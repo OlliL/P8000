@@ -1,0 +1,172 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+SYSLIB=	$(DBS)/lib
+BIN=	$(DBS)/bin
+LIBQ=	$(SYSLIB)/libovq.a
+RM=	-rm -f
+TOUCH=	touch
+
+OBJS=	IIw_left.o	IIw_right.o	IIcvar.o	IIgettup.o	\
+	IIn_get.o	IIn_ret.o	IIdbs.o		IIrdpipe.o	\
+	IIretrieve.o	IIsetup.o	IIflushtup.o	IIsync.o	\
+	IIwrite.o	IIwrpipe.o	IIexit.o	IIbmove.o	\
+	IIsyserr.o	IIconvert.o	IIerror.o	IIp_err.o	\
+	IIprpipe.o	IIresync.o	IIitos.o	IIconcatv.o	\
+	IIlength.o 	IIatoi.o 	IIsequal.o
+
+INSTALL:	install
+
+UNLOAD:		unload
+
+ALLCLEAN:	allclean
+
+CLEAN:		clean
+
+# ifdef MEM_O
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+i_FLAG=	-V
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+AR=	-ar
+# ifdef TEST
+AR_R	=rv
+AR_X	=xv
+# else
+AR_R	=r
+AR_X	=x
+# endif
+LIBMODE=	0644
+
+CHMOD=	chmod
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+
+install:	$(LIBQ)
+
+$(LIBQ):	$(OBJS)
+	$(AR) $(AR_R) $@ $?
+	@-$(CHMOD) $(LIBMODE) $@
+	$(MKLIB) $@
+
+unload:
+	@-$(AR) $(AR_X) $(LIBQ)
+	@$(RM) __.SYMDEF
+	@-$(TOUCH) $(LIBQ)
+
+allclean:	clean
+	$(RM) $(LIBQ)
+
+clean:
+	$(RM) $(OBJS)
+
+IIw_left.o:	../libq/IIw_left.c
+	$(CC) -c $(CFLAGS) $?
+
+IIw_right.o:	../libq/IIw_right.c
+	$(CC) -c $(CFLAGS) $?
+
+IIcvar.o:	../libq/IIcvar.c
+	$(CC) -c $(CFLAGS) $?
+
+IIgettup.o:	../libq/IIgettup.c
+	$(CC) -c $(CFLAGS) $?
+
+IIn_get.o:	../libq/IIn_get.c
+	$(CC) -c $(CFLAGS) $?
+
+IIn_ret.o:	../libq/IIn_ret.c
+	$(CC) -c $(CFLAGS) $?
+
+# ifdef SIGN_EXT
+IIdbs.o:	../libq/IIdbs.c ../h/bs.h
+	$(CC) -c $(CFLAGS) ../libq/IIdbs.c
+# else
+IIdbs.o:	../libq/IIdbs.c ../gutil/i1toi2.c ../h/bs.h
+	$(CC) -c $(CFLAGS) ../libq/IIdbs.c
+# endif
+
+IIrdpipe.o:	../libq/IIrdpipe.c
+	$(CC) -c $(CFLAGS) $?
+
+IIretrieve.o:	../libq/IIretrieve.c
+	$(CC) -c $(CFLAGS) $?
+
+IIsetup.o:	../libq/IIsetup.c
+	$(CC) -c $(CFLAGS) $?
+
+IIflushtup.o:	../libq/IIflushtup.c
+	$(CC) -c $(CFLAGS) $?
+
+IIsync.o:	../libq/IIsync.c
+	$(CC) -c $(CFLAGS) $?
+
+IIwrite.o:	../libq/IIwrite.c
+	$(CC) -c $(CFLAGS) $?
+
+IIwrpipe.o:	../libq/IIwrpipe.c
+	$(CC) -c $(CFLAGS) $?
+
+IIexit.o:	../libq/IIexit.c
+	$(CC) -c $(CFLAGS) $?
+
+IIbmove.o:	../libq/IIbmove.c ../gutil/bmove.src
+	$(CC) -c $(CFLAGS) ../libq/IIbmove.c
+
+IIsyserr.o:	../libq/IIsyserr.c
+	$(CC) -c $(CFLAGS) $?
+
+IIconvert.o:	../libq/IIconvert.c ../dbu/convert.c
+	$(CC) -c $(CFLAGS) ../libq/IIconvert.c
+
+IIerror.o:	../libq/IIerror.c
+	$(CC) -c $(CFLAGS) $?
+
+IIp_err.o:	../libq/IIp_err.c ../gutil/errfilen.c
+	$(CC) -c $(CFLAGS) ../libq/IIp_err.c
+
+IIprpipe.o:	../libq/IIprpipe.c ../iutil/prpipe.c
+	$(CC) -c $(CFLAGS) ../libq/IIprpipe.c
+
+IIresync.o:	../libq/IIresync.c
+	$(CC) -c $(CFLAGS) $?
+
+IIitos.o:	../libq/IIitos.c ../gutil/iocv.c
+	$(CC) -c $(CFLAGS) ../libq/IIitos.c
+
+IIconcatv.o:	../libq/IIconcatv.c ../gutil/ztack.c
+	$(CC) -c $(CFLAGS) ../libq/IIconcatv.c
+
+IIlength.o:	../libq/IIlength.c ../gutil/length.c
+	$(CC) -c $(CFLAGS) ../libq/IIlength.c
+
+IIatoi.o:	../libq/IIatoi.c ../gutil/atoi.c
+	$(CC) -c $(CFLAGS) ../libq/IIatoi.c
+
+IIsequal.o:	../libq/IIsequal.c ../gutil/sequal.c
+	$(CC) -c $(CFLAGS) ../libq/IIsequal.c
+# else
+install:
+
+unload:
+
+allclean:
+
+clean:
+# endif
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/olibq
+# endif
