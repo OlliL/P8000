@@ -1,0 +1,102 @@
+21002	COPYDB:		too many attributes~
+21010	CREATDB:	flag %s~
+21013	CREATDB:	fork err~
+21015	CREATDB:	setuid~
+21016	CREATDB:	setgid~
+21017	CREATDB:	cannot exec `%s'~
+21019	CREATDB:	fork 2~
+21020	CREATDB:	chmod~
+21021	CREATDB:	dbtmplt open~
+21022	CREATDB:	closer(att) %d~
+21023	CREATDB:	closer(rel) %d~
+21024	CREATDB:	creat admin~
+21025	CREATDB:	write Admin~
+21026	READDBTEMP:	bad Dbstat %c~
+21027	READDBTEMP:	bad rel %c~
+21028	READDBTEMP:	bad att %c~
+21029	READDBTEMP:	bad type %c~
+21030	READDBTEMP:	overflow~
+21031	GETSTAT:	bad fmt %c~
+21032	MAKEADMIN:	open %s~
+21033	DBTMPLT:	type err %c~
+21034	MAKEADMIN:	len err %s~
+21035	MAKEFILE:	creat %s~
+21036	MAKEFILE:	formatpg~
+21037	MAKERELN:	create %d~
+21038	FLAGVAL:	flag %c~
+21040	CHANGEDB:	getequal~
+21041	CHANGEDB:	replace %d~
+21042	READADMIN:	open admin %d~
+21043	READADMIN:	read err admin~
+21044	READADMIN:	open rel %d~
+21045	READADMIN:	open att %d~
+21050	DESTROYDB:	cannot open dot in %s~
+21052	ERROR:		open~
+21053	ERROR:		bad error file %d%s~
+21054	ERROR:		format err %d~
+21058	cannot read proctab %s~
+21059	proctab %s too big, lim %d~
+21060	DOFLAG:		syntx %d~
+21061	BUILDINT:	too many processes~
+21062	BUILDINT:	pipes(%s, %s)~
+21063	BUILDINT:	too many parameters~
+21064	SCANPT:		d = %c, *pp = %s~
+21065	EXPAND:		proctab too big to macro expand~
+21066	SATISFYPT:	pipe %c~
+21067	SATISFYPT:	fork~
+21068	SATISFYPT:	close(%s, %d)~
+21069	SATISFYPT:	fell out~
+21071	INGEXEC:	creat %s~
+21072	INGEXEC:	\"%s\" not executable~
+21079	PURGEDB:	cannot destroy %s~
+21080	RESTORE:	cannot open database directory~
+21081	RESTORE:	cannot open %s~
+21082	RESTORE:	cannot read %d~
+21083	LOOKUCODE:	cannot identify user %.2s~
+21084	CHECKATTS:	find~
+21085	CHECKATTS:	getequal~
+21086	CHECKATTS:	delete = %d~
+21087	CHECKATTS:	get = %d~
+21088	CHECKREL:	find~
+21089	CHECKREL:	get = %d~
+21090	CHECKREL:	delete = %d~
+21091	CHECKREL:	replace = %d~
+21096	HASNDX:		find~
+21097	HASNDX:		get = %d~
+21098	HASNDX:		getequal = %d~
+21099	HASNDX:		delete = %d~
+21100	ISNDX:		getequal = %d~
+21102	ISNDX:		delete = %d~
+21103	ISNDX:		replace = %d~
+21104	HAVETREE:	find = %d~
+21105	HAVETREE:	get = %d~
+21106	ISPROT:		find = %d~
+21107	ISPROT:		get = %d~
+21108	ISINTEG:	find = %d~
+21109	ISINTEG:	get = %d~
+21110	CHECKTREE:	find = %d~
+21111	CHECKTREE:	get = %d~
+21112	CHECKTREE:	getequal = %d~
+21113	CHECKTREE:	delete = %d~
+21114	CHECKTREE:	delete = %d~
+21115	CHECKTREE:	unknown treetype %d~
+21116	CHECKPROTECT:	find = %d~
+21117	CHECKPROTECT:	get = %d~
+21118	CHECKPROTECT:	getequal = %d~
+21119	CHECKPROTECT:	delete = %d~
+21121	CHECKPROTECT:	replace = %d~
+21123	CHECKINTEG:	find = %d~
+21124	CHECKINTEG:	get = %d~
+21125	CHECKINTEG:	getequal = %d~
+21126	CHECKINTEG:	delete = %d~
+21128	CHECKINTEG:	replace = %d~
+21131	INITIALIZE:	cannot read .../data/base~
+21132	GETNXTDB:	%d~
+21133	ASK:		cannot getline~
+21179	%s:		openr target %s, %d~
+21180	EXTRACT:	find indexes~
+21181	EXTRACT:	get indexes~
+21182	EXTRACT:	openr (%.14s) %d~
+21183	INSERT:		openr (%.14s) %d~
+21184	INSERT:		insert(catalog %.12s, tup %.14s) %d~
+21185	INSERT:		flush(catalog %.12s) %d~
