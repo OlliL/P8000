@@ -1,0 +1,412 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+SYSLIB=	$(DBS)/lib
+BIN=	$(DBS)/bin
+LIBA=	$(SYSLIB)/slibamx.a
+RM=	-rm -f
+
+# ifdef NO_F4
+OBJS=	AAmove.o	AAclrtup.o	AAi1_i2.o	AAi1_i4.o	\
+	AAi1_f8.o	AAi2_i1.o	AAi2_i4.o	AAi2_f8.o	\
+	AAi4_i1.o	AAi4_i2.o	AAi4_f8.o	AAf8_i1.o	\
+	AAf8_i2.o	AAf8_i4.o	AAmain.o	AAopenr.o	\
+	AAcloser.o	AAperm.o	AAfind.o	AAreq.o		\
+	AAget.o		AAapp.o		AAdel.o		AArep.o		\
+	AAsectup.o	AAsetkey.o	AAlock.o	AAsignal.o	\
+	AAerror.o	AAexit.o
+# else
+OBJS=	AAmove.o	AAclrtup.o	AAi1_i2.o	AAi1_i4.o	\
+	AAi1_f8.o	AAi2_i1.o	AAi2_i4.o	AAi2_f8.o	\
+	AAi4_i1.o	AAi4_i2.o	AAi4_f8.o	AAf8_i1.o	\
+	AAf8_i2.o	AAf8_i4.o	AAi1_f4.o	AAi2_f4.o	\
+	AAi4_f4.o	AAf4_i1.o	AAf4_i2.o	AAf4_i4.o	\
+	AAf4_f8.o	AAf8_f4.o	AAmain.o	AAopenr.o	\
+	AAcloser.o	AAperm.o	AAfind.o	AAreq.o		\
+	AAget.o		AAapp.o		AAdel.o		AArep.o		\
+	AAsectup.o	AAsetkey.o	AAlock.o	AAsignal.o	\
+	AAerror.o	AAexit.o
+# endif
+
+A_OBJ=	closer.o	openr.o		accbuf.o	acc_addbuf.o	\
+	getequal.o	get.o		insert.o	replace.o	\
+	delete.o	setkey.o	find.o		rhash.o		\
+	ndxsearch.o	findbest.o	scan_dups.o	get_tuple.o	\
+	put_tuple.o	del_tuple.o	tup_len.o	newlino.o	\
+	add_ovflo.o	last_page.o	page.o		compare.o	\
+	utility.o	readadmin.o
+
+I_OBJ=	printup.o	out_arg.o	dbsname.o	printdesc.o	\
+	paramd.o	lock.o		globals.o
+
+# ifdef SIGN_EXT
+G_OBJ=	atof.o		bequal.o	customer.o	itoa.o		\
+	length.o	scompare.o	ftoa.o		errfilen.o	\
+	iocv.o		version.o	ztack.o		syserr.o	\
+	trace.o		atoi.o		smove.o		xputchar.o	\
+	bmove.o		locv.o		tTf.o		concat.o	\
+	gen.o
+# else
+G_OBJ=	atof.o		bequal.o	customer.o	itoa.o		\
+	length.o	scompare.o	ftoa.o		errfilen.o	\
+	iocv.o		version.o	ztack.o		syserr.o	\
+	trace.o		atoi.o		smove.o		xputchar.o	\
+	bmove.o		locv.o		tTf.o		concat.o	\
+	i1toi2.o	gen.o
+# endif
+
+INSTALL:	install
+
+UNLOAD:		unload
+
+ALLCLEAN:	allclean
+
+CLEAN:		clean
+
+# ifdef MEM_S
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+# ifdef P8000
+CC=	scc
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+AR=	-ar
+# ifdef TEST
+AR_R	=rv
+AR_X	=xv
+# else
+AR_R	=r
+AR_X	=x
+# endif
+LIBMODE=0644
+
+CHMOD=	chmod
+MODE=	0644
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+TOUCH=	touch
+
+install:	$(LIBA)
+
+$(LIBA):	$(OBJS) $(A_OBJ) $(I_OBJ) $(G_OBJ)
+	$(AR) $(AR_R) $@ $?
+	@-$(CHMOD) $(LIBMODE) $@
+	$(MKLIB) $@
+
+unload:
+	@-$(AR) $(AR_X) $(LIBA)
+	@$(RM) __.SYMDEF
+	@-$(TOUCH) $(LIBA)
+
+allclean:	clean
+	$(RM) $(LIBA)
+
+clean:
+	$(RM) $(OBJS) $(A_OBJ) $(I_OBJ) $(G_OBJ) bmove.c
+
+AAmove.o:	../amx_lib/AAmove.c
+	$(CC) -c $(CFLAGS) $?
+
+AAclrtup.o:	../amx_lib/AAclrtup.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi1_i2.o:	../amx_lib/AAi1_i2.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi1_i4.o:	../amx_lib/AAi1_i4.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi1_f8.o:	../amx_lib/AAi1_f8.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi2_i1.o:	../amx_lib/AAi2_i1.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi2_i4.o:	../amx_lib/AAi2_i4.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi2_f8.o:	../amx_lib/AAi2_f8.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi4_i1.o:	../amx_lib/AAi4_i1.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi4_i2.o:	../amx_lib/AAi4_i2.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi4_f8.o:	../amx_lib/AAi4_f8.c
+	$(CC) -c $(CFLAGS) $?
+
+AAf8_i1.o:	../amx_lib/AAf8_i1.c
+	$(CC) -c $(CFLAGS) $?
+
+AAf8_i2.o:	../amx_lib/AAf8_i2.c
+	$(CC) -c $(CFLAGS) $?
+
+AAf8_i4.o:	../amx_lib/AAf8_i4.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi1_f4.o:	../amx_lib/AAi1_f4.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi2_f4.o:	../amx_lib/AAi2_f4.c
+	$(CC) -c $(CFLAGS) $?
+
+AAi4_f4.o:	../amx_lib/AAi4_f4.c
+	$(CC) -c $(CFLAGS) $?
+
+AAf4_i1.o:	../amx_lib/AAf4_i1.c
+	$(CC) -c $(CFLAGS) $?
+
+AAf4_i2.o:	../amx_lib/AAf4_i2.c
+	$(CC) -c $(CFLAGS) $?
+
+AAf4_i4.o:	../amx_lib/AAf4_i4.c
+	$(CC) -c $(CFLAGS) $?
+
+AAf4_f8.o:	../amx_lib/AAf4_f8.c
+	$(CC) -c $(CFLAGS) $?
+
+AAf8_f4.o:	../amx_lib/AAf8_f4.c
+	$(CC) -c $(CFLAGS) $?
+
+AAmain.o:	../amx_lib/AAmain.c
+	$(CC) -c $(CFLAGS) $?
+
+AAopenr.o:	../amx_lib/AAopenr.c
+	$(CC) -c $(CFLAGS) $?
+
+AAcloser.o:	../amx_lib/AAcloser.c
+	$(CC) -c $(CFLAGS) $?
+
+AAperm.o:	../amx_lib/AAperm.c
+	$(CC) -c $(CFLAGS) $?
+
+AAfind.o:	../amx_lib/AAfind.c
+	$(CC) -c $(CFLAGS) $?
+
+AAreq.o:	../amx_lib/AAreq.c
+	$(CC) -c $(CFLAGS) $?
+
+AAget.o:	../amx_lib/AAget.c
+	$(CC) -c $(CFLAGS) $?
+
+AAapp.o:	../amx_lib/AAapp.c
+	$(CC) -c $(CFLAGS) $?
+
+AAdel.o:	../amx_lib/AAdel.c
+	$(CC) -c $(CFLAGS) $?
+
+AArep.o:	../amx_lib/AArep.c
+	$(CC) -c $(CFLAGS) $?
+
+AAsectup.o:	../amx_lib/AAsectup.c
+	$(CC) -c $(CFLAGS) $?
+
+AAsetkey.o:	../amx_lib/AAsetkey.c
+	$(CC) -c $(CFLAGS) $?
+
+AAlock.o:	../amx_lib/AAlock.c
+	$(CC) -c $(CFLAGS) $?
+
+AAsignal.o:	../amx_lib/AAsignal.c
+	$(CC) -c $(CFLAGS) $?
+
+AAerror.o:	../amx_lib/AAerror.c
+	$(CC) -c $(CFLAGS) $?
+
+AAexit.o:	../amx_lib/AAexit.c
+	$(CC) -c $(CFLAGS) $?
+
+closer.o:	../access/closer.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/closer.c
+
+openr.o:	../access/openr.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/openr.c
+
+accbuf.o:	../access/accbuf.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/accbuf.c
+
+acc_addbuf.o:	../access/acc_addbuf.c
+	$(CC) -c $(CFLAGS) $?
+
+getequal.o:	../access/getequal.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/getequal.c
+
+get.o:		../access/get.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/get.c
+
+insert.o:	../access/insert.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/insert.c
+
+replace.o:	../access/replace.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/replace.c
+
+delete.o:	../access/delete.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/delete.c
+
+setkey.o:	../access/setkey.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/setkey.c
+
+find.o:		../access/find.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/find.c
+
+rhash.o:	../access/rhash.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/rhash.c
+
+ndxsearch.o:	../access/ndxsearch.c
+	$(CC) -c $(CFLAGS) $?
+
+findbest.o:	../access/findbest.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/findbest.c
+
+scan_dups.o:	../access/scan_dups.c
+	$(CC) -c $(CFLAGS) $?
+
+get_tuple.o:	../access/get_tuple.c
+	$(CC) -c $(CFLAGS) $?
+
+put_tuple.o:	../access/put_tuple.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/put_tuple.c
+
+del_tuple.o:	../access/del_tuple.c
+	$(CC) -c $(CFLAGS) $?
+
+tup_len.o:	../access/tup_len.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/tup_len.c
+
+newlino.o:	../access/newlino.c
+	$(CC) -c $(CFLAGS) $?
+
+add_ovflo.o:	../access/add_ovflo.c
+	$(CC) -c $(CFLAGS) $?
+
+last_page.o:	../access/last_page.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/last_page.c
+
+page.o:		../access/page.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../access/page.c
+
+compare.o:	../access/compare.c
+	$(CC) -c $(CFLAGS) $?
+
+utility.o:	../access/utility.c
+	$(CC) -c $(CFLAGS) $?
+
+readadmin.o:	../access/readadmin.c
+	$(CC) -c $(CFLAGS) $?
+
+printup.o:	../iutil/printup.c
+	$(CC) -c $(CFLAGS) $?
+
+out_arg.o:	../iutil/out_arg.c
+	$(CC) -c $(CFLAGS) $?
+
+errfilen.o:	../gutil/errfilen.c
+	$(CC) -c $(CFLAGS) $?
+
+dbsname.o:	../iutil/dbsname.c
+	$(CC) -c $(CFLAGS) $?
+
+printdesc.o:	../iutil/printdesc.c
+	$(CC) -c $(CFLAGS) $?
+
+paramd.o:	../iutil/paramd.c
+	$(CC) -c $(CFLAGS) $?
+
+lock.o:		../iutil/lock.c ../h/trace.h
+	$(CC) -c $(CFLAGS) ../iutil/lock.c
+
+globals.o:	../iutil/globals.c
+	$(CC) -c $(CFLAGS) $?
+
+version.o:	../gutil/version.c
+	$(CC) -c $(CFLAGS) ../gutil/version.c
+
+atof.o:		../gutil/atof.c
+	$(CC) -c $(CFLAGS) $?
+
+bequal.o:	../gutil/bequal.c
+	$(CC) -c $(CFLAGS) $?
+
+customer.o:	../gutil/customer.c
+	$(CC) -c $(CFLAGS) $?
+
+iocv.o:		../gutil/iocv.c
+	$(CC) -c $(CFLAGS) $?
+
+itoa.o:		../gutil/itoa.c
+	$(CC) -c $(CFLAGS) $?
+
+length.o:	../gutil/length.c
+	$(CC) -c $(CFLAGS) $?
+
+scompare.o:	../gutil/scompare.c
+	$(CC) -c $(CFLAGS) $?
+
+ftoa.o:		../gutil/ftoa.c
+	$(CC) -c $(CFLAGS) $?
+
+ztack.o:	../gutil/ztack.c
+	$(CC) -c $(CFLAGS) $?
+
+syserr.o:	../gutil/syserr.c
+	$(CC) -c $(CFLAGS) $?
+
+trace.o:	../gutil/trace.c
+	$(CC) -c $(CFLAGS) $?
+
+atoi.o:		../gutil/atoi.c
+	$(CC) -c $(CFLAGS) $?
+
+smove.o:	../gutil/smove.c
+	$(CC) -c $(CFLAGS) $?
+
+xputchar.o:	../gutil/xputchar.c
+	$(CC) -c $(CFLAGS) $?
+
+bmove.o:	bmove.c
+
+bmove.c:	../gutil/bmove.src
+	CP $? $@
+
+locv.o:		../gutil/locv.c
+	$(CC) -c $(CFLAGS) $?
+
+tTf.o:		../gutil/tTf.c
+	$(CC) -c $(CFLAGS) $?
+
+concat.o:	../gutil/concat.c
+	$(CC) -c $(CFLAGS) $?
+
+i1toi2.o:	../gutil/i1toi2.c
+	$(CC) -c $(CFLAGS) $?
+
+gen.o:		../gutil/gen.c
+	$(CC) -c $(CFLAGS) $?
+# else
+install:
+
+unload:
+
+allclean:
+
+clean:
+# endif
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/samx_lib
+# endif
