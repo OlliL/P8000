@@ -1,0 +1,34 @@
+1,$s/init_file/initfile/g
+
+1,$s/Init-File/initfile/g
+
+1,$s/startup_file/startupfile/g
+
+1,$s/startup file/startupfile/g
+
+1,$s/desc_file/Deskriptionfile/g
+
+1,$s/Tupel-File/Tupelfile/g
+
+1,$s/TUPLE-file/Tupelfile/g
+
+1,$s/day_file/dayfile/g
+
+1,$s/day-file/dayfile/g
+
+1,$s/description_file/Deskriptionfile/g
+
+1,$s/DESC-file/Deskriptionfile/g
+
+1,$s/current_file/currentfile/g
+
+1,$s/users_file/usersfile/g
+
+1,$s/batch file/batchfile/g
+
+1,$s/batch-file/batchfile/g
+
+1,$s/Users-File/usersfile/g
+
+1,$s/Startup-File/startupfile/g
+
