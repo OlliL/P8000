@@ -1,0 +1,39 @@
+10000	ACC_CLOSE:	%d = pageflush()
+		-2	WRITE ERROR
+		-11	SEEK ERROR~
+10001	OPENBATCH:	creat(`%s')~
+10002	OPENBATCH:	unbekannter Aenderungsmode %d
+		2	APPEND
+		3	REPLACE
+		4	DELETE~
+10003	OPENBATCH:	%d = find() fuer Primaerrelation `%.14s' im Katalog indexes
+		-1	get_page() ERROR
+		-2	pageflush() WRITE ERROR
+		-9	ungueltiges TID gefunden
+		-11	pageflush() SEEK ERROR~
+10004	OPENBATCH:	%d = get() fuer Primaerrelation `%.14s' im Katalog indexes
+		-1	get_page() ERROR
+		-2	pageflush() WRITE ERROR
+		-9	ungueltiges TID gefunden
+		-11	pageflush() SEEK ERROR~
+10005	CLOSEBATCH:	cannot rewind BATCH file to update header~
+10006	CLOSEBATCH:	cannot close BATCH file~
+10007	RMBATCH:	cannot close(`%s')~
+10008	RMBATCH:	cannot unlink(`%s')~
+10009	CLOSECAT:	cannot closer(`%s')~
+10010	Seitengroesse %d Bytes (> %d Bytes)~
+10011	FIND:		mode %d~
+10012	GET_ADDR:	TID [%ld], tuple deleted~
+10013	LAST_PAGE:	cannot lseek(`%.14s')~
+10014	OPENCATALOG:	`%s' is not a system catalog~
+10015	OPENCATALOG:	%d = openr(`%s')~
+10016	OPENCATALOG:	mode %d for catalog relation `%s'~
+10017	OPENR:		mode %d for relation `%s'~
+10018	GET_PAGE:	PAGE LOCK error~
+10019	PAGEFLUSH:	mainpage# [%ld] for relation TID = [%ld] of page# [%ld]~
+10020	READADMIN:	open(`DATABASE/admin', READ)~
+10021	READADMIN:	%d = read(`DATABASE/admin', %d)~
+10022	READADMIN:	open(`DATABASE/relation', READ/WRITE)~
+10023	READADMIN:	open(`DATABASE/attribute', READ/WRITE)~
+10026	SETKEY:		domain# %d > %d in relation `%.14s'~
+10027	FLUSHBATCH:	%d = write(BATCH file, %d)~
