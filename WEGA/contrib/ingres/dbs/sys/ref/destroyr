@@ -1,0 +1,22 @@
+     DESTROYR(MUTOS)              DABA16               DESTROYR(MUTOS)
+
+     NAME
+          destroyr - Zerstoeren einer bestehenden Relation
+
+     UEBERSICHT
+          destroyr [ flags ] dbname { [ permit | integrity ] relname [
+          integer { , integer } | all ] }
+
+     BESCHREIBUNG
+          Die   Aussagen   zu    destroy(ql)    gelten    auch    fuer
+          destroyr(mutos).
+
+          Sie sind jedoch um Folgendes zu ergaenzen:
+
+          Flags:
+
+          -uname erlaubt es, sich als Nutzer mit dem Login-Namen
+               auszugeben; siehe iql(mutos).
+
+          +/-w Warten oder kein Warten auf die Nutzbarkeit der
+               Datenbank dbname; siehe iql(mutos).

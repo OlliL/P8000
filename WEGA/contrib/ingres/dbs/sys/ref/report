@@ -1,0 +1,36 @@
+     REPORT(MUTOS)                DABA16                 REPORT(MUTOS)
+
+     NAME
+          report - DABA-Reportunterstuetzung
+
+     UEBERSICHT
+
+          rc {[ flags ] file }
+
+          rd [ flags ] dbname [ file ]
+
+          rg [ flags ]
+
+          rp_desc [ desc_file ]
+
+
+     BESCHREIBUNG
+          Die Reportunterstuetzung gestattet dem Nutzer  das  Erzeugen
+          von  Berichten  (Reports),  deren  Daten aus einem separaten
+          Tupel-Files entnommen werden.
+
+          Fuer das Erstellen des Tupel-Files aus  einer  Relation  der
+          Datenbank  koennen die DABA-Komponenten copy (copy(ql)) oder
+          copyr (copyr(mutos)) genutzt werden.
+
+          Die Reportunterstuetzung besteht aus  einem  Report-Compiler
+          rc,    einem   Kommando   zum   Erzeugen   eines   Domaenen-
+          Beschreibungs(Description)-Files   oder    eines    Skelett-
+          Reportprogrammes rd aus der Datenbeschreibung einer Relation
+          der Datenbank, einem Report-Generator (Interpreter)  rg  und
+          einem  Kommando  zum  Drucken  (Anzeigen) des Beschreibungs-
+          Files rp_desc.
+
+     SIEHE AUCH
+          rc(mutos),     rd(mutos),     rg(mutos),     rp_desc(mutos),
+          report(mutos) report(daba)

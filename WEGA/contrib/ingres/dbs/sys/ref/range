@@ -1,0 +1,27 @@
+     RANGE(QL)                    DABA16                     RANGE(QL)
+
+     NAME
+          range - Deklarieren einer Variablen  (Tupelvariablen)  ueber
+          einer Relation
+
+     UEBERSICHT
+          range [ [ of ] tuple_variable is relname ]
+
+     BESCHREIBUNG
+          Range muss benutzt werden, um Variablen zu  definieren,  die
+          in  nachfolgenden QL-Anweisungen verwendet werden.  Wenn nur
+          range (ohne Operanden) spezifiziert wird, werden die bereits
+          vom DBBS registrierten Tupelvariablen angezeigt.  Die Varia-
+          ble tuple_variable wird mit der durch relname spezifizierten
+          Relation verbunden.
+
+
+     BEISPIEL[E]
+          /* Deklarieren der Tupel-Variablen p, die sich ueber die
+          Relation "personal" bewegt */
+             range of p is personal
+
+
+
+     SIEHE AUCH
+          ql(iql), destroy(ql)

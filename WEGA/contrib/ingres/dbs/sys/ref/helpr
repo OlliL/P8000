@@ -1,0 +1,32 @@
+     HELPR(MUTOS)                 DABA16                  HELPR(MUTOS)
+
+     NAME
+          helpr - Anzeigen von Informationen ueber die Relationen  der
+          Datenbank
+
+     UEBERSICHT
+          helpr [ flags ] dbname [ [ integrity | permit | view ]
+          {relname} | all ]
+
+     BESCHREIBUNG
+          Helpr informiert ueber Relationen  analog  der  QL-Anweisung
+          "help"  (siehe  help(ql)).   Mit  helpr koennen jedoch keine
+          Komponentenbeschreibungen ausgelistet werden, dafuer gibt es
+          die Kommandos manr und refr.
+
+          Akzeptierte Flags sind -u und +/-w (siehe  (iql(mutos)).
+
+          Bei den Spezifikationen view, permit  und  integrity  werden
+          entsprechend  die  Sichtdefinitionen, die Berechtigungen und
+          die Integritaetbedingungen fuer die Relationen angezeigt.
+
+
+
+
+          Das Anzeigen der Relationen erfolgt   im  Abhaengigkeit  vom
+          Status des Nutzers.
+          Das Kommondo helpr dbname all zeigt alle eigenen  Relationen
+          an.
+
+     SIEHE AUCH
+          help(ql), manr(mutos), iql(mutos) refr(mutos)

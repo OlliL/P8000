@@ -1,0 +1,27 @@
+     DEFINE(QL)                   DABA16                    DEFINE(QL)
+
+     NAME
+          define - Definieren Sicht, Befugnisse  oder  Integritaetsbe-
+          dingungen
+
+     UEBERSICHT
+          define view name (target_list) [ where qual ]
+
+          define permit oplist on tuple_variable [ (attlist) ] to
+               name [ at term ] [ from time to time ]
+               [ on day to day ] [ where qual ]
+
+          define integrity on tuple_variable is qual
+
+     BESCHREIBUNG
+          Define erstellt Eintraege fuer Sichten, Befugnisse  und  In-
+          tegritaetsbedingungen,    wenn   die   Anfragemodifikations-
+          Unterstuetzung (QRYMOD,  Query  Modification)  eingeschaltet
+          wurde (Sollte sie stets!).
+
+          Die vollstaendigen Beschreibungen sind bei den im  Abschnitt
+          SIEHE AUCH aufgefuehrten Anweisungen zu finden.
+
+
+     SIEHE AUCH
+          integrity(ql), permit(ql), view(ql)

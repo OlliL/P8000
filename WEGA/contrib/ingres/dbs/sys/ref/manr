@@ -1,0 +1,27 @@
+     MANR(MUTOS)                  DABA16                   MANR(MUTOS)
+
+     NAME
+          manr - Anzeigen der Komponentenbeschreibungen
+
+     UEBERSICHT
+          manr {komponentenname}
+
+     BESCHREIBUNG
+          Manr zeigt - anlog \HELP -  ohne die Angabe  von  Parametern
+          eine Uebersicht ueber die zur Verfuegung stehenden Komponen-
+          tenbeschreibungen.
+          Es werden die Anweisungen und  Kommandos  der  Handbuchteile
+          mutos  und ql sowie Beschreibungen zu ausgewaehlten Files in
+          .../sys/etc angezeigt.
+          Bei der Angabe von Namen der Komponentenbeschreibungen  wird
+          -  analog \HELP -  eine ausfuehrliche Dokumentation der ent-
+          sprechenden Anweisung, des entsprechenden Kommandos oder der
+          Files angezeigt.
+
+     BEISPIEL
+          manr printr
+          zeigt die Dokumentation des Kommandos "printr(mutos)".
+
+
+     SIEHE AUCH
+          help(ql),helpr(mutos), refr(mutos)

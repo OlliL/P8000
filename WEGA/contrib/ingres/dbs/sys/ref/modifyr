@@ -1,0 +1,47 @@
+     MODIFYR(MUTOS)               DABA16                MODIFYR(MUTOS)
+
+     NAME
+          modifyr - Modifizieren der Speicherungsstruktur einer  Rela-
+          tion
+
+     UEBERSICHT
+          modifyr [ flags ] dbname relname [ storage_strukture
+          { domname [ :sortorder ] } ]
+
+     BESCHREIBUNG
+          Die Aussagen zu modify(ql) gelten auch fuer  modifyr(mutos).
+          Werden  nur der Datenbankname und der Relationsname spezifi-
+          ziert, entspricht das der Spezifikation "same"  (Reorganisa-
+          tion).
+
+          Bei einer Spezifikation der Sortierrichtung ist  unmittelbar
+          nach dem Domaenennamen domname ein Doppelpunkt und unmittel-
+          bar danach sortorder anzugeben.
+
+          Die Spezifikationen sind jedoch um Folgendes zu ergaenzen:
+
+
+          Flags:
+
+          -uname erlaubt es, sich als Nutzer mit dem Login-Namen
+               name auszugeben; siehe iql(mutos).
+
+          +/-w Warten oder kein Warten auf die Nutzbarkeit der
+               Datenbank dbname (iql(mutos)).
+
+          -fillfactorn Ist die Spezifikation des Fuellfaktors n
+               (Zahl).
+
+          -minpagesn Ist die Spezifikation der Mindestseitenanzahl n
+               (Zahl).
+
+          -maxpagesn ist die Spezifikation der maximalen
+               Seitenanzahl n (Zahl).
+
+     BEISPIELE
+
+          modifyr -fillfactor30 dt personal cisam
+
+
+     SIEHE AUCH
+          modify(ql)

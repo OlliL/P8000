@@ -1,0 +1,46 @@
+     RETRIEVE(QL)                 DABA16                  RETRIEVE(QL)
+
+     NAME
+          retrieve - Wiederfinden (Suchen) von Tupel aus  einer  Rela-
+          tion
+
+     UEBERSICHT
+          retrieve [[into] relname ] (target_list) [where qual ]
+
+          retrieve unique (target_list) [where qual ]
+
+     BESCHREIBUNG
+          Retrieve stellt alle Tupel bereit, die die Qualifikation er-
+          fuellen und zeigt sie entweder am Terminal (Standardausgabe)
+          an oder speichert sie in eine neue Relation.  Wurde into mit
+          relname nicht spezifiziert, werden doppelte Tupel nicht aus-
+          geblendet.  Wenn relname spezifiziert wurde, wird das Ergeb-
+          nis  der  Anfrage mit diesem Namen in eine neue Relation ge-
+          speichert.
+
+          Wenn das Schluesselwort unique spezifiziert wird, werden die
+          Tupel  nach  der Reihenfolge der angegebenenen Domaenen sor-
+          tiert und doppelte Tupel vor der Anzeige entfernt.
+
+
+     BEISPIEL[E]
+          /* Finde alle Beschaeftigten, die mehr als ihr
+          Leiter verdienen */
+
+             range of p is personal
+             range of l is personal
+             retrieve (p.name) where p.leiter = l.name
+                      and p.gehalt > l.gehalt
+
+          /* Finde alle Domaenen fuer Personen,
+          die mehr als das Durchschnittsgehalt verdienen */
+
+             retrieve into temp (p.all) where p.gehalt > avg(p.gehalt)
+
+          /* Wiederfinden der Beschaeftigtennamen, sortiert */
+
+             retrieve unique (p.name)
+
+     SIEHE AUCH
+          iql(mutos), modify(ql),  permit(ql),   ql(iql),   range(ql),
+          save(ql)

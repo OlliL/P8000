@@ -1,0 +1,34 @@
+     DESTROYDB(MUTOS)             DABA16              DESTROYDB(MUTOS)
+
+     NAME
+          destroydb - Zerstoeren einer bestehenden Datenbank
+
+     UEBERSICHT
+          destroydb [ -s ] [ -m ] dbname
+
+     BESCHREIBUNG
+          Destroydb zerstoert alle Verweise auf eine existierende  Da-
+          tenbank.  Das Directory der Datenbank und alle Files in die-
+          sem Directory werden entfernt.
+
+          Um dieses Kommando auszufuehren, muss  der  aktuelle  Nutzer
+          entweder der Datenbankadministrator (DBA) der spezifizierten
+          Datenbank oder der DABA-Systemverantwortliche (bei  spezifi-
+          ziertem -s Flag) sein.
+
+          Das -m Flag veranlasst, dass destroydb  das  MUTOS-Directory
+          nicht  entfernt.  Das ist bedeutungsvoll, wenn das Directory
+          ein  separat  montiertes  (mounted)  MUTOS-File-System  dar-
+          stellt.
+
+
+
+     BEISPIEL[E]
+          destroydb demo
+          destroydb -s peters_db
+
+     FILES
+          .../data/base/*
+
+     SIEHE AUCH
+          creatdb(mutos)

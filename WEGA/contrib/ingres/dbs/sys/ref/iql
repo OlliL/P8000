@@ -1,0 +1,122 @@
+     IQL(MUTOS)                   DABA16                    IQL(MUTOS)
+
+     NAME
+          iql - Aufruf des interaktiven Ql-Interface des DBBS DABA16
+
+     UEBERSICHT
+          iql [ flags ] dbname [ process_table ]
+
+     BESCHREIBUNG
+          Das ist das MUTOS-Kommando, das verwendet  wird,  um  DABA16
+          aufzurufen.   Dbname ist der Name einer existierenden Daten-
+          bank.
+          Die wahlweisen Flags haben folgende Bedeutung :
+          +/- bedeutet, dass die Option x durch das  Flag  +x  gesetzt
+          und  durch -x geloescht werden soll.  Ein - allein bedeutet,
+          dass mit -x die Funktion x eingeschaltet werden soll :
+
+          +/-U      Erlaubt (erlaubt nicht) das direkte Veraendern der
+                    Systemrelationen  und  Sekundaerindizes.  Fuer den
+                    Nutzer muss das 000004 Bit im Statusfeld des Files
+                    "users"  (users(files)) gesetzt sein, damit dieses
+                    Flag akzeptiert  wird.   Diese  Option  wird  aus-
+                    schliesslich fuer eine Fehlersuche im DBBS bereit-
+                    gestellt und ist fuer die normale Benutzung streng
+                    verboten.
+          -uname    Das -u Flag mit unmittelbar folgenden  Namen  name
+                    gestattet  es  sich als Nutzer mit dem Login-Namen
+                    auszugeben.  Nur der DBA  oder der DABA Systemver-
+                    antwortliche duerfen diese Option verwenden.
+          -cN       Setzt die minimale Spaltenbreite fuer die  Anzeige
+                    von  Character(Zeichen)-Domaenen auf N.  Der Stan-
+                    dard ist 6.
+          -ex       setzt  das  Zeilenseparierungszeichen  auf  x  Der
+                    Standard ist das Minuszeichen "-".
+          -ilN      Setzt die Ausgabebreite fuer  Integer  (Festkomma-
+                    zahl) auf N.  l kann 1, 2 oder 4 fuer entsprechend
+                    i1, i2 bzw. i4 Integer  sein.   Der  Standard  ist
+                    fuer i1 und i2 gleich 6 und fuer i4 gleich 13.
+          -flxM.N   Setzt  die  Ausgabebreite  fuer   Gleitkommazahlen
+                    (Floating  point) auf M Zeichen mit N Dezimalstel-
+                    len nach dem Komma.  l kann 4 oder 8 fuer f4  bzw.
+                    f8 sein.  Das x kann sein e, E, f, F, g, G, n oder
+                    N, um Ausgabeformate zu spezifizieren.  E ist  die
+                    Exponentialform,  F ist die Gleitkammadarstellung.
+                    G und N sind identisch mit F ausser, wenn die kon-
+                    vertierte  Zahl  zu  gross  ist, um in das Feld zu
+                    passen.  Dann wird in der Exponentialform  E  aus-
+                    gegeben.   G  garantiert die Ausrichtung des Dezi-
+                    malpunktes, N nicht.  Das Standardformat fuer bei-
+                    de ist n10.3.
+          -vX       Setzt  das  Zeichen  fuer  die  Spaltenseparierung
+                    (Trennung)  zum Anzeigen am Terminal (beim Wieder-
+                    auffinden) und fuer die  Ausgabe  mit  der  print-
+                    Anweisung  auf  X.   Standard  ist  der senkrechte
+                    Strich "|".
+          -rM       Setzt die Speicherungsstruktur  bei  der  retrieve
+                    Anweisung (retrieve into) auf M.  M kann sein:
+
+                    isam, cisam, hash, chash,  heap,  cheap,  heapsort
+                    oder cheapsort,
+
+                    fuer ISAM, komprimiertes (compressed) ISAM,  HASH-
+                    Relation,  komprimierte  HASH-Relation, HEAP, kom-
+                    primiertes HEAP, sortiertes HEAP, oder komprimier-
+                    tes  und  sortiertes  HEAP.   Standard ist "cheap-
+                    sort".
+          -nM       Setzt die Speicherungsstruktur fuer die index  An-
+                    weisung auf M.  M kann die gleichen Werte wie beim
+                    obigen -r Flag annehmen.  Standard ist "isam".
+          +/-a      Setzt die Autoloeschfunktion Option  (automatische
+                    Loeschung   des   Monitorpuffers)   des  Terminal-
+                    Monitors ein (aus).  Standard ist "ein".
+          +/-b      Setzt die Arbeitsweise Stapelaenderung (batch  up-
+                    date)  ein (aus).  Fuer den Nutzer muss das 000002
+                    Bit   des    Statusfeldes    im    File    "users"
+                    (users(files))  gesetzt sein, um diese Option aus-
+                    zuschalten.  Das Flag ist  normalerweise  gesetzt.
+                    Wenn  es  ausgeschaltet  ist,  werden die Anfragen
+                    zwar etwas schneller verarbeitet, aber es ist kei-
+                    ne  Wiederherstellung (recovery) nach einem Syste-
+                    mabsturz ausfuehrbar.  Anfragen, die einen  Sekun-
+                    daerindex  veraendern,  setzen  automatisch dieses
+                    Flag (nur fuer diese Anfrage) ein.
+          +/-d      Anzeige (keine Anzeige)  des  Inhaltes  des  Files
+                    "dayfile"   (dayfile(files))   (normalerweise  ge-
+                    setzt).
+          +/-s      Anzeige (keine Anzeige,  "schweigendes  Arbeiten")
+                    irgendwelcher Monitor-Nachrichten, einschliesslich
+                    Eingabeanforderungen (Prompts).   Diese  Flag  ist
+                    normalerweise  gesetzt.   Wenn  ausgeschaltet, ist
+                    auch das -d Flag ausgeschaltet.
+
+          Process_table ist der Pfadname eines DABA   File,  das  fuer
+          eine  spezielle DABA  Laufzeitkonfiguration verwendet werden
+          kann.  Diese Moeglichkeit ist nur fuer die Systempflege vor-
+          gesehen  und  ihre  unbesonnene Anwendung durch den normalen
+          Anwender ist streng untersagt.
+          Der eine Prozesstabelle verwendende Nutzer muss  das  000100
+          Bit  im Statusfeld des users-File gesetzt haben. Der die "="
+          -Form verwendende Nutzer muss das 000200 Bit gesetzt  haben.
+          Die "=" Form bedeutet, dass dem File process_table der Pfad-
+          name .../sys/etc/ vorangestellt wird.
+
+          Bemerkung  :  Es  ist  moeglich,  den  Terminal-Monitor  als
+          Stapelverarbeitungs-Interface  durch die Verwendung der Ope-
+          ratoren "<", ">" und "|" der MUTOS-Shell zu benutzen.
+
+     BEISPIEL[E]
+          iql demo
+          iql -d demo
+          iql -s demo < batchfile
+          iql -f4g12.2 -i13 +b -rhash demo
+
+     FILES
+          .../sys/etc/users
+          .../sys/etc/proctab6.3
+          .../sys/etc/dayfile6.3
+          .../sys/etc/startup
+          .../data/base
+
+     SIEHE AUCH
+          monitor(iql)

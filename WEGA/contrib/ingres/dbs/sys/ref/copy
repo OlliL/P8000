@@ -1,0 +1,61 @@
+     COPY(QL)                     DABA16                      COPY(QL)
+
+     NAME
+          copy - Kopieren von Daten zwischen Relation und MUTOS-File
+
+     UEBERSICHT
+          copy relname (domname = format {, domname = format })
+
+                    direction "filename"
+
+     BESCHREIBUNG
+          Copy uebertraegt Daten zwischen  DABA-Relationen  und  einem
+          Standard-MUTOS-File.  Relname ist der Name einer bestehenden
+          Relation.  Im allgemeinen identifiziert domname eine Domaene
+          in der Relation relname.  Format bestimmt das Format, das im
+          MUTOS-File eine Domaene besitzen soll, die mit der  spezifi-
+          zierten  Domaene  der  Relation  korrespondiert.   Direction
+          (Richtung) kann entweder into (in)  oder  from  (aus)  sein.
+          Filename ist der vollstaendige Pfadname eines Files.
+
+
+          Erlaubte Formate bei copy sind :
+
+
+
+          i1,i2,i4 - Der Datenwert im MUTOS-File ist als Festkommazahl
+               (Integer) der Laenge 1, 2 oder 4 Byte gespeichert.
+
+          f4,f8 - Der Datenwert im MUTOS-File ist eine  Gleitkommazahl
+               (entweder einfacher oder doppelter Genauigkeit).
+
+          c1,c2,...,c255 - Der Datenwert ist als Zeichenkette (String)
+               fester Laenge gespeichert.
+
+          c0  -  Zeichenkette   variabler   Laenge   (begrenzt   durch
+               Begrenzerzeichen).
+
+          d0,d1,...,d255 - Pseudo(Dummy)-Domaene
+
+
+     BEISPIEL[E]
+          /* Kopieren von Daten in die Relation "personal"*/
+             copy personal (name=c20,gehalt=f4,gebdat=i2,xxx=d1)
+                        from "/mnt/peter/pers1"
+
+          /* Kopieren der Namen und Gehaelter in ein File*/
+             copy personal (name=c0,comma=d1,gehalt=c0,nl=d1)
+                          into "/mnt/klaus/gehalt"
+
+
+          /* Gesamtkopie der Relation "personal" in ein File*/
+             copy personal ()
+                          into "/mnt/kop/personal"
+
+          /* Rueckspeichern der Gesamtkopie aus einem File*/
+             copy personal ()
+                          from "/mnt/kop/personal"
+
+     SIEHE AUCH
+           append(ql), create(ql), creater(mutos), integrity(ql),
+           permit(ql), ql(iql), view(ql), iql(mutos)
