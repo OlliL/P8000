@@ -110,9 +110,10 @@ char progbuf[0xfffe];			/*program buffer*/
 char progffff;				/*adr ffff prom e27512 program buffer*/
 char *peprombuf;
 char *pprogbuf;
+char *p_progbuf;
 char eprombuf[0xfffe];			/*prom buffer*/
 char epromffff;				/*adr ffff prom e27512 prom buffer*/
-
+long offprom, p_lange, p_begadre;
 /*	open filename
 	------------- */
 
@@ -258,6 +259,8 @@ else		/* executable and overlay */
 								  break;
 							case 'l': zhl1=2; nbytes=nbytes/2; peprombuf++; break;
 							}
+						p_lange=nbytes;
+					
 						for (;nbytes>0;pprogbuf++,peprombuf=peprombuf+zhl1,nbytes--)
 							*pprogbuf= *peprombuf;}
 
@@ -286,6 +289,8 @@ else		/* executable and overlay */
 								  break;
 							case 'l': zhl1=2; nbytes=nbytes/2; peprombuf++; break;
 							}
+						p_lange=nbytes;
+					
 						for (;nbytes>0;pprogbuf++,peprombuf=peprombuf+zhl1,nbytes--)
 							*pprogbuf= *peprombuf;}
 					offset=boffset;
@@ -308,6 +313,8 @@ else		/* executable and overlay */
 				  break;
 			case 'l': zhl1=2; nbytes=nbytes/2; peprombuf++; break;
 			}
+			p_lange=nbytes;
+					
 		for (;nbytes>0;pprogbuf++,peprombuf=peprombuf+zhl1,nbytes--)
 			*pprogbuf= *peprombuf;}
 		
@@ -335,28 +342,34 @@ sfile()
 {
 	eof=false; warning=false;
 	adr=adr << 8;
-	if (begadrf<adr)	
-		{if ((begadrf+langf)<=adr)
-			warning=true;
-		else
-			{peprombuf= &eprombuf[adr-begadrf];
-			pprogbuf= &progbuf[adr-begadrf];
-			if ((begadrf+langf)>=(adr+len))
-				nbytes=len;
-			else	nbytes=begadrf+langf-adr;}}
-	else
-		{if (begadrf>=(adr+len))	
-			eof=true;
-		else	
-			{peprombuf= &eprombuf[0];
-			pprogbuf= &progbuf[0];
-			aoffset=begadrf;
-			offset=offset+aoffset;
-			aoffset=adr;
-			offset=offset-aoffset;
-			if ((begadrf+langf)>(adr+len))
-					nbytes=adr+len-begadrf;
-			else		nbytes=langf;}}
+	if (begadrf<adr)	{
+				if ((begadrf+langf)<=adr)	warning=true;
+						else		{
+								offprom=adr-begadrf;
+								peprombuf= &eprombuf[adr-begadrf];
+								pprogbuf= &progbuf[adr-begadrf];
+								if ((begadrf+langf)>=(adr+len))	nbytes=len;
+
+									else			nbytes=begadrf+langf-adr;
+								}
+				}
+		else		{
+				if (begadrf>=(adr+len))		eof=true;
+						else		{
+								offprom=0L;
+								peprombuf= &eprombuf[0];
+								pprogbuf= &progbuf[0];
+								aoffset=begadrf;
+								offset=offset+aoffset;
+								aoffset=adr;
+								offset=offset-aoffset;
+								if ((begadrf+langf)>(adr+len))
+										nbytes=adr+len-begadrf;
+									else	nbytes=langf;
+								}
+				}
+	p_progbuf=pprogbuf;
+	p_begadre=begadre1+offprom;
 }
 
 /*	prom to file
@@ -457,7 +470,7 @@ long offs;
 	lseek (fd1, offset, 0);
 	offset=offset + hoffset;
 	n_write=write (fd1,eprombuf,prlang);
-	if (n_write != prlang)	{error=9; outerr(); return;}
+	if ((n_write & 0xffffL) != prlang)	{error=9; outerr(); return;}
 
 	aoffset=prlang;
 	s_exec.s_imsize=s_exec.s_imsize + aoffset;
