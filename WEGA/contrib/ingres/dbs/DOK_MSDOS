@@ -1,0 +1,3 @@
+cd /z/dbs/cat
+msdos abcd q9	[13]*	&& echo FD1 DONE &
+msdos abcd0 q9	[245]*	&& echo FD0 DONE &

@@ -1,0 +1,3 @@
+cd /z/dbs/cat
+tar c [13]* &
+tar c0 [245]* &
