@@ -1,0 +1,238 @@
+;**************************************************************************
+;**************************************************************************
+;
+;	WDOS-BIOS - Quelle	(C) ZFT/KEAW    Abt. Basissoftware - 1988
+;	Programm: dseg.asm
+;
+;	Bearbeiter	: P. Hoge
+;	Datum		: 24.1.89
+;	Version		: 1.1
+;
+;**************************************************************************
+;
+;	BIOS-Datensegment
+;
+;**************************************************************************
+;**************************************************************************
+
+;-------------------------------------------
+;	INTERRUPT LOCATIONS
+;-------------------------------------------
+.PUBLIC DISK_POINTER
+.PUBLIC HF_TBL_VEC
+.PUBLIC HF1_TBL_VEC
+.PUBLIC BOOT_LOCN
+
+.ORG 0:0	;ABS0 SEGMENT
+
+STG_LOC0	;BYTE
+	ORG 1EH*4
+DISK_POINTER	;DWORD
+	ORG 41H*4
+HF_TBL_VEC	;DWORD
+	ORG 46H*4
+HF1_TBL_VEC	;DWORD
+
+	ORG	400H
+DATA_AREA	;BYTE	;ABSOLUTE LOCATION OF DATA SEGMENT
+DATA_WORD	;WORD
+
+	ORG	0500H
+MFG_TEST_RTN	;FAR
+
+	ORG	7C00H
+BOOT_LOCN	;FAR
+
+;-------------------------------------------
+;STACK -- USED DURING INITIALIZATION ONLY
+;-------------------------------------------
+.ORG 30:0H	;STACK SEGMENT
+
+.PUBLIC TOS
+
+	BLKW	128
+TOS	BLKW	0
+
+;-------------------------------------------
+;	ROM BIOS DATA AREAS
+;-------------------------------------------
+.ORG 40:0H	;DATA SEGMENT
+
+.PUBLIC EQUIP_FLAG
+.PUBLIC MEMORY_SIZE
+
+DATA_BASE
+RS232_BASE	BLKW	4	;ADDRESSES OF RS232 ADAPTERS
+PRINTER_BASE	BLKW	4	;ADDRESSES OF PRINTERS
+EQUIP_FLAG	BLKW	1	;INSTALLED HARDWARE
+MFG_TST 	BLKB	1	;INITIALIZATION FLAG
+MEMORY_SIZE	BLKW	1	;MEMORY SIZE IN K BYTES
+MFG_ERR_FLAG	BLKB	1	;SCRATCHPAD FOR MANUFACTURING
+		BLKB	1	;ERROR CODES
+
+;----------------------------------------
+;	KEYBOARDS DATA AREAS
+;----------------------------------------
+.PUBLIC KB_FLAG
+.PUBLIC KB_FLAG_1
+.PUBLIC ALT_INPUT
+.PUBLIC BUFFER_HEAD
+.PUBLIC BUFFER_TAIL
+.PUBLIC KB_BUFFER
+
+KB_FLAG		BLKB	1
+KB_FLAG_1	BLKB	1	;SECOND BYTE OF KEYBOARD STATUS
+ALT_INPUT	BLKB	1	;STORAGE FOR ALTERNATE KEYPAD ENTRY
+BUFFER_HEAD	BLKW	1	;POINTER TO HEAD OF KEYBOARD BUFFER
+BUFFER_TAIL	BLKW	1	;POINTER TO TAIL OF KEYBOARD BUFFER
+KB_BUFFER	BLKW	16	;ROOM FOR 15 ENTRIES
+KB_BUFFER_END	BLKW	0
+
+;---------------------------------------
+;	DISKETTE DATA AREAS
+;---------------------------------------
+.PUBLIC SEEK_STATUS
+.PUBLIC DISKETTE_STATUS
+
+SEEK_STATUS	BLKB	1
+MOTOR_STATUS	BLKB	1
+MOTOR_COUNT	BLKB	1
+DISKETTE_STATUS	BLKB	1	;RETURN CODE STATUS BYTE
+CMD_BLOCK
+HD_ERROR
+NEC_STATUS	BLKB	7
+
+;---------------------------------------
+.PUBLIC CRT_MODE
+.PUBLIC CRT_COLS
+.PUBLIC CRT_LEN
+.PUBLIC CURSOR_POSN
+.PUBLIC CURSOR_MODE
+.PUBLIC ADDR_6845
+
+CRT_MODE	BLKB	1	;CURRENT CRT MODE
+CRT_COLS	BLKW	1	;NUMBER OF COLUMNS ON SCREEN
+CRT_LEN  	BLKW	1	;LENGTH OF REGEN IN BYTES
+CRT_START	BLKW	1	;STARTING ADDRESS IN REGEN BUFFER
+CURSOR_POSN	BLKW	8	;CURSOR FOR EACH OF UP TO 8 PAGES
+CURSOR_MODE	BLKW	1 	;CURRENT CURSOR MODE SETTING
+ACTIVE_PAGE	BLKB	1	;CURRENT PAGE BEING DISPLAYED
+ADDR_6845	BLKW	1 	;BASE ADDRESS FOR ACTIVE DISPLAY CARD
+CRT_MODE_SET	BLKB	1	;CURRENT SETTING OF THE 3x8 REGISTER
+CRT_PALLETTE	BLKB	1	;CURRENT PALLETTE SETTING COLOR CARD
+
+;---------------------------------------
+;	POST DATA AREA
+;---------------------------------------
+.PUBLIC IO_ROM_INIT
+
+IO_ROM_INIT	BLKW	1	;PNTR TO OPTIONAL I/O ROM INIT ROUTINE
+IO_ROM_SEG	BLKW	1	;POINTER TO IO ROM SEGMENT
+INTR_FLAG	BLKB	1	;FLAG TO INDICATE AN INTERRUPT HAPPEND
+
+;----------------------------------------
+;	TIMER DATA AREA
+;----------------------------------------
+.PUBLIC TIMER_LOW
+.PUBLIC TIMER_HIGH
+.PUBLIC TIMER_OFL
+
+TIMER_LOW	BLKW	1	;LOW WORD OF TIMER COUNT
+TIMER_HIGH	BLKW	1	;HIGH WORD OF TIMER COUNT
+TIMER_OFL	BLKB	1	;TIMER HAS ROLLED OVER SINCE LAST READ
+
+;----------------------------------------
+;	SYSTEM DATA AREA
+;----------------------------------------
+.PUBLIC BIOS_BREAK
+.PUBLIC RESET_FLAG
+
+BIOS_BREAK	BLKB	1	;BIT 7-1 IF BREAK KEY HAS BEEN HIT
+RESET_FLAG	BLKW	1	;WORD=1234H IF KEYBOARD RESET UNDERWAY
+
+;----------------------------------------
+;	HARD FILE DATA AREAS
+;----------------------------------------
+DISK_STATUS1	BLKB	1
+HF_NUM  	BLKB	1
+CONTROL_BYTE	BLKB	1
+PORT_OFF	BLKB	1
+
+;-------------------------------------------------
+;	PRINTER AND RS232 TIME-OUT VARIABLES
+;-------------------------------------------------
+.PUBLIC PRINT_TIM_OUT
+
+PRINT_TIM_OUT	BLKB	4
+RS232_TIM_OUT	BLKB	4
+
+;----------------------------------------
+;	ADDITIONAL KEYBOARD DATA AREA
+;----------------------------------------
+.PUBLIC BUFFER_START
+.PUBLIC BUFFER_END
+
+BUFFER_START	BLKW	1
+BUFFER_END	BLKW	1
+
+;----------------------------------------
+;	ADDITIONAL FLOPPY DATA
+;----------------------------------------
+	ORG	8BH
+
+LASTRATE	BLKB	1	;LAST DATA RATE SELECTED
+
+;----------------------------------------
+;	ADDITIONAL HARD FILE DATA
+;----------------------------------------
+HF_STATUS	BLKB	1	;STATUS REGISTER
+HF_ERROR	BLKB	1	;ERROR REGISTER
+HF_INT_FLAG	BLKB	1	;HARD FILE INTERRUPT FLAG
+HF_CNTRL	BLKB	1	;COMBO HARD FILE/FLOPPY CARD BIT 0=1
+
+;----------------------------------------
+;	ADDITIONAL DISKETTE AREA
+;----------------------------------------
+DSK_STATE	BLKB	1	;DRIVE 0 MEDIA STATE
+		BLKB	1	;DRIVE 1 MEDIA STATE
+		BLKB	1	;DRIVE 0 OPERATION START STATE
+		BLKB	1	;DRIVE 1 OPERATION START STATE
+DSK_TRK		BLKB	1	;DRIVE 0 PRESENT CYLINDER
+		BLKB	1	;DRIVE 1 PRESENT CYLINDER
+
+;----------------------------------------
+;	ADDITIONAL KEYBOARD LED FLAG
+;----------------------------------------
+.PUBLIC KB_EXT
+.PUBLIC KB_FLAG_2
+
+KB_EXT		BLKB	1
+KB_FLAG_2	BLKB	1
+
+;----------------------------------------
+;	REAL TIME CLOCK DATA AREA
+;----------------------------------------
+USER_FLAG	BLKW	1	;OFFSET ADDR OF USERS WAIT FLAG
+USER_FLAG_SEG	BLKW	1	;SEG ADDR OF USER WAIT FLAG
+RTC_LOW		BLKW	1	;LOW WORD OF USER WAIT FLAG
+RTC_HIGH	BLKW	1	;HIGH WORD OF USER WAIT FLAG
+RTC_WAIT_FLAG	BLKB	1	;WAIT ACTIVE FLAG
+
+;----------------------------------------
+;	EXTRA DATA AREA
+;----------------------------------------
+.ORG 50:0H	;XXDATA SEGMENT
+
+.PUBLIC STATUS_BYTE
+
+STATUS_BYTE	BLKB	1
+
+;----------------------------------------
+;	VIDEO DISPLAY BUFFER
+;----------------------------------------
+;.ORG B000:0H		;VIDEO_RAM SEGMENT
+
+;REGEN	BLKB	0
+;REGENW	BLKW	0
+;	BLKB	1024
+.END
