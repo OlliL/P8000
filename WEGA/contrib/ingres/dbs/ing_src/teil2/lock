@@ -1,0 +1,368 @@
+.lp 66
+.ds RH \f3LOCK-DEV       \f1
+.ds RF \f3ING_DB     \f
+.ds LH Anwendung
+.ds LF ING_DB 6.3/0
+.bp
+.NH 2
+.ft B
+Installieren des ING_DB
+.br
+          lock-device ***
+.ft R
+.LP
+.sp 10
+.NH 3
+.ft B
+\o'U"'berblick
+.ft R
+.LP
+ING_DB 6.3/0
+hat einen vollst\o'a"'ndigen concurrency control Mechanismus.
+ING_DB 6.3/0 setzt und l\o'o"'scht Sperren (locks)
+durch Schrei\%ben in ein device,
+das "/dev/lock" genannt wird.
+Wenn das device nicht zum Schreiben er\o'o"'ffnet werden kann,
+l\o'a"'uft
+ING_DB 6.3/0 ohne concurrency control.
+.LP
+Anfangs ist es ratsam,
+ING_DB 6.3/0 ohne concurrency control aufzubauen. 
+Wenn die geplante Nutzung von
+ING_DB 6.3/0 concurrency control erfordert,
+muss man das "/dev/lock" in UNIX (V7), also einen entsprechenden
+Driver in\%stallieren.
+.NH 3
+.ft B
+Arbeitsschritte
+.ft R
+.NH 4
+.ft B
+\o'U"'bersetzen des concurrency device
+.ft R
+.LP
+Sie melden sich als "root" an.
+Das concurrency device besteht aus zwei Files:
+.br
+        .../source/support/ildr.c und
+.br
+        .../source/support/ildr.h
+.br
+.LP
+Das source-File ist in /usr/sys/dev/ildr.c und
+das header-File in /usr/sys/h/ildr.h umzubenennen.
+.br
+        mv .../source/support/ildr.c /usr/sys/dev/ildr.c
+.br
+        mv .../source/support/ildr.h /usr/sys/h/ildr.h
+.br
+.LP
+Es gibt einen Parameter in m.h, mit dem der Nutzer festlegen kann,
+wo die lock table liegen soll.
+Mit
+.br
+     #define XLOCK
+.br
+wird die lock table ausserhalb des Kerns angelegt.
+Im Kern liegt sie, wenn diese Zeile ein Kommentar ist:
+.br
+     /*#define XLOCK  */
+.br
+Es gibt einige Parameter in ildr.h, die der Nutzer setzen kann:
+.DS I
+NLOCKS Anzahl der locks
+PLOCKS page locks
+RLOCKS relation locks
+DLOCKS database locks
+.DE
+NLOCKS ist die Anzahl der erlaubten locks. Sie
+bestimmt die Gr\o'o"'sse der lock table.
+PLOCKS ist die gr\o'o"'sste Zahl der page, relation und database locks.
+RLOCKS ist die gr\o'o"'sste Zahl der relation und database locks.
+DLOCKS ist die gr\o'o"'sste Zahl der database locks.
+ING_DB 6.3/0 kann nur DLOCKS-mal gleichzeitig aktiv sein.
+.LP
+Die folgenden Bedingungen m\o'u"'ssen erf\o'u"'llt sein,
+um gegen deadlock durch lock table \o'U"'berlauf gesch\o'u"'tzt zu sein.
+.br
+        NLOCKS > PLOCKS > RLOCKS > DLOCKS + 6
+.LP
+Die Zahl RLOCKS ist erforderlich, 
+damit 6-Variablen-Queries laufen k\o'o"'nnen.
+.LP
+Wir empfehlen zuerst DLOCKS festzulegen
+und dann die anderen Parameter zu setzen:
+.DS I
+RLOCKS = 2 * DLOCKS + 6
+PLOCKS = RLOCKS + 3
+NLOCKS = PLOCKS + 1
+.DE
+Z.B. k\o'o"'nnte man, um die Gr\o'o"'sse der lock table zu ver\%kleinern, 
+DLOCKS = 2, RLOCKS = 10, PLOCKS = 13 und NLOCKS = 14 setzen.
+In diesem Fall k\o'o"'nnten nur zwei Personen gleichzeitig mit
+ING_DB 6.3/0 arbeiten.
+In einem anderen Beispiel k\o'o"'nnte man
+DLOCKS = 20, RLOCKS = 46, PLOCKS = 49 und NLOCKS = 50 setzen. Das
+w\o'u"'rde 20
+ING_DB 6.3/0-Nutzern simultane Arbeit erm\o'o"'glichen.
+.LP
+Der f\o'u"'r den lock-Driver erforderliche
+Speicherplatz betr\o'a"'gt 1008 Byte
+im text segment und 36 + 18 * NLOCKS im data and bss segment.
+(Nur wenn XLOCK in m.h nicht definiert wurde.)
+.LP
+Das current directory wird in das Verzeichnis ge\o'a"'ndert, das die device-Driver enth\o'a"'llt.
+.br
+        cd /usr/sys/dev
+.br
+.NH 4
+.ft B
+\o'U"'bersetzen und Ablegen der 
+.br
+	UNIX-Library
+.ft R
+.LP
+Der UNIX-Objektcode ist in zwei
+Bibliotheken eingeteilt, LIB1 (Systemcode)
+und LIB2 (device-Driver).
+Das File ildr.c ist zu \o'u"'bersetzen und dann in LIB2 abzulegen.
+.DS I
+cc -c -O ildr.c
+ar rv LIB2 ildr.o
+.DE
+.NH 4
+.ft B
+Ablegen der Systemroutine exit()
+.ft R
+.LP
+Das current-Directory wird in das Verzeichnis f\o'u"'r
+den Systemcode ge\o'a"'ndert.
+.DS I
+cd ../sys
+.DE
+Editieren von /usr/sys/sys/sys1.c :
+.LP
+Der system exit call muss ge\o'a"'ndert werden, um das
+concurrency device rufen zu k\o'o"'nnen,
+wenn ING_DB 6.3/0 unnormal beendet wird,
+z.B. der Prozess gekillt wird oder ein Systemfehler auftritt.
+Der Aufruf "ildrm(q->p_pid)" muss in exit() im File /usr/sys/sys/sys1.c
+nach der Zeile "q->p_stat = SZOMB;"
+hinzugef\o'u"'gt werden. Der Quelltext von exit wird dann so aussehen:
+.LP
+.nf
+exit(rv)
+{
+        register int i;
+        register struct proc *p, *q;
+        register struct file *f;
+
+        p = u.u_procp;
+        p->p_flag &= ~(STRC|SULOCK);
+        p->p_clktim = 0;
+        for(i=0; i<NSIG; i++)
+                u.u_signal[i] = 1;
+        for(i=0; i<NOFILE; i++) {
+                f = u.u_ofile[i];
+                u.u_ofile[i] = NULL;
+                closef(f);
+        }
+        plock(u.u_cdir);
+        iput(u.u_cdir);
+        if (u.u_rdir) {
+                plock(u.u_rdir);
+                iput(u.u_rdir);
+        }
+        xfree();
+#ifdef SYSACCT
+        acct();
+#endif SYSACCT
+        mfree(coremap, p->p_size, p->p_addr);
+        p->p_stat = SZOMB;
+        /*
+         * remove outstanding locks
+         * for the dying process
+         */
+        ilrma(p->p_pid);
+        ((struct xproc *)p)->xp_xstat = rv;
+        ((struct xproc *)p)->xp_utime = u.u_cutime 
+                                        + u.u_utime;
+        ((struct xproc *)p)->xp_stime = u.u_cstime 
+                                        + u.u_stime;
+#ifndef EXIT
+        for(q = &proc[0]; q <= MAX_PROC; q++)
+                if(q->p_ppid == p->p_pid) {
+                        wakeup((caddr_t)&proc[1]);
+                        q->p_ppid = 1;
+                        if (q->p_stat==SSTOP)
+                                setrun(q);
+                }
+        for(q = &proc[0]; q <= MAX_PROC; q++)
+                if(p->p_ppid == q->p_pid) {
+                        wakeup((caddr_t)q);
+                        swtch();
+                        /* no return */
+                }
+        swtch();
+#else
+        for(i = 0, q = &proc[0]; 
+                 q <= MAX_PROC; q++){
+                if(q->p_ppid == p->p_pid){
+                        q->p_ppid = 1;
+                        if(q->p_stat == SZOMB)
+                                i++;
+                        else if(q->p_stat == SSTOP)
+                                setrun(q);
+                }
+                else if(q->p_pid == p->p_ppid){
+                        wakeup(q);
+                }
+        }
+        if(i)
+                wakeup(&proc[1]);
+        swtch();
+#endif EXIT
+}
+.fi
+
+Ablegen von /usr/sys/sys/LIB1 :
+.LP
+Das File sys1.c wird \o'u"'bersetzt und sys1.o in LIB1 gebracht.
+.DS I
+cc -c -O sys1.c
+ar rv LIB1 sys1.o
+.DE
+.NH 4
+.ft B
+Installieren des device in das 
+.br
+UNIX-Filesystem
+.ft R
+.LP
+Um ein device in UNIX
+zu in\%stallieren, ist die Konfiguration zu \o'a"'ndern.
+.LP
+Das current-Directory wird in das Verzeichnis ge\o'a"'ndert,
+das das configuration-File c.c enth\o'a"'lt.
+.br
+.DS I
+cd /usr/sys/conf
+.DE
+Editieren von /usr/sys/conf/c.c :
+.LP
+Das configuration-File ist zu editieren und das lock device
+in der character_device-Liste hinzuzuf\o'u"'gen.
+Nach dem letzten device unter "cdevsw[]" ist folgende Zeile einzuf\o'u"'gen:
+.br
+   nulldev,  nulldev, nulldev, ilwrite, nulldev, nodev,   0,  
+.LP
+Die Zeilennummer f\o'u"'r dieses device wird die major device number.
+Zu beachten ist, das die Z\o'a"'hlung bei Null beginnt.
+Dieser Schritt kann nicht gleichzeitig mit einer notwendigen
+Systemneuerstellung erfolgen, da durch
+.ft B
+makeconf
+.ft R
+das File c.c erzeugt wird und die eingegebenen \o'A"'nderungen
+wieder \o'u"'berschrieben werden.
+Das Basisfile zu makeconf
+.ft B
+conf
+.ft R
+kennt die Informationen zu
+.ft B
+ilwrite
+.ft R
+nicht!
+\o'U"'bersetzen von c.c :
+.LP
+Das configuration-File wird \o'u"'bersetzt
+.DS I
+cc -c c.c
+.DE
+.NH 4
+.ft B
+Laden des Systems
+.ft R
+.LP
+UNIX ist nun bereit zum reloading.
+Folgende Files sind f\o'u"'r die individuelle In\%stallation wichtig:
+.DS I
+l.o
+smch.o
+c.o
+.DE
+Erzeugt werden sie mit folgenden Kommandos:
+.DS I
+as -o l.o l.s
+cc -P smch.c;mv smch.i smch.s;as -o smch.o smch.s
+cc -c c.c
+ld -o ../unix -X l.o smch.o \\
+                c.o ../sys/LIB1 ../dev/LIB2
+.DE
+.NH 4
+.ft B
+Vorbereiten zum reboot
+.ft R
+.LP
+Das neue unix kann noch nicht /unix genannt werden.
+Da die namelist ge\o'a"'ndert wurde,
+muss man in den single user-Betrieb gehen.
+.NH 4
+.ft B
+Rebooting UNIX V.7
+.ft R
+.LP
+Das neue unix wird in das directory gebracht, aus dem gebootet wird:
+.br
+        cp unix /unix
+.LP
+Jetzt wird das sync Kommando gegeben und das
+System mit der normalen boot-Prozedur gestartet.
+.NH 4
+.ft B
+Hinzuf\o'u"'gen des device in /dev
+.ft R
+.LP
+Das concurrency device muss in "/dev" gestellt werden, nachdem
+UNIX gebootet wurde.
+Folgendes Kommando wird ausgef\o'u"'hrt:
+.DS I
+/etc/mknod /dev/lock c major 0
+.DE
+wobei "major" die major device number des lock device
+im File c.c ist.
+Die major device number ist
+die Position des device in der "cdevsw[]" liste.
+Man beachte, dass die Z\o'a"'hlung mit Null beginnt.
+.LP
+Nun wird der mode des device so ge\o'a"'ndert,
+dass es schreibbar durch den owner
+.ft B
+ing_db
+.ft R
+wird.
+.DS I
+chown ing_db /dev/lock
+chgrp ing_db /dev/lock
+chmod 200 /dev/lock
+.DE
+.NH 3
+.ft B
+Abschluss
+.ft R
+.LP
+ING_DB wird nun das /dev/lock device f\o'u"'r sein
+concurrency control benutzen.
+Ein einfacher Weg, um dies zu pr\o'u"'fen,
+ist, "purge" auf einer Datenbank zu versuchen,
+w\o'a"'hrend ein anderer 
+auf der gleichen Datenbank arbeitet.
+.LP
+Ausser den Massnahmen, die hier exakt beschrieben
+wurden, m\o'u"'ssen sie garantieren, dass die
+Systemreserven (INODEs, FILE-Deskriptoren, Puffer, Anzahl
+m\o'o"'glicher Prozesse, swap- und /tmp-Bereich)
+ausreichen. Versuchen sie deshalb ersteinmal bescheidene
+Dimensionen.
+.OC
