@@ -1,0 +1,19 @@
+     STARTUP(FILES)               DABA16                STARTUP(FILES)
+
+     NAME
+          .../sys/etc/startup - DABA-Start-File
+
+     BESCHREIBUNG
+          Dieses File wird durch den DABA-Terminal-Monitor zum  Login-
+          Zeitpunkt  gelesen.  Es wird vor dem Start-File gelesen, das
+          im File "users" spezifiziert werden  kann.   Der  Hauptzweck
+          besteht  darin,  einen  neuen  Standard-Editor und/oder eine
+          Standard-Shell fuer den Aufruf durch  das  \e  oder  das  \s
+          Monitor-Kommando zu definieren.
+
+          Diese Spezifikationen sind Standard-Spezifikationen und gel-
+          ten  fuer  alle  Nutzer.   Durch  Spezifikationen  des  File
+          "users" koennen sie ueberschrieben werden.
+
+     SIEHE AUCH
+          monitor(iql), users(files)

@@ -1,0 +1,38 @@
+     EINFUEHRUNG(ERROR)           DABA16            EINFUEHRUNG(ERROR)
+
+     NAME
+          Einfuehrung in die Fehlernachrichten
+
+     BESCHREIBUNG
+          Dieses  Dokument  beschreibt  die  Fehler,  die  durch   das
+          Datenbank-Betriebssystem  DABA16  gemeldet  werden  und gibt
+          eine Erklaerung der moeglichen Gruende fuer  ihr  Auftreten.
+          Alle Fehler sind wie folgt numeriert nxxx, wobei n die Quel-
+          le des Fehlers gemaess folgender Tabelle anzeigt :
+
+             2 =  Parser
+             3 =  Query modification
+             4 =  Dekomposition und Ein-Variablen-Anfragen-Prozessor
+             5 =  Datenbank-Dienste
+
+          Die Ziffernfolge xxx in der Fehlernummer ist ein eindeutiger
+          Identifikator.
+
+          Die Fehlernachrichten werden im File .../sys/etc/error6.3_n,
+          gespeichert, wobei n wie oben erklaert, definiert ist.
+          Jeder Fehlereintrag dieses Files besteht aus der  Fehlernum-
+          mer,  einem  Tabulator-Zeichen,  der anzuzeigenden Nachricht
+          und einem Tilde-Zeichen ("~"), das die Nachricht  abschlies-
+          st.
+
+          Darueber hinaus enthalten einige Fehlernachrichten die  Zei-
+          chenfolge  "% i " innerhalb der Nachricht, wobei i eine Zif-
+          fer ist, die als Offset innerhalb einer  Parameterliste  in-
+          terpretiert  wird,  die  durch  die  Fehlerquelle uebergeben
+          wird.  Das zeigt an, dass ein Parameter durch die  Fehlerbe-
+          handlung  in  die Nachricht einzufuegen ist.  In den meisten
+          Faellen ist dieser Parameter in seiner  Bedeutung  selbster-
+          klaerend.
+
+          Wenn die Fehlernachricht vollstaendig selbsterklaerend  ist,
+          wird keine zusaetzliche Erklaerung gegeben.

@@ -1,0 +1,28 @@
+     PRINTR(MUTOS)                DABA16                 PRINTR(MUTOS)
+
+     NAME
+          printr - Drucken von Relationen
+
+     UEBERSICHT
+          printr [ flags ] dbname  { relname }
+
+     BESCHREIBUNG
+          Printr druckt die spezifizierten Relationen der spezifizier-
+          ten  Datenbank  (analog  der  print QL-Anweisung.  Um dieses
+          Kommando auszufuehren, muss fuer den Nutzer retrieve  Befug-
+          nis gestattet sein.
+
+          Akzeptierte Flags sind die iql-Flags (iql(mutos)) -u,  +/-w,
+          -c, -i, -f und -v sowie die printr-spezifischen Flags -s -h.
+
+          Bedeutung:
+
+          -h[N] setzt pro Seite eine Ueberschrift (header).   Mit  der
+              Angabe  von  N  kann die Anzahl der zu druckenden Zeilen
+              pro Seite veraendert werden.  Die Anzahl der Zeilen  pro
+              Seite wird standardmaessig auf 66 gesetzt.
+
+          -s  unterdrueckt die Kopf- und Fusszeilen.
+
+     SIEHE AUCH
+          iql(mutos), print(ql)

@@ -1,0 +1,65 @@
+     APPEND(QL)                   DABA16                    APPEND(QL)
+
+     NAME
+          append - Anfuegen (Einfuegen) neuer Tupel an die Relation
+
+     UEBERSICHT
+          append [to] relname (target_list) [where qual]
+
+     BESCHREIBUNG
+          Append fuegt Tupel, welche die Qualifikation qual erfuellen,
+          an die Relation relname, wobei relname der Name einer beste-
+          henden Relation sein muss.  Die target_list (Ziel- oder  Er-
+          gebnisliste)  spezifiziert  die  Werte der Attribute, die an
+          relname anzufuegen sind.
+
+          Die Domaenen der Liste koennen in beliebiger Reihenfolge an-
+          gegeben werden.  Attributen der Ergebnis-Relation, die nicht
+          in  der  target_list  als  Ergebnis-Attributnamen  auftreten
+          (entweder  explizit oder als Annahme), wird als Standard ein
+          leerer Wert (0, fuer numerische Attribute bzw.   eine  Leer-
+          kette  "", fuer Zeichenketten(Character)-Attribute) zugewie-
+          sen.
+
+          Werte oder Ausdruecke (expressions) von numerischem Typ  ko-
+          ennen verwendet werden, um Werte numerischer Domaenen zu be-
+          legen.  Dabei erfolgen entsprechende Konvertierungen in  die
+          Ergebnisdomaene.   Numerische  Werte  duerfen  nicht  direkt
+          Zeichen-Domaenen zugewiesen werden.  Konvertierungen vom nu-
+          merischen  in den Character-Typ koennen unter Verwendung des
+          ascii Operators (ql(iql))  erfolgen.   Zeichenwerte  duerfen
+          auch nicht direkt numerischen Domaenen zugewiesen werden.
+
+          Die Funktionen int1, int2 usw. konvertieren Zeichen in nume-
+          rische Werte (ql(iql)).
+
+          Das Schluesselwort all kann verwendet werden, wenn alle  Do-
+          maenen einer Relation angefuegt werden sollen.
+
+          Ein append kann nur durch den Relations-Eigentuemer oder ei-
+          nem  Nutzer mit appendBefugnis auf die gegebene Relation an-
+          gewendet werden.
+
+     BEISPIEL[E]
+          /* Uebernehme den Mitarbeiter Mueller, Josef aus der */
+          /* Relation "zugang" in die Relation "personal" */
+             range of z is zugang
+             append to personal(z.name, z.gehalt, einstdat=1987,
+             beruf="Programmierer", gebdat = 1987-z.alter)
+                          where z.name = "Mueller, Josef"
+          /* Fuege die Relation "zugang1" an "zugang" an */
+             range of z1 is zugang1
+             append to zugang(z1.all)
+
+     SIEHE AUCH
+          copy(ql), copyr(mutos), permit(ql), ql(iql), retrieve(ql)
+
+     DIAGNOSE
+          Bei Zuweisung eines  numerischen Ausdruckes  auf  eine  Zei-
+          chenkettendomaene  oder  einer Zeichenkette auf eine numeri-
+          sche Domaene werden Nachrichten ausgegeben.
+
+     FEHLERQUELLEN
+          Doppelte Tupel, die an  eine  Relation  vom  Speicherungstyp
+          "paged  heap" (Schluessellos, unstrukturiert) angefuegt wer-
+          den sollen, werden nicht abgewiesen.

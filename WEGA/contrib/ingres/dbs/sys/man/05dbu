@@ -1,0 +1,604 @@
+     DBU(ERROR)                   DABA16                    DBU(ERROR)
+
+     NAME
+          Zusammenstellung der Fehlernachrichten der Datenbankdienste
+
+     UEBERSICHT
+          Fehlernummern 5000 - 5999
+
+     BESCHREIBUNG
+          Die Datenbankdienste fuehren alle Aufgaben  aus,  die  nicht
+          direkt  mit  der  Verarbeitung  der Anfragen verbunden sind.
+          Die Fehlernachrichten, die erzeugt werden koennen, resultie-
+          ren aus einigen Syntaxpruefungen und aus einer grossen Menge
+          semantischer Pruefungen.
+
+     FEHLER
+          5001    PRINT: bad relation name %0
+
+                  PRINT: Falscher Relationsname %0.
+
+                  Sie haben versucht, eine Relation  zu  drucken,  die
+                  nicht existiert.
+
+          5002    PRINT: %0 is a view and can't be printed
+
+                  PRINT: %0 ist eine Sicht  und  kann  nicht  gedruckt
+                  werden.
+
+                  Die einzige Moeglichkeit, eine Sicht zu drucken, ist
+                  das Wiederauffinden (retrieve).
+
+          5003    PRINT: Relation %0 is protected.
+
+                  PRINT: Die Relation %0 ist geschuetzt.
+
+                  Sie sind nicht autorisiert, auf diese  Relation  zu-
+                  zugreifen.
+
+          5102    CREATE: duplicate relation name %0
+
+                  CREATE: Doppelter Relationsname %0.
+
+                  Sie versuchten, eine Relation zu erstellen, die  be-
+                  reits existiert.
+
+          5103    CREATE: %0 is a system relation
+
+
+
+
+                  CREATE: %0 ist eine Systemrelation.
+
+                  Sie duerfen keine Relation mit  dem  gleichen  Namen
+                  wie  eine  Systemrelation  erstellen.  Innerhalb des
+                  Systems sind die Namen der Systemrelationen  eindeu-
+                  tig.
+
+          5104    CREATE %0: invalid attribute name %1
+
+                  CREATE %0: Falscher Attributname %1.
+
+                  Das tritt auf, wenn Sie versuchen, eine Relation mit
+                  einem  Namen  fuer ein Attribut mit mehr als 12 Zei-
+                  chen zu erstellen.
+
+          5105    CREATE %0: duplicate attribute name %1
+
+                  CREATE %0: Doppelter Attributname %1.
+
+                  Innerhalb einer Relation muessen  die  Attributnamen
+                  eindeutig  sein.   Sie versuchten, eine Relation mit
+                  doppeltem Namen fuer Attribute zu erstellen.
+
+          5106    CREATE %0: invalid attribute format "%2" on attribu-
+                  te %1
+
+                  CREATE %0: Falsches Attributformat "%2" des Attribu-
+                  tes %1.
+
+                  Die  erlaubten  Formate  fuer  eine   Domaene   sind
+                  c1-c255,  i1,  i2, i4, f4 und f8.  Irgendein anderes
+                  Format wird diesen Fehler erzeugen.
+
+          5107    CREATE %0: excessive domain count on attribute %1
+
+                  CREATE %0: Domaenenanzahl durch Attribut  %1  ueber-
+                  schritten.
+
+                  Eine Relation darf nicht mehr als 49 Domaenen haben.
+
+          5108    CREATE %0: excessive relation width on attribute %1
+
+                  CREATE %0: Die Relationbreite durch das Attribut  %1
+                  ueberschritten.
+
+                  Die maximal erlaubte Byte-Anzahl  eines  Tupels  ist
+                  1010.   Dies  resultiert  aus der Entscheidung, dass
+                  ein Tupel vollstaendig in  eine  DABA-"Page"  passen
+                  muss.   Zugeordnete  Anzeiger erfordern 14 Byte, die
+                  von 1024 subtrahiert, 1010 ergeben.
+
+          5201    DESTROY: %0 is a system relation
+
+                  DESTROY: %0 ist eine Systemrelation.
+
+                  Das System wuerde unmittelbar danach  Stoppen,  wenn
+                  das erlaubt waere.
+
+          5202    DESTROY: %0 does not exist or is not owned by you
+
+                  DESTROY: %0 existiert nicht oder ist Ihnen nicht zu-
+                  geeignet.
+
+                  Um eine Relation zu zerstoeren, muss sie existieren,
+                  und Sie muessen ihr Eigentuemer sein.
+
+          5203    DESTROY: %0 is an invalid integrity constraint iden-
+                  tifier
+
+                  DESTROY:       %0       ist       ein       falscher
+                  Integritaetsbedingungs-Identifikator.
+
+                  Die spezifizierten Zahlen identifizieren  keine  In-
+                  tegritaetsbedingungen   der   angegebenen  Relation.
+                  Wenn Sie  beispielsweise  eingeben  "destroy  permit
+                  teile  1, 2, 3" und 1, 2 oder 3 sind Zahlen fuer Be-
+                  fugnisse auf die Relation "teile", die  durch  "help
+                  permit  teile"  nicht  gedruckt  wurden, wird dieser
+                  Fehler erzeugt.
+
+          5204    DESTROY: %0  is  an  invalid  protection  constraint
+                  identifier
+
+                  DESTROY: %0 ist  eine  falscher  Befugnisbedingungs-
+                  Identifikator.
+
+                  Die spezifizierten Zahlen identifizieren  keine  Be-
+                  fugnisbedingungen   auf  die  angegebenen  Relation.
+                  Siehe Beispiel fuer Fehler 5203.
+
+          5300    INDEX: cannot find primary relation
+
+                  INDEX: Primaerrelation nicht zu finden.
+
+                  Die Relation  existiert  nicht  -  pruefen  Sie  die
+                  Schreibweise!
+
+          5301    INDEX: more than maximum number of domains
+
+
+                  INDEX: Mehr als die maximale Domaenenanzahl.
+
+                  Ein Sekundaerindex kann auf  hoechstens  6  Domaenen
+                  erzeugt werden.
+
+          5302    INDEX: invalid domain %0
+
+                  INDEX: Falsche Domaene %0.
+
+                  Sie versuchten, einen Index auf einer nicht existie-
+                  renden Domaene zu erstellen.
+
+          5303    INDEX: relation %0 not owned by you
+
+                  INDEX: Relation %0 ist Ihnen nicht zugeeignet.
+
+                  Sie muessen Eigentuemer der Relation  sein,  um  In-
+                  dizes zu erstellen.
+
+          5304    INDEX: relation %0 is already an index
+
+                  INDEX: Relation %0 ist bereits ein Index.
+
+                  DABA erlaubt keine Indizes f Indizes zu erstellen.
+
+          5305    INDEX: relation %0 is a system relation
+
+                  INDEX: Relation %0 ist eine Systemrelation.
+
+                  Sekundaerindizes duerfen nicht auf  Systemrelationen
+                  erstellt werden.
+
+          5306    INDEX: %0 is a view and an index can't be  built  on
+                  it
+
+                  INDEX: %0 ist eine Sicht, und auf sie kann kein  In-
+                  dex erstellt werden.
+
+                  Weil Sichten nicht physisch in der Datenbank gespei-
+                  chert  sind,  koennen auf sie keine Indizes erstellt
+                  werden.
+
+          5401    HELP: relation %0 does not exist
+
+                  HELP: Relation %0 existiert nicht.
+
+          5402    HELP: cannot find manual section "%0"
+
+
+
+                  HELP: Diese Beschreibungs-Komponente  des  Handbuchs
+                  kann nicht gefunden werden.
+
+          5403    HELP: relation %0 is not a view
+
+                  HELP: Relation %0 ist keine Sicht.
+
+                  Sie  spezifizierten   eine  Anweisung  "help   view"
+                  (druckt  Sichtdefinitionen)  auf  eine Basisrelation
+                  (keine Sicht).  So druckt beispielsweise "help  view
+                  gutgehaltv" von "gutgehaltv" die Sichtdefinition.
+
+          5404    HELP: relation %0 has no permissions on it granted
+
+                  HELP: Relation %0 besitzt keine erlaubten  Befugnis-
+                  se.
+
+          5405    HELP: relation %0 has no integrity constraints on it
+
+                  HELP: Relation %0 besitzt  keine  Integritaetsbedin-
+                  gungen
+
+                  Sie versuchten, die  Befugnisse  oder  Integritaets-
+                  bedingungen  einer Relation zu drucken, die nie spe-
+                  zifiziert wurden.
+
+          5410    HELP: tree buffer overflowed
+
+                  HELP: Baum(tree)-Puffer Ueberlauf.
+
+          5411    HELP: tree stack overflowed
+
+                  HELP: Baum(tree)-Kellerspeicher Ueberlauf.
+
+                  Interner KellerLberlauf.
+
+          5500    MODIFY: relation %0 does not exist
+
+                  MODIFY: Relation %0 existiert nicht.
+
+          5501    MODIFY: you do not own relation %0
+
+                  MODIFY: Sie sind nicht Eigentuemer der Relation %0.
+
+                  Sie koennen die Speicherungsstruktur einer  Relation
+                  nicht  modifizieren,  fuer die Sie nicht Eigentuemer
+                  sind.
+
+          5502    MODIFY %0: you may not provide keys on a heap
+
+                  MODIFY  %0:  Sie  duerfen  keine   Schluessel   fuer
+                  "heap"-strukturierte Relationen spezifizieren.
+
+                  Entsprechend der Definition haben  "heap"-Strukturen
+                  keine Schluessel.
+
+          5503    MODIFY %0: too many keys provided
+
+                  MODIFY %0: Zu viele Schluessel bereitgestellt.
+
+                  Sie duerfen maximal 49 Schluessel auf eine  Relation
+                  spezifizieren.
+
+          5504    MODIFY %0: cannot modify system relation
+
+                  MODIFY %0: Systemrelationen  duerfen  nicht  modifi-
+                  ziert werden.
+
+                  Systemrelationen koennen nur  durch  Verwendung  des
+                  sysmod Shell-Kommandos modifiziert werden.  Z.B.
+
+                          sysmod dbname
+
+          5507    MODIFY %0: duplicate key "%1"
+
+                  MODIFY %0: Doppelter Schluessel "%1".
+
+                  Sie duerfen eine Domaene nur einmal  als  Schluessel
+                  spezifizieren.
+
+          5508    MODIFY %0: key width (%1) too large for isam
+
+                  MODIFY %0: Schluessellaenge (%1) fuer isam zu gross.
+
+                  Bei einer Modifikation einer Relation in  isam  darf
+                  die  Summe  der Laengen der Schluesselattributer 245
+                  Bytes nicht ueberschreiten.
+
+          5510    MODIFY %0: bad storage structure "%1"
+
+                  MODIFY %0: Falsche Speicherungsstruktur "%1".
+
+                  Die erlaubten Strukturnamen sind heap, cheap,  isam,
+                  cisam, hash und chash.
+
+          5511    MODIFY %0: bad attribute name "%1"
+
+
+
+
+                  MODIFY %0: Falscher Attributname "%1".
+
+                  Sie spezifizierten ein Attribut, das in der Relation
+                  nicht existiert.
+
+          5512    MODIFY %0: "%1" not allowed or specified  more  than
+                  once
+
+                  MODIFY %0: "%1" nicht erlaubt oder  mehr  als  eines
+                  spezifiziert.
+
+                  Sie spezifizierten einen Parameter,  der  einem  an-
+                  deren Parameter widerspricht, der Speicherungsstruk-
+                  tur widerspricht oder der bereits spezifiziert  wur-
+                  de.
+
+          5513    MODIFY %0: fillfactor value %1 out of bounds
+
+                  MODIFY %0: Wert des Fuellfaktors %1  ausserhalb  der
+                  Grenzen.
+
+                  Der Fuellfaktor fillfactor muss zwischen 1  und  100
+                  sein.
+
+          5514    MODIFY %0: minpages value %1 out of bounds
+
+                  MODIFY %0: Minpages-Wert %1 ausserhalb der Grenzen.
+
+                  Der Wert von minpages muss groesser als Null sein.
+
+          5515    MODIFY %0: "%1" should be "fillfactor",  "maxpages",
+                  or "minpages"
+
+                  MODIFY %0: "%1" sollte sein "fillfactor", "maxpages"
+                  oder "minpages".
+
+                  Sie spezifizierten einen unbekannten Parameter  fuer
+                  modify.
+
+          5516    MODIFY %0: maxpages value %1 out of bounds
+
+                  MODIFY %0: Maxpages-Wert %1 ausserhalb der Grenzen.
+
+          5517    MODIFY %0: minpages value exceeds maxpages value
+
+                  MODIFY %0:  Minpages-Wert  ueberschreitet  maxpages-
+                  Wert.
+
+          5518    MODIFY %0: invalid sequence specifier "%1"  for  do-
+                  main %2.
+
+                  MODIFY %0: Falsche  Spezifikation  der  Sortierfolge
+                  "%1" fuer Domaene %2.
+
+                  Die Spezifikation fuer die Sortierfolge kann "ascen-
+                  ding"  (oder  "a")  oder "descending" (oder "d") bei
+                  modify sein.  Beispiel:
+
+                          modify teile to heapsort on
+                                 tnum:ascending,
+                                 tname:descending
+
+          5519    MODIFY: %0 is a view and can't be modified
+
+                  MODIFY: %0 ist eine Sicht und darf nicht modifiziert
+                  werden.
+
+                  Nur physisch gespeicherte  Relationen  sind  modifi-
+                  zierbar.
+
+          5520    MODIFY: %0: sequence specifier "%1" on domain %2  is
+                  not allowed with the specified storage structure.
+
+
+
+                  MODIFY: Die Spezifikation "%1" der Sortierfolge fuer
+                  Domaene  %2 ist fuer die spezifizierte Speicherungs-
+                  struktur nicht erlaubt.
+
+                  Eine Sortierfolge kann nur bei einer Modifikation in
+                  oder cheapsort angegeben werden.
+
+          5600    SAVE: cannot save system relation "%0"
+
+                  SAVE: Die Systemrelation "%0" kann  nicht  verfalls-
+                  geschuetz werden.
+
+                  Systemrelationen besitzen  kein  Schutzdatum.   Fuer
+                  sie  ist  garantiert,  dass sie fuer die gesamte Le-
+                  benszeit der Datenbank erhalten bleiben.
+
+          5601    SAVE: bad month "%0"
+
+                  SAVE: Falsche Monatsangabe "%0".
+
+          5602    SAVE: bad day "%0"
+
+
+
+
+                  SAVE: Falsche Tagesangabe "%0".
+
+          5603    SAVE: bad year "%0"
+
+                  SAVE: Falsche Jahresangabe "%0".
+
+                  Das waren fuer DABA  falsche  Monats-,  Tages-  oder
+                  Jahresangaben.
+
+          5604    SAVE: relation %0 does not exist or is not owned  by
+                  you
+
+                  SAVE: Relation %0 existiert  nicht  oder  ist  Ihnen
+                  nicht zugeeignet.
+
+          5800    COPY: relation %0 doesn't exist
+
+                  COPY: Relation %0 existiert nicht.
+
+          5801    COPY: attribute %0 in relation %1 doesn't  exist  or
+                  it has been listed twice
+
+
+
+
+                  COPY: Attribut %0 der Relation  %1  existiert  nicht
+                  oder wurde doppelt aufgefuehrt.
+
+          5803    COPY: too many attributes
+
+                  COPY: Zu viele Attribute.
+
+                  Jede Dummy-Domaene und jede reale  Domaene,  die  in
+                  der  copy-Anweisung aufgefuehrt ist, besteht nur aus
+                  einem Attribut.  Der Grenzwert ist 150 Attribute.
+
+          5804    COPY: bad length for attribute %0.  Length="%1"
+
+                  COPY: Falsche Laenge fuer Attribut %0. Laenge="%1".
+
+          5805    COPY: can't open file %0
+
+                  COPY: File %0 nicht zu eroeffnen.
+
+                  Bei einem "copy from" ist das File nicht lesbar.
+
+          5806    COPY: can't create file %0
+
+
+
+                  COPY: File %0 kann nicht erstellt werden.
+
+                  Bei einem "copy into" ist das File durch den  Nutzer
+                  nicht  erstellbar.  Das wird gewoehnlich veranlasst,
+                  wenn der Nutzer  fuer  das  spezifizierte  Directory
+                  keine Schreiberlaubnis besitzt.
+
+          5807    COPY: unrecognizable dummy domain "%0"
+
+                  COPY: Ungueltige Dummy-Domaene "%0".
+
+                  Bei einem "copy into"  wird  ein  Dummy-Domaenenname
+                  verwendet, um Zeichen in das MUTOS-File einzufuegen.
+                  Der angegebene Doaenenname ist ungueltig.
+
+          5808    COPY: domain %0 size too small for conversion.
+                  There were %2 tuples successfully copied from %3 in-
+                  to %4
+
+                  COPY: Domaene %0, Groesse fuer die Konvertierung  zu
+                  klein.
+                  Es wurden %2 Tupel erfolgreich von %3  nach  %4  ko-
+                  piert.
+
+                  Bei  einem  Kopieren,  ausser  Zeichen  in  Zeichen,
+                  prueft  "copy",  ob das Feld gross genug ist, um den
+                  zu kopierenden Wert aufzunehmen.
+
+          5809    COPY: bad input string  for  domain  %0.  Input  was
+                  "%1".  There were %2 tuples successfully copied from
+                  %3 into %4
+
+                  COPY: Falscher Eingabe-String fuer die  Domaene  %0.
+                  Eingabe  war  "%1".   Es wurden %2 Tupel erfolgreich
+                  von %3 nach %4 kopiert.
+
+                  Das tritt ein, wenn Zeichenketten in Integer  (Fest-
+                  kommazahl) oder Gleitkommazahlen konvertiert werden.
+                  Die Zeichenkette enthaelt  irgendetwas  anderes  als
+                  die numerischen Zeichen (0-9,+,-,blank,usw.).
+
+          5810    COPY: unexpected end of file  while  filling  domain
+                  %0.
+                  There were %1 tuples successfully copied from %2 in-
+                  to %3
+
+                  COPY: Unerwartetes Ende des File waehrend des  Fuel-
+                  lens der Domaene %0.
+                  Es wurden %1 Tupel erfolgreich von %2  nach  %3  ko-
+                  piert.
+
+          5811    COPY: bad type for attribute %0. Type="%1"
+
+                  COPY: Falscher Typ des Attributes %0. Typ="%1".
+
+                  Die einzigen akzeptierten Typen sind i, f, c und d.
+
+          5812    COPY: The relation "%0" has a secondary index.   The
+                  index(es)  must  be  destroyed  before  doing a copy
+                  "from"
+
+                  COPY: Die Relation "%0"  hat  einen  Sekundaerindex.
+                  Der  Index  oder die Indizes muessen vor einem "copy
+                  from" zerstoert werden.
+
+                  Copy Deshalb kann ein "copy from"  auf  keine  indi-
+                  zierte Relation angewendet werden.
+
+          5813    COPY: You are not allowed to update the relation %0
+
+                  COPY: Sie sind nicht  befugt,  die  Relation  %0  zu
+                  aendern.
+
+                  Sie duerfen nicht in eine Systemrelation oder in ei-
+                  nen Sekundaerindex kopieren.
+
+          5814    COPY: You do not own the relation %0.
+
+                  COPY: Sie sind nicht der  Eigentuemer  der  Relation
+                  %0.
+
+                  Sie duerfen "copy" nicht fuer das Aendern einer  Re-
+                  lation  benutzen,  fuer  die  Sie  nicht Eigentuemer
+                  sind.  Ein "copy into" ist erlaubt  aber  ein  "copy
+                  from" nicht.
+
+          5815    COPY: An unterminated "c0" field occurred while fil-
+                  ling  domain  %0.  There were %1 tuples successfully
+                  copied from %2 into %3
+
+                  COPY: Ein nicht abgeschlossenes "c0" Feld tritt  wa-
+                  ehrend  des Fuellens der  Domaene %0 auf.  Es wurden
+                  %1 Tupel erfolgreich von %2 nach %3 kopiert.
+
+                  Eine gelesene Zeichenkette bei  einem  "copy  from",
+                  das  die "c0"-Option benutzt, darf nicht laenger als
+                  1024 Byte sein.
+
+          5816    COPY: The full pathname must be  specified  for  the
+                  file %0
+
+                  COPY: Der vollstaendige Pfadname muss fuer das  File
+                  %0 spezifiziert werden.
+
+                  Der File-Name fuer "copy" muss mit einem "/"  begin-
+                  nen.
+
+          5817    COPY: The maximum width of the  output  file  cannot
+                  exceed 1024 bytes per tuple
+
+                  COPY: Die maximale Breite  des  File  (Tupel-Laenge)
+                  darf 1024 Byte (pro Tupel) nicht ueberschreiten.
+
+                  Die in das File ausgegebene Datenmenge fuer ein  Tu-
+                  pel ueberschreitet 1024 Byte.  Das tritt gewoehnlich
+                  nur auf, wenn das Format falsch  oder  eine  groesse
+                  Menge von Dummy-Domaenen spezifiziert wurden.
+
+          5818    COPY: %0 is a view and can't be copied
+
+                  COPY: %0 ist eine Sicht und darf nicht kopiert  wer-
+                  den.
+
+                  Nur physische Relationen koennen kopiert werden.
+
+          5819    COPY: Warning: %0 duplicate tuples were ignored.
+
+                  COPY: Warnung: %0 doppelte Tupel wurden ignoriert.
+
+                  Bei einem "copy from"  waren  doppelte  (identische)
+                  Tupel in der Relation praesent.
+
+          5820    COPY: Warning: %0  domains  had  control  characters
+                  which were converted to blanks.
+
+                  COPY: Warnung: %0 Domaenen hatten Steuerzeichen, die
+                  in Blanks konvertiert wurden.
+
+          5821    COPY: Warning: %0 c0 character domains were  trunca-
+                  ted.
+
+                  COPY: Warnung: %0  c0  Zeichendomaenen  wurden  ver-
+                  kuerzt.
+
+                  Zeichendomaenen im c0 Format haben  die  Domaenenla-
+                  enge.  Sie  spezifizierten  einen  Domaenenwert, der
+                  groesser als diese Laenge war und verkuerzt wurde.
+
+          5822    COPY: Relation %0 is protected.
+
+                  COPY: Relation %0 ist geschuetzt.
+
+                  Sie sind nicht autorisiert, auf diese  Relation  zu-
+                  zugreifen.

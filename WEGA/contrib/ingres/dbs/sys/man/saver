@@ -1,0 +1,20 @@
+     SAVER(MUTOS)                 DABA16                  SAVER(MUTOS)
+
+     NAME
+          saver - Verlaengern des Schutzdatums einer Relation
+
+     UEBERSICHT
+          saver [ flags ] dbname relname month day year
+
+     BESCHREIBUNG
+          Die Aussagen zu save(ql) gelten auch fuer saver(mutos).
+
+          Sie sind jedoch um Folgendes zu ergaenzen:
+
+          Flags:
+
+          -uname erlaubt es, sich als Nutzer mit dem Login-Namen
+               name auszugeben (iql(mutos)).
+
+          +/-w Warten oder kein Warten auf die Nutzbarkeit
+               der Datenbank dbname (iql(mutos)).

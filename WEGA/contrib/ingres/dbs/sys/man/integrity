@@ -1,0 +1,46 @@
+     INTEGRITY(QL)                DABA16                 INTEGRITY(QL)
+
+     NAME
+          integrity - Definieren von Integritaetsbedingungen
+
+     UEBERSICHT
+          define integrity on tuple_variable is qual
+
+     BESCHREIBUNG
+          Integrity fuegt eine Integritaetsbedingung  fuer  die  durch
+          tuple_variable spezifizierte Relation den Integritaetsbedin-
+          gungen hinzu.   Nachdem  die  Bedingung  gespeichert  wurde,
+          muessen  alle Aenderungen auf die Relation die Qualifikation
+          qual erfuellen.
+
+          Qual muss erfuellt (wahr) sein, damit  integrity  akzeptiert
+          wird.   Andernfalls wird eine Diagnosemeldung ausgegeben und
+          die Anweisung zurueckgewiesen.
+
+          Aenderungen, die mindestens eine Integritaetsbedingung  ver-
+          letzen,  werden  ohne Ausgabe einer Fehlermeldung nicht aus-
+          gefuehrt.
+
+          Qual muss eine  einfachte  Variablenqualifikation  sein  und
+          darf keine Aggregate enthalten.
+
+
+          Die integrity Anweisung darf  nur  vom  Relationseigentuemer
+          angewendet werden.
+
+          Define erstellt Eintraege fuer Sichten, Befugnisse  und  In-
+          tegritaetsbedingungen  nur,  wenn  die Anfragemodifikations-
+          Unterstuetzung (QRYMOD,  Query  Modification)  eingeschaltet
+          wurde (Sollte sie stets!).
+
+          In AMX-Programmen koennen nur Relationen verarbeitet werden,
+          die die keine Integritaetsbedingungen besitzen.
+
+
+     BEISPIEL[E]
+          /* Sichern eines positiven Gehaltes */
+            range of p is personal
+            define integrity on p is p.gehalt > 0
+
+     SIEHE AUCH
+          copy(ql), copyr(mutos), destroy(ql)

@@ -1,0 +1,618 @@
+     PARSER(ERROR)                DABA16                 PARSER(ERROR)
+
+     NAME
+          Zusammenstellung der Parser-Fehlernachrichten
+
+     UEBERSICHT
+          Fehlernummern 2000 - 2999.
+
+     BESCHREIBUNG
+          Die folgenden Fehlernummern koennen vom Parser erzeugt  wer-
+          den.  Der Parser liest die von Ihnen spezifizierten Anfragen
+          und uebersetzt sie in die entsprechende interne  Form.   Die
+          meisten der dabei auftretenden Fehler sind Syntaxfehler oder
+          Typkonflikte.
+
+     FEHLER
+          2000    %0 errors were found in ql program
+
+                  %0 Fehler wurden im QL-Programm gefunden.
+
+          2100    line %0, Attribute %1 not in relation %2
+
+
+
+
+                  Zeile %0, Attribut %1 nicht in der Relation %2.
+
+                  In der Zeile %0 des  verarbeiteten  Arbeitsbereiches
+                  ist das Attribut %1 keine Domaene der Relation %2.
+
+          2102    line  %0, No operations on character domains allowed
+
+                  Zeile %0, Keine Operationen auf  Character  Domaenen
+                  erlaubt
+
+          2103    line %0, Function type does not match type of attri-
+                  bute %1
+
+                  Zeile %0, Funktionstyp stimmt nicht mit  Attributtyp
+                  %1 ueberein.
+
+                  Eine Funktion  erwartet  numerische  Daten,  erhaelt
+                  aber  eine Zeichenkette (oder umgekehrt).  So ist es
+                  z.B. falsch, wenn fuer eine Sinusfunktion eine  Zei-
+                  chendomaene bereitgestellt wird.
+
+          2106    line %0, Data base utility command buffer overflow
+
+
+
+                  Zeile   %0,   Ueberlauf    des    Datenbank-Utility-
+                  Kommandopuffers.
+
+                  Fuer den zugewiesenen Pufferbereich des  Parser  ist
+                  das  Utility-Kommando  zu  lang.   Das Kommando muss
+                  verkuerzt werden.
+
+          2107    line %0, You are not allowed to  update  this  rela-
+                  tion: %1
+
+                  Zeile %0, Sie sind nicht befugt, die Relation %1  zu
+                  aendern.
+
+                  Es wurde versucht,  irgendeine  Systemrelation  oder
+                  einen  Sekundaerindex direkt mit QL zu aendern (z.B.
+                  die relation-Relation).  Solche Operationen, die der
+                  Integritaet  der Datenbank widersprechen, sind nicht
+                  erlaubt.
+
+          2108    line %0, Invalid result relation for APPEND %1
+
+                  Zeile %0, Falsche Ergebnisrelation fuer APPEND %1.
+
+                  Fuer die Ausfuehrung  einer  APPEND-Anweisung  wurde
+                  eine  Relation spezifiziert, die entweder nicht exi-
+                  stiert oder auf die Sie keinen Zugriff besitzen.  So
+                  ist  z.B. ein append to peter( ...) fehlerhaft, wenn
+                  peter nicht existiert.
+
+          2109    line %0, Variable %1 not declared in RANGE statement
+
+                  Zeile %0, Variable %1 in keiner RANGE-Anweisung  de-
+                  klariert.
+
+                  Hier wurde ein Symbol in einem QL-Ausdruck an  einer
+                  Stelle  benutzt,  an der eine Tupelvariable erwartet
+                  wird.  Dieses Symbol wurde  aber  in  keiner  RANGE-
+                  Anweisung deklariert.
+
+          2111    line %0, Too many attributes in key for INDEX
+
+                  Zeile %0, Zu viele Schluesselattribute fuer INDEX.
+
+                  Ein Sekundaerindex darf nicht mehr als  6  Attribute
+                  im SchlLssel haben.
+
+          2117    line %0, Invalid relation name %1 in RANGE statement
+
+
+
+                  Zeile %0, Falscher Relationname  %1  in  der  RANGE-
+                  Anweisung.
+
+                  Es wurde versucht,  eine  Tupelvariable  ueber  eine
+                  nicht existierende Relation zu deklarieren.
+
+          2118    line %0, Out of space in query tree - Query too long
+
+                  Zeile %0, Speicherueberlauf beim Erzeugen eines  An-
+                  fragenbaumes - Die Anfrage ist zu lang.
+
+                  Die zu erzeugende  Anfrage  ist  fuer  eine  Analyse
+                  durch  den Parser zu lang.  Die Anfrage ist zu kuer-
+                  zen, um mehr Pufferplatz zu erhalten.
+
+          2119    line %0, MOD operator not defined for floating point
+                  or character attributes
+
+                  Zeile %0, MOD-Operator fuer Gleikomma- oder  Zeiche-
+                  nattribute nicht definiert.
+
+                  Der MOD Operator ist nur fuer Integer definiert.
+
+          2120    line %0, no pattern match operators allowed  in  the
+                  target list
+
+                  Zeile %0, es ist  kein  Suchmuster-Operator  in  der
+                  Zielliste erlaubt.
+
+                  Suchmuster-Operatoren (z.B. "*") koennen nur im Qua-
+                  lifikationsteil benutzt werden.
+
+          2121    line %0, Only character type domains are allowed  in
+                  CONCAT or INTTIME operator
+
+                  Zeile %0, Nur Zeichendomaenen sind im  CONCAT-  oder
+                  INITTIME-Operator erlaubt.
+
+          2123    line %0, %1.all not defined for replace
+
+                  Zeile %0, %1.all ist fuer replace nicht definiert.
+
+          2125    line %0, Cannot use aggregates ("avg" or "avgu")  on
+                  character values
+
+                  Zeile %0, Aggregate ("avg" oder "avgu") auf Zeichen-
+                  werte nicht anwendbar.
+
+          2126    line %0, Cannot use aggregates ("sum" or "sumu")  on
+                  character values
+
+                  Zeile %0, Aggregate ("sum" oder "sumu") auf Zeichen-
+                  werte nicht anwendbar.
+
+          2127    line %0, Cannot use numerical functions (ATAN,  COS,
+                  GAMMA, LOG, SIN, SQRT, EXP, ABS) on character values
+
+                  Zeile %0, Numerische Funktionen (ATAN,  COS,  GAMMA,
+                  LOG, SIN, SQRT, EXP oder ABS) auf Zeichenwerte nicht
+                  anwendbar.
+
+          2128    line %0, Cannot use unary operators ("+" or "-")  on
+                  character values
+
+                  Zeile %0, Einstellige Operatoren ("+" oder "-")  auf
+                  Zeichenwerte nicht anwendbar.
+
+          2129    line %0, Numeric operations (+ - * /) not allowed on
+                  character values
+
+                  Zeile %0, Numerische Operationen (+ - * /) auf  Zei-
+                  chenwerte nicht erlaubt.
+
+                  Einige Funktionen und Operatoren sind bedeutungslos,
+                  wenn sie auf Zeichenwerte angewendet werden.
+
+          2130    line %0, Too many result domains in target list
+
+                  Zeile %0, Zu viele Ergebnis-Domaenen in der  Zielli-
+                  ste.
+
+                  Die maximale Anzahl der Ergebnisdomaenen ist MAXDOM.
+                  MAXDOM  ist  fuer  Rechner mit 16 Bit Verarbeitungs-
+                  breite 49 und fuer Rechner mit 32 Bit Verarbeitungs-
+                  breite 128.
+
+          2132    line %0, Too many aggregates in this query
+
+                  Zeile %0, Zu viele Aggregate in dieser Anfrage.
+
+                  Die maximal erlaubte Anzahl in der Anfrage  ist  MA-
+                  XAGG.   MAXAGG ist fuer Rechner mit 16 Bit Verarbei-
+                  tungsbreite 49 und fuer Rechner mit 32 Bit Verarbei-
+                  tungsbreite 128.
+
+          2133    line %0, Type conflict on relational operator
+
+
+
+
+                  Zeile %0, Typkonflikt beim relationalen Operator.
+
+                  Es ist nicht erlaubt, einen Zeichentyp mit einem nu-
+                  merischen Typ zu vergleichen.
+
+          2134    line %0, %1 is not a constant operator.
+
+                  Zeile %0, %1 ist kein Konstantenoperator.
+                  Nur dba oder usercode sind erlaubt.
+
+          2135    line %0, You cannot duplicate the name  of  an  exi-
+                  sting relation(%1)
+
+                  Zeile %0, Sie duerfen den Namen einer  existierenden
+                  Relation(%1) nicht doppelt verwenden.
+
+                  Sie haben versucht, eine Relation zu erstellen, wel-
+                  che  eine existierende Relation redefinieren wuerde.
+                  Benutzen Sie einen anderen Namen!
+
+          2136    line %0, There is no such hour as %1, use a 24  hour
+                  clock system
+
+
+
+                  Zeile %0, Es gibt keine solche Uhrzeit wie %1,  ver-
+                  wenden Sie eine 24-Stunden-Uhrzeit.
+
+          2137    line %0, There is no such minute as  %1,  use  a  24
+                  hour clock system
+
+                  Zeile %0, Es gibt keine solche Minutenangabe wie %1,
+                  verwenden  Sie  eine  Minutenangabe  des 24-Stunden-
+                  Uhrzeit-Systems.
+
+          2138    line %0, There is no such time as 24:%1,  use  a  24
+                  hour clock system
+
+                  Zeile %0, Es gibt keine solche Zeitangabe wie 24:%1,
+                  verwenden Sie das 24-Stunden-System.
+
+                  Die Fehler 2136-38 zeigen an, dass Sie eine  fehler-
+                  hafte Uhrzeit in einer permit Anweisung spezifiziert
+                  haben.  Gueltig sind Zeitangaben von 0:00  bis  ein-
+                  schliesslich 24:00.
+
+          2139    line %0, Your database does not support query  modi-
+                  fication
+
+
+                  Zeile %0, Fuer Ihre Datenbank ist  Anfragenmodifika-
+                  tion nicht unterstuetzt.
+
+                  Sie haben versucht, die Anweisung der  Anfragenmodi-
+                  fikation  (define  ) zu benutzen, aber die Datenbank
+                  wurde mit dem -q Flag  erstellt.   Um  diese  Unter-
+                  stuetzung  durch die Anfragenmodifikation verfuegbar
+                  zu machen, muessen Sie fuer die Shell
+
+                          creatdb -e +q dbname spezifizieren.
+
+          2500    syntax error on  line %0, last symbol read was: %1
+
+                  Syntaxfehler in Zeile %0, letztes gelesenes  Symbol:
+                  %1
+
+                  Ein Fehler 2500 wird vom Parser  gemeldet,  wenn  er
+                  den  Fehler  nicht  anderweitig klassifizieren kann.
+                  Eine  haeufige  Moeglichkeit,   diesen   Fehler   zu
+                  ergrLnden,  ist  das Weglassen der in Klammern einge-
+                  schlossenen Zielliste.  Der Parser zeigt das  letzte
+                  Symbol an, dass er vom Scanner erhalten hat.  Manch-
+                  mal ist die Lokalisation des letzten  Symboles  viel
+                  weiter  als  die  Stelle, an der der Fehler auftrat.
+                  Die Zeichenfolge "EOF" wird fuer das  letzte  Symbol
+                  verwendet,  wenn  der Parser die Anfrage schon voll-
+                  staendig gelesen hat.
+
+          2501    line %0, The word %1, cannot follow a RETRIEVE  com-
+                  mand
+
+                  Zeile %0, Das Wort %1 darf keiner RETRIEVE-Anweisung
+                  folgen.
+
+          2502    line %0, The word %1, cannot follow an  APPEND  com-
+                  mand
+
+                  Zeile %0, Das Wort %1 darf  keiner  APPEND-Anweisung
+                  folgen.
+
+          2503    line %0, The word %1, cannot follow a  REPLACE  com-
+                  mand
+
+                  Zeile %0, Das Wort %1 darf keiner  REPLACE-Anweisung
+                  folgen.
+
+          2504    line %0, The word %1, cannot follow a DELETE command
+
+
+
+                  Zeile %0, Das Wort %1 darf  keiner  DELETE-Anweisung
+                  folgen.
+
+          2507    line %0, The word %1, cannot follow a  DESTROY  com-
+                  mand
+
+                  Zeile %0, Das Wort %1 darf keiner  DESTROY-Anweisung
+                  folgen.
+
+          2508    line %0, The word %1, cannot follow a HELP command
+
+                  Zeile %0, Das Wort  %1  darf  keiner  HELP-Anweisung
+                  folgen.
+
+          2510    line %0, The word %1, cannot follow a MODIFY command
+
+                  Zeile %0, Das Wort %1 darf  keiner  MODOFY-Anweisung
+                  folgen.
+
+          2511    line %0, The word %1, cannot follow a PRINT command
+
+                  Zeile %0, Das Wort %1  darf  keiner  PRINT-Anweisung
+                  folgen.
+
+          2515    line %0, The word %1, cannot follow a RETRIEVE  UNI-
+                  QUE command
+
+                  Zeile %0, Das Wort %1 darf keiner  RETRIEVE  UNIQUE-
+                  Anweisung folgen.
+
+          2516    line %0, The word %1, cannot follow  a  DEFINE  VIEW
+                  command
+
+                  Zeile %0, Das  Wort  %1  darf  keiner  DEFINE  VIEW-
+                  Anweisung folgen.
+
+          2519    line %0, The word %1, cannot  follow  a  HELP  VIEW,
+                  HELP INTEGRITY, or HELP PERMIT command
+
+                  Zeile %0, Das Wort %1 darf keiner HELP  VIEW-,  HELP
+                  INTEGRITY- oder HELP PERMIT-Anweisung folgen.
+
+          2522    line %0, The word %1, cannot follow a DEFINE  PERMIT
+                  command
+
+                  Zeile %0, Das Wort %1  darf  keiner  DEFINE  PERMIT-
+                  Anweisung folgen.
+
+          2523    line %0, The word %1, cannot follow a  DEFINE  INTE-
+                  GRITY command
+
+                  Zeile %0, Das Wort %1 darf keiner DEFINE  INTEGRITY-
+                  Anweisung folgen.
+
+          2526    line %0, The word %1, cannot follow  a  DESTROY  IN-
+                  TEGRITY or DESTROY PERMIT command
+
+                  Zeile  %0,  ,  Das  Wort  %1  darf  keiner   DESTROY
+                  INTEGRITY- oder DESTROY PERMIT-Anweisung folgen.
+
+                  Die Fehler 2502 bis 2526 zeigen an, dass nach  einer
+                  gueltigen  Anfrage  irgendetwas  spezifiziert wurde,
+                  was nicht den  Beginn  einer  neuen  Anweisung  dar-
+                  stellt.  Die Anfrage wurde deshalb abgebrochen, weil
+                  es sonst zu gefaehrlichen Missverstaendnissen kommen
+                  koennte.
+
+          2600    syntax error on line %0
+                  last symbol read was: %1
+
+                  Syntaxfehler in Zeile %0
+                  das letzte gelesene Symbol war: %1.
+
+          2601    line %0, Syntax error on %1, the correct syntax is:
+                  RETRIEVE [[INTO]relname] (target_list) [WHERE qual]
+                  RETRIEVE UNIQUE (target_list) [WHERE qual]
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  RETRIEVE [[INTO]relname] (target_list) [WHERE qual]
+                  RETRIEVE UNIQUE (target_list) [WHERE qual].
+
+          2602    line %0, Syntax error on %1, the correct syntax is:
+                  APPEND [TO] relname (target_list) [WHERE qual]
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  APPEND [TO] relname (target_list) [WHERE qual].
+
+          2603    line %0, Syntax error*h%1, the correct syntax is:
+                  REPLACE tuple_variable (target_list) [WHERE qual]
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  REPLACE tuple_variable (target_list) [WHERE qual].
+
+          2604    line %0, Syntax error on %1, the correct syntax is:
+                  DELETE tuple_variable [WHERE qual]
+
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  DELETE tuple_variable [WHERE qual].
+
+          2605    line %0, Syntax error on %1, the correct syntax is:
+                  COPY relname (domname = format {, domname = format})
+                  direction
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  COPY relname (domname = format {, domname = format})
+                  direction
+
+          2606    line %0, Syntax error on %1, the correct syntax is:
+                  CREATE  relname (domname1 = format{, domname2 = for-
+                  mat})
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  CREATE  relname (domname1 = format{, domname2 = for-
+                  mat}).
+
+          2607    line %0, Syntax error on %1, the correct syntax is:
+                  DESTROY relname {, relname}
+                  DESTROY [PERMIT | INTEGRITY] relname [integer {, in-
+                  teger} | ALL]
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  DESTROY relname {, relname}
+                  DESTROY [PERMIT | INTEGRITY] relname [integer {, in-
+                  teger} | ALL]
+
+          2609    line %0, Syntax error on %1, the correct syntax is:
+                  INDEX ON relname IS indexname (domain1{, domain2})
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  INDEX ON relname IS indexname (domain1{, domain2}).
+
+          2610    line %0, Syntax error on %1, the correct syntax is:
+                  MODIFY relname TO storage-structure [ON key1 [: sor-
+                  torder]
+                  [{, key2 [:sortorder]}]] [WHERE [FILLFACTOR = n]  [,
+                  MINPAGES = n] [, MAXPAGES = n]]
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  MODIFY relname TO storage-structure [ON key1 [: sor-
+                  torder]
+                  [{, key2 [:sortorder]}]] [WHERE [FILLFACTOR = n]  [,
+                  MINPAGES = n] [, MAXPAGES = n]].
+
+          2611    line %0, Syntax error on %1, the correct syntax is:
+                  PRINT relname{, relname}
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  PRINT relname{, relname}.
+
+          2612    line %0, Syntax error on %1, the correct syntax is:
+                  RANGE OF variable IS relname.
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  RANGE OF variable IS relname.
+
+          2613    line %0, Syntax error on %1, the correct syntax is:
+                  SAVE relname UNTIL month day year.
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  SAVE relname UNTIL month day year.
+
+          2614    line %0, Syntax error on %1, the correct syntax is:
+                  DEFINE VIEW name (target list) [WHERE qual]
+                  DEFINE PERMIT oplist {ON | OF | TO} var  [(attlist)]
+                  TO  name  [AT  term]  [FROM time TO time] [ON day TO
+                  day] [WHERE qual]
+                  DEFINE INTEGRITY ON var IS qual.
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  DEFINE VIEW name (target list) [WHERE qual]
+                  DEFINE PERMIT oplist {ON | OF | TO} var  [(attlist)]
+                  TO  name  [AT  term]  [FROM time TO time] [ON day TO
+                  day] [WHERE qual]
+                  DEFINE INTEGRITY ON var IS qual.
+
+          2615    line %0, Syntax error on %1, the correct syntax is:
+                  RETRIEVE UNIQUE (target_list) [WHERE qual]
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  RETRIEVE UNIQUE (target_list) [WHERE qual].
+
+          2616    line %0, Syntax error on %1, the correct syntax is:
+                  DEFINE VIEW name (target_list) [WHERE qual].
+
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  DEFINE VIEW name (target_list) [WHERE qual].
+
+          2619    line %0, Syntax error on %1, the correct syntax is:
+                  HELP VIEW relname{, relname}
+                  HELP PERMIT relname{, relname}
+                  HELP INTEGRITY relname{, relname}.
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  HELP VIEW relname{, relname}
+                  HELP PERMIT relname{, relname}
+                  HELP INTEGRITY relname{, relname}.
+
+          2622    line %0, Syntax error on %1, the correct syntax is:
+                  DEFINE PERMIT oplist {ON | OF | TO} var  [(attlist)]
+                  TO  name  [AT  term]  [FROM time TO time] [ON day TO
+                  day] [WHERE qual].
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  DEFINE PERMIT oplist {ON | OF | TO} var  [(attlist)]
+                  TO  name  [AT  term]  [FROM time TO time] [ON day TO
+                  day] [WHERE qual].
+
+          2623    line %0, Syntax error on %1, the correct syntax is:
+                  DEFINE INTEGRITY ON var IS qual.
+
+                  Zeile %0, Syntaxfehler in %1,  die  korrekte  Syntax
+                  ist:
+                  DEFINE INTEGRITY ON var IS qual.
+
+                  Die Fehler 2600 bis 2623 werden generiert, wenn  die
+                  Syntax einer Anweisung verletzt wurde.  Die korrekte
+                  Syntax wird angezeigt.   Wenn  die  Anweisung  nicht
+                  festgestellt  werden  kann, wird der Fehler 2600 an-
+                  gezeigt.
+
+          2700    line %0, non-terminated string
+
+                  Zeile %0, Nicht beendete Zeichenfolge.
+
+                  Sie haben das Zeichen (") fuer das geforderten  Ende
+                  der Zeichenfolge vergessen.
+
+          2701    line %0, string too long
+
+
+
+                  Zeile %0, Zeichenfolge zu lang.
+
+                  Die Zeichenfolge ist groesser als 255 Zeichen.
+
+          2702    line %0, invalid operator
+
+                  Zeile %0, Falscher Operator.
+
+                  Sie haben ein Zeichen eingegeben, das nicht alphanu-
+                  merisch  ist aber das auch kein definierter Operator
+                  (z.B. "?") ist.
+
+          2703    line %0, Name too long %1
+
+                  Zeile %0, Name zu lang %1.
+
+                  In I sind die Relations- und  Domaenennamen  auf  12
+                  Zeichen begrenzt.
+
+          2704    line %0, Out of space in symbol table  -  Query  too
+                  long
+
+
+
+
+                  Zeile %0, Kein Platz mehr in der Symboltabelle - An-
+                  frage zu lang.
+
+                  Ihre Anfrage ist fuer den Prozess  zu  gross.   Ver-
+                  suchen  Sie sie zu unterteilen und durch mehrere \go
+                  Kommandos aufzurufen.
+
+          2705    line %0, non-terminated comment
+
+                  Zeile %0, Nicht beendeter Kommentar.
+
+                  Sie haben das Symbol fuer das  Kommentarende  ("*/")
+                  vergessen.
+
+          2707    line %0, bad floating constant: %1
+
+                  Zeile %0, Fehlerhafte Gleitkommakonstante: %1.
+
+                  Die spezifizierte Gleitkomma-Konstante war  entweder
+                  fehlerhaft  oder zu lang oder zu kurz.  Z.Zt. werden
+                  Ueberlauf und Unterlauf nichr geprueft.
+
+          2708    line %0, control character passed  in  pre-converted
+                  string
+
+                  Zeile %0, Steuerzeichen im  vorkonvertiertem  String
+                  uebergeben.
+
+                  In EQL wurde ein Steuerzeichen, das in einem  String
+                  eingebettet wurde, nicht versteckt, erst der Scanner
+                  konnte das entdecken.
+
+          2709    line %0, buffer overflow in converting a number
+
+                  Zeile %0, Pufferueberlauf bei der Konvertierung  ei-
+                  ner Zahl .
+
+                  Zahlen duerfen nicht laenger als 256 Zeichen sein.
+
+          2800    line %0, yacc stack overflow in parsing query
+
+                  Zeile %0, Ueberlauf im YACC-Stack (Keller)  bei  der
+                  Verarbeitung der Anfrage durch den Parser.

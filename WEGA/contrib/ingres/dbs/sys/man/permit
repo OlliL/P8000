@@ -1,0 +1,121 @@
+     PERMIT(QL)                   DABA16                    PERMIT(QL)
+
+     NAME
+          permit - Zufuegen von Befugnissen zu einer Relation
+
+     UEBERSICHT
+          define permit oplist on tuple_variable [ (attlist) ]
+
+               to name [ at term ] [ from time to time ]
+
+               [ on day to day ] [ where qual ]
+
+     BESCHREIBUNG
+          Permit erweitert die aktuellen  Befugnisse  einer  Relation,
+          die  durch  tuple_variable repraesentiert wird.  Permit kann
+          nur durch den Datenbankadministrator(DBA) angewendet werden.
+
+          Oplist ist eine durch Kommas separierte Liste  der  auf  die
+          Relation zugelassenen Operationen (operationelle Befugnisse)
+          wie retrieve, replace, delete, append oder  all,  wobei  all
+          bedeuted, dass alle Befugnisse erteilt werden.
+
+
+
+
+          Name ist der Login-Name des Nutzers oder das Wort all.
+
+          Term  ist  ein  Terminal-Name  der  Form  `tty[4mx[0m'  oder  das
+          Schluesselwort  all  .   Das  Auslassen  der Term-Phrase ist
+          gleichbedeutend mit all.
+
+          Die Time Phrase muss das Format "hh:mm" (Stunden:Minuten; 24
+          Stunden  Uhrzeit)  besitzen  und begrenzt die Tageszeit, wa-
+          ehrend der eine Nutzung erlaubt wird.
+
+          Day ist ein Wochentag der Form 0 = Sonntag  bis  6  =  Sonn-
+          abend.
+
+
+          Die Qualifikation qual wird an die vom  Terminal-Nutzer  zum
+          Anfragenzeitpunkt spezifizierte aktuelle Qualifikation einer
+          Anfrage angefuegt (Logische "Und"-Verknuepfung).
+
+          Separate Teile einer einzelnen permit Anweisung werden  mit-
+          einander durch "and" (Logisches "Und" oder Konjunktion) ver-
+          knuepft.  Verschiedene permit Anweisungen  werden  als  dis-
+          junkte (Logisches "Oder") Anweisungen betrachtet.
+
+
+
+          Wenn beispielsweise
+
+                  . . . to peter at tty4 . . .
+
+          spezifiziert wurde, gilt die permit Anweisung nur  fuer  den
+          Nutzer  "peter",  wenn er sich am Terminal "tty4" angemeldet
+          hat.
+
+          Wenn  zwei permit Anweisungen der Form
+
+                  . . . to peter at all . . .
+                  . . . to all at tty4 . . .
+
+          spezifiziert wurden, wird "peter", falls er sich am Terminal
+          "tty4" angemeldet hat, die Vereinigung der Befugnisse beider
+          permit Anweisungen besitzen.  Wenn sich "peter" aber z.B. am
+          Terminal "tty5" angemeldet hat, besitzt er nur die Befugnis-
+          se der ersten permit Anweisung.
+
+          Wenn sich der Nutzer "lehmann" am terminal "tty4"  anmeldet,
+          hat er nur die Befugnisse der zweiten permit Anweisung.
+
+
+
+
+          Permit darf nur vom DBA angewendet werden.
+
+          Gibt ein Nutzer, der nicht DBA ist,  eine  permit  Anweisung
+          ein, ist sie bedeutungslos, da sie niemals benutzt wird.
+
+          Permit Anweisungen werden nicht auf den DBA (Eigentuemer al-
+          ler  mehrnutzerfaehigen Relationen) oder auf Sichten (views)
+          angewendet.
+
+          Die Anweisungen
+
+                  define permit all on x to all
+                  define permit retrieve of x to all
+
+          ohne eine weitere Qualifikation werden als Spezialfaelle be-
+          handelt und sind daher besonders effizient.
+
+          Define erstellt Eintraege fuer Sichten, Befugnisse  und  In-
+          tegritaetsbedingungen  nur,  wenn  die Anfragemodifikations-
+          Unterstuetzung (QRYMOD,  Query  modification)  eingeschaltet
+          wurde (Sollte sie stets!).
+
+          In AMX-Programmen koennen nur Relationen verarbeitet werden,
+          die  ausschliesslich operationelle Befugnisse (append, dele-
+          te, replace, retrieve oder all), ohne  Qualifikationen,  be-
+          sitzen.
+
+
+     BEISPIEL[E]
+            range of p is personal
+            define permit retrieve of p (name, gehalt) to lehmann
+                 at ttyd from 8:00 to 17:00
+                 on  1  to  5
+                 where p.leiter = "lehmann"
+
+            range of t is teile
+            define permit retrieve of t to all
+
+     SIEHE AUCH
+          destroy(ql)
+
+
+     FEHLERQUELLEN
+          Es ist darauf zu achten, dass die Relationen,  die  in  qual
+          (Qualifikation)  eingegangen  sind,  nicht geloescht werden,
+          solange das Zugriffsrecht besteht.

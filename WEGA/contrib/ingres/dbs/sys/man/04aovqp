@@ -1,0 +1,93 @@
+     OVQP(ERROR)                  DABA16                   OVQP(ERROR)
+
+     NAME
+          Zusammenstellung der  Fehlernachrichten  des  Ein-Variablen-
+          Anfragenprozessors
+
+     UEBERSICHT
+          Fehlernummern  4000 - 4499.
+
+     BESCHREIBUNG
+          Diese Fehlernachrichten koennen zur Laufzeit erzeugt werden.
+          Der Ein-Variablen-Anfragenprozessor verarbeitet den vom Par-
+          ser erstellten Baum, der die aktuellen Verweise auf die  Da-
+          ten enthaelt.  Deshalb sind diese Fehlernachrichten mit Typ-
+          konflikten verbunden, die zur Laufzeit entdeckt werden.
+
+     FEHLER
+          4100    ovqp query list overflowed
+
+                  OVQP Anfrageliste uebergelaufen.
+
+                  Dieser Fehler wird in dem Moment erzeugt,  wenn  die
+                  interne Form Ihrer Interaktion mehr Speicherplatz im
+                  Ein-Variablen-Anfragenprozessor  fordert,  als  fuer
+                  den Anfragenpuffer zugewiesen wurde.  Es kann nichts
+                  anderes getan werden, als die  Interaktion  zu  ver-
+                  kuerzen.
+
+          4106    the interpreters stack overflowed -- query too long
+
+                  Der Keller (Stack) des Interpreters ist  uebergelau-
+                  fen -- die Anfrage ist zu lang.
+
+          4107    the buffer for ASCII and CONCAT commands overflowed
+
+                  Der Puffer fuer ASCII- und  CONCAT-Kommandos  laeuft
+                  ueber.
+
+          4108    cannot use arithmetic  operators  on  two  character
+                  fields
+
+                  Es ist nicht erlaubt, arithmetische  Operatoren  auf
+                  zwei Zeichenfelder anzuwenden.
+
+          4109    cannot use numeric values with CONCAT operator
+
+                  Es ist nicht  erlaubt,  fuer  numerische  Werte  den
+                  CONCAT-Operator zu verwenden.
+
+                  Sie haben versucht, eine  numerische  Operation  auf
+                  Zeichenfelder anzuwenden.
+
+          4110    floating point exception occurred.
+
+                  Gleitkommaausnahme aufgetreten.
+
+          4111    character value can't be converted to numeric due to
+                  incorrect syntax.
+
+                  Der Zeichenwert kann  nicht  in  numerisches  Format
+                  konvertiert werden, da die Syntax inkorrekt ist.
+
+                  Bei der Benutzung vo int1, int2, int4,  float4  oder
+                  float8 fuer die Konvertierung eines Zeichenwertes in
+                  einen numerischen Wert,  muss  der  Zeichenwert  die
+                  richtige  Syntax  besitzen.  Der Fehler wird auftre-
+                  ten, wenn der  Zeichenwert  nichtnumerische  Zeichen
+                  enthaelt.
+
+          4112    ovqp query vector overflowed
+
+                  OVQP Anfragenvektor uebergelaufen.
+
+                  Aehnelt dem Fehler 4100.
+
+          4113    compiler text space ran out
+
+                  Speicherplatz fuer den Compilertext erschoepft.
+
+          4114    compiler ran out of registers
+
+                  Compiler-Register erschoepft.
+
+          4199    you must convert your secondary index before running
+                  this query
+
+                  Sie muessen den Sekundaerindex vor  der  Abarbeitung
+                  der Anfrage konvertieren
+
+                  Es wurde ein Sekundaerindex verwendet, der unter ei-
+                  ner  aelteren DABA-Version aufgebaut wurde. Loeschen
+                  Sie deshalb den Sekundaerindex, und  bauen  Sie  ihn
+                  erneut auf.

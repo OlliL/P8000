@@ -1,0 +1,33 @@
+     SYSMOD(MUTOS)                DABA16                 SYSMOD(MUTOS)
+
+     NAME
+          sysmod - Modifizieren (Optimieren) der Systemrelationen
+
+     UEBERSICHT
+          sysmod [ flags ] dbname { relname }
+
+     BESCHREIBUNG
+          Sysmod modifiziert die relation-, attribute-,  integrities-,
+          protect-,  tree-,  references- und indexes- Systemrelationen
+          in optimale Speicherungsstrukturen,  wenn  nicht  wenigstens
+          einer  der  Parameter relation, attribute, integrities, pro-
+          tect, tree, references, oder indexes fuer die Systemrelatio-
+          nen  relname spezifiziert wurde.  Wurden diese Parameter an-
+          gegeben, werden nur die entsprechenden Systemrelationen  mo-
+          difiziert.
+          Die Systemrelationen werden so modifiziert, dass eine  maxi-
+          male  Zugriffsleistung  bei  der  Nutzung  von DABA erreicht
+          wird.
+          Der Anwender muss der Datenbankadministrator (DBA) der  spe-
+          zifizierten  Datenbank  oder  der DABA-Systemverantwortliche
+          (Verwendung des -s Flags) sein.
+
+          Sysmod sollte abgearbeitet werden, wenn  die  Datenbank  er-
+          stellt  wurde.   Danach sollte es periodisch angewendet wer-
+          den, um eine groesstmoegliche Zugriffsleistung zu  erhalten.
+          Wenn   einige   Relationen   und  Sekundaerindizes  erstellt
+          und/oder zerstoert wurden, ist sysmod des  oefteren  abzuar-
+          beiten.
+
+     SIEHE AUCH
+          modify(ql), modifyr(mutos), restore(mutos)

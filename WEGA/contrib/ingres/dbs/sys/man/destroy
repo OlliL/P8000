@@ -1,0 +1,54 @@
+     DESTROY(QL)                  DABA16                   DESTROY(QL)
+
+     NAME
+          destroy - Zerstoeren einer bestehenden Relation
+
+     UEBERSICHT
+          destroy relname { , relname }
+
+          destroy [ permit | integrity ] relname
+           [ integer { , integer } | all ]
+
+     BESCHREIBUNG
+          Destroy entfernt Relationen (auch virtuelle Relationen  oder
+          Sichten)  aus  der Datenbank bzw.  entfernt Einschraenkungen
+          (Constraints, Integritaetsbedingungen) oder Befugnisse (Per-
+          missions)  auf  eine Relation.  Nur der Relationseigentuemer
+          kann eine Relation oder ihre  Befugnisse  und  Integritaets-
+          Einschraenkungen  zerstoeren.   Durch delete oder modify An-
+          weisungen kann die Relation in eine leere  Relation  (tupel-
+          los) ueberfuehrt aber nicht zerstoert werden.
+
+
+          Wenn ein Relation mit Sekundaerindex zerstoert werden  soll,
+          werden  auch  die  Sekundaerindizes  entfernt.  Das separate
+          Entfernen eines Sekundaerindex hat keinen Einfluss  auf  die
+          vorher indizierte Primaerrelation.
+
+          Um eine individuelle Befugnis oder Einschraenkung einer  Re-
+          lation zu zerstoeren, sollten die integer Argumente spezifi-
+          ziert werden, die durch ein help permit (fuer  destroy  per-
+          mit)  oder  ein help integrity (fuer destroy integrity) fuer
+          die gleiche Relation angezeigt wurden.   Um  alle  Einschra-
+          enkungen  und  Befugnisse einer Relation zu zerstoeren, kann
+          das Schluesselwort all anstelle individueller integer  Argu-
+          mente verwendet werden.  Um Einschraenkungen oder Befugnisse
+          zu zerstoeren, muessen entweder die integer  Argumente  oder
+          das Schluesselwort all praesent sein.
+
+
+     BEISPIEL[E]
+          /* Zerstoeren der Relation "personal" */
+              destroy personal
+          /* Zerstoeren der Relationen "personal" und "teile" */
+              destroy personal, teile
+
+          /* Zerstoeren einiger Befugnisse auf die Relation "teile" */
+          /* und aller Integritaets-Einschraenkungen auf "personal"*/
+             destroy permit teile 0, 4, 5
+             destroy integrity personal all
+
+     SIEHE AUCH
+          create(ql),  creater(mutos),  delete(ql),   destroyr(mutos),
+          help(ql),     helpr(mutos),     index(ql),    integrity(ql),
+          modify(ql), modifyr(mutos), permit(ql), view(ql)

@@ -1,0 +1,54 @@
+     PURGE(MUTOS)                 DABA16                  PURGE(MUTOS)
+
+     NAME
+          purge - Zerstoeren verfallener und temporaerer Relationen
+
+     UEBERSICHT
+          purge [ -f ] [ -p ] [ -a ] [ -s ] [ -w ] { dbname }
+
+     BESCHREIBUNG
+          Purge loescht in den spezifizierten  Datenbanken  verfallene
+          Nutzerrelationen oder temporaere Systemrelationen.
+
+          Wenn das -p Flag benutzt wird, werden verfallene  Relationen
+          des Nutzers geloescht.
+          Das -f Flag veranlasst, nicht wiederverwendbare  Files,  die
+          normalerweise durch purge angezeigt werden, zu loeschen.
+
+          Nur der Datenbankadministratior  (DBA)  fuer  die  Datenbank
+          oder der DABA-Systemverantwortliche (unter Verwendung des -s
+          Flags) duerfen das purge-Kommando benutzen.
+
+          Wurde keine Datenbank spezifiziert, werden alle  Datenbanken
+          einbezogen, fuer die der Nutzer DBA ist.
+          Alle  Datenbanken  werden   einbezogen,   wenn   der   DABA-
+          Systemverantwortliche das -s Flag spezifiziert hat.
+          Das -a Flag veranlasst purge, eine Anforderung zur  Ausfueh-
+          rung  der  naechste  Operation auszugeben und sie nur auszu-
+          fuehren, wenn die Antwort "y" (ja) erfolgte.  Irgendeine an-
+          dere Antwort wird als "nein" gewertet.
+
+          Purge sperrt die Datenbank fuer die Dauer  die  Bearbeitung,
+          weil  sonst Fehler durch andere Operationen auftreten koenn-
+          ten, waehrend purge aktiv ist.  Wenn eine Datenbank mit  an-
+          deren Operationen beschaeftigt ist, wird purge das mitteilen
+          und zur naechsten Datenbank uebergehen.  Wenn  die  Standar-
+          dausgabe  kein  Terminal ist, wird purge warten, bis die Da-
+          tenbank frei ist.  Wenn das -w Flag gesetzt wurde, wird pur-
+          ge  niemals  warten.   Das +w Flag veranlasst purge stets zu
+          warten.
+
+     BEISPIEL[E]
+          purge -p +w peterdb
+          purge -a -f
+
+     SIEHE AUCH
+          save(ql), restore(mutos)
+
+
+
+
+     FEHLERQUELLEN
+          Wenn keine Datenbanknamen spezifiziert  wurden,  werden  nur
+          die  Datenbanken,  die  im  Directory  data/base lokalisiert
+          sind, bearbeitet.

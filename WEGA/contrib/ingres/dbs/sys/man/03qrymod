@@ -1,0 +1,187 @@
+     QRYMOD(ERROR)                DABA16                 QRYMOD(ERROR)
+
+     NAME
+          Zusammenstellung der Fehlernachrichten der Anfragenmodifika-
+          tion
+
+     UEBERSICHT
+          Fehlernummern 3000 - 3999.
+
+     BESCHREIBUNG
+          Diese Fehlernachrichten werden durch den Modul der Anfragen-
+          modifikation  generiert.  Diese Fehler umfassen syntaktische
+          und  semantische  Probleme  der  Sicht-,  Integritaets-  und
+          Schutzdefinition  als  auch  Laufzeitfehler, wie die Unmoeg-
+          lichkeit, eine Sicht zu aendern oder eine Schutzverletzung.
+
+     FEHLER
+          3310    %0 on view %1: cannot update some domain
+
+                  %0 auf Sicht %1: Keine Aenderung einzelner Domaenen.
+
+                  Sie haben versucht, die Operation %0 auf eine  Sicht
+                  auszufuehren,  aber  die  Aenderung  ist nicht defi-
+                  niert.
+
+          3320    %0 on view %1: domain  occurs  in  qualification  of
+                  view
+
+                  %0 auf Sicht %1: eine Domaene tritt in der  Qualifi-
+                  kation der Sicht auf.
+
+                  Es ist nicht moeglich, eine Domaene in der  Qualifi-
+                  kation  der  Sicht  zu aendern, weil das veranlassen
+                  koennte, das Tupel aus der Sicht zu entfernen.
+
+          3330    %o on view %1: update would result in more than  one
+                  query
+
+                  %0 auf Sicht %1: die Aenderung muesste in  mehr  als
+                  einer Anfrage erfolgen.
+
+                  Sie haben versucht, eine Aenderung  auf  eine  Sicht
+                  auszufuehren, die zwei abhaengige Relationen aendern
+                  wuerde.
+
+          3340    %0 on view %1: views do not have TID's
+
+
+
+
+                  %0 auf Sicht %1:Sichten duerfen keine TID's (Tuplei-
+                  dentifikatoren) haben.
+
+                  Sie haben versucht, das Tupelidentifikator-Feld  auf
+                  eine Sicht anzuwenden.  Das ist nicht definiert.
+
+          3350    %0 on view %1: cannot update an aggregate value
+
+                  %0 auf Sicht %1: Keine Aenderung eines Aggregatewer-
+                  tes erlaubt.
+
+                  Sie duerfen einen Wert nicht  aendern,  der  in  der
+                  Sichtdefinition als Aggregat definiert wurde.
+
+          3360    %0 on view %1: that update might be non-functional
+
+                  %0 auf Sicht  %1:  diese  Aenderung  koennte  nicht-
+                  funktional sein.
+
+                  Es besteht die Moeglichkeit, dass die  resultierende
+                  Aenderung nicht-funktional sein koennte.  Das bedeu-
+                  tet, dass einige ungewuenschte Nebeneffekte  auftre-
+                  ten  koennten.   DABA  nimmt an, dass es besser ist,
+                  diese Aenderung nicht zu versuchen.
+
+          3490    INTEGRITY on %1: cannot handle aggregates yet
+
+                  INTEGRITY auf %1: Aggregate sind nicht behandelbar.
+
+                  Sie duerfen keine  Integritaetsbedingungen  definie-
+                  ren, die Aggregate enthalten.
+
+          3491    INTEGRITY on %1: cannot  handle  multivariable  con-
+                  straints
+
+                  INTEGRITY auf %1:  Multivariable  Integritaetsbedin-
+                  gungen sind nicht behandelbar.
+
+                  Sie duerfen keine Integritaetsbedingungen  auf  mehr
+                  als einer einfache Variable definieren.
+
+          3492    INTEGRITY on %1: constraint does not initially hold
+
+                  INTEGRITY auf %1: Integritaetsbedingungen  sind  an-
+                  faenglich nichterfuellt.
+
+                  Zum Zeitpunkt der Definition der  Integritaetsbedin-
+                  gungen  gibt  es  in der Relation bereits Tupel, die
+                  diese NICHT erfuellen.  Sie muessen  dafuer  sorgen,
+                  dass  die  Relation die Integritaetsbedingungen ein-
+                  haelt, bevor Sie sie deklarieren.
+
+          3493    INTEGRITY on %1: is a view
+
+                  INTEGRITY auf %1: ist eine Sicht.
+
+                  Sie duerfen keine Integritaetsbedingungen auf  Sich-
+                  ten definieren.
+
+          3494    INTEGRITY on %1: You must own %1
+
+                  INTEGRITY auf %1: Sie muessen der Eigentuemer von %1
+                  sein.
+
+                  Sie muessen der Eigentuemer der Relation sein,  wenn
+                  Sie Integritaetsbedingungen definieren.
+
+          3500    %0 on relation %1: protection violation
+
+                  %0 auf Relation %1: Schutz-Verletzung.
+
+                  Sie haben versucht, eine Operation auszufuehren, die
+                  fuer Sie nicht erlaubt ist.
+
+          3590    PERMIT: bad terminal identifier "%2"
+
+                  PERMIT: Falscher Terminal-Identifikator "%2".
+
+                  In  einer  permit  Anweisung   war   das   Terminal-
+                  Identifikatorfeld ungueltig.
+
+          3591    PERMIT: bad user name "%2"
+
+                  PERMIT: Falscher Nutzername "%2".
+
+                  Sie haben einen Nutzernamen verwendet, der fuer  das
+                  System nicht definiert wurde.
+
+          3592    PERMIT: Relation %1 not owned by you
+
+                  PERMIT: Die Relation %1 ist Ihnen nicht zugeeignet.
+
+                  Sie muessen Eigentuemer der Relation sein, bevor Sie
+                  Befugniserweiterungen definieren duerfen.
+
+          3593    PERMIT: Relation %1 must be a real relation  (not  a
+                  view)
+
+
+
+                  PERMIT: Die Relation %1 muss eine reale Relation und
+                  keine virtuelle sein.
+
+                  Sie duerfen keine Befugnisse auf Sichten definieren.
+
+          3594    PERMIT on %1: bad day-of-week %2
+
+                  PERMIT auf %1: Falscher Wochentag %2.
+
+                  Der Code fuer den Wochentag ist ungueltig.
+
+          3595    PERMIT on %1: only the DBA can use the PERMIT state-
+                  ment
+
+                  PERMIT auf %1: Nur der DBA darf die PERMIT-Anweisung
+                  anwenden.
+
+                  Weil nur der DBA geteilt nutzbare  Relationen  haben
+                  kann, darf nur er die permit Anweisung anwenden.
+
+          3700    Tree buffer overflow in query modification
+
+
+
+
+                  Tree- (Baum) Puffer Uberlauf bei der Anfragenmodifi-
+                  kation
+
+                  Ein interner  Puffer  ist  uebergelaufen.  Versuchen
+                  Sie, Ihre Ausdruecke zu verkuerzen.
+          3701    Tree build stack overflow in query modification
+
+                  Ueberlauf im Stack fuer Baumbildung bei  der  Anfra-
+                  genmodifikation.
+
+                  Ein interner Puffer  ist  uebergelaufen.   Versuchen
+                  Sie, Ihre Ausdruecke zu verkuerzen!

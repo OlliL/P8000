@@ -1,0 +1,916 @@
+     MACROS(IQL)                  DABA16                   MACROS(IQL)
+
+     NAME
+          macros - Makro-Unterstuetzung des Terminal-Monitors
+
+     BESCHREIBUNG
+
+          Die Makro-Unterstuetzung zusammen mit der  Terminal-Monitor-
+          Kommando-Unterstuetzung  und  dem  DBBS  (QL-Sprache) bieten
+          die    Moeglichkeit,    neue     Eingabe-Nutzungs-Interfaces
+          (Benutzungsoberflaechen) zu erstellen.
+
+          Die Makro-Unterstuetzung ist  integrierter  Bestandteil  des
+          Terminal-Monitors  und  besteht  aus dem Makro-Prozessor und
+          den bereitgestellten System-Makros.
+
+          Durch die Verwendung von Makros, die  vom  Nutzer  definiert
+          (in  der  Makro-Tabelle  gespeichert)  wurden,  entfernt der
+          Makro-Prozessor Zeichenketten aus dem  Eingabetext  und  er-
+          setzt   diese   durch   anderen  oder  keinen  Text  (Makro-
+          Transformation)  wobei  durch  Funktions-Makros  ausgeloeste
+          Funktionen ausgefuehrt werden koennen.  Es ist letztlich das
+          Ziel, den Ausgabetext des Makro-Prozessors in Form  von  QL-
+          Anweisungen dem DBBS zur Ausfuehrung zu uebergeben.
+
+          Das Ersetzen von Eingabetext wird als Substitution  bezeich-
+          net.   Makros,  die  dies  ausfuehren  werden Substitutions-
+          Makros genannt.
+
+          Makros, die neben einer Substitution eine bestimmte Funktio-
+          nen  ausfuehren,  werden als Funktions-Makros bezeichnet und
+          ausschlisslich durch das System zur Nutzung durch den Anwen-
+          der   bereitgestellt   (System-Funktions-Makros   oder  kurz
+          Funktions-Makros).  Sie sind nach dem  Start  des  Terminal-
+          Monitors  in der Makro-Tabelle versteckt definiert (vordefi-
+          niert).  Mit ihnen koennen Nutzer-Makros definiert  (in  der
+          Makro-Tabelle  gespeichert) und Substitutions-Makros aus der
+          Makro-Tabelle entfernt werden.  Ausserdem sind u.a. Ein- und
+          Ausgaben  von  Text,  Vergleichsoprationen,  die Bildung von
+          Teil-Zeichenketten und das Anzeigen der Werte der Makros der
+          Makro-Tabelle moeglich.
+
+          Darueber hinaus gibt es vom System  bereitgestellte  System-
+          Substitutions-Makros.   Ein  Teil  der System-Substitutions-
+          Makros wird immer ausschliesslich durch  den  Monitor  defi-
+          niert.  Ein anderer Teil kann in Quellfom durch einen Nutzer
+          in Files bereitgestellt und beim Start  des  Monitors  durch
+          diesen  definiert  oder  vom Nutzer direkt definiert werden.
+          Ein weiterer Teil wird erst nach bestimmten Funktionen durch
+          den Monitor definiert und somit nutzbar.
+
+          Dem Anwender  ist  es  nur  gestattet,  Substitutions-Makros
+          (keine Funktions-Makros) zu definieren!
+
+          Arbeitsweise des Makro-Prozessors
+
+          Vor einer Aktion zergliedert der  Makro-Prozessor  den  Ein-
+          gabetext  in Woerter. Er unterscheidet als Worte Bezeichner,
+          Zahlen und Operatoren. Ausserdem gibt  es  fuer  den  Makro-
+          Prozessor  Standardbegrenzer (Blank, Tabulator- und Newline-
+          Zeichen) sowie Sonderzeichen.
+
+          Bezeichner sind eine  unmittelbare  Folge  von  Gross-  oder
+          Kleinbuchstaben  sowie  dem Unterstreichungszeichen und Zif-
+          fern, beginnend mit einem Buchstaben oder Unterstrich.
+
+          Zahlen sind eine unmittbare Folge von Ziffern,  einschliess-
+          lich eines Dezimalpunktes inmitten oder am Ende.
+
+          Operatoren sind alle Zeichen, die nicht in Bezeichnern  oder
+          Zahlen  verwendet werden duerfen und nicht Standardbegrenzer
+          oder Sonderzeichen sind.
+
+
+
+          Als Wortwechsel wird die Position  bezeichnet,  an  der  das
+          vorangehende  Wort  endet.  Es ist i.allg. beendet, wenn dem
+          Wort  ein  Standardbegrenzer  (Blank,  Tab-  oder   Newline-
+          Zeichen) oder ein Zeichen eines anderen Worttypes folgt.
+
+          Basiskonzepte
+
+          Alle in der Makro-Tabelle gespeicherten Makros bestehen  aus
+          zwei   Teilen,   dem  Template  und  dem  Replacement.   Der
+          Template-Teil definiert, wann der Makro aufgerufen und damit
+          abgearbeitet wird.
+
+          Er besteht aus einem Schluesselwort, dem  Schluesselwoerter,
+          Parameterdefinitionen  und  Symbole fuer Gruppen von Begren-
+          zern folgen koennen.
+
+          Das erste und weitere folgende Schluesselwoerter (ohne Para-
+          meter dazwischen) bilden den Namen des Makros.
+
+          Die Parameterdefinitionen werden den Woertern  des  Eingabe-
+          textes  zugeordnet,  die  die  entsprechende Stellung zu den
+          Schluesselwoertern besitzen.  Diese Woerter stellen die  ak-
+          tuellen Werte der Parameter dar.
+
+
+          Die Begrenzersymbole im Template-Teil bezeichnen Gruppen von
+          Begrenzern  (i.allg. Wortwechsel oder Standarbegrenzer), die
+          zwischen Schluesselwoertern und Parameterwerten im  Eingabe-
+          text auftreten duerfen, wenn das Makro abzuarbeiten ist.
+
+          Der Replacement-Teil besteht aus Woertern, Parameterreferen-
+          zen  und  Standardbegrenzern.  Bei der Ausfuehrung eines Ma-
+          kros werden im Replacement-Teil eventuell vorhandene Parame-
+          terreferenzen  durch  die  konkreten Parameterwerte ersetzt,
+          wobei die Komponenten und ihre Reihenfolge erhalten bleiben.
+          Der so entstandene Text wird als Wert des Makros bezeichnet,
+          der auch den Wert einer leeren Zeichenkette annehmen kann.
+
+          Die Analyse des Eingabetextes durch den Makro-Prozessor  er-
+          folgt  von  links nach rechts.  Die Position im Text, an der
+          das jeweils aktuelle Schluesselwort beginnt, heisst Analyse-
+          position. Ab der Analyseposition wird die folgende Konstruk-
+          tion  mit  allen  Template-Teilen  der  Makro-Tabelle  (ein-
+          schliesslich der spezifizierten Begrenzer) verglichen.
+
+          War der Vergleich erfolgreich, ersetzt der Wert des entspre-
+          chenden Makros den Eingabetext, wobei durch Funktions-Makros
+          neben einer Substitution auch eine Funktion ausgefuehrt wer-
+          den kann.
+
+          Sind bei einer Substitution mehrere Makros der Makro-Tabelle
+          zutreffend, wird das zuletzt definierte Makro verarbeitet.
+
+          Die Analyseposition rueckt erst weiter, wenn  kein  weiterer
+          positiver  Vergleich  des nun an der Analyseposition modifi-
+          zierten Textes mehr eintritt.
+
+          Da durch diese Arbeitsweise endlose Zyklen auftreten koennen
+          erfolgt nach 100 Durchlaeufen ein Abbruch.
+
+          Beispielsweise veranlasst der Template-Teil "ret" den  Makro
+          gleichen Namens aufzurufen, wenn das Wort "ret" (i.allg. be-
+          grenzt durch einen Wortwechsel oder beliebig viele Standard-
+          begrenzer)  im Eingabestrom auftritt.  Bei einem solchen Zu-
+          treffen eines Makros wird der Template-Teil im Text entfernt
+          und   durch   den   Replacement-Teil   ersetzt.   Bei  einem
+          Replacement-Teil von z.B.  "retrieve" fuer  den  "ret"-Makro
+          wuerde  jedes  Auftreten  des Wortes "ret" im Text durch das
+          Wort "retrieve" ersetzt werden.  Die Anweisung
+
+                  ret (t.all)
+
+          wuerde dann durch retrieve (t.all) ersetzt werden.
+
+
+          Makros koennen Parameter besitzen,  die  durch  das  Dollar-
+          Zeichen  angezeigt  werden  und dem ein einziges graphisches
+          Zeichen (besser Buchstabe oder Ziffer) sowie  ein  Begrenzer
+          folgen  muessen.   Heisst  beispielsweise  der Template-Teil
+          "get $1", so wird der Makro ausgeloest, wenn das Wort "get",
+          gefolgt   von   irgendeinem   anderen   Wort,  im  Anfragen-
+          Eingabestrom auftritt.  Das dem  Wort  "get"  folgende  Wort
+          wird  fuer  die  spaetere  Verwendung  gemerkt.   Wuerde der
+          Replacement-Teil des "get"-Makros
+
+                  retrieve (t.all) where t.tnum = $1
+
+          heissen und man wuerde "get 35" eingeben,  so  wuerden  alle
+          Informationen ueber die Teilenummer 35 wiedergefunden.
+
+          Definieren von Makros
+
+          Makros koennen unter Verwendung des Funktions-Makros, define
+          genannt, definiert werden.  Der Template-Teil des define Ma-
+          kros selbst kann vereinfacht durch :
+
+                  {define;$t;$r}
+
+          beschrieben werden, wobei  $t  und  $r  der  Template-  bzw.
+          Replacement-Teil des zu definierenden Makros sind.
+
+          Nun einige Beispiele.
+
+          Um den obigen "ret"-Makro zu definieren, ist :
+
+                  {define;ret;retrieve}
+
+          einzugeben.  Wenn das  gelesen  wird,  entfernt  der  Makro-
+          Prozessor  alles  zwischen  den  geschweiften  Klammern  und
+          aendert die Makro-Tabelle so, dass ein Auftreten des  Wortes
+          "ret"  durch  "retrieve"  ersetzt  wird.   Der  define Makro
+          selbst hat  die  leere  Zeichenkette  als  Replacement-Teil.
+          Deshalb scheint dieser Makro nach der Eingabe verlorengegan-
+          gen zu sein.
+
+          Ein nuetzlicher Makro fuer das Verkuerzen der  range  Anwei-
+          sung kann wie folgt definiert werden.
+
+                  {define;rg $v $r;range of $v is $r}
+
+          Dieser Makro veranlasst das Wort "rg", im Text  gefolgt  von
+          zwei weiteren Woertern als Parameter, zu entfernen und durch
+          die Woerter "range of" zu ersetzen, gefolgt vom ersten Para-
+          meter  von  "rg", gefolgt vom Wort "is", gefolgt vom zweiten
+          "rg"-Parameter.
+
+          Die Eingabe
+
+                  rg t teile
+
+          wird zu
+
+                  range of t is teile
+
+
+          Auswertungszeitpunkt
+
+          Bei der Eingabe des define-Makros wird er nicht  unmittelbar
+          danach  verarbeitet.   Das  ist aequivalent der Arbeitsweise
+          mit Anfragen, bei der auch das  Speichern  von  Anfragen  im
+          Monitor-Puffer  und  ihre  Ausfuehrung unterschieden werden.
+          Die Verarbeitung eines Makros erfolgt erst, wenn der  Anfra-
+          genpuffer ausgewertet wird.
+
+          Die Terminal-Monitor-Kommandos \go, \list, und \eval  werten
+          den  Anfragenpuffer aus.  Das Kommando \go sendet das Ergeb-
+          nis der Auswertung an das DBBS, \list zeigt das Ergebnis der
+          Auswertung  am  Terminal an und \eval stellt das Ergebnis in
+          den Anfragenpuffer zurueck.
+
+          Es ist wichtig, define Makros (wie alle anderen Makros auch)
+          auszuwerten.   Ansonsten wird so getan, als waeren sie nicht
+          eingegeben.
+
+          Gewoehnlich werden Makros wie folgt definiert :
+
+                  {define . . . }
+                  \eval
+                  \reset
+
+          Bei der Ausfuehrung von \eval erfolgt keine sichtbare  Reak-
+          tion.
+
+          Kaschieren
+
+          Einige Zeichenketten durchlaufen den  Makro-Prozessor,  ohne
+          verarbeitet  zu  werden.   In  solch  einem Fall koennen die
+          Anfuehrungs-Zeichen (` und ') benutzt werden, um den litera-
+          len  Text  einzuschliessen und zu kaschieren (vor dem Makro-
+          Prozessor zu verstecken).  Um z.B. das Wort "ret" ohne  Kon-
+          vertierung  durch obigen Makro den Makro-Prozessor durchlau-
+          fen zu lassen, muss
+
+                  `ret'
+
+          eingegeben werden.
+
+          Eine andere Verwendung des Einschlusses  in  Anfuehrungszei-
+          chen  zum  Kaschieren  besteht bei der Parameterzusammenfas-
+          sung.  Wenn gewuenscht wird, statt eines Wortes mehrere  Wo-
+          erter wie einen Parameter zu behandeln, muessen diese in An-
+          fuehrungszeichen eingeschlossen werden.
+
+          Das Backslash-Zeichen kaschiert nur das unmittelbar folgende
+          Zeichen  als waere dieses Zeichen in Anfuehrungszeichen ein-
+          geschlossen.  So kann das Anfuehrungszeichen "`" als Literal
+          benutzt werden, indem ein Backslash-Zeichen vorangeht.
+
+          Mit dem Backslash-Zeichen kann man ein einzelnes ihm folgen-
+          des Zeichen kaschieren, wenn es ausserhalb einer kaschierten
+          Zeichenfolge steht und der aktuelle Parameterbegrenzer,  ein
+          Standardbegrenzer  (Blank,  Tab-  oder Newline-Zeichen) oder
+          ein Sonderzeichen (`, {, @ ) ist.
+
+          Weil Makros normalerweise auf nur einer  Zeile  spezifiziert
+          werden  koennen,  ist  es  haeufig bedeutungsvoll, mit einem
+          Backslash-Zeichen am Zeilenende das Newline-Zeichen  zu  ka-
+          schieren (verstecken).
+
+
+          Um ein langes "get"-Makro aus einem Input-File  zu  definie-
+          ren, kann aus diesem folgendes eingegeben werden:
+
+                  {define; get $n; retrieve (t.all) \
+                  where t.name = "$n"}
+
+          Das Backslash-Zeichen kaschiert stets das naechste  Zeichen,
+          auch  ein Backslash-Zeichen selbst.  Um also einen Backslash
+          bereitzustellen, sind zwei Backslash einzugeben.
+
+          Erweiterte Parameter
+
+          Parameter sind  nicht  nur  auf  das  folgende  Wort  einge-
+          schraenkt,  sondern beinhalten auch eine Begrenzungsspezifi-
+          kation.
+
+          Beispielsweise sei im Template-Teil fuer "define"  definiert
+          :
+
+                  {define; $t; $r}
+
+          Der Parameter $t endet am zweiten Semikolon und der  Parame-
+          ter  $r  an der rechten geschweiften Klammer.  Die Regel be-
+          sagt,  dass  das  Zeichen,  das  der  Parameterspezifikation
+          folgt,  den  Parameter  beendet.   Wenn  dieses  Zeichen ein
+          Blank,  Tab-  oder  Newline-Zeichen  bzw.   das   Ende   des
+          Template-Teil ist, repraesentiert das Template ein Wort.
+
+          Wie bei allen guten Regeln  gibt  es  eine  Ausnahme.   Weil
+          System-Makros  stets  in geschweifte Klammern eingeschlossen
+          werden, weiss der Makro-Prozessor, dass sie  eigentlich  in-
+          einander geschachtelt sind.
+
+          Im Makro
+
+                  {define; x; {pathname}}
+
+          beendet die erste rechte geschweifte Klammer "pathname" aber
+          nicht das define Makro.  Wuerde man aber
+
+                  {define; x; `{pathname}'}
+
+          eingeben, waeren die Worte, wie ueblich, als Ketten von Zei-
+          chen  und  Ziffern (einschliesslich Unterstreichungszeichen)
+          definiert.
+
+          Zusammenstellung der Funktions-Makros
+
+          Die Funktions-Makros koennen zu  Funktionsgruppen  zusammen-
+          gefasst werden.
+
+          Es gibt eine Gruppe, die fuer alle Arbeiten mit  der  Makro-
+          Tabelle  zustaendig  ist  und ausschliesslich Substitutions-
+          Makros verarbeitet.  Dazu gehoert  das Definieren  (Aktivie-
+          ren) eines Makros (Aufnahme in die Makro-Tabelle) einmal mit
+          einer Spezialverarbeitung bezueglich der Begrenzer  (define)
+          und  zum  anderen  mit  exakt zu spezifizierenden Begrenzern
+          (rawdefine).  Weiterhin koennen  eine  spezifizierte  Gruppe
+          von  Makros  (remove mit Parameter) bzw. alle Substitutions-
+          Makros der Makro-Tabelle  gestrichen  (entaktiviert,  remove
+          ohne Parameter) werden.  Ausserdem gibt es Funktions-Makros,
+          die eine spezifizierte Gruppe von Makros (dump  mit  Parame-
+          ter)   bzw.   alle  Makros  der  Makro-Tabelle  am  Terminal
+          (Standard-Output) anzeigen (dump ohne Parameter).
+
+          Eine andere Gruppe von Funktions-Makros  dient  der  Eingabe
+          von  Nutzerdaten  von  der  Tastatur (exakt: Standard-Input)
+          bzw. Ausgabe am Terminal (exakt: Standard-Output) auch, wenn
+          sie  aus  einem Include-File aufgerufen werden.  Es gibt ein
+          Makro nur zur Ausgabe (type), eines zur Ausgabe und  Eingabe
+          (ersetzt  den Makro-Wert) (read) und ein anderes zur Ausgabe
+          und anschliessenden Definition eines Makros mit dem Wert der
+          Eingabe  (readdefine).   Mit letzterem ist eine elegante Mo-
+          eglichkeit gegeben, Nutzereingaben Makros als Variablen  zu-
+          zuweisen.   Bei  den  read-  und  readdefine-Makros wird vom
+          Terminal-Monitor der readcount-Makro definiert, der die  La-
+          enge des eingegebenen Textes enthaelt.
+
+          Eine weitere Gruppe von Makros dient der Berechnung des Wer-
+          tes  eines  Ausdruckes, der entweder den Wert des Makros er-
+          setzt (expr) bzw. einem Makro zugewiesen wird, der definiert
+          wird (exprdefine).
+
+          Weiterhin sind weitere Makros  zum  Vergleichen  verfuegbar.
+          Zum Zeichenkettenvergleich und anschliessender Zuweisung ei-
+          nes Wertes zum Wert dient ein Makro (same).  Ein anderer Ma-
+          kro (ifsame) dient ebenfalls dem Zeichenkettenvergleich, wo-
+          bei bei exakter Uebereinstimmung ein spezifizierter Wert und
+          bei  Nichtuebereinstimmung  ein  anderer spezifizierter Wert
+          zugewiesen werden.  Ein weiterer Makro ist fuer die  Berech-
+          nung  eines Ausdruckes und der anschliessender Zuweisung (je
+          nach Ergebnis des Vergleiches) entweder eines im Makro  spe-
+          zifizierten "wahren" oder eines "falschen" Wertes verfuegbar
+          (if).  Ebenso gibt es zwei Makros zum numerischen Vergleich,
+          einmal  fuer einen Vergleich auf "gleich" (ifeq) und zum an-
+          deren auf "groesser oder gleich".  In  beiden  Faellen  wird
+          bei  "wahr"  ein spezifizierter Wert zum Wert des Makros und
+          bei "falsch" ein anderer.
+
+
+          Mit  einem  weiteren  Makro  ist  die  Bildung  einer  Teil-
+          Zeichenkette (Substring), die dem Wert des Makros zugewiesen
+          wird, aus einem Makro mit einer Zeichenkette  mittels  Posi-
+          tionsspezifikation (substr) moeglich.
+
+          Letztlich kann mit einem Makro bis zum  Newline-Zeichen  der
+          Eingabetext uebergangen werden (dnl).
+
+          Begrenzersymbole
+
+          Bestimmte Zeichenfolgen werden intern verwendet und  stellen
+          im  Template-Teil  eines Makros Symbole fuer Gruppen von Be-
+          grenzern dar.  Normalerweise sollen sie nicht sichtbar  wer-
+          den,  aber  sie  koennen  als Ausgabe von dump auftreten und
+          werden manchmal benutzt, um sehr  phantasievolle  Makros  zu
+          erstellen.
+
+          \| entspricht einem Wortwechsel oder beliebig  vielen  Stan-
+          dardbegrenzern.   Bei  einem Wortwechsel entspricht es genau
+          Null Blanks, Tab- oder Newline-Zeichen (nur zwischen  unmit-
+          telbar  angrenzenden Woertern) und kann z.B. mit Satzzeichen
+          auftreten.
+
+
+
+          So wird \|  beispielsweise  dem  Zwischenraum  zwischen  dem
+          letzte  Zeichen  eines Wortes und einem folgenden Komma ent-
+          sprechen.
+
+          \^ entspricht exakt einem Blank-, Tab- oder Newline-Zeichen.
+
+          \& entspricht exakt einem Wortwechsel.
+
+          Bei  der  Definition  eines  Makros   mit   dem   rawdefine-
+          Funktions-Makro  sind  als zusaetzliche Symbole fuer Begren-
+          zergruppen
+
+          \<blank>  genau ein Blank
+          \<tab>    genau ein Tabulator-Zeichen
+          \<nl>     genau Newline-Zeichen
+          \^        am Beginn des Template-Teiles:
+                     Anwendung am Zeilenanfang
+
+          nutzbar.
+
+          Der Definitionsprozess
+
+          Wenn z.B. ein Makro {define;get where...;retrieve  (t.tname)
+          where...}  definiert  wird, wird bei der Definition fuer den
+          Template-Teil dieses Makros folgendes in  die  Makro-Tabelle
+          eingetragen:
+
+                    get\|where\&
+
+          Dabei sucht der Makro-Prozessor streng genommen  sogar  nach
+          "\&get",  was  aber  ueberfluessig  ist,  da die Textanalyse
+          stets mit einem Wortwechsel beginnt.
+
+          Beim define werden  alle  Sequenzen  von  Blanks,  Tab-  und
+          Newline-Zeichen  im  Template-Teil  zwischen den Woertern in
+          das Begrenzersymbol \| ueberfuehrt.  Damit ist es fuer einen
+          Vergleich  gleichgueltig,  wieviele Begrenzerzeichen im Ein-
+          gabetext auftreten.
+
+          Wenn ein Tab- oder Newline-Zeichen eingegeben  werden  soll,
+          koennen  das  Tab-  (\t)  oder  das Newline-Zeichen (\n) ka-
+          schiert benutzt werden.  Wenn das folgende  Makro  definiert
+          und aus einem Include-File eingezogen werden wuerde:
+
+                  {define; get $n \n; \
+                      ret (p.all) where p.name = "$n"}
+
+          wird daraus beim Definieren als Parameterbegrenzer am  Para-
+          meterende  "\^" eingesetzt.  Bei einer Spezifikation von der
+          Tastatur (Standard-Input) wuerde bei einem Blank, Tab-  oder
+          Newline-Zeichen  die  Eingabe des Parameters beendet werden.
+          Dieser Makro koennte benutzt werden, um durch Eingabe von :
+
+                  get *Pe*
+
+          alle Informationen ueber alle Personen zu erhalten,  die  im
+          Namen  die  Zeichenkette "Pe" (z.B. die mit "Pe" beginnenden
+          Familiennamen oder die Vornamen "Peter"  oder  "Petra")  be-
+          inhalten.
+
+          Es ist zu bemerken, dass dies eine  gute  Methode  ist,  den
+          "ret" Makro innerhalb des "get" Makros aufzurufen.
+
+          Aus dem obigen Beispiel ist ersichtlich, dass der  Makropro-
+          zessor  das  durch einen Backslash kaschierte Zeichen "n" in
+          ein Newline-Zeichen transformiert, ebenso wie aus  "\t"  ein
+          Tabulator-Zeichen wird.
+
+          Parameter-Vorverarbeitung
+
+          Der  Makro-Prozessor  entnimmt  nach  der   Vorschrift   des
+          Template-Teiles  dem  Eingabetext die Parameter.  In manchen
+          Faellen ist es notwendig, dass diese  Parameter  einer  vor-
+          herigen  Bearbeitung  durch  den Makro-Prozessor unterzogen,
+          also vorverarbeitet werden, bevor die  Werte  der  Parameter
+          eingesetzt  werden.  Zur Spezifikation einer Vorverarbeitung
+          muss die Parameterdefinition im  Template-Teil  des  define-
+          Makros  mit  "$$" gekennzeichnet werden.  Das bedeutet, dass
+          in einem define-Makro alle vorzuverarbeitenden Parameter mit
+          "$$"  zu kennzeichnen sind.  Im Eingabetext muss der Parame-
+          terwert durch "@" eingeleitet werden.
+
+          Da Funktions-Makros stets vorverarbeitet werden,  ist  keine
+          Kennzeichnung erforderlich.
+
+          Ein Beispiel der Benutzung der Parameter-Vorverarbeitung ist
+          im Abschnitt "System-Substitutions-Makros" enthalten.
+
+          Funktions-Makros
+
+          Es gibt  verschiedene  in  den  Makro-Prozessor  integrierte
+          Funktions-Makros.   In  der  nachfolgenden Beschreibung sind
+          einige der Parameterspezifikationen, nicht wie  ueblich  mit
+          einem,  sondern mit zwei Dollar-Zeichen (Kennzeichen der Mo-
+          eglichkeit der  Spezifikation  einer  Vorverarbeitung)  mar-
+          kiert.
+
+          {define; $$t; $$r}
+
+
+          definiert einen Makro, wie er oben beschrieben wurde.   Eine
+          Spezialverarbeitung  des  Template-Teiles bezueglich der Be-
+          grenzer, die hierbei erfolgt, wurde bereits beschrieben.
+
+          {rawdefine; $$t; $$r}
+
+          ist eine andere Form von define.  Dabei wird keine  Spezial-
+          verarbeitung ausgefuehrt.
+
+          {remove; $$n}
+
+          entfernt   die   mit   dem    Makro-Namen    $n    benannten
+          Substitutions-Makros aus der Makro-Tabelle.
+
+          {remove}
+
+          entfernt alle Substitutions-Makros aus der Makro-Tabelle.
+
+          {dump; $$n}
+
+          zeigt den Wert der Substitutions-Makros mit  dem  Namen  $n.
+          Die Anzeige erfolgt in Form eines rawdefine Makros.
+
+          {dump}
+
+          zeigt die Werte aller Substitutions-Makros an.
+
+          {type;$$s}
+
+          gibt $s auf Standard-Output aus.
+
+          {read;$$s}
+
+          gibt $s auf Standard-Output aus und liest  eine  eingegebene
+          Zeile  (begrenzt  durch das Newline-Zeichen, nicht kaschier-
+          bar) von Standard-Input.  Die  eingegebene  Zeile  wird  zum
+          Wert des Makros.  Der dabei definierte Makro
+
+          {readcount}
+
+          liefert die Anzahl der gelesenen Zeichen und ist vom  Nutzer
+          auswertbar.   Ein  File-Ende  (EOF)  ergibt den Wert -1, ein
+          einzelnes Newline-Zeichen ergibt 0.
+
+          {readdefine; $$n; $$s}
+
+          gibt auch $s auf Standard-Output aus und  liest  eine  Zeile
+          von  Standard-Input.   Der Makro stellt aber die eingelesene
+          Zeile in den mit $n benannten Makro.   Der  Replacement-Teil
+          ist  ein  Zaehler mit der Anzahl der Zeichen der Zeile.  Der
+          Makro {readcount} ist auch hier definiert.
+
+          {expr; $$e}
+
+          berechnet den Ausdruck $e, der zum Wert des Makros wird.
+
+          {exprdefine; $$n; $$e}
+
+          berechnet den Ausdruck $e fuer den Makro $n.  Der  Wert  des
+          Makros  ist  eine  leere  Kette und deshalb im Gegensatz zum
+          expr-Makro nicht fuer eine Schachtelung  nutzbar.   Er  ent-
+          spricht dem Makro {define;n;@{expr;e}}.
+
+          {same; $$a; $$b}
+
+          vergleicht die Zeichenketten $a und $b und liefert als  Wert
+          0 fuer $a = $b, +1 fuer $a > $b und -1 fuer $a < $b.
+
+          {ifsame; $$a; $$b; $t; $f}
+
+          vergleicht die Zeichenketten $a und $b.  Bei  exakter  Uebe-
+          reinstimmung  wird als Wert der Replacement-Text $t zugeord-
+          net, ansonsten $f.
+
+          {if; $$e; $t; $f}
+
+          berechnet den Ausdruck $e und liefert $t (true, wahr),  wenn
+          $e > 0, sonst $f (false, falsch).
+
+          {ifeq; $$a; $$b; $t; $f}
+
+          aehnelt ifsame, aber der Vergleich erfolgt numerisch.
+
+          {ifgt; $$a; $$b; $t; $f}
+
+          aehnelt ifeq, aber der Test erfolgt auf $a groesser $b.
+
+          {substr; $$f; $$t; $$s}
+
+          stellt den Teil einer Zeichenkette (Substring) von  $s  zwi-
+          schen  den  Zeichenpositionen $f und $t bereit, wobei $f und
+          $t ab Null gezaehlt werden.  Liegen $f  oder  $t  ausserhalb
+          des  Bereiches,  werden aus dem Bereich soviele Zeichen, wie
+          moeglich, uebernommen.
+
+          {dnl}
+
+
+
+
+          uebergeht alle Zeichen bis zum Newline-Zeichen.
+
+          Berechnung eines arithmetischen Ausdruckes
+
+          Die e-Parameter der if-, expr- und exprdefine-Makros und die
+          f-  und  t-Parameter des substr-Makros koennen arithmetische
+          Ausdruecke sein.
+
+          Ein Ausdruck darf Operatoren und Operanden enthalten.
+          Gueltige Operatoren sind:
+
+              **        Potenzieren
+              - !       Vorzeichen, logische Negation
+              * / %     Muliplikation, Division, Divisionsrest
+              + -       Addition, Subtraktion (zweistellig)
+              > >= < <= Vergleiche
+              = !=      gleich, ungleich
+              &         logisches Und
+              |         logisches Oder
+
+
+          Operationen der gleichen Zeile sind von  gleicher  Bindungs-
+          staerke,  ansonsten  nimmt die Bindungsstaerke von oben nach
+          unten ab.
+
+          Der Ausdruck darf als Operanden nur  ganzzahlige  numerische
+          Werte  im Bereich von -32768 bis 32767 enthalten.  Ansonsten
+          erfolgt eine Fehlermeldung und  ein  Abbruch.   Es  Ausdruck
+          darf  keine  Blanks,  Tabulator-,  Newline- oder EOF-Zeichen
+          enthalten (Ausdruckende).
+
+          Die Berechnung erfolgt in der Festkommaarithmetik. Eine  Di-
+          vision  durch  0  ergibt nach Warnung den Wert 0.  Die logi-
+          schen Operationen (! & |) deuten <=0 als FALSE  und  >0  als
+          TRUE.  Die logischen Operationen und die Vergleichsoperatio-
+          nen liefern den Wert 0 fuer FALSE und 1 fuer TRUE.  Die  Be-
+          rechnung eines Ausdruckes erfolgt von links nach rechts ent-
+          sprechen den Bindungsregeln.   Klammerung  zur  Realisierung
+          einer anderen Vorrangfolge ist moeglich.
+
+          System-Substitutions-Makros
+
+          Durch die Monitor-Kommandos \eval, \list und \go erfolgt ei-
+          ne Verarbeitung (Substitution) von im Monitor-Puffer enthal-
+          tenen Makros.
+
+          Durch das \go-Kommando wird der durch die  Makrosubstitution
+          erzeugte  Text dem Parser des DBBS uebergeben.  Dabei werden
+          einige  DABA-System-Substitutions-Makros  verarbeitet,   was
+          nachfolgend etwas naeher betrachtet werden soll.
+
+          Vor den an den Parser des DBBS uebergebenen Text  (Anfragen-
+          stapel)  wird der Makro {begintrap} und danach {endtrap} ab-
+          gearbeitet.
+
+          Nachdem der Anfragenstapel durch das DBBS  bearbeitet  wurde
+          und  bevor  das  Prompt-Zeichen erscheint, wird von DABA der
+          Makro {tuplecount} definiert, der bei  den  Tupeloperationen
+          (nicht  bei  Funktionen (Datenbankdienste) wie z.B. "print")
+          die Anzahl der bearbeiteten Tupel enthaelt (Bei einem Anfra-
+          genstapel   hat   {tuplecount}  den  Wert  der  letzten  QL-
+          Anweisung).   Danach  erfolgt  bei  vom  Nutzer  definierten
+          {querytrap}-Makro  das  Schreiben  des dem DBBS uebergebenen
+          Anfragenstapels in das in {querytrap} definierte  Protokoll-
+          File.
+
+          Wenn durch den Nutzer dynamisch ein neues  Protokollfile  zu
+          definieren  ist,  hat das in zwei Schritten zu erfolgen.  Im
+          ersten Schritt ist {querytrap} zu  entfernen  (remove)  (Ab-
+          schliessen  des  alten  Protokollfiles  nach dem letzmaligen
+          Protokollieren in das alte Protokoll).  Danach  erfolgt  mit
+          einem  neuen  \go das Definieren eines neuen Protokolles mit
+          {querytrap}.
+
+
+          Nach der moeglichen Protokollierung wird der  Makro  {conti-
+          nuetrap}  ausgefuehrt.   Erst  dann  erscheint  das  Prompt-
+          Zeichen.
+
+          Wenn die an das DBBS uebergebene Anfrage  eine  Fehlerbedin-
+          gung  ergeben hat, wird der Makro {errorcount} durch das Sy-
+          stem definiert, der die Fehlernummer  enthaelt.   Anschlies-
+          send  wird  der  Makro {catcherror} ausgefuehrt, wenn er vom
+          Nutzer definiert wurde.  Ist der catcherror-Makro nicht  de-
+          finiert  oder  0,  so wird die Standardfehlerbehandlung aus-
+          gefuehrt und eine  entsprechende  Fehlermeldung  ausgegeben.
+          Wurde  vom  Nutzer der catcherror-Makro mit 0 definiert, ist
+          zwar der errorcount-Makro definiert (Fehlerfall), eine Stan-
+          dardfehlerbehandlung  unterbleibt.  So kann der Nutzer seine
+          eigene Fehlerbehandlung ausfuehren.
+
+          Unabhaengig vom Wert des catcherror-Makros steht dem  Nutzer
+          in  jedem  Falle  bei  einem Fehler der errorcount-Makro zur
+          Verfuegung, um das Vorhandensein eines Fehlers abzutesten.
+
+          Einige speziellen Makros werden durch  den  Terminal-Monitor
+          benutzt,  um  die Ausfuehrungsumgebung zu steuern und Ergeb-
+          nisse dem Nutzer bereitzustellen.
+
+
+          Nachfolgend aufgefuehrte Makros sind durch den  Monitor  be-
+          reitgestellt und dem Nutzer immer verfuegbar.
+
+          {pathname}
+
+          Pfadname des File-Systems von DABA.
+
+          {usercode}
+
+          2-Byte Nutzercode (Usercode) des  gerade arbeitenden Nutzers
+
+          {dbname}
+
+          Name der bearbeiteten Datenbank.
+
+          Die folgenden Makros koennen in ihrer Quellform  vom  Nutzer
+          in Files bereitgestellt werden. Sie werden zum Zeitpunkt des
+          Monitor-Startes von diesem definiert. Sie koennen aber  auch
+          vom Nutzer nachtraeglich definiert werden.  Unter bestimmten
+          Bedingungen werden sie ausgefuehrt.
+
+          {begintrap}
+
+
+
+          wird am Beginn einer Anfrage ausgefuehrt.
+
+          {endtrap}
+
+          wird ausgefuehrt, nachdem die Anfragespezifikation DABA  ue-
+          bergeben wurde.
+
+          {continuetrap}
+
+          wird ausgefuehrt, nachdem die Anfrage  beendet  wurde.   Der
+          Unterschied zwischen continuetrap und endtrap besteht darin,
+          dass der endtrap-Makro ausgefuehrt wird, nachdem die Anfrage
+          uebergeben  aber  bevor  sie  ausgefuehrt wird, waehrend der
+          Aufruf des continuetrap-Makros nach Ausfuehrung der  Anfrage
+          erfolgt.
+
+          {querytrap}
+
+          definiert den Namen eines Protokollfiles.  Ist querytrap de-
+          finiert,  werden  auf dem File alle Nutzeraktionen protokol-
+          liert.  Wird das Makro geloescht, wird das Protokollfile ge-
+          schlossen.
+
+          {exectrap}
+
+          wird nach Ausfuehrung eines \edit-  oder  \shell-  Kommandos
+          gerufen,  wenn  das bearbeitete Programm einen Rueckkehrcode
+          ungleich Null lieferte.
+
+          {editor}
+
+          kann verwendet werden, um den Pfadnamen eines  Editors  fuer
+          die Benutzung durch das \edit Kommando zu definieren.
+
+          {shell}
+
+          kann verwendet werden, um den Pfadnamen der durch das \shell
+          Kommando zu nutzenden Shell zu definieren.
+
+          {catcherror}
+
+          wird benutzt, um bei einem Template von Null, die Systemfeh-
+          lerbehandlung auszuschalten.
+
+          Das vom Nutzer zu definierende
+
+          {default}
+
+
+
+          Makro wird  fueer  ein  \branch-Kommando  verwendet,  dessen
+          Zielmarke nicht gefunden wird.
+
+          Die folgenden Makros werden unter bestimmten Bedingungen vom
+          Monitor definiert.
+
+          {tuplecount}
+
+          wird nach jeder Anfrage gesetzt (aber bevor continuetrap er-
+          reicht  ist)  und  stellt einen Zaehler der Anzahl der Tupel
+          dar, die bei retrieve die Qualifikation der Anfrage  erfuel-
+          len (Anzahl relevanter Tupel), bei append zugefuegt, bei re-
+          place geaendert bzw. bei delete geloescht wurden.   Der  Za-
+          ehler   wird   von  Funktionen  der  Datenbankdienste  (z.B.
+          "print") nicht gesetzt.
+
+          Wenn mehrere Anfragen als Stapel bearbeitet werden, wird der
+          Zaehler  auf  die  Anzahl der Tupel gesetzt, die der letzten
+          Anfrage entsprechen.
+
+          Um beispielsweise die Anzahl bearbeiteter Tupel  automatisch
+          nach jeder Anfrage anzuzeigen, kann spezifiziert werden :
+
+                  {define; {begintrap}; {remove; {tuplecount}}}
+                  {define; {continuetrap}; \
+                     {ifsame; @{tuplecount}; {tuplecount};; \
+                       {type;@{tuplecount} tuples touched}}}
+
+          Dabei wird  vor  der  Ausfuehrung  des  Anfragenstapels  der
+          tuplecount-Makro  durch  den  begintrap-Makro aus der Makro-
+          Tabelle entfernt. Nach Ausfuehrung der  Anfragen  durch  das
+          DBBS  (definiert bei einer Beantwortbarkeit der QL-Anweisung
+          den tuplecount-Makro) wird durch den continuetrap-Makro  der
+          aktuelle Wert des tuplecount-Makros (mit spezifizierter Vor-
+          verarbeitung) mit der  Zeichenkette  "{tuplecount}"  vergli-
+          chen.   Wenn  beide  Werte  nicht  uebereinstimmen, wird die
+          Nachricht  "n  tupples  touched"  vor  dem  Erscheinen   des
+          Prompt-Zeichens ausgegeben.
+
+          War  die  Anfrage  fehlerhaft,   wird   vom   Monitor   kein
+          tuplecount-Makro definiert.  Folglich kann durch die Vorver-
+          arbeitung "@{tuplecount}" nicht durch  seinen  Wert  ersetzt
+          werden und bleibt die Zeichenkette "{tuplecount}".  Der Ver-
+          gleich ergibt deshalb Gleichheit und es erfolgt keine  Reak-
+          tion (Template dafuer leer).
+
+          {errorcount}
+
+
+
+          wird vom  System  definiert,  wenn  eine  spezifizierte  QL-
+          Anweisung  einen Fehler ergeben hat und enthaelt die Fehler-
+          nummer.
+
+          {readcount}
+
+          enthaelt nach einem read- oder readdefine-Makro  die  Anzahl
+          der  gelesenen Zeichen (oder -1 bei Control-D bzw. 0 bei ei-
+          nem einzelne Newline-Zeichen).
+
+
+     SIEHE AUCH
+
+          monitor(iql)
+
+
+     DIAGNOSE
+
+               infinite loop in makro -
+                    Ein Abschnitt des Input-Text wurde 100  mal  einer
+                    Makro-Substitution     unterzogen     z.B     nach
+                    {define;alpha;alpha}.   Anschliessend   geht   der
+                    Makro-Prozessor weiter.
+               every parameter needs a delimiter -
+                    Die Parameterdefinition hat keinen Begrenzer.
+
+               null parameter name -
+                    Die Parameterdefinition hat keine Namensangabe.
+
+               parameter <p_name> redeclared -
+                    Der gleiche Parametername <p_name> wird  in  einem
+                    template mehrfach als solcher verwendet.
+
+               parameter <p_name> referenced but not defined -
+                    Der im replacement referenzierte <p_name> wurde im
+                    Template-Teil nicht definiert.
+
+
+     Beispiele
+
+               /* Erzeugen des QL-Schluesselwortes "retrieve"
+               aus dem Wort "get"*/
+
+               {define;get;retrieve}\eval
+
+               /* Erzeugen einer kompletten retrieve-QL-
+               Anweisung fuer eine spezielle Anwendung*/
+
+               {define; get $1; retrieve (p.all)
+               where p.name="$1"}\eval
+
+               /* In einem Menue werden dem Nutzer die
+               Antworten a, b oder ? gestattet.
+               Er erhaelt die Eingabeaufforderung a, b, ?.
+               Abhaengig von der Antwort werden bestimmte
+               Marken angesprungen.
+
+               {define; {default}; ab}\eval
+               \branch {read; a, b, ?}
+               \mark a
+                  :
+               \mark b
+                  :
+               \mark ab
+
+          Die durch das default-Makro definierte Sprungmarke  bewirkt,
+          dass irgendeine Eingabe (ausser a oder b) stets einen Sprung
+          nach der Marke "ab" ergibt. Dort  koennte  z.B.  eine  Hilfe
+          ausgegeben werden.
+
+               /* Der Nutzer wird durch die Ausgabe des Textes
+               "Name:" aufgefordert, einen Namen einzugeben.
+               Gibt er nur ein Newline-Zeichen ein,
+               erfolgt ein Srung zur Marke "Ende"*/
+
+               {readdefine; name; Name:}\eval
+               \branch ?{readcount}=0 Ende
+               retrieve (p.all) where p.`name'="name"\go
+
+          Der eingegebene Text wird in die QL-Anweisung zwischen die "
+          "-Zeichen  eingesetzt.  Vorher  wird die Zeichenkette "name"
+          durch die Zeichen (`') kaschiert.
+
+               /* Es soll immer ein Sprung nach "normal"
+               erfolgen, es sei denn, der im vorhergehenden
+               Beispiel eingegebene Name ist "XXX" */
+
+               \branch {ifsame;@name;XXX;Ausnahme;normal}
+
+          Wenn durch "@" keine Vorverarbeitung angezeigt worden waere,
+          wuerde immer nach "normal" gesprungen werden.

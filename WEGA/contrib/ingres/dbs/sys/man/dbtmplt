@@ -1,0 +1,56 @@
+     DBTMPLT(FILES)               DABA16                DBTMPLT(FILES)
+
+     NAME
+          .../sys/etc/dbtmplt6.3 - Datenbank-Spezifikation(Template)
+
+     BESCHREIBUNG
+          Dieses File enthaelt die  Datenbank-Spezifikation,  die  von
+          creatdb verwendet wird.
+          Die  Spezifikation  besteht   aus   der   Beschreibung   des
+          Datenbank-  und  des  Standard-Relations-Status  sowie einer
+          Menge von Eintraegen (Beschreibungen), fuer in der Datenbank
+          zu erstellende System-Relation.
+          Die Eintraege werden jeweils durch eine Leerzeile separiert.
+          Zwei Leerzeilen oder das File-Ende beenden das File.
+
+          Die erste Zeile des Files  beschreibt  den  Datenbank-Status
+          und  den  Standard-Relations-Status, die durch einen Doppel-
+          punkt separiert werden.
+          Der Rest des Files beschreibt Relationen.
+          Die erste Zeile jeder Gruppe gibt  den  Relationsnamen,  ge-
+          folgt  von  einem  wahlweise vorhandenem Relationsstatus an,
+          die ebenfalls durch den Doppelpunkt separiert werden.
+          Die restlichen Zeilen  jeder  Gruppe  beschreiben  Attribute
+          durch  die  Spezifikation  von Attributname und Attributtyp,
+          separiert durch ein Tabulator-Zeichen.
+
+          Alle Statusfelder werden oktal dargestellt und besitzen  als
+          Syntax  einfache Ziffern, gefolgt von einer Liste von Paaren
+          der Form
+                  -x-N,
+          die folgendes ausdruecken:
+          Wenn das - x Flag in der creatdb Kommando-Zeile  "ein"  ist,
+          werden  die  durch  N  spezifizierten  Bits  ein-(bzw.  aus-
+          )geschaltet.
+
+          Die erste Menge von Eintraegen  muss  fuer  den  Relationen-
+          Katalog  (relation-System-Relation)  und die zweite fuer den
+          Attribute-Katalog   (attribute-System-Relation)    vorhanden
+          sein.
+
+     BEISPIEL[E]
+          3-c-1+q+2:010023
+          relation:-c-20
+          relid   c12
+          relowner        c2
+          relspec i1
+
+          attribute:-c-20
+          attrelid        c12
+          attowner        c2
+          attname c12
+
+                  (andere Relations-Deskriptoren)
+
+     SIEHE AUCH
+          creatdb(mutos)
