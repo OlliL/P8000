@@ -1,0 +1,27 @@
+set -x
+touch				\
+	access/Makefile		\
+	amx_cc/Makefile		\
+	amx_lib/Makefile	\
+	../sys/etc/Makefile	\
+	dbu/Makefile		\
+	decomp/Makefile		\
+	eql/Makefile		\
+	gutil/Makefile		\
+	h/Makefile		\
+	iutil/Makefile		\
+	lib/Makefile		\
+	libq/Makefile		\
+	monitor/Makefile	\
+	oamx_lib/Makefile	\
+	olibq/Makefile		\
+	ovqp/Makefile		\
+	parser/Makefile		\
+	pqr/Makefile		\
+	qrymod/Makefile		\
+	redabas/Makefile	\
+	samx_lib/Makefile	\
+	slibq/Makefile		\
+	support/Makefile	\
+	sys/Makefile		\
+	yyyacc/Makefile
