@@ -37,7 +37,8 @@ extern int errflag,warning,mofy,answer,qflag;
 extern long begadrf, begadre1, lange1, begadre2, lange2, prlang;
 extern char progbuf[0xfffe], eprombuf[0xfffe], progffff, epromffff, kffff;
 extern char namef[50], namee1[20], namee2[20], cmdbuf[100];
-extern char erase, vefy, d, e;
+extern char erase, vefy, d, e, zei1, *p_progbuf;
+extern long p_begadre, p_lange;
 extern int tpe1, tpe2;
 
 
@@ -53,7 +54,7 @@ progprom()
 						return;}}
 	if (warning==true) {answer=' '; warning=false; return;}
 	printf ("%s %s %s %s %s %s\n",pgr,fil,namef,to,pro,namee1);
-	writeprom (tpe1,begadre1,lange1,progbuf,&progffff);
+	writeprom (tpe1,p_begadre,p_lange,p_progbuf,&progffff);
 	if (errflag==true) {if (qflag==true)	return;
 					else	{errflag=false;
 						answer=' ';
@@ -250,10 +251,10 @@ do
 					if (id=='m')	*zadr= zei;
 						else	{eprombuf[0]=zei;
 							writeprom (tpe1,begadre1,lange1,eprombuf,&epromffff);
-							if (errflag==true) {if (qflag==true)	return;
-								else	{errflag=false;
-									answer=' ';
-									return;}}}}}
+							if ((errflag==true)||(zei1=='n')) {if (qflag==true)	return;
+													else	{errflag=false;
+														answer=' ';
+														return;}}}}}
 
 		if (errflag==false&&qflag==false&&bufadr[i]=='\0') {madr++; zadr++;}
 		if (madr>=(ladr+llang)) {errflag=true; qflag=true;}
