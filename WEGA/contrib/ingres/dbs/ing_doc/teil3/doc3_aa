@@ -1,0 +1,1944 @@
+
+
+
+        Beispiele                 - 320 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+        _3._1.  TTTTeeeerrrrmmmmiiiinnnnkkkkoooonnnnttttrrrroooolllllllleeee ********
+
+
+
+
+
+
+
+
+
+
+
+
+        _3._1._1.  VVVVoooorrrrbbbbeeeemmmmeeeerrrrkkkkuuuunnnngggg
+
+        Um sich sinnvoll in ein UNIX -System einzuordnen, sollte das
+        Prinzip  des  "Werkzeugkastens"  auch  in  der Anwenderebene
+        durchgestanden werden - na"mlich kleine Programme  mit  exakt
+        abgegrenzten Leistungen zu schaffen und diese zu einem Paket
+        verbinden.  Nachfolgend wird auszugsweise ein  Projekt  vor-
+        gestellt, das die Nutzung von AMX und ZIP veranschaulicht.
+
+        Als Bedingungen seien gestellt:
+        Die Terminkontrolle  ist  schirmorientiert  zu  lo"sen.   Bei
+        Bedarf  ko"nnen  Protokolle gedruckt werden.  Die zu kontrol-
+        lierende  Einheit  besteht  aus  einer  Basis-Massnahme  und
+        keiner  oder beliebig vielen Festlegungen.  Wa"hrend des Kon-
+        trollvorganges   sollen   die    Basis-Massnahmen    gezeigt
+        (entsprechend  vorzugebender  Eingrenzungen),  gea"ndert oder
+        als  realisiert  markiert  werden  -   Festlegungen   sollen
+        gezeigt,   korrigiert,  als  realisiert  markiert  oder  neu
+        hinzugefu"gt werden. Neben der Mo"glichkeit  u"ber  Zieltermine
+        zu  recherchieren,  kann  nach dem Kreis der, fu"r die Reali-
+        sierung  der   Massnahme   Verantwortlichen   (Gruppe   oder
+        Einzelperson)  oder  nach  dem  Kreis,  der  eine  Massnahme
+        ausgelo"st hat (Gruppe oder Einzelperson) - gegenu"ber dem der
+        recherchierende  Leiter  also  rechenschaftspflichtig  ist -
+        eingegrenzt  werden.  Es  existiert  eine  Nomenklatur,  die
+        Struktureinheiten ordnet bzw. gruppiert.
+
+        _3._1._2.  RRRReeeellllaaaattttiiiioooonnnneeeennnn
+
+        Innerhalb der Datenbank tttteeeerrrrkkkkoooonnnn  werden  folgende  Relationen
+        verwendet:
+        bbbbaaaassssiiiissss entha"lt die  Basis-Massnahmen.   U"ber  die  Massnahme-
+        Nummer  mmmmnnnnrrrr  werden  die  dazugeho"rigen Festlegungen identi-
+        fiziert.   vvvvoooonnnnggggrrrruuuupppp  gibt  Auskunft,  durch   welche   Struk-
+        tureinheit  (auch u"bergeordnete Organe) die Massnahme veran-
+        lasst wurde (Gruppe), vvvvoooonnnnppppaaaarrrrtttt grenzt  innerhalb  der  Gruppe
+        auf  einen konkreten Partner ein.  aaaannnnggggrrrruuuupppp bzw.  aaaannnnppppaaaarrrrtttt geben
+        an, wer die  Massnahme  verantwortlich  zu  realisieren  hat
+        (Gruppe  bzw.   Partner).  eeeeddddaaaatttt ist das Rechnerdatum, zu dem
+        die Massnahme  erfasst  wurde  und  tttteeeerrrrmmmmiiiinnnn  der  vorgegebene
+        Zieltermin.  Die  Angabe  ffffeeeessssttttaaaannnnzzzz  gilt  als Hinweis auf die
+        aktuelle Anzahl von Festlegungen, ist der Wert -1 sind  alle
+        Festlegungen   realisiert   (Hinweis  zum  Austragen).   Der
+        eigentliche Text wird vierzeilig in ttttxxxx1111........ttttxxxx4444 abgelegt.
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 321 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+
+
+        Relation:               basis
+        ---------               P8000 / EVK Olbernhau
+        Besitzer:               kodir
+        Tupellaenge:            218
+        Verfallsdatum:          Tue Jan  1 00:00:00 1991
+        Tupelanzahl:            131
+        Speicherstruktur:       HEAP
+        Pages:                  1 + 46
+        Relationentyp:          Nutzerrelation
+
+         Domaenname        Typ   Laenge  Schluessel
+        --------------------------------------------
+         mnr                i       4
+         edat               i       4
+         vongrup            i       2
+         vonpart            i       2
+         angrup             i       2
+         anpart             i       2
+         tx1                c      49
+         tx2                c      49
+         tx3                c      49
+         tx4                c      49
+         termin             i       4
+         festanz            i       2
+        --------------------------------------------
+
+
+        ffffeeeessssttttllll   entha"lt   die    zur    Basis-Massnahme    geho"rigen
+        Festlegungen.    ffffnnnnrrrr  nummeriert  innerhalb  der  Massnahme-
+        Nummer, vvvvggggrrrruuuupppp und vvvvppppaaaarrrrtttt  geben  die  Verantwortlichkeit  und
+        kkkkggggrrrruuuupppp  bzw.   kkkkppppaaaarrrrtttt  die Kontrollpflicht an. Mit rrrreeeeaaaalllliiiissss wird
+        ein Kennzeichen fu"r gegebene Realisierung (=1) gesetzt.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 322 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+
+
+        Relation:               festl
+        ---------               P8000 / EVK Olbernhau
+        Besitzer:               kodir
+        Tupellaenge:            216
+        Verfallsdatum:          Tue Jan  1 00:00:00 1991
+        Tupelanzahl:            26
+        Speicherstruktur:       HEAP
+        Pages:                  1 + 11
+        Relationentyp:          Nutzerrelation
+
+         Domaenname        Typ   Laenge  Schluessel
+        --------------------------------------------
+         mnr                i       4
+         fnr                i       2
+         tx1                c      49
+         tx2                c      49
+         tx3                c      49
+         tx4                c      49
+         termin             i       4
+         vgrup              i       2
+         vpart              i       2
+         kgrup              i       2
+         kpart              i       2
+         realis             i       2
+        --------------------------------------------
+
+
+        ppppaaaarrrrttttnnnn entha"lt die Nomenklatur und Bezeichnungen  der  Struk-
+        tureinheiten, die an der Terminkontrolle teilhaben. Mit ggggrrrruuuupppp
+        wird eine Gruppe, mit ffffeeeeiiiinnnn ein Partner bestimmt.
+
+
+        Relation:               partn
+        ---------               P8000 / EVK Olbernhau
+        Besitzer:               kodir
+        Tupellaenge:            28
+        Verfallsdatum:          Tue Jan  1 00:00:00 1991
+        Tupelanzahl:            56
+        Speicherstruktur:       HEAP
+        Pages:                  1 + 1
+        Relationentyp:          Nutzerrelation
+
+         Domaenname        Typ   Laenge  Schluessel
+        --------------------------------------------
+         grup               i       2
+         fein               i       2
+         bez                c      24
+        --------------------------------------------
+
+
+        mmmmaaaaffffeeeennnnrrrr  ist  eine  tempora"re  Relation,  die  jeweils   alle
+        Massnahme-Nummern,  sich qualifizierender Tupel der Relation
+        bbbbaaaassssiiiissss bzw. die dazugeho"rigen Festlegungs-Nummern  der  Rela-
+        tion ffffeeeessssttttllll entha"lt.
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 323 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+
+
+        Relation:               mafenr
+        ---------               P8000 / EVK Olbernhau
+        Besitzer:               kodir
+        Tupellaenge:            6
+        Verfallsdatum:          Tue Jan  1 00:00:00 1991
+        Tupelanzahl:            0
+        Speicherstruktur:       HEAP
+        Pages:                  1 + 0
+        Relationentyp:          Nutzerrelation
+
+         Domaenname        Typ   Laenge  Schluessel
+        --------------------------------------------
+         mnr                i       4
+         fnr                i       2
+        --------------------------------------------
+
+
+        _3._1._3.  SSSStttteeeeuuuueeeerrrrpppprrrrooooggggrrrraaaammmmmmmm
+
+        Um die relativ langen Zeilen der Quellprogramme  noch  eini-
+        germassen  u"bersichtlich  darstellen zu ko"nnen, wurden nach-
+        folgend \t durch drei Leerzeichen ersetzt.
+
+        Das Hauptmenue steht in der  Prozedur  hhhhaaaauuuuppppttttmmmm....cccc....   Hier  das
+        Hauptprogramm:
+
+
+        /* Hauptmenue zur Terminkontrolle in hauptm.c */
+        /* Pfadname in cmd.c definiert    */
+
+        # include   <stdio.h>
+        # include   <curses.h>
+        # include   "/z/zip/inkeys.h"
+
+        char      command[65];
+
+        main()
+        {
+           char   *cmd();
+
+           initzip();
+
+           if (!system(cmd("part"))) goto fehler;
+           for (;;)
+           {
+              switch(hauptm())
+              {
+                 case 1:
+                    while (system(cmd("kontr")))
+                    {
+                       system(cmd("teko"));
+                       system(cmd("delmaf"));
+                    }
+                    system(cmd("fanze"));
+                    break;
+                 case 2:
+                    system(cmd("eiko"));
+                    system(cmd("fanze"));
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 324 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+                    break;
+                 case 3:
+                    while (system(cmd("druw")))
+                    {
+                       system("modifyr terkon mafenr heapsort mnr fnr");
+                            system("nq -nb newpg");
+                       if (!system(cmd("druk")))
+                       {
+                          perror("Systemfehler");
+                          sleep(5);
+                          break;
+                       }
+                       clear(); refresh();
+                    }
+                    system(cmd("delmaf"));
+                    break;
+                 case 4:
+                    system(cmd("nomenkl"));
+                    if (!system(cmd("part"))) goto fehler;
+                    break;
+                 case 5:
+                    crmode(); noecho();
+                    clear();
+                    refresh();
+                    nocrmode(); echo();
+                    endwin();
+                    exit(0);
+                 default:
+                    goto fehler;
+              }
+           }
+        fehler:
+           crmode(); noecho();
+           clear();
+           refresh();
+           nocrmode(); echo();
+           endwin();
+           printf("*** System-Fehler ***\n");
+           exit(-1);
+        }
+
+        iiiinnnniiiittttzzzziiiipppp(((()))) ist eine Prozedur aus libzip.a,  die  die  Initia-
+        lisierung des Paketes ccccuuuurrrrsssseeeessss und des Paketes zzzziiiipppp veranlasst.
+        Die Auswahl erfolgt u"ber die Prozedur  hauptm(),  indem  die
+        gewu"nschte  Zeile mit der Kursortaste (|v) angefahren und mit
+        -> angeklickt wird.  Um einen U"berblick bezu"glich  der  Lei-
+        stung  der  einzelnen Programme zu verschaffen wird nachfol-
+        gend die Menue-Prozedur hhhhaaaauuuuppppttttmmmm....cccc gezeigt:
+
+
+
+        /* Hauptmenue zur Terminkontrolle */
+
+        # include   <curses.h>
+        # include   "/z/zip/inkeys.h"
+
+        # define   Fragen   5
+        # define   Beginn   5
+
+        extern char   *SO, *SE;
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 325 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+        hauptm()
+        {
+           static   char *men[] =   {
+        "? Kontrolle von Faelligkeiten mit Aenderungsmoeglichkeit..  ",
+        "? Erfassung neuer Basis-Massnahmen (auch mit Festlegungen)  ",
+        "? Druck von Protokollen (auch mit Eingrenzungen)..........  ",
+        "? Aenderung und Ergaenzung der Nomenklatur (Partner)......  ",
+        "? Beendigung der Arbeit...................................  "
+                    };
+           int   inp;
+           int   aus;
+           int   zl, sp, spa;
+           char   buf[80];
+
+           crmode();
+           clear();
+           datum(12, 5);
+           move(2, 5);
+           addstr("TERMINKONTROLLE Hauptmenue");
+           zl = Beginn; sp = 5;
+           for (inp = 0; inp < Fragen; inp++)
+           {
+              move(zl+inp, sp);
+              strcpy(buf, SO);
+              strcat(buf, men[inp]);
+              strcat(buf, SE);
+              addstr(buf);
+           }
+           move(zl, sp-1);
+           refresh();
+           noecho();
+
+           for (;;)
+           {
+              aus = 0;
+              switch(inp = ZZgetchx())
+              {
+
+                 case CCdo:
+                    getyx(stdscr, zl, spa);
+                    if (zl < (Fragen+Beginn-1)) move(++zl, spa);
+                    break;
+                 case CCup:
+                    getyx(stdscr, zl, spa);
+                    if (zl > Beginn) move(--zl, spa);
+                    break;
+                 case CCri:
+                    nocrmode(); echo();
+                    aus = zl - Beginn + 1;
+                    move(zl, sp+1);
+                    addstr(men[aus-1]);
+                    refresh();
+                    return(aus);
+                 default  :
+                    continue;
+              }
+              refresh();
+           }
+        }
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 326 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+        Mit der Prozedur hauptm() wird  eine  Leistung  beschrieben,
+        die  in  der  Regel die ZIP-Prozedur menzip() ausfu"hrt - der
+        einzige  Unterschied  besteht  darin,  dass   das   fu"hrende
+        Fragezeichen  nach  dem  Anklicken  durch  die  nachfolgende
+        Zeichenkette (normale Darstellung) u"berschrieben wird.   Die
+        Pointer  *SO und *SE stammen aus der termcap und realisieren
+        das Ein- und  Ausschalten  einer  inversen  Darstellung  der
+        Terminalausgabe.   ZZZZZZZZggggeeeettttcccchhhhxxxx(((()))) bietet die Mo"glichkeit, in der
+        termcap definierte  Steuerfolgen  auszuwerten  -  hier  CCdo
+        (Cursor  down),  CCup  (Cursor  up) usw. - und entsprechende
+        Reaktionen des Programms zu gestalten. Die Prozedur steht in
+        libzip.a, die entsprechenden Definitionen zu CCdo, CCup usw.
+        in inkeys.h.  Mit getyx() aus curses la"sst sich die aktuelle
+        Kursorposition auf dem Standard-Screen (stdscr) erfragen und
+        auf die nachfolgenden beiden Parameter zuru"ckschreiben.
+
+        _3._1._4.  KKKKoooonnnnttttrrrroooollllllll----MMMMeeeennnnuuuueeee
+
+        Das Programm tttteeeekkkkoooo wird nach dem Programm kkkkoooonnnnttttrrrr gerufen. Mit-
+        tels kontr wird eine Abfrage zur Qualifikation (Eingrenzung)
+        der Massnahmen bzw. Festlegungen  realisiert.   Es  entsteht
+        die  Relation  mmmmaaaaffffeeeennnnrrrr,,,, die eingangs alle eingegrenzten Mass-
+        nahmen anbietet. Wird teko  durch  einen  Abbruch  vorzeitig
+        verlassen,  ist diese Relation mit delmaf wieder zu lo"schen.
+        tttteeeekkkkoooo wird nachfolgend  komplett  gezeigt,  Bezugspunkte  fu"r
+        Erla"uterungen  werden laufend nummeriert (n) und als Kommen-
+        tar gekennzeichnet.
+
+
+        tttteeeekkkkoooo....xxxx::::
+
+        ## shared terkon
+
+        /* Menue 1 - Kontr.-Menue: Eingangsrelation mafenr aus kontr */
+        /* Kontrolle von Festlegungen und Basis-Massnahmen;          */
+        /* Basis-Massnahmen koennen geaendert, Festlegungen geaendert*/
+        /* und neue hinzugefuegt werden;                             */
+
+        # include   <curses.h>
+
+        ## long  MNR;
+        ## int   GRUP;
+        ## int   FEIN;
+        ## int   FNR;
+        ## char  BEZ[24];
+        ## char  TX1[49];
+        ## char  TX2[49];
+        ## char  TX3[49];
+        ## char  TX4[49];
+        ## long  EDAT;
+        ## long  TERMIN;
+        ## int   VGRUP;
+        ## int   VPART;
+        ## int   AGRUP;
+        ## int   APART;
+        ## int   FESTL;
+        ## int   REALIS;
+
+        char  DATUM[9];
+        char  SLE[15];
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 327 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+        char  ANTW[2];
+        char  mess[25];
+        int   VON;
+        int   clr;
+        int   zl, sp;
+        int   anzfest;
+
+        amx()
+        {
+        /* (1) */
+           static   char *bas[] =   {
+              "Weiter..............  ",
+              "Realisiert..........  ",
+              "Aendern.............  ",
+              "Festl. zeigen/aend..  ",
+              "Festlegungen zufueg.  ",
+              "Abbruch.............  "
+                    };
+           static   char *fest[] =   {
+              "Weiter..............  ",
+              "Realisiert..........  ",
+              "Aendern.............  ",
+              "Festlegungen zufueg.  "
+                    };
+           static   char *festzu[] =   {
+              "Festlegungen zufueg.  ",
+              "Abbruch.............  "
+                    };
+
+           int  c;
+           int  d;
+           int  flag;
+           int  flagm;
+           int  flagf;
+           int  end_fl;
+           int  bas_fl;
+           int  maxfnr;
+           int  t_count;
+           long old_mnr;
+
+
+        initzip();
+
+        ## open basis
+        ## open partn
+        ## open festl
+        ## open mafenr
+
+        ## use (+basis,partn,+festl,+mafenr)
+
+        zyk:
+
+           end_fl = 0;
+        ## scan mafenr (MNR=$mnr, FNR=$fnr)
+        ## {
+           ++end_fl;
+        ## }
+           if (!end_fl)
+           {
+        /* (2) */
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 328 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+              melde();
+              goto end;
+           }
+           if (MNR == old_mnr) goto zyfest;
+           clr = 0;
+           flag = 0;
+
+        ## scan basis $mnr=MNR (TX1=$tx1,TX2=$tx2,TX3=$tx3,TX4=$tx4,
+        ##   TERMIN=$termin,VGRUP=$vongrup,
+        ##   VPART=$vonpart,AGRUP=$angrup,APART=$anpart,FESTL=$festanz)
+        ## {
+           ++flag;
+           anzfest = FESTL;
+        /* (3) */
+           abas();
+           getyx(stdscr, zl, sp);
+           move(2, 52);
+           if (anzfest == -1)
+           sprintf(mess, "Festlegungen realisiert");
+           else
+           sprintf(mess, "%2d Festlegung(en) !   ", anzfest);
+           addstr(mess);
+           refresh();
+           move(zl, sp);
+           c = menzip(bas, 6, 3, 52);
+           switch(c)
+           {
+              case 2:      /* B.-M. loeschen vorbereiten */
+                 ZZbeep();
+                 okay(1,0);
+                 if (ANTW[0] == 'j' || ANTW[0] == 'J')
+                 {
+                    ZZbeep();
+                    FESTL = -1;
+                 }
+                 break;
+              case 3:      /* B.-M. korrigieren */
+                 dbas();   /* Bereich fuer B.-M. loeschen */
+        /* (5) */
+                 if (!ebas()) c = 1;
+                 break;
+              default:
+                 break;
+           }
+           if (c == 2 || c == 3)
+           {
+        ## replace ($mnr=MNR,$tx1=TX1,$tx2=TX2,$tx3=TX3,$tx4=TX4,
+        ##   $termin=TERMIN,$vongrup=VGRUP,$edat=EDAT,
+        ##   $vonpart=VPART,$angrup=AGRUP,$anpart=APART,$festanz=FESTL)
+           }
+
+        ## }
+           switch(c)
+           {
+              case 6:   goto end;
+              case 1:
+              case 2:
+              case 3:
+        ## scan mafenr $mnr=MNR
+        ## {
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 329 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+        ## delete
+        ## }
+                 goto zyk;
+              default :
+                 break;
+
+           }
+           d = 0;
+           flagf = 0;
+        zyfest:
+           switch(c)
+           {
+           case 4:
+              if (FNR)   /* Ueber Festl. recherchiert */
+              {
+        ## scan mafenr $mnr=MNR (FNR=$fnr)
+        ## {
+
+        ## scan festl $mnr=MNR, $fnr=FNR (TX1=$tx1,TX2=$tx2,TX3=$tx3,
+        ##   TX4=$tx4,TERMIN=$termin,VGRUP=$vgrup,
+        ##   VPART=$vpart,AGRUP=$kgrup,APART=$kpart,REALIS=$realis)
+        ## {
+              dfest();
+              afest();
+              d = menzip(fest, 4, 13, 52);
+              switch(d)
+              {
+                 case 1: break;
+                 case 2:   ZZbeep();
+                    okay(1,0);
+                    if (ANTW[0] == 'j' || ANTW[0] == 'J')
+                    {
+                       ZZbeep();
+                       REALIS = 1;
+                    }
+                 case 3:   if (!REALIS) kfest();
+        ## replace ($mnr=MNR,$fnr=FNR,$tx1=TX1,$tx2=TX2,$tx3=TX3,
+        ##   $tx4=TX4,$termin=TERMIN,$vgrup=VGRUP,
+        ##   $vpart=VPART,$kgrup=AGRUP,$kpart=APART,$realis=REALIS)
+                    break;
+                 case 4:   c = 5;
+                    goto zyfest;
+              }
+        ## }
+        ## delete
+        ## }
+              }
+              else      /* Keine Festl.-Nr.: Recherche BMn. */
+              {
+              ++flagf;
+        ## scan festl $mnr=MNR (FNR=$fnr,TX1=$tx1,TX2=$tx2,TX3=$tx3,
+        ##   TX4=$tx4,TERMIN=$termin,VGRUP=$vgrup,
+        ##   VPART=$vpart,AGRUP=$kgrup,APART=$kpart,REALIS=$realis)
+        ## {
+              dfest();
+              afest();
+              d = menzip(fest, 4, 13, 52);
+              switch(d)
+              {
+                 case 1: break;
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 330 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+                 case 2:   REALIS = 1;
+                 case 3:   if (!REALIS) kfest();
+        ## replace ($mnr=MNR,$fnr=FNR,$tx1=TX1,$tx2=TX2,$tx3=TX3,
+        ##   $tx4=TX4,$termin=TERMIN,$vgrup=VGRUP,
+        ##   $vpart=VPART,$kgrup=AGRUP,$kpart=APART,$realis=REALIS)
+                    break;
+                 case 4:   c = 5;
+                    goto zyfest;
+              }
+        ## }
+              }
+              break;
+           case 5:
+              ++flagf;
+        zyzuf:      if (d == 4)
+              {
+                 maxfnr = 1;
+        ## scan festl $mnr=MNR (FESTL=$fnr)
+        ## {
+                 if (FESTL > maxfnr) maxfnr = FESTL;
+        ## }
+              }
+              TX1[0] = '\0';
+              TX2[0] = '\0';
+              TX3[0] = '\0';
+              TX4[0] = '\0';
+              FNR = maxfnr + 1;
+              kfest();
+        ## append festl ($mnr=MNR,$fnr=FNR,$tx1=TX1,$tx2=TX2,$tx3=TX3,
+        ##   $tx4=TX4,$termin=TERMIN,$vgrup=VGRUP,
+        ##   $vpart=VPART,$kgrup=AGRUP,$kpart=APART,$realis=REALIS)
+              if ((d = menzip(festzu, 2, 13, 52)) == 1)
+              {
+                 d = 4;
+                 goto zyzuf;
+              }
+              break;
+           default: break;
+           }
+           if (flagf)
+           {
+        ## scan mafenr $mnr=MNR
+        ## {
+        ## delete
+        ## }
+           flagf = 0;
+           }
+           goto zyk;
+
+        end:
+
+        ## commit
+
+        ## close partn
+        ## close basis
+        ## close festl
+        ## close mafenr
+
+        }
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 331 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+        /* (4) */
+        ks_part()
+        {
+
+        ## scan partn $grup=GRUP, $fein=FEIN (BEZ=$bez)
+        ## {
+        ## }
+        }
+
+
+        Die Datenbank wird fu"r mehrere Nutzer gleichzeitig  geo"ffnet
+        (shared).  Dabei sind die Relationen bbbbaaaassssiiiissss,,,, ffffeeeessssttttllll und mmmmaaaaffffeeeennnnrrrr
+        zum Lesen und Schreiben sowie ppppaaaarrrrttttnnnn nur zum Lesen  verfu"gbar
+        (use).    Die   lokalen  Vereinbarungen  ((((1111))))  repra"sentieren
+        jeweils ein Menue, das mit menzip() zur Anzeige kommt.
+
+        Die Prozedur mmmmeeeellllddddeeee(((()))) bei  ((((2222))))  teilt  bei  den  Phasen,  die
+        mehrere  Sekunden  keine  Vera"nderungen am Bildschirm veran-
+        lassen,  mit,  dass  der  Rechner  arbeitet.  Die   Prozedur
+        beinhaltet lediglich eine Positionierung mit move(), nachdem
+        vorher mit getyx() die  aktuelle  Kursor-Position  gesichert
+        wurde  und  gibt die Zeichenkette IIIIcccchhhh aaaarrrrbbbbeeeeiiiitttteeee!!!!  mit addstr()
+        aus - die Prozeduren entstammen curses.
+
+
+        /* Ausschrift einer Meldung am Bildschirm */
+
+        # include   <curses.h>
+
+        melde()
+        {
+           int   zl, sp;
+
+           getyx(stdscr, zl, sp);
+           move(15, 1);
+           addstr("             Ich arbeite !             ");
+           refresh();
+           move(zl, sp);
+        }
+
+        Die Prozedur aaaabbbbaaaassss(((()))) bei ((((3333))))  fasst  einige  Positionierungen
+        und ZIP-Prozeduren zusammen.
+
+
+
+        /* Anzeige Basis-Massnahmen */
+
+        # include   <curses.h>
+
+        extern int   GRUP, VGRUP, FEIN, VPART, AGRUP, APART;
+        extern long   TERMIN;
+        extern char   DATUM[9];
+        extern char   SLE[15];
+        extern int   clr;
+        extern int   anzfest;
+        extern char   mess[25];
+
+        abas()
+        {
+           emnr(clr++, 0);
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 332 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+           tocdat(&TERMIN, DATUM);
+           dfest();
+           strcpy(SLE, "Basis-Massn.");
+           bas(clr, -1);
+           tobdat(DATUM, &TERMIN);
+           move(8, 0);
+           refresh();
+           strcpy(SLE, "Aufgst. durch");
+           GRUP  = VGRUP;
+           FEIN  = VPART;
+           ks_part();
+           kvekop(clr, 0);
+           strcpy(SLE, "Realis. durch");
+           GRUP  = AGRUP;
+           FEIN  = APART;
+           ks_part();
+           kvekop(clr, 0);
+           APART = FEIN;
+           refresh();
+        }
+
+        abas() soll die Basis-Massnahmen entsprechend  der,  in  der
+        Relation  mafenr vorgegebenen Reihenfolge anzeigen.  Um dies
+        etwas zu verdeutlichen, sehen wir uns den Aufbau der  oberen
+        Ha"lfte des Bildschirms an:
+
+
+
+        +-----------------------------------------------------------+
+        Massnahme-Nr.: 9999999999           >>>> TERMINKONTROLLE <<<<
+
+        Text Basis-Massn. :                    1 Festlegung(en) !
+        >aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..aa< +--------------------+
+        >aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..aa< |Weiter..............|
+        >aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..aa< |Realisiert..........|
+        >aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..aa< |Aendern.............|
+        Termin(tt.mm.jj)  : 28.02.89<          |Festl. zeigen/aend..|
+        .Aufgst. durch > Partner: Kombinatsd.. |Festlegungen zufueg.|
+        .Realis. durch > Partner: Direktor T.. |Abbruch.............|
+                                               +--------------------+
+        +-----------------------------------------------------------+
+
+
+        Die Abbildung wurde nicht vo"llig korrekt wiedergegeben, weil
+        eine  Breite  von  80 Zeichen den rechten Rand beim Druck zu
+        weit u"berschreitet. Das invers zu  zeigende  Menue  aus  der
+        Zeichenkettenvariablen  ****bbbbaaaassss  wurde  gerahmt dargestellt. In
+        der Regel wird der untere  Teil  des  Bildschirms  -  sofern
+        Festlegungen  vorhanden  sind  - beim Anklicken der 4. Zeile
+        des Menues  mit  der  analogen  Darstellung  zur  Festlegung
+        gefu"llt. Das Menue 'Weiter' zeigt die na"chste Massnahme. Das
+        Anklicken von 'Realisiert' ist  mit  einer  Ru"ckversicherung
+        verbunden  - die Frage OOOOkkkkaaaayyyy ((((jjjj////nnnn))))????  muss mit 'j' beantwortet
+        werden, bevor die Massnahme tatsa"chlich zum Lo"schen markiert
+        wird. Ein Piepton (ZZbeep()) besta"tigt die Lo"schvormerkung.
+
+        Zuru"ck zu abas(). ccccuuuurrrrsssseeeessss....hhhh wurde eingezogen, um  die  Makros
+        aus  curses  mmmmoooovvvveeee(((())))  und  rrrreeeeffffrrrreeeesssshhhh(((()))) verfu"gbar zu haben.  Die
+        Prozedur  eeeemmmmnnnnrrrr(((())))  ist  aus  ZIP  entstanden  und  zeigt  die
+        Massnahme-Nr. an.  Der Erarbeitungsweg wird gezeigt.
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 333 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+        Mit dem Editor ist folgendes File eeeemmmmnnnnrrrr____mmmm zu erstellen:
+
+
+
+        Massnahme-Nr.: #999999999         >>>> TERMINKONTROLLE <<<<
+
+
+        Die Erzeugung des Quell- und  Objektcodes  erfolgt  mit  dem
+        Aufruf:
+
+        zip -l ../LIBTERM emnr
+
+        Die Maskenidentifikation '_m' darf nicht im Aufruf angegeben
+        sein,  sonst  wird  der gesamte Name als Basisname interpre-
+        tiert. Im Dialog antworten sie in dieser Reihenfolge:
+        l
+        MNR
+        n
+
+        Zur Verdeutlichung wird das entstehende _i-File gezeigt, das
+        fu"r  eventuelle  Modifikationen genutzt werden kann und u"ber
+        den stattgefundenen Dialog informiert.
+
+
+        emnr -l ../LIBTERM
+        long   MNR   n      n
+
+
+        ttttooooccccddddaaaatttt(((()))) wandelt die intern u"bliche long-Darstellung  (Zeit,
+        Datum)  in  die  normale  Darstellung des Datums (tt.mm.jj).
+        ddddffffeeeesssstttt(((()))) lo"scht auf  dem  Bildschirm  den  Bereich,  auf  dem
+        Festlegungen  dargestellt werden, um zu vermeiden, dass eine
+        mo"glicherweise von der vorausgegangenen  Massnahme  abgebil-
+        dete  Festlegung  stehen bleibt. Die ZIP-Prozedur bbbbaaaassss(((()))) rea-
+        lisiert die Anzeige der na"chsten  6  Zeilen,  wobei  das  2.
+        Argument  '-1' die Prozedur veranlasst, unabha"ngig von einer
+        gewu"nschten Korrekturart, die Variablen nur  auszuschreiben.
+        Die Maske bbbbaaaassss____mmmm sieht so aus:
+
+
+        Text #aaaaaaaaaaaa:
+        >#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+        >#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+        >#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+        >#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+        Termin(tt.mm.jj)  : #aaaaaaa<
+
+
+        Aus dem _i-File wird ersichtlich, welche Variablen verwendet
+        und wie sie behandelt werden sollen:
+
+
+        bas -a 2 -pl ../LIBTERM
+        char   SLE[15]   n      n
+        char   TX1[49]   j      n
+        char   TX2[49]   j      n
+        char   TX3[49]   j      n
+        char   TX4[49]   j      n
+        char   DATUM[9]   j   testdat()   w
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 334 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+        Die  Maske  wird  auf  dem  Bildschirm  nach  der  2.  Zeile
+        angeha"ngt (-a 2) und die Variable DATUM[9] einer Pru"fung mit
+        tttteeeessssttttddddaaaatttt(((()))) unterzogen (gu"ltiges Datum) - diese  Pru"fung  wird
+        nur  bei einer Korrektur des alten Wertes angestossen.  ttttoooobbbb----
+        ddddaaaatttt(((()))) ist die Umkehrung von tocdat().
+
+        Mit rrrreeeeffffrrrreeeesssshhhh(((()))) werden die, auf der Speicherfla"che stdscr vor-
+        genommenen  A"nderungen sichtbar gemacht - dieser Algorithmus
+        hilft, insgesamt ein ruhiges  Abbilden  auf  dem  Schirm  zu
+        realisieren  und  die  Kursorbewegungen  zu  optimieren. Die
+        Prozedur kkkkssss____ppppaaaarrrrtttt(((()))) - es geht noch um  abas()  -  stammt  aus
+        teko.x  (4).   AMX-Statements  ko"nnen  nicht  in  separat zu
+        u"bersetzenden Prozeduren verwendet werden, der  AMX-Compiler
+        generiert  ein  main(). Das gezeigte Beispiel weist auf eine
+        sehr effiziente Anwendung von AMX  hin,  mit  der  differen-
+        zierte  und  relativ  komplizierte Einsatzfa"lle lo"sbar sind.
+        ks_part() sucht zum angegebenen Schlu"ssel fu"r GRUP und  FEIN
+        die  Bezeichnung  aus  der  Relation  partn. Die Ausgabe der
+        Bezeichnung erfolgt mit kkkkvvvveeeekkkkoooopppp(((())))....   Im  Gegensatz  zu  bas()
+        kann  kvekop() nicht durch eine fest eingestellte Zeilennum-
+        mer zur Positionierung u"bersetzt werden, da es  zweimal  bei
+        Basis-Massnahmen  und zweimal bei Festlegungen benutzt wird.
+        Fu"r  solche  Anwendungsfa"lle  ist  die  Option  -z  von  ZIP
+        gedacht, wie am Beispiel nocheinmal gezeigt werden soll:
+
+
+        .#aaaaaaaaaaaaa >Partner: #aaaaaaaaaaaaaaaaaaaaaaa
+
+
+        Aus kvekop_i wird der Aufruf deutlich:
+
+
+        kvekop -zl ../LIBTERM
+        char   SLE[15]   n      n
+        char   BEZ[24]   n      n
+
+
+
+        Nachdem abas() abgearbeitet ist, wird u"ber  die  Anzahl  der
+        Festlegungen informiert. Die Verwendung von curses schliesst
+        direkte Ausgaben auf  den  Schirm  (printf())  aus,  deshalb
+        erfolgt  erst  der Aufbau der Zeichenkette mit sprintf() und
+        anschliessend die Ausgabe mittels addstr().
+
+        mmmmeeeennnnzzzziiiipppp(((()))) ist in das Paket ZIP  eingegliedert  und  gestattet
+        eine  freie  Postionierung eines Menues - das seitliche Aus-
+        rutschen der Zeichenketten bei U"berschreitung der Spalte  80
+        wird  nicht kontrolliert, ebenso sollte die Spalte 80 selbst
+        nicht  benutzt  werden,  weil  einige  Terminaldriver   dort
+        eigenwillig  reagieren.   Die  Argumente  fu"r menzip() haben
+        folgende Bedeutung:
+
+        1.Argument:Variable, in der  die  auszugebende  Zeichenkette
+             definiert ist.
+
+        2.Argument:Zeilenzahl des Menues;
+
+        3.Argument:Zeilennummer des Bildschirms, ab  der  das  Menue
+             geschrieben werden soll, zusammen mit der Spaltennummer
+             ergibt das die linke obere Ecke des Menues.
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 335 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+        4.Argument:Spaltennummer des Bildschirms, mit 1 beginnend.
+
+        Sofern das benutzte Terminal invers schreiben kann, wird das
+        Menue  so  ausgegeben  und  die angeklickte Zeile auf normal
+        gewandelt.
+
+        Mit der Prozedur eeeebbbbaaaassss(((()))) (5)  ko"nnen  Basismassnahmen  korri-
+        giert  werden,  insoweit  unterscheidet sie sich von abas().
+        Durch die Korrektur  ist  ausserdem  denkbar,  dass  wa"hrend
+        einer  Eingabe mit zweimal Interrupt (bspw. DEL) abgebrochen
+        wird und der Ru"ckkehrcode der ZIP-Prozedur im  Hauptprogramm
+        behandelt werden muss.  Nachfolgend die Prozedur:
+
+        /* Erfassung oder Korrektur von Basis-Massnahmen */
+
+        # include   <curses.h>
+
+        extern int    GRUP, VGRUP, FEIN, VPART, APART, VON, AGRUP;
+        extern long   TERMIN;
+        extern char   DATUM[9];
+        extern char   SLE[15];
+        extern char   ANTW[2];
+        extern int    clr, anzfest;
+        extern char   mess[25];
+
+        ebas()
+        {
+           tocdat(&TERMIN, DATUM);
+           move(1, 0);
+           emnr(clr, 0);
+        wdh:
+           strcpy(SLE, "Basis-Massn.");
+           if (!bas(clr, 1)) return(0);
+           tobdat(DATUM, &TERMIN);
+           move(2, 52);
+           sprintf(mess, "%2d Festlegung(en)!", anzfest);
+           addstr(mess);
+           move(8, 0);
+           refresh();
+           strcpy(SLE, "Aufgst. durch");
+           GRUP  = VGRUP;
+           VON = 0;
+           if (!verkog(clr, 0)) return(0);
+           VGRUP = GRUP;
+           VON = 1;
+           FEIN  = VPART;
+           if (!verkop(clr, 0)) return(0);
+           VPART = FEIN;
+           strcpy(SLE, "Realis. durch");
+           GRUP  = AGRUP;
+           VON = 0;
+           move(10, 0);
+           refresh();
+           if (!verkog(clr, 0)) return(0);
+           AGRUP = GRUP;
+           FEIN  = APART;
+           VON = 1;
+           if (!verkop(clr, 0)) return(0);
+           APART = FEIN;
+           okay(1, 0);
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 336 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+           if (ANTW[0] == 'n' || ANTW[0] == 'N') goto wdh;
+           else ZZbeep();
+           return(1);
+        }
+
+        Innerhalb von ebas() sind die  ZIP-Prozeduren  vvvveeeerrrrkkkkoooogggg(((())))  fu"r
+        die  Eingabe  des  Gruppenschlu"ssels  und  vvvveeeerrrrkkkkoooopppp(((())))  fu"r die
+        Eingabe des Partnerschlu"ssels interessant,  weil  hier  u"ber
+        eine  Hilfe  (Eingabe  von  ?)  aus  der  Relation partn die
+        Schlu"sseltabelle fu"r  Gruppen  bzw.  Partner  innerhalb  der
+        gewa"hlten Gruppe angezeigt werden ko"nnen.  Als Beispiel wird
+        verkog() vorgestellt:
+
+        Maske:
+
+        #aaaaaaaaaaaaaa > Gruppe: #9
+
+        verkog_i:
+
+        -zhl ../LIBTERM verkog
+        char   SLE[15]   n      n
+        int   GRUP   j      n   s_part()   p
+
+
+        Die Hilfe wird in diesem Fall u"ber ssss____ppppaaaarrrrtttt(((()))) realisiert.
+
+        /* Nutzt das File 'partner' aus 'part.x', zeigt fuer Hilfe
+        ** die Gruppenuebersicht bzw. die Partner zur Gruppe an !
+        */
+
+        # include   <curses.h>
+
+        extern int   GRUP;
+        extern int   VON;
+
+        s_part()
+        {
+           FILE *fp, *fopen();
+           int zl = 8;
+           int count = 14;
+           int fein, grup;
+           char bez[24];
+           char buf[29];
+
+        if ((fp = fopen("/z/ing_db/work/termin/partner", "r")) == NULL)
+        {
+           echo(); nocrmode();
+           perror("partner not found");
+           exit(0);
+        }
+        while (fscanf(fp, "%d %d ", &grup, &fein) != EOF)
+        {
+           if (fgets(bez, 24, fp) == NULL) break;
+           if (!VON)
+           {
+              if (!fein)
+              {
+                 move(zl, 50); addstr("                             ");
+                 sprintf(buf,"%2d %s", grup, bez);
+                 move(zl, 51); addstr(buf);
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 337 -                    AAAAMMMMXXXX////ZZZZIIIIPPPP
+
+
+              }
+              else continue;
+           }
+           else
+           {
+              if (GRUP == grup)
+              {
+                 move(zl, 50); addstr("                             ");
+                 sprintf(buf, "%2d %s", fein, bez);
+                 move(zl, 51); addstr(buf);
+              }
+              else continue;
+           }
+           ++zl;
+           if (!(--count))
+           {
+              refresh();
+              getchar(zl);
+              zl = 8;
+              count = 14;
+           }
+        }
+        refresh();
+        fclose(fp);
+        }
+
+        Der  scan()  aus  ks_part()  ko"nnte  auf  den  ersten  Blick
+        eigentlich  auch hier genutzt werden, analog mu"sste anstelle
+        des fscanf() die Prozedur ks_part() stehen und  die  in  der
+        Qualifikation  geforderten  Werte in einer Schleife aktuali-
+        siert werden.  Allerdings wa"re die Formulierung der Qualifi-
+        kation  '$grup=GRUP, $fein=FEIN' zu differenzieren und damit
+        drei scan() erforderlich.  Die Kopie der Relation  partn  in
+        ein  UNIX   -File  ist  in  diesem  Fall  doch der geringere
+        Aufwand.  Da maximal 14 Zeilen, beginnend ab 6,  geschrieben
+        werden ko"nnen, wird mit getchar(zl) die Ausgabe gestoppt und
+        nach Eingabe eines beliebigen Zeichens fortgesetzt.
+
+        Einige wesentliche Dinge sind damit erkla"rt.  Da der  Rahmen
+        des  Anwenderhandbuches  durch  weitergehende Beschreibungen
+        gesprengt wu"rde, muss hier das Kapitel abgebrochen werden.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 338 -                     RRRREEEEPPPPOOOORRRRTTTT
+
+
+        _3._2.  RRRReeeeppppoooorrrrtttt----GGGGeeeennnneeeerrrraaaattttoooorrrr ****
+
+
+
+
+
+
+
+
+
+
+
+
+        _3._2._1.  AAAArrrrbbbbeeeeiiiittttsssslllliiiisssstttteeeennnn
+
+        Unter dem Begriff Arbeitslisten sollen Druckbilder  verstan-
+        den  werden,  die  ein bescheidenes Mass an Daten beno"tigen,
+        die aber fu"r die manuelle Erstellung  von  U"bersichten  eine
+        grosse  Hilfe  sind,  wenn sie sich relativ schnell erzeugen
+        lassen.  Ha"ufig trifft man diese  Situation  auch  dann  an,
+        wenn  bestimmte Unterlagen zur U"bernahme von Daten auf einen
+        Rechner notwendig sind  und  die  Erstellung  entsprechender
+        Prima"rbelege nicht lohnt bzw. zu aufwendig ist.
+
+        Folgende Relationen sollen verwendet werden:
+
+
+
+        Relation:                fbbz
+        ---------                K 1630 / EVK Olbernhau
+        Besitzer:                ing_db
+        Tupellaenge:             43
+        Verfallsdatum:           Mon Jan  1 00:00:00 1990
+        Tupelanzahl:             23
+        Speicherstruktur:        HEAP
+        Pages:                   1 + 2
+        Relationentyp:           Nutzerrelation
+
+         Domaenname        Typ   Laenge  Schluessel
+        --------------------------------------------
+         bn                 i       2
+         stbn               i       4
+         knr                i       2
+         bez                c      35
+        --------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 339 -                     RRRREEEEPPPPOOOORRRRTTTT
+
+
+
+
+
+        Relation:                kbz
+        ---------                K 1630 / EVK Olbernhau
+        Besitzer:                ing_db
+        Tupellaenge:             54
+        Verfallsdatum:           Mon Jan  1 00:00:00 1990
+        Tupelanzahl:             23
+        Speicherstruktur:        HEAP
+        Pages:                   1 + 16
+        Relationentyp:           Nutzerrelation
+
+         Domaenname        Typ   Laenge  Schluessel
+        --------------------------------------------
+         knr                i       2
+         kbez               c      15
+         bn                 i       2
+         bez                c      35
+        --------------------------------------------
+
+
+        Aus beiden Relationen kann mit retrieve eine  neue  Relation
+        lllliiiissssttttkkkk  erzeugt und mittels replace und modify so umgestaltet
+        werden , dass sie als Ausgangsrelation fu"r nachfolgende Auf-
+        gaben dient.  Die Arbeitsliste, die mit dem Programm erzeugt
+        wird, ist nach Betrieben und Kreisen geordnet.  Die  Kopfin-
+        formationen  ko"nnen  bei  Bedarf gegebenenfalls auch mit dem
+        Editor in die vorbereiteten Felder von  listk_o  eingetragen
+        werden,  sofern sich hierbei eine ha"ufige A"nderung notwendig
+        macht.
+
+        ------------------------------------------------------------
+        define report krbbz
+               with columns 122
+                      all lines 66
+                      lines 58
+                      big
+               define hn        = 1
+               define bn        = 2
+               define bez       = 3
+
+               define #hn       = integer 2
+               define #bn       = integer 2
+               define #bez      = char 35
+
+        as
+        proc 1
+               set var 0 = 37
+               repeat 8
+               col var 0       ':'
+               set var 0 = var 0 + 12
+               endr
+               new line
+        return
+
+        on pagebegin do
+               'ARBEITSLISTEN NACH KREISEN GEORDNET'
+               col 45
+               date
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 340 -                     RRRREEEEPPPPOOOORRRRTTTT
+
+
+               col 80
+               '* NUR FUER DEN DIENSTGEBRAUCH *'
+               new line 2
+               col 3
+               'BETRIEBSBEZEICHNUNG'
+               col 37
+               ':   PLAN    :ARB.-AUFTR.:    IST    '
+               ':    PLAN   :   V. IST  :'
+               col 109
+               ':'
+               col 121
+               ':'
+               new line
+               col 10
+               '** KREISBEZEICHNUNG'
+               col 37
+               ':    BM     :    BM     : MON       '
+               ':  KUM. BM  :  KUM. BM  :'
+               col 109
+               ':'
+               col 121
+               ':'
+               new line
+               '-' 121
+        endo
+
+        for all do
+               for one do
+                      if value 2 <> 99 then
+                             integer length 2 value 2
+                             col 3
+                      else
+                             col 10
+                      endi
+                      char value 3
+                      call 1
+                      '-' 121
+                      new line
+                      if groupend 1 then
+                             call 1
+                             col 37
+                             '-' 85
+                             new line
+                      endi
+               endo
+        enda
+
+        call 1
+        new line
+        col 37
+        ;
+        ------------------------------------------------------------
+
+        Die entstehende Liste ist ein Ausschnitt und  soll  nur  den
+        prinzipiellen Aufbau darstellen.
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 341 -                     RRRREEEEPPPPOOOORRRRTTTT
+
+
+
+
+        ARBEITSLISTEN NACH KREISEN GEORDNET         DATUM:       ===>
+
+          BETRIEBSBEZEICHNUNG               :   PLAN    :ARB.-AUFTR.:
+                 ** KREISBEZEICHNUNG        :    BM     :    BM     :
+        -------------------------------------------------------------
+        7 HOLZWAREN GROSSHARTMANSDORF       :           :           :
+        -------------------------------------------------------------
+                 ** BRAND-ERBISDORF         :           :           :
+        -------------------------------------------------------------
+        17 RAUM- U. TAFELSCHMUCK GAHLENZ    :           :           :
+        -------------------------------------------------------------
+        21 WERK-KUNST GRUENHAINICHEN        :           :           :
+        -------------------------------------------------------------
+                 ** FLOEHA                  :           :           :
+         .
+         .
+         .
+
+        -------------------------------------------------------------
+        25 KOMBINAT EVK OLBERNHAU           :           :           :
+
+                                            ==================== ===>
+
+
+
+        _3._2._2.  SSSSooooffffttttwwwwaaaarrrreeeekkkkaaaattttaaaalllloooogggg
+
+        In der Datenbank hhhhaaaarrrrddddssssoooofffftttt  gibt  es  die  beiden  Relationen
+        aaaannnnsssscccchhhhrrrriiiifffftttt und ssssoooofffftttt1111::::
+
+
+
+        Relation:                anschrift
+        ---------                K 1630 / EVK Olbernhau
+        Besitzer:                ing_db
+        Tupellaenge:             200
+        Verfallsdatum:           Mon Jan  1 00:00:00 1990
+        Tupelanzahl:             165
+        Speicherstruktur:        compressed HEAP
+        Pages:                   1 + 37
+        Relationentyp:           Nutzerrelation
+
+         Domaenname        Typ   Laenge  Schluessel
+        --------------------------------------------
+         bn                 i       4
+         ans1               c      40
+         ans2               c      40
+         ans3               c      30
+         ort                c      30
+         plz                c       5
+         kubez              c      48
+         beznr              c       3
+        --------------------------------------------
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 342 -                     RRRREEEEPPPPOOOORRRRTTTT
+
+
+
+
+
+        Relation:                soft1
+        ---------                K 1630 / EVK Olbernhau
+        Besitzer:                ing_db
+        Tupellaenge:             159
+        Verfallsdatum:           Mon Jan  1 00:00:00 1990
+        Tupelanzahl:             186
+        Speicherstruktur:        HEAP
+        Pages:                   1 + 61
+        Relationentyp:           Nutzerrelation
+
+         Domaenname        Typ   Laenge  Schluessel
+        --------------------------------------------
+         bnr                i       4
+         lnr                i       2
+         titel              c      10
+         aufg               i       2
+         deskr              c      65
+         rtyp               c       8
+         bsyst              c       8
+         prspr              c       8
+         dbspr              c       8
+         pfterm             i       2
+         nutzbg             i       2
+         ppznr              c      13
+         regnr              c      19
+         aufw               i       2
+         projzt             i       2
+         nnkost             i       2
+         nutz               i       2
+        --------------------------------------------
+
+
+        Aus einer u"bergeordneten Shell-Prozedur  wird  die  Prozedur
+        ccccaaaallll____ssssaaaacccchhhhgggg  gerufen.  Diese Prozedur verwendet zwei Files zur
+        direkten Steuerung von ING_DB .  Sofern  keine  C-Statements
+        fu"r eine Komandofolge gebraucht werden und das entsprechende
+        Menue  relativ  selten  benutzt  wird,  ist  das  ein   sehr
+        eleganter   Weg   zur  Ablaufsteuerung.   Die  beiden  Files
+        ssssaaaacccchhhhgggg____iiiinnnn1111  und  ssssaaaacccchhhhgggg____iiiinnnn2222  fungieren  als  Eingabefiles  fu"r
+        ING_DB .
+
+
+        -------------------------------------------------------------
+
+        quel hardsoft < sachg_in1
+        rd hardsoft sachg
+        mv desc sachg_d
+        quel hardsoft < sachg_in2
+        rg -dsachg_d -isachg_r -fsachg_f -osachg_o
+
+        -------------------------------------------------------------
+
+        Zuerst das File sachg_in1 - aus den Relationen aaaannnnsssscccchhhhrrrriiiifffftttt und
+        ssssoooofffftttt1111  sollen  einige  Spalten herausgezogen werden, in eine
+        tempora"re Relation ssssaaaacccchhhhgggg gespeichert und nach der  Betriebs-
+        nummer  und  Aufgabe  -  als Gruppierungsbegriffe - sortiert
+        werden. Mit ccccooooppppyyyy iiiinnnnttttoooo  wird  anschliessend  ein  UNIX  -File
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 343 -                     RRRREEEEPPPPOOOORRRRTTTT
+
+
+        erzeugt.  Da in der Shell-Prozedur noch ein Deskription File
+        zu erzeugen ist, muss das destroy-Kommando in einem  zweiten
+        Eingabefile stehen.
+
+        -------------------------------------------------------------
+
+        range of a is anschrift
+        range of s is soft1
+        retrieve into sachg (s.bnr, a.kubez, s.titel, s.aufg) \
+               where s.bnr=a.bn
+        \p\g
+        modify sachg() to heapsort on bnr, aufg
+        \p\g
+        copy sachg() into "/mnt/ing_db/work/kag/sachg_f"
+        \p\g
+        \q
+
+        ------------------------------------------------------------
+
+        Das Eingabefile ssssaaaacccchhhhgggg____iiiinnnn2222 hat  lediglich  die  Aufgabe,  die
+        Relation  ssssaaaacccchhhhgggg wieder zu loschen, da sie bei einem weiteren
+        Lauf zu diesem Menue sto"rt.
+
+        ------------------------------------------------------------
+
+        destroy sachg
+        \p\g
+        \q
+        ---------------------------------------------------------------
+
+        Das  Report  Programm  listet  betriebsweise   aus,   welche
+        Software  nach  Aufgaben  geordnet  verfu"gbar  ist. Der Pro-
+        grammtitel soll in  der  entsprechenden  Spalte  erscheinen,
+        wobei  nur  dann  eine  neue Zeile eingerichtet werden darf,
+        wenn mehrere Titel zu einem Sachgebiet (Aufgabe)  auftreten.
+        Die  Kurzbezeichnung zum Betrieb ist auf zwei Zeilen zu ver-
+        teilen.
+        --------------------------------------------------------------
+
+        report sachg_r
+        with
+               columns 130
+               lines 57
+               all lines 66
+               big
+
+               /* Prozeduren */
+               define position  = 1
+               define b_spalte  = 2
+
+               /* Variable */
+               define v_pos     = 1
+
+               /* Domaenen */
+               define s_bnr     = 1
+               define s_kubez   = 2
+               define s_titel   = 3
+               define s_aufg    = 4
+
+               define #s_bnr    = integer 4
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 344 -                     RRRREEEEPPPPOOOORRRRTTTT
+
+
+               define #s_kubez  = char 48
+               define #s_titel  = char 10
+               define #s_aufg   = integer 2
+
+        as
+
+        on pagebegin do
+               'ARBEITSKREIS >>>COMPUTEREINSATZ IN DER SBW<<<'
+               'BEZIRKSGELEITETE INDUSTRIE'
+               \115 date   0
+               '*' 7
+               ' SOFTWARE NACH SACHGEBIETEN '
+               '*' 7
+               \114 'Seite: ' integer @3 page
+               \n
+               'BETRIEB' \n
+               \10
+               'GRUMI     '
+               'INVEST    '
+               'MATERIAL  '
+               'AKR       '
+               'LEISTUNG  '
+               'WAREN     '
+               'KOSTEN    '
+               'FINANZEN  '
+               'NUTZEN    '
+               'BES./ANAL '
+               'BERICHTSW.'
+               'SONSTIGES ' \n
+               \10
+               ':=========' 12 \n2
+        end
+
+        proc position
+               if #s_aufg > 0 then
+                      set $v_pos = #s_aufg
+               else
+                      set $v_pos = 12
+               end if
+               set $v_pos *= 10
+               col $v_pos
+               char @10 #s_titel
+        return
+
+        proc b_spalte
+               \10 ':'
+               \20 ':'
+               \30 ':'
+               \40 ':'
+               \50 ':'
+               \60 ':'
+               \70 ':'
+               \80 ':'
+               \90 ':'
+               \100 ':'
+               \110 ':'
+               \120 ':'
+        return
+
+        on batchline do call b_spalte end
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 345 -                     RRRREEEEPPPPOOOORRRRTTTT
+
+
+        for all do
+               for one do
+                      if groupbegin s_bnr then
+                             \n
+                             char batch 24 @48 #s_kubez
+                             \n2
+                      end if
+                      if ! groupend s_aufg then
+                             \n
+                      end if
+                      call position
+                      if groupend s_aufg then
+                             \n
+                             \10
+                             ':..............' 12
+                             \n
+                             if line > 56 then \n4 end if
+                      end if
+               end one
+        end all
+        ;
+
+
+        ------------------------------------------------------------
+
+        Die Druckliste ist etwa 127 Zeichen breit, um einen Einblick
+        zur  Gestaltung  zu  geben, wurde bei Spalte 60 abgebrochen.
+        Es werden nur 40 Originaldruckzeilen gezeigt.  Da  das  File
+        ssssaaaacccchhhhgggg____oooo  im  ASCII-Format vorliegt, ist die Aufbereitung mit
+        dem Editor mu"helos mo"glich, ebenso wie das Einfu"gen  in  den
+        Quelltext dieses Kapitels.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Beispiele                 - 346 -                     RRRREEEEPPPPOOOORRRRTTTT
+
+
+        -------------------------------------------------------------
+
+        ARBEITSKREIS >>>COMPUTEREINSATZ IN DER SBW<<< BEZIRKSGELEITET
+
+        ****** SOFTWARE NACH SACHGEBIETEN ******
+        BETRIEB
+               GRUMI     INVEST    MATERIAL  AKR       LEISTUNG  WA
+               :=========:=========:=========:=========:=========:=
+
+        KOMBINAT ERZGEBIRGISCHE
+        VOLKSKUNST OLBERNHAU       :         :         :         :
+
+                                             AKR
+               :=========:=========:=========:=========:=========:=
+
+        KOMBINAT ELEKTROGERAETE
+        FUERSTENWALDE              :         :         :         :
+
+               GRUMI
+                                   BILANZ
+                                   DPA
+                                   HOLZERF
+                                   MFOKO
+                                   MP1801V
+                                   MWA146
+                                   MWKBIL    AKR       SORTPLA   RE
+               :.........:.........:.........:.........:.........:.
+
+        VEB ELSTERMODE
+        ELSTERWERDA                :         :         :         :
+
+                                             LISTEW1   LEIRE
+               :.........:.........:.........:.........:.........:.
+
+        INGENEURBUERO
+        U.RATIONALIS.COTTBUS       :         :         :         :
+
+                                   MARKE
+               :.........:.........:.........:.........:.........:.
+
+        ------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 19, 1989                    UUUUNNNNIIIIXXXX
+
+
