@@ -15,7 +15,7 @@ if (`whoami` !=	"wega")	then
 	exit
 endif
 
-echo 'Fuer die Installation werden im Directory /z xxx Bloecke benoetigt.'
+echo 'Fuer die Installation werden im Directory /z 830 Bloecke benoetigt.'
 echo 'Die Anzahl der freien Bloecke betraegt:'
 df -f /z
 echo
