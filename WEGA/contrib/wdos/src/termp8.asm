@@ -1,0 +1,864 @@
+;**************************************************************************
+;**************************************************************************
+;
+;	WDOS-BIOS - Quelle	(C) ZFT/KEAW    Abt. Basissoftware - 1988
+;
+;	Programm: termp8.asm
+;
+;	Bearbeiter	: P. Hoge
+;	Datum		: 24.1.89
+;	Version		: 1.1
+;
+;**************************************************************************
+;
+;	normales P8000-Terminal (ADM31) ohne Bildwiederholspeicher
+;
+;**************************************************************************
+;**************************************************************************
+
+
+.EXTERNAL DDS ;NEAR
+.EXTERNAL BYTE KB_FLAG
+.EXTERNAL WORD BUFFER_START
+.EXTERNAL WORD BUFFER_END
+.EXTERNAL WORD BUFFER_HEAD
+.EXTERNAL WORD BUFFER_TAIL
+.EXTERNAL WORD CURSOR_POSN
+.EXTERNAL WORD CURSOR_MODE
+.EXTERNAL BYTE CRT_MODE
+.EXTERNAL WORD CRT_COLS
+.EXTERNAL WORD CRT_LEN
+.external byte intin
+.external byte intout
+.external byte ttyin
+.external byte ttyout
+.external byte lpout
+.external byte ttybuf
+.external byte lpbuf
+
+.PUBLIC PUTA
+.PUBLIC	KBOARD
+.PUBLIC	KBINT
+.PUBLIC	VIDEO
+.PUBLIC	PRINTER
+.PUBLIC	RS232
+
+;---- INT 16 ------------------------------------------------------------------
+;KEYBOARD I/O
+;	THESE ROUTINES PROVIDE KEYBOARD SUPPORT
+;INPUT
+;	(AH)=0	READ THE NEXT ASCII CHARACTER STRUCK FROM THE KEYBOARD
+;		RETURN THE RESULT IN (AL), SCAN CODE IN (AH)
+;	(AH)=1	SET THE Z FLAG TO INDICATE IF AN ASCII CHARACTER IS AVAILABLE
+;		(ZF)=1 -- NO CODE AVAILABLE
+;		(ZF)=0 -- CODE IS AVAILABLE
+;		IF ZF = 0, THE NEXT CHARACTER IN THE BUFFER TO BE READ IS
+;		IN AX, AND THE ENTRY REMAINS IN THE BUFFER
+;	(AH)=2	RETURN THE CURRENT SHIFT STATUS IN AL REGISTER
+;		THE BIT SETTINGS FOR THIS CODE ARE INDICATED IN THE
+;		THE EQUATES FOR KB_FLAG
+;OUTPUT
+;	AS NOTED ABOVE, ONLY AX AND FLAGS CHANGED
+;	ALL REGISTERS RETAINED
+;------------------------------------------------------------------------------
+KBOARD ;PROC FAR	 	;>>> ENTRY POINT FOR ORG 0E82EH
+	STI		 	;INTERRUPTS BACK ON
+	PUSH	DS	 	;SAVE CURRENT DS
+	PUSH	BX	 	;SAVE BX TEMPORARILY
+	CALL	DDS	 	;ESTABLISH POINTER TO DATA REGION
+	call	CURSOR_OUT
+	OR	AH,AH	 	;AH=0
+	JZ	K0	 	;ASCII_READ
+	DEC	AH	 	;AH=1
+	JZ	K1	 	;ASCII_STATUS
+	DEC	AH	 	;AH=2
+	JZ	K2	 	;SHIFT_STATUS
+	POP	BX	 	;RECOVER REGISTER
+	POP	DS
+	IRET		 	;INVALID COMMAND
+
+;------ READ THE KEY TO FIGURE OUT WHAT TO DO
+
+K0:
+;	MOV	BX,BUFFER_HEAD	;GET POINTER TO HEAD OF BUFFER
+;	CMP	BX,BUFFER_TAIL	;TEST END OF BUFFER
+;	JNE	K0B		;IF ANYTHING IN BUFFER DONT DO INTERRUPT
+;	MOV	AX,09002H	;MOVE IN WAIT CODE & TYPE
+;	INT	15H		;PERFORM OTHER FUNCTION
+
+K0A:				;ASCII READ
+	STI			;INTERRUPTS BACK ON DURING LOOP
+	NOP			;ALLOW AN INTERRUPT TO OCCUR
+K0B:	CLI			;INTERRUPTS BACK OFF
+	MOV	BX,BUFFER_HEAD	;GET POINTER TO HEAD OF BUFFER
+	CMP	BX,BUFFER_TAIL	;TEST END OF BUFFER
+	JZ	K0A		;LOOP UNTIL SOMETHING IN BUFFER
+
+	MOV	AX,[BX] 	;GET SCAN CODE AND ASCII CODE
+	CALL	K3		;MOVE POINTER TO NEXT POSITION
+	MOV	BUFFER_HEAD,BX	;STORE VALUE IN VARIABLE
+	POP	BX		;RECOVER REGISTER
+	POP	DS		;RECOVER SEGMENT/
+	IRET			;RETURN TO CALLER
+
+;------ ASCII STATUS
+
+K1:	CLI			;INTERRUPTS OFF
+	MOV	BX,BUFFER_HEAD	;GET HEAD POINTER
+	CMP	BX,BUFFER_TAIL	;IF EQUAL (Z=1) THEN NOTHING THERE
+	MOV	AX,[BX]
+	POP	BX		;RECOVER REGISTER
+	POP	DS		;RECOVER SEGMENT
+	STI			;INTERRUPTS BACK ON
+	RET FAR	2		;THROW AWAY FLAGS
+
+;------ SHIFT STATUS
+
+K2:	MOV	AL,KB_FLAG	;GET THE SHIFT STATUS FLAGS
+	POP	BX		;RECOVER REGISTER
+	POP	DS		;RECOVER REGISTERS
+	IRET			;RETURN TO CALLER
+
+;------ INCREMENT A BUFFER POINTER
+
+K3 ;PROC NEAR
+	INC	BX		;MOVE TO NEXT WORD IN LIST
+	INC	BX
+	CMP	BX,BUFFER_END	;AT END OF BUFFER?
+	JNE	K3A		;NO, CONTINUE
+	MOV	BX,BUFFER_START ;YES, RESET TO BUFFER BEGINNING
+K3A:	RET
+
+;------ KEYBOARD INTERRUPT ROUTINE
+
+KBINT ;PROC FAR
+	STI
+	PUSH	AX
+	PUSH	BX
+	PUSH	SI
+	PUSH	DS
+	CALL	DDS			;SET UP ADDRESSING
+	mov	cs:intin,0		;naechsten Int freigeben
+	mov	al,cs:ttyin+2
+	and	al,7fh
+	xor	ah,ah
+
+;------ PUT CHARACTER INTO BUFFER
+
+	MOV	BX,BUFFER_TAIL	;GET THE END POINTER TO THE BUFFER
+	MOV	SI,BX		;SAVE THE VALUE
+	CALL	K3		;ADVANCE THE TAIL
+	CMP	BX,BUFFER_HEAD	;HAS THE BUFFER WRAPPED AROUND
+	JE	K4B		;BUFFER_FULL_BEEP
+	MOV	[SI],AX 	;STORE THE VALUE
+	MOV	BUFFER_TAIL,BX	;MOVE THE POINTER UP
+
+K4A:	POP	DS
+	POP	SI
+	POP	BX
+	POP	AX
+	mov	cs:ttyin+1,0
+	IRET			;RETURN, INTERRUPTS BACK ON WITH FLAG CHANGE
+
+K4B:	mov	al,07h		;BUFFER FULL BEEP
+	call	PUTA
+	JMP SHORT K4A
+
+
+;--- INT 10 --------------------------------------------------------------
+;VIDEO_IO
+;	THESE ROUTINES PROVIDE THE CRT INTERFACE
+;	THE FOLLOWING FUNCTIONS ARE PROVIDED:
+;	(AH)=0	SET MODE - nur Mode 7 moeglich
+;	(AH)=1	SET CURSOR TYPE - nicht moeglich
+;	(AH)=2	SET CURSOR POSITION
+;	(AH)=3	READ CURSOR POSITION
+;	(AH)=4	READ LIGHT PEN POSITION - nicht moeglich
+;	(AH)=5	SELECT ACTIVE DISPLAY PAGE - nur Page 0
+;	(AH)=6	SCROLL ACTIVE PAGE UP - nur Loeschen (al = 0)
+;	(AH)=7	SCROLL ACTIVE PAGE DOWN - nur Loeschen (al = 0)
+;CHARAKTER HANDLING ROUTINES
+;	(AH)=8	READ ATTRIBUTE/CHARAKTER AT CURRENT CURSOR POSITION
+;	(AH)=9	WRITE ATTRIBUTE/CHARAKTER AT CURRENT CURSOR POSITION
+;	(AH)=10 WRITE CHARACTER ONLY AT CURRENT CURSOR POSITION
+;GRAPHICS INTERFACE
+;	(AH)=11 SET COLOR PALETTE - nicht moeglich
+;	(AH)=12 WRITE DOT - nicht moeglich
+;	(AH)=13 READ DOT - nicht moeglich
+;ASCII TELETYPE ROUTINE FOR OUTPUT
+;	(AH)=14 WRITE TELETYPE TO ACTIVE PAGE
+;	(AH)=15 CURRENT VIDEO STATE
+;	(AH)=16 RESERVED
+;	(AH)=17 RESERVED
+;	(AH)=18 RESERVED
+;	(AH)=19 WRITE STRING
+;		(AL) = 0
+;			BL    - ATTRIBUTE
+;			STRING IS [CHAR,CHAR, ... ,CHAR]
+;			CURSOR NOT MOVED
+;		(AL) = 1
+;			BL    - ATTRIBUTE
+;			STRING IS [CHAR,CHAR, ... ,CHAR]
+;			CURSOR IS MOVED
+;		(AL) = 2
+;			STRING IS [CHAR,ATTR,CHAR,ATTR, ... ,CHAR,ATTR]
+;			CURSOR IS NOT MOVED
+;		(AL) = 3
+;			STRING IS [CHAR,ATTR,CHAR,ATTR, ... ,CHAR,ATTR]
+;			CURSOR IS MOVED
+;		NOTE:  CARRIAGE RETURN, LINE FEED, BACKSPACE, AND BELL ARE
+;		       TREATED AS COMMANDS RATHER THEN PRINTABLE CHARACTERS.
+;
+;	SS,SP,ES,DS,DX,CX,BX,SI,DI,BP PRESERVED DURING CALL
+;	ALL OTHERS DESTROYED.
+;-------------------------------------------------------------------------
+
+.PUBLIC	SET_MODE
+.PUBLIC	SET_CTYPE
+.PUBLIC	SET_CPOS
+.PUBLIC	READ_CURSOR
+.PUBLIC	READ_LPEN
+.PUBLIC	ACT_DISP_PAGE
+.PUBLIC	SCROLL_UP
+.PUBLIC	SCROLL_DOWN
+.PUBLIC	READ_AC_CURRENT
+.PUBLIC	WRITE_AC_CURRENT
+.PUBLIC	WRITE_C_CURRENT
+.PUBLIC SET_COLOR
+.PUBLIC	WRITE_DOT
+.PUBLIC	READ_DOT
+.PUBLIC	WRITE_TTY
+.PUBLIC	VIDEO_STATE
+
+V1	DW	SET_MODE
+	DW	SET_CTYPE
+	DW	SET_CPOS
+	DW	READ_CURSOR
+	DW	READ_LPEN
+	DW	ACT_DISP_PAGE
+	DW	SCROLL_UP
+	DW	SCROLL_DOWN
+	DW	READ_AC_CURRENT
+	DW	WRITE_AC_CURRENT
+	DW	WRITE_C_CURRENT
+	DW	SET_COLOR
+	DW	WRITE_DOT
+	DW	READ_DOT
+	DW	WRITE_TTY
+	DW	VIDEO_STATE
+	DW	VIDEO_RETURN	;Reserved
+	DW	VIDEO_RETURN	;Reserved
+	DW	VIDEO_RETURN	;Reserved
+	DW	WRITE_STRING	;CASE 19h, Write string
+V1L	EQU	$-V1
+
+VIDEO ;PROC NEAR		;ENTRY POINT FOR ORG 0F065H
+	STI			;INTERRUPTS BACK ON
+	CLD			;SET DIRECTION FORWARD
+	PUSH	ES
+	PUSH	DS		;SAVE SEGMENT REGISTERS
+	PUSH	DX
+	PUSH	CX
+	PUSH	BX
+	PUSH	SI
+	PUSH	DI
+	PUSH	BP
+	PUSH	AX		;SAVE AX VALUE
+	MOV	AL,AH		;GET INTO LOW BYTE
+	XOR	AH,AH		;ZERO TO HIGH BYTE
+	SAL	AX,1		;*2 FOR TABLE LOOKUP
+	MOV	SI,AX		;PUT INTO SI FOR BRANCH
+	CMP	AX,V1L		;TEST FOR WITHIN RANGE
+	JB	V2		;BRANCH AROUND BRANCH
+	POP	AX		;THROW AWAY THE PARAMETER
+	JMP	short VIDEO_RETURN
+
+V2:	CALL	DDS
+	POP	AX		;RECOVER VALUE
+	CMP	AH,13H		;TEST FOR WRITE STRING OP
+	JNE	V3
+	PUSH	BP		;IF IT'S WRITE STRING THEN GET THE
+	MOV	BP,SP		;STRINGS SEGMENT,SINCE IT GET CLOBBERED
+	MOV	ES,[BP]+10H	;MOV ES,[BP].ES_POS ????
+	POP	BP
+
+V3:	JMP	CS:[SI]+V1
+
+;---------------------------------------------------------------
+;LIGHT PEN		Implementation nicht moeglich
+;ACT_DISP_PAGE
+;SET_COLOR
+;READ DOT -- WRITE DOT
+;---------------------------------------------------------------
+READ_LPEN:			;AH = 0 = nicht verfuegbar
+	mov	ah,0		;nicht verfuegbar
+	jmp	short VIDEO_RETURN
+READ_DOT:			;AL = DOT VALUE
+	sub	al,al
+ACT_DISP_PAGE:
+SET_COLOR:
+WRITE_DOT:
+
+;------ NORMAL RETURN FROM ALL VIDEO RETURNS
+VIDEO_RETURN:
+	POP	BP
+	POP	DI
+	POP	SI
+	POP	BX
+	POP	CX
+	POP	DX
+	POP	DS
+	POP	ES
+	IRET
+
+;-----------------------------------------------------
+;SET_MODE
+;Mode setzen und Bildschirm loeschen
+;-----------------------------------------------------
+CURSOR_TTY:
+	defw	-1
+
+SET_MODE ;PROC NEAR
+	mov	CRT_MODE,7
+	mov	CRT_COLS,80
+	mov	CRT_LEN,2*25*80
+	call	CLR_TTY			;Bildschirm loeschen
+	mov	CURSOR_POSN,0		;Cursor Home setzen
+	jmp	short VIDEO_RETURN
+
+CLR_TTY:
+;------ ADM 31 Escape-Folge Bildschirm loeschen
+	push	ax
+	mov	al,1bh
+	call	PUTA
+	mov	al,'*'
+	call	PUTA
+
+	mov	ax,-1
+	mov	cs:CURSOR_TTY,ax	;Cursor synchronisieren
+	call	CURSOR_OUT
+	pop	ax
+	ret
+
+;---------------------------------------------------------
+;SET_CTYPE
+;---------------------------------------------------------
+SET_CTYPE ;PROC	NEAR	;**** nicht moeglich
+	mov	CURSOR_MODE,cx
+	jmp	short VIDEO_RETURN
+
+;---------------------------------------------------------------
+;SET_CPOS
+;	THIS ROUTINE SETS THE CURRENT CURSOR POSITION TO THE
+;	NEW X-Y VALUES PASSED
+;INPUT
+;	DX - ROW, COLUMN OF NEW CURSOR
+;OUTPUT
+;	CURSOR IS SET
+;---------------------------------------------------------------
+SET_CPOS ;PROC	NEAR		;nur 1 Page moeglich
+	mov	CURSOR_POSN,dx
+	jmp	short VIDEO_RETURN
+
+;---------------------------------------------------------------
+;READ_CURSOR
+;	THIS ROUTINE READS THE CURRENT CURSOR VALUE
+;OUTPUT
+;	DX - ROW, COLUMN OF THE CURRENT CURSOR POSITION
+;	CX - CURRENT CURSOR MODE
+;---------------------------------------------------------------
+READ_CURSOR ;PROC NEAR		;nur 1 Page
+	mov	dx,CURSOR_POSN
+	mov	cx,CURSOR_MODE
+	POP	BP
+	POP	DI
+	POP	SI
+	POP	BX
+	POP	AX		;DISCARD SAVED CX AND DX
+	POP	AX
+	POP	DS
+	POP	ES
+	IRET
+
+;---------------------------------------------------------------
+;VIDEO_STATE
+;	RETURNS THE CURRENT VIDEO STATE IN AX
+;	AH = NUMBER OF COLUMNS ON THE SCREEN
+;	AL = CURRENT VIDEO MODE
+;	BH = CURRENT ACTIVE PAGE
+;---------------------------------------------------------------
+VIDEO_STATE ;PROC NEAR
+	mov	ah,80		;GET NUMBER OF COLUMNS
+	mov	al,7		;CURRENT MODE
+	mov	bh,0		;GET CURRENT ACTIVE PAGE
+	POP	BP
+	POP	DI
+	POP	SI
+	POP	CX		;DISCARD SAVED BX
+	POP	CX
+	POP	DX
+	POP	DS
+	POP	ES
+	IRET
+
+;---------------------------------------------------------------
+;SCROLL_UP / SCROLL_DOWN
+;	realisiert nur Bildschirmloeschen
+;INPUT
+;	(AL) = 0 = Loeschen Bildschirm
+;---------------------------------------------------------------
+SCROLL_UP ;PROC NEAR
+SCROLL_DOWN ;PROC NEAR
+	or	al,al			;Loeschen
+	jnz	SUP0
+	call	CLR_TTY
+	jmp	VIDEO_RETURN
+
+SUP0:	push	ax			;Rollen durch LF realisieren
+	mov	ax,0e0ah		;Write TTY: LF ausgeben
+	int	10h
+	pop	ax
+	dec	al
+	jnz	SUP0
+	jmp	VIDEO_RETURN
+
+;---------------------------------------------------------------
+;READ_AC_CURRENT
+;	nicht moeglich, Return mit 0720h
+;OUTPUT
+;	(AL) = 20h (Space)
+;	(AH) = 07h (Attribut)
+;----------------------------------------------------------------
+READ_AC_CURRENT ;PROC NEAR
+	mov	ax,0720h
+	JMP	VIDEO_RETURN
+
+;---------------------------------------------------------------
+;WRITE_AC_CURRENT
+;	nicht moeglich, Funktion wie WRITE_C_CURRENT
+;---------------------------------------------------------------
+WRITE_AC_CURRENT ;PROC NEAR
+
+;---------------------------------------------------------------
+;WRITE_C_CURRENT
+;	THIS ROUTINE WRITES THE CHARACTER AT
+;	THE CURRENT CURSOR POSITION, ATTRIBUTE UNCHANGED
+;INPUT
+;	(CX) = COUNT OF CHARACTERS TO WRITE
+;	(AL) = CHAR TO WRITE
+;	(DS) = DATA SEGMENT
+;OUTPUT
+;	NONE
+;---------------------------------------------------------------
+WRITE_C_CURRENT ;PROC NEAR
+	call	CURSOR_OUT
+WCC0:					;WRITE_LOOP
+	inc	word ptr cs:CURSOR_TTY
+	cmp	al,07h			;Diese Zeichen haben hier
+	jz	WCC1			;keine Sonderbedeutung
+	cmp	al,08h
+	jz	WCC1
+	cmp	al,0ah
+	jz	WCC1
+	cmp	al,0dh
+	jnz	WCC2
+WCC1:	mov	al,20h
+WCC2:	call	PUTA
+	LOOP	WCC0			;AS MANY TIMES AS REQUESTED
+	JMP	VIDEO_RETURN
+;WRITE_AC_CURRENT
+
+;---------------------------------------------------------------
+;WRITE_TTY
+;	THIS INTERFACE PROVIDES A TELETYPE LIKE INTERFACE.
+;ENTRY --
+;	(AL) = CHARACTER TO BE WRITTEN
+;	       NOTE THAT BACK SPACE, CR, BELL AND LINE FEED ARE HANDLED
+;	       AS COMMANDS RATHER THAN AS DISPLAYABLE GRAPHICS
+;EXIT --
+;	ALL REGISTERS SAVED
+;---------------------------------------------------------------
+WRITE_TTY ;PROC NEAR
+	call	CURSOR_OUT
+	call	PUTA
+	mov	dx,CURSOR_POSN		;READ CURSOR POSITION
+
+;------ DX NOW HAS THE CURRENT CURSOR POSITION
+
+	CMP	AL,8			;IS IT A BACKSPACE
+	JE	U5			;BACK_SPACE
+	CMP	AL,0DH			;IS IT CARRIAGE RETURN
+	JE	U6			;CAR_RET
+	CMP	AL,0AH			;IS IT A LINE FEED
+	JE	U7			;LINE_FEED
+	CMP	AL,07H			;IS IT A BELL
+	JE	U4			;Return
+
+;------ POSITION THE CURSOR FOR NEXT CHAR
+
+	INC	DL
+	CMP	DL,80			;TEST FOR COLUMN OVERFLOW
+	JNZ	U3			;SET_CURSOR
+	MOV	DL,0			;COLUMN FOR CURSOR
+	CMP	DH,24
+	JNZ	U2			;SET_CURSOR_INC
+
+;------ SCROLL REQUIRED
+
+U1:	jmp	short U3
+
+U2:	inc	dh			;SET-CURSOR-INC NEXT ROW
+U3:	mov	CURSOR_POSN,dx		;SET-CURSOR
+	mov	cs:CURSOR_TTY,dx
+
+U4:	JMP	VIDEO_RETURN
+
+;------ BACK SPACE FOUND
+U5:	CMP	DL,0			;ALREADY AT END OF LINE
+	JE	U3			;SET_CURSOR
+	DEC	DL			;NO -- JUST MOVE IT BACK
+	JMP	short U3		;SET_CURSOR
+
+;------ CARRIAGE RETURN FOUND
+U6:	MOV	DL,0			;MOVE TO FIRST COLUMN
+	JMP	short U3		;SET_CURSOR
+
+;------ LINE FEED FOUND
+U7:	CMP	DH,24			;BOTTOM OF SCREEN
+	JNE	U2			;YES, SCROLL THE SCREEN
+	JMP	short U1		;NO, JUST SET THE CURSOR
+
+;---------------------------------------------------------------
+;WRITE STRING
+;	This routine writes a string of characters to the crt.
+;INPUT
+;	(AL) = WRITE STRING COMMAND 0 - 3
+;	(CX) = COUNT OF CHARACTERS TO WRITE. IF CX == 0 THEN RETURN
+;	(DX) = CURSOR POSITION
+;	(BL) = ATTRIBUTE OF CHAR TO WRITE IF AL == 0 | AL == 1
+;	(ES) = STRING SEGMENT
+;	(BP) = STRING OFFSET
+;OUTPUT
+;	N/A
+;----------------------------------------------------------------
+WRITE_STRING ;PROC NEAR
+	CMP	AL,04			;TEST FOR INVALID WRITE STRING OPTION
+	JB	W0			;IF OPTION INVALID THEN RETURN
+	JMP	DONE
+W0:	OR	CX,CX			;TEST FOR ZERO LENGTH STRING
+	JNZ	W1
+	JMP	short DONE		;IF ZERO LENGTH STRING THEN RETURN
+W1:	MOV	SI,CURSOR_POSN
+	PUSH	SI			;SAVE CURRENT CURSOR POSITION
+	mov	CURSOR_POSN,dx		;SET NEW CURSOR POSITION
+
+WRITE_CHAR:
+	PUSH	CX
+	PUSH	BX
+	PUSH	AX
+	PUSH	ES
+	XCHG	AH,AL			;PUT THE WRITE STRING OPTION INTO AH
+	MOV	AL,ES:[BP]		;GET CHARACTER FROM INPUT STRING
+	INC	BP			;BUMP POINTER TO CHARACTER
+
+;------ TEST FOR SPECIAL CHARACTER'S
+
+	CMP	AL,8			;IS IT A BACKSPACE
+	JE	DO_TTY			;BACK_SPACE
+	CMP	AL,0DH			;IS IT CARRIAGE RETURN
+	JE	DO_TTY			;CAR_RET
+	CMP	AL,0AH			;IS IT A LINE FEED
+	JE	DO_TTY			;LINE_FEED
+	CMP	AL,07H			;IS IT A BELL
+	JNE	GET_ATTRIBUTE		;IF NOT THEN DO WRITE CHARACTER
+DO_TTY:
+	MOV	AH,14			;WRITE TTY CHARACTER TO THE CRT
+	INT	10H
+	MOV	DX,CURSOR_POSN		;GET CURRENT CURSOR POSITION
+	POP	ES
+	POP	AX			;RESTORE REGISTERS
+	POP	BX
+	POP	CX
+	JMP	short ROWS_SET
+
+GET_ATTRIBUTE:
+	MOV	CX,1			;SET CHARACTER WRITE AMOUNT TO ONE
+	CMP	AH,2			;IS THE ATTRIBUTE IN THE STRING
+	JB	GOT_IT			;IF NOT THEN JUMP
+	MOV	BL,ES:[BP]		;ELSE GET IT
+	INC	BP			;BUMP STRING POINTER
+
+GOT_IT:	MOV	AH,09			;WRITE CHARACTER TO THE CRT
+	INT	10H
+	POP	ES
+	POP	AX			;RESTORE REGISTERS
+	POP	BX
+	POP	CX
+	INC	DL			;INCREMENT COLUMN COUNTER
+	CMP	DL,80			;IF COLS ARE WITHIN RANGE FOR THIS MODE
+	JB	COLUMNS_SET		;THEN GOTO COLS SET
+	INC	DH			;BUMP ROW COUNTER BY ONE
+	SUB	DL,DL			;SET COLUMN COUNTER TO ZERO
+	CMP	DH,25			;IF ROWS ARE < 25 THEN
+	JB	ROWS_SET		;GOTO ROWS_SET
+					;SAVE WRITE STRING PARAMETER REGS
+	PUSH	ES			;SAVE REG'S THAT GET CLOBBERED
+	PUSH	AX
+	MOV	AX,0E0AH		;DO SCROLL ONE LINE
+	INT	10H			;RESET ROW COUNTER TO 24
+	DEC	DH
+	POP	AX			;RESTORE REG'S
+	POP	ES
+
+ROWS_SET:
+COLUMNS_SET:
+	mov	CURSOR_POSN,dx
+	LOOP	WRITE_CHAR		;DO IT ONCE MORE UNTIL CX = ZERO
+	POP	DX			;RESTORE OLD CURSOR COORDINATES
+	CMP	AL,1			;IF CURSOR WAS TO BE MOVED THEN
+	JE	DONE			;WE'RE DONE
+	CMP	AL,3
+	JE	DONE
+	mov	CURSOR_POSN,dx		;ELSE RESTORE OLD CURSOR POSITION
+DONE:
+	JMP	VIDEO_RETURN		;RETURN TO CALLER
+
+;---------------------------------------------------------------
+; Cursor-Stand vergleichen und Differenzen ausgeben
+;---------------------------------------------------------------
+CURSOR_OUT:			;CURSOR-Stand vergleichen und Cursor setzen
+	push	ax
+	push	dx
+	mov	dx,CURSOR_POSN
+	cmp	dx,cs:CURSOR_TTY
+	jz	COUT2		;Cursor steht auf Bildschirm richtig
+
+	mov	al,1bh		;ADM 31 ESC-Folge
+	call	PUTA
+	mov	cs:CURSOR_TTY,dx
+	mov	al,'='
+	call	PUTA
+	mov	al,dh
+	cmp	al,24		;Terminal hat nur 24 Zeilen
+	jnz	COUT1
+	dec	al		;25 = 24 Zeile, da 24 Zeilen-Terminal
+COUT1:	add	al,20h	
+	call	PUTA
+	mov	al,dl
+	add	al,20h
+	call	PUTA
+
+COUT2:	pop	dx
+	pop	ax
+	ret
+
+;---------------------------------------------------------------
+;PUTA
+;---------------------------------------------------------------
+PUTA:	push	ax
+	push	bx
+	push	di
+	mov	di,offset ttybuf
+PU1:	mov	bx, word ptr cs:ttyout+2
+	xchg	bh,bl
+	cmp	bx,800h
+	jnc	PU1			;warten, da Puffer voll
+	cmp	al,80h
+	jc	PU2
+	mov	al,20h
+PU2:	sti
+	nop
+	cli
+	mov	ah,cs:ttyout+0		;outstop
+	or	ah,ah
+	jnz	PU2
+	mov	bx, word ptr cs:ttyout+2
+	xchg	bh,bl
+	mov	cs:[bx+di],al
+	inc	bx
+	xchg	bh,bl
+	mov	word ptr cs:ttyout+2,bx	;noutb
+	cmp	bx,0100h
+	jnz	PU4
+PU3:	sti				;beim 1.Zeichen INT geben
+	nop
+	cli
+	mov	ah,cs:intout		;kann INT gegeben werden ?
+	or	ah,ah
+	jnz	PU3
+	mov	cs:intout,1		;tty
+	out	0,al			;INT geben
+PU4:	sti
+	pop	di
+	pop	bx
+	pop	ax
+	ret
+
+
+;--- INT 17 --------------------------------------------------------------
+;PRINTER_IO
+;	THIS ROUTINE PROVIDES COMMUNICATION WITH THE PRINTER
+;INPUT
+;	(AH)=0	PRINT THE CHARACTER IN (AL)
+;		ON RETURN, (AH) BITS SET AS ON NORMAL STATUS CALL
+;	(AH)=1	INITIALIZE THE PRINTER PORT
+;		RETURNS WITH (AH) SET WITH PRINTER STATUS
+;	(AH)=2	READ THE PRINTER STATUS INTO (AH)
+;
+;	(DX) = PRINTER TO BE USED (0,1,2) - nur ein Printer moeglich
+;
+;REGISTERS	AH IS MODIFIED
+;		ALL OTHERS UNCHANGED
+;-------------------------------------------------------------------------
+PRINTER ;PROC FAR		;ENTRY POINT FOR ORG 0EFD2H
+	STI			;INTERRUPTS BACK ON
+	OR	AH,AH		;TEST FOR (AH)=0
+	JZ	P0		;PRINT_AL
+	DEC	AH		;TEST FOR (AH)=1
+	JZ	P1		;INIT_PRT - nicht implementiert
+	DEC	AH		;TEST FOR (AH)=2
+	JZ	P1		;PRINTER STATUS
+	JMP SHORT P3
+
+;------ PRINT THE CHARACTER IN (AL)
+
+P0:	push	bx
+	push	di
+	mov	di,offset lpbuf
+P0A:	mov	bx, word ptr cs:lpout+2
+	xchg	bh,bl
+	cmp	bx,100h
+	jnc	P0A			;warten Uebergabepuffer voll
+P0B:	sti
+	nop
+	cli
+	mov	ah,cs:lpout+0		;outstop
+	or	ah,ah
+	jnz	P0A
+	mov	bx, word ptr cs:lpout+2
+	xchg	bh,bl
+	mov	cs:[bx+di],al
+	inc	bx
+	xchg	bh,bl
+	mov	word ptr cs:lpout+2,bx	;noutb
+	cmp	bx,0100h
+	jnz	P0D
+P0C:	sti				;beim 1.Zeichen INT geben
+	nop
+	cli
+	mov	ah,cs:intout		;kann INT gegeben werden ?
+	or	ah,ah
+	jnz	P0C
+	mov	cs:intout,2		;lp
+	out	0,al			;INT geben
+P0D:	sti
+	pop	di
+	pop	bx
+
+;------ PRINTER STATUS
+
+P1:	push	bx
+	mov	bx,word ptr cs:lpout+2
+	xchg	bh,bl
+	cmp	bx,100h			;Puffer voll ?
+	jnc	P2
+	mov	bh,cs:lpout+0		;outstop
+	or	bh,bh
+	jnz	P2
+	mov	ah,0d0h			;bereit fuer naechstes Zeichen
+	pop	bx
+	iret
+P2:	mov	ah,50h			;nicht bereit fuer naechstes Zeichen
+	pop	bx
+P3:	iret
+
+
+;------- INT_14 -----------------------------------------------------
+;RS232_IO
+;	THIS ROUTINE PROVIDES BYTE STREAM I/O TO THE COMMUNICATIONS
+;	PORT ACCORDING TO THE PARAMETERS:
+;	(AH)=0	INITIALIZE THE COMMUNICATIONS PORT
+;		(AL) HAS PARMS FOR INITIALIZATION
+;
+;		7	6	5	4	3	2	1	0
+;		----- BAUD RATE --	-PARITY--     STOPBIT	--WORD LENGTH--
+;
+;		000 - 110		XO - NONE	0 - 1	 10 - 7 BITS
+;		001 - 150		01 - ODD	1 - 2	 11 - 8 BITS
+;		010 - 300		11 - EVEN
+;		011 - 600
+;		100 - 1200
+;		101 - 2400
+;		110 - 4800
+;		111 - 9600
+;		ON RETURN, CONDITIONS SET AS IN CALL TO COMMO STATUS (AH=3)
+;	(AH)=1	SEND THE CHARACTER IN (AL) OVER THE COMMO LINE
+;		(AL) REGISTER IS PRESERVED.
+;		ON EXIT, BIT 7 OF AH IS SET IF THE ROUTINE HAS UNABLE TO
+;			TO TRNASMIT THE BYTE OF DATA OVER THE LINE.
+;			IF BIT 7 OF AH IS NOT SET, THE
+;			REMAINDER OF AH IS SET AS IN A STATUS REQUEST,
+;			REFLECTING THE CURRENT STATUS OF THE LINE.
+;	(AH)=2	RECEIVE A CHARACTER IN (AL) FROM COMMO LINE BEFORE
+;			RETURNIND TO CALLER
+;		ON EXIT, AH HAS THE CURRENT LINE STATUS, AS SET BY THE
+;			THE STATUS ROUTINE, EXCEPT THAT THE ONLY BITS
+;			LEFT ON ARE THE ERROR BITS (7,4,3,2,1)
+;			IF AH HAS BIT 7 ON (TIME OUT) THE REMAINING
+;			BITS ARE NOT PREDICTABLE.
+;			THUS, AH IS NON ZERO ONLY WHEN AH ERROR OCCURRED.
+;	(AH)=3	RETURN THE COMMO PORT STATUS IN (AX)
+;		AH CONTAINS THE LINE CONTROL STATUS
+;		BIT 7 = TIME OUT
+;		BIT 6 = TRANS HOLDING REGISTER EMPTY
+;		BIT 5 = TRAN HOLDING REGISTER EMPTY
+;		BIT 4 = BREAK DETECT
+;		BIT 3 = FRANING ERROR
+;		BIT 2 = PARITY ERROR
+;		BIT 1 = OVERRUN ERROR
+;		BIT 0 = DATA READY
+;		AL CONTAINS THE MODEM STATUS
+;		BIT 7 = RECEVED LINE SIGNAL DETECT
+;		BIT 6 = RING INDICATOR
+;		BIT 5 = DATA SET READY
+;		BIT 4 = CLEAR TO SEND
+;		BIT 3 = DELTA RECEIVE LINE SIGNAL DETECT
+;		BIT 2 = TRAILING EDCE RING DETECTOR
+;		BIT 1 = DELTA DATA SET READY
+;		BIT 0 = DELTA CLEAR TO SEND
+;
+;	(DX) = PARAMETER INDICATING WHICH RS232 CARD (0,1 ALLOWED)
+;
+;OUTPUT
+;		AX MODIFIED ACCORDING TO PARMS OF CALL
+;		ALL OTHERS UNCHANCED:
+;----------------------------------------------------------------------
+RS232 ;PROC FAR
+
+;------ VECTOR TO APPROPRIATE ROUTINE
+
+	STI			;INTERRUPTS BACK ON
+	OR	AH,AH		;TEST FOR (AH)=0
+	JZ	RS0		;COMMUN INIT
+	DEC	AH		;TEST FOR (AH)=1
+	JZ	RS1		;SEND AL
+	DEC	AH		;TEST FOR (AH)=2
+	JZ	RS2		;RECEIVE INTO AL
+	DEC	AH		;TEST FOR (AH)=3
+	JZ	RS3		;COMMUNICATION STATUS
+	JMP SHORT RS4
+
+;------ INITIALIZE THE COMMUNICATIONS PORT
+RS0:
+
+;------ RECEIVE CHARACTER FROM COMMO LINE
+RS2:
+
+;------ COMMO PORT STATUS ROUTINE
+RS3:	MOV	AL,0
+
+;------ SEND CHARACTER IN (AL) OVER COMMO LINE
+RS1:	MOV	AH,80H		;INDICATE TIME OUT
+RS4:	IRET
+
+	END
