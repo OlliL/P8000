@@ -1,0 +1,46 @@
+HINWEIS:	iql [flags] data_base_name [proc_tab] [trace_flags]
+
+IQL -- DBS Lader fuer den QL-Anfrageprozessor
+
+Argumente
+	data_base_name	-- Der Name der zu verwendenden Datenbank.
+	proc_tab	-- wahlweise Prozesstabelle
+	trace_flags	-- wahlweise Testinformationen
+			-D    decomp trace flag
+			-M    monitor trace flag
+			-O    ovqp trace flag
+			-P    parser trace flag
+			-Q    qrymod trace flag
+			-Z    dbu trace flag
+	flags:
+	-a		-- Abschalten der MONITOR-Pufferloeschfunktion.
+	-b		-- Abschalten des Aenderns im Hintergrund.
+	-cN		-- Setzen der minimalen Ausgabeweite fuer
+			   Zeichenkettendomaenen ouf N (sonst 6).
+	-d		-- Abschalten der Ausgabe der Systeminfromation.
+	-fnxN.M		-- Setzen der Ausgabeweite N und -genauigkeit x
+			   fuer Domaenen vom Typ fn. M gibt die Anzahl
+			   der Kommastellen fuer die Ausgabe an.
+	   x = f oder F	   Fliesskommadarstellung
+	   x = e oder E	   Exponentialdarstellung
+	   x = g oder G	   Fliesskommadarstellung bei ausreichender
+			   Ausgabeweite, sonst Exponentialdarstellung,
+			   wobei die Kommaposition nodermiert wird.
+	   x = n oder N	   Fliesskommadarstellung bei ausreichender
+			   Ausgabeweite, sonst Exponentialdarstellung.
+			   (sonst fn10.3)
+	-inN		-- Setzen der Ausgabeweite fuer Domaenen vom
+			   Typ cn auf N (sonst i16, i26 bzw. i413).
+	-lx		-- Setzen des Zeilenseperators auf x (sonst l-).
+	-nmode		-- INDEX Speicherstruktur (sonst nisam).
+	-rmode		-- RETRIEVE INTO Speicherstruktur (sonst rcheapsort).
+	-s		-- Abschalten der MONITOR-Prompts.
+	-uuser_name	-- Veraendern des aktuellen Nutzers, user_name
+			   ist der BS-login Name des neuen Nutzers.
+	-vx		-- Setzen des Spaltenseperators auf x (sonst v|).
+	+w		-- Warten auf das Freiwerden der Datenbank.
+	-I		-- Angabe eines Monitor \include-files
+	-L		-- Abschalten der Konvertierung von Klein- in
+			   Grossbuchstaben fuer Schluesselwoerter und Namen.
+	+U		-- Einschalten der direkten Aenderung von
+			   Informationen in den Systemkatalogen.
