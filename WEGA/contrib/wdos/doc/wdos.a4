@@ -1,0 +1,708 @@
+.nr PO 0i
+.nr FL 0i
+.nr LL 6.6i
+.nr LT 6.6i
+.nr HM 1i
+.nr FM 1.8i
+.ds LH "Anlage 4
+.ds CH "\- \\n(PN \-
+.ds RH "WDOS-Software
+.ds CF " 
+.LP
+.nh
+Anlage 4                        - 1 -                WDOS-Software
+
+
+
+
+
+
+.DS C
+.B
+WDOS-Erweiterungsmodul - A4-Ergebnisbericht
+
+I. Software
+
+WEGA-DOS (WDOS)
+.br
+Abarbeiten von DCP unter WEGA
+.R
+.DE
+.sp 10
+.DS L
+                              Bearbeiter: P. Hoge
+                                          M. Klatte (sa.diags)
+.DE
+
+.ds LH "WEGA-DOS
+.bp
+.DS L
+.B Inhaltsverzeichnis
+
+
+1.	Einleitung ..........................................  3
+
+2.	Komponenten von WDOS ................................  4
+2.1.	WDOS-Treiber cpu2 im WEGA-Kern ......................  4
+2.2.	WDOS-Koppelprogramm wdos ............................  5
+2.3.	WDOS-Menueprogramm wm ...............................  6
+2.4.	"ROM"-BIOS ..........................................  6
+
+3.	DOS-Programme .......................................  7
+
+4.	Ergebnisse der WDOS-Implementation ..................  8
+4.1.	Hardware-Voraussetzungen ............................  8
+4.2.	Lauffaehigkeit von Anwenderprogrammen ...............  8
+4.3.	Verfuegbarer RAM ....................................  8
+4.4.	Tastatureingaben ....................................  9
+4.5.	Bildschirmausgaben ..................................  9
+4.6.	Diskzugriffe ........................................  9
+4.7.	Systemuhr ........................................... 11
+4.8.	Systemdiskette ...................................... 11
+4.9	DCP-Kommandos ....................................... 12
+
+5.	WDOS-Test-Version ................................... 13
+
+6.	Hardware-Testprogramm sa.diags ...................... 13
+
+
+Anlagen zur Anlage 4
+
+1.	WDOS-Dokumentation
+2.	Quellprogramm cpu2.c
+3.	Quellprogramm wdos.c
+4.	Quellprogramm wm.c
+5.	Quellprogramme fuer das BIOS
+6.	Quellprogramme fuer die DOS-Programme
+
+
+.DE
+
+.bp
+.NH
+Einleitung
+.LP
+WDOS gestattet die Benutzung von PCDOS bzw. MSDOS und kompatiblen
+Betriebssystemen, wie DCP, unter WEGA. Fuer diese Betriebssysteme
+wird im folgenden die Bezeichnung DCP verwendet. Mit WDOS
+wird auf dem P8000 eine Teilkompatibititaet zu DCP realisiert.
+Fuer die Benutzung von WDOS sind im
+P8000 die U80601-Erweiterungskarten (CPU-Karte / 1 MByte RAM-Karte)
+erforderlich. Auf dem P8000 muss WEGA Version 3.1 oder hoeher
+laufen.
+.LP
+Fuer die Abarbeitung der meisten DCP-Anwenderprogramme ist nur
+das P8000/WDOS-Terminal mit DCP-kompatibler Betriebsart geeignet.
+.LP
+Das Betriebsystem DCP meldet sich auch mit dem alten P8000-Terminal
+in der ADM31-kompatiblen Betriebsart.
+Einige Anwenderprogramme sind ebenfalls lauffaehig.
+Da aber fuer diesen Terminaltyp z.B. keine
+Funktionstasten, kein erweiterter Zeichensatz und kein simulierter
+Bildwiederholspeicher zur Verfuegung stehen, ist nur eine stark
+eingeschraenkte Arbeit moeglich.
+.LP
+Die wesentlichen Bestandteile von WDOS sind das WDOS-Menueprogramm
+wm, das Koppelprogramm wdos, der WDOS-Treiber cpu2 im WEGA-Kern
+und das ROM-BIOS. Koppelprogramm, Treiber und ROM-BIOS bilden
+in Verbindung mit den Erweiterungskarten
+die WDOS-Umgebung, in der das Betriebssystem DCP sowie die
+Anwenderprogramme ablaufen koennen.
+.LP
+WDOS arbeitet mit Programmen und Dateien,
+die im DCP-Format abgespeichert sind. Es ermoeglicht dem Nutzer,
+Dateien zu lesen oder zu schreiben, die z.B. auf dem
+A7150 oder EC1834 unter DCP erstellt wurden und erlaubt, viele unter
+DCP ausfuehrbare Programme ohne Aenderung abzuarbeiten. Programme, die
+Grafikausgaben enthalten, und Programme, die direkt auf die Hardware
+zugreifen, sind jedoch nicht lauffaehig.
+.LP
+WDOS simuliert mit einfachen
+Hardware-Mitteln eine Personal-Computer-Umgebung.
+Eine vollstaendig kompatible Umgebung steht nicht zur Verfuegung.
+Somit kann auch keine Garantie fuer die Lauffaehigkeit von speziellen
+Programmen uebernommen werden.
+.LP
+Unter WDOS laufen die DCP-Programme in Echtzeit ab.
+Auf den Erweiterungskarten wird dazu das unveraenderte
+Betriebssystem DCP gestartet. Es ergibt sich jedoch
+die Einschraenkung, dass nur ein WEGA-Nutzer zur gleichen Zeit
+DCP abarbeiten kann.
+.LP
+Die 1 MByte-RAM-Karte kann von WEGA auch als RAM-Disk benutzt werden. Die
+Abarbeitung von Programmen unter DCP ist dann jedoch nicht moeglich.
+.LP
+.NH
+Komponenten von WDOS
+.NH 2
+WDOS-Treiber cpu2 im WEGA-Kern
+.LP
+Im Betriebssystem WEGA ist in Verbindung mit der CPU U8001 ein
+Schutzmechanismus realisiert, der verhindert, dass Anwenderprogramme
+direkt auf Systemressourcen zugreifen koennen.
+Nur der WEGA-Kern laeuft im Systemmode des U8001 und verfuegt damit
+ueber den vollen Befehlssatz der CPU. Alle anderen Programme laufen
+im User-Mode. Im User-Mode koennen die priviligierten Befehle des U8001
+(z.B. E/A-Befehle) nicht benutzt werden. Dadurch koennen z.B.
+(fehlerhafte) Anwenderprogramme nicht den WEGA-Kern zerstoeren.
+.LP
+Fuer die Bedienung der Erweiterungskarten wurde der Treiber cpu2
+fuer die Einbindung in den WEGA-Kern entwickelt. Zusaetzlich wurden
+in einigen weiteren Kernmodulen (event.s mch.s trap.c prf.c) geringe
+Erweiterungen noetig.
+.LP
+Der Treiber cpu2 simuliert in Verbindung mit dem "ROM"-BIOS fuer
+die CPU2 die peripheren Geraete Tastatur, Bildschirm, Harddisk,
+Floppydisk, Drucker und Echtzeit-Uhr.
+.LP
+Die Kommunikation mit der CPU2 wird ueber DUAL-PORT-RAM
+und ueber Interrupts realisiert. Der Treiber realisiert weiterhin
+die RESET-Steuerung fuer die CPU2.
+.LP
+Der Treiber realisiert folgende Kommunikationsaufgaben:
+.IP 1.
+Tastatureingaben von WEGA zur CPU2
+.IP 2.
+Bildschirmausgaben von der CPU2 zu WEGA
+.IP 3.
+Druckerausgaben von der CPU2 zu WEGA
+.IP 4.
+Diskzugriffe fuer die CPU2
+.IP 5.
+Zugriff fuer WEGA auf die 1 MByte RAM der Erweiterungskarten
+.IP 6.
+Realisierung einer Echtzeit-Uhr fuer CPU2
+.LP
+Fuer die Benutzung des Treibers sind im Directory /dev von
+WEGA folgende Geraete-Eintraege erforderlich:
+
+.DS L
+Name		Art	Major	Minor	Zweck
+---------------------------------------------------------------------
+
+/dev/cpu2tty	c	4	1	U80601-Terminal
+/dev/cpu2lp	c	4	2	U80601-Drucker
+/dev/cpu2disk	c	4	3	U80601-Disk-Request
+/dev/cpu2rram	c	4	0	U80601-RAM-raw-Interface
+					(Diskdaten)
+/dev/cpu2ram	b	4	0	U80601-RAM-Blockinterface
+					(1 MByte RAM-Disk fuer WEGA)
+.DE
+Der Treiber cpu2 darf nur vom WEGA-Koppelprogramm wdos benutzt werden.
+Eine Ausnahme bildet /dev/cpu2ram. Ueber diesen Geraete-Eintrag
+koennen die 1 MByte RAM der Erweiterungskarten von WEGA als RAM-Disk
+benutzt werden.
+.LP
+Um die Groesse des Treibers und  die Belastung fuer die Haupt-CPU klein
+zu halten, realisiert der Treiber nur die Vermittlung von Daten
+zwischen WEGA und der CPU2 in Bloecken von 1 bis 800hex Bytes. Alle
+erforderlichen Konvertierungen muessen durch die CPU2 erfolgen.
+.LP
+.NH 2
+WDOS-Koppelprogramm wdos
+.LP
+Durch Start des Koppelprogramms wega stellt der Anwender die
+Verbindung zur CPU2 her. Das Programm fuehrt folgende
+Initialisierungen aus:
+.IP 1.
+Laden des "ROM"-BIOS bios bzw. bios.p8, in Abhaengigkeit
+der Umgebungsvariable TERM
+.IP 2.
+Setzen des Terminaltreibers tty in den Raw-Mode
+.IP 3.
+P8000/WDOS-Terminal in den WDOS-Mode schalten
+.br
+(Tastatur liefert SCAN-Code, Bildschirm realisiert
+abgeruesteten 8-Bit-Zeichensatz)
+.IP 4.
+Initialisierung der Signalbehandlung
+.IP 5.
+Aufheben von Reset fuer die CPU2
+.LP
+Anschliessend teilt sich das Programm in 4 Prozesse, die
+jeweils die verschiedenen Kommunikationsaufgaben
+realisieren:
+.IP 1.
+Tastatureingaben von WEGA zur CPU2
+.br
+(Read von Treiber tty, Write zu cpu2tty)
+.IP 2.
+Bildschirmausgaben von der CPU2 zu WEGA
+.br
+(Read von Treiber cpu2tty, Write zu tty. Um eine
+schnelle Ausgabe der Zeichen zu erzielen, werden
+alle Ausgabezeichen durch die CPU2 aufbereitet. Die
+Haupt-CPU kopiert nur Bloecke von 1 bis max. 800 hex Bytes.)
+.IP 3.
+Druckerausgaben von der CPU2 zu WEGA
+.br
+(Read von Treiber cpu2lp, Write zum Druckertreiber, Druckerspooler
+oder in eine Datei)
+.IP 4.
+Diskzugriffe fuer die CPU2
+(Read/Write von/zu cpu2disk und cpu2rram, Zugriff
+erfolgt auf reale Harddisk-Partition, Floppy-Disk,
+Pseudoharddisks und Pseudo-Floppy-Disks)
+.LP
+.NH 2
+WDOS-Menueprogramm wm
+.LP
+Zur einfacheren Handhabung des Programmsystems WDOS,
+wurde auf Basis der SCREEN/CURSES-Bibliothek ein
+Menueprogramm realisiert. Dieses Programm gestattet
+die Verwaltung der verschiedenen Diskarten, die Konvertierung
+von Dateien von/nach WEGA,
+die Steuerung der Druckerausgaben und den Start von DCP.
+.LP
+.NH 2
+"ROM"-BIOS
+.LP
+Das "ROM"-BIOS ist die Schnittstelle der Software zur Hardware
+des Rechners. Alle Ein-/Ausgabefunktionen, die Systemuhr, verschiedene
+andere Dienste und der Start des Boot-Vorganges sind hier
+enthalten. Das BIOS befindet sich am Ende des 1 MByte Speicherbereiches
+der CPU2.
+.LP
+Bei WDOS ist das BIOS jedoch nicht in PROM's enthalten,
+sondern wird von der Haupt-CPU (U8001) in den RAM der Erweiterungskarten
+geladen. Das BIOS realisiert die Kommunikation mit WEGA.
+.LP
+Das BIOS wurde mit Hilfe des WEGA-Cross-Assemblers fuer den
+K1810WM86 erstellt. Es setzt sich aus folgenden Modulen
+zusammen:
+.IP 1.
+bios.asm   - Boot, Uhr u.a. Funktionen
+.IP 2.
+dseg.asm   - Datensegment, Interrupttabelle
+.IP 3.
+term.asm   - Terminalinterface fuer P8000/WDOS-Terminal
+.IP 4.
+termp8.asm - Terminalinterface fuer (altes) P8000-Terminal
+.IP 5.
+disk.asm   - Diskinteface
+.IP 6.
+orgs.asm   - Systemeinspruenge, Kommunikationsbereich zu WEGA
+
+.NH
+DOS-Programme
+.LP
+Auf Basis von Quellprogrammen der TU Karl-Marx-Stadt
+wurden auf dem P8000 Programme implementiert, die
+von WEGA aus, den Zugriff auf DCP-Disketten,
+DCP-Harddisks, DCP-Pseudodisketten und -harddisks
+ermoeglichen. Fuer diese Programme sind die
+U80601-Erweiterungskarten nicht erforderlich. Diese
+Programme werden unabhaengig von WDOS mit der
+WEGA Version 3.1 vertrieben. Diese Programme koennen
+auch vom WDOS-Menueprogramm aus aufgerufen werden.
+Folgende Programme stehen zur Verfuegung:
+.IP 1.
+dosdir    - DCP-Directory im DCP-Format anzeigen
+.IP 2.
+dosls     - DCP-Directory im WEGA-Format anzeigen
+.IP 3.
+doscp     - Kopieren von Dateien zwischen DCP und WEGA
+.IP 4.
+doscat    - DCP-Dateien ausgeben
+.IP 5.
+dosrm     - DCP-Dateien loeschen
+.IP 6.
+dosmkdir  - DCP-Directory erstellen
+.IP 7.
+dosrmdir  - DCP-Directory loeschen
+.IP 8.
+dosformat - DCP-Diskette formatieren
+.LP
+
+.bp
+.NH
+Ergebnisse der WDOS-Implementation
+.LP
+In diesem Kapitel sind wichtige Unterschiede und Besonderheiten
+bei der Abarbeitung von DCP unter WEGA aufgefuehrt.
+.LP
+.NH 2
+Hardware-Voraussetzungen
+.LP
+Fuer die Abarbeitung von DCP unter WEGA sind zwei U80601-Erweiterungskarten
+(CPU-Karte und 1MByte-RAM-Karte) im P8000 erforderlich, die
+auf 2 Slots der 16-Bit-Rechnerkarte im P8000 gesteckt werden. WDOS
+realisiert mit diesen Karten eine PC-Umgebung, die jedoch nicht
+vollstaendig PC-kompatibel ist. Als Terminal muss ein spezielles
+P8000/WDOS-Terminal mit 25 Bildschirmzeilen und Flachtastatur eingesetzt
+werden. Dieses Terminal besitzt eine PC-kompatible Betriebsart.
+In dieser Betriebsart liefert die Tastatur anstelle der ASCII-Zeichen
+einen SCAN-Kode und die Bildschirmansteuerung realisiert die
+meisten Zeichen des erweiterten ASCII-Zeichensatzes.
+.LP
+.NH 2
+Lauffaehigkeit von DCP-Programmen
+.LP
+Auf den U80601-Erweiterungskarten steht keinerlei Hardware zur
+Verfuegung, die direkt E/A-Geraete oder andere PC-kompatible
+E/A-Ports ansprechen kann. Anwenderprogramme duerfen daher
+keine In- und Out-Befehle enthalten. Alle Zugriffe auf
+periphere Geraete duerfen nur ueber das Betriebssystem oder
+das BIOS erfolgen. Eine Ausnahme bilden Bildschirmausgaben.
+Anwenderprogramme duerfen direkt in einen simulierten
+Bildwiederholspeicher schreiben. Es ist aber nur ein alphanumerischer
+Mode (entsprechend der MDA-Karte) realisiert.
+Alle Programme, die Grafikausgaben enthalten und
+auf Bildschirmkarten wie CGA, EGA ... angewiesen sind, koennen
+unter der WDOS-Umgebung nicht benutzt werden.
+.LP
+In der WDOS-Umgebung stehen 1 Systemkonsole (Tastatur/Bildschirm),
+1 Drucker, max. 4 (Pseudo-)Floppy-Disk-Laufwerke und max.
+2 (Pseudo-)Harddisk-Laufwerke zur Verfuegung. Serielle Schnittstellen
+sind nicht vorhanden.
+.LP
+.NH 2
+Verfuegbarer RAM
+.LP
+Dem Betriebssystem DCP und den Anwenderprogrammen stehen unter WDOS
+von 0 bis 9ffff 640 KByte RAM zur Verfuegung, sowie zusaetzlich von
+A0000 bis Affff weitere 64 KByte (in diesem Bereich liegt bei
+einem normalen PC die Grafikkarte).  Im Bereich von B0000 bis B1fff wird
+von WDOS eine Monochrom-Bildschirmkarte simuliert. Der Bereich
+von F0000 bis Fffff ist fuer das "ROM"-BIOS reserviert. Der
+Bereich von B2000 bis Effff ist zur Zeit frei und kann unter DCP z.B. fuer
+einen vom Anwender geschriebenen RAM-Disk-Treiber benutzt werden.
+.LP
+.NH 2
+Tastatureingaben
+.LP
+Die Tastatur ist PC-kompatibel und liefert einen SCAN-Kode.
+Unter DCP darf kein zusaetzlicher Tastaturtreiber installiert
+werden, da dieser direkt auf die Hardware zugreift.
+.LP
+.NH 2
+Bildschirmausgaben
+.LP
+Im 1 MByte RAM wird eine Monochrom-Karte simuliert. Diese besitzt
+nur einen alphanumerischen Mode mit 25 Zeilen zu 80 Zeichen und
+einer Seite.
+Anwenderprogramme koennen direkt diesen
+"Bildwiederholspeicher" beschreiben. Durch das "ROM"-BIOS wird
+der Bildwiederholspeicher mit einem zweiten Abbild verglichen und
+die Differenzen zum Terminal ausgegeben. Das Terminal besitzt bezueglich
+der erweiterten ASCII-Zeichen und der VIDEO-Attribute Einschraenkungen.
+Fast alle VIDEO-BIOS-Requests schreiben die Zeichen zuerst in den
+"Bildwiederholspeicher". Eine Ausnahme bildet der
+WRTIE-TTY-Request (0eh). Hier erfolgt die Ausgabe direkt zum
+Terminal. Somit koennen auch ESC-Folgen (ADM31-kompatibel) ausgegeben
+werden. Das Betriebssystem DCP benutzt in der Regel diesen BIOS-Request.
+.LP
+Unter WDOS kann in DCP auch der Bildschirmtreiber "ANSI.SYS" installiert werden.
+Mit diesem Treiber werden ANSI-kompatible ESC-Folgen wirksam und die
+Ausgaben werden zuerst in den "Bildwiederholspeicher" geschrieben.
+Der Vergleich der "Bildwiederholspeicher" kostet aber Zeit und die Ausgabe der
+Zeichen ist daher etwas langsamer als die direkte Ausgabe zum Terminal.
+.LP
+Bei Verwendung des CP/M-Emulators EM80 fuer DCP
+(gehoert nicht zum Lieferumfang von WDOS)
+sollte ANSI.SYS nicht installiert werden. OS/M-Programme, wie TP, sind
+fuer das P8000-Terminal installiert und dann mit EM80 in der WDOS-Umgebung
+sofort lauffaehig.
+.LP
+.NH 2
+Diskzugriffe
+.LP
+Das Betriebssystem DCP erkennt durch Informationen im Urlader jeder
+Diskette das entsprechende Format der Diskette und stellt sich
+logisch darauf ein. Es kann aber bei realen Disketten nicht das
+physische Format des Floppy-Disk-Treibers (im WEGA-Kern) beeinflussen.
+Achten Sie bitte daher beim "Mounten" von realen Laufwerken im WDOS-Menue
+darauf, dass das Format mit dem Diskettenformat uebereinstimmt.
+.LP
+DCP ermittelt beim Systemstart das physische Format seiner
+Floppy-Disk-Laufwerke. Das Laufwerksformat ist aber
+nur beim Formatieren von Disketten von Bedeutung. Es hat keinen
+Einfluss beim Erkennen von Diskettenformaten. DCP erkennt z.B.
+eine 720 KByte Diskette in einem 360 KByte Laufwerk.
+Fuer die "physischen" Laufwerke
+E: und F: wird das Laufwerksformat mit der Aktivierung
+des Treibers DRIVER.SYS festgelegt
+(Standardeinstellung: 720 KByte
+Laufwerke). Fuer die Laufwerke A: und B: wird das physische
+Format aus dem "ROM"-BIOS ermittelt. Ist im Laufwerk A: eine
+1,2 MByte-Pseudo-Systemdiskette eingelegt, liefert das "ROM"-BIOS
+die Werte fuer 1,2 MByte Laufwerke ohne Disk-Change-Signal,
+sonst fuer 720 KByte Laufwerke ohne Disk-Change-Signal. Durch Fehlen
+dieses Signals setzt nur PCDOS das richtige Laufwerksformat. MSDOS und
+DCP stellen stets 360 KByte Laufwerke ein. Durch folgende Eintraege in die
+Datei CONFIG.SYS kann das Laufwerksformat auf 720 KByte eingestellt
+werden:
+.DS L
+drivparm=/d:0
+Drivparm=/d:1
+.DE
+Mit drivparm lassen sich aber auch anderer Formate einstellen.
+.LP
+Das Disk-Change-Signal dient zum automatischen Erkennen von Diskettenwechseln.
+Es wird von den (Pseudo-)Laufwerken nicht bereit gestellt. Das Signal kann
+aber vom "ROM"-BIOS simuliert werden. Der Parameter /C von DRIVER.SYS und
+DRIVPARM aktiviert das Signal. DCP fuehrt dann weniger Diskettenzugriffe
+aus. Beachten Sie jedoch, dass dann ein Diskettenwechsel in einem
+Laufwerk nur noch moeglich ist, wenn zuvor ein Zugriff auf ein anderes
+Laufwerk erfolgte, z.B. mit dem Kommando DIR. Ein Wechsel des
+aktuellen Laufwerks mit dem Kommando CD reicht nicht aus.
+.LP
+Zum Zugriff auf CP/M-Disketten und speziellen DOS-Disketten koennen
+die Treiber CDRIVE.SYS und MDRIVE.SYS (nicht im Lieferumfang von WDOS)
+installiert werden. Es koennen aber nur die physischen Formate angesprochen
+werden, die in der WDOS-Umgebung zur Verfuegung stehen. Die Treiber
+muessen so installiert werden, dass der Floppy-Disk-Treiber des
+"ROM"-BIOS benutzt wird, z.B.:
+.DS L
+device=cdrive.sys -rah -u1 -g
+device=mdrive.sys -rah -u1
+.DE
+In der WDOS-Umgebung wird von den DISK-BIOS-Requests FORMAT und
+VERIFY keine Funktion ausgefuehrt. Es wird die erfolgreiche
+Ausfuehrung der Funktion angezeigt.
+Somit koennen Kommandos wie FORMAT zum logischen Formatieren benutzt
+werden. Physisch koennen reale Disketten direkt unter WEGA oder
+vom WDOS-Menue aus formatiert werden.
+.NH 2
+Systemuhr
+.LP
+Beim Start von DCP werden die Anfangswerte fuer Datum und Zeit von WEGA
+uebernommen. Im "ROM"-BIOS ist eine Echtzeituhr realisiert. Diese erhaelt
+vom WEGA-Kern Clock-Impulse mit einer Frequenz von 10Hz. Beim verlassen
+von DCP wird die Uhr gestoppt. Wird anschlissend die Arbeit in
+DCP ohne Neustart fortgesetzt (Kommando r im WDOS-Menue bzw. wdos -r in WEGA)
+geht die Uhr nach.
+.NH 2
+Systemdiskette
+.LP
+Im Lieferumfang von WDOS ist die Pseudosystemdiskette wdos_sys
+enthalten. Als Systemdiskette kann aber auch eine reale Systemdiskette
+eines PC-kompatiblen Rechners benutzt werden. Folgende Systemdisketten
+wurden in der WDOS-Umgebung getestet:
+.DS L
+- Systemdiskette DCP 3.20   fuer A7150
+- Systemdiskette PCDOS 3.20 fuer IBM-PC
+- Systemdiskette PCDOS 3.30 fuer IBM-PC
+- Systemdiskette MSDOS 3.20 fuer Schneider-PC
+.DE
+Vor Verwendung einer fremden Systemdiskette, ist die Datei
+CONFIG.SYS dieser Diskette zu Ueberpruefen. Diese Datei darf keine
+Treiber aktivieren, die das "ROM"-BIOS umgehen. Deshalb sollten zuerst
+alle Zeilen mit
+.DS L
+device=...
+.DE
+entfernt werden.
+.LP
+Folgende Eintraege in der Datei CONFIG.SYS sind fuer die Arbeit in der
+WDOS-Umgebung guenstig aber nicht unbedingt erforderlich:
+.DS L
+drivparm=/d:0 ...		(Format fuer Laufwerk A: setzen)
+drivparm=/d:1 ...		(Format fuer Laufwerk B: setzen)
+device=driver.sys /d:4 ...	(Laufwerk E: aktivieren)
+device=driver.sys /d:5 ...	(Laufwerk F: aktivieren)
+.DE
+Auf jeder Systemdiskette befindet sich ein "Disketten"-BIOS. Probleme
+mit fremden Systemdisketten koennen entstehen, wenn dieses BIOS
+direkt die Hardware anspricht. Das "Disketten"-BIOS koennte z.B. in
+Abhaengigkeit der Version und des Datums des "ROM"-BIOS bestimmte
+Treiber des "ROM"-BIOS ersetzen.
+.LP
+Bei der Installation einer DCP-Harddisk sind keine Besonderheiten
+zu beachten. Sie erfolgt mit den Programmen FDISK, FORMAT und
+COPY.
+.LP
+.NH 2
+DCP-Kommandos
+.LP
+Folgende Kommandos funktionieren in der WDOS-Umgebung nicht:
+.IP CTTY 10
+Definition Primaerkonsole
+.IP MODE
+Einstellen Geraetemodus
+.IP SELECT
+Einstellen nationale Besonderheiten
+.IP GRAFTABL
+Laden zweiter grafischer Zeichensatz
+.IP GRAPHICS
+Vorbereiten grafische Print-Screen-Funktion
+.IP KEYBxx
+Ersetzten Tastaturprogramm
+.LP
+Bei folgenden Kommandos sind Einschraenkungen zu beachten:
+.IP DISKCOPY 10
+Physisches Kopieren von Disketten
+.br
+Unter WDOS ist das physisches Formatieren der Zieldiskette nicht moeglich.
+.IP FORMAT
+Formatieren von Disketten
+.br
+WDOS gestattet nur das logisches Formatieren von Disketten.
+720 KByte "Laufwerke" gestatten nur das logische Formatieren
+dieses Formats. "High-Density-Laufwerke"
+gestattet das logische Formatieren von 1,2 MByte Pseudodisketten
+und von 40-spurigen Disketten.
+Physisch koennen
+Disketten im WDOS-Menue oder direkt unter WEGA formatiert werden.
+.LP
+Das folgende intene Kommando dient zum Aendern der Parameter der internen
+Laufwerke. In vielen Dokumentationen ist es nicht beschrieben:
+.DS L
+DRIVPARM=/D:ddd [Schalter]
+
+Schalter:
+/D:ddd	logische Geraetenummer (0...255)
+/F:f	Geraetetyp (0=160/180,320/360k, 1=1,2M, 2=720k)
+	(Standard 720k)
+/T:ttt	Spuren pro Seite (Standard 80)
+/S:ss	Sektoren pro Spur (Standard 9)
+/H:hh	Koepfe (Standard 2)
+/C	Test auf Diskettenwechsel
+/N	nichtwechselbare Magnetplatte
+.DE
+
+.NH
+WDOS-Testversion
+.LP
+Zur Inbetriebnahme der U80601-Erweiterungskarten wurde eine
+WDOS-Testversion erstellt. Diese Version beinhaltet ein
+modifiziertes Koppelprogramm und ein modifiziertes "ROM"-BIOS.
+Die Test-Version dient vor allem zur Ueberpruefung der
+Funktionsfaehigkeit der 1 MByte RAM der Erweiterungskarten
+(DUAL-PORT-RAM) bei gleichzeitigem staendigen Zugriff durch
+Haupt-CPU und CPU2.
+
+.NH
+Hardware-Testprogramm sa.diags
+.LP
+Das Hardware-Diagnoseprogramm sa.diags wurde um die Testschritte
+zur Funktionspruefung der WDOS-Erweiterungskarten erweitert.
+Die Testschritte entsprechen im wesentlichen der Testsoftware
+des WDOS-Funktionspruefplatzes. Folgende Testschritte wurden realisiert:
+.IP 1.
+Test des MP600-RAM (1MByte) vom U8000 aus
+.IP 1.1.
+Alle Segmente werden mit einem Bytemuster vollstaendig beschrieben. 
+Regeln fuer die Mustererzeugung:
+.br
+- laenge l des Musters mit l <> 2^x, x e N = (0,1,2,3,...)
+.br
+	(es wurde die Laenge l=17 gewaehlt)
+.br
+- Die Musterbytes muessen voneinander verschieden sein.
+.IP 1.2.
+Vergleich der beschriebenen Segmente mit dem Soll-Bytemuster.
+.br
+Fehler: Fehlernummer, Adresse, Soll-Daten, Ist-Daten
+
+.IP 2.
+Paritaetstest des MP600-RAM durch den U8000
+.IP 2.1.
+Die Segmente %70 bis %7f (MP600-RAM) werden mit einem beliebigen
+Muster gefuellt.
+.IP 2.2.
+Die Segmente werden Byte fuer Byte gelesen und dabei die Merkzelle
+fuer Paritaets-NMI getestet.
+.br
+Fehler: Fehlernummer, Adresse, Ist-Daten
+
+.IP 3.
+Anlauf des MP600
+.IP 3.1.
+Der U8000 laedt ein kurzes Anlaufprogramm fuer den MP600 in den 
+MP600-RAM und loescht einen Kommunikationsbereich. Es wird eine
+Transferkontrolle durchgefuehrt.
+.br
+Fehler: Fehlernummer, Adresse, Soll-Daten, Ist-Daten
+.IP 3.2.
+Der U8000 setzt das RESET fuer den MP600 zurueck. Der MP600 beginnt mit
+der Befehlsabarbeitung und fuehrt folgende Befehle aus:
+.DS
+MOV	AX,CS
+MOV	DS,AX           ;DSEG=CSEG=F000H
+MOV	AX,returncode
+MOV	RETCODE,AX      ;Returncode im Kommunikations-
+			;bereich ablegen
+HLT
+.DE
+(siehe dazu auch asm86-Listing 'MP600 TEST3')
+.IP 3.3.
+Der U8000 wartet ca. 1 ms und ueberprueft den uebergebenen Returncode.
+.br
+Fehler: Fehlernummer, Soll-Code, Ist-Code 
+
+.IP 4.
+INT-Verkehr U8000 <--> MP600
+.IP 4.1.
+Vom U8000 werden ein INT-Initialisierungsprogramm, zwei
+Interrupt-Service-Routinen (dienen dem Test des INT-Vektors) und eine 
+INT-Vektor-Tabelle fuer dem MP600 in seinen RAM geladen.
+Es erfolgt wiederum ein Kontrollesen der uebertragenen Programmteile.
+.br
+Fehler: Fehlernummer, Adresse, Soll-Daten, Ist-Daten
+.IP 4.2.
+Der U8000 setzt das RESET-Signal des MP600 zurueck.
+.br
+* Der MP600 initialisiert sich fuer VINT
+.br
+* Meldung der erfolgreichen Initialisierung an den U8000, durch
+laden des Quittungsbytes 2 in den Kommunikationsbereich.
+.br
+* MP600 geht in den HALT-Zustand
+.IP 4.3.
+Der U8000 wartet ca. 1 ms und ueberprueft dann das Quittungsbyte 2 fuer
+eine erfolgreiche INT-Initialisierung.
+.br
+Fehler: Fehlernummer, Soll-Code, Ist-Code 
+.IP 4.4.
+U8000 sendet 256 Interrupts mit verschiedenen Vektoren (1,2,3,...,255,0) an
+den MP600. In der INT-Vektor-Tabelle wird vor jedem INT, der Zeiger auf
+die ISR1, auf den Tabellenplatz des naechsten Vektors geladen. Alle
+anderen Zeiger in der INT-Vektor-Tabelle zeigen auf die ISR2. Diese
+wird dann nur bei einem fehlerhaft gelesenen Vektor angesprungen.
+Nach Ausloesung eines INT durch den U8000 springt der MP600 in die ISR1.
+Dort wird der Stackpointer zurueckgesetzt, ein Quittungsbyte 3 fuer den
+korrekten Ansprung der ISR uebergeben und ein NVI (nichtvektorisierter INT)
+an den U8000 gesendet (durch OUT-Befehl). Danach geht der MP600 in den
+HALT-Zustand und wartet auf den naechsten Interrupt.
+.IP 4.5.
+Nachdem der U8000 einen INT an den MP600 sendete, wartet er ca. 1 ms und
+ueberprueft dann das Quittungsbyte 3 und seinen eigenen NVI-Status durch 
+kontrollieren einer Merkzelle.
+.br
+Fehler: Fehlernummer fuer falsches Quittungsbyte oder kein NVI.
+
+.IP 5.
+RAM-Test vom MP600 aus
+.IP 5.1.
+Der U8000 laedt ein RAM-Testprogramm fuer den MP600 mit Transferkontrolle.
+.br
+Fehler: Fehlernummer, Adresse, Soll-Daten, Ist-Daten
+.IP 5.2.
+Der U8000 setzt das RESET-Signal fuer den MP600 zurueck und der MP600 
+fuellt den 1MByte RAM mit einem vorgegebenen Datenmuster und der jeweiligen
+Segmentnummer.
+.IP 5.3.
+Der U8000 wartet ca. 1 s und testet danach den RAM des MP600 auf das richtig
+Eingetragene Datenmuster.
+.br
+Fehler: Fehlernummer, Adresse, Soll-Daten, Ist-Daten
+
+.IP 6.
+gemeinsamer Speicherzugriff
+.IP 6.1.
+Der U8000 laedt ein Programm fuer den MP600 mit Transferkontrolle.
+.br
+Fehler: Fehlernummer, Adresse, Soll-Daten, Ist-Daten
+.IP 6.2.
+Der U8000 setzt das RESET-Signal fuer den MP600 zurueck und der MP600 
+arbeitet sein Programm im Block %0f ab und greift auf Bloecke %00 bis %0e
+zu (schreiben lesen).
+.IP 6.3.
+Der U8000 greift gleichzeitig auf die Bloecke %00 bis %0E zu (schreiben
+lesen).
+.IP 6.4.
+Danach testet der U8000 den RAM auf korrekten Dateninhalt.
+.br
+Fehler: Fehlernummer, Adresse, Soll-Daten, Ist-Daten
+.LP
