@@ -1,0 +1,737 @@
+.ll 79
+.pl 66
+.lt 79
+.de NP
+'sp 2
+.tl ''- % -''
+'bp
+'sp 2
+.tl 'Dokumentation'WEGA'U8000-Softwaremonitor'
+'sp 3
+..
+.wh -4 NP
+.nf
+.sp 6
+*******************************************************************************
+*******************************************************************************
+ 
+	W E G A - Dokumentation	(C) ZFT/KEAW Abt. Basissoftware - 1990
+	U8000-Softwaremonitor (MON16)
+ 
+ 
+	Bearbeiter:	J. Zabel
+	Datum:		01.01.1990
+	Version:	3.1
+ 
+*******************************************************************************
+*******************************************************************************
+ 
+ 
+1. Module des U8000-Softwaremonitors
+====================================
+
+.fi
+Zur leichteren Handhabung der Quellen des U8000-Softwaremonitors wurde dieser
+in verschiedene Module unterteilt, wobei jeder Modul inhaltlich 
+zusammengehoerende Proceduren enthaelt.
+.nf
+
+Der U8000-Softwaremonitor umfasst folgende Module:
+
+	Modulbezeichnung	zugehoeriger Dateiname
+	p_init			p.init.s
+	p_term			p.term.s
+	p_comm			p.comm.s
+	p_brk			p.brk.s
+	p_test			p.test.s
+	p_gesa			p.gesa.s
+	p_ldsd			p.ldsd.s
+	p_boot			p.boot.s
+	p_disk			p.disk.s
+	p_dummy			p.dummy.s
+	p_crc			p.crc.s
+	p_ram			p.ram.s
+
+.fi
+Der Modul p_dummy enthaelt nur eine Feldvereinbarung (array [x byte]),
+die so gross sein muss, dass der Modul p_crc auf der Adresse %3FF0 beginnt.
+
+Die einzelnen Module sind folgendermassen zu assemblieren und zu linken
+(unter WEGA):
+.nf 
+as -l -o p.init.o p.init.s 
+as -l -o p.term.o p.term.s 
+as -l -o p.comm.o p.comm.s 
+as -l -o p.brk.o p.brk.s 
+as -l -o p.test.o p.test.s 
+as -l -o p.gesa.o p.gesa.s 
+as -l -o p.ldsd.o p.ldsd.s 
+as -l -o p.boot.o p.boot.s 
+as -l -o p.disk.o p.disk.s 
+as -l -o p.dummy.o p.dummy.s 
+as -l -o p.crc.o p.crc.s
+as -l -o p.ram.o p.ram.s 
+
+ld  p.init.o p.term.o p.comm.o p.brk.o p.test.o p.gesa.o 
+    p.ldsd.o p.boot.o p.disk.o p.dummy.o p.crc.o p.ram.o -o MON16
+strip -h MON16
+
+.fi
+Die Datei MON16 enthaelt dann den Maschinencode des U8000-Softwaremonitors,
+mit dem die EPROM's (4xE2732, Adresse %0000-%3FFF) programmiert werden koennen.
+.br
+Anschliessend sind auf den Adressen %3FF0-%3FFF die Pruefsummen der einzelnen
+EPROM's nachzuprogrammieren (siehe dazu Modul p_crc (Datei p.crc.s)
+und Dokumentation "EPROM-Pruefsummen" (Datei mon16.crc.doc)).
+.nf
+
+
+2. Inhaltliche Uebersicht
+=========================
+ 
+Der U8000-Softwaremonitor enthaelt Routinen
+- zur Speicherarbeit (D, C, F, M),
+- zur Ausfuehrung  von Port-I/O-Operationen (PR, PRS, PW, PWS),
+- zur Testung von U8000-Programmen (R, B, G, N),
+- zum Lesen und Schreiben von Bloecken auf Hard-Disk (HR, HW),
+- zum Formatieren von blockorientierten Disketten im WEGA-Format (FF) und 
+  zum Lesen und Schreiben von Bloecken auf solchen Disketten (FR, FW)
+- zur Arbeit mit dem 8-Bit-Teil (GE, S, Q, QRES),
+- zur Arbeit mit einem lokalen System (RGE, RS, RQ),
+- zum Hardwareeigentest (T),
+- zum automatischen Laden des WEGA-Betriebssystems (NMI-Taste),
+- zum manuellen Laden des WEGA-Betriebssystems (O),
+- zur Arbeit mit dem LOAD/SEND-System (LOAD, SEND, QUIT).
+.bp
+3. Beschreibung der Module des U8000-Softwaremonitors
+=====================================================
+
+.fi
+Jeder Modul enthaelt einen Teil "allgemeine Vereinbarungen". Da dieser Teil 
+fuer alle Module identisch ist, wurde er in den Listings der Module nicht
+ausgedruckt, sondern  ist am Ende der Listings separat angefuegt.
+.nf 
+
+3.1. Modul p_init
+-----------------
+*** Systeminitialisierung ***
+
+Prozedur ENTRY_
+(Eintrittspunkt nach RESET) 
+- U8000-Initialisierung (PSAREA,...) 
+- Test und Initialisierung der Koppelschnittstelle 
+  (fuer Terminalbetrieb ueber SIO0_B des 8-Bit-Teils und Dateitransfer 
+  von/zu UDOS)
+- falls die Koppelschnittstelle inaktiv ist, Initialisierung des seriellen
+  Kanals fuer das Terminal (SIO0_B)
+- Initialisierung des seriellen Kanals fuer das LOAD/SEND-System (SIO0_A)
+- Initialisierung des Arbeitsspeichers
+- Ausgabe der Systemmeldung
+
+Prozedur CMDLOP
+(Kommandoeingabeschleife)
+- Ansprung der ausgewaehlten Kommandoroutine bzw.
+- Fehlermeldung bei falschem Kommando
+
+Prozedur INIT_CTC0_0
+- Initialisierung CTC0_0 fuer Baudrate SIO0_A
+
+Prozedur INIT_CTC0_1
+- Initialisierung CTC0_1 fuer Baudrate SIO0_B
+
+Prozedur INIT_SIO0_A
+- Initialisierung SIO0_A fuer LOAD/SEND/QUIT
+
+Prozedur INIT_SIO0_B
+- Initialisierung SIO0_B fuer Terminalbetrieb
+
+Prozedur ERROR
+(allgemeine Fehlerroutine)
+- Ausgabe "?" auf Terminal und Sprung in Kommandoeingabeschleife
+
+Prozedur UINSTR_ERR
+(Trap-Routine fuer nichtimplementierte Befehle)
+- Ausgabe "UNIMPLEMENTED INSTRUCTION TRAP  ID=xxxx" auf Terminal und
+  Sprung zur Kommandoeingabeschleife
+
+Prozedur PINSTR_ERR
+(Trap-Routine fuer priviligierte Befehle)
+- Ausgabe "PRIVILEGED INSTRUCTION TRAP  ID=xxxx" auf Terminal und
+  Sprung zur Kommandoeingabeschleife
+
+Prozedur SC_ENTRY
+(System-Call-Routine)
+- Ausfuehrung des entsprechenden System-Calls:
+  %00 - Unterbrechungspunkt ("BREAK AT xxxx")
+  %01 - segmentierte Arbeitsweise
+  %02 - nichtsegmentierte Arbeitsweise
+  %04 - Prozedur TYRD			Modul p_term
+  %06 - Prozedur TYWR			Modul p_term
+  %08 - Prozedur RD_LINE_BFF		Modul p_term
+  %0A - Prozedur WR_CRLF		Modul p_term
+  %0C - Prozedur WR_MSG			Modul p_term
+  %0E - Prozedur BTOH16			Modul p_term
+  %10 - Prozedur WR_OUTBFF_CR		Modul p_term
+  %12 - Prozedur BTOH8			Modul p_term
+  %14 - Prozedur PUT_SEGNR		Modul p_term	
+  %16 - Prozedur PUT_CHR		Modul p_term
+  %18 - Prozedur WOCF_MCZ		Modul p_ldsd
+  %1A - Prozedur TYWR_MCZ		Modul p_ldsd
+  %1C - Prozedur CMDLOP			Modul p_init
+  %1E - Prozedur DISK			Modul p_disk
+  %20 - Prozedur TYRD_UDOS_INT		Modul p_term
+  %22 - Prozedur TYWR_UDOS_INT		Modul p_term	
+  %24 - Prozedur FLOPPY			Modul p_gesa
+  %26 - Prozedur WR_OUTBFF		Modul p_term
+
+Prozedur MMU_ERR
+(Segment-Trap-Routine)
+- Ausgabe "MMU TRAP ID=xxxx" auf Terminal und 
+  Sprung zur Kommandoeingabeschleife
+
+Prozedur NMI_INT
+(NMI-Routine)
+- Rettung aller Register
+- Ausgabe CR LF "NMI" auf Terminal und Sprung zur Kommandoeingabeschleife
+
+Prozedur NVI_ERR
+(Interruptroutine fuer uninitialisierten nichtvektorisierten Interrupt (NVI))
+- Ausgabe "UNINITIALIZED NONVECTORED INTERRUPT ENTRY  ID=xxxx" auf Terminal und
+  Sprung zur Kommandoeingabeschleife
+
+Prozedur VI_ERR
+(Interruptroutine fuer uninitialisierten vektorisierten Interrupt (VI))
+- Ausgabe "UNINITIALIZED VECTORED INTERRUPT ENTRY  ID=xxxx" auf Terminal und
+  Sprung zur Kommandoeingabeschleife
+
+
+.bp
+3.2. Modul p_term
+-----------------
+*** Routinen zur Terminalarbeit ***
+
+Prozedur PTY_INT
+(VI-Routine zur Dateneingabe vom Terminal (SIO0_B des 16-Bit-Teils))
+
+Prozedur PTY_ERR
+(VI-Routine bei Empfangsfehler vom Terminal (SIO0_B des 16-Bit-Teils))
+
+Prozedur KOPPEL_INT
+(VI-Routine zur Dateneingabe von Koppelschnittstelle (Terminal bzw. UDOS))
+
+Prozedur INCPTR
+(Pufferzeiger incrementieren)
+
+Prozedur TYRD
+(Einlesen eines Zeichens aus Terminal-Interrupt-Eingabepuffer PTYBFF)
+
+Prozedur TYWR
+(Ausgabe eines Zeichens auf Terminal)
+
+Prozedur TYRD_UDOS_INT
+(Einlesen eines Zeichens von Dateitransfer von/zu UDOS bzw. Floppy-Block-
+transfer aus Interrupt-Eingabepuffer UDOSBFF ueber Koppelschnittstelle)
+
+Prozedur TYRD_UDOS_POL
+(Einlesen eines Zeichens von Dateitransfer von/zu UDOS 
+bzw. Floppy-Blocktransfer im Polling ueber Koppelschnittstelle)
+
+Prozedur TYWR_UDOS_INT
+(Ausgabe eines Zeichens fuer Dateitransfer von/zu UDOS bzw. Floppy-Block-
+transfer ueber Koppelschnittstelle mit Interruptausloesung auf 8-Bit-Teil)
+
+Prozedur TYWR_UDOS_POL
+(Ausgabe eines Zeichens fuer Dateitransfer von/zu UDOS bzw. Floppy-Block-
+transfer ueber Koppelschnittstelle ohne Interruptausloesung auf 8-Bit-Teil)
+
+Prozedur TYWR_KOPPEL_INT / TYWR_KOPPEL_POL
+(Hilfsroutine fuer Ausgabe an Koppelschnittstelle)
+
+Prozedur KP_OUTB / KP_INB
+(Ausgabe bzw. Eingabe an/von einem I/O-Port des 8-Bit-Teils)
+
+Prozedur TYRDWR
+(Einlesen eines Zeichens aus Terminal-Eingabepuffer PTYBFF und Ausgabe dieses
+Zeichens auf Terminal)
+
+
+Prozedur RD_LINE_BFF
+(Zeile aus Terminal-Eingabepuffer PTYBFF lesen, in Zwischenpuffer abspeichern
+und auf Terminal ausgeben)
+
+Prozedur RD_LINE_INBFF
+(Zeile aus Terminal-Eingabepuffer PTYBFF lesen, in Eingabepuffer INBFF
+abspeichern und auf Terminal ausgeben)
+
+Prozedur CLRCHR
+(Loeschen eines Zeichens auf Terminal)
+
+Prozedur WR_CRLF
+(Ausgabe CR LF auf Terminal)
+
+Prozedur WR_NULL
+(Ausgabe einer Anzahl Nullen auf Terminal (entsprechend NULLCT))
+
+Prozedur WR_MSG
+(Zeichenkettenausgabe auf Terminal)
+
+Prozedur WR_OUTBFF_CR 
+(Ausgabe des Inhalts des Ausgabepuffers OUTBFF mit CR auf Terminal)
+ 
+Prozedur WR_OUTBFF 
+(Ausgabe des Inhalts des Ausgabepuffers OUTBFF auf Terminal)
+
+Prozedur HTOB
+(Konvertierung Hexaziffer (ASCII) in Binaerwert)
+
+Prozedur BTOH16
+(Konvertierung Binaerwert (16 Bit) in Hexazahl (ASCII) und Eintragung
+in Ausgabepuffer OUTBFF)
+
+Prozedur BTOH8
+(Konvertierung Binaerwert (8 Bit) in Hexazahl (ASCII) und Eintragung
+in Ausgabepuffer OUTBFF)
+
+Prozedur BTOH4
+(Konvertierung Binaerwert (4 Bit) in Hexazahl (ASCII) und Eintragung
+in Ausgabepuffer OUTBFF)
+
+Prozedur GET_CHR
+(naechstes Zeichen aus Eingabepuffer INBFF bereitstellen)
+
+Prozedur GET_SIGN
+(naechstes Space im Eingabepuffer INBFF suchen und darauffolgendes Zeichen
+ungleich Space bereitstellen)
+
+Prozedur GET_SIGNW
+(naechstes Zeichen ungleich Space aus Eingabepuffer INBFF bereitstellen)
+
+Prozedur GET_SGNR
+(Konvertierung der Segmentnummer aus Eingabepuffer INBFF)
+
+Prozedur GET_HEXZ
+(Konvertierung einer Hexazahl aus Eingabepuffer INBFF in Binaerwert)
+
+Prozedur GET_ADR
+(Konvertierung einer Adresse aus Eingabepuffer INBFF in Binaerwert)
+
+Prozedur GET_PAR
+(Konvertierung einer Parameterfolge (adr1 adr2 word) aus Eingabepuffer INBFF
+in Binaerwerte)
+
+Prozedur RD_DATA
+(Eingabe eines Datenwertes)
+- Ausgabe des Zeichens ":" auf Terminal
+- Warten auf Dateneingabe von Terminal
+- Abspeichern des eingeg. Datenwertes im Eingabepuffer INBFF
+- Konvertierung des Datenwertes aus dem Eingabepuffer INBFF in Binaerwert
+
+Prozedur GET_DATA
+(Konvertierung eines Datenwertes aus dem Eingabepuffer INBFF in Binaerwert)
+
+Prozedur WR_R5_RDDATA
+- Konvertierung eines Binaerwertes (16 Bit) in ASCII-Hexazahl und Eintragung
+  in Ausgabepuffer OUTBFF
+- Ausgabe des Inhaltes des Ausgabepuffers OUTBFF auf Terminal
+- Ausgabe des Zeichens ":" auf Terminal
+- Warten auf Dateneingabe von Terminal
+- Abspeichern des eingeg. Datenwertes im Eingabepuffer INBFF
+- Konvertierung des Datenwertes aus dem Eingabepuffer INBFF in Binaerwert
+
+Prozedur WR_OBF_RDDATA
+- Ausgabe des Inhaltes des Ausgabepuffers OUTBFF auf Terminal
+- Ausgabe des Zeichens ":" auf Terminal
+- Warten auf Dateneingabe von Terminal
+- Abspeichern des eingeg. Datenwertes im Eingabepuffer INBFF
+- Konvertierung des Datenwertes aus dem Eingabepuffer INBFF in Binaerwert
+
+Prozedur PUT_CHR
+(Eintragung eines Zeichens in Ausgabepuffer OUTBFF)
+
+Prozedur PUT_3C
+(Eintragung des Zeichens "<" in Ausgabepuffer OUTBFF)
+
+Prozedur PUT_1CHR
+(Eintragung eines Zeichens in Ausgabepuffer OUTBFF)
+
+Prozedur PUT_2CHR
+(Eintragung von 2 Zeichen in Ausgabepuffer OUTBFF)
+
+Prozedur PUT_SEGNR
+(Konvertierung der binaeren Segmentnummer in ASCII-Hexazahl (xx) und Eintragung
+von "<xx>" in Ausgabepuffer OUTBFF)
+
+Prozedur PUT_SGNR
+(Konvertierung der binaeren Segmentnummer in ASCII-Hexazahl (xx) und Eintragung
+von "xx>" in Ausgabepuffer OUTBFF)
+.bp
+3.3. Modul p_comm
+-----------------
+*** verschiedene Monitorkommandos (Speicherarbeit, Port-I/O, Block-Floppy, 
+    Hard-Disk) ***
+
+
+Prozedur DISPLAY
+(Monitorkommando "D" - Anzeigen bzw. Veraendern von Speicherbereichen)
+
+Prozedur TST_WBL
+(Zeichentest auf "W", "B" bzw. "L")
+
+Prozedur COMPARE
+(Monitorkommando "C" - Vergleichen von Speicherbereichen)
+
+Prozedur PUT_ADR_INHALT
+(Eintragung '<segnr>offset= inhalt' in Ausgabepuffer OUTBFF)
+
+Prozedur FILL
+(Monitorkommando "F" - Fuellen eines Speicherbereiches)
+
+Prozedur MOVE
+(Monitorkommando "M" - Verschieben eines Speicherbereiches)
+
+Prozedur PORT_READ
+(Monitorkommando "PR" - Port-Lese-Routine)
+
+Prozedur PORT_WRITE
+(Monitorkommando "PW" - Port-Schreib-Routine)
+
+Prozedur PORT_READ_SPECIAL
+(Monitorkommando "PRS" - Special-Port-Lese-Routine)
+
+Prozedur PORT_WRITE_SPECIAL
+(Monitorkommando "PWS" - Special-Port-Schreib-Routine)
+ 
+Prozedur PORT_RD
+(allgemeine Port-/Special-Port-Leseroutine)
+
+Prozedur PORT_WR
+(allgemeine Port-/Special-Port-Schreibroutine)
+
+Prozedur P_IN
+(Port-Eingabe)
+
+Prozedur PS_IN
+(Special-Port-Eingabe)
+
+Prozedur P_OUT
+(Port-Ausgabe)
+
+Prozedur PS_OUT
+(Special-Port-Ausgabe)
+
+Prozedur HARD_DISK_READ
+(Monitorkommando "HR" - Block von Hard-Disk lesen)
+
+Prozedur HARD_DISK_WRITE
+(Monitorkommando "HW" - Block auf Hard-Disk schreiben)
+
+Prozedur HARD_DISK
+(Schreib-/Leseroutine fuer Hard-Disk)
+
+Prozedur FLOPPY_FORMAT
+(Monitorkommando "FF" - Formatieren einer blockorientierten Diskette
+im WEGA-Format)
+
+Prozedur FLOPPY_READ
+(Monitorkommando "FR" - Block von einer blockorientierten Diskette im
+WEGA-Format lesen)
+
+Prozedur FLOPPY_WRITE
+(Monitorkommando "FW" - Block auf eine blockorientierte Diskette im 
+WEGA-Format schreiben)
+
+Prozedur FLOPPY_BLOCK
+(Schreib-/Lese-/Formatierungsroutine fuer blockorientierte Disketten im
+WEGA-Format)
+
+
+.bp
+3.4. Modul p_brk
+----------------
+*** Monitorkommandos zur Programmtestung ***
+
+Prozedur REGISTER
+(Monitorkommando "R" - Anzeigen und Veraendern von Registerinhalten)
+
+Prozedur WR_REGBEZ1
+(Ausgabe der Registerbezeichnungen 1. Zeile)
+ 
+Prozedur WR_REGBEZ2
+(Ausgabe der Registerbezeichnungen 2. Zeile)
+
+Prozedur WR_WERTE1
+(Ausgabe der Registerwerte 1. Zeile)
+
+Prozedur WR_WERTE2
+(Ausgabe der Registerwerte 2. Zeile)
+
+Prozedur SAVREG
+(Registerrettung)
+
+Prozedur GETREG
+(Registerrueckspeicherung)
+
+Prozedur BREAK
+(Monitorkommando "B" - Setzen bzw. Loeschen eines Unterbrechungspunktes)
+
+Prozedur GO
+(Monitorkommando "G" - Programmabarbeitung starten)
+
+Prozedur GO_NXT
+(Abarbeitung eines Befehls, auf dem Unterbrechungspunkt steht)
+
+Prozedur GO_INT
+(VI-Routine fuer GO)
+
+Prozedur NEXT
+(Monitorkommando "N" - Abarbeitung einer Anzahl von Befehlen)
+
+Prozedur NXT_INT
+(VI-Routine fuer NEXT)
+
+Prozedur RETI_CTC0_3
+(Ruecksetzen CTC0_3 fuer GO/NEXT)
+.bp
+3.5. Modul p_test
+-----------------
+*** Hardwareeigentest ***
+
+Prozedur TEST_
+(Monitorkommando "T" - Hardwareeigentest)
+
+Prozedur RAM_TEST_SEG0
+(RAM-Test des Segments 0)
+
+Prozedur MMU_TEST
+(MMU-Test)
+
+Prozedur RAM_TEST_SEG
+(RAM-Test eines Segments)
+
+Prozedur PRIVINSTR_TRAP
+(Trap-Routine fuer Priv.-Instr.-Trap)
+
+Prozedur SEGMENT_TRAP
+(Trap-Routine bei Segment-Trap)
+
+Prozedur CODE_TRAP
+(Trap-Routine bei Segment-Trap fuer Test der Code-MMU)
+
+Prozedur CLR_CTL_REG
+(Beschreiben der MMU-Register SAR und DSCR)
+
+Prozedur LD_SDR
+(Fuellen der 64 SDR einer MMU)
+
+Prozedur RD_SDR
+(Lesen und Vergleichen der 64 SDR einer MMU)
+
+Prozedur LD_3SDR
+(Fuellen der 64 SDR aller 3 MMU's)
+
+Prozedur SEGMENT_TRAP_TEST
+(Test Segment-Trap-Ausloesung)
+
+Prozedur BY_WO_CMP
+(Vergleich zweier Byte- bzw. Word-Register)
+
+Prozedur FAT_ERR
+(Fatal Error - Fehlerabbruch)
+
+Prozedur WR_TESTNR
+(Ausgabe der Testschrittnummer auf Terminal)
+
+Prozedur WR_2SP
+(Ausgabe von 2 Space auf Terminal)
+
+Prozedur WR_2BS
+(Ausgabe von 2 Backspace auf Terminal)
+
+
+Prozedur MSG_ERROR
+(Ausgabe einer Fehlerzeile)
+
+Prozedur MSG_MAXSEG
+(Ausgabe "MAXSEG=<xx>")
+
+Prozedur CRC_TEST
+(Hilfsroutine fuer CRC-Pruefsummentest)
+
+Prozedur PIO_TEST1
+(Hilfsroutine fuer PIO-Test)
+
+Prozedur CTC_TEST1
+(Hilfsroutine fuer CTC-Test)
+
+Prozedur CTC_TEST2
+(Hilfsroutine fuer CTC-Test)
+
+Prozedur CTC_TEST3
+(Hilfsroutine fuer CTC-Test)
+
+Prozedur CTC_INIT
+(Hilfsroutine fuer CTC-Test)
+
+Prozedur CTC_ISR
+(Hilfsroutine fuer CTC-Test)
+
+Prozedur SIO_TEST1
+(Hilfsroutine fuer SIO-Test)
+
+Prozedur SIO0_A_TEST2
+(Hilfsroutine fuer SIO-Test)
+
+Prozedur SIO0_B_TEST2
+(Hilfsroutine fuer SIO-Test)
+
+Prozedur SIO1_A_TEST2
+(Hilfsroutine fuer SIO-Test)
+
+Prozedur SIO1_B_TEST2
+(Hilfsroutine fuer SIO-Test)
+
+Prozedur SIO_INIT
+(Hilfsroutine fuer SIO-Test)
+
+Prozedur SIO_ISR
+(Hilfsroutine fuer SIO-Test)
+
+.bp
+3.6. Modul p_gesa
+-----------------
+*** Monitorkommandos zur Arbeit mit 8-Bit-Teil bzw. mit einem lokalen System
+    ueber remote  ***
+
+Prozedur GET
+(Monitorkommando "GE" - Einlesen einer UDOS-Datei von 8-Bit-Teil in RAM)
+
+Prozedur SAVE
+(Monitorkommando "S" - Auslagern eines Speicherbereiches als UDOS-Datei
+auf 8-Bit-Teil)
+
+Prozedur QUIT8
+(Monitorkommando "Q" - Rueckkehr in 8-Bit-Teil ohne RESET U8000)
+
+Prozedur QUIT8_RESET
+(Monitorkommando "QRES" - Rueckkehr in 8-Bit-Teil mit RESET U8000)
+
+Prozedur FLOPPY
+(Treiber zur Arbeit mit einer blockorientierten Diskette im WEGA-Format
+auf 8-Bit-Teil ueber Koppelschnittstelle)
+
+Prozedur RM_GET
+(Monitorkommando "RGE" - Einlesen einer Datei von einem lokalen System in RAM)
+
+Prozedur RM_SAVE
+(Monitorkommando "RS" - Auslagern eines Speicherbereiches als Datei
+auf einem lokalen System)
+
+Prozedur RM_QUIT
+(Rueckkehr zum lokalen System)
+
+ 
+3.7. Modul p_ldsd
+-----------------
+*** Monitorkommandos zur Arbeit mit einem MCZ ueber LOAD/SEND ***
+
+Prozedur QUIT
+(Monitorkommando "QUIT" - Uebergang in Betriebssystem des MCZ 
+(Transparent-Mode))
+
+Prozedur LOAD
+(Monitorkommando "LOAD" - Einlesen einer Datei von MCZ in RAM)
+
+Prozedur MCZ_INT
+(VI-Routine fuer MCZ-Zeicheneingabe)
+
+Prozedur MCZ_ERR
+(VI-Routine fuer MCZ-Empfangsfehler)
+
+Prozedur INCPTR_MCZ
+(Zeichenzeiger incrementieren)
+
+Prozedur TYWR_MCZ
+(Zeichenausgabe an MCZ)
+
+Prozedur WR_OUTBFF_CR_MCZ
+(Ausgabe des Inhaltes des Ausgabepuffers OUTBFF mit CR an MCZ)
+
+Prozedur WR_OUTBFF_MCZ
+(Ausgabe des Inhaltes des Ausgabepuffers OUTBFF an MCZ)
+
+Prozedur IN_POI_IB
+
+Prozedur EKBL
+
+Prozedur EKTB_PST
+
+Prozedur EKBY_PSB
+
+Prozedur LDB_MEM
+
+Prozedur EKLA
+
+Prozedur SAW_MCZ
+
+Prozedur WOEOI_MCZ
+
+Prozedur WOEOS_MCZ
+
+Prozedur WOCF_MCZ
+
+Prozedur WOCF_MCZ_OI
+
+Prozedur F_IB_MCZ
+
+Prozedur O_FIB_MCZ
+
+Prozedur S_RPB
+
+Prozedur S_LAB
+
+Prozedur S_SNB
+
+Prozedur SEND
+(Monitorkommando "SEND" - Auslagern eines Speicherbereiches als Datei auf MCZ)
+
+Prozedur MIOB_CON
+.bp
+3.8. Modul p_boot
+-----------------
+*** Monitorkommandos zum WEGA-Start ***
+
+Prozedur AUTOBOOT
+(Monitorkommando "NMI-Taste" - automatischer WEGA-Start)
+ 
+Prozedur OS_BOOT
+(Monitorkommando "O" - manueller WEGA-Start)
+
+Prozedur DSK_BOOT
+(WEGA-Start von Hard-Disk)
+
+Prozedur FLP_BOOT
+(WEGA-Start von blockorientierter Diskette im WEGA-Format)
+
+Prozedur UDOS_BOOT
+(WEGA-Start von UDOS-Diskette)
+
+Prozedur RM_BOOT
+(WEGA-Start vom lokalen System ueber "Remote")
+
+
+3.9. Modul p_disk
+-----------------
+*** Hard-Disk-Treiber ***
+
+Prozedur DISK
+
+
+3.10. Modul p_crc
+-----------------
+*** Speicherplatzreservierung fuer EPROM-Pruefsummen ***
+ 
+
+3.11. Modul p_ram
+-----------------
+*** Arbeitsspeicher ***
+
