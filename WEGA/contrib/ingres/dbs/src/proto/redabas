@@ -1,0 +1,293 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+BIN=	$(DBS)/bin
+LIB=	../lib
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+LD=	$(CC)
+CRT0=
+# ifdef ID_SEPERATE
+LDFLAGS= -i
+# else
+# ifdef TEXT_SEPERATE
+LDFLAGS= -n
+# endif
+# endif
+u_FLAG=	-u
+LIBC=	-lm
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+LIBC=	-lm -lc
+# endif
+
+# ifdef ESER_VMX
+# endif
+
+# ifdef HP_UX
+u_FLAG=	-W l,-u
+# endif
+
+# ifdef P8000
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef PDP
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+LD=	ld
+LDFLAGS= -i -Ms -F 2000
+CRT0=	/lib/Sseg.o /lib/Scrt0.o
+LIBC=	/lib/Slibm.a /lib/Slibcfp.a /lib/Slibc.a
+# endif
+
+# ifdef XENIX386
+LD=	ld
+CRT0=	/lib/386/Sseg.o /lib/386/Scrt0.o
+LIBC=	/lib/386/Slibm.a /lib/386/Slibcfp.a /lib/386/Slibc.a
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+CHMOD=	chmod
+MODE=	6711
+NROFF=	nroff
+UMODE=	0755
+RM=	-rm -f
+
+D2=	-DREDABAS=2
+D3=	-DREDABAS=3
+
+ILIBES=	$(LIB)/i.a $(LIB)/g.a
+$(LIB)/i.a:
+
+$(LIB)/g.a:
+
+ILIBS=	$(ILIBES) $(LIBC)
+ALIBES=	$(LIB)/a.a $(ILIBES)
+$(LIB)/a.a:
+
+ALIBS=	$(ALIBES) $(LIBC)
+
+CDB=	$(BIN)/CDB
+DB2=	$(BIN)/DB2
+DB3=	$(BIN)/DB3
+DCP=	$(BIN)/DCP
+RDB2=	$(BIN)/RDB2
+RDB3=	$(BIN)/RDB3
+SCP=	$(BIN)/SCP
+WDB2=	$(BIN)/WDB2
+WDB3=	$(BIN)/WDB3
+cdb=	$(BIN)/cdb
+db2=	$(BIN)/db2
+db3=	$(BIN)/db3
+dcp=	$(BIN)/dcp
+rdb2=	$(BIN)/rdb2
+rdb3=	$(BIN)/rdb3
+scp=	$(BIN)/scp
+wdb2=	$(BIN)/wdb2
+wdb3=	$(BIN)/wdb3
+ALL=	$(CDB)		$(DB2)		$(DB3)		$(DCP)		\
+	$(RDB2)		$(RDB3)		$(SCP)		$(WDB2)		\
+	$(WDB3)
+DOC=	EINLEITUNG.nr BEISPIEL.nr CL.nr CDB.nr DB.nr RDB.nr WDB.nr
+
+INSTALL:	install
+
+install:	$(ALL)
+
+$(cdb):		cdb.sh
+	CP cdb.sh $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(CDB):		$(cdb)
+	$(RM) $@
+	LN $(cdb) $@
+
+$(db2):		db2.o db_rdb2.o $(ILIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) db2.o db_rdb2.o $(ILIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(DB2):		$(db2)
+	$(RM) $@
+	LN $(db2) $@
+
+$(db3):		db3.o db_rdb3.o $(ILIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) db3.o db_rdb3.o $(ILIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(DB3):		$(db3)
+	$(RM) $@
+	LN $(db3) $@
+
+$(rdb2):	rdb2.o rdb_wdb2.o db_rdb2.o $(ALIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) rdb2.o rdb_wdb2.o db_rdb2.o $(ALIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(RDB2):	$(rdb2)
+	$(RM) $@
+	LN $(rdb2) $@
+
+$(rdb3):	rdb3.o rdb_wdb3.o db_rdb3.o $(ALIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) rdb3.o rdb_wdb3.o db_rdb3.o $(ALIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(RDB3):	$(rdb3)
+	$(RM) $@
+	LN $(rdb3) $@
+
+$(wdb2):	wdb2.o rdb_wdb2.o $(ALIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) wdb2.o rdb_wdb2.o $(ALIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(WDB2):	$(wdb2)
+	$(RM) $@
+	LN $(wdb2) $@
+
+$(wdb3):	wdb3.o rdb_wdb3.o $(ALIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) wdb3.o rdb_wdb3.o $(ALIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(WDB3):	$(wdb3)
+	$(RM) $@
+	LN $(wdb3) $@
+
+$(dcp):		dcp.o
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) dcp.o -o $@ $(LIBC)
+	@-$(CHMOD) $(MODE) $@
+
+$(DCP):		$(dcp)
+	$(RM) $@
+	LN $(dcp) $@
+
+$(scp):		scp.o
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) scp.o -o $@ $(LIBC)
+	@-$(CHMOD) $(MODE) $@
+
+$(SCP):		$(scp)
+	$(RM) $@
+	LN $(scp) $@
+
+TERMINAL:	terminal
+
+terminal:
+	@$(NROFF) TERMINAL.nr DECK.nr
+	@$(NROFF) MACROS.nr TERMINAL.nr $(DOC)
+
+REDABAS:	redabas
+
+redabas:	DECK.nr MACROS.nr UMLAUTE.nr $(DOC)
+	@$(NROFF) UMLAUTE.nr DECK.nr > $@
+	@$(NROFF) MACROS.nr UMLAUTE.nr $(DOC) >> $@
+
+ALLCLEAN:	allclean
+
+allclean:	clean
+	$(RM) $(ALL)
+
+CLEAN:		clean
+
+clean:
+	$(RM) *.o
+
+db2.o:		db.c db.h db2.h
+	$(CC) -c $(CFLAGS) $(D2) db.c
+	@mv db.o $@
+
+db3.o:		db.c db.h db3.h
+	$(CC) -c $(CFLAGS) $(D3) db.c
+	@mv db.o $@
+
+rdb2.o:		rdb.c db.h db2.h
+	$(CC) -c $(CFLAGS) $(D2) rdb.c
+	@mv rdb.o $@
+
+rdb3.o:		rdb.c db.h db3.h
+	$(CC) -c $(CFLAGS) $(D3) rdb.c
+	@mv rdb.o $@
+
+wdb2.o:		wdb.c db.h db2.h
+	$(CC) -c $(CFLAGS) $(D2) wdb.c
+	@mv wdb.o $@
+
+wdb3.o:		wdb.c db.h db3.h
+	$(CC) -c $(CFLAGS) $(D3) wdb.c
+	@mv wdb.o $@
+
+db_rdb2.o:	db_rdb.c db.h db2.h
+	$(CC) -c $(CFLAGS) $(D2) db_rdb.c
+	@mv db_rdb.o $@
+
+db_rdb3.o:	db_rdb.c db.h db3.h
+	$(CC) -c $(CFLAGS) $(D3) db_rdb.c
+	@mv db_rdb.o $@
+
+rdb_wdb2.o:	rdb_wdb.c db.h db2.h
+	$(CC) -c $(CFLAGS) $(D2) rdb_wdb.c
+	@mv rdb_wdb.o $@
+
+rdb_wdb3.o:	rdb_wdb.c db.h db3.h
+	$(CC) -c $(CFLAGS) $(D3) rdb_wdb.c
+	@mv rdb_wdb.o $@
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/redabas
+SRC=	cdb.sh		db.c		db.h		db2.h		\
+	db3.h		db_rdb.c	dcp.c		rdb.c		\
+	rdb_wdb.c	scp.c		wdb.c		BEISPIEL.nr	\
+	CDB.nr		CL.nr		DB.nr		DECK.daba	\
+	DECK.indes	DECK.ing_db	EINLEITUNG.nr	MACROS.daba	\
+	MACROS.indes	MACROS.ing_db	RDB.nr		TERMINAL.nr	\
+	UMLAUTE.nr	WDB.nr		dbi		pers.dbd	\
+	cdb.bat		cdb.ed		Makefile
+
+.save:		$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/redabas
+	> $@
+	umount DISK
+
+$(HOME)/.save:	$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save
+# endif
