@@ -1,8 +1,8 @@
 /************************************************************************
 *									*
-*			pburn - prom programmer				*
+*		pburn - prom programmer					*
 *									*
-*	pb1.buf.c	: wega p8000-16-bit-teil			*
+*	pb2.buf.c	: wega p8000-16-bit-teil			*
 *				c-quelle				*
 *									*
 ************************************************************************/
@@ -31,10 +31,13 @@
 #define des "destination"
 #define chs "crc_checksum: "
 
+char	d1, e1;
+
 extern int errflag,warning,mofy,answer,qflag;
-extern unsigned begadrf, begadre1, lange1, begadre2, lange2, prlang;
-extern char progbuf[0x2000], eprombuf[0x4000];
+extern long begadrf, begadre1, lange1, begadre2, lange2, prlang;
+extern char progbuf[0xfffe], eprombuf[0xfffe], progffff, epromffff, kffff;
 extern char namef[50], namee1[20], namee2[20], cmdbuf[100];
+extern char erase, vefy, d, e;
 extern int tpe1, tpe2;
 
 
@@ -43,26 +46,39 @@ extern int tpe1, tpe2;
 
 progprom()
 {
-	readprom ('t',tpe1,begadre1,lange1,eprombuf);
+	eraseprom (tpe1,begadre1,lange1);
 	if (errflag==true) {if (qflag==true)	return;
 					else	{errflag=false;
 						answer=' ';
 						return;}}
-	if (warning==true) {answer=' '; return;}
+	if (warning==true) {answer=' '; warning=false; return;}
 	printf ("%s %s %s %s %s %s\n",pgr,fil,namef,to,pro,namee1);
-	writeprom (tpe1,begadre1,lange1,progbuf);
+	writeprom (tpe1,begadre1,lange1,progbuf,&progffff);
 	if (errflag==true) {if (qflag==true)	return;
 					else	{errflag=false;
 						answer=' ';
 						return;}}
-	readprom (' ',tpe1,0,prlang,eprombuf);
+	promcrc (tpe1,begadre1,lange1);
 	if (errflag==true) {if (qflag==true)	return;
 					else	{errflag=false;
 						answer=' ';
 						return;}}
-	crc (' ',eprombuf,prlang);
-
-	compare (progbuf, &eprombuf[begadre1],begadre1,begadre1,lange1,namef,namee1);
+	crcprom(' ');
+	if (vefy==0)	{d1=d;
+			e1=e;
+			crc (' ',progbuf,lange1,&progffff);
+			if ((d1!=d) || (e1!=e))	vefy=3;}
+	if (vefy!=0)
+			{
+			warning=14; outwar();
+			if (warning==true) {answer=' '; warning=false; return;}
+			readprom (tpe1,begadre1,lange1,eprombuf,&epromffff);
+			if (errflag==true) {if (qflag==true)	return;
+							else	{errflag=false;
+								answer=' ';
+								return;}}
+			compare (progbuf,eprombuf,&progffff,&epromffff,begadre1,begadre1,lange1,namef,namee1);
+			}
 
 }
 
@@ -70,13 +86,14 @@ progprom()
 	listing eprombuffer
 	------------------- */
 
-listbuf (lid,ladr,llang,lbuf)
+listbuf (lid,ladr,llang,lbuf,padrffff)
 
 	int lid;
-	unsigned ladr, llang;
-	char *lbuf;
+	long ladr, llang;
+	char *lbuf, *padrffff;
 {
-	int i, j, k, l, c;
+	long i;
+	int j, k, l, c;
 	char string[16], zei;
 
 k=0; l=0;
@@ -84,11 +101,13 @@ k=0; l=0;
 			{if (l==0)	{l=1;
 					if (lid=='f')	printf ("%s %s %s\n",lis,fil,namef);
 						else	printf ("%s %s %s\n",lis,pro,namee1);
-					printf ("%04x:\t",ladr);}
+					printf ("%04X:\t",ladr);}
 			if (i>=llang)	{printf ("   ");
 					string[j]=' ';}
 
-				else	{zei= *lbuf;
+				else	{if (i==0xffffL)	
+						lbuf=padrffff;
+					zei= *lbuf;
 					printf ("%02x ",zei & 0x00ff);
 					if (zei<0x21||zei>0x7c) string[j]='.';
 						else string[j]=zei;}
@@ -97,7 +116,7 @@ k=0; l=0;
 					printf ("    %s \n",string);
 					j= -1;
 					if (i>=(llang-1)) break;
-					ladr=ladr+16;
+					ladr=ladr+16L;
 					k++;
 					if (k>15)	{l=0;
 							k=0;
@@ -107,7 +126,7 @@ k=0; l=0;
 								else		c=cmdbuf[0];
 							if (c!='y') break;
 							printf ("\n");}
-						else	printf ("%04x:\t",ladr);
+						else	printf ("%04X:\t",ladr);
 					} 
 
 			}
@@ -118,7 +137,7 @@ k=0; l=0;
 	------------- */
 listprom()
 {
-	listbuf ('e',begadre1,lange1,progbuf);
+	listbuf ('e',begadre1,lange1,progbuf,&progffff);
 }
 
 
@@ -130,7 +149,7 @@ modify()
 {
 	mofy=true;
 	printf ("%s %s %s\n",mod,fil,namef);
-	modprog ('m',begadre1,lange1,progbuf);
+	modprog ('m',begadre1,lange1,progbuf,&progffff);
 }
 
 /*	modify eprom buffer
@@ -139,7 +158,7 @@ modprom()
 {
 	mofy=true;
 	printf ("%s %s %s\n",mod,pro,namee1);
-	modprog ('m',begadre1,lange1,progbuf);
+	modprog ('m',begadre1,lange1,progbuf,&progffff);
 }
 
 
@@ -148,13 +167,13 @@ modprom()
 byte()
 {
 	printf ("%s %s %s\n",bpr,pro,namee1);
-	modprog ('p',0,prlang,progbuf);
-	readprom (' ',tpe1,0,prlang,eprombuf);
+	modprog ('p',0L,prlang,progbuf,&progffff);
+	promcrc (tpe1,0L,prlang);
 	if (errflag==true)	{if (qflag==true)	return;
 					else		{errflag=false;
 							answer=' ';
 							return;}}
-	crc (' ',eprombuf,prlang);
+	crcprom(' ');
 }
 
 
@@ -162,14 +181,14 @@ byte()
 	address to program ?
 	-------------------- */
 
-modprog (id,ladr,llang,zadr)
+modprog (id,ladr,llang,zadr,padrffff)
 
 int id;
-unsigned ladr, llang;
-char *zadr;
+long ladr, llang;
+char *zadr, *padrffff;
 {
 int i;
-unsigned madr;
+long madr;
 char bufadr[50];
 char zei, *bzadr;
 
@@ -196,20 +215,24 @@ do
 						{if (bufadr[i]<'a'||bufadr[i]>'f')
 							{errflag=true; break;}}}}
 		}while (errflag==true||bufadr[i]!='\0');
-	sscanf(bufadr,"%x",&madr);
+	sscanf(bufadr,"%X",&madr);
 	if (madr<ladr||madr>=(ladr+llang)) errflag=true;
 	}while (errflag==true);
 		zadr=bzadr+(madr-ladr);
 		do
 		{errflag=false;
-		if (id=='m')	printf ("%04x:\t%02x  ",madr,*zadr & 0x00ff);
+
+		/*behandlung adr ffff prom e27512*/
+		if ((madr-ladr)==0xffffL)	zadr=padrffff;
+
+		if (id=='m')	printf ("%04X:\t%02x  ",madr,*zadr & 0x00ff);
 			else	{lange1=1; begadre1=madr-ladr;
-				readprom (' ',tpe1,begadre1,lange1,eprombuf);
+				readprom (tpe1,begadre1,lange1,eprombuf,&epromffff);
 				if (errflag==true) {if (qflag==true)	return;
 								else	{errflag=false;
 									answer=' ';
 									return;}}
-				printf ("%04x:\t%02x  ",madr,eprombuf[0] & 0x00ff);}
+				printf ("%04X:\t%02x  ",madr,eprombuf[0] & 0x00ff);}
 
 		gets (bufadr);
 		i=0;
@@ -226,7 +249,7 @@ do
 					{sscanf (bufadr,"%x",&zei); 
 					if (id=='m')	*zadr= zei;
 						else	{eprombuf[0]=zei;
-							writeprom (tpe1,begadre1,lange1,eprombuf);
+							writeprom (tpe1,begadre1,lange1,eprombuf,&epromffff);
 							if (errflag==true) {if (qflag==true)	return;
 								else	{errflag=false;
 									answer=' ';
@@ -243,13 +266,13 @@ do
 	-------------------------------- */
 verify()
 {
-	readprom(' ',tpe1,begadre1,lange1,eprombuf);
+	readprom(tpe1,begadre1,lange1,eprombuf,&epromffff);
 	if (errflag==true) {if (qflag==true) 	return;
 				else		{errflag=false;
 						answer=' ';
 						return;}}
 	printf ("%s %s %s %s\n",ver,namee1,and,namef);
-	compare (progbuf,eprombuf,begadre1,begadre1,lange1,namef,namee1);
+	compare (progbuf,eprombuf,&progffff,&epromffff,begadre1,begadre1,lange1,namef,namee1);
 }
 
 /*	verify eprom1 and eprom2
@@ -257,62 +280,101 @@ verify()
 
 verifyprom()
 {
-	readprom (' ',tpe2,begadre2,lange2,eprombuf);
+	readprom (tpe2,begadre2,lange2,eprombuf,&epromffff);
 	if (errflag==true) return;
 	printf ("%s %s %s %s %s %s\n",ver,pro,namee1,and,pro,namee2);
-	compare (progbuf,eprombuf,begadre1,begadre2,lange1,namee1,namee2);
+	compare (progbuf,eprombuf,&progffff,&epromffff,begadre1,begadre2,lange1,namee1,namee2);
 }
 
 /*	compare buffer1 and buffer2
 	--------------------------- */
-compare (pbuf1,pbuf2,adr1,adr2,lang,psou,pdes)
+compare (pbuf1,pbuf2,p1ffff,p2ffff,adr1,adr2,lang,psou,pdes)
 
-char *pbuf1, *pbuf2, *psou, *pdes;
-unsigned adr1, adr2, lang;
+char *pbuf1, *pbuf2, *p1ffff, *p2ffff, *psou, *pdes;
+long adr1, adr2, lang;
 {
 char zei1, zei2;
 int k, c, i;
 
+	if (lang==0x10000L)	{lang--;
+				kffff=1;}
+		else		{if ((adr2+lang)==0x10000L)	{lang--;
+								kffff=2;}
+					else			kffff=0;}
 	k=0; i=0;
-	for (;lang>0;pbuf1++,pbuf2++,adr1++,adr2++,lang--)
-		{if (*pbuf1 != *pbuf2)
+
+	do
+	{
+		do
+		{
+		if (*pbuf1 != *pbuf2)
 			{if (i==0)	{i=1;
 					printf ("%s%s\t\t\t%s\n%s\t\t\t%s\n\n",err,sou,des,psou,pdes);}
 			zei1= *pbuf1; zei2= *pbuf2;
-			printf ("%04x:  %02x\t\t%04x:  %02x\n",adr1,zei1 &0x00ff,adr2,zei2 & 0x00ff);
+			printf ("%04X:  %02x\t\t%04X:  %02x\n",adr1,zei1 &0x00ff,adr2,zei2 & 0x00ff);
 			k++;
 			if (k>15)	{k=0; i=0;
 					printf ("%s",con);
 					gets (cmdbuf);
 					if (cmdbuf[1]!='\0')	c='w';
 						else		c=cmdbuf[0];
-					if (c!='y') break;
-					printf ("\n");}}}
+					if (c!='y') return;
+					printf ("\n");}}
+		pbuf1++;
+		pbuf2++;
+		adr1++;
+		adr2++;
+		lang--;
+		} while (lang>0);
+	/*behandlung adr ffff prom e27512*/
+	if (kffff==1)	{pbuf1=p1ffff;
+			pbuf2=p2ffff;
+			lang=1L;
+			kffff=0;}
+		else	{if (kffff==2)	{pbuf2=p2ffff;
+					lang=1L;
+					kffff=0;}}
+	} while (lang>0);
+
 }
 
 /*	crc-berechnung prom
 	------------------- */
 
-crcprom()
+crcprom (cid)
+
+char cid;
 {
-	crc ('e',progbuf,lange1);
+	if (cid=='e') printf ("%s %s %s\n",tcr,pro,namee1);
+		else  printf ("\n");
+	printf ("%s %02x%02x\n",chs,d &0xff,e & 0xff);
 }
  
 /*	crc-berechnung adr buffer; laenge buffer
 	---------------------------------------- */
-crc (cid,pbuf,lang)
-char *pbuf;
-int cid;
-unsigned lang;
+crc (cid,pbuf,lang,padrffff)
+
+char cid;
+char *pbuf, *padrffff;
+long lang;
+
 {
-char d, e, a1, a2;
+char  a1, a2;
 int i;
 
-	if (cid=='e') printf ("%s %s %s\n",tcr,pro,namee1);
-		else  if (cid=='f') printf ("%s %s %s\n",tcr,fil,namef);
-		else  printf ("\n");
-	for (d=0xff,e=0xff;lang>0;pbuf++,lang--)
-		{a1= *pbuf;
+	if (cid=='t')	printf ("%s %s %s\n",tcr,fil,namef);
+
+	d=0xff; e=0xff;
+
+	if (lang==0x10000L)	{lang--;
+				kffff=1;}
+		else		kffff=0;
+
+	do {
+
+		do
+		{
+		a1= *pbuf;
 		a1=a1 ^ d;
 		d=a1;
 		for (i=0;i<4;i++)
@@ -338,9 +400,20 @@ int i;
 		a1=a1 & 0xe0;
 		a1=a1 ^ d;
 		d=e;
-		e=a1;}
+		e=a1;
+		pbuf++;
+		lang--;
+		} while (lang>0);
 
-	printf ("%s %02x%02x\n",chs,d & 0xff,e & 0xff);
+	/*behandlung adr ffff e27512*/
+	if (kffff==1)	{pbuf=padrffff;
+			lang=1L;
+			kffff=0;}
+
+	} while (lang>0);
+
+
+	if (cid=='t')	printf ("%s %02x%02x\n",chs,d & 0xff,e & 0xff);
 }
 		
 
@@ -349,14 +422,25 @@ int i;
 
 copyprom()
 {
-	readprom ('t',tpe2,begadre2,lange2,eprombuf);
-	if (errflag==true) 	return;
-	if (warning==true) return;
+	eraseprom (tpe2,begadre2,lange2);
+	if (errflag==true)  	return;
+	if (warning==true) 	{errflag=true; warning=false; return;}
 	printf ("%s %s %s %s %s %s\n",cop,pro,namee1,to,pro,namee2);
-	writeprom (tpe2,begadre2,lange2,progbuf);
-	if (errflag==true) 	return;
-	readprom (' ',tpe2,0,prlang,eprombuf);
+	writeprom (tpe2,begadre2,lange2,progbuf,&progffff);
+	if (errflag==true)  	return;
+	promcrc (tpe2,begadre2,lange2);
+	crcprom (' ');
+	if (vefy==0)	{d1=d;
+			e1=e;
+			crc (' ',progbuf,lange2,&progffff);
+			if ((d1!=d) || (e1!=e))	vefy=3;}
 	if (errflag==true)	return;
-	crc (' ',eprombuf,prlang);
-	compare (progbuf, &eprombuf[begadre2],begadre1,begadre2,lange1,namee1,namee2);
+	if (vefy!=0)
+		{
+		warning=14; outwar();
+		if (warning==true) {answer=' '; return;}
+		readprom (tpe2,begadre2,lange2,eprombuf,&epromffff);
+		if (errflag==true)	return;
+		compare (progbuf,eprombuf,&progffff,&epromffff,begadre1,begadre2,lange1,namee1,namee2);
+		}
 }
