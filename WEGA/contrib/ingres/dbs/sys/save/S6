@@ -1,0 +1,4 @@
+echo src/amx_cc;	cd /z/dbs/src/amx_cc;		make .save
+echo src/amx_lib;	cd ../amx_lib;			make .save
+echo src/redabas;	cd ../redabas;			make .save
+echo S6 DONE
