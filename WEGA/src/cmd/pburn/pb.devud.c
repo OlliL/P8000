@@ -2,121 +2,258 @@
 *									*
 *			pburn - eprom programmer			*
 *									*
-*	pb1.devud.c		: wega p8000/16-bit-teil		*
+*	pb2.devud.c		: wega p8000/16-bit-teil		*
 *									*
 ************************************************************************/
 
-#define nit "not interruption, execution of read or write prom, please wait\n"
+#define nit "\nnot interruption, execution of read or write prom, please wait\n"
 #define true 1
+#define false 0
 
-extern int warning, errflag, error, fd, fd1, cfd, cfd1;
-extern char eprombuf[0x4000];
+extern int warning, errflag, answer, error, fd, fd1, cfd, cfd1;
+extern char eprombuf[0xfffe], Vpp, kennS;
 
-char zei;
-int fd2, k;
-unsigned lang;
+char zei, zei1, *pbufepr1, *pbufepr2;
+char erase, vefy, d, e;
+int fd2, k, kffff;
+long lang, adr, size;
 
 
 /*	read prom ueber "dev/ud" (16-bit/8-bit-schnittstelle p8000)
 	----------------------------------------------------------- */
 
-readprom(test,tpe,adrepr,lepr,pbufepr) 
+readprom(tpe,adrepr,lepr,pbufepr,padrffff) 
 int tpe;
-unsigned adrepr, lepr;
-char test;
-char *pbufepr;
-{
-char *bpbufepr;
+long adrepr, lepr;
+char *pbufepr, *padrffff;
 
-	set_del();
-	bpbufepr=pbufepr;
-	header (1,tpe,adrepr,lepr);
-	if (errflag==true) {res_del(); return;}
-	read (fd2,&zei,1);
-	switch (zei)	{
-			case 0: break;
-			case 1: error=12; printf("\n"); outerr(); close (fd2); res_del(); return;
-			case 2: error=13; printf("\n"); outerr(); close (fd2); res_del(); return;
-			}
-	lang=lepr;
+{
+
+
+	pbufepr1=pbufepr;
+	pbufepr2=pbufepr;
+	adr=adrepr;
+	if (lepr==0x10000L)	{lepr--;
+				kffff=1;}
+		else		kffff=0;
+
+	do
+	{
+		do
+		{
+		set_del();
+		if (lepr>0x4000L)	size=0x4000L;
+			else		size=lepr;
+	
+		header (1,tpe,adr,size);
+		if (errflag==true) {res_del(); return;}
+		read (fd2,&zei,1);
+		switch (zei)	{
+				case 1: error=12; printf("\n"); outerr(); close (fd2); res_del(); return;
+				case 2: error=13; printf("\n"); outerr(); close (fd2); res_del(); return;
+				}
+		r_devud ();
+		lepr=lepr-0x4000L;
+		adr=adr+0x4000L;
+		close (fd2);
+		res_del();
+		} while (lepr>0);
+
+	/*behandlung adr ffff prom e27512*/
+	if (kffff==1)	{pbufepr1=padrffff;
+			pbufepr2=padrffff;
+			lepr=1L;
+			kffff=0;}
+	} while (lepr>0);
+
+}
+
+
+/* uebertragung dev/ud-schnittstelle max. 16-K (0x4000) bloecken 
+   ------------------------------------------------------------- */
+
+r_devud ()
+
+{
+	lang=size;
 	do
 		{
-		for (k=64;(lang>0) && (k>0);lang--,k--,bpbufepr++)
-					read (fd2,bpbufepr,1);
+		for (k=64;(lang>0) && (k>0);lang--,k--,pbufepr1++)
+					read (fd2,pbufepr1,1);
 		zei='q';
 		write (fd2, &zei, 1);
 		}while (lang>0);
 
-	if (test!= ' ')	{for (warning=0;lepr>0;lepr--,pbufepr++)
-					{if (*pbufepr != 0xff)	{warning=9; 
-								if (test=='t')	{outwar(); break;}
-									else	break;}}}
-	close (fd2);
-	res_del();
 }
 
 
 /*	write prom ueber "dev/ud/ (16-bit/8-bit-schnittstelle p8000)
 	------------------------------------------------------------ */
 
-writeprom  (tpe,adrepr,lepr,pbufepr)
+writeprom  (tpe,adrepr,lepr,pbufepr,padrffff)
 int tpe;
-unsigned adrepr, lepr;
-char *pbufepr;
+long adrepr, lepr;
+char *pbufepr, *padrffff;
 {
-	set_del();
-	header (2,tpe,adrepr,lepr);
-	if (errflag==true) {res_del(); return;}
-	lang=lepr;
+	vefy=0;
+	pbufepr2=pbufepr;
+	adr=adrepr;
+	if (lepr==0x10000L)	{lepr--;
+				kffff=1;}
+		else		kffff=0;
+
+	do
+	{
+		do
+		{
+		set_del();
+		if (lepr>0x4000L)	size=0x4000L;
+			else		size=lepr;
+		header (2,tpe,adr,size);
+		if (errflag==true) {res_del(); return;}
+		w_devud ();
+			do
+			{
+			read (fd2,&zei,1);
+			switch (zei)	{
+					case 1: error=12; printf("\n"); outerr(); close (fd2); res_del(); return;
+					case 2: error=13; printf("\n"); outerr(); close (fd2); res_del(); return;
+					case 3: if (kennS==1)	warning=16;
+							else	warning=15;
+						outwar();
+						vefy=1;
+						if (warning==true)	{zei1='n';
+									write (fd2,&zei1,1);
+									close (fd2);
+									res_del();
+									answer=' ';
+									warning=false;
+									return;}
+							else		{zei1='y';
+									write (fd2,&zei1,1);
+									break;}
+					}
+			}while (zei!=0);
+
+			if (kennS==1)	{	/* Standard Speed Program Mode */
+					read (fd2,&zei,1);
+					switch (zei)	{
+							case 1: error=12; printf ("\n"); outerr(); close (fd2); res_del(); return;
+							case 2: error=13; printf ("\n"); outerr(); close (fd2); res_del(); return;
+							}
+					if (vefy==0) vefy=zei;
+					}	
+		lepr=lepr-0x4000L;
+		adr=adr+0x4000L;
+		close (fd2);
+		res_del();
+		} while (lepr>0);
+
+	/*behandlung adr ffff prom e27512*/
+	if (kffff==1)	{pbufepr2=padrffff;
+			lepr=1;
+			kffff=0;}
+	} while (lepr>0);
+
+}
+
+/*uebertragung dev/ud-schnittstelle von max. 16-K (0x4000) bloecken
+  -----------------------------------------------------------------*/
+
+w_devud ()
+{
+	lang=size;
 	do
 		{
-		for (k=64;(lang>0) && (k>0);lang--,k--,pbufepr++)
-					write (fd2,pbufepr,1);
+		for (k=64;(lang>0) && (k>0);lang--,k--,pbufepr2++)
+					write (fd2,pbufepr2,1);
 		read (fd2, &zei, 1);
 		}while (lang>0);
-	
-	read (fd2,&zei,1);
-	switch (zei)	{
-			case 0: break;
-			case 1: error=12; printf("\n"); outerr(); break;
-			case 2: error=13; printf("\n"); outerr(); break;
+}
+
+/* erase prom ueber "dev/ud" (16-bit/8-bit-schnittstelle 
+   ----------------------------------------------------- */
+
+eraseprom (tpe,adrepr,lepr)
+
+int tpe;
+long adrepr, lepr;
+{
+	set_del();
+	header (3,tpe,adrepr,lepr);
+	if (errflag==true) {res_del(); return;}
+	read (fd2,&erase,1);
+	switch (erase)	{
+			case 1: error=12; printf ("\n"); outerr(); close (fd2); res_del(); return;
+			case 2: error=13; printf ("\n"); outerr(); close (fd2); res_del(); return;
 			}
+	if (erase!=0) {warning=9; outwar(); close (fd2); res_del(); return;}
+
 	close (fd2);
 	res_del();
 }
 
+/* promcrc ueber "dev/ud" (16-bit/8-bit-schnittstelle p8000)
+   --------------------------------------------------------- */
 
-/* output header (read/write; typ prom; begadr prom; laenge prom */
+promcrc (tpe,adrepr,lepr)
+
+int tpe;
+long adrepr, lepr;
+
+{
+	set_del();
+	header (4,tpe,adrepr,lepr);
+	if (errflag==true) {res_del(); return;}
+	read (fd2,&erase,1);
+	switch (erase)	{
+			case 1: error=12; printf ("\n"); outerr(); close (fd2); res_del(); return;
+			case 2: error=13; printf ("\n"); outerr(); close (fd2); res_del(); return;
+			}	
+	read (fd2,&d,1);
+	read (fd2,&e,1);
+	close (fd2);
+	res_del();
+}
+
+/* output header (read/write; typ prom; begadr prom; laenge prom 
+   ------------------------------------------------------------- */
 
 header (rw,tpe,adre,lange)
  
 char rw;
 int  tpe;
-unsigned adre, lange;
+long adre, lange;
 {
 	fd2=open ("/dev/ud",2);
 	if (fd2==-1)	{error=11; printf("\n"); outerr(); return;}
 	zei='P';
 	write (fd2,&zei,1);			/* P - programmer */
+
 	write (fd2,&rw,1);			/* read or write */
+
 	zei=tpe & 0x00ff;
 	write (fd2,&zei,1);			/* typ prom */
+
 	lang=adre;
 	adre=adre>>8;
-	adre=adre & 0x00ff;
+	adre=adre & 0x00ffL;
 	zei=adre;
 	write (fd2,&zei,1);			/* begadr prom high */
-	lang=lang & 0x00ff;
+	lang=lang & 0x00ffL;
 	zei=lang;
 	write (fd2,&zei,1);			/*	       low */
+
 	lang=lange;
 	lange=lange>>8;
-	lange=lange & 0x00ff;
+	lange=lange & 0x00ffL;
 	zei=lange;
 	write (fd2,&zei,1);			/* laenge prom high */
-	lang=lang & 0x00ff;
+	lang=lang & 0x00ffL;
 	zei=lang;
 	write (fd2,&zei,1);			/*	       low */
+	write (fd2,&Vpp,1);			/* programmierspannung Vpp*/
+	write (fd2,&kennS,1);			/* program mode*/
 
 	read (fd2, &zei, 1);			/* acknowledge */
 
