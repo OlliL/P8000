@@ -1,0 +1,50 @@
+report r02 # d02
+with
+	/* page layout */
+	columns 70
+	lines 60
+	all lines 72
+
+	/* domains */
+	define #land         = char     12
+	define #erfinder     = char     20
+	define #erfindung    = char     36
+	define #jahr         = char      9
+
+as
+
+on pagebegin do
+	'-' 70 \n
+	\20 'E R F I N D U N G E N'
+	\61 date \n2
+	\1 'Erfinder'
+	\22 'Erfindung'
+	\61 'Jahr'
+	\n
+	'-' 70\n
+	if not groupbegin land then 
+		\n2
+		\5 'Land:'
+		\12 char @12 #land
+		\n3
+	end if
+end
+
+for all do
+	for one do
+		if groupbegin land then 
+			\n2
+			\5 'Land:'
+			\12 char @12 #land
+			\n3
+		end if
+		\1 char @20 #erfinder
+		\22 char @36 #erfindung
+		\61 char @9 #jahr
+		\n
+		if groupend land and  all lines < 6 then
+			\f 
+		end if
+	end one
+end all
+;
