@@ -1,0 +1,467 @@
+SHAPES
+#	it is more or less true that the costs = number of memory refs.
+#	the cost is 1 for memory items, 0 for regs and building consts
+#	$l and $r are used to account for multiple memory accesses
+#	basic shapes
+F:	'FREE';			# Execute the subtree for side effects
+N:	'NAME'	:1;		# Name of (typically static variable)
+				# cost = 2 wds address
+T:	'TEMP'	:1;		# Temporary location in memory
+				# cost = 1 wd offset
+A:	'AUTO'  :1;		# Automatic Variable
+P:	'PARAM' :1;		# function parameter
+CC:	'CC';			# Execute for Condition Codes only
+R:	'REG' :0;			# Value goes in a register
+
+#	constants
+C:	:1;		
+C0:	CONVAL 0 :0;
+C1:	CONVAL 1 :0;
+C2:	CONVAL 2 :0;
+C3:	CONVAL 3 :0;
+C4:	CONVAL 4 :0;
+C5:	CONVAL 5 :0;
+C6:	CONVAL 6 :0;
+C7:	CONVAL 7 :0;
+C8:	CONVAL 8 :0;
+C9:	CONVAL 9 :0;
+C10:	CONVAL 10 :0;
+C11:	CONVAL 11 :0;
+C12:	CONVAL 12 :0;
+C13:	CONVAL 13 :0;
+C14:	CONVAL 14 :0;
+C15:	CONVAL 15 :0;
+C16:	CONVAL 16 :0;
+C32:	CONVAL 32 :0;
+C64:	CONVAL 64 :0;
+C128:	CONVAL 128 :0;
+C256:	CONVAL 256 :0;
+
+#CPOW2B: C1, C2, C4, C8, C16, C32, C64, C128, C256;
+
+CPOW2:		USERCOST 1 :0;	# any power of 2
+CPOW2SUM:	USERCOST 2 :0;	# the sum of 2 powers of 2 (e.g. 10 = 8 + 2)
+CPOW2DIF:	USERCOST 3 :0;	# the diff. of powers of 2 (e.g. 14 = 16 - 2)
+
+C1to16: C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12, C13, C14, C15, C16;
+
+C0to15:	POSRANGE 4 :1;		
+C8bit:	SGRANGE 8 :1;	
+Cc:	SGRANGE 7 : 1;
+Cs:	SGRANGE 15 :1;
+Cl:	SGRANGE 31 :1;
+
+#	more complicated address modes
+
+AWDnR: *R,N,P,A;		# Addressable Word, not Register
+AWD: T, AWDnR;		# Addressable Word (temp in reg?)
+AWDR: R, AWD;		# Addressable Word (temp in reg?)
+CAWD: C, AWD;
+CAWDR: C, AWDR;  # no double indexing, so clear is OK
+AW: N,P,A,T;
+CAW: C,N,P,A,T;
+AWR: R,N,P,A,T;
+CAWR: C,R,N,P,A,T;
+SFLD: 'FLD' R ;
+AFLD: 'FLD' AWD ;
+UCHR: 'CONV' CAWDR[cuc];
+SHRT: Cs, 'CONV' CAWDR[s];
+USHRT: 'CONV' CAWDR[sus];
+RCR: 'CONV' R[cucsuslul], R[cucsuslul];
+CRCR: C, RCR;
+CR: R[cucsuslul], C[cucsuslul];
+PCR: R, C;
+# # #CRCRSHIFT: C, RCR, C1to8;
+					#  access (non register)
+
+# for function returns when functions return simple structures
+UREG: & R ;
+UHALF: UREG + C2;
+
+OPCODES
+DCOST  :1;
+
+'COMOP' F,F {$N} "" ;
+'COMOP' F,R {$Q $Q $> $R} "Y" ;
+'COMOP' F,CC {$C} "" ;
+
+'GENLAB' F  {$N} "\LL:\n" ;
+'GENLAB' R  {$L} "\LL:\n" ;
+'GENLAB' CC  {$C} "\LL:\n" ;
+
+'GENUBR' F  {$N} "ZI" ;
+'GENUBR' C0  {$N} "ZI" ;
+'GENUBR' R  {$N} "ZI" ;
+'GENBR' CC  {$N} "ZI" ;
+
+'CM' F,F {$N} "";
+
+'CALL'[cucsus] C,F {$1 $A} "	callr	CL\nZc" ;
+'CALL'[lulpf] C,F {$P $1 $A} "	callr	CL\nZc" ;
+'CALL'[d] C,F {$Q $1 $A} "	callr	CL\nZc" ;
+'CALL'[cucsus] R,F {$1 $< $A} "	callr	@CL\nZc" ;
+'CALL'[lulpf] R,F {$P $1 $< $A} "	callr	@CL\nZc" ;
+'CALL'[d] R,F {$Q $1 $< $A} "	callr	@CL\nZc" ;
+'CALL' R,F {$N $A} "	callr	@CL\nZc" ;
+'CALL' C,F {$N $A} "	callr	CL\nZc" ;
+
+'UCALL'[cucsus] C {$1 $A} "	callr	CL\n" ;
+'UCALL'[lulpf] C {$P $1 $A} "	callr	CL\n" ;
+'UCALL'[d] C {$Q $A $1} "	callr	CL\n" ;
+'UCALL'[cucsus] R {$1 $< $A} "	callr	@CL\n" ;
+'UCALL'[lulpf] R {$P $1 $< $A} "	callr	@CL\n" ;
+'UCALL'[d] R {$Q $1 $< $A} "	callr	@CL\n" ;
+#'UCALL' R {$N $A} "	callr	@CL\n" ;
+'UCALL' R {$[ $N $A} "	callr	@CL\n" ;
+'UCALL' C {$N $A} "	callr	CL\n" ;
+
+	# MOVQ is 0 to offset Cc cost
+= R[cucsus], C0 {$L} "\txor\tAL,AL\n" :0;	# result in register
+= R[sus], C0to15 {$L} "\tldk\tAL,AR\n" :0;
+= R[lulpf], C0 {$L $C} "\tsubl\tAL,AL\n" :0;
+= R[cucsus], R[cucsus] {$L} "RL!R\tld\tZiAL,ZiAR\n" :0;
+= R[cuc], C {$L} "RL!R\tld\tZiAL,AR\n" :0;
+= R[c], AWD[cuc] {$L} "RL!R\tldb\tZn1cAL,BR\n\textsb\tZiAL\n" :0;
+= R[uc], AWD[cuc] {$L} "RL!R\tldb\tZn1cAL,BR\n\txorb\tZn0cAL,Zn0cAL\n" :0;
+= R[suslulpf], CAWDR {$L} "RL!R\tldX\tAL,BR\n" :0;
+
+= AWD[cucsus], C0 {$R} "\tclrX\tAL\n" ;
+= AWD[lulpf], C0 {$P $1 $C} "\tsubl\tA1,A1\n\tldl\tBL,A1\n" ;
+= AWD[lulpf], C {$P $1} "\tldl\tA1,AR\n\tldl\tBL,A1\n" ;
+= AWD[cuc], C  {$R} "\tldb\tAL,Zn1cAR\n" ;
+= AWD[c], AWD[cuc]  {$1} "\tldb\tZn1cA1,BR\n\textsb\tZiA1\n\tldb\tBL,Zn1cA1\n" ;
+= AWD[uc], AWD[cuc]  {$1} "\txor\tZiA1,ZiA1\n\tldb\tZn1cA1,BR\n\tldb\tBL,Zn1cA1\n" ;
+= AWD[cuc], R[cucsus]  {$R} "\tldb\tBL,Zn1cAR\n" ;
+= AWD[suslulpf], C  {$R} "\tldX\tAL,AR\n" ;
+= AWD[suslulpf], R  {$R} "\tldX\tBL,AR\n" ;
+
+= R[p], (&A)[p] {$L} "\tldl\tAL,W\n\tadd\tZn2sAL,P(RL)\n" ;
+= R[p], (&P)[p] {$L} "\tldl\tAL,W\n\tadd\tZn2sAL,P(RL)\n" ;
+
+= R[d], C0 {$C $L} "\tsubl\tZn0lAL,Zn0lAL\n\tldl\tZn4lAL,Zn0lAL\n";
+= AW[d], C0 {$P $C $L} "\tsubl\tA1,A1\n\tldl\tZn4lAL,A1\n\tldl\tZn0lAL,A1\n":1;
+= R[d], C {$L} "\tldl\tZn0lAL,Zn0lAR\n\tldl\tZn4lAL,Zn4lAR\n";
+= AWR[d], R[d] {$R} "RL!R\tldl\tZn4lBL,Zn4lAR\nRL!R\tldl\tZn0lBL,Zn0lAR\n" ;
+= R[d], CAW[d] {$L} "\tldl\tZn4lAL,Zn4lBR\n\tldl\tZn0lAL,Zn0lBR\n" ;
+= AWR[d], CAW[d] {$P $L} "\tldl\tA1,Zn0lAR\n\tldl\tZn0lAL,A1\n\tldl\tA1,Zn4lAR\n\tldl\tZn4lAL,A1\n" :2;
+
+= (*R)[d],R[d] {$R} "\tldm\t@A(LL),Zn0sAR,#4\n" :10;
+
+= SFLD[cuc], R[cuc] {1 $R} "\tldb\tZn1cA1,AR\nH?L\tsllb\tZn1cA1,#HL\n\tandb\tZn1cA1,#ML\n\tandb\tZn1cAL,#M~L\n\torb\tAL,Zn1cA1\n" :5;
+= SFLD[sus], R[sus] {1 $R} "\tld\tA1,AR\nH?L\tsll\tA1,#HL\n\tand\tA1,#ML\n\tand\tAL,#M~L\n\tor\tAL,A1\n" :5;
+= SFLD[lul], R[lul] {$P $R} "\tldl\tA1,AR\nH?L\tslll\tA1,#HL\n\tand\tZn0sA1,#ML0\n\tand\tZn2sA1,#ML2\n\tand\tZn0sAL,#M~L0\n\tand\tZn2sAL,M~L2\n\tor\tZn0sAL,Zn0sA1\n\torZn2sAL,Zn2sA1\n" :5;
+
+= AFLD[cuc], R[cuc] {1 $R} "\tldb\tZn1cA1,AR\nH?L\tsllb\tZn1cA1,#HL\n\tandb\tZn1cA1,#ML\n\tldb\trl0,AL\n\tandb\trl0,#M~L\n\torb\trl0,Zn1cA1\n\tldb\tAL,rl0\n" :5;
+= AFLD[sus], R[sus] {1 $R} "\tld\tA1,AR\nH?L\tsll\tA1,#HL\n\tand\tA1,#ML\n\tld\tr0,AL\n\tand\tr0,#M~L\n\tor\tr0,A1\n\tld\tAL,r0\n" :5;
+= AFLD[lul], R[lul] {$P $R} "\tldl\tA1,AR\nH?L\tslll\tA1,#HL\n\tand\tZn0sA1,#ML0\n\tand\tZn2sA1,#ML2\n\tldl\trr0,AL\n\tand\tr0,#M~L0\n\tand\tr1,#M~L2\n\tor\tr0,Zn0sA1\n\tor\tr1,Zn2sA1\n\tldl\tAL,rr0\n" :5;
+
+R[cucsuslulpfd] {$R} "":0; 
+#  put the tests before the copies so the fast mode will work
+AWDR[cuc] {$N $C} "\tcpb\tAR,#0\n" ;
+AWDR[sus] {$N $C} "\tcp\tAR,#0\n" ;
+R[lulp] {$N $C} "\tcpl\tAR,#0\n" ;
+R[d] {$Q $> $N $A $C $X} "RR!1\tldl\tZn0lA1,Zn0lAR\nRR!1\tldl\tZn4lA1,Zn4lAR\n\tcallr\tcpzd\n" :3;
+R[f] {$P $> $N $A $C $X} "RR!1\tldl\tA1,AR\n\tcallr\tcpzs\n" :3;
+C0[cucsus] {$1} "\txorX\tA1,A1\n" :1;
+C0[lulp] {$C $P $1} "\tsubl\tA1,A1\n" :2;
+C0to15 {$1} "\tldk\tZiA1,AR\n" :3;
+C[cuc] {$1} "\tld\tZiA1,AR\n" :4;
+
+AWDR[c] {$1 $>} "RR!1\tldb\tZn1cA1,BR\nRR!1\textsb\tZiA1\n" :3;
+AWDR[uc] {$1 $>} "RR!1\tldb\tZn1cA1,BR\nRR!1\txorb\tZn0cA1,Zn0cA1\n" :3;
+CAWDR[sus] {$1 $] $>} "RR!1\tld\tA1,BR\n" :4;
+CAWDR[lulp] {$P $1 $>} "RR!1\tldl\tA1,BR\n" :2;
+AWDR[f] {$P $1 $>} "RR!1\tldl\tA1,BR\n" :2;
+(*R)[d] {$Q $1 $[ $H} "\tldm\tZn0sA1,@A(LL),#4\n" ;
+(*AW)[d] {$Q $1 $[ $H} "\tldl\tZn4lA1,B(LL)\n\tldm\tZn0sA1,@Zn4lA1,#4\n" :2;
+AW[d] {$Q $1} "\tldl\tZn0lA1,Zn0lB-R\n\tldl\tZn4lA1,Zn4lBR\n" :2;
+
+'UAND' A {$P $1} "\tldl\tA1,W\n\tadd\tZn2sA1,PL\n" ;
+'UAND' P {$P $1} "\tldl\tA1,W\n\tadd\tZn2sA1,PL\n" ;
+'UAND' T {$P $1} "ZtALA1" :5; # must store to mem if register temp
+
+'FLD'[cuc] R {$[ $1} "RL!1\tldb\tZn1cA1,AL\nH?.\tsrlb\tZnc1A1,#H.\n\tandb\tZn1cA1,#N.\n" :7;
+'FLD'[sus] R {$[ $1} "RL!1\tld\tA1,AL\nH?.\tsrl\tA1,#H.\n\tand\tA1,#N.\n" :7;
+'FLD'[lul] R {$[ $P $1} "RL!1\tldl\tA1,AL\nH?.\tsrll\tA1,#H.\n\tand\tZn0sA1,#N.0\n\tand\tZn2sA1,#N.2\n" :7;
+
+'ARG' (&A) {$P $1} "\tldl\tA1,W\n\tadd\tZn2sA1,P(LL)\n\tpushl\t|,A1\n" ;
+'ARG' (&P) {$P $1} "\tldl\tA1,W\n\tadd\tZn2sA1,P(LL)\n\tpushl\t|,A1\n" ;
+'ARG' CAWDR[sus]  {$N} "\tpush\t|,AL\n" ;
+'ARG' AWDR[lulp]  {$N} "\tpushl\t|,AL\n" ;
+'ARG' AWR[d]  {$N} "\tpushl\t|,Zn4lAL\n\tpushl\t|,Zn0lAL\n" ;
+#'ARG' AWDR[f]  {$Q $A $N $X} "\tldl\tZn4lA1,BL\n\tcallr\tftod\n\tpushl\t|,Zn4lA1\n\tpushl\t|,Zn0lA1\n" ;
+
+'CMP' R[cuc], R[cuc] {$N $C} "\tcpb\tZn1cAL,Zn1cAR\n" ;
+'CMP' R[cuc], CAWD[cuc] {$N $C} "\tcpb\tZn1cAL,AR\n" ;
+'CMP' CAWD[cuc], CAWDR[cuc] {1 $N $C} "RL!1\tldb\tZn1cA1,BL\n\tcpb\tZn1cA1,AR\n" ;
+'CMP' AWDR[sus], C0 {$N $C} "\tcp\tAL,#0\n" ;
+'CMP' R[lulp], C0 {$N $C} "\tcpl\tAL,#0\n" ;
+'CMP' AWDR[sus], C {$N $C} "\tcp\tAL,AR\n" ;
+'CMP' R[lulp], C {$N $C} "\tcpl\tAL,AR\n" ;
+'CMP' AWD[lulp], C {$N $C $P} "\tldl\tA1,BL\n\tcpl\tA1,AR\n" ;
+'CMP' R[sus], AWDR[suslulp] {$N $C} "\tcp\tAL,AR\n" ;
+'CMP' R[lulp], AWDR[suslulp] {$N $C} "\tcpl\tAL,AR\n" ;
+
+'CMP' R[d], R[d] {$Q $Q $< $> $N $A $C $X} "RL!1\tex\tZn0sA1,Zn0sA2\nRL!1\tex\tZn2sA1,Zn2sA2\nRL!1\tex\tZn4sA1,Zn4sA2\nRL!1\tex\tZn6sA1,Zn6sA2\n\tcallr\tcpdd\n" :2;
+#'CMP' CAW[d], R[d] {$Q $Q $> $N $A $C $X} "RR!2\tldl\tZn0lA2,Zn0lAR\nRR!2\tldl\tZn4lA2,Zn4lAR\n\tldl\tZn0lA1,Zn0lBL\n\tldl\tZn4lA1,Zn4lBL\n\tcallr\tcpdd\n" :3;
+#'CMP' R[d], CAW[d] {$Q $Q $< $N $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\nRR!2\tldl\tZn0lA2,Zn0lBR\nRR!2\tldl\tZn4lA2,Zn4lBR\n\tcallr\tcpdd\n" :3;
+
+#'CMP' CAWDR[f], CAWDR[f] {$P $P $> $N $< $A $C $X} "RL!1\tldl\tA1,BL\nRR!2\tldl\tA2,BR\n\tcallr\tcps\n" :3;
+
+'UMINUS' R[lul] {$P $1 $C $[} "RL!1\tldl\tA1,AL\n\tcom\tZn0sA1\n\tcom\tZn2sA1\n\taddl\tA1,#1\n" ;
+'UMINUS' R[sus]  {$1 $C $[} "RL!1\tld\tA1,AL\n\tneg\tA1\n" ;
+'UMINUS' R[d] {$Q $< $1 $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tcallr\tnegd\n" :3;
+#'UMINUS' CAWDR[f] {$P $< $1 $A $C $X} "RL!1\tldl\tA1,BL\n\tcallr\tnegs\n" :3;
+
+~ R[lul]  {$P $1 $[} "RL!1\tldl\tA1,AL\n\tcom\tZn0sA1\n\tcom\tZn2sA1\n" ;
+~ R[sus]  {$1 $[} "RL!1\tld\tA1,AL\n\tcom\tA1\n" ;
+
+++ AWD[cuc], C1to16 {$1 $l} "F\tldb\tZn1cA1,B-L\n\tincb\tAL,AR\n" ;
+++ AWDR[sus], C1to16 {$1 $l} "F\tld\tA1,B-L\n\tinc\tAL,AR\n" ;
+++ R[sus], C {$1 $l} "F\tld\tA1,A-L\n\tadd\tAL,AR\n" ;
+++ AWD[sus], C {2 $2 $l} "\tld\tA1,B-L\nF\tld\tA2,A1\n\tadd\tA1,AR\n\tld\tBL,A1\n" ;
+++ R[lul], C {$P $1 $l} "F\tldl\tA1,A-L\n\taddl\tAL,AR\n" ;
+++ AWD[lul], C {$P $P $2 $l} "\tldl\tA1,B-L\nF\tldl\tA2,A1\n\taddl\tA1,AR\n\tldl\tBL,A1\n" ;
+++ R[p], C1to16 {$P $1 $l} "F\tldl\tA1,A-L\n\tinc\tZn2sAL,AR\n" ;
+++ R[p], C {$P $1 $l} "F\tldl\tA1,A-L\n\tadd\tZn2sAL,GR\n" ;
+++ AW[p], C1to16 {$P $1 $l} "\tldl\tA1,B-L\n\tinc\tZn2sAL,AR\n" ;
+++ AW[p], C {$P $P $2 $l} "\tldl\tA1,B-L\n\tFldl\tA2,A1\n\tadd\tZn2sA1,GR\n\tldl\tBL,A1\n" ;
+
+-- AWD[cuc], C1to16 {$1 $l} "F\tldb\tZn1cA1,B-L\n\tdecb\tAL,AR\n" ;
+-- AWDR[sus], C1to16 {$1 $l} "F\tld\tA1,B-L\n\tdec\tAL,AR\n" ;
+-- R[sus], C {$1 $l} "F\tld\tA1,A-L\n\tsub\tAL,AR\n" ;
+-- AWD[sus], C {2 $2 $l} "\tld\tA1,B-L\nF\tld\tA2,A1\nsub\tA1,AR\n\tld\tBL,A1\n" ;
+-- R[lul], C {$P $1 $l} "F\tldl\tA1,A-L\n\tsubl\tAL,AR\n" ;
+-- AWD[lul], C {$P $P $2 $l} "\tldl\tA1,B-L\nF\tldl\tA2,A1\nsubl\tA1,AR\n\tldl\tBL,A1\n" ;
+-- R[p], C1to16 {$P $1 $l} "F\tldl\tA1,A-L\n\tdec\tZn2sAL,AR\n" ;
+-- R[p], C {$P $1 $l} "F\tldl\tA1,A-L\n\tsub\tZn2sAL,GR\n" ;
+-- AW[p], C1to16 {$P $1 $l} "\tldl\tA1,B-L\n\tdec\tZn2sAL,AR\n" ;
+-- AW[p], C {$P $P $2 $l} "\tldl\tA1,B-L\nF\tldl\tA2,A1\n\tsub\tZn2sA1,GR\n\tldl\tBL,A1\n" ;
+
+& R[sus], CPOW2 {$N $C} "\tbit\tAL,ZBAR\n" ;
+& AWD[cucsus], CPOW2 {$N $C} "\tbitX\tAL,ZBAR\n" ;
+### zur Vervollkommnung NCPOW2 definieren !!!
+#&= AWDR[suscuc], NCPOW2 {$L} "\tresX\tAL,ZBAR\n" ;
+&= R[sus], CAWDR {$L} "\tand\tAL,AR\n" :2;
+&= R[lul], CAWR {$L} "\tand\tZn0sAL,Zn0sAR\n\tand\tZn2sAL,Zn2sAR\n" :2;
+#&= R[lul], (*R) {$L} "\tand\tZn0sAL,@AR\n\tinc\tAR,#2\n\tand\tZn2sAL,@AR\n\tdec\tAR,#2\n" :2;
+
+|= AWDR[suscuc], CPOW2 {$L} "\tsetX\tAL,ZBAR\n" ;
+#|= AWR[suscuc], CPOW2 {$L} "\tsetX\tAL,ZBAR\n" ;
+|= R[sus], CAWDR {$L} "\tor\tAL,AR\n" :2;
+|= R[lul], CAWR {$L} "\tor\tZn0sAL,Zn0sAR\n\tor\tZn2sAL,Zn2sAR\n" :2;
+#|= R[lul], (*R) {$L} "\tor\tZn0sAL,@AR\n\tinc\tAR,#2\n\tor\tZn2sAL,@AR\n\tdec\tAR,#2\n" :2;
+
+
+^= R[sus], CAWDR {$L} "\txor\tAL,AR\n" :2;
+^= R[lul], CAWR {$L} "\txor\tZn0sAL,Zn0sAR\n\txor\tZn2sAL,Zn2sAR\n" :2;
+#^= R[lul], (*R) {$L} "\txor\tZn0sAL,@AR\n\tinc\tAR,#2\n\txor\tZn2sAL,@AR\n\tdec\tAR,#2\n" :2;
+
+	# ADDQ
+#+= R[sus], C1to16 {$L} "\tinc\tAL,AR\n" ;
++= AWD[cucsus], C1to16 {$L} "\tincX\tAL,AR\n" ;
++= R[cucsus], C1to16 {$L} "\tinc\tAL,AR\n" ;
++= R[lul], CAWDR[lul] {$L $C} "\taddl\tAL,AR\n" ;
++= R[sus], CAWDR[sus] {$L $C} "\tadd\tAL,AR\n" ;
++= R[p], C1to16[cucsus] {$L} "\tinc\tZn2sAL,AR\n" ;
++= R[p], C1to16[p] {$L $U} "\tinc\tZn2sAL,GR\n" ;
++= R[p], C[cucsus] {$L} "\tadd\tZn2sAL,AR\n" ;
++= R[p], C[p] {$L $U} "\tadd\tZn2sAL,GR\n" ;
+#+= AWD[p], C1to16 {$P $1} "\tldl\tA1,B-L\n\tinc\tZn2sA1,AR\n\tldl\tBL,A1\n" ;
+#+= AWD[p], C {$P $1} "\tldl\tA1,B-L\n\tadd\tZn2sA1,GR\n\tldl\tBL,A1\n" ;
++= R[p], CAWR[lul] {$L} "\tadd\tZn2sAL,Zn2sAR\n" ;
++= R[lul], CAWDR[p] {$L} "\txor\tZn0sAL,Zn0sAL\n\taddl\tAL,AR\n" ;
++= R[p], CAWDR[sus] {$L} "\tadd\tZn2sAL,AR\n" ;
++ PCR[p], CAWDR[sus] {$P $[ $1} "RL!1\tldl\tA1,AL\n\tadd\tZn2sA1,AR\n" ;
++ PCR[p], CAWR[lul] {$P $[ $1} "RL!1\tldl\tA1,AL\n\tadd\tZn2sA1,Zn2sAR\n" ;
++ R[sus], R[p] {$P $] $1} "RR!1\tldl\tA1,AR\n\tadd\tZn2sA1,AL\n" ;
++ R[sus], AW[p] {$P $H $[ $1} "RL!K\tld\tZn2sA1,AL\n\tld\tZn0sA1,Zn0sAR\n\tadd\tZn2sA1,Zn2sAR\n" ;
++ R[sus], C[p] {$P $H $[ $1} "RL!K\tld\tZn2sA1,AL\n\tld\tZn0sA1,QR\n\tadd\tZn2sA1,GR\n" ;
+#+= R[sus], (*R)[p] {$P $L} "\tldl\tA1,AR\n\tadd\tAL,Zn2sA1\n" ;
++ R[sus], (*R)[p] {$P $1} "\tldl\tA1,AR\n\tadd\tZn2sA1,AL\n" ;
+###diese 2 Zeilen sind voellig daneben
+#+= R[sus], AWR[p] {$R} "\tadd\tAL,Zn2sAR\n\tld\tZn2sAR,AL\n" ;
+#+= R[sus], C[p] {$L} "\tadd\tAL,GR\n" ;
+
++ R[d], R[d] {$Q $Q $< $> $1 $A $C $X} "RL!1\tex\tZn0sA1,Zn0sA2\nRL!1\tex\tZn2sA1,Zn2sA2\nRL!1\tex\tZn4sA1,Zn4sA2\nRL!1\tex\tZn6sA1,Zn6sA2\n\tcallr\taddd\n" :2;
++= R[d], R[d] {$Q $Q $< $> $1 $A $C $X} "RL!1\tex\tZn0sA1,Zn0sA2\nRL!1\tex\tZn2sA1,Zn2sA2\nRL!1\tex\tZn4sA1,Zn4sA2\nRL!1\tex\tZn6sA1,Zn6sA2\n\tcallr\taddd\nRL!1\tldl\tZn0lA2,Zn0lA1\nRL!1\tldl\tZn4lA2,Zn4lA1\n" :2;
+###+ CAW[d], R[d] {$Q $Q $> $1 $A $C $X} "RR!2\tldl\tZn0lA2,Zn0lAR\nRR!2\tldl\tZn4lA2,Zn4lAR\n\tldl\tZn0lA1,Zn0lBL\n\tldl\tZn4lA1,Zn4lBL\n\tcallr\taddd\n" :3;
+###+= AW[d], R[d] {$Q $Q $> $1 $A $C $X} "RR!2\tldl\tZn0lA2,Zn0lAR\nRR!2\tldl\tZn4lA2,Zn4lAR\n\tldl\tZn0lA1,Zn0lBL\n\tldl\tZn4lA1,Zn4lBL\n\tcallr\taddd\n\tldl\tZn0lAL,Zn0lA1\n\tldl\tZn4lAL,Zn4lA1\n" :3;
+###+ R[d], CAW[d] {$Q $Q $< $1 $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tldl\tZn0lA2,Zn0lBR\n\tldl\tZn4lA2,Zn4lBR\n\tcallr\taddd\n" :3;
+###+= R[d], CAW[d] {$Q $Q $< $1 $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tldl\tZn0lA2,Zn0lBR\n\tldl\tZn4lA2,Zn4lBR\n\tcallr\taddd\nRL!1ldl\tZn0lAL,Zn0lA1\nRL!1\tldl\tZn4lAL,Zn4lA1\n" :3;
+
+#+ CAWDR[f], CAWDR[f] {$P $P $> $1 $< $A $C $X} "RL!1\tldl\tA1,BL\nRR!2\tldl\tA2,BR\n\tcallr\tadds\n" :3;
+#+= AWDR[f], CAWDR[f] {$P $P $> $1 $< $A $C $X} "RL!1\tldl\tA1,BL\nRR!2\tldl\tA2,BR\n\tcallr\tadds\nRL!1\tldl\tBL,A1\n" :5;
+
+	# SUBQ
+#-= R[sus], C1to16 {$L} "\tdec\tAL,AR\n" ;
+-= AWD[cucsus], C1to16 {$L} "\tdecX\tAL,AR\n" ;
+-= R[cucsus], C1to16 {$L} "\tdec\tAL,AR\n" ;
+-= R[sus], CAWDR[sus] {$L $C} "\tsub\tAL,AR\n" ;
+-= R[lul], CAWDR[lul] {$L $C} "\tsubl\tAL,AR\n" ;
+-= R[p], C1to16[cucsus] {$L} "\tdec\tZn2sAL,AR\n" ;
+-= R[p], C1to16[p] {$L $U} "\tdec\tZn2sAL,GR\n" ;
+-= R[p], C[p] {$L $U} "\tsub\tZn2sAL,GR\n" ;
+-= R[p], C[cucsus] {$L} "\tsub\tZn2sAL,AR\n" ;
+#-= AWD[p], C1to16[p] {$P $U} "\tldl\tA1,B-L\n\tdec\tZn2sA1,AR\n\tldl\tBL,A1\n" ;
+#-= AWD[p], C[p] {$P $U} "\tldl\tA1,B-L\n\tsub\tZn2sA1,GR\n\tldl\tBL,A1\n" ;
+-= R[p], AWR[p] {$L $U} "\tsub\tZn2sAL,Zn2sAR\n" ;
+- AW[p], AWR[p] {$1} "\tld\tA1,Zn2sAL\n\tsub\tA1,Zn2sAR\n" ;
+#-= R[p], CAWDR[p] {$P $U $[ $C} "RL!1\tldl\tA1,AL\n\tsubl\tA1,AR\nRL!1\tldl\tAL,A1\n" ;
+-= R[p], CAWR[lul] {$L} "\tsub\tZn2sAL,Zn2sAR\n" ;
+-= R[p], CAWDR[sus] {$L} "\tsub\tZn2sAL,AR\n" ;
+
+- R[d], R[d] {$Q $Q $< $> $1 $A $C $X} "RL!1\tex\tZn0sA1,Zn0sA2\nRL!1\tex\tZn2sA1,Zn2sA2\nRL!1\tex\tZn4sA1,Zn4sA2\nRL!1\tex\tZn6sA1,Zn6sA2\n\tcallr\tsubd\n" :2;
+-= R[d], R[d] {$Q $Q $< $> $1 $A $C $X} "RL!1\tex\tZn0sA1,Zn0sA2\nRL!1\tex\tZn2sA1,Zn2sA2\nRL!1\tex\tZn4sA1,Zn4sA2\nRL!1\tex\tZn6sA1,Zn6sA2\n\tcallr\tsubd\nRL!1\tldl\tZn0lA2,Zn0lA1\nRL!1\tldl\tZn4lA2,Zn4lA1\n" :2;
+###- CAW[d], R[d] {$Q $Q $> $1 $A $C $X} "RR!2\tldl\tZn0lA2,Zn0lAR\nRR!2\tldl\tZn4lA2,Zn4lAR\n\tldl\tZn0lA1,Zn0lBL\n\tldl\tZn4lA1,Zn4lBL\n\tcallr\tsubd\n" :3;
+###-= AW[d], R[d] {$Q $Q $> $1 $A $C $X} "RR!2\tldl\tZn0lA2,Zn0lAR\nRR!2\tldl\tZn4lA2,Zn4lAR\n\tldl\tZn0lA1,Zn0lBL\n\tldl\tZn4lA1,Zn4lBL\n\tcallr\tsubd\n\tldl\tZn0lAL,Zn0lA1\n\tldl\tZn4lAL,Zn4lA1\n" :3;
+###- R[d], CAW[d] {$Q $Q $< $1 $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tldl\tZn0lA2,Zn0lBR\n\tldl\tZn4lA2,Zn4lBR\n\tcallr\tsubd\n" :3;
+###-= R[d], CAW[d] {$Q $Q $< $1 $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tldl\tZn0lA2,Zn0lBR\n\tldl\tZn4lA2,Zn4lBR\n\tcallr\tsubd\nRL!1ldl\tZn0lAL,Zn0lA1\nRL!1\tldl\tZn4lAL,Zn4lA1\n" :3;
+
+#- AWDR[f], CAWDR[f] {$P $P $> $1 $< $A $C $X} "RL!1\tldl\tA1,BL\nRR!2\tldl\tA2,BR\n\tcallr\tsubs\n" :3;
+#-= AWDR[f], CAWDR[f] {$P $P $> $1 $< $A $C $X} "RL!1\tldl\tA1,BL\nRR!2\tldl\tA2,BR\n\tcallr\tsubs\nRL!1\tldl\tBL,A1\n" :5;
+
+*= R[s], CPOW2 {$L $C} "\tsla\tAL,ZbAR\n";
+*= R[us], CPOW2 {$L $C} "\tsll\tAL,ZbAR\n";
+*= R[l], CPOW2 {$L $C} "\tslal\tAL,ZbAR\n";
+*= R[ul], CPOW2 {$L $C} "\tslll\tAL,ZbAR\n";
+*= R[l], CPOW2SUM {$P $L $C}
+	"ZfARlAL\tldl\tA1,AL\nZdARlAL\taddl\tAL,A1\n";
+*= R[ul], CPOW2SUM {$P $L $C}
+	"ZfARulAL\tldl\tA1,AL\nZdARulAL\taddl\tAL,A1\n";
+*= R[s], CPOW2SUM {1 $L $C}
+	"ZfARsAL\tld\tA1,AL\nZdARsAL\tadd\tAL,A1\n";
+*= R[us], CPOW2SUM {1 $L $C}
+	"ZfARusAL\tld\tA1,AL\nZdARusAL\tsub\tAL,A1\n";
+*= R[l], CPOW2DIF {$P $L $C}
+	"ZfARlAL\tldl\tA1,AL\nZDARlAL\tsubl\tAL,A1\n";
+*= R[ul], CPOW2DIF {$P $L $C}
+	"ZfARulAL\tldl\tA1,AL\nZDARulAL\tsubl\tAL,A1\n";
+*= R[s], CPOW2DIF {1 $L $C}
+	"ZfARsAL\tld\tA1,AL\nZDARsAL\tsub\tAL,A1\n";
+*= R[us], CPOW2DIF {1 $L $C}
+	"ZfARusAL\tld\tA1,AL\nZDARusAL\tadd\tAL,A1\n";
+#* CAWD[sus], CAWDR[sus] {$P $U $1 $C} "\tld\tZn2sA1,BL\n\tmult\tA1,AR\n" :5;
+* CAWD[sus], CAWDR[sus] {$P 1 $2 $C} "\tld\tZn2sA1,BL\n\tmult\tA1,AR\n\tld\tA2,Zn2sA1\n" :5;
+*= AWR [sus], CAWDR[sus] {$P $U $H $1 $[ $C} "RL!J\tld\tZn2sA1,BL\n\tmult\tA1,AR\n\tld\tBL,Zn2sA1\n" :6;
+* CAWD[lul], CAWDR[lul] {$Q $U $1 $C} "\tldl\tZn4lA1,BL\n\tmultl\tA1,AR\n" :8;
+*= AWR[lul], CAWDR[lul] {$Q $U $H $1 $[ $C} "RL!J\tldl\tZn4lA1,BL\n\tmultl\tA1,AR\n\tldl\tBL,Zn4lA1\n" :10;
+
+* R[d], R[d] {$Q $Q $< $> $1 $A $C $X} "RL!1\tex\tZn0sA1,Zn0sA2\nRL!1\tex\tZn2sA1,Zn2sA2\nRL!1\tex\tZn4sA1,Zn4sA2\nRL!1\tex\tZn6sA1,Zn6sA2\n\tcallr\tmultd\n" :2;
+*= R[d], R[d] {$Q $Q $< $> $1 $A $C $X} "RL!1\tex\tZn0sA1,Zn0sA2\nRL!1\tex\tZn2sA1,Zn2sA2\nRL!1\tex\tZn4sA1,Zn4sA2\nRL!1\tex\tZn6sA1,Zn6sA2\n\tcallr\tmultd\nRL!1\tldl\tZn0lA2,Zn0lA1\nRL!1\tldl\tZn4lA2,Zn4lA1\n" :2;
+###* CAW[d], R[d] {$Q $Q $> $1 $A $C $X} "RR!2\tldl\tZn0lA2,Zn0lAR\nRR!2\tldl\tZn4lA2,Zn4lAR\n\tldl\tZn0lA1,Zn0lBL\n\tldl\tZn4lA1,Zn4lBL\n\tcallr\tmultd\n" :3;
+###*= AW[d], R[d] {$Q $Q $> $1 $A $C $X} "RR!2\tldl\tZn0lA2,Zn0lAR\nRR!2\tldl\tZn4lA2,Zn4lAR\n\tldl\tZn0lA1,Zn0lBL\n\tldl\tZn4lA1,Zn4lBL\n\tcallr\tmultd\n\tldl\tZn0lAL,Zn0lA1\n\tldl\tZn4lAL,Zn4lA1\n" :3;
+###* R[d], CAW[d] {$Q $Q $< $1 $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tldl\tZn0lA2,Zn0lBR\n\tldl\tZn4lA2,Zn4lBR\n\tcallr\tmultd\n" :3;
+###*= R[d], CAW[d] {$Q $Q $< $1 $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tldl\tZn0lA2,Zn0lBR\n\tldl\tZn4lA2,Zn4lBR\n\tcallr\tmultd\nRL!1ldl\tZn0lAL,Zn0lA1\nRL!1\tldl\tZn4lAL,Zn4lA1\n" :3;
+
+#* CAWDR[f], CAWDR[f] {$P $P $> $1 $< $A $C $X} "RL!1\tldl\tA1,BL\nRR!2\tldl\tA2,BR\n\tcallr\tmults\n" :3;
+#*= AWDR[f], CAWDR[f] {$P $P $> $1 $< $A $C $X} "RL!1\tldl\tA1,BL\nRR!2\tldl\tA2,BR\n\tcallr\tmults\nRL!1\tldl\tBL,A1\n" :5;
+
+/= R[s], CPOW2 {$L $C} "\tsra\tAL,ZbAR\n";
+/= R[us], CPOW2 {$L $C} "\tsrl\tAL,ZbAR\n";
+/= R[l], CPOW2 {$L $C} "\tsral\tAL,ZbAR\n";
+/= R[ul], CPOW2 {$L $C} "\tsrll\tAL,ZbAR\n";
+/ CAWDR[s], CAWDR[s] {$P $U $1 $H $[ $C} "RL!J\tld\tZn2sA1,BL\n\texts\tA1\n\tdiv\tA1,AR\n" :10;
+/= AWR[s], CAWDR[s] {$P $U $1 $H $[ $C} "RL!J\tld\tZn2sA1,BL\n\texts\tA1\n\tdiv\tA1,AR\n\tld\tBL,Zn2sA1\n" :12;
+/ CAWDR[us], CAWDR[us] {$P $U $1 $H $[ $C} "RL!J\tld\tZn2sA1,BL\n\txor\tZn0sA1,Zn0sA1\n\tdiv\tA1,AR\n" :10;
+/= AWR[us], CAWDR[us] {$P $U $1 $H $[ $C} "RL!J\tld\tZn2sA1,BL\n\txor\tZn0sA1,Zn0sA1\n\tdiv\tA1,AR\n\tld\tBL,Zn2sA1\n" :12;
+/ CAWDR[l], CAWDR[l] {$Q $U $1 $H $[ $C} "RL!J\tldl\tZn4lA1,BL\n\textsl\tA1\n\tdivl\tA1,AR\n" :14;
+/= AWR[l], CAWDR[l] {$Q $U $1 $H $[ $C} "RL!J\tldl\tZn4lA1,BL\n\textsl\tA1\n\tdivl\tA1,AR\n\tldl\tBL,Zn4lA1\n" :16;
+/ CAWDR[ul], CAWDR[ul] {$Q $U $1 $H $[ $C} "RL!J\tldl\tZn4lA1,BL\n\txor\tZn0sA1,Zn0sA1\n\tld\tZn2sA1,Zn0sA1\n\tdivl\tA1,AR\n" :14;
+/= AWR[ul], CAWDR[ul] {$Q $U $1 $H $[ $C} "RL!J\tldl\tZn4lA1,BL\n\txor\tZn0sA1,Zn0sA1\n\tld\tZn2sA1,Zn0sA1\n\tdivl\tA1,AR\n\tldl\tBL,Zn4lA1\n" :16;
+
+/ R[d], R[d] {$Q $Q $< $> $1 $A $C $X} "RL!1\tex\tZn0sA1,Zn0sA2\nRL!1\tex\tZn2sA1,Zn2sA2\nRL!1\tex\tZn4sA1,Zn4sA2\nRL!1\tex\tZn6sA1,Zn6sA2\n\tcallr\tdivd\n" :2;
+/= R[d], R[d] {$Q $Q $< $> $1 $A $C $X} "RL!1\tex\tZn0sA1,Zn0sA2\nRL!1\tex\tZn2sA1,Zn2sA2\nRL!1\tex\tZn4sA1,Zn4sA2\nRL!1\tex\tZn6sA1,Zn6sA2\n\tcallr\tdivd\nRL!1\tldl\tZn0lA2,Zn0lA1\nRL!1\tldl\tZn4lA2,Zn4lA1\n" :2;
+###/ CAW[d], R[d] {$Q $Q $> $1 $A $C $X} "RR!2\tldl\tZn0lA2,Zn0lAR\nRR!2\tldl\tZn4lA2,Zn4lAR\n\tldl\tZn0lA1,Zn0lBL\n\tldl\tZn4lA1,Zn4lBL\n\tcallr\tdivd\n" :3;
+###/= AW[d], R[d] {$Q $Q $> $1 $A $C $X} "RR!2\tldl\tZn0lA2,Zn0lAR\nRR!2\tldl\tZn4lA2,Zn4lAR\n\tldl\tZn0lA1,Zn0lBL\n\tldl\tZn4lA1,Zn4lBL\n\tcallr\tdivd\n\tldl\tZn0lAL,Zn0lA1\n\tldl\tZn4lAL,Zn4lA1\n" :3;
+###/ R[d], CAW[d] {$Q $Q $< $1 $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tldl\tZn0lA2,Zn0lBR\n\tldl\tZn4lA2,Zn4lBR\n\tcallr\tdivd\n" :3;
+###/= R[d], CAW[d] {$Q $Q $< $1 $A $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tldl\tZn0lA2,Zn0lBR\n\tldl\tZn4lA2,Zn4lBR\n\tcallr\tdivd\nRL!1ldl\tZn0lAL,Zn0lA1\nRL!1\tldl\tZn4lAL,Zn4lA1\n" :3;
+
+#/ CAWDR[f], CAWDR[f] {$P $P $> $1 $< $A $C $X} "RL!1\tldl\tA1,BL\nRR!2\tldl\tA2,BR\n\tcallr\tdivs\n" :3;
+#/= AWDR[f], CAWDR[f] {$P $P $> $1 $< $A $C $X} "RL!1\tldl\tA1,BL\nRR!2\tldl\tA2,BR\n\tcallr\tdivs\nRL!1\tldl\tBL,A1\n" :5;
+
+%= R[s], CPOW2 {$L} "\ttest\tAL\n\tjpr\tpl,ZL1\n\tneg\tAL\n\tand\tAL,AR-1\n\tneg\tAL\n\tjpr\tZL2\nZl1:\n\tand\tAL,AR-1\nZl2:\n" ;
+%= R[us], CPOW2 {$L} "\tand\tAL,AR-1\n";
+% CAWDR[s], CAWDR[s] {$P $O $1 $H $[} "RL!J\tld\tZn2sA1,AL\n\texts\tA1\n\tdiv\tA1,AR\n" :10;
+%= AWR[s], CAWDR[s] {$P $O $1 $H $[} "RL!J\tld\tZn2sA1,BL\n\texts\tA1\n\tdiv\tA1,AR\n\tld\tBL,Zn0sA1\n" :12;
+% CAWDR[us], CAWDR[us] {$P $O $1 $H $[} "RL!J\tld\tZn2sA1,BL\n\txor\tZn0sA1,Zn0sA1\n\tdiv\tA1,AR\n" :10;
+%= AWR[us], CAWDR[us] {$P $O $1 $H $[} "RL!J\tld\tZn2sA1,BL\n\txor\tZn0sA1,Zn0sA1\n\tdiv\tA1,AR\n\tld\tBL,Zn0sA1\n" :12;
+% CAWDR[l], CAWDR[l] {$Q $O $1 $H $[} "RL!J\tldl\tZn4lA1,BL\n\textsl\tA1\n\tdivl\tA1,AR\n" :14;
+%= AWR[l], CAWDR[l] {$Q $O $1 $H $[} "RL!J\tldl\tZn4lA1,BL\n\textsl\tA1\n\tdivl\tA1,AR\n\tldl\tBL,Zn0lA1\n" :16;
+% CAWDR[ul], CAWDR[ul] {$Q $O $1 $H $[} "RL!J\tldl\tZn4lA1,BL\n\txor\tZn0sA1,Zn0sA1\n\tld\tZn2sA1,Zn0sA1\n\tdivl\tA1,AR\n" :14;
+%= AWR[ul], CAWDR[ul] {$Q $O $1 $H $[} "RL!J\tldl\tZn4lA1,BL\n\txor\tZn0sA1,Zn0sA1\n\tld\tZn2sA1,Zn0sA1\n\tdivl\tA1,AR\n\tldl\tBL,Zn0lA1\n" :16;
+
+
+<<= R[lul], C1 {$L $C} "\taddl\tAL,AL\n" ;
+<<= R[sus], C1 {$L $C} "\tadd\tAL,AL\n" ;
+<<= R[s], C {$L $C} "\tsla\tAL,AR\n" ;
+<<= R[l], C {$L $C} "\tslal\tAL,AR\n" ;
+<<= R[us], C {$L $C} "\tsll\tAL,AR\n" ;
+<<= R[ul], C {$L $C} "\tslll\tAL,AR\n" ;
+>>= R[s], C {$L $C} "\tsra\tAL,AR\n" ;
+>>= R[l], C {$L $C} "\tsral\tAL,AR\n" ;
+>>= R[us], C {$L $C} "\tsrl\tAL,AR\n" ;
+>>= R[ul], C {$L $C} "\tsrll\tAL,AR\n" ;
+
+<<= R[s], R[s] {$L $C} "\tsda\tAL,AR\n" ;
+<<= R[l], R[sus] {$L $C} "\tsdal\tAL,AR\n" ;
+<<= R[us], R[us] {$L $C} "\tsdl\tAL,AR\n" ;
+<<= R[ul], R[sus] {$L $C} "\tsdll\tAL,AR\n" ;
+
+'CONV'[lul] Cs {$L} "" :0;
+'CONV'[cuc] R[lulp] {$1 $[} "ZylcALA1" ;
+'CONV'[sus] R[lulp] {$L} "ZylsAL" ;
+#'CONV'[cuc] R[sus] {$1 $[} "" ;
+# wegen regvar nicht moeglich!!!
+'CONV'[cuc] R[sus] {$1 $[} "ZyscALA1" ;
+'CONV'[sus] C[c] {$1 $[} "\tld\tZiA1,BL\n" :2;
+'CONV'[sus] AWDR[c] {$1 $[} "RL!1\tldb\tZn1cA1,BL\nRL!1\textsb\tZiA1\n" :2;
+'CONV'[sus] CAWDR[uc] {$1 $[} "RL!1\tldb\tZn1cA1,BL\nRL!1\txorb\tZn0cA1,Zn0cA1\n" :2;
+'CONV'[lul] CAWDR[c] {$P $H $[ $1} "RL!1\tldb\tZn3cA1,BL\n\textsb\tZn2sA1\n\texts\tA1\n" :2;
+'CONV'[lul] CAWDR[uc] {$P $[ $H $1} "RL!1\tldb\tZn3cA1,BL\n\txorb\tZn2cA1,Zn2cA1\n\txor\tZn0sA1,Zn0sA1\n" :2;
+'CONV'[lul] CAWDR[s] {$P $[ $H $1} "RL!K\tld\tZn2sA1,BL\n\texts\tA1\n" :2;
+'CONV'[lul] CAWDR[us] {$P $[ $H $1} "RL!K\tld\tZn2sA1,BL\n\txor\tZn0sA1,Zn0sA1\n" :2;
+
+'CONV'[p] CAWDR[sus] {$P $[ $H $1} "RL!J\tld\tZn2sA1,BL\n\txor\tZn0sA1,Zn0sA1\n" ;
+'CONV'[p] R[lul] {$L} "" ;
+'CONV'[lul] R[p] {$L} "" ;
+
+'CONV'[d] CAWDR[lp] {$Q $Q $1 $< $H $C $X} "RL!K\tldl\tZn4lA1,BL\n\tcallr\tltod\n" ;
+'CONV'[d] CAWDR[ulp] {$Q $Q $1 $< $H $C $X} "RL!K\tldl\tZn4lA1,BL\n\tcallr\tultod\n" ;
+'CONV'[f] CAWDR[lp] {$P $1 $A $< $C $X} "RL!1\tldl\tA1,BL\n\tcallr\tltof\n" ;
+'CONV'[f] CAWDR[ulp] {$P $1 $A $< $C $X} "RL!1\tldl\tA1,BL\n\tcallr\tultof\n" ;
+### hier muesste aus RL!J das viertel-Register (r2) werden
+'CONV'[d] CAWDR[s] {$Q $Q $1 $< $H $C $X} "RL!J\tld\tZn4sA1,BL\n\tcallr\titod\n" ;
+'CONV'[d] CAWDR[us] {$Q $Q $1 $< $H $C $X} "RL!J\tld\tZn4sA1,BL\n\tcallr\tuitod\n" ;
+### hier ist RL!J ebenfalls r2, jedoch obere Haelfte von R1
+'CONV'[f] CAWDR[s] {$P $1 $A $< $H $C $X} "RL!1\tld\tZn0sA1,BL\n\tcallr\titof\n" ;
+'CONV'[f] CAWDR[us] {$P $1 $A $< $H $C $X} "RL!1\tld\tZn0sA1,BL\n\tcallr\tuitof\n" ;
+
+'CONV'[l] CAWR[d] {$Q $U $1 $A $< $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tcallr\tdtol\n" ;
+'CONV'[ul] CAWR[d] {$Q $U $1 $A $< $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tcallr\tdtoul\n" ;
+'CONV'[l] CAWDR[f] {$P $1 $A $< $C $X} "RL!1\tldl\tA1,BL\n\tcallr\tftol\n" ;
+'CONV'[ul] CAWDR[f] {$P $1 $A $< $C $X} "RL!1\tldl\tA1,BL\n\tcallr\tftoul\n" ;
+
+'CONV'[s] CAWR[d] {$Q $U $K $1 $A $< $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tcallr\tdtoi\n" ;
+'CONV'[us] CAWR[d] {$Q $U $K $1 $A $< $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tcallr\tdtoui\n" ;
+
+'CONV'[s] CAWDR[f] {$P $O $1 $A $< $C $X} "RL!1\tldl\tA1,BL\n\tcallr\tftoi\n" ;
+'CONV'[us] CAWDR[f] {$P $O $1 $A $< $C $X} "RL!1\tldl\tA1,BL\n\tcallr\tftoui\n" ;
+
+'CONV'[f] CAWR[d] {$Q $U $1 $A $< $C $X} "RL!1\tldl\tZn0lA1,Zn0lBL\nRL!1\tldl\tZn4lA1,Zn4lBL\n\tcallr\tdtof\n" ;
+'CONV'[d] CAWDR[f] {$Q $1 $A $< $H $C $X} "RL!1\tldl\tZn4lA1,BL\n\tcallr\tftod\n" ;
+
+'STARG' R  {1 $N} "ZS" ;
+'STASG' R,R {1 $R} "ZSFZz" ;
+'STASG' CAWD,R {$P 1 $R} "\tldl\tA1,BL\nZsFZz" :2;
+
+# for f().x where f returns a simple structure
+#'STAR' [sus] UREG {$1 $[} "\tldxxb\tZn0cA1,Zn1cA1\n" ;
+'STAR' [sus] UHALF {$1 $[} "" :0;
+#'STAR' [d] AWDR[p] {$Q $H $L} "RL!J\tldl\tZn2lA1,A(LL)\n\tldl\tZn0lA1,@Zn2lA1\n\tinc\tZn6sA1,#2\n\tldl\tZn4lA1,@Zn4lA1\n" ;
+'STAR' [d] AWDR[p] {$Q $H $L} "RL!J\tldl\tZn4lA1,A(LL)\n\tldl\tZn0lA1,@Zn4lA1\n\tinc\tZn6sA1,#4\n\tldl\tZn4lA1,@Zn4lA1\n" ;
+
+'INIT'[cuc] C {$N} "	.byte	CL\n" ;
+'INIT'[sus] C {$N} "	.word	CL\n" ;
+'INIT'[lul] C {$N} "	.long	CL\n" ;
+'INIT'[p] C {$N} "	.addr	CL\n" ;
