@@ -1,0 +1,38 @@
+1i\
+.so /z/ing_doc/c/macdoc
+
+1i\
+.ds RH \\f3INHALT\\f1
+
+1i\
+.ds RF \\f3UNIX\\f1
+
+1i\
+.ds LF ING_DB 6.3/3
+
+1i\
+.pn 1
+
+1i\
+.bp
+
+1i\
+.SH
+
+1i\
+.ft B
+
+1i\
+Inhaltsverzeichnis Teil3
+
+1i\
+.ft R
+
+1i\
+.LP
+
+1i\
+.nf
+
+$i\
+.fi
