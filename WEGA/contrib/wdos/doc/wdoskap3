@@ -1,0 +1,459 @@
+.ds RH "Besonderheiten DCP/WDOS
+.bp
+.NH
+Besonderheiten von DCP in der WDOS-Umgebung
+.LP
+In diesem Kapitel sind wichtige Unterschiede und Besonderheiten
+bei der Abarbeitung von DCP unter WEGA aufgefuehrt.
+.LP
+.NH 2
+Hardware-Voraussetzungen
+.LP
+Fuer die Abarbeitung von DCP unter WEGA sind zwei U80601-Erweiterungskarten
+(CPU-Karte und 1MByte-RAM-Karte) im P8000 erforderlich, die
+auf 2 Slots der 16-Bit-Rechnerkarte im P8000 gesteckt werden. WDOS
+realisiert mit diesen Karten eine PC-Umgebung, die jedoch nicht
+vollstaendig PC-kompatibel ist. Als Terminal muss ein spezielles
+P8000/WDOS-Terminal mit 25 Bildschirmzeilen und Flachtastatur eingesetzt
+werden. Dieses Terminal besitzt eine PC-kompatible Betriebsart.
+In dieser Betriebsart liefert die Tastatur anstelle der ASCII-Zeichen
+einen SCAN-Kode und die Bildschirmansteuerung realisiert die
+meisten Zeichen des erweiterten ASCII-Zeichensatzes.
+.LP
+.NH 2
+Lauffaehigkeit von Anwenderprogramen
+.LP
+Auf den U80601-Erweiterungskarten steht keinerlei Hardware zur
+Verfuegung, die direkt E/A-Geraete oder andere PC-kompatible
+E/A-Ports ansprechen kann. Anwenderprogramme duerfen daher
+keine In- und Out-Befehle enthalten. Alle Zugriffe auf
+periphere Geraete duerfen nur ueber das Betriebssystem oder
+das BIOS erfolgen. Eine Ausnahme bilden Bildschirmausgaben.
+Anwenderprogramme duerfen direkt in einen simulierten
+Bildwiederholspeicher schreiben. Es ist aber nur ein alphanumerischer
+Mode (entsprechend der MDA-Karte) realisiert.
+Alle Programme, die Grafikausgaben enthalten und
+auf Bildschirmkarten wie CGA, EGA u.a. angewiesen sind, koennen
+unter der WDOS-Umgebung nicht benutzt werden.
+.LP
+In der WDOS-Umgebung stehen 1 Systemkonsole (Tastatur/Bildschirm),
+1 Drucker, max. 4 (Pseudo-)Floppy-Disk-Laufwerke und max.
+2 (Pseudo-)Harddisk-Laufwerke zur Verfuegung. Serielle Schnittstellen
+sind nicht vorhanden.
+.LP
+.NH 2
+Verfuegbarer RAM
+.LP
+Dem Betriebssystem DCP und den Anwenderprogrammen stehen unter WDOS
+von 0 bis 9ffff 640 KByte RAM zur Verfuegung, sowie zusaetzlich von
+A0000 bis Affff weitere 64 KByte (in diesem Bereich liegt bei
+einem normalen PC die Grafikkarte).  Im Bereich von B0000 bis B1fff wird
+von WDOS eine Monochrom-Bildschirmkarte simuliert. Der Bereich
+von F0000 bis Fffff ist fuer das "ROM"-BIOS reserviert. Der
+Bereich von B2000 bis Effff ist zur Zeit frei und kann unter DCP z.B. fuer
+einen vom Anwender geschriebenen RAM-Disk-Treiber benutzt werden.
+.LP
+.NH 2
+Tastatureingaben
+.LP
+Die Tastatur ist PC-kompatibel und liefert einen SCAN-Kode.
+Unter DCP darf kein zusaetzlicher Tastaturtreiber installiert
+werden, da dieser direkt auf die Hardware zugreift. Die Tastaturbelegung
+lasst sich wie folgt umschalten:
+.DS L
+CTRL-ALT-F1	Amerikanische Tastaturbelegung (standard)
+CTRL-ALT-F2	Deutsche Tastaturbelegung
+.DE
+.NH 2
+Bildschirmausgaben
+.LP
+Im 1 MByte RAM wird eine Monochrom-Karte simuliert. Diese besitzt
+nur einen alphanumerischen Mode mit 25 Zeilen zu 80 Zeichen und
+einer Seite.
+Anwenderprogramme koennen direkt diesen
+"Bildwiederholspeicher" beschreiben. Durch das "ROM"-BIOS wird
+der Bildwiederholspeicher mit einem zweiten Abbild verglichen und
+die Differenzen zum Terminal ausgegeben. Das Terminal besitzt bezueglich
+der erweiterten ASCII-Zeichen und der VIDEO-Attribute Einschraenkungen.
+Die Umschaltung zum erweiterten Zeichensatz (ausser Umlaute) wird ueber
+Video-Attribute realisiert.
+Pro Zeile koennen insgesamt nur max. 16 Video-Attribute dargestellt werden.
+Fast alle VIDEO-BIOS-Requests schreiben die Zeichen zuerst in den
+"Bildwiederholspeicher". Eine Ausnahme bildet der
+WRTIE-TTY-Request (0eh). Hier erfolgt die Ausgabe direkt zum
+Terminal. Somit koennen auch ESC-Folgen (ADM31-kompatibel) ausgegeben
+werden. Das Betriebssystem DCP benutzt in der Regel diesen BIOS-Request.
+.LP
+Unter WDOS kann in DCP auch der Bildschirmtreiber "ANSI.SYS" installiert werden.
+Mit diesem Treiber werden ANSI-kompatible ESC-Folgen wirksam und die
+Ausgaben werden zuerst in den "Bildwiederholspeicher" geschrieben.
+Der Vergleich der "Bildwiederholspeicher" kostet aber Zeit und die Ausgabe der
+Zeichen ist daher etwas langsamer als die direkte Ausgabe zum Terminal.
+.LP
+Bei Verwendung des CP/M-Emulators EM80 fuer DCP
+(gehoert nicht zum Lieferumfang von WDOS)
+sollte ANSI.SYS nicht installiert werden. OS/M-Programme, wie TP, sind
+fuer das P8000-Terminal installiert und dann mit EM80 in der WDOS-Umgebung
+sofort lauffaehig.
+.LP
+.NH 2
+Diskzugriffe
+.LP
+Das Betriebssystem DCP erkennt durch Informationen im Urlader jeder
+Diskette das entsprechende Format der Diskette und stellt sich
+logisch darauf ein. Es kann aber bei realen Disketten nicht das
+physische Format des Floppy-Disk-Treibers (im WEGA-Kern) beeinflussen.
+Achten Sie bitte daher beim "Mounten" von realen Laufwerken im WDOS-Menue
+darauf, dass das Format mit dem Diskettenformat uebereinstimmt.
+.LP
+DCP ermittelt beim Systemstart das physische Format seiner
+Floppy-Disk-Laufwerke. Das Laufwerksformat ist aber
+nur beim Formatieren von Disketten von Bedeutung. Es hat keinen
+Einfluss beim Erkennen von Diskettenformaten. DCP erkennt z.B.
+eine 720 KByte Diskette in einem 360 KByte Laufwerk.
+Fuer die "physischen" Laufwerke
+E: und F: wird das Laufwerksformat mit der Aktivierung
+des Treibers DRIVER.SYS festgelegt
+(Standardeinstellung: 720 KByte
+Laufwerke). Fuer die Laufwerke A: und B: wird das physische
+Format aus dem "ROM"-BIOS ermittelt. Ist im Laufwerk A: eine
+1,2 MByte-Pseudo-Systemdiskette eingelegt, liefert das "ROM"-BIOS
+die Werte fuer 1,2 MByte Laufwerke ohne Disk-Change-Signal,
+sonst fuer 720 KByte Laufwerke ohne Disk-Change-Signal. Durch Fehlen
+dieses Signals setzt nur DCP 3.3 und PCDOS das richtige Laufwerksformat.
+MSDOS und
+DCP 3.2 stellen stets 360 KByte Laufwerke ein. Durch folgende Eintraege in die
+Datei CONFIG.SYS kann fuer DCP 3.2 und MSDOS 3.2 das Laufwerksformat
+auf 720 KByte eingestellt werden:
+.DS L
+drivparm=/d:0
+drivparm=/d:1
+.DE
+Mit drivparm lassen sich aber auch anderer Formate einstellen.
+.LP
+Das Disk-Change-Signal dient zum automatischen Erkennen von Diskettenwechseln.
+Es wird von den (Pseudo-)Laufwerken nicht bereit gestellt. Das Signal kann
+aber vom "ROM"-BIOS simuliert werden. Der Parameter /C von DRIVER.SYS und
+DRIVPARM aktiviert das Signal. DCP fuehrt dann weniger Diskettenzugriffe
+aus. Beachten Sie jedoch, dass dann ein Diskettenwechsel in einem
+Laufwerk nur noch moeglich ist, wenn zuvor ein Zugriff auf ein anderes
+Laufwerk erfolgte, z.B. mit dem Kommando DIR. Ein Wechsel des
+aktuellen Laufwerks mit dem Kommando CD reicht nicht aus.
+.LP
+Zum Zugriff auf CP/M-Disketten und speziellen DOS-Disketten koennen
+die Treiber CDRIVE.SYS und MDRIVE.SYS (nicht im Lieferumfang von WDOS)
+installiert werden. Es koennen aber nur die physischen Formate angesprochen
+werden, die in der WDOS-Umgebung zur Verfuegung stehen. Die Treiber
+muessen so installiert werden, dass der Floppy-Disk-Treiber des
+"ROM"-BIOS benutzt wird, z.B.:
+.DS L
+device=cdrive.sys -rah -u1 -g
+device=mdrive.sys -rah -u1
+.DE
+In der WDOS-Umgebung wird von den DISK-BIOS-Requests FORMAT und
+VERIFY keine Funktion ausgefuehrt. Es wird die erfolgreiche
+Ausfuehrung der Funktion angezeigt.
+Somit koennen Kommandos wie FORMAT zum logischen Formatieren benutzt
+werden. Physisch koennen reale Disketten direkt unter WEGA oder
+vom WDOS-Menue aus formatiert werden.
+.NH 2
+Systemuhr
+.LP
+Beim Start von DCP werden die Anfangswerte fuer Datum und Zeit von WEGA
+uebernommen. Im "ROM"-BIOS ist eine Echtzeituhr realisiert. Diese erhaelt
+vom WEGA-Kern Clock-Impulse mit einer Frequenz von 10Hz. Beim Verlassen
+von DCP wird die Uhr gestoppt. Wird anschlissend die Arbeit in
+DCP ohne Neustart fortgesetzt (Kommando r im WDOS-Menue bzw. wdos -r in WEGA)
+geht die Uhr nach.
+.NH 2
+Systemdiskette
+.LP
+Im Lieferumfang von WDOS ist die Pseudo-Systemdiskette wdos_sys
+enthalten. Sie enthaelt das Betriebssystem DCP 3.30 sowie
+alle DCP-Kommandos, deren Verwendung unter WDOS sinnvoll ist.
+Der aktuellste Stand von DCP ist aber stets auf der mitgelieferten
+Original-Systemdiskette fuer den EC1834 enthalten.
+.LP
+Als Systemdiskette kann aber auch eine reale Systemdiskette
+eines PC-kompatiblen Rechners benutzt werden. Folgende Systemdisketten
+wurden in der WDOS-Umgebung getestet:
+.DS L
+- Systemdiskette DCP 3.20   fuer A7150
+- Systemdiskette DCP 3.30   fuer EC1834
+- Systemdiskette PCDOS 3.20 fuer IBM-PC
+- Systemdiskette PCDOS 3.30 fuer IBM-PC
+- Systemdiskette MSDOS 3.20 fuer Schneider-PC
+.DE
+Vor Verwendung einer fremden Systemdiskette, ist die Datei
+CONFIG.SYS dieser Diskette zu ueberpruefen. Diese Datei darf keine
+Treiber aktivieren, die das "ROM"-BIOS umgehen. Deshalb sollten zuerst
+alle Zeilen mit
+.DS L
+device=...
+.DE
+entfernt werden.
+.LP
+Folgende Eintraege in der Datei CONFIG.SYS sind fuer die Arbeit in der
+WDOS-Umgebung guenstig aber nicht unbedingt erforderlich:
+.DS L
+drivparm=/d:0 ...		(Format fuer Laufwerk A:
+				setzen, nur DCP 3.2)
+drivparm=/d:1 ...		(Format fuer Laufwerk B:
+				setzen, nur DCP 3.2)
+device=driver.sys /d:4 ...	(Laufwerk E: aktivieren)
+device=driver.sys /d:5 ...	(Laufwerk F: aktivieren)
+.DE
+Auf jeder Systemdiskette befindet sich ein "Disketten"-BIOS. Probleme
+mit fremden Systemdisketten koennen entstehen, wenn dieses BIOS
+direkt die Hardware anspricht. Das "Disketten"-BIOS koennte z.B. in
+Abhaengigkeit der Version und des Datums des "ROM"-BIOS bestimmte
+Treiber des "ROM"-BIOS ersetzen.
+.LP
+Bei der Installation einer DCP-Harddisk sind keine Besonderheiten
+zu beachten. Sie erfolgt mit den Programmen FDISK, FORMAT und
+COPY.
+.LP
+.NH 2
+DCP-Kommandos
+.LP
+Folgende Kommandos funktionieren in der WDOS-Umgebung nicht:
+.IP CTTY 10
+Definition Primaerkonsole
+.IP "CHCP, NLSFUNC"
+.br
+Zeichensatzwechsel unterstuetzen
+.IP GRAFTABL
+Laden zweiter grafischer Zeichensatz
+.IP GRAPHICS
+Vorbereiten grafische Print-Screen-Funktion
+.IP KEYB xx
+Ersetzten Tastaturprogramm
+.IP MODE
+Einstellen Geraetemodus
+.IP SELECT
+Einstellen nationale Besonderheiten
+.LP
+Folgende EC1834-spezifischen Kommandos funktionieren
+in der WDOS-Umgebung nicht:
+.IP "ASCK, ASCORG, ASKORG, COMDRV" 10
+.br
+Serielle Schnittstellen bedienen
+.IP DMODE
+Spuranzahl Floppydisk-Laufwerke einstellen
+.IP HDINIT
+Harddisk initialisieren
+.IP HDPARK
+Harddisk parken
+.IP PCOLOR
+Programmieren Farbpalette
+.IP VMODE
+Bildschirmeinstellung
+.IP "SCPSET, SCPDR.SYS"
+.br
+SCP-Disketten verarbeiten
+.IP VE89.SYS
+Bildschirmtreiber (nur ANSI-Teil nutzbar)
+.LP
+Bei folgenden Kommandos sind Einschraenkungen zu beachten:
+.IP DISKCOPY 10
+Physisches Kopieren von Disketten
+.br
+Unter WDOS ist das physisches Formatieren der Zieldiskette nicht moeglich.
+.IP FORMAT
+Formatieren von Disketten
+.br
+WDOS gestattet nur das logisches Formatieren von Disketten.
+720 KByte "Laufwerke" gestatten nur das logische Formatieren
+dieses Formats. "High-Density-Laufwerke"
+gestattet das logische Formatieren von 1,2 MByte Pseudodisketten
+und von 40-spurigen Disketten.
+Physisch koennen
+Disketten im WDOS-Menue oder direkt unter WEGA formatiert werden.
+.LP
+Das folgende interne Kommando dient zum Aendern der Parameter der internen
+Laufwerke fuer DCP 3.2. In vielen Dokumentationen ist es nicht beschrieben:
+.DS L
+DRIVPARM=/D:ddd [Schalter]
+
+Schalter:
+/D:ddd	logische Geraetenummer (0...255)
+/F:f	Geraetetyp (0=160/180,320/360k, 1=1,2M, 2=720k)
+	(Standard 720k)
+/T:ttt	Spuren pro Seite (Standard 80)
+/S:ss	Sektoren pro Spur (Standard 9)
+/H:hh	Koepfe (Standard 2)
+/C	Test auf Diskettenwechsel
+/N	nichtwechselbare Magnetplatte
+.DE
+.bp
+.NH 2 
+BIOS-Funktionsaufrufe
+.LP
+int 5h	Bildschirmdruck-Service
+.DS L
+int 10h	Bildschirm-Service
+
+AH = 0 Setzen Mode
+       WDOS: es wird stets Mode 7 gesetzt
+
+AH = 1 Setzen Cursor-Typ
+       WDOS: Null-Funktion
+
+AH = 02 Setzen Cursor-Position
+        WDOS: stets Seite 0
+
+AH = 03 Lesen Cursor-Position
+
+AH = 04 Lesen Lichtstift
+        WDOS: Null-Funktion
+
+AH = 05 Auswahl aktive Seite
+        WDOS: es wird stets Seite 0 gesetzt
+
+AH = 06 Rollen Fenster aktive Seite hoch
+AH = 07 Rollen Fenster aktive Seite tief
+AH = 08 Lesen Zeichen und Attribut von Cursorpositition
+AH = 09 Schreiben Zeichen und Attribut auf Curserposition
+AH = 0Ah Schreiben Zeichen auf Cursorposition
+
+AH = 0Bh Setzen Color Palette
+	 WDOS: Null-Funktion
+
+AH = 0Ch Schreiben Dot
+         WDOS: Null-Funktion
+
+AH = 0Dh Lesen Dot
+         WDOS: Null-Funktion
+
+AH = 0Eh Schreiben ASCII-Teletype
+AH = 0Fh Lesen aktuellen Status
+.DE
+Unter WDOS sind zusaetzlich folgende AT-Funktionen realisiert:
+.DS L
+AX = 1300h Schreiben Zeichenkette
+	   Cursor nicht veraendern
+    BL = Attribut
+    BH = Seite (WDOS: stets 0)
+    DX = Start-Cursor-Position
+    CX = Laenge der Zeichenkette
+    ES:BP = Zeiger auf Zeichenkette
+.DE
+.DS L
+AX = 1301h Schreiben Zeichenkette
+	   Cursor hinter Zeichenkette setzen
+    BL = Attribut
+    BH = Seite (WDOS: stets 0)
+    DX = Start-Cursor-Position
+    CX = Laenge der Zeichenkette
+    ES:BP = Zeiger auf Zeichenkette
+.DE
+.DS L
+AX = 1302h Schreiben Zeichenkette = Zeichen,Attribut ...
+	   Cursor nicht veraendern
+    BH = Seite (WDOS: stets 0)
+    DX = Start-Cursor-Position
+    CX = Laenge der Zeichenkette
+    ES:BP = Zeiger auf Zeichenkette
+.DE
+.DS L
+AX = 1303h Schreiben Zeichenkette = Zeichen,Attribut ...
+	   Cursor hinter Zeichenkette setzen
+    BH = Seite (WDOS: stets 0)
+    DX = Start-Cursor-Position
+    CX = Laenge der Zeichenkette
+    ES:BP = Zeiger auf Zeichenkette
+.DE
+.DS L
+int 11h	Geraete-Ausstattungs-Service
+int 12h	Speichergroesse-Service
+.DE
+.DS L
+int 13h	Disketten-Service
+
+AH = 00 Reset
+AH = 01 Lesen Status nach (AL)
+AH = 02 Lesen
+AH = 03 Schreiben
+AH = 04 Vergleichen (WDOS: Null-Funktion)
+AH = 05 Formatieren (WDOS: Null-Funktion)
+.DE
+Unter WDOS sind folgende zuaetzliche AT-Funktionen realisiert:
+.DS L
+AH = 08h Lesen aktuelle Laufwerkparameter
+   DL = Drive (0... Diskette, 80h, 81h Harddisk)
+   Return:
+	CF = 1 wenn Fehler, dann AH = Status, sonst
+	DL = Anzahl der Laufwerke (Floppy oder Harddisk)
+	DH = Anzahl der Koepfe
+	CL = Anzahl der Sektoren
+	CH = Anzahl der Spuren
+.DE
+.DS L
+AH = 15h Lesen Disk-Typ
+   DL = Drive (0... Diskette, 80h, 81h Harddisk)
+   Return:
+	CF = 1 wenn Fehler, dann AH = Status, sonst
+	AH = Disk-Typ
+		0 - kein Laufwerk
+		1 - Diskette, keine Erkennung Diskwechsel
+		2 - Diskette, Erkennung Diskwechsel
+		3 - Harddisk
+	CX:DX = Anzahl der 512-Byte Sektoren,
+		wenn AH = 3
+.DE
+.DS L
+int 14h	Service serielle Schnittstelle
+	WDOS: Nullfunktion
+.DE
+.DS L
+int 16h	Tastatur Service
+
+int 17h Drucker-Service
+	WDOS: Druckernummer stets 0
+
+int 1Ah Datum/Uhrzeit-Service
+
+int 1Ch Uhr-Unterbrechung (18.2 mal pro Sekunde)
+			  (WDOS: 10 pro Sekunde)
+
+int 1Fh Zeiger auf Grafik-Zeichentabelle
+	WDOS: nicht vorhanden
+.DE
+.ds RH "RAM-Disk
+.bp
+.NH
+RAM-Disk fuer WEGA
+.LP
+WEGA kann die 1 MByte RAM der U80601-RAM-Karte auch als RAM-Disk benutzen.
+Die Abarbeitung von DCP ist dann aber nicht moeglich. Im Directory
+/dev sind die Eintraege
+.DS L
+cpu2ram		fuer das Blockinterface und
+cpu2rram	fuer das Raw-Interface
+.DE
+verfuegbar. Mit dem Kommando mkfs(M) kann der Superuser ein
+Dateisystem einrichten:
+.DS L
+/etc/mkfs /dev/cpu2ram 2000
+.DE
+.NH
+Literatur
+.LP
+Eine ausfuehrliche Beschreibung von DCP ist in folgender
+Literatur enthalten:
+.DS L
+Huebener, J.: MS-DOS, Reihe Technische Informatik
+                     VEB Verlag Technik Berlin
+.DE
+.DS L
+DCP-Software-Dokumentation
+Anleitung fuer den Bediener/Betriebssystem Teil 1 und 2
+VEB Robotron Buchungsmaschinenwerk Karl-Marx-Stadt
+VEB Robotron Bueromaschinenwerk Soemmerda
+.DE
+.DS L
+DCP-Software-Dokumentation
+Anleitung fuer den Systemprogrammierer
+VEB Robotron Buchungsmaschinenwerk Karl-Marx-Stadt
+VEB Robotron Bueromaschinenwerk Soemmerda
+.DE
