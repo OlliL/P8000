@@ -1,0 +1,396 @@
+
+
+
+
+
+
+                  @    @     @ @     @
+                 @ @   @@   @@  @   @
+                @   @  @ @ @ @   @ @
+               @     @ @  @  @    @
+               @@@@@@@ @     @   @ @
+               @     @ @     @  @   @
+               @     @ @     @ @     @
+
+
+
+
+
+                @    @  @    @  @@@@@
+                @    @  @@   @  @    @
+                @    @  @ @  @  @    @
+                @    @  @  @ @  @    @
+                @    @  @   @@  @    @
+                 @@@@   @    @  @@@@@
+
+
+
+
+
+               @@@@@@@ @@@@@@@ @@@@@@@
+               @       @    @  @    @
+               @           @       @
+               @@@@@      @       @
+               @         @       @
+               @         @       @
+               @         @       @
+
+
+
+
+
+
+
+
+
+
+
+                J .   W e n z l a f f
+
+                Z K I   d e r   A d W
+                 K u r s t r .   3 3
+               -----------------------
+               B E R L I N ,   1 0 8 6
+
+
+
+
+
+
+
+
+                                   - 1 -
+
+
+
+
+
+
+
+
+     ING_DB 6.3/4                                       AMX(FORTRAN77)
+
+
+
+     EINLEITUNG
+          Fuer die Einbindung von Datenbankaktionen in FORTRAN77 unter
+          UNIX  bsd 2.9 stehen die AMX-Compiler `amxf' und `oamxf' zur
+          Verfuegung.  `oamxf' ist die overlay-Version von `amxf'.
+          Die Datenbankaktionen werden in AMX/C programmiert  und  mit
+          `amxf'  uebersetzt,  alle  anderen  Programmteile koennen in
+          FORTRAN77 geschrieben werden.  Sie werden mit  `f77'  ueber-
+          setzt und mit `amxf' bzw. `oamxf' gelinkt (verbunden).
+          Die Verwendung von `amxf' zur  Programmerstellung  erfordert
+          keine  Angabe  einer  speziellen  AMX-Bibliothek  (analog zu
+          `amx').  Die Verwendung von `oamxf' erfordert vom Nutzer
+
+               1.   die Angabe des Flags `-V' beim Uebersetzen der  zu
+                    ueberlagernden Moduln
+
+               2.   die Angabe der ueberlagerbaren AMX-Bibliotheken
+                    -lova1 bzw. `.../lib/libova1.a'
+                    -lova2 bzw. `.../lib/libova2.a'
+                    -lova3 bzw. `.../lib/libova3.a'
+                    -lova4 bzw. `.../lib/libova4.a'
+                    wobei der Pfad `.../' das home-directory  des  Da-
+                    tenbanksystems ING_DB 6.3 angeben soll.
+
+          Jede Bibliothek belegt  ein  Textsegment  (8  KByte).   Ent-
+          sprechend  der  Ueberlagerungsstruktur  koennen  die Biblio-
+          theken verteilt werden.  Die Nummerierung schreibt aber  die
+          Reihenfolge der Angabe beim Verbinden vor.
+
+
+     EIN-/AUSGABEN
+          Solange in FORTRAN77 und C jeweils verschiedene Dateien  an-
+          gesprochen  werden, koennen ohne Sprachmixprobleme beliebige
+          Ein-/Ausgabeoperationen ausgefuehrt werden.  Gleiche Dateien
+          koennen  nur  dann  in  beiden Sprachen angesprochen werden,
+          wenn es sich um die Standard-Ein-  oder  -Ausgabedatei  han-
+          delt.
+
+               FORTRAN77           C
+               ---------           ---------------------
+               Einheit 5           stdin  (Deskriptor 0)
+               Einheit 6           stdout (Deskriptor 1)
+               Einheit 0           stderr (Deskriptor 2)
+
+          Einheit 5, 6 oder 0 in FORTRAN77 darf dabei  keiner  anderen
+          Datei  zugewiesen werden, wie auch stdin, stdout oder stderr
+          bzw. Deskriptor 0, 1 oder 2 in C.  In C  sollten  die  Stan-
+          darddateien auch nicht gepuffert werden (s. SETBUF(III)).
+
+
+
+
+
+
+                                   - 1 -
+
+
+
+
+
+
+
+
+     ING_DB 6.3/4                                       AMX(FORTRAN77)
+
+
+
+     FELDER
+          In FORTRAN77 beginnen Indizes von  Felder  (Vektoren)  immer
+          mit 1, in C dagegen mit 0.
+
+          Beispiel
+               FORTRAN77:     array(n)   hat die Indizes 1 .. n
+               C              array[n]   hat die Indizes 0 .. (n - 1)
+
+          Probleme koennen immer dann auftreten, wenn ueber  Argumente
+          ein  Index  uebermittelt wird, der den Bearbeitungsstand des
+          Feldes ausdruecken soll.  Die Uebermittlung  der  Kardinali-
+          taet  des Feldes (Anzahl der Feldelemente) bringt keine Pro-
+          bleme.
+          In mehrdimensionalen Feldern hat  in  FORTRAN77  Spalte  vor
+          Zeile, in C Zeile vor Spalte Vorrang.
+
+          FORTRAN77
+                           +-----------------------------------+
+                  a(2,3)   | 1,1 | 1,2 | 1,3 | 2,1 | 2,2 | 2,3 |
+                  a(3,2)   | 1,1 | 1,2 | 2,1 | 2,2 | 3,1 | 3,2 |
+                  a(6)     |  1  |  2  |  3  |  4  |  5  |  6  |
+                           +-----------------------------------+
+          C
+                           +-----------------------------------+
+                  a[6]     |  0  |  1  |  2  |  3  |  4  |  5  |
+                  a[2,3]   | 0,0 | 1,0 | 0,1 | 1,1 | 0,2 | 1,2 |
+                  a[3,2]   | 0,0 | 1,0 | 2,0 | 0,1 | 1,1 | 2,1 |
+                           +-----------------------------------+
+
+
+     FORTRAN77 KONVENTIONEN
+          Der Eintrittspunkt in das FORTRAN77-Programm ist
+
+                    subroutine amx()
+
+          Damit wird  eine  ordnungsgemaesse  Datenbankinitialisierung
+          und -beendigung gesichert.
+          Fuer  FORTRAN77  gibt  es  keine  weiteren  Konventionen  zu
+          beachten, folgende Hinweise sollen die Arbeit etwas erleich-
+          tern:
+
+               -    Vermeiden Sie die Verwendung von  Funktionen,  die
+                    in C geschrieben sind und von FORTRAN77 aufgerufen
+                    werden, solange  Sie  den  Mechanismus  der  Argu-
+                    mentuebergabe nicht vollstaendig verstanden haben.
+
+               -    Stringvariablen in FORTRAN77,  die  Zeichenketten-
+                    domaenen  aufnehmen  sollen,  muessen  ein Zeichen
+                    laenger sein, als die  Laenge  der  Zeichenketten-
+                    domaene  in der Datenbank, auch wenn FORTRAN77 das
+                    Abschlusszeichen `\0' fuer die Zeichenkette  nicht
+
+
+                                   - 2 -
+
+
+
+
+
+
+
+
+     ING_DB 6.3/4                                       AMX(FORTRAN77)
+
+
+                    benoetigt.
+
+               -    Schon sehr kleine AMX/FORTRAN77-Programme  belegen
+                    den  vollen  Adressraum.  Benutzen Sie von vornhe-
+                    rein die Ueberlagerungsstrukturen.
+
+               -    Benutzen Sie fuer AMX/F-Austauschobjekte  vom  Typ
+                    `integer' immer `integer*2' bzw. `integer*4'.
+
+
+     C KONVENTIONEN
+          Vom   C-Teil   der   C/FORTRAN77-Programmen   koennen   alle
+          FORTRAN77-Objekte   (Routinen,  Daten),  vom  FORTRAN77-Teil
+          koennen nur bestimmte C-Objekte benutzt werden.
+
+
+     NAMEN
+          FORTRAN77-Namen (Symbole) duerfen  maximal  6  Zeichen  lang
+          sein.   In  C  muss an den FORTRAN77-Namen ein zusaetzlicher
+          Unterstrich `_' angehaengt werden, um FORTRAN77-Objekte in C
+          zu erreichen.
+
+               z.B.   FORTRAN77     name   string   func
+                      C             name_  string_  func_
+
+          Normalerweise wird in FORTRAN77 Gross-  und  Kleinschreibung
+          nicht  unterschieden, d.h. der FORTRAN77-Compiler uebersetzt
+          alle  Gross-  in  Kleinbuchstaben.   Das   `f77'-Flag   `-U'
+          gestattet die Verwendung von Gross- und Kleinbuchstaben.
+
+
+     TYPKONVERSIONEN
+          Fuer die Typen in FORTRAN77 und C gelten folgende  Zuordnun-
+          gen:
+
+               integer*2                short bzw. short int
+               integer                  long bzw. long int
+                                        oder
+                                        short bzw. short int
+                                        (siehe `f77'-Flag `-i2')
+               integer*4                long bzw. long int
+               logical                  long bzw. long int
+                                        oder
+                                        short bzw. short int
+                                        (siehe `f77'-Flag `-i2')
+               real                     float
+               double precision         double
+               complex                  struct { float r, i; }
+               double complex           struct { double r, i; }
+               character*n              char [n]
+
+
+
+
+                                   - 3 -
+
+
+
+
+
+
+
+
+     ING_DB 6.3/4                                       AMX(FORTRAN77)
+
+
+
+     ARGUMENTKONVERSIONEN
+          In   FORTRAN77   werden   Parameter   grundsaetzlich   durch
+          Adressverweise  (Call By Reference) uebergeben, einige Para-
+          meter (Funktionen, Parameter vom Typ  character*n)  erzeugen
+          einen  zusaetzlichen Laengenparameter vom Typ integer*4 bzw.
+          long.
+
+          subroutine f(..., x, ...)     f_(..., x, ...)
+          integer*2 x                   short *x;
+
+          subroutine f(..., x, ...)     f_(..., x, ...)
+          integer x                     long *x;
+                                        oder
+                                        short *x;
+                                        (siehe `f77'-Flag `-i2')
+
+          subroutine f(..., x, ...)     f_(..., x, ...)
+          integer*4 x                   long *x;
+
+          subroutine f(..., x, ...)     f_(..., x, ...)
+          logical x                     long *x;
+                                        oder
+                                        short *x;
+                                        (siehe `f77'-Flag `-i2')
+
+          subroutine f(..., x, ...)     f_(..., x, ...)
+          real x                        float *x;
+
+          subroutine f(..., x, ...)     f_(..., x, ...)
+          double precision x            double *x;
+
+          subroutine f(..., x, ...)     f_(..., x, ...)
+          complex x                     struct {float r, i; } *x;
+
+          subroutine f(..., x, ...)     f_(..., x, ...)
+          double complex x              struct {double r, i; } *x;
+
+          subroutine f(..., x, ...)     f_(..., x, ..., xlen)
+          character*(*) x               char x[];
+                                        long xlen;
+
+          subroutine f(..., x, ...)     f_(..., x, ..., xnull)
+          subroutine x                  int (*x)();
+                                        long xnull; /* == 0L */
+
+
+
+
+
+
+
+
+
+                                   - 4 -
+
+
+
+
+
+
+
+
+     ING_DB 6.3/4                                       AMX(FORTRAN77)
+
+
+     FUNKTIONSKONVERSIONEN
+          Fuer die Uebergabe von Funktionswerten an aufrufende  Routi-
+          nen gelten folgende Zuordnungen:
+
+          integer*2 function f(...)          short f_(...)
+
+          integer function f(...)            long f_(...)
+                                             oder
+                                             short f_(...)
+                                             (siehe `f77'-Flag `-i2')
+
+          integer*4 function f(...)          long f_(...)
+
+          logical function f(...)            long f_(...)
+                                             oder
+                                             short f_(...)
+                                             (siehe `f77'-Flag `-i2')
+
+          real function f(...)               nicht  darstellbar,  weil
+                                             float    in   Ausdruecken
+                                             immer in double  umgewan-
+                                             delt wird
+
+          double precision function f(...)   double f_(...)
+
+          complex function f(...)            f_(r, ...)
+                                             struct {float r, i;} *r;
+
+          double complex function f(...)     f_(r, ...)
+                                             struct {double r, i;} *r;
+
+          character*n function f(...)        f_(r, l...)
+                                             char r[];
+                                             long l;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                   - 5 -
+
+
+
+
