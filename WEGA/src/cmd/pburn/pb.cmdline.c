@@ -9,14 +9,12 @@
 
 #include <stdio.h>
 
-#define of1 "filename [-w] [-D] [-B] [-os hex] : "
-#define of2 "filename [-w] [-D] [-B] [-ose hex]: "
-#define op1 "promtype [-ol hex]                : "
-#define op2 "promtype : "
-#define op3 "promtype [-ol hex] [-V volt] [-S] : "
-#define op4 "promtype [-V volt] [-S] : "
-#define des "   destination "
-#define sou "   source      "
+#define of1 "file [-w] [-D] [-B] [-os hex] : "
+#define of2 "file [-w] [-D] [-B] [-ose hex]: "
+#define op1 "prom [-ol hex]                : "
+#define op2 "prom : "
+#define op3 "prom [-ol hex] [-V volt] [-S] : "
+#define op4 "prom [-V volt] [-S] : "
 
 #define true 1
 #define false 0
@@ -34,15 +32,15 @@
 #define rby "bytemode "
 #define rfi "file:\n"
 #define rco "\007copy "
-#define eprom "promtyp "
-#define fle "file    :"
+#define epr   "  even_prom :"
+#define opr   "  odd_prom  :"
+#define eprom "  prom      "
+#define fle   "  file      :"
 #define start "start"
 #define end "end"
 #define segment "segment"
 #define entry "entry"
 #define byte " byte"
-#define lob " low byte"
-#define hib " high byte"
 
 #define err1 "invalid options\n"
 #define err2 "multiple defined\n"
@@ -116,6 +114,15 @@ int tpe1, tpe2;			/* type eprom
 					15-e27512*/
 long begadre1, begadre2;		/* begin-adr. eprom */
 long lange1, lange2;		/* laenge eprom */
+long adr_even, adr_odd;		/* adr even/odd prom */
+long lg_even, lg_odd;		/* laenge even/odd prom */
+long zwsp;			/* zwsp */
+int even_odd, beven_odd;	/* 0 ... even prom
+				   1 ... odd  prom */
+int pradr;			/* 0 ... start prom even-adresse
+				   1 ... start prom odd-adresse*/
+
+long stepw,step1,step2,stepn;	/* Stepweite, adressstep */ 
 char Vpp;			/* programmierspannung Vpp
 					 1-25 V
 					 2-21 V
@@ -131,7 +138,7 @@ long prlang;
 long bbegadrf, bbegadre1, blangf, blange1;
 
 char e0[] ="e2708";
-char e1[] ="e2716";
+char e2[] ="e2716";
 char e7[] ="e2732";
 char e8[] ="e2732a";
 char e9[] ="e2764";
@@ -191,7 +198,7 @@ inoptf()
 	if (*ptr!='-') {error=1; outerr(); return;}
 	ptr++;
 	if (*ptr!='w'&&*ptr!='D'&&*ptr!='o'&&*ptr!='s'&&*ptr!='e'&&*ptr!='B') {error=1;outerr();return;}
-	if (*ptr=='w')	{if (kennw==0) {kennw=1;bre='l';}
+	if (*ptr=='w')	{if (kennw==0) {kennw=1;bre='h';}
 				else {error=2;outerr();return;}
 			}
 	if (*ptr=='D')	{if (kennD==0) {kennD=1;sect='d';}
@@ -301,16 +308,16 @@ char *vptr;
 	{	j++;
 		ptr=namee1;
 		switch (j) {
-			case  1: for (prlang=0x400,tpe1=0,vptr=e0,i=5;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;	
-			case  2: for (prlang=0x800,tpe1=1,vptr=e1,i=5;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
-			case  3: for (prlang=0x1000,tpe1=7,vptr=e7,i=5;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
-			case  4: for (prlang=0x1000,tpe1=8,vptr=e8,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
-			case  5: for (prlang=0x2000,tpe1=9,vptr=e9,i=5;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
-			case  6: for (prlang=0x2000,tpe1=10,vptr=e10,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
-			case  7: for (prlang=0x4000,tpe1=11,vptr=e11,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
-			case  8: for (prlang=0x4000,tpe1=12,vptr=e12,i=7;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
-			case  9: for (prlang=0x8000,tpe1=13,vptr=e13,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
-			case 10: for (prlang=0x10000,tpe1=15,vptr=e15,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
+			case  1: for (prlang=0x400L,tpe1=0,vptr=e0,i=5;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;	
+			case  2: for (prlang=0x800L,tpe1=1,vptr=e2,i=5;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
+			case  3: for (prlang=0x1000L,tpe1=7,vptr=e7,i=5;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
+			case  4: for (prlang=0x1000L,tpe1=8,vptr=e8,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
+			case  5: for (prlang=0x2000L,tpe1=9,vptr=e9,i=5;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
+			case  6: for (prlang=0x2000L,tpe1=10,vptr=e10,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
+			case  7: for (prlang=0x4000L,tpe1=11,vptr=e11,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
+			case  8: for (prlang=0x4000L,tpe1=12,vptr=e12,i=7;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
+			case  9: for (prlang=0x8000L,tpe1=13,vptr=e13,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
+			case 10: for (prlang=0x10000L,tpe1=15,vptr=e15,i=6;*ptr==*vptr&&i>0;ptr++,vptr++,i--); break;
 			case 11: i=0; error=1; outerr(); return;
 			   }
 	}while (i!=0 || *ptr != '\0');
@@ -349,23 +356,78 @@ char *vptr;
 								begadre1=0L;
 								lange1=0x400L;}
 
-	if (begadre1>=prlang) {error=1; outerr(); return;}
+	if (command=='p' && bre!='s')
+		{
+		if (begadre1 % 2>0)	{ /*ungerade adresse*/
+					even_odd=1;
+					pradr=1;
+					adr_even=(begadre1+1)/2;
+					}
+			else		{/*gerade adresse*/
+					even_odd=0;
+					pradr=0;
+					adr_even=begadre1/2;
+					}
+		adr_odd=begadre1/2;			
+		if ((adr_even>=prlang) || (adr_odd>=prlang))
+					{error=1; outerr(); return;}
+		if (lange1==0L)		{
+					lg_even=prlang-adr_even;
+					lg_odd=prlang-adr_odd;
+					}
+			else		{
+					if (lange1 % 2>0)	{/*ungerade laenge*/
+								if (even_odd==1)	{/*ungerade adresse*/
+											lg_odd=(lange1+1)/2;
+											lg_even=lange1/2;
+											}
+								else			{/*gerade adresse*/
+											lg_even=(lange1+1)/2;
+											lg_odd=lange1/2;
+											}
+								}
+						else		{/*geradelaenge*/
+								lg_even=lange1/2;
+								lg_odd=lg_even;
+								}
+					}
+		if ((adr_even+lg_even>prlang) || (adr_odd+lg_odd>prlang))
+					{error=1; outerr(); return;}
+		langf=lg_even+lg_odd;
+		zwsp=begadrf+langf;
+		if (zwsp>0xffffL)	{
+					zwsp=zwsp-0xffffL;
+					zwsp=zwsp/2L;
+					lg_even=lg_even-zwsp;
+					lg_odd=lg_odd-zwsp;
+					if (pradr==0)	lg_odd--;
+						else	lg_even--;
+					langf=lg_even+lg_odd;
+					}	
+		if (even_odd==1)	{/*odd prom*/
+					begadre1=adr_odd;
+					lange1=lg_odd;
+					}
+			else		{/*even prom*/
+					begadre1=adr_even;
+					lange1=lg_even;
+					}
+		}
+	if (bre=='s')
+		{
+		if (begadre1>=prlang) {error=1; outerr(); return;}
 
-	if (begadre1+lange1>prlang)	{error=1; outerr(); return;}
+		if (begadre1+lange1>prlang)	{error=1; outerr(); return;}
 
-	if (lange1==0L)	lange1=prlang-begadre1;
+		if (lange1==0L)	lange1=prlang-begadre1;
 
-	if (command=='p')
-			{langf=lange1;
-			if (bre!='s')	{langf=langf+langf;
-					if (langf>0xffffL)	{langf=0xffffL;
-								lange1=langf/2;}}}
-
+		langf=lange1;
+		}
 	if (command=='b')	{if (kenneo==1||kennel==1)
 					{error=1; outerr(); return;}}
 
 	bbegadrf=begadrf; bbegadre1=begadre1;
-	blangf=langf; blange1=lange1; bbre=bre;							
+	blangf=langf; blange1=lange1; bbre=bre;	beven_odd=even_odd;						
 }	
 
 /*	ausgabe ready to program...... ; ready to copy ......
@@ -397,13 +459,14 @@ long ende, endf;
 
 	if (answer=='r')	{begadrf=bbegadrf; begadre1=bbegadre1;
 				langf=blangf; lange1=blange1; bre=bbre;
+				even_odd=beven_odd;
+				eofseg=0;
 				mofy=false;
 				endf=begadrf+langf;
 				ende=begadre1+lange1;
 				if (ende>prlang)
 					{lange1=prlang-begadre1;
-					if (bre=='s')	endf=begadrf+lange1;
-						else	endf=begadrf+lange1+lange1;
+					endf=begadrf+lange1;
 					langf=endf-begadrf;
 					ende=lange1+begadre1;}}
 		else	{
@@ -417,31 +480,77 @@ long ende, endf;
 						case 'l': bre='h'; break;
 						case 'h': bre='l'; break;
 						}
+					beven_odd=even_odd;
+					switch (even_odd)
+						{
+						case 0: even_odd=1; break;
+						case 1: even_odd=0; break;
+						}
 					bbegadrf=begadrf; bbegadre1=begadre1;
 					blangf=langf; blange1=lange1;
-					if (bre!='h')	{begadrf=begadrf+langf;
+					if (bre=='s')	{begadrf=begadrf+langf;
 							begadre1=begadre1+lange1;
 							if (begadre1>=prlang)	{begadre1=0;
 										lange1=prlang;
-										if (bre=='s')	langf=lange1;
-											else	langf=lange1+lange1;}}	
- 
+										langf=lange1;
+										}
+							}	
+					if (bre=='h')	{begadrf=begadrf+langf;
+							adr_even=adr_even+lg_even;
+							if (adr_even>=prlang)
+									{adr_even=0;
+									lg_even=prlang;
+									}
+								else	{if ((adr_even+lg_even)>prlang)
+										lg_even=prlang-adr_even;
+									}
+							adr_odd=adr_odd+lg_odd; 
+							if (adr_odd>=prlang)
+									{adr_odd=0;
+									lg_odd=prlang;
+									}
+								else	{if ((adr_odd+lg_odd)>prlang)
+										lg_odd=prlang-adr_odd;
+									}
+							langf=lg_even+lg_odd;
+							endf=begadrf+langf;
+							if (endf>0xffffL)
+									{endf=endf-0xffffL;
+									endf=endf/2;
+									lg_even=lg_even-endf;
+									lg_odd=lg_odd-endf;
+									langf=lg_even+lg_odd;
+									if (pradr==0)	lg_odd--;
+										else	lg_even--;
+									langf=lg_even+lg_odd;
+									}
+							}
+					if (bre!='s')	{if (even_odd==1)
+									{/*odd prom*/
+									begadre1=adr_odd;
+									lange1=lg_odd;
+									}
+								else	{/*even prom*/
+									begadre1=adr_even;
+									lange1=lg_even;
+									}
+							}
+
 					endf=begadrf+langf;
 					ende=begadre1+lange1;
 					if (ende>prlang)
 						 {lange1=prlang-begadre1;
-						 if (bre=='s')	endf=begadrf+lange1;
-							else	endf=begadrf+lange1+lange1;
+						 endf=begadrf+lange1;
 						 langf=endf-begadrf; 
-						 ende=lange1+begadre1;}
+						 ende=lange1+begadre1;
+						 }
 					}
 			if (command=='p')
 					{if (endf>0xffffL)	{langf=0xffffL - begadrf;
-								if (bre != 's')	lange1=langf/2;
-									else	lange1=langf;
+								lange1=langf;
 								endf=begadrf+langf;
 								ende=begadre1+lange1;}
-					if (endf==0xffffL && bre!='l')
+					if (endf==0xffffL && bre!='h')
 								{eofseg=1;
 								warning=12;
 								outwar();}}
@@ -458,12 +567,28 @@ long ende, endf;
 		case 't': printf ("%s",rte); break;}
 	
 	if (command=='p') {
-		printf ("%s %s %s %s %X %s %X %s %X",sou,fle,namef,segment,segnr,start,begadrf,end,(endf-1));
-		if (bre=='l') printf ("%s \n",lob);
-			else if (bre=='h') printf ("%s \n",hib);
-			else printf ("%s \n",byte);	
-		printf ("%s %s: %s %s %X %s %X %s",des,eprom,namee1,start,begadre1,end,(ende-1),byte);}
-	else	printf ("%s %s: %s %s %X %s %X %s",sou,eprom,namee1,start,begadre1,end,(ende-1),byte);
+		/* adressstep */
+		step1=begadrf;
+		stepw=2L;
+		if (bre=='s')	stepw=1L;
+			else	if (bre=='l')	step1++;	
+		step2=step1+stepw;
+		if (step2>endf-1)	step2=step1;
+		stepn=endf-1;
+		if (bre!='s')	{if (step1 % 2 > 0)	{/*ungerade begadrf*/
+							if ((endf-1) % 2 <= 0) stepn--;
+							}
+					else		{/*gerade begadrf*/
+							if ((endf-1) % 2 > 0)   stepn--;
+							}
+				}
+		printf ("%s %s %s %X %s %X, %X ... %X %s\n",fle,namef,segment,segnr,start,step1,step2,stepn,end);
+		if (bre=='s')	printf ("%s: ",eprom);
+			else	{if (even_odd==0) printf ("%s ",epr);
+					else	 printf ("%s ",opr);}
+		printf ("%s %s %X %s %X %s",namee1,start,begadre1,end,(ende-1),byte);
+			}
+	else	printf ("%s: %s %s %X %s %X %s",eprom,namee1,start,begadre1,end,(ende-1),byte);
 
 	if (command=='p') printf ("  ?(y/r/s/m/v/l/t/q)");
 		else printf ("  ?(y/r/s/q)");
@@ -506,6 +631,7 @@ long ende1, ende2, endf;
 				if (endf>0xffffL)	{langf=0xffffL - begadrf;
 							if (bre != 's')	lange1=langf/2;
 								else	lange1=langf;
+								prlang=lange1;
 							endf=begadrf+langf;
 							ende1=begadre1+lange1;}
 				if (endf==0xffffL)	{eofseg=1;
@@ -516,22 +642,22 @@ long ende1, ende2, endf;
 	{printf ("%s",rdy);
 	if (command=='b')		{printf ("%s",rby);
 					out_rpc();
-					printf ("%s %s: %s",sou,eprom,namee1);
+					printf ("%s: %s",eprom,namee1);
 					printf ("  ?(y/q)");}
 		else if (command=='f')	{printf ("%s",rfi);
-					printf ("%s %s: %s %s %X %s %X %s",sou,eprom,namee1,start,begadre1,end,(ende1-1),byte);
+					printf ("%s: %s %s %X %s %X %s",eprom,namee1,start,begadre1,end,(ende1-1),byte);
 					switch (bre)
 						{
 						case 's': 	printf ("\n"); break;
 						case 'l':	printf (" low_address\n"); break;
 						case 'h':	printf (" high_address\n"); break;
 						}
-					printf ("%s %s %s %s %X %s %X %s %X %s %X",des,fle,namef,segment,segnr,entry,entryf,start,begadrf,end,(endf-1));
+					printf ("%s %s %s %X %s %X %s %X %s %X",fle,namef,segment,segnr,entry,entryf,start,begadrf,end,(endf-1));
 					printf ("  ?(y/m/l/q)");}
 		else if (command=='c')	{printf ("%s",rco);
 					out_rpc();
-					printf ("%s %s: %s %s %X %s %X %s\n",sou,eprom,namee1,start,begadre1,end,(ende1-1),byte);
-					printf ("%s %s: %s %s %X %s %X %s",des,eprom,namee2,start,begadre2,end,(ende2-1),byte);
+					printf ("%s: %s %s %X %s %X %s\n",eprom,namee1,start,begadre1,end,(ende1-1),byte);
+					printf ("%s: %s %s %X %s %X %s",eprom,namee2,start,begadre2,end,(ende2-1),byte);
 					printf ("  ?(y/l/m/v/r/q)");}
 	gets (cmdbuf);
 	if (cmdbuf[1]!='\0')	answer='w';
