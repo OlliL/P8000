@@ -1,0 +1,82 @@
+.sh FELDER
+In \*(FF beginnen Indizes von Felder (Vektoren)
+immer mit 1,
+in C dagegen mit 0.
+.s1
+Beispiel
+.lp +20 15
+\*(FF:	array(n)\ \ \ hat die Indizes 1 .. n
+.lp +20 15
+C	array[n]\ \ \ hat die Indizes 0 .. (n - 1)
+.i0
+.s1
+Probleme k::onnen immer dann auftreten,
+wenn ::uber Argumente ein Index ::ubermittelt wird,
+der den Bearbeitungsstand des Feldes ausdr::ucken soll.
+Die ::Ubermittlung der Kardinalit::at
+des Feldes (Anzahl der Feldelemente)
+bringt keine Probleme.
+.br
+In mehrdimensionalen Feldern hat in \*(FF
+Spalte vor Zeile,
+in C Zeile vor Spalte Vorrang.
+.s1
+.nf
+\*(FF
+                 +\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-+
+        a(2,3)   | 1,1 | 1,2 | 1,3 | 2,1 | 2,2 | 2,3 |
+        a(3,2)   | 1,1 | 1,2 | 2,1 | 2,2 | 3,1 | 3,2 |
+        a(6)     |  1  |  2  |  3  |  4  |  5  |  6  |
+                 +\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-+
+C
+                 +\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-+
+        a[6]     |  0  |  1  |  2  |  3  |  4  |  5  |
+        a[2,3]   | 0,0 | 1,0 | 0,1 | 1,1 | 0,2 | 1,2 |
+        a[3,2]   | 0,0 | 1,0 | 2,0 | 0,1 | 1,1 | 2,1 |
+                 +\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*-+
+.fi
+.s1
+.sh "\*(FF KONVENTIONEN"
+Der Eintrittspunkt in das
+\*(FF\*-Programm ist
+.s1
+.in 15
+subroutine amx()
+.i0
+.s2
+Damit wird eine ordnungsgem::a::se
+Datenbankinitialisierung und
+\*-beendigung gesichert.
+.br
+F::ur \*(FF gibt es keine weiteren Konventionen
+zu beachten,
+folgende Hinweise soolen die Arbeit etwas erleichtern:
+.s1
+.lp +10 5
+\*-	Vermeiden Sie die Verwendung von Funktionen,
+die in C geschrieben sind
+und von \*(FF aufgerufen werden,
+solange Sie den mechanismus der
+Argument::ubergabe nicht vollst::andig verstanden haben.
+.s1
+.lp +10 5
+\*-	Stringvariablen in \*(FF,
+die Zei\%chen\%ket\%ten\%dom::anen aufnehmen sollen,
+m::ussen ein Zeichen l::anger sein,
+als die L::ange der Zei\%chen\%ket\%ten\%dom::ane
+in der Datenbank,
+auch wenn \*(FF das Abschlu::szeichen `\e0'
+f::ur die Zeichenkette nicht ben::otigt.
+.s2
+.lp +10 5
+\*-	Schon sehr kleine
+\*(AA/\*(FF\*-Programme belegen
+den vollen Adre::sraum.
+Benutzen Sie von vornherein die
+::Uberlagerungsstrukturen.
+.s2
+.lp +10 5
+\*-	Benutzen Sie f::ur \*(AA/\*FF\*-Austauschobjekte
+vom Typ `integer' immerr `integer*2'
+bzw. `integer*4'.
+.s1
