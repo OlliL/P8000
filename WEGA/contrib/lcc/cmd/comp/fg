@@ -1,0 +1,24 @@
+fgrep $1 \
+common/allo.c \
+common/cgen.c \
+common/cgram.c \
+common/comm1.c \
+common/comm2.c \
+common/common \
+common/cost.c \
+common/manifest.h \
+common/match.c \
+common/mfile1.h \
+common/mfile2.h \
+common/optim.c \
+common/pftn.c \
+common/reader.c \
+common/scan.c \
+common/trees.c \
+common/xdefs.c \
+u8k/debug.c \
+u8k/local.c \
+u8k/local2.c \
+u8k/macdefs.h \
+u8k/sdb.h \
+u8k/table.c | more
