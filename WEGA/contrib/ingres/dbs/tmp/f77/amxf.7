@@ -1,0 +1,55 @@
+.sh FUNKTIONSKONVERSIONEN
+F::ur die ::Ubergabe von Funktionswerten
+an aufrufende Routinen
+gelten folgende Zuordnungen:
+.s1
+.lp +35 35
+integer*2 function f(...)	short f_(...)
+.s1
+.lp +35 35
+integer function f(...)	long f_(...)
+.br
+oder
+.br
+short f_(...)
+.br
+(siehe `f77'\*-Flag `\*-i2')
+.s1
+.lp +35 35
+integer*4 function f(...)	long f_(...)
+.s1
+.lp +35 35
+logical function f(...)	long f_(...)
+.br
+oder
+.br
+short f_(...)
+.br
+(siehe `f77'\*-Flag `\*-i2')
+.s1
+.lp +35 35
+real function f(...)	nicht darstellbar,
+weil float in Ausdr::ucken immer in double
+umgewandelt wird
+.s1
+.lp +35 35
+double precision function f(...)	double f_(...)
+.s1
+.lp +35 35
+complex function f(...)	f_(r, ...)
+.br
+struct {float r, i;} *r;
+.s1
+.lp +35 35
+double complex function f(...)	f_(r, ...)
+.br
+struct {double r, i;} *r;
+.s1
+.lp +35 35
+character*n function f(...)	f_(r, l...)
+.br
+char r[];
+.br
+long l;
+.i0
+.s1
