@@ -1,0 +1,499 @@
+.po
+.ll 79
+.pl 66
+.de NP
+'bp
+.lt 79
+.tl 'Entwicklerdokumentation'- % -'P8000'
+'sp 1
+..
+.wh -1 NP
+
+
+
+
+
+
+
+.nf
+.ce
+U e b e r s i c h t
+
+
+.ce
+P 8 0 0 0 - E n t w i c k l e r d o k u m e n t a t i o n
+
+
+
+
+
+.ce
+Version 3.1
+
+.ce
+Datum: 01.01.1990
+
+
+
+
+
+
+
+
+Inhaltsverzeichnis                                                        Seite
+
+
+1.   Firmware . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   2
+
+2.   WEGA . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   3
+2.1. Standalone Programme . . . . . . . . . . . . . . . . . . . . . . . . .   3
+2.2. Boot . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   4
+2.3. Kern . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   5
+2.4. Kommandos  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   6
+
+3.   UDOS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
+3.1. Systemspuren . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
+3.2. Systemkommandos  . . . . . . . . . . . . . . . . . . . . . . . . . . .   7
+3.3. Dienstprogramme  . . . . . . . . . . . . . . . . . . . . . . . . . . .   8
+3.4. Mikroprozessorsoftware . . . . . . . . . . . . . . . . . . . . . . . .   8
+3.5. Programmiersprachen  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+
+4.   OS/M . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   9
+
+.bp 2
+1. Firmware 
+===========
+
+Auf Diskette "Firmware - MON8, WEGA, Terminal"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I MON8 (U880-Monitor)       I               I               I                 I
+I  U880SM.S                 I    x          I               I Weber           I
+I  U880EIG.S                I    x          I               I Weber           I
+I  FDINIT.S                 I    x          I               I Weber           I
+I  FLOPPY.S                 I    x          I               I Weber           I
+I  INA.S                    I    x          I               I Weber           I
+I  OUTA.S                   I    x          I               I Weber           I
+I  K.MON8.S                 I    x          I               I Weber           I
+I  FW8ASMLINK               I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I eigentest                 I               I               I                 I
+I (U880-Eigentest)          I               I               I                 I
+I  s.menu.c                 I    x          I               I Klatte          I
+I  s.u880tr.s               I    x          I               I Klatte          I
+I  udosprom.o               I    x (obj)    I               I Klatte          I
+I  makefile                 I    x          I               I Klatte          I
+I  readme                   I               I   x           I Klatte          I
+I---------------------------I---------------I---------------I-----------------I
+I WEGA (Koppelsoftware)     I               I               I                 I
+I  K.ACT.S                  I    x          I               I Oefler          I
+I  K.NEU.S                  I    x          I               I Oefler          I
+I  K.BLK.S                  I    x          I               I Oefler          I
+I  K.BUF.S                  I    x          I               I Oefler          I
+I  K.P8000.S                I    x          I               I Kuehle/Oefler   I
+I  K.PROM.S                 I    x          I               I Kuehle/Oefler   I
+I  K.LINK                   I    x          I               I Oefler          I
+I  koppeldoc                I               I    x          I Oefler          I
+I---------------------------I---------------I---------------I-----------------I
+I Terminalsoftware          I               I               I                 I
+I  p8t.5.init.s             I    x          I               I Kuehle          I
+I  p8t.5.main.s             I    x          I               I Kuehle          I
+I  p8t.5.up.s               I    x          I               I Kuehle          I
+I  p8t.5.esc.s              I    x          I               I Kuehle          I
+I  p8t.5.vt100.s            I    x          I               I Kuehle          I
+I  p8tld                    I    x          I               I Kuehle          I
+I---------------------------I---------------I---------------I-----------------I
+
+.bp
+Auf Diskette "Firmware - MON16, WDC"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I MON16 (U8000-Monitor)     I               I               I                 I
+I  p.init.s                 I    x          I               I Zabel           I
+I  p.term.s                 I    x          I               I Zabel           I
+I  p.comm.s                 I    x          I               I Zabel           I
+I  p.brk.s                  I    x          I               I Zabel           I
+I  p.test.s                 I    x          I               I Zabel           I
+I  p.gesa.s                 I    x          I               I Zabel           I
+I  p.ldsd.s                 I    x          I               I Zabel           I
+I  p.boot.s                 I    x          I               I Zabel           I
+I  p.disk.s                 I    x          I               I Zabel           I
+I  p.crc.s                  I    x          I               I Zabel           I
+I  p.ram.s                  I    x          I               I Zabel           I
+I  mon16.doc                I               I    x          I Zabel           I
+I  mon16.crc.doc            I               I    x          I Zabel           I
+I  mon16.kp.doc             I               I    x          I Zabel           I 
+I---------------------------I---------------I---------------I-----------------I
+I WDC (Winchester-Disk)     I               I               I                 I
+I  wdc.firm.s               I    x          I               I Spielmann       I
+I---------------------------I---------------I---------------I-----------------I
+
+
+2.   WEGA
+=========
+
+2.1. Standalone Programme 
+-------------------------
+
+Auf Diskette "WEGA - Standalone (sa.diags)"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I sa.diags                  I               I               I                 I
+I (U8000-Eigentest)         I               I               I                 I
+I  boot.s                   I    x          I               I Klatte          I
+I  brk.s                    I    x          I               I Klatte          I
+I  comm.s                   I    x          I               I Klatte          I
+I  disk.s                   I    x          I               I Klatte          I
+I  gesa.o                   I    x (obj)    I               I Klatte          I
+I  init.s                   I    x          I               I Klatte          I
+I  ldsd.o                   I    x (obj)    I               I Klatte          I
+I  mch.s                    I    x          I               I Klatte          I
+I  menu.s                   I    x          I               I Klatte          I
+I  misc.s                   I    x          I               I Klatte          I
+I  ram.s                    I    x          I               I Klatte          I
+I  term.o                   I    x (obj)    I               I Klatte          I
+I  twem.s                   I    x          I               I Klatte          I
+I  wdc.s                    I    x          I               I Klatte          I
+I  sa.test.s                I    x          I               I Klatte          I
+I  makefile                 I    x          I               I Klatte          I
+I---------------------------I---------------I---------------I-----------------I
+
+.bp
+Auf Diskette "WEGA - Boot, Standalone, Kommandos"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I sa.mkfs.c                 I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I sa.install.c              I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I sa.verify.c               I    x          I               I Spielmann       I
+I sa.wdc.s                  I    x          I               I Spielmann       I
+I---------------------------I---------------I---------------I-----------------I
+I sa.format.c               I    x          I               I Spielmann       I
+I---------------------------I---------------I---------------I-----------------I
+I sa.shipdisk.c             I    x          I               I Spielmann       I
+I---------------------------I---------------I---------------I-----------------I
+I sa.cat.c                  I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I sa.timer.c                I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+
+
+2.2. Boot
+---------
+
+Auf Diskette "WEGA - Boot, Standalone, Kommandos"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I BOOT0                     I               I               I                 I
+I  boot0.ud.s               I    x          I               I Hoge            I
+I  boot0.fd.s               I    x          I               I Hoge            I
+I  boot0.rm.s               I    x          I               I Hoge            I
+I  boot0.md.s               I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I BOOT                      I               I               I                 I
+I  create.boot              I    x          I               I Hoge            I
+I  bstart.c                 I    x          I               I Hoge            I
+I  boot.c                   I    x          I               I Hoge            I
+I  bsys.c                   I    x          I               I Hoge            I
+I  bmch.s                   I    x          I               I Hoge            I
+I  bmisc.c                  I    x          I               I Hoge            I
+I  bconf.c                  I    x          I               I Hoge            I
+I  bmd.c                    I    x          I               I Hoge            I
+I  bfd.c                    I    x          I               I Hoge            I
+I  bud.s                    I    x          I               I Hoge            I
+I  brm.s                    I    x          I               I Hoge            I
+I  sa.function.s            I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+
+.bp
+2.3. Kern
+---------
+Auf Diskette "WEGA - Kern"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I event.s                   I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I mch.s                     I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I main.c                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I trap.c                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I machdep.c                 I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I conf.c                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I md.c                      I    x          I               I Hoge            I
+I disk.s                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I siok.c                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I koppel.s                  I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I lp.c                      I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I ud.c                      I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I fd.c                      I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I dump.c                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I prf.c                     I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I wpar.c                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I u.s                       I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I udev1.d.s                 I    x          I               I Hoge            I
+I udev2.d.s                 I    x          I               I Hoge            I
+I udev3.d.s                 I    x          I               I Hoge            I
+I udev4.d.s                 I    x          I               I Hoge            I
+I udev5.d.s                 I    x          I               I Hoge            I
+I udev6.d.s                 I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I timer.c                   I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I bio.c                     I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I cpu2.c                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I fpe.s                     I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I mt.d.s                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I rdwri.c                   I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I rd.d.s                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I blockdev.c                I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I chardev.c                 I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I ttydev.c                  I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+
+2.4. Kommandos
+--------------
+Auf Diskette "WEGA - Boot, Standalone, Kommandos"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I tar.c                     I    x          I               I Oefler          I
+I---------------------------I---------------I---------------I-----------------I
+I dump.c                    I    x          I               I Oefler          I
+I---------------------------I---------------I---------------I-----------------I
+I dumpdir.c                 I    x          I               I Oefler          I
+I---------------------------I---------------I---------------I-----------------I
+I restor.c                  I    x          I               I Oefler          I
+I---------------------------I---------------I---------------I-----------------I
+I putud.c                   I    x          I               I Oefler          I
+I---------------------------I---------------I---------------I-----------------I
+I getud.c                   I    x          I               I Oefler          I
+I---------------------------I---------------I---------------I-----------------I
+I format.c                  I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I verify.c                  I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I copydisk.c                I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I BURN (EPROM-Programmer)   I               I               I                 I
+I  pb2.c                    I    x          I               I Kuehle          I
+I  pb2.command.c            I    x          I               I Kuehle          I
+I  pb2.cmdline.c            I    x          I               I Kuehle          I
+I  pb2.buf.c                I    x          I               I Kuehle          I
+I  pb2.file.c               I    x          I               I Kuehle          I
+I  pb2.devud.c              I    x          I               I Kuehle          I
+I---------------------------I---------------I---------------I-----------------I
+I doscopy                   I               I               I                 I
+I (DOS-Programme)           I               I               I                 I
+I  dos.h                    I    x          I               I Hoge            I
+I  doscat.c                 I    x          I               I Hoge            I
+I  doscp.c                  I    x          I               I Hoge            I
+I  dosdel.c                 I    x          I               I Hoge            I
+I  dosdev.c                 I    x          I               I Hoge            I
+I  dosdir.c                 I    x          I               I Hoge            I
+I  dosfat.c                 I    x          I               I Hoge            I
+I  dosformat.c              I    x          I               I Hoge            I
+I  dosin.c                  I    x          I               I Hoge            I
+I  dosls.c                  I    x          I               I Hoge            I
+I  dosmkdir.c               I    x          I               I Hoge            I
+I  dosopn.c                 I    x          I               I Hoge            I
+I  dosout.c                 I    x          I               I Hoge            I
+I  dosplit.c                I    x          I               I Hoge            I
+I  dosrm.c                  I    x          I               I Hoge            I
+I  dosrmdir.c               I    x          I               I Hoge            I
+I  makefile                 I    x          I               I Hoge            I
+I  mk                       I    x          I               I Hoge            I
+I  dos.1                    I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+3.   UDOS
+=========
+
+3.1. Systemspuren
+-----------------
+Auf Diskette "UDOS"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I URLADER.S                 I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I OSLOAD.S                  I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I GET/SAVE                  I               I               I                 I
+I  GET.SAVE.S               I    x          I               I Weber           I
+I  GET.S                    I    x          I               I Weber           I
+I  RAMGS.S                  I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+
+3.2. Systemkommandos  
+--------------------
+Auf Diskette "UDOS"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I COPY.DISK.S               I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I COPY.TAR.S                I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I COPY.DCP.S                I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I FORMAT.S                  I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I LP.S                      I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I NDOS                      I               I               I                 I
+I  NDOS.S                   I    x          I               I Zabel           I
+I  NDOS.RAM.S               I    x          I               I Zabel           I
+I  FLOPPY.EXT.S             I    x          I               I Zabel           I
+I  NDOSLINK                 I    x          I               I Zabel           I
+I---------------------------I---------------I---------------I-----------------I
+I OS                        I               I               I                 I
+I  OS.S                     I    x          I               I Weber           I
+I  CON.S                    I    x          I               I Weber           I
+I  OSLINK                   I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I RENAME.S                  I    x          I               I Zabel           I
+I---------------------------I---------------I---------------I-----------------I
+I UDOS.SETFD.S              I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I UDOS.SETLP.S              I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I STATUS.S                  I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I PCOPY.DISK.S              I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I PCOPY.TAR.S               I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I PCOPY.DCP.S               I    x          I               I Weber           I 
+I---------------------------I---------------I---------------I-----------------I
+.bp
+3.3. Dienstprogramme
+--------------------
+
+Auf Diskette "UDOS"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I DISKTEST                  I               I               I                 I
+I  DISKTEST.S               I    x          I               I Weber           I
+I  DISKTEST.A.S             I    x          I               I Weber           I
+I  DISKTEST.F.S             I    x          I               I Weber           I
+I  DISKTEST.S.S             I    x          I               I Weber           I
+I  DISKTEST.T.S             I    x          I               I Weber           I
+I  DISKTEST.RW.S            I    x          I               I Weber           I
+I  DISKTEST.INF.S           I    x          I               I Weber           I
+I  DISKTEST.PUFFER.S        I    x          I               I Weber           I
+I  DISKTESTLINK             I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I FILE.DEBUG.S              I    x          I               I Weber           I
+I---------------------------I---------------I---------------I-----------------I
+I SI.S                      I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I UPROG                     I               I               I                 I
+I  ZPROG.S                  I    x          I               I Hoge            I
+I  ZPROG.COMMAND.S          I    x          I               I Hoge            I
+I  ZPROG.CMDLINE.S          I    x          I               I Hoge            I
+I  ZPROG.BUF.S              I    x          I               I Hoge            I
+I  ZPROG.CRC.S              I    x          I               I Hoge            I
+I  ZPROG.PROM.S             I    x          I               I Hoge            I
+I  ZPROG.PROM1.S            I    x          I               I Hoge            I
+I  ZPROG.CONIO.S            I    x          I               I Hoge            I
+I  ZPROG.FILE.S             I    x          I               I Hoge            I
+I  ZPROG.STORAGE.S          I    x          I               I Hoge            I
+I  ZPROG.P8000.S            I    x          I               I Hoge            I
+I  ZPROG.P8000.PLZ.S        I    x          I               I Hoge            I
+I  PLZ.IO1.S                I    x          I               I Hoge            I
+I  UDOS.EQUATES.S           I    x          I               I Hoge            I
+I  ZPROG.P8000.LINK         I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+
+
+3.4. Mikroprozessorsoftware
+---------------------------
+
+Auf Diskette "UDOS"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+
+
+3.5. Programmiersprachen 
+------------------------
+
+Auf Diskette "UDOS"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+
+.bp
+4. OS/M
+=======
+
+Auf Diskette "OS/M"
+
+I---------------------------I---------------I---------------I-----------------I
+I Programmname              I Quelle        I Dokumentation I verantwortlich  I
+I---------------------------I---------------I---------------I-----------------I
+I Systemspuren              I               I               I                 I
+I  OSM.URLADER.S            I    x          I               I Hoge            I
+I  BIOS.S                   I    x          I               I Hoge            I
+I  FDINIT.S                 I    x          I               I Hoge            I
+I  FLOPPY.S                 I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I OSM.COPYDISK.S            I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I OSM.ERRORS.S              I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I OSM.FORMAT.S              I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I OSM.SETFD.S               I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I OSM.SETLP.S               I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I OSM.SYSGEN.S              I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+I OSM.BS1715.S              I    x          I               I Hoge            I
+I---------------------------I---------------I---------------I-----------------I
+
