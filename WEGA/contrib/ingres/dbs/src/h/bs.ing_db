@@ -1,0 +1,39 @@
+/*  Maximum number of open files per process.				*/
+/*  Must match 'NOFILE' entry in /usr/sys/param.h			*/
+# define	MAXFILES	20
+
+
+/*	USERDBS is the BS login name of the DBS superuser,		*/
+/*		normally "ing_db" of course.  The root of this persons	*/
+/*		subtree as listed in AA_PASSWD becomes the root of	*/
+/*		the DBS subtree.					*/
+# define	USERDBS		"ing_db"
+
+
+/*  Structure for 'gtty' and 'stty'					*/
+# include	<sgtty.h>
+
+
+/*  Structure for 'fstat' and 'stat' system calls.			*/
+# include	<sys/types.h>
+# include	<sys/stat.h>
+
+
+/*  SETEXIT | RESET							*/
+/*	In version 7, setexit is not defined, reset too:		*/
+/*	this fakes it.							*/
+# ifdef P8000
+
+# include	<setret.h>
+extern ret_buf		AAjmp_buf;
+# define	setexit()	setret(AAjmp_buf)
+# define	reset()		longret(AAjmp_buf, 1)
+
+# else
+
+# include	<setjmp.h>
+extern jmp_buf		AAjmp_buf;
+# define	setexit()	setjmp(AAjmp_buf)
+# define	reset()		longjmp(AAjmp_buf, 1)
+
+# endif
