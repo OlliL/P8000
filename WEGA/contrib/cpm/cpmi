@@ -1,0 +1,47 @@
+: interaktives Verarbeiten von CP/M Disketten
+flags="-i -S 2 -m 64"
+typ="OS/M Format 6"
+file="/z/floppy"
+flag2=""
+ok=0
+
+while test $ok = 0
+do
+cat <<+++
+Welches Diskettenformat wird gewuenscht ?
+
+	1 OS/M Diskette
+	2 CP/A Diskette im 'DOS'-Format
+
++++
+read form rest
+if test a$form != a
+then
+	if test a$form = "a1"
+	then
+		flags="-i -S 2 -m 64"
+		typ="OS/M Format 6"
+		ok=1
+		file=/dev/fd196ds9
+	elif test a$form = "a2"
+	then
+		flags="-i -t 40 -b 1024 -r 9 -S 1 -m 64"
+		typ="CP/A Diskette im DOS-Format"
+		ok=1
+		file=/dev/fd148ss9
+	else 
+		echo 
+	fi
+else
+echo 
+fi
+done
+
+echo -n Name der CP/M Diskette \(Std. $file\):
+read fil rest
+if test a$fil != a
+then
+	file=$fil
+fi
+echo CP/M Diskettenemulation fuer $typ
+cpm -i $flags $flag2 $file
