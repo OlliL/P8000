@@ -1,0 +1,22 @@
+Das Verzeichnis `.../demo/ql' enthaelt die Kommandos `demodb' und
+`tutdb' und der benoetigte Daten.
+
+Fuer die Generierung bzw. Installation der Beispiele benutzen
+Sie bitte die Vorschrift `.../demo/ql/Makefile'.
+
+Inhaltsverzeichnis:
+	-------------------
+`.../demo/ql/Makefile'		-- Generierungsvorschrift
+`.../demo/ql/READ_ME'		-- Dieser Text
+`.../demo/ql/abt'		-- Daten fuer die Relation `abt'
+`.../demo/ql/artikel'		-- Daten fuer die Relation `artikel'
+`.../demo/ql/demodb'		-- Kommando `demodb'
+`.../demo/ql/erfindungen'	-- Kommando `demodb'
+`.../demo/ql/lager'		-- Daten fuer die Relation `lager'
+`.../demo/ql/lieferant'		-- Daten fuer die Relation `lieferant'
+`.../demo/ql/lieferung'		-- Daten fuer die Relation `lieferung'
+`.../demo/ql/personal'		-- Daten fuer die Relation `personal'
+`.../demo/ql/teile'		-- Daten fuer die Relation `teile'
+`.../demo/ql/tutdb'		-- Kommando `tutdb'
+`.../demo/ql/tutorial'		-- Daten fuer die Relation `tutorial'
+`.../demo/ql/verkauf'		-- Daten fuer die Relation `verkauf'
