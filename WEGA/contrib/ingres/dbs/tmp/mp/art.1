@@ -1,0 +1,296 @@
+dBase III im Vergleich mit ING_DB 6.3
+_____________________________________
+
+J. Wenzlaff
+Zentralinstitut f}r Kybernetik und Informationsprozesse
+der Akademie der Wissenschaften der DDR
+
+
+
+Der Artikel ist nicht gedacht, dBase III mit ING_DB 6.3 zu vergleichen,
+er soll nur die  Fragen  beantworten,  die  durch die  Einbeziehung von
+ING_DB 6.3 in den dBase III Vergleich durch  Dr. W. Grafik und B. Osten
+(siehe /1/) beim Entwickler und bei Anwendern entstanden sind.
+
+
+EINLEITUNG
+
+ING_DB 6.3 wurde am ZKI als portables relationales  Datenbanksystem f}r
+16-bit Computer unter UNIX-kompatiblen Betriebssystemen entwickelt.
+Seit  Oktober 1988  gibt es  auf  allen in der  DDR  g{ngigen  Rechnern
+(BC 5120.16, P8000, A 7150, EC 1834, IBM XT/AT, PDP11, K 1630, SM 1420,
+I 100 . ..)  lauff{hige  Versionen. Alle  Versionen sind in der Nutzer-
+schnittstelle und im Leistungsverm|gen vollst{ndig identisch !
+F}r M{rz 1989 ist eine Unterst}tzung f}r 32-bit Computer  (K 1820 / 40,
+I 80386, ESER / VMX) vorgesehen.
+Zu dem  Datenbanksystem  werden ein  Datenbankcompiler und ein  Report-
+system angeboten.  Die  Dokumentation kann  kostenlos }ber das Institut
+bezogen werden. Informationen zu Systemen unter anderen  Betriebssyste-
+men (z.B. MS-DOS) k|nnen beim Entwickler eingeholt werden.
+
+
+TAFEL 1
+
+ Relation (in Bytes)      dBase      ING_DB     ING_DB komprimiert
+-------------------------------------------------------------------
+ journ                    213504     256000     170000  ..  192000
+ jotitel                  193024     113664      75000  ..   85000
+ joausdr                  140288      86014      57000  ..   65000
+-------------------------------------------------------------------
+ gesamt                   546816     455680     302000  ..  342000
+-------------------------------------------------------------------
+ ein  Schl}ssel (a)       406528     277504     185000  ..  207000
+ zwei Schl}ssel (b)       546816     363520     242000  ..  272000
+-------------------------------------------------------------------
+
+
+DATENFILES
+
+Sofort auff{llig wird,  da~ erstens das Datenfile der Relation journ in
+ING_DB 6.3 wesentlich l{nger ist (120%) und zweitens die Indexfiles da-
+gegen um Gr|~enordnungen k}rzer (60%) sind.
+
+zu1:  dBase III speichert die Tupel (Datens{tze) kompakt ab, ING_DB 6.3
+legt sie in sogenannte  Seiten (pages).  Ein ING_DB 6.3-Tupel darf eine
+Seite nicht }berschreiten, so da~ bei ungl}cklicher Wahl der Tupell{nge
+die Seiten nicht  vollst{ndig gef}llt werden k|nnen,  das hei~t,  Platz
+verschwendet wird.  Konkret, eine Tupell{nge zwischen 201 und 253 Bytes
+w}rde bei  1000 Tupel in  ING_DB 6.3 immer zu einem file der  L{nge von
+256000 Bytes f}hren,  in dBase III  w}rde die L{nge zwischen 201000 und
+253000 Bytes schwanken.  Die  Beachtung der  Physik der  Daten ist zwar
+nicht  Bestandteil der  Relationentheorie,  kann aber bei konkreten An-
+wendungen sehr n}tzlich sein (wenn man Platz sparen will !).
+
+zu 2: dBase  III  geht bei der Indexierung mit  externen  Speicherplatz
+gro~z}gig um, kein Kommentar.
+
+Disskussion: In der Gesamtbetrachtung schneidet ING_DB 6.3 aufgrund der
+k}rzeren Indizes speicherplatzm{~ig besser ab.
+ING_DB 6.3 gestattet die komprimierte Ablage von Tupel auf dem externen
+Speichermedium.  Bei den vorliegenden  Daten und deren  Struktur k|nnte
+der  Speicherplatzbedarf entsprechend der  Spalte  "ING_DB komprimiert"
+reduziert werden.
+Indizes definieren sogenannte Zugriffspfade,  Wege auf denen Tupel sehr
+schnell wiedergefunden werden k|nnen.  In dBase III mu~ jeder Zugriffs-
+pfad (Schl}ssel) als Index realisiert werden. In ING_DB 6.3 gibt es die
+M|glichkeit,  einen  Zugriffspfad in die  Daten direkt zu  integrieren,
+erst alle weitern m}ssen  als  Index angegeben werden.  Aus dieser M|g-
+lichkeit entsteht das Begriffspaar  Prim{r- und Sekund{rschl}ssel.  Der
+Prim{rschl}ssel ist der direkte Zugriffspfad, der Sekund{rschl}ssel der
+indirekte  Zugriffspfad zu den  bestehenden  Daten.  Es k|nnen zu einer
+Relation nur ein Prim{rschl}ssel,  dagegen mehrer Sekund{rschl}ssel de-
+klariert  werden.  Die  letzten  beiden  Zeilen der  Tafel 1  geben die
+Gesamtanzahl von  Bytes f}r die  Relation journ mit einem  Zugriffspfad
+}ber die Dom{ne (Spalte oder Feld) titel (a) und mit zwei  Zugriffspfa-
+den  }ber  erstens die  Dom{ne  titel  und  zweitens  }ber die  Dom{nen
+ort_verlag+jahrg+standorte (b).
+Schlu~folgerung: Mit der realen  Unterstellung von mindestens einem er-
+forderlichen Schl}ssel (oder mehr) ben|tigt ING_DB 6.3 etwa 2/3 des von
+dBase III ben|tigten externen Speicherplatzes. Bei Textdaten kann durch
+die komprimierte Ablage das Verh{ltnis auf 1/2 gesenkt werden.
+
+
+LOCATE und PACK in dBase III
+
+Ich m|chte mich nicht an der  Diskussion beteiligen,  ob  dBase III ein
+relationales  Datenbanksystem  ist  oder nicht.  Die  Relationentheorie
+trifft keine  Aussage }ber die  konkrete Lage von Tupel oder deren Rei-
+henfolge.  Ein Zugriff zu einem Tupel }ber eine  "Satznummer"  ist also
+theoretisch irrelevant,  Tupel werden durch die  Vorgabe von  konkreten
+Werten f}r einzelne  Dom{nen  selektiert.  F}r den  Nutzer entsteht der
+Vorteil, da~ er f}r sein Anwendungsmodell keine Lage- oder Reihenfolge-
+probleme ber}cksichtigen mu~. Aus diesem Grund kann in ING_DB 6.3 keine
+Entsprechung f}r die dBase III-Anweisung  "LOCATE FOR RECNO() = .." ge-
+funden werden.
+Die dBase III-Anwendung "PACK" dient der Streichung von Tupel,  die zur
+L|schung markiert sind.  dBase III kennt keine  Freispeicherverwaltung,
+neue  Datens{tze  werden  hinten angeh{ngt.  Bei  Streichungen wird aus
+Gr}nden der nicht  vorhandenen  Speicherverwaltung,  der Satz im L|sch-
+byte als gel|scht markiert.  Bei einem Datenbanksystem unter paralleler
+Verwendung mehrer  Relationen kann das Zur}ckholen schon gel|schter Da-
+tens{tze die Konsistenz der Datenbank zerst|ren, ist also eine nicht zu
+unterst}tzende Funktion.  Der temporale Aspekt dieses Problems, Zur}ck-
+setzen des  Datenbestandes auf eine  bestimmte  Zeit,  ist in dBase III
+nicht gemeint,  da Ersetzungen und Einf}gungen nicht zur}ckgesetzt wer-
+den k|nnen.  ING_DB 6.3 {ndert die Daten direkt, so da~ die DELETE-Zeit
+f}r ING_DB 6.3 mit der DELETE+PACK-Zeit von dBASE III verglichen werden
+mu~.
+
+
+TESTS
+
+F}r die Tests wurden Strukturen und Daten benutzt, die in den folgenden
+TAFELN 2,  3,  4 und  5  dokumentiert sind.  Alle  Tests wurden mit dem
+Datenbankcompiler AMX implementiert,  um Auslagern von Programmen durch
+das Betriebssystem (swap) vorzubeugen.  Grunds{tzlich andere Zeiten bei
+Verwendung der  Anfragesprache  sind  bei  Unterstellung  von  gen}gend
+Hauptspeicher nicht zu erwarten,  da alle Aktionen den Datenbestand der
+gesamten Relation verwenden. Die ]bersetzungszeit auf dem P8000 lag bei
+75  Sekunden, der  Linklauf  ben|tigte  45  Sekunden,  das  entstandene
+Programm ist 33000 Bytes gro~.  F}r die Zeitmessung wurde der Systemruf
+time(2) verwendet,  die  Reihenfolge der  Kommandos wurde ge{ndert,  um
+bei allen Kommandos mit 1000 Tupel zu arbeiten.
+
+
+TAFEL 2 (Struktur der Datenbank dbase)
+
+Datenbank dbase / DBA ing_db
+
+DB parallel verwendbar
+QRYMOD-Unterstuetzung
+Seitengroesse 1024 Bytes
+
+ Relation          Besitzer          Typ
+----------------------------------------------------
+ journ             ing_db            Nutzerrelation
+ jotitel           ing_db            Index
+ joausdr           ing_db            Index
+----------------------------------------------------
+
+
+TAFEL 3 (Struktur der Relation journ)
+
+Tupellaenge:		206
+Tupelanzahl:		1000
+Relationentyp:		Nutzerrelation
+Indexrelationen:	jotitel
+			joausdr
+
+ Domaenname        Typ   Laenge  Schluessel
+--------------------------------------------
+ kurztitel   	    c      40
+ titel       	    c      90
+ ort_verlag  	    c      30
+ jahrg       	    c       8
+ standorte   	    c      30
+ h1          	    i       2
+ h2          	    i       2
+ h3          	    i       2
+ h4          	    i       2
+--------------------------------------------
+
+
+TAFEL 4 (Struktur der Indexrelation jotitel)
+
+Tupellaenge:		94
+Tupelanzahl:		1000
+Relationentyp:		Index auf journ
+
+ Domaenname        Typ   Laenge  Schluessel
+--------------------------------------------
+ titel       	    c      90      1
+ tidp        	    i       4
+--------------------------------------------
+
+
+TAFEL 5 (Struktur der Indexrelation joausdr)
+
+Tupellaenge:		72
+Tupelanzahl:		1000
+Relationentyp:		Index auf journ
+
+ Domaenname        Typ   Laenge  Schluessel
+--------------------------------------------
+ ort_verlag  	    c      30      1
+ jahrg       	    c       8      2
+ standorte   	    c      30      3
+ tidp        	    i       4
+--------------------------------------------
+
+
+TAFEL 6 (1000 Tupel)
+
+	A7150	EC1834	P8000	dBase III-Entsprechung
+-----------------------------------------------------------------------
+COUNT	 0:14	 0:13	 0:23	COUNT
+DELETE	 0:24	 0:19	 0:24	DELETE ALL FOR titel="xxx"
+INDEX1	 1:24	 1:23	 2:12	INDEX ON titel TO jotitel
+INDEX3	 1:39	 1:36	 2:17	INDEX ON ort_verlag + jahrg + standorte
+				TO joausdr
+REPLACE	 1:05	 0:52	 0:55	REPLACE ALL titel WITH titel
+SORT1	 1:33	 1:36	 2:43	SORT ON titel TO x
+SORT3	 1:35	 1:36	 2:37	SORT ON titel,ort_verlag,standorte TO x
+SUM1	 0:15	 0:13	 0:23	SUM h1
+SUM5	 0:17	 0:15	 0:28	SUM h1, h2, h3, h4, h1 + h2 + h3 + h4
+-----------------------------------------------------------------------
+
+
+DISKUSSION (Stichpunkte)
+
+1) Der EC 1834 ist auf der Platte etwas schneller als der A 7150.
+
+2) Die Zeiten f}r COUNT, SUM1, SUM5 sind  rechnerbezogen konstant, SUM5
+dauert etwas l{nger,  da die Summation im Gleitkommaformat durchgef}hrt
+wurde und keiner der Rechner einen Gleitkommaprozessor besa~.  Die Zeit
+f}r COUNT entspricht der Plattenzeit zum Lesen der 250 KBytes.
+
+3) Die  Sortierzeiten  f}r  SORT1 und  SORT3  sind  rechnerbezogen fast
+identisch.  ING_DB 6.3  sortiert immer das  gesamte  Tupel,  so da~ die
+Sortierzeiten  unabh{ngig von den  vorgegebenen  Schl}sseln und nur von
+der Tupelanzahl und Tupell{nge abh{ngig sind, was zu beweisen war.
+
+4) Die P8000-Zeiten  besitzen  einige  Besonderheiten,  auf den  ersten
+Blick erscheint er langsamer.  Auf dem A 7150 und dem EC 1834 wurde ein
+neu  eingerichtetes  file-System verwendet,  auf dem  P8000 nicht.  Bei
+gleicher Ausgangslage w}rde der  P8000 die Zeiten vom A 7150 erreichen,
+bzw. umgekehrt. Das kann man sehr deutlich an den Zeiten f}r DELETE er-
+kennen,  durch den  Lese/Schreibzyklus  kann der  Vorteil der  frischen
+Platte nicht mehr greifen.
+Laut Aussage des  P8000-Herstellers entsprechen die Plattenzugriffszei-
+ten des P8000 denen des EC 1834, das konnte nicht best{tigt werden. Der
+neue Plattencontroller des P8000 soll doppelt so schnell werden, so da~
+die Zeiten auf dem P8000 nur besser werden k|nnen.
+
+5) Der  Sortieralgorithmus von  ING_DB 6.3 ben|tigt 40% der  Zeit,  die
+dBase III  auf dem  A 7150  ben|tigt bzw. 60% von der auf dem  EC 1834.
+Interessant ist die Fragestellung, wie die Sortierzeiten bei wachsenden
+Datenbestand sich entwickeln (siehe dazu TAFEL 7).
+
+6) Weiter Interpretationen sollen dem Leser }berlassen werden.  F}r die
+Zukunft wird ein echter  Vergleich von  dBase III mit  ING_DB 6.3 unter
+Datenbankaspekten geplant.  Dieser  Vergleich geht von einem  genutzten
+dBase III- Projekt eines  Anwenders aus,  der dieses Projekt aus inner-
+betrieblichen  Gr}nden  auf  Mehrnutzerbetrieb  umstellt  und  dazu das
+Datenbanksystem ING_DB 6.3 verwendet.
+Gleichzeitig  wird  dann ein  Koppelmodul angeboten,  der es  gestattet
+dBase II/III-Datenbanken direkt in  ING_DB 6.3-Relationen zu verwandeln
+und umgekehrt. F}r die off-line Daten}bertragung geh|rt eine integrier-
+te Software zum direkten  Lesen und  Schreiben von  Disketten im  CP/M-
+bzw. MSDOS-Format unter WEGA, MUTOS usw. dazu.
+
+7) Dieser Artikel entstand, da aus der Sicht des Autors in oben genann-
+ter Ver|ffentlichung keine  Quellenangabe f}r das System ING_DB 6.3 ge-
+macht  wurde  und  ich  eine  dadurch   entstandene   Informationsl}cke
+schlie~en wollte.
+ING_DB 6.3 ist eins der wenigen  Systeme,  die auf vielen Rechnern ver-
+f}gbar sind,  das in den Nutzerschnittstellen gegen}ber dBASE III etwas
+spartanisch wirkt,  in der  Laufzeit  (Performance) sich aber  deutlich
+qualifiziert.  Es besitzt Parallelzugriff auf Datenbanken,  Mechanismen
+zur Wiederherstellung der  Datenbankintegrit{t und -konsistenz und kann
+f}r gro~e  Datenmengen  eingesetzt werden.  Durch die  uneingeschr{nkte
+Lauff{higkeit auf  unterschiedlichen  Architekturen wird eine  portable
+Anwenderprojektierung unterst}tzt und m|glich. Das System wird vom Ent-
+wickler gewartet und weiterentwickelt.
+
+
+TAFEL 7 (2000 Tupel, ohne Kommentar)
+
+	A7150	EC1834	P8000	dBase III-Entsprechung
+-----------------------------------------------------------------------
+COUNT	 0:29	 0:27	 0:50	COUNT
+DELETE	 0:46	 0:41	 0:54	DELETE ALL FOR titel="xxx"
+INDEX1	 2:30	 2:30	 3:54	INDEX ON titel TO jotitel
+INDEX3	 3:01	 2:56	 4:14	INDEX ON ort_verlag + jahrg + standorte
+				TO joausdr
+REPLACE	 2:13	 1:44	 1:53	REPLACE ALL titel WITH titel
+SORT1	 2:48	 2:51	 4:51	SORT ON titel TO x
+SORT3	 2:48	 2:53	 4:50	SORT ON titel,ort_verlag,standorte TO x
+SUM1	 0:30	 0:27	 0:47	SUM h1
+SUM5	 0:34	 0:30	 0:56	SUM h1, h2, h3, h4, h1 + h2 + h3 + h4
+-----------------------------------------------------------------------
+
+
+LITERATUR
+
+/1/  Dr. W. Grafik, B. Osten: dBase III im Vergleich, MP 10/1988,
+                              Verlag Technik, S. 294ff
