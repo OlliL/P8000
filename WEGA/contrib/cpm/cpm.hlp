@@ -1,0 +1,21 @@
+
+erlaubte Kommandos:
+~~~~~~~~~~~~~~~~~~~
+
+copyin name1 name2  - Kopiere Unix-Text-File `name1' ins CP/M-File `name2'
+copyout name1 name2 - Kopiere CP/M-Text-File `name1' ins Unix-File `name2'
+ccopyin name1 name2 - Kopiere Unix-Code-File `name1' ins CP/M-File `name2'
+ccopyout name1 name2- Kopiere CP/M-Code-File `name1' ins Unix-File `name2'
+dir[ectory]         - Anzeige CP/M-Directory
+ls                  -    "      "     "
+del[ete] name       - Loesche CP/M-File `name'
+era[se] name        -    "      "   "      "
+exi[t]              - quit
+log[out]            - quit
+typ[e] name         - Anzeige CP/M-File `name' am Terminal
+dum[p] name         - Dump des CP/M-File am Terminal in ascii und hexadezimal
+ren[ame] alt neu    - Umbenennen des CP/M-File 'alt' in 'neu'
+! kommando          - Ausfuehren `kommando' im UNIX
+disk                - Anzeigen eingestelltes Diskettenformat
+
+Wildcardzeichen sind nicht erlaubt
