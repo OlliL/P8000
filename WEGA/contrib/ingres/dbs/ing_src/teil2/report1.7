@@ -1,0 +1,1833 @@
+.ds RH \f3Report\f1
+.ds RF \f3UNIX\f1
+.ds CH - % -
+.ds LH Anwendung
+.bp
+.NH 2
+.ft B
+Report-Generator *
+.ft R
+.LP
+.sp 10
+.NH 3
+.ft B
+Vorbemerkung
+.ft R
+.LP
+Wie jedes andere Werkzeug in \*(xx\ oder auch innerhalb
+\*(yy\ ist der Report-Generator
+.ft B
+eine
+.ft R
+Alternative zur Erstellung von Drucklisten.
+In der praktischen Anwendung werden Drucklisten
+einerseits ben\o'o"'tigt, um periodisch
+\o'u"'ber lange Zeitr\o'a"'ume Aussagen \o'u"'ber sich \o'a"'ndernde
+Datenbest\o'a"'nde zu liefern, andererseits werden 
+aber auch Aussagen mit einem gewissen Einmaligkeitscharakter
+gew\o'u"'nscht.
+.LP
+Im ersten Fall bleibt dem Projektanten in der Regel genug
+Zeit, die Listenerstellung gr\o'u"'ndlich vorzubereiten,
+sodass die Erstellung innerhalb eines AMX- oder EQUEL-Programmes
+sinnvoll und effektiv ist - vor allem unterliegt hier
+der Zugriff zu verschiedenen Relationen keiner
+praktisch wirksamen Begrenzung. Das zu druckende File wird so
+direkt aus den Datenbest\o'a"'nden der Relationen erzeugt.
+.LP
+Bei Verwendung des Report-Generators werden die Daten aus 
+einem Tupelfile gelesen, das vorher aus
+.ft B
+einer
+.ft R
+Relation erzeugt werden muss. Die Erstellung dieser Relation 
+aus den Dom\o'a"'nen verschiedener anderer Relationen
+ist technisch einfach (
+.ft B
+scan (amx)
+.ft R
+oder
+.ft B
+retrieve (quel)
+.ft R
+), kann aber gegebenenfalls Dimensionierungsprobleme
+verursachen - jedes Tupel muss der gleichen Struktur zugeordnet werden!
+.LP
+Wir k\o'o"'nnen nicht davon ausgehen, dass alle \*(yy\-Nutzer
+mit C umgehen k\o'o"'nnen oder gerade dann, wenn operativ eine
+Druckliste dringend ben\o'o"'tigt wird, ein Programmierer
+d\o'a"'umchendrehend darauf gewartet hat!
+Der Umgang mit dem Report-Generator
+ist relativ schnell erlernt. Zu Beginn muss nicht jede
+Raffinesse eingeordnet werden.
+.NH 3
+.ft B
+Arbeitsschritte
+.ft R
+.LP
+Wir verwenden wieder einmal unsere Relation aus "demo".
+.DS
+
+Relation:		personal
+---------
+Besitzer:               ing_db
+Tupellaenge:            30
+Verfallsdatum:	        Tue Apr 26 19:56:39 1988
+Tupelanzahl:            25
+Speicherstruktur:       HEAP
+Relationentyp:	        Nutzerrelation
+.DE
+.sp 1
+.DS
+ Domaenname        Typ   Laenge  Schluessel
+-------------------------------------------
+ num                i       2
+ name               c      20
+ gehalt             i       2
+ leiter             i       2
+ gebdat             i       2
+ einstdat           i       2
+-------------------------------------------
+.DE
+.LP
+Mit dem Kommando
+.IP
+.ft B
+rd demo personal
+.ft R
+.LP
+wird ein File 
+.ft B
+desc
+.ft R
+erzeugt. Dieses File l\o'a"'sst sich mit dem Kommando
+.IP
+.ft B
+rp_desc desc
+.ft R
+.LP
+auf dem Bildschirm darstellen.
+.DS L
+I       +--------+
+N       | Post   |      REPORT  description printer
+G       | Quick  |      VERSION 6/3.1
+-       | Report |      RELEASE Thu Nov 14 00:00:00 1988
+D       +--------+
+B        ZKI 1988
+
+| value | type  | len   | off   |
++-------+-------+-------+-------+
+!  1    | int   |   2   |   0   |
+!  2    | char  |  20   |   2   |
+!  3    | int   |   2   |  22   |
+!  4    | int   |   2   |  24   |
+!  5    | int   |   2   |  26   |
+!  6    | int   |   2   |  28   |
++-------+-------+-------+-------+
+.DE
+Beachten sie, dass
+der Vorspann auf 
+.ft B
+stderr
+.ft R
+und die Tabelle auf
+.ft B
+stdout
+.ft R
+ausgegeben wird.
+.LP
+Die Spalte
+.ft B
+value
+.ft R
+stellt den Dom\o'a"'nennamen in Form eines Stellungsparameters
+dar.
+.NH 3
+.ft B
+Typ ,L\o'a"'nge ,Offset
+.ft R
+.LP
+Beachten Sie bitte , dass das angebotene Deskriptionfile
+im Sinne der Beschreibung mit dem Datenfile identisch ist.
+.LP
+Ein zweiter Weg zur Erstellung eines Deskriptionfiles
+ist die Aufnahme einer Dom\o'a"'nenbeschreibung in die
+Report-Quelle. Bei Reports f\o'u"'r Relationen aus
+Datenbanken kann man mit
+.ft B
+rd -r
+.ft R
+einen leeren Report generieren, der die Beschreibung
+der Dam\o'a"'nen verankert.Der Compiler  hat die Aufgabe,
+die Dom\o'a"'nenbeschreibung in das Deskriptionfile zu
+\o'u"'bersetzen.
+.LP
+Der Variablenname im Report-Programm hat also keine unmittelbare
+Korrespondenz mit der Relation.
+Zu Beginn wollen wir uns noch auf einige Dinge einigen, die
+vom Report-Generator zwar nicht gefordert werden, aber dennoch
+recht n\o'u"'tzlich sind. In \*(xx\ werden \o'u"'blicherweise bestimmte
+File-Typen mit einem Postfix versehen, es wird vorgeschlagen
+.sp 1
+.DS
+Beschreibungsfile   desc           mit  _d  (analog Flag bei rg)
+Datenfile           tuple          mit  _f  (analog Flag bei rg)
+Ausgabe             output         mit  _o  (analog Flag bei rg)
+Report-Quelle       Quellcode      mit  _p  (Programm)
+                    r_code         mit  _r
+.DE
+.sp 1
+zu benennen. Mit dieser Methode wird eine Gruppierung erreicht,
+die garantiert, dass man auch bei mehr als 3 Report-Programmen
+im Directory noch weiss, was wohin geh\o'o"'rt.
+Der underscore wurde verwendet, weil rc
+den Punkt nicht anerkennt und um
+Verwechslungen mit dem Pascal Quellcode bzw. dem C-Objektfile
+m\o'o"'glich w\o'a"'ren.
+.LP
+Folgende Liste soll erstellt werden:
+.DS L
+--------------------------------------------------
+Gehalt und Geburtsjahr nach Abteilungen   9-Mai-88
+
+Abtlg. Name                  Gehalt    Geburtsjahr
+--------------------------------------------------
+
+       Rose, Petra            1206,- M      1931
+       Gruene, Peter          1700,- M      1920
+
+  10   Mueller, Ernst          700,- M      1950
+
+  13   Fleischer, Karl         877,- M      1952
+
+  26   Neumann, Inge          1198,- M      1950
+       Schmidt, Hermann       1120,- M      1936
+       Warnke, Peter           788,- M      1940
+
+  32   Loda, Dieter            500,- M      1952
+       Baum, Klaus             837,- M      1956
+
+  33   Kayser, Helmut          600,- M      1952
+       Weber, Franz           1337,- M      1944
+
+  55   Maerz, Udo             1116,- M      1947
+       Mueller, Petra         1362,- M      1939
+
+ 129   Moser, Otto            1567,- M      1938
+       Schulze, Ernst         1564,- M      1944
+       Zeidler, Fritz         1686,- M      1928
+
+ 199   Rose, Peter            1590,- M      1927
+       Wunsch, Peter-Paul      900,- M      1928
+       Schneider, Peter       1300,- M      1930
+       Heine, Rolf             905,- M      1929
+       Ernst, Eva             1010,- M      1931
+       Malter, Juergen        1200,- M      1920
+       Weise, Juergen          900,- M      1935
+       Thoms, Rolf            1000,- M      1941
+       Schmidt, Petra         1200,- M      1940
+--------------------------------------------------
+.DE
+.LP
+Als Ausgangsrelation verwenden wir
+.ft B
+personal\c
+.ft R
+, die allerdings nach
+.ft B
+leiter
+.ft R
+sortiert werden muss. Das Kommando dazu mit der QUEL:
+.IP
+.ft B
+modify personal to heapsort on leiter
+.ft R
+.LP
+ Das 
+.ft B
+Tupelfile
+.ft R
+erzeugen wir mit
+.IP
+.ft B
+copy personal() into "\/mnt\/work\/text\/pers.f" .
+.ft R
+.LP
+Das Programm dazu sieht so aus (pers_p):
+
+.nf
+report pers_r
+with
+	columns 50
+	lines 60
+	all lines 66
+	
+	define p_num    = 1
+	define p_name   = 2
+	define p_gehalt = 3
+	define p_abt    = 4
+	define p_gebdat = 5
+
+	define #p_num		= integer 2
+	define #p_name		= char    20
+	define #p_gehalt	= integer 2
+	define #p_abt		= integer 2
+	define #p_gebdat	= integer 2
+
+as
+
+on pagebegin do
+	'-' 50 \en
+	'Gehalt und Geburtsjahr nach Abteilungen'
+	\e42 date \en2
+	'Abtlg.'
+	\e8 'Name'
+	\e30 'Gehalt'
+	\e40 'Geburtsjahr'
+	\en
+	'-' 50 \en2
+end
+
+for all do
+	for one do
+		if groupbegin p_abt then
+			\en integer @4 #p_abt
+		end if
+		\e8 char	@20 #p_name
+		\e30 integer @5 #p_gehalt ',- M'
+		\e40 integer @9 #p_gebdat
+		\en
+	end one
+end all
+'-' 50 \en2
+;
+.fi
+.LP
+Zum Programm folgt sp\o'a"'ter noch eine Erl\o'a"'uterung.
+Jetzt wird aus 
+.ft B
+pers_p
+.ft R
+der 
+.ft B
+r_code
+.ft R
+erzeugt. Das Kommando dazu:
+.IP
+.ft B
+rc pers_p
+.ft R
+.LP
+Durch die erste Zeile im Programm
+.ft B
+report pers_r
+.ft R
+weiss der Report-Compiler wie das File "r_code" zu benennen ist.
+Mit dem Aufruf
+.IP
+.ft B
+rg -dpers_d -fpers_f -ipers_r
+.ft R
+.LP
+wird die Druckliste auf dem Bildschirm ausgegeben. F\o'u"'gen
+sie noch die Option 
+.ft B
+-opers_o
+.ft R
+hinzu, steht das Ergebnis im File
+.ft B
+pers_o.
+.ft R
+.NH 3
+.ft B
+Aufbau der Listendefinition
+.ft R
+.LP
+Jede Listendefinition beginnt mit
+.ft B
+report
+.ft R
+und wird mit
+.ft B 
+;
+.ft R
+abgeschlossen.
+Der grunds\o'a"'tzliche Aufbau:
+.DS I
+[define] report r_code_name  [desc_name]
+         with
+                formatierung
+                definitionen
+         as
+                kopfangaben
+                tupelverarbeitung
+                fussangaben
+         ;
+.DE
+.LP
+Prozeduren werden mit
+.ft B
+call
+.ft R
+aufgerufen, hierzu wurde kein Symbol eingef\o'u"'rt.
+.LP
+F\o'u"'r die
+.ft B
+definitionen
+.ft R
+erfolgt eine Zuordnung m\o'o"'glicher Variablen,
+Prozeduren, Boolescher Variablen
+zu einer laufenden Nummer (jeweils mit 0 beginnend)
+und Dom\o'a"'nen zu einer
+laufenden Nummer (mit 1 beginnend).
+Die Dom\o'a"'nendefinition muss anschliessend durch eine
+Typzuordnung erg\o'a"'nzt werden, wobei dem Dom\o'a"'nennamen
+ein '#' voranzustellen ist.
+Im Programm gilt folgende Zuordnung von Bezeichnung und Symbol:
+.DS L
+Boolesche Variable         (switch)   ^
+        Domaene            (val)      #
+        Variable           (var)      $
+.DE
+F\o'u"'r die
+.ft B
+formatierung
+.ft R
+k\o'o"'nnen den Bezeichnern
+.DS I
+lines
+all lines
+columns
+from page to page
+from tupel to tupel
+.DE
+Werte zugewiesen und gegebenenfalls mit
+.ft B
+big
+.ft R
+eine Grossbuchstaben-Konvertierung eingeschaltet werden.
+.LP
+Die Parameter k\o'o"'nnen in beliebiger Reihenfolge angegeben werden. 
+Bei  doppelt aufgef\o'u"'hrten gilt der zuletzt definierte Parameter. 
+Werden zum Zeitpunkt des Listenaufbaus neue Festlegungen
+getroffen, verlieren die jeweiligen alten Parameter ihre  G\o'u"'ltigkeit. 
+F\o'u"'r alle Parameter gelten Standardfestlegungen.
+Die Parameter haben folgende Bedeutung (die Grossschreibung
+im Text dient nur der Hervorhebung, Schl\o'u"'sselw\o'o"'rter 
+k\o'o"'nnen im Programm klein und gross geschrieben werden ):
+.LP
+.ft B
+LINES int
+.ft R
+.IP
+L\o'a"'nge  des  Informationsteils auf einer  Seite  (int 
+Zeilen),
+Standard: Wert von ALL LINES, wenn definiert,
+sonst: 66,
+.RE
+.sp 1
+.ft B
+ALL LINES int
+.ft R
+.IP
+L\o'a"'nge der physischen Druckseite (int Zeilen),
+Standard: Wert von LINES,
+.RE
+.sp 1
+.ft B
+COLUMNS int
+.ft R
+.IP
+Breite des Informationsteils (int Spalten),
+Standard: 132,
+.RE
+.sp 1
+.ft B
+FROM PAGE int
+.ft R
+.IP
+Es werden nur die Seiten in die Liste eingetragen, 
+deren  Seitennummer gr\o'o"'sser oder gleich der
+angegebenen Zahl int ist.
+Standard: 0;
+.RE
+.sp 1
+.ft B
+TO PAGE int
+.ft R
+.IP
+Es werden nur die Seiten in die Liste eingetragen, 
+deren Seitennummer kleiner oder gleich der 
+angegebenen Zahl int ist.
+Standard: 32767 (Maximum);
+.RE
+.sp 1
+.ft B
+FROM TUPLE int
+.ft R
+.IP
+Es werden nur die Tupel verarbeitet, deren 
+Tupelnummer gr\o'o"'sser oder gleich der angegebenen 
+Zahl int ist.
+Standard: 0
+.RE
+.sp 1
+.ft B
+TO TUPLE int
+.ft R
+.IP
+Es werden nur die Tupel verarbeitet, deren
+Tupelnummer kleiner oder gleich der angegebenen Zahl 
+int ist.
+Standard:32767 (Maximum)
+.RE
+.sp 1
+.ft B
+BIG
+.ft R
+.IP
+Alle Kleinbuchstaben werden beim Einschreiben in 
+die Liste automatisch in Grossbuchstaben
+umgewandelt.
+Standard: keine Umwandlung
+.RE
+.LP
+Ist der Wert von LINES gr\o'o"'sser als der von ALL LINES, wird ALL 
+LINES um ganze Vielfache seines Wertes erh\o'o"'ht. Dies bedeutet, 
+dass sich eine Informationsseite \o'u"'ber zwei oder mehr Druckseiten 
+erstreckt.
+.LP
+In
+.ft B
+prozeduren
+.ft R
+werden alle in der Listendefinition ben\o'o"'tigten 
+Prozeduren notiert.
+.LP
+Die
+.ft B
+kopfangaben
+.ft R
+enthalten alle Anweisungen zur Gestaltung des 
+Listenkopfes. In der Regel wird am Beginn der Kopfangaben der 
+Seitenaufbau definiert.
+Die Ausgabe von
+Tupelwerten in den Kopfangaben ist nicht sinnvoll.
+.LP
+Die
+.ft B
+laufsteuerung
+.ft R
+vereinigt in sich alle M\o'o"'glichkeiten zur
+Eintragung von Werten und Zeichenketten in die Liste, zur Arithmetik 
+und zur Seitengestaltung.
+.LP
+Die Syntax und Semantik der Sprachanweisungen sind in den
+angegebenen Kapiteln beschrieben.
+.LP
+Die
+.ft B
+tupelverarbeitung
+.ft R
+umfasst alle Anweisungen zur Aufbereitung 
+und Ausgabe der Tupelwerte. Die Beschreibung der
+Tupelverarbeitung erfolgt im Abschnitt "Bereitstellung der Tupelwerte".
+.LP
+Im abschliessenden Teil
+.ft B
+fussangaben
+.ft R
+wird die Definition des 
+Listenfusses beschrieben. In der vorliegenden Version k\o'o"'nnen 
+hier die Funktionswerte einer Anfrage ausgewertet werden. 
+.LP
+Viele Anweisungen haben als Parameter die syntaktische
+Konstruktion
+.ft B
+number.
+.ft R
+Bei number kann entweder ein Direktwert int
+angegeben werden oder aber eine Variable.
+.NH 3
+.ft B
+Vorschub und Positionierkommandos
+.ft R
+.LP
+F\o'u"'r  die  Positionierung der auszugebenden Werte auf den  Seiten 
+gibt es jeweils 2 Varianten, eine f\o'u"'r fleissige Schreiber und
+eine f\o'u"'r diejenigen, die schnell zum Ziel kommen wollen! Es
+k\o'o"'nnen folgende Anweisungen gegeben werden:
+.LP
+.ft B
+NEW PAGE
+.ft R
+oder
+.ft B
+\ef
+.ft R
+.IP
+Die aktuelle Seite wird abgeschlossen. Es erfolgt 
+der Vorschub auf eine neue Seite. Aus
+Sparsamkeitsgr\o'u"'nden  wird ein mehrfaches NEW  PAGE  nur 
+einmal ausgef\o'u"'hrt. Es werden nur Seiten
+ausgegeben, die mindestens ein Zeichen enthalten. Wird 
+also eine Leerseite gew\o'u"'nscht, muss zwischen den 
+zwei NEW-PAGE-Anweisungen mindestens ein
+Leerzeichen ausgegeben werden.
+.RE
+.sp 1
+.ft B
+NEW LINE number
+.ft R
+oder
+.ft B
+\ennumber
+.ft R
+.IP
+Es erfolgt der Vorschub auf eine neue Zeile. Die 
+alte Zeile wird abgeschlossen und number-1
+Leerzeilen werden ausgegeben. Der Standardwert f\o'u"'r 
+number ist 1. Wurde der Wert von LINES erreicht, 
+wird ein Seitenvorschub ausgef\o'u"'hrt.
+.RE
+.sp 1
+.ft B
+COL number
+.ft R
+oder
+.ft B
+\enumber
+.ft R
+.IP
+Es wird auf die Spalte number positioniert. Hat 
+die aktuelle Schreibposition in der Zeile bereits 
+\o'u"'ber die angegebene Spalte number \o'u"'berschritten, 
+erfolgt ein automatisches NEW LINE und danach die 
+Positionierung. Wenn bei Variante 2 der Aufwand zum Ausz\o'a"'hlen
+zu gross ist, k\o'o"'nnen sie mit
+.ft B
+\e\enumber
+.ft R
+auch relativ positionieren.
+.RE
+.sp 1
+.ft B
+SPACE number
+.ft R
+oder
+.ft B
+\e\enumber
+.ft R
+.IP
+Es werden number Leerzeichen eingef\o'u"'gt.
+.RE
+.LP
+Bei der Kurzform sollte der Zwischenraum von \e zu number entfallen,
+er verwirrt nur.
+.LP
+Positionierungen  auf einer Seite k\o'o"'nnen ausserdem durch
+Wertzuweisungen  erreicht werden (SET LINE...,  SET  COLUMN...).  Diese 
+M\o'o"'glichkeit ist in Abschnitt "Wertzuweisung zu Systemvariablen .."
+beschrieben.
+
+.ft B
+Beispiel
+.ft R
+.DS L
+  new page
+  new line 5
+  col 11
+.DE
+Es wird auf die 11. Spalte der 5. Zeile einer
+neuen Seite positioniert. In Kurzform
+.DS L
+  \ef
+  \en5
+  \e11
+.DE
+.NH 3
+.ft B
+Ausgabe konstanter Zeichenketten
+.ft R
+.LP
+Es besteht die M\o'o"'glichkeit, Zeichenketten in der
+Listendefinition festzulegen, die unver\o'a"'ndert
+in die Liste \o'u"'bernommen
+werden.
+.DS I
+ 'zeichenkette' BATCH number
+ 'zeichenkette' number
+.DE
+Bei
+.ft B
+zeichenkette number
+.ft R
+wird die zeichenkette number-mal in die 
+Liste \o'u"'bertragen.
+
+.ft B
+Beispiel
+.ft R
+.DS I
+ '=+' 5
+
+.DE
+Es  wird  die  Zeichenkette '=+=+=+=+=+'  in  die 
+Liste eingetragen.
+.LP
+Die  BATCH-Funktion  erlaubt das  "Stapeln"  einer  Zeichenkette. 
+Unter Stapeln wird die M\o'o"'glichkeit verstanden, eine Zeichenkette 
+in  einer bestimmten Breite (number Zeichen) \o'u"'ber mehrere Zeilen 
+auszugeben.  Dabei wird durch den Reportgenerator  versucht,  nur 
+ganze Worte zu \o'u"'bertragen.  Ist ein Wort l\o'a"'nger als die
+festgelegte Breite,  muss es auf zwei oder mehr Zeilen verteilt werden. 
+Eine Silbentrennung f\o'u"'hrt das System nicht aus.
+.LP
+Der Aufbau einer BATCH-Zeichenkette erfolgt in zwei Schritten:
+.IP 1.
+In  die aktuelle Zeile wird der erste Teil der Zeichenkette in 
+der durch number bestimmten L\o'a"'nge eingetragen. Danach  werden 
+weitere Anweisungen f\o'u"'r die Zeile bearbeitet.
+.IP 2.
+Bei  Vorschub auf eine neue Zeile wird der Rest der
+BATCH-Zeichenkette auf zus\o'a"'tzliche Zeilen verteilt,
+den sogenannten 
+BATCH-Zeilen. Wenn sie erwarten, dass die gesamte Zeichenkette
+ausgegeben und verteilt werden soll, muss eine L\o'a"'ngenangabe
+erfolgen.
+.LP
+.ft B
+Beispiel
+.ft R
+.DS L
+ 'DAS IST ALLES NICHT SO KOMPLIZIERT'  batch $breite @35
+.DE
+.LP
+Folgende Zeichenketten werden eingetragen,  wenn die Variable
+"breite" die Werte
+.DS L
+        12          bzw.         5     hat:
+
+   DAS IST                     DAS
+   ALLES NICHT                 IST
+   SO                          ALLES
+   KOMPLIZIERT                 NICHT
+                               SO
+                               KOMPL
+                               IZIER
+                               T
+.DE
+.LP
+Die BATCH-Funktion kann f\o'u"'r mehrere Zeichenketten in einer Zeile 
+verwendet werden. Die  n\o'a"'chste regul\o'a"'re Zeile folgt dann
+unmittelbar nach dem l\o'a"'ngsten aller Stapel.
+.LP
+Um auch BATCH-Zeilen gestalten zu k\o'o"'nnen,  z. B. Tabellenstriche 
+weiter zu f\o'u"'hren oder auch Werte auszugeben, wird eine spezielle 
+Anweisung zur Verf\o'u"'gung gestellt.
+
+.ft B
+Syntax
+.ft R
+.DS L
+
+            ON BATCHLINE [DO] [laufsteuerung] ENDO
+
+.DE
+Sie definiert den Grundaufbau ("Hintergrund") einer  BATCH-Zeile. 
+Beim Auftreten dieser Anweisung wird eine solche Zeile noch nicht 
+aufgebaut.  Dies  erfolgt erst nach dem Abschluss der  regul\o'a"'ren 
+Zeile  vor dem Aufbau einer BATCH-Zeile.  Die BATCH-Zeichenketten 
+werden dann in die vorbereiteten BATCH-Zeilen eingetragen.
+
+.ft B
+Beispiel
+.ft R
+.DS L
+  on batchline do
+      'I'
+      \e15 'I'
+      \e29 'I'
+  endo
+  \en2
+
+
+  I DAS IST     I WIE ES      I
+  I ALLES NICHT I SCHEINT     I
+  I SO          I             I
+  I KOMPLIZIERT I             I
+.DE
+.NH 3
+.ft B
+Eingabe von Zeichenketten \o'u"'ber Terminal
+.ft R
+.LP
+F\o'u"'r die Gestaltung variabler Texte in der Liste, die nicht Teil 
+der Tupeldatei sind, steht die Bedienereingabe von Zeichenketten 
+zur Verf\o'u"'gung.
+
+.ft B
+Syntax
+.ft R
+.DS L
+
+            TERMINAL zeichenkette [BATCH number]
+
+.DE
+Die Bearbeitung der Anweisung vollzieht sich in folgenden 
+Schritten:
+
+.IP 1.
+Der Text von 'zeichenkette' wird auf dem Terminal unter
+Anf\o'u"'gung des Zeichens ">" ausgegeben.
+.IP 2.
+Die Eingabe der, in die Liste einzutragenden Zeichen\%kette, vom 
+Terminal wird erwartet.
+.IP 3.
+Die eingelesene Zeichenkette wird nun genauso behandelt, wie 
+eine Zeichenkette, die direkt in der Listendefinition
+angegeben wurde. Die Bearbeitung eines
+Wiederholungsfaktors ist nicht m\o'o"'glich.
+.LP
+Zu beachten ist, dass die eingelesenen Zeichenketten nicht
+abgespeichert werden. Dies bedeutet, dass die Eingabe wiederholt
+vorgenommen werden muss, wenn die Anweisung TERMINAL in einem Zyklus 
+steht.
+
+.ft B
+Beispiel
+.ft R
+.DS L
+  terminal 'NAME DES KUNDEN' \en2
+.DE
+Bei der Abarbeitung dieser Anweisungen erscheint  auf 
+dem Terminal die Ausschrift:
+.DS L
+  NAME DES KUNDEN>
+.DE
+Wird  als  Name  "Mueller" angegeben,  steht  in  der 
+Liste dann:
+.br
+            Werter Herr Mueller!
+
+.NH 3
+.ft B
+Bereitstellung der Tupelwerte
+.ft R
+.LP
+Die Bereitstellung der Tupelwerte erfolgt im Teil
+.ft B
+tupelverarbeitung.
+.ft R
+
+.ft B
+Syntax
+.ft R
+.DS I
+FOR ALL [DO] [laufsteuerung]
+
+FOR [ONE] [DO] [laufsteuerung] END [ONE] | ENDO
+[laufsteuerung] END ALL | ENDA
+.DE
+Die Tupelverarbeitung hat also folgendes Aussehen:
+.DS L
+FOR ALL DO
+    .
+    . 
+    .
+    FOR ONE DO
+        .
+        .
+        .
+    END ONE
+    .
+    .
+    .
+END ALL
+.DE
+.LP
+Erreicht die Abarbeitung die Anweisung FOR ALL DO, wird das
+jeweils n\o'a"'chste Tupel gelesen. Zwischen FOR ONE DO 
+und END ONE kann das Tupel verarbeitet werden.
+Wird festgestellt, dass alle Tupel gelesen wurden, 
+erfolgt die weitere Abarbeitung der Listendefinition ab der ersten
+Anweisung nach END ALL.
+.LP
+Die  Konstruktion FOR ALL DO ...  END ALL kann als Zyklus betrachtet 
+werden, der verlassen wird, wenn alle Tupel der Eingabedatei
+verarbeitet wurden.
+.LP
+Der Zugriff auf die Werte eines Tupels wird durch das
+Schl\o'u"'sselwort    VALUE    oder das
+Schl\o'u"'sselzeichen # und die Nummer der Dom\o'a"'ne realisiert.
+Sicherlich hat sich die vermeintliche Doppeldefinition
+im Einf\o'u"'hrungsbeispiel etwas umst\o'a"'ndlich ausgenommen.
+.DS I
+define p_num = 1
+ .
+ .
+define #p_num = integer 2
+.DE
+Das spart aber viel Arbeit, weil sie nicht unbedingt #p_num
+schreiben m\o'u"'ssen,
+um den Wert dieser Dom\o'a"'ne zu erreichen - es gen\o'u"'gt
+auch #1. Sie haben zu entscheiden, ob die \o'U"'bersicht mit der
+zweiten Variante noch gewahrt bleibt.
+.LP
+Der Reportgenerator f\o'u"'r \*(yy\ erm\o'o"'glicht nicht nur den
+Zugriff zum aktuellen Tupel, sondern auch zum unmittelbar
+vorhergehenden und nachfolgenden durch die
+Schl\o'u"'sselw\o'o"'rter LAST und NEXT.
+
+.ft B
+Syntax
+.ft R
+.DS L
+            LAST number
+            NEXT number
+.DE
+.LP
+LAST und NEXT k\o'o"'nnen \o'u"'berall dort verwendet werden, wo auch 
+# m\o'o"'glich ist. Das heisst, dass gleichzeitig drei Tupel
+ausgewertet werden k\o'o"'nnen und erm\o'o"'glicht beispielsweise die
+Ausgabe von drei Tupeln nebeneinander \o'u"'ber mehrere Zeilen.
+.LP
+Wird mit number auf ein Attribut zugegriffen, das im Tupel gar 
+nicht existiert, wird eine Warnung auf dem Bedienterminal
+ausgegeben und die Dom\o'a"'ne Null verwendet. 
+Wird auf ein Tupel zugegriffen, welches nicht existiert, z. 
+B. bei der erstmaligen Abarbeitung von FOR ONE DO auf das Tupel 
+"LAST", haben alle Tupelattribute einen NULL-Wert.
+.LP
+Der NULL-Wert kennzeichnet ein Attribut als nicht definiert. Er 
+kann auch innerhalb von Tupeln auftreten. Intern ist der
+NULL-Wert durch eine bestimmte Bitkombination verschl\o'u"'sselt.
+.LP
+Bevor wir mit der Theorie fortfahren, versuchen wir ein etwas
+umfangreicheres Beispiel, das zwar teilweise ein Vorgriff auf
+Kommendes ist - im Wesentlichen aber Bekanntes benutzt.
+Sie kopieren die Relation "personal" aus "demo" zu "perskomp"
+auf folgende Form:
+.DS L
+
+Relation: perskomp
+
+
+|name                |qual    |pkz         |lohn  |abt   |gruppe|
+|---------------------------------------------------------------|
+|Gruene, Peter       |Dipl.Ing|301220433447|  1700|     0|     1|
+|Rose, Petra         |Oekonom |270531327326|  1206|     0|     1|
+|Mueller, Ernst      |Kaufmann|110450423412|   700|    10|    12|
+|Fleischer, Karl     |Kraftf. |200652456768|   877|    13|    23|
+|Schmidt, Hermann    |Ing.Oek.|130536487246|  1120|    26|    10|
+|Neumann, Inge       |Ing.    |120950366789|  1198|    26|    23|
+|Warnke, Peter       |FA      |120740423408|   788|    26|    23|
+|Baum, Klaus         |FA      |191156423577|   837|    32|    10|
+|Loda, Dieter        |FA      |040352433406|   500|    32|    10|
+|Weber, Franz        |Dipl.Ing|261044466201|  1337|    33|     2|
+|Kayser, Helmut      |TFA     |200652434556|   600|    33|    11|
+|Maerz, Udo          |Ing.    |120947434566|  1116|    55|     2|
+|Mueller, Petra      |Dipl.Ing|111139334464|  1362|    55|     3|
+|Schulze, Ernst      |Dipl.Ing|221144434043|  1564|   129|     1|
+|Zeidler, Fritz      |Dipl.Oek|310328434035|  1686|   129|     1|
+|Moser, Otto         |Dipl.Ing|241238434052|  1567|   129|     3|
+|Weise, Juergen      |FA      |131235435334|   900|   199|     4|
+|Malter, Juergen     |Ing.    |180620435662|  1200|   199|     5|
+|Rose, Peter         |Dipl.Oek|200227435046|  1590|   199|     5|
+|Ernst, Eva          |Dipl.Ma.|130431334667|  1010|   199|     6|
+|Heine, Rolf         |Oek.    |220829435672|   905|   199|     6|
+|Schmidt, Petra      |Dipl.Ma.|101040334223|  1200|   199|     6|
+|Thoms, Rolf         |Oek.    |100341434221|  1000|   199|     6|
+|Schneider, Peter    |Oek.    |130730434446|  1300|   199|     7|
+|Wunsch, Peter-Paul  |Ing.    |050428433078|   900|   199|     7|
+|---------------------------------------------------------------|
+.DE
+.LP
+Mit 
+.ft B
+copy perscomp()
+.ft R
+.ft B
+into "mnt\/work\/text\/komp.f"
+.ft R
+erstellen sie das Tupelfile und
+anschliessend das Deskription-File.
+Das Programm
+.ft B
+kompl_p
+.ft R
+soll eine stark vereinfachte FZR-Beitrags\o'u"'bersicht
+erstellen:
+.LP
+.nf
+report kompl_r
+with
+	/* page layout */
+	columns 60
+	lines 36
+	all lines 48
+
+	/* procedures */
+	define p_fzr		= 1
+	define p_pgw		= 2
+
+	/* switches */
+	define last_page	= 1
+
+	/* variables */
+	define next_page	= 0
+	define fzr		= 1
+	define grp_lohn	= 2
+	define grp_fzr		= 3
+	define grp_cnt		= 4
+	define abt_lohn	= 5
+	define abt_fzr		= 6
+	define abt_cnt		= 7
+
+	/* domains */
+	define d_name		= 1
+	define d_qual		= 2
+	define d_pkz		= 3
+	define d_lohn		= 4
+	define d_abt		= 5
+	define d_gruppe	= 6
+
+	define #d_name		= char    20
+	define #d_qual		= char     8
+	define #d_pkz		= char    12
+	define #d_lohn		= integer  2
+	define #d_abt		= integer  2
+	define #d_gruppe	= integer  2
+as
+
+proc p_fzr
+	set $fzr = ($fzr - 600) / 10
+	if $fzr > 60 then set $fzr = 60 end if
+return
+
+proc p_pgw
+	if line < 47 then 'I' end if
+return
+
+on pagebegin do
+	'-' 60 \en
+	'VEB Generatorwerke'
+	\e50 date \en
+	'1234 Berlin'
+	\e50 time \en
+	'Beispielstr. 13'
+	\e28 'Seite: ' integer page \en
+	'-' 60 \en2
+	if ! page == 1 then
+		\e20 'Liste der Abteilung ' integer #d_abt
+	end if
+	\en2
+end
+
+on pageend do
+	if ! ^last_page then
+		set $next_page = page + 1
+		\e36 'Es folgt Seite: ' integer $next_page
+	end if
+	\en
+	'-' 60 \en3
+end
+
+on lineend do call p_pgw end
+on linebegin do call p_pgw end
+
+on batchline do
+	\e18
+	if #d_pkz from 7 to 7 == '4'
+	then 'maennl'
+	else 'weibl'
+	end if
+end
+
+set line = 10
+\e\e20 'Liste der Abteilungen ' new page
+
+for all do
+	for one do
+		if groupbegin d_abt then new page end if
+			if groupbegin d_gruppe then
+				'**** Gruppe ' integer @3 #d_gruppe
+				' ****' \en2
+				'Name'
+				\e15 'Qualifikation'
+				\e32 'Geb.-Datum'
+				\e45 'Lohn'
+				\e55 'FZR' \en
+				\e15 'maennl/weibl' \en2
+			end if
+
+		set $fzr = #d_lohn
+		call p_fzr
+		char batch 10 @20 #d_name
+		\e18 char #d_qual
+		\e33 char        to 2 #d_pkz '.'
+		    char from 3 to 4 #d_pkz '.'
+		    char from 5 to 6 #d_pkz
+		\e44 integer @4 #d_lohn ',-M'
+		\e54 integer @3 $fzr ',-M' \en
+		set $grp_lohn += #d_lohn
+		set $grp_fzr  += $fzr
+		set $grp_cnt  += 1
+		if groupend d_gruppe then
+			set $abt_lohn += $grp_lohn
+			set $abt_fzr  += $grp_fzr
+			set $abt_cnt  += $grp_cnt
+			if $grp_cnt > 0 then
+				set $grp_lohn := $grp_cnt
+				set $grp_fzr  := $grp_cnt
+			end if
+			\e28 'Durchschnitt: '
+			\e44 integer @4 $grp_lohn ',-M'
+			\e54 integer @3 $grp_fzr ',-M' \en2
+			set $grp_lohn = 0
+			set $grp_fzr  = 0
+			set $grp_cnt  = 0
+			'-' 60 \en
+		end if
+		if groupend d_abt then
+			if $abt_cnt > 0 then
+				set $abt_lohn := $abt_cnt
+				set $abt_fzr  := $abt_cnt
+			end if
+			'Durchschnitt der Abteilung: '
+			\e44 integer @4 $abt_lohn ',-M'
+			\e54 integer @3 $abt_fzr ',-M' \en2
+			set $abt_lohn = 0
+			set $abt_fzr  = 0
+			set $abt_cnt  = 0
+			'=' 60 \en
+		end if
+	end one
+end all
+
+set ^last_page;
+.fi
+.LP
+Als Ausgabeger\o'a"'t wurde ein Seriendrucker mit 48 Zeilen
+Seitenl\o'a"'nge gew\o'a"'hlt, der softwareseitig
+keinen Seitenvorschub realisieren kann (Ausgabe von Zeilenvorschub).
+Da jeweils am Zeilenanfang und -ende mit 'I' gerahmt werden soll,
+ist durch die Prozedur
+.ft B
+p_pgw
+.ft R
+die Abfrage nach den Zeilennummern 1..46 eingeordnet, um zu
+verhindern, dass auf den Zeilen 47 und 48 (Seitenfalz)
+ebenfalls ein 'I' erscheint. Bei Druckern (Paralleldrucker), die
+diese Einschr\o'a"'nkung nicht kennen, kann die
+Prozedur p_pgw entfallen.
+.LP
+Die Rolle von 
+.ft B
+lines
+.ft R
+und
+.ft B
+all lines
+.ft R
+soll am Beispiel nocheinmal erkl\o'a"'rt werden.
+Die Differenz zwischen beiden betr\o'a"'gt 12, also die
+Summe der 
+.ft B
+new lines,
+.ft R
+die f\o'u"'r die Abschnitte
+.ft B
+on pagebegin do
+.ft R
+und
+.ft B
+on pageend do
+.ft R
+verwendet wurden. Damit stehen f\o'u"'r den Informationsteil
+tats\o'a"'chlich nur 36 Zeilen zur Verf\o'u"'gung. Bei einem Drucker
+mit 72 Zeilen m\o'u"'ssten entsprechend f\o'u"'r
+.ft B
+lines
+.ft R
+60 Zeilen und
+.ft B
+all lines
+.ft R
+72 Zeilen geschrieben werden.
+Falls sie sich hierbei verz\o'a"'hlen,
+erhalten sie in der Regel unbrauchbare
+Seitenformatierungen.
+Bevor weitere Erl\o'a"'uterungen folgen, einige
+Ausz\o'u"'ge aus dem tats\o'a"'chlichen Druckbild:
+.DS L
+I------------------------------------------------------------I
+IVEB Generatorwerke                               19-May-88  I
+I1234 Berlin                                      11:18:42   I
+IBeispielstr. 13            Seite: 2                         I
+I------------------------------------------------------------I
+I                                                            I
+I                   Liste der Abteilung 0                    I
+I                                                            I
+I**** Gruppe   1 ****                                        I
+I                                                            I
+IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+I              maennl/weibl                                  I
+I                                                            I
+IGruene,          Dipl.Ing       30.12.20   1700,-M    60,-M I
+IPeter            maennl                                     I
+IRose,            Oekonom        27.05.31   1206,-M    60,-M I
+IPetra            weibl                                      I
+I                           Durchschnitt:   1453,-M    60,-M I
+I                                                            I
+I------------------------------------------------------------I
+IDurchschnitt der Abteilung:                1453,-M    60,-M I
+I                                                            I
+I============================================================I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                   Es folgt Seite: 3        I
+I------------------------------------------------------------I
+                                                            
+                                                            
+.DE
+.DS L
+I------------------------------------------------------------I
+IVEB Generatorwerke                               19-May-88  I
+I1234 Berlin                                      11:19:29   I
+IBeispielstr. 13            Seite: 10                        I
+I------------------------------------------------------------I
+I                                                            I
+I                   Liste der Abteilung 199                  I
+I                                                            I
+I**** Gruppe   4 ****                                        I
+I                                                            I
+IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+I              maennl/weibl                                  I
+I                                                            I
+IWeise,           FA             13.12.35    900,-M    30,-M I
+IJuergen          maennl                                     I
+I                           Durchschnitt:    900,-M    30,-M I
+I                                                            I
+I------------------------------------------------------------I
+I**** Gruppe   5 ****                                        I
+I                                                            I
+IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+I              maennl/weibl                                  I
+I                                                            I
+IMalter,          Ing.           18.06.20   1200,-M    60,-M I
+IJuergen          maennl                                     I
+IRose,            Dipl.Oek       20.02.27   1590,-M    60,-M I
+IPeter            maennl                                     I
+I                           Durchschnitt:   1395,-M    60,-M I
+I                                                            I
+I------------------------------------------------------------I
+I**** Gruppe   6 ****                                        I
+I                                                            I
+IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+I              maennl/weibl                                  I
+I                                                            I
+IErnst, Eva       Dipl.Ma.       13.04.31   1010,-M    41,-M I
+I                 weibl                                      I
+IHeine,           Oek.           22.08.29    905,-M    30,-M I
+IRolf             maennl                                     I
+ISchmidt,         Dipl.Ma.       10.10.40   1200,-M    60,-M I
+IPetra            weibl                                      I
+IThoms,           Oek.           10.03.41   1000,-M    40,-M I
+IRolf             maennl                                     I
+I                           Durchschnitt:   1029,-M    43,-M I
+I                                   Es folgt Seite: 11       I
+I------------------------------------------------------------I
+                                                            
+.DE                                                         
+.DS L
+I------------------------------------------------------------I
+IVEB Generatorwerke                               19-May-88  I
+I1234 Berlin                                      11:19:41   I
+IBeispielstr. 13            Seite: 11                        I
+I------------------------------------------------------------I
+I                                                            I
+I                   Liste der Abteilung 199                  I
+I                                                            I
+I                                                            I
+I------------------------------------------------------------I
+I**** Gruppe   7 ****                                        I
+I                                                            I
+IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+I              maennl/weibl                                  I
+I                                                            I
+ISchneider,       Oek.           13.07.30   1300,-M    60,-M I
+IPeter            maennl                                     I
+IWunsch,          Ing.           05.04.28    900,-M    30,-M I
+IPeter-Paul       maennl                                     I
+I                           Durchschnitt:   1100,-M    45,-M I
+I                                                            I
+I------------------------------------------------------------I
+IDurchschnitt der Abteilung:                1112,-M    46,-M I
+I                                                            I
+I============================================================I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I                                                            I
+I------------------------------------------------------------I
+                                                            
+                                                            
+.DE
+.LP
+Sofern sie die Liste auf einem Paralleldrucker
+mit einer Seitenl\o'a"'nge von 66 Zeilen ausgeben wollen,
+kann die Prozedur p_pgw, wie ereits erw\o'a"'hnt,
+weggelassen werden. Die Kopfinformationen
+sehen dann so aus:
+.DS L
+/* page layout */
+        columns 60
+        lines 56
+        all lines 66
+        big
+.DE
+Die Behandlung des Seitenendes muss entsprechend obiger Definition
+auf
+.DS L
+on pageend do
+       if ! ^last_page then
+               set $next_page = page + 1
+               \e36 'Es folgt Seite: ' integer $next_page
+       end if
+       '-' 60 \en
+end
+.DE
+ge\o'a"'ndert werden und die Zeilenende und -anfangsbehandlung
+sieht jetzt so aus:
+.DS L
+on lineend do 'I' end
+on linebegin do 'I' end
+.DE
+.LP
+Falls sie in der Zeile
+.DS L
+          char batch 10 @20 #d_name
+.DE
+die L\o'a"'ngenangabe @20 vergessen, werden in der 2. Zeile exakt
+soviele Zeichen nicht ausgegeben, wie in der 1. gespart wurden.
+Es steht dann beispielsweise:
+.DS L
+Thoms,
+R
+Schmidt,
+Petr
+.DE
+.NH 3
+.ft B
+Systemvariable
+.ft R
+.LP
+Systemvariable werden automatisch dem Nutzer zur Verf\o'u"'gung
+gestellt. Sie besitzen einen definierten Anfangswert und k\o'o"'nnen 
+durch den Nutzer beliebige Werte zugewiesen bekommen.
+.LP
+Die Variablen haben folgende Bedeutung:
+.LP
+.ft B
+PAGE
+.ft R
+.IP
+Nummer der aktuellen Seite
+.br
+Mit 1 beginnend, wird bei jedem Vorschub auf eine 
+neue Seite der Wert PAGE um eins erh\o'o"'ht. PAGE kann 
+vom Nutzer ein beliebiger Wert zwischen 0 und 32767 
+zugewiesen werden.
+.RE
+.sp 1
+.ft B
+ TUPLE
+.ft R
+.IP
+Nummer des aktuellen Tupels
+.br
+Mit 1 beginnend, wird bei jedem Einlesen eines neuen 
+Tupels dieser Wert um eins erh\o'o"'ht. TUPLE kann vom 
+Nutzer ein beliebiger Wert zwischen 0 und 32767 
+zugewiesen werden.
+.RE
+.sp 1
+.ft B
+LINE
+.ft R
+.IP
+aktuelle Zeilennummer auf der Seite
+.br
+Ist LINE das Ziel einer Wertzuweisung, wird nicht nur 
+die neue Zeilennummer in LINE eingetragen, sondern 
+tats\o'a"'chlich auch die angegebene Zeile der Seite 
+positioniert.
+Ist die aktuelle Zeilennummer bereits gr\o'o"'sser oder 
+gleich der berechneten, erfolgt automatisch der 
+Vorschub auf eine neue Seite und danach die 
+Positionierung auf die gew\o'u"'nschte Zeile.
+.RE
+.sp 1
+.ft B
+COLUMN
+.ft R
+.IP
+aktuelle Schreibposition (Spalte, mit 1 beginnend) in 
+der Zeile
+.br
+Ist COLUMN Ziel einer Wertzuweisung, wird der 
+gew\o'u"'nschte Wert in COLUMN eingetragen und auf die 
+Spalte positioniert.
+.RE
+.sp 1
+.ft B
+VAR
+.ft R
+.IP
+allgemeine Variable
+.br
+Dem Nutzer stehen 126 Variable (VAR0 - VAR125) zur freien Verf\o'u"'gung 
+Der Nummer kann mit
+.ft B
+define
+.ft R
+ein entsprechender Name zugeordnet werden.
+Sie werden im Gegensatz zu Dom\o'a"'nenwerten (#)
+mit $NAME oder $number (mit 0 beginnend) gerufen.
+Den verf\o'u"'gbaren Variablen k\o'o"'nnen
+Integer- und Realwerte zugewiesen werden.
+Am Anfang sind alle Variablen mit dem Wert 0 
+initialisiert.
+.br
+Die allgemeinen Variablen sollten nicht mit den
+Boolschen Variablen verwechselt werden,
+hier sind ebenfalls 126 Variable verf\o'u"'gbar,
+die den Wert TRUE oder FALSE annehmen k\o'o"'nnen
+(s. Abschnitt "Boolsche Variable").
+.LP
+Alle  Systemvariablen beinhalten numerische Werte und k\o'o"'nnen als 
+solche in die Liste eingetragen werden.
+.LP
+Zeichenkettenvariablen gibt es im Reportgenerator
+nicht.
+.NH 3
+.ft B
+Systemkonstante, Datum, Uhrzeit
+.ft R
+.LP
+Die  Systemkonstanten werden dem Nutzer f\o'u"'r die Ausgabe und
+Verwendung  in arithmetischen Ausdr\o'u"'cken zur  Verf\o'u"'gung  gestellt. 
+Sie k\o'o"'nnen nicht Ziel einer Wertzuweisung sein:
+.DS L
+
+YEAR    aktuelles Jahr          (0 bis 99 als Jahr - 99)
+MONTH   aktueller Monat         (0 bis 11)
+DAY     aktueller Tag           (1 bis 31)
+M_DAY   aktueller Tag im Monat  (1 bis 31)
+W_DAY   aktueller Tag der Woche (0 = Sonntag bis 6)
+Y_DAY   aktueller Tag im Jahr   (0 bis 365)
+HOUR    aktuelle Stunde         (0 bis 23)
+MINUTE  aktuelle Minute         (0 bis 59)
+SECOND  aktuelle Sekunde        (0 bis 59).
+.DE
+Die Konstanten werden beim Start des Report-Generators neu aus der Systemzeit 
+des Rechners ermittelt.
+.LP
+Der Reportgenerator  f\o'u"'r \*(yy\ stellt zwei spezielle
+Funktionen f\o'u"'r die Ausgabe von Datum und Uhrzeit zur Verf\o'u"'gung:
+.DS I
+
+DATE   in der Form   tt-mmm-jj
+TIME   in der Form   hh:mm:ss.
+.DE
+
+.ft B
+Beispiel
+.ft R
+.DS I
+ 'DATUM UND UHRZEIT:' date ' ' time
+.DE
+erzeugt den Text
+.DS I
+DATUM UND UHRZEIT: 27-JAN-86 11:13:25
+.DE
+.NH 3
+.ft B
+Ausgabe von numerischen Werten
+.ft R
+.LP
+In diesem Abschnitt werden die Ausgabem\o'o"'glichkeiten von 
+numerischen Werten vorgestellt. Daf\o'u"'r stehen die drei Funktionen
+.DS I
+- INTEGER
+- REAL
+- GRAPHIC
+.DE
+zur Verf\o'u"'gung. Welche numerische Wertart die auszugebenden Werte 
+intern besitzen, ist f\o'u"'r die Funktionen ohne Bedeutung. Welcher 
+Wert ausgegeben werden soll, wird unmittelbar hinter der Funktion 
+angegeben.
+.LP
+Der erste Parameter dieser Funktionen ist die
+.ft B
+laenge .
+.ft R
+.DS I
+[LENGTH number]
+  oder
+[@number]
+.DE
+"laenge"  legt die Anzahl der Zeichen fest,  die f\o'u"'r die Ausgabe 
+des Wertes in der Listenzeile zur Verf\o'u"'gung gestellt werden. 
+Diese Anzahl kann den Funktionen mit Angabe von Number
+vorgegeben werden.
+Die Zahlen werden dann rechtsb\o'u"'ndig in den
+bereitgestellten Platz eingetragen. Fehlt die L\o'a"'ngenangabe, wird genau 
+so viel Platz in der Zeile beansprucht, wie f\o'u"'r die Darstellung 
+des Wertes notwendig ist. Die Zahl wird also linksb\o'u"'ndig ab der 
+aktuellen Schreibposition eingetragen. Die n\o'a"'chste Ausgabe
+erfolgt dann unmittelbar hinter dem Wert.
+.NH 4
+.ft B
+Ausgabe als Integer-Zahl
+.ft R
+.LP
+Die Darstellung eines Wertes erfolgt als ganze Zahl.
+.DS L       
+                        _                   _
+                        |                   |
+         INTEGER laenge |  SCALE real       |   num daten
+                        |  PIC zeichenkette |
+                        ~                   ~
+
+.DE
+Wahlweise  kann  ein  Skalierungsfaktor und  eine
+Druckaufbereitungsmaske spezifiziert werden.
+.LP
+Der Wert wird mit dem Skalierungsfaktor multipliziert. Damit 
+lassen sich bequem Massstabsver\o'a"'nderungen, Zinsberechnungen, 
+Prozentrechnungen u.a. realisieren. Der auszugebende Wert wird 
+eventuell gerundet.
+
+.ft B
+Beispiel
+.ft R
+.DS L
+  integer @18
+      scale 0.0325
+      pic 'ZINSEN: 00009.99 M'
+      #p_guthab
+.DE
+Hat #p_guthab den Wert 20000,  wird in die Liste
+eingetragen:
+
+  ZINSEN: 6.50 M
+.LP
+Die Symbole einer Druckaufbereitungsmaske PIC haben fest
+zugeordnete Bedeutungen. Diese sind im einzelnen:
+.IP <
+linksb\o'u"'ndiges Eintragen der aufbereiteten Maske
+in die verf\o'u"'gbare Spalte
+.IP >
+rechtsb\o'u"'ndiges Eintragen der aufbereiteten Maske 
+in die verf\o'u"'gbare Spalte
+.IP =
+zentriertes Eintragen der aufbereiteten Maske
+in die verf\o'u"'gbare Spalte
+.IP 9
+Eintragen einer Ziffer
+.IP 0
+Eintragen einer Ziffer,  falls es sich nicht um eine
+Vornull handelt.
+Bei  Vornullen wird ein Leerzeichen bzw.  das  Vorzeichen 
+(falls gew\o'u"'nscht) eingetragen.
+.IP +
+unbedingte  Darstellung des Vorzeichens  unmittelbar  vor 
+der ersten Ziffer;
+.IP -
+Darstellung nur des negativen Vorzeichens unmittelbar vor 
+der ersten Ziffer (Standard);
+.RE
+sonst unver\o'a"'nderte \o'U"'bernahme in das Ausgabebild.
+Um die Symbole f\o'u"'r die Druckaufbereitung als normale Zeichen
+verwenden zu k\o'o"'nnen, m\o'u"'ssen sie mit dem Zeichen '\e' kaschiert
+(gesch\o'u"'tzt) werden. Das Zeichen '\\' ist durch die
+Umschreibung '\\\\' verf\o'u"'gbar.
+.LP
+Die Symbole f\o'u"'r die Positionierung der
+Druckaufbereitungsmaske k\o'o"'nnen an beliebiger Stelle stehen,
+das zuletzt gegebene Symbol wird f\o'u"'r die
+Druckaufbereitung verwendet, alle anderen werden "verschluckt".
+.LP
+Das Symbol f\o'u"'r das Vorzeichen kann an drei Stellen
+angegeben werden:
+.IP -
+vor dem ersten '0'-Symbol
+.br
+Darstellung des Vorzeichens an dieser Position;
+.IP -
+vor dem ersten '9'-Symbol
+.br
+Darstellung des Vorzeichens unmittelbar vor der
+ersten Ziffer;
+.IP -
+nach dem letzten '9'-Symbol
+.br
+Darstellung des Vorzeichens nach der letzten Ziffer
+.LP
+.ft B
+Beachte:
+.ft R
+Das zuletzt verwendete Vorzeichensymbol wird f\o'u"'r die
+Aufbereitung verwendet.
+.NH 4
+.ft B
+Ausgabe als Real-Zahl
+.ft R
+.LP
+Die Darstellung eines Wertes erfolgt als Gleitkommazahl.
+.DS L
+                        _                   _
+                        |                   |
+                        |  SCALE real       |
+                        |  BEFORE number    |
+            REAL laenge |  POINT number     |  num daten
+                        |  NORM number      |
+                        |  IGNORE           |
+                        |  EXP zeichenkette |  
+                        ~                   ~
+
+.DE
+Die wahlweise anzugebenden Parameter haben folgende Bedeutung:
+.LP
+.ft B
+SCALE real
+.ft R
+.IP
+Der  Attributwert wird vor der Aufbereitung  mit 
+dem Skalierungsfaktor multipliziert.
+.RE
+.sp 1
+.ft B
+BEFORE number
+.ft R
+.IP
+Anzahl der Stellen vor dem Komma
+.br
+Standard: 0
+.RE
+.sp 1
+.ft B
+POINT number
+.ft R
+.IP
+Anzahl  der Stellen nach dem Komma
+.br
+Die  letzte Stelle ist gerundet.
+.br
+Standard: 6
+.RE
+.sp 1
+.ft B
+NORM number
+.ft R
+.IP
+Die  Zahl  soll mit einem bestimmten  Exponenten 
+dargestellt  werden.   Beispielsweise  wird  bei 
+NORM 5 die Zahl mit dem Exponenten E+05
+dargestellt. Der Parameter BEFORE wird dabei
+unwirksam.
+.RE
+.sp 1
+.ft B
+IGNORE
+.ft R
+.IP
+Die Angabe des Exponenten soll unterdr\o'u"'ckt
+werden. Der Parameter BEFORE wird dabei unwirksam. 
+Ist die Darstellung des Wertes ohne  Exponenten 
+nicht m\o'o"'glich, gelten die anderen Parameter.
+.RE
+.sp 1
+.ft B
+EXP zeichenkette
+.ft R
+.IP
+Es wird die Zeichenkette vor dem Exponentenwert 
+definiert.
+.br
+Standard: 'E'
+.LP
+.ft B
+Beispiel
+.ft R
+.LP
+Es sollen verschiedene Darstellungsm\o'o"'glichkeiten der Variablen $1 
+mit dem Wert 123.45 veranschaulicht werden:
+.DS L
+
+    1) real $1
+           0.123450E 03
+
+    2) real length 20 scale 2000 before 3 point 2 exp 'EXP' $1
+                  246.90 EXP 03 
+    3) real length 20 scale 2000 before 3 point 2
+            exp 'EXP' ignore $1
+                      246900.00
+    4) real length 20 norm -2 $1
+               12345.000000E-02
+    5) real length 15 exp '*10**' point 1 $1
+               0.1*10** 03
+.DE
+Die Darstellung nocheinmal zum besseren Vergleich:
+.DS L
+    1)     0.123450E 03
+    2)            246.90 EXP 03
+    3)                246900.00
+    4)         12345.000000E-02
+    5)         0.1*10** 03
+.DE
+.NH 4
+.ft B
+Pseudographische Ausgabe
+.ft R
+.LP
+Der Reportgenerator
+erm\o'o"'glicht  die  einfache 
+Darstellung von Diagrammen.
+.DS L
+                     _                           _
+                     |_      _      _        _   |
+                     ||      |      |        |   |
+                     || FROM |      | VAR int|   |
+    GRAPHIC  laenge  || TO   |      | real   |   | num daten
+                     |~      ~      ~        ~   |
+                     | WITH zeichenkette         |       
+                     ~                           ~ 
+.DE
+.LP
+Der  durch  die Grenzen FROM und TO definierte Wertebereich  wird 
+auf  den mit 'laenge' angegebenen Darstellungsbereich abgebildet. 
+Die Abbildung erfolgt mit dem bei WITH angegebenen Zeichen.
+Ist FROM < TO erfolgt eine linksb\o'u"'ndige und
+ist FROM > TO eine rechtsb\o'u"'ndige Darstellung der
+Pseudografik in der Spalte.
+.DS I
+Standards: laenge = 50
+           FROM    0
+           TO      0
+           WITH    '*'
+.DE
+.ft B
+Beispiel
+.ft R
+.LP
+Es soll das Attribut "menge" grafisch dargestellt werden.  Vor der
+grafischen  Darstellung  soll der Wert als Integer-Zahl  ausgegeben 
+werden.
+.DS L
+  for one do
+      integer @3 #menge
+      \e6
+      graphic @20 from 0 to 10 with '+' #menge
+      \en
+  end one
+.DE
+.DS L
+Darstellung:
+
+    7   ++++++++++++++
+    3   ++++++
+    4   ++++++++
+    8   ++++++++++++++++
+    1   ++
+    0
+   11   ++++++++++++++++++++
+.DE
+.NH 3
+.ft B
+Ausgabe von Zeichenkettenwerten
+.ft R
+.LP
+F\o'u"'r die Ausgabe von Zeichenkettenwerten steht die Funktion  CHAR 
+zur Verf\o'u"'gung:
+.DS L
+
+             _                   _
+             | _       _         |    _       _
+             | | FROM  |         |    | LAST  |
+ CHAR laenge | | TO    |   number|    | VALUE |    number
+             | | BATCH |         |    | NEXT  |
+             ~ ~       ~         ~    ~       ~
+.DE
+.LP
+Ist die L\o'a"'nge angegeben, wird die Zeichenkette linksb\o'u"'ndig in 
+den bereitgestellten Platz eingetragen. Sollte die Zeichenkette 
+l\o'a"'nger sein, wird rechts abgeschnitten. Mit FROM und TO kann die 
+auszugebende Zeichenkette eingeschr\o'a"'nkt werden. Ist keine L\o'a"'nge 
+angegeben, wird die Zeichenkette in ihrer Originall\o'a"'nge
+eingetragen. Die Tupelwerte d\o'u"'rfen nicht numerischer Wertart sein.
+.LP
+Die Zeichenketten k\o'o"'nnen mit der Funktion BATCH \o'u"'ber mehrere 
+Zeilen verteilt werden. Zu beachten ist, dass eine 
+L\o'a"'ngenangabe nicht die L\o'a"'nge der auszugebenden Zeichenkette
+bestimmt, sondern den bereitgestellten Platz in der Liste. Dieser 
+Unterschied existiert, da die Zeichenketten \o'u"'berwiegend in
+ganzen Worten ausgegeben werden und dadurch Platz verloren geht. Mit 
+CHAR 110 BATCH 20 werden zum Beispiel genau 5 Zeilen zu 20 und 
+eine Zeile mit 10 Zeichen gef\o'u"'llt, unabh\o'a"'ngig davon, wie lang 
+die Zeichenkette ist.
+.LP
+.ft B
+Beispiel
+.ft R
+.DS L
+  char from 3 #text
+  \en
+  char from 5 to 12 #text
+.DE
+Hat #text die Zeichenkette
+
+ 'PLATSCH BATCH',
+
+erzeugen die Anweisungen die Zeichenketten
+
+ ATSCH BATCH
+ SCH BATC
+
