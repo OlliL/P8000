@@ -1,0 +1,2160 @@
+
+
+
+        Referenz-Manual            - 91 -                   DDDDEEEESSSSTTTTRRRROOOOYYYYRRRR
+
+
+        NNNNAAAAMMMMEEEE
+
+             destroyr - Lo"schen von Relationen
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ddddeeeessssttttrrrrooooyyyyrrrr [ ffffllllaaaaggggssss ] dbname {relname}
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             ddddeeeessssttttrrrrooooyyyyrrrr  streicht  Relationen  aus  der   aufliegenden
+             Datenbank.   Das  Kommando  wird nur vom Eigentu"mer der
+             Relation(en) angenommen.  Will man von  einer  Relation
+             nur  deren  Inhalt  - also alle Tupel - streichen, aber
+             die Definition der Relation erhalten , benutzt man  das
+             ddddeeeelllleeeetttteeee  -Statement  ohne  where-Phrase  oder das mmmmooooddddiiiiffffyyyy
+             -Statement mit der Speicherstruktur ttttrrrruuuunnnnccccaaaatttteeeedddd....
+
+             Beim Streichen einer Relation, fu"r die  Sekunda"rindizes
+             definiert  sind,  werden automatisch auch diese gestri-
+             chen.  Das Streichen eines Sekunda"rindex selbst hat auf
+             dessen Prima"r-Relation keine Auswirkung.
+
+             Das  """"ddddeeeessssttttrrrrooooyyyy  ppppeeeerrrrmmmmiiiitttt""""   -Statement   lo"scht   gegebene
+             Zugriffsrechte   zu   der   Relation   "relname",   das
+             "destroy-integrity"-Statement definierte Integrita"ten.
+             Das Schlu"sselwort """"aaaallllllll"""" gibt an,  dass  alle  Zugriffs-
+             rechte  bzw. Integrita"ten gestrichen werden sollen.  Um
+             einzelne Zugriffsrechte bzw. Integrita"ten  zu  lo"schen,
+             muss eine, durch Komma getrennte constraint-Liste (Num-
+             mern) angegeben werden.  Die  constraint's  erha"lt  man
+             durch hhhheeeellllpppp ppppeeeerrrrmmmmiiiitttt bzw.  hhhheeeellllpppp iiiinnnntttteeeeggggrrrriiiittttyyyy....
+
+             FFFFllllaaaaggggssss::::
+
+
+                -uxx    alter-ego-Flag fu"r den
+                        UNIX-login-Name `xx'
+                +-w     wait-Flag
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual            - 92 -                        EEEEQQQQCCCC
+
+
+        NNNNAAAAMMMMEEEE
+
+             eqc - Compiler fu"r die
+                      in C eingebettete QUEL-Schnittstelle EQUEL
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             eeeeqqqqcccc [ ----dddd ] [ ----ffff ] [ ----rrrr ] file1.q [filen.q]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             EQUEL (Embedded QUEL) ist eine Sprache  zur  Einbettung
+             von  Datenbankanfragen in eine Programmiersprache.  Als
+             Anfragesprache wird QUEL verwendet.
+
+             EQUEL besteht aus der EQUEL-Laufzeitbibliothek, die die
+             Schnittstelle  zur  Datenbank  realisiert (call- Inter-
+             face), und einem Compiler zur  U"bersetzung  eines  Pro-
+             gramms  mit  eingebetteten  EQUEL-Statements in gu"ltige
+             Anweisungen der Programmiersprache.
+             Das ccccaaaallllllll -Interface ist  fu"r  alle  Programmiersprachen
+             verfu"gbar,  ein Compiler existiert zur Zeit nur fu"r die
+             Programmiersprache C.
+
+             CCCCoooommmmppppiiiillllaaaattttiiiioooonnnn
+
+             Der Pre-Compiler wird durch das Kommando:
+
+                  eeeeqqqqcccc {flags} file1.q {flags} file2.q ...
+
+             aufgerufen, wobei ffffiiiilllleeeennnn....qqqq die Quelleingabe-Files  sind,
+             deren  Namen  mit  ....qqqq beendet sein mu"ssen.  Die Ausgabe
+             wird auf das File ````ffffiiiilllleeeennnn....cccc'''' geschrieben.  Es ko"nnen  so
+             viele Files wie gewu"nscht spezifiziert werden.
+             Folgende Flags ko"nnen gesetzt werden:
+
+             -d   Generiert Code zum Quelltext des  Files  mit  Name
+                  und  Zeilennummer,  die bei auftretenden Laufzeit-
+                  Fehlern angezeigt werden. Das ist zum  Analysieren
+                  der  Fehler  nu"tzlich,  beno"tigt  aber mehr Platz.
+                  Standard ist "aus".
+
+             -f   Erzeugt Code, bei dem "Output"- und  "Input"-Files
+                  gewo"hnlich  die gleiche Zeilennummer haben, um die
+                  C-Diagnose-Mitteilungen leichter interpretieren zu
+                  ko"nnen.  Manchmal muss EQUEL versuchen, Queries in
+                  mehrere   Zeilen    zu    zerlegen,    um    einen
+                  Zeilenu"berlauf  des  C-Preprozessors zu vermeiden.
+                  Dann transportiert es C-Code  einige  Zeilen  nach
+                  vorn.   Mit  der -f Flagspezifikation passiert das
+                  nicht.  C-Code steht in der  richtigen  Zeile  und
+                  Reihenfolge.   Entsprechend  kann  die  Zeile  des
+                  Quellcodes mit der Zeile der  C-Diagnose  referen-
+                  zieren.
+
+             -r   Setzt Flags auf  Standardwerte  zuru"ck.  Das  wird
+                  verwendet,  um  andere  Flags  fu"r  Files  aus der
+                  Argumentliste zu unterdru"cken.
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual            - 93 -                        EEEEQQQQCCCC
+
+
+             Die Ausgabe-Files ko"nnen dann mittels  des  C-Compilers
+             u"bersetzt werden:
+
+                  cccccccc file1.c file2.c ... ----llllqqqq
+
+             Die  Schreibweise  ----llllqqqq  fordert   die   EQUEL-Laufzeit-
+             Bibliothek  an.   Die Bibliothek lllliiiibbbbqqqq....aaaa muss zur Angabe
+             der Option -lq  auf  ////lllliiiibbbb////lllliiiibbbbqqqq....aaaa  oder  ////uuuussssrrrr////lllliiiibbbb////lllliiiibbbbqqqq....aaaa
+             stehen,   d.h.   sie  muss  bei  der  Installation  von
+             /.../ing_db/lib/libq.a dorthin kopiert werden.
+
+             Alle EQUEL-Routinen und globalen Variablen beginnen mit
+             den  Zeichen "II", somit sind alle Namen von Prozeduren
+             und Variablen der Form IIxxxxxxxxxxxx reserviert fu"r die Nutzung
+             durch  EQUEL  und  sollten  von EQUEL-Nutzern vermieden
+             werden.
+
+             SSSSyyyynnnnttttaaaaxxxx
+
+             EQUEL Kommandos sind solche Zeilen, die mit  zwei  Num-
+             mernzeichen  (``##'')  eingeleitet  sind.  Alle anderen
+             Zeilen werden einfach von der Ein- zur Ausgabe kopiert.
+             Alle  normalen ING_DB  6.3/3 -Kommandos ko"nnen in EQUEL
+             benutzt werden und haben  die  gleiche  Bedeutung,  wie
+             unter   dem  interaktiven  Terminal-Monitor.   Nur  das
+             retrieve-Kommando ohne Ergebnisrelation hat eine andere
+             Syntax und Bedeutung.
+
+             Das  Format  des  retrieve  ohne  Ergebnisrelation  ist
+             jetzt:
+
+                  ## retrieve (C-var = a_fcn { , C-var = a_fcn } )
+
+             wahlweise (sofort) gefolgt durch:
+
+                  ##   [ wwwwhhhheeeerrrreeee "<qual>" ]
+                  ## {
+                          /* C-Code */
+                  ## }
+
+             Dieses Statement bewirkt, dass der ``C-code'' fu"r jedes
+             gefundene  Tupel  mit  den  aktuellen  Werten  der ``C-
+             Variablen''  einmal  abgearbeitet  wird.   Die   Angabe
+             ``##{'' bzw. ``##}'' ist auch dann notwendig, wenn nach
+             dem Tupel-Retrieve nur ein einziges C-Statement abgear-
+             beitet werden soll.  Numerische Werte numerischer Typen
+             werden, wenn no"tig, konvertiert.  Zwischen  numerischen
+             und  Zeichenkettenwerten  werden  keine Konvertierungen
+             ausgefu"hrt.  (Die normale QUEL-aaaasssscccciiiiiiii -Funktion kann fu"r
+             solche   Zwecke   verwendet  werden.)  Das  C-Statement
+             ``break'' ist die einzige  Mo"glichkeit,  ein  laufendes
+             Tupel-Retrieve vorzeitig zu beenden.  Die Qualifikation
+             <qual> der where-Phrase kann in  allen  QUEL-Statements
+             durch  eine  C-String-Variable  (char qual[n] bzw. char
+             *qual) ersetzt werden.  Der String entha"lt den Text der
+             Qualifikation,  d.h.  es  ist  eine variable Angabe der
+             Qualifikation in einem EQUEL-Statement zula"ssig.
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual            - 94 -                        EEEEQQQQCCCC
+
+
+             Beim copy-Statement kann die Angabe der direction (INTO
+             bzw.  FROM)  u"ber eine C-String-Variable erfolgen.  Die
+             C-Variable muss zur Zeit  der  Abarbeitung  des  EQUEL-
+             Statements  "from"  bzw.  "into" enthalten.  Zusa"tzlich
+             sind folgende EQUEL-Kommandos verfu"gbar.
+
+
+             """"######## iiiinnnngggg____ddddbbbb"""" [ing_db flags] <data_base_name>
+
+                  Dieses Kommando startet ING_DB   6.3/3  und  diri-
+                  giert  alle  folgenden  Queries  an  die Datenbank
+                  <<<<ddddaaaattttaaaa____bbbbaaaasssseeee____nnnnaaaammmmeeee>>>>....  Die zweimalige  Ausfu"hrung  des
+                  Kommandos ohne ein dazwischenliegendes ``## exit''
+                  erzeugt einen Laufzeitfehler,  ebenso  das  Formu-
+                  lieren  von  Queries,  ohne dass ein ``## ing_db''
+                  Statement wirksam ist.  Jedes Flag sollte gequotet
+                  werden, um den EQUEL  Parser nicht zu verwirren:
+
+                          ## ing_db "-f4f10.2" "-i212" demo
+
+             """"######## eeeexxxxiiiitttt""""
+
+                  Exit beendet ein laufendes ING_DB  6.3/3.  Es  ist
+                  a"quivalent     zu     dem    \\\\qqqq    Kommando    des
+                  Terminal-Monitors.
+
+             Innerhalb von EQUEL-Statements sind C Kommentare
+             ``/* comment */'' zula"ssig.
+
+             """"PPPPaaaarrrraaaammmmeeeettttrrrriiiissssiiiieeeerrrrtttteeee QQQQUUUUEEEELLLL----SSSSttttaaaatttteeeemmmmeeeennnnttttssss""""
+
+             QUEL-Statements mit  Zielliste  (<target_list>)  ko"nnen
+             parametrisiert  sein.  Das  kann durch Voranstellen des
+             Schlu"sselworts ppppaaaarrrraaaammmm angezeigt  werden.  Die  Zielliste
+             eines parametrisierten Statements hat die Form:
+
+                  """"((((ttttllll____vvvvaaaarrrr,,,, aaaarrrrggggvvvv))))""""
+
+             Dabei wird ttttllll____vvvvaaaarrrr als char-Pointer verwendet,  der  zur
+             Ausfu"hrungszeit  (muss char-Konstante sein !) wie folgt
+             interpretiert wird. Fu"r  jedes  parametrisierte  EQUEL-
+             Statement,  ausser dem "retrieve" ohne Ergebnisrelation
+             (d.h. append, copy,  create,  replace,  retrieve  into)
+             wird  die  Zeichenkette  ttttllll____vvvvaaaarrrr  als regula"re Zielliste
+             verwendet, wobei davon ausgegangen wird, dass  dem  "%"
+             ein  gu"ltiger  ING_DB   6.3/3-Typ  (f4,  f8, i2, i4, c)
+             folgt. Jedes "%" wird durch den Wert  des  korrespondi-
+             erenden  Eintrittspunktes  in  aaaarrrrggggvvvv  (beginnend  mit 0)
+             ersetzt, welcher als  Pointer  auf  eine  Variable  des
+             Typs,  der durch die %-Sequenz angezeigt ist, interpre-
+             tiert wird.  Weder aaaarrrrggggvvvv , noch die Variablen,  auf  die
+             gezeigt  wird,  mu"ssen fu"r EQUEL deklariert werden. Zum
+             Beispiel:
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual            - 95 -                        EEEEQQQQCCCC
+
+
+
+
+             double    double_var;
+             int       int_var;
+             char *argv[10];
+                  argv[0] = &double_var;
+                  argv[1] = &int_var;
+             ## param append to rel
+             ##      ("dom1=%f8, dom2=%i2", argv)
+             ## /* Zur Steuerung des "%<ing_db_typ"-Mechanismus */
+             ## /* verwende "%%",                               */
+             ## /* dies plaziert ein einfaches "%" in die       */
+             ## /* Zeichenkette.                                */
+
+
+             Bei einem "retrieve" auf C-Variablen mittels  ttttllll____vvvvaaaarrrr  ,
+             steuern  die selben "%"-Sequenzen die Typ-Kennzeichnung
+             des korrespondierenden "argv"-Punktes der  C-Variablen,
+             in welche der Wert u"bergeben werden soll.
+
+             Die Qualifikation einer Query  kann  durch  eine  char-
+             Variable,  deren  Inhalt zur Laufzeit als Text zur Qua-
+             lifikation interpretiert wird, u"bergeben werden.
+
+             Das ccccooooppppyyyy -Statement kann  auch  parametrisiert  werden.
+             Die  Form  der  Parameter ist analog den anderen State-
+             ments:
+             Die Zielliste kann in der selben  Art  und  Weise,  wie
+             beim   aaaappppppppeeeennnndddd  -Statement  und  daru"berhinaus  fu"r  das
+             "from/into"-Schlu"sselwort   durch   einen   Zeichenket-
+             tenwert, der zur Laufzeit <from> oder <into> beinhalten
+             muss, ersetzt werden.
+
+             DDDDeeeekkkkllllaaaarrrraaaattttiiiioooonnnneeeennnn
+
+             Jede gu"ltige C-Variablendeklaration  einer  Zeile,  die
+             mit  ``########''  beginnt, kann in einem EQUEL Statement als
+             Variable benutzt werden.   Alle  Variablen  mu"ssen  vor
+             ihrer  Verwendung  deklariert werden.  U"berall, wo eine
+             Konstante in einem ING_DB  6.3/3 Kommando stehen  darf,
+             kann eine C-Variable erscheinen.  Zur Laufzeit wird der
+             Wert der Variablen substituiert.
+
+             Es gibt einige Einschra"nkungen fu"r die C-Variablen, die
+             in EQUEL Statements verwendet werden sollen.
+
+             Weder geschachtelte Strukturen noch  Variable  vom  Typ
+             cccchhhhaaaarrrr  (ausgenommen  Pointer  auf char oder char-Felder)
+             sind zugelassen.  Alle von EQUEL erzeugten strings sind
+             damit  auch strings im Sinne von C und z.B. direkt mit-
+             tels ``printf'' druckbar.   In  einem  EQUEL  Statement
+             wird  zur  Laufzeit  immer auf den Wert einer Variablen
+             zugriffen.  Zum Beispiel:
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual            - 96 -                        EEEEQQQQCCCC
+
+
+
+             ##      char    *dbname;
+
+                     /* ing_db -d dt */
+                     dbname = "dt";
+             ##      ing_db "-d" dbname
+
+                     /* ing_db -d dbname */
+             ##      ing_db "-d" #dbname
+
+
+             bewirkt  die  Verwendung  der  Datenbank  ``dt''  durch
+             ING_DB   6.3/3.  Weiterhin gibt es zwei Einschra"nkungen
+             zur Referenz von Variablen mit EQUEL-Statements.   Alle
+             verwendeten   Variablen   du"rfen   nicht   auf  weitere
+             verweisen (bei Feldern und Pointern) oder weitere  (bei
+             Struktur-Variablen)   im   Sinne  von  skalaren  Werten
+             auswa"hlen.  cccchhhhaaaarrrr -Variablen werden immer im  Sinne  von
+             Zeichenketten  ((((ssssttttrrrriiiinnnnggggssss))))  durch EQUEL verwendet.  Dabei
+             muss beachtet werden, dass bei char-Feldern oder -Poin-
+             tern  der  Verweis  nur  durch  ein ``char *'' erfolgen
+             darf.  Genauso du"rfen Variable keine (runden)  Klammern
+             in der Referenz haben. Zum Beispiel:
+
+
+             ## struct xxx
+             ## {
+                     int     i;
+             ##      int     *ip;
+             ## }    **struct_var;
+
+             /* nicht erlaubt */
+             ##      delete p where p.ifield = *(*struct_var)->ip
+
+             /* erlaubt */
+             ##      delete p where p.ifield = *struct_var[0]->ip
+
+
+             C-Variablen, die fu"r  EQUEL  deklariert  wurden,  haben
+             entweder   globale   oder   lokale   Gu"ltigkeit.   Ihre
+             Gu"ltigkeit ist lokal, wenn  sie  in  einem  (nicht  fu"r
+             retrieve eingebunden) freien Block fu"r EQUEL deklariert
+             sind.  Zum Beispiel:
+
+             /* globale Variable */
+             ## int  Gint;
+
+             func(i)
+             int     i;
+             ## {
+                     /* lokale Variable */
+             ##      int     *gintp;
+                     ...
+             ## }
+
+
+             Wenn eine Variable vom char-Typ ist,  wird  der  Inhalt
+             der Variablen vom EQUEL-Statement zur Laufzeit genutzt.
+             Zum Beispiel:
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual            - 97 -                        EEEEQQQQCCCC
+
+
+
+             ##      char    *dbname[MAXDATABASES + 1];
+                     int     current_db;
+
+                     dbname[current_db] = "dt";
+             ##      ing_db dbname[current_db]
+
+             Damit wird versucht, die  Datenbank  "dt"  zu  starten.
+             Jedoch  sollte,  wenn der Variablen-Name eine Konstante
+             ist, der Nicht-Referenz-Operator `#'  verwendet  werden
+             (s.o.).
+
+             Fu"r die Verwendung der  C-Preprozessor  `#  include  '-
+             Einbindung fu"r Files, die EQUEL-Statements und Deklara-
+             tionen enthalten,  soll  die  Bezeichnung  aaaannnnyyyytttthhhhiiiinnnngggg....qqqq....hhhh
+             verwendet    werden.     Eine    entsprechende   EQUEL-
+             Beearbeitung erzeugt dann das File, das  durch  den  C-
+             Preprozessor   #   include'ed   wird,   in   Form   von
+             aaaannnnyyyytttthhhhiiiinnnngggg....cccc....hhhh .
+
+
+
+             FFFFeeeehhhhlllleeeerrrr uuuunnnndddd UUUUnnnntttteeeerrrrbbbbrrrreeeecccchhhhuuuunnnnggggeeeennnn
+
+             ING_DB  6.3/3 und EQUEL Laufzeitfehler rufen  die  Rou-
+             tine  IIIIIIIIeeeerrrrrrrroooorrrr  mit  der Fehlernummer und den Parametern
+             des Fehlers, als Feld von Stringpointern (analog zu der
+             C-main-Routine).   Die Fehlernummer wird analysiert und
+             anschliessend der dazugeho"rige Text gedruckt.
+
+             Unterbrechungen  ((((iiiinnnntttteeeerrrrrrrruuuupppptttt  oder  qqqquuuuiiiitttt----ssssiiiiggggnnnnaaaallll))))  werden
+             behandelt   ((((ccccaaaauuuugggghhhhtttt)))),,,,   sofern   sie  nicht  schon  zur
+             Startzeit von ING_DB  6.3/3 ignoriert sind.  Damit  ist
+             gesichert,  dass ING_DB  6.3/3 und EQUEL jederzeit syn-
+             chron zueinander sind.  Es gibt einen Pointer auf  eine
+             Funktion  """"IIIIIIIIiiiinnnntttteeeerrrrrrrruuuupppptttt,,,,""""  die  nach  der Behandlung der
+             Unterbrechung aufgerufen wird.   Der  Nutzer  kann  mit
+             dieser Funktion noch zusa"tzliche Dienste fu"r die Unter-
+             brechungsbehandlung  einbinden.   IIIIIIIIiiiinnnntttteeeerrrrrrrruuuupppptttt  ist  mit
+             """"eeeexxxxiiiitttt(((())))""""  initialisiert  und  wird  mit -1 als Argument
+             gerufen.  Zum Beispiel:
+
+                     extern int (*IIinterrupt)();
+                     extern IIreset();
+
+                     IIsetexit();
+                     IIinterrupt = IIreset;
+                     mainloop();
+
+
+             IIsetexit und IIreset entsprechen  setjmp  und  longjmp
+             (UNIX  Manuals III).  Um Unterbrechungen zu ignorieren,
+             sollte """"ssssiiiiggggnnnnaaaallll(((())))"""" gerufen werden, bevor das  ##  ing_db
+             Statement ausgefu"hrt wird.
+
+        FFFFIIIILLLLEEEESSSS
+
+              ...sys/etc/error6.3_*
+             Kann zur Erkla"rung der ING_DB  6.3/3  Errorcodes  durch
+             den Nutzer herangezogen werden.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual            - 98 -                        EEEEQQQQCCCC
+
+
+              .../lib/libq.a
+             Laufzeitbibliothek (run time library).
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             EQUEL-Sprachbeschreibung,
+             C-Sprachbeschreibung,
+             Anwendungsbeispiele zu EQUEL im Teil 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual            - 99 -                      HHHHEEEELLLLPPPPRRRR
+
+
+        NNNNAAAAMMMMEEEE
+
+             helpr - Ausgabe von Informationen  u"ber  Relationen  in
+             Datenbanken
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             hhhheeeellllpppprrrr [[[[ffffllllaaaaggggssss]]]] dbname  [  [integrity|permit|view]  {rel-
+             name} | aaaallllllll ]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             hhhheeeellllpppprrrr informiert u"ber Relationen analog wie  das  QUEL-
+             Statement help (s. help(quel)).  Mit hhhheeeellllpppprrrr ko"nnen keine
+             Abschnitte  des  Referenz-Manual  ausgelistet   werden,
+             dafu"r gibt es die Kommandos mmmmaaaannnnrrrr und rrrreeeeffffrrrr....
+
+             Mit den Parametern werden die Relationen bestimmt, u"ber
+             die informiert wird:
+
+                  helpr dbname     alle Relationen der bezeichneten
+                                   Datenbank werden ausgelistet
+                  helpr dbname { relname }
+                                   Beschreibung der bezeichneten
+                                   Relationen
+                  helpr dbname view relname {, relname }
+                                   druckt die view-Definitionen der
+                                   spezifizierten view
+                  helpr dbname permit relname {, relname}
+                                   druckt die Berechtigungen der
+                                   spezifizierten Relationen
+                  helpr dbname integrity relname {, relname}
+                                   druckt die Integrita"ts-
+                                   bedingungen fu"r die
+                                   spezifizierten Relationen.
+
+
+             Diese Mengen von  Relationen  werden  eingeschra"nkt  in
+             Abha"ngigkeit vom Status des Nutzers:
+
+             DBA=>alle Relationen
+
+             sonstige=>Relationen, fu"r die spezielle  Zugriffsrechte
+                  rrrreeeettttrrrriiiieeeevvvveeee oder aaaallllllll ttttoooo aaaallllllll gesetzt sind
+
+             Das Kommando hhhheeeellllpppprrrr ddddbbbbnnnnaaaammmmeeee aaaallllllll listet alle eigenen Rela-
+             tionen auf.
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             quel(unix), help(quel), manr(unix), refr(unix)
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 100 -                     IIIINNNNDDDDEEEEXXXXRRRR
+
+
+        NNNNAAAAMMMMEEEE
+
+             indexr - Erzeugen einer Sekunda"rindex auf
+                      eine existierende Relation
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             iiiinnnnddddeeeexxxxrrrr [ ffffllllaaaaggggssss ] dbname prim_rel index_rel {domname}
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             iiiinnnnddddeeeexxxxrrrr wird benutzt, um Sekunda"rindizes auf existieren-
+             den  Relationen zu definieren und zu erzeugen und damit
+             die Effizienz von rrrreeeettttrrrriiiieeeevvvveeee - und uuuuppppddddaaaatttteeee -Statements  zu
+             erho"hen.    Ein  Sekunda"rindex  vermittelt  mit  seinem
+             Schlu"ssel   einen   weiteren   Zugriffspfad   auf   der
+             Prima"r-Relation, so als ha"tte die Prima"r-Relation einen
+             weiteren Schlu"ssel, auf den direkt  zugegriffen  werden
+             kann.   Der  Sekunda"rindex  wird  aus  den  Doma"nen der
+             Prima"r-Relation erzeugt, die in  der  Reihenfolge,  wie
+             sie  im  Statement  als {{{{<<<<ddddoooommmmnnnnaaaammmmeeee>>>>}}}} angegeben sind, als
+             Schlu"ssel des Index verwendet  werden.   Das  Statement
+             wird nur vom Eigentu"mer der Relation angenommen.
+
+             Um die Integrita"t  des  Index  zu  erhalten,  kann  ein
+             Nutzer  Indizes  nicht  direkt  vera"ndern.   Sobald die
+             Prima"r-Relation gea"ndert wird, werden auch alle auf ihr
+             definierten Sekunda"rindizes automatisch vera"ndert.
+
+             Ein Sekunda"rindex wird bei seiner Erzeugung automatisch
+             in  der  Speicherstruktur  isam  u"ber  seinem Schlu"ssel
+             angelegt.   Diese  Initialstruktur   kann   durch   die
+             QUEL-Option  ----nnnn  auf  eine andere festgelegt werden (s.
+             qqqquuuueeeellll  (unix)).   Ausserdem  kann  jeder   Sekunda"rindex
+             einzeln  durch  Anwendung  eines mmmmooooddddiiiiffffyyyyrrrr-Statements auf
+             eine  Speicherstruktur  gebracht  werden,  die   anwen-
+             dungsspezifisch die beste ist.  In diesem Falle verwen-
+             det man <<<<iiiinnnnddddeeeexxxxnnnnaaaammmmeeee>>>> wie einen normalen <relname>.
+
+             Nach einem mmmmooooddddiiiiffffyyyyrrrr - oder ddddeeeessssttttrrrrooooyyyyrrrr -Kommando auf  einer
+             Prima"r-Relation   sind   alle   auf   ihr   definierten
+             Sekunda"rindizes gestrichen.
+
+             Sekunda"rindizes  ko"nnen   nicht   auf   Systemkataloge,
+             Sichten und Sekunda"rindizes definiert werden.
+
+             Die  Anzahl  der   Doma"nen  fu"r  einen  Index  ist  auf
+             6 beschra"nkt.
+             Indizes  ko"nnen nicht  direkt   gea"ndert  werden,   sie
+             werden vom System automatisch gepflegt.
+             Die    Speicherstruktur    der     Indexrelation    ist
+             standardma"ssig  iiiissssaaaammmm  in  der  Reihenfolge der  angege-
+             benen  Doma"nen.
+             Ein  mmmmooooddddiiiiffffyyyyrrrr  -   bzw.   ddddeeeessssttttrrrrooooyyyyrrrr  -Kommando   auf  die
+             Basisrelation `prim_rel' zersto"rt automatisch den Index
+             `index_rel'.
+             Ein ccccooooppppyyyy iiiinnnnttttoooo -Kommando wird auf Relationen mit Indizes
+             nicht unterstu"tzt.
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 101 -                     IIIINNNNDDDDEEEEXXXXRRRR
+
+
+             FFFFllllaaaaggggssss
+
+                -uxx         alter-ego-Flag fu"r
+                             den UNIX-login-Name `xx'
+                +-w          wait-Flag
+                -fillfactor: zahl
+                -minpages:   zahl
+                -maxpages:   zahl
+                -nspeicher_struktur
+                -tidp
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             destroyr(unix),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 102 -                       MMMMAAAANNNNRRRR
+
+
+        NNNNAAAAMMMMEEEE
+
+             manr - Anzeige einer la"ngeren Dokumentation zu ING_DB
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             mmmmaaaannnnrrrr {sections}
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             mmmmaaaannnnrrrr  zeigt  ohne  die  Angabe  von   Parametern   eine
+             U"bersicht u"ber die zur Verfu"gung stehenden Sektionen.
+
+             Es werden die Kommandos der Teile  UUUUNNNNIIIIXXXX  und  QQQQUUUUEEEELLLL  und
+             Beschreibungen  zu  ausgewa"hlten  Files  in .../sys/etc
+             angezeigt.
+
+             Bei der Angabe von Sektionen wird eine la"ngere Dokumen-
+             tation  des  entsprechenden  Kommandos  bzw.  der Files
+             angezeigt.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+             manr printr
+
+             (zeigt die Dokumentation des Kommandos "printr(unix)".
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             man(quel), ref(quel, refr(unix)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 103 -                    MMMMOOOODDDDIIIIFFFFYYYYRRRR
+
+
+        NNNNAAAAMMMMEEEE
+
+             modifyr - A"nderung der Speicherstruktur einer Relation
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             mmmmooooddddiiiiffffyyyyrrrr [  ffffllllaaaaggggssss  ]  dbname  relname  storage_structure
+             {domname[:sortorder]}
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             mmmmooooddddiiiiffffyyyy vera"ndert die Speicherstruktur der  spezifizier-
+             ten  Relation  <<<<rrrreeeellllnnnnaaaammmmeeee>>>>  auf  <<<<ssssttttoooorrrraaaaggggeeee____ssssttttrrrruuuuccccttttuuuurrrr>>>>....  Das
+             Statement wird nur vom Eigentu"mer der Relation angenom-
+             men.   Die  Systemrelationen  und  Sichten  ko"nnen  mit
+             mmmmooooddddiiiiffffyyyy nicht modifiziert werden.   Das  Statement  wird
+             benutzt, um Prima"rschlu"ssel einzufu"hren, zu a"ndern bzw.
+             zu      reorganisieren.       Die      Speicherstruktur
+             <<<<ssssttttoooorrrraaaaggggeeee____ssssttttrrrruuuuccccttttuuuurrrreeee>>>> kann wie folgt bestimmt werden:
+
+
+                  isam       - index sequentielle Struktur
+                  cisam      - komprimierte isam
+                  hash       - hash Struktur
+                  chash      - komprimierte hash
+                  heap       - unstrukturiert und ohne Schlu"ssel
+                  cheap      - komprimierte heap
+                  heapsort   - heap mit sortierten Tupeln
+                               und Ausschluss doppelter
+                  cheapsort  - komprimierte heapsort
+                  truncated  - heap, in dem alle Tupel gestrichen
+                               wurden
+                  same       - Reorganisation
+
+
+             Die  Speicherstrukturen  isam  und   hash   ermo"glichen
+             Schlu"sselzugriffe.  Isam beno"tigt mindestens zwei Plat-
+             tenzugriffe,   unterstu"tzt   aber   auch   sequentielle
+             Zugriffe,  wie  sie  bei  von-bis-Abfragen  no"tig sind.
+             Hash greift direkt zu, ist aber bei sequentieller Suche
+             uneffektiv.  Beide Verfahren ordnen neue Tupel zuna"chst
+             auf einer Prima"rseite ein und legen,  wenn  diese  voll
+             ist,  dahinter  U"berlaufseiten  an.  Bei der Suche nach
+             einem   Tupel   fu"hrt   der   Direktzugriff   auf   die
+             Prima"rseite,   diese   und   alle  an  ihr  "ha"ngenden"
+             U"berlaufseiten mu"ssen nach dem Tupel abgesucht werden.
+
+             Heap ist  ein  vo"llig  ungeordneter  Bestand,  der  nur
+             sequentiell  durchsucht  werden  kann.   Heapsort liegt
+             nach mmmmooooddddiiiiffffyyyy  in  einer  definierten  Sortierfolge  vor.
+             Sowohl  bei  heap,  als  auch  bei heapsort werden neue
+             Tupel unsortiert angefu"gt.
+
+             Bei Anlage einer  heapsort-Struktur  werden  die  Tupel
+             nach  allen  ihren Attributen sortiert.  Dadurch ko"nnen
+             und werden doppelte Tupel ermittelt und ausgeschlossen.
+             Bei den Speicherstrukturen heapsort bzw. cheapsort kann
+             durch die Schlu"sselwo"rter  "ascending"  bzw.  "a"  auf-
+             steigende  und  durch  die Schlu"sselwo"rter "descending"
+             bzw. "d" fallende Sortierung angegeben werden.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 104 -                    MMMMOOOODDDDIIIIFFFFYYYYRRRR
+
+
+             "ascending" ist Standard und kann demzufolge entfallen.
+
+             Bei  den  komprimierten  Speicherstrukturen  wird  eine
+             gu"nstigere  Ablage der Daten auf dem externen Speicher-
+             medium erreicht, mit der Einschra"nkung, dass A"nderungen
+             zeitaufwendiger sind.
+
+             Wenn im Statement die oooonnnn -Phrase fehlt,  wird  bei  der
+             Modifizierung  auf  isam,  cisam,  hash  oder chash als
+             Schlu"ssel fu"r die Relation automatisch die erste Doma"ne
+             verwendet.  Bei Modifizierung auf heap, cheap oder same
+             darf die oooonnnn -Phrase nicht angegeben werden.  Bei  Modi-
+             fizierung  auf  heapsort  oder cheapsort ist die Angabe
+             der oooonnnn -Phrase notwendig.
+
+             Wenn eine Relation sortiert werden soll  (isam,  cisam,
+             hash,   chash,   heapsort   und  cheapsort),  sind  die
+             Prima"rschlu"ssel der Relation in der oooonnnn -Phrase  in  der
+             Reihenfolge  der  gewu"nschten Sortierung anzugeben, der
+             erstangegebene bildet  den  dominanten  Sortierbegriff.
+             Die  in der oooonnnn -Phrase nicht angegebenen Doma"nen werden
+             danach in  der  erzeugten  Reihenfolge  zur  Sortierung
+             herangezogen.
+
+             Bei einer Modifikation zur Speicherstruktur "same" wird
+             die Relation reorganisiert, d.h., die Speicherstruktur,
+             der  Sortierschlu"ssel  und  deren  Reihenfolge  bleiben
+             erhalten.    Nach  umfangreichen  A"nderungen  kann  die
+             externe Anordnung der Daten uneffektiv werden, so  dass
+             eine    Neueinrichtung    bzw.    Reorganisation    der
+             Schlu"sselstruktur sinnvoll ist.
+             (Schlu"sselbaumstruktur !)
+
+             Ein Fu"llfaktor <<<<ffffiiiillllllllffffaaaaccccttttoooorrrr>>>> spezifiziert die  prozentu-
+             ale Fu"llung (1 ... 100) der Prima"rseiten (unter idealen
+             Bedingungen) bei Anlage der Relation durch  das  mmmmooooddddiiiiffffyyyy
+             -Statement.   Dieser  Fu"llfaktor kann bei Modifizierung
+             auf isam, cisam, hash und chash angegeben werden.   Man
+             vermeide  die  Angabe  eines zu grossen Fu"llfaktors bei
+             noch unfertigen Relationen.  Eine ungleichma"ssige  Ver-
+             teilung des Schlu"ssels kann bei folgenden Erweiterungen
+             der  Relation  zur  Anlage  von  vielen  U"berlaufseiten
+             fu"hren, wodurch sich das Zugriffsverhalten der Relation
+             sehr verschlechtert.
+
+             Bei Modifizierung auf  hash  oder  chash  spezifizieren
+             mmmmiiiinnnnppppaaaaggggeeee  und  mmmmaaaaxxxxppppaaaaggggeeee  die minimale und maximale Anzahl
+             von Prima"rseiten, die die Relation haben  soll.   Falls
+             angegeben, mu"ssen beide mindestens 1 sein; mmmmaaaaxxxxppppaaaaggggeeee darf
+             nicht kleiner als mmmmiiiinnnnppppaaaaggggeeee sein.
+
+             Wenn nicht  angegeben,  werden  folgende  Standardwerte
+             eingesetzt:
+
+                     FILLFACTOR      MINPAGES        MAXPAGES
+                     ----------      --------        --------
+             hash    50              10              nach Bedarf
+             chash   75              1               nach Bedarf
+             isam    80              --              --
+             cisam   100             --              --
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 105 -                    MMMMOOOODDDDIIIIFFFFYYYYRRRR
+
+
+             Fehlt  die  Schlu"sselangabe,  wird  die  erste   Doma"ne
+             der Relation der Schlu"ssel.
+             Die Sortierung der Tupel erfolgt in der Reihenfolge der
+             angegebenen Doma"nen `dom'.
+
+             ssssoooorrrrttttoooorrrrddddeeeerrrr (Sortierungsart, nur fu"r [c]heapsort):
+                  a
+                  ascending  - aufsteigend (Standard)
+                  d
+                  descending - absteigend
+
+             FFFFllllaaaaggggssss
+
+                -uxx       - alter-ego-Flag fu"r
+                             den UNIX-login-Name `xx'
+                +-w        - wait-Flag
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 106 -                     PPPPRRRRIIIINNNNTTTTRRRR
+
+
+        NNNNAAAAMMMMEEEE
+
+             printr - Drucken von Relation(en)
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             pppprrrriiiinnnnttttrrrr [ ffffllllaaaaggggssss ] dbname { relname }
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             pppprrrriiiinnnnttttrrrr druckt die angegebene(n) Relation(en) der Daten-
+             bank,  genauso  wie das pppprrrriiiinnnntttt((((qqqquuuueeeellll))))----SSSSttttaaaatttteeeemmmmeeeennnntttt....  Fu"r die
+             Ausfu"hrung  des   Kommandos   muss   lesender   Zugriff
+             (retrieve permission) fu"r den Nutzer gegeben sein.
+
+             Die wahlweisen Flags  haben  folgende  Bedeutung:  (ein
+             ``+-'' bedeutet, dass mit ````````++++xxxx'''''''' das Flag xxxx gesetzt und
+             mit ````````++++xxxx'''''''' das Flag xxxx gelo"scht werden soll.  Ein  ``-''
+             gibt  an,  dass mit ````````----xxxx'''''''' die Funktion xxxx eingeschaltet
+             werden soll):
+
+
+             -ex   setzen des Zeilenseparierungszeichens auf x.  Die
+                  Standardannahme ist das Zeichen ``-''.
+
+             -h[N] setze pro Seite eine U"berschrift  (header).   Mit
+                  der Angabe von NNNN kann die Anzahl der zu druckenden
+                  Zeilen pro Seite vera"ndert werden.  Die Anzahl der
+                  Zeilen   pro  Seite  wird  standardma"ssig  auf  66
+                  gesetzt.
+
+             -s   unterdru"ckt die Kopf- und Fusszeilen.
+
+             -cN  setzt    die    minimale     Spaltenbreite     fu"r
+                  Zeichenketten-  (character)  domains  auf  NNNN....  Die
+                  Standardannahme ist 6.
+
+             -ilN setzt die Ausgabebreite fu"r  Integers  auf  NNNN....   llll
+                  kann 1, 2, oder 4 fu"r , 2, oder 4 fu"r Die Standar-
+                  dannahme fu"r i1 und i2 ist 6, die fu"r i4 13.
+
+             -flxM.N setzt die  Ausgabebreite  fu"r  Gleitkommazahlen
+                  auf MMMM Ziffern mit NNNN Kommastellen.  llll kann 4 oder 8
+                  fu"r f4 oder f8 sein.  xxxx ist eine Formatangabe  und
+                  kann  die Werte eeee,,,, EEEE,,,, ffff,,,, FFFF,,,, gggg,,,, GGGG,,,, nnnn,,,, oder NNNN anneh-
+                  men.  EEEE steht fu"r die exponentielle und FFFF fu"r  die
+                  Gleitkommadarstellung.   GGGG und NNNN sind analog zu FFFF,
+                  passt die konvertierte Zahl aber nicht in die Aus-
+                  gabebreite   wird   auf   die  exponentielle  Form
+                  umgeschaltet.  GGGG garantiert  die  Ausrichtung  des
+                  Dezimalpunktes,  NNNN  nicht.  Das Standardformat ist
+                  nnnn11110000....3333....
+
+             -vX  setzt das Spaltenseparierungszeichen auf  XXXX....   Die
+                  Standardannahme ist der senkrechte Strich ``|''.
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 107 -                     PPPPRRRRIIIINNNNTTTTRRRR
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             quel(unix), print(quel)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 108 -                      PPPPUUUURRRRGGGGEEEE
+
+
+        NNNNAAAAMMMMEEEE
+
+             purge - Lo"schen aller verfallenen und tempora"ren  Rela-
+             tionen
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ppppuuuurrrrggggeeee [ ffffllllaaaaggggssss ] [ ----ffff ] [ ----pppp ] [ ----aaaa ] { dbname }
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             ppppuuuurrrrggggeeee durchsucht  die  angegebenen  Datenbanken  ddddbbbbnnnnaaaammmmeeee
+             nach  zu  lo"schenden  tempora"ren  Relationen,  die  zur
+             Laufzeit von ING_DB  angelegt werden.  Wenn das ----pppp Flag
+             verwendet  wird,  werden  zusa"tzlich  alle  verfallenen
+             Nutzerrelationen gelo"scht.   Die  nicht  zur  Datenbank
+             geho"rigen Files werden protokolliert und bei der Angabe
+             des ----ffff Flags gleichzeitig gelo"scht.
+
+             Nur der Datenbankadministrator (DBA) der Datenbank bzw.
+             der das alter-ego ----ssss Flag verwendende Systemadministra-
+             tor kann ppppuuuurrrrggggeeee abarbeiten.
+
+             Sollen alle Datenbanken bereinigt werden, fu"r  die  der
+             Nutzer  der  DBA  ist,  darf  kein Datenbankname spezi-
+             fiziert werden.  La"sst  der  Systemadministrator  unter
+             Verwendung  des  alter-ego  ----ssss  Flags den Datenbankname
+             weg, werden alle Datenbanken im System bereinigt.   Das
+             ----aaaa  (ask)  Flag fordert ppppuuuurrrrggggeeee vor jeder Aktion auf, dem
+             Nutzer eine  Meldung  auszugeben  und  die  Aktion  nur
+             auszufu"hren,  wenn ein 'y' (yes) eingegeben wird.  Alle
+             anderen Eingaben werden als 'n' (no) interpretiert.
+
+             ppppuuuurrrrggggeeee  sperrt  die  Datenbank  wa"hrend  seiner   Arbeit
+             exklusiv.   Wenn  die  Datenbank schon bearbeitet wird,
+             meldet ppppuuuurrrrggggeeee dies und geht zur na"chsten Datenbank u"ber.
+             Ist  das  ++++wwww  Flag  gesetzt, wird in jedem Fall auf die
+             Freigabe der Datenbank gewartet.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLLEEEE
+
+             purge -p +w tempdata
+             purge -a -f
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             saver(unix), save(quel), restore(unix)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 109 -                       QQQQUUUUEEEELLLL
+
+
+        NNNNAAAAMMMMEEEE
+
+             quel - Starten des relationalen Datenbanksystems ING_DB
+              6.3/3
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             qqqquuuueeeellll [ ffffllllaaaaggggssss ] dbname [ process_table ]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Das ist das  UNIX   Kommando  zum  Starten  von  ING_DB
+              6.3/3.  ddddbbbbnnnnaaaammmmeeee ist der Name einer existierenden Daten-
+             bank.
+
+             Die wahlweisen Flags  haben  folgende  Bedeutung:  (ein
+             ``+-'' bedeutet, dass mit ````````++++xxxx'''''''' das Flag xxxx gesetzt und
+             mit ````````----xxxx'''''''' das Flag xxxx gelo"scht werden soll.  Ein  ``-''
+             gibt  an,  dass mit ````````----xxxx'''''''' die Funktion xxxx eingeschaltet
+             werden soll):
+
+
+             -cN  setzt    die    minimale     Spaltenbreite     fu"r
+                  Zeichenketten-  (character)  domains  auf  NNNN....  Die
+                  Standardannahme ist 6.
+
+             -ilN setzt die Ausgabebreite fu"r  Integers  auf  NNNN....   llll
+                  kann  1,  2, oder 4 fu"r i1, i2, oder i4 sein.  Die
+                  Standardannahme fu"r i1 und i2 ist 6,  die  fu"r  i4
+                  13.
+
+             -flxM.N setzt die  Ausgabebreite  fu"r  Gleitkommazahlen
+                  auf MMMM Ziffern mit NNNN Kommastellen.  llll kann 4 oder 8
+                  fu"r f4 oder f8 sein.  xxxx ist eine Formatangabe  und
+                  kann  die Werte eeee,,,, EEEE,,,, ffff,,,, FFFF,,,, gggg,,,, GGGG,,,, nnnn,,,, oder NNNN anneh-
+                  men.  EEEE steht fu"r die exponentielle und FFFF fu"r  die
+                  Gleitkommadarstellung.  GGGG und NNNN sind analog zu FFFF ,
+                  passt die konvertierte Zahl aber nicht in die Aus-
+                  gabebreite   wird   auf   die  exponentielle  Form
+                  umgeschaltet.  GGGG garantiert  die  Ausrichtung  des
+                  Dezimalpunktes,  NNNN  nicht.  Das Standardformat ist
+                  nnnn11110000....3333....
+
+             -vX  setzt das Spaltenseparierungszeichen auf  XXXX....   Die
+                  Standardannahme ist der senkrechte Strich ``|''.
+
+             -ex  setzt das Zeilenseparierungszeichen  auf  x.   Die
+                  Standartannahme ist das Minuszeichen ``-''.
+
+
+             +-U  Erlaubt / erlaubt nicht
+                  das direkte  Vera"ndern  von  Systemkatalogen  oder
+                  Sekunda"rindizes.   Sie  mu"ssen  das  000004 bit im
+                  Statusfeld des users-File gesetzt haben, um dieses
+                  Flag   benutzen   zu   du"rfen.   Dieses  Flag  ist
+                  ausschliesslich fu"r das Debugging des Systems vor-
+                  gesehen  und  fu"r die normale Nutzung ausdru"cklich
+                  verboten.
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 110 -                       QQQQUUUUEEEELLLL
+
+
+             -rM  Setzt die Speicherstruktur beim rrrreeeettttrrrriiiieeeevvvveeee iiiinnnnttttoooo Kom-
+                  mando  auf MMMM....  MMMM kann die Werte iiiissssaaaammmm,,,, cccciiiissssaaaammmm,,,, hhhhaaaasssshhhh,,,,
+                  cccchhhhaaaasssshhhh,,,, hhhheeeeaaaapppp,,,, cccchhhheeeeaaaapppp,,,, hhhheeeeaaaappppssssoooorrrrtttt,,,, oder cccchhhheeeeaaaappppssssoooorrrrtttt,,,,  fu"r
+                  ISAM, compressed ISAM, HASH table, compressed HASH
+                  table, HEAP, compressed HEAP,  sorted  HEAP,  oder
+                  compressed sorted HEAP annehmen.  Der Standardwert
+                  ist ``cheapsort''.
+
+             -nM  Setzt die Speicherstruktur beim iiiinnnnddddeeeexxxx Kommando auf
+                  MMMM....   MMMM  kann die gleichen Werte wie beim ----rrrr anneh-
+                  men.  Die Standardannahme ist ``isam''.
+
+             +-a  Setze / Lo"sche
+                  die autoclear-Funktion des interaktiven  Terminal-
+                  Monitors.  Sie ist standardma"ssig gesetzt.
+
+             +-b  Setze/Lo"sche batch update.
+                  Der das Flag verwendende Nutzer  muss  das  000002
+                  bit  im  Statusfeld  des  usersFile gesetzt haben.
+                  Normalerweise  ist   ``batch   update''   gesetzt,
+                  Queries   laufen   ohne   ``batch  update''  etwas
+                  schneller, es ist aber kein Recovery nach  crash's
+                  mo"glich.   Queries  setzen  das Flag fu"r die Query
+                  automatisch, wenn sie einen Sekunda"rindex a"ndern.
+
+             +-d  Drucke das dayfile bzw. drucke es nicht.  Das Flag
+                  ist normalerweise gesetzt.
+
+             +-s  Drucke bzw. drucke nicht
+                  die  Meldungen  und   Prompts   des   interaktiven
+                  Terminal-Monitors.   Das  Flag  ist  normalerweise
+                  gesetzt.  Wird es gelo"scht, lo"scht es auch das  ----dddd
+                  Flag.
+
+             -IfileAngabe des \include-files fu"r  den  Terminalmoni-
+                  tor.  Es  wird  nur  das  File  abgearbeitet,  die
+                  Eingabe bleibt vom Monitor.
+
+             PPPPrrrroooocccceeeessssssss____ttttaaaabbbblllleeee ist der Pfadname eines  UNIX   File,  das
+             eine  spezielle  ING_DB  Laufzeitkonfiguration entha"lt.
+             Diese Mo"glichkeit ist nur  fu"r  Systemanwendungen  vor-
+             gesehen,  fu"r  normale  Nutzer  ist  die  Angabe  einer
+             Prozesstabelle streng verboten.   Der  eine  Prozessta-
+             belle verwendende Nutzer muss das 000100 bit im Status-
+             feld des users-File gesetzt haben.  Der die  ``=''-Form
+             verwendende  Nutzer  muss das 000200 bit gesetzt haben.
+             Die ``=''-Form bedeutet, dass  dem  File  pppprrrroooocccceeeessssssss____ttttaaaabbbblllleeee
+             der Pfadname .../sys/etc/ vorangestellt wird.
+
+             BBBBeeeeaaaacccchhhhtttteeee:::: Es ist mo"glich,  QUEL  bzw.  den  interaktiven
+             Terminal-Monitor  als batch-Prozessor laufen zu lassen,
+             indem die `<', `>' und `|' Operatoren der  UNIX   shell
+             verwendet werden.
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 111 -                       QQQQUUUUEEEELLLL
+
+
+        FFFFIIIILLLLEEEESSSS
+
+              ...sys/etc/users
+              ...sys/etc/proctab1.2
+              ...sys/etc/dayfile1.2
+              ...sys/etc/startup
+              .../data/base
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 112 -                    QQQQUUUUEEEELLLL____DDDDTTTT
+
+
+        NNNNAAAAMMMMEEEE
+
+             quel_dt - Erstellen einer Demonstrationsdatenbank
+             quel_eng                      -"-
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             qqqquuuueeeellll____ddddtttt dbname [ ffffllllaaaagggg ]
+             qqqquuuueeeellll____iiiinnnngggg dbname [ ffffllllaaaagggg ]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Mit den Kommandos qqqquuuueeeellll____ddddtttt und qqqquuuueeeellll____eeeennnngggg kann  eine  vor-
+             gefertigte      deutsch-     oder     englischsprachige
+             Demonstrations-Datenbank angelegt werden.
+
+             Der das Kommando verwendende  Nutzer  muss  vom  ING_DB
+             -Systemadministrator  die Berechtigung zum Erzeugen von
+             Datenbanken erhalten haben.  (Verzeichnet im  ING_DB  -
+             Nutzerverzeichnis)
+
+             Er wird der Datenbankadministrator (DBA) der Demonstra-
+             tionsdatenbank "dbname".
+
+             ddddbbbbnnnnaaaammmmeeee muss einmalig  innerhalb  des  gesamten  Systems
+             sein  (nur  fu"r  Kleinbuchstaben [max. 12 Zeichen] bzw.
+             Unterstreichungen)
+
+             ffffllllaaaagggg ist ein Flag, das an creatdb (unix) weitergereicht
+             wird.  Ein sinnvoller Wert fu"r ffffllllaaaagggg ist ----cccc....
+             Die Kommandos sind SHELL- Skripte
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+             quel_eng demo -c
+             quel_dt erichs_db
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 113 -                       RRRREEEEFFFFRRRR
+
+
+        NNNNAAAAMMMMEEEE
+
+             refr - Anzeige von Informationen zu ING_DB -Kommandos
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             rrrreeeeffffrrrr {sections}
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             rrrreeeeffffrrrr  zeigt  ohne  die  Angabe  von   Parametern   eine
+             U"bersicht u"ber die zur Verfu"gung stehenden Sektionen.
+
+             Es werden die Kommandos der Teile  UUUUNNNNIIIIXXXX  und  QQQQUUUUEEEELLLL  und
+             Beschreibungen  zu  ausgewa"hlten  Files  in .../sys/etc
+             angezeigt.
+
+             Bei der Angabe von Sektionen wird eine  Kurzinformation
+             zur  Syntax und zu den Flags der entsprechenden Komman-
+             dos bzw.  eine kurze Beschreibung der Files angezeigt.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+             refr printr
+
+             (zeigt die Dokumentation des Kommandos "printr(unix)".
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             man(quel), ref(quel, manr(unix)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 114 -                    RRRREEEESSSSTTTTOOOORRRREEEE
+
+
+        NNNNAAAAMMMMEEEE
+
+             restore - Recover nach einem ING_DB  oder UNIX -crash
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             rrrreeeessssttttoooorrrreeee [ ffffllllaaaaggggssss ] [ ----aaaa ] [ ----ffff ] [ ++++----pppp ] [ ----SSSS ] [ ----PPPP ]
+                     { dbname }
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             rrrreeeessssttttoooorrrreeee  wird  nach  einem  ING_DB   oder  UNIX    Sys-
+             temabsturz  (syserr  od.  panic ) zur Wiederherstellung
+             der Integrita"t der Daten (recovery) verwendet.  Es muss
+             nach  jeder  unnormalen  Beendigung  der ING_DB  Arbeit
+             abgearbeitet werden.
+             AAAAcccchhhhttttuuuunnnngggg:::: Gehen Sie mit diesem Hinweis nicht  leichtfer-
+             tig  um, wenn mit der Datenbank gearbeitet wird, ko"nnen
+             Inkonsistenzen auftreten, die auch rrrreeeessssttttoooorrrreeee  nicht  mehr
+             auflo"sen kann!
+
+             Sie mu"ssen der  Datenbankadministrator  (DBA)  fu"r  die
+             Datenbank  oder  der  ING_DB  Systemadministrator unter
+             Verwendung des ----ssss  alter-ego  Flags  sein,  um  rrrreeeessssttttoooorrrreeee
+             abarbeiten zu ko"nnen.
+
+             Wenn  keine  Datenbank  angegeben  wurde,  werden  alle
+             Datenbanken  bearbeitet, fu"r die Sie der DBA sind.  Hat
+             der ING_DB  Systemadministrator das ----ssss Flag  und  keine
+             Datenbank spezifiziert, werden alle Datenbanken im Sys-
+             tem bearbeitet.
+
+             Das ----aaaa (ask)-Flag holt fu"r  jede  auszufu"hrende  Aktion
+             die  Erlaubnis  des Nutzers ein.  Die Verwendung des ----aaaa
+             Flags ist ratsam, wenn vermutet wird, dass der  Zustand
+             der  Datenbank  unbestimmt  ist.   Wenn  /dev/null  als
+             Eingabe (standard input) in Verbindung mit dem ----aaaa  Flag
+             benutzt  wird,  erha"lt  man  einen  Report aller Inkon-
+             sistenzen  der  Datenbank.   Wenn  rrrreeeessssttttoooorrrreeee  erfolgreich
+             beendet werden konnte, wird ppppuuuurrrrggggeeee mit den rrrreeeessssttttoooorrrreeee Flags
+             gerufen, um unerwu"nschte Files und tempora"re  Systemre-
+             lationen zu entfernen.  Mit dem Flag ----PPPP wird der Aufruf
+             von purge,unterdru"ckt.  Wenn purge erfolgreich  beendet
+             wurde,  wird ssssyyyyssssmmmmoooodddd gerufen, mit ----SSSS der Aufruf von sys-
+             mod unterdru"ckt.
+
+             rrrreeeessssttttoooorrrreeee kann weiterhin mit den ----ffff und/oder ----pppp Flags fu"r
+             ppppuuuurrrrggggeeee  aufgerufen  werden.  Nicht zuordenbare Files und
+             verfallene   Relationen   werden   nicht    automatisch
+             gelo"scht,  es  mu"ssen  die entsprechenden Flags gesetzt
+             sein.   In  den  Fa"llen  von  unvollendeten   destroy-,
+             create-   oder   index-Kommandos   wird   rrrreeeessssttttoooorrrreeee   die
+             zugeho"rigen Files nicht lo"schen, ppppuuuurrrrggggeeee muss mit dem  ----ffff
+             Flag  gerufen  werden,  um dies zu tun.  rrrreeeessssttttoooorrrreeee sperrt
+             die Datenbank wa"hrend seiner Arbeit.
+
+             rrrreeeessssttttoooorrrreeee kann begonnene A"nderungen an der Datenbank  nur
+             dann   ausfu"hren,   wenn  die  Batch-Files  vollsta"ndig
+             vorhanden sind. Alle nicht nachvollziehbaren A"nderungen
+             mu"ssen  vom  Anwender  wiederholt  werden. Unvollendete
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 115 -                    RRRREEEESSSSTTTTOOOORRRREEEE
+
+
+             modify-Kommandos ko"nnen dann vollendet werden, wenn nur
+             noch   die   neue  Relationenbeschreibung  erzeugt  und
+             eingetragen werden muss.  Ein begonnenes  destroy  wird
+             immer  vollendet,  wa"hrend  ein create immer ausgesetzt
+             wird.
+
+             Wenn  wa"hrend  des   recovery   einer   Datenbank   ein
+             Interrupt-Signal    eintrifft,   wird   die   Datenbank
+             geschlossen und die na"chste (so vorhanden)  bearbeitet.
+             Das Quit-Signal beendet die Arbeit von rrrreeeessssttttoooorrrreeee....
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLLEEEE
+
+             restore -f demo
+             restore -a grants < /dev/null
+
+        FFFFEEEEHHHHLLLLEEEERRRRNNNNAAAACCCCHHHHRRRRIIIICCCCHHHHTTTTEEEENNNN
+
+             Um die Fehlernachrichten zu  verstehen,  muss  man  die
+             Verbindung zwischen den einzelnen Katalogen kennen.
+             Dazu folgende Informationen:
+
+             1.   Eine Relation besteht aus genau einem UNIX  -File,
+                  einem Eintrag im Relationen-Katalog "relation" und
+                  mehreren Eintra"gen im Attribut-Katalog  (fu"r  jede
+                  Doma"ne einen !):
+                  Im  Attribut-Katalog  "attribute"  wird  fu"r  jede
+                  Doma"ne  der Name der Relation und deren Eigentu"mer
+                  mit verwaltet. Die Kataloge sind im  Systemkatalog
+                  wie  normale  Relationen verzeichnet, nur dass sie
+                  im Relationen-Katalog den Status  Katalog-Relation
+                  erhalten.
+
+             2.   Index-Relationen sind
+
+                  a)   wie normale Relationen verzeichnet, nur  dass
+                       sie  im  Relationen-Katalog  den Status INDEX
+                       erhalten.
+
+                  b)   Im Katalog "index" ist der  Name  der  Index-
+                       Relation und der Name der Prima"rrelation ver-
+                       zeichnet.
+
+                  c)   Die  Prima"rrelation  erha"lt  im   Relationen-
+                       Katalog den Status Prima"rrelation.
+
+             3.   Sichten (virtuelle Relationen) sind
+
+                  a)   wie normale Relationen verzeichnet, nur  dass
+                       sie  im  Relationen-Katalog  den Status Sicht
+                       erhalten
+
+                  b)   Der Name und die Definition der Sicht sind im
+                       Katalog "tree" abgelegt.
+
+                  c)   Der Name der Basisrelation der Sicht und  der
+                       Name  der  Sicht wird im Katalog "references"
+                       eingetragen (pro Basisrelation  ein  Eintrag)
+                       und   im   Relationen-Katalog  wird  fu"r  die
+                       Basisrelation ein Verweisza"hler erho"ht.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 116 -                    RRRREEEESSSSTTTTOOOORRRREEEE
+
+
+             4.   Integrita"ten:
+
+                  a)   Die  Relationen,  die   Integrita"ten   haben,
+                       erhalten    im    Katalog    "relation"   den
+                       zusa"tzlichen Status INTEG.
+
+                  b)   Im Katalog "integrities" sind die  Namen  der
+                       Relationen,  die  Namen  der  Relationen, die
+                       Intigrita"ten haben und ein Verweis auf  deren
+                       Definitionen im Katalog "tree" enthalten.
+
+                  c)   Die Namen der  Relationen,  die  Integrita"ten
+                       haben, und die Definition der Integrita"t sind
+                       im Katalog "tree" abgelegt.
+
+             5.   Zugriffsrechte
+
+                  a)   Die Relationen, die Zugriffsrechte  besitzen,
+                       erhalten  im  Katalog  "relation"  den Status
+                       PROTECT.
+
+                  b)   Im Katalog "protect" sind die Namen der Rela-
+                       tionen, die Zugriffsrechte besitzen sowie die
+                       Verweise  auf  deren  Definition  im  Katalog
+                       "tree" enthalten.
+
+                  c)   Die Namen der Relationen, die  Zugriffsrechte
+                       haben und die Definitionen der Zugriffsrechte
+                       sind im Katalog "protect" verzeichnet.
+
+                  d)   Entha"lt  die  Qualifikation   der   Zugriffs-
+                       rechtsdefinitionen eine zusa"tzliche Relation,
+                       werden im Katalog "references" die Namen  der
+                       zusa"tzlichen Relationen und die Relation, fu"r
+                       die   das   Zugriffsrecht   definiert   wird,
+                       eingetragen.  Im  Katalog "relation" wird fu"r
+                       die zusa"tzliche  Relation  ein  Verweisza"hler
+                       erho"ht.
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             purge(unix), sysmod(unix), index(unix), define(quel)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             In einigen Systemen heisst dass Kommando rollback.
+             Bei restore sollten im  Interesse  der  Sicherheit  des
+             Ablaufs  Interrupt-  und Quit-Signale vermieden werden.
+             In ungu"nstigen Fa"llen kann die Datenbank zersto"rt  wer-
+             den.   Es  ist  unmoglich, zu verhindern, dass zwischen
+             restore und purge bzw. purge und  sysmod  kein  anderes
+             Kommando abgearbeitet wird.
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 117 -                      SSSSAAAAVVVVEEEERRRR
+
+
+        NNNNAAAAMMMMEEEE
+
+             saver - Reservierung einer Relation bis zu
+                     einem bestimmten Datum
+
+        SSSSYYYYNNNNPPPPSSSSIIIISSSS
+
+             ssssaaaavvvveeeerrrr [ ffffllllaaaaggggssss ] dbname relname month day year
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             ssssaaaavvvveeeerrrr wird benutzt, um das Verfallsdatum einer Relation
+             zu  vera"ndern,  das  bei ihrer Erzeugung standardma"ssig
+             auf 7 Tage festgelegt wird.
+
+             <<<<mmmmoooonnnntttthhhh>>>> ist der Monat (1,2,..12),  <<<<ddddaaaayyyy>>>>  ist  der  Tag
+             (1,2,..31)  und <<<<yyyyeeeeaaaarrrr>>>> ist das Jahr (1985,1986,...) des
+             neuen Verfallsdatums.  Die Verfallsstunde  wird  auf  0
+             Uhr gesetzt.
+
+             Das Streichen einer Relation,  deren  Reservierungszeit
+             abgelaufen  ist,  erfolgt  mit  dem  Programm ppppuuuurrrrggggeeee (s.
+             ppppuuuurrrrggggeeee (unix)).  Es erfolgt also nicht automatisch, son-
+             dern  nach  entsprechenden  technologischen  Regelungen
+             u"ber die Arbeit mit ppppuuuurrrrggggeeee....
+
+             Ausschliesslich  der  Eigentu"mer  einer  Relation  kann
+             deren Verfallsdatum vera"ndern.
+
+             Die  Systemrelationen  (relation,  attribute,   indexes
+             usw.) haben kein Verfallsdatum.
+
+             (Verfallsmonat):
+
+                 1, `jan'  oder  `january'
+                 2, `feb'  oder  `february'
+                 3, `mar'  oder  `march'
+                 4, `apr'  oder  `april'
+                 5, `may'
+                 6, `jun'  oder  `june'
+                 7, `jul'  oder  `july'
+                 8, `aug'  oder  `august'
+                 9, `sep'  oder  `september'
+                10, `oct'  oder  `october'
+                11, `nov'  oder  `november'
+                12, `dec'  oder  `december'
+
+
+             FFFFllllaaaaggggssss::::
+
+                -uxx    alter-ego-Flag fu"r
+                        den UNIX-login-Name `xx'
+                +-w     wait-Flag
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 118 -                     SSSSYYYYSSSSMMMMOOOODDDD
+
+
+        NNNNAAAAMMMMEEEE
+
+             sysmod - Modifizierung  der  Systemkataloge  zu  vorde-
+             finierten Speicherstrukturen.
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ssssyyyyssssmmmmoooodddd [ ffffllllaaaaggggssss ] dbname { rrrreeeellllnnnnaaaammmmeeee }
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             ssssyyyyssssmmmmoooodddd modifiziert die Systemkataloge rrrreeeellllaaaattttiiiioooonnnn ,,,, aaaattttttttrrrriiii----
+             bbbbuuuutttteeee  ,,,,  iiiinnnntttteeeeggggrrrriiiittttiiiieeeessss  ,,,, pppprrrrooootttteeeecccctttt ,,,, ttttrrrreeeeeeee ,,,, rrrreeeeffffeeeerrrreeeennnncccceeeessss und
+             iiiinnnnddddeeeexxxxeeeessss (wenn nicht einzelne Kataloge spezifiziert wur-
+             den)   zu   Speicherstrukturen,   die   ING_DB    6.3/3
+             schnellsten Zugriff ermo"glichen.   Der  ssssyyyyssssmmmmoooodddd  verwen-
+             dende  Nutzer  muss entweder der Datenbankadministrator
+             (DBA) oder der ING_DB   Systemadministrator  sein,  der
+             das ----ssss Flag gesetzt hat.
+
+             ssssyyyyssssmmmmoooodddd sollte fu"r eine frisch erzeugte Datenbank sofort
+             und  spa"ter  periodisch  abgearbeitet  werden, um einen
+             bestmo"glichen  Zugriff  zu   den   Systemkatalogen   zu
+             erreichen.   Wenn viele Relationen bzw. Sekunda"rindizes
+             erzeugt und/oder gelo"scht wurden, sollte  ssssyyyyssssmmmmoooodddd  o"fter
+             abgearbeitet werden.
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             modify(quel), restore(unix)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 119 -                  UUUUSSSSEEEERRRRSSSSEEEETTTTUUUUPPPP
+
+
+        NNNNAAAAMMMMEEEE
+
+             usersetup - Erstelle Nutzer-File
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             uuuusssseeeerrrrsssseeeettttuuuupppp [ ---- ]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Das ////eeeettttcccc////ppppaaaasssssssswwwwdddd File wird gelesen  und  zur  Erstellung
+             des   ING_DB   -Nutzer-Verzeichnis  verwendet,  das  in
+             ............ssssyyyyssss////eeeettttcccc////uuuusssseeeerrrrssss abgelegt ist.   Wenn  das  Flag  ````````----''''''''
+             gesetzt  wird,  wird  das  Ergebnis nach Standardoutput
+             geschrieben.
+
+             Die Struktur des  ING_DB  -Nutzer-Files  ist  in  users
+             (files) beschrieben.  Der Nutzername, sowie die Nutzer-
+             und  Gruppenidentifikatoren  werden  so  initialisiert,
+             dass sie mit den korrespondierenden Eintrittspunkten im
+             ////eeeettttcccc////ppppaaaasssssssswwwwdddd File identisch sind.  Das Status-Feld  wird
+             auf  000000  initialisiert,  ausgenommen fu"r den Nutzer
+             iiiinnnngggg____ddddbbbb  ,  bei  dem  alle  Bits  gesetzt   sind   (alle
+             Berechtigungen).   Als  Initialisierungs-File  wird das
+             File ....qqqquuuueeeellll im Home-Directory (user's  login  directory)
+             des  Nutzers  eingetragen.   Das Feld fu"r den "ing_db"-
+             Nutzercode wird mit einem aufsteigenden Code, beginnend
+             mit  'aa' gefu"llt.  Alle anderen Felder werden mit Null
+             initialisiert.
+
+             Nach dem  Ablauf  von  uuuusssseeeerrrrsssseeeettttuuuupppp  kann  das  NNNNuuuuttttzzzzeeeerrrrvvvveeeerrrr----
+             zzzzeeeeiiiicccchhhhnnnniiiissss  editiert werden.  Bei Nutzern, die eine spez-
+             ielle Berechtigung erhalten sollen, ist das  Statusfeld
+             zu a"ndern
+
+             Falls  UNIX  -Nutzer  nach   Erstellung   des   ing_db-
+             Nutzerverzeichnisses  im File /etc/passwd zugefu"gt oder
+             gelo"scht  werden,  ist  es  notwendig,  das  Nutzerver-
+             zeichnis zu editieren, um diese A"nderung einzuarbeiten.
+             Das Kommando uuuusssseeeerrrrsssseeeettttuuuupppp kann nur einmal ausgefu"hrt  wer-
+             den, um das NNNNuuuuttttzzzzeeeerrrrvvvveeeerrrrzzzzeeeeiiiicccchhhhnnnniiiissss zu initialisieren.
+
+        FFFFIIIILLLLEEEESSSS
+
+              .../sys/etc/users
+              /etc/passwd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Referenz-Manual           - 120 -                  UUUUSSSSEEEERRRRSSSSEEEETTTTUUUUPPPP
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             quel(unix), passwd(V), users(file)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             usersetup soll sie befa"higen, das uuuusssseeeerrrrssss -File auf einen
+             Ausgangsstand zu bringen.
+             Der Nutzer mit dem UNIX -login-Namen "topnew" kann  zum
+             Beispiel    durch   folgendes   Kommando   im   ing_db-
+             Nutzerverzeichnis aufgenommen werden:
+
+             usersetup -|fgrep topnew >> .../sys/etc/users
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
