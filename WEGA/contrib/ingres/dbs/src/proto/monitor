@@ -1,0 +1,213 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+LIB=	../lib
+SYSBIN=	$(DBS)/sys/bin
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+LD=	$(CC)
+CRT0=
+# ifdef ID_SEPERATE
+LDFLAGS= -i
+# else
+# ifdef TEXT_SEPERATE
+LDFLAGS= -n
+# endif
+# endif
+LIBC=
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+LIBC=	-lm -lc
+# endif
+
+# ifdef ESER_VMX
+# endif
+
+# ifdef HP_UX
+# endif
+
+# ifdef P8000
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef PDP
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lc
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+LD=	ld
+LDFLAGS= -i -Ms -F 2000
+CRT0=	/lib/Sseg.o /lib/Scrt0.o
+LIBC=	/lib/Slibm.a /lib/Slibcfp.a /lib/Slibc.a
+# endif
+
+# ifdef XENIX386
+LD=	ld
+CRT0=	/lib/386/Sseg.o /lib/386/Scrt0.o
+LIBC=	/lib/386/Slibm.a /lib/386/Slibcfp.a /lib/386/Slibc.a
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+AR=	-ar
+# ifdef TEST
+AR_R	=rv
+AR_X	=xv
+# else
+AR_R	=r
+AR_X	=x
+# endif
+LIBMODE=0644
+
+CHMOD=	chmod
+MODE=	6711
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+RM=	-rm -f
+TOUCH=	touch
+
+MONLIB=	$(LIB)/monitor.a
+IUTIL=	$(LIB)/i.a
+$(IUTIL):
+
+GUTIL=	$(LIB)/g.a
+$(GUTIL):
+
+LIBES=	$(MONLIB) $(IUTIL) $(GUTIL)
+LIBS=	$(LIBES) $(LIBC)
+MON=	$(SYSBIN)/monitor
+
+# ifdef MACRO
+OBJS=	main.o		monitor.o	clear.o		edit.o		\
+	go.o		trapquery.o	print.o		quit.o		\
+	shell.o		eval.o		writeout.o	xwait.o		\
+	clrline.o	prompt.o	getch.o		branch.o	\
+	newdirec.o	include.o	getfilename.o	expr.o		\
+	shorthelp.o							\
+	mcall.o		mac.o		buf.o		gen.o
+# else
+OBJS=	main.o		monitor.o	clear.o		edit.o		\
+	go.o		print.o		quit.o		shell.o		\
+	writeout.o	xwait.o		clrline.o	prompt.o	\
+	getch.o		branch.o	newdirec.o	include.o	\
+	getfilename.o	expr.o		shorthelp.o
+# endif
+
+INSTALL:	install
+
+UNLOAD:		unload
+
+# ifdef NO_PIPE
+install:
+
+unload:
+# else
+install:	$(MONLIB) $(MON)
+
+unload:
+	@-$(AR) $(AR_X) $(MONLIB)
+	@$(RM) __.SYMDEF
+	@-$(TOUCH) $(MONLIB)
+# endif
+
+$(MONLIB):	$(OBJS)
+	$(AR) $(AR_R) $@ $?
+	@-$(CHMOD) $(LIBMODE) $@
+	$(MKLIB) $@
+
+$(MON):		$(LIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) $(LIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+ALLCLEAN:	allclean
+
+allclean:	clean
+	$(RM) $(MONLIB) $(MON)
+
+CLEAN:		clean
+
+clean:
+	$(RM) $(OBJS)
+
+branch.o:	../h/trace.h
+
+getch.o:	../h/trace.h
+
+gen.o:		../h/bs.h
+
+getfilename.o:	../h/trace.h
+
+go.o:		../h/trace.h
+
+mac.o:		../h/trace.h
+
+main.o:		../h/trace.h
+
+mcall.o:	../h/trace.h
+
+quit.o:		../h/trace.h
+
+xwait.o:	../h/trace.h
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/monitor
+SRC=	branch.c	buf.c		buf.h		clear.c		\
+	clrline.c	edit.c		eval.c		expr.c		\
+	gen.daba	gen.ing_db	getch.c		getfilename.c	\
+	go.c		include.c	mac.c		main.c		\
+	mcall.c		monitor.c	monitor.h	newdirec.c	\
+	print.c		prompt.c	quit.c		shell.c		\
+	trapquery.c	writeout.c	xwait.c		shorthelp.c	\
+	Makefile
+
+.save:		$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/monitor
+	> $@
+	umount DISK
+
+$(HOME)/.save:	$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save
+# endif

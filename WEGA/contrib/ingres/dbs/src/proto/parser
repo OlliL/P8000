@@ -1,0 +1,236 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+LIB=	../lib
+SYSBIN=	$(DBS)/sys/bin
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+LD=	$(CC)
+CRT0=
+# ifdef ID_SEPERATE
+LDFLAGS= -i
+# else
+# ifdef TEXT_SEPERATE
+LDFLAGS= -n
+# endif
+# endif
+LIBC=	-lm
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+LIBC=	-lm -lc
+# endif
+
+# ifdef ESER_VMX
+# endif
+
+# ifdef HP_UX
+# endif
+
+# ifdef P8000
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef PDP
+LDFLAGS=
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+LD=	ld
+LDFLAGS= -i -Ms -F 2000
+CRT0=	/lib/Sseg.o /lib/Scrt0.o
+LIBC=	/lib/Slibm.a /lib/Slibcfp.a /lib/Slibc.a
+# endif
+
+# ifdef XENIX386
+LD=	ld
+CRT0=	/lib/386/Sseg.o /lib/386/Scrt0.o
+LIBC=	/lib/386/Slibm.a /lib/386/Slibcfp.a /lib/386/Slibc.a
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+AR=	-ar
+# ifdef TEST
+AR_R	=rv
+AR_X	=xv
+# else
+AR_R	=r
+AR_X	=x
+# endif
+LIBMODE=0644
+
+CHMOD=	chmod
+MODE=	6711
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+RM=	-rm -f
+TOUCH=	touch
+
+GREP=	grep
+GFLAGS=	-v
+
+YACC=	../yyyacc/yyyacc
+YFLAGS=	-s
+
+PARLIB=	$(LIB)/parser.a
+ACCESS=	$(LIB)/a.a
+$(ACCESS):
+
+IUTIL=	$(LIB)/i.a
+$(IUTIL):
+
+GUTIL=	$(LIB)/g.a
+$(GUTIL):
+
+LIBES=	$(PARLIB) $(ACCESS) $(IUTIL) $(GUTIL)
+LIBS=	$(LIBES) $(LIBC)
+PARSER=	$(SYSBIN)/parser
+
+OBJS=	main.o		s_parser.o	grammar.o	attfcn.o	\
+	xdot.o		rngfcn.o	tree.o		norml.o		\
+	call_p.o	call_tree.o	control.o	format.o	\
+	p_util.o	getscr.o	s_yylex.o	s_inout.o	\
+	s_name.o	s_number.o	s_operator.o	s_string.o	\
+	s_symtab.o	s_comment.o	s_cmap.o
+
+INSTALL:	install
+
+UNLOAD:		unload
+
+# ifdef NO_PIPE
+install:
+
+unload:
+# else
+install:	$(PARLIB) $(PARSER)
+
+unload:
+	@-$(AR) $(AR_X) $(PARLIB)
+	@$(RM) __.SYMDEF
+	@-$(TOUCH) $(PARLIB)
+# endif
+
+$(PARLIB):	$(OBJS)
+	$(AR) $(AR_R) $@ $?
+	@-$(CHMOD) $(LIBMODE) $@
+	$(MKLIB) $@
+
+$(PARSER):	$(LIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) $(LIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+ALLCLEAN:	allclean
+
+allclean:	clean
+	$(RM) $(PARLIB) $(PARSER)
+
+CLEAN:		clean
+
+clean:
+	$(RM) $(OBJS)
+
+grammar.c:	grammar.y
+	$(YACC) $(YFLAGS) grammar.y
+	mv y.tab.c $@
+	@-$(CHMOD) $(LIBMODE) $@
+
+grammar.y:	master.y
+	$(GREP) $(GFLAGS) "DDD" master.y > $@
+	@-$(CHMOD) $(LIBMODE) $@
+
+# ifdef YACC_OPTIM
+grammar.o:	grammar.c tables.y yyerror.y ../h/trace.h
+	$(CC) -c $(f_FLAG) $(i_FLAG) grammar.c
+# else
+grammar.o:	grammar.c tables.y yyerror.y ../h/trace.h
+# endif
+
+attfcn.o:	../h/trace.h
+
+call_p.o:	../h/trace.h
+
+call_tree.o:	../h/trace.h
+
+control.o:	../h/trace.h
+
+getscr.o:	../h/trace.h
+
+main.o:		../h/trace.h
+
+rngfcn.o:	../h/trace.h
+
+s_name.o:	../h/trace.h
+
+s_parser.o:	../h/trace.h
+
+s_string.o:	../h/trace.h
+
+s_yylex.o:	../h/trace.h
+
+tree.o:		../h/trace.h
+
+xdot.o:		../h/trace.h
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/parser
+SRC=	attfcn.c	call_p.c	call_tree.c	control.c	\
+	format.c	gen.h		getscr.c	grammar.y	\
+	grammar.c	main.c		master.y	norml.c		\
+	p_util.c	parser.h	rngfcn.c	s_cmap.c	\
+	s_comment.c	s_inout.c	s_name.c	s_number.c	\
+	s_operator.c	s_parser.c	s_string.c	s_symtab.c	\
+	s_yylex.c	tables.y	tree.c		xdot.c		\
+	yyerror.y	Makefile
+
+.save:		$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/parser
+	> $@
+	umount DISK
+
+$(HOME)/.save:	$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save
+# endif
