@@ -1,0 +1,31 @@
+: command  part before conversion
+
+: REDABAS 2 part
+
+2	lager2.dbd
+
+F	  0	#		I4  
+F	  1	*		C1  
+F	  2	NUM		N6
+F	  3	ORT		C15
+F	  4	PLZ		N6
+F	  5	STRASSE		C15
+
+: data base system 6.3/4 part
+
+I	dt
+
+: relation lager part
+T	lager
+
+D	  1	num		i2
+D	  2	ort		c15
+D	  3	plz		i2
+D	  4	strasse		c15
+
+@	  2	  1
+@	  3	  2
+@	  4	  3
+@	  5	  4
+
+: command  part after  conversion

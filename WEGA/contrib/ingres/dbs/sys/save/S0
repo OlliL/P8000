@@ -1,0 +1,14 @@
+echo .;			cd /z/dbs;			make -f M.ing_db .save
+echo demo;		cd demo;			make .save
+echo demo/amx;		cd amx;				make .save
+echo demo/bank;		cd ../bank;			make .save
+echo demo/dbsr;		cd ../dbsr;			make .save
+echo demo/eql;		cd ../eql;			make .save
+echo demo/pqr;		cd ../pqr;			make .save
+echo demo/redabas;	cd ../redabas;			make .save
+echo demo/ql;		cd ../ql;			make .save
+echo sys/etc;		cd ../../sys/etc;		make .save
+echo sys/save;		cd ../save;			make .save
+echo src/conf;		cd ../../src/conf;		make .save
+echo src/proto;		cd ../proto;			make .save
+echo S0 DONE

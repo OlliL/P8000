@@ -1,0 +1,34 @@
+: command  part before conversion
+
+: REDABAS 3 part
+
+3	lieferu3.dbd
+
+F	  0	#		I4  
+F	  1	*		C1  
+F	  2	LNUM		N6
+F	  3	TNUM		N6
+F	  4	BNUM		N6
+F	  5	LIEFDAT		C8
+F	  6	MENGE		N6
+
+: data base system 6.3/4 part
+
+I	dt
+
+: relation lieferung part
+T	lieferung
+
+D	  1	lnum		i2
+D	  2	tnum		i2
+D	  3	bnum		i2
+D	  4	liefdat		c8
+D	  5	menge		i2
+
+@	  2	  1
+@	  3	  2
+@	  4	  3
+@	  5	  4
+@	  6	  5
+
+: command  part after  conversion

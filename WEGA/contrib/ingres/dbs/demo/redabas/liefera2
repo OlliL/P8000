@@ -1,0 +1,34 @@
+: command  part before conversion
+
+: REDABAS 2 part
+
+2	liefera2.dbd
+
+F	  0	#		I4  
+F	  1	*		C1  
+F	  2	NUM		N6
+F	  3	NAME		C15
+F	  4	ORT		C15
+F	  5	PLZ		N6
+F	  6	STRASSE		C15
+
+: data base system 6.3/4 part
+
+I	dt
+
+: relation lieferant part
+T	lieferant
+
+D	  1	num		i2
+D	  2	name		c15
+D	  3	ort		c15
+D	  4	plz		i2
+D	  5	strasse		c15
+
+@	  2	  1
+@	  3	  2
+@	  4	  3
+@	  5	  4
+@	  6	  5
+
+: command  part after  conversion
