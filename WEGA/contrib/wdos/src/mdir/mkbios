@@ -1,0 +1,12 @@
+dseg
+-
+bios
+b000
+term
+
+disk
+
+orgs
+0
+
+bios
