@@ -1,0 +1,21 @@
+afcn          destmnt       modcond       permtd        retstmnt
+aggrfcn       destqm        modfill       permtime      rngof
+alias         destroy       modfillnum    permtlelm     rngprint
+append        domseq        modify        permtlist     rngstmnt
+apstmnt       help          modkeys       permwho       rngvar
+apto          helqmstmnt    modqual       permword      save
+attrib        helstmnt      modrptkey     permxlist     savstmnt
+attribfcn     hlist         modstkey      prinstmnt     specs
+clause        hparam        modstmnt      print         stmnt
+coent         hqmlist       modstorage    program       targdom
+coparam       index         month         qual          tlclause
+copstmnt      instmnt       permday       qualclause    tlelm
+copy          integis       permdefday    range         tlist
+cospecs       integnoise    permdeftime   relation      uop
+create        integrity     permit        relop         var
+crestmnt      integstmnt    permlist      replace       view
+date          is            permplace     repstmnt      viewclause
+day_year      keys          permrel       retclause     viewstmnt
+delete        keywd         permstmnt     retkwd        where
+delstmnt      modbasekey    permtarg      retrieve      xprogram
+destlist
