@@ -1,0 +1,3 @@
+echo src/pqr;		cd /z/dbs/src/pqr;		make .save
+echo src/struct;	cd ../struct;			make .save
+echo S5 DONE
