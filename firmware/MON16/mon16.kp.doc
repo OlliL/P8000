@@ -1,0 +1,399 @@
+.ll 79
+.pl 66
+.lt 79
+.de NP
+'sp 2
+.tl ''- % -''
+'bp
+'sp 2
+.tl 'Dokumentation'WEGA'Koppelsoftware in MON16'
+'sp 3
+..
+.wh -4 NP
+.nf
+.sp 6
+*******************************************************************************
+*******************************************************************************
+ 
+	W E G A - Dokumentation	(C) ZFT/KEAW Abt. Basissoftware - 1986
+	Koppelsoftware in U8000-Softwaremonitor (MON16)
+ 
+ 
+	Bearbeiter:	J. Zabel
+	Datum:		12.05.1987
+	Version:	2.0
+ 
+*******************************************************************************
+*******************************************************************************
+ 
+ 
+1. Uebersicht
+=============
+
+.fi
+Die Koppelschnittstelle wird auf dem 16-Bit-Teil durch 2 PIO's
+(PIO0, PIO1) realisiert (siehe Bild "P8000-Koppelschnittstelle").
+
+Folgende Funktionen werden ueber die Koppelschnittstelle realisiert:
+.br
+.nf
+- Initialisierung und Test der Koppelschnittstelle
+- Terminalein-/-ausgabe ueber SIO0_B des 8-Bit-Teils
+- Laden und Auslagern von UDOS-Dateien vom/zum 8-Bit-Teil
+- Lesen, Schreiben und Formatieren von blockorientierten Disketten
+  im WEGA-Format
+- Rueckkehr in 8-Bit-Teil
+
+.fi
+In den folgenden Prozeduren des U8000-Softwaremonitors (MON16) sind
+Komponenten der Software fuer die 8-Bit/16-Bit-Koppelschnittstelle
+enthalten.
+
+.nf
+	Prozedur		Modul
+	--------		-----
+	
+	ENTRY_			p_init
+
+	KOPPEL_INT		p_term
+	TYWR			p_term
+	TYRD_UDOS_INT		p_term
+	TYRD_UDOS_POL		p_term
+	TYWR_UDOS_INT		p_term
+	TYWR_UDOS_POL		p_term
+	TYWR_KOPPEL_INT		p_term
+	TYWR_KOPPEL_POL		p_term
+	KP_OUTB			p_term
+	KP_INB			p_term
+
+	FLOPPY_FORMAT		p_comm
+	FLOPPY_READ		p_comm
+	FLOPPY_WRITE		p_comm
+	FLOPPY_BLOCK		p_comm
+
+	GET			p_gesa
+	SAVE			p_gesa
+	QUIT8			p_gesa
+	QUIT8_RESET		p_gesa
+	FLOPPY			p_gesa
+
+	FLP_BOOT		p_boot
+	UDOS_BOOT		p_boot
+
+
+2. Beschreibung der einzelnen Prozeduren
+========================================
+
+.fi
+Im Folgenden werden die einzelnen Prozeduren beschrieben, die mit der
+Koppelschnittstelle arbeiten.
+
+.nf
+2.1. ENTRY_
+-----------
+
+.fi
+In der Prozedur ENTRY_ wird getestet, ob die Koppelschnittstelle aktiv ist
+und ob sie fehlerfrei arbeitet.
+
+Ist das der Fall, wird PTYPORT=2 bzw. =1 gesetzt, je nachdem, ob auf dem
+8-Bit-Teil Floppyarbeit moeglich ist (Start des U8000-Softwaremonitors
+erfolgte mit WEGA-Systemdiskette) oder nicht (Start des U8000-Softwaremonitors
+erfolgte vom U880-Softwaremonitor aus). Als Terminalkanal wird bei aktiver
+Koppelschnittstelle der SIO0_B des 8-Bit-Teils genutzt.
+
+Ist die Koppelschnittstelle nicht aktiv, wird PTYPORT=0 gesetzt und als
+Terminalkanal der SIO0_B des 16-Bit-Teils genutzt. In diesem Fall sind
+alle Funktionen, die die
+Koppelschnittstelle benutzen, nicht ausfuehrbar.
+
+.nf
+2.2. KOPPEL_INT
+---------------
+
+.fi
+KOPPEL_INT ist die Interruptroutine zum interruptgesteuerten Datenempfang
+vom 8-Bit-Teil. Der Interrupt wird durch Bit 0 des PIO1_B ausgeloest.
+
+Der uebermittelte Status (PIO1_B, Bit 1-6) und das uebermittelte Datenbyte
+(PIO1_A) werden gelesen.
+.br
+Ist der Status gleich #STAT16_SIO0_B_R, so kommt das Datenbyte (Zeichen)
+vom Terminalkanal SIO0_B des 8-Bit-Teils und wird im Terminaleingabepuffer
+PTYBFF abgespeichert.
+.br
+Ist der Status gleich #STAT16_UDOS, so ist das Datenbyte fuer den
+UDOS-Dateitransfer bzw. Blocktransfer mit blockorientierten Disketten 
+im WEGA-Format bestimmt. Das Datenbyte wird dann im UDOS-Eingabepuffer
+UDOSBFF abgespeichert.
+
+.nf
+2.3. TYWR
+---------
+
+.fi
+Ausgabe eines Zeichens an den Terminalkanal (SIO0_B des 8-Bit-Teils,
+wenn die Koppelschnittstelle aktiv ist bzw. SIO0_B des 16-Bit-Teils,
+wenn die Koppelschnittstelle inaktiv ist) im Pollingbetrieb.
+
+Zuerst wird ueber die Prozedur KP_INB gewartet, bis der Sendepuffer des
+SIO0_B des 8-Bit-Teils leer ist, indem das Leseregister 0 des SIO's
+gelesen wird. 
+.br
+Dann wird das auszugebende Zeichen ueber die Prozedur KP_OUTB an den
+SIO0_B des 8-Bit-Teils ausgegeben.
+
+.nf
+2.4. TYRD_UDOS_INT
+------------------
+
+.fi
+Einlesen eines Zeichens fuer den UDOS-Dateitransfer bzw. Floppy-Blocktransfer
+aus dem UDOS-Eingabepuffer UDOSBFF.
+
+Dieses Zeichen wurde mittels Interrupt an den 16-Bit-Teil gesendet
+(siehe auch Prozedur KOPPEL_INT (2.2.)).
+
+.nf
+2.5. TYRD_UDOS_POL
+------------------
+
+.fi
+Einlesen eines Zeichens fuer den UDOS-Dateitransfer bzw. Floppy-Blocktransfer
+im Pollingbetrieb.
+
+Dazu wird gewartet, bis an PIO1_B (Bit1-6) der Status #STAT16_UDOS anliegt.
+Dann wird das zugehoerige Datenbyte (PIO1_A) eingelesen.
+
+.nf
+2.6. TYWR_UDOS_INT
+------------------
+
+.fi
+Ausgabe eines Zeichens fuer den UDOS-Dateitransfer bzw. Blocktransfer
+ueber die Koppelschnittstelle.
+.br
+Die Ausgabe erfolgt so, dass auf dem 8-Bit-Teil ein Interrupt ausgeleost
+wird (PIO0_B, Bit 0=1).
+
+Dazu wird an PIO0_A das Datenbyte ausgegeben und an PIO0_B, Bit 1-4 der
+Status #STAT8_UDOS angelegt und das Interruptbit (PIO0_B, Bit 0) gesetzt.
+
+.nf
+2.7. TYWR_UDOS_POL
+------------------
+
+.fi
+Analog TYWR_UDOS_INT, ausser, dass auf dem 8-Bit-Teil kein Interrupt
+ausgeloest wird (PIO0_B, Bit 0=0).
+
+.nf
+2.8. TYWR_KOPPEL_INT
+--------------------
+
+.fi
+Hilfsprogramm zur Ausgabe eines Zeichens/Status ueber die Koppelschnittstelle
+mit Interruptausloesung auf dem 8-Bit-Teil (PIO0_B, Bit 0=1).
+
+.nf
+2.9. TYWR_KOPPEL_POL
+--------------------
+
+.fi
+Hilfsprogramm zur Ausgabe eines Zeichens/Status ueber die Koppelschnittstelle
+ohne Interrruptausloesung auf dem 8-Bit-Teil (PIO0_B, Bit 0=0).
+
+.nf
+2.10. KP_OUTB
+-------------
+
+.fi
+Ausgabe eines Datenbytes an einen I/O-Port des 8-Bit-Teils.
+
+Dazu wird zuerst die Portadresse des I/O-Ports und der Status #STAT8_WRITE
+ueber die Koppelschnittstelle ausgegeben (PIO0_A bzw. PIO0_B, Bit 1-4),
+wobei auf dem 8-Bit-Teil eine Interruptausloesung erfolgt (PIO0_B, Bit 0 = 1).
+.br
+Dann wird das Datenbyte und der Status #STAT8_ENDE ueber die 
+Koppelschnittstelle ausgegeben.
+
+.nf
+2.11. KP_INB
+------------
+
+.fi
+Eingabe eines Datenbytes von einem I/O-Port des 8-Bit-Teils.
+
+Dazu wird zuerst die Portadresse des I/O-Ports und der Status #STAT8_READ
+ueber die Koppelschnittstelle ausgegeben (PIO0_A bzw. PIO0_B, Bit 1-4),
+wobei auf dem 8-Bit-Teil eine Interruptausloesung erfolgt (PIO0_B, Bit 0 = 1).
+.br
+Dann wird gewartet, bis der Status #STAT16_ENDE (PIO1_B, Bit 1-6) anliegt
+und daraufhin wird das
+dazugehoerige Datenbyte (PIO1_A) eingelesen. Dieses Datenbyte ist das
+vom I/O-Port eingelesene Datenbyte.
+
+.nf
+2.12. FLOPPY_FORMAT
+-------------------
+
+.fi
+Monitorkommando FF
+.br
+Formatieren einer blockorientierten Diskette im WEGA-Format.
+
+Benutzt den Treiber FLOPPY (s. 2.20).
+
+.nf
+2.13. FLOPPY_READ
+-----------------
+
+.fi
+Monitorkommando FR
+.br
+Lesen eines Blockes einer blockorientierten Diskette im WEGA-Format.
+
+Benutzt den Treiber FLOPPY (s. 2.20).
+
+.nf
+2.14. FLOPPY_WRITE
+------------------
+
+.fi
+Monitorkommando FW
+.br
+Schreiben eines Blockes einer blockorientierten Diskette im WEGA-Format.
+
+Benutzt den Treiber FLOPPY (s. 2.20).
+
+.nf
+2.15. FLOPPY_BLOCK
+------------------
+
+.fi
+Allgemeiner Teil von FLOPPY_FORMAT, FLOPPY_READ bzw. FLOPPY_WRITE.
+
+.nf
+2.16. GET
+---------
+
+.fi
+Monitorkommando GE
+.br
+Laden einer UDOS-Procedure-Datei ueber die Koppelschnittstelle in den
+RAM des 16-Bit-Teils.
+
+Zur Datenuebertragung ueber die Koppelschnittstelle werden die Prozeduren
+TYRD_UDOS_INT (s. 2.4.) und TYWR_UDOS_INT (s. 2.6.) benutzt.
+.br
+Das Kommando wird nur ausgefuehrt, wenn PTYPORT=2 ist (s. 2.1.).
+
+Zuerst wird eine Kennung, welche Operation ausgefuehrt werden
+soll (Datenbyte "S") und der Dateiname gesendet.
+.br
+Dann werden der Dateidescriptor und die Bloecke mit den Daten der
+Datei empfangen.
+
+.nf
+2.17. SAVE
+----------
+
+.fi
+Monitorkommando S
+.br
+Auslagern eines Speicherinhaltes des 16-Bit-Teils ueber die Koppelschnittstelle
+als UDOS-Procedure-Datei.
+
+Zur Datenuebertragung ueber die Koppelschnittstelle werden die Prozeduren
+TYRD_UDOS_INT (s. 2.4.) und TYWR_UDOS_INT (s. 2.6.) benutzt.
+.br
+Das Kommando wird nur ausgefuehrt, wenn PTYPORT=2 ist (s. 2.1.).
+
+Zuerst wird eine Kennung, welche Operation ausgefuehrt werden
+soll (Datenbyte "L") und der Dateiname gesendet.
+.br
+Dann werden der Dateidescriptor und die Bloecke mit den Daten der
+Datei gesendet.
+
+.nf
+2.18. QUIT8
+-----------
+
+.fi
+Monitorkommando Q
+.br
+Rueckkehr in den 8-Bit-Teil (kein RESET des 16-Bit-Teils).
+
+Dazu wird an PIO0_A das Datenbyte "Q" ausgegeben, an PIO0_B (Bit 1-4)
+der Status #STAT8_QUIT angelegt und das Interruptbit (PIO0_B, Bit 0) gesetzt.
+
+.nf
+2.19. QUIT8_RESET
+-----------------
+
+.fi
+Monitorkommando QRES
+.br
+Rueckkehr in den 8-Bit-Teil (RESET des 16-Bit-Teils).
+
+Dazu wird an PIO0_A das Datenbyte "R" ausgegeben, an PIO0_B (Bit 1-4)
+der Status #STAT8_QUIT angelegt und das Interruptbit (PIO0_B, Bit 0) gesetzt.
+
+.nf
+2.20. FLOPPY
+------------
+
+.fi
+Treiber zur Arbeit mit blockorientierten Disketten im WEGA-Format
+ueber die Koppelschnittstelle (Formatieren, Lesen, Schreiben).
+
+Zur Datenuebertragung ueber die Koppelschnittstelle werden die Prozeduren
+TYWR_UDOS_INT (s. 2.6.), TYWR_UDOS_POL (s. 2.7.), TYRD_UDOS_INT (s. 2.4.)
+und TYRD_UDOS_POL (s. 2.5.) benutzt.
+.br
+Die Operationen werden nur ausgefuehrt, wenn PTYPORT=2 ist (s. 2.1.).
+
+Formatieren:
+.br
+Es wird eine Kennung, welche Operation ausgefuehrt werden soll (Datenbyte "F")
+und der Floppytyp/Devicenummer gesendet.
+
+Lesen:
+.br
+Es wird eine Kennung, welche Operation ausgefuehrt werden soll (Datenbyte "R"),
+der Floppytyp/Devicenummer, die Blocknummer und die Datenlaenge gesendet.
+.br
+Dann werden die Datenbytes des Blockes eingelesen.
+
+Schreiben:
+.br
+Es wird eine Kennung, welche Operation ausgefuehrt werden soll (Datenbyte "W"),
+der Floppytyp/Devicenummer, die Blocknummer und die Datenlaenge gesendet.
+.br
+Dann werden die Datenbytes des Blockes gesendet.
+
+.nf
+2.21. FLP_BOOT
+--------------
+
+.fi
+Programm zum Laden und Starten von "boot0" von einer blockorientierten
+Diskette im WEGA-Format (Block 0).
+
+Das Programm wird nur ausgefuehrt, wenn PTYPORT=2 ist (s. 2.1.).
+
+Es erfolgt ein Aufruf des Treibers FLOPPY (s. 2.20) zum Lesen des
+Blockes 0 / Drive 0.
+
+.nf
+2.22. UDOS_BOOT
+---------------
+
+.fi
+Programm zum Laden und Starten der UDOS-Datei "boot0.ud" von einer
+UDOS-Diskette.
+
+Das Programm wird nur ausgefuehrt, wenn PTYPORT=2 ist (s. 2.1.).
+
+Ablauf analog der Prozedur GET (s. 2.12.).
+

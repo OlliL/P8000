@@ -1,0 +1,359 @@
+.ll 79
+.pl 66
+.lt 79
+.de NP
+'sp 2
+.tl ''- % -''
+'bp
+'sp 2
+.tl 'Dokumentation'P8000'EPROM-Pruefsummen'
+'sp 3
+..
+.wh -4 NP
+.nf
+.sp 6
+*******************************************************************************
+*******************************************************************************
+ 
+	P 8 0 0 0 - Dokumentation  (C) ZFT/KEAW Abt. Basissoftware - 1986
+	EPROM-Pruefsummen
+ 
+ 
+	Bearbeiter:	J. Zabel
+	Datum:		05.12.1986
+	Version:	1.0
+ 
+*******************************************************************************
+*******************************************************************************
+ 
+
+ 
+ 
+Abspeicherung und Test von Pruefsummen fuer P8000 EPROM-Firmware
+================================================================
+
+
+
+
+
+1. Abspeicherung der Pruefsummen
+--------------------------------
+
+.fi
+Die Pruefsummen fuer die einzelnen EPROM's eines Firmwarekomplexes
+(z.B. U8000-Softwaremonitor) werden am Ende des jeweiligen
+EPROM-Bereiches derart gespeichert, dass zu jeder EPROM-Pruefsumme
+nachfolgend auch die zugehoerige negierte Pruefsumme abgespeichert
+wird, um eine Ueberpruefung der Pruefsummen zu ermoeglichen.
+.br
+Im Maschinenkode ist der Bereich, wo die Pruefsummen abgespeichert
+werden sollen, mit %FFFF zu reservieren, um die Pruefsummen
+nachprogrammieren zu koennen.
+.bp
+.nf
+-------------------------------------------------------------------------------
+
+Beispiel: U8000-Softwaremonitor
+          (EPROM-Bereich 0-%3FFF, 4 EPROM's, separiert (even/odd))
+
+.fi
+Der nachfolgende Modul p_crc wird so gelinkt, dass er den Adressbereich
+von %3FF0-%3FFF belegt.
+.nf
+
+
+p_crc module
+
+$SECTION PROM
+
+!Speicherzellen fuer die Pruefsummen der 4 EPROM's des U8000-Softwaremonitors
+(Modul ist so zu linken, dass er auf Adresse %3FF0 beginnt, d.h.
+dass er am Ende des EPROM-Bereiches steht)!
+
+  GLOBAL
+
+!Pruefsumme fuer EPROM MON16_1H:
+ Anfangsadresse %0000, Laenge %1000, jedes 2. Byte (even)!
+
+MON16_1H	WORD	:=%FFFF		!EPROM-Pruefsumme!
+N_MON16_1H	WORD	:=%FFFF		!negierte EPROM-Pruefsumme!
+
+!Pruefsumme fuer EPROM MON16_1L:
+ Anfangsadresse %0001, Laenge %1000, jedes 2. Byte (odd)!
+
+MON16_1L	WORD	:=%FFFF		!EPROM-Pruefsumme!
+N_MON16_1L	WORD	:=%FFFF		!negierte EPROM-Pruefsumme!
+
+!Pruefsumme fuer EPROM MON16_2H:
+ Anfangsadresse %2000, Laenge %0FF8, jedes 2. Byte (even)!
+!(in den letzen 8 Byte dieses EPROM's stehen die geradzahligen Werte
+ der EPROM-Pruefsummen)!
+
+MON16_2H	WORD	:=%FFFF		!EPROM-Pruefsumme!
+N_MON16_2H	WORD	:=%FFFF		!negierte EPROM-Pruefsumme!
+
+!Pruefsumme fuer EPROM MON16_2L:
+ Anfangsadresse %2001, Laenge %0FF8, jedes 2. Byte (odd)!
+!(in den letzen 8 Byte dieses EPROM's stehen die ungeradzahligen Werte
+ der EPROM-Pruefsummen)!
+
+MON16_2L	WORD	:=%FFFF		!EPROM-Pruefsumme!
+N_MON16_2L	WORD	:=%FFFF		!negierte EPROM-Pruefsumme!
+
+end p_crc
+
+-------------------------------------------------------------------------------
+
+.bp
+.fi
+Nach dem Programmieren der EPROM's sind deren Pruefsummen mittels dem
+UPROG-Kommando "T" zu ermitteln. Dabei ist ueber den Bereich, wo die
+Pruefsummen stehen sollen, keine Pruefsumme zu bilden.
+.nf
+
+-------------------------------------------------------------------------------
+
+Beispiel: U8000-Softwaremonitor (separierter Kode)
+
+%UPROG
+
+#T E2732 N=1000			(fuer EPROM MON16_1H)
+ ...
+PROM-CRC: A4C1
+(negiert  5B3E)
+
+#T E2732 N=1000			(fuer EPROM MON16_1L)
+ ...
+PROM-CRC: 8C51
+(negiert  73AE)
+
+#T E2732 N=FF8			(fuer EPROM MON16_2H)
+ ...
+PROM-CRC: D6EB
+(negiert  2914)
+
+#T E2732 N=FF8			(fuer EPROM MON16_2L)
+ ...
+PROM-CRC: 8D2C
+(negiert  72D3)
+#
+
+-------------------------------------------------------------------------------
+
+.bp
+.fi
+Die so ermittelten Pruefsummen werden in den 2 EPROM's (bei separierten
+Kode) bzw. in dem EPROM (bei nichtseparierten Kode), in denen die
+Pruefsummen stehen sollen, mittels dem UPROG-Kommando "D" nachprogrammiert.
+.nf
+
+-------------------------------------------------------------------------------
+
+Beispiel: U8000-Softwaremonitor (separierter Kode)
+
+
+%UPROG
+
+#D E2732 M B=FF8		(fuer EPROM MON16_2H)
+ ...
+ADDRESS TO MODIFY?FF8
+0FF8 FF A4
+0FF9 FF 5B
+0FFA FF 8C
+0FFB FF 73
+0FFC FF D6
+0FFD FF 29
+0FFE FF 8D
+0FFF FF 72
+READY TO PROGRAM?Y
+
+#D E2732 M B=FF8		(fuer EPROM MON16_2L)
+ ...
+ADDRESS TO MODIFY?FF8
+0FF8 FF C1
+0FF9 FF 3E
+0FFA FF 51
+0FFB FF AE
+0FFC FF EB
+0FFD FF 14
+0FFE FF 2C
+0FFF FF D3
+READY TO PROGRAM?Y
+#
+
+-------------------------------------------------------------------------------
+
+.bp
+2. Test der Pruefsummen
+-----------------------
+
+.fi
+Innerhalb eines Eigentestprogramms koennen die Pruefsummen getestet werden.
+Dies erfolgt fuer jeden EPROM in 2 Schritten.
+.br
+Im ersten Schritt erfolgt der Vergleich der eingetragenen Pruefsumme mit
+deren eingetragenen negierten Pruefsumme.
+
+.nf
+-------------------------------------------------------------------------------
+
+Beispiel: U8000-Softwaremonitor (separierter Kode)
+
+	ld	r4, MON16_1H	(bzw. MON16_1L
+			      	 bzw. MON16_2H
+			      	 bzw. MON16_2L)
+	ld	r5, N_MON16_1H	(bzw. N_MON16_1L
+			      	 bzw. N_MON16_2H
+			      	 bzw. N_MON16_2L)
+	xor	r5, r4
+	cp	r5, #%FFFF
+	jp	nz, ERROR	!fehlerhafter Pruefsummeneintrag!
+
+-------------------------------------------------------------------------------
+.bp
+.fi
+Im zweiten Schritt wird die Pruefsumme fuer den jeweiligen EPROM
+berechnet und mit der eingetragenen Pruefsumme verglichen.
+
+.nf
+-------------------------------------------------------------------------------
+
+Beispiel: U8000-Softwaremonitor (separierter Kode)
+
+	ld	r2, #%0000	!Anfangsadresse fuer Pruefsummenbildung!
+	ld	r3, #%1000	!Bytezahl!
+	calr	CRC		!r6:=Pruefsumme fuer EPROM MON16_1H! 
+	ld	r4, MON16_1H	!erwartete Pruefsumme (aus Modul p_crc)!
+	cp	r6, r4
+	jp	nz, ERROR	!Pruefsummenfehler!
+
+	ld	r2, #%0001	!Anfangsadresse fuer Pruefsummenbildung!
+	ld	r3, #%1000	!Bytezahl!
+	calr	CRC	        !Pruefsumme fuer EPROM MON16_1L! 
+	ld	r4, MON16_1L	!erwartete Pruefsumme (aus Modul p_crc)!
+	cp	r6, r4
+	jp	nz, ERROR	!Pruefsummenfehler!
+
+	ld	r2, #%2000	!Anfangsadresse fuer Pruefsummenbildung!
+	ld	r3, #%1000-8	!Bytezahl (letzten 8 Byte nicht in CRC-Bildung
+				 einbeziehen, da dort die geraden Werte der
+				 EPROM-Pruefsummen abgespeichert sind)!
+	calr	CRC		!Pruefsumme fuer EPROM MON16_2H! 
+	ld	r4, MON16_2H	!erwartete Pruefsumme (aus Modul p_crc)!
+	cp	r6, r4
+	jp	nz, ERROR	!Pruefsummenfehler!
+
+	ld	r2, #%2001	!Anfangsadresse fuer Pruefsummenbildung!
+	ld	r3, #%1000-8	!Bytezahl (letzten 8 Byte nicht in CRC-Bildung
+				 einbeziehen, da dort die ungeraden Werte der
+				 EPROM-Pruefsummen abgespeichert sind)!
+	calr	CRC		!Pruefsumme fuer EPROM MON16_2L! 
+	ld	r4, MON16_2L	!erwartete Pruefsumme (aus Modul p_crc)!
+	cp	r6, r4
+	jp	nz, ERROR	!Pruefsummenfehler!
+
+-------------------------------------------------------------------------------
+.bp
+.fi
+Im folgenden sind die Unterprogramme fuer die Pruefsummenbildung
+fuer den U8000 und fuer den U880 angefuehrt:
+
+.nf
+!++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+PROCEDURE CRC (U8000)
+Pruefsummenberechnung
+
+(bei der CRC-Berechnung wird beginnend bei der angeg. Anfangsadresse nur
+jedes zweite Byte in die CRC-Berechnung einbezogen, da der Maschinenkode
+auf den EPROM's separiert ist (even/odd))
+
+Input:	r2 - Speicheranfangsadresse
+	r3 - Anzahl der in die CRC-Bildung einzubeziehenden Bytes
+Output: r6 - Pruefsumme
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++!
+
+  INTERNAL
+    CRC procedure
+      entry
+	ld	r6, #-1
+CRC1:	ldb	rl0, @r2
+	xorb	rl0, rh6
+	ldb	rh6, rl0
+	rrb	rl0
+	rrb	rl0
+	rrb 	rl0
+	rrb	rl0
+	andb	rl0, #%0F
+	xorb	rl0, rh6
+	ldb	rh6, rl0
+	rrb	rl0
+	rrb	rl0
+	rrb	rl0
+	ldb	rh0, rl0
+	andb	rl0, #%1F
+	xorb	rl0, rl6
+	ldb	rl6, rl0
+	ldb	rl0, rh0
+	rrb	rl0
+	andb	rl0, #%F0
+	xorb	rl0, rl6
+	ldb	rl6, rl0
+	ldb	rl0, rh0
+	andb	rl0, #%E0
+	xorb	rl0, rh6
+	ldb	rh6, rl6
+	ldb	rl6, rl0
+
+	inc	r2, #2		!naechstes Byte!
+	djnz	r3, CRC1
+	ret
+    end CRC
+
+.bp
+;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+;Unterprogramm CRC (U880)
+;Pruefsummenberechnung
+;
+;Input:	 HL - Speicheranfangsadresse
+;	 BC - Anzahl der in die CRC-Bildung einzubeziehenden Bytes
+;Output: DE - Pruefsumme
+;++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+CRC:
+	ld	de, -1
+CRC1:	ld	a, (hl)
+	xor	d
+	ld	d, a
+	rrca
+	rrca
+	rrca
+	rrca
+	and	0FH
+	xor	d
+	ld	d, a
+	rrca
+	rrca
+	rrca
+	push	af
+	and	1FH
+	xor	e
+	ld 	e, a
+	pop	af
+	push	af
+	rrca
+	and	0F0H
+	xor	e
+	ld	e, a
+	pop	af
+	and	0E0H
+	xor	d
+	ld	d, e
+	ld	e, a
+
+	inc	hl		!naechstes Byte!
+	dec	bc
+	ld	a, b
+	or	c
+	jr	nz, CRC1
+	ret
+
