@@ -1,0 +1,224 @@
+STATIC
+------
+_del_ch:	edit.c		_del_ch(field, length)
+					char		*field;
+					int		length;
+
+_find:		value.c		struct MM_form	*_find(frame, var, no)
+					struct MM_form	*frame;
+					char		*var;
+					int		no;
+
+_getcha:r	getchar.c	_getchar()
+
+_ins_ch		edit.c		_ins_ch(field, length)
+					char		*field;
+					int		length;
+
+_transl:ate	getchar.c	_translate(key_string)
+					char		**key_string;
+
+_value		value.c		_value(form)
+					struct MM_form		*form;
+
+_Error:		error.c		int		_Error;
+
+_Peek_c:h	getchar.c	int		_Peek_ch[];
+
+_Peek_p:tr	getchar.c	int		_Peek_ptr;
+
+_Tree:		getchar.c	struct MM_tree	*_Tree;
+
+_Tty		main.c		struct sgttyb	_Tty;
+
+_Tty_fd		main.c		int		_Tty_fd;
+
+_Tty_flags	main.c		int		_Tty_flags;
+
+
+INTERN
+------
+MM_abs_:pos	screen.c	MM_abs_pos(line, col)
+					int		line;
+					int		col;
+
+MM_back:up	getchar.c	MM_backup(character)
+					int		character;
+
+MM_cs:		string.c	char		*MM_cs[];
+
+MM_cs_c:m	screen.c	int		MM_cs_cm;
+
+MM_edit:	edit.c		MM_edit(form)
+					struct MM_form	*form;
+
+MM_getc:har	getchar.c	MM_getchar()
+
+MM_inco:de	getchar.c	MM_incode(key_string, key_code)
+					char		*key_string;
+					int		key_code;
+
+MM_inpu:t	input.c		MM_input(form)
+					struct MM_form	*form;
+
+MM_need:	input.c		struct MM_form	*MM_need(frame)
+					struct MM_form	*frame;
+
+MM_outp:ut	output.c	MM_output(form)
+					struct MM_form	*form;
+
+MM_pos:		screen.c	MM_pos(line, col)
+					int		line;
+					int		col;
+
+MM_pta:		string.c	MM_pta(string, length)
+					char		*string;
+					int		length;
+
+MM_ptis:	string.c	MM_ptis(string)
+					char		*string;
+
+MM_pts:		string.c	MM_pts(string)
+					char		*string;
+
+MM_rel_:pos	screen.c	MM_rel_pos(col)
+					int		col;
+
+MM_repo:s	screen.c	MM_repos()
+
+MM_outc:ode	getchar.c	MM_outcode(key_stroutg, key_code)
+					char		*key_string;
+					int		key_code;
+
+MM_var:		var.c		MM_var(form, var, format, type)
+					struct MM_form	*form;
+					char		*var;
+					char		*format;
+					int		type;
+
+EXTERN
+------
+MMalloc:	alloc.c		struct MM_form	*MMalloc(frame, line, col, len, var)
+					struct MM_form	**frame;
+					int		line;
+					int		col;
+					int		len;
+					char		*var;
+
+MMclr_e:rror	error.c		MMclr_error()
+
+MMclr_l:ine	screen.c	MMclr_line(line, col)
+					int		line;
+					int		col;
+
+MMclr_s:creen	screen.c	MMclr_screen(line, col)
+					int		line;
+					int		col;
+
+MMclr_v:alue	value.c		MMclr_value(frame)
+					struct MM_form	*frame;
+
+MMcol:		screen.c	int		MMcol;
+
+MMerror:	error.c		MMerror(error_text)
+					char		*error_text;
+
+MMexit_:form	main.c		MMexit_form(clear)
+					int		clear;
+
+MMform:		form.c		MMform(frame)
+					struct MM_form	*frame;
+
+MMframe:	frame.c		MMframe(frame, line, col)
+					struct MM_form	*frame;
+					int		line;
+					int		col;
+
+MMfree:		free.c		MMfree(frame)
+					struct MM_form	**frame;
+
+MMinit_:form	main.c		MMinit_form(clear)
+					int		clear;
+
+MMin_fi:eld	input.c		MMin_field(form, func, help, need)
+					struct MM_form	*form;
+					int		(*func)();
+					int		(*help)();
+					int		need;
+
+MMline:		screen.c	int		MMline;
+
+MMmen_f:ield	menue.c		MMmen_field(form, func, help, menue_text)
+					struct MM_form	*form;
+					int		(*func)();
+					int		(*help)();
+					char		*menue_text;
+
+MMnext:		next.c		MMnext()
+
+MMout_f:ield	output.c	MMout_field(form, output_text)
+					struct MM_form	*form;
+					char		*output_text;
+
+MMpmove:	screen.c	char		*MMpmove(src, dst, len, ch)
+					char		*src;
+					char		*dst;
+					int		len;
+					int		ch;
+
+MMsmove:	screen.c	MMsmove(src, dst)
+					char		*src;
+					char		*dst;
+
+MMset_f:ield	value.c		MMset_field(frame, var, no)
+					struct MM_form	*frame;
+					char		*var;
+					int		no;
+
+MMset_v:alue	value.c		MMset_value(frame, var, no)
+					struct MM_form	*frame;
+					char		*var;
+					int		no;
+
+MMshell:	shell.c		MMshell(form, shell, quit, command)
+					struct MM_form	*form;
+					int		shell;
+					int		quit;
+					char		*command;
+
+MMval_f:ield	value.c		MMval_field(form, func)
+					struct MM_form	*form;
+					int		(*func)();
+
+MMvalue:	value.c		MMvalue(frame)
+					struct MM_form	*frame;
+
+MMvarc:		var_c.c		MMvarc(form, var, format)
+					struct MM_form	*form;
+					char		*var;
+					char		*format;
+
+MMvarf4:	var_f4.c	MMvarf4(form, var, format)
+					struct MM_form	*form;
+					char		*var;
+					char		*format;
+
+MMvarf8:	var_f8.c	MMvarf8(form, var, format)
+					struct MM_form	*form;
+					char		*var;
+					char		*format;
+
+MMvari1:	var_i1.c	MMvari1(form, var, format)
+					struct MM_form	*form;
+					char		*var;
+					char		*format;
+
+MMvari2:	var_i2.c	MMvari2(form, var, format)
+					struct MM_form	*form;
+					char		*var;
+					char		*format;
+
+MMvari4:	var_i4.c	MMvari4(form, var, format)
+					struct MM_form	*form;
+					char		*var;
+					char		*format;
