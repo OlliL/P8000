@@ -1,0 +1,28 @@
+     RC(MUTOS)                    DABA16                     RC(MUTOS)
+
+     NAME
+          rc - REPORT-Compiler
+
+     UEBERSICHT
+          rc {[ flags ] file}
+
+     BESCHREIBUNG
+
+          Flags:
+
+          -c Nur Uebersetzen, keine Codeerzeugung
+          -i Eingabe von Standard-Input
+          -l automatische Umwandlung der Klein- in Grossbuchstaben
+          -o Ausgabe des Report-Code-Files r_code
+          -s Unterdrueckung des Uebersetzungsprotokolls
+          -v Ausgabe des Uebersetzungsprotokolls
+
+     BEISPIELE
+          /* Uebersetze das Quell-File "pers_r" und
+             erzeuge das Report-Code-File "r_code" */
+             rc -o pers_r
+
+
+     SIEHE AUCH
+          rp_desc(mutos),   rg(mutos),    rd(mutos),    report(mutos),
+          report(daba)

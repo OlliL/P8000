@@ -1,0 +1,34 @@
+     DELETE(QL)                   DABA16                    DELETE(QL)
+
+     NAME
+          delete - Loeschen von Tupel aus einer Relation
+
+     UEBERSICHT
+          delete tuple_variable [where qual]
+
+     BESCHREIBUNG
+          Delete entfernt Tupel, welche die Qualifikation qual erfuel-
+          len,  aus  ihrer Relation.  Die tuple_variable muss in einer
+          vorherigen range Anweisung einer  bestehenden  Relation  zu-
+          gewiesen  worden  sein.   Delete  besitzt keine target_list.
+          Die delete Anweisung fordert aber eine Tupelvariable aus ei-
+          ner  range  Anweisung  und  keinen aktuellen Relationsnamen.
+          Wenn keine Qualifikation spezifiziert wurde, werden alle Tu-
+          pel einer Relation geloescht.  Das Ergebnis ist eine guelti-
+          ge aber leere Relation.
+
+          Um Tupel mit delete zu loeschen, muss der Anwender der Rela-
+          tionseigentuemer  sein oder delete Befugnis auf die Relation
+          besitzen.
+
+
+
+     BEISPIEL[E]
+          /* Entferne alle Tupel mit einem Gehalt ueber 3000 Mark*/
+             range of p is personal
+             delete p where p.gehalt > 3000
+
+     SIEHE AUCH
+          destroy(ql),   modify(ql),    modifyr(mutos),    permit(ql),
+          ql(iql), range(ql)
+     FEHLERQUELLEN
