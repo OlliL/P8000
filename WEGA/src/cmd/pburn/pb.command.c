@@ -2,7 +2,7 @@
 *								*	
 *		pburn - eprom programmer			*
 *								*
-*	pb1.command.c		: wega p8000/16-bit-teil	*
+*	pb2.command.c		: wega p8000/16-bit-teil	*
 *								*
 ****************************************************************/
 
@@ -25,9 +25,9 @@
 
 extern int qflag, errflag, warning, mofy, answer, command, eof, next;
 extern int tpe1, tpe2;
-extern char bre, progbuf[0x2000];
+extern char bre, progbuf[0xfffe], progffff, erase, board;
 extern char namee1[20], namee2[20], cmdbuf[100];
-extern unsigned begadre1, begadre2, lange1, lange2, begadrf;
+extern long begadre1, begadre2, lange1, lange2, begadrf;
 
 /*	p:	programming eprom
 	------------------------- */
@@ -44,7 +44,9 @@ program()
 		}while (errflag==true);
 		  do
 			{printf ("%s",des);
-			 outopte();		/*ausgabe eprom [options]*/
+			 			/*ausgabe eprom [options]*/
+			if (board=='1')	outopte();
+				else	outopte1();
 			 inopte();		/*eingabe eprom [options]*/
 			 if (qflag==true) return;
 	          }while (errflag==true);
@@ -62,9 +64,9 @@ program()
 			 if (answer=='y') 	      progprom();
 				else if (answer=='v') verify();
 				else if (answer=='m') modify();
-				else if (answer=='l') {listbuf('f',begadre1,lange1,progbuf);
+				else if (answer=='l') {listbuf('f',begadre1,lange1,progbuf,&progffff);
 						      mofy=true;}
-				else if (answer=='t') {crc ('f',progbuf,lange1);
+				else if (answer=='t') {crc ('t',progbuf,lange1,&progffff);
 						      mofy=true;}
 		  }while (errflag==false);
 } 
@@ -86,15 +88,25 @@ list_crc()
 	do
 	{ready();
 	if (qflag==true) return;
-	readprom('c',tpe1,begadre1,lange1,progbuf);
-	if (errflag==true) {if (qflag==true)	return;
-				else		{errflag=false;
-						answer=' ';
-						continue;}}
-	if (command=='l') 	listprom();
-		else 		{crcprom();
-				if (warning==0)	printf ("%s",per);
-					else	printf ("%s",pne);}
+	if (command=='l')
+		{
+		readprom(tpe1,begadre1,lange1,progbuf,&progffff);
+		if (errflag==true) {if (qflag==true)	return;
+					else		{errflag=false;
+							answer=' ';
+							continue;}}
+		listprom();
+		}
+	else	{
+		promcrc (tpe1,begadre1,lange1);
+		if (errflag==true) {if (qflag==true)	return;
+					else		{errflag=false;
+							answer=' ';
+							continue;}}
+		crcprom('e');
+			if (erase==0)	printf ("%s",per);
+				else	printf ("%s",pne);
+		}
 	}while (errflag==false);
 }
 
@@ -134,7 +146,7 @@ file()
 	do
 	{ready1();
 	if (qflag==true) return;
-	if (mofy==false)		{readprom (' ',tpe1,begadre1,lange1,progbuf);
+	if (mofy==false)		{readprom (tpe1,begadre1,lange1,progbuf,&progffff);
 					if (errflag==true) {if (qflag==true)	return;
 								else		{errflag=false;
 										answer=' ';
@@ -158,7 +170,8 @@ bytemode()
 	bre='s';
 	do
 	{printf ("\n%s",sou);
-	outopte();
+	if (board=='1')	outopte();
+		else	outopte1();
 	inopte();
 	if (qflag==true) return;
 	}while (errflag==true);
@@ -175,7 +188,8 @@ bytemode()
 
 copy()
 {
-int c, answer1;
+int answer1;
+long c;
 
 	bre='s';
 	do
@@ -190,7 +204,8 @@ int c, answer1;
 	for (c=0;c<20;c++) namee2[c]=namee1[c];
 	do
 	{printf ("%s",des);
-	outopte();
+	if (board=='1')	outopte();
+		else	outopte1();
 	inopte();
 	if (tpe1==0 && (begadre1 != 0 || lange1 != 0x400))	{warning=11; outwar();
 								begadre1=0; lange1=0x400;}
@@ -217,7 +232,7 @@ int c, answer1;
 					if (cmdbuf[1]!='\0')	continue;
 						else		c=cmdbuf[0];
 					if (c!='y') continue;
-					readprom (' ',tpe1,begadre1,lange1,progbuf);
+					readprom (tpe1,begadre1,lange1,progbuf,&progffff);
 					if (errflag==true) {if (qflag==true)	return;
 								else		{errflag=false;
 										answer=' ';
@@ -225,14 +240,13 @@ int c, answer1;
 
 	if (answer=='m')		{modprom(); continue;}
 	if (answer=='l')		{listprom(); mofy=true; continue;}
-	if (answer=='r') 		{if (answer1==' ') {answer1=answer;
-							   continue;}}
+	if (answer=='r') 		{if (answer1==' ') continue;} 
     do{
 	errflag=false;
 	printf ("%s",cte);
 	switch (answer) {
-		case 'y':	printf ("%s",rtc); break;
-		case 'v':	printf ("%s",rtv); break;
+		case 'y':	printf ("%s",rtc); answer1=answer; break;
+		case 'v':	printf ("%s",rtv); answer1=answer; break;
 		case 'r':	if (answer1=='y')		printf ("%s",rtc);
 					else if (answer1=='v')	printf ("%s",rtv);
 				break;
@@ -246,7 +260,6 @@ int c, answer1;
 		else if (answer=='v')	{verifyprom(); mofy=false;}
 		else if (answer=='r')	{if (answer1=='y')		copyprom();
 						else if (answer1=='v')	verifyprom();}
-	answer1=answer;
       }while (errflag==true);
     }while (errflag==false);
 }
