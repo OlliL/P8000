@@ -1,0 +1,1980 @@
+
+        Referenz_Manual            - 31 -                     MMMMaaaakkkkrrrroooossss
+
+
+                /*      Es soll ein Sprung
+                immer auf "normal" erfolgen,
+                es sei denn, der im vorangegangenen Beispiel
+                eingegebene Name ist "Neumann" */
+
+                \branch {if same;@name;Neumann;Ausnahme;normal}
+
+
+        Wenn vor  name  durch  @  keine  Vorverarbeitung  angewiesen
+        wu"rde,  erfolgte der Sprung ebenfalls immer auf "normal", da
+        "name" nicht gleich "Neumann" ist. Erst durch die  Vorverar-
+        beitung  wird  aber  der  substituierte  Text, also der oben
+        eingegebene, mit "Neumann" verglichen.
+
+
+                /*      Eine ga"ngige Anwendung des {continuetrap}
+                ist, ihn dazu zu benutzen, die Anzahl der
+                bearbeiteten Tupel anzuzeigen, wenn solche
+                im {tuplecount} angezeigt werden, dieser
+                also >= 0 ist. Dazu definiert man
+                {continuetrap} beispielsweise als: */
+
+                {define; {continuetrap}; \<nl>
+                {if; @{tuplecount}>=0; \<nl>
+                {type; @{tuplecount} Entities bearbeitet};}}\eval
+
+
+        Das "<nl>" im obigen Text soll nur anzeigen, dass  dieses  -
+        auf dem Terminal sonst nicht sichtbare - Zeichen dort steht.
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             monitor(quel)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 32 -                 UUUUeeeebbbbeeeerrrrssssiiiicccchhhhtttt
+
+        _1._1._4.  UUUU""""bbbbeeeerrrrssssiiiicccchhhhtttt ddddeeeerrrr AAAAnnnnffffrrrraaaaggggeeee----KKKKoooommmmmmmmaaaannnnddddoooossss ****
+
+
+
+             =>   APPEND - fu"ge neue Tupel in die Relation ein
+                  aaaappppppppeeeennnndddd [ttttoooo] relname (target_list) [wwwwhhhheeeerrrreeee qual]
+
+             =>   COPY - kopiere Daten zwischen einer  Relation  und
+                  einem UNIX  File.
+                  ccccooooppppyyyy relname ([domname  =  fformat  {,  domname  =
+                  fformat }])
+
+                       into | from "Filename"
+
+             =>   CREATE - erzeuge eine neue Relation
+                  ccccrrrreeeeaaaatttteeee relname (domname = format {, domname = for-
+                  mat })
+
+             =>   DEFINE - definiere Subschema
+                  ddddeeeeffffiiiinnnneeee vvvviiiieeeewwww relname (target list) [ wwwwhhhheeeerrrreeee qual ]
+                  ddddeeeeffffiiiinnnneeee ppppeeeerrrrmmmmiiiitttt oplist oooonnnn var [ (attlist) ]
+                  ttttoooo name [ aaaatttt term ] [ ffffrrrroooommmm time ttttoooo time ] [ oooonnnn day
+                  ttttoooo day ] [ wwwwhhhheeeerrrreeee qual ]
+                  ddddeeeeffffiiiinnnneeee iiiinnnntttteeeeggggrrrriiiittttyyyy oooonnnn var iiiissss qual
+
+             =>   DELETE - lo"sche Tupel aus einer Relation
+                  ddddeeeelllleeeetttteeee var [wwwwhhhheeeerrrreeee qual]
+
+             =>   DESTROY - lo"sche existierende Relationen
+                  ddddeeeessssttttrrrrooooyyyy relname {, relname}
+                  ddddeeeessssttttrrrrooooyyyy ppppeeeerrrrmmmmiiiitttt ||||  iiiinnnntttteeeeggggrrrriiiittttyyyy  relname  aaaallllllll  ||||  con-
+                  straint {, constraint}
+
+             =>   HELP - liefere Hilfen u"ber  ING_DB  -Nutzung  oder
+                  Informationen u"ber Relationen in der Datenbank
+                  hhhheeeellllpppp [relname{,relname}]
+                  hhhheeeellllpppp "" | "section" {,"section"}
+                  hhhheeeellllpppp iiiinnnntttteeeeggggrrrriiiittttyyyy |||| ppppeeeerrrrmmmmiiiitttt |||| vvvviiiieeeewwww relname {,relname}
+
+             =>   INDEX -  erzeuge  einen  Sekunda"rindex  u"ber  eine
+                  existierende Relation.
+                  iiiinnnnddddeeeexxxx oooonnnn relname iiiissss indexname (domname {  ,domname
+                  })
+
+             =>   INTEGRITY - definiere Integrita"tsbedingungen
+                  ddddeeeeffffiiiinnnneeee iiiinnnntttteeeeggggrrrriiiittttyyyy oooonnnn var iiiissss qual
+
+             =>   MODIFY - modifiziere  die  Speicherstruktur  einer
+                  Relation
+
+                       mmmmooooddddiiiiffffyyyy relname ttttoooo storage-structure
+                       [ oooonnnn key [ :sortorder] { , key :sortorder } ]
+                       [ wwwwhhhheeeerrrreeee [ ffffiiiillllllllffffaaaaccccttttoooorrrr ==== n ] [ ,,,, mmmmiiiinnnnppppaaaaggggeeeessss ==== n ]
+                       [ ,,,, mmmmaaaaxxxxppppaaaaggggeeeessss ==== n ] ]
+
+             =>   PERMIT - fu"ge  Berechtigungen  zu  einer  Relation
+                  hinzu
+                  ddddeeeeffffiiiinnnneeee ppppeeeerrrrmmmmiiiitttt oplist oooonnnn var [ (attlist) ]
+                  ttttoooo name [ aaaatttt term ] [ ffffrrrroooommmm time ttttoooo time ] [ oooonnnn day
+                  ttttoooo day ] [ wwwwhhhheeeerrrreeee qual ]
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 33 -                 UUUUeeeebbbbeeeerrrrssssiiiicccchhhhtttt
+
+             =>   PRINT - drucke Relationen
+                  pppprrrriiiinnnntttt relname {, relname}
+
+             =>   RANGE - deklariere eine Variable u"ber  eine  Rela-
+                  tion
+                  rrrraaaannnnggggeeee [[ ooooffff ] var iiiissss relname]
+
+             =>   REPLACE - ersetze Werte von Doma"nen in einer Rela-
+                  tion
+                  rrrreeeeppppllllaaaacccceeee var (target_list) [wwwwhhhheeeerrrreeee qual]
+
+             =>   RETRIEVE - suche Tupel
+                  rrrreeeettttrrrriiiieeeevvvveeee  [[iiiinnnnttttoooo]  relname  uuuunnnniiiiqqqquuuueeee]  (target_list)
+                  [wwwwhhhheeeerrrreeee qual]
+
+             =>   SAVE - sichere eine  Relation  bis  zu  einem  be-
+                  stimmten Datum
+                  ssssaaaavvvveeee relname uuuunnnnttttiiiillll month day year
+
+             =>   VIEW - definiere eine virtuelle Relation
+                  ddddeeeeffffiiiinnnneeee vvvviiiieeeewwww relname (target list) [ wwwwhhhheeeerrrreeee qual ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 34 -                 UUUUeeeebbbbeeeerrrrssssiiiicccchhhhtttt
+
+                         IIIINNNNGGGG____DDDDBBBB  ---- RRRReeeeffffeeeerrrreeeennnnzzzz MMMMaaaannnnuuuuaaaallll
+
+
+
+
+
+
+                                TTTTEEEEIIIILLLL QQQQUUUUEEEELLLL
+
+
+
+
+
+        ################################################################
+        ################################################################
+        ##                                                            ##
+        ##                                                            ##
+        ##                                                            ##
+        ##                                                            ##
+        ##                                                            ##
+        ##       ###   #     #  #####          ######  ######         ##
+        ##        #    ##    # #     #         #     # #     #        ##
+        ##        #    # #   # #               #     # #     #        ##
+        ##        #    #  #  # #  ####         #     # ######         ##
+        ##        #    #   # # #     #         #     # #     #        ##
+        ##        #    #    ## #     #         #     # #     #        ##
+        ##       ###   #     #  #####  ####### ######  ######         ##
+        ##                                                            ##
+        ##                                                            ##
+        ##                                                            ##
+        ##                #####  #     # ####### #                    ##
+        ##               #     # #     # #       #                    ##
+        ##               #     # #     # #       #                    ##
+        ##               #     # #     # #####   #                    ##
+        ##               #   # # #     # #       #                    ##
+        ##               #    #  #     # #       #                    ##
+        ##                #### #  #####  ####### #######              ##
+        ##                                                            ##
+        ##                                                            ##
+        ##                                                            ##
+        ##                                                            ##
+        ##                                                            ##
+        ################################################################
+        ################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 35 -                 UUUUeeeebbbbeeeerrrrssssiiiicccchhhhtttt
+
+        NNNNAAAAMMMMEEEE
+
+             append - Anfu"gen von Tupeln an eine Relation
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             aaaappppppppeeeennnndddd [ttttoooo] relname (target_list) [wwwwhhhheeeerrrreeee qual]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             aaaappppppppeeeennnndddd fu"gt Tupel  an  die  mit  <<<<rrrreeeellllnnnnaaaammmmeeee>>>>  bezeichnete
+             Relation  an.   Diese Relation muss bereits existieren.
+             Die <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>> bestimmt die Attribute, die mit  Wer-
+             ten   belegt   werden.    Die  Doma"nen  ko"nnen  in  der
+             <target_list> in beliebiger Reihenfolge aufgeza"hlt wer-
+             den.   Attribute,  deren  Doma"ne  in  der <target_list>
+             nicht aufgeza"hlt sind, erhalten einen  leeren  Wert  (0
+             bei    numerischen    Doma"nen,    Leerkette    ""   bei
+             Zeichenketten-Doma"nen).
+
+             Die Belegung der Attribute erfolgt mittels  der  Formu-
+             lierung   in  der  <target_list>  durch  direkte  Wert-
+             zuweisung oder durch  Ausdrucks-  oder  Namenszuweisung
+             aus  anderen  Quell-Relationen.   Die  Quell-Relationen
+             sind vorher durch rrrraaaannnnggggeeee-Statements  mit  entsprechenden
+             ttttuuuupppplllleeee____vvvvaaaarrrriiiiaaaabbbblllleeeennnn     zu     definieren.      Aus     den
+             Quell-Relationen  kann   eine   Filterung   u"ber   eine
+             wwwwhhhheeeerrrreeee-Phrase erfolgen.
+
+             Das Schlu"sselwort aaaallllllll kann in der <target_list> benutzt
+             werden, wenn der Ziel-Relation alle Doma"nen hinzugefu"gt
+             werden   und   diese   mit   den   Doma"nen-Namen    der
+             Quell-Relation u"bereinstimmen sollen.
+
+             Um Attribute einer numerischen Doma"ne zu belegen,  kann
+             ein  beliebiges,  anderes numerisches Attribut oder ein
+             numerischer Ausdruck zugewiesen  werden.   Es  erfolgen
+             automatisch  die  no"tigen  Konvertierungen.  Numerische
+             Werte   ko"nnen   nicht   direkt    auf    solche    von
+             Zeichenketten-Doma"nen  zugewiesen  werden;  man konver-
+             tiert sie mittels der aaaasssscccciiiiiiii-Funktion.  Ebenso kann eine
+             Zeichenkette  nicht  direkt  dem  Attribut  einer nume-
+             rischen Doma"ne zugewiesen werden; man benutzt in diesem
+             Fall die Konvertierungsfunktionen iiiinnnntttt1111 , iiiinnnntttt2222 u.s.w.
+
+             Das Statement aaaappppppppeeeennnndddd kann  fu"r  die  Ziel-Relation  nur
+             durch deren Eigentu"mer oder durch einen Nutzer, der fu"r
+             sie die Zugriffsberechtigung aaaappppppppeeeennnndddd hat,  benutzt  wer-
+             den.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLLEEEE
+
+                /* Fu"ge einer Personal-Relation
+                   einen neuen Mitarbeiter hinzu */
+                append personal(name="Neumann",pno=2345,abt="ORZ")
+
+                /* Fu"ge eine Relation zugang
+                   an die Personal-Relation an */
+                range of z is zugang
+                append to personal(z.all)
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 36 -                     AAAAPPPPPPPPEEEENNNNDDDD
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             copy(quel), retrieve(quel)
+
+        NNNNAAAACCCCHHHHRRRRIIIICCCCHHHHTTTTEEEENNNN
+
+             Bei Zuweisung eines numerischen Wertes auf das Attribut
+             einer  Zeichenketten-Doma"ne oder einer Zeichenkette auf
+             das Attribut einer numerischen Doma"ne werden  Nachrich-
+             ten ausgegeben.
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             Sa"tze, die einer Ziel-Relation hinzugefu"gt werden,  die
+             als  heap, cheap, heapsort oder cheapsort angelegt ist,
+             gelangen auch dann in die Relation, wenn diese  dadurch
+             doppelte   Tupel  erha"lt.   Bei  einer  heapsort-  oder
+             cheapsort-Ziel-Relation werden die Tupel eines  erfolg-
+             reichen  aaaappppppppeeeennnndddd  hinten angefu"gt, sodass die Sortierung
+             verloren geht.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 37 -                       CCCCOOOOPPPPYYYY
+
+        NNNNAAAAMMMMEEEE
+
+             copy - Kopieren von Daten einer  Relation  von/auf  ein
+             UNIX -Standard-File
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ccccooooppppyyyy relname ([domname=fformat {, domname=fformat }])
+
+                  direction "Filename"
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             ccccooooppppyyyy transportiert  die  Daten  zwischen  einer  ING_DB
+             -Relation und einem UNIX -Standard-File.  Ein Tupel der
+             Relation mit seinen Doma"nen wird einem Satz  der  Datei
+             mit  seinen  Feldern zugeordnet.  Die Transportrichtung
+             <<<<ddddiiiirrrreeeeccccttttiiiioooonnnn>>>> ist entweder iiiinnnnttttoooo oder ffffrrrroooommmm....  Die mit <<<<rrrreeeellll----
+             nnnnaaaammmmeeee>>>>  bezeichnete Relation muss jedenfalls existieren.
+             Die <domname>'s mu"ssen Doma"nen  dieser  Relation  sein.
+             Das  ihnen  zugeordnete  Format  <<<<ffffffffoooorrrrmmmmaaaatttt>>>>  ist das der
+             Felder  des  UNIX  -File.   Das  UNIX  -File  muss  mit
+             "Filename"  durch  einen  kompletten Pfadnamen (auf der
+             Wurzel, also mit "/" beginnend) angegeben werden.
+
+             Beim Kopieren in die Relation (  ccccooooppppyyyy  <relname>  (...)
+             ffffrrrroooommmm "Filename" ) wird das Statement nur vom Eigentu"mer
+             der Relation angenommen.  Die Relation darf keine  Sys-
+             temrelation  oder  kein  Sekunda"rindex  sein  und  darf
+             keinen Sekunda"rindex haben.
+
+             Beim Kopieren in das UNIX -File ( ccccooooppppyyyy <relname>  (...)
+             iiiinnnnttttoooo "Filename" ) wird das Statement nur vom Eigentu"mer
+             der Relation angenommen oder von einem Nutzer, der  fu"r
+             sie Zugriffsberechtigung rrrreeeettttrrrriiiieeeevvvveeee hat.  Der Nutzer muss
+             die entsprechende Berechtigung fu"r  das  file_directory
+             haben.  Das UNIX -File wird mit file_mode 0600 angelegt
+             oder falls es schon vorhanden ist,  neu  erzeugt.   Der
+             ccccooooppppyyyy verwendende Nutzer wird Eigentu"mer des UNIX -File.
+
+             Beim Kopieren werden folgende Formate <<<<ffffffffoooorrrrmmmmaaaatttt>>>> fu"r die
+             Felder des UNIX -File unterstu"tzt:
+
+
+                  iiii1111,,,, iiii2222,,,, iiii4444
+                   1-, 2- oder 4-Byte-Integer
+
+                  ffff4444,,,, ffff8888
+                   4- oder 8-Byte Gleitkomma (einfache oder doppelte
+                  Genauigkeit)
+
+                  cccc1111,,,, cccc2222,,,, ............ cccc222255555555
+                   - Zeichenkette fester angegebener La"nge
+
+                  cccc0000[[[[<<<<ddddeeeelllliiiimmmm>>>>]]]] |||| """"cccc0000<<<<ddddeeeelllliiiimmmm>>>>"""" - Zeichenkette variabler
+                  La"nge beendet durch den Begrenzer <<<<ddddeeeelllliiiimmmm>>>> (delimi-
+                  tor)
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 38 -                       CCCCOOOOPPPPYYYY
+
+                  dddd0000[[[[<<<<ddddeeeelllliiiimmmm>>>>]]]] |||| """"dddd0000<<<<ddddeeeelllliiiimmmm>>>>""""
+                  dddd1111 ............ dddd222255555555
+                  -  ein  fu"r  die  Relation  bedeutungsloses   Feld
+                  (dummy-Feld siehe folgend).
+
+             Die La"ngenangaben in <<<<ffffffffoooorrrrmmmmaaaatttt>>>> du"rfen  fu"hrende  Nullen
+             haben.
+
+             Die im Statement zugeordnete Doma"ne  der  Relation  zum
+             Feld  des File mu"ssen nicht vom selben Typ oder dersel-
+             ben La"nge sein,  ccccooooppppyyyy  fu"hrt  die  notwendigen  Konver-
+             tierungen durch (s. aber unten Laufzeitfehler).
+
+             Im Statement mu"ssen die Doma"nen  der  Relation  in  der
+             Reihenfolge   der  Felder  der  Sa"tze  des  UNIX  -File
+             aufgeza"hlt  werden.   Die  Zuordnung  in  der  Relation
+             erfolgt  per  Spaltennamen.   Nicht aufgeza"hlte Doma"nen
+             der Relation bleiben vom Kopieren  ausgeschlossen  (bei
+             ffffrrrroooommmm  werden sie durch 0 bzw. eine Leerkette "" initia-
+             lisiert).  Der Satz des  UNIX  -File  muss  vollsta"ndig
+             beschrieben   werden.    Vom  Kopieren  ausgeschlossene
+             Felder mu"ssen als dddduuuummmmmmmmyyyy-Felder aufgeza"hlt werden.   Der
+             fu"r  die dummy-Felder im Statement angegebene <<<<ddddoooommmmnnnnaaaammmmeeee>>>>
+             ist fu"r die Relation bedeutungslos.
+
+             ccccooooppppyyyy unterstu"tzt die Arbeit mit variabel langen Feldern
+             auf dem UNIX -File, fu"r die das, sie hinten begrenzende
+             Zeichen, als  Begrenzer  (delimitor)  <<<<ddddeeeelllliiiimmmm>>>>  bestimmt
+             werden  muss.  Da die u"blicherweise gewa"hlten Begrenzer
+             auch innerhalb der  QUEL  eine  syntaktische  Bedeutung
+             haben,  ko"nnen solche Zeichen symbolisch angegeben wer-
+             den:
+
+                Bezeichner
+                  fu"r        bezeichnet
+                <<<<ddddeeeelllliiiimmmm>>>>
+                -------------------------------------------------
+                nl           new_line-Zeichen <nl>
+                tab          Tabulator-Zeichen <tab>
+                sp           (space) <blank>-Zeichen
+                nul          "\0" Byte vom Wert 0
+                null         "\0" Byte vom Wert 0
+                comma        Komma ","
+                colon        Semikolon ";"
+                dash         Bindestrich "-"
+                lparen       (left  parenthesis) "("
+                rparen       (right parenthesis) ")"
+                <zeichen>    das angegebene Zeichen selbst
+
+
+             Man  kann  das  <<<<ffffffffoooorrrrmmmmaaaatttt>>>>  auch  als  """"cccc0000<<<<ddddeeeelllliiiimmmm>>>>""""  bzw.
+             """"dddd0000<<<<ddddeeeelllliiiimmmm>>>>  schreiben,  um  eine  Spezialbedeutung  von
+             <delim> innerhalb von QUEL aufzuheben.
+
+             Bei  der  Arbeit  mit  variablen  Feldern  sind  Beson-
+             derheiten   abha"ngig   von   der  Transportrichtung  zu
+             beachten.
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 39 -                       CCCCOOOOPPPPYYYY
+
+             In die Relation:
+             ccccooooppppyyyy rrrreeeellllnnnnaaaammmmeeee (...) ffffrrrroooommmm "Filename" :
+
+                  Wenn <<<<ddddeeeelllliiiimmmm>>>> im Statement bei  cccc0000  oder  dddd0000  nicht
+                  angegeben  ist,  wird das erste auftretende Komma,
+                  <tab> oder <nl> als Feldbegrenzer gewertet,  sonst
+                  begrenzt  das angegebene Zeichen <delim> das Feld.
+                  Das Begrenzerzeichen wird nicht  in  das  Attribut
+                  u"bernommen.  Entha"lt das Feld das Begrenzerzeichen
+                  an Stellen, wo es noch nicht Begrenzer sein  soll,
+                  ist diesem Zeichen im Feld ein <backslash> ( "\" )
+                  voranzustellen.
+
+                  Beispiele:
+
+                          chardom= c0     Zeichenkette endend
+                                          auf Komma, <tab> oder <nl>
+                          chardom= c0nl   dto endend auf <nl>
+                          chardom= "c0#"  dto endend auf #
+
+
+                  Wenn chardom= c0comma  definiert  ist,  wu"rde  der
+                  Feldinhalt
+                       Neumann\, Karl,
+                  den Attributwert
+                       Neumann, Karl
+                  erzeugen.
+
+                  Es wird empfohlen, bei der Anlage von UNIX -Files,
+                  die  zur  Kopie  auf ING_DB -Relationen vorgesehen
+                  sind, einen Satzbegrenzer  einzufu"hren,  der  sich
+                  von  allen  Feldbegrenzern unterscheidet.  Dadurch
+                  wird  ccccooooppppyyyy  synchronisiert,  auch  wenn  ein  Satz
+                  fa"lschlicherweise  nicht  die  richtige Anzahl von
+                  Feldern hat.
+
+             In das File:
+             ccccooooppppyyyy relname (...) iiiinnnnttttoooo "Filename" :
+
+             c0
+
+                  Das Attribut  wird  in  eine  Zeichenkette  fester
+                  La"nge   umgewandelt,   diese   wird  in  das  File
+                  geschrieben.     Fu"r     die     Attribute     von
+                  Zeichenketten-Doma"nen  ergibt  sich  die La"nge aus
+                  dem Doma"nen-Format <<<<ffffoooorrrrmmmmaaaatttt>>>> selbst, fu"r  Attribute
+                  numerischer  Doma"nen erfolgt eine ascii-Umwandlung
+                  auf das Druckformat, das bei  Sitzungsstart  durch
+                  die  ING_DB  -Optionen ----iiii,,,, ----ffff,,,, oder ----cccc beeinflusst
+                  werden kann (s.  qqqquuuueeeellll(unix)).
+
+             c0<delim>
+
+                  wie c0, zusa"tzlich wird das Zeichen <delim> in das
+                  Feld geschrieben.
+
+             d0
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 40 -                       CCCCOOOOPPPPYYYY
+
+                  unzula"ssig
+
+             d0<delim>
+
+                  Das Zeichen <delim> wird einmal in  den  Satz  des
+                  File  geschrieben;  der  im  Statement  angegebene
+                  <domname> ist bedeutungslos.
+
+             d1, d2, ... d255
+
+                  Der <domname> muss einer der oben als  "Bezeichner
+                  fu"r  <delim>"  aufgeza"hlten  sein.   Das  von  ihm
+                  bezeichnete Zeichen wird 1,2, ... 255 mal  in  den
+                  Satz des UNIX -File geschrieben.
+
+             d1<delim>, d2<delim>, ... d255<delim>
+
+                  Das Zeichen <delim> wird 1,2, ...255  mal  in  das
+                  UNIX  -File geschrieben.  Der im Statement angege-
+                  bene <domname> ist bedeutungslos.
+
+             Zur Sicherung  und  Wiederherstellung  einzelner  Rela-
+             tionen kann das Statement in der Kurzform:
+
+
+                  ccccooooppppyyyy relname () direction "Filename"
+
+             verwendet werden physiche  Kopie  =  (bulk_copy).   Das
+             Statement  wird  in  diesem Falle automatisch mit allen
+             Doma"nen der Relation in deren Erzeugungsreihenfolge und
+             deren   Formaten   erga"nzt.   Man  spart  Formulierung-
+             saufwand, die Abarbeitung  erfolgt  schneller  als  fu"r
+             andere ccccooooppppyyyy-Statements, da Konvertierungen entfallen.
+
+        NNNNAAAACCCCHHHHRRRRIIIICCCCHHHHTTTTEEEENNNN
+
+             Es   werden   eine   Reihe   syntaktischer   Kontrollen
+             durchgefu"hrt,  die Fehlernachrichten bringen ko"nnen (s.
+             ddddbbbbuuuu(error) 5800 ...), dabei ist das Kopieren noch nicht
+             angelaufen (man u"berpru"fe ggf. aber, ob bei copy...into
+             das UNIX -create schon das Ziel-File gelo"scht hat).
+
+             Zur Laufzeit fu"hren folgende  Fehler  zum  Abbruch  des
+             Kopierens:
+
+             -    wenn bei Konvertierungen  (numerisch  zu  Zeichen-
+                  kette,  Zeichenkette  zu  numerisch,  numerisch zu
+                  numerisch anderen Formats)  die  La"nge  des  Ziels
+                  eine  Aufnahme des vollsta"ndigen Wertes nicht mehr
+                  erlaubt,
+
+             -    wenn bei copy...from  das File-Ende asynchron  zum
+                  Tupelende kommt.
+
+             Nach Abschluss  der  Kopie  werden  3  integrale  Werte
+             gewarnt, falls es solche Fa"lle gab:
+
+             -    Es wurden nnnnnnnnnnnn Attribute nur verku"rzt kopiert.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 41 -                       CCCCOOOOPPPPYYYY
+
+             Nur bei copy...from "Filename":
+
+             -    Es wurden nnnnnnnnnnnn doppelte Tupel  gefunden  und  igno-
+                  riert.     Das    erstauftretende    Tupel   wurde
+                  gespeichert.  Diese Meldung tritt nicht auf,  wenn
+                  die  Relation  heap-Struktur  hat, in diese werden
+                  auch doppelte Tupel gespeichert.
+
+        -    Es wurden nnnnnnnnnnnn Attribute gefunden, in denen nicht druck-
+             bare  Zeichen auftraten, die zu Leerzeichen konvertiert
+             wurden (auch <tab>, <nl> und  <escape>  wurden  konver-
+             tiert !)
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLLEEEE
+
+
+                /* Kopiere Daten in die personal Relation */
+
+                copy personal
+                (name= "c24#", pno= c4null, d= d0semicol, abt= c0comma
+                d=d0nl)
+                from "/mnt/mein_dir/personal"
+
+                /* Kopiere Daten der personal Relation
+                   in ein File */
+
+                copy personal
+                (name= c0comma, pno= i2, comma= d1
+                abt= c3, d= d1comma, d= d1nl)
+                into "/user/mein_dir/personal"
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             append(quel),         create(quel),         quel(unix),
+             integrity(quel), copyr(unix)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             Bei  copy   into   auf   Relationen   mit   definierten
+             Integrita"ten werden die Integrita"ten nicht eingehalten,
+             so dass inkonsistente Datenbesta"nde entstehen ko"nnen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 42 -                     CCCCRRRREEEEAAAATTTTEEEE
+
+        NNNNAAAAMMMMEEEE
+
+             create - Erzeugen einer neuen Relation
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ccccrrrreeeeaaaatttteeee relname (domname = format {, domname = format })
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             ccccrrrreeeeaaaatttteeee erzeugt eine neue Relation in  der  aufliegenden
+             Datenbank.    Die  Relation  wird  dem,  das  Statement
+             auslo"senden  Nutzer,   zugeeignet   (dieser   ist   ihr
+             "Eigentu"mer")  und  fu"r 7 Tage reserviert.  Wenn dieser
+             Nutzer der DBA ist, wird die Relation  zur  allgemeinen
+             Benutzung  (shared),  andernfalls  nur  fu"r  den Nutzer
+             perso"nlich (private) verfu"gbar.  Der Name der erzeugten
+             Relation  ist  <<<<rrrreeeellllnnnnaaaammmmeeee>>>>,,,,  ihre  Doma"nen werden mit den
+             aufgefu"hrten <<<<ddddoooommmmnnnnaaaammmmeeee>>>> 's angelegt  und  erhalten  die,
+             jeweils fu"r sie spezifizierten Formate (s.  qqqquuuueeeellll:::: <for-
+             mat>).
+
+             Die Relation wird als heap  ohne  Daten  initialisiert.
+             Fu"r   andere   Nutzer   werden   keine   Zugriffsrechte
+             eingetragen.
+
+             Eine Relation kann implementierungsabha"ngig 49 bzw. 128
+             Doma"nen  bekommen.   Die  Namen  der  System-Relationen
+             (relation, attribute, indexes, tree, protect,  integri-
+             ties, references) sind reservierte Relationen-Namen.
+
+             Die vom Anwender  gewa"hlten  Namen  mu"ssen  den  ING_DB
+             -Konventionen genu"gen.  Namen du"rfen kleine Buchstaben,
+             Ziffern und das Unterstreichungszeichen "_"  enthalten;
+             mu"ssen  mit  einem  Buchstaben  oder  "_"  anfangen und
+             du"rfen maximal 12 Zeichen lang  sein).   Schlu"sselworte
+             von QUEL oder AMX sollten vermieden werden.
+
+             Attributnamen sind lokale Namen innerhalb  einer  Rela-
+             tion  und  mu"ssen hier eindeutig sein.  Relationennamen
+             werden von ING_DB  mit einem Codenamen des, sie  erzeu-
+             genden  Nutzers erga"nzt.  Ein Nutzer greift dadurch bei
+             gleichen  Relationennamen  innerhalb  einer   Datenbank
+             immer auf "seine" Relation zu.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+                /* Erzeuge eine Relation personal
+                   mit den Doma"nen pno, name, abt */
+                create personal (pno=i2, name=c56, abt=c3)
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             append(quel), copy(quel), creater(unix), destroy(quel),
+             modify(quel), save(quel)
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 43 -                     DDDDEEEEFFFFIIIINNNNEEEE
+
+        NNNNAAAAMMMMEEEE
+
+             define - definiere ein Subschema
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ddddeeeeffffiiiinnnneeee vvvviiiieeeewwww name (target list) [ wwwwhhhheeeerrrreeee qual ]
+             ddddeeeeffffiiiinnnneeee ppppeeeerrrrmmmmiiiitttt oplist oooonnnn var [ (attlist) }
+             ttttoooo name [ aaaatttt term ] [ ffffrrrroooommmm time ttttoooo time ] [ oooonnnn  day  ttttoooo
+             day ] [ wwwwhhhheeeerrrreeee qual ]
+             ddddeeeeffffiiiinnnneeee iiiinnnntttteeeeggggrrrriiiittttyyyy oooonnnn var iiiissss qual
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Mit  dem   ddddeeeeffffiiiinnnneeee   -Statement   ko"nnen   Integrita"ten,
+             Zugriffsrechte  bzw.  Sichten  (views) in die Datenbank
+             eingefu"hrt werden, wenn fu"r diese QRYMOD  (Querymodifi-
+             kation  = Anfragemodifikation) -Unterstu"tzung generiert
+             wurde.
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             integrity(quel), permit(quel), view(quel)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 44 -                     DDDDEEEELLLLEEEETTTTEEEE
+
+        NNNNAAAAMMMMEEEE
+
+             delete - Streichen von Tupeln aus einer Relation
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ddddeeeelllleeeetttteeee var [wwwwhhhheeeerrrreeee qual]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             ddddeeeelllleeeetttteeee streicht in der Relation vorhandene  Tupel,  die
+             sich unter qqqquuuuaaaallll qualifizieren.  Die <<<<vvvvaaaarrrr>>>> muss in einem
+             vorangehend  gegebenem  rrrraaaannnnggggeeee  -Statement  u"ber   einer
+             existierenden  Relation  definiert  worden  sein.   Das
+             ddddeeeelllleeeetttteeee -Statement hat  keine  <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>>,,,,  die  sich
+             qualifizierenden  Tupel  werden  insgesamt  gestrichen.
+             Wenn im Statement keine  where-Phrase  angegeben  wird,
+             werden  alle Tupel der Relation gestrichen; es entsteht
+             eine leere Relation.  Will  man  derartiges  erreichen,
+             ist die Anwendung eines modify-Kommandos
+
+                  mmmmooooddddiiiiffffyyyy <relname> ttttoooo ttttrrrruuuunnnnccccaaaatttteeeedddd
+
+             zeitgu"nstiger.
+
+             Das ddddeeeelllleeeetttteeee-Statement wird nur vom Eigentu"mer der  Rela-
+             tion,  oder  einem Nutzer, der die Zugriffsberechtigung
+             ddddeeeelllleeeetttteeee fu"r die Relation besitzt, angenommen.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+                /* Streichen aller Mitarbeiter der Abteilung ORZ
+                   aus der Relation personal */
+                range of p is personal
+                delete p where p.abt = "ORZ"
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             destroy(quel), modify(quel), range(quel)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 45 -                    DDDDEEEESSSSTTTTRRRROOOOYYYY
+
+        NNNNAAAAMMMMEEEE
+
+             destroy - Lo"schen von Relationen
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ddddeeeessssttttrrrrooooyyyy relname { , relname }
+             ddddeeeessssttttrrrrooooyyyy ppppeeeerrrrmmmmiiiitttt |||| iiiinnnntttteeeeggggrrrriiiittttyyyy  relname  aaaallllllll  ||||  constraint
+             {,constraint}
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             ddddeeeessssttttrrrrooooyyyy streicht Relationen aus der aufliegenden Daten-
+             bank.    Das  Kommando  wird  nur  vom  Eigentu"mer  der
+             Relation(en) angenommen.  Will man von  einer  Relation
+             nur  deren  Inhalt  - also alle Tupel - streichen, aber
+             die Definition der Relation erhalten , benutzt man  das
+             ddddeeeelllleeeetttteeee  -Statement  ohne  where-Phrase  oder das mmmmooooddddiiiiffffyyyy
+             -Statement mit der Speicherstruktur ttttrrrruuuunnnnccccaaaatttteeeedddd....
+
+             Beim Streichen einer Relation, fu"r die  Sekunda"rindizes
+             definiert  sind,  werden automatisch auch diese gestri-
+             chen.  Das Streichen eines Sekunda"rindex selbst hat auf
+             dessen Prima"r-Relation keine Auswirkung.
+
+             Das  """"ddddeeeessssttttrrrrooooyyyy  ppppeeeerrrrmmmmiiiitttt""""   -Statement   lo"scht   gegebene
+             Zugriffsrechte   zu   der   Relation   "relname",   das
+             "destroy-integrity"-Statement definierte Integrita"ten.
+             Das Schlu"sselwort """"aaaallllllll"""" gibt an,  dass  alle  Zugriffs-
+             rechte  bzw. Integrita"ten gestrichen werden sollen.  Um
+             einzelne Zugriffsrechte bzw. Integrita"ten  zu  lo"schen,
+             muss eine, durch Komma getrennte constraint-Liste (Num-
+             mern) angegeben werden.  Die  constraint's  erha"lt  man
+             durch hhhheeeellllpppp ppppeeeerrrrmmmmiiiitttt bzw.  hhhheeeellllpppp iiiinnnntttteeeeggggrrrriiiittttyyyy....
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+                /* Streiche die Relation personal */
+                destroy personal
+                destroy integrity personal 7
+                destroy integrity personal all
+                destroy permit personal 2, 9, 12
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             create(quel),  delete(quel),  help(quel),  index(quel),
+             modify(quel),      destroyr(unix),     integrity(quel),
+             permit(quel), view(quel)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             Relationen, die Basis fu"r  Sichten  (siehe  view(quel))
+             bzw.  Zugriffsrechte  (siehe permit(quel)) sind, du"rfen
+             nicht gelo"scht werden.
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 46 -                       HHHHEEEELLLLPPPP
+
+        NNNNAAAAMMMMEEEE
+
+             help - Ausgabe von Hilfen zur Nutzung  von  ING_DB  und
+             von  Informationen u"ber die Relationen der aufliegenden
+             Datenbank
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             hhhheeeellllpppp [ relname ] {, relname } hhhheeeellllpppp ""  |  "section"  {,
+             "section"}
+             hhhheeeellllpppp vvvviiiieeeewwww relname {, relname}
+             hhhheeeellllpppp ppppeeeerrrrmmmmiiiitttt relname {, relname}
+             hhhheeeellllpppp iiiinnnntttteeeeggggrrrriiiittttyyyy relname {, relname}
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Mit Statement  hhhheeeellllpppp  ohne  Argumente  erha"lt  man  eine
+             U"bersicht  u"ber alle Relationen der aufliegenden Daten-
+             bank, zu denen Zugriffsberechtigung besteht:
+
+                     relation name    relation owner
+                     { <relname>        <Eigner>   }
+
+             Mit einem Statement hhhheeeellllpppp rrrreeeellllnnnnaaaammmmeeee  erha"lt  man  Informa-
+             tionen  u"ber die bezeichnete Relation, sofern fu"r diese
+             Zugriffsberechtigung besteht:
+
+
+              Relation:         <relname>
+              Besitzer:         <Eigner der Relation>
+              Tupellaenge:      <Gesamtla"nge des Tupel>
+              saved until:      <Verfallsdatum>
+              number of tupels: <Anzahl der Tupel>
+              storage structur: <Speicherstruktur>
+              relation type:    <Typ der Relation>
+                      Bei indizierten Prima"rrelationen folgt:
+              secondary indices: <indexname> {, <indexname>}
+                      Bei allen Relationen folgt
+                      die Tabelle ihrer Doma"nen:
+
+              Domaenenname Typ  Laenge  Schluessel
+              { <domname>       <format>   <keyno>}
+
+
+             Die Speicherstruktur wird ausgegeben als:
+
+
+              [compressed] (heap          /* [c]heap */
+                          | isam          /* [c]isam */
+                          | hash          /* [c]hash */
+                          | unbekannt [Nummer] /* falsch */
+                           )
+
+
+
+             Der Typ der Relation ist:
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 47 -                       HHHHEEEELLLLPPPP
+
+
+               Systemkatalog   /* System-Relation*/
+              | Index auf <relname>
+              | Index auf unbekannte Relation
+              | Nutzerrelation  /* Prima"rrelation */
+
+
+             Die erste Seitenzahl gibt  die  Anzahl  der  physischen
+             Seiten,  die die Relation auf externen Speichern belegt
+             und die aufgrund des Datenbestandes wirklich  notwendig
+             sind, aus.  Die 2.Zahl gibt die U"berlaufseiten an.
+
+             Wenn die Relation einen Schlu"ssel hat  und  dieser  aus
+             mehreren    Komponenten    besteht,    gibt    in   der
+             Doma"nentabelle eine <<<<kkkkeeeeyyyynnnnoooo>>>> != 0 an, dass  es  sich  um
+             eine  Schlu"sselkomponente  handelt, gleichzeitig infor-
+             miert <<<<kkkkeeeeyyyynnnnoooo>>>> u"ber die Stellung (Reihenfolge) der  Kom-
+             ponente im Schlu"ssel.
+
+             Mit  einem  Statement  hhhheeeellllpppp  """"sssseeeeccccttttiiiioooonnnn""""  kann  man  sich
+             einzelne Abschnitte des Referenz-Manuals ansehen:
+
+
+                help ""          zeigt das Inhaltsverzeichnis
+                help "help"      zeigt den vorliegenden Abschnitt
+                help "<section>" zeigt den Abschnitt <section> dieses
+                               Referenz-Manuals
+
+
+             Die  Abschnittsnamen  mu"ssen  mit  kleinen   Buchstaben
+             angegeben werden.
+
+             hhhheeeellllpppp  vvvviiiieeeewwww  rrrreeeellllnnnnaaaammmmeeee  {,  relname}  druckt   die   view-
+             Definitionen des spezifizierten Relationsnamen.
+
+             hhhheeeellllpppp ppppeeeerrrrmmmmiiiitttt rrrreeeellllnnnnaaaammmmeeee {, relname}  druckt  die  Zugriffs-
+             berechtigungen der spezifizierten Relationen.
+
+             hhhheeeellllpppp  iiiinnnntttteeeeggggrrrriiiittttyyyy  rrrreeeellllnnnnaaaammmmeeee   {,   relname}   druckt   die
+             Integrita"tsbedingungen  fu"r  die  spezifizierten  Rela-
+             tionen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 48 -                      IIIINNNNDDDDEEEEXXXX
+
+        NNNNAAAAMMMMEEEE
+
+             index - Erzeugung eines Sekunda"rindex
+                     auf eine existierende Relation
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             iiiinnnnddddeeeexxxx oooonnnn relname iiiissss indexname (domname {, domname})
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             iiiinnnnddddeeeexxxx wird benutzt, um Sekunda"rindizes auf  existieren-
+             den  Relationen zu definieren und zu erzeugen und damit
+             die Effizienz von rrrreeeettttrrrriiiieeeevvvveeee - und uuuuppppddddaaaatttteeee -Statements  zu
+             erho"hen.    Ein  Sekunda"rindex  vermittelt  mit  seinem
+             Schlu"ssel   einen   weiteren   Zugriffspfad   auf   der
+             Prima"r-Relation, so als ha"tte die Prima"r-Relation einen
+             weiteren Schlu"ssel, auf den direkt  zugegriffen  werden
+             kann.   Der  Sekunda"rindex  wird  aus  den  Doma"nen der
+             Prima"r-Relation erzeugt, die in  der  Reihenfolge,  wie
+             sie  im  Statement  als {{{{<<<<ddddoooommmmnnnnaaaammmmeeee>>>>}}}} angegeben sind, als
+             Schlu"ssel des Index verwendet  werden.   Das  Statement
+             wird nur vom Eigentu"mer der Relation angenommen.
+
+             Um die Integrita"t  des  Index  zu  erhalten,  kann  ein
+             Nutzer  Indizes  nicht  direkt  vera"ndern.   Sobald die
+             Prima"r-Relation gea"ndert wird, werden auch alle auf ihr
+             definierten Sekunda"rindizes automatisch vera"ndert.
+
+             Ein Sekunda"rindex wird bei seiner Erzeugung automatisch
+             in  der  Speicherstruktur  isam  u"ber  seinem Schlu"ssel
+             angelegt.   Diese  Initialstruktur   kann   durch   die
+             QUEL-Option  ----nnnn  auf  eine andere festgelegt werden (s.
+             qqqquuuueeeellll  (unix)).   Ausserdem  kann  jeder   Sekunda"rindex
+             einzeln  durch  Anwendung  eines  mmmmooooddddiiiiffffyyyy-Statements auf
+             eine  Speicherstruktur  gebracht  werden,  die   anwen-
+             dungsspezifisch die beste ist.  In diesem Falle verwen-
+             det man <<<<iiiinnnnddddeeeexxxxnnnnaaaammmmeeee>>>> wie einen normalen <relname>.
+
+             Nach einem mmmmooooddddiiiiffffyyyy - oder ddddeeeessssttttrrrrooooyyyy  -Kommando  auf  einer
+             Prima"r-Relation   sind   alle   auf   ihr   definierten
+             Sekunda"rindizes gestrichen.
+
+             Sekunda"rindizes  ko"nnen   nicht   auf   Systemkataloge,
+             Sichten und Sekunda"rindizes definiert werden.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+                /* Erzeuge einen Sekunda"rindex abteilung
+                   auf die Prima"r-Relation personal */
+                index on personal is abteilung(abt)
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             copy(quel), destroy(quel), modify(quel), indexr(unix)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 49 -                      IIIINNNNDDDDEEEEXXXX
+
+             Ein    Index    kann    maximal    6    Doma"nen     als
+             Schlu"sselkomponenten erhalten.
+
+             Das ccccooooppppyyyy-Statement kann nicht benutzt werden, um  Daten
+             in  eine Relation zu kopieren, u"ber der Sekunda"rindizes
+             definiert sind.
+
+             Die Anlage eines Index als isam-Struktur ist die  beste
+             Speicherstruktur fu"r den Standardfall.
+             Die Speicherstruktur "heap" ist fu"r Indizes ohne  Sinn,
+             "hash"  ist  nur  dann sinnvoll, wenn grundsa"tzlich mit
+             vergebenen festen Schlu"sseln  u"ber  den  Index  recher-
+             chiert wird.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 50 -                  IIIINNNNTTTTEEEEGGGGRRRRIIIITTTTYYYY
+
+        NNNNAAAAMMMMEEEE
+
+             integrity - Definition von Integrita"tsbedingungen
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ddddeeeeffffiiiinnnneeee iiiinnnntttteeeeggggrrrriiiittttyyyy oooonnnn var qual
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Das iiiinnnntttteeeeggggrrrriiiittttyyyy -Statement fu"gt eine Integrita"tsbedingung
+             fu"r  die  durch vvvvaaaarrrr spezifizierte Relation hinzu.  Eine
+             Integrita"t ist eine Einschra"nkung eines zula"ssigen Wer-
+             tebereiches  fu"r eine oder mehrere Doma"nen. Nachdem die
+             Integrita"ten definiert wurden, werden  vom  System  nur
+             noch   A"nderungen   ausgefu"hrt,  die  alle  definierten
+             Integrita"ten erfu"llen.
+
+             A"nderungen, die mindestens eine  Integrita"t  verletzen,
+             werden   ohne   Ausgabe   einer   Fehlermeldung   nicht
+             ausgefu"hrt.
+
+             In     der     aktuellen     Implementation      werden
+             Integrita"tsverletzungen  nicht  ausgewiesen - ungu"ltige
+             Vera"nderungen an  existierenden  Datenbesta"nden  werden
+             einfach (schweigend) nicht ausgefu"hrt.
+
+             Die QQQQuuuuaaaalllliiiiffffiiiikkkkaaaattttiiiioooonnnn darf keine Aggregate und nur  Doma"nen
+             der einzuschra"nkenden Relation enthalten.
+
+             Das integrity-Statement wird  nur  vom  Eigentu"mer  der
+             Relation angenommen.
+             In AMX-Programme ko"nnen nur Relationen verarbeitet wer-
+             den, die keine Integrita"tsbedingungen besitzen.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+
+                /* Sichere, dass alle Angestellten ein
+                   positives Einkommen haben */
+                range of e is employee
+                define integrity on e is e.salary > 0
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             destroy(quel), copy(quel)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             Eine Integrita"t wird nur  dann  gu"ltig,  wenn  der  zum
+             Zeitpunkt   der  Definition  existierende  Datenbestand
+             keine  Verletzung  der  Bedingungen  darstellt.    ccccooooppppyyyy
+             beru"cksichtigt die definierten Integrita"ten noch nicht.
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 51 -                     MMMMOOOODDDDIIIIFFFFYYYY
+
+        NNNNAAAAMMMMEEEE
+
+             modify - A"nderung der Speicherstruktur einer Relation
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             mmmmooooddddiiiiffffyyyy relname ttttoooo storage_structure
+             [ oooonnnn key :sortorder { , key :sortorder} ]
+             [ wwwwhhhheeeerrrreeee [ ffffiiiillllllllffffaaaaccccttttoooorrrr ==== nnnn ]
+             [ ,,,, mmmmiiiinnnnppppaaaaggggeeeessss ==== nnnn ] [ ,,,, mmmmaaaaxxxxppppaaaaggggeeeessss ==== nnnn ] ]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             mmmmooooddddiiiiffffyyyy vera"ndert die Speicherstruktur der  spezifizier-
+             ten  Relation  <<<<rrrreeeellllnnnnaaaammmmeeee>>>>  auf  <<<<ssssttttoooorrrraaaaggggeeee____ssssttttrrrruuuuccccttttuuuurrrr>>>>....  Das
+             Statement wird nur vom Eigentu"mer der Relation angenom-
+             men.   Die  Systemrelationen  und  Sichten  ko"nnen  mit
+             mmmmooooddddiiiiffffyyyy nicht modifiziert werden.   Das  Statement  wird
+             benutzt, um Prima"rschlu"ssel einzufu"hren, zu a"ndern bzw.
+             zu      reorganisieren.       Die      Speicherstruktur
+             <<<<ssssttttoooorrrraaaaggggeeee____ssssttttrrrruuuuccccttttuuuurrrreeee>>>> kann wie folgt bestimmt werden:
+
+
+                  isam       - index sequentielle Struktur
+                  cisam      - komprimierte isam
+                  hash       - hash Struktur
+                  chash      - komprimierte hash
+                  heap       - unstrukturiert und ohne Schlu"ssel
+                  cheap      - komprimierte heap
+                  heapsort   - heap mit sortierten Tupeln
+                               und Ausschluss doppelter
+                  cheapsort  - komprimierte heapsort
+                  truncated  - heap, in dem alle Tupel gestrichen
+                               wurden
+                  same       - Reorganisation
+
+
+             Die  Speicherstrukturen  isam  und   hash   ermo"glichen
+             Schlu"sselzugriffe.  Isam beno"tigt mindestens zwei Plat-
+             tenzugriffe,   unterstu"tzt   aber   auch   sequentielle
+             Zugriffe,  wie  sie  bei  von-bis-Abfragen  no"tig sind.
+             Hash greift direkt zu, ist aber bei sequentieller Suche
+             uneffektiv.  Beide Verfahren ordnen neue Tupel zuna"chst
+             auf einer Prima"rseite ein und legen,  wenn  diese  voll
+             ist,  dahinter  U"berlaufseiten  an.  Bei der Suche nach
+             einem   Tupel   fu"hrt   der   Direktzugriff   auf   die
+             Prima"rseite,   diese   und   alle  an  ihr  "ha"ngenden"
+             U"berlaufseiten mu"ssen nach dem Tupel abgesucht werden.
+
+             Heap ist  ein  vo"llig  ungeordneter  Bestand,  der  nur
+             sequentiell  durchsucht  werden  kann.   Heapsort liegt
+             nach mmmmooooddddiiiiffffyyyy  in  einer  definierten  Sortierfolge  vor.
+             Sowohl  bei  heap,  als  auch  bei heapsort werden neue
+             Tupel unsortiert angefu"gt.
+
+             Bei Anlage einer  heapsort-Struktur  werden  die  Tupel
+             nach  allen  ihren Attributen sortiert.  Dadurch ko"nnen
+             und werden doppelte Tupel ermittelt und ausgeschlossen.
+             Bei den Speicherstrukturen heapsort bzw. cheapsort kann
+             durch die Schlu"sselwo"rter  "ascending"  bzw.  "a"  auf-
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 52 -                     MMMMOOOODDDDIIIIFFFFYYYY
+
+             steigende  und  durch  die Schlu"sselwo"rter "descending"
+             bzw. "d" fallende Sortierung angegeben werden.
+             "ascending" ist Standard und kann demzufolge entfallen.
+
+             Bei  den  komprimierten  Speicherstrukturen  wird  eine
+             gu"nstigere  Ablage der Daten auf dem externen Speicher-
+             medium erreicht, mit der Einschra"nkung, dass A"nderungen
+             unter Umsta"nden zeitaufwendiger sind.
+
+             Wenn im Statement die oooonnnn -Phrase fehlt,  wird  bei  der
+             Modifizierung  auf  isam,  cisam,  hash  oder chash als
+             Schlu"ssel fu"r die Relation automatisch die erste Doma"ne
+             verwendet.  Bei Modifizierung auf heap, cheap oder same
+             darf die oooonnnn -Phrase nicht angegeben werden.  Bei  Modi-
+             fizierung  auf  heapsort  oder cheapsort ist die Angabe
+             der oooonnnn -Phrase notwendig.
+
+             Wenn eine Relation sortiert werden soll  (isam,  cisam,
+             hash,   chash,   heapsort   und  cheapsort),  sind  die
+             Prima"rschlu"ssel der Relation in der oooonnnn -Phrase  in  der
+             Reihenfolge  der  gewu"nschten Sortierung anzugeben, der
+             erstangegebene bildet  den  dominanten  Sortierbegriff.
+             Die  in der oooonnnn -Phrase nicht angegebenen Doma"nen werden
+             danach in  der  erzeugten  Reihenfolge  zur  Sortierung
+             herangezogen.
+
+             Bei einer Modifikation zur Speicherstruktur "same" wird
+             die Relation reorganisiert, d.h., die Speicherstruktur,
+             der  Sortierschlu"ssel  und  deren  Reihenfolge  bleiben
+             erhalten.    Nach  umfangreichen  A"nderungen  kann  die
+             externe Anordnung der Daten uneffektiv werden, so  dass
+             eine    Neueinrichtung    bzw.    Reorganisation    der
+             Schlu"sselstruktur sinnvoll ist.
+             (Schlu"sselbaumstruktur !)
+
+             Ein Fu"llfaktor <<<<ffffiiiillllllllffffaaaaccccttttoooorrrr>>>> spezifiziert die  prozentu-
+             ale Fu"llung (1 ... 100) der Prima"rseiten (unter idealen
+             Bedingungen) bei Anlage der Relation durch  das  mmmmooooddddiiiiffffyyyy
+             -Statement.   Dieser  Fu"llfaktor kann bei Modifizierung
+             auf isam, cisam, hash und chash angegeben werden.   Man
+             vermeide  die  Angabe  eines zu grossen Fu"llfaktors bei
+             noch unfertigen Relationen.  Eine ungleichma"ssige  Ver-
+             teilung des Schlu"ssels kann bei folgenden Erweiterungen
+             der  Relation  zur  Anlage  von  vielen  U"berlaufseiten
+             fu"hren, wodurch sich das Zugriffsverhalten der Relation
+             sehr verschlechtert.
+
+             Bei Modifizierung auf  hash  oder  chash  spezifizieren
+             mmmmiiiinnnnppppaaaaggggeeee  und  mmmmaaaaxxxxppppaaaaggggeeee  die minimale und maximale Anzahl
+             von Prima"rseiten, die die Relation haben  soll.   Falls
+             angegeben, mu"ssen beide mindestens 1 sein; mmmmaaaaxxxxppppaaaaggggeeee darf
+             nicht kleiner als mmmmiiiinnnnppppaaaaggggeeee sein.
+
+             Wenn nicht  angegeben,  werden  folgende  Standardwerte
+             eingesetzt:
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 53 -                     MMMMOOOODDDDIIIIFFFFYYYY
+
+
+                     FILLFACTOR      MINPAGES        MAXPAGES
+                     ----------      --------        --------
+             hash    50              10              nach Bedarf
+             chash   75              1               nach Bedarf
+             isam    80              --              --
+             cisam   100             --              --
+
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+
+             /* Modifiziere die personal Relation
+                auf eine Isam-Struktur mit name als Schlu"ssel */
+             modify personal to isam on name
+
+             /* Wenn name die erste Doma"ne dieser Relation ist
+                kann das gleiche Resultat erzielt werden durch */
+             modify personal to isam
+
+             /* Die gleiche Modifizierung
+                mit 60-prozentiger Fu"llung der Prima"rseiten */
+             modify personal to isam on name
+                    where fillfactor = 60
+
+
+
+             /* Ermittle Dienstjubilare
+                und ordne sie nach 10- und 25-ja"hrigen */
+             range of p is personal
+             retrieve into temp
+              (p.abt, p.name, dienstalter=1985-p.einstellung)
+              where 1985-p.einstellung = 10
+                   or 1985-p.einstellung = 25
+             modify temp to heapsort on dienstalter
+             print temp
+             destroy temp
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             sysmod(unix), modifyr(unix)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 54 -                     PPPPEEEERRRRMMMMIIIITTTT
+
+        NNNNAAAAMMMMEEEE
+
+             permit - fu"ge Berechtigungen an eine Relation an
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             ddddeeeeffffiiiinnnneeee ppppeeeerrrrmmmmiiiitttt oplist oooonnnn var [ (attlist) }
+             ttttoooo name [ aaaatttt term ] [ ffffrrrroooommmm time ttttoooo time ] [ oooonnnn  day  ttttoooo
+             day ] [ wwwwhhhheeeerrrreeee qual ]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Das ppppeeeerrrrmmmmiiiitttt -Statement darf nur vom DBA  fu"r  DBA  Rela-
+             tionen  gegeben  werden (der DBA kann sich nicht selbst
+             einschra"nken, er hat immer alle Rechte ).
+
+             Das   ppppeeeerrrrmmmmiiiitttt   -Statement   erweitert   die   aktuellen
+             Berechtigungen  fu"r eine Relation entsprechend der Spe-
+             zifikation von vvvvaaaarrrr....  Die OOOOppppeeeerrrraaaattttiiiioooonnnnsssslllliiiisssstttteeee  (oplist)  ist
+             eine durch Komma getrennte Liste mo"glicher Operationen,
+             also rrrreeeettttrrrriiiieeeevvvveeee , rrrreeeeppppllllaaaacccceeee , ddddeeeelllleeeetttteeee  ,  aaaappppppppeeeennnndddd  oder  aaaallllllll....
+             "all"  ist  ein  Spezialfall,  es  bedeutet,  dass alle
+             Berechtigungen gesetzt sind.  nnnnaaaammmmeeee ist  der  login-Name
+             eines  Nutzers oder auch "all".  tttteeeerrrrmmmm ist ein Terminal-
+             name der Form ttyxx oder das Schlu"sselwort "all".   Das
+             Auslassen der Term-Phrase ist gleichbedeutend zu "all",
+             xxxxxxxx kann ein implemetationsabha"ngiger 2-  oder  4-  Byte
+             langer  Name  sein.   ttttiiiimmmmeeee ist in der Form "hh:mm" nach
+             24-Stunden-Modus einzugeben und begrenzt die  Zeit  des
+             Tages an der die Berechtigung gilt.  ddddaaaayyyy ist die Angabe
+             des Wochentages in der Form 0 = Sonntag bis 6 =  Sonna-
+             bend.   Diese  Qualifikation  wird an die Qualifikation
+             der Anfrage zur Laufzeit angeha"ngt.
+
+             Die separaten Teile eeeeiiiinnnneeeessss permit-Statements  (  oplist,
+             attlist,  name,  term,  time- und day-Phrase und qual )
+             mu"ssen gleichzeitig zutreffen, damit das  Zugriffsrecht
+             wirksam wird.
+
+             Die Gesamtzugriffsrechte  fu"r  einen  konkreten  Nutzer
+             ergeben  sich  aus  der  Menge  der  Vereinigung  aller
+             zutreffenden  permit-Statements.   Beispielsweise  wird
+             mit
+
+                     ... to erich at tty4 ...
+
+             die Berechtigung fu"r Erich erteilt,  wenn  er  am  TTY4
+             eingeloggt ist, aber wenn wir zwei
+              ppppeeeerrrrmmmmiiiitttt -Statements
+
+                     ... to erich at all ...
+                     ... to all at tty4  ...
+
+             haben,   dann   wird   Erich   die    Gesamtheit    der
+             Berechtigungen,  die  durch das erste Statement gegeben
+             sind (auch am TTYd), nutzen ko"nnen, wa"hrend  Paul  alle
+             Berechtigungen  des  zweiten  Statements  nur  am  TTY4
+             erha"lt.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 55 -                     PPPPEEEERRRRMMMMIIIITTTT
+
+             Die Statements
+
+             define permit all on x to all
+             define permit retrieve on x to all
+
+             mit  keinen   weiteren   Qualifikationen   werden   als
+             Spezialfa"lle  behandelt  und sehr effizient aufgelo"sst.
+             In AMX-Programmen  ko"nnen  nnnnuuuurrrr  Relationen  verarbeitet
+             werden,  die  keine definierten Zugriffsrechte besitzen
+             mit der Ausnahme der Spezialfa"lle
+
+
+                define permit all | retrieve on x to all
+
+
+             beru"cksichtigt, alle  anderen  werden  ignoriert.   Die
+             Vergabe von Zugriffsrechten auf Indizes und Sichten ist
+             nicht gestattet.
+
+             Die Qualifikation kann Bedingungen  aus  anderen  Rela-
+             tionen enthalten.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+
+             range of e is personal
+             define permit retrieve on e (name, gehalt) to erich
+               at ttyd from 8:00 to 17:00
+               on 1 to 5
+               where e.mgr = "marc"
+
+             range of p is parts
+             define permit retrieve of p to all
+               /*Erich wird die Berechtigung erteilt,
+               **u"ber die Namen der Teile aller Lieferungen
+               **des Ha"ndlers 241 zu recherchieren*/
+             range of t is teile
+             range of l is lieferung
+             define permit retrieve on t(tname) to erich
+             where t.tnum=l.tnum and l.lnum=241
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             destroy(quel)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             Es ist darauf zu achten, dass die  Relationen,  die  in
+             Qualifikation  eingegangen sind, solange nicht gelo"scht
+             werden, solange das Zugriffsrecht existiert.
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 56 -                      PPPPRRRRIIIINNNNTTTT
+
+        NNNNAAAAMMMMEEEE
+
+             print - Ausgabe von Relationen
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+              pppprrrriiiinnnntttt relname {, relname}
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             pppprrrriiiinnnntttt  gibt  den  gesamten  Inhalt  der  spezifizierten
+             Relation(en)  auf  das  Terminal (standard_output) aus.
+             Die Ausgabeformate fu"r die  verschiedenen  Formate  der
+             beteiligten  Doma"nen  kann man bei Start von QUEL durch
+             die   entsprechenden   Optionen   (s.    qqqquuuueeeellll   (unix))
+             festlegen.  Die  als  Spaltenu"berschriften ausgegebenen
+             Namen der  Doma"nen  werden  ggf.  abgeku"rzt,  wenn  sie
+             anders in der Druckbreite nicht unterzubringen sind.
+
+             Das Statement wird nur vom Eigner der Relation oder von
+             einem  Nutzer  angenommen,  der  fu"r  sie die Zugriffs-
+             berechtigung rrrreeeettttrrrriiiieeeevvvveeee hat.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+
+             /* Ausgabe der Relation personal */
+             print personal
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             retrieve(quel), quel(unix), printr(unix)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             Man vermeide die Ausgabe von zu  langen  Zeilen.   QUEL
+             selbst nimmt keine Zeilenteilung (wrap around) vor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 57 -                      RRRRAAAANNNNGGGGEEEE
+
+        NNNNAAAAMMMMEEEE
+
+             range - Deklaration einer tuple_variable'n
+                     auf eine Relation
+
+         SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             rrrraaaannnnggggeeee [[ ooooffff ] var iiiissss relname ]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             rrrraaaannnnggggeeee wird benutzt, um eine Tupelvariable vvvvaaaarrrr , die  in
+             nachfolgenden   QUEL-Statements  benutzt  werden  soll,
+             einer Relation <<<<rrrreeeellllnnnnaaaammmmeeee>>>> zuzuordnen.  Die vvvvaaaarrrr  referen-
+             ziert dann in den QUEL-Statements jeweils ein Tupel der
+             spezifizierten Relation.  Die Zuordnung der vvvvaaaarrrr zu  der
+             Relation gilt fu"r die gesamte QUEL-Sitzung, solange die
+             Variable nicht durch ein anderes rrrraaaannnnggggeeee -Statement einer
+             anderen Relation zugeordnet oder die Relation durch ein
+             ddddeeeessssttttrrrrooooyyyy -Statement gestrichen wird.  Das  leere  range-
+             Statement listet die aktuelle range-Tabelle aus.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+
+             /* Deklariere eine tuple_variable p
+                 auf die Relation personal */
+             range of p is personal
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             destroy(quel)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             Es ko"nnen nur 10 Tupelvariablen gleichzeitig deklariert
+             werden.   Nach  dem  zehnten range-Statement wird durch
+             eine  folgende  Deklaration  die  am   la"ngsten   nicht
+             benutzte Tupelvariable ungu"ltig.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 58 -                    RRRREEEEPPPPLLLLAAAACCCCEEEE
+
+        NNNNAAAAMMMMEEEE
+
+             replace - Ersetzen von Attributen in einer Relation
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             rrrreeeeppppllllaaaacccceeee var (target_list) [wwwwhhhheeeerrrreeee qual]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             rrrreeeeppppllllaaaacccceeee  a"ndert  Werte  in  den  Doma"nen,  die  in  der
+             <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>>  angegeben  sind  fu"r alle die Tupel, die
+             sich entsprechend der wwwwhhhheeeerrrreeee -Phrase qualifizieren.  Die
+             vvvvaaaarrrr  muss  in einem vorangehend gegebenem rrrraaaannnnggggeeee -State-
+             ment u"ber der zu a"ndernden Relation  deklariert  worden
+             sein.   Ausschliesslich  die  Doma"nen,  die modifiziert
+             werden sollen, mu"ssen in der  <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>>  aufgeza"hlt
+             werden.   Diese  Doma"nen  ko"nnen durch Namensangabe bei
+             Zuweisung eines Ausdrucks,  oder  durch  Namensanalogie
+             spezifiziert  werden.   Attribute in gea"nderten Tupeln,
+             deren Doma"ne  in  der  <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>>  nicht  aufgefu"hrt
+             sind, bleiben unvera"ndert.
+
+             Attributen  numerischer  Doma"nen  kann  ein  beliebiger
+             numerischer  Wert  zugewiesen  werden,  es erfolgt eine
+             automatische  Konvertierung.  Bei  der  Zuweisung   von
+             Zeichenketten  auf  Attribute  numerischer Doma"nen oder
+             numerischer      Werte      auf      Attribute      von
+             Zeichenketten-Doma"nen   muss  die  Konvertierung  durch
+             Verwendung der entsprechenden Funktionen  aaaasssscccciiiiiiii,,,,  iiiinnnntttt1111,,,,
+             iiiinnnntttt2222,,,, u.s.w.  in der <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>> angewiesen werden.
+
+             Das Statement wird nur vom Eigner der Relation angenom-
+             men,   oder   von  einem  Nutzer,  der  eine  Zugriffs-
+             berechtigung fu"r die Relation hat.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+
+               /* Alle Bescha"ftigten des Leiters "Rose, Peter"
+               **erhalten eine Gehaltserho"hung von 10 % */
+               range of p is personal
+               replace p(gehalt=1.1 * p.gehalt)
+               where p.abt="Rose, Peter"
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             range(quel)
+
+        NNNNAAAACCCCHHHHRRRRIIIICCCCHHHHTTTTEEEENNNN
+
+             Bei Zuweisung eines numerischen Wertes auf das Attribut
+             einer  Zeichenketten-Doma"ne oder einer Zeichenkette auf
+             das Attribut einer numerischen Doma"ne erfolgen  Fehler-
+             meldungen.
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 59 -                   RRRREEEETTTTRRRRIIIIEEEEVVVVEEEE
+
+        NNNNAAAAMMMMEEEE
+
+             retrieve - Suche von Tupeln
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             rrrreeeettttrrrriiiieeeevvvveeee [[iiiinnnnttttoooo ]relname](target_list) [wwwwhhhheeeerrrreeee qual]
+
+             rrrreeeettttrrrriiiieeeevvvveeee unique (target_list) [ wwwwhhhheeeerrrreeee qual]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             rrrreeeettttrrrriiiieeeevvvveeee sucht Tupel mit den Doma"nen, wie  sie  in  der
+             <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>> spezifiziert sind und die den Bedingungen
+             der wwwwhhhheeeerrrreeee -Phrase genu"gen und gibt sie auf dem Terminal
+             (standard_output)  aus  oder speichert sie im Falle von
+             iiiinnnnttttoooo in die angegebene Relation <<<<rrrreeeellllnnnnaaaammmmeeee>>>>....
+
+             Wenn <<<<rrrreeeellllnnnnaaaammmmeeee>>>> spezifiziert ist, wird eine  neue  Rela-
+             tion  erzeugt,  die  in der aufliegenden Datenbank noch
+             nicht  existieren  darf.   Beachte,  dass  verschiedene
+             Nutzer  Relationen  gleichen  Namens  erzeugen  du"rfen;
+             ING_DB erga"nzt den Relationennamen um einen, den erzeu-
+             genden  Nutzer charakterisierenden Code (s. auch ccccrrrreeeeaaaatttteeee
+             (quel).  Der Nutzer wird Eigentu"mer der Relation.   Die
+             Relation  erha"lt die, in der <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>> spezifizier-
+             ten Doma"nen.  Die Relation wird fu"r 7 Tage  reserviert,
+             falls  der  Nutzer nicht folgend durch ein ssssaaaavvvveeee -State-
+             ment die Lebensdauer der Relation vera"ndert.  Die Rela-
+             tion  wird  mit  dem  Ergebnis des rrrreeeettttrrrriiiieeeevvvveeee -Statements
+             gefu"llt.
+
+             Wenn das Schlu"sselwort uuuunnnniiiiqqqquuuueeee spezifiert  wird,  werden
+             die  Tupel nach der Reihenfolge der angegebenen Doma"nen
+             sortiert und doppelte Tupel vor der Anzeige entfernt.
+
+             Die Resultat-Relation wird standardma"ssig in  cccchhhheeeeaaaappppssssoooorrrrtttt
+             -Speicherstruktur  (s.   mmmmooooddddiiiiffffyyyy  (quel))  erzeugt.  Sie
+             wird dadurch nach den Doma"nen, in der Reihenfolge,  wie
+             diese  in  der  <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>> aufgeza"hlt sind, sortiert
+             und entha"lt keine doppelten Tupel mehr.
+
+             Ist    eine    andere    Speicherstruktur    fu"r    die
+             Resultat-Relation  erwu"nscht,  kann  das  bei Start der
+             ING_DB -Sitzung durch Verwendung  der  -rrrr  -Option  (s.
+             qqqquuuueeeellll (unix)) erreicht werden.
+
+             Wenn im Statement die iiiinnnnttttoooo -Phrase  fehlt,  (also  kein
+             <<<<rrrreeeellllnnnnaaaammmmeeee>>>>  angegeben  ist,)  erscheint das Resultat des
+             rrrreeeettttrrrriiiieeeevvvveeee einmalig auf dem Terminal, es kann  nur  durch
+             ein  erneutes  rrrreeeettttrrrriiiieeeevvvveeee wieder sichtbar gemacht werden.
+             Die Sortierung der ausgegebenen Tupel folgt den  Regeln
+             der  Zerlegung der wwwwhhhheeeerrrreeee -Phrase, doppelte Tupel werden
+             nicht unterdru"ckt.
+
+             Die Druckformate, in denen Attribute  von  Doma"nen  der
+             verschiedenen Formate dargestellt werden sollen, ko"nnen
+             mit den entsprechenden Optionen bei  Start  von  ING_DB
+              eingestellt werden (s.  qqqquuuueeeellll (unix)).
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 60 -                   RRRREEEETTTTRRRRIIIIEEEEVVVVEEEE
+
+             In der <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>> kann das Schlu"sselwort aaaallllllll benutzt
+             werden,  wenn  von  einer Relation alle Doma"nen gesucht
+             werden sollen.
+
+             Das Statement wird nur vom Eigentu"mer  der  beteiligten
+             Relation(en)  angenommen, oder von Nutzern, die fu"r sie
+             die Zugriffsberechtigung rrrreeeettttrrrriiiieeeevvvveeee haben.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+
+             /* Finde alle Mitarbeiter, die ju"nger sind, als das
+                Durchschnittsalter aller Mitarbeiter betra"gt */
+             range of p is personal
+             retrieve (p.name)
+             where 1985-p.gebjahr <= avg(1985-p.gebjahr)
+
+             /* Finde alle Bescha"ftigten, die a"lter
+                sind, als ihr Leiter */
+             range of mitarbeiter is personal
+             range of leiter is personal
+             retrieve (mitarbeiter.name)
+             where mitarbeiter.leiter = leiter.num
+             and mitarbeiter.gebdat > leiter.gebdat
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             modify(quel), quel(unix), range(quel), save(quel)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+

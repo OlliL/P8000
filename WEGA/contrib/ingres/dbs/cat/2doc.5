@@ -1,0 +1,1980 @@
+
+        Anwendung                 - 282 -                     RRRReeeeppppoooorrrrtttt
+
+             all lines 48
+
+             /* procedures */
+             define p_fzr        = 1
+             define p_pgw        = 2
+
+             /* switches */
+             define last_page    = 1
+
+             /* variables */
+             define next_page    = 0
+             define fzr          = 1
+             define grp_lohn     = 2
+             define grp_fzr      = 3
+             define grp_cnt      = 4
+             define abt_lohn     = 5
+             define abt_fzr      = 6
+             define abt_cnt      = 7
+
+             /* domains */
+             define d_name       = 1
+             define d_qual       = 2
+             define d_pkz        = 3
+             define d_lohn       = 4
+             define d_abt        = 5
+             define d_gruppe     = 6
+
+             define #d_name      = char    20
+             define #d_qual      = char     8
+             define #d_pkz       = char    12
+             define #d_lohn      = integer  2
+             define #d_abt       = integer  2
+             define #d_gruppe    = integer  2
+        as
+
+        proc p_fzr
+             set $fzr = ($fzr - 600) / 10
+             if $fzr > 60 then set $fzr = 60 end if
+        return
+
+        proc p_pgw
+             if line < 47 then 'I' end if
+        return
+
+        on pagebegin do
+             '-' 60 \n
+             'VEB Generatorwerke'
+             \50 date \n
+             '1234 Berlin'
+             \50 time \n
+             'Beispielstr. 13'
+             \28 'Seite: ' integer page \n
+             '-' 60 \n2
+             if ! page == 1 then
+                  \20 'Liste der Abteilung ' integer #d_abt
+             end if
+             \n2
+        end
+
+        on pageend do
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 283 -                     RRRReeeeppppoooorrrrtttt
+
+             if ! ^last_page then
+                  set $next_page = page + 1
+                  \36 'Es folgt Seite: ' integer $next_page
+             end if
+             \n
+             '-' 60 \n3
+        end
+
+        on lineend do call p_pgw end
+        on linebegin do call p_pgw end
+
+        on batchline do
+             \18
+             if #d_pkz from 7 to 7 == '4'
+             then 'maennl'
+             else 'weibl'
+             end if
+        end
+
+        set line = 10
+        \\20 'Liste der Abteilungen ' new page
+
+        for all do
+             for one do
+                  if groupbegin d_abt then new page end if
+                       if groupbegin d_gruppe then
+                            '**** Gruppe ' integer @3 #d_gruppe
+                            ' ****' \n2
+                            'Name'
+                            \15 'Qualifikation'
+                            \32 'Geb.-Datum'
+                            \45 'Lohn'
+                            \55 'FZR' \n
+                            \15 'maennl/weibl' \n2
+                       end if
+
+                  set $fzr = #d_lohn
+                  call p_fzr
+                  char batch 10 @20 #d_name
+                  \18 char #d_qual
+                  \33 char        to 2 #d_pkz '.'
+                      char from 3 to 4 #d_pkz '.'
+                      char from 5 to 6 #d_pkz
+                  \44 integer @4 #d_lohn ',-M'
+                  \54 integer @3 $fzr ',-M' \n
+                  set $grp_lohn += #d_lohn
+                  set $grp_fzr  += $fzr
+                  set $grp_cnt  += 1
+                  if groupend d_gruppe then
+                       set $abt_lohn += $grp_lohn
+                       set $abt_fzr  += $grp_fzr
+                       set $abt_cnt  += $grp_cnt
+                       if $grp_cnt > 0 then
+                            set $grp_lohn := $grp_cnt
+                            set $grp_fzr  := $grp_cnt
+                       end if
+                       \28 'Durchschnitt: '
+                       \44 integer @4 $grp_lohn ',-M'
+                       \54 integer @3 $grp_fzr ',-M' \n2
+                       set $grp_lohn = 0
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 284 -                     RRRReeeeppppoooorrrrtttt
+
+                       set $grp_fzr  = 0
+                       set $grp_cnt  = 0
+                       '-' 60 \n
+                  end if
+                  if groupend d_abt then
+                       if $abt_cnt > 0 then
+                            set $abt_lohn := $abt_cnt
+                            set $abt_fzr  := $abt_cnt
+                       end if
+                       'Durchschnitt der Abteilung: '
+                       \44 integer @4 $abt_lohn ',-M'
+                       \54 integer @3 $abt_fzr ',-M' \n2
+                       set $abt_lohn = 0
+                       set $abt_fzr  = 0
+                       set $abt_cnt  = 0
+                       '=' 60 \n
+                  end if
+             end one
+        end all
+
+        set ^last_page;
+
+        Als Ausgabegera"t  wurde  ein  Seriendrucker  mit  48  Zeilen
+        Seitenla"nge   gewa"hlt,  der  softwareseitig  keinen  Seiten-
+        vorschub realisieren kann (Ausgabe von Zeilenvorschub).   Da
+        jeweils  am  Zeilenanfang  und  -ende mit 'I' gerahmt werden
+        soll, ist durch die Prozedur  pppp____ppppggggwwww  die  Abfrage  nach  den
+        Zeilennummern  1..46 eingeordnet, um zu verhindern, dass auf
+        den  Zeilen  47  und  48  (Seitenfalz)  ebenfalls  ein   'I'
+        erscheint.   Bei   Druckern   (Paralleldrucker),  die  diese
+        Einschra"nkung nicht kennen, kann die Prozedur p_pgw  entfal-
+        len.
+
+        Die Rolle von lllliiiinnnneeeessss und aaaallllllll lllliiiinnnneeeessss soll am Beispiel  nochein-
+        mal  erkla"rt  werden.  Die Differenz zwischen beiden betra"gt
+        12, also die Summe der nnnneeeewwww lllliiiinnnneeeessss,,,, die fu"r die Abschnitte  oooonnnn
+        ppppaaaaggggeeeebbbbeeeeggggiiiinnnn  ddddoooo  und  oooonnnn  ppppaaaaggggeeeeeeeennnndddd  ddddoooo  verwendet wurden. Damit
+        stehen fu"r den Informationsteil tatsa"chlich  nur  36  Zeilen
+        zur  Verfu"gung.  Bei  einem  Drucker  mit  72 Zeilen mu"ssten
+        entsprechend fu"r lllliiiinnnneeeessss 60 Zeilen und  aaaallllllll  lllliiiinnnneeeessss  72  Zeilen
+        geschrieben  werden.   Falls  sie  sich  hierbei  verza"hlen,
+        erhalten sie in der Regel unbrauchbare Seitenformatierungen.
+        Bevor  weitere  Erla"uterungen folgen, einige Auszu"ge aus dem
+        tatsa"chlichen Druckbild:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 285 -                     RRRReeeeppppoooorrrrtttt
+
+
+        I------------------------------------------------------------I
+        IVEB Generatorwerke                               19-May-88  I
+        I1234 Berlin                                      11:18:42   I
+        IBeispielstr. 13            Seite: 2                         I
+        I------------------------------------------------------------I
+        I                                                            I
+        I                   Liste der Abteilung 0                    I
+        I                                                            I
+        I**** Gruppe   1 ****                                        I
+        I                                                            I
+        IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+        I              maennl/weibl                                  I
+        I                                                            I
+        IGruene,          Dipl.Ing       30.12.20   1700,-M    60,-M I
+        IPeter            maennl                                     I
+        IRose,            Oekonom        27.05.31   1206,-M    60,-M I
+        IPetra            weibl                                      I
+        I                           Durchschnitt:   1453,-M    60,-M I
+        I                                                            I
+        I------------------------------------------------------------I
+        IDurchschnitt der Abteilung:                1453,-M    60,-M I
+        I                                                            I
+        I============================================================I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                   Es folgt Seite: 3        I
+        I------------------------------------------------------------I
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 286 -                     RRRReeeeppppoooorrrrtttt
+
+
+        I------------------------------------------------------------I
+        IVEB Generatorwerke                               19-May-88  I
+        I1234 Berlin                                      11:19:29   I
+        IBeispielstr. 13            Seite: 10                        I
+        I------------------------------------------------------------I
+        I                                                            I
+        I                   Liste der Abteilung 199                  I
+        I                                                            I
+        I**** Gruppe   4 ****                                        I
+        I                                                            I
+        IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+        I              maennl/weibl                                  I
+        I                                                            I
+        IWeise,           FA             13.12.35    900,-M    30,-M I
+        IJuergen          maennl                                     I
+        I                           Durchschnitt:    900,-M    30,-M I
+        I                                                            I
+        I------------------------------------------------------------I
+        I**** Gruppe   5 ****                                        I
+        I                                                            I
+        IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+        I              maennl/weibl                                  I
+        I                                                            I
+        IMalter,          Ing.           18.06.20   1200,-M    60,-M I
+        IJuergen          maennl                                     I
+        IRose,            Dipl.Oek       20.02.27   1590,-M    60,-M I
+        IPeter            maennl                                     I
+        I                           Durchschnitt:   1395,-M    60,-M I
+        I                                                            I
+        I------------------------------------------------------------I
+        I**** Gruppe   6 ****                                        I
+        I                                                            I
+        IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+        I              maennl/weibl                                  I
+        I                                                            I
+        IErnst, Eva       Dipl.Ma.       13.04.31   1010,-M    41,-M I
+        I                 weibl                                      I
+        IHeine,           Oek.           22.08.29    905,-M    30,-M I
+        IRolf             maennl                                     I
+        ISchmidt,         Dipl.Ma.       10.10.40   1200,-M    60,-M I
+        IPetra            weibl                                      I
+        IThoms,           Oek.           10.03.41   1000,-M    40,-M I
+        IRolf             maennl                                     I
+        I                           Durchschnitt:   1029,-M    43,-M I
+        I                                   Es folgt Seite: 11       I
+        I------------------------------------------------------------I
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 287 -                     RRRReeeeppppoooorrrrtttt
+
+
+        I------------------------------------------------------------I
+        IVEB Generatorwerke                               19-May-88  I
+        I1234 Berlin                                      11:19:41   I
+        IBeispielstr. 13            Seite: 11                        I
+        I------------------------------------------------------------I
+        I                                                            I
+        I                   Liste der Abteilung 199                  I
+        I                                                            I
+        I                                                            I
+        I------------------------------------------------------------I
+        I**** Gruppe   7 ****                                        I
+        I                                                            I
+        IName          Qualifikation    Geb.-Datum   Lohn      FZR   I
+        I              maennl/weibl                                  I
+        I                                                            I
+        ISchneider,       Oek.           13.07.30   1300,-M    60,-M I
+        IPeter            maennl                                     I
+        IWunsch,          Ing.           05.04.28    900,-M    30,-M I
+        IPeter-Paul       maennl                                     I
+        I                           Durchschnitt:   1100,-M    45,-M I
+        I                                                            I
+        I------------------------------------------------------------I
+        IDurchschnitt der Abteilung:                1112,-M    46,-M I
+        I                                                            I
+        I============================================================I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I                                                            I
+        I------------------------------------------------------------I
+
+
+
+
+        Sofern sie die Liste auf  einem  Paralleldrucker  mit  einer
+        Seitenla"nge von 66 Zeilen ausgeben wollen, kann die Prozedur
+        p_pgw, wie ereits erwa"hnt, weggelassen werden.  Die  Kopfin-
+        formationen sehen dann so aus:
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 288 -                     RRRReeeeppppoooorrrrtttt
+
+
+        /* page layout */
+                columns 60
+                lines 56
+                all lines 66
+                big
+
+        Die Behandlung  des  Seitenendes  muss  entsprechend  obiger
+        Definition auf
+
+        on pageend do
+               if ! ^last_page then
+                       set $next_page = page + 1
+                       \36 'Es folgt Seite: ' integer $next_page
+               end if
+               '-' 60 \n
+        end
+
+        gea"ndert werden und die  Zeilenende  und  -anfangsbehandlung
+        sieht jetzt so aus:
+
+        on lineend do 'I' end
+        on linebegin do 'I' end
+
+
+        Falls sie in der Zeile
+
+                  char batch 10 @20 #d_name
+
+        die La"ngenangabe @20 vergessen, werden in der 2. Zeile exakt
+        soviele Zeichen nicht ausgegeben, wie in der 1. gespart wur-
+        den.  Es steht dann beispielsweise:
+
+        Thoms,
+        R
+        Schmidt,
+        Petr
+
+
+        _2._6._9.  SSSSyyyysssstttteeeemmmmvvvvaaaarrrriiiiaaaabbbblllleeee
+
+        Systemvariable werden automatisch dem Nutzer  zur  Verfu"gung
+        gestellt.  Sie  besitzen  einen  definierten Anfangswert und
+        ko"nnen durch den Nutzer beliebige Werte zugewiesen bekommen.
+
+        Die Variablen haben folgende Bedeutung:
+
+        PPPPAAAAGGGGEEEE
+
+             Nummer der aktuellen Seite
+             Mit 1 beginnend, wird bei jedem Vorschub auf eine  neue
+             Seite  der  Wert  PAGE  um  eins  erho"ht. PAGE kann vom
+             Nutzer  ein  beliebiger  Wert  zwischen  0  und   32767
+             zugewiesen werden.
+
+         TTTTUUUUPPPPLLLLEEEE
+
+             Nummer des aktuellen Tupels
+             Mit 1 beginnend, wird bei jedem  Einlesen  eines  neuen
+             Tupels  dieser  Wert  um  eins  erho"ht.  TUPLE kann vom
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 289 -                     RRRReeeeppppoooorrrrtttt
+
+             Nutzer  ein  beliebiger  Wert  zwischen  0  und   32767
+             zugewiesen werden.
+
+        LLLLIIIINNNNEEEE
+
+             aktuelle Zeilennummer auf der Seite
+             Ist LINE das Ziel einer Wertzuweisung, wird  nicht  nur
+             die  neue  Zeilennummer  in  LINE  eingetragen, sondern
+             tatsa"chlich auch die angegebene Zeile der  Seite  posi-
+             tioniert.    Ist   die  aktuelle  Zeilennummer  bereits
+             gro"sser oder gleich der  berechneten,  erfolgt  automa-
+             tisch  der  Vorschub auf eine neue Seite und danach die
+             Positionierung auf die gewu"nschte Zeile.
+
+        CCCCOOOOLLLLUUUUMMMMNNNN
+
+             aktuelle Schreibposition (Spalte, mit 1  beginnend)  in
+             der Zeile
+             Ist  COLUMN  Ziel   einer   Wertzuweisung,   wird   der
+             gewu"nschte  Wert  in  COLUMN  eingetragen  und  auf die
+             Spalte positioniert.
+
+        VVVVAAAARRRR
+
+             allgemeine Variable
+             Dem Nutzer stehen 126  Variable  (VAR0  -  VAR125)  zur
+             freien   Verfu"gung  Der  Nummer  kann  mit  ddddeeeeffffiiiinnnneeee  ein
+             entsprechender Name zugeordnet werden.  Sie  werden  im
+             Gegensatz  zu  Doma"nenwerten (#) mit $NAME oder $number
+             (mit 0 beginnend) gerufen.  Den  verfu"gbaren  Variablen
+             ko"nnen  Integer-  und  Realwerte zugewiesen werden.  Am
+             Anfang sind alle Variablen  mit  dem  Wert  0  initial-
+             isiert.
+             Die allgemeinen Variablen sollten nicht mit  den  Bool-
+             schen Variablen verwechselt werden, hier sind ebenfalls
+             126 Variable verfu"gbar, die den Wert  TRUE  oder  FALSE
+             annehmen ko"nnen (s. Abschnitt "Boolsche Variable").
+
+        Alle  Systemvariablen beinhalten numerische Werte und ko"nnen
+        als solche in die Liste eingetragen werden.
+
+        Zeichenkettenvariablen gibt es im Reportgenerator nicht.
+
+        _2._6._1_0.  SSSSyyyysssstttteeeemmmmkkkkoooonnnnssssttttaaaannnntttteeee,,,, DDDDaaaattttuuuummmm,,,, UUUUhhhhrrrrzzzzeeeeiiiitttt
+
+        Die  Systemkonstanten werden dem Nutzer fu"r die Ausgabe  und
+        Verwendung   in  arithmetischen  Ausdru"cken  zur   Verfu"gung
+        gestellt. Sie ko"nnen nicht Ziel einer Wertzuweisung sein:
+
+
+        YEAR    aktuelles Jahr          (0 bis 99 als Jahr - 99)
+        MONTH   aktueller Monat         (0 bis 11)
+        DAY     aktueller Tag           (1 bis 31)
+        M_DAY   aktueller Tag im Monat  (1 bis 31)
+        W_DAY   aktueller Tag der Woche (0 = Sonntag bis 6)
+        Y_DAY   aktueller Tag im Jahr   (0 bis 365)
+        HOUR    aktuelle Stunde         (0 bis 23)
+        MINUTE  aktuelle Minute         (0 bis 59)
+        SECOND  aktuelle Sekunde        (0 bis 59).
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 290 -                     RRRReeeeppppoooorrrrtttt
+
+        Die Konstanten werden beim Start des  Report-Generators  neu
+        aus der Systemzeit des Rechners ermittelt.
+
+        Der Reportgenerator  fu"r ING_DB  stellt zwei spezielle Funk-
+        tionen fu"r die Ausgabe von Datum und Uhrzeit zur Verfu"gung:
+
+
+                DATE   in der Form   tt-mmm-jj
+                TIME   in der Form   hh:mm:ss.
+
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+                 'DATUM UND UHRZEIT:' date ' ' time
+
+        erzeugt den Text
+
+                DATUM UND UHRZEIT: 27-JAN-86 11:13:25
+
+
+        _2._6._1_1.  AAAAuuuussssggggaaaabbbbeeee vvvvoooonnnn nnnnuuuummmmeeeerrrriiiisssscccchhhheeeennnn WWWWeeeerrrrtttteeeennnn
+
+        In diesem  Abschnitt  werden  die  Ausgabemo"glichkeiten  von
+        numerischen  Werten vorgestellt. Dafu"r stehen die drei Funk-
+        tionen
+
+                - INTEGER
+                - REAL
+                - GRAPHIC
+
+        zur Verfu"gung. Welche numerische Wertart  die  auszugebenden
+        Werte  intern  besitzen,  ist fu"r die Funktionen ohne Bedeu-
+        tung. Welcher Wert ausgegeben werden soll, wird  unmittelbar
+        hinter der Funktion angegeben.
+
+        Der erste Parameter dieser Funktionen ist die llllaaaaeeeennnnggggeeee ....
+
+                [LENGTH number]
+                  oder
+                [@number]
+
+        "laenge"  legt die Anzahl der Zeichen  fest,   die  fu"r  die
+        Ausgabe des Wertes in der Listenzeile zur Verfu"gung gestellt
+        werden. Diese Anzahl kann  den  Funktionen  mit  Angabe  von
+        Number   vorgegeben   werden.    Die   Zahlen   werden  dann
+        rechtsbu"ndig  in  den  bereitgestellten  Platz  eingetragen.
+        Fehlt  die  La"ngenangabe,  wird  genau  so viel Platz in der
+        Zeile  beansprucht,  wie  fu"r  die  Darstellung  des  Wertes
+        notwendig ist. Die Zahl wird also linksbu"ndig ab der aktuel-
+        len Schreibposition eingetragen. Die na"chste Ausgabe erfolgt
+        dann unmittelbar hinter dem Wert.
+
+        _2._6._1_1._1.  AAAAuuuussssggggaaaabbbbeeee aaaallllssss IIIInnnntttteeeeggggeeeerrrr----ZZZZaaaahhhhllll
+
+        Die Darstellung eines Wertes erfolgt als ganze Zahl.
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 291 -                     RRRReeeeppppoooorrrrtttt
+
+
+                                _                   _
+                                |                   |
+                 INTEGER laenge |  SCALE real       |   num daten
+                                |  PIC zeichenkette |
+                                ~                   ~
+
+
+        Wahlweise    kann    ein    Skalierungsfaktor   und     eine
+        Druckaufbereitungsmaske spezifiziert werden.
+
+        Der Wert wird mit dem Skalierungsfaktor multipliziert. Damit
+        lassen sich bequem Massstabsvera"nderungen, Zinsberechnungen,
+        Prozentrechnungen u.a. realisieren.  Der  auszugebende  Wert
+        wird eventuell gerundet.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+          integer @18
+              scale 0.0325
+              pic 'ZINSEN: 00009.99 M'
+              #p_guthab
+
+        Hat  #p_guthab  den  Wert  20000,    wird   in   die   Liste
+        eingetragen:
+
+          ZINSEN: 6.50 M
+
+        Die Symbole einer  Druckaufbereitungsmaske  PIC  haben  fest
+        zugeordnete Bedeutungen. Diese sind im einzelnen:
+
+        <    linksbu"ndiges Eintragen der aufbereiteten Maske in  die
+             verfu"gbare Spalte
+
+        >    rechtsbu"ndiges Eintragen der aufbereiteten Maske in die
+             verfu"gbare Spalte
+
+        =    zentriertes Eintragen der aufbereiteten  Maske  in  die
+             verfu"gbare Spalte
+
+        9    Eintragen einer Ziffer
+
+        0    Eintragen einer Ziffer,  falls es sich  nicht  um  eine
+             Vornull  handelt.   Bei  Vornullen wird ein Leerzeichen
+             bzw.  das  Vorzeichen (falls gewu"nscht) eingetragen.
+
+        +    unbedingte  Darstellung  des  Vorzeichens   unmittelbar
+             vor der ersten Ziffer;
+
+        -    Darstellung nur des negativen  Vorzeichens  unmittelbar
+             vor der ersten Ziffer (Standard);
+        sonst unvera"nderte U"bernahme in  das  Ausgabebild.   Um  die
+        Symbole   fu"r  die  Druckaufbereitung  als  normale  Zeichen
+        verwenden  zu  ko"nnen,  mu"ssen  sie  mit  dem  Zeichen   '\'
+        kaschiert  (geschu"tzt) werden. Das Zeichen '\' ist durch die
+        Umschreibung '\\' verfu"gbar.
+
+        Die     Symbole     fu"r     die      Positionierung      der
+        Druckaufbereitungsmaske  ko"nnen an beliebiger Stelle stehen,
+        das zuletzt gegebene Symbol wird fu"r  die  Druckaufbereitung
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 292 -                     RRRReeeeppppoooorrrrtttt
+
+        verwendet, alle anderen werden "verschluckt".
+
+        Das Symbol fu"r das Vorzeichen kann an drei Stellen angegeben
+        werden:
+
+        -    vor dem ersten '0'-Symbol
+             Darstellung des Vorzeichens an dieser Position;
+
+        -    vor dem ersten '9'-Symbol
+             Darstellung des Vorzeichens unmittelbar vor der  ersten
+             Ziffer;
+
+        -    nach dem letzten '9'-Symbol
+             Darstellung des Vorzeichens nach der letzten Ziffer
+
+        BBBBeeeeaaaacccchhhhtttteeee:::: Das zuletzt verwendete  Vorzeichensymbol  wird  fu"r
+        die Aufbereitung verwendet.
+
+        _2._6._1_1._2.  AAAAuuuussssggggaaaabbbbeeee aaaallllssss RRRReeeeaaaallll----ZZZZaaaahhhhllll
+
+        Die Darstellung eines Wertes erfolgt als Gleitkommazahl.
+
+                                _                   _
+                                |                   |
+                                |  SCALE real       |
+                                |  BEFORE number    |
+                    REAL laenge |  POINT number     |  num daten
+                                |  NORM number      |
+                                |  IGNORE           |
+                                |  EXP zeichenkette |
+                                ~                   ~
+
+
+        Die wahlweise anzugebenden Parameter haben  folgende  Bedeu-
+        tung:
+
+        SSSSCCCCAAAALLLLEEEE rrrreeeeaaaallll
+
+             Der  Attributwert wird vor der  Aufbereitung   mit  dem
+             Skalierungsfaktor multipliziert.
+
+        BBBBEEEEFFFFOOOORRRREEEE nnnnuuuummmmbbbbeeeerrrr
+
+             Anzahl der Stellen vor dem Komma
+             Standard: 0
+
+        PPPPOOOOIIIINNNNTTTT nnnnuuuummmmbbbbeeeerrrr
+
+             Anzahl  der Stellen nach dem Komma
+             Die  letzte Stelle ist gerundet.
+             Standard: 6
+
+        NNNNOOOORRRRMMMM nnnnuuuummmmbbbbeeeerrrr
+
+             Die  Zahl  soll mit einem bestimmten   Exponenten  dar-
+             gestellt   werden.    Beispielsweise   wird  bei NORM 5
+             die Zahl  mit  dem  Exponenten  E+05  dargestellt.  Der
+             Parameter BEFORE wird dabei unwirksam.
+
+        IIIIGGGGNNNNOOOORRRREEEE
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 293 -                     RRRReeeeppppoooorrrrtttt
+
+             Die Angabe des Exponenten soll unterdru"ckt werden.  Der
+             Parameter BEFORE wird dabei unwirksam. Ist die Darstel-
+             lung des Wertes ohne  Exponenten nicht mo"glich,  gelten
+             die anderen Parameter.
+
+        EEEEXXXXPPPP zzzzeeeeiiiicccchhhheeeennnnkkkkeeeetttttttteeee
+
+             Es  wird  die  Zeichenkette  vor   dem   Exponentenwert
+             definiert.
+             Standard: 'E'
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+        Es sollen verschiedene Darstellungsmo"glichkeiten der  Varia-
+        blen $1 mit dem Wert 123.45 veranschaulicht werden:
+
+
+            1) real $1
+                   0.123450E 03
+
+            2) real length 20 scale 2000 before 3 point 2 exp 'EXP' $1
+                          246.90 EXP 03
+            3) real length 20 scale 2000 before 3 point 2
+                    exp 'EXP' ignore $1
+                              246900.00
+            4) real length 20 norm -2 $1
+                       12345.000000E-02
+            5) real length 15 exp '*10**' point 1 $1
+                       0.1*10** 03
+
+        Die Darstellung nocheinmal zum besseren Vergleich:
+
+            1)     0.123450E 03
+            2)            246.90 EXP 03
+            3)                246900.00
+            4)         12345.000000E-02
+            5)         0.1*10** 03
+
+
+        _2._6._1_1._3.  PPPPsssseeeeuuuuddddooooggggrrrraaaapppphhhhiiiisssscccchhhheeee AAAAuuuussssggggaaaabbbbeeee
+
+        Der Reportgenerator ermo"glicht   die   einfache  Darstellung
+        von Diagrammen.
+
+                             _                           _
+                             |_      _      _        _   |
+                             ||      |      |        |   |
+                             || FROM |      | VAR int|   |
+            GRAPHIC  laenge  || TO   |      | real   |   | num daten
+                             |~      ~      ~        ~   |
+                             | WITH zeichenkette         |
+                             ~                           ~
+
+
+        Der  durch  die Grenzen FROM und TO definierte  Wertebereich
+        wird  auf   den mit 'laenge' angegebenen Darstellungsbereich
+        abgebildet. Die Abbildung erfolgt mit dem bei  WITH  angege-
+        benen  Zeichen.  Ist FROM < TO erfolgt eine linksbu"ndige und
+        ist FROM > TO eine  rechtsbu"ndige  Darstellung  der  Pseudo-
+        grafik in der Spalte.
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 294 -                     RRRReeeeppppoooorrrrtttt
+
+
+                Standards: laenge = 50
+                           FROM    0
+                           TO      0
+                           WITH    '*'
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+        Es soll das Attribut "menge"  grafisch  dargestellt  werden.
+        Vor  der grafischen  Darstellung  soll der Wert als Integer-
+        Zahl  ausgegeben werden.
+
+          for one do
+              integer @3 #menge
+              \6
+              graphic @20 from 0 to 10 with '+' #menge
+              \n
+          end one
+
+
+        Darstellung:
+
+            7   ++++++++++++++
+            3   ++++++
+            4   ++++++++
+            8   ++++++++++++++++
+            1   ++
+            0
+           11   ++++++++++++++++++++
+
+
+        _2._6._1_2.  AAAAuuuussssggggaaaabbbbeeee vvvvoooonnnn ZZZZeeeeiiiicccchhhheeeennnnkkkkeeeetttttttteeeennnnwwwweeeerrrrtttteeeennnn
+
+        Fu"r die Ausgabe von Zeichenkettenwerten steht  die  Funktion
+        CHAR zur Verfu"gung:
+
+
+                     _                   _
+                     | _       _         |    _       _
+                     | | FROM  |         |    | LAST  |
+         CHAR laenge | | TO    |   number|    | VALUE |    number
+                     | | BATCH |         |    | NEXT  |
+                     ~ ~       ~         ~    ~       ~
+
+
+        Ist die La"nge angegeben, wird die  Zeichenkette  linksbu"ndig
+        in   den  bereitgestellten  Platz  eingetragen.  Sollte  die
+        Zeichenkette la"nger sein,  wird  rechts  abgeschnitten.  Mit
+        FROM und TO kann die auszugebende Zeichenkette eingeschra"nkt
+        werden. Ist keine La"nge angegeben, wird die Zeichenkette  in
+        ihrer Originalla"nge eingetragen. Die Tupelwerte du"rfen nicht
+        numerischer Wertart sein.
+
+        Die Zeichenketten ko"nnen mit der Funktion BATCH u"ber mehrere
+        Zeilen   verteilt   werden.   Zu  beachten  ist,  dass  eine
+        La"ngenangabe nicht die La"nge der auszugebenden  Zeichenkette
+        bestimmt,  sondern  den bereitgestellten Platz in der Liste.
+        Dieser   Unterschied   existiert,   da   die   Zeichenketten
+        u"berwiegend  in  ganzen Worten ausgegeben werden und dadurch
+        Platz verloren geht.  Mit  CHAR  110  BATCH  20  werden  zum
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 295 -                     RRRReeeeppppoooorrrrtttt
+
+        Beispiel  genau 5 Zeilen zu 20 und eine Zeile mit 10 Zeichen
+        gefu"llt, unabha"ngig davon, wie lang die Zeichenkette ist.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+          char from 3 #text
+          \n
+          char from 5 to 12 #text
+
+        Hat #text die Zeichenkette
+
+         'PLATSCH BATCH',
+
+        erzeugen die Anweisungen die Zeichenketten
+
+         ATSCH BATCH
+         SCH BATC
+
+
+        _2._6._1_3.  AAAAuuuussssggggaaaabbbbeeee vvvvoooonnnn WWWWeeeerrrrtttteeeennnn aaaallllssss BBBBiiiinnnnaaaa""""rrrr----,,,,  OOOOkkkkttttaaaallll----
+             ooooddddeeeerrrr HHHHeeeexxxxaaaaddddeeeezzzziiiimmmmaaaallllzzzzaaaahhhhllll iiiimmmm BBBByyyytttteeee---- ooooddddeeeerrrr WWWWoooorrrrttttffffoooorrrrmmmmaaaatttt
+
+        Der Reportgenerator  fu"r  ING_DB   bietet  die  Mo"glichkeit,
+        Werte in einem anderen Zahlensystem darzustellen.  Die Werte
+        werden unabha"ngig  von der Wertart als  Bitketten  interpre-
+        tiert und in das gewu"nschte Zahlensystem umgewandelt.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+
+                                         _                 _
+                                         |                 |
+                                         | Systemvariable  |
+             _     _                     | Systemkonstante |
+             | BIT | _      _            |_       _        |
+             | OCT | | BYTE |   laenge   || LAST  |        |
+             | HEX | | WORD |            || VALUE | number |
+             | DEC | ~      ~            || NEXT  |        |
+             ~     ~                     ~~       ~        ~
+
+
+
+        BYTE ist Standard, fu"hrende Nullen werden unterdru"ckt.
+
+        Ist die La"nge angegeben, wird der Wert entweder  vollsta"ndig
+        oder  rechts  verku"rzt  linksbu"ndig  in den bereitgestellten
+        Platz eingetragen. Fehlt die  La"ngenangabe,  wird  der  Wert
+        vollsta"ndig in der tatsa"chlichen La"nge ausgegeben.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 296 -                     RRRReeeeppppoooorrrrtttt
+
+
+                 BIT LENGTH 10 VALUE 1 '*'
+                 OCT VALUE 1 '*'
+                 HEX VALUE 1
+                                                     NEW LINE
+
+                 Wert von VALUE 1:
+
+                 a) 71           =i2
+                 b) 30           =i1
+                 c) 'ABC' string =c3
+
+                 Darstellung:
+
+                      BIT          OCT             HEX
+
+                 a) 0001000111 * 000000 000107 * 0000 0047
+                 b) 00011110   * 036           * 1E
+                 c) 0100000101 * 101 102 103   * 41 42 43
+
+
+        _2._6._1_4.  WWWWeeeerrrrttttzzzzuuuuwwwweeeeiiiissssuuuunnnnggggeeeennnn  zzzzuuuu SSSSyyyysssstttteeeemmmmvvvvaaaarrrriiiiaaaabbbblllleeeennnn ----
+            aaaarrrriiiitttthhhhmmmmeeeettttiiiisssscccchhhheeee  AAAAuuuussssddddrrrruuuu""""cccckkkkeeee
+
+        Fu"r die Berechnung nicht in der Relation  enthaltener  Werte
+        steht  im  Reportgenerator  eine umfangreiche Arithmetik zur
+        Verfu"gung.  Dem an C gewo"hnten Nutzer  wird  zusa"tzlich  die
+        Notation arithmetischer Zuweisungen gema"ss C gestattet.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+
+                     SET systemvariable = arithm ausdruck
+
+
+        Durch  die  SET-Anweisung  wird  einer  Systemvariablen  das
+        Ergebnis  eines   arithmetischen  Ausdrucks zugewiesen.  Bei
+        den  Variablen COLUMN und LINE  ist  die  Wertzuweisung  mit
+        Ausgabeoperationen  verbunden.   Im  arithmetischen Ausdruck
+        ko"nnen beliebige numerische Werte mit den Operationen
+
+
+                   +  oder  +=    Addition
+                   -  oder  -=    Subtration
+                   *  oder  *=    Multiplikation
+                   :  oder  :=    Division
+                   /  oder  /=    ganzzahlige Division
+                   %  oder  %=    Modulodivision (Divisionsrest)
+
+
+        verknu"pft werden. Die Klammerung von Teilausdru"cken und  die
+        Negation  von  Werten  ist  mo"glich. Die Syntax eines arith-
+        metischen Ausdruckes entspricht der allgemein u"blichen Nota-
+        tion mathematischer Formeln.
+
+        BBBBeeeeiiiissssppppiiiieeeelllleeee
+
+        1.   allgemeiner Ausdruck
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 297 -                     RRRReeeeppppoooorrrrtttt
+
+
+             SET VAR 30 = ( - VALUE 10 * VAR 3 + 27.12E-7 )
+                          : ( VAR 7 % 19 / 7.2 )
+
+
+        2.   Es  soll  die  durchschnittliche  Planerfu"llung   einer
+             Plankennziffer  VALUE 4 mit den Istwerten VALUE 5 bis 7
+             ausgegeben werden:
+
+             SET VAR 1 = ( VALUE 5 + VALUE 6 + VALUE 7 ) / 3
+             INTEGER SCALE 100 PIC 'DURCHSCHNITT: 009.99 %' VAR 1
+
+
+        3.   Es soll auf die 30. Zeile der Seite  positioniert  wer-
+             den:
+
+             SET LINE = 30
+
+
+        Tritt wa"hrend der Bearbeitung eines arithmetischen Ausdrucks
+        ein  Fehler auf,  wenn z. B. ein Zeichenkettenwert beteiligt
+        ist, wird die Berechnung  abgebrochen.  Der  Variablen  wird
+        kein Wert zugewiesen, sie bleibt unvera"ndert.
+
+        _2._6._1_5.  BBBBoooooooolllleeeesssscccchhhheeee VVVVaaaarrrriiiiaaaabbbblllleeeennnn uuuunnnndddd AAAAuuuussssddddrrrruuuu""""cccckkkkeeee
+
+        Fu"r    die    wertabha"ngige    Programmabarbeitung    stehen
+        Mo"glichkeiten   zur  Formulierung Boolescher Ausdru"cke sowie
+        101  logische Variable zur Verfu"gung.
+
+        Die Schalter
+
+                    SWITCH 0  bis  SWITCH 125
+
+        ko"nnen die zwei Zusta"nde "ein"  und  "aus"  bzw.   TTTTRRRRUUUUEEEE  und
+        FFFFAAAALLLLSSSSEEEE annehmen.
+
+        Initialisiert sind  die  Variablen  bei  Programmbeginn  mit
+        FALSE.  Fu"r  ihre  A"nderung  stehen  vier  Mo"glichkeiten zur
+        Auswahl.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+
+                 _             _
+                 |  CLEAR      |
+                 |  COMPLEMENT |  SWITCH  number
+                 |  SET        |
+                 ~             ~
+                   SET SWITCH  number = boolean
+
+
+        Mit CCCCLLLLEEEEAAAARRRR,,,, CCCCOOOOMMMMPPPPLLLLEEEEMMMMEEEENNNNTTTT und SSSSEEEETTTT kann ein  bestimmter  Schalter
+        gelo"scht  (FALSE),  umgekehrt  (TRUE-->FALSE,  FALSE-->TRUE)
+        bzw. gesetzt  (TRUE) werden.  Die Wertzuweisung erlaubt  das
+        Eintragen des Ergebnisses eines Booleschen Ausdrucks. Dieser
+        wird durch die  Verknu"pfung  von  Boole-Werten  (TRUE/FALSE)
+        gebildet.  Verknu"pfungsoperatoren sind
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 298 -                     RRRReeeeppppoooorrrrtttt
+
+
+                   OR    || bzw. |  logisches "oder"   (Disjunktion)
+                   AND   && bzw. &  logisches "und"    (Konjunktion).
+
+
+        Die Negation erfolgt mit einem  vorgestellten  NNNNOOOOTTTT  oder  !!!!....
+        Eine Klammerung von Teilausdru"cken ist mo"glich.
+
+        Boole-Werte ko"nnen logische Variablen  (SWITCH  number)  mit
+        den   Werten  TRUE  oder  FALSE  sowie  die  Ergebnisse  von
+        Vergleichsoperatoren sein. Als Vergleichsoperanden sind alle
+        numerischen  und Zeichenkettenwerte, arithmetische Ausdru"cke
+        sowie NULL (Vergleich auf NULL-Wert) zugelassen.
+
+        Die Operanden ko"nnen miteinander verglichen werden durch:
+
+
+                   <   kleiner
+                   >   gro"sser
+                   !=  ungleich
+                   <>  ungleich
+                   <=  kleiner gleich
+                   >=  gro"sser gleich
+                   =   gleich.
+                   ==  gleich
+
+
+        Zeichenkettenwerte ko"nnen nicht mit numerischen Werten  ver-
+        glichen  werden. Ein NULL-Wert ist grundsa"tzlich kleiner als
+        ein beliebiger anderer Wert. Zwei NULL-Werte sind gleich.
+
+        Die  Abarbeitungsfolge eines Booleschen Ausdrucks wird durch
+        die   Priorita"t   der   Operatoren  bestimmt.   Die  ho"chste
+        Priorita"t  hat die numerische Negation, die kleinste OR:
+
+
+                 ^      !   (Negationszeichen)
+                 |      * / : %
+                 |      + -
+             Priorita"t  < > <> != <= >= = ==
+                 |      NOT  !
+                 |      AND  && &
+                 |      OR   || |
+                 ^
+
+
+        Bei gleicher Priorita"t erfolgt  die  Bearbeitung  von  links
+        nach rechts.
+
+        BBBBeeeeiiiissssppppiiiieeeelllleeee
+
+        SET SWITCH 10
+        COMPLEMENT SWITCH 10
+
+        Mit SET wird die logische Variable 10 TRUE gesetzt und durch
+        COMPLEMENT umgekehrt, d.h. FALSE
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 299 -                     RRRReeeeppppoooorrrrtttt
+
+
+        SET SWITCH 5 = VALUE 3 + 5 < VAR 7 AND
+                       (SWITCH 5 OR SWITCH 10) AND
+                       (VALUE 2 <> NULL OR
+                       NOT VALUE 3 + 100 = VAR 8)
+
+        Der logischen Variablen 5 wird das Ergebnis  des  Booleschen
+        Ausdrucks zugewiesen.
+
+        Tritt wa"hrend der Bearbeitung eines Booleschen Ausdrucks ein
+        Fehler  auf,  wird  diese abgebrochen und das Ergebnis FALSE
+        gesetzt.
+
+        _2._6._1_6.  SSSStttteeeeuuuueeeerrrruuuunnnngggg ddddeeeerrrr PPPPrrrrooooggggrrrraaaammmmmmmmaaaabbbbaaaarrrrbbbbeeeeiiiittttuuuunnnngggg
+
+        _2._6._1_6._1.  VVVVeeeerrrrzzzzwwwweeeeiiiigggguuuunnnngggg
+
+        Die  Verzweigung ermo"glicht die Abarbeitung von  Anweisungen
+        in Abha"ngigkeit von einer Bedingung (Boolescher Ausdruck).
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+        IF   boolean   THEN   laufsteuerung   [ELSE   laufsteuerung]
+        ENDIF /  ENDI
+
+        Hat der Boolesche Ausdruck den Wert  TRUE,  wird  der  THEN-
+        Zweig  abgearbeitet,  bei  FALSE,  wenn angegeben, der ELSE-
+        Zweig.  Abgeschlossen  wird  die   Anweisung   durch   ENDI.
+        Anstelle  ENDI kann auch END IF stehen.  Die Verschachtelung
+        von IF-Anweisungen ist mo"glich.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+        Es soll das Quartal ermittelt und ausgegeben werden:
+
+        IF MONTH < 6
+            THEN IF MONTH < 3
+                    THEN 'I'
+                    ELSE 'II'
+                 ENDI
+            ELSE IF MONTH < 9
+                    THEN 'III'
+                    ELSE 'IV'
+                 ENDI
+        ENDI
+         '. QUARTAL'
+
+
+        Im Dezember wird zum Beispiel IV. QUARTAL ausgegeben.
+
+        HHHHiiiinnnnwwwweeeeiiiissss:::: Die  Werte  der  Systemvariablen  MONTH  haben  den
+        Bereich 0...11 !
+
+        _2._6._1_6._2.  ZZZZyyyykkkklllluuuussss
+
+        Fu"r die Programmierung von Zyklen  stehen  zwei  Anweisungen
+        bereit.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 300 -                     RRRReeeeppppoooorrrrtttt
+
+
+
+                  REPEAT  number  laufsteuerung ENDREPEAT/ENDR
+                  WHILE  boolean  DO  laufsteuerung ENDWHILE/ENDW
+
+
+        Bei REPEAT wird der  Zyklus  in  einer  vorher  festgelegten
+        Anzahl  (number), jedoch mindestens einmal, durchlaufen. Ist
+        number ein reeller Wert, wird er  durch  Abrunden  zu  einem
+        ganzzahligen  umgewandelt. Der WHILE-Zyklus wird ausgefu"hrt,
+        solange der Boolesche Ausdruck den Wert TRUE liefert.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+        In VALUE 1 bis VALUE 10 stehen Werte zwischen 0 und 100. Die
+        Werte  sollen,  wenn  sie  kleiner als 50 sind, als ro"mische
+        Zahlen ausgegeben werden:
+
+
+        SET VAR 1 = 1
+        REPEAT 10
+            IF VALUE VAR 1 < 50
+                THEN
+                    SET VAR 2 = VALUE VAR 1
+                    WHILE VAR 2 >= 10
+                        DO 'X' SET VAR 2 -= 10
+                    ENDW
+                    IF VAR 2 >= 5
+                        THEN 'V' SET VAR 2 -= 5
+                    ENDI
+                    IF VAR 2 > 0
+                        THEN REPEAT VAR 2 'I' ENDR
+                    ENDI
+                    SPACE 3
+             ENDI
+             SET VAR 1 += 1
+        ENDR
+
+
+        Sind im Tupel die ersten 10 Werte
+                    1, 30, 60, 12, 77, 3, 90, 17, 22, 33
+        wird in die Liste eingetragen:
+                    I  XXX   XII  III  XVII  XXII  XXXIII
+
+        _2._6._1_6._3.  FFFFaaaallllllllaaaauuuusssswwwwaaaahhhhllll
+
+        Die  Fallauswahl  ist eine Mehrfachverzweigung,  die   durch
+        eine Variable gesteuert wird.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+              CASE VAR  number  [IN] [DO  laufsteuerung]
+              [OUT  laufsteuerung]ENDCASE/ENDC
+
+
+        VAR number entha"lt einen ganzzahligen Wert. Ist er 0, werden
+        die  Anweisungen  nach dem 1. DO abgearbeitet, ist er 2, die
+        nach dem 2. DO usw. Ist fu"r den Wert  keine  DO-Konstruktion
+        mehr  da,  oder  ist  der  Wert  kleiner  als  1, werden die
+        Anweisungen von OUT  abgearbeitet,  vorausgesetzt,  OUT  ist
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 301 -                     RRRReeeeppppoooorrrrtttt
+
+        definiert.  Ist  VAR  number  reell, wird durch Abrunden ein
+        ganzzahliger Wert erzeugt. Die CASE-Klausel  wird  mit  ENDC
+        abgeschlossen.  Die Angabe von IN kann entfallen.
+
+        AAAAcccchhhhttttuuuunnnngggg
+
+        Die direkte  Verschachtelung  von  CASE-Klauseln  ist  nicht
+        mo"glich!  Wird  eine  CASE-Klausel  jedoch in einer Prozedur
+        vereinbart,  ist deren Aufruf innerhalb einer anderen  CASE-
+        Klausel realisierbar.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+        Im  Kopf einer Monatsabrechnung soll  der  Name  des  Monats
+        ausgegeben werden:
+
+            'ABRECHNUNG FUER DEN MONAT '
+            SET VAR 1 = MONTH
+            CASE VAR 1
+                 DO 'JANUAR'
+                 DO 'FEBRUAR'
+                 DO 'MAERZ'
+                 DO 'APRIL'
+                 DO 'MAI'
+                 DO 'JUNI'
+                 DO 'JULI'
+                 DO 'AUGUST'
+                 DO 'SEPTEMBER'
+                 DO 'OKTOBER'
+                 DO 'NOVEMBER'
+                 DO 'DEZEMBER'
+                 OUT '(DER MONAT MUSS ERST ERFUNDEN WERDEN)'
+            ENDC
+
+        Im September wird in den Report eingetragen:
+         ABRECHNUNG FUER DEN MONAT SEPTEMBER
+
+        _2._6._1_6._4.  PPPPrrrroooozzzzeeeedddduuuurrrreeeennnn
+
+        Oft   verwendete  gleichartige   Programmteile   ko"nnen   in
+        Prozeduren vereinbart werden.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+                PROC  int  laufsteuerung  RETURN
+
+
+        Der Wert fu"r int beginnt mit 1. Es  sind  maximal  50  Werte
+        vorgesehen.  Als Identifikator der Prozedur wird eine Nummer
+        int  festgelegt. Die Definition der Prozeduren muss im  Teil
+        ddddeeeeffffiiiinnnniiiittttiiiioooonnnneeeennnn,,,,  die  Notierung  der  Prozedur  selbst im Teil
+        pppprrrroooozzzzeeeedddduuuurrrreeeennnn unmittelbar hinter AS erfolgen.
+
+        Beim Aufruf  einer  Prozedur  werden  alle  Anweisungen  bis
+        RETURN abgearbeitet.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+                    CALL  [PROC]  int
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 302 -                     RRRReeeeppppoooorrrrtttt
+
+        Der  Parameter PROC kann ohne Bedeutungsverlust  weggelassen
+        werden.  int  bestimmt die Nummer der gerufenen Prozedur. Es
+        gilt der Grundsatz, dass   eine   Prozedur  vor  dem  ersten
+        Aufruf  definiert  sein  muss.  Das ist insbesondere bei der
+        Definition mehrerer Prozeduren zu  beachten.  Nicht  erlaubt
+        ist z.B. folgende Konstruktion:
+
+                    PROC 1  CALL 5  RETURN
+                    PROC 5  ....    RETURN
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+        Es soll eine Prozedur fu"r die Potenz X^Y definiert werden
+        (Y = natu"rliche Zahl).  X wird in VAR 1, Y in VAR  2  erwar-
+        tet, das Ergebnis steht in VAR 0.
+
+        PROC 1
+            SET VAR 0 = 1
+            REPEAT VAR 2
+                SET VAR 0 = VAR 0 * VAR 1
+            ENDR
+        RETURN
+
+
+        Die Berechnung von 13^11 wird realisiert mit:
+
+        SET VAR 1 = 13
+        SET VAR 2 = 11
+        CALL 1
+        REAL VAR 0
+
+
+        _2._6._1_6._5.  SSSSeeeeiiiitttteeeennnnggggeeeessssttttaaaallllttttuuuunnnngggg
+
+        Eine  Seite  hat  im  Reportgenerator  fu"r   ING_DB     fol-
+        gende Gestalt:
+
+
+                            COLUMNS
+                     |<----------------->|
+             ________|___________________|______________
+             /|\ |   | PAGEBEGIN         |   |    /|\  |
+              |  | L |___________________| L |  A  |   |
+              |  | I |                   | I |  L  |   |
+              |  | N | Informationsteil  | N |  L  |   |
+             L|  | E |                   | E |     |   |
+             I|  | B |                   | E |  L  |   |
+             N|  | E |                   | N |  I  |   |
+             E|  | G |                   | D |  N  |   |
+             S|  | I |                   |   |  E  |   |
+             \|/ | N |                   |   |  S  |   |
+             ________|___________________|   |     |   |
+                 |   | PAGEEND           |   |     |   |
+                 |   |___________________|___|     |   |
+                 |________________________________\ /__|
+
+
+        Die  Gro"sse einer Seite wird durch  die  Parameter  COLUMNS,
+        LINES  und  ALL LINES bestimmt. Der Seitenrahmen mit Seiten-
+        kopf (PAGEBEGIN), Seitenfuss  (PAGEEND),  linkem  Seitenrand
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 303 -                     RRRReeeeppppoooorrrrtttt
+
+        (LINEBEGIN)  und rechtem Seitenrand (LINEEND) wird, wenn die
+        Teile  vom  Nutzer  definiert  wurden,  vom  Reportgenerator
+        automatisch fu"r jede Seite aufgebaut.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+                  _            _
+                  |  LINEBEGIN |
+                  |  LINEEND   |
+             ON   |  PAGEBEGIN |      [DO]  [laufsteuerung]  END/ENDO
+                  |  PAGEEND   |
+                  ~            ~
+
+
+        Ist die Laufsteuerung nicht angegeben, gilt  der  Rahmenteil
+        als nicht definiert, d. h. eine existierende Definition wird
+        gelo"scht. Sind im Programm mehrere  Definitionen  fu"r  einen
+        Rahmenteil angegeben, gilt immer die aktuellste.
+
+        In PAGEBEGIN und PAGEEND  werden  Informationen  vereinbart,
+        die  auf  jeder  Seite  erscheinen  sollen.  Das  ko"nnen die
+        aktuelle   Seitennummer,   U"berschriften,   Fussnoten    und
+        Tupelwerte  sein.  Aber  auch Berechnungen ko"nnen ausgefu"hrt
+        werden. Soll zum Beispiel  die  Seitennummerierung  in  10er
+        Schritten  erfolgen, muss in PAGEBEGIN die Wertzuweisung SET
+        PAGE = PAGE + 9 enthalten sein, da bei Seitenwechsel automa-
+        tisch  um  1  erho"ht  wird. Mit LINEBEGIN und LINEEND ko"nnen
+        "Begrenzungen", Zeilennummerierungen u.a. vereinbart werden.
+
+        Der Aufbau eines  Rahmenteils  wird  vorzeitig  abgebrochen,
+        wenn bei PAGEBEGIN und PAGEEND ein unerlaubter Seitenwechsel
+        veranlasst wird bzw. bei LINEBEGIN und LINEEND  ein  Zeilen-
+        vorschub.
+
+        Der Informationsteil nimmt den eigentlichen Inhalt der Seite
+        auf.  Ist eine Zeile la"nger als mit COLUMNS festgelegt, wer-
+        den u"berstehende Zeichen auf  eine  neue  Zeile  u"bertragen.
+        Ist  eine  Seite  voll,  wird  automatisch ein Seitenwechsel
+        ausgelo"st.
+
+        Die La"nge von PAGEBEGIN und PAGEEND ist  beliebig  und  kann
+        auch  von  Seite  zu  Seite unterschiedlich sein. Reicht die
+        physische Seite nicht aus, wird eine zweite hinzugezogen.
+
+        Auch bei  LINEBEGIN  und  LINEEND  ist  die  La"nge  zuna"chst
+        unerheblich.  Allerdings sollte darauf geachtet werden, dass
+        diese zusammen mit COLUMNS nicht gro"sser  als  die  maximale
+        Druckbreite wird. Werden die Seitenra"nder bis zum physischen
+        Blattende  gewu"nscht,  muss  PAGEEND  um  die  entsprechende
+        Anzahl Leerzeilen erweitert werden.
+
+        Die Variable LINE bezieht sich in PAGEBEGIN und PAGEEND  auf
+        die physische Seite, ebenso COLUMN in LINEBEGIN und LINEEND.
+
+        Ansonsten geben diese Variablen die Position  bezu"glich  des
+        Informationsteils an.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+        Die Funktionsweise der Seitendefinition soll im folgenden an
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 304 -                     RRRReeeeppppoooorrrrtttt
+
+        einer  "Mini"-Seite mit 12 Spalten und 7 Zeilen gezeigt wer-
+        den. Die physische Seite habe eine La"nge von 12 Zeilen:
+        report kompl1_r
+        with
+             columns 12
+             lines 7
+             all lines 12
+             big
+
+             /* switches */
+             define last_page = 1
+
+             /* domains */
+             define d_name    = 1
+             define d_qual    = 2
+             define d_pkz     = 3
+             define d_lohn    = 4
+             define d_abt     = 5
+             define d_gruppe  = 6
+
+             define #d_name   = char 20
+             define #d_qual   = char 8
+             define #d_pkz    = char 12
+             define #d_lohn   = integer 2
+             define #d_abt    = integer 2
+             define #d_gruppe = integer 2
+
+        as
+
+        on pagebegin do
+             '-' 12
+             \n
+             ' Seite: '
+             integer @2 page
+             \n
+             \2 date
+             \n
+        end
+
+        on pageend do
+             if ! ^last_page then
+                  \6 'b.w.'
+                  \n
+             end if
+             '-' 12
+             \n
+        end
+
+        on linebegin do 'I' end
+        on lineend do 'I' end
+
+        \n2
+        \f
+
+        for all do
+             for one do
+                  if #5 = 26 then
+                       \2
+                       char #1 batch 10 @20
+                       \n3
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 305 -                     RRRReeeeppppoooorrrrtttt
+
+                  end if
+             end one
+        end all
+
+        set ^last_page
+        \5 'Ende' ;
+
+        Als Tupelfile wird  die  Datenmenge  des  Beispiels  kkkkoooommmmppppllll____pppp
+        verwendet. Mit dem Programm wird folgende Liste generiert:
+
+                          Erla"uterung:
+
+        I------------I    Seitenkopf
+        I SEITE:  1  I    mit Seitennummer
+        I 20-MAY-88  I    und Datum
+        I            I
+        I            I
+        I DECKBLATT  I    Listenkopf
+        I            I
+        I            I
+        I            I
+        I            I
+        I     B.W.   I    Seitenfuss
+        I------------I
+        I------------I
+        I SEITE:  2  I
+        I 20-MAY-88  I
+        I SCHMIDT,   I    automatischer Zeichenketten-
+        I HERMANN    I    umbruch (batch)
+        I            I    Zeilenvorschub
+        I            I
+        I NEUMANN,   I
+        I INGE       I
+        I            I    Seitenvorschub, da Seite 2
+        I     B.W.   I    gefu"llt ist
+        I------------I
+        I------------I
+        I SEITE:  3  I
+        I 20-MAY-88  I
+        I            I
+        I WARNKE,    I
+        I PETER      I
+        I            I
+        I            I
+        I    ENDE    I    Listenende
+        I            I    kein Seitenfuss
+        I------------I
+
+
+
+        Bei   kurzen    Programmen    steht    der    Aufwand    zur
+        Doma"nendefinition   in   einem  ungu"nstigen  Verha"ltnis  zur
+        Gesamtbeschreibung. Auch wenn diese Definition  im  Programm
+        nicht  komplett  gebraucht  wird,  muss sie vollsta"ndig sein
+        (Identita"t zum Deskription-File).
+
+        _2._6._1_6._6.  GGGGrrrruuuuppppppppeeeennnnwwwweeeecccchhhhsssseeeellllpppprrrrooooggggrrrraaaammmmmmmmiiiieeeerrrruuuunnnngggg
+
+        In diesem Abschnitt sollen Hinweise  zur  Gruppenwechselpro-
+        grammierung  gegeben  werden.   Diese  erfolgt innerhalb der
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 306 -                     RRRReeeeppppoooorrrrtttt
+
+        Anweisung
+
+                    FOR ONE DO ... ENDONE
+
+        wa"hrend der Bearbeitung eines Tupels. Unterschieden wird  in
+        Gruppenbeginn  und  -ende. Ein Gruppenbeginn liegt vor, wenn
+        das Gruppenattribut im aktuellen Tupel verschieden  ist  von
+        dem  im  vorhergehenden Tupel.  Das bedeutet natu"rlich, dass
+        ein zum Gruppenattribut sortiertes Tupelfile vorliegen muss.
+        In  einem  Booleschen Ausdruck la"sst sich das durch den Ver-
+        gleich VALUE x <> LAST x fu"r das Tupelattribut  x  abtesten.
+        Verku"rzend kann dafu"r auch geschrieben werden
+
+             GROUPBEGIN x.
+
+
+        Diese Anweisung liefert einen Boole-Wert. Liegt ein Gruppen-
+        beginn vor, ist er TRUE.
+
+        Das Gruppenende la"sst sich durch  einen  Vergleich  mit  dem
+        na"chsten  Tupel  feststellen.  A"ndert sich das Gruppenattri-
+        but, bedeutet das das Ende der Gruppe.  Abtesten la"sst  sich
+        das mit der Konstruktion VALUE x <> NEXT x oder verku"rzend
+
+             GROUPEND x.
+
+
+        Liegt das Gruppenende fu"r das Gruppenattribut x vor, liefert
+        die Anweisung den Wert TRUE.
+
+        Im einfu"hrenden Beispiel ((((ppppeeeerrrrssss____pppp))))  ist  ein  sehr  einfacher
+        Fall  der  Gruppenwechselprogrammierung angefu"hrt. Der Grup-
+        penname pppp____aaaabbbbtttt wird jeweils nur einmal am Beginn einer Gruppe
+        ausgegeben. Realisiert wurde das durch die Anweisungen
+
+        IF GROUPBEGIN p_abt THEN
+            INTEGER @4 #p_abt
+        END IF
+
+
+        Ein  komplizierteres  Beispiel  ist  im   Programm   kkkkoooommmmppppllll____pppp
+        angefu"hrt.  Um eventuell mehr Klarheit zu schaffen, soll nun
+        noch ein relativ u"bersichtliches Beispiel  folgen.  Fu"r  die
+        Relation  ppppeeeerrrrsssskkkkoooommmmpppp  ist  fu"r  jede Abteilung und jede Gruppe
+        sowie fu"r alle Mitarbeiter die Summe der Lo"hne zu  berechnen
+        und auszugeben:
+        report kompl2_r
+        with
+             columns 35
+             lines 20
+             all lines 24
+             big
+
+             /* variables */
+             define grp_lohn  = 1
+             define abt_lohn  = 2
+             define all_lohn  = 3
+
+             /* domains */
+             define d_name    = 1
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 307 -                     RRRReeeeppppoooorrrrtttt
+
+             define d_qual    = 2
+             define d_pkz     = 3
+             define d_lohn    = 4
+             define d_abt     = 5
+             define d_gruppe  = 6
+
+             define #d_name   = char 20
+             define #d_qual   = char 8
+             define #d_pkz    = char 12
+             define #d_lohn   = integer 2
+             define #d_abt    = integer 2
+             define #d_gruppe = integer 2
+
+        as
+
+        on pagebegin do
+             '-' 35
+             \n
+             ' Seite: '
+             integer @2 page
+             \\15
+             date
+             \n
+             '-' 35
+             \n
+        end
+
+        on pageend do
+             '-' 35
+             \n
+        end
+
+        on linebegin do 'I' end
+        on lineend do 'I' end
+
+        \n2
+        \f
+        set $1 = 0
+        set $2 = 0
+        set $3 = 0
+
+        for all do
+             for one do
+                  set $1 += #4
+                  set $2 += #4
+                  set $3 += #4
+                  if groupend d_gruppe then
+                       \5 'Gruppe'
+                       \15
+                       integer @4 #d_gruppe
+                       \20 integer @8 $1 ',- M'
+                       \n
+                       set $1 = 0
+                  end if
+                  if groupend d_abt then
+                       \5 'Abteilung'
+                       \15
+                       integer @4 #d_abt
+                       \20 integer @8 $2 ',- M '
+                       \n2
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 308 -                     RRRReeeeppppoooorrrrtttt
+
+                       set $2 = 0
+                       '-' 35 \n
+                  end if
+             end one
+        end all
+
+        \5 'Gesamt'
+        \20 integer @8 $3 ',- M'
+        \n
+        \5 'Listenende' ;
+
+        Bei Abarbeitung wird folgende Liste generiert:
+
+        I-----------------------------------I
+        I SEITE:  1               20-MAY-88 I
+        I-----------------------------------I
+        I                                   I
+        I                                   I
+        I DECKBLATT                         I
+        I LOHN NACH ABTEILUNGEN UND GRUPPEN I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I-----------------------------------I
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 309 -                     RRRReeeeppppoooorrrrtttt
+
+
+        I-----------------------------------I
+        I SEITE:  2               20-MAY-88 I
+        I-----------------------------------I
+        I    GRUPPE       1     2906,- M    I
+        I    ABTEILUNG    0     2906,- M    I
+        I                                   I
+        I-----------------------------------I
+        I    GRUPPE      12      700,- M    I
+        I    ABTEILUNG   10      700,- M    I
+        I                                   I
+        I-----------------------------------I
+        I    GRUPPE      23      877,- M    I
+        I    ABTEILUNG   13      877,- M    I
+        I                                   I
+        I-----------------------------------I
+        I    GRUPPE      10     1120,- M    I
+        I    GRUPPE      23     1986,- M    I
+        I    ABTEILUNG   26     3106,- M    I
+        I                                   I
+        I-----------------------------------I
+        I    GRUPPE      10     1337,- M    I
+        I    ABTEILUNG   32     1337,- M    I
+        I                                   I
+        I-----------------------------------I
+
+
+        I-----------------------------------I
+        I SEITE:  3               20-MAY-88 I
+        I-----------------------------------I
+        I-----------------------------------I
+        I    GRUPPE       2     1337,- M    I
+        I    GRUPPE      11      600,- M    I
+        I    ABTEILUNG   33     1937,- M    I
+        I                                   I
+        I-----------------------------------I
+        I    GRUPPE       2     1116,- M    I
+        I    GRUPPE       3     1362,- M    I
+        I    ABTEILUNG   55     2478,- M    I
+        I                                   I
+        I-----------------------------------I
+        I    GRUPPE       1     3250,- M    I
+        I    GRUPPE       3     1567,- M    I
+        I    ABTEILUNG  129     4817,- M    I
+        I                                   I
+        I-----------------------------------I
+        I    GRUPPE       4      900,- M    I
+        I    GRUPPE       5     2790,- M    I
+        I    GRUPPE       6     4115,- M    I
+        I    GRUPPE       7     2200,- M    I
+        I-----------------------------------I
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 310 -                     RRRReeeeppppoooorrrrtttt
+
+
+        I-----------------------------------I
+        I SEITE:  4               20-MAY-88 I
+        I-----------------------------------I
+        I    ABTEILUNG  199    10005,- M    I
+        I                                   I
+        I-----------------------------------I
+        I-----------------------------------I
+        I    GESAMT            28163,- M    I
+        I===================================I
+        I                                   I
+        I                                   I
+        I    LISTENENDE                     I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I                                   I
+        I-----------------------------------I
+
+
+        Gruppen ko"nnen auf verschiedenen Ebenen gebildet werden.  Im
+        Beispiel-Tupelfile  kann nach der Abteilung gruppiert werden
+        und innerhalb dieser nach den Gruppen. Die  Liste  wurde  so
+        definiert,  dass eine seitenweise Ausgabe auf dem Bildschirm
+        erfolgt (HOLD-MODUS).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 311 -                     RRRReeeeppppoooorrrrtttt
+
+        _2._6._1_7.  SSSScccchhhhlllluuuu""""sssssssseeeellllwwwwoooorrrrtttteeee
+
+
+         all          end           linebegin    repeat
+         and          enda          lineend      report
+         as           endc          lines        return
+         batch        endi          m_day        scale
+         batchline    endo          minut        second
+         before       endr          mod          set
+         big          endw          month        space
+         bit          exp           new          switch
+         byte         false         next         terminal
+         call         for           norm         then
+         case         from          not          time
+         char         graphic       null         to
+         clear        groupbegin    oct          true
+         col          groupend      on           tuple
+         column       hex           one          value
+         columns      hour          or           var
+         complement   if            out          w_day
+         date         ignore        page         while
+         day          in            pagebegin    with
+         dec          integer       pageend      word
+         default      is_dst        pic          y_day
+         define       last          point        year
+         do           length        proc
+         else         line          real
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+

@@ -1,0 +1,1980 @@
+
+        Referenz-Manual           - 121 -                        ZZZZIIIIPPPP
+
+        NNNNAAAAMMMMEEEE
+
+             zip  -  Eingabe-Generator,  erzeugt  C-Quellcode   fuer
+             Eingabemasken
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             zzzziiiipppp [ ----zzzzpppphhhh ] [ ----aaaa line] [ ----cccc column] [ ----llll lib] txtmask
+             mit Compilierung, Archivierung  und  Erstellung  Input-
+             File (*_i)
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Mittels  zip  erzeugte  Prozeduren  werden  mit   einem
+             sogenannten  clear-Flag  (Loeschen des Bildschirms, Typ
+             integer) als 1. Argument - dabei  bedeutet  Flag  ==  0
+             Loeschen  und  groesser  0  kein Loeschen - sowie einem
+             show-Flag (erst zeigen, dann korrigieren) als 2.  Argu-
+             ment  -  dabei  bedeuten  Flag == -1 nur Anzeige, keine
+             Korrekturmo"glichkeit, Flag == 0 sofort Korrektur,  Flag
+             ==     1     erst    Anzeige    aller    Daten,    dann
+             Korrekturmo"glichkeit -  gerufen.  Der Rueckkehrcode der
+             Prozeduren  bestimmt  mit 1 eine ordnungsgemaesse Abar-
+             beitung bzw. mit 0 einen gewollten Abbruch nach Eingabe
+             von  '$'.  Das Verlassen des gesamten Programms aus der
+             Prozedur kann mit 2mal Interrupt (Control-C  bzw.  DEL)
+             herbeigefuehrt  werden.  Die zu bearbeitenden Variablen
+             (Eingabe, Korrektur, Anzeige) muessen global deklariert
+             sein. Als Datentypen fuer diese Variablen sind integer,
+             long, float, double und  character  zugelassen  (analog
+             AMX und EQUEL).
+
+             OOOOppppttttiiiioooonnnneeeennnn::::
+
+             -z   Zyklisch  zu  rufendes   Editions-Programm   (ohne
+                  automatisches  Bildschirm-Loeschen),  mit dem eine
+                  Erfassungsmaske jeweils nach der aktuellen Kursor-
+                  position angeha"ngt werden kann. In der Regel rollt
+                  bei U"berschreitung der  maximalen  Zeilenzahl  des
+                  Bildschirms  der  Bildschirminhalt so viele Zeilen
+                  nach oben, wie fu"r die  vollsta"ndige  Ausgabe  der
+                  Maske beno"tigt werden.
+
+             -a   Zeilennummer (line);  die  Maske soll an eine, bei
+                  der   Abarbeitung   bereits   auf  dem  Bildschirm
+                  stehende Maske ab "Zeilennummer" angeha"ngt werden;
+
+             -c   Spaltennummer (column); Die Maske soll auf  Spalte
+                  (column)  "Spaltennummer"  positioniert werden. In
+                  Verbindung mit der Option  -a  ist  eine  absolute
+                  Positionierung mo"glich.
+
+             -p   Die Aufforderung  zur  Angabe  von  Pru"fprozeduren
+                  (zeichen-  oder  wortbezogen [z/w]) wird bei allen
+                  Variablen, die mit Korrektur = j eingeordnet sind,
+                  ausgegeben.
+
+             -l   Das erzeugte   *.o-File  wird  in  die  Bibliothek
+                  "lib"  eingeordnet  bzw.  dort  angeha"ngt; Es gibt
+                  keine  Positionierungsmo"glichkeit  fuer  das  *.o-
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Referenz-Manual           - 122 -                        ZZZZIIIIPPPP
+
+                  File.
+
+             HHHHiiiinnnnwwwweeeeiiiisssseeee::::
+
+                  Zum Binden muss die  Bibliothek  ////uuuussssrrrr////lllliiiibbbb////lllliiiibbbbzzzziiiipppp....aaaa
+                  eingezogen werden. Dort stehen die Konvertierungs-
+                  und zip-Prozeduren (Verwendung der Option  -lzip).
+                  Weiterhin   ist   die  Bibliothek  "libcurses"  (-
+                  lcurses)  und  die  Verfu"gbarkeit  der   "termcap"
+                  Voraussetzung.
+
+                  Bei der Abarbeitung von ZIP wird in dieser Reihen-
+                  folge  nach  dem Datentyp (int=i, long=l, float=f,
+                  double=d oder char=c), dem im aufrufenden Programm
+                  jeweils   vereinbarten  Variablenname,  der  Bear-
+                  beitungsart (nur Anzeige oder Korrektur)  und  bei
+                  Verwendung  des p bzw. h- Flags nach dem Namen der
+                  Pruef- bzw. Hilfeprozedur (mit '()' angeben) sowie
+                  der Form der Pruefung bzw. Hilfe gefragt.
+
+                  Mit  der  Generierung  des  Programms  werden  die
+                  Daten,  die  beim  Dialog  eingegeben wurden (ein-
+                  schliesslich Aufruf) an ein  File  ttttxxxxttttmmmmaaaasssskkkk____iiii  aus-
+                  gegeben,  sodass bei Wiederholungen der Aufruf zzzziiiipppp
+                  ttttxxxxttttmmmmaaaasssskkkk den Generator veranlasst, die Eingabewerte
+                  von diesem File zu lesen.
+
+                  Korrektur? > j, Korrektur der Variablen,
+                               n, Anzeige  der  Variablen.
+
+                  Sofern Sie sich vertippt haben, koennen Sie diesen
+                  Zyklus   nach   der  Abfrage  "Okay?  >"  mit  "n"
+                  wiederholen lassen.
+
+                  Die Bibliotheksfunktionen von ZIP beginnen mit ZZ,
+                  in  der Umgebung von ZIP sollten solche Namen ver-
+                  mieden werden.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Version_6/3.3          Juni 16, 1989                  RRRREEEEPPPPOOOORRRRTTTT
+
+
+        Referenz-Manual           - 123 -                 EEEEiiiinnnnlllleeeeiiiittttuuuunnnngggg
+
+        _1._3.  UUUUNNNNIIIIXXXX  RRRReeeeppppoooorrrrtttt----KKKKoooommmmmmmmaaaannnnddddoooossss ****
+
+
+        _1._3._1.  UUUU""""bbbbeeeerrrrssssiiiicccchhhhtttt ****
+
+        Die Dokumentation wurde so aufgebaut, dass im  Report-Manual
+        nur  die  Komponenten  des Report-Generators vorgestellt und
+        einige grundsa"tzliche Ausfu"hrungen gegeben werden,  die  fu"r
+        das  Versta"ndnis  und  die Anwendung von Bedeutung sind.  Im
+        Manual konnte aus Gru"nden der U"bersichtlichkeit  keine  Dar-
+        stellung der Generator-Sprache untergebracht werden. Es wird
+        darauf hingewiesen, dass die Sprache sowohl in der Semantik,
+        als  auch  in  der  Syntax nicht ganz der gewohnten Umgebung
+        entspricht.  Die Notwendigkeit zur Schaffung  dieser  Lo"sung
+        ergibt  sich  daraus,  dass  der UNIX -Tool "awk" fu"r kleine
+        Hauptspeicher nur begrenzt einsetzbar ist und insgesamt sehr
+        langsam  arbeitet, ausserdem werden ha"ufig Anforderungen zur
+        Gestaltung  von  Druckbildern  gestellt,  die  "awk"   nicht
+        erfu"llen  kann.   Eine Verbindung zur Datenbank wird mit dem
+        Report-Generator mittelbar realisiert.
+
+        Im   Teil   II   der   Anwenderdokumentation   werden   eine
+        ausfu"hrliche  Anleitung  zur  Programmierung  der Generator-
+        Sprache mit Beispielen gebracht und  einige  Anwendungsfa"lle
+        beschrieben.   Die  Anwendung ist nicht grundsa"tzlich an das
+        Datenbanksystem ING_DB gebunden,  allerdings  wird  bei  der
+        Anwendung  auf  UNIX  -Files  das  Grundversta"ndnis des Pro-
+        grammpaketes vorausgesetzt.
+
+        Das Report Manual ist in 4 Abschnitte eingeteilt:
+
+        rc    beschreibt die Nutzung des Compilers  nach  Erstellung
+             des Quelltextes mit dem Editor.
+
+        rg    beschreibt die Anwendung des  eigentlichen  Generators
+             (Interpreters) zur Realisierung der Ausgabeformatierung
+             unter Nutzung des, mit "rc"  erzeugten  "R_code"-Files,
+             des "desc"-Files und des Daten-Files.
+
+        rd    erzeugt ein description-File aus einer  Relation  bzw.
+             das Skelett eines Reports.
+
+        rp_desc druckt ein description-File in lesbarer Form.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Version_6/3.3          Juni 16, 1989                  RRRREEEEPPPPOOOORRRRTTTT
+
+
+        Referenz-Manual           - 124 -                 EEEEiiiinnnnlllleeeeiiiittttuuuunnnngggg
+
+                       DDDDOOOOKKKKUUUUMMMMEEEENNNNTTTTAAAATTTTIIIIOOOONNNN IIIINNNNGGGG____DDDDBBBB TTTTEEEEIIIILLLL1111
+
+
+
+
+
+                             TTTTEEEEIIIILLLL  RRRREEEEPPPPOOOOPPPPRRRRTTTT ****
+
+
+
+
+
+        ####################################################################
+        ####################################################################
+        ##                                                                ##
+        ##                                                                ##
+        ##                                                                ##
+        ##                                                                ##
+        ##                                                                ##
+        ##          ###   #     #  #####          ######  ######          ##
+        ##           #    ##    # #     #         #     # #     #         ##
+        ##           #    # #   # #               #     # #     #         ##
+        ##           #    #  #  # #  ####         #     # ######          ##
+        ##           #    #   # # #     #         #     # #     #         ##
+        ##           #    #    ## #     #         #     # #     #         ##
+        ##          ###   #     #  #####  ####### ######  ######          ##
+        ##                                                                ##
+        ##                                                                ##
+        ##                                                                ##
+        ##                                                                ##
+        ##         ######  ####### ######  ####### ######  #######        ##
+        ##         #     # #       #     # #     # #     #    #           ##
+        ##         #     # #       #     # #     # #     #    #           ##
+        ##         ######  #####   ######  #     # ######     #           ##
+        ##         #   #   #       #       #     # #   #      #           ##
+        ##         #    #  #       #       #     # #    #     #           ##
+        ##         #     # ####### #       ####### #     #    #           ##
+        ##                                                                ##
+        ##                                                                ##
+        ##                                                                ##
+        ##                                                                ##
+        ##                                                                ##
+        ####################################################################
+        ####################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Version_6/3.3          Juni 16, 1989                  RRRREEEEPPPPOOOORRRRTTTT
+
+
+        Referenz-Manual           - 125 -                 EEEEiiiinnnnlllleeeeiiiittttuuuunnnngggg
+
+        NNNNAAAAMMMMEEEE
+
+             rc - REPORT Compiler
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             rrrrcccc {[flag] file}
+
+
+             Flags zur Steuerung der Bearbeitung:
+
+             -c   Nur U"bersetzen, keine Codeerzeugung
+
+             -i   Eingabe von standard-input
+
+             -l   automatische    Umwandlung    der    Klein-     in
+                  Grossbuchstaben
+
+             -o   Ausgabe des u"bersetzten Reports  auf  das  R_CODE-
+                  File "r_code"
+
+             -s   Unterdru"ckung U"bersetzungsprotokoll
+
+             -v   Ausgabe U"bersetzungsprotokoll
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Der  Report-Compiler  rrrrcccc  u"bersetzt  ein  oder  mehrere
+             Reports  in einen vom  Report-Interpreter rrrrgggg verarbeit-
+             bare  Form.  Ist im  Report eine  Beschreibung  der  zu
+             druckenden   Daten  vorhanden,    wird  zusa"tzlich  das
+             description-File erzeugt.
+             Eine ausfu"hrliche Beschreibung wird im  Teil  2  dieser
+             Dokumentation gegeben.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLLEEEE
+
+                /* U"bersetze das Quell-File "quel_p" und
+                   erzeuge das R-code-File "r_code" */
+
+                   rc -o quel_p
+
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             Teil 2 der Dok. REPORT-GENERATOR
+
+        NNNNAAAACCCCHHHHRRRRIIIICCCCHHHHTTTTEEEENNNN
+
+             Im    Laufzeitprotokoll    (auf    <stdout>)     werden
+             selbsterkla"rende Kommentare gegeben.
+
+
+
+
+
+
+
+
+
+        Version_6/3.3          Juni 16, 1989                  RRRREEEEPPPPOOOORRRRTTTT
+
+
+        Referenz-Manual           - 126 -                         RRRRDDDD
+
+        NNNNAAAAMMMMEEEE
+
+             rd - Erstellen des description-Files bzw. das Skelett
+                  eines Reports
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             rrrrdddd [flags] db rel [file]
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             rrrrdddd erstellt zu der Relation ````rrrreeeellll''''  der  Datenbank  ````ddddbbbb''''
+             ein  description-File.  Fehlt  das Argument ````ffffiiiilllleeee'''' wird
+             der Name ddddeeeesssscccc gewa"hlt.
+
+             FFFFllllaaaaggggssss::::
+
+             -o   Ausgabe auf Standardoutput (anstelle eines Files)
+
+             -r   Ausgabe eines  leeren  (skeleton)  Reportprogramms
+                  anstelle des description-files. Fehlt das Argument
+                  `file`  wird  der  Name  rrrreeeeppppoooorrrrtttt   gewaehlt.    Die
+                  Doma"nendefinition ist im Report enthalten.
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             Teil 2 der Dok. REPORT-GENERATOR
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLLEEEE
+
+
+             rd demo personal
+             rd -o demo teile > teile.d
+             /*leerer Report*/
+             rd -r demo personal
+             /*oder identisch*/
+             rd demo teile teilend
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Version_6/3.3          Juni 16, 1989                  RRRREEEEPPPPOOOORRRRTTTT
+
+
+        Referenz-Manual           - 127 -                         RRRRGGGG
+
+        NNNNAAAAMMMMEEEE
+
+             rg - REPORT-Interpreter
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             rrrrgggg {flag}
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+
+             Zur File-Umlenkung sind folgende Flags implementiert:
+
+             -dfile Nutzung des description-Files "file" (Standard:
+                   ddddeeeesssscccc )
+
+             -ffile Nutzung des Datenfiles "file" (Standard:
+                   ttttuuuupppplllleeee )
+
+             -ifile Nutzung des R-Code-Files "file" (Standard:
+                   rrrr____ccccooooddddeeee )
+
+             -ofile Setze das  Report-Files  auf  "file"  (Standard:
+                  ssssttttaaaannnnddddaaaarrrrdddd----oooouuuuttttppppuuuutttt))))
+
+             Zur Ein-/Ausgabesteuerung sind folgende Flags implemen-
+             tiert:
+
+             -lno  (entspricht LINES no)
+                  La"nge des Informationsteils auf  einer  Seite  (no
+                  Zeilen)  Standard:  Wert  von ALL LINES, wenn dort
+                  definiert sonst: 66
+
+             -ano  (entspricht ALL LINES no)
+                  La"nge der physischen Druckseite (no Zeilen)  Stan-
+                  dard: Wert von LINES
+
+             -cno  (entspricht COLUMNS no)
+                  Breite des Informationsteils  (no  Spalten)  Stan-
+                  dard: 132
+
+             -pno  (entspricht FROM PAGE no)
+                  Es werden nur die Seiten in die Liste eingetragen,
+                  deren Seitennummer gro"sser oder gleich der angege-
+                  benen Zahl no ist.  Standard: 0
+
+             -Pno  (entspricht TO PAGE no)
+                  Es werden nur die Seiten in die Liste eingetragen,
+                  deren Seitennummer kleiner oder gleich der angege-
+                  benen Zahl no ist.  Standard: 32767 (Maximum)
+
+             -tno  (entspricht FROM TUPLE no)
+                  Es werden nur die Tupel verarbeitet, deren  Tupel-
+                  nummer gro"sser oder gleich der angegebenen Zahl no
+                  ist.  Standard: 0
+
+             -Tno  (entspricht TO TUPLE no)
+                  Es werden nur die Tupel verarbeitet, deren  Tupel-
+                  nummer kleiner oder gleich der angegebenen Zahl no
+                  ist.  Standard: 32767 (Maximum)
+
+        Version_6/3.3          Juni 16, 1989                  RRRREEEEPPPPOOOORRRRTTTT
+
+
+        Referenz-Manual           - 128 -                         RRRRGGGG
+
+             -b    (entspricht BIG)
+                  Alle Kleinbuchstaben werden beim  Einschreiben  in
+                  die  Liste automatisch in Grossbuchstaben umgewan-
+                  delt.  Standard: keine Umwandlung
+
+             -Dno  Setze Debug-Information = `no'
+
+             -Sno  Setze SWITCH `no' = TRUE
+
+             -Vno val  Setze VAR `no' = `val'
+
+         BBBBEEEEIIIISSSSPPPPIIIIEEEELLLLEEEE
+
+
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             Teil 2 der Dok. REPORT-GENERATOR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Version_6/3.3          Juni 16, 1989                  RRRREEEEPPPPOOOORRRRTTTT
+
+
+        Referenz-Manual           - 129 -                         RRRRPPPP
+
+         NNNNAAAAMMMMEEEE
+
+             rp_desc - druckt ein description-File in lesbarer Form
+
+         SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+              rrrrpppp____ddddeeeesssscccc [desc-file]
+
+         BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Als  Argument  kann  der  Name  des   description-Files
+             angegeben  werden,  wenn  der Standardfilename "r_code"
+             nicht zutrifft.
+
+              rrrrpppp____ddddeeeesssscccc -  druckt  das  description-File  in  lesbarer
+             Form.
+
+         BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+
+
+             rp_desc < description-file der Relation personal >
+             rd -r demo personal
+             rc -s report
+             rp_desc > beispiel
+             rm report r_code desc
+             cat beispiel
+
+             | field | type  | len   | off   |
+             |~~~~~~~|~~~~~~~|~~~~~~~|~~~~~~~|
+             |       |       |       |       |
+             |       |       |       |       |
+             |~~~~~~~|~~~~~~~|~~~~~~~|~~~~~~~|
+             |       |       |       |       |
+
+
+         SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             Teil 2 der Dok. REPORT-GENERATOR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   FFFFIIIILLLLEEEESSSS
+
+
+        Referenz-Manual           - 130 -                 UUUUeeeebbbbeeeerrrrssssiiiicccchhhhtttt
+
+        _1._4.  FFFFiiiilllleeeessss ****
+
+
+
+
+
+
+
+
+
+
+
+
+        _1._4._1.  UUUU""""bbbbeeeerrrrssssiiiicccchhhhtttt ****
+
+
+        =>   AMX(FILES): Steuerfiles fu"r AMX-Compiler
+
+        =>   DAYFILE(FILES): ING_DB  6.3/3 login Nachricht
+
+        =>   ERROR(FILES): ING_DB  6.3/3 Fehlerfiles
+
+        =>   STARTUP(FILES): ING_DB  6.3/3 startupfile
+
+        =>   USERS(FILES):   ING_DB    6.3/3    Nutzertabelle    mit
+             Parametern
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   FFFFIIIILLLLEEEESSSS
+
+
+        Referenz-Manual           - 131 -                 UUUUeeeebbbbeeeerrrrssssiiiicccchhhhtttt
+
+                          DDDDOOOOKKKKUUUUMMMMEEEENNNNTTTTAAAATTTTIIIIOOOONNNN IIIINNNNGGGG____DDDDBBBB ---- TTTTEEEEIIIILLLL1111
+
+
+
+
+
+                            BBBBeeeesssscccchhhhrrrreeeeiiiibbbbuuuunnnngggg ddddeeeerrrr FFFFiiiilllleeeessss
+
+
+
+
+
+
+        ##############################################################
+        ##############################################################
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##       ###   #     #  #####          ######  ######       ##
+        ##        #    ##    # #     #         #     # #     #      ##
+        ##        #    # #   # #               #     # #     #      ##
+        ##        #    #  #  # #  ####         #     # ######       ##
+        ##        #    #   # # #     #         #     # #     #      ##
+        ##        #    #    ## #     #         #     # #     #      ##
+        ##       ###   #     #  #####  ####### ######  ######       ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##          #######   ###   #       #######  #####          ##
+        ##          #          #    #       #       #     #         ##
+        ##          #          #    #       #       #               ##
+        ##          #####      #    #       #####    #####          ##
+        ##          #          #    #       #             #         ##
+        ##          #          #    #       #       #     #         ##
+        ##          #         ###   ####### #######  #####          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##############################################################
+        ##############################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   FFFFIIIILLLLEEEESSSS
+
+
+        Referenz-Manual           - 132 -                 UUUUeeeebbbbeeeerrrrssssiiiicccchhhhtttt
+
+        NNNNAAAAMMMMEEEE
+
+             .../sys/etc/amx*
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Die Files sind Steuerfiles fu"r den AMX-Compiler
+
+             amx_ixc6.3    fu"r in C eingebettetes AMX unter UNIX
+             amx_msc6.3    fu"r in Microsoft-C eingebettetes AMX
+                           unter MS-DOS-kompitablen Betriebssystemen
+             amx_ixf6.3    fu"r in C eingebettetes AMX unter UNIX
+                           fu"r das linken mit Fortran-77-Programmen
+
+
+        FFFFIIIILLLLEEEESSSS
+
+             .../sys/etc/amx*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   FFFFIIIILLLLEEEESSSS
+
+
+        Referenz-Manual           - 133 -                    DDDDAAAAYYYYFFFFIIIILLLLEEEE
+
+        NNNNAAAAMMMMEEEE
+
+             .../sys/etc/dayfile: ING_DB  6.3/3 login Nachricht
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Das dayfile entha"lt allgemeine Informationen des ING_DB
+              6.3/3-Systems fu"r den Nutzer.  Es entspricht mehr oder
+             weniger dem Nachrichtenfile ////uuuussssrrrr////ssssppppoooooooollll////mmmmaaaaiiiillll////**** in UNIX .
+             Das  File  hat  kein  festes Format, es wird zur ING_DB
+              6.3/3  login-Zeit  einfach  nach  Standardoutput   des
+             interaktiven  Terminalmonitors  kopiert.   Mittels  der
+             QUEL ----ssss oder der ----dddd Flags kann die Ausgabe des  dayfile
+             unterdru"ckt werden.
+
+             Es macht u"berhaupt nichts aus, wenn das  dayfile  nicht
+             existiert oder nicht lesbar ist.
+
+        FFFFIIIILLLLEEEESSSS
+
+             .../sys/etc/dayfile6.3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   FFFFIIIILLLLEEEESSSS
+
+
+        Referenz-Manual           - 134 -                      EEEERRRRRRRROOOORRRR
+
+        NNNNAAAAMMMMEEEE
+
+             .../files/error6.3_xx
+             - Files mit den ING_DB  6.3/3-Fehlermeldungen
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Diese    Files    enthalten    die    ING_DB     6.3/3-
+             Fehlermeldungen.   Es gibt jeweils ein File fu"r jeweils
+             einen Tausender-Zahlenbereich; d.h., die  Fehler-Nummer
+             2313 entha"lt das File error6.3_2.
+
+             Jedes File entha"lt eine Folge von  Fehlermeldungen  mit
+             den  dazugeho"rigen  Fehler-Nummern.  Wenn ein Fehler im
+             front-end-Prozess auftritt, wird das passende File nach
+             der  korrekten Fehler-Nummer skandiert.  Wenn er gefun-
+             den wird, wird die  Mitteilung  gedruckt;  anderenfalls
+             werden   die   Fehlernummern  und  die  Fehlerparameter
+             gedruckt.
+
+             Jede Meldung hat das Format
+                  Fehler-Nummer <TAB> Mitteilungs-Kurzform
+             Die Meldungen  werden  durch  das  Tilde-Zeichen  (`~')
+             begrenzt.   Die  Meldungen  werden  vor dem Druck skan-
+             diert.  Wenn die Folge %%%%nnnn auftritt (wobei nnnn eine Ziffer
+             von  0  bis 9 ist), wird der Parameter nnnn ersetzt, wobei
+             %0 der erste Parameter ist.
+
+             Die Parameter ko"nnen in beliebiger  Ordnung  auftreten.
+             Beispielsweise  kann  eine  Fehlermeldung  %2  referen-
+             zieren, bevor %0 referenziert worden ist.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLLEEEE
+
+        1003    line %0, bad database name %1~
+        1005    In the purge of %1, a bad %0 caused execution to halt~
+        1006    No process, try again.~
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   FFFFIIIILLLLEEEESSSS
+
+
+        Referenz-Manual           - 135 -                    SSSSTTTTAAAARRRRTTTTUUUUPPPP
+
+        NNNNAAAAMMMMEEEE
+
+             .../files/startup: ING_DB  6.3/3 startupfile
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Das startupfile wird vom  interaktiven  Terminalmonitor
+             zur  ING_DB   6.3/3  login-Zeit  gelesen.  Das File ist
+             global fu"r alle ING_DB  6.3/3 Nutzer und wird  vor  dem
+             nutzerspezifischen   Init-File   (definiert  im  ING_DB
+              Nutzerverzeichnis) abgearbeitet.   Die  Hauptanwendung
+             des startupfiles du"rfte die Definition eines neuen Edi-
+             tors und/oder einer Shell sein, die mit den \\\\eeee bzw.  \\\\ssss
+             Monitorkommandos gerufen werden.
+
+        FFFFIIIILLLLEEEESSSS
+
+             .../sys/etc/startup
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             monitor(quel), users(files)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   FFFFIIIILLLLEEEESSSS
+
+
+        Referenz-Manual           - 136 -                      UUUUSSSSEEEERRRRSSSS
+
+        NNNNAAAAMMMMEEEE
+
+             .../sys/etc/users: ING_DB  6.3/3 Nutzer Verzeichnis
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Das File users entha"lt Informationen u"ber die Nutzer in
+             durch   Doppelpunkt  ``:''  separierten  Feldern.   Der
+             Inhalt der einzelnen Felder ist folgender:
+
+             0*   Nutzername,  direkt  den  login-Namen  des   Files
+                  ////eeeettttcccc////ppppaaaasssssssswwwwdddd entnommen.
+
+             1*   Nutzercode, zugewiesen vom ING_DB  6.3/3 Systemad-
+                  ministrator.   Er  ist ein eineindeutiger (unique)
+                  zwei Zeichen langer Code.
+
+             2*   UNIX  user id.  Der uuuuiiiidddd muss den  Eintragungen  im
+                  File ////eeeettttcccc////ppppaaaasssssssswwwwdddd entsprechen.
+
+             3*   UNIX  group id.  Der ggggiiiidddd muss den Eintragungen  im
+                  File ////eeeettttcccc////ppppaaaasssssssswwwwdddd entsprechen.
+
+             4*   oktales Statuswort.  Die einzelnen  Bits  erteilen
+                  folgende Nutzungsberechtigungen:
+
+                  0000001 creatdb
+                          Berechtigung zur Erzeugung von
+                          Datenbanken
+                  0000002 direct update
+                          Berechtigung zum Abschalten des
+                          "deferred update" (A"nderung
+                          des Hintergrundes).
+                  0000004 update of system catalogs
+                          Berechtigung zum direkten A"ndern
+                          der Systemkataloge mittels QUEL
+                  0000020 trace flags
+                          Berechtigung zum Benutzen von Trace-
+                          flags (ausschliesslich fu"r Sys-
+                          temadministrator und Debugging)
+                  0000100 proctabs
+                          Berechtigung zur Benutzung belie-
+                          biger Prozesstabellen (ausschlies-
+                          slich fu"r Systemadministrator
+                          und Debugging)
+                  0000200 =proctab form
+                          Berechtigung zur Benutzung von unde-
+                          finierten Prozesstabellen der Form
+                          "= file" (file ist eine Prozesstabelle
+                          in Verzeichnis .../sys/etc)
+                  0100000 ing_db superuser
+                          Kennzeichnung des ING_DB
+                   Systemadmini-
+                          strators
+
+
+             5*   Flagliste, die beim Start von  ING_DB   6.3/3  fu"r
+                  diesen Nutzer automatisch gesetzt werden.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   FFFFIIIILLLLEEEESSSS
+
+
+        Referenz-Manual           - 137 -                      UUUUSSSSEEEERRRRSSSS
+
+             6*   Prozesstabelle des Nutzers.
+
+             7*   Initfile.  Das initfile  wird  zur  ING_DB   6.3/3
+                  login-Zeit    vom   interaktiven   Terminalmonitor
+                  abgearbeitet.   Es  wird  nach   dem   startupfile
+                  ausgefu"hrt.
+
+             8*   Kommentarfeld
+
+             9*   Datenbankliste.  Fehlt die Liste, kann der  Nutzer
+                  alle  Datenbanken  ansprechen.   Beginnt die Liste
+                  mit einem Minuszeichen ``-'', kann der Nutzer alle
+                  Datenbanken  benutzen,  die  nicht  in  der  Liste
+                  aufgeza"hlt sind, anderenfalls kann der Nutzer  nur
+                  mit  den  Datenbanken  arbeiten,  die in der Liste
+                  enthalten sind.
+
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+             ing_db:aa:5:2:177777:-d:=special:/mnt/ing_db/.quel::
+             guest:ah:35:1:000000:::::demo,guest
+
+        FFFFIIIILLLLEEEESSSS
+
+             .../sys/etc/users
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             startup(files),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 138 -                      UUUUSSSSEEEERRRRSSSS
+
+        _1._5.  EEEErrrrrrrroooorrrr ****
+
+
+
+
+
+
+
+
+
+
+
+
+        _1._5._1.  UUUU""""bbbbeeeerrrrssssiiiicccchhhhtttt
+
+
+        =>   EQUEL(ERROR): EQUEL Fehlerliste
+             Fehlernummern 1000 - 1999
+
+        =>   PARSER(ERROR): "Parser" Fehlerliste
+             Fehlernummern 2000 - 2999
+
+        =>   OVQP(ERROR): "One Variable Query Processor" Fehlerliste
+             Fehlernummern 4000 - 4499
+
+        =>   DECOMP(ERROR) - "Decomposition" Fehlerliste
+             Fehlernummern 4500 - 4999
+
+        =>   DBU(ERROR) - "Data Base Utility" Fehlerliste
+             Fehlernummern 5000 - 5999
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 139 -                      UUUUSSSSEEEERRRRSSSS
+
+                       IIIINNNNGGGG____DDDDBBBB DDDDOOOOKKKKUUUUMMMMEEEENNNNTTTTAAAATTTTIIIIOOOONNNN ---- TTTTEEEEIIIILLLL1111
+
+
+
+
+
+                   BBBBeeeesssscccchhhhrrrreeeeiiiibbbbuuuunnnngggg ddddeeeerrrr FFFFeeeehhhhlllleeeerrrrmmmmiiiitttttttteeeeiiiilllluuuunnnnggggeeeennnn ****
+
+
+
+
+
+        ###################################################################
+        ###################################################################
+        ##                                                               ##
+        ##                                                               ##
+        ##                                                               ##
+        ##                                                               ##
+        ##                                                               ##
+        ##                                                               ##
+        ##         ###   #     #  #####          ######  ######          ##
+        ##          #    ##    # #     #         #     # #     #         ##
+        ##          #    # #   # #               #     # #     #         ##
+        ##          #    #  #  # #  ####         #     # ######          ##
+        ##          #    #   # # #     #         #     # #     #         ##
+        ##          #    #    ## #     #         #     # #     #         ##
+        ##         ###   #     #  #####  ####### ######  ######          ##
+        ##                                                               ##
+        ##                                                               ##
+        ##                                                               ##
+        ##            ####### ######  ######  ####### ######             ##
+        ##            #       #     # #     # #     # #     #            ##
+        ##            #       #     # #     # #     # #     #            ##
+        ##            #####   ######  ######  #     # ######             ##
+        ##            #       #   #   #   #   #     # #   #              ##
+        ##            #       #    #  #    #  #     # #    #             ##
+        ##            ####### #     # #     # ####### #     #            ##
+        ##                                                               ##
+        ##                                                               ##
+        ##                                                               ##
+        ##                                                               ##
+        ##                                                               ##
+        ##                                                               ##
+        ###################################################################
+        ###################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 140 -                      UUUUSSSSEEEERRRRSSSS
+
+        NNNNAAAAMMMMEEEE
+
+             Aufza"hlung der Fehlermitteilungen des Parsers
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             Fehler-Nummern 2000 - 2999.
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Die folgenden Fehler ko"nnen durch den Parser  generiert
+             werden.   Der Parser liest ihre Query und u"bersetzt sie
+             in die entsprechende interne Darstellung; damit  weisen
+             diese Fehler meist auf Syntax- oder Typenkonflikte hin.
+
+        FFFFEEEEHHHHLLLLEEEERRRR
+
+
+             2000 %0 errors were found in ql program
+
+             2100 line %0, Attribute '%1' not in relation '%2'
+
+                  Es wird angezeigt, das in  der  angegebenen  Zeile
+                  des  ausgefu"hrten  Arbeitsspeichers der angezeigte
+                  Attributname keine Doma"ne der angezeigten Relation
+                  ist.
+
+             2102 line  %0,  No  operations  on  character   domains
+                  allowed
+
+             2103 line %0, Function type  does  not  match  type  of
+                  attribute '%1'
+
+                  Dieser Fehler wird erkannt, wenn  einer  Funktion,
+                  die  ausschliesslich  numerische Daten akzeptiert,
+                  eine  Zeichenkette  (oder   umgekehrt)   u"bergeben
+                  wurde.   Beispielsweise  ist es nicht erlaubt, SIN
+                  auf eine Zeichenketten-Doma"ne anzuwenden.
+
+             2106 line %0, Database utility command buffer overflow
+
+                  Dieser Fehler ergibt  sich,  wenn  das  verwendete
+                  Kommando  zu lang ist, um mit dem verfu"gbaren Puf-
+                  ferbereich den Parser zur Ausfu"hrung zu befa"higen.
+                  Sie  mu"ssen  das  Kommando  ku"rzen oder den Parser
+                  zuru"cksetzen.
+
+             2107 line %0, You are not allowed to update this  rela-
+                  tion: %1
+
+                  Dieser Fehler ergibt sich, wenn sie  ein  "update"
+                  auf  eine System-Relation oder einen Sekunda"rindex
+                  direkt in der QUEL versuchen (wie  RELATION  rela-
+                  tion).  Solche Operationen, die die Integrita"t der
+                  Datenbank gefa"hrden, sind nicht erlaubt.
+
+             2108 line %0, Invalid result relation for APPEND '%1'
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 141 -                     PPPPAAAARRRRSSSSEEEERRRR
+
+                  Diese Fehlermeldung geho"rt zu solchen  Fa"llen,  wo
+                  ein  "append"-Kommando  auf  eine Relation bezogen
+                  wird,  die  nicht  existiert  oder  zu  der  keine
+                  Zugriffsberechtigung besteht.  Beispielsweise wird
+                  ein "append to junk( ... )"  falsch,  wenn  "junk"
+                  nicht existiert.
+
+             2109 line %0,  Variable  '%1'  not  declared  in  RANGE
+                  statement
+
+                  Hier wurde ein Symbol in  einem  QUEL-Ausdruck  an
+                  einer  Stelle verwendet, wo eigentlich eine Tupel-
+                  Variable erwartet wurde und  dieses  Symbol  wurde
+                  u"ber ein RANGE-Statement nicht definiert.
+
+             2111 line %0, Too many attributes in key for INDEX
+
+                  Ein Sekunda"rindex darf nicht mehr als 6  Schlu"ssel
+                  haben.
+
+             2117 line %0,  Invalid  relation  name  '%1'  in  RANGE
+                  statement
+
+                  Sie haben eine Tupel-Variable  mit  einem  Bereich
+                  u"ber  eine Relation deklariert, die gar nicht exi-
+                  stiert.
+
+             2118 line %0, Out of space in query tree  -  Query  too
+                  long
+
+                  Sie haben das Pech, eine Query erzeugt  zu  haben,
+                  die  zu  lang  fu"r  die Verdauung durch den Parser
+                  ist.  Die einzige Mo"glichkeit ist,  die  Query  zu
+                  ku"rzen  oder  den  Parser  zuru"ckzusetzen, um mehr
+                  Pufferbereich  fu"r  die  Query  zur  Verfu"gung  zu
+                  haben.
+
+             2119 line %0, MOD operator  not  defined  for  floating
+                  point or character attributes
+
+                  Der mmmmoooodddd Operator ist nur fu"r Integer definiert.
+
+             2120 line %0, no pattern match operators allowed in the
+                  target list
+
+                  Pattern  matching-Operatoren  (solche  wie  ``*'')
+                  ko"nnen nur in einer Qualifikation benutzt werden.
+
+             2121 line %0, Only character type domains  are  allowed
+                  in CONCAT or INTTIME operator
+
+             2123 line %0, '%1.all' not defined for replace
+
+             2125 line %0, Cannot use aggregates ("avg"  or  "avgu")
+                  on character values
+
+             2126 line %0, Cannot use aggregates ("sum"  or  "sumu")
+                  on character values
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 142 -                     PPPPAAAARRRRSSSSEEEERRRR
+
+             2127 line %0, Cannot  use  numerical  functions  (ATAN,
+                  COS, GAMMA, LOG, SIN, SQRT, EXP, ABS) on character
+                  values
+
+             2128 line %0, Cannot use unary operators ("+" or "") on
+                  character values
+
+             2129 line %0, Numeric operations (+  * /)  not  allowed
+                  on character values
+
+                  Viele Funktionen und Operatoren sind  empfindlich,
+                  wenn auf sie Zeichenketten angewendet werden.
+
+             2130 line %0, Too many result domains in target list
+
+                  Die maximale Anzahl von Ergebnisdoma"nen ist MAXDOM
+                  (gegenwa"rtig 49).
+
+             2132 line %0, Too many aggregates in this query
+
+                  Die maximale Anzahl von Aggregaten, die  in  einer
+                  Query stehen du"rfen ist MAXAGG (gegenwa"rtig 49).
+
+             2133 line %0, Type conflict on relational operator
+
+                  Es ist nicht erlaubt, eine  Zeichenketten-Typ  mit
+                  einem numerischen Typ zu vergleichen.
+
+             2134 line %0, '%1' is not a constant operator.
+                  Only 'dba' or 'usercode' are allowed.
+
+             2135 line %0, You can't duplicate the name of an exist-
+                  ing relation(%1)
+
+                  Sie haben versucht, eine Relation zu erzeugen, die
+                  eine  existierende  Relation  umdefinieren  wu"rde.
+                  Verwenden sie einen anderen Namen.
+
+             2136 line %0, There is no such hour as  %1,  use  a  24
+                  hour clock system
+
+             2137 line %0, There is no such minute as %1, use  a  24
+                  hour clock system
+
+             2138 line %0, There is no such time as 24:%1, use a  24
+                  hour clock system
+
+                  Die  Fehler  2136-38  zeigen  an,  dass  sie  eine
+                  ungu"ltige  Zeitangabe  in  einem  ppppeeeerrrrmmmmiiiitttt Statement
+                  verwendet haben.  Erlaubte Zeitangaben  sind  0:00
+                  bis 24:00 (inklusiv).
+
+             2139 line %0, Your  database  does  not  support  query
+                  modification
+
+                  Sie  haben  versucht,  ein  "query  modification"-
+                  Statement  zu  realisieren,  (ddddeeeeffffiiiinnnneeee  ),  aber die
+                  Datenbank wurde mit dem ----qqqq Flag erzeugt.   Um  die
+                  Vorteile   der  "query  modification"  nutzbar  zu
+                  machen, mu"ssen sie in der Shell aufrufen:
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 143 -                     PPPPAAAARRRRSSSSEEEERRRR
+
+                       creatdb -e +q ddddbbbbnnnnaaaammmmeeee
+
+             2500 line %0, The word '%1', can't follow this command
+
+                  Ein  2500  Fehler  wird  zuru"ckgegeben,  wenn  der
+                  Parser den Fehler nicht anderweitig klassifizieren
+                  kann.  Ein nu"tzlicher Weg, um sich  diesen  Fehler
+                  erkla"ren  zu  ko"nnen,  ist  es,  die  in  Klammern
+                  eingeschlossene  target_list   wegzulassen.    Der
+                  Parser  gibt das letzte Symbol wieder, das bei der
+                  Pru"fung bearbeitet wurde.  Manchmal ist das letzte
+                  Symbol  allerdings  etwas von der Stelle entfernt,
+                  wo der Fehler auftrat.  Das Zeichen "EOF" wird als
+                  letztes Symbol verwendet, wenn der Parser nach der
+                  Query noch gelesen hat.
+
+             2501 line %0, The word '%1', can't  follow  a  RETRIEVE
+                  command
+
+             2502 line %0, The word '%1',  can't  follow  an  APPEND
+                  command
+
+             2503 line %0, The word '%1',  can't  follow  a  REPLACE
+                  command
+
+             2504 line %0, The word '%1', can't follow a DELETE com-
+                  mand
+
+             2507 line %0, The word '%1',  can't  follow  a  DESTROY
+                  command
+
+             2508 line %0, The word '%1', can't follow a  HELP  com-
+                  mand
+
+             2510 line %0, The word '%1', can't follow a MODIFY com-
+                  mand
+
+             2511 line %0, The word '%1', can't follow a PRINT  com-
+                  mand
+
+             2515 line %0, The word '%1', can't  follow  a  RETRIEVE
+                  UNIQUE command
+
+             2516 line %0, The word '%1', can't follow a DEFINE VIEW
+                  command
+
+             2519 line %0, The word '%1', can't follow a HELP  VIEW,
+                  HELP INTEGRITY, or HELP PERMIT command
+
+             2522 line %0, The word '%1', can't follow a DEFINE PER-
+                  MIT command
+
+             2523 line %0, The word  '%1',  can't  follow  a  DEFINE
+                  INTEGRITY command
+
+             2526 line %0, The word '%1',  can't  follow  a  DESTROY
+                  INTEGRITY or DESTROY PERMIT command
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 144 -                     PPPPAAAARRRRSSSSEEEERRRR
+
+                  Die Fehler 2502 bis  2526  zeigen  an,  dass  nach
+                  einer   anderweitig   unvollsta"ndigen  Query,  ein
+                  anderes Kommando nicht begonnen werden kann.   Die
+                  Query  wurde deshalb verlassen, weil so gegebenen-
+                  falls  durch  falsche  Interpretation  gefa"hrliche
+                  Situationen abgewendet werden sollten.
+
+             2600 syntax error on line %0
+                  last symbol read was: '%1'
+
+             2601 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  RETRIEVE  [[INTO]relname]   (target_list)   [WHERE
+                  qual]
+                  RETRIEVE UNIQUE (target_list) [WHERE qual]
+
+             2602 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  APPEND [TO] relname (target_list) [WHERE qual]
+
+             2603 line %0, Syntax error '%1', the correct syntax is:
+                  REPLACE tuple_variable (target_list) [WHERE qual]
+
+             2604 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  DELETE tuple_variable [WHERE qual]
+
+             2605 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  COPY relname (domname = format {, domname  =  for-
+                  mat}) direction filename
+
+             2606 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  CREATE  relname (domname1 =  format{,  domname2  =
+                  format})
+
+             2607 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  DESTROY relname {, relname}
+                  DESTROY  [PERMIT  |  INTEGRITY]  relname  [integer
+                  integer} | ALL]
+
+             2609 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  INDEX ON relname IS indexname (domain1{, domain2})
+
+             2610 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  MODIFY relname TO storage-structure  [ON  key1  [:
+                  sortord]
+                  [{, key2 [:sortorder]}]] [WHERE [FILLFACTOR  =  n]
+                  [, MINPAGES = n] [, MAXPAGES = n]]
+
+             2611 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  PRINT relname{, relname}
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 145 -                     PPPPAAAARRRRSSSSEEEERRRR
+
+             2612 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  RANGE OF variable IS relname
+
+             2613 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  SAVE relname UNTIL month day year
+
+             2614 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  DEFINE VIEW name (target list) [WHERE qual]
+                  DEFINE PERMIT oplist {ON|OF|TO} var [(attlist)] TO
+                  name [AT term] [FROM time TO time] [ON day TO day]
+                  [WHERE qual]
+                  DEFINE INTEGRITY ON var IS qual
+
+             2615 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  RETRIEVE UNIQUE (target_list) [WHERE qual]
+
+             2616 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  DEFINE VIEW name (target_list) [WHERE qual]
+
+             2619 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  HELP VIEW relname[, relname]
+                  HELP PERMIT relname[, relname]
+                  HELP INTEGRITY relname[, relname]
+
+             2622 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  DEFINE PERMIT oplist {ON|OF|TO} var [(attlist)] TO
+                  name [AT term] [FROM time TO time] [ON day TO day]
+                  [WHERE qual]
+
+             2623 line %0, Syntax error on '%1', the correct  syntax
+                  is:
+                  DEFINE INTEGRITY ON var IS qual
+
+                  Die Fehler 2600 bis 2623  werden  generiert,  wenn
+                  die  Kommando-Syntax verletzt wurde.  Die korrekte
+                  Syntax wird angegeben.  Wenn  das  Kommando  nicht
+                  erkla"rt werden kann, wird 2600 angegeben.
+
+             2700 line %0, non-terminated string
+
+                  Sie  haben  den   abschliessenden   Zeichenketten-
+                  Begrenzer (") vergessen.
+
+             2701 line %0, string too long
+
+                  Sie haben die seltene Beharrlichkeit und das Pech,
+                  eine  Zeichenketten-Konstante  mit  mehr  als  255
+                  Zeichen eingegeben zu haben.
+
+             2702 line %0, invalid operator
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 146 -                     PPPPAAAARRRRSSSSEEEERRRR
+
+                  Sie  haben  ein  Zeichen  eingegeben,  das   nicht
+                  alphanumerisch  ist  oder es handelt sich um einen
+                  nicht definierten Operator, beispielsweise "?".
+
+             2703 line %0, Name too long '%1'
+
+                  Die ING_DB  6.3/3  Relationen-Namen  und  Doma"nen-
+                  Namen sind auf 12 Zeichen begrenzt.
+
+             2704 line %0, Out of space in symbol table - Query  too
+                  long
+
+                  Ihre Query ist zu gross, um sie auszufu"hren.  Ver-
+                  suchen  sie,  sie  mit  mehreren KKKKoooommmmmmmmaaaannnnddddoooossss zzzzuuuu zzzzeeeerrrr----
+                  gggglllliiiieeeeddddeeeerrrrnnnn....
+
+             2705 line %0, non-terminated comment
+
+                  Sie  haben  vergessen,  das   Kommentar-Begrenzer-
+                  Symbol (``*/'') anzugeben.
+
+             2707 line %0, bad floating constant: %1
+
+                  Entweder  war  ihre   Gleitkomma-Konstante   nicht
+                  korrekt spezifiziert oder sie war zu gross oder zu
+                  klein.  Ein augenblicklicher U"ber- oder  Unterlauf
+                  wurde nicht festgestellt.
+
+             2708 line %0, control character passed in pre-converted
+                  string
+
+                  In  EQUEL  wurde  ein  "control"-Zeichen  in  eine
+                  Zeichenkette eingebettet, vor der Ausfu"hrung wurde
+                  das nicht festgestellt.
+
+             2709 line %0, buffer overflow in converting a number
+
+                  Eine Zahl kann eine La"nge von  256  Zeichen  nicht
+                  u"berschreiten.   Das  du"rfte kein Problem ergeben,
+                  da  die  Zahlenformate  in  ING_DB   6.3/3   recht
+                  grosszu"gig sind.
+
+             2800 line %0, yacc stack overflow in parsing query
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 147 -                     QQQQRRRRYYYYMMMMOOOODDDD
+
+        NNNNAAAAMMMMEEEE
+
+             Aufza"hlung der Query-Modifikations-Fehlermeldungen
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             Fehlernummern 3000 - 3999.
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Diese   Fehlermeldungen   werden   durch   die   Query-
+             Modifikations-    Module   generiert.    Diese   Fehler
+             schliessen syntaktische und  semantische  Probleme  aus
+             der  Sicht  der  Integrita"t  und  der Schutz-Definition
+             sowie Laufzeitfehler  -  unberechtigter  Einblick  oder
+             Schutz-Verletzungen - ein.
+
+        FFFFEEEEHHHHLLLLEEEERRRR
+
+
+             3310 %0 on view %1: can't update some domain
+
+                  Sie haben  versucht,  die  Operation  %0  nach  %1
+                  auszufu"hren;  jedoch  ist  diese Vera"nderung nicht
+                  definiert.
+
+             3320 %0 on view %1: domain occurs in  qualification  of
+                  view
+
+                  Es ist nicht mo"glich, eine Doma"ne in der  Qualifi-
+                  kation  zu vera"ndern, weil dadurch die Tupel nicht
+                  mehr mit der Abbildung u"bereinstimmen.
+
+             3330 %o on view %1: update would result  in  more  than
+                  one query
+
+                  Sie haben versucht, eine A"nderung auszufu"hren, die
+                  sich auf die Abbildung der darunterliegenden Rela-
+                  tionen auswirkt.
+
+             3340 %0 on view %1: views do not have TID's
+
+                  Sie haben versucht, das Tupel-Identifikations-Feld
+                  abzubilden, das ist nicht definiert.
+
+             3350 %0 on view %1: can't update an aggregate value
+
+                  Sie  ko"nnen  keinen  Wert  a"ndern,  der   in   der
+                  Abbildungs- Definition als ein Aggregat steht.
+
+             3360 %0 on view %1: that update might be non-functional
+
+                  Es  gibt  eine  Mo"glichkeit,  das   die   gewollte
+                  Vera"nderung  nicht  eintritt.   Na"mlich dann, wenn
+                  einige unerwartete Nebeneffekte auftreten.  ING_DB
+                   6.3/3  geht  davon  aus,  dass es besser ist, die
+                  A"nderung nicht zu versuchen.
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 148 -                     QQQQRRRRYYYYMMMMOOOODDDD
+
+             3490 INTEGRITY on %1: can't handle aggregates yet
+
+                  Sie    ko"nnen     keine     Integrita"tsbedingungen
+                  definieren, die Aggregate einschliessen.
+
+             3491 INTEGRITY on %1: can't handle  multivariable  con-
+                  straints
+
+                  Sie ko"nnen keine Integrita"tsbedingungen  auf  mehr
+                  als eine einfache Variable definieren.
+
+             3492 INTEGRITY on %1:  constraint  does  not  initially
+                  hold
+
+                  Wenn  sie  die  Bedingungen  definieren,  gibt  es
+                  bereits Tupel in der Relation, die die Bedingungen
+                  nicht erfu"llen.  Sie mu"ssen die Relation  so  auf-
+                  stellen,  dass die Bedingungen erfu"llt sind, bevor
+                  sie sie deklarieren.
+
+             3493 INTEGRITY on %1: is a view
+
+                  Sie ko"nnen Integrita"tsbedingungen nicht auf Abbil-
+                  dungen definieren.
+
+             3494 INTEGRITY on %1: You must own '%1'
+
+                  Sie mu"ssen Eigentu"mer der Relation sein, wenn  sie
+                  Integrita"tsbedingungen definieren wollen.
+
+             3500 %0 on relation %1: protection violation
+
+                  Sie haben versucht,  eine  Operation  auszufu"hren,
+                  die ihnen nicht erlaubt ist.
+
+             3590 PERMIT: bad terminal identifier "%2"
+
+                  Im   ppppeeeerrrrmmmmiiiitttt   Statement    ist    das    Terminal-
+                  Identifikationsfeld unrichtig.
+
+             3591 PERMIT: bad user name "%2"
+
+                  Sie haben einen Nutzername verwendet, der  im  Sy-
+                  stem nicht definiert ist.
+
+             3592 PERMIT: Relation '%1' not owned by you
+
+                  Sie mu"ssen Eigner der  Relation  sein,  bevor  sie
+                  versuchen   ko"nnen,   die   Schutz-Bedingungen  zu
+                  vera"ndern.
+
+             3593 PERMIT: Relation '%1' must be a real relation (not
+                  a view)
+
+                  Sie  ko"nnen  keine   Erlaubnis   auf   Abbildungen
+                  definieren.
+
+             3594 PERMIT on %1: bad day-of-week '%2'
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 149 -                     QQQQRRRRYYYYMMMMOOOODDDD
+
+                  Der Wochentag-Code wurde nicht erkannt.
+
+             3595 PERMIT on %1: only the  DBA  can  use  the  PERMIT
+                  statement
+
+                  Weil nur der DBA verku"rzte Relationen haben  darf,
+                  kann nur der DBA die ppppeeeerrrrmmmmiiiitttt Statements vera"ndern.
+
+             3700 Tree buffer overflow in query modification
+
+             3701 Tree build stack overflow in query modification
+
+                  Schlechte Neuigkeiten.  Ein  interner  Puffer  ist
+                  u"bergelaufen.   Einige  Ausdru"cke  sind  zu gross.
+                  Versuchen sie, ihre Ausdru"cke zu verkleinern.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+
+
+        Referenz-Manual           - 150 -                       OOOOVVVVQQQQPPPP
+
+        NNNNAAAAMMMMEEEE
+
+             Aufza"hlung der Fehlermeldungen des Ein-Variablen  Query
+             Prozessors
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             Fehlernummern 4000 - 4499.
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Diese Fehlermeldungen werden  zur  Laufzeit  generiert.
+             Der  "One  Variable  Query  Processor" referenziert die
+             aktuellen Daten und fu"hrt die einfachen Ergebnisse  des
+             Parsers  aus.   Damit  sind  diese  Fehlermeldungen mit
+             Typen-Konflikten verbunden, die  zur  Laufzeit  erkannt
+             werden.
+
+        FFFFEEEEHHHHLLLLEEEERRRR
+
+
+             4100 ovqp query list overflowed
+
+                  Dieser Fehler wird in der ungewo"hnlichen Situation
+                  erzeugt,  dass die interne Form ihrer interaktiven
+                  Anweisungen mehr Platz im "one variable query pro-
+                  cessor"  beno"tigt,  als  fu"r  den Query-Puffer zur
+                  Verfu"gung steht.  Es gibt nichts Anderes, als  die
+                  interaktiven  Anweisungen  durch  Ausschliessen zu
+                  ku"rzen oder OVQP mit einem gro"sseren  Query-Puffer
+                  neu zu starten.
+
+             4106 the interpreters stack  overflowed  --  query  too
+                  long
+
+             4107 the buffer for ASCII  and  CONCAT  commands  over-
+                  flowed
+
+                  Ein weiterer Puffer-U"berlauf.
+
+             4108 can't use arithmetic operators  on  two  character
+                  fields
+
+             4109 can't use numeric values with CONCAT operator
+
+                  Sie haben versucht, eine numerische Operation  auf
+                  ein Zeichenfeld anzuwenden.
+
+             4110 floating point exception occurred.
+
+                  Wenn   sie   Gleitkomma-Hardware   anstelle    von
+                  Gleitkomma-Software  Interpreter haben, werden sie
+                  diesen Fehler  nur  im  Ausnahmefall  (U"ber-  oder
+                  Unterlauf)  haben.   Wenn der Software Interpreter
+                  solche Ausnahmen ignoriert, ist dieser Fehler  nur
+                  bei Gleitkomma-Hardware mo"glich.
+
+             4111 character value can't be converted to numeric  due
+                  to incorrect syntax.
+
+
+        ING_DB 6.3/3           Juni 16, 1989                   EEEERRRRRRRROOOORRRR
+

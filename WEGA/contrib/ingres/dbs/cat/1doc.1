@@ -1,0 +1,1980 @@
+
+
+
+        ##############################################################
+        ##############################################################
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##       ###   #     #  #####          ######  ######       ##
+        ##        #    ##    # #     #         #     # #     #      ##
+        ##        #    # #   # #               #     # #     #      ##
+        ##        #    #  #  # #  ####         #     # ######       ##
+        ##        #    #   # # #     #         #     # #     #      ##
+        ##        #    #    ## #     #         #     # #     #      ##
+        ##       ###   #     #  #####  ####### ######  ######       ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##           #####           #####        #  #####          ##
+        ##          #     #         #     #      #  #     #         ##
+        ##          #                     #     #         #         ##
+        ##          ######           #####     #     #####          ##
+        ##          #     #   ###         #   #           #         ##
+        ##          #     #   ###   #     #  #      #     #         ##
+        ##           #####    ###    #####  #        #####          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##                                                          ##
+        ##############################################################
+        ##############################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+                       Juni 16, 1989
+
+
+                           - 2 -
+
+
+
+
+                 AAAAnnnnwwwweeeennnnddddeeeerrrrhhhhaaaannnnddddbbbbuuuucccchhhh zzzzuuuu IIIINNNNGGGG____DDDDBBBB  6666....3333////3333 ffffuuuu""""rrrr UUUUNNNNIIIIXXXX
+                                  ----SSSSyyyysssstttteeeemmmmeeee
+
+
+
+
+
+
+                               _J_o"_r_g _W_e_n_z_l_a_f_f
+                              _R_o_l_f _M_o_r_g_e_n_s_t_e_r_n
+
+                      Zentralinstitut fu"r Kybernetik
+                       und Informationsprozesse der
+                        Akademie der Wissenschaften
+                             Kurstrasse 30 - 34
+                                  Berlin
+                                    1080
+
+
+                              VEB Kombinat EVK
+                                  - ODV -
+                                 Jagdweg 1
+                                 Olbernhau
+                                    9332
+
+
+                                  _R_E_F_E_R_A_T
+
+
+             Das vorliegende Anwenderhandbuch soll  als  Unter-
+             lage fu"r den lernenden und als Nachschlagewerk fu"r
+             den erfahrenen Anwender  dienen.  Es  dokumentiert
+             die    Version    6.3   Release   3.   Es   werden
+             Grundkenntnisse zu UNIX  -  kompatiblen  Betriebs-
+             systemen  vorausgesetzt.   Das  interaktive  rela-
+             tionale Datenbanksystem ING_DB  6.3/3  la"sst  sich
+             auf  verschiedenen Ebenen nutzen. Vorgestellt wer-
+             den  Mo"glichkeiten  fu"r  Recherchen,   zeit-   und
+             speicherplatzoptimale  Dateistrukturen, Ablage von
+             Kommandofolgen in Dateien, Einordnung  von  ING_DB
+             -Kommandos (EQUEL und AMX) in C-Programme, Nutzung
+             von Shell-Kommandos, Zugriffs- und Sicherungsmass-
+             nahmen.   Mit  der  Beschreibung  und Untersetzung
+             durch Beispiele zum AMX-Compiler, zum Report-  und
+             zum   Eingabe-   Generator   wird   das   Handbuch
+             vervollsta"ndigt.  ING_DB  6.3/3 ist so konzipiert,
+             dass  seine  Nutzung  auch bei geringem Fachwissen
+             durchaus sinnvoll ist. Die  Gefahr  von  Datenver-
+             lusten wird im Zusammenhang mit einem ausgefeilten
+             Datenschutz- und  -sicherungsmechanismus  a"usserst
+             gering gehalten.
+
+
+
+             UNIX  ist ein Warenzeichen der AT&T  Bell  Labora-
+             torien.
+
+
+                               Juni 16, 1989
+
+
+                                   - 3 -
+
+        AAAAnnnnwwwweeeennnnddddeeeerrrrhhhhaaaannnnddddbbbbuuuucccchhhh TTTTeeeeiiiillll IIII
+
+
+
+
+
+
+
+
+
+
+
+
+        0000....  VVVVoooorrrrbbbbeeeemmmmeeeerrrrkkkkuuuunnnngggg
+
+        Das Handbuch gliedert sich in 3 Teile.  Im Teil 1  wird  das
+        Referenz-Manual   vorgestellt   und   einige  grundsa"tzliche
+        Ausfu"hrungen zu den ING_DB  6.3/3-Komponenten  Monitor-  und
+        Makroprozessor  gegeben,  die  fu"r  das  Versta"ndnis und die
+        Anwendung der Anfragesprache (Query  Language  =  QUEL)  von
+        Bedeutung  sind.  Im  Teil  2  werden die im Referenz-Manual
+        beschriebenen Bestandteile  ausfu"hrlicher  dokumentiert  und
+        zusa"tzliche  Informationen  bereitgestellt, um Zusammenha"nge
+        zwischen einzelnen Komponenten deutlicher zu gestalten.   Es
+        sei  darauf  verwiesen, dass die im Anwenderhandbuch verwen-
+        deten Datenbanken als Demonstrationsbeispiele  in  der  Ver-
+        triebsversion mit ausgeliefert werden.  Nach dem U"berfliegen
+        von Teil 1 wird dem lernenden Anwender unbedingt das Studium
+        des   1.   Kapitels   im   Teil   2  empfohlen,  um  gewisse
+        Zusammenha"nge   zu   erkennen.    Die    vertiefenden    und
+        erweiternden  Ausfu"hrungen  mit  Demonstrationsbeispielen im
+        Teil 3 sind in erster Linie fu"r Programmierer gedacht.
+
+        Es wurde versucht, das Studium  der  Dokumentation  fu"r  den
+        Lernenden  zu erleichtern, indem die U"berschriften nach fol-
+        genden Kriterien gekennzeichnet wurden:
+
+        *    Abschnitt entha"lt  allgemein  interessierende  Informa-
+             tionen, die fu"r einen U"berblick unerla"sslich sind
+
+        **   Abschnitt  entha"lt  Informationen  fu"r   anspruchsvolle
+             Anwender   (bspw.   Datenbankadministrator),  die  u"ber
+             Grundkenntnisse  zur  Programmierung  und  umfassendere
+             Kenntnisse zum Betriebssystem bzw.  zur Shell verfu"gen.
+
+        ***  Abschnitt entha"lt Informationen fu"r Programmierer,  den
+             ING_DB -Systemadministrator.
+
+        ING_DB  6.3/3 beruht auf dem Modell  der  klassischen  Rela-
+        tionentheorie   die   im   Anwenderhandbuch   jedoch   nicht
+        ausgefu"hrt wird.
+
+        Es gelten folgende Begriffsanalogien:
+
+
+                ----------------------------
+                Relation | Tupel | Doma"ne
+                 Tabelle | Zeile | Spalte
+                   Datei | Satz  | Feld
+                ----------------------------
+
+        ING_DB 6.3/3           Juni 16, 1989
+
+
+        Referenz_Manual            - 4 -                 EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        _1.  RRRReeeeffffeeeerrrreeeennnnzzzz----MMMMaaaannnnuuuuaaaallll ****
+
+
+
+
+
+
+
+
+
+
+
+        Das ING_DB  6.3/3 Referenz-Manual ist in  5  Kapitel  unter-
+        teilt:
+
+        QUEL  beschreibt die Nutzung des interaktiven  Systems  nach
+             Start   von   qqqquuuueeeellll  (unix),  also  die  Statements  der
+             Anfragesprache  QUEL  und  den  interaktiven  Terminal-
+             Monitor mit seinem Makro-Prozessor.
+
+        UNIX  beschreibt  die  ING_DB  -Programme,  die  durch  eine
+             interaktive Shell direkt als UNIX -Kommandos ausfu"hrbar
+             sind, darunter auch das Kommando qqqquuuueeeellll (unix) selbst.
+
+        REPORT beschreibt die Sprache  zur  Generierung  von  Druck-
+             listen und wird aufgrund des Umfangs als eigensta"ndiges
+             Kapitel behandelt.
+
+        FILES beschreibt die aus Anwendungssicht wichtigen Files von
+             ING_DB .
+
+        ERROR entha"lt eine Auflistung  der  nach  Anwenderfehlbedie-
+             nungen     mo"glichen    Fehlermeldungen    mit    deren
+             Erla"uterungen.
+
+        Die Abschnitte in den Kapiteln dieses Handbuchs sind mit
+
+             KAPITEL (unten rechts)
+        und
+
+             ABSCHNITT (oben rechts)
+        gekennzeichnet, um ein schnelles Auffinden zu ermo"glichen.
+
+        Fu"r die Kapitel  QUEL,  UNIX   und  REPORT  wird  zu  Beginn
+        jeweils  eine Einfu"hrung gegeben, um die Einordnung der Kom-
+        mandos zu erleichtern. Diese Einfu"hrung ist wie  ein  Absch-
+        nitt gekennzeichnet, aber nicht so gegliedert.
+
+        Nachfolgend die allgemeine Gliederung im Sinne des Manuals:
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989
+
+
+        Referenz_Manual            - 5 -                 EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        NNNNAAAAMMMMEEEE
+
+             Name - Kurzbezeichnung des Inhalts
+
+        SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+
+             Hier wird die Syntax des  Kommandos/Statements  angege-
+             ben.
+
+             Als Metasymbole werden verwendet:
+
+
+                |     Alternative
+                [..]  wahlweise kein- oder einmal
+                {..}  wahlweise kein- oder mehrmals
+                <..>  manchmal zur Hervorhebung einer
+                      syntaktischen Variablen
+
+
+
+             Alle   anderen   Sonderzeichen    und    fettgedruckten
+             Bezeichner  sind terminale Symbole (mu"ssen so und nicht
+             anders geschrieben  werden).  Kleingeschriebene,  nicht
+             fettgedruckte  Wo"rter stehen fu"r syntaktische Variable,
+             deren  Belegung  im  folgenden  Abschnitt  BESCHREIBUNG
+             erla"utert wird.
+
+             Die Mehrzahl der syntaktischen Variablen  wird  im  Ab-
+             schnitt qqqquuuueeeellll eingefu"hrt. Insbesondere:
+
+                  <<<<ddddbbbbnnnnaaaammmmeeee>>>>    Name der aufliegenden Datenbank
+                  <<<<rrrreeeellllnnnnaaaammmmeeee>>>>   Name einer Relation, Tabelle
+                  <<<<ddddoooommmmnnnnaaaammmmeeee>>>>   Name einer Doma"ne einer Relation
+
+
+        BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+
+             Hier wird  die  Syntax  erga"nzt  und  eine  semantische
+             Beschreibung gegeben.
+
+        NNNNAAAACCCCHHHHRRRRIIIICCCCHHHHTTTTEEEENNNN
+
+             Hier werden die Nachrichten  erla"utert,  die  nicht  im
+             Kapitel  ERROR  zu finden sind, oder die eine besondere
+             Bedeutung haben.
+
+             Nachrichten, die Folgen  technischer  Fehler  sind  und
+             i.d.R.  zu einem Systemabbruch fu"hren, werden in dieser
+             Dokumentation nicht behandelt.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL[[[[EEEE]]]]
+
+             Hier werden Beispiele angegeben, die den Rahmen  dieses
+             Nachschlagewerkes nicht sprengen.
+
+             Viele  Beispiele  beziehen  sich  auf  eine   Personal-
+             Relation,  die pro Mitarbeiter einen Satz mit den Spal-
+             ten.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989
+
+
+        Referenz_Manual            - 6 -                 EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+
+
+
+                Relation:               personal
+                ---------
+                Besitzer:               ing_db
+                Tupellaenge:            30
+                Verfallsdatum:          Tue Apr 26 19:56:39 1988
+                Tupelanzahl:            25
+                Speicherstruktur:       HEAP
+                Relationentyp:          Nutzerrelation
+
+                 Domaenname        Typ   Laenge  Schluessel
+                -------------------------------------------
+                 num                i       2
+                 name               c      20
+                 gehalt             i       2
+                 leiter             i       2
+                 gebdat             i       2
+                 einstdat           i       2
+                -------------------------------------------
+
+
+             hat.
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             Hier werden andere Abschnitte aufgeza"hlt, auf die Bezug
+             genommen wurde.
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             Hier werden gewisse  Besonderheiten,  insbesondere  der
+             Implementation beschrieben.
+
+             Um mit ING_DB  arbeiten zu ko"nnen,  muss  jeder  Nutzer
+             durch   den  ING_DB  -Administrator  in  das  usersfile
+             eingetragen werden (s.  uuuusssseeeerrrrssss (files)).
+
+             Zur Einfu"hrung in dieses Handbuch beginne man  mit  den
+             Abschnitten  AAAAnnnnffffrrrraaaaggggeeeesssspppprrrraaaacccchhhheeee  , DDDDaaaatttteeeennnnbbbbaaaannnnkkkk----UUUUnnnniiiixxxx----KKKKoooommmmmmmmaaaannnnddddoooossss
+             und DDDDeeeerrrr iiiinnnntttteeeerrrraaaakkkkttttiiiivvvveeee TTTTeeeerrrrmmmmiiiinnnnaaaallll----MMMMoooonnnniiiittttoooorrrr
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 7 -                 EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        _1._1.  AAAAnnnnffffrrrraaaaggggeeeesssspppprrrraaaacccchhhheeee ****
+
+
+
+
+
+
+
+
+
+
+
+
+        _1._1._1.  BBBBeeeesssscccchhhhrrrreeeeiiiibbbbuuuunnnngggg zzzzuuuurrrr AAAAnnnnffffrrrraaaaggggeeeesssspppprrrraaaacccchhhheeee QQQQuuuueeeellll vvvvoooonnnn IIIINNNNGGGG____DDDDBBBB
+            6666....3333////3333 ****
+
+        Der   folgende   Abschnitt   ist   eine   Beschreibung   der
+        grundsa"tzlichen  Syntax  von QUEL.  Die einzelnen Statements
+        werden in gesonderten Abschnitten behandelt,  hier  nur  die
+        Klassen   syntaktischer   Variablen,  aus  denen  die  QUEL-
+        Statements aufgebaut sind.
+
+        _1._1._1._1.  KKKKoooommmmmmmmeeeennnnttttaaaarrrreeee ****
+
+        Ein Kommentar ist eine beliebige  Zeichenfolge,  eingebunden
+        links durch "/*" und rechts durch "*/":
+
+             /* Das ist ein Kommentar */
+
+        _1._1._1._2.  NNNNaaaammmmeeeennnn ****
+
+        Namen in QUEL sind Folgen von  maximal  12  alphanumerischen
+        Zeichen  (Buchstaben  oder  Ziffern),  beginnend  mit  einem
+        Buchstaben.  Das Unterstreichungszeichen ("_", <underscore>)
+        gilt  als Buchstabe.  Alle grossen Buchstaben - mit Ausnahme
+        solcher in Zeichenketten - werden  stillschweigend,  automa-
+        tisch   in   die  ihnen  entsprechenden  kleinen  Buchstaben
+        umgewandelt.
+
+        _1._1._1._3.  SSSScccchhhhlllluuuu""""sssssssseeeellllwwwwoooorrrrtttteeee ****
+
+        Die folgenden Bezeichner sind als Schlu"sselworte  reserviert
+        und du"rfen nicht anderweitig verwendet werden:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 8 -                 EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+
+                abs          all          and
+                any          append       ascii
+                at           atan         avg
+                avgu         by           concat
+                copy         cos          count
+                countu       create       dba
+                define       delete       destroy
+                distribute   exp          float4
+                float8       from         help
+                in           index        integrity
+                int1         int2         int4
+                into         is           log
+                max          min          mod
+                modify       not          of
+                on           onto         or
+                permit       print        range
+                replace      retrieve     save
+                sin          sqrt         sum
+                sumu         to           unique
+                until        usercode     view
+                where
+
+
+        _1._1._1._4.  KKKKoooonnnnssssttttaaaannnntttteeeennnn ****
+
+        Entsprechend den drei, in QUEL verfu"gbaren Datentypen,  gibt
+        es drei Typen von Konstanten.
+
+        _1._1._1._4._1.  ZZZZeeeeiiiicccchhhheeeennnnkkkkeeeetttttttteeeennnn----KKKKoooonnnnssssttttaaaannnntttteeeennnn ((((SSSSttttrrrriiiinnnnggggssss)))) ****
+
+        Zeichenketten in QUEL sind Folgen  von  maximal  255  ASCII-
+        Zeichen,  eingebunden in die (doppelten !) Anfu"hrungsstriche
+        ( " " ).   Grosse  Buchstaben  innerhalb  von  Zeichenketten
+        bleiben,  so  wie  sie  sind,  erhalten.  Bei Verwendung des
+        Begrenzers " innerhalb von Zeichenketten (  als  deren  Bes-
+        tandteil   ),   muss   diesem   ein   <backslash>  (  "\"  )
+        vorangestellt werden.  Das muss auch fu"r <backslash>  selbst
+        erfolgen.  (s. auch Abschnitt "Pattern matching ..")
+
+        Innerhalb von Zeichenketten  du"rfen  nur  druckbare  Zeichen
+        verwendet      werden.       Nicht     druckbare     Zeichen
+        (control_character) werden in  Leerzeichen  <blank>  konver-
+        tiert.
+
+        _1._1._1._4._2.  GGGGaaaannnnzzzzzzzzaaaahhhhlllliiiiggggeeee KKKKoooonnnnssssttttaaaannnntttteeeennnn ((((IIIInnnntttteeeeggggeeeerrrr)))) ****
+
+        Ganzzahlige   Konstanten   liegen   im   Wertebereich    von
+        -2 147 483 648  bis  +2 147 483 647.  Ganzzahlige Konstanten
+        ausserhalb dieses Wertebereiches werden in eine  Gleitkomma-
+        Darstellung  umgewandelt.   Wenn  die  ganzzahlige Konstante
+        kleiner als 32 768 und gro"sser als -32 769 ist, wird sie als
+        eine  2-Byte-Integer  dargestellt,  anderenfalls wird sie in
+        eine 4-Byte-Integer konvertiert.
+
+        _1._1._1._4._3.  GGGGlllleeeeiiiittttkkkkoooommmmmmmmaaaa---- ((((ffffllllooooaaaattttiiiinnnngggg____ppppooooiiiinnnntttt)))) KKKKoooonnnnssssttttaaaannnntttteeeennnn ****
+
+        Gleitkomma-Konstanten werden mit einem ganzen Teil, dem  De-
+        zimalpunkt(!), einem gebrochenen Teil (zusammen als Mantisse
+        bezeichnet) und einem Exponenten formuliert.  Genauer gesagt
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 9 -                 EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        werden sie in folgendem Format geschrieben:
+
+                  {<dig>} [.<dig>] [eE [+-] {<dig>}]
+
+        Im obigen speziellen Fall steht  <dig>  fu"r  eine  beliebige
+        Ziffer.   Ein  Exponent  ohne Mantisse erha"lt die Mantisse 1
+        zugeordnet.  Innerhalb  einer  Gleitkomma-Konstanten  du"rfen
+        keine  weiteren  Zeichen  eingebettet  werden.   Gleitkomma-
+        Konstanten werden in doppelter Genauigkeit  mit  einem  Wer-
+        tebereich  von  anna"hernd  -10**38  bis  +10**38  und  einer
+        Genauigkeit von 17 Dezimalziffern dargestellt.
+
+        _1._1._1._5.  KKKKoooonnnnssssttttaaaannnntttteeee OOOOppppeeeerrrraaaattttoooorrrreeeennnn
+
+        Die konstanten Operatoren sind  Operatoren,  die  Konstanten
+        liefern.  ddddbbbbaaaa liefert den Datenbankadministrator der verwen-
+        deten Datenbanken und uuuusssseeeerrrrccccooooddddeeee den gerade aktiven Nutzer.
+
+             <<<<ddddbbbbaaaa>>>>
+             <<<<uuuusssseeeerrrrccccooooddddeeee>>>>
+
+        Sie liefern in der Ersetzung den String fu"r den  <dba>  bzw.
+        den <usercode>.
+
+        _1._1._1._6.  AAAAttttttttrrrriiiibbbbuuuutttteeee <<<<aaaattttttttrrrriiiibbbbuuuutttteeee>>>> ****
+
+        Ein Attribut <attribute> ist ein Konstrukt der Form:
+
+                    <tuple_variable>.<domname>
+
+        <<<<ttttuuuupppplllleeee____vvvvaaaarrrriiiiaaaabbbblllleeee>>>> identifiziert eine bestimmte Relation.  Man
+        kann  den  Bezeichner <<<<ttttuuuupppplllleeee____vvvvaaaarrrriiiiaaaabbbblllleeee>>>> auffassen, als stu"nde
+        er fu"r die Zeilen bzw. Tupel dieser Relation.  Eine Variable
+        wird  einer  Relation durch Verwendung des rrrraaaannnnggggeeee---- Statements
+        zugeordnet.  <<<<ddddoooommmmnnnnaaaammmmeeee>>>> ist der Name einer  der  Spalten  der
+        Relation,  u"ber  der  die  Variable  definiert  ist.   Damit
+        bezeichnet das Konstrukt ein Attribut, das  einen  Wert  aus
+        der Doma"ne repra"sentiert.
+
+        _1._1._1._7.  AAAArrrriiiitttthhhhmmmmeeeettttiiiisssscccchhhheeee OOOOppppeeeerrrraaaattttoooorrrreeeennnn ****
+
+        Arithmetische Operatoren  haben  Ausdru"cke  von  numerischem
+        Format als Operanden.  Einstellige Operatoren gruppieren von
+        rechts nach links; zweistellige  Operatoren  gruppieren  von
+        links  nach  rechts.   Die  Operatoren  - in der Reihenfolge
+        absteigende Bindungssta"rke - sind:
+
+           +,-    (einstellig) plus, minus
+           **     Potenzierung
+           *,/    Multiplikation, Division
+           +,-    (zweistellig) Addition, Subtraktion
+
+
+        In weiter abfallender Bindungssta"rke schliessen sich  hieran
+        die weiter hinten aufgefu"hrten Operatoren:
+
+             <comparison_operator>
+             <logical_operator>
+
+        Klammern ( ) sind fu"r eine spezielle Festlegung der  Bindung
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 10 -                EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        der  Operatoren  einzusetzen.   Bei ganzzahligen Operationen
+        wird der arithmetische U"berlauf und die Division durch  Null
+        nicht  gepru"ft.   Bei  Gleitkomma-Operationen wird U"berlauf,
+        Unterlauf und Division durch  Null  nur  gepru"ft,  wenn  die
+        entsprechende Hardware existiert und aktiv ist.
+
+        _1._1._1._8.  AAAAuuuussssddddrrrruuuu""""cccckkkkeeee <<<<aaaa____eeeexxxxpppprrrr>>>> ****
+
+        Ein Ausdruck ist entweder/oder ein(e):
+
+                Konstante
+                Attribut
+                Funktionaler Ausdruck
+                Aggregat oder Aggregat-Funktion
+                Kombination von numerischen Ausdru"cken und
+                    arithmetischen Operatoren
+
+
+        Innerhalb dieses Handbuchs wird ein beliebiger Ausdruck  als
+        <<<<aaaa____eeeexxxxpppprrrr>>>> bezeichnet.
+
+        _1._1._1._9.  FFFFoooorrrrmmmmaaaatttteeee <<<<ffffoooorrrrmmmmaaaatttt>>>> ****
+
+        Jeder <<<<aaaa____eeeexxxxpppprrrr>>>> hat ein  Format  <format>,  das  durch  einen
+        Buchstaben  (cccc,,,,  iiii  oder  ffff,,,,  fu"r Zeichenfolgen (character),
+        ganze Zahlen (integer) oder  Gleitkomma-Daten(float)  )  und
+        eine  Ziffer,  die  die  Anzahl  der zur Speicherung no"tigen
+        Bytes anzeigt, bezeichnet wird.  Die  unterstu"tzten  Formate
+        sind  folgend  aufgeza"hlt,  der Wertebereich der numerischen
+        Formate ist in Klammern angegeben.
+
+        c1 - c255      Zeichenketten von 1-255 Bytes La"nge
+        i1             1-Byte Integer  (-128 bis +127)
+        i2             2-Byte Integer  (-32768 bis +32767)
+        i4             4-Byte Integer  (-2 147 483 448 bis
+                                      +2 147 483 647)
+        f4             4-Byte floating (-10**38 bis +10**38,
+                                      7 Dezimalen Genauigkeit)
+        f8             8-Byte floating (-10**38 bis +10**38,
+                                     17 Dezimalen Genauigkeit)
+
+
+        Eine  Variable  von  numerischem  Format  kann  einer  jeden
+        anderen  numerischen  Formats  zugewiesen  werden,  sie wird
+        dabei konvertiert.
+
+        _1._1._1._1_0.  FFFFoooorrrrmmmmaaaatttt KKKKoooonnnnvvvveeeerrrrttttiiiieeeerrrruuuunnnngggg ****
+
+        Bei Operationen u"ber  zwei  numerische  Doma"nen  von  unter-
+        schiedlichem  Format fu"hrt ING_DB  automatisch die notwendi-
+        gen Konvertierungen durch.
+
+        Bei Operationen zwischen einem  ganzzahligen  Operanden  und
+        einem  Gleitkomma  Operanden  wird  der  ganzzahlige vor der
+        Operation  in  Gleitkomma  umgewandelt.    Bei   Operationen
+        zwischen zwei ganzzahligen Operanden unterschiedlicher La"nge
+        wird der ku"rzere auf die  La"nge  des  la"ngeren  konvertiert.
+        Bei  Operationen  zwischen  zwei Gleitkomma Operanden unter-
+        schiedlicher Genauigkeit wird der la"ngere in die Genauigkeit
+        des ku"rzeren konvertiert.
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 11 -                EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        Die folgende Tabelle gibt alle mo"glichen Kombinationen an:
+
+                        i1      i2      i4      f4      f8
+
+                i1 -    i1      i2      i4      f4      f8
+                i2 -    i2      i2      i4      f4      f8
+                i4 -    i4      i4      i4      f4      f8
+                f4 -    f4      f4      f4      f4      f4
+                f8 -    f8      f8      f8      f4      f8
+
+
+        ING_DB  unterstu"tzt die folgenden  Konvertierungsoperatoren,
+        die  man  an  Stelle der o.g. automatischen Standardaktionen
+        einsetzen kann:
+
+                int1(<a_expr>)   Resultat hat Format i1
+                int2(<a_expr>)   Resultat hat Format i2
+                int4(<a_expr>)   Resultat hat Format i4
+                float4(<a_expr>) Resultat hat Format f4
+                float8(<a_expr>) Resultat hat Format f8
+
+
+        Die  Konvertierungsoperatoren  konvertieren   ihr   Argument
+        <a_expr> also in das von ihnen bezeichnete Format.  <<<<aaaa____eeeexxxxpppprrrr>>>>
+        kann irgendwelche Zeichen enthalten.  Wenn ein Zeichen nicht
+        konvertiert  werden  kann, wird ein Fehler angezeigt und die
+        Berechnung abgebrochen - das kann nur  eintreten,  wenn  die
+        Syntax fu"r den zu konvertierenden <<<<aaaa____eeeexxxxpppprrrr>>>> nicht eingehalten
+        wurde.
+
+        U"berlauf wird bei Konvertierungen nicht gepru"ft.
+
+        _1._1._1._1_1.  ZZZZiiiieeeelllllllliiiisssstttteeee <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>> ****
+
+        Eine <<<<ttttaaaarrrrggggeeeetttt____lllliiiisssstttt>>>> ist eine geklammerte Liste von einem oder
+        mehreren Elementen, die untereinander durch Kommata getrennt
+        werden.   Jedes  ihrer  Elemente  muss  eines  der   folgend
+        aufgeza"hlten sein:
+
+        a) <domname> iiiissss <a_expr>
+
+             <domname> ist hier der Name einer Doma"ne,  die  erzeugt
+             werden  soll (oder die, im Falle von update-Statements,
+             bereits existiert).  Das Gleichheitszeichen ( "=" ) ist
+             gleichbedeutend mit iiiissss....  In dem Falle, wo <a_expr> kein
+             einfaches Attribut ist, muss diese Form benutzt werden,
+             um  den  Ausdruck einem namentlich angegebenem Resultat
+             zuzuordnen.
+
+        b) <attribute>
+
+             Im Falle  eines  rrrreeeettttrrrriiiieeeevvvveeee----Statements  wird  als  Ergeb-
+             nisspalte  die  angenommen, die den gleichen Namen, wie
+             der dabei  angegebene  <domname>  hat.   Im  Falle  von
+             update-Statements   (aaaappppppppeeeennnndddd,,,,   rrrreeeeppppllllaaaacccceeee),  muss  die  zu
+             vera"ndernde  Relation  eine  Doma"ne   mit   genau   dem
+             bezeichneten Namen aufweisen.
+
+        Innerhalb einer <target_list>  kann  das  Schlu"sselwort  aaaallllllll
+        dazu  benutzt  werden,  alle  Doma"nen  zu  bezeichnen.   Zum
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 12 -                EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        Beispiel
+
+             range of p is personal
+             retrieve (p.all) where p.gehalt > 1000
+
+        sucht alle Tupel der Relation personal,  die  die  Bedingung
+        <qualification>:  gehalt  >  1000 erfu"llen.  aaaallllllll kann in der
+        <target_list> von rrrreeeettttrrrriiiieeeevvvveeee---- oder aaaappppppppeeeennnndddd---- Statements  benutzt
+        werden.   Die  Doma"nen werden in ihrer erzeugten Reihenfolge
+        eingesetzt, d.h. in der, in der sie mit dem  ccccrrrreeeeaaaatttteeee----  State-
+        ment erzeugt wurden.
+
+        _1._1._1._1_2.  VVVVeeeerrrrgggglllleeeeiiiicccchhhhssssooooppppeeeerrrraaaattttoooorrrreeeennnn <<<<ccccoooommmmppppaaaarrrriiiissssoooonnnn____ooooppppeeeerrrraaaattttoooorrrr>>>>
+           uuuunnnndddd KKKKllllaaaauuuusssseeeellllnnnn <<<<ccccllllaaaauuuusssseeee>>>> ****
+
+        Es  gibt  Vergleichsoperatoren  <comparison_operator>,   die
+        beliebige Ausdru"cke <a_expr> als Operanden haben:
+
+                <      (kleiner als)
+                <=     (kleiner als oder gleich)
+                >      (gro"sser als)
+                >=     (gro"sser als oder gleich)
+                =      (gleich mit)
+                !=     (ungleich zu)
+
+
+        Diese Operatoren sind alle von gleicher Bindungssta"rke.  Bei
+        Vergleichen  zwischen  Zeichenketten werden alle Leerzeichen
+        <blank> innerhalb der Zeichenketten ignoriert.
+
+        Eine Klausel <clause> ist ein Paar von Ausdru"cken, die durch
+        einen Vergleichsoperator verknu"pft sind:
+
+                  <a_expr> <comparison_operator> <a_expr>
+
+        _1._1._1._1_3.  LLLLooooggggiiiisssscccchhhheeee OOOOppppeeeerrrraaaattttoooorrrreeeennnn <<<<llllooooggggiiiiccccaaaallll____ooooppppeeeerrrraaaattttoooorrrr>>>>
+           uuuunnnndddd QQQQuuuuaaaalllliiiiffffiiiikkkkaaaattttiiiioooonnnn <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>>
+           ((((aaaauuuucccchhhh <<<<qqqquuuuaaaallll>>>>)))) ****
+
+        Logische Operatoren haben Klauseln (<clause>) als Operanden.
+        Sie gruppieren von links nach rechts.
+
+                not      (logische Negation)
+                and      (logisches und; Konjunktion)
+                or       (logisches inclusives oder; Disjunktion)
+
+
+        nnnnooootttt hat von den drei Operatoren die ho"chste  Bindungssta"rke.
+        aaaannnndddd  und  oooorrrr haben die gleiche Bindungssta"rke.  Klammern ( )
+        kann man fu"r eine spezielle Bindung einsetzen.
+
+        Eine <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>> besteht aus einer Anzahl  von  Klauseln
+        <clause>,  die  durch  logische  Operatoren  verknu"pft sind.
+        Eine <qualification> kann damit sein:
+
+             <<<<ccccllllaaaauuuusssseeee>>>>
+             nnnnooootttt <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>>
+             <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>> oooorrrr <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>>
+             <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>> aaaannnndddd <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>>
+             ( <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>> )
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 13 -                EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        _1._1._1._1_4.  FFFFuuuunnnnkkkkttttiiiioooonnnnaaaalllleeee AAAAuuuussssddddrrrruuuu""""cccckkkkeeee <<<<ffffuuuunnnnccccttttiiiioooonnnnaaaallll____eeeexxxxpppprrrreeeessssssssiiiioooonnnn>>>> ****
+
+        Ein <<<<ffffuuuunnnnccccttttiiiioooonnnnaaaallll eeeexxxxpppprrrreeeessssssssiiiioooonnnn>>>> ist ein Konstrukt, bestehend aus
+        einem  Funktionsnamen,  gefolgt  von  einem  eingeklammerten
+        Operanden oder einer  eingeklammerten  Liste  durch  Kommata
+        getrennter   Operanden.   Funktionale  Ausdru"cke  ko"nnen  in
+        beliebiger Tiefe  geschachtelt  werden.   In  der  folgenden
+        Aufza"hlung  der  unterstu"tzten Funktionen repra"sentiert (nnnn )
+        einen  beliebigen  Ausdruck  von  numerischem  Format.   Das
+        Resultat-Format ist rechts angezeigt.
+
+                abs(n)      - dasselbe wie n (Absolutwert)
+                ascii(n)    - Zeichenkette (konvertiert numerisch in
+                             Zeichen)
+                atan(n)     - f8 (arctangens)
+                concat(a,b) - Zeichenkette (Verkettung)
+                cos(n)      - f8 (cosinus)
+                exp(n)      - f8 (n. Potenz von e)
+                log(n)      - f8 (natu"rlicher Logarithmus)
+                mod(n,b)    - dasselbe wie b (n modulo b, n und b
+                             mu"ssen vom Format i1, i2 oder i4 sein
+                sin(n)      - f8 (sinus)
+                sqrt(n)     - f8 (Quadratwurzel)
+
+
+        _1._1._1._1_5.  AAAAggggggggrrrreeeeggggaaaatttt----AAAAuuuussssddddrrrruuuu""""cccckkkkeeee ****
+
+        Aggregat-Ausdru"cke ermo"glichen  es,  u"ber  einer  Menge  von
+        Seiten zusammengefasste Werte zu berechnen.
+
+        _1._1._1._1_5._1.  AAAAggggggggrrrreeeeggggaaaatttt----OOOOppppeeeerrrraaaattttoooorrrreeeennnn <<<<aaaaggggggggrrrreeeeggggaaaattttiiiioooonnnn____ooooppppeeeerrrraaaattttoooorrrr>>>> ****
+
+        Folgende Aggregat-Operatoren und  ihr  Resultat-Format  sind
+        definiert.
+
+        count   - (i4) Anzahl von Vorkommen
+        countu  - (i4) Anzahl von einmaligen (unique) Vorkommen
+        sum     -      Summierung
+        sumu    -      Summierung aller unterschiedlichen Werte
+        avg     - (f8) Durchschnitt (average) (sum/count)
+        avgu    - (f8) unique average (sumu/countu)
+        max     -      Maximum
+        min     -      Minimum
+        any     - (i2) ergibt 1, sobald sich ein Tupel qualifiziert,
+                       sonst 0
+
+
+        _1._1._1._1_5._2.  EEEEiiiinnnnffffaaaacccchhhheeee AAAAggggggggrrrreeeeggggaaaatttteeee <<<<ssssiiiimmmmpppplllleeee____aaaaggggggggrrrreeeeggggaaaatttteeee>>>> ****
+
+             <<<<aaaaggggggggrrrreeeeggggaaaattttiiiioooonnnn____ooooppppeeeerrrraaaattttoooorrrr>>>> (<<<<aaaa____eeeexxxxpppprrrr>>>>
+                  [ wwwwhhhheeeerrrreeee <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>> ] )
+
+        Ein einfaches  Aggregat  erzeugt  einen  einzelnen  skalaren
+        Wert.   <<<<aaaa____eeeexxxxpppprrrr>>>>  wird  u"ber der Menge der Tupel aggregiert,
+        die die <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>> erfu"llen (oder u"ber  alle  Tupel  im
+        Geltungsbereich  des  Ausdrucks,  wenn keine <qualification>
+        angegeben  ist).   Die  Operatoren  ssssuuuummmm  und  aaaavvvvgggg  verlangen
+        <<<<aaaa____eeeexxxxpppprrrr>>>>  in  numerischem  Format;  ccccoooouuuunnnntttt,,,,  aaaannnnyyyy,,,, mmmmaaaaxxxx und mmmmiiiinnnn
+        arbeiten sowohl auf Zeichenketten, als auch auf <<<<aaaa____eeeexxxxpppprrrr>>>> von
+        numerischem Format.
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 14 -                EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        EEEEiiiinnnnffffaaaacccchhhheeee AAAAggggggggrrrreeeeggggaaaatttteeee ssssiiiinnnndddd vvvvoooollllllllssssttttaaaa""""nnnnddddiiiigggg llllooookkkkaaaallll,,,, d.h.  sie  werden
+        logisch   von   der   u"brigen  Anfrage  abgetrennt,  separat
+        berechnet und danach in der  Anfrage  durch  ihren  skalaren
+        Wert ersetzt.
+
+        _1._1._1._1_5._3.  DDDDaaaassss aaaannnnyyyy AAAAggggggggrrrreeeeggggaaaatttt ****
+
+        Manchmal mo"chte man wissen, ob es Tupel gibt, die  eine  be-
+        stimmte  <qualification> erfu"llen.  Eine Mo"glichkeit, das zu
+        erfahren, bietet die Benutzung des ccccoooouuuunnnntttt----  Aggregates,  nach
+        welchem  man  dann pru"fen kann, ob sich Tupel qualifizieren.
+        Die  Benutzung  von  aaaannnnyyyy  anstelle  von  ccccoooouuuunnnntttt  ist  deshalb
+        effizienter,  weil  dabei  die  Berechnung abgebrochen wird,
+        sobald das erste sich qualifizierende Tupel gefunden wurde.
+
+        aaaannnnyyyy gibt 1 zuru"ck, wenn sich  mindestens  ein  Tupel  quali-
+        fiziert und sonst 0.
+
+        _1._1._1._1_5._4.  AAAAggggggggrrrreeeeggggaaaatttt----FFFFuuuunnnnkkkkttttiiiioooonnnneeeennnn ****
+
+             <<<<aaaaggggggggrrrreeeeggggaaaattttiiiioooonnnn____ooooppppeeeerrrraaaattttoooorrrr>>>> (<<<<aaaa____eeeexxxxpppprrrr>>>> bbbbyyyy <<<<bbbbyyyy____ddddoooommmmnnnnaaaammmmeeee>>>>
+             {{{{,,,, <<<<bbbbyyyy____ddddoooommmmnnnnaaaammmmeeee>>>>}}}} [ wwwwhhhheeeerrrreeee <<<<qqqquuuuaaaalllliiiiffffiiiiccccaaaattttiiiioooonnnn>>>> ] )
+
+        Aggregat-Funktionen sind Verallgemeinerungen  der  einfachen
+        Aggregate.   Die bbbbyyyy---- Phrase gruppiert (d.h. portioniert) die
+        Menge der sich qualifizierenden Tupel nach  den  Werten  der
+        <<<<bbbbyyyy____ddddoooommmmnnnnaaaammmmeeee>>>>  (das  ist ein <domname>).  Bei Angabe von mehr
+        als einem <<<<bbbbyyyy____ddddoooommmmnnnnaaaammmmeeee>>>>,,,, sind die durch bbbbyyyy gruppierten  Werte
+        die  Verkettung  der  einzelnen <<<<bbbbyyyy____ddddoooommmmnnnnaaaammmmeeee>>>>....  <<<<aaaa____eeeexxxxpppprrrr>>>> gilt
+        wie bei einfachen Aggregaten.  Eine Aggregat-Funktion ergibt
+        eine Menge von Aggregaten, je eines fu"r jede Portion, in die
+        die Menge der sich qualifizierenden Tupel  gruppiert  wurde.
+        Das  Aggregat,  das wa"hrend der Berechnung der Query jeweils
+        benutzt wird, ist das, das der Portion  zugeordnet  ist,  in
+        das das jeweils gerade behandelte Tupel fa"llt.
+
+        Anders als bei einfachen Aggregaten sind Aggregat-Funktionen
+        nicht  vollsta"ndig  lokal.  Die by-Phrase, durch welche sich
+        eine  Aggregat-Funktion  von  einfachen  Aggregaten   unter-
+        scheidet,  ist  fu"r  die  Query  global.  Doma"nen in der by-
+        Phrase werden automatisch an  andere  Doma"nen  der  gleichen
+        Relation gebunden, sofern solche in der Query vorkommen.
+
+        Zum Beispiel:
+
+                /* Bilde das Durchschnittsgehalt fu"r
+                die Angestellten einer Abteilung */
+                range of p is personal
+                retrieve (p.abteilung,
+                        dgehalt=avg(p.gehalt by p.abteilung))
+
+
+        _1._1._1._1_5._5.  AAAAggggggggrrrreeeeggggaaaatttteeee uuuu""""bbbbeeeerrrr """"eeeeiiiinnnnmmmmaaaalllliiiiggggeeee""""----WWWWeeeerrrrtttteeee ****
+
+        Ha"ufig ist es notwendig, nur u"ber  die  vvvveeeerrrrsssscccchhhhiiiieeeeddddeeeennnneeeennnn  Werte
+        eines  Ausdrucks zu aggregieren.  Die aaaavvvvgggguuuu , ssssuuuummmmuuuu und ccccoooouuuunnnnttttuuuu
+        Aggregate unterdru"cken  alle  mehrfach  auftretenden  Werte,
+        bevor das Aggregat gebildet wird.  Zum Beispiel:
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 15 -                EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+                  count(p.abteilung)
+
+        wu"rde ermitteln, wie oft in den,  in  unserem  Beispiel  pro
+        Angestellten  angelegten  Tupeln, das Attribut """"pppp....aaaabbbbtttteeeeiiiilllluuuunnnngggg""""
+        mit Werten belegt ist.  Aber
+
+                  countu(p.abteilung)
+
+        erst wu"rde za"hlen, wieviele unterschiedliche Werte  fu"r  die
+        Doma"ne pppp....aaaabbbbtttteeeeiiiilllluuuunnnngggg existieren (wofu"r man sich wahrscheinlich
+        auch in diesem Beipiel interessiert).
+
+        _1._1._1._1_6.  SSSSppppeeeezzzziiiiffffiiiisssscccchhhheeee ZZZZeeeeiiiicccchhhheeeennnnkkkkeeeetttttttteeeennnn----OOOOppppeeeerrrraaaattttoooorrrreeeennnn ****
+
+        Es werden drei speziell fu"r  die  Arbeit  mit  Zeichenketten
+        eingerichtete Arbeitsmo"glichkeiten unterstu"tzt:
+
+        _1._1._1._1_6._1.  MMMMuuuusssstttteeeerrrrssssuuuucccchhhheeee aaaauuuuffff ZZZZeeeeiiiicccchhhheeeennnnkkkkeeeetttttttteeeennnn
+           ((((""""PPPPaaaatttttttteeeerrrrnnnn mmmmaaaattttcccchhhhiiiinnnngggg"""")))) ****
+
+        Es gibt vier Zeichen, die eine  spezielle  Bedeutung  haben,
+        wenn  sie  innerhalb  von Zeichenketten-Konstanten (strings)
+        einer <qualification> eingesetzt werden:
+
+        *    symbolisiert  eine   Zeichenkette   von   einem    oder
+             mehreren Zeichen.
+
+        ?    symbolisiert ein einzelnes, beliebiges Zeichen.
+
+        [..] symbolisiert eines der, in  den  Klammern  aufgeza"hlten
+             Zeichen.  Von "-" bis Angaben sind erlaubt.
+
+        Diese Zeichen kann man in beliebigen Kombinationen benutzen,
+        um eine Vielzahl von Tests zu formulieren.  Zum Beispiel:
+
+        where p.name = "*" - qualifiziert jeden beliebigen Namen.
+
+        where p.name = "E*" - qualifiziert einen, mit "E"  beginnen-
+        den, sonst beliebigen Namen.
+
+        where p.name = "*ung" - qualifiziert  alle  Namen,  die  auf
+        "ung" enden.
+
+        where p.name = "*[aeiou]*" - qualifiziert  alle  Namen,  die
+        irgendwo einen kleingeschriebenen Vokal enthalten.
+
+        where p.name = "Schul?" - qualifiziert alle 6 Zeichen langen
+        Namen, die mit "Schul" beginnen.
+
+        where p.name = "[A-J]*" - qualifiziert alle Namen,  die  mit
+             A,B,..,J beginnen.
+
+        Die spezielle Bedeutung  der  pattern_matching-Zeichen  wird
+        aufgehoben,  wenn  man  ihnen ein <backslash> ( "\" ) voran-
+        stellt.  So  bezeichnet  "\*"  das  Zeichen  "*".   Pattern-
+        matching-Zeichen  in  einer <target_list> mu"ssen immer durch
+        "\" kaschiert werden.  Zum Beispiel:
+
+                    titel = "\*\*\* muster \*\*\*"
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 16 -                EEEEiiiinnnnffffuuuueeeehhhhrrrruuuunnnngggg
+
+        ist die korrekte Art, die Kette "*** muster ***" der  Doma"ne
+        "titel" zuzuweisen.
+
+        _1._1._1._1_6._2.  VVVVeeeerrrrkkkkeeeettttttttuuuunnnngggg ****
+
+        Es gibt einen Verkettungs- (concatenation) Operator, mit dem
+        man  aus  zwei  Zeichenketten eine bilden kann. Seine Syntax
+        ist
+                    concat(feld1, feld2)
+
+        Die La"nge der neuen Zeichenkette ist die  Summe  der  La"ngen
+        der beiden Quellketten. In feld1 hinten stehende Leerzeichen
+        werden unterdru"ckt, feld2 wird  angekettet  und  die  Ergeb-
+        niskette  wird  hinten  mit  Leerzeichen  aufgefu"llt.   Ver-
+        kettungen   ko"nnen   beliebig   in    andere    Verkettungen
+        geschachtelt werden. Zum Beipiel:
+
+           name = concat(concat(x.nachname, ","), x.vorname)
+
+        verkettet den Nachnamen mit einem Komma und kettet daran den
+        Vornamen.
+
+        _1._1._1._1_6._3.  aaaasssscccciiiiiiii ---- nnnnuuuummmmeeeerrrriiiisssscccchhhh zzzzuuuu
+           ZZZZeeeeiiiicccchhhheeeennnnkkkkeeeetttttttteeeennnn wwwwaaaannnnddddeeeellllnnnn ****
+
+        Die aaaasssscccciiiiiiii Funktion kann benutzt werden, um  ein  numerisches
+        Feld  in  eine Zeichenketten-Darstellung zu u"berfu"hren - das
+        kann nu"tzlich sein, wenn die Aufgabe steht, ein  numerisches
+        Feld   mit   einem  Zeichenkettenfeld  zu  vergleichen.  Zum
+        Beipiel:
+                    retrieve ( ... )
+                    where x.chardomname = ascii(x.numdomname)
+
+        aaaasssscccciiiiiiii kann auf einen  Zeichenketten-Wert  angewandt  werden;
+        das  Ergebnis ist die ungea"nderte Zeichenkette.  Das Konver-
+        tierungsformat wird durch das Druckformat  (printing_format,
+        s. quel(unix)) bestimmt.
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             append(quel), delete(quel), range(quel), replace(quel),
+             retrieve(quel), quel(unix)
+
+        HHHHIIIILLLLFFFFEEEENNNN
+
+             Die maximale Anzahl von Variablen, die in einer Anfrage
+             benutzt werden kann, ist 10.
+
+             Numerischer U"berlauf, Unterlauf und Division durch Null
+             werden nicht entdeckt.
+
+             Bei der  Konvertierung  numerischer  Formate  wird  ein
+             U"berlauf nicht entdeckt.
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 17 -                    MMMMoooonnnniiiittttoooorrrr
+
+        _1._1._2.  DDDDeeeerrrr iiiinnnntttteeeerrrraaaakkkkttttiiiivvvveeee TTTTeeeerrrrmmmmiiiinnnnaaaallll----MMMMoooonnnniiiittttoooorrrr ****
+
+
+        _1._1._2._1.  IIIInnnnhhhhaaaalllltttt uuuunnnndddd LLLLeeeeiiiissssttttuuuunnnngggg ****
+
+        Der interaktive Terminal-Monitor ist  der  front-end-Prozess
+        von  ING_DB .  Er ermo"glicht es, eine Anfrage zu formulieren
+        und sie zu erga"nzen, bevor sie ING_DB  u"bergeben wird.   Zur
+        Ausfu"hrung von A"nderungen an der Anfrage im """"MMMMoooonnnniiiittttoooorrrr----PPPPuuuuffffffffeeeerrrr""""
+        kann ein UNIX - Text-Editor nach eigener Wahl  benutzt  wer-
+        den.
+
+
+        _1._1._2._2.  NNNNaaaacccchhhhrrrriiiicccchhhhtttteeeennnn uuuunnnndddd PPPPrrrroooommmmpppptttt----MMMMeeeelllldddduuuunnnnggggeeeennnn ****
+
+        Der Terminal-Monitor gibt eine Reihe von  Meldungen  ab,  um
+        den   Nutzer   u"ber   den   Status   des  Monitors  und  des
+        Monitor-Puffers zu informieren.
+
+        Nach Anmeldung des Nutzers wird  eine  login-Nachricht  aus-
+        gegeben,   die   die   Versionsnummer  von  ING_DB  und  die
+        login-Zeit anzeigt.  Ihr folgt die Ausgabe des dayfile,  das
+        Informationen fu"r alle Nutzer entha"lt.
+
+        Sobald ING_DB  eingabebereit ist, wird die Meldung
+
+        ING-db>
+        *
+
+        ausgegeben.  Sie zeigt an, dass der Monitor-Puffer leer ist.
+        Die Meldung
+
+        ING-db:
+        *
+
+        zeigt  an,  dass  der  Monitor-Puffer   noch   Informationen
+        entha"lt.   Nach  einem  \go-Kommando wird der Monitor-Puffer
+        automatisch gelo"scht (autoclear-Funktion),  sobald  nachfol-
+        gend  eine weitere Anfrage eingegeben wird, nicht aber, wenn
+        danach  zuerst  ein  Kommando  folgt,  das  sich   auf   den
+        Monitor-Puffer  bezieht.   Solche  Kommandos  sind  \append,
+        \edit, \print, \list, \eval und \go.  Wenn man z.B. eingibt:
+             help parts
+             \go
+             print parts
+        entha"lt der Monitor-Puffer
+             print parts
+        Wenn man dagegen eingibt
+             help parts
+             \go
+             \print
+             print parts
+        entha"lt der Monitor-Puffer
+             help parts
+             print parts
+        Am Anfang jeder Eingabe-Zeile wird der 2. Prompt von  ING_DB
+        , in der Regel ein Stern ("*"), ausgegeben, sobald der Moni-
+        tor auf eine Eingabe des Nutzers wartet.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 18 -                    MMMMoooonnnniiiittttoooorrrr
+
+        _1._1._2._3.  KKKKoooommmmmmmmaaaannnnddddoooossss ****
+
+        Es gibt eine Anzahl von Kommandos, die vom Nutzer eingesetzt
+        werden  ko"nnen,  um  mit dem Monitor-Puffer zu arbeiten oder
+        die Nutzer-Umgebung einzurichten.   Kommandos  beginnen  mit
+        dem  Kommandokennzeichen, in der Regel mit einem <backslash>
+        ("\").  Monitor-Kommandos werden unverzu"glich ausgefu"hrt.
+
+        Einige Kommandos haben einen Parameter.  Dieser besteht  aus
+        den   signifikanten   Zeichen  nach  dem  Kommando  bis  zum
+        Zeilenende.  Hinter solchen Kommandos kann kein anderes Kom-
+        mando auf der gleichen Zeile folgen.  Kommandos ohne Parame-
+        ter ko"nnen auf einer Zeile gepackt werden; zum Beispiel
+             \date\go\date
+        gibt  die  Zeit  vor  und  nach  der   Ausfu"hrung   der   im
+        Monitor-Puffer enthaltenen Query aus.
+
+        LLLLiiiisssstttteeee ddddeeeerrrr KKKKoooommmmmmmmaaaannnnddddoooossss
+
+        \m
+        \monitor [parm]
+
+             Kommandokennzeichen einstellen
+             Der Parameter ist das Kennzeichen. Wenn er fehlt,  wird
+             der Standard eingesetzt.
+
+        \r
+        \reset
+
+             Lo"schen  der  Anfrage.   Der  formulierte  Inhalt   des
+             Monitor-Puffers ist unwiederbringlich verloren.
+
+        \H
+        \HELP [parm]
+
+             Es wird eine la"ngere Dokumentation als Hilfe angezeigt.
+             Die Paramter sind mit denen von manr(unix) identisch.
+
+        \p
+        \print
+
+             Druck  der   anliegenden   Query.    Der   Inhalt   des
+             Monitor-Puffers  wird  auf dem Nutzer-Terminal ausgege-
+             ben.
+
+        \l
+        \list
+
+             Druck der anliegenden Query in der Form, wie  sie  nach
+             ihrer  Transformation  durch  den  Makro-Prozessor aus-
+             sieht.  Einige  Nebeneffekte   bei   der   Arbeit   des
+             Makro-Prozessors,  wie die Definition von Makros werden
+             dabei mit ausgefu"hrt.
+
+        \v
+        \eval
+
+             Makro-Bearbeitung des  Monitor-Puffers.   Das  Kommando
+             dient  der  Definition  von Makros.  Der Monitor-Puffer
+             wird anschliessend gelo"scht.
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 19 -                    MMMMoooonnnniiiittttoooorrrr
+
+        \e
+        \ed
+        \edit [parm]
+        \editor
+
+             Ruf eines frei wa"hlbaren UNIX  -Text-Editors  zum  Edi-
+             tieren des Monitor-Puffers (s. auch ED, EM, VI, RAND im
+             UNIX  Programmer's Manual).  Nach Beendigung  der  Edi-
+             torarbeit  kehrt man automatisch in den Monitor zuru"ck.
+             Der Monitorpuffer erha"lt jetzt  den  editierten  Stand.
+             Wenn  dem  \e-Monitor-Kommando  ein  Parameter  gegeben
+             wird, wird nicht der Monitor-Puffer sondern das,  durch
+             den  Parameter  bezeichnete File zum editierenden File.
+             Wenn    der    Editor    mit     dem     Monitor-Puffer
+             gestartet  wird,  muss zu dessen A"nderung natu"rlich ein
+             w-Editor-Kommando   gegeben   werden,   ehe   man   dem
+             Editor  ein  anderes  File  zuordnet.   Wenn  der Makro
+             "{editor}" definiert ist, wird  dieser  Makro  als  ein
+             Pfadname fu"r einen speziellen Editor genommen, anderen-
+             falls  wird  der  installationsabha"ngige   Systemeditor
+             benutzt.
+
+        \g
+        \go
+
+             Ausfu"hrung  der  anliegenden  Query.   Der  Inhalt  des
+             Monitor-Puffers  wird  von  der  Auflo"sung  der  Makros
+             {begintrap}   und   {endtrap}   umgeben,   durch    den
+             Makro-Prozessor  transformiert  und  ING_DB u"bermittelt
+             und ausgefu"hrt.  Bei Ausfu"hrung  der  tupelorientierten
+             Statements  rrrreeeettttrrrriiiieeeevvvveeee , aaaappppppppeeeennnndddd , rrrreeeeppppllllaaaacccceeee und ddddeeeelllleeeetttteeee wird
+             der Makro {tuplecount} mit der Anzahl der  bearbeiteten
+             Tupel  definiert (sonst und im Fehlerfall als -1).  Vor
+             Ru"ckkehr in den Eingabemodus ruft der Monitor den Makro
+             {continuetrap}.
+
+        \a
+        \append
+
+             Anfu"gen  an  den  Monitor-Puffer.   Das   Kommando   \a
+             u"berschreibt    nach   Ausfu"hrung   einer   Query   die
+             auto_clear-Funktion   und    garantiert,    dass    der
+             Monitor-Puffer nicht gelo"scht wird.
+
+        \d
+        \time
+        \date
+
+             Ausgabe der aktuellen Tageszeit,
+             Ausgabe des Datums
+
+        \s
+        \sh
+        \shell [parm]
+
+             Ruf einer UNIX -Shell.  Nach Beendigung der Shell kehrt
+             man  automatisch  in den Monitor zuru"ck.  Wenn das Kom-
+             mando einen Parameter hat, wird  die  Shell  nicht  als
+             interaktive  Shell gestartet, sondern das mit dem Para-
+             meter bezeichnete  Programm  (File)  gerufen,  dem  als
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 20 -                    MMMMoooonnnniiiittttoooorrrr
+
+             Parameter  die  Stellungsparameter  ($1  usw.) u"ber den
+             Monitor-Puffer  zuga"nglich  sind.    Wenn   der   Makro
+             "{shell}"  definiert ist, wird dessen Wert als Pfadname
+             eines  Programms  benutzt,  das  mit  o.g.   Parametern
+             gerufen       wird,      andernfalls      wird      ein
+             installationsabha"ngiger  Kommandointerpreter   gerufen.
+             Liegt  bei Ru"ckkehr ein Code != 0 vor, ruft der Monitor
+             den Makro {exectrap} auf.
+
+        \q
+        \quit
+
+              Sitzungsende fu"r ING_DB .
+
+        \cd
+        \chdir [parm]
+
+             Vera"nderung des current directory, auf  das  durch  den
+             Parameter bezeichnete directory.
+
+        \i
+        \include
+        \read parm
+
+             Das bezeichnete File wird zur Eingabe fu"r den  Monitor.
+             <backslash> werden in diesem File so behandelt, wie die
+             vom Terminal gegebenen.
+
+        \w
+        \write parm
+
+             Der Inhalt des Monitor-Puffers wird auf das, durch  den
+             Parameter bezeichnete File geschrieben.
+
+        \b
+        \branch parm
+
+             Verzweigung innerhalb eines \include  File,  siehe  den
+             folgenden Abschnitt u"ber Spru"nge.
+
+        \k
+        \mark parm
+
+             Setzt eine Marke fu"r ein \branch.
+                  (Parameter ist Labelname)
+
+        \h
+        \help [parm]
+
+             Ausgabe des Inhaltsverzeichnisses der  Referenz-Hilfen;
+             mit anschliessendem Titel wird eine Kurzinformation zum
+             Kommando gegeben.
+
+        \<ein_anderes_Zeichen>
+
+             Das Zeichen <backslash> gelangt in den  Monitor-Puffer,
+             irgendeine  spezielle Bedeutung des <backslash> fu"r das
+             folgende Zeichen wird  ignoriert  -  das  erlaubt,  das
+             Zeichen  "\"  auch  als ein normales Zeichen einzugeben
+             (siehe auch QQQQUUUUEEEELLLL - Zeichenketten).  Es ist wichtig,  zu
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 21 -                    MMMMoooonnnniiiittttoooorrrr
+
+             vermerken,  dass  der  Makro-Prozessor  die <backslash>
+             wegblendet,   die   zum   Kaschieren   von   Begrenzern
+             eingesetzt  werden.  Im allgemeinen formuliert man also
+             zwei <backslash> hintereinander, wenn man eines an  den
+             Parser  senden  will  (Das  ist  insgesamt aber so kom-
+             pliziert,  dass  man  am  besten  die  Verwendung   von
+             <backslash> u"berhaupt vermeidet.).
+
+        _1._1._2._4.  MMMMaaaakkkkrrrroooossss ********
+
+        Eine genaue Beschreibung der Makros findet man im  Abschnitt
+        MMMMaaaakkkkrrrroooossss....
+
+        _1._1._2._5.  SSSSpppprrrriiiinnnnggggeeeennnn ********
+
+        Die \branch-  und  \mark-Kommandos  erlauben  es,  innerhalb
+        eines  \include  File  zu springen (analog zu "goto <label>"
+        und  "<label>:"  in  anderen  Programmiersprachen).    Einem
+        \mark-Kommando    muss    eine    Marke    folgen.     Einem
+        \branch-Kommando folgt  entweder  eine  Marke  -  was  einen
+        unbedingten  Sprung  -  oder  nach  einem  "?" ein Ausdruck,
+        gefolgt  von  einer  Marke  -  was  einen  bedingten  Sprung
+        bewirkt.  Der bedingte Sprung wird ausgefu"hrt, wenn der Aus-
+        druck gro"sser als Null ist.  Zum Beispiel wu"rde
+                \branch ?{readcount} noinput
+        immer dann  zur  Marke  noinput  springen,  wenn  der  Makro
+        {readcount}  anzeigt,  dass keine Zeichen eingegeben wurden.
+        Wenn bei Ausfu"hrung eines Sprungs die Zielmarke nicht gefun-
+        den  wird, versucht der Monitor die Marke, die der Auflo"sung
+        des Makros {default}  entspricht,  zu  finden.   Wird  keine
+        Zielmarke gefunden, wird das \include File verlassen.
+
+        Der Ausdruck, der im \branch-Kommando angegeben werden kann,
+        muss folgender Syntax genu"gen:
+
+             Die Operatoren +, -, *,
+              /, ", |, <=, >=,  <,  >,  =,  und  !=  sind  in  ihrer
+             gewo"hnlichen Bedeutung definiert.
+
+        Der linke einstellige Operator "!"  kann  fu"r  die  logische
+        Negation  benutzt  werden.   Die Operationen werden nach den
+        u"blichen Vorrangregeln behandelt, Abweichungen  dazu  ko"nnen
+        durch  Klammerung  mit  ()  angewiesen werden.  Der Ausdruck
+        darf keine Leerzeichen enthalten.  Ein Leerzeichen wu"rde den
+        Ausdruck beenden.
+
+        _1._1._2._6.  IIIInnnniiiittttiiiiaaaalllliiiissssiiiieeeerrrruuuunnnngggg ********
+
+        Wa"hrend des Startvorgangs  (login)  werden  eine  Reihe  von
+        Initialisierungsaktionen  ausgefu"hrt.  Zuna"chst (1) wird ein
+        Makro "{pathname}" definiert, der den initialisierungsabha"n-
+        gigen  ING_DB   Pfadnamen entha"lt.  Weiter (2) wird das Ini-
+        tialisierungs-File   "{pathname}/sys/etc/startup"    abgear-
+        beitet.  Dieses File ist vorgesehen, systemabha"ngige Parame-
+        ter, wie den verwendeten Editor oder die verwendete Shell zu
+        definieren.    Drittens   (3)   wird   ein  nutzerabha"ngiges
+        Initialisierungs-File, wie  es  in  einem  Feld  des  ING_DB
+        -Nutzerverzeichnis  fu"r den Nutzer spezifiziert ist, gelesen
+        und ausgefu"hrt.  Normalerweise dient dazu  ein  File  namens
+        ".quel"    im    home_directory    des    Nutzers.    Dieses
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 22 -                    MMMMoooonnnniiiittttoooorrrr
+
+        Initialisierungs-File kann dazu dienen, dem  Nutzer  gewisse
+        Makros     zu    definieren    oder    die    gebra"uchlichen
+        range-Statements abzusenden.  Man kann in diesem  File  z.B.
+        auch  schon das Start-Menue eines voll eingerichteten Anwen-
+        dungsfalles unterbringen.  Letztlich (4) wird die  Steuerung
+        dem Nutzer-Terminal u"bergeben.
+
+        _1._1._2._7.  FFFFllllaaaaggggssss ****
+
+        Folgende Flags, wie sie bei  Ruf  von  ING_DB   (quel(unix))
+        gegeben werden ko"nnen, betreffen den Monitor:
+
+             Die -aaaa -Option unterdru"ckt die autoclear-Funktion.  Das
+             bedeutet,  dass  der  Monitor-Puffer  nicht automatisch
+             gelo"scht wird.  Die Wirkung  ist  so,  als  wu"rde  nach
+             jedem  \go-Kommando ein \append-Kommando eingefu"gt wer-
+             den.  Unter dieser Option muss der Nutzer  also  selbst
+             jeweils   durch   ein  explizites  \reset-Kommando  den
+             Monitor-Puffer lo"schen.
+
+             Die -dddd -Option unterdru"ckt die Ausgabe des dayfile.
+
+             Die -ssss -Option unterdru"ckt  mit  Ausnahme  der  Fehler-
+             nachrichten  die  Ausgabe  aller Meldungen des Monitor,
+             also die login- und logout-Nachrichten, die Ausgabe des
+             dayfile  und  der  Prompt-Meldungen.  Diese Option kann
+             fu"r "verdeckte Anfragen"  eingesetzt  werden;  bei  der
+             Arbeit  aus  \include  Files wird diese Option tempora"r
+             automatisch gesetzt.
+
+        SSSSIIIIEEEEHHHHEEEE AAAAUUUUCCCCHHHH
+
+             quel(unix), makros
+
+        NNNNAAAACCCCHHHHRRRRIIIICCCCHHHHTTTTEEEENNNN
+
+
+             ING_db> Sie ko"nnen eine neue Query beginnen.
+
+             ING_db: Die vorangehende Query wurde  bearbeitet.   Sie
+                  sind wieder im Monitor
+
+             I N G _ d b . . .  Die Query wird durch  ING_DB   bear-
+             beitet.
+
+             >>cmd Sie arbeiten unter einem UNIX -Text-Editor.
+
+             >>sh  Sie arbeiten unter einer UNIX -shell.
+
+             Alle anderen Nachrichten sind selbsterkla"rend.
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 23 -                     MMMMaaaakkkkrrrroooossss
+
+        _1._1._3.  KKKKuuuurrrrzzzzbbbbeeeesssscccchhhhrrrreeeeiiiibbbbuuuunnnngggg ddddeeeessss MMMMaaaakkkkrrrroooo----PPPPrrrroooozzzzeeeessssssssoooorrrrssss ********
+
+
+
+
+        _1._1._3._1.  IIIInnnnhhhhaaaalllltttt uuuunnnndddd LLLLeeeeiiiissssttttuuuunnnngggg ****
+
+        Der  Makro-Prozessor  als   Bestandteil   des   interaktiven
+        Terminal-Monitors erlaubt es, die QUEL nach Anwenderwu"nschen
+        zuzuschneiden.  Ein gegebener Text kann durch ihn  in  QUEL-
+        Statements  eingefu"gt  oder  u"bersetzt  werden, bevor er zur
+        ING_DB -Verarbeitung gelangt.
+
+        _1._1._3._2.  AAAArrrrbbbbeeeeiiiittttsssswwwweeeeiiiisssseeee ddddeeeessss MMMMaaaakkkkrrrroooo----PPPPrrrroooozzzzeeeessssssssoooorrrrssss ********
+
+        Der Makro-Prozessor transformiert einen Input-Text in  einen
+        Output-Text und fu"hrt dabei ggf.  Funktions-Makros aus.  Bei
+        den  Monitor-Kommandos  \go,  \list  und   \eval   ist   der
+        Monitor-Puffer  der  Input-Text,  der  Output-Text  wird dem
+        ING_DB   -Parser   zur   Ausfu"hrung   der    QUEL-Statements
+        u"bergeben(\go),  auf  dem  Terminal  ausgegeben (\list) oder
+        nicht  weiter   behandelt   (\eval,   das   Kommando   dient
+        ausschliesslich  der Abarbeitung von Funktions-Makros).  Bei
+        jedem Monitor-Kommando mit Parameter, wird dieser erst durch
+        den   Makro-Prozessor  transformiert,  ehe  er  im  Monitor-
+        Kommando  als  Parameter  benutzt  wird;  das  Label   eines
+        \mark-Kommandos wird vom Makro-Prozessor nicht bearbeitet.
+
+        Der Output-Text, den der  Makro-Prozessor  erzeugt,  entha"lt
+        die  Textbestandteile  des  Input-Textes,  auf die sich kein
+        Makro anwenden liess und solche  substituierten  Texte,  auf
+        die kein Makro mehr anwendbar ist.
+
+        _1._1._3._3.  BBBBeeeessssttttaaaannnnddddtttteeeeiiiilllleeee eeeeiiiinnnneeeessss MMMMaaaakkkkrrrroooo ********
+
+        Der Makro-Prozessor arbeitet Makros ab, wenn  im  Input-Text
+        entsprechende Textabschnitte enthalten sind.  Makros sind in
+        einer Makro-Tabelle abgelegt,  die  global  fu"r  die  ING_DB
+        -Sitzung  des  Nutzers definiert ist.  Die Makro-Tabelle ist
+        mit  den  Funktions-Makros  initialisiert.   Wa"hrend   einer
+        ING_DB     -Sitzung     ko"nnen     weitere    Makros,    die
+        Substitutions-Makros,            durch            Definition
+        (define-Funktions-Makro)       eingebracht,       gestrichen
+        (remove-Funktions-Makro)  und  angelistet   (dump-Funktions-
+        Makro) werden.
+
+        Jeder Makro hat ein tttteeeemmmmppppllllaaaatttteeee und einen WWWWeeeerrrrtttt....   Das  template
+        ist eine Vorschrift, die entscheidet, ob der Makro auf einen
+        Abschnitt des Input-Textes zutrifft.  Das  template  entha"lt
+        Schlu"sselwo"rter, die im Input-Text vorhanden sein mu"ssen, um
+        den Makro anwenden zu ko"nnen und Parameterdefinitionen,  die
+        Wo"rterfolgen   hinter  oder  zwischen  den  Schlu"sselwo"rtern
+        beschreiben.  Das template entha"lt  weiter  Begrenzersymbole
+        zwischen  den  Schlu"sselwo"rtern  und  Parameterdefinitionen.
+        Das template bestimmt den Abschnitt  des  Input-Textes,  den
+        der Makro diesem entnimmt.
+
+        Der Wert eines Makros ist der Text, den der  Makro-Prozessor
+        in den Output-Text anstelle des entnommenen Textes einsetzt.
+        Er wird bei Funktions-Makros aus der durch sie  ausgefu"hrten
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 24 -                     MMMMaaaakkkkrrrroooossss
+
+        Funktion  bestimmt  und ist bei den meisten Funktions-Makros
+        eine leere Zeichenfolge.  Bei Substitutions-Makros wird  der
+        Wert  aus festen Wo"rtern und den entnommenen Parameterwerten
+        gebildet. Die Vorschrift dafu"r  ist  das  rrrreeeeppppllllaaaacccceeeemmmmeeeennnntttt  eines
+        Substitutions-Makros,  das  Wo"rter,  Parameterreferenzen und
+        Begrenzer entha"lt.
+
+        _1._1._3._4.  TTTTeeeexxxxttttsssskkkkaaaannnnddddiiiieeeerrrruuuunnnngggg ********
+
+        Der Makro-Prozessor ist ein Wort-Prozessor, d.h. er arbeitet
+        auf ganzen Wo"rtern des Input-Textes und nicht auf beliebigen
+        seiner Abschnitte.  Ein WWWWoooorrrrtttt ist ein BBBBeeeezzzzeeeeiiiicccchhhhnnnneeeerrrr,,,,  eine  ZZZZaaaahhhhllll
+        oder   ein  OOOOppppeeeerrrraaaattttoooorrrr....   Ein  BBBBeeeezzzzeeeeiiiicccchhhhnnnneeeerrrr  beginnt  mit  einem
+        Buchstaben, dem Buchstaben oder Ziffern folgen, "_" gilt als
+        Buchstabe;  der  Makro-Prozessor  unterscheidet  Klein-  und
+        Grossbuchstaben.  Eine ZZZZaaaahhhhllll ist eine Ziffernfolge, ggf.  mit
+        einem  Dezimalpunkt  ".".   Ein  OOOOppppeeeerrrraaaattttoooorrrr  ist  jedes andere
+        einzelne Zeichen, das ausserdem nicht Standardbegrenzer ist;
+        die  kombinierten Operatoren <=, >=, !=, **, /*, */ sind ein
+        Wort.
+
+        Der Makro-Prozessor  kennt  die  SSSSttttaaaannnnddddaaaarrrrddddbbbbeeeeggggrrrreeeennnnzzzzeeeerrrr  <blank>,
+        <tab>   und   <nl>,   die   keine   Operatoren   sind.   Als
+        <<<<wwwwoooorrrrdddd____cccchhhhaaaannnnggggeeee>>>> wird die Position im Text bezeichnet,  an  der
+        das vorangehende Wort endet.
+
+        Im template  von  Makros  werden  folgende  BBBBeeeeggggrrrreeeennnnzzzzeeeerrrrssssyyyymmmmbbbboooolllleeee
+        eingesetzt:
+
+
+        \^   genau ein <blank> oder <tab> oder <nl>
+             zu Beginn des template: Makro wird nur zu  Zeilenanfang
+             des Textes angewandt !
+
+        \=>    genau ein <word_change>
+
+        \|   <word_change> oder beliebig viele  der  o.g.  Standard-
+             begrenzer
+
+        \<blank><blank>genau <blank>
+
+        \<tab>genau <tab>
+
+        \<nl>genau <nl>
+
+        Diese  Begrenzersymbole  werden  in   den   Funktions-Makros
+        verwendet (s. folgende U"bersicht).
+
+        _1._1._3._5.  PPPPaaaarrrraaaammmmeeeetttteeeerrrr iiiinnnn MMMMaaaakkkkrrrroooossss ********
+
+        Eine PPPPaaaarrrraaaammmmeeeetttteeeerrrrddddeeeeffffiiiinnnniiiittttiiiioooonnnn in einem template wird  durch  drei
+        Zeichen gegeben:
+             $ <p_name> <p_delim>
+        $  kennzeichnet,  dass   eine   Parameterdefinition   folgt.
+        <p_name>  ist  ein makro-lokaler Bezeichner (ein graphisches
+        Zeichen),  der  im  replacement  referenziert  werden  kann.
+        <p_delim>  ist das Zeichen, mit dem der Parameter zu begren-
+        zen ist.  Der Begrenzer darf als
+             <backslash><token>
+        geschrieben werden, wenn ein <token> Begrenzer werden  soll,
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 25 -                     MMMMaaaakkkkrrrroooossss
+
+        der  eine  Spezialbedeutung  hat (z.B. <nl>).  Im Input-Text
+        darf innerhalb eines Parameterwertes das ihn  sonst  begren-
+        zende   Zeichen   durch   ein   vorangestelltes  <backslash>
+        kaschiert werden, der  Parameterwert  wird  bis  zum  ersten
+        freistehenden Begrenzer gewertet.
+
+        Durch eine Parameterdefinition
+             $$ <p_name> <p_delim>
+        wird der Parameter als zur  Vorverarbeitung  geeignet  (pre-
+        scaneable) gekennzeichnet, s. unten prescan.
+
+        _1._1._3._6.  SSSSppppeeeezzzziiiieeeelllllllleeee MMMMaaaakkkkrrrroooossss ********
+
+        Der Monitor bringt die Substitutions-Makros
+
+             {{{{ppppaaaatttthhhhnnnnaaaammmmeeee}}}}
+             Pfadname des ING_DB _file-Systems
+
+             {{{{uuuusssseeeerrrrccccooooddddeeee}}}}
+             2-Byte-ING_DB -Usercode des arbeitenden Nutzers
+
+             {{{{ddddaaaattttaaaabbbbaaaasssseeee}}}}
+             Name der bearbeiteten Datenbank
+
+             {{{{rrrreeeeaaaaddddccccoooouuuunnnntttt}}}}
+             Anzahl der durch den  letzten  read-  oder  readdefine-
+             Makro  gelesenen  Zeichen (0, falls nur <nl>, -1, falls
+             EOF eingegeben wurde)
+
+             {{{{ttttuuuupppplllleeeeccccoooouuuunnnntttt}}}}
+             Anzahl der vom  letzten  retrieve-,  append-,  replace-
+             oder  delete-Statement  erfolgreich  behandelten Tupel,
+             sonst -1
+        ein.
+
+        Eine besondere Bedeutung haben folgende Substitutions-Makros
+        fu"r die Ausfu"hrung von Monitor-Kommandos:
+
+             {{{{eeeeddddiiiittttoooorrrr}}}}
+             Name eines speziellen Editors fu"r das \edit-Kommando
+
+             {{{{sssshhhheeeellllllll}}}}
+             Name eines speziellen Programms, das durch ein  \shell-
+             Kommando gerufen werden soll
+
+             {{{{ddddeeeeffffaaaauuuulllltttt}}}}
+             Sprungmarke fu"r ein \branch-Kommando, dessen  Zielmarke
+             nicht gefunden wird
+
+             {{{{bbbbeeeeggggiiiinnnnttttrrrraaaapppp}}}}
+
+             {{{{eeeennnnddddttttrrrraaaapppp}}}}
+             werden bei  einem  \go-Kommando  gerufen,  ihr  substi-
+             tuierter   Text  wird  vor  und  hinter  den  Text  des
+             Monitor-Puffers gestellt, wenn dieser zur  Verarbeitung
+             weitergegeben wird
+
+             {{{{qqqquuuueeeerrrryyyyttttrrrraaaapppp}}}}
+             definiert den Namen eines Protokollfiles; ist querytrap
+             definiert,  werden  auf  dem  File  alle Nutzeraktionen
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 26 -                     MMMMaaaakkkkrrrroooossss
+
+             protokolliert; wird das Makro gelo"scht, wird  das  Pro-
+             tokollfile geschlossen.
+
+             {{{{ccccoooonnnnttttiiiinnnnuuuueeeettttrrrraaaapppp}}}}
+             wird vor Beginn des weiteren  Dialogs  nach  Ausfu"hrung
+             eines \go-Kommandos gerufen
+
+             {{{{eeeexxxxeeeeccccttttrrrraaaapppp}}}}
+             wird nach Ausfu"hrung eines \edit oder  \shell-Kommandos
+             gerufen,    wenn   das   bearbeitete   Programm   einen
+             Ru"ckkehrcode != 0 lieferte
+
+        Die letztgenannten Makros mu"ssen  vor  ihrer  Verwendung  im
+        Startvorgang  des  Monitor  im  startupfile oder im initfile
+        oder direkt wa"hrend der Sitzung vom Nutzer definiert werden.
+
+        _1._1._3._7.  FFFFuuuunnnnkkkkttttiiiioooonnnnssss----MMMMaaaakkkkrrrroooossss ********
+
+
+        template                       Wert    Funktion
+        ------------------------------------------------------------
+        {rawdefine;\|$$T;\|$$R}        ""      ) SM t:T, r:R
+        {define;\|$$T;\|$$R}           ""      ) SM t:T, r:R
+        {remove}                       ""      ) streicht alle SM
+        {remove;\|$$T}                 ""      ) dto falls t=T
+        {dump}                         ""      ) gibt alle SM aus
+        {dump;\|$$N}                   ""      ) dto falls name=N
+        ------------------------------------------------------------
+        {type;\|$$M}                   ""      ) gibt M aus
+        {read;\|$$M}               Eingabetext   gibt M aus
+                                                  SM t:{readcount}
+                                                     r:Textla"nge
+        {readdefine;\|$$N;\|$$M}   {readcount}   gibt M aus
+                                                  SM t:{readcount}
+                                                     r:Textla"nge
+                                                  SM t:N
+                                                     r:Eingabetext
+        ------------------------------------------------------------
+        {expr;\|$$e}               Wert von e  Berechnung von e
+        {exprdefine;\|$$n;\|$$e}     ""       ) SM t:n
+                                                   r:Wert von e
+        ------------------------------------------------------------
+        {same;\|$$a;\|$$b}                     Vergleich von a, b
+                                 +1, 0, -1    Wert bei =, >, <
+        {if;\|$$e;\|$t;\|$f}      t oder f     Berechnung von e
+                                              t wenn >0 sonst f
+        ------------------------------------------------------------
+        {substr;\|$$f;\|$$t;$$s}     substr    substring von s
+                                              zwischen f bis t
+        ------------------------------------------------------------
+        {dnl}                          ""      bis <nl> verwerfen
+        ------------------------------------------------------------
+
+        ) ggf. hinter dem template weiter auf der gleichen Zeile
+           stehender Input-Text wird verworfen.
+        SM  definiert einen Substitutions-Makro mit
+           t:template und r:replacement
+        $$P Parameter ist prescaneable
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 27 -                     MMMMaaaakkkkrrrroooossss
+
+        Die  type-,  read-  und   readdefine-Makros   arbeiten   auf
+        standard_input  und  _output,  auch  wenn  man  sie in einer
+        \include-Programmebene benutzt.  Der Name eines  Makros  ist
+        die Folge der in seinem template vor der ersten Parameterde-
+        finition stehenden Schlu"sselwo"rter.  Die remove-  und  dump-
+        Makros  betreffen  alle die Substitutions-Makros, deren Name
+        mit der im Makro-Parameter angegebenen Wo"rterfolge  beginnt.
+        Die Funktions-Makros bleiben von den remove- und dump-Makros
+        unberu"hrt.  Man setzt den remove-Makro ein,  um  die  Arbeit
+        des Makro-Prozessors zu beschleunigen.  Die Definition eines
+        Substitutions-Makros eines Namens, der in der  Makro-Tabelle
+        schon  existiert,  u"berschreibt  diesen.   Die  geschweiften
+        Klammern  {  und  }   erlauben   es,   Funktions-Makros   zu
+        schachteln, die Klammern kaschieren den aktuellen Parameter-
+        begrenzer.
+
+        _1._1._3._8.  BBBBeeeerrrreeeecccchhhhnnnnuuuunnnngggg aaaarrrriiiitttthhhhmmmmeeeettttiiiisssscccchhhheeeerrrr AAAAuuuussssddddrrrruuuu""""cccckkkkeeee ********
+
+        Die e-Parameter der if-, expr- und exprdefine-Makros und die
+        f-  und  t-Parameter  des substr-Makros du"rfen arithmetische
+        Ausdru"cke sein.
+
+        Ein  Ausdruck  darf  Operatoren  und  Operanden   enthalten.
+        Operatoren sind:
+
+
+        **         (Potenzieren)
+        - !        (Vorzeichen, logische Negation)
+        * / %      (Multiplikation, Division, Divisionsrest)
+        + -        (als zweistellige Operationen)
+        > >= < <=  (Vergleichsoperatoren)
+        = !=       (Gleichheit, Ungleichheit)
+        &          (logisches UND)
+        |          (logisches inclusives ODER)
+
+
+        Operationen   auf   gleicher   Zeile   sind   von   gleicher
+        Bindungssta"rke,  sonst gilt absteigende Bindung entsprechend
+        der Aufza"hlung ( ) zur Festlegung  der  Bindung  von  Opera-
+        tionen.
+
+        Der Ausdruck darf als Operanden nur  noch  ganzzahlig  nume-
+        rische  Werte  mit  einem  Wertebereich  zwischen -32768 bis
+        32767 enthalten, sonst erfolgt nach entsprechenden Meldungen
+        ein   Abbruch   der   weiteren   Ausdrucksberechnung.    Die
+        Ausdrucksauswertung wird durch die Zeichen  <blank>,  <tab>,
+        <nl> oder <eof> beendet.
+
+        Die arithmetischen  Operationen  werden  in  u"blicher  Ganz-
+        zahlarithmetik    (/:   ganzer   Teil   der   Division,   %:
+        Divisionsrest; Division durch 0 ergibt nach Warnung den Wert
+        0) berechnet. Die logischen Operationen ( ! & | ) deuten bei
+        ihren  Operanden  <=0  als  FALSE  und  >0  als  TRUE.   Die
+        logischen  Operationen und die Vergleichsoperationen liefern
+        den arithmetischen Wert 0 fu"r FALSE und  1  fu"r  TRUE.   Die
+        Ausdrucksberechnung   erfolgt   von   links   nach   rechts,
+        entsprechend den Bindungsregeln,  geklammerte  Teile  werden
+        ge- und entkellert.
+
+        Bei der Ausdrucksauswertung  (nach  Makro-Auflo"sung)  weisen
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 28 -                     MMMMaaaakkkkrrrroooossss
+
+        Meldungen auf syntaktische Fehler im Ausdruck hin.
+
+        _1._1._3._9.  PPPPaaaarrrraaaammmmeeeetttteeeerrrrvvvvoooorrrrvvvveeeerrrraaaarrrrbbbbeeeeiiiittttuuuunnnngggg ((((pppprrrreeeessssccccaaaannnn)))) ********
+
+        Der Makro-Prozessor entnimmt nach der  Vorschrift  des  tem-
+        plate  dem  Input-Text die Parameterwerte. In manchen Fa"llen
+        ist es no"tig, dass vor deren Verarbeitung diese einer geson-
+        derten  Makro-Bearbeitung  unterzogen,  also  vorverarbeitet
+        werden, ehe sie als Parameterwert  eingesetzt  werden.   Das
+        wird  als  pppprrrreeeessssccccaaaannnn  bezeichnet.  Im template des Makros muss
+        die Parameterdefinition dazu mit "$$" gekennzeichnet und  im
+        Input-Text  der  Parameterwert  dazu  durch  "@" eingeleitet
+        sein.
+
+        _1._1._3._1_0.  DDDDeeeeffffiiiinnnniiiittttiiiioooonnnn vvvvoooonnnn SSSSuuuubbbbssssttttiiiittttuuuuttttiiiioooonnnnssss----MMMMaaaakkkkrrrroooossss ********
+
+        Einen Substitutions-Makro definiert man  mit  einem  define-
+        oder  rawdefine-Funktions-Makro.  Die Verwendung des define-
+        Funktions-Makros ist fu"r  ga"ngige  Anwendungen  ausreichend.
+        Man  verwendet  im  template  zwischen  Schlu"sselwo"rtern und
+        Parameterdefinitionen    <blank>    als    Begrenzer,    der
+        Makro-Prozessor setzt wa"hrend der U"bernahme von template und
+        replacement in die Makro-Tabelle an alle  Stellen  des  tem-
+        plate,  wo  Standardbegrenzer  oder  <word_change> sind, das
+        Begrenzersymbol "\|" ein und beendet das  template  mit  "\=>"
+        oder  "\|".   Dadurch  wird  erreicht,  dass  der Makro auch
+        angewandt wird, wenn ein Nutzer seinen Text  mit  beliebigen
+        Absta"nden zwischen Wo"rtern ausschmu"ckt.
+
+        Die  Definition  mittels   rawdefine   dient   der   genauen
+        Festlegung von Begrenzern, der Makro-Prozessor la"sst die vom
+        Definierenden eingebrachten Begrenzersymbole so  stehen  und
+        vera"ndert  nur die, wo Standardbegrenzer oder <word_change>,
+        wie bei define belassen wurden.
+
+        Bei der Definition eines Substitutions-Makros gibt  man  als
+        replacement  die  Wo"rterfolge  an,  die  in  den Output-Text
+        eingesetzt  werden  soll,  durchsetzt  mit  den  gewu"nschten
+        Begrenzern  und  auch  Parameterwerten, die das template aus
+        dem Input-Text ermittelt  hat.   Eine  Parameterreferenz  im
+        replacement schreibt man als
+             $ <p_name>
+        Natu"rlich muss  <p_name>  im  template  definiert  sein,  im
+        replacement  kann er mehrfach verwendet werden.  Im replace-
+        ment  ko"nnen  alle,  den  Makro-Prozessor  sonst  steuernden
+        Zeichen,  verwendet  werden.   Das Zeichen "$" muss als "\$"
+        kaschiert werden, wenn es bei U"bernahme des template in  die
+        Makro-Tabelle   nicht  die  Funktion  der  Einleitung  einer
+        Parameterreferenz ausu"ben  soll.   Entha"lt  das  replacement
+        Wo"rterfolgen,  auf  die sich weitere Makros anwenden lassen,
+        erfolgt das folgend auch.
+
+        _1._1._3._1_1.  KKKKaaaasssscccchhhhiiiieeeerrrreeeennnn ((((qqqquuuuoooottttiiiinnnngggg ooooddddeeeerrrr ccccoooonnnncccceeeeaaaalllliiiinnnngggg)))) ********
+
+        Durch Anwendung der KKKKaaaasssscccchhhhiiiieeeerrrruuuunnnnggggssssppppaaaaaaaarrrreeee ` und ' kann  man  dem
+        Makro-Prozessor  signalisieren,  dass  der,  durch sie quasi
+        eingeklammerte Abschnitt des Input-Textes, nicht der  Makro-
+        Bearbeitung  unterzogen  werden  soll (quoting oder conceal-
+        ing).  Die  Kaschierungspaare  du"rfen  geschachtelt  werden.
+        Sie   du"rfen   auch   im   template  verwendet  werden.   Im
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 29 -                     MMMMaaaakkkkrrrroooossss
+
+        Output-Text sind die a"usseren Kaschierungspaare  nach  eeeeiiiinnnneeeemmmm
+        Makro-Lauf weggelassen.
+
+        Die Kaschierungspaare  kann  man  als  Klammern  fu"r  solche
+        Parameterwerte  im  Input-Text  verwenden,  die aus mehreren
+        Wo"rtern bestehen, wenn sonst das template nur ein  Wort  als
+        Parameterwert entnehmen wu"rde.
+
+        Mit <backslash> kann man das einzelne, ihm folgende  Zeichen
+        kaschieren,  wenn  es  ausserhalb  einer bereits kaschierten
+        Zeichenfolge steht und ihm folgt:
+
+             - der aktuelle Parameterbegrenzer
+             - eines der Zeichen
+             <blank> <tab> \t <nl> \n
+             ` ' { } @ \
+
+        <backslash> kaschiert also  die  Standardbegrenzer  und  die
+        sonst   den   Makro-Prozessor   steuernden   Zeichen.    Der
+        Makro-Prozessor gibt fu"r "\t" oder "\n" <tab> oder  <nl>  in
+        den  Output-Text,  auch  sonst gelangt das <backslash> genau
+        dann nicht in den Output-Text, wenn es  nach  obigen  Regeln
+        als  Kaschierungssymbol  gewertet wird.  Ein Funktions-Makro
+        wird vom Makro-Prozessor immer ganz auf einer  Zeile  erwar-
+        tet; gelingt diese Formulierung aus Platzgru"nden nicht, muss
+        "\<nl>" an entsprechenden Stellen verwendet werden.
+
+        NNNNAAAACCCCHHHHRRRRIIIICCCCHHHHTTTTEEEENNNN
+
+        infinite loop in makro
+
+             Ein  Abschnitt  des  Input-Text  wurde  100  mal  einer
+             Makro-Substitution  unterzogen.  Das  hat seine Ursache
+             i.d.R. darin, dass Substitutions-Zyklen definiert sind,
+             z.B.   {define;alpha;alpha}   oder  {define;alpha;beta}
+             {define;beta;alpha}.  Der Makro-Prozessor  geht  weiter
+             im Input-Text.
+
+        every parameter needs a delimiter
+
+             Die Parameterdefinition hat keinen Begrenzer
+
+        null parameter name
+
+             Die Parameterdefinition hat keine Namensangabe
+
+        parameter <p_name> redeclared
+
+             Der gleiche <p_name> wird in  einem  template  mehrfach
+             als solcher verwendet
+
+        parameter <p_name> referenced but not defined
+
+             Der im replacement referenzierte <p_name> wurde im tem-
+             plate nicht definiert
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLLEEEE
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+
+
+        Referenz_Manual            - 30 -                     MMMMaaaakkkkrrrroooossss
+
+
+                /* Erzeuge das QUEL-Schlu"sselwort "retrieve"
+                aus dem ku"rzeren Wort "get" */
+
+                     {define; get; retrieve} \eval
+
+                /* Erzeuge ein komplettes retrieve-Statement
+                fu"r einen Spezialfall aus einer
+                kurzen Angabe "get Parameterwert" */
+
+                {define; get $1; retrieve(p.all)where name="$1"}\eval
+
+
+
+                /*      In einem Menue seien dem Nutzer die
+                Antworten a,b,? gestattet,
+                er wird durch Ausgabe der Meldung "a,b,?"
+                zur Abgabe einer Antwort aufgefordert,
+                in deren Folge entsprechende Marken
+                angesprungen werden */
+
+                     {define; {default}; ab}\eval
+
+                     \branch {read;a,b,}
+                     \mark a
+                       :
+                       :
+                     \mark b
+                       :
+                       :
+                     \mark ab
+                       :
+                       :
+
+
+        Zur Sicherheit  gegen  eine  Eingabe  irgendwelcher  Zeichen
+        durch  den  Anwender, deren Deutung als Sprungmarke auf kein
+        vorhandenes  \mark  fu"hren  wu"rde,   wird   einleitend   der
+        {default}-Makro  so  definiert,  dass  auch  alle derartigen
+        Eingaben auf \mark ab gelenkt werden.
+
+
+                /*      Der Nutzer wird durch Ausgabe
+                eines Textes "NAME:" aufgefordert,
+                einen name einzugeben,
+                gibt er nur <nl>, also 0 Zeichen ein,
+                wird eine Marke Ende angesprungen */
+
+                     {readdefine; name; NAME:}\eval
+                     \branch ?{readcount}=0 Ende
+                     retrieve (p.all)where p.`name'="name"\go
+
+
+
+        Der eingegebene Text wird in das Statement zwischen die  " "
+        eingesetzt,  das  erfolgt nur dort, weil `name' von der Sub-
+        stitution ausgeschlossen wird.
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    QQQQUUUUEEEELLLL
+

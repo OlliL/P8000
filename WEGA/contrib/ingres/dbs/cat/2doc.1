@@ -1,0 +1,1980 @@
+
+        Anwendung                 - 162 -                       QQQQUUUUEEEELLLL
+
+        _2.  AAAAnnnnwwwweeeennnnddddeeeerrrrddddooookkkkuuuummmmeeeennnnttttaaaattttiiiioooonnnn
+                IIIINNNNGGGG____DDDDBBBB  6666....3333////3333 ---- TTTTeeeeiiiillll IIIIIIII
+
+
+
+
+
+        #############################################################
+        #############################################################
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##      ###   #     #  #####          ######  ######       ##
+        ##       #    ##    # #     #         #     # #     #      ##
+        ##       #    # #   # #               #     # #     #      ##
+        ##       #    #  #  # #  ####         #     # ######       ##
+        ##       #    #   # # #     #         #     # #     #      ##
+        ##       #    #    ## #     #         #     # #     #      ##
+        ##      ###   #     #  #####  ####### ######  ######       ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##        ####### #######   ###   #          #####         ##
+        ##           #    #          #    #         #     #        ##
+        ##           #    #          #    #               #        ##
+        ##           #    #####      #    #          #####         ##
+        ##           #    #          #    #         #              ##
+        ##           #    #          #    #         #              ##
+        ##           #    #######   ###   #######   #######        ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        ##                                                         ##
+        #############################################################
+        #############################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 163 -                       QQQQUUUUEEEELLLL
+
+        _2._1.  AAAAnnnnwwwweeeennnndddduuuunnnngggg ddddeeeerrrr QQQQUUUUEEEELLLL ****
+
+
+
+
+
+
+
+
+
+
+
+        Dieser Einfu"hrungskurs beschreibt, wie das  ING_DB   6.3-DBS
+        anzuwenden  ist.   Sie sollten in der Lage sein, den angege-
+        benen Beispielen zu folgen und die  gleichen  Ergebnisse  zu
+        erhalten.   Die  Datenbank  "demo" ist in der ausgelieferten
+        Vertriebsversion enthalten.   Nach  den  U"bungen  in  diesem
+        Kapitel  sind  sie  in  der  Lage die anschliessenden beiden
+        Kapitel besser zu verstehen. Es  empfiehlt  sich  auch,  das
+        Referenz-Manual noch einmal gru"ndlich zu lesen.
+
+        Die  Daten-Manipulations-Sprache,  die   von   ING_DB    6.3
+        unterstu"tzt  wird,  nennt sich QUEL (Query Language) bzw. in
+        Kurzform Query.  Eine vollsta"ndige Information zur QUEL wird
+        im  ING_DB   6.3-Referenz-Manual  (Teil I) gebracht.  Dieser
+        Kurs beabsichtigt nicht, jedes Detail  von  ING_DB   6.3  zu
+        beru"hren.  Es wird aber versucht, sie zu befa"higen, die QUEL
+        aktiv zu  beherrschen  und  auf  dieser  Basis  Schritt  fu"r
+        Schritt in die Geheimnisse von ING_DB  6.3 einzusteigen.
+
+        Fangen wir mit dem Eintritt  in  UNIX  ,  dem  Time-Sharing-
+        System,  unter  dem  ING_DB   6.3  la"uft,  an.   Wenn irgend
+        mo"glich, benutzen sie ein  Terminal,  das  u"ber  Gross-  und
+        Kleinbuchstaben   verfu"gt,   anderenfalls   werden  sie  ein
+        schweres Leben haben.  Wenn sie an einem Terminal  arbeiten,
+        das nur Grossbuchstaben hat, geben sie "\\" anstelle "\" fu"r
+        Beispiele dieses Einfu"hrungskurses ein.
+
+        Nach Eintritt in das Mehrnutzersystem (Eingabe des  "login"-
+        Namens)  wird  auf  dem  Terminal  die  Bereitschaft mit "%"
+        angezeigt.    (Durch   A"nderung   von   PS1   im    .profile
+        "/mnt/ing_db/.profile"  auf "%" erhalten sie U"bereinstimmung
+        mit den angefu"hrten Beispielen, wobei "%" vom Terminal  aus-
+        gegeben  wird  !)  Um  ING_DB   6.3  zu  nutzen,  geben  sie
+        beispielsweise das Kommando:
+
+
+        % quel dt
+
+
+
+        Das veranlasst UNIX , die Datenbank "demo" zur Nutzung durch
+        ING_DB    6.3   bereitzustellen.    Nach   einigen  Sekunden
+        erscheint folgendes:
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 164 -                       QQQQUUUUEEEELLLL
+
+
+
+        ING_db version 6.3/3 login
+        Tue Aug 30 14:52:23 1985
+
+        ING_db>
+        *
+
+
+
+        (Sofern sys/etc/dayfile nicht  leer  ist  bzw.  die  Ausgabe
+        nicht  unterdru"ckt  wird,  wird  vor ING_db> noch der Inhalt
+        dieses File's angegeben.) Die ersten beiden Zeilen  beinhal-
+        ten  die  ING_DB  6.3-Version (in diesem Fall "Version 6.3")
+        und das aktuelle Datum.  Danach folgt die Ausgabe des  "day-
+        file", das Mitteilungen - bezogen auf ING_DB  6.3 - entha"lt.
+        Das I N G - d b > zeigt an, dass  ING_DB   6.3  bereit  ist,
+        ihre Kommandos anzunehmen.
+
+        Der Monitor erinnert mit einem Stern ("*")  am  Zeilenanfang
+        daran, dass ING_DB  6.3 auf eine Eingabe wartet.
+        Wenn Sie den Monitor zur  Ausfu"hrung  der  Query  angewiesen
+        haben,  erscheint  die Ausschrift Zu Beginn arbeiten wir mit
+        einer Relation "teile", die folgende Struktur hat:
+
+
+        * help teile
+        * \g
+
+        I N G - d b . . .
+
+        Relation:               teile
+        ---------
+        Besitzer:               ing_db
+        Tupellaenge:            34
+        Verfallsdatum:          Tue Apr 26 19:57:10 1988
+        Tupelanzahl:            13
+        Speicherstruktur:       HEAP
+        Relationentyp:          Nutzerrelation
+
+         Domaenname        Typ   Laenge  Schluessel
+        -------------------------------------------
+         tnum               i       2
+         tname              c      20
+         farbe              c       8
+         gewicht            i       2
+         menge              i       2
+        -------------------------------------------
+
+        ING-db:
+
+
+        Geben sie das Kommando:
+
+
+        * print teile
+        * \g
+
+        I N G - d b   . . .
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 165 -                       QQQQUUUUEEEELLLL
+
+        Die Zeile "print teile" fordert eine Anzeige von Daten,  die
+        in der Datenbank gespeichert sind.  Das "\g" weist den Moni-
+        tor zur Ausfu"hrung der Query an.  Die Mitteilung
+        "I N G - d b   . . . "
+        informiert, dass  ING_DB   6.3  ihre  Query  ausfu"hrt.   Der
+        Ausschrift  wird  noch  der Maschinentyp vorangestellt.  Das
+        Ergebnis sieht dann so aus:
+
+
+        Relation: teile
+
+
+        |tnum  |tname               |farbe   |gewich|menge |
+        |--------------------------------------------------|
+        |     1|Zentraleinheit      |rosa    |    10|     1|
+        |     2|Hauptspeicher       |grau    |    20|    32|
+        |     3|Plattenspeicher     |schwarz |   685|     2|
+        |     4|Magnetbandspeicher  |schwarz |   450|     4|
+        |     5|Magnetbaender       |grau    |     1|   250|
+        |     6|Zeilendrucker       |gelb    |   578|     3|
+        |     7|Zeilendruckerpapier |weiss   |    15|    95|
+        |     8|Terminals           |blau    |    19|    15|
+        |    13|Lochbandleser       |schwarz |   107|     0|
+        |    14|Lochbandstanzer     |schwarz |   147|     0|
+        |     9|Konsolpapier        |weiss   |     2|   350|
+        |    10|Kartenleser         |grau    |   327|     0|
+        |    11|Kartenstanzer       |grau    |   427|     0|
+        |--------------------------------------------------|
+
+        ING_db:
+        *
+
+
+
+        Das,  was  auf  Ihrem  Terminal  angezeigt  wurde,  ist  die
+        "teile"-  Relation.  Intuitiv, eine Relation ist nicht mehr,
+        als eine Tabelle mit Zeilen und Spalten.
+
+        In diesem Fall ist der Name der Relation "teile".   Sie  hat
+        fu"nf  Spalten  (,  wir  nennen  sie Doma"nen,) bezeichnet mit
+        "tnum" (Teile-Nummer), "tname" (Teile-Bezeichnung), "farbe",
+        "gewicht"  und  "menge"  (Bestand).  Jede Zeile der Relation
+        (genannt Tupel) repra"sentiert einen  Eintrittspunkt  (Satz),
+        der  in  diesem Fall ein Teil fu"r eine Computer-Installation
+        bezeichnet.  Eine Relation kann bis zu 49 Doma"nen  und  eine
+        im Grunde genommen unbegrenzte Zahl von Tupeln haben.
+
+        Beachten sie, nachdem die Query ausgefu"hrt ist, gibt  ING_DB
+         6.3  """"IIIINNNNGGGG____ddddbbbb::::""""  aus,  wa"hrend  anfangs  nach  dem  Eintritt
+        """"IIIINNNNGGGG____ddddbbbb>>>>"""" angezeigt wurde.  Wenn sie  eine  Query  eingeben,
+        legt  sie  ING_DB   6.3 in einem "Arbeitsspeicher" ab.  Wenn
+        sie eine Query falsch eingegeben haben, ko"nnen sie mit "\r",
+        also  "reset"  (dh.  lo"schen)  den  Arbeitsspeicher lo"schen.
+        (Spa"ter werden wir Wege kennen lernen,  um  Fehler  zu  edi-
+        tieren,  so,  als  wu"rden  wir  die eingegebene Query korri-
+        gieren.)
+
+        Jederzeit ko"nnen sie sich den Arbeitsspeicher durch  Eingabe
+        von "\p" ansehen.  Versuchen sie "\p":
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 166 -                       QQQQUUUUEEEELLLL
+
+
+
+        * \p
+        print teile
+        ING-db:
+        *
+
+
+
+        Der aktuelle Inhalt  des  Arbeitsspeichers  wird  angezeigt.
+        Versuchen sie jetzt "\r":
+
+
+        * \r
+        ING_db>
+        *
+
+
+
+        Der Arbeitsspeicher ist jetzt  leer.   Solange  ING_DB   6.3
+        "ING_db:"   ausgibt,  ist  der  Arbeitsspeicher  nicht-leer;
+        solange ING_DB  6.3 "ING_db>" ausgibt, ist er leer.
+
+        Nachdem eine Query ausgefu"hrt wurde, gibt ING_DB   6.3  nor-
+        malerweise  "ING_db:"  aus.   Wenn  sie dann eine neue Query
+        eingeben, lo"scht ING_DB  6.3 automatisch die  vorhergehende,
+        obwohl  sie  nicht  nach  jeder Query "\r" eingegeben haben.
+        Das wird spa"ter noch erkla"rt.
+
+        Die Verwendung des "retrieve"-Kommandos erlaubt uns,  spezi-
+        fische  Queries  u"ber Relationen zu schreiben.  Als Beispiel
+        wollen wir ING_DB  6.3 veranlassen, nur "tname"  als  Doma"ne
+        aus  der  "teile"-  Relation auszugeben.  Geben sie das Kom-
+        mando:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 167 -                       QQQQUUUUEEEELLLL
+
+
+
+        * range of t is teile
+        * retrieve (t.tname)
+        * \g
+
+        I N G - d b   . . .
+
+        |tname               |
+        |--------------------|
+        |Zentraleinheit      |
+        |Hauptspeicher       |
+        |Plattenspeicher     |
+        |Magnetbandspeicher  |
+        |Magnetbaender       |
+        |Zeilendrucker       |
+        |Zeilendruckerpapier |
+        |Terminals           |
+        |Lochbandleser       |
+        |Lochbandstanzer     |
+        |Konsolpapier        |
+        |Kartenleser         |
+        |Kartenstanzer       |
+        |--------------------|
+        13 tuples touched
+
+        ING_db:
+        *
+
+
+
+        Die Ausgabe beschra"nkt sich auf die Doma"ne "tname"  aus  der
+        Relation   "teile".   Dazu  beno"tigten  wir  zwei  Schritte.
+        Zuerst haben wir eine sogenannte "Tupel-Variable" deklariert
+        und ihren Bereich der Relation "teile" zugewiesen.
+
+
+        range of t is teile
+
+
+        Damit ist gemeint,  dass  der  Buchstabe  "t"  die  Relation
+        "teile"  repra"sentiert.   Man  kann  sich  das als eine Mar-
+        kierung vorstellen, die  die  Relation  "teile"  eine  Stufe
+        niedriger einordnet.  ING_DB  6.3 merkt sich die Verbindung,
+        sodass, wenn "t" einmal als Bereich u"ber "teile"  deklariert
+        wurde,  eine  Wiederholung  der  Deklaration nicht notwendig
+        ist.  Das ist, wie wir spa"ter sehen  werden,  u"blich,  falls
+        wir mit mehr als einer Relation arbeiten.
+
+        Als na"chstes benutzten wir das  "retrieve"-Kommando.   Seine
+        Form ist
+
+
+        retrieve ( listen sie hier, wonach sie suchen )
+
+
+
+        "t" referenziert durch sich  selbst  die  Relation  "teile".
+        "t.tname"  referenziert  die  Doma"ne  "tname"  der  Relation
+        "teile", sozusagen:
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 168 -                       QQQQUUUUEEEELLLL
+
+
+
+        retrieve (t.tname)
+
+
+        meint die Recherche nach der  Doma"ne  "tname"  der  Relation
+        "teile".
+
+        Versuchen wir nach "tname" und "farbe" zu recherchieren:
+
+
+        * retrieve t.tname, t.farbe
+        * \g
+
+        I N G - d b   . . .
+
+        2500: syntax error on line 1
+        last symbol read was: .
+
+        ING_db:
+        *
+
+
+
+        Unglu"cklicherweise haben wir einen Fehler  gemacht.   ING_DB
+         6.3  teilt  uns  mit,  dass  es einen Syntax-Fehler auf der
+        ersten Zeile der Query gefunden hat.  "Syntax error"  bedeu-
+        tet,  dass wir etwas eingegeben haben, was ING_DB  6.3 nicht
+        wiedererkennen bzw. interpretieren kann.   Der  Fehler  trat
+        auf Zeile 1 auf.  ING_DB  6.3 fu"hrt einen manchmal undeutli-
+        chen  Versuch  zur  Diagnose  des  Problems  durch.   Sofern
+        mo"glich,  teilt  uns  ING_DB   6.3  mit, was es gelesen hat,
+        bevor es durcheinander kam.
+
+        In diesem Fall ist  der  Fehler  der,  dass  die  Liste  der
+        Rechercheobjekte  (, die sogenannte "target_list",) in Klam-
+        mern eingeschlossen werden muss.  Die korrekte Query ist:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 169 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (t.tname, t.farbe)
+        * \g
+
+        I N G - d b   . . .
+
+        |tname               |farbe   |
+        |-----------------------------|
+        |Zentraleinheit      |rosa    |
+        |Hauptspeicher       |grau    |
+        |Plattenspeicher     |schwarz |
+        |Magnetbandspeicher  |schwarz |
+        |Magnetbaender       |grau    |
+        |Zeilendrucker       |gelb    |
+        |Zeilendruckerpapier |weiss   |
+        |Terminals           |blau    |
+        |Lochbandleser       |schwarz |
+        |Lochbandstanzer     |schwarz |
+        |Konsolpapier        |weiss   |
+        |Kartenleser         |grau    |
+        |Kartenstanzer       |grau    |
+        |-----------------------------|
+        13 tuples touched
+
+        ING_db:
+        *
+
+
+
+        Sie ko"nnen durch Hinzufu"gung einer  "Qualifikation"  an  die
+        Query  einschra"nken,  welche Tupel ausgegeben werden sollen.
+        Beispielsweise, um die Namen und Farben  nur  der  Teile  zu
+        erhalten, die grau sind, geben sie ein:
+
+        * retrieve (t.tname, t.farbe)
+        * where t.farbe = "grau"
+        * \g
+
+        I N G - d b   . . .
+
+        |tname               |farbe   |
+        |-----------------------------|
+        |Hauptspeicher       |grau    |
+        |Magnetbaender       |grau    |
+        |Kartenleser         |grau    |
+        |Kartenstanzer       |grau    |
+        |-----------------------------|
+        4 tuples touched
+
+        ING-db:
+        *
+
+
+        Beachten sie, dass ING_DB  6.3  nur  die  Teile  angibt,  wo
+        "t.farbe"  gleich  "grau" ist.  Beachten sie auch, dass grau
+        in Anfu"hrungsstrichen ("grau") stehen muss.  Das ist notwen-
+        dig.   Der  einzige  Weg,  ING_DB   6.3  zur  Erkennung  von
+        Zeichenketten zu  veranlassen  (z.B.  Worte),  ist,  sie  in
+        Anfu"hrungsstriche einzuschliessen.
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 170 -                       QQQQUUUUEEEELLLL
+
+        Was ist, wenn wir die Bezeichnungen der Teile wissen wollen,
+        die  grau  oder  rosa sind?  Wir brauchen nur an die vorher-
+        gehende Query den Ausdruck
+
+
+        or t.farbe = "rosa"
+
+
+        anha"ngen.  Erinnern sie  sich,  wie  auch  immer,  wenn  die
+        na"chste  Zeile  eingegeben  wurde,  beginnt ING_DB  6.3 eine
+        neue Query und wird automatisch den Arbeitsspeicher lo"schen.
+        Der  Arbeitsspeicher  kann  nur  ggggeeeerrrreeeetttttttteeeetttt  werden,  wenn die
+        na"chste Zeile mit einem solchen Kommando wie "\p" oder  "\g"
+        beginnt.  (Es gibt noch andere Mo"glichkeiten, wie wir spa"ter
+        sehen werden.) Wenn so ein Kommando eingegeben wird, ist die
+        vorhergehende Query gerettet und anschliessend kann an diese
+        Query angeha"ngt werden.
+
+        Wir geben ein:
+
+
+        * \p
+        retrieve (t.tname, t.farbe)
+        where t.farbe = "grau"
+        ING-db:
+        *
+
+
+
+        Sie ko"nnen die vorhergehende Query sehen.  Jetzt  geben  sie
+        ein:
+
+
+        * or t.farbe = "rosa"
+        *
+
+
+        ING_DB  6.3 ha"ngt die letzte Zeile an das Ende der Query an.
+        Sie   ko"nnen   sich   davon   u"berzeugen,   indem   sie  den
+        Arbeitsspeicher ausgeben:
+
+
+        * \p
+        retrieve (t.tname, t.farbe)
+        where t.farbe = "grau"
+        or t.farbe = "rosa"
+        ING-db:
+        *
+
+
+        Jetzt starten wir die Query:
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 171 -                       QQQQUUUUEEEELLLL
+
+
+
+        * \g
+
+        I N G - d b   . . .
+
+        |tname               |farbe   |
+        |-----------------------------|
+        |Zentraleinheit      |rosa    |
+        |Hauptspeicher       |grau    |
+        |Magnetbaender       |grau    |
+        |Kartenleser         |grau    |
+        |Kartenstanzer       |grau    |
+        |-----------------------------|
+        5 tuples touched
+
+        ING-db:
+        *
+
+
+        Die Regeln dazu,  wann  der  Arbeitsspeicher  gelo"scht  ist,
+        mo"gen  anfangs  etwas verwirrend erscheinen.  Im Allgemeinen
+        wird ING_DB  6.3 genau das tun, was sie erwarten, ohne  dass
+        sie viel daran denken.
+
+        Wir haben  die  verwendeten  Qualifikationen  "or"  und  "="
+        gesehen.   Im  Allgemeinen kann eine der folgenden verwendet
+        werden:
+
+
+              and
+              or
+              not
+              =         (equal)
+              !=        (not equal)
+              >         (greater than)
+              >=        (greater than or equal)
+              <         (less than)
+              <=        (less than or equal)
+
+
+        Die Wertigkeit bestimmt sich in  der  Reihenfolge,  wie  die
+        Qualifikationen angegeben sind (d.h. von links nach rechts).
+        Klammern ko"nnen verwendet werden, um  Zusammenha"nge  in  der
+        gewu"nschten Reihenfolge zu gruppieren.
+
+        ING_DB  6.3 kann  Berechnungen  mit  den,  in  der  Relation
+        gespeicherten  Daten  ausfu"hren.   Beispielsweise beinhaltet
+        die Relation "teile" den Bestand und das Gewicht  fu"r  jedes
+        Tupel.   Wir  mo"chten  das Gesamtgewicht fu"r jede Gruppe von
+        Teilen wissen (,d.h. Gewicht multipliziert mit Bestand).
+
+        Um die Bezeichnung, die Teile-Nummer und  das  Gesamtgewicht
+        fu"r jedes Teil zu erhalten, geben wir ein:
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 172 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (t.tname, t.tnum, t.menge * t.gewicht)
+        * \g
+
+        I N G - d b   . . .
+
+        2500: syntax error on line 1
+        last symbol read was: *
+
+        ING_db:
+        *
+
+
+        Ein anderer Fehler!  Das Problem besteht  darin,  dass  nach
+        Ausfu"hrung  einer  Rechnung  ING_DB  6.3 nicht weiss, wie es
+        die entstandene Doma"ne bei der Ausgabe bezeichnen soll.  Fu"r
+        eine einfache Doma"ne nutzt ING_DB  6.3 den Doma"nen-Namen als
+        Titel (U"berschrift in der Kopfzeile).  Wie auch  immer,  sie
+        mu"ssen  eine  neue  Doma"ne  gru"nden,  um den Titel zu spezi-
+        fizieren:
+
+
+                tot = t.menge * t.gewicht
+
+
+        Die allgemeine Form ist:
+
+
+                title = expression
+
+
+        Zum Beispiel:
+
+
+                name = t.tname
+                berechnung = t.gewicht / 2000 * (t.menge + 2)
+
+
+        Wir wollen uns noch mit dem Fehler, der eine  Korrektur  der
+        Query erfordert, bescha"ftigen.  Solange die erste Zeile nach
+        einer Query nicht mit "\p" oder "\g"  beginnt,  wird  ING_DB
+         6.3 automatisch den Arbeitsspeicher lo"schen und die vorher-
+        gehende Query ist fu"r uns verloren.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 173 -                       QQQQUUUUEEEELLLL
+
+
+        * retrieve (t.tname, t.tnum, tot=t.menge * t.gewicht)
+        \g
+
+        I N G - d b   . . .
+
+        |tname               |tnum  |tot   |
+        |----------------------------------|
+        |Zentraleinheit      |     1|    10|
+        |Hauptspeicher       |     2|   640|
+        |Plattenspeicher     |     3|  1370|
+        |Magnetbandspeicher  |     4|  1800|
+        |Magnetbaender       |     5|   250|
+        |Zeilendrucker       |     6|  1734|
+        |Zeilendruckerpapier |     7|  1425|
+        |Terminals           |     8|   285|
+        |Lochbandleser       |    13|     0|
+        |Lochbandstanzer     |    14|     0|
+        |Konsolpapier        |     9|   700|
+        |Kartenleser         |    10|     0|
+        |Kartenstanzer       |    11|     0|
+        |Hauptspeicher       |     2|   640|
+        |Kartenleser         |    10|     0|
+        |----------------------------------|
+        13 tuples touched
+
+        ING_db:
+        *
+
+
+        Ausser der Multiplikation unterstu"tzt ING_DB  6.3 bspw.  die
+        Operatoren
+
+                +    Addition
+                -    Subtraktion (und Bina"rnegation)
+                /    Division
+                *    Multiplikation
+                **   Exponentation (z.B. 3**10)
+                abs  Absolutwert    (z.B. abs(p.qoh - 50) )
+                mod  Modulo-Division (Divisionsrest)
+
+        und einige andere mehr.   U"berpru"fen  sie  bitte  im  ING_DB
+         6.3-Referenz-Manual    diese    kurze    Darstellung    und
+        vervollsta"ndigen sie, was unterstu"tzt wird.
+
+        Wenn wir anschliessend die Teile-Nummer 2 oder 10  auswa"hlen
+        wollen, dann ko"nnen wir die Qualifikation
+
+
+                where t.tnum = 2 or t.tnum = 10
+
+        angeben.
+
+        VVVVOOOORRRRSSSSIIIICCCCHHHHTTTT:::: Wenn wir gerade damit beginnen "where t.tnum  ....
+        "  einzugeben,  wird  ING_DB  6.3 das als Beginn einer neuen
+        Query verstehen und den  Arbeitsspeicher lo"schen.  Um das zu
+        umgehen,  ko"nnen  sie  "\p" eingeben und ein anschliessendes
+        "append"-Kommando  garantiert  ("\a"  (append)),  dass,  was
+        immer   sie   eingeben,   dem  Inhalt  des  Arbeitsspeichers
+        hinzugefu"gt  wird.   Dieses  Kommando  wird  nur   beno"tigt,
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 174 -                       QQQQUUUUEEEELLLL
+
+        nachdem   zwischenzeitlich   eine   Query   zur   Ausfu"hrung
+        angewiesen wurde.   Zum  anderen  werden  Daten  automatisch
+        hinzugefu"gt.  Versuchen sie folgendes:
+
+
+        * \a
+        * where t.tnum = 2 or t.tnum = 10
+        * \g
+
+        I N G - d b   . . .
+
+        |tname               |tnum  |tot   |
+        |----------------------------------|
+        |Hauptspeicher       |     2|   640|
+        |Kartenleser         |    10|     0|
+        |----------------------------------|
+        2 tuples touched
+
+        ING_db:
+        *
+
+
+        Um alle Teile-Nummern gro"sser als 2 und kleiner,  gleich  10
+        auszuwa"hlen, folgendes:
+
+
+        * retrieve (t.tname, t.tnum, tot=t.menge * t.gewicht)
+        * where t.tnum > 2 and t.tnum <= 10
+        * \g
+
+        I N G - d b   . . .
+
+        |tname               |tnum  |tot   |
+        |----------------------------------|
+        |Plattenspeicher     |     3|  1370|
+        |Magnetbandspeicher  |     4|  1800|
+        |Magnetbaender       |     5|   250|
+        |Zeilendrucker       |     6|  1734|
+        |Zeilendruckerpapier |     7|  1425|
+        |Terminals           |     8|   285|
+        |Konsolpapier        |     9|   700|
+        |Kartenleser         |    10|     0|
+        |----------------------------------|
+        8 tuples touched
+
+         ING_db:
+        *
+
+
+
+        Nun wollen wir Unterstu"tzung, um die vorhergehende Query  so
+        zu   a"ndern,  dass  sie  die  Ergebnisse  der  Teile-Nummern
+        zwischen 5 und 10, anstelle von 2 und 10 liefert.  Sie wa"ren
+        sicher  vera"rgert,  wenn sie nur ein Zeichen a"ndern mu"ssten,
+        sollen aber  dafu"r  die  ganze  Query  nocheinmal  eingeben.
+        Deshalb gestattet ING_DB  6.3 die Verwendung des UNIX -Text-
+        editors, um  Korrekturen  und/oder  Hinzufu"gungen  zu  Ihrem
+        Arbeitsspeicher  vorzunehmen.   Jederzeit  ko"nnen  sie  "\e"
+        eingeben,   der   ING_DB    6.3-Monitor    schreibt    ihren
+        Arbeitsspeicher  auf  ein  File  und ruft das UNIX -Programm
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 175 -                       QQQQUUUUEEEELLLL
+
+        "ed".  Zum Beispiel:
+
+
+        * \e
+        >>ed
+        83
+
+
+        Die ">>ed"-Mitteilung sagt Ihnen, dass sie jetzt den  Editor
+        nutzen.   Die  Zahl  83  ist  die  Anzahl der Bytes in Ihrem
+        Arbeitsspeicher.
+
+        Wir ko"nnen nun die Query editieren und 2 auf 5 a"ndern.   Die
+        UNIX  -Dokumentation  (Manual  1,  "ed") beschreibt, wie der
+        Texteditor zu nutzen ist.  Aber wir wollen lieber etwas dop-
+        pelt  bringen  und  zeigen  einige  Editor-Kommandos,  um zu
+        illustrieren, wie zu editieren ist:
+
+
+        1p
+        retrieve (t.tname,t.tnum,tot = t.menge * t.gewicht)
+        2p
+        where t.tnum > 2 and t.tnum <= 10
+        s/2/5/p
+        where t.tnum > 5 and t.tnum <= 10
+        w
+        83
+        q
+        *
+
+
+        Ganz kurz, was ereignet sich.  "1p" und "2p" gibt die Zeilen
+        1  und 2 aus.  "s/2/5/p" ersetzt 5 durch 2 auf der aktuellen
+        Zeile (Zeile 2) und gibt diese Zeile anschliessend aus.  "w"
+        schreibt    die   Query   zuru"ck   in   den   ING_DB    6.3-
+        Arbeitsspeicher.
+
+        Innerhalb des Editors ko"nnen sie alle "ed"-Kommandos, ausser
+        "e"  (,es vera"ndert den File-Namen) verwenden.  Wenn sie mit
+        "quit" den Editor (q-Kommando) verlassen,  sind  sie  wieder
+        zum  Monitor  zuru"ckgekehrt.   Beachten  sie, dass vor einem
+        "q"-Kommando ein "w"-Kommando gegeben werden  muss,  um  den
+        Arbeitsspeicher  zuru"ckzuschreiben  (Aber  keine  Angst! Der
+        Editor erinnert sie daran, wenn sie es vergessen haben!).
+
+        Um sich zu vergewissern, dass die Query korrekt ist, und  um
+        sie auszufu"hren, geben sie ein:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 176 -                       QQQQUUUUEEEELLLL
+
+
+        * \p\g
+        retrieve (t.tname,t.tnum,tot = t.menge * t.gewicht)
+        where t.tnum > 5 and t.tnum <= 10
+
+        I N G - d b   . . .
+
+
+        |tname               |tnum  |tot   |
+        |----------------------------------|
+        |Zeilendrucker       |     6|  1734|
+        |Zeilendruckerpapier |     7|  1425|
+        |Terminals           |     8|   285|
+        |Konsolpapier        |     9|   700|
+        |Kartenleser         |    10|     0|
+        |----------------------------------|
+        5 tuples touched
+
+        ING_db:
+        *
+
+
+
+        Wir nehmen an, dass ihr Interesse, soweit  es  die  Relation
+        "teile"  betrifft, erscho"pft ist. Sehen wir uns deshalb eine
+        neue Relation, genannt "lieferung" an.  Geben sie ein:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 177 -                       QQQQUUUUEEEELLLL
+
+
+
+        * print lieferung
+        * \g
+
+        I N G - d b   . . .
+
+
+        lieferung relation
+
+        |lnum  |tnum  |bnum  |liefdat |menge |
+        |------------------------------------|
+        |   475|     1|  1001|73-12-31|     1|
+        |   475|     2|  1002|74-05-31|    32|
+        |   475|     3|  1001|73-12-31|     2|
+        |   475|     4|  1002|74-05-31|     1|
+        |   122|     7|  1003|75-02-01|   144|
+        |   122|     7|  1004|75-02-01|    48|
+        |   122|     9|  1004|75-02-01|   144|
+        |   440|     6|  1001|74-10-10|     2|
+        |   241|     4|  1001|73-12-31|     1|
+        |    62|     3|  1002|74-06-18|     3|
+        |   475|     2|  1001|73-12-31|    32|
+        |   475|     1|  1002|74-07-01|     1|
+        |     5|     4|  1003|74-11-15|     3|
+        |     5|     4|  1004|75-01-22|     6|
+        |    20|     5|  1001|75-01-10|    20|
+        |    20|     5|  1002|75-01-10|    75|
+        |   241|     1|  1005|75-06-01|     1|
+        |   241|     2|  1005|75-06-01|    32|
+        |   241|     3|  1005|75-06-01|     1|
+        |    67|     4|  1005|75-07-01|     1|
+        |   999|    10|  1006|76-01-01|   144|
+        |   241|     8|  1005|75-07-01|     1|
+        |   241|     9|  1005|75-07-01|   144|
+        |------------------------------------|
+
+         ING_db:
+        *
+
+
+        Die "lieferung"-Relation beinhaltet "lnum" (, die  Lieferer-
+        Nummer),  "tnum" (, die Teile-Nummer des gelieferten Teils),
+        "bnum" (, die Bestellnummer), "liefdat" (, das  Lieferdatum)
+        und "menge" (, die Liefermenge).
+
+        Um herauszufinden, welche Teile von der Lieferer-Nummer  122
+        geliefert werden, geben sie ein:
+
+
+        * retrieve (l.tnum) where l.lnum = 122
+        * \g
+
+        I N G - d b   . . .
+
+        2109: line 1, Variable 'l' not declared in RANGE statement
+
+        ING_db:
+        *
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 178 -                       QQQQUUUUEEEELLLL
+
+        Wir haben die Tupel-Variable "l" (, d.h. l.tnum)  verwendet,
+        ohne  ING_DB   6.3  mitzuteilen, was "l" repra"sentiert.  Wir
+        haben die  Bereichsdeklaration  "range"  vergessen.   Korri-
+        gieren wir die Query wie folgt:
+
+
+        * range of l is lieferung
+        * retrieve (l.tnum) where l.lnum = 122
+        * \g
+
+        I N G - d b   . . .
+
+
+        |tnum  |
+        |------|
+        |     7|
+        |     7|
+        |     9|
+        |------|
+        3 tuples touched
+
+        ING_db:
+        *
+
+
+        Die Lieferer-Nummer 122 liefert die Teile-Nummern 7,  7  und
+        9.  Beachten sie, dass 7 zweimal aufgelistet wurde.  Bei der
+        Recherche nach Tupeln u"ber das Terminal ist  es  effizienter
+        fu"r  ING_DB   6.3,  nnnniiiicccchhhhtttt  nach  doppelten  Tupeln suchen zu
+        mu"ssen.  ING_DB  6.3 ist  in  der  Lage  doppelte  Tupel  zu
+        lo"schen.  Wir wollen darauf spa"ter zuru"ckkommen.
+
+        Wir wissen jetzt, dass der Lieferer 122 die Teile-Nummern  7
+        und  9  liefert.   Wenn sie diese Query nicht einige hundert
+        mal abarbeiten, wissen sie sicher nicht, was mit den  Teile-
+        Nummern 7 und 9 gemeint ist.  Wir ko"nnen das einfach heraus-
+        finden, wenn wir die Query
+
+
+        * retrieve (t.tname) where t.tnum = 7 or
+        * t.tnum = 9
+        * \g
+
+        I N G - d b   . . .
+
+        |tname               |
+        |--------------------|
+        |Zeilendruckerpapier |
+        |Konsolpapier        |
+        |--------------------|
+        2 tuples touched
+
+         ING_db:
+        *
+
+
+        abarbeiten.   Nach  zwei  Queries  wissen  wir  die   Teile-
+        Bezeichnung  der  Teile,  die der Lieferer 122 liefert.  Wir
+        ko"nnen dasselbe in einer Query erreichen, wenn wir fragen:
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 179 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (t.tname) where t.tnum = l.tnum
+        * and l.lnum = 122
+        * \g
+
+        I N G - d b   . . .
+
+
+        |tname               |
+        |--------------------|
+        |Zeilendruckerpapier |
+        |Zeilendruckerpapier |
+        |Konsolpapier        |
+        |--------------------|
+        3 tuples touched
+
+         ING_db:
+        *
+
+
+        Beachten sie, dass "Zeilendruckerpapier"  doppelt  vorkommt.
+        Schauen  sie  sich schliesslich die Query an.  Sie bemerken,
+        dass die Doma"ne "tnum" sowohl in der Relation  "teile",  als
+        auch  in  "lieferung"  vorkommt.   Mit der Aussage "t.tnum =
+        l.tnum" verbinden wir logisch die beiden Relationen.
+
+        Um alle Lieferer, die die Zentraleinheit liefern, zu finden,
+        folgende  Unterstu"tzung.   Wir wissen, wie wir nach "l.lnum"
+        recherchieren.  Wir mo"chten aber nur jene "l.lnum"'s wissen,
+        wo  die  korrespondierende  "l.tnum" gleich der Teile-Nummer
+        der Zentraleinheit ist.
+
+        Wenn wir den "t.tname" finden, der  gleich  "Zentraleinheit"
+        ist,  dann  haben  wir  die  korrekte Teile-Nummer "t.tnum".
+        Schliesslich mo"chten wir "l.tnum = t.tnum", die  Query  lau-
+        tet:
+
+
+        * retrieve (l.lnum) where
+        * l.tnum = t.tnum and t.tname = "Zentraleinheit"
+        * \g
+
+        I N G - d b   . . .
+
+        |lnum  |
+        |------|
+        |   475|
+        |   475|
+        |   241|
+        |------|
+        3 tuples touched
+
+         ING_db:
+        *
+
+
+        Wir wollen die Relationen "teile" und "lieferung"  verlassen
+        und etwas anderes probieren.  Zuerst ko"nnen wir feststellen,
+        welche anderen Relationen die Datenbank  besitzt,  wenn  wir
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 180 -                       QQQQUUUUEEEELLLL
+
+        eingeben:
+
+
+        * help \g
+        I N G - d b   . . .
+        help \g
+        K1630 / EVK Olbernhau - k 1630 / DBA ing_db
+        DB nicht parallel verwendbar
+        keine QRYMOD-Unterstuetzung
+        Seitengroesse 1024 Byte
+
+         Relation          Besitzer      Typ
+        ----------------------------------------------
+         attribute         ing_db        Systemkatalog
+         relation          ing_db        Systemkatalog
+         indexes           ing_db        Systemkatalog
+         integrities       ing_db        Systemkatalog
+         lager             ing_db        Systemkatalog
+         personal          ing_db        Nutzerkatalog
+         lieferant         ing_db        Systemkatalog
+         abt               ing_db        Systemkatalog
+         teile             ing_db        Nutzerkatalog
+         artikel           ing_db        Systemkatalog
+         protect           ing_db        Systemkatalog
+         lieferung         ing_db        Nutzerkatalog
+         tree              ing_db        Systemkatalog
+        ----------------------------------------------
+
+        ING-db:
+        *
+
+
+        Schauen wir uns die  Relation  "personal"  an.   Sofern  wir
+        nichts  u"ber  die  Relation  wissen,  ko"nnen wir das "help"-
+        Kommando nutzen, um etwas daru"ber zu  erfahren.   Geben  sie
+        ein:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 181 -                       QQQQUUUUEEEELLLL
+
+
+
+        * help personal
+        * \g
+
+        I N G - d b   . . .
+
+        relation:               personal
+        ---------
+        Besitzer:               ing_db
+        Tupellaenge:            30
+        Verfallsdatum:          Tue Apr 26 11:01:30 1988
+        Tupelanzahl:            25
+        Speicherstruktur:       HEAP
+        Relationentyp:          Nutzerrelation
+
+         Domaenenname    Typ   Laenge  Schluessel.
+         ----------------------------------------
+         num               i       2
+         name              c      20
+         gehalt            i       2
+         leiter            i       2
+         gebdat            i       2
+         einstdat          i       2
+         ----------------------------------------
+
+        ING_db:
+        *
+
+
+        Das "help"-Kommando listet U"bersichtsinformationen zur Rela-
+        tion "personal" aus, weiterhin zu jedem Attribut, seinem Typ
+        und seiner La"nge.
+
+        ING_DB   6.3  unterstu"tzt  drei  Datentypen:  Integerzahlen,
+        Gleitkommazahlen  und  Zeichenketten.  Zeichenketten-Doma"nen
+        ko"nnen von 1 bis 255  Zeichen  lang  sein.   Integer-Doma"nen
+        ko"nnen  1,  2,  oder  4 Bytes lang sein.  Das bedeutet, dass
+        Integerzahlen  einen  Wertebereich  von   127,   32767   und
+        2147483647 maximal annehmen ko"nnen.  Gleitkommazahlen ko"nnen
+        entweder 4 oder 8 Bytes lang  sein.   Beide  erhalten  einen
+        Maximalwert  von  u"ber 10**38; mit 7 oder 17 Ziffern genauer
+        Abbildung.
+
+        Um alle Doma"nen anzusehen, ko"nnen wir  das  "print"-Kommando
+        oder das "retrieve"-Kommando nutzen und geben jede Doma"ne in
+        der "target_list" an.  ING_DB  6.3 verschafft uns einen Weg,
+        mit wenig Arbeitsaufwand, das zu realisieren.  Versuchen sie
+        folgendes:
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 182 -                       QQQQUUUUEEEELLLL
+
+
+
+        * range of p is personal
+        * retrieve (p.all)
+        * \g
+
+        I N G - d b   . . .
+
+        |num   |name                |gehalt|leiter|gebdat|einstd|
+        |-------------------------------------------------------|
+        |   157|Schmidt, Petra      |  1200|   199|  1940|  1960|
+        |  1110|Kayser, Helmut      |   600|    33|  1952|  1973|
+        |    35|Loda, Dieter        |   500|    32|  1952|  1974|
+        |   129|Thoms, Rolf         |  1000|   199|  1941|  1962|
+        |    13|Wunsch, Peter-Paul  |   900|   199|  1928|  1958|
+        |   215|Mueller, Ernst      |   700|    10|  1950|  1971|
+        |    55|Malter, Juergen     |  1200|   199|  1920|  1969|
+        |    26|Schneider, Peter    |  1300|   199|  1930|  1970|
+        |    98|Weise, Juergen      |   900|   199|  1935|  1969|
+        |    32|Heine, Rolf         |   905|   199|  1929|  1967|
+        |    33|Ernst, Eva          |  1010|   199|  1931|  1963|
+        |   199|Gruene, Peter       |  1700|     0|  1920|  1952|
+        |  4901|Baum, Klaus         |   837|    32|  1956|  1975|
+        |   843|Schmidt, Hermann    |  1120|    26|  1936|  1956|
+        |  2398|Warnke, Peter       |   788|    26|  1940|  1959|
+        |  1639|Maerz, Udo          |  1116|    55|  1947|  1970|
+        |  5119|Mueller, Petra      |  1362|    55|  1939|  1963|
+        |    37|Neumann, Inge       |  1198|    26|  1950|  1974|
+        |  5219|Weber, Franz        |  1337|    33|  1944|  1959|
+        |  1523|Zeidler, Fritz      |  1686|   129|  1928|  1949|
+        |   430|Moser, Otto         |  1567|   129|  1938|  1959|
+        |   994|Schulze, Ernst      |  1564|   129|  1944|  1970|
+        |  1330|Fleischer, Karl     |   877|    13|  1952|  1971|
+        |    10|Rose, Peter         |  1590|   199|  1927|  1953|
+        |    11|Rose, Petra         |  1206|     0|  1931|  1951|
+        |-------------------------------------------------------|
+        25 tuples touched
+
+        ING_db:
+        *
+
+
+        "all" ist ein Schlu"sselwort, das bei ING_DB  6.3  angewendet
+        wird, um alle Doma"nen zu erhalten.  Fu"r die Doma"nen ist eine
+        besondere Reihenfolge  nicht  sichergestellt.   Die  vorher-
+        gehende Query ist a"quivalent zu:
+
+
+                range of p is personal
+                retrieve (p.num, p.name, p.gehalt, p.leiter
+                        p.gebdat, p.einstdat)
+
+
+        Wir wollen nach dem Gehalt von Peter  Wunsch  recherchieren.
+        An  diesem  Punkt  ist  es  gu"nstig,  u"ber Gross- und Klein-
+        buchstaben zu verfu"gen.  Wenn sie an einem  Grossbuchstaben-
+        Terminal  arbeiten,  geben sie einen einfachen "\" vor jenen
+        Buchstaben, die sie  in  Grossbuchstaben  umwandeln  wollen.
+        Damit  mu"sste  an  einem  Grossbuchstaben-Terminal "\WUNSCH,
+        \PETER"  eingegeben  werden.   Wenn  sie  an  einem   Gross-
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 183 -                       QQQQUUUUEEEELLLL
+
+        /Kleinbuchstaben-Terminal   arbeiten,   benutzen   sie   die
+        Umschalttaste  (u.U.  auch  SHIFT)  um  Grossbuchstaben   zu
+        schreiben.
+
+        Starten sie die Query:
+
+
+        * retrieve (p.name,p.gehalt)
+        * where p.name = "Wunsch, Peter"
+        * \g
+
+        I N G - d b   . . .
+
+
+        |name                |gehalt|
+        |---------------------------|
+        |---------------------------|
+
+        ING_db:
+        *
+
+
+        Das Ergebnis ist leer.  Es gibt  keinen  "p.name",  der  die
+        Qualifikation erfu"llt.  Das befremdet, weil wir wissen, dass
+        es einen Peter Wunsch gibt.  Jedoch weiss ING_DB  6.3 nicht,
+        dass "Peter-Paul" und "Peter" semantisch das Gleiche ist.
+
+        Um in dieser Situation die  korrekte  Antwort  zu  erhalten,
+        mu"ssen  sie  die speziellen "pattern matching"-Zeichen (Ver-
+        gleichsmuster), die ING_DB  6.3 bereitha"lt, verwenden.   Ein
+        solches  Zeichen  ist  "*".  Es ist irgendeiner Zeichenkette
+        von 0 bis mehreren Zeichen ebenbu"rtig.  Versuchen sie es:
+
+
+        * retrieve (p.name,p.gehalt)
+        * where p.name = "Wunsch, P*"
+        * \g
+
+        I N G - d b   . . .
+
+
+        |name                |gehalt|
+        |---------------------------|
+        |Wunsch, Peter-Paul  |   900|
+        |---------------------------|
+        1 tuples touched
+
+        ING_db:
+        *
+
+
+
+        Probieren wir damit etwas anderes.
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 184 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (p.name, p.gehalt) where p.name = "Rose, P*"
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |gehalt|
+        |---------------------------|
+        |Rose, Peter         |  1590|
+        |Rose, Petra         |  1206|
+        |---------------------------|
+        2 tuples touched
+
+        ING-db:
+        *
+
+        Im ersten Fall ersetzt "*" die Zeichenkette  "eter"  und  im
+        zweiten Fall "etra".
+
+        Hier ein anderes Beispiel.  Finden sie die Geha"lter der Per-
+        sonen, deren Vorname "Peter" ist:
+
+
+        * retrieve (p.name,p.gehalt)
+        * where p.name = "*, Peter*"
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |gehalt|
+        |---------------------------|
+        |Wunsch, Peter-Paul  |   900|
+        |Schneider, Peter    |  1300|
+        |Gruene, Peter       |  1700|
+        |Warnke, Peter       |   788|
+        |Rose, Peter         |  1590|
+        |---------------------------|
+        5 tuples touched
+
+         ING_db:
+        *
+
+
+        Beachten sie, wenn wir nach  p.name  =  "*,  Peter"  gefragt
+        ha"tten,  wa"re  das 1. Tupel nicht ausgewa"hlt worden.  Ebenso
+        ignoriert ING_DB  6.3 "blanks" in irgendeinem Zeichenketten-
+        vergleich,  egal  ob  sie  "pattern  matching" anwenden oder
+        nicht.  Das bedeutet, dass die folgenden Varianten alle  das
+        gleiche Ergebnis bringen:
+
+
+                p.name = "Rose,Peter"
+                p.name = "Rose,   Peter   "
+                p.name = "R o s e,Peter"
+
+
+        Einzelne Zeichen oder Bereiche von Zeichen ko"nnen in  eckige
+        Klammern  ([])  eingeschlossen  werden.  Zum Beispiel, finde
+        alle Personen, deren Namen mit "B" bis "F" beginnen:
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 185 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (p.name,p.gehalt)
+        * where p.name = "[B-F]*"
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |gehalt|
+        |---------------------------|
+        |Ernst, Eva          |  1010|
+        |Baum, Klaus         |   837|
+        |Fleischer, Karl     |   877|
+        |---------------------------|
+        3 tuples touched
+
+        ING_db:
+        *
+
+
+        Beachten sie, dass die letzte Query auch auf  einem  anderen
+        Weg realisiert werden ko"nnte:
+
+
+        * retrieve (p.name,p.gehalt)
+        * where p.name >"A*" and p.name <"G*"
+        * \g
+
+        I N G - d b . . .
+
+        |name                |gehalt|
+        |---------------------------|
+        |Ernst, Eva          |  1010|
+        |Baum, Klaus         |   837|
+        |Fleischer, Karl     |   877|
+        |---------------------------|
+        3 tuples touched
+
+         ING_db:
+        *
+
+
+        Die beiden Ergebnisse sind identisch; jedoch ist der  zweite
+        Weg in der Ausfu"hrung fu"r ING_DB  6.3 effizienter.
+
+        Es gibt drei Typen  von  "pattern  matching"-Konstruktionen.
+        Alle   drei   Typen   ko"nnen   in   einer   Kombination  fu"r
+        Zeichenketten-Vergleiche genutzt werden.  Das sind:
+
+
+        *    A"quivalent zu einer beliebig langen Zeichenkette;
+
+        ?    A"quivalent zu einem Zeichen (nicht "blank")
+
+        []   Kann irgendein  Zeichen  u"berdecken,  das  in  Klammern
+             eingeschlossen  ist.   Wenn  zwei  Zeichen durch Binde-
+             strich (-) getrennt werden, dann  wird  jedes  Zeichen,
+             das  zwischen beiden in der alphabetischen Folge stehen
+             wu"rde u"berdeckt.
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 186 -                       QQQQUUUUEEEELLLL
+
+        Die spezielle Bedeutung der "pattern matching"-Zeichen  kann
+        durch  die  Kaschierung  mit  "\"  aufgehoben werden.  Damit
+        referenziert "\*" nur das Zeichen "*".
+
+        Wir wenden uns nun den Aggregat-Operatoren, die ING_DB   6.3
+        unterstu"tzt, zu.  Sie befa"higen den Nutzer, Berechnungen auf
+        Doma"nen einer Relation vorzunehmen.  Zum Beispiel ist  einer
+        dieser  Aggregat-Operatoren  Durchschnitt  (avg) ="average".
+        Um das durchschnittliche Gehalt  fu"r  alle  Angestellten  zu
+        berechnen, geben wir ein:
+
+
+        * retrieve (dgehalt=avg(p.gehalt))
+        * \g
+
+        I N G - d b   . . .
+
+
+        |dgehalt   |
+        |----------|
+        |  1126.520|
+        |----------|
+        1 tuples touched
+
+        ING_db:
+        *
+
+
+        Der Name "dgehalt" ist willku"rlich, aber  notwendig;  ING_DB
+         6.3  beno"tigt  eeeeiiiinnnneeeennnn  Namen fu"r irgendeinen Ausdruck in der
+        "target_list" (anders als fu"r eine einfache Doma"ne).
+
+        Wir ko"nnen auch das niedrigste (Minimum)  und  ho"chste  (Ma-
+        ximum) Gehalt finden:
+
+
+        * retrieve (mingeh=min(p.gehalt),maxgeh=max(p.gehalt))
+        * \g
+
+        I N G - d b   . . .
+
+
+        |mingeh|maxgeh|
+        |-------------|
+        |   500|  1700|
+        |-------------|
+        1 tuples touched
+
+        ING_db:
+        *
+
+
+        Wenn wir die Namen der Angestellten wissen wollen,  die  das
+        niedrigste  und  ho"chste  Gehalt  beziehen,  dann mu"sste die
+        Query lauten:
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 187 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (p.name, p.gehalt)
+        * where p.gehalt = min(p.gehalt) or p.gehalt = max(p.gehalt)
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |gehalt|
+        |---------------------------|
+        |Loda, Dieter        |   500|
+        |Gruene, Peter       |  1700|
+        |---------------------------|
+        2 tuples touched
+
+        ING_db:
+        *
+
+
+        ING_DB  6.3 unterstu"tzt folgende Aggregat-Operatoren:
+
+
+                count  Za"hle Tupel
+                min    Minimum der Doma"ne
+                max    Maximum der Doma"ne
+                avg    Berechne Durchschnitt
+                sum    Summiere Tupel entsprechend Doma"ne
+                any    logischer Wert entsprechend Qualifikation
+
+
+        Wir wollen jetzt eine Query vorstellen, die je  Angestelltem
+        das Durchschnittsgehalt u"ber alle Angestellten auslistet:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 188 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (p.name,pergeh=avg(p.gehalt))
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |pergeh    |
+        |-------------------------------|
+        |Schmidt, Petra      |  1126.520|
+        |Kayser, Helmut      |  1126.520|
+        |Loda, Dieter        |  1126.520|
+        |Thoms, Rolf         |  1126.520|
+        |Wunsch, Peter-Paul  |  1126.520|
+        |Mueller, Ernst      |  1126.520|
+        |Malter, Juergen     |  1126.520|
+        |Schneider, Peter    |  1126.520|
+        |Weise, Juergen      |  1126.520|
+        |Heine, Rolf         |  1126.520|
+        |Ernst, Eva          |  1126.520|
+        |Gruene, Peter       |  1126.520|
+        |Baum, Klaus         |  1126.520|
+        |Schmidt, Hermann    |  1126.520|
+        |Warnke, Peter       |  1126.520|
+        |Maerz, Udo          |  1126.520|
+        |Mueller, Petra      |  1126.520|
+        |Neumann, Inge       |  1126.520|
+        |Weber, Franz        |  1126.520|
+        |Zeidler, Fritz      |  1126.520|
+        |Moser, Otto         |  1126.520|
+        |Schulze, Ernst      |  1126.520|
+        |Fleischer, Karl     |  1126.520|
+        |Rose, Peter         |  1126.520|
+        |Rose, Petra         |  1126.520|
+        |-------------------------------|
+        25 tuples touched
+        ING_db:
+        *
+
+
+        Ein Aggregat-Operator erzeugt immer  einen  einfachen  Wert.
+        Um  die  letzte  Query  auszufu"hren,  bildet ING_DB  6.3 das
+        Durchschnittsgehalt zuna"chst zu jedem Namen ("p.name") ab.
+
+        Aggregat-Operatoren ko"nnen ihre eigene Qualifikation  haben.
+        Zum  Beispiel  ko"nnen  wir eine Liste u"ber alle Angestellten
+        herstellen und das Durchschnittsgehalt fu"r alle Angestellten
+        u"ber 50 (Jahre) berechnen und eintragen:
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 189 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (p.name,pergeh=
+        * avg(p.gehalt where 1985-p.gebdat > 50))
+        * \g
+
+        I N G - d b    . . .
+
+        |name                |pergeh    |
+        |-------------------------------|
+        |Schmidt, Petra      |  1277.444|
+        |Kayser, Helmut      |  1277.444|
+        |Loda, Dieter        |  1277.444|
+        |Thoms, Rolf         |  1277.444|
+        |Wunsch, Peter-Paul  |  1277.444|
+        |Mueller, Ernst      |  1277.444|
+        |Malter, Juergen     |  1277.444|
+        |Schneider, Peter    |  1277.444|
+        |Weise, Juergen      |  1277.444|
+        |Heine, Rolf         |  1277.444|
+        |Ernst, Eva          |  1277.444|
+        |Gruene, Peter       |  1277.444|
+        |Baum, Klaus         |  1277.444|
+        |Schmidt, Hermann    |  1277.444|
+        |Warnke, Peter       |  1277.444|
+        |Maerz, Udo          |  1277.444|
+        |Mueller, Petra      |  1277.444|
+        |Neumann, Inge       |  1277.444|
+        |Weber, Franz        |  1277.444|
+        |Zeidler, Fritz      |  1277.444|
+        |Moser, Otto         |  1277.444|
+        |Schulze, Ernst      |  1277.444|
+        |Fleischer, Karl     |  1277.444|
+        |Rose, Peter         |  1277.444|
+        |Rose, Petra         |  1277.444|
+        |-------------------------------|
+        25 tuples touched
+
+        ING_db:
+        *
+
+
+        Im Gegensatz zur vorhergehenden  Query  folgendes  Beispiel.
+        Wir  wollen  die  Namen derjenigen Angestellten u"ber fu"nfzig
+        suchen und das Durchschnittsgehalt fu"r alle berechnen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 190 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (p.name,pergeh=avg(p.gehalt))
+        * where 1985-p.gebdat > 50
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |pergeh    |
+        |-------------------------------|
+        |Wunsch, Peter-Paul  |  1126.520|
+        |Malter, Juergen     |  1126.520|
+        |Schneider, Peter    |  1126.520|
+        |Heine, Rolf         |  1126.520|
+        |Ernst, Eva          |  1126.520|
+        |Gruene, Peter       |  1126.520|
+        |Zeidler, Fritz      |  1126.520|
+        |Rose, Peter         |  1126.520|
+        |Rose, Petra         |  1126.520|
+        |-------------------------------|
+        9 tuples touched
+
+        ING_db:
+        *
+
+
+        Es gibt einen bedeutenden Unterschied  zwischen  den  beiden
+        letzten  Queries.   Der Aggregat-Operator ist vollsta"ndig in
+        sich abgeschlossen.  Er wird nicht durch  die  Qualifikation
+        der Query als Ganzes beeinflusst.
+
+        Im  ersten  Fall  wurde  der  Durchschnitt   nur   fu"r   die
+        Angestellten   u"ber   fu"nfzig   berechnet   und   u"ber  alle
+        Angestellten durchsucht.  Im zweiten Fall jedoch, wurde  der
+        Durchschnitt  fu"r  alle Angestellten berechnet, aber nur fu"r
+        die Angestellten u"ber fu"nfzig eingetragen.
+
+        Wenn wir eine Liste aller Angestellten u"ber 50 zusammen  mit
+        dem  durchschnittlichen Gehalt wu"nschen, kombinieren wir die
+        vorhergehenden zwei Queries zu einer.   Diese  Query  ko"nnte
+        sein:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 191 -                       QQQQUUUUEEEELLLL
+
+
+        * retrieve (p.name, pergeh=
+        * avg(p.gehalt where 1985 - p.gebdat > 50))
+        * where 1985 - p.gebdat > 50
+        * \g
+
+        I N G - d b . . .
+
+        |name                |pergeh    |
+        |-------------------------------|
+        |Wunsch, Peter-Paul  |  1277.444|
+        |Malter, Juergen     |  1277.444|
+        |Schneider, Peter    |  1277.444|
+        |Heine, Rolf         |  1277.444|
+        |Ernst, Eva          |  1277.444|
+        |Gruene, Peter       |  1277.444|
+        |Zeidler, Fritz      |  1277.444|
+        |Rose, Peter         |  1277.444|
+        |Rose, Petra         |  1277.444|
+        |-------------------------------|
+        9 tuples touched
+
+        ING_db:
+        *
+
+
+        Es ist manchmal gebra"uchlich, dass doppelte  Werte  gelo"scht
+        werden,  bevor  ein Aggregat-Operator ausgefu"hrt wird.  Wenn
+        sie   beispielsweise   wissen   mo"chten,   wieviele   Leiter
+        ("leiter")  es  gibt,  wird  die folgende Query die richtige
+        Antwort geben:
+
+
+        * retrieve (chefs = count(p.leiter))
+        * \g
+
+        I N G - d b . . .
+
+
+        |chefs        |
+        |-------------|
+        |           25|
+        |-------------|
+        1 tuples touched
+
+        ING_db:
+        *
+
+
+        Beachten sie, dass "count" mitteilt, wieviele  Tupel  es  in
+        "personal"  gibt.   Was  wir  wissen  wollten, war, wieviele
+        Leiter ("p.leiter") es gibt.
+
+        ING_DB  6.3  stellt  drei  spezielle  Formen  von  Aggregat-
+        Operatoren zur Verfu"gung.
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+

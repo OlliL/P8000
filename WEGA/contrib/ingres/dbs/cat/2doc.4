@@ -1,0 +1,1980 @@
+
+        Anwendung                 - 252 -                    MMMMoooonnnniiiittttoooorrrr
+
+        gige SHELL aufgerufen.
+
+                               //sh//csh//vsh
+
+        geladen.
+        Gelingt das nicht, erfolgt ein Systemabbruch mit der Meldung
+
+                               "shell: exec"
+
+
+        Falls in diesem  Falle  das  \shell-Kommando  keinen  <parm>
+        hatte, wird die geladene SHELL als interaktive SHELL gestar-
+        tet; durch Abgabe eines quit-SHELL-Signals kommt man in  den
+        Monitor  zuru"ck.   Falls  das  \shell-Kommando <parm> hatte,
+        wird u"ber eine SHELL das, durch  MACRO(<parm>)  bezeichnete,
+        SHELL-Kommando  aufgerufen.   Man  beachte,  dass <parm> aus
+        mehreren durch  <blank>  getrennten  Wo"rtern  bestehen  darf
+        (<parm>  reicht  bis  zum nicht kaschierbaren Zeilenende des
+        Monitor-Kommandos !).   Dadurch  ko"nnen  dem  SHELL-Kommando
+        Parameter  u"bermittelt  werden.   Die  Ru"ckkehr  zum Monitor
+        erfolgt automatisch mit Beendigung des  aufgerufenen  SHELL-
+        Kommandos.
+
+        In Auswertung  eines  Ru"ckkehrcodes  des  aufgerufenen  Pro-
+        gramms,  der  interaktiven  SHELL  oder  des SHELL-Kommandos
+        erfolgt durch den ING_DB -Monitor die Ausfu"hrung des  {exec-
+        trap}, wenn der Ru"ckkehrcode != 0 war.  Das erfolgt in einer
+        Form, als ga"be man selbst das Monitor-Kommando
+
+                              {exectrap}\eval
+
+        Nach Ru"ckkehr aus  der  SHELL  ist  der  Monitor  wieder  im
+        vorangehend verlassenen Eingabe-Status.
+
+        _2._4._7._1_5.  TTTTiiiimmmmeeee uuuunnnndddd DDDDaaaatttteeee
+
+
+        \d
+        \time
+        \date
+
+             Die aktuelle Zeit wird auf dem Terminal ausgegeben.  Im
+             Monitor-Puffer wird ein Zeilenwechsel eingetragen.
+
+        _2._4._7._1_6.  EEEEvvvvaaaallll
+
+
+        \v
+        \eval
+
+             Dem Makro-Prozessor wird der Monitor-Puffer als  Einga-
+             betext  angeboten,  wodurch  insbesondere  die  define-
+             Makros  in  die  Makro-Tabelle  u"bernommen  (s.  Makro-
+             Prozessor),  aber  ggf.  auch  andere  Funktions-Makros
+             abgearbeitet werden.
+
+             Im Unterschied zum \list-Kommando erfolgt keine  Einbe-
+             ziehung  von  {begintrap} und {endtrap} und keine Anli-
+             stung des Makro-Ausgabetextes.  Es  erfolgen  aber  die
+             auf standard_output wirkenden Ausgaben der {dump;...}-,
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+        Anwendung                 - 253 -                    MMMMoooonnnniiiittttoooorrrr
+
+             {type;...}-  und  {read....}-Makros.   Weiterhin   wird
+             anschliessend der Monitor-Puffer zum Lo"schen vorgemerkt
+             (falls nicht "-a" gesetzt war, autoclear_mode).
+
+             Damit ist das \eval-Kommando das  fu"r  die  Abarbeitung
+             von   Funktions-Makros  zu  bevorzugende  Kommando  (s.
+             Makro-Prozessor)
+
+             Der Monitor meldet sich  nach  Kommando-Ausfu"hrung  mit
+             einer Prompt-Meldung "ING_db>" oder "ING_db:".
+
+        _2._4._7._1_7.  WWWWrrrriiiitttteeee
+
+
+        \w <parm>
+        \write <parm>
+
+             Der Monitor-Puffer wird auf das File
+
+                           <user_cd> / <MACRO(<parm>)>
+
+             (s. \chdir-Kommando) ausgeschrieben (das File wird  mit
+             Modus 0644 crei"ert).
+
+             Es  ko"nnen  folgende  Fehlermeldungen  den   Misserfolg
+             anzeigen:
+
+                    "unakzeptabler file name <MACRO(<parm>)>"
+                    "create WRITE-file <MACRO(<parm>)>"
+
+
+             Nach Ausfu"hrung des Kommandos meldet sich  der  Monitor
+             wieder   mit   einer   Prompt-Meldung   "ING_db>"  oder
+             "ING_db:".
+
+
+        Der Monitor als Programm-Prozess  bringt  einige  Fehlermel-
+        dungen,  die  sich  auf  die  Ausgabe  von  Fehlertexten aus
+        anderen ING_DB -Prozessen beziehen, wenn  die  dazu  no"tigen
+        Fehlertext-Files  nicht lesbar, oder syntaktisch regelwidrig
+        sind.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 254 -                        AAAAMMMMXXXX
+
+        _2._5.  AAAAMMMMXXXX ********
+
+
+
+
+
+
+
+
+
+
+
+
+        _2._5._1.  EEEEiiiinnnnlllleeeeiiiittttuuuunnnngggg
+
+        AMX  (Access  Method  -  an  eXtended  interface)  ist   ein
+        Werkzeug, das direkt auf die ING_DB  Zugriffsmethoden abbil-
+        det. Es ist leicht erlernbar, einfach anzuwenden und erzeugt
+        laufzeiteffektive  Programme.  Gegenu"ber dem Datenbanksystem
+        ING_DB  bzw. der EQUEL Komponente sind AMX-Programme  bedeu-
+        tend  schneller. Mit AMX ko"nnen sowohl rekursive Zugriffe zu
+        Daten programmiert, als auch Recherchen mit A"nderungen  frei
+        gemischt   und   Abfragen   implementiert  werden,  die  die
+        Ma"chtigkeit  der  relationalen  Abfragesprachen  u"bersteigen
+        (Baum-, Stu"cklistenverarbeitung usw.).
+
+        AMX baut auf dem ING_DB  System  auf.  Es  ist  mo"glich  mit
+        ING_DB   erstellte  Daten  mit  AMX  weiterzuverarbeiten und
+        umgekehrt. Dieser komplexe Ansatz  gestattet  zwischen  AMX,
+        EQUEL und dem Datenbanksystem ING_DB  frei zu wechseln.
+
+        _2._5._2.  EEEEnnnnttttwwwwuuuurrrrffff
+
+        AMX  ist  eine  Datenbanksprache,   die   in   eine   ho"here
+        Programmiersprache eingebettet ist. Als Einbettungsstrategie
+        bietet sich einer der vier klassischen Ansa"tze an:
+
+        (1)  prozedurale Einbettung in die ho"here Programmiersprache
+             u"ber eine call-Schnittstelle:
+
+                   call database("database_action as string");
+
+             Die Datenbankaktion wird  zur  Laufzeit  interpretiert,
+             eine  Modifikation des U"bersetzers der ho"heren Program-
+             miersprache entfa"llt.  Ein besonderes Problem  ist  die
+             Verwendung  gemeinsamer  Variablen  und die Pru"fung der
+             Zula"ssigkeit  der  Datenbankaktionen.   z.B:  SYSTEM-R,
+             ADABAS, IMS
+
+        (2)  einfache Erweiterungen der  ho"heren  Programmiersprache
+             um Elemente der Datenbanksprache
+
+             Eine Modifikation  des  U"bersetzers  der  ho"heren  Pro-
+             grammiersprache  ist  notwendig,  auch wenn der Aufwand
+             durch Angleichung der Syntax  der  Datenbanksprache  an
+             die  der  ho"heren  Programmiersprache  minimiert werden
+             kann. Die Zula"ssigkeit der Datenbankaktionen  kann  bei
+             diesem Ansatz zur U"bersetzungszeit u"berpru"ft werden.
+             z.B: COBOL-DML des DBTG Netzwerkdatenmodells
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 255 -                        AAAAMMMMXXXX
+
+        (3)  syntaktische Erweiterung der ho"heren Programmiersprache
+             um  Elemente der Datenbanksprache ohne Modifikation des
+             U"bersetzers der ho"heren Programmiersprache
+
+             Die Datenbankaktionen werden in dem  Anwendungsprogramm
+             durch   ein   besonderes   Pra"fixsymbol gekennzeichnet,
+             die  durch  einen  zu   konstruierenden   Voru"bersetzer
+             (Preprozessor)   syntaktisch   und semantisch u"berpru"ft
+             und in Prozeduraufrufe der ho"heren   Programmiersprache
+             u"bersetzt  werden.  Nachteilig erscheint die Verwendung
+             zweier Semantiken durch den Benutzer.
+             z.B: EQUEL/INGRES
+
+        (4)  Datenbankprogrammiersprache: Erweiterung einer  ho"heren
+             Programmiersprache  um  das  Datenmodell  einer  Daten-
+             banksprache
+
+             Dieser Ansatz erfordert eine  grundsa"tzliche  Modifika-
+             tion  bzw.  Neukonstruktion des U"bersetzers der ho"heren
+             Programmiersprache.
+             z.B: MODULA-R
+
+        Fu"r AMX wurde der 3.  Ansatz  gewa"hlt.   Er  garantiert  mit
+        einem   geringen  Implementierungsaufwand  die  Realisierung
+        aller Forderungen, die an eine Einbettung zu  stellen  sind.
+        Der  Preprozessor  ist in YACC und C implementiert und damit
+        UNIX  portabel. Die Verwendung von  YACC  als  Werkzeug  zur
+        Compilergenerierung  bringt  einige  Probleme in der Meldung
+        von erkannten Fehlern mit sich. Nach Erkennung eines Fehlers
+        wird  die  U"bersetzung  erst nach drei als richtig erkannten
+        syntaktischen Einheiten (Token,  Morpheme)  fortgesetzt,  so
+        dass  eine  zweite  U"bersetzung Fehler erzeugen kann, die in
+        der ersten nicht erzeugt wurden. Die  zu  jedem  Fehler  mit
+        ausgegebene  Zeilennummer  ist  nicht immer exakt.  Sie kann
+        sich auf eine  der  vorherigen  Zeilen  beziehen,  wenn  der
+        Fehler  am  Zeilenende  erkannt wurde. YACC liest immer eine
+        syntaktische Einheit voraus, wird ein  Fehler  festgestellt,
+        ist  in  dem oben genannten Fall der Zeilenza"hler aber schon
+        um eins (oder mehr, bei Zeilen ohne syntaktische  Einheiten)
+        hochgeza"hlt.   Bei  syntaktischen  Fehlern,  die YACC selbst
+        generiert,  ist  eine  Angabe  der  Fehlerursache   a"usserst
+        schwierig.  Aufgrund  der einfachen Syntax von AMX wurde auf
+        eine  detaillierte  Fehlererkennung   verzichtet   und   der
+        Anwender muss den erzeugten Fehler
+
+                               "syntax error"
+
+        selbst deuten.
+
+        Ein Datenbanksystem  la"sst  sich  in  zwei  grosse  Komplexe
+        gliedern,  den  logischen  Datenbankprozessor ((((LLLLDDDDBBBBPPPP)))) und den
+        physischen  Datenbankprozessor   ((((PPPPDDDDBBBBPPPP))))....    Der   LDBP   ist
+        zusta"ndig fu"r das U"bersetzen bzw.  Parsen ((((PPPP)))) der Datenbank-
+        aktion und deren Optimierung  ((((OOOO))))....   Der  PDBP  erha"lt  eine
+        Folge von Auftra"gen (query evaluation plan - QQQQEEEEPPPP ) zur Abar-
+        beitung der Datenbankaktion unter Einbeziehung der Daten der
+        Datenbank.   Unter  dem Gesichtspunkt dieser Klassifizierung
+        la"sst sich die Einbettungsstrategie wie folgt verfeinern:
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 256 -                        AAAAMMMMXXXX
+
+
+                   +---------+----------+
+                   | L D P B |          |
+                   +------+------+ PDBP |
+                   |  P   |  O   |      |
+                   +------+------+------+
+                   |      |      |      |
+                 a |####################|
+                   |      |      |      |
+                 b |======|#############|
+                   |      |      |      |
+                 c |=============|######|
+                   |      |      |      |
+                 d |====================|
+                   |      |      |      |
+                   +------+------+------+
+                   LEGENDE
+                        #: zur Laufzeit
+                        =: zur U"bersetzungszeit
+
+
+        a-   Die U"bersetzung, Optimierung und  interpretative  Abar-
+             beitung  der  Datenbankaktionen  zur  Laufzeit  ist die
+             natu"rliche  Form  der  zum  Datenbanksystem   geho"rigen
+             Abfragesprache. Sie ist geeignet fu"r ad hoc-Abfragen.
+
+        b-   Die  U"bersetzung  ohne  Optimierung  ist  geeignet  fu"r
+             sta"ndig  wiederkehrende  datenunabha"ngige  Datenbankak-
+             tionen.
+
+        c-   Die  U"bersetzung  mit  Optimierung  ist  geeignet   fu"r
+             sta"ndig   wiederkehrende   datenabha"ngige  Datenbankak-
+             tionen, da der QEP fest determiniert ist.
+
+        d-   Die Umgehung des PDBP erfordert vom U"bersetzer die Kon-
+             struktion nicht nur des QEP sondern auch eines speziel-
+             len PDBP fu"r die konkreten  Datenbankaktionen  in  Form
+             eines  ausfu"hrbaren  Programms.  Diese Variante ist fu"r
+             schnelle  Anwendungen  (Erfassung  und  A"nderung)  bzw.
+             Massendatenverarbeitung geeignet.
+
+        Fu"r AMX wurde die Variante  d)  gewa"hlt.   Eine  wesentliche
+        Erho"hung  der  Abarbeitungsgeschwindigkeit  fu"r Datenbankak-
+        tionen  in  AMX  gegenu"ber  ING_DB   ist  eingetreten,   die
+        gewa"hlte  Variante  hat jedoch auch entscheidende Nachteile.
+        Die erzeugten AMX Programme sind abha"ngig von  der  Struktur
+        der  Datenbank, alle verwendeten datenbankspezifischen Namen
+        (der Datenbank, der Relationen und der Doma"nen)  mu"ssen  zur
+        U"bersetzungszeit bekannt also konstant sein.  Beispielsweise
+        kann mit AMX kein allgemeines Druckprogramm konstruiert bzw.
+        neue  Relationen erzeugt werden. Dass ein AMX Programm keine
+        Relationen erzeugen kann, ist aus Anwendersicht eine  schwer
+        einsehbare  Tatsache. Der AMX Compiler holt sich alle Infor-
+        mationen zu den Relationen und Doma"nen aus den Systemkatalo-
+        gen  der  Datenbank und entlastet somit den Anwender von der
+        Angabe dieser Details und den Fehlern, die an dieser  Stelle
+        gemacht  werden  ko"nnen. Eventuell beno"tigte permanente oder
+        tempora"re Relationen mu"ssen vor der U"bersetzung des AMX Pro-
+        gramms   mit   dem  ING_DB   System  erzeugt  werden  (siehe
+        CREATE(QUEL)). Durch  diesen  Ansatz  ist  eine  weitgehende
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 257 -                        AAAAMMMMXXXX
+
+        Quelltextunabha"ngigkeit von der Struktur der Datenbank gesi-
+        chert, eine A"nderung  der  Speicherstruktur  einer  Relation
+        erfordert  keine  A"nderung des AMX Quellprogramms, wohl aber
+        dessen neue U"bersetzung.
+
+        Fu"r  die  vorliegende  Version   von   AMX   gelten   einige
+        Einschra"nkungen:
+
+        -    Das Pufferschema der  ING_DB   Zugriffsmethoden  ordnet
+             jeder  Relation maximal einen Puffer zu. Fu"r die rekur-
+             sive Verarbeitung einer Relation ist ein solcher Ansatz
+             ungeeignet,   da   jede   neue   Rekursion  den  Puffer
+             u"berschreibt und ein sta"ndiges Nachlesen des alten Puf-
+             ferinhaltes  bei  Verlassen  der Rekursion erforderlich
+             ist.  Die Zuordnung von maximal einem Puffer  zu  einer
+             Relation ist ein Entwurfsprinzip der internen Ebene des
+             Datenbankystems ING_DB , eine A"nderung des  Puffersche-
+             mas ist nicht angebracht.
+
+        -    Beschra"nkung der Variablentypen fu"r den  Austausch  von
+             Daten  zwischen  der  Datenbanksprache  und der ho"heren
+             Programmiersprache.
+
+        -    Die verwendeten Relationen du"rfen keine Sichten (views)
+             sein  und du"rfen keine definierten Integrita"tsbedingun-
+             gen bzw. anderweitig vergebene Zugriffsrechte besitzen.
+
+        -    Konvertierungen zwischen  numerischen  und  Zeichenket-
+             tenwerten (und umgekehrt) werden nicht unterstu"tzt.
+
+        -    Numerische Konvertierungen erfolgen  ohne  Unter-  bzw.
+             U"berlaufkontrolle.
+
+        -    Vergleiche von Zeichenkettenwerten zwischen Doma"nen und
+             Variablen  werden  in  der La"nge der Doma"ne ausgefu"hrt,
+             z.B.  liefert  der  Variablenwert  "Automat"  den  Wert
+             "Auto"  fu"r  die  Datenbankaktion,  wenn die zugeho"rige
+             Doma"ne den ING_DB  Typ "c4" hat.
+
+        AMX garantiert die Integrita"t der Datenbank, d.h.  die  Kon-
+        sistenz   der   Systemkataloge  und  der  Indizes.  Bei  der
+        Zugriffspfadoptimierung werden die vorhandenen Indizes  voll
+        herangezogen.  A"nderungen  sind  nur in Nutzerrelationen ge-
+        stattet, die Systemkataloge und  Indizes  werden  durch  AMX
+        aktualisiert.
+
+        Es ist geplant, einen  SORT-Operator  fu"r  die  Datenbankak-
+        tionen  bereitzustellen,  um  in  Recherchen  doppelte Tupel
+        auszuschliessen und eine Hilfe  fu"r  die  Verbindung  zweier
+        Relationen (join) zu geben.
+
+        _2._5._3.  UUUUmmmmggggeeeebbbbuuuunnnngggg
+
+        AMX ist an  die  UNIX   Programmiersprache  C  gebunden,  es
+        erzeugt  aus  dem Input ein gu"ltiges C-Programm, das mit dem
+        C-Compiler weiter verarbeitet werden muss.  Es  besteht  aus
+        einem  Compiler  (Preprozessor) und einer Laufzeitbibliothek
+        "liba.a". A"hnlich EQUEL werden  AMX  Anweisungen  durch  die
+        Kennzeichnung  von  zwei Nummernzeichen "##" am Zeilenanfang
+        in das C-Programm eingebettet. Der AMX Compiler  verarbeitet
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 258 -                        AAAAMMMMXXXX
+
+        nur   solche   gekennzeichneten   Zeilen,   aufgrund  dieser
+        Arbeitsweise is es notwendig, die in AMX Anweisungen verwen-
+        deteten  C-Variablen  mit dem Kennzeichen zu deklarieren. In
+        der vorliegenden Version werden C-Variable vom Typ:
+
+                 -  short
+                 -  int
+                 -  long
+                 -  float
+                 -  double
+                 -  char *
+                 -  char []
+
+        unterstu"tzt. Jede Variable ist global zu deklarieren.
+
+        Im AMX Programm muss die Eintrittsfunktion  "amx()"  benannt
+        werden,  da  der AMX Compiler ein "main()" generiert, um die
+        notwendigen Datenbankinitialisierungen vornehmen zu ko"nnen.
+
+        AMX generiert Code fu"r die Schnittstelle des internen Daten-
+        bankschemas  von  ING_DB  ,  d.h. von Seiten des C-Programms
+        sind einige Konventionen dieser  Schnittstelle  einzuhalten.
+        Alle  ausfu"hrbaren  Programme  mu"ssen  vom  ING_DB Superuser
+        angeeignet (owner, group) und mit dem Mode "6xxx"
+
+                 -  "4000" set user id on execution
+                 -  "2000" set group id on execution
+
+        versehen sein, um die Datenbankfiles lesen und schreiben  zu
+        ko"nnen.   Eine  weitere  Besonderheit  ist  das  A"ndern  des
+        aktuellen Verzeichnisses (current  directory)  in  das  Ver-
+        zeichnis  der Datenbank zur Startzeit des AMX Programms. Zur
+        Laufzeit ist es nicht gestattet, das aktuelle Verzeichnis zu
+        a"ndern!  Daher sollten alle programmspezifischen Files abso-
+        lut von der root aus  angegeben  werden  (z.B:  "/dir/file",
+        siehe auch COPY(QUEL)).
+
+        Die Verwendung der C-Bibliotheksfunktionen
+
+                 -  setjmp()
+                 -  longjmp()
+
+        zur Realisierung nichtlokaler Spru"nge  (siehe  UNIX   Manual
+        SETJMP(3)) sollte vermieden werden.
+
+        Der   AMX   Compiler   hat   noch   kein    eigenes    Rela-
+        tionssperrkonzept, er sperrt die Datenbank fu"r die parallele
+        Verwendung wa"hrend der gesamten Zeit deren Nutzung durch das
+        AMX Programm, d.h.:
+
+        1-   zur Startzeit darf die  Datenbank  nicht  in  Benutzung
+             sein und
+
+        2-   zur Laufzeit kann niemand die Datenbank verwenden.
+
+        Das  exklusive  Sperren  der  Datenbank  erfolgt  u"ber   das
+        concurrency-control-Schema von ING_DB .
+
+        Durch die Laufzeitbibliothek werden eine Reihe von  Objekten
+        definiert,   die   alle   mit   "AA"   beginnen.  Durch  den
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 259 -                        AAAAMMMMXXXX
+
+        Anwendungsprogrammierer ist  zu  gewa"hrleisten,  dass  diese
+        Objekte nicht u"berdefiniert werden. Er sollte Namen, die mit
+        "AA" beginnen, generell vermeiden.  Da die interne Ebene des
+        Datenbanksystems  ING_DB   in das AMX Programm gelinkt wird,
+        sind weitere Objekte mit einer festen  Bedeutung  definiert,
+        die  im  AMX  Programm  nicht  verwendet werden du"rfen. Eine
+        vollsta"ndige Liste der Namen befindet  sich  im  Anhang  des
+        Kapitel.  Fu"r  eine  na"chste  AMX  Version ist zumindest die
+        U"berpru"fung der Verwendung von bereits vergebenen Namen vor-
+        gesehen.
+
+        _2._5._4.  CCCCoooommmmppppiiiillllaaaattttiiiioooonnnn
+
+        AMX  Programmnamen  mu"ssen  mit  ".x"  beendet   sein.   Die
+        U"bersetzung erfolgt durch den Aufruf:
+
+                                % amx file.x
+
+        Als Flags sind die des C-Compilers mo"glich. Der AMX Compiler
+        hinterla"sst  sein  Ergebnis  im "file.o", das in einfachster
+        Form mit:
+
+                         % cc -n file.o -la -o file
+                                     oder
+                         % cc -i file.o -la -o file
+
+        weiter verarbeitet wird. Durch die Angabe von "-la" wird die
+        AMX  Laufzeitbibliothek  "liba.a" herangezogen. Das AMX Pro-
+        gramm kann nun durch den Aufruf von:
+
+                                   % file
+
+        abgearbeitet werden.
+
+        Eine gleichzeitige U"bersetzung mehrerer AMX Programme  durch
+        einen  Aufruf  des  AMX  Compilers  ist aus internen Gru"nden
+        nicht zula"ssig.
+
+        Eine  separate  Compilierung  von  AMX  Moduln   ist   nicht
+        mo"glich,  sa"mtliche  Datenbankaktionen  mu"ssen in einem Pro-
+        gramm zusammengefasst sein.  Natu"rlich ko"nnen zu dem  compi-
+        lierten   AMX  Programm beliebige UNIX -Objektmodule einzeln
+        bzw. in Bibliotheken zugelinkt werden.
+
+        _2._5._5.  BBBBeeeeggggrrrriiiiffffffffeeee
+
+        AMX ist in das relationale Modell  von  ING_DB   integriert.
+        Durch  ein  AMX Programm ko"nnen Daten einer ING_DB Datenbank
+        manipuliert werden. Eine Datenbank ist eine Menge von  Rela-
+        tionen.  Die Anzahl der Relationen innerhalb einer Datenbank
+        ist unbegrenzt. Eine Relation ist eine Menge von Doma"nen und
+        Tupel, sie hat einen Eigentu"mer (Besitzer).
+
+        Die Anzahl der Doma"nen pro Relation  ist  auf  49  begrenzt.
+        Die    maximale   Tupella"nge  ist  generierungsabha"ngig  und
+        schwankt zwischen 498 und 1010 Bytes. Eine  Ausrichtung  der
+        Doma"nen auf bestimmte Adressen ist nicht zu beachten.
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 260 -                        AAAAMMMMXXXX
+
+
+                +-------------------------+
+                |     Begriffsanalogien   |
+                +--------+-------+--------+
+                Relation | Tupel | Doma"ne
+                 Tabelle | Zeile | Spalte
+                   Datei | Satz  | Feld
+                ---------+-------+---------
+
+        Eine Doma"ne besitzt einen Typ und eine La"nge.  Folgende Kom-
+        binationen sind zula"ssig:
+
+                ---------+----------
+                     Typ | La"nge
+                ---------+----------
+                 integer | 1
+                         | 2
+                         | 4
+                   float | 4
+                         | 8
+                    char | 1 .. 255
+                ---------+----------
+
+        Innerhalb einer Datenbank muss ein Nutzer fu"r   seine  Rela-
+        tionen  unterschiedliche Namen verwenden. Die Namen der Sys-
+        temkataloge
+
+         "relation"    Verwaltung der Relationen
+         "attribute"   Verwaltung der Doma"nen
+         "indexes"     Verwaltung der Indizes
+         "integrities" Verwaltung der definierten Integrita"ten
+         "protect"     Verwaltung der vergebenen Zugriffsrechte
+         "tree"        Verwaltung der voru"bersetzten Datenbank-
+                       aktionen
+
+        sind als Relationenname gesperrt, ebenso die Namen der Rela-
+        tionen  des  Datenbankeigentu"mers  (Datenbankadministrator -
+        DBA).
+
+        Innerhalb   einer   Relation   mu"ssen    die    Doma"nennamen
+        eineindeutig   sein.   Alle  Namen  (Datenbank,  Relationen,
+        Doma"nen) sind maximal 12 Zeichen lang und bestehen  aus  den
+        Zeichen  "[a-z_0-9]",  wobei der Name nicht mit einer Ziffer
+        "[0-9]" beginnen darf. Der AMX Compiler  konvertiert  grosse
+        Buchstaben "[A-Z]" automatisch in kleine "[a-z]".
+
+        Jede Relation muss vor ihrer Verwendung  ero"ffnet  und  kann
+        nach  Beendigung  der  Verarbeitung  geschlossen werden. Sie
+        besitzt eine Menge von Tupeln  (tuplecount)  als  zugeho"rige
+        Daten.  Wir unterscheiden die Recherche nach einer Menge von
+        Tupeln (scan) und das A"ndern bzw. Einfu"gen  eines  einzelnen
+        Tupel.   Die Recherche kann alle Daten der Relation umfassen
+        (full relation scan) oder  durch  Bedingungen  eingeschra"nkt
+        werden (limited scan).
+
+        Ein scan setzt sich aus den Komponenten
+
+        -    Selektion = scan-Bedingung,
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 261 -                        AAAAMMMMXXXX
+
+        -    Projektion = Auswahl der Doma"nen, deren Werte  fu"r  die
+             Verarbeitung interessieren und
+
+        -    Aktion = Verarbeitung, die fu"r  jedes  gefundene  Tupel
+             angestossen wird,
+
+        zusammen.
+
+        _2._5._6.  SSSSyyyynnnnttttaaaakkkkttttiiiisssscccchhhheeee RRRReeeeggggeeeellllnnnn
+
+           |  :  Alternative.
+
+          [ ] :  wahlweiser Ausdruck, kann entfallen.
+
+          { } :  mindestens einmalige Wiederholung,
+                 mehrere Elemente werden durch COMMA "," getrennt.
+                 Ausnahme: { amx_stmt } wird nicht separiert.
+
+        {A-Z_}:  Schlu"sselwo"rter bzw. terminale Symbole:
+                 ING_DB
+              = "ing_db"
+                 OPEN        = "open"
+                 CLOSE       = "close"
+                 TUPLECOUNT  = "tuplecount"
+                 APPEND      = "append"
+                 OVER        = "over"
+                 SCAN        = "scan"
+                 PRINT       = "print"
+                 DELETE      = "delete"
+                 REPLACE     = "replace"
+                 LPAREN      = "("
+                 RPAREN      = ")"
+                 LBRACE      = "{"
+                 RBRACE      = "}"
+                 DOLLAR_SIGN = "$"
+                 IS          = "="
+                             | "=="
+                 RELOP       = IS
+                             | "<"
+                             | "<="
+                             | ">"
+                             | ">="
+                             | "!="
+
+        {a-z_} :  Regelname bzw. nonterminale Symbole.
+                  Mit "(n)" numerierte Regeln sind im Programm
+                  frei verwendbar, die mit "{n}" nur innerhalb
+                  eines scan-Statements.
+                  Alle unterstrichenen Regeln sind nicht weiter
+                  aufgelo"st und besitzen folgende Bedeutung:
+                  xx         = ING_DB
+        -Nutzercode fu"r das
+                               alter-ego-Flag
+                  no_of_bufs = Anzahl der zusa"tzlichen Puffer
+                               fu"r die Zugriffsmethoden
+                  database   = Datenbankname
+                  c_code     = C-Statement
+                  c_decl     = Deklaration einer C-Variablen
+                  rel        = Relationsname
+                  c_var      = C-Variablenname
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 262 -                        AAAAMMMMXXXX
+
+                  dom_name   = Doma"nenname bzw. Doma"nennummer
+                  const      = int-Konstante
+                             | long-Konstante
+                             | double-Konstante
+                             | "string"-Konstante
+
+
+        _2._5._7.  GGGGrrrraaaammmmmmmmaaaattttiiiikkkk
+
+        ( 1)    program :  ing_db { amx_stmt }
+                        ;
+        ( 2)     ing_db :  ING_DB
+         flags database
+                        ;               --------
+        ( 3)     flags  :  [ "-u user_name " ] [ " +no_of_bufs " ]
+                                 ---------          ----------
+                        ;
+        ( 4)   amx_stmt :  c_code
+                           ------
+        ( 5)            |  c_decl
+                           ------
+        ( 6)            |  OPEN rel
+                                ---
+        ( 7)            |  CLOSE rel
+                                 ---
+        ( 8)            |  TUPLECOUNT rel c_var
+                                      --- -----
+        ( 9)            |  APPEND rel target
+                                  ---
+        (10)            |  [ OVER rel ] SCAN rel
+                                  ---        ---
+        (11)                 [ { qual } ]
+
+        (12)                 [ LPAREN { var_assign } RPAREN ]
+
+        (13)                 LBRACE [ { amx_stmt } ] RBRACE
+
+        (14)            |  PRINT LPAREN [ { dom } ] RPAREN
+
+        (15)            |  DELETE
+
+        (16)            |  REPLACE target
+
+        (17)            |  APPEND target
+                        ;
+        (18)     target :  LPAREN { dom_assign } RPAREN
+                        ;
+        (19) dom_assign :  dom IS value
+                        ;
+        (20)        dom :  DOLLAR_SIGN dom_name
+                        ;              --------
+        (21)      value :  c_var
+                           -----
+        (22)            |  const
+                           -----
+        (23)            |  dom
+                        ;
+        (24)       qual :  dom RELOP value
+                        ;
+        (25) var_assign :  c_var IS dom
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 263 -                        AAAAMMMMXXXX
+
+        _2._5._8.  SSSSpppprrrraaaacccchhhhbbbbeeeesssscccchhhhrrrreeeeiiiibbbbuuuunnnngggg
+
+        Die AMX Sprachbeschreibung orientiert sich  an  der  verein-
+        fachten  AMX  Grammatik.   Kommentare sind innerhalb von AMX
+        Statements in der C u"blichen Notation zugelassen:
+
+                       ## . . . /* Kommentar */ . . .
+
+
+        ( 1)  program :  ing_db { amx_stmt }
+                      ;
+
+        Ein AMX Programm  besteht  aus  einem  einleitenden  ing_db-
+        Statement und einer beliebigen Menge von amx-Statements.
+
+        ( 2)   ing_db :  ING_DB
+         flags database
+                      ;               --------
+
+        Das ing_db-Statement adressiert die zu verarbeitende  Daten-
+        bank  "database"  und  gestattet  wahlweise  die  Angabe von
+        Flags.
+
+        ( 3)   flags :  [ "-uuser_name" ] [ "+no_of_bufs" ]
+                     ;       ---------        ----------
+
+        Das Flag -u"user_name" bewirkt, dass das  AMX  Programm  mit
+        den  Datenbankberechtigungen  des ING_DB  Nutzer "user_name"
+        la"uft.  Das Flag +"no_of_bufs" fu"gt  "no_of_bufs"-Puffer  in
+        das  Pufferschema  der  ING_DB   Zugriffsmethoden ein.  Nor-
+        malerweise stehen nur 3 Puffer fu"r die Arbeit mit Relationen
+        zur  Verfu"gung,  wobei  eine  Relation  maximal einen Puffer
+        belegen kann. Bei der parallelen Arbeit mit  mehreren  Rela-
+        tionen  (Indexrelationen  mu"ssen mitgerechnet werden) sollte
+        jeder Relation ein eigener Puffer zugeordnet werden  ko"nnen.
+        Die zusa"tzlichen Puffer werden im Nutzerstack angelegt.
+
+        ( 4)  amx_stmt :  c_code
+                       ;  ------
+
+        Ein  AMX  Statement  kann  eine  Menge  von  beliebigen   C-
+        Statements  sein.   Die  C-Statements werden nicht durch das
+        Kennzeichen "##" am Anfang der Zeile eingeleitet.
+
+        ( 5)  amx_stmt :  c_decl
+                       ;  ------
+
+        C-Variable, die sowohl im AMX als auch im C-Programm verwen-
+        det werden sollen, mu"ssen mit dem Kennzeichen "##" am Anfang
+        der Zeile deklariert werden.
+
+        Folgende Typen werden unterstu"tzt:
+
+                 -  short
+                 -  int
+                 -  long
+                 -  float
+                 -  double
+                 -  char *
+                 -  char []
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 264 -                        AAAAMMMMXXXX
+
+        Folgende Speicherklassen werden unterstu"tzt:
+
+                 -  auto
+                 -  extern
+                 -  static
+
+
+        ( 6)  amx_stmt :  OPEN rel
+                       ;       ---
+
+        Das open-Statement ero"ffnet die Relation rrrreeeellll fu"r die weitere
+        Verarbeitung.   Die  Relation  rrrreeeellll  muss  eine  Prima"r  bzw.
+        Basisrelation sein, d.h. es  ist  nicht   mo"glich,  explizit
+        eine  Indexrelation  zu  ero"ffnen. Durch das open- Statement
+        werden  automatisch  alle  zur  Relation  geho"rigen  Indizes
+        mitero"ffnet.   Die  Relation  rrrreeeellll darf kein view sein und es
+        du"rfen keine integrity- bzw. protection- constraints auf ihr
+        definiert sein.  Die Systemkataloge rrrreeeellllaaaattttiiiioooonnnn , aaaattttttttrrrriiiibbbbuuuutttteeee und
+        iiiinnnnddddeeeexxxxeeeessss werden durch den Start eines AMX  Programms  automa-
+        tisch ero"ffnet.
+
+        Recherchen  (scan-Statement)  sind  auf   allen   Relationen
+        zugelassen,  d.h. auf Basis-, Indexrelationen und Katalogen.
+        A"nderungen und  Einfu"gungen  sind  nur  auf  Basisrelationen
+        zula"ssig, fu"r die das Programm die update-Erlaubnis hat.
+
+        ( 7)  amx_stmt :  CLOSE rel
+                       ;        ---
+
+        Das close-Statement  schliesst  die  Relation  rrrreeeellll  fu"r  die
+        weitere  Verarbeitung.  Es ko"nnen nur Relationen geschlossen
+        werden, die zuvor durch das open-Statement ero"ffnet  wurden.
+        Die  Beendigung  eines  Programms ( eeeexxxxiiiitttt ) schliesst automa-
+        tisch alle ero"ffneten Relationen und Kataloge.
+
+        ( 8)  amx_stmt :  TUPLECOUNT rel c_var
+                       ;             --- -----
+
+        Das tuplecount-Statement weist der C-Variable cccc____vvvvaaaarrrr als Wert
+        die  Anzahl  der  Tupel der Relation rrrreeeellll zu.  cccc____vvvvaaaarrrr muss ein
+        numerischer Typ sein. Die Anzahl der  Tupel  einer  Relation
+        ist die einzigste verfu"gbare variable Kataloginformation fu"r
+        das AMX  Programm.  Auf  Umwegen  kann  so  die  Anzahl  der
+        A"nderungen in einer Relation bestimmt werden:
+
+         . . .
+         ## long old, new;
+         . . .
+         ## tuplecount rel old
+           { Neueinfu"gungen }
+         ## tuplecount rel new
+           printf("# of updates", new - old);
+         . . .
+
+
+        ( 9)  amx_stmt :  APPEND rel target
+                       ;         ---
+
+        Das append-Statement fu"gt ein neues Tupel  in  die  Relation
+        rrrreeeellll   ein.    Durch   die   Projektion   ttttaaaarrrrggggeeeetttt  werden  den
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 265 -                        AAAAMMMMXXXX
+
+        aufgefu"hrten Doma"nen Werte zugewiesen. Alle nicht  angebenen
+        Doma"nen  der Relation rrrreeeellll werden mit einem Nullwert initial-
+        isiert, alle numerischen Doma"nen bekommen den Wert 0 und die
+        Zeichenkettendoma"nen eine mit Leerzeichen gefu"llte Zeichenk-
+        ette  zugewiesen.   Eventuell   vorhandene   Indizes  werden
+        automatisch aktualisiert.
+
+        (18)   target :  LPAREN { dom_assign } RPAREN
+                      ;
+
+        Die  Projektion  wird  durch  eine  o"ffnende  "("  und  eine
+        schliessende  runde  Klammer  ")" begrenzt. Sie entha"lt eine
+        durch  Kommas  ","  getrennte  Aufza"hlung  von   Zuweisungen
+        ddddoooommmm____aaaassssssssiiiiggggnnnn....   Es  muss  mindestens  einer  Doma"ne  ein  Wert
+        zugewiesen werden.
+
+        (19) dom_assign :  dom IS value
+                        ;
+
+        Eine Zuweisung weist der Doma"ne ddddoooommmm den Wert vvvvaaaalllluuuueeee zu.   Bei
+        den  Zuweisungen von numerischen zu numerischen Typen werden
+        die notwendigen Konvertierungen ohne U"berlauf- bzw.   Unter-
+        laufkontrolle  vorgenommen.  Zuweisungen  von numerischen zu
+        Zeichenkettenwerten und umgekehrt sind nicht zula"ssig.
+
+        (20) dom :  DOLLAR_SIGN dom_name
+                 ;              --------
+
+        Eine Doma"ne wird durch das Kennzeichen "$" und  ihren  Namen
+        bzw.  ihre Nummer (siehe Doma"ne aaaattttttttiiiidddd des Katalogs aaaattttttttrrrriiiibbbbuuuutttteeee
+        )  spezifiziert.  Durch  die  explizite  Kennzeichnung   von
+        Doma"nennamen  durch  das  Zeichen "$" werden im Gegensatz zu
+        EQUEL Konflikte mit dem  Namen  von  C-Variablen  vermieden.
+        Die  Referenzierung  von  Doma"nen  u"ber  ihre interne Nummer
+        (Reihenfolge vom CREATE(QUEL)) kann sinnvoll bei einer  vek-
+        torisierten Verarbeitung sein.
+
+        (21)   value :  c_var
+                     ;  -----
+
+        Ein Wert kann der aktuelle Wert der C-Variablen cccc____vvvvaaaarrrr sein.
+
+        (22)   value :  const
+                     ;  -----
+
+        Ein Wert kann eine in C u"bliche Konstante ccccoooonnnnsssstttt sein.
+
+        (23)   value :  dom
+                     ;
+
+        Ein Wert kann der aktuelle Wert der Doma"ne ddddoooommmm sein.   Diese
+        Form  des Wertes setzt einen u"bergeordneten scan voraus, aus
+        dem der Wert fu"r die Doma"ne ddddoooommmm geholt werden kann.
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 266 -                        AAAAMMMMXXXX
+
+
+        (10)  amx_stmt : [ OVER over_rel ] SCAN scan_rel
+                                --------        --------
+        (11)  Selektion  [ { qual } ]
+
+        (12)  Projektion [ LPAREN { var_assign } RPAREN ]
+
+        (13)  Aktion     LBRACE [ { amx_stmt } ] RBRACE
+                   ;
+
+        Das scan-Statement ist  das  ma"chtigste  AMX  Statement,  es
+        u"bernimmt  die  Zugriffspfadoptimierung  und ermo"glicht eine
+        rekursive  Verarbeitung,  da  innerhalb  eines   scans   ein
+        weiterer scan aufgerufen werden kann.
+
+        Die over-Klausel (OVER over_rel) gestattet die Zuweisung des
+        Zugriffspfades  u"ber  die Relation oooovvvveeeerrrr____rrrreeeellll fu"r den scan und
+        damit die Ausschaltung der  Zugriffspfadoptimierung  im  AMX
+        Compiler.   oooovvvveeeerrrr____rrrreeeellll  muss  die zu scannende Relation selbst
+        oder ein Index von ssssccccaaaannnn____rrrreeeellll sein.  Ist  oooovvvveeeerrrr____rrrreeeellll  ein  Index
+        und  wird  durch  die  Selektion  qqqquuuuaaaallll  keinem Schlu"ssel von
+        oooovvvveeeerrrr____rrrreeeellll ein Wert zugewiesen, wird der Zugriffspfad u"ber die
+        Prima"rrelation  ssssccccaaaannnn____rrrreeeellll  gewa"hlt, da ein ffffuuuullllllll rrrreeeellllaaaattttiiiioooonnnn ssssccccaaaannnn
+        u"ber einen Index  unsinning  ist.   Die  scan-Klausel  (SCAN
+        scan_rel) adressiert die zu scannende Relation ssssccccaaaannnn____rrrreeeellll....
+
+        _2._5._9.  SSSSeeeelllleeeekkkkttttiiiioooonnnn
+
+        Der scan kann durch die Angabe einer Selektion eingeschra"nkt
+        werden.   Die  Selektion  ist  eine  Einschra"nkung  des Wer-
+        tebereichs   einzelner   (oder   aller)   Doma"nen.   Mehrere
+        Einschra"nkungen werden durch Komma "," getrennt. Eine Doma"ne
+        kann   maximal   zwei   Einschra"nkungen   erfahren.     Alle
+        zugewiesenen     Bedingungen   und   Werte   der   angebenen
+        Einschra"nkungen werden beim Einlauf in den  scan  gekellert,
+        so  dass  z.B. eine A"nderung des Wertes einer verwendeten C-
+        Variablen keinen Einfluss auf die Selektion hat.
+
+        _2._5._1_0.  PPPPrrrroooojjjjeeeekkkkttttiiiioooonnnn
+
+        Die Projektion ist wahlweise, d.h. sie kann  entfallen.  Die
+        Projektion   wird   durch   eine   o"ffnende   "("  und  eine
+        schliessende runde  Klammer  ")"  begrenzt.  Sie  weist  fu"r
+        jedes, entsprechend der Selektion gefundene Tupel, der ange-
+        benen Menge von C-Variablen den aktuellen Wert der  zugeord-
+        neten  Doma"nen  zu.  Die  einzelnen Zuweisungen werden durch
+        Komma "," getrennt.
+
+        _2._5._1_1.  AAAAkkkkttttiiiioooonnnn
+
+        Die  Aktion  wird  durch  eine   o"ffnende   "{"   und   eine
+        schliessende geschweifte Klammer "}" begrenzt. Innerhalb der
+        Aktion ko"nnen beliebige AMX Statements stehen.   Die  Aktion
+        kann  leer  sein,  allerdings  mu"ssen die Klammern angegeben
+        sein. Es ist wichtig zu wissen, dass  innerhalb  der  Aktion
+        die  Doma"nenwerte  des gefundenen Tupel immer vorhanden sind
+        und sich nicht a"ndern.
+
+        BBBBEEEEIIIISSSSPPPPIIIIEEEELLLL
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 267 -                        AAAAMMMMXXXX
+
+
+         . . .
+         ## open supply
+         ## open parts
+         . . .
+         ## scan supply $snum = 122
+         ## {
+         ##  scan parts /*parts*/$pnum = /*supply*/$pnum
+         ##  {
+         . . .
+         ##  }
+         ## }
+         . . .
+         ## close supply
+         ## close parts
+         . . .
+
+
+        Die U"bernahme von Werten aus dem u"bergeordneten scan gestat-
+        tet  die  einfache Implementierung von geschachtelten scan's
+        z.B. zur Zuordnung von Abku"rzungen zu Langformen  (Nomenkla-
+        turen) usw.  Bei Zeichenkettendoma"nen gestattet der AMX Com-
+        piler keine U"bernahme von Werten, wenn die La"nge der  Doma"ne
+        des  u"bergeordneten  scan's  ku"rzer als die La"nge der Doma"ne
+        des aktuellen scan's ist.  Eine Mischung   von   numerischen
+        und    Zeichenkettenwerten    wird    grundsa"tzlich    nicht
+        unterstu"tzt.
+
+        (24) qual :  dom RELOP value
+                  ;
+
+        ddddoooommmm gibt die einzuschra"nkende Doma"ne und vvvvaaaalllluuuueeee den Wert  der
+        Einschra"nkung  an.  Als Einschra"nkungen sind die Bedingungen
+        "RELOP":
+
+                   "=", "==", "<", "<=", ">", ">=", "!="
+
+        zula"ssig. Wird eine Doma"ne doppelt eingeschra"nkt, sind  fol-
+        gende zula"ssige Kombinationen zu beachten:
+
+                "<[=]" und ">[=]"
+                "<[=]" und  "!="
+                ">[=]" und  "!="
+
+        Die Reihenfolge der Einschra"nkungen fu"r eine Doma"ne  ist  in
+        folgender Art einzuhalten:
+
+                "<[=]" --> ">[=]" --> "!="
+
+
+        (25) var_assign :  c_var IS dom
+                        ;  -----
+
+        Eine Zuweisung weist der  C-Variablen  cccc____vvvvaaaarrrr  den  aktuellen
+        Wert  der Doma"ne ddddoooommmm zu. Bei den Zuweisungen von numerischen
+        zu  numerischen  Typen   werden   die   notwendigen  Konver-
+        tierungen   ohne U"berlauf- bzw. Unterlaufkontrolle vorgenom-
+        men. Zuweisungen von numerischen zu Zeichenkettenwerten  und
+        umgekehrt sind nicht zula"ssig.
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 268 -                        AAAAMMMMXXXX
+
+
+        (14)  amx_stmt :  PRINT LPAREN [ { dom } ] RPAREN
+                       ;
+
+        Das print-Statement gibt die Werte der, durch eine  o"ffnende
+        "("  und  eine  schliessende  runde  Klammer ")", begrenzten
+        Liste der Doma"nen in einem Standardformat nach standard out-
+        put  aus.  Die Liste entha"lt eine durch Kommas "," getrennte
+        Aufza"hlung der auszugebenden Doma"nen.  Eine leere Liste "()"
+        gibt die Werte aller Doma"nen aus. Das Standardformat entha"lt
+        den Namen und den Wert der Doma"ne in folgender Form:
+
+        "%12s: %?\n", domainname, value
+        ? == Format der auszugebenden Doma"ne
+
+
+        (15)  amx_stmt :  DELETE
+                       ;
+
+        Das delete-Statement  lo"scht  das  innerhalb  des  laufenden
+        scan's   gefundene   aktuelle   Tupel  aus  der  Datenbasis.
+        Innerhalb der Aktion bleibt das aktuelle  Tupel  mit  seinen
+        Werten    erhalten.   Eventuell  vorhandene  Indizes  werden
+        automatisch aktualisiert.
+
+        (16)  amx_stmt :  REPLACE target
+           ;
+
+        Das replace-Statement  gestattet  die  A"nderung  von  Werten
+        einzelner  (oder  aller)  Doma"nen.  Eine  Unterscheidung von
+        Schlu"ssel- und Nichtschlu"sseldoma"nen ist nicht zu  beachten.
+        Die  A"nderungen  werden  durch  die Projektion ttttaaaarrrrggggeeeetttt spezi-
+        fiziert. Es ist zu beachten, dass  die A"nderungen  in  einem
+        gesondertem  Puffer  ausgefu"hrt  werden,  also  das  aktuell
+        gefundene Tupel innerhalb des laufenden  scan's  unvera"ndert
+        bleibt.  Eventuell  vorhandene  Indizes werden, falls no"tig,
+        automatisch aktualisiert. Eine Aktualsierung entfa"llt  z.B.,
+        wenn eine identische A"nderung (gea"ndertes == Ursprungstupel)
+        ausgefu"hrt wurde oder wenn die gea"nderten Doma"nen nicht  Be-
+        standteil des Index sind und sich die Tupeladresse TTTTIIIIDDDD nicht
+        gea"ndert hat.
+
+        (17)  amx_stmt :  APPEND target
+                       ;
+
+        Das append-Statement fu"gt ein neues  Tupel  in  die  aktuell
+        gescannte  Relation ein.  Durch die Projektion ttttaaaarrrrggggeeeetttt werden
+        den aufgefu"hrten Doma"nen Werte zugewiesen.  Alle nicht ange-
+        benen  Doma"nen  erhalten den Wert aus dem aktuell gefundenen
+        Tupel des laufenden scan's. Es ist  zu  beachten,  dass  die
+        A"nderung in einem gesondertem Puffer ausgefu"hrt werden, also
+        das aktuell gefundene Tupel  unvera"ndert bleibt.   Eventuell
+        vorhandene Indizes werden automatisch aktualisiert.
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 269 -                     RRRReeeeppppoooorrrrtttt
+
+        _2._6.  RRRReeeeppppoooorrrrtttt----GGGGeeeennnneeeerrrraaaattttoooorrrr ****
+
+
+
+
+
+
+
+
+
+
+
+
+        _2._6._1.  VVVVoooorrrrbbbbeeeemmmmeeeerrrrkkkkuuuunnnngggg
+
+        Wie jedes andere  Werkzeug  in  UNIX   oder  auch  innerhalb
+        ING_DB    ist  der  Report-Generator  eeeeiiiinnnneeee  Alternative  zur
+        Erstellung von Drucklisten.  In  der  praktischen  Anwendung
+        werden  Drucklisten  einerseits beno"tigt, um periodisch u"ber
+        lange Zeitra"ume Aussagen u"ber sich a"ndernde Datenbesta"nde zu
+        liefern,  andererseits  werden  aber auch Aussagen mit einem
+        gewissen Einmaligkeitscharakter gewu"nscht.
+
+        Im ersten Fall bleibt dem Projektanten in  der  Regel  genug
+        Zeit,  die  Listenerstellung gru"ndlich vorzubereiten, sodass
+        die Erstellung innerhalb eines  AMX-  oder  EQUEL-Programmes
+        sinnvoll  und  effektiv  ist - vor allem unterliegt hier der
+        Zugriff zu verschiedenen Relationen keiner praktisch wirksa-
+        men Begrenzung. Das zu druckende File wird so direkt aus den
+        Datenbesta"nden der Relationen erzeugt.
+
+        Bei Verwendung des Report-Generators werden  die  Daten  aus
+        einem  Tupelfile  gelesen,  das  vorher  aus  eeeeiiiinnnneeeerrrr Relation
+        erzeugt werden muss. Die Erstellung dieser Relation aus  den
+        Doma"nen  verschiedener anderer Relationen ist technisch ein-
+        fach ( ssssccccaaaannnn ((((aaaammmmxxxx)))) oder rrrreeeettttrrrriiiieeeevvvveeee ((((qqqquuuueeeellll)))) ),  kann  aber  gege-
+        benenfalls   Dimensionierungsprobleme  verursachen  -  jedes
+        Tupel muss der gleichen Struktur zugeordnet werden!
+
+        Wir ko"nnen nicht davon ausgehen, dass  alle  ING_DB  -Nutzer
+        mit  C  umgehen  ko"nnen oder gerade dann, wenn operativ eine
+        Druckliste  dringend  beno"tigt   wird,   ein   Programmierer
+        da"umchendrehend  darauf  gewartet  hat!   Der Umgang mit dem
+        Report-Generator ist relativ schnell erlernt. Zu Beginn muss
+        nicht jede Raffinesse eingeordnet werden.
+
+        _2._6._2.  AAAArrrrbbbbeeeeiiiittttsssssssscccchhhhrrrriiiitttttttteeee
+
+        Wir verwenden wieder einmal unsere Relation aus "demo".
+
+
+                Relation:                                            personal
+                ---------
+                Besitzer:               ing_db
+                Tupellaenge:            30
+                Verfallsdatum:               Tue Apr 26 19:56:39 1988
+                Tupelanzahl:            25
+                Speicherstruktur:       HEAP
+                Relationentyp:                         Nutzerrelation
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 270 -                     RRRReeeeppppoooorrrrtttt
+
+
+                 Domaenname        Typ   Laenge  Schluessel
+                -------------------------------------------
+                 num                i       2
+                 name               c      20
+                 gehalt             i       2
+                 leiter             i       2
+                 gebdat             i       2
+                 einstdat           i       2
+                -------------------------------------------
+
+
+        Mit dem Kommando
+
+             rrrrdddd ddddeeeemmmmoooo ppppeeeerrrrssssoooonnnnaaaallll
+
+        wird ein File ddddeeeesssscccc erzeugt. Dieses File la"sst sich  mit  dem
+        Kommando
+
+             rrrrpppp____ddddeeeesssscccc ddddeeeesssscccc
+
+        auf dem Bildschirm darstellen.
+
+        I       +--------+
+        N       | Post   |      REPORT  description printer
+        G       | Quick  |      VERSION 6/3.1
+        -       | Report |      RELEASE Thu Nov 14 00:00:00 1988
+        D       +--------+
+        B        ZKI 1988
+
+        | value | type  | len   | off   |
+        +-------+-------+-------+-------+
+        !  1    | int   |   2   |   0   |
+        !  2    | char  |  20   |   2   |
+        !  3    | int   |   2   |  22   |
+        !  4    | int   |   2   |  24   |
+        !  5    | int   |   2   |  26   |
+        !  6    | int   |   2   |  28   |
+        +-------+-------+-------+-------+
+
+        Beachten sie, dass der Vorspann auf ssssttttddddeeeerrrrrrrr und  die  Tabelle
+        auf ssssttttddddoooouuuutttt ausgegeben wird.
+
+        Die Spalte vvvvaaaalllluuuueeee stellt den Doma"nennamen in Form eines Stel-
+        lungsparameters dar.
+
+        _2._6._3.  TTTTyyyypppp ,,,,LLLLaaaa""""nnnnggggeeee ,,,,OOOOffffffffsssseeeetttt
+
+        Beachten Sie bitte , dass das angebotene Deskriptionfile  im
+        Sinne der Beschreibung mit dem Datenfile identisch ist.
+
+        Ein zweiter Weg zur Erstellung  eines  Deskriptionfiles  ist
+        die Aufnahme einer Doma"nenbeschreibung in die Report-Quelle.
+        Bei Reports fu"r Relationen aus Datenbanken kann man  mit  rrrrdddd
+        ----rrrr  einen leeren Report generieren, der die Beschreibung der
+        Dama"nen  verankert.Der  Compiler   hat  die   Aufgabe,   die
+        Doma"nenbeschreibung in das Deskriptionfile zu u"bersetzen.
+
+        Der Variablenname im Report-Programm hat also  keine  unmit-
+        telbare  Korrespondenz  mit  der Relation.  Zu Beginn wollen
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 271 -                     RRRReeeeppppoooorrrrtttt
+
+        wir uns noch auf  einige  Dinge  einigen,  die  vom  Report-
+        Generator  zwar  nicht  gefordert werden, aber dennoch recht
+        nu"tzlich  sind.  In  UNIX   werden  u"blicherweise  bestimmte
+        File-Typen mit einem Postfix versehen, es wird vorgeschlagen
+
+
+                Beschreibungsfile   desc           mit  _d  (analog Flag bei rg)
+                Datenfile           tuple          mit  _f  (analog Flag bei rg)
+                Ausgabe             output         mit  _o  (analog Flag bei rg)
+                Report-Quelle       Quellcode      mit  _p  (Programm)
+                                    r_code         mit  _r
+
+
+        zu  benennen.  Mit  dieser  Methode  wird  eine  Gruppierung
+        erreicht,  die  garantiert,  dass  man  auch  bei mehr als 3
+        Report-Programmen im Directory noch weiss, was wohin geho"rt.
+        Der  underscore  wurde  verwendet,  weil  rc den Punkt nicht
+        anerkennt und um Verwechslungen  mit  dem  Pascal  Quellcode
+        bzw. dem C-Objektfile mo"glich wa"ren.
+
+        Folgende Liste soll erstellt werden:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 272 -                     RRRReeeeppppoooorrrrtttt
+
+
+        --------------------------------------------------
+        Gehalt und Geburtsjahr nach Abteilungen   9-Mai-88
+
+        Abtlg. Name                  Gehalt    Geburtsjahr
+        --------------------------------------------------
+
+               Rose, Petra            1206,- M      1931
+               Gruene, Peter          1700,- M      1920
+
+          10   Mueller, Ernst          700,- M      1950
+
+          13   Fleischer, Karl         877,- M      1952
+
+          26   Neumann, Inge          1198,- M      1950
+               Schmidt, Hermann       1120,- M      1936
+               Warnke, Peter           788,- M      1940
+
+          32   Loda, Dieter            500,- M      1952
+               Baum, Klaus             837,- M      1956
+
+          33   Kayser, Helmut          600,- M      1952
+               Weber, Franz           1337,- M      1944
+
+          55   Maerz, Udo             1116,- M      1947
+               Mueller, Petra         1362,- M      1939
+
+         129   Moser, Otto            1567,- M      1938
+               Schulze, Ernst         1564,- M      1944
+               Zeidler, Fritz         1686,- M      1928
+
+         199   Rose, Peter            1590,- M      1927
+               Wunsch, Peter-Paul      900,- M      1928
+               Schneider, Peter       1300,- M      1930
+               Heine, Rolf             905,- M      1929
+               Ernst, Eva             1010,- M      1931
+               Malter, Juergen        1200,- M      1920
+               Weise, Juergen          900,- M      1935
+               Thoms, Rolf            1000,- M      1941
+               Schmidt, Petra         1200,- M      1940
+        --------------------------------------------------
+
+
+        Als Ausgangsrelation verwenden wir ppppeeeerrrrssssoooonnnnaaaallll, die  allerdings
+        nach  lllleeeeiiiitttteeeerrrr sortiert werden muss. Das Kommando dazu mit der
+        QUEL:
+
+             mmmmooooddddiiiiffffyyyy ppppeeeerrrrssssoooonnnnaaaallll ttttoooo hhhheeeeaaaappppssssoooorrrrtttt oooonnnn lllleeeeiiiitttteeeerrrr
+
+         Das TTTTuuuuppppeeeellllffffiiiilllleeee erzeugen wir mit
+
+             ccccooooppppyyyy ppppeeeerrrrssssoooonnnnaaaallll(((()))) iiiinnnnttttoooo """"////mmmmnnnntttt////wwwwoooorrrrkkkk////tttteeeexxxxtttt////ppppeeeerrrrssss....ffff"""" ....
+
+        Das Programm dazu sieht so aus (pers_p):
+
+        report pers_r
+        with
+             columns 50
+             lines 60
+             all lines 66
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 273 -                     RRRReeeeppppoooorrrrtttt
+
+
+             define p_num    = 1
+             define p_name   = 2
+             define p_gehalt = 3
+             define p_abt    = 4
+             define p_gebdat = 5
+
+             define #p_num       = integer 2
+             define #p_name      = char    20
+             define #p_gehalt    = integer 2
+             define #p_abt       = integer 2
+             define #p_gebdat    = integer 2
+
+        as
+
+        on pagebegin do
+             '-' 50 \n
+             'Gehalt und Geburtsjahr nach Abteilungen'
+             \42 date \n2
+             'Abtlg.'
+             \8 'Name'
+             \30 'Gehalt'
+             \40 'Geburtsjahr'
+             \n
+             '-' 50 \n2
+        end
+
+        for all do
+             for one do
+                  if groupbegin p_abt then
+                       \n integer @4 #p_abt
+                  end if
+                  \8 char   @20 #p_name
+                  \30 integer @5 #p_gehalt ',- M'
+                  \40 integer @9 #p_gebdat
+                  \n
+             end one
+        end all
+        ;
+
+        Zum Programm folgt spa"ter noch eine Erla"uterung.  Jetzt wird
+        aus ppppeeeerrrrssss____pppp der rrrr____ccccooooddddeeee erzeugt. Das Kommando dazu:
+
+             rrrrcccc ppppeeeerrrrssss____pppp
+
+        Durch die erste Zeile im Programm rrrreeeeppppoooorrrrtttt  ppppeeeerrrrssss____rrrr  weiss  der
+        Report-Compiler  wie das File "r_code" zu benennen ist.  Mit
+        dem Aufruf
+
+             rrrrgggg ----ddddppppeeeerrrrssss____dddd ----ffffppppeeeerrrrssss____ffff ----iiiippppeeeerrrrssss____rrrr
+
+        wird die Druckliste auf dem Bildschirm ausgegeben. Fu"gen sie
+        noch  die  Option ----ooooppppeeeerrrrssss____oooo hinzu, steht das Ergebnis im File
+        ppppeeeerrrrssss____oooo....
+
+        _2._6._4.  AAAAuuuuffffbbbbaaaauuuu ddddeeeerrrr LLLLiiiisssstttteeeennnnddddeeeeffffiiiinnnniiiittttiiiioooonnnn
+
+        Jede Listendefinition beginnt mit  rrrreeeeppppoooorrrrtttt  und  wird  mit  ;;;;
+        abgeschlossen.  Der grundsa"tzliche Aufbau:
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 274 -                     RRRReeeeppppoooorrrrtttt
+
+
+                [define] report r_code_name  [desc_name]
+                         with
+                                formatierung
+                                definitionen
+                         as
+                                kopfangaben
+                                tupelverarbeitung
+                                fussangaben
+                         ;
+
+
+        Prozeduren werden mit ccccaaaallllllll  aufgerufen,  hierzu  wurde  kein
+        Symbol eingefu"rt.
+
+        Fu"r die ddddeeeeffffiiiinnnniiiittttiiiioooonnnneeeennnn erfolgt eine Zuordnung mo"glicher Varia-
+        blen,  Prozeduren,  Boolescher  Variablen zu einer laufenden
+        Nummer (jeweils  mit  0  beginnend)  und  Doma"nen  zu  einer
+        laufenden  Nummer  (mit 1 beginnend).  Die Doma"nendefinition
+        muss anschliessend durch eine Typzuordnung  erga"nzt  werden,
+        wobei  dem Doma"nennamen ein '#' voranzustellen ist.  Im Pro-
+        gramm gilt folgende Zuordnung von Bezeichnung und Symbol:
+
+        Boolesche Variable         (switch)   ^
+                Domaene            (val)      #
+                Variable           (var)      $
+
+        Fu"r die ffffoooorrrrmmmmaaaattttiiiieeeerrrruuuunnnngggg ko"nnen den Bezeichnern
+
+                lines
+                all lines
+                columns
+                from page to page
+                from tupel to tupel
+
+        Werte   zugewiesen   und   gegebenenfalls   mit   bbbbiiiigggg   eine
+        Grossbuchstaben-Konvertierung eingeschaltet werden.
+
+        Die Parameter ko"nnen  in  beliebiger  Reihenfolge  angegeben
+        werden.   Bei    doppelt   aufgefu"hrten   gilt  der  zuletzt
+        definierte Parameter. Werden zum Zeitpunkt des Listenaufbaus
+        neue  Festlegungen getroffen, verlieren die jeweiligen alten
+        Parameter ihre  Gu"ltigkeit. Fu"r alle Parameter gelten  Stan-
+        dardfestlegungen.   Die  Parameter  haben folgende Bedeutung
+        (die Grossschreibung im Text  dient  nur  der  Hervorhebung,
+        Schlu"sselwo"rter   ko"nnen   im   Programm   klein  und  gross
+        geschrieben werden ):
+
+        LLLLIIIINNNNEEEESSSS iiiinnnntttt
+
+             La"nge  des  Informationsteils auf  einer   Seite   (int
+             Zeilen),  Standard: Wert von ALL LINES, wenn definiert,
+             sonst: 66,
+
+        AAAALLLLLLLL LLLLIIIINNNNEEEESSSS iiiinnnntttt
+
+             La"nge der physischen Druckseite (int Zeilen), Standard:
+             Wert von LINES,
+
+        CCCCOOOOLLLLUUUUMMMMNNNNSSSS iiiinnnntttt
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 275 -                     RRRReeeeppppoooorrrrtttt
+
+             Breite des Informationsteils (int  Spalten),  Standard:
+             132,
+
+        FFFFRRRROOOOMMMM PPPPAAAAGGGGEEEE iiiinnnntttt
+
+             Es werden nur die  Seiten  in  die  Liste  eingetragen,
+             deren  Seitennummer gro"sser oder gleich der angegebenen
+             Zahl int ist.  Standard: 0;
+
+        TTTTOOOO PPPPAAAAGGGGEEEE iiiinnnntttt
+
+             Es werden nur die  Seiten  in  die  Liste  eingetragen,
+             deren  Seitennummer kleiner oder gleich der angegebenen
+             Zahl int ist.  Standard: 32767 (Maximum);
+
+        FFFFRRRROOOOMMMM TTTTUUUUPPPPLLLLEEEE iiiinnnntttt
+
+             Es werden nur die Tupel verarbeitet, deren  Tupelnummer
+             gro"sser  oder  gleich  der  angegebenen  Zahl  int ist.
+             Standard: 0
+
+        TTTTOOOO TTTTUUUUPPPPLLLLEEEE iiiinnnntttt
+
+             Es werden nur die Tupel verarbeitet, deren  Tupelnummer
+             kleiner  oder  gleich  der  angegebenen  Zahl  int ist.
+             Standard:32767 (Maximum)
+
+        BBBBIIIIGGGG
+
+             Alle Kleinbuchstaben werden beim  Einschreiben  in  die
+             Liste   automatisch   in  Grossbuchstaben  umgewandelt.
+             Standard: keine Umwandlung
+
+        Ist der Wert von LINES gro"sser als der von ALL  LINES,  wird
+        ALL  LINES  um  ganze  Vielfache  seines Wertes erho"ht. Dies
+        bedeutet, dass sich eine Informationsseite  u"ber  zwei  oder
+        mehr Druckseiten erstreckt.
+
+        In pppprrrroooozzzzeeeedddduuuurrrreeeennnn werden alle in der Listendefinition beno"tigten
+        Prozeduren notiert.
+
+        Die kkkkooooppppffffaaaannnnggggaaaabbbbeeeennnn enthalten alle  Anweisungen  zur  Gestaltung
+        des  Listenkopfes. In der Regel wird am Beginn der Kopfanga-
+        ben der Seitenaufbau definiert.  Die Ausgabe von Tupelwerten
+        in den Kopfangaben ist nicht sinnvoll.
+
+        Die llllaaaauuuuffffsssstttteeeeuuuueeeerrrruuuunnnngggg vereinigt in sich alle  Mo"glichkeiten  zur
+        Eintragung  von  Werten  und Zeichenketten in die Liste, zur
+        Arithmetik und zur Seitengestaltung.
+
+        Die Syntax und Semantik der Sprachanweisungen  sind  in  den
+        angegebenen Kapiteln beschrieben.
+
+        Die   ttttuuuuppppeeeellllvvvveeeerrrraaaarrrrbbbbeeeeiiiittttuuuunnnngggg   umfasst   alle   Anweisungen   zur
+        Aufbereitung  und  Ausgabe  der Tupelwerte. Die Beschreibung
+        der Tupelverarbeitung erfolgt im  Abschnitt  "Bereitstellung
+        der Tupelwerte".
+
+        Im abschliessenden Teil ffffuuuussssssssaaaannnnggggaaaabbbbeeeennnn wird die Definition  des
+        Listenfusses beschrieben. In der vorliegenden Version ko"nnen
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 276 -                     RRRReeeeppppoooorrrrtttt
+
+        hier die Funktionswerte einer Anfrage ausgewertet werden.
+
+        Viele Anweisungen haben als Parameter die syntaktische  Kon-
+        struktion  nnnnuuuummmmbbbbeeeerrrr....   Bei number kann entweder ein Direktwert
+        int angegeben werden oder aber eine Variable.
+
+        _2._6._5.  VVVVoooorrrrsssscccchhhhuuuubbbb uuuunnnndddd PPPPoooossssiiiittttiiiioooonnnniiiieeeerrrrkkkkoooommmmmmmmaaaannnnddddoooossss
+
+        Fu"r  die  Positionierung der  auszugebenden  Werte  auf  den
+        Seiten  gibt  es  jeweils  2  Varianten,  eine fu"r fleissige
+        Schreiber und eine fu"r diejenigen, die schnell zum Ziel kom-
+        men wollen! Es ko"nnen folgende Anweisungen gegeben werden:
+
+        NNNNEEEEWWWW PPPPAAAAGGGGEEEE oder \\\\ffff
+
+             Die aktuelle Seite wird abgeschlossen. Es  erfolgt  der
+             Vorschub  auf  eine neue Seite. Aus Sparsamkeitsgru"nden
+             wird ein mehrfaches NEW  PAGE  nur  einmal  ausgefu"hrt.
+             Es  werden  nur  Seiten  ausgegeben, die mindestens ein
+             Zeichen enthalten. Wird also eine Leerseite  gewu"nscht,
+             muss  zwischen den zwei NEW-PAGE-Anweisungen mindestens
+             ein Leerzeichen ausgegeben werden.
+
+        NNNNEEEEWWWW LLLLIIIINNNNEEEE nnnnuuuummmmbbbbeeeerrrr oder \\\\nnnnnnnnuuuummmmbbbbeeeerrrr
+
+             Es erfolgt der Vorschub auf eine neue Zeile.  Die  alte
+             Zeile wird abgeschlossen und number-1 Leerzeilen werden
+             ausgegeben. Der Standardwert fu"r number  ist  1.  Wurde
+             der  Wert  von  LINES erreicht, wird ein Seitenvorschub
+             ausgefu"hrt.
+
+        CCCCOOOOLLLL nnnnuuuummmmbbbbeeeerrrr oder \\\\nnnnuuuummmmbbbbeeeerrrr
+
+             Es wird auf die Spalte  number  positioniert.  Hat  die
+             aktuelle  Schreibposition in der Zeile bereits u"ber die
+             angegebene Spalte  number  u"berschritten,  erfolgt  ein
+             automatisches  NEW  LINE und danach die Positionierung.
+             Wenn bei Variante 2 der Aufwand zum Ausza"hlen zu  gross
+             ist,   ko"nnen  sie  mit  \\\\\\\\nnnnuuuummmmbbbbeeeerrrr  auch  relativ  posi-
+             tionieren.
+
+        SSSSPPPPAAAACCCCEEEE nnnnuuuummmmbbbbeeeerrrr oder \\\\\\\\nnnnuuuummmmbbbbeeeerrrr
+
+             Es werden number Leerzeichen eingefu"gt.
+
+        Bei der Kurzform sollte der Zwischenraum  von  \  zu  number
+        entfallen, er verwirrt nur.
+
+        Positionierungen  auf einer  Seite  ko"nnen  ausserdem  durch
+        Wertzuweisungen    erreicht   werden   (SET   LINE...,   SET
+        COLUMN...).   Diese  Mo"glichkeit  ist  in  Abschnitt  "Wert-
+        zuweisung zu Systemvariablen .." beschrieben.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+          new page
+          new line 5
+          col 11
+
+        Es wird auf die 11. Spalte der 5. Zeile  einer  neuen  Seite
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 277 -                     RRRReeeeppppoooorrrrtttt
+
+        positioniert. In Kurzform
+
+          \f
+          \n5
+          \11
+
+
+        _2._6._6.  AAAAuuuussssggggaaaabbbbeeee kkkkoooonnnnssssttttaaaannnntttteeeerrrr ZZZZeeeeiiiicccchhhheeeennnnkkkkeeeetttttttteeeennnn
+
+        Es besteht die Mo"glichkeit, Zeichenketten in  der  Listende-
+        finition   festzulegen,   die   unvera"ndert   in  die  Liste
+        u"bernommen werden.
+
+                 'zeichenkette' BATCH number
+                 'zeichenkette' number
+
+        Bei zzzzeeeeiiiicccchhhheeeennnnkkkkeeeetttttttteeee nnnnuuuummmmbbbbeeeerrrr wird die zeichenkette number-mal  in
+        die Liste u"bertragen.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+                 '=+' 5
+
+
+        Es  wird  die   Zeichenkette  '=+=+=+=+=+'   in   die  Liste
+        eingetragen.
+
+        Die    BATCH-Funktion    erlaubt   das    "Stapeln"    einer
+        Zeichenkette. Unter Stapeln wird die Mo"glichkeit verstanden,
+        eine  Zeichenkette  in   einer  bestimmten  Breite   (number
+        Zeichen)  u"ber  mehrere Zeilen auszugeben.  Dabei wird durch
+        den  Reportgenerator   versucht,    nur   ganze   Worte   zu
+        u"bertragen.  Ist ein Wort la"nger als die festgelegte Breite,
+        muss es auf zwei oder mehr Zeilen verteilt werden. Eine Sil-
+        bentrennung fu"hrt das System nicht aus.
+
+        Der Aufbau einer BATCH-Zeichenkette erfolgt in zwei  Schrit-
+        ten:
+
+        1.   In   die  aktuelle  Zeile  wird  der  erste  Teil   der
+             Zeichenkette  in  der  durch  number  bestimmten  La"nge
+             eingetragen. Danach  werden weitere Anweisungen fu"r die
+             Zeile bearbeitet.
+
+        2.   Bei  Vorschub auf eine neue Zeile  wird  der  Rest  der
+             BATCH-Zeichenkette auf zusa"tzliche Zeilen verteilt, den
+             sogenannten BATCH-Zeilen. Wenn sie erwarten,  dass  die
+             gesamte  Zeichenkette  ausgegeben  und  verteilt werden
+             soll, muss eine La"ngenangabe erfolgen.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+         'DAS IST ALLES NICHT SO KOMPLIZIERT'  batch $breite @35
+
+
+        Folgende Zeichenketten werden eingetragen,  wenn  die  Vari-
+        able "breite" die Werte
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 278 -                     RRRReeeeppppoooorrrrtttt
+
+
+                12          bzw.         5     hat:
+
+           DAS IST                     DAS
+           ALLES NICHT                 IST
+           SO                          ALLES
+           KOMPLIZIERT                 NICHT
+                                       SO
+                                       KOMPL
+                                       IZIER
+                                       T
+
+
+        Die BATCH-Funktion kann fu"r mehrere Zeichenketten  in  einer
+        Zeile  verwendet  werden.  Die  na"chste regula"re Zeile folgt
+        dann unmittelbar nach dem la"ngsten aller Stapel.
+
+        Um auch BATCH-Zeilen gestalten zu ko"nnen,  z.  B.  Tabellen-
+        striche  weiter  zu  fu"hren oder auch Werte auszugeben, wird
+        eine spezielle Anweisung zur Verfu"gung gestellt.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+
+                    ON BATCHLINE [DO] [laufsteuerung] ENDO
+
+
+        Sie definiert den Grundaufbau ("Hintergrund") einer   BATCH-
+        Zeile.  Beim  Auftreten  dieser  Anweisung  wird eine solche
+        Zeile noch nicht aufgebaut.  Dies   erfolgt  erst  nach  dem
+        Abschluss  der  regula"ren Zeile  vor dem Aufbau einer BATCH-
+        Zeile.  Die BATCH-Zeichenketten  werden  dann  in  die  vor-
+        bereiteten BATCH-Zeilen eingetragen.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+          on batchline do
+              'I'
+              \15 'I'
+              \29 'I'
+          endo
+          \n2
+
+
+          I DAS IST     I WIE ES      I
+          I ALLES NICHT I SCHEINT     I
+          I SO          I             I
+          I KOMPLIZIERT I             I
+
+
+        _2._6._7.  EEEEiiiinnnnggggaaaabbbbeeee vvvvoooonnnn ZZZZeeeeiiiicccchhhheeeennnnkkkkeeeetttttttteeeennnn uuuu""""bbbbeeeerrrr TTTTeeeerrrrmmmmiiiinnnnaaaallll
+
+        Fu"r die Gestaltung variabler Texte in der Liste,  die  nicht
+        Teil  der  Tupeldatei  sind,  steht  die Bedienereingabe von
+        Zeichenketten zur Verfu"gung.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 279 -                     RRRReeeeppppoooorrrrtttt
+
+
+
+                    TERMINAL zeichenkette [BATCH number]
+
+
+        Die Bearbeitung der Anweisung vollzieht  sich  in  folgenden
+        Schritten:
+
+
+        1.   Der Text von 'zeichenkette' wird auf dem Terminal unter
+             Anfu"gung des Zeichens ">" ausgegeben.
+
+        2.   Die Eingabe der, in die Liste  einzutragenden  Zeichen-
+             kette, vom Terminal wird erwartet.
+
+        3.   Die eingelesene Zeichenkette wird  nun  genauso  behan-
+             delt,  wie eine Zeichenkette, die direkt in der Listen-
+             definition  angegeben  wurde.  Die  Bearbeitung   eines
+             Wiederholungsfaktors ist nicht mo"glich.
+
+        Zu beachten ist, dass die eingelesenen  Zeichenketten  nicht
+        abgespeichert   werden.  Dies  bedeutet,  dass  die  Eingabe
+        wiederholt vorgenommen werden muss, wenn die Anweisung  TER-
+        MINAL in einem Zyklus steht.
+
+        BBBBeeeeiiiissssppppiiiieeeellll
+
+          terminal 'NAME DES KUNDEN' \n2
+
+        Bei der Abarbeitung dieser Anweisungen  erscheint   auf  dem
+        Terminal die Ausschrift:
+
+          NAME DES KUNDEN>
+
+        Wird  als  Name  "Mueller" angegeben,  steht  in  der  Liste
+        dann:
+                    Werter Herr Mueller!
+
+
+        _2._6._8.  BBBBeeeerrrreeeeiiiittttsssstttteeeelllllllluuuunnnngggg ddddeeeerrrr TTTTuuuuppppeeeellllwwwweeeerrrrtttteeee
+
+        Die Bereitstellung der Tupelwerte  erfolgt  im  Teil  ttttuuuuppppeeeellll----
+        vvvveeeerrrraaaarrrrbbbbeeeeiiiittttuuuunnnngggg....
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+                FOR ALL [DO] [laufsteuerung]
+
+                FOR [ONE] [DO] [laufsteuerung] END [ONE] | ENDO
+                [laufsteuerung] END ALL | ENDA
+
+        Die Tupelverarbeitung hat also folgendes Aussehen:
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 280 -                     RRRReeeeppppoooorrrrtttt
+
+
+        FOR ALL DO
+            .
+            .
+            .
+            FOR ONE DO
+                .
+                .
+                .
+            END ONE
+            .
+            .
+            .
+        END ALL
+
+
+        Erreicht die Abarbeitung die Anweisung FOR ALL DO, wird  das
+        jeweils  na"chste  Tupel gelesen. Zwischen FOR ONE DO und END
+        ONE kann das Tupel verarbeitet werden.   Wird  festgestellt,
+        dass  alle  Tupel  gelesen wurden, erfolgt die weitere Abar-
+        beitung der Listendefinition ab der  ersten  Anweisung  nach
+        END ALL.
+
+        Die  Konstruktion FOR ALL DO ...  END ALL  kann  als  Zyklus
+        betrachtet  werden,  der verlassen wird, wenn alle Tupel der
+        Eingabedatei verarbeitet wurden.
+
+        Der Zugriff auf  die  Werte  eines  Tupels  wird  durch  das
+        Schlu"sselwort     VALUE     oder  das Schlu"sselzeichen # und
+        die Nummer der Doma"ne realisiert.  Sicherlich hat  sich  die
+        vermeintliche  Doppeldefinition im Einfu"hrungsbeispiel etwas
+        umsta"ndlich ausgenommen.
+
+                define p_num = 1
+                 .
+                 .
+                define #p_num = integer 2
+
+        Das spart aber viel Arbeit, weil sie nicht unbedingt  #p_num
+        schreiben  mu"ssen,  um den Wert dieser Doma"ne zu erreichen -
+        es  genu"gt  auch  #1.  Sie  haben  zu  entscheiden,  ob  die
+        U"bersicht mit der zweiten Variante noch gewahrt bleibt.
+
+        Der Reportgenerator fu"r ING_DB   ermo"glicht  nicht  nur  den
+        Zugriff  zum  aktuellen  Tupel, sondern auch zum unmittelbar
+        vorhergehenden und nachfolgenden durch  die  Schlu"sselwo"rter
+        LAST und NEXT.
+
+        SSSSyyyynnnnttttaaaaxxxx
+
+                    LAST number
+                    NEXT number
+
+
+        LAST und NEXT ko"nnen u"berall dort verwendet werden, wo  auch
+        # mo"glich ist. Das heisst, dass gleichzeitig drei Tupel aus-
+        gewertet werden ko"nnen  und  ermo"glicht  beispielsweise  die
+        Ausgabe von drei Tupeln nebeneinander u"ber mehrere Zeilen.
+
+        Wird mit number auf ein Attribut zugegriffen, das  im  Tupel
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+        Anwendung                 - 281 -                     RRRReeeeppppoooorrrrtttt
+
+        gar  nicht existiert, wird eine Warnung auf dem Bedientermi-
+        nal ausgegeben und die Doma"ne Null verwendet. Wird  auf  ein
+        Tupel  zugegriffen,  welches  nicht existiert, z. B. bei der
+        erstmaligen Abarbeitung von FOR ONE DO auf das Tupel "LAST",
+        haben alle Tupelattribute einen NULL-Wert.
+
+        Der NULL-Wert kennzeichnet ein Attribut als nicht definiert.
+        Er  kann auch innerhalb von Tupeln auftreten. Intern ist der
+        NULL-Wert durch eine bestimmte Bitkombination verschlu"sselt.
+
+        Bevor wir mit der  Theorie  fortfahren,  versuchen  wir  ein
+        etwas  umfangreicheres Beispiel, das zwar teilweise ein Vor-
+        griff auf Kommendes ist -  im  Wesentlichen  aber  Bekanntes
+        benutzt.  Sie kopieren die Relation "personal" aus "demo" zu
+        "perskomp" auf folgende Form:
+
+
+        Relation: perskomp
+
+
+        |name                |qual    |pkz         |lohn  |abt   |gruppe|
+        |---------------------------------------------------------------|
+        |Gruene, Peter       |Dipl.Ing|301220433447|  1700|     0|     1|
+        |Rose, Petra         |Oekonom |270531327326|  1206|     0|     1|
+        |Mueller, Ernst      |Kaufmann|110450423412|   700|    10|    12|
+        |Fleischer, Karl     |Kraftf. |200652456768|   877|    13|    23|
+        |Schmidt, Hermann    |Ing.Oek.|130536487246|  1120|    26|    10|
+        |Neumann, Inge       |Ing.    |120950366789|  1198|    26|    23|
+        |Warnke, Peter       |FA      |120740423408|   788|    26|    23|
+        |Baum, Klaus         |FA      |191156423577|   837|    32|    10|
+        |Loda, Dieter        |FA      |040352433406|   500|    32|    10|
+        |Weber, Franz        |Dipl.Ing|261044466201|  1337|    33|     2|
+        |Kayser, Helmut      |TFA     |200652434556|   600|    33|    11|
+        |Maerz, Udo          |Ing.    |120947434566|  1116|    55|     2|
+        |Mueller, Petra      |Dipl.Ing|111139334464|  1362|    55|     3|
+        |Schulze, Ernst      |Dipl.Ing|221144434043|  1564|   129|     1|
+        |Zeidler, Fritz      |Dipl.Oek|310328434035|  1686|   129|     1|
+        |Moser, Otto         |Dipl.Ing|241238434052|  1567|   129|     3|
+        |Weise, Juergen      |FA      |131235435334|   900|   199|     4|
+        |Malter, Juergen     |Ing.    |180620435662|  1200|   199|     5|
+        |Rose, Peter         |Dipl.Oek|200227435046|  1590|   199|     5|
+        |Ernst, Eva          |Dipl.Ma.|130431334667|  1010|   199|     6|
+        |Heine, Rolf         |Oek.    |220829435672|   905|   199|     6|
+        |Schmidt, Petra      |Dipl.Ma.|101040334223|  1200|   199|     6|
+        |Thoms, Rolf         |Oek.    |100341434221|  1000|   199|     6|
+        |Schneider, Peter    |Oek.    |130730434446|  1300|   199|     7|
+        |Wunsch, Peter-Paul  |Ing.    |050428433078|   900|   199|     7|
+        |---------------------------------------------------------------|
+
+
+        Mit ccccooooppppyyyy ppppeeeerrrrssssccccoooommmmpppp(((())))  iiiinnnnttttoooo  """"mmmmnnnntttt////wwwwoooorrrrkkkk////tttteeeexxxxtttt////kkkkoooommmmpppp....ffff""""  erstellen
+        sie  das  Tupelfile  und anschliessend das Deskription-File.
+        Das Programm  kkkkoooommmmppppllll____pppp  soll  eine  stark  vereinfachte  FZR-
+        Beitragsu"bersicht erstellen:
+
+        report kompl_r
+        with
+             /* page layout */
+             columns 60
+             lines 36
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
