@@ -1,0 +1,59 @@
+     USERS(FILES)                 DABA16                  USERS(FILES)
+
+     NAME
+          .../sys/etc/users - DABA-Nutzerverzeichnis
+
+     BESCHREIBUNG
+          Dieses File enthaelt die Nutzerinformationen in Feldern, die
+          durch  den  Doppelpunkt  separiert werden.  Es gibt folgende
+          Felder:
+
+          0. Nutzername, direkt entnommen aus dem /etc/passwd File.
+          1.    Nutzercode,     zugeordnet     durch     den     DABA-
+              Systemverantwortlichen.   Es  muss  ein eindeutiger Code
+              aus zwei Zeichen(Character) sein.
+          2. MUTOS-Nutzeridentifikator.  Er muss mit  dem  Eintrag  im
+              File /etc/passwd -ubereinstimmen.
+          3. MUTOS-Gruppenidentifikator (gleiche Bemerkung).
+          4. Statuswort in oktaler  Darstellung.   Erlaubte  Bit-Werte
+              sind:
+
+              0000001 creatdb
+                      Befugnis zur Erzeugung von Datenbanken
+              0000002 direct update
+                      Befugnis zum Ueberschreiben der Stapelaenderung
+                      (Aenderund des Hintergrundes).
+              0000004 update os system catalogs
+                      Befugnis zum Aendern der Systemkataloge
+              0000020 trace flag
+                      Befugnis zur Benutzung der Trace-Flags
+              0000100 proctabs
+                      Befugnis zur Benutzung der Prozesstabellen
+              0000200 =proctab form
+                      Berechtigung zur Benutzung von undefinierten
+                      Prozesstabellen der Form "=file"
+                      (file ist eine Prozesstabelle im Verzeichnis
+                      .../sys/etc).
+              0100000 DABA superuser
+                      Kennzeichen des DABA-Systemverantwortlicher
+
+          5. Eine Liste von automatisch gesetzter  Flags  fuer  diesen
+              Nutzer.
+          6. Die fuer diesen Nutzer anwendbare Prozesstabelle.
+          7. Ein Initialisierungs-File, das durch  den  DABA-Terminal-
+              Monitor zum Login-Zeitpunkt gelesen wird.
+          8. Kommentarfeld.
+          9. Komma separierte Liste von Datenbanken.  Wenn  die  Liste
+              nicht  vorhanden ist, kann der Nutzer jede Datenbank be-
+              nutzen.  Wenn sie mit einem "-" beginnt, kann der Nutzer
+              jede  Datenbank,  ausser  den nachfolgend spezifizierten
+              benutzen.  Andernfalls kann der Nutzer nur die  spezifi-
+              zierten Datenbanken benutzen.
+
+          WARNUNG: Das Erteilen der Befugnis, spezielle  Prozesstabel-
+          len zu benutzen, ist gleichbedeutend mit dem Ausschalten des
+          Schutzsystems fuer diesen Nutzer.
+
+     BEISPIEL[E]
+          daba:aa:5:2:177777:-d:=special:/mnt/daba/.ql::
+          gast:ah:35:1:000000:::::demo.gast

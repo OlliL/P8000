@@ -1,0 +1,22 @@
+     SAVE(QL)                     DABA16                      SAVE(QL)
+
+     NAME
+          save - Verlaengern des Schutzdatums einer Relation
+
+     UEBERSICHT
+          save relname until month day year
+
+     BESCHREIBUNG
+          Save wird benutzt, um das Schutzdatum  ueber  die  standard-
+          maessigen 7 Tage hinaus zu verlaengern.
+
+          month ist der Monat (1,2,...12), day der Tag (1,2,3...)  und
+          year das Jahr (...1988,1989...).
+
+
+     BEISPIEL[E]
+          /* Schuetzen der Relation "personal" bis Ende Februar 1987 */
+             save personal until 2 28 1987
+
+     SIEHE AUCH
+          create(ql), purge(mutos), retrieve(ql), saver(mutos)

@@ -1,0 +1,614 @@
+     MONITOR(IQL)                 DABA16                  MONITOR(IQL)
+
+     NAME
+          monitor - interaktiver Terminal-Monitor
+
+     BESCHREIBUNG
+          Der Terminal-Monitor realisiert zusammen mit  dem  DBBS  das
+          interaktive Interface (Nutzeroberflaeche) IQL von DABA.
+
+          Der  Monitor  stellt  einen  Monitor-Puffer,  die  Terminal-
+          Monitor-Kommando-Unterstuetzung  und die Makrounterstuetzung
+          (Makroprozessor) (macros(iql))  nach  seinem  Start  bereit.
+          Die  von  der  Monitor-Kommando-Unterstuetzung verarbeiteten
+          Monitor-Kommandos erlauben u.a. in Zusammenarbeit mit  einem
+          Editor und dem Makro-Prozessor die Manipulation des Inhaltes
+          des Monitor-Puffers.  Dieser manipulierte  Inhalt  wird  dem
+          DBBS  als  QL-Anfragenstapel  uebergeben und von diesem ver-
+          arbeitet.  Ausserdem gestatten die Kommandos einen vorueber-
+          gehenden  Wechsel der interaktiven Umgebung (Shell bzw. Edi-
+          tor).
+
+          Die Monitor-Kommandos gestatten in vom Nutzer vorgefertigten
+          Kommandofiles (Monitor-Programme als Include-Files) eine Ab-
+          laufsteuerung. Diese Files (aber auch Terminal-Eingaben) ko-
+          ennen  Monitor-Kommandos, Makro-Anweisungen und als wichtig-
+          ste  QL-Anweisungen  (bzw.  Text,  aus  dem  mittels  Makro-
+          Substitution QL-Anweisungen erzeugt werden) enthalten.
+
+          Zusammenstellung der Monitor-Kommandos
+
+          Der Monitor-Puffer kann mit Monitor-Kommandos:
+
+          - geloescht (\reset, \r),
+          - editiert (Aufruf eines Editors) (\editor, \edit, \ed,
+            \e),
+          - angezeigt (\list, \l oder \print, \p),
+          - durch Terminal-Eingaben ersetzt (Eingabe nach \go
+            und Autoloeschfunktion "ein")
+            oder ergaenzt (Eingabe nach \append, \a oder \e, \l
+            bzw. \p),
+          - durch den Inhalt eines MUTOS-File ersetzt (\include,
+            \read, \i)
+            oder ergaenzt (\include, \read, \i nach \a, \l bzw.
+            \p) bzw.
+          - in ein MUTOS-File geschrieben (\write, \w)
+
+          werden.
+
+          Ausserdem gibt es Monitor-Kommandos fuer:
+
+          - die Flucht in eine MUTOS-Shell (\shell, \sh, \s),
+          - den Ausgang aus DABA (\quit, \q),
+          - die Verarbeitung eines sich im Puffer befindlichen
+            Monitor-Makros durch den Makroprozessor (\eval, \v),
+          - das Anzeigen von Uhrzeit und Datum (\date, \time, \d),
+          - das Anzeigen von Komponentenbeschreibungen des Handbuches
+            in Lang- oder Kurzform (\H bzw. \h),
+          - das Aendern des Arbeits-Directory (\chdir, \cd),
+          - das Setzen von Sprungmarken (\mark, \k),
+          - das Verzweigen zu einer Sprungmarke (\branch, \b)
+            (bedingt oder unbedingt),
+          - die Uebergabe des Inhaltes des Monitor-Puffers (QL-
+            Anfragenstapel) zur Verarbeitung durch das DBBS (\go, \g)
+          - und zur Aenderung des Kommandokennzeichens (\monitor, \m).
+
+
+     Nachrichten und Eingabe-Aufforderungen (Prompts)
+
+     Um den Nutzer ueber den Status des Monitors und des  Anfragenpuf-
+     fers zu informieren, gibt der Terminal-Monitor verschiedene Nach-
+     richten aus.
+
+     Wenn DABA bereit ist, Eingaben zu akzeptieren, wird die Nachricht
+     "DABA>"  angezeigt.   Das  bedeutet, dass der Anfragenpuffer leer
+     ist.
+
+     Die Nachricht "DABA:" erscheint, wenn  der  Anfragenpuffer  nicht
+     leer ist.
+
+     In jedem Falle wird der Nutzer durch einen Stern "*" (Prompt) auf
+     der naechsten Zeile zur Eingabe aufgefordert.
+
+     Die Ausgaben "DABA>" bzw. "DABA:" und "*" werden bei einer  "-s"-
+     Option unterdrueckt.
+
+     Der Monitor schreibt den Eingabetext in  den  Monitor-Puffer,  je
+     nach  eingestelltem  Terminalmodus entweder sofort (cbreak-Modus)
+     oder erst nach <nl> (echo-Modus), dann sind Korrekturen vor  <nl>
+     mit <kill> oder <erase> moeglich.
+     Bei der Eingabe werden alle Zeichen mit Ausnahme von <tab>,  <nl>
+     und  <escape>,  die kleiner als oktal 040 sind, in Blanks konver-
+     tiert, wobei die Warnung:
+
+               Zeichen 0xx konvertiert in Blank
+
+     erscheint.
+
+
+
+
+     Nachdem die Eingabe in den Monitor-Puffer uebernommen wurde, kann
+     sie  dort  nur  noch durch \edit editiert oder der gesamte Puffer
+     durch \reset geloescht werden.
+
+     Bei der Uebernahme der Eingabe in den Monitor-Puffer filtert  der
+     Terminal-Monitor  die  Monitor-Kommandos aus und fuehrt diese so-
+     fort aus.
+
+     Das Monitor-Kommando \go  (oder  \g)  uebergibt  den  Inhalt  des
+     Monitor-Puffers  an  den  Parser des DBBS, der die QL-Anweisungen
+     analysiert und zur Ausfuehrung weitergibt.  Bei einer Bearbeitung
+     der Anfrage (bzw. Anfragenstapels) erscheint die Meldung:
+
+               DABA . . .
+
+     (nicht bei "-s"-Flag), wodurch signalisiert wird, dass der  Moni-
+     tor auf die Beantwortung der Anfrage wartet.
+
+     Wird ein \edit- oder ein \shell-Kommando spezifiziert,  erscheint
+     die Nachricht:
+
+             >>"Aufrufparameter"
+
+     So ergeben z.B. die Eingaben "\ed", "\sh"  und  "\sh  ls  -l  die
+     Nachrichten  ">>/bin/ed",  ">>sh" und ">>ls -l".  Im interaktiven
+     Modus des Editors (Eingabe: "\edit")  bzw.  der  Shell  (Eingabe:
+     "\sh")  erscheinen anschliessend die Standard-Prompts dieser Pro-
+     gramme.
+
+     Nach einem \go-Monitor-Kommando (oder \eval) wird  der  Anfragen-
+     puffer  standardmaessig  (Autoloeschfunktion "ein") zur Loeschung
+     vorgemerkt.  Wenn unmittelbar anschliessend eine  andere  Anfrage
+     eingegeben  wird,  erfolgt  das Loeschen des Puffers.  Es erfolgt
+     nicht, wenn unmittelbar nach der Bearbeitung des  Anfragenstapels
+     (\go)  bzw. nach \eval die Vormerkung zum Loeschen durch die Kom-
+     mandos \append, \print, \list oder \edit aufgehoben wurde.
+
+     Nach der Eingabe:
+             help teile
+             \go
+             print teile
+     enthaelt der Anfragenpuffer:
+             print teile
+     Die Eingabe :
+             help teile
+             \go
+             \print
+             print teile
+     ergibt als Inhalt des Anfragenpuffer :
+             help teile
+             print teile
+
+     Ist die Autoloeschfunktion ausgeschaltet ("aus"), wird jede  neue
+     Anfrage  an den Inhalt des Monitor-Puffers angehangen, sodass vor
+     einer Neueingabe  der  Puffer  stets  explizit  mit  dem  \reset-
+     Kommando zu loeschen ist.
+
+     Monitor-Kommandos
+
+     Ein Monitor-Kommando besteht aus dem  Kommandopraefix  (Standard:
+     \), dem Namen des Monitor-Kommandos und wahlweisen Parametern als
+     Argument des Kommandos.  Zwischen diesen Bestandteilen  sind  als
+     Trennzeichen  entweder  Leerzeichen oder Tabulatorzeichen erlaubt
+     (nach Kommandopraefix) bzw. notwendig (ansonsten).
+
+     Einige Terminal-Monitor-Kommandos enthalten nach dem  Kommandona-
+     men  bis zum Zeilenende ein Argument (u.U. aus mehreren Woertern)
+     (z.B. Filenamen).  Diese Kommandos duerfen  auf  der  Zeile  kein
+     weiteres  Kommando  beinhalten.  Die maximale ausgewertete Laenge
+     des Argumentes dieser Kommandos betraegt 100 Byte.  Es ist zu be-
+     achten,  dass  das  Argument  dieser  Kommandos  ueber den Makro-
+     Prozessor ausgewertet wird!
+
+
+
+     Kommandos ohne Parameter koennen auf der Zeile  aneinandergereiht
+     werden.
+
+     Durch
+             \date\go\date
+     wird die Zeit vor und nach der Ausfuehrung des Inhaltes  des  An-
+     fragenpuffers angezeigt.
+     Nachfolgend werden die Kommandos im Detail beschrieben, wobei al-
+     le  Kommandos keinen Parameter haben duerfen, bei denen er in der
+     Erlaeuterung nicht erwaehnt wird.
+
+          \h
+          \help Anzeige einer Komponenten-Kurzbeschreibung  (Name  als
+                    Parameter)  bzw.  der  Kurzfassung des Inhaltsver-
+                    zeichnisses der Komponenten (ohne Parameter).
+
+          \H
+          \HELP Anzeige einer Komponentenbeschreibung (Name als  Para-
+                    meter)  bzw.  des Inhaltsverzeichnisses der Kompo-
+                    nenten (ohne Parameter).
+
+          \m
+          \monitor Ersetzen des  \-Zeichens  (Monitor-Kommandopraefix)
+                    Ein   Parameter  ist  das  neue  Terminal-Monitor-
+                    Kommandopraefix. Wenn er fehlt, wird der  Standard
+                    (\) eingestellt.
+
+                    Nach  einer  Neudefinition  des  Monitor-Praefixes
+                    sind  u.U.   bestehende  Kommando-Files  (Include-
+                    Files) nicht mehr abarbeitbar!
+
+          \r
+          \reset Loeschen des Monitor-Puffers (Ruecksetzen des  Anfra-
+                    genpuffers).   Danach ist der Inhalt des Anfragen-
+                    puffers unwiederbringlich verloren.
+
+          \p
+          \print Anzeigen des Anfragenpuffers.  Der Inhalt des  Anfra-
+                    genpuffers   wird  (ohne  Veraenderung  durch  den
+                    Makro-Prozessor) am  Terminal  des  Nutzers  ange-
+                    zeigt.
+
+          \l
+          \list  Anzeigen  des  aktuellen  Anfragenstapels,  nach  der
+                    Makro-Verarbeitung.   Nebeneffekte  bei der Arbeit
+                    des  Makro-Prozessors,   wie   z.B.   die   Makro-
+                    Definition,  werden ausgefuehrt.  Dem Makroprozes-
+                    sor wird der Inhalt des  Monitor-Puffers  ueberge-
+                    ben,  dem  der Makro {begintrap} vorangestellt und
+                    der Makro {endtrap}  nachgestellt  werden.   Damit
+                    wird dem Nutzer angezeigt, welcher Text dem Parser
+                    des DBBS bei einem \go-Kommandos uebergeben werden
+                    wuerde.  Es ist zu beachten, dass bei wiederholter
+                    Anwendung durch die vorherige Definition von  Sub-
+                    stitutionsmakros  andere  Ergebnisse auftreten ko-
+                    ennen.
+
+          \v
+          \eval Der Makro-Prozessor verarbeitet den Anfragenpuffer und
+                    ersetzt  seinen  Inhalt  durch  das  Ergebnis  der
+                    Makro-Verarbeitung.  Definierte Makros  werden  in
+                    die Makro-Tabelle des Makro-Prozessors uebernommen
+                    und sind damit aktiviert.
+
+                    Im Unterschied zum  \list-Kommando  erfolgen  kein
+                    Einbeziehen  der  Makros {begintrap} und {endtrap}
+                    und keine  Anzeige  am  Terminal.   Auf  Standard-
+                    Output wirkende Ausgaben der Makros {dump}, {type}
+                    und {read...} werden ausgefuehrt.
+
+                    Das \eval-Kommando ist das  fuer  die  Abarbeitung
+                    von Funktionsmakros zu bevorzugende Kommando.
+
+          \e
+          \ed
+          \edit
+          \editor Eintritt in einen der MUTOS-Text-Editoren (z.B. "ed"
+                    als Standard-Text-Editor).  Wird "ed" benutzt, ist
+                    ein "w"- gefolgt von  einem  "q"-ed-Kommando  ein-
+                    zugeben, um die Steuerung an DABA zurueckzugeben.
+                    Wird ein File-Name als Parameter spezifiziert, er-
+                    folgt  ein  Aufruf  zum  Editieren dieses File und
+                    nicht der Aufruf eines anderen Editors!
+                    Wurde  in  einem   der   Start-Files   der   Makro
+                    "{editor}"  definiert,  wird  er  benutzt,  um den
+                    Pfadnamen eines spezifizierten Editors (z.B.  "vi"
+                    oder   "em")  einzugeben.   Standardmaessig  (ohne
+                    "{editor}"-Makro) wird als Pfadname "/bin/ed"  be-
+                    nutzt.
+
+                    Innnerhalb   des   Editors    darf    kein    "e"-
+                    Kommandoaufruf erfolgen.  Wenn er irrtuemlich doch
+                    erfolgte, geht der Name des  Anfragenpuffers  ver-
+                    loren.
+
+          \g
+          \go Verarbeitet die aktuelle Anfrage (Anfragenstapel).   Der
+                    Inhalt  des  Puffers wird vom Makro-Prozessor ver-
+                    arbeitet, DABA uebergeben  und  ausgefuehrt.   Bei
+                    den  tupelorientierten  QL-Anweisungen "retrieve",
+                    "replace", "append" und "delete"  wird  der  Makro
+                    {tuplecount} mit der Anzahl der bearbeiteten Tupel
+                    definiert (an  den  Nutzer  zurueckgegeben).   Dem
+                    Parser wird vom Makro-Prozessor der Inhalt des Mo-
+                    nitorpuffers uebergeben, dem der Makro {begintrap}
+                    voran und der Makro {endtrap} nachgestellt werden.
+                    Es ist darauf zu achten, dass nach  der  Verarbei-
+                    tung  durch  den  Makro-Prozessor,  dem  DBBS aus-
+                    schliesslich  QL-Anweisungen   uebergeben   werden
+                    (u.U. Bereinigen des Puffers).
+
+          \a
+          \append Anfuegen der folgenden Eingaben an den  Anfragenpuf-
+                    fer.   Nach Eingabe eines \a wird die automatische
+                    Loeschunterstuetzung  des  Anfragenpuffers  (falls
+                    sie  "ein" war) ausgeschaltet und damit der Anfra-
+                    genpuffer nicht zurueckgesetzt (kein reset).
+
+          \d
+          \time
+          \date Anzeigen der aktuellen Tageszeit und des Datums.
+
+          \s
+          \sh
+          \shell Flucht in eine MUTOS-Shell.  Wurde der  {shell}-Makro
+                    definiert,  wird dieses Shell-Programm zur aktiven
+                    Shell. Wenn nicht, wird "/bin/sh" aktiv.
+
+                    Der Aufruf des \shell-Monitor-Kommandos  kann  mit
+                    oder ohne Parameter erfolgen.
+
+                    Ein Aufruf ohne Parameter startet die Shell inter-
+                    aktiv.  Danach  kann wie unter einer normalen, dem
+                    Terminal zugeordneten Shell gearbeitet werden, bis
+                    diese    entsprechend   den   Konventionen   (z.B.
+                    Control-z oder Control-d ) verlassen wird und eine
+                    Rueckkehr zum Monitor erfolgt.
+
+                    Sind Parameter spezifiziert, werden diese als Auf-
+                    ruf  eines  einzigen MUTOS-Programmes (1.Parameter
+                    ist der Shell-Kommandoname  (Filename  des  auszu-
+                    fuehrendes Files), die weiteren Parameter sind die
+                    dem Kommando zu uebergebenden Parameter)  verstan-
+                    den,  das  unter Steuerung der aktiven Shell abzu-
+                    arbeiten ist.  Anschliessend  erfolgt  automatisch
+                    die  Rueckkehr  zum Monitor.  Wenn z.B. "\shell ls
+                    -l" spezifiziert wird, erfolgt die Anzeige des In-
+                    haltes  des  Arbeits-Directory in der Langform und
+                    anschliessend sofort die Rueckkehr  zum  Terminal-
+                    Monitor.
+
+          \q
+          \quit Ausgang aus DABA (Verlassen des IQL-Interfaces).
+
+          \cd
+          \chdir Aendern des Arbeits-Directory fuer den Monitor in ein
+                    benanntes Directory (Parameter).
+
+          \i
+          \include
+          \read Umschalten der Eingabe auf ein benanntes File (Parame-
+                    ter).   Backslash-Zeichen  im  File (Include-File)
+                    werden wie bei der Eingabe vom Terminal behandelt.
+
+                    Ohne Parameter wird die entsprechende Programmebe-
+                    ne  verlassen.  In  der  Basis-Terminal-Ebene ent-
+                    spricht die Wirkung dem \quit-Kommando.
+
+                    Die maximale Schachtelungstiefe  ist  5  (generie-
+                    rungsabhaengig).
+
+                    Ist in einem Include-File ein  \read-Kommando  mit
+                    dem  Zeichen  "-" spezifiziert erfolgt die Meldung
+                    "<Eingabe>" und zwischenzeitlich (bis  <EOF>)  ist
+                    das  Terminal die Eingabe.  Anschliessend wird die
+                    Eingabe aus dem Include-File fortgesetzt.
+
+
+          \w
+          \write Schreiben des Inhaltes des Anfragenpuffers in ein be-
+                    nanntes  File  (Parameter).   Der File-Modus eines
+                    neu erstellten Files ist oktal "0644".
+
+          \b
+          \branch Springen (Verzweigen der Steuerung) bedingt  (Frage-
+                    zeichen,  Ausdruck  und  Marke als Parameter) oder
+                    unbedingt (Marke als  Parameter)  innerhalb  eines
+                    Include-File (s.a. Abschnitt "Springen").
+
+          \k
+          \mark Setzen einer Sprungmarke (Parameter).  Diese  ist  die
+                    Zielangabe    eines    auszufuehrenden    \branch-
+                    Kommandos.
+
+          \<irgendein anderes Zeichen>
+                    Ignoriert irgendeine spezielle Bedeutung des nach-
+                    folgenden  Zeichens.  Das erlaubt, das "\" als li-
+                    terales Zeichen einzugeben (ql(iql).  Es ist wich-
+                    tig  zu  bemerken,  dass Backslash-Folgen manchmal
+                    durch den Makro-Prozessors verloren  gehen.   Des-
+                    halb  sind zwei Backslash zu schreiben, wenn einer
+                    zu senden ist.
+
+          Makros
+
+          Eine ganaue Beschreibung der Makros ist in (macros(iql))  zu
+          finden.
+
+          Springen
+
+          Die \branch und  \mark  Kommandos  erlauben  ein  beliebiges
+          Springen  innerhalb  eines Include-File.  Dem \mark Kommando
+          muss eine Marke folgen.  Dem \branch kann eine Marke  folgen
+          (entspricht  einem  unbedingten  Sprung),  oder es folgt ein
+          Ausdruck, dem ein Fragezeichen ("?") vorangeht und eine Mar-
+          ke  folgt  (bedingter Sprung).  Der Sprung wird ausgefuehrt,
+          wenn der Ausdruck groesser als Null ist.
+
+          Das Kommando :
+
+                     \branch ?{tuplecount}<=0 notups
+
+
+
+
+          verzweigt zur Marke "notups", wenn der Makro  "{tuplecount}"
+          kleiner oder gleich Null ist (keine relevanten Tupel).
+
+          Die Ausdruecke, die im \branch  spezifizierbar  sind,  haben
+          folgende Einschraenkungen.
+
+          Die Operatoren +, -, *, /, <=, >=, <, >, =, and != sind, wie
+          ueblich definiert.  Der linke, einstellige Operator "!" kann
+          fuer eine logische  Negation  benutzt  werden.   Leerzeichen
+          (Blanks) innerhalb des Ausdruckes sind nicht erlaubt, da ein
+          Leerzeichen den Ausdruck beendet.   Folgende  Besonderheiten
+          sind zu beachten:
+
+          - Ueberfluessige Endklammern werden ignoriert.
+
+          - Ueberfluessige Anfangsklammern ergeben Null aus
+            Ausdruckswert.
+
+          - Ein leerer Ausdruck bekommt den Wert Null.
+
+          - Nur ein nicht akzeptiertes Zeichen als Ausdruck hat den
+            Wert Null.
+
+          - Der Wert eines Zeichens, dass kein Operator ist wird Null.
+
+          - Die Division durch Null ergibt den Wert Null.
+
+
+          Wenn das \branch-Kommando als Eingabetext vom  Terminal  ge-
+          geben wurde, wird das abgelehnt ("Kein Sprung am Terminal").
+
+          Aus einem Include-File wird zuerst ein vorhandener  Ausdruck
+          ausgewertet  und bei einem Wert groeser Null ein Sprung ver-
+          sucht.
+
+          Wird eine Marke gefunden, wird mit der dieser Marke  folgen-
+          den Textposition die Eingabe des Textes fortgesetzt.
+
+          Ist keine Marke gefunden worden, wird, falls der Makro  {de-
+          fault} definiert wurde, zu dieser dort definierten Marke ge-
+          sprungen.
+
+          Andernfalls wird eine Meldung ausgegeben ("? Label ...").
+
+          IQL-Start
+
+          Beim IQL-Start  (iql(mutos))  wird  zuerst  eine  bei  allen
+          DABA-MUTOS-Kommandos ausgefuehrte Startprozedur durchlaufen.
+          Dabei wird auf das MUTOS-File  /etc/passwd  zugegriffen  und
+          der  Eintrag des Nutzers "daba" gelesen.  Aus diesem Eintrag
+          wird der Pfadname des Home-Directory  gemerkt.   Mit  diesem
+          Pfadnamen  (durch .../ gekennzeichnet) sind alle nachfolgen-
+          den DABA-Files lokalisierbar.  Mit dem Nutzercode  des  auf-
+          rufenden  Nutzers wird im File .../sys/etc/users ein Nutzer-
+          eintrag gelesen.  Ist ein solcher nicht vorhanden,  ist  der
+          Nutzer  nicht  autorisiert DABA anzuwenden.  Aus dem Nutzer-
+          eintrag wird ermittelt, ob der Nutzer  berechtigt  ist,  die
+          spezifizierte  Datenbank  zu  nutzen.  Wenn ja, erfolgt eine
+          Pruefung auf das Vorhandensein dieser Datenbank.  Anschlies-
+          send werden die spezifizierten Optionen (Flags) auf Gueltig-
+          keit geprueft.  Danach erfolgt entsprechend  der  Prozessta-
+          belle  im  vorliegenden  Falle  das  Laden  des DBBS und des
+          Terminal-Monitor-Programmes.
+
+          Initialisierung
+
+          Nach Ablauf der allgemeinen Startprozedur steht das DBBS zur
+          Arbeit   bereit,  und  es  beginnt  eine  Startprozedur  des
+          Terminal-Monitors (Initialisierung), bevor dieser seinen Ar-
+          beitszyklus beginnt.
+
+          Erstens werden vom Monitor-Programm die  Makros  {pathname},
+          {usercode},  {database} und {tuplecount} (macros(iql)) defi-
+          niert, sodass sie fuer die Nutzung bereitstehen.
+
+          Zweitens wird das allgemeine Initialisierungs-  oder  Start-
+          File  (startup(files)) gelesen und verarbeitet.  Dieses File
+          ist vorgesehen, um z.B. mittels Makrodefinitionen  den  fuer
+          alle  Nutzer  anwendbaren  Standard-Editor und die Standard-
+          Shell zu definieren.
+
+          Ist im Nutzereintrag des Files  "users"  (users(files))  ein
+          nutzerspezifisches   Start-File  (Standard-Filename:  ".ql")
+          spezifiziert, wird drittens dieses gelesen und  verarbeitet.
+          Diese  File  kann die speziellen Spezifikationen des Nutzers
+          enthalten.  So kann z.B. in diesem File  ein  nutzerspezifi-
+          scher  Editor bzw. eine Shell definiert werden.  Es ist aber
+          auch moeglich, mit den  Spezifikationen  vorbereitende  nut-
+          zerspezifische Arbeiten auszufuehren.
+
+          Am Ende der Initialisierung wird die  Steuerung  standardma-
+          essig an das Nutzerterminal uebergeben.
+
+          Flags
+
+          Die Arbeitsweise des Terminal-Monitors wird  durch  folgende
+          Optionen  (Flags) beim Aufruf des interaktiven Interface IQL
+          (iql(mutos)) gesteuert:
+
+          -d Anzeige (keine Anzeige) des Inhaltes des "dayfile"  (day-
+                    file(files)) (Standard: Anzeige).
+          -s Anzeige  (keine  Anzeige,  "schweigendes  Arbeiten")  von
+                    Monitor-Nachrichten  (Standard:  Anzeige).  Das -s
+                    Flag unterdrueckt alle Nachrichten (ausser Fehler-
+                    nachrichten)  des  Monitors,  einschliesslich  der
+                    Login- und Logout-Nachrichten  sowie  die  Ausgabe
+                    des  "dayfile"-Inhaltes (entspricht -d Flag "ein")
+                    und   die   Ausgabe   der    Eingabeaufforderungen
+                    (Prompts).
+          -/+a   Autoloeschfunktion   (automatisches   Loeschen    des
+                    Terminal-Monitorpuffers)  "aus" ("ein") (Standard:
+                    "ein").  Das -a Flag unterdrueckt die automatische
+                    Loeschfunktion  (nach  \go bzw. \eval), sodass der
+                    Anfragenpuffer nicht automatisch  geloescht  wird.
+                    Die  Wirkung  ist so, als wuerde stets ein \append
+                    nach jedem \go eingegeben werden.
+
+                    Fuer den Nutzer bedeutet dies, dass vor jeder  neu
+                    eingegebenen  Anfrage  der Anfragenpuffer explizit
+                    durch \reset geloescht werden muss.
+
+     Das -I Flag gestattet, zum IQL-Start ein  Include-File  einzuzie-
+     hen.  Wurde  das  -I  Flag mit einem Filenamen spezifiziert, wird
+     dieses File abgearbeitet, Standard-Input bleibt aber dem Terminal
+     zugeordnet.
+
+     Standardmaessig  arbeitet  der  Terminal-Monitor  in  der  Basis-
+     Terminal-Ebene  (Eingaben von Standard-Input).  Wenn ein Include-
+     File eingezogen wurde, erfolgt die Arbeit  des  Terminal-Monitors
+     durch das Include-File gesteuert, und das File ist die Quelle des
+     Eingabetextes.  Werden aus dem  Include-File  neue  Include-Files
+     eingezogen,  kann  das  als neue Programmebene betrachtet werden.
+     Der Ruecksprung in die uebergeordnete Programmebene erfolgt durch
+     ein "include" ohne Operanden.
+
+     Erfolgte eine Fileumlenkung (Standard-Input einem  File  zugeord-
+     net), werden alle Eingaben aus diesem File erwartet.
+
+     Die Ausgaben des  Monitors  erfolgen  stets  auf  Standard-Output
+     (i.allg.  dem  Terminal zugeordnet).  Die Eingaben der Funktions-
+     makros {read} und {readdefine} (macros(iql)) werden in allen Pro-
+     grammebenen von Standard-Input erwartet.
+
+     Unterbrechungen
+
+     Wenn der Terminal-Monitor auf das Ende der Bearbeitung einer  An-
+     frage durch das DBBS wartet, besteht die Moeglichkeit, die Arbeit
+     des DBBS durch ein Unterbrechungssignal (Control-c) zu  unterbre-
+     chen, um die Steuerung dem Monitor zuruueckzugeben.  Achtung, bei
+     der Bearbeitung von QL-Anweisungen, die die Datenbank veraendern,
+     ist  eine  Unterbrechung  nicht  angebracht (obwohl das DBBS fuer
+     "normale" Unterbrechungen nicht unterbrechbar ist)!
+
+     Eine Unterbrechung waehrend der  Arbeit  mit  einem  Include-File
+     fuehrt zur Rueckkehr in die Basis-Terminal-Ebene.
+
+     Ein <EOF> in einer unter der Basis-Terminal-Ebene liegenden  Pro-
+     grammebene  fuehrt  zur  Rueckkehr in die darueber liegenden Pro-
+     grammebene.  Ein <EOF> in der Basis-Terminal-Ebene entspricht dem
+     \quit-Kommando.
+
+     Fehler
+
+     Die Kommandos \edit und \shell erfordern das Erzeugen eines neuen
+     Prozesses (Betriebssystem-Kommandos "fork" und "exec") .  Gelingt
+     das  nicht,  erfolgen  die  Fehlermeldungen  "edit:  fork"   bzw.
+     "shell:  fork". Gelingt es nicht, die in den Makros {editor} bzw.
+     {shell} spezifizierten Programme zu laden, wird der Makro {error-
+     cout}  auf  den  Wert  -1 gesetzt und der Makro {exectrap} ausge-
+     fuehrt.  Als Ergebnis werden  die  Fehlermeldungen  "edit:  exec"
+     bzw. "shell: exec" ausgegeben.
+
+
+
+
+     Liefern die Editor- bzw. Shell-Programme einen Rueckkehrwert ver-
+     schieden von Null, wird der Makro {exectrap} ausgefuehrt.
+
+     Bei einem \go-Kommando kann die Fehlermeldung "go: open  1"  aus-
+     gegeben werden, wenn die Eroeffnung des Monitor-Puffers nicht ge-
+     lingt.
+
+     Bei einer ueber der maximal zugelassenen  Schachtelungstiefe  er-
+     folgenden  \include-Kommando  wird  die Fehlermeldung "Mehr als 5
+     INCLUDE'S" ausgegeben.
+
+     Wurde ein \write-Kommando spezifiziert koennen die  Fehlermeldun-
+     gen "unakzeptabler file name ..." und "create WRITE-file ..." er-
+     scheinen.
+
+     SIEHE AUCH
+          daba(mutos), macros(iql), ql(iql),
+
+     DIAGNOSE
+          DABA>               Eine neue Anfrage kann begonnen werden.
+
+          DABA:               Die vorherige Anfrage ist beendet, jedo-
+                              ch enthaelt der Puffer einen Inhalt. Der
+                              Monitor besitzt wieder die Steuerung.
+
+          DABA . . .          Die Anfrage wird von DABA bearbeitet.
+
+          >>ed                Es wird im MUTOS-Text-Editor gearbeitet.
+
+          >>sh                Es wird zwischenzeitlich in  der  MUTOS-
+                              Shell gearbeitet.
+
+          Zeichen 0xx konvertiert in Blank
+                              DABA  hat  ein  nichtdruckbares   ASCII-
+                              Zeichen  (oktal  0xx)  in Blank umgewan-
+                              delt.  Diese Nachricht  zeigt  an,  dass
+                              eine  solche Konvertierung fuer das Zei-
+                              chen (0xx) erfolgte.
+     FEHLERQUELLEN

@@ -1,0 +1,797 @@
+     AMX(DABA)                    DABA16                     AMX(DABA)
+
+     NAME
+          amx - Einbettung der Datenmanipulationssprache AMX in "C"
+
+     BESCHREIBUNG
+
+          Einleitung
+
+          Die Sprache AMX stellt ein Interface zur Einbettung von  Da-
+          tenbankzugriffen in "C"-Programme dar und ist leicht erlern-
+          bar.
+
+          Es werden eine Laufzeitbibliothek, i.allg. .../lib/libamx.a,
+          und   DABA-MUTOS-Kommandos  (i.allg.  amx(mutos))  bereitge-
+          stellt. Durch ein solches Kommando  (z.B.  amx)  werden  bei
+          entsprechend   spezifizierten  Optionen  (Flags)  ein  DABA-
+          Praecompiler fuer AMX und der C-Compiler "cc"  (einschliess-
+          lich Linker) aufgerufen.  Der Praecompiler erzeugt ein guel-
+          tiges C-Programm, das mit dem  C-Compiler  uebersetzt  wird.
+          Anschliessend  werden die fuer die Datenbankaktionen notwen-
+          digen Objektmoduln aus der Laufzeitbibliothek eingebunden.
+
+
+
+          In AMX-Programmen ist das parallele Arbeiten mehrerer Nutzer
+          in den gleichen Relationen unterstuetzt.
+
+          Die Vorteile bei der Benutzung dieser  AMX-Sprache  bestehen
+          in der Moeglichkeit der Realisierung laufzeiteffektiver Pro-
+          gramme, in der Formulierbarkeit von Transaktionen und in ei-
+          ner rekursiven Anwendbarkeit.  Letzteres bedeutet, dass z.B.
+          Wiederfinden und Aendern geschachtelt benutzbar sind.   Aus-
+          serdem   sind   prozedurale   Probleme,   z.B.   die  totale
+          Mengenbedarfsermittlung   (totale   Stuecklistenaufloesung),
+          elegant loesbar.
+
+          Alle (auch temporaere) Relationen (einschliesslich aller da-
+          tenbankspezifischen  Namen), die in AMX-Programmen verarbei-
+          tet werden sollen,  muessen  zur  Uebersetzungszeit  bereits
+          existieren.  Das bedeutet, dass sie vorher mit IQL, EQL oder
+          "creater" (creater(mutos)) erstellt werden muessen.
+
+          Mit AMX-Programmen manipulierte Relationen sind mit IQL, EQL
+          oder auch AMX weiterhin bearbeitbar.
+
+          Uebersicht
+
+          Alle tupelorientierten AMX-Anweisungen sind  ausschliesslich
+          auf eine einzige Relation anwendbar.
+
+          Die Sprache AMX hat als maechtigste  Operation  das  Bereit-
+          stellen  von  Werten  spezifizierter Domaenen aus einer u.U.
+          selektierten Tupelmenge einer Relation  (Wiederfinden)  (re-
+          trieve).
+
+          Die Recherche (Wiederfinden) kann alle  Daten  der  Relation
+          umfassen  oder  durch Selektionsbedingungen (Qualifiktionen)
+          eingeschraenkt werden.
+
+          In einer retrieve-Anweisung kann eine Qualifikation und muss
+          eine   Auswahl   spezifizierter   oder  aller  Domaenen  als
+          target_list (Ergebnis-  oder  Zielliste)  angegeben  werden.
+          Eine  solche  Ergebnisliste besitzen ausser der retrieve nur
+          die append und die replace Anweisung.
+
+          Nach einer  erfolgreichen  Recherche,  die  eine  Tupelmenge
+          (mindestens  ein Tupel) bereitstellt, wird fuer jedes dieser
+          Tupel eine Aktion ausgefuehrt.
+
+          Die anderen tupelorientierten AMX-Anweisungen beziehen  sich
+          immer nur auf ein Tupel.
+
+
+
+          Es sind das Ersetzen der Werte  der  Domaenen  eines  Tupels
+          (Ersetzen)  (replace),  das Loeschen eines Tupels (Loeschen)
+          (delete), das Anzeigen eines Tupels (print) bzw. das  Erzeu-
+          gen  eines  neuen   Tupels (Zufuegen zu einer Relation) (ap-
+          pend), aus der Menge vorher mit "retrieve" selektierter  Tu-
+          pel, moeglich.
+
+          Des weiteren ist das Zufuegen eines neuen Tupels  zur  Rela-
+          tion ohne vorherige Selektion nutzbar (append).
+
+          Es gibt weiterhin AMX-Anweisungen fuer das  Eroeffnen  einer
+          spezifizierten  Datenbank  entweder mit exklusiver (alleini-
+          ger) Benutzung (daba oder exclusive), ohne Sperrung oder mit
+          geteilter Benutzung (shared) sowie fuer das Eroeffnen (open)
+          bzw. das Schliessen (close) einer Relation.
+
+          Sollen in einem AMX-Programm miteinander in logischer Bezie-
+          hung stehende Datenmanipulationen (i.allg. in mehreren Rela-
+          tionen) ausgefuehrt werden, ist es zur Erhaltung  der  Date-
+          nintegritaet  erforderlich,  Transaktionen  zu  formulieren.
+          Eine Transaktion ist eine Folge von AMX-Anweisungen als  lo-
+          gische  Arbeitseinheit.   Es gibt jeweils eine Anweisung zur
+          Spezifikation des Transaktionsbeginns  (use),  des  Transak-
+          tionsendes  (commit), sowie des Abbrechens einer Transaktion
+          und das Ruecksetzen (abort) und  fuer  das  Behandeln  einer
+          Verklemmung (if (deadlock)).
+
+          Bei Transaktionsbeginn sind die beteiligten  Relationen  und
+          die  Art  ihrer   Benutzung  (alleinig  (exclusive), geteilt
+          (shared) oder ohne Sperrung (nolock)) spezifizierbar.   Aus-
+          serdem  ist u.a. das Sperrniveau (Seitensperrung (page) oder
+          Relationssperrung (table)) angebbar.
+
+          Des weiteren sind  Anweisungen  zur  vorzeitigen  Beendigung
+          eine  Wiederfindungszyklusses (endretrieve), zur vorzeitigen
+          Beendigung einer Tupelverarbeitung  im  Wiederfindungszyklus
+          (nextretrieve), zum Bereitstellen der Gesamt-Tupelanzahl ei-
+          ner Relation (tuplecount) sowie  der  maximalen  Tupellaenge
+          der  Relation (tuplelength), und eine Leeranweisung (;) ver-
+          fuegbar.
+
+          Neben den durch "C" bereitgestellten   und  von  AMX  unter-
+          stuetzten Datentypen short (2), int (2 bei 16 Bit- und 4 bei
+          32-Bit Rechnern), long(4) , float(4), double(8), char *  und
+          char  []  (1-255)  sind  durch  AMX  zusaetzlich die mit den
+          DABA-Datentypen uebereinstimmenden Typen
+
+                    i1, i2, i4, f4, und f8
+
+          verfuegbar.
+
+          Einschraenkungen
+
+          Die Geschwindigkeit der AMX-Zugriffe erfordert  einige  Ein-
+          schraenkungen.   AMX  gestattet Datenveraenderungen und Wie-
+          derfinden ausschliesslich in  Basis-Nutzerrelationen  (nicht
+          in  Sichten!).  Das  Wiederfinden  in Index-Nutzerrelationen
+          wird unterstuetzt. Die Katalogrelationen  sind, entsprechend
+          definierte Befugnisse vorausgesetzt, lesbar.
+
+          Da nur die in einem  AMX-Programm  konkret  benoetigten  Zu-
+          griffsroutinen  eingebunden  werden, sind keine Universallo-
+          esungen, z.B. universelle Druckprogramme, realisierbar.
+
+          Aus dem Dargelegten ergibt sich ebenfalls, dass die  Nutzer-
+          relationen nicht mit AMX erstellt werden koennen.  Bevor ein
+          AMX-Programm uebersetzt werden kann, muessen die  in  diesem
+          Programm spezifizierten Relationen bereits mit IQL, EQL oder
+          dem DABA-MUTOS-Kommandos "creater" (creater(mutos)) erstellt
+          worden sein.
+
+          Da nur die in einem AMX-Programm benoetigten  Zugriffsrouti-
+          nen  zu den Relationen, entsprechend den konkreten Bedingun-
+          gen, zugriffsoptimiert in das ausfuehrbare  Programm  einge-
+          bunden  werden,  ist  nach jeder Modifikation der Relations-
+          struktur   (modify(ql),   modifyr(mutos),   index(ql)   bzw.
+          indexr(mutos),  destroy(ql)  bzw.  destroyr(mutos) und crea-
+          te(ql) bzw. creater(mutos), eine  Neuuebersetzung  des  AMX-
+          Programmes notwendig!
+
+          Eine Relation, die durch ein AMX-Programm verarbeitet werden
+          soll,  darf keine definierten Integritaetsbedingungen besit-
+          zen!  Als Befugnisse einer  solchen  Relation  duerfen  aus-
+          schliesslich operationelle Befugnisse (append, retrieve, de-
+          lete, replace oder all) ohne  jede  Qualifikation  definiert
+          worden sein!
+
+          Werden mehrere Objektmodule zu einem ausfuehrbaren  Programm
+          verbunden,   darf   nur   einer   dieser  Objektmodule  AMX-
+          Anweisungen enthalten!
+
+          Konvertierungen zwischen numerischen und Zeichenkettenwerten
+          (und  umgekehrt) werden nicht unterstuetzt.  Numerische Kon-
+          vertierungen erfolgen ohne Unter- bzw.  Ueberlaufkontrolle.
+
+          Vergleiche von Zeichenkettenwerten zwischen Domaenen und Va-
+          riablen  werden  in der Laenge der Domaene ausgefuehrt, z.B.
+          liefert der Variablenwert "Automat" den Wert "Auto" fuer die
+          Datenbankaktion,  wenn  die  zugehoerige  Domaene  den DABA-
+          Datentyp "c4" hat.
+
+          Uebersetzung
+
+          AMX-Anweisungen, im Anwendungsprogramm  durch  ein  besonde-
+          res   Praefixsymbol  "##"  gekennzeichnet,  werden durch den
+          Voruebersetzer  (Praeprozessor)  syntaktisch  und semantisch
+          ueberprueft  und  in Prozeduraufrufe der hoeheren  Programm-
+          iersprache  uebersetzt.  Vorbild fuer diesen  Loesungsansatz
+          war EQL des DABA.
+
+          "C"-Anweisungen werden unveraendert in das "C"-Programm  ko-
+          piert.
+
+          Damit ein  AMX-Quellprogramm  vom  AMX-Compiler  verarbeitet
+          werden  kann,  muss  das  File, in dem es enthalten ist, den
+          File-Namenssuffix ".x" (z.B. prog.x) besitzen.
+
+          Der AMX-Compiler holt sich alle Informationen zu  den  Rela-
+          tionen und Domaenen aus den Systemkatalogen (Katalogrelatio-
+          nen) der Datenbank und entlastet somit den Anwender von  der
+          Angabe  dieser Details und den Fehlern, die an dieser Stelle
+          gemacht werden koennen. Durch diesen Ansatz ist  eine  weit-
+          gehende Quelltextunabhaengigkeit von der Struktur der Daten-
+          bank gesichert.
+
+          Bei der Zugriffspfadoptimierung werden die  vorhandenen  In-
+          dizes voll herangezogen.  Wenn der AMX-Programmierer es for-
+          dert, ist eine davon abweichende Zugriffsgestaltung spezifi-
+          zierbar.
+
+          Aenderungen sind nur in Nutzerrelationen gestattet, die  Sy-
+          stemkataloge und Indizes werden durch AMX aktualisiert.
+
+          Eine Aenderung der Speicherungsstruktur einer  Relation  er-
+          fordert,  wie  bereits  betont,  keine  Aenderung  des  AMX-
+          Quellprogramms, wohl aber dessen neue Uebersetzung.
+
+          Wenn der AMX-Compiler ein AMX-Programm uebersetzen soll, ar-
+          beitet  dieser  als  Nutzer "daba".  Damit das erzeugte "C"-
+          Programm in das aktuelle Arbeits-Directory geschrieben  wer-
+          den  kann,  muss  deshalb  "daba"  in  diesem  Directory die
+          Schreiberlaubnis besitzen.
+
+          Die Spezifikation des AMX-Quell-Files erfolgt, wie  ueblich,
+          entweder  als  absoluter Pfadname oder relativ zum aktuellen
+          Arbeit-Directory.
+
+
+
+
+          Das durch den AMX-Compiler erzeugte AMX-Programm besitzt den
+          Filemodus oktal "6755" und ist dem Nutzer daba und der Grup-
+          pe daba zugeordnet.  Es ist z.B. beim  Kopieren  eines  AMX-
+          Programmes  darauf zu achten, dass dieser Filemodus erhalten
+          bleibt.
+
+          Zur Fehlererkennung beimm Compilieren ist folgendes  zu  be-
+          merken.   Nach Erkennung eines Fehlers wird die Uebersetzung
+          erst nach drei als richtig erkannten syntaktischen Einheiten
+          (Token,  Morpheme) fortgesetzt, sodass eine zweite Ueberset-
+          zung Fehler erzeugen kann, die in der ersten nicht  gemeldet
+          wurden. Die zu jedem Fehler mit ausgegebene Zeilennummer ist
+          nicht immer exakt.  Sie kann sich auf  eine  der  vorherigen
+          Zeilen  beziehen, wenn der Fehler am Zeilenende erkannt wur-
+          de, da der Compiler immer eine syntaktische  Einheit  voraus
+          liest.
+          Wird ein Fehler festgestellt, ist in dem oben genannten Fall
+          der  Zeilenzaehler aber schon um eins (oder mehr, bei Zeilen
+          ohne syntaktische Einheiten) hochgezaehlt.  Bei einigen syn-
+          taktischen  Fehler  ist  eine Angabe der Fehlerursache aeus-
+          serst schwierig.
+          Aufgrund der einfachen Syntax von AMX wurde auf eine detail-
+          lierte  Fehlererkennung verzichtet und der Anwender muss den
+          erzeugten Fehler
+
+                           "syntax error"
+          selbst deuten.
+
+          Namenskonventionen
+
+          Fuer Datenbankbegriffe (ql(iql))  und  auch  bezueglich  der
+          Grenzwerte  gelten  die  gleichen Bedingungen wie in den an-
+          deren DABA-Interfaces.  Es sei nochmals daran erinnert, dass
+          die Namen der Systemrelationen:
+
+           "relation"    Verwaltung der Relationen
+           "attribute"   Verwaltung der Domaenen
+           "indexes"     Verwaltung der Indizes
+           "integrities" Verwaltung der definierten Integritaeten
+           "protect"     Verwaltung der vergebenen Zugriffsrechte
+           "tree"        Verwaltung der voruebersetzten Datenbank-
+                         aktionen
+           "references"  Verwaltung von Beziehungen zwischen
+                         Relationen
+
+          als Namen von Nutzerrelationen gesperrt sind.
+
+
+
+
+          Alle Namen (Datenbank, Relationen, Domaenen) sind maximal 12
+          Zeichen lang und bestehen aus den Zeichen "[a-z_0-9]", wobei
+          der Name nicht mit einer Ziffer "[0-9]" beginnen darf (siehe
+          ql(iql)).  Der  AMX-Compiler  konvertiert  bei  Namen grosse
+          Buchstaben "[A-Z]" automatisch in kleine "[a-z]".
+
+          Durch die Laufzeitbibliothek werden eine Reihe von  Objekten
+          definiert,  die  alle  mit "AA" beginnen. Der Anwendungspro-
+          grammierer hat zu gewaehrleisten, dass diese  Objekte  nicht
+          ueberdefiniert  werden. Er sollte Namen, die mit "AA" begin-
+          nen, generell vermeiden.
+
+          AMX-Programm
+
+          Jedes AMX-Programm besteht aus "C"-Anweisungen und eingebet-
+          teten AMX-Anweisungen, die vom AMX-Praeprozessor verarbeitet
+          werden.
+
+          Alle AMX-Anweisungen sind durch das AMX-Kommandopraefix, das
+          aus  zwei Nummernzeichen "##" am Zeilenanfang gebildet wird,
+          gekennzeichnet.
+
+
+
+
+          "C"-Variablen, die in AMX-Anweisungen verwendet werden, sind
+          ebenfalls durch "##" zu kennzeichnen.
+
+          Wie bereits dargelegt, sind die "C"-Variablentypen  und  zu-
+          saetzlich "i1", "i2", "i4", "f4" und "f8" verfuegbar.
+
+          Alle Variablen sind global zu deklarieren!
+
+          Die erste Anweisung im AMX-Quellprogramm muss eine  der  An-
+          weisungen  zum Eroeffnen der Datenbank (exclusive, daba, no-
+          lock oder shared) sein.
+
+          Die erste auszufuehrende Funktion, anstelle von "main", muss
+          die Funktion "amx" sein.  Fuer diese Funktion sind die glei-
+          chen Parameter wie bei "main" spezifizierbar (amx() ohne Pa-
+          rameter).
+
+          Jede Relation muss vor ihrer Verwendung eroeffnet  und  kann
+          nach  Beendigung  der Verarbeitung geschlossen werden. Durch
+          die MUTOS Funktion "exit" werden alle noch eroeffneten Rela-
+          tionen  geschlossen, nachdem die entsprechenden noch ausste-
+          henden Ausgaben erfolgt sind.
+
+
+
+          Zur Bildung syntaktischer Konstruktionen werden zur Darstel-
+          lung  einer Auswahl oder Wiederholung die folgenden Metasym-
+          bole verwendet:
+
+             |  :  Alternative.
+
+            [ ] :  wahlweiser Ausdruck, kann entfallen.
+
+            { } :  mindestens einmalige Wiederholung,
+                   mehrere Elemente werden durch ein Komma "," getrennt.
+
+          Als syntaktische Variable werden u.a. die folgenden  verwen-
+          det:
+
+                    dbname     = Datenbankname
+                    c_code     = C-Anweisung
+                    c_decl     = Deklaration einer C-Variablen
+                    relname    = Relationsname
+                    c_var      = C-Variablenname
+                    domname    = Domaenenname bzw. Domaenennummer
+                    const      = int-Konstante | long-Konstante
+                               | double-Konstante | "string"-Konstante
+
+
+
+          Sprachbeschreibung
+
+          Das Folgende ist eine Beschreibung  der  allgemeinen  Syntax
+          der  Sprache AMX und der syntaktischen Klassen aus denen die
+          Teile der AMX-Anweisungen gebildet  werden.   Die  einzelnen
+          Anweisungen werden ebenfalls hier erlaeutert.
+
+          Kennzeichnung der AMX-Anweisungen
+
+          Alle AMX-Anweisungen beginnen mit "##" am Zeilenanfang.  Nur
+          diese  Anweisungen  werden im folgenden behandelt.  Alle an-
+          deren Anweisungen sind "C"-Anweisungen die  den  Regeln  des
+          "C"-Compilers unterliegen.
+
+          Die erste AMX-Anweisung im Programm
+
+          Die erste AMX-Anweisung in einem AMX-Programm muss das  Ero-
+          effnen einer Datenbank sein.
+
+          Ist keine Sperrung der Datenbank vorgesehen, ist die  Anwei-
+          sung:
+
+          ## nolock [ flags ] dbname [ with deadlock ]
+
+          zu verwenden.
+
+          Soll eine Datenbank alleinig benutzt werden, sind die Anwei-
+          sungen:
+
+          ## daba [ flags ] dbname [ with deadlock ]
+
+          oder
+
+          ## exclusive [ flags ] dbname [ with deadlock ]
+
+          zu benutzen.
+
+          Bei geteilter Nutzung ist:
+
+          ## shared [ flags ] dbname [ with deadlock ]
+
+          zu verwenden.
+
+          Die wahlweisen Flags haben folgende Bedeutung:
+
+          -uname    Erlaubt es, sich als Nutzer  mit  dem  Login-Namen
+                    name  auszugeben.  Das  AMX-Programm arbeitet dann
+                    mit den  Datenbankbefugnissen  des  entsprechenden
+                    Nutzers.     Nur    der    DBA   und   der   DABA-
+                    Systemverantwortliche duerfen dieses  Flag  benut-
+                    zen.
+
+          +bufno    Ist  die  Spezifikation  zusaetzlich  verfuegbaren
+                    DABA-Puffer.   Normalerweise  werden nur insgesamt
+                    drei Puffer bereitgestellt.  Bei paralleler Arbeit
+                    mit  mehreren  Relationen (Indexrelationen muessen
+                    mit  gezaehlt  werden!),  sollte  jeder   Relation
+                    mindestens  ein Puffer zugeordnet werden.  Empfeh-
+                    lenswert sind zwei Puffer pro Relation.
+
+          Die Spezifikation with  deadlock  bedeutet,  dass  Deadlocks
+          (Totsperren) auftreten koennen, die der Nutzer selbst abfan-
+          gen will.
+
+          Kommentar
+
+          Kommentare sind innerhalb  von  AMX-Anweisungen  in  der  C-
+          ueblichen Notation zugelassen und duerfen nicht geschachtelt
+          werden:
+
+                     ## . . . /* Kommentar */ . . .
+
+
+
+
+          Deklaration von C-Variablen
+
+          "C"-Variable, die in einer  AMX-Anweisung  verwendet  werden
+          sollen, sind unbedingt durch "##" zu kennzeichnen.  Folgende
+          "C"-Typen werden unterstuetzt:
+
+                     -  short
+                     -  int
+                     -  long
+                     -  float
+                     -  double
+                     -  char *
+                     -  char []
+
+
+          Ausserdem sind die DABA-Typen i1, i2, i4, f4 und f8 zugelas-
+          sen.
+
+          Folgende Speicherklassen werden unterstuetzt:
+
+                     -  auto
+                     -  extern
+                     -  static
+
+
+          Relationseroeffnung
+
+          Die Anweisung:
+
+          ## open relation
+
+          eroeffnet die Relation relname fuer  die  weitere  Verarbei-
+          tung.
+          Die Relation relname muss eine Primaer-  bzw.  Basisrelation
+          sein,  d.h. es ist nicht  moeglich, explizit eine Indexrela-
+          tion zu eroeffnen.
+
+          Durch die open Anweisung werden automatisch alle  zur  Rela-
+          tion gehoerigen Indizes miteroeffnet.
+          Die Relation relname darf keine Sicht (View)  sein,  und  es
+          duerfen keine Integritaetsbedingungen bzw. nur operationelle
+          Befugnisse (append, replace, retrieve, delete oder all) ohne
+          jede  Qualifikation auf ihr definiert sein.  Die Systemkata-
+          loge relation , attribute und indexes werden durch den Start
+          eines  AMX-Programms automatisch eroeffnet.  Sie duerfen vom
+          Nutzer nicht explizit eroeffnet werden.
+          Recherchen sind auf  alle  Relationen zugelassen,  d.h.  auf
+          Basis-, Indexrelationen und Katalogen.
+          Aenderungen und Einfuegungen sind  nur  auf  Basisrelationen
+          zulaessig, fuer die das Programm die Aenderungsbefugnis (de-
+          lete, append, replace) hat.
+
+          ## close relname
+
+          Die close Anweisung schliesst die Relation relname fuer  die
+          weitere  Verarbeitung. Es koennen nur Relationen geschlossen
+          werden, die zuvor durch die open Anweisung eroeffnet wurden.
+          Die Beendigung eines Programms ( exit ) schliesst  automati-
+          sch alle eroeffneten Relationen und Kataloge.
+
+          ## tuplecount relname c_var
+
+          Die tuplecount-Anweisung weist der C-Variable c_var als Wert
+          die  Anzahl  der  Tupel der Relation relname zu.  C_var muss
+          von numerischem Typ und als long (oder besser i4 ) definiert
+          worden sein.
+
+          ## tuplelength relname c_var
+
+          Die tuplelength-Anweisung weist der  C-Variablen  c_var  als
+          Wert  die Laenge eines Tupels zu und sollte als short ( oder
+          besser als i2 ) definiert sein.
+
+
+
+          Die Anzahl der Tupel einer Relation und ihre Laenge sind die
+          einzigen  verfuegbaren  variablen Kataloginformationen  fuer
+          ein AMX-Programm.  Auf Umwegen kann so die Anzahl der Aende-
+          rungen in einer Relation bestimmt werden:
+
+           . . .
+           ## long old, new;
+           . . .
+           ## tuplecount rel old
+             { Neueinfuegungen }
+           ## tuplecount rel new
+             printf("# of updates", new - old);
+           . . .
+
+          Ergebnisliste
+
+          In der retrieve, der replace und der append  Anweisung  kann
+          eine  Domaenenauswahl  in  Form einer target_list (Ergebnis-
+          oder Zielliste) spezifiziert werden.
+
+          Die target_list ist eine durch Kommas separierte  Liste  von
+          Domaenenzuordnungen  (dom_assign).   Sie muss in runde Klam-
+          mern eingeschlossen werden und mindestens eine  Domaenenspe-
+          zifikation enthalten.
+
+          Eine Domaenenzuordnung der Ergebnisliste besteht aus:
+
+          $domname = value.
+
+          Sie weist der Domaene domname  den  Wert  value  zu.   Dabei
+          kennzeichnet das Dollar-Zeichen $ den Domaenennamen.
+          Als domname kann auch eine Domaenennummer ( attid des attri-
+          bute Kataloges) spezifiziert werden.
+          Bei den Zuweisungen von  numerischen  zu  numerischen  Typen
+          werden  die notwendigen Konvertierungen ohne Ueberlauf- bzw.
+          Unterlaufkontrolle vorgenommen.
+          Zuweisungen von numerischen zu Zeichenkettenwerten  und  um-
+          gekehrt sind nicht zulaessig.
+          Durch die explizite Kennzeichnung  von  Domaenennamen  durch
+          das Zeichen "$" werden im Gegensatz zu EQL Konflikte mit dem
+          Namen von C-Variablen vermieden.
+          Die Referenzierung von Domaenen ueber  ihre  interne  Nummer
+          (Reihenfolge  vom create(ql)) kann sinnvoll bei einer vekto-
+          risierten Verarbeitung sein.
+
+          Ein Wert value kann der aktuelle Wert der C-Variablen c_var,
+          eine  in C uebliche Konstante const oder eine Domaenenzuord-
+          nung sein.  Ein Wert kann der aktuelle Wert der Domaene (Do-
+          maenenzuordnung)  (gekennzeichnet  durch  das Dollarzeichen)
+          $domname sein.  Diese Form des Wertes kann nur  im  Aktions-
+          teil  der  Recherche  angegeben werden und setzt eine ueber-
+          geordnete retrieve Anweisung voraus, aus dem der  Wert  fuer
+          die Domaene domname geholt werden kann.
+
+          Die retrieve-Anweisung
+
+
+          ## [ over over_relname ] retrieve ret_relname [ qual ]  [  (
+          target_list ) ]
+
+          Die retrieve Anweisung zur  Recherche  ist  die  maechtigste
+          AMX-Anweisung,  sie  uebernimmt  die Zugriffspfadoptimierung
+          und ermoeglicht eine rekursive  Verarbeitung,  da  innerhalb
+          einer  Recherche  eine  weitere  Recherche aufgerufen werden
+          kann.
+
+          Die over Klausel gestattet die Zuweisung des  Zugriffspfades
+          ueber die Relation over_relname fuer die Recherche und damit
+          die  Ausschaltung  der   Zugriffspfadoptimierung   im   AMX-
+          Compiler.
+
+          Over_relname muss die wiederzufindende Relation selbst  oder
+          ein  Index  von ret_relname sein. Ist over_relname ein Index
+          und wird durch die  Selektion  qual  keinem  Schluessel  von
+          over_relname  ein Wert zugewiesen, wird der Zugriffspfad ue-
+          ber die Primaerrelation rel_relname gewaehlt,  da  eine  Re-
+          cherche ueber die gesamte Relation und ueber einen Index un-
+          sinning ist.
+
+          Die retrieve Klausel ( retrieve ret_relname ) adressiert die
+          zu suchende Relation ret_relname.
+
+          Qualifikation
+
+          Die Recherche kann durch eine Qualifikation qual als  Spezi-
+          fikation  einer Selektion eingeschraenkt werden, wodurch die
+          relevanten Tupel selektiert werden.
+          Die Selektion ist eine Einschraenkung des Wertebereichs ein-
+          zelner (oder aller) Domaenen.
+          Mehrere Einschraenkungen werden durch "and" getrennt.
+          Eine Qualifikation qual hat maximal zwei Klausel  pro  Doma-
+          enenname.  Eine Klausel besteht aus einer Domaenenspezifika-
+          tion (einem Domaenennamen domname, gekennzeichnet durch  ein
+          Dollarzeichen "$" davor), einem Vergleichsoperator und einem
+          Wert value.  Domname gibt die einzuschraenkende Domaene  und
+          value  den  Wert der Einschraenkung an.  Fuer die Spezifika-
+          tion von value gilt das in "Ergebnisliste" dargelegte.
+
+
+
+          Es sind die Vergleichsoperatoren:
+
+          "=", "==", "<", "<=", ">", ">=", "!="
+
+          zulaessig.
+          Wird eine Domaene doppelt eingeschraenkt, sind folgende  zu-
+          laessige Kombinationen zu beachten:
+
+                    "<[=]" und ">[=]"
+                    "<[=]" und  "!="
+                    ">[=]" und  "!="
+
+          Die Reihenfolge der Einschraenkungen fuer eine  Domaene  ist
+          in folgender Art einzuhalten:
+
+                    "<[=]" --> ">[=]" --> "!="
+
+          Alle zugewiesenen  Bedingungen und Werte der angebenen  Ein-
+          schraenkungen  werden  beim  Einlauf in die Recherche gekel-
+          lert, sodass z.B. eine Aenderung des Wertes einer  verwende-
+          ten C-Variablen keinen Einfluss auf die Selektion hat.
+
+
+
+
+          Ergebnisliste der retrieve-Anweisung
+
+          Die Ergebnisliste ( target_list ) zur Spezifikation der  Do-
+          maenenauswahl (Projektionsoperation des DBBS) ist wahlweise.
+
+          Aktion
+
+          Die Aktion, die bei jedem gefundenen Tupel duchlaufen werden
+          soll, ist durch den Einschluss der ##{ und der ##} Anweisun-
+          gen, die unmittelbar der ## retrieve Anweisung folgen  soll-
+          ten,  zu spezifizieren.  Zwischen diesen Anweisungen koennen
+          beliebige AMX-Anweisungen und C-Anweisungen stehen. Die  Ak-
+          tion  kann  leer sein, allerdings muessen die Klammern ange-
+          geben sein.
+          Es ist wichtig zu wissen, dass innerhalb der Aktion die  Do-
+          maenenwerte  des  gefundenen  Tupel immer vorhanden sind und
+          sich nicht aendern.
+          Eine Aktion fuer ein Tupel kann  vorzeitig  beendet  werden.
+          Es ist moeglich, durch die Anweisung
+
+          ## nextretrieve
+
+          zur Verabeitung des naechsten Tupels ueberzugehen oder durch
+
+          ## endretrieve
+
+          die Aktion (Recherche) zu beenden.
+
+          Variablenzuweisung
+
+          Eine Zuweisung weist der  C-Variablen  c_var  den  aktuellen
+          Wert der Domaene domname zu.
+
+          c_var = $domname
+
+          Bei den Zuweisungen von  numerischen  zu  numerischen  Typen
+          werden   die   notwendigen  Konvertierungen  ohne Ueberlauf-
+          bzw. Unterlaufkontrolle vorgenommen.
+          Zuweisungen von numerischen zu Zeichenkettenwerten  und  um-
+          gekehrt sind nicht zulaessig.
+
+          Die print-Anweisung
+
+          ## print ([{ domname }])
+
+          Die print-Anweisung gibt die Werte der, durch eine oeffnende
+          "("  und eine schliessende runde Klammer ")", begrenzten Li-
+          ste der Domaenen in einem Standardformat nach Standardoutput
+          aus.
+          Die Liste enthaelt eine durch Kommas  ","  getrennte  Aufza-
+          ehlung  der  auszugebenden  Domaenen.  Eine leere Liste "()"
+          gibt die Werte aller Domaenen aus.
+
+          Das Standardformat enthaelt den Namen und den Wert der Doma-
+          ene in folgender Form:
+
+          "%12s: %?\n", domname, value
+
+          ? == Format der auszugebenden Domaene
+
+          Die delete-Anweisung
+
+          ## delete
+
+          Eine delete-Anweisung loescht das  innerhalb  der  laufenden
+          Recherche  gefundene  aktuelle  Tupel aus der Relation.  In-
+          nerhalb der Aktion bleibt das aktuelle Tupel mit seinen Wer-
+          ten  erhalten.
+          Eventuell vorhandene  Indizes  werden  automatisch  aktuali-
+          siert.
+
+          Die replace-Anweisung
+
+          ## replace (target_list)
+
+          Die replace Anweisung gestattet  die  Aenderung  von  Werten
+          einzelner  (oder  aller) Domaenen eines wiedergefundenen Tu-
+          pels.
+          Eine Unterscheidung von Schluessel- und Nichtschluesseldoma-
+          enen ist nicht zu beachten.
+          Die Aenderungen werden  durch  die  Projektions  target_list
+          spezifiziert.
+
+          Es ist zu beachten, dass  die Aenderungen in einem gesonder-
+          tem  Puffer  ausgefuehrt werden, das aktuell gefundene Tupel
+          also innerhalb der Aktion unveraendert bleibt.
+          Eventuell vorhandene Indizes  werden,  falls  noetig,  auto-
+          matisch  aktualisiert.   Eine  Aktualsierung entfaellt z.B.,
+          wenn eine identische Aenderung (geaendertes ==  Ursprungstu-
+          pel)  ausgefuehrt  wurde  oder wenn die geaenderten Domaenen
+          nicht Bestandteil des Index sind und sich  die  Tupeladresse
+          TID nicht geaendert hat.
+
+          Die append-Anweisung
+
+          ## append [ relname ] (target-list)
+
+          Die append Anweisung mit der Spezifikation relname fuegt ein
+          neues  Tupel  in  die Relation relname ein. Die nicht in der
+          target_list spezifizierten  Domaenen  der  Relation  relname
+          werden  mit  einem  Nullwert initialisiert, alle numerischen
+          Domaenen bekommen den Wert 0.
+          Den Zeichenkettendomaenen wird eine mit Leerzeichen gefuell-
+          te Zeichenkette zugewiesen.
+
+          Die append Anweisung ohne relname fuegt ein neues  Tupel  in
+          die Relation ein. Sie kann nur innerhalb einer Recherche ge-
+          nutzt werden.  Durch die Projektion target_list  werden  den
+          aufgefuehrten Domaenen Werte zugewiesen.
+          Alle nicht angebenen Domaenen erhalten den Wert aus dem  ak-
+          tuell gefundenen Tupel der laufenden Recherche.
+
+          Es ist zu beachten, dass die Aenderungen in einem  gesonder-
+          ten  Puffer  ausgefuehrt  werden, also das aktuell gefundene
+          Tupel  unveraendert  bleibt.  Eventuell  vorhandene  Indizes
+          werden automatisch aktualisiert.
+
+          Arbeit mit Transaktionen
+
+          Zur Arbeit mit Transaktionen stehen die AMX-Anweisungen use,
+          commit, abort und if (deadlock) bereit.
+
+          ## use ( use_rel [, ...] )
+
+          Use spezifiziert den Beginn einer Transaktion.   den  Beginn
+          einer Transaktion.  Use_rel wird wie folgt angegeben:
+
+          [ exclusive | shared | nolock | + ] relname [
+
+          with [ level = page | table ]
+
+          [ readlock = exclusive | shared | nolock ]
+
+          [ maxlock = int ]
+
+          [ timeout = int ] ]
+
+          Exclusive oder + bedeuten exklusive (alleinige), das Weglas-
+          sen  oder  shared eine geteilte Benutzung.  Die geteilte Be-
+          nutzung und nolock (kein Sperren) sind nur  fuer  Leseopera-
+          tionen,  exklusive Benutzung fuer Schreiboperationen anwend-
+          bar.
+
+          Level kennzeichnet das Sperrniveau page (Seitensperren) oder
+          table (Relationsperren).
+
+          Readlock ist nur fuer Leseoperationen  anwendbar  und  kenn-
+          zeichnet die Art der Lesesperren.
+
+
+          Maxlock spezifiziert die maximale Anzahl der Sperren ( -1  :
+          unbegrenzt)  und  timeout  die  Zeit (in Sekunden), bis eine
+          Rueckkehr vom DBBS erfolgt sein muss ( -  1  :  warten,  bis
+          verfuegbar).
+
+          Nur, wenn beim Eroeffnen der Datenbank with deadlock  spezi-
+          fiziert wurde, sind die folgenden Anweisungen nutzbar.
+
+          ## if ( bd deadlock ) { stmt_list }
+
+          Mit dieser Anweisung kann abgetestet werden, ob ein Deadlock
+          aufgetreten  ist.  Diese Anweisung ist unmittelbar nach use,
+          retrieve, append, replace oder delete anzuordnen.  Wenn  ein
+          Deadlock aufgetreten ist, wird die Anweisungsfolge stmt_list
+          abgearbeitet werden, was i.allg.  die Anweisung  abort  sein
+          wird.
+
+          ## abort
+
+          Diese Anweisung beendet  eine  Transaktion  zwangsweise  und
+          setzt die Datenbank auf den Stand vor Beginn der Transaktion
+          zurueck.

@@ -1,0 +1,68 @@
+     EQC(MUTOS)                   DABA16                    EQC(MUTOS)
+
+     NAME
+          eqc - Aufruf des EQL-Praecompilers
+
+     UEBERSICHT
+          eqc [ -d ] [ -f ] [ -r ] file.q {file.q}
+
+     BESCHREIBUNG
+          EQL (Eingebettete QL) ist eine Sprache  zur  Einbettung  von
+          Datenbankanfragen    der   Sprache   QL   in   eine   Wirts-
+          Programmiersprache.
+
+          EQL besteht aus der EQL-Laufzeitbibliothek, die die Schnitt-
+          stelle zur Datenbank realisiert (Call- Interface), und einem
+          Praecompiler zur Uebersetzung eines Programms mit  eingebet-
+          teten  QL-Anweisungen  in gueltige Anweisungen der Programm-
+          iersprache C.
+          Das Call-Interface ist fuer  alle  Programmiersprachen  ver-
+          fuegbar;  ein  Praecompiler  existiert zur Zeit nur fuer die
+          Programmiersprache C.
+
+          Compilation
+
+          Der Praecompiler wird durch das Kommando:
+
+               eqc {flags} file1.q {flags} file2.q ...
+
+          aufgerufen, wobei filen.q die Quelleingabe-Files sind, deren
+          Namen  mit  .q enden muessen.  Die Ausgabe wird auf das File
+          `filen.c' geschrieben.
+
+          Folgende Flags koennen gesetzt werden:
+
+               -d Generiert Code zum Quelltext des Files mit Name  und
+               Zeilennummer, die bei auftretenden Laufzeit-Fehlern an-
+               gezeigt werden. Das  ist  zum  Analysieren  der  Fehler
+               nuetzlich, benoetigt aber mehr Platz.
+
+          -f Erzeugt Code, bei dem "Output"- und "Input"-Files
+               gewoehnlich die gleiche Zeilennummer haben, um  die  C-
+               Diagnose-Mitteilungen  leichter  interpretieren  zu ko-
+               ennen. Manchmal muss EQL versuchen, Anfragen in mehrere
+               Zeilen  zu  zerlegen,  um  einen Zeilenueberlauf des C-
+               Praeprozessors zu vermeiden.  Dann verschiebt es C-Code
+               einige  Zeilen nach vorn.  Mit der -f Flagspezifikation
+               erfolgt das nicht.  C-Code steht in der richtigen Zeile
+               und  Reihenfolge.   Entsprechend  kann  die  Zeile  des
+               Quellcodes mit der Zeile der  C-Diagnose  uebereinstim-
+               men.
+
+          -r Setzt Flags auf Standardwerte zurueck. Das wird
+               verwendet, um andere Flags fuer Files aus der Argument-
+               liste zu unterdruecken.
+
+     Die Ausgabe-Files koennen dann mittels des C-Compilers uebersetzt
+     werden:
+
+          cc file1.c file2.c ... -lq
+
+     Die Schreibweise -lq fordert die EQL-Laufzeit-Bibliothek an.
+
+     Die  Bibliothek  libq.a  muss  zur  Angabe  der  Option  -lq   in
+     /lib/libq.a  oder  /usr/lib/libq.a  vorhanden sein, d.h. sie muss
+     bei der Installation aus
+
+          /.../daba/lib/libq.a
+     dorthin kopiert werden.

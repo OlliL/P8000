@@ -1,0 +1,379 @@
+     KOMPONENTENUEBERSICHT(DABA)  DABA16   KOMPONENTENUEBERSICHT(DABA)
+
+          AMXI(DABA) - Einbettung der Datenmanipulationssprache AMX in
+              "C"
+
+
+          EQL(DABA) - Eingebettetes QL-Interface
+
+
+          IQLI(DABA) - Interaktives QL-Interface von DABA
+
+
+          REPORTI(DABA) - Reportunterstuetzung
+
+
+
+
+
+
+
+
+
+
+
+
+     KOMPONENTENUEBERSICHT(IQL)   DABA16    KOMPONENTENUEBERSICHT(IQL)
+
+          MACROS(IQL) - Makro-Unterstuetzung des Terminal-Monitors
+
+
+          MONITOR(IQL) - interaktiver Terminal-Monitor
+
+
+          QL(IQL) - DABA-Anfragesprache (Query Language)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     KOMPONENTENUEBERSICHT(QL)    DABA16     KOMPONENTENUEBERSICHT(QL)
+
+          APPEND(QL) - Anfuegen (Einfuegen) neuer Tupel an  die  Rela-
+              tion
+
+              append [to] relname (target_list) [where qual]
+
+          COPY(QL) - Kopieren von Daten zwischen Relation  und  MUTOS-
+              File
+
+              copy relname (domname = format {, domname = format })
+
+                        direction "filename"
+
+          CREATE(QL) - Erstellen einer neuen Relation
+
+              create relname (domname1 = format {, domname2  =  format
+              })
+
+          DEFINE(QL) - Definieren Sicht, Befugnisse oder Integritaets-
+              bedingungen
+
+              define view name (target_list) [ where qual ]
+
+              define permit oplist on tuple_variable [ (attlist) ] to
+                   name [ at term ] [ from time to time ]
+                   [ on day to day ] [ where qual ]
+
+              define integrity on tuple_variable is qual
+
+          DELETE(QL) - Loeschen von Tupel aus einer Relation
+
+              delete tuple_variable [where qual]
+
+          DESTROY(QL) - Zerstoeren einer bestehenden Relation
+
+              destroy relname { , relname }
+
+              destroy [ permit | integrity ] relname
+               [ integer { , integer } | all ]
+
+          HELP(QL)  -   Anzeigen   von   Nutzungs-   oder   Datenbank-
+              Informationen
+
+              help [ relname ] [ "[komponentenname]" ]
+                     {, relname}{, "[komponentenname]"}
+
+              help view relname {, relname}
+
+              help permit relname {, relname}
+
+              help integrity relname {, relname}
+
+          INDEX(QL) - Erstellen eines Sekundaerindex ueber eine  Rela-
+              tion
+
+              index on relname is indexname (domain1 { ,domain2 })
+
+          MODIFY(QL) - Modifizieren der Speicherungsstruktur einer Re-
+              lation
+
+              modify relname [ to storage_structure [ on key1
+                     [ : sortorder ]  { , key_n [ : sortorder ] }  ]
+                     [ where [ fillfactor = n ]
+                     [ , minpages = n ] [ , maxpages = n ] ] ]
+
+          PERMIT(QL) - Zufuegen von Befugnissen zu einer Relation
+
+              define permit oplist on tuple_variable [ (attlist) ]
+
+                   to name [ at term ] [ from time to time ]
+
+                   [ on day to day ] [ where qual ]
+
+          PRINT(QL) - Drucken von Relationen
+
+              print relname {, relname}
+
+          RANGE(QL) - Deklarieren einer Variablen (Tupelvariablen) ue-
+              ber einer Relation
+
+              range [ [ of ] tuple_variable is relname ]
+
+          REPLACE(QL) - Ersetzen von Domaenen-Werten in einer Relation
+
+              replace tuple_variable (target_list) [where qual]
+
+          RETRIEVE(QL) - Wiederfinden (Suchen) von Tupel aus einer Re-
+              lation
+
+              retrieve [[into] relname ] (target_list) [where qual ]
+
+              retrieve unique (target_list) [where qual ]
+
+          SAVE(QL) - Verlaengern des Schutzdatums einer Relation
+
+              save relname until month day year
+
+          VIEW(QL) - Definieren einer Sicht (virtuellen Relation)
+
+              define view name (target_list) [ where qual ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     KOMPONENTENUEBERSICHT(MUTOS) DABA16  KOMPONENTENUEBERSICHT(MUTOS)
+
+          AMX(MUTOS) - AMX-Compiler
+
+              amx [ flags ] file.x
+
+              amxf [ flags ] file.x
+
+              samx [ flags ] file.x
+
+              oamx [ flags ] file.x
+
+              oamxf [ flags ] file.x
+
+          COPYDB(MUTOS) - Kopieren einer Datenbank
+
+              copydb [ -uname ] dbname directory { relname }
+
+          COPYR(MUTOS) - Kopieren  von  Daten  zwischen  Relation  und
+              MUTOS-File
+
+              copyr [ flags ] dbname relname { domname  format })
+                        into/from file
+
+          CREATDB(MUTOS) - Erstellen einer Datenbank
+
+              creatdb [ -uname ] [ -e ] [ -m ] [ -/+c ]
+               [ -/+q ] [ -1 | -2 | -4 | -8 ] dbname
+
+
+          CREATER(MUTOS) - Erstellen einer neuen Relation
+
+              creater [ flags ] dbname relname { domname format }
+
+          DESTROYDB(MUTOS) - Zerstoeren einer bestehenden Datenbank
+
+              destroydb [ -s ] [ -m ] dbname
+
+          DESTROYR(MUTOS) - Zerstoeren einer bestehenden Relation
+
+              destroyr [ flags ] dbname { [ permit | integrity ]  rel-
+              name [ integer { , integer } | all ] }
+
+          EQC(MUTOS) - Aufruf des EQL-Praecompilers
+
+              eqc [ -d ] [ -f ] [ -r ] file.q {file.q}
+
+          HELPR(MUTOS) - Anzeigen von Informationen ueber die Relatio-
+              nen der Datenbank
+
+              helpr [ flags ] dbname [ [ integrity | permit | view ]
+              {relname} | all ]
+
+          INDEXR(MUTOS) - Erstellen eines  Sekundaerindex  ueber  eine
+              Relation
+
+              indexr [ flags ] dbname prim_rel index_rel { domname }
+
+          IQL (MUTOS) - Aufruf des interaktiven Ql-Interface des  DBBS
+              DABA16
+
+              iql [ flags ] dbname [ process_table ]
+
+          MANR(MUTOS) - Anzeigen der Komponentenbeschreibungen
+
+              manr {komponentenname}
+
+          MODIFYR(MUTOS) - Modifizieren der
+
+              modifyr [ flags ] dbname relname [ storage_strukture
+              { domname [ :sortorder ] } ]
+
+          PRINTR(MUTOS) - Drucken von Relationen
+
+              printr [ flags ] dbname  { relname }
+
+          PURGE(MUTOS) - Zerstoeren verfallener und temporaerer  Rela-
+              tionen
+
+              purge [ -f ] [ -p ] [ -a ] [ -s ] [ -w ] { dbname }
+
+          RC(MUTOS) - REPORT-Compiler
+
+              rc {[ flags ] file}
+
+          RD(MUTOS)  -  Erstellen  eines  Domaenen-Beschreibungs-Files
+              oder eines Reportskelettes
+
+              rd [ flags ] dbname relname [file]
+
+          REFR(MUTOS) - Anzeige einer Komponenten-Kurzbeschreibung
+
+              refr { komponentenname }
+
+          REPORT MUTOS() - DABA-Reportunterstuetzung
+
+
+              rc {[ flags ] file }
+
+              rd [ flags ] dbname [ file ]
+
+              rg [ flags ]
+
+              rp_desc [ desc_file ]
+
+
+          RESTORE(MUTOS) -  Wiederherstellen  nach  einem  DBBS-  oder
+              MUTOS-Absturz
+
+              restore [ -s ] [ -a ] [ -f ] [ +/-p ] [ +/-w ]
+              [ -S ] [ -P ] { dbname }
+
+          RG(MUTOS) - REPORT-Generator (Interpreter)
+
+              rg [ flags ]
+
+          RP_DESC(MUTOS) - Drucken eines Domaenen-Beschreibungs-Files
+
+              rp_desc [desc-file]
+
+          SAVER(MUTOS) - Verlaengern des Schutzdatums einer Relation
+
+              saver [ flags ] dbname relname month day year
+
+          SYSMOD(MUTOS) - Modifizieren (Optimieren) der Systemrelatio-
+              nen
+
+              sysmod [ flags ] dbname { relname }
+
+          USERSETUP(MUTOS) - Erstelle Nutzer-File
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     KOMPONENTENUEBERSICHT(FILES) DABA16  KOMPONENTENUEBERSICHT(FILES)
+
+          DAYFILE(FILES) - DABA-Login-Nachrichten
+
+
+          DBTMPLT(FILES) - Datenbank-Spezifikation(Template)
+
+
+          ERROR(FILES) - Files mit DABA-Fehlernachrichten
+
+
+          LIBAMX(FILES) - AMX-Laufzeit-Bibliothek
+
+
+          LIBQ(FILES) - EQL Laufzeit-Bibliothek
+
+
+          STARTUP(FILES) - DABA-Start-File
+
+
+          USERS(FILES) - DABA-Nutzerverzeichnis
+
+
+
+
+     KOMPONENTENUEBERSICHT(ERROR) DABA16  KOMPONENTENUEBERSICHT(ERROR)
+
+          EINFUEHRUNG(ERROR) - Einfuehrung in die Fehlernachrichten
+
+
+          PARSER(ERROR)     -     Zusammenstellung     der     Parser-
+              Fehlernachrichten
+
+              Fehlernummern 2000 - 2999.
+
+          QRYMOD(ERROR) - Zusammenstellung der  Fehlernachrichten  der
+              Anfragenmodifikation
+
+              Fehlernummern 3000 - 3999.
+
+          OVQP(ERROR) -  Zusammenstellung  der  Fehlernachrichten  des
+              Ein-Variablen-Anfragenprozessors
+
+              Fehlernummern  4000 - 4499.
+
+          DECOMP(ERROR) - Zusammenstellung der  Fehlernachrichten  der
+              Dekomposition
+
+              Fehlernummern 4500 - 4999.
+
+          DBU(ERROR) - Zusammenstellung der Fehlernachrichten der  Da-
+              tenbankdienste
+
+              Fehlernummern 5000 - 5999

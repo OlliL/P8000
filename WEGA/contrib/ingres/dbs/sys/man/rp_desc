@@ -1,0 +1,41 @@
+     RP_DESC(MUTOS)               DABA16                RP_DESC(MUTOS)
+
+     NAME
+          rp_desc - Drucken eines Domaenen-Beschreibungs-Files
+
+     UEBERSICHT
+          rp_desc [desc-file]
+
+     BESCHREIBUNG
+          Der Parameter desc-file  muss  angegeben  werden,  wenn  der
+          Standard-File-Name desc nicht zutrifft.
+
+
+          Rp_desc druckt ein Domaenen-Beschreibungs-File, das durch rd
+          (rd(mutos))  oder rc (rc(mutos)) aus einem Report-Quellcode-
+          File einschliesslich Domaenen-Beschreibung erzeugt wurde, in
+          lesbarer Form.
+
+          Dieses File enthaelt eine Tabelle, die die Beschreibung  der
+          Domaenen eines Tupels darstellt und vom Report-Generator zur
+          Lokalisation der Domaenen eines Tupel benutzt wird.
+
+          In der Tabelle beschreibt  jede  Zeile  eine  Domaene.   Die
+          Spalten enthalten die Domaenenreihenfolge (mit 1 beginnend),
+          den Domaenentyp, die  Domaenenlaenge  und  die  Verschiebung
+          (Offset, mit 0 beginnend) der Domaene vom Tupelanfang.
+
+     BEISPIELE
+          rp_desc  pers_d
+          rp_desc > beispiel
+          cat beispiel
+
+                  | field | type  | len   | off   |
+                  |~~~~~~~|~~~~~~~|~~~~~~~|~~~~~~~|
+                  |       |       |       |       |
+                  |       |       |       |       |
+                  |~~~~~~~|~~~~~~~|~~~~~~~|~~~~~~~|
+                  |       |       |       |       |
+
+     SIEHE AUCH
+          rc(mutos), rd(mutos), rg(mutos), report(mutos), report(daba)
