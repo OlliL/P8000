@@ -1,0 +1,196 @@
+/***********************
+** IIOPEN()
+***********************/
+
+struct	ro_dateibereich	*iiopen(filename, modus, rc)
+{
+char	*filename;	/* PHYSISCHER DATEINAME */
+char	modus;		/* 'R' => NUR LESEN */
+			/* 'U' => LESEN UND SCHREIBEN */
+			/* 'L' =>   -=-       -=-     MIT LOGFUEHRUNG */
+int	*rc;		/* IM FEHLERFALL WIRD HIER EIN NUMER.CODE EINGETRAGEN */
+
+RETURN:	0 => FEHLER , FEHLERCODE STEHT IN RC - LISTE DER FEHLER IN ROERR.H
+
+AKTIONEN:
+	- DIE DATENBANKDATEI IST IM ANGEGEBN.MODUS ZU EROEFFNEN UND EIN
+	  POINTER ZURUECKZUGEBEN, DER AUF EINEN DATEIBEREICH ZEIGT.
+	- DER DATEIBEREICH IST VON iiopen() ZU FUELLEN.
+	- FOLGENDE STRUKTURELEMENTE SIND EINZUTRAGEN
+
+	int lendateibereich;	/* LAENGE DES BEREICHES */
+	long anzzeilen;		/* Anzahl der zugewiesenen Zeilen  */
+	long index;		/* := 0 */
+	long indexalt;		/* := -2 */
+	char modus;		/* Modus der Eroeffnung R, U, L */
+	char filespec[RO_MAXFILSPEC];	/* phys. Name der TD */
+	int anzspalten;			/* Anzahl der Spalten der TD */
+	struct ro_spalte *spalten;  	/* -> Liste aller Spalten der TD */
+	int lenfilepuffer;	/* LAENGE DES PUFFERS FUER EINEN VOLLST. SATZ */
+	char *filepuffer;	/* POINTER AUF DEN FILEPUFFER (MALLOC()) */
+	int anfdaten;		/* Byteoffset zum ersten Datensatz */
+	struct spalte *markspalte; /* Datensaetze zum Loeschen markiert */
+	int eof_flag;		/* := 0 */
+
+	- SPALTEN ZEIGT AUF EINEN BEREICH, DER NACHEINANDER DIE STRUKTUREN
+	  RO_SPALTE FUER ALLE SPALTEN ENTHAELT.
+	  FOLGENDE STRUKTURELEMENTE SIND EINZUTRAGEN
+
+	char name[9];		/* Spaltenname mit Blanks gefuellt */
+	struct ro_ded ded;  	/* Beschreibung der Spalte */
+	struct ro_ded charded; /* Beschreibung der Spalte in Zeichenkettenform*/
+
+	- FOLGENDE SPALTEN MUESSEN ENTHALTEN SEIN:
+	  TQLRECNO: SATZNUMMER (PRIMAERINDEX) LONG
+	  TQLMARK:  LOESCHMARKIERUNG CHAR '*': ZUM LOESCHEN MARKIERT	  
+	                                   ALLES ANDERE: NICHT MARKIERT
+
+/***********************
+** IICLOSE()
+***********************/
+
+int	iiclose(dateibereich, rc)
+{
+struct	ro_dateibereich	*dateibereich; /* DATEIBEREICH DER DATEI */
+int	*rc;		/* IM FEHLERFALL WIRD HIER EIN NUMER.CODE EINGETRAGEN */
+
+RETURN:	0 => FEHLER , FEHLERCODE STEHT IN RC - LISTE DER FEHLER IN ROERR.H
+
+AKTIONEN:
+	- ABSCHLIESSEN DER DATENBANKDATEI BEZUEGLICH ZUGRIFFSPROZESSOR
+	- DER DATEIBEREICH UND ALLE WEITEREN BEREICHE WERDEN VON TQL FREI-
+	  GEGEBEN
+
+
+/***********************
+** IINEXT()
+***********************/
+
+int	iinext(dateibereich, rc)
+{
+struct	ro_dateibereich	*dateibereich; /* DATEIBEREICH DER DATEI */
+int	*rc;		/* IM FEHLERFALL WIRD HIER EIN NUMER.CODE EINGETRAGEN */
+
+RETURN:	0 => FEHLER , FEHLERCODE STEHT IN RC - LISTE DER FEHLER IN ROERR.H
+
+AKTIONEN:
+	- ES IST DER NAECHSTE SATZ IN DEN FILEPUFFER ZU UEBERTRAGEN.
+	- WURDE KEIN INDEX EINGESTELLT (MIT IISETI), IST DER NAECHSTE
+	  SATZ ENTSPRECHEND PRIMAERINDEX ZU UEBERTRAGEN - SONST ENTSPR.
+	  DEM EINGESTELLTEN INDEX
+	- IN DATEIBEREICH SIND EINZUTRAGEN:
+	  INDEX := SATZNUMMER
+	  EOF_FLAG := 1 WENN ENDE ERREICHT
+	  INDEX    := 1 WENN ENDE ERREICHT
+	- TQLMARK WIRD NICHT AUSGEWERTET => INNERHALB VON TQL
+
+/***********************
+** IISETI()
+***********************/
+
+int	iiseti(dateibereich, indexname, rc)
+{
+struct	ro_dateibereich	*dateibereich; /* DATEIBEREICH DER DATEI */
+char	*indexname;	/* NULL ODER NAME DES EINZUSTELLENEN INDEXES */
+int	*rc;		/* IM FEHLERFALL WIRD HIER EIN NUMER.CODE EINGETRAGEN */
+
+RETURN:	0 => FEHLER , FEHLERCODE STEHT IN RC - LISTE DER FEHLER IN ROERR.H
+
+AKTIONEN:
+	- ES IST DER IN INDEXNAME ANGEGEBENE INDEX EINZUSTELLEN BZW. ZU VER-
+	  MERKEN
+	- IST INDEXNAME GLEICH NULL, IST KEIN INDEX EINZUSTELLEN
+	- DIESER INDEX WIRD IN DEN FUNKTIONEN IINEXT() UND IIFIND() GENUTZT
+	- ALLE ANDEREN INDIZES WERDEN VON TQL NICHT BETRACHTES, ABER VOM
+	  ZUGRIFFSPROZESSOR GEPFLEGT
+
+/***********************
+** IIFIND()
+***********************/
+
+int	iifind(dateibereich, suchwert, rc)
+{
+struct	ro_dateibereich	*dateibereich; /* DATEIBEREICH DER DATEI */
+char	*suchwert;	/* AUFZUFINDENER SATZ */
+int	*rc;		/* IM FEHLERFALL WIRD HIER EIN NUMER.CODE EINGETRAGEN */
+
+RETURN:	0 => FEHLER , FEHLERCODE STEHT IN RC - LISTE DER FEHLER IN ROERR.H
+
+AKTIONEN:
+	- ES IST DER SATZ ZU SUCHEN BZW. ZU POSITIONIEREN, DER DEM SUCHWERT
+	  IM EINGESTELLTEN INDEX (MIT IISETI) ENTSPRICHT
+	- DER SATZ IST IN DEN FILEPUFFER ZU UEBERTRAGEN, FALLS GEFUNDEN
+	- IN DATEIBEREICH SIND EINZUTRAGEN:
+	  INDEX    := SATZNUMMER
+	  EOF_FLAG := 1 WENN ENDE ERREICHT
+	  INDEX    := 1 WENN ENDE ERREICHT
+	- TQLMARK WIRD NICHT AUSGEWERTET => INNERHALB VON TQL
+
+/***********************
+** IIGOTO()
+***********************/
+
+int	iigoto(dateibereich, satznummer, rc)
+{
+struct	ro_dateibereich	*dateibereich; /* DATEIBEREICH DER DATEI */
+long	satznummer;	/* EINZUSTELLENDER SATZ */
+int	*rc;		/* IM FEHLERFALL WIRD HIER EIN NUMER.CODE EINGETRAGEN */
+
+RETURN:	0 => FEHLER , FEHLERCODE STEHT IN RC - LISTE DER FEHLER IN ROERR.H
+
+AKTIONEN:
+	- ES IST DER SATZ ENTSPR. PRIMAERINDEX EINZUSTELLEN , DASS BEIM
+	  NAECHSTEN IINEXT() DER SATZ MIT DER ANGEGEB. SATZNUMMER GELESEN WIRD
+	  (SOLLTE SO ARBEITEN, WIE LSEEK() )
+	- WENN SATZNUMMER -1 IST, SOLL BEGIN OF FILE EINGESTELLT WERDEN, D.H.
+	  - WENN KEIN INDEX AKTIV IST (MIT IISETI): SATZ 0 ENTSPR.PRIMAERINDEX
+	    EINSTELLEN
+	  - WENN INDEX AKTIV IST (MIT IISETI)     : ERTSTEN SATZ  ENTSPR.
+	    INDEX EINSTELLEN
+
+/***********************
+** IIWRITE()
+***********************/
+
+int	iiwrite(dateibereich, rc)
+{
+struct	ro_dateibereich	*dateibereich; /* DATEIBEREICH DER DATEI */
+int	*rc;		/* IM FEHLERFALL WIRD HIER EIN NUMER.CODE EINGETRAGEN */
+
+RETURN:	0 => FEHLER , FEHLERCODE STEHT IN RC - LISTE DER FEHLER IN ROERR.H
+
+AKTIONEN:
+	- DER FILEPUFFER WIRD AUF DEN ZULETZT GELESENEN SATZ GESCHRIEBEN
+	- ALLE INDIZES SIND ZU AKTUALISIEREN
+
+/***********************
+** IIAPPEND()
+***********************/
+
+int	iiappend(dateibereich, rc)
+{
+struct	ro_dateibereich	*dateibereich; /* DATEIBEREICH DER DATEI */
+int	*rc;		/* IM FEHLERFALL WIRD HIER EIN NUMER.CODE EINGETRAGEN */
+
+RETURN:	0 => FEHLER , FEHLERCODE STEHT IN RC - LISTE DER FEHLER IN ROERR.H
+
+AKTIONEN:
+	- HINZUFUEGEN EINES SATZES, DESSEN SATZNUMMER IN INDEX STEHT.
+	- IM FILEPUFFER STEHT DER SCHREIBENE SATZ
+	- ALLE INDIZES SIND ZU AKTUALISIEREN
+
+/***********************
+** IIDELETE()
+***********************/
+
+int	iidelete(dateibereich, rc)
+{
+struct	ro_dateibereich	*dateibereich; /* DATEIBEREICH DER DATEI */
+int	*rc;		/* IM FEHLERFALL WIRD HIER EIN NUMER.CODE EINGETRAGEN */
+
+RETURN:	0 => FEHLER , FEHLERCODE STEHT IN RC - LISTE DER FEHLER IN ROERR.H
+
+AKTIONEN:
+	- LOESCHEN EINES SATZES, DESSEN SATZNUMMER IN INDEX STEHT
+	- IM PRIMAERINDEX IST DIE SATZNUMMER ZU ENTFERNEN
+	- ALLE INDIZES SIND ZU AKTUALISIEREN
