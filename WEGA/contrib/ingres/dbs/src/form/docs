@@ -1,0 +1,335 @@
+ALLGEMEINES:
+
+Eine Maske (frame) ist eine Verkettung von Feldern (form).
+	Sie wird ueber einen Pointer identifiziert.
+	z.B.:	char		*frame;
+
+Es gibt Ausgabe-, Eingabe-, Wert- und Menuefelder.
+	Ein Feld kann als Wert- und Eingabefeld definiert werden,
+	wobei die Definition des Wertfeldes zuerst erfolgen muss !
+
+Die Zeilennummerierung geht von 1 bis 24.
+
+Die Spaltennummerrierung geht von 1 bis 78.
+
+Die Zeile 1 ist grundsaetzlich fuer Fehler- bzw. Informationstexte
+	vorgesehen.
+
+Bindungen zwischen C-Variablen und Feldern erfolgen grund-
+	saetzlich ueber die Adressen der Variablen.
+
+Formatangaben erfolgen im Stil von scanf bei Eingabefeldern
+	und im Stil von printf bei Wertfeldern. Im Falle von Zeichen-
+	ketten kann der Wert `(char *) 0' fuer die 1 zu 1 Ubernahme
+	spezifiert werden.
+
+
+FUNKTIONEN:
+
+------- char	*MMalloc(frame, line, col, len, var)
+		char	**frame;
+		int	line;
+		int	col;
+		int	len;
+		char	*var;
+
+	MMalloc stellt ein Feld innerhalb der Maske (frame) bereit.
+	Der return-Wert ist ein vom Nutzer nicht interpretierbarer,
+	aber fuer andere Funktionen verwendbarer Wert. Das Feld
+	wird auf der Zeile line und der Spalte col mit der Laenge len
+	angelegt. Das Argument var stellt den Zeichenpuffer fuer das
+	Feld dar. Wird fuer var der Wert `(char *) 0' angegeben,
+	wird vom Bildschirmpaket automatisch ein Puffer berreitgestellt.
+	MMalloc muss aufgrund ihres Rueckgabewertes extern deklariert
+	werden.
+	z.B.:	char		*frame;
+		char		*form;
+		extern char	*MMalloc();
+		frame = (char *) 0;
+		form = MMalloc(&frame, 1, 10, 10, (char *) 0);
+
+------- MMclr_error()
+
+	Ein angezeigter Fehlertext kann mit MMclr_error() geloescht
+	werden.
+
+------- MMclr_line(line, col)
+		int	line;
+		int	col;
+
+	MMclr_line loescht die Zeile line ab der Spalte col.
+
+------- MMclr_screen(line, col)
+		int	line;
+		int	col;
+
+	MMclr_screen loescht den Bildschirm ab Zeile line und
+	Spalte col.
+
+------- MMclr_value(frame)
+		char	*frame;
+
+	MMclr_value loescht alle Werte in Wertfeldern (im Zeichenpuffer,
+	nicht auf dem Bildschirm).
+
+------- MMerror(error_text)
+		char	*error_text;
+
+	MMerror schreibt den Fehler- bzw. Informationstext error_text
+	auf den Bildschirm in Zeile 1. Eine nachfolgende Eingabe durch
+	den Nutzer loescht diesen Text automatisch.
+
+------- MMexit_form(clear)
+		int	clear;
+
+	MMexit_form beendet die Arbeit des Bildschirmpakets und stellt
+	das Terminal in den urspruenglichen Zustand zurueck.
+	Ist clear==0, wird der Bildschirminhalt ungeaendert stehen
+	gelassen, andernfalls geloescht.
+
+------- MMform(frame)
+		char	*frame;
+
+	MMform aktiviert die Maske frame, schreibt diese auf dem
+	Bildschirm aus und uebernimmt die gesamte weitere Steuerung.
+
+------- MMfree(frame)
+		char	**frame;
+
+	MMfree gibt eine Maske frame wieder frei.
+	z.B.:	char		*frame;
+		MMfree(&frame);
+
+------- MMinit_form(clear)
+		int	clear;
+
+	MMinit_form aktiviert die Arbeit des Bildschirmpakets und stellt
+	das Terminal in einen bestimmten Zustand.
+	Ist clear==0, wird der Bildschirminhalt ungeaendert stehen
+	gelassen, andernfalls geloescht.
+
+------- MMin_field(form, func, help, need)
+		char	*form;
+		int	(*func)();
+		int	(*help)();
+		int	need;
+
+	MMin_field definiert ein durch MMalloc beschafftes Feld form als
+	Eingabefeld.
+	func stellt die Feldfunktion dar, die aufgerufen wird, wenn in
+	das Feld eine Eingabe erfolgte. Sie muss den Wert 1
+	zurueckgeben, wenn ales in Ordnung ist, andenfalls 0.
+	help ist eine Hilfefunktion und need gibt an, ob es sich um ein
+	wahlfreies (need==0) oder ein obligatorisches (need==1)
+	Eingabefeld handelt.
+	z.B.:	char		*frame;
+		char		*form;
+		extern char	*MMalloc();
+		extern int	input();
+		form = MMalloc(&frame, 1, 10, 10, (char *) 0);
+		MMin_field(form, input, (int (*)()) 0, 0);
+
+------- MMmen_field(form, func, help, menue_text)
+		char	*form;
+		int	(*func)();
+		int	(*help)();
+		char	*menue_text;
+
+	MMmen_field definiert ein durch MMalloc beschafftes Feld form als
+	Menuefeld.
+	func stellt die Feldfunktion dar, die aufgerufen wird, wenn die
+	Menuefunktion ausgewaehlt wurde. help ist eine Hilfefunktion und
+	menue_text gibt den Menuetext an.
+	z.B.:	char		*frame;
+		char		*form;
+		extern char	*MMalloc();
+		extern int	menue();
+		form = MMalloc(&frame, 1, 10, 7, (char *) 0);
+		MMmen_field(form, menue, (int (*)()) 0, " MENUE");
+
+------- MMnext()
+
+	Beschreibung zu komplex.
+
+------- MMout_field(form, output_text)
+		char	*form;
+		char	*output_text;
+
+	MMout_field definiert ein durch MMalloc beschafftes Feld form als
+	Ausgabefeld.
+	output_text gibt den auszugebenden Text an.
+	z.B.:	char		*frame;
+		char		*form;
+		extern char	*MMalloc();
+		form = MMalloc(&frame, 1, 10, 7, (char *) 0);
+		MMout_field(form, "AUSGABE");
+
+------- char	*MMpmove(src, dst, len, ch)
+		char	*src;
+		char	*dst;
+		int	len;
+		int	ch;
+
+	siehe AApmove().
+
+------- MMsmove(src, dst)
+		char	*src;
+		char	*dst;
+
+	siehe AAsmove().
+
+------- MMset_field(frame, var, no)
+		char	*frame;
+		char	*var;
+		int	no;
+
+	MMset_field verbindet die Funktion von MMset_value() mit
+	der Ausgabe des Wertes auf dem Bildschirm.
+
+------- MMset_value(frame, var, no)
+		char	*frame;
+		char	*var;
+		int	no;
+
+	Mset_value uebernimmt den Wert der C-Variablen var in die
+	Maske, ohne ihn auf dem Bildschirm anzuzeigen. var muss
+	durch eine Variablenfunktion MMvar.. gebunden sein. no gibt
+	die Nummer der Bindung an (normalerweise 0).
+
+------- MMshell(form, shell, quit, command)
+		char	*form;
+		int	shell;
+		int	quit;
+		char	*command;
+
+	MMshell laedt ein neues Programm.
+	Ist shell==0 wird das Programm command direkt geladen,
+	andenfalls ueber eine Shell. Ist quit==0, wird nach Programm-
+	ende automatisch die Maske wieder aufgebaut, andernfalls
+	erfolgt eine Abfrage `ENDE ?', die erst quittiert werden muss.
+	Als aktives Feld wird form ausgewaehlt.
+
+------- MMval_field(form, func)
+		char	*form;
+		int	(*func)();
+
+	MMval_field definiert ein durch MMalloc beschafftes Feld form als
+	Wertfeld.
+	func stellt die Feldfunktion dar, die aufgerufen wird, wenn ein
+	Wert in das Wertfeld eingefuellt wurde. Sie muss den Wert 1
+	zurueckgeben, wenn ales in Ordnung ist, andenfalls 0.
+	z.B.:	char		*frame;
+		char		*form;
+		extern char	*MMalloc();
+		extern int	value();
+		form = MMalloc(&frame, 1, 10, 7, (char *) 0);
+		MMval_field(form, value);
+
+------- MMvalue(frame)
+		char	*frame;
+
+	MMvalue schreibt alle Wertfelder auf den Bildschirm.
+
+------- MMvarc(form, var, format)
+		char	*form;
+		char	*var;
+		char	*format;
+
+	MMvarc bindet die char[]-Variable var an das Feld form
+	mit dem Format format.
+	z.B.:	char		*frame;
+		char		*form;
+		char		varc[21];
+		extern char	*MMalloc();
+		form = MMalloc(&frame, 1, 10, 10, (char *) 0);
+		MMin_field(form, (int (*)()) 0, (int (*)()) 0, 0);
+		MMvarc(form, varc, (char *) 0);
+
+------- MMvarf4(form, var, format)
+		char	*form;
+		char	*var;
+		char	*format;
+
+	MMvarf4 bindet die float-Variable var an das Feld form
+	mit dem Format format.
+	z.B.:	char		*frame;
+		char		*form;
+		float		varf4;
+		extern char	*MMalloc();
+		form = MMalloc(&frame, 1, 10, 10, (char *) 0);
+		MMval_field(form, (int (*)()) 0);
+		MMvarf4(form, &varf4, "%10.2f");
+
+------- MMvarf8(form, var, format)
+		char	*form;
+		char	*var;
+		char	*format;
+
+	MMvarf8 bindet die double-Variable var an das Feld form
+	mit dem Format format.
+	z.B.:	char		*frame;
+		char		*form;
+		double		varf8;
+		extern char	*MMalloc();
+		form = MMalloc(&frame, 1, 10, 10, (char *) 0);
+		MMin_field(form, (int (*)()) 0, (int (*)()) 0, 0);
+		MMvarf8(form, &varf8, "%lf");
+
+------- MMvari2(form, var, format)
+		char	*form;
+		char	*var;
+		char	*format;
+
+	MMvari2 bindet die short-Variable var an das Feld form
+	mit dem Format format.
+	z.B.:	char		*frame;
+		char		*form;
+		short		vari2;
+		extern char	*MMalloc();
+		form = MMalloc(&frame, 1, 10, 10, (char *) 0);
+		MMval_field(form, (int (*)()) 0);
+		MMvari2(form, &vari2, "%010d");
+
+------- MMvari4(form, var, format)
+		char	*form;
+		char	*var;
+		char	*format;
+
+	MMvari4 bindet die long-Variable var an das Feld form
+	mit dem Format format.
+	z.B.:	char		*frame;
+		char		*form;
+		long		vari4;
+		extern char	*MMalloc();
+		form = MMalloc(&frame, 1, 10, 10, (char *) 0);
+		MMin_field(form, (int (*)()) 0, (int (*)()) 0, 0);
+		MMvari4(form, &vari4, "%ld");
+
+
+TERMINALTABELLEN:
+
+In dem Verzeichnis /usr/lib/form werden die Terminaltabellen unter
+dem Namen der Terminals (shell-Variable TERM) abgelegt.
+Jede Zeile beginnt mit einer Kennung gefolgt von einem Tabulator
+und dem Code. Der Code wird zeichenweise durch Leerzeichen
+getrennt. Ein Zeichen kann durch eine oktale Notation (\33)
+angegeben werden.
+Folgende Kennungen sind vereinbart:
+	C  = (CONTINUE)	NEXT-RECORDS-KEY
+	D  = (DELETE)	DELETE-ONE-CHARACTER-KEY
+	F  = (FIELD)	BEGIN-OF-FIELD-KEY
+	H  = (HELP)	HELP-KEY
+	I  = (INSERT)	INSERT-ONE-CHAR-KEY
+	L  = (LEFT)	CURSOR-LEFT-KEY
+	M  = (MENUE)	MENUE-KEY
+	N  = (NEXT)	NEXT-FIELD-KEY
+	P  = (PREV)	PREVIOUS-FIELD-KEY
+	Q  = (QUIT)	QUIT-KEY
+	R  = (RIGHT)	CURSOR-RIGHT-KEY
+	cd = CLEAR-SCREEN
+	ce = CLEAR-LINE
+	cm = MOVE-CURSOR-TO-POSITION
+	so = INVERS-ON
+	se = INVERS-OFF
+In der Zeile cm folgt nach demo Code noch ein Tabulator und eine
+Zahl, die die Zeilenadjustierung angibt.
