@@ -1,0 +1,48 @@
+Allgemein:
+----------
+h oder ?			Ausgabe dieser Hilfestellung
+<return>			Mount-Tabelle ausgeben
+^z				Bildschirm neu ausgeben
+
+WDOS-Start:
+-----------
+s				Start WDOS
+F12				Verlassen WDOS (P8000-WDOS-Terminal)
+^\				Verlassen WDOS (P8000-Terminal)
+r				Rueckkehr zu WDOS
+
+
+
+
+WDOS-Disks verwalten:
+---------------------
+mf				reale Disks anzeigen
+mf x: [= diskname]		reale Disk mit LW x: verbinden (mount)
+mg				globale Disks anzeigen
+mg x: [= diskname]		globale Disk mit LW x: verbinden (mount)
+ml				lokale Disks anzeigen
+ml x: [= diskname]		lokale Disk mit LW x: verbinden (mount)
+u x:				Disk aus LW x: entfernen (umount)
+
+n [-48ds9|-96ds9|-96ds15 diskname]
+				lokale Pseudodiskette erzeugen
+x [x:|diskname]			lokale Pseudodisk loeschen
+f [x:|/dev/rfd...]		reale DCP-Diskette formatiern
+
+
+Dateiverwaltung:
+----------------
+dir directory ...		Directory(s) anzeigen (DCP-Format)
+ls  directory ...		Directory(s) anzeigen (WEGA-Format)
+cat file ...			Datei(en) ausgeben
+cp  file1 file2			Textdatei kopieren
+cp  file ... directory		Textdateien in Directory kopieren
+cpb file1 file2			Bin-Datei kopieren
+cpb file ... directory		Bin-Dateien in Directory kopieren
+rm  file ...			Datei(en) loeschen
+mkdir directory ...		Directory(s) erstellen
+rmdir directory ...		Directory(s) loeschen
+
+file, directory haben die Form: device:name
+device: WEGA-Pfadname zur DCP-Disk oder LW-Buchstabe, abgeschlossen mit ":"
+name:   Pfadname fuer DCP, Trennzeichen ist "/"
