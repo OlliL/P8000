@@ -1,0 +1,73 @@
+.pl 66
+.ns
+.po 5
+.nr in 5
+.de i0
+.in \n(in
+..
+.de lp
+.i0
+.if !\n(.V .ta \\$2+1
+.if \n(.V .ta \\$2
+.in \\$1
+.ti -\\$2
+..
+.de s1
+.sp 1
+.ne 4
+..
+.de s2
+.sp 1
+..
+.de s3
+.sp 1
+..
+.de fo
+'sp 2
+'tl ''- % -''
+'bp
+..
+.de th
+.de x1
+.rs
+'sp 4
+'tl '\\*(II/\\$4'\\$3'\\$1(\\$2)'
+'sp 2
+\\..
+.wh -7 fo
+.wh 0 x1
+.pn 1
+'fi
+'ad
+.bp
+.in \n(in
+.dt
+..
+.de sh
+.i0
+.s1
+.ne 5
+.ti 0
+\\$1
+.br
+..
+.de dt
+.ta 8 16 24 32 40 48 56 64
+..
+.ds II ING_DB 6.3
+.ds ii ing_db
+.ds RR REDABAS
+.ds rr redabas
+.ds R2 REDABAS 2
+.ds R3 REDABAS 3
+.ds R4 REDABAS 4
+.ds UU MUTOS
+.ds uu mutos
+.ds MS DCP
+.ds ms dcp
+.ds CP SCP
+.ds cp scp
+.if !\n(.V .ds +- +-
+.if \n(.V .ds +- \(+-
+.ds BS \
+.hy 0

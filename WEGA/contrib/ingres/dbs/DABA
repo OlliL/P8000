@@ -1,0 +1,19 @@
+set -x
+cp	I.daba				Installation
+cp	M.daba				Makefile
+cp	P.daba				Parallelitaet
+cp	sys/etc/dayfile.daba		sys/etc/dayfile6.3
+cp	src/h/bs.daba			src/h/bs.h
+cp	src/monitor/gen.daba		src/monitor/gen.c
+cp	src/pqr/r_dbs.daba		src/pqr/r_dbs.c
+cp	src/proto/etc.daba		src/proto/etc
+cp	src/proto/support.daba		src/proto/support
+cp	src/redabas/DECK.daba		src/redabas/DECK.nr
+cp	src/redabas/MACROS.daba		src/redabas/MACROS.nr
+rm	amx_cc/main2.o		\
+	iutil/initucode.o	\
+	libq/IIdbs.o		\
+	monitor/gen.o		\
+	pqr/r_dbs.o		\
+	slibq/IIdbs.o		\
+	sys/usersetup.o
