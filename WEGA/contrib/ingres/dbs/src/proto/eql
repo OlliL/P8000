@@ -1,0 +1,218 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+BIN=	$(DBS)/bin
+LIB=	../lib
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+LD=	$(CC)
+CRT0=
+# ifdef ID_SEPERATE
+LDFLAGS= -i
+# else
+# ifdef TEXT_SEPERATE
+LDFLAGS= -n
+# endif
+# endif
+u_FLAG=	-u
+UFLAG=	$(u_FLAG) _AApath
+LIBC=	-lm
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+LIBC=	-lm -lc
+# endif
+
+# ifdef ESER_VMX
+UFLAG=	$(u_FLAG) AApath
+# endif
+
+# ifdef HP_UX
+u_FLAG=	-W l,-u
+UFLAG=	$(u_FLAG) _AApath
+# endif
+
+# ifdef P8000
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef PDP
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+LD=	ld
+LDFLAGS= -i -Ms -F 2000
+CRT0=	/lib/Sseg.o /lib/Scrt0.o
+LIBC=	/lib/Slibm.a /lib/Slibcfp.a /lib/Slibc.a
+# endif
+
+# ifdef XENIX386
+LD=	ld
+CRT0=	/lib/386/Sseg.o /lib/386/Scrt0.o
+LIBC=	/lib/386/Slibm.a /lib/386/Slibcfp.a /lib/386/Slibc.a
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+AR=	-ar
+# ifdef TEST
+AR_R	=rv
+AR_X	=xv
+# else
+AR_R	=r
+AR_X	=x
+# endif
+LIBMODE=0644
+
+CHMOD=	chmod
+MODE=	0711
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+RM=	-rm -f
+TOUCH=	touch
+
+YACC=	../yyyacc/yyyacc
+YFLAGS=
+
+EQLIB=	$(LIB)/eql.a
+IUTIL=	$(LIB)/i.a
+$(IUTIL):
+
+GUTIL=	$(LIB)/g.a
+$(GUTIL):
+
+LIBES=	$(EQLIB) $(IUTIL) $(GUTIL)
+LIBS=	$(LIBES) $(LIBC)
+eqc=	$(BIN)/eqc
+eql=	$(BIN)/eql
+EQC=	$(BIN)/EQC
+EQL=	$(BIN)/EQL
+ALL=	$(EQL)		$(EQC)
+
+OBJS=	main.o		parser.o	yylex.o		cvar.o		\
+	include.o	name.o		getkey.o	number.o	\
+	operator.o	prtout.o	string.o	comment.o	\
+	retrieve.o	display.o	getch.o		yyerror.o	\
+	nalloc.o
+
+INSTALL:	install
+
+UNLOAD:		unload
+
+# ifdef NO_PIPE
+install:
+
+unload:
+# else
+install:	$(EQLIB) $(ALL)
+
+unload:
+	@-$(AR) $(AR_X) $(EQLIB)
+	@$(RM) __.SYMDEF
+	@-$(TOUCH) $(EQLIB)
+# endif
+
+$(EQLIB):	$(OBJS)
+	$(AR) $(AR_R) $@ $?
+	@-$(CHMOD) $(LIBMODE) $@
+	$(MKLIB) $@
+
+$(eqc):		grammar.o $(LIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(UFLAG) $(CRT0) grammar.o $(LIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(eql):		$(eqc)
+	$(RM) $@
+	LN $(eqc) $@
+
+$(EQC):		$(eqc)
+	$(RM) $@
+	LN $(eqc) $@
+
+$(EQL):		$(eqc)
+	$(RM) $@
+	LN $(eqc) $@
+
+ALLCLEAN:	allclean
+
+allclean:	clean
+	$(RM) $(EQLIB) $(ALL)
+
+CLEAN:		clean
+
+clean:
+	$(RM) $(OBJS) grammar.o
+
+grammar.c:	grammar.y
+	$(YACC) $(YFLAGS) grammar.y
+	mv y.tab.c $@
+	@-$(CHMOD) $(LIBMODE) $@
+
+# ifdef YACC_OPTIM
+grammar.o:	grammar.c tokens.y
+	$(CC) -c $(f_FLAG) $(i_FLAG) grammar.c
+# else
+grammar.o:	grammar.c tokens.y
+# endif
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/eql
+SRC=	cmap.c		comment.c	constants.h	cvar.c		\
+	display.c	getch.c		getkey.c	globals.h	\
+	grammar.y	grammar.c	include.c	main.c		\
+	nalloc.c	name.c		number.c	operator.c	\
+	parser.c	prtout.c	retrieve.c	string.c	\
+	tokens.y	yyerror.c	yylex.c		gen.h		\
+	Makefile
+
+.save:		$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/eql
+	> $@
+	umount DISK
+
+$(HOME)/.save:	$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save
+# endif

@@ -1,0 +1,150 @@
+# include	"../conf/conf.h"
+
+OS=	OS_NAME
+OSLIB=	OS_LIB
+OSDIR=	OS_DIR
+MAJOR=	DBS_MAJOR
+
+SHELL=	/bin/sh
+CONF=	../../src/conf
+RM=	-rm -f
+
+# ifdef BIT_32
+BIT=	32
+# else
+BIT=	16
+# endif
+
+# ifdef OD_SEPERATE
+OD=	o
+# else
+OD=	_
+# endif
+
+# ifdef DBU_SEPERATE
+DBU=	d
+# else
+DBU=	_
+# endif
+
+CHMOD=	chmod
+RM=	-rm -f
+MODE=	0644
+DB=	dbtmplt
+PROC=	iql_tab
+OPROC=	ing_db_tab
+VER=	6.3
+
+CONF:			conf
+
+conf:
+	CP $(CONF)/$(DB).$(BIT) $(DB)$(VER)
+	@-$(CHMOD) $(MODE) $(DB)$(VER)
+	CP $(CONF)/$(PROC).$(OD)$(DBU) $(PROC)$(VER)
+	@-$(CHMOD) $(MODE) $(PROC)$(VER)
+	$(RM) $(OPROC)$(VER) IQL_tab$(VER) ING_DB_tab$(VER)
+	LN $(PROC)$(VER) $(OPROC)$(VER)
+	LN $(PROC)$(VER) IQL_tab$(VER)
+	LN $(PROC)$(VER) ING_DB_tab$(VER)
+
+ALLCLEAN:		allclean
+
+allclean:		clean
+
+CLEAN:			clean
+
+clean:
+	$(RM)	$(DB)$(VER) $(PROC)$(VER) (OPROC)$(VER)			\
+		dbserver dev_lock.o					\
+		amx_???$(VER) customer users Makefile
+
+# ifdef DBS_LOCK
+AR=	-ar
+# ifdef TEST
+AR_R=rv
+# else
+AR_R=r
+# endif
+
+CHMOD=	chmod
+MODE=	0644
+IMODE=	0622
+SMODE=	0444
+UMODE=	0700
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+RM=	-rm -f
+
+
+DEVLOCK=dev_lock.o
+SILOCK=	dbserver
+SULOCK=	../bin/unlock
+ROOT=	/etc
+RILOCK=	$(ROOT)/dbserver
+RULOCK=	$(ROOT)/unlock
+
+$(RULOCK):		$(SULOCK)
+	CP $(SULOCK) $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(RILOCK):		$(SILOCK)
+	CP $(SILOCK) $@
+	@-$(CHMOD) $(UMODE) $@
+
+/dev/db_lock:		/$(OS) $(RULOCK) $(RILOCK)
+	$(RM) $@
+	mknod $@ c $(MAJOR) 0
+	@-$(CHMOD) $(IMODE) $@
+
+$(OSLIB):		$(DEVLOCK)
+	@-$(CHMOD) $(MODE) $(DEVLOCK)
+	$(AR) $(AR_R) $@ $(DEVLOCK)
+	$(MKLIB) $@
+	$(RM) $(OSDIR)/$(OS)
+
+# ifdef P8000
+/$(OS):			udev1.o $(OSLIB)
+	cd $(OSDIR); make -f make.$(OS)
+	mv $(OSDIR)/$(OS) $@
+	@-$(CHMOD) $(SMODE) $@
+
+udev1.o:
+	@-$(AR) x $(OSLIB) $@
+	@-$(AR) d $(OSLIB) $@
+# endif
+
+# ifdef EC1834
+/$(OS):			$(OSLIB)
+	cd $(OSDIR); make $(OS)
+	mv $(OSDIR)/$(OS) $@
+	@-$(CHMOD) $(SMODE) $@
+# endif
+
+# endif
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/sys/etc
+SRC=	Makefile	READ_ME		creatdb_use	dayfile.daba	\
+	dayfile.ing_db	customer	iql_use		startup		\
+	error6.3_1	error6.3_10	error6.3_11	error6.3_12	\
+	error6.3_13	error6.3_14	error6.3_15	error6.3_16	\
+	error6.3_17	error6.3_18	error6.3_19	error6.3_2	\
+	error6.3_20	error6.3_21	error6.3_22	error6.3_3	\
+	error6.3_4	error6.3_5
+
+.save:			$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/etc
+	> $@
+	umount DISK
+
+$(HOME)/.save:		$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:		.save
+.PRECIOUS:		$(HOME)/.save
+# endif

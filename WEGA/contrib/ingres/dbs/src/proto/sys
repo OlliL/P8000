@@ -1,0 +1,305 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+SYSBIN=	$(DBS)/sys/bin
+SYSETC=	$(DBS)/sys/etc
+LIB=	../lib
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+LD=	$(CC)
+CRT0=
+# ifdef ID_SEPERATE
+LDFLAGS= -i
+# else
+# ifdef TEXT_SEPERATE
+LDFLAGS= -n
+# endif
+# endif
+u_FLAG=	-u
+UFLAG1=	$(u_FLAG) _AACCESS
+UFLAG2=	$(u_FLAG) _AApath
+LIBC=	-lm
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+LIBC=	-lm -lc
+# endif
+
+# ifdef ESER_VMX
+UFLAG1=	$(u_FLAG) AACCESS
+UFLAG2=	$(u_FLAG) AApath
+# endif
+
+# ifdef HP_UX
+u_FLAG=	-W l,-u
+UFLAG1=	$(u_FLAG) _AACCESS
+UFLAG2=	$(u_FLAG) _AApath
+# endif
+
+# ifdef P8000
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef PDP
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+LD=	ld
+LDFLAGS= -i -Ms -F 2000
+CRT0=	/lib/Sseg.o /lib/Scrt0.o
+LIBC=	/lib/Slibm.a /lib/Slibcfp.a /lib/Slibc.a
+# endif
+
+# ifdef XENIX386
+LD=	ld
+CRT0=	/lib/386/Sseg.o /lib/386/Scrt0.o
+LIBC=	/lib/386/Slibm.a /lib/386/Slibcfp.a /lib/386/Slibc.a
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+CHMOD=	chmod
+MODE=	0644
+UMODE=	0700
+RM=	-rm -f
+
+GUTIL=	$(LIB)/g.a
+$(GUTIL):
+
+GLIBS=	$(GUTIL) $(LIBC)
+IUTIL=	$(LIB)/i.a $(GUTIL)
+$(LIB)/i.a:
+
+ILIBS=	$(IUTIL) $(LIBC)
+ACCESS=	$(LIB)/a.a $(IUTIL)
+$(LIB)/a.a:
+
+ALIBS=	$(ACCESS) $(LIBC)
+DBU=	$(LIB)/dbu.a $(ACCESS)
+$(LIB)/dbu.a:
+
+DLIBS=	$(DBU) $(LIBC)
+
+ADMIN=	$(SYSBIN)/ADMIN
+DBDEV=	$(SYSBIN)/DBDEV
+DBINO=	$(SYSBIN)/DBINO
+DBREL=	$(SYSBIN)/DBREL
+DEVLOCK=$(SYSETC)/dev_lock.o
+INFO=	$(SYSBIN)/LOCKINFO
+PAGER=	$(SYSBIN)/PAGER
+PRBATCH=$(SYSBIN)/PRBATCH
+PRFIL=	$(SYSBIN)/PRFIL
+SILOCK=	$(SYSETC)/DBSERVER
+SULOCK=	$(SYSBIN)/UNLOCK
+TIDTEST=$(SYSBIN)/TIDTEST
+USETUP=	$(SYSBIN)/USERSETUP
+admin=	$(SYSBIN)/admin
+dbdev=	$(SYSBIN)/dbdev
+dbino=	$(SYSBIN)/dbino
+dbrel=	$(SYSBIN)/dbrel
+info=	$(SYSBIN)/lockinfo
+pager=	$(SYSBIN)/pager
+prbatch=$(SYSBIN)/prbatch
+prfil=	$(SYSBIN)/prfil
+silock=	$(SYSETC)/dbserver
+sulock=	$(SYSBIN)/unlock
+tidtest=$(SYSBIN)/tidtest
+usetup=	$(SYSBIN)/usersetup
+
+# ifdef DBS_LOCK
+ALL=	$(PAGER)	$(USETUP)	$(SILOCK)	$(SULOCK)	\
+	$(DEVLOCK)	$(DBDEV)	$(DBINO)	$(DBREL)	\
+	$(INFO)
+# else
+ALL=	$(PAGER)	$(USETUP)
+# endif
+SYS=	$(ADMIN)	$(PRBATCH)	$(PRFIL)	$(TIDTEST)
+
+INSTALL:		install
+
+install:		$(ALL)
+
+SYSINSTALL:		sysinstall
+
+sysinstall:		install $(SYS)
+
+$(pager):		pager.o $(ACCESS)
+	$(LD) $(LDFLAGS) STRIPFLAG $(UFLAG1) $(CRT0) pager.o $(ALIBS) -o $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(PAGER):		$(pager)
+	$(RM) $@
+	LN $(pager) $@
+
+$(usetup):		usersetup.o $(ACCESS)
+	$(LD) $(LDFLAGS) STRIPFLAG $(UFLAG2) $(CRT0) usersetup.o $(ALIBS) -o $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(USETUP):		$(usetup)
+	$(RM) $@
+	LN $(usetup) $@
+
+$(admin):		printadmin.o $(ACCESS)
+	$(LD) $(LDFLAGS) STRIPFLAG $(UFLAG1) $(CRT0) printadmin.o $(ALIBS) -o $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(ADMIN):		$(admin)
+	$(RM) $@
+	LN $(admin) $@
+
+$(prbatch):		prbatch.o $(DBU)
+	$(LD) $(LDFLAGS) STRIPFLAG $(UFLAG1) $(CRT0) prbatch.o $(DLIBS) -o $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(PRBATCH):		$(prbatch)
+	$(RM) $@
+	LN $(prbatch) $@
+
+$(prfil):		prfil.o $(GUTIL)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) prfil.o $(GLIBS) -o $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(PRFIL):		$(prfil)
+	$(RM) $@
+	LN $(prfil) $@
+
+$(tidtest):		tidtest.o
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) tidtest.o $(LIBC) -o $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(TIDTEST):		$(tidtest)
+	$(RM) $@
+	LN $(tidtest) $@
+
+$(sulock):		unlock.o $(IUTIL)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) unlock.o $(ILIBS) -o $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(SULOCK):		$(sulock)
+	$(RM) $@
+	LN $(sulock) $@
+
+$(silock):		dbserver.o $(GUTIL)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) dbserver.o $(GLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(SILOCK):		$(silock)
+	$(RM) $@
+	LN $(silock) $@
+
+$(DEVLOCK):		dev_lock.o
+	CP dev_lock.o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(info):		lockinfo.o $(IUTIL)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) lockinfo.o $(ILIBS) -o $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(INFO):		$(info)
+	$(RM) $@
+	LN $(info) $@
+
+$(dbdev):		dbdev.sh
+	CP dbdev.sh $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(DBDEV):		$(dbdev)
+	$(RM) $@
+	LN $(dbdev) $@
+
+$(dbino):		dbino.sh
+	CP dbino.sh $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(DBINO):		$(dbino)
+	$(RM) $@
+	LN $(dbino) $@
+
+$(dbrel):		dbrel.sh
+	CP dbrel.sh $@
+	@-$(CHMOD) $(UMODE) $@
+
+$(DBREL):		$(dbrel)
+	$(RM) $@
+	LN $(dbrel) $@
+
+ALLCLEAN:		allclean
+
+allclean:		clean
+	$(RM) $(ALL) $(SYS)
+
+CLEAN:			clean
+
+clean:
+	$(RM) *.o
+
+dbserver.o:		../h/trace.h
+
+# ifdef P8000
+dev_lock.o:		dev_lock.c
+	scc -c $(CFLAGS) dev_lock.c
+# endif
+
+pager.o:		../h/trace.h
+
+prbatch.o:		../h/trace.h
+
+printadmin.o:		../h/trace.h
+
+usersetup.o:		../h/bs.h
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/sys
+SRC=	pager.c		prbatch.c	prfil.c		printadmin.c	\
+	tidtest.c	usersetup.c	customer.c	Makefile	\
+	dbdev.sh	dbino.sh	dbrel.sh	lockinfo.c	\
+	unlock.c	dev_lock.c	dbserver.c
+
+.save:			$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/sys
+	> $@
+	umount DISK
+
+$(HOME)/.save:		$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:		.save
+.PRECIOUS:		$(HOME)/.save
+# endif
