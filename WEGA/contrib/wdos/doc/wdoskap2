@@ -1,0 +1,308 @@
+.ds RH "DCP-Ueberblick
+.bp
+.NH
+Ueberblick zum Betriebssystem DCP
+.LP
+Der Kern des Betriebssystems DCP umfasst folgende Komponenten:
+.DS L
+ROM-BIOS	physische Geraetetreiber, Eigentest, Boot
+BIO.COM		logische Geraetetreiber
+DOS.COM		logisches E/A-System
+COMMAND.COM	Kommandointerpreter
+.DE 
+Fuer den Anwender sind vor allem die DOS-Funktionen bedeutsam. Diese
+Funktionen werden durch das logische E/A-System und die logischen
+Geraetetreiber realisiert und stellen gegenueber den ROM-BIOS-Funktionen
+eine hoehere Schnittstelle dar. Die logischen Geraetetreiber rufen
+ihrerseits die Routinen des ROM-BIOS. Man unterscheidet CP/M-(SCP-) und
+UNIX-(WEGA/MUTOS-) kompatible Systemrufe. Somit findet der Anwender, der bisher
+eines dieser Systeme oder ein dazu kompatibles Betriebssystem, wie zum
+Beispiel SCP oder WEGA nutzte, sofort eine bekannte Schnittstelle vor.
+Aufgabe des Kommandosystems ist es, die Kommunikation zwischen Bediener und
+Betriebssystem zu realisieren. Wesentliches Merkmal des Betriebssystems ist
+seine Flexibilitaet, das heisst die leichte Anpassung an bestimmte
+Bedingungen. Ein wesentliches Kennzeichen dafuer ist, dass weitere Treiber
+fuer eine erweiterte Peripherie eingebracht werden koennen. Diese Treiber
+koennen auch vom Anwender geschrieben werden. Sie werden als Programm
+geladen und koennen als resident erklaert werden, so dass sie im Speicher
+verbleiben und fuer folgende Programme verfuegbar sind.
+.LP
+.NH 2
+Kodes
+.LP
+Fuer die Darstellung von Zeichen wird der "Erweiterte KDI-7-Kode" verwendet.
+Dieser Kode benutzt alle 8 Bit, so dass 256 Zeichen dargestellt werden
+koennen. Das sind die lateinischen Buchstaben, Ziffern und Sonderzeichen.
+.LP 
+Die Erweiterungen betreffen folgende Zeichengruppen:
+.IP -
+Grafiksymbole (Striche, Doppelstriche, Ecken, ausgefuellte
+Positionen u.a.). Diese Grafiksymbole erlauben bereits eine
+ansprechende grafische Arbeit (z.B. Blockschaltbilder).
+.IP -
+Sonderzeichen einiger europaeischer Sprachen. In der deutschen
+Sprache sind dies die Umlaute und sz
+.IP -
+griechisches Alphabet
+.IP -
+mathematische Symbole
+.IP -
+sonstige Symbole
+.LP 
+.NH 2
+Dateisysteme
+.LP
+Der Bereich der Datenspeicherung eines Datentraegers wird in gleich grosse
+Bereiche, genannt Cluster, die einen oder mehrere Sektoren umfassen,
+eingeteilt. Die Zuordnung der Cluster zu den Dateien wird in einer
+Dateizuordnungstabelle, genannt FAT (file allocation table), vorgenommen.
+Aus dieser Tabelle sind auch die unbelegten Cluster und damit die freie
+Kapazitaet eines Datentraegers erkennbar. Wird eine Datei geloescht, werden
+die von ihr belegten Cluster wieder freigegeben. Beim Anlegen und Erweitern
+einer Datei werden freie Cluster aus der Dateizuordnungstabelle ermittelt und
+der Datei zugeordnet. Jeder Datentraeger verfuegt ueber ein
+Stammverzeichnis. Das Stammverzeichnis einer Diskette kann bis zu 112
+Eintraege aufnehmen, das Stammverzeichnis einer Festplatte bis zu 512
+Eintraege. Jeder Eintrag kann eine Datei oder ein Unterverzeichnis
+beschreiben. Ein Eintrag ist 32 Byte lang und enthaelt die Datei bzw.
+Unterverzeichnisbezeichnung, die Dateigroesse in Byte und weitere Angaben.
+In einem Unterverzeichnis koennen Eintragungen weiterer Verzeichnisse
+stehen. Die Tiefe der sich so ergebenden Baumstruktur ist nicht begrenzt.
+Unterverzeichnisse koennen beliebig viele Eintragungen aufnehmen. Sie werden
+wie Dateien verwaltet, denen zur Aufnahme weiterer Eintragungen Sektoren auf
+der Diskette zugewiesen werden. Das Aufteilen der Dateien in Gruppen
+verringert die Suchzeit nach Verzeichniseintragungen und verbessert die
+Uebersichtlichkeit. Soll der Zugriff auf eine Datei realisiert werden, muss
+der Pfadname der Datei angegeben werden. Dieser Pfadname ist ausgehend vom
+Stammverzeichnis eine Folge von Verzeichnisnamen, die durch Backslash
+(\\) getrennt werden und mit dem Dateinamen enden. Lautet der
+Pfadname z.B.:
+ 
+c:\\verzeichnis1\\verzeichnis2\\datei
+ 
+so beginnt die Suche im Stammverzeichnis des Laufwerkes C nach
+"verzeichnis1", sucht dort nach "verzeichnis2" und schliesslich in diesem
+"datei". Das erste Backslash steht fuer das Stammverzeichnis
+(vollstaendiger Pfadname). Innerhalb eines Laufwerkes ist ein Verzeichnis
+das aktuelle Verzeichnis. Nach dem Systemstart ist das erste das
+Stammverzeichnis. Der Wechsel des aktuellen Verzeichnisses kann mit
+einer DOS-Funktion oder dem Kommando CD vorgenommen werden.
+Der Pfadname kann auch vom
+aktuellen Verzeichnis aus angegeben werden. In diesem Fall beginnt der
+Pfadname nicht mit einem Backslash (unvollstaendiger Pfadname).
+Waere das aktuelle Verzeichnis im vorangenannten Beispiel "verzeichnis1",
+darf zum Zugriff auf "datei" nur
+ 
+verzeichnis2\\datei
+ 
+angegeben werden. Um die Eingabe ausfuehrbarer Programme zu vereinfachen,
+gibt es die Moeglichkeit, Suchpfade zu definieren, in denen nach dem
+ausfuehrbaren Programm gesucht wird. Diese Suchpfade werden ueber das
+Kommando "PATH" festgelegt. Damit man dieses Kommando nicht nach jedem
+Systemanlauf neu eingeben muss, kann es in die AUTOEXEC.BAT geschrieben
+werden. Diese Stapeldatei wird automatisch bei jedem Systemanlauf
+abgearbeitet.
+.LP 
+.NH 2
+Systemanlauf
+.LP 
+Vom ROM-BIOS wird der Bootrecord gelesen. Der Bootrecord ist der
+erste Satz einer Diskette oder Festplatte. Das Lesen des Systems kann von
+der Diskette oder der Festplatte erfolgen. Das im Bootrecord enthaltene
+Programm liest die Datei der logischen Geraetetreiber (BIOS.COM). Von diesem
+Programm wird u.a. eine Datei (CONFIG.SYS) gelesen. Diese Datei ist
+wesentlich fuer die Grundeinstellung verschiedener Betriebssystemoptionen.
+Dazu gehoeren:
+.IP -
+die Auswahl der landesspezifischen Darstellung des Datums,
+der Uhrzeit und der Waehrung
+.IP -
+das Einstellen der Pufferanzahl fuer Ein- und Ausgabeoperationen
+.IP -
+die Anzahl der gleichzeitig eroeffneten Dateien
+.IP -
+die Angabe der Dateibezeichnung eines Kommandointerpeters
+.IP -
+der Dateiname von Treibern, die mit in das System eingebunden werden sollen.
+.LP 
+Danach wird das logische E/A-System (DOS.COM) geladen. Zuletzt ruft das
+System den Kommandoinerpreter, in der Regel COMMAND.COM auf. Der
+Kommandointerpreter sucht zunaechst eine Datei AUTOEXEC.BAT. Das ist eine
+Kommandodatei, in der der Anwender alle Kommandos eintraegt, von denen er
+wuenscht, dass sie bei Arbeitsbeginn des Kommandointerpreters abgearbeitet
+werden. So ist es z. B. sinnvoll, das Kommando zur Eingabe von Uhrzeit und
+Datum generell in diese Datei aufzunehmen. Auch Treiber koennen in der
+AUTOEXEC.BAT eingetragen werden. Jedoch muessen sich diese dann als
+resident erklaeren, damit sie nicht durch nachfolgende Kommandoaufrufe
+ueberschrieben werden.
+.LP 
+.NH 2 
+Schnittstelle zum ROM-BIOS
+.LP 
+Die Routinen des ROM-BIOS werden durch Softwareinterrupts aufgerufen.
+Von Applikationen wird
+vor allem die Bildschirmschnittstelle unmittelbar genutzt.
+.LP
+.NH 2
+Schnittstelle zu DOS.COM
+.LP 
+Es sind ca. 100 DOS-Funktionen verfuegbar. Diese werden in CP/M-kompatible
+und UNIX-kompatible DOS-Funktionen eingeteilt. Fuer Neuentwicklungen wird
+die Verwendung der UNIX-kompatiblen DOS-Funktionen empfohlen. Realisiert
+wird ein Systemruf ueber den Softwareinterrupt 21H (spezieller
+Unterprogrammaufruf). Funktionskode und sonstige Parameter werden in den
+CPU-Registern uebergeben.
+Die DOS-Funktionen lassen sich in fuenf Gruppen einteilen:
+.DS L
+- Ein- und Ausgabe von Zeichen bzw. Zeichenketten nach oder
+  von der Standard-Ein-/Ausgabe
+- Dateiverwaltung und Handhabung der Dateiverzeichnisse
+- Programmverwaltung
+- Speicherverwaltung
+- systemspezifische Funktionen.
+.DE
+Bei UNIX-kompatiblen Systemrufen wird jede Datenein- und ausgabe als ein
+Strom von Bytes aufgefasst. Ein solcher Datenstrom wird als Haendler
+bezeichnet. Er kann von oder zu einem Geraet
+oder einer Datei gerichtet sein. Die Geraete
+verfuegen dazu ueber festgelegte Namen, die sonst nicht verwendet werden
+duerfen. Die prinzipielle Gleichbehandlung von Geraeten und Dateien bedingt,
+dass die Dateien ueber kein spezielles Format verfuegen. Die Haendler
+koennen eroeffnet, geschlossen, gelesen und geschrieben werden. Beim
+Eroeffnen wird dem Haendler eine Nummer zugewiesen, die fuer weitere
+Zugriffe verwendet wird. Ein spezieller Systemruf realisiert das Laden und
+Ausfuehren eines Programms. Das rufende Programm wartet auf das Beenden des
+gerufenen Programms.
+.LP 
+.NH 2 
+Kommandoprozessor
+.LP 
+Die Kommunikation der Nutzer mit dem Betriebssystem DCP erfolgt ueber
+den Kommandoprozessor COMMAND.COM. Er realisiert eine Nutzerschnittstelle
+zur interaktiven Arbeit und bietet vielfaeltige Moeglichkeiten, dem Nutzer
+die Arbeit mit dem Betriebssystem zu erleichtern. Dazu gehoeren u.a.:
+.DS L
+- Sprachelemente zur Programmablaufsteuerung
+- Arbeit mit Variablen mit Parameteruebergabe
+- globale Dateinamenzeichen
+- Umleiten der E/A-Richtungen
+- Dateiuebergabe zwischen Programmen
+- Suchen ausfuehrbarer Dateien entlang dem definierbaren
+  Pfad
+.DE
+Man unterscheidet zwei Kommandoarten:
+.DS L
+- interne Kommandos
+- externe Kommandos.
+.DE
+Die Routinen der internen Kommandos sind Bestandteil von COMMAND.COM. Sie
+werdenn beim Aufruf sofort ausgefuehrt. Externe Kommandos befinden sich als
+Programmdateien auf Diskette bzw. Festplatte.
+.LP 
+Einige der internen Kommandos realisieren die Arbeit mit Diskette bzw.
+Festplatte. Dazu gehoeren folgende Funktionen:
+.DS L
+- Kopieren von Dateien und Datentraegern
+- Aendern des aktuellen Verzeichnisses
+- Auslisten des Verzeichnisses
+- Loeschen von Dateien
+- Umbenennen von Dateien
+- Definieren von Suchpfaden ausfuehrbarer Dateien
+.DE
+Funktionen allgemeiner Art, die von internen Kommandoss ausgefuehrt werden,
+sind:
+.DS L
+- Loeschen des Bildschirms
+- Anzeige bzw. Eingabe von Datum und Uhrzeit
+- Aendern des Bereitschaftszeichens des Kommandosystems
+- Anzeige von Dateien
+- Aendern der Standardein- bzw. -ausgabe.
+.DE
+Die dritte Gruppe der internen Kommandos dient der Arbeit mit
+Stapelverarbeitungsdateien:
+.IP - 2
+Ein- bzw. Ausschalten der Anzeige von Kommandozeilen
+.IP -
+Sequentielles Setzen einer Variablen auf jedes Element eines Satzes
+und Ausfuehren einer Kommandozeile (FOR-SCHLEIFE)
+.IP -
+Verwendung an einer anderen Stelle in der Stapelverarbeitungsdatei
+.IP -
+Ausfuehren einer Kommandozeile abhaengig von einer Bedingung
+(IF-Kommando)
+.IP -
+Unterbrechen der Abarbeitung der Stapelverarbeitungsdatei und
+Anzeige einer Nachricht, bis durch den Bediener eine Taste betaetigt wird. 
+.LP 
+Die Parameter der Kommandozeile der Stapelverarbeitungsdatei sind als
+Variable mit festgelegten Namen aufrufbar. Der Kommandoprozessor
+unterstuetzt sowohl die interaktive Arbeit, d.h. die Eingabe einzelner
+Kommmandozeilen ueber Tastatur, als auch das Abarbeiten von
+Stapelverarbeitungsdateien. Das sind Dateien, die einzelne Kommandos
+enthalten. Bei der interaktiven Arbeit wird die letzte Kommandozeile
+gespeichert. Ueber bestimmte Funktionstasten kann die Zeile wieder
+aufgerufen werden. Der Kommandoprozessor laedt das ausfuehrbare Programm in
+den naechsten freien Speicherbereich. Die ersten 128 Bytes werden durch ein
+Programmsegmentpraefix belegt. Dieser enthaelt die Parameter des Aufrufs,
+den Dateisteuerblock, die Segmentadresse der Umgebung und weitere Angaben.
+Unterschieden werden zwei Arten ausfuehrbarer Dateien:
+.DS L 
+ .COM-Dateien
+ .EXE-Dateien
+.DE 
+Die .EXE-Dateien unterliegen keinen Einschraenkungen. Sie koennen sich ueber
+mehrere Segmente erstrecken. Mit dem Dienstprogramm EXE2BIN
+koennen .EXE-Dateienin .COM-Dateien umgewandelt werden,
+wenn nur ein Segment belegt
+wird. Dieser Weg wird empfohlen, da die Ladezeit der .COM-Dateien kuerzer
+ist.
+.LP 
+.NH 2 
+Umleiten der Ein-/Ausgabe
+.LP
+Jedes Programm, dessen Ausfuehrung begonnen wird, verfuegt ueber fuenf
+geoeffnete Haendler. Dies sind:
+.DS L 
+- Standardeingabe
+- Standardausgabe
+- Standardfehlerausgabe
+- Standardhilfsein- und ausgabe
+- Standarddruckerausgabe.
+.DE 
+Ueber die Haendler kann das Programm Daten aufnehmen und aussenden.
+Normalerweise ist die Standardeingabe mit der Tastatur und die
+Standardausgabe mit dem Bildschirm verbunden. Um die Ein- oder Ausgaben von
+einer anderen Einheit zu erhalten oder zu einer anderen Einheit zu senden,
+koennen mit dem Umleitungszeichen '<' bzw. '>' eine andere Einheit oder
+Datei fuer die Dauer der Programmabarbeitung zugewiesen werden. Durch den
+Programmaufruf:
+
+beispiel <a: eingabe.txt
+
+erhaelt das Programm "beispiel" seine Daten nicht ueber die Tastatur,
+sondern von der Datei "eingabe.txt" des Laufwerkes A. Soll die Ausgabe des
+Kommandos "dir" (Anzeige des Verzeichnisses) nicht auf den Bildschirm, sondern
+auf den Drucker ausgegeben werden, ist folgende Kommandozeile einzugeben:
+ 
+dir > prn
+ 
+"prn" ist dabei der symbolische Name des Druckers.
+.LP 
+.NH 2 
+Datenuebergabe
+.LP
+Das Betriebssystem liefert ueber den Pipe-Mechanismus eine Moeglichkeit, in
+einfacher Weise Dienstprogramme untereinander oder mit Nutzerprogrammen zu
+verknuepfen. Dabei wird die Standardausgabe eines Programmes mit der
+Standardeingabe eines anderen Programmes verbunden, d.h. die Ausgaben eines
+Programmes werden als Eingaben eines anderen Programmes genutzt. Auf diese
+Weise koennen mehrere Programme miteinander verknuepft werden. Der Operator
+zum Verknuepfen der Programme ist das Zeichen "|". Beispiel fuer eine
+Datenuebergabe ist die Kommandozeile:
+ 
+dir|sort>dirlist
+ 
+Dabei wird das nach Standardausgabe gerichtete Auflisten des Verzeichnisses
+durch das Programm "sort" als Eingabe benutzt und die sortierte Ausgabe zur
+Datei "dirlist" umgelenkt.
+.LP 
