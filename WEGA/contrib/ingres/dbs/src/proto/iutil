@@ -1,0 +1,146 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+LIB=	../lib
+IUTIL=	$(LIB)/i.a
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+# endif
+
+# ifdef ESER_VMX
+# endif
+
+# ifdef HP_UX
+# endif
+
+# ifdef P8000
+# endif
+
+# ifdef PDP
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+# endif
+
+# ifdef XENIX386
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+AR=	-ar
+# ifdef TEST
+AR_R	=rv
+AR_X	=xv
+# else
+AR_R	=r
+AR_X	=x
+# endif
+LIBMODE=	0644
+
+CHMOD=	chmod
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+RM=	-rm -f
+TOUCH=	touch
+
+OBJS=	printup.o	resyncpipes.o	rdpipe.o	proc_error.o	\
+	copypipes.o	wrpipe.o	prpipe.o	getuser.o	\
+	getnuser.o	initucode.o	initproc.o	out_arg.o	\
+	error.o		end_job.o	dbsname.o	printdesc.o	\
+	paramd.o	typeconv.o	typeunconv.o	rub.o		\
+	lock.o		clr_tuple.o	trim_reln.o	trbuild.o	\
+	globals.o	tupleio.o	gamma.o
+
+INSTALL:	install
+
+install:	$(IUTIL)
+
+$(IUTIL):	$(OBJS)
+	$(AR) $(AR_R) $@ $?
+	@-$(CHMOD) $(LIBMODE) $@
+	$(MKLIB) $@
+
+UNLOAD:		unload
+
+unload:
+	@-$(AR) $(AR_X) $(IUTIL)
+	@$(RM) __.SYMDEF
+	@-$(TOUCH) $(IUTIL)
+
+ALLCLEAN:	allclean
+
+allclean:	clean
+	$(RM) $(IUTIL)
+
+CLEAN:		clean
+
+clean:
+	$(RM) $(OBJS)
+
+initucode.o:	../h/bs.h ../h/trace.h
+
+lock.o:		../h/trace.h
+
+rdpipe.o:	../h/trace.h
+
+wrpipe.o:	../h/trace.h
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/iutil
+SRC=	clr_tuple.c	copypipes.c	end_job.c			\
+	error.c		gamma.c		gen.h		getnuser.c	\
+	getuser.c	globals.c	dbsname.c	initproc.c	\
+	initucode.c	lock.c		out_arg.c	paramd.c	\
+	printdesc.c	printup.c	proc_error.c	prpipe.c	\
+	rdpipe.c	resyncpipes.c	rub.c		trbuild.c	\
+	trim_reln.c	tupleio.c	typeconv.c	typeunconv.c	\
+	wrpipe.c	Makefile
+
+.save:		$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/iutil
+	> $@
+	umount DISK
+
+$(HOME)/.save:	$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save
+# endif
