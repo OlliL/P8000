@@ -1,0 +1,221 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+LIB=	../lib
+SYSBIN=	$(DBS)/sys/bin
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+LD=	$(CC)
+CRT0=
+# ifdef ID_SEPERATE
+LDFLAGS= -i
+# else
+# ifdef TEXT_SEPERATE
+LDFLAGS= -n
+# endif
+# endif
+LIBC=	-lm
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+LIBC=	-lm -lc
+# endif
+
+# ifdef ESER_VMX
+# endif
+
+# ifdef HP_UX
+# endif
+
+# ifdef P8000
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef PDP
+LDFLAGS=
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+LD=	ld
+LDFLAGS= -i -Ms -F 2000
+CRT0=	/lib/Sseg.o /lib/Scrt0.o
+LIBC=	/lib/Slibm.a /lib/Slibcfp.a /lib/Slibc.a
+# endif
+
+# ifdef XENIX386
+LD=	ld
+CRT0=	/lib/386/Sseg.o /lib/386/Scrt0.o
+LIBC=	/lib/386/Slibm.a /lib/386/Slibcfp.a /lib/386/Slibc.a
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+AR=	-ar
+# ifdef TEST
+AR_R	=rv
+AR_X	=xv
+# else
+AR_R	=r
+AR_X	=x
+# endif
+LIBMODE=0644
+
+CHMOD=	chmod
+MODE=	6711
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+RM=	-rm -f
+TOUCH=	touch
+
+OVQPLIB=$(LIB)/ovqp.a
+ACCESS=	$(LIB)/a.a
+$(ACCESS):
+
+IUTIL=	$(LIB)/i.a
+$(IUTIL):
+
+GUTIL=	$(LIB)/g.a
+$(GUTIL):
+
+LIBES=	$(OVQPLIB) $(ACCESS) $(IUTIL) $(GUTIL)
+LIBS=	$(LIBES) $(LIBC)
+OVQP=	$(SYSBIN)/ovqp34
+# ifdef OD_SEPERATE
+ALL=	$(OVQP)
+# else
+ALL=
+# endif
+
+OBJS=	main.o		ovqp.o		startovqp.o	getqry.o	\
+	rdsym.o		strategy.o	findsimps.o	key.o		\
+	scan.o		interp.o	interp1.o	eqlpr.o		\
+	string.o	typecheck.o	support.o	prsym.o		\
+	copyreturn.o
+
+INSTALL:	install
+
+UNLOAD:		unload
+
+# ifdef NO_PIPE
+install:
+
+unload:
+# else
+install:	$(OVQPLIB) $(ALL)
+
+unload:
+	@-$(AR) $(AR_X) $(OVQPLIB)
+	@$(RM) __.SYMDEF
+	@-$(TOUCH) $(OVQPLIB)
+# endif
+
+$(OVQPLIB):	$(OBJS)
+	$(AR) $(AR_R) $@ $?
+	@-$(CHMOD) $(LIBMODE) $@
+	$(MKLIB) $@
+
+$(OVQP):	$(LIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) $(LIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+ALLCLEAN:	allclean
+
+allclean:	clean
+	$(RM) $(OVQPLIB) $(ALL)
+
+CLEAN:		clean
+
+clean:
+	$(RM) $(OBJS)
+
+# ifdef BC
+support.o:	support.c
+	$(CC) -c $(f_FLAG) $(i_FLAG) support.c
+# endif
+
+eqlpr.o:	../h/trace.h
+
+findsimps.o:	../h/trace.h
+
+getqry.o:	../h/trace.h
+
+interp.o:	../h/trace.h
+
+interp1.o:	../h/trace.h
+
+key.o:		../h/trace.h
+
+main.o:		../h/trace.h
+
+ovqp.o:		../h/trace.h
+
+rdsym.o:	../h/trace.h
+
+scan.o:		../h/trace.h
+
+strategy.o:	../h/trace.h
+
+string.o:	../h/trace.h
+
+support.o:	../h/trace.h
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/ovqp
+SRC=	copyreturn.c	eqlpr.c		findsimps.c	gen.h		\
+	getqry.c	interp.c	interp1.c	key.c		\
+	main.c		ovqp.c		ovqp.h		prsym.c		\
+	rdsym.c		scan.c		startovqp.c	strategy.c	\
+	strategy.h	string.c	support.c	typecheck.c	\
+	Makefile
+
+.save:		$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/ovqp
+	> $@
+	umount DISK
+
+$(HOME)/.save:	$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save
+# endif

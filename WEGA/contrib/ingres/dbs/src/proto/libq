@@ -1,0 +1,169 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+SYSLIB=	$(DBS)/lib
+BIN=	$(DBS)/bin
+LIBQ=	$(SYSLIB)/libq.a
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+# endif
+
+# ifdef ESER_VMX
+# endif
+
+# ifdef HP_UX
+# endif
+
+# ifdef P8000
+# endif
+
+# ifdef PDP
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+# endif
+
+# ifdef XENIX386
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+AR=	-ar
+# ifdef TEST
+AR_R	=rv
+AR_X	=xv
+# else
+AR_R	=r
+AR_X	=x
+# endif
+LIBMODE=	0644
+
+CHMOD=	chmod
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+RM=	-rm -f
+TOUCH=	touch
+
+OBJS=	IIw_left.o	IIw_right.o	IIcvar.o	IIgettup.o	\
+	IIn_get.o	IIn_ret.o	IIdbs.o		IIrdpipe.o	\
+	IIretrieve.o	IIsetup.o	IIflushtup.o	IIsync.o	\
+	IIwrite.o	IIwrpipe.o	IIexit.o	IIbmove.o	\
+	IIsyserr.o	IIconvert.o	IIerror.o	IIp_err.o	\
+	IIprpipe.o	IIresync.o	IIitos.o	IIconcatv.o	\
+	IIlength.o 	IIatoi.o 	IIsequal.o
+
+INSTALL:	install
+
+UNLOAD:		unload
+
+# ifdef NO_PIPE
+install:
+
+unload:
+# else
+install:	$(LIBQ)
+
+unload:
+	@-$(AR) $(AR_X) $(LIBQ)
+	@$(RM) __.SYMDEF
+	@-$(TOUCH) $(LIBQ)
+# endif
+
+$(LIBQ):	$(OBJS)
+	$(AR) $(AR_R) $@ $?
+	@-$(CHMOD) $(LIBMODE) $@
+	$(MKLIB) $@
+
+ALLCLEAN:	allclean
+
+allclean:	clean
+	$(RM) $(LIBQ)
+
+CLEAN:		clean
+
+clean:
+	$(RM) $(OBJS)
+
+IIatoi.o:	IIatoi.c ../gutil/atoi.c
+
+IIbmove.o:	IIbmove.c ../gutil/bmove.src
+
+IIconcatv.o:	IIconcatv.c ../gutil/ztack.c
+
+IIconvert.o:	IIconvert.c ../dbu/convert.c
+
+# ifndef SIGN_EXT
+IIdbs.o:	IIdbs.c ../gutil/i1toi2.c
+# endif
+
+IIdbs.o:	../h/bs.h
+
+IIitos.o:	IIitos.c ../gutil/iocv.c
+
+IIlength.o:	IIlength.c ../gutil/length.c
+
+IIp_err.o:	IIp_err.c ../gutil/errfilen.c
+
+IIprpipe.o:	IIprpipe.c ../iutil/prpipe.c
+
+IIsequal.o:	IIsequal.c ../gutil/sequal.c
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/libq
+SRC=	IIatoi.c	IIbmove.c	IIconcatv.c	IIconvert.c	\
+	IIcvar.c	IIerror.c	IIexit.c	IIflushtup.c	\
+	IIgettup.c	IIglobals.h	IIdbs.c		IIitos.c	\
+	IIlength.c	IIn_get.c	IIn_ret.c	IIp_err.c	\
+	IIprpipe.c	IIrdpipe.c	IIresync.c	IIretrieve.c	\
+	IIsequal.c	IIsetup.c	IIsync.c	IIsyserr.c	\
+	IIw_left.c	IIw_right.c	IIwrite.c	IIwrpipe.c	\
+	gen.h		Makefile
+
+.save:		$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/libq
+	> $@
+	umount DISK
+
+$(HOME)/.save:	$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save
+# endif
