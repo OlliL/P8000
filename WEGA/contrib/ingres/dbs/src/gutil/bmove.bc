@@ -1,0 +1,60 @@
+AAbmove_s	module
+	$N
+!									!
+!  BMOVE -- block move							!
+!									!
+!	This is a highly optimized version of the old C-language	!
+!	AAbmove routine; it's function (should be) identical.		!
+!	It uses a fancy algorithm to move words instead of bytes	!
+!	whenever possible.						!
+!									!
+!	In C the routine is:						!
+!	char *AAbmove(a, b, l)						!
+!		char	*a, *b;						!
+!		int	l;						!
+!		{							!
+!			register int	n;				!
+!			register char	*p, *q;				!
+!			p = a;						!
+!			q = b;						!
+!			n = l;						!
+!			while (n--)					!
+!				*q++ = *p++;				!
+!			return (q);					!
+!		}							!
+!									!
+!	Parameters:							!
+!		a [4(sp)] -- source area				!
+!		b [6(sp)] -- target area				!
+!		l [8(sp)]  -- byte count				!
+!									!
+!	Returns:							!
+!		Pointer to end of target area.				!
+!									!
+!	History:							!
+!		3/14/79 [rse] -- added odd to odd case			!
+!		2/9/78 [bob] -- converted from "C"			!
+!									!
+!									!
+
+	global
+_AAbmove	procedure
+	entry
+
+	push	@r15,r14
+	ld	r14,r15
+
+	ld	r1,4(r14)
+	ld	r2,6(r14)
+	ld	r3,8(r14)
+	test	r3
+	jr	z,$1
+
+	ldirb	@r2,@r1,r3
+
+$1:
+	pop	r14,@r15
+	ret
+
+	end	_AAbmove
+	end	AAbmove_s
