@@ -1,0 +1,2160 @@
+
+
+
+        Anwendung                 - 191 -                       QQQQUUUUEEEELLLL
+
+
+
+        * retrieve (p.name, pergeh=
+        * avg(p.gehalt where 1985 - p.gebdat > 50))
+        * where 1985 - p.gebdat > 50
+        * \g
+
+        I N G - d b . . .
+
+        |name                |pergeh    |
+        |-------------------------------|
+        |Wunsch, Peter-Paul  |  1277.444|
+        |Malter, Juergen     |  1277.444|
+        |Schneider, Peter    |  1277.444|
+        |Heine, Rolf         |  1277.444|
+        |Ernst, Eva          |  1277.444|
+        |Gruene, Peter       |  1277.444|
+        |Zeidler, Fritz      |  1277.444|
+        |Rose, Peter         |  1277.444|
+        |Rose, Petra         |  1277.444|
+        |-------------------------------|
+        9 tuples touched
+
+        ING_db:
+        *
+
+
+        Es ist manchmal gebra"uchlich, dass doppelte  Werte  gelo"scht
+        werden,  bevor  ein Aggregat-Operator ausgefu"hrt wird.  Wenn
+        sie   beispielsweise   wissen   mo"chten,   wieviele   Leiter
+        ("leiter")  es  gibt,  wird  die folgende Query die richtige
+        Antwort geben:
+
+
+        * retrieve (chefs = count(p.leiter))
+        * \g
+
+        I N G - d b . . .
+
+
+        |chefs        |
+        |-------------|
+        |           25|
+        |-------------|
+        1 tuples touched
+
+        ING_db:
+        *
+
+
+        Beachten sie, dass "count" mitteilt, wieviele  Tupel  es  in
+        "personal"  gibt.   Was  wir  wissen  wollten, war, wieviele
+        Leiter ("p.leiter") es gibt.
+
+        ING_DB  6.3  stellt  drei  spezielle  Formen  von  Aggregat-
+        Operatoren zur Verfu"gung.
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 192 -                       QQQQUUUUEEEELLLL
+
+
+
+                countu          za"hlt unikate (einmalig vorkommende)
+                                Werte
+                avgu            Durchschnitt u"ber unikate Werte
+                sumu            summiert unikate Werte
+
+
+        Interessanterweise werden "minu", "maxu"  und  "anyu"  nicht
+        beno"tigt.   Ihre  Werte sind die gleichen, unabha"ngig davon,
+        ob doppelte Tupel vorkommen oder nicht.
+
+        Die korrekte Query, um die Anzahl der  "leiter"  zu  finden,
+        ist:
+
+
+        * retrieve (chefs=countu(p.leiter))
+        * \g
+
+        I N G - d b . . .
+
+
+        |chefs        |
+        |-------------|
+        |            9|
+        |-------------|
+        1 tuples touched
+
+        ING_db:
+        *
+
+
+        Eine andere Erleichterung, die ING_DB  6.3 unterstu"tzt, sind
+        die  sogenannten  Aggregat-Funktionen.   Aggregat-Funktionen
+        gruppieren Daten in  Kategorien  und  unterstu"tzen  separate
+        Zusammenfassungen zu jeder Kategorie.
+
+        Was ist zum Beispiel, wenn wir fu"r die Angestellten, die zum
+        selben  Leiter  geho"ren,  das  Durchschnittsgehalt ermitteln
+        wollen?  Die Query wu"rde sein:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 193 -                       QQQQUUUUEEEELLLL
+
+
+
+
+        * retrieve (p.name,leiteravg=avg(p.gehalt by p.leiter))
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |leiteravg |
+        |-------------------------------|
+        |Mueller, Ernst      |   700.000|
+        |Gruene, Peter       |  1453.000|
+        |Rose, Petra         |  1453.000|
+        |Loda, Dieter        |   668.500|
+        |Baum, Klaus         |   668.500|
+        |Kayser, Helmut      |   968.500|
+        |Weber, Franz        |   968.500|
+        |Fleischer, Karl     |   877.000|
+        |Maerz, Udo          |  1239.000|
+        |Mueller, Petra      |  1239.000|
+        |Schmidt, Hermann    |  1035.333|
+        |Warnke, Peter       |  1035.333|
+        |Neumann, Inge       |  1035.333|
+        |Schmidt, Petra      |  1111.667|
+        |Thoms, Rolf         |  1111.667|
+        |Wunsch, Peter-Paul  |  1111.667|
+        |Malter, Juergen     |  1111.667|
+        |Schneider, Peter    |  1111.667|
+        |Weise, Juergen      |  1111.667|
+        |Heine, Rolf         |  1111.667|
+        |Ernst, Eva          |  1111.667|
+        |Rose, Peter         |  1111.667|
+        |Zeidler, Fritz      |  1605.667|
+        |Moser, Otto         |  1605.667|
+        |Schulze, Ernst      |  1605.667|
+        |-------------------------------|
+        25 tuples touched
+
+        ING_db:
+        *
+
+
+        Die erste Person ist allein und ihr Einkommen betra"gt 700.00
+        M.   Die  na"chsten zwei Personen haben den selben Leiter und
+        das Durchschnittseinkommen betra"gt 1453.00 usw.
+
+        Noch einmal, wenn  wir  die  gleiche  Liste  eben  fu"r  jene
+        Angestellten u"ber 50 sehen mo"chten:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 194 -                       QQQQUUUUEEEELLLL
+
+
+
+
+        * retrieve (p.name,leiteravg=avg(p.gehalt by p.leiter))
+        * where 1985-p.gebdat > 50
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |leiteravg |
+        |-------------------------------|
+        |Gruene, Peter       |  1453.000|
+        |Rose Petra          |  1453.000|
+        |Wunsch, Peter-Paul  |  1111.667|
+        |Malter, Juergen     |  1111.667|
+        |Schneider, Peter    |  1111.667|
+        |Heine, Rolf         |  1111.667|
+        |Ernst, Eva          |  1111.667|
+        |Rose, Peter         |  1111.667|
+        |Zeidler, Fritz      |  1605.667|
+        |-------------------------------|
+        9 tuples touched
+
+        ING_db:
+        *
+
+
+        Aggregat-Funktionen (im  Gegensatz  zu  Aggregat-Operatoren)
+        sind  nicht vollsta"ndig in sich abgeschlossen.  Die Doma"nen,
+        auf die die Daten gruppiert sind  (,  durch  die  sogenannte
+        "by_list"),  sind  logisch  mit  den  restlichen Doma"nen der
+        Query verknu"pft.
+
+        In diesem letzten Beispiel referenziert  "p.leiter"  in  der
+        "by_list"   zu   den  selben  Tupeln  wie  "p.name"  in  der
+        "target_list".
+
+        Wenn wir das Durchschnittsgehalt nach Leitern  nur  fu"r  die
+        Leiter 33 und 199 berechnen wollen, erga"be sich diese Query:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 195 -                       QQQQUUUUEEEELLLL
+
+
+
+
+        * retrieve (p.name,leiteravg=
+        * avg(p.gehalt by p.leiter))
+        * where p.leiter = 199 or p.leiter = 33
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |leiteravg |
+        |-------------------------------|
+        |Kayser, Helmut      |   968.500|
+        |Weber, Franz        |   968.500|
+        |Schmidt, Petra      |  1111.667|
+        |Thoms, Rolf         |  1111.667|
+        |Wunsch, Peter-Paul  |  1111.667|
+        |Malter, Juergen     |  1111.667|
+        |Schneider, Peter    |  1111.667|
+        |Weise, Juergen      |  1111.667|
+        |Heine, Rolf         |  1111.667|
+        |Ernst, Eva          |  1111.667|
+        |Rose, Peter         |  1111.667|
+        |-------------------------------|
+        11 tuples touched
+
+
+        ING_db:
+        *
+
+
+        Nehmen wir an, wir wollen herausfinden, wie  viele  Personen
+        bei  jedem  Leiter arbeiten und weiterhin wollen wir nur die
+        Personen einbeziehen, die bereits vor 1970 dort arbeiteten.
+
+
+        * retrieve (p.leiter,mitarb=count(p.name by p.leiter where
+        * p.einstdat < 1970))
+        * \g
+
+        I N G - d b   . . .
+
+
+        |leiter|mitarb       |
+        |--------------------|
+        |     0|            2|
+        |    10|            0|
+        |    13|            0|
+        |    26|            2|
+        |    32|            0|
+        |    33|            2|
+        |    55|            1|
+        |   129|            2|
+        |   199|            8|
+        |--------------------|
+        9 tuples touched
+
+        ING_db:
+        *
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 196 -                       QQQQUUUUEEEELLLL
+
+
+        Beachten  sie,  dass  die  Leiter  32,  10  und   13   keine
+        Angestellten  haben,  die  vor  1970  dort angefangen haben.
+        Jetzt nehmen wir an, dass wir  das  Durchschnittsgehalt  fu"r
+        diese   Angestellten  wissen  wollen.   A"ndern  sie  einfach
+        "count" in "avg" und starten sie die Query.
+
+        * retrieve (p.leiter,mitarb=avg(p.gehalt by p.leiter where
+        * p.einstdat < 1970))
+        * \g
+
+        I N G - d b   . . .
+
+        |leiter|mitarb    |
+        |-----------------|
+        |     0|  1453.000|
+        |    10|     0.000|
+        |    13|     0.000|
+        |    26|   954.000|
+        |    32|     0.000|
+        |    33|  1337.000|
+        |    55|  1362.000|
+        |   129|  1626.500|
+        |   199|  1088.125|
+        |-----------------|
+        9 tuples touched
+
+        ING_db:
+        *
+
+
+        Beachten sie, was ING_DB  6.3 fu"r die Leiter 32, 10  und  13
+        macht.   Das  Durchschnitsgehalt  fu"r diese Angestellten ist
+        tatsa"chlich nicht  definiert,  weil  es  keine  Angestellten
+        gibt,  die  vor  1970 angefangen haben.  ING_DB  6.3 wandelt
+        undefinierte Werte immer in Null.
+
+        Wenn sie die Nullwerte von  der  Ausgabe  entfernen  wollen,
+        kann  das  durch  Hinzufu"gung  einer Qualifikation zur Query
+        erfolgen.     Die    folgende    Query    wird    nur    die
+        Durchschnittsgeha"lter  finden,  die  einen Wert gro"sser Null
+        haben.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 197 -                       QQQQUUUUEEEELLLL
+
+
+
+
+        * retrieve (p.leiter,mitarb=avg(p.gehalt by p.leiter where
+        * p.einstdat < 1970))
+        * where avg(p.gehalt by p.leiter where p.einstdat < 1970) > 0
+        * \g
+
+        I N G - d b   . . .
+
+        |leiter|mitarb    |
+        |-----------------|
+        |     0|  1453.000|
+        |    26|   954.000|
+        |    33|  1337.000|
+        |    55|  1362.000|
+        |   129|  1626.500|
+        |   199|  1088.125|
+        |-----------------|
+        6 tuples touched
+
+        ING_db:
+        *
+
+
+        Bis jetzt haben wir die Rechercheergebnisse direkt  auf  dem
+        Terminal ausgegeben.  Sie ko"nnen die Ergebnisse auch in eine
+        neue Relation retten bzw.  sichern.   Das  wird  realisiert,
+        wenn sie sagen:
+
+
+                retrieve into steigerung ( ... )
+                where . . .
+
+
+        Die Regeln sind genau die gleichen, als wu"rden sie u"ber  das
+        Terminal  recherchieren.  ING_DB  6.3 gru"ndet die neue Rela-
+        tion mit den korrekten Doma"nen und gibt die  Ergebnisse  der
+        Query in diese Relation.
+
+        Als Beispiel gru"nden wir eine  neue  Relation  "steigerung",
+        die  nur  die Angestellten entha"lt, die mehr als 1000 M ver-
+        dienen:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 198 -                       QQQQUUUUEEEELLLL
+
+
+
+
+        * retrieve into steigerung (p.all)
+        * where p.gehalt > 1000
+        * print steigerung
+        * \g
+
+        I N G - d b   . . .
+
+        Relation: steigerung
+        K 1630 ING_DB
+         EVK Olbernhau - K1630
+
+        |num   |name                |gehalt|leiter|gebdat|einstd|
+        |-------------------------------------------------------|
+        |    10|Rose, Peter         |  1590|   199|  1927|  1953|
+        |    11|Rose, Petra         |  1206|     0|  1931|  1951|
+        |    26|Schneider, Peter    |  1300|   199|  1930|  1970|
+        |    33|Ernst, Eva          |  1010|   199|  1931|  1963|
+        |    37|Neumann, Inge       |  1198|    26|  1950|  1974|
+        |    55|Malter, Juergen     |  1200|   199|  1920|  1969|
+        |   157|Schmidt, Petra      |  1200|   199|  1940|  1960|
+        |   199|Gruene, Peter       |  1700|     0|  1920|  1952|
+        |   430|Moser, Otto         |  1567|   129|  1938|  1959|
+        |   843|Schmidt, Hermann    |  1120|    26|  1936|  1956|
+        |   994|Schulze, Ernst      |  1564|   129|  1944|  1970|
+        |  1523|Zeidler, Fritz      |  1686|   129|  1928|  1949|
+        |  1639|Maerz, Udo          |  1116|    55|  1947|  1970|
+        |  5119|Mueller, Petra      |  1362|    55|  1939|  1963|
+        |  5219|Weber, Franz        |  1337|    33|  1944|  1959|
+        |-------------------------------------------------------|
+        15 tuples touched
+
+        ING_db:
+        *
+
+
+        Durch ein "retrieve into" wird nichts gedruckt bzw. ausgege-
+        ben.   Wir  haben  ein  "print"-Kommando  eingefu"gt,  um die
+        Ergebnisse zu sehen.  Die Relation, die durch ein  "retrieve
+        into"  benannt wird, darf vorher nicht existieren.  Wenn wir
+        beispielsweise versuchen, die selbe Query zu wiederholen:
+
+
+        * \g
+
+        I N G - d b . . .
+
+        2135: line 1, You cannot duplicate the name of an
+        existing relation(steigerung)
+
+        ING_db:
+        *
+
+
+
+        Es gibt zwei spezielle Merkmale zu "retrieve into".  Erstens
+        wird  die  Relation  automatisch sortiert und doppelte Tupel
+        gelo"scht.  Zweitens wird die Relation Bestandteil der Daten-
+        bank  und sie werden ihr Eigentu"mer.  Wenn sie nicht wollen,
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 199 -                       QQQQUUUUEEEELLLL
+
+
+        dass  sie  erhalten  bleibt,  denken  sie  daran,  dass  sie
+        gelo"scht werden muss.  Der Ablauf zum Lo"schen einer Relation
+        wird etwas spa"ter erla"utert.
+
+        Bisher haben wir nur  Daten  gesucht,  aber  niemals  welche
+        gea"ndert.   ING_DB  6.3 unterstu"tzt drei Aktualisierungskom-
+        mandos: "append", "replace" und "delete".
+
+        Beispielsweise wollen wir "Heinz  Heinrich"  zur  Liste  der
+        Angestellten  auf "steigerung" hinzufu"gen und ihm ein Gehalt
+        von 1000 M zuordnen:
+
+
+        * append to steigerung(name = "Heinrich, Heinz",gehalt = 1000)
+        * \g
+
+        I N G - d b . . .
+
+        1 tuples touched
+
+        ING_db:
+        *
+
+
+        Beachten sie, dass wir nur zwei Werte spezifizierten, obwohl
+        "steigerung"  aus  sechs  Doma"nen  besteht.   Das ist scho"n!
+        ING_DB  6.3 setzt automatisch numerische  Doma"nen  auf  Null
+        und  Zeichenkettendoma"nen auf "blank", wenn sie nicht spezi-
+        fiziert wurden.
+
+        Beachten sie auch, dass ING_DB  6.3 nach  der  Query  nichts
+        ausgibt.  Das trifft fu"r alle Aktualisierungskommandos zu.
+
+        Wir wollen jedem in "steigerung" 10% Gehaltszuschlag  geben.
+        Um  das  zu tun, ersetzen wir "gehalt" durch das Produkt aus
+        1,1 mal Wert.  Geben sie die Query ein:
+
+
+        * range of s is steigerung
+        * replace s(gehalt = s.gehalt * 1.1)
+        * \g
+
+        I N G - d b   . . .
+
+        16 tuples touched
+
+        ING_db:
+        *
+
+
+        Wa"hrend  das  "append"-Kommando  erwartet,  dass  sie  einen
+        Relationen-Name   (d.h.  "append  to  steigerung")  angeben,
+        erwartet das "replace"- und  "delete"-Kommando  eine  Tupel-
+        Variable.  Bemerken sie, dass das Kommando lautet:
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 200 -                       QQQQUUUUEEEELLLL
+
+
+
+
+                replace s ( . . . )
+                        where . . .
+
+        und nicht:
+
+                replace steigerung ( . . . )
+                        where . . .
+
+
+        Geben sie die Ergebnisse der beiden letzten Aktualisierungen
+        aus:
+
+
+        * print steigerung
+        * \g
+
+        I N G - d b   . . .
+
+
+        Relation: steigerung
+
+
+        |num   |name                |gehalt|leiter|gebdat|einstd|
+        |-------------------------------------------------------|
+        |    10|Rose, Peter         |  1749|   199|  1927|  1953|
+        |    11|Rose, Petra         |  1326|     0|  1931|  1951|
+        |    26|Schneider, Peter    |  1430|   199|  1930|  1970|
+        |    33|Ernst, Eva          |  1111|   199|  1931|  1963|
+        |    37|Neumann, Inge       |  1317|    26|  1950|  1974|
+        |    55|Malter, Juergen     |  1320|   199|  1920|  1969|
+        |   157|Schmidt, Petra      |  1320|   199|  1940|  1960|
+        |   199|Gruene, Peter       |  1870|     0|  1920|  1952|
+        |   430|Moser, Otto         |  1723|   129|  1938|  1959|
+        |   843|Schmidt, Hermann    |  1232|    26|  1936|  1956|
+        |   994|Schulze, Ernst      |  1720|   129|  1944|  1970|
+        |  1523|Zeidler, Fritz      |  1854|   129|  1928|  1949|
+        |  1639|Maerz, Udo          |  1227|    55|  1947|  1970|
+        |  5119|Mueller, Petra      |  1498|    55|  1939|  1963|
+        |  5219|Weber, Franz        |  1470|    33|  1944|  1959|
+        |     0|Heinrich, Heinz     |  1100|     0|     0|     0|
+        |-------------------------------------------------------|
+
+
+        ING_db:
+        *
+
+
+        Nun  wollen  wir  denjenigen,  der  am  wenigsten  verdient,
+        entlassen:
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 201 -                       QQQQUUUUEEEELLLL
+
+
+
+
+        * delete s where s.gehalt = min(s.gehalt) \g
+        I N G - d b   . . .
+
+        1 tuples touched
+
+        ING_db:
+        *
+
+
+        Beachten sie, dass das "delete"-Kommando eine Tupel-Variable
+        (d.h. "delete s") erwartet und keinen Relationen-Name.
+
+        Was ist, wenn wir wissen wollen, wer  mehr  als  Otto  Moser
+        verdient? Mit Heinz Heinrich ko"nnen wir nicht mehr arbeiten,
+        den haben wir entlassen.  Die Query, die das  erledigt,  ist
+        recht  schwierig.   Zuerst  beno"tigen  wir  eine neue Tupel-
+        Variable, genannt "o", die auf auf dem Bereich  "steigerung"
+        liegt  und benutzt wird, um Otto zu referenzieren.  "o.name"
+        muss auf "Moser, Otto" gesetzt werden.   Danach  mu"ssen  wir
+        eine  Tupel-Variable  "s"  nutzen,  die die gesamte Relation
+        durchforscht.  Jedesmal, wenn wir "s.gehalt > o.gehalt" fin-
+        den, dann verdient "s.name" mehr als Otto.
+
+        Die vollsta"ndige Query ist:
+
+
+        * range of o is steigerung
+        * retrieve (s.name, sgeh=s.gehalt,ottogeh=o.gehalt)
+        * where s.gehalt > o.gehalt
+        * and o.name = "Moser, Otto"
+        * \g
+
+        I N G - d b   . . .
+
+        |name                |sgeh  |ottoge|
+        |----------------------------------|
+        |Rose, Peter         |  1749|  1723|
+        |Gruene, Peter       |  1870|  1723|
+        |Zeidler, Fritz      |  1854|  1723|
+        |----------------------------------|
+        3 tuples touched
+
+        ING_db:
+        *
+
+
+        Wenn wir Otto Moser 50 M mehr geben wollen, als  irgendeinem
+        anderen, dann muss die Query lauten:
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 202 -                       QQQQUUUUEEEELLLL
+
+
+
+
+        * replace s(gehalt = max(s.gehalt) + 50)
+        * where s.name = "Moser, Otto"
+        * \g
+
+        I N G - d b   . . .
+
+
+        ING_db:
+        *
+
+
+        Schliesslich wollen wir noch  eine  Relation,  fu"r  die  sie
+        Eigentu"mer sind, lo"schen-geben sie das Kommando:
+
+
+        * destroy steigerung
+        * \g
+
+        I N G - d b   . . .
+
+        ING_db:
+        *
+
+
+        Wir sind jetzt fertig und verlassen ING_DB  6.3.   Das  kann
+        durch Eingabe eines "end-of-file" (CONTROL_c) oder gu"nstiger
+        durch Verwendung des "\q"- Kommandos erreicht werden:
+
+
+        * \q
+        * ING-db Version 6.3/3 logout
+        K1630 / EVK Olbernhau - K1630
+        Wed May  4 19:58:00 1988
+        Auf Wiedersehen ing_db -- Kommen Sie bald wieder
+
+
+        Als "ing_db" wird immer der  Nutzername  eingetragen,  ggfs.
+        aber eben auch ing_db.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 203 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        _2._2.  AAAArrrrbbbbeeeeiiiitttt mmmmiiiitttt DDDDaaaatttteeeennnnbbbbaaaannnnkkkkeeeennnn ****
+
+
+
+
+
+
+
+
+
+
+
+
+        _2._2._1.  VVVVoooorrrrbbbbeeeemmmmeeeerrrrkkkkuuuunnnngggg ****
+
+        In diesem Abschnitt wird beschrieben, wie die Relationen der
+        Datenbank  erzeugt,  strukturiert  und verwaltet werden.  Es
+        wird davon ausgegangen, dass der Leser  etwas  vertraut  ist
+        und die Anfragesprache QUEL von ING_DB  versteht.
+
+        Um eine neue Datenbank zu gru"nden, mu"ssen sie  ein  gu"ltiger
+        (eingetragener)   ING_DB   -Nutzer   sein  und  die  ccccrrrreeeeaaaattttddddbbbb
+        -Erlaubnis haben.  Diese Erlaubnis wird vom ING_DB  -System-
+        administrator   verliehen.    Wenn   sie  beide  Bedingungen
+        erfu"llen, ko"nnen sie eine  Datenbank  unter  Verwendung  des
+        UNIX -Shell-Kommandos
+
+        %%%% ccccrrrreeeeaaaattttddddbbbb mmmmeeeeiiiinnnnddddbbbb
+
+        gru"nden, wobei mmmmeeeeiiiinnnnddddbbbb der Name der Datenbank ist.  Sie  wer-
+        den  Datenbankadministrator  (DBA)  fu"r  "meindb".   Als DBA
+        haben sie spezielle Berechtigungen.
+
+
+        1.   Alle von ihnen erzeugten Relationen  ko"nnen  von  allen
+             anderen,  mmmmeeeeiiiinnnnddddbbbb  verwendenden, Nutzern benutzt werden.
+             Erzeugt aber dagegen ein beliebiger Nutzer  eine  Rela-
+             tion,  so  ist sie strikt privat und auf sie kann weder
+             vom DBA noch von einem anderen Nutzer zugegriffen  wer-
+             den.
+
+
+        2.   Sie ko"nnen das ----uuuu -Flag in qqqquuuueeeellll und  pppprrrriiiinnnnttttrrrr  verwenden.
+             Das  befa"higt  sie,  ING_DB  auf mmmmeeeeiiiinnnnddddbbbb als ein anderer
+             Nutzer  laufen  zu  lassen.   Schlagen  sie  im  ING_DB
+             -Referenz-  Manual  unter  den  Kapiteln qqqquuuueeeellll((((uuuunnnniiiixxxx)))) und
+             uuuusssseeeerrrrssss((((ffffiiiilllleeeessss)))) wegen detaillierten Angaben nach.
+
+
+        3.   Sie ko"nnen mit ssssyyyyssssmmmmoooodddd , rrrreeeessssttttoooorrrreeee , ccccrrrreeeeaaaattttddddbbbb  ,  ddddeeeessssttttrrrrooooyyyyddddbbbb
+             und ppppuuuurrrrggggeeee auf mmmmeeeeiiiinnnnddddbbbb arbeiten.
+
+
+        4.   Eine Datenbank, die ohne  Angabe  von  Flags  gegru"ndet
+             wurde,  gestattet  mehrere  mitwirkende  Nutzer.   Wenn
+             jeweils nur ein Nutzer die Datenbank zu bestimmter Zeit
+             verwenden  mo"chte,  kann der Datenbankadministrator die
+             Gleichzeitigkeitskontrolle ausschalten.   Schlagen  sie
+             unter ccccrrrreeeeaaaattttddddbbbb((((uuuunnnniiiixxxx)))) im ING_DB - Referenz-Manual nach.
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 204 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        Wenn eine Datenbank gegru"ndet ist, sollten sie sofort
+
+        %%%% ssssyyyyssssmmmmoooodddd mmmmeeeeiiiinnnnddddbbbb
+
+        geben. Dieses Kommando konvertiert die  Systemrelationen  in
+        die  gu"nstigste  Struktur zur Verwendung in ING_DB .  ssssyyyyssssmmmmoooodddd
+        wird spa"ter ausfu"hrlich erkla"rt.
+
+        Als DBA oder als ein Nutzer ko"nnen sie  neue  Relationen  in
+        jeder  Datenbank  erzeugen,  zu der sie Zugriffsrecht haben.
+        Die vorliegenden Ausfu"hrungen beschreiben, wie  das  gemacht
+        werden muss.
+
+        _2._2._2.  EEEErrrrzzzzeeeeuuuugggguuuunnnngggg nnnneeeeuuuueeeerrrr RRRReeeellllaaaattttiiiioooonnnneeeennnn mmmmiiiitttt QQQQUUUUEEEELLLL
+
+        Es gibt zwei Wege um neue Relationen mit QUEL zu erzeugen.
+
+
+             create
+             retrieve into
+
+        rrrreeeettttrrrriiiieeeevvvveeee iiiinnnnttttoooo wird verwendet,  um  eine  neue  Relation  aus
+        einer  oder  mehreren existierenden Relationen zu formieren.
+        ccccrrrreeeeaaaatttteeee wird verwendet, um  eine  neue  Relation  ohne  Tupel
+        (leer) zu erzeugen.
+
+        Beispiel 1:
+
+
+                range of t is teile
+                range of l is lieferung
+                retrieve into neuliefrg(
+                              nummer = l.lnum,
+                              t.tname,
+                              l.liefdat)
+                where l.tnum = t.tnum
+
+
+        Beispiel 2:
+
+
+                create neuliefrg(
+                       nummer = i2,
+                       tname = c20,
+                       liefdat = c8)
+
+
+        Im Beispiel 1 erzeugt QUEL eine neue Relation, genannt "neu-
+        liefrg".  Das  Format der Doma"nen wird berechnet.  Die Query
+        wird bearbeitet und "neuliefrg" modifiziert zu  "cheapsort".
+        (Dies wird ausfu"hrlicher im Abschitt 2.2.4. erkla"rt.)
+
+        Im Beispiel 2 wird "neuliefrg" erzeugt und  der  Name  sowie
+        das Format fu"r jede Doma"ne angegeben.  Die zugelassenen For-
+        mattypen sind:
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 205 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+
+
+                i1             1  Byte Integer
+                i2             2   "      "
+                i4             4   "      "
+                f4             4  Byte Gleitkommazahl
+                f8             8   "      "       "     "
+                c1,c2,..,c255  1,2,..,255 Byte Zeichenkette
+
+
+        Im Beispiel 2 betra"gt die La"nge  eines  einzelnen  Tupel  30
+        Byte  (2  +  20 + 8). Die Relation hat drei Doma"nen.  Es ist
+        klar,  dass  ING_DB  Grenzen  hat.    Eine   Relation   kann
+        installationsabha"ngig   49   bzw.   128   Doma"nen  und  eine
+        Tupella"nge von u"ber 498 bzw. 1010 Byte haben.
+
+        UNIX  stellt den Speicherplatz auf der Platte in Blo"cken von
+        512  Byte,  1KByte bzw. 4KByte bereit.  Datensa"tze werden in
+        ING_DB  in  Seiten  (pages)  abgelegt,  deren  Gro"ssen  beim
+        Anlegen  einer  Datenbank  eingestellt werden.  Die maximale
+        Seitengro"sse ist generierungsabha"ngig.
+        ING_DB  teilt ein Tupel nicht u"ber zwei Seiten, so  kann  es
+        vorkommen,  dass  Speicherplatz  vergeudet  wird.   In einer
+        Seite werden fu"r den oooovvvveeeerrrrhhhheeeeaaaadddd 12 Bytes zuzu"glich je  2  Byte
+        pro    Tupel    fu"r    Verwaltungsaufgaben   genutzt.    Die
+        Berechnungsvorschriften sind:
+
+
+        Anzahl der Tupel pro Seite =
+                     (Seitengro"sse-12)/(Tupella"nge + 2)
+
+        Verschwendeter (oder verschenkter) Speicherplatz =
+              (Seitengro"sse-12) - (Anzahl der Tupel pro Seite) *
+              * (Tupella"nge + 2)
+
+
+        Fu"r unser Beispiel und 512-Byte-Seitengro"sse ergibt das
+
+
+             15 = 500 / (30 + 2)
+
+             20 = 500 - 15 * (30 + 2)
+
+        15 Tupel pro Seite und 20  Bytes  unbelegter  Platz.   Diese
+        Berechnung gilt nicht fu"r komprimierte Relationen.  Wir wer-
+        den auf dieses Problem im Weiteren zuru"ckkommen, wenn Tupel-
+        kompression diskutiert wird.
+
+        Wenn sie einen Doma"nenname oder ein Format vergessen  haben,
+        benutzen   sie  das  "help"-Kommando.   Geben  sie  auf  das
+        Beispiel bezogen das QUEL- Kommando
+
+
+             help neuliefrg
+
+        wird folgendes gedruckt:
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 206 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+
+
+                Relation:                neuliefrg
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                Owner:                  bob
+                Tuple width:            30
+                Saved until:            Thu Nov 10 08:35:06 1988
+                Number of tuples:       0
+                Storage structure:      heap
+                Relation type:          user relation
+
+                 attribute name    type  length  keyno.
+
+                 nummer             i       2
+                 tname              c      20
+                 liefdat            c       8
+
+
+        Merken sie sich, dass jede Relation ein  Verfallsdatum  hat.
+        Es  wird ausgehend vom Erzeugungsdatum der Relation auf eine
+        Woche festgesetzt.  Das ssssaaaavvvveeee -Kommando kann  verwendet  wer-
+        den,  um  diesen  Zeitraum zu verla"ngern.  Beachten sie dazu
+        ssssaaaavvvveeee((((qqqquuuueeeellll)))) und ppppuuuurrrrggggeeee((((uuuunnnniiiixxxx)))) im ING_DB -Referenz- Manual.
+
+
+        _2._2._3.  DDDDaaaassss KKKKooooppppiiiieeeerrrreeeennnn vvvvoooonnnn DDDDaaaatttteeeennnn aaaauuuussss uuuunnnndddd iiiinnnn eeeeiiiinnnneeee
+            DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        _2._2._3._1.  AAAAllllllllggggeeeemmmmeeeeiiiinnnneeee MMMMoooo""""gggglllliiiicccchhhhkkkkeeeeiiiitttteeeennnn
+
+        Wenn  eine  Relation  gegru"ndet  wurde,  gibt  es   folgende
+        Mo"glichkeiten, neue Daten einzufu"gen:
+
+
+             append-Kommando
+             copy-Kommando
+
+        aaaappppppppeeeennnndddd wird zum Einfu"gen eines einzelnen  Tupel  zu  irgend-
+        einem  Zeitpunkt  oder zum Fu"llen einer Relation aus anderen
+        Relationen verwendet.
+
+        ccccooooppppyyyy wird zum Kopieren von Daten aus  einem  UNIX  -File  in
+        eine  Relation  benutzt.   Es  ist  anzuwenden, um Daten von
+        einem anderen Programm oder  von  einem  anderen  System  zu
+        kopieren.  Es ist auch gebra"uchlich, um gro"ssere Datenmengen
+        zu kopieren.
+
+        Wir wollen nun eine einfache  Relation  erzeugen  und  Daten
+        dort einbringen.
+
+        Beispiel:
+
+
+                create abgabe (name = c10, wert = f4, ext = i2)
+
+        Jetzt sollen zwei  Personen  eingegeben  werden.   Die  ein-
+        fachste  Mo"glichkeit  ist  natu"rlich,  diese  Eingabe  unter
+        Verwendung des QUEL-Kommandos aaaappppppppeeeennnndddd zu vollziehen.
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 207 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+
+                append to abgabe (name="frank",wert = 5,ext = 204)
+
+                append to abgabe (name="harry",ext = 209,wert = 4.50)
+
+
+        ING_DB  erkennt die Doma"nen an ihren Namen,  unabha"ngig  von
+        ihrer  aufgelisteten Reihenfolge.  Die Relation aaaabbbbggggaaaabbbbeeee sieht
+        jetzt so aus:
+
+
+                abgabe relation
+
+                |name      |wert      |ext   |
+                |----------------------------|
+                |frank     |5.000     |204   |
+                |harry     |4.500     |209   |
+                |----------------------------|
+
+
+        Wir haben zwei Personen in die aaaabbbbggggaaaabbbbeeee -Relation  eingegeben.
+        Doch  was  ist,  wenn wir weitere fu"nfzig einzugeben ha"tten.
+        Die  Verwendung  des  "append"-Kommandos  ist  aufgrund  der
+        umfangreichen  Angaben  fu"r jedes Tupel nicht geeignet.  Das
+        ccccooooppppyyyy -Kommando entspricht besser unseren Anforderungen.
+
+        ccccooooppppyyyy kann Daten von  einem  regula"ren  UNIX  -File  in  ver-
+        schiedenen  Formaten  u"bernehmen  und  sie  in  die Relation
+        einfu"gen.  Um das "copy"-Kommando zu verwenden,  ist  vorher
+        ein UNIX -File (u"blicherweise mit "ed") zu erzeugen, das die
+        Daten entha"lt.
+
+        Als Beispiel wollen wir fu"nf neue Namen in  das  File  unter
+        Verwendung des Editor's eintragen.
+
+
+        % ed
+        a
+        bill,3.50,302
+        sam,10.00,410
+        susan,,100
+        sally,.5,305
+        george,4.00,302
+
+        w newdom
+        68
+        q
+        %
+
+
+        Das Format des obenstehenden Files ist ein Name gefolgt  von
+        einem  Komma, gefolgt von einem Wert (wert), dann ein Komma,
+        dann die Erweiterung (extension) und schliesslich  ein  New-
+        line.   Es  ist  zulaessig,  Werte  nicht anzugeben, wie zum
+        Beispiel "wert" bei "susan".  Solche  Leerwerte  werden  bei
+        numerischen  Doma"nen  zu  Null (0) und bei Zeichenketten auf
+        blanks (Leerzeichen) gesetzt.
+
+        Um zu kopieren, starten wir ING_DB  und  geben  das  "copy"-
+        Kommando.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 208 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+
+        copy abgabe (name = c0, wert = c0, ext = c0)
+                from "/mnt/bob/newdom"
+
+
+        Das "copy"-Kommando arbeitet folgendermassen:
+
+
+        copy relname (Liste, was zu kopieren ist) from "voller pathname"
+
+
+        Obwohl "wert" und "ext" in der Relation als f4  (Gleitkomma)
+        und  i2  (Integer)  gespeichert  sind, haben wir sie im UNIX
+        -File aber als Zeichenketten eingegeben.  Zur Spezifizierung
+        des Formats der Doma"ne akzeptiert ccccooooppppyyyy::::
+
+             domain = format
+
+        wobei ddddoooommmmaaaaiiiinnnn der Doma"nenname und ffffoooorrrrmmmmaaaatttt im UNIX -File  einer
+        der folgenden Werte ist:
+
+
+        i1, i2, i4         (Integer der La"nge 1, 2, oder 4)
+        f4, f8             (Gleitkommazahl der La"nge 4
+                           oder 8)
+        c1, c2, c3,...c255 (Zeichenkette mit fester La"nge)
+        c0                 (Zeichenkette mit variabler La"nge,
+                           begrenzt durch Komma, Tabulator oder
+                           Newline)
+
+
+        Im Beispiel verwenden wir:
+
+             name = c0, wert = c0, extension = c0
+
+        Das bedeutet, dass jede Doma"ne im UNIX  -File  als  Zeichen-
+        kette  mit  variabler La"nge gespeichert war.  ccccooooppppyyyy verwendet
+        das erste Komma-, Tabulator- oder Newline-Zeichen  als  Ende
+        der  Zeichenkette.   Das  ist  ungefa"hr  die gebra"uchlichste
+        Nutzung von ccccooooppppyyyy , wenn neue Daten erstmalig in  eine  Rela-
+        tion eingebracht werden.
+
+        ccccooooppppyyyy kann auch benutzt werden, um Daten aus  einer  Relation
+        in ein UNIX -File zu kopieren.  Zum Beispiel:
+
+
+        copy abgabe (name = c10, wert = c10, ext = c5)
+                 into "/mnt/bob/data"
+
+
+        Folgendes ereignet sich:
+
+        1.   Wenn das File /mnt/bob/data bereits existiert, wird  es
+             zersto"rt.
+
+        2.   Das File wird im Modus  600  (nur  read/write-Erlaubnis
+             fu"r den Nutzer) erzeugt.
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 209 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        3.   "name" wird als ein 10-Zeichenfeld kopiert, unmittelbar
+             gefolgt  von  "wert",  unmittelbar  gefolgt  von "ext".
+             "wert" wird konvertiert in eine Zeichenkette der  La"nge
+             10.   "ext"  wird  konvertiert in eine Zeichenkette der
+             La"nge 5.
+
+        Das File ////mmmmnnnntttt////bbbboooobbbb////ddddaaaattttaaaa wird eine Folge von Zeichen, die fol-
+        gendermassen aussieht:
+
+
+        frank``````````5.000``204harry``````````4.500  209bill
+        ```````````3.500``302sam```````````10.000  410susan```
+        ```````0.000``100sally``````````0.500``305george``````
+        ```4.000``302
+
+
+        Dabei steht "`" fu"r <blank>.  Die Ausgabe wurde zur Darstel-
+        lung  entsprechend  des  vorliegenden Papierformates in vier
+        Zeilen geteilt.  In Wirklichkeit ist das File  eine  einzige
+        Zeile.  Ein anderes Beispiel:
+
+
+                copy (name = c0, colon = d1, ext = c0, comma = d1,
+                        wert = c0, nl = d1) into "/mnt/bob/data"
+
+
+        In diesem Beispiel wird  cccc0000  interpretiert  als  "nutze  das
+        festgelegte   Zeichenketten-Format".    Fu"r   Zeichenketten-
+        Doma"nen ist das die La"nge der  Doma"ne.   Numerische  Doma"nen
+        werden  konvertiert in Zeichenketten entsprechend dem ING_DB
+        -Standardformat (siehe quel(unix)).
+
+        Die Statements:
+
+             colon = d1
+             comma = d1
+             nl = d1
+
+        werden benutzt um einen Doppelpunkt, ein Komma oder ein New-
+        line  in  das  File  einzufu"gen.   Das  Format  dddd1111  wird als
+        Pseudo-Zeichen (dummy) interpretiert.  Wa"hrend des Kopierens
+        in ein UNIX -File kann eine ausgewa"hlte Menge von Zeichen in
+        das File unterVerwendung  der  dddduuuummmmmmmmyyyy  ddddoooommmmaaaaiiiinnnn  -Spezifikation
+        eingefu"gt   werden.    So  wu"rde  das  File  "/mnt/bob/data"
+        aussehen:
+
+
+        frank     :   204,     5.000
+        harry     :   209,     4.500
+        bill      :   302,     3.500
+        sam       :   410,    10.000
+        susan     :   100,     0.000
+        sally     :   305,     0.500
+        george    :   302,     4.000
+
+
+
+        Wenn sie ein File mit der  wirklichen  Bina"rdarstellung  der
+        Zahlen wu"nschen, ist zu verwenden:
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 210 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+             copy (name = c10, wert = f4, ext = i2) into "..."
+
+        Dies wu"rde ein File mit einer exakten Kopie von jedem Tupel,
+        eins   nach   dem   anderen,   erzeugen.    Es   ist  ha"ufig
+        wu"nschenswert und das  wird  hier  bezweckt,  fu"r  tempora"re
+        Backups  die  Garantie zu haben, dass die Gleitkomma-Doma"nen
+        exakt abgebildet sind.
+
+        _2._2._3._2.  TTTTyyyyppppiiiisssscccchhhheeee FFFFeeeehhhhlllleeeerrrr
+
+        Es gibt 17 verschiedene  Fehler  die  bei  "copy"  auftreten
+        ko"nnen.  Wir wollen einige der ha"ufigsten durchgehen.
+
+        Angenommen sie haben ein File mit
+
+        bill,3.5,302
+        sam,10,410,
+        susan,3,100
+
+        und arbeiten das "copy"-Kommando
+
+
+                copy abgabe (name = c0, wert = c0, ext = c0)
+                        from "/mnt/bob/data"
+
+
+        ab, dann erhalten sie die Fehlermitteilung
+
+
+        5809: COPY: Bad input String for Domain wert.
+        Input was "susan".There were 2 tuples sucessfully
+        copied from /mnt/bob/data into abgabe.
+
+
+        Folgendes hat sich ereignet:
+
+             Zeile 2 hat ein extra Komma, die  ersten  beiden  Tupel
+             wurden  richtig  kopiert, das na"chste Tupel ergibt sich
+             dann zu
+              name = "" (blank), wert = "susan", and ext = "3". Aber
+             "susan"  ist  keine erlaubte Gleitkommazahl, ein Fehler
+             wird generiert und der Prozess  wird  nach  zwei  Tupel
+             gestoppt.
+
+        Wenn sie versuchen ein solches File wie
+
+        nancy,5.0,35000
+
+        zu kopieren erhalten sie die Fehlermitteilung
+
+        5809: COPY: Bad input String for Domain ext.
+        Input was "35000". There were 0 Tuples successfully
+        copied from /mnt/bob/data into abgabe.
+
+
+        Hier gilt "ext" als eine i2 (Integer)-Doma"ne, Sie  kann  den
+        Wert 32767 nicht u"berschreiten.
+
+        Es gibt weitere "numerische" Fehlermitteilungen, die meisten
+        sind selbsterkla"rend.
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 211 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        Hinzuzufu"gen sind drei, nicht verha"ngnisvolle Warnungen, die
+        bei ccccooooppppyyyy ffffrrrroooommmm auftreten ko"nnen.
+
+        Wenn sie von einem File in eine Relation der Art  iiiissssaaaammmm  oder
+        hhhhaaaasssshhhh  kopieren,  wird  die  Anzahl  der doppelten Tupel mit-
+        geteilt (, sofern welche enthalten sind).  Das kann bei hhhheeeeaaaapppp
+        nicht geschehen, weil auf doppelte Tupel nicht gepru"ft wird.
+
+        ING_DB  ist nicht in der Lage ccccoooonnnnttttrrrroooollll cccchhhhaaaarrrraaaacccctttteeeerrrrssss (solche wie
+        bbbbeeeellllllll  etc.)  zu  speichern.  Wenn ccccooooppppyyyy ein ccccoooonnnnttttrrrroooollll cccchhhhaaaarrrraaaacccctttteeeerrrr
+        liest, konvertiert es dieses in bbbbllllaaaannnnkkkk und teilt  die  Anzahl
+        der Doma"nen mit, in denen diese Zeichen enthalten waren.
+
+        Wenn sie mit der c0 -Option kopieren, wird "copy" ihnen mit-
+        teilen,  wieviele  Zeichenketten la"nger als ihre zugeho"rigen
+        Doma"nen waren und geku"rzt  werden.   Die  Zeichenkette  wird
+        abgeschnitten.
+
+        _2._2._3._3.  SSSSppppeeeezzzziiiieeeelllllllleeee MMMMoooo""""gggglllliiiicccchhhhkkkkeeeeiiiitttteeeennnn
+
+        Es gibt einige spezielle Funktionen, die ccccooooppppyyyy in der Handha-
+        bung etwas erleichtern.
+
+        _2._2._3._3._1.  PPPPhhhhyyyyssssiiiisssscccchhhheeee KKKKooooppppiiiieeee ((((bbbbuuuullllkkkk ccccooooppppyyyy))))
+
+        Wenn sie
+
+                copy relname () from "file"
+                     oder
+                copy relname () into "file"
+
+        geben, erweitert "copy" das Statement  in  folgender  Bedeu-
+        tung:
+
+             Kopiere  jede  Doma"ne  in  ihrer  genauen   Reihenfolge
+             entsprechend ihres festgelegten Formats.
+
+        Wenn sie sagen wu"rden
+
+             copy abgabe () into "/mnt/bob/abgabe"
+
+        wa"re es dasselbe wie:
+
+                copy abgabe (name = c10, wert = f4, ext = i2)
+                     into "/mnt/bob/abgabe"
+
+        Dies verschafft ihnen einen bequemen  Weg,  um  ganze  Rela-
+        tionen von und nach ING_DB  zu kopieren, bspw. aber auch von
+        einer Datenbank in die andere.
+
+        _2._2._3._3._2.  PPPPsssseeeeuuuuddddooooddddoooommmmaaaa""""nnnneeeennnn ((((DDDDuuuummmmmmmmyyyy DDDDoooommmmaaaaiiiinnnnssss))))
+
+        Wenn sie Daten von einem anderen Computer oder einem anderen
+        Programm  kopieren  wollen, kann es vorkommen, dass ein Teil
+        der Daten ignoriert  werden  soll.   Das  ko"nnen  sie  unter
+        Verwendung  der  dddduuuummmmmmmmyyyy  ddddoooommmmaaaaiiiinnnn -Spezifikation d0, d1, d2 ...
+        d511 realisieren.  Zum Beispiel
+
+                copy rel (dom1 = c5, dummy = d2, dom2 = i4,
+                     dumb = d0) from "/mnt/me/data"
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 212 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        Die  ersten  fu"nf  Zeichen  werden  in  dom1  abgelegt,  die
+        na"chsten  zwei  werden  ignoriert.   Die na"chsten vier Bytes
+        geho"ren zum Typ i4 (Integer) und gehen zu dom2, und die ver-
+        bleibende  begrenzte  Zeichenkette wird ignoriert.  Der Name
+        der dddduuuummmmmmmmyyyy -Doma"ne wird  u"berlesen,  die  Doma"ne  muss  nicht
+        unbedingt dddduuuummmmmmmmyyyy heissen, wie das bei dddduuuummmmbbbb ==== dddd0000 der Fall ist.
+
+        Wie schon erwa"hnt, ko"nnen "dummy"-Doma"nen verwendet  werden,
+        um  bei  einem "copy into" auf ein UNIX -File Spezialzeichen
+        ("special   characters")   einzufu"gen.    Die   Liste    der
+        zugelassenen Doma"nen entha"lt:
+
+                nl        newline
+                tab       tab character
+                sp        space
+                nul       a zero byte
+                null      a zero byte
+                comma     ,
+                dash      -
+                colon     :
+                lparen    (
+                rparen    )
+
+
+
+        _2._2._3._3._3.  AAAAbbbbsssscccchhhhnnnneeeeiiiiddddeeeennnn ((((TTTTrrrruuuunnnnccccaaaattttiiiioooonnnn))))
+
+        Es ist nicht ungewo"hnlich,  dass  nach  einem  aufgetretenen
+        Fehler  nochmals gestartet werden muss.  Der einfachste Weg,
+        das zu tun, ist das Lo"schen der alten Relation.  Es wird mit
+        dem Kommando
+
+             modify relname to truncated
+
+        realisiert und hat den Effekt des Lo"schens  aller  Tupel  in
+        rrrreeeellllnnnnaaaammmmeeee  , bei gleichzeitiger Freigabe des belegten Platten-
+        speicherbereichs und der Umwandlung von  rrrreeeellllnnnnaaaammmmeeee  zuru"ck  zu
+        hhhheeeeaaaapppp  .  Es  ist das logische A"quivalent zum ddddeeeessssttttrrrrooooyyyy gefolgt
+        von ccccrrrreeeeaaaatttteeee (aber mit etwas weniger Eingabearbeit).
+
+        Da   in   den   verwendeten   Files    Formatfehler    nicht
+        auszuschliessen  sind, ist es im Allgemeinen keine gute Idee
+        mit ccccooooppppyyyy Daten in eine Relation mit bereits gepru"ften  Daten
+        zu transportieren.  Die gu"nstigste Verfahrensweise ist, eine
+        tempora"re Relation mit den selben Doma"nen zu  erzeugen,  wie
+        sie  die  existierende  Relation  besitzt.  Kopieren sie die
+        Daten in die tempora"re Relation und dann  ha"ngen  ("append")
+        sie diese an die echte Relation an.  Zum Beispiel:
+
+                create tempdom(name=c10,wert=f4,ext=i2)
+
+                copy tempdom(name=c0,wert=c0,ext=c0)
+                from "/mnt/bob/data"
+
+                range of td is tempdom
+                append to abgabe(td.all)
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 213 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        _2._2._3._3._4.  SSSSppppeeeezzzziiiieeeelllllllleeee BBBBeeeeggggrrrreeeennnnzzzzeeeerrrr ((((SSSSppppeeeecccciiiiffffiiiinnnngggg DDDDeeeelllliiiimmmmiiiittttoooorrrrssss))))
+
+        Manchmal ist es wu"nschenswert das Zeichen zu  spezifizieren,
+        welches  die  Zeichenfolge  bei  "copy  from file" begrenzen
+        soll.  Das ist mit der Angabe
+
+             domain = c0delim
+
+        mo"glich, wobei ddddeeeelllliiiimmmm ein gu"ltiger Begrenzer (delimitor)  aus
+        der Liste der zugelassenen Namen oder ein beliebiges Zeichen
+        ist.  Diese Liste wurde  weiter  oben  unter  dddduuuummmmmmmmyyyy  ddddoooommmmaaaaiiiinnnnssss
+        aufgefu"hrt.   Bei den Zeichen muss beachtet werden, dass der
+        beliebige Delimitor  ein  Zeichen  sein  muss,  welches  der
+        interaktive  Terminal-Monitor  annimmt  und der Parser nicht
+        als Operator interpretiert.  (Diese Interpretationsart  kann
+        umgangen   werden,  indem  die  Angabe  cccc0000ddddeeeelllliiiimmmm  als  String
+        gequotet wird. Das heisst, der gewu"nschte  Delimitor  mu"sste
+        in der Form " cccc0000)))) "geschrieben werden.  Zum Beispiel:
+
+             copy abgabe (name = c0nl) from "/mnt/me/data"
+
+        kopiert "name" des Files in die Relation.  Nur  ein  Newline
+        begrenzt  die  Namen  richtig,  weil Kommas oder Tabulatoren
+        eventuell als Teil eines Namens auftreten ko"nnen.
+
+        Bei ccccooooppppyyyy iiiinnnnttttoooo ffffiiiilllleeee wird  ddddeeeelllliiiimmmm  immer  sofort  in  das  File
+        geschrieben, so dass bei ccccooooppppyyyy iiiinnnnttttoooo die Spezifikation lautet:
+
+             copy abgabe (name = c0nl) into "/mnt/me/file"
+
+        Genauer gesagt, "name" wird unmittelbar gefolgt von Newline.
+
+        _2._2._3._3._5.  AAAAuuuuffffhhhheeeebbbbuuuunnnngggg ddddeeeerrrr BBBBeeeeggggrrrreeeennnnzzzzeeeerrrr ((((QQQQuuuuoooottttiiiinnnngggg))))
+
+        Soll in  einem  Wert  einer  Doma"ne  der  gu"ltige  Begrenzer
+        Verwendung finden, so muss er kaschiert (aufgehoben) werden.
+        Dies geschieht durch das Voranstellen eines backslash \\\\  vor
+        dem Begrenzer.
+        So kann z.B. das Tupel
+
+             donald\, mc, 6.0, 403
+
+        korrekt mittels
+
+                copy abgabe (name = c0, wert = c0, ext = c0)
+                      from "/mnt/bob/data"
+
+        kopiert werden, wobei "name" den Wert "donald,  mc",  "wert"
+        den Wert "6.0" neu erha"lt.
+
+        _2._2._4.  SSSSppppeeeeiiiicccchhhheeeerrrrssssttttrrrruuuukkkkttttuuuurrrreeeennnn ffffuuuu""""rrrr RRRReeeellllaaaattttiiiioooonnnneeeennnn
+
+
+        _2._2._4._1.  EEEEiiiinnnnffffuuuu""""hhhhrrrruuuunnnngggg
+
+        Wenden wir uns nun den Problemen der  Effizienz  zu.   Haben
+        sie  erst  einmal eine Relation erzeugt und Ihre Daten unter
+        Verwendung von ccccooooppppyyyy oder aaaappppppppeeeennnndddd eingefu"gt, kann ING_DB  jede
+        beliebige   Query   (Kommando  aus  QUEL)  in  der  Relation
+        ausfu"hren.  Es gibt mehrere Mo"glichkeiten, zur Erho"hung  der
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 214 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        Geschwindigkeit, mit der ING_DB  die Query ausfu"hrt.
+
+        ING_DB  kann eine Relation in  drei  verschiedenen  internen
+        Strukturen  speichern.   Sie  werden  hhhheeeeaaaapppp  ,  iiiissssaaaammmm und hhhhaaaasssshhhh
+        genannt.   Zuerst   wollen   wir   jede   Struktur   genauer
+        beschreiben und spa"ter unsere Betrachtung ausdehnen.
+
+        _2._2._4._2.  HHHHeeeeaaaapppp
+
+        Wird eine  Relation  erstmalig  erzeugt,  ist  sie  vom  Typ
+        "heap".   Es gibt zwei wichtige Feststellungen zu hhhheeeeaaaapppp:::: dop-
+        pelte Tupel werden nicht gelo"scht und die Lokalisierung  der
+        Tupel ist unbekannt.  Wenn sie die folgende Query ausfu"hren
+
+             range of a is abgabe
+             retrieve (a.wert) where a.name = "bill"
+
+        muss ING_DB  jedes Tupel  lesen  und  pru"fen,  ob  der  Name
+        "bill"  dort auftritt.  Bei kleinen Relationen ist das nicht
+        schlimm, aber bei sehr grossen Relationen kann  das  Minuten
+        (oder  eben  bei  Computern mit kleinen Hauptspeichern Stun-
+        den!) dauern.
+
+        _2._2._4._3.  HHHHaaaasssshhhh
+
+        Bei einer  Relation,  deren  Struktur  hhhhaaaasssshhhh  ist,  kann  ein
+        schneller  Zugriff  auf Tupel gewa"hrt werden, wenn die Suche
+        (Recherche) durch bestimmte Doma"nen gesteuert  wird.   Diese
+        Doma"nen  werden gewo"hnlich als kkkkeeeeyyyyeeeedddd ddddoooommmmaaaaiiiinnnnssss (Schlu"ssel bzw.
+        Schlu"sseldoma"nen)  bezeichnet.   Weiterhin  enthalten,  hhhhaaaasssshhhh
+        -Relationen    keine    doppelten    Tupel.     Nehmen   wir
+        beispielsweise an, dass die "abgabe"-Relation als  hhhhaaaasssshhhh  auf
+        die Doma"ne "name" gespeichert ist. In der Query
+
+             retrieve (a.wert) where a.name = "bill"
+
+        wird ING_DB   schnell  herausbekommen,  wo  sich  das  Tupel
+        anna"hernd  auf  der  Platte befindet.  Wenn die Relation nur
+        einige wenige Tupel  entha"lt,  ko"nnen  sie  den  Unterschied
+        zwischen hhhheeeeaaaapppp -und hhhhaaaasssshhhh -Struktur nicht bemerken.  Aber wenn
+        die  Relation  gro"sser  wird,  ist  die   Zugriffszeit   von
+        spu"rbarer Bedeutung.
+
+        _2._2._4._4.  IIIIssssaaaammmm
+
+        Eine iiiissssaaaammmm -Struktur liegt dann vor, wenn die  Relation  nach
+        einer oder mehreren Doma"nen sortiert ist (auch kkkkeeeeyyyyeeeedddd ddddoooommmmaaaaiiiinnnnssss
+        genannt).  Doppelte Tupel treten bei "isam"-Relationen nicht
+        auf.    Wenn   ein   neues  Tupel  angefu"gt  wird,  wird  es
+        "anna"hernd" an der Stelle platziert, die der Sortierposition
+        in  der  Relation  entspricht.   (Das "anna"hernd" wird etwas
+        spa"ter erla"utert.)
+
+        Angenommen "abgabe" hat die Struktur  iiiissssaaaammmm  auf  die  Doma"ne
+        "name".  Die Ausfu"hrung der Query
+
+             retrieve (a.wert) where a.name = "bill"
+
+        wird ING_DB  veranlassen, festzustellen, wo in der  sortier-
+        ten  Folge  der  Name  "bill"  steht und nur dieser Teil der
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 215 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        Relation wird gelesen.
+
+        Wenn die Relation anna"hernd  sortiert  ist,  ist  eine  iiiissssaaaammmm
+        -Struktur auch effizient zur Ausfu"hrung der Query:
+
+             retrieve (a.wert) where a.name >= "b" and a.name < "g"
+
+        Diese Query zeigt alle Namen, die mit "b" bis "f"  beginnen.
+        Es  ist nicht no"tig, die gesamte Relation zu durchsuchen, da
+        sie eine isam -Struktur u"ber "name" besitzt.
+
+        _2._2._4._5.  SSSSppppeeeezzzziiiiffffiiiizzzziiiieeeerrrruuuunnnngggg ddddeeeerrrr SSSSppppeeeeiiiicccchhhheeeerrrrssssttttrrrruuuukkkkttttuuuurrrr
+
+        Eine von einem Nutzer erzeugte Relation kann durch Anwendung
+        des mmmmooooddddiiiiffffyyyy -Kommandos in eine der Speicherstrukturen konver-
+        tiert werden.  Zum Beispiel
+
+                modify abgabe to hash on name
+                     oder
+                modify abgabe to isam on name
+                     oder eben
+                modify abgabe to heap
+
+
+
+        _2._2._4._6.  HHHHaaaauuuupppptttt----((((pppprrrriiiimmmmaaaarrrryyyy)))) uuuunnnndddd
+             UUUU""""bbbbeeeerrrrllllaaaauuuuffff----((((oooovvvveeeerrrrfffflllloooowwww)))) SSSSeeeeiiiitttteeeennnn
+
+        An dieser Stelle ist es notwendig auf das Konzept der Haupt-
+        und  U"berlauf-Seiten  bei  hhhhaaaasssshhhh  -und  iiiissssaaaammmm -Strukturen ein-
+        zugehen.   Beide,  hhhhaaaasssshhhh  und  iiiissssaaaammmm  ,  sind  Techniken   der
+        Zuweisung  von  Tupeln  zu  festen  Seiten  einer  Relation,
+        basierend auf den Schlu"sseldoma"nen der  Tupel.   So  entha"lt
+        jede Seite nur eine bestimmte Untermenge der Relation.
+
+        Wenn ein neues Tupel  in  eine  hhhhaaaasssshhhh  -oder  iiiissssaaaammmm  -Relation
+        eingefu"gt  wird,  stellt ING_DB zuerst fest, in welche Seite
+        es geho"rt und u"berpru"ft dann den  verfu"gbaren  Platz  dieser
+        Seite.   Wenn  dort noch Platz ist, wird das Tupel in dieser
+        Seite  untergebracht.   Wenn  kein  Platz  ist,  wird   eine
+        U"berlauf-Seite erzeugt und das Tupel dort platziert.
+
+        Die U"berlauf-Seite wird  mit  der  Originalseite  verbunden.
+        Die Originalseite wird als Haupt-Seite bezeichnet.  Wenn die
+        U"berlauf-Seite  voll  wird,  dann   ero"ffnet   ING_DB   eine
+        U"berlauf-Seite  zu dieser.  Wir haben dann eine Haupt-Seite,
+        die mit einer U"berlauf-Seite verbunden ist, welche  wiederum
+        mit  einer  anderen U"berlauf-Seite verbunden ist.  U"berlauf-
+        Seiten werden dynamisch so hinzugefu"gt,  wie  sie  gebraucht
+        werden.
+
+
+
+        _2._2._4._7.  SSSSppppeeeezzzziiiiffffiiiizzzziiiieeeerrrruuuunnnngggg ddddeeeessss FFFFrrrreeeeiiiirrrraaaauuuummmmeeeessss
+              aaaauuuuffff eeeeiiiinnnneeeerrrr SSSSeeeeiiiitttteeee ((((ffffrrrreeeeeeee ssssppppaaaacccceeee))))
+
+        Beim mmmmooooddddiiiiffffyyyy -Statement ko"nnen sie angeben, wieviel Platz zum
+        Wachsen  der  Relation frei gehalten werden soll.  Wie schon
+        erwa"hnt,  ist  eine  Relation  in  Seiten  gegliedert.   Der
+        Fu"llungsfaktor  (  ffffiiiillllllllffffaaaaccccttttoooorrrr  ) spezifiziert, wie weit jede
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 216 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        Haupt-Seite belegt werden  soll.   Diese  Festlegung  sollte
+        na"herungsweise  darauf basieren, wieviele Tupel in die Rela-
+        tion noch einzufu"gen sind.  Zum Beispiel:
+
+             modify abgabe to isam on name where fillfactor = 100
+
+        Hier wird "modify" mitgeteilt, dass jede Seite mo"glichst mit
+        100% gefu"llt werden soll.
+
+             modify abgabe to isam on name where fillfactor = 25
+
+        bewirkt, dass jede Seite zu 25% gefu"llt,  oder  mit  anderen
+        Worten,  zu  75% leer ist.  Wir wu"rden so vorgehen, wenn wir
+        etwa 1/4 der Daten geladen ha"tten  und  annehmen,  dass  sie
+        gleichma"ssig u"ber das Alphabet verteilt sind.
+
+        Merken sie sich, wenn der ffffiiiillllllllffffaaaaccccttttoooorrrr nicht spezifiziert ist,
+        wird  ING_DB   einen  vernu"nftigen  Standardwert  einsetzen.
+        Auch dann, wenn  eine  Seite  gefu"llt  ist,  erzeugt  ING_DB
+        automatisch  eine  U"berlauf-Seite,  so dass niemals der Fall
+        eintritt, dass eine Relation nicht erweitert werden kann.
+
+        Wenn eine Relation zu hhhhaaaasssshhhh modifiziert wird, kann ein Param-
+        eter  mmmmiiiinnnnppppaaaaggggeeeessss  (minimale Seitenanzahl) spezifiziert werden.
+        mmmmooooddddiiiiffffyyyy garantiert, dass mindestens mmmmiiiinnnnppppaaaaggggeeee  als  Anzahl  der
+        Haupt-Seiten der Relation zugewiesen wird.
+
+        mmmmooooddddiiiiffffyyyy berechnet, wieviele Haupt-Seiten beno"tigt werden,  um
+        die  bestehenden  Tupel  unter  Beru"cksichtigung  des spezi-
+        fizierten   ffffiiiillllllllffffaaaaccccttttoooorrrr   so   unterzubringen,   dass   keine
+        U"berlauf-Seiten  im  Original notwendig sind.  Wenn die Zahl
+        kleiner als mmmmiiiinnnnppppaaaaggggeeeessss ist, dann wird  mmmmiiiinnnnppppaaaaggggeeeessss  statt  dieses
+        Wertes verwendet.
+
+        Zum Beispiel:
+
+                modify abgabe to hash on name where fillfactor = 50,
+                     minpages = 1
+
+                modify abgabe to hash on name where minpages = 150
+
+        Im ersten Fall garantieren wir, dass nicht mehr  Seiten  als
+        notwendig,  bei  50%  Belegung,  benutzt werden.  Der zweite
+        Fall ist typisch fu"r die  Modifizierung  einer  leeren  oder
+        fast  leeren  Relation.   Wenn  na"herungsweise  die maximale
+        Gro"sse einer Relation bei ihrer Erstellung bekannt ist, kann
+        mmmmiiiinnnnppppaaaaggggeeeessss  dazu  benutzt werden, von Anfang an die Gro"sse der
+        Relation auf dem Speicher freizuhalten.
+
+        Es ist noch  eine  andere  Option  fu"r  hhhhaaaasssshhhh  zula"ssig,  die
+        sogenannte mmmmaaaaxxxxppppaaaaggggeeeessss
+         . Ihre Syntax ist die gleiche, wie fu"r mmmmiiiinnnnppppaaaaggggeeeessss
+         . Sie kann benutzt  werden,  um  die  maximale  Anzahl  der
+        Haupt-Seiten festzulegen.
+
+        _2._2._4._8.  VVVVeeeerrrrddddiiiicccchhhhttttuuuunnnngggg ((((ccccoooommmmpppprrrreeeessssssssiiiioooonnnn))))
+
+        Die drei Speicherstrukturen ("heap", "hash", "isam")  ko"nnen
+        zusa"tzlich durch ccccoooommmmpppprrrreeeessssssssiiiioooonnnn erga"nzt werden.  Das geschieht,
+        indem die Speicherstrukturen als cccchhhheeeeaaaapppp  ,  cccchhhhaaaasssshhhh  und  cccciiiissssaaaammmm
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 217 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        geschrieben   werden.    Verdichtung  reduziert  intern  den
+        Speicherplatz   fu"r   jedes   Tupel.     Die    gegenwa"rtige
+        "compression"-Technik unterdru"ckt nachlaufende bbbbllllaaaannnnkkkkssss (Leer-
+        zeichen) in den Zeichenkettten-Doma"nen.  Die Verwendung  von
+        ccccoooommmmpppprrrreeeessssssssiiiioooonnnn  verlangt  niemals  mehr Platz und normalerweise
+        wird Speicherplatz gewonnen und ko"nnen  die  Ausfu"hrungszeit
+        verku"rzt.  Dazu ein Beispiel:
+
+             modify abgabe to cisam on name where fillfactor = 100
+
+        Es wird aaaabbbbggggaaaabbbbeeee in eine komprimierte iiiissssaaaammmm -Struktur vera"ndert
+        und jede Seite so weit als mo"glich gefu"llt.  Mit ccccoooommmmpppprrrreeeessssssssiiiioooonnnn
+        kann  jedes  Tupel  eine  verschiedene,  komprimierte  La"nge
+        erhalten.   Dadurch  muss  die  Zahl der Tupel, die in einer
+        Seite  untergebracht  werden  ko"nnen,  davon  abha"ngen,  wie
+        erfolgreich die Verdichtung ausgefu"hrt werden konnte.
+
+        Verdichtete Relationen sind  aufwendiger  zu  aktualisieren.
+        Wenn  ein  rrrreeeeppppllllaaaacccceeee  auf eine oder mehrere Doma"nen ausgefu"hrt
+        wird und das komprimierte Tupel war ku"rzer, dann muss ING_DB
+         einen neuen Platz fu"r das Tupel finden.
+
+        _2._2._4._9.  ZZZZwwwweeeeiiii VVVVaaaarrrriiiiaaaannnntttteeeennnn zzzzuuuu eeeeiiiinnnneeeemmmm PPPPrrrroooobbbblllleeeemmmm
+
+        Zur Erinnerung, doppelte Tupel werden bei einer hhhheeeeaaaapppp  -Rela-
+        tion nicht gelo"scht.  Verschiedentlich ist es wu"nschenswert,
+        sie zu lo"schen und eine hhhheeeeaaaapppp -Relation  zu  sortieren.   Ein
+        Weg  dazu  ist,  die  Relation  zu  iiiissssaaaammmm  unter  Angabe  der
+        Ordnungsmerkmale ( kkkkeeeeyyyyeeeedddd ddddoooommmmaaaaiiiinnnnssss )  zu  modifizieren.   Eine
+        Alternative  dazu  ist  entweder die Verwendung von hhhheeeeaaaappppssssoooorrrrtttt
+        oder cccchhhheeeeaaaappppssssoooorrrrtttt....  Zum Beispiel:
+
+                modify abgabe to heapsort on name, ext
+
+
+        Damit wird die Relation nach "name" und dann nach "ext" sor-
+        tiert.   Die  Tupel  werden  zusa"tzlich  nach den restlichen
+        Doma"nen, in der Reihenfolge ihrer urspru"nglichen Angabe beim
+        ccccrrrreeeeaaaatttteeee  -Statement,  sortiert,  so  dass  in diesem Fall die
+        Relation nach "name", dann "ext" und  dann  "wert"  sortiert
+        wird.   Doppelte  Tupel  werden entfernt.  Die Relation wird
+        als hhhheeeeaaaapppp verlassen.  hhhheeeeaaaappppssssoooorrrrtttt und cccchhhheeeeaaaappppssssoooorrrrtttt sind  vorgesehen
+        zum  Sortieren von tempora"ren Relationen, bevor sie gedruckt
+        und gelo"scht werden.  Dies ist  wesentlich  effektiver,  als
+        die  Modifizierung  zu  "isam",  da ING_DB  kein "directory"
+        erzeugt, in dem die Schlu"sselinformationen  fu"r  jede  Seite
+        enthalten  sind.   Die Relation wird nnnniiiicccchhhhtttt in der Sortierung
+        gehalten, wenn anschliessend A"nderungen erfolgen.
+
+        Beispiele:
+        Hier ist eine Sammlung von Beispielen und Erla"uterungen  zur
+        Abarbeitungseffizienz jeder Query.  Die Queries basieren auf
+        den Relationen:
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 218 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+
+                teile(tnum, tname, farbe, gewicht, menge)
+
+                lieferung(lnum, pnum, jnum, liefdat, menge)
+
+                range of t is teile
+                range of l is lieferung
+
+                modify teile to hash on tnum
+                modify lieferung to hash on lnum,jnum
+
+                retrieve (t.all) where t.tnum = 10
+
+
+        ING_DB  erkennt, dassteile auf ttttnnnnuuuummmm  via  hhhhaaaasssshhhh  geschlu"sselt
+        ist  und  geht  direkt auf die Seite, in der "teile" mit der
+        Nummer 10 gespeichert ist.
+
+             retrieve (t.all) where t.tname = "magnetband"
+
+        ING_DB   liest  die  vollsta"ndige  Relation  und  sucht  den
+        angegebenen "tname".
+
+             retrieve (t.all) where t.tnum < 10  and t.tnum > 5
+
+        ING_DB  liest die vollsta"ndige Relation, weil  kein  exakter
+        Wert fu"r "tnum" gegeben war.
+
+             retrieve (l.liefdat) where l.lnum = 471  and  l.jnum  =
+             1008
+
+        ING_DB  erkennt, dass lllliiiieeeeffffeeeerrrruuuunnnngggg auf die Kombination von llllnnnnuuuummmm
+        und  jjjjnnnnuuuummmm  via  hhhhaaaasssshhhh  geschlu"sselt  ist  und geht direkt zur
+        richtigen Seite.
+
+                retrieve (l.liefdat) where l.lnum = 471
+
+
+        ING_DB  liest die gesamte Relation.  lllliiiieeeeffffeeeerrrruuuunnnngggg ist  auf  die
+        Kombination von llllnnnnuuuummmm und jjjjnnnnuuuummmm via hhhhaaaasssshhhh geschlu"sselt.  Jedoch
+        wurde ING_DB  nur ein Wert von beiden gegeben, es  kann  den
+        Vorteil der Speicherstruktur nicht nutzen.
+
+                retrieve (t.tname, l.liefdat) where
+                t.tnum = l.tnum and l.lnum = 471 and l.jnum = 1008
+
+
+        ING_DB  nutzt den  Vorteil  beider  Speicherstrukturen.   Es
+        findet  zuerst  alle  Tupel llll....ttttnnnnuuuummmm und llll....lllliiiieeeeffffddddaaaatttt , bei denen
+        l.lnum = 471 und l.jnum = 1008  ist.   Danach  u"berpru"ft  es
+        alle  Tupel  t.tname,  bei denen t.tnum gleich dem korrekten
+        Wert ist.
+
+        Dieses Beispiel illustriert, dass es manchmal eine gute Idee
+        ist, eine Relation mit den Doma"nen auf hhhhaaaasssshhhh zu modifizieren,
+        die mit einer anderen Relation verbunden (  jjjjooooiiiinnnneeeedddd  )  sind.
+        In diesem Fall wa"re das die Frage nach t.tnum = l.tnum.
+
+        ZZZZuuuussssaaaammmmmmmmeeeennnnggggeeeeffffaaaasssssssstttt::::
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 219 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        Um den  Vorteil  einer  hhhhaaaasssshhhh  -Struktur  nutzen  zu  ko"nnen,
+        beno"tigt    ING_DB     einen    exakten    Wert   fu"r   jede
+        Schlu"sseldoma"ne.  Ein exakter Wert ist soetwas wie:
+
+             l.lnum = 471
+             l.tnum = t.tnum
+
+        Ein exakter Wert ist aber nicht:
+
+             l.lnum >= 471
+             (l.lnum = 10 or l.lnum = 20)
+
+        Wir wollen nun  unsere  Aufmerksamkeit  einigen  Fa"llen  zur
+        Anwendung von "isam" widmen:
+
+                modify lieferung to isam on lnum,liefdat
+                retrieve (l.all) where l.lnum = 471
+                and l.liefdat > "75-12-31"
+                and l.liefdat < "77-01-01"
+
+
+        Da lllliiiieeeeffffeeeerrrruuuunnnngggg auf llllnnnnuuuummmmuuuunnnndddd dann auf lllliiiieeeeffffddddaaaatttt sortiert ist, kann
+        ING_DB  den  ganzen  Vorteil einer iiiissssaaaammmm -Struktur zur Lokal-
+        isierung  des  Bereichs  von  lllliiiieeeeffffeeeerrrruuuunnnngggg  ,  der  die   Query
+        befriedigt, nutzen.
+
+             retrieve (l.all) where l.lnum = 471
+
+        Im Gegensatz zu hhhhaaaasssshhhh , kann eine iiiissssaaaammmm -Struktur noch verwen-
+        det werden, wenn nur der erste Schlu"ssel beschafft wird.
+
+             retrieve (l.all) where l.lnum > 400 and l.lnum < 500
+
+        Wieder wird ING_DB  den Vorteil der Struktur nutzen.
+
+                retrieve (l.all) where l.liefdat >= "75-12-31" and
+                l.liefdat <= "77-01-01"
+
+
+        Hier wird ING_DB   die  vollsta"ndige  Relation  lesen.   Das
+        geschieht,  weil  der  erste  Schlu"ssel  (lnum) nicht in der
+        Query vorgeschlagen wurde.
+
+        ZZZZuuuussssaaaammmmmmmmeeeennnnggggeeeeffffaaaasssssssstttt::::
+
+        iiiissssaaaammmm gestattet die Beschleunigung  des  Zugriffs  sowohl  zu
+        exakten  Werten,  als  auch  zu  Wertebereichen.   Das funk-
+        tioniert solange, wie wenigstens  der  erste  Schlu"ssel  vom
+        Nutzer vorgegeben wird.
+
+        Um festzustellen, wo  die  Tupel  in  einer  "isam"-Relation
+        stehen, durchsucht ING_DB  das "isam-directory" dieser Rela-
+        tion.  Wenn eine Relation nach iiiissssaaaammmm modifiziert wird, werden
+        die  Tupel  zuerst  sortiert  und  dabei die doppelten Tupel
+        gelo"scht.  Als na"chstes wird die Relation (unter  Verwendung
+        des  ffffiiiillllllllffffaaaaccccttttoooorrrr  ),  beginnend  mit  Block 0, 1, 2... und so
+        weiter, entsprechend der beno"tigten Seitenanzahl gefu"llt.
+
+        Jetzt wird das ddddiiiirrrreeeeccccttttoooorrrryyyy  aufgebaut.   Die  Schlu"sseldoma"nen
+        des ersten Tupels jeder Seite werden eingesammelt und in ein
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+
+
+
+
+        Anwendung                 - 220 -                  DDDDaaaatttteeeennnnbbbbaaaannnnkkkk
+
+
+        ddddiiiirrrreeeeccccttttoooorrrryyyy (in der Relation auf Platte gespeichert) gebracht.
+        Das  ddddiiiirrrreeeeccccttttoooorrrryyyy wird nicht eher gea"ndert, als bis die na"chste
+        Modifizierung angewiesen wurde.
+
+        Wann immer ein Tupel zu  einer  Relation  hinzugefu"gt  wird,
+        wird  das  ddddiiiirrrreeeeccccttttoooorrrryyyy  durchsucht, um die Seite zu finden, in
+        der das neue Tupel untergebracht werden muss.  Damit bleiben
+        in  dieser  Seite  die einzelnen Tupel nnnniiiicccchhhhtttt genau sortiert.
+        Das ist auch mit der na"herungsweisen ( aaaapppppppprrrrooooxxxxiiiimmmmaaaatttteeeellllyyyy )  Sor-
+        tierung im obigen Kapitel gemeint.
+
+        _2._2._4._1_0.  VVVVeeeerrrrgggglllleeeeiiiicccchhhh vvvvoooonnnn hhhheeeeaaaapppp,,,, hhhhaaaasssshhhh uuuunnnndddd iiiissssaaaammmm
+
+        Wir wollen einmal  die  Vor-  und  Nachteile  der  einzelnen
+        Speicherstrukturen  vergleichen.   Eine  Relation wird immer
+        als hhhheeeeaaaapppp erzeugt.  hhhheeeeaaaapppp ist die gu"nstigste Struktur fu"r  das
+        erstmalige  Auffu"llen einer Relation bei Verwendung von ccccooooppppyyyy
+        oder aaaappppppppeeeennnndddd....
+
+        Der Platz von gelo"schten Tupeln bei hhhheeeeaaaapppp  wird  nur  in  der
+        letzten  Seite wiederverwendet.  Ein Test auf doppelte Tupel
+        wird bei hhhheeeeaaaapppp -Relationen nicht ausgefu"hrt.
+
+        "hash" ist vorteilhaft fu"r  die  Lokalisierung  von  Tupeln,
+        sofern  sie  in  der  Qualifikation  ( wwwwhhhheeeerrrreeee -Klausel) durch
+        einen exakten Wert referenziert werden.  Die Haupt-Seite von
+        Tupeln  kann  mit  einem  vorgegebenen Wert leicht ermittelt
+        werden.
+
+        iiiissssaaaammmm ist gebra"uchlich fu"r exakte  Werte  und  Wertebereiche.
+        Weil  das   "isam-directory"  durchsucht werden muss, um die
+        Tupel zu lokalisieren, ist iiiissssaaaammmm nicht so effektiv wie hhhhaaaasssshhhh....
+
+        _2._2._4._1_1.  UUUU""""bbbbeeeerrrrllllaaaauuuuffff----SSSSeeeeiiiitttteeeennnn
+
+        Wenn ein Tupel eingefu"gt wird und sich kein freier Raum mehr
+        auf  der Haupt-Seite einer Relation befindet, dann wird eine
+        U"berlauf-Seite erzeugt.  Wenn mehr Tupel  eingefu"gt  werden,
+        als  eine  U"berlauf-Seite  aufnimmt,  werden  weitere Seiten
+        angeha"ngt.  Obwohl U"berlauf-Seiten notwendig  sind,  vermin-
+        dern  sie die Geschwindigkeit des Systems bei Ausfu"hrung von
+        Recherchen und uuuuppppddddaaaatttteeee
+
+        Beispielsweise wollen wir annehmen das "lieferung" auf  llllnnnnuuuummmm
+        via  hhhhaaaasssshhhh  geschlu"sselt  wird  und  10  Haupt-  Seiten  hat.
+        Angenommen der Wert lnum = 3 fa"llt auf  Seite  7.   Um  alle
+        Tupel  mit  lnum = 3 zu finden, bezieht ING_DB  in die Suche
+        die Haupt-Seite 7 und alle zu Seite  7  geho"rigen  U"berlauf-
+        Seiten  ein  (,  sofern  es welche gibt).  Je mehr U"berlauf-
+        Seiten einbezogen  werden  mu"ssen,  um  so  mehr  Zeit  wird
+        beno"tigt,  um  nach  lnum = 3 zu recherchieren.  Um doppelte
+        Tupel bei iiiissssaaaammmm und hhhhaaaasssshhhh lo"schen zu  ko"nnen,  muss  ebenfalls
+        bei aaaappppppppeeeennnndddd und rrrreeeeppppllllaaaacccceeee die Suche u"ber alle Seiten ausgefu"hrt
+        werden.
+
+        Wenn eine hhhhaaaasssshhhh - oder  iiiissssaaaammmm  -Relation  zu  viele  U"berlauf-
+        Seiten  hat, empfiehlt es sich, sie erneut zu hhhhaaaasssshhhh oder iiiissssaaaammmm
+        zu modifizieren.  Damit wird die Relation bereinigt  und  es
+        werden soviele U"berlauf-Seiten als mo"glich eliminiert.
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                  IIIINNNNGGGG____DDDDBBBB
+
+

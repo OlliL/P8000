@@ -1,0 +1,648 @@
+
+
+
+        Anwendung                 - 311 -                     RRRReeeeppppoooorrrrtttt
+
+
+        _2._6._1_7.  SSSScccchhhhlllluuuu""""sssssssseeeellllwwwwoooorrrrtttteeee
+
+
+         all          end           linebegin    repeat
+         and          enda          lineend      report
+         as           endc          lines        return
+         batch        endi          m_day        scale
+         batchline    endo          minut        second
+         before       endr          mod          set
+         big          endw          month        space
+         bit          exp           new          switch
+         byte         false         next         terminal
+         call         for           norm         then
+         case         from          not          time
+         char         graphic       null         to
+         clear        groupbegin    oct          true
+         col          groupend      on           tuple
+         column       hex           one          value
+         columns      hour          or           var
+         complement   if            out          w_day
+         date         ignore        page         while
+         day          in            pagebegin    with
+         dec          integer       pageend      word
+         default      is_dst        pic          y_day
+         define       last          point        year
+         do           length        proc
+         else         line          real
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Anwendung                 - 312 -                        ZZZZIIIIPPPP
+
+
+        _2._7.  EEEEiiiinnnnggggaaaabbbbeeeeggggeeeennnneeeerrrraaaattttoooorrrr ZZZZIIIIPPPP
+             ---- VVVVeeeerrrrssss.... 2222....1111 ****
+
+
+
+
+
+
+
+
+
+
+
+
+        _2._7._1.  EEEEiiiinnnnlllleeeeiiiittttuuuunnnngggg
+
+        Der vorliegende Eingabegenerator  ist  den  Bedingungen  von
+        UNIX  -Versionen  angepasst,  fu"r  die  eine tttteeeerrrrmmmmccccaaaapppp und das
+        Softwarepaket ccccuuuurrrrsssseeeessss verfu"gbar sind.  Da ZIP als  Hilfe  fu"r
+        die  Eingabe  und Anzeige von Daten in der Umgebung von AMX-
+        und EQUEL-Programmen entworfen wurde, soll  nachfolgend  die
+        Anwendung auch an solchen Beispielen gezeigt werden.
+
+        Die Erstellung einer ZIP-Prozedur erfolgt in drei Schritten:
+
+        1.   Mit dem Editor wird eine Maske entworfen, die deckungs-
+             gleich spa"ter auf dem Bildschirm abzubilden ist. Varia-
+             blenfelder werden durch # eingeleitet, die  Anzahl  der
+             nachfolgenden  Zeichen bis zum Leerzeichen bzw. Newline
+             (auch EOF)  oder  einem  beliebigen  Begrenzungszeichen
+             legt  die  Stelligkeit  fest  (einschliesslich #).  Bei
+             Gleitkommazahlen  bestimmt  der   Punkt   die   Konver-
+             tierungsvorschrift.
+
+        2.   Die Textmaske (Filename:  vorgeschlagenes  Postfix  _m)
+             wird  einschliesslich  mo"glicher  steuernder  Flags als
+             Argument fu"r das Kommando  zzzziiiipppp  angegeben  und  ein  C-
+             Quellfile generiert.
+
+        3.   Die Verbindung zwischen Maske und Variablen ergibt sich
+             aus dem Dialog. Die Flags -hp ziehen zusa"tzliche Fragen
+             fu"r Hilfen bzw. Pru"fungen nach  sich.   Der  C-Compiler
+             wird  automatisch  gerufen,  bei  Flag  -l  erfolgt die
+             Einordnung in eine Arbeitsbibliothek.
+
+        Bei Verwendung des Flag -z wird ein Zeilenoffset ausgegeben.
+        Er  berechnet sich aus der Anzahl der Newlines + EOF im Aus-
+        gangsfile.  Mit diesem Offset soll der Entwurf  des  Gesamt-
+        bildes auf dem Schirm kontrolliert werden.
+
+        Bevor eine ZIP-Prozedur im Programm genutzt werden kann, ist
+        die  Initialisierungsprozedur  iiiinnnniiiittttzzzziiiipppp(((()))) zu rufen - sie ini-
+        tialisiert auch die Verwendbarkeit der ccccuuuurrrrsssseeeessss  -Makros  bzw.
+        Prozeduren.  Die u"blichen Ausgaben zu stdout (printf, write,
+        putchar usw.) du"rfen innerhalb des Gu"ltigkeitsbereiches  des
+        sogenannten  "Standard-Screen" (stdscr) nicht verwendet wer-
+        den, weil dann Konsistenzprobleme auftreten.   Dafu"r  stehen
+        die curses-Makros (addstr(), addch()) zur Verfu"gung.
+        AAAAnnnnmmmmeeeerrrrkkkkuuuunnnngggg:::: Zum Binden  des  gesamten  Programmes  (AMX,  EQC
+        u.a.)  sind die Bibliotheken libcurses.a und libzip.a einzu-
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Anwendung                 - 313 -                        ZZZZIIIIPPPP
+
+
+        ziehen.
+
+        Die direkte Einordnung des Generators in das Datenbanksystem
+        unter  Nutzung der System-Relation "attribute" ist vorla"ufig
+        nicht geplant.  Die  Praxis  zeigt,  dass  die  Eingabe  und
+        Korrektur  aller  Doma"nen  in einem Menue die Ausnahme ist -
+        als weiteres Problem steht dann, in welcher Reihenfolge  die
+        Fu"hrungstexte  den Spalten zugeordnet werden sollten. Hierzu
+        wa"re wieder ein Dialog oder eine Zuordnung in der Phase  des
+        Editierens  der  Maske  notwendig.   Es ist in der Regel so,
+        dass erst in Abha"ngigkeit vom Wert des  Schlu"ssels  entweder
+        vom Programm oder vom Bedienenden entschieden wird, wie sich
+        der  weitere  Ablauf  gestaltet  ("append",  "replace"  oder
+        "delete") bzw.  die Doma"nen anderer Relationen einzubeziehen
+        sind.
+
+        _2._7._2.  RRRReeeeaaaalllliiiissssiiiieeeerrrruuuunnnngggg
+
+        ZIP wird  durch  "make  all"  im  Directory  "../../src/zip"
+        installiert.  Das Kommando zip wird in "../../bin" eingeord-
+        net.  Ruft man zip ohne Parameter, wird eine Kurzinformation
+        zur  Anwendung  gegeben  (in "../../man/zip").  Im Directory
+        "../src/zip" ist ein Directory "tut" enthalten, an  dem  man
+        sich analog dieser Dokumentation orientieren kann.
+
+        Die verwendete Relation "anschrift" hat folgende Struktur:
+
+
+           Relation:               anschrift
+           ---------
+           Besitzer:               ing_db
+           Tupellaenge:            199
+           Verfallsdatum:          Wed Mar 30 15:21:36 1988
+           Tupelanzahl:            99
+           Speicherstruktur:       ISAM
+           Relationentyp:          Nutzerrelation
+
+
+
+            Domaenname        Typ   Laenge  Schluessel
+           -------------------------------------------
+            bn                i       4      1
+            ans1              c      40
+            ans2              c      40
+            ans3              c      30
+            ort               c      30
+            plz               c       5
+            kubez             c      48
+            bezirk            i       2
+           -------------------------------------------
+
+
+        Zur Veranschaulichung  der  Verfahrensweise  folgendes  AMX-
+        Programm:
+        -------------------------------------------------------------
+
+        ## shared hardsoft
+
+        /* Eingabe und Korrektur von Anschriften */
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Anwendung                 - 314 -                        ZZZZIIIIPPPP
+
+
+        ## long BN;
+        ## char ANS1[40];       /* 1.Zeile Anschrift */
+        ## char ANS2[40];       /* 2.Zeile Anschrift */
+        ## char ANS3[30];       /* 3.Zeile Anschrift, Strasse/Psf. */
+        ## char ORT[30];        /* Ort */
+        ## char PLZ[5];             /* Postleitzahl */
+        ## char KUBEZ[48];      /* Kurzbezeichnung Anschrift */
+        ## int  BEZIRK;         /* individueller Bezirksschluessel */
+
+        amx()
+        {
+             int flag;
+             int clr;
+             int zl;
+
+        initzip();           /*Initialisierung von curses und zip*/
+
+        ## open anschrift
+
+        do
+        {
+             BN = 0;
+             ANS1[0] = ANS2[0] = ANS3[0] = ORT[0] = '\0';
+             PLZ[0] = '\0';
+             KUBEZ[0] = '\0';
+             clr = 0;
+             if (!ansbn(clr++, 0)) break;  /*Schirm wird gloescht,*/
+             if (!BN) break;               /*dr anschliessend erhoeht*/
+             flag = 0;
+        ## scan anschrift $bn=BN (ANS1=$ans1,ANS2=$ans2,ANS3=$ans3,
+        ##   ORT=$ort,PLZ=$plz,KUBEZ=$kubez,BEZIRK=$bezirk)
+        ## {
+             ++flag;
+             if (!ansein(clr, 1)) break;   /*kein Schirm loeschen,*/
+                                  /*alle Variablen erst anzeigen*/
+        ## replace ($bn=BN,$ans1=ANS1,$ans2=ANS2,$ans3=ANS3,
+        ##   $ort=ORT,$plz=PLZ,$kubez=KUBEZ,$bezirk=BEZIRK)
+        ## }
+             if (!flag)
+             {
+                  if (!ansein(clr, 1)) continue;
+        ## append anschrift ($bn=BN,$ans1=ANS1,$ans2=ANS2,
+        ##   $ans3=ANS3,$ort=ORT,$plz=PLZ,$kubez=KUBEZ,$bezirk=BEZIRK)
+             }
+        }
+        while (BN);
+
+        ## commit
+        ## close anschrift
+        }
+        -------------------------------------------------------------
+
+        Als Eingabe- bzw.  Korrekturprozeduren  kommen  ansbn()  und
+        ansein()   vor.   Mit  der  Trennung  in  zwei  Masken  bzw.
+        Prozeduren wird vermieden, dass ansein() bei  BN  =  0  noch
+        Werte  abfordert  und das gleiche Programm zum Anfu"gen neuer
+        Tupel bzw. zum  A"ndern  vorhandener  Verwendung  findet.  Im
+        ersten  Schritt  werden  die Masken aaaannnnssssbbbbnnnn____mmmm und aaaannnnsssseeeeiiiinnnn____mmmm mit
+        dem Editor aufgestellt, dabei ist zu beachten, dass  in  den
+        Zeilen,  bei  denen  mit  Fu"hrungstexten begonnen wird, ganz
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Anwendung                 - 315 -                        ZZZZIIIIPPPP
+
+
+        links kein Leerzeichen steht - fu"hrende  Leerzeichen  werden
+        nicht ausgegeben:
+
+        MMMMaaaasssskkkkeeee aaaannnnssssbbbbnnnn____mmmm::::
+
+         Erfassg./Korr. von Anschriften ==> Abbruch: Betriebsnummer = 0
+
+         Betriebsnummer(8-St.): #9999999<
+
+
+
+        MMMMaaaasssskkkkeeee aaaannnnsssseeeeiiiinnnn____mmmm::::
+
+         Anschrift-Betriebsbezeichnung1: #aaaaaaaaaaaaaaaaaaaaaaaaa..a<
+         ..........Betriebsbezeichnung2: #aaaaaaaaaaaaaaaaaaaaaaaaa..a<
+         ..........Strasse/Nr.         : #aaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+         ..........Ort                 : #aaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+         ..........Postleitzahl        : #aaa<
+         Kurzbezeichnung: #aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+         Bezirk         : #9<
+
+
+        In den ersten beiden Zeilen wurden, um eine bessere Darstel-
+        lung zu erreichen, einige a ausgeblendet (entspricht ..).
+
+        AAAAbbbbllllaaaauuuuffff::::
+
+        Der Eingabe-Generator wird mit
+        zzzziiiipppp -pl LIBTUT ansbn
+        gerufen.
+        Darstellung des Dialogs:
+
+        -------------------------------------------------------------
+
+
+        +--------------------------------+
+        |  EINGABE-GENERATOR >>> ZIP <<< |
+        |  Version 2.1 (curses) 01.02.89 |
+        |  EVK Olbernhau                 |
+        +--------------------------------+
+
+        Der Abfragezyklus bezieht sich jeweils auf eine Variable!
+        Zur Orientierung werden die Texte der Maske mit ausgegeben.
+
+        Erfassg./Korr. von Anschriften ==> Abbruch: Betriebsnummer = 0
+
+        Betriebsnummer(8-St.):
+        >>>Datentyp (i/l/c/f/d)            > l
+
+        >>>vereinbarter Name (Feld mit []) > BN
+
+        >>>mit Korrekturmoeglichkeit?(j/n) > j
+
+        >>>Name Pruefprozedur mit () u.Arg.> przk()
+
+        >>>Pruef-Art:Zei.=z/Wort=w > w
+
+        >>>Hilfe einordnen? (j/n)          > j
+
+        >>>Hilfe-Art: Text=t / Prozedur=p  > t
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Anwendung                 - 316 -                        ZZZZIIIIPPPP
+
+
+        >>>Name File f. Hilfe-Text m. (z,s) > bnhlp(3,15)
+        9999999<
+
+
+        Okay? >j
+
+        -------------------------------------------------------------
+
+        Zur Orientierung  im  Dialog  gibt  ZIP  alle  Fu"hrungstexte
+        entsprechend der Textmaske mit aus.
+
+        Parallel zum Dialog wird das File ansbn_i angelegt:
+
+                -pl LIBTUT ansbn
+                long BN j przk() w bnhlp(3,15) t
+
+
+        Die  Pru"fung  der  Statistik-Betriebsnummer   erledigt   die
+        Prozedur przk():
+
+        -------------------------------------------------------------
+
+        /* Pruefziffernkontrolle Modul 11 (8-stellig) */
+
+        przk(pn) long *pn;
+        {
+        long nr;
+        int bew[8];
+        int erg, sg, i, divr, anr, pz, p;
+
+        nr = *pn;
+        bew[0] = 0;
+        bew[1] = 4;
+        bew[2] = 8;
+        bew[3] = 5;
+        bew[4] = 10;
+        bew[5] = 9;
+        bew[6] = 7;
+        bew[7] = 3;
+
+        p = nr % 10;
+        sg = 0;
+
+        for (i = 0; i < 8; i++ )
+        {
+             anr = nr % 10;
+             erg = anr * bew[i];
+             sg = sg + erg;
+             nr = nr / 10;
+        }
+        divr = sg % 11;
+        switch(divr)
+        {
+             case 0 : pz = 5;
+                  break;
+             case 2 : pz = 4;
+                  break;
+             case 3 : pz = 9;
+                  break;
+             case 4 : pz = 3;
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Anwendung                 - 317 -                        ZZZZIIIIPPPP
+
+
+                  break;
+             case 5 : pz = 8;
+                  break;
+             case 6 : pz = 2;
+                  break;
+             case 7 : pz = 7;
+                  break;
+             case 8 : pz = 1;
+                  break;
+             case 9 : pz = 6;
+                  break;
+             default: pz = 0;
+
+        }
+        if (p == pz) return(1);
+        else return(0);
+        }
+        -------------------------------------------------------------
+
+        Der Ru"ckkehrcode dieser Prozedur, die  ebenfalls  in  LIBTUT
+        steht,  wird  ausgewertet  (1  ist  TRUE,  0 ist FALSE). Der
+        Return-Code 0 veranlasst  nach  einem  Hupton  zur  erneuten
+        Eingabe   (Kursor   auf   Feldanfang),   die   Eingabe   von
+        Fragezeichen (?) fu"hrt  zur  Ausgabe  der  Hilfe  "pruefzif-
+        ferngesichert"  - der Text dazu steht im File bnhlp, das bei
+        der Generierung eingezogen wird.  Die Prozedur ansein() wird
+        mit
+         zip -a 3  -hl LIBTUT ansein
+        generiert.  Der Dialog la"uft wie folgt ab:
+
+        -------------------------------------------------------------
+
+        +--------------------------------+
+        |  EINGABE-GENERATOR >>> ZIP <<< |
+        |  Version 2.1 (curses) 01.02.89 |
+        |  EVK Olbernhau                 |
+        +--------------------------------+
+
+        Der Abfragezyklus bezieht sich jeweils auf eine Variable!
+        Zur Orientierung werden die Texte der Maske mit ausgegeben.
+
+        Anschrift-Betriebsbezeichnung1:
+        >>>Datentyp (i/l/c/f/d)            > c
+
+        >>>vereinbarter Name (Feld mit []) > ANS1[40]
+
+        >>>mit Korrekturmoeglichkeit?(j/n) > j
+
+        >>>Hilfe einordnen? (j/n)          > n
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+        >>>Datentyp (i/l/c/f/d)            > c
+
+        >>>vereinbarter Name (Feld mit []) > ANS2[40]
+
+        >>>mit Korrekturmoeglichkeit?(j/n) > j
+
+        >>>Hilfe einordnen? (j/n)          > n
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+        >>>Datentyp (i/l/c/f/d)            > c
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Anwendung                 - 318 -                        ZZZZIIIIPPPP
+
+
+        >>>vereinbarter Name (Feld mit []) > ANS3[30]
+
+        >>>mit Korrekturmoeglichkeit?(j/n) > j
+
+        >>>Hilfe einordnen? (j/n)          > n
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+        >>>Datentyp (i/l/c/f/d)            > c
+
+        >>>vereinbarter Name (Feld mit []) > ORT[30]
+
+        >>>mit Korrekturmoeglichkeit?(j/n) > j
+
+        >>>Hilfe einordnen? (j/n)          > n
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+        >>>Datentyp (i/l/c/f/d)            > c
+
+        >>>vereinbarter Name (Feld mit []) > PLZ[5]
+
+        >>>mit Korrekturmoeglichkeit?(j/n) > j
+
+        >>>Hilfe einordnen? (j/n)          > n
+        aaa<
+        Kurzbezeichnung:
+        >>>Datentyp (i/l/c/f/d)            > c
+
+        >>>vereinbarter Name (Feld mit []) > KUBEZ[48]
+
+        >>>mit Korrekturmoeglichkeit?(j/n) > j
+
+        >>>Hilfe einordnen? (j/n)          > n
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+
+        >>>Datentyp (i/l/c/f/d)            > i
+
+        >>>vereinbarter Name (Feld mit []) > BEZIRK
+
+        >>>mit Korrekturmoeglichkeit?(j/n) > j
+
+        >>>Hilfe einordnen? (j/n)          > j
+
+        >>>Hilfe-Art: Text=t / Prozedur=p  > t
+
+        >>>Name File f. Hilfe-Text m.(z,s) > bezhlp(15,3)
+        9<
+
+        Okay? >>j
+        -------------------------------------------------------------
+
+        Die nach > stehenden Eingaben sind jeweils  mit  <CR>  (Car-
+        riage Return) abzuschliessen.
+
+        Folgendes i-File entsteht:
+
+
+
+
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
+
+
+
+        Anwendung                 - 319 -                        ZZZZIIIIPPPP
+
+
+
+                -a 3 -hl LIBTUT ansein
+                char ANS1[40]  j  n  n
+                char ANS2[40]  j  n  n
+                char ANS3[30]  j  n  n
+                char ORT[30]   j  n  n
+                char PLZ[5]    j  n  n
+                char KUBEZ[48] j  n  n
+                int  BEZIRK    j  n  bezhlp(15,3) t
+
+
+        Es wa"re denkbar, die  PLZ  mit  "isdigit()"  zu  pru"fen,  in
+        Abweichung zu oben entstu"nde das i-File:
+
+                -a 3 -phl LIBTUT ansein
+                char ANS1[40]  j  n         n
+                char ANS2[40]  j  n         n
+                char ANS3[30]  j  n         n
+                char ORT[30]   j  n         n
+                char PLZ[5]    j  isdigit() z
+                char KUBEZ[48] j  n         n
+                int  BEZIRK    j  n         bezhlp(15,3) t
+
+
+        Beachten  sie,  dass  \t  als   Trennzeichen   steht.    Bei
+        A"nderungen  im  *_i-File  du"rfen die Trennzeichen nicht ver-
+        sehentlich gelo"scht werden!
+
+        Es wird bei der Erzeugung  der  Ein-/Ausgabe-Prozedur  davon
+        ausgegangen,  dass  die  C-Variablen  an  Spalten bestimmter
+        Relationen u"bergeben  bzw.  von  diesen  u"bernommen  werden.
+        Deshalb  sind  die  C-Variablen  grundsa"tzlich global dekla-
+        riert, entsprechend erwartet die erzeugte Prozedur eine glo-
+        bale  Deklaration zur Wert-U"bergabe/-U"bernahme.  Fu"r alle zu
+        realisierenden Konvertierungen  werden  die  Prozeduren  (im
+        Sinne   von   Parameter-Prozeduren)   aus  /usr/lib/libzip.a
+        verwendet.  Die manuelle Ersetzung  der  Funktionsprozeduren
+        aus der Standard-Bibliothek von C (libc.a) fu"hrt zu Fehlern.
+
+        Die Reihenfolge der Objekte in der Arbeits-Bibliothek  (hier
+        LIBTUT)  spielt  eine Rolle, sofern Pru"fprozeduren verwendet
+        werden (nach der ZIP-Prozedur  !).   Die  Arbeits-Bibliothek
+        muss im Bindekommando vor /usr/lib/libzip.a stehen.
+
+        Pruefprozeduren werden in Anlehnung an  die  Funktionen  aus
+        "ctype"  (isdigit(),  isascii() usw.) so gestaltet, dass der
+        Rueckkehrcode 1 fuer TRUE und 0 fu"r FALSE liefert. Das  gilt
+        sowohl  fu"er  Prozeduren  die  zeichenweise (z) als auch fu"r
+        solche, die wortweise (w) pru"fen.  Das header-File <ctype.h>
+        wird fu"r ZIP-Prozeduren standardma"ssig eingezogen.
+
+        Als kleine zusa"tzliche  Hilfe  von  ZIP  steht  eine  Menue-
+        Prozedur  mmmmeeeennnnzzzziiiipppp(((())))  zur Verfu"gung, die ein im main() verein-
+        bartes Zeichenkettenfeld  auf  wa"hlbaren  Positionen  invers
+        ausgibt  und  die  angeklickte Zeile (1..n) als Ru"ckkehrwert
+        liefert (s. Teil III, Beispiel "Terminkontrolle").
+
+
+
+
+
+
+
+        ING_DB 6.3/3           Juni 16, 1989                    UUUUNNNNIIIIXXXX
+
+
