@@ -1,0 +1,360 @@
+        README                    - 1 -                   EIGENTEST
+
+
+
+
+                              P 8 0 0 0  8-Bit
+
+                    H a r d w a r e - E I G E N T E S T
+
+                       Beschreibung der Testschritte
+
+
+
+        Mit dem Stand-alone-Programm EIGENTEST wird dem Anwender die 
+        Moeglichkeit gegeben,  individuelle Hardware-Tests fuer  den 
+        8-Bit-Mikrorechnerteil beliebig oft abzuarbeiten.  Empfohlen 
+        wird  die  Verwendung  dieses Programms besonders  fuer  das 
+        Auffinden  von Fehlern,  die nur  zeitweilig  auftreten.  In 
+        solch einem Fall sollte man das Eigentestprogramm,  bzw. den 
+        entsprechenden Einzeltest,  laengere Zeit laufen lassen. Das 
+        Programm wird als Dienstprogramm auf der UDOS-Systemdiskette 
+        bereitgestellt.
+        Das  Programm  laeuft ohne das OS zu booten  im  sogenannten 
+        stand-alone-Betrieb und wird mit Hilfe des PROM-MONITOR  von 
+        der Systemdiskette geladen und gestartet.
+
+        Start des Programms 'EIGENTEST':
+
+        1. P8000 einschalten, oder 'RESET'-Taste betaetigen
+        2. Systemdiskette UDOS 3.1 in Laufwerk 0 einlegen
+        3. Eingabe: "GE EIGENTEST <cr>"     (Programm laden)
+        4. Eingabe: "G <cr>"               (Programm starten)
+
+        Das  Programm  meldet sich mit der Ausschrift:
+
+             UDOS 3.1
+                  H a r d w a r e - E i g e n t e s t  Vx.x
+
+        Die   Programmsteuerung   erfolgt  ueber  einen   Menuebaum. 
+        Menuebestandteile   sind   entweder   Untermenuenamen   oder 
+        Funktionen, die ausgefuehrt werden. Das Programm kommentiert 
+        sich    selbst.    Dem   Anwender   werden   jeweils    alle 
+        Eingabemoeglichkeiten   angezeigt.   Durch   Eingabe   eines 
+        Kommandos wird eine Auswahl getroffen und man gelangt in das 
+        naechste  Menue.  Es  besteht die  Moeglichkeit  Einzeltests 
+        aufzurufen,    fuer    diese   einen    Wiederholungszaehler 
+        einzustellen (1...9999 mal) und sie dann abzuarbeiten.
+        Weiterhin ist es moeglich, die interne Testliste anzuzeigen, 
+        in  der alle Einzeltests enthalten sind.  Diese  Liste  kann 
+        vollstaendig,   oder   beginnend  bei  einer  als  "aktuell" 
+        gekennzeichneten Zeile, abgearbeitet werden. Dabei kann fuer 
+        jeden  der Tests die Anzahl der  Wiederholungen  individuell 
+        (bis zu 9999 mal) festgelegt werden.
+
+        Werden   bei  der  Abarbeitung  der  Tests   Hardware-Fehler 
+        festgestellt,   so   erfolgt   die  Fehlerausgabe  auf   die 
+        Systemkonsole und in eine Fehlerliste.  Der Eintrag in diese 
+        Liste erfolgt unter einer laufenden Nummer die bei 1 beginnt 
+        und bei 32767 ueberlaeuft.  Die Fehlerliste kann die jeweils 
+        letzten 200 Fehler speichern und laeuft nicht ueber. Sie ist 
+        organisiert nach dem LIFO-Prinzip und rollendem Eintrag. Die 
+        Fehlerliste kann vom Hauptmenue aufgerufen werden.
+
+
+
+
+
+
+
+
+
+
+        README                    - 2 -                   EIGENTEST
+
+
+        Das  Diagnoseprogramm ist entsprechend den  Funktionsgruppen 
+        des   8-Bit-Teils  gegliedert  und   enthaelt   gegenwaertig 
+        folgende Tests:
+
+             EPROM-CRC-Test
+             SRAM-Speichertest
+             UA855-PIO-Test
+             UA857-CTC-Test
+             UA856-SIO-Test
+             U8272-FDC-Test
+             UA858-DMA-Test
+             DRAM-Speichertest
+
+
+        Beschreibung der Tests
+        ----------------------
+
+        1. EPROM-CRC-Test
+        ~~~~~~~~~~~~~~~~~
+        Es wird die CRC-Summe des EPROM-Satzes ermittelt und mit den 
+        Sollwerten  (EPROM-Adr.:   1FF8...1FFF)  verglichen.  Treten 
+        Differenzen  auf,  wird  die Nummer des EPROM's (0  oder  1) 
+        sowie Soll-CRC und Ist-CRC angezeigt.
+
+        Test-Nr.0      1.EPROM
+
+        Test-Nr.1      2.EPROM
+
+
+        2. SRAM-Speichertest
+        ~~~~~~~~~~~~~~~~~~~~
+        Es  wird ein Test der Datenleitungen,  der  Adressleitungen, 
+        der  Datenhaltigkeit  durch das Durchschieben von 0  oder  1 
+        durchgefuehrt.
+
+        Test-Nr.5      Test der Adressleitungen
+        Es wird ein besonderes Bitmuster in den SRAM geschrieben und 
+        danach  kontrolliert.  Der  Speicher wird dazu in  8  Seiten 
+        (Seiten-Nr.:20...27)  zu je 256 Byte aufgeteilt.  Die  Bytes 
+        einer  Seite werden fortlaufend nummeriert.  Das erste  Byte 
+        einer Seite ist gleich der Seiten-Nr.  d.h. gleich dem High-
+        Teil der Speicheradresse dieses Bytes.  Anschliessend werden 
+        die Seiten nacheinander auf richtigen Dateninhalt getestet.
+
+        Test-Nr.6      Test der Datenleitungen
+        Beschreiben  des SRAM (Adr.:2000...27FF) mit 00 bzw.  FF und 
+        anschliessendem Test.
+
+        Test-Nr.7      Test des Datenbusses
+        Durchschieben  eines 0-Bit bzw.  1-Bit auf dem DBUS  und  im 
+        Speicher.
+
+
+        3. PIO-TEST
+        ~~~~~~~~~~~
+        Test-Nr.10
+        Es  werden die PIO0,  PIO1 und PIO2 in MODE0 (Ausgabe)  ohne 
+        INT  programmiert  und danach ein Test-Byte  ausgegeben  und 
+        zurueckgelesen.
+
+
+
+
+
+
+
+
+
+
+        README                    - 3 -                   EIGENTEST
+
+
+        Testbytes:
+
+             55h an PIO0A
+             D5h an PIO0B
+             55h an PIO1A
+             F3h an PIO1B
+             9Fh an PIO2A
+             6Fh an PIO2B
+
+        Nach Testende liegen die Testbytes an den Portausgaengen an.
+
+
+        4. CTC-Test
+        ~~~~~~~~~~~
+        Test-Nr.15          Zaehltest ohne INT
+        Die  CTC-Kanaele werden als Zeitgeber ohne INT  programmiert 
+        (SW=07h), eine Zeitkonstante geladen, 0.025 ms gewartet, das 
+        Zaehlregister gelesen und der Kanal gestopt.
+
+        Test-Nr.16          Zeitkonstanten Ueberpruefung
+
+            CTC Kanal  TC
+        ---------------------
+             0    0    40h
+             0    1    50h
+             0    2    60h
+             0    3    70h
+             1    0    80h
+             1    1    02h
+             1    2    90h
+             1    3    A0h
+
+        Test-Nr.17          Test mit INT
+        Die CTC-Kanaele (nicht CTC1-Kanal1) werden als Zeitgeber mit 
+        INT   programmiert  (SW=87h),   eine  Zeitkonstante  geladen 
+        (TC=10h),  und max.  1ms gewartet in dieser der Kanal  einen 
+        INT   nach   ca.   0.04ms  generieren  muss.   Danach   wird 
+        kontrolliert  ob  in dieser  Zeit  eine  INT-Service-Routine 
+        angesprungen wurde.
+
+
+        5. SIO-Test
+        ~~~~~~~~~~~
+        Test-Nr.20
+        Ueberpruefung  der Adressierbarkeit und des  Datenaustauschs 
+        zwischen  der  CPU  und der SIO durch  Ruecklesen  des  INT-
+        Vektors aus dem SIO-KanalB.
+
+        INT-Vektoren:  SIO0 = 20h
+                       SIO1 = 50h dann 30h
+
+        Test-Nr.21
+        Ueberpruefung  der  Sende- und INT-Faehigkeit der  SIO0  und 
+        SIO1.  Die  Kanaele  senden 00h und die CPU wartet auf  INT-
+        'SENDEPUFFER   LEER'.   Erfolgt  die   INT-Anmeldung   nicht 
+        innerhalb  von 0.5s kommt es zu einer  Fehlermeldung.  SIO0-
+        KanalB  (Consolenausgabe-Kanal)  wird nicht auf diese  Weise 
+        getestet.
+        SIO-programmierung: 9600,8,N,2
+                            INT-MODE 3
+                            SAVECT
+
+
+
+
+
+
+
+
+        README                    - 4 -                   EIGENTEST
+
+
+
+        6. FDC-Test
+        ~~~~~~~~~~~
+        Test-Nr.23
+        Der  FDC-PIO  (PIO2B)  wird  auf  MODE  3  (Bitmode  Bit4=E) 
+        programmiert und danach wird ein Hardware-Reset fuer den FDC 
+        ausgeloest (Impulsbreite ca.  0.025ms). Nach einer Pause von 
+        weiteren 0.025ms wird der Test fortgesetzt.
+
+        Test-Nr.24
+        An  den  FDC wird das Kommando 'SPECIFY' gegeben  und  deren 
+        Ausfuehrung abgewartet.
+
+        Parameter: SRT=1 HUT=0FH HLT=2AH ND=1.
+
+        Test-Nr.25
+        An  den  FDC wird jetzt das Kommando  'SENSE  DRIVE  STATUS' 
+        gegeben  und das Statusregister ST3 in der Ergebnisphase des 
+        FDC gelesen und auf 05H ueberprueft.
+        Parameter: HDS=1 DS1=0 DS0=1.
+
+        Nach Abschluss der Tests wird ein Reset an den FDC gegeben.
+
+
+        7. DMA-Test
+        ~~~~~~~~~~~
+        Test-Nr.26          Test ohne INT
+        Der  DMA  wird programmiert und transferiert  100  Byte  von 
+        Adresse   0000   zur   Adresse  3000h.   Danach   wird   das 
+        Statusregister   und  das  Zaehlerregister   auf   Sollwerte 
+        getestet.  Der  DMA uebernimmt vollstaendig die Bussteuerung 
+        und gibt sie nach der Speicheruebertragung wieder an die CPU 
+        zurueck.
+
+        Test-Nr.27          Test mit INT
+        Der  DMA wird auf INT programmiert und uebertraegt 100  Byte 
+        von Adresse 0000 zur Adresse 3000 (wurde vorher  geloescht). 
+        Danach  wird ueberprueft ob ein INT generiert und durch  die 
+        CPU bedient wurde.
+        Nach   erfolgreicher  INT-Behandlung  wird  das   Statusbyte 
+        kontrolliert.
+
+        Test-Nr.28          movecheck
+        Es  wird  der DMA-Transfer durch die  CPU  ueberprueft.  Sie 
+        testet, ob die 100 Bytes vollstaendig uebertragen wurden.
+
+
+        8. DRAM-Speichertest
+        ~~~~~~~~~~~~~~~~~~~~
+        Es werden ein Test der Adressleitungen,  der Datenleitungen, 
+        der  Datenhaltigkeit  des Speichers durch das  Durchschieben 
+        von 0 und 1 durchgefuehrt. Bei auftretenden Fehlern wird der 
+        entsprechende   Fehlercode   (Test-Nr.)  an   das   Terminal 
+        ausgegeben.     Am    Terminal    werden    ausserdem    die 
+        Speicheradresse, der geschriebene und der rueckgelesene Wert 
+        angezeigt.
+        Der Test erfolgt in zwei Teilen. 
+
+        Teil 1:
+             Einschalten  des DRAM auf den Adressen 0000...FFFF  und 
+             testen des Bereiches 8000...FFFF.
+
+
+
+
+
+
+
+
+        README                    - 5 -                   EIGENTEST
+
+
+
+        Teil 2:  (nur wenn 1.Teil fehlerfrei!)
+             MOVE  des  Bereiches 0000...7FFF nach  8000...FFFF  und 
+             testen des Bereiches 0000...7FFF.
+
+        Danach remove der Programme SMON und EIGENTEST und verlassen 
+        des DRAM-Tests.
+
+        Test-Nr.30 (35)
+        Test    der   Adressleitungen   im    Bereich    8000...FFFF 
+        (0000...7FFF).
+        Der  Speicher wird in Seiten zu je 256 Byte aufgeteilt.  Die 
+        Bytes einer Seite werden fortlaufend nummeriert.  Das  erste 
+        Byte   in   einer  Seite  ist  gleich  dem   High-Teil   der 
+        Speicheradresse  dieses  Bytes.   Anschliessend  werden  die 
+        Seiten    nacheinander   getestet.    War   der   Test   der 
+        Datenleitungen fehlerfrei und stimmen die Werte einer  Seite 
+        nicht  mit  den eingegebenen Werten ueberein,  dann ist  die 
+        Ansteuerung  fuer ein oder mehrere Adressbits  dieser  Seite 
+        fehlerhaft.
+
+        Test-Nr.31 (36)
+        Test    der    Datenleitungen   im    Bereich    8000...FFFF 
+        (0000...7FFF).  Der  Speicherbereich wird zuerst mit 00  und 
+        danach mit FF gefuellt und ueberprueft.
+
+        Test-Nr.32 (37)
+        Durchschieben  von  0-Bits in einer Umgebung von  1-Bits  im 
+        Bereich von 8000...FFFF (0000...7FFF).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

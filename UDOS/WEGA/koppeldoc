@@ -1,0 +1,351 @@
+*******************************************************************************
+*******************************************************************************
+
+	P8000 - Softwaredokumentation (C) ZFT/KEAW Abt. Basissoftware - 1989
+	Koppelsoftware (8-Bit-Teil)
+
+	Bearbeiter: U. Oefler / P. Hoge / R. Kuehle
+	Datum: 	    31.1.89
+	Version:    3.1
+
+*******************************************************************************
+*******************************************************************************
+
+1. Grundlagen
+=============
+
+1.1. Hardware
+-------------
+
+Zur Kopplung der beiden Rechnerkarten des P8000 dienen zwei 16-Bit-Ports.
+Auf der 16-Bit-Seite werden diese durch zwei PIO's realisiert. Auf der
+8-Bit-Seite dienen dazu ein PIO (PIO-0) und zwei Ausgabeports (jeweils
+8-Bit breit, P16A und P16B). Die Verbindung zwischen beiden Teilen ist
+im Band: "Einfuehrung in die Software des P8000" (Bild A.1) ausfuehrlich
+dargestellt.
+Zum Verstaendnis der nachfolgend beschriebenen Programmteile der Koppel-
+software (8-Bit-Teil) ist die Belegung auf der 8-Bit-Seite wichtig.
+
+PIO0	Port-A		8-Bit Dateneingabe vom 16-Bit-Teil
+ Daten:   0CH
+ Control: 0DH
+
+	Port-B	Bit 7	Reset-U8000 (1=steht, 0=laeuft)
+ Daten:   0EH	Bit 6	Enable-Output (1=frei, 0=gesperrt)
+ Control: 0FH	Bit 5	Daten-Da (1=ja, 0=nein)
+		Bit 4-1 Status (4 Bit) vom 16-Bit-Teil
+		Bit 0   Interrupt-Bit
+
+Ausgabeport-A		8-Bit Daten an 16-Bit-Teil
+(P16A, Adr.: 10H)
+
+Ausgabeport-B	Bit 7	STB fuer PIO auf 16-Bit-Seite
+(P16B, Adr.: 14H)	(Flanke 0->1 fuer Datenuebernahme!)
+		Bit 6-1	Status (6 Bit) an 16-Bit-Teil
+		Bit 0	INT-16
+			(Flanke 0->1 erzeugt Int. auf 16-Bit-Seite)
+
+
+1.2. Arbeitsweise
+-----------------
+
+Die Koppelsoftware hat die Aufgabe die Peripherieschaltkreise des 8-Bit-
+Teils (2 x SIO und 1 x PIO) dem 16-Bit-Teil zur Verfuegung zu stellen,
+d.h. Ein- und Ausgaben vom 16-Bit-Teil aus zu ermoeglichen.
+Weiterhin beiinhaltet die Koppelsoftware Programmteile zur Ausfuehrung
+von Requests, die vom 16-Bit-Teil angefordert werden (z.B.: Lesen und
+Schreiben von UDOS-Dateien und Diskettensektoren, Formatieren von Disketten).
+Auf der 16-Bit-Seite arbeiten sowohl der U8000-Softwaremonitor als der
+WEGA-Kern mit der Koppelsoftware zusammen.
+
+Ueber die zwei SIO's des 8-Bit-Teils sind 4 V.24-Kanaele des P8000
+durch die Koppelsoftware mit dem 16-Bit-Teil verbunden.
+
+Organisation der Ankopplung:
+
+Fuer jeden SIO-Kanal (4 Stueck) wird auf der 8-Bit-Seite ein Ringpuffer
+organisiert, der die einlaufenden Daten aufnimmt, ein Flag-Byte, in dem
+das Auftreten von T_INT's, E_INT's oder S_INT's gemerkt wird, sowie 2 Byte
+fuer das Retten der Werte der Leseregister 0 und 1. Diese Ringpuffer haben
+die symbolischen Bezeichnungen
+
+	RB_S0A  (tty-0)
+	RB_S0B  (Console)
+	RB_S1A  (tty-2)
+	RB_S1B  (tty-3)
+
+Die Interrupt-Service-Routine realisieren folgende Funktionen
+
+	R_INT (Receive-Int.)	SIO-Empfangspuffer leer lesen
+				Ablegen im Ringpuffer
+	T_INT (Transmit-Int.)	Reset T_INT, RR0 einlesen
+	E_INT (Ext.-Status-Int.) RR0 einlesen, Reset E_INT
+	S_INT (Special-Rec.-	 RR1 einlesen, Reset S_INT
+               Condition)
+
+Innerhalb der Koppelsoftware testet das Programm UEB16 staendig, ob
+Interrupts eingelaufen sind, wenn ja erfolgt Uebergabe an den 16-Bit-
+Teil. Dabei erfolgt ueber die 6-Bit Status die Kennzeichnung der Art
+des Interrupts und der Adresse der Quelle.
+
+Ausgaben an die Peripherieschaltkreise werden von der ISR-Koppelpio direkt
+an die entsprechende Adresse durchgereicht.	
+
+Das Interruptsystem fuer den PIO1 (Anschluss des EPROM-Programmers)
+ist ab der Version 3.1. in der Koppelsoftware integriert.
+
+
+1.3. Statusfestlegungen
+-----------------------
+
+Der 8-Bit-Teil uebergibt Informationen an den 16-Bit-Teil, indem er
+den 16-Bit-Teil ueber INT-16 unterbricht. Dabei sind in den 6-Bit
+Status folgende Kennzeichnungen verschluesselt:
+
+	00H	Ende-Status
+
+	02H	SIO-0 Kanal-A	R_INT
+	22H			T_INT
+	42H			E_INT
+	62H			S_INT
+
+	04H	SIO-0 Kanal-B	R_INT
+	24H	(console)	T_INT
+	44H			E_INT
+	64H			S_INT
+
+	06H	SIO-1 Kanal-A	R_INT
+	26H			T_INT
+	46H			E_INT
+	66H			S_INT
+
+	08H	SIO-1 Kanal-B	R_INT
+	28H			T_INT
+	48H			E_INT
+	68H			S_INT
+
+	0AH	PIO1-Port A INTERRUPT
+	2AH	PIO1-Port B INTERRUPT
+
+	10H	Daten (UDOS-Dateien)
+
+
+Der 16-Bit-Teil uebergibt Informationen an den 8-Bit-Teil, indem er
+den 8-Bit-Teil ueber INT-8 (Bit0 PIO0-PortB) unterbricht. Dabei sind
+in den 4 Bit Status sind folgende Anforderungen verschluesselt:
+
+(a) Hardware-E/A:
+	
+	00H	Ende-Status
+
+	02H	READ von Peripherie
+	04H	WRITE an Peripherie
+		Erlaeuterung:
+		am Datenport liegt die Peripherieadresse an,
+		bei WRITE folgen am Datenport die auszugebenden
+		Datenbytes (beim letzten Datenbyte Status 0H)
+
+(b) Request:
+
+	10H	Request-Status
+		Erlaeuterung:
+		beim ersten Interrupt mit Status 10H entscheidet
+		das am Datenport anliegende Zeichen
+		ueber die Art des Requests
+		'L' (LOAD: Empfangen UDOS-Datei)
+		'S' (SEND: Senden UDOS-Datei)
+		'P' (PROM: EPROM-Programmierung)
+		'R' (READ: Lesen Block-Floppy)
+		'W' (WRITE: Schreiben Block-Floppy)
+		'F' (FORMAT: Formatieren Block-Floppy (physisch))
+		'V' (VERIFY: Ueberpruefen Disk)
+		'C' (COPYDISK: Kopieren von Disketten)
+		weitere Requests sind z.Z. nicht implementiert
+		die nachfolgenden Datenbytes mit Status 10H
+		werden bis zum Abschluss der Requestaktivitaet
+		in den 16-Bit-Empfangsringpuffer (RECBUF)
+		uebernommen
+
+(c) U8000-Monitorende:
+
+	16H	Quit-Status
+		Erlaeuterung:
+		Uebergang vom 16-Bit-Monitor in 8-Bit-Monitor
+		oder UDOS (entsprechend Start)
+		das am Datenport anliegende Zeichen entscheidet
+		ob mit oder ohne Reset-U8000
+		'R' Reset-U8000
+		'Q' ohne Reset-U8000
+
+Hardware E/A-Aktivitaeten werden in der ISR-Koppelpio sofort
+ausgefuehrt. Bei Requestanforderungen wird in der ISR-Koppelpio
+entsprechend des Requests ein Bit gesetzt.
+
+1.Status-Byte: Bit
+		0	Monitor-QUIT (ohne Reset U8000)
+		1	LOAD (Empfangen UDOS-Datei)	
+		2	SEND (Senden UDOS-Datei)
+		3	PROM (EPROM-Programmierung)
+		7	Monitor-QUIT (mit Reset U8000)
+
+2.Status-Byte: Bit
+		0	READ (Block-Floppy)
+		1	WRITE (Block-Floppy)
+		2	FORMAT (Block-Floppy)
+		3	VERIFY (Block-Floppy)
+		4	COPYDISK (Block-Floppy)
+
+Innerhalb der Grundwarteschleife der Koppelsoftware (Marke WAIT)
+wird neben dem Test auf eingelaufene Interrupts (CALL UEB16) auch
+staendig in den zwei Status-Bytes nachgesehen, ob zu einem 
+Requestprogrammteil verzweigt werden muss.
+
+
+ 
+2. Module der Koppelsoftware
+============================
+
+2.1. Startprogramm WEGA
+-----------------------
+
+Die Koppelsoftware besteht aus sechs Modulen:
+
+	K.NEU.S	      Grundprogramm zur Koppelschnittstelle
+		      (Initialisierung, Eigentest, Interruptsystem,
+		      Grundwarteschleife)
+	K.BLK.S	      Programme zur Arbeit mit Floppy-Disk
+		      (Read, Write und Format Block-Floppy-Formate)
+	K.ACT.S	      Programme zum Ein-/Auslagern von UDOS-Dateien
+		      (Load/Send entsprechend Remote-Telegramm)
+	K.PROM.S      PLZ/SYS-Programmodul zur EPROM-Programmierung
+		      (Basismodul mit Anpassung an Koppelschnittstelle)
+	K.P8000.S     Assemblerprogramm zur EPROM-Programmierung
+		      (P8000-Programmer, und Schnittstelle /dev/ud)
+	K.BUF.S       Puffervereinbarung	
+
+Nach dem Compilieren von K.PROM.S (mit PLZ/SYS Vers. 3.0) und dem 
+Assemblieren der restlichen Module wird durch folgende Linkanweisung
+
+  PLINK $=4000 K.NEU K.BLK K.ACT K.PROM K.P8000 PLZ.MATH K.BUF (N=WEGA)
+
+das Startprogramm WEGA erzeugt. Der Aufruf dieses Programms unter
+UDOS bewirkt die Initialisierung und Aktivierung der Koppelschnitt-
+stelle fuer WEGA und den Uebergang in den 16-Bit-Monitor.
+
+
+2.2. Koppelsoftwareteile fuer U880-Monitor
+------------------------------------------
+ 
+Die in den U880-Softwaremonitor zu integrierenden Teile der Koppelsoftware
+fuer die Ausfuehrung des Kommandos 'X' sind im Modul K.MON.S zusammengefasst.
+Da bei dieser Arbeitsweise keine Floppy-Disk-Arbeit moeglich ist,
+wird in diesem Fall im Anschluss an den Eigentest das Datenmuster 01H mit
+Status 00H an den 16-Bit-Softwaremonitor uebergeben (beim Programm WEGA
+wird das Datenmuster 02H uebergeben). Dadurch wird erreicht, dass sowohl
+der U8000-Monitor als auch der WEGA-Kern beim Start ueber das Kommando 'X'
+die Floppyarbeit sperrt und damit sich das System nicht verklemmen kann.
+
+
+2.3. Beschreibung der Prozeduren
+--------------------------------
+
+Modul K.NEU.S:
+
+bis Zeile 218	Koppelschnittstelle Grundprogramm
+		(Initialisierung, Hardwaretest - in Zusammenarbeit
+		mit 16-Bit-Monitor, Fehlerausgaben, Grundwarteschleife
+		Programmteile zum QUIT-Status)
+
+UEB16		Tests ob Interrupts eingelaufen sind, wenn ja Uebergabe
+		der entsprechenden Daten an 16-Bit-Teil
+
+LODNET		Eingabe 1 Zeichen aus 16-Bit-Empfangsringpuffer
+
+SNDNET		Ausgabe 1 Zeichen an 16-Bit-Teil mit Status 10H
+		ueber Interrupt
+
+SNDACK		Ausgabe ACK (06H) an 16-Bit-Teil mit Status 10H
+		ueber Interrupt
+
+SNDDAT		Ausgabe 1 Zeichen an 16-Bit-Teil mit Status 10H
+		ueber Polling
+
+LODDAT		Eingabe 1 Zeichen vom 16-Bit-Teil ueber Polling
+
+OUTP16		Ausgabe 1 Zeichen an 16-Bit-Teil ohne Interrupt
+		mit Zeitueberwachung
+
+WAITACK		Warten auf 1 Zeichen vom 16-Bit-Teil und Test ob
+		ACK (06H) mit Zeitueberwachung
+
+ISRPIO		Interrupt-Service-Routine Koppelpio:
+		Auswertung des Status und Realisierung der
+		entsprechenden Aktivitaet. E/A-Aktionen werden direkt
+		ausgefuehrt. Requestanforderungen bewirken das Setzen
+		des entsprechenden Statusbits. Daten mit Status 10H
+		(UD-Daten) werden im Ringpuffer abgelegt. Bei Block-
+		Floppy-Read bzw. -Write erfolgt auch die Uebernahme
+		der notwendigen Kopfinformationen ueber Polling
+		(Marken RBLOCK und WBLOCK (bei Write auch Uebernahme
+		des zu schreibenden Blocks))
+
+SxxR		Eintrittspunkte fuer SIO-Kanaele Receive-Interrupts
+SxxT		... Transmit-Interrupts
+SxxE		... External-Status-Interrupts
+SxxS		... Special-Receive-Cond.-Interrupts
+
+
+Modul K.BLK.S:
+
+DISK		zeitgeteilter Floppy-Zugriff
+
+RBLOCK		Uebernahme Kopfinformationen (von ISR-Koppelpio aus)
+
+BLKRD		Eintrittspunkt fuer Block-Read
+
+WBLOCK		Uebernahme Kopfinformationen und Blockdaten
+		(von ISR-Koppelpio aus)
+
+BLKWT		Eintrittspunkt fuer Block-Write
+
+KOPF		Uebernahme Kopfinformationen (durch Polling)
+
+BLOCK		Umwandlung Blocknummer in Spur- und Sektornummer 
+		(entsprechend angefordetem Diskettenformat) und
+		eintragen in Requestvektor fuer Floppyzugriff
+
+BLKFO		Eintrittspunkt fuer Format, Verify und Copydisk
+
+
+Modul K.ACT.S:
+
+Die Programmteile dieses Moduls stellen eine Anpassung des Remote-
+Softwarepakets an die Koppelschnittstelle des P8000 dar.
+Das Ein-/Auslagern von UDOS-Dateien unter WEGA (Programme getud und
+putud) erfolgt entsprechend dem Remote-Telegramm.
+Der Floppyzugriff wurde auf zeitgeteilten Verkehr umgestellt.
+
+
+Modul K.PROM.S:
+
+Dieser PLZ/SYS-Programmodul enthaelt die zur EPROM-Programmierung
+notwendigen Teile (Basismodul mit Anpassung an Koppelschnittstelle).
+
+
+Modul K.P8000.S:  
+
+Dieses Assemblerprogramm umfasst die speziellen Teile zur 
+EPROM-Programmierung mit der Anpassung an den P8000-Programmer 
+und die Schnittstelle /dev/ud.
+
+Modul K.BUF.S:
+
+Dieser Modul enthaelt nur die Vereinbarung des globalen Puffers
+mit dem Namen BUF.
+
+3. Listings der Module
+======================
+
+Im Anschluss an diese Beschreibung folgen die kommentierten
+Programmlistings aller sechs Module der Koppelsoftware
+(K.NEU, K.BLK, K.ACT, K.P8000, K.PROM und K.BUF).
