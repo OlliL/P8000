@@ -1,0 +1,227 @@
+if test "$1" = "" ; then
+	echo Kein Datenbankname spezifiziert
+	exit
+fi
+echo Die Datenbank  $1 wird erstellt -- bitte warten Sie !
+if creatdb -c $2 $1 ; then echo Erzeugen der Relationen laeuft ; else exit; fi
+iql -s $1 << 'EOF'
+
+	  :: abt
+\print
+\reset
+	create abt
+	(
+		num		is	i2,
+		name		is	c20,
+		lager		is	i2,
+		etage		is	i2,
+		leiter		is	i2
+	)
+	copy abt
+	(
+		num		is	c0,
+		name		is	c0,
+		lager		is	c0,
+		etage		is	c0,
+		leiter		is	c0nl
+	)
+	from "{pathname}/demo/ql/abt"
+	range of abt is abt
+	define permit all on abt to all
+\go
+	  :: artikel
+\print
+\reset
+	create artikel
+	(
+		num		is	i2,
+		name		is	c20,
+		abt		is	i2,
+		preis		is	i2,
+		menge		is	i2,
+		lieferant	is	i2
+	)
+	copy artikel
+	(
+		num		is	c0,
+		name		is	c0,
+		abt		is	c0,
+		preis		is	c0,
+		menge		is	c0,
+		lieferant	is	c0nl
+	)
+	from "{pathname}/demo/ql/artikel"
+	range of artikel is artikel
+	define permit all on artikel to all
+\go
+	  :: erfind
+\print
+\reset
+	create erfind
+	(
+		erfindung	is	c36,
+		erfinder	is	c20,
+		jahr		is	c9,
+		land		is	c12
+	)
+	copy erfind
+	(
+		x0		is	"d0'",
+		erfindung	is	"c0'",
+		x1		is	d2,
+		erfinder	is	"c0'",
+		x2		is	"d0'",
+		jahr		is	"c0'",
+		x3		is	d2,
+		land		is	"c0'",
+		x4		is	"d0;",
+		x5		is	d0nl
+	)
+	from "{pathname}/demo/ql/erfindungen"
+	range of erfind is erfind
+	define permit all on erfind to all
+\go
+	  :: lager
+\print
+\reset
+	create lager
+	(
+		num		is	i2,
+		ort		is	c15,
+		plz		is	i2,
+		strasse		is	c15
+	)
+	copy lager
+	(
+		num		is	c0,
+		ort		is	c0,
+		plz		is	c0,
+		strasse		is	c0nl
+	)
+	from "{pathname}/demo/ql/lager"
+	range of lager is lager
+	define permit all on lager to all
+\go
+	  :: lieferant
+\print
+\reset
+	create lieferant
+	(
+		num		is	i2,
+		name		is	c15,
+		ort		is	c15,
+		plz		is	i2,
+		strasse		is	c15
+	)
+	copy lieferant
+	(
+		num		is	c0,
+		name		is	c0,
+		ort		is	c0,
+		plz		is	c0,
+		strasse		is	c0nl
+	)
+	from "{pathname}/demo/ql/lieferant"
+	range of lieferant is lieferant
+	define permit all on lieferant to all
+\go
+	  :: lieferung
+\print
+\reset
+	create lieferung
+	(
+		lnum		is	i2,
+		tnum		is	i2,
+		bnum		is	i2,
+		liefdat		is	c8,
+		menge		is	i2
+	)
+	copy lieferung
+	(
+		lnum		is	c0,
+		tnum		is	c0,
+		bnum		is	c0,
+		liefdat		is	c0,
+		menge		is	c0nl
+	)
+	from "{pathname}/demo/ql/lieferung"
+	range of lieferung is lieferung
+	define permit all on lieferung to all
+\go
+	  :: personal
+\print
+\reset
+	create personal
+	(
+		num		is	i2,
+		name		is	c20,
+		gehalt		is	i2,
+		leiter		is	i2,
+		gebdat		is	i2,
+		einstdat	is	i2
+	)
+	copy personal
+	(
+		num		is	c0,
+		name		is	c0,
+		gehalt		is	c0,
+		leiter		is	c0,
+		gebdat		is	c0,
+		einstdat	is	c0nl
+	)
+	from "{pathname}/demo/ql/personal"
+	range of personal is personal
+	define permit all on personal to all
+\go
+	  :: teile
+\print
+\reset
+	create teile
+	(
+		tnum		is	i2,
+		tname		is	c20,
+		farbe		is	c8,
+		gewicht		is	i2,
+		menge		is	i2
+	)
+	copy teile
+	(
+		tnum		is	c0,
+		tname		is	c0,
+		farbe		is	c0,
+		gewicht		is	c0,
+		menge		is	c0nl
+	)
+	from "{pathname}/demo/ql/teile"
+	range of teile is teile
+	define permit all on teile to all
+\go
+	  :: verkauf
+\print
+\reset
+	create verkauf
+	(
+		num		is	c6,
+		datum		is	c8,
+		lager		is	i2,
+		abt		is	i2,
+		artikel		is	i2,
+		menge		is	i2,
+		person		is	i2
+	)
+	copy verkauf
+	(
+		num		is	c0,
+		datum		is	c0,
+		lager		is	c0,
+		abt		is	c0,
+		artikel		is	c0,
+		menge		is	c0,
+		person		is	c0nl
+	)
+	from "{pathname}/demo/ql/verkauf"
+	range of verkauf is verkauf
+	define permit all on verkauf to all
+\go
+EOF
+echo Datenbank $1 erstellt
