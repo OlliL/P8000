@@ -1,0 +1,210 @@
+.nr PO 0i
+.nr FL 0i
+.nr LL 6.0i
+.nr LT 6.0i
+.nr HM 1i
+.nr FM 1i
+.ds LH " 
+.ds CH "\- \\n(PN \-
+.ds RH " 
+.ds CF " 
+.LP
+.nh
+EAW-electronic               - 1 -                     P8000
+
+
+
+
+
+
+.DS C
+.B
+WEGA-DOS - Handbuch
+
+Abarbeiten von DCP unter WEGA
+.R
+.DE
+
+
+
+
+
+
+
+
+
+
+
+Diese Dokumentation wurde von einem Kollektiv des Kombinates
+
+VEB ELEKTRO-APPARATE-WERKE
+.br
+BERLIN-TREPTOW "FRIEDRICH EBERT"
+
+erarbeitet.
+
+Nachdruck und jegliche Vervielfaeltigung, auch auszugsweise,
+sind nur mit Genehmigung des Herausgebers zulaessig.
+.br
+Im Interesse einer staendigen Weiterentwicklung werden die
+Nutzer gebeten, dem Herausgeber Hinweise zur Verbesserung
+mitzuteilen.
+.DS L
+Herausgeber:
+		Kombinat
+		VEB ELEKTRO-APPARATE-WERKE
+		BERLIN-TREPTOW "FRIEDRICH EBERT"
+		Hoffmannstrasse 15-26
+		Berlin
+		1193
+.DE
+
+
+Verantwortlicher Bearbeiter: P. Hoge
+
+WAE/03-0210-01
+
+Ausgabe: 11/89
+
+Aenderungen im Sinne des technischen Fortschritts vorbehalten.
+.bp
+
+Die vorliegende Dokumentation unterliegt nicht dem Aenderungsdienst.
+
+Spezielle Hinweise zum aktuellen Stand der Softwarepakete
+befinden sich in README-Dateien auf den entsprechenden
+Vertriebsdisketten.
+
+
+.ds LH "WEGA-DOS
+.ds RH "Inhalt
+.bp
+.DS L
+.B Inhaltsverzeichnis
+
+
+1.	Einleitung ......................................  5
+
+2.	Installation ....................................  5
+2.1.	Installation von den Vertriebsdisketten .........  5
+2.2.	Geraetedateien zur Anbindung der U80601-Karten ..  6
+2.3.	Installation des Terminals ......................  6
+2.4.	Installation der Druckersteuerung ...............  7
+2.5.	Installation von Harddisklaufwerken .............  8
+2.6.	Einrichten der Nutzer ...........................  9
+
+3.	WDOS ............................................ 11
+3.1.	Benutzung von Disketten ......................... 11
+3.1.1.	Pseudolaufwerke ................................. 11
+3.1.2.	Pseudodisketten ................................. 11
+3.1.3.	Reale Diskettenlaufwerke ........................ 12
+3.1.4.	Pseudoharddisks ................................. 12
+3.1.5.	Reale Harddisklaufwerke ......................... 13
+3.1.6.	Globale Disketten ............................... 13
+3.1.7.	Lokale Disketten ................................ 13
+
+3.2.	WDOS-Menue ...................................... 13
+3.2.1.	Start von DCP ................................... 14
+3.2.2.	Einbinden der Disketten ......................... 14
+3.2.3.	Erzeugen und Loeschen von Pseudodisketten ....... 15
+3.2.4.	Formatieren von realen Disketten ................ 15
+3.2.5.	Anzeigen von Directorys ......................... 15
+3.2.6.	Anzeigen von Dateien ............................ 16
+3.2.7.	Loeschen von Dateien ............................ 16
+3.2.8.	Erstellen und Loeschen von Subdirectorys ........ 16
+3.2.9.	Kopieren von Dateien ............................ 16
+3.2.10.	Nutzung des WEGA-Editors ........................ 17
+3.2.11.	Ausfuehren von WEGA-Programmen .................. 17
+
+3.3.	WDOS-Koppelprogramm ............................. 17
+
+4.	Ueberblick zum Betriebssystem DCP ............... 19
+4.1.	Kodes ........................................... 19
+4.2.	Dateisysteme .................................... 20
+4.3.	Systemanlauf .................................... 21
+4.4.	Schnittstelle zum ROM-BIOS ...................... 22
+4.5.	Schnittstelle zu DOS.COM ........................ 22
+4.6.	Kommandoprozessor ............................... 22
+4.7.	Umleiten der Ein-/Ausgabe ....................... 24
+4.8.	Datenuebergabe .................................. 25
+
+5.	Besonderheiten von DCP in der WDOS-Umgebung ..... 26
+5.1.	Hardware-Voraussetzungen ........................ 26
+5.2.	Lauffaehigkeit von Anwenderprogrammen ........... 26
+5.3.	Verfuegbarer RAM ................................ 26
+5.4.	Tastatureingaben ................................ 27
+5.5.	Bildschirmausgaben .............................. 27
+5.6.	Diskzugriffe .................................... 28
+5.7.	Systemuhr ....................................... 29
+5.8.	Systemdiskette .................................. 29
+5.9.	DCP-Kommandos ................................... 30
+5.10.	BIOS-Funktionsaufrufe ........................... 32
+
+6.	RAM-Disk fuer WEGA .............................. 35
+
+7.	Literatur ....................................... 35
+
+.DE
+.so wdoskap1
+.so wdoskap2
+.so wdoskap3
+.ds LH " 
+.ds CH " 
+.ds RH " 
+.bp
+------------------------------------------------
+.br
+Hinweise des Lesers zu diesem Dokumentationsband
+.br
+------------------------------------------------
+
+Wir sind staendig bemueht, unsere Unterlagen auf einem
+qualitativ hochwertigen Stand zu halten. Sollten sie
+Hinweise zur Verbesserung dieser Dokumentation haben, so bitten
+wir Sie, diesen Fragebogen auszufuellen und an uns zurueckzusenden.
+
+Titel des Dokumentationsbandes: WEGA-Systemhandbuch
+
+Ihr Name / Tel.-Nr.:
+
+Name und Anschrift des Betriebes:
+
+
+
+Genuegt diese Dokumentation Ihren Anspruechen?  ja / nein
+.br
+Falls nein, warum nicht?
+
+
+
+
+Was wuerde diese Dokumentation verbessern?
+
+
+
+
+Sonstige Hinweise:
+
+
+
+
+Fehler innerhalb dieser Dokumentation:
+
+
+
+
+
+
+
+
+Unsere Anschrift:  Kombinat VEB ELEKTRO-APPARATE-WERKE
+.br
+                   BERLIN-TREPTOW "FRIEDRICH EBERT"
+.br
+                   Abteilung Basissoftware
+.br
+                   Hoffmannstrasse 15-26
+.br
+                   BERLIN
+.br
+                   1193
