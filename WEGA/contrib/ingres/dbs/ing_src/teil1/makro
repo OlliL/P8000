@@ -1,0 +1,729 @@
+.ds RH \f3Makros\f1
+.ds RF \f3QUEL\f1
+.ds LH Referenz_Manual
+.ds LF \*(vv
+.ds CH - % -
+.bp
+.RE
+.NH 3
+.ft B
+Kurzbeschreibung des Makro\-Prozessors **
+.ft R
+.LP
+.sp 2
+.NH 4
+.ft B
+Inhalt und Leistung *
+.ft R
+.LP
+Der Makro\-Prozessor als Bestandteil des interaktiven
+Terminal\-Monitors erlaubt es,
+die QUEL nach Anwenderw\o'u"'nschen zuzuschneiden.
+Ein gegebener Text kann durch ihn
+in QUEL-Statements eingef\o'u"'gt
+oder \o'u"'bersetzt werden, bevor er zur
+\*(yy\-Verarbeitung gelangt.
+.NH 4
+.ft B
+Arbeitsweise des Makro\-Prozessors **
+.ft R
+.LP
+Der Makro\-Prozessor transformiert einen Input\-Text
+in einen Output\-Text und f\o'u"'hrt dabei ggf.
+Funktions\-Makros aus.
+Bei den Monitor-Kommandos \ego, \elist und \eeval
+ist der Monitor\-Puffer der Input\-Text,
+der Output\-Text wird dem \*(yy\-Parser
+zur Ausf\o'u"'hrung der QUEL\-Statements
+\o'u"'bergeben(\ego),
+auf dem Terminal ausgegeben (\elist)
+oder nicht weiter be\%handelt
+(\eeval, das Kommando dient ausschliesslich der
+Abarbeitung von Funktions\-Makros).
+Bei jedem Monitor-Kommando mit Parameter,
+wird dieser erst durch den Makro\-Prozessor transformiert,
+ehe er im Monitor-Kommando als Parameter benutzt wird;
+das Label eines \emark\-Kommandos wird vom Makro\-Prozessor
+nicht bearbeitet.
+.LP
+Der Output\-Text, den der Makro\-Prozessor erzeugt,
+enth\o'a"'lt die Textbestandteile
+des Input\-Textes, auf die sich kein Makro anwenden liess
+und solche substituierten Texte,
+auf die kein Makro mehr anwendbar ist.
+.NH 4
+.ft B
+Bestandteile eines Makro **
+.ft R
+.LP
+Der Makro\-Prozessor arbeitet Makros ab,
+wenn im Input\-Text entsprechende
+Textabschnitte enthalten sind.
+Makros sind in einer Makro\-Tabelle abgelegt,
+die global f\o'u"'r die \*(yy\-Sitzung
+des Nutzers definiert ist.
+Die Makro\-Tabelle ist mit den Funktions\-Makros initialisiert.
+W\o'a"'hrend einer \*(yy\-Sitzung
+k\o'o"'nnen weitere Makros, die Substitutions\-Makros,
+durch Definition (define\-Funktions\-Makro) eingebracht,
+gestrichen (remove\-Funktions\-Makro) und angelistet
+(dump-Funktions-Makro) werden.
+.LP
+Jeder Makro hat ein
+.ft B
+template
+.ft R
+und einen
+.ft B
+Wert.
+.ft R
+Das template ist eine Vorschrift,
+die entscheidet, ob der Makro
+auf einen Abschnitt des Input\-Textes zutrifft.
+Das template enth\o'a"'lt
+Schl\o'u"'sselw\o'o"'rter, die im Input\-Text vorhanden
+sein m\o'u"'ssen, um den Makro anwenden zu k\o'o"'nnen
+und Parameterdefinitionen,
+die W\o'o"'rterfolgen hinter oder zwischen
+den Schl\o'u"'sselw\o'o"'rtern beschreiben.
+Das template enth\o'a"'lt weiter
+Begrenzersymbole zwischen den Schl\o'u"'sselw\o'o"'rtern
+und Parameterdefinitionen.
+Das template bestimmt den Abschnitt
+des Input\-Textes, den der Makro diesem entnimmt.
+.LP
+Der Wert eines Makros ist der Text,
+den der Makro\-Prozessor in den Output\-Text
+anstelle des entnommenen Textes einsetzt.
+Er wird bei Funktions\-Makros aus der durch sie
+ausgef\o'u"'hrten Funktion bestimmt
+und ist bei den meisten Funktions\-Makros eine leere Zeichenfolge.
+Bei Substitutions\-Makros wird der Wert aus festen W\o'o"'rtern
+und den entnommenen Parameterwerten
+gebildet. Die Vorschrift
+daf\o'u"'r ist das
+.ft B
+replacement
+.ft R
+eines Substitutions\-Makros,
+das W\o'o"'rter, Parameterreferenzen
+und Begrenzer enth\o'a"'lt.
+.NH 4
+.ft B
+Textskandierung **
+.ft R
+.LP
+Der Makro\-Prozessor ist ein Wort-Prozessor,
+d.h. er arbeitet auf ganzen W\o'o"'rtern
+des Input\-Textes und nicht auf beliebigen seiner Abschnitte.
+Ein
+.ft B
+Wort
+.ft R
+ist ein
+.ft B
+Bezeichner,
+.ft R
+eine
+.ft B
+Zahl
+.ft R
+oder ein
+.ft B
+Operator.
+.ft R
+Ein
+.ft B
+Bezeichner
+.ft R
+beginnt mit einem Buchstaben, dem Buchstaben
+oder Ziffern folgen, "_" gilt als Buchstabe;
+der Makro\-Prozessor unterscheidet Klein\-
+und Grossbuchstaben.
+Eine
+.ft B
+Zahl
+.ft R
+ist eine Ziffernfolge, ggf. mit einem Dezimalpunkt ".".
+Ein
+.ft B
+Operator
+.ft R
+ist jedes andere einzelne Zeichen, das ausserdem
+nicht Standardbegrenzer ist;
+die kombinierten Operatoren <=, >=, !=, **,
+/*, */ sind ein Wort.
+.LP
+Der Makro\-Prozessor
+kennt die
+.ft B
+Standardbegrenzer
+.ft R
+<blank>, <tab> und <nl>, die keine Operatoren sind.
+Als
+.ft B
+<word_change>
+.ft R
+wird die Position im Text bezeichnet,
+an der das vorangehende Wort endet.
+.LP
+Im template von Makros werden folgende
+.ft B
+Begrenzersymbole
+.ft R
+eingesetzt:
+.sp 1
+.IP \e^
+genau ein <blank> oder <tab> oder <nl>
+.br
+zu Beginn des template: Makro wird nur zu Zeilenanfang
+des Textes angewandt !
+.IP \e\z\(rh
+genau ein <word_change>
+.IP \e|
+<word_change> oder beliebig viele
+der o.g. Standardbegrenzer
+.IP \e<blank>
+<blank>	genau <blank>
+.IP \e<tab>
+genau <tab>
+.IP \e<nl>
+genau <nl>
+.LP
+Diese Begrenzersymbole werden in den Funktions\-Makros verwendet
+(s. folgende \o'U"'bersicht).
+.NH 4
+.ft B
+Parameter in Makros **
+.ft R
+.LP
+Eine
+.ft B
+Parameterdefinition
+.ft R
+in einem template wird durch drei Zeichen gegeben:
+.br
+	$ <p_name> <p_delim>
+.br
+$ kennzeichnet, dass eine Parameterdefinition folgt.
+<p_name> ist ein makro-lokaler Bezeichner
+(ein graphisches Zeichen), der im replacement
+referenziert werden kann.
+<p_delim> ist das Zeichen, mit dem der Parameter
+zu begrenzen ist.
+Der Begrenzer darf als
+.br
+	<backslash><token>
+.br
+geschrieben werden, wenn ein <token> Begrenzer
+werden soll, der eine Spezialbedeutung hat
+(z.B. <nl>).
+Im Input\-Text darf innerhalb eines Parameterwertes
+das ihn sonst begrenzende Zeichen
+durch ein vorangestelltes <backslash>
+kaschiert werden, der Parameterwert
+wird bis zum ersten freistehenden Begrenzer gewertet.
+.LP
+Durch eine Parameterdefinition
+.br
+	$$ <p_name> <p_delim>
+.br
+wird der Parameter als zur Vorverarbeitung geeignet
+(pre\%scaneable) gekennzeichnet, s. unten prescan.
+.NH 4
+.ft B
+Spezielle Makros **
+.ft R
+.LP
+Der Monitor bringt die Substitutions-Makros
+.IP
+.ft B
+{pathname}
+.ft R
+.br
+Pfadname des \*(yy\_file-Systems
+.IP
+.ft B
+{usercode}
+.ft R
+.br
+2-Byte-\*(yy\-Usercode des arbeitenden
+Nutzers
+.IP
+.ft B
+{database}
+.ft R
+.br
+Name der bearbeiteten Datenbank
+.IP 
+.ft B
+{readcount}
+.ft R
+.br
+Anzahl der durch den letzten
+read- oder readdefine-Makro
+gelesenen Zeichen
+(0, falls nur <nl>, -1, falls EOF eingegeben wurde)
+.IP 
+.ft B
+{tuplecount}
+.ft R
+.br
+Anzahl der vom letzten retrieve-,
+append-, replace- oder delete-Statement
+erfolgreich behandelten Tupel,
+sonst -1
+.RE
+ein.
+.LP
+Eine besondere Bedeutung haben folgende
+Substitutions-Makros
+f\o'u"'r die Ausf\o'u"'hrung von Monitor-Kommandos:
+.IP
+.ft B
+{editor} 
+.ft R
+.br
+Name eines speziellen Editors f\o'u"'r
+das \eedit-Kommando
+.IP
+.ft B
+{shell} 
+.ft R
+.br
+Name eines speziellen Programms, das durch
+ein \eshell-Kommando gerufen werden soll
+.IP
+.ft B
+{default}
+.ft R
+.br
+Sprungmarke f\o'u"'r ein \ebranch-Kommando,
+dessen Zielmarke nicht gefunden wird
+.IP
+.ft B
+{begintrap}
+.ft R
+.IP
+.ft B
+{endtrap}
+.ft R
+.br
+werden bei einem \ego-Kommando gerufen,
+ihr substituierter Text wird vor und hinter den Text
+des Monitor-Puffers gestellt, wenn dieser zur
+Verarbeitung weitergegeben wird
+.IP
+.ft B
+{querytrap}
+.ft R
+.br
+definiert den Namen eines Protokollfiles; ist
+querytrap definiert, werden auf dem File alle 
+Nutzeraktionen protokolliert; wird das Makro
+gel\o'o"'scht, wird das Protokollfile geschlossen.
+.IP
+.ft B
+{continuetrap}
+.ft R
+.br
+wird vor Beginn des weiteren Dialogs
+nach Ausf\o'u"'hrung eines \ego-Kommandos gerufen
+.IP
+.ft B
+{exectrap}
+.ft R
+.br
+wird nach Ausf\o'u"'hrung eines \eedit
+oder \eshell-Kommandos gerufen, wenn das bearbeitete
+Programm einen R\o'u"'ckkehrcode\ !=\ 0 lieferte
+.LP
+Die letztgenannten Makros
+m\o'u"'ssen vor ihrer Verwendung
+im Startvorgang des Monitor
+im startupfile oder im initfile
+oder direkt w\o'a"'hrend der Sitzung
+vom Nutzer
+definiert werden.
+.NH 4
+.ft B
+Funktions-Makros **
+.ft R
+.LP
+.DS L
+template                       Wert    Funktion
+------------------------------------------------------------
+{rawdefine;\e|$$T;\e|$$R}        ""      ) SM t:T, r:R
+{define;\e|$$T;\e|$$R}           ""      ) SM t:T, r:R
+{remove}                       ""      ) streicht alle SM
+{remove;\e|$$T}                 ""      ) dto falls t=T
+{dump}                         ""      ) gibt alle SM aus
+{dump;\e|$$N}                   ""      ) dto falls name=N
+------------------------------------------------------------
+{type;\e|$$M}                   ""      ) gibt M aus
+{read;\e|$$M}               Eingabetext   gibt M aus
+                                          SM t:{readcount}
+                                             r:Textl\o'a"'nge
+{readdefine;\e|$$N;\e|$$M}   {readcount}   gibt M aus
+                                          SM t:{readcount}
+                                             r:Textl\o'a"'nge
+                                          SM t:N
+                                             r:Eingabetext
+------------------------------------------------------------
+{expr;\e|$$e}               Wert von e  Berechnung von e
+{exprdefine;\e|$$n;\e|$$e}     ""       ) SM t:n
+                                           r:Wert von e
+------------------------------------------------------------
+{same;\e|$$a;\e|$$b}                     Vergleich von a, b
+                         +1, 0, -1    Wert bei =, >, <
+{if;\e|$$e;\e|$t;\e|$f}      t oder f     Berechnung von e
+                                      t wenn >0 sonst f
+------------------------------------------------------------
+{substr;\e|$$f;\e|$$t;$$s}     substr    substring von s
+                                      zwischen f bis t
+------------------------------------------------------------
+{dnl}                          ""      bis <nl> verwerfen
+------------------------------------------------------------
+
+) ggf. hinter dem template weiter auf der gleichen Zeile
+   stehender Input-Text wird verworfen.
+SM  definiert einen Substitutions-Makro mit
+   t:template und r:replacement
+$$P Parameter ist prescaneable
+.DE
+.LP
+Die type\-, read\- und readdefine\-Makros
+arbeiten auf standard_input und _output,
+auch wenn man sie in einer \einclude\-Programmebene
+benutzt.
+Der Name eines Makros ist die Folge
+der in seinem template vor der ersten Parameterdefinition
+stehenden Schl\o'u"'sselw\o'o"'rter.
+Die remove- und dump-Makros
+betreffen alle die Substitutions\-Makros,
+deren Name mit der im Makro\-Parameter
+angegebenen W\o'o"'rterfolge beginnt.
+Die Funktions\-Makros bleiben von den remove\- und dump\-Makros
+unber\o'u"'hrt.
+Man setzt den remove-Makro ein,
+um die Arbeit des Makro\-Prozessors zu beschleunigen.
+Die Definition eines Substitutions\-Makros eines Namens,
+der in der Makro\-Tabelle schon existiert,
+\o'u"'berschreibt diesen.
+Die geschweiften Klammern { und } erlauben es,
+Funktions\-Makros zu schachteln, die Klammern kaschieren den
+aktuellen Parameterbegrenzer.
+.NH 4
+.ft B
+Berechnung arithmetischer Ausdr\o'u"'cke **
+.ft R
+.LP
+Die e-Parameter der if-, expr- und exprdefine-Makros
+und die f- und t-Parameter des substr-Makros
+d\o'u"'rfen arithmetische Ausdr\o'u"'cke sein.
+.LP
+Ein Ausdruck darf Operatoren und Operanden enthalten.
+Operatoren sind:
+.DS L
+	
+**         (Potenzieren)
+- !        (Vorzeichen, logische Negation)
+* / %      (Multiplikation, Division, Divisionsrest)
++ -        (als zweistellige Operationen)
+> >= < <=  (Vergleichsoperatoren)
+= !=       (Gleichheit, Ungleichheit)
+&          (logisches UND)
+|          (logisches inclusives ODER)
+.DE
+.LP
+Operationen auf gleicher Zeile
+sind von gleicher Bindungsst\o'a"'rke, sonst gilt
+absteigende Bindung entsprechend der Aufz\o'a"'hlung
+( )
+zur Festlegung der Bindung von Operationen.
+.LP
+Der Ausdruck
+darf als Operanden nur noch ganzzahlig nume\%rische Werte
+mit einem Wertebereich zwischen -32768 bis 32767
+enthalten, sonst erfolgt nach entsprechenden Meldungen
+ein Abbruch der weiteren Aus\%drucks\%berechnung.
+Die Ausdrucks\%auswertung wird durch die Zeichen
+<blank>, <tab>, <nl> oder <eof>
+beendet.
+.LP
+Die arithmetischen Operationen werden in \o'u"'blicher
+Ganzzahlarithmetik (/: ganzer Teil der Division,
+%: Divisionsrest; Division durch 0 ergibt nach Warnung den Wert 0)
+berechnet. Die logischen Operationen ( ! & | )
+deuten bei ihren Operanden <=0 als FALSE und >0 als TRUE.
+Die logischen Operationen und die Vergleichsoperationen
+liefern den arithmetischen Wert 0 f\o'u"'r FALSE und 1 f\o'u"'r TRUE.
+Die Ausdrucksberechnung erfolgt
+von links nach rechts,
+entsprechend den Bindungsregeln,
+geklammerte Teile werden ge- und entkellert.
+.LP
+Bei der Ausdrucksauswertung (nach Makro-Aufl\o'o"'sung)
+weisen Meldungen auf syntaktische Fehler im Ausdruck hin.
+.NH 4
+.ft B
+Parametervorverarbeitung (prescan) **
+.ft R
+.LP
+Der Makro\-Prozessor entnimmt nach der Vorschrift des template
+dem Input\-Text die Parameterwerte. In manchen F\o'a"'llen ist es
+n\o'o"'tig, dass vor deren Verarbeitung diese
+einer gesonderten Makro-Bearbeitung unterzogen,
+also vorverarbeitet werden,
+ehe sie als Parameterwert eingesetzt werden.
+Das wird als
+.ft B
+prescan
+.ft R
+bezeichnet.
+Im template des Makros muss die Parameterdefinition
+dazu mit "$$" gekennzeichnet und
+im Input\-Text der Parameterwert dazu durch "@"
+eingeleitet sein.
+.NH 4
+.ft B
+Definition von Substitutions\-Makros **
+.ft R
+.LP
+Einen Substitutions\-Makro definiert man mit einem define\-
+oder rawdefine\-Funktions\-Makro.
+Die Verwendung des define-Funktions\-Makros ist f\o'u"'r
+g\o'a"'ngige Anwendungen ausreichend.
+Man verwendet im template zwischen
+Schl\o'u"'sselw\o'o"'rtern und Parameterdefinitionen
+<blank> als Begrenzer, der Makro\-Prozessor setzt
+w\o'a"'hrend der \o'U"'bernahme von template und replacement
+in die Makro\-Tabelle an alle Stellen des template,
+wo Standardbegrenzer oder <word_change> sind,
+das Begrenzersymbol "\e|" ein und beendet
+das template mit "\e\z\(rh" oder "\e|".
+Dadurch wird erreicht, dass der Makro auch
+angewandt wird, wenn ein Nutzer seinen
+Text mit beliebigen Abst\o'a"'nden zwischen W\o'o"'rtern
+ausschm\o'u"'ckt.
+.LP
+Die Definition mittels rawdefine
+dient der genauen Festlegung von Begrenzern,
+der Makro\-Prozessor l\o'a"'sst die vom Definierenden
+eingebrachten Begrenzersymbole so stehen
+und ver\o'a"'ndert nur die,
+wo Standardbegrenzer oder <word_change>,
+wie bei define belassen wurden.
+.LP
+Bei der Definition eines Substitutions\-Makros
+gibt man als replacement die W\o'o"'rterfolge
+an, die in den Output\-Text eingesetzt werden soll,
+durchsetzt mit den gew\o'u"'nschten Begrenzern und
+auch Parameterwerten, die das template
+aus dem Input\-Text ermittelt hat.
+Eine Parameterreferenz im replacement
+schreibt man als
+.br
+	$ <p_name>
+.br
+Nat\o'u"'rlich muss <p_name> im template
+definiert sein, im replacement kann er mehrfach
+verwendet werden.
+Im replacement k\o'o"'nnen alle, den Makro\-Prozessor
+sonst steuernden Zeichen, verwendet werden.
+Das Zeichen "$" muss als "\e$" kaschiert werden,
+wenn es bei \o'U"'bernahme des template in die Makro-Tabelle
+nicht die Funktion der Einleitung einer Parameterreferenz
+aus\o'u"'ben soll.
+Enth\o'a"'lt das replacement W\o'o"'rterfolgen,
+auf die sich weitere Makros anwenden lassen,
+erfolgt das folgend auch.
+.NH 4
+.ft B
+Kaschieren (quoting oder concealing) **
+.ft R
+.LP
+Durch Anwendung der
+.ft B
+Kaschierungspaare
+.ft R
+\%`\ und\ '
+kann man dem Makro\-Prozessor signalisieren, dass der,
+durch sie quasi eingeklammerte Abschnitt des Input\-Textes,
+nicht der Makro-Bearbeitung unterzogen werden soll
+(quoting oder concealing).
+Die Kaschierungspaare d\o'u"'rfen geschachtelt werden.
+Sie d\o'u"'rfen auch im template verwendet werden.
+Im Output\-Text sind die \o'a"'usseren Kaschierungspaare
+nach
+.ft B
+einem
+.ft R
+Makro-Lauf weggelassen.
+.LP
+Die Kaschierungspaare kann man als Klammern
+f\o'u"'r solche Parameterwerte im Input\-Text verwenden,
+die aus mehreren W\o'o"'rtern bestehen,
+wenn sonst das template nur ein Wort als Parameterwert
+entnehmen w\o'u"'rde.
+.LP
+Mit <backslash> kann man das einzelne,
+ihm folgende Zeichen kaschieren,
+wenn es ausserhalb einer bereits kaschierten
+Zeichenfolge steht und ihm folgt:
+.IP
+- der aktuelle Parameterbegrenzer
+.br
+- eines der Zeichen
+.br
+<blank> <tab> \et <nl> \en
+.br
+` ' { } @ \e
+.LP
+<backslash> kaschiert also die Standardbegrenzer
+und die sonst den Makro\-Prozessor steuernden Zeichen.
+Der Makro\-Prozessor gibt f\o'u"'r "\et" oder "\en" <tab> oder <nl>
+in den Output\-Text, auch sonst gelangt das <backslash>
+genau dann nicht in den Output\-Text, wenn es nach obigen
+Regeln als Kaschierungssymbol gewertet wird.
+Ein Funktions\-Makro wird vom Makro\-Prozessor
+immer ganz auf einer Zeile erwartet;
+gelingt diese Formulierung aus Platzgr\o'u"'nden nicht,
+muss "\e<nl>" an entsprechenden Stellen verwendet werden.
+.sp 1
+.ft B
+NACHRICHTEN
+.ft R
+.LP
+infinite loop in makro
+.IP
+Ein Abschnitt des Input\-Text wurde 100 mal einer Makro-Substitution
+unterzogen. Das hat seine Ursache i.d.R. darin,
+dass Substitutions\-Zyklen definiert sind,
+z.B. {define;alpha;alpha}
+oder {define;alpha;beta} {define;beta;alpha}.
+Der Makro\-Prozessor geht weiter im Input\-Text.
+.LP
+every parameter needs a delimiter
+.IP
+Die Parameterdefinition hat keinen Begrenzer
+.LP
+null parameter name
+.IP
+Die Parameterdefinition hat keine Namensangabe
+.LP
+parameter <p_name> redeclared
+.IP
+Der gleiche <p_name> wird in einem template mehrfach als solcher
+verwendet
+.LP
+parameter <p_name> referenced but not defined
+.IP
+Der im replacement referenzierte <p_name>
+wurde im template nicht definiert
+.RE
+.sp 1
+.ft B
+BEISPIELE
+.ft R
+.DS I
+/* Erzeuge das QUEL-Schl\o'u"'sselwort "retrieve"
+aus dem k\o'u"'rzeren Wort "get" */
+
+     {define; get; retrieve} \eeval
+
+/* Erzeuge ein komplettes retrieve\-Statement
+f\o'u"'r einen Spezialfall aus einer 
+kurzen Angabe "get Parameterwert" */
+
+{define; get $1; retrieve(p.all)where name="$1"}\eeval
+.DE
+.LP
+.DS I
+/*	In einem Menue seien dem Nutzer die 
+Antworten a,b,? ge\%stattet,
+er wird durch Ausgabe der Meldung "a,b,?"
+zur Abgabe einer Antwort aufgefordert,
+in deren Folge entsprechende Marken
+angesprungen werden */
+ 
+     {define; {default}; ab}\eeval
+ 
+     \ebranch {read;a,b,}
+     \emark a
+       :
+       :
+     \emark b
+       :
+       :
+     \emark ab
+       :
+       :
+.DE
+.RE
+.LP
+Zur Sicherheit gegen eine Eingabe irgendwelcher
+Zeichen durch den Anwender, deren Deutung als Sprungmarke
+auf kein vorhandenes \emark f\o'u"'hren w\o'u"'rde,
+wird einleitend der {default}-Makro so definiert,
+dass auch alle derartigen Eingaben auf \emark ab
+gelenkt werden.
+.LP
+.DS I
+/*	Der Nutzer wird durch Ausgabe
+eines Textes "NAME:" aufgefordert,
+einen name einzugeben,
+gibt er nur <nl>, also 0 Zeichen ein,
+wird eine Marke Ende angesprungen */
+
+     {readdefine; name; NAME:}\eeval
+     \ebranch ?{readcount}=0 Ende
+     retrieve (p.all)where p.`name'="name"\ego
+
+.DE
+.LP
+Der eingegebene Text wird in das Statement
+zwischen die \%"\ " eingesetzt,
+das erfolgt nur dort, weil `name'
+von der Substitution ausgeschlossen wird.
+.LP
+.DS I
+/*	Es soll ein Sprung
+immer auf "normal" erfolgen,
+es sei denn, der im vorangegangenen Beispiel
+eingegebene Name ist "Neumann" */
+
+\ebranch {if same;@name;Neumann;Ausnahme;normal}
+.DE
+.LP
+Wenn vor name durch @ keine
+Vorverarbeitung angewiesen w\o'u"'rde,
+erfolgte der Sprung ebenfalls immer auf "normal",
+da "name" nicht gleich "Neumann" ist. Erst
+durch die Vorverarbeitung wird aber der
+substituierte Text, also der oben eingegebene,
+mit "Neumann" verglichen.
+.LP
+.DS I
+/*	Eine g\o'a"'ngige Anwendung des {continuetrap}
+ist, ihn dazu zu benutzen, die Anzahl der
+bearbeiteten Tupel anzuzeigen, wenn solche
+im {tuplecount} angezeigt werden, dieser
+also\ >=\ 0 ist. Dazu definiert man
+{continuetrap} beispielsweise als: */
+
+{define; {continuetrap}; \e<nl>
+{if; @{tuplecount}>=0; \e<nl>
+{type; @{tuplecount} Entities bearbeitet};}}\eeval
+.DE
+.LP
+Das "<nl>" im obigen Text soll nur anzeigen,
+dass dieses - auf dem Terminal sonst nicht sichtbare -
+Zeichen dort steht.
+.sp 1
+.ft B
+SIEHE AUCH
+.ft R
+.IP
+monitor(quel)
+.RE

@@ -1,0 +1,470 @@
+.ds CH - % -
+.ds LF Version_6/3.3
+.ds RH \f3Einleitung\f1
+.ds RF \f3REPORT\f1
+.ds LH Referenz-Manual
+.bp
+.LP
+.NH 2
+.ft B 
+\*(xx\ Report-Kommandos *
+.ft R
+.LP
+.NH 3
+.ft B
+\o'U"'bersicht *
+.ft R
+.LP
+Die Dokumentation wurde so aufgebaut, dass im
+Report-Manual nur die Komponenten des
+Report-Generators
+vorgestellt und einige grunds\o'a"'tzliche
+Ausf\o'u"'hrungen
+gegeben werden, die f\o'u"'r das Verst\o'a"'ndnis
+und die Anwendung von Bedeutung sind.
+Im Manual konnte aus Gr\o'u"'nden der \o'U"'bersichtlichkeit
+keine Darstellung der Generator-Sprache untergebracht
+werden. Es wird darauf hingewiesen, dass die
+Sprache sowohl in der Semantik, als auch in der
+Syntax nicht ganz der gewohnten Umgebung entspricht.
+Die Notwendigkeit zur Schaffung dieser L\o'o"'sung ergibt
+sich daraus, dass der \*(xx\-Tool "awk" f\o'u"'r kleine
+Hauptspeicher nur begrenzt einsetzbar ist und insgesamt
+sehr langsam arbeitet, ausserdem werden h\o'a"'ufig
+Anforderungen zur Gestaltung von Druckbildern gestellt,
+die "awk" nicht erf\o'u"'llen kann.
+Eine Verbindung zur Datenbank wird mit dem Report-Generator
+mittelbar realisiert.
+.LP
+Im Teil II der Anwenderdokumentation werden eine
+ausf\o'u"'hrliche Anleitung zur Programmierung
+der Generator-Sprache mit Beispielen gebracht
+und einige Anwendungsf\o'a"'lle beschrieben.
+Die Anwendung ist nicht grunds\o'a"'tzlich an das Datenbanksystem \*(yy\
+gebunden, allerdings wird bei der Anwendung auf \*(xx\-Files das
+Grundverst\o'a"'ndnis des Programmpaketes vorausgesetzt.
+.LP
+Das Report Manual
+ist in 4 Abschnitte eingeteilt:
+.IP rc
+ beschreibt die Nutzung des Compilers
+nach Erstellung des Quelltextes mit dem Editor.
+.IP rg
+ beschreibt die Anwendung des eigentlichen Generators (Interpreters)
+zur Realisierung der Ausgabeformatierung unter Nutzung
+des, mit "rc" erzeugten "R_code"-Files, des
+"desc"-Files und des Daten-Files.
+.IP rd
+ erzeugt ein description-File aus einer Relation
+bzw. das Skelett eines Reports.
+.IP rp_desc
+ druckt ein description-File in lesbarer Form.
+.LP
+.bp
+.SH
+.ft B
+               DOKUMENTATION ING_DB TEIL1
+.ft R
+.sp 5
+.ft B
+                     TEIL  REPOPRT *
+.ft R
+.sp 5
+.nf
+####################################################################
+####################################################################
+##                                                                ##
+##                                                                ##
+##                                                                ##
+##                                                                ##
+##                                                                ##
+##          ###   #     #  #####          ######  ######          ##
+##           #    ##    # #     #         #     # #     #         ##
+##           #    # #   # #               #     # #     #         ##
+##           #    #  #  # #  ####         #     # ######          ##
+##           #    #   # # #     #         #     # #     #         ##
+##           #    #    ## #     #         #     # #     #         ##
+##          ###   #     #  #####  ####### ######  ######          ##
+##                                                                ##
+##                                                                ##
+##                                                                ##
+##                                                                ##
+##         ######  ####### ######  ####### ######  #######        ##
+##         #     # #       #     # #     # #     #    #           ##
+##         #     # #       #     # #     # #     #    #           ##
+##         ######  #####   ######  #     # ######     #           ##
+##         #   #   #       #       #     # #   #      #           ##
+##         #    #  #       #       #     # #    #     #           ##
+##         #     # ####### #       ####### #     #    #           ##
+##                                                                ##
+##                                                                ##
+##                                                                ##
+##                                                                ##
+##                                                                ##
+####################################################################
+####################################################################
+.fi
+.bp
+.LP
+.ds RH \f3RC\f1
+.bp
+.RE
+.ft B
+NAME
+.ft R
+.IP
+rc - REPORT Compiler
+.RE
+.sp 1
+.ft B
+SYNOPSIS
+.ft R
+.IP
+.ft B
+rc
+.ft R
+{[flag] file}
+.sp 1
+.RE
+.IP
+Flags zur Steuerung der Bearbeitung:
+.RS
+.IP -c
+Nur \o'U"'bersetzen, keine Codeerzeugung
+.IP -i
+Eingabe von standard-input
+.IP -l
+automatische Umwandlung der Klein- in Grossbuchstaben
+.IP -o
+Ausgabe des \o'u"'bersetzten Reports auf das R_CODE-File "r_code"
+.IP -s
+Unterdr\o'u"'ckung \o'U"'bersetzungsprotokoll
+.IP -v
+Ausgabe \o'U"'bersetzungsprotokoll
+.RE
+.LP
+.ft B
+BESCHREIBUNG
+.ft R
+.IP
+Der Report-Compiler
+.ft B
+rc
+.ft R
+\o'u"'bersetzt ein oder mehrere Reports
+in einen vom  Report-Interpreter
+.ft B
+rg
+.ft R
+verarbeitbare  Form.
+Ist im  Report eine  Beschreibung der zu druckenden  Daten
+vorhanden,   wird  zus\o'a"'tzlich  das  description-File
+erzeugt.
+.br
+Eine ausf\o'u"'hrliche Beschreibung
+wird im Teil 2 dieser Dokumentation gegeben.
+.LP
+.ft B
+BEISPIELE
+.ft R
+.DS I
+/* \o'U"'bersetze das Quell-File "quel_p" und 
+   erzeuge das R-code-File "r_code" */
+.sp 1
+   rc -o quel_p
+.sp 1
+.DE
+.LP
+.ft B
+SIEHE AUCH
+.ft R
+.IP
+Teil 2 der Dok. REPORT-GENERATOR
+.LP
+.ft B
+NACHRICHTEN
+.ft R
+.IP
+Im Laufzeitprotokoll (auf <stdout>) werden selbsterkl\o'a"'rende
+Kommentare gegeben.
+.LP
+.ds RH \f3RD\f1
+.bp
+.RE
+.ft B
+NAME
+.ft R
+.IP
+rd - Erstellen des description-Files bzw. das Skelett
+.br
+     eines Reports
+.RE
+.sp 1
+.ft B
+SYNOPSIS
+.ft R
+.IP
+.ft B
+rd
+.ft R
+[flags] db rel [file]
+.LP
+.ft B
+BESCHREIBUNG
+.ft R
+.IP
+.ft B
+rd
+.ft R
+erstellt zu der Relation
+.ft B
+`rel'
+.ft R
+der Datenbank
+.ft B
+`db'
+.ft R
+ein description-File. Fehlt das Argument
+.ft B
+`file'
+.ft R
+wird
+der Name 
+.ft B
+desc
+.ft R
+gew\o'a"'hlt.
+.sp 1
+.ft B
+Flags:
+.ft R
+.RS
+.IP -o
+Ausgabe auf Standardoutput (anstelle eines Files)
+.IP -r
+Ausgabe eines leeren (skeleton) Reportprogramms
+anstelle des description-files. Fehlt das Argument
+`file` wird der Name
+.ft B
+report
+.ft R
+gewaehlt.
+Die Dom\o'a"'nendefinition ist im Report enthalten.
+.RE
+.LP
+.ft B
+SIEHE AUCH
+.ft R
+.IP
+Teil 2 der Dok. REPORT-GENERATOR
+.RE
+.LP
+.ft B
+BEISPIELE
+.ft R
+.IP
+.DS L
+rd demo personal
+rd -o demo teile > teile.d
+/*leerer Report*/
+rd -r demo personal
+/*oder identisch*/
+rd demo teile teilend
+.DE
+.ds RH \f3RG\f1
+.bp
+.RE
+.ft B
+NAME
+.ft R
+.IP
+rg \- REPORT-Interpreter
+.RE
+.sp 1
+.ft B
+SYNOPSIS
+.ft R
+.IP
+.ft B
+rg
+.ft R
+{flag}
+.RE
+.sp 1
+.ft B
+BESCHREIBUNG
+.ft R
+.sp 1
+.IP
+Zur File-Umlenkung sind folgende Flags implementiert:
+.RS
+.IP -dfile
+ Nutzung des description-Files
+"file" (Standard: 
+.ft B
+ desc
+.ft R
+)
+.IP -ffile
+ Nutzung des Datenfiles
+"file" (Standard:
+.ft B
+ tuple
+.ft R
+)
+.IP -ifile
+ Nutzung des R-Code-Files
+"file" (Standard: 
+.ft B
+ r_code
+.ft R
+)
+.IP -ofile
+ Setze das Report-Files auf
+"file" (Standard:
+.ft B
+standard-output)
+.ft R
+.RE
+.IP
+Zur Ein-/Ausgabesteuerung sind folgende Flags implementiert: 
+.RS
+.IP -lno
+ (entspricht LINES no)
+.br
+L\o'a"'nge des Informationsteils auf
+einer Seite (no Zeilen)
+Standard: Wert von ALL LINES,
+wenn dort definiert 
+sonst: 66
+.IP -ano
+ (entspricht ALL LINES no)
+.br
+L\o'a"'nge der physischen Druckseite
+(no Zeilen)
+Standard: Wert von LINES
+.IP -cno
+ (entspricht COLUMNS no)
+.br
+Breite des Informationsteils
+(no Spalten)
+Standard: 132
+.IP -pno
+ (entspricht FROM PAGE no)
+.br
+Es werden nur die Seiten in die
+Liste eingetragen, deren
+Seitennummer gr\o'o"'sser oder gleich
+der angegebenen Zahl no ist.
+Standard: 0
+.IP -Pno
+ (entspricht TO PAGE no)
+.br
+Es werden nur die Seiten in die
+Liste eingetragen, deren Seitennummer kleiner oder gleich der 
+angegebenen Zahl no ist.
+Standard: 32767 (Maximum)
+.IP -tno
+ (entspricht FROM TUPLE no)
+.br
+Es werden nur die Tupel verarbeitet, deren Tupelnummer gr\o'o"'sser
+oder gleich der angegebenen 
+Zahl no ist.
+Standard: 0
+.IP -Tno
+ (entspricht TO TUPLE no)
+.br
+Es werden nur die Tupel verarbeitet,
+deren Tupelnummer kleiner oder
+gleich der angegebenen Zahl 
+no ist.
+Standard: 32767 (Maximum)
+.IP -b
+ (entspricht BIG)
+.br
+Alle Kleinbuchstaben werden
+beim Einschreiben in die Liste
+automatisch in Grossbuchstaben
+umgewandelt.
+Standard: keine Umwandlung
+.IP -Dno
+ Setze Debug-Information = `no'
+.IP -Sno
+ Setze SWITCH `no' = TRUE
+.IP -Vno =
+val  Setze VAR `no' = `val'
+.RE
+.LP
+.ft B
+ BEISPIELE
+.ft R
+.IP
+
+.RE
+.LP
+.ft B
+SIEHE AUCH
+.ft R
+.IP
+Teil 2 der Dok. REPORT-GENERATOR
+.RE
+.ds RH \f3RP\f1
+.bp
+.RE
+.ft B
+ NAME
+.ft R
+.IP
+rp_desc \- druckt ein description-File in lesbarer Form
+.RE
+.sp 1
+.ft B
+ SYNOPSIS
+.ft R
+.IP
+.ft B
+ rp_desc
+.ft R
+[desc-file]
+.RE
+.sp 1
+.ft B
+ BESCHREIBUNG
+.ft R
+.IP
+Als Argument kann der Name des description-Files angegeben
+werden, wenn der Standardfilename "r_code" nicht zutrifft.
+.IP
+.ft B
+ rp_desc
+.ft R
+- druckt das description-File in lesbarer Form.
+.RE
+.sp 1
+.ft B
+ BEISPIEL
+.ft R
+.IP
+.DS L
+
+rp_desc < description-file der Relation personal >
+rd -r demo personal
+rc -s report
+rp_desc > beispiel
+rm report r_code desc
+cat beispiel
+
+| field | type  | len   | off   |
+|~~~~~~~|~~~~~~~|~~~~~~~|~~~~~~~|
+|       |       |       |       |
+|       |       |       |       |
+|~~~~~~~|~~~~~~~|~~~~~~~|~~~~~~~|
+|       |       |       |       |
+.DE
+.LP
+.ft B
+ SIEHE AUCH
+.ft R
+.IP
+Teil 2 der Dok. REPORT-GENERATOR
+.RE

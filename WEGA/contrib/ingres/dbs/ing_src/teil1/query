@@ -1,0 +1,1002 @@
+.ds RH \f3Einfuehrung\f1
+.ds LH Referenz_Manual
+.ds RF \f3QUEL\f1
+.ds CH - % -
+.bp
+.RE
+.NH 2
+.ft B
+Anfragesprache *
+.ft R
+.LP
+.sp 10
+.NH 3
+.ft B
+Beschreibung zur Anfragesprache Quel von \*(yy
+.ft R
+.br
+.ft B
+    6.3/3 *
+.ft R
+.LP
+Der folgende Abschnitt ist eine
+Beschreibung der grunds\o'a"'tzlichen Syntax von
+QUEL.
+Die einzelnen Statements
+werden in gesonderten Abschnitten behandelt,
+hier nur die Klassen syntaktischer
+Variablen, aus denen die
+QUEL\c
+-Statements aufgebaut sind.
+.NH 4
+.ft B
+Kommentare *
+.ft R
+.LP
+Ein Kommentar ist eine beliebige Zeichenfolge,
+eingebunden links durch
+"/*"
+und rechts durch
+"*/":
+.IP
+/* Das ist ein Kommentar */
+.NH 4
+.ft B
+Namen *
+.ft R
+.LP
+Namen in
+QUEL
+sind Folgen von maximal 12 alphanumerischen Zeichen
+(Buchstaben oder Ziffern),
+beginnend mit einem Buchstaben.
+Das Unterstreichungszeichen ("_", <underscore>)
+gilt als Buchstabe.
+Alle grossen Buchstaben
+- mit Ausnahme solcher in Zeichenketten -
+werden stillschweigend, automatisch
+in die ihnen entsprechenden kleinen Buchstaben umgewandelt.
+.NH 4
+.ft B
+Schl\o'u"'sselworte *
+.ft R
+.LP
+Die folgenden Bezeichner sind als Schl\o'u"'sselworte
+reserviert und d\o'u"'rfen nicht anderweitig verwendet werden:
+.sp 1
+.DS I
+abs          all          and 
+any          append       ascii 
+at           atan         avg 
+avgu         by           concat 
+copy         cos          count 
+countu       create       dba
+define       delete       destroy
+distribute   exp          float4
+float8       from         help
+in           index        integrity
+int1         int2         int4
+into         is           log
+max          min          mod
+modify       not          of
+on           onto         or
+permit       print        range
+replace      retrieve     save
+sin          sqrt         sum
+sumu         to           unique
+until        usercode     view
+where
+.DE
+.NH 4 
+.ft B
+Konstanten *
+.ft R
+.LP
+Entsprechend den drei, in
+QUEL
+verf\o'u"'gbaren Datentypen, gibt es drei Typen von Konstanten.
+.NH 5
+.ft B
+Zeichenketten-Konstanten (Strings) *
+.ft R
+.LP
+Zeichenketten in
+QUEL
+sind Folgen von maximal 255 ASCII-Zeichen,
+eingebunden in die (doppelten !) Anf\o'u"'hrungsstriche ( " " ).
+Grosse Buchstaben innerhalb von Zeichenketten
+bleiben, so wie sie sind, erhalten.
+Bei Verwendung des Begrenzers " innerhalb von Zeichenketten
+( als deren Bestandteil ), muss diesem ein <backslash> ( "\e" )
+vorangestellt werden.
+Das muss auch f\o'u"'r <backslash> selbst erfolgen.
+(s. auch Abschnitt "Pattern matching ..")
+.LP
+Innerhalb von Zeichenketten d\o'u"'rfen nur druckbare
+Zeichen verwendet werden.
+Nicht druckbare Zeichen (control_character)
+werden in Leerzeichen <blank> konvertiert.
+.NH 5
+.ft B
+Ganzzahlige Konstanten (Integer) *
+.ft R
+.LP
+Ganzzahlige Konstanten liegen
+im Wertebereich von -2\ 147\ 483\ 648
+bis +2\ 147\ 483\ 647.
+Ganzzahlige Konstanten ausserhalb dieses Wertebereiches
+werden in eine Gleitkomma-Darstellung umgewandelt.
+Wenn die ganzzahlige Konstante kleiner als 32 768
+und gr\o'o"'sser als -32 769 ist,
+wird sie als eine 2-Byte-Integer dargestellt,
+anderenfalls wird sie in eine 4-Byte-Integer
+konvertiert.
+.NH 5
+.ft B
+Gleitkomma- (floating_point) Konstanten *
+.ft R
+.LP
+Gleitkomma-Konstanten werden mit einem ganzen Teil,
+dem De\%zimalpunkt(!), einem gebrochenen Teil
+(zusammen als Mantisse bezeichnet) und einem Exponenten
+formuliert.
+Genauer gesagt werden sie in folgendem Format geschrieben:
+.IP
+	{<dig>} [.<dig>] [eE [+-] {<dig>}]
+.LP
+Im obigen speziellen Fall steht <dig> f\o'u"'r eine
+beliebige Ziffer.
+Ein Exponent ohne Mantisse erh\o'a"'lt die
+Mantisse 1 zugeordnet.
+Innerhalb einer Gleitkomma-Konstanten
+d\o'u"'rfen keine weiteren Zeichen eingebettet werden.
+Gleitkomma-Konstanten werden
+in doppelter Genauigkeit
+mit einem Wertebereich von ann\o'a"'hernd
+-10**38 bis +10**38
+und einer Genauigkeit von 17 Dezimalziffern dargestellt.
+.NH 4
+.ft B
+Konstante Operatoren
+.ft R
+.LP
+Die konstanten Operatoren sind Operatoren,
+die Konstanten liefern.
+.ft B
+dba
+.ft R
+liefert den Datenbankadministrator der verwendeten Datenbanken und
+.ft B
+usercode
+.ft R
+den gerade aktiven Nutzer.
+.IP
+.ft B
+<dba>
+.ft R
+.br
+.ft B
+<usercode>
+.ft R
+.RE
+.sp 1
+Sie liefern in der Ersetzung den String 
+f\o'u"'r den <dba> bzw. den <usercode>.
+.NH 4
+.ft B
+Attribute <attribute> *
+.ft R
+.LP
+Ein Attribut <attribute> ist ein Konstrukt der Form:
+.IP
+       <tuple_variable>.<domname>
+.LP
+.ft B
+<tuple_variable> 
+.ft R
+identifiziert eine bestimmte Relation.
+Man kann den Bezeichner
+.ft B
+<tuple_variable>
+.ft R
+auffassen, als st\o'u"'nde er f\o'u"'r die Zeilen
+bzw. Tupel dieser Relation.
+Eine Variable wird einer Relation durch Verwendung des
+.ft B
+range-
+.ft R
+Statements zugeordnet.
+.ft B
+<domname> 
+.ft R
+ist der Name einer der Spalten der Relation,
+\o'u"'ber der die Variable definiert ist.
+Damit bezeichnet das Konstrukt ein Attribut,
+das einen Wert aus der Dom\o'a"'ne repr\o'a"'sentiert.
+.NH 4
+.ft B
+Arithmetische Operatoren *
+.ft R
+.LP
+Arithmetische Operatoren haben Ausdr\o'u"'cke von
+numerischem Format als Operanden.
+Einstellige Operatoren gruppieren von rechts nach links;
+zweistellige Operatoren gruppieren von links nach rechts.
+Die Operatoren
+- in der Reihenfolge absteigende Bindungsst\o'a"'rke -
+sind:
+.DS L
+   +,-    (einstellig) plus, minus
+   **     Potenzierung
+   *,/    Multiplikation, Division
+   +,-    (zweistellig) Addition, Subtraktion
+.DE
+.LP
+In weiter abfallender Bindungsst\o'a"'rke
+schliessen sich hieran die weiter hinten
+aufgef\o'u"'hrten Operatoren:
+.sp 1
+.br
+     <comparison_operator>
+.br
+     <logical_operator>
+.LP
+Klammern ( ) sind f\o'u"'r eine spezielle Festlegung
+der Bindung der Operatoren einzusetzen.
+Bei ganzzahligen Operationen
+wird der arithmetische \o'U"'berlauf und die
+Division durch Null nicht gepr\o'u"'ft.
+Bei Gleitkomma-Operationen
+wird \o'U"'berlauf, Unterlauf und Division durch Null
+nur gepr\o'u"'ft,
+wenn die entsprechende Hardware existiert und aktiv ist.
+.NH 4
+.ft B
+Ausdr\o'u"'cke <a_expr> *
+.ft R
+.LP
+Ein Ausdruck ist entweder/oder ein(e):
+.DS I
+Konstante
+Attribut
+Funktionaler Ausdruck
+Aggregat oder Aggregat-Funktion
+Kombination von numerischen Ausdr\o'u"'cken und
+    arithmetischen Operatoren
+.DE
+.LP
+Innerhalb dieses Handbuchs
+wird ein beliebiger Ausdruck als
+.ft B
+<a_expr>
+.ft R
+bezeichnet.
+.NH 4
+.ft B
+Formate <format> *
+.ft R
+.LP
+Jeder
+.ft B
+<a_expr> 
+.ft R
+hat ein Format <format>, das durch einen
+Buchstaben (\c
+.ft B
+c,
+.ft R
+.ft B
+i
+.ft R
+oder
+.ft B
+f,
+.ft R
+f\o'u"'r Zeichenfolgen (character),
+ganze Zahlen (integer)
+oder Gleitkomma-Daten(float) )
+und eine Ziffer,
+die die Anzahl der zur Speicherung n\o'o"'tigen Bytes anzeigt,
+bezeichnet wird.
+Die unterst\o'u"'tzten Formate sind folgend aufgez\o'a"'hlt,
+der Wertebereich der nume\%rischen Formate ist in
+Klammern angegeben.
+.DS L
+c1 - c255      Zeichenketten von 1\-255 Bytes L\o'a"'nge
+i1             1-Byte Integer  (-128 bis +127)
+i2             2-Byte Integer  (-32768 bis +32767)
+i4             4-Byte Integer  (-2 147 483 448 bis
+                              +2 147 483 647)
+f4             4-Byte floating (-10**38 bis +10**38,
+                              7 Dezimalen Genauigkeit)
+f8             8-Byte floating (-10**38 bis +10**38,
+                             17 Dezimalen Genauigkeit)
+.DE
+.LP
+Eine Variable von numerischem Format
+kann einer jeden anderen numerischen Formats
+zugewiesen werden, sie wird dabei konvertiert.
+.NH 4
+.ft B
+Format Konvertierung *
+.ft R
+.LP
+Bei Operationen \o'u"'ber zwei numerische Dom\o'a"'nen
+von unterschiedlichem Format f\o'u"'hrt
+\*(yy\ automatisch die notwendigen Konvertierungen durch.
+.LP
+Bei Operationen zwischen einem ganzzahligen Operanden
+und einem Gleitkomma Operanden
+wird der ganzzahlige vor der Operation in Gleitkomma
+umgewandelt.
+Bei Operationen zwischen zwei ganzzahligen Operanden
+unterschiedli\%cher L\o'a"'nge wird der k\o'u"'rzere auf die
+L\o'a"'nge des l\o'a"'ngeren konvertiert.
+Bei Operationen zwischen zwei Gleitkomma Operanden
+unterschiedlicher Genauigkeit wird der l\o'a"'ngere
+in die Genauigkeit des k\o'u"'rzeren konvertiert.
+.LP
+Die folgende Tabelle gibt alle m\o'o"'glichen Kombinationen an:
+.DS I
+        i1      i2      i4      f4      f8
+
+i1 -    i1      i2      i4      f4      f8
+i2 -    i2      i2      i4      f4      f8
+i4 -    i4      i4      i4      f4      f8
+f4 -    f4      f4      f4      f4      f4
+f8 -    f8      f8      f8      f4      f8
+.DE
+.LP
+\*(yy\ unterst\o'u"'tzt die folgenden
+Konvertierungsoperatoren, die man an Stelle der
+o.g. automatischen Standardaktionen einsetzen kann:
+.DS I
+int1(<a_expr>)   Resultat hat Format i1
+int2(<a_expr>)   Resultat hat Format i2
+int4(<a_expr>)   Resultat hat Format i4
+float4(<a_expr>) Resultat hat Format f4
+float8(<a_expr>) Resultat hat Format f8
+.DE
+.LP
+Die Konvertierungsoperatoren konvertieren ihr
+Argument <a_expr> also in das von ihnen bezeichnete Format.
+.ft B
+<a_expr> 
+.ft R
+kann irgendwelche Zeichen enthalten.
+Wenn ein Zeichen nicht konvertiert werden kann,
+wird ein Fehler angezeigt und die Berechnung
+abgebrochen - das kann nur eintreten, wenn die Syntax
+f\o'u"'r den zu konvertierenden
+.ft B
+<a_expr>
+.ft R
+nicht eingehalten wurde.
+.LP
+\o'U"'berlauf wird bei Konvertierungen nicht gepr\o'u"'ft.
+.NH 4
+.ft B
+Zielliste <target_list> *
+.ft R
+.LP
+Eine
+.ft B
+<target_list>
+.ft R
+ist eine geklammerte Liste von einem oder mehreren Elementen,
+die untereinander durch Kommata getrennt werden.
+Jedes ihrer Elemente muss eines der folgend aufgez\o'a"'hlten sein:
+.LP
+a)
+<domname>
+.ft B
+is 
+.ft R
+<a_expr>
+.IP
+<domname>
+ist hier der Name einer Dom\o'a"'ne, die erzeugt werden soll
+(oder die, im Falle von
+update-Statements, bereits existiert).
+Das Gleichheitszeichen ( "=" )
+ist gleichbedeutend mit
+.ft B
+is.
+.ft R
+In dem Falle, wo
+<a_expr>
+kein einfaches Attribut ist,
+muss diese Form benutzt werden,
+um den Ausdruck einem namentlich
+angegebenem Resultat zuzuordnen.
+.LP
+b)  
+<attribute>
+.IP
+Im Falle eines
+.ft B
+retrieve-\c
+.ft R
+Statements wird als Ergebnisspalte die angenommen,
+die den gleichen Namen, wie der dabei angegebene <domname> hat.
+Im Falle von
+update-Statements\p
+(\c
+.ft B
+append, replace\c
+.ft R
+),
+muss die zu ver\o'a"'ndernde Relation
+eine Dom\o'a"'ne mit genau dem bezeichneten Namen aufweisen.
+.LP
+Innerhalb einer <target_list>
+kann das Schl\o'u"'sselwort
+.ft B
+all
+.ft R
+dazu benutzt werden,
+alle Dom\o'a"'nen zu bezeichnen.
+Zum Beispiel
+.IP
+range of p is personal
+.br
+retrieve (p.all) where p.gehalt > 1000
+.LP
+sucht alle Tupel der Relation personal,
+die die Bedingung <qualification>:
+gehalt > 1000 erf\o'u"'llen.
+.ft B
+all
+.ft R
+kann in der <target_list> von
+.ft B
+retrieve- 
+.ft R
+oder
+.ft B
+append-
+.ft R
+Statements benutzt werden.
+Die Dom\o'a"'nen werden in ihrer erzeugten Reihenfolge
+eingesetzt, d.h. in der, in der sie mit dem
+.ft B
+create-
+.ft R
+Statement erzeugt wurden.
+.NH 4
+.ft B
+Vergleichsoperatoren <comparison_operator>
+.br
+   und Klauseln <clause> *
+.ft R
+.LP
+Es gibt
+Vergleichsoperatoren <comparison_operator>,
+die beliebige Ausdr\o'u"'cke <a_expr>
+als Operanden haben:
+.DS I
+<      (kleiner als)
+<=     (kleiner als oder gleich)
+>      (gr\o'o"'sser als)
+>=     (gr\o'o"'sser als oder gleich)
+=      (gleich mit)
+!=     (ungleich zu)
+.DE
+.LP
+Diese Operatoren sind alle von gleicher Bindungsst\o'a"'rke.
+Bei Vergleichen zwischen Zeichenketten
+werden alle Leerzeichen <blank>
+innerhalb der Zeichenketten ignoriert.
+.LP
+Eine Klausel <clause>
+ist ein Paar von Ausdr\o'u"'cken,
+die durch einen Vergleichsoperator verkn\o'u"'pft sind:
+.IP
+	<a_expr> <comparison_operator> <a_expr>
+.NH 4
+.ft B
+Logische Operatoren <logical_operator>
+.br
+   und Qualifikation <qualification>
+.br
+   (auch <qual>) *
+.ft R
+.LP
+Logische Operatoren haben Klauseln (<clause>)
+als Operanden. Sie gruppieren
+von links nach rechts.
+.DS I
+not      (logische Negation)
+and      (logisches und; Konjunktion)
+or       (logisches inclusives oder; Disjunktion)
+.DE
+.LP
+.ft B
+not
+.ft R
+hat von den drei Operatoren die h\o'o"'chste Bindungsst\o'a"'rke.
+.ft B
+and
+.ft R
+und
+.ft B
+or 
+.ft R
+haben die gleiche Bindungsst\o'a"'rke.
+Klammern ( ) kann man f\o'u"'r eine spezielle Bindung
+einsetzen.
+.LP
+Eine
+.ft B
+<qualification> 
+.ft R
+besteht aus einer Anzahl von Klauseln <clause>,
+die durch logische Operatoren verkn\o'u"'pft sind.
+Eine <qualification> kann damit sein:
+.IP
+.ft B
+<clause>
+.ft R
+.br
+.ft B
+not 
+.ft R
+.ft B
+<qualification>
+.ft R
+.br
+.ft B
+<qualification> 
+.ft R
+.ft B 
+or
+.ft R
+.ft B 
+<qualification>
+.ft R
+.br
+.ft B 
+<qualification> 
+.ft R
+.ft B 
+and
+.ft R
+.ft B 
+<qualification>
+.ft R
+.br
+(
+.ft B 
+<qualification>
+.ft R
+)
+.NH 4
+.ft B
+Funktionale Ausdr\o'u"'cke <functional_expression> *
+.ft R
+.LP
+Ein
+.ft B 
+<functional expression>
+.ft R
+ist ein Konstrukt, bestehend aus einem Funktionsnamen,
+gefolgt von einem eingeklammerten Operanden oder 
+einer eingeklammerten Liste durch Kommata getrennter Operanden.
+Funktionale Ausdr\o'u"'cke k\o'o"'nnen in beliebiger Tiefe
+geschachtelt werden.
+In der folgenden Aufz\o'a"'hlung der unterst\o'u"'tzten
+Funktionen repr\o'a"'sentiert (\c
+.ft B 
+n
+.ft R
+)
+einen beliebigen Ausdruck von nume\%rischem Format.
+Das Resultat-Format ist rechts angezeigt.
+.DS I
+abs(n)      - dasselbe wie n (Absolutwert)
+ascii(n)    - Zeichenkette (konvertiert numerisch in
+             Zeichen)
+atan(n)     - f8 (arctangens)
+concat(a,b) - Zeichenkette (Verkettung)
+cos(n)      - f8 (cosinus)
+exp(n)      - f8 (n. Potenz von e)
+log(n)      - f8 (nat\o'u"'rlicher Logarithmus)
+mod(n,b)    - dasselbe wie b (n modulo b, n und b
+             m\o'u"'ssen vom Format i1, i2 oder i4 sein
+sin(n)      - f8 (sinus)
+sqrt(n)     - f8 (Quadratwurzel)
+.DE
+.NH 4
+.ft B
+Aggregat-Ausdr\o'u"'cke *
+.ft R
+.LP
+Aggregat-Ausdr\o'u"'cke erm\o'o"'glichen es,
+\o'u"'ber einer Menge von Seiten zusammengefasste
+Werte zu berechnen.
+.NH 5
+.ft B
+Aggregat-Operatoren <aggregation_operator> *
+.ft R
+.LP
+Folgende Aggregat-Operatoren und ihr Resultat-Format sind
+definiert.
+.DS L
+count   - (i4) Anzahl von Vorkommen
+countu  - (i4) Anzahl von einmaligen (unique) Vorkommen
+sum     -      Summierung
+sumu    -      Summierung aller unterschiedlichen Werte
+avg     - (f8) Durchschnitt (average) (sum/count)
+avgu    - (f8) unique average (sumu/countu)
+max     -      Maximum
+min     -      Minimum
+any     - (i2) ergibt 1, sobald sich ein Tupel qualifiziert,
+               sonst 0
+.DE
+.NH 5
+.ft B
+Einfache Aggregate <simple_aggregate> *
+.ft R
+.IP
+.ft B 
+<aggregation_operator> 
+.ft R
+(\c
+.ft R
+.ft B 
+<a_expr>  
+.ft R
+.br
+		[
+.ft B 
+where
+.ft R
+.ft B 
+<qualification>
+.ft R
+] )
+.LP
+Ein einfaches Aggregat erzeugt einen einzelnen
+skalaren Wert.
+.ft B 
+<a_expr> 
+.ft R
+wird \o'u"'ber der Menge der Tupel aggregiert, die die
+.ft B 
+<qualification>
+.ft R
+erf\o'u"'llen
+(oder \o'u"'ber alle Tupel im Geltungsbereich
+des Ausdrucks, wenn keine <qualification>
+angegeben ist).
+Die Operatoren
+.ft B 
+sum 
+.ft R
+und
+.ft B 
+avg 
+.ft R
+verlangen
+.ft B 
+<a_expr>
+.ft R
+in numerischem Format;
+.ft B 
+count, any, max
+.ft R
+und
+.ft B 
+min 
+.ft R
+arbeiten sowohl auf Zeichenketten, als auch
+auf
+.ft B 
+<a_expr>
+.ft R
+von numerischem Format.
+.LP
+.ft B 
+Einfache Aggregate sind
+.ft R
+.ft B 
+vollst\o'a"'ndig lokal,
+.ft R
+d.h. sie werden logisch von der \o'u"'brigen Anfrage abgetrennt,
+separat berechnet und danach
+in der Anfrage durch ihren skalaren Wert ersetzt.
+.NH 5
+.ft B
+Das any Aggregat *
+.ft R
+.LP
+Manchmal m\o'o"'chte man wissen, ob es Tupel gibt,
+die eine be\%stimmte <qualification> erf\o'u"'llen.
+Eine M\o'o"'glichkeit, das zu erfahren, bietet die Benutzung des
+.ft B 
+count-
+.ft R
+Aggregates, nach welchem man dann pr\o'u"'fen kann,
+ob sich Tupel qualifizieren.
+Die Benutzung von
+.ft B 
+any
+.ft R
+anstelle von
+.ft B 
+count
+.ft R
+ist deshalb effizienter, weil dabei die Berechnung abgebrochen wird,
+sobald das erste sich qualifizierende Tupel gefunden wurde.
+.LP
+.ft B 
+any
+.ft R
+gibt 1 zur\o'u"'ck, wenn sich mindestens ein Tupel qualifiziert
+und sonst 0.
+.NH 5
+.ft B
+Aggregat-Funktionen *
+.ft R
+.IP
+.ft B 
+<aggregation_operator> 
+.ft R
+(\c 
+.ft B 
+<a_expr> 
+.ft R
+.ft B 
+by
+.ft R
+.ft B 
+<by_domname>
+.ft R
+.br
+.ft B 
+{, <by_domname>} 
+.ft R
+[
+.ft B 
+where 
+.ft R
+.ft B 
+<qualification>
+.ft R
+] )
+.LP
+Aggregat-Funktionen sind Verallgemeinerungen
+der einfachen Aggregate.
+Die
+.ft B 
+by-
+.ft R
+Phrase gruppiert (d.h. portioniert) die Menge
+der sich qualifizierenden Tupel
+nach den Werten der
+.ft B 
+<by_domname>
+.ft R
+(das ist ein <domname>).
+Bei Angabe von mehr als einem
+.ft B 
+<by_domname>, 
+.ft R
+sind die durch
+.ft B 
+by
+.ft R
+gruppierten Werte die Verkettung der einzelnen
+.ft B 
+<by_domname>.
+.ft R
+.ft B 
+<a_expr> 
+.ft R
+gilt wie bei einfachen Aggregaten.
+Eine Aggregat-Funktion ergibt eine Menge von Aggregaten,
+je eines f\o'u"'r jede Portion, in die die Menge der
+sich qualifizierenden Tupel gruppiert wurde.
+Das Aggregat, das w\o'a"'hrend der Berechnung der Query
+jeweils benutzt wird, ist das, das der Portion
+zugeordnet ist, in das das jeweils gerade behandelte Tupel f\o'a"'llt.
+.LP
+Anders als bei einfachen Aggregaten
+sind Aggregat-Funktionen nicht vollst\o'a"'ndig lokal.
+Die
+by-Phrase,
+durch welche sich eine Aggregat-Funktion von
+einfachen Aggregaten unterscheidet,
+ist f\o'u"'r die Query global.
+Dom\o'a"'nen in der
+by-Phrase
+werden automatisch an andere Dom\o'a"'nen
+der gleichen Relation gebunden,
+sofern solche in der Query vorkommen.
+.LP
+Zum Beispiel:
+.DS L
+	/* Bilde das Durchschnittsgehalt f\o'u"'r
+	die Angestellten einer Abteilung */
+	range of p is personal
+	retrieve (p.abteilung,
+		dgehalt=avg(p.gehalt by p.abteilung))
+.DE
+.NH 5
+.ft B
+Aggregate \o'u"'ber "einmalige"-Werte *
+.ft R
+.LP
+H\o'a"'ufig ist es notwendig, nur \o'u"'ber die
+.ft B 
+verschiedenen
+.ft R
+Werte eines Ausdrucks zu aggregieren.
+Die
+.ft B 
+avgu
+.ft R
+, 
+.ft B
+sumu
+.ft R
+und 
+.ft B
+countu
+.ft R
+Aggregate unterdr\o'u"'cken alle mehrfach auftretenden Werte,
+bevor das Aggregat gebildet wird.
+Zum Beispiel:
+.IP
+	count(p.abteilung)
+.LP
+w\o'u"'rde ermitteln, wie oft in den,
+in unserem Beispiel pro Angestellten angelegten Tupeln, das Attribut
+.ft B
+"p.abteilung"
+.ft R
+mit Werten belegt ist.
+Aber
+.IP
+	countu(p.abteilung)
+.LP
+erst w\o'u"'rde z\o'a"'hlen, wieviele unterschiedliche Werte
+f\o'u"'r die Dom\o'a"'ne
+.ft B
+p.abteilung
+.ft R
+existieren (wof\o'u"'r man sich wahrscheinlich auch
+in diesem Beipiel interessiert).
+.NH 4
+.ft B
+Spezifische Zeichenketten-Operatoren *
+.ft R
+.LP
+Es werden drei speziell f\o'u"'r die Arbeit mit
+Zeichenketten eingerichtete Arbeitsm\o'o"'glichkeiten 
+unterst\o'u"'tzt:
+.NH 5
+.ft B
+Mustersuche auf Zeichenketten 
+.br
+   ("Pattern matching") *
+.ft R
+.LP
+Es gibt vier Zeichen, die eine spezielle
+Bedeutung haben, wenn sie innerhalb von Zeichenketten-Konstanten
+(strings) einer <qualification> eingesetzt werden:
+.IP *
+symbolisiert eine  Zeichenkette  von  einem  oder
+mehreren Zeichen.
+.IP ?
+symbolisiert ein einzelnes, beliebiges Zeichen.
+.IP [..]
+symbolisiert eines der, in den Klammern
+aufgez\o'a"'hlten Zeichen.
+Von "-" bis Angaben sind erlaubt.
+.LP
+Diese Zeichen kann man in beliebigen Kombinationen benutzen,
+um eine Vielzahl von Tests zu formulieren.  Zum Beispiel:
+.LP
+where p.name = "*" - qualifiziert jeden beliebigen Namen.
+.LP
+where p.name = "E*" - qualifiziert einen, mit "E"
+beginnenden, sonst beliebigen Namen.
+.LP
+where p.name = "*ung" - qualifiziert alle Namen, die
+auf "ung" enden.
+.LP
+where p.name = "*[aeiou]*" - qualifiziert alle Namen,
+die irgendwo einen
+kleingeschriebenen Vokal enthalten.
+.LP
+where p.name = "Schul?" - qualifiziert alle 6 Zeichen
+langen Namen, die mit "Schul"
+beginnen.
+.IP \\
+where p.name = "[A-J]*" - qualifiziert alle Namen, die
+mit A,B,..,J beginnen.
+.LP
+Die spezielle Bedeutung der pattern_matching-Zeichen wird
+aufgehoben, wenn man ihnen ein <backslash> ( "\e" )
+voranstellt. So bezeichnet "\e*" das Zeichen "*".
+Pattern-matching-Zeichen in einer <target_list> m\o'u"'ssen
+immer durch "\e" kaschiert werden.  Zum Beispiel:
+.sp 1
+.br
+            titel = "\e*\e*\e* muster \e*\e*\e*"
+.sp 1
+ist die korrekte Art, die Kette "*** muster ***" der Dom\o'a"'ne
+"titel" zuzuweisen.
+.NH 5
+.ft B
+Verkettung *
+.ft R
+.LP
+Es gibt einen Verkettungs- (concatenation) Operator, mit dem
+man aus zwei Zeichenketten eine bilden kann. Seine Syntax
+ist
+.br
+            concat(feld1, feld2)
+
+Die L\o'a"'nge der neuen Zeichenkette ist die Summe der L\o'a"'ngen
+der beiden Quellketten. In feld1 hinten stehende Leerzeichen
+werden unterdr\o'u"'ckt, feld2 wird angekettet und die 
+Ergebniskette wird hinten mit Leerzeichen aufgef\o'u"'llt.
+Ver\%kettungen k\o'o"'nnen beliebig in andere Ver\%kettungen
+geschachtelt werden. Zum Beipiel:
+.sp 1
+.br
+   name = concat(concat(x.nachname, ","), x.vorname)
+
+verkettet den Nachnamen mit einem Komma und kettet daran den
+Vornamen.
+.NH 5
+.ft B
+ascii - numerisch zu
+.br
+   Zeichenketten wandeln *
+.ft R
+.LP
+Die
+.ft B
+ascii
+.ft R
+Funktion kann benutzt werden, um ein numerisches
+Feld in eine Zeichenketten-Darstellung zu \o'u"'berf\o'u"'hren - das
+kann n\o'u"'tzlich sein, wenn die Aufgabe steht, ein numerisches
+Feld mit einem Zeichenkettenfeld zu vergleichen. Zum
+Beipiel:
+.br
+            retrieve ( ... )
+.br
+            where x.chardomname = ascii(x.numdomname)
+
+.ft B
+ascii
+.ft R
+kann auf einen  Zeichenketten-Wert  angewandt  werden;
+das Ergebnis ist die unge\o'a"'nderte Zeichenkette.
+Das Konvertierungsformat wird durch das Druckformat
+(printing_format,
+s. quel(unix)) bestimmt.
+
+.ft B
+SIEHE AUCH
+.ft R
+.IP
+append(quel), delete(quel), range(quel), replace(quel),
+retrieve(quel), quel(unix)
+.LP
+.ft B
+HILFEN
+.ft R
+.IP
+Die maximale Anzahl von Variablen, die in einer
+Anfrage benutzt werden kann, ist 10.
+.IP
+Numerischer \o'U"'berlauf, Unterlauf und Division durch Null
+werden nicht entdeckt.
+.IP
+Bei der Konvertierung numerischer Formate wird ein \o'U"'berlauf
+nicht entdeckt.
