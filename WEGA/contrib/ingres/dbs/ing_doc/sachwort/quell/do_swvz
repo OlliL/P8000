@@ -1,0 +1,14 @@
+cat	teil1/doc1_a?	\
+	teil2/doc2_a?	\
+	teil3/doc3_a?	\
+> teil1_2.src
+tr '\040' '\012' < teil1_2.src > teil1_2.nl 
+rm teil1_2.src 
+sort -udf teil1_2.nl -o teil1_2.swq 
+rm teil1_2.nl 
+echo "editiere teil1_2.swq zu swd_file"
+echo "erstelle sawo.h: mk_incl swd_file"
+echo "erstelle Programm sawort: cc -c -O sawort.c; cc -i sawort.o -o sawort"
+echo "erzeuge Verzeichnis: sawort teil1_2.lp"
+echo "Ergebnisfile swverz.q ist zu editieren und mit nroff aufzubereiten"
+
