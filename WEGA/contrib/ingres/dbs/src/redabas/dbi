@@ -1,0 +1,27 @@
+: command  part before conversion
+
+: REDABAS 2 part
+2	pers.dbd
+
+F	  0	#           	I4  
+F	  1	*           	C1  
+F	  2	NUM         	N5  
+F	  3	NAME        	C20 
+
+: ing_db 6.3/4 part
+I	redabas
+
+: relation personal part
+T	personal
+
+D	  1	rec_no		i4
+D	  2	rec_mark	c1
+D	  3	num         	i2
+D	  4	name        	c20 
+
+@	  0	  1
+@	  1	  2
+@	  2	  3
+@	  3	  4
+
+: command  part after  conversion
