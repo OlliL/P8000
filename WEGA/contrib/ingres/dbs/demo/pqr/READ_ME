@@ -1,0 +1,14 @@
+Das Verzeichnis `.../demo/pqr' enthaelt die Demonstrationen und
+Lehrbeispiele fuer das Reportsystem.
+
+Fuer die Generierung bzw. Installation der Beispiele benutzen
+Sie bitte die Vorschrift `.../demo/pqr/Makefile'.
+
+Inhaltsverzeichnis:
+-------------------
+`.../demo/pqr/Makefile'	-- Generierungsvorschrift
+`.../demo/pqr/READ_ME'	-- Dieser Text
+`.../demo/pqr/report01'	-- Reportbeispiel Angestelltenliste
+`.../demo/pqr/report02'	-- Reportbeispiel Erfindungsliste
+`.../demo/pqr/report03'	-- Reportbeispiel Personalliste
+`.../demo/pqr/tuple01'	-- Daten-File fuer die Angestelltenliste
