@@ -8,13 +8,11 @@
 
 
 #define EOF "\n\n*** end of file\n"
-#define re1 "\n\nread source promtyp"
-#define cte "\n\nchange to destination promtyp"
+#define re1 "\n\nread source prom"
+#define cte "\n\nchange to destination prom"
 #define rtr "\nready to read?"
 #define rtc "\nready to copy?"
 #define rtv "\nready to verify?"
-#define des "destination "
-#define sou "source      "
 #define npr "change to next prom?"
 #define npl "change to next prom low_address?"
 #define nph "change to next prom high_address?"
@@ -35,7 +33,7 @@ extern long begadre1, begadre2, lange1, lange2, begadrf;
 
 program()
 {
-	do	{ do	{printf ("\n%s",sou);
+	do	{ do	{printf ("\n");
 			 outoptf();		/*ausgabe filename [options]:*/
 			 inoptf();		/*eingabe filename [options]*/
 			 if (qflag==true) return;
@@ -43,8 +41,7 @@ program()
 		openfile();
 		}while (errflag==true);
 		  do
-			{printf ("%s",des);
-			 			/*ausgabe eprom [options]*/
+			{ 			/*ausgabe eprom [options]*/
 			if (board=='1')	outopte();
 				else	outopte1();
 			 inopte();		/*eingabe eprom [options]*/
@@ -79,7 +76,7 @@ list_crc()
 {
 	bre='s';
 	do
-	{printf ("\n%s",sou);
+	{printf ("\n");
 	outopte();
 	inopte();
 	if (qflag==true) return;
@@ -117,6 +114,7 @@ list_crc()
 
 file()
 {
+	bre='s';
 	do
 	{
 	if (next==true)	{switch (bre)
@@ -129,14 +127,14 @@ file()
 			if (cmdbuf[0]  != 'y' || cmdbuf[1] != '\0') {qflag=true;
 								    return;}}
 	do
-	{printf ("\n%s",sou);
+	{printf ("\n");
 	outopte();
 	inopte();
 	if (qflag==true) return;
 	}while (errflag==true);
 	if (next==false)	{
 				do
-				{printf ("%s",des);
+				{
 				outoptf();
 				inoptf();
 				if (qflag==true) return;
@@ -169,7 +167,7 @@ bytemode()
 {
 	bre='s';
 	do
-	{printf ("\n%s",sou);
+	{printf ("\n");
 	if (board=='1')	outopte();
 		else	outopte1();
 	inopte();
@@ -193,7 +191,7 @@ long c;
 
 	bre='s';
 	do
-	{printf ("\n%s",sou);
+	{printf ("\n");
 	outopte();
 	inopte();
 	if (qflag==true) return;
@@ -203,7 +201,7 @@ long c;
 	begadre2=begadre1;
 	for (c=0;c<20;c++) namee2[c]=namee1[c];
 	do
-	{printf ("%s",des);
+	{
 	if (board=='1')	outopte();
 		else	outopte1();
 	inopte();

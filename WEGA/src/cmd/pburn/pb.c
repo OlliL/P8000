@@ -3,9 +3,9 @@
 
 	pburn - programmer	(c) zft/keaw abt.: basissoftware wae
 				wega p8000/16-bit-teil
-				version : 2.3
+				version : 2.6
 					  (prom programmer)
-				datum	: 20.11.1989
+				datum	: 09.02.1990
 
 
 	bearbeiter:		r. kuehle
@@ -47,7 +47,7 @@
 
 
 #define dia1 "\n\n\t\t      pburn - prom programmer board"
-#define cpr  "\t\t         (c) zft/keaw  version 2.3\n"
+#define cpr  "\t\t         (c) zft/keaw  version 2.6\n"
 #define dia2 "\t\t      ===============================\n\n"
 #define dia3 "menue:\n\tp - program\n\tl - list\n\tt - crc\n\tb - bytemode"
 #define dia4 "\n\tf - file\n\tc - copy"
