@@ -1,0 +1,2 @@
+echo -n INSERT ING_DB 6.3/4 DISTRIBUTION DISK $1
+read ok
