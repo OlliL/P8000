@@ -1,0 +1,36 @@
+copy erfind      
+(
+	erfindung    = c36,
+	erfinder     = c20,
+	jahr         = c9,
+	land         = c12
+)into "xxx/erfind      ii"
+\p\g
+copy personal    
+(
+	num          = i2,
+	name         = c20,
+	gehalt       = i2,
+	leiter       = i2,
+	gebdat       = i2,
+	einstdat     = i2
+)into "xxx/personal    ii"
+\p\g
+copy teile       
+(
+	tnum         = i2,
+	tname        = c20,
+	farbe        = c8,
+	gewicht      = i2,
+	menge        = i2
+)into "xxx/teile       ii"
+\p\g
+copy lieferung   
+(
+	lnum         = i2,
+	tnum         = i2,
+	bnum         = i2,
+	liefdat      = c8,
+	menge        = i2
+)into "xxx/lieferung   ii"
+\p\g
