@@ -1,0 +1,1 @@
+lpr -nb < $1; exec rm -f $1
