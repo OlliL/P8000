@@ -1,0 +1,824 @@
+
+
+++++++++++ ACCBUF ++++++++++
+
+struct accbuf   ==   ACCBUF
+   0 0000 #0000:	mainpg
+   4 0004 #0004:	ovflopg
+   8 0010 #0008:	nxtlino
+  10 0012 #000a:	firstup
+4094 7776 #0ffe:	linetab
+4096 10000 #1000:	rel_tupid
+4100 10004 #1004:	thispage
+4104 10010 #1008:	filedesc
+4108 10014 #100c:	modf
+4112 10020 #1010:	modb
+4116 10024 #1014:	bufstatus
+
+
+++++++++++ ACCESSPARAM ++++++++++
+
+struct accessparam
+   0 0000 #0000:	mode
+   2 0002 #0002:	sec_index
+   4 0004 #0004:	keydno
+
+
+++++++++++ ADMIN ++++++++++
+
+struct admin
+   0 0000 #0000:	adhdr.adowner
+   2 0002 #0002:	adhdr.adflags
+   4 0004 #0004:	adreld.reldum.relid
+  16 0020 #0010:	adreld.reldum.relowner
+  18 0022 #0012:	adreld.reldum.relspec
+  19 0023 #0013:	adreld.reldum.relindxd
+  20 0024 #0014:	adreld.reldum.relsave
+  24 0030 #0018:	adreld.reldum.reltups
+  28 0034 #001c:	adreld.reldum.relatts
+  30 0036 #001e:	adreld.reldum.relwid
+  32 0040 #0020:	adreld.reldum.relprim
+  36 0044 #0024:	adreld.reldum.relspare
+  40 0050 #0028:	adreld.reldum.relstat
+  44 0054 #002c:	adreld.relfp
+  46 0056 #002e:	adreld.relopn
+  48 0060 #0030:	adreld.reltid
+  52 0064 #0034:	adreld.reladds
+  56 0070 #0038:	adreld.reloff
+ 314 0472 #013a:	adreld.relfrmt
+ 443 0673 #01bb:	adreld.relfrml
+ 572 1074 #023c:	adreld.relxtra
+ 701 1275 #02bd:	adreld.relgiven
+ 832 1500 #0340:	adattd.reldum.relid
+ 844 1514 #034c:	adattd.reldum.relowner
+ 846 1516 #034e:	adattd.reldum.relspec
+ 847 1517 #034f:	adattd.reldum.relindxd
+ 848 1520 #0350:	adattd.reldum.relsave
+ 852 1524 #0354:	adattd.reldum.reltups
+ 856 1530 #0358:	adattd.reldum.relatts
+ 858 1532 #035a:	adattd.reldum.relwid
+ 860 1534 #035c:	adattd.reldum.relprim
+ 864 1540 #0360:	adattd.reldum.relspare
+ 868 1544 #0364:	adattd.reldum.relstat
+ 872 1550 #0368:	adattd.relfp
+ 874 1552 #036a:	adattd.relopn
+ 876 1554 #036c:	adattd.reltid
+ 880 1560 #0370:	adattd.reladds
+ 884 1564 #0374:	adattd.reloff
+1142 2166 #0476:	adattd.relfrmt
+1271 2367 #04f7:	adattd.relfrml
+1400 2570 #0578:	adattd.relxtra
+1529 2771 #05f9:	adattd.relgiven
+
+
+++++++++++ ADMINHDR ++++++++++
+
+struct adminhdr
+   0 0000 #0000:	adowner
+   2 0002 #0002:	adflags
+
+
+++++++++++ AOP_NODE ++++++++++
+
+struct aop_node   ==   AOP_NODE
+   0 0000 #0000:	qt_hdr
+  12 0014 #000c:	var_hdr
+  16 0020 #0010:	agfrmt
+  17 0021 #0011:	agfrml
+
+
+++++++++++ ATTRIBUTE ++++++++++
+
+struct attribute
+   0 0000 #0000:	attrelid
+  12 0014 #000c:	attowner
+  14 0016 #000e:	attname
+  26 0032 #001a:	attid
+  28 0034 #001c:	attoff
+  30 0036 #001e:	attfrmt
+  31 0037 #001f:	attfrml
+  32 0040 #0020:	attxtra
+
+
+++++++++++ BATCHBUF ++++++++++
+
+struct batchbuf
+   0 0000 #0000:	file_id
+   6 0006 #0006:	bbuf
+
+
+++++++++++ BATCHHD ++++++++++
+
+struct batchhd
+   0 0000 #0000:	db_name
+  15 0017 #000f:	rel_name
+  28 0034 #001c:	userid
+  32 0040 #0020:	num_updts
+  36 0044 #0024:	mode_up
+  38 0046 #0026:	tido_size
+  40 0050 #0028:	tupo_size
+  42 0052 #002a:	tupn_size
+  44 0054 #002c:	tidn_size
+  46 0056 #002e:	si_dcount
+  48 0060 #0030:	si[ 0].rel_off
+  50 0062 #0032:	si[ 0].tupo_off
+  52 0064 #0034:	si[ 0].dom_size
+  54 0066 #0036:	si[ 1].rel_off
+  56 0070 #0038:	si[ 1].tupo_off
+  58 0072 #003a:	si[ 1].dom_size
+  60 0074 #003c:	si[ 2].rel_off
+  62 0076 #003e:	si[ 2].tupo_off
+  64 0100 #0040:	si[ 2].dom_size
+  66 0102 #0042:	si[ 3].rel_off
+  68 0104 #0044:	si[ 3].tupo_off
+  70 0106 #0046:	si[ 3].dom_size
+  72 0110 #0048:	si[ 4].rel_off
+  74 0112 #004a:	si[ 4].tupo_off
+  76 0114 #004c:	si[ 4].dom_size
+  78 0116 #004e:	si[ 5].rel_off
+  80 0120 #0050:	si[ 5].tupo_off
+  82 0122 #0052:	si[ 5].dom_size
+  84 0124 #0054:	si[ 6].rel_off
+  86 0126 #0056:	si[ 6].tupo_off
+  88 0130 #0058:	si[ 6].dom_size
+  90 0132 #005a:	si[ 7].rel_off
+  92 0134 #005c:	si[ 7].tupo_off
+  94 0136 #005e:	si[ 7].dom_size
+  96 0140 #0060:	si[ 8].rel_off
+  98 0142 #0062:	si[ 8].tupo_off
+ 100 0144 #0064:	si[ 8].dom_size
+ 102 0146 #0066:	si[ 9].rel_off
+ 104 0150 #0068:	si[ 9].tupo_off
+ 106 0152 #006a:	si[ 9].dom_size
+ 108 0154 #006c:	si[10].rel_off
+ 110 0156 #006e:	si[10].tupo_off
+ 112 0160 #0070:	si[10].dom_size
+ 114 0162 #0072:	si[11].rel_off
+ 116 0164 #0074:	si[11].tupo_off
+ 118 0166 #0076:	si[11].dom_size
+ 120 0170 #0078:	si[12].rel_off
+ 122 0172 #007a:	si[12].tupo_off
+ 124 0174 #007c:	si[12].dom_size
+ 126 0176 #007e:	si[13].rel_off
+ 128 0200 #0080:	si[13].tupo_off
+ 130 0202 #0082:	si[13].dom_size
+ 132 0204 #0084:	si[14].rel_off
+ 134 0206 #0086:	si[14].tupo_off
+ 136 0210 #0088:	si[14].dom_size
+ 138 0212 #008a:	si[15].rel_off
+ 140 0214 #008c:	si[15].tupo_off
+ 142 0216 #008e:	si[15].dom_size
+ 144 0220 #0090:	si[16].rel_off
+ 146 0222 #0092:	si[16].tupo_off
+ 148 0224 #0094:	si[16].dom_size
+ 150 0226 #0096:	si[17].rel_off
+ 152 0230 #0098:	si[17].tupo_off
+ 154 0232 #009a:	si[17].dom_size
+ 156 0234 #009c:	si[18].rel_off
+ 158 0236 #009e:	si[18].tupo_off
+ 160 0240 #00a0:	si[18].dom_size
+ 162 0242 #00a2:	si[19].rel_off
+ 164 0244 #00a4:	si[19].tupo_off
+ 166 0246 #00a6:	si[19].dom_size
+ 168 0250 #00a8:	si[20].rel_off
+ 170 0252 #00aa:	si[20].tupo_off
+ 172 0254 #00ac:	si[20].dom_size
+ 174 0256 #00ae:	si[21].rel_off
+ 176 0260 #00b0:	si[21].tupo_off
+ 178 0262 #00b2:	si[21].dom_size
+ 180 0264 #00b4:	si[22].rel_off
+ 182 0266 #00b6:	si[22].tupo_off
+ 184 0270 #00b8:	si[22].dom_size
+ 186 0272 #00ba:	si[23].rel_off
+ 188 0274 #00bc:	si[23].tupo_off
+ 190 0276 #00be:	si[23].dom_size
+ 192 0300 #00c0:	si[24].rel_off
+ 194 0302 #00c2:	si[24].tupo_off
+ 196 0304 #00c4:	si[24].dom_size
+ 198 0306 #00c6:	si[25].rel_off
+ 200 0310 #00c8:	si[25].tupo_off
+ 202 0312 #00ca:	si[25].dom_size
+ 204 0314 #00cc:	si[26].rel_off
+ 206 0316 #00ce:	si[26].tupo_off
+ 208 0320 #00d0:	si[26].dom_size
+ 210 0322 #00d2:	si[27].rel_off
+ 212 0324 #00d4:	si[27].tupo_off
+ 214 0326 #00d6:	si[27].dom_size
+ 216 0330 #00d8:	si[28].rel_off
+ 218 0332 #00da:	si[28].tupo_off
+ 220 0334 #00dc:	si[28].dom_size
+ 222 0336 #00de:	si[29].rel_off
+ 224 0340 #00e0:	si[29].tupo_off
+ 226 0342 #00e2:	si[29].dom_size
+ 228 0344 #00e4:	si[30].rel_off
+ 230 0346 #00e6:	si[30].tupo_off
+ 232 0350 #00e8:	si[30].dom_size
+ 234 0352 #00ea:	si[31].rel_off
+ 236 0354 #00ec:	si[31].tupo_off
+ 238 0356 #00ee:	si[31].dom_size
+ 240 0360 #00f0:	si[32].rel_off
+ 242 0362 #00f2:	si[32].tupo_off
+ 244 0364 #00f4:	si[32].dom_size
+ 246 0366 #00f6:	si[33].rel_off
+ 248 0370 #00f8:	si[33].tupo_off
+ 250 0372 #00fa:	si[33].dom_size
+ 252 0374 #00fc:	si[34].rel_off
+ 254 0376 #00fe:	si[34].tupo_off
+ 256 0400 #0100:	si[34].dom_size
+ 258 0402 #0102:	si[35].rel_off
+ 260 0404 #0104:	si[35].tupo_off
+ 262 0406 #0106:	si[35].dom_size
+ 264 0410 #0108:	si[36].rel_off
+ 266 0412 #010a:	si[36].tupo_off
+ 268 0414 #010c:	si[36].dom_size
+ 270 0416 #010e:	si[37].rel_off
+ 272 0420 #0110:	si[37].tupo_off
+ 274 0422 #0112:	si[37].dom_size
+ 276 0424 #0114:	si[38].rel_off
+ 278 0426 #0116:	si[38].tupo_off
+ 280 0430 #0118:	si[38].dom_size
+ 282 0432 #011a:	si[39].rel_off
+ 284 0434 #011c:	si[39].tupo_off
+ 286 0436 #011e:	si[39].dom_size
+ 288 0440 #0120:	si[40].rel_off
+ 290 0442 #0122:	si[40].tupo_off
+ 292 0444 #0124:	si[40].dom_size
+ 294 0446 #0126:	si[41].rel_off
+ 296 0450 #0128:	si[41].tupo_off
+ 298 0452 #012a:	si[41].dom_size
+ 300 0454 #012c:	si[42].rel_off
+ 302 0456 #012e:	si[42].tupo_off
+ 304 0460 #0130:	si[42].dom_size
+ 306 0462 #0132:	si[43].rel_off
+ 308 0464 #0134:	si[43].tupo_off
+ 310 0466 #0136:	si[43].dom_size
+ 312 0470 #0138:	si[44].rel_off
+ 314 0472 #013a:	si[44].tupo_off
+ 316 0474 #013c:	si[44].dom_size
+ 318 0476 #013e:	si[45].rel_off
+ 320 0500 #0140:	si[45].tupo_off
+ 322 0502 #0142:	si[45].dom_size
+ 324 0504 #0144:	si[46].rel_off
+ 326 0506 #0146:	si[46].tupo_off
+ 328 0510 #0148:	si[46].dom_size
+ 330 0512 #014a:	si[47].rel_off
+ 332 0514 #014c:	si[47].tupo_off
+ 334 0516 #014e:	si[47].dom_size
+ 336 0520 #0150:	si[48].rel_off
+ 338 0522 #0152:	si[48].tupo_off
+ 340 0524 #0154:	si[48].dom_size
+ 342 0526 #0156:	si[49].rel_off
+ 344 0530 #0158:	si[49].tupo_off
+ 346 0532 #015a:	si[49].dom_size
+ 348 0534 #015c:	si[50].rel_off
+ 350 0536 #015e:	si[50].tupo_off
+ 352 0540 #0160:	si[50].dom_size
+ 354 0542 #0162:	si[51].rel_off
+ 356 0544 #0164:	si[51].tupo_off
+ 358 0546 #0166:	si[51].dom_size
+ 360 0550 #0168:	si[52].rel_off
+ 362 0552 #016a:	si[52].tupo_off
+ 364 0554 #016c:	si[52].dom_size
+ 366 0556 #016e:	si[53].rel_off
+ 368 0560 #0170:	si[53].tupo_off
+ 370 0562 #0172:	si[53].dom_size
+ 372 0564 #0174:	si[54].rel_off
+ 374 0566 #0176:	si[54].tupo_off
+ 376 0570 #0178:	si[54].dom_size
+ 378 0572 #017a:	si[55].rel_off
+ 380 0574 #017c:	si[55].tupo_off
+ 382 0576 #017e:	si[55].dom_size
+ 384 0600 #0180:	si[56].rel_off
+ 386 0602 #0182:	si[56].tupo_off
+ 388 0604 #0184:	si[56].dom_size
+ 390 0606 #0186:	si[57].rel_off
+ 392 0610 #0188:	si[57].tupo_off
+ 394 0612 #018a:	si[57].dom_size
+ 396 0614 #018c:	si[58].rel_off
+ 398 0616 #018e:	si[58].tupo_off
+ 400 0620 #0190:	si[58].dom_size
+ 402 0622 #0192:	si[59].rel_off
+ 404 0624 #0194:	si[59].tupo_off
+ 406 0626 #0196:	si[59].dom_size
+ 408 0630 #0198:	si[60].rel_off
+ 410 0632 #019a:	si[60].tupo_off
+ 412 0634 #019c:	si[60].dom_size
+ 414 0636 #019e:	si[61].rel_off
+ 416 0640 #01a0:	si[61].tupo_off
+ 418 0642 #01a2:	si[61].dom_size
+ 420 0644 #01a4:	si[62].rel_off
+ 422 0646 #01a6:	si[62].tupo_off
+ 424 0650 #01a8:	si[62].dom_size
+ 426 0652 #01aa:	si[63].rel_off
+ 428 0654 #01ac:	si[63].tupo_off
+ 430 0656 #01ae:	si[63].dom_size
+ 432 0660 #01b0:	si[64].rel_off
+ 434 0662 #01b2:	si[64].tupo_off
+ 436 0664 #01b4:	si[64].dom_size
+ 438 0666 #01b6:	si[65].rel_off
+ 440 0670 #01b8:	si[65].tupo_off
+ 442 0672 #01ba:	si[65].dom_size
+ 444 0674 #01bc:	si[66].rel_off
+ 446 0676 #01be:	si[66].tupo_off
+ 448 0700 #01c0:	si[66].dom_size
+ 450 0702 #01c2:	si[67].rel_off
+ 452 0704 #01c4:	si[67].tupo_off
+ 454 0706 #01c6:	si[67].dom_size
+ 456 0710 #01c8:	si[68].rel_off
+ 458 0712 #01ca:	si[68].tupo_off
+ 460 0714 #01cc:	si[68].dom_size
+ 462 0716 #01ce:	si[69].rel_off
+ 464 0720 #01d0:	si[69].tupo_off
+ 466 0722 #01d2:	si[69].dom_size
+ 468 0724 #01d4:	si[70].rel_off
+ 470 0726 #01d6:	si[70].tupo_off
+ 472 0730 #01d8:	si[70].dom_size
+ 474 0732 #01da:	si[71].rel_off
+ 476 0734 #01dc:	si[71].tupo_off
+ 478 0736 #01de:	si[71].dom_size
+ 480 0740 #01e0:	si[72].rel_off
+ 482 0742 #01e2:	si[72].tupo_off
+ 484 0744 #01e4:	si[72].dom_size
+ 486 0746 #01e6:	si[73].rel_off
+ 488 0750 #01e8:	si[73].tupo_off
+ 490 0752 #01ea:	si[73].dom_size
+ 492 0754 #01ec:	si[74].rel_off
+ 494 0756 #01ee:	si[74].tupo_off
+ 496 0760 #01f0:	si[74].dom_size
+ 498 0762 #01f2:	si[75].rel_off
+ 500 0764 #01f4:	si[75].tupo_off
+ 502 0766 #01f6:	si[75].dom_size
+ 504 0770 #01f8:	si[76].rel_off
+ 506 0772 #01fa:	si[76].tupo_off
+ 508 0774 #01fc:	si[76].dom_size
+ 510 0776 #01fe:	si[77].rel_off
+ 512 1000 #0200:	si[77].tupo_off
+ 514 1002 #0202:	si[77].dom_size
+ 516 1004 #0204:	si[78].rel_off
+ 518 1006 #0206:	si[78].tupo_off
+ 520 1010 #0208:	si[78].dom_size
+ 522 1012 #020a:	si[79].rel_off
+ 524 1014 #020c:	si[79].tupo_off
+ 526 1016 #020e:	si[79].dom_size
+ 528 1020 #0210:	si[80].rel_off
+ 530 1022 #0212:	si[80].tupo_off
+ 532 1024 #0214:	si[80].dom_size
+ 534 1026 #0216:	si[81].rel_off
+ 536 1030 #0218:	si[81].tupo_off
+ 538 1032 #021a:	si[81].dom_size
+ 540 1034 #021c:	si[82].rel_off
+ 542 1036 #021e:	si[82].tupo_off
+ 544 1040 #0220:	si[82].dom_size
+ 546 1042 #0222:	si[83].rel_off
+ 548 1044 #0224:	si[83].tupo_off
+ 550 1046 #0226:	si[83].dom_size
+ 552 1050 #0228:	si[84].rel_off
+ 554 1052 #022a:	si[84].tupo_off
+ 556 1054 #022c:	si[84].dom_size
+ 558 1056 #022e:	si[85].rel_off
+ 560 1060 #0230:	si[85].tupo_off
+ 562 1062 #0232:	si[85].dom_size
+ 564 1064 #0234:	si[86].rel_off
+ 566 1066 #0236:	si[86].tupo_off
+ 568 1070 #0238:	si[86].dom_size
+ 570 1072 #023a:	si[87].rel_off
+ 572 1074 #023c:	si[87].tupo_off
+ 574 1076 #023e:	si[87].dom_size
+ 576 1100 #0240:	si[88].rel_off
+ 578 1102 #0242:	si[88].tupo_off
+ 580 1104 #0244:	si[88].dom_size
+ 582 1106 #0246:	si[89].rel_off
+ 584 1110 #0248:	si[89].tupo_off
+ 586 1112 #024a:	si[89].dom_size
+ 588 1114 #024c:	si[90].rel_off
+ 590 1116 #024e:	si[90].tupo_off
+ 592 1120 #0250:	si[90].dom_size
+ 594 1122 #0252:	si[91].rel_off
+ 596 1124 #0254:	si[91].tupo_off
+ 598 1126 #0256:	si[91].dom_size
+ 600 1130 #0258:	si[92].rel_off
+ 602 1132 #025a:	si[92].tupo_off
+ 604 1134 #025c:	si[92].dom_size
+ 606 1136 #025e:	si[93].rel_off
+ 608 1140 #0260:	si[93].tupo_off
+ 610 1142 #0262:	si[93].dom_size
+ 612 1144 #0264:	si[94].rel_off
+ 614 1146 #0266:	si[94].tupo_off
+ 616 1150 #0268:	si[94].dom_size
+ 618 1152 #026a:	si[95].rel_off
+ 620 1154 #026c:	si[95].tupo_off
+ 622 1156 #026e:	si[95].dom_size
+ 624 1160 #0270:	si[96].rel_off
+ 626 1162 #0272:	si[96].tupo_off
+ 628 1164 #0274:	si[96].dom_size
+ 630 1166 #0276:	si[97].rel_off
+ 632 1170 #0278:	si[97].tupo_off
+ 634 1172 #027a:	si[97].dom_size
+ 636 1174 #027c:	si[98].rel_off
+ 638 1176 #027e:	si[98].tupo_off
+ 640 1200 #0280:	si[98].dom_size
+ 642 1202 #0282:	si[99].rel_off
+ 644 1204 #0284:	si[99].tupo_off
+ 646 1206 #0286:	si[99].dom_size
+ 648 1210 #0288:	si[100].rel_off
+ 650 1212 #028a:	si[100].tupo_off
+ 652 1214 #028c:	si[100].dom_size
+ 654 1216 #028e:	si[101].rel_off
+ 656 1220 #0290:	si[101].tupo_off
+ 658 1222 #0292:	si[101].dom_size
+ 660 1224 #0294:	si[102].rel_off
+ 662 1226 #0296:	si[102].tupo_off
+ 664 1230 #0298:	si[102].dom_size
+ 666 1232 #029a:	si[103].rel_off
+ 668 1234 #029c:	si[103].tupo_off
+ 670 1236 #029e:	si[103].dom_size
+ 672 1240 #02a0:	si[104].rel_off
+ 674 1242 #02a2:	si[104].tupo_off
+ 676 1244 #02a4:	si[104].dom_size
+ 678 1246 #02a6:	si[105].rel_off
+ 680 1250 #02a8:	si[105].tupo_off
+ 682 1252 #02aa:	si[105].dom_size
+ 684 1254 #02ac:	si[106].rel_off
+ 686 1256 #02ae:	si[106].tupo_off
+ 688 1260 #02b0:	si[106].dom_size
+ 690 1262 #02b2:	si[107].rel_off
+ 692 1264 #02b4:	si[107].tupo_off
+ 694 1266 #02b6:	si[107].dom_size
+ 696 1270 #02b8:	si[108].rel_off
+ 698 1272 #02ba:	si[108].tupo_off
+ 700 1274 #02bc:	si[108].dom_size
+ 702 1276 #02be:	si[109].rel_off
+ 704 1300 #02c0:	si[109].tupo_off
+ 706 1302 #02c2:	si[109].dom_size
+ 708 1304 #02c4:	si[110].rel_off
+ 710 1306 #02c6:	si[110].tupo_off
+ 712 1310 #02c8:	si[110].dom_size
+ 714 1312 #02ca:	si[111].rel_off
+ 716 1314 #02cc:	si[111].tupo_off
+ 718 1316 #02ce:	si[111].dom_size
+ 720 1320 #02d0:	si[112].rel_off
+ 722 1322 #02d2:	si[112].tupo_off
+ 724 1324 #02d4:	si[112].dom_size
+ 726 1326 #02d6:	si[113].rel_off
+ 728 1330 #02d8:	si[113].tupo_off
+ 730 1332 #02da:	si[113].dom_size
+ 732 1334 #02dc:	si[114].rel_off
+ 734 1336 #02de:	si[114].tupo_off
+ 736 1340 #02e0:	si[114].dom_size
+ 738 1342 #02e2:	si[115].rel_off
+ 740 1344 #02e4:	si[115].tupo_off
+ 742 1346 #02e6:	si[115].dom_size
+ 744 1350 #02e8:	si[116].rel_off
+ 746 1352 #02ea:	si[116].tupo_off
+ 748 1354 #02ec:	si[116].dom_size
+ 750 1356 #02ee:	si[117].rel_off
+ 752 1360 #02f0:	si[117].tupo_off
+ 754 1362 #02f2:	si[117].dom_size
+ 756 1364 #02f4:	si[118].rel_off
+ 758 1366 #02f6:	si[118].tupo_off
+ 760 1370 #02f8:	si[118].dom_size
+ 762 1372 #02fa:	si[119].rel_off
+ 764 1374 #02fc:	si[119].tupo_off
+ 766 1376 #02fe:	si[119].dom_size
+ 768 1400 #0300:	si[120].rel_off
+ 770 1402 #0302:	si[120].tupo_off
+ 772 1404 #0304:	si[120].dom_size
+ 774 1406 #0306:	si[121].rel_off
+ 776 1410 #0308:	si[121].tupo_off
+ 778 1412 #030a:	si[121].dom_size
+ 780 1414 #030c:	si[122].rel_off
+ 782 1416 #030e:	si[122].tupo_off
+ 784 1420 #0310:	si[122].dom_size
+ 786 1422 #0312:	si[123].rel_off
+ 788 1424 #0314:	si[123].tupo_off
+ 790 1426 #0316:	si[123].dom_size
+ 792 1430 #0318:	si[124].rel_off
+ 794 1432 #031a:	si[124].tupo_off
+ 796 1434 #031c:	si[124].dom_size
+ 798 1436 #031e:	si[125].rel_off
+ 800 1440 #0320:	si[125].tupo_off
+ 802 1442 #0322:	si[125].dom_size
+ 804 1444 #0324:	si[126].rel_off
+ 806 1446 #0326:	si[126].tupo_off
+ 808 1450 #0328:	si[126].dom_size
+ 810 1452 #032a:	si[127].rel_off
+ 812 1454 #032c:	si[127].tupo_off
+ 814 1456 #032e:	si[127].dom_size
+ 816 1460 #0330:	si[128].rel_off
+ 818 1462 #0332:	si[128].tupo_off
+ 820 1464 #0334:	si[128].dom_size
+ 822 1466 #0336:	si[129].rel_off
+ 824 1470 #0338:	si[129].tupo_off
+ 826 1472 #033a:	si[129].dom_size
+
+
+++++++++++ DESC ++++++++++
+
+struct desc   ==   DESC
+   0 0000 #0000:	reldum.relid
+  12 0014 #000c:	reldum.relowner
+  14 0016 #000e:	reldum.relspec
+  15 0017 #000f:	reldum.relindxd
+  16 0020 #0010:	reldum.relsave
+  20 0024 #0014:	reldum.reltups
+  24 0030 #0018:	reldum.relatts
+  26 0032 #001a:	reldum.relwid
+  28 0034 #001c:	reldum.relprim
+  32 0040 #0020:	reldum.relspare
+  36 0044 #0024:	reldum.relstat
+  40 0050 #0028:	relfp
+  42 0052 #002a:	relopn
+  44 0054 #002c:	reltid
+  48 0060 #0030:	reladds
+  52 0064 #0034:	reloff
+ 310 0466 #0136:	relfrmt
+ 439 0667 #01b7:	relfrml
+ 568 1070 #0238:	relxtra
+ 697 1271 #02b9:	relgiven
+
+
+++++++++++ DESCXX ++++++++++
+
+struct descxx   ==   DESCXX
+   0 0000 #0000:	xx_desc.reldum.relid
+  12 0014 #000c:	xx_desc.reldum.relowner
+  14 0016 #000e:	xx_desc.reldum.relspec
+  15 0017 #000f:	xx_desc.reldum.relindxd
+  16 0020 #0010:	xx_desc.reldum.relsave
+  20 0024 #0014:	xx_desc.reldum.reltups
+  24 0030 #0018:	xx_desc.reldum.relatts
+  26 0032 #001a:	xx_desc.reldum.relwid
+  28 0034 #001c:	xx_desc.reldum.relprim
+  32 0040 #0020:	xx_desc.reldum.relspare
+  36 0044 #0024:	xx_desc.reldum.relstat
+  40 0050 #0028:	xx_desc.relfp
+  42 0052 #002a:	xx_desc.relopn
+  44 0054 #002c:	xx_desc.reltid
+  48 0060 #0030:	xx_desc.reladds
+  52 0064 #0034:	xx_desc.reloff
+ 310 0466 #0136:	xx_desc.relfrmt
+ 439 0667 #01b7:	xx_desc.relfrml
+ 568 1070 #0238:	xx_desc.relxtra
+ 697 1271 #02b9:	xx_desc.relgiven
+ 828 1474 #033c:	xx_next
+ 832 1500 #0340:	xx_index
+ 836 1504 #0344:	xx_indom
+ 840 1510 #0348:	xx_ta
+ 845 1515 #034d:	xx_excl
+ 846 1516 #034e:	xx_locks
+
+
+++++++++++ DESXX ++++++++++
+
+struct desxx
+   0 0000 #0000:	cach_relname
+   4 0004 #0004:	cach_desc
+   8 0010 #0008:	cach_alias
+
+
+++++++++++ INDEX ++++++++++
+
+struct index
+   0 0000 #0000:	irelidp
+  12 0014 #000c:	iownerp
+  14 0016 #000e:	irelidi
+  26 0032 #001a:	irelspeci
+  27 0033 #001b:	idom
+
+
+++++++++++ INTEGRITY ++++++++++
+
+struct integrity
+   0 0000 #0000:	intrelid
+  12 0014 #000c:	intrelowner
+  14 0016 #000e:	inttree
+  16 0020 #0010:	intdomset
+  32 0040 #0020:	intresvar
+
+
+++++++++++ LASTOK ++++++++++
+
+struct lastok
+   0 0000 #0000:	toktyp
+   4 0004 #0004:	tok
+   8 0010 #0008:	tokop
+
+
+++++++++++ LOCKREQ ++++++++++
+
+struct lockreq   ==   LOCKREQ
+   0 0000 #0000:	l_db
+   4 0004 #0004:	l_rel
+   8 0010 #0008:	l_page
+  12 0014 #000c:	l_act
+  13 0015 #000d:	l_mode
+  14 0016 #000e:	l_pid
+
+
+++++++++++ OPTAB ++++++++++
+
+struct optab
+   0 0000 #0000:	term
+   4 0004 #0004:	token
+   6 0006 #0006:	opcode
+
+
+++++++++++ OP_NODE ++++++++++
+
+struct op_node   ==   OP_NODE
+   0 0000 #0000:	qt_hdr
+  12 0014 #000c:	opno
+
+
+++++++++++ OUT_ARG ++++++++++
+
+struct out_arg
+   0 0000 #0000:	c0width
+   2 0002 #0002:	i1width
+   4 0004 #0004:	i2width
+   6 0006 #0006:	i4width
+   8 0010 #0008:	f4width
+  10 0012 #000a:	f8width
+  12 0014 #000c:	f4prec
+  14 0016 #000e:	f8prec
+  16 0020 #0010:	f4style
+  17 0021 #0011:	f8style
+  18 0022 #0012:	linesperpage
+  20 0024 #0014:	coldelim
+
+
+++++++++++ PIPFRMT ++++++++++
+
+struct pipfrmt
+   0 0000 #0000:	exec_id
+   1 0001 #0001:	func_id
+   2 0002 #0002:	err_id
+   4 0004 #0004:	hdrstat
+   5 0005 #0005:	buf_len
+   6 0006 #0006:	param_id
+   7 0007 #0007:	expansion
+   8 0010 #0008:	pbuf
+ 128 0200 #0080:	pbuf_pt
+
+
+++++++++++ PROTECT ++++++++++
+
+struct protect
+   0 0000 #0000:	prorelid
+  12 0014 #000c:	prorelown
+  14 0016 #000e:	propermid
+  16 0020 #0010:	prouser
+  18 0022 #0012:	proterm
+  20 0024 #0014:	proresvar
+  21 0025 #0015:	proopset
+  22 0026 #0016:	protodbgn
+  24 0030 #0018:	protodend
+  26 0032 #001a:	prodowbgn
+  27 0033 #001b:	prodowend
+  28 0034 #001c:	prodomset
+  44 0054 #002c:	protree
+
+
+++++++++++ QTREE ++++++++++
+
+struct querytree   ==   QREE
+   0 0000 #0000:	left
+   4 0004 #0004:	right
+   8 0010 #0008:	sym.type
+   9 0011 #0009:	sym.len
+  10 0012 #000a:	sym.aligned
+  12 0014 #000c:	sym.value
+
+
+++++++++++ REFS ++++++++++
+
+struct refs
+   0 0000 #0000:	refrelid
+  12 0014 #000c:	refowner
+  14 0016 #000e:	refbrelid
+  26 0032 #001a:	refbowner
+  28 0034 #001c:	reftype
+
+
+++++++++++ RELATION ++++++++++
+
+struct relation
+   0 0000 #0000:	relid
+  12 0014 #000c:	relowner
+  14 0016 #000e:	relspec
+  15 0017 #000f:	relindxd
+  16 0020 #0010:	relsave
+  20 0024 #0014:	reltups
+  24 0030 #0018:	relatts
+  26 0032 #001a:	relwid
+  28 0034 #001c:	relprim
+  32 0040 #0020:	relspare
+  36 0044 #0024:	relstat
+
+
+++++++++++ RES_NODE ++++++++++
+
+struct res_node   ==   RES_NODE
+   0 0000 #0000:	qt_hdr
+  12 0014 #000c:	resno
+
+
+++++++++++ RETCODE ++++++++++
+
+struct retcode
+   0 0000 #0000:	rc_tupcount
+   4 0004 #0004:	rc_status
+   6 0006 #0006:	rc_siteid
+
+
+++++++++++ ROOT_NODE ++++++++++
+
+struct root_node   ==   ROOT_NODE
+   0 0000 #0000:	qt_hdr
+  12 0014 #000c:	tvarc
+  13 0015 #000d:	lvarc
+  14 0016 #000e:	lvarm
+  16 0020 #0010:	rvarm
+  18 0022 #0012:	rootuser
+
+
+++++++++++ SI_DOMS ++++++++++
+
+struct si_doms
+   0 0000 #0000:	rel_off
+   2 0002 #0002:	tupo_off
+   4 0004 #0004:	dom_size
+
+
+++++++++++ SPECIAL ++++++++++
+
+struct special
+   0 0000 #0000:	sconst
+   2 0002 #0002:	bgncmnt
+   4 0004 #0004:	endcmnt
+   6 0006 #0006:	i2const
+   8 0010 #0008:	i4const
+  10 0012 #000a:	f4const
+  12 0014 #000c:	f8const
+  14 0016 #000e:	name
+
+
+++++++++++ SRCID ++++++++++
+
+struct srcid   ==   SRCID
+   0 0000 #0000:	sym_hdr
+   4 0004 #0004:	srcvar
+   6 0006 #0006:	srcname
+  18 0022 #0012:	srcown
+  20 0024 #0014:	srcstat
+
+
+++++++++++ SVAR_NODE ++++++++++
+
+struct svar_node   ==   SVAR_NODE
+   0 0000 #0000:	sym_hdr
+   4 0004 #0004:	vattno
+   6 0006 #0006:	vtype
+   7 0007 #0007:	vlen
+   8 0010 #0008:	vpoint
+
+
+++++++++++ SYMBOL ++++++++++
+
+struct symbol   ==   SYMBOL
+   0 0000 #0000:	type
+   1 0001 #0001:	len
+   2 0002 #0002:	aligned
+   4 0004 #0004:	value
+
+
+++++++++++ TREE ++++++++++
+
+struct tree
+   0 0000 #0000:	treerelid
+  12 0014 #000c:	treeowner
+  14 0016 #000e:	treeid
+  16 0020 #0010:	treeseq
+  18 0022 #0012:	treetype
+  19 0023 #0013:	treexxxx
+  20 0024 #0014:	treetree
+
+
+++++++++++ TUP_ID ++++++++++
+
+struct tup_id
+   0 0000 #0000:	line_id
+   1 0001 #0001:	pg2
+   2 0002 #0002:	pg1
+   3 0003 #0003:	pg0
+
+
+++++++++++ VAR_NODE ++++++++++
+
+struct var_node   ==   VAR_NODE
+   0 0000 #0000:	qt_hdr
+  12 0014 #000c:	varno
+  13 0015 #000d:	attno
+  14 0016 #000e:	frmt
+  15 0017 #000f:	frml
+  16 0020 #0010:	valptr
