@@ -1,0 +1,1112 @@
+.ds LH Anwendung
+.ds RH \f3Monitor\f1
+.ds CH - % -
+.LP
+.bp
+.NH 2
+.ft B
+Monitor **
+.ft R
+.LP
+.sp 10
+.NH 3
+.ft B
+Einf\o'u"'hrung
+.ft R
+.LP
+Der Monitor realisiert die interaktive
+Arbeit mit dem DBS \*(yy\.
+Die Monitor-Kommandos erlauben in Zusammenarbeit
+mit einem Editor und dem \*(yy\-Makro-Prozessor
+gewisse Manipulationen an einem Text
+von QUEL-Statements, bevor diese aus dem Monitor-Puffer
+an den \*(yy\-Parser zur Analyse und zur Veranlassung
+ihrer Ausf\o'u"'hrung \o'u"'bergeben werden.
+Die Monitor-Kommandos erlauben die Steuerung
+der Arbeit mit \*(yy\ aus vorgefertigten Kommandofiles,
+die Monitor-Kommandos, Makro-Anweisungen und QUEL-Statements
+enthalten k\o'o"'nnen.
+.br
+Der Monitor ist der front_end_process
+des DBS \*(yy\.
+Er liest einen Eingabetext
+- prim\o'a"'r von standard_input -
+und analysiert diesen auf Monitor-Kommandos.
+Der Monitor f\o'u"'hrt in seinem Eingabetext gefundene
+Monitor-Kommandos sofort aus,
+anderer Text wird
+in den Monitor-Puffer gestellt.
+.br
+Beispiele f\o'u"'r eine komplexe Anwendung des Monitors
+sind erst in Verbindung mit Makros interessant und
+finden sich in der
+"Beschreibung des Makro-Prozessors"
+und dem Kapitel
+"Beispiele f\o'u"'r Monitor und Makro-Prozessor".
+.NH 3
+.ft B
+Modifikationen durch Optionen
+.ft R
+.LP
+Der Monitor wird durch folgende Optionen gesteuert:
+.DS I
+-d Unterdr\o'u"'ckung der Ausgabe des dayfile
+   (s. Startvorgang und Arbeitszyklus)
+-s Unterdr\o'u"'ckung der Ausgabe von Prompt-Meldungen
+   (s. Startvorgang und Arbeitszyklus)
+-a Unterdr\o'u"'ckung des automatischen L\o'o"'schens des
+   Monitor-Puffers
+   (Ausschalten des autoclear_modus)
+   (s.Arbeit mit dem Monitor-Puffer)
+.DE
+.NH 3
+.ft B
+Startvorgang und Arbeitszyklus
+.ft R
+.LP
+Beim Start von \*(yy\ wird neben dem 
+DBS der Monitor ge\%startet.
+.sp 1
+Der Monitor definiert den Makro
+.DS C
+"{pathname}"
+.DE
+mit dem Pfadnamen des \*(yy\-File-Systems.
+(Folgend wird in diesem Kapitel ein File_name
+unter diesem Pfadnamen mit
+.DS C
+ing_db/<file_name>
+.DE
+symbolisiert.)
+.LP
+Der Monitor definiert weiter den Makro
+.DS C
+"{usercode}"
+.DE
+mit dem 2-Byte-\\*(yy\-Usercode
+(s. usersfile des arbeitenden Nutzers.
+.sp 1
+Der Monitor meldet sich durch Ausgabe der
+.DS I
+\*(yy\-login-Meldung
+.sp 1
+"ing_db version <Versions_nummer> login
+ <aktuelle_Zeitangabe>"
+.DE
+.LP
+Diese Ausgabe wird durch die
+Option "-s" unterdr\o'u"'ckt.
+Anschliessend wird das
+.DS C
+ing_db/sys/etc/dayfile
+.DE
+angelistet,
+was durch die Option "-d"
+unterdr\o'u"'ckt werden kann.
+Mit der Ausgabe des dayfile sollen den \*(yy\-Nutzern
+aktuelle Informationen vermittelt werden.
+Da es allen Nutzern angeboten wird,
+ist es nicht zur Aufnahme nutzerspezifischer
+Informationen geeignet.
+.sp 1
+Durch den Monitor werden danach
+nacheinander die Monitor-Kommandos
+.DS B
+\einclude ing_db/sys/etc/startup
+\einclude <initfile>
+.DE
+automatisch ausgef\o'u"'hrt,
+was zur Abarbeitung von Kommandofolgen f\o'u"'hren
+kann,
+falls generell im startupfile f\o'u"'r \*(yy\,
+oder spezifisch f\o'u"'r den Nutzer
+(Angabe im 7.Feld der Nutzerzeile des
+ing_db/sys/etc/users)
+solche Files angelegt wurden
+(s. auch \einclude-Kommando).
+.sp 1
+Danach geht der Monitor in den Eingabe-Status
+und beginnt seinen Arbeitszyklus.
+.sp 1
+Zu Beginn des Eingabe-Status
+meldet sich der Monitor mit den Prompt-Meldungen
+.DS C
+"<bell_signal> ING_db>"
+.DE
+wenn der Monitor-Puffer leer ist, oder mit
+.DS C
+"<bell_signal> ING_db:"
+.DE
+wenn der Monitor-Puffer nicht leer ist
+und zeigt seine Eingabebereitschaft durch das
+.DS C
+Prompt-Symbol "* "
+.DE
+zu jedem Zeilenanfang.
+Die Ausgabe der Prompt-Meldungen und auch des Prompt-Symbols
+wird durch die Option "-s" unterdr\o'u"'ckt.
+Davon unber\o'u"'hrt bleibt die Ausgabe
+aller anderen folgend aufgez\o'a"'hlten Meldungen
+zur Fehleranzeige.
+.sp 1
+Der Monitor liest den Eingabetext in den Monitor-Puffer,
+filtert die Monitor-Kommandos heraus
+und f\o'u"'hrt diese sofort aus.
+.sp 1
+Das spezielle Monitor-Kommando \ego (s.dort)
+\o'u"'bergibt den Monitor-Puffer an den Parser,
+der die QUEL-Statements analysiert und ausf\o'u"'hren l\o'a"'sst.
+Mit \o'U"'bernahme dieses Kommendos meldet der Monitor
+.DS C
+"I N G _ d b . . . "
+.DE
+(diese Meldung unterbleibt, wenn die Option "-s" gesetzt ist)
+und versetzt sich in einen Warte-Status.
+.sp 1
+Der Monitor wird nach Abschluss der
+Arbeiten des Parsers und den, diesen nachgelagerten
+weiteren \*(yy\-Prozessen, wieder in den Eingabe-Status versetzt
+und beginnt erneut seinen Arbeitszyklus.
+.sp 1
+Nach Start von \*(yy\
+arbeitet der Monitor von standard_input
+(i.d.R. also vom Terminal).
+Durch ein \einclude-Kommando (s. dort)
+arbeitet er danach file-gesteuert,
+sein included_file ist der
+Eingabetextspender.
+Da man die Files hintereinander liegender
+\einclude-Kommandos als Programm-Ebenen
+betrachten kann, sagen wir,
+der Monitor arbeitet nach Start in der
+Basis-Terminal-Ebene
+und durch \einclude-Kommandos
+in darunter liegenden Programm-Ebenen.
+.sp 1
+Die Ausgaben des Monitor
+erfolgen immer auf standard_output
+(i.d.R. also ebenfalls auf dem Terminal).
+Die Eingaben der Funktions-Makros
+{read...}, {readdefine...} (s.Makro-Prozessor)
+erfolgen in allen Programm-Ebenen von standard_input.
+.sp 1
+Der Arbeitszyklus des Monitor
+und damit auch die \*(yy\-Sitzung
+wird mit Ausf\o'u"'hrung eines \equit-Monitor-Kommandos (s.dort)
+oder nach Einlesen eines <eof> in der Basis-Terminal-Ebene
+(s. \einclude-Kommando)
+beendet.
+.sp 1
+Bei der Ausf\o'u"'hrung von Monitor-Kommandos wird der
+Makroprozessor (s. dessen Kapitel) benutzt.
+Folgend wird der Output-Text, den der Makroprozessor
+aus einem Input-Text erzeugt, als
+.DS C
+< MACRO ( <Input_Text> ) >
+.DE
+symbolisiert.
+.NH 3
+.ft B
+Arbeit mit dem Monitor-Puffer
+.ft R
+.LP
+Bei der Eingabe vom Terminal wird der Eingabetext
+vom Monitor erst als vollst\o'a"'ndige Zeile
+(also erst nach Eintasten des <nl> ) \o'u"'bernommen.
+Vorher sind Korrekturen mit <kill>
+oder <erase> m\o'o"'glich.
+Nach \o'U"'bernahme der Zeile k\o'o"'nnen Korrekturen
+im Monitor-Puffer nur noch durch die Monitor-Kommandos
+\ereset oder \eeditor ausgef\o'u"'hrt werden.
+.sp 1
+Der Monitor lehnt die Eingabe aller Zeichen,
+deren Codewert kleiner als oktal 040 ist,
+ausser <tab>, <nl> und <escape>, ab.
+Genauer gesagt,
+er wandelt sie in ein <blank> um und signalisiert
+das durch die Meldung
+.DS C
+"Zeichen 0** konvertiert in blanks"
+.DE
+Die im Monitor-Puffer formulierten QUEL-Statements
+werden mit einem \ego-Kommando zur Ausf\o'u"'hrung
+angewiesen.
+Danach kann der Monitor-Puffer
+in der Regel gel\o'o"'scht werden.
+Das passiert auch im sogenannten autoclear_mode.
+Das L\o'o"'schen erfolgt nicht, wenn man sich
+nach R\o'u"'ckkehr in den Eingabe-Status des Monitor
+sofort noch einmal f\o'u"'r den alten Inhalt
+des Monitor-Puffers interessiert.
+.sp
+Der autoclear_mode wird durch die Option "-a"
+abgeschaltet. Mit dieser Option muss man in allen
+F\o'a"'llen selbst\o'a"'ndig - durch ein \ereset-Kommando -
+den Monitor-Puffer l\o'o"'schen.
+.sp 1
+Genauer gesagt, l\o'a"'uft folgendes ab:
+.br
+Nach einem \ego-Kommando
+ist der Monitor-Puffer zun\o'a"'chst noch unver\o'a"'ndert.
+Er wird jetzt aber zur L\o'o"'schung vorgemerkt.
+Diese Vormerkung kann durch die Option "-a"
+unterdr\o'u"'ckt werden.
+Die Ausf\o'u"'hrung eines vorgemerkten L\o'o"'schens h\o'a"'ngt davon
+ab, welches Monitor-Kommando folgt:
+.br
+Die Kommandos \eappend, \eprint, \elist, \eedit
+machen die Vormerkung r\o'u"'ckg\o'a"'ngig;
+das Kommando \ereset f\o'u"'hrt ohnehin ein L\o'o"'schen
+aus, alle anderen Kommandos ber\o'u"'cksichtigen die
+Vormerkung nicht, \eeval setzt sie selbst.
+Die Ausf\o'u"'hrung der vorgemerkten L\o'o"'schung
+erfolgt unmittelbar vor und anl\o'a"'sslich der Eintragung
+des ersten Nicht-Kommando-Zeichens des Eingabetextes in
+den Monitor-Puffer.
+.sp 1
+Durch dieses automatische L\o'o"'schen des Monitor-Puffers
+sollen die normalen Arbeitszyklen
+.DS I
+<QUEL-Statement>
+\ego
+<neues_QUEL-Statement>
+\ego
+.DE
+oder z.B.
+.DS I
+<QUEL-Statement>
+\ego
+\eappend | \eeditor
+<Qualifizierung des alten QUEL-Statements>
+\ego
+.DE
+unterst\o'u"'tzt werden.
+.NH 3
+.ft B
+Synchrone Beendigung und
+.br
+	  asynchrone Unterbrechung
+.ft R
+.LP
+Durch Abgabe eines Interruptsignals
+wird der Warte-Status des Monitor beendet.
+Das bedeutet, dass die vom Parser initiierten \*(yy\-Prozesse
+asynchron zum Abbrechen veranlasst werden
+(Achtung: Bei QUEL-Statements, die die Datenbasis \o'a"'ndern,
+besteht darin eine gewisse Gefahr!).
+Die Abgabe eines Interruptsignals, w\o'a"'hrend sich der Monitor
+im Eingabe-Status
+befindet,
+ist wirkungslos.
+.sp 1
+Die Abgabe eines Interruptsignals
+w\o'a"'hrend der file-gesteuerten Arbeit des
+Monitor f\o'u"'hrt zur R\o'u"'ckkehr in die
+Basis-Terminal-Ebene.
+.sp 1
+Ein <EOF> in einer,
+unter der Basis-Terminal-Ebene
+liegenden Programmebene
+(s. \einclude-Kommando)
+f\o'u"'hrt zur R\o'u"'ckkehr
+in die dar\o'u"'ber liegende Programm-Ebene
+und die der letzten zur Beendigung des Monitors
+( wie Monitor-\quit-Kommandos ).
+.sp 1
+.NH 3
+.ft B
+Struktur der Monitor-Kommandos
+.ft R
+.LP
+Ein Monitor-Kommando ist eine Zeichenfolge der Form
+.DS L
+        "\e" {<blank>|<tab>} <m_c_name> [<parm>]
+.sp 1
+mit
+.sp 1
+        <parm> = 
+             {<blank>|<tab>}<Zeichenfolge> <nl> ;
+.DE
+.DS L
+und
+        <m_c_name> = 
+.sp 1
+.DE
+.DS
+         "H"    | "help"    |
+         "a"    | "append"  |
+         "b"    | "branch"  |
+         "cd"   | "chdir"   |
+         "e"    | "ed"      | "edit"  | "editor" |
+         "g"    | "go"      |
+         "h"    | "help"    |
+         "i"    | "include" | "read"  |
+         "k"    | "mark"    |
+         "l"    | "list"    |
+         "p"    | "print"   |
+         "q"    | "quit"    |
+         "r"    | "reset"   |
+         "s"    | "sh"      | "shell" |
+         "d"    | "time" | "date"  |
+         "v"    | "eval"    |
+         "w"    | "write"   |
+         "m"    | "monitor";
+.DE
+.LP
+Das sind die Monitor-Kommando-Namen mit ihren Alias-Namen.
+.sp 1
+Die <parm> sind abh\o'a"'ngig vom jeweiligen Kommandotyp
+und werden dort beschrieben.
+Es gibt grunds\o'a"'tzlich drei Gruppen von Kommandos:
+solche, die
+.br
+	keinen <parm> haben,
+.br
+	wahlweise einen <parm> haben,
+.br
+	unbedingt einen <parm> haben m\o'u"'ssen.
+.br
+Da <parm> mit <nl> abgeschlossen wird, k\o'o"'nnen Kommandos
+der letztgenannten beiden Gruppen nur am Ende einer Zeile
+formuliert werden.
+Das Zeilenende kann f\o'u"'r einen Monitor-Parameter
+nicht durch <backslash><nl> kaschiert werden !
+.sp 1
+Eine genaue Darstellung der Verwendung der <parm>
+in den Monitor-Kommandos ist folgende:
+.br
+Zur Auswertung des Kommandoparameters wird die Zeichenkette
+.DS I
+< MACRO( <parm> ) >
+.DE
+herangezogen.
+Input-Text f\o'u"'r den Makro-Prozessor
+ist der, im Kommando formulierte Text bis zum <nl>.
+Beim \ebranch-Kommando
+m\o'u"'ssen beide Parameterteile <b_label> und <b_expr>
+vor dem <nl> untergebracht werden.
+Vom Output-Text des Makro-Prozessors werden die
+Zeichen nach den f\o'u"'hrenden <blank> oder <tab>
+bis zum Ende, aber maximal nur 100 Zeichen
+genommen (beim \ebranch-Kommando 100 Zeichen f\o'u"'r beide Parameter).
+.sp 1
+Bei der Analyse des Eingabetextes
+versucht der Monitor jede, einem <backslash> ("\e") folgende
+Zeichenfolge als Monitor-Kommando zu interpretieren,
+unabh\o'a"'ngig davon, ob dem <backslash>
+Klammern ( (... oder {... )
+oder Quoting-Symbole ( "... oder `... oder /*... )
+vorausgegangen sind.
+Auch die Formulierung von "\e\e"
+f\o'u"'hrt nur dazu, dass das erste "\e" in den Monitor-Puffer
+\o'u"'bernommen wird, dann aber die dem zweiten "\e" folgenden
+Zeichen auf ein Monitor-Kommando analysiert w\o'u"'rden.
+.sp 1
+Eine als Monitor-Kommando identifizierte Zeichenfolge
+gelangt nicht in den Monitor-Puffer;
+wohl aber sonst die gesamte Zeichenfolge
+einschliesslich des <backslash>.
+.sp 1
+Der Monitor liest seine Kommandos nur aus dem Eingabetext;
+er kann nicht dazu gebracht werden,
+den Monitor-Puffer als Eingabetext zu lesen.
+.NH 3
+.ft B
+Beschreibung der Monitor-Kommandos
+.ft R
+.LP
+Der folgende Abschnitt beschreibt die einzelnen
+Monitor-Kommandos. Die Kommando-Schreibweise
+in den Zwischen\o'u"'berschriften ist als plausible
+Abk\o'u"'rzung der vorn exakt definierten Notation
+zu verstehen.
+.NH 4
+.ft B
+Append
+.ft R
+.LP
+.sp 1
+\ea
+.br
+\eappend
+.IP
+Eine ggf. eingetragene L\o'o"'schvormerkung des Monitor-Puffers
+(autoclear_mode)
+wird ausgetragen, sodass ein folgender
+Eingabetext - jedenfalls beginnend als neue Zeile -
+dem bisherigen Monitor-Puffer angef\o'u"'gt wird.
+.NH 4
+.ft B
+Branch
+.ft R
+.LP
+.sp 1
+\eb <b_parm>
+.br
+\ebranch <b_parm>
+.IP
+	<b_parm> = 
+.br
+             {<blanc>|<tab>} ["?"<b_expr>]
+.br
+             {<blanc>|<tab>} <b_label> <nl> ;
+.br
+.sp 1
+Durch das Kommando erfolgt ein bedingter oder unbedingter
+Sprung im Eingabetext.
+Die Ausf\o'u"'hrung eines Sprungs wird mit der Meldung
+.DS C
+"Kein Sprung am Terminal"
+.DE
+abgelehnt, wenn der Eingabetext vom Terminal gelesen wird.
+Andernfalls wird im Falle eines auszuf\o'u"'hrenden Sprungs
+im Eingabetext
+- also im included_file -
+die Marke
+.DS C
+\ek <mark>
+.DE
+gesucht (s. \ek-Kommando), f\o'u"'r die
+.DS C
+<MACRO(<label>)> = <mark>
+.DE
+ist. Wird eine solche Marke gefunden, wird anschliessend
+die Eingabe des Eingabetextes mit der, dieser Marke folgenden
+Textposition fortgesetzt. Wird keine solche Marke gefunden,
+wird versucht, einen Sprung
+.DS C
+\ebranch {default}
+.DE
+auszuf\o'u"'hren. Gelingt auch das nicht
+(weil der Makro "{default}" nicht definiert ist,
+oder im included_file nicht addressiert),
+wird darauf mit der Meldung
+.DS C
+" ? Label <MACRO(<b_label>)>"
+" ? Label < MACRO ({default}) > ({default}) " 
+.DE
+hingewiesen und das included_file folgend verlassen
+(folgend wird aus dem Eingabetext <EOF> gelesen (s. \einclude-Kommando)).
+.sp 1
+Ein unbedingter Sprung ohne die Angabe
+"?"<b_expr>
+wird in jedem Falle auszuf\o'u"'hren versucht.
+Bei einem bedingten Sprung wird der Ausdruck
+.DS C
+<MACRO(<b_expr>)>
+.DE
+ausgewertet.
+Dieser Ausdruck darf Operatoren und Operanden enthalten.
+Operatoren sind:
+.DS
+**         Potenzieren
+- !        Vorzeichen, logische Negation
+* / %      Multiplikation, Division, Divisionsrest
++ -        als zweistellige Operationen
+> >= < <=  Vergleichsoperatoren
+= !=       Gleichheit, Ungleichheit
+&          logisches UND
+|          logisches inclusives ODER
+.DE
+.sp 1
+Operationen auf gleicher Zeile
+sind von gleicher Bindungsst\o'a"'rke, sonst gilt
+absteigende Bindung entsprechend der Aufz\o'a"'hlung
+zur Festlegung der Bindung von Operationen.
+.sp 1
+Der Ausdruck
+darf als Operanden nur noch ganzzahlig numerische Werte
+mit einem Wertebereich zwischen -32768 bis 32767
+enthalten, sonst erfolgt nach entsprechenden Meldungen
+(s. unten)
+ein Abbruch der weiteren Ausdrucksberechnung.
+Die Ausdrucksauswertung wird durch die Zeichen
+.DS C
+<blank>, <tab>, <nl> oder <eof>
+.DE
+beendet.
+.sp 1
+Die arithmetischen Operationen werden in \o'u"'blicher
+Ganzzahlarithmetik (/: ganzer Teil der Division,
+%: Divisionsrest; Division durch 0 ergibt nach Warnung den Wert 0)
+berechnet. Die logischen Operationen ( !,=,>,<,| )
+deuten bei ihren Operanden <=0 als FALSE und >0 als TRUE.
+Die logischen Operationen und die Vergleichsoperationen
+liefern den arithmetischen Wert 0 f\o'u"'r FALSE und 1 f\o'u"'r TRUE.
+Die Ausdrucksberechnung erfolgt
+von links nach rechts,
+entsprechend den Bindungsregeln,
+geklammerte Teile werden ge- und entkellert.
+.sp 1
+Bei der Ausdrucksauswertung (nach Makro-Aufl\o'o"'sung)
+werden folgende Fehler im Ausdruck erkannt:
+.DS B
+\ \ \ \ zus\o'a"'tzliche schliessende Klammern
+\ \ \ \ am Ende werden ignoriert
+
+\ \ \ \ zus\o'a"'tzliche \o'o"'ffnende Klammern
+\ \ \ \ am Ende, ergeben 0 als Ausdruckswert
+
+\ \ \ \ der Ausdruck ist leer,
+\ \ \ \ sein Wert ist 0
+
+\ \ \ \ der Ausdruck enth\o'a"'lt nur das
+\ \ \ \ nicht akzeptable Zeichen <c>,
+\ \ \ \ sein Wert wird 0
+
+\ \ \ \ das gefundene <c> ist kein Operator
+\ \ \ \ der Wert wird 0
+
+\ \ \ \ Division durch 0 ergibt den Wert 0
+.DE
+Ein bedingter Sprung wird ausgef\o'u"'hrt,
+wenn die Auswertung des Ausdrucks einen Wert > 0
+erbringt. Andernfalls wird die Eingabe des Eingabetextes
+hinter <b_label> folgend fortgesetzt.
+.NH 4
+.ft B
+Chdir
+.ft R
+.LP
+.sp 1
+\ecd <parm>
+.br
+\echdir <parm>
+.IP
+Das vom Nutzer bei Start von \*(yy\
+von ihm eingestellte
+working_directory bleibt auch
+w\o'a"'hrend der Arbeit von \*(yy\ erhalten.
+Unter diesem Pfadnamen bestimmte Files
+werden im Unterschied zu dem,
+durch {Pathname} mit "ing_db" symbolisierten Files,
+in diesem Kapitel
+als
+.DS I
+<user_cd> / <file_name>
+.DE
+symbolisiert.
+.sp 1
+Das f\o'u"'r den Nutzer vor Start von \*(yy\
+eingestellte working_directory wird durch das
+\echdir-Monitor-Kommando auf
+.DS I
+<user_cd> = <MACRO(<parm>)>
+.DE
+ver\o'a"'ndert;
+\o'u"'ber einen Misserfolg dabei informiert die Meldung
+.DS C
+"cannot access directory  <MACRO(<parm>)>  "
+.DE
+Der Monitor meldet sich nach Kommando-Ausf\o'u"'hrung
+wieder mit einer Prompt-Meldung "ING_db>" oder "ING_db:".
+.NH 4
+.ft B
+Editor
+.ft R
+.LP
+.sp 1
+\ee [<parm>]
+.br
+\eed [<parm>]
+.br
+\eedit [<parm>]
+.br
+\eeditor [<parm>]
+.IP
+Es wird ein Editor aus dem File
+.DS C
+<MACRO("{editor}")>
+.DE
+zu laden versucht.
+Ist der Makro nicht definiert, wird gleich
+ein installationsabh\o'a"'ngiger System-Editor, z.B.
+.ft B
+ed, vi, rand, 
+.ft R
+geladen. Gelingt das nicht, erfolgt eine Fehlerausschrift.
+Ausserdem wird der Makro {errorcount} mit dem Wert -1 
+gef\o'u"'llt und der Macro {exectrap}
+mit der Meldung
+.DS C
+"edit: exec"
+.DE
+ausgef\o'u"'hrt.
+.sp 1
+Der Monitor meldet
+.DS C
+">> <editor_file_name> "
+.DE
+Danach arbeitet man unter Steuerung des geladenen Editors,
+ihm wird als Parameter
+.DS C
+<MACRO(<parm>)>
+.DE
+oder falls das Kommando keinen Parameter hatte, der
+File-Name des Monitor-Puffers \o'u"'bergeben.
+Das bedeutet, dass der Editor das File l\o'a"'dt
+und als currentfile einstellt.
+.sp 1
+Im Falle der Arbeit auf dem Monitor-Puffer kommen mit
+dem Editor ausgef\o'u"'hrte \o'A"'nderungen nur dann dort an,
+wenn dem Editor ein w-Editor-Kommando vor \o'A"'nderung
+seines currentfile gegeben wird. Jedenfalls wird bei Ausf\o'u"'hrung
+eines \ee-Monitor-Kommandos eine ggf. eingetragene L\o'o"'schvormerkung
+f\o'u"'r den Monitor-Puffer (autoclear_mode) ausgetragen.
+.sp 1
+Nat\o'u"'rlich kann nach der Arbeit auf dem Monitor-Puffer
+oder \o'u"'berhaupt auch in anderen Files editiert werden.
+Beachten sie bei der Formulierung von File-Namen,
+dass user_cd als current_directory (s. \echdir-Kommando)
+eingestellt ist.
+.sp 1
+Nach einem q-Editor-Kommando f\o'u"'r 
+den System-Editor oder einer anderen Beendigung des
+geladenen Editors erfolgt die
+R\o'u"'ckkehr zum \*(yy\-Monitor.
+Der Monitor ruft f\o'u"'r den Fall,
+dass der Editor einen R\o'u"'ckkehrcode\ !=\ 0 lieferte,
+den Makro {exectrap}. Vorher wird der Makro {errorcount}
+mit dem exit-Status des Editors gef\o'u"'llt. Das erfolgt so,
+als g\o'a"'be man selbst das Monitor-Kommando
+.DS C
+{exectrap}\eeval
+.DE
+.NH 4
+.ft B
+Go
+.ft R
+.LP
+.sp 1
+\eg
+.br
+\ego
+.IP
+Mit diesem Kommando werden QUEL-Statements zur Ausf\o'u"'hrung
+angewiesen.
+Der Monitor zeigt die Kommando\o'u"'bernahme mit der Prompt-Meldung
+.DS C
+"I N G - d b . . ."
+.DE
+an und beendet damit seinen Eingabe-Status f\o'u"'r die Dauer der
+Arbeit des Parsers und der diesem nachgelagerter Prozesse.
+.sp 1
+Dem Parser wird die vom Makro-Prozessor verarbeitete Verkettung
+folgender Texte \o'u"'bergeben:
+.DS I
+< MACRO ( <MACRO("{begintrap}")>,
+          <Monitor-Puffer>,
+          <MACRO("{endtrap"})> ) >
+.DE
+Man achte darauf,
+dass der Monitor-Puffer so bereinigt wurde,
+dass dem Parser nur QUEL-Statements
+\o'u"'bergeben werden, er signalisiert sonst Fehler.
+.sp 1
+Nachdem die Arbeit des Parsers und dessen nach\%gelagerter Prozesse
+bei der Ausf\o'u"'hrung der QUEL-Statements beendet ist,
+arbeitet der Monitor weiter.
+Der Monitor \o'u"'bernimmt N als Anzahl der
+bearbeiteten Tupel und definiert den Makro {tuplecount} als
+.DS C
+{define; {tuplecount}; N}
+.DE
+Der Monitor arbeitet den Makro {continuetrap} ab,
+als h\o'a"'tte man das Monitor-Kommando
+.DS C
+{continuetrap} \eeval
+.DE
+(s. Makroprozessor) gegeben. Der Monitor zeigt seine
+Eingabebereitschaft durch die Prompt-Meldungen "ING_db>" oder "ING_db:"
+an.
+.sp 1
+Nach einem \ego-Kommando ist der Monitor-Puffer zun\o'a"'chst
+noch unver\o'a"'ndert;
+er ist jetzt aber zur L\o'o"'schung vorgemerkt
+(autoclear_mode).
+Diese L\o'o"'schvormerkung wird durch die Option "-a"
+unterdr\o'u"'ckt.
+.sp 1
+Wenn die Er\o'o"'ffnung des Monitor-Puffers f\o'u"'r den Makro-Prozessor
+nicht gelingt, erfolgt ein Systemabbruch mit der Meldung
+.DS C
+"go: open 1"
+.DE
+.NH 4
+.ft B
+Help
+.ft R
+.LP
+.sp 1
+\eh [<parm>]
+.br
+\ehelp [<parm>]
+.br
+.IP
+Der Monitor w\o'a"'hlt mit Angabe <parm> aus ../sys/ref die
+Kurzdokumentation zum \*(yy\-Kommando und schreibt auf "std_out".
+Ohne <parm> wird das Inhaltsverzeichnis ausgegeben.
+.NH 4
+.ft B
+Include und Read
+.ft R
+.LP
+.sp 1
+\ei <parm>
+.br
+\einclude <parm>
+.br
+\eread <parm>
+.IP
+Dem Monitor wird das File
+.DS I
+<user_cd> / <MACRO(<parm>)>
+.DE
+als Eingabetextspender zugeordnet. Das Kommando wirkt wie ein
+Sprung an den Anfang dieses File.
+.sp 1
+Fehlt <parm> oder ist <MACRO(<parm>)> leer, wirkt das
+Kommando so, dass das folgende Zeichen des dem Monitor
+angeschlossenen Eingabetextes <eof> wird.
+Das bedeutet, dass ein included_file folgend verlassen wird;
+in der Basis-Terminal-Ebene tritt der Effekt
+wie nach einem \equit-Kommando ein.
+.sp 1
+Andernfalls wird das durch <MACRO(<parm>)> bezeichnete File
+zum k\o'u"'nftigen Eingabetextspender f\o'u"'r den Monitor (es sei denn
+die Meldung
+.DS C
+"open INCLUDE file <MACRO(<parm>)> "
+.DE
+zeigt den Abbruch der Kommandobearbeitung an).
+Solange der Monitor "file-gesteuert" arbeitet,
+werden die Prompt-Meldungen wie durch die \*(yy\-Option "-s"
+unterdr\o'u"'ckt.
+.sp 1
+F\o'u"'r die Funktions-Makros {read...}, {readdefine...}
+(s. Makro-Prozessor) bleibt auch bei dieser Arbeitsweise
+des Monitor
+das Terminal (genauer standard_input) das Eingabemedium.
+.sp 1
+Das angeschlossene File darf weitere \einclude-Kommandos
+enthalten; diese sind bis zu einer Schachtelungstiefe
+von 5 (diese Anzahl ist generierungsf\o'a"'hig)
+hierarchisch hintereinander liegender \einclude-Kommandos
+erlaubt.
+Ggf. erfolgt eine Kommandoabweisung durch die Meldung
+.DS C
+"Mehr als 5 INCLUDE'S"
+.DE
+Liest der Monitor aus dem included_file <eof>
+(nachdem es sequentiell durchlesen wurde, oder bei
+Nichterfolg eines dort enthaltenen Monitor-Kommandos),
+wird das File verlassen; die Monitoreingabe wird mit
+dem Text des File hinter dem letztwirksamen \einclude-Kommando
+fortgesetzt.
+.sp 1
+Bei R\o'u"'ckkehr in die Basis-Terminal-Ebene
+meldet sich der Monitor - falls nicht "-s" gesetzt war -
+wieder mit einer Prompt-Meldung "ING_db>" oder "ING_db:".
+Die Abgabe eines <eof> in der Basis-Terminal-Ebene
+hat die gleiche Wirkung wie das \equit-Kommando:
+die \*(yy\-Sitzung wird synchron beendet.
+.sp 1
+Ist <MACRO(<parm>)> das einzelne Zeichen "-",
+erfolgt die Meldung
+.DS C
+"<Eingabe>"
+.DE
+und der k\o'u"'nftige Eingabetext f\o'u"'r den Monitor wird
+wieder vom Terminal (standard_input) gelesen. Das ist nicht die oben
+erw\o'a"'hnte Basis-Terminal-Ebene; durch Abgabe eines
+<eof> vom Terminal erfolgt kein Sitzungs\%abbruch, sondern es
+wird wieder das File zum Eingabetextspender,
+aus dem das "\einclude -" abgesetzt worden war.
+Das er\o'o"'ffnet die M\o'o"'glichkeit, unter grunds\o'a"'tzlicher
+Steuerung durch ein File, zwischenzeitlich in freiem Format
+vom Terminal zu lesen. Das Nachrichtenlevel f\o'u"'r die
+Promptmeldungen ("-s" oder nicht) ist w\o'a"'hrend dieser Arbeit am Terminal
+wieder so, wie f\o'u"'r die \*(yy\-Sitzung eingestellt.
+.NH 4
+.ft B
+Mark
+.ft R
+.LP
+.sp 1
+\ek <parm>
+.br
+\emark <parm>
+.IP
+Der Eingabetext enth\o'a"'lt eine Marke als Zielangabe
+eines ggf. auszuf\o'u"'hrenden \ebranch-Kommandos.
+Das Kommando selbst ist wirkungslos.
+Der Eingabetext wird bis hinter <parm> \o'u"'berlesen;
+der Monitor-Puffer wird folgend jedenfalls mit einer
+neuen Zeile weiter beschrieben,
+der Monitor meldet sich wieder mit einem Prompt-Symbol.
+Anl\o'a"'sslich der Ausf\o'u"'hrung eines \ebranch-Kommandos
+wird das included_file von vorn beginnend nach der
+zutreffenden Marke abgesucht.
+.NH 4
+.ft B
+List
+.ft R
+.LP
+.sp 1
+\el
+.br
+\elist
+.IP
+Der vom Makro-Prozessor aus dem verketteten Text erzeugte Text
+.DS B
+< MACRO( <MACRO("{begintrap}")>,
+         <Monitor-Puffer>,
+         <MACRO("{endtrap}")> ) >
+.DE
+wird auf dem Terminal angelistet. Man erh\o'a"'lt dadurch
+Auskunft, welcher Text tats\o'a"'chlich dem Parser mit einem
+\ego-Kommando angeboten w\o'u"'rde. Weiterhin werden durch die
+Arbeit des Makro-Prozessors die
+Funktions-Makros
+(s. Makro-Prozessor) bearbeitet.
+Der Monitor-Puffer bleibt unver\o'a"'ndert.
+(Achtung: Dadurch, dass bei der ersten Verwendung des Kommandos
+ggf. Substitutions-Makros definiert werden, kann die wiederholte Anwendung
+des Kommandos andere Ergebnisse bringen.)
+.sp 1
+Eine ggf. eingetragene L\o'o"'schvormerkung f\o'u"'r den Monitor-Puffer
+wird ausgetragen (autoclear_mode).
+.NH 4
+.ft B
+Monitor
+.ft R
+.LP
+Mit dem Monitor-Kommando l\o'a"'sst sich das standardm\o'a"'ssige
+Kommandokennzeichen 
+.ft B
+"\e"
+.ft R
+umdefinieren. Fehlt das Argument <parm>, wird wieder auf den 
+Standard zur\o'u"'ckgeschaltet. 
+.br
+Die Neudefinition des Kommandokennzeichens sollte nur dann vorgenommen 
+werden, wenn das Zeichen
+.ft B
+"\e"
+.ft R
+nicht oder nur umst\o'a"'ndlich erreicht werden kann.
+.br
+Es wird darauf hingewiesen, dass bei Neudefinition des 
+Kommandokennzeichens Monitor-Kommandodateien unter 
+Umst\o'a"'nden nicht mehr abarbeitungsf\o'a"'hig sind.
+.NH 4
+.ft B
+Print
+.ft R
+.LP
+.sp 1
+\ep
+.br
+\eprint
+.IP
+Der Inhalt des Monitor-Puffers
+wird ohne Ver\o'a"'nderung durch den Makro-Prozessor
+auf dem Terminal
+angelistet. Eine ggf. eingetragene L\o'o"'schvormerkung f\o'u"'r den
+Monitor-Puffer wird ausgetragen (autoclear_mode).
+Der Monitor meldet sich nach Kommandoausf\o'u"'hrung wieder
+mit einer Prompt-Meldung "ING_db>" oder "ING_db:".
+.NH 4
+.ft B
+Quit
+.ft R
+.LP
+.sp 1
+\eq
+.br
+\equit
+.IP
+Die \*(yy\-Sitzung wird synchron beendet. Falls nicht die \*(yy\ 6.3-Option "-s"
+gesetzt war, erfolgt abschliessend die
+.DS
+\*(yy\-logout-Meldung
+.sp 1
+"ing_db vers <Versionsnummer> logout
+ <Zeitangabe>
+ Auf Wiedersehen [<Nutzername>] -- Kommen Sie bald wieder"
+.DE
+.NH 4
+.ft B
+Reset
+.ft R
+.LP
+.sp 1
+\er
+.br
+\ereset
+.IP
+Der Inhalt des Monitor-Puffers wird gel\o'o"'scht.
+.NH 4
+.ft B
+Shell
+.ft R
+.LP
+.sp 1
+\es [<parm>]
+.br
+\esh [<parm>]
+.br
+\eshell [<parm>]
+.IP
+Das Kommando dient der Ausf\o'u"'hrung von \*(xx\-Programmen
+w\o'a"'hrend der \*(yy\-Sitzung, insbesondere unter
+Steuerung des \*(xx\-Kommandointerpreters SHELL.
+Das Kommando kann weitreichender benutzt werden.
+
+Es wird ein neuer process "geforkt" (Systemabbruch mit Meldung
+"shell: fork", wenn das nicht gelingt),
+ein Programm geladen und
+die Meldung
+.DS C
+">> <loaded_file_name> "
+.DE
+gebracht.
+Das Programm wird als File
+.DS C
+<MACRO("{shell}")>
+.DE
+zu laden versucht. Ist dieser Makro definiert und ge\%lingt der
+Ladevorgang nicht, wird der Makro
+{errorcount} auf -1 gesetzt und der Makro {exetrap} ausgef\o'u"'hrt.
+.IP
+Gelingt der Ladevorgang,
+wurde dem gerufenen Programm als 0.Parameter
+der Programmname,
+als 1.Parameter der File_name
+des Monitor-Puffers
+und als 2.Parameter
+der Wert des ggf. durch den Makro-Prozessor transformierten
+\eshell-Kommandoparameters \o'u"'bergeben.
+.LP
+Ist der Makro nicht definiert,
+wird eine instal\%lation\%sab\%h\o'a'n\%gige
+SHELL aufgerufen.
+.DS C
+//sh//csh//vsh
+.DE
+geladen.
+.br
+Gelingt das nicht, erfolgt ein Systemabbruch mit der Meldung
+.DS C
+"shell: exec"
+.DE
+.sp 1
+Falls in diesem Falle das \eshell-Kommando keinen <parm> hatte,
+wird die geladene SHELL als interaktive SHELL gestartet;
+durch Abgabe eines quit-SHELL-Signals kommt man in den
+Monitor zur\o'u"'ck.
+Falls das \eshell-Kommando <parm> hatte,
+wird \o'u"'ber eine SHELL das, durch MACRO(<parm>)
+bezeichnete, SHELL-Kommando aufgerufen.
+Man beachte, dass <parm> aus mehreren
+durch <blank> getrennten W\o'o"'rtern bestehen darf
+(<parm> reicht bis zum nicht kaschierbaren Zeilenende
+des Monitor-Kommandos !).
+Dadurch k\o'o"'nnen dem SHELL-Kommando Parameter
+\o'u"'bermittelt werden.
+Die R\o'u"'ckkehr zum Monitor erfolgt automatisch mit
+Beendigung des aufgerufenen SHELL-Kommandos.
+.sp 1
+In Auswertung eines R\o'u"'ckkehrcodes
+des aufgerufenen Programms,
+der interaktiven SHELL oder des SHELL-Kommandos
+erfolgt
+durch den \*(yy\-Monitor
+die Ausf\o'u"'hrung des {exectrap}, wenn der
+R\o'u"'ckkehrcode\ !=\ 0 war.
+Das erfolgt in einer Form, als g\o'a"'be man selbst
+das Monitor-Kommando
+.DS C
+{exectrap}\eeval
+.DE
+Nach R\o'u"'ckkehr aus der SHELL ist der Monitor wieder im vorangehend
+verlassenen Eingabe-Status.
+.NH 4
+.ft B
+Time und Date
+.ft R
+.LP
+.sp 1
+\ed
+.br
+\etime
+.br
+\edate
+.IP
+Die aktuelle Zeit wird auf dem Terminal ausgegeben.
+Im Monitor-Puffer wird ein Zeilenwechsel eingetragen.
+.NH 4
+.ft B
+Eval
+.ft R
+.LP
+.sp 1
+\ev
+.br
+\eeval
+.IP
+Dem Makro-Prozessor wird der 
+Monitor-Puffer als Eingabetext
+angeboten, wodurch insbesondere die define-Makros
+in die Makro-Tabelle \o'u"'bernommen (s. Makro-Prozessor),
+aber ggf. auch andere Funktions-Makros abgearbeitet werden.
+.sp 1
+Im Unterschied zum \elist-Kommando erfolgt
+keine Einbe\%ziehung von {begintrap} und {endtrap}
+und keine Anli\%stung des
+Makro-Ausgabetextes.
+Es erfolgen aber die auf standard_output
+wirkenden Ausgaben der
+{dump;...}-, {type;...}- und {read....}-Makros.
+Weiterhin wird anschliessend der Monitor-Puffer
+zum L\o'o"'schen vorgemerkt (falls nicht "-a" gesetzt war,
+autoclear_mode).
+.sp 1
+Damit ist das \eeval-Kommando
+das f\o'u"'r die Abarbeitung von Funktions-Makros
+zu bevorzugende Kommando (s. Makro-Prozessor)
+.sp 1
+Der Monitor meldet sich nach Kommando-Ausf\o'u"'hrung mit einer
+Prompt-Meldung "ING_db>" oder "ING_db:".
+.NH 4
+.ft B
+Write
+.ft R
+.LP
+.sp 1
+\ew <parm>
+.br
+\ewrite <parm>
+.IP
+Der Monitor-Puffer wird auf das File
+.DS C
+<user_cd> / <MACRO(<parm>)>
+.DE
+(s. \echdir-Kommando) ausgeschrieben
+(das File wird mit Modus 0644 cre\o'i"'ert).
+.sp 1
+Es k\o'o"'nnen folgende Fehlermeldungen den Misserfolg anzeigen:
+.DS B
+"unakzeptabler file name <MACRO(<parm>)>"
+"create WRITE-file <MACRO(<parm>)>"
+.DE
+.sp 1
+Nach Ausf\o'u"'hrung des Kommandos meldet sich der Monitor
+wieder mit einer Prompt-Meldung "ING_db>" oder "ING_db:".
+.sp 1
+.LP
+Der Monitor als Programm-Prozess bringt einige Fehlermeldungen,
+die sich auf die Ausgabe von Fehlertexten aus anderen
+\*(yy\-Prozessen beziehen, wenn die dazu n\o'o"'tigen Fehlertext-Files
+nicht lesbar, oder syntaktisch regelwidrig sind.
+
