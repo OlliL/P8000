@@ -1,0 +1,116 @@
+Ueberspielen der Files aus dem MUTOS auf 5130-Diskette
+
+1. Files vermittels tar in einem gemeinsamen File (max. 50kB)
+   sammeln.
+2. Am 5130 dfv8911 starten
+3. Wie gehabt am MUTOS anmelden.
+4. ^E (CTRL E) eingeben.
+5. n eingeben
+6. Menue abarbeiten (! tar-Files sind Binaerfiles !!!)
+7. ^z eingeben (abmelden bei MUTOS)
+8. ^E eingeben und mit e beantworten
+
+==================================================================
+
+Am PC 1715 :
+Einstellen des Diskettenformates fuer OS/M Disketten im CP/A
+
+Aufruf von FORMATP
+
+danach ist der folgende Dialog abzuarbeiten:
+(<ET> bedeutet dabei immer die betaetigung der ET-Taste des 1715)
+
+Disketten-FORMAT fuer CP/A auf PC 1715, Version 24.07.87
+^C bricht die aktuelle FORMAT-Aktion ab!
+
+
+0    - Formatieren einer Diskette
+1    - Pruefen einer Diskette auf Lesbarkeit
+3    - Einstellen des Diskettenformats im BIOS
+
+q,x  - Rueckkehr ins Betriebssytem
+
+Bitte FORMAT-Funktion auswaehlen (ENTER=0): 3<ET>
+
+Bitte Laufwerk angeben: B<ET>
+
+Einstellen des OS/M - Formates im Betriebssytem CPA
+
+Formate fuer 5 1/4", 80 Spuren, doppelseitig (DS) ["A": autom. Formaterk.]
+
+0 =
+...
+@ = Spezielles Format
+
+Bitte Format auswaehlen (ENTER= 0) : @<ET>
+Anzahl der phys. Spuren auf Diskette ( <= 80): 80<ET>
+Anz. der phys. Sekt. fuer DatenSpuren pro Seite (1..52): 9<ET>
+Sektorlaengencode (0=128,1=256,2=512,3=1024): 2<ET>
+Offset fuer Sektornummern auf Rueckseite (hex, ENTER=0): <ET>
+Physische Sektoranordnung auf der Spur
+SektorNr. (hex, ENTER fuer Rest monoton): <ET>
+Doppelschritte von Spur zu Spur? (j, ENTER=n): <ET>
+Einseitig (s) oder doppelseitig (d oder ENTER): <ET>
+Erst Vorders. komplett (v) oder abwechselnd (a oder ENTER): <ET>
+Logische Reihenfolge der physischen Sektoren
+SektorNr. (hex, ENTER fuer Rest monoton): <ET>
+Gesamtzahl Systemspuren (0..9, ENTER=0) 4<ET>
+Anzahl abweichender Systemsp. mit 26*128 Sektoren (0..3, ENTER=0): <ET>
+Directory-Groesse in 64er Einheiten (1=64,2=128,3=192,4=256): 1<ET>
+BDOS-Blockgroesse in kB (1,2,4): 2
+
+Disketten-FORMAT fuer CP/A auf PC 1715, Version 24.07.87
+^C bricht die aktuelle FORMAT-Aktion ab!
+
+
+0    - Formatieren einer Diskette
+1    - Pruefen einer Diskette auf Lesbarkeit
+3    - Einstellen des Diskettenformats im BIOS
+
+q,x  - Rueckkehr ins Betriebssytem
+
+Bitte FORMAT-Funktion auswaehlen (ENTER=0): Q<ET>
+A>
+===========================================================
+
+Kopieren der Files von 5130-Diskette auf OS/M Diskette
+
+1. Aufruf von POWER von CP/A-Systemdisk im LW a
+2. Entfernen der CP/A Sytemdisk
+3. Einlegen der 5130-Diskette ins Laufwerk a
+4. ^C (Warmstart)
+5. Kopieren mit Power
+
+==========================================================
+Einlesen der Diskette ins WEGA:
+
+dd if=/dev/fd1 of=/z/eris/floppy bs=512 count=1440
+
+Aufruf der Diskettenverarbeitung:
+
+cpm.osm
+
+folgende Kommandos stehen zur Verfuegung:
+
+ccopyin wegafile cpmfile	Kopiere Binaerfile aus WEGA ins CPM
+
+ccopyout cpmfile wegafile	Kopiere Binaerfile aus CPM ins WEGA
+
+copyin wegafile cpmfile		Kopiere Textfile aus WEGA ins CPM
+
+copyout cpmfile wegafile	Kopiere Textfile aus CPM ins WEGA
+
+del[ete] cpmfile
+era[se] cpmfile			Loeschen eines CPM-File
+
+exi[t]
+log[out]			Verlassen cpm
+
+dir[ectory]
+ls				Anzeige des CPM-Verzeichnisses
+
+ren[ame] cpmname1 cpmname2	Umbenennen des CPM-Files cpmname1
+				in cpmname2
+
+typ[e]  cpmfile			Anzeige des CPM-Files cpmfile am
+				Terminal

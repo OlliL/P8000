@@ -1,0 +1,54 @@
+echo -n '"wega-zu-cpm" uebertragt'
+if test $# != 0
+	then
+	echo -n ' nach Anfrage'
+	else
+	echo -n ' alle'
+fi
+echo -n ' Files aus: '
+echo -n `pwd`
+echm ' auf Diskette'
+echo 'auf Diskette duerfen nur Text-Dateien (ASCII-Code) uebertragen werden !!'
+echo 'die Filenamen muessen CP/M-Konventionen entprechen !'
+ls
+echo -n 'muessen Sie aus diesem Grund Files umbenennen [y/n] :'
+read a
+if test $a = y
+	then
+		ezit
+fi
+echo 'Diskette ---> Laufwerk 0'
+echo -n 'Diskette neu formatieren ? [y/n] :'
+read a
+if test $a = 'y'
+	then
+		format fd0
+		/z/bin/cpm -I -S 1 /dev/fd0
+fi
+for i in `ls`
+do
+if test $# -eq 0
+	then
+		/z/bin/cpm -S 1 -C $i $i /dev/fd0 2>/tmp/fehler$$
+		if test -s /tmp/fehler$$
+			then 
+				echo 'Fehler bei Uebertragung von ' $i
+				rm /tmp/fehler$$
+			else
+				echo $i 'uebernommen'
+		fi
+	else
+		echo -n $i 'uebertragen [y/n] :'
+		read a
+		if test $a = 'y'
+			then
+			/z/bin/cpm -S 1 -C $i $i /dev/fd0 2> /tmp/fehler$$
+			if test -s /tmp/fehler$$
+				then 
+					echo 'Fehler bei Uebertragung von ' $i
+					rm /tmp/fehler$$
+			fi
+
+		fi
+fi
+done

@@ -1,0 +1,45 @@
+: interaktives Verarbeiten von CP/M Disketten
+flags="-i -S 2 -m 64"
+typ="OS/M Format 6"
+file="/z/floppy"
+flag2=""
+
+
+if test a$1 != a
+then
+	if test a$1 = "a-osm"
+	then
+		flags="-i -S 2 -m 64"
+		typ="OS/M Format 6"
+		shift
+	elif test a$1 = "a-1530"
+	then
+		flags="-i -t 40 -b 1024 -r 9 -S 1 -m 64"
+		typ="CP/M Diskette im DOS-Format"
+		shift
+	fi
+fi
+if test a$1 != a
+then
+	if test a$1 = "a-f"
+	then
+	shift
+	file=$1
+	shift
+	fi
+fi
+if test a$1 != a
+then
+	if test a$1 = "a-I"
+	then
+		flag2=-I
+		shift
+	fi
+fi
+if test a$1 != a
+then
+	echo usage: cpma "[ -osm | -1530 ] [-f file] [-I]"
+	exit
+fi
+echo CP/M Diskettenemulation fuer $typ
+cpm -i $flags $flag2 $file

@@ -1,0 +1,56 @@
+echo -n '"cpm-zu-wega" uebertragt'
+if test $# != 0
+	then
+	echo -n ' nach Anfrage'
+	else
+	echo -n ' alle'
+fi
+echo -n ' Files der Diskette nach: '
+echo `pwd`
+echo 'von der Diskette duerfen nur Text-Dateien (ASCII-Code) uebertragen werden !!'
+echo 'cpm-diskette ---> Laufwerk 0,  Quittung mit ET;    sonst DEL'
+read a
+./cpm -d -S 1 /dev/fd0 | tr ":" "\012" | \
+awk '{print $1,".",$2}' | \
+tr -d "\040" >/tmp/fnamen$$
+echo 'ende' >>/tmp/fnamen$$
+i=anfangswert
+while test $i != "." -a $i != "Total.of"
+do
+ed - /tmp/fnamen$$ <<eof
+1w /tmp/fna$$
+1d
+w
+q
+eof
+i=`cat /tmp/fna$$`
+if test $i != "." -a $i != "Total.of"
+	then
+	if test $# -eq 0
+		then
+		/z/bin/cpm -S 1 -c $i $i /dev/fd0 >/tmp/fehler$$
+		if test -s /tmp/fehler$$
+			then 
+				echo 'Fehler bei Uebertragung von ' $i
+				rm /tmp/fehler$$
+			else
+				echo $i 'uebernommen'
+				rm /tmp/fehler$$
+		fi
+		else
+		echo -n $i 'uebertragen [y/n] :'
+		read a
+		if test $c = 'y'
+			then
+			/z/bin/cpm -S 1 -c $i $i /dev/fd0 >/tmp/fehler$$
+			if test -s /tmp/fehler$$
+				then 
+					echo 'Fehler bei Uebertragung von ' $i
+			fi
+			rm /tmp/fehler$$
+		fi
+	fi
+fi
+rm /tmp/fna$$
+done
+rm /tmp/fnamen$$

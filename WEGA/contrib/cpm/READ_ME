@@ -1,0 +1,21 @@
+Im Verzeichnis cpm muessen folgende Files vorhanden sein:
+
+  184    1 -rw-rw-rw- 1 erish    eris         45 Aug  2 07:30 cpfloppy
+  201    3 -rwxr-xr-x 1 wega     system     1135 Jul 28 16:44 cpm-zu-wega
+   70   10 -rw-rw-rw- 1 erisg    eris       4842 Aug  1 15:10 cpm.1
+   16   14 -rw-rw-rw- 1 erish    eris       7055 Aug  2 07:31 cpm.1C
+   28    2 -rw-rw-rw- 1 erisg    eris        921 Aug  1 17:14 cpm.hlp
+   75    9 -rw-rw-rw- 1 erisg    eris       4441 Aug  1 13:49 cpm.orig.1
+  125    2 drwxrwxrwx 2 erish    eris        960 Aug  2 07:29 cpm3
+  359    2 -rwxr-xr-x 1 erish    eris        650 Aug  1 16:52 cpma
+  362    2 -rwxrwxrwx 1 erish    eris        643 Aug  1 17:35 cpmi
+  194    7 -rw-rw-rw- 1 erish    eris       3342 Aug  2 07:31 osm
+   80    3 -rwxr-xr-x 1 wega     system     1050 Feb 23 09:52 wega-zu-cpm
+
+Das Programm cpm wurde original fuer UCB 2.9 entwickelt und danach
+fuer 1630, A7150 und P8000 angepasst.
+Das in einigen Prozeduren verwendete OS/M-Format ist im File osm
+ausfuehrlich erlaeutert, das DOS-Format ist im CP/A-Menue des Programms
+Format unter Buchstaben j angeboten. Es koennen im Prinzip alle
+CP/M, CP/A oder SCP ueblichen Formate bearbeitet werden, falls der 
+Diskettentreiber von MUTOS bzw. WEGA dies zulaesst.

@@ -1,0 +1,149 @@
+.TH CPM 1 WEGA
+.ad
+.fi
+.SH NAME
+.IP
+cpm \- Lesen und Schreiben von Disketten mit CP/M-Format
+.SH SYNTAX
+\fBcpm\fR [\fBoption\fR] [\fBfilename\fR]
+.SH BESCHREIBUNG
+.B cpm
+liest und schreibt Dateien mit der Struktur des
+CP/M-Filesystems.
+.br
+Das angegebene File muss ein Floppy-Disk-Laufwerk sein
+(/dev/fd* bzw. /dev/rfd*) oder ein Unix-Standard-File
+mit der gleichen Struktur. Da es unbequem und langsam ist,
+auf das Geraet ueber Special-File zuzugreifen, ist es immer
+guenstig eine Kopie des Disketteninhaltes im 
+Unix-Standard-Filesystem anzufertigen. Dazu kann das
+dd-Kommando benutzt werden.
+.PP
+.RS
+dd if=/dev/rfd1 of=
+.I ihrfile
+bs=512 count=..
+.RE
+.PP
+Zu den Geraeten /dev/fd* bzw. /dev/rfd*
+darf nur von der console aus zugegriffen werden.
+.SH FLAGS:
+.RS
+.IP -d 16
+Anzeige des Directory auf Standard-Ausgabe
+.IP -B 16
+die Dateien die mit Hilfe des c- bzw. C-Flags uebertragen werden
+sollen, sind Binaercode - andernfalls Textdateien.
+.IP -c\ \fIname1\fR\ \fIname2\fR 16
+Kopiere die CP/M-Datei \fIname1\fR in das UNIX-File \fIname2\fR
+.IP -C\ \fIname1\fR\ \fIname2\fR 16
+Kopiere das Unix-File \fIname1\fR in die CP/M-Datei \fIname2\fR
+.IP -p\ \fIname\fR 16
+Kopiere die angegebene CP/M-Datei nach Standard-Ausgabe.
+.IP -i 16
+Uebergang in den interaktiven Modus. (alle o.g. Flags
+sind wirkungslos)
+.IP -I 16
+Initialisiere das angegebene File im CP/M-Systemformat; 
+d.h. alle CP/M-Dateien in diesem System werden geloescht.
+.IP -s\ \fIn\fR 16
+Sektor-Interleaving-Faktor = \fIn\fR; Standard ist 6
+.IP -b\ \fIn\fR 16
+Blocklaenge = \fIn\fR (in Byte); Standard ist 2K (2048) Byte
+.IP -m\ \fIn\fR 16
+maximale Anzahl von Directory-Eintraegen = \fIn\fR; Standard ist 128
+.IP -l\ \fIn\fR 16
+Sektorlaenge (in Bytes) = \fIn\fR; Standard ist 512
+.IP -r\ \fIn\fR 16
+Anzahl der Sektoren pro Spur = \fIn\fR; Standard ist 18
+.IP -S\ \fIn\fR 16
+Anzahl der Systemspuren; Standard ist 0
+.IP -t\ \fIn\fR 16
+Anzahl der Spuren der Diskette; Standard ist 80
+.IP
+.RE
+Wird das i-Flag gesetzt, muss trotzdem der Filename mit angegeben
+werden. Existiert das angegebene File nicht, so wird nach entsprechender
+Rueckfrage ein CP/M-Filesystem mit diesem Namen im Unixsystem initialisiert.
+.br
+Die Flags -C, -c und -p schliessen einander aus. 
+.SH
+KOMMANDOS IM INTERAKTIVEN MODUS
+.RS
+.IP ccopyin\ \fIunixfile\fR\ \fIcpmfile\fR 30
+Kopiere Unix-Binary-File ins CP/M
+.IP ccopyout\ \fIcpmfile\fR\ \fIunixfile\fR 30 
+Kopiere CP/M-Binary-Datei ins Unix
+.IP copyin\ \fIunixfile\fR\ \fIcpmfile\fR 30
+Kopiere Unix-Text-File ins CP/M
+.IP copyout\ \fIcpmfile\fR\ \fIunixfile\fR 30
+Kopiere CP/M-Text-Datei ins Unix
+.IP del[ete]\ \fIfilename\fR 30
+Synonym fuer erase
+.IP dir[ectory] 30
+Anzeige Directory des CP/M-Filesystems
+.IP dum[p]\ \fIfilename\fR 30
+hexadezimale Anzeige der angegebenen Datei auf dem Terminal
+.IP era[se]\ \fIfilename\fR 30
+Loeschen der angegeben Datei aus dem CP/M-Filesystem
+.IP exi[t] 30
+Ende; Fortsetzung im Shell
+.IP hel[p] 30
+Anzeige des help-Textes
+.IP log[out] 30
+Synonym fuer exit
+.IP ls 30
+Synonym fuer dir
+.IP ren[ame]\ \fIfile1\fR\ \fIfile2\fR 30
+Umbenennung der CP/M-Datei \fIfile1\fR in \fIfile2\fR
+.IP typ[e]\ \fIfilename\fR 30
+Anzeige der genannten CP/M-Datei am Terminal
+.IP !\ \fIUNIX-kommando\fR 30
+Ausfuehren des UNIX-Kommandos
+.IP disk 30
+Anzeige der gesetzten Diskettenparameter
+.RE
+.IP
+Die Kommandonamen koennen mit 3 Buchstaben abgekuerzt werden.
+CP/M-Dateinamen werden automatisch in Grossbuchstaben umgewandelt.
+Die Kopierkommandi' erlauben nicht das Ueberschreiben bereits
+existierender Dateien.
+.IP
+Wird waehrend der Uebertragung das CP/M-Floppy-Geraet voll, wird
+die Datei geschlossen und das Kommando abgebrochen. Die bereits
+geschriebenen Daten im CP/M-File bleiben erhalten.
+.IP
+Das Kommando copyout setzt voraus, dass die CP/M-Textdateien als
+Zeilenabschluss \fIcr + lf\fR haben und ignoriert \fIcr\fR bei der Uebertragung
+ins Unix-File.
+copyin fuegt vor jeden \fIlf\fR im Unix-File bei der Uebertragung in die
+CP/M-Datei \fIcr\fR ein und schliesst eine Datei mit ^z ab.
+.IP
+Die binaeren Kopierkommandos fuehren die Uebertragung mit 'raw'-Dateien
+durch, womit auch Code-Dateien von und zu Disketten uebertragen
+werden koennen.
+.IP
+Interrupts werden im interaktiven Modus erkannt. Die
+Fortsetzung erfolgt mit Eingabeanforderung fuer eine neue
+Kommandozeile.
+.SH
+FILES
+.IP
+/dev/fd*   bzw.   /dev/rfd*
+.br
+/usr/new/lib/cpm.hlp
+.SH
+FEHLERQUELLEN
+.IP
+CP/M-Nutzernummern werden ignoriert; Dateien, die auf ein
+CP/M-Floppy-Filesystem geschrieben werden, erhalten immer die Nutzernummer 0.
+.IP
+CP/M-Dateinamenerweiterungen laenger als 3 Zeichen werden entsprechend
+abgeschnitten.
+.IP
+Wildcardzeichen sind nicht erlaubt.
+.IP
+CP/M-Dateinamen werden nicht erkannt, wenn in Zeichen des Namens das
+7. Bit eingtragen (POWER-Kommando "SET") bzw. jenes Bit in
+Zeichen der Filenamenergaenzung gesetzt ist (POWER-Kommando "SETRO"
+und "SETSYS").

@@ -1,0 +1,264 @@
+
+
+
+
+
+
+CPM(1)                              - 1 -                              CPM(1)
+
+
+
+NNNNAAAAMMMMEEEE
+          cpm - Lesen und Schreiben von Disketten mit CP/M-Format
+
+SSSSYYYYNNNNTTTTAAAAXXXX
+     ccccppppmmmm [ooooppppttttiiiioooonnnn] [ffffiiiilllleeeennnnaaaammmmeeee]
+
+BBBBEEEESSSSCCCCHHHHRRRREEEEIIIIBBBBUUUUNNNNGGGG
+     ccccppppmmmm liest und schreibt Dateien mit der Struktur des CP/M-Filesystems.
+     Das angegebene File muss ein Floppy-Disk-Laufwerk  sein  (/dev/fd*  bzw.
+     /dev/rfd*)  oder ein Unix-Standard-File mit der gleichen Struktur. Da es
+     unbequem und langsam ist, auf das Geraet ueber Special-File zuzugreifen,
+     ist  es  immer  guenstig  eine  Kopie  des  Disketteninhaltes  im  Unix-
+     Standard-Filesystem anzufertigen.  Dazu  kann  das  dd-Kommando  benutzt
+     werden.
+
+          dd if=/dev/rfd1 of= _i_h_r_f_i_l_e bs=512 count=..
+
+     Zu den Geraeten /dev/fd* bzw. /dev/rfd* darf nur  von  der  console  aus
+     zugegriffen werden.
+
+FFFFLLLLAAAAGGGGSSSS::::
+          -d              Anzeige des Directory auf Standard-Ausgabe
+
+          -B              die Dateien die  mit  Hilfe  des  c-  bzw.  C-Flags
+                          uebertragen   werden   sollen,  sind  Binaercode  -
+                          andernfalls Textdateien.
+
+          -c _n_a_m_e_1 _n_a_m_e_2  Kopiere die CP/M-Datei _n_a_m_e_1 in das UNIX-File _n_a_m_e_2
+
+          -C _n_a_m_e_1 _n_a_m_e_2  Kopiere das Unix-File _n_a_m_e_1 in die CP/M-Datei _n_a_m_e_2
+
+          -p _n_a_m_e         Kopiere die angegebene  CP/M-Datei  nach  Standard-
+                          Ausgabe.
+
+          -i              Uebergang in den  interaktiven  Modus.  (alle  o.g.
+                          Flags sind wirkungslos)
+
+          -I              Initialisiere  das   angegebene   File   im   CP/M-
+                          Systemformat;  d.h.  alle  CP/M-Dateien  in  diesem
+                          System werden geloescht.
+
+          -s _n            Sektor-Interleaving-Faktor = _n; Standard ist 6
+
+          -b _n            Blocklaenge = _n (in Byte); Standard ist  2K  (2048)
+                          Byte
+
+          -m  _n            maximale  Anzahl  von  Directory-Eintraegen  =  _n;
+                          Standard ist 128
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CPM(1)                              - 2 -                              CPM(1)
+
+
+
+          -l _n            Sektorlaenge (in Bytes) = _n; Standard ist 512
+
+          -r _n            Anzahl der Sektoren pro Spur = _n; Standard ist 18
+
+          -S _n            Anzahl der Systemspuren; Standard ist 0
+
+          -t _n            Anzahl der Spuren der Diskette; Standard ist 80
+
+
+     Wird das i-Flag  gesetzt,  muss  trotzdem  der  Filename  mit  angegeben
+     werden. Existiert das angegebene File nicht, so wird nach entsprechender
+     Rueckfrage  ein  CP/M-Filesystem  mit   diesem   Namen   im   Unixsystem
+     initialisiert.
+     Die Flags -C, -c und -p schliessen einander aus.
+
+
+     KOMMANDOS IM INTERAKTIVEN MODUS
+
+          ccopyin _u_n_i_x_f_i_l_e _c_p_m_f_i_l_e      Kopiere Unix-Binary-File ins CP/M
+
+          ccopyout _c_p_m_f_i_l_e _u_n_i_x_f_i_l_e     Kopiere CP/M-Binary-Datei ins Unix
+
+          copyin _u_n_i_x_f_i_l_e _c_p_m_f_i_l_e       Kopiere Unix-Text-File ins CP/M
+
+          copyout _c_p_m_f_i_l_e _u_n_i_x_f_i_l_e      Kopiere CP/M-Text-Datei ins Unix
+
+          del[ete] _f_i_l_e_n_a_m_e             Synonym fuer erase
+
+          dir[ectory]                   Anzeige    Directory    des     CP/M-
+                                        Filesystems
+
+          dum[p] _f_i_l_e_n_a_m_e               hexadezimale Anzeige der  angegebenen
+                                        Datei auf dem Terminal
+
+          era[se] _f_i_l_e_n_a_m_e              Loeschen der angegeben Datei aus  dem
+                                        CP/M-Filesystem
+
+          exi[t]                        Ende; Fortsetzung im Shell
+
+          hel[p]                        Anzeige des help-Textes
+
+          log[out]                      Synonym fuer exit
+
+          ls                            Synonym fuer dir
+
+          ren[ame] _f_i_l_e_1 _f_i_l_e_2          Umbenennung der CP/M-Datei  _f_i_l_e_1  in
+                                        _f_i_l_e_2
+
+          typ[e] _f_i_l_e_n_a_m_e               Anzeige der genannten  CP/M-Datei  am
+
+
+
+
+
+
+
+
+
+
+
+
+
+CPM(1)                              - 3 -                              CPM(1)
+
+
+
+                                        Terminal
+
+          ! _U_N_I_X-_k_o_m_m_a_n_d_o               Ausfuehren des UNIX-Kommandos
+
+          disk                          Anzeige         der         gesetzten
+                                        Diskettenparameter
+
+          Die Kommandonamen  koennen  mit  3  Buchstaben  abgekuerzt  werden.
+          CP/M-Dateinamen  werden automatisch in Grossbuchstaben umgewandelt.
+          Die  Kopierkommandi'  erlauben  nicht  das  Ueberschreiben  bereits
+          existierender Dateien.
+
+          Wird waehrend der Uebertragung das  CP/M-Floppy-Geraet  voll,  wird
+          die  Datei  geschlossen  und  das Kommando abgebrochen. Die bereits
+          geschriebenen Daten im CP/M-File bleiben erhalten.
+
+          Das Kommando copyout setzt voraus, dass  die  CP/M-Textdateien  als
+          Zeilenabschluss _c_r + _l_f haben und ignoriert _c_r bei der Uebertragung
+          ins Unix-File.  copyin fuegt vor jeden  _l_f  im  Unix-File  bei  der
+          Uebertragung  in die CP/M-Datei _c_r ein und schliesst eine Datei mit
+          ^z ab.
+
+          Die binaeren Kopierkommandos fuehren die  Uebertragung  mit  'raw'-
+          Dateien  durch,  womit  auch  Code-Dateien  von  und  zu  Disketten
+          uebertragen werden koennen.
+
+          Interrupts werden im interaktiven Modus  erkannt.  Die  Fortsetzung
+          erfolgt mit Eingabeanforderung fuer eine neue Kommandozeile.
+
+
+     FILES
+
+          /dev/fd*   bzw.   /dev/rfd*
+          /usr/new/lib/cpm.hlp
+
+
+     FEHLERQUELLEN
+
+          CP/M-Nutzernummern werden ignoriert; Dateien,  die  auf  ein  CP/M-
+          Floppy-Filesystem    geschrieben   werden,   erhalten   immer   die
+          Nutzernummer 0.
+
+          CP/M-Dateinamenerweiterungen   laenger   als   3   Zeichen   werden
+          entsprechend abgeschnitten.
+
+          Wildcardzeichen sind nicht erlaubt.
+
+          CP/M-Dateinamen werden nicht erkannt, wenn in  Zeichen  des  Namens
+          das  7.  Bit  eingtragen  (POWER-Kommando  "SET") bzw. jenes Bit in
+
+
+
+
+
+
+
+
+
+
+
+
+
+CPM(1)                              - 4 -                              CPM(1)
+
+
+
+          Zeichen der Filenamenergaenzung gesetzt ist (POWER-Kommando "SETRO"
+          und "SETSYS").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
