@@ -1,0 +1,17 @@
+/*
+**  BMOVE -- block move
+**
+**	Moves a  block of  storage of  length  'n' bytes from the
+**	data area pointed to by 'p' to the area pointed to by 'q'.
+**	Returns the  address of the byte  following the 'q' field.
+**	Overflow of 'q' is not tested.
+*/
+char	*AAbmove(p, q, n)
+register char	*p;
+register char	*q;
+register int	n;
+{
+	while (n--)
+		*q++ = *p++;
+	return (q);
+}
