@@ -1,0 +1,6 @@
+echo src/eql;		cd /z/dbs/src/eql;		make .save
+echo src/libq;		cd ../libq;			make .save
+echo src/monitor;	cd ../monitor;			make .save
+echo src/support;	cd ../support;			make .save
+echo src/sys;		cd ../sys;			make .save
+echo S4 DONE

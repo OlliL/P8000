@@ -1,0 +1,5 @@
+echo src/parser;	cd /z/dbs/src/parser;		make .save
+echo src/qrymod;	cd ../qrymod;			make .save
+echo src/ovqp;		cd ../ovqp;			make .save
+echo src/decomp;	cd ../decomp;			make .save
+echo S3 DONE

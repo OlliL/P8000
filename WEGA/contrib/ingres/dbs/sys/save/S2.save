@@ -1,0 +1,2 @@
+cd adr;		make /z/dbs/data/base/adr/.save
+cd ../ingres;	make /z/dbs/data/base/ingres/.save

@@ -1,0 +1,4 @@
+cd parser;	make /z/dbs/src/parser/.save
+cd ../qrymod;	make /z/dbs/src/qrymod/.save
+cd ../ovqp;	make /z/dbs/src/ovqp/.save
+cd ../decomp;	make /z/dbs/src/decomp/.save
