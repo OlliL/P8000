@@ -1,0 +1,13 @@
+for i in \
+debug.c \
+local.c \
+local2.c \
+macdefs.h \
+sdb.h \
+stin \
+sty.c \
+table.c
+do
+echo $i
+diff u8k/$i /z/sysV/cmd/cc/pcc2/m68k/$i
+done
