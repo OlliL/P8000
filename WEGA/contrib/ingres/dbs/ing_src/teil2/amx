@@ -1,0 +1,1086 @@
+.ds RH \f3AMX\f1
+.ds CH - % -
+.ds LH Anwendung
+.ds RF \f3UNIX\f1
+.bp
+.NH 2
+.ft B
+AMX **
+.ft R
+.LP
+.sp 10
+.NH 3
+.ft B
+Einleitung
+.ft R
+.LP
+AMX (Access Method - an eXtended interface) ist ein
+Werkzeug, das direkt auf die \*(yy\ Zugriffsmethoden
+abbildet. Es ist leicht erlernbar, einfach anzuwenden und
+erzeugt laufzeiteffektive Programme.  Gegen\o'u"'ber dem
+Datenbanksystem \*(yy\ bzw. der EQUEL Komponente sind AMX-Programme
+bedeutend schneller. Mit AMX k\o'o"'nnen
+sowohl rekursive Zugriffe zu Daten programmiert, als auch
+Recherchen mit \o'A"'nderungen frei gemischt und
+Abfragen implementiert werden, die die M\o'a"'chtigkeit
+der relationalen Abfragesprachen \o'u"'bersteigen (Baum-,
+St\o'u"'cklistenverarbeitung usw.).
+.LP
+AMX baut auf dem \*(yy\ System auf. Es ist m\o'o"'glich mit
+\*(yy\ erstellte Daten mit AMX weiterzuverarbeiten und
+umgekehrt. Dieser komplexe Ansatz gestattet zwischen AMX,
+EQUEL und dem Datenbanksystem \*(yy\ frei zu wechseln.
+.NH 3
+.ft B
+Entwurf
+.ft R
+.LP
+AMX ist eine Datenbanksprache, die in eine h\o'o"'here
+Programmier\%sprache eingebettet ist. Als Einbettungsstrategie
+bietet sich einer der vier klassischen Ans\o'a"'tze an:
+.IP (1)
+prozedurale Einbettung in die h\o'o"'here
+Program\%miersprache \o'u"'ber eine call-Schnittstelle:
+.DS C
+call database("database_action as string");
+.DE
+Die Datenbankaktion wird zur Laufzeit interpretiert,
+eine Modifikation des \o'U"'bersetzers der h\o'o"'heren
+Programmiersprache entf\o'a"'llt.  Ein besonderes Problem
+ist die Verwendung gemeinsamer Variablen und die
+Pr\o'u"'fung der Zul\o'a"'ssigkeit der Datenbankaktionen.
+z.B: SYSTEM-R, ADABAS, IMS
+.IP (2)
+einfache Erweiterungen der h\o'o"'heren
+Programmiersprache um Elemente der Datenbanksprache
+.IP
+Eine Modifikation des \o'U"'bersetzers der h\o'o"'heren Pro-
+grammiersprache ist notwendig, auch wenn der Aufwand
+durch Angleichung der Syntax der Datenbanksprache an
+die der h\o'o"'heren Programmiersprache minimiert werden
+kann. Die Zul\o'a"'ssigkeit der Datenbankaktionen kann
+bei diesem Ansatz zur \o'U"'bersetzungszeit \o'u"'berpr\o'u"'ft
+werden.
+.br
+z.B: COBOL-DML des DBTG Netzwerkdatenmodells
+.IP (3)
+syntaktische Erweiterung der h\o'o"'heren
+Programmiersprache um Elemente der Datenbanksprache ohne
+Modifikation des \o'U"'bersetzers der h\o'o"'heren
+Programmiersprache
+.IP
+Die Datenbankaktionen werden in dem
+Anwendungsprogramm  durch  ein  besonderes  Pr\o'a"'fixsymbol
+gekennzeichnet, die durch einen zu konstruierenden
+Vor\o'u"'bersetzer  (Preprozessor)  syntaktisch  und
+semantisch \o'u"'berpr\o'u"'ft und in Prozeduraufrufe der
+h\o'o"'heren  Programmiersprache  \o'u"'bersetzt  werden.
+Nachteilig erscheint die Verwendung zweier Semantiken
+durch den Benutzer.
+.br
+z.B: EQUEL/INGRES
+.IP (4)
+Datenbankprogrammiersprache: Erweiterung einer
+h\o'o"'heren  Programmiersprache um das Datenmodell einer
+Datenbanksprache
+.IP
+Dieser Ansatz erfordert eine grunds\o'a"'tzliche
+Modifikation bzw. Neukonstruktion des \o'U"'bersetzers der
+h\o'o"'heren Programmiersprache.
+.br
+z.B: MODULA-R
+.LP
+F\o'u"'r AMX wurde der 3. Ansatz gew\o'a"'hlt.  Er garantiert mit
+einem  geringen Implementierungsaufwand die Realisierung
+aller Forderungen, die an eine Einbettung zu stellen sind.
+Der Preprozessor ist in YACC und C implementiert und damit
+\*(xx\ portabel. Die Verwendung von YACC als Werkzeug zur
+Compilergenerierung bringt einige Probleme in der Meldung
+von erkannten Fehlern mit sich. Nach Erkennung eines
+Fehlers wird die \o'U"'bersetzung erst nach drei als richtig
+erkannten syntaktischen Einheiten (Token, Morpheme)
+fortgesetzt, so dass eine zweite \o'U"'bersetzung Fehler erzeugen
+kann, die in der ersten nicht erzeugt wurden. Die zu jedem
+Fehler mit ausgegebene Zeilennummer ist nicht immer exakt.
+Sie kann sich auf eine der vorherigen Zeilen beziehen, wenn
+der Fehler am Zeilenende erkannt wurde. YACC liest immer
+eine syntaktische Einheit voraus, wird ein Fehler
+festgestellt, ist in dem oben genannten Fall der Zeilenz\o'a"'hler
+aber schon um eins (oder mehr, bei Zeilen ohne syntaktische
+Einheiten) hochgez\o'a"'hlt.  Bei syntaktischen Fehlern, die
+YACC selbst generiert, ist eine Angabe der Fehlerursache
+\o'a"'usserst schwierig. Aufgrund der einfachen Syntax von AMX
+wurde auf eine detaillierte Fehlererkennung verzichtet und
+der Anwender muss den erzeugten Fehler
+.DS C
+"syntax error"
+.DE
+selbst deuten.
+.LP
+Ein Datenbanksystem l\o'a"'sst sich in zwei grosse Komplexe
+gliedern, den logischen Datenbankprozessor 
+.ft B
+(LDBP)
+.ft R
+und den
+physischen Datenbankprozessor 
+.ft B
+(PDBP).
+.ft R
+Der LDBP ist
+zust\o'a"'ndig f\o'u"'r das \o'U"'bersetzen bzw.
+Parsen
+.ft B
+(P)
+.ft R
+der Datenbank\%aktion
+und deren Optimierung
+.ft B
+(O).
+.ft R
+Der PDBP erh\o'a"'lt eine Folge von
+Auftr\o'a"'gen (query evaluation plan - 
+.ft B
+QEP
+.ft R
+) zur Abarbeitung der
+Datenbankaktion unter Einbeziehung der Daten der Datenbank.
+Unter dem Gesichtspunkt dieser Klassifizierung l\o'a"'sst sich
+die Einbettungsstrategie wie folgt verfeinern:
+.DS I
+   +---------+----------+
+   | L D P B |          |
+   +------+------+ PDBP |
+   |  P   |  O   |      |
+   +------+------+------+
+   |      |      |      |
+ a |####################|
+   |      |      |      |
+ b |======|#############|
+   |      |      |      |
+ c |=============|######|
+   |      |      |      |
+ d |====================|
+   |      |      |      |
+   +------+------+------+
+   LEGENDE
+        #: zur Laufzeit
+        =: zur \o'U"'bersetzungszeit
+.DE
+.IP a-
+Die \o'U"'bersetzung, Optimierung und interpretative
+Abarbeitung der Datenbankaktionen zur Laufzeit ist
+die nat\o'u"'rliche Form der zum Datenbanksystem
+geh\o'o"'rigen Abfragesprache. Sie ist geeignet f\o'u"'r
+ad hoc-Abfragen.
+.IP b-
+Die \o'U"'bersetzung ohne Optimierung ist geeignet f\o'u"'r
+st\o'a"'ndig wiederkehrende datenunabh\o'a"'ngige
+Datenbankaktionen.
+.IP c-
+Die \o'U"'bersetzung mit Optimierung ist geeignet f\o'u"'r
+st\o'a"'ndig wiederkehrende datenabh\o'a"'ngige
+Datenbankaktionen, da der QEP fest determiniert ist.
+.IP d-
+Die Umgehung des PDBP erfordert vom \o'U"'bersetzer die
+Konstruktion nicht nur des QEP sondern auch eines
+speziellen PDBP f\o'u"'r die konkreten Datenbankaktionen
+in Form eines ausf\o'u"'hrbaren Programms. Diese
+Variante ist f\o'u"'r schnelle Anwendungen (Erfassung und
+\o'A"'nderung) bzw. Massendatenverarbeitung geeignet.
+.LP
+F\o'u"'r AMX wurde die Variante d) gew\o'a"'hlt.  Eine wesentliche
+Erh\o'o"'hung der Abarbeitungsgeschwindigkeit f\o'u"'r
+Datenbankaktionen in AMX gegen\o'u"'ber \*(yy\ ist eingetreten, die
+gew\o'a"'hlte Variante hat jedoch auch entscheidende Nachteile.
+Die erzeugten AMX Programme sind abh\o'a"'ngig von der Struktur
+der Datenbank, alle verwendeten datenbankspezifischen Namen
+(der Datenbank, der Relationen und der Dom\o'a"'nen) m\o'u"'ssen zur
+\o'U"'bersetzungszeit bekannt also konstant sein.
+Beispielsweise kann mit AMX kein allgemeines Druckprogramm
+konstruiert bzw. neue Relationen erzeugt werden. Dass ein AMX
+Programm keine Relationen erzeugen kann, ist aus Anwendersicht
+eine schwer einsehbare Tatsache. Der AMX Compiler holt sich
+alle Informationen zu den Relationen und Dom\o'a"'nen aus den
+Systemkatalogen der Datenbank und entlastet somit den
+Anwender von der Angabe dieser Details und den Fehlern, die an
+dieser Stelle gemacht werden k\o'o"'nnen. Eventuell ben\o'o"'tigte
+permanente oder tempor\o'a"'re Relationen m\o'u"'ssen vor der
+\o'U"'bersetzung des AMX Programms mit dem \*(yy\ System erzeugt
+werden (siehe CREATE(QUEL)). Durch diesen Ansatz ist eine
+weitgehende Quelltextunabh\o'a"'ngigkeit von der Struktur der
+Datenbank gesichert, eine \o'A"'nderung der Speicherstruktur
+einer Relation erfordert keine \o'A"'nderung des AMX
+Quellprogramms, wohl aber dessen neue \o'U"'bersetzung.
+.LP
+F\o'u"'r die vorliegende Version
+von AMX gelten einige Einschr\o'a"'nkungen:
+.IP -
+Das Pufferschema der \*(yy\ Zugriffsmethoden
+ordnet jeder Relation maximal einen Puffer zu. F\o'u"'r
+die rekursive Verarbeitung einer Relation ist ein
+solcher Ansatz ungeeignet, da jede neue Rekursion den
+Puffer \o'u"'berschreibt und ein st\o'a"'ndiges Nachlesen des
+alten Pufferinhaltes bei Verlassen der Rekursion
+erforderlich ist.  Die Zuordnung von maximal einem
+Puffer zu einer Relation ist ein Entwurfsprinzip der
+internen Ebene des Datenbankystems \*(yy\, eine
+\o'A"'nderung des Pufferschemas ist nicht angebracht.
+.IP -
+Beschr\o'a"'nkung der Variablentypen f\o'u"'r den Austausch
+von Daten zwischen der Datenbanksprache und der
+h\o'o"'heren Programmiersprache.
+.IP -
+Die verwendeten Relationen d\o'u"'rfen keine Sichten
+(views) sein und d\o'u"'rfen keine definierten
+In\%te\%gri\%t\o'a"'ts\%be\%din\%gun\%gen bzw. anderweitig vergebene Zugriffsrechte
+besitzen.
+.IP -
+Konvertierungen zwischen numerischen und
+Zeichenkettenwerten (und umgekehrt) werden nicht unterst\o'u"'tzt.
+.IP -
+Numerische Konvertierungen erfolgen ohne Unter- bzw.
+\o'U"'berlaufkontrolle.
+.IP -
+Vergleiche von Zeichenkettenwerten zwischen Dom\o'a"'nen
+und Variablen werden in der L\o'a"'nge der Dom\o'a"'ne
+ausgef\o'u"'hrt, z.B. liefert der Variablenwert "Automat"
+den Wert "Auto" f\o'u"'r die Datenbankaktion, wenn die
+zugeh\o'o"'rige Dom\o'a"'ne den \*(yy\ Typ "c4" hat.
+.LP
+AMX garantiert die Integrit\o'a"'t der Datenbank, d.h. die
+Konsistenz der Systemkataloge und der Indizes. Bei der
+Zugriffs\%pfadoptimierung werden die vorhandenen Indizes voll
+herangezogen. \o'A"'nderungen sind nur in Nutzerrelationen
+ge\%stattet, die Systemkataloge und Indizes werden durch AMX
+aktualisiert.
+.LP
+Es ist geplant, einen SORT-Operator f\o'u"'r die
+Datenbankaktionen bereitzustellen, um in Recherchen doppelte Tupel
+auszuschliessen und eine Hilfe f\o'u"'r die Verbindung zweier
+Relationen (join) zu geben.
+.NH 3
+.ft B
+Umgebung
+.ft R
+.LP
+AMX ist an die \*(xx\ Programmiersprache C gebunden, es
+erzeugt aus dem Input ein g\o'u"'ltiges C-Programm, das mit dem
+C-Compiler weiter verarbeitet werden muss. Es besteht aus
+einem Compiler (Preprozessor) und einer Laufzeitbibliothek
+"liba.a". \o'A"'hnlich EQUEL werden AMX Anweisungen durch die
+Kennzeichnung von zwei Nummernzeichen "##" am Zeilenanfang
+in das C-Programm eingebettet. Der AMX Compiler verarbeitet
+nur solche gekennzeichneten Zeilen, aufgrund dieser
+Arbeitsweise is es notwendig, die in AMX Anweisungen verwendeteten
+C-Variablen mit dem Kennzeichen zu deklarieren. In der
+vorliegenden Version werden C-Variable vom Typ:
+.DS I
+ -  short
+ -  int
+ -  long
+ -  float
+ -  double
+ -  char *
+ -  char []
+.DE
+unterst\o'u"'tzt. Jede Variable ist global zu deklarieren.
+.LP
+Im AMX Programm muss die Eintrittsfunktion "amx()"
+benannt werden, da der AMX Compiler ein "main()" generiert,
+um die notwendigen Datenbankinitialisierungen vornehmen zu
+k\o'o"'nnen.
+.LP
+AMX generiert Code f\o'u"'r die Schnittstelle des internen
+Datenbankschemas von \*(yy\, d.h. von Seiten des
+C-Programms sind einige Konventionen dieser Schnittstelle
+einzuhalten. Alle ausf\o'u"'hrbaren Programme m\o'u"'ssen vom \*(yy\
+Superuser angeeignet (owner, group) und mit dem Mode "6xxx"
+.DS I
+ -  "4000" set user id on execution
+ -  "2000" set group id on execution
+.DE
+versehen sein, um die Datenbankfiles lesen und schreiben zu
+k\o'o"'nnen.  Eine weitere Besonderheit ist das \o'A"'ndern des
+aktuellen Verzeichnisses (current directory) in das
+Verzeichnis der Datenbank zur Startzeit des AMX Programms. Zur
+Laufzeit ist es nicht gestattet, das aktuelle Verzeichnis zu
+\o'a"'ndern!  Daher sollten alle programmspezifischen Files
+absolut von der root aus angegeben werden (z.B: "/dir/file",
+siehe auch COPY(QUEL)).
+.LP
+Die Verwendung der C-Bibliotheksfunktionen
+.DS I
+ -  setjmp()
+ -  longjmp()
+.DE
+zur Realisierung nichtlokaler Spr\o'u"'nge (siehe \*(xx\ Manual
+SETJMP(3)) sollte vermieden werden.
+.LP
+Der AMX Compiler hat noch kein eigenes
+Relationssperrkonzept, er sperrt die Datenbank f\o'u"'r die parallele
+Verwendung w\o'a"'hrend der gesamten Zeit deren Nutzung durch
+das AMX Programm, d.h.:
+.IP 1-
+zur Startzeit darf die Datenbank nicht in Benutzung
+sein und
+.IP 2-
+zur Laufzeit kann niemand die Datenbank verwenden.
+.LP
+Das exklusive Sperren der Datenbank erfolgt \o'u"'ber das
+concurrency-control-Schema von \*(yy\.
+.LP
+Durch die Laufzeitbibliothek werden eine Reihe von Objekten
+definiert, die alle mit "AA" beginnen. Durch den
+Anwendungsprogrammierer ist zu gew\o'a"'hrleisten, dass diese Objekte
+nicht \o'u"'berdefiniert werden. Er sollte Namen, die mit "AA"
+beginnen, generell vermeiden.  Da die interne Ebene des
+Datenbanksystems \*(yy\ in das AMX Programm gelinkt
+wird, sind weitere Objekte mit einer festen Bedeutung
+definiert, die im AMX Programm nicht verwendet werden
+d\o'u"'rfen. Eine vollst\o'a"'ndige Liste der Namen befindet sich
+im Anhang des Kapitel. F\o'u"'r eine n\o'a"'chste AMX Version
+ist zumindest die \o'U"'berpr\o'u"'fung der Verwendung von bereits
+vergebenen Namen vorgesehen.
+.NH 3
+.ft B
+Compilation
+.ft R
+.LP
+AMX Programmnamen m\o'u"'ssen mit ".x" beendet sein. Die
+\o'U"'bersetzung erfolgt durch den Aufruf:
+.DS C
+ % amx file.x
+.DE
+Als Flags sind die des C-Compilers m\o'o"'glich. Der AMX Compiler
+hinterl\o'a"'sst sein Ergebnis im "file.o", das in
+einfachster Form mit:
+.DS C
+ % cc -n file.o -la -o file
+  oder
+ % cc -i file.o -la -o file
+.DE
+weiter verarbeitet wird. Durch die Angabe von "-la" wird
+die AMX Laufzeitbibliothek "liba.a" herangezogen. Das AMX
+Programm kann nun durch den Aufruf von:
+.DS C
+ % file
+.DE
+abgearbeitet werden.
+.LP
+Eine gleichzeitige \o'U"'bersetzung mehrerer AMX Programme durch
+einen Aufruf des AMX Compilers ist aus internen Gr\o'u"'nden
+nicht zul\o'a"'ssig.
+.LP
+Eine separate Compilierung von AMX Moduln  ist  nicht
+m\o'o"'glich, s\o'a"'mtliche Datenbankaktionen m\o'u"'ssen in einem
+Programm zusammengefasst sein.  Nat\o'u"'rlich k\o'o"'nnen zu dem
+compilierten  AMX  Programm beliebige \*(xx\-Objektmodule
+einzeln bzw. in Bibliotheken zugelinkt werden.
+.NH 3
+.ft B
+Begriffe
+.ft R
+.LP
+AMX ist in das relationale Modell von \*(yy\ integriert.
+Durch ein AMX Programm k\o'o"'nnen Daten einer \*(yy\
+Datenbank manipuliert werden. Eine Datenbank ist eine Menge von
+Relationen. Die Anzahl der Relationen innerhalb einer
+Datenbank ist unbegrenzt. Eine Relation ist eine Menge von
+Dom\o'a"'nen und Tupel, sie hat einen Eigent\o'u"'mer (Besitzer).
+.LP
+Die Anzahl der Dom\o'a"'nen pro Relation ist auf 49 begrenzt.
+Die  maximale Tupell\o'a"'nge ist generierungsabh\o'a"'ngig und
+schwankt zwischen 498 und 1010 Bytes. Eine Ausrichtung der
+Dom\o'a"'nen auf bestimmte Adressen ist nicht zu beachten.
+.DS I
++-------------------------+
+|     Begriffsanalogien   |
++--------+-------+--------+
+Relation | Tupel | Dom\o'a"'ne
+ Tabelle | Zeile | Spalte
+   Datei | Satz  | Feld
+---------+-------+---------
+.DE
+Eine Dom\o'a"'ne besitzt einen Typ und eine L\o'a"'nge.  Folgende
+Kombinationen sind zul\o'a"'ssig:
+.DS I
+---------+----------
+     Typ | L\o'a"'nge
+---------+----------
+ integer | 1
+         | 2
+         | 4
+   float | 4
+         | 8
+    char | 1 .. 255
+---------+----------
+.DE
+Innerhalb einer Datenbank muss ein Nutzer f\o'u"'r  seine
+Relationen unterschiedliche Namen verwenden. Die Namen der
+Systemkataloge
+.DS L
+ "relation"    Verwaltung der Relationen
+ "attribute"   Verwaltung der Dom\o'a"'nen
+ "indexes"     Verwaltung der Indizes
+ "integrities" Verwaltung der definierten Integrit\o'a"'ten
+ "protect"     Verwaltung der vergebenen Zugriffsrechte
+ "tree"        Verwaltung der vor\o'u"'bersetzten Datenbank-
+               aktionen
+.DE
+sind als Relationenname gesperrt, ebenso die Namen der
+Relationen des Datenbankeigent\o'u"'mers (Datenbankadministrator
+- DBA).
+.LP
+Innerhalb  einer  Relation  m\o'u"'ssen  die  Dom\o'a"'nennamen
+eineindeutig  sein.  Alle Namen (Datenbank, Relationen,
+Dom\o'a"'nen) sind maximal 12 Zeichen lang und bestehen aus den
+Zeichen "[a-z_0-9]", wobei der Name nicht mit einer Ziffer
+"[0-9]" beginnen darf. Der AMX Compiler konvertiert grosse
+Buchstaben "[A-Z]" automatisch in kleine "[a-z]".
+.LP
+Jede Relation muss vor ihrer Verwendung er\o'o"'ffnet und kann
+nach Beendigung der Verarbeitung geschlossen werden. Sie
+besitzt eine Menge von Tupeln (tuplecount) als zugeh\o'o"'rige
+Daten. Wir unterscheiden die Recherche nach einer Menge von
+Tupeln (scan) und das \o'A"'ndern bzw. Einf\o'u"'gen eines einzelnen
+Tupel.  Die Recherche kann alle Daten der Relation umfassen
+(full relation scan) oder durch Bedingungen eingeschr\o'a"'nkt
+werden (limited scan).
+.LP
+Ein scan setzt sich aus den Komponenten
+.IP -
+Selektion = scan-Bedingung,
+.IP -
+Projektion = Auswahl der Dom\o'a"'nen, deren Werte f\o'u"'r
+die Verarbeitung interessieren und
+.IP -
+Aktion = Verarbeitung, die f\o'u"'r jedes gefundene Tupel
+angestossen wird,
+.LP
+zusammen.
+.NH 3
+.ft B
+Syntaktische Regeln
+.ft R
+.LP
+.nf
+   |  :  Alternative.
+
+  [ ] :  wahlweiser Ausdruck, kann entfallen.
+
+  { } :  mindestens einmalige Wiederholung,
+         mehrere Elemente werden durch COMMA "," getrennt.
+         Ausnahme: { amx_stmt } wird nicht separiert.
+
+{A-Z_}:  Schl\o'u"'sselw\o'o"'rter bzw. terminale Symbole:
+         \*(yy\      = "ing_db"
+         OPEN        = "open"
+         CLOSE       = "close"
+         TUPLECOUNT  = "tuplecount"
+         APPEND      = "append"
+         OVER        = "over"
+         SCAN        = "scan"
+         PRINT       = "print"
+         DELETE      = "delete"
+         REPLACE     = "replace"
+         LPAREN      = "("
+         RPAREN      = ")"
+         LBRACE      = "{"
+         RBRACE      = "}"
+         DOLLAR_SIGN = "$"
+         IS          = "="
+                     | "=="
+         RELOP       = IS
+                     | "<"
+                     | "<="
+                     | ">"
+                     | ">="
+                     | "!="
+.fi
+.LP
+.nf
+{a-z_} :  Regelname bzw. nonterminale Symbole.
+          Mit "(n)" numerierte Regeln sind im Programm
+          frei verwendbar, die mit "{n}" nur innerhalb
+          eines scan-Statements.
+          Alle unterstrichenen Regeln sind nicht weiter
+          aufgel\o'o"'st und besitzen folgende Bedeutung:
+          xx         = \*(yy\-Nutzercode f\o'u"'r das
+                       alter-ego-Flag
+          no_of_bufs = Anzahl der zus\o'a"'tzlichen Puffer
+                       f\o'u"'r die Zugriffsmethoden
+          database   = Datenbankname
+          c_code     = C-Statement
+          c_decl     = Deklaration einer C-Variablen
+          rel        = Relationsname
+          c_var      = C-Variablenname
+          dom_name   = Dom\o'a"'nenname bzw. Dom\o'a"'nennummer
+          const      = int-Konstante
+                     | long-Konstante
+                     | double-Konstante
+                     | "string"-Konstante
+.fi
+.LP
+.NH 3
+.ft B
+Grammatik
+.ft R
+.LP
+.nf
+( 1)    program :  ing_db { amx_stmt }
+                ;
+( 2)     ing_db :  \*(yy\ flags database
+                ;               --------
+( 3)     flags  :  [ "-u user_name " ] [ " +no_of_bufs " ]
+                         ---------          ----------
+                ;
+( 4)   amx_stmt :  c_code
+                   ------
+( 5)            |  c_decl
+                   ------
+( 6)            |  OPEN rel
+                        ---
+( 7)            |  CLOSE rel
+                         ---
+( 8)            |  TUPLECOUNT rel c_var
+                              --- -----
+( 9)            |  APPEND rel target
+                          ---
+(10)            |  [ OVER rel ] SCAN rel
+                          ---        ---
+(11)                 [ { qual } ]
+
+(12)                 [ LPAREN { var_assign } RPAREN ]
+
+(13)                 LBRACE [ { amx_stmt } ] RBRACE
+
+(14)            |  PRINT LPAREN [ { dom } ] RPAREN
+
+(15)            |  DELETE
+
+(16)            |  REPLACE target
+
+(17)            |  APPEND target
+                ;
+(18)     target :  LPAREN { dom_assign } RPAREN
+                ;
+(19) dom_assign :  dom IS value
+                ;
+(20)        dom :  DOLLAR_SIGN dom_name
+                ;              --------
+(21)      value :  c_var
+                   -----
+(22)            |  const
+                   -----
+(23)            |  dom
+                ;
+(24)       qual :  dom RELOP value
+                ;
+(25) var_assign :  c_var IS dom
+.fi
+.LP
+.NH 3
+.ft B
+Sprachbeschreibung
+.ft R
+.LP
+Die AMX Sprachbeschreibung orientiert sich an der
+vereinfachten AMX Grammatik.
+Kommentare sind innerhalb von AMX Statements in der C
+\o'u"'blichen Notation zugelassen:
+.DS C
+ ## . . . /* Kommentar */ . . .
+.DE
+.DS L
+( 1)  program :  ing_db { amx_stmt }
+              ;
+.DE
+Ein AMX Programm besteht aus einem einleitenden ing_db-
+Statement und einer beliebigen Menge von amx-Statements.
+.DS L
+( 2)   ing_db :  \*(yy\ flags database
+              ;               --------
+.DE
+Das ing_db-Statement adressiert die zu verarbeitende
+Datenbank "database" und gestattet wahlweise die Angabe von
+Flags.
+.DS L
+( 3)   flags :  [ "-uuser_name" ] [ "+no_of_bufs" ]
+             ;       ---------        ----------
+.DE
+Das Flag -u"user_name" bewirkt, dass das AMX Programm mit den
+Datenbankberechtigungen des \*(yy\ Nutzer "user_name" l\o'a"'uft.
+Das Flag +"no_of_bufs" f\o'u"'gt  "no_of_bufs"-Puffer in das
+Pufferschema der \*(yy\ Zugriffsmethoden ein.
+Normalerweise stehen nur 3 Puffer f\o'u"'r die Arbeit mit Relationen zur
+Verf\o'u"'gung, wobei eine Relation maximal einen Puffer belegen
+kann. Bei der parallelen Arbeit mit mehreren Relationen
+(Indexrelationen m\o'u"'ssen mitgerechnet werden) sollte jeder
+Relation ein eigener Puffer zugeordnet werden k\o'o"'nnen.  Die
+zus\o'a"'tzlichen Puffer werden im Nutzerstack angelegt.
+.DS L
+( 4)  amx_stmt :  c_code
+               ;  ------
+.DE
+Ein AMX Statement kann eine Menge von beliebigen
+C-Statements sein.  Die C-Statements werden nicht durch das
+Kennzeichen "##" am Anfang der Zeile eingeleitet.
+.DS L
+( 5)  amx_stmt :  c_decl
+               ;  ------
+.DE
+C-Variable, die sowohl im AMX als auch im C-Programm
+verwendet werden sollen, m\o'u"'ssen mit dem Kennzeichen "##" am
+Anfang der Zeile deklariert werden.
+.LP
+Folgende Typen werden unterst\o'u"'tzt:
+.DS I
+ -  short
+ -  int
+ -  long
+ -  float
+ -  double
+ -  char *
+ -  char []
+.DE
+Folgende Speicherklassen werden unterst\o'u"'tzt:
+.DS I
+ -  auto
+ -  extern
+ -  static
+.DE
+.DS L
+( 6)  amx_stmt :  OPEN rel
+               ;       ---
+.DE
+Das open-Statement er\o'o"'ffnet die Relation
+.ft B
+rel
+.ft R
+f\o'u"'r die
+weitere Verarbeitung. Die Relation
+.ft B
+rel
+.ft R
+muss eine
+Prim\o'a"'r bzw. Basisrelation sein, d.h. es ist nicht  m\o'o"'glich,
+explizit eine Indexrelation zu er\o'o"'ffnen. Durch das open-
+Statement werden automatisch alle zur Relation geh\o'o"'rigen
+Indizes miter\o'o"'ffnet.  Die Relation
+.ft B
+rel
+.ft R
+darf kein view
+sein und es d\o'u"'rfen keine integrity- bzw. protection-
+constraints auf ihr definiert sein.  Die Systemkataloge
+.ft B
+relation
+.ft R
+,
+.ft B
+attribute
+.ft R
+und
+.ft B
+indexes
+.ft R
+werden durch den Start
+eines AMX Programms automatisch er\o'o"'ffnet.
+.LP
+Recherchen (scan-Statement) sind auf  allen  Relationen
+zugelassen, d.h. auf Basis-, Indexrelationen und Katalogen.
+\o'A"'nderungen und Einf\o'u"'gungen sind nur auf Basisrelationen
+zul\o'a"'ssig, f\o'u"'r die das Programm die update-Erlaubnis hat.
+.DS L
+( 7)  amx_stmt :  CLOSE rel
+               ;        ---
+.DE
+Das close-Statement schliesst die Relation
+.ft B
+rel
+.ft R
+f\o'u"'r die
+weitere Verarbeitung. Es k\o'o"'nnen nur Relationen geschlossen
+werden, die zuvor durch das open-Statement er\o'o"'ffnet wurden.
+Die Beendigung eines Programms (
+.ft B
+exit
+.ft R
+) schliesst
+automatisch alle er\o'o"'ffneten Relationen und Kataloge.
+.DS L
+( 8)  amx_stmt :  TUPLECOUNT rel c_var
+               ;             --- -----
+.DE
+Das tuplecount-Statement weist der C-Variable
+.ft B
+c_var
+.ft R
+als Wert die Anzahl der Tupel der Relation
+.ft B
+rel
+.ft R
+zu.
+.ft B
+c_var
+.ft R
+muss ein numerischer Typ sein. Die Anzahl der Tupel einer
+Relation ist die einzigste verf\o'u"'gbare variable
+Kataloginformation f\o'u"'r das AMX Programm. Auf Umwegen kann so die
+Anzahl der \o'A"'nderungen in einer Relation bestimmt werden:
+.DS L
+ . . .
+ ## long old, new;
+ . . .
+ ## tuplecount rel old
+   { Neueinf\o'u"'gungen }
+ ## tuplecount rel new
+   printf("# of updates", new - old);
+ . . .
+.DE
+.DS L
+( 9)  amx_stmt :  APPEND rel target
+               ;         ---
+.DE
+Das append-Statement f\o'u"'gt ein neues Tupel in die Relation
+.ft B
+rel
+.ft R
+ein.  Durch die Projektion
+.ft B
+target
+.ft R
+werden den
+aufgef\o'u"'hrten Dom\o'a"'nen Werte zugewiesen. Alle nicht angebenen
+Dom\o'a"'nen der Relation
+.ft B
+rel
+.ft R
+werden mit einem Nullwert
+initialisiert, alle numerischen Dom\o'a"'nen bekommen den Wert 0
+und die Zeichenkettendom\o'a"'nen eine mit Leerzeichen gef\o'u"'llte
+Zeichenkette zugewiesen.  Eventuell  vorhandene  Indizes
+werden automatisch aktualisiert.
+.DS L
+(18)   target :  LPAREN { dom_assign } RPAREN
+              ;
+.DE
+Die Projektion wird durch eine \o'o"'ffnende "(" und eine
+schliessende runde Klammer ")" begrenzt. Sie enth\o'a"'lt eine
+durch Kommas "," getrennte Aufz\o'a"'hlung von Zuweisungen
+.ft B
+dom_assign.
+.ft R
+Es muss mindestens einer Dom\o'a"'ne ein Wert
+zugewiesen werden.
+.DS L
+(19) dom_assign :  dom IS value
+                ;
+.DE
+Eine Zuweisung weist der Dom\o'a"'ne
+.ft B
+dom
+.ft R
+den Wert
+.ft B
+value
+.ft R
+zu.
+Bei den Zuweisungen von numerischen zu numerischen Typen
+werden die notwendigen Konvertierungen ohne \o'U"'berlauf- bzw.
+Unterlaufkontrolle vorgenommen. Zuweisungen von numerischen
+zu Zeichenkettenwerten und umgekehrt sind nicht zul\o'a"'ssig.
+.DS L
+(20) dom :  DOLLAR_SIGN dom_name
+         ;              --------
+.DE
+Eine Dom\o'a"'ne wird durch das Kennzeichen "$" und ihren Namen
+bzw.  ihre Nummer (siehe Dom\o'a"'ne
+.ft B
+attid
+.ft R
+des Katalogs
+.ft B
+attribute
+.ft R
+) spezifiziert. Durch die explizite
+Kennzeichnung von Dom\o'a"'nennamen durch das Zeichen "$" werden im
+Gegensatz zu EQUEL Konflikte mit dem Namen von C-Variablen
+vermieden.  Die Referenzierung von Dom\o'a"'nen \o'u"'ber ihre
+interne Nummer (Reihenfolge vom CREATE(QUEL)) kann sinnvoll
+bei einer vektorisierten Verarbeitung sein.
+.DS L
+(21)   value :  c_var
+             ;  -----
+.DE
+Ein Wert kann der aktuelle Wert der C-Variablen
+.ft B
+c_var
+.ft R
+sein.
+.DS L
+(22)   value :  const
+             ;  -----
+.DE
+Ein Wert kann eine in C \o'u"'bliche Konstante
+.ft B
+const
+.ft R
+sein.
+.DS L
+(23)   value :  dom
+             ;
+.DE
+Ein Wert kann der aktuelle Wert der Dom\o'a"'ne
+.ft B
+dom
+.ft R
+sein.
+Diese Form des Wertes setzt einen \o'u"'bergeordneten scan
+voraus, aus dem der Wert f\o'u"'r die Dom\o'a"'ne
+.ft B
+dom
+.ft R
+geholt
+werden kann.
+.DS L
+(10)  amx_stmt : [ OVER over_rel ] SCAN scan_rel
+                        --------        --------
+(11)  Selektion  [ { qual } ]
+
+(12)  Projektion [ LPAREN { var_assign } RPAREN ]
+
+(13)  Aktion     LBRACE [ { amx_stmt } ] RBRACE
+           ;
+.DE
+Das scan-Statement ist das m\o'a"'chtigste AMX Statement, es
+\o'u"'bernimmt die Zugriffspfadoptimierung und erm\o'o"'glicht eine
+rekursive Verarbeitung, da innerhalb eines scans ein weiterer
+scan aufgerufen werden kann.
+.LP
+Die over-Klausel (OVER over_rel) gestattet die Zuweisung des
+Zugriffspfades \o'u"'ber die Relation
+.ft B
+over_rel
+.ft R
+f\o'u"'r den scan
+und damit die Ausschaltung der Zugriffspfadoptimierung im
+AMX Compiler.
+.ft B
+over_rel
+.ft R
+muss die zu scannende Relation
+selbst oder ein Index von
+.ft B
+scan_rel
+.ft R
+sein.  Ist
+.ft B
+over_rel
+.ft R
+ein Index und wird durch die Selektion
+.ft B
+qual
+.ft R
+keinem
+Schl\o'u"'ssel von
+.ft B
+over_rel
+.ft R
+ein Wert zugewiesen, wird der
+Zugriffspfad \o'u"'ber die Prim\o'a"'rrelation
+.ft B
+scan_rel
+.ft R
+gew\o'a"'hlt, da
+ein
+.ft B
+full relation scan
+.ft R
+\o'u"'ber einen Index unsinning ist.
+Die scan-Klausel (SCAN scan_rel) adressiert die zu scannende
+Relation
+.ft B
+scan_rel.
+.ft R
+.NH 3
+.ft B
+Selektion
+.ft R
+.LP
+Der scan kann durch die Angabe einer Selektion
+eingeschr\o'a"'nkt werden.  Die Selektion ist eine Einschr\o'a"'nkung
+des Wertebereichs einzelner (oder aller) Dom\o'a"'nen. Mehrere
+Einschr\o'a"'nkungen werden durch Komma "," getrennt. Eine
+Dom\o'a"'ne kann maximal zwei Einschr\o'a"'nkungen erfahren.  Alle
+zugewiesenen  Bedingungen und Werte der angebenen
+Einschr\o'a"'nkungen werden beim Einlauf in den scan gekellert, so
+dass z.B. eine \o'A"'nderung des Wertes einer verwendeten C-
+Variablen keinen Einfluss auf die Selektion hat.
+.NH 3
+.ft B
+Projektion
+.ft R
+.LP
+Die Projektion ist wahlweise, d.h. sie kann entfallen. Die
+Projektion wird durch eine \o'o"'ffnende "(" und eine
+schliessende runde Klammer ")" begrenzt. Sie weist f\o'u"'r
+jedes, entsprechend der Selektion gefundene Tupel, der
+angebenen Menge von C-Variablen den aktuellen Wert der
+zugeordneten Dom\o'a"'nen zu. Die einzelnen Zuweisungen werden
+durch Komma "," getrennt.
+.NH 3
+.ft B
+Aktion
+.ft R
+.LP
+Die Aktion wird durch eine  \o'o"'ffnende  "{"  und  eine
+schliessende geschweifte Klammer "}" begrenzt. Innerhalb
+der Aktion k\o'o"'nnen beliebige AMX Statements stehen.  Die
+Aktion kann leer sein, allerdings m\o'u"'ssen die Klammern
+angegeben sein. Es ist wichtig zu wissen, dass innerhalb der
+Aktion die Dom\o'a"'nenwerte des gefundenen Tupel immer vorhanden
+sind und sich nicht \o'a"'ndern.
+.LP
+.ft B
+BEISPIEL
+.ft R
+.DS L
+ . . .
+ ## open supply
+ ## open parts
+ . . .
+ ## scan supply $snum = 122
+ ## {
+ ##  scan parts /*parts*/$pnum = /*supply*/$pnum
+ ##  {
+ . . .
+ ##  }
+ ## }
+ . . .
+ ## close supply
+ ## close parts
+ . . .
+.DE
+.LP
+Die \o'U"'bernahme von Werten aus dem \o'u"'bergeordneten scan
+gestattet die einfache Implementierung von geschachtelten
+scan's z.B. zur Zuordnung von Abk\o'u"'rzungen zu Langformen
+(Nomenklaturen) usw.  Bei Zeichenkettendom\o'a"'nen gestattet
+der AMX Compiler keine \o'U"'bernahme von Werten, wenn die
+L\o'a"'nge der Dom\o'a"'ne des \o'u"'bergeordneten scan's k\o'u"'rzer als
+die L\o'a"'nge der Dom\o'a"'ne des aktuellen scan's ist.  Eine
+Mischung  von  numerischen und Zeichenkettenwerten wird
+grunds\o'a"'tzlich nicht unterst\o'u"'tzt.
+.DS L
+(24) qual :  dom RELOP value
+          ;
+.DE
+.ft B
+dom
+.ft R
+gibt die einzuschr\o'a"'nkende Dom\o'a"'ne und
+.ft B
+value
+.ft R
+den Wert der Einschr\o'a"'nkung an. Als Einschr\o'a"'nkungen sind die
+Bedingungen "RELOP":
+.DS C
+"=", "==", "<", "<=", ">", ">=", "!="
+.DE
+zul\o'a"'ssig. Wird eine Dom\o'a"'ne doppelt eingeschr\o'a"'nkt, sind
+folgende zul\o'a"'ssige Kombinationen zu beachten:
+.DS I
+"<[=]" und ">[=]"
+"<[=]" und  "!="
+">[=]" und  "!="
+.DE
+Die Reihenfolge der Einschr\o'a"'nkungen f\o'u"'r eine Dom\o'a"'ne ist
+in folgender Art einzuhalten:
+.DS I
+"<[=]" --> ">[=]" --> "!="
+.DE
+.DS L
+(25) var_assign :  c_var IS dom
+                ;  -----
+.DE
+Eine Zuweisung weist der C-Variablen
+.ft B
+c_var
+.ft R
+den aktuellen Wert der Dom\o'a"'ne
+.ft B
+dom
+.ft R
+zu. Bei den Zuweisungen von
+numerischen zu numerischen Typen  werden  die  notwendigen
+Konvertierungen  ohne \o'U"'berlauf- bzw. Unterlaufkontrolle
+vorgenommen. Zuweisungen von numerischen zu
+Zeichenkettenwerten und umgekehrt sind nicht zul\o'a"'ssig.
+.DS L
+(14)  amx_stmt :  PRINT LPAREN [ { dom } ] RPAREN
+               ;
+.DE
+Das print-Statement gibt die Werte der, durch eine \o'o"'ffnende
+"(" und eine schliessende runde Klammer ")", begrenzten Liste
+der Dom\o'a"'nen in einem Standardformat nach standard output
+aus.  Die Liste enth\o'a"'lt eine durch Kommas "," getrennte
+Aufz\o'a"'hlung der auszugebenden Dom\o'a"'nen.  Eine leere Liste
+"()" gibt die Werte aller Dom\o'a"'nen aus. Das Standardformat
+enth\o'a"'lt den Namen und den Wert der Dom\o'a"'ne in folgender
+Form:
+.DS L
+"%12s: %?\en", domainname, value
+? == Format der auszugebenden Dom\o'a"'ne
+.DE
+.DS L
+(15)  amx_stmt :  DELETE
+               ;
+.DE
+Das delete-Statement l\o'o"'scht das innerhalb des laufenden
+scan's  gefundene  aktuelle  Tupel aus der Datenbasis.
+Innerhalb der Aktion bleibt das aktuelle Tupel mit seinen
+Werten  erhalten.  Eventuell vorhandene Indizes werden
+automatisch aktualisiert.
+.DS L
+(16)  amx_stmt :  REPLACE target
+   ;
+.DE
+Das replace-Statement gestattet die \o'A"'nderung von Werten
+einzelner (oder aller) Dom\o'a"'nen. Eine Unterscheidung von
+Schl\o'u"'ssel- und Nichtschl\o'u"'sseldom\o'a"'nen ist nicht zu
+beachten. Die \o'A"'nderungen werden durch die Projektion
+.ft B
+target
+.ft R
+spezifiziert. Es ist zu beachten, dass  die
+\o'A"'nderungen in einem gesondertem Puffer ausgef\o'u"'hrt werden,
+also das aktuell gefundene Tupel innerhalb des laufenden
+scan's unver\o'a"'ndert bleibt. Eventuell vorhandene Indizes
+werden, falls n\o'o"'tig, automatisch aktualisiert. Eine
+Aktualsierung entf\o'a"'llt z.B., wenn eine identische \o'A"'nderung
+(ge\o'a"'ndertes == Ursprungstupel) ausgef\o'u"'hrt wurde oder wenn
+die ge\o'a"'nderten Dom\o'a"'nen nicht Be\%standteil des Index sind
+und sich die Tupeladresse
+.ft B
+TID
+.ft R
+nicht ge\o'a"'ndert hat.
+.DS L
+(17)  amx_stmt :  APPEND target
+               ;
+.DE
+Das append-Statement f\o'u"'gt ein neues Tupel in die aktuell
+gescannte Relation ein.  Durch die Projektion
+.ft B
+target
+.ft R
+werden den aufgef\o'u"'hrten Dom\o'a"'nen Werte zugewiesen.  Alle
+nicht angebenen Dom\o'a"'nen erhalten den Wert aus dem aktuell
+gefundenen Tupel des laufenden scan's. Es ist zu beachten,
+dass die \o'A"'nderung in einem gesondertem Puffer ausgef\o'u"'hrt
+werden, also das aktuell gefundene Tupel  unver\o'a"'ndert
+bleibt.  Eventuell vorhandene Indizes werden automatisch
+aktualisiert.
+.RE

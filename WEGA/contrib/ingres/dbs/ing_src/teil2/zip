@@ -1,0 +1,544 @@
+.ds RH \f3ZIP\f1
+.ds LH Anwendung
+.ds CH - % -
+.bp
+.LP
+.NH 2
+.ft B
+Eingabegenerator ZIP
+.br
+     - Vers. 2.1 *
+.ft R
+.LP
+.sp 10
+.NH 3
+.ft B
+Einleitung
+.ft R
+.LP
+Der vorliegende Eingabegenerator ist den Bedingungen von
+\*(xx\-Versionen angepasst, f\o'u"'r die eine
+.ft B
+termcap
+.ft R
+und das
+Softwarepaket
+.ft B
+curses
+.ft R
+verf\o'u"'gbar sind.
+Da ZIP als Hilfe f\o'u"'r die Eingabe und Anzeige von Daten
+in der Umgebung von AMX- und EQUEL-Programmen entworfen wurde,
+soll nachfolgend die Anwendung auch an solchen Beispielen
+gezeigt werden.
+.LP
+Die Erstellung einer ZIP-Prozedur erfolgt in drei Schritten:
+.IP 1.
+Mit dem Editor wird eine Maske entworfen, die deckungsgleich
+sp\o'a"'ter auf dem Bildschirm abzubilden ist. Variablenfelder
+werden durch # eingeleitet, die Anzahl der nachfolgenden Zeichen
+bis zum Leerzeichen bzw. Newline (auch EOF)
+oder einem beliebigen Begrenzungszeichen
+legt die Stelligkeit fest (einschliesslich #).
+Bei Gleitkommazahlen bestimmt der Punkt die Konvertierungsvorschrift.
+.IP 2.
+Die Textmaske (Filename: vorgeschlagenes Postfix _m) wird
+einschliesslich m\o'o"'glicher steuernder Flags
+als Argument f\o'u"'r das Kommando
+.ft B
+zip
+.ft R
+angegeben und ein C-Quellfile generiert.
+.IP 3.
+Die Verbindung zwischen Maske und Variablen ergibt sich
+aus dem Dialog. Die Flags -hp ziehen zus\o'a"'tzliche Fragen
+f\o'u"'r Hilfen bzw. Pr\o'u"'fungen nach sich.
+Der C-Compiler wird automatisch gerufen, bei Flag -l erfolgt
+die Einordnung in eine Arbeits\%bib\%lio\%thek.
+.LP
+Bei Verwendung des Flag -z wird ein Zeilenoffset ausgegeben.
+Er berechnet sich aus der Anzahl der Newlines + EOF im Ausgangsfile.
+Mit diesem Offset soll der Entwurf des Gesamtbildes auf dem
+Schirm kontrolliert werden.
+.LP
+Bevor eine ZIP-Prozedur im Programm genutzt werden kann, ist
+die Initia\%lisie\%rungs\%prozedur
+.ft B
+initzip()
+.ft R
+zu rufen - sie
+ini\%tiali\%siert auch die Verwendbarkeit der
+.ft B
+curses
+.ft R
+-Makros bzw.
+Prozeduren. Die \o'u"'blichen Ausgaben zu stdout (printf, write,
+putchar usw.) d\o'u"'rfen innerhalb des G\o'u"'ltigkeitsbereiches
+des sogenannten "Standard-Screen" (stdscr) nicht verwendet
+werden, weil dann Konsistenzprobleme auftreten.
+Daf\o'u"'r stehen die curses-Makros (addstr(), addch()) zur
+Verf\o'u"'gung.
+.br
+.ft B
+Anmerkung:
+.ft R
+Zum Binden des gesamten Programmes (AMX, EQC u.a.) sind
+die Bibliotheken libcurses.a und libzip.a einzu\%ziehen.
+.LP
+Die direkte Einordnung des Generators in das Datenbanksystem
+unter Nutzung der System-Relation "attribute" ist
+vorl\o'a"'ufig nicht geplant.
+Die Praxis zeigt, dass die Eingabe und Korrektur aller
+Dom\o'a"'nen in einem Menue die Ausnahme ist - als 
+weiteres Problem steht dann, in welcher Reihenfolge
+die F\o'u"'hrungstexte den Spalten
+zugeordnet werden sollten. Hierzu w\o'a"'re
+wieder ein Dialog oder eine Zuordnung in der Phase des Editierens 
+der Maske notwendig.
+Es ist in der Regel so, dass erst in Abh\o'a"'ngigkeit vom Wert des
+Schl\o'u"'ssels entweder vom Programm oder vom
+Bedienenden entschieden wird, wie sich der weitere 
+Ablauf gestaltet ("append", "replace" oder "delete") bzw.
+die Dom\o'a"'nen anderer Relationen einzubeziehen sind.
+.NH 3
+.ft B
+Realisierung
+.ft R
+.LP
+ZIP wird durch "make all" im Directory "../../src/zip"
+installiert. Das Kommando zip wird in "../../bin" eingeordnet.
+Ruft man zip ohne Parameter, wird eine Kurzinformation
+zur Anwendung gegeben (in "../../man/zip").
+Im Directory "../src/zip" ist ein Directory "tut" enthalten,
+an dem man sich analog dieser Dokumentation orientieren kann.
+.LP
+Die verwendete Relation "anschrift" hat folgende Struktur:
+.DS L
+
+   Relation:               anschrift
+   ---------
+   Besitzer:               ing_db
+   Tupellaenge:            199
+   Verfallsdatum:          Wed Mar 30 15:21:36 1988
+   Tupelanzahl:            99
+   Speicherstruktur:       ISAM
+   Relationentyp:          Nutzerrelation
+.DE
+.sp 1
+.DS L
+    Domaenname        Typ   Laenge  Schluessel
+   -------------------------------------------
+    bn                i       4      1
+    ans1              c      40
+    ans2              c      40
+    ans3              c      30
+    ort               c      30
+    plz               c       5
+    kubez             c      48
+    bezirk            i       2
+   -------------------------------------------
+.DE
+.LP
+Zur Veranschaulichung der Verfahrensweise folgendes
+AMX-Programm:
+.nf
+-------------------------------------------------------------
+
+## shared hardsoft
+
+/* Eingabe und Korrektur von Anschriften */
+
+## long BN;
+## char ANS1[40];       /* 1.Zeile Anschrift */
+## char ANS2[40];       /* 2.Zeile Anschrift */
+## char ANS3[30];       /* 3.Zeile Anschrift, Strasse/Psf. */
+## char ORT[30];        /* Ort */
+## char PLZ[5];	        /* Postleitzahl */
+## char KUBEZ[48];      /* Kurzbezeichnung Anschrift */
+## int  BEZIRK;         /* individueller Bezirksschluessel */
+
+amx()
+{
+	int flag;
+	int clr;
+	int zl;
+
+initzip();           /*Initialisierung von curses und zip*/
+
+## open anschrift
+
+do
+{
+	BN = 0;
+	ANS1[0] = ANS2[0] = ANS3[0] = ORT[0] = '\\0';
+	PLZ[0] = '\\0';
+	KUBEZ[0] = '\\0';
+	clr = 0;
+	if (!ansbn(clr++, 0)) break;	/*Schirm wird gloescht,*/
+	if (!BN) break;			/*dr anschliessend erhoeht*/
+	flag = 0;
+## scan anschrift $bn=BN (ANS1=$ans1,ANS2=$ans2,ANS3=$ans3,
+##	ORT=$ort,PLZ=$plz,KUBEZ=$kubez,BEZIRK=$bezirk)
+## {
+	++flag;
+	if (!ansein(clr, 1)) break;   /*kein Schirm loeschen,*/
+				      /*alle Variablen erst anzeigen*/
+## replace ($bn=BN,$ans1=ANS1,$ans2=ANS2,$ans3=ANS3,
+##	$ort=ORT,$plz=PLZ,$kubez=KUBEZ,$bezirk=BEZIRK)
+## }
+	if (!flag)
+	{
+		if (!ansein(clr, 1)) continue;
+## append anschrift ($bn=BN,$ans1=ANS1,$ans2=ANS2,
+##	$ans3=ANS3,$ort=ORT,$plz=PLZ,$kubez=KUBEZ,$bezirk=BEZIRK)
+	}
+}
+while (BN);
+
+## commit
+## close anschrift
+}
+-------------------------------------------------------------
+.fi
+.LP
+Als Eingabe- bzw. Korrekturprozeduren kommen ansbn() und ansein() vor.
+Mit der Trennung
+in zwei Masken bzw. Prozeduren
+wird vermieden, dass ansein() bei BN = 0 noch Werte abfordert
+und das gleiche Programm zum Anf\o'u"'gen neuer Tupel bzw. zum
+\o'A"'ndern vorhandener Verwendung findet. Im ersten Schritt
+werden die Masken
+.ft B
+ansbn_m
+.ft R
+und
+.ft B
+ansein_m
+.ft R
+mit dem Editor aufgestellt,
+dabei ist zu beachten, dass in den Zeilen, bei denen mit
+F\o'u"'hrungstexten begonnen wird, ganz links kein Leerzeichen
+steht - f\o'u"'hrende Leerzeichen werden nicht ausgegeben:
+.DS L
+.ft B
+Maske ansbn_m:
+.ft R
+
+ Erfassg./Korr. von Anschriften ==> Abbruch: Betriebsnummer = 0
+
+ Betriebsnummer(8-St.): #9999999<
+
+.DE
+.DS L
+.ft B
+Maske ansein_m:
+.ft R
+
+ Anschrift-Betriebsbezeichnung1: #aaaaaaaaaaaaaaaaaaaaaaaaa..a<
+ ..........Betriebsbezeichnung2: #aaaaaaaaaaaaaaaaaaaaaaaaa..a<
+ ..........Strasse/Nr.         : #aaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+ ..........Ort                 : #aaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+ ..........Postleitzahl        : #aaa<
+ Kurzbezeichnung: #aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+ Bezirk         : #9<
+
+.DE
+In den ersten beiden Zeilen wurden, um eine bessere Darstellung
+zu erreichen, einige a ausgeblendet (entspricht ..).
+.LP
+.ft B
+Ablauf:
+.ft R
+.LP
+Der Eingabe-Generator wird mit
+.br
+.ft B
+zip
+.ft R
+-pl LIBTUT ansbn
+.br
+gerufen.
+.nf
+Darstellung des Dialogs:
+
+-------------------------------------------------------------
+
+
++--------------------------------+
+|  EINGABE-GENERATOR >>> ZIP <<< |
+|  Version 2.1 (curses) 01.02.89 |
+|  EVK Olbernhau                 |
++--------------------------------+
+
+Der Abfragezyklus bezieht sich jeweils auf eine Variable!
+Zur Orientierung werden die Texte der Maske mit ausgegeben.
+
+Erfassg./Korr. von Anschriften ==> Abbruch: Betriebsnummer = 0
+
+Betriebsnummer(8-St.): 
+>>>Datentyp (i/l/c/f/d)            > l
+
+>>>vereinbarter Name (Feld mit []) > BN
+
+>>>mit Korrekturmoeglichkeit?(j/n) > j
+
+>>>Name Pruefprozedur mit () u.Arg.> przk()
+
+>>>Pruef-Art:Zei.=z/Wort=w > w
+
+>>>Hilfe einordnen? (j/n)          > j
+
+>>>Hilfe-Art: Text=t / Prozedur=p  > t
+
+>>>Name File f. Hilfe-Text m. (z,s) > bnhlp(3,15)
+9999999<
+
+
+Okay? >j
+
+-------------------------------------------------------------
+.fi
+.LP
+Zur Orientierung im Dialog gibt ZIP alle F\o'u"'hrungstexte
+entsprechend der Textmaske mit aus.
+.LP
+Parallel zum Dialog wird das File ansbn_i angelegt:
+.DS I
+-pl LIBTUT ansbn
+long BN j przk() w bnhlp(3,15) t
+.DE
+.LP
+Die Pr\o'u"'fung der Statistik-Betriebsnummer erledigt die Prozedur przk():
+.nf
+
+-------------------------------------------------------------
+
+/* Pruefziffernkontrolle Modul 11 (8-stellig) */
+
+przk(pn) long *pn;
+{
+long nr;
+int bew[8];
+int erg, sg, i, divr, anr, pz, p;
+
+nr = *pn;
+bew[0] = 0;
+bew[1] = 4;
+bew[2] = 8;
+bew[3] = 5;
+bew[4] = 10;
+bew[5] = 9;
+bew[6] = 7;
+bew[7] = 3;
+
+p = nr % 10;
+sg = 0;
+
+for (i = 0; i < 8; i++ )
+{
+	anr = nr % 10;
+	erg = anr * bew[i];
+	sg = sg + erg;
+	nr = nr / 10;
+}
+divr = sg % 11;
+switch(divr)
+{
+	case 0 : pz = 5;
+		break;
+	case 2 : pz = 4;
+		break;
+	case 3 : pz = 9;
+		break;
+	case 4 : pz = 3;
+		break;
+	case 5 : pz = 8;
+		break;
+	case 6 : pz = 2;
+		break;
+	case 7 : pz = 7;
+		break;
+	case 8 : pz = 1;
+		break;
+	case 9 : pz = 6;
+		break;
+	default: pz = 0;
+
+}
+if (p == pz) return(1);
+else return(0);
+}
+-------------------------------------------------------------
+.fi
+.LP
+Der R\o'u"'ckkehrcode dieser Prozedur, die ebenfalls in LIBTUT steht,
+wird ausgewertet (1 ist TRUE, 0 ist FALSE). Der Return-Code 0
+veranlasst nach einem Hupton zur erneuten Eingabe (Kursor
+auf Feldanfang), die Eingabe von Fragezeichen (?) f\o'u"'hrt zur
+Ausgabe der
+Hilfe "pruefzifferngesichert" - der Text dazu steht im File bnhlp,
+das bei der Generierung eingezogen wird.
+Die Prozedur ansein() wird mit
+.br
+ zip -a 3  -hl LIBTUT ansein
+.br
+generiert.
+Der Dialog l\o'a"'uft wie folgt ab:
+.nf
+
+-------------------------------------------------------------
+
++--------------------------------+
+|  EINGABE-GENERATOR >>> ZIP <<< |
+|  Version 2.1 (curses) 01.02.89 |
+|  EVK Olbernhau                 |
++--------------------------------+
+
+Der Abfragezyklus bezieht sich jeweils auf eine Variable!
+Zur Orientierung werden die Texte der Maske mit ausgegeben.
+
+Anschrift-Betriebsbezeichnung1: 
+>>>Datentyp (i/l/c/f/d)            > c
+
+>>>vereinbarter Name (Feld mit []) > ANS1[40]
+
+>>>mit Korrekturmoeglichkeit?(j/n) > j
+
+>>>Hilfe einordnen? (j/n)          > n
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+..........Betriebsbezeichnung2: 
+>>>Datentyp (i/l/c/f/d)            > c
+
+>>>vereinbarter Name (Feld mit []) > ANS2[40]
+
+>>>mit Korrekturmoeglichkeit?(j/n) > j
+
+>>>Hilfe einordnen? (j/n)          > n
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+..........Strasse/Nr.         : 
+>>>Datentyp (i/l/c/f/d)            > c
+
+>>>vereinbarter Name (Feld mit []) > ANS3[30]
+
+>>>mit Korrekturmoeglichkeit?(j/n) > j
+
+>>>Hilfe einordnen? (j/n)          > n
+aaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+..........Ort                 : 
+>>>Datentyp (i/l/c/f/d)            > c
+
+>>>vereinbarter Name (Feld mit []) > ORT[30]
+
+>>>mit Korrekturmoeglichkeit?(j/n) > j
+
+>>>Hilfe einordnen? (j/n)          > n
+aaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+..........Postleitzahl        : 
+>>>Datentyp (i/l/c/f/d)            > c
+
+>>>vereinbarter Name (Feld mit []) > PLZ[5]
+
+>>>mit Korrekturmoeglichkeit?(j/n) > j
+
+>>>Hilfe einordnen? (j/n)          > n
+aaa<
+Kurzbezeichnung: 
+>>>Datentyp (i/l/c/f/d)            > c
+
+>>>vereinbarter Name (Feld mit []) > KUBEZ[48]
+
+>>>mit Korrekturmoeglichkeit?(j/n) > j
+
+>>>Hilfe einordnen? (j/n)          > n
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<
+
+>>>Datentyp (i/l/c/f/d)            > i
+
+>>>vereinbarter Name (Feld mit []) > BEZIRK
+
+>>>mit Korrekturmoeglichkeit?(j/n) > j
+
+>>>Hilfe einordnen? (j/n)          > j
+
+>>>Hilfe-Art: Text=t / Prozedur=p  > t
+
+>>>Name File f. Hilfe-Text m.(z,s) > bezhlp(15,3)
+9<
+
+Okay? >>j
+-------------------------------------------------------------
+.fi
+.LP
+Die nach > stehenden Eingaben sind jeweils mit <CR> (Carriage Return)
+abzuschliessen.
+
+Folgendes i-File entsteht:
+.DS I
+-a 3 -hl LIBTUT ansein  
+char ANS1[40]  j  n  n
+char ANS2[40]  j  n  n
+char ANS3[30]  j  n  n
+char ORT[30]   j  n  n
+char PLZ[5]    j  n  n
+char KUBEZ[48] j  n  n
+int  BEZIRK    j  n  bezhlp(15,3) t
+.DE
+.LP
+Es w\o'a"'re denkbar, die PLZ mit "isdigit()" zu pr\o'u"'fen, in Abweichung
+zu oben entst\o'u"'nde das i-File:
+.DS I
+-a 3 -phl LIBTUT ansein
+char ANS1[40]  j  n         n
+char ANS2[40]  j  n         n
+char ANS3[30]  j  n         n
+char ORT[30]   j  n         n
+char PLZ[5]    j  isdigit() z
+char KUBEZ[48] j  n         n
+int  BEZIRK    j  n         bezhlp(15,3) t
+.DE
+.LP
+Beachten sie, dass \et als Trennzeichen steht.
+Bei \o'A"'nderungen im *_i-File
+d\o'u"'rfen die
+Trennzeichen nicht versehentlich gel\o'o"'scht
+werden!
+.LP
+Es wird bei der Erzeugung der Ein-/Ausgabe-Prozedur
+davon ausgegangen, dass die C-Variablen an
+Spalten bestimmter Relationen \o'u"'bergeben
+bzw. von diesen \o'u"'bernommen werden. Deshalb sind
+die C-Variablen grunds\o'a"'tzlich global de\%kla\%riert,
+entsprechend erwartet die erzeugte Prozedur eine
+globale Deklaration zur Wert-\o'U"'bergabe/-\o'U"'bernahme.
+F\o'u"'r alle zu realisierenden Konvertierungen werden die
+Prozeduren (im Sinne von Parameter-Prozeduren)
+aus /usr/lib/libzip.a verwendet.
+Die manuelle Ersetzung
+der Funktionsprozeduren aus der Standard-Bibliothek von
+C (libc.a) f\o'u"'hrt zu Fehlern.
+.LP
+Die Reihenfolge der Objekte in
+der Arbeits-Bibliothek (hier LIBTUT) spielt eine Rolle,
+sofern Pr\o'u"'fprozeduren verwendet werden (nach der ZIP-Prozedur !).
+Die Arbeits-Bibliothek muss im Bindekommando
+vor /usr/lib/libzip.a stehen.
+.LP
+Pruefprozeduren werden in Anlehnung an
+die Funktionen aus "ctype" (isdigit(), isascii() usw.) so
+ge\%staltet, dass der Rueckkehrcode 1 fuer TRUE und
+0 f\o'u"'r FALSE liefert. Das gilt sowohl f\o'u"'er Prozeduren
+die zeichenweise (z) als auch f\o'u"'r solche, die
+wortweise (w) pr\o'u"'fen.
+Das header-File <ctype.h> wird f\o'u"'r ZIP-Prozeduren
+standardm\o'a"'ssig eingezogen.
+.LP
+Als kleine zus\o'a"'tzliche Hilfe von ZIP steht eine
+Menue-Prozedur
+.ft B
+menzip()
+.ft R
+zur Verf\o'u"'gung, die ein im main() vereinbartes Zeichenkettenfeld
+auf w\o'a"'hlbaren Positionen invers ausgibt und die
+angeklickte Zeile (1..n) als R\o'u"'ckkehrwert liefert
+(s. Teil III, Beispiel "Terminkontrolle").
+

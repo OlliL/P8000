@@ -1,0 +1,597 @@
+.ds LH Anwendung
+.ds RH \f3ZUGRIFF\f1
+.ds CH - % -
+.bp
+.NH 2
+.ft B
+Zugriffsmethoden und **
+.br
+       Datenlokalisierung
+.ft R
+.LP
+.sp 10
+.NH 3
+.ft B
+Einleitung
+.ft R
+.LP
+\*(yy\ unterst\o'u"'tzt mehrere Zugriffsmethoden,
+deren sinnvoller Einsatz dem Projektanten
+und dem Datenbankadministrator \o'u"'berlassen wird
+und die Zuordnung von Datenbanken
+und Relationen in eine hierarchische \*(xx\-File-Struktur.
+.LP
+Diese Kapitel beschreibt die Funktionsweise
+der Zugriffsmethoden und gibt damit ,weiterf\o'u"'hrend
+zum vorangegangenen, eine
+Anleitung zu ihrem effektiven problembezogenem Einsatz.
+Ausserdem werden die Teile des \*(yy\-Filesystems
+beschrieben, die den anwendungsbezogenen Aufbau
+mountbarer Filesysteme erm\o'o"'glichen.
+.NH 3
+.ft B
+Grundkonzepte von \*(yy
+.ft R
+.NH 4
+.ft B
+Seitenkonzept und Tupeldarstellung
+.ft R
+.LP
+Alle Zugriffsmethoden legen den Datenbestand
+einer Relation in \*(xx\-Files ab.
+Das File ist generierungsabh\o'a"'ngig in Seiten von 512-Byte
+(\*(xx\ Version 7) oder 1KByte L\o'a"'nge
+unterteilt. Jedes File f\o'u"'r eine 
+Relation besteht aus einer ganzen Anzahl von Seiten,
+mindestens aber aus einer.
+.LP
+Jede Seite enth\o'a"'lt Tupel der Relation
+und zwar so, dass jedes Tupel vollst\o'a"'ndig auf einer Seite
+untergebracht ist.
+.LP
+Ein Tupel kann gew\o'o"'hnlich oder komprimiert gespeichert
+werden:
+Als gew\o'o"'hnlich gespeichertes Tupel wollen wir eine Speicherung verstehen,
+wo jedes Attribut des Tupel genau soviele Bytes
+belegt, wie beim create der Relation
+als Formatl\o'a"'nge f\o'u"'r die entsprechenden Dom\o'a"'nen
+definiert wurde.
+Bei den Dom\o'a"'nen des Typs c (character) wird h\o'a"'ufig der
+Fall eintreten, dass deren Attribute den verf\o'u"'gbaren Speicherplatz
+nicht voll ausf\o'u"'llen, indem sie ab einer bestimmten
+Position nur noch Leerzeichen enthalten.
+Als eine komprimierte Speicherung eines Tupel
+verstehen wir eine solche,
+bei der Attribute von c-Dom\o'a"'nen um diese rechten Leerstellen
+verk\o'u"'rzt werden (das Ende des relevanten Teils
+des Attributes wird durch ein zus\o'a"'tzliches '\e0'-Byte markiert ! ).
+Als Spreizen einer Relation wollen wir die Transformation
+einer komprimierten in die gew\o'o"'hnliche Darstellung
+verstehen.
+.LP
+F\o'u"'r gew\o'o"'hnlich dargestellte Relationen kann man die auf einer
+Seite unterbringbaren Tupel berechnen als
+.DS I
+
+                            512 - 12
+Tupel pro Seite = ggZ (--------------------)
+                         Tupell\o'a"'nge + 2
+
+(Tupell\o'a"'nge in Byte,
+ ggZ: gr\o'o"'sste ganze Zahl von )
+.DE
+Man sieht, dass pro Seite generell 12
+Bytes und pro Tupel 2 Byte Verwaltungsplatz
+ben\o'o"'tigt werden.
+.LP
+Analog kann man sich ausrechnen, wieviel Restplatz
+auf jeder Seite frei bleibt, wenn die Tupell\o'a"'nge
+so gew\o'a"'hlt wird, dass ein ganzes Vielfaches von
+ihr ( + 2 ! ) die Seite nicht ausf\o'u"'llt.
+Maximal darf die Tupell\o'a"'nge 498 Bytes betragen
+(pro Seite dadurch also ein Tupel !).
+Die Beziehungen f\o'u"'r 1024-Byte-Seiten k\o'o"'nnen
+mit den gleichen absoluten Werten berechnet werden.
+.LP
+Aus der Anzahl der Tupel und den auf einer Seite unterbringbaren,
+kann der, f\o'u"'r eine Relation insgesamt n\o'o"'tige Speicherplatz
+ausgerechnet werden.
+.LP
+F\o'u"'r komprimiert dargestellte Relationen
+muss man eigene Absch\o'a"'tzungen verwenden.
+.LP
+Wir bezeichnen eine Seite mit minimalem Restplatz
+als (100 %-tig) gef\o'u"'llt.
+Der F\o'u"'llfaktor einer Seite entspricht dem	
+durch Tupel belegten Platz
+im Verh\o'a"'ltnis zum Gesamtplatz.
+.NH 4
+.ft B
+Schl\o'u"'sselbegriff von \*(yy
+.ft R
+.LP
+In der Relationentheorie bezeichnet
+man als Schl\o'u"'ssel einer Relation
+eine derartige Dom\o'a"'ne (oder Gruppe von Dom\o'a"'nen),
+deren Attribute allein das Tupel charakterisieren.
+Beliebige zwei Tupel einer Relation unterscheiden sich also
+mindestens in ihren Schl\o'u"'sseln.
+.LP
+Wenn in der \*(yy\-Dokumentation von Schl\o'u"'sseln 
+gesprochen wird, ist ein anderer, schw\o'a"'cherer Begriff
+gemeint.
+Bei \*(yy\ kann eine Dom\o'a"'ne
+(oder eine Gruppe von in ihrer Reihenfolge
+ge\%kennzeichneter Dom\o'a"'nen)
+f\o'u"'r die Sortierung oder Zugriffsunterst\o'u"'tzung
+herangezogen werden.
+F\o'u"'r diese Dom\o'a"'ne(n) wird dann vom Schl\o'u"'ssel
+der Relation gesprochen.
+\*(yy\ unterstellt f\o'u"'r den Schl\o'u"'ssel nicht
+unbedingt die o.g. unifizierende Eigenschaft,
+dass sich zwei Tupel mindestens in ihren Schl\o'u"'sseln
+unterscheiden m\o'u"'ssen.
+.LP
+F\o'u"'r \*(yy\ sind zwei Tupel genau dann gleich,
+wenn sie in allen paarigen Attributen
+\o'u"'bereinstimmen. An den Stellen,
+wo \*(yy\ doppelte Tupel ausschliesst, wird nicht
+nur auf Unterschiede in den Schl\o'u"'sselattributen,
+sondern auf solche in allen paarigen
+Attributen getestet.
+.NH 4
+.ft B
+Seitenketten
+.ft R
+.LP
+Wir wollen eine Gruppe von Seiten, die aus einer Hauptseite besteht,
+an der ggf. weitere Seiten durch Verweisungen angekettet sind,
+als Seitenkette bezeichnen.
+Im Extrem besteht die Sei\%tenkette nur aus der Hauptseite.
+Die Verweisungen erfolgen linear aus der Hauptseite
+auf deren nachfolgende, aus dieser auf deren nachfolgende u.s.w.
+In der Regel werden die der Hauptseite folgenden
+Seiten als \o'U"'berlaufseiten bezeichnet.
+Wir bezeichnen die in der Seitenkette enthaltenen Tupel als
+Tupel\%kette der Seiten\%kette.
+.DS L
+Seitenkette      ___________
+                 |         |
+                 | Haupt   |
+                 | Seite   |
+                 |         |
+                 ~~~~~~~~~~~
+                     |         ....................
+                 ___________     \o'U"'berlaufseiten
+                 |         |
+                 | Folge   |
+                 | Seite   |
+                 |         |
+                 ~~~~~~~~~~~
+                     |
+                     :
+                     :
+                     :
+.DE
+.LP
+Gemeinsam bei allen Zugriffsmethoden ist:
+.IP \ \ \ - 5
+Die Suche eines Tupels in einer Seitenkette erfolgt
+sequentiell.
+.sp1
+Sieht man von den hier nicht darzustellenden
+Dekompositionsverfahren bei retrieve-Anweisungen
+mit Aggregaten oder \o'u"'ber mehrere Relationen ab,
+erfolgt die Anzeige aufgefundener Tupel
+unmittelbar in der Reihenfolge der Tupelkette.
+.sp1
+.IP
+Das Anf\o'u"'gen (append) eines Tupel in einer Seitenkette
+erfolgt hinten an die Tupel der laufenden Seite;
+wenn daf\o'u"'r kein Platz mehr ist,
+wird die Seitenkette um eine neue Seite verl\o'a"'ngert.
+.sp1
+Dadurch geht die anfangs bestehende Reihenfolgeordnung
+der Tupel in einer Seite und auch in der Seitenkette verloren.
+.sp1
+.IP
+Beim Streichen (delete) eines Tupel wird der Platz des Tupel
+freigegeben und die Seite komprimiert;
+die Seitenkette wird nicht komprimiert.
+.LP
+Unterschiede zwischen den Zugriffsmethoden
+bestehen darin:
+.sp1
+.IP \ \ \ - 5
+bei der heap-Technik wird die gesamte Relation in einer
+einzigen Seitenkette abgelegt, bei den Direktzugriffsmethoden
+hash und  isam besteht die Relation aus mehreren Seitenketten.
+Die Unterschiede bei letzteren Techniken
+bestehen in der Art der Zuordnung von
+Schl\o'u"'sselwerten zu den verschiedenen Seitenketten
+der Relation.
+.sp1
+.IP
+Bei der heap-Technik werden doppelte Tupel in der Seiten\%kette
+zugelassen, bei den Direktzugriffstechniken nicht.
+.sp1
+Daraus ergeben sich Unterschiede beim Anf\o'u"'gen neuer Tupel:
+.br
+Bei heap erfolgt die Einspeicherung
+am Ende der Tupel\%kette,
+bei hash und isam muss die gesamte Seiten\%kette
+durchsucht werden, um doppelte Tupel auszuschliessen,
+das Anf\o'u"'gen erfolgt
+auf dem ersten ausreichenden freien Platz der Seitenkette.
+Bei heap wird dadurch der durch delete entstandene
+freie Platz nicht wieder ausgenutzt.
+.sp1
+Daraus ergeben sich auch Unterschiede beim Ersetzen (replace)
+in komprimierten Relationen in solchen F\o'a"'llen,
+wo das Ersetzen ggf. nicht inplace erfolgen kann.
+Dann wird replace in delete und append aufgel\o'o"'st.
+Beachten sie, dass jedes gefundene Tupel ersetzt wird,
+replace also die Anzahl der Tupel einer Relation nicht \o'a"'ndert.
+.NH 3
+.ft B
+Zugriffstechniken von \*(yy
+.ft R
+.NH 4
+.ft B
+Heap
+.ft R
+.LP
+Eine als heap dargestellte Relation belegt
+eine Seitenkette.
+Bis auf die letzte Seite sind
+bei Erzeugung der Relation
+durch modify, copy from oder sukzessives append
+alle Seiten
+(100 %-tig) gef\o'u"'llt.
+Die Tupel sind unsortiert.
+Die Relation enth\o'a"'lt ggf. doppelte Tupel.
+.LP
+append f\o'u"'gt Tupel hinten an
+(ggf. werden weitere Seiten angekettet !).
+delete gibt Speicherplatz auf der jeweiligen Seite frei;
+um die zu l\o'o"'schenden Tupel zu finden,
+muss die gesamte Relation durchsucht werden.
+Der freigegebene Platz kann durch append nicht wiederbenutzt werden,
+da neue Tupel hinten angelegt werden.
+retrieve durchsucht die gesamte Relation
+und zeigt die sich qua\%lifizierenden
+Tupel in der gefundenen, unsortierten Reihenfolge.
+.LP
+heap und cheap sind geeignete Zugriffstechniken,
+um aus einer leeren Relation durch sukzessives Anf\o'u"'gen oder copy from
+eine Relation aufzubauen.
+Eine effektive Arbeit mit dieser Zugriffstechnik
+ist aber nur bei kleinen Relationen denkbar.
+.NH 4
+.ft B
+Heapsort
+.ft R
+.LP
+heapsort ist keine Speichertechnik
+sondern Zustand einer Relation
+nach Ausf\o'u"'hrung eines entsprechenden modify-Statements;
+die Relation ist in der Folge ein heap.
+.LP
+Bei der Ausf\o'u"'hrung eines modify to heapsort
+wird die Relation nach den angesprochenen Dom\o'a"'nen
+sortiert, werden doppelte Tupel gestrichen
+und wird die Relation als heap abgelegt.
+.LP
+Zur Durchf\o'u"'hrung der Sortierung wird die Relation
+gespreizt, falls sie komprimiert gespeichert war.
+Es werden Sortierarbeitspl\o'a"'tze
+als Files im SYS-directory angelegt.
+.NH 4
+.ft B
+Hash
+.tf R
+.LP
+F\o'u"'r eine als hash dargestellte Relation besteht ein
+Direktzugriff auf ein Tupel,
+wenn der Wert seines(r) Schl\o'u"'sselattribute(s)
+vollst\o'a"'ndig angegeben wird.
+Dieser Zugriff wird wie folgt vollzogen:
+.LP
+Durch eine hash-Funktion wird aus dem Schl\o'u"'sselattribut
+die Adresse (der hash-Code) einer Hauptseite
+berechnet.
+Die hash Funktion berechnet also nach einem besonderen
+Verfahren aus einem irgendwie strukturiertem Schl\o'u"'ssel
+eine Zahl, die in einem Intervall
+.DS C
+0 <= Hauptseite <= N-1
+.DE
+liegt.
+N bezeichnen wir als Spreizungsbreite der hash-Funktion.
+Diese dadurch jeweils errechnete Hauptseite ist Anfangsseite
+einer Seitenkette, die alle die Tupel der Relation enth\o'a"'lt,
+deren Schl\o'u"'ssel den gleichen hash-Code haben.
+In diesen Seitenketten werden keine doppelten Tupel zugelassen.
+Die Relation kann insgesamt als unsortiert aufgefasst werden,
+da die hash-Funktion keinen "nat\o'u"'rlichen" Wert
+aus dem Schl\o'u"'ssel bildet.
+.DS I
+                                0
+                                1
+       hash(Schl\o'u"'sselwert) =    :
+                                :
+                               N-1
+
+
+     0         1      .........    N-1
+________  ________              ________
+|      |  |      |              |      |
+|Seiten|  |Seiten|    ......... |Seiten|
+|kette |  |kette |              |kette |
+|      |  |      |              |      |
+~~~~~~~~  ~~~~~~~~              ~~~~~~~~
+
+.DE
+.LP
+Beim modify einer Relation zu hash
+kann die Spreizungsbreite
+der hash-Funktion durch die geforderte Anzahl von
+Hauptseiten
+(minpages/maxpages als minimale/maximale Anzahl)
+beeinflusst werden.
+Die Ausf\o'u"'hrung des modify erfolgt durch sukzessives insert
+in eine neue Relation.
+Die alte Relation wird aus Sicherheitsgr\o'u"'nden erst
+freigegeben, wenn die neue erzeugt ist.
+Beim create einer leeren Relation
+kann man mit
+modify
+eine gew\o'u"'nschte Spreizungsbreite einstellen.
+.LP
+hash und chash sind geeignete Zugriffstechniken,
+um aus einer leeren Relation durch sukzessives Anf\o'u"'gen
+oder durch copy from eine Relation aufzubauen.
+.LP
+\*(yy\ unterst\o'u"'tzt nur eine hash-Funktion.
+Es kann nicht garantiert werden,
+dass die durch die Spreizungsbreite definierte Anzahl
+von Seitenketten schon bei Erzeugung der Relation jeweils
+mindestens ein Tupel und maximal nicht mehr als auf der Hauptseite
+unterbringbar enthalten.
+Allerdings wird f\o'u"'r jede Seitenkette mindestens
+eine Hauptseite reserviert.
+.LP
+Die Suche in einer hash-Relation f\o'u"'r einen einzelnen Schl\o'u"'sselwert
+f\o'u"'hrt \o'u"'ber dessen hash-Code
+auf die Hauptseite, wo sequentiell weiter gesucht wird.
+Die Suche nach einem Schl\o'u"'sselintervall zwingt zum Durchsuchen
+der gesamten Relation.
+Deshalb ist die hash-Technik ungeeignet,
+wenn h\o'a"'ufig Suchpfade \o'u"'ber
+Schl\o'u"'sselintervalle benutzt werden m\o'u"'ssen.
+.LP
+Das \o'A"'ndern in einer Relation erfolgt einschliesslich
+der Suche und dem Ausschluss der Anlage doppelter Tupel.
+Beim Erg\o'a"'nzen neuer Tupel wird die betroffene Seitenkette
+ggf. durch \o'U"'berlaufseiten erg\o'a"'nzt, die an die
+vorherigen Seiten der Seitenkette angekettet werden.
+.NH 4
+.ft B
+Isam
+.ft R
+.LP
+F\o'u"'r eine als isam dargestellte Relation
+besteht ein Direktzugriff auf ein Tupel,
+wenn der Wert seines(r) Schl\o'u"'sselattribute(s)
+angegeben wird und besteht dar\o'u"'ber hinaus die M\o'o"'glichkeit,
+Schl\o'u"'sselintervalle in einer ann\o'a"'hernden
+Sortierung abzugreifen.
+.LP
+F\o'u"'r isam ist ein aus mehreren Komponenten
+bestehender Schl\o'u"'ssel soweit definiert und ggf.
+f\o'u"'r einen direkten Zugriff nutzbar,
+wie seine ersten Komponenten l\o'u"'ckenlos
+definiert sind.
+.LP
+Der Zugriff wird wie folgt organisiert:
+.LP
+Durch einen Adress-B*-Baum wird aus dem Schl\o'u"'sselattribut
+die Adresse einer Hauptseite berechnet.
+.LP
+Ein B*-Adressbaum enth\o'a"'lt in jeder Baumebene
+eine Folge von Seiten. Eine derartige Folge von Seiten
+enth\o'a"'lt aufsteigend geordnete Schl\o'u"'ssel
+von Seiten der darunter liegenden Baum\%ebene, also der
+Nachfolgeebene.
+Aus der Position des Schl\o'u"'ssels kann die betreffende Seite
+der Nachfolgeebene bestimmt werden.
+Diese enth\o'a"'lt ab dem sie definierenden Anfangsschl\o'u"'ssel
+alle, die kleiner als der Anfangsschl\o'u"'ssel
+ihrer, in gleicher Baumebene liegenden, Nachbarseite sind.
+Der B*-Baum wird nach unten durch Hauptseiten
+von Seitenketten abgeschlossen,
+die zu den Schl\o'u"'sseln auch alle weiteren Attribute
+als vollst\o'a"'ndige Tupel enthalten.
+Der B*-Baum erh\o'a"'lt nach oben soviele Ebenen, bis die
+Wurzelebene ganz auf einer Seite darstellbar ist.
+.LP
+Nehmen wir als Beispiel Schl\o'u"'ssel von ganzen Zahlen an und nehmen wir weiter an, dass auf
+einer Seite der Seitenkette der Relation 5 Tupel unterbringbar w\o'a"'ren,
+auf einer Seite des B*-Baumes aber 25 Adressen.
+Dann w\o'a"'re folgender B*-Baum mit zwei Baumebenen denkbar:
+.DS L
+
+                     ______________________________
+                     |  5   130                   |
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+      ________________________ ________________________
+      |   5    10  ....   125| |130   135   ....   255|
+      ~~~~~~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~
+
+_____ _____ _____        _____ _____ _____        _____
+|   | |   | |   |        |   | |   | |   |        |   |
+| 0 | | 5 | | 10|        |125| |130| |135|        |255|
+| : | | : | | : | .....  | : | | : | | : | .....  | : |
+| : | | : | | : |        | : | | : | | : |        | : |
+| 4 | | 9 | | 14|        |129| |134| |139|        | : |
+|   | |   | |   |        |   | |   | |   |        |   |
+~~~~~ ~~~~~ ~~~~~        ~~~~~ ~~~~~ ~~~~~        ~~~~~
+
+.DE
+Die Genauigkeit des B*-Baumes w\o'u"'rde gew\o'a"'hrleisten,
+dass im Schl\o'u"'sselintervall 0 ... 254
+maximal 5 Tupel sequentiell gesucht werden m\o'u"'ssten,
+dass in diesem Intervall keine \o'U"'berlaufseiten auftreten
+und dass bei der Ausgabe Sortierabweichungen
+nur in 5-er Schritten auftreten k\o'o"'nnten:
+.br
+z.B.
+.DS I 12
+        9,   11, 13, 12, 14, 10,   17
+aber nie 9 nach 10, 11, 12, 13, 14
+oder nie 15 vor 10, 11, 12, 13, 14
+.DE
+Allerdings w\o'u"'rden alle Tupel mit Schl\o'u"'sselwerten ab 255
+in die letzte Seitenkette eingeordnet werden.
+.LP
+Beenden wir hiermit das Beispiel.
+.LP
+Der B*-Baum ist Bestandteil der Relation.
+.sp1
+.ti +5
+.ne 8
+(seine L\o'a"'nge ist berechenbar:
+.IP \ \ \ \ \ - 8
+Tupell\o'a"'nge der Adresse:
+.br
+gespreizter Schl\o'u"'sselcode
+.IP
+jede Baumebene ganz in Seiten)
+.LP
+Die durch den B*-Baum ermittelten Hauptseiten
+sind Anfangsseiten von Seitenketten,
+die unsortiert alle Tupel enthalten und deren Schl\o'u"'ssel den
+gleichen Baumpfad nehmen.
+In diesen Seitenketten werden keine doppelten Tupel zugelassen.
+Die B*-Baum-Struktur gew\o'a"'hrleistet f\o'u"'r gewisse
+Schl\o'u"'sselintervalle
+eine Sortierung untereinander.
+.LP
+Der B*-Baum wird bei der Erzeugung der Relation
+angelegt und bleibt \o'u"'ber deren gesamte Lebensdauer fest.
+Es ist unsinnig, eine leere Relation
+als isam zu gr\o'u"'nden, der B*-Baum w\o'a"'re entartet,
+man w\o'u"'rde eine einzige Seitenkette erzeugen,
+bei dem bei jedem Einf\o'u"'gen eines neuen Tupel
+eine Duplikatkontrolle \o'u"'ber alle bereits
+vorhandenen Tupel erfolgen w\o'u"'rde.
+.LP
+Bei der Erzeugung der isam Relation durch modify
+kann man die Genauigkeit des B*-Baumes
+durch den F\o'u"'llfaktor der Hauptseiten
+bestimmen.
+Die alte Relation wird zun\o'a"'chst in eine Speicherungsform analog
+heapsort \o'u"'berf\o'u"'hrt, diese wird danach, entsprechend dem
+F\o'u"'llfaktor, gespreizt
+und \o'u"'ber den so entstandenen Hauptseiten
+wird der B*-Baum aufgebaut.
+.LP
+Die Suche in einer isam Relation kann f\o'u"'r die Angabe
+von einzelnen Schl\o'u"'sselwerten, als auch f\o'u"'r
+Intervalle von ihnen unterst\o'u"'tzt werden.
+Das Anf\o'u"'gen erfolgt zun\o'a"'chst in den
+Hauptseiten - soweit der F\o'u"'llfaktor des
+erzeugenden modify vorausschauend gen\o'u"'genden Restplatz
+definiert - danach werden der jeweiligen Seitenkette
+\o'U"'berlaufseiten angef\o'u"'gt.
+Das \o'A"'ndern in der Relation erfolgt einschliesslich
+der Suche und dem Ausschluss der Anlage doppelter Tupel.
+.NH 3
+.ft B
+Die Gestaltung des Datenbankfilesystems
+.br
+f\o'u"'r \*(yy
+.ft R
+.NH 4
+.ft B
+Einordnung einer Datenbank
+.ft R
+.LP
+\*(yy\ wird installationsabh\o'a"'ngig
+unter einem Anfangspfadnamen
+.DS C
+Pathname
+.DE
+installiert. Zum Beispiel ist
+.DS C
+Pathname = /mnt/ing_db
+.DE
+eingerichtet.
+.LP
+Unter diesem Pathname liegen eine Reihe hier nicht behandelter
+Files und directories.
+Die Datenbanken sind unter
+.DS C
+Pathname/data/base
+.DE
+eingerichtet, jede Datenbank erh\o'a"'lt ein directory ihres Namens:
+.DS C
+Pathname/data/base/dbname
+.DE
+In jedem directory dbname liegen
+.sp1
+.IP \ \ \ - 5
+dbname/admin
+.br
+das s.g. admin-File mit allgemeinen Datenbankinformationen,
+.sp1
+.IP
+die Systemkataloge
+(die Relationen relation, references, attributes, integrity, protect, indexes),
+die Relationen (Relationen schlechthin, Indizes)
+.LP
+Durch diese Struktur sind insbesondere
+.DS B
+base       oder
+dbname     oder
+SYS
+.DE
+mountbar.
+.LP
+Bei Erzeugung einer Datenbank mittels creatdb
+wird das directory dbname
+angelegt und werden die Systemkataloge eingerichtet.
+.NH 4
+.ft B
+Bewertung des Relationennamens
+.ft R
+.LP
+\*(yy\ speichert alle Daten einer Relation in einem \*(xx\-File
+unter dem directory dbname.
+Der File-Name wird aus dem vom Anwender
+bei create oder retrieve into angegebenem Relationennamen
+gebildet.
+Dazu wird der Relationenname
+.IP \ \ \ - 5
+ggf. durch Leerzeichen (<blank>) auf 12 Bytes
+verl\o'a"'ngert;
+.br
+dabei wird das erste in 2. bis 11. Position
+gefundene "_" (<underscore>) durch "/" (<slash>)
+ersetzt;
+.IP
+den 12 Bytes werden 2 Bytes als Code des
+arbeitenden Nutzers (s. auch
+-u-Flag bei quel(unix) im Referenz-Manual)
+angef\o'u"'gt.
+.LP
+Dadurch wird es m\o'o"'glich, dass
+.IP -
+verschiedene Nutzer private Relationen gleichen
+Namens in der gleichen Datenbank anlegen k\o'o"'nnen;
+.IP -
+ein Nutzer durch sinnvolle Verwendung des <underscore>
+im Relationennamen die Verteilung der Relationen
+auf das Wurzel-directory dbname oder in sub-directories
+von dbname steuern kann.
