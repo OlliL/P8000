@@ -1,0 +1,24 @@
+for i in \
+common/allo.c \
+common/cgen.c \
+common/cgram.c \
+common/cgram.y \
+common/comm1.c \
+common/comm2.c \
+common/common \
+common/cost.c \
+common/manifest.h \
+common/match.c \
+common/mfile1.h \
+common/mfile2.h \
+common/optim.c \
+common/pftn.c \
+common/reader.c \
+common/scan.c \
+common/sty.y \
+common/trees.c \
+common/xdefs.c 
+do
+echo $i
+diff $i /z/sysV/cmd/cc/pcc2/$i
+done
