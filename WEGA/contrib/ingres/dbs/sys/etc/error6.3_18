@@ -1,0 +1,25 @@
+18000	ATTLOOKUP:	getequal, ret: %d~
+18001	SETP:	oflo args = %d~
+18002	FORMAT:	bad cop(%d)~
+18003	FORMAT:	bad length %d for INT~
+18004	FORMAT:	bad length %d for FLOAT~
+18005	FORMAT:	bad frmt in opASCII %d~
+18006	FORMAT:	opNOT in targ list~
+18007	FORMAT:	bad UOP %d~
+18008	FORMAT:	LBOP in targ list~
+18009	FORMAT:	bad BOP %d~
+18010	GETSCR:	bad arg '%d'~
+18011	PROC_ERROR:	bad pipe~
+18012	ACTION:	error in openr '%d'~
+18013	ACTION:	err openr '%d'~
+18015	NOTPUSH:	strange BOP '%d'~
+18016	NOTPUSH:	strange UOP '%d'~
+18017	NOTPUSH:	unrecognizable node type '%d'~
+18018	PERMCOM:	bad QMODE(%d)~
+18019	RNGLOOK:	type '$d'~
+18020	RNGENT:	type '%d'~
+18021	RNGATNDX:	cannot find %d~
+18022	RNGFRESH:	extra entry: %s~
+18023	TREEPR:	unidentified token~
+18024	XDOT:	bad find '%d'~
+18025	YYERROR:	bad Lastok format~

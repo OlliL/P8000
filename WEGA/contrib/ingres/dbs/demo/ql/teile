@@ -1,0 +1,13 @@
+1,Zentraleinheit,rosa,10,1
+2,Hauptspeicher,grau,20,32
+3,Plattenspeicher,schwarz,685,2
+4,Magnetbandspeicher,schwarz,450,4
+5,Magnetbaender,grau,1,250
+6,Zeilendrucker,gelb,578,3
+7,Zeilendruckerpapier,weiss,15,95
+8,Terminals,blau,19,15
+13,Lochbandleser,schwarz,107,0
+14,Lochbandstanzer,schwarz,147,0
+9,Konsolpapier,weiss,2,350
+10,Kartenleser,grau,327,0
+11,Kartenstanzer,grau,427,0

@@ -1,0 +1,8 @@
+20000	COMMENT:	no end_of_comment token in the parse tables~
+20001	COMMENT:	bad length *%d* of end_of_comment token `%s'
+	for buf[`%d']~
+20002	BACKUP:	buffer overflow on line %d,
+	Pchar[0] = `%c'
+	Pchar[1] = `%c'
+	cannot backup character *%c*~
+20003	YYLEX:	invalid type *%d*~

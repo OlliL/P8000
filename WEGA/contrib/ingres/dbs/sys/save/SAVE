@@ -1,0 +1,1 @@
+SAVE.bin | fgrep -v -f /z/wen/bin/SAVE.file

@@ -1,0 +1,57 @@
+          123456789012345678901234567890123456789012345678901234567
+
+          8)  Wechseln in das Konfigurations-directory:
+                  `cd source/conf'
+
+          9)  Editieren des Konfigurations-file `conf.h'
+              Nach der Zeile
+                  `/* define MACHINE here */'
+              ist die  gewuenschte  Maschine einzutragen.  Folgende
+              Maschinen sind verfuegbar:
+                  BC        == BC 5120.16
+                  ESER      == EC... (VMX)
+                  P8000
+                  PDP       == PDP11/34, K1630, SM4-20, I100 ...
+                  PDP70     == PDP11/45, PDP11/70, I106 ...
+                  VAX       == VAX11, K1840, SM52  ...
+                  VENIX     == IBM/XT
+                  XENIX     == IBM/AT
+              Nach der Zeile
+                  `/* define FLAGS here */'
+              koennen Flags  gesetzt oder nicht gesetzt werden.
+
+              Folgende Flags sollten gesetzt werden:
+                  STRIPFLAG:	strip load modules
+
+              Folgende Flags sollten nicht gesetzt werden:
+                  TEST:		generate test code
+
+              Folgende Flags sollten in  Abhaengigkeit des Rechners
+              gesetzt bzw. nicht gesetzt werden:
+                  FP_PROCESSOR:	floating point processor
+              Folgende Flags sollten nicht veraendert werden:
+                  BIT_32:	32-bit wordsize
+                  ID_SEPERATE:	seperate I/D available
+                  RANLIB:	ranlib available
+                  REV_BYTES:	revers bytes in word
+                  REV_WORDS:	revers words in long word
+                  SIGN_EXT:	sign extension (char -> int)
+                  TEXT_SEPERATE:seperate text segment available
+
+          10) Generierung (`make allclean allinstall').
+              Die Generierung erfolgt mit dem  UNIX-Werzeug `make'.
+              Folgende entries sind verfuegbar:
+              - `make allclean'
+                Loeschen der  maschinenabhaengigen make-files,  der
+                Bibliotheken im  directory  `lib' und der Kommandos
+                im directory `bin'.
+              - `make allinstall'
+                Ein Zusammenfassung fuer make allclean conf install
+              - `make clean'
+                Loeschen aller Objekte in den  Quellverzeichnissen.
+              - `make conf'
+                Erstellung der  maschinenabhaengigen make-files und
+                ING_DB 6.3/2 System-files.
+              - `make install'
+                Installierung   bzw.  Modifizierung  des  gesammten
+                ING_DB 6.3/2 - Systems.
