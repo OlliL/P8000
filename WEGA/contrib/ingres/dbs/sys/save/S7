@@ -1,0 +1,3 @@
+echo sys/man;		cd /z/dbs/sys/man;		make .save
+echo sys/ref;		cd ../ref;			make .save
+echo S7 DONE
