@@ -1,0 +1,52 @@
+/*
+** ---  R_DBS.C --------- BASIC DECLARATIONS  ---------------------------------
+**
+**		INTERFACE  between
+**			DBS and
+**			REPORT (compiler/interpreter)
+**
+**	Version: @(#)r_dbs.c		4.0	02/05/89
+**
+*/
+
+# include	<stdio.h>
+# include	"r_dbs.h"
+
+
+/* IDENTIFICATIN STUFF */
+char		*PQR_system	= "";
+static long	PQR_release	= 610110000;
+static int	PQR_version	= 1634;
+
+
+PQR()
+{
+	register int	ver;
+# ifdef SETBUF
+	char		err_buf[BUFSIZ];
+# endif
+	extern char	*ctime();
+
+	ver = PQR_version;
+# ifdef SETBUF
+	setbuf(stderr, err_buf);
+# endif
+	fprintf(stderr, "PQR-%s", PQR_system);
+	fprintf(stderr, "\tVERSION %d/%d.%d", ver/100, ver%100/10, ver%10);
+# ifdef ESER_VMX
+	fprintf(stderr, "\tRELEASE %s\n", ctime(PQR_release));
+# else
+	fprintf(stderr, "\tRELEASE %s\n", ctime(&PQR_release));
+# endif
+	fflush(stderr);
+	setbuf(stderr, (char *) 0);
+}
+
+
+# ifndef SIGN_EXT
+AAi1toi2(i)
+register int	i;
+{
+	return ((i > 127)? (i - 256): i);
+}
+# endif
