@@ -1,0 +1,2 @@
+cd man;		make /z/dbs/sys/man/.save
+cd ../ref;	make /z/dbs/sys/ref/.save
