@@ -1,0 +1,4 @@
+destroydb dt
+creatdb -1 -c -q dt
+insertr dt 1erfind.dump 1lieferung.dump 1personal.dump 1teile.dump
+sysmod dt
