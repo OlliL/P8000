@@ -1,0 +1,125 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+LD=	$(CC)
+CRT0=
+# ifdef ID_SEPERATE
+LDFLAGS=-i
+# else
+# ifdef TEXT_SEPERATE
+LDFLAGS=-n
+# endif
+# endif
+LIBC=
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+LIBC=
+# endif
+
+# ifdef ESER_VMX
+# endif
+
+# ifdef HP_UX
+# endif
+
+# ifdef P8000
+# endif
+
+# ifdef PDP
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+LDFLAGS=-i -Ms -F 2000
+# endif
+
+# ifdef XENIX386
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+CHMOD=	chmod
+UMODE=	0700
+RM=	-rm -f
+
+LIBES=
+LIBS=	$(LIBES) $(LIBC)
+
+OBJS=	y0.o	y1.o	y2.o	y3.o	y4.o	y5.o
+
+INSTALL:	install
+
+install:	yyyacc
+
+yyyacc:		$(OBJS) $(LIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) $(OBJS) $(LIBS) -o $@
+	@-$(CHMOD) $(UMODE) $@
+
+ALLCLEAN:	allclean
+
+allclean:	clean
+	$(RM) yyyacc
+
+CLEAN:		clean
+
+clean:
+	$(RM) $(OBJS)
+
+y1.c:		y.h
+
+y2.c:		y.h
+
+y3.c:		y.h
+
+y4.c:		y.h
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/yyyacc
+SRC=	y0.c	y1.c	y2.c	y3.c	y4.c	y5.c	y.h	\
+	intyacc.c	reyacc.c	Makefile
+
+.save:		$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/yyyacc
+	> $@
+	umount DISK
+
+$(HOME)/.save:	$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save
+# endif
