@@ -1,0 +1,4 @@
+destroydb bank
+creatdb -1 -q bank
+insertr bank 3bank.dump 3buchung.dump 3grund.dump 3konto.dump 3kunde.dump 3name.dump 3ort.dump 3str.dump 3vorname.dump
+sysmod bank
