@@ -1,0 +1,1 @@
+dd if=/dev/fd148ss9 of=flop bs=512 count=360
