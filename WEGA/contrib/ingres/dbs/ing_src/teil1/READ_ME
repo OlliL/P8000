@@ -1,0 +1,31 @@
+Zur Benutzung des Makefiles
+
+Mit dem Makefile kann die Dokumentation
+fuer ING_DB einfach erstellt werden.
+Das Makefile in diesem Directory uebersetzt 
+den Teil1 der Dokumentation, das sogenannte
+Referenz-Manual.
+Dieser Teil1 kann in mehreren Formen aufbereitet
+werden.
+
+ERSTELLUNG der DOKUMENTATION TEIL1
+
+Mit dem Kommando "make doc1" wird die Doku-
+mentation als Ganzes im Directory /z/ing_doc/teil1
+unter dem Namen "doc1" abgelegt.
+
+Mit dem Kommando "make doc1.tx" wird die
+Dokumentation im Directory /z/ing_doc/teil1
+abgelegt und gedruckt. Sie ist fuer Nadeldrucker
+bzw. Seriendrucker (Textqualitaet) aufbereitet.
+
+Mit dem Kommando "make doc1.lp" wird
+eine Version fuer Drucker erstellt,
+die keine Rueckwaertspositionierung (backspace)
+kennen und folglich keinen Fettdruck realisieren,
+d.h. es werden keine fettgedruckten Passagen
+eingearbeitet, keine Unterstreichungen und
+Umlaute (dafuer als ae, oe usw.) ausgefuehrt.
+Die Dokumentation wird im Directory
+/z/ing_src/teil1/lp abgelegt und sofort
+gedruckt.
