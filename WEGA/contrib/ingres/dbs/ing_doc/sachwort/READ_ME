@@ -1,0 +1,27 @@
+Dieses Directory ist dem Sachwortverzeichnis
+reserviert.
+Das Verzeichnis ist aber nur mit einiger
+WEGA-Sachkenntnis zu erstellen.
+Hilfen dabei gibt Die Shell-Prozedur
+do_swvz.
+Wenn in das Verzeichnis neue Woerter
+aufgenommen werden sollen, muessen
+sie in swd_file aufgenommen werden,
+dann muss allerdings das Programm "sawort"
+neu uebersetzt werden.
+Dazu muessen Sie alle drei Dokumentationsteile
+zu einem grossen File verketten, da sich das
+Programm die Seitenzahl errechnet.
+
+DRUCK:
+mit "make print"
+
+SYNTAX:
+# sawort [Filename des uebersetzten Textes]
+
+**************************************************************
+*                                                            *
+*     Das aktuelle Sachwortverzeichnis heisst uebersetzt     *
+*     "sachw" und die Quelle "swverz.nq".             *
+*                                                            *
+**************************************************************
