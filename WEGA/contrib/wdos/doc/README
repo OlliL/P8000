@@ -1,0 +1,88 @@
+README WEGA-DOS Version 1.0			21.12.1989
+
+1. Inhalt
+---------
+Das Programmpaket WDOS besteht aus 2 Disketten, der
+WDOS-Installationsdiskette (tar-Format) und einer
+originalen DCP-Systemdiskette fuer den EC1834.
+Nur die WDOS-Installationsdiskette wird zur Installation
+von WDOS benoetigt. Sie hat folgenden Inhalt:
+
+README		- diese Datei
+INSTALL		- Programm zum Installieren von WDOS
+wdos.doc	- Dokumentation
+
+wm		- WDOS-Menuesystem
+wdos		- WEGA-Koppelprogramm zu DCP
+
+bios		- Datei mit dem ladbaren "ROM"-BIOS
+bios.p8		- Datei mit dem ladbaren "ROM"-BIOS
+		  fuer ein normales P8000-Terminal
+help		- Datei fuer Help-Funktion
+run_lpr		- Datei fuer den Aufruf des Druckerspoolers
+
+wdos_sys	- Pseudo-Systemdiskette DCP 3.2
+
+Die DCP-Systemdiskette wird vom Kombinat Robotron bezogen.
+Fuer deren Inhalt ist Robotron verantwortlich.
+
+2. Dokumentation
+----------------
+Die Dokumentation zu WDOS besteht aus folgenden Baenden:
+
+- WDOS - Handbuch
+
+- DCP-Software-Dokumentation
+      Anleitung fuer den Bediener/Betriebssystem Teil 1
+- DCP-Software-Dokumentation
+      Anleitung fuer den Bediener/Betriebssystem Teil 2
+- DCP-Software-Dokumentation
+      Anleitung fuer den Systemprogrammierer
+
+Das WDOS-Handbuch befindet sich zusaetzlich in gepackter
+Form auf der Installationsdiskette. Es kann wie folgt
+entpackt werden:
+
+	unpack wdos.doc
+
+
+3. Installation
+---------------
+Die Installation erfolgt vom Superuser von der
+WDOS-Installationsdiskette mit dem Installationsskript
+INSTALL, das zuerst mit dem Programm tar(1) von der
+Installationsdiskette eingelesen werden muss:
+        
+	# cd /
+        # mkdir installdir
+        # cd installdir
+        # tar -xv INSTALL README
+        # INSTALL
+
+4. Nutzerhinweise
+-----------------
+Als Terminaltyp (Umgebungsvariable TERM) sind nun auch
+P8 fuer P8000-Terminal mit Video-Attributen bzw.
+W8 fuer P8000-WDOS-Terminal mit Video-Attributen moeglich.
+In die Datei /etc/termcap ist gegebenenfalls der Eintrag
+fuer W8 einzufuegen. Er entspricht dem Eintrag von P8.
+Das P8000-WDOS-Terminal kann im WEGA-Mode mit 24 (Standard)
+oder 25 Zeilen arbeiten.
+
+
+5. Versionshinweise
+-------------------
+
+	----
+
+6. Probleme
+-----------
+Pseudodisketten und Pseudoharddisks sind z.Z. nicht vor dem
+geichzeitigen Zugriff von mehreren Nutzern geschuetzt.
+Gleichzeitige Schreibzugriffe muessen von den Nutzern
+verhindert werden.
+DCP fuer den EC1834 arbeitet nicht mit dem Standard-Zeittakt
+von 18,2... Hz.  Dadurch wird beim Start von DCP eine falsche
+Zeit gesetzt.
+Bei DCP fuer den AC7150 und anderen kompatiblen Betriebssystemen
+tritt der Fehler nicht auf.
