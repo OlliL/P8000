@@ -1,0 +1,481 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+BIN=	$(DBS)/bin
+LIB=	../lib
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+LD=	$(CC)
+CRT0=
+# ifdef ID_SEPERATE
+LDFLAGS= -i
+# else
+# ifdef TEXT_SEPERATE
+LDFLAGS= -n
+# endif
+# endif
+u_FLAG=	-u
+UFLAG=	$(u_FLAG) _AACCESS
+LIBC=	-lm
+LIBX=
+
+RESTORE=$(BIN)/RESTORE
+restore=$(BIN)/restore
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+LIBC=	-lm -lc
+# endif
+
+# ifdef ESER_VMX
+UFLAG=	$(u_FLAG) AACCESS
+# endif
+
+# ifdef HP_UX
+u_FLAG=	-W l,-u
+UFLAG=	$(u_FLAG) _AACCESS
+# endif
+
+# ifdef P8000
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef PDP
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+LD=	ld
+CRT0=	/lib/crt0.o
+LIBC=	-lm -lc
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+LD=	ld
+LDFLAGS= -i -Ms -F 2000
+CRT0=	/lib/Sseg.o /lib/Scrt0.o
+LIBC=	/lib/Slibm.a /lib/Slibcfp.a /lib/Slibc.a
+LIBX=	/lib/Slibx.a
+RESTORE=$(BIN)/ROLLBACK
+restore=$(BIN)/rollback
+# endif
+
+# ifdef XENIX386
+LD=	ld
+CRT0=	/lib/386/Sseg.o /lib/386/Scrt0.o
+LIBC=	/lib/386/Slibm.a /lib/386/Slibcfp.a /lib/386/Slibc.a
+LIBX=	/lib/386/Slibx.a
+RESTORE=$(BIN)/ROLLBACK
+restore=$(BIN)/rollback
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+CHMOD=	chmod
+MODE=	6711
+UMODE=	0700
+RM=	-rm -f
+
+LIBES=	$(LIB)/a.a $(LIB)/i.a $(LIB)/g.a
+$(LIB)/a.a:
+
+$(LIB)/i.a:
+
+$(LIB)/g.a:
+
+LIBS=	$(LIBES) $(LIBC)
+DLIBES=	$(LIB)/dbu.a $(LIBES)
+$(LIB)/dbu.a:
+
+DLIBS=	$(DLIBES) $(LIBC)
+AMXAPP=	$(BIN)/AMXAPP
+AMXDEL=	$(BIN)/AMXDEL
+AMXGET=	$(BIN)/AMXGET
+AMXREP=	$(BIN)/AMXREP
+AMXRET=	$(BIN)/AMXRET
+AMXVAR=	$(BIN)/AMXVAR
+COPYDB=	$(BIN)/COPYDB
+COPYR=	$(BIN)/COPYR
+CREATDB=$(BIN)/CREATDB
+CREATER=$(BIN)/CREATER
+DEST_DB=$(BIN)/DESTROYDB
+DEST_R=	$(BIN)/DESTROYR
+EXTR=	$(BIN)/EXTRACTR
+HELPR=	$(BIN)/HELPR
+INDEXR=	$(BIN)/INDEXR
+ING_DB=	$(BIN)/ING_DB
+INSR=	$(BIN)/INSERTR
+IQL=	$(BIN)/IQL
+MANR=	$(BIN)/MANR
+MODIFYR=$(BIN)/MODIFYR
+PRINTR=	$(BIN)/PRINTR
+PURGE=	$(BIN)/PURGE
+RD=	$(BIN)/RD
+REFR=	$(BIN)/REFR
+SAVER=	$(BIN)/SAVER
+SYSMOD=	$(BIN)/SYSMOD
+amxapp=	$(BIN)/amxapp
+amxdel=	$(BIN)/amxdel
+amxget=	$(BIN)/amxget
+amxrep=	$(BIN)/amxrep
+amxret=	$(BIN)/amxret
+amxvar=	$(BIN)/amxvar
+copydb=	$(BIN)/copydb
+copyr=	$(BIN)/copyr
+creatdb=$(BIN)/creatdb
+creater=$(BIN)/creater
+dest_db=$(BIN)/destroydb
+dest_r=	$(BIN)/destroyr
+extr=	$(BIN)/extractr
+helpr=	$(BIN)/helpr
+indexr=	$(BIN)/indexr
+ing_db=	$(BIN)/ing_db
+insr=	$(BIN)/insertr
+iql=	$(BIN)/iql
+manr=	$(BIN)/manr
+modifyr=$(BIN)/modifyr
+printr=	$(BIN)/printr
+purge=	$(BIN)/purge
+rd=	$(BIN)/rd
+refr=	$(BIN)/refr
+saver=	$(BIN)/saver
+sysmod=	$(BIN)/sysmod
+
+
+# ifdef NO_PIPE
+ALL=	$(AMXAPP)	$(AMXDEL)	$(AMXGET)	$(AMXREP)	\
+	$(AMXRET)	$(AMXVAR)	$(COPYDB)	$(COPYR)	\
+	$(CREATDB)	$(CREATER)	$(DEST_DB)	$(DEST_R)	\
+	$(EXTR)		$(HELPR)	$(INDEXR)	$(INSR)		\
+	$(MANR)		$(MODIFYR)	$(PRINTR)	$(PURGE)	\
+	$(RD)		$(REFR)		$(RESTORE)	$(SAVER)	\
+	$(SYSMOD)
+# else
+ALL=	$(AMXAPP)	$(AMXDEL)	$(AMXGET)	$(AMXREP)	\
+	$(AMXRET)	$(AMXVAR)	$(COPYDB)	$(COPYR)	\
+	$(CREATDB)	$(CREATER)	$(DEST_DB)	$(DEST_R)	\
+	$(EXTR)		$(HELPR)	$(INDEXR)	$(ING_DB)	\
+	$(INSR)		$(IQL)		$(MANR)		$(MODIFYR)	\
+	$(PRINTR)	$(PURGE)	$(RD)		$(REFR)		\
+	$(RESTORE)	$(SAVER)	$(SYSMOD)
+# endif
+
+O1=	error.o
+O2=	subs.o error.o
+O3=	dmp.o error.o
+
+INSTALL:		install
+
+install:		$(ALL)
+
+$(copydb):		$(O1) copydb.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) copydb.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(COPYDB):		$(copydb)
+	$(RM) $@
+	LN $(copydb) $@
+
+$(copyr):		$(O1) copyr.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) copyr.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(COPYR):		$(copyr)
+	$(RM) $@
+	LN $(copyr) $@
+
+$(creatdb):		$(O1) creatdb.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) creatdb.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(CREATDB):		$(creatdb)
+	$(RM) $@
+	LN $(creatdb) $@
+
+$(creater):		$(O1) creater.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) creater.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(CREATER):		$(creater)
+	$(RM) $@
+	LN $(creater) $@
+
+$(dest_db):		destroydb.o $(LIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) destroydb.o $(LIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(DEST_DB):		$(dest_db)
+	$(RM) $@
+	LN $(dest_db) $@
+
+$(dest_r):		$(O1) destroyr.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) destroyr.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(DEST_R):		$(dest_r)
+	$(RM) $@
+	LN $(dest_r) $@
+
+$(extr):		$(O3) extractr.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) extractr.o $(O3) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(EXTR):		$(extr)
+	$(RM) $@
+	LN $(extr) $@
+
+$(helpr):		$(O1) helpr.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) helpr.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(HELPR):		$(helpr)
+	$(RM) $@
+	LN $(helpr) $@
+
+$(indexr):		$(O1) indexr.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) indexr.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(INDEXR):		$(indexr)
+	$(RM) $@
+	LN $(indexr) $@
+
+$(insr):		$(O3) insertr.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) insertr.o $(O3) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(INSR):		$(insr)
+	$(RM) $@
+	LN $(insr) $@
+
+$(manr):		manr.o $(LIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(UFLAG) $(CRT0) manr.o $(LIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(MANR):		$(manr)
+	$(RM) $@
+	LN $(manr) $@
+
+$(refr):		$(manr)
+	$(RM) $@
+	LN $(manr) $@
+
+$(REFR):		$(manr)
+	$(RM) $@
+	LN $(manr) $@
+
+$(modifyr):		$(O1) modifyr.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) modifyr.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(MODIFYR):		$(modifyr)
+	$(RM) $@
+	LN $(modifyr) $@
+
+$(printr):		$(O1) printr.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) printr.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(PRINTR):		$(printr)
+	$(RM) $@
+	LN $(printr) $@
+
+$(iql):			proc_tab.o $(LIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) proc_tab.o $(LIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(IQL):			$(iql)
+	$(RM) $@
+	LN $(iql) $@
+
+$(ing_db):		$(iql)
+	$(RM) $@
+	LN $(iql) $@
+
+$(ING_DB):		$(iql)
+	$(RM) $@
+	LN $(iql) $@
+
+$(purge):		$(O2) purge.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) purge.o $(O2) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(PURGE):		$(purge)
+	$(RM) $@
+	LN $(purge) $@
+
+$(rd):			$(O1) rd.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) rd.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(RD):			$(rd)
+	$(RM) $@
+	LN $(rd) $@
+
+$(restore):		$(O2) restore.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) restore.o $(O2) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(RESTORE):		$(restore)
+	$(RM) $@
+	LN $(restore) $@
+
+$(saver):		$(O1) saver.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) saver.o $(O1) $(DLIBS) $(LIBX) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(SAVER):		$(saver)
+	$(RM) $@
+	LN $(saver) $@
+
+$(sysmod):		$(O1) sysmod.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) sysmod.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(SYSMOD):		$(sysmod)
+	$(RM) $@
+	LN $(sysmod) $@
+
+$(amxvar):		$(O1) amxvar.o $(DLIBES)
+	$(LD) $(LDFLAGS) STRIPFLAG $(CRT0) amxvar.o $(O1) $(DLIBS) -o $@
+	@-$(CHMOD) $(MODE) $@
+
+$(AMXVAR):		$(amxvar)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(amxapp):		$(amxvar)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(AMXAPP):		$(amxvar) $(amxapp)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(amxdel):		$(amxvar)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(AMXDEL):		$(amxvar) $(amxdel)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(amxget):		$(amxvar)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(AMXGET):		$(amxvar) $(amxget)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(amxrep):		$(amxvar)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(AMXREP):		$(amxvar) $(amxrep)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(amxret):		$(amxvar)
+	$(RM) $@
+	LN $(amxvar) $@
+
+$(AMXRET):		$(amxvar) $(amxret)
+	$(RM) $@
+	LN $(amxvar) $@
+
+ALLCLEAN:		allclean
+
+allclean:		clean
+	$(RM) $(ALL)
+
+CLEAN:			clean
+
+clean:
+	$(RM) *.o
+
+copydb.o:		../h/trace.h
+
+copyr.o:		../h/trace.h
+
+creatdb.o:		../h/trace.h
+
+creater.o:		../h/trace.h
+
+destroydb.o:		../h/trace.h
+
+destroyr.o:		../h/trace.h
+
+helpr.o:		../h/trace.h
+
+indexr.o:		../h/trace.h
+
+modifyr.o:		../h/trace.h
+
+printr.o:		../h/trace.h
+
+proc_tab.o:		../h/trace.h
+
+purge.o:		../h/trace.h
+
+rd.o:			../h/trace.h
+
+restore.o:		../h/trace.h
+
+saver.o:		../h/trace.h
+
+subs.o:			../h/trace.h
+
+sysmod.o:		../h/trace.h
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/support
+SRC=	copydb.c	copyr.c		creatdb.c	creater.c	\
+	destroydb.c	destroyr.c	dmp.c		dmp.h		\
+	error.c		extractr.c	gen.h		helpr.c		\
+	indexr.c	insertr.c	manr.c		modifyr.c	\
+	printr.c	proc_tab.c	purge.c		rd.c		\
+	restore.c	saver.c		subs.c		sysmod.c	\
+	amxvar.c	Makefile
+
+.save:			$(SRC)
+	mount DISK /wrk
+	CP $? $@ /wrk/support
+	> $@
+	umount DISK
+
+$(HOME)/.save:		$(SRC)
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:		.save
+.PRECIOUS:		$(HOME)/.save
+# endif
