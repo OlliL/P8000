@@ -1,4 +1,4 @@
-README WEGA-DOS Version 1.0			21.12.1989
+README WEGA-DOS Version 1.1			4.4.1990
 
 1. Inhalt
 ---------
@@ -18,10 +18,12 @@ wdos		- WEGA-Koppelprogramm zu DCP
 bios		- Datei mit dem ladbaren "ROM"-BIOS
 bios.p8		- Datei mit dem ladbaren "ROM"-BIOS
 		  fuer ein normales P8000-Terminal
+bios.wy		- Datei mit dem ladbaren "ROM"-BIOS
+		  fuer ein Wyse-Terminal (Wyse 60, WY-99GT)
 help		- Datei fuer Help-Funktion
 run_lpr		- Datei fuer den Aufruf des Druckerspoolers
 
-wdos_sys	- Pseudo-Systemdiskette DCP 3.2
+wdos_sys	- Pseudo-Systemdiskette DCP 3.3
 
 Die DCP-Systemdiskette wird vom Kombinat Robotron bezogen.
 Fuer deren Inhalt ist Robotron verantwortlich.
@@ -68,7 +70,13 @@ In die Datei /etc/termcap ist gegebenenfalls der Eintrag
 fuer W8 einzufuegen. Er entspricht dem Eintrag von P8.
 Das P8000-WDOS-Terminal kann im WEGA-Mode mit 24 (Standard)
 oder 25 Zeilen arbeiten.
-
+Zusaetzlich koennen nun die Terminals Wyse 60 und
+Wyse WY-99GT mit Enhanced-PC-Tastatur verwendet werden.
+Diese Terminals, sind im ADM31-Mode zu betreiben.
+In die Datei /etc/termcap ist der Eintrag WY anzulegen,
+der bis auf den Terminalnamen mit P8 identisch ist.
+Die Umgebungsvariable TERM, ist in der Datei /etc/ttytype
+auf WY zu setzen.
 
 5. Versionshinweise
 -------------------
