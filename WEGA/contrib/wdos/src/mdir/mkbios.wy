@@ -1,0 +1,12 @@
+dseg
+-
+bios
+b000
+termwy
+
+disk
+
+orgs
+0
+
+bios.wy
