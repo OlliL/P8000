@@ -3,8 +3,10 @@
 
 	pburn - programmer	(c) zft/keaw abt.: basissoftware wae
 				wega p8000/16-bit-teil
-				version : 1.4
-				datum	: 04.01.1989
+				version : 2.3
+					  (prom programmer)
+				datum	: 20.11.1989
+
 
 	bearbeiter:		r. kuehle
 
@@ -16,17 +18,17 @@
 
 	wega p8000/16-bit-teil:
 	-----------------------
-	pb1.c				(c)
-	pb1.command.c			(c)
-	pb1.cmdline.c			(c)
-	pb1.file.c			(c)
-	pb1.buf.c			(c)
-	pb1.devud.c			(c)
+	pb2.c				(c)
+	pb2.command.c			(c)
+	pb2.cmdline.c			(c)
+	pb2.file.c			(c)
+	pb2.buf.c			(c)
+	pb2.devud.c			(c)
 
 	udos p8000/8-bit-teil:
 	----------------------
-	PB1.PROM.S			(plzsys)
-	PB1.P8000.S			(z80)
+	K.PROM.S			(plzsys)
+	K.P8000.S			(z80)
 
 **************************************************************************
 *************************************************************************/
@@ -36,7 +38,7 @@
 *									*	
 *			pburn - prom programmer				*
 *									*
-*	pb1.c		: wega p8000 16-bit-teil			*
+*	pb2.c		: wega p8000 16-bit-teil			*
 *				  c-quelle				*
 *									*
 ************************************************************************/
@@ -44,9 +46,9 @@
 
 
 
-#define dia1 "\n\n\t\t   pburn - prom programmer\n"
-#define cpr "\t\t (c) zft/keaw 04.01.1989/v 1.4\n"
-#define dia2 "\t\t =============================\n\n"
+#define dia1 "\n\n\t\t      pburn - prom programmer board"
+#define cpr  "\t\t         (c) zft/keaw  version 2.3\n"
+#define dia2 "\t\t      ===============================\n\n"
 #define dia3 "menue:\n\tp - program\n\tl - list\n\tt - crc\n\tb - bytemode"
 #define dia4 "\n\tf - file\n\tc - copy"
 #define dia5 "\n\tq - quit\nselect ?:"
@@ -72,18 +74,26 @@ int eof;		/*end of file*/
 int mofy;		/*modify flag*/
 int next;		/*next prom	prom to file*/
 char cmdbuf[100];
+char board;		/*'1' eprom programmer board 1
+			  '2' eprom programmer board 2*/
 
-extern int fd, fd1;	/*file descriptoren*/
-extern int cfd, cfd1;
+extern int fd, fd1, fd2;	/*file descriptoren*/
+extern int cfd, cfd1, error;
 extern int eofseg;
 
 
-main()
+main ()
 {
-
+	/* prom programmer board */
+	set_del();
+	header (5,0,0L,0L);
+	if (errflag==true) {res_del(); return;}
+	read (fd2,&board,1);
+	close (fd2);
+	res_del();
 
 	do	{
-		printf ("%s %s %s %s %s %s",dia1,cpr,dia2,dia3,dia4,dia5);
+		printf ("%s %c\n%s %s %s %s %s",dia1,board,cpr,dia2,dia3,dia4,dia5);
 		cfd=false;
 		cfd1=false;
 		eofseg=false;
