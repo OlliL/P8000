@@ -1,0 +1,33 @@
+destroydb f77
+creatdb -c -q f77
+creater f77 basisdaten \
+key i4 \
+ca_nr c16 \
+name c32 \
+sumform c16 \
+mw f8 \
+tm f8 \
+hslm f8 \
+tb f8 \
+rholb f8 \
+cplb f8 \
+hlvb f8 \
+tc f8 \
+pc f8 \
+vc f8 \
+zc f8 \
+omegp f8 \
+omegh f8 \
+oma f8 \
+omb f8 \
+delt25 f8 \
+vl25 f8 \
+rpar f8 \
+qpar f8 \
+dip f8 \
+assko f8 \
+parach f8 \
+hfo f8 \
+so f8 \
+quell_nr i4 \
+version i4
