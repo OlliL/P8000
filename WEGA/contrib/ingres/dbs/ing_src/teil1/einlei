@@ -1,0 +1,336 @@
+.so /z/ing_src/macdoc
+.TL
+Anwenderhandbuch zu \*(yy\ 6.3/3
+f\o'u"'r \*(xx\-Systeme
+.LP
+.AU
+J\o'o"'rg Wenzlaff
+Rolf Morgenstern
+.DS C
+Zentralinstitut f\o'u"'r Kybernetik 
+und Informationsprozesse der 
+Akademie der Wissenschaften
+Kurstrasse 30 - 34
+Berlin 
+1080
+.DE
+.DS C
+VEB Kombinat EVK
+- ODV -
+Jagdweg 1
+Olbernhau
+9332
+.DE
+.AB
+Das vorliegende Anwenderhandbuch soll 
+als Unterlage f\o'u"'r den lernenden und als 
+Nachschlage\%werk f\o'u"'r den erfahrenen 
+Anwender dienen. Es dokumentiert die Version
+6.3 Release 3. Es werden Grundkenntnisse zu
+\*(xx\ - kompatiblen Be\%triebs\%sys\%te\%men vorausgesetzt.
+Das interaktive relationale Datenbanksystem 
+\*(yy\ 6.3/3 l\o'a"'sst sich auf verschiedenen Ebenen 
+nutzen. Vorgestellt werden M\o'o"'glichkeiten f\o'u"'r 
+Recherchen, zeit- und speicherplatzoptimale Dateistrukturen,
+Ablage von Kommandofolgen in Dateien, Einordnung von 
+\*(yy\-Kommandos (EQUEL und AMX) in C-Programme, Nutzung 
+von Shell-Kommandos, Zugriffs- und Sicherungsmassnahmen.
+Mit der Beschreibung und Untersetzung durch Beispiele zum 
+AMX-Compiler, zum Report- und zum Eingabe- Generator wird 
+das Handbuch vervollst\o'a"'ndigt.
+\*(yy\ 6.3/3 ist so konzipiert, dass seine Nutzung auch 
+bei geringem Fachwissen durchaus sinnvoll ist. Die 
+Gefahr von Datenverlusten wird im Zusammenhang mit 
+einem ausgefeilten Datenschutz- und -sicherungsmechanismus
+\o'a"'usserst gering gehalten.
+.sp 3
+\*(xx\ ist ein Warenzeichen der AT&T Bell Laboratorien.
+.AE
+.bp
+.ds LH Referenz_Manual
+.ds CH - % -
+.ds RH \f3Einfuehrung\f1
+.ds LF \*(vv\
+.LP
+.SH
+.ft B
+Anwenderhandbuch Teil I
+.ft R
+.LP
+.sp 10
+.SH
+.ft B
+0.  Vorbemerkung
+.ft R
+.LP
+Das Handbuch gliedert sich in 3 Teile.
+Im Teil 1 wird das Referenz-Manual
+vorgestellt und einige grunds\o'a"'tzliche
+Ausf\o'u"'hrungen zu den \*(yy\ 6.3/3-Komponenten Monitor- und
+Makroprozessor gegeben, die f\o'u"'r das Verst\o'a"'ndnis
+und die Anwendung der Anfragesprache (Query Language = QUEL)
+von Bedeutung sind. Im Teil 2 werden die
+im Referenz-Manual beschriebenen Be\%standteile
+ausf\o'u"'hrlicher dokumentiert und
+zus\o'a"'tzliche Informationen bereitgestellt,
+um Zusammenh\o'a"'nge zwischen einzelnen Komponenten
+deutlicher zu gestalten.
+Es sei darauf
+verwiesen, dass die im Anwenderhandbuch verwendeten
+Datenbanken als Demonstrations\%beispiele
+in der Vertriebsversion mit ausgeliefert werden.
+Nach dem \o'U"'berfliegen von Teil 1 wird dem lernenden Anwender
+unbedingt das Studium des 1. Kapitels im Teil 2 empfohlen,
+um gewisse Zusammenh\o'a"'nge zu erkennen.
+Die vertiefenden und erweiternden Ausf\o'u"'hrungen
+mit Demon\%strations\%beispielen im Teil 3
+sind in erster Linie
+f\o'u"'r Programmierer gedacht.
+.LP
+Es wurde versucht, das Studium der Dokumentation
+f\o'u"'r den Lernenden zu erleichtern,
+indem die \o'U"'berschriften nach folgenden
+Kriterien gekennzeichnet wurden:
+.IP *
+Abschnitt enth\o'a"'lt allgemein interessierende
+Informationen, die f\o'u"'r einen \o'U"'berblick unerl\o'a"'sslich sind
+.IP **
+Abschnitt enth\o'a"'lt Informationen f\o'u"'r anspruchsvolle
+Anwender (bspw. Datenbankadministrator), 
+die \o'u"'ber Grundkenntnisse zur Programmierung
+und umfassendere Kenntnisse zum Betriebssystem bzw.
+zur Shell verf\o'u"'gen.
+.IP ***
+Abschnitt enth\o'a"'lt Informationen f\o'u"'r Programmierer,
+den \*(yy\-Systemadministrator.
+.LP
+\*(yy\ 6.3/3 beruht auf dem Modell der
+klassischen Relationentheorie
+die im Anwenderhandbuch jedoch nicht ausgef\o'u"'hrt wird.
+.LP
+Es gelten folgende Begriffsanalogien:
+.DS I
+
+----------------------------
+Relation | Tupel | Dom\o'a"'ne
+ Tabelle | Zeile | Spalte
+   Datei | Satz  | Feld
+----------------------------
+.DE
+.bp
+.NH 1
+.ft B
+Referenz-Manual *
+.ft R
+.LP
+.sp 10
+Das \*(yy\ 6.3/3 Referenz-Manual
+ist in 5 Kapitel unterteilt:
+.IP QUEL
+ beschreibt die Nutzung des interaktiven Systems
+nach Start von
+.ft B
+quel
+.ft R
+(unix), also die
+Statements der Anfragesprache QUEL und den interaktiven
+Terminal-Monitor mit seinem Makro-Prozessor.
+.IP \*(xx\
+ beschreibt die \*(yy\-Programme, die durch
+eine interaktive Shell direkt als \*(xx\-Kommandos
+ausf\o'u"'hrbar sind, darunter auch das
+Kommando
+.ft B
+quel
+.ft R
+(unix) selbst.
+.IP REPORT
+ beschreibt die Sprache zur Generierung von
+Drucklisten und wird aufgrund des Umfangs als eigenst\o'a"'ndiges
+Kapitel behandelt.
+.IP FILES
+ beschreibt die aus Anwendungssicht
+wichtigen Files von \*(yy\.
+.IP ERROR
+ enth\o'a"'lt eine Auflistung der nach
+Anwender\%fehl\%bedie\%nungen m\o'o"'glichen
+Fehlermeldungen mit deren Erl\o'a"'uterungen.
+.LP
+Die Abschnitte in den Kapiteln dieses Handbuchs
+sind mit
+.IP
+KAPITEL (unten rechts)
+.RE
+und
+.IP
+ABSCHNITT (oben rechts)
+.RE
+gekennzeichnet, um ein
+schnelles Auffinden zu erm\o'o"'glichen.
+.LP
+F\o'u"'r die Kapitel QUEL, \*(xx\ und REPORT wird
+zu Beginn jeweils eine Einf\o'u"'hrung gegeben, um die Einordnung
+der Kommandos zu erleichtern. Diese Einf\o'u"'hrung ist wie ein
+Abschnitt ge\%kennzeichnet, aber nicht so gegliedert.
+.LP
+Nachfolgend die allgemeine
+Gliederung im Sinne des Manuals:
+.bp
+.sp 1
+.ft B
+NAME
+.ft R
+.IP
+Name \- Kurzbezeichnung des Inhalts
+.RE
+.sp 1
+.ft B
+SYNOPSIS
+.ft R
+.IP
+Hier wird die Syntax des Kommandos/Statements
+angegeben.
+.IP
+Als Metasymbole werden verwendet:
+.RE
+.DS L
+
+        |     Alternative
+        [..]  wahlweise kein- oder einmal
+        {..}  wahlweise kein- oder mehrmals
+        <..>  manchmal zur Hervorhebung einer
+              syntaktischen Variablen
+
+.DE
+.IP
+Alle anderen Sonderzeichen und fettgedruckten Bezeichner
+sind terminale Symbole (m\o'u"'ssen so und nicht
+anders geschrieben werden). Kleingeschriebene,
+nicht fettgedruckte W\o'o"'rter stehen f\o'u"'r
+syntaktische Variable, deren Belegung im folgenden
+Abschnitt BESCHREIBUNG erl\o'a"'utert wird.
+.IP
+Die Mehrzahl der syntaktischen Variablen wird
+im Ab\%schnitt
+.ft B
+quel
+.ft R
+eingef\o'u"'hrt. Insbesondere:
+.RS
+.IP
+.ft B
+<dbname>
+.ft R
+\ \ \ Name der aufliegenden Datenbank
+.br
+.ft B
+<relname>
+.ft R
+\ \ Name einer Relation, Tabelle
+.br
+.ft B
+<domname>
+.ft R
+\ \ Name einer Dom\o'a"'ne einer Relation
+
+.RE
+.LP
+.ft B
+BESCHREIBUNG
+.ft R
+.IP
+Hier wird die Syntax erg\o'a"'nzt und eine semantische
+Beschreibung gegeben.
+.RE
+.sp 1
+.ft B
+NACHRICHTEN
+.ft R
+.IP
+Hier werden die Nachrichten erl\o'a"'utert,
+die nicht im Kapitel ERROR zu finden sind,
+oder die eine besondere Bedeutung haben.
+.IP
+Nachrichten, die Folgen technischer Fehler sind
+und i.d.R. zu einem Systemabbruch f\o'u"'hren,
+werden in dieser Dokumentation nicht behandelt.
+.RE
+.sp 1
+.ft B
+BEISPIEL[E]
+.ft R
+.IP
+Hier werden Beispiele angegeben,
+die den Rahmen dieses Nachschlagewerkes nicht sprengen.
+.IP
+Viele Beispiele beziehen sich auf eine
+Personal-Relation, die pro Mitarbeiter einen Satz
+mit den Spalten.
+.RE
+.DS
+
+
+Relation:		personal
+---------
+Besitzer:		ing_db
+Tupellaenge:		30
+Verfallsdatum:		Tue Apr 26 19:56:39 1988
+Tupelanzahl:		25
+Speicherstruktur:	HEAP
+Relationentyp:		Nutzerrelation
+
+ Domaenname        Typ   Laenge  Schluessel
+-------------------------------------------
+ num         	    i       2
+ name        	    c      20
+ gehalt      	    i       2
+ leiter      	    i       2
+ gebdat      	    i       2
+ einstdat    	    i       2
+-------------------------------------------
+.DE
+.IP
+hat.
+.RE
+.sp 1
+.ft B
+SIEHE AUCH
+.ft R
+.IP
+Hier werden andere Abschnitte aufgez\o'a"'hlt,
+auf die Bezug genommen wurde.
+.RE
+.sp 1
+.ft B
+HILFEN
+.ft R
+.IP
+Hier werden gewisse Besonderheiten,
+insbesondere der Implementation beschrieben.
+.IP
+Um mit \*(yy\ arbeiten zu k\o'o"'nnen,
+muss jeder Nutzer
+durch den \*(yy\-Administrator in das usersfile
+eingetragen werden
+(s.
+.ft B
+users
+.ft R
+(files)).
+.IP
+Zur Einf\o'u"'hrung in dieses Handbuch beginne man mit den
+Ab\%schnitten
+.ft B
+Anfragesprache
+.ft R
+,
+.ft B
+Datenbank-Unix-Kommandos
+.ft R
+und
+.ft B
+Der interaktive Terminal-Monitor
+.ft R
+.RE
+.ds RF \f3QUEL\f1
+.bp

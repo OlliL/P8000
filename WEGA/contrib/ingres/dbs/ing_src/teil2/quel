@@ -1,0 +1,2223 @@
+.so /z/ing_src/macdoc
+.NH 1
+.ds RH \f3QUEL\f1
+.ds RF \f3\*(yy\f1
+.ds CH - % -
+.ds LH Anwendung
+.ds LF \*(vv
+.pn 162
+.LP
+.bp
+.NH 1
+.ft B
+Anwenderdokumentation
+.br
+        \*(yy\ 6.3/3 - Teil II
+.ft R
+.sp 5
+.nf
+#############################################################
+#############################################################
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##      ###   #     #  #####          ######  ######       ##
+##       #    ##    # #     #         #     # #     #      ##
+##       #    # #   # #               #     # #     #      ##
+##       #    #  #  # #  ####         #     # ######       ##
+##       #    #   # # #     #         #     # #     #      ##
+##       #    #    ## #     #         #     # #     #      ##
+##      ###   #     #  #####  ####### ######  ######       ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##        ####### #######   ###   #          #####         ##
+##           #    #          #    #         #     #        ##
+##           #    #          #    #               #        ##
+##           #    #####      #    #          #####         ##
+##           #    #          #    #         #              ##
+##           #    #          #    #         #              ##
+##           #    #######   ###   #######   #######        ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+##                                                         ##
+#############################################################
+#############################################################
+
+.fi
+.bp
+.NH 2
+.ft B
+Anwendung der QUEL *
+.ft R
+.LP
+.sp 10
+Dieser Einf\o'u"'hrungskurs beschreibt, wie das \*(yy\ 6.3-DBS
+anzuwenden ist.
+Sie sollten in der Lage sein, den angegebenen
+Beispielen zu folgen und die gleichen Ergebnisse zu erhalten.
+Die Datenbank "demo" ist in der ausgelieferten
+Vertriebsversion enthalten.
+Nach den \o'U"'bungen in diesem Kapitel sind sie in der
+Lage die anschliessenden beiden Kapitel besser 
+zu verstehen. Es empfiehlt sich auch, das Referenz-Manual
+noch einmal gr\o'u"'ndlich zu lesen.
+.LP
+Die Daten-Manipulations-Sprache, die von 
+\*(yy\ 6.3 unterst\o'u"'tzt wird, nennt sich
+QUEL (Query Language) bzw. in Kurzform Query.
+Eine vollst\o'a"'ndige Information zur QUEL wird
+im \*(yy\ 6.3-Referenz-Manual (Teil I) gebracht.
+Dieser Kurs beabsichtigt nicht, jedes
+Detail von \*(yy\ 6.3 zu ber\o'u"'hren.
+Es wird aber versucht, sie zu bef\o'a"'higen,
+die QUEL aktiv zu beherrschen und auf dieser
+Basis Schritt f\o'u"'r Schritt in die Geheimnisse
+von \*(yy\ 6.3 einzusteigen.
+.LP
+Fangen wir mit dem Eintritt in \*(xx\, dem
+Time-Sharing-System, unter dem \*(yy\ 6.3 l\o'a"'uft, an.
+Wenn irgend m\o'o"'glich, benutzen sie ein Terminal,
+das \o'u"'ber Gross- und Kleinbuchstaben verf\o'u"'gt,
+anderenfalls werden sie ein schweres Leben haben.
+Wenn sie an einem Terminal arbeiten, das nur
+Grossbuchstaben hat, geben
+sie "\\\\" anstelle "\\" f\o'u"'r Beispiele dieses
+Einf\o'u"'hrungskurses ein.
+.LP
+Nach Eintritt in das Mehrnutzersystem (Eingabe des "login"-Namens)
+wird auf dem Terminal die Bereitschaft mit "%" angezeigt.
+(Durch \o'A"'nderung von PS1 im .profile "/mnt/ing_db/.profile" auf
+"%" erhalten sie \o'U"'bereinstimmung mit den angef\o'u"'hrten
+Beispielen, wobei "%" vom Terminal ausgegeben wird !)
+Um \*(yy\ 6.3 zu nutzen, geben sie beispielsweise das Kommando:
+.DS L
+
+% quel dt
+
+.DE
+.LP
+Das veranlasst \*(xx\, die Datenbank "demo" zur
+Nutzung durch \*(yy\ 6.3 bereitzustellen.
+Nach einigen Sekunden erscheint folgendes:
+.DS L
+
+ING_db version 6.3/3 login
+Tue Aug 30 14:52:23 1985
+
+ING_db>
+*
+
+.DE
+.LP
+(Sofern sys/etc/dayfile nicht leer ist
+bzw. die Ausgabe nicht unterdr\o'u"'ckt wird, wird vor
+ING_db> noch
+der Inhalt dieses File's angegeben.)
+Die ersten beiden Zeilen beinhalten die \*(yy\ 6.3-Version
+(in diesem Fall "Version 6.3") und das aktuelle Datum.
+Danach folgt die Ausgabe des "dayfile",
+das Mitteilungen
+- bezogen auf \*(yy\ 6.3 - enth\o'a"'lt.
+Das I N G - d b > zeigt an, dass \*(yy\ 6.3
+bereit ist, ihre Kommandos anzunehmen.
+.LP
+Der Monitor
+erinnert mit einem Stern ("*") am Zeilenanfang daran,
+dass \*(yy\ 6.3
+auf eine Eingabe wartet.
+.br
+Wenn Sie den Monitor zur Ausf\o'u"'hrung der Query
+angewiesen haben, erscheint die Ausschrift
+Zu Beginn arbeiten wir mit einer Relation "teile", die
+folgende Struktur hat:
+.DS L
+
+* help teile
+* \eg
+
+I N G - d b . . .
+
+Relation:		teile
+---------
+Besitzer:		ing_db
+Tupellaenge:		34
+Verfallsdatum:		Tue Apr 26 19:57:10 1988
+Tupelanzahl:		13
+Speicherstruktur:	HEAP
+Relationentyp:		Nutzerrelation
+
+ Domaenname        Typ   Laenge  Schluessel
+-------------------------------------------
+ tnum        	    i       2
+ tname       	    c      20
+ farbe       	    c       8
+ gewicht     	    i       2
+ menge       	    i       2
+-------------------------------------------
+
+ING-db:
+.DE
+.LP
+Geben sie das Kommando:
+.DS L
+
+* print teile
+* \eg
+
+I N G - d b   . . .
+
+.DE
+.LP
+Die Zeile "print teile" fordert eine Anzeige von
+Daten, die in der Datenbank gespeichert sind.
+Das "\\g" weist den Monitor zur Ausf\o'u"'hrung der
+Query an.
+Die Mitteilung
+.br
+"I N G - d b   . . . "
+.br
+informiert, dass \*(yy\ 6.3 ihre Query ausf\o'u"'hrt.
+Der Ausschrift wird noch der Maschinentyp vorangestellt.
+Das Ergebnis sieht dann so aus:
+.DS L
+
+Relation: teile
+
+
+|tnum  |tname               |farbe   |gewich|menge |
+|--------------------------------------------------|
+|     1|Zentraleinheit      |rosa    |    10|     1|
+|     2|Hauptspeicher       |grau    |    20|    32|
+|     3|Plattenspeicher     |schwarz |   685|     2|
+|     4|Magnetbandspeicher  |schwarz |   450|     4|
+|     5|Magnetbaender       |grau    |     1|   250|
+|     6|Zeilendrucker       |gelb    |   578|     3|
+|     7|Zeilendruckerpapier |weiss   |    15|    95|
+|     8|Terminals           |blau    |    19|    15|
+|    13|Lochbandleser       |schwarz |   107|     0|
+|    14|Lochbandstanzer     |schwarz |   147|     0|
+|     9|Konsolpapier        |weiss   |     2|   350|
+|    10|Kartenleser         |grau    |   327|     0|
+|    11|Kartenstanzer       |grau    |   427|     0|
+|--------------------------------------------------|
+
+ING_db:
+*
+
+.DE
+.LP
+Das, was auf Ihrem Terminal angezeigt wurde, ist die "teile"- Relation.
+Intuitiv, eine Relation ist nicht mehr, als eine Tabelle
+mit Zeilen und Spalten.
+.LP
+In diesem Fall ist der Name der Relation "teile".
+Sie hat f\o'u"'nf Spalten (, wir nennen sie Dom\o'a"'nen,)
+bezeichnet mit "tnum" (Teile-Nummer), "tname" (Teile-Bezeichnung),
+"farbe", "gewicht" und "menge" (Bestand).
+Jede Zeile der Relation (genannt Tupel)
+repr\o'a"'sentiert einen Eintrittspunkt (Satz),
+der in diesem Fall ein Teil
+f\o'u"'r eine Computer-Installation bezeichnet.
+Eine Relation kann bis zu 49 Dom\o'a"'nen und eine
+im Grunde genommen unbegrenzte Zahl von Tupeln haben.
+.LP
+Beachten sie, nachdem die Query ausgef\o'u"'hrt ist,
+gibt \*(yy\ 6.3
+.ft B
+"ING_db:"
+.ft R
+aus, w\o'a"'hrend anfangs nach dem
+Eintritt
+.ft B
+"ING_db>"
+.ft R
+angezeigt wurde.
+Wenn sie eine Query eingeben, legt sie \*(yy\ 6.3
+in einem "Arbeitsspeicher" ab.
+Wenn sie
+eine Query falsch eingegeben haben, k\o'o"'nnen sie mit "\\r",
+also "reset" (dh. l\o'o"'schen) den Arbeitsspeicher l\o'o"'schen.
+(Sp\o'a"'ter werden wir Wege kennen lernen,
+um Fehler zu editieren, so, als
+w\o'u"'rden wir die eingegebene Query korrigieren.)
+.LP
+Jederzeit k\o'o"'nnen sie sich den Arbeitsspeicher
+durch Eingabe von "\\p" ansehen.
+Versuchen sie "\\p":
+.DS L
+
+* \ep
+print teile
+ING-db:
+*
+
+.DE
+.LP
+Der aktuelle Inhalt des Arbeitsspeichers
+wird angezeigt.
+Versuchen sie jetzt "\\r":
+.DS L
+
+* \er
+ING_db>
+*
+
+.DE
+.LP
+Der Arbeitsspeicher ist jetzt leer.
+Solange
+\*(yy\ 6.3 "ING_db:" ausgibt,
+ist der Arbeitsspeicher nicht-leer;
+solange \*(yy\ 6.3 "ING_db>" ausgibt, ist er leer.
+.LP
+Nachdem eine Query ausgef\o'u"'hrt wurde,
+gibt \*(yy\ 6.3 normalerweise "ING_db:" aus.
+Wenn sie dann eine neue Query eingeben, l\o'o"'scht \*(yy\ 6.3
+automatisch die vorhergehende, obwohl
+sie nicht nach jeder Query "\\r" eingegeben haben.
+Das wird sp\o'a"'ter noch erkl\o'a"'rt.
+.LP
+Die Verwendung des "retrieve"-Kommandos erlaubt uns,
+spezifische Queries \o'u"'ber Relationen zu schreiben.
+Als Beispiel wollen wir \*(yy\ 6.3
+veranlassen, nur "tname" als Dom\o'a"'ne aus der "teile"-
+Relation auszugeben.
+Geben sie das Kommando:
+.DS L
+
+* range of t is teile
+* retrieve (t.tname)
+* \eg
+
+I N G - d b   . . .
+
+|tname               |
+|--------------------|
+|Zentraleinheit      |
+|Hauptspeicher       |
+|Plattenspeicher     |
+|Magnetbandspeicher  |
+|Magnetbaender       |
+|Zeilendrucker       |
+|Zeilendruckerpapier |
+|Terminals           |
+|Lochbandleser       |
+|Lochbandstanzer     |
+|Konsolpapier        |
+|Kartenleser         |
+|Kartenstanzer       |
+|--------------------|
+13 tuples touched
+
+ING_db:
+*
+
+.DE
+.LP
+Die Ausgabe beschr\o'a"'nkt sich auf die Dom\o'a"'ne
+"tname" aus der Relation "teile".
+Dazu ben\o'o"'tigten wir zwei Schritte.
+Zuerst haben wir eine sogenannte "Tupel-Variable"
+deklariert und ihren Bereich der Relation "teile" zugewiesen.
+.DS L
+
+range of t is teile
+.DE
+.LP
+Damit ist gemeint, dass der Buchstabe "t" die Relation
+"teile" repr\o'a"'sentiert.
+Man kann sich das als eine Markierung
+vorstellen, die die Relation "teile" eine Stufe
+niedriger einordnet.
+\*(yy\ 6.3 merkt sich die Verbindung, sodass,
+wenn "t" einmal als Bereich \o'u"'ber "teile"
+deklariert wurde, eine Wiederholung der Deklaration
+nicht notwendig ist.
+Das ist, wie wir sp\o'a"'ter sehen werden, \o'u"'blich,
+falls wir mit mehr als einer Relation arbeiten.
+.LP
+Als n\o'a"'chstes benutzten wir das
+"retrieve"-Kommando.
+Seine Form ist
+.DS L
+
+retrieve ( listen sie hier, wonach sie suchen )
+
+.DE
+.LP
+"t" referenziert durch sich selbst die Relation "teile".
+"t.tname" referenziert die Dom\o'a"'ne "tname" der Relation
+"teile", sozusagen:
+.DS L
+
+retrieve (t.tname)
+
+.DE
+meint die Recherche nach der Dom\o'a"'ne
+"tname" der Relation "teile".
+.LP
+Versuchen wir
+nach "tname" und "farbe" zu recherchieren:
+.DS L
+
+* retrieve t.tname, t.farbe
+* \eg
+
+I N G - d b   . . .
+
+2500: syntax error on line 1
+last symbol read was: .
+
+ING_db:
+*
+
+.DE
+.LP
+Ungl\o'u"'cklicherweise haben wir einen Fehler gemacht.
+\*(yy\ 6.3 teilt uns mit, dass es einen Syntax-Fehler
+auf der ersten Zeile der Query gefunden hat.
+"Syntax error" bedeutet, dass wir etwas eingegeben
+haben, was \*(yy\ 6.3 nicht wiedererkennen bzw. interpretieren
+kann.
+Der Fehler trat auf Zeile 1 auf.
+\*(yy\ 6.3 f\o'u"'hrt einen manchmal undeutlichen
+Versuch zur Diagnose des Problems durch.
+Sofern m\o'o"'glich, teilt uns \*(yy\ 6.3 mit,
+was es gelesen hat, bevor es durcheinander kam.
+.LP
+In diesem Fall ist der Fehler der, dass die Liste der
+Rechercheobjekte
+(, die sogenannte "target_list",) in Klammern eingeschlossen
+werden muss.
+Die korrekte Query ist:
+.DS L
+
+* retrieve (t.tname, t.farbe)
+* \eg
+
+I N G - d b   . . .
+
+|tname               |farbe   |
+|-----------------------------|
+|Zentraleinheit      |rosa    |
+|Hauptspeicher       |grau    |
+|Plattenspeicher     |schwarz |
+|Magnetbandspeicher  |schwarz |
+|Magnetbaender       |grau    |
+|Zeilendrucker       |gelb    |
+|Zeilendruckerpapier |weiss   |
+|Terminals           |blau    |
+|Lochbandleser       |schwarz |
+|Lochbandstanzer     |schwarz |
+|Konsolpapier        |weiss   |
+|Kartenleser         |grau    |
+|Kartenstanzer       |grau    |
+|-----------------------------|
+13 tuples touched
+
+ING_db:
+*
+
+.DE
+.LP
+Sie k\o'o"'nnen durch Hinzuf\o'u"'gung einer
+"Qualifikation" an die Query einschr\o'a"'nken,
+welche Tupel ausgegeben werden sollen.
+Beispielsweise, um die Namen und Farben
+nur der Teile zu erhalten, die grau sind,
+geben sie ein:
+.DS L
+* retrieve (t.tname, t.farbe)
+* where t.farbe = "grau"
+* \eg
+
+I N G - d b   . . .
+
+|tname               |farbe   |
+|-----------------------------|
+|Hauptspeicher       |grau    |
+|Magnetbaender       |grau    |
+|Kartenleser         |grau    |
+|Kartenstanzer       |grau    |
+|-----------------------------|
+4 tuples touched
+
+ING-db:
+*
+
+.DE
+Beachten sie, dass \*(yy\ 6.3 nur die Teile angibt, wo "t.farbe"
+gleich "grau" ist.
+Beachten sie auch, dass grau in Anf\o'u"'hrungsstrichen ("grau")
+stehen muss.
+Das ist notwendig.
+Der einzige Weg, \*(yy\ 6.3 zur Erkennung von Zeichenketten zu
+veranlassen (z.B. Worte), ist, sie in 
+Anf\o'u"'hrungsstriche einzuschliessen.
+.LP
+Was ist, wenn wir die Bezeichnungen der Teile wissen wollen,
+die grau oder rosa sind?
+Wir brauchen nur an die vorhergehende Query den
+Ausdruck
+.DS L
+
+or t.farbe = "rosa"
+
+.DE
+anh\o'a"'ngen.
+Erinnern sie sich, wie auch immer,
+wenn die n\o'a"'chste Zeile eingegeben wurde,
+beginnt \*(yy\ 6.3 eine neue Query und wird automatisch
+den Arbeitsspeicher l\o'o"'schen.
+Der Arbeitsspeicher kann nur
+.ft B
+gerettet
+.ft R
+werden, wenn die n\o'a"'chste Zeile mit einem solchen Kommando
+wie "\\p" oder "\\g" beginnt.
+(Es gibt noch andere M\o'o"'glichkeiten, wie wir
+sp\o'a"'ter sehen werden.)
+Wenn so ein Kommando eingegeben wird,
+ist die vorhergehende Query gerettet und
+anschliessend kann an diese Query angeh\o'a"'ngt werden.
+.LP
+Wir geben ein:
+.DS L
+
+* \ep
+retrieve (t.tname, t.farbe)
+where t.farbe = "grau"
+ING-db:
+*
+
+.DE
+.LP
+Sie k\o'o"'nnen die vorhergehende Query sehen.
+Jetzt geben sie ein:
+.DS L
+
+* or t.farbe = "rosa"
+*
+
+.DE
+\*(yy\ 6.3 h\o'a"'ngt die letzte Zeile an das Ende der Query an.
+Sie k\o'o"'nnen sich davon \o'u"'berzeugen, indem sie
+den Arbeitsspeicher ausgeben:
+.DS L
+
+* \ep
+retrieve (t.tname, t.farbe)
+where t.farbe = "grau"
+or t.farbe = "rosa"
+ING-db:
+*
+
+.DE
+Jetzt starten wir die Query:
+.DS L
+
+* \eg
+
+I N G - d b   . . .
+
+|tname               |farbe   |
+|-----------------------------|
+|Zentraleinheit      |rosa    |
+|Hauptspeicher       |grau    |
+|Magnetbaender       |grau    |
+|Kartenleser         |grau    |
+|Kartenstanzer       |grau    |
+|-----------------------------|
+5 tuples touched
+
+ING-db:
+*
+.DE
+.LP
+Die Regeln dazu, wann der Arbeitsspeicher gel\o'o"'scht
+ist, m\o'o"'gen anfangs etwas verwirrend erscheinen.
+Im Allgemeinen wird \*(yy\ 6.3 genau das tun,
+was sie erwarten, ohne dass sie viel daran denken.
+.LP
+Wir haben die verwendeten Qualifikationen "or" und "=" gesehen.
+Im Allgemeinen kann eine der folgenden verwendet werden:
+
+.DS L
+      and
+      or
+      not
+      =	        (equal)
+      !=        (not equal)
+      >         (greater than)
+      >=        (greater than or equal)
+      <         (less than)
+      <=        (less than or equal)
+.DE
+.LP
+Die Wertigkeit bestimmt sich in der Reihenfolge,
+wie die Qualifikationen angegeben sind (d.h. von links nach rechts).
+Klammern k\o'o"'nnen verwendet werden,
+um Zusammenh\o'a"'nge in der gew\o'u"'nschten
+Reihenfolge zu gruppieren.
+.LP
+\*(yy\ 6.3 kann Berechnungen mit den, in der
+Relation gespeicherten Daten ausf\o'u"'hren.
+Beispielsweise beinhaltet die Relation
+"teile" den Bestand und das Gewicht f\o'u"'r jedes
+Tupel.
+Wir m\o'o"'chten das Gesamtgewicht f\o'u"'r
+jede Gruppe von Teilen wissen (,d.h. Gewicht multipliziert
+mit Bestand).
+.LP
+Um die Bezeichnung, die Teile-Nummer und das
+Gesamtgewicht f\o'u"'r jedes Teil zu erhalten,
+geben wir ein:
+.DS L
+
+* retrieve (t.tname, t.tnum, t.menge * t.gewicht)
+* \eg
+
+I N G - d b   . . .
+
+2500: syntax error on line 1
+last symbol read was: *
+
+ING_db:
+*
+
+.DE
+Ein anderer Fehler!
+Das Problem besteht darin, dass nach Ausf\o'u"'hrung
+einer Rechnung \*(yy\ 6.3 nicht weiss, wie es die entstandene
+Dom\o'a"'ne bei der Ausgabe bezeichnen soll.
+F\o'u"'r eine einfache Dom\o'a"'ne
+nutzt \*(yy\ 6.3 den Dom\o'a"'nen-Namen als Titel
+(\o'U"'berschrift in der Kopfzeile).
+Wie auch immer, sie m\o'u"'ssen eine neue Dom\o'a"'ne
+gr\o'u"'nden, um den Titel zu spezifizieren:
+.DS L
+
+	tot = t.menge * t.gewicht
+
+.DE
+Die allgemeine Form ist:
+.DS L
+
+	title = expression
+
+.DE
+Zum Beispiel:
+.DS L
+
+	name = t.tname
+	berechnung = t.gewicht / 2000 * (t.menge + 2)
+
+.DE
+Wir wollen uns noch mit dem Fehler, der eine Korrektur
+der Query erfordert, besch\o'a"'ftigen.
+Solange die erste Zeile nach einer Query
+nicht mit "\\p" oder "\\g" beginnt, wird
+\*(yy\ 6.3 automatisch den Arbeitsspeicher l\o'o"'schen
+und die vorhergehende Query ist f\o'u"'r
+uns verloren.
+.DS L
+* retrieve (t.tname, t.tnum, tot=t.menge * t.gewicht)
+\eg
+
+I N G - d b   . . .
+
+|tname               |tnum  |tot   |
+|----------------------------------|
+|Zentraleinheit      |     1|    10|
+|Hauptspeicher       |     2|   640|
+|Plattenspeicher     |     3|  1370|
+|Magnetbandspeicher  |     4|  1800|
+|Magnetbaender       |     5|   250|
+|Zeilendrucker       |     6|  1734|
+|Zeilendruckerpapier |     7|  1425|
+|Terminals           |     8|   285|
+|Lochbandleser       |    13|     0|
+|Lochbandstanzer     |    14|     0|
+|Konsolpapier        |     9|   700|
+|Kartenleser         |    10|     0|
+|Kartenstanzer       |    11|     0|
+|Hauptspeicher       |     2|   640|
+|Kartenleser         |    10|     0|
+|----------------------------------|
+13 tuples touched
+
+ING_db:
+*
+
+.DE
+Ausser der Multiplikation unterst\o'u"'tzt \*(yy\ 6.3
+bspw. die Operatoren
+.DS
++    Addition
+-    Subtraktion (und Bin\o'a"'rnegation)
+/    Division
+*    Multiplikation
+**   Exponentation (z.B. 3**10)
+abs  Absolutwert    (z.B. abs(p.qoh - 50) )
+mod  Modulo-Division (Divisionsrest)
+.DE
+und einige andere mehr.
+\o'U"'berpr\o'u"'fen sie bitte im \*(yy\ 6.3-Referenz-Manual diese
+kurze Darstellung und vervollst\o'a"'ndigen sie,
+was unterst\o'u"'tzt wird.
+.LP
+Wenn wir anschliessend die Teile-Nummer 2 oder 10
+ausw\o'a"'hlen wollen, dann k\o'o"'nnen wir die Qualifikation
+.DS L
+
+	where t.tnum = 2 or t.tnum = 10
+.DE
+angeben.
+.LP
+.ft B
+VORSICHT:
+.ft R
+Wenn wir gerade damit beginnen "where t.tnum .... "
+einzugeben, wird \*(yy\ 6.3 das als Beginn einer neuen Query
+verstehen und den  Arbeitsspeicher
+l\o'o"'schen.
+Um das zu umgehen, k\o'o"'nnen sie "\\p" eingeben und ein 
+anschliessendes "append"-Kommando garantiert
+("\\a" (append)), dass, was immer sie eingeben, dem Inhalt des
+Arbeitsspeichers hinzugef\o'u"'gt wird.
+Dieses Kommando wird nur ben\o'o"'tigt, nachdem
+zwischenzeitlich eine Query zur Ausf\o'u"'hrung 
+angewiesen wurde.
+Zum anderen werden Daten automatisch hinzugef\o'u"'gt.
+Versuchen sie folgendes:
+.DS L
+
+* \ea
+* where t.tnum = 2 or t.tnum = 10
+* \eg
+
+I N G - d b   . . .
+
+|tname               |tnum  |tot   |
+|----------------------------------|
+|Hauptspeicher       |     2|   640|
+|Kartenleser         |    10|     0|
+|----------------------------------|
+2 tuples touched
+
+ING_db:
+*
+
+.DE
+Um alle Teile-Nummern gr\o'o"'sser als 2 und kleiner,
+gleich 10 auszuw\o'a"'hlen, folgendes:
+.DS L
+
+* retrieve (t.tname, t.tnum, tot=t.menge * t.gewicht)
+* where t.tnum > 2 and t.tnum <= 10
+* \eg
+
+I N G - d b   . . .
+
+|tname               |tnum  |tot   |
+|----------------------------------|
+|Plattenspeicher     |     3|  1370|
+|Magnetbandspeicher  |     4|  1800|
+|Magnetbaender       |     5|   250|
+|Zeilendrucker       |     6|  1734|
+|Zeilendruckerpapier |     7|  1425|
+|Terminals           |     8|   285|
+|Konsolpapier        |     9|   700|
+|Kartenleser         |    10|     0|
+|----------------------------------|
+8 tuples touched
+
+ ING_db:
+*
+
+.DE
+.LP
+Nun wollen wir Unterst\o'u"'tzung, um die
+vorhergehende Query so zu \o'a"'ndern, dass sie die 
+Ergebnisse der Teile-Nummern zwischen 5 und 10,
+anstelle von 2 und 10 liefert.
+Sie w\o'a"'ren sicher ver\o'a"'rgert, wenn
+sie nur ein Zeichen \o'a"'ndern m\o'u"'ssten, sollen
+aber daf\o'u"'r die ganze Query nocheinmal eingeben.
+Deshalb gestattet
+\*(yy\ 6.3 die Verwendung des \*(xx\-Texteditors,
+um Korrekturen und/oder Hinzuf\o'u"'gungen
+zu Ihrem Arbeitsspeicher vorzunehmen.
+Jederzeit k\o'o"'nnen sie "\\e" eingeben,
+der \*(yy\ 6.3-Monitor schreibt ihren Arbeitsspeicher auf ein
+File und ruft das \*(xx\-Programm "ed".
+Zum Beispiel:
+.DS L
+
+* \ee
+>>ed
+83
+
+.DE
+Die ">>ed"-Mitteilung sagt Ihnen, dass sie jetzt den
+Editor nutzen.
+Die Zahl 83 ist die Anzahl der Bytes in Ihrem Arbeitsspeicher.
+.LP
+Wir k\o'o"'nnen nun die Query editieren und
+2 auf 5 \o'a"'ndern.
+Die \*(xx\-Dokumentation
+(Manual 1, "ed") beschreibt, wie der
+Texteditor zu nutzen ist.
+Aber wir wollen lieber etwas doppelt bringen und zeigen
+einige Editor-Kommandos, um zu illustrieren,
+wie zu editieren ist:
+.DS L
+
+1p
+retrieve (t.tname,t.tnum,tot = t.menge * t.gewicht)
+2p
+where t.tnum > 2 and t.tnum <= 10
+s/2/5/p
+where t.tnum > 5 and t.tnum <= 10
+w
+83
+q
+*
+
+.DE
+Ganz kurz, was ereignet sich.
+"1p" und "2p" gibt die Zeilen 1 und 2 aus.
+"s/2/5/p" ersetzt 5 durch 2 auf der aktuellen Zeile
+(Zeile 2) und gibt diese Zeile anschliessend aus.
+"w" schreibt die Query zur\o'u"'ck in den \*(yy\ 6.3-Arbeitsspeicher.
+.LP
+Innerhalb des Editors k\o'o"'nnen sie alle "ed"-Kommandos,
+ausser "e" (,es ver\o'a"'ndert den File-Namen) verwenden.
+Wenn sie mit "quit" den Editor (q-Kommando) verlassen,
+sind sie wieder zum Monitor zur\o'u"'ckgekehrt.
+Beachten sie, dass vor einem "q"-Kommando ein
+"w"-Kommando gegeben werden muss,
+um den Arbeitsspeicher zur\o'u"'ckzuschreiben
+(Aber keine Angst! Der Editor erinnert sie daran, wenn
+sie es vergessen haben!).
+.LP
+Um sich zu vergewissern, dass die Query korrekt ist, und um
+sie auszuf\o'u"'hren, geben sie ein:
+.DS L
+* \ep\eg
+retrieve (t.tname,t.tnum,tot = t.menge * t.gewicht)
+where t.tnum > 5 and t.tnum <= 10
+
+I N G - d b   . . .
+
+
+|tname               |tnum  |tot   |
+|----------------------------------|
+|Zeilendrucker       |     6|  1734|
+|Zeilendruckerpapier |     7|  1425|
+|Terminals           |     8|   285|
+|Konsolpapier        |     9|   700|
+|Kartenleser         |    10|     0|
+|----------------------------------|
+5 tuples touched
+
+ING_db:
+*
+
+.DE
+.LP
+Wir nehmen an, dass ihr
+Interesse, soweit es die Relation "teile" betrifft, ersch\o'o"'pft
+ist. Sehen wir uns deshalb 
+eine neue Relation, genannt "lieferung" an.
+Geben sie ein:
+.DS L
+
+* print lieferung
+* \eg
+
+I N G - d b   . . .
+
+
+lieferung relation
+
+|lnum  |tnum  |bnum  |liefdat |menge |
+|------------------------------------|
+|   475|     1|  1001|73-12-31|     1|
+|   475|     2|  1002|74-05-31|    32|
+|   475|     3|  1001|73-12-31|     2|
+|   475|     4|  1002|74-05-31|     1|
+|   122|     7|  1003|75-02-01|   144|
+|   122|     7|  1004|75-02-01|    48|
+|   122|     9|  1004|75-02-01|   144|
+|   440|     6|  1001|74-10-10|     2|
+|   241|     4|  1001|73-12-31|     1|
+|    62|     3|  1002|74-06-18|     3|
+|   475|     2|  1001|73-12-31|    32|
+|   475|     1|  1002|74-07-01|     1|
+|     5|     4|  1003|74-11-15|     3|
+|     5|     4|  1004|75-01-22|     6|
+|    20|     5|  1001|75-01-10|    20|
+|    20|     5|  1002|75-01-10|    75|
+|   241|     1|  1005|75-06-01|     1|
+|   241|     2|  1005|75-06-01|    32|
+|   241|     3|  1005|75-06-01|     1|
+|    67|     4|  1005|75-07-01|     1|
+|   999|    10|  1006|76-01-01|   144|
+|   241|     8|  1005|75-07-01|     1|
+|   241|     9|  1005|75-07-01|   144|
+|------------------------------------|
+
+ ING_db:
+*
+
+.DE
+Die "lieferung"-Relation beinhaltet "lnum" (, die
+Lieferer-Nummer),
+"tnum" (, die Teile-Nummer des gelieferten Teils),
+"bnum" (, die Bestellnummer),
+"liefdat" (, das Lieferdatum)
+und "menge" (, die Liefermenge).
+.LP
+Um herauszufinden, welche Teile von der Lieferer-Nummer 122 
+geliefert werden, geben sie ein:
+.DS L
+
+* retrieve (l.tnum) where l.lnum = 122
+* \eg
+
+I N G - d b   . . .
+
+2109: line 1, Variable 'l' not declared in RANGE statement
+
+ING_db:
+*
+
+.DE
+Wir haben die Tupel-Variable "l"
+(, d.h. l.tnum) verwendet, ohne \*(yy\ 6.3 mitzuteilen, was
+"l" repr\o'a"'sentiert.
+Wir haben die Bereichsdeklaration "range" vergessen.
+Korrigieren wir die Query wie folgt:
+.DS L
+
+* range of l is lieferung
+* retrieve (l.tnum) where l.lnum = 122
+* \eg
+
+I N G - d b   . . .
+
+
+|tnum  |
+|------|
+|     7|
+|     7|
+|     9|
+|------|
+3 tuples touched
+
+ING_db:
+*
+
+.DE
+Die Lieferer-Nummer 122 liefert die Teile-Nummern 7, 7 und 9.
+Beachten sie, dass 7 zweimal aufgelistet wurde.
+Bei der Recherche nach Tupeln \o'u"'ber das Terminal ist es
+effizienter f\o'u"'r \*(yy\ 6.3,
+.ft B
+nicht
+.ft R
+nach doppelten Tupeln suchen zu 
+m\o'u"'ssen.
+\*(yy\ 6.3 ist in der Lage doppelte Tupel zu l\o'o"'schen.
+Wir wollen darauf sp\o'a"'ter zur\o'u"'ckkommen.
+.LP
+Wir wissen jetzt, dass der Lieferer 122 die
+Teile-Nummern 7 und 9 liefert.
+Wenn sie diese Query nicht einige hundert
+mal abarbeiten, wissen sie sicher nicht,
+was mit den Teile-Nummern 7 und 9 gemeint ist.
+Wir k\o'o"'nnen das einfach herausfinden,
+wenn wir die Query
+.DS L
+
+* retrieve (t.tname) where t.tnum = 7 or
+* t.tnum = 9
+* \eg
+
+I N G - d b   . . .
+
+|tname               |
+|--------------------|
+|Zeilendruckerpapier |
+|Konsolpapier        |
+|--------------------|
+2 tuples touched
+
+ ING_db:
+*
+
+.DE
+abarbeiten.
+Nach zwei Queries wissen wir die Teile-Bezeichnung
+der Teile, die der Lieferer 122 liefert.
+Wir k\o'o"'nnen dasselbe in einer Query erreichen,
+wenn wir fragen:
+.DS L
+
+* retrieve (t.tname) where t.tnum = l.tnum
+* and l.lnum = 122
+* \eg
+
+I N G - d b   . . .
+
+
+|tname               |
+|--------------------|
+|Zeilendruckerpapier |
+|Zeilendruckerpapier |
+|Konsolpapier        |
+|--------------------|
+3 tuples touched
+
+ ING_db:
+*
+
+.DE
+Beachten sie, dass "Zeilendruckerpapier" doppelt vorkommt.
+Schauen sie sich schliesslich die Query an.
+Sie bemerken, dass die Dom\o'a"'ne "tnum"
+sowohl in der Relation
+"teile", als auch in "lieferung" vorkommt.
+Mit der Aussage "t.tnum = l.tnum" verbinden wir logisch
+die beiden Relationen.
+.LP
+Um alle Lieferer, die die Zentraleinheit
+liefern, zu finden,
+folgende Unterst\o'u"'tzung.
+Wir wissen, wie wir nach "l.lnum" recherchieren.
+Wir m\o'o"'chten aber nur jene "l.lnum"'s wissen, wo die korrespondierende
+"l.tnum" gleich der Teile-Nummer der Zentraleinheit
+ist.
+.LP
+Wenn wir den "t.tname" finden, der gleich "Zentraleinheit"
+ist, dann haben wir die korrekte Teile-Nummer "t.tnum".
+Schliesslich m\o'o"'chten wir "l.tnum = t.tnum",
+die Query lautet:
+.DS L
+
+* retrieve (l.lnum) where
+* l.tnum = t.tnum and t.tname = "Zentraleinheit"
+* \eg
+
+I N G - d b   . . .
+
+|lnum  |
+|------|
+|   475|
+|   475|
+|   241|
+|------|
+3 tuples touched
+
+ ING_db:
+*
+
+.DE
+Wir wollen die Relationen "teile" und "lieferung" 
+verlassen und etwas anderes probieren.
+Zuerst k\o'o"'nnen wir feststellen, welche anderen
+Relationen die Datenbank besitzt, wenn wir eingeben:
+.DS L
+
+* help \eg
+I N G - d b   . . .
+help \eg
+K1630 / EVK Olbernhau - k 1630 / DBA ing_db
+DB nicht parallel verwendbar
+keine QRYMOD-Unterstuetzung
+Seitengroesse 1024 Byte
+
+ Relation          Besitzer      Typ
+----------------------------------------------
+ attribute         ing_db        Systemkatalog
+ relation          ing_db        Systemkatalog
+ indexes           ing_db        Systemkatalog
+ integrities       ing_db        Systemkatalog
+ lager             ing_db        Systemkatalog
+ personal          ing_db        Nutzerkatalog
+ lieferant         ing_db        Systemkatalog
+ abt               ing_db        Systemkatalog
+ teile             ing_db        Nutzerkatalog
+ artikel           ing_db        Systemkatalog
+ protect           ing_db        Systemkatalog
+ lieferung         ing_db        Nutzerkatalog
+ tree              ing_db        Systemkatalog
+----------------------------------------------
+
+ING-db:
+*
+
+.DE
+Schauen wir uns die Relation "personal" an.
+Sofern wir nichts \o'u"'ber die Relation wissen,
+k\o'o"'nnen wir das "help"-Kommando nutzen, um etwas
+dar\o'u"'ber zu erfahren.
+Geben sie ein:
+.DS L
+
+* help personal
+* \eg
+
+I N G - d b   . . .
+
+relation:               personal
+---------
+Besitzer:               ing_db
+Tupellaenge:            30
+Verfallsdatum:          Tue Apr 26 11:01:30 1988
+Tupelanzahl:            25
+Speicherstruktur:       HEAP
+Relationentyp:          Nutzerrelation
+
+ Domaenenname    Typ   Laenge  Schluessel.
+ ----------------------------------------
+ num               i       2
+ name              c      20
+ gehalt            i       2
+ leiter            i       2
+ gebdat            i       2
+ einstdat          i       2
+ ----------------------------------------
+
+ING_db:
+* 
+
+.DE
+Das "help"-Kommando listet \o'U"'bersichtsinformationen
+zur Relation "personal" aus,
+weiterhin zu jedem Attribut, seinem
+Typ und seiner L\o'a"'nge.
+.LP
+\*(yy\ 6.3 unterst\o'u"'tzt drei Datentypen: Integerzahlen,
+Gleitkommazahlen und Zeichenketten.
+Zeichenketten-Dom\o'a"'nen k\o'o"'nnen von 1 bis 255 Zeichen
+lang sein.
+Integer-Dom\o'a"'nen k\o'o"'nnen 1, 2, oder 4 Bytes lang sein.
+Das bedeutet, dass Integerzahlen einen Wertebereich von
+127, \%32767 und \%2147483647 maximal annehmen k\o'o"'nnen.
+Gleitkommazahlen k\o'o"'nnen entweder 4 oder 8 Bytes lang sein.
+Beide erhalten einen Maximalwert von \o'u"'ber 10**38;
+mit 7 oder 17 Ziffern genauer Abbildung.
+.LP
+Um alle Dom\o'a"'nen anzusehen, k\o'o"'nnen wir das "print"-Kommando
+oder das "retrieve"-Kommando nutzen
+und geben jede Dom\o'a"'ne in der "target_list" an.
+\*(yy\ 6.3 verschafft uns einen Weg, mit wenig Arbeitsaufwand,
+das zu realisieren.
+Versuchen sie folgendes:
+.DS L
+
+* range of p is personal
+* retrieve (p.all)
+* \eg
+
+I N G - d b   . . . 
+
+|num   |name                |gehalt|leiter|gebdat|einstd|
+|-------------------------------------------------------|
+|   157|Schmidt, Petra      |  1200|   199|  1940|  1960|
+|  1110|Kayser, Helmut      |   600|    33|  1952|  1973|
+|    35|Loda, Dieter        |   500|    32|  1952|  1974|
+|   129|Thoms, Rolf         |  1000|   199|  1941|  1962|
+|    13|Wunsch, Peter-Paul  |   900|   199|  1928|  1958|
+|   215|Mueller, Ernst      |   700|    10|  1950|  1971|
+|    55|Malter, Juergen     |  1200|   199|  1920|  1969|
+|    26|Schneider, Peter    |  1300|   199|  1930|  1970|
+|    98|Weise, Juergen      |   900|   199|  1935|  1969|
+|    32|Heine, Rolf         |   905|   199|  1929|  1967|
+|    33|Ernst, Eva          |  1010|   199|  1931|  1963|
+|   199|Gruene, Peter       |  1700|     0|  1920|  1952|
+|  4901|Baum, Klaus         |   837|    32|  1956|  1975|
+|   843|Schmidt, Hermann    |  1120|    26|  1936|  1956|
+|  2398|Warnke, Peter       |   788|    26|  1940|  1959|
+|  1639|Maerz, Udo          |  1116|    55|  1947|  1970|
+|  5119|Mueller, Petra      |  1362|    55|  1939|  1963|
+|    37|Neumann, Inge       |  1198|    26|  1950|  1974|
+|  5219|Weber, Franz        |  1337|    33|  1944|  1959|
+|  1523|Zeidler, Fritz      |  1686|   129|  1928|  1949|
+|   430|Moser, Otto         |  1567|   129|  1938|  1959|
+|   994|Schulze, Ernst      |  1564|   129|  1944|  1970|
+|  1330|Fleischer, Karl     |   877|    13|  1952|  1971|
+|    10|Rose, Peter         |  1590|   199|  1927|  1953|
+|    11|Rose, Petra         |  1206|     0|  1931|  1951|
+|-------------------------------------------------------|
+25 tuples touched
+
+ING_db:
+*
+
+.DE
+"all" ist ein Schl\o'u"'sselwort, das bei
+\*(yy\ 6.3 angewendet wird, um alle Dom\o'a"'nen zu erhalten.
+F\o'u"'r die Dom\o'a"'nen ist eine besondere Reihenfolge 
+nicht sichergestellt.
+Die vorhergehende Query ist \o'a"'quivalent zu:
+.DS L
+
+	range of p is personal
+	retrieve (p.num, p.name, p.gehalt, p.leiter
+		p.gebdat, p.einstdat)
+
+.DE
+Wir wollen nach dem Gehalt von Peter Wunsch recherchieren.
+An diesem Punkt ist es g\o'u"'nstig,
+\o'u"'ber Gross- und Kleinbuchstaben zu verf\o'u"'gen.
+Wenn sie an einem Grossbuchstaben-Terminal arbeiten,
+geben sie einen einfachen "\\" vor jenen Buchstaben, die
+sie in Grossbuchstaben umwandeln wollen.
+Damit m\o'u"'sste an einem Grossbuchstaben-Terminal
+"\\WUNSCH, \\PETER" eingegeben werden.
+Wenn sie an einem Gross-/Kleinbuchstaben-Terminal
+arbeiten, benutzen sie die Umschalttaste (u.U. auch SHIFT)
+um Grossbuchstaben zu schreiben.
+.LP
+Starten sie die Query:
+.DS L
+
+* retrieve (p.name,p.gehalt)
+* where p.name = "Wunsch, Peter"
+* \eg
+
+I N G - d b   . . .
+
+
+|name                |gehalt|
+|---------------------------|
+|---------------------------|
+
+ING_db:
+*
+
+.DE
+Das Ergebnis ist leer.
+Es gibt keinen "p.name", der die Qualifikation erf\o'u"'llt.
+Das befremdet, weil wir wissen, dass es einen Peter Wunsch gibt.
+Jedoch weiss \*(yy\ 6.3 nicht, dass "Peter-Paul"
+und "Peter" semantisch das Gleiche ist.
+.LP
+Um in dieser Situation die korrekte Antwort
+zu erhalten, m\o'u"'ssen sie die speziellen
+"pattern matching"-Zeichen (Vergleichsmuster),
+die \*(yy\ 6.3 bereith\o'a"'lt, verwenden.
+Ein solches Zeichen ist "*".
+Es ist irgendeiner Zeichenkette von 0 bis mehreren Zeichen
+ebenb\o'u"'rtig.
+Versuchen sie es:
+.DS L
+
+* retrieve (p.name,p.gehalt)
+* where p.name = "Wunsch, P*"
+* \eg
+
+I N G - d b   . . .
+
+
+|name                |gehalt|
+|---------------------------|
+|Wunsch, Peter-Paul  |   900|
+|---------------------------|
+1 tuples touched
+
+ING_db:
+*
+
+.DE
+.LP
+Probieren wir damit etwas anderes.
+.DS L
+
+* retrieve (p.name, p.gehalt) where p.name = "Rose, P*"
+* \eg
+
+I N G - d b   . . .
+
+|name                |gehalt|
+|---------------------------|
+|Rose, Peter         |  1590|
+|Rose, Petra         |  1206|
+|---------------------------|
+2 tuples touched
+
+ING-db:
+*
+.DE
+Im ersten Fall ersetzt "*" die Zeichenkette "eter" und
+im zweiten Fall "etra".
+.LP
+Hier ein anderes Beispiel.
+Finden sie die Geh\o'a"'lter der
+Personen, deren Vorname "Peter" ist:
+.DS L
+
+* retrieve (p.name,p.gehalt)
+* where p.name = "*, Peter*"
+* \eg
+
+I N G - d b   . . .
+
+|name                |gehalt|
+|---------------------------|
+|Wunsch, Peter-Paul  |   900|
+|Schneider, Peter    |  1300|
+|Gruene, Peter       |  1700|
+|Warnke, Peter       |   788|
+|Rose, Peter         |  1590|
+|---------------------------|
+5 tuples touched
+
+ ING_db:
+*
+
+.DE
+Beachten sie, wenn wir nach p.name = "*, Peter"
+gefragt h\o'a"'tten, w\o'a"'re das 1. Tupel nicht
+ausgew\o'a"'hlt worden.
+Ebenso ignoriert
+\*(yy\ 6.3 "blanks"
+in irgendeinem Zeichenkettenvergleich,
+egal ob sie "pattern matching" anwenden oder nicht.
+Das bedeutet, dass die folgenden
+Varianten alle das gleiche Ergebnis bringen:
+.DS L
+
+	p.name = "Rose,Peter"
+	p.name = "Rose,   Peter   "
+	p.name = "R o s e,Peter"
+
+.DE
+Einzelne Zeichen oder Bereiche von Zeichen k\o'o"'nnen
+in eckige Klammern ([]) eingeschlossen werden.
+Zum Beispiel, finde alle Personen, deren Namen mit
+"B" bis "F" beginnen:
+.DS L
+
+* retrieve (p.name,p.gehalt)
+* where p.name = "[B-F]*"
+* \eg
+
+I N G - d b   . . .
+
+|name                |gehalt|
+|---------------------------|
+|Ernst, Eva          |  1010|
+|Baum, Klaus         |   837|
+|Fleischer, Karl     |   877|
+|---------------------------|
+3 tuples touched
+
+ING_db:
+*
+
+.DE
+Beachten sie, dass die letzte Query auch auf einem
+anderen Weg realisiert werden k\o'o"'nnte:
+.DS L
+
+* retrieve (p.name,p.gehalt)
+* where p.name >"A*" and p.name <"G*"
+* \eg
+
+I N G - d b . . .
+
+|name                |gehalt|
+|---------------------------|
+|Ernst, Eva          |  1010|
+|Baum, Klaus         |   837|
+|Fleischer, Karl     |   877|
+|---------------------------|
+3 tuples touched
+
+ ING_db:
+*
+
+.DE
+Die beiden Ergebnisse sind identisch;
+jedoch ist der zweite Weg in der Ausf\o'u"'hrung
+f\o'u"'r \*(yy\ 6.3 effizienter.
+.LP
+Es gibt drei Typen von "pattern matching"-Konstruktionen.
+Alle drei Typen k\o'o"'nnen in einer Kombination f\o'u"'r
+Zeichenketten-Vergleiche genutzt werden.
+Das sind:
+
+.IP * 5
+\o'A"'quivalent zu einer beliebig langen Zeichenkette;
+.IP ? 5
+\o'A"'quivalent zu einem Zeichen (nicht "blank")
+.IP [] 5
+Kann irgendein Zeichen \o'u"'berdecken, das in
+Klammern eingeschlossen ist.
+Wenn zwei Zeichen durch Binde\%strich (-) getrennt werden,
+dann wird jedes Zeichen, das zwischen
+beiden in der alphabetischen Folge stehen w\o'u"'rde
+\o'u"'berdeckt.
+.RE
+.LP
+Die spezielle Bedeutung der "pattern matching"-Zeichen
+kann durch die Kaschierung
+mit "\\" aufgehoben werden.
+Damit referenziert "\\*" nur das Zeichen
+"*".
+.LP
+Wir wenden uns nun den Aggregat-Operatoren,
+die \*(yy\ 6.3 unterst\o'u"'tzt, zu.
+Sie bef\o'a"'higen den Nutzer, Berechnungen auf
+Dom\o'a"'nen einer Relation vorzunehmen.
+Zum Beispiel ist einer dieser Aggregat-Operatoren Durchschnitt (avg)
+="average".
+Um das durchschnittliche Gehalt f\o'u"'r alle
+Angestellten zu berechnen, geben wir ein:
+.DS L
+
+* retrieve (dgehalt=avg(p.gehalt))
+* \eg
+
+I N G - d b   . . .
+
+
+|dgehalt   |
+|----------|
+|  1126.520|
+|----------|
+1 tuples touched
+
+ING_db:
+*
+
+.DE
+Der Name "dgehalt"
+ist willk\o'u"'rlich, aber notwendig;
+\*(yy\ 6.3 ben\o'o"'tigt 
+.ft B
+einen
+.ft R
+Namen
+f\o'u"'r irgend\%einen Ausdruck in der "target_list"
+(anders als f\o'u"'r eine einfache Dom\o'a"'ne).
+.LP
+Wir k\o'o"'nnen auch das niedrigste (Minimum) und h\o'o"'chste (Ma\%ximum)
+Gehalt finden:
+.DS L
+
+* retrieve (mingeh=min(p.gehalt),maxgeh=max(p.gehalt))
+* \eg
+
+I N G - d b   . . .
+
+
+|mingeh|maxgeh|
+|-------------|
+|   500|  1700|
+|-------------|
+1 tuples touched
+
+ING_db:
+*
+
+.DE
+Wenn wir die Namen der Angestellten wissen wollen, die das 
+niedrigste und h\o'o"'chste Gehalt beziehen, dann
+m\o'u"'sste die Query lauten:
+.DS L
+
+* retrieve (p.name, p.gehalt)
+* where p.gehalt = min(p.gehalt) or p.gehalt = max(p.gehalt)
+* \eg
+
+I N G - d b   . . .
+
+|name                |gehalt|
+|---------------------------|
+|Loda, Dieter        |   500|
+|Gruene, Peter       |  1700|
+|---------------------------|
+2 tuples touched
+
+ING_db:
+* 
+
+.DE
+\*(yy\ 6.3 unterst\o'u"'tzt folgende Aggregat-Operatoren:
+.DS L
+
+	count  Z\o'a"'hle Tupel
+	min    Minimum der Dom\o'a"'ne
+	max    Maximum der Dom\o'a"'ne
+	avg    Berechne Durchschnitt
+	sum    Summiere Tupel entsprechend Dom\o'a"'ne
+	any    logischer Wert entsprechend Qualifikation
+
+.DE
+Wir wollen jetzt eine Query vorstellen, die je Angestelltem
+das Durch\%schnittsgehalt \o'u"'ber alle Angestellten
+auslistet:
+.DS L
+
+* retrieve (p.name,pergeh=avg(p.gehalt))
+* \eg
+
+I N G - d b   . . .
+
+|name                |pergeh    |
+|-------------------------------|
+|Schmidt, Petra      |  1126.520|
+|Kayser, Helmut      |  1126.520|
+|Loda, Dieter        |  1126.520|
+|Thoms, Rolf         |  1126.520|
+|Wunsch, Peter-Paul  |  1126.520|
+|Mueller, Ernst      |  1126.520|
+|Malter, Juergen     |  1126.520|
+|Schneider, Peter    |  1126.520|
+|Weise, Juergen      |  1126.520|
+|Heine, Rolf         |  1126.520|
+|Ernst, Eva          |  1126.520|
+|Gruene, Peter       |  1126.520|
+|Baum, Klaus         |  1126.520|
+|Schmidt, Hermann    |  1126.520|
+|Warnke, Peter       |  1126.520|
+|Maerz, Udo          |  1126.520|
+|Mueller, Petra      |  1126.520|
+|Neumann, Inge       |  1126.520|
+|Weber, Franz        |  1126.520|
+|Zeidler, Fritz      |  1126.520|
+|Moser, Otto         |  1126.520|
+|Schulze, Ernst      |  1126.520|
+|Fleischer, Karl     |  1126.520|
+|Rose, Peter         |  1126.520|
+|Rose, Petra         |  1126.520|
+|-------------------------------|
+25 tuples touched
+ING_db:
+*
+
+.DE
+Ein Aggregat-Operator erzeugt immer einen einfachen Wert.
+Um die letzte Query auszuf\o'u"'hren, bildet
+\*(yy\ 6.3 das Durch\%schnittsgehalt zun\o'a"'chst zu jedem
+Namen ("p.name") ab.
+.LP
+Aggregat-Operatoren k\o'o"'nnen ihre eigene Qualifikation haben.
+Zum Beispiel k\o'o"'nnen wir eine Liste \o'u"'ber alle
+Angestellten herstellen und das Durchschnittsgehalt f\o'u"'r
+alle Angestellten \o'u"'ber 50 (Jahre) berechnen
+und eintragen:
+.DS L
+
+* retrieve (p.name,pergeh=
+* avg(p.gehalt where 1985-p.gebdat > 50))
+* \eg
+
+I N G - d b    . . .
+
+|name                |pergeh    |
+|-------------------------------|
+|Schmidt, Petra      |  1277.444|
+|Kayser, Helmut      |  1277.444|
+|Loda, Dieter        |  1277.444|
+|Thoms, Rolf         |  1277.444|
+|Wunsch, Peter-Paul  |  1277.444|
+|Mueller, Ernst      |  1277.444|
+|Malter, Juergen     |  1277.444|
+|Schneider, Peter    |  1277.444|
+|Weise, Juergen      |  1277.444|
+|Heine, Rolf         |  1277.444|
+|Ernst, Eva          |  1277.444|
+|Gruene, Peter       |  1277.444|
+|Baum, Klaus         |  1277.444|
+|Schmidt, Hermann    |  1277.444|
+|Warnke, Peter       |  1277.444|
+|Maerz, Udo          |  1277.444|
+|Mueller, Petra      |  1277.444|
+|Neumann, Inge       |  1277.444|
+|Weber, Franz        |  1277.444|
+|Zeidler, Fritz      |  1277.444|
+|Moser, Otto         |  1277.444|
+|Schulze, Ernst      |  1277.444|
+|Fleischer, Karl     |  1277.444|
+|Rose, Peter         |  1277.444|
+|Rose, Petra         |  1277.444|
+|-------------------------------|
+25 tuples touched
+
+ING_db:
+*
+
+.DE
+Im Gegensatz zur vorhergehenden Query folgendes Beispiel.
+Wir wollen die Namen derjenigen Angestellten \o'u"'ber f\o'u"'nfzig
+suchen und das Durchschnittsgehalt f\o'u"'r alle berechnen.
+.DS L
+
+* retrieve (p.name,pergeh=avg(p.gehalt))
+* where 1985-p.gebdat > 50
+* \eg
+
+I N G - d b   . . .
+
+|name                |pergeh    |
+|-------------------------------|
+|Wunsch, Peter-Paul  |  1126.520|
+|Malter, Juergen     |  1126.520|
+|Schneider, Peter    |  1126.520|
+|Heine, Rolf         |  1126.520|
+|Ernst, Eva          |  1126.520|
+|Gruene, Peter       |  1126.520|
+|Zeidler, Fritz      |  1126.520|
+|Rose, Peter         |  1126.520|
+|Rose, Petra         |  1126.520|
+|-------------------------------|
+9 tuples touched
+
+ING_db:
+*
+
+.DE
+Es gibt einen bedeutenden Unterschied zwischen den beiden
+letzten Queries.
+Der Aggregat-Operator ist vollst\o'a"'ndig in sich abgeschlossen.
+Er wird nicht durch die Qualifikation der
+Query als Ganzes beeinflusst.
+.LP
+Im ersten Fall wurde der Durchschnitt nur f\o'u"'r
+die Angestellten \o'u"'ber f\o'u"'nfzig berechnet und
+\o'u"'ber alle Angestellten durchsucht.
+Im zweiten Fall jedoch, wurde der Durchschnitt f\o'u"'r alle 
+Angestellten berechnet, aber nur f\o'u"'r die Angestellten
+\o'u"'ber f\o'u"'nfzig eingetragen.
+.LP
+Wenn wir eine Liste aller Angestellten \o'u"'ber 50 zusammen
+mit dem durchschnittlichen Gehalt w\o'u"'nschen,
+kombinieren wir die vorhergehenden zwei Queries zu einer.
+Diese Query k\o'o"'nnte sein:
+
+.DS L
+* retrieve (p.name, pergeh=
+* avg(p.gehalt where 1985 - p.gebdat > 50))
+* where 1985 - p.gebdat > 50
+* \eg
+
+I N G - d b . . .
+
+|name                |pergeh    |
+|-------------------------------|
+|Wunsch, Peter-Paul  |  1277.444|
+|Malter, Juergen     |  1277.444|
+|Schneider, Peter    |  1277.444|
+|Heine, Rolf         |  1277.444|
+|Ernst, Eva          |  1277.444|
+|Gruene, Peter       |  1277.444|
+|Zeidler, Fritz      |  1277.444|
+|Rose, Peter         |  1277.444|
+|Rose, Petra         |  1277.444|
+|-------------------------------|
+9 tuples touched
+
+ING_db:
+* 
+
+.DE
+Es ist manchmal gebr\o'a"'uchlich, dass doppelte Werte gel\o'o"'scht
+werden, bevor ein Aggregat-Operator ausgef\o'u"'hrt wird.
+Wenn sie beispielsweise wissen m\o'o"'chten, wieviele Leiter
+("leiter") es gibt, wird die
+folgende Query die richtige Antwort geben:
+
+.DS L
+* retrieve (chefs = count(p.leiter))
+* \eg
+
+I N G - d b . . .
+
+
+|chefs        |
+|-------------|
+|           25|
+|-------------|
+1 tuples touched
+
+ING_db:
+* 
+
+.DE
+Beachten sie, dass "count" mitteilt, wieviele Tupel es in
+"personal" gibt.
+Was wir wissen wollten, war, 
+wieviele Leiter ("p.leiter") es gibt.
+.LP
+\*(yy\ 6.3 stellt drei spezielle Formen von
+Aggregat-Operatoren zur Verf\o'u"'gung.
+
+.DS L
+	countu		z\o'a"'hlt unikate (einmalig vorkommende)
+                        Werte
+	avgu		Durchschnitt \o'u"'ber unikate Werte
+	sumu		summiert unikate Werte
+.DE
+.LP
+Interessanterweise werden "minu", "maxu" und "anyu" nicht
+ben\o'o"'tigt.
+Ihre Werte sind die gleichen, unabh\o'a"'ngig davon, ob
+doppelte Tupel vorkommen oder nicht.
+.LP
+Die korrekte Query, um die Anzahl der "leiter" zu finden, ist:
+
+.DS L
+* retrieve (chefs=countu(p.leiter))
+* \eg
+
+I N G - d b . . .
+
+
+|chefs        |
+|-------------|
+|            9|
+|-------------|
+1 tuples touched
+
+ING_db:
+*
+
+.DE
+Eine andere Erleichterung, die \*(yy\ 6.3 unterst\o'u"'tzt, sind die
+sogenannten Aggregat-Funktionen.
+Aggregat-Funktionen gruppieren Daten
+in Kategorien und unterst\o'u"'tzen separate Zusammenfassungen
+zu jeder Kategorie.
+.LP
+Was ist zum Beispiel, wenn
+wir f\o'u"'r die Angestellten, die zum selben
+Leiter geh\o'o"'ren, das Durchschnittsgehalt ermitteln wollen?
+Die Query w\o'u"'rde sein:
+.DS L
+
+* retrieve (p.name,leiteravg=avg(p.gehalt by p.leiter))
+* \eg
+
+I N G - d b   . . .
+
+|name                |leiteravg |
+|-------------------------------|
+|Mueller, Ernst      |   700.000|
+|Gruene, Peter       |  1453.000|
+|Rose, Petra         |  1453.000|
+|Loda, Dieter        |   668.500|
+|Baum, Klaus         |   668.500|
+|Kayser, Helmut      |   968.500|
+|Weber, Franz        |   968.500|
+|Fleischer, Karl     |   877.000|
+|Maerz, Udo          |  1239.000|
+|Mueller, Petra      |  1239.000|
+|Schmidt, Hermann    |  1035.333|
+|Warnke, Peter       |  1035.333|
+|Neumann, Inge       |  1035.333|
+|Schmidt, Petra      |  1111.667|
+|Thoms, Rolf         |  1111.667|
+|Wunsch, Peter-Paul  |  1111.667|
+|Malter, Juergen     |  1111.667|
+|Schneider, Peter    |  1111.667|
+|Weise, Juergen      |  1111.667|
+|Heine, Rolf         |  1111.667|
+|Ernst, Eva          |  1111.667|
+|Rose, Peter         |  1111.667|
+|Zeidler, Fritz      |  1605.667|
+|Moser, Otto         |  1605.667|
+|Schulze, Ernst      |  1605.667|
+|-------------------------------|
+25 tuples touched
+
+ING_db:
+*
+
+.DE
+Die erste Person ist allein und
+ihr Einkommen betr\o'a"'gt 700.00 M.
+Die n\o'a"'chsten zwei Personen haben den selben Leiter und
+das Durchschnittseinkommen betr\o'a"'gt 1453.00 usw.
+.LP
+Noch einmal, wenn wir die gleiche Liste eben
+f\o'u"'r jene Angestellten \o'u"'ber 50 sehen m\o'o"'chten:
+.DS L
+
+* retrieve (p.name,leiteravg=avg(p.gehalt by p.leiter))
+* where 1985-p.gebdat > 50
+* \eg
+
+I N G - d b   . . .
+
+|name                |leiteravg |
+|-------------------------------|
+|Gruene, Peter       |  1453.000|
+|Rose Petra          |  1453.000|
+|Wunsch, Peter-Paul  |  1111.667|
+|Malter, Juergen     |  1111.667|
+|Schneider, Peter    |  1111.667|
+|Heine, Rolf         |  1111.667|
+|Ernst, Eva          |  1111.667|
+|Rose, Peter         |  1111.667|
+|Zeidler, Fritz      |  1605.667|
+|-------------------------------|
+9 tuples touched
+
+ING_db:
+*
+
+.DE
+Aggregat-Funktionen (im Gegensatz zu Aggregat-Operatoren) sind
+nicht vollst\o'a"'ndig in sich abgeschlossen.
+Die Dom\o'a"'nen, auf die die Daten gruppiert sind
+(, durch die sogenannte "by_list"), sind logisch
+mit den restlichen Dom\o'a"'nen der Query
+verkn\o'u"'pft.
+.LP
+In diesem letzten Beispiel referenziert "p.leiter" in
+der "by_list" zu den selben Tupeln wie
+"p.name" in der "target_list".
+.LP
+Wenn wir das Durchschnittsgehalt nach Leitern nur f\o'u"'r
+die Leiter 33 und 199 berechnen wollen,
+erg\o'a"'be sich diese Query:
+.DS L
+
+* retrieve (p.name,leiteravg=
+* avg(p.gehalt by p.leiter))
+* where p.leiter = 199 or p.leiter = 33
+* \eg
+
+I N G - d b   . . .
+
+|name                |leiteravg |
+|-------------------------------|
+|Kayser, Helmut      |   968.500|
+|Weber, Franz        |   968.500|
+|Schmidt, Petra      |  1111.667|
+|Thoms, Rolf         |  1111.667|
+|Wunsch, Peter-Paul  |  1111.667|
+|Malter, Juergen     |  1111.667|
+|Schneider, Peter    |  1111.667|
+|Weise, Juergen      |  1111.667|
+|Heine, Rolf         |  1111.667|
+|Ernst, Eva          |  1111.667|
+|Rose, Peter         |  1111.667|
+|-------------------------------|
+11 tuples touched
+
+
+ING_db:
+*
+
+.DE
+Nehmen wir an, wir wollen herausfinden,
+wie viele Personen bei jedem Leiter
+arbeiten und weiterhin wollen wir nur
+die Personen einbeziehen, die
+bereits vor 1970 dort arbeiteten.
+.DS L
+
+* retrieve (p.leiter,mitarb=count(p.name by p.leiter where
+* p.einstdat < 1970))
+* \eg
+
+I N G - d b   . . .
+
+
+|leiter|mitarb       |
+|--------------------|
+|     0|            2|
+|    10|            0|
+|    13|            0|
+|    26|            2|
+|    32|            0|
+|    33|            2|
+|    55|            1|
+|   129|            2|
+|   199|            8|
+|--------------------|
+9 tuples touched
+
+ING_db:
+*
+
+.DE
+Beachten sie, dass die Leiter 32, 10 und 13 keine
+Angestellten haben, die vor 1970
+dort angefangen haben.
+Jetzt nehmen wir an, dass wir das Durchschnittsgehalt
+f\o'u"'r diese Angestellten wissen wollen.
+\o'A"'ndern sie einfach "count" in "avg" und starten sie die Query.
+.DS L
+* retrieve (p.leiter,mitarb=avg(p.gehalt by p.leiter where
+* p.einstdat < 1970))
+* \eg
+
+I N G - d b   . . .
+
+|leiter|mitarb    |
+|-----------------|
+|     0|  1453.000|
+|    10|     0.000|
+|    13|     0.000|
+|    26|   954.000|
+|    32|     0.000|
+|    33|  1337.000|
+|    55|  1362.000|
+|   129|  1626.500|
+|   199|  1088.125|
+|-----------------|
+9 tuples touched
+
+ING_db:
+*
+
+.DE
+Beachten sie, was \*(yy\ 6.3 f\o'u"'r die
+Leiter 32, 10 und 13 macht.
+Das Durchschnitsgehalt f\o'u"'r diese Angestellten 
+ist tats\o'a"'chlich nicht
+definiert, weil es keine Angestellten gibt, die vor 1970
+angefangen haben.
+\*(yy\ 6.3 wandelt undefinierte Werte immer
+in Null.
+.LP
+Wenn sie die Nullwerte von der Ausgabe entfernen wollen,
+kann das durch Hinzuf\o'u"'gung einer Qualifikation
+zur Query erfolgen.
+Die folgende Query wird nur die Durchschnittsgeh\o'a"'lter
+finden, die einen Wert gr\o'o"'sser Null haben.
+.DS L
+
+* retrieve (p.leiter,mitarb=avg(p.gehalt by p.leiter where
+* p.einstdat < 1970))
+* where avg(p.gehalt by p.leiter where p.einstdat < 1970) > 0
+* \eg
+
+I N G - d b   . . .
+
+|leiter|mitarb    |
+|-----------------|
+|     0|  1453.000|
+|    26|   954.000|
+|    33|  1337.000|
+|    55|  1362.000|
+|   129|  1626.500|
+|   199|  1088.125|
+|-----------------|
+6 tuples touched
+
+ING_db:
+* 
+
+.DE
+Bis jetzt haben wir die Rechercheergebnisse direkt auf dem Terminal
+ausgegeben.
+Sie k\o'o"'nnen die Ergebnisse auch in eine neue Relation
+retten bzw. sichern.
+Das wird realisiert, wenn sie sagen:
+.DS L
+
+	retrieve into steigerung ( ... )
+	where . . .
+
+.DE
+Die Regeln sind genau die gleichen, als w\o'u"'rden sie \o'u"'ber
+das Terminal recherchieren.
+\*(yy\ 6.3 gr\o'u"'ndet die neue Relation mit den
+korrekten Dom\o'a"'nen und gibt die Ergebnisse
+der Query in diese Relation.
+.LP
+Als Beispiel gr\o'u"'nden
+wir eine neue Relation "steigerung", die nur die Angestellten
+enth\o'a"'lt, die mehr als 1000 M verdienen:
+.DS L
+
+* retrieve into steigerung (p.all)
+* where p.gehalt > 1000
+* print steigerung
+* \eg
+
+I N G - d b   . . .
+
+Relation: steigerung
+K 1630 \*(yy\ EVK Olbernhau - K1630
+
+|num   |name                |gehalt|leiter|gebdat|einstd|
+|-------------------------------------------------------|
+|    10|Rose, Peter         |  1590|   199|  1927|  1953|
+|    11|Rose, Petra         |  1206|     0|  1931|  1951|
+|    26|Schneider, Peter    |  1300|   199|  1930|  1970|
+|    33|Ernst, Eva          |  1010|   199|  1931|  1963|
+|    37|Neumann, Inge       |  1198|    26|  1950|  1974|
+|    55|Malter, Juergen     |  1200|   199|  1920|  1969|
+|   157|Schmidt, Petra      |  1200|   199|  1940|  1960|
+|   199|Gruene, Peter       |  1700|     0|  1920|  1952|
+|   430|Moser, Otto         |  1567|   129|  1938|  1959|
+|   843|Schmidt, Hermann    |  1120|    26|  1936|  1956|
+|   994|Schulze, Ernst      |  1564|   129|  1944|  1970|
+|  1523|Zeidler, Fritz      |  1686|   129|  1928|  1949|
+|  1639|Maerz, Udo          |  1116|    55|  1947|  1970|
+|  5119|Mueller, Petra      |  1362|    55|  1939|  1963|
+|  5219|Weber, Franz        |  1337|    33|  1944|  1959|
+|-------------------------------------------------------|
+15 tuples touched
+
+ING_db:
+*
+
+.DE
+Durch ein "retrieve into" wird nichts gedruckt bzw. ausgegeben.
+Wir haben ein "print"-Kommando eingef\o'u"'gt, um
+die Ergebnisse zu sehen.
+Die Relation, die durch ein "retrieve into" benannt wird,
+darf vorher nicht existieren.
+Wenn wir beispielsweise versuchen,
+die selbe Query zu wiederholen:
+.DS L
+
+* \eg
+
+I N G - d b . . .
+
+2135: line 1, You cannot duplicate the name of an
+existing relation(steigerung)
+
+ING_db:
+*
+
+.DE
+.LP
+Es gibt zwei spezielle Merkmale zu "retrieve into".
+Erstens wird die Relation automatisch sortiert
+und doppelte Tupel gel\o'o"'scht.
+Zweitens wird die Relation Bestandteil der Datenbank
+und sie werden ihr Eigent\o'u"'mer.
+Wenn sie nicht wollen, dass sie erhalten bleibt, denken sie daran,
+dass sie gel\o'o"'scht werden muss.
+Der Ablauf zum L\o'o"'schen einer Relation wird
+etwas sp\o'a"'ter erl\o'a"'utert.
+.LP
+Bisher haben wir nur Daten gesucht, aber niemals
+welche ge\o'a"'ndert.
+\*(yy\ 6.3 unterst\o'u"'tzt drei Aktualisierungskommandos:
+"append", "replace" und "delete".
+.LP
+Beispielsweise wollen wir "Heinz Heinrich" zur 
+Liste der Angestellten auf "steigerung" hinzuf\o'u"'gen und ihm
+ein Gehalt von 1000 M zuordnen:
+.DS L
+
+* append to steigerung(name = "Heinrich, Heinz",gehalt = 1000)
+* \eg
+
+I N G - d b . . .
+
+1 tuples touched
+
+ING_db:
+*
+
+.DE
+Beachten sie, dass wir nur zwei Werte spezifizierten,
+obwohl "steigerung" aus sechs Dom\o'a"'nen besteht.
+Das ist sch\o'o"'n!
+\*(yy\ 6.3 setzt automatisch numerische Dom\o'a"'nen
+auf Null und Zeichenkettendom\o'a"'nen auf "blank",
+wenn sie nicht spezifiziert wurden.
+.LP
+Beachten sie auch, dass \*(yy\ 6.3 nach der Query nichts
+ausgibt.
+Das trifft f\o'u"'r alle Aktualisierungskommandos zu.
+.LP
+Wir wollen jedem in "steigerung" 10% Gehaltszuschlag geben.
+Um das zu tun, ersetzen wir "gehalt" durch das Produkt aus
+1,1 mal Wert.
+Geben sie die Query ein:
+.DS L
+
+* range of s is steigerung
+* replace s(gehalt = s.gehalt * 1.1)
+* \eg
+
+I N G - d b   . . .
+
+16 tuples touched
+
+ING_db:
+*
+
+.DE
+W\o'a"'hrend das "append"-Kommando erwartet, dass sie einen
+Relationen-Name (d.h. "append to steigerung") angeben, erwartet das
+"replace"- und "delete"-Kommando eine 
+Tupel-Variable.
+Bemerken sie, dass das Kommando lautet:
+.DS L
+
+        replace s ( . . . )
+                where . . .
+
+und nicht:
+
+        replace steigerung ( . . . )
+                where . . .
+
+.DE
+Geben sie die Ergebnisse der beiden
+letzten Aktualisierungen aus:
+.DS L
+
+* print steigerung
+* \eg
+
+I N G - d b   . . .
+
+
+Relation: steigerung
+
+
+|num   |name                |gehalt|leiter|gebdat|einstd|
+|-------------------------------------------------------|
+|    10|Rose, Peter         |  1749|   199|  1927|  1953|
+|    11|Rose, Petra         |  1326|     0|  1931|  1951|
+|    26|Schneider, Peter    |  1430|   199|  1930|  1970|
+|    33|Ernst, Eva          |  1111|   199|  1931|  1963|
+|    37|Neumann, Inge       |  1317|    26|  1950|  1974|
+|    55|Malter, Juergen     |  1320|   199|  1920|  1969|
+|   157|Schmidt, Petra      |  1320|   199|  1940|  1960|
+|   199|Gruene, Peter       |  1870|     0|  1920|  1952|
+|   430|Moser, Otto         |  1723|   129|  1938|  1959|
+|   843|Schmidt, Hermann    |  1232|    26|  1936|  1956|
+|   994|Schulze, Ernst      |  1720|   129|  1944|  1970|
+|  1523|Zeidler, Fritz      |  1854|   129|  1928|  1949|
+|  1639|Maerz, Udo          |  1227|    55|  1947|  1970|
+|  5119|Mueller, Petra      |  1498|    55|  1939|  1963|
+|  5219|Weber, Franz        |  1470|    33|  1944|  1959|
+|     0|Heinrich, Heinz     |  1100|     0|     0|     0|
+|-------------------------------------------------------|
+
+
+ING_db:
+*
+
+.DE
+Nun wollen wir denjenigen, der am wenigsten verdient, entlassen:
+.DS L
+
+* delete s where s.gehalt = min(s.gehalt) \eg
+I N G - d b   . . .
+
+1 tuples touched
+
+ING_db:
+*
+
+.DE
+Beachten sie, dass das "delete"-Kommando eine
+Tupel-Variable (d.h. "delete s") erwartet
+und keinen Relationen-Name.
+.LP
+Was ist, wenn wir wissen wollen, wer mehr als
+Otto Moser verdient? Mit Heinz Heinrich k\o'o"'nnen wir nicht
+mehr arbeiten, den haben wir entlassen.
+Die Query, die das erledigt, ist recht schwierig.
+Zuerst ben\o'o"'tigen wir eine neue Tupel-Variable, genannt
+"o", die auf auf dem Bereich "steigerung" liegt
+und benutzt wird, um Otto zu referenzieren.
+"o.name" muss auf "Moser, Otto" gesetzt werden.
+Danach m\o'u"'ssen wir eine Tupel-Variable "s"
+nutzen, die die gesamte Relation durchforscht.
+Jedesmal, wenn wir "s.gehalt > o.gehalt"
+finden, dann verdient "s.name" mehr als Otto.
+.LP
+Die vollst\o'a"'ndige Query ist:
+.DS L
+
+* range of o is steigerung
+* retrieve (s.name, sgeh=s.gehalt,ottogeh=o.gehalt)
+* where s.gehalt > o.gehalt
+* and o.name = "Moser, Otto"
+* \eg
+
+I N G - d b   . . .
+
+|name                |sgeh  |ottoge|
+|----------------------------------|
+|Rose, Peter         |  1749|  1723|
+|Gruene, Peter       |  1870|  1723|
+|Zeidler, Fritz      |  1854|  1723|
+|----------------------------------|
+3 tuples touched
+
+ING_db:
+* 
+
+.DE
+Wenn wir Otto Moser 50 M mehr geben wollen, als
+irgendeinem anderen, dann muss die Query lauten:
+.DS L
+
+* replace s(gehalt = max(s.gehalt) + 50)
+* where s.name = "Moser, Otto"
+* \eg
+ 
+I N G - d b   . . .
+
+
+ING_db:
+* 
+
+.DE
+Schliesslich wollen wir noch eine Relation,
+f\o'u"'r die sie Eigent\o'u"'mer sind,
+l\o'o"'schen-geben sie das Kommando:
+.DS L
+
+* destroy steigerung
+* \eg
+
+I N G - d b   . . .
+
+ING_db:
+*
+
+.DE
+Wir sind jetzt fertig und verlassen \*(yy\ 6.3.
+Das kann durch Eingabe eines
+"end-of-file" (CONTROL_c)
+oder g\o'u"'nstiger durch Verwendung des "\\q"-
+Kommandos erreicht werden:
+.DS L
+
+* \eq
+* ING-db Version 6.3/3 logout
+K1630 / EVK Olbernhau - K1630
+Wed May  4 19:58:00 1988
+Auf Wiedersehen ing_db -- Kommen Sie bald wieder
+.DE
+.LP
+Als "ing_db" wird immer der Nutzername eingetragen, ggfs.
+aber eben auch ing_db.
+
+
