@@ -1,0 +1,61 @@
+.../sys/etc
+
+This directory is roughly equivalent to /etc in BS.  The files
+in this directory are critical for the system to run.  The important
+files are:
+
+	Makefile    --	the make file
+	READ_ME     --	this text
+	amx_ixc6.3  --	the AMX compiler file for BS C
+	amx_ixf6.3  --	the AMX compiler file for BS FORTRAN 77
+	amx_msc6.3  --	the AMX compiler file for MSDOS MICROSOFT C
+	creatdb_use --	printed out by the CREATDB when there
+		is something wrong.  Right now it is quite short,
+		but you could give a verbose message if that is
+		appropriate for your user population.
+	customer    --	identification stuff
+	dayfile6.3  --	the dayfile printed out when
+		IQL starts up.
+	dbtmplt6.3  --	the template for a database; this file
+		drives creatdb.
+	error6.3_1  --	these files contain the error messages
+		that the EQL system prints out.
+	error6.3_2  --	these files contain the error messages
+		that the PARSER system prints out.
+	error6.3_3  --	these files contain the error messages
+		that the QRYMOD system prints out.
+	error6.3_4  --	these files contain the error messages
+		that the OVQP/DECOMP system prints out.
+	error6.3_5  --	these files contain the error messages
+		that the DBU system prints out.
+	error6.3_10 --	these files contain the system errors
+		that the ACCESS module prints out.
+	error6.3_11 --	these files contain the system errors
+		that the DBU module prints out.
+	error6.3_12 --	these files contain the system errors
+		that the DECOMP module prints out.
+	error6.3_13 --	these files contain the system errors
+		that the EQL module prints out.
+	error6.3_14 --	these files contain the system errors
+		that the GUTIL module prints out.
+	error6.3_15 --	these files contain the system errors
+		that the IUTIL module prints out.
+	error6.3_16 --	these files contain the system errors
+		that the MONITOR module prints out.
+	error6.3_17 --	these files contain the system errors
+		that the OVQP module prints out.
+	error6.3_18 --	these files contain the system errors
+		that the PARSER module prints out.
+	error6.3_19 --	these files contain the system errors
+		that the QRYMOD module prints out.
+	error6.3_20 --	these files contain the system errors
+		that the SCANNER module prints out.
+	error6.3_21 --	these files contain the system errors
+		that the SUPPORT modules prints out.
+	error6.3_22 --	these files contain the system errors
+		that the SYS modules prints out.
+	iql_tab6.3  --	the process table.  IQL reads this to
+		decide what programs to load.
+	iql_use     --	printed out by the IQL driver when there
+		is something wrong.
+	users       --	the DBS users file
