@@ -1,0 +1,338 @@
+HOME=		/z/dbs
+SHELL=		/bin/sh
+DISK=		/dev/dbs
+TAPE=		null
+
+PASSWD=		/etc/passwd
+USER=		bummi
+USERS=		sys/etc/users
+
+ED=		ed
+LS=		ls -l
+MAKE=		make
+MFLAGS=		-k
+RM=		rm -rf
+TAR=		tar
+TAR_X=		$(TAR) xf /dev/$(TAPE)
+
+MODE_0644=	0644
+MODE_0700=	0700
+MODE_0711=	0711
+MODE_0755=	0755
+MODE_0777=	0777
+MODE_6711=	6711
+
+SRC=	DABA		DOK_MS360	DOK_MSDOS	DOK_UNIX	\
+	I.daba		I.ing_db	INFO.DOK	ING_DB		\
+	M.daba		M.ing_db	P.daba		P.ing_db	\
+	READ_ME		Customer	720B		720D		\
+	720E		720L		720S		
+
+DIRS_0700=	data
+
+DIRS_0755=	bin			\
+		cat			\
+		demo			\
+		demo/amx		\
+		demo/bank		\
+		demo/dbsr		\
+		demo/eql		\
+		demo/pqr		\
+		demo/redabas		\
+		demo/ql			\
+		doc			\
+		lib			\
+		src			\
+		src/access		\
+		src/amx_cc		\
+		src/amx_lib		\
+		src/conf		\
+		src/dbu			\
+		src/decomp		\
+		src/eql			\
+		src/form		\
+		src/gutil		\
+		src/h			\
+		src/iutil		\
+		src/lib			\
+		src/libq		\
+		src/monitor		\
+		src/oamx_lib		\
+		src/olibq		\
+		src/ovqp		\
+		src/parser		\
+		src/pqr			\
+		src/proto		\
+		src/qrymod		\
+		src/redabas		\
+		src/samx_lib		\
+		src/slibq		\
+		src/support		\
+		src/sys			\
+		src/yyyacc		\
+		sys			\
+		sys/bin			\
+		sys/etc			\
+		sys/man			\
+		sys/ref
+
+DIRS_0777=	data/base
+
+DIRS=		$(DIRS_0700) $(DIRS_0755) $(DIRS_0777)
+
+BIN_0711=	bin/eql			\
+		bin/rc			\
+		bin/rg			\
+		bin/rp_desc
+
+BIN_6711=	bin/amx			\
+		bin/amxf		\
+		bin/oamx		\
+		bin/oamxf		\
+		bin/samx		\
+		bin/amxrm		\
+		bin/copydb		\
+		bin/copyr		\
+		bin/creatdb		\
+		bin/creater		\
+		bin/destroydb		\
+		bin/destroyr		\
+		bin/helpr		\
+		bin/indexr		\
+		bin/iql			\
+		bin/manr		\
+		bin/modifyr		\
+		bin/printr		\
+		bin/purge		\
+		bin/rd			\
+		bin/restore		\
+		bin/saver		\
+		bin/sysmod
+
+SYS_0700=	sys/bin/pager		\
+		sys/bin/usersetup
+
+SYS_6711=	sys/bin/dbu??_?		\
+		sys/bin/decomp??	\
+		sys/bin/monitor		\
+		sys/bin/ovqp34		\
+		sys/bin/parser		\
+		sys/bin/qrymod
+
+FILES_0644=	Installation		\
+		Makefile		\
+		Parallelitaet		\
+		READ_ME			\
+		lib/*			\
+		sys/etc/*		\
+		sys/man/*		\
+		sys/ref/*
+
+FILES_0700=	$(DIRS_0700) $(SYS_0700)
+
+FILES_0711=	$(BIN_0711)
+
+FILES_0755=	$(DIRS_0755)
+
+FILES_0777=	$(DIRS_0777)
+
+FILES_6711=	$(BIN_6711) $(SYS_6711)
+
+disk:		sysbgn tar720 system sysend
+
+tape:		dirs system sysend
+
+disk360:	sysbgn tar360 system sysend
+
+sysbgn:		dirs ready
+
+dirs:
+		@-mkdir $(DIRS)
+
+ready:
+		@echo 'echo -n INSERT DBS DISTRIBUTION DISK $$1' > READY
+		@echo read ok >> READY
+		@chmod $(MODE_0700) READY
+
+system:		conf install
+
+conf:
+		@-cd src/conf;$(MAKE) $(MFLAGS) reset
+		@echo 'cat src/conf/machine.h' > MKCONF.sh
+		@echo 'echo -n "       Maschinentyp> "' >> MKCONF.sh
+		@echo 'read machine' >> MKCONF.sh
+		@echo 'until grep "$$machine  *== " src/conf/machine.h > /dev/null' >> MKCONF.sh
+		@echo 'do echo Ungueltige Maschinentyp !' >> MKCONF.sh
+		@echo 'cat src/conf/machine.h' >> MKCONF.sh
+		@echo 'echo -n "       Maschinentyp> "' >> MKCONF.sh
+		@echo 'read machine' >> MKCONF.sh
+		@echo 'done' >> MKCONF.sh
+		@echo 'echo "# define	$$machine" > src/conf/m.h' >> MKCONF.sh
+		@echo 'echo -n "Betriebsbezeichnung> "' >> MKCONF.sh
+		@echo 'read betrieb' >> MKCONF.sh
+		@echo 'echo "$$machine / $$betrieb" > sys/etc/customer' >> MKCONF.sh
+		@chmod $(MODE_0700) MKCONF.sh
+		@-./MKCONF.sh
+		@$(RM) MKCONF.sh
+
+install:
+		cd src/conf;$(MAKE) $(MFLAGS) allinstall >../../GEN.1 2>../../GEN.2
+
+sysend:		mode users
+
+mode:
+		@-chmod $(MODE_0644) $(FILES_0644)
+		@-chmod $(MODE_0700) $(FILES_0700)
+		@-chmod $(MODE_0711) $(FILES_0711)
+		@-chmod $(MODE_0755) $(FILES_0755)
+		@-chmod $(MODE_0777) $(FILES_0777)
+		@-chmod $(MODE_6711) $(FILES_6711)
+
+users:
+		@usersetup
+		@echo EDITING DBS USERS FILE via $(ED)
+		@-$(ED) $(USERS)
+
+adduser:
+		@echo Folgende Nutzerkennzeichen sind vergeben
+		@-sed "s/[a-z_][a-z_0-9]*:\(..\):.*/\1/" $(USERS)
+		@-usersetup - | grep $(USER) > $(USERS).tmp || echo USER $(USER) not found in $(PASSWD)
+		@echo EDITING new USER $(USER) via $(ED)
+		@-$(ED) $(USERS).tmp
+		@cat $(USERS).tmp >> $(USERS)
+		@$(RM) $(USERS).tmp
+
+clean:
+		@$(RM) cat/* doc/* src/*
+
+list:
+		@$(LS) . $(DIRS)
+
+tar720:		S720.1 S720.2 S720.3 SAMX SPQR
+
+S720.1:
+		@./READY S720.1
+		@cd src; $(TAR_X)
+
+S720.2:
+		@./READY S720.2
+		@cd src; $(TAR_X)
+
+S720.3:
+		@./READY S720.3
+		@cd src; $(TAR_X)
+
+SAMX:
+		@./READY SAMX
+		@cd src; $(TAR_X)
+
+SPQR:
+		@./READY SPQR
+		@cd src; $(TAR_X)
+
+C720:		C720.1 C720.2 C720.3
+
+C720.1:
+		@./READY C720.1
+		@$(TAR_X)
+
+C720.2:
+		@./READY C720.2
+		@$(TAR_X)
+
+C720.3:
+		@./READY C720.3
+		@$(TAR_X)
+
+tar360:		M360 S360.1 S360.2 S360.3 S360.4 S360.5 S360.6 SAMX SPQR
+
+M360:
+		@./READY M360
+		$(TAR_X)
+
+S360.1:
+		@./READY S360.1
+		@cd src; $(TAR_X)
+
+S360.2:
+		@./READY S360.2
+		@cd src; $(TAR_X)
+
+S360.3:
+		@./READY S360.3
+		@cd src; $(TAR_X)
+
+S360.4:
+		@./READY S360.4
+		@cd src; $(TAR_X)
+
+S360.5:
+		@./READY S360.5
+		@cd src; $(TAR_X)
+
+S360.6:
+		@./READY S360.6
+		@cd src; $(TAR_X)
+
+C360:		C360.1 C360.2 C360.3 C360.4 C360.5
+
+C360.1:
+		@./READY C360.1
+		@$(TAR_X)
+
+C360.2:
+		@./READY C360.2
+		@$(TAR_X)
+
+C360.3:
+		@./READY C360.3
+		@$(TAR_X)
+
+C360.4:
+		@./READY C360.4
+		@$(TAR_X)
+
+C360.5:
+		@./READY C360.5
+		@$(TAR_X)
+
+DISK:		disk
+
+TAPE:		tape
+
+DISK360:	disk360
+
+SYSBGN:		sysbgn
+
+DIRS:		dirs
+
+SYSTEM:		system
+
+CONF:		conf
+
+INSTALL:	install
+
+SYSEND:		sysend
+
+MODE:		mode
+
+USERS:		users
+
+ADDUSER:	adduser
+
+CLEAN:		clean
+
+LIST:		list
+
+.save:		$(SRC)
+		mount $(DISK) /wrk
+		cp $? $@ /wrk
+		> $@
+		umount $(DISK)
+
+$(HOME)/.save:	$(SRC)
+		cp $? /z/dbs
+		> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save

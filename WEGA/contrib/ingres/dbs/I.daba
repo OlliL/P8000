@@ -1,0 +1,365 @@
+##############################################################################
+#+--------------------------------------------------------------------------+#
+#|                                                                          |#
+#| +----------------------------------------------------------------------+ |#
+#| |                                                                      | |#
+#| |    DDDDDD        A       BBBBBB        A             1     66666     | |#
+#| |    D     D     A   A     B     B     A   A        1  1    6          | |#
+#| |    D     D    A     A    B     B    A     A     1    1    6          | |#
+#| |    D     D    AAAAAAA    BBBBBB     AAAAAAA          1    666666     | |#
+#| |    D     D    A     A    B     B    A     A          1    6     6    | |#
+#| |    D     D    A     A    B     B    A     A          1    6     6    | |#
+#| |    DDDDDD     A     A    BBBBBB     A     A          1     66666     | |#
+#| |                                                                      | |#
+#| |                                                                      | |#
+#| +----------------------------------------------------------------------+ |#
+#|                                                                          |#
+#|                                                                          |#
+#|                   Relationales Datenbankbetriebssystem                   |#
+#|                                                                          |#
+#|                                                                          |#
+#|                                VERSION 3                                 |#
+#|                                                                          |#
+#|                                RELEASE 4                                 |#
+#|                                                                          |#
+#+--------------------------------------------------------------------------+#
+##############################################################################
+
+
+
+##############################################################################
+#+--------------------------------------------------------------------------+#
+#|                                                                          |#
+#|                    I  N  S  T  A  L  L  A  T  I  O  N                    |#
+#|                                                                          |#
+#+--------------------------------------------------------------------------+#
+##############################################################################
+
+
+  ---- (1) ---- Login MUTOS-Supernutzer
+
+
+  ---- (2) ---- Eintragen des Nutzers  `daba'  in das MUTOS - Nutzer-
+		verzeichnis `/etc/passwd' in folgender Art:
+
+	daba::9:9::/z/daba:
+
+		Das Directory  `/z/daba'  ist das Home-Directory  des
+		Nutzers  `daba' ,  in  das alle relevanten  Daten des
+		DABA16.3/4 - Systems eingespielt werden.
+		Rechnerabhaengig kann das  Directory  natuerlich auch
+		woanders angelegt werden,  z.B. `/mnt/daba' oder auch
+		`/usr/daba' usw.
+		Die Nutzeridentifikation  (uid = 9)  und die Gruppen-
+		identifikation  (gid = 9) sind unbedingt einzuhalten.
+
+
+  ---- (3) ---- Eintragen der Gruppe  `daba'  in das MUTOS - Gruppen-
+		verzeichnis `/etc/group' in folgender Art:
+
+	daba::9:daba  
+
+
+  ---- (4) ---- Erstellen des Home-Directory fuer den Nutzer `daba'
+
+	mkdir /z/daba
+	chown daba /z/daba
+	chgrp daba /z/daba
+	chmod 0755 /z/daba
+
+
+  ---- (5) ---- Login Nutzer `daba'
+
+
+  ---- (6) ---- Erstellen des  Login-Files fuer den  Nutzer `daba'.
+		Fuer die  `sh'  das  File  `/z/daba/.profile'  nach
+		folgendem Muster:
+
+	PATH=/z/daba/bin:/z/daba/sys/bin:/bin:/usr/bin:
+	export PATH
+
+		Fuer  die  `csh'  das  File  `/z/daba/.cshrc'  nach
+		folgendem Muster:
+
+	set path=(/z/daba/bin /z/daba/sys/bin /bin /usr/bin)
+	setenv PATH "/z/daba/bin:/z/daba/sys/bin:/bin:/usr/bin:"
+
+		In das Login-File koennen natuerlich weiter Zeilen
+		zur Terminalinitialisierung usw. eingetragen werden.
+		Ebenso kann der Suchpfad (PATH) nutzerspezifisch er-
+		weitert werden. Das Home-Directory ist mit Absicht
+		nicht Bestandteil des Suchpfades. Anschliessend
+		sollte das Login-File gegen unberechtigtes Schreiben
+		geschuetzt werden, z.B. durch
+
+	chmod 0400 .profile
+
+		fuer die `sh' bzw.
+
+	chmod 0400 .cshrc
+
+		fuer die `csh'.
+
+
+  ---- (7) ---- Login Nutzer `daba'
+		Um das eben erstellte  Login-File auch abzuarbeiten,
+		ist es notwendig, sich neu anzumelden.
+
+
+  ---- (8) ---- Laden der DABA16.3/4 - Installationsroutine mittels
+
+	tar xf /dev/geraet (geraet = Ihre Geraetebezeichnung)
+
+		von  der  Diskette  E720,  E360  oder  dem  Band ent-
+		sprechend  der  Vertriebsform.  Der  Datentraeger ist
+		vollstaendig einzulesen.
+		Wenn Sie das Standardlaufwerk von tar benutzen,
+		reicht die Angabe
+
+	tar x
+
+		aus.
+
+
+  ---- (9) ---- INSTALLATION des Datanbanksystems DABA16.3/4
+		Ausfuehrung der Installation durch das Kommando
+
+	make disk TAPE=dev [TAR=cmd] [ED=cmd]
+
+		fuer die  Auslieferung auf  720 KBytes-Disketten bzw.
+
+	make disk360 TAPE=dev [TAR=cmd] [ED=cmd]
+
+		fuer die  Auslieferung auf  360 KBytes-Disketten bzw.
+
+	make tape [ED=cmd]
+
+		fuer die  Auslieferung auf  Magnetband.
+		`dev'  ist die Angabe des verwendeten Geraetes in der
+		Form: fd1, fd096ds9, dmf0, rmt0 usw.
+		Die Angabe `TAR=cmd' ist notwendig,  falls Sie ein zu
+		`tar'  kompatibles Kommando mit dem Namen `cmd'  ver-
+		wenden wollen.
+		Die Angabe  `ED=cmd' gestattet Ihnen,  die Verwendung
+		des Editors `cmd' anstelle von `ed'.
+		Bei der Installation  auftretende Fehler,  die mit der
+		folgenden Mitteilung inhaltlich identisch sind:
+
+	*** Error code 1 (ignored)
+	*** Error code 2 (ignored)
+	*** Error code 4 (ignored)
+	usw.
+
+		sind vom  Entwickler beabsichtigt und beruhen auf der
+		gleichen Installation fuer verschiedene Rechner.
+
+		Die Installation laeuft in folgenden Schritten ab:
+		- Erzeugen der Systemverzeichnisse
+		- Laden der Datentraeger
+		- Anfordern der Betriebsbezeichnung,  die von einigen
+		  Kommandos protokolliert wird, durch
+
+	Betriebsbezeichnung> 
+
+		  Hier ist eine einzeilige  Bezeichnung ohne das Zei-
+		  chen `"' zulaessig.
+		- Einstellen der  richtigen  Zugriffsrechte fuer alle
+		  Verzeichnisse und generierten Kommandos.
+		- Erstellung des Nutzerverzeichnisses,  nach der Aus-
+		  schrift
+
+	EDITING DBS USERS FILE via ed
+
+		  koennen Sie das  Nutzerverzeichnis  (siehe Abschnitt
+		  `Eintragen von Nutzern' in diesem Text)
+		  Ihren  Beduerfnissen  anpassen,  bevor es  abgelegt
+		  wird.
+
+
+  --- (10) ---- Login MUTOS-Supernutzer
+
+
+  --- (11) ---- Kopieren der EQL-Laufzeitbibliotheken in ein
+		oeffentliches Bibliotheks-Directory durch das
+		Kommando:
+
+	cp /z/daba/lib/*libq.a /usr/lib
+
+		Einstellen der Zugriffsberechtigungen:
+
+	chown daba /usr/lib/*libq.a
+	chgrp daba /usr/lib/*libq.a
+	chmod 0644 /usr/lib/*libq.a
+
+
+  --- (12) ---- INSTALLATION der Demonstrationsbeispiele
+		Das File `demo/Makefile' enthaelt weiter Hinweise
+		zur Generierung der einzelnen Demonstrationsbeispiele
+		und deren globale Installation.
+
+
+  --- (13) ---- INSTALLATION des Mehrnutzerbetriebes
+		DABA16 unterstuetzt grundsaetzlich den parallelen
+		Zugriff von mehreren Nutzern auf eine Datenbank.
+		Um den Mehrnutzerbetrieb zu aktivieren, sind die
+		Hinweise aus dem File `Parallelitaet' zu beachten.
+
+
+
+##############################################################################
+#+--------------------------------------------------------------------------+#
+#|                                                                          |#
+#|   Z  U  S  A  E  T  Z  L  I  C  H  E      F  U  N  K  T  I  O  N  E  N   |#
+#|                                                                          |#
+#+--------------------------------------------------------------------------+#
+##############################################################################
+
+	make customer
+
+		Erstellen einer neuen Betriebsbezeichnung
+
+	make mode
+
+		Einstellen der  richtigen  Zugriffsrechte  fuer  alle
+		Verzeichnisse und generierten Kommandos.
+
+	make users [ED=cmd]
+
+		Erstellen des DABA16.3/4 - Nutzerverzeichnisses.
+
+	make adduser USER=user [ED=cmd]
+
+		Eintragen des neuen  Nutzers `user' in das Nutzerver-
+		zeichnis. Es werden zur Information alle bereits ver-
+		gebenen  DABA16.3/4 - Nutzerkennzeichen ausgegeben.
+
+
+
+##############################################################################
+#+--------------------------------------------------------------------------+#
+#|                                                                          |#
+#|               U E B E R P R U E F E N   V O N   F I L E S                |#
+#|                                                                          |#
+#+--------------------------------------------------------------------------+#
+##############################################################################
+
+
+
+	Folgende Files sind auf ihren Modus zu pruefen:
+
+		   /dev/null				-rw-rw-rw-
+		   /etc/passwd				-rw-r--r--
+		   /etc/group				-rw-r--r--
+nicht PSU, XENIX   /lib/libc.a bzw. /usr/lib/libc.a	-rw-r--r--
+nicht PSU, XENIX   /lib/libm.a bzw. /usr/lib/libm.a	-rw-r--r--
+nur PSU		   /SYS/lib/libc.a bzw. /USR/lib/libc.a	-rw-r--r--
+nur PSU		   /SYS/lib/libm.a bzw. /USR/lib/libm.a	-rw-r--r--
+nur XENIX286	   /lib/Slibc.a				-rw-r--r--
+nur XENIX286	   /lib/Slibcfp.a			-rw-r--r--
+nur XENIX286	   /lib/Slibm.a				-rw-r--r--
+nur XENIX286	   /lib/Slibx.a				-rw-r--r--
+nur XENIX286	   /lib/Scrt0.o				-rw-r--r--
+nur XENIX286	   /lib/Sseg.o				-rw-r--r--
+nur XENIX386	   /lib/386/Slibc.a			-rw-r--r--
+nur XENIX386	   /lib/386/Slibcfp.a			-rw-r--r--
+nur XENIX386	   /lib/386/Slibm.a			-rw-r--r--
+nur XENIX386	   /lib/386/Slibx.a			-rw-r--r--
+nur XENIX386	   /lib/386/Scrt0.o			-rw-r--r--
+nur XENIX386	   /lib/386/Sseg.o			-rw-r--r--
+nur P8000, VENIX   /lib/crt0.o				-rw-r--r--
+nicht P8000	   /usr/include/setjmp.h		-rw-r--r--
+nur P8000	   /usr/include/setret.h		-rw-r--r--
+		   /usr/include/sgtty.h			-rw-r--r--
+		   /usr/include/signal.h		-rw-r--r--
+		   /usr/include/stdio.h			-rw-r--r--
+nur LOCKING	   /usr/include/sys/dir.h		-rw-r--r--
+nur P8000-LOCKING  /usr/include/sys/mmu.h		-rw-r--r--
+nur LOCKING	   /usr/include/sys/param.h		-rw-r--r--
+nur LOCKING	   /usr/include/sys/proc.h		-rw-r--r--
+nur P8000-LOCKING  /usr/include/sys/s.out.h		-rw-r--r--
+		   /usr/include/sys/stat.h		-rw-r--r--
+nur P8000-LOCKING  /usr/include/sys/state.h		-rw-r--r--
+		   /usr/include/sys/timeb.h		-rw-r--r--
+		   /usr/include/sys/types.h		-rw-r--r--
+nur LOCKING	   /usr/include/sys/user.h		-rw-r--r--
+		   /tmp					-rwxrwxrwx
+
+
+	Folgende  Kommandos  sind  auf ihre  Ausfuehrbarkeit  durch
+	daba zu pruefen:
+
+	   /bin/sh,  /lib/cpp,  ar
+	   as		nur CM1420 CM4 CM52_11 I100 I102 I105 K1630
+			und PDP34 PDP70
+	   cc,  chmod,  cp,  echo,  ed,  grep
+	   ld		nur P8000 VENIX XENIX
+	   ln,  make,  mkdir,  mknod,  mv
+	   ranlib	nur A7150 EC1834 ESER_VMX K1820 K1840 PDP70
+			und PSU VENIX XENIX
+	   rm,  rmdir
+	   scc		nur P8000
+	   sed,  tar,  touch
+
+
+
+##############################################################################
+#+--------------------------------------------------------------------------+#
+#|                                                                          |#
+#|       E  I  N  T  R  A  G  E  N     V  O  N     N  U  T  Z  E  R  N      |#
+#|                                                                          |#
+#+--------------------------------------------------------------------------+#
+##############################################################################
+
+          Durch die  Systeminstallation wird das  Nutzerverzeichnis
+          `sys/etc/users' automatisch eingerichtet.
+          Bei der Anpassung sind folgende Punkte zu beachten:
+
+          1)  Durch die  Systeminstallation  wurden alle im  MUTOS-
+              Nutzerverzeichnis  `/etc/passwd'  stehenden Nutzer in
+              das  DABA16.3/4   Nutzerverzeichnis   uebernommen.
+
+          2)  Alle nicht erwuenschten Nutzer sind zu streichen.
+              Die MUTOS-Supernutzer sind unbedingt aus dem Nutzerver-
+              zeichnis zu entfernen !
+
+          3)  Bei den verbleibenden  Nutzer koennen  Modifikationen
+              vorgenommen  werden.  Die folgende  Zeile illustriert
+              einen Eintrag:
+                  reserved:am:24:15:000000:::/tmp/.ql::
+              Der Wert  `am' ist der  DABA16.3/4  Nutzerkode,  er
+              muss zwei Bytes lang und  eineindeutig sein,  er kann
+              eigenen  Vorstellungen  entsprechen geaendert werden.
+              Der Wert  `000000' gibt die DABA16.3/4 Berechtigung
+              des Nutzers  `reserved' an.  Die Berechtigung kann in
+              `000001' geaendert werden,  um dem Nutzer die Erlaub-
+              nis  zum  Erzeugen  von  Datenbanken  zu  geben.  Der
+              Nutzer  `daba' muss die Berechtigung  `177777' ein-
+              getragen haben, um seine Systemfunktionen ausueben zu
+              koennen.
+              Der  Wert  `/tmp/.ql'  stellt  den  Prototyp  eines
+              nutzerspezifischen DABA16.3/4 Start-File
+              (siehe STARTUP(FILES)).
+              Fuer alle weiteren Fragen siehe USERS(FILES).
+
+          4)  Die neuen DABA16.3/4  Nutzer sollten auf die Aende-
+              rung ihres Login-Files hingewiesen werden, damit sie die
+              Datenbankkommandos aufrufen koennen:
+              - fuer die  `sh' das File  `.profile'  nach folgendem
+                Muster:
+                  PATH=/z/daba/bin:/bin:/usr/bin:
+                  export PATH
+              - fuer  die  `csh' das File  `.cshrc'  nach folgendem
+                Muster:
+                  set path=(/z/daba/bin /bin /usr/bin)
+                  setenv PATH "/z/daba/bin:/bin:/usr/bin:"
+
+
+          Soll zu einem spaeteren Zeitpunkt ein neuer Nutzer in das
+          das  Nutzerverzeichnis  aufgenommen  werden,  so kann das
+          kann das folgendermassen erfolgen:
+                  make adduser USER=login_name
+          Es werden zuerst alle verwendeten  Nutzerkodes ausgegeben
+          und  anschliessend der  Eintrag fuer den  Nutzer  `login'
+          zur  Korrektur angeboten.  Nach  Beendigung der Korrektur
+          wird der neue  Nutzer automatisch in das  Nutzerverzeich-
+          nis eingefuegt.

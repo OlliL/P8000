@@ -1,0 +1,239 @@
+
+
+
+
+
+
+
+
+
+
+
+##############################################################################
+#+--------------------------------------------------------------------------+#
+#|                                                                          |#
+#| +----------------------------------------------------------------------+ |#
+#| |                                                                      | |#
+#| |    |||||||    |     |     |||||                ||||||     ||||||     | |#
+#| |       |       ||    |    |     |               |     |    |     |    | |#
+#| |       |       | |   |    |                     |     |    |     |    | |#
+#| |       |       |  |  |    |  |||                |     |    ||||||     | |#
+#| |       |       |   | |    |     |               |     |    |     |    | |#
+#| |       |       |    ||    |     |               |     |    |     |    | |#
+#| |    |||||||    |     |     |||||                ||||||     ||||||     | |#
+#| |                                     |||||||                          | |#
+#| |                                                                      | |#
+#| +----------------------------------------------------------------------+ |#
+#|                                                                          |#
+#|                                                                          |#
+#|                   A relational database managment system                 |#
+#|                                                                          |#
+#|                                                                          |#
+#|                               VERSION 6.3                                |#
+#|                                                                          |#
+#|                               RELEASE  4                                 |#
+#|                                                                          |#
+#+--------------------------------------------------------------------------+#
+##############################################################################
+
+
+
+
+
+	KONTAKTPARTNER:
+
+	Akademie der Wissenschaften der DDR
+	Zentralinstitut fuer Kybernetik und Informationsprozesse
+	Koll. Wenzlaff
+	Abteilung RS
+	Kurstrasse 33
+	PSF 1298
+	BERLIN
+	1086
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##############################################################################
+#+--------------------------------------------------------------------------+#
+#|                                                                          |#
+#|                    I  N  S  T  A  L  L  A  T  I  O  N                    |#
+#|                                                                          |#
+#+--------------------------------------------------------------------------+#
+##############################################################################
+
+  ---- (1) ---- login UNIX - super user
+
+
+  ---- (2) ---- Eintragen des Nutzers  `ing_db' in das UNIX - Nutzer-
+		verzeichnis `/etc/passwd' in folgender Art:
+
+	ing_db::9:9::/z/ing_db:
+
+		Das directory  `/z/ing_db' ist das home-directory des
+		Nutzers  `ing_db',  in das alle relevanten  Daten des
+		ING_DB 6.3/4 - Systems eingespielt werden.
+		Rechnerabhaengig kann das  directory  natuerlich auch
+		anders gelegt werden,  z.B.  `/mnt/ing_db'  oder auch
+		`/usr/ing_db' usw.
+		Die Nutzeridentifikation  (uid = 9)  und die Gruppen-
+		identifikation  (gid = 9) sind unbedingt einzuhalten.
+
+
+  ---- (3) ---- Eintragen der Gruppe  `ing_db' in das UNIX - Gruppen-
+		verzeichnis `/etc/group' in folgender Art:
+
+	ing_db::9:ing_db
+
+
+  ---- (4) ---- Erstellen des home-directory fuer den Nutzer `ing_db'
+
+	mkdir /z/ing_db
+	chown ing_db /z/ing_db
+	chgrp ing_db /z/ing_db
+	chmod 755 /z/ing_db
+
+
+  ---- (5) ---- Erstellen des  login-files fuer den  Nutzer `ing_db'.
+		Fuer die  `sh'  das  file  `/z/ing_db/.profile'  nach
+		folgendem Muster:
+
+	PATH=:/z/ing_db/bin:/z/ing_db/sys/bin:/bin:/usr/bin:
+	export PATH
+
+		Fuer  die  `csh'  das  file  `/z/ing_db/.cshrc'  nach
+		folgendem Muster:
+
+	set path=(. /z/ing_db/bin /z/ing_db/sys/bin /bin /usr/bin)
+	setenv PATH ":/z/ing_db/bin:/z/ing_db/sys/bin:/bin:/usr/bin:"
+
+
+  ---- (6) ---- login Nutzer `ing_db'
+
+
+  ---- (7) ---- Laden der ING_DB 6.3/4 - Installation mittels
+
+	tar xf /dev/... (... = Ihre Geraetebezeichnung)
+
+		von  der  Diskette  E720,  E360  oder  dem  Band ent-
+		sprechend  der  Vertriebsform.  Der  Datentraeger ist
+		vollstaendig einzulesen.
+
+
+  ---- (8) ---- Ausfuehrung der Installation durch das Kommando
+
+	make disk TAPE=dev [TAR=cmd] [ED=cmd]
+
+		fuer die  Auslieferung auf  720 KBytes-Disketten bzw.
+
+	make disk360 TAPE=dev [TAR=cmd] [ED=cmd]
+
+		fuer die  Auslieferung auf  360 KBytes-Disketten bzw.
+
+	make tape [ED=cmd]
+
+		fuer die  Auslieferung auf  Magnetband.
+		`dev'  ist die Angabe des verwendeten Geraetes in der
+		Form: fd1, fd096ds9, dmf0 usw.
+		Die Angabe `TAR=cmd' ist notwendig,  falls Sie ein zu
+		`tar'  kompatibles Kommando mit dem Namen `cmd'  ver-
+		wenden wollen.
+		Die Angabe  `ED=cmd' gestattet Ihnen,  die Verwendung
+		des Editors `cmd' anstelle von `ed'.
+		Drucken Sie sich das file `READ_ME', um die Veraende-
+		rungen im Realease 4  und notwendige Zusatzkenntnisse
+		zu erhalten.
+		Auf den files  GEN.1 und  GEN.2 wird die  Generierung
+		protokolliert,  bei  auftretenden  Fehlern sind diese
+		an den Entwickler zu schicken.
+		Bei der Generierung  auftretende Fehler,  die mit der
+		folgenden Mitteilung inhaltlich identisch sind:
+
+	*** Error code 1 (ignored)
+
+		sind vom  Entwickler beabsichtigt und beruhen auf der
+		gleichen Generierung fuer verschiedene Rechner.
+		Die Generierung erfolgt ab dem  Release 4 grundsaetz-
+		lich  von  Quelltextniveau,  d.h.  sie dauert je nach
+		Anlagentyp zwischen 0,5 .. 36 Stunden.
+		Die Generierung laeuft in folgenden Schritten ab:
+		- Erzeugen der Systemverzeichnisse
+		- Laden der Datentraeger
+		- Anfordern des  Maschinentyps,  fuer die das  System
+		  generiert werden soll, durch
+
+	Maschinentyp> 
+
+		  Vor der  Anforderung wird eine  Liste der gueltigen
+		  Maschinentypen  ausgegeben,  aus der ein Typ auszu-
+		  waehlen ist.  Die  Anforderung wird solange wieder-
+		  holt, bis der eingegebene Typ akzeptiert wird.
+		- Anfordern der Betriebsbezeichnung,  die von einigen
+		  Kommandos protokolliert wird, durch
+
+	Betriebsbezeichnung> 
+
+		  Hier ist eine einzeilige  Bezeichnung ohne das Zei-
+		  chen `"' zulaessig.
+		- Generierung des Systems aus den Quellen.
+		- Einstellen der  richtigen  Zugriffsrechte fuer alle
+		  Verzeichnisse und generierten Kommandos.
+		- Erstellung des Nutzerverzeichnisses,  nach der Aus-
+		  schrift
+
+	EDITING DBS USERS FILE via ED
+
+		  koennen Sie das  Nutzerverzeichnis  (siehe READ_ME)
+		  Ihren  Beduerfnissen  anpassen,  bevor es  abgelegt
+		  wird.
+  ---- (9) ---- Zusaetzliche Funktionen des Makefiles
+
+	make customer
+
+		Erstellen einer neuen Betriebsbezeichnung
+
+	make conf
+
+		Erstellen eines neuen Anlagentyps
+
+	make install
+
+		Quelltextgenierung des Systems (fuer Update's)
+
+	make system
+
+		Generierung fuer eine neue  Anlage,  unter der Bedin-
+		gung, dass alle Quellen geladen sind (Zusammenfassung
+		def Funktion `make customer conf install').
+
+	make mode
+
+		Einstellen der  richtigen  Zugriffsrechte  fuer  alle
+		Verzeichnisse und generierten Kommandos.
+
+	make users [ED=cmd]
+
+		Erstellen des ING_DB 6.3/4 - Nutzerverzeichnisses.
+
+	make adduser USER=user [ED=cmd]
+
+		Eintragen des neuen  Nutzers `user' in das Nutzerver-
+		zeichnis. Es werden zur Information alle bereits ver-
+		gebenen  ING_DB 6.3/4 - Nutzerkennzeichen ausgegeben.
+
+	make clean
+
+		Loeschen aller fuer ein lauffaehiges System nicht be-
+		noetigter Komponenten.
+		VORSICHT: Sichern Sie sich vorher de Inhalte der Ver-
+		zeichnisse `cat', `doc', `lib' und `src'.

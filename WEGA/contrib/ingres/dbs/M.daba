@@ -1,0 +1,207 @@
+##############################################################################
+#+--------------------------------------------------------------------------+#
+#|                                                                          |#
+#| +----------------------------------------------------------------------+ |#
+#| |                                                                      | |#
+#| |    DDDDDD        A       BBBBBB        A             1     66666     | |#
+#| |    D     D     A   A     B     B     A   A        1  1    6          | |#
+#| |    D     D    A     A    B     B    A     A     1    1    6          | |#
+#| |    D     D    AAAAAAA    BBBBBB     AAAAAAA          1    666666     | |#
+#| |    D     D    A     A    B     B    A     A          1    6     6    | |#
+#| |    D     D    A     A    B     B    A     A          1    6     6    | |#
+#| |    DDDDDD     A     A    BBBBBB     A     A          1     66666     | |#
+#| |                                                                      | |#
+#| |                                                                      | |#
+#| +----------------------------------------------------------------------+ |#
+#|                                                                          |#
+#|                                                                          |#
+#|                   Relationales Datenbankbetriebssystem                   |#
+#|                                                                          |#
+#|                                                                          |#
+#|                                VERSION 3                                 |#
+#|                                                                          |#
+#|                                RELEASE 4                                 |#
+#|                                                                          |#
+#+--------------------------------------------------------------------------+#
+##############################################################################
+
+
+ED=		ed
+LS=		ls -l
+MAKE=		make
+MFLAGS=		-k
+MODE_0644=	0644
+MODE_0700=	0700
+MODE_0711=	0711
+MODE_0755=	0755
+MODE_0777=	0777
+MODE_6711=	6711
+PASSWD=		/etc/passwd
+RM=		rm -rf
+SHELL=		/bin/sh
+TAPE=		null
+TAR=		tar
+TAR_X=		$(TAR) xf /dev/$(TAPE)
+USER=		bummi
+USERS=		sys/etc/users
+
+BIN_0711=	bin/eqc			\
+		bin/eql			\
+		bin/rc			\
+		bin/rg			\
+		bin/rp_desc
+BIN_6711=	bin/amx			\
+		bin/amxf		\
+		bin/amxrm		\
+		bin/copydb		\
+		bin/copyr		\
+		bin/creatdb		\
+		bin/creater		\
+		bin/daba		\
+		bin/destroydb		\
+		bin/destroyr		\
+		bin/helpr		\
+		bin/indexr		\
+		bin/iql			\
+		bin/manr		\
+		bin/modifyr		\
+		bin/oamx		\
+		bin/oamxf		\
+		bin/printr		\
+		bin/purge		\
+		bin/rd			\
+		bin/refr		\
+		bin/restore		\
+		bin/samx		\
+		bin/saver		\
+		bin/sysmod
+DIRS_0700=	data
+DIRS_0755=	bin			\
+		demo			\
+		demo/amx		\
+		demo/bank		\
+		demo/dbsr		\
+		demo/eql		\
+		demo/pqr		\
+		demo/redabas		\
+		demo/ql			\
+		lib			\
+		sys			\
+		sys/bin			\
+		sys/etc			\
+		sys/man			\
+		sys/ref
+DIRS_0777=	data/base
+DIRS=		$(DIRS_0700) $(DIRS_0755) $(DIRS_0777)
+SYS_0700=	sys/bin/dbdev		\
+		sys/bin/dbino		\
+		sys/bin/dbrel		\
+		sys/bin/lockinfo	\
+		sys/bin/pager		\
+		sys/bin/unlock		\
+		sys/bin/usersetup
+SYS_6711=	sys/bin/dbu??_?		\
+		sys/bin/decomp??	\
+		sys/bin/monitor		\
+		sys/bin/ovqp34		\
+		sys/bin/parser		\
+		sys/bin/qrymod
+FILES_0644=	Installation		\
+		Makefile		\
+		Parallelitaet		\
+		lib/*			\
+		sys/etc/*		\
+		sys/man/*		\
+		sys/ref/*
+FILES_0700=	$(DIRS_0700) $(SYS_0700)
+FILES_0711=	$(BIN_0711)
+FILES_0755=	$(DIRS_0755)
+FILES_0777=	$(DIRS_0777)
+FILES_6711=	$(BIN_6711) $(SYS_6711)
+
+DISK:		disk
+
+disk:		sysbgn tar720 sysend
+
+TAPE:		tape
+
+tape:		dirs sysend
+
+SYSBGN:		sysbgn
+
+sysbgn:		dirs ready
+
+DIRS:		dirs
+
+dirs:
+		@-mkdir $(DIRS)
+
+ready:
+		@echo 'echo -n INSERT DBS DISTRIBUTION DISK $$1' > READY
+		@echo read ok >> READY
+		@chmod $(MODE_0700) READY
+
+SYSEND:		sysend
+
+sysend:		customer mode users
+
+CUSTOMER:	customer
+
+customer:
+		@echo 'echo -n "Betriebsbezeichnung> "' > CU
+		@echo 'read betrieb' >> CU
+		@echo 'echo $$betrieb > sys/etc/customer' >> CU
+		@chmod $(MODE_0700) CU
+		@./CU
+		@$(RM) CU
+
+MODE:		mode
+
+mode:
+		@-chmod $(MODE_0644) $(FILES_0644)
+		@-chmod $(MODE_0700) $(FILES_0700)
+		@-chmod $(MODE_0711) $(FILES_0711)
+		@-chmod $(MODE_0755) $(FILES_0755)
+		@-chmod $(MODE_0777) $(FILES_0777)
+		@-chmod $(MODE_6711) $(FILES_6711)
+
+USERS:		users
+
+users:
+		@usersetup
+		@echo EDITING DBS USERS FILE via $(ED)
+		@-$(ED) $(USERS)
+
+ADDUSER:	adduser
+
+adduser:
+		@echo Folgende Nutzerkennzeichen sind vergeben
+		@-sed "s/[a-z_][a-z_0-9]*:\(..\):.*/\1/" $(USERS)
+		@-usersetup - | grep $(USER) > $(USERS).tmp || echo USER $(USER) not found in $(PASSWD)
+		@echo EDITING new USER $(USER) via $(ED)
+		@-$(ED) $(USERS).tmp
+		@cat $(USERS).tmp >> $(USERS)
+		@$(RM) $(USERS).tmp
+
+LIST:		list
+
+list:
+		@$(LS) . $(DIRS)
+
+tar720:		B720 S720 L720 D720
+
+B720:
+		@./READY B720
+		@$(TAR_X)
+
+S720:
+		@./READY S720
+		@$(TAR_X)
+
+L720:
+		@./READY L720
+		@$(TAR_X)
+
+D720:
+		@./READY D720
+		@$(TAR_X)
