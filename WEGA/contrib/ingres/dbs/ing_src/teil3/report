@@ -1,0 +1,554 @@
+.de xx
+UNIX
+..
+.de yy
+ING_DB
+..
+.de vv
+ING_DB 6.3/3
+..
+.pl 72
+.ds RH \f3REPORT\f1
+.ds RF \f3\*(xx\f1
+.ds LH Beispiele
+.ds LF \*(vv
+.ds CH - % -
+.bp
+.NH 2
+.ft B
+Report-Generator *
+.ft R
+.LP
+.sp 10
+.NH 3
+.ft B
+Arbeitslisten
+.ft R
+.LP
+Unter dem Begriff Arbeitslisten sollen
+Druckbilder verstanden werden, die ein bescheidenes
+Mass an Daten ben\o'o"'tigen, die aber f\o'u"'r die manuelle
+Erstellung von \o'U"'bersichten eine grosse Hilfe sind,
+wenn sie sich relativ schnell erzeugen lassen.
+H\o'a"'ufig trifft man diese Situation auch dann an,
+wenn bestimmte Unterlagen zur \o'U"'bernahme
+von Daten auf einen Rechner notwendig sind und die
+Erstellung entsprechender Prim\o'a"'rbelege nicht lohnt
+bzw. zu aufwendig ist.
+.LP
+Folgende Relationen sollen
+verwendet werden:
+.DS L
+
+
+Relation:                fbbz
+---------                K 1630 / EVK Olbernhau
+Besitzer:                ing_db
+Tupellaenge:             43
+Verfallsdatum:           Mon Jan  1 00:00:00 1990
+Tupelanzahl:             23
+Speicherstruktur:        HEAP
+Pages:                   1 + 2
+Relationentyp:           Nutzerrelation
+
+ Domaenname        Typ   Laenge  Schluessel
+--------------------------------------------
+ bn                 i       2
+ stbn               i       4
+ knr                i       2
+ bez                c      35
+--------------------------------------------
+.DE
+.sp 2
+.DS L
+
+
+Relation:                kbz
+---------                K 1630 / EVK Olbernhau
+Besitzer:                ing_db
+Tupellaenge:             54
+Verfallsdatum:           Mon Jan  1 00:00:00 1990
+Tupelanzahl:             23
+Speicherstruktur:        HEAP
+Pages:                   1 + 16
+Relationentyp:           Nutzerrelation
+
+ Domaenname        Typ   Laenge  Schluessel
+--------------------------------------------
+ knr                i       2
+ kbez               c      15
+ bn                 i       2
+ bez                c      35
+--------------------------------------------
+.DE
+.LP
+Aus beiden Relationen kann mit retrieve eine neue 
+Relation
+.ft B
+listk
+.ft R
+erzeugt und mittels replace und
+modify so umgestaltet werden , dass sie als 
+Ausgangsrelation f\o'u"'r nachfolgende Aufgaben dient.
+Die Arbeitsliste, die mit dem Programm
+erzeugt wird, ist nach Betrieben und Kreisen geordnet.
+Die Kopfinformationen k\o'o"'nnen bei
+Bedarf gegebenenfalls auch mit dem Editor in die 
+vorbereiteten Felder von listk_o eingetragen 
+werden, sofern sich hierbei eine h\o'a"'ufige \o'A"'nderung
+notwendig macht.
+.LP
+.nf
+------------------------------------------------------------
+define report krbbz
+       with columns 122
+              all lines 66
+              lines 58
+              big
+       define hn        = 1
+       define bn        = 2
+       define bez       = 3
+
+       define #hn       = integer 2
+       define #bn       = integer 2
+       define #bez      = char 35
+
+as
+proc 1
+       set var 0 = 37
+       repeat 8
+       col var 0       ':'
+       set var 0 = var 0 + 12
+       endr
+       new line
+return
+
+on pagebegin do
+       'ARBEITSLISTEN NACH KREISEN GEORDNET'
+       col 45
+       date
+       col 80
+       '* NUR FUER DEN DIENSTGEBRAUCH *'
+       new line 2
+       col 3
+       'BETRIEBSBEZEICHNUNG'
+       col 37
+       ':   PLAN    :ARB.-AUFTR.:    IST    '
+       ':    PLAN   :   V. IST  :'
+       col 109
+       ':'
+       col 121 
+       ':' 
+       new line
+       col 10
+       '** KREISBEZEICHNUNG'
+       col 37
+       ':    BM     :    BM     : MON       '
+       ':  KUM. BM  :  KUM. BM  :'
+       col 109 
+       ':'
+       col 121 
+       ':'
+       new line
+       '-' 121
+endo
+
+for all do
+       for one do
+              if value 2 <> 99 then
+                     integer length 2 value 2
+                     col 3
+              else
+                     col 10
+              endi
+              char value 3
+              call 1
+              '-' 121
+              new line
+              if groupend 1 then
+                     call 1
+                     col 37
+                     '-' 85
+                     new line
+              endi
+       endo
+enda
+
+call 1
+new line
+col 37
+'=' 85
+;
+------------------------------------------------------------
+.fi
+.LP
+Die entstehende Liste ist ein Ausschnitt und soll
+nur den prinzipiellen Aufbau darstellen.
+.DS L
+
+ARBEITSLISTEN NACH KREISEN GEORDNET         DATUM:       ===>
+
+  BETRIEBSBEZEICHNUNG               :   PLAN    :ARB.-AUFTR.:
+         ** KREISBEZEICHNUNG        :    BM     :    BM     :
+-------------------------------------------------------------
+7 HOLZWAREN GROSSHARTMANSDORF       :           :           :
+-------------------------------------------------------------
+         ** BRAND-ERBISDORF         :           :           :
+-------------------------------------------------------------
+17 RAUM- U. TAFELSCHMUCK GAHLENZ    :           :           :
+-------------------------------------------------------------
+21 WERK-KUNST GRUENHAINICHEN        :           :           :
+-------------------------------------------------------------
+         ** FLOEHA                  :           :           :
+ .
+ .
+ .
+
+-------------------------------------------------------------
+25 KOMBINAT EVK OLBERNHAU           :           :           :
+
+                                    ==================== ===>
+.DE
+.LP
+.NH 3
+.ft B
+Softwarekatalog
+.ft R
+.LP
+In der Datenbank
+.ft B
+hardsoft
+.ft R
+gibt es die beiden Relationen
+.ft B
+anschrift
+.ft R
+und
+.ft B
+soft1:
+.ft R
+.DS L
+
+
+Relation:                anschrift
+---------                K 1630 / EVK Olbernhau
+Besitzer:                ing_db
+Tupellaenge:             200
+Verfallsdatum:           Mon Jan  1 00:00:00 1990
+Tupelanzahl:             165
+Speicherstruktur:        compressed HEAP
+Pages:                   1 + 37
+Relationentyp:           Nutzerrelation
+
+ Domaenname        Typ   Laenge  Schluessel
+--------------------------------------------
+ bn                 i       4
+ ans1               c      40
+ ans2               c      40
+ ans3               c      30
+ ort                c      30
+ plz                c       5
+ kubez              c      48
+ beznr              c       3
+--------------------------------------------
+.DE
+.DS L
+
+
+Relation:                soft1
+---------                K 1630 / EVK Olbernhau
+Besitzer:                ing_db
+Tupellaenge:             159
+Verfallsdatum:           Mon Jan  1 00:00:00 1990
+Tupelanzahl:             186
+Speicherstruktur:        HEAP
+Pages:                   1 + 61
+Relationentyp:           Nutzerrelation
+
+ Domaenname        Typ   Laenge  Schluessel
+--------------------------------------------
+ bnr                i       4
+ lnr                i       2
+ titel              c      10
+ aufg               i       2
+ deskr              c      65
+ rtyp               c       8
+ bsyst              c       8
+ prspr              c       8
+ dbspr              c       8
+ pfterm             i       2
+ nutzbg             i       2
+ ppznr              c      13
+ regnr              c      19
+ aufw               i       2
+ projzt             i       2
+ nnkost             i       2
+ nutz               i       2
+--------------------------------------------
+.DE
+.LP
+Aus einer \o'u"'bergeordneten Shell-Prozedur wird 
+die Prozedur
+.ft B
+cal_sachg
+.ft R
+gerufen. Diese Prozedur verwendet zwei Files zur 
+direkten Steuerung von \*(yy. Sofern keine C-Statements
+f\o'u"'r eine Komandofolge gebraucht werden und das 
+entsprechende Menue relativ selten benutzt wird, 
+ist das ein sehr eleganter Weg zur Ablaufsteuerung.
+Die beiden Files 
+.ft B
+sachg_in1
+.ft R
+und
+.ft B
+sachg_in2
+.ft R
+fungieren als Eingabefiles f\o'u"'r \*(yy.
+.nf
+
+
+-------------------------------------------------------------
+
+quel hardsoft < sachg_in1
+rd hardsoft sachg
+mv desc sachg_d
+quel hardsoft < sachg_in2
+rg -dsachg_d -isachg_r -fsachg_f -osachg_o
+
+-------------------------------------------------------------
+.fi
+.LP
+Zuerst das File sachg_in1 - aus den Relationen
+.ft B
+anschrift
+.ft R
+und
+.ft B
+soft1
+.ft R 
+sollen einige Spalten herausgezogen werden, in eine 
+tempor\o'a"'re Relation
+.ft B
+sachg
+.ft R
+gespeichert und nach der 
+Betriebsnummer und Aufgabe - als Gruppierungsbegriffe - 
+sortiert werden. Mit
+.ft B
+copy into
+.ft R
+wird anschliessend ein \*(xx-File erzeugt. 
+Da in der Shell-Prozedur noch ein Deskription File zu erzeugen ist, 
+muss das destroy-Kommando in einem zweiten Eingabefile stehen.
+.nf
+
+-------------------------------------------------------------
+
+range of a is anschrift
+range of s is soft1
+retrieve into sachg (s.bnr, a.kubez, s.titel, s.aufg) \e
+       where s.bnr=a.bn
+\\p\\g
+modify sachg() to heapsort on bnr, aufg
+\\p\\g
+copy sachg() into "/mnt/ing_db/work/kag/sachg_f"
+\\p\\g
+\\q
+
+------------------------------------------------------------
+.fi
+.LP
+Das Eingabefile 
+.ft B
+sachg_in2
+.ft R
+hat lediglich die Aufgabe, die Relation
+.ft B
+sachg
+.ft R
+wieder zu l\o'o'schen, 
+da sie bei einem weiteren Lauf zu diesem Menue st\o'o"'rt.
+.nf
+
+------------------------------------------------------------
+
+destroy sachg
+\\p\\g
+\\q
+---------------------------------------------------------------
+.fi
+.LP
+Das Report Programm listet betriebsweise aus, welche Software 
+nach Aufgaben geordnet verf\o'u"'gbar ist. Der Programmtitel soll
+in der entsprechenden Spalte erscheinen, wobei nur dann eine
+neue Zeile eingerichtet werden darf, wenn mehrere Titel zu einem
+Sachgebiet (Aufgabe) auftreten. Die Kurzbezeichnung zum 
+Betrieb ist auf zwei Zeilen zu verteilen.
+.nf
+--------------------------------------------------------------
+
+report sachg_r
+with
+       columns 130
+       lines 57
+       all lines 66
+       big
+
+       /* Prozeduren */
+       define position  = 1
+       define b_spalte  = 2
+
+       /* Variable */
+       define v_pos     = 1
+
+       /* Domaenen */
+       define s_bnr     = 1
+       define s_kubez   = 2
+       define s_titel   = 3
+       define s_aufg    = 4
+
+       define #s_bnr    = integer 4
+       define #s_kubez  = char 48
+       define #s_titel  = char 10
+       define #s_aufg   = integer 2
+
+as
+
+on pagebegin do
+       'ARBEITSKREIS >>>COMPUTEREINSATZ IN DER SBW<<<'
+       'BEZIRKSGELEITETE INDUSTRIE'
+       \\115 date   \n2
+       '*' 7
+       ' SOFTWARE NACH SACHGEBIETEN '
+       '*' 7
+       \\114 'Seite: ' integer @3 page
+       \\n
+       'BETRIEB' \en
+       \\10
+       'GRUMI     '
+       'INVEST    '
+       'MATERIAL  '
+       'AKR       '
+       'LEISTUNG  '
+       'WAREN     '
+       'KOSTEN    '
+       'FINANZEN  '
+       'NUTZEN    '
+       'BES./ANAL '
+       'BERICHTSW.'
+       'SONSTIGES ' \en
+       \\10
+       ':=========' 12 \en2
+end
+
+proc position
+       if #s_aufg > 0 then
+              set $v_pos = #s_aufg
+       else
+              set $v_pos = 12
+       end if
+       set $v_pos *= 10
+       col $v_pos
+       char @10 #s_titel
+return
+
+proc b_spalte
+       \\10 ':'
+       \\20 ':'
+       \\30 ':'
+       \\40 ':'
+       \\50 ':'
+       \\60 ':'
+       \\70 ':'
+       \\80 ':'
+       \\90 ':'
+       \\100 ':'
+       \\110 ':'
+       \\120 ':'
+return
+
+on batchline do call b_spalte end
+
+for all do
+       for one do
+              if groupbegin s_bnr then
+                     \\n
+                     char batch 24 @48 #s_kubez
+                     \\n2
+              end if
+              if ! groupend s_aufg then
+                     \\n
+              end if
+              call position
+              if groupend s_aufg then
+                     \\n
+                     \\10
+                     ':..............' 12
+                     \\n
+                     if line > 56 then \en4 end if
+              end if
+       end one
+end all
+;
+
+
+------------------------------------------------------------
+.fi
+.LP
+Die Druckliste ist etwa 127 Zeichen breit, um einen Einblick zur 
+Gestaltung zu geben, wurde bei Spalte 60 abgebrochen.
+Es werden nur 40 Originaldruckzeilen gezeigt. Da das File 
+.ft B
+sachg_o
+.ft R
+im ASCII-Format vorliegt, ist die Aufbereitung mit dem Editor
+m\o'u"'helos m\o'o"'glich, ebenso wie das Einf\o'u"'gen in den
+Quelltext dieses Kapitels.
+.bp
+.nf
+
+-------------------------------------------------------------
+
+ARBEITSKREIS >>>COMPUTEREINSATZ IN DER SBW<<< BEZIRKSGELEITET
+
+****** SOFTWARE NACH SACHGEBIETEN ******
+BETRIEB
+       GRUMI     INVEST    MATERIAL  AKR       LEISTUNG  WA
+       :=========:=========:=========:=========:=========:=
+
+KOMBINAT ERZGEBIRGISCHE
+VOLKSKUNST OLBERNHAU       :         :         :         :
+
+                                     AKR
+       :=========:=========:=========:=========:=========:=
+
+KOMBINAT ELEKTROGERAETE
+FUERSTENWALDE              :         :         :         :
+
+       GRUMI
+                           BILANZ
+                           DPA
+                           HOLZERF
+                           MFOKO
+                           MP1801V
+                           MWA146
+                           MWKBIL    AKR       SORTPLA   RE
+       :.........:.........:.........:.........:.........:.
+
+VEB ELSTERMODE
+ELSTERWERDA                :         :         :         :
+
+                                     LISTEW1   LEIRE
+       :.........:.........:.........:.........:.........:.
+
+INGENEURBUERO
+U.RATIONALIS.COTTBUS       :         :         :         :
+
+                           MARKE
+       :.........:.........:.........:.........:.........:.
+
+------------------------------------------------------------
+.fi
+
