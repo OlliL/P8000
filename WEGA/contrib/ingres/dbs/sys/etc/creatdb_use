@@ -1,0 +1,27 @@
+HINWEIS:	creatdb [flags] data_base_name
+
+CREATDB -- erzeuge oder modifiziere Datenbank
+
+Argumente
+	data_base_name	-- Der Name der zu verwendenden Datenbank.
+	flags:
+	-Fpathname	-- Das file `pathname' wird als Datenbank-
+			   steuerfile verwendet (nur fuer Debugging).
+	-1		-- Erzeugen einer  512'er Datenbank
+	-2		-- Erzeugen einer 1024'er Datenbank
+	-4		-- Erzeugen einer 2048'er Datenbank
+	-8		-- Erzeugen einer 4096'er Datenbank
+	+-c		-- Ein/Ausschalten der parallelen Verwendbarkeit
+			   der Datenbank.
+			   Standard: eingeschaltet.
+	-e		-- Die Datenbank soll modifiziert und nicht
+			   erzeugt werden, d.h. der Status
+			   (+/-c bzw. +q) wird geaendert.
+	-m		-- Die Datenbank liegt auf einem monierbaren
+			   Datentraeger.
+	+-q		-- Ein/Ausschalten von QRYMOD, d.h. ausgeschaltet
+			   werden keine Sichten, Integritaeten und
+			   Zugriffsrechte unterstuetzt.
+			   Standard: eingeschaltet.
+	-uuser_name	-- Veraendern des aktuellen Nutzers, user_name
+			   ist der BS-login Name des neuen Nutzers.
