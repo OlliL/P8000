@@ -1,0 +1,673 @@
+.ds RH "Einleitung
+.bp
+.NH
+Einleitung
+.LP
+WDOS gestattet die Benutzung von PCDOS bzw. MSDOS und kompatiblen
+Betriebssystemen, wie DCP, unter WEGA. Fuer diese Betriebssysteme
+wird im folgenden die Bezeichnung DCP verwendet. Voraussetzung fuer
+die Benutzung von WDOS ist, dass im
+P8000 zwei U80601-Erweiterungskarten (CPU-Karte / 1 MByte RAM-Karte)
+installiert sind. Auf dem P8000 muss WEGA Version 3.1 oder hoeher
+laufen.
+Zur Bedienung von DCP ist in der Regel nur das P8000/WDOS-Terminal mit
+DCP-kompatibler Betriebsart geeignet.
+.LP
+Die wesentlichen Bestandteile von WDOS sind das WDOS-Menueprogramm
+wm, das Koppelprogramm wdos, der WDOS-Treiber cpu2 im WEGA-Kern
+und das ROM-BIOS. Koppelprogramm, Treiber und ROM-BIOS bilden
+in Verbindung mit den Erweiterungskarten
+die WDOS-Umgebung, in der das Betriebssystem DCP sowie die
+Anwenderprogramme ablaufen koennen.
+.LP
+WDOS arbeitet mit Programmen und Dateien,
+die im DCP-Format abgespeichert sind. Es ermoeglicht dem Nutzer,
+Dateien zu lesen oder zu schreiben, die z.B. auf dem
+A7150 oder EC1834 unter DCP erstellt wurden und erlaubt, viele unter
+DCP ausfuehrbare Programme ohne Aenderung abzuarbeiten. Programme, die
+Grafikausgaben enthalten, und Programme, die direkt auf die Hardware
+zugreifen, sind jedoch nicht lauffaehig. WDOS simuliert mit einfachen
+Hardware-Mitteln eine Personal-Computer-Umgebung.
+Eine vollstaendig kompatible Umgebung steht nicht zur Verfuegung.
+Somit kann auch keine Garantie fuer die Lauffaehigkeit von speziellen
+Programmen uebernommen werden.
+.LP
+Unter WDOS laufen die DCP-Programme in Echtzeit ab.
+Auf den Erweiterungskarten wird dazu das unveraenderte
+Betriebssystem DCP gestartet. Es ergibt sich jedoch
+die Einschraenkung, dass nur ein WEGA-Nutzer zur gleichen Zeit
+DCP abarbeiten kann.
+.LP
+Die 1 MByte-RAM-Karte kann von WEGA auch als RAM-Disk benutzt werden. Die
+Abarbeitung von Programmen unter DCP ist dann jedoch nicht moeglich.
+.LP
+Diese Dokumentation enthaelt keine umfassende DCP-Beschreibung.
+.LP
+.ds RH "Installation
+.NH
+Installation
+.NH 2
+Installation von den Vertriebsdisketten
+.LP
+Die Installation von WDOS kann nur der Superuser ausfuehren.
+.br
+Das Programm-Paket WDOS besteht aus zwei Disketten, einer
+WDOS-Diskette und einer unveraenderten Original-DCP-Systemdiskette fuer
+den EC1834 vom Kombinat Robotron, die die aktuelle Version von DCP
+enthaelt.
+.LP
+Zur Installation von WDOS ist nur die WDOS-Diskette
+erforderlich. Sie ist im tar-Format beschrieben.
+Auf der Diskette befindet sich die Datei "README", die aktuelle
+Hinweise zum Software-Paket enthaelt, und die Datei "INSTALL", die
+zur Installation benutzt werden kann. Beide Dateien sollten
+zuerst mit tar(1) eingelesen werden:
+.DS
+tar xv README INSTALL
+.DE
+Durch Start von INSTALL
+wird das Software-Paket automatisch im Directory /z/bin und in
+/z/wdoslib installiert. Nach der Installation ist
+im Directory /z/wdoslib/disks die globale Pseudo-Systemdiskette
+wdos_sys verfuegbar.
+.LP
+Ist die Umgebungsvariable TERM fuer das Terminal richtig gesetzt
+(siehe Abschnitt 2.3.), kann bereits mit WEGA-DOS gearbeitet
+werden.
+.LP
+.NH 2
+Geraetedateien zur Anbindung der U80601-Karten
+.LP
+Die Verbindung zwischen WEGA und den U80601-Karten erfolgt
+ueber den Treiber "cpu2" im WEGA-Kern. Folgende Eintraege
+sind im Directory /dev erforderlich:
+.DS L
+Name            Art  Major  Minor  Zweck
+------------------------------------------------------------
+
+/dev/cpu2tty    c    4      1      U80601-Terminal
+/dev/cpu2lp     c    4      2      U80601-Drucker
+/dev/cpu2disk   c    4      3      U80601-Disk-Request
+/dev/cpu2rram   c    4      0      U80601-RAM-raw-Interface
+                                   (Diskdaten)
+/dev/cpu2ram    b    4      0      U80601-RAM-Blockinterface
+                                   (1 MByte WEGA-RAM-Disk)
+.DE
+.LP
+.NH 2
+Installation des Terminals
+.LP
+Fuer die Abarbeitung der meisten DCP-Anwenderprogramme ist nur
+das P8000/WDOS-Terminal mit DCP-kompatibler Betriebsart geeignet.
+.LP
+Das Betriebsystem DCP meldet sich auch mit dem alten P8000-Terminal
+in der ADM31-kompatiblen Betriebsart.
+Einige zeilenorientierte Anwenderprogramme sind ebenfalls lauffaehig.
+Da aber fuer diesen Terminaltyp z.B. keine
+Funktionstasten, kein erweiterter Zeichensatz und kein simulierter
+Bildwiederholspeicher zur Verfuegung stehen, ist die Arbeit oft nur mit
+Einschraenkungen moeglich. In der Dokumentation wird stets das
+P8000/WDOS-Terminal vorausgesetzt.
+.LP
+Im "ROM"-BIOS sind die
+Steuerzeichenfolgen fuer das Terminal fest enthalten. Das WDOS-Menue-Programm
+benutzt die Datei /etc/termcap und ist unabhaengig vom Terminaltyp. Sichtbare
+Videoattribute sollten aber nicht benutzt werden.
+Die Umgebungsvariable TERM muss fuer ein P8000/WDOS-Terminal
+auf w8 gesetzt werden, die Datei
+/etc/termcap muss folgenden Eintrag enthalten:
+
+
+w8|p8000-A|P8000/WDOS-Terminal komp. ADM31 ohne Vattr.:\\
+.br
+    :al=\\EE:am:bs:ce=\\ET:cm=\\E=%+ %+ :cl=50\\E*^^:\\
+.br
+    :co#80:dc=\\EW:dl=\\ER:\\
+.br
+    :cd=\EY:ho=^^:li#25:ma=^Z^L^K^P^L j^Jk^Pl :\\
+.br
+    :kl=^H:kd=^J:ku=^K:kr=^L:kh=^^:\\
+.br
+    :mi:nd=^L:up=^K:
+
+Die Umgebungsvariable TERM fuer das alte P8000-Terminal sollte auf
+p8 gesetzt werden.
+.LP
+.NH 2
+Installation der Druckersteuerung
+.LP
+Standardmaessig sammelt WDOS alle Druckerausgaben von
+DCP in der Datei /tmp/wdoslp.tmp. Erst beim Verlassen
+von WDOS wird diese Datei durch den automatischen Aufruf von
+/z/wdoslib/run_lpr zum WEGA-Druckerspooler geschickt. Anschliessend wird
+die Datei /tmp/wdoslp.tmp geloescht. Der Shell-Skript
+/z/wdoslib/run_lpr enthaelt folgende Kommandos:
+.DS L
+lpr -nb < $1; exec rm -f $1
+.DE
+Beachten Sie bitte jedoch, dass DCP mit einem 8-Bit-Zeichensatz
+(IBM-Zeichensatz) arbeitet. Drucker, wie LX86,
+lassen sich auf diesen Zeichensatz umschalten. Bei Robotron-Druckern, wie
+K6313/14, besteht diese Moeglichkeit nur fuer die Export-Ausfuehrung.
+.LP
+Die Backend-Programme des Druckerspoolers (siehe backend(M)) filtern
+leider alle Zeichen groesser 7fh heraus. Der folgende Shell-Skript
+fuer run_lpr
+umgeht das Problem. Er setzt aber voraus, dass der Drucker 
+stets verfuegbar ist:
+.DS L
+mv $1 /tmp/wdoslp.$$
+(cp /tmp/wdoslp.$$ /dev/lp; rm -f /tmp/wdoslp.$$)&
+.DE
+Jeder Nutzer kann sich eine Umgebungsvariable WDOS_LP vereinbaren.
+Diese gibt an, wohin die Druckerausgaben ohne Zwischenspeicherung
+gerichtet werden, z.B.: 
+.DS L
+setenv WDOS_LP /dev/lp
+.DE
+.NH 2
+Installation von Harddisklaufwerken
+.LP
+Fuer die Installation einer realen WDOS-Harddisk ist ein
+separates logisches Dateisystem auf einem P8000-Winchesterlaufwerk
+erforderlich. Nach der Installation enthaelt das logische Dateisystem
+die Struktur einer DCP-Festplatte. WEGA-Programme, wie fsck(1), tar(1)
+und mount(M) koennen auf dieses Dateisystem nicht angewandt werden.
+.LP
+Vor der Installation einer realen WDOS-Harddisk, sollten Sie erst diese
+Dokumentation, insbesondere Abschnitt 3.1. lesen.
+Voraussetzung ist weiterhin, dass DCP von der Diskette gestartet
+werden kann.
+.LP
+Fuer die Installation einer WDOS-Harddisk sind vom Superuser
+folgende Schritte auszufuehren:
+.IP 1.
+Die Aufteilung des P8000-Winchester-Laufwerkes (oder besser des 2.
+Laufwerkes, falls vorhanden), muss so geaendert werden, dass
+eine separate logische Platte von 10000, 20000 oder 40000 Bloecken
+fuer WDOS verfuegbar ist. Der WEGA-Kern, ist entsprechend der
+Plattenaufteilung zu aendern. Die Aenderung der Plattenaufteilung
+und die Generierung eines neuen WEGA-Kerns sind im WEGA-Systemhandbuch
+(Abschnitt 5) beschrieben.
+.IP 2.
+Wird ein bereits existierendes Dateisystem als WDOS-Platte benutzt,
+z.B. /dev/z1 des 2. Winchester-Laufwerks, sind die mount- und
+fsck-Eintraege in den Dateien /etc/mfs, /etc/rc_csh und /etc/checklist
+fuer das entsprechende Dateisystem zu entfernen.
+.IP 3.
+Im Directory /dev sind die Eintraege fuer das Block- und Raw-Interface
+anzulegen. Die Eintraege lauten wd*_5, rwd*_5 oder wd*_10, rwd*_10 oder
+wd*_20 und rwd*_20, je nach der Speicherkapazitaet der WDOS-Platte.
+(* - beliebige Zeichenkette)
+
+Beispiel:
+
+/dev/z1 der 2. Winchester-Platte mit 40000 Bloecken wird als WDOS-Harddisk
+benutzt:
+.DS L
+mknod /dev/z1  b 0 10
+mknod /dev/rz1 c 0 10
+ln /dev/z1  wd0_20
+ln /dev/rz1 rwd0_20
+.DE
+.IP 4.
+Das WDOS-Menue wird gestartet. Mit
+.DS L
+mf c: wd0_20
+.DE
+wird die WDOS-Harddisk mit Laufwerk C: verbunden.
+
+DCP wird nun von der Systemdiskette in Laufwerk A: gestartet.
+Mit den DCP-Kommandos FDISK und FORMAT kann die reale WDOS-Harddisk
+eingerichtet werden.
+.LP
+.NH 2
+Einrichten der Nutzer
+.LP
+Jeder unter WEGA eingetragene Nutzer kann auch mit WDOS arbeiten.
+Folgende Voraussetzungen kann jeder Nutzer vor Aufruf von
+WDOS schaffen:
+.IP 1.
+Das Directory /z/bin muss in den Suchpfad nach Programmen
+einbezogen sein. Dies ist fuer einen normalen Nutzer standardmaessig
+gegeben. Ist das Directory /z/bin im Suchpfad nicht enthalten,
+koennen bei Benutzung der C-Shell
+in die Datei .cshrc oder .login folgende Zeilen eingetragen werden:
+.DS
+set path = ($path /z/bin)
+setenv PATH "$PATH:/z/bin"
+.DE
+Sollten Sie mit der Bourne-Shell arbeiten,
+muss in die Datei .profile eingefuegt werden:
+.DS
+PATH ="$PATH:/z/bin"
+export PATH
+.DE
+.IP 2.
+Die Umgebungsvariable TERM muss bei Benutzung des
+P8000/WDOS-Terminals auf w8 gesetzt sein.
+.br
+Der Superuser kann die Anpassung in der Datei /etc/ttytype
+vornehmen. Der Terminaltyp kann auch wie folgt geaendert werden:
+.DS
+setenv TERM w8
+.DE
+Wird das "alte"
+P8000-Terminal benutzt, ist TERM auf p8 zu setzen. Die meisten
+DCP-Anwenderprogramme setzen aber das P8000/WDOS-Terminal voraus.
+.IP 3.
+Jeder Nutzer, der lokale (private) Disketten benutzen will,
+muss sich ein Directory fuer die lokalen Disketten vereinbaren.
+Dazu wird mit mkdir ein leeres Directory erstellt, z.B.
+.DS
+mkdir $HOME/wdos.disks
+.DE
+und die Umgebungsvariable WDOS_DISKS vereinbart, z.B.
+.DS
+setenv WDOS_DISKS $HOME/wdos.disks
+.DE
+.IP 4.
+Jeder Nutzer kann sich eine Umgebungsvariable WDOS_LP vereinbaren.
+Die Standard-Druckerzuweisung wird damit aufgehoben.
+WDOS_LP gibt an, wohin die Druckerausgaben ohne Zwischenspeicherung
+gerichtet werden, z.B. schickt
+.DS
+setenv WDOS_LP /dev/lp
+.DE
+die Druckerausgaben direkt zum WEGA-Druckertreiber.
+.IP 5.
+Im WDOS-Menue besteht die Moeglichkeit, DCP-Textdateien zu
+editieren. Standardmaessig wird dazu der Editor vi aufgerufen.
+Durch Setzen der Umgebungsvariable WDOS_ED kann der
+Nutzer einen anderen Editor vereinbaren, z.B. mit
+.DS
+setenv WDOS_ED /bin/ed
+.DE
+.LP
+.ds RH "WDOS
+.bp
+.NH
+WDOS
+.NH 2
+Benutzung von Disketten
+.NH 3
+Pseudolaufwerke
+.LP
+WDOS stellt jedem Nutzer 6 Pseudolaufwerke (A: bis F:) bereit.
+Den Laufwerken C: und D: koennen vom Nutzer Pseudoharddisks oder
+reale Harddisklaufwerke zugeordnet werden, den Laufwerken
+A:, B:, E: und F: koennen Pseudodisketten oder reale Floppy-Laufwerke
+zugeordnet werden. Die Zuordnung ist in der Datei .dos im
+Home-Directory jedes Nutzers abgelegt. Diese Datei wird beim erstmaligen
+Aufruf vom WDOS-Menue angelegt.
+Die Laufwerke E: und F: koennen nur benutzt werden,
+wenn im DCP-Betriebssystem der Treiber DRIVER.SYS installiert ist.
+.LP
+.NH 3
+Pseudodisketten
+.LP
+Pseudodisketten sind WEGA-Dateien, die intern die Struktur
+von DCP-Disketten besitzen. Sie werden von DCP wie richtige
+Disketten behandelt. Pseudodisketten koennen eine Speicherkapazitaet
+von 360 KByte, 720 KByte oder 1,2 MByte besitzen. Sie werden mit
+dem WEGA-Kommando dosformat oder im WDOS-Menue erzeugt.
+Leere Pseudodisketten belegen nur einen minimalen Speicherplatz.
+Sie wachsen bis zu ihrer maximalen Speicherkapazitaet. Das Loeschen
+von Dateien fuehrt aber nicht zur Verringerung des benoetigten
+Speicherplatzes der Pseudodiskette.
+Durch Kopieren einer Pseudodiskette auf
+eine andere wird nur der tatsaechlich benoetigte Speicherbereich belegt.
+Erneutes Formatieren existierender Pseudodisketten
+unter WEGA mit dosformat oder im WDOS-Menue reduziert den benoetigten
+Speicherplatz auf den minimal erforderlichen Wert.
+.LP
+Pseudodisketten koennen auch unter DCP mit dem Kommando FORMAT
+logisch formatiert werden. Der benoetigte Speicherplatz fuer die
+Pseudodiskette verringert sich dadurch aber nicht.
+.LP
+WDOS akzeptiert
+auch leere Dateien als unformatierte Pseudodisketten.
+Unter WEGA koennen leere Dateien z.B. mit
+.DS
+cp /dev/null diskname
+.DE
+angelegt werden.
+Das Diskettenformat wird mit dem DCP-Kommando FORMAT festgelegt.
+WDOS betrachtet alle Disketten als zweiseitig, bei
+einseitigen Disketten wird die zweite Seite nur nicht angesprochen.
+"Einseitige" Pseudodisketten verschenken Speicherplatz und
+sollten nicht angelegt werden.
+.LP
+.NH 3
+Reale Diskettenlaufwerke
+.LP
+Reale Diskettenlaufwerke sind die
+existierenden Floppy-Disk-Laufwerke.
+DCP erkennt automatisch das Format der eingelegten
+DCP-Disketten, WEGA jedoch nicht. Deshalb muss das Format der
+Diskette mit dem WEGA-Diskettentreiber uebereinstimmen.
+Im Directory /dev sind Eintraege fuer unterschiedliche
+Diskettenformate enthalten. Fuer DCP koennen aber nur die
+zweiseitigen Formate verwendet werden. Diese gestatten unter DCP
+jedoch auch die Benutzung von einseitig beschriebenen Disketten.
+Ueber DCP-Treiber,
+wie CDRIVE.SYS oder MDRIVE.SYS, koennen in DCP auch CP/M-kompatible Formate
+und spezielle DCP-Formate benutzt werden.
+.LP
+Das WDOS-Koppelprogramm wdos benutzt automatisch das Raw-Interface, indem
+es vor den Geraetename ein "r" setzt. Mit dem Raw-Interface
+wird ein Wechel von realen Disketten von WEGA
+nicht verhindert. Die Diskettenzugriffe werden bescheunigt.
+.LP
+Reale Diskettenlaufwerke koennen nur von der Systemkonsole aus benutzt
+werden.
+.DS L
+Formate realer Disketten:
+
+E/A-Geraet		Diskettenformate in DCP
+-----------------------------------------------
+/dev/fdx96ds9			80*2*9*512
+				80*1*9*512
+/dev/fdx48ds9			40*2*9*512
+				40*1*9*512
+				40*2*8*512
+				40*1*8*512
+/dev/fdx96ds16			80*2*16*256
+				80*1*16*256
+/dev/fdx48ds16			40*2*16*256
+				40*1*16*256
+/dev/fdx96ds5			80*2*5*1024
+				80*1*5*1024
+/dev/fdx48ds5			40*2*5*1024
+				40*1*5*1024
+.DE
+.NH 3
+Pseudoharddisks
+.LP
+Als Ergaenzung zu den Pseudodisketten sind auch Pseudoharddisks moeglich.
+Diese realisieren eine Speicherkapazitaet von 5 oder 10 MByte. Die Dateinamen
+der Pseudoharddisks muessen entsprechend der Speicherkapazitaet
+mit _5 bzw. _10 enden, damit im ROM-BIOS die richtigen Laufwerkswerte
+eingestellt werden koennen.
+Andere Formate sind nicht moeglich. Pseudoharddisks koennen nur unter
+DCP mit FDISK und FORMAT logisch formatiert werden.
+.LP
+.NH 3
+Reale Harddisklaufwerke
+.LP
+Im P8000 koennen 1 oder 2 Winchesterlaufwerke vorhanden sein.
+In WEGA kann jedes physisches Harddisklaufwerk in bis zu
+10 virtuelle (logische) Laufwerke eingeteilt werden. Jedes virtuelle
+Laufwerk kann ein eigenes Dateisystem enthalten. Standardmaessig ist
+z.B. das 1. Winchesterlaufwerk in 5 virtuelle Laufwerke
+(/dev/md0 ... /dev/md4 bzw. /dev/usr, /dev/swap, /dev/root, /dev/tmp und
+/dev/z) aufgeteilt. Die Aufteilung der Laufwerke laesst sich bei
+der WEGA-Systemgenerierung (siehe WEGA-Systemhandbuch, sysgen(M)) veraendern.
+Auf weiteren virtuellen Laufwerken laessen sich auch DCP-Dateisysteme
+installieren. Diese werden hier als reale Harddisks bezeichnet.
+Eine reale DCP-Harddisk kann eine Speicherkapatitaet von
+5 MByte (10000 Bloecke), 10 MByte (20000 Bloecke) oder 20 MByte
+(400000 Bloecke) besitzen. Die Geraetenamen im Directory /dev
+muessen wd*_5, wd*_10 oder
+wd*_20 fuer das Blockinterface und rwd*_5 ... fuer das Raw-Interface
+sein.
+.NH 3
+Globale Disketten
+.LP
+Globale Disketten und Harddisks sind fuer alle WDOS-Nutzer verfuegbar.
+Alle realen Disketten und Harddisks sind global.
+Pseudodisketten und Pseudoharddisks sind global, wenn sie sich im
+Directory /z/wdoslib/disks befinden.
+.LP
+.NH 3
+Lokale Disketten
+.LP
+Jeder Nutzer kann sich ein Directory vereinbaren, in dem
+seine privaten Pseudodisketten (und Pseudoharddisks) abgelegt werden.
+Dazu muss die Umgebungsvariable WDOS_DISKS vereinbart werden.
+Das kann z.B. in der Datei .cshrc des Nutzers mit dem Eintrag
+.DS
+setenv WDOS_DISKS $HOME/wdos.disks
+.DE
+erfolgen. Das Directory muss mit mkdir(1) erstellt werden.
+.LP
+.NH 2
+WDOS-Menue
+.LP
+Das WDOS-Menue wird durch Eingabe von
+.DS
+wm
+.DE
+gestartet.
+.LP
+Auf dem Bildschirm werden die moeglichen Kommandos und
+die mit den Pseudolaufwerken verbundenen Disketten und
+Harddisks angezeigt.
+Auf der letzten Zeile des Bildschirms erfolgt die
+Eingabe von Kommandos.
+.LP
+Das Kommando "h" oder "?" (Hilfe) gibt die Syntax aller
+im WDOS-Menue moeglichen Kommandos aus.
+.LP
+Mit dem Kommando "q" (quit) wird das Menuesystem verlassen
+und zu WEGA zurueckgegangen.
+.LP
+.NH 3
+Start von DCP
+.LP
+Das Kommando "s" (Start) dient zum Starten von DCP.
+Zuvor ist es notwendig, dem
+Pseudolaufwerk A: eine DCP-Systemdiskette oder dem
+Laufwerk C: eine Harddisk zuzuordnen. Als Systemdiskette
+kann die globale Pseudodiskette "wdos_sys" oder auch eine originale
+DCP-, PCDOS- oder MSDOS-Diskette benutzt werden. Beachten Sie
+bitte, dass ueber die Datei CONFIG.SYS einer originalen Systemdiskette
+keine Treiber aktiviert werden, die direkt auf die Hardware
+zugreifen. Zusaetzliche Tastaturtreiber tun dies mit Sicherheit.
+.LP
+Soll die Arbeit unter DCP unterbrochen oder beendet werden,
+so ist die Taste F12 bei einem P8000/WDOS-Terminal
+oder CTRL-\\ bei einem "alten" P8000-Terminal zu betaetigen.
+Es wird wieder das Hauptmenue angezeigt.
+.LP
+Durch Eingabe des Kommandos "r" (Return zu WDOS) ist es moeglich,
+DCP an genau der Stelle fortzusetzen, wo es verlassen wurde.
+(Mit dem Verlassen von DCP kann sich allerdings ein anderer Nutzer die
+U80601-Erweiterungskarten reservieren, eine Rueckkehr ist dann nicht
+mehr moeglich.)
+.LP
+Die Kommandos "s" und "r" starten das WDOS-Koppelprogramm wdos.
+Es kann aber auch direkt von der WEGA-Shell aus gestartet werden
+(Aufruf: wdos bzw. wdos -r).
+.LP
+.NH 3
+Einbinden der Disketten
+.LP
+mf                   reale Disks anzeigen
+.br
+mf x: [= diskname]   reale Disk mit LW x: verbinden (mount)
+.br
+mg                   globale Disks anzeigen
+.br
+mg x: [= diskname]   globale Disk mit LW x: verbinden (mount)
+.br
+ml                   lokale Disks anzeigen
+.br
+ml x: [= diskname]   lokale Disk mit LW x: verbinden (mount)
+.br
+u x:                 Disk aus LW x: entfernen (umount)
+.LP
+Die Mount-Kommandos "mf", "mg" und "ml" werden verwendet,
+um eine Pseudodisks oder ein reales Laufwerk einem
+Pseudolaufwerk zuzuordnen.  Das Kommando "u" (umount) loest diese
+Verbindung.
+.LP
+Beachten Sie, dass die Laufwerke A:, B:, E: und F:
+fuer (Pseudo-)Disketten und die Laufwerke C: und D: fuer (Pseudo-)Harddisks
+vorbehalten sind. 
+.LP
+Beachten Sie bitte, dass hier "physische" Pseudolaufwerke gemeint sind.
+DCP arbeitet mit logischen Laufwerksbezeichnungen ab A:, die nicht
+mit der "physischen" Bezeichnung uebereinstimmen muessen.
+.LP
+.NH 3
+Erzeugen und Loeschen von Pseudodisketten
+.LP
+n [-48ds9|-96ds9|-96ds15 diskname] lokale Pseudodiskette erzeugen
+.br
+x [x:|diskname]          lokale Pseudodisk loeschen
+.LP
+Mit dem Kommando "n" wird eine lokale Pseudodiskette im DCP-Format
+erstellt oder eine bestehende lokale Pseudodiskette logisch
+neu formatiert und auf die notwendige Dateilaenge verkuerzt.
+Mit dem Kommando "x" wird eine lokale Pseudodiskette oder
+Pseudoharddisk geloescht.
+.LP
+Eine lokale Pseudoharddisk wird ebenfalls mit dem Kommando "n"
+(ohne Optionen) erzeugt. Anschliessend muss sie jedoch
+mit dem Kommando "ml" dem Laufwerk C: oder D:
+zugeordnet werden. Nun wird DCP gestartet und die Pseudoharddisk
+mit FDISK und FORMAT eingerichtet. Der Name der Pseudoharddisk muss
+mit _5 (5 MByte Speicherkapazitaet) oder _10 (10 MByte Speicherkapazitaet)
+enden.
+.LP
+Globale Pseudodisks koennen nur unter WEGA mit dosformat (siehe dos(1))
+im Directory /z/wdoslib/disks erstellt, mit mv(1) oder cp(1) in das globale
+Directory kopiert oder mit rm(1) geloescht werden.
+.LP
+.NH 3
+Formatieren von realen Disketten
+.LP
+f [x:|/dev/rfd...]      reale DCP-Diskette formatiern
+.sp
+Das Kommando "f" wird zum Formatieren von realen Disketten verwendet.
+Das Kommando kann nur von der Systemkonsole ausgefuehrt werden.
+.LP
+.NH 3
+Anzeigen von Directorys
+.LP
+dir directory ...     Directory(s) anzeigen (DCP-Format)
+.br
+ls  directory ...     Directory(s) anzeigen (WEGA-Format)
+.LP
+Die Kommandos bewirken das Auslisten von Directorys. Dazu
+wird das Programm dosdir oder dosls (siehe dos(1)) gestartet.
+.LP
+Die Datei- und Verzeichnisargumente dieser und folgender Kommandos haben
+die Form:
+.DS
+device:name
+.DE
+wobei
+.IP device 8
+ein WEGA-Pfadname zur (Pseudo-)Disk oder der
+Laufwerksbuchstabe ist und
+.IP name
+ein Pfadname zu
+einer Datei oder einem Verzeichnis auf der DCP-Disk.
+.LP
+Die beiden Komponenten
+werden durch Doppelpunkt getrennt.
+Beachten Sie das Trennzeichen (\fB/\fR) fuer Dateinamen in DCP-Pfadnamen!
+Argumente, die kein "\fIdevice\fR:" enthalten,
+werden als WEGA-Dateien betrachtet.
+.LP
+.NH 3
+Anzeigen von Dateien
+.LP
+cat file ...          Datei(en) ausgeben
+.LP
+.NH 3
+Loeschen von Dateien
+.LP
+rm  file ...          Datei(en) loeschen
+.LP
+Das Kommando bewirkt das Loeschen von DCP-Dateien. Dazu
+wird das Programm dosrm (siehe dos(1)) gestartet.
+.LP
+.NH 3
+Erstellen und Loeschen von Subdirectorys
+.LP
+mkdir directory ...   Directory(s) erstellen
+.br
+rmdir directory ...   Directory(s) loeschen
+.LP
+Das Kommando mkdir erstellt ein neues Unterdirectory. Das Kommando
+rmdir loescht ein leeres Directory. Dazu werden die Programme
+dosmkdir bzw. dosrmdir (siehe dos(1)) gestartet.
+.LP
+.NH 3
+Kopieren von Dateien
+.LP
+cp  file1 file2         Textdatei kopieren
+.br
+cp  file ... directory  Textdateien in Directory kopieren
+.br
+cpb file1 file2         Bin-Datei kopieren
+.br
+cpb file ... directory  Bin-Dateien in Directory kopieren
+.LP
+Die Kommandos dienen zum Kopieren von Dateien
+.DS L
+- von WEGA zu DCP
+- von DCP zu WEGA
+- von WEGA zu WEGA
+.DE
+Zum Kopieren wird das Programm doscp aufgerufen (siehe dos(1)).
+Zum Kopieren von Bin-Dateien wird die Option -r uebergeben.
+.LP
+.NH 3
+Nutzung des WEGA-Editors
+.LP
+ed textfile
+.LP
+Das Kommando "ed" wird zum Editieren einer DCP-Datei mit dem WEGA-Texteditor
+benutzt. Beachten Sie die Probleme mit den
+unterschiedlichen Zeichensaetzen. WEGA unterstuetzt nur
+den 7-Bit-ASCII-Zeichensatz. DCP arbeitet mit einem 8-Bit-Zeichensatz.
+Die Textdatei wird in das Directory /tmp kopiert, dort editiert und
+zum Schluss wieder auf die DCP-Disk kopiert.
+.NH 3
+Ausfuehren von WEGA-Programmen
+.LP
+Beliebige WEGA-Programme koennen vom WDOS-Menue aus, durch ein dem
+Kommando vorangestelltes Ausrufezeichen gestartet werden. Mit
+.DS
+!csh
+.DE
+wird zum Beispiel die C-Shell gestartet.
+
+.LP
+.NH 2
+WDOS-Koppelprogramm
+.LP
+wdos
+.br
+wdos -r[esume]
+.br
+wdos proto_file
+.LP
+Das Programm wdos ist die eigentliche Verbindung zwischen
+WEGA und den U80601-Erweiterungskarten mit dem Betriebssystem DCP.
+WDOS kopiert nach dem Starten das "ROM"-BIOS (proto_file) zur
+U80601-RAM-Karte. Ist die Umgebungsvariable TERM auf w8
+(P8000/WDOS-Terminal) gesetzt, wird standardmaesig die Datei
+/z/wdoslib/bios als
+"ROM"-BIOS benutzt. Ist TERM auf p8 oder P8 gesetzt, wird
+die Datei /z/wdoslib/bios.p8 verwendet.
+Das Koppelprogramm realisiert mit Hilfe des Treibers "cpu2"
+im WEGA-Kern
+mit den Geraeten "/dev/cpu2tty", "/dev/cpu2lp", "/dev/cpu2disk"
+und "/dev/cpu2rram" die E/A-Geraete Terminal, Drucker, Diskette und
+Harddisk fuer die U80601-CPU. Die U80601-CPU erhaelt einen
+Reset-Impuls.
+Zur Rueckkehr nach WEGA, muss der Nutzer die Taste F12
+betaetigen (P8000/WDOS-Terminal) oder Control-\\
+(bei einem "alten" P8000-Terminal) eingeben.
+Die U80601-CPU arbeitet abgekoppelt von WEGA weiter und wird irgendwann
+auf eine E/A-Aktion warten, die von der WEGA-Seite nicht mehr
+bedient wird.
+.IP -resume 10
+Bei Angabe der Option -resume wird die Verbindung zur U80601-CPU
+wiederhergestellt und die E/A-Auftraege bedient. (Die U80601-CPU
+erhaelt keinen Reset-Impuls, das "ROM"-BIOS wird nicht geladen.)
