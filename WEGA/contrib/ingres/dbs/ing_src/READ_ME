@@ -1,0 +1,22 @@
+Ein READ_ME zur Erstellung der Dokumentation
+ist jeweils unter ../ing_src/teil1 bis ...3
+zu finden.
+ Daraus waehlen Sie bitte aus, fuer welche
+Dokumentationsform sie sich entsprechend
+des Angebots im Makefile entscheiden, nroff mit
+seinen verfuegbaren Makropaketen ist leider
+nicht sehr portabel - deshalb wurde beim Einsatz
+der Makros auf eine Minimalvariante orientiert.
+
+Das Inhaltsverzeichnis kann im Directory
+"/z/ing_doc/inhalt" erstellt werden,
+es ist dort auch uebersetzt abgelegt.
+(Siehe auch "/z/ing_doc/inhalt/READ_ME" ).
+
+Ausserdem wird zu jedem uebersetzten
+Teil der Dokumentation ein Inhaltsver-
+zeichnis mit erstellt, welches jedoch
+nicht fuer den Druck des Handbuches
+geeignet ist, da die Seitennummer-
+ierung nicht ausgefuehrt ist.
+
