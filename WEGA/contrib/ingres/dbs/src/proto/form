@@ -1,0 +1,194 @@
+# include	"../conf/conf.h"
+
+SHELL=	/bin/sh
+DBS=	../..
+LIB=	../lib
+SYSLIB=	$(DBS)/lib
+BIN=	$(DBS)/bin
+GUTIL=	$(LIB)/g.a
+$(GUTIL):
+
+LIBF=	$(SYSLIB)/libform.a
+
+CC=	cc
+i_FLAG=
+O_FLAG=	-O
+# ifndef FP_PROCESSOR
+f_FLAG=	-f
+# else
+f_FLAG=
+# endif
+
+# ifdef A7150
+# endif
+
+# ifdef BC
+# endif
+
+# ifdef EC1834
+# endif
+
+# ifdef ESER_PSU
+# ifdef TRACE
+i_FLAG=	-d
+# endif
+# endif
+
+# ifdef ESER_VMX
+# endif
+
+# ifdef HP_UX
+# endif
+
+# ifdef P8000
+# endif
+
+# ifdef PDP
+# endif
+
+# ifdef PDP70
+# endif
+
+# ifdef VAX
+# endif
+
+# ifdef VENIX
+# endif
+
+# ifdef XENIX286
+i_FLAG=	-i -M2s
+# endif
+
+# ifdef XENIX386
+# endif
+
+CFLAGS=	$(O_FLAG) $(f_FLAG) $(i_FLAG)
+
+AR=	-ar
+# ifdef TEST
+AR_R	=rv
+AR_X	=xv
+# else
+AR_R	=r
+AR_X	=x
+# endif
+LIBMODE=	0644
+
+CHMOD=	chmod
+# ifdef RANLIB
+MKLIB=	ranlib
+# else
+MKLIB=	@echo ranlib
+# endif
+RM=	-rm -f
+TOUCH=	touch
+
+OBJ=	alloc.o		free.o		main.o		menue.o		\
+	next.o		value.o		shell.o		output.o	\
+	var_c.o		var_f4.o	var_f8.o	var_i1.o	\
+	var_i2.o	var_i4.o	var.o		form.o		\
+	edit.o		input.o		frame.o		getchar.o	\
+	error.o		screen.o	string.o
+
+INSTALL:	install
+
+install:	$(LIBF)
+
+$(LIBF):	$(OBJ)
+	$(AR) $(AR_R) $@ $?
+	@-$(CHMOD) $(LIBMODE) $@
+	$(MKLIB) $@
+
+UNLOAD:		unload
+
+unload:
+	@-$(AR) $(AR_X) $(LIBF)
+	@$(RM) __.SYMDEF
+	@-$(TOUCH) $(LIBF)
+
+ALLCLEAN:	allclean
+
+allclean:	clean
+	$(RM) $(LIBF)
+
+CLEAN:		clean
+
+clean:
+	$(RM) $(OBJ)
+
+alloc.o:	form.h
+
+error.o:	form.h
+
+edit.o:		form.h
+
+form.o:		form.h
+
+frame.o:	form.h
+
+free.o:		form.h
+
+getchar.o:	form.h
+
+input.o:	form.h
+
+main.o:		form.h
+
+menue.o:	form.h
+
+next.o:		form.h
+
+output.o:	form.h
+
+screen.o:	form.h ../gutil/pmove.c ../gutil/smove.c
+
+shell.o:	form.h
+
+string.o:	form.h
+
+value.o	:	form.h
+
+var.o:		form.h
+
+var_c.o:	form.h
+
+var_f4.o:	form.h
+
+var_f8.o:	form.h
+
+var_i1.o:	form.h
+
+var_i2.o:	form.h
+
+var_i4.o:	form.h
+
+# ifndef SIGN_EXT
+# endif
+
+# ifdef WENZLAFF
+HOME=	/z/dbs/src/form
+SRC=	form.h		alloc.c		error.c		edit.c		\
+	form.c		frame.c		free.c		getchar.c	\
+	input.c		main.c		menue.c		next.c		\
+	output.c	screen.c	shell.c		string.c	\
+	value.c		var.c		var_c.c		var_f4.c	\
+	var_f8.c	var_i1.c	var_i2.c	var_i4.c	\
+	docs		tags		FORM.P8		FORM.PV
+
+.print:		$(SRC)
+	pr $? > /dev/lp
+	> $@
+
+.save:		$(SRC) Makefile
+	mount DISK /wrk
+	CP $? $@ /wrk/form
+	> $@
+	umount DISK
+
+$(HOME)/.save:	$(SRC) Makefile
+	CP $? $(HOME)
+	> $@
+
+.PRECIOUS:	.save
+.PRECIOUS:	$(HOME)/.save
+# endif
