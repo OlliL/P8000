@@ -1,0 +1,91 @@
+#               Installationsskript fuer
+#          	     WEGA-DOS (WDOS)
+#
+#             ! als SUPERUSER ausfuehren !
+#
+echo
+echo 'Installationsprogramm 1.0 fuer WEGA-DOS'
+echo '---------------------------------------'
+echo
+echo 'Die Installation erfolgt von der tar-Vertriebsdiskette.'
+echo 'Die Diskette muss im Laufwerk 1 eingelegt sein.'
+echo
+if (`whoami` !=	"wega")	then
+	echo 'Die Installation wurde abgebrochen, Sie sind nicht der Superuser'
+	exit
+endif
+
+echo 'Fuer die Installation werden im Directory /z xxx Bloecke benoetigt.'
+echo 'Die Anzahl der freien Bloecke betraegt:'
+df -f /z
+echo
+
+set a =	'a'
+set b = 0
+while ($a != 'j' && $a != 'n')
+	echo -n	'Moechten Sie die Installation ausfuehren (j/n) : '
+	set a =	`gets`
+end
+if ($a != 'j') then
+	echo
+	echo 'Die Installation von WEGA-DOS wurde abgebrochen'
+	exit
+endif
+
+echo
+echo 'Installation der Dateien in /z/bin und /z/wdoslib:'
+echo
+cd /z
+tar -xvb 18 bin wdoslib
+set b = ($b + $status)
+endif
+
+echo
+echo 'Installation der Device-Eintraege:'
+echo
+if (-e /dev/cpu2ram) then
+	echo '/dev/cpu2ram existiert bereits\!'
+else
+	echo '/dev/cpu2ram b 4 0'
+	mknod /dev/cpu2ram b 4 0
+endif
+if (-e /dev/cpu2rram) then
+	echo '/dev/cpu2rram existiert bereits\!'
+else
+	echo '/dev/cpu2rram c 4 0'
+	mknod /dev/cpu2rram c 4 0
+	set b = ($b + $status)
+endif
+if (-e /dev/cpu2tty) then
+	echo '/dev/cpu2tty existiert bereits\!'
+else
+	echo '/dev/cpu2tty c 4 1'
+	mknod /dev/cpu2tty c 4 1
+	set b = ($b + $status)
+endif
+if (-e /dev/cpu2lp) then
+	echo '/dev/cpu2lp existiert bereits\!'
+else
+	echo '/dev/cpu2lp c 4 2'
+	mknod /dev/cpu2lp c 4 2
+	set b = ($b + $status)
+endif
+if (-e /dev/cpu2disk) then
+	echo '/dev/cpu2disk existiert bereits\!'
+else
+	echo '/dev/cpu2disk c 4 3'
+	mknod /dev/cpu2disk c 4 3
+	set b = ($b + $status)
+endif
+echo
+if ($a == 'j' && $b == 0) then
+	echo 'WEGA-DOS wurde ordnungsgemaess installiert'
+	echo
+	echo 'Bitte loeschen Sie die Datei INSTALL'
+	exit
+endif
+if ($b != 0) then
+	echo 'Bei der Installation traten Fehler auf,'
+	echo 'WEGA-DOS ist nicht vollstaendig installiert'
+	exit
+endif
