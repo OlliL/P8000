@@ -1,0 +1,358 @@
+\reset
+{remove;{database}}
+{remove;{editor}}
+{remove;{pathname}}
+{remove;{shell}}
+{remove;{usercode}}\eval
+
+
+       +---------------------------------------------+
+       |                                             |
+       |   L E H R B E I S P I E L E   D A B A 1 6   |
+       |                                             |
+       +---------------------------------------------+
+
+
+\print
+\reset
+{read;<-- Start ----->}
+\eval
+\reset
+print teile
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+range of t is teile
+retrieve (t.tname)
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve t.tname, t.farbe
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname, t.farbe)
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname, t.farbe)
+where t.farbe = "grau"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname, t.farbe)
+where t.farbe = "grau"
+or t.farbe = "rosa"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname, t.tnum, t.menge * t.gewicht)
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname, t.tnum, summe = t.menge * t.gewicht)
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname, t.tnum, summe = t.menge * t.gewicht)
+where t.tnum = 2 or t.tnum = 9
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname, t.tnum, summe = t.menge * t.gewicht)
+where t.tnum > 2 and t.tnum <= 9
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname, t.tnum, summe = t.menge * t.gewicht)
+where t.tnum > 5 and t.tnum <= 9
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+print lieferung
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (l.tnum) where l.lnum = 122
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+range of l is lieferung
+retrieve (l.tnum) where l.lnum = 122
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve unique (l.tnum) where l.lnum = 122
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname) where t.tnum = 7 or t.tnum = 9
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (t.tname) where t.tnum = l.tnum
+and l.lnum = 122
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (l.lnum)
+where l.tnum = t.tnum and t.tname = "Zentraleinheit"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+help
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+help personal
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+range of p is personal
+retrieve (p.all)
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, p.gehalt)
+where p.name = "Wunsch, Peter"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, p.gehalt)
+where p.name = "Wunsch, P*"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, p.gehalt)
+where p.name = "Rose, P*"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, p.gehalt)
+where p.name = "*, Peter*"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, p.gehalt)
+where p.name = "[B-F]*"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, p.gehalt)
+where p.name > "B" and p.name < "G"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (dgehalt = avg(p.gehalt))
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (mingehalt = min(p.gehalt), maxgehalt = max(p.gehalt))
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, p.gehalt)
+where p.gehalt = min(p.gehalt) or p.gehalt = max(p.gehalt)
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, dgehalt = avg(p.gehalt))
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, dgehalt = avg(p.gehalt where 1989 - p.gebdat > 50))
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, dgehalt = avg(p.gehalt))
+where 1989 - p.gebdat > 50
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, dgehalt = avg(p.gehalt where 1989 - p.gebdat > 50))
+where 1989 - p.gebdat > 50
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (chefs = count(p.leiter))
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (chefs = countu(p.leiter))
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, dproleiter = avg(p.gehalt by p.leiter))
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, dproleiter = avg(p.gehalt by p.leiter))
+where 1989 - p.gebdat > 50
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.name, dproleiter = avg(p.gehalt by p.leiter))
+where p.leiter = 199 or p.leiter = 33
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.leiter, mitarb = count(p.name by p.leiter
+where p.einstdat < 1970))
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.leiter, mitarb = avg(p.gehalt by p.leiter
+where p.einstdat < 1970))
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve (p.leiter, mitarb = avg(p.gehalt by p.leiter
+where p.einstdat < 1970))
+where avg(p.gehalt by p.leiter where p.einstdat < 1970) > 0
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve into ggehalt (p.all) where p.gehalt > 800
+print ggehalt
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+retrieve into ggehalt (p.all) where p.gehalt > 800
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+append to ggehalt (name = "Lehmann, Franz", gehalt = 1000)
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+range of g is ggehalt
+replace g (gehalt = g.gehalt * 1.1)
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+print ggehalt
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+delete g where g.name = "Moser, Otto"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+range of f is ggehalt
+retrieve (g.name, ggehalt = g.gehalt, franzg = f.gehalt)
+where g.gehalt > f.gehalt
+and f.name = "Lehmann, Franz"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+replace g (gehalt = max(g.gehalt) + 50)
+where g.name = "Lehmann, Franz"
+\print
+\go
+{read;<-- Weiter ? -->}
+\eval
+\reset
+destroy ggehalt
+\print
+\go
+{read;<-- Ende ------>}
+\eval
+\reset
