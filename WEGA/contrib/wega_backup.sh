@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $Id: wega_backup.sh,v 1.1 2006/02/01 17:07:00 olivleh1 Exp $
+# $Id: wega_backup.sh,v 1.2 2006/02/01 17:14:28 olivleh1 Exp $
 #
 
 UUENCODE=uuencode
@@ -103,12 +103,16 @@ fi
 
 case "${TYPE}" in
 	cpio)	CMD="cd ${TO_BACKUP} && find . -print | cpio -oa | ${UUENCODE} -";;
-	tar)	CMD="cd ${TO_BACKUP} && tar cf - . | ${UUENCODE} -";;
+	tar)	if [ "${TO_BACKUP}" = "/" ] ; then
+			FILES='`ls | grep -v '^dev$'`'
+		else
+			FILES='.'
+		fi
+		CMD="cd ${TO_BACKUP} && tar cf - ${FILES} | ${UUENCODE} -";;
 
 	dd)	CMD="dd if=${TO_BACKUP} bs=512 | ${UUENCODE} -";;
 	dump)	CMD="uuencode /dumppipe -"
-		cd / || exit 1
-		mknod p dumppipe.$$ || exit 1
+		mknod p /dumppipe.$$ || exit 1
 		dump 0f /dumppipe ${TO_BACKUP} &
 		;;
 esac
@@ -128,6 +132,9 @@ _EOF
 
 echo "press enter to start the transfer"
 read LALA
-
+set -x
 eval "${CMD}" | ${KERMIT}  -i -b ${SPEED} -l ${PORT} -p n -a ${ARCHIVE} -s -
-	
+
+if [ "${TYPE}" = "cpio" ] ; then
+	rm -f /dumppipe.$$
+fi
