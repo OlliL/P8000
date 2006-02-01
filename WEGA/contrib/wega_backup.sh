@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $Id: wega_backup.sh,v 1.4 2006/02/01 21:22:04 olivleh1 Exp $
+# $Id: wega_backup.sh,v 1.5 2006/02/01 21:22:53 olivleh1 Exp $
 #
 
 UUENCODE=uuencode
@@ -135,6 +135,7 @@ echo "press enter to start the transfer"
 read LALA
 set -x
 eval "${CMD}" | ${KERMIT}  -i -b ${SPEED} -l ${PORT} -p n -a ${ARCHIVE} -s -
+set +x
 
 if [ "${TYPE}" = "dump" ] ; then
 	rm -f /dumppipe.$$
