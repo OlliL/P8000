@@ -24,7 +24,7 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $Id: wega_backup.sh,v 1.2 2006/02/01 17:14:28 olivleh1 Exp $
+# $Id: wega_backup.sh,v 1.3 2006/02/01 19:50:26 olivleh1 Exp $
 #
 
 UUENCODE=uuencode
@@ -124,6 +124,7 @@ now open a kermit on your receiving system and type:
 set line /dev/ttyXX
 set speed ${SPEED}
 set parity none
+set carrier-watch off
 set file type binary
 receive
 
