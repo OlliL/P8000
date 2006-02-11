@@ -1,4 +1,4 @@
-#!/bin/sh -u
+#!/bin/sh
 #-
 # Copyright (c) 2006 Oliver Lehmann <oliver@FreeBSD.org>
 # All rights reserved.
@@ -24,12 +24,24 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# $Id: wega_backup.sh,v 1.5 2006/02/01 21:22:53 olivleh1 Exp $
+# $Id: wega_backup.sh,v 1.6 2006/02/11 13:42:26 olivleh1 Exp $
 #
 
-UUENCODE=uuencode
-KERMIT=kermit
 whereis printf | grep /printf >/dev/null && PRINTF="printf" || PRINTF="echo -n"
+
+PROGNAME=`basename $0`
+PROGPATH=$0
+if [ $PROGNAME = $PROGPATH -o $PROGPATH = '.' ] ; then
+	PROGPATH=`pwd`
+else
+	[ -z "`echo "$PROGPATH" | sed 's![^/]!!g'`" ] && \
+	PROGPATH=`type "$PROGPATH" | sed 's/^.* //g'`
+	PROGPATH=`dirname $PROGPATH`
+fi
+
+UUENCODE=${PROGPATH}/uuencode
+KERMIT=${PROGPATH}/kermit
+
 
 while [ ! -c "${PORT}" ] ; do
 	${PRINTF} "Port number                  (0-9)                  [0]:    "
@@ -111,7 +123,7 @@ case "${TYPE}" in
 		CMD="cd ${TO_BACKUP} && tar cf - ${FILES} | ${UUENCODE} -";;
 
 	dd)	CMD="dd if=${TO_BACKUP} bs=512 | ${UUENCODE} -";;
-	dump)	CMD="uuencode /dumppipe -"
+	dump)	CMD="${UUENCODE} /dumppipe -"
 		mknod p /dumppipe.$$ || exit 1
 		dump 0f /dumppipe ${TO_BACKUP} &
 		;;
