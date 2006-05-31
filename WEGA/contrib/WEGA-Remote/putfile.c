@@ -42,7 +42,11 @@ int argc;
 char **argv;
 
 {
+#ifdef __FreeBSD__
+  void time_out();
+#else
   int time_out();
+#endif
 
   signal(SIGALRM,time_out);		/* set up alarm handling */
   tty = ttyname(1);			/* get name of the output file */
@@ -200,6 +204,9 @@ char **argv;
     printf ("\nputfile: unable to un-write protect the terminal\n");
 }
 
+#ifdef __FreeBSD__
+void
+#endif
 time_out()
 {
 	signal(SIGALRM,time_out);

@@ -27,8 +27,13 @@ char *strcat();
 #include <stdio.h> /* used for database accesses only ... all else uses
 			wega calls */
 #include <pwd.h>
+#ifdef __FreeBSD__
+#define DATABASE "/var/spool/uucp/remotelines"
+#define LOCKROOT "/var/spool/uucp/LCK..\0xxxxxxxxxxxxxxxxxxxxxxxxxx"
+#else
 #define DATABASE "/usr/spool/uucp/remotelines"
 #define LOCKROOT "/usr/spool/uucp/LCK..\0xxxxxxxxxxxxxxxxxxxxxxxxxx"
+#endif
 			/* note: extra space required by strcat */
 #define NEEDNULL 21	/* index where \0 is .. */
 
@@ -62,7 +67,19 @@ char can = CAN;
 char esc = ESC;
 char exc = EXEC;
 
+#ifdef __FreeBSD__
+#include <termios.h>
+#include <sys/ttycom.h>
+#define TCGETA  TIOCGETA
+#define TCSETA  TIOCSETA
+#define NCC     NCCS
+#define TAB3    OXTABS
+#define CBAUD	0010017
+#define TCFLSH  TCIOFLUSH
+#define termio  termios
+#else
 #include <termio.h>
+#endif
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -77,7 +94,11 @@ static int lockfd,pterm;
 static struct termio targ;	/* defined in termio.h */
 static struct termio tflags, ptflags;	/* original tty flags */
 static struct termio txlflags, ptxlflags;	/* xlucent flags */
+#ifdef __FreeBSD__
+#define curint SIG_DFL
+#else
 int (*curint)();		/* initial SIGINT value */
+#endif
 
 xlucent (term, targp, savterm)	/* make terminal interface translucent and */
 int term;		/* return the previous configuration */
@@ -90,7 +111,9 @@ struct termio *targp, *savterm;
   savterm->c_oflag = targp->c_oflag;
   savterm->c_cflag = targp->c_cflag;
   savterm->c_lflag = targp->c_lflag;
+#ifndef __FreeBSD__
   savterm->c_line = targp->c_line;
+#endif
   for (i = 0; i < NCC; i++)
   	savterm->c_cc[i] = targp->c_cc[i];
 
@@ -142,7 +165,9 @@ struct termio *targp, *savterm;
   savterm->c_oflag = targp->c_oflag;
   savterm->c_cflag = targp->c_cflag;
   savterm->c_lflag = targp->c_lflag;
+#ifndef __FreeBSD__
   savterm->c_line = targp->c_line;
+#endif
   for (i = 0; i < NCC; i++)
   	savterm->c_cc[i] = targp->c_cc[i];
 
@@ -163,7 +188,9 @@ struct termio *savterm, *targp;
   targp->c_oflag = savterm->c_oflag;
   targp->c_cflag = savterm->c_cflag;
   targp->c_lflag = savterm->c_lflag;
+#ifndef __FreeBSD__
   targp->c_line = savterm->c_line;
+#endif
   for (i = 0; i < NCC; i++)
   	targp->c_cc[i] = savterm->c_cc[i];
   ioctl (term, TCSETA, targp);
@@ -175,6 +202,9 @@ term_to_wega (pterm)	/* send all input from terminal to wega */
 int pterm;
 {
   char c;
+#ifdef __FreeBSD__
+  void cleanup();
+#endif
 
   while (1)			/* do forever */
   {
@@ -239,6 +269,9 @@ int parent;			/* transfers to detect user abort requests */
 }
 
 
+#ifdef __FreeBSD__
+void
+#endif
 total_abort ()			/* set flag to indicate all xfers to stop */
 {
   signal (SIGQUIT, total_abort);	/* set up the signal call again */
@@ -246,12 +279,18 @@ total_abort ()			/* set flag to indicate all xfers to stop */
 }
 
 
+#ifdef __FreeBSD__
+void
+#endif
 single_abort ()			/* set flag to stop xfer in progress */
 {
   signal (SIGTERM, single_abort); /* set up the signal call again */
   onestop = 1;
 }
 
+#ifdef __FreeBSD__
+void
+#endif
 time_out ()			/* set flag to indicate a read timed out */
 {
   signal (SIGALRM, time_out);	/* set up the signal call again */
@@ -665,14 +704,22 @@ char **argv;
 {
   char c, wega_to_term();
   FILE *dbf;	/* file descriptor for database */
+#ifdef __FreeBSD__
+  void total_abort(), single_abort(), time_out(), cleanup(), intrupt();
+#else
   int total_abort(), single_abort(), time_out(), cleanup(), intrupt();
+#endif
   int inithookup;	/* initial hookup flag */
   char *eof,*nxtdev;	/* end of file on database */
 
   inithookup = 1;
   signal(SIGHUP, cleanup);	/* watch for hangups */
   /* get current SIGINT value, watch for interrupts before going to raw mode */
+#ifdef __FreeBSD__
+  signal(SIGINT, intrupt);
+#else
   curint = signal(SIGINT, intrupt);
+#endif
   signal(SIGALRM, time_out);	/* set up timeout for initial hookup */
 
 	/* attempt to open database file */
@@ -872,6 +919,9 @@ char *device;
   signal(SIGINT, curint);		/* reset to original SIGINT value */
 }
 
+#ifdef __FreeBSD__
+void
+#endif
 cleanup()	/* interrupt or hang up, so exit gracefully */
 {
   write(pterm, "logout\n", 7);
@@ -892,6 +942,9 @@ logout()	/* logout processing */
 /*
  *  this routine is used by both parent and child
  */
+#ifdef __FreeBSD__
+void
+#endif
 intrupt()
 {
   unlink(locknm);

@@ -9,7 +9,8 @@ INCL = /usr/include
 BIN =  is ready for installation in /bin
 
 # Cflags
-CFLAGS = -O -s
+#CFLAGS = -O -s
+LDFLAGS = -lcompat
 
 #
 # Abhaengigkeiten und Aktionen
@@ -19,21 +20,21 @@ default:	putfile getfile local
 
 putfile:	putfile.c $(INCL)/sgtty.h $(INCL)/sys/types.h \
 	$(INCL)/sys/stat.h $(INCL)/signal.h
-	$(CC) $(CFLAGS) putfile.c -o $@
+	$(CC) $(CFLAGS) putfile.c -o $@ $(LDFLAGS)
 	$(ECHO) $@ $(BIN)
 	$(ECHO) with mode: 751  owner: bin  group: 0
 
 local:	local.c $(INCL)/sgtty.h
-	$(CC) $(CFLAGS) local.c -o $@
+	$(CC) $(CFLAGS) local.c -o $@ $(LDFLAGS)
 	$(ECHO) $@ $(BIN)
 	$(ECHO) with mode: 751  owner: bin  group: 0
 
 getfile:	getfile.c $(INCL)/sgtty.h $(INCL)/signal.h
-	$(CC) $(CFLAGS) getfile.c -o $@
+	$(CC) $(CFLAGS) getfile.c -o $@ $(LDFLAGS)
 	$(ECHO) $@ $(BIN)
 	$(ECHO) with mode: 751  owner: bin  group: 0
 
-remote:	remote.c $(INCL)/termio.h $(INCL)/signal.h $(INCL)/stdio.h \
+remote:	remote.c $(INCL)/termios.h $(INCL)/signal.h $(INCL)/stdio.h \
 	$(INCL)/sys/types.h $(INCL)/sys/stat.h $(INCL)/pwd.h
 	$(CC) $(CFLAGS) remote.c -o $@
 	$(ECHO) $@ $(BIN)
