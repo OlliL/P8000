@@ -1,0 +1,131 @@
+ZFT/KEAW                                                      15.5.1989
+Abt. Basissoftware
+
+
+
+
+                         Softwarehinweise
+                         ----------------
+
+
+Titel: WEGA-Remote                                         Version: 1.2
+
+-----------------------------------------------------------------------
+
+1. Inhalt:
+----------
+
+Dieses Softwarepaket dient zum Betreiben eines P8000 unter dem Betriebs-
+system WEGA als Terminal eines anderen WEGA-Systems. Es enthaelt weiterhin
+die Software um ein 8-Bit-P8000 unter dem Betriebssystem UDOS als Terminal
+an einem WEGA-System zu nutzen. Die Programme werden auf einer Standard-
+P8000-TAR-Diskette (Ms 889 318) geliefert, die folgende Dateien enthaelt:
+
+- Programme fuer das Betriebssystem WEGA:
+
+	Makefile	zur Generierung von getfile, putfile, local
+			und remote
+	getfile.c	WEGA-Kommando getfile C-Quellprogramm
+	local.c		WEGA-Kommando local C-Quellprogramm
+	putfile.c	WEGA-Kommando putfile C-Quellprogramm
+	remote.c	WEGA-Kommando remote C-Quellprogramm
+
+- Programme fuer das Betriebssystem UDOS:
+
+	REMOTE		ausfuehrbares UDOS-Kommando fuer 8-Bit-P8000
+	REM.ACT.S	Quellmodul: Dateiaktivitaeten
+	REM.CRTEM.S	Quellmodul: Terminalemulator
+	REM.P8000.S	Quellmodul: geraetespez. Teil 8-Bit-P8000
+	REMLINK		UDOS-DO-Datei zur Generierung von REMOTE
+
+- Benutzerhandbuch:
+
+	rembhb.dr	Remote-Benutzerhandbuch (formatierter Text)
+
+
+Zum gesamten WEGA-Remotepaket gehoeren noch zwei weitere Disketten:
+
+	SCP-REMOTE	zum Anschluss eines PC1715 unter dem Betriebs-
+        (Ms 889 319)	system SCP an ein WEGA-System
+	DCP-REMOTE	zum Anschluss eines DCP-Rechners an ein
+        (Ms 889 320)	WEGA-System
+
+
+2. Dokumentation:
+-----------------
+
+Zum WEGA-REMOTE-Softwarepaket existiert ein Benutzerhandbuch, das die
+notwendigen Informationen fuer den Anwender enthaelt. Es befindet sich
+auf der WEGA-REMOTE-TAR-Diskette. Spezielle Hinweise zum Anschluss eines
+P8000-8-Bit-Rechner an ein WEGA-System befinden sich im Abschn. 3.1.
+des Remote-Benutzerhandbuchs.
+
+
+3. Installation:
+----------------
+
+Mit Hilfe des WEGA-Kommandos tar werden die o.g. Dateien in das Dateisystem
+/tmp eingelesen. Die fuer das Betriebssystem WEGA relevanten Teile kann der
+Anwender in die Directory /usr/src kopieren. Die fuer ein 8-Bit-P8000
+benoetigten Dateien koennen ueber das Kommando putud auf eine UDOS-Diskette
+ausgelagert werden. Das ausfuehrbare Kommando REMOTE muss mit den Optionen
+-b (Binaer-Datei) und -f (einschliesslich Descriptorrecord) ausgelagert 
+werden:
+
+	putud -b -f REMOTE
+
+Es kann aber auch unter UDOS aus den Quellprogrammen und der Linkanweisung
+generiert werden. Die Quelldateien und die Linkanweisung werden als 
+ASCII-Dateien auf eine UDOS-Diskette ausgelagert:
+
+	putud REMLINK REM.CRTEM.S REM.ACT.S REM.P8000.S
+
+
+V.24-Verbindungskabel:
+
+	P8000-8-Bit-Rechner		        P8000-WEGA
+	tty0 (bis 2/89!)		Terminalport | (neu ab 3/89!)
+					(bis 2/89!)  | einschl. P8000-compact
+
+			===(Schirm)=======+  7     SG    7  
+         SG	7 +-----------------------+  7     SG    7 
+         TD	3 +-----------------------+  2     RD    3
+         RD	2 +-----------------------+  3     TD    2
+	 DTR    8 +-----------------------+ 20     DCD   8
+	 DCD   20 +-----------------------+  8     DTR  20
+
+(siehe dazu auch P8000-Hardwarehandbuch, Abschn. 5.2.)
+
+Ab 3/89 hat sich die Pinbelegung der tty-Ports veraendert
+(siehe Abschn. 6.2. Hardwarehandbuch). Dies ist bei Verbindung
+eines aelteren P8000 mit einem neueren P8000 (einschl. P8000-compact)
+zu beachten.
+
+
+4. Nutzerhinweise:
+------------------
+
+Die Programme getfile, putfile, local und remote sind integraler Bestandteil
+des Betriebssystems WEGA. Die C-Quellprogramme verdeutlichen dem Anwender
+die Arbeitsweise der WEGA-REMOTE-Software mit der REMOTE-Software des lokalen
+Rechners.
+
+
+5. Versionshinweise:
+--------------------
+
+Die Version des Programms local in /bin entspricht nicht der C-Quelle local.c.
+Die mit dem Betriebssystem WEGA ausgelieferte Version von local ermoeglicht
+zusaetzlich mit dem DCP-REMOTE-Paket-A die Ausfuehrung von Kommandos auf dem
+angeschlossenen lokalen Rechner.
+
+Beim UDOS-REMOTE-Paket wurde die Wirkung der Option -f abgewandelt.
+Sie gestattet das Ein-/Auslagern von UDOS-Dateien einschliesslich ihres
+Descriptorrecords.
+
+
+6. Probleme:
+------------
+
+Zum Problem der Bildschirmemulation siehe Abschn. 3.1. des Remote-
+Benutzerhandbuchs.

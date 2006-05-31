@@ -1,0 +1,792 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Remote                     - 1 -           Benutzerhandbuch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                               REMOTE
+
+                          Benutzerhandbuch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     (Stand: 5/89)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Remote                     - 2 -           Benutzerhandbuch
+
+
+     Vorwort
+
+
+         Das   vorliegende   Handbuch   beschreibt   das   WEGA-
+     Softwarepaket  REMOTE  aus der Sicht des Benutzers. Es wird
+     vorausgesetzt, dass der Leser Erfahrungen  mit  dem  Umgang
+     von Personal Computern besitzt.
+
+     Mit diesem Softwarepaket ist es moeglich PC's als Terminals
+     in einem WEGA-System zu betreiben. Zusaetzlich besteht noch
+     die Moeglichkeit der Dateiuebertragung  vom  PC  zum  WEGA-
+     System und umgekehrt.
+
+     Hinweise zur PC-seitigen Installation der  Software  werden
+     in  der  jeweiligen  Dateie  README,  die  sich  auf  jeder
+     Vertriebsdiskette befindet, gegeben.
+
+     Zum Lieferumfang gehoeren drei Disketten, die  die  Remote-
+     Software fuer folgende PC's enthalten:
+
+             P8000 (8-Bit-Rechner) unter UDOS und OS/M
+             PC1715 unter SCP
+             EC1834/AC7150 unter DCP und XT/AT-kompatible PC's
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Remote                     - 3 -           Benutzerhandbuch
+
+
+
+     Inhaltsverzeichnis                                    Seite
+
+
+     1.      Einfuehrung . . . . . . . . . . . . . . . . . . . 4
+
+     2.      Arbeitsweise. . . . . . . . . . . . . . . . . . . 4
+     2.1.    Physikalische Verbindung. . . . . . . . . . . . . 4
+     2.2.    Auf- und Abbau der Rechnerverbindung. . . . . . . 5
+     2.3.    Dateiuebertragung . . . . . . . . . . . . . . . . 5
+
+     3.      Hinweise zu PC-Implementierungen. . . . . . . . . 7
+     3.1.    P8000 (8-Bit-Rechner) unter UDOS. . . . . . . . . 7
+     3.2.    PC1715 unter SCP. . . . . . . . . . . . . . . . . 7
+     3.3.    P8000 (8-Bit-Rechner) unter OS/M. . . . . . . . . 8
+     3.4.    XT/AT-kompatible Rechner unter MS-DOS . . . . . . 8
+     3.5.    EC1834/AC7150 unter DCP . . . . . . . . . . . . .11
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Remote                     - 4 -           Benutzerhandbuch
+
+
+     1.   Einfuehrung
+
+         Das Remote-Softwarepaket  dient  zur  Verbindung  eines
+     Personal Computers (im folgenden als PC bezeichnet) mit dem
+     P8000 unter dem Betriebsystem  WEGA  (Mehrplatzsystem)  mit
+     dem  Ziel, den PC als Terminal zu benutzen und/oder Dateien
+     zwischen den verbundenen zu transferieren.
+     Es gestattet aber auch ein P8000 unter  WEGA  als  Terminal
+     eines anderen WEGA-Systems zu betreiben und zwischen diesen
+     beiden Rechnern Dateien auszutauschen.
+
+     Zur  Nutzung  ist  die  entsprechende  Software   auf   dem
+     jeweiligen    PC   zu   installieren.   Die   Host-seitigen
+     Programmteile    sind    integraler     Bestandteil     des
+     Betriebssystem WEGA (Standardlieferumfang).
+
+     Das Remote-Softwarepaket besteht aus mehreren Funktionen:
+
+         Die Funktion "putfile" transferiert Dateien  des  WEGA-
+         Systems  zum  PC.   Die  Uebertragung  erfolgt in einem
+         mehrfach    abgesicherten    Protokoll,     so     dass
+         Uebertragungsfehler  erkannt  werden.   Fuehren auch 10
+         Wiederholungen  nicht   zum   Erfolg,   so   wird   die
+         Uebertragung abgebrochen.
+
+         Die Funkion "getfile" transferiert  Daten  vom  PC  zum
+         WEGA-System.   Die Absicherung der Daten wird analog zu
+         "putfile" durchgefuehrt.
+
+         Die Funktionen "REMOTE" und "local" dienen zum Auf- und
+         Abbau  der  gewuenschten Verbindung zwischen PC und dem
+         WEGA-System. Sonderformen der Funktion "local" erlauben
+         die  Ausfuehrung von Kommandos auf dem lokalen Personal
+         Computer  unter  Aufrechterhaltung  der   hergestellten
+         Verbindung  (In  dieser  Version  nur  beim Paket-A der
+         Remote-Software der DCP-Diskette moeglich!).
+
+
+     2.   Arbeitsweise
+
+     2.1. Physikalische Verbindung
+
+         Die physikalische Verbindung zwischen PC und dem  WEGA-
+     System  wird  durch  ein  Verbindungskabel  zwischen  einem
+     Terminalport des WEGA-Systems (es  sollten  tty4  bis  tty7
+     benutzt    werden)   und   einer   asynchronen,   seriellen
+     Schnittstelle   des   PC    hergestellt.     Details    zur
+     Kabelbelegung     sind    der    README-Datei    der    PC-
+     Installationsdiskette  (s.  Abschn.  3   Installation)   zu
+     entnehmen.
+     Die   ausgelieferte    Software    arbeitet    mit    einer
+     Uebertragungsgeschwindigkeit von 9600 baud.
+
+
+
+
+
+
+
+
+
+
+
+     Remote                     - 5 -           Benutzerhandbuch
+
+
+     2.2. Auf- und Abbau der Rechnerverbindung
+
+         PC-seitig  wird  das  Kommando  REMOTE  zur  Verfuegung
+     gestellt,  welches  aus  dem Bildschirm des PC ein Terminal
+     des WEGA-Systems macht, d.h.  jede Eingabe am  PC  wird  an
+     das  WEGA-System  gesandt und jede Ausgabe des WEGA-Systems
+     wird auf dem Bildschirm des PC ausgegeben.
+
+     Der Aufruf des Kommandos
+
+             REMOTE<CR>
+
+     bewirkt den Uebergang in diese  Arbeitsweise.  Beim  ersten
+     Aufruf   wird   auf  dem  PC-Bildschirm  die  "WEGA-login"-
+     Anforderung erscheinen  (ggf.  ist  auf  dem  PC  ein  <CR>
+     einzugeben).
+
+     Das  WEGA-Kommando  "local"  fuehrt  zur   Beendigung   des
+     Kommandos  "REMOTE"  auf  dem  PC, d.h. die Kontrolle kehrt
+     wieder zum PC zurueck.  Sofern  bei  Aufruf  des  Kommandos
+     "local" der Parameter "-l" angegeben wurde
+
+             local -l<CR>
+
+     generiert REMOTE ein "logout" fuer den WEGA-Rechner.
+
+     Eine  Sonderform  des  Kommandos  "local"   gestattet   die
+     Ausfuehrung  von lokalen Kommandos auf dem PC. Diese Option
+     wird z.Z. nur vom Remote-Paket-A unter  dem  Betriebssystem
+     DCP unterstuetzt (siehe dazu Abschn. 3.4.).
+
+
+     2.3. Dateiuebertragung
+
+         Dateitransfers sind moeglich, nachdem unter  Verwendung
+     des  Kommandos  "REMOTE"  die  Verbindung  vom PC zum WEGA-
+     System erfolgreich aufgebaut worden  ist.   Auf  dem  WEGA-
+     System  sind  hierzu  die Kommandos "putfile" (WEGA ==> PC)
+     und "getfile" (PC ==> WEGA) installiert.
+     Diese Kommandos akzeptieren Dateinamen, die fuer das  WEGA-
+     System    zulaessig   sind.   Dabei   ist   auf   moegliche
+     Namenskonflikte  zu  achten,  da  i.d.R.  unter   dem   PC-
+     Betriebssystem   andere  Regeln  fuer  gueltige  Dateinamen
+     gelten. Naehere Informationen dazu sind  dem  Abschn.  3  -
+     Hinweise zu PC-Implentierungen - zu entnehmen.
+
+     Eine  Umsetzung  des  Textdateiformates  des  PC's  in  das
+     entsprechende      Format     des     WEGA-Systems     (das
+     Zeilenendekennzeichen "CR" wird  durch  ein  "LF"  ersetzt)
+     wird   von   "REMOTE"  standardmaessig  beim  Dateitransfer
+     durchgefuehrt, es  sei  denn  diese  Umsetzung  wird  durch
+     Verwendung der Kommandoparameter "-B" oder "-b" (steht fuer
+     binaer) unterdrueckt.
+
+     Der Aufruf der Kommandos unter  WEGA  hat  folgende  Syntax
+     (s.a.     putfile(1)     und     getfile(1)     im    WEGA-
+
+
+
+
+
+
+
+     Remote                     - 6 -           Benutzerhandbuch
+
+
+     Programmierhandbuch):
+
+     getfile [-bBfq] filename1 [[-b] filename2 ... ]
+
+     putfile [-bBfq] filename1 [[-b] filename2 ... ]
+
+     -b:     Nur  die  folgende  Datei  wird   als   Binaerdatei
+             behandelt.  Das Zeichen "Linefeed" wird nicht durch
+             "Carriage Return" ersetzt (bzw.  umgekehrt).
+
+     -B:     Alle angegebenen Dateien werden  als  Binaerdateien
+             behandelt (wichtig fuer einen WEGA-WEGA-Transfer).
+
+     -f:     Das Programm unterdrueckt alle Fehlermeldungen, die
+             nicht zu einem Abbruch fuehren.
+
+     -q:     Das Programm gibt  eine  Anfrage  aus,  bevor  eine
+             existierende  Datei, die den gleichen Namen wie die
+             zu transferierende hat, ueberschrieben wird.
+
+     Die Optionen "-f" und  "-q"  koennen  bei  einigen  REMOTE-
+     Versionen nicht implementiert sein.
+     Beim  UDOS-REMOTE  wurde  die  Wirkung  der   Option   "-f"
+     abgewandelt.   Sie  gestattet  das Ein-/Auslagern von UDOS-
+     Dateien einschliesslich ihres Descriptorrecords.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Remote                     - 7 -           Benutzerhandbuch
+
+
+     3. Hinweise zu PC-Implentierungen
+
+     3.1. P8000 (8-Bit) unter UDOS
+
+         Die physikalische Verbindung des  P8000  (8-Bit-System)
+     erfolgt  ueber  den  seriellen  UDOS-Geraetetreiber  "$SI".
+     Dieser bedient standardmaessig den seriellen Kanal tty0. An
+     diesen  Kanal  ist demzufolge das Verbindungskabel zu einem
+     WEGA-Terminalport anzuschliessen.
+
+     Fuer Dateiuebertragungen von UDOS zum WEGA-System wird  die
+     standardmaessige   Suchstrategie  des  Betriebssystem  UDOS
+     verwendet.
+
+     Eine Uebersetzung von Dateinamen findet nicht statt.   Dies
+     ist  bei  beiden Uebertragungsrichtungen zu beachten, da es
+     sonst  zu  Dateinamenskonflikten   kommen   kann.    (WEGA-
+     Dateinamen:  14  Alphanumerische  Zeichen (einschl. einiger
+     Sonderzeichen)
+     UDOS-Dateinamen: 32 Alphanumerische Zeichen  (einschl.  "_"
+     und "."))
+
+     Die lokale Kommandoausfuehrung ist in dieser Version  nicht
+     implementiert.
+
+     Beim Arbeiten mit bildschirmorientierten  Programmen  (z.B.
+     "vi-Editor")  ist  darauf  zu  achten,  dass die globale C-
+     Shell-Variable "TERM" den entsprechenden Wert fuer das  PC-
+     Terminal besitzt ("P8" fuer P8000-Terminal ADM31-kompatibel
+     und "PV" fuer VT-kompatibel).
+
+
+     3.2. PC1715 unter SCP
+
+         Die physikalische Verbindung erfolgt  ueber  den  V.24-
+     Anschluss  der  Grundplatte  des  PC1715.  Falls  der IFFS-
+     Anschluss (Ausgang B) genutzt werden  soll,  so  ist  durch
+     Uebersetzung  des  Quellprogramms  "TPC1715.PAS"  eine neue
+     Version des Programms "REMOTE.COM" zu generieren.
+     Die Uebertragungsrate ist auf 9600 baud eingestellt.
+
+     Eine Uebersetzung von Dateinamen findet  nicht  statt.  Die
+     bei  "putfile"  und  "getfile"  angegebenen Dateinamen sind
+     immer WEGA-Dateinamen.  Die Zuordnung zu  SCP-Dateien  wird
+     immer  per  Dialog  abgefragt  (zuerst Laufwerksnummer dann
+     Dateiname).   Vorher   erfolgt   noch   die   Ausgabe   des
+     Inhaltsverzeichnisses des aktuellen Laufwerks.
+
+     Die   Option   "-q"   ist   auf   Grund   der    staendigen
+     Dateinamensabfrage nicht integriert.
+
+     Die lokale Kommandoausfuehrung ist in dieser Version  nicht
+     implementiert.
+
+     Zur Bildschirmemulation ist die  Erstellung  eines  PC1715-
+     Termcap-Eintrages  (Datei:  /etc/termcap),  der die PC1715-
+
+
+
+
+
+
+
+     Remote                     - 8 -           Benutzerhandbuch
+
+
+     Bildschirmsteuerfunktionen enthaelt notwendig.
+     Beispiel:
+
+             PR|PC1715|PC1715 - REMOTE-System:\
+                     :co#80:li#24:cl=\f:am:bs:\
+                     :ce=\026:cd=\024:up=\032:
+
+
+     3.3. P8000 (8-Bit) unter OS/M
+
+         Die physikalische Verbindung des  P8000  (8-Bit-System)
+     erfolgt ueber den seriellen Kanal tty0. An diesen Kanal ist
+     demzufolge das Verbindungskabel zu einem  WEGA-Terminalport
+     anzuschliessen.  Damit ist sowohl unter UDOS als auch unter
+     OS/M auf dem 8-Bit-P8000 die gleiche Verbindung nutzbar.
+
+     Die Arbeitsweise  des  Programms  ist  analog  zur  PC1715-
+     Version.
+
+     Beim Arbeiten mit bildschirmorientierten  Programmen  (z.B.
+     vi-Editor)  ist darauf zu achten, dass die globale C-Shell-
+     Variable  "TERM"  den  entsprechenden  Wert  fuer  das  PC-
+     Terminal besitzt ("P8" fuer P8000-Terminal ADM31-kompatibel
+     und "PV" fuer VT-kompatibel).
+
+
+     3.4. XT/AT-kompatible Rechner unter MS-DOS
+
+         Die folgenden Bemerkungen beziehen sich auf das Paket-A
+     der DCP-Vertriebsdiskette.
+     Die physikalische Verbindung des PC  zum  WEGA-System  wird
+     ueber    den   asynchronen,   seriellen   Port   0   (COM1)
+     durchgefuehrt.     Die    Baudrate    wird    durch     die
+     Umgebungsvariable  RTPARMS  gesteuert.   Ihr  kann als Wert
+     eine Zeichenkette der Form zugewiesen werden,  wie  sie  im
+     DCP-Kommando MODE zulaessig ist:
+
+             COM1:baud[,parity[,databits[,stoppbits]]]
+
+     Das  folgende   Beispiel   bewirkt,   dass   die   serielle
+     Schnittstelle  COM1 mit 9600 baud, ohne Paritaetsbit, mit 8
+     Datenbits und einem Stoppbit betrieben wird:
+
+             set RTPARMS=com1:9600,n,8,1
+
+     Im einzelnen sind folgende Einstellungen zulaessig:
+
+     (1) Baudraten
+         300  bis  9600  entsprechend  der  Initialisierung  des
+         WEGA-Terminalports (siehe WEGA-Systemhandbuch)
+
+     (2) Paritaet
+         n - no parity e - even parity o - odd parity
+
+     (3) Datenbits
+         8 - 8 Datenbits 7 - 7 Datenbits
+
+
+
+
+
+
+
+     Remote                     - 9 -           Benutzerhandbuch
+
+
+
+     (4) Stoppbits
+         1 - 1 Stoppbit 2 - 2 Stoppbits
+
+     Die  Verwendung  des  Uebertragungsprotokolls  "8-Bit,   no
+     parity" ist fuer den Transfer von Binaerdaten verbindlich.
+
+     Optionen  fuer   das   Kommando   "REMOTE"   werden   ueber
+     Umgebungsvariablen  gesteuert.  Deshalb  erfolgt der Aufruf
+     des Kommandos  normalerweise  ueber  eine  Batch-Datei.  So
+     enthaelt z.B. die Datei "RTG.BAT" folgende Kommandofolge:
+
+             echo off
+             set RTWEGA=49
+             set RTSTATUS=
+             remote
+             set RTSTATUS=0
+             $$$
+
+     Auf der PC-Installationsdiskette befinden sich 4  Beispiele
+     fuer Batch-Dateien.
+
+     Ueber  die  Umgebungsvariable  "RTINIT"  ist  es   moeglich
+     bestimmte  Zeichen  (z.B.  Steuerzeichen  oder  gewuenschte
+     Kommandos) an das WEGA-System zu senden. Ihr  kann  in  der
+     Form
+
+             set RTINIT=<Zeichenkette>
+
+     ein Wert zugewiesen  werden.  Neben  den  normalen  Zeichen
+     stehen  folgende  Sondernotationen  zur Verfuegung, die von
+     "REMOTE" expandiert werden:
+
+             \b      - Backspace, BS
+             \n      - Neue Zeile, NL, LF
+             \r      - Wagenruecklauf, CR
+             \t      - hor. Tabulator, HT
+             \v      - vert. Tabulator, VT
+             \f      - Seitenvorschub, FF
+             \nnn    - bel. 3-stellige Oktalzahl
+             \xnn    - bel. 2-stellige Hexazahl
+
+     Durch die Zuweisung
+
+             set RTINIT=\ndate\nwho\n
+
+     wird  z.B.  bei  jedem  Verbindungsaufbau  zum  WEGA-System
+     Datum,   Uhrzeit  und  die  Liste  der  aktuellen  Benutzer
+     ausgegeben.  Sollen   vom   WEGA-System   keine   Kommandos
+     ausgefuehrt werden, so ist
+
+             set RTINIT=\n
+
+     sinnvoll. Ist die Variable  "RTINIT"  nicht  definiert,  so
+     sendet  "REMOTE"  bei Verbindungsaufbau kein Zeichen an das
+     WEGA-System.
+
+
+
+
+
+
+
+     Remote                    - 10 -           Benutzerhandbuch
+
+
+     Die lokale Kommandoausfuehrung wird mittels
+
+             local <Kommandostring><CR>
+
+     realisiert. Der Kommandostring muss mit einem "."  beginnen
+     und  kein  ":"  enthalten.  Die sogenannten Punkt-Kommandos
+     werden    ausgefuehrt,    indem    "REMOTE"    den     DCP-
+     Kommandointerpreter  "COMMAND.COM" mit der Option "C" laedt
+     und  ihm  das   auszufuehrende   Kommando   als   Parameter
+     uebergibt.    Als   auszufuehrendes   Kommando  kann  jedes
+     verfuegbare DCP-Kommando verwendet werden.
+     Ist z.B. der DCP-PC mit  einem  WEGA-System  verbunden  und
+     soll  das  Inhaltsverzeichnis  der DCP-Arbeitsdirectory auf
+     dem Drucker des WEGA-Rechners ausgedruckt werden,  so  kann
+     dies mit der folgenden Sequenz erreicht werden:
+
+             local .dir \>dcp.dir
+             getfile dcp.dir
+             lpr dcp.dir
+
+     Da das Zeichen ">" fuer die unter WEGA laufende  Shell  ein
+     Sonderzeichen  ist,  die gewuenschte Redirection aber nicht
+     auf WEGA-Ebene, sondern auf DCP-Ebene durchgefuehrt  werden
+     soll,  muss  die  Shell-Bedeutung  des  Zeichens  durch "\"
+     (backslash) aufgehoben  werden.   Selbstverstaendlich  kann
+     eine  solche  Kommandofolge  in  der  ueblichen  Weise auch
+     Bestandteil von Shell-Skripten, Makefiles, etc. sein.
+
+
+     Bei der Uebersetzung von  Dateinamen  wird  nach  folgendem
+     Verfahren vorgegangen:
+
+     Der Teil des WEGA-Dateinamens vor dem ersten "." wird  nach
+     Kuerzung  auf  8  Zeichen  der  DCP-Dateiname. Der Teil des
+     WEGA-Dateinamens nach dem letzten "."  wird  nach  Kuerzung
+     auf 3 Zeichen der DCP-Dateityp.
+     Enthaelt der WEGA-Dateiname keinen ".", so wird dieser  auf
+     8  Zeichen  abgeschnitten  und wird mit leerem Dateityp der
+     DCP-Dateiname.
+     Enthaelt der WEGA-Dateiname genau einen  ".",  so  wird  er
+     gemaess  dem  Schema "name.typ" interpretiert und wird nach
+     Kuerzung auf 8 bzw. 3 Zeichen  der  DCP-Dateiname  mit  dem
+     entsprechenden Dateityp.
+
+     Die  Umgebungsvariable  "RTWEGA"  dient  zur  Anpassung  an
+     unterschiedliche  Zeichensaetze  (s.  Abschn. 1 der README-
+     Datei  der  Installationsdiskette).    Hat   die   Variable
+     "RTWEGA"  den Wert 0, so erfolgt keine Zeichenuebersetzung.
+     Bei einem  Wert  ungleich  0  werden  zusaetzlich  bei  der
+     lokalen    Kommandoausfuehrung    folgende   Uebersetzungen
+     ausgefuehrt:
+
+             verwendetes Zeichen     Uebersetzung durch REMOTE
+             -------------------------------------------------
+             Schraegstrich (slash)   Rueckstrich (backslash)
+             Minus                   Schraegstrich (slash)
+
+
+
+
+
+
+
+     Remote                    - 11 -           Benutzerhandbuch
+
+
+             Rueckstrich (backslash) Minus
+
+     Der Sinn der Uebersetzung ist der folgende:
+
+     Pfadnamen werden unter WEGA  durch  Schraegstrich  (slash),
+     unter  DCP  aber  durch  Rueckstrich  (backslash) getrennt.
+     Kommandooptionen werden unter WEGA  durch  "-",  unter  DCP
+     aber durch Schraegstrich (slash) gekennzeichnet.
+
+     Zur Bildschirmemulation steht der Termcap-Eintrag "ia"  zur
+     Verfuegung.    Dazu   ist   auf   PC-Seite   der   auf  der
+     Installationsdiskette  befindliche  Treiber  "ANSI.SYS"  zu
+     verwenden.     Er    gewaehrleistet    die    volle   ANSI-
+     Kompatibilitaet.   Daneben  existiert  noch  der   Termcap-
+     Eintrag "im", er ist eingeschraenkt ANSI-kompatibel.
+
+
+     3.5. EC1834/AC7150 unter DCP
+
+         Diese  Programme  (Paket-B  der  DCP-Vertriebsdiskette)
+     bieten  vielfaeltige  Moeglichkeiten auf der DCP-Seite. Sie
+     bieten   eine   menuegesteuerte   Bedienerfuehrung.    Alle
+     Varianten koennen ueber ein Help-Menue (F1-Taste) angezeigt
+     werden.
+     Die EC1834-Version dieses Paketes laeuft  auch  auf  XT/AT-
+     kompatiblen  PC's.   Der  Anwender  kann  dann  das  seinen
+     Beduerfnissen am besten entsprechende Programm einsetzen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
