@@ -20,9 +20,21 @@
 #define EXEC	0x10
 #define SECONDS 20	/* timeout interval */
 
-#include <sgtty.h>
 #include <signal.h>
+#ifdef __FreeBSD__
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <term.h>
+struct termios targ;
+#define RAW	ICANON
+#define CRMOD	OPOST
+#define XTABS	OXTABS
+#define TANDEM	IXON|IXOFF
+#else
+#include <sgtty.h>
 struct sgttyb targ;
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -36,6 +48,9 @@ int timeout = 0;
 char *fname;
 char flags = 0;
 
+#ifdef __FreeBSD__
+int
+#endif
 main (argc, argv)
 
 int argc;
@@ -53,12 +68,21 @@ char **argv;
   if (chmod(tty, 0600) == -1)		/* write protect terminal */
     printf ("\nputfile: unable to write protect the terminal\n");
 
+#ifdef __FreeBSD__
+  tcgetattr(0, &targ);			/* get current terminal parameters */
+  tflags = targ.c_oflag;		/* save flag word */
+  targ.c_oflag |= RAW;			/* set 1-char input, no parity output */
+  targ.c_oflag &= ~(ECHO|CRMOD|XTABS|TANDEM);  /* turn off echo, carr. return */
+					/* subst. and tab replacement */
+  tcsetattr(0, TCSADRAIN, &targ);
+#else
   gtty (0, &targ);			/* get current terminal parameters */
   tflags = targ.sg_flags;		/* save flag word */
   targ.sg_flags |= RAW;			/* set 1-char input, no parity output */
   targ.sg_flags &= ~(ECHO|CRMOD|XTABS|TANDEM); /* turn off echo, carr. return */
                                         /* subst. and tab replacement */
   stty (0, &targ);
+#endif
 
   while (--argc > 0)			/* process all command line args */
   {
@@ -195,13 +219,21 @@ char **argv;
       }
     }
   }
+#ifdef __FreeBSD__
+  targ.c_oflag = tflags;		/* restore initial terminal flags */
+  tcsetattr(0, TCSADRAIN, &targ);
+#else
   targ.sg_flags = tflags;		/* restore initial terminal flags */
   stty (0, &targ);
+#endif
   printf ("\nputfile: %d successful transfers  %d unsuccessful transfers\n",
           success, unsuccess);
 
   if (chmod(tty, 0622) == -1)		/* un-write protect */
     printf ("\nputfile: unable to un-write protect the terminal\n");
+#ifdef __FreeBSD__
+  return 0;
+#endif
 }
 
 #ifdef __FreeBSD__

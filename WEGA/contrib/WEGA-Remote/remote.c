@@ -68,6 +68,13 @@ char esc = ESC;
 char exc = EXEC;
 
 #ifdef __FreeBSD__
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <fcntl.h>
 #include <termios.h>
 #include <sys/ttycom.h>
 #define TCGETA  TIOCGETA
@@ -77,6 +84,8 @@ char exc = EXEC;
 #define CBAUD	0010017
 #define TCFLSH  TCIOFLUSH
 #define termio  termios
+void logout();
+int try();
 #else
 #include <termio.h>
 #endif
@@ -93,18 +102,29 @@ static char line[100],*p;	/* buffer for reading in database */
 static int lockfd,pterm;
 static struct termio targ;	/* defined in termio.h */
 static struct termio tflags, ptflags;	/* original tty flags */
+#ifdef __FreeBSD__
+static struct termio ptxlflags;			/* xlucent flags */
+#else
 static struct termio txlflags, ptxlflags;	/* xlucent flags */
+#endif
 #ifdef __FreeBSD__
 #define curint SIG_DFL
 #else
 int (*curint)();		/* initial SIGINT value */
 #endif
 
+#ifdef __FreeBSD__
+void
+#endif
 xlucent (term, targp, savterm)	/* make terminal interface translucent and */
 int term;		/* return the previous configuration */
 struct termio *targp, *savterm;
 {
+#ifdef __FreeBSD__
+  int iospeed = 0, i;
+#else
   int iospeed, i;
+#endif
 
   ioctl (term, TCGETA, targp);	/* get terminal parameters */
   savterm->c_iflag = targp->c_iflag;
@@ -151,6 +171,9 @@ struct termio *targp, *savterm;
 }
 
 
+#ifdef __FreeBSD__
+void
+#endif
 xparent (term, targp, savterm)	/* make terminal interface transparent and */
 int term;		/* return the previous configuration */
 struct termio *targp, *savterm;
@@ -177,6 +200,9 @@ struct termio *targp, *savterm;
 }
 
 /* return terminal interface to its initial state */
+#ifdef __FreeBSD__
+void
+#endif
 tinit (term, savterm, targp)
 int term;
 struct termio *savterm, *targp;
@@ -198,6 +224,9 @@ struct termio *savterm, *targp;
   return;
 }
 
+#ifdef __FreeBSD__
+void
+#endif
 term_to_wega (pterm)	/* send all input from terminal to wega */
 int pterm;
 {
@@ -251,6 +280,9 @@ int pterm;
   }
 }
 
+#ifdef __FreeBSD__
+void
+#endif
 watch_for_abort (parent)	/* child executes this routine during file */
 int parent;			/* transfers to detect user abort requests */
 {
@@ -297,6 +329,9 @@ time_out ()			/* set flag to indicate a read timed out */
   timeout = 1;
 }
 
+#ifdef __FreeBSD__
+void
+#endif
 message (pterm)		/* get a message from the remote system */
 int pterm;		/* an ETX ends the message */
 {
@@ -311,6 +346,9 @@ int pterm;		/* an ETX ends the message */
 }
 
 
+#ifdef __FreeBSD__
+void
+#endif
 aread (pterm, cptr)	/* time out a read using the alarm clock */
 int pterm;
 char *cptr;
@@ -322,6 +360,9 @@ char *cptr;
 }
 
 
+#ifdef __FreeBSD__
+void
+#endif
 wait_etx (pterm)	/* wait for etx, checksum from remote system */
 int pterm;
 {
@@ -334,6 +375,9 @@ int pterm;
   return;
 }    
 
+#ifdef __FreeBSD__
+int
+#endif
 getname (pterm, name)	/* get a file name from the remote system */
 int pterm;
 char *name;
@@ -393,6 +437,9 @@ char *name;
   }
 }
 
+#ifdef __FreeBSD__
+int
+#endif
 getrec (pterm, fd)		/* get a file record from remote system */
 int pterm;
 int fd;				/* file descriptor of local system file */
@@ -490,6 +537,9 @@ int fd;				/* file descriptor of local system file */
   } 
 }
 
+#ifdef __FreeBSD__
+int
+#endif
 load (pterm)			/* download a file from the remote system */
 int pterm;
 {
@@ -505,7 +555,11 @@ int pterm;
 
   printmsg = (flags & FATAL) ? 0 : 1;	/* print or suppress non-fatal msgs */
 
+#ifdef __FreeBSD__
+  if (getname (pterm, fname) < 0) return -1;	/* get the file name */
+#else
   if (getname (pterm, fname) < 0) return;	/* get the file name */
+#endif
 
   c =  'y';
   if(flags & QUERY)		/* test for existing file */
@@ -521,8 +575,13 @@ int pterm;
   {
     write(pterm, &can, 1);	/* cancel the transfer */
     aread(pterm, &c);	/* wait for CAN from remote sys */
+#ifdef __FreeBSD__
+    write(pterm, &ack, 1);	/* tell remote sys to proceed */
+    return 0;
+#else
     write(pterm &ack, 1);	/* tell remote sys to proceed */
     return;
+#endif
   }
 
   printf ("\n\r%s", fname);	/* print file name */
@@ -559,7 +618,11 @@ int pterm;
         close (dnfd);		/* end of file sent */
         printf ("\n\r");
         write (pterm, &ack, 1);
+#ifdef __FreeBSD__
+        return 0;
+#else
         return;
+#endif
       case 4:
         write (pterm, &can, 1);	/* user requests cancellation */
         break;                  /* remote system should return a cancel */
@@ -570,6 +633,9 @@ int pterm;
   }
 }
 
+#ifdef __FreeBSD__
+int
+#endif
 sendrec (pterm, fd, fname)	/* upload one file record */
 int pterm;			/* send the record here */
 int fd;				/* get the record from this file */
@@ -633,6 +699,9 @@ char *fname;			/* file name used for message only */
   }
 }
 
+#ifdef __FreeBSD__
+int
+#endif
 send (pterm)			/* upload a file to the remote system */
 int pterm;
 {
@@ -650,7 +719,11 @@ int pterm;
 
   printmsg = (flags & FATAL) ? 0 : 1;	/* print or suppress non-fatal msgs */
 
+#ifdef __FreeBSD__
+  if (getname (pterm, fname) < 0) return -1;	/* get the file name */
+#else
   if (getname (pterm, fname) < 0) return;	/* get the file name */
+#endif
 
   printf ("\n\r%s", fname);	/* print file name */
   if ((upfd = open (fname, 0)) < 0)		/* open the file */
@@ -694,10 +767,17 @@ int pterm;
   }
 
   write (pterm, &ack, 1);	/* tell remote system to proceed */
+#ifdef __FreeBSD__
+  return 0;
+#else
   return;
+#endif
 }
 
 
+#ifdef __FreeBSD__
+int
+#endif
 main (argc, argv)
 int argc;
 char **argv;
@@ -867,6 +947,9 @@ char **argv;
   }
 }
 
+#ifdef __FreeBSD__
+int
+#endif
 try(device)
 char *device;
 {
@@ -917,6 +1000,9 @@ char *device;
   xlucent (0, &targ, &tflags);		/* set new terminal parameters */
   xlucent (pterm, &targ, &ptflags);	/* set new pseudo terminal parameters */
   signal(SIGINT, curint);		/* reset to original SIGINT value */
+#ifdef __FreeBSD__
+  return 0;
+#endif
 }
 
 #ifdef __FreeBSD__
@@ -929,6 +1015,9 @@ cleanup()	/* interrupt or hang up, so exit gracefully */
   logout();
 }
 
+#ifdef __FreeBSD__
+void
+#endif
 logout()	/* logout processing */
 {
   ioctl(pterm, TCFLSH, 2);	/* flush remote line */

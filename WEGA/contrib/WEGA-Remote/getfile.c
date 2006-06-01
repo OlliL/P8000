@@ -21,9 +21,24 @@
 #define	EXEC	0x10	/* mode flag is sent after the filename */
 #define SECONDS 20	/* timeout interval */
 
-#include <sgtty.h>
 #include <signal.h>
+#ifdef __FreeBSD__
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <term.h>
+#include <sys/stat.h>
+void look_for_etx();
+void aread();
+struct termios targ;
+#define RAW	ICANON
+#define CRMOD	OPOST
+#define XTABS	OXTABS
+#define TANDEM	IXON|IXOFF
+#else
+#include <sgtty.h>
 struct sgttyb targ;
+#endif
 
 char *tty, *ttyname();
 
@@ -35,6 +50,9 @@ int timeout = 0;
 char *fname;
 char flags = 0;
 
+#ifdef __FreeBSD__
+int
+#endif
 main (argc, argv)
 
 int argc;
@@ -52,11 +70,19 @@ char **argv;
   if (chmod(tty, 0600) == -1)		/* write protect the terminal */
     printf ("\ngetfile: unable to write protect the terminal\n");
 
+#ifdef __FreeBSD__
+  tcgetattr(0, &targ);			/* get current terminal parameters */
+  tflags = targ.c_oflag;		/* save flag word */
+  targ.c_oflag |= RAW;			/* set 1-char input, no parity output */
+  targ.c_oflag &= ~(ECHO | TANDEM);	/* turn off echo, xon-xoff handling */
+  tcsetattr(0, TCSADRAIN, &targ);
+#else
   gtty (0, &targ);			/* get current terminal parameters */
   tflags = targ.sg_flags;		/* save flag word */
   targ.sg_flags |= RAW ;		/* set 1-char input, no parity output */
   targ.sg_flags &= ~(ECHO | TANDEM);	/* turn off echo, xon-xoff handling */
   stty (0, &targ);
+#endif
 
   while (--argc > 0)			/* process all command line args */
   {
@@ -136,7 +162,11 @@ char **argv;
 	    look_for_etx();		/* flush chars coming from local sys */
 	    printf("%c", CAN);		/* send cancel */
             printf ("\n\nunable to open file on remote system\r\n");
+#ifdef __FreeBSD__
+            scanf("%c",&c);		/* wait for CAN from local sys */
+#else
 	    scanf("%c",c);		/* wait for CAN from local sys */
+#endif
 	  }
 
           else				/* file was opened with no error */
@@ -229,13 +259,21 @@ char **argv;
       flags &= ~BINARY;			/* default to ascii type next file */
     }
   }
+#ifdef __FreeBSD__
+  targ.c_oflag = tflags;		/* restore initial terminal flags */
+  tcsetattr(0, TCSADRAIN, &targ);
+#else
   targ.sg_flags = tflags;		/* restore initial terminal flags */
   stty (0, &targ);
+#endif
   printf ("\ngetfile: %d successful transfers  %d unsuccessful transfers\n",
           success, unsuccess);
 
   if (chmod(tty, 0622) == -1)		/* un-write protect the terminal */
     printf ("\ngetfile: unable to un-write protect the terminal\n");
+#ifdef __FreeBSD__
+  return 0;
+#endif
 }
 
 #ifdef __FreeBSD__
@@ -247,6 +285,9 @@ time_out()
 	timeout = 1;
 }
 
+#ifdef __FreeBSD__
+void
+#endif
 look_for_etx()		/* look for etx and chksum */
 {
    while (c != ETX)
@@ -258,6 +299,9 @@ look_for_etx()		/* look for etx and chksum */
    if(timeout) return;
 }
 
+#ifdef __FreeBSD__
+void
+#endif
 aread()			/* alarm read */
 {
    timeout = 0;		/* assume no timeout */
