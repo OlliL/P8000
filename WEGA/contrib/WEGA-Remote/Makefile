@@ -9,7 +9,7 @@ INCL = /usr/include
 BIN =  is ready for installation in /bin
 
 # Cflags
-CFLAGS+=	-Wall
+CFLAGS+=	-Wall -s
 
 #
 # Abhaengigkeiten und Aktionen
