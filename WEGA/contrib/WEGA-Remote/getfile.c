@@ -22,14 +22,16 @@
 #define SECONDS 20	/* timeout interval */
 
 #include <signal.h>
-#ifdef __FreeBSD__
 #include <stdio.h>
 #include <fcntl.h>
+
+void look_for_etx();
+void aread();
+
+#ifdef __FreeBSD__
 #include <unistd.h>
 #include <term.h>
 #include <sys/stat.h>
-void look_for_etx();
-void aread();
 struct termios targ;
 #define RAW	ICANON
 #define CRMOD	OPOST
@@ -50,20 +52,14 @@ int timeout = 0;
 char *fname;
 char flags = 0;
 
-#ifdef __FreeBSD__
 int
-#endif
 main (argc, argv)
 
 int argc;
 char **argv;
 
 {
-#ifdef __FreeBSD__
   void time_out();
-#else
-  int time_out();
-#endif
 
   signal(SIGALRM,time_out);		/* set up alarm handling */
   tty = ttyname(1);			/* get name of the output file */
@@ -106,7 +102,7 @@ char **argv;
       c = 'y';				/* assume we are proceeding */
 
       if (flags & QUERY)		/* test for existing file */
-        if ((fd = open(*argv, 0)) != -1) /* file exists */
+        if ((fd = open(*argv, O_RDONLY)) != -1) /* file exists */
         {
           printf ("replace %s (y/n)?", *argv);
           c = getchar() & 0177;		/* could have parity so mask bit 7 */
@@ -162,11 +158,7 @@ char **argv;
 	    look_for_etx();		/* flush chars coming from local sys */
 	    printf("%c", CAN);		/* send cancel */
             printf ("\n\nunable to open file on remote system\r\n");
-#ifdef __FreeBSD__
             scanf("%c",&c);		/* wait for CAN from local sys */
-#else
-	    scanf("%c",c);		/* wait for CAN from local sys */
-#endif
 	  }
 
           else				/* file was opened with no error */
@@ -271,23 +263,18 @@ char **argv;
 
   if (chmod(tty, 0622) == -1)		/* un-write protect the terminal */
     printf ("\ngetfile: unable to un-write protect the terminal\n");
-#ifdef __FreeBSD__
+
   return 0;
-#endif
 }
 
-#ifdef __FreeBSD__
 void
-#endif
 time_out()
 {
 	signal(SIGALRM,time_out);
 	timeout = 1;
 }
 
-#ifdef __FreeBSD__
 void
-#endif
 look_for_etx()		/* look for etx and chksum */
 {
    while (c != ETX)
@@ -299,9 +286,7 @@ look_for_etx()		/* look for etx and chksum */
    if(timeout) return;
 }
 
-#ifdef __FreeBSD__
 void
-#endif
 aread()			/* alarm read */
 {
    timeout = 0;		/* assume no timeout */

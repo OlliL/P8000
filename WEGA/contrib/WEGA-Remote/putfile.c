@@ -21,9 +21,10 @@
 #define SECONDS 20	/* timeout interval */
 
 #include <signal.h>
-#ifdef __FreeBSD__
 #include <stdio.h>
 #include <fcntl.h>
+
+#ifdef __FreeBSD__
 #include <unistd.h>
 #include <term.h>
 struct termios targ;
@@ -48,20 +49,14 @@ int timeout = 0;
 char *fname;
 char flags = 0;
 
-#ifdef __FreeBSD__
 int
-#endif
 main (argc, argv)
 
 int argc;
 char **argv;
 
 {
-#ifdef __FreeBSD__
   void time_out();
-#else
-  int time_out();
-#endif
 
   signal(SIGALRM,time_out);		/* set up alarm handling */
   tty = ttyname(1);			/* get name of the output file */
@@ -104,7 +99,7 @@ char **argv;
       }
     else				/* argument is a file name */
     {
-      if ((fd = open(*argv, 0)) == -1)	/* open file and test for error */
+      if ((fd = open(*argv, O_RDONLY)) == -1)	/* open file and test for error */
       {
         printf ("\n%s\n\nunable to open file on remote system\r\n", *argv);
 	unsuccess++;
@@ -231,14 +226,11 @@ char **argv;
 
   if (chmod(tty, 0622) == -1)		/* un-write protect */
     printf ("\nputfile: unable to un-write protect the terminal\n");
-#ifdef __FreeBSD__
+
   return 0;
-#endif
 }
 
-#ifdef __FreeBSD__
 void
-#endif
 time_out()
 {
 	signal(SIGALRM,time_out);

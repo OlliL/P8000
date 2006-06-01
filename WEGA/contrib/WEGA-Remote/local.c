@@ -9,8 +9,8 @@
 #define SOH	0x01	/* ascii start-of-header character */
 #define ESC	0x1b	/* ascii escape character */
 
-#ifdef __FreeBSD__
 #include <stdio.h>
+#ifdef __FreeBSD__
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -28,9 +28,7 @@ int tflags;
 
 char c;
 
-#ifdef __FreeBSD__
 int
-#endif
 main (argc, argv)
 int argc;
 char *argv[];
@@ -81,9 +79,9 @@ char *argv[];
 #ifdef __FreeBSD__
   targ.c_oflag = tflags;
   tcsetattr(0, TCSADRAIN, &targ);
-  return 0;
 #else
   targ.sg_flags = tflags;	/* restore initial terminal mode */
   stty (0, &targ);
 #endif
+  return 0;
 }
