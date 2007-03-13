@@ -1,0 +1,352 @@
+--- wdc.firm.s.orig	Tue Mar 13 20:28:16 2007
++++ wdc.firm.s	Tue Mar 13 20:43:02 2007
+@@ -6,10 +6,9 @@
+ ; Programmierung fuer die Arbeit mit bis zu drei Laufwerken
+ ;----------------------------------------------------------------------
+ 
+-	begin	0
+ 
+ 	jr	entry
+-string	text	'WDC_4.2'
++string	defm	"WDC_4.2 "
+ 
+ sc_len	equ	512	;Laenge des Datenfeldes eines Sektors (Byte)
+  
+@@ -238,12 +237,11 @@
+ ; Bereiche fuer das Umladen von Zugriffszaehler und Fehlerzellen
+ s_zcnt	equ	37c0h	;10 Byte, Zugriffszaehler
+ s_errz	equ	37cah	;50 Byte, Fehlerzellen
+- eject
+ ;--------------------------------------------------------
+ ; Systemanlauf und Initialisierungen
+ ;--------------------------------------------------------
+ entry
+-	ld	sp,stk_br+1
++	ld	sp,stk_br
+ 
+ ; Test der CRC-Werte fuer beide EPROM's
+ 	ld	hl,(crc_0)	;CRC-Wert fuer 1.EPROM
+@@ -1327,8 +1325,7 @@
+ 	and	(hl)
+ 	ld	(s_rdy),a
+ 	ret
+- eject
+-begin
++begin:
+ ;-----------------------------------------------------------------------
+ ; Host-Schnittstelle auf die Eingabe eines Kommandos (9 Byte) einstellen
+ ;-----------------------------------------------------------------------
+@@ -1552,7 +1549,6 @@
+ t_cd3	ld	hl,cmd_br-6
+ 	call	id_ein
+ 	jp	hd_mov
+- eject
+ ;--------------------------------------------------------------------
+ ; Routine zur Bewegung der Schreib-Lese-Koepfe (Kamm)
+ ;--------------------------------------------------------------------
+@@ -1683,7 +1679,6 @@
+ ;-------------------------
+ rdy_ts
+ 	jp	begin
+- eject
+ ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ ; Lesen eines Sektors, der durch seine Sektoradresse angegeben ist
+ ;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+@@ -1718,7 +1713,6 @@
+ 	ld	a,3		;Status '3'
+ 	call	p_wc_h		;Programmierung der Host-Schnittstelle
+ 	jp	begin
+- eject
+ read5
+ ;+++++++++++++++++++++++++++++++++++++++++++
+ ; Testlesen eines Sektors
+@@ -1828,7 +1822,6 @@
+ 	xor	a
+ 	ld	(err_cd),a
+ 	jp	begin
+- eject
+ ;**************************************************************************
+ ; UP rd_id
+ ; Lesen eines Kennfeldes (und des Datenfeldes) von Hard-Disk
+@@ -2315,7 +2308,6 @@
+ 	out	(CTC+1),a
+ 	pop	af
+ 	ret
+- eject
+ ;---  id_ein  -----------------------
+ ; Eintragen des Kennfeldes
+ ; hl: Zeiger auf 'Cy-L, Cy-H, Hd, Sc'
+@@ -2484,7 +2476,6 @@
+ 	inc	a
+ 	ld	(l_inc),a
+ 	jr	sc9		;naechste Spur auch BTT-Spur ?
+- eject
+ ;***********************************************************
+ ; Schreiben auf Hard-Disk
+ ;***********************************************************
+@@ -2588,7 +2579,6 @@
+ 	ld	(err_cd),a
+ 	cp	0
+ 	ret			;Fehlerruecksprung bei 'Read after Write'
+- eject
+ ;***************************************************************************
+ ; UP wrt_dt
+ ; Schreiben des Datenfeldes eines Sektors
+@@ -2995,7 +2985,6 @@
+ 	res	4,d
+ 	djnz	ldir32
+ 	ret
+- eject
+ ;**********************************
+ ; Formatierprogramme fuer Hard-Disk
+ ;**********************************
+@@ -3285,7 +3274,6 @@
+ 	cp	0ffh
+ 	jp	nz,f350
+ 	jp	f358
+- eject
+ ;*************************************************
+ ; Formatieren der aktuellen Spur
+ ;*************************************************
+@@ -3523,7 +3511,6 @@
+ wrt_d1	ld	(dt_len),hl
+ 	call	wrt_dt		;Schreiben der Datenfelder
+ 	ret			;Schreibfehler
+- eject
+ ;***********************************************************************
+ ; Datentransfer zwischen Host und WDC-RAM
+ ;***********************************************************************
+@@ -3669,7 +3656,6 @@
+ 	ld	a,3
+ 	call	p_wc_h
+ 	jp	begin
+- eject
+ ;---------------------------------------------------------------
+ ; PROGRAMMIERUNG DER HOST-SCHNITTSTELLE
+ ;---------------------------------------------------------------
+@@ -3834,7 +3820,6 @@
+ 	pop	af
+ 	ei
+ 	reti
+- eject
+ ;---------------------------------------------------------------------
+ ; Fehlerauswertung und Uebergabe an den Host
+ ;---------------------------------------------------------------------
+@@ -3977,117 +3962,116 @@
+  
+ ;---------------- PROGRAMMTEXT-ENDE ---------------------------------------
+  
+-	begin	1
++
+ ; Tabelle der Kommandocodes
+-com_tb	db	021h	;HD-Lesen von einer Blocknummer
+-	db	022h	;HD-Schreiben auf eine Blocknummer
+-	db	001h	;HD-Lesen von einer Sektoradresse
+-	db	081h	;HD-Testlesen von einer Sektoradresse
+-	db	011h	;HD-Lesen von einer Sektoradresse mit BTT-Berueck.
+-	db	002h	;HD-Schreiben auf eine Sektoradresse
+-	db	082h	;HD-Schreiben auf eine Sektoradresse mit Ruecklesen
+-	db	012h	;HD-Schreiben auf eine Sektoradresse mit BTT-Berue.
+-	db	092h	;HD-Schreiben auf eine Sektoradresse mit BTT-
++com_tb	defb	021h	;HD-Lesen von einer Blocknummer
++	defb	022h	;HD-Schreiben auf eine Blocknummer
++	defb	001h	;HD-Lesen von einer Sektoradresse
++	defb	081h	;HD-Testlesen von einer Sektoradresse
++	defb	011h	;HD-Lesen von einer Sektoradresse mit BTT-Berueck.
++	defb	002h	;HD-Schreiben auf eine Sektoradresse
++	defb	082h	;HD-Schreiben auf eine Sektoradresse mit Ruecklesen
++	defb	012h	;HD-Schreiben auf eine Sektoradresse mit BTT-Berue.
++	defb	092h	;HD-Schreiben auf eine Sektoradresse mit BTT-
+ 			;Beruecksichtigung und Ruecklesen
+-	db	0a1h	;HD-Kopieren von einer Blocknummer des LW 1 auf LW 0
+-	db	0a2h	;HD-Schreiben auf eine Blocknummer mit Ruecklesen
+-	db	0c2h	;HD-Schreiben von PAR und BTT auf das Laufwerk
+-	db	004h	;HD-Formatieren einer Spur
+-	db	014h	;HD-Formatieren einer Spur mit Ruecklesen
+-	db	024h	;HD-Formatieren einer Spur mit Defektspurfeststellung
+-	db	044h	;HD-Ruecklesen einer Spur (Verify)
+-	db	084h	;HD-Loeschen einer Spur
+-	db	008h	;Lesen WDC-RAM
+-	db	018h	;Schreiben WDC-RAM
+-	db	028h	;Lesen des WDC-Parameterblocks
+-	db	038h	;Lesen der WDC-Fehlerstatistik
+-	db	048h	;Loeschen der BTT im WDC-RAM
+-	db	058h	;Lesen der BTT aus dem WDC-RAM in den Host-RAM
+-	db	068h	;Schreiben der BTT aus dem Host-RAM in den WDC-RAM
+-	db	078h	;Schriben des WDC-Parameterblocks
+-	db	0ffh	;Endekennzeichen
++	defb	0a1h	;HD-Kopieren von einer Blocknummer des LW 1 auf LW 0
++	defb	0a2h	;HD-Schreiben auf eine Blocknummer mit Ruecklesen
++	defb	0c2h	;HD-Schreiben von PAR und BTT auf das Laufwerk
++	defb	004h	;HD-Formatieren einer Spur
++	defb	014h	;HD-Formatieren einer Spur mit Ruecklesen
++	defb	024h	;HD-Formatieren einer Spur mit Defektspurfeststellung
++	defb	044h	;HD-Ruecklesen einer Spur (Verify)
++	defb	084h	;HD-Loeschen einer Spur
++	defb	008h	;Lesen WDC-RAM
++	defb	018h	;Schreiben WDC-RAM
++	defb	028h	;Lesen des WDC-Parameterblocks
++	defb	038h	;Lesen der WDC-Fehlerstatistik
++	defb	048h	;Loeschen der BTT im WDC-RAM
++	defb	058h	;Lesen der BTT aus dem WDC-RAM in den Host-RAM
++	defb	068h	;Schreiben der BTT aus dem Host-RAM in den WDC-RAM
++	defb	078h	;Schriben des WDC-Parameterblocks
++	defb	0ffh	;Endekennzeichen
+ ; Praeambel beim Schreiben eines Datenfeldes (13 Byte)
+-prae	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0a1h
+-	db	0fbh
++prae	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0a1h
++	defb	0fbh
+ ; Postambel beim Schreiben eines Datenfeldes (12 Byte)
+-post	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
+-	db	0ffh
++post	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
++	defb	0ffh
+ ; Kennfeld der Defektspurtabelle
+-id_df	db	0feh
+-	db	00h
+-	db	00h
+-	db	00h
+-	db	01h
++id_df	defb	0feh
++	defb	00h
++	defb	00h
++	defb	00h
++	defb	01h
+ ; Kennung der Parametertabelle
+-txt_pm	text	'PARMTR'
++txt_pm	defm	"PARMTR"
+ ; Kennung der Defektspurtabelle
+-txt_df	text	'DEFEKT'
++txt_df	defm	"DEFEKT"
+ ; Fehlerzaehler fuer normales Lesen
+-fe_n	db	4
+-	db	8
+-	db	4
+-	db	4
+-	db	4
+-	db	4
+-	db	4
++fe_n	defb	4
++	defb	8
++	defb	4
++	defb	4
++	defb	4
++	defb	4
++	defb	4
+ ; Fehlerzaehler fuer das Formatieren
+-fe_f1	db	2
+-	db	2
+-	db	2
+-	db	2
+-	db	2
+-	db	2
+-	db	2
++fe_f1	defb	2
++	defb	2
++	defb	2
++	defb	2
++	defb	2
++	defb	2
++	defb	2
+ ; Fehlerzaehler fuer das Testlesen
+-fe_t	db	1
+-	db	1
+-	db	1
+-	db	1
+-	db	1
+-	db	1
+-	db	1
++fe_t	defb	1
++	defb	1
++	defb	1
++	defb	1
++	defb	1
++	defb	1
++	defb	1
+ ; Tabelle des Sektorversatz
+-	db	0ffh
+-sc_tab	db	1
+-	db	10
+-	db	2
+-	db	11
+-	db	3
+-	db	12
+-	db	4
+-	db	13
+-	db	5
+-	db	14
+-	db	6
+-	db	15
+-	db	7
+-	db	16
+-	db	8
+-	db	17
+-	db	9
+-	db	18
+-	db	0ffh
++	defb	0ffh
++sc_tab	defb	1
++	defb	10
++	defb	2
++	defb	11
++	defb	3
++	defb	12
++	defb	4
++	defb	13
++	defb	5
++	defb	14
++	defb	6
++	defb	15
++	defb	7
++	defb	16
++	defb	8
++	defb	17
++	defb	9
++	defb	18
++	defb	0ffh
+  
+-	end
+ 
