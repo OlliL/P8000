@@ -1,0 +1,260 @@
+Erstellung der WDC Firmware
+===========================
+
+Firmware Version: 		4.2
+Dokument Version:		1.2 (2007-03-13)
+Autor dieses Dokumentes:	Oliver Lehmann
+
+Dokumentenhistorie:
+	1.2
+	- Abschnitt ueber das generieren mit z80-asm unter UNIX hinzugefuegt
+
+
+
+                  1. Firmwaregenerierung auf dem PC
+                  =================================
+
+Die WDC Firmware ist auf dem PC unter UNIX o. komp. OS generierbar.
+Der hier verwendete Assembler ist der Z80-ASM von 
+http://wwwhomes.uni-bielefeld.de/achim/z80-asm.html
+
+Der dort bereitgestellte Assembler hat einen marginal unterschiedlichen
+Befehlssatz. Daher ist es noetig, das ASM Sourcefile wdc.firm.s zu pat-
+chen. Im Grunde werden nur alle Vorkommen der Datendefinitionssteueran-
+weisungen "db" durch "defb", und "text" durch "defm" ersetzt. Ausserdem
+versteht der Assembler keine Steueranweisungen zur Programmeinteilung
+wie "begin" oder "end", oder Steueranweisungen fuer Assemblerlisting
+wie "eject". Diese Steueranweisungen wurden ersatzlos entfernt.
+
+1.1. Erzeugen der Firmware
+-------------------------
+
+Nachdem der Assembler compiliert und installiert ist, wird die Firmware
+gepatcht:
+
+	patch -p0 < z80-asm.patch
+
+Im Anschluss daran wird die Sourcedatei assembliert:
+
+	z80-asm wdc.firm.s wdc.firm.o
+
+Nun muss der durch den z80-asm vorgestellte Header verworfen werden:
+
+	dd if=wdc.firm.o of=wdc.firm bs=1 skip=10
+
+Jetzt enthaellt die Datei "firmware" die WDC Firmware, welche noch
+gesplittet werden muss:
+
+	dd if=wdc.firm of=WDC_1_4.2 bs=1 count=4096 >&/dev/null
+	dd if=wdc.firm of=WDC_2_4.2 bs=1 skip=4096 >&/dev/null
+
+
+
+                 2. Firmwaregenerierung auf dem P8000
+                 ====================================
+
+2.1. Erzeugen der Firmware
+------------------------
+
+Um die Firmware erstellen zu koennen, muss die WEGA-Cross-Software
+auf dem Computer installiert sein. Sobald die Software installiert
+ist, kann die Firmware mittels Eingabe von "make" erzeugt werden:
+
+	#1 make
+	        u80as -u -o wdc.firm.o wdc.firm.s
+	        ld -o wdc.firm wdc.firm.o
+	        strip -h wdc.firm
+	        dd if=wdc.firm of=WDC_1_4.2 bs=1 count=4096 >&/dev/null
+	        dd if=wdc.firm of=WDC_2_4.2 bs=1 skip=4096 >&/dev/null
+	#2
+
+Die erzeugten Firmwaredateien lauten WDC_1_4.2 und WDC_2_4.2.
+
+
+
+                     3. Programmieren der EPROMS
+                     ===========================
+
+Im ersten Schritt werden die  beiden EPROMs programmiert und deren
+Checksummen ermittelt.  Diese Checksummen werden  im Anschluss ne-
+giert. Danach werden die ermittelten Checksummen an folgende Posi-
+tionen des 2. EPROMs nachprogrammiert.
+
+0FF8h - 0FF9h	Checksumme 1. EPROM 0000h-0FFFh
+0FFAh - 0FFBh	Checksumme 1. EPROM 0000h-0FFFh negiert
+0FFCh - 0FFDh	Checksumme 2. EPROM 0000h-0FF7h
+0FFEh - 0FFFh	Checksumme 2. EPROM 0000h-0FF7h negiert
+
+
+3.1. EPROM 1 programmieren
+----------------------------
+
+Bitte starten Sie unter WEGA das Programm "pburn" und waehlen dort
+aus:
+
+	select ?:p
+
+
+	p:      programming prom
+
+	source      filename [-w] [-D] [-B] [-os hex] : WDC_2_1.2 -B
+	destination promtype [-ol hex]                : e2732
+
+	*** warning - is prom really e2732, not e2732a ?
+	continue ?y
+
+	ready to program :
+	   source       file    : WDC_2_4.2 segment 0 start 0 end fff byte 
+	   destination  promtyp : e2732 start 0 end fff  byte  ?(y/r/s/m/v/l/t/q)y
+
+	program file WDC_2_4.2 to prom e2732
+	
+	crc_checksum:  2c43
+
+Die ermittelte Checksumme (2C43) ist zu notieren.
+
+
+3.2. EPROM 2 programmieren
+----------------------------
+
+Bitte starten Sie unter WEGA das Programm "pburn" und waehlen dort
+aus:
+
+	select ?:p
+
+
+	p:      programming prom
+
+	source      filename [-w] [-D] [-B] [-os hex] : WDC_2_4.2 -B
+	destination promtype [-ol hex]                : e2732
+
+	*** warning - is prom really e2732, not e2732a ?
+	continue ?y
+
+	ready to program :
+	   source       file    : WDC_2_4.2 segment 0 start 0 end fff byte 
+	   destination  promtyp : e2732 start 0 end fff  byte  ?(y/r/s/m/v/l/t/q)y
+
+	program file WDC_2_4.2 to prom e2732
+	
+	crc_checksum:  14bc
+
+
+3.3. Checksumme EPROM 2 ermitteln
+-----------------------------------
+
+Mir ist keine Moeglichkeit  bekannt mittels "pburn" nur die Check-
+summe eines Teils  des EPROMs zu ermitteln.  Aus diesem Grund muss
+hier leider auf UDOS und "UPROG" zurueckgegriffen werden.
+Nachdem sie WEGA ordnungsgemaess abgefahren haben starten sie bit-
+te UDOS mittels  der UDOS Vertriebsdiskette.  Sobald sich UDOS mit
+seinem Prompt meldet ist "UPROG" zu starten.
+
+	#T E2732 N=FF8
+	READY TO READ?y
+	PROM CRC: 2C03
+	PROM NOT ERASED
+
+Die ermittelte Checksumme (2C03) ist zu notieren
+
+
+3.4. Checksummen negieren
+---------------------------
+
+Die Negierung der aus  2.1. und 2.3.  ermittelten Checksummen kann
+zum Beispiel mittels dem  Rechenprogramm "bc" unter WEGA vorgenom-
+men werden.
+
+	#1 bc
+	obase=16
+	ibase=16
+	FFFF-a
+	b
+
+- fuer a ist die zu negierende Checksumme einzusetzen
+- b ist die zu a gehoerige negierte Checksumme
+
+Beispiel:
+
+	#1 bc
+	obase=16
+	ibase=16
+	FFFF-2C43
+	D3BC
+
+Beide negierten Checksummen sind zu notieren.
+
+3.5. Checksummen nachprogrammieren
+----------------------------------
+
+Nun sind die  Checksummen aus  2.1, 2.3. und 2.4 nachzuprogrammie-
+ren. Dabei ist im 2. EPROM ab 0FF8h die Checksumme aus 2.1., deren
+Negat aus 2.4.,  die Checksumme aus 2.3. und deren  Negat aus 2.4.
+zu programmieren (siehe auch Abschn. 2.).
+
+Beispiel:
+
+	Abschn.		Checksumme
+	2.1.		2C43
+	2.4. (aus 2.1.)	D3BC
+	2.3		2C03
+	2.4. (aus 2.3.)	D3FC
+
+
+3.5.1. Nachprogrammieren mittels "UPROG" unter UDOS
+---------------------------------------------------
+
+Sollten Sie sich  aufgrund von Abschn. 2.4. noch unter UDOS befin-
+den, koennen sie  hier ohne einen Wechsel zu WEGA  die Checksummen
+mittels "UPROG" nachprogrammieren.
+
+	#B E2732
+	ADDRESS TO MODIFY?FF8
+	0FF8 FF 2C
+	0FF9 FF 43
+	0FFA FF D3
+	0FFB FF BC
+	0FFC FF 2C
+	0FFD FF 03
+	0FFE FF D3
+	0FFF FF FC
+	ADDRESS TO MODIFY?q
+
+3.5.2. Nachprogrammieren mittels "pburn" unter WEGA
+---------------------------------------------------
+
+Befinden sie sich unter WEGA, und wollen dort die Checksummen
+nachprogrammieren, starten sie bitte "pburn".
+
+	select ?:b
+	
+	
+	b:      bytemode prom
+	
+	source      promtype : e2732
+	
+	*** warning - is prom really e2732, not e2732a ?
+	continue ?y
+	
+	ready to bytemode :
+	   source       promtyp : e2732  ?(y/q)y
+	
+	byteprogram prom e2732
+	address to program ?FF8
+	0ff8:   ff  2C
+	0ff9:   ff  43
+	0ffa:   ff  D3
+	0ffb:   ff  BC
+	0ffc:   ff  2C
+	0ffd:   ff  03
+	0ffe:   ff  D3
+	0fff:   ff  FC
+	
+	*** the specified address out of address range
+	address to program ?q
+	
+	crc_checksum:  5d66
+
+
+
+Die Erstellung der WDC Firmware ist hiermit abgeschlossen.
