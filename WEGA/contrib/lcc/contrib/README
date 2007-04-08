@@ -1,0 +1,2 @@
+libcurses	taken from 4.3BSD and modified to compile on WEGA with LCC
+libtermlib	taken from 4.3BSD
