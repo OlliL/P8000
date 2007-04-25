@@ -22,14 +22,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: crc.c,v 1.3 2007/04/16 17:20:32 olivleh1 Exp $
+ * $Id: crc.c,v 1.4 2007/04/25 04:50:07 olivleh1 Exp $
  */
 
+#include <fcntl.h>
 #include <stdio.h>
-
-#ifndef SEEK_SET
-#define SEEK_SET 0
-#endif
 
 static void usage();
 
@@ -45,21 +42,25 @@ char **argv;
 
 	if(argc < 2 || argc > 4 )
 		usage(argv[1]);
-		
+
 	filename = argv[1];
-	
+
 	if(argc > 2)
 		begin = atoi(argv[2]);
-		
+
 	if(argc > 3)
 		end = atoi(argv[3]);
-    
+
 	if( end != -1 && begin > end ) {
 		fprintf(stderr, "begin adress cannot be higher than end adress\n");
 		usage(argv[1]);
 	}
 
-	f = open(filename, 0);
+#ifdef O_BINARY
+	f = open(filename, O_RDONLY|O_BINARY);
+#else
+	f = open(filename, O_RDONLY);
+#endif
 	if (f<0) {
 		fprintf(stderr, "cannot open %s \n", filename);
 		usage(argv[1]);
@@ -89,7 +90,7 @@ char **argv;
 			a1=a1 ^ e;
 			e=a1;
 			a1=a2;
-			if ((a1 & 1)>0)	{a1=a1 >> 1; a1=a1 | 0x80;}
+			if ((a1 & 1)>0) {a1=a1 >> 1; a1=a1 | 0x80;}
 				else	{a1=a1 >> 1; a1=a1 & 0x7f;}
 			a1=a1 & 0xf0;
 			a1=a1 ^ e;
@@ -102,7 +103,7 @@ char **argv;
 			a1=0xff;
 		}
 		c++;
-	} 
+	}
 	close(f);
 	printf ("%s %02x%02x\n","crc_checksum:",d & 0xff,e & 0xff);
 
