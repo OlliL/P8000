@@ -1,0 +1,11 @@
+CC = scc 
+
+wega:	wpar.o event.o mch.o u.o ver.o fpe.o conf.o ../sys/LIB1 ../dev/LIB2
+	sld -Ns -o wega -e start -X -i -Ms62 wpar.o event.o mch.o u.o ver.o fpe.o conf.o ../sys/LIB1 ../dev/LIB2
+	rm -f ver.o ver.c
+
+wpar.o:	wpar.c ../h/sysparm.h ../h/mdsize.h ../h/ver.h
+	$(CC) -O -c wpar.c
+
+ver.o:	ver.c
+	$(CC) -c ver.c

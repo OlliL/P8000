@@ -1,0 +1,15 @@
+&R
+&R
+&R
+&H wega at Tue Oct 28 14:24:16 1986
+&C 1.Version
+a0
+#define UTS_LENGTH 9
+char version[] = "@[$]WEGA Kernel -- Release $R$ -- Generated $D$\n";
+char copyrit[] = "Copyright  1986  ZFT/KEAW-WAE\n";
+char utsrelease[UTS_LENGTH]	= "$R$";
+.
+&D
+&H wega at Tue Oct 28 14:31:34 1986
+&C 2. Version Auslieferungsstand
+&D
