@@ -30,6 +30,20 @@
 #include <sys/sysinfo.h>
 #include <sys/systm.h>
 
+#ifndef CPU2INT
+#define CPU2INT		21
+#endif
+
+#ifndef CPU2SEG0
+#define CPU2SEG0	0x37
+#endif
+#ifndef CPU2SEG1
+#define CPU2SEG1	0x36
+#endif
+#ifndef CPU2SEG2
+#define CPU2SEG2	0x35
+#endif
+
 #define CPU2PORT	0xff1f	/* PORT-ADRESSE */
 #define RESET		0xfeff
 #define RUN		0xffff
