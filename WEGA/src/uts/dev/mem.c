@@ -17,8 +17,6 @@
 #include <sys/mmu.h>
 #include <sys/s.out.h>
 #include <sys/user.h>
-#include <sys/sysinfo.h>
-#include <sys/systm.h>
 
 char memwstr[] = "@[$]mem.c		Rev: 4.1	08/27/83 13:39:47";
 
