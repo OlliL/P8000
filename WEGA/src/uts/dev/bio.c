@@ -196,11 +196,8 @@ register struct buf *bp;
 		bfreelist.b_flags &= ~B_WANTED;
 		wakeup((caddr_t)&bfreelist);
 	}
-	if (bp->b_flags & B_ERROR) {
-		bp->b_flags |= B_STALE|B_AGE;
-		bp->b_flags &= ~(B_ERROR|B_DELWRI);
-		bp->b_error = 0;
-	}
+	if (bp->b_flags & B_ERROR)
+		bp->b_dev = NODEV;  /* no assoc. on error */
 	s = dvi();
 	if (bp->b_flags & B_AGE)
 		backp = bfreelist.av_forw;
@@ -228,8 +225,7 @@ register daddr_t blkno;
 
 	hp = bhash(dev, blkno);
 	for (bp = hp->b_forw; bp != hp; bp = bp->b_forw) {
-		if (bp->b_blkno == blkno && bp->b_dev == dev &&
-		    (bp->b_flags & B_STALE) == 0)
+		if (bp->b_blkno == blkno && bp->b_dev == dev)
 			return(1);
 	}
 	return(0);
@@ -255,7 +251,7 @@ loop:
 	evi();
 	hp = bhash(dev, blkno);
 	for (bp = hp->b_forw; bp != hp; bp = bp->b_forw) {
-		if (bp->b_blkno!=blkno || bp->b_dev!=dev || bp->b_flags&B_STALE)
+		if (bp->b_blkno!=blkno || bp->b_dev!=dev)
 			continue;
 		dvi();
 		if (bp->b_flags & B_BUSY) {
@@ -603,8 +599,7 @@ register dev_t dev;
 		hp = &hbuf[n];
 		for (bp = hp->b_forw; bp != (struct buf *)hp; bp = bp->b_forw) 
 			if (bp->b_dev == dev) {
-				bp->b_flags |= B_STALE|B_AGE;
-				bp->b_flags &= ~B_DELWRI;
+				bp->b_flags |= B_AGE;
 			}
 	}
 }
