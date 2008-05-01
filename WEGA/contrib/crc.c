@@ -22,11 +22,12 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: crc.c,v 1.4 2007/04/25 04:50:07 olivleh1 Exp $
+ * $Id: crc.c,v 1.5 2008/05/01 16:31:11 olivleh1 Exp $
  */
 
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 static void usage();
 
