@@ -151,12 +151,8 @@ dev_t dev;
 	}
 	if (dev & 0x20)		/* keine autom. Umschaltung auf Raw-Mode */
 		goto noraw;
-
-	if (c==0x1b) {		/* set lp raw mode */ 
+	if (c==0x1b)		/* set lp raw mode */ 
 		plp->raw = 1;
-		putc(c, poutq);
-		return;
-	}
 noraw: 
 	if (c == '\n') {
 		lpoutput('\r', tp, dev);
