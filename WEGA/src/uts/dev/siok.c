@@ -639,8 +639,6 @@ register c;
 	register timo;
 	register struct tty *tp;
 
-	if (udos == 0)		/* kein 8-bit-Teil */
-		console = 5;	/* alternative System-Console */
 	s = dvi();
 	tp = &sio[console];
 	addr = sioaddrs[console].sio;	
