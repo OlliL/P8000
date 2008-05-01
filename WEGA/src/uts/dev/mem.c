@@ -62,7 +62,7 @@ mmwrite(dev)
 	case 0: 		/* physical memory */
 			do {
 			if ((c = cpass()) >= 0) return;
-			if (spbyte(u.u_offset, c)){
+			if (spbyte(u.u_offset-1, c)){
 				u.u_error = ENXIO;
 				return;
 			}
@@ -72,7 +72,7 @@ mmwrite(dev)
 	case 1: 		/* kernel memory */
 		do {
 			if ((c = cpass()) >= 0) return;
-			if (skbyte(u.u_offset, c)){
+			if (skbyte(u.u_offset-1, c)){
 				u.u_error = ENXIO;
 				return;
 			}
