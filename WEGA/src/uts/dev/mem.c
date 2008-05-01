@@ -20,6 +20,8 @@
 #include <sys/sysinfo.h>
 #include <sys/systm.h>
 
+char memwstr[] = "@[$]mem.c		Rev: 4.1	08/27/83 13:39:47";
+
 /*
  *	Memory special file
  *	minor device 0 is physical memory
@@ -61,7 +63,7 @@ mmwrite(dev)
 	switch (minor (dev)) {
 	case 0: 		/* physical memory */
 			do {
-			if ((c = cpass()) >= 0) return;
+			if ((c = cpass()) < 0) return;
 			if (spbyte(u.u_offset-1, c)){
 				u.u_error = ENXIO;
 				return;
@@ -71,7 +73,7 @@ mmwrite(dev)
 		break;
 	case 1: 		/* kernel memory */
 		do {
-			if ((c = cpass()) >= 0) return;
+			if ((c = cpass()) < 0) return;
 			if (skbyte(u.u_offset-1, c)){
 				u.u_error = ENXIO;
 				return;
