@@ -20,18 +20,18 @@
 #include <sys/tty.h>
 #include <sys/ttold.h>
 #include <sys/sysinfo.h>
+#include <sys/systm.h>
 #include <sys/proc.h>
 #include <sys/inode.h>
 #include <sys/mmu.h>
 #include <sys/s.out.h>
 #include <sys/user.h>
 
+char ttywstr[] = "@[$]tty.c		Rev : 4.2+ 	02/07/84 13:50:59";
 
 extern int Canbsiz;
 char canonb[256];
 extern int numterm;
-char ttywstr[] = {
-	"@[$]tty.c		Rev : 4.2+ 	02/07/84 13:50:59"};
 int tthiwat[] = {	
 	0,
 	60,	60,	60,	60,	60,	60,
@@ -119,66 +119,61 @@ int com;
 	struct tchars toc;
 
 	switch (com){
-	case TCGETA:
+	case IOCTYPE:
 		u.u_r.r_val1 = TIOC;
 		break;
-	case TIOCFLUSH:
-	case TIOCSETC:
+	case TCSETAW:
+	case TCSETAF:
 		ttywait(tp);
 		if (com == TCSETAF)
 			ttyflush(tp, T_RESUME);
-	case TIOCGETC:
-		if (copyin( addr.l, (caddr_t)&t, sizeof(t)) == 0){
-		if (tp->t_line != t.c_line){
-			if ((t.c_line < 0) || (t.c_line >= linecnt)){
-				u.u_error = EINVAL;
-				break;
+	case TCSETA:
+		if (copyin( addr, (caddr_t)&t, sizeof(t))==0){
+			if (tp->t_line != t.c_line){
+				if ((t.c_line < 0) || (t.c_line >= linecnt)){
+					u.u_error = EINVAL;
+					break;
+				}
+				(*linesw[tp->t_line].l_ioctl)(tp, LDCLOSE,  (caddr_t) 0, flag);
 			}
-			(*linesw[tp->t_line].l_ioctl)(tp, LDCLOSE,  (caddr_t) 0, flag);
-		}
-		ldmode = tp->t_lflag;
-		tmod = 0;
-		if ((tp->t_cflag & CBAUD) != (t.c_cflag & CBAUD))
-			tmod++;
-		if ((tp->t_cflag & CSIZE) != (t.c_cflag & CSIZE))
-			tmod++;
-		if ((tp->t_cflag ^ t.c_cflag ) & CDEF)
-			tmod++;
-		if ((tp->t_iflag ^ t.c_iflag ) & IGNBRK)
-			tmod++;
-		tp->t_iflag = t.c_iflag;
-		tp->t_oflag = t.c_oflag;
-		tp->t_cflag = t.c_cflag;
-		tp->t_lflag = t.c_lflag;
-		bcopy(t.c_tcc, tp->t_cc, sizeof(tp->t_cc));
-		if (tp->t_line != t.c_line) {
-			tp->t_line = t.c_line;
-			(*linesw[tp->t_line].l_ioctl)(tp, LDIOC, (caddr_t) 0, flag);
-		}
-		else
-			if (tp->t_lflag != ldmode)
-				(*linesw[tp->t_line].l_ioctl)(tp, LDCHG, (long) ldmode, flag);
-		if (tmod) return(1);
-break;
-}
+			ldmode = tp->t_lflag;
+			tmod = 0;
+			if ((tp->t_cflag & CBAUD) != (t.c_cflag & CBAUD))
+				tmod++;
+			if ((tp->t_cflag & CSIZE) != (t.c_cflag & CSIZE))
+				tmod++;
+			if ((tp->t_cflag ^ t.c_cflag ) & CDEF)
+				tmod++;
+			if ((tp->t_iflag ^ t.c_iflag ) & IGNBRK)
+				tmod++;
+			tp->t_iflag = t.c_iflag;
+			tp->t_oflag = t.c_oflag;
+			tp->t_cflag = t.c_cflag;
+			tp->t_lflag = t.c_lflag;
+			bcopy(t.c_tcc, tp->t_cc, sizeof(tp->t_cc));
+			if (tp->t_line != t.c_line) {
+				tp->t_line = t.c_line;
+				(*linesw[tp->t_line].l_ioctl)(tp, LDIOC, (caddr_t) 0, flag);
+			}
+			else
+				if (tp->t_lflag != ldmode)
+					(*linesw[tp->t_line].l_ioctl)(tp, LDCHG, (long) ldmode, flag);
+			if (tmod) return(1);
+		} else
+			u.u_error = EFAULT;
 		break;
-	case IOCTYPE:
+	case TCGETA:
 		t.c_iflag = tp->t_iflag;
 		t.c_oflag = tp->t_oflag;
 		t.c_cflag = tp->t_cflag;
 		t.c_lflag = tp->t_lflag;
 		t.c_line = tp->t_line;
 		bcopy (tp->t_cc, t.c_tcc, sizeof(tp->t_cc));
-		if (copyout((caddr_t) &t, addr.l, sizeof(t)))
+		if (copyout((caddr_t) &t, addr, sizeof(t)))
 			u.u_error = EFAULT;
 		break;
-	case TIOCSETN:
-		ttywait(tp);
-		if ((((long)addr.l) & 0x0000ffffL) == 0)
-			(*tp->t_proc)(tp, T_BREAK);
-		break;
-	case TIOCSETP:
-		switch (addr.half.right){
+	case TCXONC:
+		switch (addr){
 		case 000:
 			(*tp->t_proc)(tp, T_SUSPEND);
 			break;
@@ -195,28 +190,33 @@ break;
 			u.u_error = EINVAL;
 		}
 		break;
-	case TCSETAF:
+	case TCSBRK:
+		ttywait(tp);
+		if(addr == 0)
+			(*tp->t_proc)(tp, T_BREAK);
+		break;
+	case TIOCFLUSH:
 		ttyflush(tp, T_RESUME);
 		break;
-	case TIOCGETP:
-		switch (addr.half.right){
+	case TCFLSH:
+		switch (addr){
 		case 000:
 		case 001:
 		case 002:
-			ttyflush(tp, (addr.half.right+1)&3);
+			ttyflush(tp, addr);
 			break;
 		default:
 			u.u_error  = EINVAL;
 		}
 		break;
-	case TCXCLUSE:
+	case TIOCHPCL:
 		tp->t_cflag |= HUPCL;
 		break;
-	case TCXONC:
+	case TIOCSETP:
 		ttywait(tp);
 		ttyflush(tp, T_RESUME);
-	case TCSBRK:
-		if (copyin( addr.l, (caddr_t) &told, sizeof(told))){
+	case TIOCSETN:
+		if (copyin( addr, (caddr_t) &told, sizeof(told))){
 			cflg = tp->t_cflag;
 			iflg = tp->t_iflag;
 			tp->t_iflag = 0;
@@ -307,7 +307,7 @@ break;
 		else
 			u.u_error = EFAULT;
 		break;
-	case TCFLSH:
+	case TIOCGETP:
 		told.sg_ospeed = told.sg_ispeed = tp->t_cflag & CBAUD;
 		told.sg_erase = tp->t_cc[VERASE];
 		told.sg_kill = (long)tp->t_cc[VKILL];
@@ -349,17 +349,17 @@ break;
 		if (tp->t_iflag & IXOFF)
 			ldmode |= O_TANDEM;
 		told.sg_flags = ldmode;
-		if (copyout((caddr_t) &told, addr.l, sizeof(told)))
+		if (copyout((caddr_t) &told, addr, sizeof(told)))
 			u.u_error = EFAULT;
 		break;
-	case TIOCHPCL:
+	case TCXCLUSE:
 		tp->t_state |= XCLUSE;
 		break;
 	case TCNXCLUSE:
 		tp->t_state &= ~XCLUSE;
 		break;
-	case TCSETAW:
-		if (copyin( addr.l, (caddr_t) &toc, sizeof(toc))){
+	case TIOCSETC:
+		if (copyin( addr, (caddr_t) &toc, sizeof(toc))){
 			tp->t_cc[VINTR] = toc.t_intrc;
 			tp->t_cc[VQUIT] = toc.t_quitc;
 			if (tp->t_lflag & ICANON)
@@ -368,19 +368,19 @@ break;
 		else
 			u.u_error = EFAULT;
 		break;
-	case TCSETA:
+	case TIOCGETC:
 		toc.t_intrc = tp->t_cc[VINTR];
 		toc.t_quitc = tp->t_cc[VQUIT];
 		toc.t_eofc = tp->t_cc[VEOF];
 		toc.t_startc = CSTART;
 		toc.t_stopc = CSTOP;
 		toc.t_brkc = 0;
-		if (copyout((caddr_t)&toc, addr.l, sizeof(toc)))
+		if (copyout((caddr_t)&toc, addr, sizeof(toc)))
 			u.u_error =EFAULT;
 		break;
 	default:
 		if ((com & IOCTYPE) == LDIOC)
-			(*linesw[tp->t_line].l_ioctl)(tp, com, addr.l, flag);
+			(*linesw[tp->t_line].l_ioctl)(tp, com, addr, flag);
 		else
 			u.u_error = EINVAL;
 	}
