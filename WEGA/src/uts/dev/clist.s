@@ -176,14 +176,14 @@ L6:
 	ldctl	fcw,r6		//restore processor status
 	ret
 L7:
-	ldl	rr2,_cfreelist
+	ldl	rr2,_cfreelist	//rr2 = cfreelist.c_next
 	testl	rr2
-	jpr	eq,L9
-	ldl	rr4(#2),rr2
+	jpr	eq,L9		//if(cfreelist empty) goto L9
+	ldl	rr4(#2),rr2	//ptr->c_cf = rr2
 L8:
 	ldl	rr0,@rr2
-	ldl	_cfreelist,rr0
-	clr	@rr2
+	ldl	_cfreelist,rr0	//cfreelist.c_next = cfreelist.c_next->c_next
+	clr	@rr2		//ptr->c_cl->c_next = 0
 	subl	rr0,rr0
 	ldl	rr2(#2),rr0
 	ldl	rr4(#6),rr2
