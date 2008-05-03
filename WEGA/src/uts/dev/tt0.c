@@ -37,157 +37,26 @@ char tt0wstr[] = "@[$]tt0.c		Rev : 4.1 	09/29/83 01:02:58";
 extern putcb();
 extern char partab[];
 
-#ifdef 0
 ttin(tp, c, count)
 register struct tty *tp;
-long c;
+union {
+	ushort  ch;
+	struct cblock *ptr;
+} c;
 int count;
+
 {
+
 	register ushort ch;
 	register ushort mode;
 	register char *cp;
 	char *csp;
-	char *foo;
-
-	extern	tttimeo();
 
 	mode = tp->t_iflag;
-	if( count) {
-		if(count == 1)
-			goto L214;
-		putcb(c, tp);
-		sysinfo.rawch += count;
-		cp = &c->c_data[c->c_first];
-L5a:			
-		if (tp->t_rawq.c_cc <= TTXOHI) { /* 3 */
-L62:			
-			mode = tp->t_lflag;
-			if ((tp->t_state & IEXTPROC) ||
-			    (mode == 0)){ /* 4,5 */
-				if (!(mode & ICANON)){/* 6 */
-					tp->t_state &= ~RTO;
-					if (tp->t_cc[VMIN] <= tp->t_rawq.c_cc) /* 7 */
-						tp->t_delct = 1;
-					else
-						if ((tp->t_cc[VTIME]) &&
-						    ((tp->t_state & TACT) == 0)) /* 72,73 */
-							ttimeout(tp);
-					if ((tp->t_delct) == 0) return; /* 74 */
-				}
-				if (tp->t_state & IASLP) { /* 75 */
-					tp->t_state &= ~IASLP;
-					wakeup(tp);
-				}
-				return;
-			}
-			if (count--){ /* 67 */
-				ch = *cp++;
-				mode = tp->t_lflag;
-				if (!(mode & ISIG)){ /* 68 */
-L494:						
-					if (mode & ICANON){ /* 69 */
-						if (ch == '\n'){ /* 70 */
-							if (mode & ECHONL)
-								mode |= ECHO;
-							tp->t_delct++;
-						} 
-						else
-							if (ch == tp->t_cc[VEOL])
-								tp->t_delct++;
-						if ((tp->t_state & ESC) == 0){ /* 50 */
-							if (ch == '\\')
-								tp->t_state |= ESC;
-							if ((ch == tp->t_cc[VERASE]) &&
-							    (mode & INPCK)){ /* 52,53 */
-								if (mode & ECHO) /* 54 */
-									ttxput(tp, (long) CERASE, 0);
-								mode |= ECHO;
-								ttxput(tp, (long) ' ', 0);
-								ch = CERASE;
-							} /* von 52,53 */
-							else if ((ch == tp->t_cc[VKILL]) &&
-							    (mode & ISTRIP)){ /* 55,56 */
-								if ((mode & ECHO) &&
-								    (mode & ISPCI)){ /* 57,58 */
-									for ( csp = &"???"; (*csp);)
-										ttxput(tp, (long) *csp++, 0);
-									(*tp->t_proc)(tp, T_OUTPUT);
-								}
-								ttxput(tp, (long) ch, 0);
-								mode |= ECHO;
-								ch = '\n';
-							}
-							else if (ch != tp->t_cc[VEOF]) /* 60 */
-								if ((mode & ECHO) &&
-								    (mode & ISPCI)){ /* 61,62 */
-									for ( csp = &"(eof)"; (*csp);)
-										ttxput(tp, (long) *csp++, 0);
-									(*tp->t_proc)(tp, T_OUTPUT);
-								}
-							mode &= ~ECHO;
-							tp->t_delct++;
-						}
-						else if ((ch == '\\') ||
-						    (mode & XCASE)) /* 64,65 */
-							tp->t_state  &= ~RTO;
-					}
-					if (mode & ECHO) /* 66 */
-						ttxput(tp, (long) ch, 0);
-					(*tp->t_proc)(tp, T_OUTPUT);
-				} /* von 68 */
-				else {
-					if (ch != tp->t_cc[VINTR]){ /* 43 */
-						if (ch == tp->t_cc[VQUIT]) /* 44 */
-							goto L494;
-						if (!(mode & NOFLSH))
-							ttyflush(tp, T_RESUME);
-						if ((mode & ECHO) ||
-						    (mode & ISPCI)){ /* 46,47 */
-							for ( csp = &"(quit)"; (*csp); csp++)
-								ttxput(tp,(long) *csp, 0);
-							(*tp->t_proc)(tp, T_OUTPUT);
-						} /* von 43 */
-					}
-					else {
-						if (!(mode & NOFLSH))
-							ttyflush(tp, T_RESUME);
-						if ((mode & ECHO) &&
-						    (mode & ISPCI)) /* 40,41 */{
-							for ( csp = &"(intr)"; (*csp); csp++)
-								ttxput(tp, (long) *csp, 0);
-							(*tp->t_proc)(tp, T_OUTPUT);
-						} /* von 40,41 */
-					}
-				} /* von 68 else */
-			} /* von 67 */
-			if (!(mode & ICANON)){ /* 6 */
-				if (tp->t_cc[VMIN] <= tp->t_rawq.c_cc)
-					tp->t_delct = 1;
-				if ((tp->t_cc[VTIME]) &&
-				    ((tp->t_state & TACT) == 0))
-					meout(tp);
-			} /* von 6 */
-			if ((tp->t_delct) &&
-			    (tp->t_state & IASLP)){ /* 74,75 */
-				tp->t_state &= ~IASLP;
-				wakeup(tp);
-			}
-			return;
-		} /* von 3 */
-		else {
-			if ((mode & IXOFF)&&
-			    (tp->t_state & TBLOCK)) /* 8,9 */
-				(*tp->t_proc)(tp, T_BLOCK);
-			if (tp->t_rawq.c_cc <= TTYHOG) /* 10 */
-				goto L62;
-			else
-				ttyflush(tp, T_TIME);
-			return;
-		} /* 3 von else */
-	} /* von 1 */
-	else {
+	switch(count) {
+	case 0:
 		count++;
-		ch = c.half.left;
+		ch = c.ch;
 		if ((ch & IXOFF) &&
 		    (!(mode & INPCK))) /* 13,14 */
 			ch &= ~PERROR;
@@ -227,25 +96,132 @@ L494:
 		}
 		if ((ch == '\n')&& 
 		    (mode & INLCR)) /* 30,31 */
-			c = '\r';
+			c.ch = '\r';
 		else {
-			if (c == 0xd){ /* 32 */
+			if (c.ch == 0xd){ /* 32 */
 				if (mode & IGNCR) return;
 				if (mode & ICRNL)
-					c = '\n';
+					c.ch = '\n';
 			}
 		}
-	}
-	if (mode & IUCLC)  /* 35 */
-		c = toupper(c);
-L214:
+		if (mode & IUCLC)  /* 35 */
+			c.ch = toupper(c.ch);
+	case 1:
 		if (putc(c, tp))
 			return;
 		sysinfo.rawch++;
-		cp = &lobyte(c.half.right);
-		goto L5a;
+		cp = (char *)&lobyte(c.ch);
+		break;
+	default:
+		putcb(c, tp);
+		sysinfo.rawch += count;
+		cp = (char *)&c.ptr->c_data[c.ptr->c_first];
+		break;
+	}
+
+	if (tp->t_rawq.c_cc > TTXOHI) {
+		if ((mode & IXOFF)&&
+		    (tp->t_state & TBLOCK))
+			(*tp->t_proc)(tp, T_BLOCK);
+		if (tp->t_rawq.c_cc > TTYHOG) {
+			ttyflush(tp, T_TIME);
+			return;
+		}
+	}
+
+	if (tp->t_lflag) while (count--) {
+		ch = *cp++;
+		mode = tp->t_lflag;
+		if (mode&ISIG) {
+			if (ch == tp->t_cc[VINTR]){
+				if (!(mode & NOFLSH))
+					ttyflush(tp, T_RESUME);
+				if ((mode & ECHO) &&
+				    (mode & ISPCI)){
+					for ( csp = "(intr)"; (*csp); csp++)
+						ttxput(tp, (long) *csp, 0);
+					(*tp->t_proc)(tp, T_OUTPUT);
+				}
+				continue;
+			} else {
+				if (ch == tp->t_cc[VQUIT]) /* 44 */
+					continue;
+				if (!(mode & NOFLSH))
+					ttyflush(tp, T_RESUME);
+				if ((mode & ECHO) ||
+				    (mode & ISPCI)){ /* 46,47 */
+					for ( csp = "(quit)"; (*csp); csp++)
+						ttxput(tp,(long) *csp, 0);
+					(*tp->t_proc)(tp, T_OUTPUT);
+				}
+				continue;
+			}
+		}
+		if (mode & ICANON){ /* 69 */
+			if (ch == '\n'){ /* 70 */
+				if (mode & ECHONL)
+					mode |= ECHO;
+				tp->t_delct++;
+			} 
+			else
+				if (ch == tp->t_cc[VEOL])
+					tp->t_delct++;
+			if ((tp->t_state & ESC) == 0){ /* 50 */
+				if (ch == '\\')
+					tp->t_state |= ESC;
+				if ((ch == tp->t_cc[VERASE]) &&
+				    (mode & INPCK)){ /* 52,53 */
+					if (mode & ECHO) /* 54 */
+						ttxput(tp, (long) CERASE, 0);
+					mode |= ECHO;
+					ttxput(tp, (long) ' ', 0);
+					ch = CERASE;
+				} /* von 52,53 */
+				else if ((ch == tp->t_cc[VKILL]) &&
+				    (mode & ISTRIP)){ /* 55,56 */
+					if ((mode & ECHO) &&
+					    (mode & ISPCI)){ /* 57,58 */
+						for ( csp = "???"; (*csp);)
+							ttxput(tp, (long) *csp++, 0);
+						(*tp->t_proc)(tp, T_OUTPUT);
+					}
+					ttxput(tp, (long) ch, 0);
+					mode |= ECHO;
+					ch = '\n';
+				}
+				else if (ch != tp->t_cc[VEOF]) /* 60 */
+					if ((mode & ECHO) &&
+					    (mode & ISPCI)){ /* 61,62 */
+						for ( csp = "(eof)"; (*csp);)
+							ttxput(tp, (long) *csp++, 0);
+						(*tp->t_proc)(tp, T_OUTPUT);
+					}
+				mode &= ~ECHO;
+				tp->t_delct++;
+			}
+			else if ((ch == '\\') ||
+			    (mode & XCASE)) /* 64,65 */
+				tp->t_state  &= ~RTO;
+		}
+		if (mode & ECHO){
+			ttxput(tp, (long) ch, 0);
+			(*tp->t_proc)(tp, T_OUTPUT);
+		}
+	}
+	if (!(mode & ICANON)){ /* 6 */
+		if (tp->t_cc[VMIN] <= tp->t_rawq.c_cc)
+			tp->t_delct = 1;
+		if ((tp->t_cc[VTIME]) &&
+		    ((tp->t_state & TACT) == 0))
+			tttimeout(tp);
+	} /* von 6 */
+	if ((tp->t_delct) &&
+	    (tp->t_state & IASLP)){ /* 74,75 */
+		tp->t_state &= ~IASLP;
+		wakeup(tp);
+	}
+	return;
 }
-#endif
 
 /*
  * Put character(s) on TTY output queue, adding delays,
