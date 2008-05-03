@@ -1,3 +1,16 @@
+/**************************************************************************
+***************************************************************************
+ 
+	W E G A - Quelle
+	KERN 3.2	Modul : tt0.c
+ 
+	Bearbeiter	: O. Lehmann
+	Datum		: 03.05.08
+	Version		: 1.0
+ 
+***************************************************************************
+**************************************************************************/
+
 #include <sys/param.h>
 #include <sys/state.h>
 #include <sys/conf.h>
@@ -7,30 +20,40 @@
 #include <sys/tty.h>
 #include <sys/ttold.h>
 #include <sys/sysinfo.h>
+#include <sys/systm.h>
 #include <sys/proc.h>
 #include <sys/inode.h>
 #include <sys/mmu.h>
 #include <sys/s.out.h>
 #include <sys/user.h>
 
-extern putcb();
+/*
+ * Line discipline 0
+ */
 
+char tt0wstr[] = "@[$]tt0.c		Rev : 4.1 	09/29/83 01:02:58";
+
+
+extern putcb();
+extern char partab[];
+
+#ifdef 0
 ttin(tp, c, count)
 register struct tty *tp;
 long c;
 int count;
 {
-
 	register ushort ch;
 	register ushort mode;
 	register char *cp;
 	char *csp;
+	char *foo;
 
 	extern	tttimeo();
 
 	mode = tp->t_iflag;
-	if (count){
-		if (count == 1)
+	if( count) {
+		if(count == 1)
 			goto L214;
 		putcb(c, tp);
 		sysinfo.rawch += count;
@@ -215,23 +238,26 @@ L494:
 	}
 	if (mode & IUCLC)  /* 35 */
 		c = toupper(c);
-L214:			
-	if (putc(c, tp)){/* 38 */
+L214:
+		if (putc(c, tp))
+			return;
 		sysinfo.rawch++;
 		cp = &lobyte(c.half.right);
 		goto L5a;
-	}
 }
+#endif
 
-
-
-
-extern char partab[];
-ttxput(tp, arg, count)
+/*
+ * Put character(s) on TTY output queue, adding delays,
+ * expanding tabs, and handling the CR/NL bit.
+ * It is called both from the top half for output, and from
+ * interrupt level for echoing.
+ */
+ttxput(tp, ucp, ncode)
 register struct tty *tp;
 union { 
-	long c;
-	struct cblock *cb;
+	long ch;
+	struct cblock *ptr;
 	struct
 	    {
 		char l_l;
@@ -240,240 +266,230 @@ union {
 		char r_r;
 	} 
 	byte;
-} 
-arg;
-int count;
-
+} ucp;
+int ncode;
 {
+	register c;
+	register flg;
+	register unsigned char *cp;
+	register char *colp;
+	int ctype;
+	register int cs;
+	struct cblock *scf;
 
-	register ch;
-	register ushort mode;
-	register char *cp;
-	char *colp;
-	int pch, vch;
-	struct cblock *cbp;
-
-	mode = tp->t_oflag;
-	if (tp->t_state & OEXTPROC)
-		mode &= ~OPOST;
-	if (!(count)) {
-		if (tp->t_outq.c_cc >= TTYHOG) return;
-		count++;
-		if (!(mode & OPOST)){
+	flg = tp->t_oflag;
+	if (tp->t_state&OEXTPROC)
+		flg &= ~OPOST;
+	if (ncode == 0) {
+		if (tp->t_outq.c_cc >= TTYHOG)
+			return;
+		ncode++;
+		if (!(flg&OPOST)) {
 			sysinfo.outch++;
-			putc(arg.r_r, &tp->t_outq);
+			putc(ucp.r_r, &tp->t_outq);
 			return;
 		}
-		else {
-			cp = &arg.r_r;
-			cbp = 0;
-		}
-	}
-	else {
-		if (!(mode & OPOST)){
-			sysinfo.outch += count;
-			putcb(arg.c, &tp->t_outq);
+		cp = (unsigned char *)&ucp.r_r;
+		scf = NULL;
+	} else {
+		if (!(flg&OPOST)) {
+			sysinfo.outch += ncode;
+			putcb(ucp.ch, &tp->t_outq);
 			return;
 		}
-		else {
-			cp = &arg.cb->c_data[arg.cb->c_first];
-			cbp = arg.cb;
-		}
+		cp = (unsigned char *)&ucp.ptr->c_data[ucp.ptr->c_first];
+		scf = ucp.ptr;
 	}
-	while(count--){
-		ch = (unsigned char) (*cp++);
-		if (ch >= DELAYDEL){ /* b7 */
-			if (ch == DELAYDEL)
+	while (ncode--) {
+		c = *cp++;
+		if (c >= DELAYDEL){
+			if (c == DELAYDEL)
 				putc(DELAYDEL, &tp->t_outq);
 			sysinfo.outch++;
-			putc(ch, &tp->t_outq);
+			putc(c, &tp->t_outq);
 			continue;
 		} 
-		if (tp->t_lflag  & XCASE){
-			for ( colp = "({)}!|^~'`\\"; (*colp++); )
-				if (ch  == *colp++){
+		/*
+		 * Generate escapes for upper-case-only terminals.
+		 */
+		if (tp->t_lflag&XCASE)  {
+			colp = "({)}!|^~'`\\";
+			while(*colp++)
+				if (c == *colp++) {
 					tp->t_lflag &= ~XCASE;
 					ttxput(tp, (long)'\\', 0);
 					tp->t_lflag |= XCASE;
-					ch = *(colp - 2);
+					c = colp[-2];
 					break;
 				}
-			if ((ch >= 'A') && (ch <= 'Z')){
+			if ('A' <= c && c <= 'Z'){
 				tp->t_lflag &= ~XCASE;
 				ttxput(tp, (long)'\\', 0);
 				tp->t_lflag |= XCASE;
 			}
 		}
-		if (mode & OLCUC)
-			if ((ch >= 'a') &&
-			    (ch <= 'z'))
-				ch += 'A'-'a';
-		vch = ch;
-		pch = partab[ch];
+		if (flg&OLCUC && 'a' <= c && c <= 'z')
+			c += 'A' - 'a';
+		cs = c;
+		/*
+		 * Calculate delays.
+		 * The numbers here represent clock ticks
+		 * and are not necessarily optimal for all terminals.
+		 * The delays are indicated by characters above 0200.
+		 */
+		ctype = partab[c];
 		colp = &tp->t_col;
-		ch = 0;
-		switch (pch & 077){
-		case 0:
+		c = 0;
+		switch (ctype&077) {
+		case 0: /* ordinary */
 			(*colp)++;
+
+		case 1: /* non-printing */
 			break;
-		case 2:
-			if (mode & BS1)
-				ch = 2;
+
+		case 2: /* backspace */
+			if (flg&BSDLY)
+				c = 2;
 			if (*colp)
 				(*colp)--;
 			break;
-		case 3:
-			if (!(mode & ONLRET)){
-				if (mode & ONLCR){
-					if ((!(mode & ONOCR)) ||
-					    (*colp)){
-						sysinfo.outch++;
-						putc('\r', &tp->t_outq);
-					}
+		case 3: /* line feed */
+			if (flg&ONLRET)
+				goto cr;
+			if (flg&ONLCR) {
+				if (!(flg&ONOCR && *colp==0)) {
+					sysinfo.outch++;
+					putc('\r', &tp->t_outq);
 				}
-				else 
-					goto nldly;
+				goto cr;
 			}
-			goto crdly;
-		case 4:
-			ch = 8 - (*colp & 7);
-			*colp += ch;
-			pch = mode & TABDLY;
-			if (pch == 0){
-				ch = 0;
-				break;
-			}
-			if (pch == TAB1){
-				if (ch < 5) 
-					ch = 0;
-				break;
-			}
-			if (pch == TAB2){
-				ch = 2;
-				break;
-			}
-			if (pch == TAB3){
-				sysinfo.outch += ch;
+		nl:
+			if (flg&NLDLY)
+				c = 5;
+			break;
+		case 4:	/* tab */
+			c = 8 - ((*colp)&07);
+			*colp += c;
+			ctype = flg&TABDLY;
+			if (ctype == TAB0) {
+				c = 0;
+			} else if (ctype == TAB1) {
+				if (c < 5)
+					c = 0;
+			} else if (ctype == TAB2) {
+				c = 2;
+			} else if (ctype == TAB3) {
+				sysinfo.outch += c;
 				do
-				    putc(' ', &tp->t_outq);
-				while (--ch);
+					putc(' ', &tp->t_outq);
+				while (--c);
 				continue;
 			}
 			break;
-		case 5:
-			if (mode & VTDLY)
-				ch = 0x7f;
+
+		case 5: /* vertical tab */
+			if (flg&VTDLY)
+				c = 0177;
 			break;
-		case 6:
-			if (mode & OCRNL){
-				vch = '\n';
-nldly:					
-				if (mode & NLDLY)
-					ch = 5;
-				break;
+
+		case 6: /* carriage return */
+			if (flg&OCRNL) {
+				cs = '\n';
+				goto nl;
 			}
-			if ((mode & ONOCR) &&
-			    (*colp == 0))
+			if (flg&ONOCR && *colp == 0)
 				continue;
-crdly:				
-			pch = mode & CRDLY;
-			if (pch == CR1){
+		cr:				
+			ctype = flg&CRDLY;
+			if (ctype == CR1) {
 				if (*colp)
-					ch  = max((*colp>>4)+3, 6);
+					c = max((*colp>>4) + 3, 6);
+			} else if (ctype == CR2) {
+				c = 5;
+			} else if (ctype == CR3) {
+				c = 9;
 			}
-			else
-				if (pch == CR2)
-					ch = 5;
-				else
-					if (pch == CR3)
-						ch = 9;
 			*colp = 0;
-		case 1:
-		default:
 			break;
-		case 7:
-			if (mode & FFDLY)
-				ch = 0x7f;
+		case 7: /* form feed */
+			if (flg&FFDLY)
+				c = 0177;
+			break;
 		}
 		sysinfo.outch++;
-		putc(vch, &tp->t_outq);
-		if (ch){
-			if ((ch < ' ') &&
-			    (mode & OFILL)){
-				if (mode & OFDEL)
-					vch = 0x7f;
+		putc(cs, &tp->t_outq);
+		if (c) {
+			if ((c < 32) && flg&OFILL) {
+				if (flg&OFDEL)
+					cs = 0177;
 				else
-					vch = 0;
-				putc(vch, &tp->t_outq);
-				if (ch > 3)
-					putc(vch, &tp->t_outq);
-
-			}
-			else {
+					cs = 0;
+				putc(cs, &tp->t_outq);
+				if (c > 3)
+					putc(cs, &tp->t_outq);
+			} else {
 				putc(DELAYDEL, &tp->t_outq);
-				putc(ch | DELAYDEL, &tp->t_outq);
+				putc(c|DELAYDEL, &tp->t_outq);
 			}
 		}
-		/* }
-												 else {
-													putc(DELAYDEL, &tp->t_outq);
-													sysinfo.outch++;
-													putc(ch, &tp->t_outq);
-													continue;
-												} */
-	} /* von while */
-	if  (cbp)
-		putcf(cbp);
+	}
+	if (scf != NULL)
+		putcf(scf);
 }
 
+
+/*
+ * Get next function from output queue.
+ * Called from xmit interrupt complete.
+ */
 ttout(tp)
 register struct tty *tp;
 {
 	return;
 }
 
-
 extern timeout();
-tttimeout(tp)
+tttimeo(tp)
 register struct tty *tp;
 {
 
-	tp->t_state &= ~TACT; /* timeout waiting on rawq */
-	if (tp->t_lflag & ICANON) return; /* enable canonicalization */
-	if (tp->t_cc[VTIME] == 0) return; /* time out */
-	if (( tp->t_rawq.c_cc == 0) && (tp->t_cc[VMIN])) return;
-	if (tp->t_state & RTO){ /* timeout waiting on rawq */
-		tp->t_delct = 1;
-		if (!(tp->t_state & IASLP)) return; /* wakeup when input done */
-		tp->t_state &= ~IASLP;
-		wakeup(tp);
+	tp->t_state &= ~TACT;		/* timeout waiting on rawq */
+	if (tp->t_lflag&ICANON)
+		return;			/* enable canonicalization */
+	if (tp->t_cc[VTIME] == 0)
+		return;			/* time out */
+	if (( tp->t_rawq.c_cc == 0) && (tp->t_cc[VMIN]))
 		return;
+	if (tp->t_state&RTO) {		/* timeout waiting on rawq */
+		tp->t_delct = 1;
+		if (tp->t_state&IASLP) {/* wakeup when input done */
+			tp->t_state &= ~IASLP;
+			wakeup(tp);
+		}
+	} else {
+		tp->t_state |= RTO|TACT;
+		timeout(tttimeo, tp, tp->t_cc[VTIME]*(HZ/10));
 	}
-	tp->t_state |= (RTO | TACT);
-	timeout(tttimeout, tp, tp->t_cc[VTIME] * 6);
 }
 
-extern putcb();
-
-ttioctl(tp, com, arg)
+ttioctl(tp, cmd, arg)
 register struct tty *tp;
-int com;
+int cmd;
 long arg;
 {
+	ushort chg;
 
-	ushort ldmode;
-
-	switch(com) {
+	switch(cmd) {
 	case LDCHG:
-		ldmode = tp->t_lflag ^ arg;
-		if (!(ldmode & ICANON))
+		chg = tp->t_lflag^arg;
+		if (!(chg&ICANON))
 			break;
 		dvi();
-		if (tp->t_canq.c_cc){
-			if (tp->t_rawq.c_cc){
+		if (tp->t_canq.c_cc) {
+			if (tp->t_rawq.c_cc) {
 				tp->t_canq.c_cc += tp->t_rawq.c_cc;
 				tp->t_canq.c_cl->c_next = tp->t_rawq.c_cf;
-				tp->t_outq.c_cf = tp->t_rawq.c_cl;
+				tp->t_canq.c_cl = tp->t_rawq.c_cl;
 			}
 			tp->t_rawq = tp->t_canq;
 			tp->t_canq = ttnulq;
@@ -481,6 +497,7 @@ long arg;
 		tp->t_delct = tp->t_rawq.c_cc;
 		evi();
 		break;
+
 	default:
 		break;
 	}
