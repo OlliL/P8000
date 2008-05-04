@@ -139,8 +139,7 @@ int ncode;
 		break;
 	}
 	if (tp->t_rawq.c_cc > TTXOHI) {
-		if ((flg & IXOFF)&&
-		    (tp->t_state & TBLOCK))
+		if (flg&IXOFF && !(tp->t_state&TBLOCK))
 			(*tp->t_proc)(tp, T_BLOCK);
 		if (tp->t_rawq.c_cc > TTYHOG) {
 			ttyflush(tp, T_TIME);
