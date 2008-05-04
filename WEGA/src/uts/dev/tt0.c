@@ -64,12 +64,26 @@ int ncode;
 	char *csp;
 	extern  tttimeo();
 
-/* irgendwie sowas fehlt noch 
-	if (tp->t_state&IEXTPROC)
-		flg &= ~OPOST;
+/* irgendwie fehlt noch was - siehe TODO
+
+gebraucht wird
+
+31c2  002c a12a  35c2  002e  0702  0004  bd30  9c28  ee05  a1a2  8da4
+|     |     |     |     |     |     |     |     |     |     |     |  jp      ne,$8000+$0x46e (sprung vor die while(ncode--) schleife)
+|     |     |     |     |     |     |     |     |     |     |     +- test    r10
+|     |     |     |     |     |     |     |     |     |     +------- ld      r2,r10              zurueckladen von flg nach tp->t_lflag.
+|     |     |     |     |     |     |     |     |     +------------- jpr     ne,#$00b8
+|     |     |     |     |     |     |     |     +------------------- testl   rr2		teste register 2 auf 0
+|     |     |     |     |     |     |     +------------------------- ldk     r3,0		lade ins register 3 die konstante 0
+|     |     |     |     |     |     |
+|     |     |     |     |     +-----+------------------------------- and     r2,#$0004          tp->t_lflag wird mit IEXTPROC binaer verknuepft  --- tp->t_lflag&IEXTROC
+|     |     |     |     |
+|     |     |     +-----+------------------------------------------- ldl     rr2,rr12(#46)
+|     |     +------------------------------------------------------- ld      r10,r2		flg wird mit r2 definiert	                 -+
+|     |                                                                                                                                           |
++-----+------------------------------------------------------------- ld      r2,rr12(#44)	tp->t_lflag wird in r2 geladen                    +- flg = tp->t_lflag
 */
 	flg = tp->t_iflag;
-/*hier nicht*/
 	switch (ncode) {
 	case 0:
 		ncode++;
@@ -90,7 +104,7 @@ int ncode;
 					return;
 			}			
 			if (flg&PARMRK) {
-				ttin(tp, (long) 0xff, 1);
+				ttin(tp, (long) 0377, 1);
 				ttin(tp, (long) 0, 1);
 			} else
 				c = 0;
@@ -142,16 +156,22 @@ int ncode;
 		if (flg&IXOFF && !(tp->t_state&TBLOCK))
 			(*tp->t_proc)(tp, T_BLOCK);
 		if (tp->t_rawq.c_cc > TTYHOG) {
-			ttyflush(tp, T_TIME);
+			ttyflush(tp, FREAD);
 			return;
 		}
 	}
 
-/* hier passt es nicht so richtig */
+/* TODO - das passt noch nicht 100%ig */
+	flg = tp->t_lflag;
+	if (tp->t_state&IEXTPROC)
+		flg &= OPOST;
+	tp->t_lflag = flg;
+
+/* TODO */
+
 	if (tp->t_lflag) while (ncode--) {
 		c = *cp++;
 		flg = tp->t_lflag;
-/* hier auch nicht */
 		if (flg&ISIG) {
 			if (c == tp->t_cc[VINTR]) {
 				signal(tp->t_pgrp, SIGINT);
@@ -185,7 +205,6 @@ int ncode;
 				tp->t_delct++;
 			} else if (c == tp->t_cc[VEOL])
 				tp->t_delct++;
-/*hier passts nicht */
 			if (!(tp->t_state&ESC)) {
 				if (c == '\\')
 					tp->t_state |= ESC;
