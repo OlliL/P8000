@@ -58,14 +58,18 @@ union {
 } ucp;
 int ncode;
 {
-
 	register c;
 	register flg;
 	register unsigned char *cp;
 	char *csp;
 	extern  tttimeo();
 
+/* irgendwie sowas fehlt noch 
+	if (tp->t_state&IEXTPROC)
+		flg &= ~OPOST;
+*/
 	flg = tp->t_iflag;
+/*hier nicht*/
 	switch (ncode) {
 	case 0:
 		ncode++;
@@ -126,7 +130,7 @@ int ncode;
 		if (putc(ucp.r_r, &tp->t_rawq))
 			return;
 		sysinfo.rawch++;
-		cp = (unsigned char *)ucp.r_r;
+		cp = (unsigned char *)&ucp.r_r;
 		break;
 	default:
 		putcb(ucp.ch, &tp->t_rawq);
@@ -144,11 +148,14 @@ int ncode;
 		}
 	}
 
+/* hier passt es nicht so richtig */
 	if (tp->t_lflag) while (ncode--) {
 		c = *cp++;
 		flg = tp->t_lflag;
+/* hier auch nicht */
 		if (flg&ISIG) {
 			if (c == tp->t_cc[VINTR]) {
+				signal(tp->t_pgrp, SIGINT);
 				if (!(flg&NOFLSH))
 					ttyflush(tp, (FREAD|FWRITE));
 				if ((flg&ECHO) &&
@@ -160,6 +167,7 @@ int ncode;
 				continue;
 			} 
 			if (c == tp->t_cc[VQUIT]) {
+				signal(tp->t_pgrp, SIGQUIT);
 				if (!(flg&NOFLSH))
 					ttyflush(tp, (FREAD|FWRITE));
 				if ((flg&ECHO) ||
@@ -178,7 +186,8 @@ int ncode;
 				tp->t_delct++;
 			} else if (c == tp->t_cc[VEOL])
 				tp->t_delct++;
-			if ((tp->t_state&ESC) == 0) {
+/*hier passts nicht */
+			if (!(tp->t_state&ESC)) {
 				if (c == '\\')
 					tp->t_state |= ESC;
 				if (c == tp->t_cc[VERASE] && flg&ECHOE) {
