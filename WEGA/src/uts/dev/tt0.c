@@ -37,90 +37,93 @@ char tt0wstr[] = "@[$]tt0.c		Rev : 4.1 	09/29/83 01:02:58";
 extern putcb();
 extern char partab[];
 
-ttin(tp, c, count)
+ttin(tp, ucp, ncode)
 register struct tty *tp;
 union {
 	ushort  ch;
 	struct cblock *ptr;
-} c;
-int count;
+} ucp;
+int ncode;
 
 {
 
-	register ushort ch;
-	register ushort mode;
+	register ushort c;
+	register ushort flg;
 	register char *cp;
 	char *csp;
 
-	mode = tp->t_iflag;
-	switch(count) {
+	flg = tp->t_iflag;
+	switch (ncode) {
 	case 0:
-		count++;
-		ch = c.ch;
-		if ((ch & IXOFF) &&
-		    (!(mode & INPCK))) /* 13,14 */
-			ch &= ~PERROR;
-		if (ch & (OVERRUN | FRERROR | PERROR)){ /* 15 */
-			if (ch & 0xff){ /* 16 */
-				if (mode & IGNPAR) return;
-				if (mode & IGNBRK) return;
-				if (mode & BRKINT){ /* 12 */
+		ncode++;
+		c = ucp.ch;
+		if (c&PERROR && !(flg&INPCK))
+			c &= ~PERROR;
+		 if (c&(FRERROR|PERROR|OVERRUN)) {
+			if ((c&0377) == 0) {
+				if (flg&IGNBRK)
+					return;
+				if (flg&BRKINT) {
 					signal(tp->t_pgrp, SIGINT);
-					ttyflush(tp, T_RESUME);
+					ttyflush(tp, (FREAD|FWRITE));
 					return;
 				}
-			} /* von 16 */
-			if (mode & PARMRK){ /* 18 */
+			} else {
+				if (flg&IGNPAR)
+					return;
+			}			
+			if (flg&PARMRK) {
 				ttin(tp, (long) 0xff, 1);
 				ttin(tp, (long) 0, 1);
+			} else
+				c = 0;
+			c |= 0400;
+		} else { 
+			if (flg&ISTRIP)
+				c &= 0177;
+			else {
+				c &= 0377;
+				if (c == 0377 && flg&PARMRK)
+				    if (putc(0377, &tp->t_rawq))
+				     return;
 			}
-			else
-				ch = 0;
-			ch |= ICRNL;
-		} /* von 15 */
-		else { 
-			if (mode & ISTRIP) /* 23 */
-				ch &= 0x7f;
-			else
-				if (((ch & 0xff)== 0xff) &&
-				    (mode & PARMRK) &&
-				    (putc( 0xff, tp))) /* 24,25,26 */ return;
 		}
-		if (mode & IXON){ /* 19 */
-			if (tp->t_state & TTSTOP)
-				if ((ch == CSTART) ||
-				    (mode & IXANY)) /* 21,22 */
+		if (flg&IXON) {
+			if (tp->t_state&TTSTOP) {
+				if (c == CSTART || flg&IXANY)
 					(*tp->t_proc)(tp, T_RESUME);
-			if (ch  == CSTART) return;
-			if (ch == CSTOP) return;
-		}
-		if ((ch == '\n')&& 
-		    (mode & INLCR)) /* 30,31 */
-			c.ch = '\r';
-		else {
-			if (c.ch == 0xd){ /* 32 */
-				if (mode & IGNCR) return;
-				if (mode & ICRNL)
-					c.ch = '\n';
+			} else {
+				if (c == CSTOP)
+					(*tp->t_proc)(tp, T_SUSPEND);
 			}
+			if (c == CSTART || c == CSTOP)
+				return;
 		}
-		if (mode & IUCLC)  /* 35 */
-			c.ch = toupper(c.ch);
+		if (c == '\n' && flg&INLCR)
+			c = '\r';
+		else if (c == '\r')
+			if (flg&IGNCR)
+				return;
+			else if (flg&ICRNL)
+				c = '\n';
+		if (flg&IUCLC && 'A' <= c && c <= 'Z')
+			c += 'a' - 'A';
+		ucp.ch = c;
 	case 1:
 		if (putc(c, tp))
 			return;
 		sysinfo.rawch++;
-		cp = (char *)&lobyte(c.ch);
+		cp = (char *)&lobyte(ucp.ch);
 		break;
 	default:
 		putcb(c, tp);
-		sysinfo.rawch += count;
-		cp = (char *)&c.ptr->c_data[c.ptr->c_first];
+		sysinfo.rawch += ncode;
+		cp = (char *)&ucp.ptr->c_data[ucp.ptr->c_first];
 		break;
 	}
 
 	if (tp->t_rawq.c_cc > TTXOHI) {
-		if ((mode & IXOFF)&&
+		if ((flg & IXOFF)&&
 		    (tp->t_state & TBLOCK))
 			(*tp->t_proc)(tp, T_BLOCK);
 		if (tp->t_rawq.c_cc > TTYHOG) {
@@ -129,27 +132,27 @@ int count;
 		}
 	}
 
-	if (tp->t_lflag) while (count--) {
-		ch = *cp++;
-		mode = tp->t_lflag;
-		if (mode&ISIG) {
-			if (ch == tp->t_cc[VINTR]){
-				if (!(mode & NOFLSH))
+	if (tp->t_lflag) while (ncode--) {
+		c = *cp++;
+		flg = tp->t_lflag;
+		if (flg&ISIG) {
+			if (c == tp->t_cc[VINTR]){
+				if (!(flg & NOFLSH))
 					ttyflush(tp, T_RESUME);
-				if ((mode & ECHO) &&
-				    (mode & ISPCI)){
+				if ((flg & ECHO) &&
+				    (flg & ISPCI)){
 					for ( csp = "(intr)"; (*csp); csp++)
 						ttxput(tp, (long) *csp, 0);
 					(*tp->t_proc)(tp, T_OUTPUT);
 				}
 				continue;
 			} else {
-				if (ch == tp->t_cc[VQUIT]) /* 44 */
+				if (c == tp->t_cc[VQUIT]) /* 44 */
 					continue;
-				if (!(mode & NOFLSH))
+				if (!(flg & NOFLSH))
 					ttyflush(tp, T_RESUME);
-				if ((mode & ECHO) ||
-				    (mode & ISPCI)){ /* 46,47 */
+				if ((flg & ECHO) ||
+				    (flg & ISPCI)){ /* 46,47 */
 					for ( csp = "(quit)"; (*csp); csp++)
 						ttxput(tp,(long) *csp, 0);
 					(*tp->t_proc)(tp, T_OUTPUT);
@@ -157,58 +160,58 @@ int count;
 				continue;
 			}
 		}
-		if (mode & ICANON){ /* 69 */
-			if (ch == '\n'){ /* 70 */
-				if (mode & ECHONL)
-					mode |= ECHO;
+		if (flg & ICANON){ /* 69 */
+			if (c == '\n'){ /* 70 */
+				if (flg & ECHONL)
+					flg |= ECHO;
 				tp->t_delct++;
 			} 
 			else
-				if (ch == tp->t_cc[VEOL])
+				if (c == tp->t_cc[VEOL])
 					tp->t_delct++;
 			if ((tp->t_state & ESC) == 0){ /* 50 */
-				if (ch == '\\')
+				if (c == '\\')
 					tp->t_state |= ESC;
-				if ((ch == tp->t_cc[VERASE]) &&
-				    (mode & INPCK)){ /* 52,53 */
-					if (mode & ECHO) /* 54 */
+				if ((c == tp->t_cc[VERASE]) &&
+				    (flg & INPCK)){ /* 52,53 */
+					if (flg & ECHO) /* 54 */
 						ttxput(tp, (long) CERASE, 0);
-					mode |= ECHO;
+					flg |= ECHO;
 					ttxput(tp, (long) ' ', 0);
-					ch = CERASE;
+					c = CERASE;
 				} /* von 52,53 */
-				else if ((ch == tp->t_cc[VKILL]) &&
-				    (mode & ISTRIP)){ /* 55,56 */
-					if ((mode & ECHO) &&
-					    (mode & ISPCI)){ /* 57,58 */
+				else if ((c == tp->t_cc[VKILL]) &&
+				    (flg & ISTRIP)){ /* 55,56 */
+					if ((flg & ECHO) &&
+					    (flg & ISPCI)){ /* 57,58 */
 						for ( csp = "???"; (*csp);)
 							ttxput(tp, (long) *csp++, 0);
 						(*tp->t_proc)(tp, T_OUTPUT);
 					}
-					ttxput(tp, (long) ch, 0);
-					mode |= ECHO;
-					ch = '\n';
+					ttxput(tp, (long) c, 0);
+					flg |= ECHO;
+					c = '\n';
 				}
-				else if (ch != tp->t_cc[VEOF]) /* 60 */
-					if ((mode & ECHO) &&
-					    (mode & ISPCI)){ /* 61,62 */
+				else if (c != tp->t_cc[VEOF]) /* 60 */
+					if ((flg & ECHO) &&
+					    (flg & ISPCI)){ /* 61,62 */
 						for ( csp = "(eof)"; (*csp);)
 							ttxput(tp, (long) *csp++, 0);
 						(*tp->t_proc)(tp, T_OUTPUT);
 					}
-				mode &= ~ECHO;
+				flg &= ~ECHO;
 				tp->t_delct++;
 			}
-			else if ((ch == '\\') ||
-			    (mode & XCASE)) /* 64,65 */
+			else if ((c == '\\') ||
+			    (flg & XCASE)) /* 64,65 */
 				tp->t_state  &= ~RTO;
 		}
-		if (mode & ECHO){
-			ttxput(tp, (long) ch, 0);
+		if (flg & ECHO){
+			ttxput(tp, (long) c, 0);
 			(*tp->t_proc)(tp, T_OUTPUT);
 		}
 	}
-	if (!(mode & ICANON)){ /* 6 */
+	if (!(flg & ICANON)){ /* 6 */
 		if (tp->t_cc[VMIN] <= tp->t_rawq.c_cc)
 			tp->t_delct = 1;
 		if ((tp->t_cc[VTIME]) &&
