@@ -64,33 +64,6 @@ int ncode;
 	char *csp;
 	extern  tttimeo();
 
-/* irgendwie fehlt noch was - siehe TODO
-
-gebraucht wird
-
-31c2  002c a12a  35c2  002e  0702  0004  bd30  9c28  ee05  a1a2  8da4
-|     |     |     |     |     |     |     |     |     |     |     |  jp      ne,$8000+$0x46e (sprung vor die while(ncode--) schleife)
-|     |     |     |     |     |     |     |     |     |     |     +- test    r10
-|     |     |     |     |     |     |     |     |     |     +------- ld      r2,r10              zurueckladen von flg nach tp->t_lflag.
-|     |     |     |     |     |     |     |     |     +------------- jpr     ne,#$00b8
-|     |     |     |     |     |     |     |     +------------------- testl   rr2		teste register 2 auf 0
-|     |     |     |     |     |     |     +------------------------- ldk     r3,0		lade ins register 3 die konstante 0
-|     |     |     |     |     |     |
-|     |     |     |     |     +-----+------------------------------- and     r2,#$0004          tp->t_lflag wird mit IEXTPROC binaer verknuepft  --- tp->t_lflag&IEXTROC
-|     |     |     |     |
-|     |     |     +-----+------------------------------------------- ldl     rr2,rr12(#46)
-|     |     +------------------------------------------------------- ld      r10,r2		flg wird mit r2 definiert	                 -+
-|     |                                                                                                                                           |
-+-----+------------------------------------------------------------- ld      r2,rr12(#44)	tp->t_lflag wird in r2 geladen                    +- flg = tp->t_lflag
-
-
-//      flg = tp->t_lflag;
-        .line   186     "tt0.c" 
-        ld      r2,rr12(#44)
-        ld      r10,r2
-
-
-*/
 	flg = tp->t_iflag;
 	switch (ncode) {
 	case 0:
@@ -169,92 +142,13 @@ gebraucht wird
 		}
 	}
 
-/* TODO - das passt noch nicht 100%ig */
-/*
 
-soll:
-0060:     ea29  31c2  002c  
-                            a12a  35c2  002e  0702  0004
-0070:     bd30  9c28  ee05  a1a2  8da4
-                                        5e0e  8000  046e
-0080:     a7a1  5e0e  8000  04cc  94c2  0103  002e  1424
-
-
-
-try #1
-0060:     ea30  31c2  002c  
-                            a12a  35c2  002e  0702  0004
-0070:     bd30  9c28  e602  070a  0001  94c2  0103  002c
-0080:     2f2a  31c2  002c  8d24  
-                                  5e0e  8000  0478  a7a1
-	flg = tp->t_lflag;
-	if (flg&IEXTPROC)
-		flg &= OPOST;
-	tp->t_lflag = flg;
-
-try #2
-0060:     ea2f  31c2  002c  bd40  0704  0004  bd50  9c48
-0070:     e607  94c2  0103  002c  2124  0704  0001  2f24
-0080:     31c2  002c  8d24  5e0e  8000  0476  a7a1  5e0e
-
-	if (tp->t_lflag&IEXTPROC)
-		tp->t_lflag &= OPOST;
-
-try #3
-0060:     ea26  31c2  002c  a12a  a123  b12a  0702  0004
-0070:     bd30  9c28  5e0e  8000  0464  a7a1  5e0e  8000
-0080:     04bc  94c2  0103  002e  1424  0705  efff  1d24
-
-	flg = tp->t_lflag;
-	if (flg&IEXTPROC) while (ncode--) {
-
-
-try #4
-0060:     ea2a  31c2  002c  a12a  a123  b12a  0702  0004
-0070:     bd30  9c28  e602  070a  0001  8da4  5e0e  8000
-0080:     046c  a7a1  5e0e  8000  04c4  94c2  0103  002e
-
-	flg = tp->t_lflag;
-	if (flg&IEXTPROC)
-		flg &= OPOST;
-	if (flg) while (ncode--) {
-		c = *cp++;
-
-try #5
-0060:     ea29  31c2  002c  a12a  a123  b12a  0702  0004
-0070:     bd30  9c28  ee05  a1a2  8da4  5e0e  8000  046a
-0080:     a7a1  5e0e  8000  04c8  94c2  0103  002e  1424
-
-	flg = tp->t_lflag;
-	if (!(flg&IEXTPROC)) {
-	if (tp->t_lflag) while (ncode--) {
-        [...]
-	}}
-	if (!(flg&ICANON)) {
-	
-try #6
-0060:     ea27  31c2  002c  8d24  e609  35c2  002e  0702
-0070:     0004  bd30  9c28  5e06  8000  0466  a7a1  5e0e
-0080:     8000  04c4  94c2  0103  002e  1424  0705  efff
-
-	if (tp->t_lflag) {
-		if(!(tp->t_state&IEXTPROC)) { 
-             while (ncode--) {
-
-#looks like that is what we want but this looks strange...
-0060:     ea29  31c2  002c  a12a  35c2  002e  0702  0004
-0070:     bd30  9c28  ee05  a1a2  8da4  5e0e  8000  046a
-0080:     a7a1  5e0e  8000  04c8  94c2  0103  002e  1424
 	flg = tp->t_lflag;
 	if (!(tp->t_state&IEXTPROC)) 
-	if (tp->t_lflag) { 
-*/
-	flg = tp->t_lflag;
-	if (!(tp->t_state&IEXTPROC)) 
-	if (tp->t_lflag) { 
+	if (tp->t_lflag)  
              while (ncode--) {
 		c = *cp++;
-		flg = tp->t_lflag;
+		flg = tp->t_lflag;		/* FIXME - wird das hier gebraucht? */
 
 		if (flg&ISIG) {
 			if (c == tp->t_cc[VINTR]) {
@@ -300,7 +194,7 @@ try #6
 					c = '\b';
 				} else if (c == tp->t_cc[VKILL] && flg&ECHOK) {
 					if ((flg & ECHO) &&
-					    (flg & ISPCI)) {
+					    (flg & ISPCI)) {	/* FIXME - muss das hier weg? */
 						for ( csp = "XXX"; (*csp);)
 							ttxput(tp, (long) *csp++, 0);
 						(*tp->t_proc)(tp, T_OUTPUT);
@@ -327,7 +221,7 @@ try #6
 			ttxput(tp, (long) c, 0);
 			(*tp->t_proc)(tp, T_OUTPUT);
 		}
-	}}
+	}
 	if (!(flg&ICANON)) {
 		tp->t_state &= ~RTO;
 		if (tp->t_rawq.c_cc >= tp->t_cc[VMIN])
