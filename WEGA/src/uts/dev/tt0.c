@@ -144,11 +144,10 @@ int ncode;
 
 
 	flg = tp->t_lflag;
-	if (!(tp->t_state&IEXTPROC)) 
-	if (tp->t_lflag)  
+	if (!(tp->t_state&IEXTPROC) && tp->t_lflag)
              while (ncode--) {
 		c = *cp++;
-		flg = tp->t_lflag;		/* FIXME - wird das hier gebraucht? */
+		flg = tp->t_lflag;
 
 		if (flg&ISIG) {
 			if (c == tp->t_cc[VINTR]) {
@@ -156,9 +155,9 @@ int ncode;
 				if (!(flg&NOFLSH))
 					ttyflush(tp, (FREAD|FWRITE));
 				if ((flg&ECHO) &&
-				    (flg&ISPCI)) { /* muss bleiben */
-					for ( csp = "(intr)"; (*csp); csp++)
-						ttxput(tp, (long) *csp, 0);
+				    (flg&ISPCI)) {
+					for ( csp = "(intr)"; (*csp); )
+						ttxput(tp, (long) *csp++, 0);
 					(*tp->t_proc)(tp, T_OUTPUT);
 				}
 				continue;
@@ -167,10 +166,10 @@ int ncode;
 				signal(tp->t_pgrp, SIGQUIT);
 				if (!(flg&NOFLSH))
 					ttyflush(tp, (FREAD|FWRITE));
-				if ((flg&ECHO) ||  
-				    (flg&ISPCI)) { /* muss bleiben */
-					for ( csp = "(quit)"; (*csp); csp++)
-						ttxput(tp,(long) *csp, 0);
+				if ((flg&ECHO) &&  
+				    (flg&ISPCI)) {
+					for ( csp = "(quit)\n"; (*csp); )
+						ttxput(tp,(long) *csp++, 0);
 					(*tp->t_proc)(tp, T_OUTPUT);
 				}
 				continue;
@@ -194,7 +193,7 @@ int ncode;
 					c = '\b';
 				} else if (c == tp->t_cc[VKILL] && flg&ECHOK) {
 					if ((flg & ECHO) &&
-					    (flg & ISPCI)) {	/* FIXME - muss das hier weg? */
+					    (flg & ISPCI)) {
 						for ( csp = "XXX"; (*csp);)
 							ttxput(tp, (long) *csp++, 0);
 						(*tp->t_proc)(tp, T_OUTPUT);
@@ -204,7 +203,7 @@ int ncode;
 					c = '\n';
 				} else if (c == tp->t_cc[VEOF]) {
 					if ((flg & ECHO) &&
-					    (flg & ISPCI)) {  /* muss bleiben */
+					    (flg & ISPCI)) {
 						for ( csp = "(eof)\n"; (*csp);)
 							ttxput(tp, (long) *csp++, 0);
 						(*tp->t_proc)(tp, T_OUTPUT);
@@ -259,6 +258,7 @@ union {
 } ucp;
 int ncode;
 {
+
 	register c;
 	register flg;
 	register unsigned char *cp;
@@ -290,6 +290,7 @@ int ncode;
 		cp = (unsigned char *)&ucp.ptr->c_data[ucp.ptr->c_first];
 		scf = ucp.ptr;
 	}
+
 	while (ncode--) {
 		c = *cp++;
 		if (c >= DELAYDEL){
@@ -303,7 +304,7 @@ int ncode;
 		 * Generate escapes for upper-case-only terminals.
 		 */
 		if (tp->t_lflag&XCASE)  {
-			colp = "({)}!|^~'`\\";
+			colp = "({)}!|^~'`\\\\";
 			while(*colp++)
 				if (c == *colp++) {
 					tp->t_lflag &= ~XCASE;
@@ -348,7 +349,10 @@ int ncode;
 				goto cr;
 			if (flg&ONLCR) {
 				if (!(flg&ONOCR && *colp==0)) {
-					sysinfo.outch++;
+					sysinfo.outch++;	/* FIXME: in the original object
+								 *        it is loaded int rr6,
+								 *        we now load it into rr4
+								 */
 					putc('\r', &tp->t_outq);
 				}
 				goto cr;
