@@ -11,6 +11,12 @@
 ***************************************************************************
 **************************************************************************/
 
+/*
+ * Line discipline 0
+ */
+
+char tt0wstr[] = "@[$]tt0.c		Rev : 4.1 	09/29/83 01:02:58";
+
 #include <sys/param.h>
 #include <sys/state.h>
 #include <sys/conf.h>
@@ -27,14 +33,6 @@
 #include <sys/s.out.h>
 #include <sys/user.h>
 
-/*
- * Line discipline 0
- */
-
-char tt0wstr[] = "@[$]tt0.c		Rev : 4.1 	09/29/83 01:02:58";
-
-
-extern putcb();
 extern char partab[];
 
 /*
@@ -62,7 +60,6 @@ int ncode;
 	register flg;
 	register unsigned char *cp;
 	char *csp;
-	extern  tttimeo();
 
 	flg = tp->t_iflag;
 	switch (ncode) {
@@ -71,7 +68,7 @@ int ncode;
 		c = ucp.ch;
 		if (c&PERROR && !(flg&INPCK))
 			c &= ~PERROR;
-		 if (c&(FRERROR|PERROR|OVERRUN)) {
+		if (c&(FRERROR|PERROR|OVERRUN)) {
 			if ((c&0377) == 0) {
 				if (flg&IGNBRK)
 					return;
@@ -83,21 +80,21 @@ int ncode;
 			} else {
 				if (flg&IGNPAR)
 					return;
-			}			
+			}
 			if (flg&PARMRK) {
 				ttin(tp, (long) 0377, 1);
 				ttin(tp, (long) 0, 1);
 			} else
 				c = 0;
 			c |= 0400;
-		} else { 
+		} else {
 			if (flg&ISTRIP)
 				c &= 0177;
 			else {
 				c &= 0377;
 				if (c == 0377 && flg&PARMRK)
-				    if (putc(0377, &tp->t_rawq))
-				     return;
+					if (putc(0377, &tp->t_rawq))
+						return;
 			}
 		}
 		if (flg&IXON) {
@@ -144,81 +141,81 @@ int ncode;
 
 
 	flg = tp->t_lflag;
-	if (!(tp->t_state&IEXTPROC) && tp->t_lflag)
-             while (ncode--) {
-		c = *cp++;
-		flg = tp->t_lflag;
-
-		if (flg&ISIG) {
-			if (c == tp->t_cc[VINTR]) {
-				signal(tp->t_pgrp, SIGINT);
-				if (!(flg&NOFLSH))
-					ttyflush(tp, (FREAD|FWRITE));
-				if ((flg&ECHO) &&
-				    (flg&ISPCI)) {
-					for ( csp = "(intr)"; (*csp); )
-						ttxput(tp, (long) *csp++, 0);
-					(*tp->t_proc)(tp, T_OUTPUT);
+	if (!(tp->t_state&IEXTPROC) && tp->t_lflag) {
+        	while (ncode--) {
+			c = *cp++;
+			flg = tp->t_lflag;
+			if (flg&ISIG) {
+				if (c == tp->t_cc[VINTR]) {
+					signal(tp->t_pgrp, SIGINT);
+					if (!(flg&NOFLSH))
+						ttyflush(tp, (FREAD|FWRITE));
+					if ((flg&ECHO) &&
+					    (flg&ISPCI)) {
+						for ( csp = "(intr)"; (*csp); )
+							ttxput(tp, (long) *csp++, 0);
+						(*tp->t_proc)(tp, T_OUTPUT);
+					}
+					continue;
+				} 
+				if (c == tp->t_cc[VQUIT]) {
+					signal(tp->t_pgrp, SIGQUIT);
+					if (!(flg&NOFLSH))
+						ttyflush(tp, (FREAD|FWRITE));
+					if ((flg&ECHO) &&  
+					    (flg&ISPCI)) {
+						for ( csp = "(quit)\n"; (*csp); )
+							ttxput(tp,(long) *csp++, 0);
+						(*tp->t_proc)(tp, T_OUTPUT);
+					}
+					continue;
 				}
-				continue;
-			} 
-			if (c == tp->t_cc[VQUIT]) {
-				signal(tp->t_pgrp, SIGQUIT);
-				if (!(flg&NOFLSH))
-					ttyflush(tp, (FREAD|FWRITE));
-				if ((flg&ECHO) &&  
-				    (flg&ISPCI)) {
-					for ( csp = "(quit)\n"; (*csp); )
-						ttxput(tp,(long) *csp++, 0);
-					(*tp->t_proc)(tp, T_OUTPUT);
-				}
-				continue;
 			}
-		}
-		if (flg&ICANON) {
-			if (c == '\n') {
-				if (flg&ECHONL)
-					flg |= ECHO;
-				tp->t_delct++;
-			} else if (c == tp->t_cc[VEOL])
-				tp->t_delct++;
-			if (!(tp->t_state&ESC)) {
-				if (c == '\\')
-					tp->t_state |= ESC;
-				if (c == tp->t_cc[VERASE] && flg&ECHOE) {
-					if (flg&ECHO)
-						ttxput(tp, (long) '\b', 0);
-					flg |= ECHO;
-					ttxput(tp, (long) ' ', 0);
-					c = '\b';
-				} else if (c == tp->t_cc[VKILL] && flg&ECHOK) {
-					if ((flg & ECHO) &&
-					    (flg & ISPCI)) {
-						for ( csp = "XXX"; (*csp);)
-							ttxput(tp, (long) *csp++, 0);
-						(*tp->t_proc)(tp, T_OUTPUT);
-					}
-					ttxput(tp, (long) c, 0);
-					flg |= ECHO;
-					c = '\n';
-				} else if (c == tp->t_cc[VEOF]) {
-					if ((flg & ECHO) &&
-					    (flg & ISPCI)) {
-						for ( csp = "(eof)\n"; (*csp);)
-							ttxput(tp, (long) *csp++, 0);
-						(*tp->t_proc)(tp, T_OUTPUT);
-					}
-					flg &= ~ECHO;
+			if (flg&ICANON) {
+				if (c == '\n') {
+					if (flg&ECHONL)
+						flg |= ECHO;
 					tp->t_delct++;
+				} else if (c == tp->t_cc[VEOL])
+					tp->t_delct++;
+				if (!(tp->t_state&ESC)) {
+					if (c == '\\')
+						tp->t_state |= ESC;
+					if (c == tp->t_cc[VERASE] && flg&ECHOE) {
+						if (flg&ECHO)
+							ttxput(tp, (long) '\b', 0);
+						flg |= ECHO;
+						ttxput(tp, (long) ' ', 0);
+						c = '\b';
+					} else if (c == tp->t_cc[VKILL] && flg&ECHOK) {
+						if ((flg & ECHO) &&
+						    (flg & ISPCI)) {
+							for ( csp = "XXX"; (*csp);)
+								ttxput(tp, (long) *csp++, 0);
+							(*tp->t_proc)(tp, T_OUTPUT);
+						}
+						ttxput(tp, (long) c, 0);
+						flg |= ECHO;
+						c = '\n';
+					} else if (c == tp->t_cc[VEOF]) {
+						if ((flg & ECHO) &&
+						    (flg & ISPCI)) {
+							for ( csp = "(eof)\n"; (*csp);)
+								ttxput(tp, (long) *csp++, 0);
+							(*tp->t_proc)(tp, T_OUTPUT);
+						}
+						flg &= ~ECHO;
+						tp->t_delct++;
+					}
+				} else {
+					if (c != '\\' || (flg&XCASE))
+						tp->t_state  &= ~ESC;
 				}
-			} else {
-				if (c != '\\' || (flg&XCASE))
-					tp->t_state  &= ~ESC;
 			}
-		}
-		if (flg&ECHO) {
-			ttxput(tp, (long) c, 0);
-			(*tp->t_proc)(tp, T_OUTPUT);
+			if (flg&ECHO) {
+				ttxput(tp, (long) c, 0);
+				(*tp->t_proc)(tp, T_OUTPUT);
+			}
 		}
 	}
 	if (!(flg&ICANON)) {
@@ -258,13 +255,12 @@ union {
 } ucp;
 int ncode;
 {
-
 	register c;
 	register flg;
 	register unsigned char *cp;
 	register char *colp;
 	int ctype;
-	register int cs;
+	int cs;
 	struct cblock *scf;
 
 	flg = tp->t_oflag;
@@ -290,7 +286,6 @@ int ncode;
 		cp = (unsigned char *)&ucp.ptr->c_data[ucp.ptr->c_first];
 		scf = ucp.ptr;
 	}
-
 	while (ncode--) {
 		c = *cp++;
 		if (c >= DELAYDEL){
@@ -299,7 +294,7 @@ int ncode;
 			sysinfo.outch++;
 			putc(c, &tp->t_outq);
 			continue;
-		} 
+		}
 		/*
 		 * Generate escapes for upper-case-only terminals.
 		 */
@@ -332,19 +327,21 @@ int ncode;
 		colp = &tp->t_col;
 		c = 0;
 		switch (ctype&077) {
-		case 0: /* ordinary */
+
+		case 0:	/* ordinary */
 			(*colp)++;
 
-		case 1: /* non-printing */
+		case 1:	/* non-printing */
 			break;
 
-		case 2: /* backspace */
+		case 2:	/* backspace */
 			if (flg&BSDLY)
 				c = 2;
 			if (*colp)
 				(*colp)--;
 			break;
-		case 3: /* line feed */
+
+		case 3:	/* line feed */
 			if (flg&ONLRET)
 				goto cr;
 			if (flg&ONLCR) {
@@ -361,6 +358,7 @@ int ncode;
 			if (flg&NLDLY)
 				c = 5;
 			break;
+
 		case 4:	/* tab */
 			c = 8 - ((*colp)&07);
 			*colp += c;
@@ -381,19 +379,19 @@ int ncode;
 			}
 			break;
 
-		case 5: /* vertical tab */
+		case 5:	/* vertical tab */
 			if (flg&VTDLY)
 				c = 0177;
 			break;
 
-		case 6: /* carriage return */
+		case 6:	/* carriage return */
 			if (flg&OCRNL) {
 				cs = '\n';
 				goto nl;
 			}
 			if (flg&ONOCR && *colp == 0)
 				continue;
-		cr:				
+		cr:
 			ctype = flg&CRDLY;
 			if (ctype == CR1) {
 				if (*colp)
@@ -405,7 +403,8 @@ int ncode;
 			}
 			*colp = 0;
 			break;
-		case 7: /* form feed */
+
+		case 7:	/* form feed */
 			if (flg&FFDLY)
 				c = 0177;
 			break;
@@ -431,7 +430,6 @@ int ncode;
 		putcf(scf);
 }
 
-
 /*
  * Get next function from output queue.
  * Called from xmit interrupt complete.
@@ -442,11 +440,9 @@ register struct tty *tp;
 	return;
 }
 
-extern timeout();
 tttimeo(tp)
 register struct tty *tp;
 {
-
 	tp->t_state &= ~TACT;		/* timeout waiting on rawq */
 	if (tp->t_lflag&ICANON)
 		return;			/* enable canonicalization */
@@ -471,7 +467,7 @@ register struct tty *tp;
 int cmd;
 long arg;
 {
-	ushort chg;
+	ushort	chg;
 
 	switch(cmd) {
 	case LDCHG:
