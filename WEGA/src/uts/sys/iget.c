@@ -1,9 +1,26 @@
+/******************************************************************************
+*******************************************************************************
+
+	W E G A - Quelle	(C) ZFT/KEAW Abt. Basissoftware - 1988
+	KERN 3.2		  Modul: iget.c
+
+
+	Bearbeiter:
+	Datum:		$D$
+	Version:	$R$
+
+*******************************************************************************
+******************************************************************************/
+
 #include <sys/param.h>
+#include <sys/inode.h>
+
+char igetwstr[]="@[$]iget.c		Rev : 4.1 	08/27/83 11:54:46";
+
 #include <sys/sysinfo.h>
 #include <sys/systm.h>
 #include <sys/mount.h>
 #include <sys/dir.h>
-#include <sys/inode.h>
 #include <sys/ino.h>
 #include <sys/filsys.h>
 #include <sys/conf.h>
@@ -14,7 +31,6 @@
 extern int Ninode;
 extern int Nmount;
 
-char igetwstr[]="@[$]iget.c		Rev : 4.1 	08/27/83 11:54:46";
 
 struct inode *ihash[INOHSZ] = 0 ;
 struct inode *ifreelist;
