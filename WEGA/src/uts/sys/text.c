@@ -1,4 +1,21 @@
+/******************************************************************************
+*******************************************************************************
+
+	W E G A - Quelle	(C) ZFT/KEAW Abt. Basissoftware - 1988
+	KERN	 3.2		Modul: alloc.c
+
+
+	Bearbeiter:
+	Datum:		$D$
+	Version:	$R$
+
+*******************************************************************************
+******************************************************************************/
+
 /* @(#)text.c	1.2 */
+
+char textwstr[]="@[$]text.c		Rev : 4.1 	08/27/83 12:00:24";
+
 #include <sys/param.h>
 #include <sys/sysparm.h>
 #include <sys/sysinfo.h>
@@ -13,7 +30,6 @@
 #include <sys/s.out.h>
 #include <sys/user.h>
 
-char textwstr[]="@[$]text.c		Rev : 4.1 	08/27/83 12:00:24";
 extern Ntext;
 
 /*
@@ -70,14 +86,13 @@ xfree()
 		xp->x_iptr = NULL;
 		mfree(swapmap, (ctod(xp->x_size)), xp->x_daddr);
 		mfree(coremap, xp->x_size, xp->x_caddr);
-		s = dvi();
 		ip->i_flag &= ~ITEXT;
+		s = dvi();
 		if (ip->i_flag&ILOCK)
 			ip->i_count--;
-		else {
+		else
 			iput(ip);
-			rvi(s);
-		}
+		rvi(s);
 	} 
 	else
 		xccdec(xp);
@@ -154,17 +169,18 @@ loop:
 			s2 = ld[s];
 			if (((int)u.u_segno[s] & 0x80) == 0)
 				u.u_offset += s2;
-			else
+			else {
 				u.u_count = s2;
-			u.u_base.left = (u.u_segno[s] & 0x7f)<<8;
-			u.u_base.right = 0;
-			u.u_procp->p_flag |= SLOCK; /* proc can't be swapped */
-			readi(ip);
-			u.u_procp->p_flag &= ~SLOCK;
+				u.u_base.left = (u.u_segno[s] & 0x7f)<<8;
+				u.u_base.right = 0;
+				u.u_procp->p_flag |= SLOCK; /* proc can't be swapped */
+				readi(ip);
+				u.u_procp->p_flag &= ~SLOCK;
+			}
 		}
 	} else {
 		estabur(ts, 0, 0, 0 );
-		u.u_count = lc.right;
+		u.u_count = lc/*.right*/;
 		u.u_base.left = USEGW;
 		u.u_base.right = 0;
 		u.u_procp->p_flag |= SLOCK;
