@@ -19,6 +19,13 @@ char sysentwstr[] = "@[$]sysent.c	Rev : 4.1 	08/27/83 12:00:12";
 #include <sys/sysinfo.h>
 #include <sys/systm.h>
 
+/*
+ * This table is the switch used to transfer
+ * to the appropriate routine for processing a system call.
+ * Each row contains the number of arguments expected
+ * and a pointer to the routine.
+ */
+
 int sysiret();
 int rexit();
 int fork();
