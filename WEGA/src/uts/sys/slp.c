@@ -1,3 +1,20 @@
+/******************************************************************************
+*******************************************************************************
+
+	W E G A - Quelle	(C) ZFT/KEAW Abt. Basissoftware - 1988
+
+	KERN 3.2	Modul: slp.c
+
+
+	Bearbeiter:
+	Datum:		$D$
+	Version:	$R$
+
+*******************************************************************************
+******************************************************************************/
+
+char slpwstr[] = "@[$]slp.c		Rev : 4.2	10/02/83 05:55:35";
+
 #include <sys/param.h>
 #include <sys/sysinfo.h>
 #include <sys/systm.h>
@@ -35,7 +52,13 @@ int pri;
 		panic("zero wchan");
 	rp->p_stat = SSLEEP;
 	rp->p_wchan = chan;
+/*	if (chan==0)
+		panic("Sleeping on wchan 0");
 	rp->p_pri = pri;
+	h = HASH(chan);
+*/
+	rp->p_pri = pri;
+	if (chan == &runout)
 		h = 0x40;
 	else
 		h = HASH(chan);
