@@ -134,10 +134,10 @@ register struct tty *tp;
 /*
  * common ioctl tty code
  */
-ttiocmd(tp, cmd, arg, mode)
+ttiocom(tp, cmd, arg, mode)
 register struct tty *tp;
-caddr_t arg;
 int cmd;
+caddr_t arg;
 {
 	register ushort cflg;
 	register int tmod;
@@ -217,7 +217,7 @@ int cmd;
 			break;
 		default:
 			u.u_error = EINVAL;
-		}
+		}		
 		break;
 	case TCSBRK:
 		ttywait(tp);
@@ -233,9 +233,8 @@ int cmd;
 		case 0:
 		case 1:
 		case 2:
-			ttyflush(tp, arg);
+			ttyflush(tp, ((int)arg - FOPEN)&(FREAD|FWRITE));
 			break;
-
 		default:
 			u.u_error  = EINVAL;
 		}
