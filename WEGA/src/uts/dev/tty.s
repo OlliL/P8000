@@ -619,7 +619,10 @@ L127:
 L114:
 	ldb	_u+21,#14
 	jpr	L106
-L666:
+L130:
+	ld	r2,|_stkseg+~L1+2|(fp)
+	cp	r2,#3
+	jpr	ugt,L10009
 	rl	r2,#2
 	ldl	rr4,L138(r2)
 	jp	@rr4
@@ -628,7 +631,10 @@ L133:
 	ldl	|_stkseg+~L1+44|(fp),rr4
 	ldl	rr6,rr12
 	ldk	r5,#2
-	jpr	L20007
+L20007:
+	ldl	rr2,|_stkseg+~L1+44|(fp)
+	call	@rr2
+	jpr	L106
 L134:
 	ldl	rr2,rr12(#34)
 	ldl	|_stkseg+~L1+44|(fp),rr2
@@ -646,27 +652,18 @@ L136:
 	ldl	|_stkseg+~L1+44|(fp),rr2
 	ldl	rr6,rr12
 	ldk	r5,#5
-L20007:
-	ldl	rr2,|_stkseg+~L1+44|(fp)
-	call    @rr2
-	jpr	L106
+	jpr	L20007
 L139:
 	ldl	rr6,rr12
 	callr	_ttywait
 	ldl	rr2,|_stkseg+~L1|(fp)
-	ldk	r2,#0
 	testl	rr2
 	jpr	ne,L106
-	ldl	rr2,rr12(#34)
-	ldl	|_stkseg+~L1+44|(fp),rr2
+	ldl	rr4,rr12(#34)
+	ldl	|_stkseg+~L1+44|(fp),rr4
 	ldl	rr6,rr12
 	ldk	r5,#8
 	jpr	L20007
-L130:
-	ld	r2,|_stkseg+~L1+2|(fp)
-	cp	r2,#3
-	jpr	ule,L666
-	jpr	L10009
 L141:
 	ldl	rr6,rr12
 	ldk	r5,#3
