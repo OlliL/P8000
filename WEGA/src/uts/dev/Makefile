@@ -4,46 +4,55 @@ AS=	as
 CC=	scc
 CFLAGS= -O
 
-OBJ=	bio.o clist.o cpu2.o disk.o dump.o fd.o koppel.o lp.o md.o mem.o \
-	mt.o partab.o rd.o siok.o sys.o tt0.o tt0.o tty.o tty.o ud.o udev1.o \
-	udev2.o udev3.o udev4.o udev5.o udev6.o
+
+OBJ=	bio.o siok.o koppel.o ud.o fd.o mem.o sys.o tty.o tt0.o partab.o md.o \
+	disk.o lp.o rd.o mt.o cpu2.o udev1.o udev2.o udev3.o udev4.o udev5.o \
+	udev6.o clist.o dump.o
+
+IFILES=	blockdev.c chardev.c lp.c ttydev.c udev1.c udev2.c udev3.c udev4.c\
+	udev5.c udev6.c LIB2
+IDIR=	/usr/sys/dev
+
+OWN=	bin
+GRP=	system
+MOD=	644
 
 all:	LIB2
 
+install: LIB2
+	if [ -f $IDIR/LIB2 ] && [ ! -f $IDIR/LIB2.orig ] ; then \
+		mv $IDIR/LIB2 $IDIR/LIB2.orig ; \
+	fi \
+	for file in $IFILES ; do \
+		cp $$file $(IDIR) ; \
+		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
+	done
+
 LIB2:	$(OBJ)
-	ar cr LIB2 `lorder $(OBJ) | tsort`
+	ar cr LIB2 $(OBJ)
 
-clist.o:
-	$(CAS) -u -o clist.o clist.s
-
+# use dummy objects
 mt.o:
-	$(AS) -u -o mt.o mt.d.s
-
+	$(AS) -u -o $@ $*.d.s
 rd.o:
-	$(AS) -u -o rd.o rd.d.s
-
+	$(AS) -u -o $@ $*.d.s
 udev1.o:
-	$(AS) -u -o udev1.o udev1.d.s
-
+	$(AS) -u -o $@ $*.d.s
 udev2.o:
-	$(AS) -u -o udev2.o udev2.d.s
-
+	$(AS) -u -o $@ $*.d.s
 udev3.o:
-	$(AS) -u -o udev3.o udev3.d.s
-
+	$(AS) -u -o $@ $*.d.s
 udev4.o:
-	$(AS) -u -o udev4.o udev4.d.s
-
+	$(AS) -u -o $@ $*.d.s
 udev5.o:
-	$(AS) -u -o udev5.o udev5.d.s
-
+	$(AS) -u -o $@ $*.d.s
 udev6.o:
-	$(AS) -u -o udev6.o udev6.d.s
+	$(AS) -u -o $@ $*.d.s
 
-# use the ASM sources to gain 100% compatibility
+# this files are written in plain ASM
+clist.o:
+	$(CAS) -u -o $@ $*.s
 tt0.o:
-	$(CAS) -u -o tt0.o tt0.s
-
+	$(CAS) -u -o $@ $*.s
 tty.o:
-	$(CAS) -u -o tty.o tty.s
-
+	$(CAS) -u -o $@ $*.s
