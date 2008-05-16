@@ -20,7 +20,7 @@ MOD=	644
 all:	LIB2
 
 install: LIB2
-	sh -c 'for file in $IFILES ; do \
+	sh -c 'for file in $(IFILES) ; do \
 		cp $$file $(IDIR) ; \
 		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
 	done'
