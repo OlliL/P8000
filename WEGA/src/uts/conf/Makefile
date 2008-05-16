@@ -1,6 +1,6 @@
 
 AS=	as
-CC=	scc
+CC=	cc
 CFLAGS= -O
 
 
@@ -15,14 +15,14 @@ OWN=	bin
 GRP=	system
 MOD=	644
 
+all:	$(OBJ)
+
 install: $(OBJ)
-	for file in $IFILES ; do \
+	for file in ${IFILES} ; do \
 		cp $$file $(IDIR) ; \
 		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
 	done
 	chmog 666 wega system $(IDIR)/bstart.o
-
-all:	$(OBJ)
 
 BOOTLIB: $(BL_OBJ)
 	rm -f BOOTLIB
