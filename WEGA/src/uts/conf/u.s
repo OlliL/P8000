@@ -1,4 +1,5 @@
 u module
+$segmented
 $abs %F600
 
   global
