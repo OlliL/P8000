@@ -61,3 +61,6 @@ tt0.o:
 	$(CAS) -u -o $@ $*.s
 tty.o:
 	$(CAS) -u -o $@ $*.s
+
+clean:
+	rm -f $(OBJ) LIB2

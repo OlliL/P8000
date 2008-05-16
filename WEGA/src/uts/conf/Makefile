@@ -33,3 +33,6 @@ BOOTLIB: $(BL_OBJ) ../conf_times ../touch
 
 conf.o:
 	scc $(CFLAGS) -c $<
+
+clean:
+	rm -f $(BL_OBJ) $(OBJ)
