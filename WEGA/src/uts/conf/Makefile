@@ -18,10 +18,10 @@ MOD=	644
 all:	$(OBJ)
 
 install: $(OBJ)
-	for file in ${IFILES} ; do \
+	sh -c 'for file in ${IFILES} ; do \
 		cp $$file $(IDIR) ; \
 		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
-	done
+	done'
 	chmog 666 wega system $(IDIR)/bstart.o
 
 BOOTLIB: $(BL_OBJ) ../conf_times ../touch
@@ -30,3 +30,6 @@ BOOTLIB: $(BL_OBJ) ../conf_times ../touch
 	sh -c 'while read line ; do ../touch $$line ; done < ../conf_times'
 	rm -f BOOTLIB
 	ar qc BOOTLIB bmch.o boot.o bsys.o bconf.o bmisc.o bmd.o bfd.o bud.o brm.o
+
+conf.o:
+	scc $(CFLAGS) -c $<

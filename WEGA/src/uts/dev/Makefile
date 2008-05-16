@@ -23,10 +23,10 @@ install: LIB2
 	if [ -f $IDIR/LIB2 ] && [ ! -f $IDIR/LIB2.orig ] ; then \
 		mv $IDIR/LIB2 $IDIR/LIB2.orig ; \
 	fi \
-	for file in $IFILES ; do \
+	sh -c 'for file in $IFILES ; do \
 		cp $$file $(IDIR) ; \
 		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
-	done
+	done'
 
 LIB2:	$(OBJ) ../dev_times ../touch
 # modify the objectfiles to make them as equal as possible to the
