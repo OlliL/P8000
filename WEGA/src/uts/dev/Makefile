@@ -28,7 +28,8 @@ install: LIB2
 		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
 	done
 
-LIB2:	$(OBJ)
+LIB2:	$(OBJ) ../dev_times ../touch
+	sh -c 'while read line ; do ../touch $$line ; done < ../dev_times'
 	ar cr LIB2 $(OBJ)
 
 # use dummy objects
