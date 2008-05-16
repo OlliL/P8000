@@ -808,9 +808,9 @@ L209:
 	testb	@rr4
 	jpr	eq,L211
 L10009:
-	ldl	rr6,_sysinfo+108
-	addl	rr6,#1
-	ldl	_sysinfo+108,rr6
+	ldl	rr4,_sysinfo+108
+	addl	rr4,#1
+	ldl	_sysinfo+108,rr4
 	ldl	rr4,rr12
 	add	r5,#20
 	ldk	r7,#13
@@ -1078,8 +1078,8 @@ _ttioctl::
 	cp	r5,#17410
 	jpr	ne,L10016
 	ld	r5,rr12(#44)
-	ld	r3,r5
 	ldk	r2,#0
+	ld	r3,r5
 	ld	r7,|_stkseg+~L1+2|(fp)
 	xor	r2,|_stkseg+~L1|(fp)
 	xor	r3,r7
