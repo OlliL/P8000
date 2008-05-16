@@ -29,7 +29,14 @@ install: LIB2
 	done
 
 LIB2:	$(OBJ) ../dev_times ../touch
+# modify the objectfiles to make them as equal as possible to the
+# original objects stored in LIB2
 	sh -c 'while read line ; do ../touch $$line ; done < ../dev_times'
+	chmog 666 26 1 koppel.o
+	chmog 666 26 1 fd.o
+	chmog 644 89 0 tty.o
+	chmog 666 26 1 md.o
+	chmog 666 26 1 disk.o
 	ar cr LIB2 $(OBJ)
 
 # use dummy objects
