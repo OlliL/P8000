@@ -15,6 +15,8 @@
  * general TTY subroutines
  */
 
+char ttywstr[] = "@[$]tty.c		Rev : 4.2+ 	02/07/84 13:50:59";
+
 #include <sys/param.h>
 #include <sys/state.h>
 #include <sys/conf.h>
@@ -35,10 +37,9 @@
 #define CDEF	(CLOCAL | PARODD | PARENB | CREAD | CSTOPB)
 #define CDEF1	(CLOCAL | PARENB | CREAD | CSTOPB)
 
-char ttywstr[] = "@[$]tty.c		Rev : 4.2+ 	02/07/84 13:50:59";
 
 extern int Canbsiz;
-extern int numterm;
+extern int numterms;
 
 /*
  * tty low and high water marks
@@ -68,8 +69,10 @@ char	ttcchar[NCC] = {
 	0
 };
 static int noterm;
-/* canon buffer */
-char	canonb[256];
+
+/* null clist header */
+struct clist ttnulq;
+
 /*
  * Input mapping table-- if an entry is non-zero, when the
  * corresponding character is typed preceded by "\" the escape
@@ -217,7 +220,7 @@ caddr_t arg;
 			break;
 		default:
 			u.u_error = EINVAL;
-		}		
+		}
 		break;
 	case TCSBRK:
 		ttywait(tp);
@@ -246,7 +249,7 @@ caddr_t arg;
 		ttywait(tp);
 		ttyflush(tp, (FREAD|FWRITE));
 	case TIOCSETN:
-		if (copyin( arg, (caddr_t)&tb, sizeof(tb))) {
+		if (copyin( arg, (caddr_t)&tb, sizeof(tb))==0) {
 			cflg = tp->t_cflag;
 			iflg = tp->t_iflag;
 			tp->t_iflag = 0;
@@ -338,13 +341,14 @@ caddr_t arg;
 			u.u_error = EFAULT;
 		break;
 	case TIOCGETP:
-		tb.sg_ospeed = tb.sg_ispeed = tp->t_cflag&CBAUD;
+		tb.sg_ispeed = tp->t_cflag&CBAUD;
+		tb.sg_ospeed = tb.sg_ispeed;
 		tb.sg_erase = tp->t_cc[VERASE];
 		tb.sg_kill = (long)tp->t_cc[VKILL];
 		flag = 0;
-		if ((tp->t_lflag&ICANON) || (tp->t_lflag&ISIG) )
+		if (!(tp->t_lflag&ICANON) && !(tp->t_lflag&ISIG))
 			flag |= O_RAW;
-		if ((tp->t_lflag&ICANON) || (tp->t_lflag&ISIG))
+		if (!(tp->t_lflag&ICANON) && (tp->t_lflag&ISIG))
 			flag |= O_CBREAK;
 		if (tp->t_lflag&XCASE)
 			flag |= O_LCASE;
@@ -389,7 +393,7 @@ caddr_t arg;
 		tp->t_state &= ~XCLUSE;
 		break;
 	case TIOCSETC:
-		if (copyin( arg, (caddr_t)&toc, sizeof(toc))) {
+		if (copyin( arg, (caddr_t)&toc, sizeof(toc))==0) {
 			tp->t_cc[VINTR] = toc.t_intrc;
 			tp->t_cc[VQUIT] = toc.t_quitc;
 			if (tp->t_lflag&ICANON)
@@ -504,7 +508,7 @@ register struct tty *tp;
 				break;
 			tp->t_state &= ~RTO;
 			if ((tp->t_state&TACT) == 0)
-				tttimeout(tp);
+				tttimeo(tp);
 		}
 		tp->t_state |= IASLP;
 		sleep(tp, TTIPRI);
@@ -699,7 +703,7 @@ register struct tty *tp;
 
 ttchkopen()
 {
-	if (noterm < numterm) {
+	if (noterm < numterms) {
 		noterm++;
 		return(0);
 	}
