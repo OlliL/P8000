@@ -1,4 +1,20 @@
-char sys1wstr[] = "@[$]%M		Rev :%I	%H";
+/******************************************************************************
+*******************************************************************************
+ 
+	W E G A - Quelle	(C) ZFT/KEAW Abt. Basissoftware - 1988
+
+	KERN 3.2	Modul: sys1.c
+ 
+ 
+	Bearbeiter:
+	Datum:		$D$
+	Version:	$R$
+ 
+*******************************************************************************
+******************************************************************************/
+ 
+char sys1wstr[] = "@[$]sys1.c		Rev : 4.1	09/28/83 00:28:52";
+
 #include <sys/param.h>
 #include <sys/sysparm.h>
 #include <sys/sysinfo.h>
@@ -43,7 +59,7 @@ exece()
 	register struct buf *bp;
 	register struct execa *uap;
 	int ne;
-	int bno;
+	register long bno;
 	unsigned ap;
 	char b;
 	saddr_t c, stkv;
