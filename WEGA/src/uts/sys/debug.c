@@ -1,3 +1,19 @@
+/******************************************************************************
+*******************************************************************************
+
+	W E G A - Quelle	(C) ZFT/KEAW Abt. Basissoftware - 1988
+	KERN	 3.2		Modul: alloc.c
+
+
+	Bearbeiter:
+	Datum:		$D$
+	Version:	$R$
+
+*******************************************************************************
+******************************************************************************/
+
+char debugwstr[] = "@[$]debug.c		Rev : 4.1 	09/17/83 02:56:07";
+
 #include	<sys/param.h>
 #include	<sys/state.h>
 #include	<sys/sysinfo.h>
@@ -9,6 +25,7 @@
 #include	<sys/user.h>
 #include	<sys/proc.h>
 #include	<sys/text.h>
+/*include	"debug.h"*/
 
 #define sreg	state->s_reg
 #define eventid state->s_eventid
@@ -22,16 +39,7 @@
 #define KMASK	0x7f00ffffL
 #define HMASK	(unsigned char)0x0f
 
-extern char *zpr();
-extern mmut;
-extern fubyte(), fpbyte(), fkbyte();
-extern getchar();
-int kdebug;
-static char kdbstr[6];
-char hzif[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-static unsigned char format[18];
-static unsigned int kval;
-static struct {
+extern struct {
 	unsigned a;
 	union {
 	unsigned int *b;
@@ -43,6 +51,17 @@ static struct {
 	unsigned d;
 	unsigned e;
 } breakpt[NBPTS];
+
+extern char *zpr();
+extern mmut;
+extern fubyte(), fpbyte(), fkbyte();
+extern getchar();
+extern int kdebug;
+
+static char kdbstr[8];
+char hzif[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+static unsigned char format[19];
+static unsigned int kval;
 
 long
 gethex()
@@ -110,7 +129,7 @@ struct state *state;
 		else {
 			breakpt[bp_cnt].a = 0;
 			kadr = breakpt[bp_cnt].b.b;
-			printf("KDB: @%X Breakpoint",breakpt[bp_cnt].b.b);
+			printf("KDB: @%X Breakpoint\n",breakpt[bp_cnt].b.b);
 			getsd(mmut, hibyte(kadr), &sdrf);
 			attr = sdrf.sg_attr;
 			sdrf.sg_attr &= 0xfe;
@@ -136,7 +155,7 @@ struct state *state;
 	}
 	case 'B':
 	case 'b':
-	{	printf("reak point @");
+	{	printf("reakpoint @");
 		kadr = (unsigned int *)((gethex() & UMASK) & KMASK);
 		for (bp_cnt = 0; breakpt[bp_cnt].a && ++bp_cnt<NBPTS; );
 		if (bp_cnt >= NBPTS){
