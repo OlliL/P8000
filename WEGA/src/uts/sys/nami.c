@@ -246,7 +246,6 @@ out:
  */
 schar()
 {
-
 	return(u.u_dirp.left++ & 0377);
 }
 
@@ -256,10 +255,9 @@ schar()
  */
 uchar()
 {
-	register c;
+	char c;
 
-	c = fubyte(u.u_dirp.left++);
-	if(!c)
+	if (fubyte(u.u_dirp.l++, &c))
 		u.u_error = EFAULT;
 	return(c);
 }
