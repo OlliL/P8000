@@ -13,7 +13,7 @@
 *******************************************************************************
 ******************************************************************************/
 
-char acctwstr[] = "@[$]acct.c	Rev : 4.1 08/27/83 11:53:34";
+char whatstr[] = "@[$]acct.c	Rev : 4.1 08/27/83 11:53:34";
 
 
 #include <sys/param.h>
@@ -39,67 +39,71 @@ sysacct()
 	} *uap;
 
 	uap = (struct a *)u.u_ap;
-	if (suser()) {
-		if((!u.u_segmented && ((long)uap->fname==(USEGW << 16))) ||
-		   ( u.u_segmented && (uap->fname==NULL))) {
-			if (acctp) {
-				plock(acctp);
-				iput(acctp);
-				acctp = NULL;
-			}
-			return;
-		}
+	if (!suser())
+		return;
+	if((!u.u_segmented && ((long)uap->fname==(USEGW << 16))) ||
+	   ( u.u_segmented && (uap->fname==NULL))) {
 		if (acctp) {
-			u.u_error = EBUSY;
-			return;
+			plock(acctp);
+			iput(acctp);
+			acctp = NULL;
 		}
-		ip = namei(uchar, 0);
-		if(ip == NULL)
-			return;
-		if((ip->i_mode & IFMT) != IFREG) {
-			u.u_error = EACCES;
-			iput(ip);
-			return;
-		}
-		acctp = ip;
-		prele(ip);
+		return;
 	}
+	if (acctp) {
+		u.u_error = EBUSY;
+		return;
+	}
+	ip = namei(uchar, 0);
+	if(ip == NULL)
+		return;
+	if((ip->i_mode & IFMT) != IFREG) {
+		u.u_error = EACCES;
+		iput(ip);
+		return;
+	}
+	acctp = ip;
+	prele(ip);
 }
 
 /*
  * On exit, write a record on the accounting file.
  */
-acct()
+acct(st)
 {
 	register struct inode *ip;
-	register int i;
 	off_t siz;
+	int i;
 
-	if ((ip=acctp)) {
-		plock(ip);
-		for (i=0; i<sizeof(acctbuf.ac_comm); i++)
-			acctbuf.ac_comm[i] = u.u_comm[i];
-		acctbuf.ac_utime = compress(u.u_utime);
-		acctbuf.ac_stime = compress(u.u_stime);
-		acctbuf.ac_etime = compress(time - u.u_start);
-		acctbuf.ac_btime = u.u_start;
-		acctbuf.ac_uid = u.u_ruid;
-		acctbuf.ac_gid = u.u_rgid;
-		acctbuf.ac_mem = 0;
-		acctbuf.ac_io = 0;
-		acctbuf.ac_tty = u.u_ttyd;
-		acctbuf.ac_flag = u.u_acflag;
-		siz = ip->i_size;
-		u.u_offset = siz;
-		u.u_base.l = (caddr_t)&acctbuf;
-		u.u_count = sizeof(acctbuf);
-		u.u_segflg = 1;
-		u.u_error = 0;
-		writei(ip);
-		if(u.u_error)
-			ip->i_size = siz;
-		prele(ip);
-	}
+	if ((ip=acctp)==NULL)
+		return;
+	plock(ip);
+	for (i=0; i<sizeof(acctbuf.ac_comm); i++)
+		acctbuf.ac_comm[i] = u.u_comm[i];
+	acctbuf.ac_btime = u.u_start;
+	acctbuf.ac_utime = compress(u.u_utime);
+	acctbuf.ac_stime = compress(u.u_stime);
+	acctbuf.ac_etime = compress(lbolt - u.u_ticks);
+	acctbuf.ac_mem = compress(u.u_mem);
+	acctbuf.ac_io = compress(u.u_ioch);
+	acctbuf.ac_rw = compress(u.u_ior+u.u_iow);
+	acctbuf.ac_uid = u.u_ruid;
+	acctbuf.ac_gid = u.u_rgid;
+	acctbuf.ac_tty = u.u_ttyp ? u.u_ttyd : NODEV;
+	acctbuf.ac_stat = st;
+	acctbuf.ac_flag = u.u_acflag;
+	siz = ip->i_size;
+	u.u_offset = siz;
+	u.u_base.l = (caddr_t)&acctbuf;
+	u.u_count = sizeof(acctbuf);
+	u.u_segflg = 1;
+	u.u_error = 0;
+	u.u_limit = (daddr_t)5000;
+	writei(ip);
+	u.u_segflg = 0;
+	if(u.u_error)
+		ip->i_size = siz;
+	prele(ip);
 }
 
 /*
