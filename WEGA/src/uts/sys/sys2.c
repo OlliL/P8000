@@ -70,7 +70,7 @@ register mode;
 		u.u_error = EBADF;
 		return;
 	}
-	u.u_base.left = (caddr_t)uap->cbuf;
+	u.u_base.l = (caddr_t)uap->cbuf;
 	u.u_count = uap->count;
 	u.u_segflg = 0;
 	u.u_fmode = fp->f_flag;
