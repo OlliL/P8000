@@ -1,12 +1,34 @@
-#include "sys/param.h"
-#include "sys/systm.h"
-#include "sys/dir.h"
-#include "sys/user.h"
-#include "sys/inode.h"
-#include "sys/proc.h"
-#include "sys/var.h"
-#include "sys/mtpr.h"
-#include "sys/clock.h"
+/******************************************************************************
+*******************************************************************************
+ 
+	W E G A - Quelle
+
+	KERN 3.2	Modul: sys4.c
+ 
+ 
+	Bearbeiter:	O. Lehmann
+	Datum:		19.05.08
+	Version:	1.0
+ 
+*******************************************************************************
+******************************************************************************/
+ 
+char sys4wstr[] = "@[$]sys4.c		Rev : 4.2 	09/26/83 22:15:02";
+
+#include <sys/param.h>
+#include <sys/sysinfo.h>
+#include <sys/sysparm.h>
+#include <sys/systm.h>
+#include <sys/file.h>
+#include <sys/inode.h>
+#include <sys/dir.h>
+#include <sys/mmu.h>
+#include <sys/buf.h>
+#include <sys/conf.h>
+#include <sys/proc.h>
+#include <sys/s.out.h>
+#include <sys/user.h>
+
 
 /*
  * Everything in this file is a routine implementing a system call.
@@ -14,7 +36,7 @@
 
 gtime()
 {
-	u.u_rtime = time;
+	u.u_r.r_time = time;
 }
 
 stime()
@@ -28,12 +50,6 @@ stime()
 	if (suser()) {
 		logtchg(uap->time);
 		time = uap->time;
-		/*
-		 * In addition to setting software time
-		 * also set VAX TODR.
-		 */
-		i = urem(time, SECYR);
-		mtpr(TODR,i*100) ; /* 10 ms. clicks */
 	}
 }
 
@@ -60,8 +76,8 @@ setuid()
 getuid()
 {
 
-	u.u_rval1 = u.u_ruid;
-	u.u_rval2 = u.u_uid;
+	u.u_r.r_val1 = u.u_ruid;
+	u.u_r.r_val2 = u.u_uid;
 }
 
 setgid()
@@ -86,14 +102,14 @@ setgid()
 getgid()
 {
 
-	u.u_rval1 = u.u_rgid;
-	u.u_rval2 = u.u_gid;
+	u.u_r.r_val1 = u.u_rgid;
+	u.u_r.r_val2 = u.u_gid;
 }
 
 getpid()
 {
-	u.u_rval1 = u.u_procp->p_pid;
-	u.u_rval2 = u.u_procp->p_ppid;
+	u.u_r.r_val1 = u.u_procp->p_pid;
+	u.u_r.r_val2 = u.u_procp->p_ppid;
 }
 
 setpgrp()
@@ -107,7 +123,7 @@ setpgrp()
 		u.u_procp->p_pgrp = u.u_procp->p_pid;
 		u.u_ttyp = NULL;
 	}
-	u.u_rval1 = u.u_procp->p_pgrp;
+	u.u_r.r_val1 = u.u_procp->p_pgrp;
 }
 
 sync()
@@ -133,7 +149,7 @@ nice()
 	if (n < 0)
 		n = 0;
 	u.u_procp->p_nice = n;
-	u.u_rval1 = n - NZERO;
+	u.u_r.r_val1 = n - NZERO;
 }
 
 /*
@@ -178,7 +194,7 @@ unlink()
 		goto out;
 	}
 	u.u_offset -= sizeof(struct direct);
-	u.u_base = (caddr_t)&u.u_dent;
+	u.u_base.l = (caddr_t)&u.u_dent;
 	u.u_count = sizeof(struct direct);
 	u.u_dent.d_ino = 0;
 	u.u_segflg = 1;
@@ -294,12 +310,12 @@ ssig()
 		u.u_error = EINVAL;
 		return;
 	}
-	u.u_rval1 = u.u_signal[a-1];
+	u.u_r.r_val1 = u.u_signal[a-1];
 	u.u_signal[a-1] = uap->fun;
 	u.u_procp->p_sig &= ~(1L<<(a-1));
 	if (a == SIGCLD) {
 		a = u.u_procp->p_pid;
-		for (p = &proc[1]; p < (struct proc *)v.ve_proc; p++) {
+		for (p = &proc[1]; p < &proc[NPROC] ; p++) {
 			if (a == p->p_ppid && p->p_stat == SZOMB)
 				psignal(u.u_procp, SIGCLD);
 		}
@@ -332,7 +348,7 @@ kill()
 		u.u_error = ESRCH;
 		return;
 	}
-	for(; p < (struct proc *)v.ve_proc; p++) {
+	for(; p < &proc[NPROC]; p++) {
 		if (p->p_stat == NULL)
 			continue;
 		if (arg > 0 && p->p_pid != arg)
@@ -366,25 +382,24 @@ times()
 	uap = (struct a *)u.u_ap;
 	if (copyout((caddr_t)&u.u_utime, (caddr_t)uap->times, sizeof(*uap->times)))
 		u.u_error = EFAULT;
-	spl7();
-	u.u_rtime = lbolt;
-	spl0();
+	dvi();
+	u.u_r.r_time = lbolt;
 }
 
 profil()
 {
 	register struct a {
-		short	*bufbase;
+		long	 bufbase;
 		unsigned bufsize;
 		unsigned pcoffset;
 		unsigned pcscale;
 	} *uap;
 
 	uap = (struct a *)u.u_ap;
-	u.u_prof.pr_base = uap->bufbase;
-	u.u_prof.pr_size = uap->bufsize;
-	u.u_prof.pr_off = uap->pcoffset;
-	u.u_prof.pr_scale = uap->pcscale;
+	u.u_prof[0].pr_base = uap->bufbase;
+	u.u_prof[0].pr_size = uap->bufsize;
+	u.u_prof[0].pr_off = uap->pcoffset;
+	u.u_prof[0].pr_scale = uap->pcscale;
 }
 
 /*
@@ -402,7 +417,7 @@ alarm()
 	p = u.u_procp;
 	c = p->p_clktim;
 	p->p_clktim = uap->deltat;
-	u.u_rval1 = c;
+	u.u_r.r_val1 = c;
 }
 
 /*
@@ -429,7 +444,7 @@ umask()
 	uap = (struct a *)u.u_ap;
 	t = u.u_cmask;
 	u.u_cmask = uap->mask & 0777;
-	u.u_rval1 = t;
+	u.u_r.r_val1 = t;
 }
 
 /*
@@ -476,7 +491,8 @@ ulimit()
 		int	cmd;
 		long	arg;
 	} *uap;
-
+	register brk, stk;
+	
 	uap = (struct a *)u.u_ap;
 	switch(uap->cmd) {
 	case 2:
@@ -484,11 +500,16 @@ ulimit()
 			return;
 		u.u_limit = uap->arg;
 	case 1:
-		u.u_roff = u.u_limit;
+		u.u_r.r_off = u.u_limit;
 		break;
 
 	case 3:
-		u.u_roff = ctob(maxmem - UPAGES - MAXUMEM/128);
+		brk = 1024 - u.u_dsize
+			- ((u.u_ssize + btoct(8*1024) - 1)/btoct(8*1024))
+			 * btoct(8*1024);
+		if ((stk = btoct(8*1024) - u.u_ssize % btoct(8*1024)) < USIZE)
+			brk -= USIZE - stk;
+		u.u_r.r_off = ctob((long)brk);
 		break;
 	}
 }
