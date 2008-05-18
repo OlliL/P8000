@@ -52,6 +52,7 @@ write()
 rdwr(mode)
 register mode;
 {
+	int	foo,foo2;
 	register struct file *fp;
 	register struct inode *ip;
 	register struct a {
@@ -69,7 +70,7 @@ register mode;
 		u.u_error = EBADF;
 		return;
 	}
-	u.u_base.l = (caddr_t)uap->cbuf;
+	u.u_base.left = (caddr_t)uap->cbuf;
 	u.u_count = uap->count;
 	u.u_segflg = 0;
 	u.u_fmode = fp->f_flag;
@@ -244,15 +245,6 @@ seek()
 		uap->off += fp->f_offset;
 	else if (uap->sbase == 2)
 		uap->off += fp->f_inode->i_size;
-	else if (uap->sbase != 0) {
-		u.u_error = EINVAL;
-		psignal(u.u_procp, SIGSYS);
-		return;
-	}
-	if (uap->off < 0) {
-		u.u_error = EINVAL;
-		return;
-	}
 	fp->f_offset = uap->off;
 	u.u_r.r_off = uap->off;
 }
@@ -272,10 +264,6 @@ link()
 	ip = namei(uchar, 0);
 	if (ip == NULL)
 		return;
-	if (ip->i_nlink >= MAXLINK) {
-		u.u_error = EMLINK;
-		goto out;
-	}
 	if ((ip->i_mode&IFMT)==IFDIR && !suser())
 		goto out;
 	/*
