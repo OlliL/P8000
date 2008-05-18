@@ -538,7 +538,7 @@ setregs()
 	 * Remember file name for accounting.
 	 */
 	u.u_acflag &= ~AFORK;
-	bcopy((caddr_t)u.u_dent.d_name, (caddr_t)u.u_comm, DIRSIZ);
+	bcopy((caddr_t)u.u_dbuf, (caddr_t)u.u_comm, DIRSIZ);
 }
 
 /*
@@ -605,7 +605,7 @@ exit(rv)
 			if (q->p_stat == SSTOP)
 				setrun(q);
 		} else  if (p->p_ppid==q->p_pid)
-			psignal(q, SIGSYS);
+			psignal(q, SIGCLD);
 		if (p->p_pid == q->p_pgrp)
 			q->p_pgrp = 0;
 	}
@@ -621,12 +621,13 @@ exit(rv)
  */
 wait()
 {
+	int foo,foo2;
 	register f;
 	register struct proc *p;
 
-loop:
 	f = 0;
-	for (p = &proc[1]; p < &proc[Nproc]; p++)
+loop:
+	for (p = &proc[0]; p < &proc[Nproc]; p++)
 	if (p->p_ppid == u.u_procp->p_pid) {
 		f++;
 		if (p->p_stat == SZOMB) {
@@ -675,40 +676,55 @@ register struct proc *p;
  */
 fork()
 {
+	int foo,foo2;
 	register struct proc *p1, *p2;
 	register a;
 	register n;
 
+	/*
+	 * Make sure there's enough swap space for max
+	 * core image, thus reducing chances of running out
+	 */
 	if (u.u_segmented){
 		n = ctod(u.u_tsize + USIZE + u.u_dsize + u.u_ssize);
-		if ((a = malloc(swapmap, n)) == (int)0){
-out0:			u.u_error = ENOMEM;
+		if ((a = malloc(swapmap, n)) == 0){
+			u.u_error = ENOMEM;
 			goto out;
 		} else
 			mfree(swapmap, n, a);
-	} else
-		if ((a = malloc(swapmap, ctod(Maxmem))) == (int)0)
-			goto out0;
-		else
+	} else {
+		if ((a = malloc(swapmap, ctod(Maxmem))) == 0) {
+			u.u_error = ENOMEM;
+			goto out;
+		} else
 			mfree(swapmap, ctod(Maxmem), a);
-	for (a=0,p2=0,p1 = &proc[0]; p1 < &proc[Nproc]; p1++){
-		if (p1->p_stat == NULL && p2 == NULL)
-			p2 = p1;
-		if (p1->p_uid == u.u_uid && p1->p_stat)
-			a++;
 	}
-	if (!p2 || u.u_uid && ((p2 == &proc[Nproc-1]) || (a>Maxuprc))){
+	a = 0;
+	p2 = NULL;
+	for (p1 = &proc[0]; p1 < &proc[Nproc]; p1++){
+		if (p1->p_stat==NULL && p2==NULL)
+			p2 = p1;
+		else {
+			if (p1->p_uid==u.u_uid && p1->p_stat!=NULL)
+				a++;
+		}
+	}
+	/*
+	 * Disallow if
+	 *  No processes at all;
+	 *  not su and too many procs owned; or
+	 *  not su and would take last slot.
+	 */
+	if (p2==NULL || (u.u_uid!=0 && (p2==&proc[Nproc-1] || a>Maxuprc))) {
 		u.u_error = EAGAIN;
 		goto out;
 	}
 	p1 = u.u_procp;
-	if (newproc()){
+	if (newproc()) {
 		u.u_r.r_val1 = p1->p_pid;
 		u.u_start = time;
 		u.u_mem = p2->p_size;
-		u.u_ioch = 0;
-		u.u_iow = 0;
-		u.u_ior = 0;
+		u.u_ior = u.u_iow = u.u_ioch = 0;
 		u.u_cstime = 0;
 		u.u_stime = 0;
 		u.u_cutime = 0;
