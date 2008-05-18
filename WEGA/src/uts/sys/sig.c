@@ -1,4 +1,3 @@
-#include "sys/plexus.h"
 #include "sys/param.h"
 #include "sys/systm.h"
 #include "sys/dir.h"
@@ -9,6 +8,8 @@
 #include "sys/text.h"
 #include "sys/seg.h"
 #include "sys/var.h"
+#include "sys/mtpr.h"
+#include "sys/page.h"
 #include "sys/psl.h"
 
 /*
@@ -185,7 +186,7 @@ fsig(p)
 struct proc *p;
 {
 	register i;
-	long n;
+	register n;
 
 	n = p->p_sig;
 	for(i=1; i<=NSIG; i++) {
@@ -206,18 +207,14 @@ struct proc *p;
 core()
 {
 	register struct inode *ip;
-	register unsigned s;
+	register s;
 	extern schar();
 
 	if (u.u_uid != u.u_ruid)
 		return(0);
 	u.u_error = 0;
 	u.u_dirp = "core";
-#ifndef	PNETDFS
 	ip = namei(schar, 1);
-#else
-	ip = namei(schar, 1, NULL);
-#endif
 	if(ip == NULL) {
 		if(u.u_error)
 			return(0);
@@ -233,11 +230,12 @@ core()
 		u.u_segflg = 1;
 		u.u_limit = (daddr_t)ctod(MAXMEM);
 		writei(ip);
-		s = u.u_procp->p_size - USIZE;
-		estabur((unsigned)0, s, (unsigned)0, 0, RO);
-		u.u_base = 0;
-		u.u_count = ctob(s);
+		u.u_base = (char *)ctob(u.u_tsize);
+		u.u_count = ctob(u.u_dsize);
 		u.u_segflg = 0;
+		writei(ip);
+		u.u_base = (char *)(0x80000000 - ctob(u.u_ssize));
+		u.u_count = ctob(u.u_ssize);
 		writei(ip);
 	} else
 		u.u_error = EACCES;
@@ -255,23 +253,21 @@ unsigned sp;
 {
 	register si, i;
 	register struct proc *p;
-	register a;
 
-	si = btoc(USRSTACK-sp) - u.u_ssize;
+	if(sp >= USRSTACK-ctob(u.u_ssize))
+		return(0);
+	mtpr(TBIS, sp);
+	mtpr(TBIS, ((int *)&u) + 128*USIZE - u.u_ssize - 1);
+	si = btoc((USRSTACK-sp)) - u.u_ssize + SINCR;
 	if(si <= 0)
 		return(0);
-	if(estabur(u.u_tsize, u.u_dsize, u.u_ssize+si, u.u_sep, RO))
+	if(chksize(u.u_tsize, u.u_dsize, u.u_ssize+si))
 		return(0);
 	p = u.u_procp;
-	expand(p->p_size+si);
-	a = p->p_addr + p->p_size;
-	for(i=u.u_ssize; i; i--) {
-		a--;
-		copyseg(a-si, a);
-	}
-	for(i=si; i; i--)
-		clearseg(--a);
 	u.u_ssize += si;
+	expand(si, P1BR);
+	for(i=si; --i>=0;)
+		clearseg(((int *)&u)[128*USIZE - u.u_ssize + i] & PG_PFNUM);
 	return(1);
 }
 
@@ -282,10 +278,10 @@ ptrace()
 {
 	register struct proc *p;
 	register struct a {
-		int	data;
+		int	req;
 		int	pid;
 		int	*addr;
-		int	req;
+		int	data;
 	} *uap;
 
 	uap = (struct a *)u.u_ap;
@@ -319,6 +315,7 @@ ptrace()
 	wakeup((caddr_t)&ipc);
 }
 
+int ipcreg[] = {R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, AP, FP, SP, PC};
 /*
  * Code that the child process
  * executes to implement the command
@@ -352,7 +349,7 @@ procxmt()
 		i = (int)ipc.ip_addr;
 		if (i<0 || i >= ctob(USIZE))
 			goto error;
-		ipc.ip_data = ((physadr)&u)->r[i>>1];
+		ipc.ip_data = ((physadr)&u)->r[i>>2];
 		break;
 
 	/* write user I */
@@ -366,10 +363,10 @@ procxmt()
 				goto error;
 			xp->x_iptr->i_flag &= ~ITEXT;
 		}
-		estabur(u.u_tsize, u.u_dsize, u.u_ssize, u.u_sep, RW);
+		chgprot(RW, 0, 0);
 		i = suiword((caddr_t)ipc.ip_addr, 0);
 		suiword((caddr_t)ipc.ip_addr, ipc.ip_data);
-		estabur(u.u_tsize, u.u_dsize, u.u_ssize, u.u_sep, RO);
+		chgprot(RO, 0, 0);
 		if (i<0)
 			goto error;
 		if (xp)
@@ -386,15 +383,13 @@ procxmt()
 	/* write u */
 	case 6:
 		i = (int)ipc.ip_addr;
-		p = (int *)&((physadr)&u)->r[i>>1];
-		for (i=0; i<15; i++)
-			if (p == &u.u_ar0[regloc[i]])
+		p = (int *)&((physadr)&u)->r[i>>2];
+		for (i=0; i<16; i++)
+			if (p == &u.u_ar0[ipcreg[i]])
 				goto ok;
-		if (p == &u.u_ar0[PC])
-			goto ok;
-		if (p == &u.u_ar0[FCW]) {
-			ipc.ip_data &= (M_FLGS << S_FLGS);
-			ipc.ip_data |= (B_VI | B_NVI);
+		if (p == &u.u_ar0[PS]) {
+			ipc.ip_data |= 0x3c00000; /* modes == user */
+			ipc.ip_data &=  ~0x3c20ff00; /* IS, FPD,  ... */
 			goto ok;
 		}
 		goto error;
@@ -406,9 +401,11 @@ procxmt()
 	/* set signal and continue */
 	/* one version causes a trace-trap */
 	case 9:
-		u.u_ar0[FCW] |= B_SINGL;
+		u.u_ar0[PS] |= PS_T;
 	case 7:
-		u.u_procp->p_sig = 0;
+		if ((int)ipc.ip_addr != 1)
+			u.u_ar0[PC] = (int)ipc.ip_addr;
+		u.u_procp->p_sig = 0L;
 		if (ipc.ip_data)
 			psignal(u.u_procp, ipc.ip_data);
 		return(1);

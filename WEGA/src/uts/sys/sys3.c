@@ -1,6 +1,5 @@
 #include "sys/param.h"
 #include "sys/systm.h"
-#include "sys/stat.h"
 #include "sys/mount.h"
 #include "sys/ino.h"
 #include "sys/buf.h"
@@ -10,11 +9,9 @@
 #include "sys/inode.h"
 #include "sys/file.h"
 #include "sys/conf.h"
+#include "sys/stat.h"
 #include "sys/ioctl.h"
 #include "sys/var.h"
-#ifdef	PNETDFS
-extern	ddbug;
-#endif
 
 /*
  * the fstat system call.
@@ -46,11 +43,7 @@ stat()
 	} *uap;
 
 	uap = (struct a *)u.u_ap;
-#ifndef	PNETDFS
 	ip = namei(uchar, 0);
-#else
-	ip = namei(uchar, 0, NULL);
-#endif
 	if(ip == NULL)
 		return;
 	stat1(ip, uap->sb);
@@ -65,15 +58,9 @@ stat1(ip, ub)
 register struct inode *ip;
 struct stat *ub;
 {
+	register struct dinode *dp;
 	register struct buf *bp;
 	struct stat ds;
-
-#ifdef	PNETDFS
-	if ( ip->i_flag & IRMT ) {
-		rstat1( ip, ub );
-		return;
-	}
-#endif
 
 	if(ip->i_flag&(IACC|IUPD|ICHG))
 		iupdat(ip, &time, &time);
@@ -92,9 +79,11 @@ struct stat *ub;
 	 * next the dates in the disk
 	 */
 	bp = bread(ip->i_dev, itod(ip->i_number));
-	copyio(paddr(bp)+itoo(ip->i_number)*sizeof(struct dinode)
-		+(long)(&((struct dinode *)0)->di_atime),
-	    &ds.st_atime, 3*sizeof(time_t), U_RKD);
+	dp = bp->b_un.b_dino;
+	dp += itoo(ip->i_number);
+	ds.st_atime = dp->di_atime;
+	ds.st_mtime = dp->di_mtime;
+	ds.st_ctime = dp->di_ctime;
 	brelse(bp);
 	if (copyout((caddr_t)&ds, (caddr_t)ub, sizeof(ds)) < 0)
 		u.u_error = EFAULT;
@@ -102,42 +91,23 @@ struct stat *ub;
 
 /*
  * the dup system call.
- *
- * dup2 has been added to the stock SYSTEM III code for compatibility
- * with v7.
  */
 dup()
 {
 	register struct file *fp;
+	register i;
 	register struct a {
 		int	fdes;
-		int	fdes2;
 	} *uap;
-	register i,m;
 
 	uap = (struct a *)u.u_ap;
-	m = uap->fdes & ~077;
-	uap->fdes &= 077;
 	fp = getf(uap->fdes);
 	if(fp == NULL)
 		return;
-	if ((m&0100) == 0) {
-		if ((i = ufalloc(0)) < 0)
-			return;
-	} else {
-		i = uap->fdes2;
-		if (i<0 || i>=NOFILE) {
-			u.u_error = EBADF;
-			return;
-		}
-		u.u_rval1 = i;
-	}
-	if (i!=uap->fdes) {
-		if (u.u_ofile[i]!=NULL)
-			closef(u.u_ofile[i]);
-		u.u_ofile[i] = fp;
-		fp->f_count++;
-	}
+	if ((i = ufalloc(0)) < 0)
+		return;
+	u.u_ofile[i] = fp;
+	fp->f_count++;
 }
 
 /*
@@ -166,15 +136,6 @@ fcntl()
 		}
 		if ((i = ufalloc(i)) < 0)
 			return;
-#ifdef	PNETDFS
-		if ( fp->f_inode->i_flag & IRMT ) {
-if ( ddbug ) {
-			printf( "fcntl dup on remote file %x\n", fp );
-			debug();
-}
-			rfcntl( uap->fdes, i, 0, uap->arg );
-		}
-#endif
 		u.u_ofile[i] = fp;
 		fp->f_count++;
 		break;
@@ -193,15 +154,6 @@ if ( ddbug ) {
 
 	case 4:
 		fp->f_flag &= (FREAD|FWRITE);
-#ifdef	PNETDFS
-		if ( fp->f_inode->i_flag & IRMT ) {
-if ( ddbug ) {
-			printf( "fcntl setfl on remote file %x\n", fp );
-			debug();
-}
-			rfcntl( uap->fdes, i, 4, uap->arg );
-		}
-#endif
 		fp->f_flag |= (uap->arg-FOPEN) & ~(FREAD|FWRITE);
 		break;
 
@@ -232,13 +184,6 @@ ioctl()
 		u.u_error = ENOTTY;
 		return;
 	}
-	u.u_rval1 = 0;
-#ifdef	PNETDFS
-	if ( ip->i_flag & IRMT ) {
-		rioctl( uap->fdes, uap->cmd, uap->arg );
-		return;
-	}
-#endif
 	dev = (dev_t)ip->i_rdev;
 	(*cdevsw[major(dev)].d_ioctl)(minor(dev),uap->cmd,uap->arg,fp->f_flag);
 }
@@ -298,11 +243,7 @@ smount()
 	if(u.u_error)
 		return;
 	u.u_dirp = (caddr_t)uap->freg;
-#ifndef	PNETDFS
 	ip = namei(uchar, 0);
-#else
-	ip = namei(uchar, 0, NULL);
-#endif
 	if(ip == NULL)
 		return;
 	if ((ip->i_mode&IFMT) != IFDIR) {
@@ -336,9 +277,9 @@ smount()
 		goto out1;
 	}
 	mp->m_inodp = ip;
-	mp->m_bufp = getablk(1);
-	fp = (struct filsys *)paddr(mp->m_bufp);
-	copyio(paddr(bp), fp, sizeof(struct filsys), U_RKD);
+	mp->m_bufp = geteblk();
+	bcopy((caddr_t)bp->b_un.b_addr, mp->m_bufp->b_un.b_addr, BSIZE);
+	fp = mp->m_bufp->b_un.b_filsys;
 	mp->m_flags = MINUSE;
 	fp->s_ilock = 0;
 	fp->s_flock = 0;
@@ -411,11 +352,7 @@ getmdev()
 	dev_t dev;
 	register struct inode *ip;
 
-#ifndef	PNETDFS
 	ip = namei(uchar, 0);
-#else
-	ip = namei(uchar, 0, NULL);
-#endif
 	if(ip == NULL)
 		return(NODEV);
 	if((ip->i_mode&IFMT) != IFBLK)

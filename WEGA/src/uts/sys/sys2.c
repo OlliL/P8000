@@ -5,9 +5,6 @@
 #include "sys/file.h"
 #include "sys/inode.h"
 #include "sys/sysinfo.h"
-#ifdef	PNETDFS
-extern	ddbug;
-#endif
 
 /*
  * read system call
@@ -55,26 +52,14 @@ register mode;
 	u.u_segflg = 0;
 	u.u_fmode = fp->f_flag;
 	ip = fp->f_inode;
-#ifdef	PNETDFS
-	if ( ip->i_flag & IRMT ) {
-		rrdwr( ip, uap->fdes, mode );
-		goto dfsout;
-	}
-#endif
 	type = ip->i_mode&IFMT;
 	if (type==IFREG || type==IFDIR) {
+		plock(ip);
 		if ((u.u_fmode&FAPPEND) && (mode == FWRITE))
 			fp->f_offset = ip->i_size;
-		if (ip->i_locklist &&
-			locked(1, ip, fp->f_offset, fp->f_offset + u.u_count))
-				return;
-		plock(ip);
 	} else if (type == IFIFO) {
-		fp->f_offset = 0;
-		if (ip->i_locklist &&
-			locked(1, ip, fp->f_offset, fp->f_offset + u.u_count))
-				return;
 		plock(ip);
+		fp->f_offset = 0;
 	}
 	u.u_offset = fp->f_offset;
 	if (mode == FREAD)
@@ -83,9 +68,6 @@ register mode;
 		writei(ip);
 	if (type==IFREG || type==IFDIR || type==IFIFO)
 		prele(ip);
-#ifdef	PNETDFS
-	dfsout:
-#endif
 	fp->f_offset += uap->count-u.u_count;
 	u.u_rval1 = uap->count-u.u_count;
 	u.u_ioch += u.u_rval1;
@@ -141,11 +123,7 @@ register mode;
 		return;
 	}
 	if (mode&FCREAT) {
-#ifndef	PNETDFS
 		ip = namei(uchar, 1);
-#else
-		ip = namei(uchar, 1, NULL);
-#endif
 		if (ip == NULL) {
 			if (u.u_error)
 				return;
@@ -154,12 +132,6 @@ register mode;
 				return;
 			mode &= ~FTRUNC;
 		} else {
-			if (ip->i_locklist != NULL &&
-				(ip->i_flag & IFMT) == IFREG &&
-				locked(2, ip, (long)(0L), (long)(1L<<30))) {
-					iput(ip);
-					return;
-			}
 			if (mode&FEXCL) {
 				u.u_error = EEXIST;
 				iput(ip);
@@ -168,11 +140,7 @@ register mode;
 			mode &= ~FCREAT;
 		}
 	} else {
-#ifndef	PNETDFS
 		ip = namei(uchar, 0);
-#else
-		ip = namei(uchar, 0, NULL);
-#endif
 		if (ip == NULL)
 			return;
 	}
@@ -196,12 +164,10 @@ register mode;
 	fp->f_inode = ip;
 	i = u.u_rval1;
 	if (setjmp(u.u_qsav)) {	/* catch half-opens */
-		if (u.u_abreq)
-			(*u.u_abreq)();
 		if (u.u_error == 0)
 			u.u_error = EINTR;
-		closef(fp);
 		u.u_ofile[i] = NULL;
+		closef(fp);
 	} else {
 		openi(ip, mode);
 		if (u.u_error == 0)
@@ -226,8 +192,8 @@ close()
 	fp = getf(uap->fdes);
 	if (fp == NULL)
 		return;
-	closef(fp);
 	u.u_ofile[uap->fdes] = NULL;
+	closef(fp);
 }
 
 /*
@@ -252,16 +218,6 @@ seek()
 		u.u_error = ESPIPE;
 		return;
 	}
-#ifdef	PNETDFS
-	if ( ip->i_flag & IRMT ) {
-if ( ddbug ) {
-		printf( "remote seek %x\n", ip );
-		debug();
-}
-		rseek( uap->fdes, uap->off, uap->sbase );
-		return;
-	}
-#endif
 	if (uap->sbase == 1)
 		uap->off += fp->f_offset;
 	else if (uap->sbase == 2)
@@ -291,11 +247,7 @@ link()
 	} *uap;
 
 	uap = (struct a *)u.u_ap;
-#ifndef	PNETDFS
 	ip = namei(uchar, 0);
-#else
-	ip = namei(uchar, 0, NULL);
-#endif
 	if (ip == NULL)
 		return;
 	if (ip->i_nlink >= MAXLINK) {
@@ -314,11 +266,7 @@ link()
 	 */
 	prele(ip);
 	u.u_dirp = (caddr_t)uap->linkname;
-#ifndef	PNETDFS
 	xp = namei(uchar, 1);
-#else
-	xp = namei(uchar, 1, NULL);
-#endif
 	if (xp != NULL) {
 		u.u_error = EEXIST;
 		iput(xp);
@@ -326,15 +274,6 @@ link()
 	}
 	if (u.u_error)
 		goto out;
-#ifdef PNETDFS
-	if ( u.u_pdir && u.u_pdir->i_flag & IRMT ) {
-		printf( "link on remote dfs, not there yet\n" );
-		debug();
-		u.u_error = EXDEV;
-		iput( u.u_pdir );
-		goto	out;
-	}
-#endif
 	if (u.u_pdir->i_dev != ip->i_dev) {
 		iput(u.u_pdir);
 		u.u_error = EXDEV;
@@ -361,30 +300,17 @@ mknod()
 		int	fmode;
 		dev_t	dev;
 	} *uap;
-#ifdef	PNETDFS
-	struct	inode	*rmaknode();
-#endif
 
 	uap = (struct a *)u.u_ap;
 	if ((uap->fmode&IFMT) != IFIFO && !suser())
 		return;
-#ifndef	PNETDFS
 	ip = namei(uchar, 1);
-#else
-	ip = namei(uchar, 1, NULL);
-#endif
 	if (ip != NULL) {
 		u.u_error = EEXIST;
 		goto out;
 	}
 	if (u.u_error)
 		return;
-#ifdef	PNETDFS
-	if ( u.u_pdir->i_flag & IRMT ) {
-		ip = rmaknode( uap->fmode );
-		return;
-	}
-#endif
 	ip = maknode(uap->fmode);
 	if (ip == NULL)
 		return;
@@ -416,11 +342,7 @@ saccess()
 	svgid = u.u_gid;
 	u.u_uid = u.u_ruid;
 	u.u_gid = u.u_rgid;
-#ifndef	PNETDFS
 	ip = namei(uchar, 0);
-#else
-	ip = namei(uchar, 0, NULL);
-#endif
 	if (ip != NULL) {
 		if (uap->fmode&(IREAD>>6))
 			access(ip, IREAD);

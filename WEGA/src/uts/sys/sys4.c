@@ -1,15 +1,13 @@
 #include "sys/param.h"
-#include "sys/plexus.h"
 #include "sys/systm.h"
 #include "sys/dir.h"
 #include "sys/user.h"
 #include "sys/inode.h"
 #include "sys/proc.h"
 #include "sys/var.h"
+#include "sys/mtpr.h"
+#include "sys/clock.h"
 
-#ifdef PNETDFS
-extern int ddbug;
-#endif
 /*
  * Everything in this file is a routine implementing a system call.
  */
@@ -21,6 +19,7 @@ gtime()
 
 stime()
 {
+	register unsigned i;
 	register struct a {
 		time_t	time;
 	} *uap;
@@ -29,7 +28,12 @@ stime()
 	if (suser()) {
 		logtchg(uap->time);
 		time = uap->time;
-		puttod(time);
+		/*
+		 * In addition to setting software time
+		 * also set VAX TODR.
+		 */
+		i = urem(time, SECYR);
+		mtpr(TODR,i*100) ; /* 10 ms. clicks */
 	}
 }
 
@@ -144,22 +148,9 @@ unlink()
 		char	*fname;
 	};
 
-#ifndef	PNETDFS
 	pp = namei(uchar, 2);
-#else
-	pp = namei(uchar, 2, NULL);
-#endif
 	if (pp == NULL)
 		return;
-#ifdef	PNETDFS
-	if ( pp->i_flag & IRMT ) {
-if ( ddbug ) {
-		printf( "remote unlink, not there yet\n" );
-		debug();
-}
-		goto out1;
-	}
-#endif
 	/*
 	 * Check for unlink(".")
 	 * to avoid hanging on the iget
@@ -223,11 +214,7 @@ register struct inode **ipp;
 		char	*fname;
 	};
 
-#ifndef	PNETDFS
 	ip = namei(uchar, 0);
-#else
-	ip = namei(uchar, 0, NULL);
-#endif
 	if (ip == NULL)
 		return;
 	if ((ip->i_mode&IFMT) != IFDIR) {
@@ -265,12 +252,6 @@ chmod()
 		if (u.u_gid != ip->i_gid)
 			uap->fmode &= ~ISGID;
 	}
-#ifdef	PNETDFS
-	if ( ip->i_flag & IRMT ) {
-		rchmod( ip, uap->fmode );
-		return;
-	}
-#endif
 	ip->i_mode |= uap->fmode&07777;
 	ip->i_flag |= ICHG;
 	if (ip->i_flag&ITEXT && (ip->i_mode&ISVTX)==0)
@@ -290,12 +271,6 @@ chown()
 	uap = (struct a *)u.u_ap;
 	if ((ip = owner()) == NULL)
 		return;
-#ifdef	PNETDFS
-	if ( ip->i_flag & IRMT ) {
-		rchown( ip, uap->uid, uap->gid );
-		return;
-	}
-#endif
 	ip->i_uid = uap->uid;
 	ip->i_gid = uap->gid;
 	if (u.u_uid != 0)
@@ -479,11 +454,7 @@ utime()
 		tv[0] = time;
 		tv[1] = time;
 	}
-#ifndef
 	ip = namei(uchar, 0);
-#else
-	ip = namei(uchar, 0, NULL);
-#endif
 	if (ip == NULL)
 		return;
 	if (u.u_uid != ip->i_uid && u.u_uid != 0) {
@@ -493,12 +464,6 @@ utime()
 			access(ip, IWRITE);
 	}
 	if (!u.u_error) {
-#ifdef	PNETDFS
-		if ( ip->i_flag & IRMT ) {
-			rutime( ip, &tv[0], &tv[1] );
-			return;
-		}
-#endif
 		ip->i_flag |= IACC|IUPD|ICHG;
 		iupdat(ip, &tv[0], &tv[1]);
 	}
@@ -512,8 +477,6 @@ ulimit()
 		long	arg;
 	} *uap;
 
-	register brk, stk;
-
 	uap = (struct a *)u.u_ap;
 	switch(uap->cmd) {
 	case 2:
@@ -525,7 +488,7 @@ ulimit()
 		break;
 
 	case 3:
-		u.u_roff = ctob((long)(NUMLOGPAGE - u.u_ssize));
+		u.u_roff = ctob(maxmem - UPAGES - MAXUMEM/128);
 		break;
 	}
 }
