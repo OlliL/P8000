@@ -1,10 +1,32 @@
-#include "sys/param.h"
-#include "sys/systm.h"
-#include "sys/dir.h"
-#include "sys/user.h"
-#include "sys/file.h"
-#include "sys/inode.h"
-#include "sys/sysinfo.h"
+/******************************************************************************
+*******************************************************************************
+ 
+	W E G A - Quelle
+
+	KERN 3.2	Modul: sys2.c
+ 
+ 
+	Bearbeiter:	O. Lehmann
+	Datum:		18.05.08
+	Version:	1.0
+ 
+*******************************************************************************
+******************************************************************************/
+ 
+char sys2wstr[] = "@[$]sys2.c		Rev : 4.1 	08/27/83 11:59:09";
+
+#include <sys/param.h>
+#include <sys/sysinfo.h>
+#include <sys/systm.h>
+#include <sys/file.h>
+#include <sys/inode.h>
+#include <sys/dir.h>
+#include <sys/mmu.h>
+#include <sys/buf.h>
+#include <sys/conf.h>
+#include <sys/proc.h>
+#include <sys/s.out.h>
+#include <sys/user.h>
 
 /*
  * read system call
@@ -47,7 +69,7 @@ register mode;
 		u.u_error = EBADF;
 		return;
 	}
-	u.u_base = (caddr_t)uap->cbuf;
+	u.u_base.l = (caddr_t)uap->cbuf;
 	u.u_count = uap->count;
 	u.u_segflg = 0;
 	u.u_fmode = fp->f_flag;
@@ -69,12 +91,12 @@ register mode;
 	if (type==IFREG || type==IFDIR || type==IFIFO)
 		prele(ip);
 	fp->f_offset += uap->count-u.u_count;
-	u.u_rval1 = uap->count-u.u_count;
-	u.u_ioch += u.u_rval1;
+	u.u_r.r_val1 = uap->count-u.u_count;
+	u.u_ioch += u.u_r.r_val1;
 	if (mode == FREAD)
-		sysinfo.readch += u.u_rval1;
+		sysinfo.readch += u.u_r.r_val1;
 	else
-		sysinfo.writech += u.u_rval1;
+		sysinfo.writech += u.u_r.r_val1;
 }
 
 /*
@@ -162,7 +184,7 @@ register mode;
 	prele(ip);
 	fp->f_flag = mode&FMASK;
 	fp->f_inode = ip;
-	i = u.u_rval1;
+	i = u.u_r.r_val1;
 	if (setjmp(u.u_qsav)) {	/* catch half-opens */
 		if (u.u_error == 0)
 			u.u_error = EINTR;
@@ -232,7 +254,7 @@ seek()
 		return;
 	}
 	fp->f_offset = uap->off;
-	u.u_roff = uap->off;
+	u.u_r.r_off = uap->off;
 }
 
 /*
@@ -265,7 +287,7 @@ link()
 	 * embraces.
 	 */
 	prele(ip);
-	u.u_dirp = (caddr_t)uap->linkname;
+	u.u_dirp.l = (caddr_t)uap->linkname;
 	xp = namei(uchar, 1);
 	if (xp != NULL) {
 		u.u_error = EEXIST;
