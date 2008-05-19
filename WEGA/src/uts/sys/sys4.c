@@ -28,7 +28,10 @@ char sys4wstr[] = "@[$]sys4.c		Rev : 4.2 	09/26/83 22:15:02";
 #include <sys/proc.h>
 #include <sys/s.out.h>
 #include <sys/user.h>
-
+#include <sys/utsname.h>
+#include <sys/timeb.h>
+#include <sys/filsys.h>
+#include <sys/mount.h>
 
 /*
  * Everything in this file is a routine implementing a system call.
@@ -39,20 +42,46 @@ gtime()
 	u.u_r.r_time = time;
 }
 
+/*
+ * New time entry-- return TOD with milliseconds, timezone,
+ * DST flag
+ */
+ftime()
+{
+	register struct a {
+		struct	timeb	*tp;
+	} *uap;
+	struct timeb t;
+	register unsigned ms;
+
+	uap = (struct a *)u.u_ap;
+	dvi();
+	t.time = time;
+	ms = lbolt;
+	if (ms > HZ) {
+		ms -= HZ;
+		t.time++;
+	}
+	t.millitm = (1000*ms)/HZ;
+	t.timezone = TIMEZONE;
+	t.dstflag = DSTFLAG;
+	if (copyout((caddr_t)&t, (caddr_t)uap->tp, sizeof(t)) < 0)
+		u.u_error = EFAULT;
+}
+
+/*
+ * Set the time
+ */
 stime()
 {
-	register unsigned i;
 	register struct a {
 		time_t	time;
 	} *uap;
 
 	uap = (struct a *)u.u_ap;
-	if (suser()) {
-		logtchg(uap->time);
+	if(suser())
 		time = uap->time;
-	}
 }
-
 setuid()
 {
 	register uid;
@@ -199,8 +228,7 @@ unlink()
 	u.u_dent.d_ino = 0;
 	u.u_segflg = 1;
 	writei(pp);
-	if (u.u_error)
-		goto out;
+	u.u_segflg = 0;
 	ip->i_nlink--;
 	ip->i_flag |= ICHG;
 
@@ -263,11 +291,8 @@ chmod()
 	if ((ip = owner()) == NULL)
 		return;
 	ip->i_mode &= ~07777;
-	if (u.u_uid) {
+	if (u.u_uid)
 		uap->fmode &= ~ISVTX;
-		if (u.u_gid != ip->i_gid)
-			uap->fmode &= ~ISGID;
-	}
 	ip->i_mode |= uap->fmode&07777;
 	ip->i_flag |= ICHG;
 	if (ip->i_flag&ITEXT && (ip->i_mode&ISVTX)==0)
@@ -483,6 +508,62 @@ utime()
 		iupdat(ip, &tv[0], &tv[1]);
 	}
 	iput(ip);
+}
+
+/*
+ * nonexistent system call-- signal bad system call.
+ */
+nosys()
+{
+	u.u_error = EINVAL;
+}
+
+/*
+ * Ignored system call
+ */
+nullsys()
+{
+}
+
+utssys()
+{
+	register i;
+	register struct a {
+		char	*cbuf;
+		int	mv;
+		int	type;
+	} *uap;
+
+	uap = (struct a *)u.u_ap;
+	switch(uap->type) {
+
+case 0:		/* uname */
+	if (copyout(&utsname, uap->cbuf, sizeof(struct utsname)))
+		u.u_error = EFAULT;
+	return;
+
+/* case 1 was umask */
+
+case 2:		/* ustat */
+	for(i=0; i<NMOUNT; i++) {
+		register struct mount *mp;
+
+		mp = &mount[i];
+		if(mp->m_flags == MINUSE && mp->m_dev==uap->mv) {
+			register struct filsys *fp;
+
+			fp = mp->m_bufp->b_un.b_filsys;
+			if(copyout(&fp->s_tfree, uap->cbuf, 18))
+				u.u_error = EFAULT;
+			return;
+		}
+	}
+	u.u_error = EINVAL;
+	return;
+
+default:
+	u.u_error = EFAULT;
+	}
 }
 
 ulimit()
