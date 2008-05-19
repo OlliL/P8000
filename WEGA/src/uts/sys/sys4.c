@@ -53,18 +53,21 @@ ftime()
 	} *uap;
 	struct timeb t;
 	register unsigned ms;
+	extern int Timezone;
+	extern int Dstflag;
 
 	uap = (struct a *)u.u_ap;
 	dvi();
 	t.time = time;
 	ms = lbolt;
+	evi();
 	if (ms > HZ) {
 		ms -= HZ;
 		t.time++;
 	}
 	t.millitm = (1000*ms)/HZ;
-	t.timezone = TIMEZONE;
-	t.dstflag = DSTFLAG;
+	t.timezone = Timezone;
+	t.dstflag = Dstflag;
 	if (copyout((caddr_t)&t, (caddr_t)uap->tp, sizeof(t)) < 0)
 		u.u_error = EFAULT;
 }
@@ -572,7 +575,7 @@ ulimit()
 		int	cmd;
 		long	arg;
 	} *uap;
-	register brk, stk;
+	register stk, j, brk, i;
 	
 	uap = (struct a *)u.u_ap;
 	switch(uap->cmd) {
@@ -585,12 +588,19 @@ ulimit()
 		break;
 
 	case 3:
-		brk = 1024 - u.u_dsize
-			- ((u.u_ssize + btoct(8*1024) - 1)/btoct(8*1024))
-			 * btoct(8*1024);
-		if ((stk = btoct(8*1024) - u.u_ssize % btoct(8*1024)) < USIZE)
-			brk -= USIZE - stk;
-		u.u_r.r_off = ctob((long)brk);
+		if (u.u_segmented) {
+			brk = u.u_segno[u.u_nsegs - 1];
+			stk = 256;
+		} else {
+			brk = 0;
+			stk = 256 - u.u_ssize;
+		}
+		i = umemory-USIZE-u.u_tsize-u.u_ssize-u.u_dsize;
+		
+		u.u_r.r_val1 = brk;
+		u.u_r.r_val2 = min(i,stk)<<8;
+			
 		break;
 	}
+
 }
