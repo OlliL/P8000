@@ -36,7 +36,6 @@ char sys4wstr[] = "@[$]sys4.c		Rev : 4.2 	09/26/83 22:15:02";
 /*
  * Everything in this file is a routine implementing a system call.
  */
-#ifdef 0
 
 gtime()
 {
@@ -569,7 +568,6 @@ default:
 	u.u_error = EFAULT;
 	}
 }
-#endif
 
 ulimit()
 {
@@ -577,7 +575,7 @@ ulimit()
 		int	cmd;
 		long	arg;
 	} *uap;
-	register stk1, stk, brk, stk2;
+	register brk1, brk, seg, brk2;
 	
 	uap = (struct a *)u.u_ap;
 	switch(uap->cmd) {
@@ -591,17 +589,17 @@ ulimit()
 
 	case 3:
 		if (u.u_segmented) {
-			brk = u.u_segno[u.u_nsegs - 1];
-			stk1 = 256;
+			seg = u.u_segno[u.u_nsegs - 1];
+			brk1 = 256;
 		} else {
-			brk = 0;
-			stk1 = 256 - u.u_ssize;
+			seg = 0;
+			brk1 = 256 - u.u_ssize;
 		}
-		stk2 = umemory-USIZE-u.u_tsize-u.u_ssize-u.u_dsize;
-		stk = min(stk2,stk1);
+		brk2 = umemory-USIZE-u.u_tsize-u.u_ssize-u.u_dsize;
+		brk = min(brk2,brk1);
 
-		u.u_r.r_val1 = brk;
-		u.u_r.r_val2 = stk<<8;
+		u.u_r.r_val1 = seg;
+		u.u_r.r_val2 = brk<<8;
 		break;
 	}
 }
