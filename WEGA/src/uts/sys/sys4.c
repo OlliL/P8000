@@ -33,7 +33,6 @@ char sys4wstr[] = "@[$]sys4.c		Rev : 4.2 	09/26/83 22:15:02";
 #include <sys/filsys.h>
 #include <sys/mount.h>
 
-
 /*
  * Everything in this file is a routine implementing a system call.
  */
@@ -86,6 +85,7 @@ stime()
 	if(suser())
 		time = uap->time;
 }
+
 setuid()
 {
 	register uid;
@@ -348,7 +348,6 @@ ssig()
 	}
 	u.u_signal[a-1] = uap->fun;
 	u.u_procp->p_sig &= ~(1L<<(a-1));
-	
 	if (a == SIGCLD) {
 		a = u.u_procp->p_pid;
 		for (p = &proc[1]; p < &proc[Nproc] ; p++) {
@@ -549,22 +548,23 @@ bpt()
 
 utssys()
 {
-	register i;
+	register int c;
+	register struct mount *mp;
 	register struct a {
 		char	*cbuf;
 		int	mv;
 		int	type;
 	} *uap;
-	register struct mount *mp;
-	register struct filsys *fp;
+	struct filsys *fp;
+	daddr_t tfree;
+	ino_t tinode;
+	char fname[6];
+	char fpack[6];
 	extern int Nmount;
 	
-/* variable declarations missing probably used for case 2 */
-
 	uap = (struct a *)u.u_ap;
 	switch(uap->type) {
 
-/* case 0 should work - case 2 is not compatible */
 case 0:		/* uname */
 	if (copyout(&utsname, uap->cbuf, sizeof(struct utsname)))
 		u.u_error = EFAULT;
@@ -573,13 +573,18 @@ case 0:		/* uname */
 /* case 1 was umask */
 
 case 2:		/* ustat */
-	for(i=0; i<Nmount; i++) {
+	for (mp = mount; mp < &mount[Nmount]; mp++) {
 
-		mp = &mount[i];
 		if(mp->m_flags == MINUSE && mp->m_dev==uap->mv) {
 
 			fp = mp->m_bufp->b_un.b_filsys;
-			if(copyout(&fp->s_tfree, uap->cbuf, 18))
+			tfree = fp->s_tfree;
+			tinode = fp->s_tinode;
+			for(c=0; c < 6; c++) {
+				fname[c] = fp->s_fname[c];
+				fpack[c] = fp->s_fpack[c];
+			}
+			if(copyout(&tfree, uap->cbuf, 18))
 				u.u_error = EFAULT;
 			return;
 		}
