@@ -488,7 +488,8 @@ utime()
 	time_t tv[2];
 
 	uap = (struct a *)u.u_ap;
-	if (uap->tptr != NULL) {
+	if ((!u.u_segmented && uap->tptr != (time_t *)0x3f000000) || 
+	    (u.u_segmented && uap->tptr != NULL)) {
 		if (copyin((caddr_t)uap->tptr, (caddr_t)tv, sizeof(tv))) {
 			u.u_error = EFAULT;
 			return;
@@ -501,10 +502,12 @@ utime()
 	if (ip == NULL)
 		return;
 	if (u.u_uid != ip->i_uid && u.u_uid != 0) {
-		if (uap->tptr != NULL)
+		if ((!u.u_segmented && uap->tptr != (time_t *)0x3f000000) || 
+		    (u.u_segmented && uap->tptr != NULL)) {
 			u.u_error = EPERM;
-		else
+		} else {
 			access(ip, IWRITE);
+		}
 	}
 	if (!u.u_error) {
 		ip->i_flag |= IACC|IUPD|ICHG;
@@ -536,10 +539,16 @@ utssys()
 		int	mv;
 		int	type;
 	} *uap;
+	register struct mount *mp;
+	register struct filsys *fp;
+	extern int Nmount;
+	
+/* variable declarations missing probably used for case 2 */
 
 	uap = (struct a *)u.u_ap;
 	switch(uap->type) {
 
+/* case 0 should work - case 2 is not compatible */
 case 0:		/* uname */
 	if (copyout(&utsname, uap->cbuf, sizeof(struct utsname)))
 		u.u_error = EFAULT;
@@ -548,12 +557,10 @@ case 0:		/* uname */
 /* case 1 was umask */
 
 case 2:		/* ustat */
-	for(i=0; i<NMOUNT; i++) {
-		register struct mount *mp;
+	for(i=0; i<Nmount; i++) {
 
 		mp = &mount[i];
 		if(mp->m_flags == MINUSE && mp->m_dev==uap->mv) {
-			register struct filsys *fp;
 
 			fp = mp->m_bufp->b_un.b_filsys;
 			if(copyout(&fp->s_tfree, uap->cbuf, 18))
