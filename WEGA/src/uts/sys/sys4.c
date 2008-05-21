@@ -33,6 +33,7 @@ char sys4wstr[] = "@[$]sys4.c		Rev : 4.2 	09/26/83 22:15:02";
 #include <sys/filsys.h>
 #include <sys/mount.h>
 
+
 /*
  * Everything in this file is a routine implementing a system call.
  */
@@ -329,21 +330,28 @@ ssig()
 	register struct proc *p;
 	struct a {
 		int	signo;
-		int	fun;
+		long	fun;
 	} *uap;
+	extern int Nproc;
 
 	uap = (struct a *)u.u_ap;
 	a = uap->signo;
-	if (a <= 0 || a > NSIG || a == SIGKILL) {
+	if (a <= 0 || a >= NSIG || a == SIGKILL) {
 		u.u_error = EINVAL;
 		return;
 	}
-	u.u_r.r_val1 = u.u_signal[a-1];
+	if(!u.u_segmented) {
+		u.u_r.r_val1 = u.u_signal[a-1];
+	} else {
+		u.u_r.r_val1 = u.u_signal[a-1]>> 16;
+		u.u_r.r_val2 = u.u_signal[a-1];
+	}
 	u.u_signal[a-1] = uap->fun;
 	u.u_procp->p_sig &= ~(1L<<(a-1));
+	
 	if (a == SIGCLD) {
 		a = u.u_procp->p_pid;
-		for (p = &proc[1]; p < &proc[NPROC] ; p++) {
+		for (p = &proc[1]; p < &proc[Nproc] ; p++) {
 			if (a == p->p_ppid && p->p_stat == SZOMB)
 				psignal(u.u_procp, SIGCLD);
 		}
@@ -358,7 +366,8 @@ kill()
 		int	pid;
 		int	signo;
 	} *uap;
-	int f;
+	register int f;
+	extern int Nproc;
 
 	uap = (struct a *)u.u_ap;
 	if (uap->signo < 0 || uap->signo > NSIG) {
@@ -376,7 +385,7 @@ kill()
 		u.u_error = ESRCH;
 		return;
 	}
-	for(; p < &proc[NPROC]; p++) {
+	for(; p < &proc[Nproc]; p++) {
 		if (p->p_stat == NULL)
 			continue;
 		if (arg > 0 && p->p_pid != arg)
@@ -406,12 +415,14 @@ times()
 	register struct a {
 		time_t	(*times)[4];
 	} *uap;
+	register fcw;
 
 	uap = (struct a *)u.u_ap;
-	if (copyout((caddr_t)&u.u_utime, (caddr_t)uap->times, sizeof(*uap->times)))
+	if (copyout((caddr_t)&u.u_utime, (caddr_t)uap->times, sizeof(*uap->times))<0)
 		u.u_error = EFAULT;
-	dvi();
-	u.u_r.r_time = lbolt;
+	fcw = dvi();
+	u.u_r.r_time = lifetime;
+	evi(fcw);
 }
 
 profil()
@@ -529,6 +540,11 @@ nosys()
  */
 nullsys()
 {
+}
+
+bpt()
+{
+	psignal(u.u_procp, SIGTRAP);
 }
 
 utssys()
