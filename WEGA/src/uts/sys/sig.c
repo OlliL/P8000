@@ -67,7 +67,7 @@ register pgrp;
 
 	if(pgrp == 0)
 		return;
-	for(p = &proc[1]; p < &proc[Nproc]; p++)
+	for(p = &proc[0]; p < &proc[Nproc]; p++)
 		if(p->p_pgrp == pgrp)
 			psignal(p, sig);
 }
@@ -228,7 +228,8 @@ struct proc *p;
 core()
 {
 	register struct inode *ip;
-	register s;
+	register i;
+	char s;
 	extern schar();
 
 	if (u.u_uid != u.u_ruid)
@@ -251,13 +252,29 @@ core()
 		u.u_segflg = 1;
 		u.u_limit = (daddr_t)ctod(Maxmem);
 		writei(ip);
-		u.u_base.l = (char *)ctob(u.u_tsize);
-		u.u_count = ctob(u.u_dsize);
 		u.u_segflg = 0;
-		writei(ip);
-		u.u_base.l = (char *)(0x80000000 - ctob(u.u_ssize));
-		u.u_count = ctob(u.u_ssize);
-		writei(ip);
+		if(!u.u_segmented) {
+			i = u.u_procp->p_size-USIZE;
+			estabur(0, i, 0, 1 );
+			u.u_base.left = USEGW;
+			u.u_base.right = 0;
+			u.u_count = ctob(i);
+			writei(ip);
+		} else {
+			for(s=0;s<u.u_nsegs;s++) {
+				if(!(u.u_segno[s]&0x80)) {
+					u.u_base.left = ctob(u.u_segno[s] & 0x7f);
+					u.u_base.right = 0;
+					u.u_count = ctob((u.u_segmts[s].sg_limit)+1);
+					writei(ip);
+				
+				}
+			}
+			u.u_base.left = ctob(u.u_stakseg);
+			u.u_base.right = ctob(u.u_segmts[127].sg_limit);
+			u.u_count = ctob(-u.u_segmts[127].sg_limit+0x100);
+			writei(ip);
+		}
 	} else
 		u.u_error = EACCES;
 	iput(ip);
