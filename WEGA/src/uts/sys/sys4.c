@@ -28,10 +28,10 @@ char sys4wstr[] = "@[$]sys4.c		Rev : 4.2 	09/26/83 22:15:02";
 #include <sys/proc.h>
 #include <sys/s.out.h>
 #include <sys/user.h>
-#include <sys/utsname.h>
 #include <sys/timeb.h>
 #include <sys/filsys.h>
 #include <sys/mount.h>
+#include <sys/utsname.h>
 
 /*
  * Everything in this file is a routine implementing a system call.
@@ -440,6 +440,33 @@ profil()
 	u.u_prof[0].pr_scale = uap->pcscale;
 }
 
+sprofil()
+{
+	register struct a {
+		int	 segno;
+		long	 bufbase;
+		unsigned bufsize;
+		unsigned pcoffset;
+		unsigned pcscale;
+	} *uap;
+
+	uap = (struct a *)u.u_ap;
+	if(!uap->segno) {
+		u.u_prof[0].pr_scale = 0;
+	} else {
+		if(u.u_nprof == 10) {
+			u.u_error = ENOPROF;
+		} else {
+			u.u_pr_segno[u.u_nprof] = uap->segno;
+			u.u_prof[u.u_nprof].pr_base = uap->bufbase;
+			u.u_prof[u.u_nprof].pr_size = uap->bufsize;
+			u.u_prof[u.u_nprof].pr_off = uap->pcoffset;
+			u.u_prof[u.u_nprof].pr_scale = uap->pcscale;
+			u.u_nprof++;
+		}
+	}
+}
+
 /*
  * alarm clock signal
  */
@@ -502,7 +529,7 @@ utime()
 	    (u.u_segmented && uap->tptr != NULL)) {
 		if (copyin((caddr_t)uap->tptr, (caddr_t)tv, sizeof(tv))) {
 			u.u_error = EFAULT;
-			return;
+			goto out;
 		}
 	} else {
 		tv[0] = time;
@@ -523,6 +550,7 @@ utime()
 		ip->i_flag |= IACC|IUPD|ICHG;
 		iupdat(ip, &tv[0], &tv[1]);
 	}
+out:
 	iput(ip);
 }
 
