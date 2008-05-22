@@ -164,7 +164,8 @@ loop:
  */
 psig()
 {
-	register n, p;
+	register n;
+	long p;
 	register struct proc *rp;
 
 	rp = u.u_procp;
@@ -206,10 +207,10 @@ fsig(p)
 struct proc *p;
 {
 	register i;
-	register n;
+	long n;
 
 	n = p->p_sig;
-	for(i=1; i<=NSIG; i++) {
+	for(i=1; i<NSIG; i++) {
 		if(n & 1L)
 			return(i);
 		n >>= 1;
