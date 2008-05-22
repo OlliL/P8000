@@ -1,22 +1,42 @@
-#include "sys/param.h"
-#include "sys/systm.h"
-#include "sys/dir.h"
-#include "sys/user.h"
-#include "sys/proc.h"
-#include "sys/inode.h"
-#include "sys/reg.h"
-#include "sys/text.h"
-#include "sys/seg.h"
-#include "sys/var.h"
-#include "sys/mtpr.h"
-#include "sys/page.h"
-#include "sys/psl.h"
+/******************************************************************************
+*******************************************************************************
+ 
+	W E G A - Quelle
+
+	KERN 3.2	Modul: sig.c
+ 
+ 
+	Bearbeiter:	O. Lehmann
+	Datum:		22.05.08
+	Version:	1.0
+ 
+*******************************************************************************
+******************************************************************************/
+
+char sigwstr[] = "@[$]sig.c		Rev: 4.2 	09/29/83 09:47:41";
+
+#include <sys/param.h>
+#include <sys/sysinfo.h>
+#include <sys/systm.h>
+#include <sys/file.h>
+#include <sys/inode.h>
+#include <sys/dir.h>
+#include <sys/mmu.h>
+#include <sys/buf.h>
+#include <sys/conf.h>
+#include <sys/proc.h>
+#include <sys/s.out.h>
+#include <sys/user.h>
+#include <sys/text.h>
+#include <sys/state.h>
 
 /*
  * Priority for tracing
  */
 #define	IPCPRI	PZERO
 
+extern int Nproc;
+extern int Maxmem;
 /*
  * Tracing variables.
  * Used to pass trace command from
@@ -47,7 +67,7 @@ register pgrp;
 
 	if(pgrp == 0)
 		return;
-	for(p = &proc[1]; p < (struct proc *)v.ve_proc; p++)
+	for(p = &proc[1]; p < &proc[Nproc]; p++)
 		if(p->p_pgrp == pgrp)
 			psignal(p, sig);
 }
@@ -94,7 +114,7 @@ issig()
 		if (n == SIGCLD) {
 			if (u.u_signal[SIGCLD-1]&01) {
 				for (q = &proc[1];
-					q < (struct proc *)v.ve_proc; q++) {
+					q < &proc[Nproc]; q++) {
 			   			 if (p->p_pid == q->p_ppid &&
 							q->p_stat == SZOMB)
 							freeproc(q, 0) ;
@@ -123,7 +143,7 @@ stop()
 loop:
 	cp = u.u_procp;
 	if(cp->p_ppid != 1)
-	for (pp = &proc[0]; pp < (struct proc *)v.ve_proc; pp++)
+	for (pp = &proc[0]; pp < &proc[Nproc]; pp++)
 		if (pp->p_pid == cp->p_ppid) {
 			wakeup((caddr_t)pp);
 			cp->p_stat = SSTOP;
@@ -170,7 +190,7 @@ psig()
 	case SIGEMT:
 	case SIGFPE:
 	case SIGBUS:
-	case SIGSEGV:
+	case SIGSEG:
 	case SIGSYS:
 		if(core())
 			n += 0200;
@@ -213,7 +233,7 @@ core()
 	if (u.u_uid != u.u_ruid)
 		return(0);
 	u.u_error = 0;
-	u.u_dirp = "core";
+	u.u_dirp.l = "core";
 	ip = namei(schar, 1);
 	if(ip == NULL) {
 		if(u.u_error)
@@ -225,16 +245,16 @@ core()
 	if(!access(ip, IWRITE) && (ip->i_mode&IFMT) == IFREG) {
 		itrunc(ip);
 		u.u_offset = 0;
-		u.u_base = (caddr_t)&u;
+		u.u_base.l = (caddr_t)&u;
 		u.u_count = ctob(USIZE);
 		u.u_segflg = 1;
-		u.u_limit = (daddr_t)ctod(MAXMEM);
+		u.u_limit = (daddr_t)ctod(Maxmem);
 		writei(ip);
-		u.u_base = (char *)ctob(u.u_tsize);
+		u.u_base.l = (char *)ctob(u.u_tsize);
 		u.u_count = ctob(u.u_dsize);
 		u.u_segflg = 0;
 		writei(ip);
-		u.u_base = (char *)(0x80000000 - ctob(u.u_ssize));
+		u.u_base.l = (char *)(0x80000000 - ctob(u.u_ssize));
 		u.u_count = ctob(u.u_ssize);
 		writei(ip);
 	} else
@@ -253,24 +273,27 @@ unsigned sp;
 {
 	register si, i;
 	register struct proc *p;
+	register a;
 
-	if(sp >= USRSTACK-ctob(u.u_ssize))
+	if(sp >= UBASE-ctob(u.u_ssize))
 		return(0);
-	mtpr(TBIS, sp);
-	mtpr(TBIS, ((int *)&u) + 128*USIZE - u.u_ssize - 1);
-	si = btoc((USRSTACK-sp)) - u.u_ssize + SINCR;
+	si = (UBASE-sp)/64 - u.u_ssize + SINCR;
 	if(si <= 0)
 		return(0);
-	if(chksize(u.u_tsize, u.u_dsize, u.u_ssize+si))
+	if(estabur(u.u_tsize, u.u_dsize, u.u_ssize+si, u.u_sep, RO))
 		return(0);
 	p = u.u_procp;
+	expand(p->p_size+si);
+	a = p->p_addr + p->p_size;
+	for(i=u.u_ssize; i; i--) {
+		a--;
+		copyseg(a-si, a);
+	}
+	for(i=si; i; i--)
+		clearseg(--a);
 	u.u_ssize += si;
-	expand(si, P1BR);
-	for(i=si; --i>=0;)
-		clearseg(((int *)&u)[128*USIZE - u.u_ssize + i] & PG_PFNUM);
 	return(1);
 }
-
 /*
  * sys-trace system call.
  */
@@ -289,7 +312,7 @@ ptrace()
 		u.u_procp->p_flag |= STRC;
 		return;
 	}
-	for (p=proc; p < (struct proc *)v.ve_proc; p++) 
+	for (p=proc; p < &proc[Nproc]; p++) 
 		if (p->p_stat==SSTOP
 		 && p->p_pid==uap->pid
 		 && p->p_ppid==u.u_procp->p_pid)
@@ -308,14 +331,16 @@ ptrace()
 	setrun(p);
 	while (ipc.ip_req > 0)
 		sleep((caddr_t)&ipc, IPCPRI);
-	u.u_rval1 = ipc.ip_data;
+	u.u_r.r_val1 = ipc.ip_data;
 	if (ipc.ip_req < 0)
 		u.u_error = EIO;
 	ipc.ip_lock = 0;
 	wakeup((caddr_t)&ipc);
 }
 
+/*
 int ipcreg[] = {R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, AP, FP, SP, PC};
+*/
 /*
  * Code that the child process
  * executes to implement the command
@@ -385,9 +410,9 @@ procxmt()
 		i = (int)ipc.ip_addr;
 		p = (int *)&((physadr)&u)->r[i>>2];
 		for (i=0; i<16; i++)
-			if (p == &u.u_ar0[ipcreg[i]])
+			if (p == &u.u_state->s_reg[i])
 				goto ok;
-		if (p == &u.u_ar0[PS]) {
+		if (p == &u.u_state->s_ps) {
 			ipc.ip_data |= 0x3c00000; /* modes == user */
 			ipc.ip_data &=  ~0x3c20ff00; /* IS, FPD,  ... */
 			goto ok;
@@ -401,10 +426,10 @@ procxmt()
 	/* set signal and continue */
 	/* one version causes a trace-trap */
 	case 9:
-		u.u_ar0[PS] |= PS_T;
+		u.u_state->s_ps |= 0x10/*PS_T*/;
 	case 7:
 		if ((int)ipc.ip_addr != 1)
-			u.u_ar0[PC] = (int)ipc.ip_addr;
+			u.u_state->s_pc = (int)ipc.ip_addr;
 		u.u_procp->p_sig = 0L;
 		if (ipc.ip_data)
 			psignal(u.u_procp, ipc.ip_data);
