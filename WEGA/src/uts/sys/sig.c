@@ -262,17 +262,16 @@ core()
 			writei(ip);
 		} else {
 			for(s=0;s<u.u_nsegs;s++) {
-				if(!(u.u_segno[s]&0x80)) {
-					u.u_base.left = ctob(u.u_segno[s] & 0x7f);
-					u.u_base.right = 0;
-					u.u_count = ctob((u.u_segmts[s].sg_limit)+1);
-					writei(ip);
-				
-				}
+				if((u.u_segno[s]&0x80))
+					continue;
+				u.u_base.left = ctob(u.u_segno[s] & STAK);
+				u.u_base.right = 0;
+				u.u_count = ctob((u.u_segmts[s].sg_limit)+1);
+				writei(ip);
 			}
 			u.u_base.left = ctob(u.u_stakseg);
-			u.u_base.right = ctob(u.u_segmts[127].sg_limit);
-			u.u_count = ctob(-u.u_segmts[127].sg_limit+0x100);
+			u.u_base.right = ctob(u.u_segmts[NUSEGS-1].sg_limit);
+			u.u_count = ctob(-u.u_segmts[NUSEGS-1].sg_limit+0x100);
 			writei(ip);
 		}
 	} else
@@ -287,22 +286,42 @@ core()
  */
 
 grow(sp)
-unsigned sp;
+int sp;
 {
-	register si, i;
+	register j, si, i;
 	register struct proc *p;
 	register a;
 
-	if(sp >= UBASE-ctob(u.u_ssize))
+/* somehow goto out should do the job but then everything gets
+   ordered different in the ASM listing
+   this needs more work...
+ */
+
+	if(sp >= ctob(-(u.u_ssize-1)+0x100))
 		return(0);
-	si = (UBASE-sp)/64 - u.u_ssize + SINCR;
-	if(si <= 0)
-		return(0);
-	if(estabur(u.u_tsize, u.u_dsize, u.u_ssize+si, u.u_sep, RO))
-		return(0);
+
+	for(j=6;;) {
+		if(!j--)
+			return(0);
+		si=(-lbtoc((long)sp)+0x100)-u.u_ssize+sp;
+		if(si <= 0)
+			continue;
+		if(!u.u_segmented) {
+			if((u.u_ssize + USIZE + i + u.u_dsize) >= 0x100)
+				continue;
+/*			if(!estabur(u.u_tsize,u.u_dsize,u.u_ssize+i,1))
+				goto out;
+*/			estabur(u.u_tsize,u.u_dsize,u.u_ssize+i,1);
+		} else {
+			if(u.u_ssize + i > 0x100)
+				continue;
+			u.u_segmts[NUSEGS-1].sg_limit = -u.u_ssize+0x100;
+/*			goto out;*/
+		}
+	}
+out:
 	p = u.u_procp;
 	expand(p->p_size+si);
-	a = p->p_addr + p->p_size;
 	for(i=u.u_ssize; i; i--) {
 		a--;
 		copyseg(a-si, a);
@@ -312,6 +331,7 @@ unsigned sp;
 	u.u_ssize += si;
 	return(1);
 }
+
 /*
  * sys-trace system call.
  */
