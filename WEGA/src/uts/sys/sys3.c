@@ -1,17 +1,39 @@
-#include "sys/param.h"
-#include "sys/systm.h"
-#include "sys/mount.h"
-#include "sys/ino.h"
-#include "sys/buf.h"
-#include "sys/filsys.h"
-#include "sys/dir.h"
-#include "sys/user.h"
-#include "sys/inode.h"
-#include "sys/file.h"
-#include "sys/conf.h"
-#include "sys/stat.h"
-#include "sys/ioctl.h"
-#include "sys/var.h"
+/******************************************************************************
+*******************************************************************************
+ 
+	W E G A - Quelle
+
+	KERN 3.2	Modul: sys3.c
+ 
+ 
+	Bearbeiter:	O. Lehmann
+	Datum:		23.05.08
+	Version:	1.0
+ 
+*******************************************************************************
+******************************************************************************/
+ 
+char sys3wstr[] = "@[$]sys3.c		Rev : 4.1 	08/27/83 11:59:28";
+
+#include <sys/param.h>
+#include <sys/sysinfo.h>
+#include <sys/systm.h>
+#include <sys/mount.h>
+#include <sys/ino.h>
+#include <sys/buf.h>
+#include <sys/filsys.h>
+#include <sys/dir.h>
+#include <sys/s.out.h>
+#include <sys/mmu.h>
+#include <sys/user.h>
+#include <sys/inode.h>
+#include <sys/file.h>
+#include <sys/conf.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+
+extern int Nmount;
+extern int Ninode;
 
 /*
  * the fstat system call.
@@ -141,7 +163,7 @@ fcntl()
 		break;
 
 	case 1:
-		u.u_rval1 = u.u_pofile[uap->fdes];
+		u.u_r.r_val1 = u.u_pofile[uap->fdes];
 		break;
 
 	case 2:
@@ -149,7 +171,7 @@ fcntl()
 		break;
 
 	case 3:
-		u.u_rval1 = fp->f_flag+FOPEN;
+		u.u_r.r_val1 = fp->f_flag+FOPEN;
 		break;
 
 	case 4:
@@ -160,63 +182,6 @@ fcntl()
 	default:
 		u.u_error = EINVAL;
 	}
-}
-
-/*
- * character special i/o control
- */
-ioctl()
-{
-	register struct file *fp;
-	register struct inode *ip;
-	register struct a {
-		int	fdes;
-		int	cmd;
-		int	arg;
-	} *uap;
-	register dev_t dev;
-
-	uap = (struct a *)u.u_ap;
-	if ((fp = getf(uap->fdes)) == NULL)
-		return;
-	ip = fp->f_inode;
-	if ((ip->i_mode&IFMT) != IFCHR) {
-		u.u_error = ENOTTY;
-		return;
-	}
-	dev = (dev_t)ip->i_rdev;
-	(*cdevsw[major(dev)].d_ioctl)(minor(dev),uap->cmd,uap->arg,fp->f_flag);
-}
-
-/*
- * old stty and gtty
- */
-stty()
-{
-	register struct a {
-		int	fdes;
-		int	arg;
-		int	narg;
-	} *uap;
-
-	uap = (struct a *)u.u_ap;
-	uap->narg = uap->arg;
-	uap->arg = TIOCSETP;
-	ioctl();
-}
-
-gtty()
-{
-	register struct a {
-		int	fdes;
-		int	arg;
-		int	narg;
-	} *uap;
-
-	uap = (struct a *)u.u_ap;
-	uap->narg = uap->arg;
-	uap->arg = TIOCGETP;
-	ioctl();
 }
 
 /*
@@ -242,7 +207,7 @@ smount()
 	dev = getmdev();
 	if(u.u_error)
 		return;
-	u.u_dirp = (caddr_t)uap->freg;
+	u.u_dirp.l = (caddr_t)uap->freg;
 	ip = namei(uchar, 0);
 	if(ip == NULL)
 		return;
@@ -255,7 +220,7 @@ smount()
 	if (ip->i_number == ROOTINO)
 		goto out;
 	smp = NULL;
-	for(mp = &mount[0]; mp < (struct mount *)v.ve_mount; mp++) {
+	for(mp = &mount[0]; mp < &mount[Nmount]; mp++) {
 		if(mp->m_flags != MFREE) {
 			if(dev == mp->m_dev)
 				goto out;
@@ -318,14 +283,14 @@ sumount()
 		return;
 	xumount(dev);	/* remove unused sticky files from text table */
 	update();
-	for(mp = &mount[0]; mp < (struct mount *)v.ve_mount; mp++)
+	for(mp = &mount[0]; mp < &mount[Nmount]; mp++)
 		if(mp->m_flags == MINUSE && dev == mp->m_dev)
 			goto found;
 	u.u_error = EINVAL;
 	return;
 
 found:
-	for(ip = &inode[0]; ip < (struct inode *)v.ve_inode; ip++)
+	for(ip = &inode[0]; ip < &inode[Ninode]; ip++)
 		if(ip->i_number != 0 && dev == ip->i_dev) {
 			u.u_error = EBUSY;
 			return;
@@ -358,8 +323,66 @@ getmdev()
 	if((ip->i_mode&IFMT) != IFBLK)
 		u.u_error = ENOTBLK;
 	dev = (dev_t)ip->i_rdev;
-	if(major(dev) >= bdevcnt)
+/*	if(major(dev) >= bdevcnt)
 		u.u_error = ENXIO;
-	iput(ip);
+*/	iput(ip);
 	return(dev);
 }
+
+/*
+ * character special i/o control
+ */
+ioctl()
+{
+	register struct file *fp;
+	register struct inode *ip;
+	register struct a {
+		int	fdes;
+		int	cmd;
+		int	arg;
+	} *uap;
+	register dev_t dev;
+
+	uap = (struct a *)u.u_ap;
+	if ((fp = getf(uap->fdes)) == NULL)
+		return;
+	ip = fp->f_inode;
+	if ((ip->i_mode&IFMT) != IFCHR) {
+		u.u_error = ENOTTY;
+		return;
+	}
+	dev = (dev_t)ip->i_rdev;
+	(*cdevsw[major(dev)].d_ioctl)(minor(dev),uap->cmd,uap->arg,fp->f_flag);
+}
+
+/*
+ * old stty and gtty
+ */
+stty()
+{
+	register struct a {
+		int	fdes;
+		int	arg;
+		int	narg;
+	} *uap;
+
+	uap = (struct a *)u.u_ap;
+	uap->narg = uap->arg;
+	uap->arg = TIOCSETP;
+	ioctl();
+}
+
+gtty()
+{
+	register struct a {
+		int	fdes;
+		int	arg;
+		int	narg;
+	} *uap;
+
+	uap = (struct a *)u.u_ap;
+	uap->narg = uap->arg;
+	uap->arg = TIOCGETP;
+	ioctl();
+}
+
