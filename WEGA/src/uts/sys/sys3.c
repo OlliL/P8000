@@ -228,7 +228,7 @@ smount()
 		return;
 	if (ip->i_count != 1)
 		goto out;
-	if (ip->i_mode&2000)
+	if ((ip->i_mode&0x2000) != 0)
 		goto out;
 	smp = NULL;
 	for(mp = &mount[0]; mp < &mount[Nmount]; mp++) {
@@ -244,7 +244,7 @@ smount()
 		goto out;
 	(*bdevsw[major(dev)].d_open)(dev, !uap->ronly);
 	if(u.u_error)
-		goto out1;
+		goto out;
 	bp = bread(dev, SUPERB);
 	if(u.u_error) {
 		brelse(bp);
@@ -263,14 +263,12 @@ smount()
 	ip->i_flag |= IMOUNT;
 	prele(ip);
 	return;
-
-out1:
-	mp->m_flags = MFREE;
 out:
-	if (u.u_error == 0)
-		u.u_error = EBUSY;
+	u.u_error = EBUSY;
+out1:
 	iput(ip);
 }
+
 
 /*
  * the umount system call.
@@ -291,7 +289,7 @@ sumount()
 	xumount(dev);	/* remove unused sticky files from text table */
 	update();
 	for(mp = &mount[0]; mp < &mount[Nmount]; mp++)
-		if(mp->m_bufp)
+		if(mp->m_bufp && dev == mp->m_dev)
 			goto found;
 	u.u_error = EINVAL;
 	return;
@@ -311,9 +309,8 @@ found:
 	bp = mp->m_bufp;
 	mp->m_bufp = NULL;
 	brelse(bp);
-	/* FIXME: here has to be a clr @r8 - rr8 is mp */
+	mp->m_flags = MFREE;
 }
-
 
 /*
  * Common code for mount and umount.
@@ -338,7 +335,6 @@ getmdev()
 	return(dev);
 }
 
-
 /*
  * character special i/o control
  */
@@ -349,10 +345,10 @@ ioctl()
 	register struct a {
 		int	fdes;
 		int	cmd;
-		int	arg;
+		caddr_t	arg;
 	} *uap;
 	register dev_t dev;
-
+	
 	uap = (struct a *)u.u_ap;
 	if ((fp = getf(uap->fdes)) == NULL)
 		return;
@@ -361,38 +357,44 @@ ioctl()
 		u.u_error = ENOTTY;
 		return;
 	}
+	u.u_r.r_val1 = 0;
 	dev = (dev_t)ip->i_rdev;
 	(*cdevsw[major(dev)].d_ioctl)(minor(dev),uap->cmd,uap->arg,fp->f_flag);
 }
 
-/*
- * old stty and gtty
- */
 stty()
 {
-	register struct a {
-		int	fdes;
-		int	arg;
-		int	narg;
-	} *uap;
-
-	uap = (struct a *)u.u_ap;
-	uap->narg = uap->arg;
-	uap->arg = TIOCSETP;
+	u.u_arg[1] = TIOCSETP;
+	u.u_arg[3] = u.u_arg[2];
+	u.u_arg[2] = 0x3f00;
 	ioctl();
 }
-
+ 
 gtty()
 {
-	register struct a {
-		int	fdes;
-		int	arg;
-		int	narg;
-	} *uap;
-
-	uap = (struct a *)u.u_ap;
-	uap->narg = uap->arg;
-	uap->arg = TIOCGETP;
+	u.u_arg[1] = TIOCGETP;
+	u.u_arg[3] = u.u_arg[2];
+	u.u_arg[2] = 0x3f00;
 	ioctl();
 }
 
+/*
+ * modem control
+ */
+
+mdmmctl()
+{
+	register struct a {
+		int request;
+		long *modems;
+		int dev;
+	} *uap;
+	
+	uap = (struct a *)u.u_ap;
+	if (uap->dev<0||uap->dev>=nchrdev ) {
+		u.u_error = ENODEV;
+		return;
+	}
+	u.u_r.r_val1 = 0;
+	(*cdevsw[uap->dev].d_ioctl)(0,uap->request,uap->modems,uap->dev);
+}
