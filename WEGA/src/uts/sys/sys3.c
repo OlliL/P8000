@@ -269,7 +269,6 @@ out1:
 	iput(ip);
 }
 
-
 /*
  * the umount system call.
  */
@@ -362,6 +361,9 @@ ioctl()
 	(*cdevsw[major(dev)].d_ioctl)(minor(dev),uap->cmd,uap->arg,fp->f_flag);
 }
 
+/* 	 
+ * old stty and gtty 	 
+ */
 stty()
 {
 	u.u_arg[1] = TIOCSETP;
@@ -381,7 +383,6 @@ gtty()
 /*
  * modem control
  */
-
 mdmmctl()
 {
 	register struct a {
