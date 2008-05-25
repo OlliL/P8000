@@ -52,7 +52,6 @@ write()
 rdwr(mode)
 register mode;
 {
-	int	foo,foo2;
 	register struct file *fp;
 	register struct inode *ip;
 	register struct a {
@@ -60,6 +59,7 @@ register mode;
 		char	*cbuf;
 		unsigned count;
 	} *uap;
+	long	j;		/*FIXME: should be stack+0 is stack+2*/
 	int	type;
 
 	uap = (struct a *)u.u_ap;
@@ -70,13 +70,19 @@ register mode;
 		u.u_error = EBADF;
 		return;
 	}
-	u.u_base.l = (caddr_t)uap->cbuf;
+	u.u_base.l = (caddr_t)(((long)uap->cbuf) & 0x7F00FFFF); /* FIXME: this is not 100% compatible */
 	u.u_count = uap->count;
 	u.u_segflg = 0;
 	u.u_fmode = fp->f_flag;
 	ip = fp->f_inode;
 	type = ip->i_mode&IFMT;
 	if (type==IFREG || type==IFDIR) {
+		u.u_offset = fp->f_offset;
+		if(ip->i_locklist) {
+			j = u.u_offset + u.u_count;	/*FIXME: rr2 is used for adding, rr4 should be used j is used nowhere*/
+			if(locked(mode == FREAD?0x100:0,ip,u.u_offset))
+				return;
+		}
 		plock(ip);
 		if ((u.u_fmode&FAPPEND) && (mode == FWRITE))
 			fp->f_offset = ip->i_size;
@@ -134,13 +140,15 @@ creat()
  * Check permissions, allocate an open file structure,
  * and call the device open routine if any.
  */
-copen(mode, arg)
+copen(mode, arg,j)
 register mode;
+int arg; /*FIXME: this should be stack +4 but is +0*/
 {
 	register struct inode *ip;
 	register struct file *fp;
-	int i;
-
+	long j; /*FIXME: this should be stack +0 but is +4*/
+	int i; /*FIXME: this is stack +8*/
+	
 	if ((mode&(FREAD|FWRITE)) == 0) {
 		u.u_error = EINVAL;
 		return;
@@ -159,6 +167,23 @@ register mode;
 				u.u_error = EEXIST;
 				iput(ip);
 				return;
+			}
+			if(save(u.u_qsav)) {
+				setscr();
+				iput(ip);
+				if (u.u_error) {
+					return;
+				} else {
+					u.u_error = EINTR;
+					return;
+				}
+			}
+			if(ip->i_locklist) {
+				j=0x4000000;  /*FIXME: only usage of j - makes no real sense if its private*/
+				if(locked(0,ip,0)){
+					iput(ip);
+					return;
+				}
 			}
 			mode &= ~FCREAT;
 		}
@@ -187,6 +212,7 @@ register mode;
 	fp->f_inode = ip;
 	i = u.u_r.r_val1;
 	if (setjmp(u.u_qsav)) {	/* catch half-opens */
+		setscr();
 		if (u.u_error == 0)
 			u.u_error = EINTR;
 		u.u_ofile[i] = NULL;
@@ -275,7 +301,9 @@ link()
 	 * embraces.
 	 */
 	prele(ip);
-	u.u_dirp.l = (caddr_t)uap->linkname;
+
+	u.u_dirp.l = (caddr_t)(((long)uap->linkname) & 0x7F00FFFF);	/* FIXME: this is not 100% compatible */
+	
 	xp = namei(uchar, 1);
 	if (xp != NULL) {
 		u.u_error = EEXIST;
