@@ -46,7 +46,7 @@ sureg()
 	if(u.u_segmented || inb(SCR)&0x0004)
 		panic("sureg: user is segmented");
 
-	u.u_segmts[USEG].sg_base = u.u_procp->p_addr+10;
+	u.u_segmts[USEG].sg_base = u.u_procp->p_addr+USIZE;
 	u.u_segmts[NUSEGS-1].sg_base = (u.u_segmts[USEG].sg_limit + u.u_segmts[USEG].sg_base + 1)
 	                                - u.u_segmts[NUSEGS-1].sg_limit;	
 	textp = u.u_procp->p_textp;
@@ -74,13 +74,55 @@ sureg()
  * The last argument determines whether the text
  * segment is read-write or read-only.
  */
-estabur(nt, nd, ns, sep, xrw)
-unsigned nt, nd, ns;
+estabur(nt, nd, ns, sep)
+register unsigned nt, nd, ns;
 {
+	/*FIXME: the 3rd test should be done in r5, not r2 */
+	if(((nt > 0x100 || (nd+ns) > 0x00ff)) || (maxmem < nt+nd+ns+USIZE)) { 
+		u.u_error = ENOMEM;
+		return(-1);
+	}
+
+	u.u_nsucode.sg_limit = (!nt?0:nt-1);
+	u.u_segmts[USEG].sg_limit = (!nd?0:nd-1);
+	u.u_segmts[NUSEGS-1].sg_limit = (!ns?0:-ns+0x100);
+	
+	u.u_nsucode.sg_attr = (!nt?0x14:sep);    /*FIXME: use r3 here instead of r2 */
+	u.u_segmts[USEG].sg_attr = (!nd?0x14:0); /*FIXME: use r2 here instead of r3 */
+	u.u_segmts[NUSEGS-1].sg_attr = (!ns?0x14:0x20);
+	sureg();
+	return(0);
 }
 
-sestabur()
+sestabur(nt, nd, ns, sep)
+register unsigned nt;
+register unsigned ns;
+register unsigned sep;
 {
+	int foo2;
+	
+	if(nt > 0x100) {
+		u.u_error = ENOMEM;
+		return(-1);
+	}
+	
+	foo2 = nd&LONGMASK;
+	
+	if(sep>0x0080) {
+		u.u_error = ENOEXEC;
+		return(-1);
+	}
+	
+	if(foo2 == u.u_stakseg) {
+		u.u_segmts[NUSEGS-1].sg_limit = (!nt?0:-nt+0x100);
+		u.u_segmts[NUSEGS-1].sg_attr = (!nt?0x20:-nt+0x14);
+		return(0);
+	}
+
+/*FIXME: and now the whole thing is missing.... */
+
+
+	return(0);
 }
 
 segureg()
