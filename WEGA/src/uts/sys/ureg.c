@@ -1,11 +1,36 @@
-#include "sys/plexus.h"
-#include "sys/param.h"
-#include "sys/systm.h"
-#include "sys/dir.h"
-#include "sys/user.h"
-#include "sys/proc.h"
-#include "sys/text.h"
-#include "sys/seg.h"
+/******************************************************************************
+*******************************************************************************
+ 
+	W E G A - Quelle
+
+	KERN 3.2	Modul: ureg.c
+ 
+ 
+	Bearbeiter:	O. Lehmann
+	Datum:		25.05.08
+	Version:	1.0
+ 
+*******************************************************************************
+******************************************************************************/
+ 
+char uregwstr[] = @[$]ureg.c		Rev : 4.1 	08/27/83 12:01:05";
+
+#include <sys/param.h>
+#include <sys/sysinfo.h>
+#include <sys/systm.h>
+#include <sys/file.h>
+#include <sys/inode.h>
+#include <sys/dir.h>
+#include <sys/mmu.h>
+#include <sys/buf.h>
+#include <sys/conf.h>
+#include <sys/proc.h>
+#include <sys/s.out.h>
+#include <sys/user.h>
+
+extern int	mmut;	/* STACK MMU */
+extern int	mmud;	/* DATA MMU */
+extern int	mmus;	/* CODE MMU */
 
 /*
  * Load the user hardware segmentation
@@ -15,36 +40,27 @@
  */
 sureg()
 {
-	int taddr, daddr;
-	register i, c;
-	struct text *tp;
-	int maptemp[NUMLOGPAGE];
+	register struct segd *segmnt;
+	register struct text *textp;
 
-	taddr = daddr = u.u_procp->p_addr;
-	if ((tp=u.u_procp->p_textp) != NULL)
-		taddr = tp->x_caddr;
+	if(u.u_segmented || inb(SCR)&0x0004)
+		panic("sureg: user is segmented");
 
-	for (i = 0; i < NUMLOGPAGE; i++) {
-		c = u.u_uisa[i];
-		if ((c & B_IP) == 0)
-			if (c & B_EX)
-				c += taddr;
-			else
-				c += daddr;
-		maptemp[i] = c;
+	u.u_segmts[USEG].sg_base = u.u_procp->p_addr+10;
+	u.u_segmts[NUSEGS-1].sg_base = (u.u_segmts[USEG].sg_limit + u.u_segmts[USEG].sg_base + 1)
+	                                - u.u_segmts[NUSEGS-1].sg_limit;	
+	textp = u.u_procp->p_textp;
+	if(textp) {
+		u.u_nsucode.sg_base = textp->x_caddr;
+		segmnt = &u.u_nsucode;
+	} else {
+		segmnt = &u.u_segmts[USEG];
 	}
-	copymout(maptemp, P_MUI0, NUMLOGPAGE << 1);
-
-	for (i = 0; i < NUMLOGPAGE; i++) {
-		c = u.u_uisa[i + NUMLOGPAGE];
-		if ((c & B_IP) == 0)
-			if (c & B_EX)
-				c += taddr;
-			else
-				c += daddr;
-		maptemp[i] = c;
-	}
-	copymout(maptemp, P_MUD0, NUMLOGPAGE << 1);
+	loadsd(mmut,USEG,segmnt);
+	loadsd(mmud,USEG,&u.u_segmts[USEG]);
+	loadsd(mmus,USEG,&u.u_segmts[NUSEGS-1]);
+	u.u_break = u.u_segmts[USEG].sg_limit + 1;
+	outb(0xffd1,u.u_break);
 }
 
 /*
@@ -61,47 +77,20 @@ sureg()
 estabur(nt, nd, ns, sep, xrw)
 unsigned nt, nd, ns;
 {
-	register a, *ap, i;
-
-	if (checkur(nt, nd, ns, sep))
-		return(-1);
-	a = 0;
-	ap = &u.u_uisa[0];
-	for (i = 0; i < nt; i++)
-		*ap++ = a++ | B_EX | (xrw == RO ? B_RO : 0);
-	if (sep)
-		for (i = 0; i < (NUMLOGPAGE - nt); i++)
-			*ap++ = B_IP | B_RO;
-	a = USIZE;
-	for (i = 0; i < nd; i++)
-		*ap++ = a++;
-	for (i = 0; i < (NUMLOGPAGE - nd - ns - ((!sep) ? nt : 0)); i++)
-		*ap++ = B_IP | B_RO;
-	for (i = 0; i < ns; i++)
-		*ap++ = a++;
-	if (!sep) {
-		ap = &u.u_uisa[0];
-		for (i = 0; i < NUMLOGPAGE; i++)
-			ap[i + NUMLOGPAGE] = ap[i];
-	}
-	sureg();
-	return(0);
 }
 
-checkur(nt, nd, ns, sep)
+sestabur()
 {
-	if(sep) {
-		if(ctos(nt) > NUMLOGPAGE || ctos(nd)+ctos(ns) > NUMLOGPAGE)
-			goto err;
-	} else {
-		if(ctos(nt)+ctos(nd)+ctos(ns) > NUMLOGPAGE)
-			goto err;
-	}
-	if(nt+nd+ns+USIZE > maxmem)
-		goto err;
-	return(0);
+}
 
-err:
-	u.u_error = ENOMEM;
-	return(-1);
+segureg()
+{
+}
+
+ldsdr()
+{
+}
+
+prmmu()
+{
 }
