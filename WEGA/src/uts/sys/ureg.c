@@ -96,31 +96,37 @@ register unsigned nt, nd, ns;
 
 sestabur(nt, nd, ns, sep)
 register unsigned nt;
+char nd;
 register unsigned ns;
 register unsigned sep;
 {
-	int foo2;
+	int stakseg;
 	
-	if(nt > 0x100) {
+	if(nt > 256) {
 		u.u_error = ENOMEM;
 		return(-1);
 	}
 	
-	foo2 = nd&LONGMASK;
+	stackseg = nd&LONGMASK;
 	
-	if(sep>0x0080) {
+	if(sep > 128) {
 		u.u_error = ENOEXEC;
 		return(-1);
 	}
 	
-	if(foo2 == u.u_stakseg) {
-		u.u_segmts[NUSEGS-1].sg_limit = (!nt?0:-nt+0x100);
-		u.u_segmts[NUSEGS-1].sg_attr = (!nt?0x20:-nt+0x14);
+	if(stackseg == u.u_stakseg) {
+		u.u_segmts[NUSEGS-1].sg_limit = (!nt?0:-nt+256);
+		u.u_segmts[NUSEGS-1].sg_attr  = (!nt?32:-nt+20);
 		return(0);
 	}
+	
+	u.u_segmts[ns].sg_limit = (!nt?0:nt-1);
 
-/*FIXME: and now the whole thing is missing.... */
-
+	if(nd&128) {
+		u.u_segmts[ns].sg_attr = (!nt?20:sep);
+	} else {
+		u.u_segmts[ns].sg_attr = (!nt?20:0);
+	}
 
 	return(0);
 }
