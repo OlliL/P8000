@@ -1,3 +1,20 @@
+/******************************************************************************
+*******************************************************************************
+ 
+	W E G A - Quelle	(C) ZFT/KEAW Abt. Basissoftware - 1988
+
+	KERN 3.2	Modul: mkseg.c
+ 
+ 
+	Bearbeiter:
+	Datum:		$D$
+	Version:	$R$
+ 
+*******************************************************************************
+******************************************************************************/
+
+char mksegwstr[]="@[$]mkseg.c		Rev : 4.1	08/27/83 11:56:13";
+
 #include <sys/param.h>
 #include <sys/sysparm.h>
 #include <sys/sysinfo.h>
@@ -10,8 +27,6 @@
 #include <sys/s.out.h>
 #include <sys/user.h>
 #include <sys/map.h>
-
-char mksegwstr[]="@@[$]mkseg.c@i@iRev : 4.1@i08/27/83 11:56:13";
 
 mkseg()
 {
@@ -77,23 +92,19 @@ sgstat()
 
 	saddr = (paddr_t *)u.u_ap;
 	j = 0;
-	if (u.u_sep)
-		for (i=0; ; ){
-			if (i< u.u_nsegs){
-				if (u.u_segno[i] & 0x80){
-					hibyte(segstat[j].segno) = u.u_segno[i] & 0x7f;
-					if (u.u_segmts[i].sg_limit == 0xff)
-						segstat[j].limit = 0xfffe;
-					else
-						segstat[j].limit = ((unsigned int)(u.u_segmts[i].sg_limit)+1)<<8;
-				}
+	if (u.u_sep) {
+		for (i=0; i< u.u_nsegs; i++){
+			if (u.u_segno[i] & 0x80){
+				hibyte(segstat[j].segno) = u.u_segno[i] & 0x7f;
+				if (u.u_segmts[i].sg_limit == 0xff)
+					segstat[j].limit = 0xfffe;
+				else
+					segstat[j].limit = ((unsigned int)(u.u_segmts[i].sg_limit)+1)<<8;
+				if (j++ == NSEGS)
+					break;
 			}
-			if (j++ != NSEGS)
-				i++;
-			else
-				break;
 		}
-	else {
+	} else {
 		hibyte(segstat[0].segno) = u.u_tseg;
 		segstat[0].limit = u.u_toff<<8;
 		j++;
