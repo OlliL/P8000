@@ -13,7 +13,7 @@
 *******************************************************************************
 ******************************************************************************/
  
-char uregwstr[] = @[$]ureg.c		Rev : 4.1 	08/27/83 12:01:05";
+char uregwstr[] = "@[$]ureg.c		Rev : 4.1 	08/27/83 12:01:05";
 
 #include <sys/param.h>
 #include <sys/sysinfo.h>
@@ -27,6 +27,7 @@ char uregwstr[] = @[$]ureg.c		Rev : 4.1 	08/27/83 12:01:05";
 #include <sys/proc.h>
 #include <sys/s.out.h>
 #include <sys/user.h>
+#include <sys/text.h>
 
 extern int	mmut;	/* STACK MMU */
 extern int	mmud;	/* DATA MMU */
@@ -107,14 +108,14 @@ register unsigned sep;
 		return(-1);
 	}
 	
-	stackseg = nd&LONGMASK;
+	stakseg = nd&LONGMASK;
 	
 	if(sep > 128) {
 		u.u_error = ENOEXEC;
 		return(-1);
 	}
 	
-	if(stackseg == u.u_stakseg) {
+	if(stakseg == u.u_stakseg) {
 		u.u_segmts[NUSEGS-1].sg_limit = (!nt?0:-nt+256);
 		u.u_segmts[NUSEGS-1].sg_attr  = (!nt?32:-nt+20);
 		return(0);
@@ -122,17 +123,49 @@ register unsigned sep;
 	
 	u.u_segmts[ns].sg_limit = (!nt?0:nt-1);
 
-	if(nd&128) {
+	if(nd&128)
 		u.u_segmts[ns].sg_attr = (!nt?20:sep);
-	} else {
+	else
 		u.u_segmts[ns].sg_attr = (!nt?20:0);
-	}
 
 	return(0);
 }
 
 segureg()
 {
+	register short caddr;
+	register short addr;
+	register int segno;
+	register struct text *textp;
+	char i, j;
+
+	addr = u.u_procp->p_addr+USIZE;
+	textp = u.u_procp->p_textp;
+
+	if(textp)
+		caddr = textp->x_caddr;
+	else
+		caddr = 0;
+	
+	for(i=0;i<u.u_nsegs;i++) {
+		segno = u.u_segno[i]&0x7f;
+		j = u.u_segmts[i].sg_attr&0x14;
+		if (u.u_segno[i] & 0x80){
+			u.u_segmts[i].sg_base = caddr;
+			if(u.u_segmts[i].sg_limit > 0 || !j)
+				caddr += u.u_segmts[i].sg_limit-1; /*FIXME: r2 gets used here, r3 has to be used here */
+		} else {
+			u.u_segmts[i].sg_base = addr;
+			if(u.u_segmts[i].sg_limit || !j)
+				addr += u.u_segmts[i].sg_limit+1;
+		}
+		if((unsigned)segno < 0x0040)
+			loadsd(mmud,segno,&u.u_segmts[i]);
+		else
+			loadsd(mmus,segno,&u.u_segmts[i]);
+	}
+	u.u_segmts[NUSEGS-1].sg_limit = addr - u.u_segmts[NUSEGS-1].sg_limit;
+	loadsd((u.u_stakseg<0x40?mmud:mmus),0x7f,&u.u_segmts[NUSEGS-1]);
 }
 
 ldsdr()
