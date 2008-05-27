@@ -33,19 +33,15 @@ mkseg()
 	register unsigned segno;
 	register unsigned size;
 	register struct proc *pp;
-	struct a {
-		unsigned segno;
-		unsigned size;
-	} 
-	*uap;
 	char i, j;
 
 	pp = u.u_procp;
-	segno = ((struct a *)u.u_ap)->segno & 0x7f;
-	size = ((struct a *)u.u_ap)->size;
+	segno = ((saddr_t *)u.u_ap)->left & 0x7f;
+	size = lbtoc((long)((saddr_t *)u.u_ap)->right);
+
 	if (!segno){
-loop:	
 		i = 4;
+loop:	
 		for (j=0; j<u.u_nsegs; j++)
 			if ((u.u_segno[j]&0x7f) == i)
 				if (++i > STAK){
@@ -54,7 +50,7 @@ loop:
 				}
 				else
 					goto loop;
-		segno = i;
+		segno = (unsigned char)i;
 	}
 	else
 		for (j=0; j<u.u_nsegs; j++)
@@ -63,7 +59,7 @@ loop:
 				return;
 			}
 	j = u.u_nsegs;
-	if (u.u_tsize+u.u_dsize+u.u_ssize+(unsigned)USIZE > umemory){
+	if (u.u_tsize+u.u_dsize+size+u.u_ssize+USIZE > umemory){
 		u.u_error = ENOMEM;
 		return;
 	}
