@@ -95,29 +95,34 @@ register unsigned nt, nd, ns;
 	return(0);
 }
 
+/*FIXME: The function works from the functional point of view, but in the original
+ *       object the stkseg stuff at the beginning shows that at least one int is
+ *       used - which cannot be, because if stakseg is an int the work with stackseg
+ *       is no longer compatible - same goes with nd. but if for example stakseg is
+ *       declared as int, nt, ns and sep are assigned correctly so that r12 get used
+ *       otherwise r3 gets used instead of r12
+ */
 sestabur(nt, nd, ns, sep)
-register unsigned nt;
+register unsigned nt, ns, sep;
 char nd;
-register unsigned ns;
-register unsigned sep;
 {
-	int stakseg;
+	char stakseg;
 	
 	if(nt > 256) {
 		u.u_error = ENOMEM;
 		return(-1);
 	}
 	
-	stakseg = nd&LONGMASK;
+	stakseg = nd&STAK;
 	
-	if(sep > 128) {
+	if(ns > 128) {
 		u.u_error = ENOEXEC;
 		return(-1);
 	}
 	
 	if(stakseg == u.u_stakseg) {
 		u.u_segmts[NUSEGS-1].sg_limit = (!nt?0:-nt+256);
-		u.u_segmts[NUSEGS-1].sg_attr  = (!nt?32:-nt+20);
+		u.u_segmts[NUSEGS-1].sg_attr  = (!nt?20:32);
 		return(0);
 	}
 	
@@ -148,7 +153,7 @@ segureg()
 		caddr = 0;
 	
 	for(i=0;i<u.u_nsegs;i++) {
-		segno = u.u_segno[i]&0x7f;
+		segno = u.u_segno[i]&STAK;
 		j = u.u_segmts[i].sg_attr&0x14;
 		if (u.u_segno[i] & 0x80){
 			u.u_segmts[i].sg_base = caddr;
@@ -165,11 +170,42 @@ segureg()
 			loadsd(mmus,segno,&u.u_segmts[i]);
 	}
 	u.u_segmts[NUSEGS-1].sg_limit = addr - u.u_segmts[NUSEGS-1].sg_limit;
-	loadsd((u.u_stakseg<0x40?mmud:mmus),0x7f,&u.u_segmts[NUSEGS-1]);
+	loadsd((u.u_stakseg<0x40?mmud:mmus),STAK,&u.u_segmts[NUSEGS-1]);
 }
 
-ldsdr()
+ldsdr(segno, sbase, slimit, sattr)
 {
+	register struct segd *segmnt;
+	register int i;
+
+	segno &= STAK;
+	if(segno != u.u_stakseg) {
+		for(i=0;i<u.u_nsegs;i++) {
+			if((u.u_segno[i]&STAK) == segno)
+				break;
+		}
+	
+		if(i == u.u_nsegs) {
+			u.u_error = ENOSEG;
+			return;
+		}
+		segmnt = &u.u_segmts[i];
+	} else {
+		segmnt = &u.u_segmts[NUSEGS-1];
+	}
+	
+	getsd(segno<0x40?mmud:mmus,segno,segmnt);
+	
+	if(sbase != 0xffff)
+		segmnt->sg_base = sbase;
+
+	if(slimit != 0xffff)
+		segmnt->sg_limit = ((segno == u.u_stakseg)?0x100-slimit:slimit-1);
+
+	if(sattr != 0xffff)
+		segmnt->sg_attr = sattr;
+
+	loadsd(segno<0x40?mmud:mmus,segno,segmnt);
 }
 
 prmmu()
