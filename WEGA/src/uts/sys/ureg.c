@@ -78,8 +78,7 @@ sureg()
 estabur(nt, nd, ns, sep)
 register unsigned nt, nd, ns;
 {
-	/*FIXME: the 3rd test should be done in r5, not r2 */
-	if(((nt > 0x100 || (nd+ns) > 0x00ff)) || (maxmem < nt+nd+ns+USIZE)) { 
+	if(nt > 0x100 || ((nd+ns) > 0x00ff || (nt+nd+ns+USIZE) > maxmem)) { 
 		u.u_error = ENOMEM;
 		return(-1);
 	}
