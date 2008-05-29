@@ -45,7 +45,7 @@ sureg()
 	register struct text *textp;
 
 	if(u.u_segmented || inb(SCR)&0x0004)
-		panic("sureg: user is segmented");
+		panic("sureg: user is segmented\n");
 
 	u.u_segmts[USEG].sg_base = u.u_procp->p_addr+USIZE;
 	u.u_segmts[NUSEGS-1].sg_base = (u.u_segmts[USEG].sg_limit + u.u_segmts[USEG].sg_base + 1)
@@ -158,7 +158,7 @@ segureg()
 		if (u.u_segno[i] & 0x80){
 			u.u_segmts[i].sg_base = caddr;
 			if(u.u_segmts[i].sg_limit > 0 || !j)
-				caddr += u.u_segmts[i].sg_limit-1; /*FIXME: r2 gets used here, r3 has to be used here */
+				caddr += u.u_segmts[i].sg_limit+1; /*FIXME: r2 gets used here, r3 has to be used here */
 		} else {
 			u.u_segmts[i].sg_base = addr;
 			if(u.u_segmts[i].sg_limit || !j)
@@ -169,7 +169,7 @@ segureg()
 		else
 			loadsd(mmus,segno,&u.u_segmts[i]);
 	}
-	u.u_segmts[NUSEGS-1].sg_limit = addr - u.u_segmts[NUSEGS-1].sg_limit;
+	u.u_segmts[NUSEGS-1].sg_base = addr - u.u_segmts[NUSEGS-1].sg_limit;
 	loadsd((u.u_stakseg<0x40?mmud:mmus),STAK,&u.u_segmts[NUSEGS-1]);
 }
 
@@ -210,4 +210,33 @@ ldsdr(segno, sbase, slimit, sattr)
 
 prmmu()
 {
+	int segno;
+	int i;
+	struct segd segmnt;
+
+	putchar(0x0a);	/*newline*/
+	if(!u.u_segmented) {
+		getsd(mmut,0x3f,&segmnt);
+		printf("code: %x %x %x\n",segmnt.sg_base,hibyte(segmnt.sg_limit),hibyte(segmnt.sg_attr));
+		getsd(mmud,0x3f,&segmnt);
+		printf("data: %x %x %x\n",segmnt.sg_base,hibyte(segmnt.sg_limit),hibyte(segmnt.sg_attr));
+	} else {
+		for(i=0;i<u.u_nsegs;i++) {
+			segno = u.u_segno[i];
+			if(segno < 0x40) {
+				getsd(mmud,segno,&segmnt);
+			} else {
+				getsd(mmus,segno,&segmnt);
+			}
+			printf("seg/slot %x/%x: %x %x %x\n",segno,i,segmnt.sg_base,hibyte(segmnt.sg_limit),hibyte(segmnt.sg_attr));
+		}
+	}
+	getsd(mmus,0x3f,&segmnt);
+	printf("stak: %x %x %x\n",segmnt.sg_base,hibyte(segmnt.sg_limit),hibyte(segmnt.sg_attr));
+	getsd(mmut,0x3b,&segmnt);
+	printf("MAPU: %x %x %x\n",segmnt.sg_base,hibyte(segmnt.sg_limit),hibyte(segmnt.sg_attr));
+	getsd(mmut,0x3c,&segmnt);
+	printf("DMA1: %x %x %x\n",segmnt.sg_base,hibyte(segmnt.sg_limit),hibyte(segmnt.sg_attr));
+	getsd(mmut,0x3d,&segmnt);
+	printf("DMA2: %x %x %x\n",segmnt.sg_base,hibyte(segmnt.sg_limit),hibyte(segmnt.sg_attr));
 }
