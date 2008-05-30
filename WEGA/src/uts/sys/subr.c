@@ -140,6 +140,37 @@ daddr_t bn;
 }
 
 /*
+ * Pass back  c  to the user at his location u_base;
+ * update u_base, u_count, and u_offset.  Return -1
+ * on the last character of the user's read.
+ * u_base is in the user address space unless u_segflg is set.
+ */
+passc(c)
+register char c;
+{
+	if(u.u_segflg == 1) {
+		*u.u_base.l = c;
+	} else {
+		if(!u.u_segflg || u.u_segmented) {
+			if(subyte(u.u_base.l,c)) {
+				u.u_error = EFAULT;
+				return(-1);
+			}
+		} else {
+			if(suibyte(u.u_base.right,c)) {
+				u.u_error = EFAULT;
+				return(-1);
+			}
+		}		
+	}
+
+	u.u_count--;
+	u.u_offset++;
+	u.u_base.l++;
+	return(u.u_count == 0? -1: 0);
+}
+
+/*
  * Pick up and return the next character from the user's
  * write call at location u_base;
  * update u_base, u_count, and u_offset.  Return -1
@@ -148,20 +179,30 @@ daddr_t bn;
  */
 cpass()
 {
-	register c, id;
+	char c;
 
-	if(u.u_count == 0)
+	if(!u.u_count)
 		return(-1);
-	if((id = u.u_segflg) == 1)
-		c = *u.u_base;
-	else
-		if((c = id==0?fubyte(u.u_base):fuibyte(u.u_base)) < 0) {
-			u.u_error = EFAULT;
-			return(-1);
-		}
+
+	if(u.u_segflg == 1) {
+		c = *u.u_base.l;
+	} else {
+		if(!u.u_segflg || u.u_segmented) {
+			if(fubyte(u.u_base.l,&c)) {
+				u.u_error = EFAULT;
+				return(-1);
+			}
+		} else {
+			if(fuibyte(u.u_base.right,&c)) {
+				u.u_error = EFAULT;
+				return(-1);
+			}
+		}		
+	}
+
 	u.u_count--;
 	u.u_offset++;
-	u.u_base++;
+	u.u_base.l++;
 	return(c&0377);
 }
 
@@ -183,30 +224,6 @@ nulldev()
 }
 
 /*
- * Pass back  c  to the user at his location u_base;
- * update u_base, u_count, and u_offset.  Return -1
- * on the last character of the user's read.
- * u_base is in the user address space unless u_segflg is set.
- */
-passc(c)
-register c;
-{
-	register id;
-
-	if((id = u.u_segflg) == 1)
-		*u.u_base = c;
-	else
-		if(id?suibyte(u.u_base, c):subyte(u.u_base, c) < 0) {
-			u.u_error = EFAULT;
-			return(-1);
-		}
-	u.u_count--;
-	u.u_offset++;
-	u.u_base++;
-	return(u.u_count == 0? -1: 0);
-}
-
-/*
  * timeout is called to arrange that fun(arg) is called in tim/HZ seconds.
  * An entry is sorted into the callout structure.
  * The time in each structure entry is the number of HZ's more
@@ -222,7 +239,8 @@ caddr_t arg;
 {
 	register struct callo *p1, *p2;
 	register int t;
-	int s;
+	register int s;
+	long foo1,foo2;
 
 	t = tim;
 	p1 = &callout[0];
