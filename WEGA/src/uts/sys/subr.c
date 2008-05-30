@@ -48,13 +48,16 @@ daddr_t bn;
 	daddr_t nb, *bap;
 	dev_t dev;
 
+	if(bn < 0) {
+		u.u_error = EFBIG;
+		return((daddr_t)0);
+	}
 	dev = ip->i_dev;
 	rablock = 0;
 
 	/*
 	 * blocks 0..NADDR-4 are direct blocks
 	 */
-
 	if(bn < NADDR-3) {
 		i = bn;
 		nb = ip->i_addr[i];
@@ -212,6 +215,7 @@ cpass()
  */
 nodev()
 {
+
 	u.u_error = ENODEV;
 }
 
