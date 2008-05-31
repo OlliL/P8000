@@ -49,7 +49,7 @@ struct
 {
 	int	ip_lock;
 	int	ip_req;
-	int	*ip_addr;
+	saddr_t	ip_addr;
 	int	ip_data;
 } ipc;
 
@@ -120,7 +120,7 @@ issig()
 							freeproc(q, 0) ;
 				}
 			} else
-				if (u.u_signal[SIGCLD-1])
+				if (u.u_signal[SIGCLD-1]) /* this is not compatible - r3 gets checked, not rr2 which is what u.u_signal is in */
 					return(n) ;
 		} else
 			if((u.u_signal[n-1]&1) == 0 || (p->p_flag&STRC))
@@ -341,7 +341,7 @@ ptrace()
 	register struct a {
 		int	req;
 		int	pid;
-		int	*addr;
+		saddr_t	addr;
 		int	data;
 	} *uap;
 
@@ -363,7 +363,7 @@ ptrace()
 		sleep((caddr_t)&ipc, IPCPRI);
 	ipc.ip_lock = p->p_pid;
 	ipc.ip_data = uap->data;
-	ipc.ip_addr = uap->addr;
+	ipc.ip_addr.l = uap->addr.left&0x7f00;
 	ipc.ip_req = uap->req;
 	p->p_flag &= ~SWTED;
 	setrun(p);
@@ -377,9 +377,6 @@ ptrace()
 }
 
 /*
-int ipcreg[] = {R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, AP, FP, SP, PC};
-*/
-/*
  * Code that the child process
  * executes to implement the command
  * of the parent process in tracing.
@@ -389,30 +386,36 @@ procxmt()
 	register int i;
 	register *p;
 	register struct text *xp;
+	int foo1, foo2;
 
 	if (ipc.ip_lock != u.u_procp->p_pid)
 		return(0);
 	i = ipc.ip_req;
 	ipc.ip_req = 0;
 	wakeup((caddr_t)&ipc);
+	if(!u.u_segmented)
+		ipc.ip_addr.left = nsseg(ipc.ip_addr.right);
 	switch (i) {
 
 	/* read user I */
 	case 1:
-		ipc.ip_data = fuiword((caddr_t)ipc.ip_addr);
-		break;
-
+		if(!u.u_segmented) {
+			if(fuiword(ipc.ip_addr.right,&ipc.ip_data))
+				goto error;
+			break;
+		}
 	/* read user D */
 	case 2:
-		ipc.ip_data = fuword((caddr_t)ipc.ip_addr);
+		if(fuword(ipc.ip_addr.l,&ipc.ip_data))
+				goto error;
 		break;
 
 	/* read u */
 	case 3:
-		i = (int)ipc.ip_addr;
+		i = (int)ipc.ip_addr.right;
 		if (i<0 || i >= ctob(USIZE))
 			goto error;
-		ipc.ip_data = ((physadr)&u)->r[i>>2];
+		ipc.ip_data = (long)((physadr)&u)->r[i>>1];
 		break;
 
 	/* write user I */
@@ -426,33 +429,42 @@ procxmt()
 				goto error;
 			xp->x_iptr->i_flag &= ~ITEXT;
 		}
-		chgprot(RW, 0, 0);
-		i = suiword((caddr_t)ipc.ip_addr, 0);
-		suiword((caddr_t)ipc.ip_addr, ipc.ip_data);
-		chgprot(RO, 0, 0);
-		if (i<0)
-			goto error;
+		if(u.u_segmented) {
+			if (u.u_sep)
+				ldsdr(hibyte(ipc.ip_addr.l),-1,-1,0);
+			if(suword(ipc.ip_addr.l,ipc.ip_data))
+				goto error;
+			if (u.u_sep)
+				ldsdr(hibyte(ipc.ip_addr.l),-1,-1,1);
+		} else {
+			estabur(u.u_tsize,u.u_dsize,u.u_ssize,0);
+			if(suiword(ipc.ip_addr.right,ipc.ip_data))
+				goto error;
+			estabur(u.u_tsize,u.u_dsize,u.u_ssize,1);
+		}
 		if (xp)
 			xp->x_flag |= XWRIT;
 		break;
 
 	/* write user D */
 	case 5:
-		if (suword((caddr_t)ipc.ip_addr, 0) < 0)
+		if (suword((caddr_t)ipc.ip_addr.l, ipc.ip_data))
 			goto error;
-		suword((caddr_t)ipc.ip_addr, ipc.ip_data);
 		break;
 
 	/* write u */
 	case 6:
-		i = (int)ipc.ip_addr;
-		p = (int *)&((physadr)&u)->r[i>>2];
-		for (i=0; i<16; i++)
+		i = (int)ipc.ip_addr.right;
+		p = (int *)&((physadr)&u)->r[i>>1];
+		for (i=0; i<15; i++)
 			if (p == &u.u_state->s_reg[i])
 				goto ok;
+		if (p == &u.u_state->s_sp)
+			goto ok;
+		if (p == &u.u_state->s_pc)
+			goto ok;
 		if (p == &u.u_state->s_ps) {
-			ipc.ip_data |= 0x3c00000; /* modes == user */
-			ipc.ip_data &=  ~0x3c20ff00; /* IS, FPD,  ... */
+			ipc.ip_data = (ipc.ip_data&0x00ff)|(u.u_state->s_ps&0xff00);
 			goto ok;
 		}
 		goto error;
@@ -464,10 +476,13 @@ procxmt()
 	/* set signal and continue */
 	/* one version causes a trace-trap */
 	case 9:
-		u.u_state->s_ps |= 0x10/*PS_T*/;
+		u.u_state->s_ps |= TBIT/*PS_T*/;
 	case 7:
-		if ((int)ipc.ip_addr != 1)
-			u.u_state->s_pc = (int)ipc.ip_addr;
+		if ((int)ipc.ip_addr.right != 1) {
+			if(u.u_segmented)
+				u.u_state->s_pcseg = (int)ipc.ip_addr.left;					
+			u.u_state->s_pc = (int)ipc.ip_addr.right;
+		}
 		u.u_procp->p_sig = 0L;
 		if (ipc.ip_data)
 			psignal(u.u_procp, ipc.ip_data);
