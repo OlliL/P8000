@@ -29,7 +29,6 @@ char namiwstr[] = "@[$]nami.c		Rev : 4.1 	08/27/83 11:56:22";
 #include <sys/proc.h>
 #include <sys/s.out.h>
 #include <sys/user.h>
-#include <sys/map.h>
 
 /*
  * Convert a pathname into a pointer to
@@ -50,9 +49,10 @@ int (*func)();
 	register c;
 	register char *cp;
 	struct buf *bp;
-	int i;
+	register int i;
 	dev_t d;
 	off_t eo;
+	extern int Nmount;
 
 	/*
 	 * If name starts with '/' start from
@@ -60,23 +60,15 @@ int (*func)();
 	 */
 
 	sysinfo.namei++;
-	c = (*func)();
-	if (c == '\0') {
-		u.u_error = ENOENT;
-		return(NULL);
-	}
-	if (c == '/') {
+	dp = u.u_cdir;
+	if((c=(*func)()) == '/')
 		if ((dp = u.u_rdir) == NULL)
 			dp = rootdir;
-		while(c == '/')
-			c = (*func)();
-		if(c == '\0' && flag != 0) {
-			u.u_error = ENOENT;
-			return(NULL);
-		}
-	} else
-		dp = u.u_cdir;
 	iget(dp->i_dev, dp->i_number);
+	while(c == '/')
+		c = (*func)();
+	if(c == '\0' && flag != 0)
+		u.u_error = ENOENT;
 
 cloop:
 	/*
@@ -91,17 +83,17 @@ cloop:
 
 	/*
 	 * If there is another component,
-	 * gather up name into users' dir buffer.
+	 * Gather up name into
+	 * users' dir buffer.
 	 */
 
-
-	cp = &u.u_dent.d_name[0];
-	while(c != '/' && c != '\0' && u.u_error == 0) {
-		if(cp < &u.u_dent.d_name[DIRSIZ])
+	cp = &u.u_dbuf[0];
+	while (c != '/' && c != '\0' && u.u_error == 0 ) {
+		if(cp < &u.u_dbuf[DIRSIZ])
 			*cp++ = c;
 		c = (*func)();
 	}
-	while(cp < &u.u_dent.d_name[DIRSIZ])
+	while(cp < &u.u_dbuf[DIRSIZ])
 		*cp++ = '\0';
 	while(c == '/')
 		c = (*func)();
@@ -111,24 +103,20 @@ seloop:
 	 * dp must be a directory and
 	 * must have X permission.
 	 */
-	if ((dp->i_mode&IFMT) != IFDIR || dp->i_nlink==0)
+
+	if((dp->i_mode&IFMT) != IFDIR)
 		u.u_error = ENOTDIR;
-	else
-		access(dp, IEXEC);
-	if (u.u_error)
+	access(dp, IEXEC);
+	if(u.u_error)
 		goto out;
 
 	/*
 	 * set up to search a directory
 	 */
 	u.u_offset = 0;
+	u.u_segflg = 1;
 	eo = 0;
 	bp = NULL;
-	if (dp == u.u_rdir)
-	if (u.u_dent.d_name[0] == '.')
-	if (u.u_dent.d_name[1] == '.')
-	if (u.u_dent.d_name[2] == '\0')
-		goto cloop;
 
 eloop:
 
@@ -145,11 +133,10 @@ eloop:
 			if(access(dp, IWRITE))
 				goto out;
 			u.u_pdir = dp;
-			if (eo)
-				u.u_offset = eo - sizeof(struct direct);
-			bmap(dp, (daddr_t)(u.u_offset>>BSHIFT), B_WRITE);
-			if (u.u_error)
-				goto out;
+			if(eo)
+				u.u_offset = eo-sizeof(struct direct);
+			else
+				dp->i_flag |= IUPD|ICHG;
 			return(NULL);
 		}
 		u.u_error = ENOENT;
@@ -163,20 +150,12 @@ eloop:
 	 */
 
 	if((u.u_offset&BMASK) == 0) {
-		daddr_t bn;
-
 		if(bp != NULL)
 			brelse(bp);
 		sysinfo.dirblk++;
-		bn = bmap(dp, (daddr_t)(u.u_offset>>BSHIFT), B_READ);
-		if (u.u_error)
-			goto out;
-		if (bn < 0) {
-			u.u_error = EIO;
-			goto out;
-		}
-		bp = bread(dp->i_dev, bn);
-		if (u.u_error) {
+		bp = bread(dp->i_dev,
+			bmap(dp, (daddr_t)(u.u_offset>>BSHIFT), B_READ));
+		if (bp->b_flags & B_ERROR) {
 			brelse(bp);
 			goto out;
 		}
@@ -190,17 +169,16 @@ eloop:
 	 * If they do not match, go back to eloop.
 	 */
 
-	cp = bp->b_un.b_addr+(u.u_offset&BMASK);
+	bcopy(bp->b_un.b_addr+(u.u_offset&BMASK), (caddr_t)&u.u_dent,
+		sizeof(struct direct));
 	u.u_offset += sizeof(struct direct);
-	u.u_dent.d_ino = ((struct direct *)cp)->d_ino;
 	if(u.u_dent.d_ino == 0) {
 		if(eo == 0)
 			eo = u.u_offset;
 		goto eloop;
 	}
-	cp = &((struct direct *)cp)->d_name[0];
 	for(i=0; i<DIRSIZ; i++)
-		if(*cp++ != u.u_dent.d_name[i])
+		if(u.u_dbuf[i] != u.u_dent.d_name[i])
 			goto eloop;
 
 	/*
@@ -220,8 +198,8 @@ eloop:
 	if(u.u_dent.d_ino == ROOTINO)
 	if(dp->i_number == ROOTINO)
 	if(u.u_dent.d_name[1] == '.')
-		for(i=1; i<NMOUNT; i++)
-			if(mount[i].m_flags == MINUSE)
+		for(i=1; i<Nmount; i++)
+			if(mount[i].m_bufp != NULL)
 			if(mount[i].m_dev == d) {
 				iput(dp);
 				dp = mount[i].m_inodp;
@@ -246,7 +224,11 @@ out:
  */
 schar()
 {
-	return(u.u_dirp.left++ & 0377);
+	register int ret;
+	int foo;
+	
+	ret = (int)*u.u_dirp.l++;
+	return(ret);
 }
 
 /*
