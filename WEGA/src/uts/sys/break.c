@@ -103,7 +103,6 @@ register int i;
 	register int foo1,foo2,b;
 	int size;
 	struct proc *p;
-	extern int maxmem;
 	
 	p = u.u_procp;
 	if(r > 0x100) {
@@ -115,7 +114,7 @@ register int i;
 			b=r;
 		else
 			b=r-(u.u_segmts[i].sg_limit+1);
-		if((u.u_tsize + USIZE + u.u_dsize + u.u_ssize + b) > maxmem) {
+		if((u.u_tsize + USIZE + u.u_dsize + u.u_ssize + b) > umemory) {
 			u.u_error = ENOMEM;
 			return;
 		}
