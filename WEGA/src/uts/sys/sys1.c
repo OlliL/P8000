@@ -59,7 +59,7 @@ exece()
 	register struct buf *bp;
 	register struct execa *uap;
 	int ne;
-	register long bno;
+	register int bno;
 	unsigned ap;
 	char b;
 	saddr_t c, stkv;
@@ -90,7 +90,7 @@ bad:		u.u_error = EACCES;
 			if (((!u.u_segmented) && (long)uap->argp & 0x0ffffL) ||
 			    (u.u_segmented && uap->argp)){
 				if (u.u_segmented){
-					if (fuword(uap->argp, &c.left) ||
+					if (fuword((caddr_t)uap->argp, &c.left) ||	/*FIXME: uses different temp regs here */
 					    (fuword((long)uap->argp+2, &c.right)))
 						goto bad;
 					(long)uap->argp += 4;
@@ -101,30 +101,30 @@ bad:		u.u_error = EACCES;
 				}
 			}
 			if ((!u.u_segmented && c.right  == NULL && ((long)uap->envp & 0xffffL) != NULL) ||
-			   (u.u_segmented && (c.l == 0L) && (uap->envp != 0L))){
-				uap->argp = 0;
-/* b24 */			if (u.u_segmented){
+			    ( u.u_segmented && !c.l && uap->envp )){		/*FIXME: uses different temp regs here */
+				uap->argp = NULL;					/*FIXME: uses different temp regs here */
+				if (u.u_segmented){
 					if ((fuword(uap->envp, &c.left)) ||
 					   (fuword((long)uap->envp+2, &c.right)))
 						goto bad;
-/* 27 */				if (!c.l)
+					if (!c.l)
 						break;
 					(long)uap->envp += 2;
 				} else  {
-/* 28 */				if (fuword(uap->envp, &c.right))
+					if (fuword(uap->envp, &c.right))
 						goto bad;
-					if (c.right != 0L)
+					if (c.right == 0L)
 						break;
 					c.left = nsseg(c.right);
 			}
 			(long)uap->envp += 2;
 			ne++;
 			}
-/* 30 */		if ((u.u_segmented || c.right != 0L) &&
+			if ((u.u_segmented || c.right != 0L) &&
 			    (!u.u_segmented || c.l != 0)){
 				nc1++;
 				do {
-	/* 34 */			if (nc >= 0x13ff)
+					if (nc >= NCARGS-1)
 						u.u_error = E2BIG;
 					if (fubyte (c.l++, &b))
 						u.u_error = EFAULT;
@@ -133,7 +133,7 @@ bad:		u.u_error = EACCES;
 					if ((nc & 0x1ff) == 0){
 						if (bp)
 							bawrite(bp);
-						bp = getblk(swapdev, (daddr_t)(bno+swplo+(nc>>BSHIFT)));
+						bp = getblk(swapdev, (daddr_t)(swplo+bno+(nc>>BSHIFT)));
 						cp = bp->b_un.b_addr;
 					}
 					nc++;
@@ -142,7 +142,7 @@ bad:		u.u_error = EACCES;
 			} else
 				break;
 		}
-/*40*/	if (bp)
+	if (bp)
 		bawrite(bp);
 	bp = 0;
 	nc = (nc + NBPW -1) & ~(NBPW -1);
@@ -153,23 +153,23 @@ bad:		u.u_error = EACCES;
 	}
 	ap = -nc - NBPW;
 	c.left = u.u_stakseg << 8;
-/*45*/	if (u.u_segmented)
+	if (u.u_segmented)
 		c.right = ap - nc1*2*NBPW - 3*2*NBPW;
 	else
 		c.right = ap - nc1*NBPW - 3*NBPW;
 	u.u_state->s_sp = c.right;
-/*46*/	if (suword(c.l, nc1 - ne))
+	if (suword(c.l, nc1 - ne))
 		goto bad;
 	nc = 0;
 	while (1){
-/* b57 */	if (u.u_segmented){
+		if (u.u_segmented){
 			c.right += 2;
-/* b58 */		if (nc1 == ne){
+			if (nc1 == ne){
 				if (suword(c.l, 0) || suword(c.l+2, 0))
 					goto bad;
 				c.right += 4;
 			}
-/* b61 */		if (--nc1 >= 0){
+			if (--nc1 >= 0){
 				if (suword(c.l, u.u_stakseg<<8) || suword(c.l+2, ap))
 					goto bad;
 				c.right += 2;
@@ -182,17 +182,17 @@ bad:		u.u_error = EACCES;
 					goto bad;
 				c.right += 2;
 			}
-/* b54 */		if (--nc1 >= 0){
+			if (--nc1 >= 0){
 				if (suword(c.l, ap))
 					goto bad;
 			} else
 				break;
 		}
 		while (1){
-/* b49 */		if ((nc & 0x1ff) == 0){
+			if ((nc & 0x1ff) == 0){
 				if (bp)
 					brelse(bp);
-				bp = bread(swapdev, (daddr_t)bno+swplo+(nc>>BSHIFT));
+				bp = bread(swapdev, (daddr_t)(swplo+bno+(nc>>BSHIFT)));
 				cp = bp->b_un.b_addr;
 			}
 			stkv.left = u.u_stakseg<<8;
@@ -200,7 +200,7 @@ bad:		u.u_error = EACCES;
 			if (subyte(stkv.l, (b = *cp++)))
 				goto bad;
 			nc++;
-/* b56 */		if (b & 0xff)
+			if (b & 0xff)
 				continue;
 			else
 				break;
@@ -208,7 +208,7 @@ bad:		u.u_error = EACCES;
 	}
 	if (suword(c.l, 0))
 		goto bad;
-	if (u.u_error)
+	if (u.u_segmented)
 		if (suword(c.l+2, 0))
 			goto bad;
 	stkv.left = u.u_stakseg<<8;
