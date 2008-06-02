@@ -1,0 +1,21 @@
+#define USR	13000
+#define SWAP	3000
+#define ROOT	7000
+#define TMP	4000
+#define Z	60732
+#define MD5	0
+#define MD6	0
+#define MD7	0
+#define MD8	0
+#define MD9	0
+
+#define MD10	40000
+#define MD11	47732
+#define MD12	0
+#define MD13	0
+#define MD14	0
+#define MD15	0
+#define MD16	0
+#define MD17	0
+#define MD18	0
+#define MD19	0
