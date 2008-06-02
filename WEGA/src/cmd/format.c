@@ -5,8 +5,8 @@
 	Programm: format.c
  
 	Bearbeiter	: P. Hoge
-	Datum		: ??.??.??
-	Version		: 1.5
+	Datum		: 30.11.89
+	Version		: 1.6
  
 ***************************************************************************
 
@@ -16,6 +16,7 @@
 ***************************************************************************
 **************************************************************************/
 
+#include <signal.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -59,6 +60,13 @@ char **argv;
   		if ((getchar() & 0x5f) != 'Y')
 			exit(1);
 	}
+
+	/* Programm darf nicht abgebrochen werden */
+	signal(SIGALRM, SIG_IGN);
+	signal(SIGHUP, SIG_IGN);
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGTERM, SIG_IGN);
 
 	buf = 'F';
 	write(dd, &buf, 1);	/* Start Request F: Format */
