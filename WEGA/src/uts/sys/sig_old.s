@@ -219,7 +219,7 @@ L113:
 	jpr	L115
 L112:
 	ldl	rr2,_u+330
-	test	r3
+	testl	rr2
 	jpr	ne,L20004
 	jpr	L120
 L20006:
@@ -553,7 +553,6 @@ L20019:
 	ldb	rh2,rl2
 	clrb	rl2
 	ld	_u+48,r2
-L20020:
 	ldl	rr6,rr12
 	callr	_writei
 	jpr	L180
@@ -604,13 +603,9 @@ L178:
 	ld	_u+46,r2
 	ldk	r2,#0
 	ldb	rl2,_u+1060
-	ld	r3,r2
-	neg	r3
-	add	r3,#256
-	ldb	rh3,rl3
-	clrb	rl3
-	ld	_u+48,r3
-	jpr	L20020
+	neg	r2
+	add	r2,#256
+	jpr	L20019
 L170:
 	ldb	_u+21,#13
 L180:
@@ -619,7 +614,6 @@ L180:
 	cpb	_u+21,#0
 	ldk	r2,#0
 	tcc	eq,r2
-	extsb	r2
 L10021:
 	ldm	r11,_stkseg+4(fp),#3
 	inc	fp,#~L2
@@ -643,12 +637,11 @@ _grow::
 	ld	|_stkseg+~L1+0|(fp),r7
 	ld	r6,_u+220
 	dec	r6,#1
-	ld	r2,r6
-	neg	r2
-	add	r2,#256
-	ldb	rh2,rl2
-	clrb	rl2
-	cp	r2,r7
+	neg	r6
+	add	r6,#256
+	ldb	rh6,rl6
+	clrb	rl6
+	cp	r6,|_stkseg+~L1|(fp)
 	jpr	ugt,L184
 L20024:
 	sub	r2,r2
@@ -659,70 +652,54 @@ L184:
 L20021:
 	ld	r2,_u+220
 	inc	r2,#10
-	add	r2,r12
+	add	r2,r11
 	add	r2,_u+218
 	cp	r2,#256
 	jpr	ge,L187
 	ld	r5,_u+220
-	add	r5,r12
+	add	r5,r11
 	ld	r6,_u+218
 	ld	r7,_u+216
 	ldk	r4,#1
 	callr	_estabur
-	test	r2
-	jpr	eq,L197
 L187:
 	ld	r2,r13
-	dec	r2,#1
-	ld	r13,r2
+	dec	r13,#1
 	test	r2
 	jpr	eq,L20024
-	ldk	r2,#0
 	ld	r3,|_stkseg+~L1|(fp)
+	exts	rr2
 	addl	rr2,#255
 	sral	rr2,#8
-	ld	r2,r3
-	neg	r2
-	add	r2,#256
-	sub	r2,_u+220
-	add	r2,r13
-	ld	r12,r2
-	cp	r2,#0
+	neg	r3
+	add	r3,#256
+	sub	r3,_u+220
+	add	r3,|_stkseg+~L1|(fp)
+	ld	r12,r3
+	cp	r3,#0
 	jpr	le,L187
 	testb	_u+544
 	jpr	eq,L20021
 	ld	r2,_u+220
-	add	r2,r12
+	add	r2,r11
 	cp	r2,#256
 	jpr	gt,L187
 	ld	r2,_u+220
-	add	r2,r12
-	ld	r3,r2
-	neg	r3
-	add	r3,#256
-	ldb	_u+1060,rl3
-L197:
-	ldl	rr8,_u+32
-	ld	r7,r8(#20)
-	add	r7,r12
-	call	_expand
-	ld	r2,r8(#18)
-	ldl	rr4,rr8
-	add	r5,#20
-	add	r2,@rr4
-	ld	r10,r2
-	ld	r11,_u+220
-	jpr	L198a
+	neg	r2
+	add	r2,#256
+	ldb	_u+1060,rl2
+	jpr	L187
 L198:
+	test	r11
+	jpr	eq,L197
 	dec	r10,#1
 	ld	r7,r10
 	sub	r7,r12
 	ld	r6,r10
 	callr	_copyseg
 	dec	r11,#1
-L198a:
-	test	r11
-	jr	ne,L198
+	jpr	L198
+L197:
 	ld	r11,r12
 	jpr	L202
 L20023:
@@ -803,9 +780,10 @@ L213:
 	ld	_ipc,r2
 	ld	r2,rr10(#8)
 	ld	_ipc+8,r2
-	ldl	rr2,rr10(#4)
-	ldl	rr4,rr2
-	and	r4,#32512
+	ld	r2,rr10(#4)
+	and	r2,#32512
+	sub	r4,r4
+	ld	r5,r2
 	ldl	_ipc+4,rr4
 	ld	r2,@rr10
 	ld	_ipc+2,r2
