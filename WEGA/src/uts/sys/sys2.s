@@ -150,9 +150,8 @@ _rdwr::
 L96:
 	ldl	rr2,|_stkseg+~L1+6|(fp)
 	ldl	rr4,rr2(#2)
-	ldl	rr6,rr4
-	and	r6,#32512
-	ldl	_u+44,rr6
+	and	r4,#32512
+	ldl	_u+44,rr4
 	ld	r4,rr2(#6)
 	ld	_u+48,r4
 	clrb	_u+20
@@ -169,15 +168,15 @@ L96:
 	cp	r4,#16384
 	jpr	ne,L97
 L10009:
-	ldl	rr4,rr10(#6)
-	ldl	_u+50,rr4
-	ldl	rr4,rr8(#74)
-	testl	rr4
+	ldl	rr2,rr10(#6)
+	ldl	_u+50,rr2
+	ldl	rr2,rr8(#74)
+	testl	rr2
 	jpr	eq,L98
-	ldk	r4,#0
-	ld	r5,_u+48
-	addl	rr4,_u+50
-	ldl	|_stkseg+~L1|(fp),rr4
+	ldk	r2,#0
+	ld	r3,_u+48
+	addl	rr2,_u+50
+	ldl	|_stkseg+~L1+2|(fp),rr2
 	cp	r13,#1
 	jpr	ne,L10010
 	ld	r7,#256
@@ -329,7 +328,7 @@ _copen::
 {
 	sub	fp,#~L2
 	ldm	_stkseg+10(fp),r8,#6
-	ld	|_stkseg+~L1+4|(fp),r6
+	ld	|_stkseg+~L1+0|(fp),r6
 	ld	r13,r7
 	and	r7,#3
 	test	r7
@@ -347,7 +346,7 @@ L119:
 	jpr	ne,L121
 	testb	_u+21
 	jpr	ne,L10019
-	ld	r7,|_stkseg+~L1+4|(fp)
+	ld	r7,|_stkseg+~L1|(fp)
 	and	r7,#3583
 	callr	_maknode
 	ldl	rr10,rr2
@@ -404,10 +403,10 @@ L128:
 	testl	rr2
 	jpr	eq,L131
 	ldl	rr2,#1073741824
-	ldl	|_stkseg+~L1|(fp),rr2
+	ldl	|_stkseg+~L1+4|(fp),rr2
 	sub	r7,r7
 	ldl	rr4,rr10
-	subl	rr2,rr2
+	sub	r3,r3
 	callr	_locked
 	test	r2
 	jpr	ne,L20001
@@ -590,7 +589,7 @@ L10026:
 _link::
 {
 	dec	fp,#~L2
-	ldm	_stkseg+4(fp),r8,#6
+	ldm	_stkseg+0(fp),r8,#6
 	ldl	rr8,_u+36
 	ldl	rr6,#_uchar
 	sub	r5,r5
@@ -609,9 +608,8 @@ L163:
 	ldl	rr6,rr12
 	callr	_prele
 	ldl	rr2,rr8(#4)
-	ldl	rr4,rr2
-	and	r4,#32512
-	ldl	_u+78,rr4
+	and	r2,#32512
+	ldl	_u+78,rr2
 	ldl	rr6,#_uchar
 	ldk	r5,#1
 	callr	_namei
@@ -650,11 +648,11 @@ L164:
 	ldl	rr6,rr12
 	callr	_iput
 L10029:
-	ldm	r8,_stkseg+4(fp),#6
+	ldm	r8,_stkseg+0(fp),#6
 	inc	fp,#~L2
 	ret
 	~L1 := 0
-	~L2 := 16
+	~L2 := 12
 	}	/* _link */
 
 .psec data
