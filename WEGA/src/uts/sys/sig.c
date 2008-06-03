@@ -107,6 +107,7 @@ issig()
 {
 	register n;
 	register struct proc *p, *q;
+	int foo1;
 
 	p = u.u_procp;
 	while(p->p_sig) {
@@ -250,7 +251,7 @@ core()
 		u.u_base.l = (caddr_t)&u;
 		u.u_count = ctob(USIZE);
 		u.u_segflg = 1;
-		u.u_limit = (daddr_t)ctod(Maxmem);
+		u.u_limit = (daddr_t)ctod(umemory);
 		writei(ip);
 		u.u_segflg = 0;
 		if(!u.u_segmented) {
@@ -297,7 +298,7 @@ int sp;
    this needs more work...
  */
 
-	if(sp >= ctob(-(u.u_ssize-1)+0x100))
+	if((unsigned)sp >= ctob(-(u.u_ssize-1)+0x100))
 		return(0);
 
 	for(j=6;;) {
@@ -413,7 +414,7 @@ procxmt()
 	/* read u */
 	case 3:
 		i = (int)ipc.ip_addr.right;
-		if (i<0 || i >= ctob(USIZE))
+		if (i<0 || (unsigned)i >= ctob(USIZE))
 			goto error;
 		ipc.ip_data = (long)((physadr)&u)->r[i>>1];
 		break;
