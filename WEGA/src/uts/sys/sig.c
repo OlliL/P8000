@@ -121,7 +121,7 @@ issig()
 							freeproc(q, 0) ;
 				}
 			} else
-				if (u.u_signal[SIGCLD-1]) /* this is not compatible - r3 gets checked, not rr2 which is what u.u_signal is in */
+				if ((int)u.u_signal[SIGCLD-1])
 					return(n) ;
 		} else
 			if((u.u_signal[n-1]&1) == 0 || (p->p_flag&STRC))
@@ -226,6 +226,7 @@ struct proc *p;
  * user.h area followed by the entire
  * data+stack segments.
  */
+int
 core()
 {
 	register struct inode *ip;
@@ -272,13 +273,13 @@ core()
 			}
 			u.u_base.left = ctob(u.u_stakseg);
 			u.u_base.right = ctob(u.u_segmts[NUSEGS-1].sg_limit);
-			u.u_count = ctob(-u.u_segmts[NUSEGS-1].sg_limit+0x100);
+			u.u_count = ctob(CPAS - u.u_segmts[NUSEGS-1].sg_limit);
 			writei(ip);
 		}
 	} else
 		u.u_error = EACCES;
 	iput(ip);
-	return(u.u_error==0);
+	return(u.u_error==0); /* FIXME: this is not compatible extsb r2 is missing here... */
 }
 
 /*
@@ -287,37 +288,40 @@ core()
  */
 
 grow(sp)
-int sp;
+unsigned sp;
 {
 	register j, si, i;
 	register struct proc *p;
 	register a;
 
-/* somehow goto out should do the job but then everything gets
+/* FIXME: somehow goto out should do the job but then everything gets
    ordered different in the ASM listing
    this needs more work...
  */
 
-	if((unsigned)sp >= ctob(-(u.u_ssize-1)+0x100))
+	if(sp >= ctob(CPAS - (u.u_ssize-1)))
 		return(0);
 
 	for(j=6;;) {
-		if(!j--)
+		--j;
+		if(!j)
 			return(0);
-		si=(-lbtoc((long)sp)+0x100)-u.u_ssize+sp;
+		si=(CPAS - btoc(sp))-u.u_ssize+j;
 		if(si <= 0)
 			continue;
 		if(!u.u_segmented) {
-			if((u.u_ssize + USIZE + i + u.u_dsize) >= 0x100)
+			if((u.u_ssize + USIZE + si + u.u_dsize) >= CPAS)
 				continue;
-/*			if(!estabur(u.u_tsize,u.u_dsize,u.u_ssize+i,1))
+/*			if(estabur(u.u_tsize,u.u_dsize,u.u_ssize+i,1))
 				goto out;
-*/			estabur(u.u_tsize,u.u_dsize,u.u_ssize+i,1);
+*/			estabur(u.u_tsize,u.u_dsize,u.u_ssize+si,1);
 		} else {
-			if(u.u_ssize + i > 0x100)
+			if(u.u_ssize + si > CPAS) {
 				continue;
-			u.u_segmts[NUSEGS-1].sg_limit = -u.u_ssize+0x100;
-/*			goto out;*/
+			} else {
+				u.u_segmts[NUSEGS-1].sg_limit = (CPAS - (u.u_ssize+si));
+/*				goto out;*/
+			}
 		}
 	}
 out:
@@ -364,7 +368,7 @@ ptrace()
 		sleep((caddr_t)&ipc, IPCPRI);
 	ipc.ip_lock = p->p_pid;
 	ipc.ip_data = uap->data;
-	ipc.ip_addr.l = uap->addr.left&0x7f00;
+	ipc.ip_addr.l = uap->addr.left&0x7f00; /* FIXME: not compatible */
 	ipc.ip_req = uap->req;
 	p->p_flag &= ~SWTED;
 	setrun(p);
