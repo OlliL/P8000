@@ -219,7 +219,7 @@ L113:
 	jpr	L115
 L112:
 	ldl	rr2,_u+330
-	testl	rr2
+	test	r3
 	jpr	ne,L20004
 	jpr	L120
 L20006:
@@ -549,10 +549,10 @@ L166:
 	ld	_u+44,#16128
 	clr	_u+46
 	ld	r2,r11
-L20019:
 	ldb	rh2,rl2
 	clrb	rl2
 	ld	_u+48,r2
+L20020:
 	ldl	rr6,rr12
 	callr	_writei
 	jpr	L180
@@ -603,9 +603,13 @@ L178:
 	ld	_u+46,r2
 	ldk	r2,#0
 	ldb	rl2,_u+1060
-	neg	r2
-	add	r2,#256
-	jpr	L20019
+	ld	r3,r2
+	neg	r3
+	add	r3,#256
+	ldb	rh3,rl3
+	clrb	rl3
+	ld	_u+48,r3
+	jpr	L20020
 L170:
 	ldb	_u+21,#13
 L180:
@@ -637,11 +641,12 @@ _grow::
 	ld	|_stkseg+~L1+0|(fp),r7
 	ld	r6,_u+220
 	dec	r6,#1
-	neg	r6
-	add	r6,#256
-	ldb	rh6,rl6
-	clrb	rl6
-	cp	r6,|_stkseg+~L1|(fp)
+	ld	r2,r6
+	neg	r2
+	add	r2,#256
+	ldb	rh2,rl2
+	clrb	rl2
+	cp	r2,r7
 	jpr	ugt,L184
 L20024:
 	sub	r2,r2
@@ -652,42 +657,44 @@ L184:
 L20021:
 	ld	r2,_u+220
 	inc	r2,#10
-	add	r2,r11
+	add	r2,r12
 	add	r2,_u+218
 	cp	r2,#256
 	jpr	ge,L187
 	ld	r5,_u+220
-	add	r5,r11
+	add	r5,r12
 	ld	r6,_u+218
 	ld	r7,_u+216
 	ldk	r4,#1
 	callr	_estabur
 L187:
-	ld	r2,r13
 	dec	r13,#1
-	test	r2
+	test	r13
 	jpr	eq,L20024
+	ldk	r2,#0
 	ld	r3,|_stkseg+~L1|(fp)
-	exts	rr2
 	addl	rr2,#255
 	sral	rr2,#8
-	neg	r3
-	add	r3,#256
-	sub	r3,_u+220
-	add	r3,|_stkseg+~L1|(fp)
-	ld	r12,r3
-	cp	r3,#0
+	ld	r2,r3
+	neg	r2
+	add	r2,#256
+	sub	r2,_u+220
+	add	r2,r13
+	ld	r12,r2
+	cp	r2,#0
 	jpr	le,L187
 	testb	_u+544
 	jpr	eq,L20021
 	ld	r2,_u+220
-	add	r2,r11
+	add	r2,r12
 	cp	r2,#256
 	jpr	gt,L187
 	ld	r2,_u+220
-	neg	r2
-	add	r2,#256
-	ldb	_u+1060,rl2
+	add	r2,r12
+	ld	r3,r2
+	neg	r3
+	add	r3,#256
+	ldb	_u+1060,rl3
 	jpr	L187
 L198:
 	test	r11
