@@ -288,45 +288,62 @@ core()
  */
 
 grow(sp)
-unsigned sp;
+int sp;
 {
 	register j, si, i;
 	register struct proc *p;
-	register a;
+	register int a;
 
-/* FIXME: somehow goto out should do the job but then everything gets
-   ordered different in the ASM listing
-   this needs more work...
- */
-
-	if(sp >= ctob(CPAS - (u.u_ssize-1)))
+	if(sp >= ctob(256-(u.u_ssize-1)))
 		return(0);
 
 	for(j=6;;) {
-		--j;
-		if(!j)
+		if(!j--)
 			return(0);
-		si=(CPAS - btoc(sp))-u.u_ssize+j;
-		if(si <= 0)
+		si=(256-btoc(sp))-u.u_ssize+j;
+		if(si<=0)
 			continue;
-		if(!u.u_segmented) {
-			if((u.u_ssize + USIZE + si + u.u_dsize) >= CPAS)
+		if(!u.u_segmented){
+			if((u.u_ssize + USIZE + si + u.u_dsize) >= 0x100)
 				continue;
-/*			if(estabur(u.u_tsize,u.u_dsize,u.u_ssize+i,1))
-				goto out;
+/*			if(!estabur(u.u_tsize,u.u_dsize,u.u_ssize+si,1))
+				break;
 */			estabur(u.u_tsize,u.u_dsize,u.u_ssize+si,1);
 		} else {
-			if(u.u_ssize + si > CPAS) {
+			if(u.u_ssize + si > 0x100)
 				continue;
-			} else {
-				u.u_segmts[NUSEGS-1].sg_limit = (CPAS - (u.u_ssize+si));
-/*				goto out;*/
-			}
+			u.u_segmts[NUSEGS-1].sg_limit = 256 - (u.u_ssize+si);
+			break;
 		}
 	}
+		
+		
+
+/* correct code based on the asm listing but gets ordered differently
+   because of the optimizer
+	j=6;
+	goto count;
+not_seg:
+	if((u.u_ssize + USIZE + si + u.u_dsize) >= 0x100)
+		goto count;
+	if(estabur(u.u_tsize,u.u_dsize,u.u_ssize+si,1))
+		goto out;
+count:
+	if(!j--)
+		return(0);
+	si=(256-btoc(sp))-u.u_ssize+j;
+	if(si<=0)
+		goto count;
+	if(!u.u_segmented)
+		goto not_seg;
+	if(u.u_ssize + si > 0x100)
+		continue;
+	u.u_segmts[NUSEGS-1].sg_limit = 256 - (u.u_ssize+si);
+*/
 out:
 	p = u.u_procp;
 	expand(p->p_size+si);
+	a=p->p_addr+p->p_size;
 	for(i=u.u_ssize; i; i--) {
 		a--;
 		copyseg(a-si, a);
@@ -336,7 +353,6 @@ out:
 	u.u_ssize += si;
 	return(1);
 }
-
 /*
  * sys-trace system call.
  */
@@ -368,7 +384,7 @@ ptrace()
 		sleep((caddr_t)&ipc, IPCPRI);
 	ipc.ip_lock = p->p_pid;
 	ipc.ip_data = uap->data;
-	ipc.ip_addr.l = uap->addr.left&0x7f00; /* FIXME: not compatible */
+	ipc.ip_addr.l = (caddr_t)((long)uap->addr.l & 0x7F00FFFF); /* FIXME: not compatible */
 	ipc.ip_req = uap->req;
 	p->p_flag &= ~SWTED;
 	setrun(p);
