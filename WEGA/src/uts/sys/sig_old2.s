@@ -618,7 +618,6 @@ L180:
 	cpb	_u+21,#0
 	ldk	r2,#0
 	tcc	eq,r2
-	extsb	r2
 L10021:
 	ldm	r11,_stkseg+4(fp),#3
 	inc	fp,#~L2
@@ -648,7 +647,7 @@ _grow::
 	ldb	rh2,rl2
 	clrb	rl2
 	cp	r2,r7
-	jpr	ugt,L184
+	jpr	gt,L184
 L20024:
 	sub	r2,r2
 	jpr	L10025
@@ -668,12 +667,9 @@ L20019:
 	ld	r7,_u+216
 	ldk	r4,#1
 	callr	_estabur
-	test	r2
-	jpr	eq,L197
 L187:
 	ld	r2,r13
-	dec	r2,#1
-	ld	r13,r2
+	dec	r13,#1
 	test	r2
 	jpr	eq,L20024
 	ldk	r2,#0
@@ -700,7 +696,6 @@ L187:
 	neg	r3
 	add	r3,#256
 	ldb	_u+1060,rl3
-L197:
 	ldl	rr8,_u+32
 	ld	r7,rr8(#20)
 	add	r7,r12
@@ -803,9 +798,8 @@ L213:
 	ld	r2,rr10(#8)
 	ld	_ipc+8,r2
 	ldl	rr2,rr10(#4)
-	ldl	rr4,rr2
-	and	r4,#32512
-	ldl	_ipc+4,rr4
+	and	r2,#32512
+	ldl	_ipc+4,rr2
 	ld	r2,@rr10
 	ld	_ipc+2,r2
 	ldl	rr4,rr12
