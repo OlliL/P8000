@@ -428,9 +428,8 @@ _smount::
 	jpr	ne,L10019
 	ldl	rr2,|_stkseg+~L1+12|(fp)
 	ldl	rr4,rr2(#4)
-	ldl	rr6,rr4
-	and	r6,#32512
-	ldl	_u+78,rr6
+	and	r4,#32512
+	ldl	_u+78,rr4
 	ldl	rr6,#_uchar
 	sub	r5,r5
 	callr	_namei
