@@ -78,36 +78,29 @@ sureg()
 estabur(nt, nd, ns, sep)
 register unsigned nt, nd, ns;
 {
-	if(nt > 0x100 || ((nd+ns) > 0x00ff || (nt+nd+ns+USIZE) > maxmem)) { 
+	if(nt > CPAS || ((nd+ns) > 0x00ff || (nt+nd+ns+USIZE) > maxmem)) { 
 		u.u_error = ENOMEM;
 		return(-1);
 	}
 
 	u.u_nsucode.sg_limit = (!nt?0:nt-1);
 	u.u_segmts[USEG].sg_limit = (!nd?0:nd-1);
-	u.u_segmts[NUSEGS-1].sg_limit = (!ns?0:-ns+0x100);
+	u.u_segmts[NUSEGS-1].sg_limit = (!ns?0:(CPAS-ns));
 	
-	u.u_nsucode.sg_attr = (!nt?0x14:sep);    /*FIXME: use r3 here instead of r2 */
-	u.u_segmts[USEG].sg_attr = (!nd?0x14:0); /*FIXME: use r2 here instead of r3 */
+	u.u_nsucode.sg_attr = (!nt?0x14:sep);
+	u.u_segmts[USEG].sg_attr = (!nd?0x14:0);
 	u.u_segmts[NUSEGS-1].sg_attr = (!ns?0x14:0x20);
 	sureg();
 	return(0);
 }
 
-/*FIXME: The function works from the functional point of view, but in the original
- *       object the stkseg stuff at the beginning shows that at least one int is
- *       used - which cannot be, because if stakseg is an int the work with stackseg
- *       is no longer compatible - same goes with nd. but if for example stakseg is
- *       declared as int, nt, ns and sep are assigned correctly so that r12 get used
- *       otherwise r3 gets used instead of r12
- */
 sestabur(nt, nd, ns, sep)
 register unsigned nt, ns, sep;
 char nd;
 {
 	char stakseg;
 	
-	if(nt > 256) {
+	if(nt > CPAS) {
 		u.u_error = ENOMEM;
 		return(-1);
 	}
@@ -120,7 +113,7 @@ char nd;
 	}
 	
 	if(stakseg == u.u_stakseg) {
-		u.u_segmts[NUSEGS-1].sg_limit = (!nt?0:-nt+256);
+		u.u_segmts[NUSEGS-1].sg_limit = (!nt?0:(CPAS-nt));
 		u.u_segmts[NUSEGS-1].sg_attr  = (!nt?20:32);
 		return(0);
 	}
@@ -154,7 +147,7 @@ segureg()
 	for(i=0;i<u.u_nsegs;i++) {
 		segno = u.u_segno[i]&STAK;
 		j = u.u_segmts[i].sg_attr&0x14;
-		if (u.u_segno[i] & 0x80){
+		if (u.u_segno[i] & NUSEGS){
 			u.u_segmts[i].sg_base = caddr;
 			if(u.u_segmts[i].sg_limit > 0 || !j)
 				caddr += u.u_segmts[i].sg_limit+1; /*FIXME: r2 gets used here, r3 has to be used here */
@@ -199,7 +192,7 @@ ldsdr(segno, sbase, slimit, sattr)
 		segmnt->sg_base = sbase;
 
 	if(slimit != 0xffff)
-		segmnt->sg_limit = ((segno == u.u_stakseg)?0x100-slimit:slimit-1);
+		segmnt->sg_limit = ((segno == u.u_stakseg)?CPAS-slimit:slimit-1);
 
 	if(sattr != 0xffff)
 		segmnt->sg_attr = sattr;
