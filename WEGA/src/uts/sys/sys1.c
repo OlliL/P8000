@@ -573,8 +573,8 @@ exit(rv)
 	for (i=0; i<NSIG; i++)
 		u.u_signal[i] = 1;
 	if ((p->p_pid == p->p_pgrp)
-	 && (u.u_ttyp != NULL)
-	 && (u.u_ttyp->t_pgrp == p->p_pgrp)) {
+	 && ((u.u_ttyp != NULL)
+	 && (u.u_ttyp->t_pgrp == p->p_pgrp))) {
 		u.u_ttyp->t_pgrp = 0;
 		signal(p->p_pgrp, SIGHUP);
 	}
