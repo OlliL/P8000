@@ -197,8 +197,8 @@ L10009:
 	testb	_u+544
 	jpr	eq,L123
 	ldl	rr6,|_stkseg+~L1|(fp)
-	ldl	rr4,rr6(#4)
-	ldl	rr6,rr4
+	ldl	rr2,rr6(#4)
+	ldl	rr6,rr2
 	ldl	rr4,#_stkseg+~L1+12
 	add	r5,fp
 	callr	_fuword
@@ -251,18 +251,18 @@ L122:
 L10013:
 	testb	_u+544
 	jpr	eq,L129
-	ldl	rr4,|_stkseg+~L1+12|(fp)
-	testl	rr4
+	ldl	rr2,|_stkseg+~L1+12|(fp)
+	testl	rr2
 	jpr	ne,L129
 	ldl	rr2,|_stkseg+~L1|(fp)
-	ldl	rr6,rr2(#8)
-	testl	rr6
+	ldl	rr4,rr2(#8)
+	testl	rr4
 	jpr	eq,L129
 L10012:
 	ldl	rr2,|_stkseg+~L1|(fp)
 	inc	r3,#4
-	subl	rr6,rr6
-	ldl	@rr2,rr6
+	subl	rr4,rr4
+	ldl	@rr2,rr4
 	testb	_u+544
 	jpr	eq,L130
 	ldl	rr6,|_stkseg+~L1|(fp)
@@ -634,9 +634,9 @@ L249:
 	.long	L198
 	.even
 L261:
-	.long	L258
-	.long	L255
 	.long	L257
+	.long	L255
+	.long	L258
 	.psec
 	.code
 	sub	fp,#~L2
@@ -687,12 +687,12 @@ L194:
 	jpr	gt,L191
 	ld	r2,r9
 	ldl	rr4,#L248
-	ld	r3,#3
-	cpir	r2,@rr4,r3,eq
+	ld	r6,#3
+	cpir	r2,@rr4,r6,eq
 	jpr	ne,L191
-	sll	r3,#2
-	neg	r3
-	ldl	rr4,L249+8(r3)
+	sll	r6,#2
+	neg	r6
+	ldl	rr4,L249+8(r6)
 	jp	@rr4
 L198:
 	inc	|_stkseg+~L1+12|(fp),#1
@@ -700,9 +700,9 @@ L199:
 	ld	|_stkseg+~L1+32|(fp),#-1
 	ldk	r10,#0
 L202:
-	ld	r2,|_stkseg+~L1+34|(fp)
-	inc	r2,#1
-	ld	r5,r2
+	ld	r3,|_stkseg+~L1+34|(fp)
+	inc	r3,#1
+	ld	r5,r3
 	exts	rr4
 	div	rr4,#2
 	cp	r10,r5
@@ -711,26 +711,26 @@ L202:
 L205:
 	cp	|_stkseg+~L1+172|(fp),#1
 	jpr	gt,L204
-	ld	r2,|_stkseg+~L1+172|(fp)
-	sla	r2,#4
-	ldb	rl3,_u+512(r2)
-	extsb	r3
-	ld	|_stkseg+~L1+38|(fp),r3
-	ld	r2,|_stkseg+~L1+172|(fp)
-	sla	r2,#4
-	ld	r3,_u+516(r2)
-	ld	_stkseg+~L1+430(fp),r3
-	ld	r2,|_stkseg+~L1+172|(fp)
-	sla	r2,#4
-	ld	r3,_u+518(r2)
-	ld	_stkseg+~L1+432(fp),r3
-	ld	r2,|_stkseg+~L1+172|(fp)
-	sla	r2,#4
-	ld	r3,_u+520(r2)
-	ld	_stkseg+~L1+434(fp),r3
+	ld	r3,|_stkseg+~L1+172|(fp)
+	sla	r3,#4
+	ldb	rl4,_u+512(r3)
+	extsb	r4
+	ld	|_stkseg+~L1+38|(fp),r4
+	ld	r3,|_stkseg+~L1+172|(fp)
+	sla	r3,#4
+	ld	r4,_u+516(r3)
+	ld	_stkseg+~L1+428(fp),r4
+	ld	r3,|_stkseg+~L1+172|(fp)
+	sla	r3,#4
+	ld	r4,_u+518(r3)
+	ld	_stkseg+~L1+430(fp),r4
+	ld	r3,|_stkseg+~L1+172|(fp)
+	sla	r3,#4
+	ld	r4,_u+520(r3)
+	ld	_stkseg+~L1+432(fp),r4
 	inc	|_stkseg+~L1+36|(fp),#1
-	ld	r2,|_stkseg+~L1+36|(fp)
-	cp	r2,|_stkseg+~L1+34|(fp)
+	ld	r3,|_stkseg+~L1+36|(fp)
+	cp	r3,|_stkseg+~L1+34|(fp)
 	jpr	le,L208
 L204:
 	ldl	rr2,#_u+512
@@ -744,54 +744,55 @@ L204:
 	jpr	L202
 L208:
 	inc	|_stkseg+~L1+32|(fp),#1
-	ld	r2,|_stkseg+~L1+32|(fp)
+	ld	r3,|_stkseg+~L1+32|(fp)
 	ldl	rr4,#_stkseg+~L1+44
 	add	r5,fp
-	add	r5,r2
-	ldb	rl3,|_stkseg+~L1+39|(fp)
-	ldb	@rr4,rl3
-	ld	r2,|_stkseg+~L1+32|(fp)
-	add	r2,r2
+	add	r5,r3
+	ldb	rl6,|_stkseg+~L1+39|(fp)
+	ldb	@rr4,rl6
+	ld	r3,|_stkseg+~L1+32|(fp)
+	add	r3,r3
 	ldl	rr4,#_stkseg+~L1+174
 	add	r5,fp
-	add	r5,r2
+	add	r5,r3
 	clr	@rr4
-	ld	r2,|_stkseg+~L1+172|(fp)
-	sla	r2,#4
-	ld	r3,_u+522(r2)
-	bit	r3,#0
+	ld	r3,|_stkseg+~L1+172|(fp)
+	sla	r3,#4
+	ld	r4,_u+522(r3)
+	bit	r4,#0
 	jpr	eq,L209
-	ld	r2,|_stkseg+~L1+32|(fp)
-	add	r2,r2
-	ldl	rr4,#_stkseg+~L1+174
-	add	r5,fp
-	add	r5,r2
-	ld	r2,_stkseg+~L1+430(fp)
-	ld	@rr4,r2
+	ld	r3,|_stkseg+~L1+32|(fp)
+	add	r3,r3
+	ldl	rr6,#_stkseg+~L1+174
+	add	r7,fp
+	add	r7,r3
+	ld	r3,_stkseg+~L1+428(fp)
+	ld	@rr6,r3
 	test	|_stkseg+~L1+12|(fp)
 	jpr	eq,L210
-	ld	r2,|_stkseg+~L1+32|(fp)
-	ldl	rr4,#_stkseg+~L1+44
-	add	r5,fp
-	add	r5,r2
-	ldb	rl6,@rr4
-	orb	rl6,#-128
-	ldb	@rr4,rl6
-	ldk	r4,#0
-	ld	r5,_stkseg+~L1+430(fp)
-	addl	rr4,|_stkseg+~L1+20|(fp)
-	ldl	|_stkseg+~L1+20|(fp),rr4
-	ldk	r4,#0
-	ld	r5,_stkseg+~L1+430(fp)
-	addl	rr4,#255
-	sral	rr4,#8
-	ld	r7,r5
-	ld	r2,|_stkseg+~L1+32|(fp)
-	ldl	rr4,#_stkseg+~L1+44
-	add	r5,fp
-	ldb	rl6,rr4(r2)
+	ld	r3,|_stkseg+~L1+32|(fp)
+	ldl	rr6,#_stkseg+~L1+44
+	add	r7,fp
+	add	r7,r3
+	ldb	rl5,@rr6
+	orb	rl5,#-128
+	ldb	@rr6,rl5
+	ldk	r6,#0
+	ld	r7,_stkseg+~L1+428(fp)
+	addl	rr6,|_stkseg+~L1+20|(fp)
+	ldl	|_stkseg+~L1+20|(fp),rr6
+	ldk	r6,#0
+	ld	r7,_stkseg+~L1+428(fp)
+	addl	rr6,#255
+	sral	rr6,#8
+	ld	r3,|_stkseg+~L1+32|(fp)
+	ldl	rr0,#_stkseg+~L1+44
+	add	r1,fp
+	add	r1,r3
+	ldl	rr2,rr0
+	ldb	rl6,@rr2
 	extsb	r6
-	ld	r5,r2
+	ld	r5,|_stkseg+~L1+32|(fp)
 	sub	r4,r4
 	callr	_sestabur
 	test	r2
@@ -804,29 +805,30 @@ L210:
 	ldb	rl3,rr4(r2)
 	ldb	_u+1191,rl3
 	ldk	r4,#0
-	ld	r5,_stkseg+~L1+430(fp)
+	ld	r5,_stkseg+~L1+428(fp)
 	addl	rr4,#255
 	sral	rr4,#8
 	ld	_u+1192,r5
 	ldk	r4,#0
-	ld	r5,_stkseg+~L1+430(fp)
+	ld	r5,_stkseg+~L1+428(fp)
 	addl	rr4,|_stkseg+~L1+24|(fp)
 	ldl	|_stkseg+~L1+24|(fp),rr4
+	test	_stkseg+~L1+430(fp)
+	jpr	ne,L209
 	test	_stkseg+~L1+432(fp)
 	jpr	ne,L209
-	test	_stkseg+~L1+434(fp)
-	jpr	ne,L209
-	ldk	r4,#0
-	ld	r5,_stkseg+~L1+430(fp)
-	addl	rr4,#255
-	sral	rr4,#8
-	ld	r7,r5
-	ld	r2,|_stkseg+~L1+32|(fp)
-	ldl	rr4,#_stkseg+~L1+44
-	add	r5,fp
-	ldb	rl6,rr4(r2)
+	ldk	r2,#0
+	ld	r3,_stkseg+~L1+428(fp)
+	addl	rr2,#255
+	sral	rr2,#8
+	ld	r7,r3
+	ld	r6,|_stkseg+~L1+32|(fp)
+	ldl	rr2,#_stkseg+~L1+44
+	add	r3,fp
+	ldb	rl4,rr2(r6)
+	ldb	rl6,rl4
 	extsb	r6
-	ld	r5,r2
+	ld	r5,|_stkseg+~L1+32|(fp)
 	ldk	r4,#1
 	callr	_sestabur
 	test	r2
@@ -843,7 +845,7 @@ L209:
 	add	r5,fp
 	add	r5,r2
 	ld	r2,@rr4
-	add	r2,_stkseg+~L1+432(fp)
+	add	r2,_stkseg+~L1+430(fp)
 	ld	@rr4,r2
 	ld	r2,|_stkseg+~L1+32|(fp)
 	add	r2,r2
@@ -853,7 +855,7 @@ L209:
 	ldk	r4,#0
 	ld	r5,r3
 	ld	r2,r4
-	ld	r3,_stkseg+~L1+434(fp)
+	ld	r3,_stkseg+~L1+432(fp)
 	addl	rr4,rr2
 	ldl	|_stkseg+~L1+16|(fp),rr4
 	ld	r2,|_stkseg+~L1+18|(fp)
@@ -866,11 +868,11 @@ L20013:
 	jpr	L20012
 L216:
 	ldk	r2,#0
-	ld	r3,_stkseg+~L1+432(fp)
+	ld	r3,_stkseg+~L1+430(fp)
 	addl	rr2,|_stkseg+~L1+24|(fp)
 	ldl	|_stkseg+~L1+24|(fp),rr2
 	ldk	r2,#0
-	ld	r3,_stkseg+~L1+434(fp)
+	ld	r3,_stkseg+~L1+432(fp)
 	addl	rr2,|_stkseg+~L1+28|(fp)
 	ldl	|_stkseg+~L1+28|(fp),rr2
 	ld	r2,|_stkseg+~L1+32|(fp)
@@ -878,7 +880,7 @@ L216:
 	ldl	rr4,#_stkseg+~L1+174
 	add	r5,fp
 	ld	r7,rr4(r2)
-	add	r7,_stkseg+~L1+434(fp)
+	add	r7,_stkseg+~L1+432(fp)
 	ldk	r2,#0
 	ld	r3,r7
 	addl	rr2,#255
@@ -903,11 +905,11 @@ L215:
 	bit	r3,#2
 	jpr	eq,L203
 	ldk	r4,#0
-	ld	r5,_stkseg+~L1+434(fp)
+	ld	r5,_stkseg+~L1+432(fp)
 	addl	rr4,|_stkseg+~L1+28|(fp)
 	ldl	|_stkseg+~L1+28|(fp),rr4
-	ld	r7,_stkseg+~L1+434(fp)
-	add	r7,_stkseg+~L1+430(fp)
+	ld	r7,_stkseg+~L1+432(fp)
+	add	r7,_stkseg+~L1+428(fp)
 	ldk	r4,#0
 	ld	r5,r7
 	addl	rr4,#255
@@ -930,16 +932,16 @@ L201:
 	ldl	rr2,|_stkseg+~L1+20|(fp)
 	testl	rr2
 	jpr	eq,L221
-	ldb	rl4,@rr12
-	extsb	r4
-	and	r4,#32
-	test	r4
+	ldb	rl2,@rr12
+	extsb	r2
+	and	r2,#32
+	test	r2
 	jpr	ne,L221
-	ldb	rl4,rr12(#1)
-	cpb	rl4,#1
+	ldb	rl2,rr12(#1)
+	cpb	rl2,#1
 	jpr	eq,L221
 L20014:
-	ldb	_u+21,#26
+	ldb	_u+21,#36
 	jpr	L20012
 L221:
 	ldk	r2,#0
@@ -1088,8 +1090,8 @@ L238:
 	jpr	eq,L242
 	test	_u+24
 	jpr	eq,L242
-	ld	r4,rr12(#10)
-	ld	_u+24,r4
+	ld	r2,rr12(#10)
+	ld	_u+24,r2
 	ld	r2,rr12(#10)
 	ldl	rr4,_u+32
 	inc	r5,#10
@@ -1108,9 +1110,9 @@ L241:
 L244:
 	ld	r2,|_stkseg+~L1+6|(fp)
 	ld	_u+216,r2
-	ld	_u+218,r8
-	ld	r2,|_stkseg+~L1+8|(fp)
-	ld	_u+220,r2
+	ld	_u+218,r2
+	ld	r3,|_stkseg+~L1+8|(fp)
+	ld	_u+220,r3
 	callr	_segureg
 	jpr	L20012
 L192:
@@ -1124,15 +1126,14 @@ L192:
 	cp	r9,#59143
 	jpr	ne,L250
 L10025:
-	ldk	r4,#0
-	ld	r5,_u+518
-	ldl	|_stkseg+~L1+24|(fp),rr4
+	ldk	r2,#0
+	ld	r3,_u+518
 	jpr	L20009
 L250:
 	ldk	r2,#0
 	ld	r3,_u+534
-	ldl	|_stkseg+~L1+24|(fp),rr2
 L20009:
+	ldl	|_stkseg+~L1+24|(fp),rr2
 	ldl	rr2,_u+494
 	ldk	r4,#0
 	ld	r5,r3
@@ -1146,12 +1147,12 @@ L20009:
 L252:
 	ld	r2,r9
 	ldl	rr4,#L260
-	ld	r3,#3
-	cpir	r2,@rr4,r3,eq
+	ld	r6,#3
+	cpir	r2,@rr4,r6,eq
 	jpr	ne,L191
-	sll	r3,#2
-	neg	r3
-	ldl	rr4,L261+8(r3)
+	sll	r6,#2
+	neg	r6
+	ldl	rr4,L261+8(r6)
 	jp	@rr4
 L255:
 	ldl	rr4,|_stkseg+~L1+24|(fp)
@@ -1160,30 +1161,30 @@ L255:
 	ldl	|_stkseg+~L1+24|(fp),rr4
 	ld	r3,|_stkseg+~L1+18|(fp)
 	ld	_u+518,r3
-	ld	r6,|_stkseg+~L1+18|(fp)
-	ldk	r0,#0
-	ld	r1,r6
-	cpl	rr0,|_stkseg+~L1+16|(fp)
+	ld	r4,|_stkseg+~L1+18|(fp)
+	ldk	r6,#0
+	ld	r7,r4
+	cpl	rr6,|_stkseg+~L1+16|(fp)
 	jpr	ne,L20013
-	subl	rr4,rr4
-	ldl	|_stkseg+~L1+20|(fp),rr4
+	subl	rr2,rr2
+	ldl	|_stkseg+~L1+20|(fp),rr2
 	clr	_u+516
 	jpr	L253
 L20016:
-	ldb	rl4,@rr12
-	extsb	r4
-	and	r4,#32
-	test	r4
+	ldb	rl2,@rr12
+	extsb	r2
+	and	r2,#32
+	test	r2
 	jpr	ne,L262
-	ldb	rl4,rr12(#1)
-	cpb	rl4,#1
+	ldb	rl2,rr12(#1)
+	cpb	rl2,#1
 	jpr	eq,L262
 	jpr	L20014
 L257:
-	inc	|_stkseg+~L1+12|(fp),#1
+	inc	|_stkseg+~L1+14|(fp),#1
 	jpr	L253
 L258:
-	inc	|_stkseg+~L1+14|(fp),#1
+	inc	|_stkseg+~L1+12|(fp),#1
 L253:
 	ldl	rr2,|_stkseg+~L1+20|(fp)
 	testl	rr2
@@ -1293,8 +1294,8 @@ L269:
 	jpr	eq,L273
 	test	_u+24
 	jpr	eq,L273
-	ld	r4,rr12(#10)
-	ld	_u+24,r4
+	ld	r2,rr12(#10)
+	ld	_u+24,r2
 	ld	r2,rr12(#10)
 	ldl	rr4,_u+32
 	inc	r5,#10
@@ -1533,12 +1534,13 @@ L20026:
 	ldl	rr2,_u+478
 	testl	rr2
 	jpr	eq,L304
-	ldl	rr4,rr10
-	inc	r5,#12
-	ldl	rr2,_u+478
-	ld	r6,rr2(#50)
-	cp	r6,@rr4
+	ldl	rr2,rr10
+	inc	r3,#12
+	ldl	rr4,_u+478
+	ld	r6,rr4(#50)
+	cp	r6,@rr2
 	jpr	ne,L304
+	ldl	rr2,rr4
 	add	r3,#50
 	clr	@rr2
 	ld	r7,rr10(#12)
