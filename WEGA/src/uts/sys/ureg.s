@@ -227,20 +227,20 @@ L10014:
 	ldb	_u+1060,rl2
 	test	r13
 	jpr	ne,L10015
-	ld	r2,#20
+	ld	r3,#20
 	jpr	L10016
 L10015:
-	ld	r2,|_stkseg+~L1|(fp)
+	ld	r3,|_stkseg+~L1|(fp)
 L10016:
-	ldb	_u+549,rl2
+	ldb	_u+549,rl3
 	test	r12
 	jpr	ne,L10017
-	ld	r3,#20
+	ld	r2,#20
 	jpr	L10018
 L10017:
-	sub	r3,r3
+	sub	r2,r2
 L10018:
-	ldb	_u+805,rl3
+	ldb	_u+805,rl2
 	test	r11
 	jpr	ne,L10019
 	ld	r2,#20
@@ -270,10 +270,10 @@ L10004:
 _sestabur::
 {
 	sub	fp,#~L2
-	ld	_stkseg+12(fp),r11
+	ldm	_stkseg+12(fp),r11,#2
 	ld	|_stkseg+~L1+4|(fp),r6
 	ld	r11,r4
-	ld	r3,r5
+	ld	r12,r5
 	ld	r1,r7
 	cp	r7,#256
 	jpr	ule,L108
@@ -289,7 +289,7 @@ L108:
 	extsb	r2
 	and	r2,#127
 	ldb	|_stkseg+~L1+9|(fp),rl2
-	cp	r3,#128
+	cp	r12,#128
 	jpr	ugt,L20003
 	ldb	rl2,rl2
 	extsb	r2
@@ -307,15 +307,15 @@ L10025:
 	ldb	_u+1060,rl2
 	test	r1
 	jpr	ne,L10026
-	ld	r2,#20
+	ld	r3,#20
 	jpr	L10027
 L10026:
-	ld	r2,#32
+	ld	r3,#32
 L10027:
-	ldb	_u+1061,rl2
+	ldb	_u+1061,rl3
 	jpr	L112
 L110:
-	ld	r2,r3
+	ld	r2,r12
 	sla	r2,#2
 	ldl	rr4,#_u+552
 	add	r5,r2
@@ -332,7 +332,7 @@ L10029:
 	extsb	r2
 	bit	r2,#7
 	jpr	eq,L111
-	ld	r2,r3
+	ld	r2,r12
 	sla	r2,#2
 	ldl	rr4,#_u+553
 	add	r5,r2
@@ -345,7 +345,7 @@ L10030:
 	ld	r2,r11
 	jpr	L10033
 L111:
-	ld	r2,r3
+	ld	r2,r12
 	sla	r2,#2
 	ldl	rr4,#_u+553
 	add	r5,r2
@@ -357,7 +357,7 @@ L10033:
 L112:
 	sub	r2,r2
 L10021:
-	ld	r11,_stkseg+12(fp)
+	ldm	r11,_stkseg+12(fp),#2
 	add	fp,#~L2
 	ret
 	~L1 := 0
