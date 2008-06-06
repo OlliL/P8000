@@ -1534,13 +1534,12 @@ L20026:
 	ldl	rr2,_u+478
 	testl	rr2
 	jpr	eq,L304
-	ldl	rr2,rr10
-	inc	r3,#12
-	ldl	rr4,_u+478
-	ld	r6,rr4(#50)
-	cp	r6,@rr2
+	ldl	rr4,rr10
+	inc	r5,#12
+	ldl	rr2,_u+478
+	ld	r6,rr2(#50)
+	cp	r6,@rr4
 	jpr	ne,L304
-	ldl	rr2,rr4
 	add	r3,#50
 	clr	@rr2
 	ld	r7,rr10(#12)
