@@ -803,9 +803,8 @@ L212:
 	ld	r2,rr10(#8)
 	ld	_ipc+8,r2
 	ldl	rr2,rr10(#4)
-	ldl	rr4,rr2
-	and	r4,#32512
-	ldl	_ipc+4,rr4
+	and	r2,#32512
+	ldl	_ipc+4,rr2
 	ld	r2,@rr10
 	ld	_ipc+2,r2
 	ldl	rr4,rr12
