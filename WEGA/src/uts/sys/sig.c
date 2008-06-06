@@ -279,7 +279,7 @@ core()
 	} else
 		u.u_error = EACCES;
 	iput(ip);
-	return(u.u_error==0); /* FIXME: this is not compatible extsb r2 is missing here... */
+	return((char)(u.u_error==0));
 }
 
 /*
@@ -288,7 +288,7 @@ core()
  */
 
 grow(sp)
-int sp;
+unsigned sp;
 {
 	register j, si, i;
 	register struct proc *p;
@@ -297,8 +297,9 @@ int sp;
 	if(sp >= ctob(256-(u.u_ssize-1)))
 		return(0);
 
-	for(j=6;;) {
-		if(!j--)
+	j=6;
+	while(1) {
+		if(!(j = j - 1))
 			return(0);
 		si=(256-btoc(sp))-u.u_ssize+j;
 		if(si<=0)
@@ -306,53 +307,28 @@ int sp;
 		if(!u.u_segmented){
 			if((u.u_ssize + USIZE + si + u.u_dsize) >= 0x100)
 				continue;
-/*			if(!estabur(u.u_tsize,u.u_dsize,u.u_ssize+si,1))
-				break;
-*/			estabur(u.u_tsize,u.u_dsize,u.u_ssize+si,1);
+			if(estabur(u.u_tsize,u.u_dsize,u.u_ssize+si,1))
+				continue;
+
 		} else {
 			if(u.u_ssize + si > 0x100)
 				continue;
 			u.u_segmts[NUSEGS-1].sg_limit = 256 - (u.u_ssize+si);
-			break;
 		}
+		p = u.u_procp;
+		expand(p->p_size+si);
+		a=p->p_addr+p->p_size;
+		for(i=u.u_ssize; i; i--) {
+			a--;
+			copyseg(a-si, a);
+		}
+		for(i=si; i; i--)
+			clearseg(--a);
+		u.u_ssize += si;
+		return(1);
 	}
-		
-		
-
-/* correct code based on the asm listing but gets ordered differently
-   because of the optimizer
-	j=6;
-	goto count;
-not_seg:
-	if((u.u_ssize + USIZE + si + u.u_dsize) >= 0x100)
-		goto count;
-	if(estabur(u.u_tsize,u.u_dsize,u.u_ssize+si,1))
-		goto out;
-count:
-	if(!j--)
-		return(0);
-	si=(256-btoc(sp))-u.u_ssize+j;
-	if(si<=0)
-		goto count;
-	if(!u.u_segmented)
-		goto not_seg;
-	if(u.u_ssize + si > 0x100)
-		continue;
-	u.u_segmts[NUSEGS-1].sg_limit = 256 - (u.u_ssize+si);
-*/
-out:
-	p = u.u_procp;
-	expand(p->p_size+si);
-	a=p->p_addr+p->p_size;
-	for(i=u.u_ssize; i; i--) {
-		a--;
-		copyseg(a-si, a);
-	}
-	for(i=si; i; i--)
-		clearseg(--a);
-	u.u_ssize += si;
-	return(1);
 }
+
 /*
  * sys-trace system call.
  */
