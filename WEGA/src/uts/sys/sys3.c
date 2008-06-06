@@ -383,7 +383,7 @@ gtty()
 /*
  * modem control
  */
-mdmmctl()
+mdmctl()
 {
 	register struct a {
 		int request;
