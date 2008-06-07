@@ -392,7 +392,8 @@ bad0:		u.u_error = ENOEXEC;
 						u.u_gid = ip->i_gid;
 				} else
 					psignal(u.u_procp, SIGTRAP);
-				u.u_dsize = u.u_tsize = utsize;
+				u.u_tsize = utsize;
+				u.u_dsize = udsize;
 				u.u_ssize = ussize;
 				segureg();
 				return ovly;
@@ -404,7 +405,7 @@ bad0:		u.u_error = ENOEXEC;
 	} else
 		code_size = u.u_exdata.segtable[0].sg_code;
 	if ((head_size = u.u_exdata.s_exc.s_segt) == sizeof(struct segt) || (magic == N_MAGIC1))
-		data_size = u.u_exdata.segtable[0].sg_data;
+		data_size = u.u_exdata.segtable[0].sg_data; /*FIXME: has to be r4+r5 instead of r2+r3*/
 	else
 		data_size = u.u_exdata.segtable[1].sg_data;
 	bss_size = (unsigned)u.u_exdata.s_exc.s_bss;
