@@ -1110,9 +1110,9 @@ L241:
 L244:
 	ld	r2,|_stkseg+~L1+6|(fp)
 	ld	_u+216,r2
-	ld	_u+218,r2
-	ld	r3,|_stkseg+~L1+8|(fp)
-	ld	_u+220,r3
+	ld	_u+218,r8
+	ld	r2,|_stkseg+~L1+8|(fp)
+	ld	_u+220,r2
 	callr	_segureg
 	jpr	L20012
 L192:
