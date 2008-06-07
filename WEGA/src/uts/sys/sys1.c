@@ -1,18 +1,18 @@
 /******************************************************************************
 *******************************************************************************
- 
+
 	W E G A - Quelle	(C) ZFT/KEAW Abt. Basissoftware - 1988
 
 	KERN 3.2	Modul: sys1.c
- 
- 
+
+
 	Bearbeiter:
 	Datum:		$D$
 	Version:	$R$
- 
+
 *******************************************************************************
 ******************************************************************************/
- 
+
 char sys1wstr[] = "@[$]sys1.c		Rev : 4.1	09/28/83 00:28:52";
 
 #include <sys/param.h>
@@ -241,10 +241,10 @@ register unsigned nargc;
 	unsigned long bss_size;
 	int scn, nseg, cseg;
 	int segment;
-	int stackno, offs;
+	int stackno,  offs;
 	char segno[NUSEGS];
 	int j;
-	unsigned int segmts[NUSEGS-1];
+	unsigned int segmts[NUSEGS];
 	unsigned int stext;
 	unsigned int sdata;
 	unsigned int sbss;
@@ -255,7 +255,7 @@ register unsigned nargc;
 	u.u_segflg = 1;
 	readi();
 	u.u_segflg = 0;
-	if (u.u_error) /* 1 */
+	if (u.u_error)
 		return ovly;
 	if (u.u_count){
 bad0:		u.u_error = ENOEXEC;
@@ -278,127 +278,130 @@ bad0:		u.u_error = ENOEXEC;
 			return ovly;
 		}
 		switch (magic){
-		case S_MAGIC3: sepid++;	
-		case S_MAGIC1: scn = -1;
-		for (i=0; i < (nseg+1)/2; i++){
-			for(j = 0; ; j++){
-			if ( j <= 1){
-				segment = u.u_exdata.segtable[j].sg_segno;
-				stext = u.u_exdata.segtable[j].sg_code;
-				sdata = u.u_exdata.segtable[j].sg_data;
-				sbss = u.u_exdata.segtable[j].sg_bss;
-				if (++cseg > nseg)  /* 10 */
-					break;
-			} else
-				break;
-			segno[++scn] = segment;
-			segmts[scn] = 0;
-/* 11 */		if (u.u_exdata.segtable[j].sg_atr & SG_CODE){
-				segmts[scn] = stext;
-/* 12 */			if (sepid){
-					segno[scn] |= 0x80;
-					code_size += (unsigned long)stext;
-/* 13 */				if (sestabur(lbtoc((long)stext), segno[scn], scn, 0))
-						goto bad0;
-					else
-						continue;
-				} else {
-					u.u_tseg = segno[scn];
-					u.u_toff = lbtoc((long)stext);
-					data_size += stext;
-					if (sdata == 0 && sbss == 0)
-					if (sestabur(lbtoc((long)stext), segno[scn], scn, 1))
-						goto bad0;
+			case S_MAGIC3:
+				sepid++;
+			case S_MAGIC1:
+				scn = -1;
+				for (i=0; i < (nseg+1)/2; i++){
+					for(j = 0;; j++){
+						if ( j <= 1){
+							segment = u.u_exdata.segtable[j].sg_segno;
+							stext = u.u_exdata.segtable[j].sg_code;
+							sdata = u.u_exdata.segtable[j].sg_data;
+							sbss = u.u_exdata.segtable[j].sg_bss;
+							if (++cseg > nseg)
+								break;
+						} else
+							break;
+						segno[++scn] = segment;
+						segmts[scn] = 0;
+						if (u.u_exdata.segtable[j].sg_atr & SG_CODE){
+							segmts[scn] = stext;
+							if (sepid){
+								segno[scn] |= 0x80;
+								code_size += (unsigned long)stext;
+								if (sestabur(lbtoc((long)stext), segno[scn], scn, 0))
+									goto bad0;
+								else
+									continue;
+							} else {
+								u.u_tseg = segno[scn];
+								u.u_toff = lbtoc((long)stext);
+								data_size += stext;
+								if (sdata == 0 && sbss == 0)
+									if (sestabur(lbtoc((long)stext), segno[scn], scn, 1))
+										goto bad0;
+							}
+						}
+						if (u.u_exdata.segtable[j].sg_atr & SG_DATA){
+							segmts[scn] += sdata;
+							curdsiz = (unsigned long)segmts[scn] + (unsigned long)sbss;
+							if ((unsigned)curdsiz != curdsiz){
+								u.u_error = ENOMEM;
+								return ovly;
+							}
+							data_size += sdata;
+							bss_size += sbss;
+							if (sestabur(lbtoc((long)(segmts[scn]+sbss)), segno[scn], scn, 1))
+								goto bad0;
+						} else {
+							if (u.u_exdata.segtable[j].sg_atr & SG_BSS){
+								bss_size += sbss;
+								if (sestabur(lbtoc((long)(sbss + stext)), segno[scn], scn, 1))
+									goto bad0;
+							}
+						}
+					}
+					u.u_base.l = (caddr_t)u.u_exdata.segtable;
+					u.u_count = 32;
+					u.u_segflg = 1;
+					readi(ip);
+					u.u_segflg = 0;
 				}
-			}
-/* 17 */		if (u.u_exdata.segtable[j].sg_atr & SG_DATA){
-				segmts[scn] += sdata;
-				curdsiz = (unsigned long)segmts[scn] + (unsigned long)sbss;
-				if ((unsigned)curdsiz != curdsiz){
+				if (code_size && (ip->i_flag & ITEXT) == 0 && ip->i_count != 1){
+					u.u_error = ETXTBSY;
+					return ovly;
+				}
+				ussize = lbtoc((long)nargc) + SSIZE;
+				u.u_stakseg = stackno;
+				if (sestabur(ussize, stackno, 0, 0))
+					goto bad0;
+				utsize = lbtoc((long)code_size);
+				udsize = lbtoc((long)(data_size + bss_size));
+				if ((utsize+USIZE+udsize+ussize) > umemory){
 					u.u_error = ENOMEM;
 					return ovly;
 				}
-				data_size += sdata;
-				bss_size += sbss;
-/* 19 */			if (sestabur(lbtoc((long)(segmts[scn]+sbss)), segno[scn], scn, 1))
-					goto bad0;
-			} else {
-				if (u.u_exdata.segtable[j].sg_atr & SG_BSS){
-					bss_size += sbss;
-/* 21 */				if (sestabur(lbtoc((long)(sbss + stext)), segno[scn], scn, 1))
-						goto bad0;
+				u.u_segmented = 1;
+				setscr();
+				u.u_exdsz = u.u_exdata.s_exc.s_segt + 24;
+				u.u_nsegs = nseg;
+				for (i = 0; i < nseg; i++)
+					u.u_segno[i] = segno[i];
+				u.u_sep = (unsigned char)sepid;
+				u.u_prof[0].pr_scale = 0;
+				u.u_nprof = 0;
+				xfree();
+				i = udsize + USIZE + ussize;
+				expand(i);
+				while (--i >= USIZE)
+					clearseg(u.u_procp->p_addr + i);
+				xalloc(ip, code_size, &segmts[0]);
+				if (code_size == 0){
+					invsdrs();
+					segureg();
 				}
-			}
+				u.u_offset = u.u_exdsz;
+				for (scn = 0;scn < nseg; scn++){
+					if (u.u_segno[scn] & 0x80){
+						u.u_offset += segmts[scn];
+						sestabur(u.u_segmts[scn].sg_limit+1, u.u_segno[scn], scn, 1);
+					} else {
+						u.u_base.left = ctob(u.u_segno[scn] & 0x7f);
+						u.u_base.right = 0;
+						u.u_count = segmts[scn];
+						readi(ip);
+					}
+				}
+				if ((u.u_procp->p_flag & STRC) == 0){
+					if ((ip->i_mode & ISUID) && (u.u_uid)){
+						u.u_uid = ip->i_uid;
+						u.u_procp->p_uid = ip->i_uid;
+					}
+					if (ip->i_mode & ISGID)
+						u.u_gid = ip->i_gid;
+				} else
+					psignal(u.u_procp, SIGTRAP);
+				u.u_dsize = u.u_tsize = utsize;
+				u.u_ssize = ussize;
+				segureg();
+				return ovly;
+			case S_MAGIC4:
+			default:
+				u.u_error = ENOEXEC;
+				return ovly;
 		}
-		u.u_base.l = (caddr_t)u.u_exdata.segtable;
-		u.u_count = 32;
-		u.u_segflg = 1;
-		readi(ip);
-		u.u_segflg = 0;
-	}
-	if (code_size && (ip->i_flag & ITEXT) == 0 && ip->i_count != 1){
-		u.u_error = ENOSEG;
-		return ovly;
-	}
-	ussize = lbtoc((long)nargc) + SSIZE;
-	u.u_stakseg = stackno;
-/* 25*/ if (sestabur(ussize, stackno, 0, 0))
-		goto bad0;
-	utsize = lbtoc((long)code_size);
-	udsize = lbtoc((long)(data_size + bss_size));
-	if ((utsize+USIZE+udsize+ussize) > umemory){
-		u.u_error = ENOMEM;
-		return ovly;
-	}
-	u.u_segmented = 1;
-	setscr();
-	u.u_exdsz = u.u_exdata.s_exc.s_segt + 24;
-	u.u_nsegs = nseg;
-/* 27*/	for (i = 0; i < nseg; i++)
-		u.u_segno[i] = segno[i];
-	u.u_sep = (unsigned char)sepid;
-	u.u_prof[0].pr_scale = 0;
-	u.u_nprof = 0;
-	xfree();
-	i = udsize + USIZE + ussize;
-	expand(i);
-	while (--i >= USIZE)
-		clearseg(u.u_procp->p_addr + i);
-	xalloc(ip, code_size, &segmts[0]);
-	if (code_size == 0){
-		invsdrs();
-		segureg();
-	}
-	u.u_offset = u.u_exdsz;
-	for (scn = 0;scn < nseg; scn++){
-		if (u.u_segno[scn] & 0x80){
-			u.u_offset += segmts[scn];
-			sestabur(u.u_segmts[scn].sg_limit+1, u.u_segno[scn], scn, 1);
-		} else {
-			u.u_base.left = ctob(u.u_segno[scn] & 0x7f);
-			u.u_base.right = 0;
-			u.u_count = segmts[scn];
-			readi(ip);
-		}
-	}
-	if ((u.u_procp->p_flag & STRC) == 0){
-		if ((ip->i_mode & ISUID) && (u.u_uid)){
-			u.u_uid = ip->i_uid;
-			u.u_procp->p_uid = ip->i_uid;
-		}
-		if (ip->i_mode & ISGID)
-			u.u_gid = ip->i_gid;	
 	} else
-		psignal(u.u_procp, SIGTRAP);
-	u.u_dsize = u.u_tsize = utsize;
-	u.u_ssize = ussize;
-	segureg();
-	return ovly;
-	case S_MAGIC4:
-	default: u.u_error = ENOEXEC;
-		 return ovly;
-	}
-	} else		/* von b3 */
 		code_size = u.u_exdata.segtable[0].sg_code;
 	if ((head_size = u.u_exdata.s_exc.s_segt) == sizeof(struct segt) || (magic == N_MAGIC1))
 		data_size = u.u_exdata.segtable[0].sg_data;
@@ -409,38 +412,34 @@ bad0:		u.u_error = ENOEXEC;
 	if (head_size == sizeof(struct segt))
 		u.u_exdsz -= head_size;
 	switch(magic){
-	case N_MAGIC1:
-	{	data_size = curdsiz = data_size + code_size;
-		u.u_exdata.segtable[0].sg_data = curdsiz;
-		if ((unsigned)curdsiz != curdsiz){
-			u.u_error = ENOMEM;
+		case N_MAGIC1:
+			data_size = curdsiz = data_size + code_size;
+			u.u_exdata.segtable[0].sg_data = curdsiz;
+			if ((unsigned)curdsiz != curdsiz){
+				u.u_error = ENOMEM;
+				return ovly;
+			}
+			code_size=0;
+			u.u_exdata.segtable[0].sg_code=0;
+			break;
+		case N_MAGIC3:
+			sepid++;
+			break;
+		case N_MAGIC4:
+			ovly++;
+			break;
+		default:
+			u.u_error = ENOEXEC;
 			return ovly;
-		}
-		code_size=0;
-		u.u_exdata.segtable[0].sg_code=0;
-		break;
 	}
-	case N_MAGIC4:
-	{	ovly++;
-		break;
-	}
-	case N_MAGIC3:
-	{	sepid++;
-		break;
-	}
-	default:
-	{	u.u_error = ENOEXEC;
-		return ovly;
-	}
-	}
-	if (code_size && (ip->i_flag & ITEXT) == 0 && 
+	if ((code_size) && (ip->i_flag & ITEXT) == 0 &&
 	    ip->i_count!=(cnt_t)1){
-		u.u_error = ENOSEG;
+		u.u_error = ETXTBSY;
 		return ovly;
 	}
 	utsize = lbtoc((long)code_size);
 	curdsiz = data_size + bss_size;
-/* 45 */if ((unsigned)curdsiz != curdsiz){
+	if ((unsigned)curdsiz != curdsiz){
 		u.u_error = ENOMEM;
 		return ovly;
 	}
@@ -454,7 +453,7 @@ bad0:		u.u_error = ENOEXEC;
 				u.u_error = ENOMEM;
 				return ovly;
 			}
-/* 49 */if (nargc){
+		if (nargc){
 			u.u_error = ENOMEM;
 			return ovly;
 		}
@@ -472,17 +471,22 @@ bad0:		u.u_error = ENOEXEC;
 		while (--i >= USIZE)
 			clearseg(u.u_procp->p_addr + i);
 		xalloc(ip, code_size);
-		estabur(0, udsize, 0, 1);
+		/* read in data segment */
+		estabur((unsigned)0, udsize, (unsigned)0, 1);
 		u.u_base.left = USEGW;
 		u.u_base.right = 0;
 		u.u_offset = (unsigned long)(u.u_exdsz+(unsigned)code_size);
 		u.u_count = data_size;
 		readi(ip);
-/* 51 */	if ((u.u_procp->p_flag & STRC)==0){
-			if ((ip->i_mode & ISUID) && (u.u_uid)){
-				u.u_uid = ip->i_uid;
-				u.u_procp->p_uid = ip->i_uid;
-			}
+		/*
+		 * set SUID/SGID protections, if no tracing
+		 */
+		if ((u.u_procp->p_flag & STRC)==0){
+			if (ip->i_mode & ISUID)
+				if (u.u_uid){
+					u.u_uid = ip->i_uid;
+					u.u_procp->p_uid = ip->i_uid;
+				}
 			if (ip->i_mode & ISGID)
 				u.u_gid = ip->i_gid;
 		} else
