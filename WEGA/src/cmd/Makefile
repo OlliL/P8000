@@ -1,5 +1,9 @@
+CAS=		cas
+CC=		cc
+LD=		ld
+
 FILES=		getud putud
-STRIPFILES=	copydisk dump dumpdir format restor tar verify
+STRIPFILES=	copydisk dump dumpdir format restor sync tar verify
 
 all: $(FILES) $(STRIPFILES) strip
 
@@ -8,3 +12,9 @@ strip:
 
 clean:
 	rm -f $(FILES) $(STRIPFILES)
+
+compat1crt.o:	compat1crt.s
+	$(CAS) -u -o $@ $*.s
+
+sync:	compat1crt.o sync.o
+	$(LD) -o $@ -e start compat1crt.o sync.o -lc
