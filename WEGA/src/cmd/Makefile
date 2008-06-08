@@ -4,6 +4,7 @@ LD=		ld
 
 FILES=		getud putud
 STRIPFILES=	copydisk dump dumpdir format restor sync tar verify
+CLEANFILES=	compat1crt.o sync.o
 
 all: $(FILES) $(STRIPFILES) strip
 
