@@ -1,6 +1,6 @@
-FILES=  	sa.cat sa.format sa.verify sa.mkfs sa.install sa.timer
+FILES=  	sa.cat sa.format sa.verify sa.mkfs sa.install sa.timer sa.shipdisk
 CLEANFILES=	libb.a sa.wdc.o bmisc.o sa.function.o sa.cat.o sa.format.o \
-		sa.verify.o sa.mkfs.o sa.install.o sa.timer.o \
+		sa.verify.o sa.mkfs.o sa.install.o sa.timer.o sa.shipdisk.o \
 		$(FILES)
 BMISC_C=	../../uts/conf/bmisc.c
 
