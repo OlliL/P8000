@@ -197,7 +197,7 @@ _zpr::
 	ld	|_stkseg+~L1+2|(fp),r7
 	ld	r6,r7
 	sra	r6,#12
-	andb	rl6,#15
+	and	r6,#15
 	subb	rh6,rh6
 	ldl	rr2,|_stkseg+~L1+4|(fp)
 	ldb	rl4,rr2(r6)
@@ -205,18 +205,18 @@ _zpr::
 	ld	r6,|_stkseg+~L1+2|(fp)
 	ldb	rl6,rh6
 	extsb	r6
-	andb	rl6,#15
+	and	r6,#15
 	subb	rh6,rh6
 	ldb	rl4,rr2(r6)
 	ldb	_kdbstr+1,rl4
 	ld	r6,|_stkseg+~L1+2|(fp)
 	sra	r6,#4
-	andb	rl6,#15
+	and	r6,#15
 	subb	rh6,rh6
 	ldb	rl4,rr2(r6)
 	ldb	_kdbstr+2,rl4
 	ld	r6,|_stkseg+~L1+2|(fp)
-	andb	rl6,#15
+	and	r6,#15
 	subb	rh6,rh6
 	ldb	rl4,rr2(r6)
 	ldb	_kdbstr+3,rl4
@@ -475,9 +475,9 @@ L20009:
 	and	r3,#16128
 	cp	r2,r3
 	jpr	ne,L109
-	ld	r7,|_stkseg+~L1+20|(fp)
-	mult	rr6,#10
-	ld	r2,_breakpt+4(r7)
+	ld	r3,|_stkseg+~L1+20|(fp)
+	mult	rr2,#10
+	ld	r2,_breakpt+4(r3)
 	ld	r3,rr4(#38)
 	dec	r3,#2
 	cp	r2,r3
@@ -556,10 +556,8 @@ L126:
 	ldl	rr6,#L127
 	callr	_printf
 	callr	_gethex
-	ldl	rr4,rr2
-	and	r4,#32512
-	ldl	|_stkseg+~L1+32|(fp),rr4
-	ldl	rr2,rr4
+	and	r2,#32512
+	ldl	|_stkseg+~L1+32|(fp),rr2
 	call	@rr2
 L128:
 	ldk	r7,#10
@@ -570,9 +568,7 @@ L131:
 	callr	_printf
 	callr	_gethex
 	and	r2,#16128
-	ldl	rr4,rr2
-	and	r4,#32512
-	ldl	|_stkseg+~L1+8|(fp),rr4
+	ldl	|_stkseg+~L1+8|(fp),rr2
 	clr	|_stkseg+~L1+20|(fp)
 L135:
 	ld	r3,|_stkseg+~L1+20|(fp)
@@ -667,9 +663,8 @@ L20010:
 	ldl	rr6,#L150
 	callr	_printf
 	callr	_gethex
-	ldl	rr4,rr2
-	and	r4,#32512
-	ldl	|_stkseg+~L1+4|(fp),rr4
+	and	r2,#32512
+	ldl	|_stkseg+~L1+4|(fp),rr2
 	ldl	rr6,#L151
 	callr	_printf
 	callr	_gethex
@@ -686,7 +681,7 @@ L20010:
 L20014:
 	ldl	|_stkseg+~L1+24|(fp),rr2
 	cpl	rr2,|_stkseg+~L1+28|(fp)
-	jpr	uge,L128
+	jpr	uge,L120
 	test	|_stkseg+~L1+16|(fp)
 	jpr	ne,L156
 	testl	rr2
@@ -797,7 +792,7 @@ L171:
 	ldl	rr4,#L196
 	ld	r6,#4
 	cpir	r2,@rr4,r6,eq
-	jpr	ne,L128
+	jpr	ne,L120
 	sll	r6,#2
 	neg	r6
 	ldl	rr4,L197+12(r6)
@@ -823,7 +818,7 @@ L176:
 	cp	r2,#89
 	jpr	eq,L183
 	cp	r2,#121
-	jpr	ne,L128
+	jpr	ne,L120
 L183:
 	ldl	rr2,|_stkseg+~L1+28|(fp)
 	slal	rr2,#1
@@ -831,15 +826,13 @@ L183:
 	add	r5,r3
 	ld	r2,|_stkseg+~L1+14|(fp)
 	ld	@rr4,r2
-	jpr	L128
+	jpr	L120
 L185:
 	ldl	rr6,#L186
 	callr	_printf
 	callr	_gethex
-	ldl	rr4,rr2
-	and	r4,#32512
-	ldl	|_stkseg+~L1+8|(fp),rr4
-	ldl	rr2,rr4
+	and	r2,#32512
+	ldl	|_stkseg+~L1+8|(fp),rr2
 	ld	r7,@rr2
 	callr	_zpr
 	ldl	|_stkseg+~L1+42|(fp),rr2
@@ -854,7 +847,7 @@ L185:
 	cp	r2,#89
 	jpr	eq,L192
 	cp	r2,#121
-	jpr	ne,L128
+	jpr	ne,L120
 L192:
 	ldl	rr4,#_stkseg+~L1+36
 	add	r5,fp
@@ -955,11 +948,11 @@ L214:
 	cp	r2,#89
 	jpr	eq,L220
 	cp	r2,#121
-	jpr	ne,L128
+	jpr	ne,L120
 L220:
 	ldl	rr6,|_stkseg+~L1|(fp)
 	callr	_dump
-	jpr	L128
+	jpr	L120
 L223:
 	ldl	rr6,#L224
 	jpr	L20021
