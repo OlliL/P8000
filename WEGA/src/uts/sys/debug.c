@@ -13,6 +13,7 @@
 ******************************************************************************/
 
 char debugwstr[] = "@[$]debug.c		Rev : 4.1 	09/17/83 02:56:07";
+int  kdebug = 0;
 
 #include	<sys/param.h>
 #include	<sys/state.h>
@@ -25,7 +26,6 @@ char debugwstr[] = "@[$]debug.c		Rev : 4.1 	09/17/83 02:56:07";
 #include	<sys/user.h>
 #include	<sys/proc.h>
 #include	<sys/text.h>
-/*include	"debug.h"*/
 
 #define sreg	state->s_reg
 #define eventid state->s_eventid
@@ -37,9 +37,9 @@ char debugwstr[] = "@[$]debug.c		Rev : 4.1 	09/17/83 02:56:07";
 #define NBPL	16
 #define UMASK	0x3f00ffffL
 #define KMASK	0x7f00ffffL
-#define HMASK	(unsigned char)0x0f
+#define HMASK	0x0f
 
-extern struct {
+struct {
 	unsigned a;
 	union {
 	unsigned int *b;
@@ -56,11 +56,11 @@ extern char *zpr();
 extern mmut;
 extern fubyte(), fpbyte(), fkbyte();
 extern getchar();
-extern int kdebug;
 
-static char kdbstr[8];
-char hzif[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-static unsigned char format[19];
+static char kdbstr[6];
+static char hzif[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+static int foo;
+static unsigned char format[17];
 static unsigned int kval;
 
 long
@@ -156,7 +156,7 @@ struct state *state;
 	case 'B':
 	case 'b':
 	{	printf("reakpoint @");
-		kadr = (unsigned int *)((gethex() & UMASK) & KMASK);
+		kadr = (unsigned int *)((long)(gethex() & UMASK) & KMASK);
 		for (bp_cnt = 0; breakpt[bp_cnt].a && ++bp_cnt<NBPTS; );
 		if (bp_cnt >= NBPTS){
 			printf("KDB: No more break slots\n");
@@ -169,13 +169,15 @@ struct state *state;
 		attr = sdrf.sg_attr;
 		sdrf.sg_attr &= ~RD_AT;
 		loadsd(mmut, hibyte(kadr), &sdrf);
-		if (!(skbyte(kadr, 0x7f)) &&	/* 7f02  break */
+		if ((skbyte(kadr, 0x7f)) ||	/* 7f02  break */
 		    (skbyte((((char *)kadr)+1), 0x02))){
 			printf(" FAULT ");
+			putchar('\n');
 			break;
 		}
 		sdrf.sg_attr = attr;
 		loadsd(mmut, hibyte(kadr), &sdrf);
+		putchar('\n');
 		break;
 	} /* von break - Routine */
 	case 'U':
@@ -209,6 +211,7 @@ Mdisplay:	printf("isplay @");
 			}
 			if ((*sad)(dadr, &format[v1])){
 				printf(" FAULT ");
+				putchar('\n');
 				break;
 			}
 			kval = format[v1]<<8;
@@ -219,6 +222,7 @@ Mdisplay:	printf("isplay @");
 			dadr++;
 			if ((*sad)(dadr, &format[v1])){
 				printf(" FAULT ");
+				putchar('\n');
 				break;
 			}
 			kval |= format[v1];
@@ -256,31 +260,32 @@ Mdisplay:	printf("isplay @");
 			case 'M':
 			case 'm':
 			{	printf("emory @");
-			kadr = (unsigned int *)(gethex() & KMASK);
-			printf("(%s) with ", zpr(*kadr));
-			v2 = ((unsigned int)gethex());
-			printf("OK ");
-			switch(getchar()){
-			{	case 'Y':
-				case 'y':
-				getsd(mmut, hibyte(kadr), &sdrf);
-				attr = sdrf.sg_attr;
-				sdrf.sg_attr &= ~RD_AT;
-				loadsd(mmut, hibyte(kadr), &sdrf);
-				if ((!(skbyte(kadr, hibyte(v2)))) &&
-				    (skbyte(((char *)kadr+1), hibyte(v2)))){
-					printf(" FAULT ");
-					break;
+				kadr = (unsigned int *)(gethex() & KMASK);
+				printf("(%s) with ", zpr(*kadr));
+				v2 = ((unsigned int)gethex());
+				printf("OK ");
+				switch(getchar()){
+					case 'Y':
+					case 'y':
+						getsd(mmut, hibyte(kadr), &sdrf);
+						attr = sdrf.sg_attr;
+						sdrf.sg_attr &= ~RD_AT;
+						loadsd(mmut, hibyte(kadr), &sdrf);
+						if (((skbyte(kadr, hibyte(v2)))) ||
+						    (skbyte(((char *)kadr+1), hibyte(v2)))){
+							printf(" FAULT ");
+							putchar('\n');
+							break;
+						}
+						sdrf.sg_attr = attr;
+						loadsd(mmut, hibyte(kadr), &sdrf);
+						putchar('\n');
+						break;
 				}
-				sdrf.sg_attr = attr;
-				loadsd(mmut, hibyte(kadr), &sdrf);
 				break;
-			}
-			}
-			break;
 			}	/* von memory - Routine */
 		}
-	break;
+		break;
 	}	/* von modify - Routine */
 	case 'R':
 	case 'r':
@@ -288,11 +293,12 @@ Mdisplay:	printf("isplay @");
 		for (acount = 0; acount < 16; acount++){
 			if (!(acount & 7))
 				putchar('\n');
-			printf("r%d:%s ", zpr(sreg[acount]));
+			printf("r%d:%s ", acount, zpr(sreg[acount]));
 		}
 		printf("\nfcw=%s ", zpr(ps));
 		printf("pcseg=%s ", zpr(pcseg));
 		printf("pcoff=%s", zpr(pc));
+		putchar('\n');
 		break;
 	}	/* von register - Routine */
 	case 'S':
