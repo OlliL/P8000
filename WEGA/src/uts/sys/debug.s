@@ -48,8 +48,9 @@ _debugwstr::
 .byte	%30
 .byte	%37
 .byte	%0
+.even
 _kdebug::
-.word	0
+.word	%0
 .comm	0,	_buffer1;
 .comm	0,	_buffer2;
 .comm	0,	_buffer3;
@@ -92,7 +93,7 @@ _kdebug::
 .comm	4,	_tk_nin;
 .comm	4,	_tk_nout;
 .comm	200,	_callout;
-.comm   50,	_breakpt;
+.comm	50,	_breakpt;
 _kdbstr:
 .=.+6
 _hzif:
@@ -112,6 +113,7 @@ _hzif:
 .byte	%44
 .byte	%45
 .byte	%46
+.even
 _foo:
 .word	0
 _format:
@@ -131,14 +133,14 @@ _gethex::
 	dec	fp,#~L2
 	subl	rr2,rr2
 	jpr	L20000
-L95:
+L96:
 	cpb	|_stkseg+~L1+1|(fp),#97
 	jpr	ge,L20005
-L97:
+L98:
 	cpb	|_stkseg+~L1+1|(fp),#48
-	jpr	lt,L99
+	jpr	lt,L100
 	cpb	|_stkseg+~L1+1|(fp),#57
-	jpr	gt,L99
+	jpr	gt,L100
 	ldb	rl2,|_stkseg+~L1+1|(fp)
 	subb	rl2,#48
 L20007:
@@ -156,20 +158,20 @@ L20000:
 	testb	rl2
 	jpr	eq,L10000
 	cpb	rl2,#65
-	jpr	lt,L95
+	jpr	lt,L96
 	cpb	rl2,#70
-	jpr	gt,L95
+	jpr	gt,L96
 	extsb	r2
 	sub	r2,#55
 	jpr	L20007
 L20005:
 	cpb	|_stkseg+~L1+1|(fp),#102
-	jpr	gt,L97
+	jpr	gt,L98
 	ldb	rl2,|_stkseg+~L1+1|(fp)
 	extsb	r2
 	sub	r2,#87
 	jpr	L20007
-L99:
+L100:
 	ldl	rr2,|_stkseg+~L1+2|(fp)
 L10000:
 	inc	fp,#~L2
@@ -229,148 +231,148 @@ _zpr::
 .psec data
 .data
 
-L114:
+L115:
 .byte	%4b,%44,%42,%3a,%20,%55,%6e,%73
 .byte	%65,%74,%20,%62,%72,%65,%61,%6b
 .byte	%70,%6f,%69,%6e,%74,%a,%0
 .even
-L116:
+L117:
 .byte	%4b,%44,%42,%3a,%20,%40,%25,%58
 .byte	%20,%42,%72,%65,%61,%6b,%70,%6f
 .byte	%69,%6e,%74,%a,%0
 .even
-L121:
+L122:
 .byte	%4b,%44,%42,%3e,%7,%0
 .even
-L126:
+L127:
 .byte	%75,%6d,%70,%20,%63,%61,%6c,%6c
 .byte	%20,%74,%6f,%20,%40,%0
 .even
-L131:
+L132:
 .byte	%72,%65,%61,%6b,%70,%6f,%69,%6e
 .byte	%74,%20,%40,%0
 .even
-L136:
+L137:
 .byte	%4b,%44,%42,%3a,%20,%4e,%6f,%20
 .byte	%6d,%6f,%72,%65,%20,%62,%72,%65
 .byte	%61,%6b,%20,%73,%6c,%6f,%74,%73
 .byte	%a,%0
 .even
-L139:
+L140:
 .byte	%20,%46,%41,%55,%4c,%54,%20,%0
 .even
-L142:
+L143:
 .byte	%73,%65,%72,%20,%73,%70,%61,%63
 .byte	%65,%20,%64,%0
 .even
-L146:
+L147:
 .byte	%68,%79,%73,%69,%63,%61,%6c,%20
 .byte	%73,%70,%61,%63,%65,%20,%64,%0
 .even
-L149:
+L150:
 .byte	%69,%73,%70,%6c,%61,%79,%20,%40
 .byte	%0
 .even
-L150:
+L151:
 .byte	%66,%6f,%72,%20,%0
 .even
-L151:
+L152:
 .byte	%77,%6f,%72,%64,%73,%a,%0
 .even
-L157:
+L158:
 .byte	%a,%0
 .even
-L158:
+L159:
 .byte	%25,%73,%0
 .even
-L159:
+L160:
 .byte	%25,%73,%3a,%20,%0
 .even
-L161:
+L162:
 .byte	%20,%46,%41,%55,%4c,%54,%20,%0
 .even
-L164:
+L165:
 .byte	%20,%46,%41,%55,%4c,%54,%20,%0
 .even
-L166:
+L167:
 .byte	%25,%73,%20,%0
 .even
-L168:
+L169:
 .byte	%20,%20,%7c,%25,%73,%7c,%0
 .even
-L171:
+L172:
 .byte	%6f,%64,%69,%66,%79,%20,%0
 .even
-L176:
+L177:
 .byte	%65,%67,%69,%73,%74,%65,%72,%20
 .byte	%0
 .even
-L177:
+L178:
 .byte	%28,%25,%73,%29,%20,%77,%69,%74
 .byte	%68,%20,%0
 .even
-L178:
+L179:
 .byte	%4f,%4b,%20,%0
-.even
-L185:
-.byte	%65,%6d,%6f,%72,%79,%20,%40,%0
 .even
 L186:
+.byte	%65,%6d,%6f,%72,%79,%20,%40,%0
+.even
+L187:
 .byte	%28,%25,%73,%29,%20,%77,%69,%74
 .byte	%68,%20,%0
 .even
-L187:
+L188:
 .byte	%4f,%4b,%20,%0
 .even
-L193:
+L194:
 .byte	%20,%46,%41,%55,%4c,%54,%20,%0
 .even
 .even
-L195:
+L196:
 .word	77
 .word	82
 .word	109
 .word	114
 .even
-L199:
+L200:
 .byte	%65,%67,%69,%73,%74,%65,%72,%73
 .byte	%a,%0
 .even
-L204:
+L205:
 .byte	%72,%25,%64,%3a,%25,%73,%20,%0
 .even
-L205:
+L206:
 .byte	%a,%66,%63,%77,%3d,%25,%73,%20
 .byte	%0
 .even
-L206:
+L207:
 .byte	%70,%63,%73,%65,%67,%3d,%25,%73
 .byte	%20,%0
 .even
-L207:
+L208:
 .byte	%70,%63,%6f,%66,%66,%3d,%25,%73
 .byte	%0
 .even
-L210:
+L211:
 .byte	%69,%6e,%67,%6c,%65,%20,%73,%74
 .byte	%65,%70,%a,%0
 .even
-L214:
+L215:
 .byte	%61,%70,%65,%20,%63,%72,%61,%73
 .byte	%68,%20,%64,%75,%6d,%70,%a,%0
 .even
-L215:
+L216:
 .byte	%77,%72,%69,%74,%61,%62,%6c,%65
 .byte	%20,%74,%61,%70,%65,%20,%6c,%6f
 .byte	%61,%64,%65,%64,%20,%69,%6e,%20
 .byte	%64,%72,%69,%76,%65,%20,%30,%3f
 .byte	%20,%0
 .even
-L223:
+L224:
 .byte	%6f,%6e,%74,%69,%6e,%75,%65,%a
 .byte	%0
 .even
-L226:
+L227:
 .byte	%78,%69,%74,%a,%0
 .even
 .even
@@ -384,65 +386,65 @@ _debug::
 	.psec	data
 	.data
 	.even
-L196:
-	.long	L184
-	.long	L175
-	.long	L184
-	.long	L175
+L197:
+	.long	L185
+	.long	L176
+	.long	L185
+	.long	L176
 	.even
-L227:
-	.long	L130
-	.long	L222
-	.long	L148
-	.long	L225
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L125
-	.long	L127
-	.long	L127
-	.long	L170
-	.long	L127
-	.long	L127
-	.long	L145
-	.long	L127
-	.long	L198
-	.long	L209
-	.long	L213
-	.long	L141
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L130
-	.long	L222
-	.long	L148
-	.long	L225
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L127
-	.long	L125
-	.long	L127
-	.long	L127
-	.long	L170
-	.long	L127
-	.long	L127
-	.long	L145
-	.long	L127
-	.long	L198
-	.long	L209
-	.long	L213
-	.long	L141
+L228:
+	.long	L131
+	.long	L223
+	.long	L149
+	.long	L226
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L126
+	.long	L128
+	.long	L128
+	.long	L171
+	.long	L128
+	.long	L128
+	.long	L146
+	.long	L128
+	.long	L199
+	.long	L210
+	.long	L214
+	.long	L142
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L131
+	.long	L223
+	.long	L149
+	.long	L226
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L128
+	.long	L126
+	.long	L128
+	.long	L128
+	.long	L171
+	.long	L128
+	.long	L128
+	.long	L146
+	.long	L128
+	.long	L199
+	.long	L210
+	.long	L214
+	.long	L142
 	.psec
 	.code
 	sub	fp,#~L2
@@ -457,14 +459,14 @@ L227:
 	ld	|_stkseg+~L1+22|(fp),r4
 	ld	|_stkseg+~L1+20|(fp),#5
 	cp	|_stkseg+~L1+22|(fp),#2
-	jpr	ne,L119
+	jpr	ne,L120
 	clr	|_stkseg+~L1+20|(fp)
 L20009:
 	ld	r3,|_stkseg+~L1+20|(fp)
 	mult	rr2,#10
 	ld	r2,_breakpt(r3)
 	test	r2
-	jpr	eq,L108
+	jpr	eq,L109
 	ld	r5,|_stkseg+~L1+20|(fp)
 	mult	rr4,#10
 	ld	r2,_breakpt+2(r5)
@@ -472,26 +474,26 @@ L20009:
 	ld	r3,rr4(#36)
 	and	r3,#16128
 	cp	r2,r3
-	jpr	ne,L108
+	jpr	ne,L109
 	ld	r7,|_stkseg+~L1+20|(fp)
 	mult	rr6,#10
 	ld	r2,_breakpt+4(r7)
 	ld	r3,rr4(#38)
 	dec	r3,#2
 	cp	r2,r3
-	jpr	eq,L109
-L108:
+	jpr	eq,L110
+L109:
 	inc	|_stkseg+~L1+20|(fp),#1
 	cp	|_stkseg+~L1+20|(fp),#5
 	jpr	lt,L20009
-L109:
+L110:
 	cp	|_stkseg+~L1+20|(fp),#5
-	jpr	lt,L112
-	ldl	rr6,#L114
-L20020:
+	jpr	lt,L113
+	ldl	rr6,#L115
+L20022:
 	callr	_printf
-	jpr	L119
-L112:
+	jpr	L120
+L113:
 	ld	r3,|_stkseg+~L1+20|(fp)
 	mult	rr2,#10
 	ldl	rr4,#_breakpt
@@ -504,7 +506,7 @@ L112:
 	ld	r3,|_stkseg+~L1+20|(fp)
 	mult	rr2,#10
 	ldl	rr4,_breakpt+2(r3)
-	ldl	rr6,#L116
+	ldl	rr6,#L117
 	callr	_printf
 	ldl	rr4,#_stkseg+~L1+36
 	add	r5,fp
@@ -539,19 +541,19 @@ L112:
 	ldl	rr2,|_stkseg+~L1|(fp)
 	add	r3,#38
 	dec	@rr2,#2
-L119:
-	ldl	rr6,#L121
+L120:
+	ldl	rr6,#L122
 	callr	_printf
 	callr	_getchar
 	ld	|_stkseg+~L1+18|(fp),r2
 	sub	r2,#66
 	cp	r2,#51
-	jpr	ugt,L127
+	jpr	ugt,L128
 	rl	r2,#2
-	ldl	rr4,L227(r2)
+	ldl	rr4,L228(r2)
 	jp	@rr4
-L125:
-	ldl	rr6,#L126
+L126:
+	ldl	rr6,#L127
 	callr	_printf
 	callr	_gethex
 	ldl	rr4,rr2
@@ -559,12 +561,12 @@ L125:
 	ldl	|_stkseg+~L1+32|(fp),rr4
 	ldl	rr2,rr4
 	call	@rr2
-L127:
+L128:
 	ldk	r7,#10
 	callr	_putchar
-	jpr	L119
-L130:
-	ldl	rr6,#L131
+	jpr	L120
+L131:
+	ldl	rr6,#L132
 	callr	_printf
 	callr	_gethex
 	and	r2,#16128
@@ -572,21 +574,21 @@ L130:
 	and	r4,#32512
 	ldl	|_stkseg+~L1+8|(fp),rr4
 	clr	|_stkseg+~L1+20|(fp)
-L134:
+L135:
 	ld	r3,|_stkseg+~L1+20|(fp)
 	mult	rr2,#10
 	ld	r2,_breakpt(r3)
 	test	r2
-	jpr	eq,L133
+	jpr	eq,L134
 	inc	|_stkseg+~L1+20|(fp),#1
 	cp	|_stkseg+~L1+20|(fp),#5
-	jpr	lt,L134
-L133:
-	cp	|_stkseg+~L1+20|(fp),#5
 	jpr	lt,L135
-	ldl	rr6,#L136
-	jpr	L20020
-L135:
+L134:
+	cp	|_stkseg+~L1+20|(fp),#5
+	jpr	lt,L136
+	ldl	rr6,#L137
+	jpr	L20022
+L136:
 	ld	r3,|_stkseg+~L1+20|(fp)
 	mult	rr2,#10
 	ldl	rr4,#_breakpt
@@ -626,19 +628,19 @@ L135:
 	ld	r5,#127
 	callr	_skbyte
 	test	r2
-	jpr	ne,L138a
+	jpr	ne,L10009
 	ldl	rr6,|_stkseg+~L1+8|(fp)
 	inc	r7,#1
 	ldk	r5,#2
 	callr	_skbyte
 	test	r2
-	jpr	eq,L138
-L138a:
-	ldl	rr6,#L139
-L20021:
+	jpr	eq,L139
+L10009:
+	ldl	rr6,#L140
+L20027:
 	callr	_printf
-	jpr	L127
-L138:
+	jpr	L128
+L139:
 	ldb	rl2,|_stkseg+~L1+41|(fp)
 	ldb	|_stkseg+~L1+39|(fp),rl2
 	ldl	rr4,#_stkseg+~L1+36
@@ -647,32 +649,32 @@ L138:
 	ldb	rh6,#0
 	ld	r7,_mmut
 	callr	_loadsd
-	jpr	L127
-L141:
-	ldl	rr6,#L142
+	jpr	L128
+L142:
+	ldl	rr6,#L143
 	callr	_printf
 	ldl	rr2,#_fubyte
 	jpr	L20010
-L145:
-	ldl	rr6,#L146
+L146:
+	ldl	rr6,#L147
 	callr	_printf
 	ldl	rr2,#_fpbyte
 	jpr	L20010
-L148:
+L149:
 	ldl	rr2,#_fkbyte
 L20010:
 	ldl	|_stkseg+~L1+32|(fp),rr2
-	ldl	rr6,#L149
+	ldl	rr6,#L150
 	callr	_printf
 	callr	_gethex
 	ldl	rr4,rr2
 	and	r4,#32512
 	ldl	|_stkseg+~L1+4|(fp),rr4
-	ldl	rr6,#L150
+	ldl	rr6,#L151
 	callr	_printf
 	callr	_gethex
 	ldl	|_stkseg+~L1+28|(fp),rr2
-	ldl	rr6,#L151
+	ldl	rr6,#L152
 	callr	_printf
 	clr	|_stkseg+~L1+16|(fp)
 	ldl	rr2,|_stkseg+~L1+28|(fp)
@@ -681,21 +683,21 @@ L20010:
 	slal	rr2,#3
 	ldl	|_stkseg+~L1+28|(fp),rr2
 	subl	rr2,rr2
-L20012:
+L20014:
 	ldl	|_stkseg+~L1+24|(fp),rr2
 	cpl	rr2,|_stkseg+~L1+28|(fp)
-	jpr	uge,L127
+	jpr	uge,L128
 	test	|_stkseg+~L1+16|(fp)
-	jpr	ne,L155
+	jpr	ne,L156
 	testl	rr2
-	jpr	eq,L156
-	ldl	rr6,#L157
+	jpr	eq,L157
+	ldl	rr6,#L158
 	callr	_printf
-L156:
+L157:
 	ld	r7,|_stkseg+~L1+4|(fp)
 	callr	_zpr
 	ldl	|_stkseg+~L1+42|(fp),rr2
-	ldl	rr6,#L158
+	ldl	rr6,#L159
 	ldl	rr4,rr2
 	callr	_printf
 	ldl	rr2,#_stkseg+~L1+4
@@ -703,10 +705,10 @@ L156:
 	ld	r7,rr2(#2)
 	callr	_zpr
 	ldl	|_stkseg+~L1+42|(fp),rr2
-	ldl	rr6,#L159
+	ldl	rr6,#L160
 	ldl	rr4,rr2
 	callr	_printf
-L155:
+L156:
 	ldl	rr2,|_stkseg+~L1+32|(fp)
 	ldl	|_stkseg+~L1+42|(fp),rr2
 	ldl	rr4,#_format
@@ -714,10 +716,10 @@ L155:
 	ldl	rr6,|_stkseg+~L1+4|(fp)
 	call	@rr2
 	test	r2
-	jpr	eq,L160
-	ldl	rr6,#L161
-	jpr	L20021
-L160:
+	jpr	eq,L161
+	ldl	rr6,#L162
+	jpr	L20027
+L161:
 	ld	r2,|_stkseg+~L1+16|(fp)
 	ldb	rl3,_format(r2)
 	subb	rh3,rh3
@@ -726,16 +728,16 @@ L160:
 	ld	_kval,r3
 	ldb	rl3,_format(r2)
 	cpb	rl3,#32
-	jpr	ult,L10009
+	jpr	ult,L10010
 	ldb	rl3,_format(r2)
 	cpb	rl3,#126
-	jpr	ule,L162
-L10009:
+	jpr	ule,L163
+L10010:
 	ld	r2,|_stkseg+~L1+16|(fp)
 	ldl	rr4,#_format
 	add	r5,r2
 	ldb	@rr4,#32
-L162:
+L163:
 	inc	|_stkseg+~L1+16|(fp),#1
 	inc	|_stkseg+~L1+6|(fp),#1
 	ldl	rr2,|_stkseg+~L1+32|(fp)
@@ -745,10 +747,10 @@ L162:
 	ldl	rr6,|_stkseg+~L1+4|(fp)
 	call	@rr2
 	test	r2
-	jpr	eq,L163
-	ldl	rr6,#L164
-	jpr	L20021
-L163:
+	jpr	eq,L164
+	ldl	rr6,#L165
+	jpr	L20027
+L164:
 	ld	r2,|_stkseg+~L1+16|(fp)
 	ldb	rl3,_format(r2)
 	subb	rh3,rh3
@@ -757,51 +759,51 @@ L163:
 	ld	r2,|_stkseg+~L1+16|(fp)
 	ldb	rl3,_format(r2)
 	cpb	rl3,#32
-	jpr	ult,L10010
+	jpr	ult,L10011
 	ldb	rl3,_format(r2)
 	cpb	rl3,#126
-	jpr	ule,L165
-L10010:
+	jpr	ule,L166
+L10011:
 	ld	r2,|_stkseg+~L1+16|(fp)
 	ldl	rr4,#_format
 	add	r5,r2
 	ldb	@rr4,#32
-L165:
+L166:
 	inc	|_stkseg+~L1+16|(fp),#1
 	inc	|_stkseg+~L1+6|(fp),#1
 	ld	r7,_kval
 	callr	_zpr
 	ldl	|_stkseg+~L1+42|(fp),rr2
-	ldl	rr6,#L166
+	ldl	rr6,#L167
 	ldl	rr4,rr2
 	callr	_printf
 	ld	r3,|_stkseg+~L1+16|(fp)
 	exts	rr2
 	div	rr2,#16
 	test	r2
-	jpr	ne,L152
-	ldl	rr6,#L168
+	jpr	ne,L153
+	ldl	rr6,#L169
 	ldl	rr4,#_format
 	callr	_printf
 	clr	|_stkseg+~L1+16|(fp)
-L152:
+L153:
 	ldl	rr2,|_stkseg+~L1+24|(fp)
 	addl	rr2,#1
-	jpr	L20012
-L170:
-	ldl	rr6,#L171
+	jpr	L20014
+L171:
+	ldl	rr6,#L172
 	callr	_printf
 	callr	_getchar
-	ldl	rr4,#L195
+	ldl	rr4,#L196
 	ld	r6,#4
 	cpir	r2,@rr4,r6,eq
-	jpr	ne,L127
+	jpr	ne,L128
 	sll	r6,#2
 	neg	r6
-	ldl	rr4,L196+12(r6)
+	ldl	rr4,L197+12(r6)
 	jp	@rr4
-L175:
-	ldl	rr6,#L176
+L176:
+	ldl	rr6,#L177
 	callr	_printf
 	callr	_gethex
 	ldl	|_stkseg+~L1+28|(fp),rr2
@@ -810,28 +812,28 @@ L175:
 	ld	r7,rr4(r3)
 	callr	_zpr
 	ldl	|_stkseg+~L1+42|(fp),rr2
-	ldl	rr6,#L177
+	ldl	rr6,#L178
 	ldl	rr4,rr2
 	callr	_printf
 	callr	_gethex
 	ld	|_stkseg+~L1+14|(fp),r3
-	ldl	rr6,#L178
+	ldl	rr6,#L179
 	callr	_printf
 	callr	_getchar
 	cp	r2,#89
-	jpr	eq,L182
+	jpr	eq,L183
 	cp	r2,#121
-	jpr	ne,L127
-L182:
+	jpr	ne,L128
+L183:
 	ldl	rr2,|_stkseg+~L1+28|(fp)
 	slal	rr2,#1
 	ldl	rr4,|_stkseg+~L1|(fp)
 	add	r5,r3
 	ld	r2,|_stkseg+~L1+14|(fp)
 	ld	@rr4,r2
-	jpr	L127
-L184:
-	ldl	rr6,#L185
+	jpr	L128
+L185:
+	ldl	rr6,#L186
 	callr	_printf
 	callr	_gethex
 	ldl	rr4,rr2
@@ -841,19 +843,19 @@ L184:
 	ld	r7,@rr2
 	callr	_zpr
 	ldl	|_stkseg+~L1+42|(fp),rr2
-	ldl	rr6,#L186
+	ldl	rr6,#L187
 	ldl	rr4,rr2
 	callr	_printf
 	callr	_gethex
 	ld	|_stkseg+~L1+14|(fp),r3
-	ldl	rr6,#L187
+	ldl	rr6,#L188
 	callr	_printf
 	callr	_getchar
 	cp	r2,#89
-	jpr	eq,L191
+	jpr	eq,L192
 	cp	r2,#121
-	jpr	ne,L127
-L191:
+	jpr	ne,L128
+L192:
 	ldl	rr4,#_stkseg+~L1+36
 	add	r5,fp
 	ldb	rl6,|_stkseg+~L1+8|(fp)
@@ -876,96 +878,96 @@ L191:
 	ldb	rh5,#0
 	callr	_skbyte
 	test	r2
-	jpr	ne,L198a
+	jpr	ne,L10012
 	ldl	rr6,|_stkseg+~L1+8|(fp)
 	inc	r7,#1
 	ldb	rl5,|_stkseg+~L1+14|(fp)
 	ldb	rh5,#0
 	callr	_skbyte
 	test	r2
-	jpr	eq,L138
-L198a:
-	ldl	rr6,#L193
-	jpr	L20021
-L198:
-	ldl	rr6,#L199
+	jpr	eq,L139
+L10012:
+	ldl	rr6,#L194
+	jpr	L20027
+L199:
+	ldl	rr6,#L200
 	callr	_printf
 	subl	rr2,rr2
-L20013:
+L20015:
 	ldl	|_stkseg+~L1+24|(fp),rr2
 	cpl	rr2,#16
-	jpr	ult,L20015
+	jpr	ult,L20017
 	ldl	rr2,|_stkseg+~L1|(fp)
 	ld	r7,rr2(#34)
-	callr	_zpr
-	ldl	|_stkseg+~L1+42|(fp),rr2
-	ldl	rr6,#L205
-	ldl	rr4,rr2
-	callr	_printf
-	ldl	rr2,|_stkseg+~L1|(fp)
-	ld	r7,rr2(#36)
 	callr	_zpr
 	ldl	|_stkseg+~L1+42|(fp),rr2
 	ldl	rr6,#L206
 	ldl	rr4,rr2
 	callr	_printf
 	ldl	rr2,|_stkseg+~L1|(fp)
-	ld	r7,rr2(#38)
+	ld	r7,rr2(#36)
 	callr	_zpr
 	ldl	|_stkseg+~L1+42|(fp),rr2
 	ldl	rr6,#L207
 	ldl	rr4,rr2
-	jpr	L20021
-L20015:
+	callr	_printf
+	ldl	rr2,|_stkseg+~L1|(fp)
+	ld	r7,rr2(#38)
+	callr	_zpr
+	ldl	|_stkseg+~L1+42|(fp),rr2
+	ldl	rr6,#L208
+	ldl	rr4,rr2
+	jpr	L20027
+L20017:
 	ldl	rr2,|_stkseg+~L1+24|(fp)
 	ldk	r2,#0
 	and	r3,#7
 	testl	rr2
-	jpr	ne,L203
+	jpr	ne,L204
 	ldk	r7,#10
 	callr	_putchar
-L203:
+L204:
 	ldl	rr2,|_stkseg+~L1+24|(fp)
 	slal	rr2,#1
 	ldl	rr4,|_stkseg+~L1|(fp)
 	ld	r7,rr4(r3)
 	callr	_zpr
 	ldl	|_stkseg+~L1+42|(fp),rr2
-	ldl	rr6,#L204
+	ldl	rr6,#L205
 	ldl	rr4,|_stkseg+~L1+24|(fp)
 	callr	_printf
 	ldl	rr2,|_stkseg+~L1+24|(fp)
 	addl	rr2,#1
-	jpr	L20013
-L209:
-	ldl	rr6,#L210
+	jpr	L20015
+L210:
+	ldl	rr6,#L211
 	callr	_printf
 	ldl	rr2,|_stkseg+~L1|(fp)
 	add	r3,#34
 	set	@rr2,#0
-	jpr	L20018
-L213:
-	ldl	rr6,#L214
-	callr	_printf
+	jpr	L20020
+L214:
 	ldl	rr6,#L215
+	callr	_printf
+	ldl	rr6,#L216
 	callr	_printf
 	callr	_getchar
 	cp	r2,#89
-	jpr	eq,L219
+	jpr	eq,L220
 	cp	r2,#121
-	jpr	ne,L127
-L219:
+	jpr	ne,L128
+L220:
 	ldl	rr6,|_stkseg+~L1|(fp)
 	callr	_dump
-	jpr	L127
-L222:
-	ldl	rr6,#L223
-	jpr	L20019
-L225:
-	ldl	rr6,#L226
-L20019:
+	jpr	L128
+L223:
+	ldl	rr6,#L224
+	jpr	L20021
+L226:
+	ldl	rr6,#L227
+L20021:
 	callr	_printf
-L20018:
+L20020:
 	ld	r7,|_stkseg+~L1+12|(fp)
 	callr	_rvi
 	ldk	r2,#1
