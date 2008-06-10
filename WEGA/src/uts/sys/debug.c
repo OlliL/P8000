@@ -121,8 +121,8 @@ struct state *state;
 	if (event == 2){
 		for (bp_cnt = 0; bp_cnt < NBPTS; bp_cnt++)
 			if ((breakpt[bp_cnt].a) &&
-			    (hiword(breakpt[bp_cnt].b) == (pcseg & USEGW)) &&
-			    (breakpt[bp_cnt].b.l.c == (pc -2)))
+			    ((hiword(breakpt[bp_cnt].b) == (pcseg & USEGW)) &&
+			    (breakpt[bp_cnt].b.l.c == (pc -2))))
 				break;
 		if (bp_cnt >= NBPTS)
 			printf("KDB: Unset breakpoint\n");
@@ -211,7 +211,6 @@ Mdisplay:	printf("isplay @");
 			}
 			if ((*sad)(dadr, &format[v1])){
 				printf(" FAULT ");
-				putchar('\n');
 				break;
 			}
 			kval = format[v1]<<8;
@@ -222,7 +221,6 @@ Mdisplay:	printf("isplay @");
 			dadr++;
 			if ((*sad)(dadr, &format[v1])){
 				printf(" FAULT ");
-				putchar('\n');
 				break;
 			}
 			kval |= format[v1];
@@ -237,6 +235,7 @@ Mdisplay:	printf("isplay @");
 				v1 = 0;
 			}
 		}
+		putchar('\n');
 		break;
 	}
 	case 'M':
@@ -274,17 +273,16 @@ Mdisplay:	printf("isplay @");
 						if (((skbyte(kadr, hibyte(v2)))) ||
 						    (skbyte(((char *)kadr+1), hibyte(v2)))){
 							printf(" FAULT ");
-							putchar('\n');
 							break;
 						}
 						sdrf.sg_attr = attr;
 						loadsd(mmut, hibyte(kadr), &sdrf);
-						putchar('\n');
 						break;
 				}
 				break;
 			}	/* von memory - Routine */
 		}
+		putchar('\n');
 		break;
 	}	/* von modify - Routine */
 	case 'R':
@@ -318,6 +316,7 @@ Mdisplay:	printf("isplay @");
 				dump(state);
 		}
 		}
+		putchar('\n');
 		break;
 	}
 	case 'C':
