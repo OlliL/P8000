@@ -1,0 +1,47 @@
+
+                                                                                                        feb-12-94
+
+The net and bm files here can be compiled to work on a 68000 osk box.
+Don't use the math or cio flags for speed. The OS9 version used was 2.4 and the
+C compiler version was 3.2. They have been compiled sucesssfully on a Peripheral
+Technology PT68K4 w/ 4 megs ram and a 68000 @ 16 mhz.
+
+To compile, make a directory and copy the source files from the archive to it.
+Next, convert ALL of the files from the unix lf end of line to the osk cr. I
+use a program called lf2cr. In your /dd/defs directory, make a subdir called
+SYS. In SYS put a copy of types.h from /dd/defs and make an empty file
+called stat.h (this is done to minimize the number of changes to the source).
+Read the unix docs and set your options in the respective .h files (if you
+don't like the defaults). Now, do a make (make -f=makefile.os9), ignore the
+petty error messages! You should end up with net in your cmds directory. You
+need to setup a home directory for net, a startup.net file, and some
+env vars before you can do anything with net, read on below.
+
+The baud rate parameter in the startup.net file is not implemented, I 
+decided setting it within the program is counter to the OS9 philosophy.
+The current baud rate will be printed on a sucessful open.
+Use xmode to set the baud rate before using net. Also, use xmode to set the
+number of bits to 8 and 1 stop bit.
+
+The AX25 and SLIP interfaces are the only ones implemented.
+
+The telunix (telnet login) function is not implemented because of a lack
+of a working pseudo-tty package for osk. It would be easy to implement though
+if a working pseudo-tty package ever shows up. If anyone runs into one, let
+me know! As of the .k34 version, there is a telserv function using named pipes
+which I also did not implement though this may be done in the future
+
+Sent the env vars NETHOME (your home net directory, I use /dd/k5jb) and
+NETSPOOL (your net spool directory, I use /dd/k5jb/spool) and also TMPDIR (I
+used /r0, a ramdisk) for faster tempfile operations.
+
+Check out the unix instructions in the DOCS.
+
+Please direct any comments or bug reports to me.
+
+Robert E. Brose II
+internet: bob@os9.jriver.com
+uucp: ...uunet!jriver!os9!bob
+packet: N0QBJ@WB0GDB.#STP.MN.USA
+cis: 72067,3021
+

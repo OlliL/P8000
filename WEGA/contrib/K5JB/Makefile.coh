@@ -1,0 +1,143 @@
+#
+#	Makefile for KA9Q TCP/IP package for Coherent 386 (v 4.0.1)
+#  See Makefile.unix for Unix versions.  Joe, K5JB
+#
+
+SHELL = /bin/sh
+TAR = tar
+# Use gzip if you and your correspondents have it.  It makes smaller archive
+ZIPPER = compress
+
+#
+# Coherent 386 (4.0.1 - K5JB)
+#
+# Note that most configuration macros are in config.h, options.h, and
+# unixopt.h.  One, W5GFE, in unixopt.h, causes inverse video on incoming
+# telnet data.  It requires the curses lib.
+# Note that this version of Coherent has a fixed times() function, and
+# also has tmpfile().  See notes for older versions of Coherent for work
+# arounds.  The -VSUVAR stifles unused variables warnings.  If you are
+# using Coherent version earlier than 4, make MSPTICK=1000, and undef
+# COH4 in unixopt.h
+#
+CFLAGS = -O -DCOH386 -DUNIX -DSYS5 -VSUVAR -DMSPTICK=10 
+LINTFLAGS = -O -DCOH386 -DUNIX -DSYS5 VSUVAR -DMSPTICK=10
+LIBS =-lcurses
+
+SRCS =	main.c arp.c arpcmd.c arpdump.c ax25.c ax25cmd.c \
+	ax25dump.c ax25subr.c ax25user.c ax_mbx.c cmdparse.c mdkiss.c \
+	files.c fingcli.c fingserv.c ftp.c ftpcli.c ftpserv.c icmp.c \
+	icmpcmd.c icmpdump.c icmpmsg.c iface.c ip.c ipcmd.c ipdump.c \
+	iproute.c kiss.c lapb.c lapbtime.c lcsum.c mbuf.c misc.c motd.c \
+	mulport.c ndir.c netuser.c nrcmd.c nrs.c nr3.c nrsubr.c nr4.c \
+	nr4subr.c nr4user.c nr4timer.c pathname.c session.c slip.c \
+	smisc.c smtpcli.c smtpserv.c sys5_io.c sys5unix.c tcpcmd.c \
+	tcpdump.c tcpin.c tcpout.c tcpsubr.c tcptimer.c tcpuser.c telnet.c \
+	telserv.c telunix.c timer.c tnserv.c trace.c ttydriv.c udp.c udpcmd.c \
+	udpdump.c version.c wildmat.c
+
+OBJS =	main.o arp.o arpcmd.o arpdump.o ax25.o ax25cmd.o \
+	ax25dump.o ax25subr.o ax25user.o ax_mbx.o cmdparse.o mdkiss.o \
+	files.o fingcli.o fingserv.o ftp.o ftpcli.o ftpserv.o icmp.o \
+	icmpcmd.o icmpdump.o icmpmsg.o iface.o ip.o ipcmd.o ipdump.o \
+	iproute.o kiss.o lapb.o lapbtime.o lcsum.o mbuf.o misc.o motd.o \
+	mulport.o ndir.o netuser.o nrcmd.o nrs.o nr3.o nrsubr.o nr4.o \
+	nr4subr.o nr4user.o nr4timer.o pathname.o session.o slip.o \
+	smisc.o smtpcli.o smtpserv.o sys5_io.o sys5unix.o tcpcmd.o \
+	tcpdump.o tcpin.o tcpout.o tcpsubr.o tcptimer.o tcpuser.o telnet.o \
+	telserv.o telunix.o timer.o tnserv.o trace.o ttydriv.o udp.o udpcmd.o \
+	udpdump.o version.o wildmat.o
+
+net:	$(OBJS)
+	$(CC) $(CFLAGS) -s -o net $(OBJS) $(LIBS)
+
+# Keep the following up to date.  Make a fresh list if necessary with
+# mkdepcoh.  If you use mkdepcoh you will have to edit out some of the
+# spurious things like enet.h 8250.h, etc.
+
+arp.o: arp.c config.h global.h mbuf.h timer.h iface.h ax25.h arp.h
+arpcmd.o: arpcmd.c config.h global.h mbuf.h timer.h iface.h ax25.h arp.h cmdparse.h
+arpdump.o: arpdump.c options.h config.h global.h mbuf.h timer.h arp.h iface.h ax25.h
+ax25.o: ax25.c options.h config.h global.h mbuf.h iface.h timer.h arp.h slip.h ax25.h lapb.h heard.h
+ax25cmd.o: ax25cmd.c global.h options.h config.h mbuf.h ax25.h timer.h netuser.h ftp.h tcp.h telnet.h iface.h lapb.h finger.h cmdparse.h session.h nr4.h arp.h heard.h
+ax25dump.o: ax25dump.c options.h config.h global.h mbuf.h ax25.h timer.h iface.h lapb.h trace.h
+ax25subr.o: ax25subr.c config.h global.h mbuf.h timer.h ax25.h lapb.h netuser.h ftp.h nr4.h session.h tcp.h telnet.h iface.h finger.h
+ax25user.o: ax25user.c config.h global.h mbuf.h timer.h iface.h ax25.h lapb.h
+ax_mbx.o: ax_mbx.c options.h config.h global.h mbuf.h ax25.h timer.h iface.h lapb.h netrom.h nr4.h ax_mbx.h cmdparse.h netuser.h tcp.h
+cmdparse.o: cmdparse.c global.h cmdparse.h
+mdkiss.o: mdkiss.c options.h config.h global.h mbuf.h ax25.h slip.h asy.h iface.h kiss.h trace.h netuser.h timer.h tcp.h
+files.o: files.c options.h config.h global.h netuser.h timer.h tcp.h mbuf.h
+fingcli.o: fingcli.c config.h global.h mbuf.h timer.h internet.h icmp.h netuser.h tcp.h ftp.h telnet.h iface.h ax25.h lapb.h finger.h session.h nr4.h
+fingserv.o: fingserv.c config.h sokname.h global.h mbuf.h timer.h internet.h icmp.h netuser.h tcp.h ftp.h telnet.h iface.h ax25.h lapb.h finger.h session.h nr4.h
+ftp.o: ftp.c config.h global.h mbuf.h netuser.h timer.h tcp.h ftp.h telnet.h iface.h ax25.h lapb.h finger.h session.h nr4.h
+ftpcli.o: ftpcli.c config.h global.h mbuf.h netuser.h icmp.h timer.h tcp.h ftp.h session.h cmdparse.h telnet.h iface.h ax25.h lapb.h finger.h nr4.h
+ftpserv.o: ftpserv.c config.h global.h mbuf.h netuser.h timer.h tcp.h ftp.h telnet.h unix.h iface.h ax25.h lapb.h finger.h session.h nr4.h
+icmp.o: icmp.c global.h mbuf.h internet.h timer.h iface.h ip.h icmp.h
+icmpcmd.o: icmpcmd.c global.h icmp.h mbuf.h netuser.h internet.h timer.h ping.h
+icmpdump.o: icmpdump.c config.h global.h mbuf.h internet.h icmp.h trace.h
+icmpmsg.o: icmpmsg.c global.h
+iface.o: iface.c global.h iface.h
+ip.o: ip.c global.h mbuf.h timer.h internet.h iface.h ip.h icmp.h
+ipcmd.o: ipcmd.c options.h config.h global.h mbuf.h internet.h timer.h netuser.h iface.h ip.h cmdparse.h
+ipdump.o: ipdump.c config.h global.h mbuf.h internet.h timer.h iface.h ip.h trace.h netuser.h
+iproute.o: iproute.c config.h global.h mbuf.h internet.h timer.h netuser.h ip.h icmp.h iface.h trace.h
+kiss.o: kiss.c options.h config.h global.h mbuf.h iface.h kiss.h trace.h
+lapb.o: lapb.c options.h config.h global.h mbuf.h timer.h ax25.h lapb.h iface.h
+lapbtime.o: lapbtime.c config.h global.h mbuf.h ax25.h timer.h netuser.h nr4.h session.h tcp.h ftp.h telnet.h iface.h finger.h lapb.h
+lcsum.o: lcsum.c global.h
+main.o: main.c options.h config.h sokname.h global.h mbuf.h netuser.h timer.h icmp.h iface.h ip.h tcp.h ax25.h lapb.h netrom.h nr4.h ftp.h telnet.h remote.h finger.h session.h cmdparse.h asy.h slip.h nrs.h unix.h unixopt.h asy.h trace.h
+mbuf.o: mbuf.c config.h global.h mbuf.h
+misc.o: misc.c global.h
+motd.o: motd.c config.h
+mulport.o: mulport.c options.h global.h mbuf.h iface.h ax25.h cmdparse.h
+ndir.o: ndir.c ndir.h
+netuser.o: netuser.c sokname.h global.h netuser.h unix.h
+nr3.o: nr3.c config.h global.h mbuf.h iface.h timer.h arp.h slip.h ax25.h netrom.h nr4.h lapb.h
+nr4.o: nr4.c config.h global.h mbuf.h timer.h ax25.h lapb.h iface.h netrom.h nr4.h
+nr4subr.o: nr4subr.c config.h global.h mbuf.h timer.h ax25.h iface.h netrom.h nr4.h lapb.h
+nr4timer.o: nr4timer.c config.h global.h mbuf.h timer.h ax25.h lapb.h iface.h netrom.h nr4.h
+nr4user.o: nr4user.c config.h global.h mbuf.h timer.h ax25.h lapb.h iface.h netrom.h nr4.h
+nrcmd.o: nrcmd.c config.h global.h mbuf.h ax25.h timer.h iface.h lapb.h netrom.h nr4.h netuser.h tcp.h ftp.h telnet.h finger.h cmdparse.h session.h
+nrs.o: nrs.c options.h config.h global.h mbuf.h iface.h ax25.h nrs.h asy.h trace.h
+nrsubr.o: nrsubr.c config.h global.h mbuf.h timer.h ax25.h iface.h netrom.h lapb.h
+pathname.o: pathname.c global.h
+session.o: session.c options.h config.h global.h sokname.h mbuf.h netuser.h timer.h tcp.h ax25.h lapb.h iface.h ftp.h telnet.h finger.h netrom.h nr4.h session.h cmdparse.h
+slip.o: slip.c global.h mbuf.h iface.h ax25.h slip.h asy.h options.h config.h trace.h
+smisc.o: smisc.c sokname.h global.h mbuf.h netuser.h timer.h tcp.h remote.h
+smtpcli.o: smtpcli.c global.h netuser.h mbuf.h timer.h tcp.h smtp.h trace.h cmdparse.h
+smtpserv.o: smtpserv.c global.h mbuf.h netuser.h timer.h tcp.h smtp.h
+sys5_io.o: sys5_io.c global.h asy.h mbuf.h internet.h iface.h unix.h cmdparse.h unixopt.h
+sys5unix.o: sys5unix.c global.h cmdparse.h iface.h unix.h unixopt.h ndir.h
+tcpcmd.o: tcpcmd.c sokname.h global.h timer.h mbuf.h netuser.h internet.h tcp.h cmdparse.h
+tcpdump.o: tcpdump.c config.h global.h mbuf.h netuser.h internet.h timer.h tcp.h trace.h
+tcpin.o: tcpin.c global.h timer.h mbuf.h netuser.h internet.h tcp.h icmp.h iface.h ip.h
+tcpout.o: tcpout.c global.h timer.h mbuf.h netuser.h internet.h tcp.h
+tcpsubr.o: tcpsubr.c global.h timer.h mbuf.h netuser.h internet.h tcp.h
+tcptimer.o: tcptimer.c global.h mbuf.h timer.h netuser.h internet.h tcp.h
+tcpuser.o: tcpuser.c global.h config.h timer.h mbuf.h netuser.h internet.h tcp.h unixopt.h
+telnet.o: telnet.c config.h global.h mbuf.h timer.h icmp.h netuser.h tcp.h telnet.h session.h ftp.h iface.h ax25.h lapb.h finger.h nr4.h
+telserv.o: telserv.c unixopt.h global.h mbuf.h timer.h icmp.h netuser.h tcp.h telnet.h session.h
+telunix.o: telunix.c unixopt.h global.h mbuf.h timer.h icmp.h netuser.h tcp.h telnet.h session.h
+timer.o: timer.c global.h timer.h
+tnserv.o: tnserv.c config.h sokname.h global.h mbuf.h timer.h icmp.h netuser.h tcp.h telnet.h session.h ftp.h iface.h ax25.h lapb.h finger.h nr4.h
+trace.o: trace.c config.h global.h mbuf.h iface.h trace.h session.h ax25.h timer.h nr4.h netuser.h tcp.h finger.h lapb.h telnet.h ftp.h
+ttydriv.o: ttydriv.c options.h config.h global.h mbuf.h netuser.h timer.h ax25.h lapb.h nr4.h iface.h tcp.h session.h cmdparse.h telnet.h ftp.h finger.h
+udp.o: udp.c global.h mbuf.h netuser.h udp.h internet.h
+udpcmd.o: udpcmd.c sokname.h global.h mbuf.h netuser.h udp.h internet.h cmdparse.h
+udpdump.o: udpdump.c config.h global.h mbuf.h netuser.h internet.h udp.h
+version.o: version.c options.h config.h
+wildmat.o: wildmat.c
+
+# Following not used with Coherent, but left in place in case you get
+# some of these cpio files from someone else.  Use lharc to update the
+# Coherent files.  Much more efficient.
+
+pak:
+	ls *.unix *.coh *.os9 *.h | cpio -ocm >./net.h.cpio
+	$(ZIPPER) net.h.cpio
+	ls *.[ac] | cpio -ocm >./net.c.cpio
+	$(ZIPPER) net.c.cpio
+
+tar:
+	$(TAR) cvf net.tar *.unix *.coh *.os9 *.[hca]
+	$(ZIPPER) -f net.tar

@@ -1,0 +1,309 @@
+main.o:	/usr/include/stdio.h	/usr/include/string.h\
+	./options.h	./config.h	./sokname.h	./global.h	./mbuf.h\
+	./netuser.h	./timer.h	./icmp.h	./iface.h	./ip.h	./tcp.h\
+	./ax25.h	./lapb.h	./netrom.h	./nr4.h	./ftp.h	./telnet.h\
+	./remote.h	./finger.h	./session.h	./cmdparse.h	./asy.h\
+	./slip.h	./unix.h	./unixopt.h	./trace.h\
+	/usr/include/signal.h	/usr/include/sys/signal.h
+
+arp.o:	./config.h	./global.h	./mbuf.h	./timer.h	./iface.h\
+	./ax25.h	./arp.h
+
+arpcmd.o:	./config.h	/usr/include/stdio.h	./global.h\
+	./mbuf.h	./timer.h	./iface.h	./ax25.h	./arp.h	./cmdparse.h\
+	/usr/include/ctype.h
+
+arpdump.o:	./options.h	./config.h	/usr/include/stdio.h\
+	./global.h	./mbuf.h	./timer.h	./arp.h	./iface.h	./ax25.h
+
+ax25.o:	./options.h	./config.h	/usr/include/stdio.h\
+	/usr/include/string.h	./global.h	./mbuf.h	./iface.h\
+	./timer.h	./arp.h	./slip.h	./ax25.h	./lapb.h\
+	/usr/include/ctype.h	/usr/include/time.h	./heard.h\
+	/usr/include/sys/types.h
+
+ax25cmd.o:	/usr/include/stdio.h	/usr/include/string.h\
+	./global.h	./options.h	./config.h	./mbuf.h	./ax25.h\
+	./timer.h	./netuser.h	./ftp.h	./tcp.h	./telnet.h	./iface.h\
+	./lapb.h	./finger.h	./cmdparse.h	./session.h	./nr4.h\
+	./arp.h	/usr/include/time.h	./heard.h\
+	/usr/include/sys/types.h	/usr/include/sys/inode.h\
+	/usr/include/sys/stat.h
+
+ax25dump.o:	/usr/include/stdio.h	./options.h	./config.h\
+	./global.h	./mbuf.h	./ax25.h	./timer.h	./iface.h	./lapb.h\
+	./trace.h
+
+ax25subr.o:	./config.h	/usr/include/stdio.h\
+	/usr/include/string.h	./global.h	./mbuf.h	./timer.h\
+	./ax25.h	./lapb.h	./netuser.h	./ftp.h	./nr4.h	./session.h\
+	./tcp.h	./telnet.h	./iface.h	./finger.h\
+	/usr/include/ctype.h
+
+ax25user.o:	./config.h	./global.h	./mbuf.h	./timer.h\
+	./iface.h	./ax25.h	./lapb.h	/usr/include/ctype.h
+
+ax_mbx.o:	./options.h	./config.h	/usr/include/string.h\
+	/usr/include/stdio.h	/usr/include/time.h\
+	/usr/include/ctype.h	/usr/include/sys/types.h\
+	/usr/include/sys/stat.h	./global.h	./mbuf.h	./ax25.h\
+	./timer.h	./iface.h	./lapb.h	./netrom.h	./nr4.h	./ax_mbx.h\
+	./cmdparse.h	./netuser.h	./tcp.h
+
+cmdparse.o:	/usr/include/stdio.h	/usr/include/ctype.h\
+	./global.h	./cmdparse.h
+
+mdkiss.o:	./options.h	./config.h	/usr/include/stdio.h\
+	/usr/include/string.h	./global.h	./mbuf.h	./ax25.h\
+	./slip.h	./asy.h	./iface.h	./kiss.h	./trace.h	./netuser.h\
+	./timer.h	./tcp.h
+
+files.o:	./options.h	./config.h	/usr/include/stdio.h\
+	/usr/include/sys/types.h	/usr/include/sys/stat.h\
+	./global.h	./netuser.h	./timer.h	./tcp.h	./mbuf.h\
+	/usr/include/string.h	/usr/include/time.h
+
+fingcli.o:	/usr/include/stdio.h	./config.h	./global.h\
+	./mbuf.h	./timer.h	./internet.h	./icmp.h	./netuser.h\
+	./tcp.h	./ftp.h	./telnet.h	./iface.h	./ax25.h	./lapb.h\
+	./finger.h	./session.h	./nr4.h
+
+fingserv.o:	./config.h	/usr/include/stdio.h\
+	/usr/include/string.h	./sokname.h	./global.h	./mbuf.h\
+	./timer.h	./internet.h	./icmp.h	./netuser.h	./tcp.h\
+	./ftp.h	./telnet.h	./iface.h	./ax25.h	./lapb.h	./finger.h\
+	./session.h	./nr4.h
+
+ftp.o:	/usr/include/stdio.h	./config.h	./global.h	./mbuf.h\
+	./netuser.h	./timer.h	./tcp.h	./ftp.h	./telnet.h	./iface.h\
+	./ax25.h	./lapb.h	./finger.h	./session.h\
+	/usr/include/sys/types.h	/usr/include/sys/stat.h\
+	/usr/include/sys/inode.h	./nr4.h
+
+ftpcli.o:	/usr/include/stdio.h	/usr/include/string.h\
+	./config.h	./global.h	./mbuf.h	./netuser.h	./icmp.h\
+	./timer.h	./tcp.h	./ftp.h	./session.h	./cmdparse.h\
+	./telnet.h	./iface.h	./ax25.h	./lapb.h	./finger.h	./nr4.h
+
+ftpserv.o:	/usr/include/stdio.h	/usr/include/ctype.h\
+	/usr/include/string.h	/usr/include/time.h	./config.h\
+	./global.h	./mbuf.h	./netuser.h	./timer.h	./tcp.h	./ftp.h\
+	./telnet.h	./unix.h	/usr/include/sys/types.h\
+	/usr/include/sys/stat.h	./iface.h	./ax25.h	./lapb.h\
+	./finger.h	./session.h	./nr4.h
+
+icmp.o:	./global.h	./mbuf.h	./internet.h	./timer.h\
+	./iface.h	./ip.h	./icmp.h
+
+icmpcmd.o:	/usr/include/stdio.h	/usr/include/string.h\
+	./global.h	./icmp.h	./mbuf.h	./netuser.h	./internet.h\
+	./timer.h	./ping.h
+
+icmpdump.o:	./config.h	/usr/include/stdio.h	./global.h\
+	./mbuf.h	./internet.h	./icmp.h	./trace.h
+
+icmpmsg.o:	./global.h
+
+iface.o:	./options.h	./global.h	./iface.h
+
+ip.o:	./global.h	./mbuf.h	./timer.h	./internet.h	./iface.h\
+	./ip.h	./icmp.h
+
+ipcmd.o:	/usr/include/stdio.h	./options.h\
+	./global.h	./mbuf.h	./internet.h	./timer.h	./netuser.h\
+	./iface.h	./ip.h	./cmdparse.h
+
+ipdump.o:	./config.h	/usr/include/stdio.h	./global.h\
+	./mbuf.h	./internet.h	./timer.h	./iface.h	./ip.h	./trace.h\
+	./netuser.h
+
+iproute.o:	./config.h	./global.h	./mbuf.h	./internet.h\
+	./timer.h	./netuser.h	./ip.h	./icmp.h	./iface.h	./trace.h
+
+kiss.o:	./options.h	./config.h	./global.h	./mbuf.h\
+	./iface.h	./kiss.h	./trace.h	/usr/include/stdio.h\
+	/usr/include/string.h
+
+lapb.o:	./options.h	./config.h	./global.h	./mbuf.h\
+	./timer.h	./ax25.h	./lapb.h	./iface.h
+
+lapbtime.o:	./config.h	/usr/include/stdio.h	./global.h\
+	./mbuf.h	./ax25.h	./timer.h	./netuser.h	./nr4.h\
+	./session.h	./tcp.h	./ftp.h	./telnet.h	./iface.h\
+	./finger.h	./lapb.h
+
+lcsum.o:	./global.h
+
+mbuf.o:	./config.h	./global.h	./mbuf.h
+
+misc.o:	./global.h
+
+motd.o:	./config.h	/usr/include/stdio.h
+
+mulport.o:	./options.h	/usr/include/stdio.h	./global.h\
+	./mbuf.h	./iface.h	./ax25.h	./cmdparse.h\
+	/usr/include/ctype.h
+
+ndir.o:	/usr/include/sys/param.h\
+	/usr/include/sys/fs/s5param.h	./ndir.h
+
+netuser.o:	/usr/include/ctype.h	/usr/include/stdio.h\
+	/usr/include/string.h	./sokname.h	./global.h	./netuser.h\
+	./unix.h
+
+nrcmd.o:	./config.h	/usr/include/stdio.h\
+	/usr/include/string.h	./global.h	./mbuf.h	./ax25.h\
+	./timer.h	./iface.h	./lapb.h	./netrom.h	./nr4.h\
+	./netuser.h	./tcp.h	./ftp.h	./telnet.h	./finger.h\
+	./cmdparse.h	./session.h	/usr/include/ctype.h\
+	/usr/include/sys/types.h	/usr/include/sys/inode.h\
+	/usr/include/sys/stat.h
+
+nrs.o:	./options.h	./config.h
+
+nr3.o:	/usr/include/stdio.h	/usr/include/string.h\
+	./config.h	./global.h	./mbuf.h	./iface.h	./timer.h	./arp.h\
+	./slip.h	./ax25.h	./netrom.h	./nr4.h	./lapb.h\
+	/usr/include/ctype.h
+
+nrsubr.o:	./config.h	./global.h	./mbuf.h	./timer.h	./ax25.h\
+	./iface.h	./netrom.h	./lapb.h	/usr/include/ctype.h
+
+nr4.o:	/usr/include/stdio.h	./config.h	./global.h	./mbuf.h\
+	./timer.h	./ax25.h	./lapb.h	./iface.h	./netrom.h	./nr4.h\
+	/usr/include/ctype.h
+
+nr4subr.o:	/usr/include/stdio.h	./config.h	./global.h\
+	./mbuf.h	./timer.h	./ax25.h	./iface.h	./netrom.h	./nr4.h\
+	./lapb.h	/usr/include/ctype.h
+
+nr4user.o:	/usr/include/stdio.h	./config.h	./global.h\
+	./mbuf.h	./timer.h	./ax25.h	./lapb.h	./iface.h	./netrom.h\
+	./nr4.h	/usr/include/ctype.h
+
+nr4timer.o:	/usr/include/stdio.h	./config.h	./global.h\
+	./mbuf.h	./timer.h	./ax25.h	./lapb.h	./iface.h	./netrom.h\
+	./nr4.h	/usr/include/ctype.h
+
+pathname.o:	./global.h
+
+session.o:	/usr/include/stdio.h	/usr/include/string.h\
+	./options.h	./config.h	/usr/include/curses.h\
+	/usr/include/stdio.h	/usr/include/unctrl.h\
+	/usr/include/termio.h	/usr/include/sys/termio.h\
+	/usr/include/term.h	./global.h	./sokname.h	./mbuf.h\
+	./netuser.h	./timer.h	./tcp.h	./ax25.h	./lapb.h	./iface.h\
+	./ftp.h	./telnet.h	./finger.h	./netrom.h	./nr4.h\
+	./session.h	./cmdparse.h
+
+slip.o:	/usr/include/stdio.h	./global.h	./mbuf.h	./iface.h\
+	./ax25.h	./slip.h	./asy.h	./options.h	./config.h	./trace.h
+
+smisc.o:	/usr/include/stdio.h	/usr/include/time.h\
+	./sokname.h	./global.h	./mbuf.h	./netuser.h	./timer.h\
+	./tcp.h	./remote.h
+
+smtpcli.o:	/usr/include/stdio.h	/usr/include/fcntl.h\
+	/usr/include/sys/fcntl.h	/usr/include/time.h\
+	/usr/include/string.h	/usr/include/sys/types.h	./global.h\
+	./netuser.h	./mbuf.h	./timer.h	./tcp.h	./smtp.h	./trace.h\
+	./cmdparse.h
+
+smtpserv.o:	/usr/include/stdio.h	/usr/include/time.h\
+	/usr/include/sys/types.h	/usr/include/ctype.h\
+	/usr/include/string.h	./global.h	./mbuf.h	./netuser.h\
+	./timer.h	./tcp.h	./smtp.h
+
+sys5_io.o:	/usr/include/stdio.h	/usr/include/sys/types.h\
+	/usr/include/termio.h	/usr/include/sys/termio.h\
+	/usr/include/signal.h	/usr/include/sys/signal.h\
+	/usr/include/sys/file.h	/usr/include/time.h\
+	/usr/include/fcntl.h	/usr/include/sys/fcntl.h\
+	/usr/include/errno.h	/usr/include/sys/errno.h	./global.h\
+	./asy.h	./mbuf.h	./internet.h	./iface.h	./unix.h\
+	./cmdparse.h	./unixopt.h
+
+sys5unix.o:	/usr/include/stdio.h	/usr/include/signal.h\
+	/usr/include/sys/signal.h	/usr/include/termio.h\
+	/usr/include/sys/termio.h	/usr/include/sys/types.h\
+	/usr/include/sys/stat.h	/usr/include/sys/times.h\
+	/usr/include/time.h	/usr/include/fcntl.h\
+	/usr/include/sys/fcntl.h	./global.h	./cmdparse.h	./iface.h\
+	./unix.h	./unixopt.h	./ndir.h	./session.h
+
+tcpcmd.o:	/usr/include/stdio.h	/usr/include/ctype.h\
+	./sokname.h	./global.h	./timer.h	./mbuf.h	./netuser.h\
+	./internet.h	./tcp.h	./cmdparse.h
+
+tcpdump.o:	./config.h	/usr/include/stdio.h	./global.h\
+	./mbuf.h	./netuser.h	./internet.h	./timer.h	./tcp.h\
+	./trace.h
+
+tcpin.o:	./global.h	./timer.h	./mbuf.h	./netuser.h\
+	./internet.h	./tcp.h	./icmp.h	./iface.h	./ip.h
+
+tcpout.o:	./global.h	./timer.h	./mbuf.h	./netuser.h\
+	./internet.h	./tcp.h
+
+tcpsubr.o:	./global.h	./timer.h	./mbuf.h	./netuser.h\
+	./internet.h	./tcp.h
+
+tcptimer.o:	/usr/include/stdio.h	./global.h	./mbuf.h\
+	./timer.h	./netuser.h	./internet.h	./tcp.h
+
+tcpuser.o:	/usr/include/stdio.h	/usr/include/string.h\
+	./global.h	./config.h	./timer.h	./mbuf.h	./netuser.h\
+	./internet.h	./tcp.h	./unixopt.h
+
+telnet.o:	/usr/include/stdio.h	./config.h\
+	/usr/include/string.h	./global.h	./mbuf.h	./timer.h\
+	./icmp.h	./netuser.h	./tcp.h	./telnet.h	./session.h\
+	./ftp.h	./iface.h	./ax25.h	./lapb.h	./finger.h	./nr4.h
+
+telserv.o:	./unixopt.h	/usr/include/stdio.h	./global.h\
+	./mbuf.h	./timer.h	./icmp.h	./netuser.h	./tcp.h	./telnet.h\
+	./session.h	/usr/include/errno.h	/usr/include/sys/errno.h\
+	/usr/include/fcntl.h	/usr/include/sys/fcntl.h\
+	/usr/include/signal.h	/usr/include/sys/signal.h\
+	/usr/include/sys/types.h	/usr/include/termio.h\
+	/usr/include/sys/termio.h	/usr/include/sys/ipc.h\
+	/usr/include/sys/msg.h	/usr/include/errno.h\
+	/usr/include/sys/errno.h
+
+telunix.o:	./unixopt.h	/usr/include/stdio.h	./global.h\
+	./mbuf.h	./timer.h	./icmp.h	./netuser.h	./tcp.h	./telnet.h\
+	./session.h	/usr/include/errno.h	/usr/include/sys/errno.h\
+	/usr/include/fcntl.h	/usr/include/sys/fcntl.h\
+	/usr/include/signal.h	/usr/include/sys/signal.h\
+	/usr/include/sys/types.h	/usr/include/sys/stat.h\
+	/usr/include/termio.h	/usr/include/sys/termio.h
+
+timer.o:	/usr/include/stdio.h	./global.h	./timer.h
+
+tnserv.o:	./config.h	/usr/include/stdio.h	./sokname.h\
+	./global.h	./mbuf.h	./timer.h	./icmp.h	./netuser.h	./tcp.h\
+	./telnet.h	./session.h	./ftp.h	./iface.h	./ax25.h	./lapb.h\
+	./finger.h	./nr4.h	/usr/include/string.h
+
+trace.o:	./config.h	./options.h	/usr/include/stdio.h\
+	/usr/include/ctype.h	./global.h	./mbuf.h	./iface.h\
+	./trace.h	./session.h	./ax25.h	./timer.h	./nr4.h\
+	./netuser.h	./tcp.h	./finger.h	./lapb.h	./telnet.h	./ftp.h\
+	/usr/include/string.h
+
+ttydriv.o:	/usr/include/stdio.h	/usr/include/ctype.h\
+	./options.h	./config.h	./global.h	./mbuf.h	./netuser.h\
+	./timer.h	./ax25.h	./lapb.h	./nr4.h	./iface.h	./tcp.h\
+	./session.h	./cmdparse.h	./telnet.h	./ftp.h	./finger.h\
+	./unixopt.h
+
+udp.o:	./global.h	./mbuf.h	./netuser.h	./udp.h	./internet.h
+
+udpcmd.o:	/usr/include/stdio.h	./sokname.h	./global.h\
+	./mbuf.h	./netuser.h	./udp.h	./internet.h	./cmdparse.h
+
+udpdump.o:	./config.h	/usr/include/stdio.h	./global.h\
+	./mbuf.h	./netuser.h	./internet.h	./udp.h
+
+version.o:	./options.h	./config.h
+

@@ -1,0 +1,119 @@
+#	Makefile for KA9Q TCP/IP package for OS9-68k
+#  Prepared by Bob Brose, N0QBJ, 974 Hampden Ave, St Paul MN 55114-1108
+#
+#  Note that this is still under development, e.g. curses functions not
+#  resolved yet.  Since "remote" is an OSK storage type, we redefine at
+#  compile time remote=rremote so variables using that name in the files
+#  don't have to be renamed.  Don't use "rremote" in any modifications.
+
+SHELL = /dd/cmds/shell
+TAR = tar
+# Note that the GNU zipper makes smaller compressed files.  Use it if
+# you and your correspondents have it, eg: ZIPPER = gzip
+ZIPPER = compress
+
+# If you have shared libraries (usually /lib/libc_s.a) you can make
+# smaller executable with SHLIB defined: note cio.l is too slow to do
+# 9600 baud on a 16mhz 68000 system
+
+#SHLIB="-l=/dd/lib/cio.l"
+SHLIB=
+CC=cc
+RDIR=RELS
+#RDIR=RELS.UCC
+OSKDEFS = -Dremote=rremote
+####################################################################
+# The W5GFE video modification has been put in unixopt.h. This modifi-
+# cation cause inverse video on incoming telnet data.
+# Change unixopt.h, if necessary, and define your curses library.
+#CURSES=-lcurses
+# Or, if you don't have curses, forget the whole thing and enable:
+CURSES=
+#
+####################################################################
+# Uncomment the next three lines for
+# OS9-68000. MWC 3.2 compiler
+#
+CFLAGS = -s -o=2 -t=/r0 -DUNIX -DMSPTICK=10 $(OSKDEFS)
+LINTFLAGS = -DUNIX -DMSPTICK=10 $(OSKDEFS)
+LIBS =$(SHLIB) $(CURSES)
+########################################################################
+# Uncomment the next three lines for OS9-68000, ULTRA-C compiler
+#
+#CFLAGS = -mode=ucc -b -o=7 -td=/dd -t=4 -s=1 -r -DUNIX -DMSPTICK=10 $(OSKDEFS)
+#LINTFLAGS = -DUNIX -DMSPTICK=10 $(OSKDEFS)
+#LIBS =$(SHLIB) $(CURSES)
+#####################################################################
+# Uncomment the next three lines for OS9-68000, ULTRA-C in compat mode
+#
+#CFLAGS = -mode=compat -r=. i- -x -o=0 -t=/r0 -DUNIX -DMSPTICK=10 $(OSKDEFS)
+#LINTFLAGS = -DUNIX -DMSPTICK=10 $(OSKDEFS)
+#LIBS = $(SHLIB) $(CURSES)
+#####################################################################
+
+SRCS =	main.c arp.c arpcmd.c arpdump.c ax25.c ax25cmd.c \
+	ax25dump.c ax25subr.c ax25user.c ax_mbx.c cmdparse.c mdkiss.c \
+	files.c fingcli.c fingserv.c ftp.c ftpcli.c ftpserv.c icmp.c \
+	icmpcmd.c icmpdump.c icmpmsg.c iface.c ip.c ipcmd.c ipdump.c \
+	iproute.c kiss.c lapb.c lapbtime.c lcsum.c mbuf.c misc.c motd.c \
+	mulport.c netuser.c nrcmd.c nrs.c nr3.c nrsubr.c nr4.c \
+	nr4subr.c nr4user.c nr4timer.c pathname.c session.c slip.c \
+	smisc.c smtpcli.c smtpserv.c sys5unix.c tcpcmd.c \
+	tcpdump.c tcpin.c tcpout.c tcpsubr.c tcptimer.c tcpuser.c telnet.c \
+	telserv.c telunix.c timer.c tnserv.c trace.c ttydriv.c udp.c udpcmd.c \
+	udpdump.c version.c wildmat.c osk_io.c
+
+OBJS =	main.r arp.r arpcmd.r arpdump.r ax25.r ax25cmd.r \
+	ax25dump.r ax25subr.r ax25user.r ax_mbx.r cmdparse.r mdkiss.r \
+	files.r fingcli.r fingserv.r ftp.r ftpcli.r ftpserv.r icmp.r \
+	icmpcmd.r icmpdump.r icmpmsg.r iface.r ip.r ipcmd.r ipdump.r \
+	iproute.r kiss.r lapb.r lapbtime.r lcsum.r mbuf.r misc.r motd.r \
+	mulport.r netuser.r nrcmd.r nrs.r nr3.r nrsubr.r nr4.r \
+	nr4subr.r nr4user.r nr4timer.r pathname.r session.r slip.r \
+	smisc.r smtpcli.r smtpserv.r sys5unix.r tcpcmd.r \
+	tcpdump.r tcpin.r tcpout.r tcpsubr.r tcptimer.r tcpuser.r telnet.r \
+	telserv.r telunix.r timer.r tnserv.r trace.r ttydriv.r udp.r udpcmd.r \
+	udpdump.r version.r wildmat.r osk_io.r
+
+net:	$(OBJS)
+
+# OSK link for mwc 3.2 follows
+     chd $(RDIR);l68 /dd/lib/cstart.r -z=../linkfiles.os9 -o=net $(SHLIB) -l=/dd/lib/clib.l -l=/dd/lib/sys.l -a
+
+# OSK link for ULTRA-C follows
+
+#	chd $(RDIR);l68 /dd/lib/ansi_cstart.r -a -z=../linkfiles.os9 -o=nos -l=/dd/lib/clib.l -l=/dd/lib/os_lib.l -l=/dd/lib/sys_clib.l -l=/dd/lib/os_lib.l -l=/dd/lib/fdir.l -l=/dd/lib/sys.l -a -c
+# ucc in compat mode
+#	chd $(RDIR);l68 /dd/lib/cstart.r -a -q -z=../linkfiles.os9 -o=nos $(SHLIB) -l=/dd/lib/sys_clib.l -l=/dd/lib/clib.l -l=/dd/lib/os_lib.l -l=/dd/lib/math.l -l=/dd/lib/sys.l
+depend:
+	mkdep $(LINTFLAGS) $(SRCS) > depend.out
+
+clean:
+	-rm *.r
+
+
+# here are some choices for archiving your files:
+#
+tar:
+	$(TAR) cvf net.tar *.unix *.coh *.os9 mkdep depend.out *.[hca]
+	$(ZIPPER) -f net.tar
+
+lharc:
+	lharc f netunix
+
+uptar:
+	$(TAR) uvf net.tar *.unix *.coh *.os9 mkdep depend.out *.[hca]
+	#    net.tar not compressed - do it manually
+
+pak:
+	ls *.unix *.coh *.os9 mkdep depend.out *.h | cpio -ocm >./net.h.cpio
+	$(ZIPPER) net.h.cpio
+	ls *.[ac] | cpio -ocm >./net.c.cpio
+	$(ZIPPER) net.c.cpio
+	$(ZIPPER) -f net
+
+# Be sure and make a new depend.out because the one in the tar kit came
+# off of my machine and you may not have the same nested include files.
+# You need depend.out to run "make depend", even if it is a zero length file.
+#
+include depend.out
