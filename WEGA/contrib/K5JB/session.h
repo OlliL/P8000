@@ -37,7 +37,9 @@ struct session {
 	char *rfile;		/* Record file name */
 	FILE *upload;		/* Send file */
 	char *ufile;		/* Upload file name */
+#ifndef	WEGA	/* leads to problems because of conflicting function noecho() */
 	char noecho;		/* Echo flag */
+#endif
 };
 #define	NULLSESSION	(struct session *)0
 extern unsigned nsessions;

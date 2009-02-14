@@ -4,6 +4,13 @@
 #
 cpparg=
 linelen=60 # desired length of dependency line
+system=`uname -s`
+if [ "$system" = "P8000" ] ; then
+	cpp_cmd=/z/LCC/lib/lcpp
+else
+	cpp_cmd=/lib/cpp
+fi
+
 for arg in "$@"
 do
 	case $arg in
@@ -15,7 +22,7 @@ do
 	target=`expr "$source" : '\\(.*\\)\\.c$'`
 	if [ -n "$target" ]; then
 		target=`basename "$target"`
-		/lib/cpp $cpparg "$source" |
+		$cpp_cmd $cpparg "$source" |
 		sed -n -e 's/^# 1 "\(.*\)"/\1/p' |
 		awk '
 			BEGIN { deplist = "'$target.o:'" }

@@ -48,6 +48,7 @@
 #include "unix.h"
 #include "unixopt.h"
 #include "ndir.h"
+#include "timer.h"
 
 #define	MAXCMD	1024
 

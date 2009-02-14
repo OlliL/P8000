@@ -3,7 +3,9 @@
  */
 
 /* if you have the mkdir() function, define the following: */
+#ifndef WEGA
 #define HAVEMKDIR
+#endif
 
 /* This is a wait value for the Coherent sleep2() function */
 #define COHWAIT 50	/* 50 ms */
@@ -20,19 +22,25 @@
  * Contact me for source code if you have same problem.
  */
 
+#ifndef WEGA
 #define TELUNIX
+#endif
 
 /* On k5jb3b2 only, has to do with brain damaged pty on my machine.
  * Don't define this unless you have the file that I call telunix.c3
  * linked to telunix.c in your set.
  */
+#ifndef WEGA
 #define PTY_PIPE
+#endif
 
 /* a client stub with PORT 87.  Uses IPC to transact with a server.
  * Contact me for a sample server if you want to try this.
  */
+#ifndef WEGA
 #define TELSERV
 #define SERVNAME "telserv"	/* suggest 7 max for screen formatting */
+#endif
 
 #ifdef _OSK
 #undef TELUNIX

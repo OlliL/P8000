@@ -26,10 +26,14 @@ struct timer {
 #if	ATARI_ST && (!MWC)
 #define	MSPTICK		100		/* Milliseconds per tick */
 #else
+#ifdef	WEGA
+#define	MSPTICK		17
+#else
 /* for only a 10% error you can make all time reports pretty by using
  * 50 instead of 55 here
  */
 #define	MSPTICK		55		/* (approx) Milliseconds per tick */
+#endif /* WEGA */
 #endif /* ATARI, etc */
 #endif
 

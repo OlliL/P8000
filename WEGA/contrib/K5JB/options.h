@@ -56,7 +56,9 @@
 #define	MDKISSPORT /* Multidrop KISS, up to 16 pseudo ports, 1016 bytes */
 #define	MULPORT /* Grapes Multiport code - adds 1398 bytes */
 #define	AX25_HEARD /* Heard list - adds 3716 bytes */
+#ifndef WEGA
 #define	CUTE_VIDEO  /* Contrast video on incoming sessions. Adds 484 Bytes */
+#endif
 #undef	TRACE_TIME	/* Trace timestamping */
 #define	SEG_CMD	/* ax25 segment command */
 #define	REWRITE	/* rewrite.net file for smtp server */

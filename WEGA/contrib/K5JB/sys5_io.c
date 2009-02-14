@@ -39,6 +39,9 @@
 #ifndef COH386
 #include <sys/file.h>
 #endif
+#ifdef	WEGA
+#include <math.h>	/* for errno declaration */
+#endif
 #include <time.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -56,7 +59,11 @@
 #endif
 
 #ifndef	B38400
+#ifdef	WEGA
+#define	B38400	EXTA
+#else
 #define	B38400	EXTB
+#endif
 #endif
 
 struct asy asy[ASY_MAX];

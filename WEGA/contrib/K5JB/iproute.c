@@ -589,7 +589,11 @@ int16 len;
 		sum += loword(ph->source);
 		sum += hiword(ph->dest);
 		sum += loword(ph->dest);
+#ifdef	WEGA
+		sum += (int)ph->protocol;
+#else
 		sum += uchar(ph->protocol);
+#endif
 		sum += ph->length;
 	}
 	/* Now do each mbuf on the chain */
@@ -601,9 +605,17 @@ int16 len;
 		if(((long)up) & 1){
 			/* Handle odd leading byte */
 			if(swap)
+#ifdef	WEGA
+				csum = (int)(*up++);
+#else
 				csum = uchar(*up++);
+#endif
 			else
+#ifdef	WEGA
+				csum = (int16)((int)(*up++) << 8);
+#else
 				csum = (int16)(uchar(*up++) << 8);
+#endif
 			cnt--;
 			swap = !swap;
 		}
@@ -620,9 +632,24 @@ int16 len;
 		/* Handle odd trailing byte */
 		if(cnt & 1){
 			if(swap)
+#ifdef	WEGA
+			{
+				unsigned short tmp;
+
+				tmp = (unsigned short)up[--cnt];
+				tmp <<= 8;
+				tmp >>= 8;
+				csum += tmp;
+			}
+#else
 				csum += uchar(up[--cnt]);
+#endif
 			else
+#ifdef	WEGA
+				csum += (int16)((int)(up[--cnt]) << 8);
+#else
 				csum += (int16)(uchar(up[--cnt]) << 8);
+#endif
 			swap = !swap;
 		}
 		sum += csum;

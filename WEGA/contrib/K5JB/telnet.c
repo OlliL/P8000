@@ -2,6 +2,9 @@
 #include "config.h"
 #ifdef _TELNET
 #include <string.h>
+#ifdef	WEGA
+#include <memory.h>	/* to get the return value of memchr() right */
+#endif
 #include "global.h"
 #include "mbuf.h"
 #include "timer.h"

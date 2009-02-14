@@ -22,7 +22,9 @@
 #ifdef NETROM
 #include "nr4.h"
 #endif
+#ifndef WEGA
 #include "iface.h"
+#endif
 #include "tcp.h"
 #include "session.h"
 #include "cmdparse.h"

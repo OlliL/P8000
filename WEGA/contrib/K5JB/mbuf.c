@@ -479,6 +479,9 @@ pull32(bpp)
 struct mbuf **bpp;
 {
 	int32 rval;
+#ifdef	WEGA
+	int16 rval1, rval2;
+#endif
 	char buf[4];
 	register char *cp;
 
@@ -489,6 +492,18 @@ struct mbuf **bpp;
 	cp = buf;
 
 	/* Unwound for speed */
+#ifdef	WEGA
+	rval1   = uchar(*cp++);
+	rval1 <<= 8;
+	rval1  |= uchar(*cp++);
+	rval2   = uchar(*cp++);
+	rval2 <<= 8;
+	rval2  |= uchar(*cp);
+
+	rval   = rval1;
+	rval <<= 16;
+	rval  |= rval2;
+#else
 	rval = uchar(*cp++);
 	rval <<= 8;
 	rval |= uchar(*cp++);
@@ -496,6 +511,7 @@ struct mbuf **bpp;
 	rval |= uchar(*cp++);
 	rval <<= 8;
 	rval |= uchar(*cp);
+#endif
 
 	return rval;
 }

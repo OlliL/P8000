@@ -11,10 +11,11 @@ SHELL = /bin/sh
 TAR = tar
 # Use gzip instead of compress if you and your correspondents have it
 ZIPPER = compress
+CC = lcc
 
 # If you have shared libraries (usually /lib/libc_s.a) you can make
 # smaller executable with SHLIB defined:
-SHLIB=-lc_s
+#SHLIB=-lc_s
 # Otherwise, enable:
 #SHLIB=
 
@@ -22,7 +23,7 @@ SHLIB=-lc_s
 # The W5GFE video modification has been put in unixopt.h. This modifi-
 # cation cause inverse video on incoming telnet data.
 # Change unixopt.h, if necessary, and define your curses library.
-CURSES=-lcurses
+#CURSES=-lcurses
 # Or, if you don't have curses, forget the whole thing and enable:
 #CURSES=
 #
@@ -74,8 +75,8 @@ CURSES=-lcurses
 # Uncomment the next three lines for
 # Unix System V -- (AT&T 3B2 - K5JB)
 #
-CFLAGS = -O -DUNIX -DSYS5 -DSLOWCHECK -DMSPTICK=10
-LINTFLAGS = -O -DUNIX -DSYS5 -DSLOWCHECK -DMSPTICK=10
+CFLAGS = -DWEGA -DUNIX -DSYS5 -DSLOWCHECK
+LINTFLAGS = -DWEGA -DUNIX -DSYS5 -DSLOWCHECK
 LIBS =$(SHLIB) $(CURSES)
 ########################################################################
 #
@@ -137,7 +138,11 @@ lint:	$(SRCS)
 #	lint $(LINTFLAGS) [i-z]*.ln  > lint3.out 2>&1
 
 depend:
-	mkdep $(LINTFLAGS) $(SRCS) > depend.out
+	rm -f depend.out
+	touch depend.out
+	for file in $(SRCS) ; do \
+		mkdep $(LINTFLAGS) $$file > depend.out ; \
+	done
 
 clean:
 	-rm *.o
