@@ -643,7 +643,7 @@ iterate()
 		printf("iterate works\n");
 	nchange = 0;
 	for (p = first.forw; p!=0; p = p->forw) {
-		if (p->op && p->op <= JSW) {
+		if (p->op && p->op <= JSW && p->ref) {
 		if(debug > 2){
 			printf("iterate works on:");
 			dbprint(p);
@@ -939,7 +939,7 @@ char *str;
 	register char *s = str;
 	char *anf, *ende;
 	char *stkp;
-	unsigned xli;
+	unsigned xli = 256;
 
 	while(*s) {
 		while(*s && *s != '_')
