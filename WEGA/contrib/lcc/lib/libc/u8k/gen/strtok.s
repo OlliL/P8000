@@ -29,7 +29,7 @@
  *		if(*p == '\0')		// return if no tokens remaining
  *			return(NULL);
  *	
- *		if((r = strpbrk(q, sepset)) != NULL)	// move past token
+ *		if((r = strpbrk(p, sepset)) != NULL)	// move past token
  *		{
  *			*r = '\0';
  *			r++;
@@ -74,7 +74,7 @@ _strtok::
 	jr	~finis
 ~L2:
 	ldl	@SP,rr8
-	call	~strpbrk		// rr2 <-> r=strpbrk(p,sepset)
+	call	_strpbrk		// rr2 <-> r=strpbrk(p,sepset)
 	testl	rr2
 	jr	z,~L3
 	clrb	@rr2
