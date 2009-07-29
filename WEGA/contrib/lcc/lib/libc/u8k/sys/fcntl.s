@@ -7,7 +7,7 @@
 	.code
 _fcntl::
 	{
-	ldm	r0,|_stkseg+3|(sp),#4
+	ldm	r0,|_stkseg+4|(sp),#4
 	xor	r4,r4
 	sc	#38			  // switch
 	ld	r2,r4
