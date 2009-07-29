@@ -1,0 +1,28 @@
+A. Allgemeines
+==============
+
+Der Ursprung der Sourcen unter cmd/ und lib/ liegt in den Orginalsourcen
+von der
+
+         Akademie der Wissenschaften Berlin
+Zentralinsitut fuer Kybernetik und Informationsprozesse
+
+
+
+B. Installation (compilieren von den Sourcen)
+=============================================
+
+1. Entpacken Sie das Archiv unterhalb /z/LCC
+
+2. Sie benoetigen zum compilieren von LCC zwingend den LCC selbst.
+
+3. Vor dem compilieren bitte die neusten Aenderungen uebernehmen
+	patch < lcc.WEGA.patch
+   Der patch Aufruf muss leider im Vorfeld unter einem anderen UNIX-Betriebs-
+   system aufgerufen werden. An der Erzeugung eines WEGA-gerechten Patches
+   wird gearbeitet.
+
+4. Danach bitte den Generierungslauf starten:
+	make clean
+	make all
+	make install
