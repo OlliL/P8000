@@ -1,0 +1,543 @@
+        cd cmd ; make all
+        lcc -O -o ar ar.c
+        chmog 751 wega system ar
+        cd comp/u8k ; make
+Expect 6 shift/reduce conflicts
+        yacc  ../common/cgram.y
+
+conflicts: 6 shift/reduce
+        mv y.tab.c ../common/cgram.c
+        lcc -c -O -I. -I../common ../common/cgram.c
+        lcc -c -O -I. -I../common ../common/xdefs.c
+        lcc -c -O -I. -I../common ../common/scan.c
+        lcc -c -O -I. -I../common ../common/pftn.c
+        lcc -c -O -I. -I../common ../common/trees.c
+        lcc -c -O -I. -I../common ../common/optim.c
+        lcc -c -O -I. -I../common local.c
+        lcc -c -O -I. -I../common ../common/reader.c
+        lcc -c -O -I. -I../common local2.c
+        lcc -c -O -I. -I../common debug.c
+        lcc -c -O -I. -I../common ../common/match.c
+        lcc -c -O -I. -I../common ../common/allo.c
+        lcc -c -O -I. -I../common ../common/comm1.c
+        lcc -O -I. -I../common -o sty sty.c
+        ./sty <stin >table.c
+        lcc -c -O -I. -I../common table.c
+        lcc -c -O -I. -I../common ../common/cost.c
+        lcc -c -O -I. -I../common ../common/cgen.c
+        lcc  -o ccom cgram.o xdefs.o scan.o pftn.o trees.o optim.o local.o reader.o local2.o debug.o match.o allo.o comm1.o table.o cost.o cgen.o
+        chmog 751 wega system ccom
+        cc -O -i -o lcc lcc.c
+_debug   ld: /lib/libc.a(mpx.o): - warning: symbol redefined in archive
+        chmog 751 wega system lcc
+        cd c2 ; make
+        lcc -O -c c20.c
+        lcc -O -c c21.c
+        lcc -o lcopt c2*.o
+        chmog 751 wega system lcopt
+        cd cpp ; make
+        lcc -c -O -Dunix -Du8k -DFLEXNAMES -I. ./cpp.c
+"./cpp.c", line 129: warning: constant too big for compiler
+"./cpp.c", line 129: warning: zero or negative subscript
+        yacc ./cpy.y
+        mv y.tab.c cpy.c
+        lcc -c -O -Dunix -Du8k -DFLEXNAMES -I. ./cpy.c
+        lcc -o lcpp cpp.o cpy.o
+        chmod 751 lcpp
+        lcc -o lld lld.c
+        chmog 751 wega system lld
+        cd lib/libc ; make all
+        cd port; make
+        cd gen; make
+a64l.c:
+        lcc -O -c a64l.c
+abort.c:
+        lcc -O -c abort.c
+assert.c:
+        lcc -O -c assert.c
+atof.c:
+        lcc -O -c atof.c
+atoi.c:
+        lcc -O -c atoi.c
+atol.c:
+        lcc -O -c atol.c
+bsearch.c:
+        lcc -O -c bsearch.c
+clock.c:
+        lcc -O -c clock.c
+crypt.c:
+        lcc -O -c crypt.c
+ctime.c:
+        lcc -O -c ctime.c
+ctype.c:
+        lcc -O -c ctype.c
+drand48.c:
+        lcc -O -c drand48.c
+ecvt.c:
+        lcc -O -c ecvt.c
+errlst.c:
+        lcc -O -c errlst.c
+execvp.c:
+        lcc -O -c execvp.c
+fakcu.c:
+        lcc -O -c fakcu.c
+frexp.c:
+        lcc -O -c frexp.c
+ftok.c:
+        lcc -O -c ftok.c
+ftw.c:
+        lcc -O -c ftw.c
+gcvt.c:
+        lcc -O -c gcvt.c
+getcwd.c:
+        lcc -O -c getcwd.c
+getenv.c:
+        lcc -O -c getenv.c
+getgrent.c:
+        lcc -O -c getgrent.c
+getgrgid.c:
+        lcc -O -c getgrgid.c
+getgrnam.c:
+        lcc -O -c getgrnam.c
+getlogin.c:
+        lcc -O -c getlogin.c
+getopt.c:
+        lcc -O -c getopt.c
+getpw.c:
+        lcc -O -c getpw.c
+getpwent.c:
+        lcc -O -c getpwent.c
+getpwnam.c:
+        lcc -O -c getpwnam.c
+getpwuid.c:
+        lcc -O -c getpwuid.c
+getut.c:
+        lcc -O -c getut.c
+hsearch.c:
+        lcc -O -c hsearch.c
+isatty.c:
+        lcc -O -c isatty.c
+l3.c:
+        lcc -O -c l3.c
+l64a.c:
+        lcc -O -c l64a.c
+ldexp.c:
+        lcc -O -c ldexp.c
+lsearch.c:
+        lcc -O -c lsearch.c
+mktemp.c:
+        lcc -O -c mktemp.c
+modf.c:
+        lcc -O -c modf.c
+nlist.c:
+        lcc -O -c -DFLEXNAMES nlist.c
+perror.c:
+        lcc -O -c perror.c
+putpwent.c:
+        lcc -O -c putpwent.c
+qsort.c:
+        lcc -O -c qsort.c
+rand.c:
+        lcc -O -c rand.c
+sleep.c:
+        lcc -O -c sleep.c
+ssignal.c:
+        lcc -O -c ssignal.c
+strtol.c:
+        lcc -O -c strtol.c
+swab.c:
+        lcc -O -c swab.c
+tell.c:
+        lcc -O -c tell.c
+tolower.c:
+        lcc -O -c tolower.c
+toupper.c:
+        lcc -O -c toupper.c
+tsearch.c:
+        lcc -O -c tsearch.c
+ttyname.c:
+        lcc -O -c ttyname.c
+ttyslot.c:
+        lcc -O -c ttyslot.c
+        cd print; make
+doprnt.c:
+        lcc -O -c doprnt.c
+fprintf.c:
+        lcc -O -c fprintf.c
+printf.c:
+        lcc -O -c printf.c
+sprintf.c:
+        lcc -O -c sprintf.c
+        cd stdio; make
+clrerr.c:
+        lcc -O -c clrerr.c
+ctermid.c:
+        lcc -O -c ctermid.c
+cuserid.c:
+        lcc -O -c cuserid.c
+data.c:
+        lcc -O -c data.c
+doscan.c:
+        lcc -O -c doscan.c
+fdopen.c:
+        lcc -O -c fdopen.c
+fgetc.c:
+        lcc -O -c fgetc.c
+fgets.c:
+        lcc -O -c fgets.c
+filbuf.c:
+        lcc -O -c filbuf.c
+findiop.c:
+        lcc -O -c findiop.c
+flsbuf.c:
+        lcc -O -c flsbuf.c
+fopen.c:
+        lcc -O -c fopen.c
+fputc.c:
+        lcc -O -c fputc.c
+fputs.c:
+        lcc -O -c fputs.c
+fread.c:
+        lcc -O -c fread.c
+fseek.c:
+        lcc -O -c fseek.c
+ftell.c:
+        lcc -O -c ftell.c
+fwrite.c:
+        lcc -O -c fwrite.c
+getchar.c:
+        lcc -O -c getchar.c
+getpass.c:
+        lcc -O -c getpass.c
+gets.c:
+        lcc -O -c gets.c
+getw.c:
+        lcc -O -c getw.c
+popen.c:
+        lcc -O -c popen.c
+putchar.c:
+        lcc -O -c putchar.c
+puts.c:
+        lcc -O -c puts.c
+putw.c:
+        lcc -O -c putw.c
+rew.c:
+        lcc -O -c rew.c
+scanf.c:
+        lcc -O -c scanf.c
+setbuf.c:
+        lcc -O -c setbuf.c
+system.c:
+        lcc -O -c system.c
+tempnam.c:
+        lcc -O -c tempnam.c
+tmpfile.c:
+        lcc -O -c tmpfile.c
+tmpnam.c:
+        lcc -O -c tmpnam.c
+ungetc.c:
+        lcc -O -c ungetc.c
+        cd u8k; make all
+        cd crt ; make
+comp.s:
+        lcc -O -c comp.s
+conv.s:
+        lcc -O -c conv.s
+doub.s:
+        lcc -O -c doub.s
+fix.s:
+        lcc -O -c fix.s
+mul.s:
+        lcc -O -c mul.s
+sing.s:
+        lcc -O -c sing.s
+cerror.s:
+        lcc -O -c cerror.s
+        lcc -O -c chrtab.c
+        cd csu ; make
+lcrt0.s:
+        lcc -O -c lcrt0.s
+        cd gen ; make
+abs.s:
+        lcc -O -c abs.s
+cuexit.s:
+        lcc -O -c cuexit.s
+setjmp.s:
+        lcc -O -c setjmp.s
+malloc.c:
+        lcc -O -c malloc.c
+memccpy.s:
+        lcc -O -c memccpy.s
+memchr.s:
+        lcc -O -c memchr.s
+memcmp.s:
+        lcc -O -c memcmp.s
+memcpy.s:
+        lcc -O -c memcpy.s
+memset.s:
+        lcc -O -c memset.s
+strtok.s:
+        lcc -O -c strtok.s
+strcat.s:
+        lcc -O -c strcat.s
+strchr.s:
+        lcc -O -c strchr.s
+strcmp.s:
+        lcc -O -c strcmp.s
+strcpy.s:
+        lcc -O -c strcpy.s
+strcspn.s:
+        lcc -O -c strcspn.s
+strlen.s:
+        lcc -O -c strlen.s
+strncat.s:
+        lcc -O -c strncat.s
+strncmp.s:
+        lcc -O -c strncmp.s
+strncpy.s:
+        lcc -O -c strncpy.s
+strpbrk.s:
+        lcc -O -c strpbrk.s
+strrchr.s:
+        lcc -O -c strrchr.s
+strspn.s:
+        lcc -O -c strspn.s
+        cd sys ; make
+dup2.s:
+        lcc -O -c dup2.s
+execl.s:
+        lcc -O -c execl.s
+execle.s:
+        lcc -O -c execle.s
+execv.s:
+        lcc -O -c execv.s
+ftime.s:
+        lcc -O -c ftime.s
+getpgrp.s:
+        lcc -O -c getpgrp.s
+lkdata.s:
+        lcc -O -c lkdata.s
+mdmctl.s:
+        lcc -O -c mdmctl.s
+mkseg.s:
+        lcc -O -c mkseg.s
+sgbrk.s:
+        lcc -O -c sgbrk.s
+sgstat.s:
+        lcc -O -c sgstat.s
+sptrace.s:
+        lcc -O -c sptrace.s
+ssgbrk.s:
+        lcc -O -c ssgbrk.s
+stime.s:
+        lcc -O -c stime.s
+unlk.s:
+        lcc -O -c unlk.s
+access.s:
+        lcc -O -c access.s
+acct.s:
+        lcc -O -c acct.s
+alarm.s:
+        lcc -O -c alarm.s
+chdir.s:
+        lcc -O -c chdir.s
+chmod.s:
+        lcc -O -c chmod.s
+chown.s:
+        lcc -O -c chown.s
+chroot.s:
+        lcc -O -c chroot.s
+close.s:
+        lcc -O -c close.s
+creat.s:
+        lcc -O -c creat.s
+dup.s:
+        lcc -O -c dup.s
+execve.s:
+        lcc -O -c execve.s
+exit.s:
+        lcc -O -c exit.s
+fcntl.s:
+        lcc -O -c fcntl.s
+fork.s:
+        lcc -O -c fork.s
+fstat.s:
+        lcc -O -c fstat.s
+getegid.s:
+        lcc -O -c getegid.s
+geteuid.s:
+        lcc -O -c geteuid.s
+getgid.s:
+        lcc -O -c getgid.s
+getpid.s:
+        lcc -O -c getpid.s
+getppid.s:
+        lcc -O -c getppid.s
+getuid.s:
+        lcc -O -c getuid.s
+ioctl.s:
+        lcc -O -c ioctl.s
+kill.s:
+        lcc -O -c kill.s
+link.s:
+        lcc -O -c link.s
+lseek.s:
+        lcc -O -c lseek.s
+mknod.s:
+        lcc -O -c mknod.s
+mount.s:
+        lcc -O -c mount.s
+nice.s:
+        lcc -O -c nice.s
+open.s:
+        lcc -O -c open.s
+pause.s:
+        lcc -O -c pause.s
+pipe.s:
+        lcc -O -c pipe.s
+plock.s:
+        lcc -O -c plock.s
+profil.s:
+        lcc -O -c profil.s
+ptrace.s:
+        lcc -O -c ptrace.s
+read.s:
+        lcc -O -c read.s
+setgid.s:
+        lcc -O -c setgid.s
+setpgrp.s:
+        lcc -O -c setpgrp.s
+setuid.s:
+        lcc -O -c setuid.s
+signal.s:
+        lcc -O -c signal.s
+stat.s:
+        lcc -O -c stat.s
+stty.s:
+        lcc -O -c stty.s
+sync.s:
+        lcc -O -c sync.s
+time.s:
+        lcc -O -c time.s
+times.s:
+        lcc -O -c times.s
+ulimit.s:
+        lcc -O -c ulimit.s
+umask.s:
+        lcc -O -c umask.s
+umount.s:
+        lcc -O -c umount.s
+uname.s:
+        lcc -O -c uname.s
+unlink.s:
+        lcc -O -c unlink.s
+ustat.s:
+        lcc -O -c ustat.s
+utime.s:
+        lcc -O -c utime.s
+wait.s:
+        lcc -O -c wait.s
+write.s:
+        lcc -O -c write.s
+        rm -rf object
+        mkdir object
+        cp port/*/*.o object
+        cp u8k/*/*.o object
+        rm -f lib.Llibc
+        cd object; mv lcrt0.o ..
+        cd object; make -f ../u8k/makefile archive \
+                AR=ar LORDER=lorder
+        chmog 644 wega system *.o
+        mv cuexit.o cuexit.x
+        mv fakcu.o fakcu.x
+        mv signal.o signal.x
+        ar q scratch.a *.o && lorder scratch.a | tsort > objlist; rm scratch.a
+ar: creating scratch.a
+        mv cuexit.x cuexit.o
+        mv fakcu.x fakcu.o
+        mv signal.x signal.o
+        ar q ../lib.Llibc signal.o `cat objlist` cuexit.o fakcu.o
+ar: creating ../lib.Llibc
+        ar t ../lib.Llibc >../Llib.contents
+        rm -f *.o
+        rm -rf object
+        cd lib/libm ; make all
+        lcc -c -O asin.c atan.c erf.c fabs.c floor.c fmod.c gamma.c hypot.c jn.c j0.c j1.c pow.c log.c sin.c sqrt.c tan.c tanh.c sinh.c exp.c matherr.c
+asin.c:
+atan.c:
+erf.c:
+fabs.c:
+floor.c:
+fmod.c:
+gamma.c:
+hypot.c:
+jn.c:
+j0.c:
+j1.c:
+pow.c:
+log.c:
+sin.c:
+sqrt.c:
+tan.c:
+tanh.c:
+sinh.c:
+exp.c:
+matherr.c:
+        chmod 644 asin.o atan.o erf.o fabs.o floor.o fmod.o gamma.o hypot.o jn.o j0.o j1.o pow.o log.o sin.o sqrt.o tan.o tanh.o sinh.o exp.o matherr.o
+        chgrp system  asin.o atan.o erf.o fabs.o floor.o fmod.o gamma.o hypot.o jn.o j0.o j1.o pow.o log.o sin.o sqrt.o tan.o tanh.o sinh.o exp.o matherr.o
+        chown wega  asin.o atan.o erf.o fabs.o floor.o fmod.o gamma.o hypot.o jn.o j0.o j1.o pow.o log.o sin.o sqrt.o tan.o tanh.o sinh.o exp.o matherr.o
+        ar rv Llibm.a asin.o atan.o erf.o fabs.o floor.o fmod.o gamma.o hypot.o jn.o j0.o j1.o pow.o log.o sin.o sqrt.o tan.o tanh.o sinh.o exp.o matherr.o
+ar: creating Llibm.a
+a - asin.o
+a - atan.o
+a - erf.o
+a - fabs.o
+a - floor.o
+a - fmod.o
+a - gamma.o
+a - hypot.o
+a - jn.o
+a - j0.o
+a - j1.o
+a - pow.o
+a - log.o
+a - sin.o
+a - sqrt.o
+a - tan.o
+a - tanh.o
+a - sinh.o
+a - exp.o
+a - matherr.o
+        rm asin.o atan.o erf.o fabs.o floor.o fmod.o gamma.o hypot.o jn.o j0.o j1.o pow.o log.o sin.o sqrt.o tan.o tanh.o sinh.o exp.o matherr.o
+
+real  4:20:49.51
+user  3:11:57.61
+sys     26:32.55
+
+cpu idle        15%
+wait bio         4%
+wait swap        0%
+wait pio         0%
+cpu user        74%
+cpu sys         11%
+swap in         112
+swap out        97
+chars read      10178208
+chars written   7670642
+block reads     199543
+logical reads   460711
+cached reads    57%
+block writes    27136
+logical writes  101191
+cached writes   73%
+disk0 I/O       0
+disk1 I/O       0
+disk2 I/O       0
+disk3 I/O       0
+p switch        121122
+preempt         16443
+syscall         128117
+iget            50902
+namei           19571
+dirblk          54142
+
