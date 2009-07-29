@@ -1,9 +1,9 @@
 # created by Oliver Lehmann
-# 2007-04-03
+# 2009-07-29
 
 C_FILES = \
  cmd/cpp/cpy.c \
- cmd/comp/common/sty.c \
+ cmd/comp/u8k/sty.c \
  cmd/comp/common/cgram.c
 
 BIN_FILES = \
