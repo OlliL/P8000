@@ -1689,9 +1689,7 @@ register char *p;	/* pointer to name */
 			continue;
 
 		case 'v':
-			/* later..
 			i |= TVOID;
-			*/
 			continue;
 
 		case 'u':

@@ -99,7 +99,7 @@ DCOST  :1;
 'CALL'[cucsus] C,F {$1 $A} "	callr	CL\nZc" ;
 'CALL'[lulpf] C,F {$P $1 $A} "	callr	CL\nZc" ;
 'CALL'[d] C,F {$Q $1 $A} "	callr	CL\nZc" ;
-'CALL'[cucsus] R,F {$1 $< $A} "	callr	@CL\nZc" ;
+'CALL'[cucsusv] R,F {$1 $< $A} "	callr	@CL\nZc" ;
 'CALL'[lulpf] R,F {$P $1 $< $A} "	callr	@CL\nZc" ;
 'CALL'[d] R,F {$Q $1 $< $A} "	callr	@CL\nZc" ;
 'CALL' R,F {$N $A} "	callr	@CL\nZc" ;
