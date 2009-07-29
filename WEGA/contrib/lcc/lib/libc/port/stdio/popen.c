@@ -29,7 +29,7 @@ char	*cmd, *mode;
 		(void) close(stdio);
 		(void) fcntl(yourside, 0, stdio);
 		(void) close(yourside);
-		(void) execl("/bin/sh", "sh", "-c", cmd, 0);
+		(void) execl("/bin/sh", "sh", "-c", cmd, NULL);
 		_exit(1);
 	}
 	if(pid == -1)
