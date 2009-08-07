@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: gmtime.c,v 1.1 2009/08/07 13:53:20 olivleh1 Exp $
+ * $Id: gmtime.c,v 1.2 2009/08/07 20:02:59 olivleh1 Exp $
  */
  
 #define	dysize(A) (((A)%4)? 365: 366)
@@ -36,7 +36,7 @@ static int dmsize[12]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 struct tm *
 gmtime(tim)
-const long	*tim;
+long	*tim;
 {
 	register int d0, d1;
 	long hms, day;

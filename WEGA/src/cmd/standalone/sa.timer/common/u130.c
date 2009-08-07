@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.c,v 1.2 2009/08/07 13:55:55 olivleh1 Exp $
+ * $Id: u130.c,v 1.3 2009/08/07 20:02:59 olivleh1 Exp $
  */
  
 #include <time.h>
@@ -52,7 +52,7 @@ long time;
 	clktime = gmtime(&time);
 	if(clktime->tm_year > 100)
 		clktime->tm_year -= 100;
-	clktime->tm_mon++;
+	clktime->tm_mon ++;
 
 	outvalue(0x02);		/* Datum einstellen */
 	outvalue(0x03);		/* Korrektur Monat */
@@ -115,8 +115,11 @@ u130_get()
 	struct tm *clktime;
 	outvalue(0x02);				/* Umschalten auf Datum */
 	clktime->tm_year = rdvalue(U130YYx1);
+	if (clktime->tm_year < 70)
+		clktime->tm_year+=100;
 	clktime->tm_mday = rdvalue(U130DDx1);
 	clktime->tm_mon = rdvalue(U130MMx1);
+	clktime->tm_mon --;
 	outvalue(0x00);
 	clktime->tm_sec = inb(U130MM1x) & 0x28;	/* Umschalten auf Zeit */
 	if (clktime->tm_sec == 0x08 || clktime->tm_sec == 0x20) {
@@ -126,7 +129,15 @@ u130_get()
 	while ((clktime->tm_sec = rdvalue(U130SSx1)) == 59);
 	clktime->tm_min = rdvalue(U130MIx1);
 	clktime->tm_hour = rdvalue(U130HHx1);
-
+#ifdef DEBUG
+	printf("u130_get\n");
+	printf("year %d\n",clktime->tm_year);
+	printf("month %d\n",clktime->tm_mon);
+	printf("day %d\n",clktime->tm_mday);
+	printf("hour %d\n",clktime->tm_hour);
+	printf("min %d\n",clktime->tm_min);
+	printf("sec %d\n",clktime->tm_sec);
+#endif
 	time = timegm(clktime);
 
 	return(time);

@@ -23,25 +23,36 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.1 2009/08/07 13:53:20 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.2 2009/08/07 20:02:59 olivleh1 Exp $
  */
  
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 #include "u130.h"
 #include "rtc72421.h"
+#include "timer.h"
 
 extern long		timegm();
 extern struct tm	*gmtime();
 
-char	estring[20];
-
 main()
 {
 	register long time;
+	register i,timer_found;
+	struct clock_type *t;
+	int a;
 
-	if (inb(U130BASE) != STR_U130) {	/* Uhrmodul vorhanden ? */
+	t = clock_devs;
+
+	for( i = 0 ; i < sizeof(clock_devs) / sizeof(clock_devs[0]); i++, t++) {
+		if((inb(t->clock_addr)&~t->clock_det_msk) == t->clock_det_str) {
+			printf("%s found\n",t->clock_name);
+			timer_found=1;
+			/* function pointers here */
+			break;
+		}
+	}
+	if (timer_found != 1) {	/* Uhrmodul vorhanden ? */
 		printf("Timer not available\n");
 		exit(1);
 	}
@@ -77,11 +88,13 @@ long time;
 
 	clktime = gmtime(&time);
 
-	clktime->tm_year += 1900;
+#ifdef DEBUG
+	print_tm("outtime",clktime);
+#endif	
+	(clktime->tm_year) += 1900;
 	clktime->tm_mon++;
-
-	printf("Date is: %d/%d/%d\n", clktime->tm_mon, clktime->tm_mday, clktime->tm_year);
-	printf("Time is: %d:%d:%d GMT\n", clktime->tm_hour, clktime->tm_min, clktime->tm_sec);
+	printf("Date is: %d/%d/%d\n",     clktime->tm_mon,  clktime->tm_mday, clktime->tm_year);
+	printf("Time is: %d:%d:%d GMT\n", clktime->tm_hour, clktime->tm_min,  clktime->tm_sec);
 }
 
 settimer()
@@ -100,7 +113,7 @@ loop1:
 	if (clktime->tm_year < 70 )
 		clktime->tm_year += 100;
 
-	if (clktime->tm_mon<1 || clktime->tm_mon>12 || clktime->tm_mday<1 || clktime->tm_mday>31)
+	if (clktime->tm_mon<0 || clktime->tm_mon>11 || clktime->tm_mday<1 || clktime->tm_mday>31)
 		goto loop1;
 		
 loop2:
@@ -121,3 +134,18 @@ loop2:
 	u130_start();
 	
 }
+
+#ifdef DEBUG
+print_tm(func,clktime)
+char *func;
+struct tm *clktime;
+{
+	printf("%s\n", func);
+	printf("year %d\n",clktime->tm_year);
+	printf("month %d\n",clktime->tm_mon);
+	printf("day %d\n",clktime->tm_mday);
+	printf("hour %d\n",clktime->tm_hour);
+	printf("min %d\n",clktime->tm_min);
+	printf("sec %d\n",clktime->tm_sec);
+}
+#endif

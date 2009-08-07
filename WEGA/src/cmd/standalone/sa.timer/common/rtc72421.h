@@ -23,13 +23,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: rtc72421.h,v 1.1 2009/08/07 13:53:20 olivleh1 Exp $
+ * $Id: rtc72421.h,v 1.2 2009/08/07 20:02:59 olivleh1 Exp $
  */
 
 #ifndef R421_H
 #define R421_H 1
 
-#define STR_R421	0xc0
+#define STR_R421	0xc
+#define MSK_R421	0xf0
 
 #define R421BASE	0xfde1	/* base address */
 #define R421YYx1	0xfdf5	/* 1-year digit register */

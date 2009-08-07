@@ -23,13 +23,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.h,v 1.1 2009/08/07 13:53:20 olivleh1 Exp $
+ * $Id: u130.h,v 1.2 2009/08/07 20:02:59 olivleh1 Exp $
  */
 
 #ifndef U130_H
 #define U130_H 1
 
 #define STR_U130	0xbf
+#define MSK_U130	0x00
 
 #define U130BASE	0xfef1	/* base address */
 #define U130YYx1	0xfef5	/* 1-year digit register */
