@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.c,v 1.1 2009/08/07 13:53:20 olivleh1 Exp $
+ * $Id: u130.c,v 1.2 2009/08/07 13:55:55 olivleh1 Exp $
  */
  
 #include <time.h>
@@ -156,7 +156,7 @@ register flag;
 	takt = seg7 & 0x80;		/* nur gueltig bei 6. Stelle */
 	if (seg7 & 0x20)
 		seg7 = ~seg7;
-	if (addr == 0xfeff)		/* 6.Stelle */
+	if (addr == U130MM1x)		/* 6.Stelle */
 		seg7 &= 0x07;
 	seg7 &= 0x1f;
 	if (seg7 == 0x0f)
@@ -164,7 +164,7 @@ register flag;
 	if (seg7 == 0x00) {
 		if (flag == 0)
 			return(0); 
-		if (addr == 0xfeff && takt)
+		if (addr == U130MM1x && takt)
 			return(0);
 	}
 	if (seg7 == 0x02)
