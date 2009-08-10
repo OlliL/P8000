@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.c,v 1.3 2009/08/07 20:02:59 olivleh1 Exp $
+ * $Id: u130.c,v 1.4 2009/08/10 20:18:59 olivleh1 Exp $
  */
  
 #include <time.h>
@@ -32,9 +32,8 @@
 int			rdvalue();
 int			invalue();
 void			outvalue();
-extern long		timegm();
-extern struct tm	*gmtime();
-
+long			timegm();
+struct tm		*gmtime();
 
 int
 u130_init()
@@ -42,8 +41,7 @@ u130_init()
 	return(0);
 }
 
-
-int
+void
 u130_set(time)
 long time;
 {
@@ -98,7 +96,6 @@ long time;
 		;
 	outvalue(0x01);		/* Korrektur Stop */
 	outvalue(0x00);
-	return(0);
 }
 
 void
@@ -129,20 +126,10 @@ u130_get()
 	while ((clktime->tm_sec = rdvalue(U130SSx1)) == 59);
 	clktime->tm_min = rdvalue(U130MIx1);
 	clktime->tm_hour = rdvalue(U130HHx1);
-#ifdef DEBUG
-	printf("u130_get\n");
-	printf("year %d\n",clktime->tm_year);
-	printf("month %d\n",clktime->tm_mon);
-	printf("day %d\n",clktime->tm_mday);
-	printf("hour %d\n",clktime->tm_hour);
-	printf("min %d\n",clktime->tm_min);
-	printf("sec %d\n",clktime->tm_sec);
-#endif
-	time = timegm(clktime);
 
+	time = timegm(clktime);
 	return(time);
 }
-
 
 void
 outvalue(t)
@@ -203,5 +190,5 @@ int
 rdvalue(addr)
 unsigned addr;
 {
-        return(invalue(addr,0) + invalue(addr+2,0)*10);
+	return(invalue(addr,0) + invalue(addr+2,0)*10);
 }

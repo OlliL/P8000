@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.h,v 1.2 2009/08/07 20:02:59 olivleh1 Exp $
+ * $Id: u130.h,v 1.3 2009/08/10 20:18:59 olivleh1 Exp $
  */
 
 #ifndef U130_H
@@ -48,7 +48,7 @@
 
 int 	u130_init();
 long	u130_get();
-int 	u130_set();
+void 	u130_set();
 void	u130_start();
 
 #endif

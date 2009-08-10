@@ -23,16 +23,11 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: gmtime.c,v 1.2 2009/08/07 20:02:59 olivleh1 Exp $
+ * $Id: gmtime.c,v 1.3 2009/08/10 20:18:59 olivleh1 Exp $
  */
  
 #define	dysize(A) (((A)%4)? 365: 366)
 #include <time.h>
-
-struct tm *gmtime();
-
-static char cbuf[26];
-static int dmsize[12]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 struct tm *
 gmtime(tim)
@@ -41,6 +36,7 @@ long	*tim;
 	register int d0, d1;
 	long hms, day;
 	static struct tm xtime;
+	static int dmsize[12]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 	/*
 	 * break initial number into days

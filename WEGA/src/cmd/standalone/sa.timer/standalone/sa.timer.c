@@ -23,27 +23,29 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.2 2009/08/07 20:02:59 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.3 2009/08/10 20:18:59 olivleh1 Exp $
  */
  
-#include <stdio.h>
-#include <time.h>
+
+char	estring[20];
+long	u130_get();
+
+#define	dysize(A) (((A)%4)? 365: 366)
+#include "time.h"
 #include "u130.h"
 #include "rtc72421.h"
 #include "timer.h"
 
-extern long		timegm();
-extern struct tm	*gmtime();
+long		timegm();
+struct tm	*gmtime();
 
 main()
 {
 	register long time;
 	register i,timer_found;
 	struct clock_type *t;
-	int a;
-
 	t = clock_devs;
-
+#ifdef foo
 	for( i = 0 ; i < sizeof(clock_devs) / sizeof(clock_devs[0]); i++, t++) {
 		if((inb(t->clock_addr)&~t->clock_det_msk) == t->clock_det_str) {
 			printf("%s found\n",t->clock_name);
@@ -52,6 +54,9 @@ main()
 			break;
 		}
 	}
+#else
+	timer_found=1;
+#endif
 	if (timer_found != 1) {	/* Uhrmodul vorhanden ? */
 		printf("Timer not available\n");
 		exit(1);
@@ -88,11 +93,8 @@ long time;
 
 	clktime = gmtime(&time);
 
-#ifdef DEBUG
-	print_tm("outtime",clktime);
-#endif	
-	(clktime->tm_year) += 1900;
-	clktime->tm_mon++;
+	clktime->tm_year += 1900;
+	clktime->tm_mon ++;
 	printf("Date is: %d/%d/%d\n",     clktime->tm_mon,  clktime->tm_mday, clktime->tm_year);
 	printf("Time is: %d:%d:%d GMT\n", clktime->tm_hour, clktime->tm_min,  clktime->tm_sec);
 }
@@ -101,7 +103,7 @@ settimer()
 {
 	struct tm *clktime;
 	long time;
-	int i;
+	register i;
 loop1:
 	printf("Enter new Date (MM/DD/YY) : ");
 	gets(estring, sizeof estring);
@@ -132,20 +134,4 @@ loop2:
 	printf("Enter Return to start time : ");
 	gets(estring, 1);
 	u130_start();
-	
 }
-
-#ifdef DEBUG
-print_tm(func,clktime)
-char *func;
-struct tm *clktime;
-{
-	printf("%s\n", func);
-	printf("year %d\n",clktime->tm_year);
-	printf("month %d\n",clktime->tm_mon);
-	printf("day %d\n",clktime->tm_mday);
-	printf("hour %d\n",clktime->tm_hour);
-	printf("min %d\n",clktime->tm_min);
-	printf("sec %d\n",clktime->tm_sec);
-}
-#endif
