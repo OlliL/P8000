@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.c,v 1.4 2009/08/10 20:18:59 olivleh1 Exp $
+ * $Id: u130.c,v 1.5 2009/08/11 05:14:26 olivleh1 Exp $
  */
  
 #include <time.h>
@@ -46,8 +46,11 @@ u130_set(time)
 long time;
 {
 	struct tm *clktime;
+	long time2;
+	
+	time2=time;
 
-	clktime = gmtime(&time);
+	clktime = gmtime(&time2);
 	if(clktime->tm_year > 100)
 		clktime->tm_year -= 100;
 	clktime->tm_mon ++;

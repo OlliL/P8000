@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.3 2009/08/10 20:18:59 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.4 2009/08/11 05:14:26 olivleh1 Exp $
  */
  
 
@@ -41,7 +41,7 @@ struct tm	*gmtime();
 
 main()
 {
-	register long time;
+	long time;
 	register i,timer_found;
 	struct clock_type *t;
 	t = clock_devs;
@@ -90,8 +90,11 @@ outtime(time)
 long time;
 {
 	struct tm *clktime;
+	long time2;
+	
+	time2=time;
 
-	clktime = gmtime(&time);
+	clktime = gmtime(&time2);
 
 	clktime->tm_year += 1900;
 	clktime->tm_mon ++;
