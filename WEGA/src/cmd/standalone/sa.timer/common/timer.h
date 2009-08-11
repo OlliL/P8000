@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: timer.h,v 1.1 2009/08/07 20:08:59 olivleh1 Exp $
+ * $Id: timer.h,v 1.2 2009/08/11 19:18:03 olivleh1 Exp $
  */
 
 #ifndef TIMER_H
@@ -34,15 +34,23 @@ struct clock_type {
         int             clock_det_msk;
         int             clock_det_str;
         char            *clock_name;
+	int		(*time_init)();
+	long		(*time_get)();
+	void		(*time_set)();
+	void		(*time_start)();
 };
 
 char    estring[20];
 
 static struct clock_type clock_devs[] = {
         { U130BASE, MSK_U130, STR_U130,
-            "RFT U130X RTC" },
-        { R421BASE, MSK_R421, STR_R421,
-            "Seiko Epson RTC-72421" },
+	  "RFT U130X RTC",
+	  u130_init, u130_get, u130_set, u130_start
+	},
+	{ R421BASE, MSK_R421, STR_R421,
+	  "Seiko Epson RTC-72421",
+	  rtc72421_init, rtc72421_get, rtc72421_set, rtc72421_start
+	},
 };
 
 #endif

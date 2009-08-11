@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: rtc72421.h,v 1.2 2009/08/07 20:02:59 olivleh1 Exp $
+ * $Id: rtc72421.h,v 1.3 2009/08/11 19:18:03 olivleh1 Exp $
  */
 
 #ifndef R421_H
@@ -64,7 +64,7 @@
 
 int 	rtc72421_init();
 long	rtc72421_get();
-int 	rtc72421_set();
+void 	rtc72421_set();
 void	rtc72421_start();
 
 #endif

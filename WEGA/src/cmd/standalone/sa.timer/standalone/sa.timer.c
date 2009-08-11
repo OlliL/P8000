@@ -23,14 +23,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.4 2009/08/11 05:14:26 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.5 2009/08/11 19:18:03 olivleh1 Exp $
  */
  
 
-char	estring[20];
-long	u130_get();
-
-#define	dysize(A) (((A)%4)? 365: 366)
 #include "time.h"
 #include "u130.h"
 #include "rtc72421.h"
@@ -38,35 +34,55 @@ long	u130_get();
 
 long		timegm();
 struct tm	*gmtime();
+long		u130_get();
+
+int		(*time_init)();
+long		(*time_get)();
+void		(*time_set)();
+void		(*time_start)();
 
 main()
 {
-	long time;
-	register i,timer_found;
+	register long time;
+	register i;
 	struct clock_type *t;
+	int a,b;
+long time1,time2;
+
 	t = clock_devs;
-#ifdef foo
+
 	for( i = 0 ; i < sizeof(clock_devs) / sizeof(clock_devs[0]); i++, t++) {
-		if((inb(t->clock_addr)&~t->clock_det_msk) == t->clock_det_str) {
+		a = inb(t->clock_addr)&~t->clock_det_msk;
+		b = t->clock_det_str;
+		if(a == b) {
 			printf("%s found\n",t->clock_name);
-			timer_found=1;
-			/* function pointers here */
+			time_init  = t->time_init;
+			time_get   = t->time_get;
+			time_set   = t->time_set;
+			time_start = t->time_start;
 			break;
 		}
 	}
-#else
-	timer_found=1;
-#endif
-	if (timer_found != 1) {	/* Uhrmodul vorhanden ? */
+
+	if (time_init > 0) {		/* function pointer assigned? */
+		time_init();		/* init RTC */
+		time = time_get();	/* Uhrenmodul lesen */
+time1 = time/100000L;
+time2 = time%100000L;
+printf("time: %d-%d-%d-%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time2/100L),(int)(time2%100L));
+		outtime(time);		/* Datum/Zeit ausgeben */
+time1 = time/100000L;
+time2 = time%100000L;
+printf("time: %d-%d-%d-%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time2/100L),(int)(time2%100L));
+		settimer(time);		/* Uhrenmodul neu programmieren */
+		time = time_get();	/* Uhrenmodul lesen */
+		outtime(time);		/* Datum/Zeit ausgeben */
+		exit(0);
+	} else {
 		printf("Timer not available\n");
 		exit(1);
 	}
-	time = u130_get();	/* Uhrenmodul lesen */
-	outtime(time);		/* Datum/Zeit ausgeben */
-	settimer();		/* Uhrenmodul neu programmieren */
-	time = u130_get();	/* Uhrenmodul lesen */
-	outtime(time);		/* Datum/Zeit ausgeben */
-	exit(0);
+
 }
 
 getdat(k)
@@ -102,11 +118,19 @@ long time;
 	printf("Time is: %d:%d:%d GMT\n", clktime->tm_hour, clktime->tm_min,  clktime->tm_sec);
 }
 
-settimer()
+settimer(time)
+long time;
 {
 	struct tm *clktime;
-	long time;
+	long time,time2;
 	register i;
+	
+	time2=time;
+
+	clktime = gmtime(&time2);
+	if(clktime->tm_year > 100)
+		clktime->tm_year -= 100;
+	clktime->tm_mon ++;
 loop1:
 	printf("Enter new Date (MM/DD/YY) : ");
 	gets(estring, sizeof estring);
@@ -132,9 +156,17 @@ loop2:
 	if (clktime->tm_min<0 || clktime->tm_min>59 || clktime->tm_hour<0 || clktime->tm_hour>23)
 		goto loop2;
 
+	printf("year %d\n",clktime->tm_year);
+	printf("month %d\n",clktime->tm_mon);
+	printf("day %d\n",clktime->tm_mday);
+	printf("hour %d\n",clktime->tm_hour);
+	printf("min %d\n",clktime->tm_min);
+	printf("sec %d\n",clktime->tm_sec);
+
+	time = 0;
 	time = timegm(clktime);
-	u130_set(time);
+	time_set(time);
 	printf("Enter Return to start time : ");
 	gets(estring, 1);
-	u130_start();
+	time_start();
 }

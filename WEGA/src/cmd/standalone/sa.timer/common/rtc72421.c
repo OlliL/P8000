@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: rtc72421.c,v 1.2 2009/08/07 20:02:59 olivleh1 Exp $
+ * $Id: rtc72421.c,v 1.3 2009/08/11 19:18:03 olivleh1 Exp $
  */
  
 #include <time.h>
@@ -37,7 +37,6 @@ extern long		timegm();
 extern struct tm	*gmtime();
 
 
-#ifdef NOTYET
 int
 rtc72421_init()
 {
@@ -45,7 +44,7 @@ rtc72421_init()
 }
 
 
-int
+void
 rtc72421_set(time)
 long time;
 {
@@ -55,8 +54,6 @@ long time;
 	if(clktime->tm_year > 100)
 		clktime->tm_year -= 100;
 	clktime->tm_mon++;
-
-	return(0);
 }
 
 void
@@ -112,4 +109,3 @@ unsigned addr2;
 {
         return(rdnibble(addr1) + rdnibble(addr2)*10);
 }
-#endif
