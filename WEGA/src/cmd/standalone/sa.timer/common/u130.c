@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.c,v 1.6 2009/08/11 19:18:03 olivleh1 Exp $
+ * $Id: u130.c,v 1.7 2009/08/12 04:54:25 olivleh1 Exp $
  */
  
 #include <time.h>
@@ -113,7 +113,6 @@ u130_get()
 {
 	long time;
 	struct tm *clktime;
-long time1,time2;
 
 	outvalue(0x02);				/* Umschalten auf Datum */
 	clktime->tm_year = rdvalue(U130YYx1);
@@ -133,9 +132,6 @@ long time1,time2;
 	clktime->tm_hour = rdvalue(U130HHx1);
 
 	time = timegm(clktime);
-time1 = time/100000L;
-time2 = time%100000L;
-printf("time: %d-%d-%d-%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time2/100L),(int)(time2%100L));
 	return(time);
 }
 

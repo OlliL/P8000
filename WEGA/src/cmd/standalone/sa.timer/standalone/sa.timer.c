@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.5 2009/08/11 19:18:03 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.6 2009/08/12 04:54:25 olivleh1 Exp $
  */
  
 
@@ -47,7 +47,6 @@ main()
 	register i;
 	struct clock_type *t;
 	int a,b;
-long time1,time2;
 
 	t = clock_devs;
 
@@ -67,13 +66,7 @@ long time1,time2;
 	if (time_init > 0) {		/* function pointer assigned? */
 		time_init();		/* init RTC */
 		time = time_get();	/* Uhrenmodul lesen */
-time1 = time/100000L;
-time2 = time%100000L;
-printf("time: %d-%d-%d-%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time2/100L),(int)(time2%100L));
 		outtime(time);		/* Datum/Zeit ausgeben */
-time1 = time/100000L;
-time2 = time%100000L;
-printf("time: %d-%d-%d-%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time2/100L),(int)(time2%100L));
 		settimer(time);		/* Uhrenmodul neu programmieren */
 		time = time_get();	/* Uhrenmodul lesen */
 		outtime(time);		/* Datum/Zeit ausgeben */
@@ -122,15 +115,24 @@ settimer(time)
 long time;
 {
 	struct tm *clktime;
-	long time,time2;
+	long time2;
 	register i;
+long time1,time3;
 	
-	time2=time;
 
-	clktime = gmtime(&time2);
+time1 = time/100000L;
+time3 = time%100000L;
+printf("time: %d%d%d%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time3/100L),(int)(time3%100L));
+	clktime = gmtime(&time);
 	if(clktime->tm_year > 100)
 		clktime->tm_year -= 100;
 	clktime->tm_mon ++;
+	printf("year %d\n",clktime->tm_year);
+	printf("month %d\n",clktime->tm_mon);
+	printf("day %d\n",clktime->tm_mday);
+	printf("hour %d\n",clktime->tm_hour);
+	printf("min %d\n",clktime->tm_min);
+	printf("sec %d\n",clktime->tm_sec);
 loop1:
 	printf("Enter new Date (MM/DD/YY) : ");
 	gets(estring, sizeof estring);
@@ -163,9 +165,11 @@ loop2:
 	printf("min %d\n",clktime->tm_min);
 	printf("sec %d\n",clktime->tm_sec);
 
-	time = 0;
-	time = timegm(clktime);
-	time_set(time);
+	time2 = timegm(clktime);
+time1 = time2/100000L;
+time3 = time2%100000L;
+printf("time: %d%d%d%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time3/100L),(int)(time3%100L));
+	time_set(time2);
 	printf("Enter Return to start time : ");
 	gets(estring, 1);
 	time_start();
