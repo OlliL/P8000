@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.6 2009/08/12 04:54:25 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.7 2009/08/12 15:39:50 olivleh1 Exp $
  */
  
 
@@ -46,14 +46,11 @@ main()
 	register long time;
 	register i;
 	struct clock_type *t;
-	int a,b;
 
 	t = clock_devs;
 
 	for( i = 0 ; i < sizeof(clock_devs) / sizeof(clock_devs[0]); i++, t++) {
-		a = inb(t->clock_addr)&~t->clock_det_msk;
-		b = t->clock_det_str;
-		if(a == b) {
+		if((((int)inb(t->clock_addr))&((int)(~((int)(t->clock_det_msk))))) == ( (int)(t->clock_det_str) ) ) {
 			printf("%s found\n",t->clock_name);
 			time_init  = t->time_init;
 			time_get   = t->time_get;
@@ -111,28 +108,25 @@ long time;
 	printf("Time is: %d:%d:%d GMT\n", clktime->tm_hour, clktime->tm_min,  clktime->tm_sec);
 }
 
+#ifdef DEBUG
+prtime(time)
+long time;
+{
+	long time1,time3;
+	time1 = time/100000L;
+	time3 = time%100000L;
+	printf("time: %d|%d|%d|%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time3/100L),(int)(time3%100L));
+}
+#endif
+
 settimer(time)
 long time;
 {
 	struct tm *clktime;
 	long time2;
 	register i;
-long time1,time3;
-	
 
-time1 = time/100000L;
-time3 = time%100000L;
-printf("time: %d%d%d%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time3/100L),(int)(time3%100L));
 	clktime = gmtime(&time);
-	if(clktime->tm_year > 100)
-		clktime->tm_year -= 100;
-	clktime->tm_mon ++;
-	printf("year %d\n",clktime->tm_year);
-	printf("month %d\n",clktime->tm_mon);
-	printf("day %d\n",clktime->tm_mday);
-	printf("hour %d\n",clktime->tm_hour);
-	printf("min %d\n",clktime->tm_min);
-	printf("sec %d\n",clktime->tm_sec);
 loop1:
 	printf("Enter new Date (MM/DD/YY) : ");
 	gets(estring, sizeof estring);
@@ -158,17 +152,8 @@ loop2:
 	if (clktime->tm_min<0 || clktime->tm_min>59 || clktime->tm_hour<0 || clktime->tm_hour>23)
 		goto loop2;
 
-	printf("year %d\n",clktime->tm_year);
-	printf("month %d\n",clktime->tm_mon);
-	printf("day %d\n",clktime->tm_mday);
-	printf("hour %d\n",clktime->tm_hour);
-	printf("min %d\n",clktime->tm_min);
-	printf("sec %d\n",clktime->tm_sec);
 
 	time2 = timegm(clktime);
-time1 = time2/100000L;
-time3 = time2%100000L;
-printf("time: %d%d%d%d\n",(int)(time1/100L),(int)(time1%100L),(int)(time3/100L),(int)(time3%100L));
 	time_set(time2);
 	printf("Enter Return to start time : ");
 	gets(estring, 1);
