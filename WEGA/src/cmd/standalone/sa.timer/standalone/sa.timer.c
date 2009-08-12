@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.7 2009/08/12 15:39:50 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.8 2009/08/12 15:51:40 olivleh1 Exp $
  */
  
 
@@ -46,11 +46,14 @@ main()
 	register long time;
 	register i;
 	struct clock_type *t;
+	int a,b; 	 
 
 	t = clock_devs;
 
 	for( i = 0 ; i < sizeof(clock_devs) / sizeof(clock_devs[0]); i++, t++) {
-		if((((int)inb(t->clock_addr))&((int)(~((int)(t->clock_det_msk))))) == ( (int)(t->clock_det_str) ) ) {
+		a = inb(t->clock_addr)&~t->clock_det_msk;
+		b = t->clock_det_str;
+ 		if(a == b) {
 			printf("%s found\n",t->clock_name);
 			time_init  = t->time_init;
 			time_get   = t->time_get;
