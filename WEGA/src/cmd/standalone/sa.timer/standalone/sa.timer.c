@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.8 2009/08/12 15:51:40 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.9 2009/08/12 16:29:42 olivleh1 Exp $
  */
  
 
@@ -99,12 +99,8 @@ outtime(time)
 long time;
 {
 	struct tm *clktime;
-	long time2;
-	
-	time2=time;
 
-	clktime = gmtime(&time2);
-
+	clktime = gmtime(&time);
 	clktime->tm_year += 1900;
 	clktime->tm_mon ++;
 	printf("Date is: %d/%d/%d\n",     clktime->tm_mon,  clktime->tm_mday, clktime->tm_year);
