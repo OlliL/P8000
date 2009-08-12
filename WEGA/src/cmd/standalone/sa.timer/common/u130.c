@@ -1,4 +1,4 @@
-/*
+/*-
  * Copyright (c) 2009 Oliver Lehmann <oliver@FreeBSD.org>
  * All rights reserved.
  *
@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.c,v 1.8 2009/08/12 16:23:35 olivleh1 Exp $
+ * $Id: u130.c,v 1.9 2009/08/12 19:27:31 olivleh1 Exp $
  */
  
 #include <time.h>

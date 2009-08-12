@@ -1,4 +1,4 @@
-/*
+/*-
  * Copyright (c) 2009 Oliver Lehmann <oliver@FreeBSD.org>
  * All rights reserved.
  *
@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.9 2009/08/12 16:29:42 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.10 2009/08/12 19:27:31 olivleh1 Exp $
  */
  
 
@@ -36,10 +36,12 @@ long		timegm();
 struct tm	*gmtime();
 long		u130_get();
 
-int		(*time_init)();
-long		(*time_get)();
-void		(*time_set)();
-void		(*time_start)();
+int		clock_min_year;
+int		clock_max_year;
+int		(*clock_finit)();
+long		(*clock_fget)();
+void		(*clock_fset)();
+void		(*clock_fstart)();
 
 main()
 {
@@ -55,21 +57,24 @@ main()
 		b = t->clock_det_str;
  		if(a == b) {
 			printf("%s found\n",t->clock_name);
-			time_init  = t->time_init;
-			time_get   = t->time_get;
-			time_set   = t->time_set;
-			time_start = t->time_start;
+			clock_finit    = t->clock_finit;
+			clock_fget     = t->clock_fget;
+			clock_fset     = t->clock_fset;
+			clock_fstart   = t->clock_fstart;
+			clock_min_year = t->clock_min_year;
+			clock_max_year = t->clock_max_year;
 			break;
 		}
 	}
 
-	if (time_init > 0) {		/* function pointer assigned? */
-		time_init();		/* init RTC */
-		time = time_get();	/* Uhrenmodul lesen */
-		outtime(time);		/* Datum/Zeit ausgeben */
-		settimer(time);		/* Uhrenmodul neu programmieren */
-		time = time_get();	/* Uhrenmodul lesen */
-		outtime(time);		/* Datum/Zeit ausgeben */
+	/* function pointer assigned? => RTC found?*/
+	if (clock_finit > 0) {
+		clock_finit();	
+		time = clock_fget();
+		outtime(time);	
+		settimer(time);	
+		time = clock_fget();
+		outtime(time);	
 		exit(0);
 	} else {
 		printf("Timer not available\n");
@@ -123,7 +128,6 @@ long time;
 {
 	struct tm *clktime;
 	long time2;
-	register i;
 
 	clktime = gmtime(&time);
 loop1:
@@ -137,7 +141,7 @@ loop1:
 	if (clktime->tm_year < 70 )
 		clktime->tm_year += 100;
 
-	if (clktime->tm_mon<0 || clktime->tm_mon>11 || clktime->tm_mday<1 || clktime->tm_mday>31)
+	if (clktime->tm_mon<0 || clktime->tm_mon>11 || clktime->tm_mday<1 || clktime->tm_mday>31 || clktime->tm_year<clock_min_year || clktime->tm_year>clock_max_year)
 		goto loop1;
 		
 loop2:
@@ -153,8 +157,8 @@ loop2:
 
 
 	time2 = timegm(clktime);
-	time_set(time2);
+	clock_fset(time2);
 	printf("Enter Return to start time : ");
 	gets(estring, 1);
-	time_start();
+	clock_fstart();
 }

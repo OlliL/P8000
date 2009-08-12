@@ -8,3 +8,5 @@ all:	sa.timer
 sa.timer:	$(OBJ)
 		$(LD) -s -o $@ $(OBJ)
 		chmod 400 $@
+clean:	
+	rm -f $(OBJ) sa.timer

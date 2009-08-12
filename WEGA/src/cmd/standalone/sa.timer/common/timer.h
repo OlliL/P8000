@@ -1,4 +1,4 @@
-/*
+/*-
  * Copyright (c) 2009 Oliver Lehmann <oliver@FreeBSD.org>
  * All rights reserved.
  *
@@ -23,31 +23,33 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: timer.h,v 1.2 2009/08/11 19:18:03 olivleh1 Exp $
+ * $Id: timer.h,v 1.3 2009/08/12 19:27:31 olivleh1 Exp $
  */
 
 #ifndef TIMER_H
 #define TIMER_H 1
 
 struct clock_type {
-        int             clock_addr;
-        int             clock_det_msk;
-        int             clock_det_str;
-        char            *clock_name;
-	int		(*time_init)();
-	long		(*time_get)();
-	void		(*time_set)();
-	void		(*time_start)();
+        int		clock_addr;
+        int		clock_det_msk;
+        int		clock_det_str;
+	int		clock_min_year;
+	int		clock_max_year;
+        char		*clock_name;
+	int		(*clock_finit)();
+	long		(*clock_fget)();
+	void		(*clock_fset)();
+	void		(*clock_fstart)();
 };
 
 char    estring[20];
 
 static struct clock_type clock_devs[] = {
-        { U130BASE, MSK_U130, STR_U130,
+        { U130BASE, MSK_U130, STR_U130, 80, 119,
 	  "RFT U130X RTC",
 	  u130_init, u130_get, u130_set, u130_start
 	},
-	{ R421BASE, MSK_R421, STR_R421,
+	{ R421BASE, MSK_R421, STR_R421, 70, 137,
 	  "Seiko Epson RTC-72421",
 	  rtc72421_init, rtc72421_get, rtc72421_set, rtc72421_start
 	},

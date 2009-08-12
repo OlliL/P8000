@@ -1,4 +1,4 @@
-/*
+/*-
  * Copyright (c) 2009 Oliver Lehmann <oliver@FreeBSD.org>
  * All rights reserved.
  *
@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: gmtime.c,v 1.3 2009/08/10 20:18:59 olivleh1 Exp $
+ * $Id: gmtime.c,v 1.4 2009/08/12 19:27:31 olivleh1 Exp $
  */
  
 #define	dysize(A) (((A)%4)? 365: 366)
