@@ -1,0 +1,80 @@
+.TH SAW 1
+.\" @[$]saw.1 1.0
+.ad
+.fi
+.SH NAME
+saw 
+.SH SYNTAX
+.B saw
+file
+.SH BESCHREIBUNG
+Das Programm
+.B saw
+ist ein Filterprogramm.
+.br
+Mit diesem Programm werden segmentierte Programme entsprechend den
+Segmentnummern in nichtsegmentierte Programme aufgesplittet.
+.br
+Die so erzeugten 'files' koennen mit dem LOAD-Kommando einzeln
+in ein entsprechenden Entwicklungsmodul (Emulator) geladen werden.
+.br
+.B Saw
+erzeugt Dateien mit nachfolgend aufgefuehrter Charakteristik.
+.br
+.sp
+.nf
+filename.segment_attribut:
+--------------------------
+filename ... entspricht dem Namen der zu splittenden Datei
+segment  ... Segmentnummmer
+attribut ... c - Segment enthaelt Code
+             d - Segment enthaelt initialisierte Daten
+             b - Segment enthaelt uninitialisierte Daten
+
+object module header:
+---------------------
+s_magic :       N_MAGIC1 (0xE707 nonsegmented executable)
+s_imsize:       _c Laenge Code
+                _d Laenge Daten
+                _b = 0
+s_bss   :       _c = 0
+                _d = 0
+                _b Laenge uninitialisierte Daten
+s_segt  :       0x10
+s_syms  :       0
+s_entry :       0
+s_flag  :       0x0001
+s_codesz:       0
+s_lines :       0
+
+segment table:
+--------------
+                entsprechend dem Original-Segment
+.fi
+.bp
+.SH BEISPIEL
+.PD 0
+.TP
+\&% saw test
+.TP
+(c) zft/keaw v. 1.0 splitted:
+.TP
+test.0_c
+.TP
+test.32_d
+.TP
+test.64_b
+.TP
+test.65_b
+.TP
+\&%
+.sp 1
+.SH SIEHE AUCH
+.PD 0
+.TP
+\&a.out(5)
+.TP
+LOAD(1)
+.sp 1
+.SH DIAGNOSTIK
+Auftretende Fehler sind in den Ausschriften selbstklaerend.
