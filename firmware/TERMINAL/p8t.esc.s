@@ -385,8 +385,9 @@ ENTRY
  CP	CHAR,#'('
  JR	Z,ESCG0
  CP	CHAR,#')'
- JR	ESCG8
+ JR	z,ESCG8
 VIDEO1:
+ and	STAT1,#NB4 land NB7	!ESC- und Video-Flag ruecksetzen!
  RET
  
  
@@ -522,53 +523,50 @@ ENTRY
  JR	Z,ESC_OUT0
  !------------------------------------------------------!
   
+	cp	CHAR,#%C2	!00 ?!
+	jr	nz,FKT_TAS	!nein!
+	ld	CHAR,#'0'
+	call	ESC_AUS2
+	ld	ESCH0,#'0'
+	jp	FKT_AUS
 FKT_TAS:
 	tm	STAT2,#B3	!VT100/ADM31 ?!
 	jp	z,FKT_VT100
  ! Auswertung der Tasten-Codes ADM31 !
 ! Cursor Movement Tasten !
 	ld	ESCH0,#FF	!Forspace!
-	cp	CHAR,#%86
+	cp	CHAR,#%CD
 	jp	z,FKT_AUS
 	ld	ESCH0,#BS	!Backspace!
-	cp	CHAR,#%88
+	cp	CHAR,#%CB
 	jp	z,FKT_AUS
 	ld	ESCH0,#LF	!Linefeed!
-	cp	CHAR,#%8A
+	cp	CHAR,#%D0
 	jr	z,FKT_AUS
 	ld	ESCH0,#VT	!Verticaltab!
-	cp	CHAR,#%8B
+	cp	CHAR,#%C8
 	jr	z,FKT_AUS
 	ld	ESCH0,#RS	!Cursor home!
-	cp	CHAR,#%8C
-	jr	z,FKT_AUS
-	ld	ESCH0,#BS
-	cp	CHAR,#%9D
-	jr	z,FKT_AUS
-	ld	ESCH0,#%09
-	cp	CHAR,#%89
+	cp	CHAR,#%CF
 	jr	z,FKT_AUS
 ! Funktionstasten !
  LD	ESCH0,#'W'	! char delete !
- CP	CHAR,#%8F
+ CP	CHAR,#%D2
  JR	Z,ESC_SEQ_AUS
  LD	ESCH0,#'Q'	! char insert !
- CP	CHAR,#%85
+ CP	CHAR,#%C9
  JR	Z,ESC_SEQ_AUS
  LD	ESCH0,#'R'	! line delete !
- CP	CHAR,#%84
+ CP	CHAR,#%D3
  JR	Z,ESC_SEQ_AUS
  LD	ESCH0,#'E'	! line insert !
- CP	CHAR,#%81
+ CP	CHAR,#%D1
  JR	Z,ESC_SEQ_AUS
  LD	ESCH0,#'Y'	! page erase !
- CP	CHAR,#%83
+ CP	CHAR,#%C7
  JR	Z,ESC_SEQ_AUS
- ld	ESCH0,#'T'
- cp	CHAR,#%82
- jr	z,ESC_SEQ_AUS
  ld	ESCH0,#'I'	! BACK_TAB !
- cp	CHAR,#%87
+ cp	CHAR,#%81
  jr	z,ESC_SEQ_AUS
  
  !------------------------------------------------------!
@@ -614,47 +612,38 @@ ESC_AUS1:
 FKT_VT100:
 ! Cursor Movement Tasten !
 	ld	ESCH0,#'C'	!Cursor right!
-	cp	CHAR,#%86
+	cp	CHAR,#%CD
 	jr	z,ESC_SEQ_AUS
 	ld	ESCH0,#'D'	!Cursor left!
-	cp	CHAR,#%88
+	cp	CHAR,#%CB
 	jr	z,ESC_SEQ_AUS
 	ld	ESCH0,#'B'	!Cursor down!
-	cp	CHAR,#%8A
+	cp	CHAR,#%D0
 	jr	z,ESC_SEQ_AUS
 	ld	ESCH0,#'A'	!Cursor up!
-	cp	CHAR,#%8B
+	cp	CHAR,#%C8
 	jr	z,ESC_SEQ_AUS
 	ld	ESCH0,#'H'	!Cursor home!
-	cp	CHAR,#%8C
+	cp	CHAR,#%CF
 	jr	z,ESC_SEQ_AUS
-	ld	ESCH0,#BS
-	cp	CHAR,#%9D
-	jr	z,FKT_AUS
 ! Funktionstasten !
 	ld	ESCH0,#'P'	!Delete character!
-	cp	CHAR,#%8F
+	cp	CHAR,#%D2
 	jr	z,ESC_SEQ_AUS
 	ld	ESCH0,#'@'	!Insert character!
-	cp	CHAR,#%85
+	cp	CHAR,#%C9
 	jr	z,ESC_SEQ_AUS
 	ld	ESCH0,#'M'	!Delete line!
-	cp	CHAR,#%84
+	cp	CHAR,#%D3
 	jr	z,ESC_SEQ_AUS
 	ld	ESCH0,#'L'	!Insert line!
-	cp	CHAR,#%81
+	cp	CHAR,#%D1
 	jr	z,ESC_SEQ_AUS
 	ld	ESCH0,#'J'	!Erasing from cursor to end of screen!
-	cp	CHAR,#%83
-	jp	z,ESC_SEQ_AUS
-	ld	ESCH0,#'K'
-	cp	CHAR,#%82
+	cp	CHAR,#%C7
 	jp	z,ESC_SEQ_AUS
 	ld	ESCH0,#'Z'	!Cursor backward tab!
-	cp	CHAR,#%87
-	jp	z,ESC_SEQ_AUS
-	ld	ESCH0,#'I'
-	cp	CHAR,#%89
+	cp	CHAR,#%81
 	jp	z,ESC_SEQ_AUS
 	jp	ESC_OUT0
  

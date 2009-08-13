@@ -206,6 +206,8 @@ TOUT5:
 	cp	CHAR,#'='
 	jr	z,TOUT6
 	cp	CHAR,#'#'
+	jr	z,TOUT10
+	cp	CHAR,#'<'
 	jr	z,TOUT7
 	call	PUTA
 	incw	rr6
@@ -219,6 +221,14 @@ TOUT6:
 TOUT8:
 	ld	r6,#HI VAF	!on!
 	ld	r7,#LO VAF
+	jr	TOUT5
+TOUT10:
+	tm	STAT3,#B4	!Eigentest ?!
+	jr	z,TOUT10	!nein!
+	tm	STAT3,#B5	!Error Tastatur ?!
+	jr	z,TOUT7		!nein!
+	ld	r6,#HI ERR
+	ld	r7,#LO ERR
 	jr	TOUT5
 TOUT7:
 	tm	STAT2,#B5	!war on/off ?!
@@ -266,7 +276,7 @@ MAIN10:
 ! Umschaltung VT100 <---> ADM31 ueber Taste MOD
   ********************************************* !
 MAIN11:
-	cp	CHAR,#%90
+	cp	CHAR,#%F3
 	jr	nz,MAIN14
 	tm	STAT2,#B3	!VT100/ADM31 ?!
 	jr	nz,ADM31
@@ -281,7 +291,7 @@ ADM31:
 ! Umschaltung Video Attribute on <---> off ueber Taste VIDEO
   ********************************************************** !
 MAIN14:
-	cp	CHAR,#%A0
+	cp	CHAR,#%F4
 	jr	nz,MAIN13
 	tm	STAT2,#B4	!Video Attribute on/off ?!
 	jr	nz,V_off
@@ -315,8 +325,9 @@ END MAIN
  
 ADM	array [* byte] := 'ADM31/9600 baud/='
 VT1	array [* byte] := 'VT100/9600 baud/='
-VAN	array [* byte] := 'Video Attr. on%R%L#'
-VAF	array [* byte] := 'Video Attr. off%R%L#'
+VAN	array [* byte] := 'Video Attr. on (c)zft/keaw%R%L#'
+VAF	array [* byte] := 'Video Attr. off (c)zft/keaw%R%L#'
+ERR	array [* byte] := 'Error Tastatur<'
 $PAGE
  
 PUTA PROCEDURE
@@ -561,88 +572,119 @@ ENTRY
  
 	push	rp
 	srp	#%20
-	tcm	r1,#B7		!Taste mit Vorbyte E1 ?!
-	jr	z,TGET0
-	tcm	r0,#B0
-	jr	z,TGET2
-	jr	TGET3
+	tm	STAT3,#B7	!Taste mit Vorbyte E1 ?!
+	jr	z,TGET0		!nein!
+	and	ZBYTE,#NB4
+	jp	TGETV
 TGET0:
-	ld	r6,r1
-	clr	r1
-	tcm	r0,#B0
-	jr	z,TGET3
-	ld	r1,r6
-	sub	r1,#B7
+	tm	STAT0,#B5	!Taste mit Vorbyte E0 ?!
+	jp	nz,TGETV	!ja!
+	tm	STAT3,#B2	!SHIFT-STATUS ein ?!
+	jr	z,TGET1		!nein!
+! SHIFT-STATUS !
+	cp	ZBYTE,#%35	!Abtastcode 00H ... 35H ?!
+	jr	ule,TGET2	!ja!
+	cp	ZBYTE,#%56	!Abtastcode 56H ?!
+	jr	nz,TGET1	!nein!
+	ld	ZBYTE,#'>'	!ZBYTE='>'!
+	jp	TGETE
+TGET2:
+	ld	r2,#HI SHIFT_Tab
+	ld	r3,#LO SHIFT_Tab
 	add	r3,r1
-	jr	nc,TGET1
-	inc	r2
-TGET1:
+	adc	r2,#0
 	ldc	r1,@rr2		!Wert aus SHIFT_Tab!
+	tm	STAT3,#B0	!CAPS-LOCK-STATUS ein ?!
+	jr	z,TGET3		!nein!
+	cp	ZBYTE,#'A'	!Grossbuchstaben A ... Z ?!
+	jr	ult,TGET3	!nein!
+	cp	ZBYTE,#'Z'
+	jr	ugt,TGET3	!nein!
+	or	ZBYTE,#B5	!Grossbuchstaben ---> Kleinbuchstaben!
+	jr	TGET3
 ! NORMAL-STATUS !
+TGET1:
 	ld	r2,#HI NORMAL_Tab
 	ld	r3,#LO NORMAL_Tab
-	jr	TGET3
-TGET2
-	ld	r6,r1
-	clr	r1
-	tcm	r6,#%40
-	jr	nz,TGET3
-	cp	r6,#%7B
-	jr	gt,TGET3
-	and	r6,#%1F
-	ld	r1,r6
-	jr	TGET3
+	add	r3,r1
+	adc	r2,#0
+	ldc	r1,@rr2		!Wert aus NORMAL_Tab!
+	tm	STAT3,#B0	!CAPS-LOCK-STATUS ein ?!
+	jr	z,TGET3		!nein!
+	cp	ZBYTE,#'a'	!Kleinbuchstaben a ... z ?!
+	jr	ult,TGET3	!nein!
+	cp	ZBYTE,#'z'
+	jr	ugt,TGET3	!nein!
+	and	ZBYTE,#NB5	!Kleinbuchstaben ---> Grossbuchstaben!
 TGET3:
-	tcm	r0,#%08
-	jr	nz,TGET7
-	tcm	r0,#%02
-	jr	nz,TGET3
-	cp	r1,#%41
-	jr	lt,TGET3
-	cp	r1,#%5A
-	jr	gt,TGET3
-	add	r1,#%20
-TGET3:
-	ld	CHAR,r1
-	tcm	r0,#%04
-	jr	nz,TGET5
-	tcm	STAT1,#%01
-	jr	z,TGET6
-	or	STAT1,#%01
-	ld	r4,#%020
-	ld	r5,#%00
-	ldc	@rr4,r5
-	jr	TGET6
+	tm	STAT3,#B1	!CTRL-STATUS ein ?!
+	jr	z,TGET5		!nein!
+	cp	ZBYTE,#'@'	!CTRL-Zeichen @ ... DEL ?!
+	jr	ult,TGETE	!nein!
+	cp	ZBYTE,#%7F
+	jr	ugt,TGET5	!nein!
+	and	ZBYTE,#NB5 land NB6	!CTRL-Zeichen!
+	jr	TGETE
 TGET5:
-	tcm	STAT1,#%01
-	jr	nz,TGET6
+	cp	ZBYTE,#%F2	!ALT-Taste ?!
+	jr	nz,TGET8	!nein!
+ 
+! Umschaltung Zeichensaetze !
+	tm	STAT1,#B0
+	jr	z,TGET6
 ! Zeichensatz 1 (amerikanisch) !
 	and	STAT1,#NB0
 	ld	r4,#HI ZG0
 	ld	r5,#LO ZG0
-	ldc	@rr4,r5
+	jr	TGET7
+! Zeichensatz 2 (Umlaute) !
 TGET6:
+	or	STAT1,#B0
+	ld	r4,#HI ZG1
+	ld	r5,#LO ZG1
+TGET7:
+	ldc	@rr4,r5
+	ld	ZBYTE,#%80
+	jr	TGETE
+ 
+! Behandlung Umlaute !
+TGET8:
+	tm	STAT1,#B0	!Zeichensatz 2 ?!
+	jr	z,TGETE		!nein!
+	tm	STAT3,#B0	!CAPS-LOCK-STATUS ein ?!
+	jr	nz,TGETE	!ja!
+	cp	ZBYTE,#'['	!Zeichen [  ] ?!
+	jr	ult,TGETE	!nein!
+	cp	ZBYTE,#']'
+	jr	ugt,TGET9	!nein!
+	add	r1,#%20		!ZBYTE=ZBYTE+20H!
+	jr	TGETE
+TGET9:
+	cp	ZBYTE,#'{'	!Zeichen { | } ?!
+	jr	ult,TGETE	!nein!
+	cp	ZBYTE,#'}'
+	jr	ugt,TGETE	!nein!
+	sub	r1,#%20		!ZBYTE=ZBYTE-20H!
+	jr	TGETE
+ 
+! Behandlung Taste mit Vorbyte E0 ... !
+TGETV:
+	or	ZBYTE,#B7
+	cp	ZBYTE,#%9C	!ENTER ?!
+	jr	nz,TGETV1	!nein!
+	ld	r1,#CR
+	jr	TGETE
+TGETV1:
+	cp	ZBYTE,#%B5
+	jr	nz,TGETE
+	ld	r1,#'/'
+TGETE:
+	ld	CHAR,r1		!CHAR=ZBYTE!
 	and	STAT0,#NB4 land NB5
+	and	STAT3,#NB6 land NB7
+ 
 	pop	rp
 	ret
-TGET7:
-	tm	STAT1,#%01
-	jr	z,TGET3
-	tm	r0,#%02
-	jr	z,TGET8
-	cp	r1,#%7A
-	jr	ule,TGET3
-	cp	r1,#%7E
-	jr	nc,TGET3
-	sub	r1,#%20
-	jr	TGET3
-TGET8:
-	cp	r1,#%5A
-	jr	ule,TGET3
-	cp	r1,#%5E
-	jr	nc,TGET3
-	add	r1,#%20
-	jr	TGET3
 END TGETCHAR
  
 $PAGE
@@ -749,13 +791,21 @@ Dez/Hex
  
 * Zeichengenerator ZG1 (Umlaute)
 !
-NORMAL_Tab	array [85 byte] :=
-	[%00 %00 %81 %F1 %00 %00 %86 %87 %88 %89 %8A %8B %8C %09 %F0 %00
-	 %00 %00 %00 %00 %00 %00 %00 %00 %00 %00 %00 %1B %00 %9D %0D %00
-	 %80 %82 %81 %85 %00 %00 %00 %00 %00 %00 %00 %00 %2C %00 %00 %00
-	 %30 %31 %32 %33 %34 %35 %36 %37 %38 %39 %00 %2E %00 %2D %00 %00
-	 %83 %80 %84 %00 %00 %00 %00 %00 %00 %00 %00 %00 %00 %8F %08 %80
-	 %2B %90 %A0 %80 %80]
+ 
+NORMAL_Tab	array [89 byte] :=
+	[%2B %1B %31 %32 %33 %34 %35 %36 %37 %38 %39 %30 %7E %27 %7F %81
+	 %71 %77 %65 %72 %74 %7A %75 %69 %6F %70 %5D %2B %0D %09 %61 %73
+	 %64 %66 %67 %68 %6A %6B %6C %5C %5B %08 %80 %23 %79 %78 %63 %76
+	 %62 %6E %6D %2C %2E %2D %80 %2A %80 %20 %80 %F2 %F3 %F4 %F1 %80
+	 %80 %80 %80 %80 %80 %08 %80 %37 %38 %39 %2D %34 %35 %36 %3D %31
+	 %32 %33 %30 %2C %F0 %80 %3C %80 %80]
+ 
+SHIFT_Tab	array [54 byte] :=
+	[%2B %1B %21 %22 %40 %24 %25 %26 %2F %28 %29 %3D %3F %60 %7F %81
+	 %51 %57 %45 %52 %54 %5A %55 %49 %4F %50 %7D %2A %0D %09 %41 %53
+	 %44 %46 %47 %48 %4A %4B %4C %7C %7B %08 %00 %5E %59 %58 %43 %56
+	 %42 %4E %4D %3B %3A %5F]
+ 
  
  
 $PAGE

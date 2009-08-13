@@ -5,7 +5,8 @@
  *   mit Einchip-Mikrorechner U 882 und CRTC 8275	*
  *   ============================================	*
  *							*
- *  INIT Module; Version 4.2:				*
+ *  INIT Module; Version 5.0:				*
+ *    - Anpassung an IBM (XT) Tastatur			*
  *    - 24 Zeilen / 80 Zeichen				*
  *  Inhalt:						*
  *    - Initialisierung Rechner, Bildspeicher, CRTC	*
@@ -31,7 +32,7 @@ P01EXT	:=	%96	! P0:=A8...A14, P1:=AD0...AD7, Stack intern !
 P01TRI	:=	%9E	! tri state: P0,P1,AS,DS,R/W !
 SBUFL	:=	45	! SIO-Puffer-Laenge !
 ZDMA	:=	26	! DMA ausschalten: 26*1.08=28 mys !
-ZVSY	:=	160	! VSYN: 192*1.08=172.8 mys !
+ZVSY	:=	192	! VSYN: 192*1.08=172.8 mys !
  
 ! Bit Definitionen !
 B0	:=  %1		! bit 0 !
@@ -86,7 +87,7 @@ RES4		:=	%6A	! visible video control !
 				!ruhender Cursor-Block!
 RES5		:=	%4A	!volles Feld blinkend!
 RES6		:=	%7A	!Unterstrich!
-RES7		:=	%6C	!changed for 4!
+RES7		:=	%5A	!Unterstrich blinkend!
  
 ! Field Attribute Code !
 FAC	:=	%80	! Field Attribute: Normal Mode !
@@ -137,7 +138,7 @@ EXTERNAL
  
  
 GLOBAL
-$SECTION SECR REGISTER
+$SECTION REGISTER
  
 $REL	0
  ! Ports, Status- und Hilfsregister: Reg.-Grp. 0 !
@@ -161,7 +162,7 @@ $REL	%30
  
  
  
-$SECTION SEC0 PROGRAM
+$SECTION PROGRAM
 $REL	0
  
 INTERRUPT ARRAY [6 WORD] := [IRP32 IRP33 IRP31 IRP30 IRT0 IRT1]
@@ -174,7 +175,7 @@ ENTRY
 END JP_MESSAGE
  
 ! Message: Copyright  Name  Version  Datum !
-MESSAGE array [* byte] := '(C) ZFT/KEAW 4.2 Jan88'
+MESSAGE array [* byte] := '(C) ZFT/KEAW 5.0 Dec88'
  
  
 INITIAL PROCEDURE
@@ -250,8 +251,6 @@ ZADR0:
  
  ! IBM (XT) Tastatur und Zeichengenerator vorbereiten !
  SRP	#%20
- ld	r2,#%04
- ld	r3,#%84
  LD	R4,#ZG0		! nur High-Adr interessant !
  LDC	@RR4,R5		! Scheinausgabe zum Einschalten ZG0 !
  ld	r4,#TRES
@@ -383,22 +382,89 @@ IRP33 PROCEDURE
  *******************************************************!
 ENTRY
  
-	tcm	STAT0,#B4
-	jr	z,TINT0
 	push	rp
 	srp	#%20
-	tcm	STAT0,#B5
-	jr	z,TINT1
-	tcm	P2,#%E0
-	jr	nz,TINT0
-	ld	r0,P2
+ 
+	or	STAT3,#B4	!Eigentest!
+ 
+	tm	STAT0,#B4	!Zeichen verarbeitet ?!
+	jp	nz,TINT0	!nein!
+ 
+	ld	r1,P2		!Lesen von Port 2!
+ 
+	rr	r1		!Verschieben D0->D7 ... D7->D6!
+ 
+	cp 	ZBYTE,#%E1	!Vorbyte E1 ?!
+	jr	nz,TINT14	!nein!
+	or	STAT3,#B7
+	jr	TINT0
+TINT14:
+	cp	ZBYTE,#%E0	!Vorbyte E0 ?!
+	jr	nz,TINT1	!nein!
 	or	STAT0,#B5
 	jr	TINT0
 TINT1:
-	ld	r1,P2		!Lesen von Port 2!
+	tm	ZBYTE,#B7	!Scan-/Break-Code ?!
+	jr	nz,TINT2	!Break-Code!
+ 
+! Scan-Code !
+	cp	ZBYTE,#%2A	!SHIFT-Taste ?!
+	jr	nz,TINT4	!nein!
+	or	STAT3,#B2	!SHIFT-STATUS ein!
+	jr	TINT8
+TINT4:
+	cp	ZBYTE,#%3A	!CAPS-LOCK-Taste ?!
+	jr	nz,TINT5	!nein!
+	tm	STAT3,#B0	!war CAPS-LOCK-STATUS ein ?!
+	jr	nz,TINT15	!ja!
+	or	STAT3,#B0	!CAPS-LOCK-STATUS ein!
+	jr	TINT8
+TINT15:
+	and	STAT3,#NB0	!CAPS-LOCK-STATUS aus!
+	jr	TINT8
+TINT5:
+	cp	ZBYTE,#%38	!CTRL-Taste ?!
+	jr	nz,TINT6	!nein!
+	and	STAT0,#NB5
+	or	STAT3,#B1	!CTRL-STATUS ein!
+	jr	TINT8
+TINT6:
+	tm	STAT3,#B7	!war Vorbyte E1 ?!
+	jr	z,TINT7		!nein!
+	tm	STAT3,#B6	!1. Zeichen nach E1 ?!
+	jr	nz,TINT7
+	or	STAT3,#B6
+	ld	r0,r1		!1. Zeichen nach E1!
+	jr	TINT0
+TINT7:
 	or	STAT0,#B4
+	jr	TINT0
+ 
+! Break-Code !
+TINT2:
+	and	STAT0,#NB5
+	cp	ZBYTE,#%AA	!SHIFT-Taste ?!
+	jr	nz,TINT11	!nein!
+	and	STAT3,#NB2	!SHIFT-STATUS aus!
+	jr	TINT8
+TINT11:
+	cp	ZBYTE,#%B8	!CTRL-Taste ?!
+	jr	nz,TINT12	!nein!
+	and	STAT3,#NB1	!CTRL-STATUS aus!
+	jr	TINT8
+TINT12:
+	cp	ZBYTE,#%FC	!Error Tastatur ?!
+	jr	nz,TINT13	!nein!
+	or	STAT3,#B5	!ERROR-STATUS ein!
+	jr	TINT8
+TINT13:
+	cp	ZBYTE,#%AA	!Okay Tastatur ?!
+	jr	nz,TINT8	!nein!
+	and	STAT3,#NB5	!ERROR-STATUS aus!
+TINT8:
+	and	STAT3,#NB6 land NB7
 TINT0:
-	ld	r4,#TRES
+ ld	r4,#TRES
  
 TINTW:
  tcm	STAT0,#B0	! DMA aktiv?, wenn ja, warten !
