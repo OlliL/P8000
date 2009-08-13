@@ -1144,4 +1144,8 @@ Interruptquelle (CTC0_3) loeschen
 	ret	
     end RETI_CTC0_3
 
+! Platzhalter !
+internal
+	array [%60 byte]
+
 END p_brk

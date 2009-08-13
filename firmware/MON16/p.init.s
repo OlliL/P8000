@@ -1525,4 +1525,7 @@ VI_TXT:
 	ARRAY [* BYTE] := 'UNINITIALIZED VECTORED INTERRUPT ENTRY  ID= '
 VI_END:
  
+! Platzhalter !
+internal
+	array	[%20 byte]
 END p_init

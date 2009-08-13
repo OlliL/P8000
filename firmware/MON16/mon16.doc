@@ -73,7 +73,7 @@ as -l -o p.crc.o p.crc.s
 as -l -o p.ram.o p.ram.s 
 
 ld  p.init.o p.term.o p.comm.o p.brk.o p.test.o p.gesa.o 
-    p.ldsd.o p.boot.o p.disk.o p.dummy.o p.crc.o p.ram.o -o MON16
+    p.ldsd.o p.boot.o p.dummy.o p.disk.o p.crc.o p.ram.o -o MON16
 strip -h MON16
 
 .fi
