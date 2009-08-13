@@ -208,7 +208,7 @@ clean:
 list:
 		@$(LS) . $(DIRS)
 
-tar720:		S720.1 S720.2 S720.3 SAMX SPQR
+tar720:		S720.1 S720.2 S720.3 S720.4 SAMX SPQR
 
 S720.1:
 		@./READY S720.1
@@ -220,6 +220,10 @@ S720.2:
 
 S720.3:
 		@./READY S720.3
+		@cd src; $(TAR_X)
+
+S720.4:
+		@./READY S720.4
 		@cd src; $(TAR_X)
 
 SAMX:
@@ -244,7 +248,7 @@ C720.3:
 		@./READY C720.3
 		@$(TAR_X)
 
-tar360:		M360 S360.1 S360.2 S360.3 S360.4 S360.5 S360.6 SAMX SPQR
+tar360:		M360 S360.1 S360.2 S360.3 S360.4 S360.5 S360.6 S360.7 SAMX SPQR
 
 M360:
 		@./READY M360
@@ -272,6 +276,10 @@ S360.5:
 
 S360.6:
 		@./READY S360.6
+		@cd src; $(TAR_X)
+
+S360.7:
+		@./READY S360.7
 		@cd src; $(TAR_X)
 
 C360:		C360.1 C360.2 C360.3 C360.4 C360.5

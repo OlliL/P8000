@@ -1,0 +1,82 @@
+Version 0.2 - 2007-04-25
+
+Installation von ing_db unter WEGA
+
+
+1. Herstellen der Entwicklungsumgebung
+
+1.1. uebertragen sie den Inhalt des Verz. dbs nach /z/dbs
+1.2. fuehren sie nun  das Kommando ING_DB aus, um die Dateien fuer ING_DB herzurichten
+     alternativ kann auch das Kommando DABA ausgefuehrt werden, um die Dateien fuer DABA
+     herzurichten.
+1.3. Formatieren Sie nun 10 Disketten (720KB)
+1.4. Starten Sie die Befehlskette "make -f Customer 720kb" Dabei werden sie zum Einlegen
+     der 10 Disketten nacheinander aufgefordert.
+
+Nun haben Sie den Distributionsdiskettensatz zu ING_DB. Vergessen Sie nicht die Disketen
+zu beschriften.
+
+Verfahren Sie nun nach der Installationsanleitung "Installation"
+
+Tips:
+
+Eine Bereinigung der Installation erfolgt im Verz. src/conf durch Eingabe von
+	make allclean reset
+Weiterhin sollten die Dateien dbs/src/amx_cc/grammar.y dbs/src/parser/grammar.y,
+sowie alle .c Dateien zu denen .y Dateien existieren geloescht werden.
+Es sollte geprueft werden, ob nach "make" noch .o Files in einem der Unterverz.
+existieren. Ist dies der Fall sind auch diese zu Loeschen.
+
+
+
+
+       Maschinentyp> P8000
+Betriebsbezeichnung> KEAW
+        cd src/conf;make -k allinstall >../../GEN.1 2>../../GEN.2
+chmod: can't access bin/eql
+chmod: can't access bin/rc
+chmod: can't access bin/rg
+*** Error code 3 (ignored)
+chmod: can't access bin/amx
+chmod: can't access bin/amxf
+chmod: can't access bin/oamx
+chmod: can't access bin/oamxf
+chmod: can't access bin/samx
+chmod: can't access sys/bin/ovqp34
+*** Error code 6 (ignored)
+Make: Cannot load usersetup.  Stop.
+*** Error code 1
+
+Stop.
+
+real  6:20:26.28
+user  3:13:18.30
+sys   1:10:47.50
+
+cpu idle        28%
+wait bio         5%
+wait swap        0%
+wait pio         0%
+cpu user        51%
+cpu sys         22%
+swap in         334
+swap out        259
+chars read      55822182
+chars written   22879637
+block reads     564333
+logical reads   1295490
+cached reads    56%
+block writes    83648
+logical writes  305590
+cached writes   73%
+disk0 I/O       0
+disk1 I/O       0
+disk2 I/O       0
+disk3 I/O       0
+p switch        200854
+preempt         19133
+syscall         489778
+iget            160551
+namei           54119
+dirblk          130609
+#224 

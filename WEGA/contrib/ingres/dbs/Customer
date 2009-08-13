@@ -1,3 +1,4 @@
+SHELL=	/bin/sh
 MACH=	
 DEV=	fd0
 TARDEV=	/dev/$(DEV)
@@ -40,6 +41,7 @@ CONF=	conf/Makefile			\
 	proto/decomp			\
 	proto/eql			\
 	proto/etc			\
+	proto/form			\
 	proto/gutil			\
 	proto/h				\
 	proto/iutil			\
@@ -51,6 +53,7 @@ CONF=	conf/Makefile			\
 	proto/parser			\
 	proto/pqr			\
 	proto/qrymod			\
+	proto/redabas			\
 	proto/samx_lib			\
 	proto/slibq			\
 	proto/support			\
@@ -90,6 +93,9 @@ ETC1=	Makefile			\
 ETC2=	sys/man/[d-z]*
 ETC=	$(ETC1) $(ETC2)
 
+FORM=	form/*.h			\
+	form/*.c
+
 GUTIL=	gutil/*.h			\
 	gutil/*.c			\
 	gutil/bmove.??*
@@ -121,6 +127,11 @@ PQR=	pqr/*.h				\
 QRYMOD=	qrymod/*.h			\
 	qrymod/*.c
 
+REDAB=	redabas/*.c			\
+	redabas/*.h			\
+	redabas/*.nr			\
+	redabas/pers.dbd
+
 SUPPORT=support/*.h			\
 	support/*.c
 
@@ -139,6 +150,7 @@ SRC3_4=	$(SRC3) $(SRC4)
 SRC5=	$(SYS) $(YYYACC) $(ACCESS) $(OVQP)
 SRC6=	$(QRYMOD) $(SUPPORT)
 SRC5_6=	$(SRC5) $(SRC6)
+SRC7=	$(FORM) $(REDAB)
 
 
 720kb:	E720 S720 D720 C720
@@ -155,7 +167,7 @@ E720:
 	@-READY E720
 	@-$(TAR) $(ETC) || ($(FORMAT); $(TAR) $(ETC))
 
-S720:	S720.1 S720.2 S720.3 SAMX SPQR
+S720:	S720.1 S720.2 S720.3 S720.4 SAMX SPQR
 
 C360:	C360.1 C360.2 C360.3
 
@@ -171,7 +183,7 @@ M360:
 	@-READY M360
 	@-$(TAR) $(ETC2) || ($(FORMAT); $(TAR) $(ETC2))
 
-S360:	S360.1 S360.2 S360.3 S360.4 S360.5 S360.6 SAMX SPQR
+S360:	S360.1 S360.2 S360.3 S360.4 S360.5 S360.6 S360.7 SAMX SPQR
 
 C720.1:
 	@-READY C720.1
@@ -221,6 +233,10 @@ S720.3:
 	@-READY S720.3
 	@-cd src; $(TAR) $(SRC5_6) || ($(FORMAT); $(TAR) $(SRC5_6))
 
+S720.4:
+	@-READY S720.4
+	@-cd src; $(TAR) $(SRC7) || ($(FORMAT); $(TAR) $(SRC7))
+
 S360.5:
 	@-READY S360.5
 	@-cd src; $(TAR) $(SRC5) || ($(FORMAT); $(TAR) $(SRC5))
@@ -228,6 +244,10 @@ S360.5:
 S360.6:
 	@-READY S360.6
 	@-cd src; $(TAR) $(SRC6) || ($(FORMAT); $(TAR) $(SRC6))
+
+S360.7:
+	@-READY S360.7
+	@-cd src; $(TAR) $(SRC7) || ($(FORMAT); $(TAR) $(SRC7))
 
 SAMX:
 	@-READY SAMX
