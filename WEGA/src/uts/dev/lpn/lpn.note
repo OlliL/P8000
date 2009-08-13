@@ -1,0 +1,16 @@
+lpn ist der erweiterte lp-Treiber fuer wega 3.2
+Mit mknod <lp> c 9 <min>
+sind die gewuenschten Eigenschaften und lp-namen zu installieren.
+Dabei sind Kombinationen moeglich:
+Fuer <min> gilt
+	0x00	normal lp Parameter (66 Z, 128 Sp, 0)
+	0x10	kein Seitenvorschub (0x0c) beim close
+	0x20	keine Umschaltung auf raw-Mode bei ESC
+	0x40	permanenter raw-Mode
+	0x80	lp2 Parameter (90 Z, 160 Sp, 0)
+	  +3	(bei tty3 als Druckerkanal)
+Das Objekt lpn.o ist nach /usr/sys/dev/lp.o zu kopieren (moven) und mit
+ar rv LIB2 lp.o das alte lp.o zu ersetzen.
+Die beiden lp-Parameterfelder koennen mit setlp [-d /dev/lpx] angezeigt
+und veraendert werden.
+Zum Test fuer lx kann der Druckauftrag io3sys* dienen.
