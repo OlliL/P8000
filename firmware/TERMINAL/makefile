@@ -1,14 +1,12 @@
-VERSION=5
-
 AS=u8as
 LD=ld
 STRIP=strip -h
-FIRMWARE=p8t_1_$(VERSION)
-OBJECTS=p8t.$(VERSION).init.o \
-	p8t.$(VERSION).main.o \
-	p8t.$(VERSION).up.o \
-	p8t.$(VERSION).esc.o \
-	p8t.$(VERSION).vt100.o
+FIRMWARE=p8t_1_5.0
+OBJECTS=p8t.init.o \
+	p8t.main.o \
+	p8t.up.o \
+	p8t.esc.o \
+	p8t.vt100.o
 
 all: $(OBJECTS)
 	$(LD) -x -o $(FIRMWARE) -bt 0 $(OBJECTS)

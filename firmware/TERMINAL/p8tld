@@ -1,3 +1,0 @@
-#shell procedure zum linken von p8t.*.o objektmodulen
-ld -x  -o p8t$1xt -bt 0 p8t.$1.init.o p8t.$1.main.o p8t.$1.up.o p8t.$1.esc.o p8t.$1.vt100.o
-

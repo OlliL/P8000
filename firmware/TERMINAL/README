@@ -1,13 +1,20 @@
-Version 4.2 muss unter UDOS erzeugt werden:
+==== Version 4.2 ====
+CVS Tag P8T_4_2
 
-U8ASM p8t.4.init.s
-U8ASM p8t.4.main.s
-U8ASM p8t.5.up.s
-U8ASM p8t.4.esc.s
-U8ASM p8t.5.vt100.s
-ZLINK N=p8t_1_4 p8t.4.init.obj p8t.4.main.obj p8t.5.up.obj p8t.4.esc.obj p8t.5.vt100.obj
+- muss unter UDOS erzeugt werden:
+
+U8ASM p8t.init.s
+U8ASM p8t.main.s
+U8ASM p8t.up.s
+U8ASM p8t.esc.s
+U8ASM p8t.vt100.s
+ZLINK N=p8t_1_4 p8t.init.obj p8t.main.obj p8t.up.obj p8t.esc.obj p8t.vt100.obj
 IMAGER p8t_1_4 ($=0000 SEC0 $=0193 SEC1 $=054E SEC2 $=06A1 SEC3 $=098D SEC5 $=0000 SECR) {0 FFF} O=P8T_1_4.2
 
-Version 5.0 muss unter WEGA erzeugt werden:
+
+==== Version 5.0 ====
+CVS Tag P8T_5_0
+
+ muss unter WEGA erzeugt werden:
 
 make
