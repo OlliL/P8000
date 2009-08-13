@@ -1,0 +1,25 @@
+Hier findet Ihr Dateien welche nuetzlich bei der Arbeit mit dem P8000 sind.
+
+crc.c		Berechnung von EPROM Checksummen (compilierbar unter FreeBSD,
+		WEGA und DOS (Turbo-C 2))
+
+compress.c	unter WEGA compilierbare Version von compress(1)
+		verarbeitet max. 12 bit-code-size Z-files (Option -b)
+
+uuencode.c	unter WEGA compilierbare Version von uuencode(1)/uudecode(1)
+uudecode.c	nuetzlich fuer den Dateiaustausch zw. WEGA und einem Zielhost
+
+mig_DUMP2bin.sh	nuetzlich zum Umwandeln von DUMP-Output von OS/M+UDOS, und hd-
+		Output von WEGA zurueck in binary-files (zum copy&paste-Datei-
+		transfer)
+
+wega_backup.sh	mit wega_backup.sh kann man bequem sein system (bzw ein
+		beliebiges Verz. oder Device) ueber seriell abziehen als tar,
+		cpio image oder als dd oder dump image.
+
+get_file.sh	mit "get_file.sh <file>" fordert man vom client-kermit eine
+		datei. Das Script ermittelt autom. an welchem terminal man
+		sich gerade befindet und welche Uebetragungsgeschwindigkeit
+		dieses Terminal hat.
+
+
