@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: timer.c,v 1.4 2009/08/16 15:00:18 olivleh1 Exp $
+ * $Id: timer.c,v 1.5 2009/08/16 20:15:48 olivleh1 Exp $
  */
  
 
@@ -35,6 +35,7 @@
 long
 gettime()
 {
+#ifdef foo
 	register long time;
 	register i;
 	struct clock_type *t;
@@ -51,6 +52,40 @@ gettime()
 			time = t->clock_fget();
 			break;
 		}
+	}
+#endif
+	register long time = 0;
+	register i;
+	struct clock_type *t;
+	int a,b; 	 
+int		clock_min_year;
+int		clock_max_year;
+int		(*clock_finit)();
+long		(*clock_fget)();
+void		(*clock_fset)();
+void		(*clock_fstart)();
+
+	t = clock_devs;
+
+	for( i = 0 ; i < sizeof(clock_devs) / sizeof(clock_devs[0]); i++, t++) {
+		a = inb(t->clock_addr)&~t->clock_det_msk;
+		b = t->clock_det_str;
+ 		if(a == b) {
+			printf("%s found\n",t->clock_name);
+			clock_finit    = t->clock_finit;
+			clock_fget     = t->clock_fget;
+			clock_fset     = t->clock_fset;
+			clock_fstart   = t->clock_fstart;
+			clock_min_year = t->clock_min_year;
+			clock_max_year = t->clock_max_year;
+			break;
+		}
+	}
+
+	/* function pointer assigned? => RTC found?*/
+	if (clock_finit > 0) {
+		clock_finit();	
+		time = clock_fget();
 	}
 
 	return(time);
