@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.11 2009/08/16 11:11:00 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.12 2009/08/16 14:52:52 olivleh1 Exp $
  */
  
 
@@ -32,8 +32,10 @@
 #include "rtc72421.h"
 #include "timer.h"
 
-long		timegm();
-struct tm	*gmtime();
+extern long		timegm();
+extern struct tm	*gmtime();
+char    estring[20];
+
 
 int		clock_min_year;
 int		clock_max_year;
@@ -127,20 +129,25 @@ long time;
 {
 	struct tm *clktime;
 	long time2;
+	int tm_year, tm_mday, tm_mon, tm_sec, tm_min, tm_hour;
 
 	clktime = gmtime(&time);
 loop1:
 	printf("Enter new Date (MM/DD/YY) : ");
 	gets(estring, sizeof estring);
-	if (estring[0] == 0)
+	if (estring[0] == 0) {
+		tm_mon  = clktime->tm_mon;
+		tm_mday = clktime->tm_mday;
+		tm_year = clktime->tm_year;
 		goto loop2;
-	clktime->tm_mon  = getdat(1)-1;
-	clktime->tm_mday = getdat(2);
-	clktime->tm_year = getdat(3);
-	if (clktime->tm_year < 70 )
-		clktime->tm_year += 100;
+	}
+	tm_mon  = getdat(1)-1;
+	tm_mday = getdat(2);
+	tm_year = getdat(3);
+	if (tm_year < 70 )
+		tm_year += 100;
 
-	if (clktime->tm_mon<0 || clktime->tm_mon>11 || clktime->tm_mday<1 || clktime->tm_mday>31 || clktime->tm_year<clock_min_year || clktime->tm_year>clock_max_year)
+	if (tm_mon<0 || tm_mon>11 || tm_mday<1 || tm_mday>31 || tm_year<clock_min_year || tm_year>clock_max_year)
 		goto loop1;
 		
 loop2:
@@ -148,14 +155,14 @@ loop2:
 	gets(estring, sizeof estring);
 	if (estring[0] == 0)
 		return;
-	clktime->tm_hour = getdat(1);
-	clktime->tm_min  = getdat(2);
-	clktime->tm_sec  = 0;
-	if (clktime->tm_min<0 || clktime->tm_min>59 || clktime->tm_hour<0 || clktime->tm_hour>23)
+	tm_hour = getdat(1);
+	tm_min  = getdat(2);
+	tm_sec  = 0;
+	if (tm_min<0 || tm_min>59 || tm_hour<0 || tm_hour>23)
 		goto loop2;
 
 
-	time2 = timegm(clktime);
+	time2 = timegm(tm_year,tm_mon,tm_mday,tm_hour,tm_min,tm_sec);
 	clock_fset(time2);
 	printf("Enter Return to start time : ");
 	gets(estring, 1);

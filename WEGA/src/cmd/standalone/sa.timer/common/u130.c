@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.c,v 1.10 2009/08/16 11:11:00 olivleh1 Exp $
+ * $Id: u130.c,v 1.11 2009/08/16 14:52:52 olivleh1 Exp $
  */
  
 #include <time.h>
@@ -32,8 +32,8 @@
 int			rdvalue();
 int			invalue();
 void			outvalue();
-long			timegm();
-struct tm		*gmtime();
+extern long		timegm();
+extern struct tm	*gmtime();
 
 int
 u130init()
@@ -109,26 +109,26 @@ long
 u130get()
 {
 	long time;
-	struct tm *clktime;
+	int tm_year, tm_mday, tm_mon, tm_sec, tm_min, tm_hour;
 
 	outvalue(0x02);				/* Umschalten auf Datum */
-	clktime->tm_year = rdvalue(U130YYx1);
-	if (clktime->tm_year < 70)
-		clktime->tm_year+=100;
-	clktime->tm_mday = rdvalue(U130DDx1);
-	clktime->tm_mon = rdvalue(U130MMx1);
-	clktime->tm_mon --;
+	tm_year = rdvalue(U130YYx1);
+	if (tm_year < 70)
+		tm_year+=100;
+	tm_mday = rdvalue(U130DDx1);
+	tm_mon = rdvalue(U130MMx1);
+	tm_mon --;
 	outvalue(0x00);
-	clktime->tm_sec = inb(U130MM1x) & 0x28;	/* Umschalten auf Zeit */
-	if (clktime->tm_sec == 0x08 || clktime->tm_sec == 0x20) {
+	tm_sec = inb(U130MM1x) & 0x28;	/* Umschalten auf Zeit */
+	if (tm_sec == 0x08 || tm_sec == 0x20) {
 		outvalue(0x02);
 		outvalue(0x00);
 	}
-	while ((clktime->tm_sec = rdvalue(U130SSx1)) == 59);
-	clktime->tm_min = rdvalue(U130MIx1);
-	clktime->tm_hour = rdvalue(U130HHx1);
+	while ((tm_sec = rdvalue(U130SSx1)) == 59);
+	tm_min = rdvalue(U130MIx1);
+	tm_hour = rdvalue(U130HHx1);
 
-	time = timegm(clktime);
+	time = timegm(tm_year,tm_mon,tm_mday,tm_hour,tm_min,tm_sec);
 	return(time);
 }
 

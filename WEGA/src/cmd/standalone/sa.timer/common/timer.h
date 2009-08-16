@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: timer.h,v 1.4 2009/08/16 11:11:00 olivleh1 Exp $
+ * $Id: timer.h,v 1.5 2009/08/16 14:52:52 olivleh1 Exp $
  */
 
 #ifndef TIMER_H
@@ -41,8 +41,6 @@ struct clock_type {
 	void		(*clock_fset)();
 	void		(*clock_fstart)();
 };
-
-char    estring[20];
 
 static struct clock_type clock_devs[] = {
         { U130BASE, MSK_U130, STR_U130, 80, 119,

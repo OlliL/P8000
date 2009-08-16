@@ -23,16 +23,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: timegm.c,v 1.2 2009/08/12 19:27:31 olivleh1 Exp $
+ * $Id: timegm.c,v 1.3 2009/08/16 14:52:52 olivleh1 Exp $
  */
  
 #include <time.h>
 
-extern struct tm	*gmtime();
-
 long
-timegm(clktime)
-struct tm *clktime;
+timegm(tm_year,tm_mon,tm_mday,tm_hour,tm_min,tm_sec)
+register tm_year;
+register tm_mon;
+register tm_mday;
+register tm_hour;
+register tm_min;
+register tm_sec;
 {
 	register long time;
 	register i;
@@ -40,19 +43,19 @@ struct tm *clktime;
 		{ 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
 
 	time = 0;
-	if (clktime->tm_mday > 31 || clktime->tm_mon > 12)
+	if (tm_mday > 31 || tm_mon > 12)
 		return(time);
-	i = dmsize[clktime->tm_mon];
-	if (clktime->tm_year%4 == 0 && clktime->tm_mon > 2) i++;
-	if (clktime->tm_year > 137) return(time);
-	time = (clktime->tm_year-69)/4;
-	time += 365*(clktime->tm_year-70)+i;
-	time += clktime->tm_mday - 1;
+	i = dmsize[tm_mon];
+	if (tm_year%4 == 0 && tm_mon > 2) i++;
+	if (tm_year > 137) return(time);
+	time = (tm_year-69)/4;
+	time += 365*(tm_year-70)+i;
+	time += tm_mday - 1;
 
-	if (clktime->tm_sec > 59 || clktime->tm_min > 59 || clktime->tm_hour > 23)
+	if (tm_sec > 59 || tm_min > 59 || tm_hour > 23)
 		return(time);
-	time = 24*time + clktime->tm_hour;
-	time = 60*time + clktime->tm_min;
-	time = 60*time + clktime->tm_sec;
+	time = 24*time + tm_hour;
+	time = 60*time + tm_min;
+	time = 60*time + tm_sec;
 	return(time);
 }

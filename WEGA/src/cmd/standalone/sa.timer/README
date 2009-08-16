@@ -12,15 +12,15 @@ mv sa.timer /sa.timer
 make clean
 
 	# Objekte bauen
-scc -c -O timer.c gmtime.c timegm.c u130.c rtc72421.c 
+scc -c -O timer.c gmtime.c timegm.c rtc72421.c u130.c
 
 	# LIB1 sichern
-cp /usr/sys/sys/LIB1 /usr/sys/sys/LIB.orig
+cp /usr/sys/sys/LIB1 /usr/sys/sys/LIB1.orig
 
 	# Objekte ins Kernel-Archiv legen
+	# (Reihenfolge: lorder timer.o rtc72421.o u130.o gmtime.o timegm.o | tsort)
 ar rv /usr/sys/sys/LIB1 timer.o rtc72421.o u130.o gmtime.o timegm.o
 
 	# Kernel generieren
 cd /usr/sys/conf ; make -f make.wega wega
 chmod 400 wega ; mv wega /wega.new
-
