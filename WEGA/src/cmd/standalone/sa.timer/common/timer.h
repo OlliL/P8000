@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: timer.h,v 1.3 2009/08/12 19:27:31 olivleh1 Exp $
+ * $Id: timer.h,v 1.4 2009/08/16 11:11:00 olivleh1 Exp $
  */
 
 #ifndef TIMER_H
@@ -47,11 +47,11 @@ char    estring[20];
 static struct clock_type clock_devs[] = {
         { U130BASE, MSK_U130, STR_U130, 80, 119,
 	  "RFT U130X RTC",
-	  u130_init, u130_get, u130_set, u130_start
+	  u130init, u130get, u130set, u130start
 	},
 	{ R421BASE, MSK_R421, STR_R421, 70, 137,
 	  "Seiko Epson RTC-72421",
-	  rtc72421_init, rtc72421_get, rtc72421_set, rtc72421_start
+	  r421init, r421get, r421set, r421start
 	},
 };
 

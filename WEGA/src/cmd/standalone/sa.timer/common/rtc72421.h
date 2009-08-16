@@ -23,14 +23,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: rtc72421.h,v 1.4 2009/08/12 19:27:31 olivleh1 Exp $
+ * $Id: rtc72421.h,v 1.5 2009/08/16 11:11:00 olivleh1 Exp $
  */
 
 #ifndef R421_H
 #define R421_H 1
 
-#define STR_R421	0xc
-#define MSK_R421	0xf0
+#define STR_R421	0x30
+#define MSK_R421	0x0f
 
 #define R421BASE	0xfde1	/* base address */
 #define R421YYx1	0xfdf5	/* 1-year digit register */
@@ -50,6 +50,8 @@
 #define R421REGE	0xfdfd	/* t1, t0, ITRPT/STND, MASK */
 #define R421REGF	0xfdff	/* TEST, 24/12, STOP, RESET */
 
+#define R421CLR		0x00
+
 /* register F */
 #define R421RST		0x01
 #define	R421STOP	0x02
@@ -62,9 +64,9 @@
 #define R421IRQF	0x04
 #define R421ADJ		0x08
 
-int 	rtc72421_init();
-long	rtc72421_get();
-void 	rtc72421_set();
-void	rtc72421_start();
+int 	r421init();
+long	r421get();
+void 	r421set();
+void	r421start();
 
 #endif

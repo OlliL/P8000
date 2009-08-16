@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: sa.timer.c,v 1.10 2009/08/12 19:27:31 olivleh1 Exp $
+ * $Id: sa.timer.c,v 1.11 2009/08/16 11:11:00 olivleh1 Exp $
  */
  
 
@@ -34,7 +34,6 @@
 
 long		timegm();
 struct tm	*gmtime();
-long		u130_get();
 
 int		clock_min_year;
 int		clock_max_year;

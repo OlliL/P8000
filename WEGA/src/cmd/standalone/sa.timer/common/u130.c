@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.c,v 1.9 2009/08/12 19:27:31 olivleh1 Exp $
+ * $Id: u130.c,v 1.10 2009/08/16 11:11:00 olivleh1 Exp $
  */
  
 #include <time.h>
@@ -36,13 +36,13 @@ long			timegm();
 struct tm		*gmtime();
 
 int
-u130_init()
+u130init()
 {
 	return(0);
 }
 
 void
-u130_set(time)
+u130set(time)
 long time;
 {
 	struct tm *clktime;
@@ -99,14 +99,14 @@ long time;
 }
 
 void
-u130_start()
+u130start()
 {
 	outvalue(0x01);		/* Start der Zeit */
 	outvalue(0x00);
 }
 
 long
-u130_get()
+u130get()
 {
 	long time;
 	struct tm *clktime;

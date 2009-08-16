@@ -1,4 +1,4 @@
-OBJ=	sa.timer.o libb.a u130.o rtc72421.o gmtime.o timegm.o
+OBJ=	sa.timer.o timer.o libb.a u130.o rtc72421.o gmtime.o timegm.o
 CC=	cc
 LD=	ld
 DEBUG=

@@ -23,76 +23,64 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: rtc72421.c,v 1.5 2009/08/16 11:11:00 olivleh1 Exp $
+ * $Id: timer.c,v 1.1 2009/08/16 11:11:00 olivleh1 Exp $
  */
  
-#include <time.h>
+
+#include "time.h"
 #include "rtc72421.h"
 
 void			wrnibble();
 void			wrbyte();
 int			rdnibble();
 int			rdbyte();
-extern long		timegm();
-extern struct tm	*gmtime();
+
+static	int  dmsize[] =		/* Tage/Monat (kumulierend) */
+	{ 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
+
+long
+gettime()
+{
+	register long time;
+	register d1, d2, d3;
+	register i;
+
+	time = 0;
+	r421init();
+
+	d1 = rdbyte(R421YY1x,R421YYx1);		/* Jahr */
+	d2 = rdbyte(R421DD1x,R421DDx1);		/* Tag */
+	d3 = rdbyte(R421MM1x,R421MMx1);		/* Monat */
+	if (d1 > 100 || d2 > 31 || d3 > 12)
+		return(time);
+	i = dmsize[d3-1];
+	if (d1%4 == 0 && d3 > 2) i++;
+	if (d1 < 70) d1 += 100;
+	if (d1 > 137) return(time);
+	time = (d1-69)/4;
+	time += 365*(d1-70)+i;
+	time += d2 - 1;
+
+	while ((d1 = rdbyte(R421SS1x,R421SSx1)) == 59)
+		;			/* Sekunden */
+	d2 = rdbyte(R421MI1x,R421MIx1);		/* Minuten */
+	d3 = rdbyte(R421HH1x,R421HHx1);		/* Stunden */
+	if (d1 > 59 || d2 > 59 || d3 > 23)
+		return(time);
+	time = 24*time + d3;
+	time = 60*time + d2;
+	time = 60*time + d1;
+	return(time);
+}
 
 
-int
+
 r421init()
 {
 	outb(R421REGD,R421IRQF);
 	outb(R421REGE,R421CLR);
 	outb(R421REGF,R4212412);
 }
-
-
-void
-r421set(time)
-long time;
-{
-	struct tm *clktime;
-
-	clktime = gmtime(&time);
-	if(clktime->tm_year > 100)
-		clktime->tm_year -= 100;
-	clktime->tm_mon++;
-	outb(R421REGF,R421RST|R421STOP|R4212412);
-	wrbyte(R421SS1x,R421SSx1,clktime->tm_sec);
-	wrbyte(R421MI1x,R421MIx1,clktime->tm_min);
-	wrbyte(R421HH1x,R421HHx1,clktime->tm_hour);
-	wrbyte(R421DD1x,R421DDx1,clktime->tm_mday);
-	wrbyte(R421MM1x,R421MMx1,clktime->tm_mon);
-	wrbyte(R421YY1x,R421YYx1,clktime->tm_year);
-}
-
-void
-r421start()
-{
-	outb(R421REGF,R4212412);
-}
-
-long
-r421get()
-{
-	long time = 0;
-	struct tm *clktime;
-
-	clktime->tm_sec  = rdbyte(R421SS1x,R421SSx1);
-	clktime->tm_min  = rdbyte(R421MI1x,R421MIx1);
-	clktime->tm_hour = rdbyte(R421HH1x,R421HHx1);
-	clktime->tm_mday = rdbyte(R421DD1x,R421DDx1);
-	clktime->tm_mon  = rdbyte(R421MM1x,R421MMx1);
-	clktime->tm_year = rdbyte(R421YY1x,R421YYx1);
-
-	if (clktime->tm_year < 70)
-		clktime->tm_year+=100;
-	clktime->tm_mon --;
-
-	time = timegm(clktime);
-
-	return(time);
-}
-
 
 r421bsy()
 {

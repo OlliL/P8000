@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: u130.h,v 1.4 2009/08/12 19:27:31 olivleh1 Exp $
+ * $Id: u130.h,v 1.5 2009/08/16 11:11:00 olivleh1 Exp $
  */
 
 #ifndef U130_H
@@ -46,9 +46,9 @@
 #define U130MIx1	0xfef9	/* 1-minute digit register */
 #define U130MI1x	0xfefb	/* 10-minute digit register */
 
-int 	u130_init();
-long	u130_get();
-void 	u130_set();
-void	u130_start();
+int 	u130init();
+long	u130get();
+void 	u130set();
+void	u130start();
 
 #endif
