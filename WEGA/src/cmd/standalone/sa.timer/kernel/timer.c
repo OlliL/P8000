@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: timer.c,v 1.3 2009/08/16 14:52:52 olivleh1 Exp $
+ * $Id: timer.c,v 1.4 2009/08/16 15:00:18 olivleh1 Exp $
  */
  
 
@@ -35,26 +35,6 @@
 long
 gettime()
 {
-#ifdef foo
-	register long time;
-	int a,b; 	 
-
-	time = 0;
-	a = inb(U130BASE)&~MSK_U130;
-	b = STR_U130;
-	if( a == b) {
-		printf("RFT U130X RTC found\n");
-		time = u130get();
-	} else {
-		a = inb(R421BASE)&~MSK_R421;
-		b = STR_R421;
-		if( a == b) {
-			printf("Seiko Epson RTC-72421\n");
-			time = r421get();
-		}
-	}
-	
-#endif
 	register long time;
 	register i;
 	struct clock_type *t;
