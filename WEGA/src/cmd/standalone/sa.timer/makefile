@@ -1,11 +1,11 @@
-all:	sa.timer kernel
+all:	sa.timer kern
 
 sa.timer:
 	cd standalone ; make all
 instsa:
 	cd standalone ; make install
 	
-kernel:
+kern:
 	cd kernel ; make all
 
 instkern:
