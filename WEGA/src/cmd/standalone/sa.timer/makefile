@@ -1,12 +1,16 @@
-OBJ=	sa.timer.o u130.o rtc72421.o gmtime.o timegm.o
-CC=	cc
-LD=	ld
-DEBUG=
-CFLAGS= -O $(DEBUG)
+all:	sa.timer kernel
 
-all:	sa.timer
-sa.timer:	$(OBJ) libb.a
-		$(LD) -s -o $@ $(OBJ) libb.a
-		chmod 400 $@
+sa.timer:
+	cd standalone ; make all
+instsa:
+	cd standalone ; make install
+	
+kernel:
+	cd kernel ; make all
+
+instkern:
+	cd kernel ; make install
+	
 clean:	
-	rm -f $(OBJ) timer.o sa.timer
+	cd standalone ; make clean
+	cd kernel ; make clean
