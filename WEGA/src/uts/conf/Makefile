@@ -31,6 +31,11 @@ BOOTLIB: $(BL_OBJ) ../conf_times ../touch
 	rm -f BOOTLIB
 	ar qc BOOTLIB bmch.o boot.o bsys.o bconf.o bmisc.o bmd.o bfd.o bud.o brm.o
 
+libb.a:	sa.function.o bmisc.o
+	rm -f libb.a
+	ar qc libb.a sa.function.o bmisc.o
+	chmod 644 libb.a
+
 conf.o:
 	scc $(CFLAGS) -c $<
 
