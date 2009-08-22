@@ -7,6 +7,11 @@ CC_CMD= 	$(CC) -c $(CFLAGS)
 
 all:	sa.timer
 
+# files are here: src/uts/conf/
+libb.a:	bmisc.o sa.function.o
+	rm -f libb.a
+	ar qc libb.a sa.function.o bmisc.o
+
 u130.o:
 	$(CC_CMD) $(M)/u130.c
 
@@ -31,4 +36,4 @@ install:	sa.timer
 	cp sa.timer /sa.timer
 
 clean:	
-	rm -f $(OBJ) sa.timer
+	rm -f $(OBJ) libb.a sa.timer bmisc.o sa.function.o
