@@ -84,6 +84,7 @@ settty()
 		putchar(0x1b);
 		putchar('~');
 		putchar('5');
+		sleep(2);
 	}
 }
 
@@ -100,6 +101,7 @@ restty()
 	if (termtyp == 2) {
 		printf("%s","\033G0\033.1\033v");
 		putchar('+');
+		sleep(2);
 	}
 	ioctl(0, TCSETA, &savterm);
 	chmod(tty, 0622);

@@ -4,6 +4,9 @@ I = /usr/include
 
 all:	wm wdos bios bios.p8 bios.wy wdos.test bios.test
 
+clean:
+	rm -f *.obj bios.test bios.wy bios.p8 bios core GLOBAL.111 wdos.test wdos wm
+
 wm: 	wm.c \
 	$I/stdio.h $I/ctype.h $I/curses.h $I/screen.h $I/signal.h \
 	$I/fcntl.h $I/sys/types.h \
@@ -52,5 +55,5 @@ disk.obj:	disk.asm \
 orgs.obj:	orgs.asm \
 		; asm86 < mdir/mkorgs.obj
 
-test:		test.asm \
+test.obj:	test.asm \
 		; asm86 < mdir/mktest.obj
