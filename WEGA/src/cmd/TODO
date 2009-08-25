@@ -1,0 +1,298 @@
+  0% ./bin/adb                                         ./cmd/adb
+  0% ./bin/ar                                          ./cmd/ar.c
+  0% ./bin/as                                          
+  0% ./bin/bc                                          
+  0% ./bin/bcmp                                        
+  0% ./bin/bd                                          
+  0% ./bin/cas                                         ./cmd/as
+  0% ./bin/cat                                         ./cmd/cat.c
+  0% ./bin/cc                                          
+  0% ./bin/chgrp                                       ./cmd/chgrp.c
+100% ./bin/chkdiff                                     
+  0% ./bin/chkin                                       
+  0% ./bin/chkout                                      
+  0% ./bin/chkwhat                                     
+  0% ./bin/chmod                                       ./cmd/chmod.c
+  0% ./bin/chown                                       ./cmd/chown.c
+  0% ./bin/cmp                                         ./cmd/cmp.c
+  0% ./bin/cp                                          ./cmd/mv.c
+  0% ./bin/csh                                         ./cmd/plx/csh
+  0% ./bin/date                                        ./cmd/date.c
+  0% ./bin/dc                                          ./cmd/dc/dc.c
+  0% ./bin/dd                                          ./cmd/dd.c
+  0% ./bin/df                                          ./cmd/df.c
+  0% ./bin/diff                                        ./cmd/diff.c
+  0% ./bin/dog                                         
+  0% ./bin/du                                          ./cmd/du.c
+  0% ./bin/echo                                        ./cmd/echo.c
+  0% ./bin/echo2                                       
+  0% ./bin/ed                                          ./cmd/ed/ed.c
+  0% ./bin/edit                                        
+  0% ./bin/egrep                                       ./cmd/egrep.y
+  0% ./bin/env                                         ./cmd/env.c
+  0% ./bin/ex                                          ./cmd/plx/ex
+  0% ./bin/file                                        ./cmd/file.c
+  0% ./bin/find                                        ./cmd/find.c
+100% ./bin/format                                      
+  0% ./bin/getfile                                     
+  0% ./bin/gets                                        ./lib/libc/z8000/stdio/gets.c
+100% ./bin/getud                                       
+  0% ./bin/gpasswd                                     
+  0% ./bin/grep                                        ./cmd/grep.c
+  0% ./bin/hd                                          
+  0% ./bin/kill                                        ./cmd/kill.c
+  0% ./bin/ld                                          
+  0% ./bin/ln                                          ./cmd/mv.c
+  0% ./bin/local                                       
+  0% ./bin/login                                       ./cmd/login.c
+  0% ./bin/ls                                          ./cmd/ls.c
+  0% ./bin/mail                                        ./cmd/mail.c
+  0% ./bin/make                                        ./cmd/make
+  0% ./bin/mkdir                                       ./cmd/mkdir.c
+  0% ./bin/more                                        ./cmd/plx/more/more.c
+  0% ./bin/mv                                          ./cmd/mv.c
+  0% ./bin/newgrp                                      ./cmd/newgrp.c
+  0% ./bin/nice                                        ./cmd/nice.c
+  0% ./bin/nl                                          ./cmd/nl.c
+  0% ./bin/nm                                          ./cmd/nm.c
+  0% ./bin/nohup                                       ./cmd/nohup.c
+  0% ./bin/od                                          ./cmd/od.c
+  0% ./bin/page                                        
+  0% ./bin/passwd                                      ./cmd/passwd.c
+100% ./bin/pburn                                       
+  0% ./bin/pr                                          ./cmd/pr.c
+  0% ./bin/printenv                                    ./cmd/plx/printenv.c
+  0% ./bin/ps                                          ./cmd/ps.c
+  0% ./bin/pstat                                       
+  0% ./bin/putfile                                     
+100% ./bin/putud                                       
+  0% ./bin/pwd                                         ./cmd/pwd.c
+  0% ./bin/regcmp                                      ./cmd/regcmp.c
+  0% ./bin/remote                                      
+  0% ./bin/rm                                          ./cmd/rm.c
+  0% ./bin/rmail                                       ./cmd/mail.c
+  0% ./bin/rmdir                                       ./cmd/rmdir.c
+  0% ./bin/rsh                                         
+  0% ./bin/scc                                         
+  0% ./bin/sh                                          ./cmd/plx/csh/sh.c
+  0% ./bin/size                                        ./cmd/size.c
+  0% ./bin/sld                                         
+  0% ./bin/sleep                                       ./cmd/sleep.c
+  0% ./bin/sort                                        ./cmd/sort.c
+  0% ./bin/stty                                        ./cmd/stty.c
+  0% ./bin/su                                          ./cmd/su.c
+  0% ./bin/sum                                         ./cmd/sum.c
+100% ./bin/sync                                        ./cmd/sync.c
+  0% ./bin/tail                                        ./cmd/tail.c
+100% ./bin/tar                                         ./cmd/tar.c
+  0% ./bin/tee                                         ./cmd/tee.c
+  0% ./bin/test                                        ./cmd/sh/test.c
+  0% ./bin/time                                        ./cmd/time.c
+  0% ./bin/touch                                       ./cmd/touch.c
+  0% ./bin/tr                                          ./cmd/tr.c
+  0% ./bin/uname                                       ./cmd/uname.c
+100% ./bin/uuclear                                     
+  0% ./bin/uucp                                        ./cmd/uucp/uucp.c
+  0% ./bin/uulog                                       ./cmd/uucp/uulog.c
+  0% ./bin/uuname                                      ./cmd/uucp/uuname.c
+  0% ./bin/uusend                                      
+  0% ./bin/uux                                         ./cmd/uucp/uux.c
+100% ./bin/verify
+  0% ./bin/vi                                          ./cmd/plx/ex
+  0% ./bin/view                                        
+  0% ./bin/whereis                                     
+  0% ./bin/who                                         ./cmd/who.c
+100% ./bin/whodo                                       
+  0% ./bin/write                                       ./cmd/write.c
+  0% ./etc/GETTY                                       
+  0% ./etc/INIT                                        
+  0% ./etc/UGETT1                                      
+  0% ./etc/UGETTY                                      
+  0% ./etc/adduser                                     
+  0% ./etc/chmog                                       
+  0% ./etc/chog                                        
+  0% ./etc/chroot                                      ./cmd/chroot.c
+  0% ./etc/clri                                        ./cmd/clri.c
+  0% ./etc/cron                                        ./cmd/cron.c
+  0% ./etc/datem                                       
+  0% ./etc/dcheck                                      
+  0% ./etc/devnm                                       ./cmd/devnm.c
+  0% ./etc/down                                        
+  0% ./etc/dqueuer                                     
+100% ./etc/dump                                        ./cmd/dump.c
+100% ./etc/dumpdir                                     ./cmd/dumpdir.c
+  0% ./etc/fsck                                        ./cmd/fsck.c
+  0% ./etc/fsdb                                        ./cmd/fsdb.c
+  0% ./etc/getty                                       ./cmd/getty.c
+  0% ./etc/halt                                        
+  0% ./etc/icheck                                      
+  0% ./etc/init                                        ./cmd/init.c
+  0% ./etc/install                                     
+  0% ./etc/kdb                                         
+  0% ./etc/killall                                     
+  0% ./etc/labelit                                     ./cmd/labelit.c
+  0% ./etc/link                                        ./cmd/link.c
+  0% ./etc/login                                       ./cmd/login.c
+  0% ./etc/makelost+found                              
+  0% ./etc/makewhatis                                  
+  0% ./etc/man.dbmgr                                   
+  0% ./etc/mfs                                         
+  0% ./etc/mkfs                                        ./cmd/mkfs.c
+  0% ./etc/mknod                                       ./cmd/mknod.c
+  0% ./etc/mlf                                         
+  0% ./etc/mount                                       ./cmd/mount.c
+  0% ./etc/mvdir                                       
+  0% ./etc/ncheck                                      ./cmd/ncheck.c
+  0% ./etc/new.install                                 
+  0% ./etc/rc                                          
+  0% ./etc/rc_csh                                      
+100% ./etc/restor                                      ./cmd/restor.c
+  0% ./etc/rmuser                                      
+  0% ./etc/setlp                                       
+  0% ./etc/setmnt                                      ./cmd/setmnt.c
+  0% ./etc/shut                                        
+  0% ./etc/sysgen                                      
+  0% ./etc/ttyconfig                                   
+  0% ./etc/umfs                                        
+  0% ./etc/umount                                      ./cmd/umount.c
+  0% ./etc/unlink                                      ./cmd/unlink.c
+  0% ./etc/update                                      ./cmd/update.c
+  0% ./etc/upkeep                                      
+  0% ./etc/wall                                        
+  0% ./usr/bin/LOAD                                    
+  0% ./usr/bin/SEND                                    
+  0% ./usr/bin/acctcom                                 ./cmd/acct/acctcom.c
+  0% ./usr/bin/admin                                   ./cmd/sccs/src/admin.c
+  0% ./usr/bin/apropos                                 
+  0% ./usr/bin/at                                      
+  0% ./usr/bin/awk                                     ./cmd/awk
+  0% ./usr/bin/banner                                  ./cmd/banner.c
+  0% ./usr/bin/basename                                Shellsctipz
+  0% ./usr/bin/bcheck                                  
+  0% ./usr/bin/bdiff                                   ./cmd/sccs/src/bdiff.c
+  0% ./usr/bin/cal                                     ./cmd/cal.c
+  0% ./usr/bin/calendar                                
+  0% ./usr/bin/cb                                      ./cmd/cb.c
+  0% ./usr/bin/cdc                                     
+  0% ./usr/bin/checkcw                                 ./cmd/checkcw.c
+  0% ./usr/bin/checkeq                                 ./cmd/checkeq.c
+  0% ./usr/bin/code                                    ./cmd/cc/pcc.d/code.c
+  0% ./usr/bin/col                                     ./cmd/col.c
+  0% ./usr/bin/comb                                    ./cmd/sccs/src/comb.c
+  0% ./usr/bin/comm                                    ./cmd/comm.c
+  0% ./usr/bin/cpio                                    ./cmd/cpio.c
+  0% ./usr/bin/cref                                    
+  0% ./usr/bin/crypt                                   ./cmd/crypt.c
+  0% ./usr/bin/csplit                                  ./cmd/csplit.c
+  0% ./usr/bin/ct                                      ./cmd/ct.c
+  0% ./usr/bin/ctags                                   ./cmd/plx/ctags.c
+  0% ./usr/bin/cu                                      ./cmd/cu.c
+  0% ./usr/bin/cut                                     ./cmd/cut.c
+  0% ./usr/bin/cw                                      ./cmd/cw.c
+  0% ./usr/bin/cxref                                   
+  0% ./usr/bin/daytime                                 
+  0% ./usr/bin/delta                                   ./cmd/sccs/src/delta.c
+  0% ./usr/bin/deroff                                  ./cmd/deroff.c
+  0% ./usr/bin/dfilter                                 
+  0% ./usr/bin/diff3                                   
+  0% ./usr/bin/diffmk                                  
+  0% ./usr/bin/dircmp                                  
+  0% ./usr/bin/dirname                                 
+  0% ./usr/bin/eqn                                     
+  0% ./usr/bin/error                                   ./cmd/sh/error.c
+  0% ./usr/bin/expand                                  ./cmd/sh/expand.c
+  0% ./usr/bin/expr                                    ./cmd/expr.c
+  0% ./usr/bin/false                                   
+  0% ./usr/bin/fgrep                                   ./cmd/fgrep.c
+  0% ./usr/bin/flow                                    
+  0% ./usr/bin/get                                     ./cmd/sccs/src/get.c
+  0% ./usr/bin/getNAME                                 
+  0% ./usr/bin/getopt                                  ./cmd/getopt.c
+  0% ./usr/bin/grpck                                   ./cmd/grpck.c
+  0% ./usr/bin/head                                    ./cmd/plx/head.c
+  0% ./usr/bin/help                                    ./cmd/sccs/src/help.c
+  0% ./usr/bin/hyphen                                  ./cmd/hyphen.c
+  0% ./usr/bin/id                                      ./cmd/id.c
+  0% ./usr/bin/join                                    ./cmd/join.c
+  0% ./usr/bin/lex                                     ./cmd/text/eqn.d/lex.c
+  0% ./usr/bin/line                                    ./cmd/line.c
+  0% ./usr/bin/lint                                    ./cmd/lint/lint.c
+  0% ./usr/bin/logname                                 ./cmd/logname.c
+  0% ./usr/bin/look                                    
+  0% ./usr/bin/lorder                                  
+  0% ./usr/bin/lpr                                     ./cmd/lpr/lpr.c
+  0% ./usr/bin/m4                                      ./cmd/m4/m4.c
+  0% ./usr/bin/man                                     
+  0% ./usr/bin/mesg                                    ./cmd/mesg.c
+  0% ./usr/bin/mkmenu                                  
+  0% ./usr/bin/mkstr                                   ./cmd/plx/mkstr.c
+  0% ./usr/bin/mm                                      
+  0% ./usr/bin/mmchek                                  
+  0% ./usr/bin/mmt                                     
+  0% ./usr/bin/mvt                                     
+  0% ./usr/bin/neqn                                    
+  0% ./usr/bin/news                                    ./cmd/news.c
+  0% ./usr/bin/nq                                      
+  0% ./usr/bin/nroff                                   
+  0% ./usr/bin/nroffv7                                 
+  0% ./usr/bin/objdu                                   
+  0% ./usr/bin/objhdr                                  
+  0% ./usr/bin/objsu                                   
+  0% ./usr/bin/pack                                    ./cmd/pack.c
+  0% ./usr/bin/paste                                   ./cmd/paste.c
+  0% ./usr/bin/pcat                                    ./cmd/pcat.c
+  0% ./usr/bin/plz                                     
+  0% ./usr/bin/plzcg                                   
+  0% ./usr/bin/plzsys                                  
+  0% ./usr/bin/prof                                    ./cmd/prof.c
+  0% ./usr/bin/prs                                     ./cmd/sccs/src/prs.c
+  0% ./usr/bin/ptx                                     ./cmd/ptx.c
+  0% ./usr/bin/pwck                                    ./cmd/pwck.c
+  0% ./usr/bin/quot                                    
+  0% ./usr/bin/ranlib                                  
+  0% ./usr/bin/reset                                   
+  0% ./usr/bin/rmchg                                   ./cmd/sccs/src/rmchg.c
+  0% ./usr/bin/rmdel                                   
+  0% ./usr/bin/sact                                    
+  0% ./usr/bin/sccsdiff                                
+  0% ./usr/bin/script                                  ./cmd/plx/script.c
+  0% ./usr/bin/sdiff                                   ./cmd/sdiff.c
+  0% ./usr/bin/sed                                     
+  0% ./usr/bin/spell                                   
+  0% ./usr/bin/spellin                                 ./cmd/spell/spellin.c
+  0% ./usr/bin/spellout                                ./cmd/spell/spellout.c
+  0% ./usr/bin/split                                   ./cmd/split.c
+  0% ./usr/bin/sprof                                   
+  0% ./usr/bin/str                                     
+  0% ./usr/bin/strings                                 ./cmd/plx/strings.c
+  0% ./usr/bin/strip                                   ./cmd/strip.c
+  0% ./usr/bin/strprint                                
+  0% ./usr/bin/tabs                                    ./cmd/tabs.c
+  0% ./usr/bin/talk                                    
+  0% ./usr/bin/tbl                                     
+  0% ./usr/bin/timex                                   ./cmd/sa/timex.c
+  0% ./usr/bin/troff                                   
+  0% ./usr/bin/troffv7                                 
+  0% ./usr/bin/true                                    
+  0% ./usr/bin/tsort                                   ./cmd/tsort.c
+  0% ./usr/bin/tty                                     ./cmd/tty.c
+  0% ./usr/bin/uimage                                  
+  0% ./usr/bin/unget                                   ./cmd/sccs/src/unget.c
+  0% ./usr/bin/uniq                                    ./cmd/uniq.c
+  0% ./usr/bin/units                                   ./cmd/units.c
+  0% ./usr/bin/unpack                                  ./cmd/unpack.c
+  0% ./usr/bin/users                                   
+  0% ./usr/bin/val                                     ./cmd/sccs/src/val.c
+  0% ./usr/bin/vls                                     
+  0% ./usr/bin/vnews                                   
+  0% ./usr/bin/wc                                      ./cmd/wc.c
+  0% ./usr/bin/what                                    ./cmd/sccs/src/what.c
+  0% ./usr/bin/whatis                                  
+  0% ./usr/bin/whoami                                  
+  0% ./usr/bin/whois                                   
+  0% ./usr/bin/xargs                                   ./cmd/xargs.c
+  0% ./usr/bin/xq                                      
+  0% ./usr/bin/xstr                                    ./cmd/plx/xstr.c
+  0% ./usr/bin/yacc                                    ./cmd/yacc
+  0% ./usr/bin/zmenu                                   
+  0% ./usr/bin/zmprint                                 
