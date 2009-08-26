@@ -1,11 +1,11 @@
 execv module
 
   external
-    _environ
-    _cerror
+    _environ	procedure
+    cerror	procedure
 
   global
-    execv procedure
+    _execv procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -13,5 +13,5 @@ execv module
 	sc	#59
 	ld	r2,r4
 	jp	cerror
-    end execv
+    end _execv
 end execv

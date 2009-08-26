@@ -1,10 +1,10 @@
 setuid module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    setuid procedure
+    _setuid procedure
       entry
 	ld	r0,r7
 	xor	r4,r4
@@ -12,5 +12,5 @@ setuid module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end setuid
+    end _setuid
 end setuid

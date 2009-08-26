@@ -1,10 +1,10 @@
 lseek module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    lseek procedure
+    _lseek procedure
       entry
 	ld	r0,r7
 	ld	r1,r4
@@ -14,5 +14,5 @@ lseek module
 	ldl	rr2,rr4
 	ret	nc
 	jp	cerror
-    end lseek
+    end _lseek
 end lseek

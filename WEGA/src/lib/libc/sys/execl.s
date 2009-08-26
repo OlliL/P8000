@@ -1,11 +1,11 @@
 execl module
 
   external
-    _environ
-    _cerror
+    _environ	procedure
+    cerror	procedure
 
   global
-    execl procedure
+    _execl procedure
       entry
 	ld	r0,@r15
 	ex	r0,r7
@@ -21,6 +21,6 @@ execl module
 	inc	r15,#8
 	ld	@r15,r7
 	jp	cerror
-    end execl
+    end _execl
 end execl
 

@@ -1,7 +1,7 @@
 time module
 
   global
-    time procedure
+    _time procedure
       entry
 	sc	#13
 	ldl	rr2,rr4
@@ -9,5 +9,5 @@ time module
 	ret	z
 	ldl	@r7,rr2
 	ret
-    end time
+    end _time
 end time

@@ -2,13 +2,13 @@ signal module
 
   internal
     L1
-      WORD = 80
+      WORD := 80
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    signal procedure
+    _signal procedure
       entry
 	ld	r2,#22
 	ld	r0,r7
@@ -65,5 +65,5 @@ L7:
 	ldm	r0,@r15,#15
 	add	r15,#32
 	sc	#0
-    end signal
+    end _signal
 end signal

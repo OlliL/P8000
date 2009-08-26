@@ -1,9 +1,9 @@
 sync module
 
   global
-    sync procedure
+    _sync procedure
       entry
 	sc	#36
 	ret
-    end sync
+    end _sync
 end sync

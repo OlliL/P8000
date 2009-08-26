@@ -1,10 +1,7 @@
 profil module
 
-  external
-    _cerror
-
   global
-    profil procedure
+    _profil procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -13,5 +10,5 @@ profil module
 	sc	#44
 	xor	r2,r2
 	ret
-    end profil
+    end _profil
 end profil

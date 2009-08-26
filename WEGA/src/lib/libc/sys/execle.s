@@ -1,10 +1,10 @@
 execle module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    execle procedure
+    _execle procedure
       entry
 	ld	r0,@r15
 	ex	r0,r7
@@ -24,5 +24,5 @@ execle module
 	inc	r15,#8
 	ld	@r15,r7
 	jp	cerror
-    end execle
+    end _execle
 end execle

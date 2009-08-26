@@ -1,10 +1,10 @@
 chown module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    chown procedure
+    _chown procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -14,5 +14,5 @@ chown module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end chown
+    end _chown
 end chown

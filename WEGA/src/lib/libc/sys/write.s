@@ -1,10 +1,10 @@
 write module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    write procedure
+    _write procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -13,5 +13,5 @@ write module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end write
+    end _write
 end write

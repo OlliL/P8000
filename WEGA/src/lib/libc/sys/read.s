@@ -1,10 +1,10 @@
 read module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    read procedure
+    _read procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -13,5 +13,5 @@ read module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end read
+    end _read
 end read

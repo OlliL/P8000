@@ -1,10 +1,10 @@
 wait module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    wait procedure
+    _wait procedure
       entry
 	sc	#7
 	ldl	rr2,rr4
@@ -13,5 +13,5 @@ wait module
 	ret	z
 	ld	@r7,r3
 	ret
-    end wait
+    end _wait
 end wait

@@ -1,10 +1,10 @@
 dup module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    dup procedure
+    _dup procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -12,5 +12,5 @@ dup module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end dup
+    end _dup
 end dup

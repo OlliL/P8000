@@ -1,10 +1,10 @@
 nice module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    nice procedure
+    _nice procedure
       entry
 	ld	r0,r7
 	xor	r4,r4
@@ -12,5 +12,5 @@ nice module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end nice
+    end _nice
 end nice

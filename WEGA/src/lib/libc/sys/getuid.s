@@ -1,10 +1,10 @@
 getuid module
 
   global
-    getuid procedure
+    _getuid procedure
       entry
 	sc	#24
 	ld	r2,r4
 	ret
-    end getuid
+    end _getuid
 end getuid

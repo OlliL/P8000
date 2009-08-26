@@ -1,9 +1,9 @@
 pause module
 
   global
-    pause procedure
+    _pause procedure
       entry
         sc	#29
         ret
-    end pause
+    end _pause
 end pause

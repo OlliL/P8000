@@ -1,10 +1,10 @@
 setpgrp module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    setpgrp procedure
+    _setpgrp procedure
       entry
 	ld	r0,#%0001
 	xor	r4,r4
@@ -12,5 +12,5 @@ setpgrp module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end setpgrp
+    end _setpgrp
 end setpgrp

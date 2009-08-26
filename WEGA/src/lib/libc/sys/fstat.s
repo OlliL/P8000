@@ -1,10 +1,10 @@
 fstat module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    fstat procedure
+    _fstat procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -13,5 +13,5 @@ fstat module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end fstat
+    end _fstat
 end fstat

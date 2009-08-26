@@ -1,10 +1,10 @@
-exit module
+exxit module
 
   global
-    exit procedure
+    __exit procedure
       entry
 	ld	r0,r7
 	sc	#1
 	ld	r2,r4
-    end exit
-end exit
+    end __exit
+end exxit

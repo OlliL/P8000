@@ -1,10 +1,10 @@
 times module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    times procedure
+    _times procedure
       entry
 	ld	r0,r7
 	subl	rr4,rr4
@@ -12,5 +12,5 @@ times module
 	ldl	rr2,rr4
 	ret	nc
 	jp	cerror
-    end times
+    end _times
 end times

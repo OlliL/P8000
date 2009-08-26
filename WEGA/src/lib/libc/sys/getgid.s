@@ -1,10 +1,10 @@
 getgid module
 
   global
-    getgid procedure
+    _getgid procedure
       entry
 	sc	#47
 	ld	r2,r4
 	ret
-    end getgid
+    end _getgid
 end getgid

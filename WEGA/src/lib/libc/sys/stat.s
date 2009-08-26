@@ -1,10 +1,10 @@
 stat module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    stat procedure
+    _stat procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -13,5 +13,5 @@ stat module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end stat
+    end _stat
 end stat

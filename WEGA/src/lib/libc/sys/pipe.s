@@ -1,10 +1,10 @@
 pipe module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    pipe procedure
+    _pipe procedure
       entry
 	sc	#42
 	ld	r2,r4
@@ -12,5 +12,5 @@ pipe module
 	ldl	@r7,rr4
 	xor	r2,r2
 	ret
-    end pipe
+    end _pipe
 end pipe

@@ -1,14 +1,13 @@
 fork module
 
-  internal
-    _par_uid
-      word    :=2
-
   external
-    _cerror
+    cerror	procedure
 
   global
-    fork procedure
+    _par_uid
+      word
+
+    _fork procedure
       entry
 	sc	#2
 	jr	uid
@@ -17,7 +16,7 @@ fork module
 	jp	cerror
 uid:
 	ld	_par_uid,r4
-	xorg	r2,r2
+	xor	r2,r2
 	ret
-    end fork
+    end _fork
 end fork

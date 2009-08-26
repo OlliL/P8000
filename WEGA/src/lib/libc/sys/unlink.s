@@ -1,10 +1,10 @@
 unlink module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    unlink procedure
+    _unlink procedure
       entry
 	ld	r0,r7
 	xor	r4,r4
@@ -12,5 +12,5 @@ unlink module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end unlink
+    end _unlink
 end unlink

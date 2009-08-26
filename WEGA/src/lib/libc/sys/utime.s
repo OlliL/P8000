@@ -1,10 +1,10 @@
 utime module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    utime procedure
+    _utime procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -13,5 +13,5 @@ utime module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end utime
+    end _utime
 end utime

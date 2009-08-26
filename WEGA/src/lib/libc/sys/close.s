@@ -1,10 +1,10 @@
 close module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    close procedure
+    _close procedure
       entry
 	ld	r0,r7
 	xor	r4,r4
@@ -12,5 +12,5 @@ close module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end close
+    end _close
 end close

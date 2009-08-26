@@ -1,10 +1,10 @@
 link module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    link procedure
+    _link procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -13,5 +13,5 @@ link module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end link
+    end _link
 end link

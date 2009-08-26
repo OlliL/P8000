@@ -1,10 +1,10 @@
 open module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    open procedure
+    _open procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -13,5 +13,5 @@ open module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end open
+    end _open
 end open

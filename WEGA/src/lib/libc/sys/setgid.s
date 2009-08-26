@@ -1,10 +1,10 @@
 setgid module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    setgid procedure
+    _setgid procedure
       entry
 	ld	r0,r7
 	xor	r4,r4
@@ -12,5 +12,5 @@ setgid module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end setgid
+    end _setgid
 end setgid

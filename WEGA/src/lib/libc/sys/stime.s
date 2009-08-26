@@ -1,10 +1,10 @@
 stime module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    stime procedure
+    _stime procedure
       entry
 	ldl	rr0,@r7
 	xor	r4,r4
@@ -12,5 +12,5 @@ stime module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end stime
+    end _stime
 end stime

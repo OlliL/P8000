@@ -1,10 +1,10 @@
 ioctl module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    ioctl procedure
+    _ioctl procedure
       entry
 	ld	r0,r7
 	ld	r1,r6
@@ -14,5 +14,5 @@ ioctl module
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end ioctl
+    end _ioctl
 end ioctl
