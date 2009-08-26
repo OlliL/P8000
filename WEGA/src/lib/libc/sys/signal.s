@@ -1,8 +1,12 @@
 signal module
 
+$SECTION signal_b
+
   internal
     L1
-      WORD := 80
+      ARRAY [20 WORD]
+
+$SDEFAULT
 
   external
     cerror	procedure
@@ -13,7 +17,7 @@ signal module
 	ld	r2,#22
 	ld	r0,r7
 	ld	r1,r6
-	cp	r0,20
+	cp	r0,#%0014
 	jp	ge,cerror
 	ld	r3,r0
 	sla	r3,#1
