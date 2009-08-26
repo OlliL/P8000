@@ -4,10 +4,8 @@ abs.o                abs.c                C
 atof.o               atof.s               ASM
 atoi.o               atoi.c               C
 atol.o               atol.c               C
-brk.o                                     ASM
 bsearch.o            bsearch.c            C
 cerror.o             cerror.s             ASM
-chroot.o             chroot.s             ASM
 clrerr.o             clrerr.c             C
 cnvt.o               cnvt.c               C
 crypt.o              crypt.c              C
@@ -20,11 +18,9 @@ data.o               data.c               C
 decimal.o            decimal.s            ASM
 doprnt.o             doprnt.c             C
 doscan.o             doscan.c             C
-dup2.o               dup2.s               ASM
 ecvt.o               ecvt.s               ASM
 endopen.o            endopen.c            C
 errlst.o             errlst.c             C
-execlp.o             execlp.s             ASM
 execvp.o             execvp.c             C
 fakcu.o              fakcu.s              ASM
 fdopen.o             fdopen.c             C
@@ -41,7 +37,6 @@ fputs.o              fputs.c              C
 freopen.o            freopen.c            C
 fseek.o              fseek.c              C
 ftell.o              ftell.c              C
-ftime.o              ftime.s              ASM
 getchar.o            getchar.c            C
 getenv.o             getenv.c             C
 getgrent.o           getgrent.c           C
@@ -50,7 +45,6 @@ getgrnam.o           getgrnam.c           C
 getlogin.o           getlogin.c           C
 getopt.o             getopt.c             C
 getpass.o            getpass.c            C
-getpgrp.o            getpgrp.s            ASM
 getpw.o              getpw.c              C
 getpwent.o           getpwent.c           C
 getpwnam.o           getpwnam.c           C
@@ -63,12 +57,9 @@ isatty.o             isatty.c             C
 l3.o                 l3.c                 C
 l64a.o               l64a.c               C
 length.o             length.c             C
-lkdata.o             lkdata.s             ASM
-lock.o               lock.s               ASM
 lsearch.o            lsearch.c            C
 malloc.o             malloc.c             C
 mcount.o             mcount.s             ASM
-mdmctl.o             mdmctl.s             ASM
 mktemp.o             mktemp.c             C
 mon.o                mon.c                C
 mpx.o                mpx.c                C
@@ -91,7 +82,6 @@ scanf.o              scanf.c              C
 setbuf.o             setbuf.c             C
 setret.o             setret.s             ASM
 sleep.o              sleep.c              C
-sptrace.o            sptrace.s            ASM
 ssignal.o            ssignal.c            C
 stfl.o                                    ???
 strcat.o             strcat.c             C
@@ -119,4 +109,3 @@ toupper.o            toupper.c            C
 ttyname.o            ttyname.c            C
 ttyslot.o            ttyslot.c            C
 ungetc.o             ungetc.c             C
-unlk.o               unlk.s               ASM

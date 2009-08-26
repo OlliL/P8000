@@ -1,6 +1,7 @@
 
 while read line ; do
 	file=$(echo "$line" | awk '{print $2}')
+	grep -q $file TODO.done && continue
 	comment=$(echo "$line" | awk '{print substr($NF,length($NF))}')
 
 	found=$(find . -name "$file")

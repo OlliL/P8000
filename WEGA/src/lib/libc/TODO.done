@@ -55,3 +55,14 @@ ustat.o              ustat.s              ASM
 utime.o              utime.s              ASM
 wait.o               wait.s               ASM
 write.o              write.s              ASM
+brk.o                                     ASM
+chroot.o             chroot.s             ASM
+dup2.o               dup2.s               ASM
+execlp.o             execlp.s             ASM
+ftime.o              ftime.s              ASM
+getpgrp.o            getpgrp.s            ASM
+lkdata.o             lkdata.s             ASM
+lock.o               lock.s               ASM
+mdmctl.o             mdmctl.s             ASM
+sptrace.o            sptrace.s            ASM
+unlk.o               unlk.s               ASM

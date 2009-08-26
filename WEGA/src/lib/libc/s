@@ -10,10 +10,10 @@ cat <<EOF > $func.s
 $func module
 
   external
-    _cerror
+    cerror	procedure
 
   global
-    $func procedure
+    _$func procedure
       entry
 	ld	r0,r7
 EOF
@@ -38,7 +38,7 @@ cat <<EOF >> $func.s
 	ld	r2,r4
 	ret	nc
 	jp	cerror
-    end $func
+    end _$func
 end $func
 EOF
 
