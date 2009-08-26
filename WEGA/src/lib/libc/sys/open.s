@@ -1,3 +1,5 @@
+! @[$] open.s	3.1  09/12/83 11:42:38 - 87wega3.2 !
+
 open module
 
   external

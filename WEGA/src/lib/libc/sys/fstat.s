@@ -1,3 +1,5 @@
+! @[$] fstat.s	2.1  09/12/83 11:41:08 - 87wega3.2 !
+
 fstat module
 
   external

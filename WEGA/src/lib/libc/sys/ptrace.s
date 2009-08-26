@@ -1,3 +1,5 @@
+! @[$] ptrace.s	2.1  09/12/83 11:42:55 - 87wega3.2 !
+
 ptrace module
 
   external

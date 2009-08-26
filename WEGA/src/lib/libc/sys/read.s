@@ -1,3 +1,5 @@
+! @[$] read.s	2.1  09/12/83 11:43:00 - 87wega3.2 !
+
 read module
 
   external

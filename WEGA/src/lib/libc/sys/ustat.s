@@ -1,3 +1,5 @@
+! @[$] ustat.s	1.1  09/12/83 11:44:09 - 87wega3.2 !
+
 ustat module
 
   external

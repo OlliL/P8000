@@ -1,3 +1,5 @@
+! @[$] mount.s	2.1  09/12/83 11:42:30 - 87wega3.2 !
+
 mount module
 
   external

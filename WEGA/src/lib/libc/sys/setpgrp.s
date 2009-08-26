@@ -1,3 +1,5 @@
+! @[$] setpgrp.s	1.1  09/12/83 11:43:08 - 87wega3.2 !
+
 setpgrp module
 
   external

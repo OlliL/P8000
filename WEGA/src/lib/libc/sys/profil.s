@@ -1,3 +1,5 @@
+! @[$] profil.s	2.1  09/12/83 11:42:49 - 87wega3.2 !
+
 profil module
 
   global

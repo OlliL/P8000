@@ -1,3 +1,5 @@
+! @[$] write.s	2.1  09/12/83 11:44:24 - 87wega3.2 !
+
 write module
 
   external

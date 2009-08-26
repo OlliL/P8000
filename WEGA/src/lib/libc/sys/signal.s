@@ -1,3 +1,5 @@
+! @[$] signal.s	2.1  09/12/83 11:43:15 - 87wega3.2 !
+
 signal module
 
 $SECTION signal_b

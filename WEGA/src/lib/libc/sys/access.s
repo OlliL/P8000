@@ -1,3 +1,5 @@
+! @[$] access.s	2.1  09/12/83 11:39:31 - 87wega3.2 !
+
 access module
 
   external

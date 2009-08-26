@@ -1,3 +1,5 @@
+! @[$] stat.s	2.1  09/12/83 11:43:23 - 87wega3.2 !
+
 stat module
 
   external

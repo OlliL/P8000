@@ -1,3 +1,5 @@
+! @[$] creat.s	2.1  09/12/83 11:40:14 - 87wega3.2 !
+
 creat module
 
   external

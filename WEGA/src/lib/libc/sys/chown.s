@@ -1,3 +1,5 @@
+! @[$] chown.s	2.1  09/12/83 11:39:58 - 87wega3.2 !
+
 chown module
 
   external

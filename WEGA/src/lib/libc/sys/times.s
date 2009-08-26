@@ -1,3 +1,5 @@
+! @[$] times.s	2.2  09/12/83 11:43:39 - 87wega3.2 !
+
 times module
 
   external

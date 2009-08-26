@@ -1,3 +1,5 @@
+! @[$] link.s	2.1  09/12/83 11:41:52 - 87wega3.2 !
+
 link module
 
   external

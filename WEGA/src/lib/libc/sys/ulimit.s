@@ -1,3 +1,5 @@
+! @[$] ulimit.s	1.1  09/12/83 11:43:44 - 87wega3.2 !
+
 ulimit module
 
   external

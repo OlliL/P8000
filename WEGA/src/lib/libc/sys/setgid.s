@@ -1,3 +1,5 @@
+! @[$] setgid.s	2.1  09/12/83 11:43:05 - 87wega3.2 !
+
 setgid module
 
   external

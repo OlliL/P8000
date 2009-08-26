@@ -1,3 +1,5 @@
+! @[$] uname.s	1.1  09/12/83 11:43:55 - 87wega3.2 !
+
 uname module
 
   external

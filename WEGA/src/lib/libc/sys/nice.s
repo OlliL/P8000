@@ -1,3 +1,5 @@
+! @[$] nice.s	2.1  09/12/83 11:42:35 - 87wega3.2 !
+
 nice module
 
   external

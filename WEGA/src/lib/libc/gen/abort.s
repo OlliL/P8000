@@ -1,3 +1,5 @@
+! @[$] abort.s	2.1  09/12/83 11:19:15 - 87wega3.2 !
+
 abort module
 
   global

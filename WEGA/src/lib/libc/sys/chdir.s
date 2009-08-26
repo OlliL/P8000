@@ -1,3 +1,5 @@
+! @[$] chdir.s	2.1  09/12/83 11:39:45 - 87wega3.2 !
+
 chdir module
 
   external

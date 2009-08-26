@@ -1,0 +1,45 @@
+func=$1
+sc=$2
+par=$3
+xor_r4=$4
+
+sc=`/mnt/files/scripts/zahlsys -s 16 -e 10 -n $sc`
+echo function: $func
+echo syscal: $sc
+cat <<EOF > $func.s
+$func module
+
+  external
+    _cerror
+
+  global
+    $func procedure
+      entry
+	ld	r0,r7
+EOF
+
+case $par in
+	3)	echo "	ld	r1,r6" >> $func.s
+		echo "	ld	r2,r5" >> $func.s
+		echo "	ld	r3,r4" >> $func.s
+		break;;
+	2)	echo "	ld	r1,r6" >> $func.s
+		echo "	ld	r2,r5" >> $func.s
+		break;;
+	1)	echo "	ld	r1,r6" >> $func.s
+		break;;
+esac
+if [ "$xor_r4" -eq 1 ] ; then
+	echo "	xor	r4,r4" >> $func.s
+fi
+
+cat <<EOF >> $func.s
+	sc	#$sc
+	ld	r2,r4
+	ret	nc
+	jp	cerror
+    end $func
+end $func
+EOF
+
+cat $func.s

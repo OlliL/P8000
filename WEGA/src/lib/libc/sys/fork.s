@@ -1,3 +1,5 @@
+! @[$] fork.s	2.1  09/12/83 11:41:04 - 87wega3.2 !
+
 fork module
 
   external

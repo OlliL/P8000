@@ -1,3 +1,5 @@
+! @[$] dup.s	2.1  09/12/83 11:40:18 - 87wega3.2 !
+
 dup module
 
   external

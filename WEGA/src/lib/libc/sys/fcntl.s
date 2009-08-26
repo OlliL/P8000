@@ -1,3 +1,5 @@
+! @[$] fcntl.s	1.1  09/12/83 11:40:59 - 87wega3.2 !
+
 fcntl module
 
   external

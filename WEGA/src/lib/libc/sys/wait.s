@@ -1,3 +1,5 @@
+! @[$] wait.s	2.1  09/12/83 11:44:17 - 87wega3.2 !
+
 wait module
 
   external
