@@ -66,3 +66,7 @@ lock.o               lock.s               ASM
 mdmctl.o             mdmctl.s             ASM
 sptrace.o            sptrace.s            ASM
 unlk.o               unlk.s               ASM
+cerror.o             cerror.s             ASM
+cuexit.o             cuexit.s             ASM
+fakcu.o              fakcu.s              ASM
+mcount.o             mcount.s             ASM

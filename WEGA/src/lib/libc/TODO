@@ -5,14 +5,12 @@ atof.o               atof.s               ASM
 atoi.o               atoi.c               C
 atol.o               atol.c               C
 bsearch.o            bsearch.c            C
-cerror.o             cerror.s             ASM
 clrerr.o             clrerr.c             C
 cnvt.o               cnvt.c               C
 crypt.o              crypt.c              C
 ctermid.o            ctermid.c            C
 ctime.o              ctime.c              C
 ctype_.o             ctype_.c             C
-cuexit.o             cuexit.s             ASM
 cuserid.o            cuserid.c            C
 data.o               data.c               C
 decimal.o            decimal.s            ASM
@@ -22,7 +20,6 @@ ecvt.o               ecvt.s               ASM
 endopen.o            endopen.c            C
 errlst.o             errlst.c             C
 execvp.o             execvp.c             C
-fakcu.o              fakcu.s              ASM
 fdopen.o             fdopen.c             C
 ffltioc.o            ffltioc.c            C
 fgetc.o              fgetc.c              C
@@ -59,7 +56,6 @@ l64a.o               l64a.c               C
 length.o             length.c             C
 lsearch.o            lsearch.c            C
 malloc.o             malloc.c             C
-mcount.o             mcount.s             ASM
 mktemp.o             mktemp.c             C
 mon.o                mon.c                C
 mpx.o                mpx.c                C
