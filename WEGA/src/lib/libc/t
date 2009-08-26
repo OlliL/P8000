@@ -9,8 +9,6 @@
 #	
 #done > TODO.new
 
-rm -f TODO.done TODO.undone
-
 while read line ; do
 	file=$(echo "$line" | awk '{if(NF==3)print $2}')
 	if [ -n "$file" ] ; then
