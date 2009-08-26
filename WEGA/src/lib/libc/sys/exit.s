@@ -1,8 +1,5 @@
 exit module
 
-  external
-    _cerror
-
   global
     exit procedure
       entry
