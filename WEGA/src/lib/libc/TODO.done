@@ -1,3 +1,4 @@
+crt0.o               crt0.s               ASM
 abort.o              abort.s              ASM
 access.o             access.s             ASM
 acct.o               acct.s               ASM
