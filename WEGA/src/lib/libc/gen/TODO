@@ -1,0 +1,11 @@
+ctime.o /z/src/libc/orig_obj/ctime.o differ: char 6, line 1
+errlst.o /z/src/libc/orig_obj/errlst.o differ: char 5, line 1
+execvp.o /z/src/libc/orig_obj/execvp.o differ: char 6, line 1
+getgrent.o /z/src/libc/orig_obj/getgrent.o differ: char 132, line 1
+l3.o /z/src/libc/orig_obj/l3.o differ: char 6, line 1
+malloc.o /z/src/libc/orig_obj/malloc.o differ: char 5, line 1
+nlist.o /z/src/libc/orig_obj/nlist.o differ: char 5, line 1
+perror.o /z/src/libc/orig_obj/perror.o differ: char 6, line 1
+qsort.o /z/src/libc/orig_obj/qsort.o differ: char 5, line 1
+ttyname.o /z/src/libc/orig_obj/ttyname.o differ: char 5, line 1
+
