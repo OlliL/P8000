@@ -6,9 +6,11 @@
  */
 
 int	errno;
-extern	int	sys_nerr;
-extern	char	*sys_errlist[];
-
+int	sys_nerr;
+char	*sys_errlist[];
+int	deverr;
+int	dev_nerr;
+char	*dev_errlist[];
 perror(s)
 char *s;
 {
@@ -16,8 +18,20 @@ char *s;
 	register n;
 
 	c = "Unknown error";
-	if(errno < sys_nerr)
-		c = sys_errlist[errno];
+
+	if(errno == 5)
+		goto deve;
+	else if (errno != 6)
+		goto syse;
+deve:
+	if(deverr) {
+		if(deverr < dev_nerr)
+			c = dev_errlist[deverr];
+	} else {
+syse:
+		if(errno < sys_nerr)
+			c = sys_errlist[errno];
+	}
 	n = strlen(s);
 	if(n) {
 		write(2, s, n);
