@@ -4,10 +4,8 @@ cnvt.o               cnvt.c               C
 decimal.o            decimal.s            ASM
 doprnt.o             doprnt.c             C
 ecvt.o               ecvt.s               ASM
-ffltioc.o            ffltioc.c            C
 fltioc.o             fltioc.c             C
 goodmagic.o          goodmagic.c          C
-length.o             length.c             C
 pow10.o              pow10.s              ASM
 readsym.o            readsym.c            C
 setret.o             setret.s             ASM

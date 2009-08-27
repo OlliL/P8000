@@ -162,3 +162,5 @@ rindex.o             rindex.c             C
 tmpfile.o            tmpfile.c            C
 tolower.o            tolower.c            C
 toupper.o            toupper.c            C
+ffltioc.o            ffltioc.c            C
+length.o             length.c             C
