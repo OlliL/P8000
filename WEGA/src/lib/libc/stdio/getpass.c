@@ -9,7 +9,8 @@ getpass(prompt)
 char *prompt;
 {
 	struct sgttyb ttyb;
-	int flags;
+	int flags; /*,flags2,flags3,flags4,flags5;*/
+	struct sgttyb foo;
 	register char *p;
 	register c;
 	FILE *fi;
@@ -18,14 +19,14 @@ char *prompt;
 	int (*sig)();
 
 	if ((fi = fopen("/dev/tty", "r")) == NULL)
-		fi = stdin;
+		return(0);
 	else
 		setbuf(fi, (char *)NULL);
 	sig = signal(SIGINT, SIG_IGN);
-	gtty(fileno(fi), &ttyb);
+	ioctl(fileno(fi), 0x5401, &ttyb);
 	flags = ttyb.sg_flags;
-	ttyb.sg_flags &= ~ECHO;
-	stty(fileno(fi), &ttyb);
+	ttyb.sg_flags &= 0xff87;
+	stty(fileno(fi), 0x5404, &ttyb);
 	fprintf(stderr, prompt);
 	for (p=pbuf; (c = getc(fi))!='\n' && c!=EOF;) {
 		if (p < &pbuf[8])
@@ -34,7 +35,7 @@ char *prompt;
 	*p = '\0';
 	fprintf(stderr, "\n");
 	ttyb.sg_flags = flags;
-	stty(fileno(fi), &ttyb);
+	stty(fileno(fi), 0x5403, &ttyb);
 	signal(SIGINT, sig);
 	if (fi != stdin)
 		fclose(fi);

@@ -5,11 +5,29 @@
 system(s)
 char *s;
 {
+	int i;
+	_system(s,1);
+}
+
+csystem(s)
+char *s;
+{
+	int i;
+	_system(s,0);
+}
+
+_system(s,mode)
+char *s;
+int mode;
+{
 	int status, pid, w;
 	register int (*istat)(), (*qstat)();
 
 	if ((pid = fork()) == 0) {
-		execl("/bin/sh", "sh", "-c", s, 0);
+		if(!mode)
+			execl("/bin/csh", "csh", "-c", s, 0);
+		else
+			execl("/bin/sh", "sh", "-c", s, 0);
 		_exit(127);
 	}
 	istat = signal(SIGINT, SIG_IGN);

@@ -10,5 +10,5 @@ register struct _iobuf *iop;
 	i = getc(iop);
 	if (iop->_flag&_IOEOF)
 		return(-1);
-	return(i | (getc(iop)<<8));
+	return(i<<8 | getc(iop));
 }
