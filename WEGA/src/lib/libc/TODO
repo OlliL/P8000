@@ -20,6 +20,5 @@ stfl.o                                    ???
 swap.o               swap.c               C
 symscan.o            symscan.c            C
 tmpfile.o            tmpfile.c            C
-tmpnam.o             tmpnam.c             C
 tolower.o            tolower.c            C
 toupper.o            toupper.c            C

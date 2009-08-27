@@ -1,5 +1,4 @@
 doscan.o /z/src/libc/orig_obj/doscan.o differ: char 5, line 1
-endopen.o /z/src/libc/orig_obj/endopen.o differ: char 6, line 1
 flsbuf.o /z/src/libc/orig_obj/flsbuf.o differ: char 6, line 1
 getgrent.o /z/src/libc/orig_obj/getgrent.o differ: char 132, line 1
 getpass.o /z/src/libc/orig_obj/getpass.o differ: char 6, line 1

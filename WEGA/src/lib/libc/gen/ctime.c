@@ -153,9 +153,11 @@ gmtime(tim)
 long *tim;
 {
 	register int d0, d1;
+	int foo1;
 	long hms, day;
 	register int *tp;
 	static struct tm xtime;
+	int foo2;
 
 	/*
 	 * break initial number into days
@@ -216,6 +218,7 @@ struct tm *t;
 {
 	register char *cp, *ncp;
 	register int *tp;
+	int foo;
 
 	cp = cbuf;
 	for(ncp = "Day Mon 00 00:00:00 1900\n"; *cp++ = *ncp++;);
@@ -267,6 +270,7 @@ tzset()
 {
 	register char *p, *q;
 	register int n;
+	int foo;
 	int sign;
 	char *getenv();
 
@@ -275,7 +279,7 @@ tzset()
 		q = tzname[0];
 		do *q++ = *p? *p++: ' ';
 		while(--n);
-		if(sign = *p == '-')
+		if(sign = (char)(p[0] == '-'))
 			p++;
 		n = 0;
 		while(*p >= '0' && *p <= '9')
@@ -283,7 +287,7 @@ tzset()
 		if(sign)
 			n = -n;
 		timezone = ((long) (n * 60)) * 60;
-		if(daylight = *p != '\0') {
+		if(daylight = (char)(*p != '\0')) {
 			q = tzname[1];
 			n = 3;
 			do *q++ = *p? *p++: ' ';

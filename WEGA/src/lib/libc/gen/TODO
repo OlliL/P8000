@@ -1,4 +1,3 @@
-ctime.o /z/src/libc/orig_obj/ctime.o differ: char 6, line 1
 execvp.o /z/src/libc/orig_obj/execvp.o differ: char 6, line 1
 malloc.o /z/src/libc/orig_obj/malloc.o differ: char 5, line 1
 nlist.o /z/src/libc/orig_obj/nlist.o differ: char 5, line 1

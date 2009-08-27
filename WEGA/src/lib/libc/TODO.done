@@ -153,3 +153,4 @@ setbuf.o             setbuf.c             C
 strout.o             strout.c             C
 system.o             system.c             C
 ungetc.o             ungetc.c             C
+tmpnam.o             tmpnam.c             C

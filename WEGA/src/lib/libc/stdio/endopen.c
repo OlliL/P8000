@@ -4,67 +4,81 @@
 #include	<errno.h>
 
 FILE *
-_endopen(file, mode, iop)
-	char *file, *mode;
-	register FILE *iop;
+_endopen (file, mode, iop)
+char *file, *mode;
+register FILE *iop;
 {
 	extern int errno;
-	register int rw, f;
+	register int rw;
+	register int f;
 
 	if (iop == NULL)
-		return(NULL);
+		return NULL;
 
-	rw = mode[1] == '+';
+	if ((mode[0] == 'r' && mode[1] == 'w') ||
+	    (mode[0] == 'w' && mode[1] == 'r')) {
+		mode[0]='r';
+		mode[1]='+';
+	}
+
+	rw = (char)(mode[1] == '+');
 
 	switch (*mode) {
 
 	case 'w':
-		f = create(file, rw);
+		f = create (file, rw);
 		break;
 
 	case 'a':
-		if ((f = open(file, rw? 2: 1)) < 0) {
+		if ((f = open (file, rw? 2: 1)) < 0) {
 			if (errno == ENOENT)
-				f = create(file, rw);
+				f = create (file, rw);
 		}
-		lseek(f, 0L, 2);
+		lseek (f, 0L, 2);
 		break;
 
 	case 'r':
-		f = open(file, rw? 2: 0);
+		f = open (file, rw? 2: 0);
 		break;
 
 	default:
-		return(NULL);
+		return NULL;
 	}
 
 	if (f < 0)
-		return(NULL);
+		return NULL;
 
 	iop->_cnt = 0;
 	iop->_file = f;
 
 	if (rw)
 		iop->_flag |= _IORW;
-	else if(*mode == 'r')
+	else if (*mode == 'r')
 		iop->_flag |= _IOREAD;
 	else
 		iop->_flag |= _IOWRT;
 
-	return(iop);
+	return iop;
 }
 
 static int
-create(file, rw)
-	register char *file;
-	int rw;
+create (file, rw)
+register char *file;
+int rw;
 {
-	register int f;
+	register int m, f;
 
-	f = creat(file, 0666);
-	if (rw && f>=0) {
-		close(f);
-		f = open(file, 2);
-	}
-	return(f);
+	if (rw) {
+		m = umask (0);
+		f = creat (file, 0666);
+		if (f >= 0) {
+			close (f);
+			f = open (file, 2);
+			chmod (file, 0666 & ~m);
+		}
+		umask (m);
+	} else
+		f = creat (file, 0666);
+	
+	return f;
 }
