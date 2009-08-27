@@ -154,3 +154,6 @@ strout.o             strout.c             C
 system.o             system.c             C
 ungetc.o             ungetc.c             C
 tmpnam.o             tmpnam.c             C
+ctermid.o            ctermid.c            C
+cuserid.o            cuserid.c            C
+index.o              index.c              C

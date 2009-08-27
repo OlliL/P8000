@@ -1,15 +1,12 @@
 __callex.o           __callex.c           C
 atof.o               atof.s               ASM
 cnvt.o               cnvt.c               C
-ctermid.o            ctermid.c            C
-cuserid.o            cuserid.c            C
 decimal.o            decimal.s            ASM
 doprnt.o             doprnt.c             C
 ecvt.o               ecvt.s               ASM
 ffltioc.o            ffltioc.c            C
 fltioc.o             fltioc.c             C
 goodmagic.o          goodmagic.c          C
-index.o              index.c              C
 length.o             length.c             C
 mpx.o                mpx.c                C
 pow10.o              pow10.s              ASM
