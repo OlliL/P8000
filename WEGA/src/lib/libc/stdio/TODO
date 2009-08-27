@@ -1,0 +1,12 @@
+doscan.o /z/src/libc/orig_obj/doscan.o differ: char 5, line 1
+endopen.o /z/src/libc/orig_obj/endopen.o differ: char 6, line 1
+fdopen.o /z/src/libc/orig_obj/fdopen.o differ: char 6, line 1
+flsbuf.o /z/src/libc/orig_obj/flsbuf.o differ: char 6, line 1
+getgrent.o /z/src/libc/orig_obj/getgrent.o differ: char 132, line 1
+getpass.o /z/src/libc/orig_obj/getpass.o differ: char 6, line 1
+getw.o /z/src/libc/orig_obj/getw.o differ: char 6, line 1
+printf.o /z/src/libc/orig_obj/printf.o differ: char 5, line 1
+putw.o /z/src/libc/orig_obj/putw.o differ: char 64, line 1
+scanf.o /z/src/libc/orig_obj/scanf.o differ: char 6, line 1
+system.o /z/src/libc/orig_obj/system.o differ: char 6, line 1
+
