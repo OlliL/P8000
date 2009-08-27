@@ -1,4 +1,3 @@
-__callex.o           __callex.c           C
 atof.o               atof.s               ASM
 cnvt.o               cnvt.c               C
 decimal.o            decimal.s            ASM
