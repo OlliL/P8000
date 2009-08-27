@@ -1,5 +1,4 @@
 ctime.o /z/src/libc/orig_obj/ctime.o differ: char 6, line 1
-errlst.o /z/src/libc/orig_obj/errlst.o differ: char 5, line 1
 execvp.o /z/src/libc/orig_obj/execvp.o differ: char 6, line 1
 getgrent.o /z/src/libc/orig_obj/getgrent.o differ: char 132, line 1
 l3.o /z/src/libc/orig_obj/l3.o differ: char 6, line 1

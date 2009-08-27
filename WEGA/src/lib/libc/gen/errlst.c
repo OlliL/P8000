@@ -38,3 +38,15 @@ char	*sys_errlist[] = {
 	"Result too large",
 };
 int	sys_nerr = { sizeof sys_errlist/sizeof sys_errlist[0] };
+
+char    *dev_errlist[] = {
+	"I/O error",
+	"No such device or address",
+	"Data transfer error",
+	"Device busy",
+	"Device write protected",
+	"No media",
+	"End of media",
+	"End of data",
+};
+int	dev_nerr = ( sizeof dev_errlist/sizeof dev_errlist[0] );
