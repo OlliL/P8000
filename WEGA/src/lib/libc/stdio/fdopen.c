@@ -38,7 +38,7 @@ fdopen(fd, mode)
 		return(NULL);
 	}
 
-	if (mode[1] == '+') {
+	if (mode[1] == '+' || mode[1] == 'w') {
 		iop->_flag &= ~(_IOREAD|_IOWRT);
 		iop->_flag |= _IORW;
 	}
