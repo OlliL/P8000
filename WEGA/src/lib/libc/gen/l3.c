@@ -4,37 +4,33 @@
  * Convert longs to and from 3-byte disk addresses
  */
 ltol3(cp, lp, n)
-char	*cp;
+register char	*cp;
 long	*lp;
-int	n;
+register int	n;
 {
-	register i;
-	register char *a, *b;
+	register char *b;
 
-	a = cp;
 	b = (char *)lp;
-	for(i=0;i<n;i++) {
+	while (n--) {
 		b++;
-		*a++ = *b++;
-		*a++ = *b++;
-		*a++ = *b++;
+		*cp++ = *b++;
+		*cp++ = *b++;
+		*cp++ = *b++;
 	}
 }
 
 l3tol(lp, cp, n)
 long	*lp;
-char	*cp;
-int	n;
+register char	*cp;
+register int	n;
 {
-	register i;
-	register char *a, *b;
+	register char *a;
 
 	a = (char *)lp;
-	b = cp;
-	for(i=0;i<n;i++) {
+	while (n--) {
 		*a++ = 0;
-		*a++ = *b++;
-		*a++ = *b++;
-		*a++ = *b++;
+		*a++ = *cp++;
+		*a++ = *cp++;
+		*a++ = *cp++;
 	}
 }
