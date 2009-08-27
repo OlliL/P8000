@@ -2,7 +2,6 @@
 
 static int	(*qscmp)();
 static int	qses;
-int	qsuflg;		/* used by sort command */
 
 qsort(a, n, es, fc)
 char *a;
@@ -20,7 +19,7 @@ char *a, *l;
 {
 	register char *i, *j;
 	register es;
-	char **k;
+	char *foo1, *foo2;
 	char *lp, *hp;
 	int c;
 	unsigned n;
@@ -70,10 +69,6 @@ loop:
 
 
 		if(i == lp) {
-			if(qsuflg)
-				/* nullify non-unique lines */
-				for(k=(char **)lp; k<(char **)hp;)
-					*(*++k) = '\0';
 			if(lp-a >= l-hp) {
 				qs1(hp+es, l);
 				l = lp;
