@@ -43,6 +43,7 @@ register c;
 struct group *
 getgrent()
 {
+	char *foo;
 	register char *p, **q;
 
 	if( !grf && !(grf = fopen( GROUP, "r" )) )
