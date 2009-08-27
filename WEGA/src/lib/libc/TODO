@@ -8,14 +8,9 @@ ffltioc.o            ffltioc.c            C
 fltioc.o             fltioc.c             C
 goodmagic.o          goodmagic.c          C
 length.o             length.c             C
-mpx.o                mpx.c                C
 pow10.o              pow10.s              ASM
 readsym.o            readsym.c            C
-rindex.o             rindex.c             C
 setret.o             setret.s             ASM
 stfl.o                                    ???
 swap.o               swap.c               C
 symscan.o            symscan.c            C
-tmpfile.o            tmpfile.c            C
-tolower.o            tolower.c            C
-toupper.o            toupper.c            C

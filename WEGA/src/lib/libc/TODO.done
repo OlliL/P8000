@@ -157,3 +157,8 @@ tmpnam.o             tmpnam.c             C
 ctermid.o            ctermid.c            C
 cuserid.o            cuserid.c            C
 index.o              index.c              C
+mpx.o                mpx.c                C
+rindex.o             rindex.c             C
+tmpfile.o            tmpfile.c            C
+tolower.o            tolower.c            C
+toupper.o            toupper.c            C
