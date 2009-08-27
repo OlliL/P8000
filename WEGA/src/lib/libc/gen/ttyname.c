@@ -3,12 +3,7 @@
 /*
  * ttyname(f): return "/dev/ttyXX" which the the name of the
  * tty belonging to file f.
- *
- * This program works in two passes: the first pass tries to
- * find the device by matchine device and inode numbers; if
- * that doesn't work, it tries a second time, this time doing a
- * stat on every file in /dev and trying to match device numbers
- * only. If that fails too, NULL is returned.
+ *  NULL if it is not a tty
  */
 
 #define	NULL	0
@@ -27,36 +22,30 @@ ttyname(f)
 	struct stat tsb;
 	struct direct db;
 	static char rbuf[32];
-	register df, pass1;
+	register df;
 
-	if(isatty(f) == 0)
+	if (isatty(f)==0)
 		return(NULL);
-	if(fstat(f, &fsb) < 0)
+	if (fstat(f, &fsb) < 0)
 		return(NULL);
-	if((fsb.st_mode & S_IFMT) != S_IFCHR)
+	if ((fsb.st_mode&S_IFMT) != S_IFCHR)
 		return(NULL);
-	if((df = open(dev, 0)) < 0)
+	if ((df = open(dev, 0)) < 0)
 		return(NULL);
-	pass1 = 1;
-	do {
-		while(read(df, (char *)&db, sizeof(db)) == sizeof(db)) {
-			if(db.d_ino == 0)
-				continue;
-			if(pass1 && db.d_ino != fsb.st_ino)
-				continue;
-			strcpy(rbuf, dev);
-			strcat(rbuf, db.d_name);
-			if(stat(rbuf, &tsb) < 0)
-				continue;
-			if(tsb.st_rdev == fsb.st_rdev
-			 && (tsb.st_mode&S_IFMT) == S_IFCHR
-			 && (!pass1 || tsb.st_ino == fsb.st_ino)) {
-				close(df);
-				return(rbuf);
-			}
+	while (read(df, (char *)&db, sizeof(db)) == sizeof(db)) {
+		if (db.d_ino == 0)
+			continue;
+		if (db.d_ino != fsb.st_ino)
+			continue;
+		strcpy(rbuf, dev);
+		strcat(rbuf, db.d_name);
+		if (stat(rbuf, &tsb) < 0)
+			continue;
+		if (tsb.st_dev==fsb.st_dev && tsb.st_ino==fsb.st_ino) {
+			close(df);
+			return(rbuf);
 		}
-		lseek(df, 0L, 0);
-	} while(pass1--);
+	}
 	close(df);
 	return(NULL);
 }
