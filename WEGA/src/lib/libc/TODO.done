@@ -165,3 +165,7 @@ toupper.o            toupper.c            C
 ffltioc.o            ffltioc.c            C
 length.o             length.c             C
 __callex.o           __callex.c           C
+setret.o             setret.s             ASM
+decimal.o            decimal.s            ASM
+readsym.o            readsym.c            C
+goodmagic.o          goodmagic.c          C
