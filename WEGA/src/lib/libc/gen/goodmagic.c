@@ -14,26 +14,26 @@ int
 goodmagic(magic)
 int magic;
 {
-	register int i;
+	register int ret;
 	
 	swap_flg=0x0000;
-foo0:
-	magics[0]=(unsigned)magic;
 
-	i=10;
-foo1:		
-	i--;
-	if(magic!=magics[i])
-		goto foo1;
-	if(i)
-		goto foo2;
-	magic=swap(magic);
-	if(!swap_flg++)
-		goto foo0;
-foo2:
-	if(i)
-		goto foo3;
-	swap_flg=0x0000;
-foo3:
-	return(i);
+	do {
+		magics[0]=magic;
+		ret=sizeof(magics)/sizeof(int);
+
+		do 
+			ret--;
+		while (magic!=magics[ret]);
+
+		if(ret)
+			break;
+
+		magic=swap(magic);
+	} while(!swap_flg++);
+
+	if(!ret)
+		swap_flg=0x0000;
+
+	return(ret);
 }
