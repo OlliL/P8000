@@ -1,9 +1,6 @@
-atof.o               atof.s               ASM
 cnvt.o               cnvt.c               C
 doprnt.o             doprnt.c             C
 ecvt.o               ecvt.s               ASM
 fltioc.o             fltioc.c             C
-pow10.o              pow10.s              ASM
-stfl.o                                    ???
 swap.o               swap.c               C
 symscan.o            symscan.c            C
