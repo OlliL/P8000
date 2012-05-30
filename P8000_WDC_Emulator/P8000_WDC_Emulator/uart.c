@@ -14,6 +14,7 @@
 #include <avr/sleep.h>
 
 #include "uart.h"
+#include "config.h"
 
 /* some mcus have multiple uarts */
 #ifdef UDR0
@@ -58,9 +59,7 @@
 #endif
 
 #define BAUD 9600UL
-#warning "CPU frequency hardcoded here"
-#define UBRRVAL (18432000UL/(BAUD*16)-1)
-/*define UBRRVAL (2304000UL/(BAUD*16)-1)   mit 8er Teiler */
+#define UBRRVAL (CPU_FREQ/(BAUD*16)-1)
 #define USE_SLEEP 1
 
 void uart_init()

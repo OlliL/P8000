@@ -1,13 +1,15 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_config.h,v 1.2 2012/05/29 20:23:09 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.3 2012/05/30 16:41:00 olivleh1 Exp $
  * 
  */ 
 
 
 #ifndef CONFIG_H_
 #define CONFIG_H_
+
+#define CPU_FREQ        18432000UL
 
 #define PORT_DATA       PORTA
 #define PIN_DATA        PINA
