@@ -59,7 +59,7 @@
 #endif
 
 #define BAUD 9600UL
-#define UBRRVAL (CPU_FREQ/(BAUD*16)-1)
+#define UBRRVAL (F_CPU/(BAUD*16)-1)
 #define USE_SLEEP 1
 
 void uart_init()

@@ -1,21 +1,26 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.3 2012/05/30 16:41:00 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.4 2012/05/30 20:07:10 olivleh1 Exp $
  * 
  */ 
 
 
+#include "config.h"
 #include <string.h>
+#include <stdlib.h>
 #include <avr/pgmspace.h>
 #include <avr/sleep.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "config.h"
+#include <util/delay.h>
 #include "main.h"
 #include "uart.h"
 
+#define DEBUG 1
 void atmega_setup(void);
+void wdc_read_data_from_p8k(uint8_t **data_buffer, uint8_t data_count);
+void wdc_write_data_to_ram(uint8_t **data_buffer, uint16_t data_address, uint8_t data_count);
 
 int main(void)
 {
@@ -25,6 +30,7 @@ int main(void)
     uint8_t datacnt;
     uint16_t data_counter;
     uint16_t data_address;
+    uint8_t *data_buffer = NULL;
 
     atmega_setup();
     
@@ -60,38 +66,18 @@ int main(void)
         {
             case CMD_WR_WDC_RAM:
 
-            for(data_counter=1000;data_counter>0;data_counter--) asm("nop");
-
                 data_counter = (cmdbuffer[7]<<8)|cmdbuffer[6];
 
-                configure_port_data_read();
-                datacnt = 0;
-                port_info_set( INFO_STAT_RDATA );
-                while ( !isset_info_te() );
-                while ( !isset_info_wdardy() );
-                while ( datacnt < data_counter )
-                {
-                    while ( isset_info_wdardy() );
-                    port_info_set( INFO_ASTB | INFO_STAT_RDATA );
-                    buffer[datacnt] = port_data_get();
-                    port_info_set( INFO_STAT_RDATA );
-                    while ( !isset_info_wdardy() );
+                wdc_read_data_from_p8k(&data_buffer
+                                      ,data_counter
+                                      );
 
-                    datacnt++;
-                }
-
-                port_info_set( INFO_CLEAR );
-
-                data_address = convert_ram_address((cmdbuffer[2]<<8)+cmdbuffer[1]);
-                do 
-                {
-                    data_counter--;
-                    wdc_ram[data_address+data_counter] = buffer[+data_counter];
-                } while (data_counter > 0);
-
-                uart_puts_p(PSTR("DATA Buffer:"));
-                uart_putc_hex(wdc_ram[data_address+0]);
-                uart_putc_hex(wdc_ram[data_address+1]);
+                wdc_write_data_to_ram(&data_buffer
+                                     ,convert_ram_address((cmdbuffer[2]<<8)+cmdbuffer[1])
+                                     ,data_counter
+                                     );
+                
+                free(data_buffer);
                 break;
 
             case CMD_RD_WDC_RAM:
@@ -104,7 +90,7 @@ int main(void)
                     buffer[+data_counter] = wdc_ram[data_address+data_counter];
                 } while (data_counter > 0);
 
-            for(data_counter=1000;data_counter>0;data_counter--) asm("nop");
+                _delay_us(560);
 
                 data_counter = (cmdbuffer[7]<<8)|cmdbuffer[6];
                 datacnt = 0;
@@ -131,7 +117,7 @@ int main(void)
                 port_info_set( INFO_CLEAR );
                 break;
             default:
-            for(data_counter=1000;data_counter>0;data_counter--) asm("nop");
+                _delay_us(560);
                 port_info_set( INFO_TR | INFO_STAT_ERROR );
                 while ( isset_info_te() );
                 configure_port_data_write();
@@ -152,6 +138,7 @@ int main(void)
                 break;
         }
 
+#ifdef DEBUG
         uart_puts_p(PSTR(" CMD Buffer:"));
         uart_putc_hex(cmdbuffer[0]);
         uart_putc_hex(cmdbuffer[1]);
@@ -163,7 +150,7 @@ int main(void)
         uart_putc_hex(cmdbuffer[7]);
         uart_putc_hex(cmdbuffer[8]);
         uart_putc('\n');
-
+#endif
     }
     return 0;
 }
@@ -184,4 +171,39 @@ void atmega_setup(void)
     configure_port_data_read();
     
     uart_init();
+}
+
+void wdc_read_data_from_p8k(uint8_t **data_buffer, uint8_t data_count)
+{
+    int datacnt = 0;
+    
+    (*data_buffer) = (uint8_t *)malloc(data_count);
+
+    _delay_us(560);
+
+    configure_port_data_read();
+    port_info_set( INFO_STAT_RDATA );
+    while ( !isset_info_te() );
+    while ( !isset_info_wdardy() );
+    do 
+    {
+        while ( isset_info_wdardy() );
+        port_info_set( INFO_ASTB | INFO_STAT_RDATA );
+        (*data_buffer)[datacnt] = port_data_get();
+        port_info_set( INFO_STAT_RDATA );
+        while ( !isset_info_wdardy() );
+
+        datacnt++;
+    } while ( datacnt < data_count );
+
+    port_info_set( INFO_CLEAR );
+}
+
+void wdc_write_data_to_ram(uint8_t **data_buffer, uint16_t data_address, uint8_t data_count)
+{
+    do
+    {
+        data_count--;
+        wdc_ram[data_address+data_count] = (*data_buffer)[data_count];
+    } while (data_count > 0);
 }
