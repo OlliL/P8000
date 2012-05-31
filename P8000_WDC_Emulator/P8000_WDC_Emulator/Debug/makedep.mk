@@ -6,3 +6,9 @@ main.c
 
 uart.c
 
+wdc_if_pio.c
+
+wdc_if_sdcard.c
+
+wdc_ram.c
+
