@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_ram.c,v 1.1 2012/05/31 20:21:51 olivleh1 Exp $
+ * $Id: wdc_ram.c,v 1.2 2012/05/31 20:34:11 olivleh1 Exp $
  *
  */
 
@@ -13,7 +13,7 @@ uint8_t par_table[200] = {   'W',  'D',  'C',  '_',  '4',  '.',  '2', 0x00,  'R'
                              0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                          };
 uint8_t bt_table[125];
-unsigned char wdc_ram[2048];
+uint8_t wdc_ram[2048];
 
 
 void wdc_write_data_to_ram ( uint8_t *buffer, uint16_t address, uint16_t count )
@@ -26,12 +26,10 @@ void wdc_write_data_to_ram ( uint8_t *buffer, uint16_t address, uint16_t count )
 
 void wdc_read_data_from_ram ( uint8_t *buffer, uint16_t address, uint16_t count )
 {
-
     do {
         count--;
         buffer[count] = wdc_ram[address + count];
     } while ( count > 0 );
-
 }
 
 void wdc_read_partab ( uint8_t *buffer, uint16_t count )
