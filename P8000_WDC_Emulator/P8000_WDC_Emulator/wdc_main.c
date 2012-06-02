@@ -1,14 +1,19 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.6 2012/06/02 00:51:55 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.7 2012/06/02 23:04:30 olivleh1 Exp $
  *
  * TODO: - Prio 1: more commandcodes
  *       - Prio 2: check if BTT is really cleaned when sa.format gets called all the time with a real drive
+ *       ----------> no the old BTT from the previous formatting is shown
+ *       ----------> check if after formatting, no BTT is written to the disk, the old BTT is still there
  *       - Prio 2: respect BTT entries when calculating the block number to use.
  *       - Prio 3: work out how PAR+BTT where originally stored on the harddisks and store them the same way
  *       - Prio 3: put the whole par_table handling from wdc_ram.[ch] into wdc_par.[ch]
  */
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -21,7 +26,17 @@
 #include "wdc_if_sdcard.h"
 
 #define DEBUG 1
+#undef  MEASURE_SDCARD_TIME
+
 void atmega_setup ( void );
+
+#ifdef MEASURE_SDCARD_TIME
+volatile uint32_t overflow = 0;
+ISR ( TIMER0_OVF_vect )
+{
+    overflow ++;
+}
+#endif
 
 int main ( void )
 {
@@ -38,10 +53,45 @@ int main ( void )
 
     uart_puts_p ( PSTR ( "P8000 WDC Emulator 0.01\n" ) );
 
+#ifdef MEASURE_SDCARD_TIME
+    uint32_t starttime;
+
+    sei();
+    TIMSK0 |= ( 0x01 << TOIE0 );
+    TCCR0B = ( 1 << CS01 ); // Prescaler 8
+    TCNT0 = 0x00;
+
+    uart_putdw_dec ( overflow );
+    data_buffer = malloc ( 512 * sizeof ( *data_buffer ) );
+    uart_putc ( 'w' );
+    uart_putc ( '\n' );
+    for ( i8 = 0; i8 < 5; i8++ ) {
+        for ( blockno = 200000, starttime = overflow; blockno < 205000; blockno++ ) {
+            errorcode = wdc_write_sector ( blockno, data_buffer );
+        }
+        uart_putdw_dec ( overflow - starttime );
+        uart_putc ( '\n' );
+    }
+    uart_putc ( '\n' );
+
+    uart_putc ( 'r' );
+    uart_putc ( '\n' );
+    for ( i8 = 0; i8 < 5; i8++ ) {
+        for ( blockno = 200000, starttime = overflow; blockno < 205000; blockno++ ) {
+            errorcode = wdc_read_sector ( blockno, data_buffer );
+        }
+        uart_putdw_dec ( overflow - starttime );
+        uart_putc ( '\n' );
+    }
+    uart_putc ( '\n' );
+
+    free ( data_buffer );
+#endif
+
     /* load Parameter Table into RAM if valid */
     blockno = 0;
     data_counter = 512;
-    data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
+    data_buffer  = malloc ( data_counter * sizeof ( *data_buffer ) );
     while ( wdc_read_sector ( blockno, data_buffer ) ) {
 #if DEBUG >= 1
         uart_puts_p ( PSTR ( "Block 0 of SD-Card not readable" ) );
@@ -177,15 +227,16 @@ int main ( void )
 
                 free ( data_buffer );
                 break;
-            case CMD_FMT_BTT:
+
+            case CMD_FMTBTT_TRACK:
 
                 data_counter = 512;
                 data_buffer = calloc ( data_counter, sizeof ( *data_buffer ) );
 
-                blockno = wdc_get_blockno ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
-                                            , cmd_buffer[4]
-                                            , cmd_buffer[5]
-                                          );
+                blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
+                                               , cmd_buffer[4]
+                                               , cmd_buffer[5]
+                                             );
 
                 errorcode = 1;
                 for ( i8 = 0; i8 < wdc_get_hdd_sectors(); i8++ ) {
@@ -245,10 +296,10 @@ int main ( void )
                 data_counter = 512;
                 data_buffer = calloc ( data_counter, sizeof ( *data_buffer ) );
 
-                blockno = wdc_get_blockno ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
-                                            , cmd_buffer[4]
-                                            , cmd_buffer[5]
-                                          );
+                blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
+                                               , cmd_buffer[4]
+                                               , cmd_buffer[5]
+                                             );
 
                 errorcode = 1;
                 for ( i8 = 0; i8 < wdc_get_hdd_sectors(); i8++ ) {
@@ -271,19 +322,83 @@ int main ( void )
                 else
                     data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
 
-                blockno = wdc_get_blockno ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
-                                            , cmd_buffer[4]
-                                            , cmd_buffer[5]
-                                          );
+                blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
+                                               , cmd_buffer[4]
+                                               , cmd_buffer[5]
+                                             );
 
+                i8 = 0;
                 errorcode = 1;
                 for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
                     errorcode = wdc_read_sector ( blockno, data_buffer );
                     if ( errorcode ) break;
+                    i8++;
+                    blockno++;
+                    data_buffer += 512;
                 }
+                data_buffer -= ( 512 * i8 );
 
                 if ( errorcode )
                     wdc_send_error();
+
+                free ( data_buffer );
+                break;
+
+            case CMD_WR_BLOCK:
+                data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+                if ( data_counter % 512 > 0 )
+                    data_buffer = malloc ( ( data_counter + 512 - ( data_counter % 512 ) ) * sizeof ( *data_buffer ) );
+                else
+                    data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
+
+                blockno = wdc_p8kblock2sdblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
+
+                wdc_receive_data ( data_buffer
+                                   , data_counter
+                                 );
+                i8 = 0;
+                errorcode = 1;
+                for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
+                    errorcode = wdc_write_sector ( blockno, data_buffer );
+                    if ( errorcode ) break;
+                    i8++;
+                    blockno++;
+                    data_buffer += 512;
+                }
+                data_buffer -= ( 512 * i8 );
+
+                if ( errorcode )
+                    wdc_send_error();
+
+                free ( data_buffer );
+                break;
+
+            case CMD_RD_BLOCK:
+                data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+                if ( data_counter % 512 > 0 )
+                    data_buffer = malloc ( ( data_counter + 512 - ( data_counter % 512 ) ) * sizeof ( *data_buffer ) );
+                else
+                    data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
+
+                blockno = wdc_p8kblock2sdblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
+
+                i8 = 0;
+                errorcode = 1;
+                for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
+                    errorcode = wdc_read_sector ( blockno, data_buffer );
+                    if ( errorcode ) break;
+                    i8++;
+                    blockno++;
+                    data_buffer += 512;
+                }
+                data_buffer -= ( 512 * i8 );
+
+                if ( errorcode )
+                    wdc_send_error();
+
+                wdc_send_data ( data_buffer
+                                , data_counter
+                              );
 
                 free ( data_buffer );
                 break;
@@ -308,12 +423,13 @@ int main ( void )
 
         free ( cmd_buffer );
     }
+
     return 0;
 }
 
 void atmega_setup ( void )
 {
-    set_sleep_mode ( SLEEP_MODE_IDLE );
+    //    set_sleep_mode ( SLEEP_MODE_IDLE );
     uart_init();
     wdc_init_ports();
     while ( wdc_init_sdcard() ) {

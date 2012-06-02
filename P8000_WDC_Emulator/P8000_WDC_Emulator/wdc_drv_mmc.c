@@ -196,28 +196,35 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *Buffer )
         return ( tmp );
     }
 
-    //Wartet einen Moment und sendet einen Clock an die MMC/SD-Karte
-    for ( uint16_t a = 0; a < 100; a++ ) {
-        mmc_read_byte();
-    }
-
-    //Sendet Start Byte an MMC/SD-Karte
-    mmc_write_byte ( 0xFE );
+    SPDR = 0xFE;    //Sendet Startbyte
 
     //Schreiben des Bolcks (512Bytes) auf MMC/SD-Karte
     for ( uint16_t a = 0; a < 512; a++ ) {
-        mmc_write_byte ( *Buffer++ );
+        uint8_t data = *Buffer;
+        Buffer++;
+        while ( ! ( SPSR & ( 1 << SPIF ) ) );
+        SPDR = data;    //Sendet ein Byte
     }
+    while ( ! ( SPSR & ( 1 << SPIF ) ) );
 
     //CRC-Byte schreiben
-    mmc_write_byte ( 0xFF ); //Schreibt Dummy CRC
-    mmc_write_byte ( 0xFF ); //CRC Code wird nicht benutzt
+    SPDR = 0xFF;
+    while ( ! ( SPSR & ( 1 << SPIF ) ) );
+    SPDR = 0xFF;
+    while ( ! ( SPSR & ( 1 << SPIF ) ) );
 
     //Fehler beim schreiben? (Data Response XXX00101 = OK)
-    if ( ( mmc_read_byte() & 0x1F ) != 0x05 ) return ( 1 );
+    SPDR = 0xff;
+    while ( ! ( SPSR & ( 1 << SPIF ) ) ) {};
+    if ( ( SPDR & 0x1F ) != 0x05 ) return ( 1 );
 
     //Wartet auf MMC/SD-Karte Bussy
-    while ( mmc_read_byte() != 0xff ) {};
+    while ( 1 ) {
+        SPDR = 0xff;
+        while ( ! ( SPSR & ( 1 << SPIF ) ) ) {};
+        if ( SPDR == 0xff )
+            break;
+    }
 
     //set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
     MMC_Disable();
@@ -236,15 +243,34 @@ void mmc_read_block ( uint8_t *cmd, uint8_t *Buffer, uint16_t Bytes )
     }
 
     //Wartet auf Start Byte von der MMC/SD-Karte (FEh/Start Byte)
-    while ( mmc_read_byte() != 0xfe ) {};
+    //    while ( mmc_read_byte() != 0xfe ) {};
+    while ( 1 ) {
+        SPDR = 0xff;
+        while ( ! ( SPSR & ( 1 << SPIF ) ) ) {};
+        if ( SPDR == 0xfe )
+            break;
+    }
+
+
+    SPDR = 0xff;
+    while ( ! ( SPSR & ( 1 << SPIF ) ) );
+    *Buffer = SPDR;
 
     //Lesen des Bolcks (normal 512Bytes) von MMC/SD-Karte
-    for ( uint16_t a = 0; a < Bytes; a++ ) {
-        *Buffer++ = mmc_read_byte();
+    for ( uint16_t a = 0; a < Bytes - 1; a++ ) {
+        SPDR = 0xff;
+        Buffer++;
+        while ( ! ( SPSR & ( 1 << SPIF ) ) );
+        *Buffer = SPDR;
     }
+
     //CRC-Byte auslesen
-    mmc_read_byte();//CRC - Byte wird nicht ausgewertet
-    mmc_read_byte();//CRC - Byte wird nicht ausgewertet
+    SPDR = 0xff;
+    while ( ! ( SPSR & ( 1 << SPIF ) ) );
+    SPDR;
+    SPDR = 0xff;
+    while ( ! ( SPSR & ( 1 << SPIF ) ) );
+    SPDR;
 
     //set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
     MMC_Disable();
