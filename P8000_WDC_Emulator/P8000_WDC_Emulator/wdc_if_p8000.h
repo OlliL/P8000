@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_p8000.h,v 1.1 2012/05/31 20:21:51 olivleh1 Exp $
+ * $Id: wdc_if_p8000.h,v 1.2 2012/06/02 00:51:55 olivleh1 Exp $
  *
  */
 
@@ -45,9 +45,9 @@
 
 void wdc_init_ports();
 void wdc_wait_for_reset();
-void wdc_receive_cmd(uint8_t *buffer, uint16_t count);
-void wdc_receive_data(uint8_t *buffer, uint16_t count);
-void wdc_send_data(uint8_t *buffer, uint16_t count);
+void wdc_receive_cmd ( uint8_t *buffer, uint16_t count );
+void wdc_receive_data ( uint8_t *buffer, uint16_t count );
+void wdc_send_data ( uint8_t *buffer, uint16_t count );
 void wdc_send_error();
 
 #endif /* WDC_IF_PIO_H_ */

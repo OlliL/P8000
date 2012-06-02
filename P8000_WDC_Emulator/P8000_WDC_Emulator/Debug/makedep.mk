@@ -4,6 +4,8 @@
 
 main.c
 
+mmc.c
+
 uart.c
 
 wdc_if_pio.c

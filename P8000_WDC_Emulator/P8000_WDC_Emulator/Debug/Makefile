@@ -36,6 +36,7 @@ SUBDIRS :=
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../main.c \
+../mmc.c \
 ../uart.c \
 ../wdc_if_pio.c \
 ../wdc_if_sdcard.c \
@@ -50,6 +51,7 @@ ASM_SRCS +=
 
 OBJS +=  \
 main.o \
+mmc.o \
 uart.o \
 wdc_if_pio.o \
 wdc_if_sdcard.o \
@@ -58,6 +60,7 @@ wdc_ram.o
 
 OBJS_AS_ARGS +=  \
 main.o \
+mmc.o \
 uart.o \
 wdc_if_pio.o \
 wdc_if_sdcard.o \
@@ -66,6 +69,7 @@ wdc_ram.o
 
 C_DEPS +=  \
 main.d \
+mmc.d \
 uart.d \
 wdc_if_pio.d \
 wdc_if_sdcard.d \
@@ -74,6 +78,7 @@ wdc_ram.d
 
 C_DEPS_AS_ARGS +=  \
 main.d \
+mmc.d \
 uart.d \
 wdc_if_pio.d \
 wdc_if_sdcard.d \
@@ -100,10 +105,12 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 
 
 
+
+
 ./%.o: .././%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : (AVR_8_bit_GNU_Toolchain_3.4.0_663) 4.6.2
-	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Studio 6.0\extensions\Atmel\AVRGCC\3.4.0.65\AVRToolchain\bin\avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -O1 -fpack-struct -fshort-enums -g2 -Wall -Wundef -Werror -pedantic -pedantic-errors -c -std=gnu99 -save-temps -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"  -mmcu=atmega1284p   -o"$@" "$<" 
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Studio 6.0\extensions\Atmel\AVRGCC\3.4.0.65\AVRToolchain\bin\avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -O1 -fpack-struct -fshort-enums -g2 -Wall -Wundef -Werror -pedantic -pedantic-errors -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"  -mmcu=atmega1284p   -o"$@" "$<" 
 	@echo Finished building: $<
 
 
