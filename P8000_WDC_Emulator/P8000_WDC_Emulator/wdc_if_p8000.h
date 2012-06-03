@@ -1,14 +1,14 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_p8000.h,v 1.3 2012/06/02 23:04:30 olivleh1 Exp $
+ * $Id: wdc_if_p8000.h,v 1.4 2012/06/03 13:38:03 olivleh1 Exp $
  *
  */
 
 #ifndef WDC_IF_PIO_H_
 #define WDC_IF_PIO_H_
 
-#define DELAY_PIO_US                400
+#define DELAY_PIO_US                500
 
 #define configure_port_data_read()  DDR_DATA = 0x00                /* programs the DATA-Port as Input-only for reading from the P8000*/
 #define configure_port_data_write() DDR_DATA = 0xff                /* programs the DATA-Port as Out-only for writing to the P8000*/

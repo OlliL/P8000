@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.h,v 1.7 2012/06/02 23:04:30 olivleh1 Exp $
+ * $Id: wdc_main.h,v 1.8 2012/06/03 13:38:03 olivleh1 Exp $
  *
  */
 
@@ -32,7 +32,7 @@
 #define NO_CMD_DL_TRACK       0x84              /* delete a track                                   */
 #define NO_CMD_WRRDBTT_SECTOR 0x92              /* write and reread sector taking BTT into account  */
 #define NO_CMD_CP_BLOCK       0xa1              /* copy block from drive 1 to drive 0               */
-#define NO_CMD_WRRD_BLOCK     0xa2              /* wrid and reread block                            */
+#define NO_CMD_WRRD_BLOCK     0xa2              /* write and reread block                           */
 #define CMD_ST_PARBTT         0xc2              /* store PAR and BTT on harddisk                    */
 
 #endif /* MAIN_H_ */

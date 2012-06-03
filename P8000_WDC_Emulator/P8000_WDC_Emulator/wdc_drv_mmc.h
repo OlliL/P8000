@@ -12,6 +12,8 @@ Copyright (C) 2004 Ulrich Radig
 #define SPI_Mode        1       //1 = Hardware SPI | 0 = Software SPI
 //#define SPI_Mode      0
 
+#define SPI_CRC         1
+
 #define MMC_Write       PORTB   //Port an der die MMC/SD-Karte angeschlossen ist also des SPI 
 #define MMC_Read        PINB
 #define MMC_Direction_REG   DDRB
@@ -25,7 +27,7 @@ Copyright (C) 2004 Ulrich Radig
 
 extern uint8_t mmc_read_byte ( void );
 extern void mmc_write_byte ( uint8_t );
-extern void mmc_read_block ( uint8_t *, uint8_t *, uint16_t );
+extern uint8_t mmc_read_block ( uint8_t *, uint8_t *, uint16_t );
 
 extern uint8_t mmc_init ( void );
 extern uint8_t mmc_read_sector ( uint32_t, uint8_t * );

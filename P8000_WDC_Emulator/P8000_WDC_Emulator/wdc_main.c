@@ -1,9 +1,11 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.7 2012/06/02 23:04:30 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.8 2012/06/03 13:38:03 olivleh1 Exp $
  *
- * TODO: - Prio 1: more commandcodes
+ * TODO: - Different Errorcodes in the MMC layer (use defines)
+ *       - errorchecking in several places
+ *       - Prio 1: more commandcodes
  *       - Prio 2: check if BTT is really cleaned when sa.format gets called all the time with a real drive
  *       ----------> no the old BTT from the previous formatting is shown
  *       ----------> check if after formatting, no BTT is written to the disk, the old BTT is still there
@@ -27,6 +29,7 @@
 
 #define DEBUG 1
 #undef  MEASURE_SDCARD_TIME
+#undef  USE_ALLOC
 
 void atmega_setup ( void );
 
@@ -38,14 +41,20 @@ ISR ( TIMER0_OVF_vect )
 }
 #endif
 
-int main ( void )
+int __attribute__ ( ( OS_main ) )
+main ( void )
 {
     uint16_t cmd_counter = 9;
     uint16_t data_counter;
     uint32_t blockno;
     uint8_t  errorcode;
+#ifdef USE_ALLOC
     uint8_t *data_buffer = NULL;
     uint8_t *cmd_buffer = NULL;
+#else
+    uint8_t data_buffer[4096];
+    uint8_t cmd_buffer[9];
+#endif
     uint8_t i8;
     uint16_t i16;
 
@@ -91,7 +100,9 @@ int main ( void )
     /* load Parameter Table into RAM if valid */
     blockno = 0;
     data_counter = 512;
+#ifdef USE_ALLOC
     data_buffer  = malloc ( data_counter * sizeof ( *data_buffer ) );
+#endif
     while ( wdc_read_sector ( blockno, data_buffer ) ) {
 #if DEBUG >= 1
         uart_puts_p ( PSTR ( "Block 0 of SD-Card not readable" ) );
@@ -104,12 +115,17 @@ int main ( void )
         wdc_write_par_table ( data_buffer, data_counter );
     };
 
+#ifdef USE_ALLOC
+    free ( data_buffer );
+#endif
+
     while ( 1 ) {
 
         wdc_wait_for_reset();
 
+#ifdef USE_ALLOC
         cmd_buffer = malloc ( cmd_counter * sizeof ( *cmd_buffer ) );
-
+#endif
         wdc_receive_cmd ( cmd_buffer
                           , cmd_counter
                         );
@@ -129,11 +145,94 @@ int main ( void )
 #endif
 
         switch ( cmd_buffer[0] ) {
+            case CMD_WR_BLOCK:
+                data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
+                if ( data_counter % 512 > 0 )
+                    data_buffer = malloc ( ( data_counter + 512 - ( data_counter % 512 ) ) * sizeof ( *data_buffer ) );
+                else
+                    data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
+#endif
+                blockno = wdc_p8kblock2sdblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
+
+                wdc_receive_data ( data_buffer
+                                   , data_counter
+                                 );
+#ifdef USE_ALLOC
+                i8 = 0;
+#endif
+                errorcode = 1;
+                for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
+#ifdef USE_ALLOC
+                    errorcode = wdc_write_sector ( blockno, data_buffer );
+#else
+                    errorcode = wdc_write_sector ( blockno, &data_buffer[i16] );
+#endif
+                    if ( errorcode ) break;
+#ifdef USE_ALLOC
+                    i8++;
+                    data_buffer += 512;
+#endif
+                    blockno++;
+                }
+#ifdef USE_ALLOC
+                data_buffer -= ( 512 * i8 );
+#endif
+                if ( errorcode )
+                    wdc_send_error();
+#ifdef USE_ALLOC
+                free ( data_buffer );
+#endif
+                break;
+
+            case CMD_RD_BLOCK:
+                data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
+                if ( data_counter % 512 > 0 )
+                    data_buffer = malloc ( ( data_counter + 512 - ( data_counter % 512 ) ) * sizeof ( *data_buffer ) );
+                else
+                    data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
+#endif
+                blockno = wdc_p8kblock2sdblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
+
+#ifdef USE_ALLOC
+                i8 = 0;
+#endif
+                errorcode = 1;
+                for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
+#ifdef USE_ALLOC
+                    errorcode = wdc_read_sector ( blockno, data_buffer );
+#else
+                    errorcode = wdc_read_sector ( blockno, &data_buffer[i16] );
+#endif
+                    if ( errorcode ) break;
+#ifdef USE_ALLOC
+                    i8++;
+                    data_buffer += 512;
+#endif
+                    blockno++;
+                }
+#ifdef USE_ALLOC
+                data_buffer -= ( 512 * i8 );
+#endif
+                if ( errorcode )
+                    wdc_send_error();
+
+                wdc_send_data ( data_buffer
+                                , data_counter
+                              );
+
+#ifdef USE_ALLOC
+                free ( data_buffer );
+#endif
+                break;
+
             case CMD_WR_WDC_RAM:
 
                 data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
                 data_buffer  = malloc ( data_counter * sizeof ( *data_buffer ) );
-
+#endif
                 wdc_receive_data ( data_buffer
                                    , data_counter
                                  );
@@ -143,14 +242,17 @@ int main ( void )
                                         , data_counter
                                       );
 
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_RD_WDC_RAM:
 
                 data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
                 data_buffer  = malloc ( data_counter * sizeof ( *data_buffer ) );
-
+#endif
                 wdc_read_data_from_ram ( data_buffer
                                          , convert_ram_address ( ( cmd_buffer[2] << 8 ) | cmd_buffer[1] )
                                          , data_counter
@@ -160,14 +262,17 @@ int main ( void )
                                 , data_counter
                               );
 
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_RD_PARTAB:
 
                 data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
                 data_buffer  = malloc ( data_counter * sizeof ( *data_buffer ) );
-
+#endif
                 wdc_read_par_table ( data_buffer
                                      , data_counter );
 
@@ -175,14 +280,17 @@ int main ( void )
                                 , data_counter
                               );
 
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_WR_PARTAB:
 
                 data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
                 data_buffer  = malloc ( data_counter * sizeof ( *data_buffer ) );
-
+#endif
                 wdc_receive_data ( data_buffer
                                    , data_counter
                                  );
@@ -190,7 +298,9 @@ int main ( void )
                 wdc_write_wdc_par ( data_buffer
                                     , data_counter );
 
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_DL_BTTAB:
@@ -201,23 +311,26 @@ int main ( void )
             case CMD_RD_BTTAB:
 
                 data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
                 data_buffer  = malloc ( data_counter * sizeof ( *data_buffer ) );
-
+#endif
                 wdc_read_wdc_btt ( data_buffer
                                    , data_counter );
 
                 wdc_send_data ( data_buffer
                                 , data_counter
                               );
-
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_WR_BTTAB:
 
                 data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
                 data_buffer  = malloc ( data_counter * sizeof ( *data_buffer ) );
-
+#endif
                 wdc_receive_data ( data_buffer
                                    , data_counter
                                  );
@@ -225,13 +338,19 @@ int main ( void )
                 wdc_write_wdc_btt ( data_buffer
                                     , data_counter );
 
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_FMTBTT_TRACK:
 
                 data_counter = 512;
+#ifdef USE_ALLOC
                 data_buffer = calloc ( data_counter, sizeof ( *data_buffer ) );
+#else
+                memset ( &data_buffer[0], 0x00, 512 );
+#endif
 
                 blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
                                                , cmd_buffer[4]
@@ -249,8 +368,10 @@ int main ( void )
                     if ( wdc_add_btt_entry ( cmd_buffer[2] | ( cmd_buffer[3] << 8 ), cmd_buffer[4] ) ) {
                         wdc_send_error();
                     } else {
+#ifdef USE_ALLOC
                         free ( data_buffer );
                         data_buffer  = malloc ( 3 * sizeof ( *data_buffer ) );
+#endif
                         data_buffer[0] = cmd_buffer[2]; // Track Low
                         data_buffer[1] = cmd_buffer[3]; // Track High
                         data_buffer[2] = cmd_buffer[4]; // Head
@@ -261,7 +382,9 @@ int main ( void )
                     }
                 }
 
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_ST_PARBTT:
@@ -269,7 +392,9 @@ int main ( void )
                 blockno = 0;
 
                 data_counter = 512;
+#ifdef USE_ALLOC
                 data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
+#endif
                 wdc_read_par_table ( data_buffer
                                      , data_counter );
 
@@ -277,25 +402,34 @@ int main ( void )
                 if ( errorcode )
                     wdc_send_error();
 
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_RD_WDCERR:
 
                 data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
                 data_buffer = calloc ( data_counter, sizeof ( *data_buffer ) );
+#else
+                memset ( &data_buffer[0], 0x00, 512 );
+#endif
                 wdc_send_data ( data_buffer
                                 , data_counter
                               );
 
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_VER_TRACK:
 
                 data_counter = 512;
-                data_buffer = calloc ( data_counter, sizeof ( *data_buffer ) );
-
+#ifdef USE_ALLOC
+                data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
+#endif
                 blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
                                                , cmd_buffer[4]
                                                , cmd_buffer[5]
@@ -310,97 +444,52 @@ int main ( void )
 
                 if ( errorcode )
                     wdc_send_error();
-
+#ifdef USE_ALLOC
                 free ( data_buffer );
+#endif
                 break;
 
             case CMD_RD_SECTOR:
 
                 data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
+#ifdef USE_ALLOC
                 if ( data_counter % 512 > 0 )
                     data_buffer = malloc ( ( data_counter + 512 - ( data_counter % 512 ) ) * sizeof ( *data_buffer ) );
                 else
                     data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
-
+#endif
                 blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
                                                , cmd_buffer[4]
                                                , cmd_buffer[5]
                                              );
 
+#ifdef USE_ALLOC
                 i8 = 0;
+#endif
                 errorcode = 1;
                 for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
+#ifdef USE_ALLOC
                     errorcode = wdc_read_sector ( blockno, data_buffer );
+#else
+                    errorcode = wdc_read_sector ( blockno, &data_buffer[i16] );
+#endif
                     if ( errorcode ) break;
+#ifdef USE_ALLOC
                     i8++;
-                    blockno++;
                     data_buffer += 512;
+#endif
+                    blockno++;
                 }
+#ifdef USE_ALLOC
                 data_buffer -= ( 512 * i8 );
+#endif
 
                 if ( errorcode )
                     wdc_send_error();
 
+#ifdef USE_ALLOC
                 free ( data_buffer );
-                break;
-
-            case CMD_WR_BLOCK:
-                data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
-                if ( data_counter % 512 > 0 )
-                    data_buffer = malloc ( ( data_counter + 512 - ( data_counter % 512 ) ) * sizeof ( *data_buffer ) );
-                else
-                    data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
-
-                blockno = wdc_p8kblock2sdblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
-
-                wdc_receive_data ( data_buffer
-                                   , data_counter
-                                 );
-                i8 = 0;
-                errorcode = 1;
-                for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
-                    errorcode = wdc_write_sector ( blockno, data_buffer );
-                    if ( errorcode ) break;
-                    i8++;
-                    blockno++;
-                    data_buffer += 512;
-                }
-                data_buffer -= ( 512 * i8 );
-
-                if ( errorcode )
-                    wdc_send_error();
-
-                free ( data_buffer );
-                break;
-
-            case CMD_RD_BLOCK:
-                data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
-                if ( data_counter % 512 > 0 )
-                    data_buffer = malloc ( ( data_counter + 512 - ( data_counter % 512 ) ) * sizeof ( *data_buffer ) );
-                else
-                    data_buffer = malloc ( data_counter * sizeof ( *data_buffer ) );
-
-                blockno = wdc_p8kblock2sdblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
-
-                i8 = 0;
-                errorcode = 1;
-                for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
-                    errorcode = wdc_read_sector ( blockno, data_buffer );
-                    if ( errorcode ) break;
-                    i8++;
-                    blockno++;
-                    data_buffer += 512;
-                }
-                data_buffer -= ( 512 * i8 );
-
-                if ( errorcode )
-                    wdc_send_error();
-
-                wdc_send_data ( data_buffer
-                                , data_counter
-                              );
-
-                free ( data_buffer );
+#endif
                 break;
 
             default:
@@ -421,7 +510,9 @@ int main ( void )
                 break;
         }
 
+#ifdef USE_ALLOC
         free ( cmd_buffer );
+#endif
     }
 
     return 0;

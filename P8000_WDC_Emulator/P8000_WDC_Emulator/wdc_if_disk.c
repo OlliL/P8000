@@ -1,11 +1,12 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_disk.c,v 1.3 2012/06/02 23:04:30 olivleh1 Exp $
+ * $Id: wdc_if_disk.c,v 1.4 2012/06/03 13:38:03 olivleh1 Exp $
  *
  */
 
 #include "mmc.h"
+#include "uart.h"
 extern uint8_t par_table[200];
 
 uint8_t wdc_init_sdcard()
@@ -32,15 +33,37 @@ uint32_t wdc_p8kblock2sdblock ( uint32_t blockno )
     /*                          +----------------------------------------------- configured heads form the harddisk
      *                          |               +------------------------------- configured sectors for the harddisk
      *                          |               |*/
-     return ( blockno +  ( par_table[25] * par_table[26] ) );
+    return ( blockno +  ( par_table[25] * par_table[26] ) );
 }
 
 uint8_t wdc_write_sector ( uint16_t addr, uint8_t *sector )
 {
-    return mmc_write_sector ( addr, sector );
+    uint8_t errorcode;
+
+    errorcode = mmc_write_sector ( addr, sector );
+    if ( errorcode ) {
+        uart_puts_p ( PSTR ( " write error at address: " ) );
+        uart_putw_dec ( addr );
+        uart_puts_p ( PSTR ( " / errorcode is: " ) );
+        uart_putc_hex ( errorcode );
+        uart_putc ( '\n' );
+        return errorcode;
+    } else
+        return 0;
 }
 
 uint8_t wdc_read_sector ( uint16_t addr, uint8_t *sector )
 {
-    return mmc_read_sector ( addr, sector );
+    uint8_t errorcode;
+
+    errorcode = mmc_read_sector ( addr, sector );
+    if ( errorcode ) {
+        uart_puts_p ( PSTR ( " read error at address: " ) );
+        uart_putw_dec ( addr );
+        uart_puts_p ( PSTR ( " / errorcode is: " ) );
+        uart_putc_hex ( errorcode );
+        uart_putc ( '\n' );
+        return errorcode;
+    } else
+        return 0;
 }
