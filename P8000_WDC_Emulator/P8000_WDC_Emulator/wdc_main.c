@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.11 2012/06/05 19:46:26 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.12 2012/06/05 20:30:09 olivleh1 Exp $
  *
  * TODO: - Different Errorcodes in the MMC layer (use defines)
  *       - errorchecking in several places
@@ -49,8 +49,6 @@ main ( void )
     uint16_t data_counter;
     uint32_t blockno;
     uint8_t  errorcode;
-    uint8_t data_buffer[4096];
-    uint8_t cmd_buffer[9];
     uint8_t i8;
     uint16_t i16;
 #endif
@@ -115,7 +113,6 @@ main ( void )
                 if ( data_counter / 512 == 1 ) {
                     errorcode = wdc_write_sector ( blockno, data_buffer );
                 } else {
-                    uart_putc ( '#' );
                     errorcode = wdc_write_multiblock ( blockno, data_buffer, data_counter / 512 );
                 }
                 /* check if this really works - this must be used if the card does not support multiblock-access (there are some)
@@ -138,7 +135,6 @@ main ( void )
                 if ( data_counter / 512 == 1 ) {
                     errorcode = wdc_read_sector ( blockno, data_buffer );
                 } else {
-                    uart_putc ( '#' );
                     errorcode = wdc_read_multiblock ( blockno, data_buffer, data_counter / 512 );
                 }
                 /* check if this really works - this must be used if the card does not support multiblock-access (there are some)
@@ -148,11 +144,13 @@ main ( void )
                                     blockno++;
                                 }
                 */
-                if ( errorcode )
+                if ( errorcode ) {
                     wdc_send_error();
-                wdc_send_data ( data_buffer
-                                , data_counter
-                              );
+                } else {
+                    wdc_send_data ( data_buffer
+                                    , data_counter
+                                  );
+                }
                 break;
 
             case CMD_WR_WDC_RAM:
@@ -354,7 +352,6 @@ void atmega_setup ( void )
 void measure_performance()
 {
     uint32_t starttime;
-    uint8_t data_buffer[4096];
     uint32_t blockno = 0;
     uint8_t numblocks = 4;
     uint8_t i8, errorcode;

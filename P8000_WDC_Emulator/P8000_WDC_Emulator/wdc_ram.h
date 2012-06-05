@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_ram.h,v 1.2 2012/06/02 00:51:55 olivleh1 Exp $
+ * $Id: wdc_ram.h,v 1.3 2012/06/05 20:30:09 olivleh1 Exp $
  *
  */
 
@@ -34,5 +34,9 @@ uint8_t wdc_get_hdd_sectors();
 #define SIZE_PAR_VERSION    8
 #define SIZE_PAR_WDC_PAR    80
 #define SIZE_PAR_WDC_BTT    125
+
+/* switched from local to global for keeping an eye on memory usage */
+uint8_t data_buffer[4096];
+uint8_t cmd_buffer[9];
 
 #endif /* WDC_RAM_H_ */

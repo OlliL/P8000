@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_p8000.c,v 1.2 2012/05/31 20:22:42 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.3 2012/06/05 20:30:09 olivleh1 Exp $
  *
  */
 
@@ -112,11 +112,11 @@ void wdc_send_data ( uint8_t *buffer, uint16_t count )
 
 void wdc_send_error()
 {
-    uint8_t data_buffer[1];
+    uint8_t buffer[1];
 
-    data_buffer[0] = 0x01;
+    buffer[0] = 0x01;
 
-    wdc_write_data_to_p8k ( data_buffer
+    wdc_write_data_to_p8k ( buffer
                             , 1
                             , INFO_STAT_ERROR
                           );
