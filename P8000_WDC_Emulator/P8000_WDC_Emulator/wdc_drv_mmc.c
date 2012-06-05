@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_drv_mmc.c,v 1.5 2012/06/05 18:24:16 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.6 2012/06/05 19:46:26 olivleh1 Exp $
  *
  */
 
@@ -420,7 +420,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *Buffer, uint8_t numblocks 
         while ( 1 ) {
             send_dummy_byte();
             if ( recv_byte() == SB_START )
-            break;
+                break;
         }
 
         send_dummy_byte();
@@ -445,8 +445,8 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *Buffer, uint8_t numblocks 
         }
         Buffer = Buffer + 512;
 #else
-    send_dummy_byte();
-    send_dummy_byte();
+        send_dummy_byte();
+        send_dummy_byte();
         Buffer++;
 #endif
 
@@ -462,12 +462,12 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *Buffer, uint8_t numblocks 
 
     resp = mmc_cmd ( cmd );
 
-/*  TODO: Apacer Card I have sends 0x7f after some reads - No idea why - CRC was correct
-    if ( resp > 1 ) {
-        MMC_Disable();
-        return ( 2 );
-    }
-*/
+    /*  TODO: Apacer Card I have sends 0x7f after some reads - No idea why - CRC was correct
+        if ( resp > 1 ) {
+            MMC_Disable();
+            return ( 2 );
+        }
+    */
     // Pad 8
     send_dummy_byte();
 
