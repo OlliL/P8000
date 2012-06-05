@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_drv_mmc.c,v 1.4 2012/06/05 18:21:48 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.5 2012/06/05 18:24:16 olivleh1 Exp $
  *
  */
 
@@ -126,7 +126,7 @@ uint16_t crc16 ( const uint8_t *buffer, uint16_t len )
 }
 #endif
 
-uint8_t SDSetCRC ( uint8_t on_off )
+uint8_t mmc_enable_crc ( uint8_t on_off )
 {
     unsigned char cmd[] = {CMD59, 0x00, 0x00, 0x00, 0x00, 0xFF};
 
@@ -191,7 +191,7 @@ uint8_t mmc_init ()
     SPSR = SPSR | ( 1 << SPI2X );
 
 #ifdef SPI_CRC
-    SDSetCRC ( 1 );
+    mmc_enable_crc ( 1 );
 #endif
 
     MMC_Disable();
