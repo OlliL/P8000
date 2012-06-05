@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_p8000.h,v 1.4 2012/06/03 13:38:03 olivleh1 Exp $
+ * $Id: wdc_if_p8000.h,v 1.5 2012/06/05 18:21:48 olivleh1 Exp $
  *
  */
 
@@ -43,11 +43,11 @@
 #define INFO_STAT_ERROR     ((1 << PIN_INFO_STATUS0) | (1 << PIN_INFO_STATUS1) | (1 << PIN_INFO_STATUS2))      /* 0x07 */
 #define INFO_TR             (1 << PIN_INFO_TR)                                                                 /* 0x40 */
 
-void wdc_init_ports();
-void wdc_wait_for_reset();
-void wdc_receive_cmd ( uint8_t *buffer, uint16_t count );
-void wdc_receive_data ( uint8_t *buffer, uint16_t count );
-void wdc_send_data ( uint8_t *buffer, uint16_t count );
-void wdc_send_error();
+extern void wdc_init_ports();
+extern void wdc_wait_for_reset();
+extern void wdc_receive_cmd ( uint8_t *buffer, uint16_t count );
+extern void wdc_receive_data ( uint8_t *buffer, uint16_t count );
+extern void wdc_send_data ( uint8_t *buffer, uint16_t count );
+extern void wdc_send_error();
 
 #endif /* WDC_IF_PIO_H_ */

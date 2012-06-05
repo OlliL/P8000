@@ -1,34 +1,43 @@
-/*#######################################################################################
-Connect AVR to MMC/SD
+/*
+ * P8000 WDC Emulator
+ *
+ * $Id: wdc_drv_mmc.c,v 1.4 2012/06/05 18:21:48 olivleh1 Exp $
+ *
+ */
 
-Copyright (C) 2004 Ulrich Radig
-
-Bei Fragen und Verbesserungen wendet euch per EMail an
-
-mail@ulrichradig.de
-
-oder im Forum meiner Web Page : www.ulrichradig.de
-
-Dieses Programm ist freie Software. Sie können es unter den Bedingungen der
-GNU General Public License, wie von der Free Software Foundation veröffentlicht,
-weitergeben und/oder modifizieren, entweder gemäß Version 2 der Lizenz oder
-(nach Ihrer Option) jeder späteren Version.
-
-Die Veröffentlichung dieses Programms erfolgt in der Hoffnung,
-daß es Ihnen von Nutzen sein wird, aber OHNE IRGENDEINE GARANTIE,
-sogar ohne die implizite Garantie der MARKTREIFE oder der VERWENDBARKEIT
-FÜR EINEN BESTIMMTEN ZWECK. Details finden Sie in der GNU General Public License.
-
-Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
-Programm erhalten haben.
-Falls nicht, schreiben Sie an die Free Software Foundation,
-Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
-#######################################################################################*/
-
+#include <avr/io.h>
+#include "config.h"
 #include "mmc.h"
 
+#define wait_till_send_done() while ( ! ( SPSR & ( 1 << SPIF ) ) )
+#define wait_till_card_ready() do { send_dummy_byte(); } while ( !recv_byte() )
+#define send_dummy_byte() SPDR = 0xFF; wait_till_send_done()
+#define recv_byte() SPDR
+#define xmit_byte(x) SPDR = x
+#define MMC_Disable() PORT_MMC|= (1<<PIN_MMC_CS);
+#define MMC_Enable() PORT_MMC=~(1<<PIN_MMC_CS);
+#define nop()  __asm__ __volatile__ ("nop" ::)
+
+#define CMD0  (0x40 + 0)
+#define CMD1  (0x40 + 1)
+#define CMD12 (0x40 + 12)
+#define CMD17 (0x40 + 17)
+#define CMD18 (0x40 + 18)
+#define CMD23 (0x40 + 23)
+#define CMD24 (0x40 + 24)
+#define CMD25 (0x40 + 25)
+#define CMD55 (0x40 + 55)
+#define CMD59 (0x40 + 59)
+
+#define SB_START 0xFE
+#define MB_START 0xFC
+#define MB_STOP  0xFD
+
+uint8_t mmc_read_block ( uint8_t *, uint8_t *, uint16_t );
+uint8_t mmc_cmd ( uint8_t * );
+
 #ifdef SPI_CRC
-const uint16_t crc_itu_t_table[256] = {
+const uint16_t crc16_table[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
     0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
     0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6,
@@ -63,377 +72,293 @@ const uint16_t crc_itu_t_table[256] = {
     0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
 
-#define CRC7_POLY 0x09
-unsigned char CRC_7Bit ( unsigned char *pData, unsigned int uiLen )
+const uint8_t crc7_table[256] = {
+    0x00, 0x09, 0x12, 0x1b, 0x24, 0x2d, 0x36, 0x3f,
+    0x48, 0x41, 0x5a, 0x53, 0x6c, 0x65, 0x7e, 0x77,
+    0x19, 0x10, 0x0b, 0x02, 0x3d, 0x34, 0x2f, 0x26,
+    0x51, 0x58, 0x43, 0x4a, 0x75, 0x7c, 0x67, 0x6e,
+    0x32, 0x3b, 0x20, 0x29, 0x16, 0x1f, 0x04, 0x0d,
+    0x7a, 0x73, 0x68, 0x61, 0x5e, 0x57, 0x4c, 0x45,
+    0x2b, 0x22, 0x39, 0x30, 0x0f, 0x06, 0x1d, 0x14,
+    0x63, 0x6a, 0x71, 0x78, 0x47, 0x4e, 0x55, 0x5c,
+    0x64, 0x6d, 0x76, 0x7f, 0x40, 0x49, 0x52, 0x5b,
+    0x2c, 0x25, 0x3e, 0x37, 0x08, 0x01, 0x1a, 0x13,
+    0x7d, 0x74, 0x6f, 0x66, 0x59, 0x50, 0x4b, 0x42,
+    0x35, 0x3c, 0x27, 0x2e, 0x11, 0x18, 0x03, 0x0a,
+    0x56, 0x5f, 0x44, 0x4d, 0x72, 0x7b, 0x60, 0x69,
+    0x1e, 0x17, 0x0c, 0x05, 0x3a, 0x33, 0x28, 0x21,
+    0x4f, 0x46, 0x5d, 0x54, 0x6b, 0x62, 0x79, 0x70,
+    0x07, 0x0e, 0x15, 0x1c, 0x23, 0x2a, 0x31, 0x38,
+    0x41, 0x48, 0x53, 0x5a, 0x65, 0x6c, 0x77, 0x7e,
+    0x09, 0x00, 0x1b, 0x12, 0x2d, 0x24, 0x3f, 0x36,
+    0x58, 0x51, 0x4a, 0x43, 0x7c, 0x75, 0x6e, 0x67,
+    0x10, 0x19, 0x02, 0x0b, 0x34, 0x3d, 0x26, 0x2f,
+    0x73, 0x7a, 0x61, 0x68, 0x57, 0x5e, 0x45, 0x4c,
+    0x3b, 0x32, 0x29, 0x20, 0x1f, 0x16, 0x0d, 0x04,
+    0x6a, 0x63, 0x78, 0x71, 0x4e, 0x47, 0x5c, 0x55,
+    0x22, 0x2b, 0x30, 0x39, 0x06, 0x0f, 0x14, 0x1d,
+    0x25, 0x2c, 0x37, 0x3e, 0x01, 0x08, 0x13, 0x1a,
+    0x6d, 0x64, 0x7f, 0x76, 0x49, 0x40, 0x5b, 0x52,
+    0x3c, 0x35, 0x2e, 0x27, 0x18, 0x11, 0x0a, 0x03,
+    0x74, 0x7d, 0x66, 0x6f, 0x50, 0x59, 0x42, 0x4b,
+    0x17, 0x1e, 0x05, 0x0c, 0x33, 0x3a, 0x21, 0x28,
+    0x5f, 0x56, 0x4d, 0x44, 0x7b, 0x72, 0x69, 0x60,
+    0x0e, 0x07, 0x1c, 0x15, 0x2a, 0x23, 0x38, 0x31,
+    0x46, 0x4f, 0x54, 0x5d, 0x62, 0x6b, 0x70, 0x79
+};
+
+
+uint8_t crc7 ( const uint8_t *buffer, uint8_t len )
 {
-
-    unsigned int i, c, bit;
-    unsigned int crc = 0;
-
-    while ( uiLen-- ) {
-
-        c = ( unsigned long ) * pData++;
-
-        for ( i = 0x80; i; i >>= 1 ) {
-
-            bit = crc & 0x40;
-            crc <<= 1;
-            if ( c & i ) crc |= 1;
-            if ( bit ) crc ^= CRC7_POLY;
-        }
-    }
-
-    for ( i = 0; i < 7; i++ ) {
-
-        if ( crc & 0x40 ) {
-            crc = ( crc << 1 ) ^ CRC7_POLY;
-        } else
-            crc <<= 1;
-    }
-
-    return ( crc & 0x7F );
+    uint8_t crc = 0x00;
+    while ( len-- )
+        crc = crc7_table[ ( crc << 1 ) ^ *buffer++];
+    return crc;
 }
 
-
-unsigned short CRC_16Bit ( unsigned char *pData, unsigned int uiLen )
+uint16_t crc16 ( const uint8_t *buffer, uint16_t len )
 {
-    unsigned short usCRC;
-
-    //Init CRC register to zero (Required by SD card)
-    usCRC = 0x0000;
-
-    while ( uiLen-- ) {
-        //Do table lookup and xor result
-        //see "Painless guide to CRC error detection algorithms" section 10
-        usCRC = ( usCRC << 8 ) ^ crc_itu_t_table[ ( usCRC >> 8 ) ^ *pData++];
+    uint16_t crc = 0x0000;
+    while ( len-- ) {
+        crc = ( crc << 8 ) ^ crc16_table[ ( crc >> 8 ) ^ *buffer++];
     }
-
-    return usCRC;
+    return crc;
 }
 #endif
 
-unsigned int SDSetCRC ( unsigned int uiCRC )
+uint8_t SDSetCRC ( uint8_t on_off )
 {
-    unsigned char ucSDSetCRC[] = {0x3B, 0x00, 0x00, 0x00, 0x00, 0xFF};
+    unsigned char cmd[] = {CMD59, 0x00, 0x00, 0x00, 0x00, 0xFF};
 
-    ucSDSetCRC[0] = 0x3B;
-    //tail bit of uiCRC sets or clears CRC mode
-    ucSDSetCRC[4] = uiCRC & 0x01;
+    //last bit enables or disables CRC mode
+    cmd[4] = on_off & 0x01;
 
-    if ( mmc_write_command ( ucSDSetCRC ) != 0 ) {
+    if ( mmc_cmd ( cmd ) != 0 ) {
         return 1;
     }
     return 0;
 }
 
-//############################################################################
-//Routine zur Initialisierung der MMC/SD-Karte (SPI-MODE)
 uint8_t mmc_init ()
-//############################################################################
 {
     uint8_t Timeout = 0;
 
-    //Konfiguration des Ports an der die MMC/SD-Karte angeschlossen wurde
-    MMC_Direction_REG &= ~ ( 1 << SPI_DI );     //Setzen von Pin MMC_DI auf Input
-    MMC_Direction_REG |= ( 1 << SPI_Clock );    //Setzen von Pin MMC_Clock auf Output
-    MMC_Direction_REG |= ( 1 << SPI_DO );       //Setzen von Pin MMC_DO auf Output
-    MMC_Direction_REG |= ( 1 << MMC_Chip_Select ); //Setzen von Pin MMC_Chip_Select auf Output
-    MMC_Write |= ( 1 << MMC_Chip_Select );      //Setzt den Pin MMC_Chip_Select auf High Pegel
+
+    DDR_MMC &= ~ ( 1 << PIN_MMC_MISO );
+    DDR_MMC |= ( 1 << PIN_MMC_SCK );
+    DDR_MMC |= ( 1 << PIN_MMC_MOSI );
+    DDR_MMC |= ( 1 << PIN_MMC_CS );
+
+    MMC_Enable();
 
     for ( uint8_t a = 0; a < 200; a++ ) {
         nop();
-    };      //Wartet eine kurze Zeit
+    };
 
-#if SPI_Mode
-    //Aktiviren des SPI - Bus, Clock = Idel LOW
-    //SPI Clock teilen durch 128
     SPCR = ( 1 << SPE ) | ( 1 << MSTR ) | ( 1 << SPR0 ) | ( 1 << SPR1 ); //Enable SPI, SPI in Master Mode
     SPSR = ( 0 << SPI2X );
-#endif
 
-    //Initialisiere MMC/SD-Karte in den SPI-Mode
-    for ( uint8_t b = 0; b < 0x0f; b++ ) { //Sendet min 74+ Clocks an die MMC/SD-Karte
-        mmc_write_byte ( 0xff );
+    for ( uint8_t b = 0; b < 0x0f; b++ ) {
+        send_dummy_byte();
     }
 
-    //Sendet Commando CMD0 an MMC/SD-Karte
-    uint8_t CMD[] = {0x40, 0x00, 0x00, 0x00, 0x00, 0x95};
-    while ( mmc_write_command ( CMD ) != 1 ) {
+    /*
+     * send CMD0
+     */
+    uint8_t cmd[] = {CMD0, 0x00, 0x00, 0x00, 0x00, 0x95};
+    while ( mmc_cmd ( cmd ) != 1 ) {
         if ( Timeout++ > 200 ) {
             MMC_Disable();
-            return ( 1 ); //Abbruch bei Commando1 (Return Code1)
+            return ( 1 );
         }
     }
-    //Sendet Commando CMD1 an MMC/SD-Karte
+
+    /*
+     * send CMD1
+     */
     Timeout = 0;
-    CMD[0] = 0x41;//Commando 1
-    CMD[5] = 0xFF;
-    while ( mmc_write_command ( CMD ) != 0 ) {
+    cmd[0] = CMD1;
+    cmd[5] = 0xFF;
+    while ( mmc_cmd ( cmd ) != 0 ) {
         if ( Timeout++ > 400 ) {
             MMC_Disable();
-            return ( 2 ); //Abbruch bei Commando2 (Return Code2)
+            return ( 2 );
         }
     }
-#if SPI_Mode
-    //SPI Bus auf max Geschwindigkeit
+
+    //SPI Bus to max. speed
     SPCR &= ~ ( ( 1 << SPR0 ) | ( 1 << SPR1 ) );
     SPSR = SPSR | ( 1 << SPI2X );
-#endif
 
 #ifdef SPI_CRC
     SDSetCRC ( 1 );
-#else
-    SDSetCRC ( 0 );
 #endif
 
-    //set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
     MMC_Disable();
     return ( 0 );
 }
 
-//############################################################################
-//Sendet ein Commando an die MMC/SD-Karte
-uint8_t mmc_write_command ( uint8_t *cmd )
-//############################################################################
+uint8_t mmc_cmd ( uint8_t *cmd )
 {
-    uint8_t tmp = 0xff;
-    uint8_t Timeout = 0;
+    uint8_t tmp = 0x80;
+    uint8_t i = 10;
+    uint8_t cmd0 = cmd[0];
 #ifdef SPI_CRC
-    unsigned char ucCRC;
-
     //Calculate CRC and framing bits
-    cmd [0] = ( cmd[0] | ( 1 << 6 ) ) & 0x7F;
-    ucCRC = CRC_7Bit ( cmd, 5 ) << 1;
-    cmd[5] =  ucCRC;
+    cmd[0] = ( cmd[0] | ( 1 << 6 ) ) & 0x7F;
+    cmd[5] =  crc7 ( cmd, 5 ) << 1;
 #endif
-    //set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
-    MMC_Disable();
 
-    //sendet 8 Clock Impulse
-    mmc_write_byte ( 0xFF );
-
-    //set MMC_Chip_Select to low (MMC/SD-Karte Aktiv)
-    MMC_Enable();
-
-    //sendet 6 Byte Commando
-    for ( uint8_t a = 0; a < 0x06; a++ ) { //sendet 6 Byte Commando zur MMC/SD-Karte
-        mmc_write_byte ( *cmd++ );
+    // send command
+    for ( uint8_t a = 0; a < 0x06; a++ ) {
+        xmit_byte ( *cmd++ );
+        wait_till_send_done();
     }
 
-    //Wartet auf ein gültige Antwort von der MMC/SD-Karte
-    while ( tmp == 0xff ) {
-        tmp = mmc_read_byte();
-        if ( Timeout++ > 500 ) {
-            break; //Abbruch da die MMC/SD-Karte nicht Antwortet
-        }
-    }
+    if ( cmd0 == ( CMD12 ) ) recv_byte();
+
+    do {
+        send_dummy_byte();
+        tmp = recv_byte();
+    } while ( ( tmp & 0x80 ) && --i );
     return ( tmp );
 }
 
-//############################################################################
-//Routine zum Empfangen eines Bytes von der MMC-Karte
-uint8_t mmc_read_byte ( void )
-//############################################################################
-{
-    uint8_t Byte = 0;
-#if SPI_Mode    //Routine für Hardware SPI
-    SPDR = 0xff;
-    while ( ! ( SPSR & ( 1 << SPIF ) ) ) {};
-    Byte = SPDR;
-
-#else           //Routine für Software SPI
-    for ( uint8_t a = 8; a > 0; a-- ) { //das Byte wird Bitweise nacheinander Empangen MSB First
-        MMC_Write &= ~ ( 1 << SPI_Clock ); //erzeugt ein Clock Impuls (Low)
-
-        if ( bit_is_set ( MMC_Read, SPI_DI ) > 0 ) { //Lesen des Pegels von MMC_DI
-            Byte |= ( 1 << ( a - 1 ) );
-        } else {
-            Byte &= ~ ( 1 << ( a - 1 ) );
-        }
-        MMC_Write |= ( 1 << SPI_Clock ); //setzt Clock Impuls wieder auf (High)
-    }
-#endif
-    return ( Byte );
-}
-
-
-//############################################################################
-//Routine zum Senden eines Bytes zur MMC-Karte
-void mmc_write_byte ( uint8_t Byte )
-//############################################################################
-{
-#if SPI_Mode        //Routine für Hardware SPI
-
-    SPDR = Byte;    //Sendet ein Byte
-
-    while ( ! ( SPSR & ( 1 << SPIF ) ) ) { //Wartet bis Byte gesendet wurde
-    }
-
-#else           //Routine für Software SPI
-    for ( uint8_t a = 8; a > 0; a-- ) { //das Byte wird Bitweise nacheinander Gesendet MSB First
-        if ( bit_is_set ( Byte, ( a - 1 ) ) > 0 ) { //Ist Bit a in Byte gesetzt
-            MMC_Write |= ( 1 << SPI_DO ); //Set Output High
-        } else {
-            MMC_Write &= ~ ( 1 << SPI_DO ); //Set Output Low
-        }
-        MMC_Write &= ~ ( 1 << SPI_Clock ); //erzeugt ein Clock Impuls (LOW)
-
-        MMC_Write |= ( 1 << SPI_Clock ); //setzt Clock Impuls wieder auf (High)
-    }
-    MMC_Write |= ( 1 << SPI_DO ); //setzt Output wieder auf High
-#endif
-}
-
-//############################################################################
-//Routine zum schreiben eines Blocks(512Byte) auf die MMC/SD-Karte
 uint8_t mmc_write_sector ( uint32_t addr, uint8_t *Buffer )
-//############################################################################
 {
     uint8_t tmp;
-    //Commando 24 zum schreiben eines Blocks auf die MMC/SD - Karte
-    uint8_t cmd[] = {0x58, 0x00, 0x00, 0x00, 0x00, 0xFF};
+    uint8_t cmd[] = {CMD24, 0x00, 0x00, 0x00, 0x00, 0xFF};
 #ifdef SPI_CRC
-    unsigned int uiCheckSum;
+    uint16_t crc;
+    uint8_t  crcl, crch;
 #endif
-    /*Die Adressierung der MMC/SD-Karte wird in Bytes angegeben,
-      addr wird von Blocks zu Bytes umgerechnet danach werden
-      diese in das Commando eingefügt*/
+
+    MMC_Enable();
+
+    // convert blocks to bytes
     addr = addr << 9; //addr = addr * 512
 
     cmd[1] = ( ( addr & 0xFF000000 ) >> 24 );
     cmd[2] = ( ( addr & 0x00FF0000 ) >> 16 );
     cmd[3] = ( ( addr & 0x0000FF00 ) >> 8 );
 
-    //Sendet Commando cmd24 an MMC/SD-Karte (Write 1 Block/512 Bytes)
-    tmp = mmc_write_command ( cmd );
+    /*
+     * send CMD24
+     */
+    tmp = mmc_cmd ( cmd );
     if ( tmp != 0 ) {
+        MMC_Disable();
         return ( tmp );
     }
 
-    SPDR = 0xFE;    //Sendet Startbyte
+    //send Startbyte
+    xmit_byte ( SB_START );
 
 #ifdef SPI_CRC
-    uiCheckSum = CRC_16Bit ( Buffer, 512 );
+    crc = crc16 ( Buffer, 512 );
+    crch = crc >> 8;
+    crcl = crc & 0xff;
 #endif
 
-    //Schreiben des Bolcks (512Bytes) auf MMC/SD-Karte
+    //write a single block
     for ( uint16_t a = 0; a < 512; a++ ) {
         uint8_t data = *Buffer;
         Buffer++;
-        while ( ! ( SPSR & ( 1 << SPIF ) ) );
-        SPDR = data;    //Sendet ein Byte
+        wait_till_send_done();
+        xmit_byte ( data );
     }
-    while ( ! ( SPSR & ( 1 << SPIF ) ) );
+    wait_till_send_done();
 
-    //CRC-Byte schreiben
+    //handle CRC
 #ifdef SPI_CRC
-    SPDR = uiCheckSum >> 8;
-    while ( ! ( SPSR & ( 1 << SPIF ) ) );
-    SPDR = uiCheckSum & 0xFF;
+    xmit_byte ( crch );
+    wait_till_send_done();
+    xmit_byte ( crcl );
+    wait_till_send_done();
 #else
-    SPDR = 0xFF;
-    while ( ! ( SPSR & ( 1 << SPIF ) ) );
-    SPDR = 0xFF;
+    send_dummy_byte();
+    send_dummy_byte();
 #endif
-    while ( ! ( SPSR & ( 1 << SPIF ) ) );
 
-    //Fehler beim schreiben? (Data Response XXX00101 = OK)
-    SPDR = 0xff;
-    while ( ! ( SPSR & ( 1 << SPIF ) ) ) {};
-    if ( ( SPDR & 0x1F ) != 0x05 ) return ( 0x02 );
-
-    //Wartet auf MMC/SD-Karte Bussy
-    while ( 1 ) {
-        SPDR = 0xff;
-        while ( ! ( SPSR & ( 1 << SPIF ) ) ) {};
-        if ( SPDR == 0xff )
-            break;
+    //check for errors
+    send_dummy_byte();
+    if ( ( recv_byte() & 0x1F ) != 0x05 ) {
+        MMC_Disable();
+        return ( 2 );
     }
 
-    //set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
+    wait_till_card_ready();
+
     MMC_Disable();
 
     return ( 0 );
 }
 
-//############################################################################
-//Routine zum lesen des CID Registers von der MMC/SD-Karte (16Bytes)
 uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *Buffer, uint16_t Bytes )
-//############################################################################
 {
 #ifdef SPI_CRC
     uint16_t crc;
 #endif
-    //Sendet Commando cmd an MMC/SD-Karte
-    if ( mmc_write_command ( cmd ) != 0 ) {
+
+    MMC_Enable();
+
+    //send command
+    if ( mmc_cmd ( cmd ) != 0 ) {
+        MMC_Disable();
         return ( 1 );
     }
 
-    //Wartet auf Start Byte von der MMC/SD-Karte (FEh/Start Byte)
+    //wait for startbyte
     while ( 1 ) {
-        SPDR = 0xff;
-        while ( ! ( SPSR & ( 1 << SPIF ) ) ) {};
-        if ( SPDR == 0xfe )
+        send_dummy_byte();
+        if ( recv_byte() == SB_START )
             break;
     }
 
-    SPDR = 0xff;
-    while ( ! ( SPSR & ( 1 << SPIF ) ) );
-    *Buffer = SPDR;
+    //read first byte
+    send_dummy_byte();
+    *Buffer = recv_byte();
 
-    //Lesen des Bolcks (normal 512Bytes) von MMC/SD-Karte
+    //read the remaining 511 bytes
     for ( uint16_t a = 0; a < Bytes - 1; a++ ) {
-        SPDR = 0xff;
+        xmit_byte ( 0xff ); // send dummy byte
         Buffer++;
-        while ( ! ( SPSR & ( 1 << SPIF ) ) );
-        *Buffer = SPDR;
+        wait_till_send_done();
+        *Buffer = recv_byte();
     }
 
     Buffer = Buffer - ( Bytes - 1 );
 
-    //CRC-Byte auslesen
+    //handle CRC
 #ifdef SPI_CRC
-    SPDR = 0xff;
-    while ( ! ( SPSR & ( 1 << SPIF ) ) );
-    crc = SPDR << 8;
-    SPDR = 0xff;
-    while ( ! ( SPSR & ( 1 << SPIF ) ) );
-    crc |= SPDR;
+    send_dummy_byte();
+    crc = recv_byte() << 8;
+    send_dummy_byte();
+    crc |= recv_byte();
 
-    if ( crc != CRC_16Bit ( Buffer, Bytes ) ) {
+    if ( crc != crc16 ( Buffer, Bytes ) ) {
         MMC_Disable();
         return ( 1 );
     }
 #else
-    SPDR = 0xff;
-    while ( ! ( SPSR & ( 1 << SPIF ) ) );
-    SPDR;
-    SPDR = 0xff;
-    while ( ! ( SPSR & ( 1 << SPIF ) ) );
-    SPDR;
+    send_dummy_byte();
+    send_dummy_byte();
 #endif
 
-
-    //set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
     MMC_Disable();
 
     return ( 0 );
 }
 
-//############################################################################
-//Routine zum lesen eines Blocks(512Byte) von der MMC/SD-Karte
 uint8_t mmc_read_sector ( uint32_t addr, uint8_t *Buffer )
-//############################################################################
 {
-    //Commando 16 zum lesen eines Blocks von der MMC/SD - Karte
-    uint8_t cmd[] = {0x51, 0x00, 0x00, 0x00, 0x00, 0xFF};
+    /*
+     * send CMD17
+     */
+    uint8_t cmd[] = {CMD17, 0x00, 0x00, 0x00, 0x00, 0xFF};
 
-    /*Die Adressierung der MMC/SD-Karte wird in Bytes angegeben,
-      addr wird von Blocks zu Bytes umgerechnet danach werden
-      diese in das Commando eingefügt*/
-
+    // convert blocks to bytes
     addr = addr << 9; //addr = addr * 512
-
     cmd[1] = ( ( addr & 0xFF000000 ) >> 24 );
     cmd[2] = ( ( addr & 0x00FF0000 ) >> 16 );
     cmd[3] = ( ( addr & 0x0000FF00 ) >> 8 );
@@ -442,24 +367,221 @@ uint8_t mmc_read_sector ( uint32_t addr, uint8_t *Buffer )
 
 }
 
-//############################################################################
-//Routine zum lesen des CID Registers von der MMC/SD-Karte (16Bytes)
-uint8_t mmc_read_cid ( uint8_t *Buffer )
-//############################################################################
+uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *Buffer, uint8_t numblocks )
 {
-    //Commando zum lesen des CID Registers
-    uint8_t cmd[] = {0x4A, 0x00, 0x00, 0x00, 0x00, 0xFF};
+    uint8_t resp;
+    uint8_t cmd[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF };
+#ifdef SPI_CRC
+    uint16_t crc;
+#endif
 
-    return mmc_read_block ( cmd, Buffer, 16 );
+    MMC_Enable();
+
+#ifdef MMC_PRESET_MULTIBLOCKCOUNT
+    wait_till_card_ready();
+
+    /*
+     * send CMD55
+     */
+    cmd[0] = CMD55;
+    mmc_cmd ( cmd );
+
+    /*
+     * send CMD23
+     */
+    cmd[0] = CMD23;
+    cmd[4] = numblocks;
+    mmc_cmd ( cmd );
+
+    wait_till_card_ready();
+#endif
+
+    // convert blocks to bytes
+    addr = addr << 9; //addr = addr * 512
+    cmd[0] = CMD18;
+    cmd[1] = ( ( addr & 0xFF000000 ) >> 24 );
+    cmd[2] = ( ( addr & 0x00FF0000 ) >> 16 );
+    cmd[3] = ( ( addr & 0x0000FF00 ) >> 8 );
+    cmd[4] = ( addr &  0x000000FF );
+
+    wait_till_card_ready();
+
+    /*
+     * send CMD18
+     */
+    resp = mmc_cmd ( cmd );
+    if ( resp > 1 ) {
+        MMC_Disable();
+        return ( 1 );
+    }
+
+    for ( uint8_t n = numblocks; n > 0; n-- ) {
+        // wait for startbyte
+        while ( 1 ) {
+            send_dummy_byte();
+            if ( recv_byte() == SB_START )
+            break;
+        }
+
+        send_dummy_byte();
+        *Buffer = recv_byte();
+        // receive the block
+        for ( uint16_t a = 0; a < 512 - 1; a++ ) {
+            xmit_byte ( 0xff );
+            Buffer++;
+            wait_till_send_done();
+            *Buffer = recv_byte();
+        }
+        // handle CRC
+#ifdef SPI_CRC
+        Buffer = Buffer - ( 512 - 1 );
+        send_dummy_byte();
+        crc = recv_byte() << 8;
+        send_dummy_byte();
+        crc |= recv_byte();
+        if ( crc != crc16 ( Buffer, 512 ) ) {
+            MMC_Disable();
+            return ( 1 );
+        }
+        Buffer = Buffer + 512;
+#else
+    send_dummy_byte();
+    send_dummy_byte();
+        Buffer++;
+#endif
+
+    }
+
+    wait_till_card_ready();
+
+    /*
+     * send CMD12
+     */
+    cmd[0] = CMD12;
+    cmd[1] = cmd[2] = cmd[3] = cmd[4] = 0;
+
+    resp = mmc_cmd ( cmd );
+
+/*  TODO: Apacer Card I have sends 0x7f after some reads - No idea why - CRC was correct
+    if ( resp > 1 ) {
+        MMC_Disable();
+        return ( 2 );
+    }
+*/
+    // Pad 8
+    send_dummy_byte();
+
+    MMC_Disable()
+
+    return ( 0 );
 }
 
-//############################################################################
-//Routine zum lesen des CSD Registers von der MMC/SD-Karte (16Bytes)
-uint8_t mmc_read_csd ( uint8_t *Buffer )
-//############################################################################
+uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *Buffer, uint8_t numblocks )
 {
-    //Commando zum lesen des CSD Registers
-    uint8_t cmd[] = {0x49, 0x00, 0x00, 0x00, 0x00, 0xFF};
+    uint8_t resp;
+    uint8_t cmd[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF };
+#ifdef SPI_CRC
+    uint16_t crc;
+    uint8_t crcl, crch;
+#endif
 
-    return mmc_read_block ( cmd, Buffer, 16 );
+    MMC_Enable();
+
+#ifdef MMC_PRESET_MULTIBLOCKCOUNT
+    wait_till_card_ready();
+
+    /*
+     * send CMD55
+     */
+    cmd[0] = CMD55;
+    mmc_cmd ( cmd );
+
+    /*
+     * send CMD23
+     */
+    cmd[0] = CMD23;
+    cmd[4] = numblocks;
+    mmc_cmd ( cmd );
+
+    wait_till_card_ready();
+#endif
+
+    // convert blocks to bytes
+    addr = addr << 9;
+    cmd[0] = CMD25;
+    cmd[1] = ( ( addr & 0xFF000000 ) >> 24 );
+    cmd[2] = ( ( addr & 0x00FF0000 ) >> 16 );
+    cmd[3] = ( ( addr & 0x0000FF00 ) >> 8 );
+    cmd[4] = 0;
+
+    /*
+     * send CMD25
+     */
+    resp =  mmc_cmd ( cmd );
+    if ( resp > 1 ) {
+        MMC_Disable();
+        return ( 1 );
+    }
+
+    for ( uint8_t n = numblocks; n > 0; n-- ) {
+#ifdef SPI_CRC
+        crc = crc16 ( Buffer, 512 );
+        crch = crc >> 8;
+        crcl = crc & 0xff;
+#endif
+        wait_till_card_ready();
+
+        // Send multi-block start-token
+        xmit_byte ( MB_START );
+
+        //actually transfer the data
+        for ( uint16_t i = 512; i; i-- ) {
+            uint8_t data = *Buffer;
+            Buffer++;
+            wait_till_send_done();
+            xmit_byte ( data );
+        }
+
+        wait_till_send_done();
+        // handle CRC
+#ifdef SPI_CRC
+        xmit_byte ( crch );
+        wait_till_send_done();
+        xmit_byte ( crcl );
+#else
+        xmit_byte ( 0xff );
+        wait_till_send_done();
+        xmit_byte ( 0xff );
+#endif
+
+#ifdef MMC_PRESET_MULTIBLOCKCOUNT
+        // Pad 8
+        send_dummy_byte();
+#else
+        wait_till_send_done();
+#endif
+
+        // Get response
+        send_dummy_byte();
+        resp = recv_byte();
+        if ( ( resp & 0x0E ) != 4 ) {
+            MMC_Disable();
+            return ( 2 );
+        }
+    }
+
+    wait_till_card_ready();
+
+    // Send "transfer stop byte"
+    xmit_byte ( MB_STOP );
+    wait_till_send_done();
+
+    // Pad 8
+    send_dummy_byte();
+
+    wait_till_card_ready();
+
+    MMC_Disable();
+
+    return ( 0 );
 }

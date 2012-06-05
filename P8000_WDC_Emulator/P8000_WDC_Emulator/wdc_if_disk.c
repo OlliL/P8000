@@ -1,10 +1,11 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_disk.c,v 1.4 2012/06/03 13:38:03 olivleh1 Exp $
+ * $Id: wdc_if_disk.c,v 1.5 2012/06/05 18:21:48 olivleh1 Exp $
  *
  */
 
+#include <stdint.h>
 #include "mmc.h"
 #include "uart.h"
 extern uint8_t par_table[200];
@@ -36,14 +37,14 @@ uint32_t wdc_p8kblock2sdblock ( uint32_t blockno )
     return ( blockno +  ( par_table[25] * par_table[26] ) );
 }
 
-uint8_t wdc_write_sector ( uint16_t addr, uint8_t *sector )
+uint8_t wdc_write_sector ( uint32_t addr, uint8_t *sector )
 {
     uint8_t errorcode;
 
     errorcode = mmc_write_sector ( addr, sector );
     if ( errorcode ) {
         uart_puts_p ( PSTR ( " write error at address: " ) );
-        uart_putw_dec ( addr );
+        uart_putdw_dec ( addr );
         uart_puts_p ( PSTR ( " / errorcode is: " ) );
         uart_putc_hex ( errorcode );
         uart_putc ( '\n' );
@@ -52,18 +53,51 @@ uint8_t wdc_write_sector ( uint16_t addr, uint8_t *sector )
         return 0;
 }
 
-uint8_t wdc_read_sector ( uint16_t addr, uint8_t *sector )
+uint8_t wdc_read_sector ( uint32_t addr, uint8_t *sector )
 {
     uint8_t errorcode;
 
     errorcode = mmc_read_sector ( addr, sector );
     if ( errorcode ) {
         uart_puts_p ( PSTR ( " read error at address: " ) );
-        uart_putw_dec ( addr );
+        uart_putdw_dec ( addr );
         uart_puts_p ( PSTR ( " / errorcode is: " ) );
         uart_putc_hex ( errorcode );
         uart_putc ( '\n' );
         return errorcode;
     } else
         return 0;
+}
+
+uint8_t wdc_read_multiblock ( uint32_t addr, uint8_t *sector, uint8_t numblocks )
+{
+    uint8_t errorcode;
+
+    errorcode = mmc_read_multiblock ( addr, sector, numblocks );
+    if ( errorcode ) {
+        uart_puts_p ( PSTR ( " read error at address: " ) );
+        uart_putdw_dec ( addr );
+        uart_puts_p ( PSTR ( " / errorcode is: " ) );
+        uart_putc_hex ( errorcode );
+        uart_putc ( '\n' );
+        return errorcode;
+    } else
+    return 0;
+}
+
+uint8_t wdc_write_multiblock ( uint32_t addr, uint8_t *sector, uint8_t numblocks )
+{
+    uint8_t errorcode;
+
+    errorcode = mmc_write_multiblock ( addr, sector, numblocks );
+//    errorcode = mmc_write_multiblock_predef ( addr, sector, numblocks );
+    if ( errorcode ) {
+        uart_puts_p ( PSTR ( " write error at address: " ) );
+        uart_putdw_dec ( addr );
+        uart_puts_p ( PSTR ( " / errorcode is: " ) );
+        uart_putc_hex ( errorcode );
+        uart_putc ( '\n' );
+        return errorcode;
+    } else
+    return 0;
 }
