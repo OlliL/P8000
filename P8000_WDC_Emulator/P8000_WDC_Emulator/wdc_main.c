@@ -1,11 +1,10 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.12 2012/06/05 20:30:09 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.13 2012/06/06 22:05:06 olivleh1 Exp $
  *
  * TODO: - Different Errorcodes in the MMC layer (use defines)
  *       - errorchecking in several places
- *       - Prio 1: more commandcodes
  *       - Prio 2: check if BTT is really cleaned when sa.format gets called all the time with a real drive
  *       ----------> no the old BTT from the previous formatting is shown
  *       ----------> check if after formatting, no BTT is written to the disk, the old BTT is still there
@@ -24,11 +23,16 @@
 #include "main.h"
 #include "uart.h"
 #include "wdc_ram.h"
+#include "wdc_par.h"
 #include "wdc_if_pio.h"
 #include "wdc_if_sdcard.h"
 
 #define DEBUG 1
 #undef  MEASURE_SDCARD_TIME
+
+/* switched from local to global for keeping an eye on memory usage */
+uint8_t data_buffer[4096];
+uint8_t cmd_buffer[9];
 
 void atmega_setup ( void );
 

@@ -12,5 +12,7 @@ wdc_if_pio.c
 
 wdc_if_sdcard.c
 
+wdc_par.c
+
 wdc_ram.c
 

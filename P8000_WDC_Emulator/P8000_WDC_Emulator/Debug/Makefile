@@ -40,6 +40,7 @@ C_SRCS +=  \
 ../uart.c \
 ../wdc_if_pio.c \
 ../wdc_if_sdcard.c \
+../wdc_par.c \
 ../wdc_ram.c
 
 
@@ -55,6 +56,7 @@ mmc.o \
 uart.o \
 wdc_if_pio.o \
 wdc_if_sdcard.o \
+wdc_par.o \
 wdc_ram.o
 
 
@@ -64,6 +66,7 @@ mmc.o \
 uart.o \
 wdc_if_pio.o \
 wdc_if_sdcard.o \
+wdc_par.o \
 wdc_ram.o
 
 
@@ -73,6 +76,7 @@ mmc.d \
 uart.d \
 wdc_if_pio.d \
 wdc_if_sdcard.d \
+wdc_par.d \
 wdc_ram.d
 
 
@@ -82,6 +86,7 @@ mmc.d \
 uart.d \
 wdc_if_pio.d \
 wdc_if_sdcard.d \
+wdc_par.d \
 wdc_ram.d
 
 
@@ -94,6 +99,8 @@ ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 # AVR32/GNU C Compiler
+
+
 
 
 
