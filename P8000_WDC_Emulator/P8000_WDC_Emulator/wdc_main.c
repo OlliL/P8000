@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.13 2012/06/06 22:05:06 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.14 2012/06/06 23:10:31 olivleh1 Exp $
  *
  * TODO: - Different Errorcodes in the MMC layer (use defines)
  *       - errorchecking in several places
@@ -341,7 +341,7 @@ main ( void )
 
 void atmega_setup ( void )
 {
-    //    set_sleep_mode ( SLEEP_MODE_IDLE );
+    set_sleep_mode ( SLEEP_MODE_IDLE );
     uart_init();
     wdc_init_ports();
     while ( wdc_init_sdcard() ) {
