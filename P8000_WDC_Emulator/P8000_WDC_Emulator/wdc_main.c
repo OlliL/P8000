@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.16 2012/06/07 01:03:17 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.17 2012/06/07 17:54:00 olivleh1 Exp $
  *
  * TODO: - Different Errorcodes in the MMC layer (use defines)
  *       - errorchecking in several places
@@ -350,7 +350,7 @@ void measure_performance()
     uint8_t i8, errorcode;
     uint8_t nr_of_tests = 5;
 
-#define BLOCKNO 300000
+#define BLOCKNO 355000
     sei();
     TIMSK0 |= ( 0x01 << TOIE0 );
     TCCR0B = ( 1 << CS01 ); /* Prescaler 8 */

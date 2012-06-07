@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_disk.c,v 1.7 2012/06/07 01:03:17 olivleh1 Exp $
+ * $Id: wdc_if_disk.c,v 1.8 2012/06/07 17:54:00 olivleh1 Exp $
  *
  */
 
@@ -14,7 +14,14 @@ extern uint8_t par_table[];
 
 uint8_t wdc_init_sdcard()
 {
-    return mmc_init();
+    uint8_t errorcode;
+
+    errorcode=mmc_init();
+    if ( errorcode ) {
+        uart_putc_hex ( errorcode );
+        uart_putc ( '\n' );
+    }    
+    return errorcode;        
 }
 
 uint32_t wdc_sector2sdblock ( uint16_t req_cylinder, uint8_t req_head, uint8_t req_sector )

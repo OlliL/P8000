@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_config.h,v 1.6 2012/06/07 01:03:17 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.7 2012/06/07 17:54:00 olivleh1 Exp $
  *
  */
 
@@ -50,5 +50,7 @@
  * #define MMC_PRESET_MULTIBLOCKCOUNT 1
  * #define SPI_CRC       1
  */
+
+#define MMC_MULTIBLOCK 1
 
 #endif /* CONFIG_H_ */
