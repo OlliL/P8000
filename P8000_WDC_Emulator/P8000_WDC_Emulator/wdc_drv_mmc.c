@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.11 2012/06/07 18:38:08 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.12 2012/06/07 20:25:46 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -340,12 +340,13 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
 uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
 {
     uint16_t i = 1;
+uint8_t by;
 #ifdef SPI_CRC
     uint16_t crc;
 #endif
 
     MMC_Enable();
-//    wait_till_card_ready();
+    //wait_till_card_ready();
 
     /* send command */
     if ( mmc_cmd ( cmd ) != 0 ) {
@@ -362,31 +363,33 @@ uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
 
     /* read first byte */
     send_dummy_byte();
-    *buffer = recv_byte();
+    by = recv_byte();
+    xmit_byte ( 0xff );
 
     /* read the remaining 511 bytes */
     do {
-        xmit_byte ( 0xff ); /* send dummy byte */
-        buffer++;
-        wait_till_send_done();
-        *buffer = recv_byte();
+        *buffer++ = by;
         i++;
+        wait_till_send_done();
+        by = recv_byte();
+        xmit_byte ( 0xff );
     } while ( i<bytes );
 
-    /* handle CRC */
-#ifdef SPI_CRC
-    buffer = buffer - ( bytes - 1 );
-    send_dummy_byte();
-    crc = recv_byte() << 8;
-    send_dummy_byte();
-    crc |= recv_byte();
+    *buffer = by;
 
+    /* handle CRC */
+    wait_till_send_done();
+#ifdef SPI_CRC
+    crc = recv_byte() << 8;
+    xmit_byte ( 0xff );
+    buffer = buffer - (bytes-1);
+    wait_till_send_done();
+    crc |= recv_byte();
     if ( crc != crc16 ( buffer, bytes ) ) {
         MMC_Disable();
-        return ( 1 );
+        return ( 3 );
     }
 #else
-    send_dummy_byte();
     send_dummy_byte();
 #endif
 
@@ -426,7 +429,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
 #endif
 
     MMC_Enable();
-    wait_till_card_ready();
+//    wait_till_card_ready();
 
 #ifdef MMC_MULTIBLOCK
 #ifdef MMC_PRESET_MULTIBLOCKCOUNT
@@ -518,7 +521,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
         crc |= recv_byte();
         if ( crc != crc16 ( buffer, MMC_BLOCKLEN ) ) {
             MMC_Disable();
-            return ( 1 );
+            return ( 3 );
         }
         buffer = buffer + MMC_BLOCKLEN;
 #else
@@ -548,6 +551,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
     /* Pad 8 */
     send_dummy_byte();
 #endif
+
     MMC_Disable()
 
     return ( 0 );
@@ -567,7 +571,6 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
 
     MMC_Enable();
     wait_till_card_ready();
-
 #ifdef MMC_MULTIBLOCK
 #ifdef MMC_PRESET_MULTIBLOCKCOUNT
 
@@ -690,8 +693,6 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
 
     /* Pad 8 */
     send_dummy_byte();
-
-    wait_till_card_ready();
 #endif
     MMC_Disable();
 

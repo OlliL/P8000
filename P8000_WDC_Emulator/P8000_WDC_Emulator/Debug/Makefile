@@ -37,6 +37,7 @@ SUBDIRS :=
 C_SRCS +=  \
 ../main.c \
 ../mmc.c \
+../mmc_perf.c \
 ../uart.c \
 ../wdc_if_pio.c \
 ../wdc_if_sdcard.c \
@@ -53,6 +54,7 @@ ASM_SRCS +=
 OBJS +=  \
 main.o \
 mmc.o \
+mmc_perf.o \
 uart.o \
 wdc_if_pio.o \
 wdc_if_sdcard.o \
@@ -63,6 +65,7 @@ wdc_ram.o
 OBJS_AS_ARGS +=  \
 main.o \
 mmc.o \
+mmc_perf.o \
 uart.o \
 wdc_if_pio.o \
 wdc_if_sdcard.o \
@@ -73,6 +76,7 @@ wdc_ram.o
 C_DEPS +=  \
 main.d \
 mmc.d \
+mmc_perf.d \
 uart.d \
 wdc_if_pio.d \
 wdc_if_sdcard.d \
@@ -83,6 +87,7 @@ wdc_ram.d
 C_DEPS_AS_ARGS +=  \
 main.d \
 mmc.d \
+mmc_perf.d \
 uart.d \
 wdc_if_pio.d \
 wdc_if_sdcard.d \
@@ -99,6 +104,8 @@ ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 # AVR32/GNU C Compiler
+
+
 
 
 
