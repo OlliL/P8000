@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_disk.h,v 1.4 2012/06/05 18:21:48 olivleh1 Exp $
+ * $Id: wdc_if_disk.h,v 1.5 2012/06/07 00:34:36 olivleh1 Exp $
  *
  */
 
@@ -15,4 +15,7 @@ extern uint8_t wdc_write_sector ( uint32_t addr, uint8_t *sector );
 extern uint8_t wdc_read_sector ( uint32_t addr, uint8_t *sector );
 extern uint8_t wdc_read_multiblock ( uint32_t addr, uint8_t *sector, uint8_t numblocks );
 extern uint8_t wdc_write_multiblock ( uint32_t addr, uint8_t *sector, uint8_t numblocks );
+
+#define WDC_BLOCKLEN 512
+
 #endif /* WDC_IF_SDCARD_H_ */

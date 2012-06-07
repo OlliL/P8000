@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.14 2012/06/06 23:10:31 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.15 2012/06/07 00:34:36 olivleh1 Exp $
  *
  * TODO: - Different Errorcodes in the MMC layer (use defines)
  *       - errorchecking in several places
@@ -54,7 +54,6 @@ main ( void )
     uint32_t blockno;
     uint8_t  errorcode;
     uint8_t i8;
-    uint16_t i16;
 #endif
     atmega_setup();
 
@@ -66,7 +65,7 @@ main ( void )
 
     /* load Parameter Table into RAM if valid */
     blockno = 0;
-    data_counter = 512;
+    data_counter = WDC_BLOCKLEN;
     while ( wdc_read_sector ( blockno, data_buffer ) ) {
 #if DEBUG >= 1
         uart_puts_p ( PSTR ( "Block 0 of SD-Card not readable" ) );
@@ -114,18 +113,12 @@ main ( void )
                                    , data_counter
                                  );
                 errorcode = 1;
-                if ( data_counter / 512 == 1 ) {
+                if ( data_counter == WDC_BLOCKLEN ) {
                     errorcode = wdc_write_sector ( blockno, data_buffer );
                 } else {
-                    errorcode = wdc_write_multiblock ( blockno, data_buffer, data_counter / 512 );
+                    errorcode = wdc_write_multiblock ( blockno, data_buffer, data_counter / WDC_BLOCKLEN );
                 }
-                /* check if this really works - this must be used if the card does not support multiblock-access (there are some)
-                                for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
-                                    errorcode = wdc_write_sector ( blockno, &data_buffer[i16] );
-                                    if ( errorcode ) break;
-                                    blockno++;
-                                }
-                */
+
                 if ( errorcode )
                     wdc_send_error();
                 break;
@@ -136,18 +129,12 @@ main ( void )
                 blockno = wdc_p8kblock2sdblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
 
                 errorcode = 1;
-                if ( data_counter / 512 == 1 ) {
+                if ( data_counter == WDC_BLOCKLEN ) {
                     errorcode = wdc_read_sector ( blockno, data_buffer );
                 } else {
-                    errorcode = wdc_read_multiblock ( blockno, data_buffer, data_counter / 512 );
+                    errorcode = wdc_read_multiblock ( blockno, data_buffer, data_counter / WDC_BLOCKLEN );
                 }
-                /* check if this really works - this must be used if the card does not support multiblock-access (there are some)
-                                for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
-                                    errorcode = wdc_read_sector ( blockno, &data_buffer[i16] );
-                                    if ( errorcode ) break;
-                                    blockno++;
-                                }
-                */
+
                 if ( errorcode ) {
                     wdc_send_error();
                 } else {
@@ -232,7 +219,7 @@ main ( void )
                 break;
 
             case CMD_FMTBTT_TRACK:
-                data_counter = 512;
+                data_counter = WDC_BLOCKLEN;
 
                 memset ( &data_buffer[0], 0x00, data_counter );
                 blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
@@ -263,7 +250,7 @@ main ( void )
                 break;
 
             case CMD_ST_PARBTT:
-                data_counter = 512;
+                data_counter = WDC_BLOCKLEN;
 
                 blockno = 0;
                 wdc_read_par_table ( data_buffer
@@ -284,7 +271,7 @@ main ( void )
                 break;
 
             case CMD_VER_TRACK:
-                data_counter = 512;
+                data_counter = WDC_BLOCKLEN;
 
                 blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
                                                , cmd_buffer[4]
@@ -308,11 +295,13 @@ main ( void )
                                                , cmd_buffer[5]
                                              );
                 errorcode = 1;
-                for ( i16 = 0; i16 < data_counter; i16 += 512 ) {
-                    errorcode = wdc_read_sector ( blockno, &data_buffer[i16] );
-                    if ( errorcode ) break;
-                    blockno++;
+
+                if ( data_counter == WDC_BLOCKLEN ) {
+	                errorcode = wdc_write_sector ( blockno, data_buffer );
+                } else {
+	                errorcode = wdc_write_multiblock ( blockno, data_buffer, data_counter / WDC_BLOCKLEN );
                 }
+
                 if ( errorcode )
                     wdc_send_error();
                 break;
@@ -372,7 +361,7 @@ void measure_performance()
     uart_puts_p ( PSTR ( "Timer is initialized with a Prescaler 8" ) );
     uart_putc ( '\n' );
 
-    uart_puts_p ( PSTR ( "Test Read 5000 512B-Blocks with Multiblock-Read (4KB Blocksize):" ) );
+    uart_puts_p ( PSTR ( "Test Read 5000 WDC_BLOCKLENB-Blocks with Multiblock-Read (4KB Blocksize):" ) );
     uart_putc ( '\n' );
 
     for ( i8 = 0; i8 < nr_of_tests; i8++ ) {
@@ -389,9 +378,9 @@ void measure_performance()
         uart_putc ( '\n' );
     }
 
-    uart_puts_p ( PSTR ( "Test Write 5000 512B-Blocks with Multiblock-Write (4KB Blocksize):" ) );
+    uart_puts_p ( PSTR ( "Test Write 5000 WDC_BLOCKLENB-Blocks with Multiblock-Write (4KB Blocksize):" ) );
     uart_putc ( '\n' );
-    memset ( &data_buffer[0], 0xCC, 512 * numblocks );
+    memset ( &data_buffer[0], 0xCC, WDC_BLOCKLEN * numblocks );
     for ( i8 = 0; i8 < nr_of_tests; i8++ ) {
         blockno = BLOCKNO;
         for ( starttime = overflow; blockno < ( BLOCKNO + 5000 ); blockno += numblocks ) {
@@ -406,7 +395,7 @@ void measure_performance()
         uart_putc ( '\n' );
     }
 
-    uart_puts_p ( PSTR ( "Test Read 5000 512B-Blocks with Singleblock-Read (512B Blocksize):" ) );
+    uart_puts_p ( PSTR ( "Test Read 5000 WDC_BLOCKLENB-Blocks with Singleblock-Read (WDC_BLOCKLENB Blocksize):" ) );
     uart_putc ( '\n' );
 
     for ( i8 = 0; i8 < nr_of_tests; i8++ ) {
@@ -423,9 +412,9 @@ void measure_performance()
         uart_putc ( '\n' );
     }
 
-    uart_puts_p ( PSTR ( "Test Write 5000 512B-Blocks with Singleblock-Write (512B Blocksize):" ) );
+    uart_puts_p ( PSTR ( "Test Write 5000 WDC_BLOCKLENB-Blocks with Singleblock-Write (WDC_BLOCKLENB Blocksize):" ) );
     uart_putc ( '\n' );
-    memset ( &data_buffer[0], 0xCC, 512 * numblocks );
+    memset ( &data_buffer[0], 0xCC, WDC_BLOCKLEN * numblocks );
     for ( i8 = 0; i8 < nr_of_tests; i8++ ) {
         blockno = BLOCKNO;
         for ( starttime = overflow; blockno < ( BLOCKNO + 5000 ); blockno++ ) {
