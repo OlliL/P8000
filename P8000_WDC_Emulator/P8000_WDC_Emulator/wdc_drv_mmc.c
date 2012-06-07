@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.10 2012/06/07 18:01:02 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.11 2012/06/07 18:38:08 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -345,7 +345,7 @@ uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
 #endif
 
     MMC_Enable();
-    wait_till_card_ready();
+//    wait_till_card_ready();
 
     /* send command */
     if ( mmc_cmd ( cmd ) != 0 ) {

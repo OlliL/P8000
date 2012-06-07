@@ -29,7 +29,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.18 2012/06/07 18:01:02 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.19 2012/06/07 18:38:08 olivleh1 Exp $
  *
  * TODO: - Different Errorcodes in the MMC layer (use defines)
  *       - errorchecking in several places
@@ -57,6 +57,7 @@
 
 #define DEBUG 1
 #undef  MEASURE_SDCARD_TIME
+#define MEASURE_SDCARD_TIME 1
 
 /* switched from local to global for keeping an eye on memory usage */
 uint8_t data_buffer[4096];
@@ -374,7 +375,7 @@ void measure_performance()
 {
     uint32_t starttime;
     uint32_t blockno = 0;
-    uint8_t numblocks = 4;
+//    uint8_t numblocks = 4;
     uint8_t i8, errorcode;
     uint8_t nr_of_tests = 5;
 
@@ -388,7 +389,7 @@ void measure_performance()
     uart_putc ( '\n' );
     uart_puts_p ( PSTR ( "Timer is initialized with a Prescaler 8" ) );
     uart_putc ( '\n' );
-
+#ifdef FOO
     uart_puts_p ( PSTR ( "Test Read 5000 WDC_BLOCKLENB-Blocks with Multiblock-Read (4KB Blocksize):" ) );
     uart_putc ( '\n' );
 
@@ -422,7 +423,7 @@ void measure_performance()
         uart_putdw_dec ( overflow - starttime );
         uart_putc ( '\n' );
     }
-
+#endif
     uart_puts_p ( PSTR ( "Test Read 5000 WDC_BLOCKLENB-Blocks with Singleblock-Read (WDC_BLOCKLENB Blocksize):" ) );
     uart_putc ( '\n' );
 
@@ -439,7 +440,7 @@ void measure_performance()
         uart_putdw_dec ( overflow - starttime );
         uart_putc ( '\n' );
     }
-
+#ifdef FOO
     uart_puts_p ( PSTR ( "Test Write 5000 WDC_BLOCKLENB-Blocks with Singleblock-Write (WDC_BLOCKLENB Blocksize):" ) );
     uart_putc ( '\n' );
     memset ( &data_buffer[0], 0xCC, WDC_BLOCKLEN * numblocks );
@@ -456,7 +457,7 @@ void measure_performance()
         uart_putdw_dec ( overflow - starttime );
         uart_putc ( '\n' );
     }
-
+#endif
     while ( 1 );
 }
 #endif
