@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_disk.c,v 1.6 2012/06/06 22:05:06 olivleh1 Exp $
+ * $Id: wdc_if_disk.c,v 1.7 2012/06/07 01:03:17 olivleh1 Exp $
  *
  */
 
@@ -83,7 +83,6 @@ uint8_t wdc_write_multiblock ( uint32_t addr, uint8_t *sector, uint8_t numblocks
     uint8_t errorcode;
 
     errorcode = mmc_write_multiblock ( addr, sector, numblocks );
-    //    errorcode = mmc_write_multiblock_predef ( addr, sector, numblocks );
     if ( errorcode ) {
         uart_puts_p ( PSTR ( " write error at address: " ) );
         uart_putdw_dec ( addr );

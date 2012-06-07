@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_config.h,v 1.5 2012/06/05 18:21:48 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.6 2012/06/07 01:03:17 olivleh1 Exp $
  *
  */
 
@@ -39,13 +39,16 @@
 #define PIN_MMC         PINB
 #define DDR_MMC         DDRB
 
-#define PIN_MMC_CS      PINB4       //AVR Port where the MMC Card /CS signal is connected to
-#define PIN_MMC_MOSI    PINB5       //AVR Port: MOSI / MMC Card: Data-In
-#define PIN_MMC_MISO    PINB6       //AVR Port: MISO / MMC Card: Data-Out
-#define PIN_MMC_SCK     PINB7       //AVR Port: SCk / MMC Card: CLK
+#define PIN_MMC_CS      PINB4       /* AVR Port where the MMC Card /CS signal is connected to */
+#define PIN_MMC_MOSI    PINB5       /* AVR Port: MOSI / MMC Card: Data-In */
+#define PIN_MMC_MISO    PINB6       /* AVR Port: MISO / MMC Card: Data-Out */
+#define PIN_MMC_SCK     PINB7       /* AVR Port: SCk / MMC Card: CLK */
 
-//maximum performance with both turned off
-//#define MMC_PRESET_MULTIBLOCKCOUNT 1
-//#define SPI_CRC       1
+/*
+ * maximum performance with both turned off
+ *
+ * #define MMC_PRESET_MULTIBLOCKCOUNT 1
+ * #define SPI_CRC       1
+ */
 
 #endif /* CONFIG_H_ */

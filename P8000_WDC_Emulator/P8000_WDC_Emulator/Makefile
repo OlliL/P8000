@@ -4,7 +4,7 @@ MCU=	-mmcu=atmega1284p
 CC=avr-gcc
 CFLAGS= -I/usr/local/avr/include -funsigned-char -funsigned-bitfields -O1 \
 	-ffunction-sections -fpack-struct -fshort-enums -Wall -Wundef \
-	-Werror -pedantic -pedantic-errors -c -std=gnu99  ${MCU}
+	-Werror -pedantic -pedantic-errors -c -std=c99  ${MCU}
 
 LDFLAGS=-Wl,-Map="${OUTPUT_FILE}.map" -Wl,--start-group -Wl,-lm  \
 	-Wl,--end-group -Wl,--gc-sections -mrelax ${MCU}

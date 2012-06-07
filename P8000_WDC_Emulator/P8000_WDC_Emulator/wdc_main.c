@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.15 2012/06/07 00:34:36 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.16 2012/06/07 01:03:17 olivleh1 Exp $
  *
  * TODO: - Different Errorcodes in the MMC layer (use defines)
  *       - errorchecking in several places
@@ -238,9 +238,9 @@ main ( void )
                     if ( wdc_add_btt_entry ( cmd_buffer[2] | ( cmd_buffer[3] << 8 ), cmd_buffer[4] ) ) {
                         wdc_send_error();
                     } else {
-                        data_buffer[0] = cmd_buffer[2]; // Track Low
-                        data_buffer[1] = cmd_buffer[3]; // Track High
-                        data_buffer[2] = cmd_buffer[4]; // Head
+                        data_buffer[0] = cmd_buffer[2]; /* Track Low */
+                        data_buffer[1] = cmd_buffer[3]; /* Track High */
+                        data_buffer[2] = cmd_buffer[4]; /* Head */
 
                         wdc_send_data ( data_buffer
                                         , 3
@@ -353,7 +353,7 @@ void measure_performance()
 #define BLOCKNO 300000
     sei();
     TIMSK0 |= ( 0x01 << TOIE0 );
-    TCCR0B = ( 1 << CS01 ); // Prescaler 8
+    TCCR0B = ( 1 << CS01 ); /* Prescaler 8 */
     TCNT0 = 0x00;
 
     uart_puts_p ( PSTR ( "Performance Measurement. Displayed are the Timer-Overflows." ) );

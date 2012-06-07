@@ -1,7 +1,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_if_p8000.c,v 1.3 2012/06/05 20:30:09 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.4 2012/06/07 01:03:17 olivleh1 Exp $
  *
  */
 
@@ -9,6 +9,8 @@
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 #include "wdc_if_pio.h"
+
+#define nop()  __asm__ __volatile__ ("nop" ::)
 
 void wdc_init_ports()
 {
@@ -77,8 +79,8 @@ void wdc_write_data_to_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status
     } while ( datacnt < count );
     while ( isset_info_wdardy() );
     port_info_set ( INFO_TR | INFO_ASTB | wdc_status );
-    asm ( "nop" );
-    asm ( "nop" );
+    nop();
+    nop();
     port_info_set ( INFO_TR | wdc_status );
     configure_port_data_read();
     while ( !isset_info_wdardy() );
