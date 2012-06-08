@@ -29,7 +29,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.21 2012/06/08 10:40:39 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.22 2012/06/08 11:11:26 olivleh1 Exp $
  *
  * TODO: - Different Errorcodes in the MMC layer (use defines)
  *       - errorchecking in several places
@@ -56,7 +56,7 @@
 #include "wdc_if_sdcard.h"
 #include "config.h"
 
-#define DEBUG 3
+#define DEBUG 1
 
 void atmega_setup ( void );
 

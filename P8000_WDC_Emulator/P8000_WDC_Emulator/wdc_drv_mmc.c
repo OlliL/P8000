@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.13 2012/06/08 10:40:39 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.14 2012/06/08 11:11:26 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -346,7 +346,7 @@ uint8_t by;
 #endif
 
     MMC_Enable();
-    //wait_till_card_ready();
+    wait_till_card_ready();
 
     /* send command */
     if ( mmc_cmd ( cmd ) != 0 ) {
