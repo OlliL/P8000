@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.12 2012/06/07 20:25:46 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.13 2012/06/08 10:40:39 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -159,7 +159,6 @@ uint16_t crc16 ( const uint8_t *buffer, uint16_t len )
     }
     return crc;
 }
-#endif
 
 uint8_t mmc_enable_crc ( uint8_t on_off )
 {
@@ -173,6 +172,7 @@ uint8_t mmc_enable_crc ( uint8_t on_off )
     }
     return 0;
 }
+#endif
 
 uint8_t mmc_init ()
 {
@@ -429,10 +429,11 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
 #endif
 
     MMC_Enable();
-//    wait_till_card_ready();
 
 #ifdef MMC_MULTIBLOCK
 #ifdef MMC_PRESET_MULTIBLOCKCOUNT
+
+    wait_till_card_ready();
 
     /*
      * send CMD55

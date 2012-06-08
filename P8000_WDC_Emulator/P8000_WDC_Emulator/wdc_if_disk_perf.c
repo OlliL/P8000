@@ -18,7 +18,7 @@
 #include "uart.h"
 
 #ifdef MEASURE_SDCARD_TIME
-#define BLOCKNO 550000
+#define BLOCKNO 150000
 
 extern  uint32_t overflow;
 
