@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.10 2012/06/08 10:40:39 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.11 2012/06/09 00:22:28 olivleh1 Exp $
  */
 
 
@@ -78,6 +78,7 @@
 
 #define MMC_MULTIBLOCK 1
 
+#define MEASURE_SDCARD_TIME 1
 #undef  MEASURE_SDCARD_TIME
 
 #endif /* CONFIG_H_ */

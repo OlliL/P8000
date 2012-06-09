@@ -26,13 +26,13 @@
  */
 
 /*
- * $Id: wdc_if_p8000.h,v 1.6 2012/06/07 18:01:02 olivleh1 Exp $
+ * $Id: wdc_if_p8000.h,v 1.7 2012/06/09 00:22:28 olivleh1 Exp $
  */
 
 #ifndef WDC_IF_PIO_H_
 #define WDC_IF_PIO_H_
 
-#define DELAY_PIO_US                500
+#define DELAY_PIO_US                450
 
 #define configure_port_data_read()  DDR_DATA = 0x00                /* programs the DATA-Port as Input-only for reading from the P8000*/
 #define configure_port_data_write() DDR_DATA = 0xff                /* programs the DATA-Port as Out-only for writing to the P8000*/

@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_main.h,v 1.10 2012/06/07 18:01:02 olivleh1 Exp $
+ * $Id: wdc_main.h,v 1.11 2012/06/09 00:22:28 olivleh1 Exp $
  */
 
 
@@ -39,7 +39,7 @@
 #define CMD_RD_WDC_RAM        0x08              /* read data from WDC RAM                           */
 #define ___CMD_RDBTT_SECTOR   0x11              /* read sector taking BTT into account              */
 #define ___CMD_WRBTT_SECTOR   0x12              /* write sector taking BTT into account             */
-#define ___CMD_FMTRD_TRACK    0x14              /* format and reread a track                        */
+#define CMD_FMTRD_TRACK       0x14              /* format and reread a track                        */
 #define CMD_WR_WDC_RAM        0x18              /* write data to WDC RAM                            */
 #define CMD_RD_BLOCK          0x21              /* read data beginning at given block               */
 #define CMD_WR_BLOCK          0x22              /* write data beginning at given block              */

@@ -18,7 +18,7 @@
 #include "uart.h"
 
 #ifdef MEASURE_SDCARD_TIME
-#define BLOCKNO 150000
+#define BLOCKNO 300000
 
 extern  uint32_t overflow;
 
@@ -108,13 +108,13 @@ void test_read512(uint8_t numblocks, uint8_t nr_of_tests)
     uint32_t blockno = 0;
     uint8_t i8, errorcode;
 
-    uart_puts_p ( PSTR ( "Test Read 5000 512B-Blocks with Multiblock-Read (4KB Blocksize):" ) );
+    uart_puts_p ( PSTR ( "Test Read 5000 512B-Blocks with Singleblock-Read (512B Blocksize):" ) );
     uart_putc ( '\n' );
 
     for ( i8 = 0; i8 < nr_of_tests; i8++ ) {
         blockno = BLOCKNO;
-        for ( starttime = overflow; blockno < ( BLOCKNO + 5000 ); blockno += numblocks ) {
-            errorcode = wdc_read_multiblock ( blockno, data_buffer, numblocks );
+        for ( starttime = overflow; blockno < ( BLOCKNO + 5000 ); blockno++ ) {
+            errorcode = wdc_read_sector ( blockno, data_buffer );
             if ( errorcode ) {
                 break;
             }

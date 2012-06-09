@@ -26,15 +26,13 @@
  */
 
 /*
- * $Id: wdc_if_disk.c,v 1.9 2012/06/07 18:01:02 olivleh1 Exp $
+ * $Id: wdc_if_disk.c,v 1.10 2012/06/09 00:22:28 olivleh1 Exp $
  */
 
 #include <stdint.h>
 #include "mmc.h"
 #include "uart.h"
 #include "wdc_par.h"
-
-extern uint8_t par_table[];
 
 uint8_t wdc_init_sdcard()
 {

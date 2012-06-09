@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.14 2012/06/08 11:11:26 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.15 2012/06/09 00:22:28 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -45,6 +45,7 @@
 
 #define CMD0  (0x40 + 0)
 #define CMD1  (0x40 + 1)
+#define CMD8  (0x40 + 8)
 #define CMD12 (0x40 + 12)
 #define CMD17 (0x40 + 17)
 #define CMD18 (0x40 + 18)
@@ -60,6 +61,8 @@
 
 uint8_t mmc_read_block ( uint8_t *, uint8_t *, uint16_t );
 uint8_t mmc_cmd ( uint8_t * );
+
+uint8_t is_sdhc = 0;
 
 typedef union {
     uint32_t value32;
@@ -177,6 +180,7 @@ uint8_t mmc_enable_crc ( uint8_t on_off )
 uint8_t mmc_init ()
 {
     uint16_t t16 = 0;
+    uint8_t a;
 
 
     DDR_MMC &= ~ ( 1 << PIN_MMC_MISO );
@@ -184,7 +188,7 @@ uint8_t mmc_init ()
     DDR_MMC |= ( 1 << PIN_MMC_MOSI );
     DDR_MMC |= ( 1 << PIN_MMC_CS );
 
-    for ( uint8_t a = 0; a < 200; a++ ) {
+    for ( a = 0; a < 200; a++ ) {
         nop();
     };
 
@@ -193,7 +197,7 @@ uint8_t mmc_init ()
 
     MMC_Disable();
 
-    for ( uint8_t b = 0; b < 0x0f; b++ ) {
+    for ( a = 0; a < 0x0f; a++ ) {
         send_dummy_byte();
     }
 
@@ -212,12 +216,41 @@ uint8_t mmc_init ()
 
     send_dummy_byte();
 
+    cmd[0] = CMD8;
+    cmd[1] = 0x00;
+    cmd[2] = 0x00;
+    cmd[3] = 0x01;
+    cmd[4] = 0xaa;
+    cmd[5] = 0x86;
+    a = mmc_cmd ( cmd );
+    /* if SDHC Card */
+    if ( a <= 1 ) {
+        /* skip 6 bytes */
+        for ( a = 0; a < 6; a++ )
+            send_dummy_byte();
+
+        is_sdhc = 1;
+
+        /* prepare next cmd */
+        cmd[0] = CMD1;
+        cmd[1] = 0x40;
+        cmd[2] = cmd[3] = cmd[4] = 0x00;
+        cmd[5] = 0xFF;
+    } else {
+
+        send_dummy_byte();
+        is_sdhc = 0;
+
+        /* prepare next cmd */
+        cmd[0] = CMD1;
+        cmd[1] = cmd[2] = cmd[3] = cmd[4] = 0x00;
+        cmd[5] = 0xFF;
+    }
+
     /*
      * send CMD1
      */
     t16 = 0;
-    cmd[0] = CMD1;
-    cmd[5] = 0xFF;
     while ( mmc_cmd ( cmd ) != 0 ) {
         send_dummy_byte();
         if ( t16++ > 1000 ) {
@@ -281,11 +314,13 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
     wait_till_card_ready();
 
     /* convert blocks to bytes */
-    addr = addr * MMC_BLOCKLEN;
+    if ( !is_sdhc )
+        addr = addr * MMC_BLOCKLEN;
     x.value32 = addr;
     cmd[1] = x.value8.hh;
     cmd[2] = x.value8.hl;
     cmd[3] = x.value8.lh;
+    cmd[4] = x.value8.ll;
 
     /*
      * send CMD24
@@ -340,7 +375,7 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
 uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
 {
     uint16_t i = 1;
-uint8_t by;
+    uint8_t by;
 #ifdef SPI_CRC
     uint16_t crc;
 #endif
@@ -373,7 +408,7 @@ uint8_t by;
         wait_till_send_done();
         by = recv_byte();
         xmit_byte ( 0xff );
-    } while ( i<bytes );
+    } while ( i < bytes );
 
     *buffer = by;
 
@@ -382,7 +417,7 @@ uint8_t by;
 #ifdef SPI_CRC
     crc = recv_byte() << 8;
     xmit_byte ( 0xff );
-    buffer = buffer - (bytes-1);
+    buffer = buffer - ( bytes - 1 );
     wait_till_send_done();
     crc |= recv_byte();
     if ( crc != crc16 ( buffer, bytes ) ) {
@@ -407,11 +442,13 @@ uint8_t mmc_read_sector ( uint32_t addr, uint8_t *buffer )
     uint8_t cmd[] = {CMD17, 0x00, 0x00, 0x00, 0x00, 0xFF};
 
     /* convert blocks to bytes */
-    addr = addr * MMC_BLOCKLEN;
+    if ( !is_sdhc )
+        addr = addr * MMC_BLOCKLEN;
     x.value32 = addr;
     cmd[1] = x.value8.hh;
     cmd[2] = x.value8.hl;
     cmd[3] = x.value8.lh;
+    cmd[4] = x.value8.ll;
 
     return mmc_read_block ( cmd, buffer, MMC_BLOCKLEN );
 
@@ -452,14 +489,16 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
 #endif
 
     /* convert blocks to bytes */
-    addr = addr * MMC_BLOCKLEN;
+    if ( !is_sdhc )
+        addr = addr * MMC_BLOCKLEN;
     x.value32 = addr;
+
 #ifdef MMC_MULTIBLOCK
     cmd[0] = CMD18;
     cmd[1] = x.value8.hh;
     cmd[2] = x.value8.hl;
     cmd[3] = x.value8.lh;
-    cmd[4] = 0;
+    cmd[4] = x.value8.ll;
 
     wait_till_card_ready();
 
@@ -482,6 +521,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
         cmd[1] = x.value8.hh;
         cmd[2] = x.value8.hl;
         cmd[3] = x.value8.lh;
+        cmd[4] = x.value8.ll;
 
         /*
          * send CMD17
@@ -592,14 +632,16 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
 #endif
 #endif
     /* convert blocks to bytes */
-    addr = addr * MMC_BLOCKLEN;
+    /* convert blocks to bytes */
+    if ( !is_sdhc )
+        addr = addr * MMC_BLOCKLEN;
     x.value32 = addr;
 #ifdef MMC_MULTIBLOCK
     cmd[0] = CMD25;
     cmd[1] = x.value8.hh;
     cmd[2] = x.value8.hl;
     cmd[3] = x.value8.lh;
-    cmd[4] = 0;
+    cmd[4] = x.value8.ll;
 
     /*
      * send CMD25
@@ -619,6 +661,7 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
         cmd[1] = x.value8.hh;
         cmd[2] = x.value8.hl;
         cmd[3] = x.value8.lh;
+        cmd[4] = x.value8.ll;
 
         /*
         * send CMD24
