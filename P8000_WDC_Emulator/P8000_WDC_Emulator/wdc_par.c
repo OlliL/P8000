@@ -26,11 +26,13 @@
  */
 
 /*
- * $Id: wdc_par.c,v 1.3 2012/06/09 00:22:28 olivleh1 Exp $
+ * $Id: wdc_par.c,v 1.4 2012/06/09 19:47:31 olivleh1 Exp $
  */
 
 #include <avr/pgmspace.h>
+#include "main.h"
 #include "wdc_par.h"
+#include "uart.h"
 
 /*
  * unformatted ST138
@@ -97,6 +99,7 @@ par_tab_no_dsk[128]  = {'W',  'D',  'C',  '_',  '4',  '.',  '2',  0x81, 0x81, 0x
                        };
 
 uint8_t valid_disk = 1;
+uint8_t initialized;
 
 void wdc_read_par_table ( uint8_t *buffer, uint16_t count )
 {
@@ -182,7 +185,7 @@ uint8_t wdc_add_btt_entry ( uint16_t cylinder, uint8_t head )
         wdc_set_btt_count ( btt_count );
         return ( 0 );
     } else {
-        return ( 1 );
+        return ( ERR_BTT_FULL );
     }
 }
 
@@ -251,4 +254,14 @@ uint8_t wdc_get_disk_valid()
 uint8_t wdc_get_num_of_drvs()
 {
     return par_table[49];
+}
+
+void wdc_set_initialized(uint8_t num)
+{
+    initialized=num;
+}
+
+uint8_t wdc_get_initialized()
+{
+    return initialized;
 }

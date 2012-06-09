@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_p8000.h,v 1.7 2012/06/09 00:22:28 olivleh1 Exp $
+ * $Id: wdc_if_p8000.h,v 1.8 2012/06/09 19:47:31 olivleh1 Exp $
  */
 
 #ifndef WDC_IF_PIO_H_
@@ -69,9 +69,10 @@
 
 extern void wdc_init_ports();
 extern void wdc_wait_for_reset();
-extern void wdc_receive_cmd ( uint8_t *buffer, uint16_t count );
+extern uint8_t wdc_receive_cmd ( uint8_t *buffer, uint16_t count );
 extern void wdc_receive_data ( uint8_t *buffer, uint16_t count );
 extern void wdc_send_data ( uint8_t *buffer, uint16_t count );
 extern void wdc_send_error();
+extern void wdc_send_errorcode ( uint8_t error );
 
 #endif /* WDC_IF_PIO_H_ */

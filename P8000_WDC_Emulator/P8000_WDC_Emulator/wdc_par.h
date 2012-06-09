@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_par.h,v 1.3 2012/06/09 00:22:29 olivleh1 Exp $
+ * $Id: wdc_par.h,v 1.4 2012/06/09 19:47:31 olivleh1 Exp $
  */
 
 #ifndef WDC_PAR_H_
@@ -43,16 +43,15 @@ extern void wdc_read_wdc_btt ( uint8_t *buffer, uint16_t count );
 extern void wdc_write_wdc_btt ( uint8_t *buffer, uint16_t count );
 extern uint16_t wdc_get_btt_count();
 extern uint8_t wdc_add_btt_entry ( uint16_t cylinder, uint8_t head );
-
 extern uint8_t wdc_get_hdd_sectors();
 extern uint8_t wdc_get_hdd_heads();
-
-void wdc_set_disk_invalid();
-void wdc_set_disk_valid();
-uint8_t wdc_get_disk_valid();
-
-void wdc_set_no_disk();
-uint8_t wdc_get_num_of_drvs();
+extern void wdc_set_disk_invalid();
+extern void wdc_set_disk_valid();
+extern uint8_t wdc_get_disk_valid();
+extern void wdc_set_no_disk();
+extern uint8_t wdc_get_num_of_drvs();
+extern void wdc_set_initialized ( uint8_t num );
+extern uint8_t wdc_get_initialized ();
 
 #define POS_PAR_VERSION     0
 #define POS_PAR_WDC_PAR     8

@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_main.h,v 1.11 2012/06/09 00:22:28 olivleh1 Exp $
+ * $Id: wdc_main.h,v 1.12 2012/06/09 19:47:31 olivleh1 Exp $
  */
 
 
@@ -58,5 +58,11 @@
 #define ___CMD_CP_BLOCK       0xa1              /* copy block from drive 1 to drive 0               */
 #define ___CMD_WRRD_BLOCK     0xa2              /* write and reread block                           */
 #define CMD_ST_PARBTT         0xc2              /* store PAR and BTT on hard disk                   */
+
+#define ERR_STANDARD          0x01
+#define ERR_SECT_N_ON_SURFACE 0x0A
+#define ERR_BTT_FULL          0x16
+#define ERR_NO_DRIVE_READY    0x27
+#define ERR_CYL0_NOT_READABLE 0x31
 
 #endif /* MAIN_H_ */

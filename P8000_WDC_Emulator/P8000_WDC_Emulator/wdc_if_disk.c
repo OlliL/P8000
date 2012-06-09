@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_disk.c,v 1.10 2012/06/09 00:22:28 olivleh1 Exp $
+ * $Id: wdc_if_disk.c,v 1.11 2012/06/09 19:47:31 olivleh1 Exp $
  */
 
 #include <stdint.h>
@@ -36,14 +36,7 @@
 
 uint8_t wdc_init_sdcard()
 {
-    uint8_t errorcode;
-
-    errorcode=mmc_init();
-    if ( errorcode ) {
-        uart_putc_hex ( errorcode );
-        uart_putc ( '\n' );
-    }
-    return errorcode;
+    return mmc_init();
 }
 
 uint32_t wdc_sector2sdblock ( uint16_t req_cylinder, uint8_t req_head, uint8_t req_sector )

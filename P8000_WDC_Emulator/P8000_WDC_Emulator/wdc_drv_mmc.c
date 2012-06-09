@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.15 2012/06/09 00:22:28 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.16 2012/06/09 19:47:31 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -39,8 +39,8 @@
 #define send_dummy_byte() SPDR = 0xFF; wait_till_send_done()
 #define recv_byte() SPDR
 #define xmit_byte(x) SPDR = x
-#define MMC_Disable() PORT_MMC|= (1<<PIN_MMC_CS);
-#define MMC_Enable() PORT_MMC=~(1<<PIN_MMC_CS);
+#define mmc_disable() PORT_MMC|= (1<<PIN_MMC_CS);
+#define mmc_enable() PORT_MMC=~(1<<PIN_MMC_CS);
 #define nop()  __asm__ __volatile__ ("nop" ::)
 
 #define CMD0  (0x40 + 0)
@@ -195,13 +195,13 @@ uint8_t mmc_init ()
     SPCR = ( 1 << SPE ) | ( 1 << MSTR ) | ( 1 << SPR0 ) | ( 1 << SPR1 ); /* Enable SPI, SPI in Master Mode */
     SPSR = ( 0 << SPI2X );
 
-    MMC_Disable();
+    mmc_disable();
 
     for ( a = 0; a < 0x0f; a++ ) {
         send_dummy_byte();
     }
 
-    MMC_Enable();
+    mmc_enable();
 
     /*
      * send CMD0
@@ -209,7 +209,7 @@ uint8_t mmc_init ()
     uint8_t cmd[] = {CMD0, 0x00, 0x00, 0x00, 0x00, 0x95};
     while ( mmc_cmd ( cmd ) != 1 ) {
         if ( t16++ > 1000 ) {
-            MMC_Disable();
+            mmc_disable();
             return ( 1 );
         }
     }
@@ -254,7 +254,7 @@ uint8_t mmc_init ()
     while ( mmc_cmd ( cmd ) != 0 ) {
         send_dummy_byte();
         if ( t16++ > 1000 ) {
-            MMC_Disable();
+            mmc_disable();
             return ( 2 );
         }
     }
@@ -269,7 +269,7 @@ uint8_t mmc_init ()
     mmc_enable_crc ( 1 );
 #endif
 
-    MMC_Disable();
+    mmc_disable();
     return ( 0 );
 }
 
@@ -310,7 +310,7 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
     uint8_t  crcl, crch;
 #endif
 
-    MMC_Enable();
+    mmc_enable();
     wait_till_card_ready();
 
     /* convert blocks to bytes */
@@ -327,7 +327,7 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
      */
     tmp = mmc_cmd ( cmd );
     if ( tmp != 0 ) {
-        MMC_Disable();
+        mmc_disable();
         return ( tmp );
     }
 
@@ -363,11 +363,11 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
     /* check for errors */
     send_dummy_byte();
     if ( ( recv_byte() & 0x1F ) != 0x05 ) {
-        MMC_Disable();
+        mmc_disable();
         return ( 2 );
     }
 
-    MMC_Disable();
+    mmc_disable();
 
     return ( 0 );
 }
@@ -380,12 +380,12 @@ uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
     uint16_t crc;
 #endif
 
-    MMC_Enable();
+    mmc_enable();
     wait_till_card_ready();
 
     /* send command */
     if ( mmc_cmd ( cmd ) != 0 ) {
-        MMC_Disable();
+        mmc_disable();
         return ( 1 );
     }
 
@@ -421,14 +421,14 @@ uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
     wait_till_send_done();
     crc |= recv_byte();
     if ( crc != crc16 ( buffer, bytes ) ) {
-        MMC_Disable();
+        mmc_disable();
         return ( 3 );
     }
 #else
     send_dummy_byte();
 #endif
 
-    MMC_Disable();
+    mmc_disable();
 
     return ( 0 );
 }
@@ -465,7 +465,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
     uint16_t crc;
 #endif
 
-    MMC_Enable();
+    mmc_enable();
 
 #ifdef MMC_MULTIBLOCK
 #ifdef MMC_PRESET_MULTIBLOCKCOUNT
@@ -507,7 +507,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
      */
     resp = mmc_cmd ( cmd );
     if ( resp > 1 ) {
-        MMC_Disable();
+        mmc_disable();
         return ( 1 );
     }
 #else
@@ -528,7 +528,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
          */
         resp = mmc_cmd ( cmd );
         if ( resp > 1 ) {
-            MMC_Disable();
+            mmc_disable();
             return ( 1 );
         }
         x.value32 += MMC_BLOCKLEN;
@@ -561,7 +561,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
         send_dummy_byte();
         crc |= recv_byte();
         if ( crc != crc16 ( buffer, MMC_BLOCKLEN ) ) {
-            MMC_Disable();
+            mmc_disable();
             return ( 3 );
         }
         buffer = buffer + MMC_BLOCKLEN;
@@ -585,7 +585,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
 
     /*  TODO: Apacer Card I have sends 0x7f after some reads - No idea why - CRC was correct
         if ( resp > 1 ) {
-            MMC_Disable();
+            mmc_disable();
             return ( 2 );
         }
     */
@@ -593,7 +593,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
     send_dummy_byte();
 #endif
 
-    MMC_Disable()
+    mmc_disable()
 
     return ( 0 );
 }
@@ -610,7 +610,7 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
     uint8_t crcl, crch;
 #endif
 
-    MMC_Enable();
+    mmc_enable();
     wait_till_card_ready();
 #ifdef MMC_MULTIBLOCK
 #ifdef MMC_PRESET_MULTIBLOCKCOUNT
@@ -648,7 +648,7 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
      */
     resp =  mmc_cmd ( cmd );
     if ( resp > 1 ) {
-        MMC_Disable();
+        mmc_disable();
         return ( 1 );
     }
 #else
@@ -668,7 +668,7 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
         */
         resp = mmc_cmd ( cmd );
         if ( resp != 0 ) {
-            MMC_Disable();
+            mmc_disable();
             return ( resp );
         }
         x.value32 += MMC_BLOCKLEN;
@@ -718,7 +718,7 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
 
         send_dummy_byte();
         if ( ( recv_byte() & 0x1F ) != 0x05 ) {
-            MMC_Disable();
+            mmc_disable();
             return ( 2 );
         }
 
@@ -738,7 +738,7 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
     /* Pad 8 */
     send_dummy_byte();
 #endif
-    MMC_Disable();
+    mmc_disable();
 
     return ( 0 );
 }

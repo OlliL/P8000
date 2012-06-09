@@ -14,6 +14,7 @@ RM := rm -rf
 OBJS +=  \
 main.o \
 mmc.o \
+mmc_perf.o \
 uart.o \
 wdc_if_pio.o \
 wdc_if_sdcard.o \

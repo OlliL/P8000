@@ -26,13 +26,15 @@
  */
 
 /*
- * $Id: wdc_if_p8000.c,v 1.5 2012/06/07 18:01:02 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.6 2012/06/09 19:47:31 olivleh1 Exp $
  */
 
 #include "config.h"
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 #include "wdc_if_pio.h"
+#include "wdc_par.h"
+#include "uart.h"
 
 #define nop()  __asm__ __volatile__ ("nop" ::)
 
@@ -55,11 +57,12 @@ void wdc_wait_for_reset()
     while ( !isset_info_reset() ) {
         port_data_set ( DATA_CLEAR );
         port_info_set ( INFO_CLEAR );
+        wdc_set_initialized ( 1 );
     }
 
 }
 
-void wdc_read_data_from_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status )
+uint8_t wdc_read_data_from_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status )
 {
     uint16_t datacnt;
 
@@ -68,7 +71,9 @@ void wdc_read_data_from_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_statu
     configure_port_data_read();
     datacnt = 0;
     port_info_set ( wdc_status );
-    while ( !isset_info_te() );
+    while ( !isset_info_te() )
+        if ( !isset_info_reset() )
+            return 0;
     while ( !isset_info_wdardy() );
     do {
         while ( isset_info_wdardy() );
@@ -80,6 +85,7 @@ void wdc_read_data_from_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_statu
     } while ( datacnt < count );
     port_info_set ( INFO_CLEAR );
 
+    return 1;
 }
 
 void wdc_write_data_to_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status )
@@ -104,7 +110,6 @@ void wdc_write_data_to_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status
     while ( isset_info_wdardy() );
     port_info_set ( INFO_TR | INFO_ASTB | wdc_status );
     nop();
-    nop();
     port_info_set ( INFO_TR | wdc_status );
     configure_port_data_read();
     while ( !isset_info_wdardy() );
@@ -112,12 +117,12 @@ void wdc_write_data_to_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status
 
 }
 
-void wdc_receive_cmd ( uint8_t *buffer, uint16_t count )
+uint8_t wdc_receive_cmd ( uint8_t *buffer, uint16_t count )
 {
-    wdc_read_data_from_p8k ( buffer
-                             , count
-                             , INFO_STAT_GCMD
-                           );
+    return wdc_read_data_from_p8k ( buffer
+                                    , count
+                                    , INFO_STAT_GCMD
+                                  );
 }
 
 void wdc_receive_data ( uint8_t *buffer, uint16_t count )
@@ -138,9 +143,14 @@ void wdc_send_data ( uint8_t *buffer, uint16_t count )
 
 void wdc_send_error()
 {
+    wdc_send_errorcode ( 0x01 );
+}
+
+void wdc_send_errorcode ( uint8_t error )
+{
     uint8_t buffer[1];
 
-    buffer[0] = 0x01;
+    buffer[0] = error;
 
     wdc_write_data_to_p8k ( buffer
                             , 1
