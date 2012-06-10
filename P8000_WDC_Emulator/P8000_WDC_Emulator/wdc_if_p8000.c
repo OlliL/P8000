@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_p8000.c,v 1.7 2012/06/10 21:03:23 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.8 2012/06/10 21:11:03 olivleh1 Exp $
  */
 
 #include "config.h"
@@ -48,8 +48,12 @@ void wdc_init_ports()
     configure_pin_wdardy();
     configure_pin_tr();
     configure_pin_reset();
-    PORTD |= ( ( 1 << PIND5 ) );
-
+    DDRD |= ( ( 1 << PIND5 ) );
+    DDRD |= ( ( 1 << PIND6 ) );
+    DDRD |= ( ( 1 << PIND7 ) );
+    PORTD &= ~ ( ( 1 << PIND5 ) );
+    PORTD &= ~ ( ( 1 << PIND6 ) );
+    PORTD &= ~ ( ( 1 << PIND7 ) );
     configure_port_data_read();
 }
 
