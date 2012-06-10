@@ -29,7 +29,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.25 2012/06/10 21:03:23 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.26 2012/06/10 21:10:44 olivleh1 Exp $
  *
  * TODO:  - right now, BTT entries are not taken into account
  */
@@ -81,18 +81,10 @@ main ( void )
     uint8_t  errorcode;
     uint8_t i8;
 #endif
-DDRD = 0xff;
-PORTD = 0x00;
     atmega_setup();
 
     uart_puts_p ( PSTR ( "P8000 WDC Emulator 0.90\n" ) );
-/*
-configure_port_data_read();
-PORTD |= ((1<<PIND5));
-port_info_set(INFO_STAT_GCMD);
 
-while(1);
-*/
 #ifdef MEASURE_SDCARD_TIME
     measure_performance();
 #else
@@ -118,7 +110,6 @@ while(1);
     }
 
     while ( 1 ) {
-    
 
         wdc_wait_for_reset();
 
