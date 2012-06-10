@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_p8000.c,v 1.6 2012/06/09 19:47:31 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.7 2012/06/10 21:03:23 olivleh1 Exp $
  */
 
 #include "config.h"
@@ -48,6 +48,7 @@ void wdc_init_ports()
     configure_pin_wdardy();
     configure_pin_tr();
     configure_pin_reset();
+    PORTD |= ( ( 1 << PIND5 ) );
 
     configure_port_data_read();
 }
@@ -77,9 +78,11 @@ uint8_t wdc_read_data_from_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_st
     while ( !isset_info_wdardy() );
     do {
         while ( isset_info_wdardy() );
-        port_info_set ( INFO_ASTB | wdc_status );
+        PORTD |= ( ( 1 << PIND5 ) );
+        nop();
+        nop();
         buffer[datacnt] = ( uint8_t ) port_data_get();
-        port_info_set ( wdc_status );
+        PORTD &= ~ ( ( 1 << PIND5 ) );
         while ( !isset_info_wdardy() );
         datacnt++;
     } while ( datacnt < count );
@@ -100,17 +103,19 @@ void wdc_write_data_to_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status
     while ( !isset_info_wdardy() );
     do {
         while ( isset_info_wdardy() );
-        port_info_set ( INFO_TR | INFO_ASTB | wdc_status );
+        PORTD |= ( ( 1 << PIND5 ) );
+        nop();
+        nop();
         port_data_set ( buffer[datacnt] );
-        port_info_set ( INFO_TR | wdc_status );
-        while ( !isset_info_wdardy() );
+        PORTD &= ~ ( ( 1 << PIND5 ) );
+       while ( !isset_info_wdardy() );
 
         datacnt++;
     } while ( datacnt < count );
     while ( isset_info_wdardy() );
-    port_info_set ( INFO_TR | INFO_ASTB | wdc_status );
+    PORTD |= ( ( 1 << PIND5 ) );
     nop();
-    port_info_set ( INFO_TR | wdc_status );
+    PORTD &= ~ ( ( 1 << PIND5 ) );
     configure_port_data_read();
     while ( !isset_info_wdardy() );
     port_info_set ( INFO_CLEAR );

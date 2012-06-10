@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.12 2012/06/09 19:47:31 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.13 2012/06/10 21:03:23 olivleh1 Exp $
  */
 
 
@@ -81,6 +81,6 @@
 #define MEASURE_SDCARD_TIME 1
 #undef  MEASURE_SDCARD_TIME
 
-#define DEBUG 0
+#define DEBUG 3
 
 #endif /* CONFIG_H_ */
