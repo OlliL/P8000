@@ -12,15 +12,15 @@ LDFLAGS=-Wl,-Map="${OUTPUT_FILE}.map" -Wl,--start-group -Wl,-lm  \
 RM := rm -rf
 
 OBJS +=  \
-main.o \
-mmc.o \
-mmc_perf.o \
+wdc_avr.o \
+wdc_main.o \
+wdc_drv_mmc.o \
+wdc_drv_mmc_perf.o \
 uart.o \
-wdc_if_pio.o \
-wdc_if_sdcard.o \
+wdc_if_p8000.o \
+wdc_if_disk.o \
 wdc_par.o \
 wdc_ram.o
-
 
 all: ${OUTPUT_FILE}
 
