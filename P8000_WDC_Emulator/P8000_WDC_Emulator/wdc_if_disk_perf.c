@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_disk_perf.c,v 1.4 2012/06/09 19:47:31 olivleh1 Exp $
+ * $Id: wdc_if_disk_perf.c,v 1.5 2012/06/12 17:34:14 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -36,8 +36,8 @@
 #include <stdlib.h>
 #include <avr/pgmspace.h>
 #include <avr/sleep.h>
-#include "config.h"
-#include "wdc_if_sdcard.h"
+#include "wdc_config.h"
+#include "wdc_if_disk.h"
 #include "wdc_ram.h"
 #include "uart.h"
 

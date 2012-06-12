@@ -26,22 +26,37 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.h,v 1.8 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_avr.c,v 1.1 2012/06/12 17:34:14 olivleh1 Exp $
  */
 
-#ifndef WDC_DRV_MMC_H_
-#define WDC_DRV_MMC_H_
 
-extern uint8_t mmc_init ();
+#include <avr/io.h>
+#include "wdc_config.h"
+#include "wdc_avr.h"
 
-extern uint8_t mmc_read_sector ( uint32_t addr, uint8_t *buffer );
-extern uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer );
+void wdc_init_avr()
+{
+    /* configure the P8000 interface */
+    configure_pin_status0();
+    configure_pin_status1();
+    configure_pin_status2();
+    configure_pin_te();
+    configure_pin_wdardy();
+    configure_pin_tr();
+    configure_pin_reset();
 
-extern uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks );
-extern uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks );
+    configure_port_data_read();
 
-#define MMC_BLOCKLEN 512
+    /* configure the address decoder */
+    configure_pin_addr0();
+    configure_pin_addr1();
+    configure_pin_addr2();
 
-#endif /* WDC_DRV_MMC_H_ */
+    init_addressdecoder();
 
-
+    /* configure the MMC interface */
+    configure_pin_miso();
+    configure_pin_sck();
+    configure_pin_mosi();
+    configure_pin_mmc_cs();
+}

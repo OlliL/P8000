@@ -26,27 +26,27 @@
  */
 
 /*
- * $Id: wdc_if_disk.c,v 1.11 2012/06/09 19:47:31 olivleh1 Exp $
+ * $Id: wdc_if_disk.c,v 1.12 2012/06/12 17:34:14 olivleh1 Exp $
  */
 
 #include <stdint.h>
-#include "mmc.h"
+#include "wdc_drv_mmc.h"
 #include "uart.h"
 #include "wdc_par.h"
 
-uint8_t wdc_init_sdcard()
+uint8_t wdc_init_disk()
 {
     return mmc_init();
 }
 
-uint32_t wdc_sector2sdblock ( uint16_t req_cylinder, uint8_t req_head, uint8_t req_sector )
+uint32_t wdc_sector2diskblock ( uint16_t req_cylinder, uint8_t req_head, uint8_t req_sector )
 {
     return ( ( req_cylinder * wdc_get_hdd_heads() * wdc_get_hdd_sectors() )
              + ( req_head * wdc_get_hdd_sectors() )
              + ( req_sector - 1 ) );
 }
 
-uint32_t wdc_p8kblock2sdblock ( uint32_t blockno )
+uint32_t wdc_p8kblock2diskblock ( uint32_t blockno )
 {
     return ( blockno
              +  ( wdc_get_hdd_heads() * wdc_get_hdd_sectors() ) );

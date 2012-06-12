@@ -26,12 +26,13 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.16 2012/06/09 19:47:31 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.17 2012/06/12 17:34:14 olivleh1 Exp $
  */
 
 #include <avr/io.h>
-#include "config.h"
-#include "mmc.h"
+#include "wdc_config.h"
+#include "wdc_avr.h"
+#include "wdc_drv_mmc.h"
 #include "uart.h"
 
 #define wait_till_send_done() while ( ! ( SPSR & ( 1 << SPIF ) ) )
@@ -39,8 +40,6 @@
 #define send_dummy_byte() SPDR = 0xFF; wait_till_send_done()
 #define recv_byte() SPDR
 #define xmit_byte(x) SPDR = x
-#define mmc_disable() PORT_MMC|= (1<<PIN_MMC_CS);
-#define mmc_enable() PORT_MMC=~(1<<PIN_MMC_CS);
 #define nop()  __asm__ __volatile__ ("nop" ::)
 
 #define CMD0  (0x40 + 0)
@@ -181,12 +180,6 @@ uint8_t mmc_init ()
 {
     uint16_t t16 = 0;
     uint8_t a;
-
-
-    DDR_MMC &= ~ ( 1 << PIN_MMC_MISO );
-    DDR_MMC |= ( 1 << PIN_MMC_SCK );
-    DDR_MMC |= ( 1 << PIN_MMC_MOSI );
-    DDR_MMC |= ( 1 << PIN_MMC_CS );
 
     for ( a = 0; a < 200; a++ ) {
         nop();

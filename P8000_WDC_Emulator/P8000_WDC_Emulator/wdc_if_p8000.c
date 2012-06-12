@@ -26,36 +26,17 @@
  */
 
 /*
- * $Id: wdc_if_p8000.c,v 1.8 2012/06/10 21:11:03 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.9 2012/06/12 17:34:14 olivleh1 Exp $
  */
 
-#include "config.h"
-#include <avr/pgmspace.h>
+#include "wdc_config.h"
+#include <avr/io.h>
 #include <util/delay.h>
-#include "wdc_if_pio.h"
+#include "wdc_avr.h"
+#include "wdc_if_p8000.h"
 #include "wdc_par.h"
-#include "uart.h"
 
 #define nop()  __asm__ __volatile__ ("nop" ::)
-
-void wdc_init_ports()
-{
-    configure_pin_status0();
-    configure_pin_status1();
-    configure_pin_status2();
-    configure_pin_astb();
-    configure_pin_te();
-    configure_pin_wdardy();
-    configure_pin_tr();
-    configure_pin_reset();
-    DDRD |= ( ( 1 << PIND5 ) );
-    DDRD |= ( ( 1 << PIND6 ) );
-    DDRD |= ( ( 1 << PIND7 ) );
-    PORTD &= ~ ( ( 1 << PIND5 ) );
-    PORTD &= ~ ( ( 1 << PIND6 ) );
-    PORTD &= ~ ( ( 1 << PIND7 ) );
-    configure_port_data_read();
-}
 
 void wdc_wait_for_reset()
 {
@@ -81,12 +62,10 @@ uint8_t wdc_read_data_from_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_st
             return 0;
     while ( !isset_info_wdardy() );
     do {
+        enable_p8000_transeiver();  /* this also generates /ASTB in the moment /WDARDY gets low with a 7403 */
         while ( isset_info_wdardy() );
-        PORTD |= ( ( 1 << PIND5 ) );
-        nop();
-        nop();
         buffer[datacnt] = ( uint8_t ) port_data_get();
-        PORTD &= ~ ( ( 1 << PIND5 ) );
+        disable_p8000_transeiver(); /* this additionally brings /ASTB to high */
         while ( !isset_info_wdardy() );
         datacnt++;
     } while ( datacnt < count );
@@ -106,24 +85,21 @@ void wdc_write_data_to_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status
     configure_port_data_write();
     while ( !isset_info_wdardy() );
     do {
+        enable_p8000_transeiver();  /* this also generates /ASTB in the moment /WDARDY gets low with a 7403 */
         while ( isset_info_wdardy() );
-        PORTD |= ( ( 1 << PIND5 ) );
-        nop();
-        nop();
         port_data_set ( buffer[datacnt] );
-        PORTD &= ~ ( ( 1 << PIND5 ) );
-       while ( !isset_info_wdardy() );
+        disable_p8000_transeiver(); /* this additionally brings /ASTB to high */
+        while ( !isset_info_wdardy() );
 
         datacnt++;
     } while ( datacnt < count );
     while ( isset_info_wdardy() );
-    PORTD |= ( ( 1 << PIND5 ) );
+    enable_p8000_transeiver();
     nop();
-    PORTD &= ~ ( ( 1 << PIND5 ) );
+    disable_p8000_transeiver();
     configure_port_data_read();
     while ( !isset_info_wdardy() );
     port_info_set ( INFO_CLEAR );
-
 }
 
 uint8_t wdc_receive_cmd ( uint8_t *buffer, uint16_t count )

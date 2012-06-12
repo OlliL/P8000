@@ -29,7 +29,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.26 2012/06/10 21:10:44 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.27 2012/06/12 17:34:14 olivleh1 Exp $
  *
  * TODO:  - right now, BTT entries are not taken into account
  */
@@ -41,16 +41,16 @@
 #include <stdlib.h>
 #include <avr/pgmspace.h>
 #include <avr/sleep.h>
-#include "config.h"
-#include "main.h"
+#include "wdc_config.h"
+#include "wdc_main.h"
 #ifdef DEBUG
 #include "uart.h"
 #endif
+#include "wdc_avr.h"
 #include "wdc_ram.h"
 #include "wdc_par.h"
-#include "wdc_if_pio.h"
-#include "wdc_if_sdcard.h"
-
+#include "wdc_if_p8000.h"
+#include "wdc_if_disk.h"
 
 void atmega_setup ( void );
 
@@ -94,7 +94,6 @@ main ( void )
         blockno = 0;
         data_counter = WDC_BLOCKLEN;
         wdc_read_sector ( blockno, data_buffer );
-
         if ( data_buffer[0]  ==  'W' &&
              data_buffer[1]  ==  'D' &&
              data_buffer[2]  ==  'C' &&
@@ -175,7 +174,7 @@ main ( void )
                     case CMD_WR_BLOCK:
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
-                        blockno = wdc_p8kblock2sdblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
+                        blockno = wdc_p8kblock2diskblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
                         wdc_receive_data ( data_buffer
                                            , data_counter
                                          );
@@ -193,7 +192,7 @@ main ( void )
                     case CMD_RD_BLOCK:
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
-                        blockno = wdc_p8kblock2sdblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
+                        blockno = wdc_p8kblock2diskblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
 
                         errorcode = 1;
                         if ( data_counter == WDC_BLOCKLEN ) {
@@ -298,7 +297,7 @@ main ( void )
                         data_counter = WDC_BLOCKLEN;
 
                         memset ( &data_buffer[0], 0x00, data_counter );
-                        blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
+                        blockno = wdc_sector2diskblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
                                                        , cmd_buffer[4]
                                                        , cmd_buffer[5]
                                                      );
@@ -356,7 +355,7 @@ main ( void )
                     case CMD_VER_TRACK:
                         data_counter = WDC_BLOCKLEN;
 
-                        blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
+                        blockno = wdc_sector2diskblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
                                                        , cmd_buffer[4]
                                                        , cmd_buffer[5]
                                                      );
@@ -373,7 +372,7 @@ main ( void )
                     case CMD_RD_SECTOR:
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
-                        blockno = wdc_sector2sdblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
+                        blockno = wdc_sector2diskblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
                                                        , cmd_buffer[4]
                                                        , cmd_buffer[5]
                                                      );
@@ -417,9 +416,8 @@ void atmega_setup ( void )
 {
     set_sleep_mode ( SLEEP_MODE_IDLE );
     uart_init();
-    wdc_init_ports();
-    if ( wdc_init_sdcard() ) {
+    wdc_init_avr();
+    if ( wdc_init_disk() ) {
         wdc_set_no_disk();
     }
-
 }

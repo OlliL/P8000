@@ -72,22 +72,28 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="config.h">
+    <Compile Include="wdc_config.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="main.c">
+    <Compile Include="wdc_avr.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="main.h">
+    <Compile Include="wdc_avr.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="mmc.c">
+    <Compile Include="wdc_main.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="mmc.h">
+    <Compile Include="wdc_main.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="mmc_perf.c">
+    <Compile Include="wdc_drv_mmc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="wdc_drv_mmc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="wdc_drv_mmc_perf.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="uart.c">
@@ -96,16 +102,16 @@
     <Compile Include="uart.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="wdc_if_pio.c">
+    <Compile Include="wdc_if_p8000.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="wdc_if_pio.h">
+    <Compile Include="wdc_if_p8000.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="wdc_if_sdcard.c">
+    <Compile Include="wdc_if_disk.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="wdc_if_sdcard.h">
+    <Compile Include="wdc_if_disk.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="wdc_par.c">

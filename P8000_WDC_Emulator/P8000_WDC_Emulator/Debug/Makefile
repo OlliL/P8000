@@ -35,12 +35,13 @@ SUBDIRS :=
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
-../main.c \
-../mmc.c \
-../mmc_perf.c \
+../wdc_avr.c \
+../wdc_main.c \
+../wdc_drv_mmc.c \
+../wdc_drv_mmc_perf.c \
 ../uart.c \
-../wdc_if_pio.c \
-../wdc_if_sdcard.c \
+../wdc_if_p8000.c \
+../wdc_if_disk.c \
 ../wdc_par.c \
 ../wdc_ram.c
 
@@ -52,45 +53,49 @@ ASM_SRCS +=
 
 
 OBJS +=  \
-main.o \
-mmc.o \
-mmc_perf.o \
+wdc_avr.o \
+wdc_main.o \
+wdc_drv_mmc.o \
+wdc_drv_mmc_perf.o \
 uart.o \
-wdc_if_pio.o \
-wdc_if_sdcard.o \
+wdc_if_p8000.o \
+wdc_if_disk.o \
 wdc_par.o \
 wdc_ram.o
 
 
 OBJS_AS_ARGS +=  \
-main.o \
-mmc.o \
-mmc_perf.o \
+wdc_avr.o \
+wdc_main.o \
+wdc_drv_mmc.o \
+wdc_drv_mmc_perf.o \
 uart.o \
-wdc_if_pio.o \
-wdc_if_sdcard.o \
+wdc_if_p8000.o \
+wdc_if_disk.o \
 wdc_par.o \
 wdc_ram.o
 
 
 C_DEPS +=  \
-main.d \
-mmc.d \
-mmc_perf.d \
+wdc_avr.d \
+wdc_main.d \
+wdc_drv_mmc.d \
+wdc_drv_mmc_perf.d \
 uart.d \
-wdc_if_pio.d \
-wdc_if_sdcard.d \
+wdc_if_p8000.d \
+wdc_if_disk.d \
 wdc_par.d \
 wdc_ram.d
 
 
 C_DEPS_AS_ARGS +=  \
-main.d \
-mmc.d \
-mmc_perf.d \
+wdc_avr.d \
+wdc_main.d \
+wdc_drv_mmc.d \
+wdc_drv_mmc_perf.d \
 uart.d \
-wdc_if_pio.d \
-wdc_if_sdcard.d \
+wdc_if_p8000.d \
+wdc_if_disk.d \
 wdc_par.d \
 wdc_ram.d
 
@@ -104,6 +109,8 @@ ADDITIONAL_DEPENDENCIES:=
 OUTPUT_FILE_DEP:= ./makedep.mk
 
 # AVR32/GNU C Compiler
+
+
 
 
 

@@ -2,17 +2,19 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
-main.c
+wdc_avr.c
 
-mmc.c
+wdc_main.c
 
-mmc_perf.c
+wdc_drv_mmc.c
+
+wdc_drv_mmc_perf.c
 
 uart.c
 
-wdc_if_pio.c
+wdc_if_p8000.c
 
-wdc_if_sdcard.c
+wdc_if_disk.c
 
 wdc_par.c
 

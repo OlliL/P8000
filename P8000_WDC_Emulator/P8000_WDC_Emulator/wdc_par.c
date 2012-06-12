@@ -26,11 +26,11 @@
  */
 
 /*
- * $Id: wdc_par.c,v 1.4 2012/06/09 19:47:31 olivleh1 Exp $
+ * $Id: wdc_par.c,v 1.5 2012/06/12 17:34:14 olivleh1 Exp $
  */
 
 #include <avr/pgmspace.h>
-#include "main.h"
+#include "wdc_main.h"
 #include "wdc_par.h"
 #include "uart.h"
 

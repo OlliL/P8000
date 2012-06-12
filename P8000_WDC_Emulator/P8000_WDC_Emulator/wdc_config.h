@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.13 2012/06/10 21:03:23 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.14 2012/06/12 17:34:14 olivleh1 Exp $
  */
 
 
@@ -47,15 +47,21 @@
 #define PIN_INFO        PINC
 #define DDR_INFO        DDRC
 
+#define PORT_ADRDEC     PORTD
+#define PIN_ADRDEC      PIND
+#define DDR_ADRDEC      DDRD
+
 #define PIN_INFO_STATUS0    PINC0
 #define PIN_INFO_STATUS1    PINC1
 #define PIN_INFO_STATUS2    PINC2
-#define PIN_INFO_ASTB       PINC3
 #define PIN_INFO_TE         PINC4
 #define PIN_INFO_WDARDY     PINC5
 #define PIN_INFO_TR         PINC6
 #define PIN_INFO_RST        PINC7
 
+#define PIN_ADRDEC_ADDR0    PIND5
+#define PIN_ADRDEC_ADDR1    PIND6
+#define PIN_ADRDEC_ADDR2    PIND7
 /*
  * SD-Card Interface
  */
@@ -81,6 +87,6 @@
 #define MEASURE_SDCARD_TIME 1
 #undef  MEASURE_SDCARD_TIME
 
-#define DEBUG 3
+#define DEBUG 1
 
 #endif /* CONFIG_H_ */

@@ -14,7 +14,7 @@
 #include <avr/sleep.h>
 
 #include "uart.h"
-#include "config.h"
+#include "wdc_config.h"
 
 /* some mcus have multiple uarts */
 #ifdef UDR0
