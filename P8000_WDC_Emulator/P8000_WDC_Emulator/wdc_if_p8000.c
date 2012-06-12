@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_p8000.c,v 1.9 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.10 2012/06/12 17:43:38 olivleh1 Exp $
  */
 
 #include "wdc_config.h"
@@ -64,7 +64,7 @@ uint8_t wdc_read_data_from_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_st
     do {
         enable_p8000_transeiver();  /* this also generates /ASTB in the moment /WDARDY gets low with a 7403 */
         while ( isset_info_wdardy() );
-        buffer[datacnt] = ( uint8_t ) port_data_get();
+        *buffer++ = port_data_get();
         disable_p8000_transeiver(); /* this additionally brings /ASTB to high */
         while ( !isset_info_wdardy() );
         datacnt++;
@@ -87,7 +87,7 @@ void wdc_write_data_to_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status
     do {
         enable_p8000_transeiver();  /* this also generates /ASTB in the moment /WDARDY gets low with a 7403 */
         while ( isset_info_wdardy() );
-        port_data_set ( buffer[datacnt] );
+        port_data_set ( *buffer++ );
         disable_p8000_transeiver(); /* this additionally brings /ASTB to high */
         while ( !isset_info_wdardy() );
 
