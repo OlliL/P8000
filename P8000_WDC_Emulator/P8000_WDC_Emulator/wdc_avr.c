@@ -26,13 +26,16 @@
  */
 
 /*
- * $Id: wdc_avr.c,v 1.1 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_avr.c,v 1.2 2012/06/13 20:17:45 olivleh1 Exp $
  */
 
 
 #include <avr/io.h>
 #include "wdc_config.h"
 #include "wdc_avr.h"
+#include "wdc_drv_mmc.h"
+#include "wdc_drv_pata.h"
+#include "wdc_if_disk.h"
 
 void wdc_init_avr()
 {
@@ -59,4 +62,25 @@ void wdc_init_avr()
     configure_pin_sck();
     configure_pin_mosi();
     configure_pin_mmc_cs();
+}
+
+void wdc_get_sysconf()
+{
+    enable_sysconf();
+    nop();
+    nop();
+    if ( jumper_pata_set() ) {
+        drv_init = pata_init;
+        drv_read_block = pata_read_block;
+        drv_write_block = pata_write_block;
+        drv_read_multiblock = pata_read_multiblock;
+        drv_write_multiblock = pata_write_multiblock;
+    } else {
+        drv_init = mmc_init;
+        drv_read_block = mmc_read_sector;
+        drv_write_block = mmc_write_sector;
+        drv_read_multiblock = mmc_read_multiblock;
+        drv_write_multiblock = mmc_write_multiblock;
+    }
+    disable_sysconf();
 }

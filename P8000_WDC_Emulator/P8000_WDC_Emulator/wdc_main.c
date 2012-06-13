@@ -29,7 +29,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.27 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.28 2012/06/13 20:17:45 olivleh1 Exp $
  *
  * TODO:  - right now, BTT entries are not taken into account
  */
@@ -417,6 +417,7 @@ void atmega_setup ( void )
     set_sleep_mode ( SLEEP_MODE_IDLE );
     uart_init();
     wdc_init_avr();
+    wdc_get_sysconf();
     if ( wdc_init_disk() ) {
         wdc_set_no_disk();
     }

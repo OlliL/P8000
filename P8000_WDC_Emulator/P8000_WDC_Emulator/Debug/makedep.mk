@@ -4,6 +4,8 @@
 
 wdc_avr.c
 
+wdc_drv_pata.c
+
 wdc_main.c
 
 wdc_drv_mmc.c

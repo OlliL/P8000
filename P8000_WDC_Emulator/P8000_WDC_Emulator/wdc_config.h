@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.14 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.15 2012/06/13 20:17:45 olivleh1 Exp $
  */
 
 
@@ -50,6 +50,15 @@
 #define PORT_ADRDEC     PORTD
 #define PIN_ADRDEC      PIND
 #define DDR_ADRDEC      DDRD
+
+#define PIN_DATA_D0         PINA0
+#define PIN_DATA_D1         PINA1
+#define PIN_DATA_D2         PINA2
+#define PIN_DATA_D3         PINA3
+#define PIN_DATA_D4         PINA4
+#define PIN_DATA_D5         PINA5
+#define PIN_DATA_D6         PINA6
+#define PIN_DATA_D7         PINA7
 
 #define PIN_INFO_STATUS0    PINC0
 #define PIN_INFO_STATUS1    PINC1
@@ -88,5 +97,7 @@
 #undef  MEASURE_SDCARD_TIME
 
 #define DEBUG 1
+
+#define nop()  __asm__ __volatile__ ("nop" ::)
 
 #endif /* CONFIG_H_ */

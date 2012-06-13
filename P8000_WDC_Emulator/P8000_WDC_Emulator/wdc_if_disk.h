@@ -26,11 +26,13 @@
  */
 
 /*
- * $Id: wdc_if_disk.h,v 1.7 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_if_disk.h,v 1.8 2012/06/13 20:17:45 olivleh1 Exp $
  */
 
 #ifndef WDC_IF_DISK_H_
 #define WDC_IF_DISK_H_
+
+#include <stdio.h>
 
 extern uint8_t wdc_init_disk();
 extern uint32_t wdc_sector2diskblock ( uint16_t req_cylinder, uint8_t req_head, uint8_t req_sector );
@@ -39,6 +41,20 @@ extern uint8_t wdc_write_sector ( uint32_t addr, uint8_t *sector );
 extern uint8_t wdc_read_sector ( uint32_t addr, uint8_t *sector );
 extern uint8_t wdc_read_multiblock ( uint32_t addr, uint8_t *sector, uint8_t numblocks );
 extern uint8_t wdc_write_multiblock ( uint32_t addr, uint8_t *sector, uint8_t numblocks );
+
+typedef uint8_t (*t_drv_init) ();
+
+typedef uint8_t (*t_drv_read_block) ( uint32_t addr, uint8_t *buffer );
+typedef uint8_t (*t_drv_write_block) ( uint32_t addr, uint8_t *buffer );
+
+typedef uint8_t (*t_drv_read_multiblock) ( uint32_t addr, uint8_t *buffer, uint8_t numblocks );
+typedef uint8_t (*t_drv_write_multiblock) ( uint32_t addr, uint8_t *buffer, uint8_t numblocks );
+
+t_drv_init drv_init;
+t_drv_read_block drv_read_block;
+t_drv_write_block drv_write_block;
+t_drv_read_multiblock drv_read_multiblock;
+t_drv_write_multiblock drv_write_multiblock;
 
 #define WDC_BLOCKLEN 512
 

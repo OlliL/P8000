@@ -26,17 +26,19 @@
  */
 
 /*
- * $Id: wdc_if_disk.c,v 1.12 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_if_disk.c,v 1.13 2012/06/13 20:17:45 olivleh1 Exp $
  */
 
 #include <stdint.h>
+#include "wdc_if_disk.h"
 #include "wdc_drv_mmc.h"
+#include "wdc_drv_pata.h"
 #include "uart.h"
 #include "wdc_par.h"
 
 uint8_t wdc_init_disk()
 {
-    return mmc_init();
+    return (*drv_init)();
 }
 
 uint32_t wdc_sector2diskblock ( uint16_t req_cylinder, uint8_t req_head, uint8_t req_sector )
@@ -56,7 +58,7 @@ uint8_t wdc_write_sector ( uint32_t addr, uint8_t *sector )
 {
     uint8_t errorcode;
 
-    errorcode = mmc_write_sector ( addr, sector );
+    errorcode = drv_write_block ( addr, sector );
     if ( errorcode ) {
         uart_puts_p ( PSTR ( " write error at address: " ) );
         uart_putdw_dec ( addr );
@@ -72,7 +74,7 @@ uint8_t wdc_read_sector ( uint32_t addr, uint8_t *sector )
 {
     uint8_t errorcode;
 
-    errorcode = mmc_read_sector ( addr, sector );
+    errorcode = drv_read_block ( addr, sector );
     if ( errorcode ) {
         uart_puts_p ( PSTR ( " read error at address: " ) );
         uart_putdw_dec ( addr );
@@ -88,7 +90,7 @@ uint8_t wdc_read_multiblock ( uint32_t addr, uint8_t *sector, uint8_t numblocks 
 {
     uint8_t errorcode;
 
-    errorcode = mmc_read_multiblock ( addr, sector, numblocks );
+    errorcode = drv_read_multiblock ( addr, sector, numblocks );
     if ( errorcode ) {
         uart_puts_p ( PSTR ( " read error at address: " ) );
         uart_putdw_dec ( addr );
@@ -104,7 +106,7 @@ uint8_t wdc_write_multiblock ( uint32_t addr, uint8_t *sector, uint8_t numblocks
 {
     uint8_t errorcode;
 
-    errorcode = mmc_write_multiblock ( addr, sector, numblocks );
+    errorcode = drv_write_multiblock ( addr, sector, numblocks );
     if ( errorcode ) {
         uart_puts_p ( PSTR ( " write error at address: " ) );
         uart_putdw_dec ( addr );

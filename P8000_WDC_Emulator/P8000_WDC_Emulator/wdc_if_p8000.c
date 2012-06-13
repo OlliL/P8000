@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_p8000.c,v 1.10 2012/06/12 17:43:38 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.11 2012/06/13 20:17:45 olivleh1 Exp $
  */
 
 #include "wdc_config.h"
@@ -35,8 +35,6 @@
 #include "wdc_avr.h"
 #include "wdc_if_p8000.h"
 #include "wdc_par.h"
-
-#define nop()  __asm__ __volatile__ ("nop" ::)
 
 void wdc_wait_for_reset()
 {
@@ -62,10 +60,10 @@ uint8_t wdc_read_data_from_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_st
             return 0;
     while ( !isset_info_wdardy() );
     do {
-        enable_p8000_transeiver();  /* this also generates /ASTB in the moment /WDARDY gets low with a 7403 */
+        enable_p8000com();  /* this also generates /ASTB in the moment /WDARDY gets low with a 7403 */
         while ( isset_info_wdardy() );
         *buffer++ = port_data_get();
-        disable_p8000_transeiver(); /* this additionally brings /ASTB to high */
+        disable_p8000com(); /* this additionally brings /ASTB to high */
         while ( !isset_info_wdardy() );
         datacnt++;
     } while ( datacnt < count );
@@ -85,18 +83,18 @@ void wdc_write_data_to_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status
     configure_port_data_write();
     while ( !isset_info_wdardy() );
     do {
-        enable_p8000_transeiver();  /* this also generates /ASTB in the moment /WDARDY gets low with a 7403 */
+        enable_p8000com();  /* this also generates /ASTB in the moment /WDARDY gets low with a 7403 */
         while ( isset_info_wdardy() );
         port_data_set ( *buffer++ );
-        disable_p8000_transeiver(); /* this additionally brings /ASTB to high */
+        disable_p8000com(); /* this additionally brings /ASTB to high */
         while ( !isset_info_wdardy() );
 
         datacnt++;
     } while ( datacnt < count );
     while ( isset_info_wdardy() );
-    enable_p8000_transeiver();
+    enable_p8000com();
     nop();
-    disable_p8000_transeiver();
+    disable_p8000com();
     configure_port_data_read();
     while ( !isset_info_wdardy() );
     port_info_set ( INFO_CLEAR );

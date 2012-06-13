@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.17 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.18 2012/06/13 20:17:45 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -40,7 +40,6 @@
 #define send_dummy_byte() SPDR = 0xFF; wait_till_send_done()
 #define recv_byte() SPDR
 #define xmit_byte(x) SPDR = x
-#define nop()  __asm__ __volatile__ ("nop" ::)
 
 #define CMD0  (0x40 + 0)
 #define CMD1  (0x40 + 1)

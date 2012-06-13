@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_avr.h,v 1.1 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_avr.h,v 1.2 2012/06/13 20:17:45 olivleh1 Exp $
  */
 
 
@@ -55,11 +55,12 @@
 #define configure_pin_addr2()       DDR_ADRDEC |= ( 1 << PIN_ADRDEC_ADDR2 )
 
 #define init_addressdecoder()       PORT_ADRDEC &=  ~( ( 1 << PIN_ADRDEC_ADDR0 ) | ( 1 << PIN_ADRDEC_ADDR1 ) | ( 1 << PIN_ADRDEC_ADDR2 ) )
-#define enable_p8000_transeiver()   PORT_ADRDEC |=   ( 1 << PIN_ADRDEC_ADDR0 )
-#define disable_p8000_transeiver()  PORT_ADRDEC &=  ~( 1 << PIN_ADRDEC_ADDR0 )
+#define enable_p8000com()           PORT_ADRDEC |=   ( 1 << PIN_ADRDEC_ADDR0 )
+#define disable_p8000com()          PORT_ADRDEC &=  ~( 1 << PIN_ADRDEC_ADDR0 )
+#define enable_sysconf()            PORT_ADRDEC |=   ( ( 1 << PIN_ADRDEC_ADDR0 ) | ( 1 << PIN_ADRDEC_ADDR1 ) | ( 1 << PIN_ADRDEC_ADDR2 ) )
+#define disable_sysconf()           PORT_ADRDEC &=  ~( ( 1 << PIN_ADRDEC_ADDR0 ) | ( 1 << PIN_ADRDEC_ADDR1 ) | ( 1 << PIN_ADRDEC_ADDR2 ) )
 
 /* functions dealing with the MMC interface */
-
 #define configure_pin_miso()        DDR_MMC &= ~ ( 1 << PIN_MMC_MISO )
 #define configure_pin_sck()         DDR_MMC |= ( 1 << PIN_MMC_SCK )
 #define configure_pin_mosi()        DDR_MMC |= ( 1 << PIN_MMC_MOSI )
@@ -68,6 +69,13 @@
 #define mmc_disable()               PORT_MMC|= (1<<PIN_MMC_CS);
 #define mmc_enable()                PORT_MMC&=~(1<<PIN_MMC_CS);
 
+/* functions dealing with the sysconf jumperpad */
+#define jumper_pata_set()           ~port_data_get() & (1<<PIN_DATA_D0)
+#define jumper_nn2_set()            ~port_data_get() & (1<<PIN_DATA_D1)
+#define jumper_nn3_set()            ~port_data_get() & (1<<PIN_DATA_D2)
+#define jumper_nn4_set()            ~port_data_get() & (1<<PIN_DATA_D3)
+
 extern void wdc_init_avr();
+extern void wdc_get_sysconf();
 
 #endif /* WDC_AVR_H_ */
