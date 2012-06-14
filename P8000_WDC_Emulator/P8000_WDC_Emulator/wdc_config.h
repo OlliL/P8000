@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.15 2012/06/13 20:17:45 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.16 2012/06/14 20:24:24 olivleh1 Exp $
  */
 
 
@@ -51,6 +51,8 @@
 #define PIN_ADRDEC      PIND
 #define DDR_ADRDEC      DDRD
 
+
+
 #define PIN_DATA_D0         PINA0
 #define PIN_DATA_D1         PINA1
 #define PIN_DATA_D2         PINA2
@@ -71,6 +73,7 @@
 #define PIN_ADRDEC_ADDR0    PIND5
 #define PIN_ADRDEC_ADDR1    PIND6
 #define PIN_ADRDEC_ADDR2    PIND7
+
 /*
  * SD-Card Interface
  */
@@ -82,6 +85,30 @@
 #define PIN_MMC_MOSI    PINB5       /* AVR Port: MOSI / MMC Card: Data-In */
 #define PIN_MMC_MISO    PINB6       /* AVR Port: MISO / MMC Card: Data-Out */
 #define PIN_MMC_SCK     PINB7       /* AVR Port: SCk / MMC Card: CLK */
+
+/*
+ * ATA Interface
+ */
+
+#define PORT_ATARDWR    PORTB
+#define PIN_ATARDWR     PINB
+#define DDR_ATARDWR     DDRB
+
+#define PORT_ATACS      PORTB
+#define PIN_ATACS       PINB
+#define DDR_ATACS       DDRB
+
+#define PORT_ATADA      PORTD
+#define PIN_ATADA       PIND
+#define DDR_ATADA       DDRD
+
+#define PIN_ATARDWR_WR      PINB2
+#define PIN_ATARDWR_RD      PINB3
+#define PIN_ATACS_CS0       PINB0
+#define PIN_ATACS_CS1       PINB1
+#define PIN_ATADA_DA0       PIND2
+#define PIN_ATADA_DA1       PIND3
+#define PIN_ATADA_DA2       PIND4
 
 /*
  * maximum performance with both turned off

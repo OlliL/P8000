@@ -26,14 +26,46 @@
  */
 
 /*
- * $Id: wdc_drv_pata.c,v 1.2 2012/06/13 20:17:45 olivleh1 Exp $
+ * $Id: wdc_drv_pata.c,v 1.3 2012/06/14 20:24:24 olivleh1 Exp $
  */
 
-#include <avr/io.h>
 #include "wdc_config.h"
+#include <avr/io.h>
+#include <util/delay.h>
+#include "wdc_avr.h"
+#include "uart.h"
+
+void pata_set_highbyte ( uint8_t byte )
+{
+    port_data_set ( byte );
+    enable_atalatch();
+    nop();
+    nop();
+    disable_atalatch();
+}
+
+void pata_set_lowbyte ( uint8_t byte )
+{
+    port_data_set ( byte );
+}
+
+void pata_send_data()
+{
+    enable_rdwrtoata();
+    _delay_us(10);
+//    disable_rdwrtoata();
+}
 
 uint8_t pata_init ()
 {
+uart_putc('1');
+    /* test write */
+    configure_port_data_write();
+    ata_wr_enable();
+    pata_set_highbyte ( 0xff );
+    pata_set_lowbyte ( 0x00 );
+    pata_send_data();
+//    ata_wr_disable();
     return 1;
 }
 

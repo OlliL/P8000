@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_avr.c,v 1.2 2012/06/13 20:17:45 olivleh1 Exp $
+ * $Id: wdc_avr.c,v 1.3 2012/06/14 20:24:24 olivleh1 Exp $
  */
 
 
@@ -62,6 +62,23 @@ void wdc_init_avr()
     configure_pin_sck();
     configure_pin_mosi();
     configure_pin_mmc_cs();
+
+    /* configure the ATA interface */
+    configure_ata_wr();
+    configure_ata_rd();
+    configure_ata_cs0();
+    configure_ata_cs1();
+    configure_ata_da0();
+    configure_ata_da1();
+    configure_ata_da2();
+
+    ata_wr_disable();
+    ata_rd_disable();
+    ata_cs0_disable();
+    ata_cs1_disable();
+    ata_da0_disable();
+    ata_da1_disable();
+    ata_da2_disable();
 }
 
 void wdc_get_sysconf()
