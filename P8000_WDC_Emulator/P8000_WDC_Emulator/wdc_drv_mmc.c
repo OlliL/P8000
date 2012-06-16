@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.18 2012/06/13 20:17:45 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.19 2012/06/16 23:41:42 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -270,6 +270,7 @@ uint8_t mmc_cmd ( uint8_t *cmd )
     uint8_t tmp = 0x80;
     uint8_t i = 10;
     uint8_t cmd0 = cmd[0];
+    uint8_t a;
 #ifdef SPI_CRC
     /* Calculate CRC and framing bits */
     cmd[0] = ( cmd[0] | ( 1 << 6 ) ) & 0x7F;
@@ -277,7 +278,7 @@ uint8_t mmc_cmd ( uint8_t *cmd )
 #endif
 
     /* send command */
-    for ( uint8_t a = 0; a < 0x06; a++ ) {
+    for ( a = 0; a < 0x06; a++ ) {
         xmit_byte ( *cmd++ );
         wait_till_send_done();
     }
