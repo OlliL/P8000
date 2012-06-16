@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_disk_perf.c,v 1.5 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_if_disk_perf.c,v 1.6 2012/06/16 19:34:39 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -41,7 +41,7 @@
 #include "wdc_ram.h"
 #include "uart.h"
 
-#ifdef MEASURE_SDCARD_TIME
+#ifdef MEASURE_DISK_PERFORMANCE
 #define BLOCKNO 300000
 
 extern  uint32_t overflow;

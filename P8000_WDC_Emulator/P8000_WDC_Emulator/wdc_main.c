@@ -29,7 +29,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.28 2012/06/13 20:17:45 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.29 2012/06/16 19:34:39 olivleh1 Exp $
  *
  * TODO:  - right now, BTT entries are not taken into account
  */
@@ -54,7 +54,7 @@
 
 void atmega_setup ( void );
 
-#ifdef MEASURE_SDCARD_TIME
+#ifdef MEASURE_DISK_PERFORMANCE
 extern void measure_performance();
 volatile uint32_t overflow = 0;
 ISR ( TIMER0_OVF_vect )
@@ -74,7 +74,7 @@ extern uint8_t valid_disk;
 int __attribute__ ( ( OS_main ) )
 main ( void )
 {
-#ifndef MEASURE_SDCARD_TIME
+#ifndef MEASURE_DISK_PERFORMANCE
     uint16_t cmd_counter = 9;
     uint16_t data_counter;
     uint32_t blockno;
@@ -85,7 +85,7 @@ main ( void )
 
     uart_puts_p ( PSTR ( "P8000 WDC Emulator 0.90\n" ) );
 
-#ifdef MEASURE_SDCARD_TIME
+#ifdef MEASURE_DISK_PERFORMANCE
     measure_performance();
 #else
 

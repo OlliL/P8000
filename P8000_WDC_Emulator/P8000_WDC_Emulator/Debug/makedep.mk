@@ -10,7 +10,7 @@ wdc_main.c
 
 wdc_drv_mmc.c
 
-wdc_drv_mmc_perf.c
+wdc_if_disk_perf.c
 
 uart.c
 

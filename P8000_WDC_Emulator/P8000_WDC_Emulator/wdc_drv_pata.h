@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_pata.h,v 1.5 2012/06/16 00:33:26 olivleh1 Exp $
+ * $Id: wdc_drv_pata.h,v 1.6 2012/06/16 19:34:39 olivleh1 Exp $
  */
 
 #ifndef WDC_DRV_PATA_H_
@@ -98,6 +98,8 @@ extern uint8_t pata_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t n
 #define CMD_WRITE_MULTIPLE               0xC5
 #define CMD_WRITE_SECTORS                0x30
 #define CMD_WRITE_VERIFY                 0x3C
+
+#define PATA_BLOCKLEN 512
 
 // CB_DH bits 7-4 OF THE DEVICE/HEAD REGISTER
 #define ATA_DH_DEV0 0xE0    // select device 0 LBA MODE

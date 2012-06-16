@@ -174,7 +174,7 @@ T 67100 33100 9 8 1 0 0 0 1
 T 68500 33100 9 8 1 0 0 0 1
 1
 T 71000 33400 9 7 1 0 0 0 1
-$Revision: 1.16 $ / $Date: 2012/06/16 10:49:19 $
+$Revision: 1.17 $ / $Date: 2012/06/16 19:34:40 $
 T 71000 33100 9 8 1 0 0 0 1
 Oliver Lehmann <lehmann@ans-netz.de>
 N 50600 59400 51200 59400 4
@@ -930,14 +930,14 @@ C 45100 50300 1 0 1 busripper-1.sym
 T 45100 50700 5 8 0 0 0 6 1
 device=none
 T 45200 50400 5 10 1 1 0 0 1
-pinlabel=DA1
+pinlabel=DA2
 }
 C 45100 50000 1 0 1 busripper-1.sym
 {
 T 45100 50400 5 8 0 0 0 6 1
 device=none
 T 45200 50100 5 10 1 1 0 0 1
-pinlabel=DA2
+pinlabel=DA1
 }
 C 45100 56300 1 0 1 busripper-1.sym
 {
@@ -1179,7 +1179,7 @@ pinlabel=DA0
 N 66000 39600 69800 39600 4
 {
 T 66000 39700 5 10 1 1 0 0 1
-pinlabel=DA2
+pinlabel=DA1
 }
 N 67500 41200 66000 41200 4
 {
@@ -1204,7 +1204,7 @@ pinlabel=\_CS1\_
 N 62700 39200 64600 39200 4
 {
 T 64600 39300 5 10 1 1 0 6 1
-pinlabel=DA1
+pinlabel=DA2
 }
 N 64600 40400 63500 40400 4
 {

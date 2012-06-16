@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.16 2012/06/14 20:24:24 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.17 2012/06/16 19:34:39 olivleh1 Exp $
  */
 
 
@@ -107,8 +107,8 @@
 #define PIN_ATACS_CS0       PINB0
 #define PIN_ATACS_CS1       PINB1
 #define PIN_ATADA_DA0       PIND2
-#define PIN_ATADA_DA1       PIND3
-#define PIN_ATADA_DA2       PIND4
+#define PIN_ATADA_DA1       PIND4
+#define PIN_ATADA_DA2       PIND3
 
 /*
  * maximum performance with both turned off
@@ -120,8 +120,8 @@
 
 #define MMC_MULTIBLOCK 1
 
-#define MEASURE_SDCARD_TIME 1
-#undef  MEASURE_SDCARD_TIME
+#define MEASURE_DISK_PERFORMANCE 1
+#undef  MEASURE_DISK_PERFORMANCE
 
 #define DEBUG 1
 

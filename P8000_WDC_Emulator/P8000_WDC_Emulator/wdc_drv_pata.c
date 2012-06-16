@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_pata.c,v 1.6 2012/06/16 08:39:01 olivleh1 Exp $
+ * $Id: wdc_drv_pata.c,v 1.7 2012/06/16 19:34:39 olivleh1 Exp $
  */
 
 #include "wdc_config.h"
@@ -56,11 +56,17 @@ void pata_read_bytes ( uint8_t *buffer, uint16_t bytes );
  *                                                 ||+--- DA0
  *                                                 |||+-- DA1
  *                                                 ||||+- DA2
- *                                                 |||||*/
-#define PATA_RD_STATUS_REGISTER         0x0F  /* 0b01111*/
-#define PATA_WR_COMMAND_REGISTER        0x0F  /* 0b01111*/
-#define PATA_WR_DEVICE_CONTROL_REGISTER 0x0B  /* 0b01011*/
-#define PATA_RD_DATA_REGISTER           0x08  /* 0b01000*/
+ *                                                 ||||| */
+#define PATA_R_STATUS_REGISTER         0x0F  /* 0b01111 */
+#define PATA_W_COMMAND_REGISTER        0x0F  /* 0b01111 */
+#define PATA_W_DEVICE_CONTROL_REGISTER 0x0B  /* 0b01011 */
+
+#define PATA_RW_DATA_REGISTER          0x08  /* 0b01000 */
+#define PATA_RW_SECTOR_COUNT_REGISTER  0b00001010
+#define PATA_RW_SECTOR_NUMBER_REGISTER 0b00001110
+#define PATA_RW_CYLINDER_LOW_REGISTER  0b00001001
+#define PATA_RW_CYLINDER_HIGH_REGISTER 0b00001101
+#define PATA_RW_DEVICE_HEAD_REGISTER   0b00001011
 
 #define ata_ctl_high() ata_cs0_disable();ata_cs1_disable();ata_da0_disable();ata_da1_disable();ata_da2_disable();
 
@@ -72,17 +78,17 @@ void pata_read_bytes ( uint8_t *buffer, uint16_t bytes );
 
 uint8_t pata_rdy()
 {
-    return ( read_io_register ( PATA_RD_STATUS_REGISTER ) & ATA_STAT_RDY ) ? 1 : 0;
+    return ( read_io_register ( PATA_R_STATUS_REGISTER ) & ATA_STAT_RDY ) ? 1 : 0;
 }
 
 uint8_t pata_bsy()
 {
-    return ( read_io_register ( PATA_RD_STATUS_REGISTER ) & ATA_STAT_BSY ) ? 1 : 0;
+    return ( read_io_register ( PATA_R_STATUS_REGISTER ) & ATA_STAT_BSY ) ? 1 : 0;
 }
 
 uint8_t pata_drq()
 {
-    return ( read_io_register ( PATA_RD_STATUS_REGISTER ) & ATA_STAT_DRQ ) ? 1 : 0;
+    return ( read_io_register ( PATA_R_STATUS_REGISTER ) & ATA_STAT_DRQ ) ? 1 : 0;
 }
 
 void set_io_register ( uint8_t ioreg )
@@ -113,6 +119,7 @@ void pata_set_highbyte ( uint8_t byte )
 {
     port_data_set ( byte );
     enable_atalatch();
+    nop();
     nop();
     nop();
     disable_atalatch();
@@ -172,21 +179,55 @@ void write_io_register ( uint8_t ioreg, uint8_t byte )
 
 void pata_read_bytes ( uint8_t *buffer, uint16_t bytes )
 {
-    uint8_t byte_l, byte_h;
     uint16_t i;
+    uint8_t blocks;
 
     configure_port_data_read();
 
-    set_io_register ( PATA_RD_DATA_REGISTER );
-    ata_rd_enable();
-    for ( i = 0; i < bytes / 2; i++ ) {
-        byte_l = pata_get_lowbyte();
-        byte_h = pata_get_highbyte();
-        *buffer++ = byte_h;
-        *buffer++ = byte_l;
+    for ( blocks = bytes / PATA_BLOCKLEN ; blocks ; blocks-- ) {
+        /* Wait for BSY goes low and DRQ goes high */
+        while ( pata_bsy() & !pata_drq() );
+
+        set_io_register ( PATA_RW_DATA_REGISTER );
+        ata_rd_enable();
+
+        for ( i = 0; i < PATA_BLOCKLEN / 2; i++ ) {
+            *buffer++ = pata_get_lowbyte();
+            *buffer++ = pata_get_highbyte();
+        }
+
+        ata_rd_disable();
+        ata_ctl_high();
     }
-    ata_rd_disable();
-    ata_ctl_high();
+}
+
+
+void pata_write_bytes ( uint8_t *buffer, uint16_t bytes )
+{
+    uint16_t i, a;
+    uint8_t blocks;
+
+    a = 0;
+    for ( blocks = bytes / PATA_BLOCKLEN ; blocks ; blocks-- ) {
+        /* Wait for BSY goes low and DRQ goes high */
+        while ( pata_bsy() & !pata_drq() );
+
+        configure_port_data_write();
+
+        set_io_register ( PATA_RW_DATA_REGISTER );
+        ata_wr_enable();
+        
+        for ( i = 0; i < PATA_BLOCKLEN / 2; i++ ) {
+            pata_set_highbyte ( buffer[a + 1] );
+            pata_set_lowbyte ( buffer[a] );
+            a += 2;
+        }
+        ata_wr_disable();
+        ata_ctl_high();
+
+        configure_port_data_read();
+
+    }
 }
 
 void ata_identify()
@@ -195,16 +236,13 @@ void ata_identify()
     uint16_t word[256], n;
 
     while ( pata_bsy() );
-    write_io_register ( PATA_WR_COMMAND_REGISTER, CMD_IDENTIFY_DEVICE );
-
-    /* Wait for BSY goes low and DRQ goes high */
-    while ( pata_bsy() & !pata_drq() );
+    write_io_register ( PATA_W_COMMAND_REGISTER, CMD_IDENTIFY_DEVICE );
 
     pata_read_bytes ( buffer, 512 );
 
     i = 0;
     for ( n = 0; n < 512; n += 2 ) {
-        word[i] = ( ( buffer[n] << 8 ) | buffer[n + 1] );
+        word[i] = ( ( buffer[n + 1] << 8 ) | buffer[n] );
         i++;
     }
 
@@ -231,6 +269,8 @@ void ata_identify()
     uart_putc ( '\n' );
     uart_puts_p ( PSTR ( "Model number: " ) );
     for ( uint8_t i = 27; i <= 46; i++ ) {
+        uart_putc ( word[i] >> 8 );
+        uart_putc ( word[i] & 0x00FF );
     }
     uart_putc ( '\n' );
     uart_puts_p ( PSTR ( "Number of current logical cylinders: " ) );
@@ -256,6 +296,7 @@ void ata_identify()
  * Public functions
  */
 
+uint8_t data2_buffer[4096];
 uint8_t pata_init ()
 {
 
@@ -266,36 +307,58 @@ uint8_t pata_init ()
     while ( ( !pata_rdy() ) & pata_bsy() );
 
     /*set drive 0 to LBA mode*/
-    write_io_register ( PATA_WR_DEVICE_CONTROL_REGISTER, ATA_LBA_DRIVE_0 );
+    write_io_register ( PATA_W_DEVICE_CONTROL_REGISTER, ATA_LBA_DRIVE_0 );
     while ( ( !pata_rdy() ) & pata_bsy() );
 
     /*recalibrate*/
-    write_io_register ( PATA_WR_COMMAND_REGISTER, CMD_RECALIBRATE );
+    write_io_register ( PATA_W_COMMAND_REGISTER, CMD_RECALIBRATE );
     while ( pata_bsy() );
 
     uart_puts_p ( PSTR ( "disk is now ready\n" ) );
 
     ata_identify();
 
-    return 1;
+    return 0;
 }
 
 uint8_t pata_read_block ( uint32_t addr, uint8_t *buffer )
 {
-    return 1;
+    return pata_read_multiblock ( addr, buffer, 1 );
 }
 
 uint8_t pata_write_block ( uint32_t addr, uint8_t *buffer )
 {
-    return 1;
+    return pata_write_multiblock ( addr, buffer, 1 );
 }
 
 uint8_t pata_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks )
 {
-    return 1;
+    write_io_register ( PATA_RW_SECTOR_COUNT_REGISTER,    numblocks );
+
+    write_io_register ( PATA_RW_SECTOR_NUMBER_REGISTER,   ( uint8_t ) addr );
+    write_io_register ( PATA_RW_CYLINDER_LOW_REGISTER,    ( uint8_t ) ( addr >> 8 ) );
+    write_io_register ( PATA_RW_CYLINDER_HIGH_REGISTER,   ( uint8_t ) ( addr >> 16 ) );
+    write_io_register ( PATA_RW_DEVICE_HEAD_REGISTER,     ( ( uint8_t ) ( addr >> 24 ) & 0x0F ) | ATA_LBA_DRIVE_0 );
+
+    write_io_register ( PATA_W_COMMAND_REGISTER,         CMD_READ_SECTORS );
+
+    pata_read_bytes ( buffer, numblocks * PATA_BLOCKLEN );
+
+    return 0;
 }
 
 uint8_t pata_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks )
 {
-    return 1;
+    write_io_register ( PATA_RW_SECTOR_COUNT_REGISTER,    numblocks );
+
+    write_io_register ( PATA_RW_SECTOR_NUMBER_REGISTER,   ( uint8_t ) addr );
+    write_io_register ( PATA_RW_CYLINDER_LOW_REGISTER,    ( uint8_t ) ( addr >> 8 ) );
+    write_io_register ( PATA_RW_CYLINDER_HIGH_REGISTER,   ( uint8_t ) ( addr >> 16 ) );
+    write_io_register ( PATA_RW_DEVICE_HEAD_REGISTER,     ( ( uint8_t ) ( addr >> 24 ) & 0x0F ) | ATA_LBA_DRIVE_0 );
+
+    write_io_register ( PATA_W_COMMAND_REGISTER,         CMD_WRITE_SECTORS );
+
+    pata_write_bytes ( buffer, numblocks * PATA_BLOCKLEN );
+
+    return 0;
 }

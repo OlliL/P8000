@@ -15,10 +15,11 @@ OBJS +=  \
 wdc_avr.o \
 wdc_main.o \
 wdc_drv_mmc.o \
-wdc_drv_mmc_perf.o \
+wdc_drv_pata.o \
 uart.o \
 wdc_if_p8000.o \
 wdc_if_disk.o \
+wdc_if_disk_perf.o \
 wdc_par.o \
 wdc_ram.o
 

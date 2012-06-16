@@ -39,7 +39,7 @@ C_SRCS +=  \
 ../wdc_drv_pata.c \
 ../wdc_main.c \
 ../wdc_drv_mmc.c \
-../wdc_drv_mmc_perf.c \
+../wdc_if_disk_perf.c \
 ../uart.c \
 ../wdc_if_p8000.c \
 ../wdc_if_disk.c \
@@ -58,7 +58,7 @@ wdc_avr.o \
 wdc_drv_pata.o \
 wdc_main.o \
 wdc_drv_mmc.o \
-wdc_drv_mmc_perf.o \
+wdc_if_disk_perf.o \
 uart.o \
 wdc_if_p8000.o \
 wdc_if_disk.o \
@@ -71,7 +71,7 @@ wdc_avr.o \
 wdc_drv_pata.o \
 wdc_main.o \
 wdc_drv_mmc.o \
-wdc_drv_mmc_perf.o \
+wdc_if_disk_perf.o \
 uart.o \
 wdc_if_p8000.o \
 wdc_if_disk.o \
@@ -84,7 +84,7 @@ wdc_avr.d \
 wdc_drv_pata.d \
 wdc_main.d \
 wdc_drv_mmc.d \
-wdc_drv_mmc_perf.d \
+wdc_if_disk_perf.d \
 uart.d \
 wdc_if_p8000.d \
 wdc_if_disk.d \
@@ -97,7 +97,7 @@ wdc_avr.d \
 wdc_drv_pata.d \
 wdc_main.d \
 wdc_drv_mmc.d \
-wdc_drv_mmc_perf.d \
+wdc_if_disk_perf.d \
 uart.d \
 wdc_if_p8000.d \
 wdc_if_disk.d \
@@ -138,7 +138,7 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 ./%.o: .././%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : (AVR_8_bit_GNU_Toolchain_3.4.0_663) 4.6.2
-	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Studio 6.0\extensions\Atmel\AVRGCC\3.4.0.65\AVRToolchain\bin\avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -O1 -ffunction-sections -fpack-struct -fshort-enums -Wall -Wundef -Werror -pedantic -pedantic-errors -c -std=c99 -save-temps -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"  -mmcu=atmega1284p   -o"$@" "$<" 
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Studio 6.0\extensions\Atmel\AVRGCC\3.4.0.65\AVRToolchain\bin\avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -O1 -ffunction-sections -fpack-struct -fshort-enums -c -std=gnu99 -save-temps -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"  -mmcu=atmega1284p   -o"$@" "$<" 
 	@echo Finished building: $<
 
 
