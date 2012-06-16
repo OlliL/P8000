@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_pata.c,v 1.5 2012/06/16 00:33:26 olivleh1 Exp $
+ * $Id: wdc_drv_pata.c,v 1.6 2012/06/16 08:39:01 olivleh1 Exp $
  */
 
 #include "wdc_config.h"
@@ -40,14 +40,14 @@ uint8_t pata_bsy();
 uint8_t pata_rdy();
 uint8_t pata_drq();
 void ata_identify();
-void pata_set_highbyte(uint8_t byte);
-void pata_set_lowbyte(uint8_t byte);
+void pata_set_highbyte ( uint8_t byte );
+void pata_set_lowbyte ( uint8_t byte );
 uint8_t pata_get_highbyte();
 uint8_t pata_get_lowbyte();
-void set_io_register( uint8_t ioreg );
-uint8_t read_io_register( uint8_t ioreg );
-void write_io_register( uint8_t ioreg, uint8_t byte );
-uint16_t pata_read_single_word ();
+void set_io_register ( uint8_t ioreg );
+uint8_t read_io_register ( uint8_t ioreg );
+void write_io_register ( uint8_t ioreg, uint8_t byte );
+void pata_read_bytes ( uint8_t *buffer, uint16_t bytes );
 
 
 /*
@@ -72,17 +72,17 @@ uint16_t pata_read_single_word ();
 
 uint8_t pata_rdy()
 {
-    return (read_io_register ( PATA_RD_STATUS_REGISTER ) & ATA_STAT_RDY )?1:0;
+    return ( read_io_register ( PATA_RD_STATUS_REGISTER ) & ATA_STAT_RDY ) ? 1 : 0;
 }
 
 uint8_t pata_bsy()
 {
-    return (read_io_register ( PATA_RD_STATUS_REGISTER ) & ATA_STAT_BSY )?1:0;
+    return ( read_io_register ( PATA_RD_STATUS_REGISTER ) & ATA_STAT_BSY ) ? 1 : 0;
 }
 
 uint8_t pata_drq()
 {
-    return (read_io_register ( PATA_RD_STATUS_REGISTER ) & ATA_STAT_DRQ )?1:0;
+    return ( read_io_register ( PATA_RD_STATUS_REGISTER ) & ATA_STAT_DRQ ) ? 1 : 0;
 }
 
 void set_io_register ( uint8_t ioreg )
@@ -128,7 +128,7 @@ uint8_t pata_get_lowbyte ()
     byte = port_data_get();
     disable_rdwrtoata();
 
-    return(byte);
+    return ( byte );
 }
 
 uint8_t pata_get_highbyte ()
@@ -170,32 +170,29 @@ void write_io_register ( uint8_t ioreg, uint8_t byte )
     ata_ctl_high();
 }
 
-uint16_t pata_read_single_word ()
+void pata_read_bytes ( uint8_t *buffer, uint16_t bytes )
 {
-    uint16_t word;
-    uint8_t byte_l;
-    uint8_t byte_h;
+    uint8_t byte_l, byte_h;
+    uint16_t i;
 
     configure_port_data_read();
 
     set_io_register ( PATA_RD_DATA_REGISTER );
     ata_rd_enable();
-    byte_l = pata_get_lowbyte();
-    byte_h = pata_get_highbyte();
+    for ( i = 0; i < bytes / 2; i++ ) {
+        byte_l = pata_get_lowbyte();
+        byte_h = pata_get_highbyte();
+        *buffer++ = byte_h;
+        *buffer++ = byte_l;
+    }
     ata_rd_disable();
     ata_ctl_high();
-
-    word = byte_h << 8;
-    word |= byte_l;
-
-    return ( word );
 }
 
 void ata_identify()
 {
-    uint32_t dword;
-    uint16_t word;
-    uint8_t byte_l, byte_h;
+    uint8_t buffer[512], i;
+    uint16_t word[256], n;
 
     while ( pata_bsy() );
     write_io_register ( PATA_WR_COMMAND_REGISTER, CMD_IDENTIFY_DEVICE );
@@ -203,92 +200,54 @@ void ata_identify()
     /* Wait for BSY goes low and DRQ goes high */
     while ( pata_bsy() & !pata_drq() );
 
-    word = pata_read_single_word(); // General configuration bit
-    word = pata_read_single_word();
+    pata_read_bytes ( buffer, 512 );
+
+    i = 0;
+    for ( n = 0; n < 512; n += 2 ) {
+        word[i] = ( ( buffer[n] << 8 ) | buffer[n + 1] );
+        i++;
+    }
+
     uart_puts_p ( PSTR ( "Number of logical cylinders: " ) );
-    uart_putw_dec ( word );
+    uart_putw_dec ( word[1] );
     uart_putc ( '\n' );
-    word = pata_read_single_word(); // Specific configuration
-    word = pata_read_single_word();
     uart_puts_p ( PSTR ( "Number of logical heads: " ) );
-    uart_putw_dec ( word );
+    uart_putw_dec ( word[3] );
     uart_putc ( '\n' );
-    word = pata_read_single_word();
-    word = pata_read_single_word();
-    word = pata_read_single_word();
     uart_puts_p ( PSTR ( "Number of logical sectors per logical track: " ) );
-    uart_putw_dec ( word );
+    uart_putw_dec ( word[6] );
     uart_putc ( '\n' );
-    word = pata_read_single_word(); // CompactFlash
-    word = pata_read_single_word(); // CompactFlash
-    word = pata_read_single_word(); // Retired
     uart_puts_p ( PSTR ( "Serial number: " ) );
-    for ( uint8_t i = 0; i < 10; i++ ) {
-        word = pata_read_single_word();
-        byte_h = word >> 8;
-        byte_l = word & 0x00FF;
-        uart_putc ( byte_h );
-        uart_putc ( byte_l );
+    for ( i = 10; i <= 19; i++ ) {
+        uart_putc ( word[i] >> 8 );
+        uart_putc ( word[i] & 0x00FF );
     }
     uart_putc ( '\n' );
-    word = pata_read_single_word(); // Retired
-    word = pata_read_single_word(); // Retired
-    word = pata_read_single_word(); // Obsolete
     uart_puts_p ( PSTR ( "Firmware revision: " ) );
-    for ( uint8_t i = 0; i < 4; i++ ) {
-        word = pata_read_single_word();
-        byte_h = word >> 8;
-        byte_l = word & 0x00FF;
-        uart_putc ( byte_h );
-        uart_putc ( byte_l );
+    for ( i = 23; i <= 26; i++ ) {
+        uart_putc ( word[i] >> 8 );
+        uart_putc ( word[i] & 0x00FF );
     }
     uart_putc ( '\n' );
     uart_puts_p ( PSTR ( "Model number: " ) );
-    for ( uint8_t i = 0; i < 20; i++ ) {
-        word = pata_read_single_word();
-        byte_h = word >> 8;
-        byte_l = word & 0x00FF;
-        uart_putc ( byte_h );
-        uart_putc ( byte_l );
+    for ( uint8_t i = 27; i <= 46; i++ ) {
     }
     uart_putc ( '\n' );
-    word = pata_read_single_word(); // no idea
-    word = pata_read_single_word(); // Reserved
-    word = pata_read_single_word(); // Capabilities
-    word = pata_read_single_word(); // Capabilities
-    word = pata_read_single_word(); // Obsolete
-    word = pata_read_single_word(); // Obsolete
-    word = pata_read_single_word(); // Reserved
-    word = pata_read_single_word();
     uart_puts_p ( PSTR ( "Number of current logical cylinders: " ) );
-    uart_putw_dec ( word );
+    uart_putw_dec ( word[54] );
     uart_putc ( '\n' );
-    word = pata_read_single_word();
     uart_puts_p ( PSTR ( "Number of current logical heads: " ) );
-    uart_putw_dec ( word );
+    uart_putw_dec ( word[55] );
     uart_putc ( '\n' );
-    word = pata_read_single_word();
     uart_puts_p ( PSTR ( "Number of current logical sectors per track: " ) );
-    uart_putw_dec ( word );
+    uart_putw_dec ( word[56] );
     uart_putc ( '\n' );
-    word = pata_read_single_word();
-    dword = word;
-    word = pata_read_single_word();
-    dword |= ( uint32_t ) word << 16;
     uart_puts_p ( PSTR ( "Current capacity in sectors: " ) );
-    uart_putdw_dec ( dword );
+    uart_putdw_dec (  word[57] | ( uint32_t ) word[58] << 16 );
     uart_putc ( '\n' );
-    word = pata_read_single_word(); // Reserved
-    word = pata_read_single_word();
-    dword = word;
-    word = pata_read_single_word();
-    dword |= ( uint32_t ) word << 16;
     uart_puts_p ( PSTR ( "Total number of user addressable sectors (LBA mode only): " ) );
-    uart_putdw_dec ( dword );
+    uart_putdw_dec (  word[60] | ( uint32_t ) word[61] << 16 );
     uart_putc ( '\n' );
-    word = pata_read_single_word(); // Obsolete
-    for ( uint8_t i = 0; i < 193; i++ )
-        word = pata_read_single_word(); // ignore it
 }
 
 
