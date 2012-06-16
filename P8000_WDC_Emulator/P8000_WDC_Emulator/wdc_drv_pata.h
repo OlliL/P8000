@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_pata.h,v 1.4 2012/06/15 22:42:42 olivleh1 Exp $
+ * $Id: wdc_drv_pata.h,v 1.5 2012/06/16 00:33:26 olivleh1 Exp $
  */
 
 #ifndef WDC_DRV_PATA_H_
@@ -50,8 +50,8 @@ extern uint8_t pata_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t n
 #define ATA_STAT_IDX  0x02  // ATA index
 #define ATA_STAT_ERR  0x01  // ATA error
 
-#define ATA_DH_DEV0 0xE0
-#define ATA_DH_DEV1 0xF0
+#define ATA_LBA_DRIVE_0 0xE0
+#define ATA_LBA_DRIVE_1 0xF0
 
 //ATA commands (from ATA-3),
 #define CMD_CFA_ERASE_SECTORS            0xC0
