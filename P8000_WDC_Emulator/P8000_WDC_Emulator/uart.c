@@ -174,6 +174,7 @@ void uart_puts_p(PGM_P str)
 
 uint8_t uart_getc()
 {
+    uint8_t b;
     /* wait until receive buffer is full */
 #if USE_SLEEP
     uint8_t sreg = SREG;
@@ -187,7 +188,7 @@ uint8_t uart_getc()
     while(!(UCSRA & (1 << RXC)));
 #endif
 
-    uint8_t b = UDR;
+    b = UDR;
     if(b == '\r')
         b = '\n';
 

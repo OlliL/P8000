@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.19 2012/06/16 23:41:42 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.20 2012/06/17 13:21:55 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -179,7 +179,7 @@ uint8_t mmc_init ()
 {
     uint16_t t16 = 0;
     uint8_t a;
-
+    uint8_t cmd[6];
     for ( a = 0; a < 200; a++ ) {
         nop();
     };
@@ -198,7 +198,12 @@ uint8_t mmc_init ()
     /*
      * send CMD0
      */
-    uint8_t cmd[] = {CMD0, 0x00, 0x00, 0x00, 0x00, 0x95};
+    cmd[0] = CMD0;
+    cmd[1] = 0x00;
+    cmd[2] = 0x00;
+    cmd[3] = 0x00;
+    cmd[4] = 0x00;
+    cmd[5] = 0x95;
     while ( mmc_cmd ( cmd ) != 1 ) {
         if ( t16++ > 1000 ) {
             mmc_disable();

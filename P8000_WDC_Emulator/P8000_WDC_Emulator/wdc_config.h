@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.18 2012/06/16 23:41:42 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.19 2012/06/17 13:21:55 olivleh1 Exp $
  */
 
 
@@ -121,7 +121,7 @@
 #define MMC_MULTIBLOCK 1
 
 #define MEASURE_DISK_PERFORMANCE 1
-//#undef  MEASURE_DISK_PERFORMANCE
+#undef  MEASURE_DISK_PERFORMANCE
 
 #define DEBUG 1
 

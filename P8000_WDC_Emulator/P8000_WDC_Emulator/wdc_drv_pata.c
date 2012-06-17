@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_pata.c,v 1.8 2012/06/16 23:41:42 olivleh1 Exp $
+ * $Id: wdc_drv_pata.c,v 1.9 2012/06/17 13:21:55 olivleh1 Exp $
  */
 
 #include "wdc_config.h"
@@ -39,6 +39,7 @@
 uint8_t pata_bsy();
 uint8_t pata_rdy();
 uint8_t pata_drq();
+uint8_t pata_err();
 void ata_identify();
 void pata_set_highbyte ( uint8_t byte );
 void pata_set_lowbyte ( uint8_t byte );
@@ -60,6 +61,7 @@ void pata_read_bytes ( uint8_t *buffer, uint16_t bytes );
 #define PATA_W_DEVICE_CONTROL_REGISTER   0x0B  /* 0b10011 */
 #define PATA_R_STATUS_REGISTER           0x0F  /* 0b01111 */
 #define PATA_R_ALTERNATE_STATUS_REGISTER 0x0B  /* 0b10011 */
+#define PATA_R_ERROR_REGISTER            0x0C  /* 0b01100 */
 #define PATA_W_FEATURE_REGISTER          0x0C  /* 0b01100 */
 #define PATA_W_COMMAND_REGISTER          0x0F  /* 0b01111 */
 
@@ -91,6 +93,11 @@ uint8_t pata_bsy()
 uint8_t pata_drq()
 {
     return ( read_io_register ( PATA_R_STATUS_REGISTER ) & ATA_STAT_DRQ ) ? 1 : 0;
+}
+
+uint8_t pata_err()
+{
+    return ( read_io_register ( PATA_R_STATUS_REGISTER ) & ATA_STAT_ERR ) ? 1 : 0;
 }
 
 void set_io_register ( uint8_t ioreg )
@@ -278,6 +285,9 @@ void ata_identify()
         uart_putc ( word[i] & 0x00FF );
     }
     uart_putc ( '\n' );
+    uart_puts_p ( PSTR ( "Capabilities: " ) );
+    uart_putw_dec ( word[49] );
+    uart_putc ( '\n' );
     uart_puts_p ( PSTR ( "Number of current logical cylinders: " ) );
     uart_putw_dec ( word[54] );
     uart_putc ( '\n' );
@@ -293,6 +303,9 @@ void ata_identify()
     uart_puts_p ( PSTR ( "Total number of user addressable sectors (LBA mode only): " ) );
     uart_putdw_dec (  word[60] | ( uint32_t ) word[61] << 16 );
     uart_putc ( '\n' );
+    uart_puts_p ( PSTR ( "Minimum PIO transfer cycle time without flow control: " ) );
+    uart_putdw_dec (  word[67] );
+    uart_puts_p ( PSTR ( "ns\n" ) );
 }
 
 
@@ -301,14 +314,10 @@ void ata_identify()
  * Public functions
  */
 
-uint8_t data2_buffer[512];
-//uint8_t data3_buffer[512];
-
 uint8_t pata_init ()
 {
-    uint16_t a;
 
-    // is needed for some disks (for example Maxtor 6L080J4)
+    /* is needed for some disks (for example Maxtor 6L080J4) */
     _delay_ms ( 200 );
 
     uart_puts_p ( PSTR ( "Init start\n" ) );
@@ -318,25 +327,30 @@ uint8_t pata_init ()
     write_io_register ( PATA_RW_DEVICE_HEAD_REGISTER, ATA_LBA_DRIVE_0 );
     while ( ( !pata_rdy() ) & pata_bsy() );
 
-/*
+    /*recalibrate*/
+    write_io_register ( PATA_W_COMMAND_REGISTER, CMD_RECALIBRATE );
+    while ( pata_bsy() );
+
+/*  CHS Mode, Software Reset, PIO mode without IORDY
+    write_io_register ( PATA_RW_DEVICE_HEAD_REGISTER, 0 );
+    while ( ( pata_drq() ) & pata_bsy() );
+
+
+    write_io_register ( PATA_W_DEVICE_CONTROL_REGISTER, 0x40 | 0x20 );
+    _delay_ms(20);
+    write_io_register ( PATA_W_DEVICE_CONTROL_REGISTER, 0x20 );
+    _delay_ms(20);
+    while ( ( !pata_rdy() ) & pata_bsy() );
+
     write_io_register ( PATA_W_FEATURE_REGISTER, 3 );
     write_io_register ( PATA_RW_SECTOR_COUNT_REGISTER,    1 );
     write_io_register ( PATA_W_COMMAND_REGISTER,    CMD_SET_FEATURES );
     while ( pata_bsy() );
 */
-
-    /*recalibrate*/
-    write_io_register ( PATA_W_COMMAND_REGISTER, CMD_RECALIBRATE );
-    while ( pata_bsy() );
-
     uart_puts_p ( PSTR ( "disk is now ready\n" ) );
 
-//    ata_identify();
+    ata_identify();
 
-    pata_read_block(0,data2_buffer);
-            for ( a = 0 ; a < 512 ; a++ )
-            uart_putc_hex ( data2_buffer[a] );
-while(1);
     return 0;
 }
 
@@ -352,7 +366,7 @@ uint8_t pata_write_block ( uint32_t addr, uint8_t *buffer )
 
 uint8_t pata_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks )
 {
-    
+
     write_io_register ( PATA_RW_SECTOR_COUNT_REGISTER,    numblocks );
 
     write_io_register ( PATA_RW_SECTOR_NUMBER_REGISTER,   ( uint8_t ) addr );
@@ -364,10 +378,7 @@ uint8_t pata_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
 
     pata_read_bytes ( buffer, numblocks * PATA_BLOCKLEN );
 
-    read_io_register ( PATA_R_ALTERNATE_STATUS_REGISTER );
-    read_io_register ( PATA_R_STATUS_REGISTER );
-
-    return 0;
+    return pata_err();
 }
 
 uint8_t pata_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks )
@@ -386,8 +397,5 @@ uint8_t pata_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblock
     /* wait until drive completed write */
     while(pata_bsy());
 
-    read_io_register ( PATA_R_ALTERNATE_STATUS_REGISTER );
-    read_io_register ( PATA_R_STATUS_REGISTER );
-    
-    return 0;
+    return pata_err();
 }

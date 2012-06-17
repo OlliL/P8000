@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_par.c,v 1.5 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_par.c,v 1.6 2012/06/17 13:21:55 olivleh1 Exp $
  */
 
 #include <avr/pgmspace.h>
@@ -205,8 +205,9 @@ uint16_t wdc_get_hdd_cylinder()
 
 void wdc_set_disk_invalid()
 {
-    valid_disk = 0;
     uint8_t i;
+
+    valid_disk = 0;
     for ( i = 0; i < 128; i++ )
         par_table[i] = par_tab_new_dsk[i];
 }
