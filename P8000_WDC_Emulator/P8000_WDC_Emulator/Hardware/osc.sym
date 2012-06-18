@@ -1,0 +1,68 @@
+v 20080127 1
+P 2000 900 1700 900 1 0 0
+{
+T 1800 950 5 8 1 1 0 0 1
+pinnumber=8
+T 1800 850 5 8 0 1 0 2 1
+pinseq=3
+T 1650 900 9 8 1 1 0 6 1
+pinlabel=Out
+T 1650 900 5 8 0 1 0 8 1
+pintype=out
+}
+P 1000 0 1000 300 1 0 0
+{
+T 1050 200 5 8 1 1 0 2 1
+pinnumber=7
+T 950 200 5 8 0 1 0 8 1
+pinseq=2
+T 1000 350 9 8 1 1 0 3 1
+pinlabel=GND
+T 1000 500 5 8 0 1 0 3 1
+pintype=pwr
+}
+P 0 900 300 900 1 0 0
+{
+T 200 950 5 8 1 1 0 6 1
+pinnumber=14
+T 200 850 5 8 0 1 0 8 1
+pinseq=4
+T 350 900 9 8 1 1 0 0 1
+pinlabel=Vcc
+T 350 900 5 8 0 1 0 2 1
+pintype=pwr
+}
+B 300 300 1400 900 3 0 0 0 -1 -1 0 -1 -1 -1 -1 -1
+T 1900 1300 8 10 1 1 0 6 1
+refdes=U?
+T 300 1300 9 10 1 0 0 0 1
+OSC
+T 300 1550 5 10 0 0 0 0 1
+device=OSC
+T 300 1750 5 10 0 0 0 0 1
+footprint=OSC__Crystek_CCHD-950
+T 300 1950 5 10 0 0 0 0 1
+author=Stefan Salewski
+T 300 2150 5 10 0 0 0 0 1
+documentation=http://www.crystekcrystals.com/crystal/clock/clock-complete.asp
+T 300 2350 5 10 0 0 0 0 1
+description=Oscillator Crystek_CCHD-950
+T 300 2550 5 10 0 0 0 0 1
+numslots=0
+T 300 2750 5 10 0 0 0 0 1
+dist-license=GPL
+T 300 2950 5 10 0 0 0 0 1
+use-license=unlimited
+T 300 3150 5 10 0 0 0 0 1
+comment=generated with Python script tragesym
+L 800 1000 900 1000 3 0 0 0 -1 -1
+L 900 1000 900 800 3 0 0 0 -1 -1
+L 900 800 1000 800 3 0 0 0 -1 -1
+L 1000 800 1000 1000 3 0 0 0 -1 -1
+L 1000 1000 1100 1000 3 0 0 0 -1 -1
+L 1100 1000 1100 800 3 0 0 0 -1 -1
+L 700 800 800 800 3 0 0 0 -1 -1
+L 800 800 800 1000 3 0 0 0 -1 -1
+L 1100 800 1200 800 3 0 0 0 -1 -1
+L 1200 800 1200 1000 3 0 0 0 -1 -1
+L 1200 1000 1300 1000 3 0 0 0 -1 -1
