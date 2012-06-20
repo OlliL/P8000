@@ -1,4 +1,4 @@
-update=19/06/2012 16:43:42
+update=20/06/2012 19:17:38
 version=1
 last_client=eeschema
 [pcbnew]
@@ -141,4 +141,5 @@ LibName29=contrib
 LibName30=valves
 LibName31=w_device
 LibName32=sdcard-cache
-LibName33=olli
+LibName33=P8000_WDC_Emulator
+LibName34=maxim_olli
