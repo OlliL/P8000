@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.19 2012/06/17 13:21:55 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.20 2012/06/20 18:58:24 olivleh1 Exp $
  */
 
 
@@ -50,7 +50,6 @@
 #define PORT_ADRDEC     PORTD
 #define PIN_ADRDEC      PIND
 #define DDR_ADRDEC      DDRD
-
 
 
 #define PIN_DATA_D0         PINA0
@@ -81,7 +80,6 @@
 #define PIN_MMC         PINB
 #define DDR_MMC         DDRB
 
-#define PIN_MMC_CS      PINB4       /* AVR Port where the MMC Card /CS signal is connected to */
 #define PIN_MMC_MOSI    PINB5       /* AVR Port: MOSI / MMC Card: Data-In */
 #define PIN_MMC_MISO    PINB6       /* AVR Port: MISO / MMC Card: Data-Out */
 #define PIN_MMC_SCK     PINB7       /* AVR Port: SCk / MMC Card: CLK */

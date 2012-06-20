@@ -29,7 +29,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.29 2012/06/16 19:34:39 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.30 2012/06/20 18:58:24 olivleh1 Exp $
  *
  * TODO:  - right now, BTT entries are not taken into account
  */
@@ -54,19 +54,14 @@
 
 void atmega_setup ( void );
 
-#ifdef MEASURE_DISK_PERFORMANCE
-extern void measure_performance();
-volatile uint32_t overflow = 0;
-ISR ( TIMER0_OVF_vect )
-{
-    overflow ++;
-}
-#else
-
-/* switched from local to global for keeping an eye on memory usage */
 uint8_t data_buffer[4096];
 uint8_t cmd_buffer[9];
 
+#ifdef MEASURE_DISK_PERFORMANCE
+extern void measure_performance();
+#else
+
+/* switched from local to global for keeping an eye on memory usage */
 extern uint8_t valid_disk;
 
 #endif

@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_disk_perf.c,v 1.9 2012/06/17 16:40:42 olivleh1 Exp $
+ * $Id: wdc_if_disk_perf.c,v 1.10 2012/06/20 18:58:24 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -44,11 +44,15 @@
 #ifdef MEASURE_DISK_PERFORMANCE
 #define BLOCKNO 300000
 
-extern  uint32_t overflow;
+volatile uint32_t overflow = 0;
+ISR ( TIMER0_OVF_vect )
+{
+    overflow ++;
+}
 
 /* switched from local to global for keeping an eye on memory usage */
-uint8_t data_buffer[4096];
-uint8_t cmd_buffer[9];
+extern uint8_t data_buffer[];
+extern uint8_t cmd_buffer[];
 
 
 void test_write4k ( uint8_t numblocks, uint8_t nr_of_tests )
