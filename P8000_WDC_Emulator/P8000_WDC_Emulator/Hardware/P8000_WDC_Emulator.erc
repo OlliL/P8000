@@ -1,0 +1,9 @@
+ERC Bericht (18.06.2012 21:14:30)
+
+***** Schaltplan /
+ErrType(3): Pin ist mit anderen Pins verbunden, wird jedoch von keinem angesteuert
+    @ (11,6500 ",8,5500 "): Pin 1 (power_in) von Bauteil #PWR01 wird nicht angesteuert (Netz 121).
+ErrType(3): Pin ist mit anderen Pins verbunden, wird jedoch von keinem angesteuert
+    @ (11,2000 ",4,4500 "): Pin 1 (power_in) von Bauteil #PWR041 wird nicht angesteuert (Netz 1).
+
+ >> ERC Fehler: 0
