@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = 19.06.2012 08:11:34
+Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = 21/06/2012 22:07:51
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -46,7 +46,7 @@ BeginCmp
 TimeStamp = /4FDF74B6;
 Reference = 1R4;
 ValeurCmp = 220;
-IdModule  = R5;
+IdModule  = R1;
 EndCmp
 
 BeginCmp
@@ -95,7 +95,7 @@ BeginCmp
 TimeStamp = /4FDF6D7E;
 Reference = 2R4;
 ValeurCmp = 220;
-IdModule  = R5;
+IdModule  = R1;
 EndCmp
 
 BeginCmp
@@ -116,7 +116,7 @@ BeginCmp
 TimeStamp = /4FDF60A7;
 Reference = 3R4;
 ValeurCmp = 220;
-IdModule  = R5;
+IdModule  = R1;
 EndCmp
 
 BeginCmp
@@ -207,7 +207,7 @@ BeginCmp
 TimeStamp = /4FDE10FA;
 Reference = D1;
 ValeurCmp = ATMEGA1284-P;
-IdModule  = DIP-40__1000;
+IdModule  = DIP-40__600;
 EndCmp
 
 BeginCmp
@@ -218,7 +218,7 @@ IdModule  = DIP-16__300;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDF606E;
+TimeStamp = /4FE371A3;
 Reference = D3;
 ValeurCmp = LM317;
 IdModule  = TO92;
@@ -239,7 +239,7 @@ IdModule  = DIP-14__300;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDF6517;
+TimeStamp = /4FE09BE0;
 Reference = D8;
 ValeurCmp = 74HCT04;
 IdModule  = DIP-14__300;
@@ -305,28 +305,21 @@ BeginCmp
 TimeStamp = /4FDF534E;
 Reference = R3;
 ValeurCmp = 10k;
-IdModule  = R5;
+IdModule  = R1;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDF60AB;
+TimeStamp = /4FE094D5;
 Reference = R5;
-ValeurCmp = 330;
-IdModule  = R5;
-EndCmp
-
-BeginCmp
-TimeStamp = /4FDF4D3B;
-Reference = R6;
-ValeurCmp = 4k7;
+ValeurCmp = R-SIL_5;
 IdModule  = pin_strip_6;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDF7282;
-Reference = R7;
-ValeurCmp = 4k7;
-IdModule  = R5;
+TimeStamp = /4FDF60AB;
+Reference = R6;
+ValeurCmp = 330;
+IdModule  = R1;
 EndCmp
 
 BeginCmp
@@ -337,10 +330,10 @@ IdModule  = PCB_PUSH;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDE2F46;
+TimeStamp = /4FE36B44;
 Reference = X1;
-ValeurCmp = DB9;
-IdModule  = DB9FC;
+ValeurCmp = CONN_5X2;
+IdModule  = pin_array_6x2;
 EndCmp
 
 BeginCmp
@@ -365,17 +358,31 @@ IdModule  = PIN_ARRAY_20X2;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDF8717;
+TimeStamp = /4FE2B9E3;
 Reference = X5;
-ValeurCmp = CONN_1;
-IdModule  = PIN_ARRAY_1;
+ValeurCmp = MINI_DIN_6;
+IdModule  = MINI_DIN6;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDF872A;
+TimeStamp = /4FE0905F;
 Reference = X6;
-ValeurCmp = CONN_1;
-IdModule  = PIN_ARRAY_1;
+ValeurCmp = 4_PIN_MOLEX;
+IdModule  = 4PIN_MOLEX;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FE091E5;
+Reference = X7;
+ValeurCmp = HDD_POWER;
+IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FE098BD;
+Reference = X8;
+ValeurCmp = EFS_26;
+IdModule  = EFS26;
 EndCmp
 
 EndListe

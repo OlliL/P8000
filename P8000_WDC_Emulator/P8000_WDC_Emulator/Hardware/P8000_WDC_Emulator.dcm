@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0  Date: 21/06/2012 21:09:16
+#
+$CMP LM317
+D Linear Regulator (adjustable)
+K POWER REGUL
+F regulator/lm117.pdf
+$ENDCMP
+#
+#End Doc Library
