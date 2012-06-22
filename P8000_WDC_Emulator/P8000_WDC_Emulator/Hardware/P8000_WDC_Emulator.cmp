@@ -1,4 +1,4 @@
-Cmp-Mod V01 Genere par PcbNew le 22/06/2012 14:56:30
+Cmp-Mod V01 Genere par PcbNew le 22/06/2012 22:29:37
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -347,7 +347,7 @@ BeginCmp
 TimeStamp = /4FDF5E6E;
 Reference = X3;
 ValeurCmp = SD-CON;
-IdModule  = sd_socket;
+IdModule  = sd_cocket_yamaichi_fps009_3001;
 EndCmp
 
 BeginCmp

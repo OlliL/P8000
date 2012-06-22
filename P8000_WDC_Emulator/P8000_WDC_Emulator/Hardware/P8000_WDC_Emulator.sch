@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date 22/06/2012 17:13:33
+EESchema Schematic File Version 2  date 22/06/2012 23:25:48
 LIBS:P8000_WDC_Emulator
 LIBS:power
 LIBS:device
@@ -38,13 +38,15 @@ encoding utf-8
 Sheet 1 1
 Title "P8000 WDC Emulator"
 Date "22 jun 2012"
-Rev "$Revision: 1.24 $"
+Rev "$Revision: 1.25 $"
 Comp ""
 Comment1 ""
 Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
+Text Notes 1450 5250 1    60   ~ 0
+US-Norm!! 7,2mm
 Wire Wire Line
 	9600 8500 9600 9050
 Wire Wire Line
