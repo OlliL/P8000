@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = 21/06/2012 22:07:51
+Cmp-Mod V01 Genere par PcbNew le 22/06/2012 14:56:30
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -361,7 +361,7 @@ BeginCmp
 TimeStamp = /4FE2B9E3;
 Reference = X5;
 ValeurCmp = MINI_DIN_6;
-IdModule  = MINI_DIN6;
+IdModule  = mini_din-M_DIN6;
 EndCmp
 
 BeginCmp

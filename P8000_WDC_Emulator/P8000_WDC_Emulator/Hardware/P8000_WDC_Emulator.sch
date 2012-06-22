@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date 21/06/2012 21:10:36
+EESchema Schematic File Version 2  date 22/06/2012 16:15:27
 LIBS:P8000_WDC_Emulator
 LIBS:power
 LIBS:device
@@ -37,8 +37,8 @@ $Descr A2 23400 16535
 encoding utf-8
 Sheet 1 1
 Title "P8000 WDC Emulator"
-Date "21 jun 2012"
-Rev "$Revision: 1.22 $"
+Date "22 jun 2012"
+Rev "$Revision: 1.23 $"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -162,7 +162,7 @@ Wire Wire Line
 Wire Wire Line
 	2400 4550 2100 4550
 Wire Wire Line
-	8350 8750 8950 8750
+	8950 9250 8050 9250
 Wire Wire Line
 	21300 6000 20800 6000
 Wire Wire Line
@@ -697,8 +697,6 @@ Wire Wire Line
 Wire Wire Line
 	10100 7500 9700 7500
 Wire Wire Line
-	8350 9250 8050 9250
-Wire Wire Line
 	8050 9450 8350 9450
 Connection ~ 8350 9350
 Wire Wire Line
@@ -728,7 +726,7 @@ Wire Wire Line
 Wire Wire Line
 	8750 9550 8750 9150
 Wire Wire Line
-	8350 8750 8350 9550
+	8350 9250 8350 9550
 Wire Bus Line
 	7900 3750 7900 8150
 Wire Wire Line
@@ -1309,10 +1307,10 @@ $EndComp
 $Comp
 L R-SIL_5 R5
 U 1 1 4FE094D5
-P 9250 8900
-F 0 "R5" H 9250 9200 50  0000 C CNN
-F 1 "R-SIL_5" H 9235 9120 50  0000 C CNN
-	1    9250 8900
+P 9250 9000
+F 0 "R5" H 9250 9300 50  0000 C CNN
+F 1 "R-SIL_5" H 9235 9220 50  0000 C CNN
+	1    9250 9000
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -2089,11 +2087,11 @@ F 1 "74HCT573" H 16700 8750 60  0000 C CNN
 $EndComp
 $Comp
 L 74HCT04 D8
-U 4 1 4FDF6517
+U 6 1 4FDF6517
 P 13500 10800
 F 0 "D8" H 13650 10900 40  0000 C CNN
 F 1 "74HCT04" H 13700 10700 40  0000 C CNN
-	4    13500 10800
+	6    13500 10800
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -2568,11 +2566,11 @@ F 1 "74HCT04" H 5650 2850 40  0000 C CNN
 $EndComp
 $Comp
 L 74HCT04 D8
-U 3 1 4FDE2FFE
+U 4 1 4FDE2FFE
 P 6150 7300
 F 0 "D8" H 6300 7400 40  0000 C CNN
 F 1 "74HCT04" H 6350 7200 40  0000 C CNN
-	3    6150 7300
+	4    6150 7300
 	1    0    0    -1  
 $EndComp
 $Comp
