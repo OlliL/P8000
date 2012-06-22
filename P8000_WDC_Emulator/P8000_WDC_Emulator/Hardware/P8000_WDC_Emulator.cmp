@@ -1,4 +1,4 @@
-Cmp-Mod V01 Genere par PcbNew le 22/06/2012 22:29:37
+Cmp-Mod V01 Genere par PcbNew le 23/06/2012 00:28:56
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -326,7 +326,7 @@ BeginCmp
 TimeStamp = /4FDF540D;
 Reference = SW1;
 ValeurCmp = SW_PUSH;
-IdModule  = PCB_PUSH;
+IdModule  = SW_6x6;
 EndCmp
 
 BeginCmp
