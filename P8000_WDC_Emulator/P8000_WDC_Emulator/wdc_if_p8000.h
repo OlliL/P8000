@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_p8000.h,v 1.10 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_if_p8000.h,v 1.11 2012/06/24 09:10:40 olivleh1 Exp $
  */
 
 #ifndef WDC_IF_P8000_H_
@@ -43,9 +43,10 @@
 #define DATA_CLEAR          0x00
 #define INFO_CLEAR          0x00
 
-#define INFO_STAT_GCMD      (1 << PIN_INFO_STATUS0)                                                            /* 0x01 */
-#define INFO_STAT_RDATA     (1 << PIN_INFO_STATUS1)                                                            /* 0x02 */
-#define INFO_STAT_WDATA     ((1 << PIN_INFO_STATUS0) | (1 << PIN_INFO_STATUS1))                                /* 0x03 */
+#define INFO_STAT_GCMD      ((1 << PIN_INFO_STATUS0)                                                    )      /* 0x01 */
+#define INFO_STAT_RDATA     (                          (1 << PIN_INFO_STATUS1)                          )      /* 0x02 */
+#define INFO_STAT_WDATA     ((1 << PIN_INFO_STATUS0) | (1 << PIN_INFO_STATUS1)                          )      /* 0x03 */
+#define _INFO_STAT_CRCERR   (                          (1 << PIN_INFO_STATUS1) | (1 << PIN_INFO_STATUS2))      /* 0x06 */
 #define INFO_STAT_ERROR     ((1 << PIN_INFO_STATUS0) | (1 << PIN_INFO_STATUS1) | (1 << PIN_INFO_STATUS2))      /* 0x07 */
 #define INFO_TR             (1 << PIN_INFO_TR)                                                                 /* 0x40 */
 
