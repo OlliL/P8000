@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date 22/06/2012 23:25:48
+EESchema Schematic File Version 2  date 23/06/2012 18:32:19
 LIBS:P8000_WDC_Emulator
 LIBS:power
 LIBS:device
@@ -37,16 +37,36 @@ $Descr A2 23400 16535
 encoding utf-8
 Sheet 1 1
 Title "P8000 WDC Emulator"
-Date "22 jun 2012"
-Rev "$Revision: 1.25 $"
+Date "23 jun 2012"
+Rev "$Revision: 1.26 $"
 Comp ""
 Comment1 ""
 Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text Notes 1450 5250 1    60   ~ 0
-US-Norm!! 7,2mm
+$Comp
+L VCC #PWR?
+U 1 1 4FE5DF87
+P 12150 2300
+F 0 "#PWR?" H 12150 2400 30  0001 C CNN
+F 1 "VCC" H 12150 2400 30  0000 C CNN
+	1    12150 2300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	12150 2300 12150 2450
+Wire Wire Line
+	12150 2450 12050 2450
+Wire Wire Line
+	12150 2850 12150 2650
+Wire Wire Line
+	12150 2650 12050 2650
+Connection ~ 10900 1900
+Wire Wire Line
+	10900 1900 10900 2550
+Wire Wire Line
+	10900 2550 11250 2550
 Wire Wire Line
 	9600 8500 9600 9050
 Wire Wire Line
@@ -359,7 +379,7 @@ Wire Wire Line
 Wire Wire Line
 	11550 5600 11400 5600
 Wire Wire Line
-	10500 2750 10700 2750
+	10700 2750 10500 2750
 Wire Wire Line
 	12650 4100 12650 3850
 Connection ~ 12250 3850
@@ -871,9 +891,7 @@ Wire Wire Line
 Wire Wire Line
 	6600 7300 7000 7300
 Wire Wire Line
-	10700 2750 10700 6350
-Wire Wire Line
-	10700 6350 11750 6350
+	11750 6350 10700 6350
 Wire Wire Line
 	11750 6350 11750 7950
 Wire Wire Line
@@ -1034,6 +1052,41 @@ Wire Wire Line
 Wire Wire Line
 	14550 4700 14550 5500
 Connection ~ 14550 5200
+Wire Wire Line
+	11250 2450 11000 2450
+Wire Wire Line
+	11000 2450 11000 2000
+Connection ~ 11000 2000
+Wire Wire Line
+	11250 2650 10700 2650
+Wire Wire Line
+	10700 2650 10700 6350
+Connection ~ 10700 2750
+Wire Wire Line
+	12050 2550 12500 2550
+Wire Wire Line
+	12500 2550 12500 2100
+Connection ~ 12500 2100
+$Comp
+L GND #PWR?
+U 1 1 4FE5DF6F
+P 12150 2850
+F 0 "#PWR?" H 12150 2850 30  0001 C CNN
+F 1 "GND" H 12150 2780 30  0001 C CNN
+	1    12150 2850
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_3X2 X9
+U 1 1 4FE5DEFA
+P 11650 2600
+F 0 "X9" H 11650 2850 50  0000 C CNN
+F 1 "ISP" V 11650 2650 40  0000 C CNN
+	1    11650 2600
+	1    0    0    -1  
+$EndComp
+Text Notes 1450 5250 1    60   ~ 0
+US-Norm!! 7,2mm
 $Comp
 L LM317 D3
 U 1 1 4FE371A3

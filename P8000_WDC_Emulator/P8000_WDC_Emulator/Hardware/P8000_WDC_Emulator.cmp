@@ -1,4 +1,4 @@
-Cmp-Mod V01 Genere par PcbNew le 23/06/2012 00:28:56
+Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = 23/06/2012 18:33:05
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -383,6 +383,13 @@ TimeStamp = /4FE098BD;
 Reference = X8;
 ValeurCmp = EFS_26;
 IdModule  = EFS26;
+EndCmp
+
+BeginCmp
+TimeStamp = /4FE5DEFA;
+Reference = X9;
+ValeurCmp = ISP;
+IdModule  = pin_array_3x2;
 EndCmp
 
 EndListe
