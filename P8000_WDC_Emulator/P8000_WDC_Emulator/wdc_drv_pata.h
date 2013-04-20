@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2012 Oliver Lehmann
+ * Copyright (c) 2012, 2013 Oliver Lehmann
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_pata.h,v 1.7 2012/06/17 13:21:55 olivleh1 Exp $
+ * $Id: wdc_drv_pata.h,v 1.8 2013/04/20 23:22:47 olivleh1 Exp $
  */
 
 #ifndef WDC_DRV_PATA_H_

@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2012 Oliver Lehmann
+ * Copyright (c) 2012, 2013 Oliver Lehmann
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.30 2012/06/20 18:58:24 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.31 2013/04/20 23:22:47 olivleh1 Exp $
  *
  * TODO:  - right now, BTT entries are not taken into account
  */
@@ -78,7 +78,7 @@ main ( void )
 #endif
     atmega_setup();
 
-    uart_puts_p ( PSTR ( "P8000 WDC Emulator 0.90\n" ) );
+    uart_puts_p ( PSTR ( "P8000 WDC Emulator 0.91\n" ) );
 
 #ifdef MEASURE_DISK_PERFORMANCE
     measure_performance();

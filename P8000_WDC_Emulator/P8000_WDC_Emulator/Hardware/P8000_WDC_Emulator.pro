@@ -1,4 +1,4 @@
-update=21/06/2012 21:10:25
+update=29/06/2012 18:02:54
 version=1
 last_client=eeschema
 [general]
@@ -101,3 +101,4 @@ LibName28=opto
 LibName29=atmel
 LibName30=contrib
 LibName31=valves
+LibName32=w_device

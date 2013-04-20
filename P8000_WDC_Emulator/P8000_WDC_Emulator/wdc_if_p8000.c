@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2012 Oliver Lehmann
+ * Copyright (c) 2012, 2013 Oliver Lehmann
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_p8000.c,v 1.11 2012/06/13 20:17:45 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.12 2013/04/20 23:22:47 olivleh1 Exp $
  */
 
 #include "wdc_config.h"

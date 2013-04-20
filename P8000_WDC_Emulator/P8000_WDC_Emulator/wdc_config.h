@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2012 Oliver Lehmann
+ * Copyright (c) 2012, 2013 Oliver Lehmann
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.20 2012/06/20 18:58:24 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.21 2013/04/20 23:22:47 olivleh1 Exp $
  */
 
 
@@ -80,6 +80,7 @@
 #define PIN_MMC         PINB
 #define DDR_MMC         DDRB
 
+#define PIN_MMC_CS      PINB4       /* AVR Port where the MMC Card /CS signal is connected to */
 #define PIN_MMC_MOSI    PINB5       /* AVR Port: MOSI / MMC Card: Data-In */
 #define PIN_MMC_MISO    PINB6       /* AVR Port: MISO / MMC Card: Data-Out */
 #define PIN_MMC_SCK     PINB7       /* AVR Port: SCk / MMC Card: CLK */

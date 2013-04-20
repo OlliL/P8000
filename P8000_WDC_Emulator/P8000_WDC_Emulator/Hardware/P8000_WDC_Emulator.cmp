@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = 23/06/2012 18:33:05
+Cmp-Mod V01 Genere par PcbNew le 21/04/2013 00:07:31
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -221,7 +221,7 @@ BeginCmp
 TimeStamp = /4FE371A3;
 Reference = D3;
 ValeurCmp = LM317;
-IdModule  = TO92;
+IdModule  = TO92-LM317;
 EndCmp
 
 BeginCmp
@@ -281,6 +281,13 @@ IdModule  = PIN_ARRAY_2X1;
 EndCmp
 
 BeginCmp
+TimeStamp = /51730FFF;
+Reference = JP5;
+ValeurCmp = JUMPER;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
 TimeStamp = /4FDF5237;
 Reference = Q1;
 ValeurCmp = CRYSTAL;
@@ -333,7 +340,7 @@ BeginCmp
 TimeStamp = /4FE36B44;
 Reference = X1;
 ValeurCmp = CONN_5X2;
-IdModule  = pin_array_6x2;
+IdModule  = PIN_ARRAY_5x2;
 EndCmp
 
 BeginCmp
@@ -375,7 +382,7 @@ BeginCmp
 TimeStamp = /4FE091E5;
 Reference = X7;
 ValeurCmp = HDD_POWER;
-IdModule  = PIN_ARRAY_4x1;
+IdModule  = HDD_POWER;
 EndCmp
 
 BeginCmp

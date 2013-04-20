@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2012 Oliver Lehmann
+ * Copyright (c) 2012, 2013 Oliver Lehmann
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.h,v 1.8 2012/06/12 17:34:14 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.h,v 1.9 2013/04/20 23:22:47 olivleh1 Exp $
  */
 
 #ifndef WDC_DRV_MMC_H_

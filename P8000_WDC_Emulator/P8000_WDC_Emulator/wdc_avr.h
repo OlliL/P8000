@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2012 Oliver Lehmann
+ * Copyright (c) 2012, 2013 Oliver Lehmann
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_avr.h,v 1.4 2012/06/20 18:58:24 olivleh1 Exp $
+ * $Id: wdc_avr.h,v 1.5 2013/04/20 23:22:47 olivleh1 Exp $
  */
 
 
@@ -61,8 +61,6 @@
 #define disable_rdwrtoata()         PORT_ADRDEC &=  ~( 1 << PIN_ADRDEC_ADDR1 )
 #define enable_atalatch()           PORT_ADRDEC |=   ( ( 1 << PIN_ADRDEC_ADDR0 ) | ( 1 << PIN_ADRDEC_ADDR1 ))
 #define disable_atalatch()          PORT_ADRDEC &=  ~( ( 1 << PIN_ADRDEC_ADDR0 ) | ( 1 << PIN_ADRDEC_ADDR1 ))
-#define enable_mmc()                PORT_ADRDEC |=   ( 1 << PIN_ADRDEC_ADDR2 );
-#define disable_mmc()               PORT_ADRDEC &=  ~( 1 << PIN_ADRDEC_ADDR2 );
 #define enable_sysconf()            PORT_ADRDEC |=   ( ( 1 << PIN_ADRDEC_ADDR0 ) | ( 1 << PIN_ADRDEC_ADDR1 ) | ( 1 << PIN_ADRDEC_ADDR2 ) )
 #define disable_sysconf()           PORT_ADRDEC &=  ~( ( 1 << PIN_ADRDEC_ADDR0 ) | ( 1 << PIN_ADRDEC_ADDR1 ) | ( 1 << PIN_ADRDEC_ADDR2 ) )
 
@@ -70,6 +68,10 @@
 #define configure_pin_miso()        DDR_MMC &= ~ ( 1 << PIN_MMC_MISO )
 #define configure_pin_sck()         DDR_MMC |= ( 1 << PIN_MMC_SCK )
 #define configure_pin_mosi()        DDR_MMC |= ( 1 << PIN_MMC_MOSI )
+#define configure_pin_mmc_cs()      DDR_MMC |= ( 1 << PIN_MMC_CS )
+
+#define disable_mmc()               PORT_MMC |= (1<<PIN_MMC_CS);
+#define enable_mmc()                PORT_MMC &=~(1<<PIN_MMC_CS);
 
 /* functions dealing with the sysconf jumperpad */
 #define jumper_pata_set()           ~port_data_get() & (1<<PIN_DATA_D0)
