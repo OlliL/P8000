@@ -29,7 +29,7 @@
 /*
  * P8000 WDC Emulator
  *
- * $Id: wdc_main.c,v 1.31 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.32 2013/04/21 00:40:52 olivleh1 Exp $
  *
  * TODO:  - right now, BTT entries are not taken into account
  */
@@ -90,12 +90,12 @@ main ( void )
         data_counter = WDC_BLOCKLEN;
         wdc_read_sector ( blockno, data_buffer );
         if ( data_buffer[0]  ==  'W' &&
-             data_buffer[1]  ==  'D' &&
-             data_buffer[2]  ==  'C' &&
-             data_buffer[3]  ==  '_' &&
-             data_buffer[4]  ==  '4' &&
-             data_buffer[5]  ==  '.' &&
-             data_buffer[6]  ==  '2' ) {
+                data_buffer[1]  ==  'D' &&
+                data_buffer[2]  ==  'C' &&
+                data_buffer[3]  ==  '_' &&
+                data_buffer[4]  ==  '4' &&
+                data_buffer[5]  ==  '.' &&
+                data_buffer[6]  ==  '2' ) {
             wdc_write_par_table ( data_buffer, data_counter );
             wdc_set_disk_valid();
         } else {
@@ -132,7 +132,7 @@ main ( void )
             /* no drive attached */
             if ( wdc_get_initialized() && wdc_get_num_of_drvs() == 0 ) {
                 if ( cmd_buffer[0] == CMD_WR_WDC_RAM
-                     || cmd_buffer[0] == CMD_RD_BLOCK ) {
+                        || cmd_buffer[0] == CMD_RD_BLOCK ) {
                     wdc_send_errorcode ( 0xc1 );
                 } else if ( cmd_buffer[0] == CMD_RD_WDC_RAM ) {
                     wdc_send_errorcode ( ERR_NO_DRIVE_READY );
@@ -293,9 +293,9 @@ main ( void )
 
                         memset ( &data_buffer[0], 0x00, data_counter );
                         blockno = wdc_sector2diskblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
-                                                       , cmd_buffer[4]
-                                                       , cmd_buffer[5]
-                                                     );
+                                                         , cmd_buffer[4]
+                                                         , cmd_buffer[5]
+                                                       );
 
                         errorcode = 1;
                         for ( i8 = 0; i8 < wdc_get_hdd_sectors(); i8++ ) {
@@ -351,9 +351,9 @@ main ( void )
                         data_counter = WDC_BLOCKLEN;
 
                         blockno = wdc_sector2diskblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
-                                                       , cmd_buffer[4]
-                                                       , cmd_buffer[5]
-                                                     );
+                                                         , cmd_buffer[4]
+                                                         , cmd_buffer[5]
+                                                       );
                         errorcode = 1;
                         for ( i8 = 0; i8 < wdc_get_hdd_sectors(); i8++ ) {
                             errorcode = wdc_read_sector ( blockno, data_buffer );
@@ -368,9 +368,9 @@ main ( void )
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
                         blockno = wdc_sector2diskblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
-                                                       , cmd_buffer[4]
-                                                       , cmd_buffer[5]
-                                                     );
+                                                         , cmd_buffer[4]
+                                                         , cmd_buffer[5]
+                                                       );
                         errorcode = 1;
 
                         if ( data_counter == WDC_BLOCKLEN ) {

@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_par.c,v 1.7 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_par.c,v 1.8 2013/04/21 00:40:52 olivleh1 Exp $
  */
 
 #include <avr/pgmspace.h>
@@ -218,7 +218,7 @@ void wdc_set_disk_valid()
     uint16_t zw0, zw1;
 
     blocks = (uint32_t)wdc_get_hdd_sectors() * (uint32_t)wdc_get_hdd_heads() * (uint32_t) wdc_get_hdd_cylinder()
-           - (uint32_t)wdc_get_hdd_sectors() * (uint32_t)wdc_get_hdd_heads();
+             - (uint32_t)wdc_get_hdd_sectors() * (uint32_t)wdc_get_hdd_heads();
 
     zw0 = blocks / 65536;
     zw1 = ( blocks % 65536 ) - 1;
