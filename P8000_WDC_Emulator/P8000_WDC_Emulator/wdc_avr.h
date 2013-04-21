@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_avr.h,v 1.5 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_avr.h,v 1.6 2013/04/21 20:19:41 olivleh1 Exp $
  */
 
 
@@ -42,7 +42,7 @@
 #define configure_pin_te()          DDR_INFO &= ~( 1 << PIN_INFO_TE )
 #define configure_pin_wdardy()      DDR_INFO &= ~( 1 << PIN_INFO_WDARDY )
 #define configure_pin_tr()          DDR_INFO |=  ( 1 << PIN_INFO_TR )
-#define configure_pin_reset()       DDR_INFO &= ~( 1 << PIN_INFO_RST )
+#define configure_pin_reset()       DDR_INFO &= ~( 1 << PIN_INFO_RST ); PORT_INFO |= ( 1 << PIN_INFO_RST )
 
 #define port_data_set(x)            ( PORT_DATA = ( x ) )
 #define port_info_set(x)            ( PORT_INFO = ( x ) )

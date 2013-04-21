@@ -1,4 +1,4 @@
-Cmp-Mod V01 Genere par PcbNew le 21/04/2013 00:07:31
+Cmp-Mod V01 Genere par PcbNew le 21/04/2013 21:16:38
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -319,7 +319,7 @@ BeginCmp
 TimeStamp = /4FE094D5;
 Reference = R5;
 ValeurCmp = R-SIL_5;
-IdModule  = pin_strip_6;
+IdModule  = pin_strip_7;
 EndCmp
 
 BeginCmp
