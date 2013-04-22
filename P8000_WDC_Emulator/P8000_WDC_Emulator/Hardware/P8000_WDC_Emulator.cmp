@@ -1,4 +1,4 @@
-Cmp-Mod V01 Genere par PcbNew le 21/04/2013 21:16:38
+Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = 22/04/2013 18:56:26
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -246,7 +246,7 @@ IdModule  = DIP-14__300;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDE1840;
+TimeStamp = /51741EF3;
 Reference = D9;
 ValeurCmp = 74HCT03;
 IdModule  = DIP-14__300;
@@ -281,13 +281,6 @@ IdModule  = PIN_ARRAY_2X1;
 EndCmp
 
 BeginCmp
-TimeStamp = /51730FFF;
-Reference = JP5;
-ValeurCmp = JUMPER;
-IdModule  = PIN_ARRAY_2X1;
-EndCmp
-
-BeginCmp
 TimeStamp = /4FDF5237;
 Reference = Q1;
 ValeurCmp = CRYSTAL;
@@ -316,9 +309,9 @@ IdModule  = R1;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE094D5;
+TimeStamp = /51742221;
 Reference = R5;
-ValeurCmp = R-SIL_5;
+ValeurCmp = R-SIL_6;
 IdModule  = pin_strip_7;
 EndCmp
 
@@ -365,24 +358,24 @@ IdModule  = PIN_ARRAY_20X2;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE2B9E3;
+TimeStamp = /517569F9;
 Reference = X5;
-ValeurCmp = MINI_DIN_6;
-IdModule  = mini_din-M_DIN6;
+ValeurCmp = 4_PIN_MOLEX;
+IdModule  = 4PIN_MOLEX;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE0905F;
+TimeStamp = /517569F2;
 Reference = X6;
 ValeurCmp = 4_PIN_MOLEX;
 IdModule  = 4PIN_MOLEX;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE091E5;
+TimeStamp = /4FE0905F;
 Reference = X7;
-ValeurCmp = HDD_POWER;
-IdModule  = HDD_POWER;
+ValeurCmp = 4_PIN_MOLEX;
+IdModule  = 4PIN_MOLEX;
 EndCmp
 
 BeginCmp
