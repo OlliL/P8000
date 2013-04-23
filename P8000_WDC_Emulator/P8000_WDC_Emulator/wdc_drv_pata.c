@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_pata.c,v 1.11 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_drv_pata.c,v 1.12 2013/04/23 20:08:41 olivleh1 Exp $
  */
 
 #include "wdc_config.h"
@@ -327,7 +327,7 @@ uint8_t pata_init ()
 {
 
     /* is needed for some disks (for example Maxtor 6L080J4) */
-    _delay_ms ( 200 );
+    _delay_ms ( 400 );
 
     uart_puts_p ( PSTR ( "Init start\n" ) );
     while ( ( !pata_rdy() ) & pata_bsy() );
