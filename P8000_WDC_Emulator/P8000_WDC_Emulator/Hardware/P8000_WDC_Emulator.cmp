@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = 22/04/2013 18:56:26
+Cmp-Mod V01 Created by CvPcb (2012-01-19 BZR 3256)-stable date = 26/04/2013 19:12:05
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -8,7 +8,7 @@ IdModule  = C1;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDE2DD8;
+TimeStamp = /517968F8;
 Reference = 1C2;
 ValeurCmp = 330n;
 IdModule  = C1;
@@ -57,7 +57,7 @@ IdModule  = C1;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDE2EA3;
+TimeStamp = /5179694E;
 Reference = 2C2;
 ValeurCmp = 330n;
 IdModule  = C1;
@@ -106,7 +106,7 @@ IdModule  = C1;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDE2EEB;
+TimeStamp = /5179691C;
 Reference = 3C2;
 ValeurCmp = 330n;
 IdModule  = C1;
@@ -183,7 +183,7 @@ IdModule  = C1;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDE2D21;
+TimeStamp = /517968CB;
 Reference = C3;
 ValeurCmp = 100n;
 IdModule  = C1;
@@ -239,14 +239,14 @@ IdModule  = DIP-14__300;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE09BE0;
+TimeStamp = /5176DD54;
 Reference = D8;
 ValeurCmp = 74HCT04;
 IdModule  = DIP-14__300;
 EndCmp
 
 BeginCmp
-TimeStamp = /51741EF3;
+TimeStamp = /5176D7FD;
 Reference = D9;
 ValeurCmp = 74HCT03;
 IdModule  = DIP-14__300;
@@ -372,10 +372,10 @@ IdModule  = 4PIN_MOLEX;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE0905F;
+TimeStamp = /4FE5DEFA;
 Reference = X7;
-ValeurCmp = 4_PIN_MOLEX;
-IdModule  = 4PIN_MOLEX;
+ValeurCmp = ISP;
+IdModule  = pin_array_3x2;
 EndCmp
 
 BeginCmp
@@ -383,13 +383,6 @@ TimeStamp = /4FE098BD;
 Reference = X8;
 ValeurCmp = EFS_26;
 IdModule  = EFS26;
-EndCmp
-
-BeginCmp
-TimeStamp = /4FE5DEFA;
-Reference = X9;
-ValeurCmp = ISP;
-IdModule  = pin_array_3x2;
 EndCmp
 
 EndListe
