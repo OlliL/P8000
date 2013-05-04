@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.22 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.23 2013/05/04 21:22:53 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -35,23 +35,23 @@
 #include "wdc_drv_mmc.h"
 #include "uart.h"
 
-#define wait_till_send_done() while ( ! ( SPSR & ( 1 << SPIF ) ) )
+#define wait_till_send_done() while ( !( SPSR & ( 1 << SPIF ) ) )
 #define wait_till_card_ready() do { send_dummy_byte(); } while ( !recv_byte() )
 #define send_dummy_byte() SPDR = 0xFF; wait_till_send_done()
 #define recv_byte() SPDR
-#define xmit_byte(x) SPDR = x
+#define xmit_byte( x ) SPDR = x
 
-#define CMD0  (0x40 + 0)
-#define CMD1  (0x40 + 1)
-#define CMD8  (0x40 + 8)
-#define CMD12 (0x40 + 12)
-#define CMD17 (0x40 + 17)
-#define CMD18 (0x40 + 18)
-#define CMD23 (0x40 + 23)
-#define CMD24 (0x40 + 24)
-#define CMD25 (0x40 + 25)
-#define CMD55 (0x40 + 55)
-#define CMD59 (0x40 + 59)
+#define CMD0  ( 0x40 + 0 )
+#define CMD1  ( 0x40 + 1 )
+#define CMD8  ( 0x40 + 8 )
+#define CMD12 ( 0x40 + 12 )
+#define CMD17 ( 0x40 + 17 )
+#define CMD18 ( 0x40 + 18 )
+#define CMD23 ( 0x40 + 23 )
+#define CMD24 ( 0x40 + 24 )
+#define CMD25 ( 0x40 + 25 )
+#define CMD55 ( 0x40 + 55 )
+#define CMD59 ( 0x40 + 59 )
 
 #define SB_START 0xFE
 #define MB_START 0xFC
@@ -108,7 +108,7 @@ const uint16_t crc16_table[256] = {
     0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
 
-const uint8_t crc7_table[256] = {
+const uint8_t  crc7_table[256] = {
     0x00, 0x09, 0x12, 0x1b, 0x24, 0x2d, 0x36, 0x3f,
     0x48, 0x41, 0x5a, 0x53, 0x6c, 0x65, 0x7e, 0x77,
     0x19, 0x10, 0x0b, 0x02, 0x3d, 0x34, 0x2f, 0x26,
@@ -147,23 +147,26 @@ const uint8_t crc7_table[256] = {
 uint8_t crc7 ( const uint8_t *buffer, uint8_t len )
 {
     uint8_t crc = 0x00;
-    while ( len-- )
-        crc = crc7_table[ ( crc << 1 ) ^ *buffer++];
+
+    while ( len-- ) {
+        crc = crc7_table[( crc << 1 ) ^ *buffer++];
+    }
     return crc;
 }
 
 uint16_t crc16 ( const uint8_t *buffer, uint16_t len )
 {
     uint16_t crc = 0x0000;
+
     while ( len-- ) {
-        crc = ( crc << 8 ) ^ crc16_table[ ( crc >> 8 ) ^ *buffer++];
+        crc = ( crc << 8 ) ^ crc16_table[( crc >> 8 ) ^ *buffer++];
     }
     return crc;
 }
 
 uint8_t mmc_enable_crc ( uint8_t on_off )
 {
-    unsigned char cmd[] = {CMD59, 0x00, 0x00, 0x00, 0x00, 0xFF};
+    uint8_t cmd[] = { CMD59, 0x00, 0x00, 0x00, 0x00, 0xFF };
 
     /* last bit enables or disables CRC mode */
     cmd[4] = on_off & 0x01;
@@ -173,16 +176,20 @@ uint8_t mmc_enable_crc ( uint8_t on_off )
     }
     return 0;
 }
+
 #endif
 
 uint8_t mmc_init ()
 {
     uint16_t t16 = 0;
-    uint8_t a;
-    uint8_t cmd[6];
+    uint8_t  a;
+    uint8_t  cmd[6];
+
+    uart_putstring ( PSTR ( "INFO: SDCard init start" ), true );
+
     for ( a = 0; a < 200; a++ ) {
         nop();
-    };
+    }
 
     SPCR = ( 1 << SPE ) | ( 1 << MSTR ) | ( 1 << SPR0 ) | ( 1 << SPR1 ); /* Enable SPI, SPI in Master Mode */
     SPSR = ( 0 << SPI2X );
@@ -207,7 +214,7 @@ uint8_t mmc_init ()
     while ( mmc_cmd ( cmd ) != 1 ) {
         if ( t16++ > 1000 ) {
             disable_mmc();
-            return ( 1 );
+            return 1;
         }
     }
 
@@ -223,8 +230,9 @@ uint8_t mmc_init ()
     /* if SDHC Card */
     if ( a <= 1 ) {
         /* skip 6 bytes */
-        for ( a = 0; a < 6; a++ )
+        for ( a = 0; a < 6; a++ ) {
             send_dummy_byte();
+        }
 
         is_sdhc = 1;
 
@@ -252,14 +260,14 @@ uint8_t mmc_init ()
         send_dummy_byte();
         if ( t16++ > 1000 ) {
             disable_mmc();
-            return ( 2 );
+            return 2;
         }
     }
 
     send_dummy_byte();
 
     /* SPI Bus to max. speed */
-    SPCR &= ~ ( ( 1 << SPR0 ) | ( 1 << SPR1 ) );
+    SPCR &= ~( ( 1 << SPR0 ) | ( 1 << SPR1 ) );
     SPSR = SPSR | ( 1 << SPI2X );
 
 #ifdef SPI_CRC
@@ -267,7 +275,7 @@ uint8_t mmc_init ()
 #endif
 
     disable_mmc();
-    return ( 0 );
+    return 0;
 }
 
 uint8_t mmc_cmd ( uint8_t *cmd )
@@ -276,10 +284,11 @@ uint8_t mmc_cmd ( uint8_t *cmd )
     uint8_t i = 10;
     uint8_t cmd0 = cmd[0];
     uint8_t a;
+
 #ifdef SPI_CRC
     /* Calculate CRC and framing bits */
     cmd[0] = ( cmd[0] | ( 1 << 6 ) ) & 0x7F;
-    cmd[5] =  crc7 ( cmd, 5 ) << 1;
+    cmd[5] = crc7 ( cmd, 5 ) << 1;
 #endif
 
     /* send command */
@@ -288,21 +297,29 @@ uint8_t mmc_cmd ( uint8_t *cmd )
         wait_till_send_done();
     }
 
-    if ( cmd0 == ( CMD12 ) ) recv_byte();
+    if ( cmd0 == ( CMD12 ) ) {
+        recv_byte();
+    }
 
     do {
         send_dummy_byte();
         tmp = recv_byte();
     } while ( ( tmp & 0x80 ) && --i );
-    return ( tmp );
+
+    if ( !tmp ) {
+        uart_putstring ( PSTR ( "INFO: SDCard disk has been found" ), true );
+    }
+
+    return tmp;
 }
 
 uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
 {
-    sint32 x;
-    uint8_t tmp;
-    uint8_t cmd[] = {CMD24, 0x00, 0x00, 0x00, 0x00, 0xFF};
+    sint32   x;
+    uint8_t  tmp;
+    uint8_t  cmd[] = { CMD24, 0x00, 0x00, 0x00, 0x00, 0xFF };
     uint16_t i;
+
 #ifdef SPI_CRC
     uint16_t crc;
     uint8_t  crcl, crch;
@@ -312,8 +329,9 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
     wait_till_card_ready();
 
     /* convert blocks to bytes */
-    if ( !is_sdhc )
+    if ( !is_sdhc ) {
         addr = addr * MMC_BLOCKLEN;
+    }
     x.value32 = addr;
     cmd[1] = x.value8.hh;
     cmd[2] = x.value8.hl;
@@ -326,7 +344,7 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
     tmp = mmc_cmd ( cmd );
     if ( tmp != 0 ) {
         disable_mmc();
-        return ( tmp );
+        return tmp;
     }
 
     /* send Startbyte */
@@ -339,7 +357,7 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
 #endif
 
     /* write a single block */
-    for ( i = MMC_BLOCKLEN ; i ; i-- ) {
+    for ( i = MMC_BLOCKLEN; i; i-- ) {
         uint8_t data = *buffer;
         buffer++;
         wait_till_send_done();
@@ -362,18 +380,19 @@ uint8_t mmc_write_sector ( uint32_t addr, uint8_t *buffer )
     send_dummy_byte();
     if ( ( recv_byte() & 0x1F ) != 0x05 ) {
         disable_mmc();
-        return ( 2 );
+        return 2;
     }
 
     disable_mmc();
 
-    return ( 0 );
+    return 0;
 }
 
 uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
 {
     uint16_t i = 1;
-    uint8_t by;
+    uint8_t  by;
+
 #ifdef SPI_CRC
     uint16_t crc;
 #endif
@@ -384,14 +403,15 @@ uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
     /* send command */
     if ( mmc_cmd ( cmd ) != 0 ) {
         disable_mmc();
-        return ( 1 );
+        return 1;
     }
 
     /* wait for startbyte */
     while ( 1 ) {
         send_dummy_byte();
-        if ( recv_byte() == SB_START )
+        if ( recv_byte() == SB_START ) {
             break;
+        }
     }
 
     /* read first byte */
@@ -420,7 +440,7 @@ uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
     crc |= recv_byte();
     if ( crc != crc16 ( buffer, bytes ) ) {
         disable_mmc();
-        return ( 3 );
+        return 3;
     }
 #else
     send_dummy_byte();
@@ -428,7 +448,7 @@ uint8_t mmc_read_block ( uint8_t *cmd, uint8_t *buffer, uint16_t bytes )
 
     disable_mmc();
 
-    return ( 0 );
+    return 0;
 }
 
 uint8_t mmc_read_sector ( uint32_t addr, uint8_t *buffer )
@@ -437,11 +457,12 @@ uint8_t mmc_read_sector ( uint32_t addr, uint8_t *buffer )
     /*
      * send CMD17
      */
-    uint8_t cmd[] = {CMD17, 0x00, 0x00, 0x00, 0x00, 0xFF};
+    uint8_t cmd[] = { CMD17, 0x00, 0x00, 0x00, 0x00, 0xFF };
 
     /* convert blocks to bytes */
-    if ( !is_sdhc )
+    if ( !is_sdhc ) {
         addr = addr * MMC_BLOCKLEN;
+    }
     x.value32 = addr;
     cmd[1] = x.value8.hh;
     cmd[2] = x.value8.hl;
@@ -449,16 +470,16 @@ uint8_t mmc_read_sector ( uint32_t addr, uint8_t *buffer )
     cmd[4] = x.value8.ll;
 
     return mmc_read_block ( cmd, buffer, MMC_BLOCKLEN );
-
 }
 
 uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks )
 {
-    sint32 x;
-    uint8_t resp;
-    uint8_t cmd[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF };
-    uint8_t n = numblocks;
+    sint32   x;
+    uint8_t  resp;
+    uint8_t  cmd[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF };
+    uint8_t  n = numblocks;
     uint16_t i;
+
 #ifdef SPI_CRC
     uint16_t crc;
 #endif
@@ -487,8 +508,9 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
 #endif
 
     /* convert blocks to bytes */
-    if ( !is_sdhc )
+    if ( !is_sdhc ) {
         addr = addr * MMC_BLOCKLEN;
+    }
     x.value32 = addr;
 
 #ifdef MMC_MULTIBLOCK
@@ -506,7 +528,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
     resp = mmc_cmd ( cmd );
     if ( resp > 1 ) {
         disable_mmc();
-        return ( 1 );
+        return 1;
     }
 #else
     cmd[0] = CMD17;
@@ -527,7 +549,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
         resp = mmc_cmd ( cmd );
         if ( resp > 1 ) {
             disable_mmc();
-            return ( 1 );
+            return 1;
         }
         x.value32 += MMC_BLOCKLEN;
 #endif
@@ -537,8 +559,9 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
         /* wait for startbyte */
         while ( 1 ) {
             send_dummy_byte();
-            if ( recv_byte() == SB_START )
+            if ( recv_byte() == SB_START ) {
                 break;
+            }
         }
 
         send_dummy_byte();
@@ -560,7 +583,7 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
         crc |= recv_byte();
         if ( crc != crc16 ( buffer, MMC_BLOCKLEN ) ) {
             disable_mmc();
-            return ( 3 );
+            return 3;
         }
         buffer = buffer + MMC_BLOCKLEN;
 #else
@@ -586,26 +609,27 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
             disable_mmc();
             return ( 2 );
         }
-    */
+     */
     /* Pad 8 */
     send_dummy_byte();
 #endif
 
     disable_mmc();
 
-    return ( 0 );
+    return 0;
 }
 
 uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks )
 {
-    sint32 x;
-    uint8_t resp;
-    uint8_t cmd[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF };
-    uint8_t n = numblocks;
+    sint32   x;
+    uint8_t  resp;
+    uint8_t  cmd[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF };
+    uint8_t  n = numblocks;
     uint16_t i;
+
 #ifdef SPI_CRC
     uint16_t crc;
-    uint8_t crcl, crch;
+    uint8_t  crcl, crch;
 #endif
 
     enable_mmc();
@@ -630,9 +654,9 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
 #endif
 #endif
     /* convert blocks to bytes */
-    /* convert blocks to bytes */
-    if ( !is_sdhc )
+    if ( !is_sdhc ) {
         addr = addr * MMC_BLOCKLEN;
+    }
     x.value32 = addr;
 #ifdef MMC_MULTIBLOCK
     cmd[0] = CMD25;
@@ -644,10 +668,10 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
     /*
      * send CMD25
      */
-    resp =  mmc_cmd ( cmd );
+    resp = mmc_cmd ( cmd );
     if ( resp > 1 ) {
         disable_mmc();
-        return ( 1 );
+        return 1;
     }
 #else
     cmd[0] = CMD24;
@@ -662,12 +686,12 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
         cmd[4] = x.value8.ll;
 
         /*
-        * send CMD24
-        */
+         * send CMD24
+         */
         resp = mmc_cmd ( cmd );
         if ( resp != 0 ) {
             disable_mmc();
-            return ( resp );
+            return resp;
         }
         x.value32 += MMC_BLOCKLEN;
 #endif
@@ -717,7 +741,7 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
         send_dummy_byte();
         if ( ( recv_byte() & 0x1F ) != 0x05 ) {
             disable_mmc();
-            return ( 2 );
+            return 2;
         }
 
 #ifndef MMC_MULTIBLOCK
@@ -738,5 +762,5 @@ uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks
 #endif
     disable_mmc();
 
-    return ( 0 );
+    return 0;
 }
