@@ -27,12 +27,11 @@
 
 
 /*
- * P8000 WDC Emulator
+ * $Id: wdc_main.c,v 1.33 2013/05/04 21:39:53 olivleh1 Exp $
  *
- * $Id: wdc_main.c,v 1.32 2013/04/21 00:40:52 olivleh1 Exp $
- *
- * TODO:  - right now, BTT entries are not taken into account
  */
+
+/* TODO:  - right now, BTT entries are not taken into account */
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -58,7 +57,7 @@ uint8_t data_buffer[4096];
 uint8_t cmd_buffer[9];
 
 #ifdef MEASURE_DISK_PERFORMANCE
-extern void measure_performance();
+extern void measure_performance ();
 #else
 
 /* switched from local to global for keeping an eye on memory usage */
@@ -66,7 +65,7 @@ extern uint8_t valid_disk;
 
 #endif
 
-int __attribute__ ( ( OS_main ) )
+int __attribute__( ( OS_main ) )
 main ( void )
 {
 #ifndef MEASURE_DISK_PERFORMANCE
@@ -74,11 +73,11 @@ main ( void )
     uint16_t data_counter;
     uint32_t blockno;
     uint8_t  errorcode;
-    uint8_t i8;
+    uint8_t  i8;
 #endif
     atmega_setup();
 
-    uart_puts_p ( PSTR ( "P8000 WDC Emulator 0.91\n" ) );
+    uart_putstring ( PSTR ( "=== P8000 WDC Emulator 0.92 ===" ), true );
 
 #ifdef MEASURE_DISK_PERFORMANCE
     measure_performance();
@@ -89,18 +88,20 @@ main ( void )
         blockno = 0;
         data_counter = WDC_BLOCKLEN;
         wdc_read_sector ( blockno, data_buffer );
-        if ( data_buffer[0]  ==  'W' &&
-                data_buffer[1]  ==  'D' &&
-                data_buffer[2]  ==  'C' &&
-                data_buffer[3]  ==  '_' &&
-                data_buffer[4]  ==  '4' &&
-                data_buffer[5]  ==  '.' &&
-                data_buffer[6]  ==  '2' ) {
+        if ( data_buffer[0] == 'W' &&
+             data_buffer[1] == 'D' &&
+             data_buffer[2] == 'C' &&
+             data_buffer[3] == '_' &&
+             data_buffer[4] == '4' &&
+             data_buffer[5] == '.' &&
+             data_buffer[6] == '2' ) {
             wdc_write_par_table ( data_buffer, data_counter );
+            uart_putstring ( PSTR ( "INFO: Disk found and ready to use." ), true );
             wdc_set_disk_valid();
         } else {
+            uart_putstring ( PSTR ( "INFO: Disk found but Sector 0 is invalid, please execute sa.format to initialize this disk properly." ), true );
             wdc_set_disk_invalid();
-        };
+        }
     }
 
     while ( 1 ) {
@@ -108,12 +109,12 @@ main ( void )
         wdc_wait_for_reset();
 
         if ( wdc_receive_cmd ( cmd_buffer
-                               , cmd_counter
+                             , cmd_counter
                              ) ) {
 
 #if DEBUG >= 2
 #if DEBUG >= 3
-            uart_puts_p ( PSTR ( " CMD:" ) );
+            uart_putstring ( PSTR ( "DEBUG: received command is:" ), false );
 #endif
             uart_putc_hex ( cmd_buffer[0] );
 #if DEBUG >= 3
@@ -125,14 +126,14 @@ main ( void )
             uart_putc_hex ( cmd_buffer[6] );
             uart_putc_hex ( cmd_buffer[7] );
             uart_putc_hex ( cmd_buffer[8] );
-            uart_putc ( '\n' );
 #endif
+            uart_putnl();
 #endif
 
             /* no drive attached */
             if ( wdc_get_initialized() && wdc_get_num_of_drvs() == 0 ) {
                 if ( cmd_buffer[0] == CMD_WR_WDC_RAM
-                        || cmd_buffer[0] == CMD_RD_BLOCK ) {
+                     || cmd_buffer[0] == CMD_RD_BLOCK ) {
                     wdc_send_errorcode ( 0xc1 );
                 } else if ( cmd_buffer[0] == CMD_RD_WDC_RAM ) {
                     wdc_send_errorcode ( ERR_NO_DRIVE_READY );
@@ -140,38 +141,39 @@ main ( void )
                 }
                 /* WDC freshly initialized after RESET, the disk is not valid */
             } else if ( wdc_get_initialized()
-                        && ! wdc_get_disk_valid()
+                        && !wdc_get_disk_valid()
                         && ( cmd_buffer[0] == CMD_WR_WDC_RAM || cmd_buffer[0] == CMD_RD_BLOCK ) ) {
                 wdc_send_errorcode ( ERR_CYL0_NOT_READABLE );
                 wdc_set_initialized ( 0 );
                 /* if the disk is not valid, only maintenance commands are allowed */
-            } else  if ( ! wdc_get_disk_valid()
-                         && cmd_buffer[0] != CMD_RD_WDC_RAM
-                         && cmd_buffer[0] != CMD_FMTRD_TRACK
-                         && cmd_buffer[0] != CMD_WR_WDC_RAM
-                         && cmd_buffer[0] != CMD_FMTBTT_TRACK
-                         && cmd_buffer[0] != CMD_RD_PARTAB
-                         && cmd_buffer[0] != CMD_RD_WDCERR
-                         && cmd_buffer[0] != CMD_VER_TRACK
-                         && cmd_buffer[0] != CMD_DL_BTTAB
-                         && cmd_buffer[0] != CMD_RD_BTTAB
-                         && cmd_buffer[0] != CMD_WR_BTTAB
-                         && cmd_buffer[0] != CMD_WR_PARTAB
-                         && cmd_buffer[0] != CMD_ST_PARBTT
-                       ) {
-                if ( cmd_buffer[0] == CMD_RD_BLOCK )
+            } else if ( !wdc_get_disk_valid()
+                        && cmd_buffer[0] != CMD_RD_WDC_RAM
+                        && cmd_buffer[0] != CMD_FMTRD_TRACK
+                        && cmd_buffer[0] != CMD_WR_WDC_RAM
+                        && cmd_buffer[0] != CMD_FMTBTT_TRACK
+                        && cmd_buffer[0] != CMD_RD_PARTAB
+                        && cmd_buffer[0] != CMD_RD_WDCERR
+                        && cmd_buffer[0] != CMD_VER_TRACK
+                        && cmd_buffer[0] != CMD_DL_BTTAB
+                        && cmd_buffer[0] != CMD_RD_BTTAB
+                        && cmd_buffer[0] != CMD_WR_BTTAB
+                        && cmd_buffer[0] != CMD_WR_PARTAB
+                        && cmd_buffer[0] != CMD_ST_PARBTT
+                      ) {
+                if ( cmd_buffer[0] == CMD_RD_BLOCK ) {
                     wdc_send_errorcode ( ERR_SECT_N_ON_SURFACE );
-                else
+                } else {
                     wdc_send_error();
+                }
             } else {
 
                 switch ( cmd_buffer[0] ) {
                     case CMD_WR_BLOCK:
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
-                        blockno = wdc_p8kblock2diskblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
+                        blockno = wdc_p8kblock2diskblock ( ( (uint32_t)cmd_buffer[5] << 24 ) | ( (uint32_t)cmd_buffer[4] << 16 ) | ( (uint16_t)cmd_buffer[3] << 8 ) | cmd_buffer[2] );
                         wdc_receive_data ( data_buffer
-                                           , data_counter
+                                         , data_counter
                                          );
                         errorcode = 1;
                         if ( data_counter == WDC_BLOCKLEN ) {
@@ -180,14 +182,15 @@ main ( void )
                             errorcode = wdc_write_multiblock ( blockno, data_buffer, data_counter / WDC_BLOCKLEN );
                         }
 
-                        if ( errorcode )
+                        if ( errorcode ) {
                             wdc_send_error();
+                        }
                         break;
 
                     case CMD_RD_BLOCK:
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
-                        blockno = wdc_p8kblock2diskblock ( ( ( uint32_t ) cmd_buffer[5] << 24 ) | ( ( uint32_t ) cmd_buffer[4] << 16 ) | ( ( uint16_t ) cmd_buffer[3] << 8 ) | cmd_buffer[2] );
+                        blockno = wdc_p8kblock2diskblock ( ( (uint32_t)cmd_buffer[5] << 24 ) | ( (uint32_t)cmd_buffer[4] << 16 ) | ( (uint16_t)cmd_buffer[3] << 8 ) | cmd_buffer[2] );
 
                         errorcode = 1;
                         if ( data_counter == WDC_BLOCKLEN ) {
@@ -200,7 +203,7 @@ main ( void )
                             wdc_send_error();
                         } else {
                             wdc_send_data ( data_buffer
-                                            , data_counter
+                                          , data_counter
                                           );
                         }
                         break;
@@ -209,12 +212,12 @@ main ( void )
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
                         wdc_receive_data ( data_buffer
-                                           , data_counter
+                                         , data_counter
                                          );
 
                         wdc_write_data_to_ram ( data_buffer
-                                                , convert_ram_address ( ( cmd_buffer[2] << 8 ) | cmd_buffer[1] )
-                                                , data_counter
+                                              , convert_ram_address ( ( cmd_buffer[2] << 8 ) | cmd_buffer[1] )
+                                              , data_counter
                                               );
                         break;
 
@@ -222,12 +225,12 @@ main ( void )
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
                         wdc_read_data_from_ram ( data_buffer
-                                                 , convert_ram_address ( ( cmd_buffer[2] << 8 ) | cmd_buffer[1] )
-                                                 , data_counter
+                                               , convert_ram_address ( ( cmd_buffer[2] << 8 ) | cmd_buffer[1] )
+                                               , data_counter
                                                );
 
                         wdc_send_data ( data_buffer
-                                        , data_counter
+                                      , data_counter
                                       );
 
                         wdc_set_initialized ( 0 );
@@ -237,10 +240,10 @@ main ( void )
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
                         wdc_read_par_table ( data_buffer
-                                             , data_counter );
+                                           , data_counter );
 
                         wdc_send_data ( data_buffer
-                                        , data_counter
+                                      , data_counter
                                       );
                         break;
 
@@ -248,12 +251,11 @@ main ( void )
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
                         wdc_receive_data ( data_buffer
-                                           , data_counter
+                                         , data_counter
                                          );
 
                         wdc_write_wdc_par ( data_buffer
-                                            , data_counter );
-
+                                          , data_counter );
                         break;
 
                     case CMD_DL_BTTAB:
@@ -264,10 +266,10 @@ main ( void )
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
                         wdc_read_wdc_btt ( data_buffer
-                                           , data_counter );
+                                         , data_counter );
 
                         wdc_send_data ( data_buffer
-                                        , data_counter
+                                      , data_counter
                                       );
                         break;
 
@@ -275,32 +277,35 @@ main ( void )
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
                         wdc_receive_data ( data_buffer
-                                           , data_counter
+                                         , data_counter
                                          );
 
                         wdc_write_wdc_btt ( data_buffer
-                                            , data_counter );
+                                          , data_counter );
                         break;
 
                     case CMD_FMTRD_TRACK:
                     case CMD_FMTBTT_TRACK:
 
                         /* no cylinder 0 formatting if command is CMD_FMTBTT_TRACK */
-                        if ( cmd_buffer[0] == CMD_FMTBTT_TRACK && ( cmd_buffer[2] | ( cmd_buffer[3] << 8 ) ) == 0 )
+                        if ( cmd_buffer[0] == CMD_FMTBTT_TRACK && ( cmd_buffer[2] | ( cmd_buffer[3] << 8 ) ) == 0 ) {
                             break;
+                        }
 
                         data_counter = WDC_BLOCKLEN;
 
                         memset ( &data_buffer[0], 0x00, data_counter );
                         blockno = wdc_sector2diskblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
-                                                         , cmd_buffer[4]
-                                                         , cmd_buffer[5]
+                                                       , cmd_buffer[4]
+                                                       , cmd_buffer[5]
                                                        );
 
                         errorcode = 1;
                         for ( i8 = 0; i8 < wdc_get_hdd_sectors(); i8++ ) {
                             errorcode = wdc_write_sector ( blockno, data_buffer );
-                            if ( errorcode ) break;
+                            if ( errorcode ) {
+                                break;
+                            }
                             blockno++;
                         }
 
@@ -317,7 +322,7 @@ main ( void )
                                     data_buffer[2] = cmd_buffer[4]; /* Head */
 
                                     wdc_send_data ( data_buffer
-                                                    , 3
+                                                  , 3
                                                   );
                                 }
                             }
@@ -330,12 +335,12 @@ main ( void )
                         blockno = 0;
                         wdc_set_disk_valid();
                         wdc_read_par_table ( data_buffer
-                                             , data_counter );
+                                           , data_counter );
 
                         errorcode = wdc_write_sector ( blockno, data_buffer );
-                        if ( errorcode )
+                        if ( errorcode ) {
                             wdc_send_error();
-
+                        }
                         break;
 
                     case CMD_RD_WDCERR:
@@ -343,7 +348,7 @@ main ( void )
 
                         memset ( &data_buffer[0], 0x00, data_counter );
                         wdc_send_data ( data_buffer
-                                        , data_counter
+                                      , data_counter
                                       );
                         break;
 
@@ -351,25 +356,28 @@ main ( void )
                         data_counter = WDC_BLOCKLEN;
 
                         blockno = wdc_sector2diskblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
-                                                         , cmd_buffer[4]
-                                                         , cmd_buffer[5]
+                                                       , cmd_buffer[4]
+                                                       , cmd_buffer[5]
                                                        );
                         errorcode = 1;
                         for ( i8 = 0; i8 < wdc_get_hdd_sectors(); i8++ ) {
                             errorcode = wdc_read_sector ( blockno, data_buffer );
-                            if ( errorcode ) break;
+                            if ( errorcode ) {
+                                break;
+                            }
                             blockno++;
                         }
-                        if ( errorcode )
+                        if ( errorcode ) {
                             wdc_send_error();
+                        }
                         break;
 
                     case CMD_RD_SECTOR:
                         data_counter = ( cmd_buffer[7] << 8 ) | cmd_buffer[6];
 
                         blockno = wdc_sector2diskblock ( cmd_buffer[2] | ( cmd_buffer[3] << 8 )
-                                                         , cmd_buffer[4]
-                                                         , cmd_buffer[5]
+                                                       , cmd_buffer[4]
+                                                       , cmd_buffer[5]
                                                        );
                         errorcode = 1;
 
@@ -379,13 +387,14 @@ main ( void )
                             errorcode = wdc_write_multiblock ( blockno, data_buffer, data_counter / WDC_BLOCKLEN );
                         }
 
-                        if ( errorcode )
+                        if ( errorcode ) {
                             wdc_send_error();
+                        }
                         break;
 
                     default:
 #if DEBUG >= 1
-                        uart_puts_p ( PSTR ( " Unknown command:" ) );
+                        uart_putstring ( PSTR ( "ERROR: Unknown command received from the P8000:" ), false );
                         uart_putc_hex ( cmd_buffer[0] );
                         uart_putc_hex ( cmd_buffer[1] );
                         uart_putc_hex ( cmd_buffer[2] );
@@ -395,7 +404,7 @@ main ( void )
                         uart_putc_hex ( cmd_buffer[6] );
                         uart_putc_hex ( cmd_buffer[7] );
                         uart_putc_hex ( cmd_buffer[8] );
-                        uart_putc ( '\n' );
+                        uart_put_nl();
 #endif
                         wdc_send_error();
                         break;
@@ -413,7 +422,9 @@ void atmega_setup ( void )
     uart_init();
     wdc_init_avr();
     wdc_get_sysconf();
+
     if ( wdc_init_disk() ) {
+        uart_putstring ( PSTR ( "ERROR: No disk found!" ), true );
         wdc_set_no_disk();
     }
 }
