@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_disk_perf.c,v 1.11 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_if_disk_perf.c,v 1.12 2013/05/04 15:40:15 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -45,9 +45,8 @@
 #define BLOCKNO 300000
 
 volatile uint32_t overflow = 0;
-ISR ( TIMER0_OVF_vect )
-{
-    overflow ++;
+ISR ( TIMER0_OVF_vect ) {
+    overflow++;
 }
 
 /* switched from local to global for keeping an eye on memory usage */
@@ -59,103 +58,121 @@ void test_write4k ( uint8_t numblocks, uint8_t nr_of_tests )
 {
     uint32_t starttime;
     uint32_t blockno = 0;
-    uint8_t i8, errorcode;
+    uint8_t  i8, errorcode;
 
-    uart_puts_p ( PSTR ( "Test Write 5000 512B-Blocks with Multiblock-Write (4KB Blocksize):" ) );
+    uart_putstring ( PSTR ( "Test Write 5000 512B-Blocks with Multiblock-Write (4KB Blocksize):" ) );
     uart_putc ( '\n' );
     memset ( &data_buffer[0], 0xCC, WDC_BLOCKLEN * numblocks );
+
     for ( i8 = 0; i8 < nr_of_tests; i8++ ) {
         blockno = BLOCKNO;
-        for ( starttime = overflow; blockno < ( ( uint32_t ) BLOCKNO + 5000 ); blockno += numblocks ) {
+
+        for ( starttime = overflow; blockno < ( (uint32_t)BLOCKNO + 5000 ); blockno += numblocks ) {
             errorcode = wdc_write_multiblock ( blockno, data_buffer, numblocks );
+
             if ( errorcode ) {
                 break;
             }
         }
-        if ( errorcode )
+
+        if ( errorcode ) {
             break;
+        }
+
         uart_putdw_dec ( overflow - starttime );
         uart_putc ( '\n' );
     }
-
 }
 
 void test_read4k ( uint8_t numblocks, uint8_t nr_of_tests )
 {
     uint32_t starttime;
     uint32_t blockno = 0;
-    uint8_t i8, errorcode;
+    uint8_t  i8, errorcode;
 
-    uart_puts_p ( PSTR ( "Test Read 5000 512B-Blocks with Multiblock-Read (4KB Blocksize):" ) );
+    uart_putstring ( PSTR ( "Test Read 5000 512B-Blocks with Multiblock-Read (4KB Blocksize):" ) );
     uart_putc ( '\n' );
 
     for ( i8 = 0; i8 < nr_of_tests; i8++ ) {
         blockno = BLOCKNO;
-        for ( starttime = overflow; blockno < ( ( uint32_t ) BLOCKNO + 5000 ); blockno += numblocks ) {
+
+        for ( starttime = overflow; blockno < ( (uint32_t)BLOCKNO + 5000 ); blockno += numblocks ) {
             errorcode = wdc_read_multiblock ( blockno, data_buffer, numblocks );
+
             if ( errorcode ) {
                 break;
             }
         }
-        if ( errorcode )
+
+        if ( errorcode ) {
             break;
+        }
+
         uart_putdw_dec ( overflow - starttime );
         uart_putc ( '\n' );
     }
-
 }
 
 void test_write512 ( uint8_t numblocks, uint8_t nr_of_tests )
 {
     uint32_t starttime;
     uint32_t blockno = 0;
-    uint8_t i8, errorcode;
+    uint8_t  i8, errorcode;
 
-    uart_puts_p ( PSTR ( "Test Write 5000 512B-Blocks with Singleblock-Write (512B Blocksize):" ) );
+    uart_putstring ( PSTR ( "Test Write 5000 512B-Blocks with Singleblock-Write (512B Blocksize):" ) );
     uart_putc ( '\n' );
     memset ( &data_buffer[0], 0xEF, WDC_BLOCKLEN * numblocks );
+
     for ( i8 = 0; i8 < nr_of_tests; i8++ ) {
         blockno = BLOCKNO;
-        for ( starttime = overflow; blockno < ( ( uint32_t ) BLOCKNO + 5000 ); blockno++ ) {
+
+        for ( starttime = overflow; blockno < ( (uint32_t)BLOCKNO + 5000 ); blockno++ ) {
             errorcode = wdc_write_sector ( blockno, data_buffer );
+
             if ( errorcode ) {
                 break;
             }
         }
-        if ( errorcode )
+
+        if ( errorcode ) {
             break;
+        }
+
         uart_putdw_dec ( overflow - starttime );
         uart_putc ( '\n' );
     }
-
 }
 
 void test_read512 ( uint8_t numblocks, uint8_t nr_of_tests )
 {
     uint32_t starttime;
     uint32_t blockno = 0;
-    uint8_t i8, errorcode;
+    uint8_t  i8, errorcode;
 
-    uart_puts_p ( PSTR ( "Test Read 5000 512B-Blocks with Singleblock-Read (512B Blocksize):" ) );
+    uart_putstring ( PSTR ( "Test Read 5000 512B-Blocks with Singleblock-Read (512B Blocksize):" ) );
     uart_putc ( '\n' );
 
     for ( i8 = 0; i8 < nr_of_tests; i8++ ) {
         blockno = BLOCKNO;
-        for ( starttime = overflow; blockno < ( ( uint32_t ) BLOCKNO + 5000 ); blockno++ ) {
+
+        for ( starttime = overflow; blockno < ( (uint32_t)BLOCKNO + 5000 ); blockno++ ) {
             errorcode = wdc_read_sector ( blockno, data_buffer );
+
             if ( errorcode ) {
                 break;
             }
         }
-        if ( errorcode )
+
+        if ( errorcode ) {
             break;
+        }
+
         uart_putdw_dec ( overflow - starttime );
         uart_putc ( '\n' );
     }
-
 }
 
-void measure_performance()
+void measure_performance ()
 {
     uint8_t numblocks = 4;
     uint8_t nr_of_tests = 2;
@@ -164,12 +181,10 @@ void measure_performance()
     TIMSK0 |= ( 0x01 << TOIE0 );
     TCCR0B = ( 1 << CS01 ); /* Prescaler 8 */
     TCNT0 = 0x00;
-
-    uart_puts_p ( PSTR ( "Performance Measurement. Displayed are the Timer-Overflows." ) );
+    uart_putstring ( PSTR ( "Performance Measurement. Displayed are the Timer-Overflows." ) );
     uart_putc ( '\n' );
-    uart_puts_p ( PSTR ( "Timer is initialized with a Prescaler 8" ) );
+    uart_putstring ( PSTR ( "Timer is initialized with a Prescaler 8" ) );
     uart_putc ( '\n' );
-
     test_write512 ( numblocks, nr_of_tests );
     test_read512 ( numblocks, nr_of_tests );
     test_write512 ( numblocks, nr_of_tests );
@@ -183,11 +198,10 @@ void measure_performance()
     test_read512 ( numblocks, nr_of_tests );
     test_write4k ( numblocks, nr_of_tests );
     test_write512 ( numblocks, nr_of_tests );
-
-    uart_puts_p ( PSTR ( "End" ) );
+    uart_putstring ( PSTR ( "End" ) );
     uart_putc ( '\n' );
 
-    while ( 1 );
+    while ( 1 ) {}
 }
 
 #endif

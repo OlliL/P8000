@@ -26,39 +26,39 @@
  */
 
 /*
- * $Id: wdc_par.h,v 1.5 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_par.h,v 1.6 2013/05/04 15:40:15 olivleh1 Exp $
  */
 
 #ifndef WDC_PAR_H_
 #define WDC_PAR_H_
 
-extern void wdc_read_par_table ( uint8_t *buffer, uint16_t count );
-extern void wdc_write_par_table ( uint8_t *buffer, uint16_t count );
+extern void     wdc_read_par_table ( uint8_t *buffer, uint16_t count );
+extern void     wdc_write_par_table ( uint8_t *buffer, uint16_t count );
 
-extern void wdc_read_wdc_par ( uint8_t *buffer, uint16_t count );
-extern void wdc_write_wdc_par ( uint8_t *buffer, uint16_t count );
+extern void     wdc_read_wdc_par ( uint8_t *buffer, uint16_t count );
+extern void     wdc_write_wdc_par ( uint8_t *buffer, uint16_t count );
 
-extern void wdc_del_wdc_btt();
-extern void wdc_read_wdc_btt ( uint8_t *buffer, uint16_t count );
-extern void wdc_write_wdc_btt ( uint8_t *buffer, uint16_t count );
-extern uint16_t wdc_get_btt_count();
-extern uint8_t wdc_add_btt_entry ( uint16_t cylinder, uint8_t head );
-extern uint8_t wdc_get_hdd_sectors();
-extern uint8_t wdc_get_hdd_heads();
-extern void wdc_set_disk_invalid();
-extern void wdc_set_disk_valid();
-extern uint8_t wdc_get_disk_valid();
-extern void wdc_set_no_disk();
-extern uint8_t wdc_get_num_of_drvs();
-extern void wdc_set_initialized ( uint8_t num );
-extern uint8_t wdc_get_initialized ();
+extern void     wdc_del_wdc_btt ();
+extern void     wdc_read_wdc_btt ( uint8_t *buffer, uint16_t count );
+extern void     wdc_write_wdc_btt ( uint8_t *buffer, uint16_t count );
+extern uint16_t wdc_get_btt_count ();
+extern uint8_t  wdc_add_btt_entry ( uint16_t cylinder, uint8_t head );
+extern uint8_t  wdc_get_hdd_sectors ();
+extern uint8_t  wdc_get_hdd_heads ();
+extern void     wdc_set_disk_invalid ();
+extern void     wdc_set_disk_valid ();
+extern uint8_t  wdc_get_disk_valid ();
+extern void     wdc_set_no_disk ();
+extern uint8_t  wdc_get_num_of_drvs ();
+extern void     wdc_set_initialized ( uint8_t num );
+extern uint8_t  wdc_get_initialized ();
 
-#define POS_PAR_VERSION     0
-#define POS_PAR_WDC_PAR     8
-#define POS_PAR_WDC_BTT     0x88
+#define POS_PAR_VERSION     0           /* defines at which position in the PAR table the WDC version string starts */
+#define POS_PAR_WDC_PAR     8           /* defines at which position in the PAR table the WDC parameter section starts */
+#define POS_PAR_WDC_BTT     0x88        /* defines at which position in the PAR table the BTT section starts */
 
-#define SIZE_PAR_VERSION    8
-#define SIZE_PAR_WDC_PAR    0x80
-#define SIZE_PAR_WDC_BTT    125
+#define SIZE_PAR_VERSION    8           /* defines the length of the WDC version string */
+#define SIZE_PAR_WDC_PAR    0x80        /* defines the length of the WDC parameter section */
+#define SIZE_PAR_WDC_BTT    125         /* defines the length of the BTT section */
 
 #endif /* WDC_PAR_H_ */

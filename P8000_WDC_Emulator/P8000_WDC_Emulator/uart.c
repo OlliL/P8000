@@ -1,198 +1,145 @@
-/*
- * Copyright (c) 2006-2011 by Roland Riegel <feedback@roland-riegel.de>
+/*-
+ * Copyright (c) 2013 Oliver Lehmann
+ * All rights reserved.
  *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer
+ *    in this position and unchanged.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/*
+ * $Id: uart.c,v 1.6 2013/05/04 15:40:14 olivleh1 Exp $
  */
 
 #include <stdio.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#include <avr/pgmspace.h>
 #include <avr/sfr_defs.h>
 #include <avr/sleep.h>
 
 #include "uart.h"
 #include "wdc_config.h"
 
-/* some mcus have multiple uarts */
-#ifdef UDR0
-#define UBRRH UBRR0H
-#define UBRRL UBRR0L
-#define UDR UDR0
+/* Define baud rate */
+#define BAUD         9600UL
+#define UBBR_VALUE   (( F_CPU / ( BAUD * 16 )) - 1 )
 
-#define UCSRA UCSR0A
-#define UDRE UDRE0
-#define RXC RXC0
 
-#define UCSRB UCSR0B
-#define RXEN RXEN0
-#define TXEN TXEN0
-#define RXCIE RXCIE0
-
-#define UCSRC UCSR0C
-#define URSEL 
-#define UCSZ0 UCSZ00
-#define UCSZ1 UCSZ01
-#define UCSRC_SELECT 0
-#else
-#define UCSRC_SELECT (1 << URSEL)
-#endif
-
-#ifndef USART_RXC_vect
-#if defined(UART0_RX_vect)
-#define USART_RXC_vect UART0_RX_vect
-#elif defined(UART_RX_vect)
-#define USART_RXC_vect UART_RX_vect
-#elif defined(USART0_RX_vect)
-#define USART_RXC_vect USART0_RX_vect
-#elif defined(USART_RX_vect)
-#define USART_RXC_vect USART_RX_vect
-#elif defined(USART0_RXC_vect)
-#define USART_RXC_vect USART0_RXC_vect
-#elif defined(USART_RXC_vect)
-#define USART_RXC_vect USART_RXC_vect
-#else
-#error "Uart receive complete interrupt not defined!"
-#endif
-#endif
-
-#define BAUD 9600UL
-#define UBRRVAL (F_CPU/(BAUD*16)-1)
-#define USE_SLEEP 1
-
-void uart_init()
+void uart_init ()
 {
-    /* set baud rate */
-    UBRRH = UBRRVAL >> 8;
-    UBRRL = UBRRVAL & 0xff;
-    /* set frame format: 8 bit, no parity, 1 bit */
-    UCSRC = UCSRC_SELECT | (1 << UCSZ1) | (1 << UCSZ0);
-    /* enable serial receiver and transmitter */
-#if !USE_SLEEP
-    UCSRB = (1 << RXEN) | (1 << TXEN);
-#else
-    UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
-#endif
+    /* Set baud rate */
+    UBRR0H = (uint8_t)( UBBR_VALUE >> 8 );
+    UBRR0L = (uint8_t)UBBR_VALUE;
+    /* Set frame format to 8 data bits, no parity, 1 stop bit */
+    UCSR0C = ( 0 << USBS0 ) | ( 1 << UCSZ01 ) | ( 1 << UCSZ00 );
+    /* Enable receiver and transmitter */
+    UCSR0B = ( 1 << RXEN0 ) | ( 1 << TXEN0 );
 }
 
-void uart_putc(uint8_t c)
+void uart_putc ( uint8_t data )
 {
-    if(c == '\n')
-        uart_putc('\r');
+    /* Wait if a byte is being transmitted */
+    while ( ( UCSR0A & ( 1 << UDRE0 ) ) == 0 ) {}
 
-    /* wait until transmit buffer is empty */
-    while(!(UCSRA & (1 << UDRE)));
-
-    /* send next byte */
-    UDR = c;
+    /* Transmit data */
+    UDR0 = data;
 }
 
-void uart_putc_hex(uint8_t b)
+void uart_putc_hex ( uint8_t b )
 {
     /* upper nibble */
-    if((b >> 4) < 0x0a)
-        uart_putc((b >> 4) + '0');
-    else
-        uart_putc((b >> 4) - 0x0a + 'a');
+    if ( ( b >> 4 ) < 0x0a ) {
+        uart_putc ( ( b >> 4 ) + '0' );
+    } else {
+        uart_putc ( ( b >> 4 ) - 0x0a + 'a' );
+    }
 
     /* lower nibble */
-    if((b & 0x0f) < 0x0a)
-        uart_putc((b & 0x0f) + '0');
-    else
-        uart_putc((b & 0x0f) - 0x0a + 'a');
+    if ( ( b & 0x0f ) < 0x0a ) {
+        uart_putc ( ( b & 0x0f ) + '0' );
+    } else {
+        uart_putc ( ( b & 0x0f ) - 0x0a + 'a' );
+    }
 }
 
-void uart_putw_hex(uint16_t w)
-{
-    uart_putc_hex((uint8_t) (w >> 8));
-    uart_putc_hex((uint8_t) (w & 0xff));
-}
-
-void uart_putdw_hex(uint32_t dw)
-{
-    uart_putw_hex((uint16_t) (dw >> 16));
-    uart_putw_hex((uint16_t) (dw & 0xffff));
-}
-
-void uart_putw_dec(uint16_t w)
+void uart_putw_dec ( uint16_t w )
 {
     uint16_t num = 10000;
-    uint8_t started = 0;
+    uint8_t  started = 0;
 
-    while(num > 0)
-    {
+    while ( num > 0 ) {
         uint8_t b = w / num;
-        if(b > 0 || started || num == 1)
-        {
-            uart_putc('0' + b);
+
+        if ( b > 0 || started || num == 1 ) {
+            uart_putc ( '0' + b );
             started = 1;
         }
-        w -= b * num;
 
+        w -= b * num;
         num /= 10;
     }
 }
 
-void uart_putdw_dec(uint32_t dw)
+void uart_putdw_dec ( uint32_t dw )
 {
     uint32_t num = 1000000000;
-    uint8_t started = 0;
+    uint8_t  started = 0;
 
-    while(num > 0)
-    {
+    while ( num > 0 ) {
         uint8_t b = dw / num;
-        if(b > 0 || started || num == 1)
-        {
-            uart_putc('0' + b);
+
+        if ( b > 0 || started || num == 1 ) {
+            uart_putc ( '0' + b );
             started = 1;
         }
-        dw -= b * num;
 
+        dw -= b * num;
         num /= 10;
     }
 }
 
-void uart_puts(const char* str)
+void uart_put_nl ()
 {
-    while(*str)
-        uart_putc(*str++);
+    uart_putc ( '\n' );
+    uart_putc ( '\r' );
 }
 
-void uart_puts_p(PGM_P str)
+void uart_putstring ( PGM_P str, bool newline )
 {
-    while(1)
-    {
-        uint8_t b = pgm_read_byte_near(str++);
-        if(!b)
-            break;
+    uint8_t i = 0;
 
-        uart_putc(b);
+    while ( 1 ) {
+        char c = pgm_read_byte ( &str[i] );
+
+        if ( c != '\0' ) {
+            uart_putc ( c );
+            i++;
+        } else {
+            break;
+        }
+    }
+
+    if ( newline ) {
+        uart_put_nl();
     }
 }
 
-uint8_t uart_getc()
-{
-    uint8_t b;
-    /* wait until receive buffer is full */
-#if USE_SLEEP
-    uint8_t sreg = SREG;
-    sei();
-
-    while(!(UCSRA & (1 << RXC)))
-        sleep_mode();
-
-    SREG = sreg;
-#else
-    while(!(UCSRA & (1 << RXC)));
-#endif
-
-    b = UDR;
-    if(b == '\r')
-        b = '\n';
-
-    return b;
-}
-
-EMPTY_INTERRUPT(USART_RXC_vect)
+EMPTY_INTERRUPT ( USART0_RX_vect )

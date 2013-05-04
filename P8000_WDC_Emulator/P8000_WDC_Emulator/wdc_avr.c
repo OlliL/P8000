@@ -26,9 +26,8 @@
  */
 
 /*
- * $Id: wdc_avr.c,v 1.5 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_avr.c,v 1.6 2013/05/04 15:40:14 olivleh1 Exp $
  */
-
 
 #include <avr/io.h>
 #include "wdc_config.h"
@@ -37,7 +36,7 @@
 #include "wdc_drv_pata.h"
 #include "wdc_if_disk.h"
 
-void wdc_init_avr()
+void wdc_init_avr ()
 {
     /* configure the P8000 interface */
     configure_pin_status0();
@@ -81,11 +80,12 @@ void wdc_init_avr()
     ata_da2_disable();
 }
 
-void wdc_get_sysconf()
+void wdc_get_sysconf ()
 {
     enable_sysconf();
     nop();
     nop();
+
     if ( jumper_pata_set() ) {
         drv_init = pata_init;
         drv_read_block = pata_read_block;
@@ -99,5 +99,6 @@ void wdc_get_sysconf()
         drv_read_multiblock = mmc_read_multiblock;
         drv_write_multiblock = mmc_write_multiblock;
     }
+
     disable_sysconf();
 }

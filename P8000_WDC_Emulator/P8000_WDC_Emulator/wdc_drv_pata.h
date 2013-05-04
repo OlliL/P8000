@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_pata.h,v 1.8 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_drv_pata.h,v 1.9 2013/05/04 15:40:14 olivleh1 Exp $
  */
 
 #ifndef WDC_DRV_PATA_H_

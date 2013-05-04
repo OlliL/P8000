@@ -26,9 +26,8 @@
  */
 
 /*
- * $Id: wdc_config.h,v 1.21 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_config.h,v 1.22 2013/05/04 15:40:14 olivleh1 Exp $
  */
-
 
 #ifndef CONFIG_H_
 #define CONFIG_H_
@@ -124,6 +123,6 @@
 
 #define DEBUG 1
 
-#define nop()  __asm__ __volatile__ ("nop" ::)
+#define nop()  __asm__ __volatile__ ( "nop" ::)
 
 #endif /* CONFIG_H_ */

@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_ram.h,v 1.6 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_ram.h,v 1.7 2013/05/04 15:40:15 olivleh1 Exp $
  */
 
 #ifndef WDC_RAM_H_
@@ -35,6 +35,6 @@
 extern void wdc_write_data_to_ram ( uint8_t *buffer, uint16_t address, uint16_t count );
 extern void wdc_read_data_from_ram ( uint8_t *buffer, uint16_t address, uint16_t count );
 
-#define convert_ram_address(x) ((x) - 0x2000)        /* The S-RAM of the original WDC hardware starts at 0x2000. We use an array as RAM here and no direct RAM access     */
+#define convert_ram_address( x ) (( x ) - 0x2000 )        /* The S-RAM of the original WDC hardware starts at 0x2000. We use an array as RAM here and no direct RAM access     */
 
 #endif /* WDC_RAM_H_ */

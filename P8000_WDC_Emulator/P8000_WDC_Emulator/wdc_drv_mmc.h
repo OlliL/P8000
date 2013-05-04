@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.h,v 1.9 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.h,v 1.10 2013/05/04 15:40:14 olivleh1 Exp $
  */
 
 #ifndef WDC_DRV_MMC_H_
@@ -43,5 +43,3 @@ extern uint8_t mmc_write_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t nu
 #define MMC_BLOCKLEN 512
 
 #endif /* WDC_DRV_MMC_H_ */
-
-

@@ -26,9 +26,8 @@
  */
 
 /*
- * $Id: wdc_main.h,v 1.13 2013/04/20 23:22:47 olivleh1 Exp $
+ * $Id: wdc_main.h,v 1.14 2013/05/04 15:40:15 olivleh1 Exp $
  */
-
 
 #ifndef MAIN_H_
 #define MAIN_H_
@@ -57,7 +56,7 @@
 #define ___CMD_WRRDBTT_SECTOR 0x92              /* write and reread sector taking BTT into account  */
 #define ___CMD_CP_BLOCK       0xa1              /* copy block from drive 1 to drive 0               */
 #define ___CMD_WRRD_BLOCK     0xa2              /* write and reread block                           */
-#define CMD_ST_PARBTT         0xc2              /* store PAR and BTT on hard disk                   */
+#define CMD_ST_PARBTT         0xc2              /* store Parameter block and BTT on hard disk       */
 
 #define ERR_STANDARD          0x01
 #define ERR_SECT_N_ON_SURFACE 0x0A
