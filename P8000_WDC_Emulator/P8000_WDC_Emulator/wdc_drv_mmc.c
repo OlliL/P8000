@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.23 2013/05/04 21:22:53 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.24 2013/05/07 17:38:06 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -274,6 +274,8 @@ uint8_t mmc_init ()
     mmc_enable_crc ( 1 );
 #endif
 
+    uart_putstring ( PSTR ( "INFO: SDCard disk has been found" ), true );
+
     disable_mmc();
     return 0;
 }
@@ -305,10 +307,6 @@ uint8_t mmc_cmd ( uint8_t *cmd )
         send_dummy_byte();
         tmp = recv_byte();
     } while ( ( tmp & 0x80 ) && --i );
-
-    if ( !tmp ) {
-        uart_putstring ( PSTR ( "INFO: SDCard disk has been found" ), true );
-    }
 
     return tmp;
 }

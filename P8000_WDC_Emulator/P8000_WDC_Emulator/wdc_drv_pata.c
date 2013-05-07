@@ -26,12 +26,11 @@
  */
 
 /*
- * $Id: wdc_drv_pata.c,v 1.13 2013/05/04 21:29:43 olivleh1 Exp $
+ * $Id: wdc_drv_pata.c,v 1.14 2013/05/07 17:38:06 olivleh1 Exp $
  */
 
 #include "wdc_config.h"
 #include <avr/io.h>
-#include <util/delay.h>
 #include "wdc_avr.h"
 #include "uart.h"
 #include "wdc_drv_pata.h"
@@ -326,10 +325,6 @@ void ata_identify ()
 
 uint8_t pata_init ()
 {
-
-    /* is needed for some disks (for example Maxtor 6L080J4) */
-    _delay_ms ( 400 );
-
     uart_putstring ( PSTR ( "INFO: PATA init start" ), true );
     while ( ( !pata_rdy() ) & pata_bsy() ) {}
 

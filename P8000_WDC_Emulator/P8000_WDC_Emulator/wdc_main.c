@@ -27,7 +27,7 @@
 
 
 /*
- * $Id: wdc_main.c,v 1.33 2013/05/04 21:39:53 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.34 2013/05/07 17:38:06 olivleh1 Exp $
  *
  */
 
@@ -41,6 +41,7 @@
 #include <avr/pgmspace.h>
 #include <avr/sleep.h>
 #include "wdc_config.h"
+#include <util/delay.h>
 #include "wdc_main.h"
 #ifdef DEBUG
 #include "uart.h"
@@ -75,9 +76,8 @@ main ( void )
     uint8_t  errorcode;
     uint8_t  i8;
 #endif
-    atmega_setup();
 
-    uart_putstring ( PSTR ( "=== P8000 WDC Emulator 0.92 ===" ), true );
+    atmega_setup();
 
 #ifdef MEASURE_DISK_PERFORMANCE
     measure_performance();
@@ -419,8 +419,11 @@ main ( void )
 void atmega_setup ( void )
 {
     set_sleep_mode ( SLEEP_MODE_IDLE );
+    /* is needed for some disks (for example Maxtor 6L080J4) and SD-Cards*/
+    _delay_ms ( 400 );
     uart_init();
-    wdc_init_avr();
+    uart_putstring ( PSTR ( "=== P8000 WDC Emulator 0.92 ===" ), true );
+   wdc_init_avr();
     wdc_get_sysconf();
 
     if ( wdc_init_disk() ) {
