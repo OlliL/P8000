@@ -27,7 +27,7 @@
 
 
 /*
- * $Id: wdc_main.c,v 1.34 2013/05/07 17:38:06 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.35 2013/05/09 00:16:04 olivleh1 Exp $
  *
  */
 
@@ -423,7 +423,7 @@ void atmega_setup ( void )
     _delay_ms ( 400 );
     uart_init();
     uart_putstring ( PSTR ( "=== P8000 WDC Emulator 0.92 ===" ), true );
-   wdc_init_avr();
+    wdc_init_avr();
     wdc_get_sysconf();
 
     if ( wdc_init_disk() ) {

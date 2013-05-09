@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_drv_mmc.c,v 1.24 2013/05/07 17:38:06 olivleh1 Exp $
+ * $Id: wdc_drv_mmc.c,v 1.25 2013/05/09 00:16:04 olivleh1 Exp $
  */
 
 #include <avr/io.h>
@@ -299,6 +299,10 @@ uint8_t mmc_cmd ( uint8_t *cmd )
         wait_till_send_done();
     }
 
+    /*
+     * The received byte immediataly following CMD12 is a stuff byte,
+     * it should be discarded before receive the response of the CMD12
+     */
     if ( cmd0 == ( CMD12 ) ) {
         recv_byte();
     }
@@ -600,14 +604,12 @@ uint8_t mmc_read_multiblock ( uint32_t addr, uint8_t *buffer, uint8_t numblocks 
     cmd[0] = CMD12;
     cmd[1] = cmd[2] = cmd[3] = cmd[4] = 0;
 
-    resp = mmc_cmd ( cmd );
-
-    /*  TODO: Apacer Card I have sends 0x7f after some reads - No idea why - CRC was correct
-        if ( resp > 1 ) {
-            disable_mmc();
-            return ( 2 );
-        }
+    /*
+     * My Apacer SD-Card sends sometimes 0x7f as response to the CMD12 even if the write was
+     * successfull. Because of that, no checking of the response to CMD12 is done.
      */
+    mmc_cmd ( cmd );
+
     /* Pad 8 */
     send_dummy_byte();
 #endif
