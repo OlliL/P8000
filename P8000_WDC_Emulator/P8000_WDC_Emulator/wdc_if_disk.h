@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_disk.h,v 1.10 2013/05/04 15:40:14 olivleh1 Exp $
+ * $Id: wdc_if_disk.h,v 1.11 2013/05/09 12:30:25 olivleh1 Exp $
  */
 
 #ifndef WDC_IF_DISK_H_
@@ -55,6 +55,8 @@ t_drv_read_block       drv_read_block;
 t_drv_write_block      drv_write_block;
 t_drv_read_multiblock  drv_read_multiblock;
 t_drv_write_multiblock drv_write_multiblock;
+
+#define wdc_number_of_disks() 1
 
 #define WDC_BLOCKLEN 512
 

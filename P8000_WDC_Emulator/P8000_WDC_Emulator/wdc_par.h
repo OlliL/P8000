@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_par.h,v 1.6 2013/05/04 15:40:15 olivleh1 Exp $
+ * $Id: wdc_par.h,v 1.7 2013/05/09 12:30:25 olivleh1 Exp $
  */
 
 #ifndef WDC_PAR_H_
@@ -52,6 +52,7 @@ extern void     wdc_set_no_disk ();
 extern uint8_t  wdc_get_num_of_drvs ();
 extern void     wdc_set_initialized ( uint8_t num );
 extern uint8_t  wdc_get_initialized ();
+extern uint8_t  wdc_get_btt_cleared ();
 
 #define POS_PAR_VERSION     0           /* defines at which position in the PAR table the WDC version string starts */
 #define POS_PAR_WDC_PAR     8           /* defines at which position in the PAR table the WDC parameter section starts */

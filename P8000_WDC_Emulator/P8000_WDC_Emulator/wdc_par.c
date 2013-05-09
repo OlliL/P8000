@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_par.c,v 1.9 2013/05/04 15:40:15 olivleh1 Exp $
+ * $Id: wdc_par.c,v 1.10 2013/05/09 12:30:25 olivleh1 Exp $
  */
 
 #include <avr/pgmspace.h>
@@ -104,6 +104,7 @@ const uint8_t
 
 uint8_t valid_disk = 1;
 uint8_t initialized;
+uint8_t btt_cleared = 0;
 
 void wdc_read_par_table ( uint8_t *buffer, uint16_t count )
 {
@@ -146,6 +147,7 @@ void wdc_del_wdc_btt ()
     }
 
     par_table[122 + POS_PAR_WDC_BTT] = 0xff;
+    btt_cleared = 1;
 }
 
 void wdc_read_wdc_btt ( uint8_t *buffer, uint16_t count )
@@ -277,4 +279,9 @@ void wdc_set_initialized ( uint8_t num )
 uint8_t wdc_get_initialized ()
 {
     return initialized;
+}
+
+uint8_t wdc_get_btt_cleared ()
+{
+    return btt_cleared;
 }

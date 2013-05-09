@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_main.h,v 1.14 2013/05/04 15:40:15 olivleh1 Exp $
+ * $Id: wdc_main.h,v 1.15 2013/05/09 12:30:25 olivleh1 Exp $
  */
 
 #ifndef MAIN_H_
@@ -59,8 +59,10 @@
 #define CMD_ST_PARBTT         0xc2              /* store Parameter block and BTT on hard disk       */
 
 #define ERR_STANDARD          0x01
+#define ERR_DRIVE_NOT_READY   0x03
 #define ERR_SECT_N_ON_SURFACE 0x0A
 #define ERR_BTT_FULL          0x16
+#define ERR_BTT_INVALID       0x18
 #define ERR_NO_DRIVE_READY    0x27
 #define ERR_CYL0_NOT_READABLE 0x31
 

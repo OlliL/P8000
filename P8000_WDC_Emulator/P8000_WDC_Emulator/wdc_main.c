@@ -27,7 +27,7 @@
 
 
 /*
- * $Id: wdc_main.c,v 1.35 2013/05/09 00:16:04 olivleh1 Exp $
+ * $Id: wdc_main.c,v 1.36 2013/05/09 12:30:25 olivleh1 Exp $
  *
  */
 
@@ -164,6 +164,22 @@ main ( void )
                     wdc_send_errorcode ( ERR_SECT_N_ON_SURFACE );
                 } else {
                     wdc_send_error();
+                }
+                /* if the specified drive exceeds the number of drives, no drive commands are allowed */
+            } else if ( cmd_buffer[1] >= wdc_number_of_disks()
+                        && ( cmd_buffer[0] == CMD_RD_SECTOR
+                             || cmd_buffer[0] == CMD_FMTRD_TRACK
+                             || cmd_buffer[0] == CMD_RD_BLOCK
+                             || cmd_buffer[0] == CMD_WR_BLOCK
+                             || cmd_buffer[0] == CMD_FMTBTT_TRACK
+                             || cmd_buffer[0] == CMD_VER_TRACK
+                             || ( cmd_buffer[0] == CMD_RD_BTTAB && !wdc_get_btt_cleared() )
+                           )
+                      ) {
+                if ( cmd_buffer[0] == CMD_RD_BTTAB ) {
+                    wdc_send_errorcode ( ERR_BTT_INVALID );
+                } else {
+                    wdc_send_errorcode ( ERR_DRIVE_NOT_READY );
                 }
             } else {
 

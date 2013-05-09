@@ -26,7 +26,7 @@
  */
 
 /*
- * $Id: wdc_if_p8000.c,v 1.16 2013/05/04 15:40:15 olivleh1 Exp $
+ * $Id: wdc_if_p8000.c,v 1.17 2013/05/09 12:30:25 olivleh1 Exp $
  */
 
 #include "wdc_config.h"
@@ -38,11 +38,11 @@
 
 void wdc_wait_for_reset ()
 {
-    while ( isset_info_reset() ) {
-        port_data_set ( DATA_CLEAR );
-        port_info_set ( INFO_CLEAR );
-        wdc_set_initialized ( 1 );
-    }
+    port_data_set ( DATA_CLEAR );
+    port_info_set ( INFO_CLEAR );
+    wdc_set_initialized ( 1 );
+
+    while ( isset_info_reset() ) {}
 }
 
 uint8_t wdc_read_data_from_p8k ( uint8_t *buffer, uint16_t count, uint8_t wdc_status )
