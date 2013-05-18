@@ -1,4 +1,4 @@
-Cmp-Mod V01 Genere par PcbNew le 27/04/2013 12:33:58
+Cmp-Mod V01 Genere par PcbNew le 18/05/2013 10:33:29
 
 BeginCmp
 TimeStamp = /4FDF8116;
@@ -337,10 +337,10 @@ IdModule  = PIN_ARRAY_5x2;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FDE0D6C;
+TimeStamp = /51973111;
 Reference = X2;
-ValeurCmp = DB25;
-IdModule  = DB25FC;
+ValeurCmp = CONN_13X2;
+IdModule  = pin_array_13x2;
 EndCmp
 
 BeginCmp
@@ -379,10 +379,10 @@ IdModule  = pin_array_3x2;
 EndCmp
 
 BeginCmp
-TimeStamp = /4FE098BD;
+TimeStamp = /51972B4B;
 Reference = X8;
-ValeurCmp = EFS_26;
-IdModule  = EFS26;
+ValeurCmp = CONN_13X2;
+IdModule  = pin_array_13x2;
 EndCmp
 
 EndListe
