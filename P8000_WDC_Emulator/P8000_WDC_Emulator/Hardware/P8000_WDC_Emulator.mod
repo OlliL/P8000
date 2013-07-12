@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  18/05/2013 14:43:58
+PCBNEW-LibModule-V1  12.07.2013 23:01:28
 # encoding utf-8
 $INDEX
 4PIN_MOLEX
@@ -6,7 +6,7 @@ EFS26
 HDD_POWER
 HOLE_4mm
 HOLE_4x8mm
-HOLE_4x8mm_4mmclear
+HOLE_4x8mm_4mmclear_copper
 HOLE_4x8mm_4mmclear_pad
 HOLE_4x8mm_copper
 HOLE_4x8mm_pad
@@ -1181,25 +1181,6 @@ Of 0.000000 0.000000 0.000000
 Ro 0.000000 0.000000 0.000000
 $EndSHAPE3D
 $EndMODULE  sd_cocket_yamaichi_fps009_3001
-$MODULE HOLE_4x8mm_4mmclear
-Po 0 0 0 15 517AA888 00000000 ~~
-Li HOLE_4x8mm_4mmclear
-Sc 00000000
-AR HOLE_4x8mm
-Op 0 0 0
-.SolderPasteRatio 9.51343e-317
-T0 0 0 600 600 0 120 N I 21 N "HOLE_4x8mm"
-T1 0 0 600 600 0 120 N I 21 N "VAL**"
-$PAD
-Sh "" O 1575 3150 0 0 0
-Dr 1575 0 0 O 1575 3150
-At HOLE N 00E0FFFF
-Ne 0 ""
-Po 0 0
-.SolderMask 1575
-.LocalClearance 1575
-$EndPAD
-$EndMODULE  HOLE_4x8mm_4mmclear
 $MODULE HOLE_4x8mm
 Po 0 0 0 15 517BA7C6 00000000 ~~
 Li HOLE_4x8mm
@@ -1472,4 +1453,23 @@ Po 0 0
 .LocalClearance 1693
 $EndPAD
 $EndMODULE  HOLE_4x8mm_4mmclear_pad
+$MODULE HOLE_4x8mm_4mmclear_copper
+Po 0 0 0 15 51E06E83 00000000 ~~
+Li HOLE_4x8mm_4mmclear_copper
+Sc 00000000
+AR HOLE_4x8mm
+Op 0 0 0
+.SolderPasteRatio 9.51343e-317
+T0 0 0 600 600 0 120 N I 21 N "HOLE_4x8mm"
+T1 0 0 600 600 0 120 N I 21 N "VAL**"
+$PAD
+Sh "" O 4724 6299 0 0 0
+Dr 1575 0 0 O 1575 3150
+At STD N 00E0FFFF
+Ne 0 ""
+Po 0 0
+.SolderMask 197
+.LocalClearance 197
+$EndPAD
+$EndMODULE  HOLE_4x8mm_4mmclear_copper
 $EndLIBRARY
