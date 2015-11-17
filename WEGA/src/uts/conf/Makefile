@@ -18,17 +18,14 @@ MOD=	644
 all:	$(OBJ)
 
 install: $(OBJ)
+	sh -c 'test -d $(IDIR) || mkdir $(IDIR)'
 	sh -c 'for file in ${IFILES} ; do \
 		cp $$file $(IDIR) ; \
 		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
 	done'
 	chmog 666 wega system $(IDIR)/bstart.o
 
-BOOTLIB: $(BL_OBJ) ../conf_times ../touch
-# modify the objectfiles to make them as equal as possible to the
-# original objects stored in BOOTLIB
-	sh -c 'while read line ; do ../touch $$line ; done < ../conf_times'
-	rm -f BOOTLIB
+BOOTLIB: $(BL_OBJ)
 	ar qc BOOTLIB bmch.o boot.o bsys.o bconf.o bmisc.o bmd.o bfd.o bud.o brm.o
 
 libb.a:	sa.function.o bmisc.o
@@ -38,6 +35,8 @@ libb.a:	sa.function.o bmisc.o
 
 conf.o:
 	scc $(CFLAGS) -c $<
+u.o:
+	cp u.obj u.o
 
 clean:
 	rm -f $(BL_OBJ) $(OBJ)

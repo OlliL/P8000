@@ -204,6 +204,7 @@ caddr_t arg;
 		if (copyout((caddr_t)&cb, arg, sizeof(cb)))
 			u.u_error = EFAULT;
 		break;
+
 	case TCXONC:
 		switch (arg) {
 		case 0:
@@ -224,7 +225,7 @@ caddr_t arg;
 		break;
 	case TCSBRK:
 		ttywait(tp);
-		if(arg == 0)
+		if(0 == arg)
 			(*tp->t_proc)(tp, T_BREAK);
 		break;
 

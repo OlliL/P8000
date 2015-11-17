@@ -20,15 +20,13 @@ MOD=	644
 all:	LIB2
 
 install: LIB2
+	sh -c 'test -d $(IDIR) || mkdir $(IDIR)'
 	sh -c 'for file in $(IFILES) ; do \
 		cp $$file $(IDIR) ; \
 		chmog $(MOD) $(OWN) $(GRP) $(IDIR)/$$file ; \
 	done'
 
-LIB2:	$(OBJ) ../dev_times ../touch
-# modify the objectfiles to make them as equal as possible to the
-# original objects stored in LIB2
-	sh -c 'while read line ; do ../touch $$line ; done < ../dev_times'
+LIB2:	$(OBJ)
 	chmog 666 26 1 koppel.o
 	chmog 666 26 1 fd.o
 	chmog 644 89 0 tty.o
@@ -56,10 +54,6 @@ udev6.o:
 
 # this files are written in plain ASM
 clist.o:
-	$(CAS) -u -o $@ $*.s
-tt0.o:
-	$(CAS) -u -o $@ $*.s
-tty.o:
 	$(CAS) -u -o $@ $*.s
 
 clean:

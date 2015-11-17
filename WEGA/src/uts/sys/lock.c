@@ -26,8 +26,8 @@ char lockwstr[] = "@[$]lock.c		Rev : 4.1 	08/27/83 11:55:14";
 #include <sys/proc.h>
 #include <sys/s.out.h>
 #include <sys/user.h>
-#include <sys/map.h>
 #include <sys/lockblk.h>
+#include <sys/callo.h>
 
 long lkfront();
 

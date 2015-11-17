@@ -54,7 +54,6 @@ register mode;
 {
 	register struct file *fp;
 	register struct inode *ip;
-	long	j;
 	register struct a {
 		int	fdes;
 		char	*cbuf;
@@ -70,19 +69,20 @@ register mode;
 		u.u_error = EBADF;
 		return;
 	}
-	u.u_base.l = (caddr_t)(((long)uap->cbuf) & 0x7F00FFFF);	 	/* FIXME: this is not 100% compatible (sys2.s v1.1 Line 151-154) */
+
+	u.u_base.l = (caddr_t)(((long)uap->cbuf) & 0x7F00FFFF);
+
 	u.u_count = uap->count;
 	u.u_segflg = 0;
 	u.u_fmode = fp->f_flag;
 	ip = fp->f_inode;
 	type = ip->i_mode&IFMT;
 	if (type==IFREG || type==IFDIR) {
-		u.u_offset = fp->f_offset;				/* FIXME: uses different temp. reg. (sys2.s v1.1 line 172-173 */
-		if(ip->i_locklist) {					/* FIXME: uses different temp. reg. (sys2.s v1.1 line 174-175 */
-			j = u.u_offset + u.u_count;			/* FIXME: j should be +0 but is +2 and why is it defined at all? */
-			if(locked(mode == FREAD?0x100:0,ip,u.u_offset))	/*        probably it should be some variable locked() usess     */
-				return;				       	/*        (sys2.s v1.1 line 147-150)                             */
-		}
+		u.u_offset = fp->f_offset;
+		if(ip->i_locklist &&
+			locked(mode == FREAD?0x100:0,ip,
+				u.u_offset,u.u_offset + u.u_count))
+			return;
 		plock(ip);
 		if ((u.u_fmode&FAPPEND) && (mode == FWRITE))
 			fp->f_offset = ip->i_size;
@@ -142,11 +142,10 @@ creat()
  */
 copen(mode, arg)
 register mode;
-int arg;								/*FIXME: this has to be stack +4 (sys2.s v1.1 line 332 */
+int arg;
 {
 	register struct inode *ip;
 	register struct file *fp;
-	long j;
 	int i;
 	
 	if ((mode&(FREAD|FWRITE)) == 0) {
@@ -179,9 +178,8 @@ int arg;								/*FIXME: this has to be stack +4 (sys2.s v1.1 line 332 */
 				}
 			}
 			if(ip->i_locklist) {
-				j=0x40000000;  				/* FIXME: j should be +0 but is +4 and why is it defined at all? */
-				if(locked(0,ip,0)){			/*         probably it should be some variable locked() usess    */
-					iput(ip);			/*        (sys2.s v1.1 line 407)                                 */
+				if(locked(0,ip,(long)(0L), (long)(1L<<30))){
+					iput(ip);
 					return;
 				}
 			}
@@ -284,7 +282,8 @@ link()
 	register struct a {
 		char	*target;
 		char	*linkname;
-	} *uap;								/* FIXME: some var definitions are missing (sys2.c v1.1 line 593, 653, 657)*/
+	} *uap;
+	long i;
 
 	uap = (struct a *)u.u_ap;
 	ip = namei(uchar, 0);
@@ -302,8 +301,8 @@ link()
 	 */
 	prele(ip);
 
-	u.u_dirp.l = (caddr_t)(((long)uap->linkname) & 0x7F00FFFF);	/* FIXME: this is not 100% compatible (sys2.c v1.1 line 611-613) */
-	
+	u.u_dirp.l = (caddr_t)(((long)uap->linkname) & 0x7F00FFFF);
+
 	xp = namei(uchar, 1);
 	if (xp != NULL) {
 		u.u_error = EEXIST;

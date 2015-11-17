@@ -156,7 +156,7 @@ struct state *state;
 	case 'B':
 	case 'b':
 	{	printf("reakpoint @");
-		kadr = (unsigned int *)((long)(gethex() & UMASK) & KMASK);
+		kadr = (unsigned int *)((long)(gethex() & UMASK));
 		for (bp_cnt = 0; breakpt[bp_cnt].a && ++bp_cnt<NBPTS; );
 		if (bp_cnt >= NBPTS){
 			printf("KDB: No more break slots\n");
