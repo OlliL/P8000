@@ -1,6 +1,0 @@
-cd access;	make /z/dbs/src/access/.save
-cd ../dbu;	make /z/dbs/src/dbu/.save
-cd ../gutil;	make /z/dbs/src/gutil/.save
-cd ../h;	make /z/dbs/src/h/.save
-cd ../iutil;	make /z/dbs/src/iutil/.save
-cd ../yyyacc;	make /z/dbs/src/yyyacc/.save

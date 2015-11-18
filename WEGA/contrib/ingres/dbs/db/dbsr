@@ -1,4 +1,0 @@
-destroydb dbsr
-creatdb -1 -c -q dbsr
-insertr dbsr 2teile.dump 2inf.dump 2total.dump
-sysmod dbsr

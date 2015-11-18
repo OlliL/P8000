@@ -1,4 +1,0 @@
-cd amx_cc;	make /z/dbs/src/amx_cc/.save
-cd ../amx_lib;	make /z/dbs/src/amx_lib/.save
-cd ../redabas;	make /z/dbs/src/redabas/.save
-cd ../form;	make /z/dbs/src/form/.save

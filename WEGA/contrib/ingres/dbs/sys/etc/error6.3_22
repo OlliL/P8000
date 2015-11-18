@@ -1,8 +1,0 @@
-22076	PRINTADMIN:	cannot read admin struct~
-22137	USERSETUP:	fclose~
-22138	USERSETUP:	open /etc/passwd 2~
-22140	USERSETUP:	cannot create %s~
-22141	USERSETUP:	cannot open %s~
-22200	%s:	initucode %d~
-22201	%s:	cannot access data base %s~
-22202	PAGER:	openr target %s, %d~

@@ -1,4 +1,0 @@
-set -x
-mount /dev/dbs /wrk r
-cp /wrk/.save $1.save
-umount /dev/dbs

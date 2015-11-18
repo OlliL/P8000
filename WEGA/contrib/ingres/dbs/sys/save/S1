@@ -1,7 +1,0 @@
-echo src/access;	cd /z/dbs/src/access;		make .save
-echo src/dbu;		cd ../dbu;			make .save
-echo src/gutil;		cd ../gutil;			make .save
-echo src/h;		cd ../h;			make .save
-echo src/iutil;		cd ../iutil;			make .save
-echo src/yyyacc;	cd ../yyyacc;			make .save
-echo S1 DONE

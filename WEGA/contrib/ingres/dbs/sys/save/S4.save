@@ -1,5 +1,0 @@
-cd eql;		make /z/dbs/src/eql/.save
-cd ../libq;	make /z/dbs/src/libq/.save
-cd ../monitor;	make /z/dbs/src/monitor/.save
-cd ../support;	make /z/dbs/src/support/.save
-cd ../sys;	make /z/dbs/src/sys/.save

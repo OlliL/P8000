@@ -1,5 +1,0 @@
-\monitor \\
-{define;{editor};ed}\eval
-{define;{shell};sh}\eval
-{define;{begintrap};{remove;{tuplecount}}}\eval
-{define;{continuetrap};{ifsame;@{tuplecount};{tuplecount};;{type;@{tuplecount} tuples touched}}}\eval

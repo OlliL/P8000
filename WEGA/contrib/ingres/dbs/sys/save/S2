@@ -1,3 +1,0 @@
-echo data/base/adr;	cd /z/dbs/data/base/adr;	make .save
-echo data/base/ingres;	cd ../ingres;			make .save
-echo S2 DONE

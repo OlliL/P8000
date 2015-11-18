@@ -1,5 +1,0 @@
-## i2		tnum;
-## char		tname[21];
-## char		farbe[9];
-## i2		gewicht;
-## i2		menge;

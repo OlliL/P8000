@@ -1,1 +1,0 @@
-iql -s -I{pathname}/demo/ql/tutorial $1

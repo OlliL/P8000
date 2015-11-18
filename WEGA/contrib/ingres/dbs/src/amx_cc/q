@@ -1,3 +1,0 @@
-# if (S_ALIGN + L_ALIGN + D_ALIGN) > 0
-	fprintf(FILE_tmp, msg(120));
-# endif

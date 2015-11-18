@@ -1,2 +1,0 @@
-a 2>/dev/null | fgrep $1
-d 2>/dev/null | fgrep $1

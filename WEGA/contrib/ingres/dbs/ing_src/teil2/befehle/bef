@@ -1,9 +1,0 @@
-1,$s/z\\(rha/o'a"'/g
-1,$s/z\\(rho/o'o"'/g
-1,$s/z\\(rhu/o'u"'/g
-1,$s/z\\(rhA/o'A"'/g
-1,$s/z\\(rhO/o'O"'/g
-1,$s/z\\(rhU/o'U"'/g
-1,$s/^.OP/.ft B/
-1,$s/^.OM/.ft B/
-1,$s/^.NH 3/.NH 3.ft B/

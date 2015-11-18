@@ -1,9 +1,0 @@
-.de xx
-\&\UNIX
-..
-.de yy
-\&\ING_DB
-..
-.de vv
-\&\ING_DB 6.3/3
-..
