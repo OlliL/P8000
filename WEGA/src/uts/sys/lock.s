@@ -90,6 +90,379 @@ _lockwstr::
 .comm	4,	_tk_nin;
 .comm	4,	_tk_nout;
 .comm	200,	_callout;
+/*~~lkdata:*/
+
+.psec
+.code
+
+_lkdata::
+{
+	ret
+	~L1	:=	0
+	~L2	:=	12
+}	/*	_lkdata	*/
+
+.psec	data
+.data
+
+/*~~unlk:*/
+
+.psec
+.code
+
+_unlk::
+{
+	sub     fp,#~L2
+	ldm     _stkseg+%0010(fp),r8,#6
+	ldl     rr2,_u+%0024
+	ldl     |_stkseg+~L1+%000c|(fp),rr2
+	ldl     rr4,#%00000004
+	add     r5,fp
+	ldl     rr2,#%00000008
+	add     r3,fp
+	ldl     rr6,|_stkseg+~L1+%000c|(fp)
+	calr    _lkfront
+	ldl     rr12,rr2
+	testl   rr2
+	jr      z,L700
+	add     r3,#%004a
+	ldl     rr10,rr2
+	jr      L710
+L760:
+	ld      r2,rr8(#%0004)
+	bit     r2,#4
+	jr      z,L720
+	ldl     rr2,rr8
+	inc     r3,#4
+	res     @rr2,#4
+	ldl     rr6,rr8
+	call    _wakeup
+L720:
+	ldl     rr2,rr8(#%000a)
+	cpl     rr2,|_stkseg+~L1+%0004|(fp)
+	jr      ge,L730
+	ldl     rr2,rr8
+	inc     r3,#14
+	ldl     rr4,|_stkseg+~L1+%0008|(fp)
+	cpl     rr4,@rr2
+	jr      ge,L730
+	ldl     rr2,rr8(#%000e)
+	ldl     |_stkseg+~L1+%0000|(fp),rr2
+	ld      r5,rr8(#%0004)
+	ldl     rr6,rr8
+	ldl     rr2,|_stkseg+~L1+%0008|(fp)
+	calr    _lockadd
+	test    r2
+	jr      nz,L700
+	ldl     rr2,rr8
+	inc     r3,#14
+	ldl     rr4,|_stkseg+~L1+%0004|(fp)
+	ldl     @rr2,rr4
+	jr      L700
+	ldl     rr2,rr8
+L730:
+	inc     r3,#10
+	ldl     rr4,|_stkseg+~L1+%0004|(fp)
+	cpl     rr4,@rr2
+	jr      gt,L740
+	ldl     rr2,rr8
+	inc     r3,#14
+	ldl     rr6,|_stkseg+~L1+%0008|(fp)
+	cpl     rr6,@rr2
+	jr      ge,L740
+	ldl     rr2,rr8
+	inc     r3,#10
+	ldl     rr0,|_stkseg+~L1+%0008|(fp)
+	ldl     @rr2,rr0
+	jr      L700
+L740:
+	ldl     rr2,rr8
+	inc     r3,#14
+	ldl     rr4,|_stkseg+~L1+%0004|(fp)
+	ldl     @rr2,rr4
+L750:
+	ldl     rr10,rr8
+	jr      L710
+L770:
+	ldl     rr2,rr8(#%0006)
+	cpl     rr2,<<%0>>%0020
+	jr      nz,L750
+	ldl     rr2,rr8
+	inc     r3,#10
+	ldl     rr4,|_stkseg+~L1+%0008|(fp)
+	cpl     rr4,@rr2
+	jr      le,L700
+	ldl     rr2,rr8(#%000e)
+	cpl     rr2,|_stkseg+~L1+%0004|(fp)
+	jr      le,L750
+	ldl     rr2,rr8
+	inc     r3,#10
+	ldl     rr4,|_stkseg+~L1+%0004|(fp)
+	cpl     rr4,@rr2
+	jr      gt,L760
+	ldl     rr2,rr8(#%000e)
+	cpl     rr2,|_stkseg+~L1+%0008|(fp)
+	jr      gt,L760
+	ldl     rr2,@rr8
+	ldl     @rr10,rr2
+	ldl     rr6,rr8
+	calr    _lockfree
+L710:
+	ldl     rr8,@rr10
+	testl   rr8
+	jr      nz,L770
+L700:
+	ldm     r8,_stkseg+%0010(fp),#6
+	add     fp,#~L2
+	ret
+	~L1	:=	0
+	~L2	:=	28
+}	/*	_unlk	*/
+
+.psec	data
+.data
+
+/*~~locked:*/
+
+.psec
+.code
+
+_locked::
+{
+	sub     fp,#~L2
+	ldm     _stkseg+%0012(fp),r8,#6
+	ld      |_stkseg+~L1+%000a|(fp),r7
+	ldl     rr8,<<%0>>%0022(fp)
+	ldl     rr10,rr2
+	ldl     rr12,rr4
+	ldl     rr2,rr12(#%004a)
+	ldl     |_stkseg+~L1+%000c|(fp),rr2
+	jr      L600
+L610:
+	ldl     rr2,|_stkseg+~L1+%000c|(fp)
+	ldl     rr4,@rr2
+	ldl     |_stkseg+~L1+%000c|(fp),rr4
+	jr      L600
+L650:
+	inc     r3,#10
+	cpl     rr8,@rr2
+	jr      le,L620
+	ldl     rr2,|_stkseg+~L1+%000c|(fp)
+	ldl     rr4,rr2(#%0006)
+	cpl     rr4,<<%0>>%0020
+	jr      z,L610
+	inc     r3,#14
+	cpl     rr10,@rr2
+	jr      ge,L610
+	ldl     rr2,|_stkseg+~L1+%000c|(fp)
+	inc     r3,#4
+	ld      r4,|_stkseg+~L1+%000a|(fp)
+	and     r4,#%0100
+	and     r4,@rr2
+	jr      nz,L610
+	bit     |_stkseg+~L1+%000a|(fp),#7
+	jr      z,L660
+	ldb     _u+%0015,#%0d
+L640:
+	ldk     r2,#1
+	jr      L630
+L660:
+	ldl     rr6,|_stkseg+~L1+%000c|(fp)
+	calr    _deadlock
+	test    r2
+	jr      nz,L640
+	ldl     rr2,|_stkseg+~L1+%000c|(fp)
+	inc     r3,#4
+	set     @rr2,#4
+	ldl     rr6,|_stkseg+~L1+%000c|(fp)
+	ld      r5,#%0028
+	call    _sleep
+	ldl     rr2,rr12(#%004a)
+	ldl     |_stkseg+~L1+%000c|(fp),rr2
+	testb   _u+%0015
+	jr      nz,L640
+L600:
+	ldl     rr2,|_stkseg+~L1+%000c|(fp)
+	testl   rr2
+	jr      nz,L650
+L620:
+	sub     r2,r2
+L630:
+	ldm     r8,_stkseg+%0012(fp),#6
+	add     fp,#~L2
+	ret
+	~L1	:=	0
+	~L2	:=	30
+}	/*	_locked	*/
+
+.psec	data
+.data
+
+/*~~deadlock:*/
+
+.psec
+.code
+
+_deadlock::
+{
+	sub     fp,#~L2
+	ldm     _stkseg+%000a(fp),r10,#4
+	ldl     rr12,rr6
+	jr      L500
+L540:
+	ldl     rr2,rr12(#%0006)
+	ldl     rr4,rr2(#%0016)
+	ldl     rr10,rr4
+	cpl     rr4,#0
+	jr      c,L510
+	ld      r3,_Nflock
+	mult    rr2,#%0012
+	ldl     rr4,#0
+	add     r5,r3
+	cpl     rr10,rr4
+	jr      nc,L510
+	ldl     rr2,rr10(#%0006)
+	cpl     rr2,_u+%0020
+	jr      nz,L520
+	ldb     _u+%0015,#35
+	ldk     r2,#1
+	jr      L530
+L520:
+	ldl     rr12,rr10
+L500:
+	ldl     rr2,rr12(#%0006)
+	cpb     @rr2,#%01
+	jr      z,L540
+L510:
+	sub     r2,r2
+L530:
+	ldm     r10,_stkseg+%000a(fp),#4
+	add     fp,#~L2
+	ret
+	~L1	:=	0
+	~L2	:=	18
+}	/*	_deadlock	*/
+
+.psec	data
+.data
+
+/*~~unlock:*/
+
+.psec
+.code
+
+_unlock::
+{
+	sub     fp,#~L2
+	ldm     _stkseg+%0010(fp),r8,#6
+	ldl     rr12,rr6
+	ldl     rr2,rr12(#%004a)
+	testl   rr2
+	jr      z,L400
+	ldl     rr2,rr6
+	add     r3,#%004a
+	ldl     rr8,rr2
+	clr     |_stkseg+~L1+%000e|(fp)
+	clr     |_stkseg+~L1+%000c|(fp)
+	ld      r2,|_stkseg+~L1+%000c|(fp)
+	sla     r2,#2
+	ldl     rr4,_u+%0068(r2)
+	testl   rr4
+	jr      z,L410
+	ld      r2,|_stkseg+~L1+%000c|(fp)
+	sla     r2,#2
+	ldl     rr4,_u+%0068(r2)
+	inc     r5,#2
+	cpl     rr12,@rr4
+	jr      ne,L410
+	inc     |_stkseg+~L1+%000e|(fp),#1
+L410:
+	inc     |_stkseg+~L1+%000c|(fp),#1
+	cp      |_stkseg+~L1+%000c|(fp),#%0014
+	jr      lt,_unlock+%26
+	test    |_stkseg+~L1+%000e|(fp)
+	jr      z,L420
+	jr      L400
+L430:
+	ldl     rr2,@rr10
+	ldl     @rr8,rr2
+	ldl     rr6,rr10
+	calr    _lockfree
+	jr      L420
+L440:
+	ldl     rr2,rr10(#%0006)
+	cpl     rr2,_u+%0020
+	jr      z,L430
+	ldl     rr8,rr10
+L420:
+	ldl     rr10,@rr8
+	testl   rr10
+	jr      nz,L440
+L400:
+	ldm     r8,_stkseg+%0010(fp),#6
+	add     fp,#~L2
+	ret
+	~L1	:=	0
+	~L2	:=	28
+}	/*	_unlock	*/
+
+.psec	data
+.data
+
+/*~~lockalloc:*/
+
+.psec
+.code
+
+_lockalloc::
+{
+	dec	fp,#~L2
+	ldm	_stkseg+4(fp),r10,#4
+	ldl     rr12,#0
+	ldl     rr2,rr12(#6)
+	testl   rr2
+	jr      nz,L300
+	ldl     rr2,rr12
+	inc     r3,#6
+	ldl     rr4,#0
+	ldl     @rr2,rr4
+	ldl     rr10,#18
+	jr      L310
+L320:
+	ldl     rr6,rr10
+	calr    _lockfree
+	add     r11,#18
+L310:
+	ld      r3,_proc
+	mult    rr2,#18
+	ldl     rr4,#0
+	add     r5,r3
+	cpl     rr10,rr4
+	jr      c,L320
+L300:
+	ldl     rr10,@rr12
+	testl   rr10
+	jr      nz,L330
+	ldb     _proc+21,#21
+	subl    rr2,rr2
+	jr      L340
+L330:
+	ldl     rr2,@rr10
+	ldl     @rr12,rr2
+	subl    rr2,rr2
+	ldl     @rr10,rr2
+	ldl     rr2,rr10
+L340:
+	ldm	r10,_stkseg+4(fp),#4
+	inc	fp,#~L2
+	ret
+	~L1	:=	0
+	~L2	:=	12
+}	/*	_lockalloc	*/
+
+.psec	data
+.data
+
 /*~~lockfree:*/
 
 .psec
@@ -118,7 +491,7 @@ L10:
 	ret
 	~L1	:=	0
 	~L2	:=	12
-	}	/*	_lockfree	*/
+}	/*	_lockfree	*/
 
 .psec	data
 .data
@@ -169,12 +542,12 @@ L30:
 	ret
 	~L1	:=	0
 	~L2	:=	30
-	}	/*	_lockfree	*/
+}	/*	_lockadd	*/
 
 .psec	data
 .data
 
-/*~~lockadd:*/
+/*~~lkfront:*/
 
 .psec
 .code
@@ -299,7 +672,7 @@ L200:
 	ret
 	~L1	:=	0
 	~L2	:=	44
-}	/*	_lockfree	*/
+}	/*	_lkfront	*/
 
 .psec	data
 .data
