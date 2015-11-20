@@ -90,6 +90,22 @@ _lockwstr::
 .comm	4,	_tk_nin;
 .comm	4,	_tk_nout;
 .comm	200,	_callout;
+L6000:
+.byte	%00,%00,%01,%1e,%00,%00,%01,%4a
+.byte	%00,%00,%02,%56,%00,%00,%02,%56
+.byte	%00,%00,%02,%56,%00,%00,%02,%56
+.byte	%00,%00,%02,%56,%00,%00,%02,%56
+.byte	%00,%00,%01,%76,%00,%00,%02,%02
+.byte	%00,%00,%02,%56,%00,%00,%02,%42
+.byte	%00,%00,%02,%56,%00,%00,%02,%56
+.byte	%00,%00,%02,%56,%00,%00,%02,%56
+.byte	%00,%00,%02,%2e,%00,%00,%02,%74
+.byte	%00,%00,%02,%56,%00,%00,%02,%56
+.byte	%00,%00,%02,%56,%00,%00,%02,%56
+.byte	%00,%00,%02,%56,%00,%00,%02,%56
+.byte	%00,%00,%02,%4e,%00,%00,%02,%46
+.byte	%00,%00,%02,%56,%00,%00,%02,%38
+.even
 /*~~lkdata:*/
 
 .psec
@@ -97,9 +113,245 @@ _lockwstr::
 
 _lkdata::
 {
+	sub     fp,#~L2
+	ldm     _stkseg+~L1+%0012(fp),r8,#6
+	ldl     rr2,_u+%0024
+	ldl     |_stkseg+~L1+%000c|(fp),rr2
+	ldl     rr4,#%00000004
+	add     r5,fp
+	ldl     rr2,#%00000008
+	add     r3,fp
+	ldl     rr6,|_stkseg+~L1+%000c|(fp)
+	calr    _lkfront
+	ldl     rr12,rr2
+	testl   rr2
+	jp      z,L1000
+	ldl     rr2,|_stkseg+~L1+%0008|(fp)
+	ldl     |_stkseg+~L1+%0000|(fp),rr2
+	ldl     rr4,|_stkseg+~L1+%000c|(fp)
+	ld      r7,rr4(#%0002)
+	bit     r7,#2
+	jr      z,L1180
+	ld      r7,#%0080
+	jr      L1170
+L1180:
+	sub     r7,r7
+L1170:
+	ldl     rr4,rr12
+	ldl     rr2,|_stkseg+~L1+%0004|(fp)
+	calr    _locked
+	test    r2
+	jp      nz,L1000
+	ldl     rr2,rr12
+	add     r3,#%004a
+	ldl     rr10,rr2
+	ldl     rr2,|_stkseg+~L1+%000c|(fp)
+	ld      r4,rr2(#%0002)
+	bit     r4,#0
+	jr      z,L1190
+	sub     r4,r4
+	jr      L1200
+L1190:
+	ld      r4,#%0100
+L1200:
+	ld      |_stkseg+~L1+%0010|(fp),r4
+	jp      L1010
+L1160:
+	ldl     rr2,rr8
+	inc     r3,#10
+	ldl     rr4,|_stkseg+~L1+%0008|(fp)
+	cpl     rr4,@rr2
+	jp      lt,L1150
+	ldl     rr2,rr8(#%0006)
+	cpl     rr2,_u+%0020
+	jp      nz,L1140
+	ldl     rr4,rr8(#%000a)
+	cpl     rr4,|_stkseg+~L1+%0004|(fp)
+	jr      gt,L1210
+	ldk     r3,#1
+	jr      L1220
+L1210:
+	sub     r3,r3
+L1220:
+	ldl     rr4,rr8(#%000e)
+	cpl     rr4,|_stkseg+~L1+%0004|(fp)
+	jr      gt,L1230
+	ldk     r4,#2
+	jr      L1240
+L1230:
+	sub     r4,r4
+L1240:
+	add     r3,r4
+	ldl     rr4,rr8(#%000a)
+	cpl     rr4,|_stkseg+~L1+%0008|(fp)
+	jr      gt,L1250
+	ldk     r4,#4
+	jr      L1260
+L1250:
+	sub     r4,r4
+L1260:
+	add     r3,r4
+	ldl     rr4,rr8(#%000e)
+	cpl     rr4,|_stkseg+~L1+%0008|(fp)
+	jr      gt,L1270
+	ldk     r4,#8
+	jr      L1280
+L1270:
+	sub     r4,r4
+L1280:
+	add     r3,r4
+	ld      r4,rr8(#%0004)
+	and     r4,#%0100
+	cp      r4,|_stkseg+~L1+%0010|(fp)
+	jr      nz,L1290
+	ld      r4,#%0010
+	jr      L1130
+L1290:
+	sub     r4,r4
+L1130:
+	add     r3,r4
+	ld      r2,r3
+	dec     r2,#4
+	cp      r2,#%001b
+	jp      ugt,L1010
+	rl      r2,#2
+	ldl     rr4,L6000(r2)
+	jp      @rr4
+	test    |_stkseg+~L1+%0010|(fp)
+	jr      z,L1120
+	ldl     rr4,rr8(#%000a)
+	ldl     |_stkseg+~L1+%0000|(fp),rr4
+	jp      L1110
+L1120:
+	ldl     rr2,|_stkseg+~L1+%0008|(fp)
+	ldl     |_stkseg+~L1+%0000|(fp),rr2
+	ldl     rr6,rr10
+	ld      r5,|_stkseg+~L1+%0010|(fp)
+	ldl     rr2,|_stkseg+~L1+%0004|(fp)
+	calr    _lockadd
+	test    r2
+	jr      z,L1060
+	test    |_stkseg+~L1+%0010|(fp)
+	jp      nz,L1000
+	ldl     rr2,rr8(#%000a)
+	cpl     rr2,|_stkseg+~L1+%0004|(fp)
+	jr      ge,L1090
+	ldl     rr2,|_stkseg+~L1+%0004|(fp)
+	ldl     |_stkseg+~L1+%0000|(fp),rr2
+	ldl     rr2,rr8(#%000a)
+	ld      r5,#%0100
+	ldl     rr6,rr10
+	calr    _lockadd
+	test    r2
+	jr      z,L1100
+	test    |_stkseg+~L1+%0010|(fp)
+	jr      z,L1040
+	ldl     rr2,rr8(#%000a)
+	ldl     |_stkseg+~L1+%0000|(fp),rr2
+	ldl     rr6,rr10
+	ld      r5,|_stkseg+~L1+%0010|(fp)
+	ldl     rr2,|_stkseg+~L1+%0004|(fp)
+	calr    _lockadd
+	test    r2
+	jr      nz,L1080
+	ldl     rr2,_locklist
+	testl   rr2
+	jr      nz,L1070
+	ldl     rr4,@rr8
+	ldl     @rr10,rr4
+	ldl     rr6,@rr10
+	calr    _lockfree
+	ldb     _u+%0015,#%23
+	jr      L1000
+L1100:
+	ldl     rr2,|_stkseg+~L1+%0008|(fp)
+	ldl     |_stkseg+~L1+%0000|(fp),rr2
+	ldl     rr6,@rr10
+	sub     r5,r5
+	ldl     rr2,|_stkseg+~L1+%0004|(fp)
+	calr    _lockadd
+	test    r2
+	jr      z,L1060
+	ldl     rr2,@rr8
+	ldl     @rr10,rr2
+	ldl     rr6,@rr10
+	calr    _lockfree
+	jr      L1000
+L1090:
+	ldl     rr2,|_stkseg+~L1+%0008|(fp)
+	ldl     |_stkseg+~L1+%0000|(fp),rr2
+	ldl     rr2,rr8(#%000a)
+	sub     r5,r5
+	ldl     rr6,rr10
+	calr    _lockadd
+	test    r2
+	jr      nz,L1000
+L1060:
+	ldl     rr2,rr8
+	inc     r3,#10
+	ldl     rr4,|_stkseg+~L1+%0008|(fp)
+L1030:
+	ldl     @rr2,rr4
+	jr      L1000
+L1070:
+	ldl     rr2,rr8(#%000e)
+	ldl     |_stkseg+~L1+%0004|(fp),rr2
+	cpl     rr2,|_stkseg+~L1+%0008|(fp)
+	jr      nz,L1010
+	jr      L1000
+L1080:
+	test    |_stkseg+~L1+%0010|(fp)
+	jr      z,L1050
+	ldl     rr2,rr8(#%000e)
+	ldl     |_stkseg+~L1+%0004|(fp),rr2
+	cpl     rr2,|_stkseg+~L1+%0008|(fp)
+	jr      nz,L1010
+	jr      L1000
+L1050:
+	ldl     rr2,rr8(#%000a)
+	cpl     rr2,|_stkseg+~L1+%0004|(fp)
+	jr      ge,L1040
+	ldl     rr2,rr8
+	inc     r3,#14
+	ldl     rr4,|_stkseg+~L1+%0004|(fp)
+	ldl     @rr2,rr4
+	jr      L1010
+	ldl     rr2,rr8
+	inc     r3,#10
+	ldl     rr4,|_stkseg+~L1+%0004|(fp)
+	jr      L1030
+	ldl     rr2,rr8(#%000e)
+	cpl     rr2,|_stkseg+~L1+%0004|(fp)
+	jr      z,L1020
+L1140:
+	ldl     rr10,rr8
+	jr      L1010
+L1020:
+	ldl     rr2,rr8(#%000a)
+	ldl     |_stkseg+~L1+%0004|(fp),rr2
+L1040:
+	ldl     rr2,@rr8
+	ldl     @rr10,rr2
+	ldl     rr6,rr8
+	calr    _lockfree
+L1010:
+	ldl     rr8,@rr10
+	testl   rr8
+	jp      nz,L1160
+L1150:
+	ldl     rr2,|_stkseg+~L1+%0008|(fp)
+	ldl     |_stkseg+~L1+%0000|(fp),rr2
+L1110:
+	ldl     rr6,rr10
+	ld      r5,|_stkseg+~L1+%0010|(fp)
+	ldl     rr2,|_stkseg+~L1+%0004|(fp)
+	calr    _lockadd
+L1000:
+	ldm     r8,_stkseg+~L1+%0012(fp),#6
+	add     fp,#~L2
 	ret
 	~L1	:=	0
-	~L2	:=	12
+	~L2	:=	30
 }	/*	_lkdata	*/
 
 .psec	data
@@ -159,8 +411,8 @@ L720:
 	ldl     rr4,|_stkseg+~L1+%0004|(fp)
 	ldl     @rr2,rr4
 	jr      L700
-	ldl     rr2,rr8
 L730:
+	ldl     rr2,rr8
 	inc     r3,#10
 	ldl     rr4,|_stkseg+~L1+%0004|(fp)
 	cpl     rr4,@rr2
@@ -185,7 +437,7 @@ L750:
 	jr      L710
 L770:
 	ldl     rr2,rr8(#%0006)
-	cpl     rr2,<<%0>>%0020
+	cpl     rr2,_locklist+%20
 	jr      nz,L750
 	ldl     rr2,rr8
 	inc     r3,#10
@@ -232,7 +484,7 @@ _locked::
 	sub     fp,#~L2
 	ldm     _stkseg+%0012(fp),r8,#6
 	ld      |_stkseg+~L1+%000a|(fp),r7
-	ldl     rr8,<<%0>>%0022(fp)
+	ldl     rr8,_stkseg+~L1+%0022(fp)
 	ldl     rr10,rr2
 	ldl     rr12,rr4
 	ldl     rr2,rr12(#%004a)
@@ -249,7 +501,7 @@ L650:
 	jr      le,L620
 	ldl     rr2,|_stkseg+~L1+%000c|(fp)
 	ldl     rr4,rr2(#%0006)
-	cpl     rr4,<<%0>>%0020
+	cpl     rr4,_u+%0020
 	jr      z,L610
 	inc     r3,#14
 	cpl     rr10,@rr2
@@ -443,7 +695,7 @@ L300:
 	ldl     rr10,@rr12
 	testl   rr10
 	jr      nz,L330
-	ldb     _proc+21,#21
+	ldb     _u+21,#%23
 	subl    rr2,rr2
 	jr      L340
 L330:
@@ -512,7 +764,7 @@ _lockadd::
 	ldl     |_stkseg+~L1+12|(fp),rr2
 	testl   rr2
 	jr      nz,L20
-	ldb     _stkseg+~L1+21,#21
+	ldb     _stkseg+~L1+21,#%23
 	ldk     r2,#1
 	jr      L30
 L20:
@@ -547,6 +799,12 @@ L30:
 .psec	data
 .data
 
+L5000:
+.byte	%50,%41,%4e,%49,%43,%20,%69,%70
+.byte	%20,%6e,%75,%6c,%6c,%20,%69,%6e
+.byte	%20,%6c,%6b,%66,%72,%6f,%6e,%74
+.byte	%0a,%00
+.even
 /*~~lkfront:*/
 
 .psec
@@ -566,11 +824,11 @@ _lkfront::
 	jr      nz,L40
 	jr      L50
 L70:
-	ldl     rr6,#%0100009a
+	ldl     rr6,#L5000
 	call    _printf
 	jr      L50
 L90:
-	ldl     rr6,|_stkseg+~L1+22|(fp)
+	ldl     rr6,|_stkseg+~L1+%1a|(fp)
 	ld      r5,#%0080
 	call    _access
 	test    r2
@@ -582,7 +840,7 @@ L100:
 	ld      r4,rr2(#%0006)
 	bit     r4,#12
 	jr      z,L80
-	ldb     _u+21,#%0d
+	ldb     _u+21,#%1d
 	jr      L50
 L40:
 	ldl     rr2,|_stkseg+~L1+22|(fp)
@@ -642,14 +900,14 @@ L160:
 	ldl     rr2,|_stkseg+~L1+16|(fp)
 	ldl     @rr10,rr2
 	jr      L170
-	ldl     rr2,|_stkseg+~L1+22|(fp)
 L130:
+	ldl     rr2,|_stkseg+~L1+22|(fp)
 	ldl     rr4,rr2(#%0006)
 	ldl     @rr10,rr4
 L170:
 	ldl     rr2,@rr10
 	cpl     rr2,#%00000000
-	jr      lt,L180
+	jr      lt,L120
 	ldl     rr2,|_stkseg+~L1+12|(fp)
 	testl   rr2
 	jr      z,L180
@@ -665,13 +923,13 @@ L190:
 	jr      ge,L120
 	ldl     rr2,@rr10
 	ldl     _u+40,rr2
-	ldl     rr2,|_stkseg+~L1+22|(fp)
+	ldl     rr2,|_stkseg+~L1+%1a|(fp)
 L200:
 	ldm     r8,_stkseg+~L1+36(fp),#6
 	add     fp,#~L2
 	ret
 	~L1	:=	0
-	~L2	:=	44
+	~L2	:=	48
 }	/*	_lkfront	*/
 
 .psec	data
