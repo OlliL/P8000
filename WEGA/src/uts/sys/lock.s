@@ -90,6 +90,7 @@ _lockwstr::
 .comm	4,	_tk_nin;
 .comm	4,	_tk_nout;
 .comm	200,	_callout;
+.even
 L6000:
 .byte	%00,%00,%01,%1e,%00,%00,%01,%4a
 .byte	%00,%00,%02,%56,%00,%00,%02,%56
@@ -725,7 +726,7 @@ _lockfree::
 	dec	fp,#~L2
 	ldm	_stkseg+4(fp),r10,#4
 	ldl	rr12,rr6
-	ldl	rr10,#0
+	ldl	rr10,#_locklist
 	ld	r2,r12(#4)
 	bit	r2,#4
 	jr	z,L10
@@ -764,7 +765,7 @@ _lockadd::
 	ldl     |_stkseg+~L1+12|(fp),rr2
 	testl   rr2
 	jr      nz,L20
-	ldb     _stkseg+~L1+21,#%23
+	ldb     _u+21,#%23
 	ldk     r2,#1
 	jr      L30
 L20:
@@ -862,7 +863,7 @@ L60:
 	and     r4,|_stkseg+~L1+30|(fp)
 	jr      nz,L100
 	ldl     rr6,rr12(#%0004)
-	ldl     rr4,#%0000000c
+	ldl     rr4,#_stkseg+~L1+%0000000c
 	add     r5,fp
 	ldk     r3,#10
 	call    _copyin
