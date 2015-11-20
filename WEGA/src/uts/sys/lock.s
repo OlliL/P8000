@@ -117,9 +117,9 @@ _lkdata::
 	ldm     _stkseg+~L1+%0012(fp),r8,#6
 	ldl     rr2,_u+%0024
 	ldl     |_stkseg+~L1+%000c|(fp),rr2
-	ldl     rr4,#%00000004
+	ldl     rr4,#_stkseg+~L1+4
 	add     r5,fp
-	ldl     rr2,#%00000008
+	ldl     rr2,#_stkseg+~L1+8
 	add     r3,fp
 	ldl     rr6,|_stkseg+~L1+%000c|(fp)
 	calr    _lkfront
@@ -368,9 +368,9 @@ _unlk::
 	ldm     _stkseg+%0010(fp),r8,#6
 	ldl     rr2,_u+%0024
 	ldl     |_stkseg+~L1+%000c|(fp),rr2
-	ldl     rr4,#%00000004
+	ldl     rr4,#_stkseg+~L1+4
 	add     r5,fp
-	ldl     rr2,#%00000008
+	ldl     rr2,#_stkseg+~L1+8
 	add     r3,fp
 	ldl     rr6,|_stkseg+~L1+%000c|(fp)
 	calr    _lkfront
@@ -437,7 +437,7 @@ L750:
 	jr      L710
 L770:
 	ldl     rr2,rr8(#%0006)
-	cpl     rr2,_locklist+%20
+	cpl     rr2,_u+%20
 	jr      nz,L750
 	ldl     rr2,rr8
 	inc     r3,#10
@@ -565,11 +565,11 @@ L540:
 	ldl     rr2,rr12(#%0006)
 	ldl     rr4,rr2(#%0016)
 	ldl     rr10,rr4
-	cpl     rr4,#0
+	cpl     rr4,#_locklist
 	jr      c,L510
 	ld      r3,_Nflock
 	mult    rr2,#%0012
-	ldl     rr4,#0
+	ldl     rr4,#_locklist
 	add     r5,r3
 	cpl     rr10,rr4
 	jr      nc,L510
@@ -670,24 +670,24 @@ _lockalloc::
 {
 	dec	fp,#~L2
 	ldm	_stkseg+4(fp),r10,#4
-	ldl     rr12,#0
+	ldl     rr12,#_locklist
 	ldl     rr2,rr12(#6)
 	testl   rr2
 	jr      nz,L300
 	ldl     rr2,rr12
 	inc     r3,#6
-	ldl     rr4,#0
+	ldl     rr4,#_proc
 	ldl     @rr2,rr4
-	ldl     rr10,#18
+	ldl     rr10,#_locklist+18
 	jr      L310
 L320:
 	ldl     rr6,rr10
 	calr    _lockfree
 	add     r11,#18
 L310:
-	ld      r3,_proc
+	ld      r3,_Nflock
 	mult    rr2,#18
-	ldl     rr4,#0
+	ldl     rr4,#_locklist
 	add     r5,r3
 	cpl     rr10,rr4
 	jr      c,L320
