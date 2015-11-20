@@ -52,7 +52,7 @@ udev5.o:
 udev6.o:
 	$(AS) -u -o $@ $*.d.s
 
-# this files are written in plain ASM
+# this files are written in C-ASM
 clist.o:
 	$(CAS) -u -o $@ $*.s
 

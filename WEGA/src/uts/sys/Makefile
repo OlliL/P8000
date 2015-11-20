@@ -26,9 +26,9 @@ install: LIB1
 LIB1:	$(OBJ)
 	ar cr LIB1 $(OBJ)
 
-# No source available for this files
+# this files are written in C-ASM
 lock.o:
-	cp lock.obj lock.o
+	$(CAS) -u -o $@ $*.s
 
 clean:
 	rm -f $(OBJ) LIB1

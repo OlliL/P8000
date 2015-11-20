@@ -91,22 +91,6 @@ _lockwstr::
 .comm	4,	_tk_nout;
 .comm	200,	_callout;
 .even
-L6000:
-.byte	%00,%00,%01,%1e,%00,%00,%01,%4a
-.byte	%00,%00,%02,%56,%00,%00,%02,%56
-.byte	%00,%00,%02,%56,%00,%00,%02,%56
-.byte	%00,%00,%02,%56,%00,%00,%02,%56
-.byte	%00,%00,%01,%76,%00,%00,%02,%02
-.byte	%00,%00,%02,%56,%00,%00,%02,%42
-.byte	%00,%00,%02,%56,%00,%00,%02,%56
-.byte	%00,%00,%02,%56,%00,%00,%02,%56
-.byte	%00,%00,%02,%2e,%00,%00,%02,%74
-.byte	%00,%00,%02,%56,%00,%00,%02,%56
-.byte	%00,%00,%02,%56,%00,%00,%02,%56
-.byte	%00,%00,%02,%56,%00,%00,%02,%56
-.byte	%00,%00,%02,%4e,%00,%00,%02,%46
-.byte	%00,%00,%02,%56,%00,%00,%02,%38
-.even
 /*~~lkdata:*/
 
 .psec
@@ -114,6 +98,41 @@ L6000:
 
 _lkdata::
 {
+        .psec   data
+        .data
+        .even
+L6000:
+	.long L6001
+	.long L6002
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L6003
+	.long L1080
+ 	.long L1010
+ 	.long L1140
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L6004
+	.long L1000
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L1010
+	.long L1040
+	.long L1020
+	.long L1010
+	.long L6005
+	.even
+        .psec
+        .code
 	sub     fp,#~L2
 	ldm     _stkseg+~L1+%0012(fp),r8,#6
 	ldl     rr2,_u+%0024
@@ -218,6 +237,7 @@ L1130:
 	rl      r2,#2
 	ldl     rr4,L6000(r2)
 	jp      @rr4
+L6001:
 	test    |_stkseg+~L1+%0010|(fp)
 	jr      z,L1120
 	ldl     rr4,rr8(#%000a)
@@ -232,6 +252,7 @@ L1120:
 	calr    _lockadd
 	test    r2
 	jr      z,L1060
+L6002:
 	test    |_stkseg+~L1+%0010|(fp)
 	jp      nz,L1000
 	ldl     rr2,rr8(#%000a)
@@ -245,6 +266,7 @@ L1120:
 	calr    _lockadd
 	test    r2
 	jr      z,L1100
+L6003:
 	test    |_stkseg+~L1+%0010|(fp)
 	jr      z,L1040
 	ldl     rr2,rr8(#%000a)
@@ -317,10 +339,12 @@ L1050:
 	ldl     rr4,|_stkseg+~L1+%0004|(fp)
 	ldl     @rr2,rr4
 	jr      L1010
+L6004:
 	ldl     rr2,rr8
 	inc     r3,#10
 	ldl     rr4,|_stkseg+~L1+%0004|(fp)
 	jr      L1030
+L6005:
 	ldl     rr2,rr8(#%000e)
 	cpl     rr2,|_stkseg+~L1+%0004|(fp)
 	jr      z,L1020
@@ -617,6 +641,7 @@ _unlock::
 	ldl     rr8,rr2
 	clr     |_stkseg+~L1+%000e|(fp)
 	clr     |_stkseg+~L1+%000c|(fp)
+L450:
 	ld      r2,|_stkseg+~L1+%000c|(fp)
 	sla     r2,#2
 	ldl     rr4,_u+%0068(r2)
@@ -632,7 +657,7 @@ _unlock::
 L410:
 	inc     |_stkseg+~L1+%000c|(fp),#1
 	cp      |_stkseg+~L1+%000c|(fp),#%0014
-	jr      lt,_unlock+%26
+	jr      lt,L450
 	test    |_stkseg+~L1+%000e|(fp)
 	jr      z,L420
 	jr      L400
