@@ -8,6 +8,26 @@
  * memory, but lower than cpu2ram address. The start address an size
  * of the ram disk is found itself. If there is no space, OPEN(2)
  * returns ENXIO.
+ *
+ *
+ * How to use it:
+ * - main.c must be modified to not consume all free memory up as user memory.
+ *   - change "for (i=kclicks,j=0; ; i++){" to something like
+ *             for (i=kclicks,j=0; ctob((long)i) < 1048576; i++){
+ *     to only use up 1MB for kernel and user memory. All other memory is now
+ *     available for the RAM Disk
+ *   - add a #define of SHOWRD to this file. I've chosen   (('f'<<8)|1)
+ *   - compile rd.c and replace rd.o in LIB2
+ *   - compile main.c and replace main.o in LIB1
+ *   - build kernel
+ *   - reboot with new kernel
+ *   - create device
+ *     - mknod /dev/rd0 b 5 0
+ *   - make filesystem
+ *     - mkfs /dev/rd0 6000 (for 3 MB)
+ *   - mount filesystem
+ *     - mount /dev/rd0 /fd1
+ *   - enjoy
  */
 
 #include	<sys/param.h>
