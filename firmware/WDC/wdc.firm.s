@@ -9,7 +9,7 @@
 	begin	0
 
 	jr	entry
-string	text	'WDC_4.2'
+string	text	'WDC_4.21'
 
 sc_len	equ	512	;Laenge des Datenfeldes eines Sektors (Byte)
  
@@ -791,43 +791,17 @@ rd_stp	in	a,(ST_PRT)	;Lesen des Statusports
 	ret	z		;Rueckkehr ok.
 	ld	a,(dsk_c1)
 	set	0,a		;'ST=aktiv'
+	di
 	out	(DSKC1),a
 	res	0,a		;'ST=inaktiv'
 	out	(DSKC1),a
+	ei
 	dec	hl
 	ld	a,h
 	or	l
 	jr	nz,wt_see
 	inc	a
 	ret			;Rueckkehr mit Fehler (nz)
-
-;----------------------------
-; Ausfuehrung eines Schrittes
-; HL: Schrittanzahl
-;----------------------------
-ramp	ld	a,(dsk_c1)	;Ausgabebyte fuer DSKC1
-	xor	1		;Step-Impuls ein
-	out	(DSKC1),a
-	xor	1		;Step-Impuls aus
-	out	(DSKC1),a
-	dec	hl
-	ld	a,h
-	or	l
-	jr	nz,ramp
-	ret
- 
-si_step	ld	a,(dsk_c1)	;Ausgabebyte fuer DSKC1
-	xor	1		;Step-Impuls ein
-	out	(DSKC1),a
-	xor	1		;Step-Impuls aus
-	out	(DSKC1),a
-	dec	hl
-	ld	a,h
-	or	l
-	ret	z
-	ld	de,150
-	call	time
-	jr	si_step
  
 ;---  cy_pos  ---------------------------------------------
 ; Bestimmung der Position in 'cy_tab'
@@ -1608,12 +1582,41 @@ mv0	push	hl		;Step-Anzahl
 	ld	a,(rp_mod)
 	ld	c,a
 	ld	b,0
+	xor	a
 	sbc	hl,bc
 	pop	hl
-	jr	c,sngl
-	call	ramp		;Stepausfuehrung im Ramp-Mode
-	jr	mv1
-sngl	call	si_step		;Stepausfuehrung im Single-Step-Mode
+	jp	z,si_step
+	jp	nc,ramp
+
+; Stepausfuehrung im Single- und Slow-Step-Mode, HL: Schrittanzahl
+si_step	ld	a,(dsk_c1)	;Ausgabebyte fuer DSKC1
+	xor	1		;Step-Impuls ein
+	di
+	out	(DSKC1),a
+	xor	1		;Step-Impuls aus
+	out	(DSKC1),a
+	ei
+	dec	hl
+	ld	a,h
+	or	l
+	jr	z,mv1
+	ld	de,320
+	call	time
+	jr	si_step
+; Stepausfuehrung im Ramp-Mode, HL: Schrittanzahl
+ramp	ld	a,(hst_by)	;Test auf Abschluss von Host-Transfers
+	bit	7,a
+	jr	nz,ramp
+	ld	de,(dsk_c1)		;Ausgabebyte fuer DSKC1 nach e
+	set	0,e		;Step-Impuls an
+rmp	ld	a,e
+	out	(DSKC1),a
+	xor	1		;Step-Impuls aus
+	out	(DSKC1),a
+	dec	hl
+	ld	a,h
+	or	l
+	jp	nz,rmp
 mv1	in	a,(ST_PRT)	;Lesen des Status-Ports
 	bit	3,a		;'SEEKC=aktiv' ?
 	jr	nz,mv1
@@ -2335,9 +2338,11 @@ step1	ld	a,(dsk_c1)	;Ausgabebyte fuer DSKC1
 	set	3,a		;SD nach innen
 	out	(DSKC1),a
 	xor	1		;ST ein
+	di
 	out	(DSKC1),a
 	xor	1		;ST aus
 	out	(DSKC1),a
+	ei
 step11	in	a,(ST_PRT)
 	bit	3,a
 	jr	nz,step11
