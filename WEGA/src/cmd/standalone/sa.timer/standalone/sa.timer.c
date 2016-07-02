@@ -25,7 +25,7 @@
  *
  * $Id: sa.timer.c,v 1.12 2009/08/16 14:52:52 olivleh1 Exp $
  */
- 
+
 
 #include "time.h"
 #include "u130.h"
@@ -49,7 +49,8 @@ main()
 	register long time;
 	register i;
 	struct clock_type *t;
-	int a,b; 	 
+	int a,b;
+	int		clock_found = 0;
 
 	t = clock_devs;
 
@@ -58,6 +59,7 @@ main()
 		b = t->clock_det_str;
  		if(a == b) {
 			printf("%s found\n",t->clock_name);
+			clock_found    = 1;
 			clock_finit    = t->clock_finit;
 			clock_fget     = t->clock_fget;
 			clock_fset     = t->clock_fset;
@@ -69,13 +71,13 @@ main()
 	}
 
 	/* function pointer assigned? => RTC found?*/
-	if (clock_finit > 0) {
-		clock_finit();	
+	if (clock_found == 1) {
+		clock_finit();
 		time = clock_fget();
-		outtime(time);	
-		settimer(time);	
+		outtime(time);
+		settimer(time);
 		time = clock_fget();
-		outtime(time);	
+		outtime(time);
 		exit(0);
 	} else {
 		printf("Timer not available\n");
@@ -149,7 +151,7 @@ loop1:
 
 	if (tm_mon<0 || tm_mon>11 || tm_mday<1 || tm_mday>31 || tm_year<clock_min_year || tm_year>clock_max_year)
 		goto loop1;
-		
+
 loop2:
 	printf("Enter new Time in GMT (HH:MM) : ");
 	gets(estring, sizeof estring);

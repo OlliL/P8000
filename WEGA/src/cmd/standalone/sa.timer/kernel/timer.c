@@ -25,7 +25,7 @@
  *
  * $Id: timer.c,v 1.6 2009/08/22 15:45:33 olivleh1 Exp $
  */
- 
+
 
 #include <time.h>
 #include "rtc72421.h"
@@ -38,13 +38,14 @@ gettime()
 	register long time = 0;
 	register i;
 	struct clock_type *t;
-	int a,b; 	 
+	int a,b;
 	int		clock_min_year;
 	int		clock_max_year;
 	int		(*clock_finit)();
 	long		(*clock_fget)();
 	void		(*clock_fset)();
 	void		(*clock_fstart)();
+	int		clock_found = 0;
 
 	t = clock_devs;
 
@@ -53,6 +54,7 @@ gettime()
 		b = t->clock_det_str;
  		if(a == b) {
 			printf("%s found\n",t->clock_name);
+			clock_found    = 1;
 			clock_finit    = t->clock_finit;
 			clock_fget     = t->clock_fget;
 			clock_fset     = t->clock_fset;
@@ -64,8 +66,8 @@ gettime()
 	}
 
 	/* function pointer assigned? => RTC found?*/
-	if (clock_finit > 0) {
-		clock_finit();	
+	if (clock_found == 1) {
+		clock_finit();
 		time = clock_fget();
 	}
 
