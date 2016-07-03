@@ -1,5 +1,10 @@
 #### bauen von sa.timer
 
+Man benötigt im Verzeichnis "standalone" ausserdem noch folgende 2 Dateien:
+- https://github.com/OlliL/P8000/blob/master/WEGA/src/uts/conf/bmisc.c
+- https://github.com/OlliL/P8000/blob/master/WEGA/src/uts/conf/sa.function.s
+(Wenn dies als Diskette vorliegt, werden die 2 Dateien bereits enthalten sein)
+
 make clean
 make sa.timer
 make instsa
