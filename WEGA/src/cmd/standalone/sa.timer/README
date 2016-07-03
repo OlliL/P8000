@@ -8,5 +8,5 @@ make instsa
 #### Kernel Modul bauen
 
 make clean
-make kernel
+make kern
 make instkern
