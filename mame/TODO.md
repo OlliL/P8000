@@ -59,6 +59,7 @@ corrections go out. One PR per device, each from current mamedev `master`:
 
 - [x] Z8010 command `%15`/`%16` with data byte 00 (flags are set): measured 2026-10-16, `tests/02`
 - (program for command %10 is ready: tests/04)
+- [ ] Z8000 PC offset wraps at FFFF: program ready, `tests/05` (emulator: new `7F21 D000 8100 0002`, old core `7F22 D000 8200 0002`); real result open
 - [x] Z8010 SAR autoincrement wraps from 63 to 0: measured 2026-10-16, `tests/03`.
 - [ ] Z8010 command `%10` (MR, VTR, DSCR cleared, SAR untouched).
 - [ ] Z8010 SWW only for system stack writes (status `%9`), FATL otherwise.

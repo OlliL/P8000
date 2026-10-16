@@ -337,6 +337,14 @@ board (dump `1000 1010 0020`: bytes `10 00 10 10 00`, the last byte is not a res
 emulator after the fix; the old emulation stayed at 3F. Supports the SAR wrap item of commit
 `03dffddf` (U8010 6.2.13, 6.2.14, 6.2.16). Test 04 (command %10) is ready but not yet run.
 
+### 5.4 Test program for the PC wrap (ready, not yet run)
+
+`tests/05-z8000-pc-wrap-ffff` runs a one word instruction at `<<1>>%FFFE` and lets two
+different system calls sit at `<<1>>%0000` (wrap) and `<<2>>%0000` (carry). Emulator with commit
+`d613b434`: frame `7F21 D000 8100 0002`; with the commit taken out again (old core, rebuilt
+on 2026-10-16): `7F22 D000 8200 0002`. So the test tells the two behaviours apart; it needs
+main memory at `%10000-%2FFFF` on the real board.
+
 ## 6. MMU selection and the break register (NBR)
 
 For a non-segmented user in normal mode the board decides between data MMU and stack MMU by
