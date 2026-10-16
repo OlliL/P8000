@@ -47,13 +47,16 @@ class SOut:
         self.symtab = data[self.sym_off:self.sym_off + self.syms]
         self.trailing = len(data) - (self.sym_off + self.syms)
         self.symbols = self._parse_syms()
+        # relocation symbol numbers are 14-byte entry numbers; long names
+        # occupy several entries
+        self.symidx = {y["idx"]: y for y in self.symbols}
 
     def _parse_syms(self):
         out, o, st = [], 0, self.symtab
         while o + 14 <= len(st):
             val, typ, segt = struct.unpack(">IBB", st[o:o + 6])
             name = st[o + 6:o + 14]
-            idx = len(out)
+            idx = o // 14   # relocations count 14-byte entries
             if name[0] & 0x80:
                 ln = name[0] & 0x7F           # length incl. length byte
                 raw = st[o + 7:o + 6 + ln]
@@ -94,7 +97,8 @@ def reloc_str(w, syms):
     if w & 8:
         k = RKIND.get(w & 7, "?%d" % (w & 7))
         i = w >> 4
-        n = syms[i]["name"] if i < len(syms) else "?sym%d" % i
+        y = syms.get(i)
+        n = y["name"] if y else "?sym%d" % i
         return "ext %s %s" % (k, n)
     area = ("abs", "text", "data", "bss")[(w >> 1) & 3]
     if w & 1:
@@ -132,7 +136,7 @@ def main(argv):
                     rw = struct.unpack(">H", r)[0] if len(r) == 2 else 0
                     if show_hex or rw:
                         print("    %04x: %s%s" % (a - off, w.hex(),
-                                                 ("  " + reloc_str(rw, s.symbols)) if rw else ""))
+                                                 ("  " + reloc_str(rw, s.symidx)) if rw else ""))
 
 
 if __name__ == "__main__":

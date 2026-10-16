@@ -191,6 +191,13 @@ Floating point uses EPU mnemonics (`fadd`, `fldd`, ...).
   entries, zero padded to whole entries. Types N_UNDF 0, N_ABS 1, N_CODE 2,
   N_DATA 3, N_BSS 4, N_REG 0x14, N_SN 0x1E, N_FN 0x1F, flags N_EXT 0x20,
   N_SEG 0x40. Undefined external with value != 0: common of that size.
+- The symbol number in an external relocation word counts 14-byte entries,
+  so a long name that spills into following entries also uses up their
+  numbers (e.g. section name `udev2_s_p` takes two). Verified: with this
+  numbering all 13882 external relocations of the libraries point to
+  undefined symbols.
+- Objects from PLZ/ASM (`as`) carry section name symbols (N_SN) like
+  `udev2_s_p` / `udev2_s_d`.
 - Segmented C objects (scc) have two segment table entries (code in segment
   0, data in segment 1; data symbols have values 0x01xxxxxx). A
   hand-written cas object (clist.o) has one entry with code and data.
@@ -242,6 +249,19 @@ Validation:
 - `sstrings.py` NUL-terminated strings from the data sections.
 - `z8k.py` Z8000 decoder.
 - `check_reloc.py` decoder self-check against relocations.
+- `sdis.py` symbolic disassembler for objects: labels from the symbol
+  table, relocated operands as symbol+addend, synthetic labels for internal
+  branch targets, `-l` adds addresses and code words. Output close to the
+  code generator's cas syntax, e.g. `ldm _stkseg+2(r15),r10,#4`.
+
+## Observations from disassembly
+
+- scc function prologue/epilogue (lp.o): `dec r15,#n` / `ldm
+  _stkseg+2(r15),r10,#4` ... `ldm r10,_stkseg+2(r15),#4` / `inc r15,#n` /
+  `ret`. Calls to functions in the same module use `calr`, others `call`
+  with a long segmented address.
+- LIB2 member udev2.o (16 bytes, jp _unexint) is built from the PLZ/ASM
+  file udev2.d.s, not from udev2.c.
 
 ## Open questions
 
