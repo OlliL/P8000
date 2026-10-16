@@ -803,3 +803,13 @@ dates from the READMEs: UDOS 29.05.1989, OS/M 15.01.1988, WEGA July 6, 1989 (so 
 WEGA sets is sourced and OS/M is 1988). The label list calls the last usr disk "usr 8" twice; the
 WEGA README names it "usr 9" (889 361), the list follows the README. The doc disks are not to be
 installed (README): WEGA file system disks with the manuals as packed print files.
+
+### Upstream check (2026-10-16)
+
+`origin/master` is at `a9d405aa` (85 commits after `f26abf2b`). No change in `src/devices/cpu/z8000`,
+`cpu/z80`, `machine/z80pio`, `z80ctc`, `z80dma`, `z8010`, `z80daisy`, `bus/zbi`, `imagedev/floppy`, `i8272a` or
+`src/mame/ddr`, and nobody touched the P8000 files. Other changes (`ioport.cpp` analog fields, `xtal.cpp`
+one more crystal, cassette image code, z80scc) do not touch the driver. Test rebase of the 20 commits of
+`p8k-clean` onto `a9d405aa` (local branch `p8k-rebase-test`, not pushed): no conflicts, build of `p8k.cpp`
+without new warnings, `-validate` clean for `p8000` and `p8000_16`, `-verifysoftware` 6 of 6 good, test 06 program on the
+emulator gives the same frame and words. The real rebase is still done right before the PRs.

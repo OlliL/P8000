@@ -65,8 +65,9 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 ## 4. Upstream and review run
 
-- [ ] Check mamedev `master` for changes in `z80pio`, `z80ctc`, `z80dma`, `z8000`, `z8010`
-      since `f26abf2b` (conflicts, or someone fixed the same thing).
+- [x] Check mamedev `master` for changes in `z80pio`, `z80ctc`, `z80dma`, `z8000`, `z8010`
+      since `f26abf2b`: none (state 2026-10-16, `a9d405aa`); test rebase clean, build/validate/test 06 ok
+      (LOG.md, last section). Repeat right before submission.
 - [ ] Re-run the `mame-review` skill over the final series.
 
 ## 5. Only the author can do (real machine / own material)
