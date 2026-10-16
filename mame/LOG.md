@@ -600,6 +600,8 @@ tested.
   copied from the web page.
 - Stop hook in the sandbox ("N unpushed commits and no remote branch") is a false alarm: it
   looks at `origin` (mamedev); all branches are pushed to `olli`.
+- 2026-10-16: CI of the pull request inside the fork (PR #2) is green on all jobs: Linux 2h32m,
+  macOS 1h36m, Windows 3h18m, include guards 3m45s, XML/JSON validation 7m26s.
 - A pull request to mamedev from a fork of a fork is possible (same fork network); this was
   not tried yet.
 

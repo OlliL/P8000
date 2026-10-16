@@ -13,12 +13,14 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 ## 1. Waiting for / checking the CI
 
-- [ ] Look at the CI runs of the pull request inside the fork (Linux gcc/clang, macOS,
-      Windows gcc-x64, clang-x64, clang-arm64, include guards, hash XML validation).
-      `gh` is not logged in in the sandbox, so errors have to be copied from the web page.
-- [ ] Fix every warning or error that comes from our files, push, wait again.
+- [x] CI of the pull request inside the fork (PR #2 "P8k clean Test 2", 2026-10-16 13:29): all
+      green: CI (Linux) 2h32m, CI (macOS) 1h36m, CI (Windows) 3h18m, include guards,
+      XML/JSON validation. Check on the PR page that the run belongs to the current head
+      of `p8k-clean`; later pushes only changed `PULL_REQUEST_*.md`, which the path filters
+      ignore.
 - [ ] Before the real pull request: sync again with mamedev `master` and rebase
-      `p8k-clean` if `master` moved.
+      `p8k-clean` if `master` moved, then let the CI run once more.
+- [ ] The three optional branches (section 3) need their own CI run each.
 
 ## 2. Local tests that CI does not do
 
