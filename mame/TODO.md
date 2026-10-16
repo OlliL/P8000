@@ -50,10 +50,14 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 ## 3. Data and texts
 
-- [ ] `hash/p8000_flop.xml` against the software list rules (SL-1..SL-13: names,
-      `supported`, year, publisher, `alt_title`, release dates). Only `xmllint --valid` was run.
-- [ ] Heading "Systems promoted to working" in the driver commit: check against the state
-      of `skeleton/p8k.cpp` (were the systems listed as not working?).
+- [x] `hash/p8000_flop.xml` against the software list rules: mechanical checks pass, all sets
+      verify, OS/M tested (LOG.md, last section). Still open, needs the owner:
+  - [ ] descriptions: the labels printed on the disks (SL-6); now they are descriptive
+  - [ ] years of the WEGA sets: change to `1989?` unless a source exists (SL-7)
+  - [ ] origin of the images (original dumps or converted?) and, if possible, run the two
+        `w31doc` disks once
+- [x] Heading "Systems promoted to working": the skeleton had both systems as not working,
+      names match the driver.
 - [ ] Read all four PR drafts completely and check each statement. "I, @OlliL, reviewed it
       myself" has to be true when they are sent.
 - [ ] Decision kept: no links to ROM or software downloads; only documents, schematics, source.

@@ -774,3 +774,23 @@ Observation, not part of the change: in non-segmented mode `IRET` and `LDPS` loa
 `m_pc = POPW(SP)` / `RDMEM_W`, which clears the segment number of a Z8001 running non-segmented
 code in a segment other than 0 (the manuals say the segment comes from the PC segment field).
 Not looked at further; to ask the Z8001 specialist.
+
+### Check of `hash/p8000_flop.xml` against the software list rules (2026-10-16)
+
+Mechanical: `xmllint --noout --valid` clean; `srcclean` leaves the file unchanged; header, license
+comment and tab indentation as required (SL-12, SL-13); names are lowercase and at most 8
+characters (SL-1); `mame -verifysoftware p8000_16`: all 6 sets good (sizes, CRC, SHA1 equal to the
+local images); `mame p8000_16 w31start` and `w31root` start (interface `floppy_5_25` is the one of
+the `525qd` drives).
+Content: `supported` is absent (= yes). Tested running: UDOS 3.1 (earlier), WEGA start, root 1-5 and
+usr 1-9 (WEGA install), and now OS/M 3.0 (`mame p8000 osm30`: banner "P8000 OS/M 3.0 (C)ZFT/KEAW",
+`DIR` lists the files). Not run: the two documentation disks `w31doc` (only the format is checked).
+Publisher "ZFT/KEAW" is the spelling of the copyright lines in the UDOS and WEGA sources
+(`(C) ZFT/KEAW Abt. Basissoftware - 1989`), so SL-8 is fine. Years: UDOS 3.1 1989 follows the
+source copyright; the WEGA sets use 1989 without a source (kernel sources 1985-1988, hardware
+manual 15.03.1989): `1989?` would be the honest form (SL-7).
+Open for the owner: descriptions are descriptive, not the labels printed on the disks (SL-6);
+where the images come from (original dumps of the disks, or converted?).
+"Systems promoted to working" in the driver commit: the old skeleton had both systems as
+`MACHINE_NOT_WORKING`; the heading names equal the full names in `p8k.cpp` ("P8000 (8bit Board)",
+"P8000 (8bit and 16bit Board)").
