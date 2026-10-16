@@ -737,3 +737,21 @@ NMI, then `blk2.lua` takes over the CPU). Fix: commit `915b2c70` on `p8k-clean`.
 Test 06 (`tests/06-z8000-block-instruction-restart`) is the same case as a real-machine program like test 05:
 `ldir` at `<<2>>%FFFC`, `sc #%21` at `<<2>>%0000`, marker `sc #%22` at `<<1>>%FFFC`. Emulator: old core
 `7F22 D000 8100 FFFE` and `A001 0000 0000`; new core `7F21 D050 8200 0002` and `A001 A002 A003`.
+
+### Manual references for the PC wrap and the block instruction restart (2026-10-16)
+
+Read in the scanned documents supplied by the author (OCR):
+
+- U8000 CPU description (German): 3.4.2 p. 36 (instructions and multi-byte data cannot cross
+  segment boundaries), 5.5.5 p. 59 (indexed address: an overflow is ignored, it neither sets the
+  overflow flag nor increments the segment number), 6.6.2 p. 68 table 6.1 note 2 (for an
+  interruptible instruction such as LDIR the saved PC is the address of the current instruction).
+- Z8001/Z8002 CPU manual, SGS-Thomson edition (82 pages): p. 5 (segment number is not altered by
+  the effective address calculation), p. 65 (indexed: overflow ignored, segment number not
+  incremented), p. 66 (relative addresses are in the same segment as the instruction, because the
+  segment number is unchanged), p. 71 note 2 (same LDIR statement as the U8000 description).
+- Zilog Z8001/2 CPU product specification, April 1985 (36 pages): segmented PC is two words, the
+  first holds the 7 bit segment number, the second the 16 bit offset (p. 3). Nothing about wrap.
+- No document says literally "the PC wraps from FFFF to 0000"; it follows from the statements
+  above and from Moore p. 19. The Mateosian pages 267 to 269 (program status area, initial PC and
+  FCW at reset) are not about this change.

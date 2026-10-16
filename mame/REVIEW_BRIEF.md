@@ -45,6 +45,7 @@ Commit [`d613b434`](https://github.com/OlliL/mame/commit/d613b434) in
 - **Documents:** U8000 CPU description 3.4.2 (instructions and multi-byte data cannot cross a
   segment boundary), 5.5.5/5.5.7/5.5.8 (indexed, base, relative offsets wrap, already so in
   the core); Moore, Z8000 Handbook ch. 2 p. 19 (PC wraps FFFF -> 0000, no carry).
+- **Additional manual references (found 2026-10-16):** Z8001/Z8002 CPU manual (SGS-Thomson edition) p. 65 (indexed address: overflow is ignored, it neither sets the overflow flag nor increments the segment number), p. 66 (relative addresses stay in the segment of the instruction because the segment number is unchanged); U8000 description p. 59 (same statement for indexed addresses). No manual states the sentence "the PC wraps at FFFF" literally; the claim follows from these statements and from Moore p. 19.
 - **Evidence:** [test 05](tests/05-z8000-pc-wrap-ffff/README.md) on the real machine: an
   instruction at `<<1>>%FFFE` is followed by the word at `<<1>>%0000` (frame
   `7F21 D000 8100 0002`); the old core continues in segment 2 (`7F22 D000 8200 0002`).
@@ -54,7 +55,10 @@ Commit [`d613b434`](https://github.com/OlliL/mame/commit/d613b434) in
   [`915b2c70`](https://github.com/OlliL/mame/commit/915b2c70) with a helper
   `restart_insn()` (to be squashed into `d613b434`). Checked on the emulator with an `ldir`
   at `<<1>>%FFFC` (old: leaves segment 1 after one round; new: copies all words). Not
-  measured on the real machine.
+  measured on the real machine ([test 06](tests/06-z8000-block-instruction-restart/README.md) is prepared).
+  Manual support: if an interruptible instruction such as `ldir` is interrupted, the saved PC is the address
+  of that instruction (U8000 description table 6.1 note 2, p. 68; Z8001/Z8002 CPU manual p. 71 note 2), so a
+  repeat has to start at the same segment and offset.
 - **Please check:** other places that change the PC offset (calls, jumps, `RET`, traps,
   `IRET`, the non-segmented mode that takes the segment from the PC), and whether a real Z8001
   behaves the same in non-segmented mode.

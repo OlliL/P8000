@@ -28,7 +28,8 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
       continues at `<<1>>%0000`. Test: `tools/run_blk.sh` + `tools/blk2.lua` (emulator only).
       **At split time:** squash `915b2c70` into `d613b434`; its change to
       `PULL_REQUEST_z8000.md` belongs to the drafts commit.
-- [ ] Optional: real-machine test 06 (`ldir` at `<<1>>%FFFC`) like test 05.
+- [ ] Real-machine test 06 (`tests/06-z8000-block-instruction-restart`, prepared; also note the FCW).
+- [x] Manual references for the PC wrap and the block restart added to the PR draft and the brief (LOG.md).
 - [ ] Look for other PC offset changes that still carry into the segment (calls, jumps,
       `RET`, traps, `IRET`, non-segmented mode).
 
