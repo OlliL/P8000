@@ -37,14 +37,13 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 ## 2. Code: tidy items in the driver
 
-- [ ] `p8k_16_daisy_device` and `p8k_dma_device` are outside the anonymous namespace
-      (needs `DEFINE_DEVICE_TYPE_PRIVATE` with a base class visible to the driver, or move
-      the logic into the driver class).
-- [ ] RS232 ports (`tty0`..`tty7`, `rs232`, `u_rs232`) are connected by tag strings; use
-      finders.
-- [ ] `m_dram8` is a `unique_ptr` with `save_pointer`; prefer `memory_share_creator` or
-      `.ram()` in the map.
-- [ ] `board16_reset()` resets child devices; redundant when called from `machine_reset()`.
+- [x] `p8k_dma_device` is private now (`DEFINE_DEVICE_TYPE_PRIVATE`, exposed as `ua858d_device`).
+- [ ] `p8k_16_daisy_device` stays outside the anonymous namespace: `DEFINE_DEVICE_TYPE_PRIVATE`
+      needs a concrete exposed base class (with `device_t` it fails to build), and the driver needs
+      its methods. Only possible by moving the daisy logic into the driver class; left as is.
+- [x] RS232 ports: the callbacks use the port references instead of tag strings (slot names unchanged).
+- [x] `m_dram8` is a `memory_share_creator<uint8_t>` now.
+- [x] `board16_reset()` no longer resets child devices; `soft_reset_w()` (the only place that needs it) does.
 - [x] Save states: members registered, tested in WEGA, `MACHINE_SUPPORTS_SAVE` set (LOG.md).
 
 ## 3. Data and texts

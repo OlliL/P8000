@@ -829,3 +829,10 @@ A reviewer found the block-instruction borrow independently (test rig z8000_test
 and suggested `addr_add(m_pc, 2)` for the six fetch places and `addr_sub(m_pc, 4)` for the 32 restarts.
 `addr_add/addr_sub` already exist in the core with exactly my expression. Done: no `restart_insn()` any
 more, the six comments are removed.
+
+## Tidy items in the driver (2026-10-17)
+
+Done: `board16_reset()` without child resets (the machine resets them; `soft_reset_w()` resets them
+explicitly), `m_dram8` as `memory_share_creator`, RS232 callbacks use the port references,
+`p8k_dma_device` private. The daisy device cannot be private (see TODO). Tested: build, `-validate`
+(both systems), WEGA cold boot to login, machine reset and boot again to login, save/load of `p8000`.
