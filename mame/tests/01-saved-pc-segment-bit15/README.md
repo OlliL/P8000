@@ -119,6 +119,7 @@ Four frames (identifier, FCW, PC segment word, PC offset):
 ```
 
 The emulator prints the same four frames.
+**Real machine: the same four frames** (see the photos).
 
 ## What it means and which claim it supports
 
