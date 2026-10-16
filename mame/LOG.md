@@ -341,13 +341,15 @@ command %10 the real board gave MR = `00`, DSC = `00`, SAR = `07` (dump `0038 02
 the last byte is not a result). The emulator gives the same. So %10 resets MR and DSCR and leaves SAR
 alone (U8010 6.2.17, table 6.2). VTR cannot be set without a violation, so it is not covered.
 
-### 5.4 Test program for the PC wrap (ready, not yet run)
+### 5.4 PC offset wrap at FFFF (measured 2026-10-16)
 
 `tests/05-z8000-pc-wrap-ffff` runs a one word instruction at `<<1>>%FFFE` and lets two
-different system calls sit at `<<1>>%0000` (wrap) and `<<2>>%0000` (carry). Emulator with commit
-`d613b434`: frame `7F21 D000 8100 0002`; with the commit taken out again (old core, rebuilt
-on 2026-10-16): `7F22 D000 8200 0002`. So the test tells the two behaviours apart; it needs
-main memory at `%10000-%2FFFF` on the real board.
+different system calls sit at `<<1>>%0000` (wrap) and `<<2>>%0000` (carry). The real board
+(4 MiB RAM) gave the frame `7F21 D000 8100 0002`: the next word was fetched from segment 1,
+offset 0, so the offset wraps without a carry into the segment. Emulator with commit `d613b434`:
+the same frame; with the commit taken out again (old core, rebuilt on 2026-10-16):
+`7F22 D000 8200 0002`. So the test tells the two behaviours apart and the real machine
+agrees with the change. Supports commit `d613b434` (U8000 description 3.4.2; Moore p. 19).
 
 ## 6. MMU selection and the break register (NBR)
 

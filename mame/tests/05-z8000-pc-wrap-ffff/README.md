@@ -1,6 +1,6 @@
 # Test 05: the PC offset wraps at FFFF without a carry into the segment
 
-Status: **program ready, not yet run on the real machine** (emulator results below).
+Status: **done on the real machine** (2026-10-16, 4 MiB RAM installed), result equals the emulator with the change.
 
 ## What is tested
 
@@ -25,7 +25,7 @@ the monitor.
 
 Assumption to check on the real machine: with the MMUs off, segment `n` is the physical
 memory at `n * 64 KiB`, and main memory exists at `%10000` to `%2FFFF` (at least 192 KiB
-installed besides the on-board memory). The emulator has 1 MiB.
+installed besides the on-board memory). The emulator has 1 MiB, the real machine used for the measurement has 4 MiB.
 
 ## Procedure
 
@@ -128,21 +128,26 @@ One frame (identifier, FCW, PC segment word, PC offset) at `%9200`.
 | Emulator with the change (and the expected real result) | `7F21 D000 8100 0002` | `sc #%21` executed from segment 1, offset 0: the offset wrapped |
 | Emulator without the change (old core) | `7F22 D000 8200 0002` | `sc #%22` executed from segment 2, offset 0: the offset carried into the segment |
 
-The monitor shows `BREAK AT 9076` afterwards (emulator).
+The monitor shows `BREAK AT 9076` afterwards (emulator and real machine).
+
+**Real machine: `7F21 D000 8100 0002`** (the first `D 9200 4W` was mistyped and answered with `?`, the second
+`D 9200 4 W` shows the frame).
 
 ## What it means and which claim it supports
 
-`7F21 ... 8100 0002` on the real board means the real U8001 continues at offset 0 of the
+`7F21 ... 8100 0002` is what the real board showed: it means the real U8001 continues at offset 0 of the
 **same** segment after the last word of a segment, which is the claim of commit `d613b434`
 ("PC offset wraps at FFFF without carry into the segment"). `7F22 ... 8200 0002` would show that
 the real CPU carries into the segment number and the change would be wrong.
 
 ## Photos of the screen (real machine)
 
-- (none yet)
+<img src="photos/IMG_20261016_test05.jpg" alt="Programs and result on the screen" width="720">
+
+*Both programs entered, G 9000, frame 7F21 D000 8100 0002.*
 
 ## Result on the real machine
 
 | Date | Board / monitor | Bytes read | Same as the emulator? |
 |---|---|---|---|
-| | | | |
+| 2026-10-16 | 16 bit board, 4 MiB RAM, MON16 | `7F21 D000 8100 0002` (`D 9200 4 W`) | yes (with the change; the old core gives `7F22 D000 8200 0002`) |
