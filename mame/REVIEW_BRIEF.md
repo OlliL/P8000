@@ -54,8 +54,8 @@ Commit [`d613b434`](https://github.com/OlliL/mame/commit/d613b434) in
   offset `FFFC`) this borrowed from the segment number. Fixed in commit
   [`915b2c70`](https://github.com/OlliL/mame/commit/915b2c70) with a helper
   `restart_insn()` (to be squashed into `d613b434`). Checked on the emulator with an `ldir`
-  at `<<1>>%FFFC` (old: leaves segment 1 after one round; new: copies all words). Not
-  measured on the real machine ([test 06](tests/06-z8000-block-instruction-restart/README.md) is prepared).
+  at `<<1>>%FFFC` (old: leaves segment 1 after one round; new: copies all words). Measured on the
+  real machine too: [test 06](tests/06-z8000-block-instruction-restart/README.md) (`7F21 D050 8200 0002`, words `A001 A002 A003`, equal to the emulator).
   Manual support: if an interruptible instruction such as `ldir` is interrupted, the saved PC is the address
   of that instruction (U8000 description table 6.1 note 2, p. 68; Z8001/Z8002 CPU manual p. 71 note 2), so a
   repeat has to start at the same segment and offset.

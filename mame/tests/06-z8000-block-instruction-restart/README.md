@@ -1,6 +1,6 @@
 # Test 06: a repeating block instruction at the end of a segment restarts in the same segment
 
-Status: **prepared, not yet run on the real machine.** Emulator results (old core and new core, run 2026-10-16) are below.
+Status: **done on the real machine** (2026-10-16, 4 MiB RAM installed), result equals the emulator with the change (old core and new core, emulator run 2026-10-16, are below).
 
 ## What is tested
 
@@ -147,8 +147,8 @@ The monitor shows `BREAK AT 90C2` afterwards.
 
 The FCW differs between the two rows because of the flags: after a finished `ldir` the emulator
 has Z and V set (`D050`), in the old run the `sc` was reached after the first round (`D000`).
-The flags are not part of the claim. Please write the FCW of the real machine down anyway: the
-emulator sets Z at the end of `ldir`, and the real value is a useful side check.
+The flags are not part of the claim. The real machine shows the same FCW `D050`, so Z and V are set after a finished `ldir`
+there too.
 
 ## What it means and which claim it supports
 
@@ -156,14 +156,16 @@ emulator sets Z at the end of `ldir`, and the real value is a useful side check.
 segment where it stands, even if the instruction ends exactly at the segment end. That is what
 the change `915b2c70` relies on (the program counter offset wraps and never changes the segment).
 `7F22 ... 8100 FFFE` would mean that the real CPU goes back into the previous segment and the
-change would be wrong. If the machine hangs instead, press reset and report what was on the screen.
+change would be wrong. 
 
 ## Photos of the screen (real machine)
 
-To be added: `photos/IMG_<date>_test06.jpg`, then link it here like in test 05.
+<img src="photos/IMG_20261016_test06.jpg" alt="Programs and result on the screen" width="720">
+
+*Both programs entered, G 9000, frame 7F21 D050 8200 0002, words A001 A002 A003.*
 
 ## Result on the real machine
 
 | Date | Board / monitor | Bytes read | Same as the emulator? |
 |---|---|---|---|
-| | | | |
+| 2026-10-16 | 16 bit board, 4 MiB RAM, MON16 | `7F21 D050 8200 0002` (`D 9200 4 W`), `A001 A002 A003` (`D 9400 3 W`) | yes, also the FCW `D050` (Z and V set after the finished `ldir`); the old core gives `7F22 D000 8100 FFFE` and `A001 0000 0000` |

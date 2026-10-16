@@ -10,7 +10,7 @@ it means and which claim it supports) and a `photos/` directory for pictures of 
 | `03-z8010-sar-wrap` | Z8010 SAR wraps 63 -> 0 | done on the real machine, as the emulator |
 | `04-z8010-reset-command-10` | Z8010 %10 resets MR, VTR, DSCR | done on the real machine, as the emulator |
 | `05-z8000-pc-wrap-ffff` | Z8000 PC offset wraps at FFFF without a carry into the segment | done on the real machine, as the emulator |
-| `06-z8000-block-instruction-restart` | a repeating block instruction at the end of a segment restarts in the same segment | prepared, emulator checked |
+| `06-z8000-block-instruction-restart` | a repeating block instruction at the end of a segment restarts in the same segment | done on the real machine, as the emulator |
 
 Generators: `../tools/gen.py` (test 01), `../tools/gen_z8010.py` (tests 02-04), `../tools/listing.py` (listings, test 05 included).
 Expected values are the emulator's, in the READMEs. Fill in the real results and add the

@@ -755,3 +755,5 @@ Read in the scanned documents supplied by the author (OCR):
 - No document says literally "the PC wraps from FFFF to 0000"; it follows from the statements
   above and from Moore p. 19. The Mateosian pages 267 to 269 (program status area, initial PC and
   FCW at reset) are not about this change.
+
+Test 06 on the real machine (2026-10-16, 4 MiB): frame `7F21 D050 8200 0002`, words `A001 A002 A003`, equal to the emulator with the fix, FCW included.
