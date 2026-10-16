@@ -178,6 +178,78 @@ def prog05():
     h.op([0x7B00],"iret","return to the continue address")
     return main,h
 
+def prog06():
+    """test 06: a repeating block instruction (ldir) at the end of a segment restarts in the same segment"""
+    HAND=0x9180
+    main=L(0x9000)
+    main.comment_line("main program, runs in segmented mode; installs the system call handler like test 05")
+    main.op([0x7F01],"sc   #1","MON16: switch to segmented mode")
+    main.op([0x2106,0x8000],"ld   r6,#%8000","segment word of rr6: segment 0 in long form")
+    main.op([0x7D15],"ldctl r1,PSAPOFF","offset of the program status area (PSAP)")
+    main.op([0xA117],"ld   r7,r1","")
+    main.op([0x0107,0x001C],"add  r7,#%1C","rr6 -> PC segment word of the system call entry")
+    main.op([0x2160],"ld   r0,@rr6","")
+    main.op([0x6F00,0x8000,0x9110],"ld   %9110,r0","keep the old PC segment word")
+    main.op([0x0D65,0x8000],"ld   @rr6,#%8000","new vector: segment 0 ...")
+    main.op([0xA971],"inc  r7,#2","")
+    main.op([0x2160],"ld   r0,@rr6","")
+    main.op([0x6F00,0x8000,0x9112],"ld   %9112,r0","keep the old PC offset")
+    main.op([0x0D65,HAND],"ld   @rr6,#%%%04X"%HAND,"... offset %9180 = the handler")
+    main.op([0x4D05,0x8000,0x9100,0x8000],"ld   %9100,#%8000","frame buffer pointer, segment word")
+    main.op([0x4D05,0x8000,0x9102,0x9200],"ld   %9102,#%9200","frame buffer pointer, offset: the frame goes to %9200")
+    main.comment_line("source words at %9300, destination words at %9400 (segment 0)")
+    for i in range(3):
+        main.op([0x4D05,0x8000,0x9300+2*i,0xA001+i],"ld   %%%04X,#%%%04X"%(0x9300+2*i,0xA001+i),"source word %d"%i)
+    for i in range(3):
+        main.op([0x4D05,0x8000,0x9400+2*i,0x0000],"ld   %%%04X,#%%0000"%(0x9400+2*i),"destination word %d, cleared"%i)
+    main.comment_line("code in segment 2 (physical %20000) and a marker in segment 1 (physical %10000), main memory")
+    main.op([0x4D05,0x8200,0xFFFC,0xBB41],"ld   <<2>>%FFFC,#%BB41","segment 2, last two words: ldir @rr2,@rr4,r1 (a two word instruction)")
+    main.op([0x4D05,0x8200,0xFFFE,0x0120],"ld   <<2>>%FFFE,#%0120","second word of the ldir")
+    main.op([0x4D05,0x8200,0x0000,0x7F21],"ld   <<2>>%0000,#%7F21","segment 2, offset 0: sc #%21  (reached after the ldir if the repeat stays in segment 2)")
+    main.op([0x4D05,0x8100,0xFFFC,0x7F22],"ld   <<1>>%FFFC,#%7F22","segment 1, offset FFFC: sc #%22  (reached if the repeat borrows from the segment)")
+    main.op([0x2101,0x0003],"ld   r1,#3","word count")
+    main.op([0x2102,0x8000],"ld   r2,#%8000","destination rr2 = segment 0 ...")
+    main.op([0x2103,0x9400],"ld   r3,#%9400","... offset %9400")
+    main.op([0x2104,0x8000],"ld   r4,#%8000","source rr4 = segment 0 ...")
+    main.op([0x2105,0x9300],"ld   r5,#%9300","... offset %9300")
+    main.op([0x5E08,0x8200,0xFFFC],"jp   <<2>>%FFFC","run the ldir at the end of segment 2")
+    cont=main.pc
+    main.comment_line("the handler continues here (it changes the saved PC to this address)")
+    main.op([0x2106,0x8000],"ld   r6,#%8000","restore the vector")
+    main.op([0x7D15],"ldctl r1,PSAPOFF","")
+    main.op([0xA117],"ld   r7,r1","")
+    main.op([0x0107,0x001C],"add  r7,#%1C","")
+    main.op([0x6100,0x8000,0x9110],"ld   r0,%9110","")
+    main.op([0x2F60],"ld   @rr6,r0","old PC segment word back")
+    main.op([0xA971],"inc  r7,#2","")
+    main.op([0x6100,0x8000,0x9112],"ld   r0,%9112","")
+    main.op([0x2F60],"ld   @rr6,r0","old PC offset back")
+    main.op([0x7F02],"sc   #2","MON16: back to non segmented mode")
+    main.op([0x7F00],"sc   #0","BREAK: back to the monitor")
+    h=L(HAND)
+    h.comment_line("handler for the system call vector, runs on the system stack (rr14)")
+    h.op([0x97E0],"pop  r0,@rr14","identifier word: 7F21 or 7F22 tells which sc was executed")
+    h.op([0x97E1],"pop  r1,@rr14","saved FCW")
+    h.op([0x97E2],"pop  r2,@rr14","saved PC segment word: shows the segment the sc was fetched from")
+    h.op([0x97E3],"pop  r3,@rr14","saved PC offset (0002)")
+    h.op([0x5406,0x8000,0x9100],"ldl  rr6,%9100","rr6 := frame buffer pointer")
+    h.op([0x2F60],"ld   @rr6,r0","store identifier")
+    h.op([0xA971],"inc  r7,#2","")
+    h.op([0x2F61],"ld   @rr6,r1","store FCW")
+    h.op([0xA971],"inc  r7,#2","")
+    h.op([0x2F62],"ld   @rr6,r2","store PC segment word")
+    h.op([0xA971],"inc  r7,#2","")
+    h.op([0x2F63],"ld   @rr6,r3","store PC offset")
+    h.op([0xA971],"inc  r7,#2","")
+    h.op([0x2102,0x8000],"ld   r2,#%8000","new return segment: 0 (long form)")
+    h.op([0x2103,cont],"ld   r3,#%%%04X"%cont,"new return offset: the continue address of the main program")
+    h.op([0x93E3],"push @rr14,r3","rebuild the frame (reverse order)")
+    h.op([0x93E2],"push @rr14,r2","")
+    h.op([0x93E1],"push @rr14,r1","")
+    h.op([0x93E0],"push @rr14,r0","")
+    h.op([0x7B00],"iret","return to the continue address")
+    return main,h
+
 def words(l): return [w for _,ws,_,_,lab in l.rows if lab!="#" for w in ws]
 
 if __name__=="__main__":
@@ -187,7 +259,8 @@ if __name__=="__main__":
     for k,f in (("A",progA),("B",progB),("C",progC)):
         assert words(f())==gen_z8010.PROGS[k]["words"],k
     m5,h5=prog05()
-    LISTS={"05-z8000-pc-wrap-ffff":m5.text()+"\n\n"+h5.text(),"01-saved-pc-segment-bit15":m.text()+"\n\n"+h.text(),
+    m6,h6=prog06()
+    LISTS={"06-z8000-block-instruction-restart":m6.text()+"\n\n"+h6.text(),"05-z8000-pc-wrap-ffff":m5.text()+"\n\n"+h5.text(),"01-saved-pc-segment-bit15":m.text()+"\n\n"+h.text(),
            "02-z8010-set-all-inhibit-flags":progA().text(),
            "03-z8010-sar-wrap":progB().text(),
            "04-z8010-reset-command-10":progC().text()}
