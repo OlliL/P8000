@@ -263,6 +263,29 @@ Validation:
 - LIB2 member udev2.o (16 bytes, jp _unexint) is built from the PLZ/ASM
   file udev2.d.s, not from udev2.c.
 
+## Reference: lcc (WEGA/contrib/lcc)
+
+A later C compiler for WEGA (sources from the Akademie der Wissenschaften
+Berlin, ZKI; the owner fixed bugs in it). Not our target: it generates
+different code. Useful as a reference for:
+
+- PCC structure: `cmd/comp/common` (cgram.y, scan.c, trees.c, pftn.c,
+  reader.c, match.c, allo.c, cost.c, sty.y) and the Z8000 back end
+  `cmd/comp/u8k` (local.c, local2.c, table.c). It is a newer PCC (pcc2 with
+  sty table generator). The WEGA code generator uses the same template
+  language (`AL`, `AR`, `A1`, `U1`, `Z...` escapes, e.g. `\tZtZi\tUL,AR\n`,
+  `\tld\tAL,A1\n`), so zzzcode()/local2.c show how such escapes work.
+- cas syntax in real use: `lib/libc/u8k` is written in cas (`.seg`,
+  `sp := r15`, `SP := rr14`, `{ ... }` blocks, `|_stkseg+4|(sp)`,
+  `ret nc`, `jp c,cerror`). A cas test corpus.
+- WEGA system call interface (segmented): arguments in r0.. (e.g. `ldm
+  r0,|_stkseg+4|(sp),#4` for read), `sc #n` with V7 numbers (exit 1, fork
+  2, read 3, break 17, ...), result in r4 (r4/r5), carry set on error with
+  errno in r4 and a device error in r5; fork returns twice (`sc #2; jr L1`).
+  lcc's own calling convention passes arguments on the stack, unlike scc.
+- `cmd/ar.c` (ar format), `cmd/lld.c` (a BSD ld "string table version"
+  adapted to s.out, not WEGA's ld).
+
 ## Open questions
 
 - Format of `__.SYMDEF`.
