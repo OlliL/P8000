@@ -70,9 +70,9 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 ## 5. Only the author can do (real machine / own material)
 
-- [ ] EPROM labels and board positions of the 8 bit only machine (`mon8_*_3.1_nur8bit`);
-      rename the ROMs if the labels exist.
-- [ ] Real `MAXSEG` display at WEGA start with 4 MiB (the emulator shows `<3F>`).
+- [x] EPROM labels of the 8 bit only machine: only pencil labels (`mon16...` and a CRC), no component
+      identifiers on the boards; nothing to rename, the file names stay.
+- [x] Real `MAXSEG` display: the original machine shows `3F` with 4 MiB and `0F` with 1 MiB, as the emulator.
 - [ ] Optional: Z8010 SWW (needs a translation and a deliberate violation) and Z80 PIO port
       priority (hard to provoke).
 - [ ] Optional: someone with ROMs starts m20/m40 and c900 (Z8010 users) with the reduced series.
