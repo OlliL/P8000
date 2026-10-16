@@ -1,6 +1,6 @@
 # Test 02: Z8010 commands %15 and %16 ignore the data byte
 
-Status: **program ready, not yet run on the real machine** (emulator result below).
+Status: **done on the real machine** (2026-10-16), result equals the emulator.
 
 ## What is tested
 
@@ -47,25 +47,27 @@ Four bytes at `%9100`, in the order: descriptor 5 after %15, descriptor 63 after
 descriptor 5 after %16, descriptor 63 after %16.
 
 Expected (and emulator, `D 9100 2 W`): `0404 1010`, that is `04 04 10 10`.
+**Real machine: `0404 1010`.**
 `00` instead of `04` / `10` would mean that the data byte 00 decides the flags.
 
 ## What it means and which claim it supports
 
-If the real chip shows `04 04 10 10`, the flags are set although the data byte was 00, so the
-data byte does not take part in the command. That is the claim of commit `03dffddf`
+The real chip shows `04 04 10 10`: the flags are set although the data byte was 00, so the
+data byte does not take part in the command (an implementation that lets the data byte decide
+would show `00 00 00 00`). That is the claim of commit `03dffddf`
 ("%15/%16 always set the flags"); documents behind it: U8010 description 6.2.21/6.2.22
 ("no data has to be passed to the MMU", content of the source register ignored), ZiLOG
 System 8000 Hardware Reference Manual table 3-2, Moore table 5-3. WEGA's `_invsdrs` writes
 %15 with whatever is left in a register (seen: 00, 3E, D8).
 
-## Photos / screen shots
+## Photos of the screen (real machine)
 
-Put the photos of the screen into `photos/` in this directory and list them here:
+<img src="photos/IMG_20261016_test02.jpg" alt="Program and result on the screen" width="720">
 
-- (none yet)
+*Program entered, G 9000, result 0404 1010.*
 
 ## Result on the real machine
 
 | Date | Board / monitor | Bytes read | Same as the emulator? |
 |---|---|---|---|
-| | | | |
+| 2026-10-16 | 16 bit board, MON16 | `04 04 10 10` (`D 9100 2 W`: `0404 1010`) | yes |
