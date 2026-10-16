@@ -722,3 +722,14 @@ Source code and software:
   `https://docs.mamedev.org/contributing/`.
 - `mame-review` skill, `https://github.com/rb6502/mame-ai-tips` (v1.1).
 - mamedev pull request seen for reference: `https://github.com/mamedev/mame/pull/16447`.
+
+## 16. Block instructions and the PC wrap (2026-10-16)
+
+Reading `z8000ops.hxx` after the PC wrap fix showed that the repeating block instructions
+restart with `m_pc -= 4`. An instruction of two words at `seg:FFFC` leaves the PC at
+`seg:0000` after the fetch, and `-= 4` then borrows from the segment. Test with `ldir
+@rr2,@rr4,r1` (`BB41 0120`) at `<<1>>%FFFC`, count 3, followed by `ld r0,#%1234` at
+`<<1>>%0000`: old core (with the wrap fix only) copies one word, R1=2, then runs away
+(PC=7FE0); with `restart_insn()` all three words are copied, R1=0, R0=1234, PC at
+`<<1>>%0004`. Run with `tools/run_blk.sh <mame binary> <out>` (MON16 reached through `X` and
+NMI, then `blk2.lua` takes over the CPU). Fix: commit `915b2c70` on `p8k-clean`.

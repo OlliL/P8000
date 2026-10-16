@@ -20,15 +20,15 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 - Real-machine tests 01 to 05 (4 MiB board) equal the emulator: saved PC bit 15, Z8010
   `%15/%16`, SAR wrap, `%10`, PC wrap at FFFF. See [tests/](tests/README.md).
 
-## 1. Code: open finding
+## 1. Code: PC wrap follow-up
 
-- [ ] **Repeating block instructions and the PC wrap.** About 25 places in
-      `z8000ops.hxx` use `m_pc -= 4` to restart an instruction. With the PC wrap fix an
-      instruction ending at offset `FFFC` leaves the PC at `0000`, and `-= 4` borrows from
-      the segment. Make the subtraction wrap on the offset, as the fetch does. Reproduce
-      first: block instruction (e.g. `LDIR`) at `seg:FFFC`, compare old and new core.
-      Goes into the z8000 PR (B) commit. Update `PULL_REQUEST_z8000.md` and the tests
-      list if a real-machine test is possible.
+- [x] Repeating block instructions and the PC wrap: reproduced 2026-10-16 (`ldir` at
+      `<<1>>%FFFC`: old core jumps to segment 0 after one round, R1=2) and fixed with
+      `restart_insn()` (32 places, commit `915b2c70`). New core copies all 3 words and
+      continues at `<<1>>%0000`. Test: `tools/run_blk.sh` + `tools/blk2.lua` (emulator only).
+      **At split time:** squash `915b2c70` into `d613b434`; its change to
+      `PULL_REQUEST_z8000.md` belongs to the drafts commit.
+- [ ] Optional: real-machine test 06 (`ldir` at `<<1>>%FFFC`) like test 05.
 - [ ] Look for other PC offset changes that still carry into the segment (calls, jumps,
       `RET`, traps, `IRET`, non-segmented mode).
 

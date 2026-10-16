@@ -48,13 +48,13 @@ Commit [`d613b434`](https://github.com/OlliL/mame/commit/d613b434) in
 - **Evidence:** [test 05](tests/05-z8000-pc-wrap-ffff/README.md) on the real machine: an
   instruction at `<<1>>%FFFE` is followed by the word at `<<1>>%0000` (frame
   `7F21 D000 8100 0002`); the old core continues in segment 2 (`7F22 D000 8200 0002`).
-- **Known open issue (found while writing this brief, from reading the code, not yet
-  reproduced):** the repeating block instructions restart themselves with `m_pc -= 4`
-  (about 25 places in `z8000ops.hxx`). An instruction of two words that ends exactly at the
-  segment end (offset `FFFC`) now leaves the PC at offset `0000` of the same segment after
-  the fetch, and `m_pc -= 4` then borrows from the segment number. Before the change the
-  carry and the borrow cancelled. These places need an offset-wrapping subtraction too.
-  Please look at this first.
+- **Block instructions:** the repeating block instructions restart themselves with
+  `m_pc -= 4` (32 places in `z8000ops.hxx`). After a wrapped fetch (instruction ending at
+  offset `FFFC`) this borrowed from the segment number. Fixed in commit
+  [`915b2c70`](https://github.com/OlliL/mame/commit/915b2c70) with a helper
+  `restart_insn()` (to be squashed into `d613b434`). Checked on the emulator with an `ldir`
+  at `<<1>>%FFFC` (old: leaves segment 1 after one round; new: copies all words). Not
+  measured on the real machine.
 - **Please check:** other places that change the PC offset (calls, jumps, `RET`, traps,
   `IRET`, the non-segmented mode that takes the segment from the PC), and whether a real Z8001
   behaves the same in non-segmented mode.
