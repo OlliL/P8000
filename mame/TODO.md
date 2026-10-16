@@ -1,111 +1,87 @@
-# P8000 in MAME: To-do list
+# P8000 in MAME: final to-do list
 
-Working list for the MAME contribution (driver `src/mame/ddr/p8k.cpp`). The full
-background of every point is in [LOG.md](LOG.md). Tick items off and add new ones as
-work goes on. Status as of 2026-10-16.
+Working list for the MAME contribution (driver `src/mame/ddr/p8k.cpp`). Background of every
+point: [LOG.md](LOG.md). What a reviewer should look at: [REVIEW_BRIEF.md](REVIEW_BRIEF.md).
+Status as of 2026-10-16.
 
 Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
-- `p8k-clean`: the cleaned up series (10 commits plus drafts commit), based on the
-  mamedev `master` of 2026-10-13 (`f26abf2b`). This is the branch for the pull request.
+- `p8k-clean`: the cleaned up series (9 commits plus the drafts commits), based on mamedev
+  `master` of 2026-10-13 (`f26abf2b`). Source for the pull requests.
 - `p8k-firmware-selftest`: the old working branch (85 commits), kept as a backup.
 - Local tag `backup-before-author-rewrite`: state before the commit author was changed.
 
-## 1. Waiting for / checking the CI
+## Done (condensed)
 
-- [x] CI of the pull request inside the fork (PR #2 "P8k clean Test 2", 2026-10-16 13:29): all
-      green: CI (Linux) 2h32m, CI (macOS) 1h36m, CI (Windows) 3h18m, include guards,
-      XML/JSON validation. Check on the PR page that the run belongs to the current head
-      of `p8k-clean`; later pushes only changed `PULL_REQUEST_*.md`, which the path filters
-      ignore.
-- [ ] Before the real pull request: sync again with mamedev `master` and rebase
-      `p8k-clean` if `master` moved, then let the CI run once more.
-- [ ] The three optional branches (section 3) need their own CI run each.
+- CI of the fork PR #2 green (Linux, macOS, Windows, include guards, XML/JSON).
+- Local tests: reduced series without the optional commits boots WEGA (1 MiB, 8 MiB) and UDOS;
+  `DEBUG=1` build, clang 18, `-validate`, `srcclean`; other drivers that use the changed
+  devices build and validate (not booted, no ROMs).
+- Real-machine tests 01 to 05 (4 MiB board) equal the emulator: saved PC bit 15, Z8010
+  `%15/%16`, SAR wrap, `%10`, PC wrap at FFFF. See [tests/](tests/README.md).
 
-## 2. Local tests that CI does not do
+## 1. Code: open finding
 
-Done 2026-10-16 (results in LOG.md, section 7.1):
+- [ ] **Repeating block instructions and the PC wrap.** About 25 places in
+      `z8000ops.hxx` use `m_pc -= 4` to restart an instruction. With the PC wrap fix an
+      instruction ending at offset `FFFC` leaves the PC at `0000`, and `-= 4` borrows from
+      the segment. Make the subtraction wrap on the offset, as the fetch does. Reproduce
+      first: block instruction (e.g. `LDIR`) at `seg:FFFC`, compare old and new core.
+      Goes into the z8000 PR (B) commit. Update `PULL_REQUEST_z8000.md` and the tests
+      list if a real-machine test is possible.
+- [ ] Look for other PC offset changes that still carry into the segment (calls, jumps,
+      `RET`, traps, `IRET`, non-segmented mode).
 
-- [x] Build without the three optional device commits (local branch `p8k-noopt`, only in the
-      sandbox): WEGA boots to multi-user with `-ram 1m` and `-ram 8m` (MAXSEG=<7E>); `p8000`
-      boots UDOS, `STATUS`/`DATE` work. The hardware test above step 70 was not run.
-- [x] `DEBUG=1` build (gcc 13): `-validate` for `p8000` and `p8000_16` clean, WEGA 1 MiB
-      boots to multi-user with no assertion.
-- [x] clang 18 build of `p8k.cpp`: no warnings in our files.
-- [x] Other drivers using the changed devices: m20, m40, m44, c900 (Z8000/Z8010), c5000,
-      c8002, aussieby, psi98, wicat, kc85_*, z1013* build and pass `-validate`.
-      **Not booted** (no ROMs for them in the sandbox). Someone with the ROMs should start
-      m20/m40 and c900 (the Z8010 users).
-- [x] `srcclean` built by hand (`g++ -std=c++20 src/tools/srcclean.cpp` with libutils/ocore):
-      the 15 touched files come out unchanged.
-- [ ] Still open: run the MON16 hardware test above step 70 and a WEGA login on the
-      reduced series; boot m20/c900 with ROMs.
-
-## 3. Splitting into separate pull requests
-
-Decision: the changes the P8000 needs stay in the driver PR, only the optional
-corrections go out. One PR per device, each from current mamedev `master`:
-
-- [ ] `cpu/z8000`: PC offset wraps at FFFF (commit `d613b434`, draft `PULL_REQUEST_z8000.md`)
-- [ ] `machine/z80pio`: port A before port B, mode 3 request dropped after RETI
-      (commit `fb7176fb`, draft `PULL_REQUEST_z80pio.md`)
-- [ ] `machine/z8010`: four corrections (commit `03dffddf`, draft `PULL_REQUEST_z8010.md`)
-- [ ] Driver PR keeps: z8000 DAB, z80pio acknowledge/match, z80ctc opt-in, z80dma hook,
-      software list, driver.
-- [ ] Check each branch builds and passes CI on its own (the driver branch must not
-      depend on the optional commits).
-
-## 4. Measure on the real machine (turns "documents say" into "measured")
-
-- [x] Z8010 command `%15`/`%16` with data byte 00 (flags are set): measured 2026-10-16, `tests/02`
-- [x] Z8000 PC offset wraps at FFFF: measured 2026-10-16, `tests/05` (real machine, 4 MiB: `7F21 D000 8100 0002` = wraps)
-- [x] Z8010 SAR autoincrement wraps from 63 to 0: measured 2026-10-16, `tests/03`.
-- [x] Z8010 command `%10` (MR, DSCR cleared, SAR untouched): measured 2026-10-16, `tests/04` (VTR not testable without a violation).
-- [ ] Z8010 SWW only for system stack writes (status `%9`), FATL otherwise.
-- [ ] Z80 PIO priority port A over port B (hard to test, otherwise rely on the manual).
-- [ ] 8 MiB memory (if a card is available), `MAXSEG` display of the monitor.
-- Test programs are generated by `gen.py` (see LOG.md, section 14), entered through
-  MON16 `D <addr>` in upper case hex, started with `G <addr>`.
-
-## 5. Open review points (mame-review skill, none of them blocking)
+## 2. Code: tidy items in the driver
 
 - [ ] `p8k_16_daisy_device` and `p8k_dma_device` are outside the anonymous namespace
-      (moving them broke the build because of `DEFINE_DEVICE_TYPE`; needs
-      `DEFINE_DEVICE_TYPE_PRIVATE` with a base class that is visible to the driver,
-      or the logic moves into the driver class).
-- [ ] RS232 ports (`tty0`..`tty7`, `rs232`, `u_rs232`) are still connected with tag
-      strings, use finders.
-- [ ] `m_dram8` is a `unique_ptr` with `save_pointer`; a `memory_share_creator` or
-      `.ram()` in the map is preferred for fixed RAM.
-- [ ] `board16_reset()` resets child devices (`m_ctc[...]->reset()` etc.). Justified for
-      the 16 bit board's soft reset, but from `machine_reset()` it is redundant.
-- [ ] `static const z80_daisy_config` tables and the remaining `// device-level` comments
-      are fine; check again after the next review run.
-- [ ] Save states: not claimed (`MACHINE_SUPPORTS_SAVE` is not set), several coupling
-      members are not saved. Either complete or leave it.
+      (needs `DEFINE_DEVICE_TYPE_PRIVATE` with a base class visible to the driver, or move
+      the logic into the driver class).
+- [ ] RS232 ports (`tty0`..`tty7`, `rs232`, `u_rs232`) are connected by tag strings; use
+      finders.
+- [ ] `m_dram8` is a `unique_ptr` with `save_pointer`; prefer `memory_share_creator` or
+      `.ram()` in the map.
+- [ ] `board16_reset()` resets child devices; redundant when called from `machine_reset()`.
+- [ ] Save states: decide. Either complete (coupling members) or leave
+      `MACHINE_SUPPORTS_SAVE` unset and say so.
+
+## 3. Data and texts
+
+- [ ] `hash/p8000_flop.xml` against the software list rules (SL-1..SL-13: names,
+      `supported`, year, publisher, `alt_title`, release dates). Only `xmllint --valid` was run.
+- [ ] Heading "Systems promoted to working" in the driver commit: check against the state
+      of `skeleton/p8k.cpp` (were the systems listed as not working?).
+- [ ] Read all four PR drafts completely and check each statement. "I, @OlliL, reviewed it
+      myself" has to be true when they are sent.
+- [ ] Decision kept: no links to ROM or software downloads; only documents, schematics, source.
+- [ ] Optional: wiki page "how to install WEGA on the P8000".
+
+## 4. Upstream and review run
+
+- [ ] Check mamedev `master` for changes in `z80pio`, `z80ctc`, `z80dma`, `z8000`, `z8010`
+      since `f26abf2b` (conflicts, or someone fixed the same thing).
 - [ ] Re-run the `mame-review` skill over the final series.
 
-## 6. Texts and metadata
+## 5. Only the author can do (real machine / own material)
 
-- [ ] Read all four PR drafts completely and check each statement. The disclosure line
-      says "I, @OlliL, reviewed it myself": this has to be true when it is sent.
-- [ ] ROM naming: ask for the printed labels and board positions of the EPROMs of the
-      8 bit only machine (`mon8_*_3.1_nur8bit`); use them if they exist.
-- [ ] Check `hash/p8000_flop.xml` against the software list rules (names, `supported`,
-      year, publisher, `alt_title`, release dates), only `xmllint` was run so far.
-- [ ] Release notes heading in the driver commit ("Systems promoted to working"): check
-      that the systems were "not working" before in `skeleton/p8k.cpp`.
-- [ ] Drop the commit "PR drafts (not part of the pull requests...)" before opening the PR,
-      and do not include `PULL_REQUEST_*.md` in the PR.
-- [ ] Optional: a MAME wiki page "how to install WEGA on the P8000" (usage notes are a
-      nice-to-have for non-arcade systems).
-- [ ] Decide about the link to the sources and ROMs. Decision so far: no links to ROM or
-      software downloads in the driver or the PR; only documentation, schematics and
-      source code (`pofo.de`, `github.com/OlliL/P8000`).
+- [ ] EPROM labels and board positions of the 8 bit only machine (`mon8_*_3.1_nur8bit`);
+      rename the ROMs if the labels exist.
+- [ ] Real `MAXSEG` display at WEGA start with 4 MiB (the emulator shows `<3F>`).
+- [ ] Optional: Z8010 SWW (needs a translation and a deliberate violation) and Z80 PIO port
+      priority (hard to provoke).
+- [ ] Optional: someone with ROMs starts m20/m40 and c900 (Z8010 users) with the reduced series.
 
-## 7. Notes and backups
+## 6. Right before submission
+
+- [ ] Sync with mamedev `master`, rebase `p8k-clean`.
+- [ ] Make the three PR branches (z8000, z80pio, z8010), each from `master`; the driver
+      branch must not depend on them (reduced series `p8k-noopt` as the base for the check).
+- [ ] Full build, `DEBUG=1`, `-validate` and CI in the fork for each branch.
+- [ ] Drop the drafts commits; `PULL_REQUEST_*.md` must not be part of any PR.
+- [ ] Open the PRs, driver first or independent; AI disclosure with model and version stays.
+
+## 7. Notes
 
 - [ ] Keep `LOG.md` current when something is found or decided.
-- [ ] Test programs and scripts that are only in the sandbox (`gen.py`, `console.py`,
-      `ctl2.lua`, `ramtest.sh`, `udos8.sh`): copy them into this repository
-      (`mame/tools/`) if they should survive.
+- Test programs and scripts are in [tools/](tools/), generated by `gen.py` and
+  `gen_z8010.py`, entered through MON16 `D <addr>` in upper case hex, started with `G <addr>`.
