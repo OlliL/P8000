@@ -59,9 +59,11 @@ Commit [`d613b434`](https://github.com/OlliL/mame/commit/d613b434) in
   Manual support: if an interruptible instruction such as `ldir` is interrupted, the saved PC is the address
   of that instruction (U8000 description table 6.1 note 2, p. 68; Z8001/Z8002 CPU manual p. 71 note 2), so a
   repeat has to start at the same segment and offset.
-- **Please check:** other places that change the PC offset (calls, jumps, `RET`, traps,
-  `IRET`, the non-segmented mode that takes the segment from the PC), and whether a real Z8001
-  behaves the same in non-segmented mode.
+- **Audit:** the other PC updates (JR, CALR, DJNZ, relative loads, indexed/base addressing, `set_pc*`,
+  return addresses, traps) already keep the segment; see `LOG.md`. A `jr` at `<<1>>%FFFE` stays in the segment (emulator).
+- **Please check:** whether a real Z8001 behaves the same in non-segmented mode (the segment comes from the PC),
+  and the unrelated observation that non-segmented `IRET`/`LDPS` load the PC with `m_pc = POPW(SP)`, which clears
+  the segment number.
 
 ## PR C: machine/z80pio (optional part)
 

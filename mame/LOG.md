@@ -757,3 +757,20 @@ Read in the scanned documents supplied by the author (OCR):
   FCW at reset) are not about this change.
 
 Test 06 on the real machine (2026-10-16, 4 MiB): frame `7F21 D050 8200 0002`, words `A001 A002 A003`, equal to the emulator with the fix, FCW included.
+
+### Audit of the other PC updates in the z8000 core (2026-10-16)
+
+All places that change the PC after the fetch keep the upper 16 bits (segment) of `m_pc`:
+`RDOP`, `get_operand`, `get_addr_operand`, `get_raw_addr_operand` (wrap), `addr_add`/`addr_sub`
+(used by JR, CALR, DJNZ/DBJNZ, LDR/LDAR via `GET_DSP16`, base and index addressing),
+`set_pc` (segmented: the new PC as is; non-segmented: low 16 bits only), `set_pc_long`,
+`restart_insn()` (block instructions). Return addresses (`CALL`, `CALR`, traps, interrupts) are
+pushed with `make_segmented_pc(m_pc)`, so after a wrapped fetch they hold `seg:0000`.
+With the old carry, a JR/CALR/DJNZ whose displacement base was `seg:0000` after a fetch at
+`seg:FFFE` would have jumped in the next segment (by reading the code, not run).
+Emulator check (`tools/run_blk3.sh`, `tools/blk3.lua`): `jr +2 words` at `<<1>>%FFFE` ends in
+segment 1 (r0=1111, PC `<<1>>%0008`).
+Observation, not part of the change: in non-segmented mode `IRET` and `LDPS` load the PC with
+`m_pc = POPW(SP)` / `RDMEM_W`, which clears the segment number of a Z8001 running non-segmented
+code in a segment other than 0 (the manuals say the segment comes from the PC segment field).
+Not looked at further; to ask the Z8001 specialist.

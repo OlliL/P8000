@@ -30,8 +30,10 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
       `PULL_REQUEST_z8000.md` belongs to the drafts commit.
 - [x] Real-machine test 06 (`tests/06-z8000-block-instruction-restart`): measured 2026-10-16, `7F21 D050 8200 0002`, `A001 A002 A003`, as the emulator.
 - [x] Manual references for the PC wrap and the block restart added to the PR draft and the brief (LOG.md).
-- [ ] Look for other PC offset changes that still carry into the segment (calls, jumps,
-      `RET`, traps, `IRET`, non-segmented mode).
+- [x] Audit of the other PC updates (calls, jumps, `RET`, traps, `IRET`, non-segmented mode): all
+      keep the segment, nothing more to change (LOG.md, audit section; emulator check of `jr` at `<<1>>%FFFE`).
+- [ ] Ask the Z8001 specialist: non-segmented `IRET`/`LDPS` clear the PC segment number of a
+      Z8001 (`m_pc = POPW(SP)`); is that right? Not part of this change.
 
 ## 2. Code: tidy items in the driver
 
