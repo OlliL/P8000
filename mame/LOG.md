@@ -412,6 +412,31 @@ Results:
 - 2026-10-16, after the review changes (include sorting, finders, constexpr, `machine_reset`):
   `p8000` and `p8000_16` pass `mame -validate`; WEGA boots to "Going multi-user" (1 MiB).
   `-ram 8m` and the reduced series (without the optional commits) were not re-run.
+### 7.1 Local tests that CI does not do (2026-10-16)
+
+- Reduced series (`p8k-noopt` = mamedev `f26abf2b` + DAB, z80pio acknowledge/match, z80ctc
+  opt-in, z80dma hook, software list, driver; without z8000 PC wrap, z80pio priority/mode 3
+  after RETI and z8010 changes): `p8000_16` hardware test and WEGA boot to "Going
+  multi-user" with `-ram 1m` and `-ram 8m` (`MAXSEG=<7E>`, user memory 8151552 bytes);
+  `p8000` boots the UDOS floppy to `%`, `STATUS` and `DATE` work. So the three optional
+  commits are not needed for these paths.
+- `DEBUG=1` (gcc 13.3): `mamed -validate p8000` and `p8000_16` return 0; hardware test and
+  WEGA boot to multi-user with 1 MiB, no assertion. The first debug build was killed by the
+  out of memory killer in `luaengine.cpp` with `-j2` and left a broken object; use `-j1` and
+  delete the object.
+- clang 18.1.3 build of `p8k.cpp` and everything it links: no warning in the touched files.
+- Other drivers built together with the changed devices and validated (`-validate` returns
+  0): `m20`, `m40`, `m44`, `c900` (Z8000 + Z8010), `c5000`, `c8002` (Z8000), `aussieby`,
+  `psi98`, `wicat`, `kc85_2..5`, `z1013*` (Z80 PIO/CTC/DMA). They were not run, because the
+  ROMs are not available here. `specnext_dma` derives from `z80dma_device`: its
+  `reset_byte_counter()` override does not clash with the new `byte_counter()` hook.
+- `srcclean` (hand built, see TODO 2): the 15 touched files are unchanged.
+- ROMs for the other drivers were not available, so "other systems are not affected" is
+  only checked by building and validating; the PR texts must not claim more.
+- The harness `ramtest.sh` sends two Returns at fixed times. In the (slower) debug build the
+  second one arrives after "Press NMI", which stops the autoboot. Any input before NMI
+  stops the boot, so `ramtest_dbg.sh` waits for the prompts instead.
+
 - Two earlier wrong assumptions that were fixed: baud quartz 9.8304 MHz (right: 9.832 MHz),
   NBR described as a Z8010 property (it is board logic).
 

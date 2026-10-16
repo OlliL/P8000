@@ -22,19 +22,22 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 ## 2. Local tests that CI does not do
 
-- [ ] Build the driver **without** the three optional device changes (z8000 PC wrap,
-      z80pio priority and mode 3 after RETI, z8010) and boot WEGA to multi-user with
-      `-ram 1m` and `-ram 8m`; start `p8000` (8 bit only) with the UDOS floppy.
-      Needed for the statement "WEGA still boots without them". So far only 1 MiB
-      was tried, and the hardware test only up to step 70.
-- [ ] `DEBUG=1` build of `p8k.cpp` (assertions), `mame -validate` with that build.
-- [ ] clang build of `p8k.cpp` (CI does clang, but warnings are easier to read locally).
-- [ ] Build and start a few other drivers that use the changed devices, to support the
-      claim "other systems are not affected": Z8000 based (e.g. Olivetti M20), systems
-      with Z80 PIO, CTC, DMA.
-- [ ] Build `./srcclean` (`make TOOLS=1`, the earlier background build did not
-      finish) and run it on copies of all touched files. A manual check found only two
-      non-ASCII characters in comments of `z8010.cpp` (lines 362 and 448).
+Done 2026-10-16 (results in LOG.md, section 7.1):
+
+- [x] Build without the three optional device commits (local branch `p8k-noopt`, only in the
+      sandbox): WEGA boots to multi-user with `-ram 1m` and `-ram 8m` (MAXSEG=<7E>); `p8000`
+      boots UDOS, `STATUS`/`DATE` work. The hardware test above step 70 was not run.
+- [x] `DEBUG=1` build (gcc 13): `-validate` for `p8000` and `p8000_16` clean, WEGA 1 MiB
+      boots to multi-user with no assertion.
+- [x] clang 18 build of `p8k.cpp`: no warnings in our files.
+- [x] Other drivers using the changed devices: m20, m40, m44, c900 (Z8000/Z8010), c5000,
+      c8002, aussieby, psi98, wicat, kc85_*, z1013* build and pass `-validate`.
+      **Not booted** (no ROMs for them in the sandbox). Someone with the ROMs should start
+      m20/m40 and c900 (the Z8010 users).
+- [x] `srcclean` built by hand (`g++ -std=c++20 src/tools/srcclean.cpp` with libutils/ocore):
+      the 15 touched files come out unchanged.
+- [ ] Still open: run the MON16 hardware test above step 70 and a WEGA login on the
+      reduced series; boot m20/c900 with ROMs.
 
 ## 3. Splitting into separate pull requests
 
