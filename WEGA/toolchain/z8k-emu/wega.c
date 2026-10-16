@@ -257,10 +257,49 @@ static void put_stat(Z8K *c, Ad a, const struct stat *st)
 	gputl(c, a, st->st_ctime);
 }
 
+/* Fetch string number n of a guest pointer array (argv/envp); returns NULL at the terminator. */
+static char *gptr_str(Z8K *c, Ad base, int n)
+{
+	char s[2048];
+	Ad p = base;
+	if (c->segmode) {
+		uint32_t v;
+		p.off += n * 4;
+		v = ((uint32_t)gw(c, p) << 16) | gw(c, (Ad){ p.seg, p.off + 2 });
+		if (v == 0)
+			return NULL;
+		gstr(c, (Ad){ (v >> 24) & 0x7F, v & 0xFFFF }, s, sizeof s);
+	} else {
+		uint16_t v;
+		p.off += n * 2;
+		v = gw(c, p);
+		if (v == 0)
+			return NULL;
+		gstr(c, (Ad){ 0, v }, s, sizeof s);
+	}
+	return strdup(s);
+}
+
+/* Copy a whole guest pointer array into a NULL-terminated host vector. */
+static char **gvec(Z8K *c, Ad base, int *count)
+{
+	char **v = NULL, *s;
+	int n = 0;
+	while ((s = gptr_str(c, base, n)) != NULL) {
+		v = realloc(v, (n + 2) * sizeof *v);
+		v[n++] = s;
+	}
+	if (!v)
+		v = malloc(2 * sizeof *v);
+	v[n] = NULL;
+	*count = n;
+	return v;
+}
+
 static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 {
-	char gp[1024], hb[1100], **av = NULL, **ev = NULL;
-	int na = 0, ne = 0, ptr = c->segmode ? 4 : 2, e, i;
+	char gp[1024], hb[1100], **av, **ev;
+	int na, ne = 0, e, i;
 	Exec x;
 	const char *hp;
 	gstr(c, path, gp, sizeof gp);
@@ -269,30 +308,8 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 	e = exec_open(hp, &x);
 	if (e) return sc_err(c, e);
 	/* copy argument and environment strings out of the old image */
-	for (;; na++) {
-		Ad p = argvp; char s[2048];
-		p.off += na * ptr;
-		if (c->segmode) { uint32_t v = ((uint32_t)gw(c, p) << 16) | gw(c, (Ad){ p.seg, p.off + 2 });
-			if (!(v & 0xFFFF) && !(v >> 16)) break; gstr(c, (Ad){ (v >> 24) & 0x7F, v & 0xFFFF }, s, sizeof s); }
-		else { uint16_t v = gw(c, p); if (!v) break; gstr(c, (Ad){ 0, v }, s, sizeof s); }
-		av = realloc(av, (na + 2) * sizeof *av); av[na] = strdup(s);
-	}
-	if (!av) av = malloc(2 * sizeof *av);
-	av[na] = NULL;
-	if (haveenv) {
-		for (;; ne++) {
-			Ad p = envp; char s[2048];
-			p.off += ne * ptr;
-			if (c->segmode) { uint32_t v = ((uint32_t)gw(c, p) << 16) | gw(c, (Ad){ p.seg, p.off + 2 });
-				if (!(v & 0xFFFF) && !(v >> 16)) break; gstr(c, (Ad){ (v >> 24) & 0x7F, v & 0xFFFF }, s, sizeof s); }
-			else { uint16_t v = gw(c, p); if (!v) break; gstr(c, (Ad){ 0, v }, s, sizeof s); }
-			ev = realloc(ev, (ne + 2) * sizeof *ev); ev[ne] = strdup(s);
-		}
-		if (!ev) ev = malloc(2 * sizeof *ev);
-		ev[ne] = NULL;
-	} else {
-		ev = envv;
-	}
+	av = gvec(c, argvp, &na);
+	ev = haveenv ? gvec(c, envp, &ne) : envv;
 	exec_map(c, &x, av, ev);
 	free(x.file);
 	for (i = 0; i < na; i++) free(av[i]);
