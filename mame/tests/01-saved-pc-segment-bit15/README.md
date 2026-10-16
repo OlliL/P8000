@@ -74,8 +74,16 @@ This is what the Z8000 core in MAME already did (`m_pc_b15`). The test removes t
 Source of the questions: U8000 CPU technical description 6.6.2, fig. 6.1/6.2; the answer
 comes from the measurement, not from a document.
 
-## Photos / screen shots
+## Photos of the screen (real machine)
 
-Put the photos of the screen into `photos/` in this directory and list them here:
+<img src="photos/IMG_20261016_102733.jpg" alt="Main program in memory" width="720">
 
-- (none yet)
+*Main program entered, memory dump at %9000.*
+
+<img src="photos/IMG_20261016_103035.jpg" alt="Handler in memory" width="720">
+
+*Handler routine entered, memory dump at %9080.*
+
+<img src="photos/IMG_20261016_103155.jpg" alt="Frames after the run" width="720">
+
+*G 9000, BREAK, four frames alternating 8000/0000.*
