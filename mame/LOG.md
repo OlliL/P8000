@@ -335,7 +335,11 @@ Test `tests/03-z8010-sar-wrap`: with SAR = 63, reading with command 0E (attribut
 and with 0A/0F (read passes the attribute byte, then SAR+1) both left SAR = `00` on the real
 board (dump `1000 1010 0020`: bytes `10 00 10 10 00`, the last byte is not a result). Same as the
 emulator after the fix; the old emulation stayed at 3F. Supports the SAR wrap item of commit
-`03dffddf` (U8010 6.2.13, 6.2.14, 6.2.16). Test 04 (command %10) is ready but not yet run.
+`03dffddf` (U8010 6.2.13, 6.2.14, 6.2.16). 
+Test `tests/04-z8010-reset-command-10`: MR := 38, SAR := 7, DSCR := 2 read back as `38 07 02`; after
+command %10 the real board gave MR = `00`, DSC = `00`, SAR = `07` (dump `0038 0207 0000 0702`,
+the last byte is not a result). The emulator gives the same. So %10 resets MR and DSCR and leaves SAR
+alone (U8010 6.2.17, table 6.2). VTR cannot be set without a violation, so it is not covered.
 
 ### 5.4 Test program for the PC wrap (ready, not yet run)
 

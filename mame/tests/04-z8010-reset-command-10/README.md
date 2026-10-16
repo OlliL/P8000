@@ -1,6 +1,6 @@
 # Test 04: Z8010 command %10 resets MR, VTR and DSCR
 
-Status: **program ready, not yet run on the real machine** (emulator result below).
+Status: **done on the real machine** (2026-10-16), result equals the emulator.
 
 ## What is tested
 
@@ -79,20 +79,24 @@ Seven bytes at `%9500`, `D 9500 4 W`: MR at start, MR set, DSC set, SAR set, **M
 Expected (emulator): `00 38 02 07 00 00 07`. The first byte is whatever MR holds at start
 (the real MON16 may leave a different value).
 
+**Real machine: `0038 0207 0000 0702`**, i.e. bytes `00 38 02 07 00 00 07` and then `02`. The last
+byte is not a result (the dump shows 8 bytes, the program writes 7), it is leftover memory. MR
+at start was `00`.
+
 ## What it means and which claim it supports
 
-MR and DSC `00` after %10 and SAR still `07` means %10 resets exactly MR, VTR and DSCR (VTR
+On the real chip MR and DSC are `00` after %10 and SAR is still `07`. That means %10 resets exactly MR, VTR and DSCR (VTR
 is not tested, it cannot be set without a violation) and not the SAR. That supports the claim
 in commit `03dffddf` ("command %10 resets MR, VTR and DSCR").
 
-## Photos / screen shots
+## Photos of the screen (real machine)
 
-Put the photos of the screen into `photos/` in this directory and list them here:
+<img src="photos/IMG_20261016_test04.jpg" alt="Program and result on the screen" width="720">
 
-- (none yet)
+*Program entered, G 9400, result 0038 0207 0000 0702.*
 
 ## Result on the real machine
 
 | Date | Board / monitor | Bytes read | Same as the emulator? |
 |---|---|---|---|
-| | | | |
+| 2026-10-16 | 16 bit board, MON16 | `00 38 02 07 00 00 07` (`D 9500 4 W`: `0038 0207 0000 0702`, the final `02` is not a result) | yes |
