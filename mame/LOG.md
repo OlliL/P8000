@@ -794,3 +794,12 @@ where the images come from (original dumps of the disks, or converted?).
 "Systems promoted to working" in the driver commit: the old skeleton had both systems as
 `MACHINE_NOT_WORKING`; the heading names equal the full names in `p8k.cpp` ("P8000 (8bit Board)",
 "P8000 (8bit and 16bit Board)").
+
+Software list updated with the disk labels and READMEs of the owner (2026-10-16): the images are dumps
+of the original disks delivered with the system. Titles as printed ("UDOS - Systemdisk", "OS/M -
+Systemdisk", "WEGA - Startdisk", "WEGA - root n", "WEGA - usr n", "WEGA - doc n"), drawing numbers
+889 336 (UDOS 3.1), 889 338 (OS/M 3.0), 889 347 to 889 363 (WEGA 3.1), versions 3.1/3.0/3.1,
+dates from the READMEs: UDOS 29.05.1989, OS/M 15.01.1988, WEGA July 6, 1989 (so the year of the
+WEGA sets is sourced and OS/M is 1988). The label list calls the last usr disk "usr 8" twice; the
+WEGA README names it "usr 9" (889 361), the list follows the README. The doc disks are not to be
+installed (README): WEGA file system disks with the manuals as packed print files.

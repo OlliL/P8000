@@ -50,12 +50,12 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 ## 3. Data and texts
 
-- [x] `hash/p8000_flop.xml` against the software list rules: mechanical checks pass, all sets
-      verify, OS/M tested (LOG.md, last section). Still open, needs the owner:
-  - [ ] descriptions: the labels printed on the disks (SL-6); now they are descriptive
-  - [ ] years of the WEGA sets: change to `1989?` unless a source exists (SL-7)
-  - [ ] origin of the images (original dumps or converted?) and, if possible, run the two
-        `w31doc` disks once
+- [x] `hash/p8000_flop.xml` against the software list rules: mechanical checks pass, all sets verify,
+      OS/M tested, titles/part numbers/versions/dates now from the disk labels and the READMEs the
+      owner supplied (commit `a2ee8e76` on `p8k-clean`, to be squashed into the software list commit).
+  - [ ] Optional: run the two `w31doc` disks once (mount in WEGA, copy a packed manual).
+  - [ ] Optional: the checksums printed on the labels ("Pruefsumme", COPY.DISK / COPY.TAR under UDOS)
+        could prove that the images equal the originals; algorithm not known, not needed for the list.
 - [x] Heading "Systems promoted to working": the skeleton had both systems as not working,
       names match the driver.
 - [ ] Read all four PR drafts completely and check each statement. "I, @OlliL, reviewed it
