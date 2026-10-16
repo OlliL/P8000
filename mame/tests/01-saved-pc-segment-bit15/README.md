@@ -1,6 +1,6 @@
 # Test 01: bit 15 of the saved PC segment word (trap frame and IRET)
 
-Status: **done on the real machine** (P8000 16 bit board, MON16 3.1), reproduced in the emulator.
+Status: **done on the real machine** (2026-10-16), result equals the emulator.
 
 ## What is tested
 
@@ -146,3 +146,9 @@ comes from the measurement, not from a document.
 <img src="photos/IMG_20261016_103155.jpg" alt="Frames after the run" width="720">
 
 *G 9000, BREAK, four frames alternating 8000/0000.*
+
+## Result on the real machine
+
+| Date | Board / monitor | Bytes read | Same as the emulator? |
+|---|---|---|---|
+| 2026-10-16 | 16 bit board, MON16 | `D 9200 10 W`: `7F11 D000 8000 903A  7F12 D000 0000 903C  7F13 D000 8000 903E  7F14 D000 0000 9040` | yes |
