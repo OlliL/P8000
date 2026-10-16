@@ -20,7 +20,7 @@ Suggested way (not decided with the owner yet, discuss first):
    be mixed, take care of the format flags.
 3. **Oracle first:** to know what "identical" means, create reference outputs by running the
    original tools under the emulator (WEGA boots in `p8000_16`, 1 to 8 MiB, hard disk image
-   below) on a set of test inputs (the sources in `WEGA/src` are good material). Save inputs,
+   below, `sd.hd`; use a copy) on a set of test inputs (the sources in `WEGA/src` are good material). Save inputs,
    outputs and sizes. Every decompiled stage is checked against them.
 4. Option: a small user mode Z8000 interpreter on Linux that maps the WEGA system calls to
    Linux ones would run the original binaries natively and give a fast oracle and a fallback.
@@ -38,8 +38,9 @@ Suggested way (not decided with the owner yet, discuss first):
   `/home/claude/mamedev/mame`, branch `p8k-clean`. Binaries: `mame` (optimised), `mamed`
   (`DEBUG=1`). Build scripts `/home/claude/runs/build.sh` and friends (see `LOG.md`).
   Machines: `p8000` (8 bit board, UDOS) and `p8000_16` (16 bit board, WEGA).
-- ROMs and disk images: `/home/claude/roms`, `/home/claude/sdimg` (`wega.stock` = installed
-  WEGA hard disk, `wega.sd_original`, `sd_*.hd`), `/home/claude/flop` (floppy images and their
+- ROMs and disk images: `/home/claude/roms`, `/home/claude/sdimg` (`sd.hd` -> `sd.dd`, about 85 MB, the
+  WEGA hard disk used for the boot tests; `sd_*.hd`/`tr*.hd` are variants from experiments, some with other
+  kernels; `wega.stock`, `wega.sd_original` are small files, probably the kernel only, check), `/home/claude/flop` (floppy images and their
   raw conversions: `wgaend22.raw`, `w31start.raw`, `vsh.raw`, `udossys.raw`), `/home/claude/sw`.
   No ROM or software download links in any document or PR.
 - Test harness `/home/claude/runs/sc` and copies in `mame/tools`: `console.py` (console on a
