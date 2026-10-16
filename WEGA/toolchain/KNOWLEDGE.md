@@ -286,9 +286,89 @@ different code. Useful as a reference for:
 - `cmd/ar.c` (ar format), `cmd/lld.c` (a BSD ld "string table version"
   adapted to s.out, not WEGA's ld).
 
+## Oracle: z8k-emu (z8k-emu/)
+
+A user-mode Z8001/Z8002 interpreter in C that runs the original WEGA
+executables on Linux. It is the reference ("oracle") for everything we
+reconstruct: run the original tool, run our rebuilt tool, compare the output
+byte for byte.
+
+    z8k-emu [-r ROOT] [-t] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
+
+`ROOT` is the extracted WEGA disk image; absolute guest paths are looked up
+below it (`/dev/*` goes to the host, `ROOT/tmp` is created). `-t` traces every
+instruction, `-v` reports lazily allocated segments.
+
+Results (all byte-identical to the objects shipped with WEGA, see
+`z8k-emu/selftest.sh`, `make check-oracle`):
+
+- `scc -O -c` reproduces kernel LIB2 members lp, bio, mem, partab, sys, md, ud,
+  fd and `conf/wpar.o`.
+- `cc -c` and `cc -O -c` both reproduce `conf/bstart.o`.
+- Of the owner's hand decompilations, `mem.c`, `partab.c` and `sys.c` compile to
+  objects identical to the shipped ones (so those three are in fact exact).
+- `tty.c` differs (our copy is the owner's revised "4.2+" source), `udev*.o` in
+  LIB2 are only dummy objects (`dev/Makefile`: "use dummy objects").
+- `cc -O -o hello hello.c` links and the result runs (exit status 5 as expected),
+  so the whole pipeline cpp, cparse, codgen, popt, cas, ld works unmodified.
+- ar, size run correctly; nothing in the tool chain needed more than the
+  system calls listed below.
+
+### Loader
+
+- Magic E707/E607 combined, E711/E611 separate I&D. For non-segmented E711 the
+  instruction and data spaces are separate 64K spaces (data at 0).
+- File layout: header (24), segment table (16 per entry), text of all segments in
+  table order, data of all segments. Per segment: code at `coff*256`, data
+  right behind the code (or at `doff*256` if set), bss behind the data.
+  Combined binaries place data directly after the text (no padding) - the
+  rebuilt `ar` and `size` ran correctly with this, so it is right.
+- Initial stack (non-segmented, top 0xFFFE): `argc`, `argv[]`, NULL, `envp[]`,
+  NULL, then the strings, argv[0] first (crt0 clears the word below argv[0]).
+  Segmented: same with 32-bit pointers `seg<<24|off`, stack segment 0x7F (flag
+  7FSTK); SP is rr14 = (0x7F00, offset).
+- Entry: `s_entry` (`seg<<24|off` for segmented).
+
+### System call ABI (verified in libc/slibc stubs and in the kernel sources)
+
+- `sc #n` is the word `7F00|n`. Numbers from `sys/sysent.c` (System III based,
+  e.g. 1 exit, 2 fork, 3 read, 4 write, 5 open, 6 close, 7 wait, 8 creat, 11 exec,
+  17 break, 19 seek, 28 fstat, 41 dup, 42 pipe, 45 ssgbrk, 48 signal, 59 exece).
+- The kernel reads the arguments from the saved registers r0, r1, ... in order
+  (`machdep.c: scfunc`): a 16-bit value takes one register, a 32-bit value two,
+  a pointer one (non-segmented) or two (segmented: segment word `0sssssss 00000000`,
+  offset). The libc stubs shuffle the compiler's argument registers (r7, r6, r5/rr4,
+  r3 ...) into r0.. first, e.g. `lseek(fd, long off, whence)`: r0 fd, rr1(r1,r2) off,
+  r3 whence.
+- Result in r4 (r5 for a second value: wait = pid, status; pipe = two fds; lseek,
+  time = rr4). Error: carry set, error number in r4. `cerror` stores it in `_errno`.
+- `fork`: the stub is `sc #2; jr L; <parent code>`; the child continues at the
+  `jr` (r4 = parent value, carry clear), the parent skips the `jr` (r4 = child pid).
+- `signal` stub installs per-signal trampolines (`calr` table) and passes the
+  trampoline address (or 0/1) to the kernel, which returns the old value in r4.
+- `ssgbrk(seg, nbytes)` grows a segment in 256 byte clicks and returns
+  (seg<<8, old size). `break` in segmented mode takes a segmented address.
+- `struct stat` is 26 bytes: dev, ino, mode, nlink, uid, gid, rdev (16 bit each),
+  size, atime, mtime, ctime (32 bit each), big endian.
+
+### Not yet emulated
+
+- EPU (Z8070 floating point) arithmetic. Only EPU loads/stores between memory
+  and the EPU registers are implemented (as plain data moves), which is all
+  varargs prologues (`4FFC 8x03 off`: store fr3..fr0) need. WEGA emulates
+  floating point in the kernel (`conf/fpe.s`, full soft float); to run float code
+  we have to port or reimplement it.
+- Signal handlers installed by the guest (signals keep their host default or
+  are ignored for SIG_IGN), terminal ioctls (always ENOTTY), I/O and
+  privileged instructions (user mode only).
+- Flags that nothing in the tool chain looked at are approximate: V after
+  shifts and rotates, C/V after `div`, DA/H after anything but byte add/sub.
+  The `cpir`/`cpsir` family sets Z = condition true, P/V = counter reached zero.
+
 ## Open questions
 
-- Format of `__.SYMDEF`.
+- Format of `__.SYMDEF` (can now be answered by running the original `ranlib`
+  under the oracle).
 - EPU instruction formats and cas mnemonics (fadd, fldd, ...).
 - Which cas condition code and flag names to emit (both `ne`/`nz`,
   `c`/`ult` exist).
