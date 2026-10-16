@@ -324,13 +324,18 @@ Run on the real machine and reproduced in the emulator: the WEGA installation on
 disk (all counts of the final `df -t` match block for block), the `sa.format`, `sa.verify`,
 `sa.mkfs`, `sa.install`, `sysgen` sequence, the MON16 hardware test steps up to step 70.
 
-### 5.3 Z8010 commands %15 / %16 (measured 2026-10-16)
+### 5.3 Z8010 commands %15 / %16 and SAR wrap (measured 2026-10-16)
 
 Test `tests/02-z8010-set-all-inhibit-flags`: with the attribute bytes of descriptors 5 and 63
 set to 00, command %15 and later %16 with data byte 00 gave `04 04 10 10` on the real 16 bit
 board, the same as the emulator after commit `03dffddf`. So the data byte is not part of
 the command, as the U8010 description (6.2.21/6.2.22) says. Photo in the test directory.
-The tests 03 (SAR wrap) and 04 (command %10) are ready but not yet run.
+
+Test `tests/03-z8010-sar-wrap`: with SAR = 63, reading with command 0E (attribute, then SAR+1)
+and with 0A/0F (read passes the attribute byte, then SAR+1) both left SAR = `00` on the real
+board (dump `1000 1010 0020`: bytes `10 00 10 10 00`, the last byte is not a result). Same as the
+emulator after the fix; the old emulation stayed at 3F. Supports the SAR wrap item of commit
+`03dffddf` (U8010 6.2.13, 6.2.14, 6.2.16). Test 04 (command %10) is ready but not yet run.
 
 ## 6. MMU selection and the break register (NBR)
 

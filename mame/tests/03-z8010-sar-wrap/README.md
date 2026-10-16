@@ -1,6 +1,6 @@
 # Test 03: Z8010 segment address register wraps from 63 to 0
 
-Status: **program ready, not yet run on the real machine** (emulator result below).
+Status: **done on the real machine** (2026-10-16), result equals the emulator.
 
 ## What is tested
 
@@ -68,21 +68,28 @@ Expected: the 2nd and 5th byte are `00` (emulator: `10 00 10 10 00`, the attribu
 are leftovers of test 02: `10`; if test 02 was not run before they differ).
 Emulator before the fix: `3F` (stays at 63).
 
+**Real machine: `1000 1010 0020`**, i.e. bytes `10 00 10 10 00` and then `20`. The last byte is
+not a result (the dump shows 6 bytes, the program writes 5), it is leftover memory. SAR after
+0E = `00`, SAR after 0F = `00`, the attribute bytes are `10` (left from test 02, as expected).
+
 ## What it means and which claim it supports
 
-`00` for both SAR values means the register wraps (a 6 bit counter without carry out).
+On the real chip both SAR values are `00`: after descriptor 63 the register continues with
+descriptor 0 (a 6 bit counter without carry out), neither staying at `3F` nor showing a 7th
+bit (`40`), for both the attribute read (cmd 0E) and the read that passes the attribute byte
+(cmd 0F).
 That supports the claim in commit `03dffddf` ("SAR autoincrement wraps from 63 to 0").
 Nothing else in the P8000 software depends on it (the kernel always writes SAR first), so a
 different real value would be a finding to document, not a boot problem.
 
-## Photos / screen shots
+## Photos of the screen (real machine)
 
-Put the photos of the screen into `photos/` in this directory and list them here:
+<img src="photos/IMG_20261016_test03.jpg" alt="Program and result on the screen" width="720">
 
-- (none yet)
+*Program entered, G 9200, result 1000 1010 0020.*
 
 ## Result on the real machine
 
 | Date | Board / monitor | Bytes read | Same as the emulator? |
 |---|---|---|---|
-| | | | |
+| 2026-10-16 | 16 bit board, MON16 | `10 00 10 10 00` (`D 9300 3 W`: `1000 1010 0020`, the final `20` is not a result) | yes |
