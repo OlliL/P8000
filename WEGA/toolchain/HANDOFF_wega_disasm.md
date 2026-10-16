@@ -1,7 +1,7 @@
 # Handoff: WEGA build chain back to C (new session)
 
-Written 2026-10-16 at the end of the MAME session. Read this first, then `LOG.md` (long
-background, English) and `tests/` (what was measured on the real machine).
+Written 2026-10-16 at the end of the MAME session. Read this first, then `mame/LOG.md` (long
+background, English) and `mame/tests/` (what was measured on the real machine).
 
 ## Goal of the new work
 
@@ -16,7 +16,7 @@ Suggested way (not decided with the owner yet, discuss first):
    Find the executable format (segmented Z8000, probably a.out like) and write a small
    reader.
 2. Disassemble with a Z8000 disassembler (MAME's `z8000` core has one: debugger `dasm`, or the
-   `unidasm` tool; a script for it is in `tools/dbg.lua`). Segmented and non-segmented code can
+   `unidasm` tool; a script for it is in `mame/tools/dbg.lua`). Segmented and non-segmented code can
    be mixed, take care of the format flags.
 3. **Oracle first:** to know what "identical" means, create reference outputs by running the
    original tools under the emulator (WEGA boots in `p8000_16`, 1 to 8 MiB, hard disk image
@@ -31,12 +31,12 @@ Suggested way (not decided with the owner yet, discuss first):
 
 - Git: `https://github.com/OlliL/P8000` (branch master, sparse checkout here: `UDOS/WEGA`,
   `WEGA/src/{boot,cmd/standalone,head/sys,stand,uts}`, `firmware/MON8`, `firmware/MON16`, `mame`).
-  Commit with `git add --sparse -A mame`. Other `WEGA/src` directories exist in the full repo
+  Commit with `git add --sparse -A mame WEGA/toolchain`. Other `WEGA/src` directories exist in the full repo
   (`git sparse-checkout add <dir>`): there are about 1100 files in the repo, among them `cmd`
   and the contributed K5JB sources.
 - MAME fork: `https://github.com/OlliL/mame` (never push to `mamedev/mame`), checkout
   `/home/claude/mamedev/mame`, branch `p8k-clean`. Binaries: `mame` (optimised), `mamed`
-  (`DEBUG=1`). Build scripts `/home/claude/runs/build.sh` and friends (see `LOG.md`).
+  (`DEBUG=1`). Build scripts `/home/claude/runs/build.sh` and friends (see `mame/LOG.md`).
   Machines: `p8000` (8 bit board, UDOS) and `p8000_16` (16 bit board, WEGA).
 - ROMs and disk images: `/home/claude/roms`, `/home/claude/sdimg` (`sd.hd` -> `sd.dd`, about 85 MB, the
   WEGA hard disk used for the boot tests; `sd_*.hd`/`tr*.hd` are variants from experiments, some with other
@@ -44,7 +44,7 @@ Suggested way (not decided with the owner yet, discuss first):
   raw conversions: `wgaend22.raw`, `w31start.raw`, `vsh.raw`, `udossys.raw`), `/home/claude/sw`.
   No ROM or software download links in any document or PR.
 - Test harness `/home/claude/runs/sc` and copies in `mame/tools`: `console.py` (console on a
-  socket, log in `mon.log`, input through the fifo `mon.in`), `dbg.lua`/`blk2.lua` (Lua scripts
+  socket, log in `mon.log`, input through the fifo `mon.in`), `mame/tools/dbg.lua`/`blk2.lua` (Lua scripts
   that press NMI, swap floppies, read memory and registers), `start.sh`, `run_*.sh`. Entering
   programs by hand into MON16 is slow (about 0.5 s per word).
 - Manuals as scans with OCR text, in `/home/claude/docs` (not in git, copyright):
@@ -52,7 +52,7 @@ Suggested way (not decided with the owner yet, discuss first):
   `Z8001-2-CPU-Zilog-1985.pdf` (36 pages), each with `.ocr.txt` (English OCR, German umlauts
   garbled). Handy: instruction set tables in the SGS-Thomson manual, saved program status
   (Table 6.1), segmented addressing (3.4.2, 5.5).
-- Other references named in `LOG.md` section 15: Leventhal, Z8000 Assembly Language Programming;
+- Other references named in `mame/LOG.md` section 15: Leventhal, Z8000 Assembly Language Programming;
   Moore, Z8000 Handbook; Mateosian, Programming the Z8000 (owner has the books and photographs
   pages on request).
 
@@ -66,7 +66,7 @@ Suggested way (not decided with the owner yet, discuss first):
   `ldb rl0,#vv`, `4D05 DA imm` `ld DA,#imm`, `5E08 DA` `jp DA`, `BB s1 0cd0` `ldir`, `97E0..97E3` pop,
   `93E3..93E0` push, `7B00` iret, `7F01`/`7F02` MON16 switch to segmented/non segmented mode, `7F00` break.
 - MMU: three Z8010 (stack `F6`, data `FA`, code `FC`) selected by the special I/O port number.
-  See `LOG.md` section 5 and `tests/02..04`.
+  See `mame/LOG.md` section 5 and `mame/tests/02..04`.
 - Fixed in the MAME core (branch `p8k-clean`): `DAB` after addition with a high digit
   (WEGA's decimal conversion in libc broke on it), PC wrap, the block instruction restart.
 
