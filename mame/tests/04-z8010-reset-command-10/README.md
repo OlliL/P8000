@@ -39,6 +39,38 @@ Opcodes (checked against `z8000tbl.hxx`): `C8vv` = `ldb rl0,#vv`, `3A87 pppp` =
 `soutb pppp,rl0` (special I/O), `3A85 pppp` = `sinb rl0,pppp`, `6E08 aaaa` = `ldb %aaaa,rl0`,
 `6008 aaaa` = `ldb rl0,%aaaa`, `7F00` = `sc #0` (back to the monitor).
 
+## Assembler listing
+
+Address, machine words, instruction, comment (hand assembled; the words are what you type).
+
+```
+9400  3A85 00F6            sinb  rl0,%00F6           ; cmd %00: MR (mode register)
+9404  6E08 9500            ldb  %9500,rl0            ; result byte 0: MR at start (saved for the end)
+9408  C838                 ldb  rl0,#%38             ; MR := 38 (master enable and translate stay off)
+940A  3A87 00F6            soutb %00F6,rl0           ; stack MMU, cmd %00: MR (mode register)
+940E  C807                 ldb  rl0,#%07             ; SAR := 7
+9410  3A87 01F6            soutb %01F6,rl0           ; stack MMU, cmd %01: SAR (segment address register)
+9414  C802                 ldb  rl0,#%02             ; DSCR := 2
+9416  3A87 20F6            soutb %20F6,rl0           ; stack MMU, cmd %20: DSCR (descriptor selector)
+941A  3A85 00F6            sinb  rl0,%00F6           ; cmd %00: MR (mode register)
+941E  6E08 9501            ldb  %9501,rl0            ; result byte 1: MR set
+9422  3A85 20F6            sinb  rl0,%20F6           ; cmd %20: DSCR (descriptor selector)
+9426  6E08 9502            ldb  %9502,rl0            ; result byte 2: DSC set
+942A  3A85 01F6            sinb  rl0,%01F6           ; cmd %01: SAR (segment address register)
+942E  6E08 9503            ldb  %9503,rl0            ; result byte 3: SAR set
+9432  C800                 ldb  rl0,#%00             ; command %10
+9434  3A87 10F6            soutb %10F6,rl0           ; stack MMU, cmd %10: reset MR, VTR and DSCR
+9438  3A85 00F6            sinb  rl0,%00F6           ; cmd %00: MR (mode register)
+943C  6E08 9504            ldb  %9504,rl0            ; result byte 4: MR after %10
+9440  3A85 20F6            sinb  rl0,%20F6           ; cmd %20: DSCR (descriptor selector)
+9444  6E08 9505            ldb  %9505,rl0            ; result byte 5: DSC after %10
+9448  3A85 01F6            sinb  rl0,%01F6           ; cmd %01: SAR (segment address register)
+944C  6E08 9506            ldb  %9506,rl0            ; result byte 6: SAR after %10
+9450  6008 9500            ldb  rl0,%9500            ; restore the MR saved at start
+9454  3A87 00F6            soutb %00F6,rl0           ; MR := saved value
+9458  7F00                 sc   #0                   ; BREAK: back to the monitor
+```
+
 ## What comes out
 
 Seven bytes at `%9500`, `D 9500 4 W`: MR at start, MR set, DSC set, SAR set, **MR after
