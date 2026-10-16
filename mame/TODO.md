@@ -24,7 +24,7 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 - [x] Repeating block instructions and the PC wrap: reproduced 2026-10-16 (`ldir` at
       `<<1>>%FFFC`: old core jumps to segment 0 after one round, R1=2) and fixed with
-      `restart_insn()` (32 places, commit `915b2c70`). New core copies all 3 words and
+      `addr_sub(m_pc, 4)` (32 places, commit `915b2c70`; first as `restart_insn()`, changed after a review comment). New core copies all 3 words and
       continues at `<<1>>%0000`. Test: `tools/run_blk.sh` + `tools/blk2.lua` (emulator only).
       **At split time:** squash `915b2c70` into `d613b434`; its change to
       `PULL_REQUEST_z8000.md` belongs to the drafts commit.
@@ -45,8 +45,7 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 - [ ] `m_dram8` is a `unique_ptr` with `save_pointer`; prefer `memory_share_creator` or
       `.ram()` in the map.
 - [ ] `board16_reset()` resets child devices; redundant when called from `machine_reset()`.
-- [ ] Save states: decide. Either complete (coupling members) or leave
-      `MACHINE_SUPPORTS_SAVE` unset and say so.
+- [x] Save states: members registered, tested in WEGA, `MACHINE_SUPPORTS_SAVE` set (LOG.md).
 
 ## 3. Data and texts
 

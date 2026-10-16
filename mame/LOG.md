@@ -629,7 +629,7 @@ tested.
 - Not emulated: stop watch key (ST) and weekday symbols of the clock module (the software
   does not use them); head load, write precompensation, separate drive select, drives 2/3,
   8" drives; parity/ECC NMI of the 16 bit board.
-- No `MACHINE_SUPPORTS_SAVE`; some coupling members are not in the save state.
+- Save states: see the section at the end (flag set since 2026-10-17).
 - ROMs: the `nur8bit` ones are dumps of real EPROMs; others carry the EAW file names.
 - Decision: no links to the ROM or floppy collection in the driver or in the PR (MAME does not
   point to downloads). Hosting a `mame/` collection of ROMs/images in the user's repository
@@ -813,3 +813,19 @@ one more crystal, cassette image code, z80scc) do not touch the driver. Test reb
 `p8k-clean` onto `a9d405aa` (local branch `p8k-rebase-test`, not pushed): no conflicts, build of `p8k.cpp`
 without new warnings, `-validate` clean for `p8000` and `p8000_16`, `-verifysoftware` 6 of 6 good, test 06 program on the
 emulator gives the same frame and words. The real rebase is still done right before the PRs.
+
+## Save states (2026-10-17)
+
+Registered with `save_item`: `m_dma_int`, `m_fdc_tc`, `m_is_seg_user`, `m_p16a`, `m_p16b`, `m_ardy0/1`,
+`m_u_pio0_writing`, `m_u_pio0_a_bus`, `m_u8000_held`; `m_normal_mode` and `m_dma_on` are `bool` now
+(`m_dma_on` is never set, so it is not saved). Test: WEGA from the hard disk to the shell, state saved,
+one command, state loaded: the shell prompt counter and the output continued from the saved point;
+`cp`/`cmp` on the disk worked afterwards. `p8000` (8 bit board): save and load in the monitor without
+errors. `-validate` ok. `MACHINE_SUPPORTS_SAVE` set on both systems.
+
+## Review comment on the PC wrap (2026-10-17)
+
+A reviewer found the block-instruction borrow independently (test rig z8000_test, same result as test 06)
+and suggested `addr_add(m_pc, 2)` for the six fetch places and `addr_sub(m_pc, 4)` for the 32 restarts.
+`addr_add/addr_sub` already exist in the core with exactly my expression. Done: no `restart_insn()` any
+more, the six comments are removed.
