@@ -499,3 +499,27 @@ exactly the emulator's output (`ld r1,r7`, `ldk r3,#0`, `ld @fp,r1` ... `~L2 := 
 Consequence: the shipped libc cannot have been built with `-Or` for such functions, and
 the 2-byte frame / `ldb`+`testb` differences (length, nlist, swap, malloc) come from an
 older compiler revision, not from options or from the emulator.
+
+## size and strip (reconstructed, own code identical)
+
+- `size/size.c` + `size/crt0s.s` and `strip/strip.c` + `strip/crt0s.s` rebuild with the
+  ORIGINAL `cc -O`; `make verify` compares the instructions of the own code
+  (`tools/cmpins.py`, from 0x42 up to the first libc member, `fseek` resp. `rdwr`).
+  size: 0 differences. strip: one expression (`head.s_imsize = code + data` as long uses
+  rr4/rr6 in the original, rr2/rr4 in our build; the same kind of expression elsewhere in
+  the file compiles identically, so the original source form is just not found yet).
+- Therefore size (`size.c 2.1 01/14/83`) and strip (`strip.c 1.2 11/19/82`, crt0 3.1
+  01/24/83) were built with the same compiler revision as the shipped cc, not with an
+  older one. The "older compiler" is only visible in ranlib (and some libc members).
+- The libc parts inside these binaries are an OLDER libc revision (Jan 1983): `printf`,
+  `doprnt`, `fprintf`, `malloc`, `length`, `swap` are not the members of the shipped
+  libc.a (those are dated Sep/Nov 1983). The old members can be reconstructed from these
+  binaries (printf family in size/strip, malloc in strip/ranlib) - they are the
+  predecessors of the float stdio cluster that is still missing from `src/lib/libc`.
+- strip: `strip [-h] file ...`. `-h` removes header and segment table. For the 8-bit
+  magics (E507/E511/E505) it rewrites image size/codesz and filters the image through the
+  relocation bytes (`rcopy`). Signals 1-3 are ignored while copying. `hflag` is
+  uninitialised when no option is given (as in the original). Temp file `/tmp/sXXXXXX`,
+  opened `w+` and unlinked at once.
+- size/strip/ranlib/objhdr/objdu call `goodmagic(magic)` (value, not pointer), `swab`,
+  `longswap`, `swap_flg` from the libc.

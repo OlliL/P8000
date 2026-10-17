@@ -32,7 +32,7 @@ char **argv;
 			continue;
 		}
 		fread((char *)&buf, sizeof(buf), 1, f);
-		if(!goodmagic(&buf)) {
+		if(!goodmagic(buf.s_magic)) {
 			fprintf(stderr, "size: %s not an object file\n", *argv);
 			fclose(f);
 			continue;
