@@ -41,7 +41,7 @@ produce the same bytes with the shipped cc.
 | `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | Needs the older cc | none yet |
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | builds, differs (8422 vs 8506, 8260 vs 8346 bytes) | Not analysed | none yet |
 | `cmd/copydisk.c` | copydisk | builds, differs (7318 vs 7148 bytes) | Not analysed | none yet |
-| `cmd/format.c` | format | builds, differs (6738 vs 6568 bytes) | Not analysed | none yet |
+| `cmd/format.c` | format | differs (6738 vs 6568 bytes) in the current version 1.6 | The 2008 version of `format.c` (commit 77770f2, version 1.5) builds byte-identical to `bin/format`. The current version adds the `signal(..., SIG_IGN)` block for SIGALRM, SIGHUP, SIGINT, SIGQUIT, SIGTERM and the new date/version. Not yet replaced in src/: the choice is open | use 77770f2's `format.c` if the byte-identical build is wanted |
 | `cmd/tar.c` | tar | builds, differs (21692 vs 22494 bytes) | Not analysed | none yet |
 | `cmd/verify.c` | verify | builds, differs (6696 vs 6526 bytes) | Not analysed | none yet |
 | `cmd/dump.c`, `cmd/dumpdir.c`, `cmd/restor.c`, `cmd/sync.c` | dump, dumpdir, restor, sync | identical (sync, restor after strip-programs) | - | - |
