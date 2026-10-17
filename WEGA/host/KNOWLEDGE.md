@@ -20,7 +20,7 @@
 - `WEGA/contrib/...` third-party and own extras, unchanged.
 
 Living document. Goal: rebuild the WEGA tool chain (cc, scc, cas, ld, sld,
-ar, ranlib, libc, ...) as C that builds on modern Linux and produces
+gld, ar, ranlib, libc, ...) as C that builds on modern Linux and produces
 byte-identical objects and binaries. Long-term goal: the whole WEGA OS as
 sources. See `HANDOFF_wega_disasm.md` for the original plan.
 
@@ -78,6 +78,7 @@ Size = s_imsize, I&D = combined (E?07) or separate (E?11).
 | /bin/cas | E611 | seg (segs 4,5,7,8) | 46848 | 38360+1280+1280 | 12328 | parser.y, main.c, getops.c, ifile.c, ofile.c, pst.c, assemble.c, error.c, expr.c, gen.c, instr.c, itable.c, jpr.c, jpr2.c, listing.c, locntr.c, nodes.c, ntable.c, optim.c, p2loop.c, scanner.c, ssymtab.c, stable.c, subr.c, symbols.c, table1.c, table2.c |
 | /bin/ld | E711 | nonseg | 18944 | 2748 | 27082 | ld.c 1.18, copyname.c 1.3, printname.c 1.5, symbols.c 1.8, crt0.s |
 | /bin/sld | E611 | seg | 38912 | 7090 | 31054+63488 | ld.c, ldm.c, dump.c, ext.c, swap.c, copyname.c, printname.c, symbols.c, malloc.c, scrt0.s |
+| /bin/gld| E607 | seg | 22924 | 4652 | 4680 | gld.c malloc.c | 
 | /bin/ar | E707 | nonseg | 10060 | 2296 | 1738 | ar.c 2.2, malloc.c 3.3, crt0.s |
 | /usr/bin/ranlib | E707 | nonseg | 7124 | 568 | 9560 | ranlib.c 1.1 |
 | /bin/nm | E707 | nonseg | 10870 | 1116 | 9278 | nm.c 2.6, malloc.c, crt0.s |
@@ -228,7 +229,7 @@ ar_name[14]; long ar_date; char ar_uid; char ar_gid; int ar_mode; long
 ar_size; }` (26 bytes), data padded to even length. ranlib adds a first
 member `__.SYMDEF` (format still to be decoded from ranlib).
 
-## ld / sld (ld(1), sld(1))
+## ld / sld / gld (ld(1), sld(1), gld(1))
 
 - ld: nonseg and 8 bit. Options -b, -d, -e, -i, -l x (/lib, /usr/lib,
   /z/bin/lib), -N s|l, -o, -r, -s, -t, -u, -w, -x, -X (keep locals except
@@ -237,6 +238,8 @@ member `__.SYMDEF` (format still to be decoded from ranlib).
 - sld: segmented; -M/-R map sections to segments, segments 0..127;
   `__.SYMDEF` is searched repeatedly. Kernel link: `sld -Ns -o wega -e start
   -X -i -Ms62 ...`.
+- gld: segmented; for very large programs; needs a load module ; pburn 2 
+  link: `gld /lib/scrt0.o .... /lib/slibc.a -o ....` ; TODO: read man page!
 
 ## Z8000 decoder (tools/z8k.py)
 
