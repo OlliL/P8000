@@ -100,7 +100,7 @@ fclose(iop)
 	    && (iop->_flag & _IOSTRG) == 0) {
 		r = fflush(iop);
 		if (close(fileno(iop)) < 0)
-			r = EOF;
+			return(EOF);
 		if (iop->_flag & _IOMYBUF)
 			free(iop->_base);
 		if (iop->_flag & (_IOMYBUF|_IONBF))

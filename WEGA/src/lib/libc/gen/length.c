@@ -3,12 +3,11 @@
 _length(str) 
 register char *str;
 {
-	register char *tmp;
 	register int i;
 
 	i=0;
 	do {
-		if(*str++)
+		if(!*str++)
 			break;
 		i++;
 	} while (i<=16384);

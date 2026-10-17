@@ -21,7 +21,7 @@ sed -e 's/[[:space:]]*#.*//' "$SRC/TODO.done" | awk 'NF>=2 {print $1, $2}' | whi
 	d="$WORK/$m"; mkdir -p "$d"; cp "$(dirname "$f")"/* "$d"/ 2>/dev/null
 	res=DIFF
 	case $srcname in
-	*.s) for fl in "" "-u"; do
+	*.s) for fl in "" "-u" "-f" "-f -u"; do
 		( cd "$d" && rm -f "$obj" && "$EMU" -r "$ROOT" /bin/as $fl -o "$obj" "$srcname" >log 2>&1 )
 		cmp -s "$d/$obj" "$ORIG/$obj" && { res="ok  as $fl"; break; }
 	     done ;;

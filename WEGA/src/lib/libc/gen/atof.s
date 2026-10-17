@@ -3,26 +3,26 @@
 atof module
 
   external
-    _pow10	procedure
+    __pow10	procedure
 
   internal
     str1:
-	WORD := %008c
-	WORD := %0054
-	WORD := %0088
-	WORD := %0094
-	WORD := %0098
-	WORD := %009a
-	WORD := %009e
-	WORD := %00ac
-	WORD := %00b6
-	WORD := %00ba
-	WORD := %00be
-	WORD := %00c4
-	WORD := %00ce
-	WORD := %00d0
-	WORD := %00d4
-	WORD := %0114
+	WORD := T8c
+	WORD := T54
+	WORD := T88
+	WORD := T94
+	WORD := T98
+	WORD := T9a
+	WORD := T9e
+	WORD := Tac
+	WORD := Tb6
+	WORD := Tba
+	WORD := Tbe
+	WORD := Tc4
+	WORD := Tce
+	WORD := Td0
+	WORD := Td4
+	WORD := T114
 	WORD := %004e
 	WORD := %4965
 	WORD := %452e
@@ -147,6 +147,7 @@ L6:
 	ldb	rl1,r11(r1)
 	ld	r11,str1(r1)			!%023c!
 	jp	@r11
+T54:
 	ldk	r8,#3
 	lda	r11,str3			!%02ec!
 	cpsirb	@r13,@r11,r8,nz
@@ -173,15 +174,21 @@ L3:
 	jr	nz,L5
 	set	r6,#6
 L5:
+T88:
 	or	r6,#%7f80
+T8c:
 	or	r6,r3
 	flds	f0,r6
 	jr	L10
+T94:
 	ldb	rl1,#%49
 	jr	L6
+T98:
 	setb	rh3,#7
+T9a:
 	ldb	rl1,#%25
 	jr	L6
+T9e:
 	ldb	rl1,#%25
 L7:
 	ldb	rl0,@r13
@@ -189,26 +196,34 @@ L7:
 	jr	nz,L6
 	inc	r13
 	jr	L7
+Tac:
 	ldb	rl1,#%37
 	decb	rh2
 	jr	ge,L8
 	incb	rl2
 	jr	L6
+Tb6:
 	ldb	rl1,#%5b
 	jr	L6
+Tba:
 	ldb	rl1,#%6d
 	jr	L6
+Tbe:
 	decb	rl2
 	ldb	rl1,#%49
 	jr	L6
+Tc4:
 	ldb	rl1,#%5b
 	decb	rh2
 	jr	lt,L6
 	decb	rl2
 	jr	L8
+Tce:
 	setb	rh3,#6
+Td0:
 	ldb	rl1,#%7f
 	jr	L6
+Td4:
 	mult	rr8,#%000a
 	and	r0,#%000f
 	add	r9,r0
@@ -241,6 +256,7 @@ L14:
 	rrdb	rl3,rh4
 	rrdb	rh3,rl3
 	ret
+T114:
 	bitb	rh3,#6
 	resb	rh3,#6
 	jr	z,L11
@@ -273,7 +289,7 @@ L12:
 	jr	z,L15
 	neg	r7
 L15:
-	call	_pow10
+	call	__pow10
 	fldbcd	f1,@r15
 	inc	r15,#10
 	bit	r9,#15

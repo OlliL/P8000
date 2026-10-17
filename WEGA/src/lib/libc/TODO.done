@@ -56,7 +56,7 @@ ustat.o              ustat.s              ASM
 utime.o              utime.s              ASM
 wait.o               wait.s               ASM
 write.o              write.s              ASM
-brk.o                                     ASM
+brk.o                brk.s                ASM
 chroot.o             chroot.s             ASM
 dup2.o               dup2.s               ASM
 execlp.o             execlp.s             ASM

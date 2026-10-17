@@ -2,15 +2,14 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include <sgtty.h>
+#include <termio.h>
 
 char *
 getpass(prompt)
 char *prompt;
 {
-	struct sgttyb ttyb;
-	int flags; /*,flags2,flags3,flags4,flags5;*/
-	struct sgttyb foo;
+	struct termio ttyb;
+	int flags;
 	register char *p;
 	register c;
 	FILE *fi;
@@ -24,9 +23,9 @@ char *prompt;
 		setbuf(fi, (char *)NULL);
 	sig = signal(SIGINT, SIG_IGN);
 	ioctl(fileno(fi), 0x5401, &ttyb);
-	flags = ttyb.sg_flags;
-	ttyb.sg_flags &= 0xff87;
-	stty(fileno(fi), 0x5404, &ttyb);
+	flags = ttyb.c_lflag;
+	ttyb.c_lflag &= 0xff87;
+	ioctl(fileno(fi), 0x5404, &ttyb);
 	fprintf(stderr, prompt);
 	for (p=pbuf; (c = getc(fi))!='\n' && c!=EOF;) {
 		if (p < &pbuf[8])
@@ -34,8 +33,8 @@ char *prompt;
 	}
 	*p = '\0';
 	fprintf(stderr, "\n");
-	ttyb.sg_flags = flags;
-	stty(fileno(fi), 0x5403, &ttyb);
+	ttyb.c_lflag = flags;
+	ioctl(fileno(fi), 0x5403, &ttyb);
 	signal(SIGINT, sig);
 	if (fi != stdin)
 		fclose(fi);

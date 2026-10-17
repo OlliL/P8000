@@ -1,26 +1,23 @@
 /* @[$] execvp.c	2.1  09/12/83 11:23:54 - 87wega3.2 */
 
 /*
- *	execlp(name, arg,...,0)	(like execl, but does path search)
  *	execvp(name, argv)	(like execv, but does path search)
+ *	(execlp is a separate member, see execlp.s)
  */
 #include <errno.h>
 #define	NULL	0
 
 static	char shell[] =	"/bin/sh";
-char	*execat(), *getenv(), *strchr();
+static	char cshell[] =	"/bin/csh";
+char	*execat(), *getenv(), *index();
+char	*whichshell();
 extern	errno;
-
-execlp(name, argv)
-char *name, *argv;
-{
-	return(execvp(name, &argv));
-}
 
 execvp(name, argv)
 char *name, **argv;
 {
 	char *pathstr;
+	char *sh;
 	register char *cp;
 	char fname[128];
 	char *newargs[256];
@@ -30,7 +27,7 @@ char *name, **argv;
 
 	if ((pathstr = getenv("PATH")) == NULL)
 		pathstr = ":/bin:/usr/bin";
-	cp = strchr(name, '/')? "": pathstr;
+	cp = index(name, '/')? "": pathstr;
 
 	do {
 		cp = execat(cp, name, fname);
@@ -38,7 +35,11 @@ char *name, **argv;
 		execv(fname, argv);
 		switch(errno) {
 		case ENOEXEC:
-			newargs[0] = "sh";
+			sh = whichshell(fname);
+			if (sh == shell)
+				newargs[0] = "sh";
+			else
+				newargs[0] = "csh";
 			newargs[1] = fname;
 			for (i=1; newargs[i+1]=argv[i]; i++) {
 				if (i>=254) {
@@ -46,7 +47,7 @@ char *name, **argv;
 					return(-1);
 				}
 			}
-			execv(shell, newargs);
+			execv(sh, newargs);
 			return(-1);
 		case ETXTBSY:
 			if (++etxtbsy > 5)
@@ -74,7 +75,7 @@ char *si;
 	register char *s;
 
 	s = si;
-	while (*s1 && *s1 != ':')
+	while (*s1 && *s1 != ':' && *s1 != '-')
 		*s++ = *s1++;
 	if (si != s)
 		*s++ = '/';
@@ -82,4 +83,23 @@ char *si;
 		*s++ = *s2++;
 	*s = '\0';
 	return(*s1? ++s1: 0);
+}
+
+static char *
+whichshell(fname)
+register char *fname;
+{
+	register fd;
+	char c;
+
+	fd = open(fname, 0);
+	if (fd < 0) {
+		close(fd);
+		return(shell);
+	}
+	read(fd, &c, 1);
+	close(fd);
+	if (c == '#')
+		return(cshell);
+	return(shell);
 }
