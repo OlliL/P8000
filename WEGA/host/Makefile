@@ -40,13 +40,11 @@ check:
 verify: all check verify-wega
 
 verify-wega:
-	$(MAKE) -C $(SRC)/ar clean all $(WTOOLS)
-	cmp $(SRC)/ar/ar $(WEGAABS)/bin/ar && echo "ar: identical to original"
-	$(MAKE) -C $(SRC)/ranlib clean all $(WTOOLS)
-	$(MAKE) -C $(SRC)/size clean all $(WTOOLS)
-	python3 tools/cmpins.py $(SRC)/size/size $(WEGAABS)/bin/size 0x224 0x224
-	$(MAKE) -C $(SRC)/strip clean all $(WTOOLS)
-	python3 tools/cmpins.py $(SRC)/strip/strip $(WEGAABS)/usr/bin/strip 0x68c 0x68c
+	$(MAKE) -B -C $(SRC) ar ranlib size strip $(WTOOLS)
+	cmp $(SRC)/ar $(WEGAABS)/bin/ar && echo "ar: identical to original"
+	python3 tools/cmpins.py $(SRC)/size $(WEGAABS)/bin/size 0x224 0x224
+	python3 tools/cmpins.py $(SRC)/strip $(WEGAABS)/usr/bin/strip 0x68c 0x68c
+	$(MAKE) -C $(SRC) clean >/dev/null
 
 clean:
 	$(MAKE) -C cc clean

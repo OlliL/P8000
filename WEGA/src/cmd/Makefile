@@ -1,9 +1,10 @@
-# cmd: WEGA system commands. Every command is built with the cc, cas and ld
-# named by the variables below (default: the WEGA tools in PATH). The
-# subdirectories are the commands that have their own Makefile. The cc
-# driver and popt are Linux-side tools and live in ../../host.
+# cmd: WEGA system commands, in the V7 layout: a command with a single source
+# file is a file here (ar.c, size.c, ...); a command with several files has
+# its own subdirectory with its own Makefile (doscopy, pburn, standalone,
+# BOOT0). Start-up variants of the commands live in ../lib/libc/crt.
+# The cc driver and popt are Linux-side tools and live in ../../host.
 #
-#   make                       build everything
+#   make                       build everything (with the WEGA cc/cas/ld)
 #   make install PREFIX=dir    install below dir (default /)
 #   make clean                 remove the objects and the programs
 
@@ -11,30 +12,57 @@ CAS ?= cas
 CC  ?= cc
 LD  ?= ld
 STRIP ?= strip
+CFLAGS ?= -O
 PREFIX ?= /
+LIBC ?= /lib/libc.a
+CRT = ../lib/libc/crt
 
-SUBDIRS = ar ranlib size strip
+PROGS = ar ranlib size strip
 
 FILES=		getud putud
 STRIPFILES=	copydisk dump dumpdir format restor sync tar verify
 CLEANFILES=	compat1crt.o sync.o
 
-all: $(FILES) $(STRIPFILES) strip-programs $(SUBDIRS:%=%.dir)
+all: $(PROGS) $(FILES) $(STRIPFILES) strip-programs
 
-%.dir:
-	@$(MAKE) -C $* all CC="$(CC)" CAS="$(CAS)" LD="$(LD)"
+ar: ar.o $(CRT)/crt0-ar.o
+	$(LD) -s -e start -o $@ $(CRT)/crt0-ar.o ar.o $(LIBC)
+
+size: size.o $(CRT)/crt0-size.o
+	$(LD) -s -e start -o $@ $(CRT)/crt0-size.o size.o $(LIBC)
+
+strip: strip.o $(CRT)/crt0-strip.o
+	$(LD) -s -e start -o $@ $(CRT)/crt0-strip.o strip.o $(LIBC)
+
+ranlib: ranlib.o
+	$(LD) -s -e start -o $@ /lib/crt0.o ranlib.o $(LIBC)
+
+$(CRT)/crt0-ar.o: $(CRT)/crt0-ar.s
+	$(CAS) -u -o $@ $(CRT)/crt0-ar.s
+
+$(CRT)/crt0-size.o: $(CRT)/crt0-size.s
+	$(CAS) -u -o $@ $(CRT)/crt0-size.s
+
+$(CRT)/crt0-strip.o: $(CRT)/crt0-strip.s
+	$(CAS) -u -o $@ $(CRT)/crt0-strip.s
 
 strip-programs:
 	$(STRIP) $(STRIPFILES)
 
-clean:
-	rm -f $(FILES) $(STRIPFILES) $(CLEANFILES)
-	@for d in $(SUBDIRS); do $(MAKE) -C $$d clean || exit 1; done
-
 compat1crt.o:	compat1crt.s
-	$(CAS) -u -o $@ $*.s
+	$(CAS) -u -o $@ compat1crt.s
 
 sync:	compat1crt.o sync.o
 	$(LD) -o $@ -e start compat1crt.o sync.o -lc
 
-.PHONY: all clean strip-programs
+install: $(PROGS)
+	cp ar $(PREFIX)/bin/ar
+	cp size $(PREFIX)/bin/size
+	cp ranlib $(PREFIX)/bin/ranlib
+	cp strip $(PREFIX)/usr/bin/strip
+
+clean:
+	rm -f $(PROGS) $(FILES) $(STRIPFILES) $(CLEANFILES) *.o
+	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-size.o $(CRT)/crt0-strip.o
+
+.PHONY: all clean install strip-programs

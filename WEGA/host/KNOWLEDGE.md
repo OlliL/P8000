@@ -3,9 +3,12 @@
 ## Directory layout
 
 - `WEGA/src/...`  WEGA source code, as it would sit in /usr/src of a WEGA
-  system, compiled by the WEGA cc/cas/ld: `src/cmd/<name>` (ar, size, strip,
-  ranlib, the flat commands), `src/lib/libc` (with `oldcc/*.s` for members
-  made by the older cc), `src/uts` kernel. Objects and programs are built
+  system, compiled by the WEGA cc/cas/ld. Layout as in V7 (/usr/src/cmd):
+  a command with one source file is a file in `src/cmd/` (`ar.c`, `size.c`,
+  ...); a command with several files has its own subdirectory with its own
+  Makefile (`doscopy`, `pburn`, `standalone`, `BOOT0`). Start-up variants are
+  in `src/lib/libc/crt/`, libc in `src/lib/libc` (with `oldcc/*.s` for members
+  made by the older cc), kernel in `src/uts`. Objects and programs are built
   next to the sources; `make` there needs the cc/cas/ld variables.
 - `WEGA/host/...` the Linux side. `z8k-emu` (the oracle that runs the original
   binaries), `tools` (analysis scripts), and the Linux-native cross tools
@@ -395,12 +398,12 @@ Results (all byte-identical to the objects shipped with WEGA, see
 
 ## ar (reconstructed, byte-identical)
 
-`src/cmd/ar/ar.c` + `src/cmd/ar/crt0v.s` rebuild `/bin/ar` byte for byte (`make -C WEGA/host verify-wega`).
+`src/cmd/ar.c` + `src/lib/libc/crt/crt0-ar.s` rebuild `/bin/ar` byte for byte (`make -C WEGA/host verify-wega`).
 
 - Source is the System III/V7 ar, version string `@[$]ar.c 2.2 11/18/83 - 87wega3.2`;
   WEGA additions: `-l` (local temp files `vXXXXX`), `av0 = trim(argv[0])` in all
   messages, sticky bit `t` in the mode tables, `qcmd`/`cleanup` use `stats()`.
-- Link: `ld -s -e start crt0v.o ar.o /lib/libc.a`, cc flags `-O`. `crt0v.s` is a
+- Link: `ld -s -e start crt0-ar.o ar.o /lib/libc.a`, cc flags `-O`. `crt0-ar.s` is a
   crt0 variant (`jr` over a 22-byte version string, then the usual start-up);
   assemble with `cas -u`.
 - Binary layout: crt0 (0x00-0x42), ar.o, then the libc members in archive order.
@@ -439,7 +442,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
   `Z8K_SC_TRACE=FILE` logs system calls to a host file (guest may close fd 2).
 - `WEGA/src/lib/libc/csu/crt0.s` (PLZ/ASM, Rev 3.2 09/12/83) matches the shipped
   `/lib/crt0.o` (42 bytes text, data `.word 0`). The ar/ranlib binaries use a
-  later crt0 variant (version string in text and data), see `ar/crt0v.s`.
+  later crt0 variant (version string in text and data), see `src/lib/libc/crt/crt0-ar.s`.
 
 ## Plexis System III sources (s3plxsrc.tar.gz, not in git)
 
@@ -474,7 +477,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
 - `size` (E707, text 5652): own code is only main() at 0x42-0x224 (s.out aware:
   `goodmagic`, `swab`, segment table of 16 byte entries, prints
   `%U + %U + %U = ` and `%U = 0x%lx`), then the old libc (fread at 0x224, fwrite
-  at 0x2a0, ...). Draft in `src/cmd/size/size.c`; it compiles but differs from the
+  at 0x2a0, ...). Draft in `src/cmd/size.c`; it compiles but differs from the
   original because of the older optimizer.
 - z8k-emu now also runs Plexus a.out (0407/0410/0411) with the Plexus system
   call ABI (`sc INDIR; .word blk`, first argument in r0 for some calls). In 0410
@@ -522,7 +525,7 @@ older compiler revision, not from options or from the emulator.
 
 ## size and strip (reconstructed, own code identical)
 
-- `src/cmd/size/size.c` + `crt0s.s` and `src/cmd/strip/strip.c` + `crt0s.s` rebuild with the
+- `src/cmd/size.c` + `src/lib/libc/crt/crt0-size.s` and `src/cmd/strip.c` + `crt0-strip.s` rebuild with the
   ORIGINAL `cc -O`; `make verify` compares the instructions of the own code
   (`tools/cmpins.py`, from 0x42 up to the first libc member, `fseek` resp. `rdwr`).
   size: 0 differences. strip: one expression (`head.s_imsize = code + data` as long uses

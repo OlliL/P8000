@@ -30,10 +30,10 @@ produce the same bytes with the shipped cc.
 | (none in src/) | fltioc.o | no C source | C source not reconstructed | `lib/libc/oldcc/fltioc.s` |
 | (none in src/) | symscan.o | no C source | C source not reconstructed | `lib/libc/oldcc/symscan.s` |
 | `lib/oldlibc/doprnt.c` | - | not built | Structural reconstruction of the Jan 1983 `_doprnt`, untested | - |
-| `cmd/ar/ar.c` + `crt0v.s` | ar | identical (built with the WEGA cc) | - | `crt0v.s` is the start-up variant of this binary |
-| `cmd/size/size.c` + `crt0s.s` | size | own code identical, file differs | The libc part of the original is an older libc revision | none; verify compares own code only |
-| `cmd/strip/strip.c` + `crt0s.s` | strip | own code identical, file differs | Same as size | none; verify compares own code only |
-| `cmd/ranlib/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | Needs the older cc | none yet |
+| `cmd/ar.c` + `lib/libc/crt/crt0-ar.s` | ar | identical (built with the WEGA cc) | - | `crt0-ar.s` is the start-up variant of this binary |
+| `cmd/size.c` + `lib/libc/crt/crt0-size.s` | size | own code identical, file differs | The libc part of the original is an older libc revision | none; verify compares own code only |
+| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | own code identical, file differs | Same as size | none; verify compares own code only |
+| `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | Needs the older cc | none yet |
 
 ## Not yet checked
 
