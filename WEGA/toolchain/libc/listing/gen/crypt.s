@@ -1,0 +1,1308 @@
+
+fp		:= r15;
+sp		:= r15;
+_IP:
+.byte	%3a
+.byte	%32
+.byte	%2a
+.byte	%22
+.byte	%1a
+.byte	%12
+.byte	%a
+.byte	%2
+.byte	%3c
+.byte	%34
+.byte	%2c
+.byte	%24
+.byte	%1c
+.byte	%14
+.byte	%c
+.byte	%4
+.byte	%3e
+.byte	%36
+.byte	%2e
+.byte	%26
+.byte	%1e
+.byte	%16
+.byte	%e
+.byte	%6
+.byte	%40
+.byte	%38
+.byte	%30
+.byte	%28
+.byte	%20
+.byte	%18
+.byte	%10
+.byte	%8
+.byte	%39
+.byte	%31
+.byte	%29
+.byte	%21
+.byte	%19
+.byte	%11
+.byte	%9
+.byte	%1
+.byte	%3b
+.byte	%33
+.byte	%2b
+.byte	%23
+.byte	%1b
+.byte	%13
+.byte	%b
+.byte	%3
+.byte	%3d
+.byte	%35
+.byte	%2d
+.byte	%25
+.byte	%1d
+.byte	%15
+.byte	%d
+.byte	%5
+.byte	%3f
+.byte	%37
+.byte	%2f
+.byte	%27
+.byte	%1f
+.byte	%17
+.byte	%f
+.byte	%7
+_FP:
+.byte	%28
+.byte	%8
+.byte	%30
+.byte	%10
+.byte	%38
+.byte	%18
+.byte	%40
+.byte	%20
+.byte	%27
+.byte	%7
+.byte	%2f
+.byte	%f
+.byte	%37
+.byte	%17
+.byte	%3f
+.byte	%1f
+.byte	%26
+.byte	%6
+.byte	%2e
+.byte	%e
+.byte	%36
+.byte	%16
+.byte	%3e
+.byte	%1e
+.byte	%25
+.byte	%5
+.byte	%2d
+.byte	%d
+.byte	%35
+.byte	%15
+.byte	%3d
+.byte	%1d
+.byte	%24
+.byte	%4
+.byte	%2c
+.byte	%c
+.byte	%34
+.byte	%14
+.byte	%3c
+.byte	%1c
+.byte	%23
+.byte	%3
+.byte	%2b
+.byte	%b
+.byte	%33
+.byte	%13
+.byte	%3b
+.byte	%1b
+.byte	%22
+.byte	%2
+.byte	%2a
+.byte	%a
+.byte	%32
+.byte	%12
+.byte	%3a
+.byte	%1a
+.byte	%21
+.byte	%1
+.byte	%29
+.byte	%9
+.byte	%31
+.byte	%11
+.byte	%39
+.byte	%19
+_PC1_C:
+.byte	%39
+.byte	%31
+.byte	%29
+.byte	%21
+.byte	%19
+.byte	%11
+.byte	%9
+.byte	%1
+.byte	%3a
+.byte	%32
+.byte	%2a
+.byte	%22
+.byte	%1a
+.byte	%12
+.byte	%a
+.byte	%2
+.byte	%3b
+.byte	%33
+.byte	%2b
+.byte	%23
+.byte	%1b
+.byte	%13
+.byte	%b
+.byte	%3
+.byte	%3c
+.byte	%34
+.byte	%2c
+.byte	%24
+_PC1_D:
+.byte	%3f
+.byte	%37
+.byte	%2f
+.byte	%27
+.byte	%1f
+.byte	%17
+.byte	%f
+.byte	%7
+.byte	%3e
+.byte	%36
+.byte	%2e
+.byte	%26
+.byte	%1e
+.byte	%16
+.byte	%e
+.byte	%6
+.byte	%3d
+.byte	%35
+.byte	%2d
+.byte	%25
+.byte	%1d
+.byte	%15
+.byte	%d
+.byte	%5
+.byte	%1c
+.byte	%14
+.byte	%c
+.byte	%4
+_shifts:
+.byte	%1
+.byte	%1
+.byte	%2
+.byte	%2
+.byte	%2
+.byte	%2
+.byte	%2
+.byte	%2
+.byte	%1
+.byte	%2
+.byte	%2
+.byte	%2
+.byte	%2
+.byte	%2
+.byte	%2
+.byte	%1
+_PC2_C:
+.byte	%e
+.byte	%11
+.byte	%b
+.byte	%18
+.byte	%1
+.byte	%5
+.byte	%3
+.byte	%1c
+.byte	%f
+.byte	%6
+.byte	%15
+.byte	%a
+.byte	%17
+.byte	%13
+.byte	%c
+.byte	%4
+.byte	%1a
+.byte	%8
+.byte	%10
+.byte	%7
+.byte	%1b
+.byte	%14
+.byte	%d
+.byte	%2
+_PC2_D:
+.byte	%29
+.byte	%34
+.byte	%1f
+.byte	%25
+.byte	%2f
+.byte	%37
+.byte	%1e
+.byte	%28
+.byte	%33
+.byte	%2d
+.byte	%21
+.byte	%30
+.byte	%2c
+.byte	%31
+.byte	%27
+.byte	%38
+.byte	%22
+.byte	%35
+.byte	%2e
+.byte	%2a
+.byte	%32
+.byte	%24
+.byte	%1d
+.byte	%20
+_C:
+.=.+28
+_D:
+.=.+28
+_KS:
+.=.+768
+/*~~setkey:*/
+
+.code
+
+_setkey::
+{
+	dec	fp,#~L2
+	ld	4(fp),r12
+	ld	@fp,r7
+	ldk	r1,#0
+L20001:
+	ldb	rl2,_PC1_C(r1)
+	extsb	r2
+	dec	r2,#1
+	ld	r3,~L1(fp)
+	add	r3,r2
+	ldb	rl2,@r3
+	ldb	_C(r1),rl2
+	ldb	rl3,_PC1_D(r1)
+	extsb	r3
+	dec	r3,#1
+	ld	r4,~L1(fp)
+	add	r4,r3
+	ldb	rl3,@r4
+	ldb	_D(r1),rl3
+	inc	r1,#1
+	cp	r1,#28
+	jpr	lt,L20001
+	ldk	r1,#0
+L20011:
+	ldk	r12,#0
+	jpr	L30
+L20007:
+	ldb	rl2,_C
+	extsb	r2
+	ld	~L1+2(fp),r2
+	ldk	r6,#0
+L20003:
+	ldb	rl2,_C+1(r6)
+	ldb	_C(r6),rl2
+	inc	r6,#1
+	cp	r6,#27
+	jpr	lt,L20003
+	ldb	rl2,~L1+3(fp)
+	ldb	_C+27,rl2
+	ldb	rl3,_D
+	extsb	r3
+	ld	~L1+2(fp),r3
+	ldk	r6,#0
+L20005:
+	ldb	rl2,_D+1(r6)
+	ldb	_D(r6),rl2
+	inc	r6,#1
+	cp	r6,#27
+	jpr	lt,L20005
+	ldb	rl2,~L1+3(fp)
+	ldb	_D+27,rl2
+	inc	r12,#1
+L30:
+	ldb	rl2,_shifts(r1)
+	extsb	r2
+	cp	r12,r2
+	jpr	lt,L20007
+	ldk	r6,#0
+L20009:
+	ldb	rl2,_PC2_C(r6)
+	extsb	r2
+	dec	r2,#1
+	ld	r5,r1
+	mult	rr4,#48
+	add	r5,#_KS
+	add	r5,r6
+	ldb	rl3,_C(r2)
+	ldb	@r5,rl3
+	lda	r2,24(r6)
+	ld	r5,r1
+	mult	rr4,#48
+	add	r5,#_KS
+	ldb	rl3,_PC2_D(r6)
+	extsb	r3
+	sub	r3,#29
+	add	r5,r2
+	ldb	rl4,_D(r3)
+	ldb	@r5,rl4
+	inc	r6,#1
+	cp	r6,#24
+	jpr	lt,L20009
+	inc	r1,#1
+	cp	r1,#16
+	jpr	lt,L20011
+	ld	r12,4(fp)
+	inc	fp,#~L2
+	ret
+	~L1 := 0
+	~L2 := 10
+	}	/* _setkey */
+
+.data
+
+_E:
+.=.+48
+_e:
+.byte	%20
+.byte	%1
+.byte	%2
+.byte	%3
+.byte	%4
+.byte	%5
+.byte	%4
+.byte	%5
+.byte	%6
+.byte	%7
+.byte	%8
+.byte	%9
+.byte	%8
+.byte	%9
+.byte	%a
+.byte	%b
+.byte	%c
+.byte	%d
+.byte	%c
+.byte	%d
+.byte	%e
+.byte	%f
+.byte	%10
+.byte	%11
+.byte	%10
+.byte	%11
+.byte	%12
+.byte	%13
+.byte	%14
+.byte	%15
+.byte	%14
+.byte	%15
+.byte	%16
+.byte	%17
+.byte	%18
+.byte	%19
+.byte	%18
+.byte	%19
+.byte	%1a
+.byte	%1b
+.byte	%1c
+.byte	%1d
+.byte	%1c
+.byte	%1d
+.byte	%1e
+.byte	%1f
+.byte	%20
+.byte	%1
+_S:
+.byte	%e
+.byte	%4
+.byte	%d
+.byte	%1
+.byte	%2
+.byte	%f
+.byte	%b
+.byte	%8
+.byte	%3
+.byte	%a
+.byte	%6
+.byte	%c
+.byte	%5
+.byte	%9
+.byte	%0
+.byte	%7
+.byte	%0
+.byte	%f
+.byte	%7
+.byte	%4
+.byte	%e
+.byte	%2
+.byte	%d
+.byte	%1
+.byte	%a
+.byte	%6
+.byte	%c
+.byte	%b
+.byte	%9
+.byte	%5
+.byte	%3
+.byte	%8
+.byte	%4
+.byte	%1
+.byte	%e
+.byte	%8
+.byte	%d
+.byte	%6
+.byte	%2
+.byte	%b
+.byte	%f
+.byte	%c
+.byte	%9
+.byte	%7
+.byte	%3
+.byte	%a
+.byte	%5
+.byte	%0
+.byte	%f
+.byte	%c
+.byte	%8
+.byte	%2
+.byte	%4
+.byte	%9
+.byte	%1
+.byte	%7
+.byte	%5
+.byte	%b
+.byte	%3
+.byte	%e
+.byte	%a
+.byte	%0
+.byte	%6
+.byte	%d
+.byte	%f
+.byte	%1
+.byte	%8
+.byte	%e
+.byte	%6
+.byte	%b
+.byte	%3
+.byte	%4
+.byte	%9
+.byte	%7
+.byte	%2
+.byte	%d
+.byte	%c
+.byte	%0
+.byte	%5
+.byte	%a
+.byte	%3
+.byte	%d
+.byte	%4
+.byte	%7
+.byte	%f
+.byte	%2
+.byte	%8
+.byte	%e
+.byte	%c
+.byte	%0
+.byte	%1
+.byte	%a
+.byte	%6
+.byte	%9
+.byte	%b
+.byte	%5
+.byte	%0
+.byte	%e
+.byte	%7
+.byte	%b
+.byte	%a
+.byte	%4
+.byte	%d
+.byte	%1
+.byte	%5
+.byte	%8
+.byte	%c
+.byte	%6
+.byte	%9
+.byte	%3
+.byte	%2
+.byte	%f
+.byte	%d
+.byte	%8
+.byte	%a
+.byte	%1
+.byte	%3
+.byte	%f
+.byte	%4
+.byte	%2
+.byte	%b
+.byte	%6
+.byte	%7
+.byte	%c
+.byte	%0
+.byte	%5
+.byte	%e
+.byte	%9
+.byte	%a
+.byte	%0
+.byte	%9
+.byte	%e
+.byte	%6
+.byte	%3
+.byte	%f
+.byte	%5
+.byte	%1
+.byte	%d
+.byte	%c
+.byte	%7
+.byte	%b
+.byte	%4
+.byte	%2
+.byte	%8
+.byte	%d
+.byte	%7
+.byte	%0
+.byte	%9
+.byte	%3
+.byte	%4
+.byte	%6
+.byte	%a
+.byte	%2
+.byte	%8
+.byte	%5
+.byte	%e
+.byte	%c
+.byte	%b
+.byte	%f
+.byte	%1
+.byte	%d
+.byte	%6
+.byte	%4
+.byte	%9
+.byte	%8
+.byte	%f
+.byte	%3
+.byte	%0
+.byte	%b
+.byte	%1
+.byte	%2
+.byte	%c
+.byte	%5
+.byte	%a
+.byte	%e
+.byte	%7
+.byte	%1
+.byte	%a
+.byte	%d
+.byte	%0
+.byte	%6
+.byte	%9
+.byte	%8
+.byte	%7
+.byte	%4
+.byte	%f
+.byte	%e
+.byte	%3
+.byte	%b
+.byte	%5
+.byte	%2
+.byte	%c
+.byte	%7
+.byte	%d
+.byte	%e
+.byte	%3
+.byte	%0
+.byte	%6
+.byte	%9
+.byte	%a
+.byte	%1
+.byte	%2
+.byte	%8
+.byte	%5
+.byte	%b
+.byte	%c
+.byte	%4
+.byte	%f
+.byte	%d
+.byte	%8
+.byte	%b
+.byte	%5
+.byte	%6
+.byte	%f
+.byte	%0
+.byte	%3
+.byte	%4
+.byte	%7
+.byte	%2
+.byte	%c
+.byte	%1
+.byte	%a
+.byte	%e
+.byte	%9
+.byte	%a
+.byte	%6
+.byte	%9
+.byte	%0
+.byte	%c
+.byte	%b
+.byte	%7
+.byte	%d
+.byte	%f
+.byte	%1
+.byte	%3
+.byte	%e
+.byte	%5
+.byte	%2
+.byte	%8
+.byte	%4
+.byte	%3
+.byte	%f
+.byte	%0
+.byte	%6
+.byte	%a
+.byte	%1
+.byte	%d
+.byte	%8
+.byte	%9
+.byte	%4
+.byte	%5
+.byte	%b
+.byte	%c
+.byte	%7
+.byte	%2
+.byte	%e
+.byte	%2
+.byte	%c
+.byte	%4
+.byte	%1
+.byte	%7
+.byte	%a
+.byte	%b
+.byte	%6
+.byte	%8
+.byte	%5
+.byte	%3
+.byte	%f
+.byte	%d
+.byte	%0
+.byte	%e
+.byte	%9
+.byte	%e
+.byte	%b
+.byte	%2
+.byte	%c
+.byte	%4
+.byte	%7
+.byte	%d
+.byte	%1
+.byte	%5
+.byte	%0
+.byte	%f
+.byte	%a
+.byte	%3
+.byte	%9
+.byte	%8
+.byte	%6
+.byte	%4
+.byte	%2
+.byte	%1
+.byte	%b
+.byte	%a
+.byte	%d
+.byte	%7
+.byte	%8
+.byte	%f
+.byte	%9
+.byte	%c
+.byte	%5
+.byte	%6
+.byte	%3
+.byte	%0
+.byte	%e
+.byte	%b
+.byte	%8
+.byte	%c
+.byte	%7
+.byte	%1
+.byte	%e
+.byte	%2
+.byte	%d
+.byte	%6
+.byte	%f
+.byte	%0
+.byte	%9
+.byte	%a
+.byte	%4
+.byte	%5
+.byte	%3
+.byte	%c
+.byte	%1
+.byte	%a
+.byte	%f
+.byte	%9
+.byte	%2
+.byte	%6
+.byte	%8
+.byte	%0
+.byte	%d
+.byte	%3
+.byte	%4
+.byte	%e
+.byte	%7
+.byte	%5
+.byte	%b
+.byte	%a
+.byte	%f
+.byte	%4
+.byte	%2
+.byte	%7
+.byte	%c
+.byte	%9
+.byte	%5
+.byte	%6
+.byte	%1
+.byte	%d
+.byte	%e
+.byte	%0
+.byte	%b
+.byte	%3
+.byte	%8
+.byte	%9
+.byte	%e
+.byte	%f
+.byte	%5
+.byte	%2
+.byte	%8
+.byte	%c
+.byte	%3
+.byte	%7
+.byte	%0
+.byte	%4
+.byte	%a
+.byte	%1
+.byte	%d
+.byte	%b
+.byte	%6
+.byte	%4
+.byte	%3
+.byte	%2
+.byte	%c
+.byte	%9
+.byte	%5
+.byte	%f
+.byte	%a
+.byte	%b
+.byte	%e
+.byte	%1
+.byte	%7
+.byte	%6
+.byte	%0
+.byte	%8
+.byte	%d
+.byte	%4
+.byte	%b
+.byte	%2
+.byte	%e
+.byte	%f
+.byte	%0
+.byte	%8
+.byte	%d
+.byte	%3
+.byte	%c
+.byte	%9
+.byte	%7
+.byte	%5
+.byte	%a
+.byte	%6
+.byte	%1
+.byte	%d
+.byte	%0
+.byte	%b
+.byte	%7
+.byte	%4
+.byte	%9
+.byte	%1
+.byte	%a
+.byte	%e
+.byte	%3
+.byte	%5
+.byte	%c
+.byte	%2
+.byte	%f
+.byte	%8
+.byte	%6
+.byte	%1
+.byte	%4
+.byte	%b
+.byte	%d
+.byte	%c
+.byte	%3
+.byte	%7
+.byte	%e
+.byte	%a
+.byte	%f
+.byte	%6
+.byte	%8
+.byte	%0
+.byte	%5
+.byte	%9
+.byte	%2
+.byte	%6
+.byte	%b
+.byte	%d
+.byte	%8
+.byte	%1
+.byte	%4
+.byte	%a
+.byte	%7
+.byte	%9
+.byte	%5
+.byte	%0
+.byte	%f
+.byte	%e
+.byte	%2
+.byte	%3
+.byte	%c
+.byte	%d
+.byte	%2
+.byte	%8
+.byte	%4
+.byte	%6
+.byte	%f
+.byte	%b
+.byte	%1
+.byte	%a
+.byte	%9
+.byte	%3
+.byte	%e
+.byte	%5
+.byte	%0
+.byte	%c
+.byte	%7
+.byte	%1
+.byte	%f
+.byte	%d
+.byte	%8
+.byte	%a
+.byte	%3
+.byte	%7
+.byte	%4
+.byte	%c
+.byte	%5
+.byte	%6
+.byte	%b
+.byte	%0
+.byte	%e
+.byte	%9
+.byte	%2
+.byte	%7
+.byte	%b
+.byte	%4
+.byte	%1
+.byte	%9
+.byte	%c
+.byte	%e
+.byte	%2
+.byte	%0
+.byte	%6
+.byte	%a
+.byte	%d
+.byte	%f
+.byte	%3
+.byte	%5
+.byte	%8
+.byte	%2
+.byte	%1
+.byte	%e
+.byte	%7
+.byte	%4
+.byte	%a
+.byte	%8
+.byte	%d
+.byte	%f
+.byte	%c
+.byte	%9
+.byte	%0
+.byte	%3
+.byte	%5
+.byte	%6
+.byte	%b
+_P:
+.byte	%10
+.byte	%7
+.byte	%14
+.byte	%15
+.byte	%1d
+.byte	%c
+.byte	%1c
+.byte	%11
+.byte	%1
+.byte	%f
+.byte	%17
+.byte	%1a
+.byte	%5
+.byte	%12
+.byte	%1f
+.byte	%a
+.byte	%2
+.byte	%8
+.byte	%18
+.byte	%e
+.byte	%20
+.byte	%1b
+.byte	%3
+.byte	%9
+.byte	%13
+.byte	%d
+.byte	%1e
+.byte	%6
+.byte	%16
+.byte	%b
+.byte	%4
+.byte	%19
+_L:
+.=.+32
+_R:
+.=.+32
+_tempL:
+.=.+32
+_f:
+.=.+32
+_preS:
+.=.+48
+/*~~encrypt:*/
+
+.code
+
+_encrypt::
+{
+	dec	fp,#~L2
+	ldm	8(fp),r12,#2
+	ldl	@fp,rr6
+	ldk	r13,#0
+L20013:
+	ldb	rl2,_IP(r13)
+	extsb	r2
+	dec	r2,#1
+	ld	r3,~L1+2(fp)
+	add	r3,r2
+	ldb	rl2,@r3
+	ldb	_L(r13),rl2
+	inc	r13,#1
+	cp	r13,#64
+	jpr	lt,L20013
+	clr	~L1+6(fp)
+L20026:
+	test	~L1(fp)
+	jpr	eq,L57
+	ldk	r2,#15
+	sub	r2,~L1+6(fp)
+	jpr	L20014
+L57:
+	ld	r2,~L1+6(fp)
+L20014:
+	ld	~L1+4(fp),r2
+	ldk	r13,#0
+L20016:
+	ldb	rl2,_R(r13)
+	ldb	_tempL(r13),rl2
+	inc	r13,#1
+	cp	r13,#32
+	jpr	lt,L20016
+	ldk	r13,#0
+L20018:
+	ldb	rl2,_E(r13)
+	extsb	r2
+	dec	r2,#1
+	ldb	rl3,_R(r2)
+	extsb	r3
+	ld	r5,~L1+4(fp)
+	mult	rr4,#48
+	add	r5,#_KS
+	add	r5,r13
+	ldb	rl2,@r5
+	extsb	r2
+	xor	r3,r2
+	ldb	_preS(r13),rl3
+	inc	r13,#1
+	cp	r13,#48
+	jpr	lt,L20018
+	ldk	r13,#0
+L20020:
+	ld	r3,r13
+	mult	rr2,#6
+	ld	r1,r3
+	ldb	rl2,_preS(r1)
+	extsb	r2
+	sla	r2,#5
+	ldb	rl3,_preS+1(r1)
+	extsb	r3
+	sla	r3,#3
+	add	r2,r3
+	ldb	rl3,_preS+2(r1)
+	extsb	r3
+	sla	r3,#2
+	add	r2,r3
+	ldb	rl3,_preS+3(r1)
+	extsb	r3
+	add	r3,r3
+	add	r2,r3
+	ldb	rl3,_preS+4(r1)
+	extsb	r3
+	sla	r3,#0
+	add	r2,r3
+	ldb	rl3,_preS+5(r1)
+	extsb	r3
+	sla	r3,#4
+	add	r2,r3
+	ld	r3,r13
+	sla	r3,#6
+	add	r3,#_S
+	add	r3,r2
+	ldb	rl2,@r3
+	extsb	r2
+	ld	r12,r2
+	ld	r2,r13
+	sla	r2,#2
+	ld	r1,r2
+	ld	r2,r12
+	sra	r2,#3
+	and	r2,#1
+	ldb	_f(r1),rl2
+	ld	r2,r12
+	sra	r2,#2
+	and	r2,#1
+	ldb	_f+1(r1),rl2
+	ld	r2,r12
+	sra	r2,#1
+	and	r2,#1
+	ldb	_f+2(r1),rl2
+	ld	r2,r12
+	sra	r2,#0
+	and	r2,#1
+	ldb	_f+3(r1),rl2
+	inc	r13,#1
+	cp	r13,#8
+	jpr	lt,L20020
+	ldk	r13,#0
+L20022:
+	ldb	rl2,_P(r13)
+	extsb	r2
+	dec	r2,#1
+	ldb	rl3,_f(r2)
+	extsb	r3
+	ldb	rl2,_L(r13)
+	extsb	r2
+	xor	r2,r3
+	ldb	_R(r13),rl2
+	inc	r13,#1
+	cp	r13,#32
+	jpr	lt,L20022
+	ldk	r13,#0
+L20024:
+	ldb	rl2,_tempL(r13)
+	ldb	_L(r13),rl2
+	inc	r13,#1
+	cp	r13,#32
+	jpr	lt,L20024
+	inc	~L1+6(fp),#1
+	cp	~L1+6(fp),#16
+	jpr	lt,L20026
+	ldk	r13,#0
+L20028:
+	ldb	rl2,_L(r13)
+	extsb	r2
+	ld	r1,r2
+	ldb	rl2,_R(r13)
+	ldb	_L(r13),rl2
+	ld	r3,r1
+	ldb	_R(r13),rl3
+	inc	r13,#1
+	cp	r13,#32
+	jpr	lt,L20028
+	ldk	r13,#0
+L20030:
+	ldb	rl2,_FP(r13)
+	extsb	r2
+	dec	r2,#1
+	ld	r3,~L1+2(fp)
+	add	r3,r13
+	ldb	rl4,_L(r2)
+	ldb	@r3,rl4
+	inc	r13,#1
+	cp	r13,#64
+	jpr	lt,L20030
+	ldm	r12,8(fp),#2
+	inc	fp,#~L2
+	ret
+	~L1 := 0
+	~L2 := 14
+	}	/* _encrypt */
+
+.data
+
+L82:
+.=.+66
+L83:
+.=.+16
+/*~~crypt:*/
+
+.code
+
+_crypt::
+{
+	dec	fp,#~L2
+	ldm	8(fp),r12,#3
+	ldl	@fp,rr6
+	ldk	r14,#0
+L20032:
+	clrb	L82(r14)
+	inc	r14,#1
+	cp	r14,#66
+	jpr	lt,L20032
+	ldk	r14,#0
+	jpr	L89
+L20036:
+	cp	r14,#64
+	jpr	ge,L88
+	ldk	r13,#0
+L20034:
+	ld	r2,r13
+	neg	r2
+	add	r2,#6
+	ld	r3,r12
+	neg	r2
+	sda	r3,r2
+	and	r3,#1
+	ldb	L82(r14),rl3
+	inc	r13,#1
+	inc	r14,#1
+	cp	r13,#7
+	jpr	lt,L20034
+	inc	r14,#1
+	inc	~L1+2(fp),#1
+L89:
+	ld	r2,~L1+2(fp)
+	ldb	rl3,@r2
+	extsb	r3
+	ld	r12,r3
+	test	r3
+	jpr	ne,L20036
+L88:
+	ld	r7,#L82
+	callr	_setkey
+	ldk	r14,#0
+L20038:
+	clrb	L82(r14)
+	inc	r14,#1
+	cp	r14,#66
+	jpr	lt,L20038
+	ldk	r14,#0
+L20040:
+	ldb	rl2,_e(r14)
+	ldb	_E(r14),rl2
+	inc	r14,#1
+	cp	r14,#48
+	jpr	lt,L20040
+	ldk	r14,#0
+L20044:
+	ld	r2,~L1(fp)
+	ldb	rl3,@r2
+	extsb	r3
+	ld	r12,r3
+	inc	~L1(fp),#1
+	ldb	L83(r14),rl3
+	cp	r12,#90
+	jpr	le,L102
+	dec	r12,#6
+L102:
+	cp	r12,#57
+	jpr	le,L103
+	dec	r12,#7
+L103:
+	sub	r12,#46
+	ldk	r13,#0
+L20042:
+	ld	r2,r12
+	ld	r3,r13
+	neg	r3
+	sda	r2,r3
+	bit	r2,#0
+	jpr	eq,L104
+	ld	r3,r14
+	mult	rr2,#6
+	add	r3,r13
+	ldb	rl2,_E(r3)
+	extsb	r2
+	ld	~L1+4(fp),r2
+	ld	r3,r14
+	mult	rr2,#6
+	add	r3,r13
+	ld	r5,r14
+	mult	rr4,#6
+	add	r5,r13
+	ldb	rl2,_E+24(r3)
+	ldb	_E(r5),rl2
+	ld	r5,r14
+	mult	rr4,#6
+	add	r5,r13
+	ldb	rl3,~L1+5(fp)
+	ldb	_E+24(r5),rl3
+L104:
+	inc	r13,#1
+	cp	r13,#6
+	jpr	lt,L20042
+	inc	r14,#1
+	cp	r14,#2
+	jpr	lt,L20044
+	ldk	r14,#0
+L20046:
+	ld	r7,#L82
+	sub	r6,r6
+	callr	_encrypt
+	inc	r14,#1
+	cp	r14,#25
+	jpr	lt,L20046
+	ldk	r14,#0
+L20050:
+	ldk	r12,#0
+	ldk	r13,#0
+L20048:
+	add	r12,r12
+	ld	r3,r14
+	mult	rr2,#6
+	add	r3,r13
+	ldb	rl2,L82(r3)
+	extsb	r2
+	or	r12,r2
+	inc	r13,#1
+	cp	r13,#6
+	jpr	lt,L20048
+	add	r12,#46
+	cp	r12,#57
+	jpr	le,L117
+	inc	r12,#7
+L117:
+	cp	r12,#90
+	jpr	le,L118
+	inc	r12,#6
+L118:
+	ld	r2,r12
+	ldb	L83+2(r14),rl2
+	inc	r14,#1
+	cp	r14,#11
+	jpr	lt,L20050
+	clrb	L83+2(r14)
+	testb	L83+1
+	jpr	ne,L119
+	ldb	rl2,L83
+	ldb	L83+1,rl2
+L119:
+	ld	r2,#L83
+	ldm	r12,8(fp),#3
+	inc	fp,#~L2
+	ret
+	~L1 := 0
+	~L2 := 14
+	}	/* _crypt */
+
+.data
+

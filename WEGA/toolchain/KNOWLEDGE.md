@@ -540,3 +540,13 @@ older compiler revision, not from options or from the emulator.
   exists in any archive, so size/strip as whole binaries cannot be reproduced bit-exact by compiling.
   Their own code (size 0x42..0x224, strip) is identical to the shipped cc output.
 - `oldlibc/doprnt.c` holds the structural reconstruction of _doprnt (untested).
+
+## cas listings are checked in
+
+Until the older cc is available, every rebuilt source has its assembler output checked in so that
+code can be compared with plain text tools: `<dir>/listing/NAME.s` (`cc -S`, the cas source) and
+`NAME.l` (`cas -l`: location, code bytes, source line). Generate with `make listing` (top level or
+per directory; `tools/listing.sh WEGA_ROOT SRC OUTDIR [flags|none]`). The libc listings live in
+`libc/listing/<dir>/` and use the cc flags that reproduced the original member (members that do not
+reproduce are listed with `-O`). Rebuilding the listing's `.s` with `cas -u` gives the same object
+as `cc -c`. Listings are of our own rebuilt sources only, never of the original binaries.

@@ -14,6 +14,9 @@ all:
 clean:
 	@for d in $(SUBDIRS); do $(MAKE) -C $$d clean || exit 1; done
 
+listing:
+	@for d in ar size strip ranlib oldlibc libc; do $(MAKE) -C $$d listing WEGA=$(abspath $(WEGA)) || exit 1; done
+
 check:
 	python3 tools/check_reloc.py $(LIBS)/*/*.o
 
@@ -24,4 +27,4 @@ verify: all
 check-oracle: all
 	z8k-emu/selftest.sh $(WEGA) $(UTS) $(KOBJ)
 
-.PHONY: all clean check check-oracle
+.PHONY: all clean listing check check-oracle
