@@ -37,7 +37,7 @@ produce the same bytes with the shipped cc.
 | `lib/oldlibc/doprnt.c` | - | not built | Structural reconstruction of the Jan 1983 `_doprnt`, untested | - |
 | `cmd/ar.c` + `lib/libc/crt/crt0-ar.s` | ar | identical (built with the WEGA cc) | - | `crt0-ar.s` is the start-up variant of this binary |
 | `cmd/size.c` + `lib/libc/crt/crt0-size.s` | size | own code identical, file differs | The libc part of the original is an older libc revision | none; verify compares own code only |
-| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | differs in the own code (2 blocks at 0x2b0, 0x2bc in the `cmpins` range) | Not reproduced: an earlier run had the own code identical. Register allocation differs (`ldk r2,#0` vs `ldk r4,#0`); `strip.c` unchanged since 7d120f0. Open | none yet |
+| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | differs in the own code (2 blocks, 0x2b0 and 0x2bc, `cmpins` range 0x68c) | Not the crt0 change: the old and new `crt0-strip.s` assemble to identical objects, and every commit back to 14098cf gives the same 2 blocks. The code differs in expression form (`addl rr2,rr4` / `ldl %2490` vs `ld r6,r4` / `addl rr4,rr6`), so the shipped strip seems to come from another source revision. Earlier note 'own code identical' is not reproduced | none yet |
 | `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | Needs the older cc | none yet |
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | builds, differs (8422 vs 8506, 8260 vs 8346 bytes) | Not analysed | none yet |
 | `cmd/copydisk.c` | copydisk | builds, differs (7318 vs 7148 bytes) | Not analysed | none yet |
