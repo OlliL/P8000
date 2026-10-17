@@ -836,3 +836,21 @@ Done: `board16_reset()` without child resets (the machine resets them; `soft_res
 explicitly), `m_dram8` as `memory_share_creator`, RS232 callbacks use the port references,
 `p8k_dma_device` private. The daisy device cannot be private (see TODO). Tested: build, `-validate`
 (both systems), WEGA cold boot to login, machine reset and boot again to login, save/load of `p8000`.
+
+## S8000 SADIE regression run (2026-10-17)
+
+Source: https://github.com/tpaxia/Zilog_S8000 (`sadie_serial/`, injected diagnostics from a saved COMMAND LEVEL
+state). Two `s8000` builds of the same MAME base (`f26abf2b`): one with the z8000/z8010/z80pio/z80ctc/z80dma files
+reverted to the base, one with the `p8k-clean` series. Machine `s8000` (CPU-A), 150 s per diagnostic.
+
+| Diagnostic | Base | p8k-clean | Remark |
+| --- | --- | --- | --- |
+| MMUTST | PASS, ERRORS=0 | PASS, ERRORS=0 | transcripts identical (the repo README reports 252 errors with another MAME build) |
+| CACHETST, CIOTST | aborts: not an HPCPU | same | need `s8000s2` (HPCPU) |
+| ICPTST2-4 | "no ICP's present" | same | ICP board not emulated |
+| MEMTEST | still in "SEG 0 self parity bit test" after 150 s | same | transcripts equal except for padding; to be run longer |
+| SIOTEST | endless laps | same | lap count depends on timing |
+| SCCTST, ICPTST1, TEX, ECCTEST | wait for operator input / special hardware | same | not automatable |
+
+No difference between base and the series where the output is deterministic. Not yet run: the other 24 diagnostics
+(disk, tape, FPP, printer).
