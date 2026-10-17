@@ -848,9 +848,26 @@ reverted to the base, one with the `p8k-clean` series. Machine `s8000` (CPU-A), 
 | MMUTST | PASS, ERRORS=0 | PASS, ERRORS=0 | transcripts identical (the repo README reports 252 errors with another MAME build) |
 | CACHETST, CIOTST | aborts: not an HPCPU | same | need `s8000s2` (HPCPU) |
 | ICPTST2-4 | "no ICP's present" | same | ICP board not emulated |
-| MEMTEST | still in "SEG 0 self parity bit test" after 150 s | same | transcripts equal except for padding; to be run longer |
+| MEMTEST | still in "SEG 0 self parity bit test" after 150 s | same after 150 s; with 1800 s both: PASS, ERRORS=0 | needs several minutes |
 | SIOTEST | endless laps | same | lap count depends on timing |
 | SCCTST, ICPTST1, TEX, ECCTEST | wait for operator input / special hardware | same | not automatable |
 
 No difference between base and the series where the output is deterministic. Not yet run: the other 24 diagnostics
 (disk, tape, FPP, printer).
+
+### Setup and limits (state 2026-10-17)
+
+- Binaries: `s8000` from `SOURCES=src/mame/zilog/s8k.cpp` (`REGENIE=1` is needed when the source list changes);
+  the SADIE scripts of the repo were run unchanged with `S8000_MAME` and `S8000_ROMS` set (ROM directory
+  `s8k_cpu/`, device name, not `s8000/`). The harness leaves old MAME processes running; they have to be killed.
+- The 24 diagnostics that were not run need disk, tape, FPP or printer hardware, or an operator; the harness
+  cannot answer their questions (150 s timeout, "waiting for input").
+- **`s8000s2` (HPCPU) cannot run the SADIE tests with this loader.** The ROMs are available
+  (https://github.com/OlliL/S8000-roms, SHA1 equal to the driver, directory `s8k_hpcpu/`) and the machine starts
+  ("System 8000 HPCPU Monitor 10.1 - Press START to Load System"), but the SADIE loader of the repo is written for
+  the CPU-A board: it enters through the CPU-A monitor's `L` command and drives the Z80 SIO (`%FF81`), while the
+  HPCPU has an SCC at other addresses and another monitor. It would need a new loader. CACHETST and CIOTST abort on
+  CPU-A with "Not a HPCPU board" / "Host processor is not an HPCPU". Not needed for the P8000 changes.
+- MEMTEST needs more than 150 s: after 150 s it is still in "SEG 0 self parity bit test" (both binaries), with a
+  1800 s limit both binaries finish with **PASS, ERRORS=0** (16 segments = 1 MiB found, parity memory).
+- Comparison of the manuals with the P8000 16 bit board: [S8000_COMPARISON.md](S8000_COMPARISON.md).
