@@ -572,3 +572,32 @@ and `stripldm` register renaming). Verified byte-identical (output, `-l`, `-d` i
 against the original run in z8k-emu on 174 compiler outputs of the WEGA sources plus ~200 other .s
 files: `make -C popt check WEGA=<tree> CORPUS=<dir>` (`popt/corpus.sh` builds the corpus; the corpus
 is compiler output and is not kept in git). Details and reproduced quirks: `popt/NOTES.md`.
+
+## cc (compiler driver, /bin/cc)
+
+`cc/cc.c` is a decompilation of the WEGA `/bin/cc` driver (14208 bytes, E707
+combined I/D; own code 0x2a-0x15f0, libc from 0x15f2).  It is a portable K&R
+C program; `make -C cc` builds it with the host compiler.
+
+- The driver only runs other programs: `/lib/cpp`, `/lib/cparse`,
+  `/lib/gopt` (levels -O0-5, skipped for '0'), `/lib/codgen`, optionally
+  `fpf` (-F) and `/lib/popt` (-O), then `/bin/cas` and `/bin/ld`.  Passes
+  talk through `/tmp/cc.<pid>.{I,D,s,o,p,z,S}` (names `cc.<pid>.x` in the
+  current directory with -:d).
+- Command lines are built with sprintf and executed by `callsys`, a small
+  tokenizer (`<in`, `>out`, `>>out`) + fork + `execv`; ENOEXEC goes to
+  `/bin/sh`.  `-:z` echoes every command line, `-:n` executes nothing; this
+  is what `cc/check.sh` uses to compare the original (under z8k-emu) with the
+  portable build: 74 option combinations, command lines, messages, exit codes
+  and created files identical (pid normalized).
+- Pass paths can be changed with `-Tx<path>`, flags of a pass with `-:x<flags>`,
+  all passes can be taken from a directory with `-B<dir>` (+ `-a<ids>`).
+- Quirks kept: `-o file.c` prints "would overwrite" and exits 1; an unknown
+  option letter is handed to ld one letter at a time (`-x`); `-Ns` adds `-Ns`
+  for ld and `-L` for cparse and ends the argument; `-l...` is passed to ld
+  with the preceding byte overwritten by '-'; `-o` as last argument leaves
+  outfile NULL (the original reads a zero byte at address 0).
+- The driver of this (Jan 1983) cc is the one that names the `-Sl` listing
+  program `/lib/clist`; gopt/popt/fpf warnings do not stop the compile.
+- Not done: building cc.c with the WEGA cc under z8k-emu (the original was
+  probably built with the older cc; an exact own-code match is unlikely).
