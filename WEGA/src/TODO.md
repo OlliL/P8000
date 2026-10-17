@@ -44,7 +44,6 @@ produce the same bytes with the shipped cc.
 | `cmd/tar.c` | tar | builds, differs (21692 vs 22494 bytes) | - | Not analysed | none yet |
 | `cmd/BOOT0/boot0.fd.s`, `boot0.ud.s`, `boot0.rm.s` | boot0.fd, boot0.ud, boot0.rm | builds, not compared | - | No original in `arc/cpio` | none |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | - | The emulator stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) while the original cc compiles `dosopn.c`, which has no floating point. Cause in the cc not yet traced (cc at 00:b270) | none; blocked by the emulator |
-| `cmd/standalone/sa.cat.c`, `sa.format.c`, `sa.verify.c`, `sa.mkfs.c`, `sa.install.c`, `sa.shipdisk.c` | sa.cat, sa.format, sa.verify, sa.mkfs, sa.install, sa.shipdisk | differ (sizes 1060/1036, 8916/10204, 4050/5162, 4284/4260, 7146/7122, 1816/2464) | - | Not analysed. `libb.a` is not the cause: `sa.timer` (same library) is identical. Probably a different source revision | none yet |
 | `cmd/standalone/sa.diags/` | sa.diags | builds, no original to compare | - | The MON16 modules `p.gesa.s`, `p.ldsd.s`, `p.term.s` are copied from `OlliL/P8000` `firmware/MON16` into the build directory (not in git). `sa.test.s` needs `as -u` (without it, `as` stops with ERROR 50 at `call _printf`) | none |
 
 ## Scripts without an object check

@@ -35,36 +35,41 @@ libb.a: sa.function.o bmisc.o
 
 sa.mkfs: sa.mkfs.o libb.a
 	$(LD) -s -o $@ sa.mkfs.o libb.a
-	chmod 400 $@
 
 sa.cat: sa.cat.o libb.a
 	$(LD) -s -o $@ sa.cat.o libb.a
-	chmod 400 $@
 
-sa.timer: sa.timer.o libb.a
-	$(LD) -s -o $@ sa.timer.o libb.a
-	chmod 400 $@
+sa.timer: sa.timer.o sa.function.o sa.inout.o bmisc.o
+	$(LD) -s -o $@ sa.timer.o sa.function.o sa.inout.o bmisc.o
 
 sa.install: sa.install.o libb.a
 	$(LD) -s -o $@ sa.install.o libb.a
-	chmod 400 $@
 
-sa.format: sa.format.o sa.wdc.o libb.a
-	$(LD) -s -o $@ sa.format.o sa.wdc.o libb.a
-	chmod 400 $@
+ft41.o: sa.format.c
+	cp sa.format.c ft41.c
+	$(CC) -c -o ft41.o ft41.c
 
-sa.verify: sa.verify.o sa.wdc.o libb.a
-	$(LD) -s -o $@ sa.verify.o sa.wdc.o libb.a
-	chmod 400 $@
+sa.format: ft41.o wdc.o libb.a
+	$(LD) -o $@ ft41.o wdc.o libb.a
 
-sa.shipdisk: sa.shipdisk.o sa.wdc.o libb.a
-	$(LD) -s -o $@ sa.shipdisk.o sa.wdc.o libb.a
-	chmod 400 $@
+vf41.o: sa.verify.c
+	cp sa.verify.c vf41.c
+	$(CC) -c -o vf41.o vf41.c
+
+sa.verify: vf41.o wdc.o libb.a
+	$(LD) -o $@ vf41.o wdc.o libb.a
+
+sd41.o: sa.shipdisk.c
+	cp sa.shipdisk.c sd41.c
+	$(CC) -c -o sd41.o sd41.c
+
+sa.shipdisk: sd41.o wdc.o libb.a
+	$(LD) -o $@ sd41.o wdc.o libb.a
 
 install: $(FILES)
-	for p in $(FILES); do cp $$p $(PREFIX)/$$p; done
+	for p in $(FILES); do cp $$p $(PREFIX)/$$p; chmod 400 $(PREFIX)/$$p; done
 
 clean:
-	rm -f $(FILES) libb.a *.o
+	rm -f $(FILES) sd41.c ft41.c vf41.c libb.a *.o
 
 .PHONY: all install clean
