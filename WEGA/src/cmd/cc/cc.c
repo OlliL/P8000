@@ -19,12 +19,22 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <signal.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+
+/*
+ * The WEGA header set has no string.h, stdlib.h, unistd.h or sys/wait.h and
+ * no declaration of errno; the functions are used with the implicit int
+ * return of K&R C (16-bit int and pointer on the Z8002).  A host build
+ * gets the prototypes from -include options in host/cc/Makefile.
+ */
+#ifndef errno
+extern int errno;
+#endif
+#ifndef ENOEXEC
+#define ENOEXEC	8
+#endif
+#ifndef ENOMEM
+#define ENOMEM	12
+#endif
 
 #ifndef TMPFMT
 #define TMPFMT	"/tmp/cc.%d.%s"
@@ -331,7 +341,8 @@ int	p;
 			fatal("Termination code : %o in %s", (char *)(long)status, curpass);
 		dexit(3);
 	}
-	return ((signed char)((status >> 8) & 0xff));
+	status = (status >> 8) & 0xff;
+	return (status > 127 ? status - 256 : status);
 }
 
 /* can the file be read? */

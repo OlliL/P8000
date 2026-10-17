@@ -3,8 +3,6 @@
  * "stripldm" pass (procopt), decompiled from the WEGA /lib/popt.
  */
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
 #include "z2.h"
 
@@ -576,19 +574,19 @@ procopt(void)
 		if ((n & 1) && b[n - 1] && n <= 13) {
 			if ((r14 & 1) || r14 + 1 >= 8 || a[r14 + 1])
 				continue;
-			snprintf(t[k].s1, sizeof t[k].s1, "r%d", n - 1);
+			sprintf(t[k].s1, "r%d", n - 1);
 			t[k].len = strlen(t[k].s1);
-			snprintf(t[k].s2, sizeof t[k].s2, "r%d", r14);
+			sprintf(t[k].s2, "r%d", r14);
 			k++;
 			r14++;
-			snprintf(t[k].s1, sizeof t[k].s1, "r%d", n);
+			sprintf(t[k].s1, "r%d", n);
 			t[k].len = strlen(t[k].s1);
-			snprintf(t[k].s2, sizeof t[k].s2, "r%d", r14);
+			sprintf(t[k].s2, "r%d", r14);
 			k++;
 		} else {
-			snprintf(t[k].s1, sizeof t[k].s1, "r%d", n);
+			sprintf(t[k].s1, "r%d", n);
 			t[k].len = strlen(t[k].s1);
-			snprintf(t[k].s2, sizeof t[k].s2, "r%d", r14);
+			sprintf(t[k].s2, "r%d", r14);
 			k++;
 		}
 	}

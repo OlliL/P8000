@@ -392,7 +392,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
 
 ## ar (reconstructed, byte-identical)
 
-`src/cmd/ar/ar.c` + `src/cmd/ar/crt0v.s` rebuild `/bin/ar` byte for byte (`make -C ar verify`).
+`src/cmd/ar/ar.c` + `src/cmd/ar/crt0v.s` rebuild `/bin/ar` byte for byte (`make -C WEGA/host verify-wega`).
 
 - Source is the System III/V7 ar, version string `@[$]ar.c 2.2 11/18/83 - 87wega3.2`;
   WEGA additions: `-l` (local temp files `vXXXXX`), `av0 = trim(argv[0])` in all
@@ -590,7 +590,7 @@ is compiler output and is not kept in git). Details and reproduced quirks: `popt
 
 `src/cmd/cc/cc.c` is a decompilation of the WEGA `/bin/cc` driver (14208 bytes, E707
 combined I/D; own code 0x2a-0x15f0, libc from 0x15f2).  It is a portable K&R
-C program; `make -C cc` builds it with the host compiler.
+C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
 
 - The driver only runs other programs: `/lib/cpp`, `/lib/cparse`,
   `/lib/gopt` (levels -O0-5, skipped for '0'), `/lib/codgen`, optionally

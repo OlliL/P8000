@@ -1,27 +1,55 @@
-# WEGA tool chain rebuild. One subdirectory per original binary.
-# `make all` builds everything; `make check` runs the tool self-checks
-# (needs the original WEGA files, see KNOWLEDGE.md).
+# WEGA tool chain, Linux side. Everything in here runs on the Linux host:
+#
+#   z8k-emu/   emulator that runs the original WEGA binaries (the oracle)
+#   tools/     analysis scripts (disassembler, object and archive readers)
+#   cc/        the WEGA cc driver built for Linux (cross tool)
+#   popt/      the WEGA peephole optimizer built for Linux (cross tool)
+#   libc/      check of the libc members in ../src/lib/libc
+#   oldcc/     check of the cas sources in ../src/lib/libc/oldcc
+#
+# The WEGA programs themselves are built from ../src (make -C ../src); here
+# they are only verified against the original files:
+#
+#   make verify          all checks below
+#   make verify-wega     ar, size, strip, ranlib built with the original tools
+#                        (run under z8k-emu) compared with the originals
+#
+# WEGA: the WEGA file tree (bin/, lib/, usr/...), not in git.
 
-SUBDIRS = z8k-emu ar size strip popt cc
-
-# Directory with the WEGA file tree (lib/, bin/, usr/...), not in git.
 WEGA ?= ../../../wega/arc/cpio
-LIBS ?= ../../../wega/work/libs
+WEGAABS = $(abspath $(WEGA))
+EMU  ?= $(abspath z8k-emu/z8k-emu)
+ROOT  = $(WEGAABS)
+WEMU  = $(EMU) -r $(ROOT)
+SRC   = ../src/cmd
 
-all:
-	@for d in $(SUBDIRS); do $(MAKE) -C $$d all || exit 1; done
+# the original cc, cas and ld run under the emulator
+WTOOLS = CC='$(WEMU) /bin/cc' CAS='$(WEMU) /bin/cas' LD='$(WEMU) /bin/ld'
 
-clean:
-	@for d in $(SUBDIRS); do $(MAKE) -C $$d clean || exit 1; done
+all: cc popt
+
+cc popt:
+	$(MAKE) -C $@ all
 
 check:
-	python3 tools/check_reloc.py $(LIBS)/*/*.o
+	$(MAKE) -C cc check WEGA=$(WEGAABS) EMU=$(EMU)
+	$(MAKE) -C popt check WEGA=$(WEGAABS)
+	$(MAKE) -C libc check WEGA=$(WEGAABS) EMU=$(EMU)
+	$(MAKE) -C oldcc verify WEGA=$(WEGAABS) EMU=$(EMU)
 
-# Oracle self test (needs UTS= extracted uts.tar.gz/uts and KOBJ= kernel lib2 dir)
-verify: all
-	@for d in $(SUBDIRS); do [ ! -f $$d/Makefile ] || $(MAKE) -C $$d verify WEGA=$(abspath $(WEGA)) 2>/dev/null || true; done
+verify: all check verify-wega
 
-check-oracle: all
-	z8k-emu/selftest.sh $(WEGA) $(UTS) $(KOBJ)
+verify-wega:
+	$(MAKE) -C $(SRC)/ar clean all $(WTOOLS)
+	cmp $(SRC)/ar/ar $(WEGAABS)/bin/ar && echo "ar: identical to original"
+	$(MAKE) -C $(SRC)/ranlib clean all $(WTOOLS)
+	$(MAKE) -C $(SRC)/size clean all $(WTOOLS)
+	python3 tools/cmpins.py $(SRC)/size/size $(WEGAABS)/bin/size 0x224 0x224
+	$(MAKE) -C $(SRC)/strip clean all $(WTOOLS)
+	python3 tools/cmpins.py $(SRC)/strip/strip $(WEGAABS)/usr/bin/strip 0x68c 0x68c
 
-.PHONY: all clean check check-oracle
+clean:
+	$(MAKE) -C cc clean
+	$(MAKE) -C popt clean
+
+.PHONY: all check verify verify-wega clean cc popt

@@ -1,0 +1,18 @@
+# objects and programs built next to the sources (see Makefiles)
+*.o
+/cmd/ar/ar
+/cmd/cc/cc
+/cmd/popt/popt
+/cmd/ranlib/ranlib
+/cmd/size/size
+/cmd/strip/strip
+/cmd/copydisk
+/cmd/dump
+/cmd/dumpdir
+/cmd/format
+/cmd/getud
+/cmd/putud
+/cmd/restor
+/cmd/sync
+/cmd/tar
+/cmd/verify

@@ -5,10 +5,10 @@ WEGA, why, and what we use instead. Everything in `src/` should build with
 `make`; a file listed here is built from a workaround until the cause is gone.
 Git content is in English; the German notes of the original WEGA sources stay as they are.
 
-Last checked: 2026-10-17. Verification: `make -C host/libc check` for libc
-(170 identical, 7 different, 3 without C source), `make -C host/ar verify`,
-`make -C host/cc verify` (74 command lines identical), `make -C host/size verify`
-and `host/strip` (own code only, see below).
+Last checked: 2026-10-17. Verification (from `WEGA/host`):
+`make check` (cc: 74 command lines identical; popt: 522 corpus runs
+identical; libc: 170 identical, 7 different, 3 without C source; oldcc: all
+ok) and `make verify-wega` (ar identical; size and strip: own code only).
 
 ## Differences and workarounds
 
@@ -30,12 +30,12 @@ produce the same bytes with the shipped cc.
 | (none in src/) | fltioc.o | no C source | C source not reconstructed | `lib/libc/oldcc/fltioc.s` |
 | (none in src/) | symscan.o | no C source | C source not reconstructed | `lib/libc/oldcc/symscan.s` |
 | `lib/oldlibc/doprnt.c` | - | not built | Structural reconstruction of the Jan 1983 `_doprnt`, untested | - |
-| `cmd/ar/ar.c` + `crt0v.s` | ar | identical | - | `crt0v.s` is the start-up variant of this binary |
+| `cmd/ar/ar.c` + `crt0v.s` | ar | identical (built with the WEGA cc) | - | `crt0v.s` is the start-up variant of this binary |
 | `cmd/size/size.c` + `crt0s.s` | size | own code identical, file differs | The libc part of the original is an older libc revision | none; verify compares own code only |
 | `cmd/strip/strip.c` + `crt0s.s` | strip | own code identical, file differs | Same as size | none; verify compares own code only |
-| `cmd/ranlib/ranlib.c` | ranlib | not identical, unfinished | Needs the older cc | none yet |
-| `cmd/cc/cc.c` | cc | command lines identical (74 cases), binary not built with the WEGA cc | Not yet built with the WEGA cc; own-code identity unlikely (original likely built by an older cc) | none yet |
-| `cmd/popt/*.c` | popt | behaviour identical on corpus, binary not built with the WEGA cc | Not yet built with the WEGA cc | none yet |
+| `cmd/ranlib/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | Needs the older cc | none yet |
+| `cmd/cc/cc.c` | cc | builds with the WEGA cc; command lines identical to the original (74 cases), binary not compared | Own-code identity unlikely (original likely built by an older cc) | none yet |
+| `cmd/popt/*.c` | popt | behaviour identical on corpus (native build); does NOT build with the WEGA cc | Source uses ANSI prototypes and `(void)`, which the WEGA cc does not accept (z2.h, z21.c, z22.c, z23.c); needs a K&R port | none yet |
 
 ## Not yet checked
 
@@ -43,6 +43,15 @@ Old status 100% in the earlier `cmd/TODO`, sources still flat in `cmd/`
 (to be moved to `cmd/<name>/` with the layout step, then checked):
 chkdiff, format, getud, pburn, putud, sync, tar, uuclear, verify, whodo,
 dump, dumpdir, restor.
+
+## Layout still open
+
+- `cmd/copydisk`, `dump`, `dumpdir`, `format`, `getud`, `putud`, `restor`,
+  `sync`, `tar`, `verify` are still flat in `cmd/` (no own directory, no
+  check yet).
+- `cmd/standalone` has its own Makefile with hard-coded `cc`/`ld`; it is not
+  part of `make` in `cmd/` yet.
+- `lib/libc` has no Makefile of its own yet.
 
 ## Original programs without source in src/
 

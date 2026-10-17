@@ -1,27 +1,30 @@
-# cc: C compiler driver (WEGA 3.2), reconstructed from the original /bin/cc.
+# cc: the WEGA C compiler driver built for Linux (a cross tool: it behaves
+# like /bin/cc of WEGA, it is only compiled by the host cc). Source:
+# ../../src/cmd/cc/cc.c. The WEGA header set lacks some headers the driver
+# uses; they are supplied here, so the source stays WEGA-compatible.
 #
-#   make all      build the portable driver (host cc), result ./cc
-#   make verify   compare the command lines it builds with those of the
-#                 original $(WEGA)/bin/cc run under z8k-emu (check.sh)
-#
-# The driver only runs the pass programs; with -:n it executes nothing and
-# with -:z it prints the command lines, which is what check.sh compares.
+#   make                 build ./cc
+#   make check           compare with the original /bin/cc under z8k-emu
 
+HOSTCC ?= cc
+CFLAGS ?= -O2 -w
+SRC = ../../src/cmd/cc
 WEGA ?= ../../../../wega/arc/cpio
 EMU  ?= $(abspath ../z8k-emu/z8k-emu)
-CC   ?= cc
-SRC  ?= ../../src/cmd/cc
-CFLAGS ?= -O2 -std=gnu89 -w
+
+HOSTINC = -include stdio.h -include ctype.h -include signal.h -include errno.h \
+	-include string.h -include stdlib.h -include unistd.h \
+	-include sys/types.h -include sys/wait.h
 
 all: cc
 
 cc: $(SRC)/cc.c
-	$(CC) $(CFLAGS) -o $@ $(SRC)/cc.c
+	$(HOSTCC) $(CFLAGS) -std=gnu89 $(HOSTINC) -o $@ $(SRC)/cc.c
 
-verify: cc
-	WEGA=$(abspath $(WEGA)) E=$(EMU) ./check.sh
+check: cc
+	WEGA=$(abspath $(WEGA)) E=$(EMU) sh check.sh
 
 clean:
 	rm -f cc
 
-.PHONY: all verify clean
+.PHONY: all check clean

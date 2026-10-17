@@ -4,8 +4,6 @@
  * (modules z20.c .. z23.c).  See NOTES.md.
  */
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /* node types (the "op" byte of a node, also the low byte of an optab word) */
 #define CJP	1	/* jpr cc,Lnnn  (subop = condition) */
