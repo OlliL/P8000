@@ -5,7 +5,7 @@
 #   make install PREFIX=dir    install below dir (default /)
 #   make clean                 remove the objects and the program
 
-CC ?= scc
+CC ?= cc
 PREFIX ?= /
 
 OBJECTS = pb.o pb.command.o pb.cmdline.o pb.file.o pb.buf.o pb.devud.o
