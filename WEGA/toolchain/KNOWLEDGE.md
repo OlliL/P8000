@@ -597,7 +597,7 @@ C program; `make -C cc` builds it with the host compiler.
   for ld and `-L` for cparse and ends the argument; `-l...` is passed to ld
   with the preceding byte overwritten by '-'; `-o` as last argument leaves
   outfile NULL (the original reads a zero byte at address 0).
-- The driver of this (Jan 1983) cc is the one that names the `-Sl` listing
-  program `/lib/clist`; gopt/popt/fpf warnings do not stop the compile.
+- `-Sl` runs the listing program `/lib/clist`; failures of gopt, popt and fpf
+  only print a warning and the compile goes on without that pass.
 - Not done: building cc.c with the WEGA cc under z8k-emu (the original was
   probably built with the older cc; an exact own-code match is unlikely).
