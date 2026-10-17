@@ -13,6 +13,7 @@ identical from the EPROMs using the P8000 sources); MON16 source (`firmware/MON1
   bit 0 on-board PROM+RAM off, bit 1 MMUs on, bit 2 segmented user, bit 3 parity check on/clear parity error.
   Bits 4-7 are DIP switches on the S8000 (baud rate, autoboot device); the MON16 comments mark them "unused".
   The MAME drivers use the same constants (`SCR_BD_MEMON`, `SCR_MMU_ONH`, `SCR_SEG_USER`, `SCR_CLR_PARITY`).
+- The RETI port at `%FFE1` (written with ED 4D for the Z80 peripherals, in both firmwares).
 - On-board SIO/CTC/PIO set of Z80 peripherals at `%FF81..` in the I/O space with 8 bit registers on odd
   addresses; the SIO0 is at `%FF81` in both, SIO1 at `%FF89`.
 
@@ -25,7 +26,6 @@ identical from the EPROMs using the P8000 sources); MON16 source (`firmware/MON1
 | CTC | 3 (`%FFA1`, `%FFA9`, `%FFB1`) | 2 (`%FFA9`, `%FFB1`) |
 | `%FFB9` | PIO0 channel A data | RUN16 lamp off (`LOFF`), lamp on at `%FFD9` |
 | System/Normal Break Register | not found at a fixed address in the firmware source | `%FFC9` / `%FFD1` |
-| RETI port | not found in the firmware source | `%FFE1` (for the U880 peripherals) |
 
 The S8000 monitor console is SIO0 channel B.
 
