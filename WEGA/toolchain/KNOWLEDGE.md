@@ -488,3 +488,14 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   path separator in `execat`; malloc is a variant that extends the top free block when the
   break is contiguous (`maxbytes` 0xFFF8, `maxblocks` 64 as data); nlist/readsym use the
   s.out long-name encoding (`readby`, `(len+13)/14` entries).
+
+### Open: gopt (-Or) output with register pointer parameters
+
+`cc -Or -S` on `f(str) register char *str; { register int i; i=0; while(*str++) i++; return(i); }`
+emits `ld r4,~L1+-1275(fp)` (bogus frame offset, constant -1275) where `-Ol` gives the
+sane `ld r1,r7`. Cases without a loop over the register parameter are fine. Filling fresh
+guest memory with non-zero bytes makes the tools hang (they rely on zeroed memory), so
+uninitialized memory is not easily ruled out. It is not yet known whether this is an
+emulator defect or a gopt property. No libc member matched with -Or/-Ol so far, all 92
+C members that match are plain `-O`. The original `length` (frame 8, `ld r1,r7`,
+`ldk r4,#0`, `ldb rl3,@r2/testb rl3`) looks like `-Ol`/`-Or` output of an older popt/gopt.
