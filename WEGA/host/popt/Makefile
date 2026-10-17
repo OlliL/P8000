@@ -1,28 +1,29 @@
 # popt: the WEGA peephole optimizer built for Linux (a cross tool, see
-# ../cc/Makefile). Source: ../../src/cmd/popt. The byte-level check against
-# the original /lib/popt is check.sh (single runs) and corpus.sh (corpus).
+# ../cc/Makefile). Decompiled from the original /lib/popt binary; NOTES.md
+# lists the reproduced quirks. The byte-level check against the original
+# is check.sh (single runs) and corpus.sh (corpus).
 #
 #   make                 build ./popt
 #   make check           compare with the original /lib/popt under z8k-emu
+#   make corpus          build the test corpus (slow)
 
 HOSTCC ?= cc
 CFLAGS ?= -O2 -g -Wall -Wno-unused -Wno-format-truncation
-SRC = ../../src/cmd/popt
 WEGA ?= ../../../../wega/arc/cpio
 CORPUS ?= $(abspath ../../../../wega/work/popt-corpus)
-HOSTINC = -include stdio.h -include ctype.h -include string.h -include stdlib.h
+SRC = .
 
 all: popt
 
-popt: $(SRC)/z20.c $(SRC)/z21.c $(SRC)/z22.c $(SRC)/z23.c $(SRC)/z2.h
-	$(HOSTCC) $(CFLAGS) $(HOSTINC) -I$(SRC) -o $@ $(SRC)/z20.c $(SRC)/z21.c $(SRC)/z22.c $(SRC)/z23.c
+popt: z20.c z21.c z22.c z23.c z2.h
+	$(HOSTCC) $(CFLAGS) -o $@ z20.c z21.c z22.c z23.c
 
 check: all
 	WEGA=$(abspath $(WEGA)) ./check.sh $(CORPUS)
 
 # build the corpus (compiler output of all sources in ../../src, slow)
 corpus:
-	WEGA=$(abspath $(WEGA)) sh corpus.sh $(SRC) $(CORPUS)
+	WEGA=$(abspath $(WEGA)) sh corpus.sh ../../src $(CORPUS)
 
 clean:
 	rm -f popt

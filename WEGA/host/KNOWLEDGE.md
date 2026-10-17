@@ -3,14 +3,17 @@
 ## Directory layout
 
 - `WEGA/src/...`  WEGA source code, as it would sit in /usr/src of a WEGA
-  system: `src/cmd/<name>` programs (ar, size, strip, ranlib, cc, popt, ...),
-  `src/lib/libc` the C library (with `oldcc/*.s` for members made by the older
-  cc), `src/uts` kernel. Nothing in there needs Linux.
-- `WEGA/host/...` Linux host side: the z8k-emu oracle (`z8k-emu`), analysis
-  scripts (`tools`), and one directory per program with a Makefile that builds
-  the program from `src/` (with the original WEGA tools under z8k-emu, or as
-  portable cross tool with the host cc) and `check.sh`/`verify` against the
-  original binaries. `make -C WEGA/host all` builds everything.
+  system, compiled by the WEGA cc/cas/ld: `src/cmd/<name>` (ar, size, strip,
+  ranlib, the flat commands), `src/lib/libc` (with `oldcc/*.s` for members
+  made by the older cc), `src/uts` kernel. Objects and programs are built
+  next to the sources; `make` there needs the cc/cas/ld variables.
+- `WEGA/host/...` the Linux side. `z8k-emu` (the oracle that runs the original
+  binaries), `tools` (analysis scripts), and the Linux-native cross tools
+  `cc` and `popt`: their source is in the same directory, they behave like
+  the WEGA originals and replace the emulator calls later. Check scripts and
+  `Makefile` targets: `make -C WEGA/host check` (cc, popt, libc, oldcc) and
+  `make -C WEGA/host verify-wega` (ar, size, strip, built by the original
+  tools under z8k-emu, compared with the original binaries).
 - `WEGA/contrib/...` third-party and own extras, unchanged.
 
 Living document. Goal: rebuild the WEGA tool chain (cc, scc, cas, ld, sld,

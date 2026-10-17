@@ -1,6 +1,7 @@
 # cmd: WEGA system commands. Every command is built with the cc, cas and ld
 # named by the variables below (default: the WEGA tools in PATH). The
-# subdirectories are the commands that have their own Makefile.
+# subdirectories are the commands that have their own Makefile. The cc
+# driver and popt are Linux-side tools and live in ../../host.
 #
 #   make                       build everything
 #   make install PREFIX=dir    install below dir (default /)
@@ -12,7 +13,7 @@ LD  ?= ld
 STRIP ?= strip
 PREFIX ?= /
 
-SUBDIRS = ar cc popt ranlib size strip
+SUBDIRS = ar ranlib size strip
 
 FILES=		getud putud
 STRIPFILES=	copydisk dump dumpdir format restor sync tar verify
