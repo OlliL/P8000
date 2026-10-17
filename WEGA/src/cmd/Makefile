@@ -22,7 +22,7 @@ CRT = ../lib/libc/crt
 PROGS = ar ranlib size strip
 
 FILES=		getud putud
-STRIPFILES=	copydisk dump dumpdir format restor sync tar verify
+STRIPFILES=	copydisk dump dumpdir restor sync tar
 CLEANFILES=	sync.o
 SUBDIRS=	BOOT0 doscopy pburn standalone verify
 
