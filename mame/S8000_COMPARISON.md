@@ -25,7 +25,7 @@ identical from the EPROMs using the P8000 sources); MON16 source (`firmware/MON1
 | CTC | 3 (`%FFA1`, `%FFA9`, `%FFB1`) | 2 (`%FFA9`, `%FFB1`) |
 | `%FFB9` | PIO0 channel A data | RUN16 lamp off (`LOFF`), lamp on at `%FFD9` |
 | System/Normal Break Register | not found at a fixed address in the firmware source | `%FFC9` / `%FFD1` |
-| RETI port | not used | `%FFE1` (for the U880 peripherals) |
+| RETI port | not found in the firmware source | `%FFE1` (for the U880 peripherals) |
 
 The S8000 monitor console is SIO0 channel B.
 
