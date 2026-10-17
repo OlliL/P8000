@@ -392,3 +392,31 @@ Results (all byte-identical to the objects shipped with WEGA, see
     `a[i] = *cp; if(*cp) cp++;` gives `testb @r14`.
   - `f(g())` keeps g's result in a frame temp.
   - Strings, tables and jump tables are emitted in function order.
+
+## ranlib (work in progress) and emulator findings
+
+- `/usr/bin/ranlib` (E707, text 7124): `ranlib.c 1.1 07/24/82`, a 4.1BSD ranlib
+  adapted to s.out (24-byte `s_exec` header, 14-byte `s_nlist`, long names via
+  `readsym`, `goodmagic`/`swab`/`longswap` for byte-swapped objects,
+  `__.SYMDEF` entries of 12 bytes `{long cloc; char cname[8]}`, max 700 symbols,
+  `ar rlb`/`ar rl` via `system`, `fixdate` sets the archive date +5 s).
+  Layout: crt0 variant (as in ar, but no data string), `ranlib.o` = 0x42-0x53a
+  (trim, main, nextel, stash, fnew, fixdate), then libc members.
+- The libc members inside this binary come from an OLDER libc than the shipped
+  `/lib/libc.a` (e.g. fseek has a 14-byte frame, shipped fseek.o 20 bytes), so a
+  byte-identical link is not possible until that older libc is reconstructed.
+  `ranlib.o` itself can only be compared instruction-wise.
+- The original ranlib.o was compiled with different optimizer behaviour than
+  `cc -O` of the shipped compiler: `register` variables of leaf functions sit in
+  scratch registers (r1, r3), parameters are not spilled and the frame keeps the
+  slots. Not reproduced yet (tried -O, -Ol, -Or and register/auto variants).
+  The "unused local" slots seen in ar (rcmd, notfound, longt) are probably the same effect.
+- Oracle: segmented binaries (`/lib/gopt`, `sld`, ...) put the stack in segment
+  0x3F unless header flag SF_7FSTK (0x20) is set; z8k-emu used 0x7F always, so
+  `gopt` silently produced no output. Fixed; `cc -Ol/-Or` now run. gopt reports
+  "coloring failed" for one function of ranlib.c (line 188) and falls back.
+- z8k-emu debugging aids: `Z8K_EXEC_TRACE=1` prints every exec,
+  `Z8K_SC_TRACE=FILE` logs system calls to a host file (guest may close fd 2).
+- `WEGA/src/lib/libc/csu/crt0.s` (PLZ/ASM, Rev 3.2 09/12/83) matches the shipped
+  `/lib/crt0.o` (42 bytes text, data `.word 0`). The ar/ranlib binaries use a
+  later crt0 variant (version string in text and data), see `ar/crt0v.s`.

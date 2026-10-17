@@ -136,7 +136,7 @@ static void clear_mem(Z8K *c)
 static void exec_map(Z8K *c, Exec *x, char **argv, char **envp)
 {
 	long toff, doff;
-	int i, stkseg = 0x7F;
+	int i, stkseg = (x->flags & 0x20) ? 0x7F : 0x3F;	/* SF_7FSTK selects segment 0x7F, else the stack is in segment 0x3F */
 	clear_mem(c);
 	memset(segsz, 0, sizeof segsz);
 	memset(segused, 0, sizeof segused);
@@ -312,6 +312,11 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 	if (e) return sc_err(c, e);
 	/* copy argument and environment strings out of the old image */
 	av = gvec(c, argvp, &na);
+	if (getenv("Z8K_EXEC_TRACE")) {
+		fprintf(stderr, "exec %s", gp);
+		for (i = 0; i < na; i++) fprintf(stderr, " %s", av[i]);
+		fprintf(stderr, "\n");
+	}
 	ev = haveenv ? gvec(c, envp, &ne) : envv;
 	exec_map(c, &x, av, ev);
 	free(x.file);
@@ -321,7 +326,7 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 	return 0;
 }
 
-static int sys_call(Z8K *c, unsigned n)
+static int sys_call_impl(Z8K *c, unsigned n)
 {
 	Args a = { c, 0 };
 	char gp[1024], hb[1100], gp2[1024], hb2[1100];
@@ -496,6 +501,26 @@ static int sys_call(Z8K *c, unsigned n)
 }
 
 /* -------------------------------------------------------------------- main */
+
+/* optional system call trace: Z8K_SC_TRACE=1 */
+static int sys_call(Z8K *c, unsigned n)
+{
+	static int tr = -1;
+	static FILE *tf;
+	int rc;
+	if (tr < 0) {
+		const char *p = getenv("Z8K_SC_TRACE");
+		tr = p != NULL;
+		if (tr) tf = fopen(p, "a");	/* a host file: the guest may close fd 2 */
+		if (tr && !tf) tr = 0;
+	}
+	if (tr) fprintf(tf, "sc %u r0-3=%04x %04x %04x %04x", n, c->r[0], c->r[1], c->r[2], c->r[3]);
+	if (tr) fflush(tf);
+	rc = sys_call_impl(c, n);
+	if (tr) fprintf(tf, " -> r4=%04x r5=%04x%s\n", c->r[4], c->r[5], (c->fl & F_C) ? " ERR" : "");
+	if (tr) fflush(tf);
+	return rc;
+}
 
 int main(int argc, char **argv)
 {
