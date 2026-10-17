@@ -21,7 +21,7 @@ PROGS = ar ranlib size strip
 
 FILES=		getud putud
 STRIPFILES=	copydisk dump dumpdir format restor sync tar verify
-CLEANFILES=	compat1crt.o sync.o
+CLEANFILES=	sync.o
 
 all: $(PROGS) $(FILES) $(STRIPFILES) strip-programs
 
@@ -49,11 +49,11 @@ $(CRT)/crt0-strip.o: $(CRT)/crt0-strip.s
 strip-programs:
 	$(STRIP) $(STRIPFILES)
 
-compat1crt.o:	compat1crt.s
-	$(CAS) -u -o $@ compat1crt.s
+$(CRT)/crt0-sync.o: $(CRT)/crt0-sync.s
+	$(CAS) -u -o $@ $(CRT)/crt0-sync.s
 
-sync:	compat1crt.o sync.o
-	$(LD) -o $@ -e start compat1crt.o sync.o -lc
+sync: $(CRT)/crt0-sync.o sync.o
+	$(LD) -o $@ -e start $(CRT)/crt0-sync.o sync.o -lc
 
 install: $(PROGS)
 	cp ar $(PREFIX)/bin/ar
@@ -63,6 +63,6 @@ install: $(PROGS)
 
 clean:
 	rm -f $(PROGS) $(FILES) $(STRIPFILES) $(CLEANFILES) *.o
-	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-size.o $(CRT)/crt0-strip.o
+	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-size.o $(CRT)/crt0-strip.o $(CRT)/crt0-sync.o
 
 .PHONY: all clean install strip-programs
