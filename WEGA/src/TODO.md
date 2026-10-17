@@ -8,7 +8,12 @@ Git content is in English; the German notes of the original WEGA sources stay as
 Last checked: 2026-10-17. Verification (from `WEGA/host`):
 `make check` in host/ (cc: 74 command lines identical; popt: 522 corpus runs
 identical; libc: 170 identical, 7 different, 3 without C source; oldcc: all
-ok) and `make verify-wega` (ar identical; size and strip: own code only).
+ok) and `make verify-wega`, which builds `src/cmd` with the original cc, cas,
+as, ld, ar and strip (under z8k-emu), runs `make strip-programs`, and reports
+per program. Result of this run, for the ar/ranlib/size/strip/
+getud/putud/copydisk/dump/dumpdir/format/restor/sync/tar/verify group: ar,
+dump, dumpdir, restor and sync are identical; pb.image and sa.timer are
+identical; everything else differs or is not built, see the table.
 
 ## Differences and workarounds
 
@@ -32,25 +37,42 @@ produce the same bytes with the shipped cc.
 | `lib/oldlibc/doprnt.c` | - | not built | Structural reconstruction of the Jan 1983 `_doprnt`, untested | - |
 | `cmd/ar.c` + `lib/libc/crt/crt0-ar.s` | ar | identical (built with the WEGA cc) | - | `crt0-ar.s` is the start-up variant of this binary |
 | `cmd/size.c` + `lib/libc/crt/crt0-size.s` | size | own code identical, file differs | The libc part of the original is an older libc revision | none; verify compares own code only |
-| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | own code identical, file differs | Same as size | none; verify compares own code only |
+| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | differs in the own code (2 blocks at 0x2b0, 0x2bc in the `cmpins` range) | Not reproduced: an earlier run had the own code identical. Register allocation differs (`ldk r2,#0` vs `ldk r4,#0`); `strip.c` unchanged since 7d120f0. Open | none yet |
 | `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | Needs the older cc | none yet |
+| `cmd/getud.c`, `cmd/putud.c` | getud, putud | builds, differs (8422 vs 8506, 8260 vs 8346 bytes) | Not analysed | none yet |
+| `cmd/copydisk.c` | copydisk | builds, differs (7318 vs 7148 bytes) | Not analysed | none yet |
+| `cmd/format.c` | format | builds, differs (6738 vs 6568 bytes) | Not analysed | none yet |
+| `cmd/tar.c` | tar | builds, differs (21692 vs 22494 bytes) | Not analysed | none yet |
+| `cmd/verify.c` | verify | builds, differs (6696 vs 6526 bytes) | Not analysed | none yet |
+| `cmd/dump.c`, `cmd/dumpdir.c`, `cmd/restor.c`, `cmd/sync.c` | dump, dumpdir, restor, sync | identical (sync, restor after strip-programs) | - | - |
+| `cmd/BOOT0/boot0.md.s` | pb.image | identical (`as -u`, `ld -s`, `strip -h`) | - | - |
+| `cmd/BOOT0/boot0.fd.s`, `boot0.ud.s`, `boot0.rm.s` | boot0.fd, boot0.ud, boot0.rm | builds, not compared | No original in `arc/cpio` | none |
+| `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | The emulator stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) while the original cc compiles `dosopn.c`, which has no floating point. Cause in the cc not yet traced (cc at 00:b270) | none; blocked by the emulator |
+| `cmd/pburn/*.c` | pburn | **exception: newer source than in WEGA (allowed), expected to differ; not built** | The sources are inconsistent: `pb.cmdline.c` defines `namef[80]`, `pb.buf.c` and `pb.file.c` declare `namef[50]`; ld reports `bss overflow` | none; the source is not changed |
+| `cmd/standalone/sa.cat.c`, `sa.format.c`, `sa.verify.c`, `sa.mkfs.c`, `sa.install.c`, `sa.shipdisk.c` | sa.cat, sa.format, sa.verify, sa.mkfs, sa.install, sa.shipdisk | differ (sizes 1060/1036, 8916/10204, 4050/5162, 4284/4260, 7146/7122, 1816/2464) | Not analysed. `libb.a` is not the cause: `sa.timer` (same library) is identical. Probably a different source revision | none yet |
+| `cmd/standalone/sa.timer.c` | sa.timer | identical | - | - |
+| `cmd/standalone/sa.diags/` | sa.diags | not built, no original | Needs the MON16 firmware modules `p.gesa.s`, `p.ldsd.s`, `p.term.s`, not in this tree | none |
 
-## Not yet checked
+## Scripts without an object check
 
-Old status 100% in the earlier `cmd/TODO`, sources still flat in `cmd/`
-(to be moved to `cmd/<name>/` with the layout step, then checked):
-chkdiff, format, getud, pburn, putud, sync, tar, uuclear, verify, whodo,
-dump, dumpdir, restor.
+`cmd/chkdiff`, `cmd/uuclear` and `cmd/whodo` are text scripts, not compiled
+programs, so there is no object to compare. Their originals are not checked
+(the old status 100% from the earlier `cmd/TODO` is not confirmed).
 
 ## Layout still open
 
 - `cc` and `popt` are Linux-side tools and live in `host/` (not WEGA sources).
 
-- `cmd/copydisk`, `dump`, `dumpdir`, `format`, `getud`, `putud`, `restor`,
-  `sync`, `tar`, `verify` are still flat in `cmd/` (no own directory, no
-  check yet).
-- `cmd/standalone` has its own Makefile with hard-coded `cc`/`ld`; it is not
-  part of `make` in `cmd/` yet.
+- The single-file commands are flat in `cmd/` (V7 layout); `copydisk`, `dump`,
+  `dumpdir`, `format`, `getud`, `putud`, `restor`, `sync`, `tar`, `verify`
+  are built by `make` there, `strip-programs` strips them before the compare.
+- `BOOT0`, `doscopy`, `pburn`, `standalone` have their own template Makefiles
+  and are built by `make` in `cmd/` (`subdirs`). `standalone/sa.diags` is
+  separate and not built (see the table).
+- `make` (the `all` target) does not strip; `make strip-programs` does, and
+  `make verify-wega` in `host/` runs it before comparing.
+- `cmd/doscopy/mk` is a one-line helper (`make doscat ...`) that duplicates
+  the `all` target; not used.
 - `lib/libc` has no Makefile of its own yet.
 
 ## Original programs without source in src/
