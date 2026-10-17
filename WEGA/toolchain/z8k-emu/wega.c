@@ -32,6 +32,7 @@ static const char *root = "";
 static char **envv;			/* guest default environment */
 static int nenv;
 static uint32_t sig_kernel[32];		/* kernel-level handler values per signal */
+static uint8_t  segused[128];		/* segment exists (program image or mkseg) */
 static uint32_t segsz[128];		/* current size in bytes of each program segment (segmented mode) */
 static int mainseg;			/* the segment break() reports (last non-stack data segment) */
 
@@ -138,6 +139,7 @@ static void exec_map(Z8K *c, Exec *x, char **argv, char **envp)
 	int i, stkseg = 0x7F;
 	clear_mem(c);
 	memset(segsz, 0, sizeof segsz);
+	memset(segused, 0, sizeof segused);
 	memset(c->r, 0, sizeof c->r);
 	c->fl = 0;
 	c->segmode = x->segmented;
@@ -164,6 +166,7 @@ static void exec_map(Z8K *c, Exec *x, char **argv, char **envp)
 			uint32_t cex = x->sg[i].coff * 256 + x->sg[i].code;
 			if (cex > ext) ext = cex;
 			ext = (ext + 255) & ~255u;
+			segused[no & 127] = 1;
 			if (ext > segsz[no & 127]) segsz[no & 127] = ext;
 			if (!(x->sg[i].atr & SG_STACK) && (x->sg[i].data || x->sg[i].bssz)) mainseg = no;
 		}
@@ -398,7 +401,7 @@ static int sys_call(Z8K *c, unsigned n)
 			if (!(sw & 0x8000) && sw == 0) return sc_ok2(c, mainseg << 8, segsz[mainseg]);
 			{
 				unsigned sno = (sw >> 8) & 0x7F, ncl = (off + 255) >> 8;
-				if (!segsz[sno]) return sc_err(c, ENOMEM);
+				if (!segused[sno]) return sc_err(c, ENOMEM);
 				if (ncl * 256 > segsz[sno]) segsz[sno] = ncl * 256;
 				return sc_ok(c, 0);
 			}
@@ -455,9 +458,21 @@ static int sys_call(Z8K *c, unsigned n)
 		  for (i = 0; i < 4; i++) { b[4*i] = v[i] >> 24; b[4*i+1] = v[i] >> 16; b[4*i+2] = v[i] >> 8; b[4*i+3] = v[i]; } }
 		gwrite(c, p, b, 16);
 		return sc_long(c, r); }
+	case 55: {	/* mkseg(segaddr): create a segment of the given size, returns seg<<8 */
+		unsigned sno = (a_int(&a) >> 8) & 0x7F, nb = a_int(&a);
+		if (!sno) {
+			for (sno = 4; sno < 0x7F && segused[sno]; sno++)
+				;
+			if (sno >= 0x7F) return sc_err(c, ENOMEM);
+		} else if (segused[sno]) {
+			return sc_err(c, EEXIST);
+		}
+		segused[sno] = 1;
+		segsz[sno] = ((nb + 255) >> 8) << 8;
+		return sc_ok2(c, sno << 8, 0); }
 	case 45: {	/* ssgbrk(segno, nbytes): grow a segment, returns (seg<<8, old size) */
 		unsigned sno = a_int(&a) & 0x7F, nb = a_int(&a), old, ncl = (nb + 255) >> 8;
-		if (!segsz[sno]) return sc_err(c, ENOMEM);
+		if (!segused[sno]) return sc_err(c, ENOMEM);
 		old = segsz[sno];
 		if (old + ncl * 256 > 0x10000) return sc_err(c, ENOMEM);
 		segsz[sno] = old + ncl * 256;
