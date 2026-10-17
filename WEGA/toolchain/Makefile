@@ -2,7 +2,7 @@
 # `make all` builds everything; `make check` runs the tool self-checks
 # (needs the original WEGA files, see KNOWLEDGE.md).
 
-SUBDIRS = z8k-emu ar size strip
+SUBDIRS = z8k-emu ar size strip popt
 
 # Directory with the WEGA file tree (lib/, bin/, usr/...), not in git.
 WEGA ?= ../../../wega/arc/cpio

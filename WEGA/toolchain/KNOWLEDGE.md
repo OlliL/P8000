@@ -562,3 +562,13 @@ listing in git.
 Covered (10, all verify): cnvt, doscan, fltioc, length, malloc, nlist, printf, scanf, swap,
 symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`. Not yet covered: the old-cc
 libc parts that are only embedded in size/strip/ranlib binaries (no member objects exist for them).
+
+## popt (C optimizer, /lib/popt)
+
+`popt/` is a portable C decompilation of the shipped /lib/popt (written from the binary only,
+not from Plexus c2). Modules like the original: z20 tables, z21 (input/output, jump optimizations),
+z22 (rmove: register contents tracking, redundant loads, push/pop, shifts), z23 (isused liveness
+and `stripldm` register renaming). Verified byte-identical (output, `-l`, `-d` incl. statistics)
+against the original run in z8k-emu on 174 compiler outputs of the WEGA sources plus ~200 other .s
+files: `make -C popt check WEGA=<tree> CORPUS=<dir>` (`popt/corpus.sh` builds the corpus; the corpus
+is compiler output and is not kept in git). Details and reproduced quirks: `popt/NOTES.md`.
