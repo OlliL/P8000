@@ -620,3 +620,10 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
   only print a warning and the compile goes on without that pass.
 - Not done: building cc.c with the WEGA cc under z8k-emu (the original was
   probably built with the older cc; an exact own-code match is unlikely).
+
+## local directories on host
+
+- extracted WEGA disk image (root of the file system): `/mnt/users/olivleh1/BACKUPs/P8000/harddisks/oliver_lehmann_robk5504.50_1/extracted`
+- extracted kernel objects with MAME disassembled ASM listings: `/mnt/users/olivleh1/BACKUPs/P8000/kernel`
+- full path to z8k-emu: `/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu`
+- example to run /bin/cc from WEGA on the host: `/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu -r /mnt/users/olivleh1/BACKUPs/P8000/harddisks/oliver_lehmann_robk5504.50_1/extracted/ /bin/cc`
