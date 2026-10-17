@@ -1,0 +1,176 @@
+NAME
+	pburn - prom programmer
+
+SYNTAX
+	pburn
+
+BESCHREIBUNG
+	Pburn ist ein universeller EPROM-Programmer. Das Programm arbeitet
+	menuegesteuert.
+
+	Das Kommando kann nur von der Systemkonsole ausgefuehrt werden. Das
+	Betriebssystem WEGA muss dazu ueber die WEGA-Startdiskette gestar-
+	tet werden.
+
+	Nach Aufruf des Kommandos erfolgt auf der Standardausgabe folgende
+	Dialogbereitschaft:
+
+			   pburn - prom programmer
+			(c) zft/keaw 31.12.1987/v ... 
+			=============================
+	menue:
+		p - program
+		l - list
+		t - crc
+		b - bytemode
+		f - file
+		c - copy
+		q - quit
+	select?
+
+	Danach kann ein entsprechendes Kommando der gewuenschten Funktion
+	eingegeben werden. Das eingegebene Kommando erzeugt wiederum eine 
+	Dialogfolge die entsprechend ueber die Standardeingabe beantwortet
+	werden muss. Grundsaetzlich kann jede Dialoganforderung ueber die
+	Eingabe 'q' abgebrochen werden.
+
+OPTIONEN
+	Optionale Angaben zur Datei: filename [ -w ] [ -D ] [ -ose hex ]
+
+	filename	a.out-Datei (S_MAGIC1, S_MAGIC3, S_MAGIC4, N_MAGIC1,
+			N_MAGIC3, N_MAGIC4, X_MAGIC1, X_MAGIC3, X_MAGIC4).
+			Siehe a.out(5).
+
+	-w		Programmierung wortorientierter Dateien in der Reihen-
+			folge: low Byte, high Byte (bezogen auf die Offset-
+			Adresse).
+			Erstellung wortorientierter Dateien aus mehreren
+			EPROM's in der Reihenfolge: low Byte, high Byte.
+
+	-D		Es wird nur die Datensektion programmiert. Diese Op-
+			tion ist nur sinnvoll fuer Dateien mit getrennten Co-
+			de- und Datenbereich (separated I&D). Normalerweise
+			wird die CODE-Section programmiert.	
+
+	-o		Offset-Adresse (Startadresse) der a.out-Datei. 
+			Standard ist der Beginn des Code-Offset der a.out-Datei.
+
+	-s		Selektierung der Segmentnummer der a.out-Datei. Nur
+			ein Segment zwischen 0 und 80 kann angegeben werden.
+			Standard ist 0.
+
+	-e		Entry-Adresse bei der Erzeugung von a.out-Dateien.
+			Standard ist 0.
+
+	Optionale Angaben zum Epromtype: promtype [ -ol hex ]
+
+	promtype	e2708, e2716, e2732, e2732a, e2764
+
+	-o		Offset-Adresse (Startadresse) des EPROM's.
+			Standard ist 0.
+
+	-l		Laenge des zu programmierenden Teils des EPROM's.
+			Standard entspricht der Laenge des jeweiligen EPROM-
+			Typs.
+
+
+	Vor jedem Programmieren, Lesen und Vergleichen von EPROM's werden
+	Bereitschaftsmeldungen in der Form 
+
+		ready to ...
+				.
+				.
+				.		       ?(y/r/s/ ... /q)
+
+	auf der Standardausgabe angegeben. Diese Bereitschaftsmeldungen ent-
+	sprechen den Parameterangaben in den Dialoganforderungen. Sie sind
+	entsprechend zu beantworten. Im einzelnen haben sie folgende Bedeu-
+	tung:
+
+	y	yes - Ausfuehren der Funktion und gegebenfalls erhoehen des
+		Adressbereichs
+
+	r	repeat - Einstellen des vorangegangenen Adressbereichs bzw.
+		Wiederholen der vorangegangenen Funktion (Copy, Verify EPROM's).
+
+	s	skip - Erhoehen des Adressbereichs.
+
+	m	modify - spezifiziert die Moeglichkeit des Anzeigens bzw. des
+		Modifizieren einzelner Bytes (Datei, EPROM). Waehrend der Abar-
+		beitung des Kommandos erscheint auf der Standardausgabe die 
+		Frage:
+
+			modify ...
+			address to modify?
+
+		Ist die Adresse angegeben, wird der Inhalt diese Bytes
+		angezeigt (Adressangaben beziehen sich grundsaetzlich
+		auf die entsprechenden Prom-Adressen).
+	 	Der Anwender hat jetzt folgende Moeglichkeiten der
+		Eingabe:
+
+		- Eingabe eines hexadezimalen Wertes zwecks Modifikation des
+		  angezeigten Inhalts des Bytes
+
+		- Eingabe eines Newline zwecks Anzeige des naechsten Bytes
+
+		- Eingabe eines 'q' zwecks Ruecksprung zur Frage 'address to
+		  modify?'
+
+	v	verify - Vergleichen von EPROM's (Funktion c - copy)
+		bzw. Vergleichen des Inhalts eines EPROM's mit dem Inhalt einer
+		a.out-Datei (Funktion p - program) und erhoehen des Adressbe-
+		reichs.
+
+	l	list - Auflisten des Inhalts von a.out-Dateien bzw. von
+		EPROM's.
+
+	t	test - Ermittlung der Pruefsumme einer a.out-Datei.
+
+	q	quit - Funktion wird nicht ausgefuehrt, Rueckkehr in das
+		Anfangsmenue.
+
+
+	Die Ausfuehrung der Funktionen wird auf der Standardausgabe ange-
+	zeigt. Bei den Funktionen 'f - file' und 'c - copy' erfolgt die Wei-
+	terfuehrung der Funktion ueber eindeutige Eingabeanforderungen
+	(z.B. 'change to next prom?') an den Anwender. Diese sind jeweils
+	mit 'y' zu quittieren. Eine andere Quittierung fuehrt zum Abbruch der
+	Funktion.
+
+	Die Funktion 'b - bytemode' ermoeglicht das Programmieren (Korrigie-
+	ren) einzelner Bytes eines EPROM's. Unmittelbar nach dem Start der
+	Bereitschaftsmeldung ('y') erscheint auf der Standardausgabe
+
+		bytemode ...
+		address to modify?
+
+	Wird eine Adresse eingegeben, dann wird der Inhalt diese Bytes ange-
+	zeigt. Der Anwender hat jetzt folgende Moeglichkeit der Eingabe:
+
+	- Eingabe eines hexadezimalen Wertes zwecks Modifikation des ange-
+	  zeigten Inhalts des Bytes (Beachte: der eingegebene Wert ist nicht
+	  programmierbar, wenn bei einem oder mehreren Bits des Bytes Wertig-
+	  keitsaenderungen nicht moeglich sind).
+
+	- Eingabe eines Newline zwecks Anzeigen des naechsten Bytes.
+
+	- Eingabe eines 'q' zwecks Ruecksprung zu der Frage 'address to modify'
+
+	Sollte waehrend des Pruefens des EPROM's ein Fehler (oder mehrere)
+	gefunden werden, werden diese Fehler auf der Standardausgabe ange-
+	zeigt. Die Beantwortung von 'continue?' mit 'y' fuehrt zu einer weite-
+	ren Auflistung. Eine andere Quittierung fuehrt zum Abbruch der Fehler-
+	auflistung.
+
+SIEHE AUCH
+	load(1), a.out(5)
+
+DIAGNOSTIK
+	Bei Syntaxfehlern, nicht zugreifbaren Dateien, Funtionsfehlern usw.
+	werden Meldungen in Form von 'error...' bzw. 'warning...' ausgegeben.
+	Diese koennen bei Beantwortung einer moeglichen Eingabeanforderung
+	von 'continue' mit 'y' ignoriert werden unter Beachtung der jeweiligen
+	Einschraenkung der entsprechenden Funktion. Eine andere Beantwortung 
+	fuehrt zum Abbruch der Funktion.
+

@@ -1,28 +1,12 @@
-# pburn: PROM burner. Compiled with the WEGA cc, linked through the cc
-# driver (crt0 and libc).
-#
-#   make                       build pburn
-#   make install PREFIX=dir    install below dir (default /)
-#   make clean                 remove the objects and the program
+# 2.1 is the version on WEGA 3.1
 
-CC ?= cc
-CFLAGS ?= -O
-PREFIX ?= /
+PBURN_VERSION ?= 2.1
 
-OBJECTS = pb.o pb.buf.o pb.cmdline.o pb.command.o pb.devud.o pb.file.o
-
-all: pburn
-
-.c.o:
-	$(CC) $(CFLAGS) -c $<
-
-pburn: $(OBJECTS)
-	$(CC) $(OBJECTS) -o $@ -s
-
-install: pburn
-	cp pburn $(PREFIX)/bin/pburn
+all:
+	cd $(PBURN_VERSION) ; make $@
 
 clean:
-	rm -f pburn *.o
+	cd $(PBURN_VERSION) ; make $@
 
-.PHONY: all install clean
+install:
+	cd $(PBURN_VERSION) ; make $@
