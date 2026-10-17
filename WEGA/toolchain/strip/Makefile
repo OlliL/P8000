@@ -28,13 +28,4 @@ $(WORK)/crt0s.o: crt0s.s
 verify: all
 	python3 ../tools/cmpins.py $(WORK)/strip $(WEGA)/usr/bin/strip 0x68c 0x68c
 
-# cas listings (cc -S source and cas -l listing) of the rebuilt sources,
-# checked in under listing/ to ease comparison with the originals
-listing:
-	../tools/listing.sh $(abspath $(WEGA)) strip.c listing -O
-	../tools/listing.sh $(abspath $(WEGA)) crt0s.s listing
-
-clean:
-	rm -rf $(WORK)
-
-.PHONY: all verify clean listing
+.PHONY: all verify clean

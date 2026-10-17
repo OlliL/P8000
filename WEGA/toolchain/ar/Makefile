@@ -30,13 +30,4 @@ $(WORK)/crt0v.o: crt0v.s
 verify: all
 	cmp $(WORK)/ar $(WEGA)/bin/ar && echo "ar: identical to original"
 
-# cas listings (cc -S source and cas -l listing) of the rebuilt sources,
-# checked in under listing/ to ease comparison with the originals
-listing:
-	../tools/listing.sh $(abspath $(WEGA)) ar.c listing -O
-	../tools/listing.sh $(abspath $(WEGA)) crt0v.s listing
-
-clean:
-	rm -rf $(WORK)
-
-.PHONY: all verify clean listing
+.PHONY: all verify clean

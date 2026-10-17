@@ -3,6 +3,7 @@
 
 Usage: sdis.py [-l] file.o
   -l   listing: address and code words in front of each line
+  -a   assembler source: no .extern line (symbols in order of first use)
 
 Output follows cas syntax as far as known (see KNOWLEDGE.md). Relocated
 operands are shown as symbol+addend. Internal targets without a symbol get
@@ -137,6 +138,9 @@ def render_op(obj, ins, o, off):
     return z8k.op_text(o, ins)
 
 
+NOEXT = False
+
+
 def disasm(fn, listing):
     obj = Obj(fn)
     s = obj.s
@@ -163,82 +167,96 @@ def disasm(fn, listing):
             pc = ins.end
         decoded[si] = (off, lst)
 
-    out.append("// %s: magic %04X %s" % (fn, s.magic, "segmented" if obj.seg else "nonsegmented"))
-    if obj.seg:
-        out.append("\t.seg")
-    ext = [y["name"] for y in s.symbols if (y["type"] & 0x1F) == 0 and y["type"] & 0x20]
-    comm = [(y["name"], y["value"]) for y in s.symbols if (y["type"] & 0x1F) == 0 and y["value"]]
-    if ext:
-        out.append("\t.extern\t" + ", ".join(n for n in ext if n not in dict(comm)))
-    for n, v in comm:
-        out.append("\t.comm\t%d, %s" % (v, n))
-
-    def labels_at(si, area, a):
-        res = []
-        for y in obj.labels.get((si, area, a), []):
-            glob = (y.get("type", 0) & 0x20) != 0
-            res.append("%s%s" % (y["name"], "::" if glob else ":"))
-        return res
-
-    for si, kind, off, size in s.section_ranges():
-        out.append("")
-        out.append("// segment table entry %d (segment %d), %s, %d bytes" % (
-            si, s.segs[si]["segno"], kind, size))
-        out.append("\t.psec\n\t.%s" % ("code" if kind == "text" else "data"))
-        if kind == "text":
-            for pc, ins in decoded[si][1]:
-                for lab in labels_at(si, "text", pc):
-                    out.append(lab)
-                if ins is None:
-                    w = obj.word(off + pc)
-                    line = "\t.word\t%s\t// undecodable" % z8k.hx(w)
-                    words = [w]
-                else:
-                    ops = []
-                    for o in ins.ops:
-                        t = render_op(obj, ins, o, off + pc)
-                        if t is None:
-                            t = obj.label(si, "text", o.a)
-                        ops.append(t)
-                    ops = [x for x in ops if x != ""]
-                    if ins.mn == "epu":
-                        line = "\t" + z8k.text(ins)
-                    else:
-                        line = "\t" + ins.mn + ("\t" + ",".join(ops) if ops else "")
-                    words = ins.words
-                if listing:
-                    line = "%04x %-19s%s" % (pc, " ".join("%04x" % w for w in words), line)
-                out.append(line)
+    for _pass in (0, 1):   # pass 0 only creates the labels needed by forward references
+        out = []
+        out.append("// %s: magic %04X %s" % (os.path.basename(fn), s.magic, "segmented" if obj.seg else "nonsegmented"))
+        if obj.seg:
+            out.append("\t.seg")
+        ext = [y["name"] for y in s.symbols if (y["type"] & 0x1F) == 0 and y["type"] & 0x20]
+        comm = [(y["name"], y["value"]) for y in s.symbols if (y["type"] & 0x1F) == 0 and y["value"]]
+        if NOEXT:
+            # assembler source: declare all symbols in symbol table order so
+            # that cas rebuilds the identical symbol table
+            for y in s.symbols:
+                t = y["type"]
+                if t & 0x1F == 0 and y["value"]:
+                    out.append("\t.comm\t%d, %s" % (y["value"], y["name"]))
+                elif t & 0x1F == 0 or t & 0x20:
+                    out.append("\t.extern\t" + y["name"])
         else:
-            a = 0
-            while a < size:
-                for lab in labels_at(si, "data", a):
-                    out.append(lab)
-                r = obj.reloc.get(off + a)
-                w = obj.word(off + a) if a + 2 <= size else s.image[off + a] << 8
-                if r:
-                    name, add = obj.target_of(r, off + a, w)
-                    line = "\t.word\t%s" % fmt_sym(name, add)
-                elif a + 2 <= size:
-                    line = "\t.word\t%s" % z8k.hx(w)
-                else:
-                    line = "\t.byte\t%s" % z8k.hx(w >> 8, 2)
-                if listing:
-                    line = "%04x %-19s%s" % (a, "%04x" % w, line)
-                out.append(line)
-                a += 2
-    # bss symbols
-    bss = [y for y in s.symbols if (y["type"] & 0x1F) == 4]
-    if bss:
-        out.append("\n\t.bss")
-        for y in sorted(bss, key=lambda y: y["value"]):
-            out.append("%s%s\t// bss at %04x" % (y["name"], "::" if y["type"] & 0x20 else ":",
-                                                y["value"] & 0xFFFF))
+            if ext:
+                out.append("\t.extern\t" + ", ".join(n for n in ext if n not in dict(comm)))
+            for n, v in comm:
+                out.append("\t.comm\t%d, %s" % (v, n))
+
+        def labels_at(si, area, a):
+            res = []
+            for y in obj.labels.get((si, area, a), []):
+                glob = (y.get("type", 0) & 0x20) != 0
+                res.append("%s%s" % (y["name"], "::" if glob else ":"))
+            return res
+
+        for si, kind, off, size in s.section_ranges():
+            out.append("")
+            out.append("// segment table entry %d (segment %d), %s, %d bytes" % (
+                si, s.segs[si]["segno"], kind, size))
+            out.append("\t.psec\n\t.%s" % ("code" if kind == "text" else "data"))
+            if kind == "text":
+                for pc, ins in decoded[si][1]:
+                    for lab in labels_at(si, "text", pc):
+                        out.append(lab)
+                    if ins is None:
+                        w = obj.word(off + pc)
+                        line = "\t.word\t%s\t// undecodable" % z8k.hx(w)
+                        words = [w]
+                    else:
+                        ops = []
+                        for o in ins.ops:
+                            t = render_op(obj, ins, o, off + pc)
+                            if t is None:
+                                t = obj.label(si, "text", o.a)
+                            ops.append(t)
+                        ops = [x for x in ops if x != ""]
+                        if ins.mn == "epu":
+                            line = "\t" + z8k.text(ins)
+                        else:
+                            line = "\t" + ins.mn + ("\t" + ",".join(ops) if ops else "")
+                        words = ins.words
+                    if listing:
+                        line = "%04x %-19s%s" % (pc, " ".join("%04x" % w for w in words), line)
+                    out.append(line)
+            else:
+                a = 0
+                while a < size:
+                    for lab in labels_at(si, "data", a):
+                        out.append(lab)
+                    r = obj.reloc.get(off + a)
+                    w = obj.word(off + a) if a + 2 <= size else s.image[off + a] << 8
+                    if r:
+                        name, add = obj.target_of(r, off + a, w)
+                        line = "\t.word\t%s" % fmt_sym(name, add)
+                    elif a + 2 <= size:
+                        line = "\t.word\t%s" % z8k.hx(w)
+                    else:
+                        line = "\t.byte\t%s" % z8k.hx(w >> 8, 2)
+                    if listing:
+                        line = "%04x %-19s%s" % (a, "%04x" % w, line)
+                    out.append(line)
+                    a += 2
+        # bss symbols
+        bss = [y for y in s.symbols if (y["type"] & 0x1F) == 4]
+        if bss:
+            out.append("\n\t.bss")
+            for y in sorted(bss, key=lambda y: y["value"]):
+                out.append("%s%s\t// bss at %04x" % (y["name"], "::" if y["type"] & 0x20 else ":",
+                                                    y["value"] & 0xFFFF))
     return "\n".join(out)
 
 
 def main(argv):
+    global NOEXT
     listing = "-l" in argv
+    NOEXT = "-a" in argv
     for fn in [a for a in argv if not a.startswith("-")]:
         print(disasm(fn, listing))
 

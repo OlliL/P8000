@@ -541,12 +541,15 @@ older compiler revision, not from options or from the emulator.
   Their own code (size 0x42..0x224, strip) is identical to the shipped cc output.
 - `oldlibc/doprnt.c` holds the structural reconstruction of _doprnt (untested).
 
-## cas listings are checked in
+## oldcc: assembler sources of objects made by the old cc
 
-Until the older cc is available, every rebuilt source has its assembler output checked in so that
-code can be compared with plain text tools: `<dir>/listing/NAME.s` (`cc -S`, the cas source) and
-`NAME.l` (`cas -l`: location, code bytes, source line). Generate with `make listing` (top level or
-per directory; `tools/listing.sh WEGA_ROOT SRC OUTDIR [flags|none]`). The libc listings live in
-`libc/listing/<dir>/` and use the cc flags that reproduced the original member (members that do not
-reproduce are listed with `-O`). Rebuilding the listing's `.s` with `cas -u` gives the same object
-as `cc -c`. Listings are of our own rebuilt sources only, never of the original binaries.
+Objects that an older cc revision produced cannot be rebuilt from C with the shipped cc. For those
+we keep `oldcc/libc/<member>.s` (cas syntax) which the original `cas -u` turns into the byte-identical
+original member (`make -C oldcc verify`). They are generated from the original objects with
+`tools/sdis.py -a` (all symbols are pre-declared in symbol-table order, otherwise the symbol table
+of the rebuilt object differs). Sources that the shipped cc reproduces byte for byte get NO `.s`
+listing in git.
+
+Covered (11, all verify): cnvt, doprnt, doscan, fltioc, length, malloc, nlist, printf, scanf, swap,
+symscan. Not yet covered: `ecvt` (PLZ/ASM `module ecvt`, needs `as` syntax, not cas) and the old-cc
+libc parts that are only embedded in size/strip/ranlib binaries (no member objects exist for them).
