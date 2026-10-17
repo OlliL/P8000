@@ -16,7 +16,7 @@ PROCED = sa.diags
 all: $(PROCED)
 
 .s.o:
-	$(AS) -o $@ $<
+	$(AS) -u -o $@ $<
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<

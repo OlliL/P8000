@@ -51,7 +51,7 @@ produce the same bytes with the shipped cc.
 | `cmd/pburn/*.c` | pburn | **exception: newer source than in WEGA (allowed), expected to differ; not built** | The sources are inconsistent: `pb.cmdline.c` defines `namef[80]`, `pb.buf.c` and `pb.file.c` declare `namef[50]`; ld reports `bss overflow` | none; the source is not changed |
 | `cmd/standalone/sa.cat.c`, `sa.format.c`, `sa.verify.c`, `sa.mkfs.c`, `sa.install.c`, `sa.shipdisk.c` | sa.cat, sa.format, sa.verify, sa.mkfs, sa.install, sa.shipdisk | differ (sizes 1060/1036, 8916/10204, 4050/5162, 4284/4260, 7146/7122, 1816/2464) | Not analysed. `libb.a` is not the cause: `sa.timer` (same library) is identical. Probably a different source revision | none yet |
 | `cmd/standalone/sa.timer.c` | sa.timer | identical | - | - |
-| `cmd/standalone/sa.diags/` | sa.diags | not built, no original | Needs the MON16 firmware modules `p.gesa.s`, `p.ldsd.s`, `p.term.s`, not in this tree | none |
+| `cmd/standalone/sa.diags/` | sa.diags | builds, no original to compare | The MON16 modules `p.gesa.s`, `p.ldsd.s`, `p.term.s` are copied from `OlliL/P8000` `firmware/MON16` into the build directory (not in git). `sa.test.s` needs `as -u` (without it, `as` stops with ERROR 50 at `call _printf`) | none |
 
 ## Scripts without an object check
 
