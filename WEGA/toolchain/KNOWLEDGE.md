@@ -420,3 +420,20 @@ Results (all byte-identical to the objects shipped with WEGA, see
 - `WEGA/src/lib/libc/csu/crt0.s` (PLZ/ASM, Rev 3.2 09/12/83) matches the shipped
   `/lib/crt0.o` (42 bytes text, data `.word 0`). The ar/ranlib binaries use a
   later crt0 variant (version string in text and data), see `ar/crt0v.s`.
+
+## Plexis System III sources (s3plxsrc.tar.gz, not in git)
+
+- Zilog Z8000 SysIII source tree from Plexis (cmd/, lib/, uts/, ...), 2440 files.
+  No ranlib/`__.SYMDEF` anywhere (only a BUGS mention).
+- Contains the PCC based Z8000 compiler: `cmd/cc/z8000/pcc` (ccom: order.c,
+  local2.c, table.c, code.c), `c2` (peephole optimizer, c20-c23, ancestor of
+  popt z20-z23), `cpp`, assembler `cmd/as/z8000`, `cmd/ld`, `lib/libc/z8000`
+  (stdio, gen, sys, crt, csu/crt0.s), sources of ar, size, nm, strip.
+- crt0 revision strings in WEGA binaries are an era fingerprint: 3.1 (10/82 -
+  03/83) vs 3.2 (07/83 - 12/83), e.g. size = 3.1 01/14/83, strip = 3.1 01/24/83,
+  ar/nm = 3.2 11/18/83, ld = 3.2 07/26/83, ranlib/cas/cc passes carry none.
+- Check: Plexis `lib/libc/z8000/stdio/fseek.c` compiled with the shipped cc -O has
+  exactly the instruction sequence of the OLD fseek embedded in ranlib; only the
+  register/frame allocation differs (old: frame 14, temps in r1/rr0/rr6; shipped
+  compiler: frame 20, temps in r4/r5). So the sources are right, the old
+  compiler's code generator/optimizer is the missing piece.
