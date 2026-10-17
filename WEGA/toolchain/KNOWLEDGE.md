@@ -459,3 +459,24 @@ Results (all byte-identical to the objects shipped with WEGA, see
 - z8k-emu now also runs Plexus a.out (0407/0410/0411) with the Plexus system
   call ABI (`sc INDIR; .word blk`, first argument in r0 for some calls). In 0410
   files data addresses start at the text size and wrap around 64K.
+
+## libc check against the original library (status)
+
+`toolchain/libc/check.sh WEGA_ROOT LIBC_SRC ORIG_MEMBERS` rebuilds each member of
+`WEGA/src/lib/libc` with the original tools (`.s` with `/bin/as`, `.c` with
+`/bin/cc` in -O, "", -Or, -Ol) and compares it byte for byte with the original
+member.
+
+- `/bin/as` is the PLZ/ASM assembler (not `cas`). It execs the overlay `/lib/as2`
+  (magic E705), so the emulator implements overlay exec (I-space replaced, data,
+  stack and registers kept).
+- Result: 159 of 174 members identical, 14 differ, 1 missing (`brk`).
+- Known causes of differences:
+  - `abort.s`: symbol must be `_abort::`.
+  - `pow10.s`, `atof.s`: the original `as` rejects EPU mnemonics (ERROR 91); the
+    original objects contain EPU instructions as `.word` encodings; extern name `__pow10`.
+  - `execvp`, `malloc`: the sources are a different version than the library member
+    (original execvp uses `index`, `open/close/read`; no debug `ASSERT`/`allock` in malloc).
+  - `length`: different code, probably an older compiler.
+  - `nlist`, `readsym`: need `a.out.h` / syntax fixes in the source.
+- Still without source: cnvt.c, doprnt.c, ecvt.s, fltioc.c, swap.c, symscan.c.

@@ -80,7 +80,7 @@ static uint16_t be16(const uint8_t *p) { return (p[0] << 8) | p[1]; }
 static uint32_t be32(const uint8_t *p) { return ((uint32_t)be16(p) << 16) | be16(p + 2); }
 
 typedef struct {
-	int magic, segmented, sep, flags, nseg, plexus;
+	int magic, segmented, sep, flags, nseg, plexus, overlay;
 	uint32_t entry, bss;
 	struct { int no, coff, doff, boff, code, data, bssz, atr; } sg[128];
 	uint8_t *file; long size;
@@ -97,7 +97,7 @@ static int exec_open(const char *host, Exec *x)
 	if ((long)fread(x->file, 1, n, f) != n) { fclose(f); free(x->file); return EIO; }
 	fclose(f);
 	x->size = n;
-	x->plexus = 0;
+	x->plexus = 0; x->overlay = 0;
 	if (n < 16) { free(x->file); return ENOEXEC; }
 	x->magic = be16(x->file);
 	if (x->magic >= 0x107 && x->magic <= 0x109) {
@@ -119,6 +119,7 @@ static int exec_open(const char *host, Exec *x)
 	case 0xE611: x->segmented = 1; x->sep = 1; break;
 	case 0xE707: x->segmented = 0; x->sep = 0; break;
 	case 0xE711: x->segmented = 0; x->sep = 1; break;
+	case 0xE705: x->segmented = 0; x->sep = 1; x->overlay = 1; break;
 	default: free(x->file); return ENOEXEC;
 	}
 	{
@@ -343,6 +344,23 @@ static int do_exec(Z8K *c, Ad path, Ad argvp, int haveenv, Ad envp)
 		fprintf(stderr, "\n");
 	}
 	ev = haveenv ? gvec(c, envp, &ne) : envv;
+	if (x.overlay) {
+		/* overlay (N_MAGIC4): replace the code of the running separate I&D
+		   program and continue at the overlay entry; data, stack and registers stay */
+		if (!c->sepid || x.nseg < 1) { free(x.file); return sc_err(c, ENOMEM); }
+		{
+			uint8_t *im = z8k_block(c, 0, 0);
+			memset(im, 0, 0x10000);
+			memcpy(im + x.sg[0].coff * 256, x.file + x.textoff, x.sg[0].code);
+			c->pc = x.entry & 0xFFFE;
+			c->halted = 0;
+		}
+		free(x.file);
+		for (i = 0; i < na; i++) free(av[i]);
+		free(av);
+		if (haveenv) { for (i = 0; i < ne; i++) free(ev[i]); free(ev); }
+		return 0;
+	}
 	exec_map(c, &x, av, ev);
 	free(x.file);
 	for (i = 0; i < na; i++) free(av[i]);
