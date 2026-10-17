@@ -2,7 +2,7 @@
 # `make all` builds everything; `make check` runs the tool self-checks
 # (needs the original WEGA files, see KNOWLEDGE.md).
 
-SUBDIRS = z8k-emu
+SUBDIRS = z8k-emu ar
 
 # Directory with the WEGA file tree (lib/, bin/, usr/...), not in git.
 WEGA ?= ../../../wega/arc/cpio
@@ -18,6 +18,9 @@ check:
 	python3 tools/check_reloc.py $(LIBS)/*/*.o
 
 # Oracle self test (needs UTS= extracted uts.tar.gz/uts and KOBJ= kernel lib2 dir)
+verify: all
+	@for d in $(SUBDIRS); do [ ! -f $$d/Makefile ] || $(MAKE) -C $$d verify WEGA=$(abspath $(WEGA)) 2>/dev/null || true; done
+
 check-oracle: all
 	z8k-emu/selftest.sh $(WEGA) $(UTS) $(KOBJ)
 

@@ -372,3 +372,23 @@ Results (all byte-identical to the objects shipped with WEGA, see
 - EPU instruction formats and cas mnemonics (fadd, fldd, ...).
 - Which cas condition code and flag names to emit (both `ne`/`nz`,
   `c`/`ult` exist).
+
+## ar (reconstructed, byte-identical)
+
+`ar/ar.c` + `ar/crt0v.s` rebuild `/bin/ar` byte for byte (`make -C ar verify`).
+
+- Source is the System III/V7 ar, version string `@[$]ar.c 2.2 11/18/83 - 87wega3.2`;
+  WEGA additions: `-l` (local temp files `vXXXXX`), `av0 = trim(argv[0])` in all
+  messages, sticky bit `t` in the mode tables, `qcmd`/`cleanup` use `stats()`.
+- Link: `ld -s -e start crt0v.o ar.o /lib/libc.a`, cc flags `-O`. `crt0v.s` is a
+  crt0 variant (`jr` over a 22-byte version string, then the usual start-up);
+  assemble with `cas -u`.
+- Binary layout: crt0 (0x00-0x42), ar.o, then the libc members in archive order.
+- Compiler behaviour learned while matching:
+  - `register` locals are saved with `ld`/`ldm` below the frame; a plain unused
+    `int` local adds one 2-byte frame slot (rcmd, notfound, longt each declare an
+    unused `int u;` to reproduce the original frame size).
+  - `if((a[i] = *cp) != 0) cp++;` compiles to `testb rl2`; the form
+    `a[i] = *cp; if(*cp) cp++;` gives `testb @r14`.
+  - `f(g())` keeps g's result in a frame temp.
+  - Strings, tables and jump tables are emitted in function order.
