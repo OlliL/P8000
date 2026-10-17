@@ -6,18 +6,20 @@
 #   make clean                 remove the objects and the program
 
 SCC ?= scc
-CFLAGS ?= -O
+GLD ?= gld
+SCRT0 ?= /lib/scrt0.o
+LIBC ?= /lib/slibc.a
 PREFIX ?= /
 
-OBJECTS = pb.o pb.buf.o pb.cmdline.o pb.command.o pb.devud.o pb.file.o
+OBJECTS = pb.o pb.command.o pb.cmdline.o pb.file.o pb.buf.o pb.devud.o
 
 all: pburn
 
 .c.o:
-	$(SCC) $(CFLAGS) -c $<
+	$(SCC) -c $<
 
 pburn: $(OBJECTS)
-	$(SCC) $(OBJECTS) -o $@ -s
+	$(GLD) $(SCRT0) $(OBJECTS) $(LIBC) -o $@
 
 install: pburn
 	cp pburn $(PREFIX)/bin/pburn

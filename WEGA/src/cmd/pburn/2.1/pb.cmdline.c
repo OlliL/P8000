@@ -343,7 +343,7 @@ char *vptr;
 			}
 
 
-	if ((command=='p' && tpe1==0) && (begadre1 != 0L || prlang != 0x400L))
+	if ((command=='p' && tpe1==0) && (begadre1 != 0L || lange1 != 0x400L))
 								{warning=11;
 								outwar();
 								begadre1=0L;
@@ -600,7 +600,6 @@ int c;
 		case 13: printf ("%s",war13); warning=false; return;
 		case 14: printf ("%s",war14); break;
 		case 15: printf ("%s",war15); break;
-		case 16: printf ("%s",war16); break;
 		}
 	printf ("\007continue ?");
 	gets (cmdbuf);

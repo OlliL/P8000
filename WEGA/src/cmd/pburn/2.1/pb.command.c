@@ -66,7 +66,7 @@ program()
 				else if (answer=='m') modify();
 				else if (answer=='l') {listbuf('f',begadre1,lange1,progbuf,&progffff);
 						      mofy=true;}
-				else if (answer=='t') {crc ('t',progbuf,lange1,&progffff);
+				else if (answer=='t') {crc (progbuf,lange1);
 						      mofy=true;}
 		  }while (errflag==false);
 } 

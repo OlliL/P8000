@@ -3,9 +3,9 @@
 
 	pburn - programmer	(c) zft/keaw abt.: basissoftware wae
 				wega p8000/16-bit-teil
-				version : 2.3
+				version : 2.1
 					  (prom programmer)
-				datum	: 20.11.1989
+				datum	: ??.??.1989
 
 
 	bearbeiter:		r. kuehle

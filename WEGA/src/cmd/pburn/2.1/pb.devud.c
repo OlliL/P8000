@@ -118,8 +118,7 @@ char *pbufepr, *padrffff;
 			switch (zei)	{
 					case 1: error=12; printf("\n"); outerr(); close (fd2); res_del(); return;
 					case 2: error=13; printf("\n"); outerr(); close (fd2); res_del(); return;
-					case 3: if (kennS==1)	warning=16;
-							else	warning=15;
+					case 3: warning=15;
 						outwar();
 						vefy=1;
 						if (warning==true)	{zei1='n';

@@ -252,10 +252,7 @@ else		/* executable and overlay */
 						switch (bre)
 							{
 							case 's': zhl1=1; break;
-							case 'h': zhl1=2; 
-								  if ((nbytes % 2) > 0)	nbytes=nbytes/2+1;
-									else		nbytes=nbytes/2; 
-								  break;
+							case 'h': zhl1=2; nbytes=nbytes/2; break;
 							case 'l': zhl1=2; nbytes=nbytes/2; peprombuf++; break;
 							}
 						for (;nbytes>0;pprogbuf++,peprombuf=peprombuf+zhl1,nbytes--)
@@ -280,10 +277,7 @@ else		/* executable and overlay */
 						switch (bre)
 							{
 							case 's': zhl1=1; break;
-							case 'h': zhl1=2; 
-								  if ((nbytes % 2) > 0)	nbytes=nbytes/2+1;
-									else		nbytes=nbytes/2; 
-								  break;
+							case 'h': zhl1=2; nbytes=nbytes/2; break;
 							case 'l': zhl1=2; nbytes=nbytes/2; peprombuf++; break;
 							}
 						for (;nbytes>0;pprogbuf++,peprombuf=peprombuf+zhl1,nbytes--)
@@ -302,10 +296,7 @@ else		/* executable and overlay */
 		switch (bre)
 			{
 			case 's': zhl1=1; break;
-			case 'h': zhl1=2; 
-				  if ((nbytes % 2) > 0)	nbytes=nbytes/2+1;
-					else		nbytes=nbytes/2; 
-				  break;
+			case 'h': zhl1=2; nbytes=nbytes/2; break;
 			case 'l': zhl1=2; nbytes=nbytes/2; peprombuf++; break;
 			}
 		for (;nbytes>0;pprogbuf++,peprombuf=peprombuf+zhl1,nbytes--)

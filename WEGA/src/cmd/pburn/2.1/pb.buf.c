@@ -31,7 +31,7 @@
 #define des "destination"
 #define chs "crc_checksum: "
 
-char	d1, e1;
+char	e1;
 
 extern int errflag,warning,mofy,answer,qflag;
 extern long begadrf, begadre1, lange1, begadre2, lange2, prlang;
@@ -64,10 +64,6 @@ progprom()
 						answer=' ';
 						return;}}
 	crcprom(' ');
-	if (vefy==0)	{d1=d;
-			e1=e;
-			crc (' ',progbuf,lange1,&progffff);
-			if ((d1!=d) || (e1!=e))	vefy=3;}
 	if (vefy!=0)
 			{
 			warning=14; outwar();
@@ -352,25 +348,18 @@ char cid;
  
 /*	crc-berechnung adr buffer; laenge buffer
 	---------------------------------------- */
-crc (cid,pbuf,lang,padrffff)
+crc (pbuf,lang)
 
-char cid;
-char *pbuf, *padrffff;
+char *pbuf;
 long lang;
 
 {
 char  a1, a2;
 int i;
 
-	if (cid=='t')	printf ("%s %s %s\n",tcr,fil,namef);
+	printf ("%s %s %s\n",tcr,fil,namef);
 
 	d=0xff; e=0xff;
-
-	if (lang==0x10000L)	{lang--;
-				kffff=1;}
-		else		kffff=0;
-
-	do {
 
 		do
 		{
@@ -405,15 +394,7 @@ int i;
 		lang--;
 		} while (lang>0);
 
-	/*behandlung adr ffff e27512*/
-	if (kffff==1)	{pbuf=padrffff;
-			lang=1L;
-			kffff=0;}
-
-	} while (lang>0);
-
-
-	if (cid=='t')	printf ("%s %02x%02x\n",chs,d & 0xff,e & 0xff);
+	printf ("%s %02x%02x\n",chs,d & 0xff,e & 0xff);
 }
 		
 
@@ -424,16 +405,12 @@ copyprom()
 {
 	eraseprom (tpe2,begadre2,lange2);
 	if (errflag==true)  	return;
-	if (warning==true) 	{errflag=true; warning=false; return;}
+	if (warning==true) 	{errflag=true;; return;}
 	printf ("%s %s %s %s %s %s\n",cop,pro,namee1,to,pro,namee2);
 	writeprom (tpe2,begadre2,lange2,progbuf,&progffff);
 	if (errflag==true)  	return;
 	promcrc (tpe2,begadre2,lange2);
 	crcprom (' ');
-	if (vefy==0)	{d1=d;
-			e1=e;
-			crc (' ',progbuf,lange2,&progffff);
-			if ((d1!=d) || (e1!=e))	vefy=3;}
 	if (errflag==true)	return;
 	if (vefy!=0)
 		{
