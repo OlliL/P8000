@@ -1,0 +1,22 @@
+oldlibc - the Jan-1983 libc revision embedded in size, strip and ranlib
+=======================================================================
+
+doprnt.c   _doprnt (+ fix, getnum, float stubs) reconstructed from the
+           object code of bin/size (0x4ec..0xb54).  UNTESTED, NOT
+           BYTE-IDENTICAL (see below); the control flow, local variable
+           layout and jump tables follow the original.
+
+Why this directory does not produce byte-identical size/strip:
+
+ * The members were compiled with an OLDER cc revision than the one
+   shipped in /bin/cc.  Visible differences: post-increment through a
+   pointer in a store (`*p->_ptr++ = c`) is emitted as load/store/inc
+   by the old cc and as inc/load/dec by the shipped cc; the varargs
+   prologue (registers spilled in reverse order into one contiguous
+   argument block, f3..f0 spilled with inline EPU words) is a feature
+   of the old cc only; char loads are `ldb`+`subb` vs `ldk`+`ldb`.
+ * No copy of the old compiler is available (all archives contain the
+   same 1990-03-01 cparse/codgen/gopt/popt).
+
+So printf/fprintf/sprintf (which rely on the old varargs prologue) are
+not reconstructed as C; only the code that the shipped cc can express.

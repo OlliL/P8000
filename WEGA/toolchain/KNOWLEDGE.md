@@ -523,3 +523,20 @@ older compiler revision, not from options or from the emulator.
   opened `w+` and unlinked at once.
 - size/strip/ranlib/objhdr/objdu call `goodmagic(magic)` (value, not pointer), `swab`,
   `longswap`, `swap_flg` from the libc.
+
+
+## Old (Jan 1983) libc inside size/strip/ranlib
+
+- Members found unchanged in size: fopen, decimal, isatty, stty, swab, brk and all syscall stubs.
+  Everything else (fread/fwrite, printf family, _doprnt, _flsbuf, _filbuf, fflush, fclose, _cleanup,
+  endopen, malloc, strlen, goodmagic ...) differs from the shipped libc.a only through the compiler
+  revision, plus the printf family/_doprnt which use an older interface:
+  `_doprnt(fmt, regargs, fpargs, stackargs, nreg, file)`; `printf` passes nreg=0, fprintf/sprintf 1.
+- `_doprnt` walks the register argument block (r6,r5,r4,r3,r2 stored in that order), switches to the
+  stack arguments after 5 words, uses fix() to align longs, supports `- * 0 .` flags, d o u x c s
+  D O U X, l-prefix, and e/f/g via an empty stub (no float support in this revision).
+- The old cc differs from the shipped one (post-increment codegen, varargs prologue with reversed
+  contiguous spill of r6..r2 plus inline EPU spills, ldb/subb char loads). No older compiler binary
+  exists in any archive, so size/strip as whole binaries cannot be reproduced bit-exact by compiling.
+  Their own code (size 0x42..0x224, strip) is identical to the shipped cc output.
+- `oldlibc/doprnt.c` holds the structural reconstruction of _doprnt (untested).
