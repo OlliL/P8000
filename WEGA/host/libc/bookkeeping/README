@@ -1,0 +1,8 @@
+Original 1983 bookkeeping scripts of the libc directory, kept for reference.
+They are superseded: the status lives in src/TODO.md, and host/libc/check.sh
+compares the members with the original library.
+
+stamp-headers.sh  prepends the Library.SC version lines to the sources
+                  (it skipped members listed in the old TODO.done; that file
+                  no longer exists, so do not run it again on src/).
+make-todo.sh      generated the old TODO.done / TODO.undone lists.

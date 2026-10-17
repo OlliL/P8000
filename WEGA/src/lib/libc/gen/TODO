@@ -1,4 +1,0 @@
-malloc.o   same code; old compiler: calloc 'mult rr2,r6' (register still known) instead of memory operand
-nlist.o    same code; old compiler: frame 2 bytes smaller
-length.o   same code; old compiler: 'ldb rl3,@r2/testb rl3' and frame 2 bytes smaller
-swap.o     same code; old compiler: '0(r15)' form of the spill of an address-taken argument

@@ -5,19 +5,21 @@
 #   check.sh WEGA_ROOT LIBC_SRC ORIG_OBJ_DIR [member ...]
 #
 # WEGA_ROOT     original WEGA tree (bin/cc, lib/..., usr/include)
-# LIBC_SRC      WEGA/src/lib/libc (uses TODO.done for member -> source mapping)
+# LIBC_SRC      WEGA/src/lib/libc: the member foo.o is built from foo.c or foo.s
+#               (oldcc/ is not searched: those .s files are the workarounds, see
+#               ../../src/TODO.md)
 # ORIG_OBJ_DIR  directory with the original members (*.o extracted from libc.a)
 # Result lines: ok <flags> | DIFF | MISSING | FAIL
 set -u
 ROOT=$1; SRC=$2; ORIG=$3; shift 3
 EMU=$(cd "$(dirname "$0")/.." && pwd)/z8k-emu/z8k-emu
 WORK=$(mktemp -d); trap 'rm -rf "$WORK"' EXIT
-sed -e 's/[[:space:]]*#.*//' "$SRC/TODO.done" | awk 'NF>=2 {print $1, $2}' | while read obj srcname; do
+for obj in $(cd "$ORIG" && ls *.o); do
 	m=${obj%.o}
 	if [ $# -gt 0 ]; then case " $* " in *" $m "*) ;; *) continue;; esac; fi
-	f=$(find "$SRC" -name "$srcname" | head -1)
-	if [ -z "$f" ]; then echo "MISSING $m ($srcname)"; continue; fi
-	[ -f "$ORIG/$obj" ] || { echo "NOREF   $m"; continue; }
+	f=$(cd "$SRC" && find . -path ./oldcc -prune -o \( -name "$m.c" -o -name "$m.s" \) -print | head -1)
+	if [ -z "$f" ]; then echo "MISSING $m"; continue; fi
+	f="$SRC/$f"; srcname=$(basename "$f")
 	d="$WORK/$m"; mkdir -p "$d"; cp "$(dirname "$f")"/* "$d"/ 2>/dev/null
 	res=DIFF
 	case $srcname in

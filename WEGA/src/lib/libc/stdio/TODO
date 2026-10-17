@@ -1,3 +1,0 @@
-doscan.o   different revision (Nov 1983, floating point: calls _inflt); source is the older version
-printf.o   different revision (Nov 1983: printf/fprintf/sprintf with _pfile, _flsbuf, calls the new _doprnt)
-scanf.o    different revision (Nov 1983, floating point)
