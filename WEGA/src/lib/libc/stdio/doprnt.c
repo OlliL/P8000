@@ -5,9 +5,8 @@
 #undef	putc
 #define	putc(x,p) (--(p)->_cnt>=0? (int)(*(char *)(p)->_ptr++=(x)): _flsbuf((x),p))
 
-FILE	*_pfile;
-
 static	int fldone;
+static	char nullstr[] = "(null)";
 
 union lw {
 	long	l;
@@ -33,12 +32,14 @@ int *stkap;
 	} else if (*np == 4) {
 		*np += 2;
 		*app = stkap;
-	} else {
-		tmp = **app;
-		**app = (*app)[1];
-		(*app)[1] = tmp;
+		return;
 	}
+	tmp = **app;
+	**app = (*app)[1];
+	(*app)[1] = tmp;
 }
+
+FILE	*_pfile;
 
 _doprnt(fmt, argp, stkap, nreg, file)
 register unsigned char *fmt;
@@ -184,43 +185,28 @@ FILE *file;
 			if (++nreg == 5)
 				ap = stkap;
 			goto conv_int;
-		case 'd':
-			base = -10;
-			val.l = *ap++;
-			if (++nreg == 5)
-				ap = stkap;
-			goto conv_int;
 		case 'l':
 			if (fmtlen == 0)
 				goto fin;
 			fmtlen--;
-			c = *fmt++;
-			if (c == 'o')
+			if ((c = *fmt++) == 'o') {
+		case 'O':
 				base = 8;
-			else if (c == 'x')
+			} else if (c == 'x') {
+		case 'X':
 				base = 16;
-			else if (c == 'd')
+			} else if (c == 'd') {
+		case 'D':
 				base = -10;
-			else if (c == 'u')
+			} else if (c == 'u') {
+		case 'U':
 				base = 10;
-			else {
+			} else {
 				putc('l', file);
 				putc(c, file);
 				count += 2;
 				goto fin;
 			}
-			goto lng;
-		case 'O':
-			base = 8;
-			goto lng;
-		case 'X':
-			base = 16;
-			goto lng;
-		case 'D':
-			base = -10;
-			goto lng;
-		case 'U':
-			base = 10;
 		lng:
 			if (nreg < 5)
 				_align(&nreg, &ap, stkap);
@@ -229,20 +215,23 @@ FILE *file;
 			nreg += 2;
 			if (nreg == 5)
 				ap = stkap;
+			goto conv_int;
+		case 'd':
+			base = -10;
+			val.l = *ap++;
+			if (++nreg == 5)
+				ap = stkap;
 		conv_int:
 			if (plus && base == -10 && val.l >= 0) {
 				buf[0] = sign;
-				n = 1;
-				p = buf + 1;
+				p = buf + (n = 1);
 			} else if (base == 8 && alt && val.l != 0) {
 				buf[0] = '0';
-				n = 1;
-				p = buf + 1;
+				p = buf + (n = 1);
 			} else if (base == 16 && alt && val.l != 0) {
 				buf[0] = '0';
 				buf[1] = 'x';
-				n = 2;
-				p = buf + 2;
+				p = buf + (n = 2);
 			} else
 				p = buf;
 			str = buf;
@@ -252,7 +241,7 @@ FILE *file;
 			fill = ' ';
 			str = (char *)*ap++;
 			if (str == 0)
-				str = "(null)";
+				str = nullstr;
 			len = _length(str);
 			if (++nreg == 5)
 				ap = stkap;
@@ -278,11 +267,84 @@ FILE *file;
 				ap = stkap;
 				nreg += 5;
 			}
-			str = _fegcvt(*(double *)ap, prec, conv, buf);
+			str = _fegcvt(*(double *)ap, prec, buf, c);
 			if (sap)
 				ap = sap;
 			else
 				ap += 4;
+			if (plus && *str != '-' && *str) {
+				p = str;
+				c1 = *p;
+				*p++ = sign;
+				while (c1) {
+					c2 = *p;
+					*p++ = c1;
+					c1 = c2;
+				}
+				*p = 0;
+			}
+			if (!alt) {
+				if (c == 'e' || c == 'E') {
+					for (p = str; *p; p++)
+						if (*p == '.' && *++p == 'e') {
+							p--;
+							while (*p) {
+								*p = p[1];
+								p++;
+							}
+							break;
+						}
+				} else if (c == 'g' || c == 'G') {
+					for (p = str; *p; p++)
+						if (*p == '.') {
+							p2 = p;
+							while (*++p == '0')
+								;
+							if (*p == 'e')
+								strcpy(p2, p);
+							break;
+						}
+				}
+			} else {
+				if (c == 'f') {
+					p = str;
+					while (*p) {
+						if (*p == '.')
+							break;
+						p++;
+					}
+					if (*p == 0) {
+						*p++ = '.';
+						*p = 0;
+					}
+				} else if (c == 'g' || c == 'G') {
+					p = str;
+					while (*p) {
+						if (*p == '.')
+							break;
+						p++;
+					}
+					if (*p == 0) {
+						*p++ = '.';
+						n = 0;
+						while (n < prec) {
+							*p++ = '0';
+							n++;
+						}
+						*p = 0;
+					}
+				}
+			}
+			if (c == 'E' || c == 'G') {
+				p = str;
+				while (*p) {
+					if (*p == 'e') {
+						*p = 'E';
+						break;
+					}
+					p++;
+				}
+			}
 			len = _length(str);
 			break;
 		default:
@@ -302,8 +364,16 @@ FILE *file;
 				putc(fill, file);
 				count++;
 			}
+		if (base == -10 && val.l < 0) {
+			base = 10;
+			val.l *= -1;
+			putc('-', file);
+			count++;
+			str++;
+			len--;
+		}
 		while (len--) {
-			putc(*str++, file);
+			putc((int)*str++, file);
 			count++;
 		}
 		if (left)
@@ -326,8 +396,8 @@ int *result;
 	int neg;
 	char c;
 
-	left = len;
 	neg = 0;
+	left = len;
 	if (len && *str == '-') {
 		len--;
 		str++;
@@ -335,8 +405,7 @@ int *result;
 	}
 	n = 0;
 	while (left) {
-		c = *str++;
-		if (c < '0' || c > '9')
+		if ((c = *str++) < '0' || c > '9')
 			break;
 		n = n*10 + (c - '0');
 		left--;

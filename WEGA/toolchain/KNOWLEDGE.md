@@ -539,6 +539,11 @@ older compiler revision, not from options or from the emulator.
   contiguous spill of r6..r2 plus inline EPU spills, ldb/subb char loads). No older compiler binary
   exists in any archive, so size/strip as whole binaries cannot be reproduced bit-exact by compiling.
   Their own code (size 0x42..0x224, strip) is identical to the shipped cc output.
+- `src/lib/libc/stdio/doprnt.c` is the Nov-1983 `_doprnt` and now rebuilds byte-identical with the shipped cc -O
+  (findings: `static char nullstr[]` declared after `fldone` explains the data order, `_pfile` must be
+  declared between `_align` and `_doprnt` for the symbol order, `putc((int)*str++,f)` gives
+  `extsb r6; ld r7,r6`, `if ((c = *str++) < '0' || c > '9')` keeps c in rl3, `_align` falls into the
+  swap after the first branch, float tail jumps to the shared `len = r2` store).
 - `oldlibc/doprnt.c` holds the structural reconstruction of _doprnt (untested).
 
 ## oldcc: assembler sources of objects made by the old cc
@@ -550,6 +555,6 @@ original member (`make -C oldcc verify`). They are generated from the original o
 of the rebuilt object differs). Sources that the shipped cc reproduces byte for byte get NO `.s`
 listing in git.
 
-Covered (11, all verify): cnvt, doprnt, doscan, fltioc, length, malloc, nlist, printf, scanf, swap,
+Covered (10, all verify): cnvt, doscan, fltioc, length, malloc, nlist, printf, scanf, swap,
 symscan. Not yet covered: `ecvt` (PLZ/ASM `module ecvt`, needs `as` syntax, not cas) and the old-cc
 libc parts that are only embedded in size/strip/ranlib binaries (no member objects exist for them).

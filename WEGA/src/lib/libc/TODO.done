@@ -173,3 +173,4 @@ stfl.o               stfl.s               ASM
 pow10.o              pow10.s              ASM
 atof.o               atof.s               ASM
 swap.o               swap.c               C
+doprnt.o             doprnt.c             C
