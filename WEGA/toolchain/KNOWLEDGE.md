@@ -489,13 +489,13 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   break is contiguous (`maxbytes` 0xFFF8, `maxblocks` 64 as data); nlist/readsym use the
   s.out long-name encoding (`readby`, `(len+13)/14` entries).
 
-### Open: gopt (-Or) output with register pointer parameters
+### gopt (-Or) output with register pointer parameters: real behaviour, not an emulator bug
 
 `cc -Or -S` on `f(str) register char *str; { register int i; i=0; while(*str++) i++; return(i); }`
-emits `ld r4,~L1+-1275(fp)` (bogus frame offset, constant -1275) where `-Ol` gives the
-sane `ld r1,r7`. Cases without a loop over the register parameter are fine. Filling fresh
-guest memory with non-zero bytes makes the tools hang (they rely on zeroed memory), so
-uninitialized memory is not easily ruled out. It is not yet known whether this is an
-emulator defect or a gopt property. No libc member matched with -Or/-Ol so far, all 92
-C members that match are plain `-O`. The original `length` (frame 8, `ld r1,r7`,
-`ldk r4,#0`, `ldb rl3,@r2/testb rl3`) looks like `-Ol`/`-Or` output of an older popt/gopt.
+emits `ld ~L1+12(fp),r7` / `ld r4,~L1+-1275(fp)` with `~L2 := 12`. Verified on real
+WEGA hardware (photos of the terminal, same output, same constant -1275), so this is a
+genuine gopt defect and the emulator reproduces it faithfully. `-Ol` on the hardware gives
+exactly the emulator's output (`ld r1,r7`, `ldk r3,#0`, `ld @fp,r1` ... `~L2 := 10`).
+Consequence: the shipped libc cannot have been built with `-Or` for such functions, and
+the 2-byte frame / `ldb`+`testb` differences (length, nlist, swap, malloc) come from an
+older compiler revision, not from options or from the emulator.
