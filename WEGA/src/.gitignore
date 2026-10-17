@@ -36,8 +36,3 @@
 /cmd/standalone/sa.timer
 /cmd/standalone/sa.shipdisk
 /cmd/standalone/sa.diags/sa.diags
-# MON16 firmware modules copied from OlliL/P8000 firmware/MON16 for sa.diags;
-# original material, not committed
-/cmd/standalone/sa.diags/p.gesa.s
-/cmd/standalone/sa.diags/p.ldsd.s
-/cmd/standalone/sa.diags/p.term.s
