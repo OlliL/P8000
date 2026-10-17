@@ -1,5 +1,18 @@
 # WEGA tool chain: what we know
 
+## Directory layout
+
+- `WEGA/src/...`  WEGA source code, as it would sit in /usr/src of a WEGA
+  system: `src/cmd/<name>` programs (ar, size, strip, ranlib, cc, popt, ...),
+  `src/lib/libc` the C library (with `oldcc/*.s` for members made by the older
+  cc), `src/uts` kernel. Nothing in there needs Linux.
+- `WEGA/host/...` Linux host side: the z8k-emu oracle (`z8k-emu`), analysis
+  scripts (`tools`), and one directory per program with a Makefile that builds
+  the program from `src/` (with the original WEGA tools under z8k-emu, or as
+  portable cross tool with the host cc) and `check.sh`/`verify` against the
+  original binaries. `make -C WEGA/host all` builds everything.
+- `WEGA/contrib/...` third-party and own extras, unchanged.
+
 Living document. Goal: rebuild the WEGA tool chain (cc, scc, cas, ld, sld,
 ar, ranlib, libc, ...) as C that builds on modern Linux and produces
 byte-identical objects and binaries. Long-term goal: the whole WEGA OS as
@@ -379,7 +392,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
 
 ## ar (reconstructed, byte-identical)
 
-`ar/ar.c` + `ar/crt0v.s` rebuild `/bin/ar` byte for byte (`make -C ar verify`).
+`src/cmd/ar/ar.c` + `src/cmd/ar/crt0v.s` rebuild `/bin/ar` byte for byte (`make -C ar verify`).
 
 - Source is the System III/V7 ar, version string `@[$]ar.c 2.2 11/18/83 - 87wega3.2`;
   WEGA additions: `-l` (local temp files `vXXXXX`), `av0 = trim(argv[0])` in all
@@ -458,7 +471,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
 - `size` (E707, text 5652): own code is only main() at 0x42-0x224 (s.out aware:
   `goodmagic`, `swab`, segment table of 16 byte entries, prints
   `%U + %U + %U = ` and `%U = 0x%lx`), then the old libc (fread at 0x224, fwrite
-  at 0x2a0, ...). Draft in `size/size.c`; it compiles but differs from the
+  at 0x2a0, ...). Draft in `src/cmd/size/size.c`; it compiles but differs from the
   original because of the older optimizer.
 - z8k-emu now also runs Plexus a.out (0407/0410/0411) with the Plexus system
   call ABI (`sc INDIR; .word blk`, first argument in r0 for some calls). In 0410
@@ -506,7 +519,7 @@ older compiler revision, not from options or from the emulator.
 
 ## size and strip (reconstructed, own code identical)
 
-- `size/size.c` + `size/crt0s.s` and `strip/strip.c` + `strip/crt0s.s` rebuild with the
+- `src/cmd/size/size.c` + `crt0s.s` and `src/cmd/strip/strip.c` + `crt0s.s` rebuild with the
   ORIGINAL `cc -O`; `make verify` compares the instructions of the own code
   (`tools/cmpins.py`, from 0x42 up to the first libc member, `fseek` resp. `rdwr`).
   size: 0 differences. strip: one expression (`head.s_imsize = code + data` as long uses
@@ -548,12 +561,12 @@ older compiler revision, not from options or from the emulator.
   declared between `_align` and `_doprnt` for the symbol order, `putc((int)*str++,f)` gives
   `extsb r6; ld r7,r6`, `if ((c = *str++) < '0' || c > '9')` keeps c in rl3, `_align` falls into the
   swap after the first branch, float tail jumps to the shared `len = r2` store).
-- `oldlibc/doprnt.c` holds the structural reconstruction of _doprnt (untested).
+- `src/lib/oldlibc/doprnt.c` holds the structural reconstruction of _doprnt (untested).
 
 ## oldcc: assembler sources of objects made by the old cc
 
 Objects that an older cc revision produced cannot be rebuilt from C with the shipped cc. For those
-we keep `oldcc/libc/<member>.s` (cas syntax) which the original `cas -u` turns into the byte-identical
+we keep `src/lib/libc/oldcc/<member>.s` (cas syntax) which the original `cas -u` turns into the byte-identical
 original member (`make -C oldcc verify`). They are generated from the original objects with
 `tools/sdis.py -a` (all symbols are pre-declared in symbol-table order, otherwise the symbol table
 of the rebuilt object differs). Sources that the shipped cc reproduces byte for byte get NO `.s`
@@ -575,7 +588,7 @@ is compiler output and is not kept in git). Details and reproduced quirks: `popt
 
 ## cc (compiler driver, /bin/cc)
 
-`cc/cc.c` is a decompilation of the WEGA `/bin/cc` driver (14208 bytes, E707
+`src/cmd/cc/cc.c` is a decompilation of the WEGA `/bin/cc` driver (14208 bytes, E707
 combined I/D; own code 0x2a-0x15f0, libc from 0x15f2).  It is a portable K&R
 C program; `make -C cc` builds it with the host compiler.
 

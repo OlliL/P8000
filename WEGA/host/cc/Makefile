@@ -10,12 +10,13 @@
 WEGA ?= ../../../../wega/arc/cpio
 EMU  ?= $(abspath ../z8k-emu/z8k-emu)
 CC   ?= cc
+SRC  ?= ../../src/cmd/cc
 CFLAGS ?= -O2 -std=gnu89 -w
 
 all: cc
 
-cc: cc.c
-	$(CC) $(CFLAGS) -o $@ cc.c
+cc: $(SRC)/cc.c
+	$(CC) $(CFLAGS) -o $@ $(SRC)/cc.c
 
 verify: cc
 	WEGA=$(abspath $(WEGA)) E=$(EMU) ./check.sh

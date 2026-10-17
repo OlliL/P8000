@@ -31,7 +31,7 @@ Suggested way (not decided with the owner yet, discuss first):
 
 - Git: `https://github.com/OlliL/P8000` (branch master, sparse checkout here: `UDOS/WEGA`,
   `WEGA/src/{boot,cmd/standalone,head/sys,stand,uts}`, `firmware/MON8`, `firmware/MON16`, `mame`).
-  Commit with `git add --sparse -A mame WEGA/toolchain`. Other `WEGA/src` directories exist in the full repo
+  Commit with `git add --sparse -A mame WEGA/host`. Other `WEGA/src` directories exist in the full repo
   (`git sparse-checkout add <dir>`): there are about 1100 files in the repo, among them `cmd`
   and the contributed K5JB sources.
 - MAME fork: `https://github.com/OlliL/mame` (never push to `mamedev/mame`), checkout

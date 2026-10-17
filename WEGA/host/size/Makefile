@@ -9,20 +9,22 @@ WEGA ?= ../../../../wega/arc/cpio
 EMU  ?= $(abspath ../z8k-emu/z8k-emu)
 RUN   = $(EMU) -r $(abspath $(WEGA))
 WORK ?= build
+# the WEGA source of the program
+SRC  ?= ../../src/cmd/size
 
 all: $(WORK)/size
 
 $(WORK)/size: $(WORK)/size.o $(WORK)/crt0s.o
 	cd $(WORK) && $(RUN) /bin/ld -s -e start -o size crt0s.o size.o /lib/libc.a
 
-$(WORK)/size.o: size.c
+$(WORK)/size.o: $(SRC)/size.c
 	mkdir -p $(WORK)
-	cp size.c $(WORK)/size.c
+	cp $(SRC)/size.c $(WORK)/size.c
 	cd $(WORK) && $(RUN) /bin/cc -O -c size.c
 
-$(WORK)/crt0s.o: crt0s.s
+$(WORK)/crt0s.o: $(SRC)/crt0s.s
 	mkdir -p $(WORK)
-	cp crt0s.s $(WORK)/crt0s.s
+	cp $(SRC)/crt0s.s $(WORK)/crt0s.s
 	cd $(WORK) && $(RUN) /bin/cas -u -o crt0s.o crt0s.s
 
 verify: all

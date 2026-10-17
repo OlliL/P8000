@@ -11,18 +11,19 @@ WEGA ?= ../../../../wega/arc/cpio
 LIBS ?= ../../../../wega/work/libs
 EMU  ?= $(abspath ../z8k-emu/z8k-emu)
 RUN   = $(EMU) -r $(abspath $(WEGA))
-MEMBERS = $(basename $(notdir $(wildcard libc/*.s)))
+SRC  ?= ../../src/lib/libc/oldcc
+MEMBERS = $(basename $(notdir $(wildcard $(SRC)/*.s)))
 
 verify:
 	@set -e; t=$$(mktemp -d); fail=0; \
 	for m in $(MEMBERS); do \
-		cp libc/$$m.s $$t/; \
+		cp $(SRC)/$$m.s $$t/; \
 		(cd $$t && $(RUN) /bin/cas -u -o $$m.o $$m.s >log 2>&1); \
 		if cmp -s $$t/$$m.o $(LIBS)/libc/$$m.o; then echo "ok   $$m"; \
 		else echo "DIFF $$m"; fail=1; fi; \
 	done; rm -rf $$t; exit $$fail
 
 gen:
-	@for m in $(MEMBERS); do python3 -I ../tools/sdis.py -a $(LIBS)/libc/$$m.o > libc/$$m.s; done
+	@for m in $(MEMBERS); do python3 -I ../tools/sdis.py -a $(LIBS)/libc/$$m.o > $(SRC)/$$m.s; done
 
 .PHONY: verify gen

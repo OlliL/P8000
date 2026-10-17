@@ -1,4 +1,4 @@
-! ecvt.s  reconstructed from the shipped ecvt.o with toolchain/tools/s2as.py !
+! ecvt.s  reconstructed from the shipped ecvt.o with host/tools/s2as.py !
 
 ecvt module
 

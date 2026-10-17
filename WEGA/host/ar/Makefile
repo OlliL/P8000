@@ -11,20 +11,22 @@ WEGA ?= ../../../../wega/arc/cpio
 EMU  ?= $(abspath ../z8k-emu/z8k-emu)
 RUN   = $(EMU) -r $(abspath $(WEGA))
 WORK ?= build
+# the WEGA source of the program
+SRC  ?= ../../src/cmd/ar
 
 all: $(WORK)/ar
 
 $(WORK)/ar: $(WORK)/ar.o $(WORK)/crt0v.o
 	cd $(WORK) && $(RUN) /bin/ld -s -e start -o ar crt0v.o ar.o /lib/libc.a
 
-$(WORK)/ar.o: ar.c
+$(WORK)/ar.o: $(SRC)/ar.c
 	mkdir -p $(WORK)
-	cp ar.c $(WORK)/ar.c
+	cp $(SRC)/ar.c $(WORK)/ar.c
 	cd $(WORK) && $(RUN) /bin/cc -O -c ar.c
 
-$(WORK)/crt0v.o: crt0v.s
+$(WORK)/crt0v.o: $(SRC)/crt0v.s
 	mkdir -p $(WORK)
-	cp crt0v.s $(WORK)/crt0v.s
+	cp $(SRC)/crt0v.s $(WORK)/crt0v.s
 	cd $(WORK) && $(RUN) /bin/cas -u -o crt0v.o crt0v.s
 
 verify: all

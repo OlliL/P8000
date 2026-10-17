@@ -14,7 +14,7 @@ instructions.
     make            # builds ./z8k-emu (plain C, needs only cc and make)
     make clean
 
-`make all` in the parent directory (`WEGA/toolchain`) builds it as well.
+`make all` in the parent directory (`WEGA/host`) builds it as well.
 
 ## Prerequisites (not in git)
 
@@ -77,7 +77,7 @@ Disassemble the objects and executables with `../tools/sdis.py` (objects) or
 compares them byte for byte with the objects shipped on the disk image:
 
     ./selftest.sh WEGA_ROOT UTS_DIR KERNEL_OBJ_DIR
-    # or from WEGA/toolchain:
+    # or from WEGA/host:
     make check-oracle WEGA=... UTS=... KOBJ=...
 
 `UTS_DIR` is the extracted kernel source tree (`dev/`, `conf/`, `h/`),
