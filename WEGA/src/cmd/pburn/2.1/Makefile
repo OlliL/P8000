@@ -1,5 +1,5 @@
-# pburn: PROM burner. Compiled with the WEGA cc, linked through the cc
-# driver (crt0 and libc).
+# pburn: PROM burner. Compiled with the WEGA scc, linked with gld
+# loading module scrt0 and libc.
 #
 #   make                       build pburn
 #   make install PREFIX=dir    install below dir (default /)
