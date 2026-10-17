@@ -437,3 +437,25 @@ Results (all byte-identical to the objects shipped with WEGA, see
   register/frame allocation differs (old: frame 14, temps in r1/rr0/rr6; shipped
   compiler: frame 20, temps in r4/r5). So the sources are right, the old
   compiler's code generator/optimizer is the missing piece.
+
+## Compiler lineage and versions (findings from the Plexus sources and size)
+
+- Plexus `ccom` (one pass PCC, runs now in z8k-emu) is NOT the ancestor of the
+  WEGA code generator: it emits Plexus assembler (`jpr`, `csv2`/`cret2`
+  prologues). Its output cannot be compared with WEGA objects. The WEGA compiler
+  (cparse + codgen, 2 passes) is a different lineage.
+- Plexus `c2` (peephole optimizer, `@(#)c20.c 1.1`, Aug 1982) IS the ancestor
+  of WEGA `popt`: shipped popt carries `z20.c 1.3 12/21/82`, `z21.c 1.4
+  12/21/82`, `z22.c 1.6 01/18/83`, `z23.c 1.6 03/25/83`. Binaries built earlier
+  than those dates (size: crt0 3.1 01/14/83, size.c 2.1 01/14/83) were produced
+  with older popt revisions (z22 <= 1.5, z23 <= 1.5) and codgen/cparse revisions
+  we do not have. This explains the differences seen in ranlib and size
+  (tighter frames, scratch registers, error blocks moved ahead of the loop).
+- `size` (E707, text 5652): own code is only main() at 0x42-0x224 (s.out aware:
+  `goodmagic`, `swab`, segment table of 16 byte entries, prints
+  `%U + %U + %U = ` and `%U = 0x%lx`), then the old libc (fread at 0x224, fwrite
+  at 0x2a0, ...). Draft in `size/size.c`; it compiles but differs from the
+  original because of the older optimizer.
+- z8k-emu now also runs Plexus a.out (0407/0410/0411) with the Plexus system
+  call ABI (`sc INDIR; .word blk`, first argument in r0 for some calls). In 0410
+  files data addresses start at the text size and wrap around 64K.
