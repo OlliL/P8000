@@ -21,10 +21,15 @@ sed -e 's/[[:space:]]*#.*//' "$SRC/TODO.done" | awk 'NF>=2 {print $1, $2}' | whi
 	d="$WORK/$m"; mkdir -p "$d"; cp "$(dirname "$f")"/* "$d"/ 2>/dev/null
 	res=DIFF
 	case $srcname in
-	*.s) for fl in "" "-u" "-f" "-f -u"; do
+	*.s) if ! grep -q "module" "$d/$srcname"; then
+		# cas syntax (no PLZ/ASM module header)
+		( cd "$d" && rm -f "$obj" && "$EMU" -r "$ROOT" /bin/cas -o "$obj" "$srcname" >log 2>&1 )
+		cmp -s "$d/$obj" "$ORIG/$obj" && res="ok  cas"
+	     else
+	     for fl in "" "-u" "-f" "-f -u"; do
 		( cd "$d" && rm -f "$obj" && "$EMU" -r "$ROOT" /bin/as $fl -o "$obj" "$srcname" >log 2>&1 )
 		cmp -s "$d/$obj" "$ORIG/$obj" && { res="ok  as $fl"; break; }
-	     done ;;
+	     done; fi ;;
 	*.c) for fl in "-O" "" "-Or" "-Ol"; do
 		( cd "$d" && rm -f "$obj" && "$EMU" -r "$ROOT" /bin/cc $fl -c "$srcname" >log 2>&1 )
 		cmp -s "$d/$obj" "$ORIG/$obj" && { res="ok  cc $fl"; break; }

@@ -1,6 +1,3 @@
-doscan.o /z/src/libc/orig_obj/doscan.o differ: char 5, line 1
-flsbuf.o /z/src/libc/orig_obj/flsbuf.o differ: char 6, line 1
-getgrent.o /z/src/libc/orig_obj/getgrent.o differ: char 132, line 1
-getpass.o /z/src/libc/orig_obj/getpass.o differ: char 6, line 1
-printf.o /z/src/libc/orig_obj/printf.o differ: char 5, line 1
-scanf.o /z/src/libc/orig_obj/scanf.o differ: char 6, line 1
+doscan.o   different revision (Nov 1983, floating point: calls _inflt); source is the older version
+printf.o   different revision (Nov 1983: printf/fprintf/sprintf with _pfile, _flsbuf, calls the new _doprnt)
+scanf.o    different revision (Nov 1983, floating point)

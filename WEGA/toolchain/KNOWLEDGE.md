@@ -462,21 +462,29 @@ Results (all byte-identical to the objects shipped with WEGA, see
 
 ## libc check against the original library (status)
 
-`toolchain/libc/check.sh WEGA_ROOT LIBC_SRC ORIG_MEMBERS` rebuilds each member of
-`WEGA/src/lib/libc` with the original tools (`.s` with `/bin/as`, `.c` with
-`/bin/cc` in -O, "", -Or, -Ol) and compares it byte for byte with the original
-member.
+`toolchain/libc/check.sh WEGA_ROOT LIBC_SRC ORIG_MEMBERS [member ...]` rebuilds each
+member of `WEGA/src/lib/libc` with the original tools and compares it byte for byte
+with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` without a
+`module` header with `cas`, `.c` with `/bin/cc` (-O, "", -Or, -Ol).
 
 - `/bin/as` is the PLZ/ASM assembler (not `cas`). It execs the overlay `/lib/as2`
   (magic E705), so the emulator implements overlay exec (I-space replaced, data,
-  stack and registers kept).
-- Result: 159 of 174 members identical, 14 differ, 1 missing (`brk`).
-- Known causes of differences:
-  - `abort.s`: symbol must be `_abort::`.
-  - `pow10.s`, `atof.s`: the original `as` rejects EPU mnemonics (ERROR 91); the
-    original objects contain EPU instructions as `.word` encodings; extern name `__pow10`.
-  - `execvp`, `malloc`: the sources are a different version than the library member
-    (original execvp uses `index`, `open/close/read`; no debug `ASSERT`/`allock` in malloc).
-  - `length`: different code, probably an older compiler.
-  - `nlist`, `readsym`: need `a.out.h` / syntax fixes in the source.
-- Still without source: cnvt.c, doprnt.c, ecvt.s, fltioc.c, swap.c, symscan.c.
+  stack and registers kept). `-f` allows the EPU (floating point) mnemonics
+  (`fldctl`, `flds`, `fmul`, `fldd`, ...); without it they give ERROR 91.
+  Module names matter: they appear as `<module>_p`/`<module>_d` symbols
+  (abort.s is module `abort_s`).
+- Result: 168 of 174 members identical.
+- Same code, different compiler revision (cannot match with the shipped cc):
+  `malloc` (calloc: `mult rr2,r6`), `nlist` and `length` (frame 2 bytes smaller),
+  `swap` (`0(r15)` spill form). The shipped libc was built with more than one compiler
+  revision (older popt/codgen: tighter frames, `ldb`+`testb` instead of `testb @r`).
+- Different source revision (Nov 1983 float versions, files dated Nov 16-17 1983):
+  `printf` (printf/fprintf/sprintf with `_pfile`, `_rc`, `_flsbuf`; calls
+  `_doprnt(fmt, args, argend, flag, file)`), `scanf`, `doscan` (calls `_inflt`).
+  Together with the still missing `doprnt`, `cnvt`, `ecvt`, `fltioc` and `symscan`
+  they form the floating-point stdio cluster that remains to be reconstructed.
+- Findings while fixing sources: getpass uses `struct termio` (`c_lflag`, ioctl 0x5401/0x5404/0x5403);
+  execvp is the 4.3BSD one with `index`, a `/bin/csh` fallback (`whichshell`) and `-` as
+  path separator in `execat`; malloc is a variant that extends the top free block when the
+  break is contiguous (`maxbytes` 0xFFF8, `maxblocks` 64 as data); nlist/readsym use the
+  s.out long-name encoding (`readby`, `(len+13)/14` entries).
