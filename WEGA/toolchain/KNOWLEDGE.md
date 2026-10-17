@@ -238,7 +238,11 @@ Validation:
   3); `tccb c,rh1` AE17; `resflg c` 8D83, `resflg p` 8D13; `ldctlb
   rh0,flags` 8C01, `ldctlb flags,rh0` 8C09.
 - EPU (floating point) instructions 0E/0F/4E/4F/8E/8F: template word + one
-  word (+ address for 4E/4F). Mnemonics not decoded yet; shown as `.word`.
+  word (+ address for 4E/4F). `tools/epugen.py` derives the register-form templates by brute force
+  from the original `as -f` (needs the emulator; output `tools/epu_data.py`), `tools/epu.py` decodes
+  them (`fld r8,f3` = 8F30 8804: bare `fld` = extended, `flds`/`fldd` = single/double; reg-reg
+  forms are size independent). `tools/s2as.py obj.o` writes a PLZ/ASM source (`as -f`) from an
+  object; ecvt.o rebuilds byte-identical that way. sdis.py still prints EPU as `.word`.
 
 ## Tools (tools/)
 
@@ -556,5 +560,5 @@ of the rebuilt object differs). Sources that the shipped cc reproduces byte for 
 listing in git.
 
 Covered (10, all verify): cnvt, doscan, fltioc, length, malloc, nlist, printf, scanf, swap,
-symscan. Not yet covered: `ecvt` (PLZ/ASM `module ecvt`, needs `as` syntax, not cas) and the old-cc
+symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`. Not yet covered: the old-cc
 libc parts that are only embedded in size/strip/ranlib binaries (no member objects exist for them).

@@ -1,4 +1,3 @@
 cnvt.o               cnvt.c               C
-ecvt.o               ecvt.s               ASM
 fltioc.o             fltioc.c             C
 symscan.o            symscan.c            C
