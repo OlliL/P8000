@@ -32,6 +32,7 @@ static const char *root = "";
 static char **envv;			/* guest default environment */
 static int nenv;
 static uint32_t sig_kernel[32];		/* kernel-level handler values per signal */
+static int plexus;			/* current program uses the Plexus system call ABI */
 static uint8_t  segused[128];		/* segment exists (program image or mkseg) */
 static uint32_t segsz[128];		/* current size in bytes of each program segment (segmented mode) */
 static int mainseg;			/* the segment break() reports (last non-stack data segment) */
@@ -79,7 +80,7 @@ static uint16_t be16(const uint8_t *p) { return (p[0] << 8) | p[1]; }
 static uint32_t be32(const uint8_t *p) { return ((uint32_t)be16(p) << 16) | be16(p + 2); }
 
 typedef struct {
-	int magic, segmented, sep, flags, nseg;
+	int magic, segmented, sep, flags, nseg, plexus;
 	uint32_t entry, bss;
 	struct { int no, coff, doff, boff, code, data, bssz, atr; } sg[128];
 	uint8_t *file; long size;
@@ -96,8 +97,23 @@ static int exec_open(const char *host, Exec *x)
 	if ((long)fread(x->file, 1, n, f) != n) { fclose(f); free(x->file); return EIO; }
 	fclose(f);
 	x->size = n;
-	if (n < 24) { free(x->file); return ENOEXEC; }
+	x->plexus = 0;
+	if (n < 16) { free(x->file); return ENOEXEC; }
 	x->magic = be16(x->file);
+	if (x->magic >= 0x107 && x->magic <= 0x109) {
+		/* Plexus/PDP-11 style a.out: magic, text, data, bss, syms, entry, -, flag.
+		   0407 combined I&D, 0410/0411 separate I&D (non-segmented only) */
+		x->segmented = 0; x->sep = x->magic != 0x107; x->plexus = 1;
+		x->bss = be16(x->file + 6); x->entry = be16(x->file + 10); x->flags = 0;
+		x->nseg = 1;
+		x->sg[0].no = 0; x->sg[0].coff = 0; x->sg[0].doff = 0; x->sg[0].boff = 0;
+		x->sg[0].code = be16(x->file + 2); x->sg[0].data = be16(x->file + 4);
+		x->sg[0].bssz = be16(x->file + 6); x->sg[0].atr = 7;
+		x->textoff = 16;
+		if (16 + x->sg[0].code + x->sg[0].data > n) { free(x->file); return ENOEXEC; }
+		return 0;
+	}
+	if (n < 24) { free(x->file); return ENOEXEC; }
 	switch (x->magic) {
 	case 0xE607: x->segmented = 1; x->sep = 0; break;
 	case 0xE611: x->segmented = 1; x->sep = 1; break;
@@ -138,6 +154,7 @@ static void exec_map(Z8K *c, Exec *x, char **argv, char **envp)
 	long toff, doff;
 	int i, stkseg = (x->flags & 0x20) ? 0x7F : 0x3F;	/* SF_7FSTK selects segment 0x7F, else the stack is in segment 0x3F */
 	clear_mem(c);
+	plexus = x->plexus;
 	memset(segsz, 0, sizeof segsz);
 	memset(segused, 0, sizeof segused);
 	memset(c->r, 0, sizeof c->r);
@@ -157,7 +174,13 @@ static void exec_map(Z8K *c, Exec *x, char **argv, char **envp)
 		if (x->sg[i].doff) dataoff = x->sg[i].doff * 256;
 		else if (c->sepid) dataoff = 0;
 		else dataoff = x->sg[i].coff * 256 + x->sg[i].code;
-		if (x->sg[i].data) memcpy(dm + dataoff, x->file + doff, x->sg[i].data);
+		if (x->plexus && c->sepid && x->magic == 0x108) {
+			/* 0410: data addresses start at the text size and wrap around 64K in D space */
+			uint32_t t = x->sg[i].code, n1 = x->sg[i].data;
+			if (t + n1 > 0x10000) { memcpy(dm + t, x->file + doff, 0x10000 - t); memcpy(dm, x->file + doff + (0x10000 - t), t + n1 - 0x10000); }
+			else memcpy(dm + t, x->file + doff, n1);
+			dataoff = t & 0xFFFF;
+		} else if (x->sg[i].data) memcpy(dm + dataoff, x->file + doff, x->sg[i].data);
 		doff += x->sg[i].data;
 		(void)SG_CODE; (void)SG_DATA; (void)SG_BSS;
 		if (x->sg[i].atr & SG_STACK) stkseg = no;
@@ -224,6 +247,8 @@ static const char *hostpath(const char *g, char *buf, size_t n)
 	snprintf(buf, n, "%s%s", root, g);
 	return buf;
 }
+
+static uint16_t rdw_pl(Z8K *c, Ad a) { uint8_t b[2]; gread(c, a, b, 2); return (b[0] << 8) | b[1]; }
 
 /* ---------------------------------------------------------------- syscalls */
 
@@ -502,6 +527,52 @@ static int sys_call_impl(Z8K *c, unsigned n)
 
 /* -------------------------------------------------------------------- main */
 
+/*
+ * Plexus (SysIII for Z8002) system call ABI, see lib/libc/z8000/sys of the
+ * Plexus sources: numbers as in syscall.h; `sc INDIR; .word blk` runs the call
+ * `sc N` stored at blk with its arguments as the words following it; some calls
+ * take their first argument in r0 (and dup a second one in r1); results come
+ * back in r0/r1, carry set and errno in r0 on error.
+ */
+static int sys_call_plexus(Z8K *c, unsigned n)
+{
+	uint16_t save[8], arg[8];
+	int i, k = 0, rc;
+	Ad blk;
+	memcpy(save, c->r, sizeof save);
+	blk.seg = 0; blk.off = c->pc;
+	if (n == 0) {			/* indirect: next word is the block address */
+		{ uint8_t *im = z8k_block(c, 0, 0); blk.off = (im[c->pc] << 8) | im[(uint16_t)(c->pc + 1)]; }
+		c->pc += 2;
+		n = rdw_pl(c, blk) & 0xFF;
+		blk.off += 2;
+	} else {
+		blk.off = 0;
+	}
+	switch (n) {
+	case 1: case 3: case 4: case 6: case 19: case 23: case 27: case 28:
+	case 34: case 37: case 46: case 60: case 62:
+		arg[k++] = save[0]; break;
+	case 41: arg[k++] = save[0]; arg[k++] = save[1]; break;
+	}
+	if (blk.off)
+		for (; k < 8; k++) { arg[k] = rdw_pl(c, blk); blk.off += 2; }
+	for (; k < 8; k++) arg[k] = 0;
+	if (n == 62) {			/* ugrow: stack grows by itself here */
+		c->r[0] = 0; c->fl &= ~F_C; return 0;
+	}
+	for (i = 0; i < 6; i++) c->r[i] = arg[i];
+	rc = sys_call_impl(c, n);
+	{
+		uint16_t r4 = c->r[4], r5 = c->r[5];
+		int err = (c->fl & F_C) != 0;
+		memcpy(c->r, save, sizeof save);
+		c->r[0] = r4;
+		if (!err) c->r[1] = r5;
+	}
+	return rc;
+}
+
 /* optional system call trace: Z8K_SC_TRACE=1 */
 static int sys_call(Z8K *c, unsigned n)
 {
@@ -516,7 +587,7 @@ static int sys_call(Z8K *c, unsigned n)
 	}
 	if (tr) fprintf(tf, "sc %u r0-3=%04x %04x %04x %04x", n, c->r[0], c->r[1], c->r[2], c->r[3]);
 	if (tr) fflush(tf);
-	rc = sys_call_impl(c, n);
+	rc = plexus ? sys_call_plexus(c, n) : sys_call_impl(c, n);
 	if (tr) fprintf(tf, " -> r4=%04x r5=%04x%s\n", c->r[4], c->r[5], (c->fl & F_C) ? " ERR" : "");
 	if (tr) fflush(tf);
 	return rc;
