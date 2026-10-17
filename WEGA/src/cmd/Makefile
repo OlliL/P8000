@@ -24,7 +24,7 @@ PROGS = ar ranlib size strip
 FILES=		getud putud
 STRIPFILES=	copydisk dump dumpdir format restor sync tar verify
 CLEANFILES=	sync.o
-SUBDIRS=	BOOT0 doscopy pburn standalone
+SUBDIRS=	BOOT0 doscopy pburn standalone verify
 
 all: $(PROGS) $(FILES) $(STRIPFILES) subdirs
 

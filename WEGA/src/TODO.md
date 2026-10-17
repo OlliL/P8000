@@ -41,9 +41,7 @@ produce the same bytes with the shipped cc.
 | `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | - | Needs the older cc | none yet |
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | builds, differs (8422 vs 8506, 8260 vs 8346 bytes) | - | Not analysed | none yet |
 | `cmd/copydisk.c` | copydisk | builds, differs (7318 vs 7148 bytes) | - | Not analysed | none yet |
-| `cmd/format.c` | format | differs (6738 vs 6568 bytes) in the current version 1.6 | 77770f2 | Newer version in tree: version 1.6 adds the `signal(..., SIG_IGN)` block (SIGALRM, SIGHUP, SIGINT, SIGQUIT, SIGTERM) and a new date. Version 1.5 (77770f2) builds byte-identical to `bin/format` | use 77770f2's `format.c` if the byte-identical build is wanted |
 | `cmd/tar.c` | tar | builds, differs (21692 vs 22494 bytes) | - | Not analysed | none yet |
-| `cmd/verify.c` | verify | builds, differs (6696 vs 6526 bytes) | - | Not analysed | none yet |
 | `cmd/BOOT0/boot0.fd.s`, `boot0.ud.s`, `boot0.rm.s` | boot0.fd, boot0.ud, boot0.rm | builds, not compared | - | No original in `arc/cpio` | none |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | - | The emulator stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) while the original cc compiles `dosopn.c`, which has no floating point. Cause in the cc not yet traced (cc at 00:b270) | none; blocked by the emulator |
 | `cmd/standalone/sa.cat.c`, `sa.format.c`, `sa.verify.c`, `sa.mkfs.c`, `sa.install.c`, `sa.shipdisk.c` | sa.cat, sa.format, sa.verify, sa.mkfs, sa.install, sa.shipdisk | differ (sizes 1060/1036, 8916/10204, 4050/5162, 4284/4260, 7146/7122, 1816/2464) | - | Not analysed. `libb.a` is not the cause: `sa.timer` (same library) is identical. Probably a different source revision | none yet |
