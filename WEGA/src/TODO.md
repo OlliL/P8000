@@ -22,36 +22,33 @@ assembler source of the original object; `cas -u` on it gives the
 byte-identical member. Such a `.s` is only used where the C source cannot
 produce the same bytes with the shipped cc.
 
-| Source | Object | Status | Cause | Workaround |
-|---|---|---|---|---|
-| `lib/libc/gen/malloc.c` | malloc.o | differs | Older cc: calloc uses `mult rr2,r6` (register still known) instead of a memory operand | `lib/libc/oldcc/malloc.s` |
-| `lib/libc/gen/nlist.c` | nlist.o | differs | Older cc: stack frame 2 bytes smaller | `lib/libc/oldcc/nlist.s` |
-| `lib/libc/gen/length.c` | length.o | differs | Older cc: `ldb rl3,@r2` / `testb rl3`, frame 2 bytes smaller | `lib/libc/oldcc/length.s` |
-| `lib/libc/gen/swap.c` | swap.o | differs | Older cc: `0(r15)` form for the spill of an address-taken argument | `lib/libc/oldcc/swap.s` |
-| `lib/libc/stdio/doscan.c` | doscan.o | differs | Different revision (Nov 1983), floating point, calls `_inflt`; the source is the older version | `lib/libc/oldcc/doscan.s` |
-| `lib/libc/stdio/printf.c` | printf.o | differs | Different revision (Nov 1983): printf/fprintf/sprintf via `_pfile`, `_flsbuf`, new `_doprnt` | `lib/libc/oldcc/printf.s` |
-| `lib/libc/stdio/scanf.c` | scanf.o | differs | Different revision (Nov 1983), floating point | `lib/libc/oldcc/scanf.s` |
-| (none in src/) | cnvt.o | no C source | C source not reconstructed | `lib/libc/oldcc/cnvt.s` |
-| (none in src/) | fltioc.o | no C source | C source not reconstructed | `lib/libc/oldcc/fltioc.s` |
-| (none in src/) | symscan.o | no C source | C source not reconstructed | `lib/libc/oldcc/symscan.s` |
-| `lib/oldlibc/doprnt.c` | - | not built | Structural reconstruction of the Jan 1983 `_doprnt`, untested | - |
-| `cmd/ar.c` + `lib/libc/crt/crt0-ar.s` | ar | identical (built with the WEGA cc) | - | `crt0-ar.s` is the start-up variant of this binary |
-| `cmd/size.c` + `lib/libc/crt/crt0-size.s` | size | own code identical, file differs | The libc part of the original is an older libc revision | none; verify compares own code only |
-| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | differs in the own code (2 blocks, 0x2b0 and 0x2bc, `cmpins` range 0x68c) | Not the crt0 change: the old and new `crt0-strip.s` assemble to identical objects, and every commit back to 14098cf gives the same 2 blocks. The code differs in expression form (`addl rr2,rr4` / `ldl %2490` vs `ld r6,r4` / `addl rr4,rr6`), so the shipped strip seems to come from another source revision. Earlier note 'own code identical' is not reproduced | none yet |
-| `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | Needs the older cc | none yet |
-| `cmd/getud.c`, `cmd/putud.c` | getud, putud | builds, differs (8422 vs 8506, 8260 vs 8346 bytes) | Not analysed | none yet |
-| `cmd/copydisk.c` | copydisk | builds, differs (7318 vs 7148 bytes) | Not analysed | none yet |
-| `cmd/format.c` | format | differs (6738 vs 6568 bytes) in the current version 1.6 | The 2008 version of `format.c` (commit 77770f2, version 1.5) builds byte-identical to `bin/format`. The current version adds the `signal(..., SIG_IGN)` block for SIGALRM, SIGHUP, SIGINT, SIGQUIT, SIGTERM and the new date/version. Not yet replaced in src/: the choice is open | use 77770f2's `format.c` if the byte-identical build is wanted |
-| `cmd/tar.c` | tar | builds, differs (21692 vs 22494 bytes) | Not analysed | none yet |
-| `cmd/verify.c` | verify | builds, differs (6696 vs 6526 bytes) | Not analysed | none yet |
-| `cmd/dump.c`, `cmd/dumpdir.c`, `cmd/restor.c`, `cmd/sync.c` | dump, dumpdir, restor, sync | identical (sync, restor after strip-programs) | - | - |
-| `cmd/BOOT0/boot0.md.s` | pb.image | identical (`as -u`, `ld -s`, `strip -h`) | - | - |
-| `cmd/BOOT0/boot0.fd.s`, `boot0.ud.s`, `boot0.rm.s` | boot0.fd, boot0.ud, boot0.rm | builds, not compared | No original in `arc/cpio` | none |
-| `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | The emulator stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) while the original cc compiles `dosopn.c`, which has no floating point. Cause in the cc not yet traced (cc at 00:b270) | none; blocked by the emulator |
-| `cmd/pburn/*.c` | pburn | **exception: newer source than in WEGA (allowed), expected to differ; not built** | The sources are inconsistent: `pb.cmdline.c` defines `namef[80]`, `pb.buf.c` and `pb.file.c` declare `namef[50]`; ld reports `bss overflow` | none; the source is not changed |
-| `cmd/standalone/sa.cat.c`, `sa.format.c`, `sa.verify.c`, `sa.mkfs.c`, `sa.install.c`, `sa.shipdisk.c` | sa.cat, sa.format, sa.verify, sa.mkfs, sa.install, sa.shipdisk | differ (sizes 1060/1036, 8916/10204, 4050/5162, 4284/4260, 7146/7122, 1816/2464) | Not analysed. `libb.a` is not the cause: `sa.timer` (same library) is identical. Probably a different source revision | none yet |
-| `cmd/standalone/sa.timer.c` | sa.timer | identical | - | - |
-| `cmd/standalone/sa.diags/` | sa.diags | builds, no original to compare | The MON16 modules `p.gesa.s`, `p.ldsd.s`, `p.term.s` are copied from `OlliL/P8000` `firmware/MON16` into the build directory (not in git). `sa.test.s` needs `as -u` (without it, `as` stops with ERROR 50 at `call _printf`) | none |
+| Source | Object | Status | Commit with the original build | Cause | Workaround |
+|---|---|---|---|---|---|
+| `lib/libc/gen/malloc.c` | malloc.o | differs | - | Older cc: calloc uses `mult rr2,r6` (register still known) instead of a memory operand | `lib/libc/oldcc/malloc.s` |
+| `lib/libc/gen/nlist.c` | nlist.o | differs | - | Older cc: stack frame 2 bytes smaller | `lib/libc/oldcc/nlist.s` |
+| `lib/libc/gen/length.c` | length.o | differs | - | Older cc: `ldb rl3,@r2` / `testb rl3`, frame 2 bytes smaller | `lib/libc/oldcc/length.s` |
+| `lib/libc/gen/swap.c` | swap.o | differs | - | Older cc: `0(r15)` form for the spill of an address-taken argument | `lib/libc/oldcc/swap.s` |
+| `lib/libc/stdio/doscan.c` | doscan.o | differs | - | Different revision (Nov 1983), floating point, calls `_inflt`; the source is the older version | `lib/libc/oldcc/doscan.s` |
+| `lib/libc/stdio/printf.c` | printf.o | differs | - | Different revision (Nov 1983): printf/fprintf/sprintf via `_pfile`, `_flsbuf`, new `_doprnt` | `lib/libc/oldcc/printf.s` |
+| `lib/libc/stdio/scanf.c` | scanf.o | differs | - | Different revision (Nov 1983), floating point | `lib/libc/oldcc/scanf.s` |
+| (none in src/) | cnvt.o | no C source | - | C source not reconstructed | `lib/libc/oldcc/cnvt.s` |
+| (none in src/) | fltioc.o | no C source | - | C source not reconstructed | `lib/libc/oldcc/fltioc.s` |
+| (none in src/) | symscan.o | no C source | - | C source not reconstructed | `lib/libc/oldcc/symscan.s` |
+| `lib/oldlibc/doprnt.c` | - | not built | - | Structural reconstruction of the Jan 1983 `_doprnt`, untested | - |
+| `cmd/ar.c` + `lib/libc/crt/crt0-ar.s` | ar | identical (built with the WEGA cc) | - | - | `crt0-ar.s` is the start-up variant of this binary |
+| `cmd/size.c` + `lib/libc/crt/crt0-size.s` | size | own code identical, file differs | - | The libc part of the original is an older libc revision | none; verify compares own code only |
+| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | differs in the own code (2 blocks, 0x2b0 and 0x2bc, `cmpins` range 0x68c) | - | Not the crt0 change: the old and new `crt0-strip.s` assemble to identical objects, and every commit back to 14098cf gives the same 2 blocks. The code differs in expression form (`addl rr2,rr4` / `ldl %2490` vs `ld r6,r4` / `addl rr4,rr6`), so the shipped strip seems to come from another source revision. Earlier note 'own code identical' is not reproduced | none yet |
+| `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | - | Needs the older cc | none yet |
+| `cmd/getud.c`, `cmd/putud.c` | getud, putud | builds, differs (8422 vs 8506, 8260 vs 8346 bytes) | - | Not analysed | none yet |
+| `cmd/copydisk.c` | copydisk | builds, differs (7318 vs 7148 bytes) | - | Not analysed | none yet |
+| `cmd/format.c` | format | differs (6738 vs 6568 bytes) in the current version 1.6 | 77770f2 | Newer version in tree: version 1.6 adds the `signal(..., SIG_IGN)` block (SIGALRM, SIGHUP, SIGINT, SIGQUIT, SIGTERM) and a new date. Version 1.5 (77770f2) builds byte-identical to `bin/format` | use 77770f2's `format.c` if the byte-identical build is wanted |
+| `cmd/tar.c` | tar | builds, differs (21692 vs 22494 bytes) | - | Not analysed | none yet |
+| `cmd/verify.c` | verify | builds, differs (6696 vs 6526 bytes) | - | Not analysed | none yet |
+| `cmd/BOOT0/boot0.fd.s`, `boot0.ud.s`, `boot0.rm.s` | boot0.fd, boot0.ud, boot0.rm | builds, not compared | - | No original in `arc/cpio` | none |
+| `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | - | The emulator stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) while the original cc compiles `dosopn.c`, which has no floating point. Cause in the cc not yet traced (cc at 00:b270) | none; blocked by the emulator |
+| `cmd/pburn/*.c` | pburn | **exception: newer source than in WEGA (allowed), expected to differ; not built** | - | Newer version in tree (2.6). 2.3 (ffc49bb45) and 2.6 do not link (`bss overflow`); the 2.6 sources disagree on `namef[]` (`pb.cmdline.c` 80, `pb.buf.c`/`pb.file.c` 50). 1.4 (71cf2e46a) links but is 27674 bytes vs 41570 for the original (both without `-s`). The original has its symbol table, so it is not stripped and `-s` in pburn/Makefile is wrong for it. None of the three matches | none; the sources are not changed |
+| `cmd/standalone/sa.cat.c`, `sa.format.c`, `sa.verify.c`, `sa.mkfs.c`, `sa.install.c`, `sa.shipdisk.c` | sa.cat, sa.format, sa.verify, sa.mkfs, sa.install, sa.shipdisk | differ (sizes 1060/1036, 8916/10204, 4050/5162, 4284/4260, 7146/7122, 1816/2464) | - | Not analysed. `libb.a` is not the cause: `sa.timer` (same library) is identical. Probably a different source revision | none yet |
+| `cmd/standalone/sa.diags/` | sa.diags | builds, no original to compare | - | The MON16 modules `p.gesa.s`, `p.ldsd.s`, `p.term.s` are copied from `OlliL/P8000` `firmware/MON16` into the build directory (not in git). `sa.test.s` needs `as -u` (without it, `as` stops with ERROR 50 at `call _printf`) | none |
 
 ## Scripts without an object check
 
