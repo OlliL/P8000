@@ -40,27 +40,30 @@ produce the same bytes with the shipped cc.
 | `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | differs in the own code (2 blocks, 0x2b0 and 0x2bc, `cmpins` range 0x68c) | - | Not the crt0 change: the old and new `crt0-strip.s` assemble to identical objects, and every commit back to 14098cf gives the same 2 blocks. The code differs in expression form (`addl rr2,rr4` / `ldl %2490` vs `ld r6,r4` / `addl rr4,rr6`), so the shipped strip seems to come from another source revision. Earlier note 'own code identical' is not reproduced | none yet |
 | `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | - | Needs the older cc | none yet |
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | - | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
-| `cmd/tar.c` | tar | builds, differs (21692 vs 22494 bytes) | - | Not analysed | none yet |
+| `cmd/tar.c` | tar | builds, own code is Version 12.1.88, original is 1.8.88, differences in code and strings | - | Not analysed | none yet |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | - | The emulator stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) while the original cc compiles `dosopn.c`, which has no floating point. Cause in the cc not yet traced (cc at 00:b270) | none; blocked by the emulator |
 
 ## Scripts without an object check
 
-`cmd/chkdiff`, `cmd/uuclear` and `cmd/whodo` are text scripts, not compiled
-programs, so there is no object to compare. Their originals are not checked
-(the old status 100% from the earlier `cmd/TODO` is not confirmed).
+`cmd/chkdiff`, `cmd/uuclear` and `cmd/whodo` are text scripts, they  where
+compared using `cmp` and are identical.
 
 ## Layout still open
 
 - `cc` and `popt` are Linux-side tools and live in `host/` (not WEGA sources).
 
-- The single-file commands are flat in `cmd/` (V7 layout); `copydisk`, `dump`,
-  `dumpdir`, `format`, `getud`, `putud`, `restor`, `sync`, `tar`, `verify`
+- The single-file commands are flat in `cmd/` (V7 layout); , `dump`,
+  `dumpdir`, `getud`, `putud`, `restor`, `sync`, `tar`, 
+- For some commands there are different versions available. For those, even if
+  they are only one C source, subdirectories where created with additional
+  subdirectories for the different versions. The `Makefile` in the subdirectory
+  builds the version which was shippted with WEGA 3.1. The other versions are
+  not built. This applies to `pburn`, `copydisk`, `format` and `verify`.
   are built by `make` there, `strip-programs` strips them before the compare.
-- `BOOT0`, `doscopy`, `pburn`, `standalone` have their own template Makefiles
+- `BOOT0`, `doscopy`, `standalone` have their own template Makefiles
   and are built by `make` in `cmd/` (`subdirs`). `standalone/sa.diags` is
-  separate and not built (see the table).
-- `make` (the `all` target) does not strip; `make strip-programs` does, and
-  `make verify-wega` in `host/` runs it before comparing.
+  separate and built as well - but only the p8000 version which was shipped
+  with WEGA 3.1 on separate floppy disks.
 - `cmd/doscopy/mk` is a one-line helper (`make doscat ...`) that duplicates
   the `all` target; not used.
 - `lib/libc` has no Makefile of its own yet.
