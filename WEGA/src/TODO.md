@@ -42,7 +42,6 @@ produce the same bytes with the shipped cc.
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | builds, differs (8422 vs 8506, 8260 vs 8346 bytes) | - | Not analysed | none yet |
 | `cmd/copydisk.c` | copydisk | builds, differs (7318 vs 7148 bytes) | - | Not analysed | none yet |
 | `cmd/tar.c` | tar | builds, differs (21692 vs 22494 bytes) | - | Not analysed | none yet |
-| `cmd/BOOT0/boot0.fd.s`, `boot0.ud.s`, `boot0.rm.s` | boot0.fd, boot0.ud, boot0.rm | builds, not compared | - | No original in `arc/cpio` | none |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | - | The emulator stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) while the original cc compiles `dosopn.c`, which has no floating point. Cause in the cc not yet traced (cc at 00:b270) | none; blocked by the emulator |
 
 ## Scripts without an object check
