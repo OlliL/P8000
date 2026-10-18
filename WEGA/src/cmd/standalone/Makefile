@@ -17,7 +17,12 @@ PREFIX ?= /
 FILES = sa.cat sa.format sa.verify sa.mkfs sa.install sa.timer sa.shipdisk
 BMISC_C = ../../uts/conf/bmisc.c
 
-all: $(FILES)
+SUBDIRS=	sa.diags
+
+all: $(FILES) subdirs
+
+subdirs:
+	fail=0; for d in $(SUBDIRS); do $(MAKE) -C $$d all || fail=1; done; exit $$fail
 
 .s.o:
 	$(AS) -o $@ $<
@@ -71,5 +76,6 @@ install: $(FILES)
 
 clean:
 	rm -f $(FILES) sd41.c ft41.c vf41.c libb.a *.o
+	for d in $(SUBDIRS); do $(MAKE) -C $$d clean; done
 
-.PHONY: all install clean
+.PHONY: all subdirs install clean
