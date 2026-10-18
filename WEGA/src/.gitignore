@@ -35,4 +35,5 @@
 /cmd/standalone/sa.install
 /cmd/standalone/sa.timer
 /cmd/standalone/sa.shipdisk
-/cmd/standalone/sa.diags/sa.diags
+/cmd/standalone/sa.diags/p8000/sa.diags
+/cmd/standalone/sa.diags/p8000c/sa.diags
