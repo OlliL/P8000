@@ -31,8 +31,11 @@ subdirs:
 	-cd doscopy ; $(MAKE) all ; cd ..
 	for d in $(SUBDIRS); do cd $$d ; $(MAKE) all ; cd .. ; done
 
-getud.o: getud.c
-putud.o: putud.c
+getud: getud.c
+	$(CC) -o $@ getud.c
+
+putud: putud.c
+	$(CC) -o $@ putud.c
 
 dump: dump.c
 	$(CC) $(CFLAGS) -s -o $@ dump.c
