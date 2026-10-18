@@ -6,10 +6,10 @@
 #   make install PREFIX=dir    install pb.image below dir (default /)
 #   make clean                 remove the objects and the images
 
-AS ?= as   # the original BOOT0 build uses as, not cas
-LD ?= ld
-STRIP ?= strip
-PREFIX ?= /
+AS = as   # the original BOOT0 build uses as, not cas
+LD = ld
+STRIP = strip
+PREFIX = /
 
 PROGS = pb.image boot0.fd boot0.ud boot0.rm
 

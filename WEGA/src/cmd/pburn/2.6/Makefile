@@ -5,11 +5,11 @@
 #   make install PREFIX=dir    install below dir (default /)
 #   make clean                 remove the objects and the program
 
-SCC ?= scc
-GLD ?= gld
-SCRT0 ?= /lib/scrt0.o
-LIBC ?= /lib/slibc.a
-PREFIX ?= /
+SCC = scc
+GLD = gld
+SCRT0 = /lib/scrt0.o
+LIBC = /lib/slibc.a
+PREFIX = /
 
 OBJECTS = pb.o pb.command.o pb.cmdline.o pb.file.o pb.buf.o pb.devud.o
 

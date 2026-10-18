@@ -5,9 +5,9 @@
 #   make install PREFIX=dir    install below dir (default /)
 #   make clean                 remove the objects and the program
 
-CC ?= cc
-CFLAGS ?= -O
-PREFIX ?= /
+CC = cc
+CFLAGS = -O
+PREFIX = /
 
 all: verify
 

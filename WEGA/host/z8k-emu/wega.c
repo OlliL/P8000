@@ -471,6 +471,17 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		off_t r = lseek(fd, off, wh);
 		if (r < 0) return sc_err(c, errno);
 		return sc_long(c, r); }
+	case 38: {	/* fcntl */
+		int fd  = a_int(&a);
+		int cmd = a_int(&a);
+		int arg = a_int(&a);
+
+		int r = fcntl(fd, cmd, arg);
+
+		if (r < 0)
+			return sc_err(c, errno);
+
+		return sc_long(c, r); }
 	case 20: return sc_ok(c, getpid());
 	case 23: case 46: return sc_ok(c, 0);
 	case 24: return sc_ok2(c, getuid(), geteuid());

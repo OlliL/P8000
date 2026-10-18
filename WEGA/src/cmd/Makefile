@@ -10,21 +10,21 @@
 #   make install PREFIX=dir    install below dir (default /)
 #   make clean                 remove the objects and the programs
 
-CAS ?= cas
-CC  ?= cc
-LD  ?= ld
-STRIP ?= strip
-CFLAGS ?= -O
-PREFIX ?= /
-LIBC ?= /lib/libc.a
+CAS = cas
+CC  = cc
+LD  = ld
+STRIP = strip
+CFLAGS = -O
+PREFIX = /
+LIBC = /lib/libc.a
 CRT = ../lib/libc/crt
 
 PROGS = ar ranlib size strip
 
 FILES=		getud putud
-STRIPFILES=	copydisk dump dumpdir restor sync tar
+STRIPFILES=	dump dumpdir restor sync tar
 CLEANFILES=	sync.o
-SUBDIRS=	BOOT0 doscopy pburn standalone verify
+SUBDIRS=	BOOT0 doscopy pburn standalone verify copydisk
 
 all: $(PROGS) $(FILES) $(STRIPFILES) subdirs
 
@@ -34,14 +34,14 @@ subdirs:
 ar: ar.o $(CRT)/crt0-ar.o
 	$(LD) -s -e start -o $@ $(CRT)/crt0-ar.o ar.o $(LIBC)
 
+ranlib: ranlib.o
+	$(LD) -s -e start -o $@ /lib/crt0.o ranlib.o $(LIBC)
+
 size: size.o $(CRT)/crt0-size.o
 	$(LD) -s -e start -o $@ $(CRT)/crt0-size.o size.o $(LIBC)
 
 strip: strip.o $(CRT)/crt0-strip.o
 	$(LD) -s -e start -o $@ $(CRT)/crt0-strip.o strip.o $(LIBC)
-
-ranlib: ranlib.o
-	$(LD) -s -e start -o $@ /lib/crt0.o ranlib.o $(LIBC)
 
 $(CRT)/crt0-ar.o: $(CRT)/crt0-ar.s
 	$(CAS) -u -o $@ $(CRT)/crt0-ar.s
