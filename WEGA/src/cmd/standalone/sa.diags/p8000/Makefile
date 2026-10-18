@@ -25,41 +25,17 @@ term.o: p.term.s
 	cp p.term.s term.s
 	$(AS) -o $@ term.s
 
-boot.o:
-	$(AS) -u -o boot.o boot.s
-
-brk.o:
-	$(AS) -u -o brk.o brk.s
-
-comm.o:
-	$(AS) -u -o comm.o comm.s
-
-disk.o:
-	$(AS) -u -o disk.o disk.s
-
-init.o:
-	$(AS) -u -o init.o init.s
-
-mch.o:
-	$(AS) -u -o mch.o mch.s
-
-ram.o:
-	$(AS) -u -o ram.o ram.s
-
-sa.diags.o:
-	$(AS) -u -o sa.diags.o sa.diags.s
-
-sa.test.o:
-	$(AS) -u -o sa.test.o sa.test.s
-
-wdc.o:
-	$(AS) -u -o wdc.o wdc.s
-
+boot.o: boot.s
+brk.o: brk.s
+comm.o: comm.s
+disk.o: disk.s
+init.o: init.s
+mch.o: mch.s
+ram.o: ram.s
+sa.test.o: sa.test.s
+wdc.o: wdc.s
 menu.o:	menu.c
-	$(CC) $(CFLAGS) -c menu.c
-
 misc.o:	misc.c
-	$(CC) $(CFLAGS) -c misc.c
 
 $(PROCED): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)

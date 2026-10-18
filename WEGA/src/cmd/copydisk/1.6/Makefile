@@ -11,6 +11,8 @@ PREFIX = /
 
 all: copydisk
 
+copydisk.o: copydisk.c
+
 copydisk: copydisk.o
 	$(CC) $(CFLAGS) copydisk.o -s -o $@
 
@@ -18,6 +20,6 @@ install: copydisk
 	cp copydisk $(PREFIX)/bin/copydisk
 
 clean:
-	rm -f copydisk *.o
+	rm -f copydisk copydisk.o
 
 .PHONY: all install clean

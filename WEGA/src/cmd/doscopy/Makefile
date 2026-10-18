@@ -15,6 +15,7 @@ PROGS = doscat dosrm doscp dosdir dosls dosmkdir dosrmdir dosformat
 OBJECTS = dosdev.o dosplit.o dosopn.o dosdel.o dosfat.o dosin.o dosout.o \
           doscat.o dosrm.o doscp.o dosdir.o dosls.o dosmkdir.o \
           dosrmdir.o dosformat.o
+I = /usr/include
 
 all: $(PROGS)
 
@@ -53,6 +54,22 @@ install: $(PROGS)
 	for p in $(PROGS); do cp $$p $(PREFIX)/usr/bin/$$p; done
 
 clean:
-	rm -f $(PROGS) *.o
+	rm -f $(PROGS) $(OBJECTS)
+
+dosdev.o:  dosdev.c
+dosplit.o: dosplit.c $I/stdio.h $I/ctype.h
+dosopn.o:  dosopn.c
+dosdel.o:  dosdel.c
+dosfat.o:  dosfat.c
+dosin.o:   dosin.c $I/time.h $I/sys/types.h $I/sys/stat.h
+dosout.o:  dosout.c
+doscat.o:  doscat.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
+dosrm.o:   dosrm.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
+doscp.o:   doscp.c $I/stdio.h $I/ctype.h $I/sys/types.h $I/sys/stat.h
+dosdir.o:  dosdir.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
+dosls.o:   dosls.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
+dosmkdir.o: dosmkdir.c $I/time.h $I/stdio.h $I/sys/types.h $I/sys/stat.h
+dosrmdir.o: dosrmdir.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
+dosformat.o: dosformat.c $I/stdio.h $I/sys/types.h $I/sys/stat.h $I/fcntl.h
 
 .PHONY: all install clean

@@ -11,6 +11,8 @@ PREFIX = /
 
 all: format
 
+format.o: format.c
+
 format: format.o
 	$(CC) $(CFLAGS) format.o -s -o $@
 
@@ -18,6 +20,6 @@ install: format
 	cp format $(PREFIX)/bin/format
 
 clean:
-	rm -f format *.o
+	rm -f format format.o
 
 .PHONY: all install clean

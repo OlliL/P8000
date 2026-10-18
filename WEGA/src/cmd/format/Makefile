@@ -3,10 +3,10 @@
 FORMAT_VERSION = 1.5
 
 all:
-	cd $(FORMAT_VERSION) ; make $@
+	cd $(FORMAT_VERSION) ; $(MAKE) $@
 
 clean:
-	cd $(FORMAT_VERSION) ; make $@
+	cd $(FORMAT_VERSION) ; $(MAKE) $@
 
 install:
-	cd $(FORMAT_VERSION) ; make $@
+	cd $(FORMAT_VERSION) ; $(MAKE) $@

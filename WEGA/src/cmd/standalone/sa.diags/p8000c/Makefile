@@ -14,50 +14,21 @@ PROCED = sa.diags
 
 all: $(PROCED)
 
-boot.o:
-	$(AS) -u -o boot.o boot.s
-
-brk.o:
-	$(AS) -u -o brk.o brk.s
-
-comm.o:
-	$(AS) -u -o comm.o comm.s
-
-disk.o:
-	$(AS) -u -o disk.o disk.s
-
-init.o:
-	$(AS) -u -o init.o init.s
-
-mch.o:
-	$(AS) -u -o mch.o mch.s
-
-p.gesa.o:
-	$(AS) -u -o p.gesa.o p.gesa.s
-
-p.ldsd.o:
-	$(AS) -u -o p.ldsd.o p.ldsd.s
-
-p.term.o:
-	$(AS) -u -o p.term.o p.term.s
-
-ram.o:
-	$(AS) -u -o ram.o ram.s
-
-sa.test.o:
-	$(AS) -u -o sa.test.o sa.test.s
-
-twem.o:
-	$(AS) -u -o twem.o twem.s
-
-wdc.o:
-	$(AS) -u -o wdc.o wdc.s
-
+boot.o: boot.s
+brk.o: brk.s
+comm.o: comm.s
+disk.o: disk.s
+init.o: init.s
+mch.o: mch.s
+p.gesa.o: p.gesa.s
+p.ldsd.o: p.ldsd.s
+p.term.o: p.term.s
+ram.o: ram.s
+sa.test.o: sa.test.s
+twem.o: twem.s
+wdc.o: wdc.s
 menu.o:	menu.c
-	$(CC) $(CFLAGS) -c menu.c
-
 misc.o:	misc.c
-	$(CC) $(CFLAGS) -c misc.c
 
 $(PROCED): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)

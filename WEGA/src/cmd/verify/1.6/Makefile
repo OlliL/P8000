@@ -11,6 +11,8 @@ PREFIX = /
 
 all: verify
 
+verify.o: verify.c
+
 verify: verify.o
 	$(CC) $(CFLAGS) verify.o -s -o $@
 
@@ -18,6 +20,6 @@ install: verify
 	cp verify $(PREFIX)/bin/verify
 
 clean:
-	rm -f verify *.o
+	rm -f verify verify.o
 
 .PHONY: all install clean

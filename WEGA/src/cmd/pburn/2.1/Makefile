@@ -18,6 +18,13 @@ all: pburn
 .c.o:
 	$(SCC) -c $<
 
+pb.buf.c.o: pb.buf.c
+pb.c.o: pb.c
+pb.cmdline.c.o: pb.cmdline.c
+pb.command.c.o: pb.command.c
+pb.devud.c.o: pb.devud.c
+pb.file.c.o: pb.file.c
+
 pburn: $(OBJECTS)
 	$(GLD) $(SCRT0) $(OBJECTS) $(LIBC) -o $@
 
@@ -25,6 +32,6 @@ install: pburn
 	cp pburn $(PREFIX)/bin/pburn
 
 clean:
-	rm -f pburn *.o
+	rm -f pburn $(OBJECTS)
 
 .PHONY: all install clean

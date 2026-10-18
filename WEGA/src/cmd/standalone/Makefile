@@ -22,7 +22,7 @@ SUBDIRS=	sa.diags
 all: $(FILES) subdirs
 
 subdirs:
-	fail=0; for d in $(SUBDIRS); do cd $$d ; $(MAKE) all || fail=1; cd .. ; done; exit $$fail
+	for d in $(SUBDIRS); do cd $$d ; $(MAKE) all ; cd .. ; done
 
 wdc.o: wdc.s
 	$(AS) -o $@ $<

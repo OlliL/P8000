@@ -3,10 +3,10 @@
 VERIFY_VERSION = 1.5
 
 all:
-	cd $(VERIFY_VERSION) ; make $@
+	cd $(VERIFY_VERSION) ; $(MAKE) $@
 
 clean:
-	cd $(VERIFY_VERSION) ; make $@
+	cd $(VERIFY_VERSION) ; $(MAKE) $@
 
 install:
-	cd $(VERIFY_VERSION) ; make $@
+	cd $(VERIFY_VERSION) ; $(MAKE) $@

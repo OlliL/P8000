@@ -15,8 +15,10 @@ PROGS = pb.image boot0.fd boot0.ud boot0.rm
 
 all: $(PROGS)
 
-.s.o:
-	$(AS) -u -o $@ $<
+boot0.fd.o: boot0.fd.s
+boot0.md.o: boot0.md.s
+boot0.rm.o: boot0.rm.s
+boot0.ud.o: boot0.ud.s
 
 pb.image: boot0.md.o
 	$(LD) -s -o $@ boot0.md.o
@@ -42,6 +44,6 @@ install: pb.image
 	cp pb.image $(PREFIX)/pb.image
 
 clean:
-	rm -f $(PROGS) *.o
+	rm -f $(PROGS) boot0.fd.o  boot0.md.o  boot0.rm.o  boot0.ud.o
 
 .PHONY: all install clean
