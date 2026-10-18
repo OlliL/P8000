@@ -1,92 +1,95 @@
-# Handoff: WEGA build chain back to C (new session)
+# Handoff: WEGA build chain back to C
 
-Written 2026-10-16 at the end of the MAME session. Read this first, then `mame/LOG.md` (long
-background, English) and `mame/tests/` (what was measured on the real machine).
+Status 2026-10-19. Read `../CLAUDE.md` first (how to build, where to look things up),
+then `KNOWLEDGE.md` (all facts, long) and `../src/TODO.md` (what is not yet identical).
 
-## Goal of the new work
+## Goal
 
-Disassemble the WEGA build chain (C compilers `cc` and `scc`, assembler `cas`, linker `ld`,
-`libc`, ...) and turn it back into C that builds on a modern Linux, so that it behaves like the
-original and produces the same objects and binaries, byte for byte, as a build under WEGA. In
-other words: a cross tool chain that is output-identical to the native one.
+A tool chain on the Linux host (`WEGA/host/`) that is output-identical to the native WEGA
+one: `cc`, `scc`, `cas`, `as`, `ld`, `gld`, `ar`, `ranlib`, `strip`, `size`, `libc`, built from
+our own C sources, checked byte for byte against the original binaries.
 
-Suggested way (not decided with the owner yet, discuss first):
+## What exists
 
-1. Get the original binaries out of the WEGA disk image and the floppy images (see below).
-   Find the executable format (segmented Z8000, probably a.out like) and write a small
-   reader.
-2. Disassemble with a Z8000 disassembler (MAME's `z8000` core has one: debugger `dasm`, or the
-   `unidasm` tool; a script for it is in `mame/tools/dbg.lua`). Segmented and non-segmented code can
-   be mixed, take care of the format flags.
-3. **Oracle first:** to know what "identical" means, create reference outputs by running the
-   original tools under the emulator (WEGA boots in `p8000_16`, 1 to 8 MiB, hard disk image
-   below, `sd.hd`; use a copy) on a set of test inputs (the sources in `WEGA/src` are good material). Save inputs,
-   outputs and sizes. Every decompiled stage is checked against them.
-4. Option: a small user mode Z8000 interpreter on Linux that maps the WEGA system calls to
-   Linux ones would run the original binaries natively and give a fast oracle and a fallback.
-5. Decompile bottom up: `libc` and the assembler and linker (small, format heavy) before the
-   compilers. Compare at object level after every step.
+- **Oracle:** `host/z8k-emu` runs the original WEGA binaries on Linux (Z8001/Z8002 user mode,
+  system calls mapped to Linux, incl. `fcntl`). The whole original chain runs under it:
+  `cc scc cas as ld gld ar strip ranlib` and `pcat` (man pages).
+- **Native host tools:**
+  - `host/cc`: decompiled `cc` driver, 74 command lines identical to the original. Pass paths
+    can be changed (`-Tx`, `-B`, `-a`), but `/tmp/cc.<pid>.x` and `/bin/mv` are hard coded and
+    `scc` (segmented chain) is not supported.
+  - `host/popt`: peephole optimizer, 522 corpus runs byte identical.
+- **Checks:** `make -C host check` (cc, popt, libc 170 identical / 7 different / 3 without C
+  source, oldcc). `make -C host verify-wega` builds `src/cmd` with the original tools and
+  compares per program.
+- **Sources:** `src/cmd` builds under the oracle (see `src/TODO.md` for the per program state;
+  `ar`, `dump`, `dumpdir`, `restor`, `sync`, `pb.image`, `pburn` 2.1 identical). `src/lib/libc` has
+  C sources for 170 members, `oldcc/*.s` for the rest.
+- **Analysis scripts:** `host/tools` (`sdis.py` disassembler, `cmpins.py` instruction compare,
+  `epu*.py`, `war.py`, ...).
 
-## Where things are
+## What is missing for a complete host tool chain
 
-- Git: `https://github.com/OlliL/P8000` (branch master, sparse checkout here: `UDOS/WEGA`,
-  `WEGA/src/{boot,cmd/standalone,head/sys,stand,uts}`, `firmware/MON8`, `firmware/MON16`, `mame`).
-  Commit with `git add --sparse -A mame WEGA/host`. Other `WEGA/src` directories exist in the full repo
-  (`git sparse-checkout add <dir>`): there are about 1100 files in the repo, among them `cmd`
-  and the contributed K5JB sources.
-- MAME fork: `https://github.com/OlliL/mame` (never push to `mamedev/mame`), checkout
-  `/home/claude/mamedev/mame`, branch `p8k-clean`. Binaries: `mame` (optimised), `mamed`
-  (`DEBUG=1`). Build scripts `/home/claude/runs/build.sh` and friends (see `mame/LOG.md`).
-  Machines: `p8000` (8 bit board, UDOS) and `p8000_16` (16 bit board, WEGA).
-- ROMs and disk images: `/home/claude/roms`, `/home/claude/sdimg` (`sd.hd` -> `sd.dd`, about 85 MB, the
-  WEGA hard disk used for the boot tests; `sd_*.hd`/`tr*.hd` are variants from experiments, some with other
-  kernels; `wega.stock`, `wega.sd_original` are small files, probably the kernel only, check), `/home/claude/flop` (floppy images and their
-  raw conversions: `wgaend22.raw`, `w31start.raw`, `vsh.raw`, `udossys.raw`), `/home/claude/sw`.
-  No ROM or software download links in any document or PR.
-- Test harness `/home/claude/runs/sc` and copies in `mame/tools`: `console.py` (console on a
-  socket, log in `mon.log`, input through the fifo `mon.in`), `mame/tools/dbg.lua`/`blk2.lua` (Lua scripts
-  that press NMI, swap floppies, read memory and registers), `start.sh`, `run_*.sh`. Entering
-  programs by hand into MON16 is slow (about 0.5 s per word).
-- Manuals as scans with OCR text, in `/home/claude/docs` (not in git, copyright):
-  `U8000-CPU.pdf` (German, 103 pages), `Z8001-Z8002-CPU-SGS-Thomson.pdf` (82 pages),
-  `Z8001-2-CPU-Zilog-1985.pdf` (36 pages), each with `.ocr.txt` (English OCR, German umlauts
-  garbled). Handy: instruction set tables in the SGS-Thomson manual, saved program status
-  (Table 6.1), segmented addressing (3.4.2, 5.5).
-- Other references named in `mame/LOG.md` section 15: Leventhal, Z8000 Assembly Language Programming;
-  Moore, Z8000 Handbook; Mateosian, Programming the Z8000 (owner has the books and photographs
-  pages on request).
+| Part | State |
+|---|---|
+| `cpp` | not started (original `/lib/cpp`; Plexus-free reconstruction needed) |
+| `cparse` / `scparse` | not started; the parser is the biggest part |
+| `codgen` / `scodgen` | not started |
+| `gopt` | not started (only used with -Ol/-Or) |
+| `popt`, `spopt` | `popt` done (non-segmented); `spopt` not started |
+| `cas`, `as` | not started |
+| `ld`, `sld`, `gld` | not started; `gld` man page read, `pburn` 2.1 link line known |
+| `ar`, `ranlib`, `strip`, `size` | C sources exist in `src/cmd` (strip: one expression differs) |
+| `cc` driver | done for non-segmented; `scc` driver missing; hard coded paths |
+| libc | 170 of 180 members from C; 7 differ (older/newer cc revision), 3 without C |
 
-## Z8000 facts that were verified on the real machine or in the emulator
+## Next steps, in this order (fastest way to a usable local tool chain)
 
-- `m_pc` of the MAME core: segment in bits 16..22, offset in the low 16 bits. The offset wraps at
-  `FFFF`, a two word block instruction at `seg:FFFC` restarts in the same segment (tests 05, 06).
-- Trap frame on the system stack (segmented): identifier, FCW, PC segment word, PC offset;
-  bit 15 of the PC segment word is kept (test 01). `sc #n` pushes `7Fnn`.
-- Opcode examples used in the tests: `3A d5`/`3A s7` SINB/SOUTB with an immediate port, `C8vv`
-  `ldb rl0,#vv`, `4D05 DA imm` `ld DA,#imm`, `5E08 DA` `jp DA`, `BB s1 0cd0` `ldir`, `97E0..97E3` pop,
-  `93E3..93E0` push, `7B00` iret, `7F01`/`7F02` MON16 switch to segmented/non segmented mode, `7F00` break.
-- MMU: three Z8010 (stack `F6`, data `FA`, code `FC`) selected by the special I/O port number.
-  See `mame/LOG.md` section 5 and `mame/tests/02..04`.
-- Fixed in the MAME core (branch `p8k-clean`): `DAB` after addition with a high digit
-  (WEGA's decimal conversion in libc broke on it), PC wrap, the block instruction restart.
+1. **Make `host/cc` usable stand-alone.** Replace the hard coded `/tmp/cc.%d.%s` and `/bin/mv`,
+   add the segmented variant (`scc`: `scparse`, `scodgen`, `spopt`, `sld`, `gld`, `slibc.a`,
+   `scrt0.o`; the driver is the same shape, take the original `/bin/scc` as oracle with
+   `-:z`). Result: one driver that calls original passes under the emulator or later
+   native ones. *Small, unblocks everything below.*
+2. **Wrapper scripts** `host/bin/{cc,scc,cas,as,ld,gld,ar,...}` that run the original passes under
+   `z8k-emu -r ROOT`, so `src/cmd` can be built with plain `make` (CC=host/bin/cc).
+   Then `make -C src/cmd` is the daily build and the pieces are replaced one by one.
+3. **Small data-format tools first, native:** `ar`/`ranlib` (done in `src/cmd`, build for Linux
+   with a host libc shim), then `strip`, `size`, `nm`-like reader. Compare to the original on the
+   whole WEGA tree.
+4. **Assembler `cas` (and `as`):** closed grammar, good oracle (every `.s` in the tree, every
+   `cc -S` output, `oldcc/*.s`). Decode from the binary with `tools/sdis.py`; check with
+   `cmpins.py`. Do `cas` before `as` (PLZ/ASM is separate and used less).
+5. **Linkers `ld`, then `sld`/`gld`:** object/a.out formats, relocation (`tools/check_reloc.py`),
+   man page for `gld`. Oracle: relink every program in the tree and compare.
+6. **Emulator: EPU arithmetic** (needed for `cparse` on floating constants and for the doscopy
+   commands; formats decoded in `tools/epu.py`). Do it before the parser decompilation, otherwise
+   the oracle cannot compile `dosopn.c` (see `src/TODO.md`).
+7. **Back end `codgen` (+ `scodgen`), then `gopt`, `spopt`:** table driven, check against the
+   oracle's `-S` output on the whole source tree (libc, cmd, kernel). `popt` experience applies.
+8. **Front end `cpp`, `cparse` (+ `scparse`):** largest part, leave it to last; with
+   the oracle the intermediate file (`cc -:z` temp files) can be compared pass by pass.
+9. **libc leftovers:** the 7 differing and 3 missing members (older/newer revisions; see the
+   TODO table), decide which revision the target is.
+10. **Close out:** `make verify` with only native tools and no emulator; keep the emulator as
+    oracle in CI-like checks.
+
+Steps 1 to 3 are a few sessions; 4 to 5 follow; 6 to 8 are the real decompilation work.
 
 ## Working rules of the owner (Oliver Lehmann, @OlliL)
 
 - Conversation in German, short messages. Documents, commit messages, PR texts in English.
-- Commit and push often as a safety net. Author `Oliver Lehmann <lehmann@ans-netz.de>`
-  (`git -c user.name="Oliver Lehmann" -c user.email="lehmann@ans-netz.de" commit`), trailers
-  `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` and the `Claude-Session:` URL of the
-  session that made the commit. The stop hook only checks `origin`; its "unpushed commits" alarms for
-  other remotes are false alarms.
-- Facts only from documents or measurements; real machine tests are possible on his P8000
-  (16 bit board, 4 MiB, MON16), he types the programs by hand: keep them short and give him the
-  words.
-- The owner already tried to translate the WEGA kernel back to C once (`WEGA/src/uts`), and wrote
-  an own RTC driver. Ask him what exists for the tool chain before starting.
+- Commit and push often (branch `toolchain`). Author `Oliver Lehmann <lehmann@ans-netz.de>`,
+  trailers `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` and the `Claude-Session:` URL.
+- Facts only from documents or measurements; mark guesses.
+- Keep `host/KNOWLEDGE.md` and `src/TODO.md` current.
+- Originals, binaries and copyrighted material stay out of git (explicit exceptions by the owner).
+  Plexus sources are private reference only; reconstructed code is not a copy of them.
+- V7 layout in `src/cmd`; Makefiles must also work with WEGA's native `make`
+  (`=` not `?=`, `cd dir ; $(MAKE)`).
 
 ## Open questions for the owner
 
-- Which tools exactly, which WEGA version (the disk image is 3.x?), are the sources of any part
-  of the chain already available (the repo has `cmd` sources and K5JB)?
-- What counts as "identical": byte equal objects, including timestamps and symbol table order?
-- May the original binaries be published in the repo (probably not): keep them out of git.
+- Which revision of libc is the target (the 7 differing members come from older/newer cc revisions)?
+- What does `p8000c` (second `sa.diags`) and the `87wega3.2` SCCS suffix stand for?
+- Fix `src/cmd/Makefile` (`donee` typos in `install`, `format` missing in `SUBDIRS`, no
+  `strip-programs` rule) and `sa.diags/p8000/Makefile` (`ASFLAGS=-u`)? Not touched so far.

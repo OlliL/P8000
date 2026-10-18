@@ -90,7 +90,7 @@ compares them byte for byte with the objects shipped on the disk image:
 segmented mode); results are returned in r4 (r5), carry set and errno in r4 on
 error. Implemented: exit, fork, read, write, open, close, wait, creat, link,
 unlink, exec, exece, chdir, time, chmod, chown (no-op), break, ssgbrk, stat,
-fstat, lseek, getpid, getuid/getgid, alarm, pause, utime, access, nice
+fstat, fcntl, lseek, getpid, getuid/getgid, alarm, pause, utime, access, nice
 (no-op), sync, kill, dup/dup2, pipe, times, signal (SIG_DFL/SIG_IGN only),
 ioctl (always ENOTTY), umask. Anything else prints
 `unimplemented system call N` and fails with EINVAL.
@@ -100,6 +100,7 @@ Details: `../KNOWLEDGE.md`, section "Oracle: z8k-emu".
 
 - EPU (floating point) arithmetic is not emulated; only loads and stores of
   EPU registers (as plain data moves, enough for varargs prologues).
+  Consequence: `cparse` cannot compile floating constants (blocks `doscopy`).
 - Guest signal handlers are not run.
 - Some flags that nothing in the tool chain evaluates are approximate (V after
   shifts/rotates, C/V after `div`, DA/H except after byte add/sub).

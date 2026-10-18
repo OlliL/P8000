@@ -1,7 +1,7 @@
 # popt (WEGA /lib/popt) - decompilation notes
 
 Goal: portable C that turns `cc -S` output into the same text the shipped
-/lib/popt produces (oracle: z8k-emu running the original; corpus in /tmp/corpus,
+/lib/popt produces (oracle: z8k-emu running the original; corpus in a scratch directory (CORPUS=...),
 built by corpus.sh).  Source is written from the WEGA binary (not from Plexus c2).
 
 ## Binary layout (stripped, 22272 text, 3308 data, 3420 bss)

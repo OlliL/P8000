@@ -3,26 +3,37 @@
 ## Directory layout
 
 - `WEGA/src/...`  WEGA source code, as it would sit in /usr/src of a WEGA
-  system, compiled by the WEGA cc/cas/ld. Layout as in V7 (/usr/src/cmd):
-  a command with one source file is a file in `src/cmd/` (`ar.c`, `size.c`,
-  ...); a command with several files has its own subdirectory with its own
-  Makefile (`doscopy`, `pburn`, `standalone`, `BOOT0`). Start-up variants are
-  in `src/lib/libc/crt/`, libc in `src/lib/libc` (with `oldcc/*.s` for members
-  made by the older cc), kernel in `src/uts`. Objects and programs are built
-  next to the sources; `make` there needs the cc/cas/ld variables.
+  system, compiled by the WEGA tools (cc, scc, cas, as, ld, gld, ...) and
+  meant to build with WEGA's own `make` as well. Layout as in V7
+  (/usr/src/cmd): a command with one source file is a file in `src/cmd/`
+  (`ar.c`, `size.c`, ...); a command with several files has its own
+  subdirectory with its own Makefile (`doscopy`, `standalone`, `BOOT0`). Where
+  several shipped versions of a command exist (`pburn` 1.4/2.1/2.3/2.6,
+  `copydisk`, `format`, `verify` 1.5/1.6, `standalone/sa.diags` p8000/p8000c),
+  every version has its own subdirectory and the Makefile one level up builds
+  the version shipped with WEGA 3.1. Start-up variants are in
+  `src/lib/libc/crt/`, libc in `src/lib/libc` (with `oldcc/*.s` for members
+  made by the older cc), headers in `src/head`, kernel in `src/uts`. Objects
+  and programs are built next to the sources. `make` there needs the tool
+  variables (`CC SCC CAS AS LD GLD AR STRIP`); `src/make_cmd_linux.sh` is the
+  owner's wrapper that runs `make` with all tools under z8k-emu (it holds the
+  owner's local paths; the generic recipe is in `CLAUDE.md`).
 - `WEGA/host/...` the Linux side. `z8k-emu` (the oracle that runs the original
   binaries), `tools` (analysis scripts), and the Linux-native cross tools
-  `cc` and `popt`: their source is in the same directory, they behave like
-  the WEGA originals and replace the emulator calls later. Check scripts and
-  `Makefile` targets: `make -C WEGA/host check` (cc, popt, libc, oldcc) and
-  `make -C WEGA/host verify-wega` (ar, size, strip, built by the original
-  tools under z8k-emu, compared with the original binaries).
+  `cc` (the non-segmented driver only, no `scc` yet) and `popt`: their source
+  is in the same directory, they behave like the WEGA originals and replace
+  the emulator calls later. Check scripts and `Makefile` targets:
+  `make -C WEGA/host check` (cc, popt, libc, oldcc). `make -C WEGA/host
+  verify-wega` is outdated since the version subdirectories, `GLD`/`SCC` and
+  the Makefile changes of 2026-10-18; see `HANDOFF_wega_disasm.md`. The status
+  of the programs against the originals is kept in `WEGA/src/TODO.md`.
 - `WEGA/contrib/...` third-party and own extras, unchanged.
 
-Living document. Goal: rebuild the WEGA tool chain (cc, scc, cas, ld, sld,
+Living document. Goal: rebuild the WEGA tool chain (cc, scc, cas, as, ld, sld,
 gld, ar, ranlib, libc, ...) as C that builds on modern Linux and produces
 byte-identical objects and binaries. Long-term goal: the whole WEGA OS as
-sources. See `HANDOFF_wega_disasm.md` for the original plan.
+sources. See `HANDOFF_wega_disasm.md` for the state and the next steps, and
+`../CLAUDE.md` for how to compile and where to look things up.
 
 Facts here come from documents (man pages, WEGA-Dienstprogramme Band A/B)
 or from measurements on the original files. Guesses are marked as such.
@@ -32,14 +43,26 @@ or from measurements on the original files. Guesses are marked as such.
 Copyrighted material and original binaries stay out of the repository.
 Local copies used in the work:
 
-- WEGA man pages (man0..man7, manM), German.
+- WEGA man pages (man0..man7, manM), German. They are also inside the file
+  tree below as packed files (`usr/man/man1/gld.1.z`); the original `pcat`
+  reads them under the oracle: `z8k-emu -r ROOT /usr/bin/pcat
+  /usr/man/man1/gld.1`.
 - WEGA-Dienstprogramme Band A (calling conventions, Teil 7) and Band B
   (cas assembler, Teil 2; C specifics, Teil 5), transcribed by the owner
   (may contain typos).
 - The WEGA file tree from the owner's machine, as an original tar and as a
   big-endian binary cpio (uuencoded). Not a stock install, but all tool
   chain files are present. tar and cpio agree byte for byte on every tool
-  chain file; only runtime files (utmp, wtmp, logs, core) differ.
+  chain file; only runtime files (utmp, wtmp, logs, core) differ. This tree
+  is the reference for every "identical" in `src/TODO.md`: the version
+  subdirectories under `src/cmd` build exactly the versions found here (the
+  owner calls them the versions shipped with WEGA 3.1; the SCCS ids in the
+  binaries end in `87wega3.2`, the meaning of that suffix is not clarified).
+- WEGA 3.1 start and floppy disks (images and raw conversions). The owner
+  compared `BOOT0` and `standalone/sa.diags` with them; `sa.diags` is not
+  part of the file tree.
+- Z8000/Z8001/Z8002 CPU manuals (scans with OCR text) and the books named in
+  the old handoff (Leventhal, Moore, Mateosian). Not in git.
 - Kernel sources (KERN 3.2, EAW/ZFT 1985-89) with the owner's hand
   decompilations of 17 files (author "O.Lehmann", based on Plexus/V7):
   clist.s mem.c partab.c sys.c tt0.c tty.c acct.c break.c lock.c nami.c
@@ -55,9 +78,17 @@ non-segmented. Not used.
 - Not every WEGA binary was rebuilt with each compiler release. Some code
   may never be reproducible with the compiler we have; then several C
   compiler versions must be maintained side by side.
-- One subdirectory per binary for the C sources (`ar/`, `cas/`, `ld/`, ...),
-  Makefiles on every level, `make all` builds everything.
+- V7 layout for `src/cmd` (a flat file for a single-source command, a
+  subdirectory with its own Makefile for several files or several versions,
+  see "Directory layout"); `make all` builds everything.
+- Makefiles keep to what WEGA's own `make` understands: plain `=` assignments
+  (no `?=`), `cd dir ; $(MAKE)` instead of `$(MAKE) -C`, no GNU extensions.
+  The owner moved them that way in the commits "work on supporting WEGA native
+  make" (d914fd9, adabdd8, 2b62862). Variables come from the command line.
 - Git content in English.
+- Original binaries and copyrighted material stay out of git. Plexus sources
+  are private reference only; our decompiled cc and popt are not copies of
+  Plexus code.
 
 ## Files of the tool chain
 
@@ -78,7 +109,7 @@ Size = s_imsize, I&D = combined (E?07) or separate (E?11).
 | /bin/cas | E611 | seg (segs 4,5,7,8) | 46848 | 38360+1280+1280 | 12328 | parser.y, main.c, getops.c, ifile.c, ofile.c, pst.c, assemble.c, error.c, expr.c, gen.c, instr.c, itable.c, jpr.c, jpr2.c, listing.c, locntr.c, nodes.c, ntable.c, optim.c, p2loop.c, scanner.c, ssymtab.c, stable.c, subr.c, symbols.c, table1.c, table2.c |
 | /bin/ld | E711 | nonseg | 18944 | 2748 | 27082 | ld.c 1.18, copyname.c 1.3, printname.c 1.5, symbols.c 1.8, crt0.s |
 | /bin/sld | E611 | seg | 38912 | 7090 | 31054+63488 | ld.c, ldm.c, dump.c, ext.c, swap.c, copyname.c, printname.c, symbols.c, malloc.c, scrt0.s |
-| /bin/gld| E607 | seg | 22924 | 4652 | 4680 | gld.c malloc.c | 
+| /bin/gld | E607 | seg | 22924 | 4652 | 4680 | gld.c, malloc.c |
 | /bin/ar | E707 | nonseg | 10060 | 2296 | 1738 | ar.c 2.2, malloc.c 3.3, crt0.s |
 | /usr/bin/ranlib | E707 | nonseg | 7124 | 568 | 9560 | ranlib.c 1.1 |
 | /bin/nm | E707 | nonseg | 10870 | 1116 | 9278 | nm.c 2.6, malloc.c, crt0.s |
@@ -227,7 +258,8 @@ Floating point uses EPU mnemonics (`fadd`, `fldd`, ...).
 `ARMAG` 0177545 (0xFF65), then per member `struct ar_hdr { char
 ar_name[14]; long ar_date; char ar_uid; char ar_gid; int ar_mode; long
 ar_size; }` (26 bytes), data padded to even length. ranlib adds a first
-member `__.SYMDEF` (format still to be decoded from ranlib).
+member `__.SYMDEF` (entries of 12 bytes, see the ranlib section; not yet
+checked against a `__.SYMDEF` that the original ranlib produced).
 
 ## ld / sld / gld (ld(1), sld(1), gld(1))
 
@@ -238,8 +270,18 @@ member `__.SYMDEF` (format still to be decoded from ranlib).
 - sld: segmented; -M/-R map sections to segments, segments 0..127;
   `__.SYMDEF` is searched repeatedly. Kernel link: `sld -Ns -o wega -e start
   -X -i -Ms62 ...`.
-- gld: segmented; for very large programs; needs a load module ; pburn 2 
-  link: `gld /lib/scrt0.o .... /lib/slibc.a -o ....` ; TODO: read man page!
+- gld (gld(1), `gld.1 1.0`, "segmented U8001 loader for very large programs"):
+  segmented like sld; sections can be placed in logical segments, the
+  default mapping is text in segments 0-31, data 32-63, bss 64-95, stack
+  segment 128; segments can grow to `0xFFFE` by system calls. Options `-e label`, `-l x` (= `/lib/slibx.a`, then
+  `/usr/lib`, `/z/bin/lib`), `-L path`, `-o name`, `-s`, `-t`, `-w`, `-M`
+  (prints the library modules loaded). Libraries are searched at the position
+  of their name; `__.SYMDEF` is searched repeatedly. No relocation information
+  stays in the output (cannot be used for another gld run); no output file
+  when references stay unresolved; `_stkseg` is reserved. WEGA programs use
+  `-e start` with `/lib/scrt0.o`. Verified use: `pburn` 2.1 is compiled with
+  `scc -c` and linked with `gld /lib/scrt0.o <objects> /lib/slibc.a -o pburn`;
+  the result is byte-identical to `/bin/pburn`.
 
 ## Z8000 decoder (tools/z8k.py)
 
@@ -339,6 +381,15 @@ Results (all byte-identical to the objects shipped with WEGA, see
   so the whole pipeline cpp, cparse, codgen, popt, cas, ld works unmodified.
 - ar, size run correctly; nothing in the tool chain needed more than the
   system calls listed below.
+- The whole `src/cmd` builds under the oracle (`CC SCC CAS AS LD GLD AR STRIP`
+  all run as `z8k-emu -r ROOT <tool>`); the per-program results are in
+  `src/TODO.md`. The segmented chain `scc` -> `gld` (E607/E611) reproduces
+  `pburn` 2.1 byte for byte. `make` itself runs on the host, not in the
+  emulator.
+- Paths: absolute guest paths are looked up below ROOT, relative ones refer
+  to the host working directory (so builds happen in place in `src/cmd`);
+  guest `/tmp` is `ROOT/tmp`. A file outside ROOT and outside the working
+  directory is invisible to the guest.
 
 ### Loader
 
@@ -359,7 +410,9 @@ Results (all byte-identical to the objects shipped with WEGA, see
 
 - `sc #n` is the word `7F00|n`. Numbers from `sys/sysent.c` (System III based,
   e.g. 1 exit, 2 fork, 3 read, 4 write, 5 open, 6 close, 7 wait, 8 creat, 11 exec,
-  17 break, 19 seek, 28 fstat, 41 dup, 42 pipe, 45 ssgbrk, 48 signal, 59 exece).
+  17 break, 19 seek, 28 fstat, 38 fcntl, 41 dup, 42 pipe, 45 ssgbrk, 48 signal,
+  59 exece). `fcntl` (38: fd, cmd, arg) passes straight to the host `fcntl`
+  (added 2026-10-18).
 - The kernel reads the arguments from the saved registers r0, r1, ... in order
   (`machdep.c: scfunc`): a 16-bit value takes one register, a 32-bit value two,
   a pointer one (non-segmented) or two (segmented: segment word `0sssssss 00000000`,
@@ -383,7 +436,12 @@ Results (all byte-identical to the objects shipped with WEGA, see
   and the EPU registers are implemented (as plain data moves), which is all
   varargs prologues (`4FFC 8x03 off`: store fr3..fr0) need. WEGA emulates
   floating point in the kernel (`conf/fpe.s`, full soft float); to run float code
-  we have to port or reimplement it.
+  we have to port or reimplement it. First concrete victim: `/lib/cparse` stops
+  with "EPU instruction 8e04 not implemented at 00:b270" on a floating
+  constant, e.g. `lseek(fd, fat + (long)(1.5 * first), 0)` in
+  `src/cmd/doscopy/dosopn.c` line 175. This blocks all `doscopy` commands
+  (every one links `dosopn.o`); `cc -S` already fails, so it is the front end,
+  not the assembler or the optimizer.
 - Signal handlers installed by the guest (signals keep their host default or
   are ignored for SIG_IGN), terminal ioctls (always ENOTTY), I/O and
   privileged instructions (user mode only).
@@ -393,11 +451,15 @@ Results (all byte-identical to the objects shipped with WEGA, see
 
 ## Open questions
 
-- Format of `__.SYMDEF` (can now be answered by running the original `ranlib`
-  under the oracle).
-- EPU instruction formats and cas mnemonics (fadd, fldd, ...).
+- Check the `__.SYMDEF` entry format (12 bytes, from the ranlib binary) against
+  a `__.SYMDEF` that the original `ranlib` produces under the oracle.
+- EPU arithmetic in the emulator (see "Not yet emulated"). The instruction
+  formats are decoded (`tools/epu.py`); what is missing is the semantics and
+  the cas mnemonics for the arithmetic.
 - Which cas condition code and flag names to emit (both `ne`/`nz`,
   `c`/`ult` exist).
+- What `p8000c` (second `sa.diags`) and the `87wega3.2` SCCS suffix mean;
+  `gld` options beyond the man page.
 
 ## ar (reconstructed, byte-identical)
 
@@ -488,7 +550,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
 
 ## libc check against the original library (status)
 
-`toolchain/libc/check.sh WEGA_ROOT LIBC_SRC ORIG_MEMBERS [member ...]` rebuilds each
+`libc/check.sh WEGA_ROOT LIBC_SRC ORIG_MEMBERS [member ...]` rebuilds each
 member of `WEGA/src/lib/libc` with the original tools and compares it byte for byte
 with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` without a
 `module` header with `cas`, `.c` with `/bin/cc` (-O, "", -Or, -Ol).
@@ -597,7 +659,7 @@ is compiler output and is not kept in git). Details and reproduced quirks: `popt
 
 ## cc (compiler driver, /bin/cc)
 
-`src/cmd/cc/cc.c` is a decompilation of the WEGA `/bin/cc` driver (14208 bytes, E707
+`host/cc/cc.c` is a decompilation of the WEGA `/bin/cc` driver (14208 bytes, E707
 combined I/D; own code 0x2a-0x15f0, libc from 0x15f2).  It is a portable K&R
 C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
 

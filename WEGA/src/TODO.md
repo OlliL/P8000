@@ -5,15 +5,13 @@ WEGA, why, and what we use instead. Everything in `src/` should build with
 `make`; a file listed here is built from a workaround until the cause is gone.
 Git content is in English; the German notes of the original WEGA sources stay as they are.
 
-Last checked: 2026-10-17. Verification (from `WEGA/host`):
-`make check` in host/ (cc: 74 command lines identical; popt: 522 corpus runs
-identical; libc: 170 identical, 7 different, 3 without C source; oldcc: all
-ok) and `make verify-wega`, which builds `src/cmd` with the original cc, cas,
-as, ld, ar and strip (under z8k-emu), runs `make strip-programs`, and reports
-per program. Result of this run, for the ar/ranlib/size/strip/
-getud/putud/copydisk/dump/dumpdir/format/restor/sync/tar/verify group: ar,
-dump, dumpdir, restor and sync are identical; pb.image and sa.timer are
-identical; everything else differs or is not built, see the table.
+Last checked: 2026-10-19. Verification (from `WEGA/host`):
+`make check` in host/ (last run 2026-10-17: cc 74 command lines identical;
+popt 522 corpus runs identical; libc 170 identical, 7 different, 3 without C
+source; oldcc all ok) and the build of `src/cmd` with the original cc, scc,
+cas, as, ld, gld, ar and strip under z8k-emu, followed by the compare per
+program (see `host/KNOWLEDGE.md`). Programs that are identical or whose own
+code is identical are marked in the table; the rest differs or is not built.
 
 ## Differences and workarounds
 
@@ -37,33 +35,37 @@ produce the same bytes with the shipped cc.
 | `lib/oldlibc/doprnt.c` | - | not built | - | Structural reconstruction of the Jan 1983 `_doprnt`, untested | - |
 | `cmd/ar.c` + `lib/libc/crt/crt0-ar.s` | ar | identical (built with the WEGA cc) | - | - | `crt0-ar.s` is the start-up variant of this binary |
 | `cmd/size.c` + `lib/libc/crt/crt0-size.s` | size | own code identical, file differs | - | The libc part of the original is an older libc revision | none; verify compares own code only |
-| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | differs in the own code (2 blocks, 0x2b0 and 0x2bc, `cmpins` range 0x68c) | - | Not the crt0 change: the old and new `crt0-strip.s` assemble to identical objects, and every commit back to 14098cf gives the same 2 blocks. The code differs in expression form (`addl rr2,rr4` / `ldl %2490` vs `ld r6,r4` / `addl rr4,rr6`), so the shipped strip seems to come from another source revision. Earlier note 'own code identical' is not reproduced | none yet |
+| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | differs in the own code (2 blocks, 0x2b0 and 0x2bc, `cmpins` range 0x68c) | - | Not the crt0 change: the old and new `crt0-strip.s` assemble to identical objects, and every commit back to 14098cf gives the same 2 blocks. The code differs in one expression form (`addl rr2,rr4` / `ldl %2490` vs `ld r6,r4` / `addl rr4,rr6`); the version string is the same. Earlier note 'own code identical' is not reproduced | none yet |
 | `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | - | Needs the older cc | none yet |
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | - | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
 | `cmd/tar.c` | tar | builds, own code is Version 12.1.88, original is 1.8.88, differences in code and strings | - | Not analysed | none yet |
-| `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | - | The emulator stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) while the original cc compiles `dosopn.c`, which has no floating point. Cause in the cc not yet traced (cc at 00:b270) | none; blocked by the emulator |
+| `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | - | `/lib/cparse` stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) on the floating constant in `dosopn.c` line 175 (`1.5*first`); every doscopy command links `dosopn.o` | none; blocked by the emulator (EPU arithmetic) |
 
 ## Scripts without an object check
 
-`cmd/chkdiff`, `cmd/uuclear` and `cmd/whodo` are text scripts, they  where
+`cmd/chkdiff`, `cmd/uuclear` and `cmd/whodo` are text scripts; they were
 compared using `cmp` and are identical.
 
 ## Layout still open
 
 - `cc` and `popt` are Linux-side tools and live in `host/` (not WEGA sources).
 
-- The single-file commands are flat in `cmd/` (V7 layout); , `dump`,
-  `dumpdir`, `getud`, `putud`, `restor`, `sync`, `tar`, 
-- For some commands there are different versions available. For those, even if
-  they are only one C source, subdirectories where created with additional
-  subdirectories for the different versions. The `Makefile` in the subdirectory
-  builds the version which was shippted with WEGA 3.1. The other versions are
-  not built. This applies to `pburn`, `copydisk`, `format` and `verify`.
-  are built by `make` there, `strip-programs` strips them before the compare.
-- `BOOT0`, `doscopy`, `standalone` have their own template Makefiles
-  and are built by `make` in `cmd/` (`subdirs`). `standalone/sa.diags` is
-  separate and built as well - but only the p8000 version which was shipped
-  with WEGA 3.1 on separate floppy disks.
+- The single-file commands are flat in `cmd/` (V7 layout): `ar`, `dump`,
+  `dumpdir`, `getud`, `putud`, `ranlib`, `restor`, `size`, `strip`, `sync`,
+  `tar`.
+- For some commands several versions exist. For those, subdirectories were
+  created, one per version (even if it is a single C source). The `Makefile`
+  in the subdirectory builds the version shipped with WEGA 3.1; the others
+  are not built. This applies to `pburn` (2.1; others 1.4/2.3/2.6),
+  `copydisk`, `format` and `verify` (1.5; 1.6 alternative).
+- `BOOT0`, `doscopy`, `standalone` have their own template Makefiles and are
+  built by `make` in `cmd/` (`SUBDIRS`). `format` is not in `SUBDIRS` yet.
+  `standalone/sa.diags` is separate and built as well, but only the p8000
+  version shipped with WEGA 3.1 (`p8000c` is an unreleased variant); its
+  Makefile needs `ASFLAGS=-u` (the original `as` needs `-u` for external
+  symbols like `_printf`).
+- `cmd/Makefile`: `install` has typos (`donee`, lines 94-95); the `strip-programs`
+  rule documented in its header does not exist yet.
 - `cmd/doscopy/mk` is a one-line helper (`make doscat ...`) that duplicates
   the `all` target; not used.
 - `lib/libc` has no Makefile of its own yet.
