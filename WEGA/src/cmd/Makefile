@@ -32,10 +32,7 @@ subdirs:
 	for d in $(SUBDIRS); do cd $$d ; $(MAKE) all ; cd .. ; done
 
 getud.o: getud.c
-getud:	getud.o
-
 putud.o: putud.c
-putud:	putud.o
 
 dump: dump.c
 	$(CC) $(CFLAGS) -s -o $@ dump.c
@@ -90,10 +87,9 @@ sync: $(CRT)/crt0-sync.o sync.o
 	$(LD) -s -o $@ -e start $(CRT)/crt0-sync.o sync.o -lc
 
 install: $(PROGS) $(FILES) $(STRIPFILES)
-	cp ar $(PREFIX)/bin/ar
-	cp size $(PREFIX)/bin/size
-	cp ranlib $(PREFIX)/bin/ranlib
-	cp strip $(PREFIX)/usr/bin/strip
+	for file in ar chkdiff getud putud size tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
+	for file in ranlib strip ; do cp $$file $(PREFIX)/usr/bin/$$file ; donee
+	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; donee
 	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
 
 clean:
