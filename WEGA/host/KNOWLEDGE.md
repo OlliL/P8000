@@ -647,6 +647,29 @@ Covered (10, all verify): cnvt, doscan, fltioc, length, malloc, nlist, printf, s
 symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`. Not yet covered: the old-cc
 libc parts that are only embedded in size/strip/ranlib binaries (no member objects exist for them).
 
+## tar (reconstructed, byte-identical)
+
+`src/cmd/tar.c` rebuilds `/bin/tar` (Version 1.8.88, 22494 bytes) byte for byte with the shipped
+`cc -O -s` under the oracle (`cmp` against the original, header and data included).
+
+- Compare method: `tools/cmpins.py` on the own code (0x42 up to the first libc member at 0x1db8), then
+  `cmp` of the whole file. Differences in the data section show up as shifted string addresses.
+- String pool order is the order of the strings in the source, but `popt` moves code blocks
+  (`codemove` in `host/popt/z21.c`: a `jr` to a block that is preceded by an unconditional jump or
+  `ret` is replaced by the block itself; loop inversion). So the code order of the original can differ
+  from the source order. Use the string addresses to recover the lexical order: in `readarchiv` and
+  `writearchiv` the "change error-disk" / "format error-disk" blocks stand before the read/write in
+  the code, but behind it in the source (retry with `goto readblock` / `goto writeblock`).
+- A `goto` or `done(n)` written in several places is not merged by `popt`; the shared `done(2)` of
+  `writearchiv` comes from the source form `if (...) { ...; goto writeblock; } done(2);`.
+- Initialised `int` globals go to the data section, uninitialised ones to bss: `disks` has no
+  initialiser (a `= 1` adds a data word and moves the other bss variables).
+- Operand order matters: `BLOCKS * disks` gives `ld r3,BLOCKS; mult rr2,disks`, `disks * BLOCKS` the reverse.
+- The frame of a function is locals + 2 bytes (a spilled argument counts as a local): `writearchiv` has
+  `char cmd[98]` for `sub r15,#0x66`.
+- `dumpblock()` (debug dump of the header block, `dflag >= 2`) prints each byte as `%02x`, then
+  `"%c"` for printable characters or three blanks, and at the end `Checksummme: gelesen = %o berechnet = %o`.
+
 ## popt (C optimizer, /lib/popt)
 
 `popt/` is a portable C decompilation of the shipped /lib/popt (written from the binary only,
