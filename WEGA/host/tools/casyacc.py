@@ -33,6 +33,8 @@ def load(binary):
              chk=words(d, YYCHK, NST), defl=words(d, YYDEF, NST))
     return t
 
+OBSERVED = collections.defaultdict(set)
+
 def traces(files, r2):
     for f in files:
         stack = []
@@ -40,6 +42,8 @@ def traces(files, r2):
             m = re.match(r'state (\d+), char 0(\d+)', line)
             if m:
                 stack.append(int(m.group(1)))
+                if len(stack) > 1:
+                    OBSERVED[stack[-1]].add(stack[-2])
                 continue
             m = re.match(r'reduce (\d+)', line)
             if m:
@@ -97,7 +101,7 @@ def tables_trans(t):
     pred = collections.defaultdict(set)
     for s in range(NST):
         if t['pact'][s] > -1000:
-            for tk in range(1, 128):
+            for tk in list(range(1, 128)) + [256]:
                 i = t['pact'][s] + tk
                 if 0 <= i < NACT:
                     nstate = t['act'][i]
@@ -134,6 +138,9 @@ def main(binary, files):
     def sym(x):
         return 'N%d' % -x if x < 0 else str(x)
     trans, pred = tables_trans(t)
+    for st, srcs in OBSERVED.items():
+        for src in srcs:
+            pred[st].add((src, t['chk'][st]))
     derived = {}
     for p in range(1, NPROD):
         if p not in rhs and t['r2'][p] > 0:

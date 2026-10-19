@@ -11,6 +11,7 @@ static char sccsid[] = "@[$]scanner.c\t1.2  07/18/83 13:26:36 Copr. 1981 87wega3
 #include <stdio.h>
 #include <ctype.h>
 #include "cas.h"
+#include "y.tab.h"
 
 /* the operators: the longest match wins by their order in the table */
 struct optab {
@@ -56,7 +57,6 @@ struct optab {
 };
 
 char tokbuf[128];
-YYSTYPE yylval;
 
 /* put c into the token buffer */
 #define ADD(c)	if (cnt > 0x80) toolong++; else { *bp++ = c; cnt++; }

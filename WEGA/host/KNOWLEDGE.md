@@ -850,6 +850,42 @@ show only such differences). The jump tables and strings of the data were not co
   with `ungetc` for the characters read too far; `/* */` and `//` comments are skipped (the line counter
   `curline` is incremented there).
 
+**Done: parser (`parser.y`).** The grammar was rebuilt from the tables and the yydebug traces and written as
+`src/cmd/cas/parser.y`; the ORIGINAL `/usr/bin/yacc` (run under z8k-emu, `yacc -d`; `/usr/lib/yaccpar` is the
+skeleton of the binary) turns it into tables that are identical to those of `/bin/cas` in all 8 arrays
+(`yyexca yyact yypact yypgo yyr1 yyr2 yychk yydef`; `tools/cmpyacc.py`, run by `check.sh parser`). That fixes the
+rules and their order, the token numbers (declared in increasing order) and the order of the nonterminals:
+39 typed nonterminals come first (`%type`, in the order of `parser.y`), then the 15 untyped ones in order of
+first appearance. yacc reports 3 shift/reduce conflicts (as for the original grammar: the tables are equal).
+- `%union {long l; int i; char *p; struct pst *pp; NODE *np;}`: the scanner returns `yylval.i` (symbol index, token 36),
+  `.l` (number, 85), `.p` (names 86/87, string 88) and `.pp` (the entries of the permanent symbol table, 37..84).
+  `scanner.c` includes the generated `y.tab.h` for `YYSTYPE`; `yylval` is defined by the parser (yacc writes
+  `YYSTYPE yylval, yyval;`; `yyval` is at bss 0xa9c2, `yylval` at 0xa2b6).
+- The value stack element is 4 bytes; `yyparse` is the skeleton of `yaccpar` (`yydebug` data 0x1fc6, `yychar` 0x1fc8,
+  `yynerrs` 0x1fca, `yyerrflag` 0x1fcc, `yyv[150]`). `yyerror(s)` (0x1ef8): `"yacc stack overflow"` -> `error(4, msg)`;
+  `"syntax error"` -> the three lines `Syntax error(s) found / Syntax checking will continue / No object file will be
+  created` once (`synerr`); any other text -> `error(3, msg)` and `synrecover()` (skip tokens up to the end of line
+  token 29, `yyerrflag = 0`, `nfreed = nalloc`). The actions of the productions that only say `Expecting ...`
+  call `yyerror` with that text (about 140 messages, all in `parser.y`).
+- Variables of the parser (data): `plist` 0x5f6 (labels waiting for the next statement), `segmode` 0x5fa (`.seg` /
+  `.nonseg`), `fpflag` 0x5fc, `fpmode` 0x5fe, counters of rounding / infinity modes 0x600, 0x602 (the second test of
+  the infinity case uses the rounding counter: kept), `nameflag` 0x604 (a name was read: its index goes to the
+  symbol file with record 0x15), `errmsg[80]` 0x606; bss: `listp` 0xac20, `symmode` 0xac24 (6 local name, 0 other;
+  passed as `(unsigned char)`). Node kinds the grammar builds with `mknode2(type, a, b)`: 0x56 address operand, 0x60
+  indirect `@r`, 0x61 `expr(r)`, 0x62 immediate `#expr`, 0x63 `r(#expr)`, 0x64 `r(r)`; register nodes
+  `mknode2(tok, mknode1(1, regnumber), 0)`; the kind byte at offset 6 of a name node (0 extern/common, 2 `::=`, 3 `::`, 4 `:=`, 5 `:`)
+  is set before `defsym` (0x3d90) or the label list.
+- The functions of the modules that are not reconstructed yet are called by address (`fn4368` = define the labels of
+  `plist`, `fn4CDA` / `fn4DC4` even / odd, `fn4BB0` select the section, `fn4A0E` / `fn4A30` `{` / `}`, `fn84FC` jpr /
+  callr, `fn4ECC` the type of an expression, `fn52C6 fn538A fn543C fn5CCC fn59FC fn57C0 fn5708 fn5650 fn5598 fn54E0 fn5876
+  fn5928 fn59DC fn5CAC` the operators of `expr.c`, `fn4DF6` the value of `.`); they get their names when their modules are done.
+- Code check: `cmpmod.py` on `parser.o` (compiled WITHOUT `-O`, as `yyparse` has the prologue behind the body there):
+  the sequence of the 283 calls of the module is identical to the binary (checked by a script, only the names of
+  `yyerror`/`synrecover` differ), the remaining differences are the code generator's (switch in `cpir` form, `slal` instead
+  of `ld; sdal`, scratch registers). Data: the tables are equal, the strings are the same set; the layout
+  differs (the shipped scc puts the strings of a function in front of the following data, the old one at the end
+  of the module, 42 bytes of alignment), so `cmpdata.py` shows differences for this module.
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

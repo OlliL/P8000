@@ -2,7 +2,7 @@ cas - the U8000 assembler of WEGA (/bin/cas), reconstructed from the binary
 ===========================================================================
 
 State: module by module, see MODULES (text range of each module in /bin/cas and its state).
-Done: ifile, nodes, instr, scanner, main, done, pst, subr and the data modules table1, table2, pstab. The facts about the binary are in host/KNOWLEDGE.md (section cas).
+Done: ifile, nodes, instr, scanner, main, done, parser, pst, subr and the data modules table1, table2, pstab. The facts about the binary are in host/KNOWLEDGE.md (section cas).
 
 How a module is checked
 -----------------------
@@ -28,3 +28,14 @@ are not differences of the source:
  * the conversion of an unsigned char argument is `ldb rh7,#0` (old) and `subb rh7,rh7` (shipped).
 
 The names of functions and variables are ours (the binary is stripped); cas.h declares the node layout.
+
+parser.y
+--------
+`parser.y` is made into `parser.c` by the original yacc (`yacc -d parser.y`, `y.tab.c` renamed); `y.tab.h` gives
+scanner.c its `YYSTYPE`. The module is compiled WITHOUT -O (with -O the shipped scc would not put the prologue
+behind the body, as the binary has it). `check.sh parser` first compares the eight yacc tables with the binary
+(`host/tools/cmpyacc.py`: all identical), then the code. The functions of the modules that do not exist yet are
+called by their address (`fn4368`, ...); the names follow when those modules are done (see ADDRESSES).
+Data: the tables and strings are the same, but the shipped scc places the strings of a function in front of the
+data that follow, the old one at the end of the module (and aligns them differently), so `cmpdata` reports
+differences.

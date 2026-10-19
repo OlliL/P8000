@@ -43,7 +43,7 @@ produce the same bytes with the shipped cc.
 ## In progress
 
 - `cmd/cas/` (the cas assembler): decompilation from `/bin/cas`, module by module (`cmd/cas/MODULES`). Done:
-  ifile, nodes. The original was built by an older scc, so the code differs in registers, frames, switch and
+  ifile, instr, scanner, main, done, nodes, parser, pst, subr and the tables. The original was built by an older scc, so the code differs in registers, frames, switch and
   loop layout (see `cmd/cas/README`); byte identity is not expected.
 
 ## Scripts without an object check

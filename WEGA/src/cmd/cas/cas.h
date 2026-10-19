@@ -48,15 +48,7 @@ extern struct ilen instlen[];
 extern int segmode;			/* set by .seg, cleared by .nonseg */
 extern int shortaddr;			/* a short segmented address was seen */
 
-/* the value of the last token (yylval); the parser's %union */
-typedef union {
-	long	l;
-	int	i;
-	char	*p;
-	NODE	*np;
-} YYSTYPE;
-
-extern YYSTYPE yylval;
+/* the value of the last token is yylval (YYSTYPE, the %union of parser.y: y.tab.h) */
 extern char tokbuf[];			/* the text of the last token */
 
 struct pst {				/* 12 bytes */
