@@ -21,16 +21,16 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 
 | Placeholder | Content | Use |
 |---|---|---|
-| `<WEGA_ROOT>` | extracted WEGA 3.1 file tree (`bin/ etc/ lib/ usr/`) | ROOT for `z8k-emu -r`; originals to compare against |
-| `<Z8K_EMU>` | built `host/z8k-emu/z8k-emu` (or its path) | run original WEGA binaries |
-| `<WEGA_MAN>` | man pages (inside `<WEGA_ROOT>/usr/man`) | read with `pcat` under the emulator |
-| `<WEGA_BOOKS>` | WEGA manuals and handbooks (scans, OCR text) | lookup |
-| `<CPU_DOCS>` | Z8000/Z8001/Z8002 CPU manuals (PDF + OCR text) | instruction sets, formats |
-| `<KERNEL_OBJECTS>` | original kernel objects / libraries | compare, disassemble |
-| `<PLEXUS_SRC>` | Plexus sources, private reference only | read for ideas, never copy |
-| `<WEGA31_DISKS>` | WEGA 3.1 floppy images and raw conversions | extract originals |
-| `<MAME_REPO>` | MAME fork with P8000 machines (`p8000`, `p8000_16`) | real-system tests, boot WEGA |
-| `<SCRATCH>` | temp directory | intermediate files, build logs |
+| `/mnt/share/cvs/P8000/tmp/wega31_root` | extracted WEGA 3.1 file tree (`bin/ etc/ lib/ usr/`) | ROOT for `z8k-emu -r`; originals to compare against |
+| `/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu` | z8k Emulator (oracle) | run original WEGA binaries |
+| `/mnt/share/cvs/P8000/tmp/wega31_root/usr/man` | man pages | read with `pcat` under the emulator |
+| `/mnt/share/cvs/P8000/tmp/wega31_books` | WEGA manuals and handbooks (scans, OCR text) | lookup |
+| `/mnt/share/cvs/P8000/tmp/cpu_docs` | Z8000/Z8001/Z8002 CPU manuals (PDF + OCR text) | instruction sets, formats |
+| `/mnt/share/cvs/P8000/tmp/wega31_kernel` | original kernel objects / libraries | compare, disassemble |
+| `/mnt/share/cvs/P8000/tmp/plexus` | Plexus sources, private reference only | read for ideas, never copy |
+| `/mnt/share/cvs/P8000/tmp/wega31_disks` | WEGA 3.1 floppy images and raw conversions | extract originals |
+| `/mnt/share/git/mame/` | MAME fork with P8000 machines (`p8000`, `p8000_16`) | real-system tests, boot WEGA |
+| `/mnt/share/cvs/P8000/tmp/tmp` | temp directory | intermediate files, build logs |
 
 Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do not copy them into documents.
 
