@@ -629,7 +629,7 @@ tested.
 - Not emulated: stop watch key (ST) and weekday symbols of the clock module (the software
   does not use them); head load, write precompensation, separate drive select, drives 2/3,
   8" drives; parity/ECC NMI of the 16 bit board.
-- No `MACHINE_SUPPORTS_SAVE`; some coupling members are not in the save state.
+- Save states: see the section at the end (flag set since 2026-10-17).
 - ROMs: the `nur8bit` ones are dumps of real EPROMs; others carry the EAW file names.
 - Decision: no links to the ROM or floppy collection in the driver or in the PR (MAME does not
   point to downloads). Hosting a `mame/` collection of ROMs/images in the user's repository
@@ -813,3 +813,61 @@ one more crystal, cassette image code, z80scc) do not touch the driver. Test reb
 `p8k-clean` onto `a9d405aa` (local branch `p8k-rebase-test`, not pushed): no conflicts, build of `p8k.cpp`
 without new warnings, `-validate` clean for `p8000` and `p8000_16`, `-verifysoftware` 6 of 6 good, test 06 program on the
 emulator gives the same frame and words. The real rebase is still done right before the PRs.
+
+## Save states (2026-10-17)
+
+Registered with `save_item`: `m_dma_int`, `m_fdc_tc`, `m_is_seg_user`, `m_p16a`, `m_p16b`, `m_ardy0/1`,
+`m_u_pio0_writing`, `m_u_pio0_a_bus`, `m_u8000_held`; `m_normal_mode` and `m_dma_on` are `bool` now
+(`m_dma_on` is never set, so it is not saved). Test: WEGA from the hard disk to the shell, state saved,
+one command, state loaded: the shell prompt counter and the output continued from the saved point;
+`cp`/`cmp` on the disk worked afterwards. `p8000` (8 bit board): save and load in the monitor without
+errors. `-validate` ok. `MACHINE_SUPPORTS_SAVE` set on both systems.
+
+## Review comment on the PC wrap (2026-10-17)
+
+A reviewer found the block-instruction borrow independently (test rig z8000_test, same result as test 06)
+and suggested `addr_add(m_pc, 2)` for the six fetch places and `addr_sub(m_pc, 4)` for the 32 restarts.
+`addr_add/addr_sub` already exist in the core with exactly my expression. Done: no `restart_insn()` any
+more, the six comments are removed.
+
+## Tidy items in the driver (2026-10-17)
+
+Done: `board16_reset()` without child resets (the machine resets them; `soft_reset_w()` resets them
+explicitly), `m_dram8` as `memory_share_creator`, RS232 callbacks use the port references,
+`p8k_dma_device` private. The daisy device cannot be private (see TODO). Tested: build, `-validate`
+(both systems), WEGA cold boot to login, machine reset and boot again to login, save/load of `p8000`.
+
+## S8000 SADIE regression run (2026-10-17)
+
+Source: https://github.com/tpaxia/Zilog_S8000 (`sadie_serial/`, injected diagnostics from a saved COMMAND LEVEL
+state). Two `s8000` builds of the same MAME base (`f26abf2b`): one with the z8000/z8010/z80pio/z80ctc/z80dma files
+reverted to the base, one with the `p8k-clean` series. Machine `s8000` (CPU-A), 150 s per diagnostic.
+
+| Diagnostic | Base | p8k-clean | Remark |
+| --- | --- | --- | --- |
+| MMUTST | PASS, ERRORS=0 | PASS, ERRORS=0 | transcripts identical (the repo README reports 252 errors with another MAME build) |
+| CACHETST, CIOTST | aborts: not an HPCPU | same | need `s8000s2` (HPCPU) |
+| ICPTST2-4 | "no ICP's present" | same | ICP board not emulated |
+| MEMTEST | still in "SEG 0 self parity bit test" after 150 s | same after 150 s; with 1800 s both: PASS, ERRORS=0 | needs several minutes |
+| SIOTEST | endless laps | same | lap count depends on timing |
+| SCCTST, ICPTST1, TEX, ECCTEST | wait for operator input / special hardware | same | not automatable |
+
+No difference between base and the series where the output is deterministic. Not yet run: the other 24 diagnostics
+(disk, tape, FPP, printer).
+
+### Setup and limits (state 2026-10-17)
+
+- Binaries: `s8000` from `SOURCES=src/mame/zilog/s8k.cpp` (`REGENIE=1` is needed when the source list changes);
+  the SADIE scripts of the repo were run unchanged with `S8000_MAME` and `S8000_ROMS` set (ROM directory
+  `s8k_cpu/`, device name, not `s8000/`). The harness leaves old MAME processes running; they have to be killed.
+- The 24 diagnostics that were not run need disk, tape, FPP or printer hardware, or an operator; the harness
+  cannot answer their questions (150 s timeout, "waiting for input").
+- **`s8000s2` (HPCPU) cannot run the SADIE tests with this loader.** The ROMs are available
+  (https://github.com/OlliL/S8000-roms, SHA1 equal to the driver, directory `s8k_hpcpu/`) and the machine starts
+  ("System 8000 HPCPU Monitor 10.1 - Press START to Load System"), but the SADIE loader of the repo is written for
+  the CPU-A board: it enters through the CPU-A monitor's `L` command and drives the Z80 SIO (`%FF81`), while the
+  HPCPU has an SCC at other addresses and another monitor. It would need a new loader. CACHETST and CIOTST abort on
+  CPU-A with "Not a HPCPU board" / "Host processor is not an HPCPU". Not needed for the P8000 changes.
+- MEMTEST needs more than 150 s: after 150 s it is still in "SEG 0 self parity bit test" (both binaries), with a
+  1800 s limit both binaries finish with **PASS, ERRORS=0** (16 segments = 1 MiB found, parity memory).
+- Comparison of the manuals with the P8000 16 bit board: [S8000_COMPARISON.md](S8000_COMPARISON.md).
