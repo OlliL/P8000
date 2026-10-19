@@ -651,6 +651,167 @@ Covered (10, all verify): cnvt, doscan, fltioc, length, malloc, nlist, printf, s
 symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`. Not yet covered: the old-cc
 libc parts that are only embedded in size/strip/ranlib binaries (no member objects exist for them).
 
+## cas: analysis of the binary (`/bin/cas`)
+
+Tool: `tools/casmap.py /bin/cas` (function entries, text blocks). Results of the first analysis, the base
+for the decompilation (`src/cmd/cas/`, then `host/cas`); ranges are text offsets in segment 4.
+
+**Origin.** The SCCS ids and strings show Zilog's U8000 assembler (`"U8000 assembler"`, source tree
+`/as/as/*.c`, ids from 03/1983 to 07/1983, `Copr. 1981`). It is not the Plexus `as` (`tmp/plexus/cmd/as`:
+two passes with an ifile as well, but hand written scanner/parser, other messages and tables); the module
+names `ifile`, `ofile`, `expr`, `symbols`, `table1`, `table2` coincide, so a relation is possible.
+Plexus is read only where a place in the binary is unclear.
+
+**File.** E611 (segmented, separate I&D), `-e` entry `04000000`, flags STRIP|7FSTK. Segments: 4 code
+(46848 bytes), 5 data (38360) + bss (12328), 7, 8, 9 each 1280 bytes data. Code from `scrt0` (0x0..0x41), the
+28 modules of cas, then the libc members (from 0x9694, about 8.3 KB: stdio, `_doprnt`, `sys_errlist`, syscall stubs).
+Segment 5 holds the data of all modules in link order (each begins with its SCCS id); segments 7, 8, 9 are
+the three symbol tables `stable.c`, `itable.c`, `ntable.c`: each starts with its SCCS id and has the table
+area at offset 0x30. `ssymtab.c` allocates from them like a bump allocator and grows the segment by 1024
+bytes with `ssgbrk` (syscall 45) when it is full (`0x457a`, `0x4618`, `0x46b6` for segment 7, 8, 9).
+Pointers into the tables are 32 bit `seg:off` (`0x87000030` ...).
+
+**Calls.** Inside one module `calr` is used, between modules `call <<4>>addr`; so blocks that no `calr`
+crosses are module boundaries. Together with the SCCS order of the data (modules are linked in the order of
+the SCCS ids in segment 5: ifile, instr, scanner, main, nodes, parser, pst, subr, symbols, ssymtab, table1,
+table2, locntr, expr, p2loop, ofile, gen, assemble, getops, error, jpr, jpr2, optim, listing; the three
+table segments last) and the strings each function loads:
+
+| module | text | note |
+|---|---|---|
+| scrt0 | 0000-0041 | start, `exit` |
+| ifile | 0042-04f5 | 20 small functions: put byte/word/long into the intermediate file (via `fwrite`), expression nodes (`Unknown expression type`) |
+| instr | 04f6-0789 | 4 functions, `Illegal opcode`, `Invalid operand combination`, use of `table2` data |
+| scanner | 078a-1277 | `yylex` (2600 bytes), 2 helpers; `::=`, `^FS`, `^FD`, `Invalid token`, `Unknown keyword` |
+| main | 1278-1b01 | `main` (2064 bytes, option switch on `c - '^'`, jump table at data 0x350), 0x1a90 = fatal error exit |
+| nodes | 1b02-1ef7 | 8 functions, node allocation (`Out of nodes`) |
+| parser | 1ef8-3b05 | `yyparse` 0x1ff6 (6910 bytes, with YYDEBUG strings), stub 0x3af4, helpers; actions print `Expecting ...` |
+| pst | 3b06-3d1d | 5 functions: look up a name in the permanent symbol table (mnemonics, registers), case insensitive compare (`3b6a`); called by the scanner, the nodes and the jpr modules |
+| subr | 3d1e-3d8f | one function, the name hash (`3d1e`); `3b06` calls it with `call`, not `calr`, so it is another module; also used by ssymtab (`479e`, `4996`, `4a30`) |
+| symbols | 3d90-4579 | 10 functions; the last three (`43d4`, `4472`, `44ee`) write records of type `0x2a` to the intermediate file and are called by `yyparse` directly; the border to ssymtab is not proven |
+| ssymtab | 457a-4b3d | the three table allocators (`457a`, `4618`, `46b6`) and accessors (`4772`, `4788`, `479e` ...) |
+| table1, table2 | data only | 0x5526-0x655e, 0x655e-0x6b82: instruction and operand tables (5.7 KB) |
+| locntr | 4b3e-4ecb | location counters per section, 9 functions |
+| expr | 4ecc-5f31 | expression evaluation, 18 functions (the operators `+ - * / ^< ^> ^& ^\| ^X ^S ^O` ...) |
+| p2loop | 5f32-6393 | pass 2 main loop, 3 functions |
+| ofile | 6394-6da5 | object file writer: header (24 bytes `fwrite`), segment table, relocation, the 14 byte symbol entries (`6b66`), seeks into the temporary files (`6b96`, `6cb2` writes the symbols of segment 7) |
+| gen | 6da6-729d | code generation, 8 functions linked by `calr` (6da6, 6e9a, 6f66, 6fba, 70b0, 7192, 71c2, 7286) |
+| assemble | 729e-7fed | instruction assembly; `729e` (396 bytes) has no `calr` partner, its place after gen follows from the module order |
+| getops | 7fee-83ff | operand parsing helpers, 4 functions |
+| error | 8400-84fb | one function (`error`, uses `listing`, `ifile`) |
+| jpr, jpr2 | 84fc-89c1, 89c2-8af3 | JPR/CALLR pseudo instruction (jr/jp, calr/call) |
+| optim | 8af4-92f5 | jump optimisation (`jump optimization`), 8 functions |
+| listing | 92f6-9693 | listing (`LOC    OBJ CODE    STMT SOURCE STATEMENT`, `%04x `), the last function copies the rest of the source file with `getc` inline |
+| libc | 9694-b6ff | stdio, `fprintf`, `ssgbrk` (b516), `exit` (abc8), `strerror` tables |
+
+**Libc members inside cas** (matched with `slibc.a` by instruction sequence and by the `sc` numbers; it is an
+older revision, so some match only partly): `freopen` 9694, `fseek` 96ce, `fread` 982e, `fwrite` 98b2,
+`fopen` 9938, `printf` 995c, `fprintf` 99f0, `sprintf` 9a74, `_align` 9b4a, `_doprnt` 9bb0, `_atoip` a58a,
+`ungetc` a61a, `_filbuf` a68c, `_flsbuf` a7a0, `fflush` a8b6, `_cleanup` a924, `fclose` a950, `_endopen`
+a9dc (+ `ab1e` a creat/close/open/chmod helper of it), `_findiop` ab9e, `exit` abc8/abd0, `perror` abdc,
+`_cnvt` aca6, `_deciml` adbe, `_length` ae5c, `calloc` ae8a, `malloc` aef6, `free` b168, `realloc` b198,
+`isatty` b276, `mktemp` b29c, `strcmp` b356, `strcpy` b39a, `strncpy` b3cc, `strlen` b422, `tolower` b458,
+the stubs `access` b446, `chmod` b47e, `close` b490, `creat` b4a0, `getpid` b4b0, `ioctl` b4b6, `lseek`
+b4ce, `mkseg` b4e2, `open` b4f2, `read` b504, `ssgbrk` b516, `signal` b52c, `umask` b5e6, `unlink` b5ee,
+`write` b5fe; `sys_errlist` data after the listing strings; the text ends with zero padding from 0xb624.
+
+**Options of `main`** (`c - '^'` indexes a jump table of 25 words at data 0x350): `-o file` (output name,
+default `a.out`, pointer at 0x316), `-d` (0x348, read by ofile: internal labels into the symbol table),
+`-l` (0x34a, listing; used by main), `-u` (0x342, read by ofile: undefined symbols become external),
+`-v` (0x344, main: the messages `Pass 1`, `Pass 2`), `-^` (0x346, scanner), and the register counters
+`-i` `-r` `-t` `-m` (r11, r12, r10, r9): keep the intermediate, relocation, symbol and object-symbol
+file under the fixed names `i.out`, `r.out`, `sym.out`, `osym.out` instead of a temporary; with `-d`
+the name is built from a base name (0x32a) with the last character replaced (`i`, `t`, ...). Any other
+letter: `invalid option -%c`. The documented options of cas(1) are `-d -l -o -u`; the others are debug aids.
+
+**Temporary files** `/tmp/as{i,r,s,o,t}XXXXXX` (mktemp, pointers at 0x318, 0x31a, 0x31c ...): i =
+intermediate, r = relocation, t = symbols, o = output symbols, s = the listing/source copy (`list.out`);
+the meaning is derived from the names `i.out`, `r.out`, `sym.out`, `osym.out`, `list.out` that main
+uses when the flags ask for them.
+
+**Plexus yacc.** `tmp/plexus/cmd/yacc` (y1-y4.c, `yaccpar`, `dextern`, `files`; private reference) builds on the host with
+`gcc -std=gnu89 -w` after `PARSER` in `files` points to the local `yaccpar`; the tables it writes (`yyexca`,
+`yyact`, `yypact`, `yypgo`, `yyr1`, `yyr2`, `yychk`, `yydef`, tokens from 257, `yychk[0] = -1000`) have the
+layout and order of the cas parser, and its `yaccpar` has the debug strings of the binary (`state %d, char 0%o`,
+`error recovery pops state %d, uncovers %d`, `reduce %d`, `yacc stack overflow`, `syntax error`). So the grammar
+rebuilt from the tables can be checked by running this yacc on it and comparing the tables with the binary.
+Only as a local tool: the sources are not copied into git.
+
+**bss** (0x95d8-0xc5ff, 12328 bytes) by direct use (module = who uses it, the owner may be another one):
+0x9628-0x9638 file pointers/state of ifile and main, 0xa234-0xa236 parser/instr, 0xa236-0xa2b6 scanner,
+0xa2ba-0xa366 main (options, names, the files 0xa2ba/0xa31a/0xa31e), 0xa382 nodes, 0xa9c2 and
+0xac20-0xac24 parser, 0xac26-0xac28 jpr/optim, 0xb826 and 0xb83a ssymtab (the allocator state),
+0xc00a-0xc0b1 and 0xc138 ofile (header `0xc08e`, section tables `0xc0a6`), 0xc13c-0xc14a assemble,
+0xc152-0xc162 optim. The data of the modules before 0x95d8 holds the initialised variables, tables
+and strings.
+
+**Raw structures in files.** Intermediate file: single bytes, words and longs (`fwrite` of 1, 2, 4 bytes
+from `ifile` and `gen`). Object file (`ofile`): `fwrite(&header, 24, 1, f)` (the `s_exec` header, bss 0xc08e),
+a buffer of `n` bytes (`6672`, `66a8`) and arrays of 14 byte `s_nlist` entries (`6b66`): the host
+version has to write these big endian and without padding explicitly.
+
+**System calls** in the binary: exit, read, write, open, creat, close, unlink, chmod, lseek, getpid, access,
+signal (48), umask (60), ioctl (54), 55 (via a libc stub, not yet named) and `ssgbrk` (45).
+Temporary files `/tmp/as{i,r,s,o,t}XXXXXX` (the meaning of the letters is a guess: intermediate, relocation, symbol, object, ...), debug
+names `i.out`, `sym.out`, `list.out`, `r.out`, `osym.out`, default output `a.out`.
+
+**yacc (parser.y 1.2).** System III yacc skeleton (`yaccpar`) with YYDEBUG strings (`state %d, char 0%o`,
+`reduce %d`, `error recovery ...`), but no name tables. Data at 0x5c0 (SCCS id) then, by the base
+addresses used in `yyparse`: scalars 0x5f6-0x604, `yyexca` 0x606-0x6f9 (122 words), `yyact` 0x6fa (1408
+words), `yypact` 0x11fa (379 states), `yypgo` 0x14f0 (55), `yyr1` 0x155e (287 productions), `yyr2` 0x179c
+(287), `yychk` 0x19da (379), `yydef` 0x1cd0 (379), the action switch table of `yyparse` from 0x1fce
+(32 bit pointers into segment 4, about 318 entries), the `Expecting ...` strings in 0x24c6-0x388d (they are
+the parser's `yyerror` texts, one per rule). The tables are the original ones; the grammar can be rebuilt
+from them: the automaton gives for every production the accessing symbols (`yychk`) of the states a
+reduction pops, so the right hand side of each rule follows. Token names are not in the binary (no
+`yytoks`), they follow from `yylex` (return values) and from the action texts. The original `yacc` is not
+usable (`/usr/lib/yaccpar` is missing on the machine); for a byte identical parser the tables are taken
+over from the binary, a rebuilt parser with another yacc is functionally the same only.
+
+**To do for the decompilation:** the border symbols/ssymtab, the bss layout per module (the module bss
+variables are in link order; only 56 addresses are used directly), the intermediate file records
+(ifile/p2loop), the grammar from the tables (Plexus has a SysIII `yacc` with `yaccpar` in
+`tmp/plexus/cmd/yacc` that can be built locally to regenerate and compare the tables; not for git), and the places that depend on the Z8000 types (16 bit `int`, 32 bit
+pointers `seg:off` in nodes and tables; the tables in segments 7-9 become heap arrays on the host; the
+intermediate files: the small functions of `ifile` (0x42-0x1d0) write single bytes, words and longs with
+`fwrite`, which is good for the host; whether other places write raw structures is not checked yet).
+
+## cas: decompilation (src/cmd/cas)
+
+Method and tools: `src/cmd/cas/check.sh` (compile a module with the original `scc` under the oracle, compare
+with the range of `/bin/cas` by `tools/cmpmod.py`), `MODULES` (ranges and state), `ADDRESSES` (names against
+addresses), `README` (the differences between the old and the shipped scc). The work goes in link order; the
+aim is the same code and then the same behaviour of the complete program (tested against the original with
+a corpus, like `ar`); byte identity is not expected.
+
+**The compiler that built cas.** The binary was built by an older scc than the one in the system: prologue in
+front of the body (no `jr` hops), a switch of up to 3 cases is a chain of compares with the dispatch in front
+(the shipped scc: `cpir` + jump table, dispatch behind), other frame sizes, scratch registers and loop layout,
+direct addressing of constant indexes into local arrays, byte moves for `>> 8`. No `popt` was used (redundant
+reloads after stores are in the code), so the flags were `scc -c` only. See `src/cmd/cas/README`.
+
+**Done: ifile and nodes.** Every function was compared with `cmpmod.py` and the remaining differences read by
+eye: they are those of the code generator listed above (the tool cannot hide them all, so its counts of
+"differing" functions are not a measure; `nodes` has 6 of 8 and `ifile` 4 of 19 functions identical, the rest
+show only such differences). The jump tables and strings of the data were not compared yet.
+
+- Node (16 bytes, `cas.h`): `n_type` (unsigned char, 0), `n_next` (long pointer, 2), then a union at 6: a long;
+  a word and a long (type 6); a word at 8 (types 7-9); two longs at 6 and 10; or two bytes at 6, 7 and two
+  longs at 8 and 12 (type 25). Node types seen: 1 byte value, 2 word, 3 long, 6 word + node, 7-9 word,
+  22 (0x16) string (chain of type 1 nodes, the last one in the long at 6), 23-25 operations (the operator
+  byte at 7, the operands at 8 and 12); the others are `Unknown expression type`. The pool is `nodes[100]` in
+  the bss (0xa382), `nalloc` and `nfreed` (unsigned, data 0x514, 0x512) count the nodes handed out and
+  written to the intermediate file; at the end of a statement they must be equal (`Nodes allocated at end
+  of statement`), else both are reset.
+- Intermediate files (`ifile.c`): two sets of routines with the same shape for the intermediate file
+  (`ifile`, bss 0x9630, name in the variable at data 0x32e) and the relocation file (`rfile`, 0x962c, name at
+  0x336): put/get a byte, a word (high byte first) and a long (high word first); a failed `fwrite`/`fread` of
+  one byte gives `perror(name); done(-1)`. Expressions are written in prefix order: the operator or type byte,
+  then the value (1: byte, 2: word, 3: long, 6: word and the node list, 7-9: word, 23-25: both operands). The
+  record codes seen: 10 (and four zero bytes, `075e`), 11 + word (the location counter of the current section:
+  `lctab[cursec][cursub]`, 12 bytes per section), 15 + word (line number) or 16, 17, 18 for the next 1, 2, 3
+  lines (the variables at data 0x38, 0x3a start with 1).
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

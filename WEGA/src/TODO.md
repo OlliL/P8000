@@ -40,6 +40,12 @@ produce the same bytes with the shipped cc.
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | - | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | - | `/lib/cparse` stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) on the floating constant in `dosopn.c` line 175 (`1.5*first`); every doscopy command links `dosopn.o` | none; blocked by the emulator (EPU arithmetic) |
 
+## In progress
+
+- `cmd/cas/` (the cas assembler): decompilation from `/bin/cas`, module by module (`cmd/cas/MODULES`). Done:
+  ifile, nodes. The original was built by an older scc, so the code differs in registers, frames, switch and
+  loop layout (see `cmd/cas/README`); byte identity is not expected.
+
 ## Scripts without an object check
 
 `cmd/chkdiff`, `cmd/uuclear` and `cmd/whodo` are text scripts; they were

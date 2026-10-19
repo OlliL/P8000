@@ -37,7 +37,8 @@ our own C sources, checked byte for byte against the original binaries.
 | `codgen` / `scodgen` | not started |
 | `gopt` | not started (only used with -Ol/-Or) |
 | `popt`, `spopt` | `popt` done (non-segmented); `spopt` not started |
-| `cas`, `as` | not started |
+| `cas` | analysis done (`KNOWLEDGE.md`, section cas: module map, yacc tables, segments); decompilation to `src/cmd/cas/` started: ifile, nodes done (see `src/cmd/cas/MODULES`) |
+| `as` | not started |
 | `ld`, `sld`, `gld` | not started; `gld` man page read, `pburn` 2.1 link line known |
 | `ar` | done on the host (`host/ar`, identical behaviour and archives) |
 | `ranlib`, `strip`, `size` | done on the host (`host/binutils`); the `src/cmd` versions still differ from the originals (see TODO) |

@@ -1,0 +1,11 @@
+# names used in the source <-> addresses in /bin/cas (text, segment 4)
+# ifile.c
+iputb 0042  iputw 0080  iputl 009e  rputb 00c0  rputw 00fe  rputl 011c
+rgetb 013e  rgetw 017c  rgetl 01a0  igetb 01d0  igetw 020e  igetl 0232  igetaddr 0262
+iputnode 0270  rputnode 02a8  iputexpr 02e0  rputexpr 03b2  iputloc 0484  iputline 04aa
+# nodes.c
+chknodes 1b02  mknode1 1b2e  mknode6 1b96  mknode7 1c06  mknode2 1c6a  escape 1cdc  mkstring 1d78  mknode25 1e74
+# seen from other modules, defined in modules not yet reconstructed
+error 8400  done 1a90  locadv 4b3e  xtol 3c8e  hash 3d1e
+# data (segment 5): ifile.c curline 0038 lastline 003a; nodes.c nfreed 0512 nalloc 0514; locntr.c cursec 6bb2 cursub 6bb4
+# bss: rfile 962c ifile 9630 lctab 9634 nodes[100] a382

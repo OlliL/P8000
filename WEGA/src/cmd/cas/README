@@ -1,0 +1,28 @@
+cas - the U8000 assembler of WEGA (/bin/cas), reconstructed from the binary
+===========================================================================
+
+State: module by module, see MODULES (text range of each module in /bin/cas and its state).
+Done: ifile, nodes. The facts about the binary are in host/KNOWLEDGE.md (section cas).
+
+How a module is checked
+-----------------------
+`sh check.sh WEGA=<file tree>` compiles the module with the original scc under z8k-emu and runs
+host/tools/cmpmod.py: it reduces the object and the range of /bin/cas to a normal form (addresses,
+labels, frame sizes and scratch registers are masked; constants, calls and the stack slots of the local
+variables are kept) and lists every function as identical or differing. `-v` shows the differences.
+
+The binary was built by an OLDER scc than the one in the system (which is why byte identity is not the aim
+here; the aim is the same code, then the same behaviour). Differences that always show up and are not
+differences of the source:
+
+ * the prologue: the old compiler writes it in front of the body; the shipped scc puts it behind
+   (`jr Lp ... Lp: dec r15 ... jr Lb`); cmpmod converts it back;
+ * `switch`: up to 3 cases the old compiler compares one after the other, and puts the dispatch in front
+   of the cases; the shipped scc uses a table (`cpir` over the case values, then a jump table) from 1 or 3
+   cases on and puts the dispatch behind the cases;
+ * frame size and the registers used as scratch (rr0 / rr4), the layout of loops (test at the end);
+ * constant indexes into a local array are addressed directly (`ldb S5(r15)`), the shipped scc computes
+   the address; shifts of 8 bits are done with byte moves (`ldb rl7,rh7`) instead of `sra`;
+ * the conversion of an unsigned char argument is `ldb rh7,#0` (old) and `subb rh7,rh7` (shipped).
+
+The names of functions and variables are ours (the binary is stripped); cas.h declares the node layout.
