@@ -651,6 +651,28 @@ Covered (10, all verify): cnvt, doscan, fltioc, length, malloc, nlist, printf, s
 symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`. Not yet covered: the old-cc
 libc parts that are only embedded in size/strip/ranlib binaries (no member objects exist for them).
 
+## ar on the host (`host/ar`)
+
+`host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),
+options (`cuvnbail`), messages, exit codes and archives. `make -C host/ar check` runs 79 commands
+(`scenarios.sh`: create, replace, update, delete, move, extract, print, list, quick append, position
+options, error cases) with the original `/bin/ar` under z8k-emu and with `host/ar/ar`, in five time
+zone settings, and compares output, exit codes, archives and extracted files; also `tv` of the
+shipped `libc.a` and `slibc.a`. All identical.
+
+- The 26 byte header (`name[14]`, big endian `date`, `uid`, `gid`, 16 bit `mode`, 32 bit `size`) and
+  the magic `FF 65` are packed by hand; widths of the Z8000 are kept where visible (uid/gid are
+  signed chars, dates 32 bit).
+- `tv` prints with the WEGA `ctime`, not with the host's: `host/tools/lib/wctime.c` is a port of
+  `src/lib/libc/gen/ctime.c`. Without `TZ` the time zone is EST5EDT with the US rule of that time
+  (last Sunday in April to last Sunday in October, special days in 1974/75); `TZ` has the form
+  `ESTn` or `ESTnEDT` (e.g. `MET-1MEST`), the same as on WEGA. Verified with `-e TZ=...` in the oracle.
+- Temporary files: `mkstemp` instead of `mktemp`; the `l` option keeps them in the current directory.
+- Differences that cannot be avoided: the text after `ar write error:` comes from the host's
+  `strerror`.
+- Test pitfall: files extracted by `x` get the current time; the scenarios reset it with `touch`,
+  otherwise archives built later contain it. Member names are cut to 13 characters.
+
 ## tar (reconstructed, byte-identical)
 
 `src/cmd/tar.c` rebuilds `/bin/tar` (Version 1.8.88, 22494 bytes) byte for byte with the shipped
