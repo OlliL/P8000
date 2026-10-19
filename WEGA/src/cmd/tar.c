@@ -1,22 +1,5 @@
 /* WEGA P8000 'tar' Version: 1.8.88 */
 
-/* notes for migration
-
-
-  +--------- pos in shipped tar
-  |      +-- name here
-  v      v
-%81FA = BLOCKS
-%81FC = Blocks
-%81FE = disks
-%4634 = nblock
-%81EE = recno
-%81E0 = dflag
-
-%2868 = printf
-*/
-
-
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -64,7 +47,7 @@ int	fd, term, chksum, wflag, recno, first, linkerrok;
 int	archuid, rhead, timeout;
 int	freemem = 1;
 int	nblock = 1;	/* default: nur bei tardev */
-int	BLOCKS, Blocks, disks = 1;
+int	BLOCKS, Blocks, disks;
 int	xbuf[TBLOCK];
 
 daddr_t	low;
@@ -298,7 +281,7 @@ if (dflag >= 2) fprintf(stderr, "dorep(argv)\n");	/* TEST */
     }
     if (*argv == 0) {
 	fprintf(stderr, "tar: no write-arguments\n");
-	done(1);
+	done(3);
     }
     getwdir(wdir);
     while (*argv && ! term) {
@@ -329,7 +312,7 @@ int lastdskspace;
 {
 	if (disks) {
 	    fprintf(stderr, "\ntar: allocated space on %2d disks:  %4d blocks\n",
-		disks+1, disks * BLOCKS + lastdskspace);
+		disks+1, BLOCKS * disks + lastdskspace);
 	    fprintf(stderr, "     allocated space on last disk: %4d blocks\n",
 		lastdskspace);
 	    fprintf(stderr, "       free    space on last disk: %4d from %4d blocks\n",
@@ -378,7 +361,7 @@ readhead:
     sscanf(dblock.dbuf.chksum, "%o", &chksum);
     if (chksum != checksum()) {
 	fprintf(stderr, "headblock checksum error\n");
-	if (dflag >= 2) new1();
+	if (dflag >= 2) dumpblock();
 	if (j) goto readhead;
 	else {
 	    fprintf(stderr, "test next blocks ? (y/n) : ");
@@ -390,7 +373,6 @@ readhead:
 }
 
 /* Archiv-Durchlauf zum Lesen der Header-Informationen */
-/* FIXME: ADR in shipped version: L0t_08e2 */
 passarchiv()
 {
     long blocks;
@@ -419,7 +401,6 @@ if (dflag >= 2) fprintf(stderr, "lseek mit blocks = %D\n", blocks);
 }
 
 /* Schreibe Datei auf Archiv */
-/* FIXME: ADR in shipped version: L0t_0a06 */
 putfile(longname, shortname)
 char *longname;
 char *shortname;
@@ -548,7 +529,6 @@ char *shortname;
 }
 
 /* Lese von Archiv, Schreibe auf Platte */
-/* FIXME: ADR in shipped version: L0t_0dd8 */
 doxtract(argv)
 char	*argv[];
 {
@@ -606,11 +586,13 @@ gotit:
 	    readarchiv(buf);
 	    if (bytes > TBLOCK) {
 		if (write(ofile, buf, TBLOCK) < 0) {
+		    if (dflag >= 2) fprintf(stderr, "\n");
 		    fprintf(stderr, "tar: %s: HELP1 - extract write error\n", dblock.dbuf.name);
 		    done(2);
 		}
 	    } else
 		if (write(ofile, buf, (int) bytes) < 0) {
+		    if (dflag >= 2) fprintf(stderr, "\n");
 		    fprintf(stderr, "tar: %s: HELP2 - extract write error\n", dblock.dbuf.name);
 		    done(2);
 		}
@@ -631,7 +613,6 @@ gotit:
 }
 
 /* Lese von Archiv (Realisierung t-Option) */
-/* FIXME: ADR in shipped version: L0t_1036 */
 dotable()
 {
     for (;;) {
@@ -646,7 +627,6 @@ dotable()
     }
 }
 
-/* FIXME: ADR in shipped version: L0t_1078 */
 putempty()
 {
     char buf[TBLOCK];
@@ -659,7 +639,6 @@ if (dflag >= 2) fprintf(stderr, "putempty\n");	/* TEST */
 }
 
 /* v-Option fuer Terminalanzeige von: mode, uid, gid, size, ctime */
-/* FIXME: ADR in shipped version: L0t_10ba */
 longt(st)
 register struct stat *st;
 {
@@ -697,7 +676,6 @@ int	m9[] = { 2, STXT, 't', XOTH, 'x', '-' };
 
 int	*m[] = { m1, m2, m3, m4, m5, m6, m7, m8, m9};
 
-/* FIXME: ADR in shipped version: L0t_1106 */
 pmode(st)
 register struct stat *st;
 {
@@ -707,7 +685,6 @@ register struct stat *st;
 	select(*mp++, st);
 }
 
-/* FIXME: ADR in shipped version: L0t_1132 */
 select(pairp, st)
 int *pairp;
 struct stat *st;
@@ -721,7 +698,6 @@ struct stat *st;
     printf("%c", *ap);
 }
 
-/* FIXME: ADR in shipped version: L0t_1174 */
 checkdir(name)
 register char *name;
 {
@@ -769,7 +745,6 @@ onterm()
     term++;
 }
 
-/* FIXME: ADR in shipped version: L0t_1238 */
 tomodes(sp)
 register struct stat *sp;
 {
@@ -784,7 +759,6 @@ register struct stat *sp;
     sprintf(dblock.dbuf.mtime, "%11lo ", sp->st_mtime);
 }
 
-/* FIXME: ADR in shipped version: L0t_12b0 */
 checksum()
 {
     register i;
@@ -799,88 +773,28 @@ if (dflag >= 2) fprintf(stderr, "checksum = %o\n",i);	/* TEST */
     return(i);
 }
 
-/* FIXME: ADR in shipped version: L0t_1302 */
-new1()
+/* Dump the header block in hex (dflag >= 2) */
+dumpblock()
 {
-	int i1,i2;
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag)return(0);
-	if(dflag+dflag)return(0);
-	if(dflag+dflag)return(0);
-	if(dflag+dflag)return(0);
-/* FIXME ASM Code
-L0t_1302:
-	dec	r15,#6
-	ldm	@r15,r12,#3
-	ld	r12,#%584C
-	jr	L0t_1314
-L0t_130e:
-	ldb	@r12,#%20
-	inc	r12,#1
-L0t_1314:
-	cp	r12,#%5854
-	jr	c,L0t_130e
-	ldk	r13,#0
-	ld	r14,r13
-	ld	r12,#%57B8
-	jr	L0t_136c
-L0t_1324:
-	ldb	rl2,@r12
-	extsb	r2
-	add	r14,r2
-	inc	r13,#1
-	ldb	rl5,@r12
-	extsb	r5
-	and	r5,#%00FF
-	ld	r6,#%500A
-	ld	r7,#%5520
-	call	%2868
-	cpb	@r12,#%1F
-	jr	le,L0t_135e
-	cpb	@r12,#%7F
-	jr	ge,L0t_135e
-	ldb	rl5,@r12
-	extsb	r5
-	and	r5,#%00FF
-	ld	r6,#%5010
-	ld	r7,#%5520
-	jr	L0t_1366
-L0t_135e:
-	ld	r7,#%5520
-	ld	r6,#%5016
-L0t_1366:
-	call	%2868
-	inc	r12,#1
-L0t_136c:
-	cp	r12,#%59B8
-	jr	c,L0t_1324
-	ld	r7,#%5520
-	ld	r6,#%501A
-	ld	r5,%81EA
-	ld	r4,r14
-	call	%2868
-	ldm	r12,@r15,#3
-	inc	r15,#6
-	ret
-*/
+    register i, n;
+    register char *cp;
+
+    for (cp = dblock.dbuf.chksum; cp < &dblock.dbuf.chksum[sizeof(dblock.dbuf.chksum)]; cp++)
+	*cp = ' ';
+    n = 0;
+    i = 0;
+    for (cp = dblock.dummy; cp < &dblock.dummy[TBLOCK]; cp++) {
+	i += *cp;
+	n++;
+	fprintf(stderr, "%02x", *cp & 0xff);
+	if (*cp > 037 && *cp < 0177)
+	    fprintf(stderr, "\"%c\"", *cp & 0xff);
+	else
+	    fprintf(stderr, "   ");
+    }
+    fprintf(stderr, "Checksummme: gelesen = %o berechnet = %o\n", chksum, i);
 }
-/* FIXME: ADR in shipped version: L0t_138c */
+
 checkw(c, name)
 char *name;
 {
@@ -902,7 +816,6 @@ register i;
     return(1);
 }
 
-/* FIXME: ADR in shipped version: L0t_1438 */
 response()
 {
     char c;
@@ -914,7 +827,6 @@ response()
     return(c);
 }
 
-/* FIXME: ADR in shipped version: L0t_14a4 */
 checkupdate(arg)
 char	*arg;
 {
@@ -936,7 +848,6 @@ char	*arg;
     }
 }
 
-/* FIXME: ADR in shipped version: L0t_14fc */
 done(n)
 {
     unlink(tname);
@@ -1065,12 +976,18 @@ char *buffer;
     if (recno >= nblock || first == 0) {
 	if (first == 0 && nblock == 0) j = NBLOCK;
 	else j = nblock;
+readblock:
 if (dflag >= 2) fprintf(stderr, "readarchiv ruft diskend\n");
 	diskend();			/* NEU */
 	if ((i = read(fd, tbuf, TBLOCK*j)) < 0) {
 	    fprintf(stderr, "tar: archiv read error\n");
+	    if (BLOCKS && Blocks == nblock) {
+		fprintf(stderr, "tar: change error-disk ? (y/n) : ");
+		if (response() == 'y') {
+		    Blocks = 0;
+		    goto readblock; } }
 	    if (rhead) { rhead++;	/* Fehlermeldung an 'gethead' */
-		fprintf(stderr, "     in head-block\n"); }
+		fprintf(stderr, "tar: archiv read error in head-block\n"); }
 	    if (!tflag)
 		fprintf(stderr, "tar: file %s is not complete\n", dblock.dbuf.name);
 	    fprintf(stderr, "     continue (y/n) : ");
@@ -1102,14 +1019,15 @@ if (dflag >= 2) fprintf(stderr, "i = %d, nblock = %d\n",i, nblock);
 writearchiv(buffer)
 char *buffer;
 {
+    char cmd[98];
+
     first = 1;
+if (dflag >= 2) fprintf(stderr, "writearchiv: recno=%d nblock=%d\n",recno, nblock);
     if (nblock == 0)
 	nblock = 1;
-if (dflag >= 2) fprintf(stderr, "writearchiv: recno=%d nblock=%d\n",recno, nblock);
     if (recno >= nblock) {
 if (dflag >= 2) fprintf(stderr, "writearchiv ruft diskend (1)\n");
 	diskend();			/* NEU */
-/* Hier muesste Test auf Diskettenformat rein, inkl. Format-Moeglichkeit */
 	if (write(fd, tbuf, TBLOCK*nblock) < 0) {
 	    fprintf(stderr, "tar: archiv write error\n");
 	    done(2);
@@ -1118,10 +1036,28 @@ if (dflag >= 2) fprintf(stderr, "writearchiv ruft diskend (1)\n");
     }
     copy(&tbuf[recno++], buffer);
     if (recno >= nblock) {
+writeblock:
 if (dflag >= 2) fprintf(stderr, "writearchiv ruft diskend (2)\n");
 	diskend();			/* NEU */
 	if (write(fd, tbuf, TBLOCK*nblock) < 0) {
 	    fprintf(stderr, "tar: archiv write error\n");
+	    if (BLOCKS && Blocks == nblock) {
+		fprintf(stderr, "tar: format error-disk ? (y/n) : ");
+		if (response() == 'y') {
+		    close(fd);
+		    fprintf(stderr, "     ", usefile);
+		    sprintf(cmd, "format %s", usefile);
+		    system(cmd);
+		    if ((fd = open(usefile, 2)) < 0) {
+			if (cflag == 0 || (fd = creat(usefile, 0666)) < 0) {
+			    fprintf(stderr, "tar: cannot open %s\n", usefile);
+			    done(1); } }
+		    Blocks = 0;
+		    goto writeblock; }
+		fprintf(stderr, "tar: change error-disk ? (y/n) : ");
+		if (response() == 'y') {
+		    Blocks = 0;
+		    goto writeblock; } }
 	    done(2);
 	}
 	recno = 0;
@@ -1149,11 +1085,8 @@ if (dflag >= 2) fprintf(stderr, "backarchiv ruft diskend\n");
 	Blocks -= nblock;
 if (dflag >= 2)					/* TEST */
     fprintf(stderr, "lseek: Blocks := Blocks-nblock = %d\n", Blocks);
-if (BLOCKS && tflag) {
-    printf("\ntar: allocated space on disk %4d blocks with 512 bytes\n",
-					    Blocks+3);
-    printf("tar:   free    space on disk %4d blocks from %4d blocks\n",
-					BLOCKS-Blocks-3, BLOCKS); }
+if (BLOCKS && tflag)
+    printblocks(Blocks+recno+2);
 	lseek(fd, (long)(-TBLOCK*nblock), 1);
     }
 }
@@ -1175,12 +1108,12 @@ diskend()
 int	time_out();
 
     if (BLOCKS == 0) return;
-if (dflag >= 2) fprintf(stderr, "diskend: Blocks = %d\n", Blocks);	/* TEST */
-    if (++Blocks == 0) {
+if (dflag >= 2) fprintf(stderr, "diskend: Blocks = %d\n", Blocks+nblock);	/* TEST */
+    if ((Blocks += nblock) == 0) {
 	close(fd);
-	fprintf(stderr, "\ninsert previous disk : ");
-	if (disks > 1) disks--;
-	Blocks = 1;	/* da 'diskend' mit ++Blocks beginnt */
+	fprintf(stderr, "\007\ninsert previous disk : ");
+	disks--;
+	Blocks = 1;	/* da 'diskend' mit Blocks += nblock beginnt */
 	while (getchar() != '\n') ;
 	if ((fd = open(usefile, 2)) < 0) {
 	    if (cflag == 0 || (fd =  creat(usefile, 0666)) < 0) {
@@ -1193,7 +1126,7 @@ if (dflag >= 2) fprintf(stderr, "diskend: Blocks = %d\n", Blocks);	/* TEST */
 	alarm(SEC);
 	while (!timeout) getchar();
 	alarm(0);
-	fprintf(stderr, "\ninsert next disk : ");
+	fprintf(stderr, "\007\ninsert next disk : ");
 	disks++;
 	Blocks = 1;
 	while (getchar() != '\n') ;

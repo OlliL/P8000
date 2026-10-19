@@ -38,7 +38,6 @@ produce the same bytes with the shipped cc.
 | `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | differs in the own code (2 blocks, 0x2b0 and 0x2bc, `cmpins` range 0x68c) | - | Not the crt0 change: the old and new `crt0-strip.s` assemble to identical objects, and every commit back to 14098cf gives the same 2 blocks. The code differs in one expression form (`addl rr2,rr4` / `ldl %2490` vs `ld r6,r4` / `addl rr4,rr6`); the version string is the same. Earlier note 'own code identical' is not reproduced | none yet |
 | `cmd/ranlib.c` | ranlib | builds with the WEGA cc, not identical, unfinished | - | Needs the older cc | none yet |
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | - | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
-| `cmd/tar.c` | tar | builds, own code is Version 12.1.88, original is 1.8.88, differences in code and strings | - | Not analysed | none yet |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | - | `/lib/cparse` stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) on the floating constant in `dosopn.c` line 175 (`1.5*first`); every doscopy command links `dosopn.o` | none; blocked by the emulator (EPU arithmetic) |
 
 ## Scripts without an object check
