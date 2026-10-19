@@ -40,7 +40,7 @@ our own C sources, checked byte for byte against the original binaries.
 | `cas`, `as` | not started |
 | `ld`, `sld`, `gld` | not started; `gld` man page read, `pburn` 2.1 link line known |
 | `ar` | done on the host (`host/ar`, identical behaviour and archives) |
-| `ranlib`, `strip`, `size` | C sources exist in `src/cmd` (strip: one expression differs) |
+| `ranlib`, `strip`, `size` | done on the host (`host/binutils`); the `src/cmd` versions still differ from the originals (see TODO) |
 | `cc`, `scc` drivers | done, paths in `cc.conf` / `scc.conf` |
 | libc | 170 of 180 members from C; 7 differ (older/newer cc revision), 3 without C |
 
@@ -52,8 +52,8 @@ our own C sources, checked byte for byte against the original binaries.
    `z8k-emu -r ROOT`, so `src/cmd` can be built with plain `make` (CC=host/bin/cc).
    Then `make -C src/cmd` is the daily build and the pieces are replaced one by one.
 3. **Small data-format tools first, native:** `ar` (done, `host/ar`, checked against the original),
-   `ranlib` (C source in `src/cmd`, build for Linux), then `strip`, `size`, `nm`-like reader. Compare to the original on the
-   whole WEGA tree.
+   `ranlib`, `strip`, `size` (done, `host/binutils`, checked against the originals), then an
+   `nm`-like reader.
 4. **Assembler `cas` (and `as`):** closed grammar, good oracle (every `.s` in the tree, every
    `cc -S` output, `oldcc/*.s`). Decode from the binary with `tools/sdis.py`; check with
    `cmpins.py`. Do `cas` before `as` (PLZ/ASM is separate and used less).

@@ -1,6 +1,11 @@
 oldlibc - the Jan-1983 libc revision embedded in size, strip and ranlib
 =======================================================================
 
+readsym.c  _readsym as embedded in ranlib (0x724..0x79b of /usr/bin/ranlib). It reads the
+           pieces of a long symbol name over the symbol (no "sym++"), which the shipped libc.a
+           readsym does not; ranlib's __.SYMDEF depends on that. Same code as the original,
+           but compiled by the shipped cc (other register use, frame 2 bytes larger).
+
 doprnt.c   _doprnt (+ fix, getnum, float stubs) reconstructed from the
            object code of bin/size (0x4ec..0xb54).  UNTESTED, NOT
            BYTE-IDENTICAL (see below); the control flow, local variable

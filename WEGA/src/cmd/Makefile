@@ -22,7 +22,7 @@ CRT = ../lib/libc/crt
 PROGS = ar ranlib size strip
 
 FILES=		getud putud dump dumpdir restor sync tar
-CLEANFILES=	sync.o ar.o  getud.o  putud.o  ranlib.o  size.o  strip.o
+CLEANFILES=	sync.o ar.o  getud.o  putud.o  ranlib.o  readsym.o  size.o  strip.o
 SUBDIRS=	BOOT0 pburn standalone verify copydisk format
 
 all: $(PROGS) $(FILES) $(STRIPFILES) subdirs
@@ -58,8 +58,13 @@ ar: ar.o $(CRT)/crt0-ar.o
 ranlib.o: ranlib.c
 	$(CC) $(CFLAGS) -c ranlib.c
 
-ranlib: ranlib.o
-	$(LD) -s -e start -o $@ /lib/crt0.o ranlib.o $(LIBC)
+# the original ranlib contains the readsym of an older libc (it reads the pieces of a long name
+# over the symbol), see ../lib/oldlibc/README; ld warns "symbol redefined in archive" and keeps ours
+readsym.o: ../lib/oldlibc/readsym.c
+	$(CC) $(CFLAGS) -c ../lib/oldlibc/readsym.c
+
+ranlib: ranlib.o readsym.o
+	$(LD) -s -e start -o $@ /lib/crt0.o ranlib.o readsym.o $(LIBC)
 
 size.o: size.c
 	$(CC) $(CFLAGS) -c size.c

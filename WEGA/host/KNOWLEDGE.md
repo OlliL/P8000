@@ -673,6 +673,41 @@ shipped `libc.a` and `slibc.a`. All identical.
 - Test pitfall: files extracted by `x` get the current time; the scenarios reset it with `touch`,
   otherwise archives built later contain it. Member names are cut to 13 characters.
 
+## ranlib, strip, size on the host (`host/binutils`)
+
+`ranlib`, `strip` and `size` for Linux, derived from `src/cmd/{ranlib,strip,size}.c`. `make -C
+host/binutils check` runs 40 cases with the originals under z8k-emu and with the host programs on
+copies of a corpus (all members of `libc.a`/`slibc.a`, binaries, 30 libraries of the tree, byte swapped
+copies, damaged and non-object files, archives with swapped, stripped, text and too many members) and
+compares output, exit code and every file afterwards: all identical.
+
+- Helpers in `host/tools/lib`: `sobj.c` (the file structures are byte arrays in the Z8000 layout; libc
+  `goodmagic`, `swab`, `longswap` ported, so byte swapped objects behave as there) and `conf.c`.
+- `size`: exit status always 0. `strip`: exit 2 for usage and errors that stop, 1 for a file that was
+  skipped. 8-bit objects (E507, E511, E505) with relocation removal are not supported (the original
+  result depends on uninitialised variables, no such file exists in the tree): the host strip refuses.
+- `strip` closes the output file at once; the original leaves it open, but a second use of the same file
+  in one call already sees the data.
+- `ranlib` calls `ar` like the original (`ar rlb first archive __.SYMDEF` for a new table, `ar rl
+  archive __.SYMDEF` to replace one) and then sets the date of the first member to now + 5 s. The
+  host `ar` is `../ar/ar` next to the executable, `ranlib.conf` (`ar = path`) can name another.
+- What the original ranlib really does (found with the oracle, and confirmed in the binary): the
+  `ar` command line is `ar rl <archive> __.SYMDEF` (the new table `ar rlb first archive __.SYMDEF`);
+  `goodmagic` gets the magic value; and the `readsym` linked into the binary is the one of an OLDER
+  libc than the shipped `libc.a`: it reads the continuation pieces of a long name over the symbol
+  itself (`fread(sym, 14, n)`, not `sym + 1`). So a symbol with a long name (more than 7
+  characters after the length byte, e.g. `_getgrgid`) is tested and stashed with the first piece
+  of the name text: most long names are missing in the table and some enter it with garbage
+  (entries with an empty name). The table of `libc.a` has 238 entries, not the ~290 a correct
+  ranlib would write. That is the behaviour of the WEGA binary, not a bug of ours; the host ranlib
+  and `src/cmd/ranlib.c` keep it (identical `__.SYMDEF`). The tables are not cleared between two
+  archives of one call.
+- `src/cmd/ranlib.c` now follows the binary: the earlier version had the `ar rl` arguments swapped
+  and passed `&exp` to `goodmagic`; the old readsym is `src/lib/oldlibc/readsym.c`, linked in by
+  `src/cmd/Makefile`. Built with the WEGA cc the program behaves exactly like the original (same
+  `__.SYMDEF` for libc.a, slibc.a, libcurses.a); the code is not byte identical because the original
+  was compiled by an older cc (own code and readsym differ in register use, frame and spills).
+
 ## tar (reconstructed, byte-identical)
 
 `src/cmd/tar.c` rebuilds `/bin/tar` (Version 1.8.88, 22494 bytes) byte for byte with the shipped

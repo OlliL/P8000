@@ -78,7 +78,7 @@ char **argv;
 		}
 		do {
 			fread((char *)&exp, 1, sizeof(struct s_exec), fi);
-			if(!goodmagic(&exp))
+			if(!goodmagic(exp.s_magic))
 				continue;
 			if(swap_flg)
 				swab((char *)&exp, (char *)&exp, sizeof(struct s_exec));
@@ -112,7 +112,7 @@ char **argv;
 		if(new)
 			sprintf(cmdbuf, "ar rlb %s %s %s\n", firstname, *argv, tempnm);
 		else
-			sprintf(cmdbuf, "ar rl %s %s\n", tempnm, *argv);
+			sprintf(cmdbuf, "ar rl %s %s\n", *argv, tempnm);
 		if(system(cmdbuf))
 			fprintf(stderr, "can't execute %s\n", cmdbuf);
 		else
