@@ -3,11 +3,13 @@
 # with -:n -:z so that nothing is executed; the command lines and messages
 # on stderr, the exit code and the files created must be identical (the
 # process id in the temporary names is normalized).
-#   check.sh   (WEGA=dir with bin/ lib/; E=emulator)
+#   check.sh   (WEGA=dir with bin/ lib/; E=emulator; PROG=cc or scc, default cc)
 HERE=$(cd "$(dirname "$0")" && pwd)
-E=${E:-$HERE/../z8k-emu/z8k-emu}; R=${WEGA:?set WEGA to the WEGA file tree}
+E=${E:-$HERE/../z8k-emu/z8k-emu}; PROG=${PROG:-cc}; R=${WEGA:?set WEGA to the WEGA file tree}
 T=$(mktemp -d); ok=0; bad=0
 cd "$T" || exit 1
+# run a copy: a local cc.conf / scc.conf next to the program must not be used
+cp "$HERE/$PROG" "$T/$PROG.bin"; mkdir -p "$T/bin"; mv "$T/$PROG.bin" "$T/bin/$PROG"
 echo 'main(){}' > a.c; echo 'f(){}' > b.c; : > x.s; : > y.o; : > z.f
 : > a.err; : > b.err; : > a.ls; : > b.ls; : > a.n; : > b.n
 norm() { sed -e 's/cc\.-\{0,1\}[0-9][0-9]*/cc.PID/g'; }
@@ -16,10 +18,10 @@ P="-TO/bin/ld -TP/bin/ld"
 while IFS= read -r args; do
   [ -z "$args" ] && continue
   rm -f *.o
-  $E -r "$R" /bin/cc -:n -:z $P $args 2>a.err; ra=$?
+  $E -r "$R" /bin/$PROG -:n -:z $P $args 2>a.err; ra=$?
   ls > a.ls
   rm -f *.o
-  "$HERE/cc" -:n -:z $P $args 2>b.err; rb=$?
+  "$T/bin/$PROG" -:n -:z $P $args 2>b.err; rb=$?
   ls > b.ls
   norm < a.err > a.n; norm < b.err > b.n
   if [ $ra = $rb ] && cmp -s a.n b.n && cmp -s a.ls b.ls; then ok=$((ok+1))

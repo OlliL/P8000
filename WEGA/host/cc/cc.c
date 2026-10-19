@@ -1,8 +1,12 @@
 /*
- * cc - C compiler driver (WEGA 3.2)
+ * cc, scc - C compiler drivers (WEGA 3.2)
  *
- * Reconstructed from the original WEGA binary /bin/cc by decompilation
- * (no other source was used).  The driver runs the compiler passes
+ * Reconstructed from the original WEGA binaries /bin/cc and /bin/scc by
+ * decompilation (no other source was used).  The two drivers are the same
+ * program: scc (compile with -DSCC) runs the segmented passes (scparse,
+ * scodgen, spopt, sld, slibc.a, scrt0.o, ...), passes "-z" to the loader
+ * and "-DNULL=0L" to cpp, and "-Z" to gopt; everything else is identical.
+ * The driver runs the compiler passes
  * (cpp, cparse, gopt, codgen, fpf, popt, cas, ld) as separate processes
  * and passes temporary files between them.  The option letters, the
  * command lines it builds and its messages are those of the original.
@@ -13,8 +17,8 @@
  *   -:v verbose  -:d keep temporaries  -:z echo commands
  *   -:n do not execute  -:r run the result
  *
- * The pass programs are called by absolute path (/lib/cpp, ...) unless cc.conf,
- * which lies next to the executable, names others (see cc.conf.example).
+ * The pass programs are called by absolute path (/lib/cpp, ...) unless cc.conf
+ * (scc.conf for scc), which lies next to the executable, names others (see cc.conf.example).
  * K&R C; build with cc -std=gnu89 -w or with the WEGA cc.
  */
 #include <stdio.h>
@@ -29,6 +33,14 @@
 
 #include "conf.h"
 
+#ifdef SCC
+#define CONFNAME	"scc.conf"
+#define SEG(c, s)	s
+#else
+#define CONFNAME	"cc.conf"
+#define SEG(c, s)	c
+#endif
+
 typedef void (*sigfn)();
 
 char	*libs[4];			/* libraries for ld, libs[0] set in main */
@@ -38,26 +50,26 @@ int	nfiles;				/* number of source files */
 
 /* pass programs */
 char	*cpp		= "/lib/cpp";
-char	*cparse		= "/lib/cparse";
+char	*cparse		= SEG("/lib/cparse", "/lib/scparse");
 char	*gopt		= "/lib/gopt";
-char	*codgen		= "/lib/codgen";
-char	*popt		= "/lib/popt";
+char	*codgen		= SEG("/lib/codgen", "/lib/scodgen");
+char	*popt		= SEG("/lib/popt", "/lib/spopt");
 char	*clist		= "/lib/clist";
 char	*cas		= "/bin/cas";
-char	*ld		= "/bin/ld";
+char	*ld		= SEG("/bin/ld", "/bin/sld");
 char	*fpf		= "/z/bin/lib/fpf";
-char	*fpe		= "/z/bin/lib/fpe.o";
-char	*fpent		= "/z/bin/lib/fpent.o";
-char	*libcfpf	= "/z/bin/lib/libcfpf.a";
-char	*crt0		= "/lib/crt0.o";
-char	*mcrt0		= "/lib/mcrt0.o";
+char	*fpe		= SEG("/z/bin/lib/fpe.o", "/z/bin/lib/sfpe.o");
+char	*fpent		= SEG("/z/bin/lib/fpent.o", "/z/bin/lib/sfpent.o");
+char	*libcfpf	= SEG("/z/bin/lib/libcfpf.a", "/z/bin/lib/slibcfpf.a");
+char	*crt0		= SEG("/lib/crt0.o", "/lib/scrt0.o");
+char	*mcrt0		= SEG("/lib/mcrt0.o", "/lib/smcrt0.o");
 char	*m4		= "/usr/bin/m4";
-char	*basicc		= "/z/bin/basic";
-char	*f77		= "/z/bin/f77";
+char	*basicc		= SEG("/z/bin/basic", "/z/bin/sbasic");
+char	*f77		= SEG("/z/bin/f77", "/z/bin/sf77");
 char	*shell		= "/bin/sh";
 char	*mv		= "/bin/mv";
 char	*tmpdir		= "/tmp";	/* directory of the temporary files */
-char	*libc		= "/lib/libc.a";
+char	*libc		= SEG("/lib/libc.a", "/lib/slibc.a");
 char	*outfile	= "a.out";
 char	*cfile		= "<command line>";
 
@@ -76,7 +88,11 @@ char	optlev		= '0';		/* gopt level */
 char	cparsebuf[256];			/* flags collected for cparse */
 char	f77buf[32]	= "-";		/* flags collected for f77 */
 char	xopt[4]		= "-x";		/* unknown option, passed to ld */
+#ifdef SCC
+char	gbuf[4]		= "-Z";		/* flags of gopt: segmented */
+#else
 char	gbuf[4];			/* flags buffer of gopt (empty) */
+#endif
 char	cppbuf[512];			/* flags collected for cpp */
 char	*cppp		= cppbuf;
 char	*cparsep	= cparsebuf;
@@ -564,7 +580,7 @@ char	*f;
 		*lastchar(t_p) = 'i';
 	}
 	dbg("CPP.");
-	sprintf(cmd, "%s %s %s  %s %s", cpp, cppflags, cppbuf, cfile, t_p);
+	sprintf(cmd, SEG("%s %s %s  %s %s", "%s -DNULL=0L %s %s  %s %s"), cpp, cppflags, cppbuf, cfile, t_p);
 	if (callsys(cmd) != 0)
 		error("Error.  No assembly.");
 	if (Pflag)
@@ -640,7 +656,7 @@ char	*argv0;
 	struct conf	*c;
 	char	*path;
 
-	path = conf_sibling(argv0, "cc.conf");
+	path = conf_sibling(argv0, CONFNAME);
 	if (path == 0)
 		return;
 	c = conf_read(path);
@@ -753,6 +769,9 @@ char	**argv;
 	clp = av + 2;
 	*clp++ = "-e";
 	*clp++ = "start";
+#ifdef SCC
+	*clp++ = "-z";
+#endif
 
 	/* options */
 	for (;;) {

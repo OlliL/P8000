@@ -20,7 +20,7 @@
   owner's local paths; the generic recipe is in `CLAUDE.md`).
 - `WEGA/host/...` the Linux side. `z8k-emu` (the oracle that runs the original
   binaries), `tools` (analysis scripts), and the Linux-native cross tools
-  `cc` (the non-segmented driver only, no `scc` yet) and `popt`: their source
+  `cc`, `scc` (the drivers) and `popt`: their source
   is in the same directory, they behave like the WEGA originals and replace
   the emulator calls later. Check scripts and `Makefile` targets:
   `make -C WEGA/host check` (cc, popt, libc, oldcc). `make -C WEGA/host
@@ -270,9 +270,10 @@ checked against a `__.SYMDEF` that the original ranlib produced).
 - sld: segmented; -M/-R map sections to segments, segments 0..127;
   `__.SYMDEF` is searched repeatedly. Kernel link: `sld -Ns -o wega -e start
   -X -i -Ms62 ...`.
-- Which linker: `scc` links with `sld` by default (see the pipeline above). `gld` is not part of the
-  `scc` pipeline: it is for especially large programs and, as far as known (owner), the user has to
-  call it by hand. Do not confuse the two when the `scc` driver is rebuilt (`sld`, not `gld`).
+- Which linker (measured): `scc` links with `/bin/sld`, with `-X -e start -z`. The string `gld` does
+  not occur in the `/bin/scc` binary, so `gld` is not part of the `scc` pipeline (the driver `host/cc`
+  built as `scc` is checked against the original, 74 command lines identical). `gld` is for very
+  large programs and is called by hand (owner). Do not confuse the two (`sld`, not `gld`).
 - gld (gld(1), `gld.1 1.0`, "segmented U8001 loader for very large programs"):
   segmented like sld; sections can be placed in logical segments, the
   default mapping is text in segments 0-31, data 32-63, bss 64-95, stack
@@ -700,6 +701,15 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
   is what `cc/check.sh` uses to compare the original (under z8k-emu) with the
   portable build: 74 option combinations, command lines, messages, exit codes
   and created files identical (pid normalized).
+- `scc` is the same program (`host/cc/cc.c` built with `-DSCC`, `make -C host/cc` builds `cc` and
+  `scc`). Measured against the original `/bin/scc` (disassembly diff of both drivers, then
+  `check.sh PROG=scc`, 74 command lines identical): only the strings differ. Defaults `/lib/scparse`,
+  `/lib/scodgen`, `/lib/spopt`, `/bin/sld`, `/lib/scrt0.o`, `/lib/smcrt0.o`, `/lib/slibc.a`,
+  `/z/bin/lib/sfpe.o`, `sfpent.o`, `slibcfpf.a`, `/z/bin/sbasic`, `/z/bin/sf77`; cpp is called with
+  `-DNULL=0L`; gopt gets the flag `-Z` (initialised `gbuf`); the loader gets `-X -e start -z`.
+  Config file `scc.conf` (template `scc.conf.example`). Verified end to end under the emulator:
+  `scc -O -o h h.c` with the original passes gives the same executable as the original `/bin/scc`
+  (only the process id inside the temporary names differs, as between two runs of the original).
 - Configuration: `cc.conf` next to the executable (template `host/cc/cc.conf.example`, the file
   itself is local) sets the pass programs, `crt0`, `mcrt0`, `libc`, `mv`, `shell` and `tmpdir`. A pass
   may be a command with arguments, e.g. `cas = ${_emu} /bin/cas` to run the original under z8k-emu

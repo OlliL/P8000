@@ -1,0 +1,23 @@
+# scc.conf: settings of the scc driver (segmented compiler). Copy to "scc.conf"
+# next to the executable "scc". Same format and rules as cc.conf.example; only
+# the pass names differ (the segmented passes, linker sld). The defaults are the
+# WEGA paths: cpp /lib/cpp, cparse /lib/scparse, gopt /lib/gopt, codgen
+# /lib/scodgen, popt /lib/spopt, cas /bin/cas, ld /bin/sld, crt0 /lib/scrt0.o,
+# mcrt0 /lib/smcrt0.o, libc /lib/slibc.a.
+
+_emu   = /path/to/WEGA/host/z8k-emu/z8k-emu -r /path/to/wega31_root
+
+cpp    = ${_emu} /lib/cpp
+cparse = ${_emu} /lib/scparse
+gopt   = ${_emu} /lib/gopt
+codgen = ${_emu} /lib/scodgen
+popt   = ${_emu} /lib/spopt
+cas    = ${_emu} /bin/cas
+ld     = ${_emu} /bin/sld
+
+crt0   = /lib/scrt0.o
+mcrt0  = /lib/smcrt0.o
+libc   = /lib/slibc.a
+
+# Under the emulator use the working directory for the temporary files.
+tmpdir = .

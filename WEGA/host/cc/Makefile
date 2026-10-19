@@ -2,7 +2,7 @@
 # like /bin/cc of WEGA; it runs the passes, which are the WEGA programs run
 # under z8k-emu for now). Source: cc.c, decompiled from the original binary.
 #
-#   make                 build ./cc
+#   make                 build ./cc and ./scc (the same source, scc with -DSCC)
 #   make check           compare with the original /bin/cc under z8k-emu
 
 HOSTCC ?= cc
@@ -10,17 +10,21 @@ CFLAGS ?= -O2 -w
 WEGA ?= ../../../../wega/arc/cpio
 EMU  ?= $(abspath ../z8k-emu/z8k-emu)
 
-all: cc
+all: cc scc
 
 LIB  = ../tools/lib
 
 cc: cc.c $(LIB)/conf.c $(LIB)/conf.h
 	$(HOSTCC) $(CFLAGS) -std=gnu89 -I$(LIB) -o $@ cc.c $(LIB)/conf.c
 
-check: cc
-	WEGA=$(abspath $(WEGA)) E=$(EMU) sh check.sh
+check: cc scc
+	WEGA=$(abspath $(WEGA)) E=$(EMU) PROG=cc sh check.sh
+	WEGA=$(abspath $(WEGA)) E=$(EMU) PROG=scc sh check.sh
+
+scc: cc.c $(LIB)/conf.c $(LIB)/conf.h
+	$(HOSTCC) $(CFLAGS) -std=gnu89 -DSCC -I$(LIB) -o $@ cc.c $(LIB)/conf.c
 
 clean:
-	rm -f cc
+	rm -f cc scc
 
 .PHONY: all check clean

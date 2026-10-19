@@ -17,7 +17,7 @@ our own C sources, checked byte for byte against the original binaries.
 - **Native host tools:**
   - `host/cc`: decompiled `cc` driver, 74 command lines identical to the original. Pass paths,
     `mv` and the temp directory are set in `cc.conf` next to the executable (library
-    `host/tools/lib/conf.c`, template `cc/cc.conf.example`); `scc` (segmented chain) is not supported.
+    `host/tools/lib/conf.c`, template `cc/cc.conf.example`); `scc` is the same source built with `-DSCC` (`scc.conf`).
   - `host/popt`: peephole optimizer, 522 corpus runs byte identical.
 - **Checks:** `make -C host check` (cc, popt, libc 170 identical / 7 different / 3 without C
   source, oldcc). `make -C host verify-wega` builds `src/cmd` with the original tools and
@@ -40,16 +40,13 @@ our own C sources, checked byte for byte against the original binaries.
 | `cas`, `as` | not started |
 | `ld`, `sld`, `gld` | not started; `gld` man page read, `pburn` 2.1 link line known |
 | `ar`, `ranlib`, `strip`, `size` | C sources exist in `src/cmd` (strip: one expression differs) |
-| `cc` driver | done for non-segmented; `scc` driver missing; hard coded paths |
+| `cc`, `scc` drivers | done, paths in `cc.conf` / `scc.conf` |
 | libc | 170 of 180 members from C; 7 differ (older/newer cc revision), 3 without C |
 
 ## Next steps, in this order (fastest way to a usable local tool chain)
 
-1. **Make `host/cc` usable stand-alone.** (Paths, tmp dir and `mv` are configurable now, see `cc.conf`.)
-   Still to do: add the segmented variant (`scc`: `scparse`, `scodgen`, `spopt`, `sld`, `slibc.a`,
-   `scrt0.o`; `scc` links with `sld`, not `gld` (`gld` is for very large programs and called by hand); the driver is the same shape, take the original `/bin/scc` as oracle with
-   `-:z`). Result: one driver that calls original passes under the emulator or later
-   native ones. *Small, unblocks everything below.*
+1. **Drivers `cc` and `scc` stand-alone: done** (`host/cc`, one source, `cc.conf` / `scc.conf` set the
+   passes; `scc` uses `sld`, not `gld`; both checked with `make -C host/cc check`).
 2. **Wrapper scripts** `host/bin/{cc,scc,cas,as,ld,gld,ar,...}` that run the original passes under
    `z8k-emu -r ROOT`, so `src/cmd` can be built with plain `make` (CC=host/bin/cc).
    Then `make -C src/cmd` is the daily build and the pieces are replaced one by one.
