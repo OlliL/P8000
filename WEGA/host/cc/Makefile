@@ -12,8 +12,10 @@ EMU  ?= $(abspath ../z8k-emu/z8k-emu)
 
 all: cc
 
-cc: cc.c
-	$(HOSTCC) $(CFLAGS) -std=gnu89 -o $@ cc.c
+LIB  = ../tools/lib
+
+cc: cc.c $(LIB)/conf.c $(LIB)/conf.h
+	$(HOSTCC) $(CFLAGS) -std=gnu89 -I$(LIB) -o $@ cc.c $(LIB)/conf.c
 
 check: cc
 	WEGA=$(abspath $(WEGA)) E=$(EMU) sh check.sh

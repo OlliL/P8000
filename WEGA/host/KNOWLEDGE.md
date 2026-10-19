@@ -270,6 +270,9 @@ checked against a `__.SYMDEF` that the original ranlib produced).
 - sld: segmented; -M/-R map sections to segments, segments 0..127;
   `__.SYMDEF` is searched repeatedly. Kernel link: `sld -Ns -o wega -e start
   -X -i -Ms62 ...`.
+- Which linker: `scc` links with `sld` by default (see the pipeline above). `gld` is not part of the
+  `scc` pipeline: it is for especially large programs and, as far as known (owner), the user has to
+  call it by hand. Do not confuse the two when the `scc` driver is rebuilt (`sld`, not `gld`).
 - gld (gld(1), `gld.1 1.0`, "segmented U8001 loader for very large programs"):
   segmented like sld; sections can be placed in logical segments, the
   default mapping is text in segments 0-31, data 32-63, bss 64-95, stack
@@ -383,7 +386,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
   system calls listed below.
 - The whole `src/cmd` builds under the oracle (`CC SCC CAS AS LD GLD AR STRIP`
   all run as `z8k-emu -r ROOT <tool>`); the per-program results are in
-  `src/TODO.md`. The segmented chain `scc` -> `gld` (E607/E611) reproduces
+  `src/TODO.md`. The segmented chain `scc` -> `gld` (E607/E611, `gld` called by hand) reproduces
   `pburn` 2.1 byte for byte. `make` itself runs on the host, not in the
   emulator.
 - Paths: absolute guest paths are looked up below ROOT, relative ones refer
@@ -697,6 +700,14 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
   is what `cc/check.sh` uses to compare the original (under z8k-emu) with the
   portable build: 74 option combinations, command lines, messages, exit codes
   and created files identical (pid normalized).
+- Configuration: `cc.conf` next to the executable (template `host/cc/cc.conf.example`, the file
+  itself is local) sets the pass programs, `crt0`, `mcrt0`, `libc`, `mv`, `shell` and `tmpdir`. A pass
+  may be a command with arguments, e.g. `cas = ${_emu} /bin/cas` to run the original under z8k-emu
+  (then `access()` checks of `gopt`/`fpf` are skipped and `ld` is exec'ed with its arguments in front).
+  Order: built-in default, `cc.conf`, then `-T<x>`. The parser is the library `host/tools/lib/conf.c`
+  (`conf.h`, `make -C host/tools/lib check`), reused by later drivers (`scc`). `/bin/mv` and the
+  temporary directory are no longer fixed. Under the emulator `tmpdir = .` is needed: a relative path
+  means the same for the host driver and the guest.
 - Pass paths can be changed with `-Tx<path>`, flags of a pass with `-:x<flags>`,
   all passes can be taken from a directory with `-B<dir>` (+ `-a<ids>`).
 - Quirks kept: `-o file.c` prints "would overwrite" and exits 1; an unknown

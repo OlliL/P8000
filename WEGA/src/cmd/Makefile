@@ -23,7 +23,7 @@ PROGS = ar ranlib size strip
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o  ranlib.o  size.o  strip.o
-SUBDIRS=	BOOT0 pburn standalone verify copydisk install format
+SUBDIRS=	BOOT0 pburn standalone verify copydisk format
 
 all: $(PROGS) $(FILES) $(STRIPFILES) subdirs
 

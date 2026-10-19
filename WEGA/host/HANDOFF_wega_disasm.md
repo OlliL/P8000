@@ -15,9 +15,9 @@ our own C sources, checked byte for byte against the original binaries.
   system calls mapped to Linux, incl. `fcntl`). The whole original chain runs under it:
   `cc scc cas as ld gld ar strip ranlib` and `pcat` (man pages).
 - **Native host tools:**
-  - `host/cc`: decompiled `cc` driver, 74 command lines identical to the original. Pass paths
-    can be changed (`-Tx`, `-B`, `-a`), but `/tmp/cc.<pid>.x` and `/bin/mv` are hard coded and
-    `scc` (segmented chain) is not supported.
+  - `host/cc`: decompiled `cc` driver, 74 command lines identical to the original. Pass paths,
+    `mv` and the temp directory are set in `cc.conf` next to the executable (library
+    `host/tools/lib/conf.c`, template `cc/cc.conf.example`); `scc` (segmented chain) is not supported.
   - `host/popt`: peephole optimizer, 522 corpus runs byte identical.
 - **Checks:** `make -C host check` (cc, popt, libc 170 identical / 7 different / 3 without C
   source, oldcc). `make -C host verify-wega` builds `src/cmd` with the original tools and
@@ -45,9 +45,9 @@ our own C sources, checked byte for byte against the original binaries.
 
 ## Next steps, in this order (fastest way to a usable local tool chain)
 
-1. **Make `host/cc` usable stand-alone.** Replace the hard coded `/tmp/cc.%d.%s` and `/bin/mv`,
-   add the segmented variant (`scc`: `scparse`, `scodgen`, `spopt`, `sld`, `gld`, `slibc.a`,
-   `scrt0.o`; the driver is the same shape, take the original `/bin/scc` as oracle with
+1. **Make `host/cc` usable stand-alone.** (Paths, tmp dir and `mv` are configurable now, see `cc.conf`.)
+   Still to do: add the segmented variant (`scc`: `scparse`, `scodgen`, `spopt`, `sld`, `slibc.a`,
+   `scrt0.o`; `scc` links with `sld`, not `gld` (`gld` is for very large programs and called by hand); the driver is the same shape, take the original `/bin/scc` as oracle with
    `-:z`). Result: one driver that calls original passes under the emulator or later
    native ones. *Small, unblocks everything below.*
 2. **Wrapper scripts** `host/bin/{cc,scc,cas,as,ld,gld,ar,...}` that run the original passes under

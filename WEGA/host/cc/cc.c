@@ -13,7 +13,8 @@
  *   -:v verbose  -:d keep temporaries  -:z echo commands
  *   -:n do not execute  -:r run the result
  *
- * The pass programs are called by absolute path (/lib/cpp, ...).
+ * The pass programs are called by absolute path (/lib/cpp, ...) unless cc.conf,
+ * which lies next to the executable, names others (see cc.conf.example).
  * K&R C; build with cc -std=gnu89 -w or with the WEGA cc.
  */
 #include <stdio.h>
@@ -26,13 +27,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#ifndef TMPFMT
-#define TMPFMT	"/tmp/cc.%d.%s"
-#endif
+#include "conf.h"
 
 typedef void (*sigfn)();
 
-char	*libs[4]	= { "/lib/libc.a", 0, 0, 0 };
+char	*libs[4];			/* libraries for ld, libs[0] set in main */
 FILE	*diag;				/* stderr */
 int	intign, quitign, hupign, termign;	/* signals ignored on entry */
 int	nfiles;				/* number of source files */
@@ -56,6 +55,9 @@ char	*m4		= "/usr/bin/m4";
 char	*basicc		= "/z/bin/basic";
 char	*f77		= "/z/bin/f77";
 char	*shell		= "/bin/sh";
+char	*mv		= "/bin/mv";
+char	*tmpdir		= "/tmp";	/* directory of the temporary files */
+char	*libc		= "/lib/libc.a";
 char	*outfile	= "a.out";
 char	*cfile		= "<command line>";
 
@@ -100,7 +102,7 @@ int	Fflag;				/* -F */
 int	gonce		= 1;		/* codgen flags not yet completed */
 int	dexited;
 
-char	t_I[64], t_D[64], t_s[64], t_o[64], t_p[64], t_z[64], t_S[64];
+char	t_I[256], t_D[256], t_s[256], t_o[256], t_p[256], t_z[256], t_S[256];
 char	curpass[256];			/* name of the pass running */
 char	cmd[2048];
 char	*obj1;				/* object name for a single file */
@@ -433,7 +435,7 @@ nameit(buf, suffix)
 char	*buf, *suffix;
 {
 	if (!dflag)
-		sprintf(buf, TMPFMT, pid, suffix);
+		sprintf(buf, "%s/cc.%d.%s", tmpdir, pid, suffix);
 	else
 		sprintf(buf, "cc.%d.%s", pid, suffix);
 }
@@ -460,13 +462,13 @@ gopass()
 		t = cutsuf(t_I);
 		sprintf(cmd, "%s %s %s -%c -E %s >%s", gopt, gbuf, goptflags,
 		    optlev, t, t_z);
-		if (access(gopt, 0) != 0)
+		if (!passexists(gopt))
 			fprintf(diag, "Global optimizer not on system- no optimization performed\n");
 		else if (callsys(cmd) != 0)
 			fprintf(diag, "Global optimizer error - no optimization performed\n");
 		else {
 			dbg("MOVE.");
-			sprintf(cmd, "/bin/mv %s %s", t_z, t_I);
+			sprintf(cmd, "%s %s %s", mv, t_z, t_I);
 			if (callsys(cmd) != 0)
 				fatal(" Cannot move files");
 		}
@@ -493,13 +495,13 @@ asspass()
 	if (Fflag) {
 		dbg("FPF.");
 		sprintf(cmd, "%s <%s >%s", fpf, t_s, t_z);
-		if (access(fpf, 0) != 0)
+		if (!passexists(fpf))
 			fprintf(diag, "Floating point filter not on system- no optimization performed\n");
 		else if (callsys(cmd) != 0)
 			fprintf(diag, "Floating point filter error - no optimization performed\n");
 		else {
 			dbg("MOVE.");
-			sprintf(cmd, "/bin/mv %s %s", t_z, t_s);
+			sprintf(cmd, "%s %s %s", mv, t_z, t_s);
 			if (callsys(cmd) != 0)
 				fatal(" Cannot move files");
 		}
@@ -511,7 +513,7 @@ asspass()
 			fprintf(diag, "Peephole optimizer error - no optimization performed\n");
 		else {
 			dbg("MOVE.");
-			sprintf(cmd, "/bin/mv %s %s", t_z, t_s);
+			sprintf(cmd, "%s %s %s", mv, t_z, t_s);
 			if (callsys(cmd) != 0)
 				fatal(" Cannot move files");
 		}
@@ -525,7 +527,7 @@ asspass()
 				fatal(" Cannot list file");
 		} else {
 			dbg("MOVE.");
-			sprintf(cmd, "/bin/mv %s %s", t_s, t_o);
+			sprintf(cmd, "%s %s %s", mv, t_s, t_o);
 			if (callsys(cmd) != 0)
 				fatal(" Cannot move files");
 		}
@@ -582,6 +584,76 @@ char	*f;
 	return (0);
 }
 
+/*
+ * A pass may be given as a command with arguments in cc.conf (for example an
+ * emulator with its options and the program).  Such a pass cannot be checked
+ * with access(): the program is not a file of the host.
+ */
+int
+passexists(p)
+char	*p;
+{
+	if (strchr(p, ' '))
+		return (1);
+	return (access(p, 0) == 0);
+}
+
+/* exec the loader ld (a command with arguments, see above) with the arguments of v */
+ldexec(v)
+char	**v;
+{
+	char	*w[100], *s, *sp;
+	char	**q;
+	int	n;
+
+	n = 0;
+	for (s = savestr(ld); *s; s = sp) {
+		w[n++] = s;
+		sp = strchr(s, ' ');
+		if (sp == 0)
+			break;
+		*sp++ = 0;
+		while (*sp == ' ')
+			sp++;
+	}
+	for (q = v + 1; *q && n < 98; q++)
+		w[n++] = *q;
+	w[n] = 0;
+	execv(w[0], w);
+}
+
+/* the settings that cc.conf may give */
+struct conf_var	confvars[] = {
+	{ "cpp", &cpp }, { "cparse", &cparse }, { "gopt", &gopt },
+	{ "codgen", &codgen }, { "popt", &popt }, { "clist", &clist },
+	{ "cas", &cas }, { "ld", &ld }, { "fpf", &fpf }, { "fpe", &fpe },
+	{ "fpent", &fpent }, { "libcfpf", &libcfpf }, { "crt0", &crt0 },
+	{ "mcrt0", &mcrt0 }, { "libc", &libc }, { "m4", &m4 },
+	{ "basic", &basicc }, { "f77", &f77 }, { "shell", &shell },
+	{ "mv", &mv }, { "tmpdir", &tmpdir }, { 0, 0 }
+};
+
+/* defaults, overridden by cc.conf next to the executable, then by -T */
+loadconf(argv0)
+char	*argv0;
+{
+	struct conf	*c;
+	char	*path;
+
+	path = conf_sibling(argv0, "cc.conf");
+	if (path == 0)
+		return;
+	c = conf_read(path);
+	if (c == 0) {
+		if (errno != ENOENT)
+			exit(1);		/* the message is printed */
+		return;
+	}
+	if (conf_apply(c, confvars))
+		exit(1);
+	conf_free(c);
+}
+
 /* run the loader: argument vector v up to e */
 load(v, e)
 char	**v, **e;
@@ -606,14 +678,14 @@ char	**v, **e;
 	child = fork();
 	if (child == 0) {
 		setsigs((sigfn)0);
-		execv(ld, v);
+		ldexec(v);
 		fatal("couldn't load %s", ld);
 	}
 	if (await(child) != 0) {
 		errflag = 1;
 		if (nfiles == 1 && !cflag) {
 			dbg("MOVE.");
-			sprintf(cmd, "/bin/mv %s %s", t_o, obj1);
+			sprintf(cmd, "%s %s %s", mv, t_o, obj1);
 			if (callsys(cmd) != 0)
 				fatal(" Cannot move files");
 		}
@@ -669,6 +741,8 @@ char	**argv;
 	int	i, c;
 
 	diag = stderr;
+	loadconf(argv[0]);
+	libs[0] = libc;
 	intign = signal(SIGINT, SIG_IGN) == SIG_IGN;
 	quitign = signal(SIGQUIT, SIG_IGN) == SIG_IGN;
 	hupign = signal(SIGHUP, SIG_IGN) == SIG_IGN;

@@ -10,7 +10,7 @@ T=$(mktemp -d); ok=0; bad=0
 cd "$T" || exit 1
 echo 'main(){}' > a.c; echo 'f(){}' > b.c; : > x.s; : > y.o; : > z.f
 : > a.err; : > b.err; : > a.ls; : > b.ls; : > a.n; : > b.n
-norm() { sed -e 's/cc\.[0-9][0-9]*/cc.PID/g'; }
+norm() { sed -e 's/cc\.-\{0,1\}[0-9][0-9]*/cc.PID/g'; }
 # pass paths that exist in both worlds, so the access() tests agree
 P="-TO/bin/ld -TP/bin/ld"
 while IFS= read -r args; do
