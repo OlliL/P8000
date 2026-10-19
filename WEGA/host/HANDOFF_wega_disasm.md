@@ -78,8 +78,7 @@ Steps 1 to 3 are a few sessions; 4 to 5 follow; 6 to 8 are the real decompilatio
 ## Working rules of the owner (Oliver Lehmann, @OlliL)
 
 - Conversation in German, short messages. Documents, commit messages, PR texts in English.
-- Commit and push often (branch `toolchain`). Author `Oliver Lehmann <lehmann@ans-netz.de>`,
-  trailers `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` and the `Claude-Session:` URL.
+- The owner handles the repository (commit, push, branches). Claude only edits files.
 - Facts only from documents or measurements; mark guesses.
 - Keep `host/KNOWLEDGE.md` and `src/TODO.md` current.
 - Originals, binaries and copyrighted material stay out of git (explicit exceptions by the owner).
@@ -90,6 +89,6 @@ Steps 1 to 3 are a few sessions; 4 to 5 follow; 6 to 8 are the real decompilatio
 ## Open questions for the owner
 
 - Which revision of libc is the target (the 7 differing members come from older/newer cc revisions)?
+  - answer: currently the one on the system. After that all the ones which are needed to get every binary bit-compatible to the delivered version 
 - What does `p8000c` (second `sa.diags`) and the `87wega3.2` SCCS suffix stand for?
-- Fix `src/cmd/Makefile` (`donee` typos in `install`, `format` missing in `SUBDIRS`, no
-  `strip-programs` rule) and `sa.diags/p8000/Makefile` (`ASFLAGS=-u`)? Not touched so far.
+  - p8000c mean P8000 compact - which is a newer hardware. Not relevant for us.

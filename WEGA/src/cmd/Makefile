@@ -23,7 +23,7 @@ PROGS = ar ranlib size strip
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o  ranlib.o  size.o  strip.o
-SUBDIRS=	BOOT0 pburn standalone verify copydisk
+SUBDIRS=	BOOT0 pburn standalone verify copydisk install format
 
 all: $(PROGS) $(FILES) $(STRIPFILES) subdirs
 
@@ -91,8 +91,8 @@ sync: $(CRT)/crt0-sync.o sync.o
 
 install: $(PROGS) $(FILES) $(STRIPFILES)
 	for file in ar chkdiff getud putud size tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
-	for file in ranlib strip ; do cp $$file $(PREFIX)/usr/bin/$$file ; donee
-	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; donee
+	for file in ranlib strip ; do cp $$file $(PREFIX)/usr/bin/$$file ; done
+	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; done
 	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
 
 clean:
@@ -100,4 +100,4 @@ clean:
 	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-size.o $(CRT)/crt0-strip.o $(CRT)/crt0-sync.o
 	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) clean ; cd .. ; done
 
-.PHONY: all subdirs clean install strip-programs
+.PHONY: all subdirs clean install

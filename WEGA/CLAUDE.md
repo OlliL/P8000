@@ -8,14 +8,14 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 ## Rules
 
 - Conversation in German, short messages. Git content (files, commits) in English.
-- Push often. Keep `host/KNOWLEDGE.md` and `src/TODO.md` current.
+- Do not commit or push: the owner handles the repository (git add/commit/push, branches). Keep
+  `host/KNOWLEDGE.md` and `src/TODO.md` current and say which files changed.
 - Facts only from documents or measurements; mark guesses as guesses.
 - Originals, binaries and copyrighted material never go into git (unless the owner says so).
   Plexus sources are private reference only; our code is reconstructed from the WEGA binaries
   and is not a copy of them.
 - V7 layout in `src/cmd`. Makefiles must also work with WEGA's native `make`:
   use `=` not `?=`, `cd dir ; $(MAKE)`.
-- Commit trailers: `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` and the `Claude-Session:` URL.
 
 ## Local directories (placeholders, the owner fills in the real paths)
 

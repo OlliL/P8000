@@ -5,6 +5,7 @@ CC = cc
 CFLAGS =
 LD = ld
 LDFLAGS = -b 0x8000 -e _main
+ASFLAGS = -u
 PREFIX = /
 
 OBJECTS = menu.o sa.test.o init.o term.o comm.o brk.o \
@@ -15,15 +16,15 @@ all: $(PROCED)
 
 gesa.o: p.gesa.s
 	cp p.gesa.s gesa.s
-	$(AS) -o $@ gesa.s
+	$(AS) $(ASFLAGS) -o $@ gesa.s
 
 ldsd.o: p.ldsd.s
 	cp p.ldsd.s ldsd.s
-	$(AS) -o $@ ldsd.s
+	$(AS) $(ASFLAGS) -o $@ ldsd.s
 
 term.o: p.term.s
 	cp p.term.s term.s
-	$(AS) -o $@ term.s
+	$(AS) $(ASFLAGS) -o $@ term.s
 
 boot.o: boot.s
 brk.o: brk.s
