@@ -1,0 +1,27 @@
+# module  first  last+1   (range of its data in segment 5 of /bin/cas, hex)
+crt0      0     2
+ifile     2     136
+instr     136   1a2
+scanner   1a2   2e2
+main      2e2   4e4
+nodes     4e4   5c0
+parser    5c0   388e
+pst       388e  535a
+subr      535a  5388
+symbols   5388  54b0
+ssymtab   54b0  5526
+table1    5526  655e
+table2    655e  6b82
+locntr    6b82  6bf4
+expr      6bf4  72bc
+p2loop    72bc  74d4
+ofile     74d4  75b6
+gen       75b6  76e4
+assemble  76e4  7af0
+getops    7af0  7d4a
+error     7d4a  7df0
+pstab     7df0  8da8
+jpr       8da8  8e2c
+jpr2      8e2c  8e6a
+optim     8e6a  8eac
+listing   8eac  8f32

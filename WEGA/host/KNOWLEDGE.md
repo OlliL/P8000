@@ -724,10 +724,15 @@ file under the fixed names `i.out`, `r.out`, `sym.out`, `osym.out` instead of a 
 the name is built from a base name (0x32a) with the last character replaced (`i`, `t`, ...). Any other
 letter: `invalid option -%c`. The documented options of cas(1) are `-d -l -o -u`; the others are debug aids.
 
-**Temporary files** `/tmp/as{i,r,s,o,t}XXXXXX` (mktemp, pointers at 0x318, 0x31a, 0x31c ...): i =
-intermediate, r = relocation, t = symbols, o = output symbols, s = the listing/source copy (`list.out`);
-the meaning is derived from the names `i.out`, `r.out`, `sym.out`, `osym.out`, `list.out` that main
-uses when the flags ask for them.
+**Temporary files** (from `main`, read in detail): `/tmp/as{i,r,s,o,t}XXXXXX` are templates (pointers at data
+0x31a-0x32a); i = the intermediate file (FILE at 0x9630, name `i.out`), s = the symbol file (FILE 0x962c,
+`sym.out`; option -t keeps it), r = relocation (FILE 0xa31e, `r.out`), o = the output symbols (FILE 0xa2ba,
+`osym.out`), t = the temporary copy of a source read from stdin when a listing is wanted. The listing is
+`list.out` (stdin) or the source name with the last character replaced by `l`; likewise `i`, `t`/s, `r`, `m`.
+Each file is created `w+`, and removed at once with `unlink` unless its option asks to keep it. The
+errors of pass 1 (`synerr`, `semerr`, data 0x34c, 0x34e) end the run with `Abort because of syntax errors`,
+those of pass 2 with `Abort because of semantic errors`; `done(-1)` prints `Assembler Abort`, `done(0)`
+`Assembly Complete` with -v.
 
 **Plexus yacc.** `tmp/plexus/cmd/yacc` (y1-y4.c, `yaccpar`, `dextern`, `files`; private reference) builds on the host with
 `gcc -std=gnu89 -w` after `PARSER` in `files` points to the local `yaccpar`; the tables it writes (`yyexca`,
@@ -787,10 +792,10 @@ a corpus, like `ar`); byte identity is not expected.
 **The compiler that built cas.** The binary was built by an older scc than the one in the system: prologue in
 front of the body (no `jr` hops), a switch of up to 3 cases is a chain of compares with the dispatch in front
 (the shipped scc: `cpir` + jump table, dispatch behind), other frame sizes, scratch registers and loop layout,
-direct addressing of constant indexes into local arrays, byte moves for `>> 8`. No `popt` was used (redundant
-reloads after stores are in the code), so the flags were `scc -c` only. See `src/cmd/cas/README`.
+direct addressing of constant indexes into local arrays, byte moves for `>> 8`. The flags were `scc -O -c`: the old `popt` merged the common tails of branches (the scanner's shared
+`call xtol; jp`) but did not remove a reload after a store. See `src/cmd/cas/README`.
 
-**Done: ifile and nodes.** Every function was compared with `cmpmod.py` and the remaining differences read by
+**Done: ifile, nodes, instr, scanner, main, done (code).** Every function was compared with `cmpmod.py` and the remaining differences read by
 eye: they are those of the code generator listed above (the tool cannot hide them all, so its counts of
 "differing" functions are not a measure; `nodes` has 6 of 8 and `ifile` 4 of 19 functions identical, the rest
 show only such differences). The jump tables and strings of the data were not compared yet.
@@ -804,13 +809,46 @@ show only such differences). The jump tables and strings of the data were not co
   written to the intermediate file; at the end of a statement they must be equal (`Nodes allocated at end
   of statement`), else both are reset.
 - Intermediate files (`ifile.c`): two sets of routines with the same shape for the intermediate file
-  (`ifile`, bss 0x9630, name in the variable at data 0x32e) and the relocation file (`rfile`, 0x962c, name at
+  (`ifile`, bss 0x9630, name in the variable at data 0x32e) and the symbol file (`sfile`, 0x962c, name at
   0x336): put/get a byte, a word (high byte first) and a long (high word first); a failed `fwrite`/`fread` of
   one byte gives `perror(name); done(-1)`. Expressions are written in prefix order: the operator or type byte,
   then the value (1: byte, 2: word, 3: long, 6: word and the node list, 7-9: word, 23-25: both operands). The
   record codes seen: 10 (and four zero bytes, `075e`), 11 + word (the location counter of the current section:
   `lctab[cursec][cursub]`, 12 bytes per section), 15 + word (line number) or 16, 17, 18 for the next 1, 2, 3
   lines (the variables at data 0x38, 0x3a start with 1).
+
+**Done: pst, subr and the tables table1, table2, pstab.**
+
+- Permanent symbol table: 403 entries of 12 bytes `{int tok; char b2; unsigned char n; struct irow *rows; char *name}`
+  at data 0x38c2, then the names; an instruction entry has its forms in `rows` (n of them, `itab1`), `tok` is
+  the token the scanner returns (62..65 for the four instruction kinds that write a trailer record). The hash:
+  `hash(503, name)` of `subr.c` (the characters, folded to one case, go alternately into the high and the
+  low byte of a word and every step adds that word: `*p = c; h += k`; the result is `h % n`), the buckets are
+  `pbuckets[503]` of `{next, entry}` (the module `pstab`, no code, no SCCS id, between error and jpr in the
+  data), the chains run inside the array. `pstlook` compares the name case-insensitively with the stored
+  lower case name (`pstcmp`: -1 = different, anything else = equal; the original returns a stale register
+  for "equal", the caller tests only against -1).
+- `itab1` (684 rows of 6 bytes, base opcode word, offset of the operand template, index into `instlen`, one
+  more byte), `opcls` (operand templates, 522 bytes, each ends with 0x12 or 0x1c), `clstype` (30 bytes, the node
+  type an operand class needs), `instlen` (162 records `{len; 5 bytes}`). `tools/casgen.py BINARY DIR`
+  writes `pstdata.h`, `table1.c`, `table2.c`, `pstab.c` from the binary; scc compiles them to data that
+  equals the binary byte for byte (`tools/cmpdata.py`: table1 4152, table2 1572, pst 6860, pstab 4024 bytes;
+  only the relocated pointers are not compared).
+- Scanner tokens seen (`yylex`): 2 float constant, 3 `.` (location counter), 4 `+`, 5 `-`, 6 `^FS`, 7 `^FD`,
+  8 `^F`, 9 `/`, 10 `*`, 11 `^<`, 12 `^>`, 13 `^&`, 14 `^|`, 15 `^X`, 16 `<<`, 17 `>>`, 18 `|`, 19 `:`,
+  20 `::`, 21 `#`, 22 `@`, 23 `^S`, 24 `^O`, 25 `{`, 26 `}`, 27 `(`, 28 `)`, 29 end of line, 30 `,`, 31 `=`,
+  32 `::=`, 33 `:=`, 34 invalid token, 35 unknown keyword, 36 symbol index (yylval.i), 85 number (yylval.l),
+  86 new name, 87 new local name, 88 string, -1 end of file; the others (37 ... 84) come from the permanent
+  symbol table (directives such as `.comm` 37, `.extern` 38, `.even` 39, `.odd` 40, `.byte` 41, `.blkb` 44,
+  `.bss` 77, `.code` 75, `.data` 76, `.seg` 78, `.nonseg` 79, `.psec` 82, `.addr` 83, `.line` 84, then the
+  registers and mnemonics).
+- `scanner.c` details: the name path is shared by `~name` (local names, mode 6) and plain names; a name goes
+  first to `pstlook`, then to the user symbols (`stlook(name, mode)`); an alias entry (type 3) is followed
+  through the itable and masked with `0x7F00FFFF`; `%1F` hex, `%(2)101` binary, `%(8)17` octal, decimal,
+  `1.5` / `.5` floats (token 2; `1e5` without a dot is an invalid token); strings `"..."` and `'...'` end at
+  the same quote (no check for end of line); operators are matched against a table of 35 `{string, token}`
+  with `ungetc` for the characters read too far; `/* */` and `//` comments are skipped (the line counter
+  `curline` is incremented there).
 
 ## ar on the host (`host/ar`)
 

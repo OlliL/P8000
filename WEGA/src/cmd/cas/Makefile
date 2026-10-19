@@ -8,8 +8,8 @@
 # the table segments 7, 8, 9) is added when all modules exist.
 
 SCC = scc
-SCCFLAGS = -c
-OBJS = ifile.o nodes.o
+SCCFLAGS = -O -c
+OBJS = ifile.o instr.o scanner.o main.o done.o nodes.o pst.o subr.o table1.o table2.o pstab.o
 
 all: $(OBJS)
 

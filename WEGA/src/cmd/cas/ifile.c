@@ -5,17 +5,17 @@ static char sccsid[] = "@[$]/as/as/ifile.c\t1.2 05/27/83 15:47:57 - 87wega3.2";
  *
  * Pass 1 writes the statements as records of bytes, words and longs; expression
  * trees are written in prefix order.  There are two files with the same set of
- * routines: the intermediate file (i) and the relocation file (r).
+ * routines: the intermediate file (i) and the symbol file (s).
  */
 #include <stdio.h>
 #include "cas.h"
 
 int curline = 1;			/* line number of the statement */
 int lastline = 1;			/* line number of the last record */
-FILE *rfile;
+FILE *sfile;
 FILE *ifile;
 
-extern char *ifname, *rfname;
+extern char *ifname, *sfname;
 extern long lctab[][3];
 extern int cursec, cursub;
 
@@ -42,57 +42,57 @@ long l;
 	iputw((int)l);
 }
 
-rputb(c)
+sputb(c)
 char c;
 {
-	if (fwrite(&c, 1, 1, rfile) != 1) {
-		perror(rfname);
+	if (fwrite(&c, 1, 1, sfile) != 1) {
+		perror(sfname);
 		done(-1);
 	}
 }
 
-rputw(w)
+sputw(w)
 int w;
 {
-	rputb(w >> 8);
-	rputb(w);
+	sputb(w >> 8);
+	sputb(w);
 }
 
-rputl(l)
+sputl(l)
 long l;
 {
-	rputw((int)(l >> 16));
-	rputw((int)l);
+	sputw((int)(l >> 16));
+	sputw((int)l);
 }
 
 unsigned char
-rgetb()
+sgetb()
 {
 	unsigned char c;
 
-	if (fread(&c, 1, 1, rfile) != 1) {
-		perror(rfname);
+	if (fread(&c, 1, 1, sfile) != 1) {
+		perror(sfname);
 		done(-1);
 	}
 	return(c);
 }
 
-rgetw()
+sgetw()
 {
 	register int w;
 
-	w = rgetb() << 8;
-	w += rgetb();
+	w = sgetb() << 8;
+	w += sgetb();
 	return(w);
 }
 
 long
-rgetl()
+sgetl()
 {
 	register long l;
 
-	l = (long)(unsigned)rgetw() << 16;
-	l += (unsigned)rgetw();
+	l = (long)(unsigned)sgetw() << 16;
+	l += (unsigned)sgetw();
 	return(l);
 }
 
@@ -149,7 +149,7 @@ NODE *np;
 	}
 }
 
-rputnode(np)
+sputnode(np)
 NODE *np;
 {
 	if (np) {
@@ -157,9 +157,9 @@ NODE *np;
 		case 23:
 		case 24:
 		case 25:
-			rputb(np->n_type);
+			sputb(np->n_type);
 		}
-		rputexpr(np);
+		sputexpr(np);
 	}
 }
 
@@ -201,36 +201,36 @@ NODE *np;
 	nfreed++;
 }
 
-rputexpr(np)
+sputexpr(np)
 NODE *np;
 {
 	if (np == 0)
 		return(0);
-	rputb((np->n_type == 23 || np->n_type == 24 || np->n_type == 25) ? np->n_u.cc.c2 : np->n_type);
+	sputb((np->n_type == 23 || np->n_type == 24 || np->n_type == 25) ? np->n_u.cc.c2 : np->n_type);
 	switch (np->n_type) {
 	case 1:
-		rputb((unsigned char)np->n_u.l);
+		sputb((unsigned char)np->n_u.l);
 		break;
 	case 2:
-		rputw((int)np->n_u.l);
+		sputw((int)np->n_u.l);
 		break;
 	case 3:
-		rputl(np->n_u.l);
+		sputl(np->n_u.l);
 		break;
 	case 6:
-		rputw(np->n_u.wl.w);
-		rputnode((NODE *)np->n_u.wl.l);
+		sputw(np->n_u.wl.w);
+		sputnode((NODE *)np->n_u.wl.l);
 		break;
 	case 7:
 	case 8:
 	case 9:
-		rputw(np->n_u.pw.w);
+		sputw(np->n_u.pw.w);
 		break;
 	case 23:
 	case 24:
 	case 25:
-		rputexpr((NODE *)np->n_u.cc.l1);
-		rputexpr((NODE *)np->n_u.cc.l2);
+		sputexpr((NODE *)np->n_u.cc.l1);
+		sputexpr((NODE *)np->n_u.cc.l2);
 		break;
 	default:
 		error(2, "Unknown expression type\n");

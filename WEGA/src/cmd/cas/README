@@ -2,7 +2,7 @@ cas - the U8000 assembler of WEGA (/bin/cas), reconstructed from the binary
 ===========================================================================
 
 State: module by module, see MODULES (text range of each module in /bin/cas and its state).
-Done: ifile, nodes. The facts about the binary are in host/KNOWLEDGE.md (section cas).
+Done: ifile, nodes, instr, scanner, main, done, pst, subr and the data modules table1, table2, pstab. The facts about the binary are in host/KNOWLEDGE.md (section cas).
 
 How a module is checked
 -----------------------
@@ -12,11 +12,13 @@ labels, frame sizes and scratch registers are masked; constants, calls and the s
 variables are kept) and lists every function as identical or differing. `-v` shows the differences.
 
 The binary was built by an OLDER scc than the one in the system (which is why byte identity is not the aim
-here; the aim is the same code, then the same behaviour). Differences that always show up and are not
-differences of the source:
+here; the aim is the same code, then the same behaviour). The flags were `scc -O -c`: the old popt merged the
+common tails of branches (e.g. the shared `call xtol; jp` of the number cases of the scanner); with `-O` the
+shipped scc gives the closest result, so the Makefile and check.sh use it. Differences that always show up and
+are not differences of the source:
 
- * the prologue: the old compiler writes it in front of the body; the shipped scc puts it behind
-   (`jr Lp ... Lp: dec r15 ... jr Lb`); cmpmod converts it back;
+ * the old popt did not remove a reload after a store (`ld S0,r7; ld r7,S0`);
+ * without -O the prologue would be behind the body (`jr Lp ... Lp: dec r15 ... jr Lb`); cmpmod converts that back;
  * `switch`: up to 3 cases the old compiler compares one after the other, and puts the dispatch in front
    of the cases; the shipped scc uses a table (`cpir` over the case values, then a jump table) from 1 or 3
    cases on and puts the dispatch behind the cases;

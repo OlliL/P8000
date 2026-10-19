@@ -20,8 +20,82 @@ struct node {
 	} n_u;
 };
 
+#include <stdio.h>
 #define NNODES	100			/* size of the node pool */
 
 extern NODE	nodes[NNODES];
 extern unsigned	nalloc;			/* nodes handed out */
 extern unsigned	nfreed;			/* nodes written to the intermediate file */
+
+/* the instruction tables (table1.c, table2.c) */
+/* a symbol of the permanent symbol table (mnemonics, registers, directives) */
+struct irow {				/* 6 bytes: one operand form of an instruction */
+	int	ir_0;
+	int	ir_cls;			/* offset of its operand template in opcls[] */
+	unsigned char ir_kind;		/* index into instlen[] */
+	char	ir_5;
+};
+
+
+extern unsigned char opcls[];		/* operand templates, ended by 0x12 or 0x1c */
+extern unsigned char clstype[];		/* node type that an operand class needs */
+struct ilen {				/* length of an instruction and what the code generator needs */
+	unsigned char len;
+	char	x[5];
+};
+extern struct ilen instlen[];
+
+extern int segmode;			/* set by .seg, cleared by .nonseg */
+extern int shortaddr;			/* a short segmented address was seen */
+
+/* the value of the last token (yylval); the parser's %union */
+typedef union {
+	long	l;
+	int	i;
+	char	*p;
+	NODE	*np;
+} YYSTYPE;
+
+extern YYSTYPE yylval;
+extern char tokbuf[];			/* the text of the last token */
+
+struct pst {				/* 12 bytes */
+	int	p_tok;			/* token to return; 62 .. 65: instructions with a trailer record */
+	char	p_2;
+	unsigned char p_n;		/* instructions: number of forms */
+	struct irow *p_rows;		/* instructions: the forms (table1.c) */
+	char	*p_name;
+};
+
+struct pbucket {			/* the hash table of the permanent symbols (503 entries) */
+	struct pbucket *pb_next;
+	struct pst *pb_ent;
+};
+
+/* an entry of the user symbol table (segment 7) */
+struct sym {
+	int	s_0;
+	long	s_2;
+	unsigned char s_type;		/* 3: alias of an entry of the itable */
+	char	s_7;
+	int	s_8;
+};
+
+extern struct pst *pstlook();		/* name -> permanent symbol or 0 */
+extern int stlook();			/* name, mode -> index of the symbol or 0 */
+extern struct sym *stabp();		/* index -> symbol */
+extern struct sym *itabp();		/* index -> entry of the itable */
+extern long symval();			/* value of a defined symbol */
+extern long xtol();			/* digits, base -> long */
+extern int isdef();			/* is the symbol defined */
+
+extern int curline;			/* ifile.c */
+extern int echoflag;			/* option -^ (main.c) */
+
+extern FILE *ifile, *sfile;		/* the intermediate file and the symbol file (ifile.c) */
+extern int nsect;			/* number of sections (locntr.c) */
+extern int uflag, vflag, dflag, lflag, synerr, semerr;	/* main.c */
+
+extern struct pbucket pbuckets[];
+extern struct irow itab1[];
+extern struct pst pst[];
