@@ -117,7 +117,7 @@ int n;
 	unsigned char t;
 
 	if ((flags & 6) == 0) {
-		ip->s_2 = 0L;
+		ip->s_2 = (long)(unsigned)n;
 		return (0x20);
 	}
 	if ((flags & 1) == 0)

@@ -5,6 +5,8 @@ static char sccsid[] = "@[$]instr.c\t1.1 03/16/83 18:59:17 - 87wega3.2";
  */
 #include "cas.h"
 
+int shortaddr;				/* a short segmented address was seen in this instruction (bss a234) */
+
 /*
  * Look for the form of the instruction op that fits the operand list: the
  * first one whose template matches.  Record 10 gets the table row and the operands.

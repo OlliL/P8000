@@ -11,11 +11,11 @@ static char sccsid[] = "@[$]listing.c\t1.1 05/27/83 14:57:19 - 87wega3.2.";
  */
 #include "cas.h"
 
+extern int errno;
 unsigned lcol = 1;
 unsigned lline = 1;
 int lnl = 0;
 
-int copyerr;
 
 /* copy the file src to dst; the names are for the messages */
 copyfile(dst, dname, src, sname)
@@ -30,7 +30,7 @@ char *sname;
 	int m;
 
 	p = buf;
-	copyerr = 0;
+	errno = 0;
 	while ((n = fread(p, 1, 512, src)) != 0) {
 		m = fwrite(p, 1, n, dst);
 		if (m != n) {
@@ -38,7 +38,7 @@ char *sname;
 			done(-1);
 		}
 	}
-	if (n == 0 && copyerr) {
+	if (n == 0 && errno) {
 		perror(sname);
 		done(-1);
 	}

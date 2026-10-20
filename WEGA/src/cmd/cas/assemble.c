@@ -42,7 +42,7 @@ struct irow *row;
 		case 10:
 		case 11:
 			getop(n);
-			asmrel(n, (unsigned)((int)lctab[cursec][cursub] + instlen[row->ir_kind].len), *p);
+			asmrel(n, (long)(unsigned)((int)lctab[cursec][cursub] + instlen[row->ir_kind].len), *p);
 			break;
 		case 17:
 			getop(n);
@@ -85,11 +85,11 @@ struct irow *row;
 	while (j != 5 && code != 0) {
 		j++;
 		switch (code) {
-		case 9:
+		case 0xFF:
 			kind++;
 			j = 0;
 			break;
-		case 0xFF:
+		case 9:
 			putbits(16, w);
 			break;
 		case 1:

@@ -12,6 +12,8 @@ static char sccsid[] = "@[$]locntr.c\t1.2 05/06/83 13:25:13 - 87wega3.2";
 int cursec = 0;
 int cursub = 1;
 int nsect = 1;
+long lctab[256][3];			/* location counter of every section and subsection (bss 9634) */
+struct lcaux lcaux[256][3];		/* see jpr.c, optim.c (bss ac26) */
 
 
 /* advance the location counter */

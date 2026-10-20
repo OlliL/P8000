@@ -51,4 +51,4 @@ jpr2 89c2
 optim 8af4  jinit 8c26  newrec 8c6e  jdeps 8cfa  jdist 8e72  jiter 8ffc  jsum 916a  jsymadj 922e
 # listing.c
 copyfile 92f6  listhead 9398  lstloc 93ac  lstw 93ec  lstb 941c  lstflag 9452  lstend 949c  lstsync 94d4  lstline 9534  lstrest 9638
-# data: lcol 8ede  lline 8ee0  lnl 8ee2; bss copyerr 95d4, listf a322 (main.c)
+# data: lcol 8ede  lline 8ee0  lnl 8ee2; errno 95d4 (libc), bss listf a322 (main.c)

@@ -1186,7 +1186,7 @@ subsection (symbol table walk, 10 or 16 bytes per symbol), at the end the locati
 and, behind column 19, the line number (`%5d `) and the source line (`lstline`, read from stdin, which was reopened, with `getc`/`putc`). A line of code that is
 longer than 16 columns gets its source line at once (`lstend`, `lnl` counts the lines of code that wait); `lstsync(n)` (called when the line number changes) prints
 the source lines up to n, `lstrest` the rest of the file at the end. `listhead` writes the head `LOC    OBJ CODE    STMT SOURCE STATEMENT`; `copyfile(dst, dname, src, sname)`
-copies stdin to the temporary file with `fread`/`fwrite` (main). `copyerr` (bss 95d4) is only cleared and tested (a leftover; a read error cannot set it here).
+copies stdin to the temporary file with `fread`/`fwrite` (main). The variable at 0x95d4 that it clears and tests is `errno` (libc).
 Check: 10 functions, `copyfile`, `listhead`, `lstw`, `lstend` identical, the rest differs by D3, D7, D8 and the inline `getc`/`putc` layout; the strings are the same set.
 
 ## ar on the host (`host/ar`)
