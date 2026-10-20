@@ -620,7 +620,7 @@ Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, m
 - `_doprnt` walks the register argument block (r6,r5,r4,r3,r2 stored in that order), switches to the
   stack arguments after 5 words, uses fix() to align longs, supports `- * 0 .` flags, d o u x c s
   D O U X, l-prefix, and e/f/g via an empty stub (no float support in this revision).
-- The old cc differs from the shipped one (D13 and others in "Compiler revisions"). No older compiler
+- The old cc differs from the shipped one (D14 and others in "Compiler revisions"). No older compiler
   binary exists in any archive, so size/strip as whole binaries cannot be reproduced bit-exact by compiling.
   Their own code (size 0x42..0x224, strip) is identical to the shipped cc output.
 - `src/lib/libc/stdio/doprnt.c` is the Nov-1983 `_doprnt` and now rebuilds byte-identical with the shipped cc -O
@@ -778,7 +778,7 @@ intermediate files: the small functions of `ifile` (0x42-0x1d0) write single byt
 Several WEGA programs were built by an older revision of the C compilers: cas by an older scc; ranlib, strip
 and some libc members by an older cc. No old compiler binary exists in any archive (the old libc members and
 the old objects only show its output), so these differences are the base for rebuilding the old compiler at the
-end of the project. Each difference has its own number D1 ... D13; `src/TODO.md` (section "Compiler
+end of the project. Each difference has its own number D1 ... D14; `src/TODO.md` (section "Compiler
 differences") lists which objects show which difference. "old" = the compiler that built the original, "shipped"
 = the scc/cc in `/bin` of the system. Evidence: `cmpmod.py` listings of the cas modules (`-s` shows frames and
 scratch registers), the `oldcc` objects, ranlib, strip.
@@ -860,7 +860,12 @@ shipped one writes the strings of a function in front of the data that follow. T
 order: in the parser 42 bytes of difference in size, and the tables of `yyexca` ... start at another
 offset. `cmpdata.py` shows differences for such modules although the contents are equal.
 
-### D13 Post-increment code and varargs prologue (old libc)
+### D13 Pointer constants
+The old compiler keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`, `add r3,idx`), the shipped
+scc clears it (`#%07000030`; `(char *)CONST + n` can even stop with `register jam` when it is assigned to a
+register variable or returned). Seen in cas `ssymtab` (the three tables in segments 7, 8, 9).
+
+### D14 Post-increment code and varargs prologue (old libc)
 The old cc generates different code for post-increment, and a varargs prologue with a reversed contiguous
 spill of r6..r2 plus inline EPU spills (the printf family inside size, strip, ranlib and cas).
 
@@ -987,6 +992,23 @@ value is in the itable entry (`itabp(s_8)`: `s_0` = `section << 8 | subsection`,
 - Variables seen: `blklevel` (data 0x54e0, nesting level of `{ }`, max 10), `cursec` 0x6bb2, `cursub` 0x6bb4.
 - Check: every function compared with `cmpmod.py`; the remaining differences are those of the old compiler (the
   listing is in "Compiler differences" of `src/TODO.md`); the strings are the same set, the data layout differs (D12).
+
+**Done: ssymtab (`ssymtab.c`, 457a-4b3d).** The three tables of the user symbols in the segments 7 (symbols, `struct sym`),
+8 (itable, the values) and 9 (names) grow by `ssgbrk(seg, 0x400)` (`perror("symtab" / "infotab" / "namtab")` and
+`done(-1)` when that fails); the first 0x30 bytes of a segment are not used, an index is the offset less 0x30 (0 = none).
+- `stalloc(n)`, `italloc(n)`, `namalloc(s)` (457a, 4618, 46b6): bump allocators with the variables `stoff stlim itoff itlim
+  ntoff nmlim` (data 0x54e2 ... 0x54ec, start 2 and 0x400); `stabp(idx)`, `itabp(idx)` (4772, 4788): index to address, 0 gives 0.
+- `stenter(name, mode)` (479e) makes a symbol: a new hash chain head (10 bytes) or a chained entry (16 bytes: `s_14` =
+  next, `s_7 = 8`); mode bits 1-2 = 6 (local, `~name`) put it on the list of the block (`blkstack[level-1]`, `s_10`
+  = next of the block, `s_12` = block level, `s_7 |= 6`); an empty name always gets a fresh entry. `hashtab[1000]`
+  (bss 0xb83a) holds the index of the first symbol of each `hash(1000, name)`, `blkstack[10]` (0xb826) the first local
+  symbol of each level; `blklevel` starts with 1.
+- `setsym(idx, type, kind)` (4926): `s_type`, `s_7 |= kind`, and an itable entry of 6 bytes (types 1, 3, 4) or 12
+  (type 2) whose index goes to `s_8`. `stlook(name, mode)` (4996: `mode` unused) follows the chain (`s_7 & 8`, `s_14`)
+  and compares the names. `blkopen()` (4a0e: `Nesting too deep` at level 10), `blkclose()` (4a30: takes the local
+  symbols of the block out of their hash chains again).
+- Check: all functions compared with `cmpmod.py` (the remaining differences: D13, the order of code from tail merging
+  in `stenter`, scratch registers); the strings are the same set (D12).
 
 ## ar on the host (`host/ar`)
 

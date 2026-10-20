@@ -11,7 +11,7 @@ static char sccsid[] = "@[$]symbols.c\t1.3  07/18/83 13:31:43 Copr. 1981 87wega3
 
 extern unsigned char fn4ECC();		/* the type of an expression (expr.c) */
 extern int fn4F52();			/* its value as an int */
-extern int fn479E();			/* enter a name into the symbol table (ssymtab.c) */
+extern int stenter();			/* enter a name into the symbol table (ssymtab.c) */
 
 /* define the symbol of np with the value val */
 defsym(np, val)
@@ -38,7 +38,7 @@ NODE *val;
 			p = sp;
 			if (p->s_12 == blklevel)
 				error(2, "Symbol redefined\n");
-			np->n_u.pw.w = fn479E(sp->s_2, 6);
+			np->n_u.pw.w = stenter(sp->s_2, 6);
 			sp = stabp(np->n_u.pw.w);
 		} else
 			error(2, "Symbol redefined\n");
@@ -54,7 +54,7 @@ NODE *val;
 	switch (fn4ECC(val)) {
 	case 3:
 		if (redef == 0)
-			fn4926(np->n_u.pw.w, (unsigned char)1, np->n_u.cc.c1);
+			setsym(np->n_u.pw.w, (unsigned char)1, np->n_u.cc.c1);
 		else
 			sp->s_7 = (sp->s_7 & ~6) | np->n_u.cc.c1;
 		sp = stabp(np->n_u.pw.w);
@@ -67,7 +67,7 @@ NODE *val;
 		break;
 	case 1:
 		if (redef == 0)
-			fn4926(np->n_u.pw.w, (unsigned char)1, np->n_u.cc.c1 | 1);
+			setsym(np->n_u.pw.w, (unsigned char)1, np->n_u.cc.c1 | 1);
 		else
 			sp->s_7 = (sp->s_7 & ~6) | np->n_u.cc.c1;
 		sp = stabp(np->n_u.pw.w);
@@ -103,7 +103,7 @@ struct pst *val;
 	register struct sym *sp;
 	register struct sym *ip;
 
-	fn4926(np->n_u.pw.w, (unsigned char)3, np->n_u.cc.c1);
+	setsym(np->n_u.pw.w, (unsigned char)3, np->n_u.cc.c1);
 	sp = stabp(np->n_u.pw.w);
 	ip = itabp(sp->s_8);
 	ip->s_2 = (long)val;

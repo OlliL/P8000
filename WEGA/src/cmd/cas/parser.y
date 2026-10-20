@@ -28,7 +28,7 @@ extern NODE *fn4DF6(), *fn52C6(), *fn538A(), *fn543C(), *fn5CCC(), *fn59FC();
 extern NODE *fn57C0(), *fn5708(), *fn5650(), *fn5598(), *fn54E0(), *fn5876();
 extern NODE *fn5928(), *fn59DC(), *fn5CAC();
 extern char fn4ECC();
-extern int fn479E();
+extern int stenter();
 %}
 
 %union {
@@ -154,11 +154,11 @@ lineinit	:
 
 stmt	: LBRACE
 		{
-		deflabels(); fn4A0E();
+		deflabels(); blkopen();
 		}
 	| RBRACE
 		{
-		deflabels(); fn4A30();
+		deflabels(); blkclose();
 		}
 	| assign
 	| datadir
@@ -1243,14 +1243,14 @@ name	: NEWLOCAL
 		{
 		nameflag = 0;
 		symmode = 6;
-		$$ = mknode7(fn479E($1, (unsigned char)symmode));
+		$$ = mknode7(stenter($1, (unsigned char)symmode));
 		nameflag++;
 		}
 	| NEWNAME
 		{
 		nameflag = 0;
 		symmode = 0;
-		$$ = mknode7(fn479E($1, (unsigned char)symmode));
+		$$ = mknode7(stenter($1, (unsigned char)symmode));
 		nameflag++;
 		}
 	| SYMBOL

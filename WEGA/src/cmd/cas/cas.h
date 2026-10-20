@@ -73,6 +73,7 @@ struct sym {
 	int	s_8;
 	int	s_10;
 	int	s_12;			/* block level of the definition */
+	int	s_14;			/* next symbol with the same hash value */
 };
 
 extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring();	/* nodes.c */

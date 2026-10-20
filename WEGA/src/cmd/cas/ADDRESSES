@@ -18,7 +18,7 @@ hash 3d1e
 # nodes.c
 chknodes 1b02  mknode1 1b2e  mknode6 1b96  mknode7 1c06  mknode2 1c6a  escape 1cdc  mkstring 1d78  mknode25 1e74
 # seen from other modules, defined in modules not yet reconstructed
-error 8400  locadv 4b3e  stlook 4996  stabp 4772  itabp 4788  isdef 4184  symval 40f4
+error 8400  locadv 4b3e
 # also: yyparse 1ff6  endpass1 4d10  optim 8af4  pass2 5f32  listhead 9398  copyfile 92f6
 # data (segment 5): ifile.c curline 0038 lastline 003a; nodes.c nfreed 0512 nalloc 0514; locntr.c cursec 6bb2 cursub 6bb4
 # bss: sfile 962c ifile 9630 (main.c: ifname 032e, sfname 0336, rfname 0332, ofname 033a, lfname 033e) lctab 9634 nodes[100] a382
@@ -27,7 +27,9 @@ error 8400  locadv 4b3e  stlook 4996  stabp 4772  itabp 4788  isdef 4184  symval
 yyerror 1ef8  synrecover 1fc6  yyparse 1ff6 (parser.c)
 # symbols.c
 defsym 3d90  defalias 4084  symval 40f4  isdef 4184  symreloc 41d6  defcomm 4312  deflabels 4368  putstabn 43d4  putstabp 4472  putstabr 44ee
+# ssymtab.c
+stalloc 457a  italloc 4618  namalloc 46b6  stabp 4772  itabp 4788  stenter 479e  setsym 4926  stlook 4996  blkopen 4a0e  blkclose 4a30
 # called by parser.y, module not reconstructed yet (address names fnXXXX in parser.y)
-# 4cda even, 4dc4 odd, 4bb0 select section, 4a0e / 4a30 '{' / '}', 84fc jpr/callr,
-# 4ecc type of an expression, 4df6 value of '.', 4e6a '.=', 479e name lookup,
+# 4cda even, 4dc4 odd, 4bb0 select section, 84fc jpr/callr,
+# 4ecc type of an expression, 4df6 value of '.', 4e6a '.=',
 # 52c6 538a 543c 5ccc 59fc 57c0 5708 5650 5598 54e0 5876 5928 59dc 5cac expressions
