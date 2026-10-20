@@ -20,7 +20,7 @@ cd "$T" || exit 1
 mods=${*:-$(awk '$1 !~ /^#/ && $4 == "done" || $4 == "done:" {print $1}' "$HERE/MODULES")}
 rc=0
 for m in $mods; do
-	O=-O; [ $m = parser ] && O=
+	O=-O; case $m in parser|assemble) O=;; esac
 	"$EMU" -r "$R" /bin/scc $O -Dstatic= -c $m.c || { rc=1; continue; }
 	echo "== $m"
 	[ $m = parser ] && { python3 "$TOOLS/tools/cmpyacc.py" parser.c "$R/bin/cas" || rc=1; }

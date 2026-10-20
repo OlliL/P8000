@@ -2,7 +2,7 @@ cas - the U8000 assembler of WEGA (/bin/cas), reconstructed from the binary
 ===========================================================================
 
 State: module by module, see MODULES (text range of each module in /bin/cas and its state).
-Done: ifile, nodes, instr, scanner, main, done, parser, symbols, ssymtab, locntr, expr, p2loop, ofile, gen, pst, subr and the data modules table1, table2, pstab. The facts about the binary are in host/KNOWLEDGE.md (section cas).
+Done: ifile, nodes, instr, scanner, main, done, parser, symbols, ssymtab, locntr, expr, p2loop, ofile, gen, assemble, pst, subr and the data modules table1, table2, pstab. The facts about the binary are in host/KNOWLEDGE.md (section cas).
 
 How a module is checked
 -----------------------
@@ -30,3 +30,5 @@ called by their address (`fn4368`, ...); the names follow when those modules are
 Data: the tables and strings are the same, but the shipped scc places the strings of a function in front of the
 data that follow, the old one at the end of the module (and aligns them differently), so `cmpdata` reports
 differences.
+
+assemble.c is compiled without -O (prologues behind the bodies, as in the parser; check.sh does that); cmpmod.py pairs its functions shifted by the prologue fragments.

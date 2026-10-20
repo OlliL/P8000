@@ -83,6 +83,7 @@ extern long exprval(), exprreloc();	/* its value and relocation (pass 2) */
 extern unsigned char igetb();		/* ifile.c */
 extern long igetl(), igetaddr();
 extern int subsw;			/* the subsection was changed (p2loop.c, gen.c) */
+extern NODE *ops[];			/* operands of the instruction (assemble.c) */
 extern int shortop;			/* a short address was seen (expr.c, gen.c, assemble.c) */
 struct seekent {			/* where a section starts in the object file and in the relocation file (ofile.c) */
 	long	sk_off;

@@ -93,7 +93,7 @@ unsigned char tag;
 		genl(igetl(), 0L, 1);
 		break;
 	case 10:
-		fn742A(igetaddr());
+		asmins(igetaddr());
 		break;
 	case 12:
 		setsub(0);

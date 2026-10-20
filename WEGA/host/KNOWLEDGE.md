@@ -1123,6 +1123,23 @@ write the object code; `fwrite` errors are `perror(outname)` (the relocation fil
 - Check: all compared with `cmpmod.py` (`genw` identical, the others D2, D3, D6, D8); the strings are the same set; the jump tables of the original are fewer
   (the old compiler uses compare chains for up to 3 cases, D6), so the data of this module is larger when rebuilt (D12).
 
+**Done: assemble (`assemble.c`, 742a-7fed; compiled without `-O` like the parser: the prologues are behind the bodies).** Pass 2 assembles an instruction.
+A record 10 of the intermediate file points to a row of `itab1`. `asmins(row)` (742a): `opcls + row->ir_cls` is the list of operand classes up to 0x12 or
+0x1C; every class reads operands with `getop(n)` (829e, getops.c) into `ops[0..3]` (bss 0xc13e): 6/12/13 two operands; 8 the low 4 bits of the value;
+17 the value `>> 4`; 9/10/11 a relative address (`asmrel(n, pc, class)`, pc = counter + length of the instruction); 0x1C one more operand. Then
+`asmword(row)` (75f4) assembles the words: `instlen[kind].x[0..4]` are field codes: 1 ... 8 and 0xff take bits of the opcode word of the row (8 bits >> 8,
+4 >> 12, 4 (>>4)&F, 4 &F, bit 7, bit 3, 2 bits >> 6, 7 bits >> 9; 0xff all 16), 9 goes on with the next descriptor; the other codes go to `asmfield(code)`
+(774e): 14-18 and 21-23 (value less 1), 61-63 (value 0-7), 73/74 (value * 5 - 1) a 4 bit register field (`asmreg`, 7eb8, range check, `putbits(4, ...)`),
+26-28 `genbop`, 29-31 `genwop`, 32-34 `genaddr`, 36/37 `genlop`, else `asmimm(code)` (7964): immediate fields of 1 to 16 bits made from the constants of
+operands 0 and 1 (and 2, 3): masks, negation, `Operand too large`; then `asmfix` (7c2c, fixed fields 4 bits 0 15 14 2, 8 bits 0 0xff, 1 bit 0 1, 2 bits 0,
+16 bits 1) and `asmfix2` (7ce6, 8 bits 0x8e 0x8f 0x0f 0x4f, 4 bits 4 8 0 12; else `Unexpected tag in intermediate file`).
+`putbits(n, v)` (7f2c) collects the bits into `word` (bss 0xc13c; `nbits`, data 0x7716): more than 16 bits give `Too many bits assembled for word`, a full word is
+written with `genw`; `rangechk(v, mask)` (7fae): `Value too large` (a warning) when neither v nor -v fits the mask. `asmrel` (7d84) turns a symbol or expression
+operand into a node of type 0x13 holding the distance to the instruction (class 9 in words, 10 in bytes, 11 backwards in words; `Mixed relocatable and
+absolute`, `Must be relative address`). The operand nodes are given back after the instruction (`nfreed++`, `ops[i] = 0`).
+- Check: `cmpmod.py` pairs the functions of this module shifted by the prologue fragments (the labels in its list are those of the prologues), so its
+  per-function counts are only a guide; the sequence of the 86 calls and the set of strings are identical to the binary.
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

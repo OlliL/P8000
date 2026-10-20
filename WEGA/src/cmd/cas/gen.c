@@ -157,7 +157,7 @@ int flag;
 	default:
 		error(2, "Must be number or expression\n");
 	}
-	fn7FAE(v, 0xFFFF0000L);
+	rangechk(v, 0xFFFF0000L);
 	genw((int)v, (int)r, 1);
 	shortop = 0;
 }
@@ -201,9 +201,9 @@ int flag;
 	default:
 		error(2, "Must be number or relative address\n");
 	}
-	fn7FAE(v, 0xFFFFFF00L);
+	rangechk(v, 0xFFFFFF00L);
 	if (flag != 0)
-		fn7F2C(8, (int)v & 0xFF);
+		putbits(8, (int)v & 0xFF);
 	else
 		genb((unsigned char)v, 0, 1);
 }
