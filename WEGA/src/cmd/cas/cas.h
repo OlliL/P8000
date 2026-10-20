@@ -121,6 +121,16 @@ extern FILE *ifile, *sfile;		/* the intermediate file and the symbol file (ifile
 extern int nsect;			/* number of sections (locntr.c) */
 extern int uflag, vflag, dflag, lflag, synerr, semerr;	/* main.c */
 
+struct jent {				/* an undecided jpr in the itable (jpr.c, jpr2.c): 14 bytes */
+	int	j_0;
+	int	j_2;
+	int	j_4;
+	long	j_6;
+	int	j_10;
+	char	j_12;
+	char	j_13;
+};
+
 extern struct pbucket pbuckets[];
 extern struct irow itab1[];
 extern struct pst pst[];

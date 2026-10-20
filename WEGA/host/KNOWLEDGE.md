@@ -1154,6 +1154,16 @@ program (`Fatal error: line %d: `; only the first one of a line is printed, `las
 drops the nodes of the statement), 3 a syntax error (`Syntax error: line %d: `, `lasterr = curline`), 4 `Immediately fatal error: line %d: ` and `done(-1)`.
 The messages go to `stderr` with `fprintf`. Check: one function, the differences are D3 and D6, the strings are the same set.
 
+**Done: jpr (`jpr.c`, 84fc-89c1).** `jpr(tok, list)` (parser: `jpr`/`callr`, tok 0x50 jpr, 0x51 callr) looks at the operand list: nodes of type
+0x36 are condition codes (counted in `ncc`; with callr `Invalid operand combination`), type 0x56 an expression, which must be a name or
+name+/-constant (otherwise `jpput`, or `Expressions used in jpr must be constant`). With a known label (exprtype 1) `jprange` (8734) decides:
+d1 = value of the label - location counter + offset, d2 = d1 less the growth of all jpr entries since the definition (`lcaux[][].la_0` minus
+`sym->s_0`, times 2, 4 with `segmode`). jpr: -254 ... 256, callr: -4092 ... 4098. Both in range: 0 = `jrput` (jr/calr by `putins`), none: 1 = `jpput`
+(jp/call), one: 2 = undecided. Undecided (or label not known): `jprnew` (8640) makes an itable entry `struct jent` (14 bytes: +0 `cursec<<8 & cursub`
+(sic, `&`), +2 location counter, +4 symbol, +6 offset, +10 previous entry, +13 tok), counts `la_0++`, chains it in `la_1`; `jprput` (88ac) writes
+tag 38 (jpr) or 39 (callr), the index, 2/1 (with/without condition) and both fields of every operand node to the intermediate file (read by `fn89C2`
+in pass 2). Check: 6 functions; differences D3, D4, D6, D7, D8, D12 only; the strings are the same set (SCCS id 1.2 03/24/83).
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

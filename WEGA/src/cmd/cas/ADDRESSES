@@ -45,5 +45,5 @@ asmins 742a  asmword 75f4  asmfield 7754  asmimm 796a  asmfix 7c2e  asmfix2 7ce8
 igetexpr 7fee  sgetexpr 8146  getop 829e  sgetnode 8358
 # error.c
 error 8400
-# called by parser.y, module not reconstructed yet (address names fnXXXX in parser.y)
-# 84fc jpr/callr,
+# jpr.c
+jpr 84fc  jprnew 8640  jprange 8734  jprput 88ac  jpput 893e  jrput 8980

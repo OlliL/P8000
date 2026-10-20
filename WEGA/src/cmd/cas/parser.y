@@ -230,7 +230,7 @@ instr	: opcode operands
 		}
 	| JPR operands
 		{
-		even(); deflabels(); fn84FC($1->p_tok, $2);
+		even(); deflabels(); jpr($1->p_tok, $2);
 		}
 	| JPR error
 		{
@@ -238,7 +238,7 @@ instr	: opcode operands
 		}
 	| CALLR operands
 		{
-		even(); deflabels(); fn84FC($1->p_tok, $2);
+		even(); deflabels(); jpr($1->p_tok, $2);
 		}
 	| CALLR error
 		{
