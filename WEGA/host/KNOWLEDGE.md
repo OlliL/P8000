@@ -1085,6 +1085,26 @@ and does the same n times (elements 1/2/3 with the count as the third argument, 
 - Check: all three compared with `cmpmod.py`; `pass2` is identical, the others differ in the old compiler's way (D2, D3, D6, D8); data
   and strings are equal in size (536 bytes) and content.
 
+**Done: ofile (`ofile.c`, 6394-6da5).** Eight functions; the source includes `<s.out.h>`; the sccsid is `@[$]/as/as/ofile.c`.
+- `symadjust()` (6cb2, the first call of pass 2): walks the symbol table (entries of 10 bytes, 16 for chained or local ones) and adds
+  to the value of every defined relocatable symbol the sizes that precede it: data symbols the size of the code of their section (only
+  with `.seg`), bss symbols the size of the data and (with `.seg`) of the code.
+- `ohdrinit()` (6394): the header `hdr` (bss 0xc08e; magic 0xE607 with `.seg`, else 0xE711), the segment table `segtab` (16 bytes per
+  section, `calloc`, error `segment table`) and a table of two longs per section `seektab` (`seek offset table`) are made from the
+  location counters, which are cleared; `s_imsize` is code + data, `s_bss` the bss, `imoff` (0xc00c) = `s_segt + 24`. `ohdrput()` (6634)
+  writes the header and the segment table at the start of the output file.
+- `osymout()` (676a, reads the symbol file of pass 1): for the records 0x14 (a symbol) and 0x15 (a use; with `-u` an undefined one becomes
+  external) it writes an s_nlist entry per symbol (not for local symbols, scope 6, and without `-d` not for scope 4);
+  value = value | section << 24 for relocatable ones; `symtype()` (66cc) gives the type byte (1 abs, 2 code, 3 data, 4 bss, + 0x20 external, 0x20
+  alone for an undefined symbol, whose value is cleared). The records 0x2a/0x2b (stabs, `stabout`, 6952) hold a string and constant
+  expressions (value, section, type) and are written only with `-d` (`Stab field must be constant`). `nlwrite()` (6ad6) writes
+  an entry: a name of more than 8 characters is stored with the length byte `(len+1)|0x80` and takes `(len-7)/14 + 2` entries of 14 bytes.
+  `hdr.s_syms` = number of entries * 14.
+- `ofinish()` (6b96, after the object code was written): appends the relocation file and the osym file, word by word, to the output file.
+- Variables (bss): `imoff` 0xc00c, `stabname[128]` 0xc00e, `hdr` 0xc08e, `seektab` 0xc0a6, `nl` (the entry being written, with 128 bytes for the name) 0xc0aa, `segtab`
+  0xc138; `shortop` (0xc00a) belongs to expr.c.
+- Check: all functions compared with `cmpmod.py` (`ohdrput` and `ofinish` identical, the rest D2, D3, D6, D8); the strings are the same set.
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

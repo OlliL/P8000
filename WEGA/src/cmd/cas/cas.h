@@ -100,6 +100,7 @@ struct lcaux {				/* a pair per location counter (jpr.c, optim.c) */
 };
 extern struct lcaux lcaux[][3];
 extern int blklevel;			/* nesting level of { } (ssymtab.c) */
+extern unsigned stoff;			/* used part of the symbol table (ssymtab.c) */
 extern NODE *plist;			/* labels of the statement, not yet defined (parser.y) */
 extern int echoflag;			/* option -^ (main.c) */
 

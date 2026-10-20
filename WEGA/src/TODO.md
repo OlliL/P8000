@@ -58,6 +58,7 @@ the marks of D14 only: that is all that was checked for them.
 | cas | parser.y (parser.c) | x | x | x |  | x | x | ? |  |  | x |  | x |  |  |
 | cas | expr.c | x | x | x |  |  | x |  |  |  | x |  | x |  |  |
 | cas | p2loop.c |  | x | x |  |  | x |  | x |  |  |  |  |  |  |
+| cas | ofile.c |  | x | x |  |  | x |  | x |  |  |  | x |  |  |
 | cas | locntr.c | x | x | x | x |  | x |  |  |  |  |  | x |  |  |
 | cas | ssymtab.c |  |  |  |  |  | x |  |  |  |  | x | x | x |  |
 | cas | symbols.c | x | x |  |  |  | x |  | x |  | x | x | x |  |  |
@@ -78,7 +79,7 @@ the marks of D14 only: that is all that was checked for them.
 ## In progress
 
 - `cmd/cas/` (the cas assembler): decompilation from `/bin/cas`, module by module (`cmd/cas/MODULES`). Done:
-  ifile, instr, scanner, main, done, nodes, parser, symbols, ssymtab, locntr, expr, p2loop, pst, subr and the tables. The original was built by an older scc, so the code differs (see "Compiler differences" below and
+  ifile, instr, scanner, main, done, nodes, parser, symbols, ssymtab, locntr, expr, p2loop, ofile, pst, subr and the tables. The original was built by an older scc, so the code differs (see "Compiler differences" below and
   `cmd/cas/README`); byte identity is not expected.
 
 ## Scripts without an object check

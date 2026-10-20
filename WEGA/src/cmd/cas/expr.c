@@ -14,7 +14,7 @@ static char sccsid[] = "@[$]expr.c\t1.2 07/18/83 13:22:11 - 87wega3.2";
 #include "cas.h"
 
 extern NODE *opsub(), *opadd();
-extern int shortop;			/* a short address was seen in pass 2 (assemble.c) */
+int shortop;				/* a short address was seen in pass 2 (read and cleared in assemble.c) */
 
 /* the type of an expression */
 unsigned char

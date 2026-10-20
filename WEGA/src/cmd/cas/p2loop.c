@@ -18,10 +18,10 @@ pass2()
 {
 	unsigned char c;
 
-	fn6CB2();
-	fn6394();
-	fn676A();
-	fn6634();
+	symadjust();
+	ohdrinit();
+	osymout();
+	ohdrput();
 	cursec = 0;
 	cursub = 1;
 	curline = 1;
@@ -37,7 +37,7 @@ pass2()
 		fn9638();
 	}
 	if (semerr == 0)
-		fn6B96();
+		ofinish();
 }
 
 /* one record of the intermediate file */
