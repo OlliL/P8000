@@ -2,7 +2,7 @@ cas - the U8000 assembler of WEGA (/bin/cas), reconstructed from the binary
 ===========================================================================
 
 State: module by module, see MODULES (text range of each module in /bin/cas and its state).
-Done: ifile, nodes, instr, scanner, main, done, parser, symbols, ssymtab, locntr, expr, pst, subr and the data modules table1, table2, pstab. The facts about the binary are in host/KNOWLEDGE.md (section cas).
+Done: ifile, nodes, instr, scanner, main, done, parser, symbols, ssymtab, locntr, expr, p2loop, pst, subr and the data modules table1, table2, pstab. The facts about the binary are in host/KNOWLEDGE.md (section cas).
 
 How a module is checked
 -----------------------

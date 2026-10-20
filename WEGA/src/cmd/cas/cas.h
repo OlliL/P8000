@@ -80,6 +80,9 @@ extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring(), *mknode
 extern unsigned char exprtype();	/* expr.c: the type of an expression */
 extern int evalint();			/* its value as an int */
 extern long exprval(), exprreloc();	/* its value and relocation (pass 2) */
+extern unsigned char igetb();		/* ifile.c */
+extern long igetl(), igetaddr();
+extern int subsw;			/* the subsection was changed (p2loop.c, gen.c) */
 extern struct pst *pstlook();		/* name -> permanent symbol or 0 */
 extern int stlook();			/* name, mode -> index of the symbol or 0 */
 extern struct sym *stabp();		/* index -> symbol */
