@@ -1169,6 +1169,26 @@ in pass 2). Check: 6 functions; differences D3, D4, D6, D7, D8, D12 only; the st
 `call` row 1) and `la_0` of the location counter grows by 4 (2 without `segmode`); short = `jr`/`calr` (row 1 with a condition, else row 0).
 (Who sets `j_12` is not yet known; probably `optim`.) Check: one function, the differences are the address calculation of `lcaux[][]` (D3 class).
 
+**Done: optim (`optim.c`, 8af4-92f5).** `optim(sub, sec)` (main calls it for every section with sub 1, 0, 2 at the end of pass 1) decides the length of the
+undecided jpr/callr entries (`struct jent`, chained newest first through `j_10`, `jn = lcaux[sec][sub].la_0` of them). It gets a new segment
+(`mkseg` b4e2, system call 55) of `(jn + jcap) * 6` bytes, `jcap = 2 * jn`: `jtab[jn]` of 6-byte records (`jr_0` distance, `jr_2` list) and behind it the room for list
+entries (`newrec` 8c6e takes them, and grows by 0xC00 bytes with `ssgbrk` and `jcap += 0x200` when it is full; error `jump optimization`).
+`jdist` (8e72): distance d1 of the entry to its symbol now, d2 with all entries between made long (2 bytes each, 4 with `segmode`);
+a symbol that is not defined (or not relocatable) makes the entry long (`j_12 = 1`, distance 0x1004); both in range (jpr -254 ... 256, callr -4092 ... 4098)
+gives 0, otherwise d1. `jdeps` (8cfa) puts, for each entry with a distance not 0, its index into the list of every entry in between (those that move the target).
+`jiter` (8ffc) repeats until nothing changes: an entry out of range becomes long (`j_12 = 1`) and the distances in its list grow by 2 (4 with `segmode`) away from zero.
+`jsum` (916a) makes `jadj[i]` the sum of the growth of the entries up to i (`jadj` overlays `jtab`), `jsymadj` (922e) adds `jadj[s_0 - 1]` to every label of the section and
+subsection (symbol table walk, 10 or 16 bytes per symbol), at the end the location counter grows by `jadj[jn - 1]`. `la_0` and `la_1` are cleared.
+`jpr2` (pass 2) then reads `j_12`. Check: 8 functions, the differences are D3, D4, D6, D7, D8, D11 and the `lcaux`/`lctab` address calculation; the strings are the same set.
+
+**Done: listing (`listing.c`, 92f6-9693).** The listing (`-l`) is written in pass 2 to `listf`: a line is the location counter (`%04x `, only at the start of a line,
+`lcol` is the column, 1 = start), the code (`lstb` a byte `%02x`, `lstw` a word `%04x`, then `lstflag`: `* ` relocatable (flag bit 3), `' ` symbolic (bits 1, 2), else two blanks)
+and, behind column 19, the line number (`%5d `) and the source line (`lstline`, read from stdin, which was reopened, with `getc`/`putc`). A line of code that is
+longer than 16 columns gets its source line at once (`lstend`, `lnl` counts the lines of code that wait); `lstsync(n)` (called when the line number changes) prints
+the source lines up to n, `lstrest` the rest of the file at the end. `listhead` writes the head `LOC    OBJ CODE    STMT SOURCE STATEMENT`; `copyfile(dst, dname, src, sname)`
+copies stdin to the temporary file with `fread`/`fwrite` (main). `copyerr` (bss 95d4) is only cleared and tested (a leftover; a read error cannot set it here).
+Check: 10 functions, `copyfile`, `listhead`, `lstw`, `lstend` identical, the rest differs by D3, D7, D8 and the inline `getc`/`putc` layout; the strings are the same set.
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

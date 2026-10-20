@@ -118,6 +118,7 @@ extern NODE *plist;			/* labels of the statement, not yet defined (parser.y) */
 extern int echoflag;			/* option -^ (main.c) */
 
 extern FILE *ifile, *sfile;		/* the intermediate file and the symbol file (ifile.c) */
+extern FILE *listf;			/* the listing (main.c) */
 extern int nsect;			/* number of sections (locntr.c) */
 extern int uflag, vflag, dflag, lflag, synerr, semerr;	/* main.c */
 

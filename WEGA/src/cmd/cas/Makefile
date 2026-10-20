@@ -10,7 +10,7 @@
 SCC = scc
 SCCFLAGS = -O -c
 YACC = yacc
-OBJS = ifile.o instr.o scanner.o main.o done.o nodes.o parser.o pst.o subr.o symbols.o ssymtab.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o getops.o error.o table1.o table2.o pstab.o jpr.o jpr2.o optim.o
+OBJS = ifile.o instr.o scanner.o main.o done.o nodes.o parser.o pst.o subr.o symbols.o ssymtab.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o getops.o error.o table1.o table2.o pstab.o jpr.o jpr2.o optim.o listing.o
 
 all: $(OBJS)
 

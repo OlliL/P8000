@@ -33,8 +33,8 @@ pass2()
 	}
 	if (lflag) {
 		curline++;
-		fn94D4(curline);
-		fn9638();
+		lstsync(curline);
+		lstrest();
 	}
 	if (semerr == 0)
 		ofinish();
@@ -53,22 +53,22 @@ unsigned char tag;
 	case 15:
 		curline = igetw();
 		if (lflag)
-			fn94D4(curline);
+			lstsync(curline);
 		break;
 	case 16:
 		curline++;
 		if (lflag)
-			fn94D4(curline);
+			lstsync(curline);
 		break;
 	case 17:
 		curline += 2;
 		if (lflag)
-			fn94D4(curline);
+			lstsync(curline);
 		break;
 	case 18:
 		curline += 3;
 		if (lflag)
-			fn94D4(curline);
+			lstsync(curline);
 		break;
 	case 11:
 		x = igetw() + lcaux[cursec][cursub].la_0;

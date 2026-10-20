@@ -36,7 +36,7 @@ unsigned n;
 			}
 		}
 		if (lflag)
-			fn941C(c, a);
+			lstb(c, a);
 		locadv(1);
 	}
 }
@@ -63,7 +63,7 @@ unsigned n;
 			done(-1);
 		}
 		if (lflag)
-			fn93EC(w, a);
+			lstw(w, a);
 		locadv(2);
 	}
 }
