@@ -537,17 +537,13 @@ Results (all byte-identical to the objects shipped with WEGA, see
   prologues). Its output cannot be compared with WEGA objects. The WEGA compiler
   (cparse + codgen, 2 passes) is a different lineage.
 - Plexus `c2` (peephole optimizer, `@(#)c20.c 1.1`, Aug 1982) IS the ancestor
-  of WEGA `popt`: shipped popt carries `z20.c 1.3 12/21/82`, `z21.c 1.4
-  12/21/82`, `z22.c 1.6 01/18/83`, `z23.c 1.6 03/25/83`. Binaries built earlier
-  than those dates (size: crt0 3.1 01/14/83, size.c 2.1 01/14/83) were produced
-  with older popt revisions (z22 <= 1.5, z23 <= 1.5) and codgen/cparse revisions
-  we do not have. This explains the differences seen in ranlib and size
-  (tighter frames, scratch registers, error blocks moved ahead of the loop).
+  of WEGA `popt`. Binaries built with older popt/codgen/cparse revisions show the
+  differences listed in "Compiler revisions" (ranlib, cas, some libc members).
 - `size` (E707, text 5652): own code is only main() at 0x42-0x224 (s.out aware:
   `goodmagic`, `swab`, segment table of 16 byte entries, prints
   `%U + %U + %U = ` and `%U = 0x%lx`), then the old libc (fread at 0x224, fwrite
   at 0x2a0, ...). Draft in `src/cmd/size.c`; it compiles but differs from the
-  original because of the older optimizer.
+  original (older compiler revision, see "Compiler revisions").
 - z8k-emu now also runs Plexus a.out (0407/0410/0411) with the Plexus system
   call ABI (`sc INDIR; .word blk`, first argument in r0 for some calls). In 0410
   files data addresses start at the text size and wrap around 64K.
@@ -566,10 +562,9 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   Module names matter: they appear as `<module>_p`/`<module>_d` symbols
   (abort.s is module `abort_s`).
 - Result: 168 of 174 members identical.
-- Same code, different compiler revision (cannot match with the shipped cc):
-  `malloc` (calloc: `mult rr2,r6`), `nlist` and `length` (frame 2 bytes smaller),
-  `swap` (`0(r15)` spill form). The shipped libc was built with more than one compiler
-  revision (older popt/codgen: tighter frames, `ldb`+`testb` instead of `testb @r`).
+- Same code, different compiler revision (cannot match with the shipped cc): `malloc`,
+  `nlist`, `length`, `swap` (differences D1, D3, D4, D8 in "Compiler revisions"). The shipped
+  libc was built with more than one compiler revision.
 - Different source revision (Nov 1983 float versions, files dated Nov 16-17 1983):
   `printf` (printf/fprintf/sprintf with `_pfile`, `_rc`, `_flsbuf`; calls
   `_doprnt(fmt, args, argend, flag, file)`), `scanf`, `doscan` (calls `_inflt`).
@@ -588,9 +583,7 @@ emits `ld ~L1+12(fp),r7` / `ld r4,~L1+-1275(fp)` with `~L2 := 12`. Verified on r
 WEGA hardware (photos of the terminal, same output, same constant -1275), so this is a
 genuine gopt defect and the emulator reproduces it faithfully. `-Ol` on the hardware gives
 exactly the emulator's output (`ld r1,r7`, `ldk r3,#0`, `ld @fp,r1` ... `~L2 := 10`).
-Consequence: the shipped libc cannot have been built with `-Or` for such functions, and
-the 2-byte frame / `ldb`+`testb` differences (length, nlist, swap, malloc) come from an
-older compiler revision, not from options or from the emulator.
+Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, malloc differences).
 
 ## size and strip (reconstructed, own code identical)
 
@@ -600,9 +593,9 @@ older compiler revision, not from options or from the emulator.
   size: 0 differences. strip: one expression (`head.s_imsize = code + data` as long uses
   rr4/rr6 in the original, rr2/rr4 in our build; the same kind of expression elsewhere in
   the file compiles identically, so the original source form is just not found yet).
-- Therefore size (`size.c 2.1 01/14/83`) and strip (`strip.c 1.2 11/19/82`, crt0 3.1
-  01/24/83) were built with the same compiler revision as the shipped cc, not with an
-  older one. The "older compiler" is only visible in ranlib (and some libc members).
+- size (`size.c 2.1 01/14/83`): own code identical to the output of the shipped cc. strip (`strip.c 1.2
+  11/19/82`, crt0 3.1 01/24/83): identical except that one expression (D2); the older compiler is clearly
+  visible in ranlib and some libc members (table "Compiler differences" in `src/TODO.md`).
 - The libc parts inside these binaries are an OLDER libc revision (Jan 1983): `printf`,
   `doprnt`, `fprintf`, `malloc`, `length`, `swap` are not the members of the shipped
   libc.a (those are dated Sep/Nov 1983). The old members can be reconstructed from these
@@ -627,9 +620,8 @@ older compiler revision, not from options or from the emulator.
 - `_doprnt` walks the register argument block (r6,r5,r4,r3,r2 stored in that order), switches to the
   stack arguments after 5 words, uses fix() to align longs, supports `- * 0 .` flags, d o u x c s
   D O U X, l-prefix, and e/f/g via an empty stub (no float support in this revision).
-- The old cc differs from the shipped one (post-increment codegen, varargs prologue with reversed
-  contiguous spill of r6..r2 plus inline EPU spills, ldb/subb char loads). No older compiler binary
-  exists in any archive, so size/strip as whole binaries cannot be reproduced bit-exact by compiling.
+- The old cc differs from the shipped one (D13 and others in "Compiler revisions"). No older compiler
+  binary exists in any archive, so size/strip as whole binaries cannot be reproduced bit-exact by compiling.
   Their own code (size 0x42..0x224, strip) is identical to the shipped cc output.
 - `src/lib/libc/stdio/doprnt.c` is the Nov-1983 `_doprnt` and now rebuilds byte-identical with the shipped cc -O
   (findings: `static char nullstr[]` declared after `fldone` explains the data order, `_pfile` must be
@@ -781,6 +773,97 @@ pointers `seg:off` in nodes and tables; the tables in segments 7-9 become heap a
 intermediate files: the small functions of `ifile` (0x42-0x1d0) write single bytes, words and longs with
 `fwrite`, which is good for the host; whether other places write raw structures is not checked yet).
 
+## Compiler revisions: how the old compiler differs from the shipped one
+
+Several WEGA programs were built by an older revision of the C compilers: cas by an older scc; ranlib, strip
+and some libc members by an older cc. No old compiler binary exists in any archive (the old libc members and
+the old objects only show its output), so these differences are the base for rebuilding the old compiler at the
+end of the project. Each difference has its own number D1 ... D13; `src/TODO.md` (section "Compiler
+differences") lists which objects show which difference. "old" = the compiler that built the original, "shipped"
+= the scc/cc in `/bin` of the system. Evidence: `cmpmod.py` listings of the cas modules (`-s` shows frames and
+scratch registers), the `oldcc` objects, ranlib, strip.
+
+**Dating.** The shipped popt carries `z20.c 1.3 12/21/82`, `z21.c 1.4 12/21/82`, `z22.c 1.6 01/18/83`,
+`z23.c 1.6 03/25/83`; it descends from the Plexus `c2` (`c20.c 1.1`, Aug 1982). Binaries built earlier than
+those dates (size: crt0 3.1 / size.c 2.1 01/14/83, strip.c 1.2 11/19/82) were produced with older popt revisions
+(z22 <= 1.5, z23 <= 1.5) and codgen/cparse revisions we do not have. The Plexus one-pass `ccom` is not an ancestor
+of the WEGA code generator (it emits Plexus assembler: `jpr`, `csv2`/`cret2`). The date of a source does not date
+the compiler: the sources of cas are dated up to 07/83 and were compiled by the older scc (`scc -O -c`).
+
+**Not differences of the compiler.**
+- Position of the prologue: with `-O` both scc put `dec r15,#n; ldm ...` in front of the body; without `-O` the
+  prologue is behind the body (`jr Lp` at the entry, `Lp: dec r15 ... jr Lb`). The cas parser was compiled
+  without `-O` (`yyparse` starts with `jr 1ff4`), the other cas modules with `-O`. `cmpmod.py` converts the
+  behind form to the front form before it compares.
+- The gopt defect of `cc -Or` (`ld ~L1+12(fp),r7` with `~L2 := 12`, verified on real hardware, the emulator
+  reproduces it): the shipped libc cannot have been built with `-Or` for such functions; the 2-byte frame and
+  `ldb`+`testb` differences of length, nlist, swap and malloc are not caused by options or the emulator but by the
+  compiler revision (D1, D3, D4, D8).
+- Older revisions of the libc sources (Jan 1983 `_doprnt`, `readsym` of ranlib, ...) are source differences, see
+  the libc sections.
+
+### D1 Frame size and saved registers
+Frames differ in size (cas `putins`: 12 bytes in the original, 14 in ours; libc `nlist` and `length` 2 bytes
+smaller; ranlib smaller frames; libc `fseek` 14 bytes against 20 in the shipped member) and the slots of the saved
+register variables are numbered differently (`ldm S10(r15),r13` against `S12`). Seen with `cmpmod.py -s`.
+
+### D2 Scratch registers
+The old compiler uses r0/r1 (`rr0`) as scratch where the shipped one uses r4/r5 (`rr4`): cas modules
+(`ldl rr0,S4(r15)` against `ldl rr4,S4(r15)`), strip (`head.s_imsize = (long)code + data` is compiled with
+rr4/rr6 by the original, rr2/rr4 by ours; the same kind of expression elsewhere in strip.c compiles identically),
+ranlib. Register variables of leaf functions are placed in scratch registers. Error blocks are moved ahead
+of a loop (ranlib, size).
+
+### D3 Register contents (redundant reloads, memory operands)
+The old popt does not remove a reload after a store (`ld S0,r7` followed by `ld r7,S0`): 2 times in ifile,
+1 in scanner, 5 in parser, more in the later modules (counted in the binary). The shipped one removes them.
+Opposite direction in libc `malloc` (calloc): the old cc knows that a register still holds the value
+(`mult rr2,r6`) where the shipped cc uses a memory operand.
+
+### D4 Spill of arguments
+ranlib: no spill of arguments into the frame. libc `swap`: the old cc spills an address-taken argument in
+the `0(r15)` form.
+
+### D5 Constant index into local arrays
+`a[3]` of a local array is addressed directly (`ldb S5(r15),rl2`); the shipped scc computes the address
+(`ldl rr2,#S4; add r3,r15`). Seen in cas `nodes` (`escape`) and the parser.
+
+### D6 switch
+Up to 3 case labels the old scc compares one after the other and puts the dispatch in front of the case
+bodies; the shipped scc uses a table from 1 or 3 cases on (`cpir` over the case values, then a jump table
+behind the bodies: `ld r6,#n; cpir ...; sll r6,#2; neg r6; ldl rr2,L(r6); jp @rr2`). With 4 or more labels the
+old compiler also uses the `cpir` table (parser, nested switches), the values sorted, the bodies in source order.
+
+### D7 Loop layout
+The old compiler puts the loop test at the bottom (`jr` into the test first); the shipped scc tests at the top.
+
+### D8 Conversion and loads of bytes
+Unsigned char argument: old `ldb rh7,#0`, shipped `subb rh7,rh7` (cas `ifile`). Old libc `length`:
+`ldb rl3,@r2` + `testb rl3` where the shipped cc has `testb @r2`. Old libc: char loads as `ldb`/`subb`.
+`extsb` against byte moves in cas `pst`.
+
+### D9 Shift by 8 bits
+`w >> 8` is done with a byte move (`ldb rl7,rh7`) by the old compiler, with `sra r7,#8` by the shipped one
+(cas `ifile`).
+
+### D10 Shift of a long by a constant
+Old: `ld r2,#24; sdal rr4,r2` (also `ldk r0,#0; ld r1,r2; ld r2,#16; sdal rr0,r2` for `(long)w << 16`), shipped: `slal rr4,#24`.
+
+### D11 Tail merging (popt)
+The old popt merges common tails of branches (`call xtol; jp` shared by the number cases of the scanner).
+The shipped popt does not.
+
+### D12 String literals and data layout
+The old compiler writes all string literals and the jump tables of a module behind its other data
+(switch tables in front of the strings), does not merge equal strings and aligns them differently; the
+shipped one writes the strings of a function in front of the data that follow. The same data, a different
+order: in the parser 42 bytes of difference in size, and the tables of `yyexca` ... start at another
+offset. `cmpdata.py` shows differences for such modules although the contents are equal.
+
+### D13 Post-increment code and varargs prologue (old libc)
+The old cc generates different code for post-increment, and a varargs prologue with a reversed contiguous
+spill of r6..r2 plus inline EPU spills (the printf family inside size, strip, ranlib and cas).
+
 ## cas: decompilation (src/cmd/cas)
 
 Method and tools: `src/cmd/cas/check.sh` (compile a module with the original `scc` under the oracle, compare
@@ -789,16 +872,14 @@ addresses), `README` (the differences between the old and the shipped scc). The 
 aim is the same code and then the same behaviour of the complete program (tested against the original with
 a corpus, like `ar`); byte identity is not expected.
 
-**The compiler that built cas.** The binary was built by an older scc than the one in the system: prologue in
-front of the body (no `jr` hops), a switch of up to 3 cases is a chain of compares with the dispatch in front
-(the shipped scc: `cpir` + jump table, dispatch behind), other frame sizes, scratch registers and loop layout,
-direct addressing of constant indexes into local arrays, byte moves for `>> 8`. The flags were `scc -O -c`: the old `popt` merged the common tails of branches (the scanner's shared
-`call xtol; jp`) but did not remove a reload after a store. See `src/cmd/cas/README`.
+**The compiler that built cas.** The binary was built by an older scc with `scc -O -c` (the parser without `-O`);
+its differences from the shipped scc are described in "Compiler revisions" and listed per module in the table
+"Compiler differences" of `src/TODO.md`; see also `src/cmd/cas/README`.
 
 **Done: ifile, nodes, instr, scanner, main, done (code).** Every function was compared with `cmpmod.py` and the remaining differences read by
-eye: they are those of the code generator listed above (the tool cannot hide them all, so its counts of
+eye: they are those of the old compiler ("Compiler revisions"; the tool cannot hide them all, so its counts of
 "differing" functions are not a measure; `nodes` has 6 of 8 and `ifile` 4 of 19 functions identical, the rest
-show only such differences). The jump tables and strings of the data were not compared yet.
+show only such differences). Data (`cmpdata.py`): the order of strings and jump tables differs (D12).
 
 - Node (16 bytes, `cas.h`): `n_type` (unsigned char, 0), `n_next` (long pointer, 2), then a union at 6: a long;
   a word and a long (type 6); a word at 8 (types 7-9); two longs at 6 and 10; or two bytes at 6, 7 and two
@@ -881,10 +962,8 @@ first appearance. yacc reports 3 shift/reduce conflicts (as for the original gra
   fn5928 fn59DC fn5CAC` the operators of `expr.c`, `fn4DF6` the value of `.`); they get their names when their modules are done.
 - Code check: `cmpmod.py` on `parser.o` (compiled WITHOUT `-O`, as `yyparse` has the prologue behind the body there):
   the sequence of the 283 calls of the module is identical to the binary (checked by a script, only the names of
-  `yyerror`/`synrecover` differ), the remaining differences are the code generator's (switch in `cpir` form, `slal` instead
-  of `ld; sdal`, scratch registers). Data: the tables are equal, the strings are the same set; the layout
-  differs (the shipped scc puts the strings of a function in front of the following data, the old one at the end
-  of the module, 42 bytes of alignment), so `cmpdata.py` shows differences for this module.
+  `yyerror`/`synrecover` differ), the remaining differences are those of the old compiler (D2, D3, D5, D6, D10). Data: the tables are equal, the strings are the same set; the layout
+  differs (D12), so `cmpdata.py` shows differences for this module.
 
 ## ar on the host (`host/ar`)
 

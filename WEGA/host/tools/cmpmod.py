@@ -17,9 +17,8 @@ targets are masked; stack offsets of the local variables and constants are kept.
 Unless -s is given, also masked: the frame size, the save slots of the register
 variables, and the scratch registers r0-r5 are not distinguished (the older
 compiler used other scratch registers and other frame sizes).
-The scc of the shipped system puts the prologue behind the body ("jr Lp ... Lp:
-dec r15 ... jr Lb"); the older compiler that built most WEGA programs has it
-in front. The object is converted to the second form before comparing.
+Without -O the scc puts the prologue behind the body ("jr Lp ... Lp: dec r15 ...
+jr Lb"), with -O in front. The object is converted to the second form before comparing.
 """
 import sys, re, os, subprocess, difflib, collections
 here = os.path.dirname(os.path.abspath(__file__))
