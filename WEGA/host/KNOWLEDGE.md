@@ -956,14 +956,37 @@ first appearance. yacc reports 3 shift/reduce conflicts (as for the original gra
   indirect `@r`, 0x61 `expr(r)`, 0x62 immediate `#expr`, 0x63 `r(#expr)`, 0x64 `r(r)`; register nodes
   `mknode2(tok, mknode1(1, regnumber), 0)`; the kind byte at offset 6 of a name node (0 extern/common, 2 `::=`, 3 `::`, 4 `:=`, 5 `:`)
   is set before `defsym` (0x3d90) or the label list.
-- The functions of the modules that are not reconstructed yet are called by address (`fn4368` = define the labels of
-  `plist`, `fn4CDA` / `fn4DC4` even / odd, `fn4BB0` select the section, `fn4A0E` / `fn4A30` `{` / `}`, `fn84FC` jpr /
+- The functions of the modules that are not reconstructed yet are called by address (`fn4CDA` / `fn4DC4` even / odd, `fn4BB0` select the section, `fn4A0E` / `fn4A30` `{` / `}`, `fn84FC` jpr /
   callr, `fn4ECC` the type of an expression, `fn52C6 fn538A fn543C fn5CCC fn59FC fn57C0 fn5708 fn5650 fn5598 fn54E0 fn5876
   fn5928 fn59DC fn5CAC` the operators of `expr.c`, `fn4DF6` the value of `.`); they get their names when their modules are done.
 - Code check: `cmpmod.py` on `parser.o` (compiled WITHOUT `-O`, as `yyparse` has the prologue behind the body there):
   the sequence of the 283 calls of the module is identical to the binary (checked by a script, only the names of
   `yyerror`/`synrecover` differ), the remaining differences are those of the old compiler (D2, D3, D5, D6, D10). Data: the tables are equal, the strings are the same set; the layout
   differs (D12), so `cmpdata.py` shows differences for this module.
+
+**Done: symbols (`symbols.c`, 3d90-4579).** Ten functions; names are ours. A name in the grammar is a node of
+kind 7-9 whose word at offset 8 is the index of the symbol in the symbol table (`stabp(idx)`, `struct sym`:
+`s_0` word, `s_2` long, `s_type` byte 6 (0 unknown, 1 defined, 3 alias of a reserved word), `s_7` flags byte 7
+(bit 0, bits 1-2 = scope 0/2/4/6), `s_8` index of the itable entry, `s_12` block level of the definition); the
+value is in the itable entry (`itabp(s_8)`: `s_0` = `section << 8 | subsection`, `s_2` the value).
+- `defsym(np, val)` (3d90): `Unknown symbol`; an already defined symbol: a kind-0 name (extern) only counts `nfreed += 2`;
+  scope 6 (local, `:=`) in the same block level -> `Symbol redefined`, in another level a new generation of the
+  symbol (`fn479E(s_2, 6)`); other scopes -> `Symbol redefined`. Records 0x14 + word go to the intermediate file, and to
+  the symbol file for a new symbol. Then a switch on the expression type (`fn4ECC`): 3 constant (value into the itable
+  entry, kept if not larger when redefined), 1 relative to another symbol (copy of its `s_0`, value `fn4F52(val)`),
+  0 and 4-7 `Invalid assignment`. `s_0` is taken from the pair table `lcaux[cursec][cursub]` (bss 0xac26, stride 4).
+- `defalias` (4084, `:=` with a reserved word): type 3, the itable entry holds the pointer to the permanent symbol.
+- `symval(idx)` (40f4) (a relocatable symbol carries its section in bits 24-30), `isdef(idx)` (4184: type 1, scope
+  bits set, bit 0 clear), `symreloc(idx)` (41d6: relocation word of a symbol in an expression: scope 0 gives
+  `index << 4 | 8` (`| 9` in the high word with `.seg`), scopes 2/4/6 add 2/4/6 for the area 0/1/2 (`Unknown area`) and with
+  `.seg` the section byte; `Unknown scope`; a statement `v != 0;` without effect is in the binary).
+- `defcomm(size, list)` (4312, .comm: `Invalid constant` unless the size is constant, then `defsym` for every name),
+  `deflabels()` (4368: gives the labels of `plist` the value of the location counter, `plist = 0`),
+  `putstabn/putstabp/putstabr` (43d4, 4472, 44ee: records 0x2a, 0x2a, 0x2b with the quoted string and the node
+  operands in the symbol file).
+- Variables seen: `blklevel` (data 0x54e0, nesting level of `{ }`, max 10), `cursec` 0x6bb2, `cursub` 0x6bb4.
+- Check: every function compared with `cmpmod.py`; the remaining differences are those of the old compiler (the
+  listing is in "Compiler differences" of `src/TODO.md`); the strings are the same set, the data layout differs (D12).
 
 ## ar on the host (`host/ar`)
 

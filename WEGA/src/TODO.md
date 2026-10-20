@@ -56,6 +56,7 @@ are not objects of `src/` and not in this table.
 | cas | main.c |  | x |  |  |  | ? | ? |  |  |  |  | x |
 | cas | nodes.c | x | x |  |  | x | x | ? |  |  |  |  | x |
 | cas | parser.y (parser.c) | x | x | x |  | x | x | ? |  |  | x |  | x |
+| cas | symbols.c | x | x |  |  |  | x |  | x |  | x | x | x |
 | cas | pst.c | x | x |  |  |  |  | ? | x |  |  |  |  |
 | cas | subr.c |  |  |  |  |  |  | ? |  |  |  |  |  |
 | ranlib | ranlib.c, readsym.c | x | x |  | x |  |  |  |  |  |  |  |  |
@@ -68,7 +69,7 @@ are not objects of `src/` and not in this table.
 ## In progress
 
 - `cmd/cas/` (the cas assembler): decompilation from `/bin/cas`, module by module (`cmd/cas/MODULES`). Done:
-  ifile, instr, scanner, main, done, nodes, parser, pst, subr and the tables. The original was built by an older scc, so the code differs (see "Compiler differences" below and
+  ifile, instr, scanner, main, done, nodes, parser, symbols, pst, subr and the tables. The original was built by an older scc, so the code differs (see "Compiler differences" below and
   `cmd/cas/README`); byte identity is not expected.
 
 ## Scripts without an object check

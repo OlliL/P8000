@@ -16,8 +16,6 @@ FILE *sfile;
 FILE *ifile;
 
 extern char *ifname, *sfname;
-extern long lctab[][3];
-extern int cursec, cursub;
 
 iputb(c)
 char c;

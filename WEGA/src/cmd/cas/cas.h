@@ -69,10 +69,13 @@ struct sym {
 	int	s_0;
 	long	s_2;
 	unsigned char s_type;		/* 3: alias of an entry of the itable */
-	char	s_7;
+	unsigned char s_7;		/* flags: bit 0, bits 1 and 2 (scope) */
 	int	s_8;
+	int	s_10;
+	int	s_12;			/* block level of the definition */
 };
 
+extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring();	/* nodes.c */
 extern struct pst *pstlook();		/* name -> permanent symbol or 0 */
 extern int stlook();			/* name, mode -> index of the symbol or 0 */
 extern struct sym *stabp();		/* index -> symbol */
@@ -82,6 +85,15 @@ extern long xtol();			/* digits, base -> long */
 extern int isdef();			/* is the symbol defined */
 
 extern int curline;			/* ifile.c */
+extern long lctab[][3];			/* location counter of every section and subsection (locntr.c) */
+extern int cursec, cursub;		/* the current section and subsection (locntr.c) */
+struct lcaux {				/* a pair per location counter (jpr.c, optim.c) */
+	int	la_0;
+	int	la_1;
+};
+extern struct lcaux lcaux[][3];
+extern int blklevel;			/* nesting level of { } (ssymtab.c) */
+extern NODE *plist;			/* labels of the statement, not yet defined (parser.y) */
 extern int echoflag;			/* option -^ (main.c) */
 
 extern FILE *ifile, *sfile;		/* the intermediate file and the symbol file (ifile.c) */

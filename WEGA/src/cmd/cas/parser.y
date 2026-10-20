@@ -154,11 +154,11 @@ lineinit	:
 
 stmt	: LBRACE
 		{
-		fn4368(); fn4A0E();
+		deflabels(); fn4A0E();
 		}
 	| RBRACE
 		{
-		fn4368(); fn4A30();
+		deflabels(); fn4A30();
 		}
 	| assign
 	| datadir
@@ -167,7 +167,7 @@ stmt	: LBRACE
 	| label stmt
 	| label
 		{
-		fn4368();
+		deflabels();
 		}
 	| error
 		{
@@ -176,19 +176,19 @@ stmt	: LBRACE
 
 simpledir	: CODE
 		{
-		fn4368(); fn4BB0(0); iputb(12);
+		deflabels(); fn4BB0(0); iputb(12);
 		}
 	| DATA
 		{
-		fn4368(); fn4BB0(1); iputb(13);
+		deflabels(); fn4BB0(1); iputb(13);
 		}
 	| BSS
 		{
-		fn4368(); fn4BB0(2); iputb(14);
+		deflabels(); fn4BB0(2); iputb(14);
 		}
 	| EVEN
 		{
-		fn4CDA(); fn4368();
+		fn4CDA(); deflabels();
 		}
 	| ODD
 		{
@@ -219,19 +219,19 @@ simpledir	: CODE
 
 instr	: opcode operands
 		{
-		fn4CDA(); fn4368(); putins($1, $2);
+		fn4CDA(); deflabels(); putins($1, $2);
 		}
 	| opcode
 		{
-		fn4CDA(); fn4368(); putins($1, mknode2(0L, 0L, 0L));
+		fn4CDA(); deflabels(); putins($1, mknode2(0L, 0L, 0L));
 		}
 	| opcode fpspec
 		{
-		fn4CDA(); fn4368(); putins($1, $2);
+		fn4CDA(); deflabels(); putins($1, $2);
 		}
 	| JPR operands
 		{
-		fn4CDA(); fn4368(); fn84FC($1->p_tok, $2);
+		fn4CDA(); deflabels(); fn84FC($1->p_tok, $2);
 		}
 	| JPR error
 		{
@@ -239,7 +239,7 @@ instr	: opcode operands
 		}
 	| CALLR operands
 		{
-		fn4CDA(); fn4368(); fn84FC($1->p_tok, $2);
+		fn4CDA(); deflabels(); fn84FC($1->p_tok, $2);
 		}
 	| CALLR error
 		{
@@ -467,7 +467,7 @@ datadir	: datalist
 
 externdir	: EXTERN externs
 		{
-		fn4368();
+		deflabels();
 		}
 	| EXTERN error
 		{
@@ -491,7 +491,7 @@ externs	: name COMMA externs
 
 commdir	: COMM commargs
 		{
-		fn4368();
+		deflabels();
 		}
 	| COMM error
 		{
@@ -500,7 +500,7 @@ commdir	: COMM commargs
 
 commargs	: expr COMMA commnames
 		{
-		fn4312($1, $3);
+		defcomm($1, $3);
 		}
 	| expr error
 		{
@@ -571,7 +571,7 @@ datalist	: bytedir blist
 		}
 	| BLKB expr
 		{
-		fn4368();
+		deflabels();
 		if (fn4ECC($2) == 3)
 			locadv((int)$2->n_u.l);
 		else
@@ -586,7 +586,7 @@ datalist	: bytedir blist
 	| BLKW expr
 		{
 		fn4CDA();
-		fn4368();
+		deflabels();
 		if (fn4ECC($2) == 3)
 			locadv((int)$2->n_u.l << 1);
 		else
@@ -601,7 +601,7 @@ datalist	: bytedir blist
 	| BLKL expr
 		{
 		fn4CDA();
-		fn4368();
+		deflabels();
 		if (fn4ECC($2) == 3)
 			locadv((int)$2->n_u.l << 2);
 		else
@@ -615,7 +615,7 @@ datalist	: bytedir blist
 		}
 	| STABN expr COMMA expr COMMA expr COMMA STRING
 		{
-		fn43D4($2, $4, $6, $8);
+		putstabn($2, $4, $6, $8);
 		}
 	| STABN error
 		{
@@ -647,7 +647,7 @@ datalist	: bytedir blist
 		}
 	| STABR expr COMMA expr COMMA STRING
 		{
-		fn44EE($2, $4, $6);
+		putstabr($2, $4, $6);
 		}
 	| STABR error
 		{
@@ -671,7 +671,7 @@ datalist	: bytedir blist
 		}
 	| STABP expr COMMA expr COMMA expr COMMA expr COMMA STRING
 		{
-		fn4472($2, $4, $6, $8, $10);
+		putstabp($2, $4, $6, $8, $10);
 		}
 	| STABP error
 		{
@@ -721,7 +721,7 @@ datalist	: bytedir blist
 
 bytedir	: BYTE
 		{
-		fn4368();
+		deflabels();
 		}	;
 
 blist	: belem COMMA blist
@@ -800,7 +800,7 @@ belem	: expr LPAR sexpr RPAR
 
 worddir	: WORD
 		{
-		fn4CDA(); fn4368();
+		fn4CDA(); deflabels();
 		}	;
 
 wlist	: welem COMMA wlist
@@ -855,7 +855,7 @@ welem	: expr LPAR sexpr RPAR
 
 adrdir	: ADDR
 		{
-		fn4CDA(); fn4368();
+		fn4CDA(); deflabels();
 		}	;
 
 alist	: alist COMMA aelem
@@ -928,7 +928,7 @@ aelem	: expr LPAR sexpr RPAR
 
 longdir	: LONG
 		{
-		fn4CDA(); fn4368();
+		fn4CDA(); deflabels();
 		}	;
 
 llist	: lelem COMMA llist
@@ -969,7 +969,7 @@ lelem	: expr LPAR sexpr RPAR
 
 assign	: name GASSIGN sexpr
 		{
-		fn4368();
+		deflabels();
 		$1->n_u.cc.c1 = 2;
 		defsym($1, $3);
 		}
@@ -979,7 +979,7 @@ assign	: name GASSIGN sexpr
 		}
 	| name LASSIGN sexpr
 		{
-		fn4368();
+		deflabels();
 		$1->n_u.cc.c1 = 4;
 		defsym($1, $3);
 		}
@@ -989,9 +989,9 @@ assign	: name GASSIGN sexpr
 		}
 	| name LASSIGN keyword
 		{
-		fn4368();
+		deflabels();
 		$1->n_u.cc.c1 = 4;
-		fn4084($1, $3);
+		defalias($1, $3);
 		}
 	| name error
 		{
@@ -999,7 +999,7 @@ assign	: name GASSIGN sexpr
 		}
 	| DOT EQ expr
 		{
-		fn4368();
+		deflabels();
 		fn4E6A($3);
 		}
 	| DOT error
