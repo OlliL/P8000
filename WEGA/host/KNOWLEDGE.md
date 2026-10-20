@@ -1149,6 +1149,11 @@ order from the intermediate file or the symbol file (tag 3 a long, 7 a name: `is
 - Check: `cmpmod.py` differences are D3, D6 and D11 (the old popt shares the call of `mknode1` and the store into `ops[n]` between the cases, the functions
   are 20 instructions shorter); the strings are the same set.
 
+**Done: error (`error.c`, 8400-84fb).** `error(n, msg)`: 1 a warning (`Warning: line %d: `, then the message as a format; returns 0), 2 an error of the
+program (`Fatal error: line %d: `; only the first one of a line is printed, `lasterr` data 0x7d78 holds that line; `semerr++`; `nfreed = nalloc`
+drops the nodes of the statement), 3 a syntax error (`Syntax error: line %d: `, `lasterr = curline`), 4 `Immediately fatal error: line %d: ` and `done(-1)`.
+The messages go to `stderr` with `fprintf`. Check: one function, the differences are D3 and D6, the strings are the same set.
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

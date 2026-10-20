@@ -18,7 +18,6 @@ hash 3d1e
 # nodes.c
 chknodes 1b02  mknode1 1b2e  mknode6 1b96  mknode7 1c06  mknode2 1c6a  escape 1cdc  mkstring 1d78  mknode25 1e74
 # seen from other modules, defined in modules not yet reconstructed
-error 8400
 # also: yyparse 1ff6  endpass1 4d10  optim 8af4  listhead 9398  copyfile 92f6
 # data (segment 5): ifile.c curline 0038 lastline 003a; nodes.c nfreed 0512 nalloc 0514; locntr.c cursec 6bb2 cursub 6bb4
 # bss: sfile 962c ifile 9630 (main.c: ifname 032e, sfname 0336, rfname 0332, ofname 033a, lfname 033e) lctab 9634 nodes[100] a382
@@ -44,5 +43,7 @@ genb 6da6  genw 6e9a  genl 6f66  genlop 6fba  genwop 70b0  genaddr 7192  genbop 
 asmins 742a  asmword 75f4  asmfield 7754  asmimm 796a  asmfix 7c2e  asmfix2 7ce8  asmrel 7d8a  asmreg 7eba  putbits 7f2e  rangechk 7fb0
 # getops.c
 igetexpr 7fee  sgetexpr 8146  getop 829e  sgetnode 8358
+# error.c
+error 8400
 # called by parser.y, module not reconstructed yet (address names fnXXXX in parser.y)
 # 84fc jpr/callr,
