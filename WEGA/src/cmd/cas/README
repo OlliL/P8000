@@ -1,8 +1,11 @@
 cas - the U8000 assembler of WEGA (/bin/cas), reconstructed from the binary
 ===========================================================================
 
-State: module by module, see MODULES (text range of each module in /bin/cas and its state).
-Done: ifile, nodes, instr, scanner, main, done, parser, symbols, ssymtab, locntr, expr, p2loop, ofile, gen, assemble, getops, error, jpr, jpr2, optim, listing, pst, subr and the data modules table1, table2, pstab. The facts about the binary are in host/KNOWLEDGE.md (section cas).
+State: all modules are done, see MODULES (text range of each module in /bin/cas and its state): ifile, nodes, instr, scanner, main, done, parser, symbols, ssymtab, locntr, expr, p2loop, ofile, gen, assemble, getops, error, jpr, jpr2, optim, listing, pst, subr and the data modules table1, table2, pstab, stable, itable, ntable. `make` builds the program (see the Makefile: `sld -i -s -e start -z -Mt4 -Md5 -Mb5 /lib/scrt0.o <modules> -Md7 stable.o -Md8 itable.o -Md9 ntable.o -Md5 /lib/slibc.a`). The facts about the binary are in host/KNOWLEDGE.md (section cas).
+
+Two checks, different in weight
+-------------------------------
+`check.sh` (below) compares the code of a module with the binary. It does NOT prove the behaviour: it did not show a swapped pair of case labels, undeclared functions that return a long or a pointer (the result was cut to an int), a long argument that was passed as an int, or a forgotten assignment. These were found by running the program against the original: see test/ and host/KNOWLEDGE.md ("Test of the complete cas"). The behaviour is what counts; check.sh helps to find the place when a test fails.
 
 How a module is checked
 -----------------------
@@ -32,3 +35,11 @@ data that follow, the old one at the end of the module (and aligns them differen
 differences.
 
 assemble.c is compiled without -O (prologues behind the bodies, as in the parser; check.sh does that); cmpmod.py pairs its functions shifted by the prologue fragments.
+
+Tests of the complete program
+-----------------------------
+`test/` (see test/README): the original /bin/cas (run by z8k-emu) and the rebuilt cas assemble the same sources; messages, return code and object
+must be equal. exh.py (every opcode that host/tools/z8k.py decodes, and operand patterns for the others), rel.py (relative jumps, jpr/callr, chains
+of jpr at the limit), opts.py (the options -l -d -r -t -i -m -v -^), exp.py (random expressions and directives; use with care: the original does not
+terminate on many wrong inputs, and the results after a second error in a statement depend on the memory layout). The corpus of compiler output:
+`cc -S` / `scc -S` of the sources in src/cmd and src/lib/libc.

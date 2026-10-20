@@ -321,6 +321,8 @@ Validation:
 - `sstrings.py` NUL-terminated strings from the data sections.
 - `z8k.py` Z8000 decoder.
 - `check_reloc.py` decoder self-check against relocations.
+- `cmpmod.py`, `cmpdata.py`, `cmpyacc.py` compare a module/data/yacc tables with a range of a binary (cas work, see "cas: decompilation").
+- `swcmp.py` lists the switches of two segmented programs (case value -> body) and compares them; noisy, see its text.
 - `sdis.py` symbolic disassembler for objects: labels from the symbol
   table, relocated operands as symbol+addend, synthetic labels for internal
   branch targets, `-l` adds addresses and code words. Output close to the
@@ -889,8 +891,8 @@ the source are possible; only differences that the compiler explains are counted
 Method and tools: `src/cmd/cas/check.sh` (compile a module with the original `scc` under the oracle, compare
 with the range of `/bin/cas` by `tools/cmpmod.py`), `MODULES` (ranges and state), `ADDRESSES` (names against
 addresses), `README` (the differences between the old and the shipped scc). The work goes in link order; the
-aim is the same code and then the same behaviour of the complete program (tested against the original with
-a corpus, like `ar`); byte identity is not expected.
+aim is the same code and then the same behaviour of the complete program (tested against the original, see "Test of the complete cas"
+below: the code comparison alone is not enough); byte identity is not expected.
 
 **The compiler that built cas.** The binary was built by an older scc with `scc -O -c` (the parser without `-O`);
 its differences from the shipped scc are described in "Compiler revisions" and listed per module in the table
@@ -1188,6 +1190,35 @@ longer than 16 columns gets its source line at once (`lstend`, `lnl` counts the 
 the source lines up to n, `lstrest` the rest of the file at the end. `listhead` writes the head `LOC    OBJ CODE    STMT SOURCE STATEMENT`; `copyfile(dst, dname, src, sname)`
 copies stdin to the temporary file with `fread`/`fwrite` (main). The variable at 0x95d4 that it clears and tests is `errno` (libc).
 Check: 10 functions, `copyfile`, `listhead`, `lstw`, `lstend` identical, the rest differs by D3, D7, D8 and the inline `getc`/`putc` layout; the strings are the same set.
+
+**Link of the complete cas.** `make` in `src/cmd/cas` links with `sld -i -s -e start -z -Mt4 -Md5 -Mb5 /lib/scrt0.o <modules in the order of MODULES> -Md7 stable.o
+-Md8 itable.o -Md9 ntable.o -Md5 /lib/slibc.a -o cas`. Measured: the text is 46848 bytes like the original; `-z` gives the header flags 0x21 (STRIP, 7FSTK: stack in
+segment 127, no stack segment in the table); without `-Mb5` the bss goes to segment 1, without the second `-Md5` the data of `slibc.a` go to segment 9. The three
+table modules (`stable.c`, `itable.c`, `ntable.c`, sccsid ids from the binary) consist of the id and `char x[1024] = {0}`: id (48 bytes with padding) + 1024 =
+1072 bytes, 1280 with the click, as in the original (`ssymtab.c` starts at 0x30 and grows the segment by 1024 bytes). The bss variables that no module defined
+yet: `lctab[256][3]` (long, 9634) and `lcaux[256][3]` (struct of two ints, ac26) in `locntr.c`, `shortaddr` (a234) in `instr.c`; the variable at 0x95d4 is libc's `errno`.
+data 38906 / bss 12294 against 38360 / 12328 of the original: the shipped scc lays out strings and alignment differently (D12), no difference in contents.
+
+**Test of the complete cas.** Method: the original `/bin/cas` (z8k-emu) and the rebuilt one assemble the same source, messages (stderr, return code) and object must be equal;
+scripts in `src/cmd/cas/test/` (README there). Used: (1) every opcode that `tools/z8k.py` decodes (37308 nonsegmented, 30444 short segmented, 30388 long segmented), written as
+source; lines that the original refuses are removed and both runs are compared; (2) about 346 000 operand patterns for the mnemonics that z8k.py does not decode (EPU,
+block and flag instructions), nonsegmented and segmented; (3) jr, djnz, dbjnz, calr, ldr/ldar, jpr, callr at 23 distances (0 ... 3000 words) and chains of up to 80
+jpr at the limit of the short form (jpr.c, jpr2.c, optim.c); (4) 228 assembler files made by `cc -S` and `scc -S` from src/cmd and src/lib/libc; (5) the options -l -d -r -t -i -m -v -^
+on 38 of these files (380 runs; for -i only the length of the intermediate file is compared, it holds addresses of the tables; after a semantic error only the messages, the
+listing then shows leftovers of memory in the original too). Result: no difference. The 16 usable files of the kernel and library sources (the others are PLZ/ASM, which the
+original does not accept) are equal too.
+The Z8000 disassembler of the owner (`/mnt/share/git/Z8000-Disassembler`, GPL, not copied) has lists of all valid opcodes with text (`VERIF/`); as a check of z8k.py: mnemonic and length
+agree for all 36253 nonsegmented rows; in the segmented lists 184 rows of res/set/bit with `@rr` are wrong in the list (made before the owner's fix; z8k.py rejects them, the original
+cas gives the other encoding).
+Faults that the tests found and that `cmpmod.py` had not shown (it compares calls, constants and stack slots, not the meaning of a case label or the type of a result): `putins`
+(trailer of the EPU instructions: token 62 -> 0, 63 -> 4, 64 -> 3, 65 -> 1; the jump table of the original, not the order of the cases, decides), `asmword` (the codes 9 = whole word and
+0xFF = next row were swapped), `cas.h` (`symreloc`, `italloc`, `stalloc`, `namalloc`, `mkseg`, `ssgbrk` must be declared: an implicit int cuts a long or a pointer), `asmins` (`asmrel` takes
+a long: `(long)(unsigned)`), `symtype` (an external symbol gets its number `n`), the file `listing.c` (`errno`). Lesson: a function that returns a long or a pointer needs a declaration, an argument
+must have the type of the parameter (K&R), and the case labels of a switch with a jump table are read from the table (`tools/swcmp.py` compares the switches of two programs).
+Not equal, because the original has undefined behaviour there: (a) more than one semantic error in one statement with an expression (`.word 1^>Lab,1^>ext`): `error()` returns a long
+whose low word is whatever `r3` held (the original) or `curline` (the shipped scc), the parser uses it as a pointer; (b) `"\%4"` or `"\%"` (less than two hex digits): the scanner goes
+past the end of the string, the original ends with `Out of nodes`, the memory behind `nodes[]` differs; (c) the original itself does not terminate on a syntax error in the last statement
+of a file and on some tokens (`<<`, `^$`, `5|3`); the test `exp.py` therefore leaves out the statements that hang the original.
 
 ## ar on the host (`host/ar`)
 

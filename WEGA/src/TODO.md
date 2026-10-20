@@ -86,9 +86,12 @@ the marks of D14 only: that is all that was checked for them.
 
 ## In progress
 
-- `cmd/cas/` (the cas assembler): decompilation from `/bin/cas`, module by module (`cmd/cas/MODULES`). Done:
-  ifile, instr, scanner, main, done, nodes, parser, symbols, ssymtab, locntr, expr, p2loop, ofile, gen, assemble, getops, error, jpr, jpr2, optim, listing, pst, subr and the tables. The original was built by an older scc, so the code differs (see "Compiler differences" below and
-  `cmd/cas/README`); byte identity is not expected.
+- `cmd/cas/` (the cas assembler): all modules are rebuilt from `/bin/cas` (`cmd/cas/MODULES`), `make` links the complete program
+  (`sld -i -s -e start -z -Mt4 -Md5 -Mb5`, tables in the segments 7, 8, 9; text 46848 bytes like the original). The original was built by an older
+  scc, so the code differs (see "Compiler differences" below and `cmd/cas/README`); byte identity is not expected. Proof of behaviour: `cmd/cas/test/`
+  (all opcodes in the three address modes, about 346 000 operand patterns, jr/jpr/callr at 23 distances, 228 compiler outputs, 10 option sets): same
+  messages and objects as the original. Not the same (undefined behaviour of the original, see KNOWLEDGE.md "Test of the complete cas"): more than one
+  semantic error in an expression in one statement, `"\%4"` (one hex digit). Next: the host fork `host/cas` (modern C, tested against the original with the same scripts).
 
 ## Scripts without an object check
 

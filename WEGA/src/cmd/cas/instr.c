@@ -27,19 +27,19 @@ NODE *args;
 			switch (op->p_tok) {
 			case 62:
 				iputb(1);
-				iputb(4);
+				iputb(0);
 				break;
 			case 63:
 				iputb(1);
-				iputb(3);
+				iputb(4);
 				break;
 			case 64:
 				iputb(1);
-				iputb(1);
+				iputb(3);
 				break;
 			case 65:
 				iputb(1);
-				iputb(0);
+				iputb(1);
 				break;
 			}
 			return(0);

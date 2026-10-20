@@ -1,0 +1,29 @@
+Tests of the reconstructed cas against the original /bin/cas (run by z8k-emu)
+==============================================================================
+
+The original binary is the oracle: the same source is assembled by it and by the cas under test; the
+messages (stderr, return code) and the object file must be equal. WEGA=<file tree of the original
+system> must be set. Build the cas under test with `make` (see ../Makefile).
+
+exh.py   WEGA=.. python3 exh.py ns|ss|sl --new ../cas
+         every valid opcode as decoded by host/tools/z8k.py (nonsegmented, short and long segmented
+         addresses), written as source, in blocks. Lines that the original refuses are removed in a
+         second run; both runs are compared. The listing also shows where z8k.py's text is not what
+         the original cas accepts (syntax, not a defect of the assembler).
+exh.py   WEGA=.. python3 exh.py fz|fzs --new ../cas
+         about 1 200 operand patterns for each mnemonic that z8k.py does not decode (EPU, block
+         instructions, ...), nonsegmented and segmented.
+rel.py   WEGA=.. python3 rel.py ../cas
+         jr, djnz, dbjnz, calr, ldr/ldar, jpr, callr at 23 distances (0 ... 3000 words), also with
+         chains of up to 80 jpr at the limit of the short form (exercises jpr.c, jpr2.c, optim.c).
+
+opts.py  WEGA=.. python3 opts.py ../cas file.s ...
+         the options -l -d -r -t -i -m -v -^ on given sources (files written by the program are compared too).
+exp.py   WEGA=.. python3 exp.py ../cas [seed] [count]
+         random expressions, numbers, strings and directives. Use with care: the original does not terminate on many
+         wrong inputs (these statements are found by bisection and left out, which takes minutes), and after a second
+         error in one statement the result depends on leftover register contents (undefined in the original).
+
+Compiler output as test input: `cc -S` / `scc -S` of the sources in src/cmd and src/lib/libc give 230 assembler files; run
+opts.py or a loop over them with `-u`. Files of the kernel and library sources that are PLZ/ASM are not accepted by the
+original and are no input (some make the original run for ever).
