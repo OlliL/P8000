@@ -865,9 +865,24 @@ The old compiler keeps bit 31 of a segmented address constant (`ldl rr2,#%870000
 scc clears it (`#%07000030`; `(char *)CONST + n` can even stop with `register jam` when it is assigned to a
 register variable or returned). Seen in cas `ssymtab` (the three tables in segments 7, 8, 9).
 
-### D14 Post-increment code and varargs prologue (old libc)
-The old cc generates different code for post-increment, and a varargs prologue with a reversed contiguous
-spill of r6..r2 plus inline EPU spills (the printf family inside size, strip, ranlib and cas).
+### D14 Varargs prologue and post-increment (old libc members inside binaries)
+The old libc members that are linked into size, strip, ranlib and cas (we only have them as machine code inside
+those binaries) were compared function by function with the members of the shipped `libc.a` / `slibc.a` (script
+in the scratchpad, matched by instruction sequence; the old members come from the Jan 1983 libc, so differences of
+the source are possible; only differences that the compiler explains are counted here).
+- Varargs prologue: the printf family (`printf`, `fprintf`, `sprintf`) of size, strip and cas spills the EPU
+  registers inline (`.word %4FFC,%8303,off` ... four before and four after the `ldm`) and stores r6..r2 in addition to the
+  contiguous `ldm`; the shipped members have neither. The printf family of ranlib has the shipped form (no EPU spills).
+- Post-increment: in size the byte of `*fp->_ptr++` is used first and `inc @r13,#1` follows (`fread`, `fwrite`, and the
+  `putc` inside `_doprnt`, whose source differs from the shipped one, so that case is a guess); the shipped cc increments
+  first (`ld r2,@r13; inc @r13,#1; ldb rl3,@r2`). `fread`/`fwrite` of strip, ranlib and cas have the shipped order.
+- Checked and without D14: in cas 35 functions (fseek, fopen, freopen, ungetc, `_filbuf`, `_flsbuf`, fflush, `_cleanup`,
+  fclose, `_endopen`, `_findiop`, exit, perror, `_cnvt`, `_deciml`, `_length`, `_align`, `_atoip`, malloc family, isatty,
+  mktemp, str*, tolower, signal; their differences are D1, D8 (`extsb; and #FF` against `subb rh,rh`) and those of the
+  source), in size/strip/ranlib the same members and `swab`, `goodmagic`, `swap`. Several of them are identical to the
+  shipped member (cas: freopen, fopen, ungetc, `_deciml`, `_length`, strcmp, strcpy, strncpy, strlen, tolower).
+- `_filbuf` of size and ranlib: the conditional value `(flag & _IONBF) ? 1 : BUFSIZ` goes through a stack temporary
+  (`ld @r15,#1` ... `ld r5,@r15`) where the shipped cc uses the register; not counted as D14 (not seen elsewhere, no D number yet).
 
 ## cas: decompilation (src/cmd/cas)
 

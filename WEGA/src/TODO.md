@@ -45,27 +45,32 @@ produce the same bytes with the shipped cc.
 The numbers D1 ... D13 are the sections of "Compiler revisions" in `host/KNOWLEDGE.md`. `x` = the difference
 was seen in this object; `?` = the construct is in the source but the difference was not separated from the
 others yet; empty = not seen (no proof that it is absent). The cas modules that exist so far are listed;
-new rows follow with every module. The old libc members inside size, strip and ranlib (printf family, D14)
-are not objects of `src/` and not in this table.
+new rows follow with every module. The old libc members that are only inside the binaries (size, strip, ranlib, cas) are listed with
+the marks of D14 only: that is all that was checked for them.
 
-| Binary | Object | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| cas | ifile.c | x | x | x |  |  | x |  | x | x | x |  | x |  |
-| cas | instr.c | x | x |  |  |  | ? | ? |  |  |  |  | x |  |
-| cas | scanner.c | x | x | x |  |  | ? | ? |  |  |  | x | x |  |
-| cas | main.c |  | x |  |  |  | ? | ? |  |  |  |  | x |  |
-| cas | nodes.c | x | x |  |  | x | x | ? |  |  |  |  | x |  |
-| cas | parser.y (parser.c) | x | x | x |  | x | x | ? |  |  | x |  | x |  |
-| cas | ssymtab.c |  |  |  |  |  | x |  |  |  |  | x | x | x |
-| cas | symbols.c | x | x |  |  |  | x |  | x |  | x | x | x |  |
-| cas | pst.c | x | x |  |  |  |  | ? | x |  |  |  |  |  |
-| cas | subr.c |  |  |  |  |  |  | ? |  |  |  |  |  |  |
-| ranlib | ranlib.c, readsym.c | x | x |  | x |  |  |  |  |  |  |  |  |  |
-| strip | strip.c |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | malloc.o (gen/malloc.c) |  |  | x |  |  |  |  |  |  |  |  |  |  |
-| libc.a | nlist.o (gen/nlist.c) | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | length.o (gen/length.c) | x |  |  |  |  |  |  | x |  |  |  |  |  |
-| libc.a | swap.o (gen/swap.c) |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| Binary | Object | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| cas | ifile.c | x | x | x |  |  | x |  | x | x | x |  | x |  |  |
+| cas | instr.c | x | x |  |  |  | ? | ? |  |  |  |  | x |  |  |
+| cas | scanner.c | x | x | x |  |  | ? | ? |  |  |  | x | x |  |  |
+| cas | main.c |  | x |  |  |  | ? | ? |  |  |  |  | x |  |  |
+| cas | nodes.c | x | x |  |  | x | x | ? |  |  |  |  | x |  |  |
+| cas | parser.y (parser.c) | x | x | x |  | x | x | ? |  |  | x |  | x |  |  |
+| cas | ssymtab.c |  |  |  |  |  | x |  |  |  |  | x | x | x |  |
+| cas | symbols.c | x | x |  |  |  | x |  | x |  | x | x | x |  |  |
+| cas | pst.c | x | x |  |  |  |  | ? | x |  |  |  |  |  |  |
+| cas | subr.c |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |
+| ranlib | ranlib.c, readsym.c | x | x |  | x |  |  |  |  |  |  |  |  |  |  |
+| strip | strip.c |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | malloc.o (gen/malloc.c) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | nlist.o (gen/nlist.c) | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | length.o (gen/length.c) | x |  |  |  |  |  |  | x |  |  |  |  |  |  |
+| libc.a | swap.o (gen/swap.c) |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
+| size | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
+| size | libc: rdwr.o (fread, fwrite) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
+| size | libc: doprnt.o (_doprnt) |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |
+| strip | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
+| cas | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
 
 ## In progress
 
