@@ -1025,6 +1025,22 @@ value is in the itable entry (`itabp(s_8)`: `s_0` = `section << 8 | subsection`,
 - Check: all functions compared with `cmpmod.py` (the remaining differences: D13, the order of code from tail merging
   in `stenter`, scratch registers); the strings are the same set (D12).
 
+**Done: locntr (`locntr.c`, 4b3e-4ecb).** Nine functions. `lctab[cursec][cursub]` (bss 0x9634) is the location counter of
+each section (up to 255, `setsec`: `Too many segments`) and subsection (0 code, 1 data, 2 bss); the variables `cursec`
+(data 0x6bb2, starts 0), `cursub` (0x6bb4, starts 1), `nsect` (0x6bb6, starts 1).
+- `locadv(n)` (4b3e): `Segment overflow` when the counter would pass 0x10000, else adds n. `setsub(n)` (4bb0), `setsec(n)` (4cb4).
+- `secname(np)` (4bbc, `.psec name`): a known section name (symbol type 4) selects its section (record 0x29 + number),
+  an unknown one (type 0) becomes section `nsect++` (symbol type 4, kind 2; the itable entry holds `nsect<<8|1` and the
+  number), anything else is `Invalid section name`; `.psec` without a name is `setsec(0)` and records 0x29, 0.
+- `even()` (4cda) and `odd()` (4dc4): `locadv(1); iputloc()` when the counter has the wrong parity.
+- `endpass1()` (4d10): for every section the three subsections are made even (records 0x29, section, then 13/12/14 for
+  data/code/bss), then the current section and subsection are selected again.
+- `dotval()` (4df6, the value of `.`): a fresh unnamed symbol (`stenter("", 0)`, type 1, kind 5) whose value is the
+  location counter, returned as a name node. `setdot(np)` (4e6a, `. = expression`): for a type 1 expression the
+  counter is advanced by the difference (`locadv`), then `iputloc()` and `nfreed += 3`; other types are ignored.
+- Check: every function compared with `cmpmod.py` (the remaining differences: D2, D3, D4 in `setsub`, D6 in `endpass1`); the strings
+  are the same set.
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

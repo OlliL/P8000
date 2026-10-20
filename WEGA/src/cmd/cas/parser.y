@@ -24,7 +24,7 @@ NODE *listp;			/* walks over a list of nodes */
 int symmode;			/* how a name is looked up: 6 local, 0 global */
 
 extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring();
-extern NODE *fn4DF6(), *fn52C6(), *fn538A(), *fn543C(), *fn5CCC(), *fn59FC();
+extern NODE *dotval(), *fn52C6(), *fn538A(), *fn543C(), *fn5CCC(), *fn59FC();
 extern NODE *fn57C0(), *fn5708(), *fn5650(), *fn5598(), *fn54E0(), *fn5876();
 extern NODE *fn5928(), *fn59DC(), *fn5CAC();
 extern char fn4ECC();
@@ -176,23 +176,23 @@ stmt	: LBRACE
 
 simpledir	: CODE
 		{
-		deflabels(); fn4BB0(0); iputb(12);
+		deflabels(); setsub(0); iputb(12);
 		}
 	| DATA
 		{
-		deflabels(); fn4BB0(1); iputb(13);
+		deflabels(); setsub(1); iputb(13);
 		}
 	| BSS
 		{
-		deflabels(); fn4BB0(2); iputb(14);
+		deflabels(); setsub(2); iputb(14);
 		}
 	| EVEN
 		{
-		fn4CDA(); deflabels();
+		even(); deflabels();
 		}
 	| ODD
 		{
-		fn4DC4();
+		odd();
 		}
 	| SEG
 		{
@@ -210,28 +210,28 @@ simpledir	: CODE
 		}
 	| PSEC
 		{
-		fn4CB4(0); iputb(0x29); iputb(0);
+		setsec(0); iputb(0x29); iputb(0);
 		}
 	| PSEC name
 		{
-		fn4BBC($2);
+		secname($2);
 		}	;
 
 instr	: opcode operands
 		{
-		fn4CDA(); deflabels(); putins($1, $2);
+		even(); deflabels(); putins($1, $2);
 		}
 	| opcode
 		{
-		fn4CDA(); deflabels(); putins($1, mknode2(0L, 0L, 0L));
+		even(); deflabels(); putins($1, mknode2(0L, 0L, 0L));
 		}
 	| opcode fpspec
 		{
-		fn4CDA(); deflabels(); putins($1, $2);
+		even(); deflabels(); putins($1, $2);
 		}
 	| JPR operands
 		{
-		fn4CDA(); deflabels(); fn84FC($1->p_tok, $2);
+		even(); deflabels(); fn84FC($1->p_tok, $2);
 		}
 	| JPR error
 		{
@@ -239,7 +239,7 @@ instr	: opcode operands
 		}
 	| CALLR operands
 		{
-		fn4CDA(); deflabels(); fn84FC($1->p_tok, $2);
+		even(); deflabels(); fn84FC($1->p_tok, $2);
 		}
 	| CALLR error
 		{
@@ -585,7 +585,7 @@ datalist	: bytedir blist
 		}
 	| BLKW expr
 		{
-		fn4CDA();
+		even();
 		deflabels();
 		if (fn4ECC($2) == 3)
 			locadv((int)$2->n_u.l << 1);
@@ -600,7 +600,7 @@ datalist	: bytedir blist
 		}
 	| BLKL expr
 		{
-		fn4CDA();
+		even();
 		deflabels();
 		if (fn4ECC($2) == 3)
 			locadv((int)$2->n_u.l << 2);
@@ -800,7 +800,7 @@ belem	: expr LPAR sexpr RPAR
 
 worddir	: WORD
 		{
-		fn4CDA(); deflabels();
+		even(); deflabels();
 		}	;
 
 wlist	: welem COMMA wlist
@@ -855,7 +855,7 @@ welem	: expr LPAR sexpr RPAR
 
 adrdir	: ADDR
 		{
-		fn4CDA(); deflabels();
+		even(); deflabels();
 		}	;
 
 alist	: alist COMMA aelem
@@ -928,7 +928,7 @@ aelem	: expr LPAR sexpr RPAR
 
 longdir	: LONG
 		{
-		fn4CDA(); deflabels();
+		even(); deflabels();
 		}	;
 
 llist	: lelem COMMA llist
@@ -1000,7 +1000,7 @@ assign	: name GASSIGN sexpr
 	| DOT EQ expr
 		{
 		deflabels();
-		fn4E6A($3);
+		setdot($3);
 		}
 	| DOT error
 		{
@@ -1201,7 +1201,7 @@ primary	: NUMBER
 		}
 	| DOT
 		{
-		$$ = fn4DF6();
+		$$ = dotval();
 		}
 	| LPAR expr RPAR
 		{
