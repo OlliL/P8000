@@ -150,7 +150,7 @@ unsigned char tag;
 		break;
 	case 38:
 	case 39:
-		fn89C2(tag);
+		jpr2(tag);
 		break;
 	default:
 		error(2, "Unknown tag in intermediate file\n");

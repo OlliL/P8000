@@ -47,3 +47,5 @@ igetexpr 7fee  sgetexpr 8146  getop 829e  sgetnode 8358
 error 8400
 # jpr.c
 jpr 84fc  jprnew 8640  jprange 8734  jprput 88ac  jpput 893e  jrput 8980
+# jpr2.c
+jpr2 89c2

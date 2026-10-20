@@ -1164,6 +1164,11 @@ d1 = value of the label - location counter + offset, d2 = d1 less the growth of 
 tag 38 (jpr) or 39 (callr), the index, 2/1 (with/without condition) and both fields of every operand node to the intermediate file (read by `fn89C2`
 in pass 2). Check: 6 functions; differences D3, D4, D6, D7, D8, D12 only; the strings are the same set (SCCS id 1.2 03/24/83).
 
+**Done: jpr2 (`jpr2.c`, 89c2-8af3).** `jpr2(tag)` (pass 2, tags 38/39 of `p2tag`) reads the entry index and the condition flag, then looks at
+`j_12` of the entry (set by the second pass logic when the jump became long): long = `jp`/`call` (`asmins` of row 4 of `jp` with a condition, else row 1;
+`call` row 1) and `la_0` of the location counter grows by 4 (2 without `segmode`); short = `jr`/`calr` (row 1 with a condition, else row 0).
+(Who sets `j_12` is not yet known; probably `optim`.) Check: one function, the differences are the address calculation of `lcaux[][]` (D3 class).
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),
