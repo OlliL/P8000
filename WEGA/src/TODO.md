@@ -63,6 +63,7 @@ the marks of D14 only: that is all that was checked for them.
 | cas | assemble.c |  | x | x |  |  | x |  |  |  | x |  | x |  |  |
 | cas | getops.c |  | x | x |  |  | x |  |  |  |  | x | x |  |  |
 | cas | error.c |  |  | x |  |  | x |  |  |  |  |  | x |  |  |
+| cas | optim.c |  |  | x | x |  | x | x |  |  |  | x | x |  |  |
 | cas | jpr2.c |  |  | x |  |  |  |  |  |  |  |  | x |  |  |
 | cas | jpr.c |  |  | x | x |  | x | x | x |  |  |  | x |  |  |
 | cas | locntr.c | x | x | x | x |  | x |  |  |  |  |  | x |  |  |
@@ -85,7 +86,7 @@ the marks of D14 only: that is all that was checked for them.
 ## In progress
 
 - `cmd/cas/` (the cas assembler): decompilation from `/bin/cas`, module by module (`cmd/cas/MODULES`). Done:
-  ifile, instr, scanner, main, done, nodes, parser, symbols, ssymtab, locntr, expr, p2loop, ofile, gen, assemble, getops, error, jpr, jpr2, pst, subr and the tables. The original was built by an older scc, so the code differs (see "Compiler differences" below and
+  ifile, instr, scanner, main, done, nodes, parser, symbols, ssymtab, locntr, expr, p2loop, ofile, gen, assemble, getops, error, jpr, jpr2, optim, pst, subr and the tables. The original was built by an older scc, so the code differs (see "Compiler differences" below and
   `cmd/cas/README`); byte identity is not expected.
 
 ## Scripts without an object check

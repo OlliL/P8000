@@ -127,8 +127,8 @@ struct jent {				/* an undecided jpr in the itable (jpr.c, jpr2.c): 14 bytes */
 	int	j_4;
 	long	j_6;
 	int	j_10;
-	char	j_12;
-	char	j_13;
+	unsigned char j_12;
+	unsigned char j_13;
 };
 
 extern struct pbucket pbuckets[];

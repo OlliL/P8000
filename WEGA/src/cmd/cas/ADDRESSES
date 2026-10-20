@@ -49,3 +49,5 @@ error 8400
 jpr 84fc  jprnew 8640  jprange 8734  jprput 88ac  jpput 893e  jrput 8980
 # jpr2.c
 jpr2 89c2
+# optim.c
+optim 8af4  jinit 8c26  newrec 8c6e  jdeps 8cfa  jdist 8e72  jiter 8ffc  jsum 916a  jsymadj 922e
