@@ -38,5 +38,7 @@ opshr 5708  opshl 57c0  opmul 5876  opdiv 5928  opneg 59dc  opsub 59fc  opplus 5
 pass2 5f32  p2tag 5fc2  p2rep 6262
 # ofile.c
 ohdrinit 6394  ohdrput 6634  symtype 66cc  osymout 676a  stabout 6952  nlwrite 6ad6  ofinish 6b96  symadjust 6cb2
+# gen.c
+genb 6da6  genw 6e9a  genl 6f66  genlop 6fba  genwop 70b0  genaddr 7192  genbop 71c2  seekout 7286
 # called by parser.y, module not reconstructed yet (address names fnXXXX in parser.y)
 # 84fc jpr/callr,

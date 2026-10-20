@@ -83,6 +83,14 @@ extern long exprval(), exprreloc();	/* its value and relocation (pass 2) */
 extern unsigned char igetb();		/* ifile.c */
 extern long igetl(), igetaddr();
 extern int subsw;			/* the subsection was changed (p2loop.c, gen.c) */
+extern int shortop;			/* a short address was seen (expr.c, gen.c, assemble.c) */
+struct seekent {			/* where a section starts in the object file and in the relocation file (ofile.c) */
+	long	sk_off;
+	long	sk_end;
+};
+extern struct seekent *seektab;
+extern int imoff;			/* where the image starts in the object file */
+extern FILE *outf, *relf;		/* the object file and the relocation file (main.c) */
 extern struct pst *pstlook();		/* name -> permanent symbol or 0 */
 extern int stlook();			/* name, mode -> index of the symbol or 0 */
 extern struct sym *stabp();		/* index -> symbol */

@@ -687,8 +687,8 @@ table segments last) and the strings each function loads:
 | expr | 4ecc-5f31 | expression evaluation, 18 functions (the operators `+ - * / ^< ^> ^& ^\| ^X ^S ^O` ...) |
 | p2loop | 5f32-6393 | pass 2 main loop, 3 functions |
 | ofile | 6394-6da5 | object file writer: header (24 bytes `fwrite`), segment table, relocation, the 14 byte symbol entries (`6b66`), seeks into the temporary files (`6b96`, `6cb2` writes the symbols of segment 7) |
-| gen | 6da6-729d | code generation, 8 functions linked by `calr` (6da6, 6e9a, 6f66, 6fba, 70b0, 7192, 71c2, 7286) |
-| assemble | 729e-7fed | instruction assembly; `729e` (396 bytes) has no `calr` partner, its place after gen follows from the module order |
+| gen | 6da6-7429 | code generation, 8 functions linked by `calr` (6da6, 6e9a, 6f66, 6fba, 70b0, 7192, 71c2, 7286; the last one runs to 7424) |
+| assemble | 742a-7fed | instruction assembly (the block `729e` that had no `calr` partner is the second half of `seekout` in gen) |
 | getops | 7fee-83ff | operand parsing helpers, 4 functions |
 | error | 8400-84fb | one function (`error`, uses `listing`, `ifile`) |
 | jpr, jpr2 | 84fc-89c1, 89c2-8af3 | JPR/CALLR pseudo instruction (jr/jp, calr/call) |
@@ -1104,6 +1104,24 @@ and does the same n times (elements 1/2/3 with the count as the third argument, 
 - Variables (bss): `imoff` 0xc00c, `stabname[128]` 0xc00e, `hdr` 0xc08e, `seektab` 0xc0a6, `nl` (the entry being written, with 128 bytes for the name) 0xc0aa, `segtab`
   0xc138; `shortop` (0xc00a) belongs to expr.c.
 - Check: all functions compared with `cmpmod.py` (`ohdrput` and `ofinish` identical, the rest D2, D3, D6, D8); the strings are the same set.
+
+**Done: gen (`gen.c`, 6da6-7429; the end was 729d before: `seekout` runs on to 7424 and `assemble` starts at 742a).** Eight functions that
+write the object code; `fwrite` errors are `perror(outname)` (the relocation file: `perror(rfname)`) and `done(-1)`. In bss (`cursub == 2`)
+`Bss cannot be initialized`; a changed subsection (`subsw`) first calls `seekout()`.
+- `genb(c, a, n)` (6da6): n bytes c to the object file; if the location counter is odd the relocation word a goes to the relocation file; with `-l` the
+  listing is told (0x941c); then `locadv(1)`. `genw(w, a, n)` (6e9a): n words and each time a relocation word, listing 0x93ec, `locadv(2)`;
+  `genl(l, a, n)` (6f66): n times two words (high, low).
+- `genlop(np, flag)` (6fba, a long operand): a number (with `.seg` and while `genaddr` runs the segment bit 0x80000000 is set), a name
+  (`symval`, `symreloc`) or an expression (`exprval`, `exprreloc`; with `shortop` set only a word is written). `genwop(np, flag)`
+  (70b0, a word operand, types 2 3 0x13, 7 8, 0x18 0x19; bit 0x8000 with `.seg` and flag; range check 0x7fae with the mask 0xFFFF0000), `genbop(np, flag)` (71c2, a byte:
+  1 3 0x13, 7 9; mask 0xFFFFFF00). In `genbop` a `break` is missing before `default`: a name always gives `Must be number or relative address`
+  (and, if its relocation word is not 0, `Bad relocation bits` before that); the binary has it so. `genaddr(np)` (7192): `addrflag++`, `genlop(np, 1)`
+  with `.seg`, else `genwop(np, 1)`.
+- `seekout()` (7286): positions the object file at `seektab[cursec].sk_off` (subsection 0) or `.sk_end` (subsection 1) + `imoff` + counter, and the relocation
+  file at the same offset without `imoff` and with the counter rounded down to even.
+- Variables: `addrflag` (data 0x75ee).
+- Check: all compared with `cmpmod.py` (`genw` identical, the others D2, D3, D6, D8); the strings are the same set; the jump tables of the original are fewer
+  (the old compiler uses compare chains for up to 3 cases, D6), so the data of this module is larger when rebuilt (D12).
 
 ## ar on the host (`host/ar`)
 

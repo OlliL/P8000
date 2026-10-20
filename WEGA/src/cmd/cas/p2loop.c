@@ -77,20 +77,20 @@ unsigned char tag;
 				savelflag = lflag;
 				lflag = 0;
 			}
-			fn6DA6(0, 0, x - (int)lctab[cursec][cursub]);
+			genb(0, 0, x - (int)lctab[cursec][cursub]);
 			if (savelflag)
 				lflag = savelflag;
 		} else
 			lctab[cursec][cursub] = (unsigned)x;
 		break;
 	case 1:
-		fn6DA6(igetb(), 0, 1);
+		genb(igetb(), 0, 1);
 		break;
 	case 2:
-		fn6E9A(igetw(), 0, 1);
+		genw(igetw(), 0, 1);
 		break;
 	case 3:
-		fn6F66(igetl(), 0L, 1);
+		genl(igetl(), 0L, 1);
 		break;
 	case 10:
 		fn742A(igetaddr());
@@ -117,32 +117,32 @@ unsigned char tag;
 		break;
 	case 7:
 		np = mknode7(igetw());
-		fn6FBA(np, 0);
+		genlop(np, 0);
 		nfreed++;
 		break;
 	case 8:
 		np = mknode7(igetw());
-		fn70B0(np, 0);
+		genwop(np, 0);
 		nfreed++;
 		break;
 	case 9:
 		np = mknode7(igetw());
-		fn71C2(np, 0);
+		genbop(np, 0);
 		nfreed++;
 		break;
 	case 23:
 		np = fn7FEE();
-		fn71C2(np, 0);
+		genbop(np, 0);
 		nfreed++;
 		break;
 	case 24:
 		np = fn7FEE();
-		fn70B0(np, 0);
+		genwop(np, 0);
 		nfreed++;
 		break;
 	case 25:
 		np = fn7FEE();
-		fn6FBA(np, 0);
+		genlop(np, 0);
 		nfreed++;
 		break;
 	case 20:
@@ -175,17 +175,17 @@ unsigned n;
 	case 1:
 		b = igetb();
 		z = 0;
-		fn6DA6(b, z, n);
+		genb(b, z, n);
 		break;
 	case 2:
 		x = igetw();
 		z = 0;
-		fn6E9A(x, z, n);
+		genw(x, z, n);
 		break;
 	case 3:
 		l = igetl();
 		z = 0;
-		fn6F66(l, (long)(unsigned)z, n);
+		genl(l, (long)(unsigned)z, n);
 		break;
 	case 7:
 	case 8:
@@ -210,15 +210,15 @@ unsigned n;
 			switch (c) {
 			case 8:
 			case 24:
-				fn70B0(np, 0);
+				genwop(np, 0);
 				break;
 			case 7:
 			case 25:
-				fn6FBA(np, 0);
+				genlop(np, 0);
 				break;
 			case 9:
 			case 23:
-				fn71C2(np, 0);
+				genbop(np, 0);
 				break;
 			}
 		}

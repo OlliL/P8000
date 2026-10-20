@@ -11,17 +11,12 @@ static char sccsid[] = "@[$]/as/as/ofile.c\t1.2 05/27/83 15:49:59 - 87wega3.2";
 #include "cas.h"
 #include <s.out.h>
 
-extern FILE *outf, *relf, *osymf;
+extern FILE *osymf;
 extern char *outname, *rfname, *ofname, *sfname;
 extern NODE *fn8358();			/* read an expression from the symbol file (getops.c) */
 extern char *calloc();
 extern unsigned char sgetb();
 extern int sgetw();
-
-struct seekent {
-	long	sk_off;
-	long	sk_end;
-};
 
 int imoff;				/* size of header and segment table: where the image starts */
 char stabname[128];
