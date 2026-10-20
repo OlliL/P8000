@@ -13,7 +13,7 @@ static char sccsid[] = "@[$]/as/as/ofile.c\t1.2 05/27/83 15:49:59 - 87wega3.2";
 
 extern FILE *osymf;
 extern char *outname, *rfname, *ofname, *sfname;
-extern NODE *fn8358();			/* read an expression from the symbol file (getops.c) */
+
 extern char *calloc();
 extern unsigned char sgetb();
 extern int sgetw();
@@ -223,14 +223,14 @@ unsigned char tag;
 		p++;
 	}
 	if (tag == 0x2a) {
-		np = fn8358();
+		np = sgetnode();
 		if (exprtype(np) != 3)
 			error(2, "Stab field must be constant\n");
 		else {
 			v = np->n_u.l << 8;
 			nfreed++;
 		}
-		np = fn8358();
+		np = sgetnode();
 		if (exprtype(np) != 3)
 			error(2, "Stab field must be constant\n");
 		else {
@@ -238,7 +238,7 @@ unsigned char tag;
 			nfreed++;
 		}
 	} else if (tag == 0x2b) {
-		np = fn8358();
+		np = sgetnode();
 		switch (np->n_type) {
 		case 3:
 			v = np->n_u.l;
@@ -252,14 +252,14 @@ unsigned char tag;
 		}
 		nfreed++;
 	}
-	np = fn8358();
+	np = sgetnode();
 	if (exprtype(np) != 3)
 		error(2, "Stab field must be constant\n");
 	else {
 		sect = np->n_u.l;
 		nfreed++;
 	}
-	np = fn8358();
+	np = sgetnode();
 	if (exprtype(np) != 3)
 		error(2, "Stab field must be constant\n");
 	else {

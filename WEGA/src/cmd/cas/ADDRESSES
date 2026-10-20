@@ -42,5 +42,7 @@ ohdrinit 6394  ohdrput 6634  symtype 66cc  osymout 676a  stabout 6952  nlwrite 6
 genb 6da6  genw 6e9a  genl 6f66  genlop 6fba  genwop 70b0  genaddr 7192  genbop 71c2  seekout 7286
 # assemble.c
 asmins 742a  asmword 75f4  asmfield 7754  asmimm 796a  asmfix 7c2e  asmfix2 7ce8  asmrel 7d8a  asmreg 7eba  putbits 7f2e  rangechk 7fb0
+# getops.c
+igetexpr 7fee  sgetexpr 8146  getop 829e  sgetnode 8358
 # called by parser.y, module not reconstructed yet (address names fnXXXX in parser.y)
 # 84fc jpr/callr,

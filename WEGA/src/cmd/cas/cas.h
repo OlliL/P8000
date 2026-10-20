@@ -77,11 +77,15 @@ struct sym {
 };
 
 extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring(), *mknode25();	/* nodes.c */
+extern NODE *opadd(), *opsub(), *opmul(), *opdiv(), *opshl(), *opshr();	/* expr.c */
+extern NODE *opand(), *opor(), *opxor(), *opshort(), *opoff(), *opseg(), *opneg(), *opplus();
 extern unsigned char exprtype();	/* expr.c: the type of an expression */
 extern int evalint();			/* its value as an int */
 extern long exprval(), exprreloc();	/* its value and relocation (pass 2) */
-extern unsigned char igetb();		/* ifile.c */
-extern long igetl(), igetaddr();
+extern unsigned char igetb(), sgetb();		/* ifile.c */
+extern long igetl(), igetaddr(), sgetl();
+extern int igetw(), sgetw();
+extern NODE *igetexpr(), *sgetexpr(), *sgetnode();	/* getops.c */
 extern int subsw;			/* the subsection was changed (p2loop.c, gen.c) */
 extern NODE *ops[];			/* operands of the instruction (assemble.c) */
 extern int shortop;			/* a short address was seen (expr.c, gen.c, assemble.c) */

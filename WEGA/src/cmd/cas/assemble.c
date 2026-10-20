@@ -15,7 +15,7 @@ int nbits = 0;				/* bits of the word that are filled */
 unsigned word;				/* the word being assembled */
 NODE *ops[4];				/* the operands of the instruction */
 
-extern int getop();			/* read operand n from the intermediate file (getops.c) */
+
 
 /* assemble the instruction of the row */
 asmins(row)

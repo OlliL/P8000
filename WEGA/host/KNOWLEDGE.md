@@ -1140,6 +1140,15 @@ absolute`, `Must be relative address`). The operand nodes are given back after t
 - Check: `cmpmod.py` pairs the functions of this module shifted by the prologue fragments (the labels in its list are those of the prologues), so its
   per-function counts are only a guide; the sequence of the 86 calls and the set of strings are identical to the binary.
 
+**Done: getops (`getops.c`, 7fee-83ff).** Four functions that read operands. `igetexpr()` (7fee) and `sgetexpr()` (8146) read an expression in prefix
+order from the intermediate file or the symbol file (tag 3 a long, 7 a name: `isdef` gives a constant node of its value, else a name node;
+26 ... 34 two operands for `opadd opsub opmul opdiv opshl opshr opand opor opxor`, 35/36/37 one operand for `opshort opoff opseg`).
+`getop(n)` (829e) reads operand n of an instruction from the intermediate file into `ops[n]`: tag 1 a byte, 2 a word (unsigned), 3 a long, 7/8/9 a name
+(constant if defined), 23/24/25 an expression; else `Unexpected tag in intermediate file`. `sgetnode()` (8358) does the same for a node of the symbol file
+(tag 2 gives a signed word; `Unexpected tag in symbol file`). Names: ours; the sccsid is `@[$]/as/as/getops.c`.
+- Check: `cmpmod.py` differences are D3, D6 and D11 (the old popt shares the call of `mknode1` and the store into `ops[n]` between the cases, the functions
+  are 20 instructions shorter); the strings are the same set.
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

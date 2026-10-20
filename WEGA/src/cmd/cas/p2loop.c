@@ -12,7 +12,7 @@ static char sccsid[] = "@[$]p2loop.c\t1.2 05/17/83 17:30:47 - 87wega3.2";
 int subsw = 0;				/* the subsection was changed (gen.c) */
 int savelflag = 0;
 
-extern NODE *fn7FEE();			/* read an operand (getops.c) */
+extern NODE *igetexpr(), *sgetnode();	/* getops.c */
 
 pass2()
 {
@@ -131,17 +131,17 @@ unsigned char tag;
 		nfreed++;
 		break;
 	case 23:
-		np = fn7FEE();
+		np = igetexpr();
 		genbop(np, 0);
 		nfreed++;
 		break;
 	case 24:
-		np = fn7FEE();
+		np = igetexpr();
 		genwop(np, 0);
 		nfreed++;
 		break;
 	case 25:
-		np = fn7FEE();
+		np = igetexpr();
 		genlop(np, 0);
 		nfreed++;
 		break;
@@ -203,7 +203,7 @@ unsigned n;
 		case 23:
 		case 24:
 		case 25:
-			np = fn7FEE();
+			np = igetexpr();
 			break;
 		}
 		for (i = 0; i < n; i++) {
