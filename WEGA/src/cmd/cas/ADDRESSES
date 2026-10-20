@@ -31,7 +31,8 @@ defsym 3d90  defalias 4084  symval 40f4  isdef 4184  symreloc 41d6  defcomm 4312
 stalloc 457a  italloc 4618  namalloc 46b6  stabp 4772  itabp 4788  stenter 479e  setsym 4926  stlook 4996  blkopen 4a0e  blkclose 4a30
 # locntr.c
 locadv 4b3e  setsub 4bb0  secname 4bbc  setsec 4cb4  even 4cda  endpass1 4d10  odd 4dc4  dotval 4df6  setdot 4e6a
+# expr.c
+exprtype 4ecc  evalint 4f52  exprreloc 4fb2  exprval 50b6  opshort 52c6  opseg 538a  opoff 543c  opxor 54e0  opor 5598  opand 5650
+opshr 5708  opshl 57c0  opmul 5876  opdiv 5928  opneg 59dc  opsub 59fc  opplus 5cac  opadd 5ccc
 # called by parser.y, module not reconstructed yet (address names fnXXXX in parser.y)
 # 84fc jpr/callr,
-# 4ecc type of an expression,
-# 52c6 538a 543c 5ccc 59fc 57c0 5708 5650 5598 54e0 5876 5928 59dc 5cac expressions

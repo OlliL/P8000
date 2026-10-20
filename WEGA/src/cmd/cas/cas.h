@@ -76,7 +76,10 @@ struct sym {
 	int	s_14;			/* next symbol with the same hash value */
 };
 
-extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring();	/* nodes.c */
+extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring(), *mknode25();	/* nodes.c */
+extern unsigned char exprtype();	/* expr.c: the type of an expression */
+extern int evalint();			/* its value as an int */
+extern long exprval(), exprreloc();	/* its value and relocation (pass 2) */
 extern struct pst *pstlook();		/* name -> permanent symbol or 0 */
 extern int stlook();			/* name, mode -> index of the symbol or 0 */
 extern struct sym *stabp();		/* index -> symbol */

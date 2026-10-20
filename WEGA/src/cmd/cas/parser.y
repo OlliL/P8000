@@ -24,10 +24,9 @@ NODE *listp;			/* walks over a list of nodes */
 int symmode;			/* how a name is looked up: 6 local, 0 global */
 
 extern NODE *mknode1(), *mknode2(), *mknode6(), *mknode7(), *mkstring();
-extern NODE *dotval(), *fn52C6(), *fn538A(), *fn543C(), *fn5CCC(), *fn59FC();
-extern NODE *fn57C0(), *fn5708(), *fn5650(), *fn5598(), *fn54E0(), *fn5876();
-extern NODE *fn5928(), *fn59DC(), *fn5CAC();
-extern char fn4ECC();
+extern NODE *dotval(), *opshort(), *opseg(), *opoff(), *opadd(), *opsub();
+extern NODE *opshl(), *opshr(), *opand(), *opor(), *opxor(), *opmul();
+extern NODE *opdiv(), *opneg(), *opplus();
 extern int stenter();
 %}
 
@@ -572,7 +571,7 @@ datalist	: bytedir blist
 	| BLKB expr
 		{
 		deflabels();
-		if (fn4ECC($2) == 3)
+		if (exprtype($2) == 3)
 			locadv((int)$2->n_u.l);
 		else
 			error(2, "Block specifier must be constant\n");
@@ -587,7 +586,7 @@ datalist	: bytedir blist
 		{
 		even();
 		deflabels();
-		if (fn4ECC($2) == 3)
+		if (exprtype($2) == 3)
 			locadv((int)$2->n_u.l << 1);
 		else
 			error(2, "Block specifier must be constant\n");
@@ -602,7 +601,7 @@ datalist	: bytedir blist
 		{
 		even();
 		deflabels();
-		if (fn4ECC($2) == 3)
+		if (exprtype($2) == 3)
 			locadv((int)$2->n_u.l << 2);
 		else
 			error(2, "Block specifier must be constant\n");
@@ -1052,7 +1051,7 @@ keyword	: COMM
 
 sexpr	: BAR expr BAR
 		{
-		$$ = fn52C6($2);
+		$$ = opshort($2);
 		shortaddr++;
 		}
 	| BAR error
@@ -1065,7 +1064,7 @@ sexpr	: BAR expr BAR
 		}
 	| SSEG expr
 		{
-		$$ = fn538A($2);
+		$$ = opseg($2);
 		shortaddr++;
 		}
 	| SSEG error
@@ -1074,7 +1073,7 @@ sexpr	: BAR expr BAR
 		}
 	| OSEG expr
 		{
-		$$ = fn543C($2);
+		$$ = opoff($2);
 		shortaddr++;
 		}
 	| OSEG error
@@ -1085,7 +1084,7 @@ sexpr	: BAR expr BAR
 
 expr	: expr PLUS bexpr
 		{
-		$$ = fn5CCC($1, $3);
+		$$ = opadd($1, $3);
 		}
 	| expr PLUS error
 		{
@@ -1093,7 +1092,7 @@ expr	: expr PLUS bexpr
 		}
 	| expr MINUS bexpr
 		{
-		$$ = fn59FC($1, $3);
+		$$ = opsub($1, $3);
 		}
 	| expr MINUS error
 		{
@@ -1103,7 +1102,7 @@ expr	: expr PLUS bexpr
 
 bexpr	: bexpr SHL term
 		{
-		$$ = fn57C0($1, $3);
+		$$ = opshl($1, $3);
 		}
 	| bexpr SHL error
 		{
@@ -1111,7 +1110,7 @@ bexpr	: bexpr SHL term
 		}
 	| bexpr SHR term
 		{
-		$$ = fn5708($1, $3);
+		$$ = opshr($1, $3);
 		}
 	| bexpr SHR error
 		{
@@ -1119,7 +1118,7 @@ bexpr	: bexpr SHL term
 		}
 	| bexpr AND term
 		{
-		$$ = fn5650($1, $3);
+		$$ = opand($1, $3);
 		}
 	| bexpr AND error
 		{
@@ -1127,7 +1126,7 @@ bexpr	: bexpr SHL term
 		}
 	| bexpr OR term
 		{
-		$$ = fn5598($1, $3);
+		$$ = opor($1, $3);
 		}
 	| bexpr OR error
 		{
@@ -1135,7 +1134,7 @@ bexpr	: bexpr SHL term
 		}
 	| bexpr XOR term
 		{
-		$$ = fn54E0($1, $3);
+		$$ = opxor($1, $3);
 		}
 	| bexpr XOR error
 		{
@@ -1145,7 +1144,7 @@ bexpr	: bexpr SHL term
 
 term	: term MUL unary
 		{
-		$$ = fn5876($1, $3);
+		$$ = opmul($1, $3);
 		}
 	| term MUL error
 		{
@@ -1153,7 +1152,7 @@ term	: term MUL unary
 		}
 	| term DIV unary
 		{
-		$$ = fn5928($1, $3);
+		$$ = opdiv($1, $3);
 		}
 	| term DIV error
 		{
@@ -1163,7 +1162,7 @@ term	: term MUL unary
 
 unary	: MINUS primary
 		{
-		$$ = fn59DC($2);
+		$$ = opneg($2);
 		}
 	| MINUS error
 		{
@@ -1171,7 +1170,7 @@ unary	: MINUS primary
 		}
 	| PLUS primary
 		{
-		$$ = fn5CAC($2);
+		$$ = opplus($2);
 		}
 	| PLUS error
 		{

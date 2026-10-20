@@ -1041,6 +1041,34 @@ each section (up to 255, `setsec`: `Too many segments`) and subsection (0 code, 
 - Check: every function compared with `cmpmod.py` (the remaining differences: D2, D3, D4 in `setsub`, D6 in `endpass1`); the strings
   are the same set.
 
+**Done: expr (`expr.c`, 4ecc-5f31).** Eighteen functions. An expression is a tree of nodes: constant (type 3, value in the
+long at 6), name (type 7, the symbol index at 8) or operation (type 25: `c1` type of the result, `c2` operator, `l1` and
+`l2` the operands). Operators: 0x1A +, 0x1B -, 0x1C *, 0x1D /, 0x1E ^<, 0x1F ^>, 0x20 ^&, 0x21 ^|, 0x22 ^X,
+0x23 `| |` (short segmented address), 0x24 ^O (offset), 0x25 ^S (segment). The parser calls the `op...` functions; they fold
+constants and build a type 25 node for the rest, which `exprval`/`exprreloc` evaluate in pass 2.
+- `exprtype(np)` (4ecc) gives the type: 3 constant; a name: 7 undefined, 6 not a plain symbol, 4 external, 1 defined;
+  an operation: its `c1`. Types seen: 0 (operand not known yet), 1 relocatable, 3 constant, 4 external, 5 short address, 6
+  invalid (`Invalid expression type ...`), 7 undefined. `evalint(np)` (4f52): a name, or name + constant, as an int
+  (`Must be simple expression`).
+- `opadd`/`opsub` (5ccc, 59fc; `opplus`, `opneg` call them with a zero constant): constant + constant is folded
+  (and two nodes are given back: `nfreed += 2`); relocatable/external/undefined plus or minus a constant keeps the
+  operation node and folds the constant into its right operand (`(x + a) - b` becomes `x + (a - b)` or `x - (b - a)`); two
+  relocatable operands of type 1 are evaluated with `symval` and give a constant (`Invalid addition expression` /
+  `Invalid subtraction expression` for the rest). The binary operators `opmul opdiv opshl opshr opand opor opxor`
+  need two constants (`Both sides of ^X must be constants`), or an operand of type 0 (then a node is built); each checks
+  the type of the right side first (`Invalid expression type for right side of ...`).
+- `opshort`, `opseg`, `opoff` (`| |`, ^S, ^O): a constant gives `((v >> 16) & 0xFF00) | (unsigned char)v`, `(v >> 16) & 0xFF00`,
+  `(unsigned char)v` (the last one is passed as an int to `mknode1`, whose second argument is a long: the high word of the argument
+  is whatever rr4 holds); other types give an operation node (the result type: 1 and 4 become 5, 0 and 7 become 0).
+- `exprval(np)` (50b6, pass 2): the value of a type 1 or 4 operation (`symval(idx)` plus or minus the constant), of
+  type 5 (`| |`: `Value too large` warning when the offset does not fit in a byte, ^O the offset, ^S the segment);
+  `Undefined symbol` for 0 and 7, `Erroneous expression type` for 6. `exprreloc(np)` (4fb2): the relocation word
+  (`symreloc`) of type 1 and 4, and for type 5 the flags 0x20/0x02 (`| |`), 0x10/0x01 (^S) depending on bit 3 of the
+  relocation of the operand; ^O only tests it (no effect). It counts the short operators in `shortop` (bss 0xc00a, tested and
+  cleared in assemble.c).
+- Check: all functions compared with `cmpmod.py`; `opneg` and `opplus` are identical, the others show the differences of
+  the old compiler (D2, D3, D4, D6, D10); the strings are the same set; the four jump tables (data 0x6c22-0x6c9f) are there (D12).
+
 ## ar on the host (`host/ar`)
 
 `host/ar/ar.c` is the WEGA `ar` for Linux, derived from `src/cmd/ar.c`: same commands (`rdxtpmq`),

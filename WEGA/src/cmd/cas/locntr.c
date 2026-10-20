@@ -13,8 +13,6 @@ int cursec = 0;
 int cursub = 1;
 int nsect = 1;
 
-extern unsigned char fn4ECC();		/* the type of an expression (expr.c) */
-extern int fn4F52();			/* its value */
 
 /* advance the location counter */
 locadv(n)
@@ -157,9 +155,9 @@ NODE *np;
 {
 	int n;
 
-	switch (fn4ECC(np)) {
+	switch (exprtype(np)) {
 	case 1:
-		n = (long)fn4F52(np) - lctab[cursec][cursub];
+		n = (long)evalint(np) - lctab[cursec][cursub];
 		locadv(n);
 		iputloc();
 		nfreed += 3;

@@ -9,8 +9,6 @@ static char sccsid[] = "@[$]symbols.c\t1.3  07/18/83 13:31:43 Copr. 1981 87wega3
  */
 #include "cas.h"
 
-extern unsigned char fn4ECC();		/* the type of an expression (expr.c) */
-extern int fn4F52();			/* its value as an int */
 extern int stenter();			/* enter a name into the symbol table (ssymtab.c) */
 
 /* define the symbol of np with the value val */
@@ -51,7 +49,7 @@ NODE *val;
 		sputb(0x14);
 		sputw(np->n_u.pw.w);
 	}
-	switch (fn4ECC(val)) {
+	switch (exprtype(val)) {
 	case 3:
 		if (redef == 0)
 			setsym(np->n_u.pw.w, (unsigned char)1, np->n_u.cc.c1);
@@ -80,7 +78,7 @@ NODE *val;
 			nfreed += 2;
 		}
 		sp->s_0 = q->s_0;
-		ip->s_2 = (long)fn4F52(val);
+		ip->s_2 = (long)evalint(val);
 		ip->s_0 = (cursec << 8) | cursub;
 		break;
 	case 0:
@@ -211,7 +209,7 @@ NODE *list;
 	register NODE *p;
 	register NODE *q;
 
-	if (fn4ECC(size) != 3)
+	if (exprtype(size) != 3)
 		error(2, "Invalid constant\n");
 	p = list;
 	q = p;
