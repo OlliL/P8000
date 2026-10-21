@@ -14,6 +14,12 @@ ROOT = os.environ.get('WEGA')                 # file tree of the original system
 if not ROOT:
     raise SystemExit('set WEGA=<file tree of the original system>')
 EMU = [os.path.join(HOST, 'z8k-emu', 'z8k-emu'), '-r', ROOT]
+
+NATIVE = bool(os.environ.get('NATIVE'))      # the cas under test is a program of this host (host/cas), not a WEGA binary
+def runcmd(prog):
+    """the command that runs prog: the original (/bin/cas) under the emulator, a WEGA binary under test too,
+    a native program (NATIVE=1) directly"""
+    return [prog] if NATIVE and prog != '/bin/cas' else EMU + [prog]
 ORIG = '/bin/cas'                             # the original, run by the emulator
 sys.path.insert(0, os.path.join(HOST, 'tools'))
 import z8k
@@ -62,7 +68,7 @@ def run(cas, lines, mode, tag):
     for _ in range(4):
         src = ('.seg\n' if mode != 'ns' else '') + '.code\n' + ''.join('\t' + lines[i] + '\n' for i in keep)
         open('ch_%s.s' % tag, 'w').write(src)
-        r = subprocess.run(EMU + [cas, '-u', '-o', 'ch_%s.o' % tag, 'ch_%s.s' % tag], capture_output=True, text=True, timeout=300)
+        r = subprocess.run(runcmd(cas) +[ '-u', '-o', 'ch_%s.o' % tag, 'ch_%s.s' % tag], capture_output=True, text=True, timeout=300)
         off = 2 if mode != 'ns' else 1
         bad = {}
         for m in re.finditer(r'line (\d+): (.*)', r.stderr):

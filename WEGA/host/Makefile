@@ -7,6 +7,7 @@
 #   ar/        the WEGA ar built for Linux (cross tool)
 #   binutils/  the WEGA ranlib, strip and size built for Linux (cross tools)
 #   popt/      the WEGA peephole optimizer built for Linux (cross tool)
+#   cas/       the WEGA assembler cas built for Linux (cross tool)
 #   libc/      check of the libc members in ../src/lib/libc
 #   oldcc/     check of the cas sources in ../src/lib/libc/oldcc
 #
@@ -49,15 +50,16 @@ WEGA_PROGS = ar:bin/ar ranlib:usr/bin/ranlib size:bin/size strip:usr/bin/strip \
 	standalone/sa.install:sa.install standalone/sa.timer:sa.timer \
 	standalone/sa.shipdisk:sa.shipdisk
 
-all: cc popt ar binutils
+all: cc popt ar binutils cas
 
-cc popt ar binutils:
+cc popt ar binutils cas:
 	$(MAKE) -C $@ all
 
 check:
 	$(MAKE) -C cc check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C ar check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C binutils check WEGA=$(WEGAABS) EMU=$(EMU)
+	$(MAKE) -C cas check WEGA=$(WEGAABS)
 	$(MAKE) -C popt check WEGA=$(WEGAABS)
 	$(MAKE) -C libc check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C oldcc verify WEGA=$(WEGAABS) EMU=$(EMU)
@@ -82,5 +84,6 @@ clean:
 	$(MAKE) -C ar clean
 	$(MAKE) -C binutils clean
 	$(MAKE) -C popt clean
+	$(MAKE) -C cas clean
 
-.PHONY: all check verify verify-wega clean cc popt ar binutils
+.PHONY: all check verify verify-wega clean cc popt ar binutils cas

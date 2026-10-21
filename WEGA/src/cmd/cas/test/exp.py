@@ -9,6 +9,12 @@ ROOT = os.environ.get('WEGA')
 if not ROOT:
     raise SystemExit('set WEGA=<file tree of the original system>')
 EMU = [os.path.join(HOST, 'z8k-emu', 'z8k-emu'), '-r', ROOT]
+
+NATIVE = bool(os.environ.get('NATIVE'))      # the cas under test is a program of this host (host/cas), not a WEGA binary
+def runcmd(prog):
+    """the command that runs prog: the original (/bin/cas) under the emulator, a WEGA binary under test too,
+    a native program (NATIVE=1) directly"""
+    return [prog] if NATIVE and prog != '/bin/cas' else EMU + [prog]
 sys.path.insert(0, os.path.join(HOST, 'tools'))
 from sout import SOut
 
@@ -61,7 +67,7 @@ PRE = ['.code', 'k1:=\t%10', 'k2:=\t7', 'Lab:', '\tnop', 'Lab2::', '\tnop', '\t.
 def run(cas, src, d):
     open(os.path.join(d, 'x.s'), 'w').write(src)
     try:
-        r = subprocess.run(EMU + [cas, '-u', '-o', 'x.o', 'x.s'], capture_output=True, text=True, timeout=120, cwd=d)
+        r = subprocess.run(runcmd(cas) +[ '-u', '-o', 'x.o', 'x.s'], capture_output=True, text=True, timeout=120, cwd=d)
     except subprocess.TimeoutExpired:
         return 'hang', '', None
     try: img = open(os.path.join(d, 'x.o'), 'rb').read()
@@ -72,7 +78,7 @@ def run(cas, src, d):
 def hangs(cas, pre, ss, d):
     open(os.path.join(d, 'h.s'), 'w').write('\n'.join(pre + ss) + '\n')
     try:
-        subprocess.run(EMU + [cas, '-u', '-o', 'h.o', 'h.s'], capture_output=True, timeout=20, cwd=d)
+        subprocess.run(runcmd(cas) +[ '-u', '-o', 'h.o', 'h.s'], capture_output=True, timeout=20, cwd=d)
         return False
     except subprocess.TimeoutExpired:
         return True

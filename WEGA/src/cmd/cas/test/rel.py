@@ -8,6 +8,12 @@ ROOT = os.environ.get('WEGA')                 # file tree of the original system
 if not ROOT:
     raise SystemExit('set WEGA=<file tree of the original system>')
 EMU = [os.path.join(HOST, 'z8k-emu', 'z8k-emu'), '-r', ROOT]
+
+NATIVE = bool(os.environ.get('NATIVE'))      # the cas under test is a program of this host (host/cas), not a WEGA binary
+def runcmd(prog):
+    """the command that runs prog: the original (/bin/cas) under the emulator, a WEGA binary under test too,
+    a native program (NATIVE=1) directly"""
+    return [prog] if NATIVE and prog != '/bin/cas' else EMU + [prog]
 ORIG = '/bin/cas'                             # the original, run by the emulator
 sys.path.insert(0, os.path.join(HOST, 'tools'))
 from sout import SOut
@@ -54,7 +60,7 @@ ALL = [0, 1, 2, 10, 100, 126, 127, 128, 129, 130, 250, 254, 255, 256, 257, 258, 
 
 EMU = ['/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu', '-r', '/mnt/share/cvs/P8000/tmp/wega31_root']
 def go(cas, f, o):
-    r = subprocess.run(EMU + [cas, '-u', '-o', o, f], capture_output=True, text=True, timeout=300)
+    r = subprocess.run(runcmd(cas) +[ '-u', '-o', o, f], capture_output=True, text=True, timeout=300)
     try: img = bytes(SOut(open(o, 'rb').read()).image)
     except Exception: img = None
     return r.returncode, r.stderr, img

@@ -20,7 +20,7 @@
   owner's local paths; the generic recipe is in `CLAUDE.md`).
 - `WEGA/host/...` the Linux side. `z8k-emu` (the oracle that runs the original
   binaries), `tools` (analysis scripts), and the Linux-native cross tools
-  `cc`, `scc` (the drivers) and `popt`: their source
+  `cc`, `scc` (the drivers), `popt` and `cas`: their source
   is in the same directory, they behave like the WEGA originals and replace
   the emulator calls later. Check scripts and `Makefile` targets:
   `make -C WEGA/host check` (cc, popt, libc, oldcc). `make -C WEGA/host
@@ -1219,6 +1219,31 @@ Not equal, because the original has undefined behaviour there: (a) more than one
 whose low word is whatever `r3` held (the original) or `curline` (the shipped scc), the parser uses it as a pointer; (b) `"\%4"` or `"\%"` (less than two hex digits): the scanner goes
 past the end of the string, the original ends with `Out of nodes`, the memory behind `nodes[]` differs; (c) the original itself does not terminate on a syntax error in the last statement
 of a file and on some tokens (`<<`, `^$`, `5|3`); the test `exp.py` therefore leaves out the statements that hang the original.
+
+## cas on the host (`host/cas`)
+
+`host/cas` is the cas assembler for Linux: the decompilation of `src/cmd/cas` moved to a 32/64 bit host and to ANSI C (see `host/cas/README` for what changed: 16 bit
+types where the width shows, nodes and symbol tables without pointers in longs, big endian binary files, `mkstemp`). Same options, messages, return codes, objects and
+listings as `/bin/cas`. Checks: `make -C host/cas check WEGA=...` (`check.sh`) runs the scripts of `src/cmd/cas/test/` with `NATIVE=1` (the program under test runs on the
+host, the original under z8k-emu).
+
+Results: `rel.py` 48 files, no difference; `exh.py` ns/ss/sl (all opcodes of the three address modes) no difference; `fz`/`fzs` (about 346 000 operand patterns)
+differ only in lines `jpr cc` without an address (undefined in the original); `opts.py` on the 228 compiler outputs, 10 option sets each, 2280 runs, no difference;
+about 600 single statements (scanner, numbers, strings, comments, nesting depth, expressions, directives, stab records) and 570 random files compared with the original:
+one difference (a statement with `\` after a name: another one of the `error` rules). ASAN/UBSAN over 4800 random files: no report, no hang.
+
+Findings of this work:
+- **A yacc of the host is not enough.** bison does not use a default reduction in a state that can shift `error`; the yacc of WEGA does. So a syntax error at the start of
+  a line is found before `lineinit` is reduced (bison: rule `line: error`, "Expecting beginning of line") or after (WEGA: `stmt: error`, "Expecting beginning of program").
+  `host/cas/parser.c` is therefore made by the original yacc under z8k-emu (`mkparser.sh`) and kept in the repository. The stack of its driver has 150 entries: a list of
+  75 elements gives "yacc stack overflow", the same limit in both programs (74 elements pass).
+- **Pool of nodes.** The original goes on counting `nalloc` behind `NNODES = 100`; after "Out of nodes" the pool stays full and the next statement fails too. A
+  syntax error before the first token of a line (`line: error`) allocates no node, the pool is not emptied by it.
+- **`opoff` of a constant** in `src/cmd/cas/expr.c` had a cast `(unsigned char)` that the binary does not have in effect (see `src/cmd/cas/README`): fixed there.
+- Shifts: the count is the low byte of the right operand as a signed number, a negative count shifts the other way, 32 or more gives 0 (or the sign for a left shift of a
+  negative number); `x/0` is `x` (unsigned division by the library routine). Measured in the original.
+- Not reproduced, undefined in the original: the values after an error message in the same statement, `jpr cc` without address, `^O n` with the option `-^`, a string
+  or comment that is not closed at the end of the file (the original does not terminate; the host stops), `}` too many.
 
 ## ar on the host (`host/ar`)
 

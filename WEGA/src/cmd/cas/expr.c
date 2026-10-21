@@ -251,7 +251,7 @@ NODE *np;
 	if (t == 6)
 		error(2, "Invalid expression type for ^O operator\n");
 	if (t == 3) {
-		p = mknode1(3, (unsigned char)np->n_u.l);
+		p = mknode1(3, np->n_u.l);
 		nfreed++;
 		return (p);
 	}

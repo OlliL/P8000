@@ -24,6 +24,9 @@ exp.py   WEGA=.. python3 exp.py ../cas [seed] [count]
          wrong inputs (these statements are found by bisection and left out, which takes minutes), and after a second
          error in one statement the result depends on leftover register contents (undefined in the original).
 
+All four scripts take NATIVE=1: the program under test is then a program of this host (host/cas/cas) and runs directly,
+the original still runs under the emulator. host/cas/check.sh does that.
+
 Compiler output as test input: `cc -S` / `scc -S` of the sources in src/cmd and src/lib/libc give 230 assembler files; run
 opts.py or a loop over them with `-u`. Files of the kernel and library sources that are PLZ/ASM are not accepted by the
 original and are no input (some make the original run for ever).

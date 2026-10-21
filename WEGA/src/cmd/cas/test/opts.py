@@ -9,6 +9,12 @@ ROOT = os.environ.get('WEGA')
 if not ROOT:
     raise SystemExit('set WEGA=<file tree of the original system>')
 EMU = [os.path.join(HOST, 'z8k-emu', 'z8k-emu'), '-r', ROOT]
+
+NATIVE = bool(os.environ.get('NATIVE'))      # the cas under test is a program of this host (host/cas), not a WEGA binary
+def runcmd(prog):
+    """the command that runs prog: the original (/bin/cas) under the emulator, a WEGA binary under test too,
+    a native program (NATIVE=1) directly"""
+    return [prog] if NATIVE and prog != '/bin/cas' else EMU + [prog]
 OPTS = [['-u', '-l'], ['-u', '-d'], ['-u', '-r'], ['-u', '-t'], ['-u', '-i'], ['-u', '-m'], ['-u', '-v'], ['-u', '-^'], ['-l'], ['-u', '-l', '-d']]
 
 def run(prog, opts, src):
@@ -17,7 +23,7 @@ def run(prog, opts, src):
     if prog != '/bin/cas': shutil.copy(prog, os.path.join(d, 'cas.new'))
     p = '/bin/cas' if prog == '/bin/cas' else './cas.new'
     try:
-        r = subprocess.run(EMU + [p] + opts + ['-o', 'w.o', 'w.s'], capture_output=True, timeout=60, cwd=d)
+        r = subprocess.run(runcmd(p) + opts + ['-o', 'w.o', 'w.s'], capture_output=True, timeout=60, cwd=d)
         rc, err, out = r.returncode, r.stderr, r.stdout
     except subprocess.TimeoutExpired:
         rc, err, out = 'timeout', '', ''
@@ -36,7 +42,10 @@ for src in sys.argv[2:]:
         if a[0] != 0:
             # after a semantic error the files hold what happened to be in memory (the original too): only
             # the messages count
-            a, b = a[:3], b[:3]
+            # (a warning after an error depends on the leftover value too, e.g. "Value too large" behind "Undefined symbol")
+            def msgs(r):
+                return (r[0], [l for l in r[1].splitlines() if not l.startswith(b'Warning')], r[2])
+            a, b = msgs(a), msgs(b)
         else:
             # the intermediate file (-i) holds addresses of the tables, which are different in a rebuilt program
             a = a[:3] + ({f: (len(c) if f.endswith('.i') else c) for f, c in a[3].items()},)

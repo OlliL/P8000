@@ -43,3 +43,11 @@ must be equal. exh.py (every opcode that host/tools/z8k.py decodes, and operand 
 of jpr at the limit), opts.py (the options -l -d -r -t -i -m -v -^), exp.py (random expressions and directives; use with care: the original does not
 terminate on many wrong inputs, and the results after a second error in a statement depend on the memory layout). The corpus of compiler output:
 `cc -S` / `scc -S` of the sources in src/cmd and src/lib/libc.
+
+`^O` of a constant (`opoff`): in the binary the value of `^O n` is `n` (`.word ^O %12345` gives %12345 and the warning `Value too large`). The code of the
+original passes the argument `(unsigned char)` of a long as a word in `r6` and does not set `r4:r5`, from which `mknode1` takes its long `val` (K&R call without a
+prototype: the type of the argument is what the caller has, not what the callee expects); `r4:r5` happen to hold the number just read, so the value stays the same,
+except under `-^` (the echo of the source leaves other values there: `^O 5` gives %9028). `opoff` therefore calls `mknode1(3, np->n_u.l)`. The first version had the
+cast; the shipped scc compiled it to a different garbage value. The tests above did not show it (no source used `^O` on a constant), the work on host/cas did.
+
+The host fork of the program is `host/cas` (same behaviour, modern C, tested with these scripts: `NATIVE=1`).

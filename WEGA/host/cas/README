@@ -1,0 +1,55 @@
+cas - the WEGA U8000 assembler for Linux
+========================================
+
+`cas` here behaves like `/bin/cas` of WEGA 3.1: same options (`-o -i -r -t -m -l -u -v -d -^`), same messages, same
+return codes, same object files (`s.out`, big endian), same listing. It is a cross tool: it runs on the host and
+replaces the call of the original under z8k-emu.
+
+    make                      build ./cas
+    make check WEGA=<tree>    compare with the original /bin/cas under z8k-emu (check.sh)
+    make parser WEGA=<tree>   make parser.c and parser.h again from parser.y (original yacc under z8k-emu)
+
+Where the code comes from
+-------------------------
+The code is the decompilation in `../../src/cmd/cas` (same modules, same names, `MODULES`/`ADDRESSES` there) moved to
+a 32/64 bit host and to ANSI C; `table1.c`, `table2.c`, `pstab.c` and `pstdata.h` are the generated tables of that
+directory (made from `/bin/cas` by `host/tools/casgen.py`). What the move changed:
+
+- `int` of the Z8000 has 16 bits: where the width shows (words, indexes, location counters, distances of jumps) the
+  types are `int16_t`/`uint16_t`, `long` is `int32_t`. `char` is unsigned (`-funsigned-char`, as in scc); the end of the
+  source is the character 0xFF.
+- No pointers in longs. A node (`cas.h`) has the fields of all node types side by side (`n_val`, `n_w`, `n_c1`, `n_c2`,
+  `n_a`, `n_b`); the symbol tables are three byte arenas of 64 KB (the original: three segments), a symbol is its offset in
+  the arena, names are offsets in the name arena. The row of an instruction in the intermediate file (record 10) is the
+  index in `itab1`.
+- Binary files are written field by field with the high byte first (header, segment table, symbols, relocation words).
+- The temporary files are made by `mkstemp`, the names of the kept files (`-i`, `-t`, `-r`, `-m`, listing) are cut from
+  the source name as before; the buffers for names are `PATH_MAX` long.
+- `parser.c`/`parser.h` are made by the yacc of WEGA, not by bison: the tables of the other generators use other default
+  reductions, so a syntax error is found in another state and another one of the `error` rules (another message) is
+  taken. The driver is the one of the original (`/usr/lib/yaccpar`), the stack has the same depth (150: a list of 75
+  elements overflows it, as in the original). The two files are in the repository; `mkparser.sh` makes them.
+
+Undefined behaviour of the original
+-----------------------------------
+In a few places the original uses what happens to be in a register or in memory. The host version does something fixed
+and harmless instead; the results differ only for input that is wrong anyway (an error message has been printed):
+
+- After an error message a function returns a constant 0 node (`errnode`), not a leftover value. More than one error in
+  a statement can give other follow-up messages (the warning `Value too large` behind `Undefined symbol`) than in the original.
+- `jpr cc` with a condition but without an address assembles whatever is left in the registers of the original. `^O n`
+  is `n` (the argument is `(unsigned char)` of a long, passed as a word; the callee takes the long from `r4:r5`, where the
+  number happens to be), except under the option `-^`, where other values are there (`^O 5` is %9028); the host version
+  always gives `n`.
+- A string that is not closed (the closing quote is looked for behind the end of the text), `.byte ""` and `"\%4"`: the
+  original runs through memory and ends with `Out of nodes`, the following statement gets that message too, because the
+  pool is not emptied. The host version makes the same messages.
+- A syntax error in the last statement of a file that has no newline, an unclosed comment or string: the original does
+  not terminate; the host version stops at the end of the file.
+- A `}` too many: the original uses the memory in front of its block stack; here the level stays 0.
+
+Checks (check.sh, `../../src/cmd/cas/test/`)
+-------------------------------------------
+The same scripts as for the decompiled sources, with `NATIVE=1` (the program under test runs on the host, the original under
+z8k-emu): `rel.py` (jumps), `exh.py ns|ss|sl|fz|fzs` (all opcodes in the three address modes; operand patterns), `opts.py`
+(the options on given sources). See `../KNOWLEDGE.md`, section "cas on the host", for the numbers.
