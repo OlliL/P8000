@@ -1,0 +1,9 @@
+	.psec
+	.code
+__fltuse::
+	ret
+__fegcvt::
+	ret
+__inflt::
+	ret
+	ret

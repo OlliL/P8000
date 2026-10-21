@@ -1,0 +1,43 @@
+old fseek 0_2
+old ftell 0_1
+old readsym 0_1
+old rdwr 0_3
+old system 0_1
+old fopen 0_1
+old printf 0_3
+old doprnt 0_3
+old ffltioc 0_1
+old filbuf 0_3
+old flsbuf 0_2
+old endopen 0_3
+old findiop 0_2
+shipped data
+shipped __callex
+shipped cuexit
+old cnvt 0_2
+shipped decimal
+old length 0_2
+old malloc 0_3
+old isatty 0_1
+old stty 0_1
+old swab 0_1
+old strncmp 0_1
+old strncpy 0_1
+old goodmagic 0_2
+old swap 0_3
+shipped brk
+shipped close
+shipped creat
+shipped execl
+shipped exit
+shipped fork
+shipped ioctl
+shipped lseek
+old open 0_1
+shipped read
+shipped signal
+shipped time
+shipped unlink
+shipped wait
+shipped write
+shipped cerror

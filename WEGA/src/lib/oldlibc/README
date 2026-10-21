@@ -1,27 +1,51 @@
-oldlibc - the Jan-1983 libc revision embedded in size, strip and ranlib
-=======================================================================
+oldlibc - modules of the libc versions that the original programs were linked with
+===================================================================================
 
-readsym.c  _readsym as embedded in ranlib (0x724..0x79b of /usr/bin/ranlib). It reads the
-           pieces of a long symbol name over the symbol (no "sym++"), which the shipped libc.a
-           readsym does not; ranlib's __.SYMDEF depends on that. Same code as the original,
-           but compiled by the shipped cc (other register use, frame 2 bytes larger).
+The shipped library (/lib/libc.a, sources in ../libc) is not the only libc inside the original programs.
+Programs carry the members they were linked with, and some of them come from other revisions. This
+directory holds only libc modules that are not the shipped ones:
 
-doprnt.c   _doprnt (+ fix, getnum, float stubs) reconstructed from the
-           object code of bin/size (0x4ec..0xb54).  UNTESTED, NOT
-           BYTE-IDENTICAL (see below); the control flow, local variable
-           layout and jump tables follow the original.
+    <module>/0_<n>.s     version n of the libc module (named like the member of libc.a: printf, doprnt, ...)
+    VERSIONS             which program contains which version of a module
+    CATALOG.md           which libc members each program contains and how they differ (made by
+                         host/tools/libcver.py --catalog)
 
-Why this directory does not produce byte-identical size/strip:
+The sources are assembler (cas syntax) cut out of the original programs by `host/tools/unlink.py`; there is no
+C source and none is planned. The version numbers are invented (0_1, 0_2, ...) until we know the real ones;
+the same text gets the same number.
 
- * The members were compiled with an OLDER cc revision than the one
-   shipped in /bin/cc.  Visible differences: post-increment through a
-   pointer in a store (`*p->_ptr++ = c`) is emitted as load/store/inc
-   by the old cc and as inc/load/dec by the shipped cc; the varargs
-   prologue (registers spilled in reverse order into one contiguous
-   argument block, f3..f0 spilled with inline EPU words) is a feature
-   of the old cc only; char loads are `ldb`+`subb` vs `ldk`+`ldb`.
- * No copy of the old compiler is available (all archives contain the
-   same 1990-03-01 cparse/codgen/gopt/popt).
+Members of the shipped libc.a that an older cc built are NOT here: they are in `../libc/oldcc/<function>/<version>.s`.
 
-So printf/fprintf/sprintf (which rely on the old varargs prologue) are
-not reconstructed as C; only the code that the shipped cc can express.
+How a program uses them: the program has its own directory in `../../cmd` (size, strip, ranlib, cc) with a
+list of its libc modules in link order (`<program>.spec` input and `<program>.link` result of unlink.py). Its
+Makefile assembles the old modules from here, extracts the modules that are identical with the shipped ones
+from `/lib/libc.a` (`ar x`) and links them behind the own objects. No libc is linked. The first program is
+`../../cmd/size` (13 old modules: rdwr printf doprnt ffltioc filbuf flsbuf endopen findiop cnvt length malloc
+goodmagic swap, and 19 shipped members), `../../cmd/strip` (16 old modules and 24 shipped members),
+`../../cmd/ranlib` (24 old modules and 19 shipped members) and `../../cmd/cc` (cc and scc: 9 old modules and 33 shipped
+members; these two files are byte-identical with the originals). Modules with the same text in several programs are one
+version (for example cnvt, ffltioc, length in cc, scc, size and strip; strcpy in cc, scc and strip); see VERSIONS.
+
+How the modules are cut:
+ * a module is a stretch of text that no relative branch (jr, djnz, calr) and no jump table crosses; the
+   assembler cannot relocate those. The boundaries and names come from a spec written by hand (call graph,
+   sizes of the shipped members, symbol table of libc.a).
+ * calls between modules, data and bss addresses are symbols; local labels count from the start of the module
+   (`L0042`, `D0010`); jump tables are `.addr` of local labels. Pointers in other data are still numbers.
+ * the data belongs to the modules in link order.
+
+Versions found so far (CATALOG.md): the programs ar, getud, putud, tar, dump, dumpdir, restor, copydisk, format,
+verify, sync use the shipped libc; cc and scc have one libc part of their own, size, strip and ranlib one each
+(strip shares six modules with size). Open: how many libc source revisions and how many older compilers are behind
+that. Not covered: the segmented programs (cas, sld, ...), they link slibc.a.
+
+Regenerate the catalogue (file tree of the original system in WEGA):
+
+    WEGA=<tree> python3 host/tools/libcver.py --catalog bin/ar bin/cc bin/scc bin/size usr/bin/strip \
+        usr/bin/ranlib bin/getud bin/putud bin/tar etc/dump etc/dumpdir etc/restor bin/copydisk \
+        bin/format bin/verify bin/sync > src/lib/oldlibc/CATALOG.md
+
+Cut a program (here size, from src/cmd/size after `make` built its crt0-size.o and size.o):
+
+    WEGA=<tree> python3 host/tools/unlink.py src/cmd/size/size.spec <tree>/bin/size src/lib/oldlibc \
+        src/lib/libc/crt/crt0-size.o src/cmd/size/size.o > src/cmd/size/size.link

@@ -15,31 +15,50 @@ code is identical are marked in the table; the rest differs or is not built.
 
 ## Differences and workarounds
 
-Workaround `oldcc/...s` means: the file in `src/lib/libc/oldcc/` is the cas
+Workaround `oldcc/...s` means: the file in `src/lib/libc/oldcc/<member>/` is the cas
 assembler source of the original object; `cas -u` on it gives the
 byte-identical member. Such a `.s` is only used where the C source cannot
 produce the same bytes with the shipped cc.
 
 | Source | Object | Status | Cause | Workaround |
 |---|---|---|---|---|
-| `lib/libc/gen/malloc.c` | malloc.o | differs | Older cc (register contents, D3) | `lib/libc/oldcc/malloc.s` |
-| `lib/libc/gen/nlist.c` | nlist.o | differs | Older cc (frame size, D1) | `lib/libc/oldcc/nlist.s` |
-| `lib/libc/gen/length.c` | length.o | differs |  Older cc (frame size D1, byte loads D8) | `lib/libc/oldcc/length.s` |
-| `lib/libc/gen/swap.c` | swap.o | differs |  Older cc (argument spill, D4) | `lib/libc/oldcc/swap.s` |
-| `lib/libc/stdio/doscan.c` | doscan.o | differs | Different revision (Nov 1983), floating point, calls `_inflt`; the source is the older version | `lib/libc/oldcc/doscan.s` |
-| `lib/libc/stdio/printf.c` | printf.o | differs | Different revision (Nov 1983): printf/fprintf/sprintf via `_pfile`, `_flsbuf`, new `_doprnt` | `lib/libc/oldcc/printf.s` |
-| `lib/libc/stdio/scanf.c` | scanf.o | differs | Different revision (Nov 1983), floating point | `lib/libc/oldcc/scanf.s` |
-| (none in src/) | cnvt.o | no C source | C source not reconstructed | `lib/libc/oldcc/cnvt.s` |
-| (none in src/) | fltioc.o | no C source |  C source not reconstructed | `lib/libc/oldcc/fltioc.s` |
-| (none in src/) | symscan.o | no C source | C source not reconstructed | `lib/libc/oldcc/symscan.s` |
-| `lib/oldlibc/doprnt.c` | - | not built | Structural reconstruction of the Jan 1983 `_doprnt`, untested | - |
-| `cmd/ar.c` + `lib/libc/crt/crt0-ar.s` | ar | identical (built with the WEGA cc) | - | `crt0-ar.s` is the start-up variant of this binary |
-| `cmd/size.c` + `lib/libc/crt/crt0-size.s` | size | own code identical (0 differing blocks up to the first libc member), strings identical, file differs | The libc part of the original is an older libc revision; the program built from `size.c` gives the same output as the original on the corpus (objects, swapped objects, damaged files) | none; verify compares own code only |
-| `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | behaves like the original; own code differs in 2 blocks (0x2b0 and 0x2bc, `cmpins` range 0x68c) | Older cc (scratch registers, D2): one expression, `head.s_imsize = (long)segt[0].sg_code + segt[0].sg_data`. Source forms tried without success: both operands cast to long, operands swapped, cast of the sum, one cast moved. Strings and the rest of the code are identical; run on the whole corpus (objects, swapped objects, damaged files, `-h`) the program built from `strip.c` gives the same output and files as the original | none |
-| `cmd/ranlib.c` + `lib/oldlibc/readsym.c` | ranlib | behaves like the original (same `__.SYMDEF` for libc.a, slibc.a, libcurses.a), code differs | Older cc (frame size D1, scratch registers D2, argument spill D4); the old `readsym` of the original is `lib/oldlibc/readsym.c` | none |
-| `cmd/cc.c` | cc, scc | own code identical (37 functions, data and strings; `cmpins` 0 differing blocks), file differs | The libc part of the original comes from an older libc with floating point printf (EPU register saves) that is not available; rebuilt files are 162 bytes longer (cc 14370 vs 14208, scc 14408 vs 14246) | none; verify compares own code only |
+| `lib/libc/gen/malloc.c` | malloc.o | differs | Older cc (register contents, D3) | `lib/libc/oldcc/malloc/3_3.s` |
+| `lib/libc/gen/nlist.c` | nlist.o | differs | Older cc (frame size, D1) | `lib/libc/oldcc/nlist/0_1.s` |
+| `lib/libc/gen/length.c` | length.o | differs |  Older cc (frame size D1, byte loads D8) | `lib/libc/oldcc/length/0_1.s` |
+| `lib/libc/gen/swap.c` | swap.o | differs |  Older cc (argument spill, D4) | `lib/libc/oldcc/swap/0_1.s` |
+| `lib/libc/stdio/doscan.c` | doscan.o | differs | Different revision (Nov 1983), floating point, calls `_inflt`; the source is the older version | `lib/libc/oldcc/doscan/0_1.s` |
+| `lib/libc/stdio/printf.c` | printf.o | differs | Different revision (Nov 1983): printf/fprintf/sprintf via `_pfile`, `_flsbuf`, new `_doprnt` | `lib/libc/oldcc/printf/0_1.s` |
+| `lib/libc/stdio/scanf.c` | scanf.o | differs | Different revision (Nov 1983), floating point | `lib/libc/oldcc/scanf/0_1.s` |
+| (none in src/) | cnvt.o | no C source | C source not reconstructed | `lib/libc/oldcc/cnvt/0_1.s` |
+| (none in src/) | fltioc.o | no C source |  C source not reconstructed | `lib/libc/oldcc/fltioc/0_1.s` |
+| (none in src/) | symscan.o | no C source | C source not reconstructed | `lib/libc/oldcc/symscan/0_1.s` |
+| `cmd/size/doprnt.c` | - | not built | Structural reconstruction of the Jan 1983 `_doprnt`, untested | - |
+| `cmd/ar.c` + `lib/libc/crt/crt0.s.in` | ar | identical (built with the WEGA cc, linked with the shipped libc.a) | - | `crt0-ar.s` is made from the template (`crt0.list`) |
+| `cmd/size/size.c` + `lib/libc/crt/crt0-size.s` | size | own code identical (0 differing blocks up to the first libc member), strings identical, file differs | The libc part of the original is an older libc revision; the program built from `size.c` gives the same output as the original on the corpus (objects, swapped objects, damaged files) | none; verify compares own code only |
+| `cmd/strip/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | behaves like the original; own code differs in 2 blocks (0x2b0 and 0x2bc, `cmpins` range 0x68c) | Older cc (scratch registers, D2): one expression, `head.s_imsize = (long)segt[0].sg_code + segt[0].sg_data`. Source forms tried without success: both operands cast to long, operands swapped, cast of the sum, one cast moved. Strings and the rest of the code are identical; run on the whole corpus (objects, swapped objects, damaged files, `-h`) the program built from `strip.c` gives the same output and files as the original | none |
+| `cmd/ranlib/ranlib.c` (`readsym` is an old libc module) | ranlib | behaves like the original (same `__.SYMDEF` for libc.a, slibc.a, libcurses.a), code differs | Older cc (frame size D1, scratch registers D2, argument spill D4); the old `readsym` of the original is `lib/oldlibc/ranlib/readsym.c` | none |
+| `cmd/cc/cc.c` | cc, scc | **identical** (linked from `cmd/cc`: cc.o + 9 old libc modules + 33 shipped members, no libc.a) | - | - |
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | `/lib/cparse` stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) on the floating constant in `dosopn.c` line 175 (`1.5*first`); every doscopy command links `dosopn.o` | none; blocked by the emulator (EPU arithmetic) |
+
+## Programs and libc versions
+
+Result of `make verify-wega` (2026-10-21) and the libc version of the original program (measured with
+`host/tools/libcver.py`, details in `lib/oldlibc/README` and `lib/oldlibc/CATALOG.md`). "libc version" = the libc
+state the original was linked with; `shipped` = the members of the shipped `/lib/libc.a`.
+
+| Program | Result | libc version | Remaining difference |
+|---|---|---|---|
+| ar, tar, dump, dumpdir, restor, sync | identical | shipped | - |
+| getud, putud | own code identical, file differs | shipped | unstripped, the PID of the cc temporary name is in the symbol table |
+| cc, scc | identical | cc | - |
+| size | own code identical; file differs by 2 bytes of data when linked from the old libc modules (`cmd/size`: own objects + 13 old modules + 19 shipped members, no libc.a; identical with the size.o of the older cc) | size | libc part of an older libc and older compiler; `size.o` needs the older cc's string alignment |
+| strip | own code differs in 2 blocks (D2), file differs by 6 bytes (D12); the libc part linked from `cmd/strip` (16 old modules + 24 shipped members) is identical (`cmpins` 0 blocks) | strip | the 2 blocks, the string alignment of strip.o |
+| ranlib | code differs (D1, D2, D4), file differs; the libc part linked from `cmd/ranlib` (24 old modules + 19 shipped members) is identical (`cmpins` 0 blocks) | ranlib | the own code of ranlib.o (older cc), string alignment (D12) |
+| copydisk, format, verify | not built by `verify-wega` | shipped (measured on the originals) | not built here |
+| BOOT0/pb.image, standalone/sa.* | identical | - | - |
+| pburn, doscopy/* | not built | - | doscopy: EPU constant, see below; pburn not built |
+| cas | rebuilt, see "In progress" | not measured (segmented, slibc.a) | older scc |
 
 ## Compiler differences (old compiler)
 
@@ -101,7 +120,7 @@ compared using `cmp` and are identical.
 
 ## Layout still open
 
-- `popt` and the Linux versions of the drivers (`host/cc`, with `cc.conf`) are Linux-side tools and live in `host/`; the WEGA source of `cc` and `scc` is `cmd/cc.c`.
+- `popt` and the Linux versions of the drivers (`host/cc`, with `cc.conf`) are Linux-side tools and live in `host/`; the WEGA source of `cc` and `scc` is `cmd/cc/cc.c`.
 
 - The single-file commands are flat in `cmd/` (V7 layout): `ar`, `dump`,
   `dumpdir`, `getud`, `putud`, `ranlib`, `restor`, `size`, `strip`, `sync`,

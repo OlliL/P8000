@@ -1,0 +1,42 @@
+shipped freopen
+shipped fopen
+old printf 0_4
+old doprnt 0_4
+old ffltioc 0_1
+shipped flsbuf
+shipped endopen
+shipped findiop
+shipped data
+shipped __callex
+shipped cuexit
+shipped abort
+old cnvt 0_1
+shipped decimal
+old length 0_1
+old malloc 0_4
+shipped ctype_
+shipped isatty
+shipped stty
+old strcat 0_1
+shipped strcmp
+old strcpy 0_1
+old strlen 0_1
+shipped access
+shipped brk
+shipped chmod
+shipped close
+shipped creat
+shipped execl
+shipped execv
+shipped fork
+shipped getpid
+shipped ioctl
+shipped lseek
+shipped open
+shipped signal
+shipped stat
+shipped umask
+shipped unlink
+shipped wait
+shipped write
+shipped cerror

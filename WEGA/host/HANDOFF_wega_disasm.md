@@ -24,7 +24,7 @@ our own C sources, checked byte for byte against the original binaries.
   compares per program.
 - **Sources:** `src/cmd` builds under the oracle (see `src/TODO.md` for the per program state;
   `ar`, `dump`, `dumpdir`, `restor`, `sync`, `pb.image`, `pburn` 2.1 identical). `src/lib/libc` has
-  C sources for 170 members, `oldcc/*.s` for the rest.
+  C sources for 170 members, `src/lib/libc/oldcc/<member>/<version>.s` for the rest; other libc versions: `src/lib/oldlibc/README`.
 - **Analysis scripts:** `host/tools` (`sdis.py` disassembler, `cmpins.py` instruction compare,
   `epu*.py`, `war.py`, ...).
 
@@ -42,7 +42,7 @@ our own C sources, checked byte for byte against the original binaries.
 | `ld`, `sld`, `gld` | not started; `gld` man page read, `pburn` 2.1 link line known |
 | `ar` | done on the host (`host/ar`, identical behaviour and archives) |
 | `ranlib`, `strip`, `size` | done on the host (`host/binutils`); the `src/cmd` versions still differ from the originals (see TODO) |
-| `cc`, `scc` drivers | done, paths in `cc.conf` / `scc.conf`; WEGA source `src/cmd/cc.c` (own code identical, libc part of the original not reproducible) |
+| `cc`, `scc` drivers | done, paths in `cc.conf` / `scc.conf`; WEGA source `src/cmd/cc/cc.c`; cc and scc built there are byte-identical with the originals |
 | libc | 170 of 180 members from C; 7 differ (older/newer cc revision), 3 without C |
 
 ## Next steps, in this order (fastest way to a usable local tool chain)
@@ -56,7 +56,7 @@ our own C sources, checked byte for byte against the original binaries.
    `ranlib`, `strip`, `size` (done, `host/binutils`, checked against the originals), then an
    `nm`-like reader.
 4. **Assembler `cas` (and `as`):** closed grammar, good oracle (every `.s` in the tree, every
-   `cc -S` output, `oldcc/*.s`). Decode from the binary with `tools/sdis.py`; check with
+   `cc -S` output, `src/lib/libc/oldcc/*/*.s`). Decode from the binary with `tools/sdis.py`; check with
    `cmpins.py`. Do `cas` before `as` (PLZ/ASM is separate and used less).
 5. **Linkers `ld`, then `sld`/`gld`:** object/a.out formats, relocation (`tools/check_reloc.py`),
    man page for `gld`. Oracle: relink every program in the tree and compare.

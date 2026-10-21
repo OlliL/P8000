@@ -35,7 +35,7 @@ WTOOLS = CC='$(WEMU) /bin/cc' CAS='$(WEMU) /bin/cas' AS='$(WEMU) /bin/as' \
          LD='$(WEMU) /bin/ld' AR='$(WEMU) /bin/ar' STRIP='$(WEMU) /usr/bin/strip'
 
 # program (in ../src/cmd) : original (in the WEGA tree)
-WEGA_PROGS = ar:bin/ar cc:bin/cc scc:bin/scc ranlib:usr/bin/ranlib size:bin/size strip:usr/bin/strip \
+WEGA_PROGS = ar:bin/ar cc/cc:bin/cc cc/scc:bin/scc ranlib/ranlib:usr/bin/ranlib size/size:bin/size strip/strip:usr/bin/strip \
 	getud:bin/getud putud:bin/putud copydisk:bin/copydisk dump:etc/dump \
 	dumpdir:etc/dumpdir format:bin/format restor:etc/restor sync:bin/sync \
 	tar:bin/tar verify:bin/verify \
@@ -76,11 +76,12 @@ verify-wega:
 	  elif cmp -s $$f $$o; then echo "$$p: identical"; \
 	  else echo "$$p: differs ($$(stat -c%s $$f) vs $$(stat -c%s $$o) bytes)"; fi; \
 	done
-	-python3 tools/cmpins.py $(SRC)/size $(WEGAABS)/bin/size 0x224 0x224
-	-python3 tools/cmpins.py $(SRC)/strip $(WEGAABS)/usr/bin/strip 0x68c 0x68c
-	@echo 'cc, scc: only the libc part differs (the original is linked with an older libc); own code 0x2a..:'
-	-python3 tools/cmpins.py $(SRC)/cc $(WEGAABS)/bin/cc 0x15f2 0x15f2 0x2a
-	-python3 tools/cmpins.py $(SRC)/scc $(WEGAABS)/bin/scc 0x15fe 0x15fe 0x2a
+	-python3 tools/cmpins.py $(SRC)/size/size $(WEGAABS)/bin/size 0x224 0x224
+	-python3 tools/cmpins.py $(SRC)/strip/strip $(WEGAABS)/usr/bin/strip 0x68c 0x68c
+	@echo 'size, strip, ranlib (not identical yet): the libc part linked from the old libc modules:'
+	-python3 tools/cmpins.py $(SRC)/size/size $(WEGAABS)/bin/size 0x1614 0x1614 0x224
+	-python3 tools/cmpins.py $(SRC)/strip/strip $(WEGAABS)/usr/bin/strip 0x1fd2 0x1fd2 0x68c
+	-python3 tools/cmpins.py $(SRC)/ranlib/ranlib $(WEGAABS)/usr/bin/ranlib 0x1bce 0x1bd4 0x534 0x53a
 
 clean:
 	$(MAKE) -C cc clean

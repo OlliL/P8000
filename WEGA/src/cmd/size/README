@@ -1,0 +1,29 @@
+size - libc version of /bin/size (size.c 2.1 01/14/83)
+=======================================================
+
+Functions of the libc part that differ from the shipped libc.a: see ../../lib/oldlibc/CATALOG.md (bin/size).
+
+size.spec, size.link   the libc part of /bin/size as modules (input of host/tools/unlink.py, result: link order);
+           the old modules are `../../lib/oldlibc/<module>/0_<n>.s`, see there. `make` here links `size` from the
+           own objects, these modules and the shipped members that are identical with the original (extracted
+           from /lib/libc.a); no libc is linked. The file is not byte-identical with the original: size.o of
+           the original was made by an older cc that does not pad string literals to even addresses (D12), the
+           shipped cc does, so the data is 2 bytes longer (6212 instead of 6210 bytes). With that older size.o
+           (the `.even` behind the strings removed from the cc -S output) the file was identical. Run on
+           several files the built `size` gives the same output as the original.
+
+doprnt.c   _doprnt (+ fix, getnum, float stubs) reconstructed from the object code of bin/size
+           (0x4ec..0xb54). UNTESTED, NOT BYTE-IDENTICAL; the control flow, local variable layout and
+           jump tables follow the original. The same function in strip has the same structure with
+           another frame size and another code for post-increments, so the two programs were not
+           compiled by the same compiler.
+
+Why the members of this version do not come out byte-identical with the shipped cc:
+ * They were compiled with an OLDER cc revision than the one shipped in /bin/cc. Visible differences:
+   post-increment through a pointer in a store (`*p->_ptr++ = c`) is emitted as load/store/inc by the
+   old cc and as inc/load/dec by the shipped cc; the varargs prologue (registers spilled in reverse
+   order into one contiguous argument block, f3..f0 spilled with inline EPU words) is a feature of the
+   old cc only; char loads are `ldb`+`subb` vs `ldk`+`ldb`.
+ * No copy of the old compiler is available (all archives contain the same 1990-03-01 cparse/codgen/
+   gopt/popt).
+So printf/fprintf/sprintf, which rely on the old varargs prologue, are not reconstructed as C.

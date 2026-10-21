@@ -1,0 +1,3 @@
+crt0-ar.s
+crt0-size.s
+crt0-strip.s

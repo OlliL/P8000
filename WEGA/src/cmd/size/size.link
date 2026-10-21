@@ -1,0 +1,32 @@
+old rdwr 0_1
+shipped fopen
+old printf 0_1
+old doprnt 0_1
+old ffltioc 0_1
+old filbuf 0_1
+old flsbuf 0_1
+old endopen 0_1
+old findiop 0_1
+shipped data
+shipped __callex
+shipped cuexit
+old cnvt 0_1
+shipped decimal
+old length 0_1
+old malloc 0_1
+shipped isatty
+shipped stty
+shipped swab
+old goodmagic 0_1
+old swap 0_1
+shipped brk
+shipped chmod
+shipped close
+shipped creat
+shipped ioctl
+shipped lseek
+shipped open
+shipped read
+shipped umask
+shipped write
+shipped cerror

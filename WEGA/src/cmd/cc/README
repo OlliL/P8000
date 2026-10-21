@@ -1,0 +1,19 @@
+cc, scc - the drivers (cc.c 87wega3.2, no SCCS id in the binaries)
+====================================================================
+
+cc.c is the source of both drivers: scc is cc.c compiled with -DSCC. `make` here builds both and they are
+byte-identical with the originals /bin/cc (14208 bytes) and /bin/scc (14246 bytes): cc.o (own code, data and strings
+identical), the shipped start-up code /lib/crt0.o, 9 old libc modules (printf doprnt ffltioc cnvt length malloc strcat
+strcpy strlen; `../../lib/oldlibc/<module>/0_<n>.s`) and 33 members of the shipped libc.a (extracted with `ar x`). No
+libc is linked.
+
+cc.spec, cc.link, scc.spec, scc.link   the libc part of /bin/cc and /bin/scc as modules (input of host/tools/unlink.py
+           and its result, the link order). The libc part is the same text in both, only the addresses differ; the
+           order of the objects is the same.
+
+What the libc part of cc is: printf and fprintf save the EPU registers at entry (words 4FFC 83xx ...); the old _doprnt
+(714 instructions) has data of 124 bytes; malloc, strcat, strcpy and strlen are old versions; cnvt, length and ffltioc
+are the same text as in size and strip; flsbuf, endopen, findiop, abort, freopen, fopen and many system calls are the
+shipped members. cc has no filbuf (it never reads a stdio stream).
+
+Check: `cmp cc /bin/cc` and `cmp scc /bin/scc` (host: `make verify-wega` reports "identical").

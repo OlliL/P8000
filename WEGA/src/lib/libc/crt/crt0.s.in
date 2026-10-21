@@ -4,7 +4,7 @@
 	.code
 start::
 	jr	L1
-	.byte	"......1981 87wega3.2.",%00
+	.byte	"PADTEXT",%00
 L1:
 	ld	r7,@r15
 	lda	r6,%0002(r15)
@@ -25,4 +25,4 @@ L2:
 	.psec
 	.data
 	.word	%0000
-	.byte	"@[$]crt0.s",%09,%09,"Rev : 3.1",%09,"01/14/83 00:05:14",%00
+	.byte	"@[$]crt0.s",%09,%09,"Rev : REVNUM",%09,"STAMPTIME",%00

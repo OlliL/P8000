@@ -1,0 +1,242 @@
+# Start-up files of the original programs: name, text behind the jump, revision, SCCS stamp, path
+# made by host/tools/crt0list.py from the original file tree
+adb	.......... 87wega3.2.	3.2	09/28/83 00:05:03	bin/adb
+ar	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/ar
+bc	......1981 87wega3.2.			bin/bc
+chgrp	......1981 87wega3.2.	3.1	03/11/83 00:05:05	bin/chgrp
+chkin	......1981 87wega3.2.	3.2	09/12/83 00:05:03	bin/chkin
+chkout	......1981 87wega3.2.			bin/chkout
+chkwhat	......1981 87wega3.2.	3.1	02/10/83 00:05:05	bin/chkwhat
+chmod	......1981 87wega3.2.			bin/chmod
+chown	......1981 87wega3.2.	3.1	03/11/83 00:05:05	bin/chown
+cmp	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/cmp
+cp	......1981 87wega3.2.	3.2	07/26/83 00:05:04	bin/cp
+csh	......1981 87wega3.2.	3.2	08/11/83 00:05:05	bin/csh
+date	......1981 87wega3.2.	3.1	03/03/83 00:05:05	bin/date
+dc	......1981 87wega3.2.			bin/dc
+dd	......1981 87wega3.2.	3.1	12/06/82 00:05:04	bin/dd
+df	......1981 87wega3.2.	3.1	04/23/83 00:05:05	bin/df
+diff	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/diff
+dog	......1981 87wega3.2.	3.1	03/14/83 00:05:05	bin/dog
+du	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/du
+echo	......1981 87wega3.2.			bin/echo
+echo2	......1981 87wega3.2.			bin/echo2
+ed	......1981 87wega3.2.	3.1	01/30/83 00:05:05	bin/ed
+egrep	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/egrep
+env	......1981 87wega3.2.			bin/env
+file	......1981 87wega3.2.			bin/file
+find	......1981 87wega3.2.	3.2	10/25/83 00:05:05	bin/find
+getfile	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/getfile
+gets	......1981 87wega3.2.			bin/gets
+gpasswd	......1981 87wega3.2.	3.2	09/12/83 00:05:03	bin/gpasswd
+grep	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/grep
+hd	......1981 87wega3.2.	3.1	01/14/83 00:05:14	bin/hd
+kill	......1981 87wega3.2.			bin/kill
+ld	......1981 87wega3.2.	3.2	07/26/83 00:05:04	bin/ld
+ln	......1981 87wega3.2.	3.2	07/26/83 00:05:04	bin/ln
+login	......1981 87wega3.2.	3.2	07/26/83 00:05:04	bin/login
+ls	......1981 87wega3.2.	3.1	02/23/83 00:05:05	bin/ls
+mail	......1981 87wega3.2.	3.2	11/16/83 00:05:05	bin/mail
+make	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/make
+mkdir	......1981 87wega3.2.			bin/mkdir
+more	......1981 87wega3.2.	3.1	03/31/83 00:05:07	bin/more
+mv	......1981 87wega3.2.	3.2	07/26/83 00:05:04	bin/mv
+newgrp	......1981 87wega3.2.	3.2	09/23/83 00:05:04	bin/newgrp
+nice	......1981 87wega3.2.	3.1	01/30/83 00:05:05	bin/nice
+nl	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/nl
+nm	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/nm
+nohup	......1981 87wega3.2.			bin/nohup
+od	......1981 87wega3.2.	3.1	01/14/83 00:05:14	bin/od
+page	......1981 87wega3.2.	3.1	03/31/83 00:05:07	bin/page
+passwd	......1981 87wega3.2.	3.1	02/04/83 00:05:11	bin/passwd
+pr	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/pr
+printenv	......1981 87wega3.2.			bin/printenv
+putfile	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/putfile
+pwd	......1981 87wega3.2.			bin/pwd
+regcmp	......1981 87wega3.2.	3.1	01/24/83 00:05:06	bin/regcmp
+remote	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/remote
+rm	......1981 87wega3.2.	3.1	05/19/83 00:05:04	bin/rm
+rmail	......1981 87wega3.2.	3.2	11/16/83 00:05:05	bin/rmail
+rmdir	......1981 87wega3.2.	3.1	01/05/83 00:05:05	bin/rmdir
+rsh	......1981 87wega3.2.	3.2	08/22/83 00:05:04	bin/rsh
+sh	......1981 87wega3.2.	3.2	08/22/83 00:05:04	bin/sh
+size	......1981 87wega3.2.	3.1	01/14/83 00:05:14	bin/size
+sleep	......1981 87wega3.2.			bin/sleep
+sort	......1981 87wega3.2.	3.1	02/23/83 00:05:05	bin/sort
+stty	......1981 87wega3.2.	3.2	12/21/83 00:05:05	bin/stty
+su	......1981 87wega3.2.	3.1	02/04/83 00:05:11	bin/su
+sum	......1981 87wega3.2.			bin/sum
+sync	......1981 87wega3.2.			bin/sync
+tail	......1981 87wega3.2.			bin/tail
+tee	......1981 87wega3.2.	3.1	01/27/83 00:05:05	bin/tee
+test	......1981 87wega3.2.	3.1	01/20/83 00:05:05	bin/test
+time	......1981 87wega3.2.	3.1	01/22/83 00:05:06	bin/time
+touch	......1981 87wega3.2.	3.1	03/18/83 00:05:05	bin/touch
+tr	......1981 87wega3.2.	3.1	05/04/83 00:05:07	bin/tr
+uname	......1981 87wega3.2.	3.1	01/24/83 00:05:06	bin/uname
+whereis	......1981 87wega3.2.			bin/whereis
+who	......1981 87wega3.2.	3.2	11/18/83 00:05:06	bin/who
+write	......1981 87wega3.2.	3.1	01/05/83 00:05:05	bin/write
+GETTY	......1981 87wega3.2.	3.2	01/03/84 00:05:06	etc/GETTY
+INIT	......1981 87wega3.2.	3.2	07/27/83 00:05:05	etc/INIT
+UGETTY	......1981 87wega3.2.	3.2	01/03/84 00:05:06	etc/UGETTY
+chmog	......1981 87wega3.2.	3.1	03/25/83 00:05:05	etc/chmog
+chog	......1981 87wega3.2.	3.1	03/25/83 00:05:05	etc/chog
+chroot	......1981 87wega3.2.	3.1	01/24/83 00:05:06	etc/chroot
+clri	......1981 87wega3.2.			etc/clri
+cron	......1981 87wega3.2.			etc/cron
+datem	COPR. 1981 87wega3.2.	3.1	03/03/83 00:05:05	etc/datem
+dcheck	......1981 87wega3.2.			etc/dcheck
+devnm	......1981 87wega3.2.	3.1	01/24/83 00:05:06	etc/devnm
+dqueuer	......1981 87wega3.2.	3.2	09/12/83 00:05:03	etc/dqueuer
+fsck	......1981 87wega3.2.	3.2	11/18/83 00:05:06	etc/fsck
+fsdb	......1981 87wega3.2.	3.2	09/01/83 00:05:03	etc/fsdb
+getty	......1981 87wega3.2.	3.2	01/03/84 00:05:06	etc/getty
+icheck	......1981 87wega3.2.	3.1	03/11/83 00:05:05	etc/icheck
+init	......1981 87wega3.2.	3.2	07/27/83 00:05:05	etc/init
+kdb	                     	3.2	08/31/83 00:05:32	etc/kdb
+labelit	......1981 87wega3.2.	3.1	02/11/83 00:05:05	etc/labelit
+link	......1981 87wega3.2.			etc/link
+login	......1981 87wega3.2.	3.2	07/26/83 00:05:04	etc/login
+mkfs	COPR. 1981 87wega3.2.	3.2	12/12/83 00:05:06	etc/mkfs
+mknod	......1981 87wega3.2.	3.1	02/24/83 00:05:05	etc/mknod
+mount	......1981 87wega3.2.	3.1	03/03/83 00:05:05	etc/mount
+ncheck	......1981 87wega3.2.	3.2	11/18/83 00:05:06	etc/ncheck
+setlp	..... 1981 87wega3.2.	3.2	10/25/83 00:05:05	etc/setlp
+setmnt	......1981 87wega3.2.	3.1	03/03/83 00:05:05	etc/setmnt
+shut	......1981 87wega3.2.	3.1	11/24/82 00:05:05	etc/shut
+ttyconfig	......1981 87wega3.2.	3.2	11/18/83 00:05:06	etc/ttyconfig
+umount	......1981 87wega3.2.	3.1	03/03/83 00:05:05	etc/umount
+unlink	......1981 87wega3.2.			etc/unlink
+update	......1981 87wega3.2.	3.1	03/31/83 00:05:07	etc/update
+upkeep	......1981 87wega3.2.	3.2	11/22/83 00:05:06	etc/upkeep
+wall	......1981 87wega3.2.			etc/wall
+SEND	..... 1981 87wega3.2.			usr/bin/SEND
+acctcom	COPR. 1981 87wega3.2.	3.1	01/24/83 00:05:06	usr/bin/acctcom
+admin	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/admin
+awk	COPR. 1981 87wega3.2.	3.1	03/11/83 00:05:05	usr/bin/awk
+banner	COPR. 1981 87wega3.2.			usr/bin/banner
+bcheck	COPR. 1981 87wega3.2.	3.1	03/06/83 00:05:05	usr/bin/bcheck
+bdiff	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/bdiff
+cal	COPR. 1981 87wega3.2.			usr/bin/cal
+cb	COPR. 1981 87wega3.2.			usr/bin/cb
+cdc	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/cdc
+checkcw	COPR. 1981 87wega3.2.	3.2	08/01/83 00:05:05	usr/bin/checkcw
+checkeq	COPR. 1981 87wega3.2.	3.1	01/19/83 00:05:05	usr/bin/checkeq
+code	COPR. 1981 87wega3.2.			usr/bin/code
+col	COPR. 1981 87wega3.2.			usr/bin/col
+comb	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/comb
+comm	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/comm
+cpio	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/cpio
+cref	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/cref
+crypt	COPR. 1981 87wega3.2.			usr/bin/crypt
+csplit	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/csplit
+ct	COPR. 1981 87wega3.2.	3.2	07/27/83 00:05:05	usr/bin/ct
+ctags	COPR. 1981 87wega3.2.	3.1	03/06/83 00:05:05	usr/bin/ctags
+cu	COPR. 1981 87wega3.2.	3.2	12/21/83 00:05:05	usr/bin/cu
+cut	COPR. 1981 87wega3.2.			usr/bin/cut
+cw	COPR. 1981 87wega3.2.	3.2	09/13/83 00:05:15	usr/bin/cw
+daytime	COPR. 1981 87wega3.2.			usr/bin/daytime
+delta	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/delta
+deroff	COPR. 1981 87wega3.2.			usr/bin/deroff
+eqn	COPR. 1981 87wega3.2.			usr/bin/eqn
+error	COPR. 1981 87wega3.2.	3.1	02/04/83 00:05:11	usr/bin/error
+expr	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/expr
+fgrep	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/fgrep
+flow	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/flow
+get	COPR. 1981 87wega3.2.	3.2	07/01/83 00:05:05	usr/bin/get
+getopt	COPR. 1981 87wega3.2.			usr/bin/getopt
+grpck	COPR. 1981 87wega3.2.			usr/bin/grpck
+head	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/head
+help	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/help
+hyphen	COPR. 1981 87wega3.2.	3.1	01/24/83 00:05:06	usr/bin/hyphen
+id	COPR. 1981 87wega3.2.	3.1	05/05/83 00:05:05	usr/bin/id
+join	COPR. 1981 87wega3.2.			usr/bin/join
+lex	COPR. 1981 87wega3.2.	3.1	01/14/83 00:05:14	usr/bin/lex
+line	COPR. 1981 87wega3.2.			usr/bin/line
+logname	COPR. 1981 87wega3.2.	3.1	01/24/83 00:05:06	usr/bin/logname
+look	COPR. 1981 87wega3.2.	3.1	04/20/83 00:05:04	usr/bin/look
+lpr	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/lpr
+m4	COPR. 1981 87wega3.2.			usr/bin/m4
+man	COPR. 1981 87wega3.2.	3.2	09/28/83 00:05:03	usr/bin/man
+mesg	COPR. 1981 87wega3.2.			usr/bin/mesg
+mmchek	COPR. 1981 87wega3.2.	3.2	08/19/83 00:05:04	usr/bin/mmchek
+neqn	COPR. 1981 87wega3.2.			usr/bin/neqn
+news	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/news
+nq	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/nq
+nroff	COPR. 1981 87wega3.2.	3.2	07/08/83 00:05:08	usr/bin/nroff
+nroffv7	COPR. 1981 87wega3.2.	3.2	09/20/83 00:05:03	usr/bin/nroffv7
+objdu	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/objdu
+objhdr	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/objhdr
+objsu	COPR. 1981 87wega3.2.	3.1	03/25/83 00:05:05	usr/bin/objsu
+pack	COPR. 1981 87wega3.2.			usr/bin/pack
+paste	COPR. 1981 87wega3.2.			usr/bin/paste
+pcat	COPR. 1981 87wega3.2.			usr/bin/pcat
+prof	COPR. 1981 87wega3.2.			usr/bin/prof
+prs	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/prs
+ptx	COPR. 1981 87wega3.2.			usr/bin/ptx
+pwck	COPR. 1981 87wega3.2.			usr/bin/pwck
+quot	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/quot
+ranlib	COPR. 1981 87wega3.2.			usr/bin/ranlib
+reset	COPR. 1981 87wega3.2.	3.2	12/21/83 00:05:05	usr/bin/reset
+rmchg	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/rmchg
+rmdel	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/rmdel
+sact	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/sact
+script	COPR. 1981 87wega3.2.			usr/bin/script
+sdiff	COPR. 1981 87wega3.2.			usr/bin/sdiff
+sed	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/sed
+spellin	COPR. 1981 87wega3.2.			usr/bin/spellin
+spellout	COPR. 1981 87wega3.2.			usr/bin/spellout
+split	COPR. 1981 87wega3.2.			usr/bin/split
+str	COPR. 1981 87wega3.2.	3.2	09/12/83 00:05:03	usr/bin/str
+strings	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/strings
+strip	COPR. 1981 87wega3.2.	3.1	01/24/83 00:05:06	usr/bin/strip
+tabs	COPR. 1981 87wega3.2.			usr/bin/tabs
+talk	COPR. 1981 87wega3.2.			usr/bin/talk
+tbl	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/tbl
+timex	COPR. 1981 87wega3.2.	3.1	02/17/83 00:05:04	usr/bin/timex
+troff	COPR. 1981 87wega3.2.			usr/bin/troff
+troffv7	COPR. 1981 87wega3.2.	3.2	09/09/83 00:05:03	usr/bin/troffv7
+tsort	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/tsort
+tty	COPR. 1981 87wega3.2.			usr/bin/tty
+unget	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/unget
+uniq	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/uniq
+units	COPR. 1981 87wega3.2.	3.1	01/14/83 00:05:14	usr/bin/units
+unpack	COPR. 1981 87wega3.2.			usr/bin/unpack
+users	COPR. 1981 87wega3.2.			usr/bin/users
+val	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/val
+vls	COPR. 1981 87wega3.2.			usr/bin/vls
+vnews	COPR. 1981 87wega3.2.			usr/bin/vnews
+wc	COPR. 1981 87wega3.2.			usr/bin/wc
+what	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/bin/what
+whoami	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/whoami
+whois	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/whois
+xargs	COPR. 1981 87wega3.2.	3.1	01/24/83 00:05:06	usr/bin/xargs
+xq	COPR. 1981 87wega3.2.	3.2	11/18/83 00:05:06	usr/bin/xq
+atrun	COPR. 1981 87wega3.2.			usr/lib/atrun
+calprog	COPR. 1981 87wega3.2.			usr/lib/calprog
+diff3prog	COPR. 1981 87wega3.2.			usr/lib/diff3prog
+diffh	COPR. 1981 87wega3.2.	3.1	01/26/83 00:05:05	usr/lib/diffh
+lint1	COPR. 1981 87wega3.2.	3.1	05/12/83 00:05:05	usr/lib/lint1
+lint2	COPR. 1981 87wega3.2.	3.1	05/12/83 00:05:05	usr/lib/lint2
+lp	COPR. 1981 87wega3.2.	3.1	11/22/82 00:05:05	usr/lib/lp
+lp_ban	COPR. 1981 87wega3.2.	3.1	11/22/82 00:05:05	usr/lib/lp_ban
+lp_nf	COPR. 1981 87wega3.2.	3.1	01/24/83 00:05:06	usr/lib/lp_nf
+makekey	COPR. 1981 87wega3.2.			usr/lib/makekey
+spell	COPR. 1981 87wega3.2.			usr/lib/spell
+text	COPR. 1981 87wega3.2.	3.1	03/23/83 00:05:05	usr/lib/text
+text_nf	COPR. 1981 87wega3.2.	3.2	07/27/83 00:05:05	usr/lib/text_nf
+acctcms	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/acctcms
+acctcon1	COPR. 1981 87wega3.2.	3.1	03/23/83 00:05:05	usr/lib/acct/acctcon1
+acctcon2	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/acctcon2
+acctdisk	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/acctdisk
+acctdusg	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/acctdusg
+acctmerg	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/acctmerg
+accton	COPR. 1981 87wega3.2.	3.1	01/07/83 00:05:06	usr/lib/acct/accton
+acctprc1	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/acctprc1
+acctprc2	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/acctprc2
+acctwtmp	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/acctwtmp
+fwtmp	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/fwtmp
+wtmpfix	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/wtmpfix
+crpost	COPR. 1981 87wega3.2.			usr/lib/cref/crpost
+upost	COPR. 1981 87wega3.2.			usr/lib/cref/upost

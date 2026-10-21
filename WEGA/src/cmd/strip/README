@@ -1,0 +1,19 @@
+strip - libc version of /usr/bin/strip (strip.c 1.2 11/19/82)
+==============================================================
+
+Functions of the libc part that differ from the shipped libc.a: see ../../lib/oldlibc/CATALOG.md (usr/bin/strip).
+
+strip.spec, strip.link   the libc part of /usr/bin/strip as modules (input of host/tools/unlink.py, result: link
+           order); the old modules are `../../lib/oldlibc/<module>/0_<n>.s`, see there. `make` here links `strip`
+           from the own objects, these modules and the shipped members that are identical with the original
+           (extracted from /lib/libc.a); no libc is linked. 16 of 40 modules are old (fseek rdwr printf doprnt ffltioc
+           filbuf flsbuf endopen findiop cnvt length malloc mktemp strcpy goodmagic swap).
+
+The built file is not byte-identical with the original (9078 instead of 9072 bytes; the bss has the size of the original): strip.o of the original was made
+by an older cc, its own code differs in two blocks (D2) and its string literals are not padded to even addresses
+(D12, 6 bytes of data). The libc part is: `tools/cmpins.py strip /usr/bin/strip 0x1fd2 0x1fd2 0x68c` gives 0 differing
+blocks. Run on several files (objects, a program, `-h`, a missing file) the built `strip` gives the same output and
+files as the original.
+
+The old modules cnvt, ffltioc, findiop, flsbuf, goodmagic and length are the same text as in size (one version
+each); doprnt, filbuf, endopen, malloc, printf, rdwr and swap are different versions (0_2 here).

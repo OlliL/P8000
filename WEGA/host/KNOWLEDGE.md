@@ -6,14 +6,14 @@
   system, compiled by the WEGA tools (cc, scc, cas, as, ld, gld, ...) and
   meant to build with WEGA's own `make` as well. Layout as in V7
   (/usr/src/cmd): a command with one source file is a file in `src/cmd/`
-  (`ar.c`, `size.c`, ...); a command with several files has its own
+  (`ar.c`, `tar.c`, ...); a command with several files has its own
   subdirectory with its own Makefile (`doscopy`, `standalone`, `BOOT0`). Where
   several shipped versions of a command exist (`pburn` 1.4/2.1/2.3/2.6,
   `copydisk`, `format`, `verify` 1.5/1.6, `standalone/sa.diags` p8000/p8000c),
   every version has its own subdirectory and the Makefile one level up builds
   the version shipped with WEGA 3.1. Start-up variants are in
-  `src/lib/libc/crt/`, libc in `src/lib/libc` (with `oldcc/*.s` for members
-  made by the older cc), headers in `src/head`, kernel in `src/uts`. Objects
+  `src/lib/libc/crt/`, libc in `src/lib/libc`, the other libc versions (members made by
+  the older cc, libc states inside size, strip, ranlib, cc) in `src/lib/oldlibc`, headers in `src/head`, kernel in `src/uts`. Objects
   and programs are built next to the sources. `make` there needs the tool
   variables (`CC SCC CAS AS LD GLD AR STRIP`); `src/make_cmd_linux.sh` is the
   owner's wrapper that runs `make` with all tools under z8k-emu (it holds the
@@ -323,6 +323,8 @@ Validation:
 - `check_reloc.py` decoder self-check against relocations.
 - `cmpmod.py`, `cmpdata.py`, `cmpyacc.py` compare a module/data/yacc tables with a range of a binary (cas work, see "cas: decompilation").
 - `swcmp.py` lists the switches of two segmented programs (case value -> body) and compares them; noisy, see its text.
+- `libcver.py` which libc members a linked program contains and which libc version it was linked with (`--catalog` for
+  the table in `src/lib/oldlibc/CATALOG.md`), see "oldlibc" below.
 - `sdis.py` symbolic disassembler for objects: labels from the symbol
   table, relocated operands as symbol+addend, synthetic labels for internal
   branch targets, `-l` adds addresses and code words. Output close to the
@@ -469,7 +471,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
 
 ## ar (reconstructed, byte-identical)
 
-`src/cmd/ar.c` + `src/lib/libc/crt/crt0-ar.s` rebuild `/bin/ar` byte for byte (`make -C WEGA/host verify-wega`).
+`src/cmd/ar.c` + `src/lib/libc/crt/crt0-ar.s` (made from `crt0.s.in`) rebuild `/bin/ar` byte for byte (`make -C WEGA/host verify-wega`).
 
 - Source is the System III/V7 ar, version string `@[$]ar.c 2.2 11/18/83 - 87wega3.2`;
   WEGA additions: `-l` (local temp files `vXXXXX`), `av0 = trim(argv[0])` in all
@@ -544,7 +546,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
 - `size` (E707, text 5652): own code is only main() at 0x42-0x224 (s.out aware:
   `goodmagic`, `swab`, segment table of 16 byte entries, prints
   `%U + %U + %U = ` and `%U = 0x%lx`), then the old libc (fread at 0x224, fwrite
-  at 0x2a0, ...). Draft in `src/cmd/size.c`; it compiles but differs from the
+  at 0x2a0, ...). Draft in `src/cmd/size/size.c`; it compiles but differs from the
   original (older compiler revision, see "Compiler revisions").
 - z8k-emu now also runs Plexus a.out (0407/0410/0411) with the Plexus system
   call ABI (`sc INDIR; .word blk`, first argument in r0 for some calls). In 0410
@@ -589,7 +591,7 @@ Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, m
 
 ## size and strip (reconstructed, own code identical)
 
-- `src/cmd/size.c` + `src/lib/libc/crt/crt0-size.s` and `src/cmd/strip.c` + `crt0-strip.s` rebuild with the
+- `src/cmd/size/size.c` + `src/lib/libc/crt/crt0-size.s` and `src/cmd/strip/strip.c` + `crt0-strip.s` rebuild with the
   ORIGINAL `cc -O`; `make verify` compares the instructions of the own code
   (`tools/cmpins.py`, from 0x42 up to the first libc member, `fseek` resp. `rdwr`).
   size: 0 differences. strip: one expression (`head.s_imsize = code + data` as long uses
@@ -630,20 +632,77 @@ Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, m
   declared between `_align` and `_doprnt` for the symbol order, `putc((int)*str++,f)` gives
   `extsb r6; ld r7,r6`, `if ((c = *str++) < '0' || c > '9')` keeps c in rl3, `_align` falls into the
   swap after the first branch, float tail jumps to the shared `len = r2` store).
-- `src/lib/oldlibc/doprnt.c` holds the structural reconstruction of _doprnt (untested).
+- `src/cmd/size/doprnt.c` holds the structural reconstruction of _doprnt (untested).
 
-## oldcc: assembler sources of objects made by the old cc
+## oldlibc: libc versions and assembler sources of objects made by the old cc
 
 Objects that an older cc revision produced cannot be rebuilt from C with the shipped cc. For those
-we keep `src/lib/libc/oldcc/<member>.s` (cas syntax) which the original `cas -u` turns into the byte-identical
+we keep `src/lib/libc/oldcc/<member>/<version>.s` (cas syntax) which the original `cas -u` turns into the byte-identical
 original member (`make -C oldcc verify`). They are generated from the original objects with
 `tools/sdis.py -a` (all symbols are pre-declared in symbol-table order, otherwise the symbol table
 of the rebuilt object differs). Sources that the shipped cc reproduces byte for byte get NO `.s`
 listing in git.
 
-Covered (10, all verify): cnvt, doscan, fltioc, length, malloc, nlist, printf, scanf, swap,
-symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`. Not yet covered: the old-cc
-libc parts that are only embedded in size/strip/ranlib binaries (no member objects exist for them).
+Covered (10, all verify, directory `src/lib/libc/oldcc/`, version 3_3 for malloc (SCCS id malloc.c 3.3), 0_1 for the others (no id, invented)): cnvt, doscan, fltioc, length, malloc, nlist,
+printf, scanf, swap, symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`.
+
+### libc versions (measured with `tools/libcver.py`)
+
+A program carries the libc members it was linked with. `libcver.py` decodes the text of a program, normalises
+addresses and relocated values (in the members of the archive every relocated word is masked, in the program
+every address and every immediate from 0x100 up) and searches each member of `lib/libc.a` as a contiguous
+instruction sequence. What is found is "identical to the shipped member"; the rest behind the own code is split at
+the call targets and fingerprinted (md5 of the normalised instructions). `--catalog` writes `src/lib/oldlibc/CATALOG.md`.
+Results (nonsegmented programs of `src/cmd`):
+
+- Version **shipped**: ar, getud, putud, tar, dump, dumpdir, restor, copydisk, format, verify, sync. Every function
+  behind the own code is a member of the shipped libc.a (this includes the 10 members of `libc/oldcc`, which are
+  in the shipped library and were made by an older cc). SCCS ids in these programs: `malloc.c 3.3 09/12/83`.
+- Version **cc**: cc and scc (same libc part, byte for byte). 9 functions differ from the shipped library
+  (printf with EPU register saves, `_doprnt` 714 instructions, malloc, strcat, strcpy, ...); cnvt and length are
+  the code that size and strip also contain. No `malloc.c` SCCS id.
+- Versions **size**, **strip**, **ranlib**: each has its own libc part (13, 14, 10 functions differ). size and strip share
+  4 functions (rew, ttyname, 2 swap) and the cnvt and length of cc; their `_doprnt` is the same function with another
+  frame size and another post-increment code: the two programs were not compiled by the same compiler. ranlib
+  shares nothing with the others except tiny stubs.
+- Counted as no difference: functions of up to 3 instructions (`__callex`, `fakcu`, the `sync` stub). SCCS ids of the
+  own sources: ar.c 2.2 11/18/83, size.c 2.1 01/14/83, strip.c 1.2 11/19/82, ranlib.c 1.1 07/24/82; cc has none.
+- The names of the nearest members are a hint only (members of another revision look different; below ratio 0.6 they
+  are guesses). Not measured: the segmented programs (cas, sld, ...) with slibc.a.
+- Still open: how many older compilers and how many libc source revisions are behind the versions cc, size, strip,
+  ranlib (the evidence so far: `_doprnt` of size and strip differs by compiler only).
+
+### Start-up files (crt0) and the libc part as building blocks
+
+- `crt0` of the system programs is one piece of code. It differs only in the 21 characters behind the first jump (`COPR. 1981
+  87wega3.2.`, `......1981 87wega3.2.`, ...), the revision (3.1, 3.2) and the SCCS stamp in the data (`@[$]crt0.s <tab><tab>Rev :
+  x <tab> date time`), which is the build time of the program (about 60 different stamps). `src/lib/libc/crt/crt0.s.in` is the
+  template, `crt0.list` the table (made by `tools/crt0list.py` from the original tree: 240 programs have this form, 169 of them with a stamp and 71 without
+  (empty stamp, the data starts with the program's own strings, ranlib is one); 16 have the stamp elsewhere, 60 have another start-up), `mkcrt0.sh NAME` writes `crt0-NAME.s`. The Makefiles of `src/cmd` (ar), `src/cmd/size`, `src/cmd/strip` and `src/cmd/ranlib` build the
+  start-up files that way (same bytes as the files that were kept before).
+- `tools/unlink.py` cuts the libc part of a linked program into assembler modules (idea: a "Baukasten" of objects per libc
+  module and version, `src/lib/oldlibc/<module>/0_<n>.s`, version numbers invented, `VERSIONS` lists the programs). Facts it
+  relies on: the assembler cannot relocate `calr`/`jr`/`djnz` to another object (checked: `calr _g` to an external symbol is
+  assembled as a call to itself), so a module is a stretch of text that no relative branch and no jump table crosses; `call` and
+  `jp` between modules are normal relocations; the commons (`.comm`) are allocated in the order of the first mention in the
+  symbol tables; the names and addresses of the symbols that the own objects use are found from their relocations. The module
+  boundaries and names come from a spec written by hand (`src/cmd/size/size.spec`): entry points from the call graph, the
+  sizes of the shipped members (text and data, `tools/libcver.py`, the symbol table of `libc.a`), the layout of the data in link
+  order. For size (`src/cmd/size`): 13 old modules + 19 shipped members, no libc.a is linked; with the size.o of the older cc the file is
+  byte-identical with `/bin/size` (6210 bytes), with the current cc it is 6212 bytes (checked: same output on several files). Findings on the way: size's libc is the shipped libc in older revisions
+  (flsbuf.o holds `_flsbuf _fflush __cleanup _fclose`, rdwr.o `_fread _fwrite`, printf.o `_printf _fprintf _sprintf`, doprnt.o
+  `__align __doprnt __atoip`, as in the shipped library); `__sobuf` is allocated before `__sibuf` in size, strip, ranlib and cc (cc: `_rc` before `__pfile`, the order of the `.comm` lines in the module matters); malloc's data is 12 bytes
+  (62 in the shipped one). strip (`src/cmd/strip`): 16 old modules + 24 shipped members; the
+  libc part is instruction-identical (`cmpins` 0 blocks), the file is 6 bytes longer than the original (data of strip.o, D12) and
+  its own code has the 2 known blocks (D2). Six old modules (cnvt, ffltioc, findiop, flsbuf, goodmagic, length) are the same text
+  in size and strip (cnvt, ffltioc and length also in cc and scc, ffltioc also in ranlib, strcpy in cc, scc and strip). In strip the data of the libc modules is: doprnt 124, filbuf 20, endopen 12, `data` 162, cnvt 12, malloc 12,
+  mktemp 2, goodmagic 20, brk 2, cerror 4. ranlib (`src/cmd/ranlib`): 24 old modules + 19 shipped members; the libc part is instruction-identical
+  (1999 instructions, 5786 bytes), the own code is not (ranlib.o: 6 bytes less text, 6 bytes more data, 4 bytes more bss), so the
+  spec has the symbol addresses (`noown`). The old `readsym` is now an assembler module like the others; the start-up code has
+  no stamp. The data of the libc modules is: system 30, doprnt 80, filbuf 20, `data` 162, malloc 12, goodmagic 20, brk 2, fork 2,
+  cerror 4. ranlib's isatty, stty, swab, open, strncmp, strncpy are old modules (not the shipped ones). The built ranlib gives the
+  same archives as the original (libc.a, slibc.a; only the time stamp differs). The own object size.o would have to be the one of the older cc (no `.even` behind string literals, D12); that is left for the
+  work on the older cc.
 
 ## cas: analysis of the binary (`/bin/cas`)
 
@@ -1295,10 +1354,10 @@ compares output, exit code and every file afterwards: all identical.
   of the name text: most long names are missing in the table and some enter it with garbage
   (entries with an empty name). The table of `libc.a` has 238 entries, not the ~290 a correct
   ranlib would write. That is the behaviour of the WEGA binary, not a bug of ours; the host ranlib
-  and `src/cmd/ranlib.c` keep it (identical `__.SYMDEF`). The tables are not cleared between two
+  and `src/cmd/ranlib/ranlib.c` keep it (identical `__.SYMDEF`). The tables are not cleared between two
   archives of one call.
-- `src/cmd/ranlib.c` now follows the binary: the earlier version had the `ar rl` arguments swapped
-  and passed `&exp` to `goodmagic`; the old readsym is `src/lib/oldlibc/readsym.c`, linked in by
+- `src/cmd/ranlib/ranlib.c` now follows the binary: the earlier version had the `ar rl` arguments swapped
+  and passed `&exp` to `goodmagic`; the old readsym is `src/cmd/ranlib/readsym.c`, linked in by
   `src/cmd/Makefile`. Built with the WEGA cc the program behaves exactly like the original (same
   `__.SYMDEF` for libc.a, slibc.a, libcurses.a); the code is not byte identical because the original
   was compiled by an older cc (own code and readsym differ in register use, frame and spills).
@@ -1379,25 +1438,24 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
   outfile NULL (the original reads a zero byte at address 0).
 - `-Sl` runs the listing program `/lib/clist`; failures of gopt, popt and fpf
   only print a warning and the compile goes on without that pass.
-- The WEGA source `src/cmd/cc.c` (see below) is the rebuild with the WEGA cc; `host/cc/cc.c` is the
+- The WEGA source `src/cmd/cc/cc.c` (see below) is the rebuild with the WEGA cc; `host/cc/cc.c` is the
   separate Linux version.
 
-### cc, scc rebuilt with the WEGA cc (`src/cmd/cc.c`)
+### cc, scc rebuilt with the WEGA cc (`src/cmd/cc/cc.c`)
 
-- `src/cmd/cc.c` is one source for both drivers (`scc` = `-DSCC`); `make cc scc` in `src/cmd` compiles it
-  with the shipped `cc -O` and links `ld -s -e start /lib/crt0.o x.o /lib/libc.a`. Both are non-segmented
+- `src/cmd/cc/cc.c` is one source for both drivers (`scc` = `-DSCC`); `make` in `src/cmd/cc` compiles it
+  with the shipped `cc -O` and links `ld -s -e start /lib/crt0.o x.o` plus the libc part (see below). Both are non-segmented
   programs (E707), also scc. Built under z8k-emu: cc 14370 bytes (original 14208), scc 14408 (14246).
 - **Own code, data and strings are identical** to `/bin/cc` and `/bin/scc`: all 37 functions compare equal
   instruction by instruction including stack offsets; the data of the program (pointers, strings, switch
   tables, buffers in the original order) is identical; `tools/cmpins.py cc /bin/cc 0x15f2 0x15f2 0x2a` gives
   0 differing blocks (scc: 0x15fe). The only differing words are addresses behind the own code that moved
   because the libc part is longer (+112 bytes of text, so +112 for data addresses and +162 for bss).
-- **The libc part cannot be reproduced.** The original is linked with another libc than the shipped
-  `libc.a`: its `printf`/`fprintf`/`sprintf` save the EPU registers (`4FFC 83xx` words) and call a
-  different `_doprnt` (about 680 instead of 690 instructions), and further members (malloc, calloc, strcpy, strcat,
-  strlen, measured by instruction comparison) differ too. No source or object of that libc exists here (cf. the old libc in
-  size/strip/ranlib, which has no floating point). `make verify-wega` reports `cc: differs`; the own code
-  check follows it.
+- **The libc part** of the originals is an older libc (printf and fprintf save the EPU registers, `_doprnt` has 714 instructions,
+  malloc, strcat, strcpy, strlen are older versions). It is cut out of the originals as assembler modules and linked instead of
+  `libc.a`, see `src/cmd/cc` and `src/lib/oldlibc`: with these `cc` and `scc` are **byte-identical** with `/bin/cc` and `/bin/scc`
+  (`make` in `src/cmd/cc`; 9 old modules + 33 shipped members + the shipped /lib/crt0.o). A linked `cc` of the shipped libc is 14370
+  bytes (162 longer).
 - Behaviour check: the rebuilt cc and scc, started under z8k-emu with the original passes, give the same
   messages, exit codes and files as `/bin/cc`, `/bin/scc` for 40 option combinations (`-c -S -E -P -O -Ol -Or
   -O2 -p -F -D -I -o`, two files, missing file, bad `-T -a -N -:` options, `-:v -:z -:n`); the only difference

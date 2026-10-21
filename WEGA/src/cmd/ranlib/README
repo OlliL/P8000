@@ -1,0 +1,25 @@
+ranlib - libc version of /usr/bin/ranlib (ranlib.c 1.1 07/24/82)
+=================================================================
+
+Functions of the libc part that differ from the shipped libc.a: see ../../lib/oldlibc/CATALOG.md (usr/bin/ranlib).
+
+ranlib.spec, ranlib.link   the libc part of /usr/bin/ranlib as modules (input of host/tools/unlink.py, result: link
+           order); the old modules are `../../lib/oldlibc/<module>/0_<n>.s`, see there. `make` here links `ranlib`
+           from the own objects, these modules and the shipped members that are identical with the original
+           (extracted from /lib/libc.a); no libc is linked. 24 of 43 modules are old (fseek ftell readsym rdwr system
+           fopen printf doprnt ffltioc filbuf flsbuf endopen findiop cnvt length malloc isatty stty swab strncmp strncpy
+           goodmagic swap open). The own code differs from the original, so the symbol addresses are in the spec
+           (`noown`, `sym`).
+readsym.c  _readsym as embedded in ranlib (0x724..0x79b of /usr/bin/ranlib), reconstructed as C: it reads the
+           pieces of a long symbol name over the symbol (no "sym++"), which the shipped libc.a readsym does not;
+           ranlib's __.SYMDEF depends on that. It is not built any more: the module `readsym` in the old libc is the
+           assembler form of the original (`../../lib/oldlibc/readsym/0_1.s`). The C file is kept as documentation.
+
+The start-up code of the original ranlib is the crt0 with the jump over the text "COPR. 1981 87wega3.2." but without
+the SCCS stamp in the data (crt0.list has an empty stamp for it).
+
+The built file is not byte-identical with the original (7732 bytes, as the original, but the content differs): ranlib.o
+of the original was made by an older cc (own code differs, D1, D2, D4; 6 bytes less text, 6 bytes more data from the
+string alignment D12; 4 bytes more bss). The libc part is identical: `tools/cmpins.py ranlib /usr/bin/ranlib 0x1bce 0x1bd4
+0x534 0x53a` gives 0 differing blocks. Run on libc.a and slibc.a the built `ranlib` gives the same archive as the
+original (except the 4 bytes of the time stamp in the header of __.SYMDEF).

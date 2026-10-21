@@ -1,8 +1,9 @@
 # cmd: WEGA system commands, in the V7 layout: a command with a single source
-# file is a file here (ar.c, size.c, ...); a command with several files has
-# its own subdirectory with its own Makefile (BOOT0, doscopy, pburn,
-# standalone). Start-up variants of the commands live in ../lib/libc/crt.
-# cc.c is the source of both drivers, cc and scc (scc is cc.c compiled with -DSCC).
+# file is a file here (ar.c, tar.c, ...); a command with several files, several versions or its own
+# libc has its own subdirectory with its own Makefile (BOOT0, doscopy, pburn, standalone, size, strip,
+# ranlib, cc). Start-up variants of the commands live in ../lib/libc/crt (crt0.s.in + crt0.list,
+# made into crt0-<command>.s by mkcrt0.sh).
+# cc/cc.c is the source of both drivers, cc and scc (scc is cc.c compiled with -DSCC).
 # The Linux versions of the cc driver (with cc.conf) and of popt live in ../../host.
 #
 #   make                       build everything (with the WEGA cc/cas/ld)
@@ -20,11 +21,11 @@ PREFIX = /
 LIBC = /lib/libc.a
 CRT = ../lib/libc/crt
 
-PROGS = ar ranlib size strip cc scc
+PROGS = ar
 
 FILES=		getud putud dump dumpdir restor sync tar
-CLEANFILES=	sync.o ar.o  getud.o  putud.o  ranlib.o  readsym.o  size.o  strip.o  cc.o  scc.o  scc.c
-SUBDIRS=	BOOT0 pburn standalone verify copydisk format
+CLEANFILES=	sync.o ar.o  getud.o  putud.o
+SUBDIRS=	BOOT0 pburn standalone verify copydisk format size strip ranlib cc
 
 all: $(PROGS) $(FILES) $(STRIPFILES) subdirs
 
@@ -56,52 +57,11 @@ ar.o: ar.c
 ar: ar.o $(CRT)/crt0-ar.o
 	$(LD) -s -e start -o $@ $(CRT)/crt0-ar.o ar.o $(LIBC)
 
-# the drivers: scc is cc.c compiled with -DSCC (the object is named after the source file)
-cc.o: cc.c
-	$(CC) $(CFLAGS) -c cc.c
-
-cc: cc.o
-	$(LD) -s -e start -o $@ /lib/crt0.o cc.o $(LIBC)
-
-scc.o: cc.c
-	cp cc.c scc.c
-	$(CC) $(CFLAGS) -DSCC -c scc.c
-	rm -f scc.c
-
-scc: scc.o
-	$(LD) -s -e start -o $@ /lib/crt0.o scc.o $(LIBC)
-
-ranlib.o: ranlib.c
-	$(CC) $(CFLAGS) -c ranlib.c
-
-# the original ranlib contains the readsym of an older libc (it reads the pieces of a long name
-# over the symbol), see ../lib/oldlibc/README; ld warns "symbol redefined in archive" and keeps ours
-readsym.o: ../lib/oldlibc/readsym.c
-	$(CC) $(CFLAGS) -c ../lib/oldlibc/readsym.c
-
-ranlib: ranlib.o readsym.o
-	$(LD) -s -e start -o $@ /lib/crt0.o ranlib.o readsym.o $(LIBC)
-
-size.o: size.c
-	$(CC) $(CFLAGS) -c size.c
-
-size: size.o $(CRT)/crt0-size.o
-	$(LD) -s -e start -o $@ $(CRT)/crt0-size.o size.o $(LIBC)
-
-strip.o: strip.c
-	$(CC) $(CFLAGS) -c strip.c
-
-strip: strip.o $(CRT)/crt0-strip.o
-	$(LD) -s -e start -o $@ $(CRT)/crt0-strip.o strip.o $(LIBC)
+$(CRT)/crt0-ar.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+	sh $(CRT)/mkcrt0.sh ar > $@
 
 $(CRT)/crt0-ar.o: $(CRT)/crt0-ar.s
 	$(CAS) -u -o $@ $(CRT)/crt0-ar.s
-
-$(CRT)/crt0-size.o: $(CRT)/crt0-size.s
-	$(CAS) -u -o $@ $(CRT)/crt0-size.s
-
-$(CRT)/crt0-strip.o: $(CRT)/crt0-strip.s
-	$(CAS) -u -o $@ $(CRT)/crt0-strip.s
 
 $(CRT)/crt0-sync.o: $(CRT)/crt0-sync.s
 	$(CAS) -u -o $@ $(CRT)/crt0-sync.s
@@ -111,14 +71,13 @@ sync: $(CRT)/crt0-sync.o sync.o
 	$(LD) -s -o $@ -e start $(CRT)/crt0-sync.o sync.o -lc
 
 install: $(PROGS) $(FILES) $(STRIPFILES)
-	for file in ar cc chkdiff getud putud scc size tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
-	for file in ranlib strip ; do cp $$file $(PREFIX)/usr/bin/$$file ; done
+	for file in ar chkdiff getud putud tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
 	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; done
 	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
 
 clean:
 	rm -f $(PROGS) $(FILES) $(STRIPFILES) $(CLEANFILES)
-	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-size.o $(CRT)/crt0-strip.o $(CRT)/crt0-sync.o
+	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-sync.o $(CRT)/crt0-ar.s
 	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) clean ; cd .. ; done
 
 .PHONY: all subdirs clean install
