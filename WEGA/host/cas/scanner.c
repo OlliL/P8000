@@ -54,6 +54,7 @@ static const struct optab {
 };
 
 char tokbuf[0x100];
+int toklen;				/* length of the text of the last string token */
 
 static void ungetch(int c);
 
@@ -313,6 +314,7 @@ again:
 			ADD(c);
 		} while (c != c1 && !(c == 0xFF && feof(stdin)));
 		TERM();
+		toklen = cnt - 1;
 		yylval.p = tokbuf;
 		tok = 0x58;
 		goto done;

@@ -60,6 +60,23 @@ errnode(void)
 	return (np);
 }
 
+/*
+ * The value of a rule that ended in a syntax error: an expression of the invalid type 6, so
+ * that an assignment or an operation that goes on with it defines and folds nothing (the
+ * original goes on with whatever is on its stack; a symbol that is assigned such a value
+ * stays undefined).
+ */
+NODE *
+synnode(void)
+{
+	NODE *np;
+
+	np = extranode();
+	np->n_type = 0x19;
+	np->n_c1 = 6;
+	return (np);
+}
+
 /* end of a statement: all nodes must have been written */
 void
 chknodes(void)
@@ -126,6 +143,9 @@ mknode2(int type, NODE *a, NODE *b)
 	return (np);
 }
 
+/* the end of the text of the string that is made into nodes (a NUL inside is a character) */
+static const char *strend;
+
 /* the character after a backslash in a string; *sp is left on the last character used */
 static int
 escape(const char **sp)
@@ -135,9 +155,9 @@ escape(const char **sp)
 	switch (**sp) {
 	case '%':
 		buf[0] = buf[1] = buf[2] = '\0';
-		if (*++*sp) {
+		if (++*sp < strend) {
 			buf[0] = **sp;
-			if (*++*sp)
+			if (++*sp < strend)
 				buf[1] = **sp;
 		}
 		return ((unsigned char)xtol(buf, 16));
@@ -183,6 +203,7 @@ mkstring(const char *s)
 
 	np = newnode();
 	np->n_type = 0x16;
+	strend = s + toklen;
 	delim = *s;
 	s++;
 	c = (unsigned char)*s;
@@ -193,7 +214,7 @@ mkstring(const char *s)
 	tail = mknode1(1, c);
 	locadv(1);
 	np->n_next = tail;
-	if (*s == 0) {				/* the escape of the first character reached the end of the text */
+	if (s >= strend) {			/* the escape of the first character reached the end of the text */
 		runout();
 		np->n_a = tail;
 		return (np);
@@ -203,8 +224,8 @@ mkstring(const char *s)
 	 * character, and the scan goes on behind the end of the text. The original finds a quote in
 	 * whatever memory follows and ends with "Out of nodes"; so does this one.
 	 */
-	for (s += (*s != 0); *s != delim; s++) {
-		if (*s == 0) {
+	for (s += (s < strend); *s != delim; s++) {
+		if (s >= strend) {
 			runout();
 			break;
 		}
@@ -216,7 +237,7 @@ mkstring(const char *s)
 		tail->n_next = mknode1(1, c);
 		tail = tail->n_next;
 		locadv(1);
-		if (*s == 0) {			/* the escape reached the end of the text */
+		if (s >= strend) {		/* the escape reached the end of the text */
 			runout();
 			break;
 		}

@@ -59,6 +59,7 @@ extern int segmode;			/* set by .seg, cleared by .nonseg */
 extern int shortaddr;			/* a short segmented address was seen */
 
 extern char tokbuf[];			/* the text of the last token */
+extern int toklen;			/* its length, for a string (it may hold a NUL) */
 
 struct pst {				/* the permanent symbols: mnemonics, registers, directives */
 	int	p_tok;			/* token to return; 62 .. 65: instructions with a trailer record */
@@ -117,6 +118,7 @@ struct lcaux {				/* a pair per location counter (jpr.c, optim.c) */
 /* nodes.c */
 NODE *newnode(void);
 NODE *errnode(void);
+NODE *synnode(void);
 void chknodes(void);
 NODE *mknode1(int type, int32_t val);
 NODE *mknode2(int type, NODE *a, NODE *b);

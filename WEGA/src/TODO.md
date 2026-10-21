@@ -91,7 +91,7 @@ the marks of D14 only: that is all that was checked for them.
   scc, so the code differs (see "Compiler differences" below and `cmd/cas/README`); byte identity is not expected. Proof of behaviour: `cmd/cas/test/`
   (all opcodes in the three address modes, about 346 000 operand patterns, jr/jpr/callr at 23 distances, 228 compiler outputs, 10 option sets): same
   messages and objects as the original. Not the same (undefined behaviour of the original, see KNOWLEDGE.md "Test of the complete cas"): more than one
-  semantic error in an expression in one statement, `"\%4"` (one hex digit). The host fork `host/cas` (modern C) exists and is tested against the original with the same scripts (KNOWLEDGE.md "cas on the host"); open: one syntax-error recovery case with `\\` in a statement.
+  semantic error in an expression in one statement, `"\%4"` (one hex digit). The host fork `host/cas` (modern C) exists and is tested against the original with the same scripts (KNOWLEDGE.md "cas on the host").
 
 ## Scripts without an object check
 

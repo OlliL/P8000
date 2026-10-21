@@ -1237,6 +1237,7 @@ Findings of this work:
   a line is found before `lineinit` is reduced (bison: rule `line: error`, "Expecting beginning of line") or after (WEGA: `stmt: error`, "Expecting beginning of program").
   `host/cas/parser.c` is therefore made by the original yacc under z8k-emu (`mkparser.sh`) and kept in the repository. The stack of its driver has 150 entries: a list of
   75 elements gives "yacc stack overflow", the same limit in both programs (74 elements pass).
+- **Value of a rule after a syntax error.** The original goes on with the stack leftovers; in practice a symbol that was assigned such a value stays undefined (e.g. `x:= ^o .data` and `x` in the next line is still a new name). `host/cas` gives these rules a node of the invalid type 6 (`synnode`); a constant 0 defined `x` and changed the next syntax error. Strings: a NUL inside a string is a character, the scanner passes the length (`toklen`).
 - **Pool of nodes.** The original goes on counting `nalloc` behind `NNODES = 100`; after "Out of nodes" the pool stays full and the next statement fails too. A
   syntax error before the first token of a line (`line: error`) allocates no node, the pool is not emptied by it.
 - **`opoff` of a constant** in `src/cmd/cas/expr.c` had a cast `(unsigned char)` that the binary does not have in effect (see `src/cmd/cas/README`): fixed there.

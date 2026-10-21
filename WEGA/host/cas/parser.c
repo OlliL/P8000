@@ -32,7 +32,7 @@ static void yyerror(const char *s);
 
 /*
  * an error in the syntax: the message, then the rest of the line is skipped. The value of the
- * rule is a constant node: the original leaves what happens to be on the stack here, and a
+ * rule is a node of the invalid type (synnode): the original leaves what happens to be on the stack here, and a
  * rule that takes the operand list or an expression goes on with it before the statement
  * is dropped.
  */
@@ -42,7 +42,7 @@ static void yyerror(const char *s);
 		while (yychar != 29 && yychar != -1 && yychar != 0) \
 			yychar = yylex(); \
 		yyerrflag = 0; \
-		yyval.np = errnode(); \
+		yyval.np = synnode(); \
 		nfreed = nalloc; \
 	} while (0)
 
