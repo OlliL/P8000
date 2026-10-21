@@ -2,7 +2,8 @@
 # file is a file here (ar.c, size.c, ...); a command with several files has
 # its own subdirectory with its own Makefile (BOOT0, doscopy, pburn,
 # standalone). Start-up variants of the commands live in ../lib/libc/crt.
-# The cc driver and popt are Linux-side tools and live in ../../host.
+# cc.c is the source of both drivers, cc and scc (scc is cc.c compiled with -DSCC).
+# The Linux versions of the cc driver (with cc.conf) and of popt live in ../../host.
 #
 #   make                       build everything (with the WEGA cc/cas/ld)
 #   make strip-programs        strip the programs that the original ships
@@ -19,10 +20,10 @@ PREFIX = /
 LIBC = /lib/libc.a
 CRT = ../lib/libc/crt
 
-PROGS = ar ranlib size strip
+PROGS = ar ranlib size strip cc scc
 
 FILES=		getud putud dump dumpdir restor sync tar
-CLEANFILES=	sync.o ar.o  getud.o  putud.o  ranlib.o  readsym.o  size.o  strip.o
+CLEANFILES=	sync.o ar.o  getud.o  putud.o  ranlib.o  readsym.o  size.o  strip.o  cc.o  scc.o  scc.c
 SUBDIRS=	BOOT0 pburn standalone verify copydisk format
 
 all: $(PROGS) $(FILES) $(STRIPFILES) subdirs
@@ -54,6 +55,21 @@ ar.o: ar.c
 
 ar: ar.o $(CRT)/crt0-ar.o
 	$(LD) -s -e start -o $@ $(CRT)/crt0-ar.o ar.o $(LIBC)
+
+# the drivers: scc is cc.c compiled with -DSCC (the object is named after the source file)
+cc.o: cc.c
+	$(CC) $(CFLAGS) -c cc.c
+
+cc: cc.o
+	$(LD) -s -e start -o $@ /lib/crt0.o cc.o $(LIBC)
+
+scc.o: cc.c
+	cp cc.c scc.c
+	$(CC) $(CFLAGS) -DSCC -c scc.c
+	rm -f scc.c
+
+scc: scc.o
+	$(LD) -s -e start -o $@ /lib/crt0.o scc.o $(LIBC)
 
 ranlib.o: ranlib.c
 	$(CC) $(CFLAGS) -c ranlib.c
@@ -95,7 +111,7 @@ sync: $(CRT)/crt0-sync.o sync.o
 	$(LD) -s -o $@ -e start $(CRT)/crt0-sync.o sync.o -lc
 
 install: $(PROGS) $(FILES) $(STRIPFILES)
-	for file in ar chkdiff getud putud size tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
+	for file in ar cc chkdiff getud putud scc size tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
 	for file in ranlib strip ; do cp $$file $(PREFIX)/usr/bin/$$file ; done
 	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; done
 	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done

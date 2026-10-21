@@ -37,6 +37,7 @@ produce the same bytes with the shipped cc.
 | `cmd/size.c` + `lib/libc/crt/crt0-size.s` | size | own code identical (0 differing blocks up to the first libc member), strings identical, file differs | The libc part of the original is an older libc revision; the program built from `size.c` gives the same output as the original on the corpus (objects, swapped objects, damaged files) | none; verify compares own code only |
 | `cmd/strip.c` + `lib/libc/crt/crt0-strip.s` | strip | behaves like the original; own code differs in 2 blocks (0x2b0 and 0x2bc, `cmpins` range 0x68c) | Older cc (scratch registers, D2): one expression, `head.s_imsize = (long)segt[0].sg_code + segt[0].sg_data`. Source forms tried without success: both operands cast to long, operands swapped, cast of the sum, one cast moved. Strings and the rest of the code are identical; run on the whole corpus (objects, swapped objects, damaged files, `-h`) the program built from `strip.c` gives the same output and files as the original | none |
 | `cmd/ranlib.c` + `lib/oldlibc/readsym.c` | ranlib | behaves like the original (same `__.SYMDEF` for libc.a, slibc.a, libcurses.a), code differs | Older cc (frame size D1, scratch registers D2, argument spill D4); the old `readsym` of the original is `lib/oldlibc/readsym.c` | none |
+| `cmd/cc.c` | cc, scc | own code identical (37 functions, data and strings; `cmpins` 0 differing blocks), file differs | The libc part of the original comes from an older libc with floating point printf (EPU register saves) that is not available; rebuilt files are 162 bytes longer (cc 14370 vs 14208, scc 14408 vs 14246) | none; verify compares own code only |
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built | `/lib/cparse` stops at EPU instruction `8E04` (not emulated, see `host/z8k-emu/README.md`) on the floating constant in `dosopn.c` line 175 (`1.5*first`); every doscopy command links `dosopn.o` | none; blocked by the emulator (EPU arithmetic) |
 
@@ -100,7 +101,7 @@ compared using `cmp` and are identical.
 
 ## Layout still open
 
-- `cc` and `popt` are Linux-side tools and live in `host/` (not WEGA sources).
+- `popt` and the Linux versions of the drivers (`host/cc`, with `cc.conf`) are Linux-side tools and live in `host/`; the WEGA source of `cc` and `scc` is `cmd/cc.c`.
 
 - The single-file commands are flat in `cmd/` (V7 layout): `ar`, `dump`,
   `dumpdir`, `getud`, `putud`, `ranlib`, `restor`, `size`, `strip`, `sync`,

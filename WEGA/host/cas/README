@@ -35,8 +35,11 @@ Undefined behaviour of the original
 In a few places the original uses what happens to be in a register or in memory. The host version does something fixed
 and harmless instead; the results differ only for input that is wrong anyway (an error message has been printed):
 
-- After an error message a function returns a constant 0 node (`errnode`), not a leftover value. More than one error in
-  a statement can give other follow-up messages (the warning `Value too large` behind `Undefined symbol`) than in the original.
+- After a semantic error message a function returns a constant 0 node (`errnode`), not a leftover value. More than one error
+  in a statement can give other follow-up messages (the warning `Value too large` behind `Undefined symbol`) than in the original.
+  After a syntax error the value of the rule is an invalid node (`synnode`, type 0x19), as in the original: `x:= ^o .data`
+  does not define `x`, the next statement starts with an undefined name. A NUL inside a string is a character; the scanner
+  passes the length of the token (`toklen`).
 - `jpr cc` with a condition but without an address assembles whatever is left in the registers of the original. `^O n`
   is `n` (the argument is `(unsigned char)` of a long, passed as a word; the callee takes the long from `r4:r5`, where the
   number happens to be), except under the option `-^`, where other values are there (`^O 5` is %9028); the host version

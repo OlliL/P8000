@@ -42,7 +42,7 @@ our own C sources, checked byte for byte against the original binaries.
 | `ld`, `sld`, `gld` | not started; `gld` man page read, `pburn` 2.1 link line known |
 | `ar` | done on the host (`host/ar`, identical behaviour and archives) |
 | `ranlib`, `strip`, `size` | done on the host (`host/binutils`); the `src/cmd` versions still differ from the originals (see TODO) |
-| `cc`, `scc` drivers | done, paths in `cc.conf` / `scc.conf` |
+| `cc`, `scc` drivers | done, paths in `cc.conf` / `scc.conf`; WEGA source `src/cmd/cc.c` (own code identical, libc part of the original not reproducible) |
 | libc | 170 of 180 members from C; 7 differ (older/newer cc revision), 3 without C |
 
 ## Next steps, in this order (fastest way to a usable local tool chain)

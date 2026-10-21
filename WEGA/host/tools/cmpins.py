@@ -10,8 +10,9 @@ def ins(f,lo,hi):
         if not i: out.append((pc,'.word %04x'%buf.w(pc))); pc+=2; continue
         out.append((pc,z8k.text(i))); pc=i.end
     return out
-a=ins(sys.argv[1],0x42,int(sys.argv[3],0))
-b=ins(sys.argv[2],0x42,int(sys.argv[4],0))
+start=int(sys.argv[5],0) if len(sys.argv)>5 else 0x42
+a=ins(sys.argv[1],start,int(sys.argv[3],0))
+b=ins(sys.argv[2],start,int(sys.argv[4],0))
 norm=lambda t: re.sub(r'%[0-9A-F]{3,4}','ADDR',t)
 A=[norm(t) for p,t in a]; B=[norm(t) for p,t in b]
 sm=difflib.SequenceMatcher(None,A,B,autojunk=False)

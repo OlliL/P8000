@@ -566,8 +566,8 @@ int yyparse(void) {
 	yychar = -1;
 	yynerrs = 0;
 	yyerrflag = 0;
-	yyps= &yys[-1];
-	yypv= &yyv[-1];
+	yyps= yys - 1;
+	yypv= yyv - 1;
 
  yystack:    /* put a state and value onto the stack */
 

@@ -1230,7 +1230,7 @@ host, the original under z8k-emu).
 Results: `rel.py` 48 files, no difference; `exh.py` ns/ss/sl (all opcodes of the three address modes) no difference; `fz`/`fzs` (about 346 000 operand patterns)
 differ only in lines `jpr cc` without an address (undefined in the original); `opts.py` on the 228 compiler outputs, 10 option sets each, 2280 runs, no difference;
 about 600 single statements (scanner, numbers, strings, comments, nesting depth, expressions, directives, stab records) and 570 random files compared with the original:
-one difference (a statement with `\` after a name: another one of the `error` rules). ASAN/UBSAN over 4800 random files: no report, no hang.
+one difference (a statement with `\` after a name: another one of the `error` rules). ASAN/UBSAN over 4800 random files (earlier state) and 1100 files with the final code (`parser.c` built without the object-size and bounds checks: the yacc driver uses `yys - 1`): no report, no hang.
 
 Findings of this work:
 - **A yacc of the host is not enough.** bison does not use a default reduction in a state that can shift `error`; the yacc of WEGA does. So a syntax error at the start of
@@ -1379,5 +1379,48 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
   outfile NULL (the original reads a zero byte at address 0).
 - `-Sl` runs the listing program `/lib/clist`; failures of gopt, popt and fpf
   only print a warning and the compile goes on without that pass.
-- Not done: building cc.c with the WEGA cc under z8k-emu (the original was
-  probably built with the older cc; an exact own-code match is unlikely).
+- The WEGA source `src/cmd/cc.c` (see below) is the rebuild with the WEGA cc; `host/cc/cc.c` is the
+  separate Linux version.
+
+### cc, scc rebuilt with the WEGA cc (`src/cmd/cc.c`)
+
+- `src/cmd/cc.c` is one source for both drivers (`scc` = `-DSCC`); `make cc scc` in `src/cmd` compiles it
+  with the shipped `cc -O` and links `ld -s -e start /lib/crt0.o x.o /lib/libc.a`. Both are non-segmented
+  programs (E707), also scc. Built under z8k-emu: cc 14370 bytes (original 14208), scc 14408 (14246).
+- **Own code, data and strings are identical** to `/bin/cc` and `/bin/scc`: all 37 functions compare equal
+  instruction by instruction including stack offsets; the data of the program (pointers, strings, switch
+  tables, buffers in the original order) is identical; `tools/cmpins.py cc /bin/cc 0x15f2 0x15f2 0x2a` gives
+  0 differing blocks (scc: 0x15fe). The only differing words are addresses behind the own code that moved
+  because the libc part is longer (+112 bytes of text, so +112 for data addresses and +162 for bss).
+- **The libc part cannot be reproduced.** The original is linked with another libc than the shipped
+  `libc.a`: its `printf`/`fprintf`/`sprintf` save the EPU registers (`4FFC 83xx` words) and call a
+  different `_doprnt` (about 680 instead of 690 instructions), and further members (malloc, calloc, strcpy, strcat,
+  strlen, measured by instruction comparison) differ too. No source or object of that libc exists here (cf. the old libc in
+  size/strip/ranlib, which has no floating point). `make verify-wega` reports `cc: differs`; the own code
+  check follows it.
+- Behaviour check: the rebuilt cc and scc, started under z8k-emu with the original passes, give the same
+  messages, exit codes and files as `/bin/cc`, `/bin/scc` for 40 option combinations (`-c -S -E -P -O -Ol -Or
+  -O2 -p -F -D -I -o`, two files, missing file, bad `-T -a -N -:` options, `-:v -:z -:n`); the only difference
+  is the process id inside names (`cc.<pid>.o`), also in the symbol table of a linked program.
+- Layout of the original (needed to get the same bytes): `main` is the first function, then compile, gopass,
+  asspass, load, callsys, doexec, dbg, dexit, setsigs, idexit, await, testfile, a dead `closeout`, cleanup,
+  a dead `nonempty` (stat), mktmps, unl, nameit, getsuf, basename, lastchar, setsuf, a dead `cantopen`, alloc,
+  savestr, cutsuf, cat, a dead `any`, nodup, error (+ 2 variants, one is a duplicate), fatal (+ 3 variants, one
+  unused). Data: libs, diag (initialised with stderr), four signal flags, pass names with their strings behind
+  the pointer, flag strings, `optlev`, then arrays and the pointers into them, then the int flags. bss
+  (`.comm`) in this order: pid, cmd[200], curpass[200], fbuf[20], seven temp names of 26 bytes in the order
+  I D s p o z S, cppbuf[512], obj1, av, clp.
+- Odd constructs that the original has (all kept, see the header of `cc.c`): `-o` tests `argv[i + 1]` with an
+  `i` that was never set (the register still holds 0), an error in a `-:` option falls into `-N`, `cutsuf`
+  uses an unset pointer when there is no `.`, `gonce` and `dexited` are function-local statics, "gopt not on
+  system" tests with `access()`.
+- Compiler findings from this work (shipped cc -O): uninitialised globals become `.comm` and are allocated in
+  the order of their first mention, so a forward `extern char buf[];` in front of a pointer initialiser keeps
+  `buf` last; uninitialised `static` variables and all initialised ones go to the data section in declaration
+  order; the string of a pointer initialiser follows the pointer; strings of a function are pooled in source
+  order, the table of a `switch` follows the switch; a leaf function with `register` variables gets scratch
+  registers (r1, r3, ...) instead of r14; `(char)f(x) == 'c'` compiles to `cpb`; `x >> 8` on an int is `ldb rl,rh;
+  extsb`; the temporaries of nested calls (`f(g(x))`) get stack slots in a fixed order, which is why `cat` and
+  `savestr` are single statements; a `switch` with 6 or more labels in a dense range gets a jump table, fewer or
+  sparse ones a `cpir` search; popt moves blocks, so the order of the `case` bodies, the `default` and a `goto`
+  target after the `switch` decides the final layout (see `compile`).
