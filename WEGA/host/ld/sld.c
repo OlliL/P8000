@@ -7,6 +7,7 @@
  *
  * Search path of -l: $WEGA_LIBPATH (colon separated), default /lib:/usr/lib:/z/bin (below
  * $WEGA_ROOT when that is set); the library of -lx is slibx.a.
+ * The settings can also come from ld.conf next to the executable (ldconf.h); the environment wins.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +15,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include "ldconf.h"
 
 #define N_UNDF	0x00
 #define N_ABS	0x01
@@ -818,7 +820,7 @@ putlocal(const struct sym *s, uint32_t val, int segt)
  * files followed by the data, the relocation words kept and renumbered.
  */
 int
-main(int argc, char **argv)
+realmain(int argc, char **argv)
 {
 	int i, k;
 	char *lp = getenv("WEGA_LIBPATH");
@@ -1446,4 +1448,11 @@ main(int argc, char **argv)
 		}
 	}
 	return status;
+}
+
+int
+main(int argc, char **argv)
+{
+	ldconf_load(argv[0]);
+	return realmain(argc, argv);
 }

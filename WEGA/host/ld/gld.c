@@ -9,6 +9,7 @@
  *
  * Search path of -l: the -L directories, then /lib, /usr/lib and /z/bin/lib (below $WEGA_ROOT when that is
  * set and the file is not found as given); the library of -lx is slibx.a.
+ * The settings can also come from ld.conf next to the executable (ldconf.h); the environment wins.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +17,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include "ldconf.h"
 
 #define N_UNDF	0x00
 #define N_ABS	0x01
@@ -878,7 +880,7 @@ pass2unit(struct obj *o)
 }
 
 int
-main(int argc, char **argv)
+realmain(int argc, char **argv)
 {
 	int i, k, g, entryg = -1, stkg;
 	char *lp;
@@ -1168,4 +1170,11 @@ nextarg:	;
 		chmod(outname, mode);
 	fflush(stdout);
 	return status;
+}
+
+int
+main(int argc, char **argv)
+{
+	ldconf_load(argv[0]);
+	return realmain(argc, argv);
 }

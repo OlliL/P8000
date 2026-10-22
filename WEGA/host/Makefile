@@ -8,7 +8,7 @@
 #   binutils/  the WEGA ranlib, strip and size built for Linux (cross tools)
 #   popt/      the WEGA peephole optimizer built for Linux (cross tool)
 #   cas/       the WEGA assembler cas built for Linux (cross tool)
-#   ld/        the WEGA non-segmented loader ld built for Linux (cross tool)
+#   ld/        the WEGA loaders ld, sld and gld built for Linux (cross tools)
 #   libc/      check of the libc members in ../src/lib/libc
 #   oldcc/     check of the cas sources in ../src/lib/libc/oldcc
 #

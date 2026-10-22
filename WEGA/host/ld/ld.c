@@ -14,6 +14,7 @@
  * /lib:/usr/lib:/z/bin. A file name that begins with / and does not exist is also looked up
  * below $WEGA_ROOT (the file tree of the original system, where /lib/crt0.o and
  * /lib/libc.a are), and the default of the search path then is $WEGA_ROOT/lib:...
+ * Both can also be set in ld.conf next to the executable (ldconf.h); the environment wins.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +22,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include "ldconf.h"
 
 #define N_UNDF	0x00
 #define N_ABS	0x01
@@ -671,7 +673,7 @@ putfn(const char *name, uint32_t val)
 }
 
 int
-main(int argc, char **argv)
+realmain(int argc, char **argv)
 {
 	int i;
 	char *lp = getenv("WEGA_LIBPATH");
@@ -1115,4 +1117,11 @@ main(int argc, char **argv)
 		(void)k;
 	}
 	return status;
+}
+
+int
+main(int argc, char **argv)
+{
+	ldconf_load(argv[0]);
+	return realmain(argc, argv);
 }

@@ -120,8 +120,7 @@ the marks of D14 only: that is all that was checked for them.
   since 2026-10-22 `ld` (`host/ld`, nonsegmented, same files as `/bin/ld` on 146 command lines; no 8 bit objects, no `-T`/`-v`) and `sld`
   (`host/ld/sld.c`, same files as `/bin/sld` on 91 command lines; not implemented: `-f`, `-A`, `-b`, `-t`, `-M` with `:t`/`:b`/`+files+`, `-M` changing
   between large files, several overflowing start segments in combined mode, see KNOWLEDGE.md). `gld` (`host/ld/gld.c`, same files and messages as `/bin/gld`; not reproduced: the original's undefined output when no object is loaded, its memory limit ("out of memory(load2td)" with sections of about 50000 bytes) and hangs with sections near 64K). Still under the
-  emulator: `cpp`, `cparse`/`scparse`, `codgen`/`scodgen`, `gopt`, `spopt`, `as`. Next: the wrapper
-  scripts, `spopt`, the back end, the front end (order in `host/HANDOFF_wega_disasm.md`). `src/cmd/ld` (a source that builds the byte-identical
+  emulator: `cpp`, `cparse`/`scparse`, `codgen`/`scodgen`, `gopt`, `spopt`, `as`. Next: `spopt`, the back end, the front end (order in `host/HANDOFF_wega_disasm.md`). `src/cmd/ld` (a source that builds the byte-identical
   `/bin/ld`) does not exist yet; `host/ld/ld.c` is written from the binary and measurements, not transcribed function by function.
 
 ## Scripts without an object check

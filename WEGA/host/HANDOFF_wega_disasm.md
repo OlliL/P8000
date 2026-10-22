@@ -56,10 +56,9 @@ our own C sources, checked byte for byte against the original binaries.
 
 1. **Drivers `cc` and `scc` stand-alone: done** (`host/cc`, one source, `cc.conf` / `scc.conf` set the
    passes; `scc` uses `sld`, not `gld`; both checked with `make -C host/cc check`).
-2. **Wrapper scripts** `host/bin/{cc,scc,cas,as,ld,gld,ar,...}` that run the original passes under
-   `z8k-emu -r ROOT`, so `src/cmd` can be built with plain `make` (CC=host/bin/cc).
-   Then `make -C src/cmd` is the daily build and the pieces are replaced one by one.
-   Not done yet (`host/bin` does not exist); `src/make_cmd_linux.sh` is the owner's local stand-in.
+2. **Using the native tools in builds: done without wrapper scripts.** `cc.conf`/`scc.conf` name the passes (native or
+   `z8k-emu` command); `ld`, `sld` and `gld` find the file tree of the original through `ld.conf` next to the executable
+   (`root = ...`, template `host/ld/ld.conf.example`) or `$WEGA_ROOT`. `src/make_cmd_linux.sh` is the owner's older stand-in.
 3. **Small data-format tools first, native:** `ar` (done, `host/ar`, checked against the original),
    `ranlib`, `strip`, `size` (done, `host/binutils`, checked against the originals), then an
    `nm`-like reader.
