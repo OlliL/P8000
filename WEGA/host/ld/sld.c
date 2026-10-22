@@ -423,14 +423,12 @@ loadobject(const char *name, const unsigned char *data, size_t len, int member)
 	f.nent = segt / 16;
 	sg = data + 24;
 	o = 0;
-	for (i = 0; i < f.nent; i++) {
+	for (i = 0; i < f.nent; i++) {		/* the image holds code and data entry by entry */
 		f.code[i] = be16(sg + 16 * i + 4);
 		f.data[i] = be16(sg + 16 * i + 6);
 		f.bss[i] = be16(sg + 16 * i + 8);
 		f.codeoff[i] = o;
 		o += f.code[i];
-	}
-	for (i = 0; i < f.nent; i++) {
 		f.dataoff[i] = o;
 		o += f.data[i];
 	}

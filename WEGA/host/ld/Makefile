@@ -1,8 +1,8 @@
-# ld, sld: the WEGA loaders built for Linux (cross tools). They write the same files as /bin/ld
-# (non-segmented) and /bin/sld (segmented) of WEGA. Sources: ld.c, sld.c, written from the original
+# ld, sld, gld: the WEGA loaders built for Linux (cross tools). They write the same files as /bin/ld
+# (non-segmented), /bin/sld and /bin/gld (segmented) of WEGA. Sources: ld.c, sld.c, gld.c, written from the original
 # binaries (see ../KNOWLEDGE.md).
 #
-#   make                 build ./ld and ./sld
+#   make                 build ./ld, ./sld and ./gld
 #   make check           compare with the original /bin/ld under z8k-emu
 #                        (WEGA=<file tree of the original system>)
 
@@ -11,7 +11,7 @@ CFLAGS = -O2 -Wall
 WEGA = ../../../tmp/wega31_root
 EMU  = $(abspath ../z8k-emu/z8k-emu)
 
-all: ld sld
+all: ld sld gld
 
 ld: ld.c
 	$(HOSTCC) $(CFLAGS) -o $@ ld.c
@@ -19,10 +19,13 @@ ld: ld.c
 sld: sld.c
 	$(HOSTCC) $(CFLAGS) -o $@ sld.c
 
-check: ld sld
+gld: gld.c
+	$(HOSTCC) $(CFLAGS) -o $@ gld.c
+
+check: ld sld gld
 	WEGA=$(abspath $(WEGA)) EMU=$(EMU) python3 check.py
 
 clean:
-	rm -f ld sld
+	rm -f ld sld gld
 
 .PHONY: all check clean

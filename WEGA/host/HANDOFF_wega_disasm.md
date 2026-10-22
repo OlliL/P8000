@@ -46,7 +46,7 @@ our own C sources, checked byte for byte against the original binaries.
 | `as` | not started |
 | `ld` | done: `host/ld` (nonsegmented), 146 command lines identical to the original, `make -C host/ld check` |
 | `sld` | done: `host/ld/sld.c`, 91 command lines identical (kernel link, cas link included), `make -C host/ld check` |
-| `gld` | not started; `gld` man page read, `pburn` 2.1 link line known; own layout (text 0-31, data 32-63, bss 64-95, stack 128) |
+| `gld` | done: `host/ld/gld.c`, same files and messages as `/bin/gld` on the check lines (pburn link included), `make -C host/ld check` |
 | `ar` | done on the host (`host/ar`, identical behaviour and archives) |
 | `ranlib`, `strip`, `size` | done on the host (`host/binutils`); the `src/cmd` versions still differ from the originals (see TODO) |
 | `cc`, `scc` drivers | done, paths in `cc.conf` / `scc.conf`; WEGA source `src/cmd/cc/cc.c`; cc and scc built there are byte-identical with the originals |
@@ -66,8 +66,7 @@ our own C sources, checked byte for byte against the original binaries.
 4. **Assembler `cas` (and `as`):** `cas` done (`src/cmd/cas`, `host/cas`); `as` not started. Closed grammar, good oracle (every `.s` in the tree, every
    `cc -S` output, `src/lib/libc/oldcc/*/*.s`). Decode from the binary with `tools/sdis.py`; check with
    `cmpins.py`. Do `cas` before `as` (PLZ/ASM is separate and used less).
-5. **Linkers:** `ld` and `sld` done (`host/ld`, see `KNOWLEDGE.md`, "ld on the host", "sld on the host"); `gld` next (own segment layout,
-   `-M` lists the modules, `slibc.a`). Oracle: relink every program in the tree and
+5. **Linkers:** `ld`, `sld` and `gld` done (`host/ld`, see `KNOWLEDGE.md`, "ld/sld/gld on the host"). Oracle: relink every program in the tree and
    compare; the recorded link lines of `src/cmd` (cas, pburn) are the first test input.
 6. **Emulator: EPU arithmetic** (needed for `cparse` on floating constants and for the doscopy
    commands): done 2026-10-22 as a C port of the kernel's `src/uts/conf/fpe.s`

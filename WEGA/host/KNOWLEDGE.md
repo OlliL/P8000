@@ -387,6 +387,47 @@ option reaches them). Facts:
   an external word of an undefined symbol gets `slot + number of local slots` as index. With `-i` and no `-z` the stack entry is also made when
   the output is relocatable by undefined symbols (not with an explicit `-r`).
 
+### gld on the host (`host/ld/gld.c`, measured with the original `/bin/gld`, gld.c V1.0 06/22/88, ZFT-KEAW)
+
+`gld.c` writes the same files and messages as `/bin/gld` (`make -C host/ld check`). `gld` is a loader of its own, not the `sld` with another
+mapping: no `-i -r -R -z -M n -d`, no relocation output, no stack segment entry; fixed mapping text segments 0-31, data 32-63, bss and
+commons 64-95. Options (the letters of one argument are scanned one by one): `-L` (a directory attached: `-Ldir`; the rest of the argument
+is not looked at), `-M` (prints the file names and, with a tab, the loaded members), `-e sym`, `-l x`, `-o file`, `-s`, `-t`, `-w`; `-X -i -x
+-z` are accepted and ignored. All messages go to the standard output. Facts:
+
+- **Messages.** `error(level, text)`: "gld:" in front of the first message only (until an error or warning has set the status), then the
+  file name, `(member)` for level 0/1, `: `, the text. Level 1 ends the program (status 4, removes `l.out`), level 0 is a warning (the
+  final status becomes 2, the output file keeps mode 0666 & ~umask instead of 0777 & ~umask), -1 a message only. Undefined symbols:
+  `Undefined:` and the names, then level 1 with an empty text ("gld:" alone on the line).
+- **Passes.** Pass 1 loads the objects and the needed archive members in argument order and builds the symbol table (symbols of the
+  output in table order, locals are dropped, `segt` byte always 0, the 0x80 of an archive definition is dropped on output). Between the
+  passes: `_stkseg` (if referenced) becomes ABS|EXT 0x7F000000, commons are allocated in the bss in table order (an even address when the
+  size is at least 2; the symbol becomes BSS|EXT), the three current segments are padded to a multiple of 256, undefined symbols are
+  reported. Pass 2 reads the loaded objects again in the same order and copies and relocates the text and data.
+- **Placement.** Per entry of an object, in order: code, data, bss go behind what is in the current segment of their kind; when
+  `size + new >= 0xFFFE` the segment is padded to a multiple of 256 (at most 0xFFFE) and the next number is used (limit 32 text, 32 data,
+  32 bss segments: "too many text segments"). A symbol value is `segment << 24 | offset` of the area it is in; data offsets are not
+  corrected by a code size (objects of the compilers have one entry per area). The image of an object holds code and data entry by
+  entry (not all code first); this holds for `sld` too (fixed in `sld.c`, `tools/sout.py`).
+- **Output.** Header magic E611, flag 0x21, `entry` = value of the `-e` symbol (a warning "entry point not in text" when it is not a text
+  symbol; 0 without `-e`), `imsize` = text + data, then the segment table (text, data, bss segments, even when empty), the images, the
+  symbols (not with `-s`). The file is written as `l.out` and renamed to `a.out` unless `-o` is given (then it is written under that
+  name, an existing executable file keeps its mode).
+- **Symbols.** The first definition wins; a common is replaced by a definition of another type (a definition of type text is ignored
+  when the common has a non-zero size). Archive: with a table of contents (`__.SYMDEF`) the entries are scanned repeatedly while symbols
+  were added; the name is the C string at `e+4` of the 12 byte entry (so long names never match); an entry whose symbol is defined by a
+  plain object gives "- warning  symbol (x) redefined" (not with `-w`). Without a table every member is tried once in order; a member
+  is loaded when it defines a symbol that is undefined or a common. A table older than the archive: "warning: table of contents is out
+  of date" and the members are tried as without a table (the table itself skipped). The member `Library.SC` is skipped. Pass 2 warns
+  "   name: gld:file:  - warning: multiply defined" (`-w` silences) when a definition differs from the first one.
+- **Relocation.** Same word format as `ld`/`sld` (kind 0 offset, 1 segment, 2 short, 3 12 bit relative, 4 16 bit relative). Kind 3 and 4
+  against an external symbol print "extern 12bit rel. adr. name" (16bit: "extern 16bit rel. adr. name") on every use, fail with "external
+  relativ adress(12|16) to another segment" and (12 bit) "relativ adress(12) to large". Kinds 2-4 of an internal reference only print
+  "aufgeloeste short seg adress", "aufgeloeste 12bit rel. adress", "aufgeloeste 16bit rel.adress" and change nothing.
+- **Not reproduced.** The original writes undefined data when no object was loaded at all (the table of segments is allocated with the
+  first object: `gld libq.a` alone gives a header with segment number 127 and sizes of unrelated memory); the host stops with an error.
+  The original hangs (or runs very long) when a single section comes near 64K (`gld` with one 60000 byte text); not investigated.
+
 ## Z8000 decoder (tools/z8k.py)
 
 Own table, written from the Z8000 encoding rules, segmented and
@@ -612,6 +653,12 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` | `-Ms n` without a reference to `_stkseg`: the warning `sld: warning: _stkseg undefined` goes to stdout, not stderr, and the status is 1 although the file is written | kept | "sld on the host" |
 | `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
 | `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
+| `/bin/gld` | in the second pass every `l` (and `e`, `o`) in an option argument counts: `-L/usr/lib` is read as `-lib` and fails with "cannot open"; an `o` or `e` skips the next argument | kept | "gld on the host" |
+| `/bin/gld` | a common with a size is not replaced by a text definition; a member found through a table of contents is loaded by name of at most 8 characters only (long names never match) | kept | "gld on the host" |
+| `/bin/gld` | the symbol "rollback" of a rejected archive member leaves a stale pointer when the table was empty: the next rejected member gives "symfree botch" (`gld lib.a` without a first object) | kept | "gld on the host" |
+| `/bin/gld` | `kind 3`/`4` relocations against external symbols print debug lines ("extern 12bit rel. adr. name") on every use; internal short/relative relocations print "aufgeloeste ..." and are not resolved | kept | "gld on the host" |
+| `/bin/gld` | no object loaded at all: header and segment table are written from unallocated memory; sections of about 50000 bytes: "out of memory(load2td)"; a section near 64K: hangs | not reproduced | "gld on the host" |
+| `/bin/sld`, `/bin/gld` | the code and data of an object are stored entry by entry (not all code first); `tools/sout.py` and `host/ld/sld.c` had assumed all code first | fixed | "gld on the host" |
 
 ## ar (reconstructed, byte-identical)
 

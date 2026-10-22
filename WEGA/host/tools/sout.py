@@ -70,13 +70,12 @@ class SOut:
         return out
 
     def section_ranges(self):
-        """Yield (segindex, kind, image_offset, size) in file order."""
+        """Yield (segindex, kind, image_offset, size) in file order: entry by entry, code then data."""
         o = 0
         for i, s in enumerate(self.segs):
             if s["code"]:
                 yield i, "text", o, s["code"]
                 o += s["code"]
-        for i, s in enumerate(self.segs):
             if s["data"]:
                 yield i, "data", o, s["data"]
                 o += s["data"]

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare the host ld and sld with the original /bin/ld and /bin/sld (run under z8k-emu).
+"""Compare the host ld, sld and gld with the original /bin/ld, /bin/sld and /bin/gld (run under z8k-emu).
 
 usage: check.py [-n RANDOM_RUNS] [-s SEED]     (environment: WEGA=file tree of the original system, EMU=emulator)
 
@@ -12,7 +12,7 @@ import os, random, shutil, subprocess, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.environ.get('WEGA', ''))
 EMU = os.environ.get('EMU', os.path.join(HERE, '..', 'z8k-emu', 'z8k-emu'))
-HOST = {'ld': os.path.join(HERE, 'ld'), 'sld': os.path.join(HERE, 'sld')}
+HOST = {'ld': os.path.join(HERE, 'ld'), 'sld': os.path.join(HERE, 'sld'), 'gld': os.path.join(HERE, 'gld')}
 W = None
 
 
@@ -37,13 +37,14 @@ def link(args, tool='ld', base='base'):
             if a == '-o' and i + 1 < len(args):
                 out = args[i + 1]
         p = os.path.join(d, out)
-        res.append((r.returncode, open(p, 'rb').read() if os.path.exists(p) else None, r.stderr.decode()))
-    (rc1, o1, e1), (rc2, o2, e2) = res
-    if rc1 == rc2 and o1 == o2:
+        res.append((r.returncode, open(p, 'rb').read() if os.path.exists(p) else None, r.stderr.decode(),
+                    r.stdout if tool == 'gld' else b''))
+    (rc1, o1, e1, s1), (rc2, o2, e2, s2) = res
+    if rc1 == rc2 and o1 == o2 and s1 == s2:
         return True, ''
     return False, '%s: rc %d/%d, size %s/%s\n  orig: %s\n  host: %s' % (
         ' '.join(args), rc1, rc2, len(o1) if o1 is not None else None, len(o2) if o2 is not None else None,
-        e1.replace('\n', '|')[:200], e2.replace('\n', '|')[:200])
+        (e1 + s1.decode(errors='replace')).replace('\n', '|')[:200], (e2 + s2.decode(errors='replace')).replace('\n', '|')[:200])
 
 
 def setup():
@@ -117,6 +118,59 @@ SFIXED = [
     '-o t abs1.o', '-e _f1 -o t abs1.o', '-Q', '-o t nofile.o',
     '-Ns -o wega -e start -X -i -Ms62 k_wpar.o k_event.o k_mch.o k_u.o ver.o k_fpe.o k_conf.o LIB1 LIB2',
 ]
+
+
+GFIXED = [
+    '/lib/scrt0.o a2.o b.o c.o d.o u.o /lib/slibc.a', '/lib/scrt0.o a2.o b.o c.o d.o u.o /lib/slibc.a -o t', '/lib/scrt0.o a2.o b.o c.o d.o u.o /lib/slibc.a -s',
+    '/lib/scrt0.o a2.o b.o c.o d.o u.o /lib/slibc.a -e start', '/lib/scrt0.o a2.o b.o c.o d.o u.o /lib/slibc.a -t', '/lib/scrt0.o a2.o b.o c.o d.o u.o /lib/slibc.a -M',
+    '/lib/scrt0.o a2.o b.o c.o d.o u.o -lc', '/lib/scrt0.o a2.o b.o c.o d.o u.o -L/lib -lc', '/lib/scrt0.o a2.o b.o c.o d.o u.o /lib/slibc.a -w',
+    '/lib/scrt0.o a2.o b.o c.o e.o f.o d.o u.o /lib/slibc.a', '/lib/scrt0.o a2.o b.o c.o e.o f.o d.o u.o /lib/slibc.a -w', 'a2.o b.o c.o d.o u.o', 'a2.o b.o',
+    '-e nosuch a2.o b.o c.o d.o u.o', 'nosuch.o', '-q a2.o', '-o', '-e', '-L', 'gx1.o gx2.o', 'gx2.o gx1.o', 'gx1.o gx2.o gx3.o', 'gx1.o gx3.o gx2.o',
+    'gx1.o gx2.o gx3.o -w', 'gx1.o gx2.o gx4.o', 'gx1.o gx2.o gx3.o gx4.o', 'gx4.o gx3.o gx1.o -e _x4', 'gx4.o gx3.o gx1.o -e _xd', 'psec1.o', 'gx1.o gx2.o -o',
+    'gx1.o gx2.o -lnone', 'gx1.o gx2.o -sl', 'gx1.o gx2.o -L/usr', 'gx1.o gx2.o -Lx', 'gx1.o gx2.o -Zq', 'gx1.o gx2.o -e _gx1 -s', 'gx3.o gx3.o',
+    'gx1.o libgp.a', 'gx1.o libgq.a', 'gx1.o libgo.a', 'gx1.o libs1.a', 'gx1.o libgp.a -M', 'gx1.o libgq.a -M', 'gx1.o libgo.a -M',
+    'gx4.o gx1.o libgq.a gx3.o', 'gx4.o gx1.o libgq.a gx3.o -w', 'gx4.o gx1.o libgp.a gx3.o', 'a2.o libgp.a', 'a2.o libgq.a', 'a2.o libs1.a libgp.a',
+    '/lib/scrt0.o a2.o libgq.a /lib/slibc.a', '/lib/scrt0.o a2.o libs1.a /lib/slibc.a -M',
+    'bad1.o', 'bad2.o', 'bad3.o gx2.o', 'bad4.o gx2.o',
+]
+
+
+def setup_gld():
+    base = os.path.join(W, 'sbase')
+    sh = lambda *a: subprocess.run(list(a), cwd=base, check=True, capture_output=True)
+    for n, src in (('gx1', 'gx1.o'), ('gx2', 'gx2.o')):
+        pass
+    orig(['r', 'libgp.a', 'gx2.o', 'gx3.o', 'gx4.o', 'b.o', 'c.o', 'd.o', 'u.o', 'e.o', 'f.o'], base, 'ar')
+    shutil.copy(os.path.join(base, 'libgp.a'), os.path.join(base, 'libgq.a'))
+    subprocess.run([EMU, '-r', ROOT, '/usr/bin/ranlib', 'libgq.a'], cwd=base, capture_output=True)
+    shutil.copy(os.path.join(base, 'libgq.a'), os.path.join(base, 'libgo.a'))
+    t = os.stat(os.path.join(base, 'libgo.a')).st_mtime + 100000      # older than the archive: table out of date
+    os.utime(os.path.join(base, 'libgo.a'), (t, t))
+    open(os.path.join(base, 'bad1.o'), 'w').write('hello world\n')
+    open(os.path.join(base, 'bad2.o'), 'w').close()
+    d = bytearray(open(os.path.join(base, 'gx1.o'), 'rb').read())
+    d[5] |= 1
+    open(os.path.join(base, 'bad3.o'), 'wb').write(d)
+    d = bytearray(open(os.path.join(base, 'gx1.o'), 'rb').read())
+    d[12:14] = b'\0\0'
+    open(os.path.join(base, 'bad4.o'), 'wb').write(d)
+
+
+def rnd_gld(n, seed):
+    random.seed(seed)
+    objs = ['gx1.o', 'gx2.o', 'gx3.o', 'gx4.o', 'a2.o', 'b.o', 'c.o', 'd.o', 'e.o', 'f.o', 'u.o']
+    libs = ['libgp.a', 'libgq.a', 'libgo.a', 'libs1.a', '/lib/slibc.a']
+    for _ in range(n):
+        args = ['/lib/scrt0.o'] if random.random() < 0.6 else []
+        args += [random.choice(objs) if random.random() < 0.7 else random.choice(libs) for _ in range(random.randint(1, 6))]
+        if random.random() < 0.5:
+            args.append('/lib/slibc.a')
+        for o in ('-s', '-w', '-t', '-M'):
+            if random.random() < 0.1:
+                args.insert(random.randint(0, len(args)), o)
+        if random.random() < 0.15:
+            args += ['-e', random.choice(['start', '_x1', '_xd', '_main', '_x4'])]
+        yield args
 
 
 def rnd_seg(n, seed):
@@ -229,6 +283,23 @@ def main():
                     bad += 1
                     print('DIFF', msg)
             print('sld: %s (%d of %d command lines identical)' % ('identical' if not bad else 'DIFFERENT', total - bad, total))
+            rc |= 1 if bad else 0
+        if os.path.exists(HOST['gld']):
+            setup_gld()
+            bad = total = 0
+            for line in GFIXED:
+                total += 1
+                ok, msg = link(line.split(), 'gld', 'sbase')
+                if not ok:
+                    bad += 1
+                    print('DIFF', msg)
+            for args in rnd_gld(n // 3, seed):
+                total += 1
+                ok, msg = link(args, 'gld', 'sbase')
+                if not ok:
+                    bad += 1
+                    print('DIFF', msg)
+            print('gld: %s (%d of %d command lines identical)' % ('identical' if not bad else 'DIFFERENT', total - bad, total))
             rc |= 1 if bad else 0
         return rc
     finally:
