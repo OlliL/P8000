@@ -8,6 +8,7 @@
 #   binutils/  the WEGA ranlib, strip and size built for Linux (cross tools)
 #   popt/      the WEGA peephole optimizer built for Linux (cross tool)
 #   cas/       the WEGA assembler cas built for Linux (cross tool)
+#   ld/        the WEGA non-segmented loader ld built for Linux (cross tool)
 #   libc/      check of the libc members in ../src/lib/libc
 #   oldcc/     check of the cas sources in ../src/lib/libc/oldcc
 #
@@ -53,9 +54,9 @@ WEGA_PROGS = ar:bin/ar cc/cc:bin/cc cc/scc:bin/scc ranlib/ranlib:usr/bin/ranlib 
 	standalone/sa.install:sa.install standalone/sa.timer:sa.timer \
 	standalone/sa.shipdisk:sa.shipdisk
 
-all: cc popt ar binutils cas
+all: cc popt ar binutils cas ld
 
-cc popt ar binutils cas:
+cc popt ar binutils cas ld:
 	$(MAKE) -C $@ all
 
 check:
@@ -63,6 +64,7 @@ check:
 	$(MAKE) -C ar check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C binutils check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C cas check WEGA=$(WEGAABS)
+	$(MAKE) -C ld check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C popt check WEGA=$(WEGAABS)
 	$(MAKE) -C libc check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C oldcc verify WEGA=$(WEGAABS) EMU=$(EMU)

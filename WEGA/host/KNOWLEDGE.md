@@ -293,6 +293,56 @@ see "ranlib, strip, size on the host").
   `scc -c` and linked with `gld /lib/scrt0.o <objects> /lib/slibc.a -o pburn`;
   the result is byte-identical to `/bin/pburn`.
 
+### ld on the host (`host/ld`, measured with the original `/bin/ld`, ld.c 1.18)
+
+`host/ld/ld.c` writes the same files as `/bin/ld` (146 command lines compared by `make -C host/ld check`; the 19 `ld` links of
+`src/cmd` give the same programs as the original ld). Nonsegmented only: E707/E711 objects, no 8 bit objects (E507/E511, diagnosed), no
+`-T` (prints the arguments), no `-v`. Facts found in the binary and by comparison:
+
+- **Two passes.** Pass 1 runs while the arguments are read (an option and a file are handled in the order of the command line, `-u`/`-e`
+  enter their symbol at that point): it collects the global symbols and the sizes. Pass 2 (after the options) reads the files again in
+  load order and writes the image. Output: header, text, data, relocation (only with `-r`), symbols. Without `-r` the output has
+  `SF_STRIP` (the relocation is dropped) but keeps the symbols (`-s` drops them).
+- **Global symbol table** = array of 14 byte entries (`s_nlist`); a long name continues in the following entries (first name byte
+  `0x80 | (length+1)`, the entry number of a symbol counts these slots, so a relocation index is the slot). Order = order of first
+  mention (also a reference); the symbols are written in this order after the local ones. With `-Ns` the names are stored whole but
+  compared by their first 8 characters.
+- **Stale byte.** The `segt` byte (offset 5) of a global entry is never written: it keeps what the slot held before. The entries of an
+  archive member that was dropped (it defined nothing that was undefined) stay in the array, so an entry that reuses their slots carries
+  an old byte (for example `0x74` from a long name). `host/ld` keeps this byte per slot (`stale5`) to write identical files.
+- **Locals** are copied from the objects in load order, each file after an `N_FN` entry (file name: the base name, or the member name,
+  cut to 8 characters; value = start of its text). `-x` and `-s` drop all of them, `-X` drops `N_SN` and names that begin with `L`, `-S` keeps
+  only the types 0, 2, 3, 4.
+- **Archives.** Without `__.SYMDEF` the members are scanned once in order: a member is loaded when it defines a symbol that is undefined
+  at that moment (its symbols are entered tentatively and removed again if nothing was needed; only a larger common size of an
+  existing undefined symbol survives). With `__.SYMDEF` (12 byte entries `{long offset, char name[8]}`, a long name continues in the
+  following entries and starts with the length byte `0x80|len+1`) the table is scanned again and again until nothing is loaded; a
+  `__.SYMDEF` older than the archive file gives "out of date (warning)" and a plain scan. The original `ranlib` loses most long
+  names (see the ranlib section), so the tests make the tables with `host/ld/test/mklib.py`.
+- **Commons and special symbols.** An undefined symbol with a value is a common of that size; unless `-r` (or `-d` with `-r`) it is
+  allocated (size rounded up to even, in table order) in front of the bss, whose symbols follow it. `_etext`, `_edata`, `_end` are only
+  looked up, never entered: they are defined (code: text size, data: data size, bss: bss size) when they are undefined with value 0,
+  otherwise the message "-- Multiply defined" is given.
+- **Undefined symbols** (value 0, not the three above) without `-r`: the list "Undefined:" and one name per line go to stderr, the
+  output becomes a relocatable one internally (relocation kept, `-s`, `-O`, `-b`, `-t` dropped), and the output file is removed because
+  the exit status is 1.
+- **Relocation** (E711 objects, data addresses start at 0, bss addresses at the data size): internal text/data/bss words get the base
+  of their area, external words the value of the symbol; with `-r` an external word of a still undefined symbol keeps its kind and gets
+  the index `slot + number of local slots`, a defined one becomes an internal relocation of the type of the symbol. The kinds 1 to 4
+  (segment part, short address, relative) are not changed by `ld`.
+- **Areas** (`-b`, `-t`, `-i`): records 0 program (anchor), 1 text, 2 data, 3 bss (commons in front). An area starts where the area it
+  follows ends (text follows the anchor, data the text, bss the data; with `-i` the text starts at 0 and the data follows the anchor).
+  `-bX [sel]` sets the start (rounded up to 256, the warning "top or bottom rounded" is given), `-tX` sets the end (start = (X - size)
+  & 0xFF00, size rounded up to 256). An area in front of an area with a selector is padded so that its end is a multiple of 256; with
+  `-i` and without `-r` the text size is rounded up to 256. `-b`/`-t` without a selector (letters `t`, `d`, `b`) is moved to the text
+  (data with `-i`) and overrides the selectors of the other areas ("warning, -b overrides -bt"). The areas must not overlap ("X and Y
+  areas overlap", error). The segment table holds the padded sizes; `OCODE`/`ODATA`/`OBSS` (0x10/0x20/0x40) and `coff`/`doff`/`boff` (address
+  / 256) are set for the areas with a selector. `-r` overrides `-b`/`-t`.
+- **Exit status.** It is the level of the last message (0 warning, 1 error), not "any error": the warning "only 8 characters of name
+  are significant" that comes while the undefined list is printed turns the status back to 0. A fatal error (bad option, cannot open,
+  Bad format, ...) ends with status 4, no arguments with 4, "cannot create output" with 2.
+- **Checks in pass 2:** a symbol defined with another type or value than in the table gives "- Multiply defined" (error).
+
 ## Z8000 decoder (tools/z8k.py)
 
 Own table, written from the Z8000 encoding rules, segmented and

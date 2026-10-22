@@ -44,7 +44,8 @@ our own C sources, checked byte for byte against the original binaries.
 | `popt`, `spopt` | `popt` done (non-segmented); `spopt` not started |
 | `cas` | done: all modules decompiled to `src/cmd/cas/` (same behaviour as the original, code of the older scc not byte identical, see `src/cmd/cas/MODULES`); host version `host/cas`, checked against the original |
 | `as` | not started |
-| `ld`, `sld`, `gld` | not started; `gld` man page read, `pburn` 2.1 link line known |
+| `ld` | done: `host/ld` (nonsegmented), 146 command lines identical to the original, `make -C host/ld check` |
+| `sld`, `gld` | not started; `gld` man page read, `pburn` 2.1 link line known |
 | `ar` | done on the host (`host/ar`, identical behaviour and archives) |
 | `ranlib`, `strip`, `size` | done on the host (`host/binutils`); the `src/cmd` versions still differ from the originals (see TODO) |
 | `cc`, `scc` drivers | done, paths in `cc.conf` / `scc.conf`; WEGA source `src/cmd/cc/cc.c`; cc and scc built there are byte-identical with the originals |
@@ -64,8 +65,9 @@ our own C sources, checked byte for byte against the original binaries.
 4. **Assembler `cas` (and `as`):** `cas` done (`src/cmd/cas`, `host/cas`); `as` not started. Closed grammar, good oracle (every `.s` in the tree, every
    `cc -S` output, `src/lib/libc/oldcc/*/*.s`). Decode from the binary with `tools/sdis.py`; check with
    `cmpins.py`. Do `cas` before `as` (PLZ/ASM is separate and used less).
-5. **Linkers `ld`, then `sld`/`gld`:** object/a.out formats, relocation (`tools/check_reloc.py`),
-   man page for `gld`. Oracle: relink every program in the tree and compare.
+5. **Linkers:** `ld` done (`host/ld`, see `KNOWLEDGE.md`, "ld on the host"); `sld` and `gld` next (segmented: segment table with
+   several entries, `-M` mappings, `__.SYMDEF` searched repeatedly, `slibc.a`). Oracle: relink every program in the tree and
+   compare; the recorded link lines of `src/cmd` (cas, pburn) are the first test input.
 6. **Emulator: EPU arithmetic** (needed for `cparse` on floating constants and for the doscopy
    commands): done 2026-10-22 as a C port of the kernel's `src/uts/conf/fpe.s`
    (`z8k-emu/fpe2c.py` -> `fpe_gen.c`, `epu.c`; checked on the host, see `KNOWLEDGE.md`, "EPU
