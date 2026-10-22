@@ -645,6 +645,7 @@ means it does something fixed instead (only possible where the original's result
 | `/usr/bin/strip` | `hflag` is uninitialised without an option; for 8-bit objects with relocation removal the result depends on uninitialised variables; the output file is left open | `hflag` kept in `src/cmd/strip`; host strip refuses 8-bit objects and closes the file | "size and strip", "ranlib, strip, size on the host" |
 | `/bin/cc` | `-o` as last argument leaves `outfile` NULL (reads the byte at address 0); `-l...` is passed to ld with the byte in front overwritten by `-` | kept | "cc (compiler driver, /bin/cc)" |
 | `/lib/popt` | `killreg()` always looks at rr0 (`n % 1`); nodes without operand text read the code at address 0; the "preceded by alnum" test of `procopt` has no effect; the `rN(` recursion passes a character as a pointer | kept, except the `rN(` recursion | `popt/NOTES.md`, "Quirks that are reproduced on purpose" |
+| `/lib/popt`, `/lib/spopt` | `conloc` has 20 bytes and is followed by the counters `ndirect`, `nbrbr`: an operand of 21 or more characters overwrites them (visible in `-d`: "10496 operations made more direct"); spopt's movedat() starts with `clrb @r9` (r9 = what the caller left) | kept (counters), not reproduced (`clrb`) | `popt/NOTES.md`, "spopt" |
 | `/bin/ld` | the `segt` byte (offset 5) of a global symbol entry is never written, it keeps what the slot held before (leftover of a long name or an earlier entry) and lands in the output | kept (`stale5`) | "ld on the host" |
 | `/bin/ld` | the exit status is the level of the last message, not the worst one; fatal errors exit with 4 | kept | "ld on the host" |
 | `/bin/sld` | same stale `segt` byte as `ld`; additionally the byte of a non-area symbol is the object's `segt` plus the segment table entries of the files loaded before (68 for `_u` of the kernel) | kept | "sld on the host" |
@@ -1586,7 +1587,7 @@ compares output, exit code and every file afterwards: all identical.
 
 ## popt (C optimizer, /lib/popt)
 
-`popt/` is a portable C decompilation of the shipped /lib/popt (written from the binary only,
+`popt/` is a portable C decompilation of the shipped /lib/popt (and, with `-DSPOPT`, of /lib/spopt: `make` builds `popt` and `spopt`) (written from the binary only,
 not from Plexus c2). Modules like the original: z20 tables, z21 (input/output, jump optimizations),
 z22 (rmove: register contents tracking, redundant loads, push/pop, shifts), z23 (isused liveness
 and `stripldm` register renaming). Verified byte-identical (output, `-l`, `-d` incl. statistics)

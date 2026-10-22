@@ -317,8 +317,25 @@ usesreg(struct node *node, char *str, int reg)
 				res = 1;
 				goto out;
 			}
+#ifdef SPOPT
+			if (reg >= 2) {
+				if (p->code[0] != '@')
+					continue;
+				r10 = isreg(p->code + 1);
+				if (reg == r10) {
+					res = 1;
+					goto out;
+				}
+				r10 = reg ^ 1;
+				if (r10 == 0)
+					continue;
+				res = 1;
+				goto out;
+			}
+#else
 			if (reg >= 2)
 				continue;
+#endif
 			if (p->code[0] != '@')
 				goto out;
 			r10 = isreg(p->code + 1);
@@ -327,7 +344,11 @@ usesreg(struct node *node, char *str, int reg)
 			res = 1;
 			goto out;
 		case RET:
+#ifdef SPOPT
+			if (reg == 2 || reg == 3 || reg == 12 || reg == 13) {
+#else
 			if (reg == 2 || reg == 3 || reg == 14) {
+#endif
 				res = 1;
 				goto out;
 			}
@@ -572,7 +593,11 @@ procopt(void)
 	for (r14 = 1; r9 > k && r14 < 8; r14++) {
 		if (a[r14])
 			continue;
+#ifdef SPOPT
+		n = 13 - k;
+#else
 		n = 14 - k;
+#endif
 		if ((n & 1) && b[n - 1] && n <= 13) {
 			if ((r14 & 1) || r14 + 1 >= 8 || a[r14 + 1])
 				continue;

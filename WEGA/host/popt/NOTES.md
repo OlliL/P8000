@@ -50,3 +50,26 @@ with the original cc/popt in z8k-emu).  Also identical on ~200 further .s files.
   usesreg() restores RT1/RT2 from the node before returning.
 - Memory: bump allocator over sbrk, break grows by 2000, reset after each function;
   `heaplim` model gives the "NK core" figure (initial break 0x1a48 = data+bss).
+
+## spopt (/lib/spopt, the segmented variant)
+
+`/lib/spopt` (E711, 22528 text, 3312 data, 3420 bss, modules z20.c 1.3, z21.c 1.4, z22.c 1.6, z23.c 1.6 like popt) is the same program with
+a few changes; `make spopt` builds the same sources with `-DSPOPT`. Found by comparing the disassembly of both binaries (52 hunks,
+about 10 real changes), all in the code marked `SPOPT`:
+- input: `.long Lnnn` (not `.word`) becomes a JSW node; output prints `\t.long\tL%d`. Output has a PSEC case: the subop
+  that movedat() left in the node is cleared before the mnemonic lookup.
+- movedat(): sections are `.psec [name]` + `.code`/`.data`; the PSEC node's subop gets the kind of the next directive; data
+  sections move in front; a header that repeats the previous kind and name is dropped, an empty section in front of another
+  header too. The original starts with `clrb @r9` (r9 = whatever main's caller left): the name of the "previous" section is
+  an empty string; not reproduced as a write.
+- rmove: `ld` to a register nobody uses is kept when it is r8 and follows a call; the push/pop conversions compare
+  `isreg(@rrN part) == r - 1` (rr14 is r14/r15); an `inc`/`dec` that is not a push/pop clears the register contents (`reset`,
+  popt only goes on with `disp`).
+- dest(): `lda` gives a long; ilen(): a jump without operand text is 6 bytes; adrlen(): `#` is 6 (long) or 4, an operand with `|`
+  is 4, `x(reg)` is 4 when the base is a register, anything else 6.
+- usesreg(): ret uses r2 r3 r12 r13; a call through `@reg` counts for reg and (always, `reg ^ 1` is not 0) any register >= 2.
+- procopt: the free registers are paired from r13 downward (`13 - k`).
+- Heap start 0x1a4c (data is 4 bytes longer): "NK core" in `-d`.
+- Both popt and spopt: `conloc` (the memory location known to hold a constant) has 20 bytes in the original, directly followed by
+  the statistic counters `ndirect` and `nbrbr`: an operand of 21 or more characters (`|_stkseg+~L1+142|(fp)`) overwrites them, and
+  `-d` prints "10496 operations made more direct" (0x2900 = ")" and NUL). setcon() does the same to the two counters.

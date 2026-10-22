@@ -2,6 +2,8 @@
  * z2.h -- common definitions for popt, the peephole optimizer of the
  * WEGA C compiler (cc -O).  Reconstructed from the WEGA /lib/popt binary
  * (modules z20.c .. z23.c).  See NOTES.md.
+ * The same sources, compiled with -DSPOPT, are spopt (scc -O): the segmented variant;
+ * the places that differ are marked SPOPT.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -124,7 +126,11 @@ struct node *allocnode(void);
 extern unsigned short heaplim;
 void heapreset(void);
 #ifndef HEAP0
+#ifdef SPOPT
+#define HEAP0 0x1a4c	/* end of data+bss of the original spopt */
+#else
 #define HEAP0 0x1a48	/* end of data+bss of the original */
+#endif
 #endif
 struct node *nonlab(struct node *);
 void decref(struct node *);

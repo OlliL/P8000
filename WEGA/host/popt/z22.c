@@ -423,7 +423,11 @@ dest(struct node *p)
 		if (sub == 0)
 			sub = SLONG;
 	} else if (op == LDA)
+#ifdef SPOPT
+		sub = SLONG;		/* an address is a segmented (long) address */
+#else
 		sub = 0;
+#endif
 	if (sub == 0)
 		return TW;
 	if (sub == SBYTE)
@@ -676,6 +680,80 @@ repladdr(struct node *p, int f)
 void
 movedat(void)
 {
+#ifdef SPOPT
+	/*
+	 * Sections are introduced by ".psec [name]" followed by ".code" or ".data". The PSEC node
+	 * gets the kind of the following directive in its subop. Every data section moves in front
+	 * of the code; then a section header that repeats the previous one is dropped.
+	 */
+	struct node hd, *r10, *r11, *r13, *r14;
+	char *prev = "";	/* the original clears the byte at the address held in a register */
+	int cur;
+
+	if (first.forw == 0)
+		return;
+	memset(&hd, 0, sizeof hd);
+	r10 = &hd;
+	for (r14 = first.forw; r14; r14 = r14->forw) {
+		if (r14->op == PSEC && r14->forw &&
+		    (r14->forw->op == CODE || r14->forw->op == DATA))
+			r14->subop = r14->forw->op;
+		if (r14->subop != DATA)
+			continue;
+		for (r13 = r14->forw; r13; r13 = r13->forw) {
+			if (r13->op == CODE)
+				break;
+			if (r13->op == PSEC && r13->forw &&
+			    (r13->forw->op == CODE || r13->forw->op == DATA))
+				r13->subop = r13->forw->op;
+		}
+		if (r13 == 0)
+			break;
+		r11 = r14->back;
+		r14->back->forw = r13->forw;
+		r13->forw->back = r11;
+		r13->forw = 0;
+		r10->forw = r14;
+		r14->back = r10;
+		r14 = r11;
+		r10 = r13;
+	}
+	if (hd.forw) {
+		r10->forw = first.forw;
+		first.forw->back = r10;
+		hd.forw->back = &first;
+		first.forw = hd.forw;
+	}
+	cur = -1;
+	for (r14 = first.forw; r14; r14 = r14->forw) {
+		if (r14->subop != CODE && r14->subop != DATA)
+			continue;
+		r13 = r14->forw;
+		if (r13) {
+			if (r13->op == r14->subop)
+				r13 = r13->forw;
+			if (r13 && r13->forw && r13->forw->op == r13->subop &&
+			    (r13->subop == CODE || r13->subop == DATA)) {
+				r14->back->forw = r13;
+				r13->back = r14->back;
+				r14 = r13;
+			}
+		}
+		if (r14->subop == cur && equstr(prev, r14->code)) {
+			if (r14->forw->op == r14->subop)
+				r13 = r14->forw->forw;
+			else
+				r13 = r14->forw;
+			r14->back->forw = r13;
+			r13->back = r14->back;
+			r14 = r14->back;
+		} else {
+			prev = r14->code;
+			cur = r14->subop;
+		}
+	}
+#else
+
 	struct node hd, *r1, *r4, *r6, *r7;
 	int cur;
 
@@ -729,6 +807,7 @@ movedat(void)
 		} else
 			cur = r1->op;
 	}
+#endif
 }
 
 /*
@@ -840,6 +919,20 @@ setcon(char *val, char *loc)
 	if (*val == '#' && natural(loc)) {
 		strcpy(conloc, loc);
 		strcpy(conval, val);
+		/*
+		 * In the original conloc has 20 bytes and the statistic counters follow it
+		 * (ndirect, then nbrbr, 16 bit big endian): a longer name overwrites them.
+		 */
+		{
+			int k, n = strlen(loc) + 1;
+
+			for (k = 20; k < n && k < 24; k++) {
+				int *w = k < 22 ? &ndirect : &nbrbr;
+				int sh = (k & 1) ? 0 : 8;
+
+				*w = (*w & ~(0xff << sh) & 0xffff) | ((unsigned char)loc[k] << sh);
+			}
+		}
 	}
 }
 
@@ -966,7 +1059,11 @@ ilen(struct node *p)
 	case CJP:
 	case JP:
 		if (p->code == 0)
+#ifdef SPOPT
+			return 6;
+#else
 			return 4;
+#endif
 		return adrlen(p->code, p->subop);
 	case LABEL: case DLABEL: case OBRACE:
 	case CODE: case DATA: case WORD: case EVEN:
@@ -1020,9 +1117,31 @@ adrlen(char *s, int op)
 		return 2;
 	if (*s == '@')
 		return 2;
+#ifdef SPOPT
+	if (*s == '#')
+		return op == SLONG ? 6 : 4;
+	{
+		char *s0 = s;
+
+		for (; *s; s++) {
+			if (*s == '|')
+				return 4;
+			if (*s == '(') {	/* x(rrN): a register in the index part is a short address */
+				int r;
+
+				*s = 0;
+				r = isreg(s0);
+				*s = '(';
+				return r >= 0 ? 4 : 6;
+			}
+		}
+	}
+	return 6;
+#else
 	if (*s == '#' && op == SLONG)
 		return 6;
 	return 4;
+#endif
 }
 
 /* --------------------------------------------------------------- */
@@ -1133,8 +1252,14 @@ rmove(void)
 		repladdr(p, 0);
 	ld_chk:
 		r11 = isreg(RT2);
+#ifdef SPOPT
+		if (r11 >= 0 && !isused(p, RT2) &&
+		    (r11 != 8 || p->back->op != CALL))
+			goto del;
+#else
 		if (r11 >= 0 && !isused(p, RT2))
 			goto del;
+#endif
 		r12 = isreg(RT1);
 		t = dest(p);
 		setreg(RT2, t);
@@ -1196,13 +1321,18 @@ rmove(void)
 		n = p->back;
 		r12 = isreg(RT2);
 		if (r12 < 0 || n == 0 || n->op != LD)
-			goto disp;
+			goto incfail;
 		if (!((equstr(RT1, "#2") && n->subop == 0) ||
 		      (equstr(RT1, "#4") && n->subop == SLONG)))
-			goto disp;
+			goto incfail;
 		dualop(n);
+#ifdef SPOPT
+		if (RT1[0] == '@' && r12 != isreg(RT2) &&
+		    isreg(RT1 + 1) == r12 - 1) {	/* rr14 is the stack pointer r15 */
+#else
 		if (RT1[0] == '@' && r12 != isreg(RT2) &&
 		    r12 == isreg(RT1 + 1)) {
+#endif
 			n->forw = p->forw;
 			p->forw->back = n;
 			p = n;
@@ -1219,12 +1349,16 @@ rmove(void)
 		dualop(p);
 		r12 = isreg(RT2);
 		if (r12 < 0 || p1 == 0 || p1->op != LD)
-			goto disp;
+			goto incfail;
 		if (!((equstr(RT1, "#2") && p1->subop == 0) ||
 		      (equstr(RT1, "#4") && p1->subop == SLONG)))
-			goto disp;
+			goto incfail;
 		dualop(p1);
+#ifdef SPOPT
+		if (RT2[0] == '@' && isreg(RT2 + 1) == r12 - 1) {
+#else
 		if (RT2[0] == '@' && r12 == isreg(RT2 + 1)) {
+#endif
 			if (RT1[0] == '#' && p1->subop == SLONG)
 				goto redual;
 			p->back->forw = p1;
@@ -1235,6 +1369,13 @@ rmove(void)
 			nchange++;
 		}
 		goto redual;
+
+	incfail:
+#ifdef SPOPT
+		goto reset;		/* spopt forgets everything at an inc/dec that is not a push/pop */
+#else
+		goto disp;
+#endif
 
 	do_tst:
 		singop(p);

@@ -41,7 +41,7 @@ our own C sources, checked byte for byte against the original binaries.
 | `cparse` / `scparse` | not started; the parser is the biggest part |
 | `codgen` / `scodgen` | not started |
 | `gopt` | not started (only used with -Ol/-Or) |
-| `popt`, `spopt` | `popt` done (non-segmented); `spopt` not started |
+| `popt`, `spopt` | done: `host/popt` (`make` builds both; `spopt` is the same sources with `-DSPOPT`), checked against the originals with `make -C host/popt check` / `PROG=spopt` |
 | `cas` | done: all modules decompiled to `src/cmd/cas/` (same behaviour as the original, code of the older scc not byte identical, see `src/cmd/cas/MODULES`); host version `host/cas`, checked against the original |
 | `as` | not started |
 | `ld` | done: `host/ld` (nonsegmented), 146 command lines identical to the original, `make -C host/ld check` |

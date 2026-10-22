@@ -189,7 +189,11 @@ input(void)
 				p->code = copy(1, line, 0);
 			}
 			break;
+#ifdef SPOPT
+		case LONG:
+#else
 		case WORD:
+#endif
 		case ADDR:
 			p = jswcheck();
 			if (p == 0)
@@ -335,8 +339,18 @@ output(struct node *n)
 		printf("%s:\n", n->code);
 		return;
 	case JSW:
+#ifdef SPOPT
+		printf("\t.long\tL%d\n", n->labno);
+#else
 		printf("\t.word\tL%d\n", n->labno);
+#endif
 		return;
+#ifdef SPOPT
+	case PSEC:
+		n->subop = 0;		/* movedat() leaves the kind of the section here */
+		lastseg = n->op;
+		break;
+#endif
 	case CODE:
 	case DATA:
 		lastseg = n->op;
