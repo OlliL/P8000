@@ -428,28 +428,87 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   first object: `gld libq.a` alone gives a header with segment number 127 and sizes of unrelated memory); the host stops with an error.
   The original hangs (or runs very long) when a single section comes near 64K (`gld` with one 60000 byte text); not investigated.
 
-## codgen / scodgen (`/lib/codgen`, `/lib/scodgen`): analysis, not yet rebuilt
+## codgen / scodgen (`/lib/codgen`, `/lib/scodgen`): analysis and first parts
 
 Second pass of a Portable C Compiler (PCC) derivation: `cparse` (pass 1) writes three files, `codgen` reads them and prints cas source.
 `cc` calls `cparse -E base <x.p`, which creates `base.I` (the trees, text), `base.D` (initialised data, text) and `base.S` (symbol table,
 binary, big endian), then `codgen [-l] [-p] [-R] -E base <base.I >x.s`; `gopt` (cc -O1..5) rewrites `base.I` in between. `-R`: register
-variables for -O3/-O5, `-l`/`-p`: line numbers, profiling. E711 (non-segmented program, scodgen generates Z8001 code): text 53760/54784,
+variables for -O3/-O5, `-l`/`-p`: line numbers, profiling. Both are E711 (non-segmented programs; scodgen generates Z8001 code): text 53760/54784,
 data 27084/28730, bss 17522/17512. Modules and versions (strings in the binary): reader3.c 2.5, rdr3.c 2.1, local3.c 2.4, order3.c 2.4,
 match3.c 2.4, allo3.c 2.4, regallo3.c 2.5, comm3.c 2.1, common 2.5, table3.c 2.2 with table3.nzcc.c 2.4 (scodgen: table3.szcc), wrt3.c 2.4,
-regs3.c 2.5, lcl3.c 2.4, tr3.c 2.3, optim3.c 2.4, all 08/83-10/83. The names follow PCC (`reader`, `match`, `allo`, `order`, `local`, `table`, `optim`,
-`comm2`), the table is the usual `struct optab` (shapes SAREG STAREG SNAME SCON SOREG ... printed in diagnostics) with 130 templates numbered
-`/* 000 */` ... `/* 128 */` (the numbers appear in the output as comments). Not the Plexus `pcc` (it prints `csv2`/`cret2`); the Plexus sources
-(`cmd/cc/pcc.d/mip`) only help to read the structure (private reference).
+regs3.c 2.5, lcl3.c 2.4, tr3.c 2.3, optim3.c 2.4, all 08/83-10/83. The names follow PCC (`reader`, `match`, `allo`, `order`, `local`, `table`,
+`optim`, `comm2`). Not the Plexus `pcc` (it prints `csv2`/`cret2`); the Plexus sources (`cmd/cc/pcc.d/mip`) only help to read the
+structure (private reference).
 
-Intermediate file `base.I` (text, tab separated): `{` begins a function (`{2 TAB 00000 TAB 0000 TAB 0 TAB`: frame data), `.2 TAB "file"` and a
-line number line `118 TAB 44 TAB` (op, ...), `[48 TAB 14 TAB 23 TAB` opens an expression tree, nodes are lines `op TAB value TAB type TAB ...`
-in prefix order, `]` closes, `Lnn TAB` a label, `Bnn TAB` a branch, `}` ends. `base.D`: the data text of the module (`    .even`, `_g::`, `\t.word\t%3`; in the example
-the file starts with a 7 digit decimal count and ends with two 7 digit numbers). Example: cc -S of `int g = 3; f(a,b){...}`; `host/codgen/corpus.sh` keeps these files.
+**Options** of codgen (list at data 0x58): `E M O R a e f l o p r s t u x y`, `-E base` names the files.
+
+**Intermediate file `base.I`** (text; numbers decimal and tab terminated). A record starts with one character (table at data 0x98 in
+codgen: `# . / B C F L R S T [ ] { }`):
+- `{ n TAB autooff TAB size TAB nreg TAB`: begin of a function (generates the prologue); `}`: end (epilogue, `~L1`, `~L2` lines).
+- `[ autooff TAB maxtreg TAB x TAB` begin and `]` end of a block; `. lineno TAB "file"` followed by an expression tree;
+  `L n TAB` label, `B n TAB` branch label, `F n`, `S n`, `T n`, `R a TAB b [TAB c]`, `C n TAB l1 TAB l2 ... TAB` switch table
+  (`.data`, `.even`, `Ln:`, `.addr Lx`..., `.code`), `# text` and `/ text` copied or ignored lines.
+- A tree node in prefix order: `op TAB [lval TAB] [rval TAB] type(octal) TAB name LF`; lval for leaves (arity LTYPE), rval except for binary
+  nodes, `stsize TAB stalign LF` instead of the name for STASG, STARG, STCALL, USTCALL (101, 102, 103, 105). Then the left subtree
+  (not for leaves) and the right subtree (binary nodes). Op numbers and arity come from a table of 12 byte entries
+  (op, name[8], flags; flags & 0xE: 2 leaf, 4 unary, 8 binary) at data 0x3b92 (89 operators: NAME 2, STRING 3, ICON 4, FCON 5, + 6, ... PROC 118).
+- `tools/cgread.py /lib/codgen x.I ...` reads these files with exactly these rules: all 230 files of the cc corpus (136k nodes) and
+  all 253 files of the scc corpus (168k nodes) parse without a remainder.
+
+**Symbol table file `base.S`** (binary, big endian; `rdr3`, functions at 0x1a86..0x2090): a long G (offset of the last section = the global
+symbols), then sections up to the end of the file, one per function (`{`) and the global one last. A section: word flag (member table
+present), long bytes of symbols, long bytes of the ascii table, word bytes of the number table, word bytes of the member table, then the
+22 byte symbol entries (11 words: name offset, type, class/flags, ..., the tag in `w8 >> 4 & 0xFFF`, last word 0xFFFF), the ascii table (names,
+NUL terminated), the number table (2 byte entries), the member table (6 byte entries). The symbols are sorted by tag for the lookups
+(binary search at 0x1f82). `tools/cgsym.py` reads the files: the sections of all 483 files of both corpora tile the file exactly.
+`base.D` (the data text) is copied to the output in pieces: a 7 digit count, TAB, LF, then that many bytes; one piece at each `{` and `}`.
+
+**Constants** (the same values and names as the PCC pass 2, in octal): shapes SANY 01, SAREG 02, STAREG 04, SBREG 010, STBREG 020, SCC 040,
+SNAME 0100, SCON 0200, SFLD 0400, SOREG 01000, STARNM 02000, STARREG 04000, INTEMP 010000, FORARG 020000, SWADD 040000, SPECIAL 0100000;
+types TCHAR 01, TSHORT 02, TINT 04, TLONG 010, TFLOAT 020, TDOUBLE 040, TPOINT 0100, TUCHAR 0200, TUSHORT 0400, TUNSIGNED 01000,
+TULONG 02000, TANY 010000, TSTRUCT 020000. A node is 0x12 bytes: op, rall (0x2000 = none), type, +6, +8 (symbol of a NAME), +0xA
+(struct size, TEMP number), lval (long, +0xC), left (+0xE), rval (+0x10); the format of `base.I` has no names (symbols come from the tags).
+`host/codgen/cg.h` has them; `regallo3.c` has the register lists (`rsinit rsbuild newnode rsinsert roverlap regjam getreg rsreturn nullsyms`, from 0x740c-0x8112; `rsfreeall rspush rsmerge rsrestart rsdump` are open); `match3.c` has tshape, ttype and setrew (the index `opptr[op]` of the first table entry for an operator; entries with
+op >= 0x1000 are operator classes selected by the masks in `opclass[]`). The operators (`host/codgen/ops_*.c`, from `tools/codgentab.py --ops`) are the PCC ones.
+
+**Table.** The templates are an array of 10 word entries `op visit lshape ltype rshape rtype needs nx rewrite cstring` behind the version string
+`table3.nzcc.c` (codgen: 150 entries, last one the sentinel "/*NULL*/") or `table3.szcc.c` (scodgen: 174 entries, sentinel "/*hi mom*/"). The text
+of a template begins with its number as a comment (`/* 000 */` ...), which shows in the output. `tools/codgentab.py <original> > table3.c`
+writes the table as C source (`host/codgen/table3_codgen.c`, `table3_scodgen.c`, `table.h`).
 
 Test harness: `host/codgen/corpus.sh SRC OUT` (PROG=scodgen for scc) runs the original `cc -S -:d` over all C sources of the tree and keeps
-`<id>.I .D .S` and the reference `<id>.out.s` (230 files for cc); `check.sh` will compare `./codgen -E x <x.I` with the original.
-The rebuild (about 6000 lines of C: reader, rdr, match, allo, regallo, order, local, lcl, wrt, regs, tr, optim, comm, table) is the largest piece
-of the front end and has not been started beyond this analysis.
+`<id>.I .D .S` and the reference `<id>.out.s`; `check.sh` compares a rebuilt `./codgen -E x <x.I` with the original on that corpus.
+`match3.c` also has `getlr` and `match()` (the selection loop: operator or class entry, cookie, shapes and types of both operands, the "same type"/"same size" markers 0x4000/0x8000, `needs & 0x1000` = rewrite entry, then `allo`, `expand`, `reclaim`), `local3.c` the helpers `special` (the SPECIAL+1..8 constant shapes), `shtemp`, `shumul`, `shincr`, `ltypeok`, `ltypeop`, `ispow2`, `bsize`, `szty`, `rcount` (compiler loop guard, 5000). `out3.c` has `expand` (0x6444) with the template macros and the printing functions: `A`x operand (`adrput` 0x41d0), `B` low bit of lval, `F` (line only when the value is used, i.e. cookie has no FOREFF), `H`/`S` field shift/size, `I` (insput: always an error), `L` the label of a CBRANCH, `M`/`N` field mask and its complement, `O`x (`hopcode` 0x2de0: mnemonic by operator and type from the tables `fhoptab`/`ihoptab`, `tools/codgentab.py --hop`), `T` flag, `U`x (`upput` 0x40d4: second word), `V` registers print as `rr2`, `W` as `rl2`, `X` back to normal, `Y` right operand as a constant, `Z`x (`zzzcode` 0x2edc) and `C` (not done). Operands print through `acon` (0x437e: `Ln` for negative rval, `_name`, `Lnn` for a local static, `~L1`/`~L2` frame symbols, `+offset`) and `oregput` (`off(reg)`, `(fp)`). `fixname` (0xa0c6: NAME in a register becomes REG, auto becomes OREG), `oregfix` (0xa12a), `allo` (0x67e8, uses the register counts in `needs`), `reclaim` (0x7058) and `zzzcode` are next. Next: allo, regallo, order, local, wrt, regs, lcl, tr, optim and the reader main loop (about 6000 lines in all; the module map is: reader/rdr 0x19e..0x2790, local 0x2780..0x3e00 and 0x3e1c..0x4804, order 0x49c0..0x5c7a, match 0x5d2c..0x66bc, allo/regallo/comm/optim after).
+
+### codgen / scodgen: register machinery (notes from reading allo3, regallo3, regs3; not yet rebuilt)
+
+Register classes (`rclass(type, reg)` at 0x6bf4): 2 word register r0-r7, 3 long register (rr), 4 float register f0-f3 (regs 16-19), 6 word
+variable register r8+, 7 long variable register, 8 float variable register (20-23). `rstatus[]` (data 0x27da): r0-r7 0x6 (SAREG|STAREG), r8-r15 0x2,
+f0-f3 0x18, f4-f7 0x8. The register status list nodes are 14 bytes: reg (byte 0), class (byte 1), byte 3 busy count, next pointer at +0xA; a pool
+of nodes (0xa2d8..0xa79a) feeds two lists: 0xa154 the registers that are free (built by `rsbuild` 0x7458 in the order rr2 rr4 rr6 rr0, f0-f3, r14, rr8 rr10 rr12,
+f4-f7 for every function) and 0xa166 the ones in use. Function map (address, PCC name where it is the same job):
+
+| address | function |
+|---|---|
+| 0x66bc | rbusy(r, t): count a register as busy; a word register inside a long one splits the long entry (errors "rbusy: register %d not free", "... not found on rslist") |
+| 0x6792 | freetemp(k): k words of temporary stack (`tmpoff`, errors against `maxoff`) |
+| 0x67e8 | allo(p, q): resources for an entry: `needs` nibbles count A registers (bits 0-3), B registers (4-7), temps (8-9, 10-11); fills `resc[0..2]` (0x12 byte nodes at 0x8f24) |
+| 0x6ba6 | argument offset (`paroff`, `parmax`) |
+| 0x6bf4 | rclass(type, reg) |
+| 0x6c4e | getreg for a node (register variable or free register, "register jam") |
+| 0x6d5a | freereg(p, r, cookie): look for a free or reusable register |
+| 0x6e78 | usable(p, side, r): does the operand already live in register r |
+| 0x6efa / 0x6f76 | rfree for the registers of a node / rfree(r, t) |
+| 0x7058 | reclaim(p, rewrite, cookie): after the code was printed, rewrite the tree by RLEFT/RRIGHT/RESC1-3 (bits 0-4 of rewrite), result in a register: REG node, type adjusted (SHORT to INT 3->4, 13->14), fix of the reg class |
+| 0x73f0 | the other half of a register pair (r ^ 1) |
+| 0x740c, 0x7458, 0x750c | rsinit, rsbuild, rsdump (debug table "Reg No. Type Symbol usecount offset addr dtype") |
+| 0x75e0, 0x7650, 0x7790 | new list node by class, ordered insert into the list, overlap test of a class and a register (error "roverlap: illegal base type") |
+| 0x7790 | roverlap(class, reg, node): do register reg of class and the register of the node overlap |
+| 0x7916 | regjam(class, reg, flag, sym): take a used but unbusy node (or split one, or free the smaller registers inside a long one) for a symbol |
+| 0x7c10 | getreg(class, reg, flag, sym): a register of the class (reg -1 = any); register variables (classes 5-8) by name; a node that still holds the symbol; a free node; split a larger free node (long into words, word into bytes); with flag 0x1000 regjam |
+| 0x7f50 | rsreturn(class, reg): a register is free again, moved from the use list to the free list, merged with its partner (reg ^ 1) into a node of the next class |
+| 0x811e, 0x815e, 0x81c4, 0x81fe, 0x8502 | nullsyms, rsfreeall, rspush (save the use list, up to 3), rsmerge (restore and merge with what the code in between used), rsrestart (rebuild the lists, re-get the registers of the saved list with flag 0x2000) |
+| 0x847a | rsrelease(list): the nodes of a list go back to the pool (87 nodes at 0xa2d8) |
 
 ## Z8000 decoder (tools/z8k.py)
 
