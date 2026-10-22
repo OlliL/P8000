@@ -428,6 +428,29 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   first object: `gld libq.a` alone gives a header with segment number 127 and sizes of unrelated memory); the host stops with an error.
   The original hangs (or runs very long) when a single section comes near 64K (`gld` with one 60000 byte text); not investigated.
 
+## codgen / scodgen (`/lib/codgen`, `/lib/scodgen`): analysis, not yet rebuilt
+
+Second pass of a Portable C Compiler (PCC) derivation: `cparse` (pass 1) writes three files, `codgen` reads them and prints cas source.
+`cc` calls `cparse -E base <x.p`, which creates `base.I` (the trees, text), `base.D` (initialised data, text) and `base.S` (symbol table,
+binary, big endian), then `codgen [-l] [-p] [-R] -E base <base.I >x.s`; `gopt` (cc -O1..5) rewrites `base.I` in between. `-R`: register
+variables for -O3/-O5, `-l`/`-p`: line numbers, profiling. E711 (non-segmented program, scodgen generates Z8001 code): text 53760/54784,
+data 27084/28730, bss 17522/17512. Modules and versions (strings in the binary): reader3.c 2.5, rdr3.c 2.1, local3.c 2.4, order3.c 2.4,
+match3.c 2.4, allo3.c 2.4, regallo3.c 2.5, comm3.c 2.1, common 2.5, table3.c 2.2 with table3.nzcc.c 2.4 (scodgen: table3.szcc), wrt3.c 2.4,
+regs3.c 2.5, lcl3.c 2.4, tr3.c 2.3, optim3.c 2.4, all 08/83-10/83. The names follow PCC (`reader`, `match`, `allo`, `order`, `local`, `table`, `optim`,
+`comm2`), the table is the usual `struct optab` (shapes SAREG STAREG SNAME SCON SOREG ... printed in diagnostics) with 130 templates numbered
+`/* 000 */` ... `/* 128 */` (the numbers appear in the output as comments). Not the Plexus `pcc` (it prints `csv2`/`cret2`); the Plexus sources
+(`cmd/cc/pcc.d/mip`) only help to read the structure (private reference).
+
+Intermediate file `base.I` (text, tab separated): `{` begins a function (`{2 TAB 00000 TAB 0000 TAB 0 TAB`: frame data), `.2 TAB "file"` and a
+line number line `118 TAB 44 TAB` (op, ...), `[48 TAB 14 TAB 23 TAB` opens an expression tree, nodes are lines `op TAB value TAB type TAB ...`
+in prefix order, `]` closes, `Lnn TAB` a label, `Bnn TAB` a branch, `}` ends. `base.D`: the data text of the module (`    .even`, `_g::`, `\t.word\t%3`; in the example
+the file starts with a 7 digit decimal count and ends with two 7 digit numbers). Example: cc -S of `int g = 3; f(a,b){...}`; `host/codgen/corpus.sh` keeps these files.
+
+Test harness: `host/codgen/corpus.sh SRC OUT` (PROG=scodgen for scc) runs the original `cc -S -:d` over all C sources of the tree and keeps
+`<id>.I .D .S` and the reference `<id>.out.s` (230 files for cc); `check.sh` will compare `./codgen -E x <x.I` with the original.
+The rebuild (about 6000 lines of C: reader, rdr, match, allo, regallo, order, local, lcl, wrt, regs, tr, optim, comm, table) is the largest piece
+of the front end and has not been started beyond this analysis.
+
 ## Z8000 decoder (tools/z8k.py)
 
 Own table, written from the Z8000 encoding rules, segmented and
