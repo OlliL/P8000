@@ -46,7 +46,7 @@ register tm_sec;
 	if (tm_mday > 31 || tm_mon > 12)
 		return(time);
 	i = dmsize[tm_mon];
-	if (tm_year%4 == 0 && tm_mon > 2) i++;
+	if (tm_year%4 == 0 && tm_mon > 1) i++;
 	if (tm_year > 137) return(time);
 	time = (tm_year-69)/4;
 	time += 365*(tm_year-70)+i;
