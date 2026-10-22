@@ -41,7 +41,7 @@ produce the same bytes with the shipped cc.
 | `cmd/ranlib/ranlib.c` (`readsym` is an old libc module) | ranlib | behaves like the original (same `__.SYMDEF` for libc.a, slibc.a, libcurses.a), code differs | Older cc (frame size D1, scratch registers D2, argument spill D4, string alignment D12); the old `readsym` of the original is `lib/oldlibc/readsym/0_1.s` (C form `cmd/ranlib/readsym.c`, kept as documentation, not built) | libc part linked from 24 old modules (`lib/oldlibc`) + 19 shipped members, identical |
 | `cmd/cc/cc.c` | cc, scc | **identical** (linked from `cmd/cc`: cc.o + 9 old libc modules + 33 shipped members, no libc.a) | - | - |
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
-| `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | not built yet | `/lib/cparse` stopped at EPU instruction `8E04` on the floating constant in `dosopn.c` line 175 (`1.5*first`); every doscopy command links `dosopn.o`. z8k-emu now runs EPU instructions through the C port of the kernel's `fpe.s` (2026-10-22, see `host/z8k-emu/README.md`) | build under the oracle and compare (not run yet: no WEGA tree on the development machine) |
+| `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | builds under z8k-emu, but all files differ from the originals | `dosopn.c` line 175 (`1.5*first`) needed EPU instructions; z8k-emu now runs them (2026-10-22, `host/z8k-emu/README.md`) and the commands compile. Locally the build fails only on the `/usr/include` make dependencies (outside the guest ROOT). The owner believes they were built with the current cc and libc (no old-libc version needed; belief, not measured). The differences are not analysed yet | analyse **after the host tool chain is complete** (nearest-version method, `cmpins.py`) |
 
 ## Programs and libc versions
 
@@ -60,7 +60,6 @@ state the original was linked with; `shipped` = the members of the shipped `/lib
 | copydisk, format, verify | not measured by `verify-wega` yet (paths corrected 2026-10-22) | shipped (measured on the originals) | - |
 | BOOT0/pb.image, standalone/sa.* | identical | - | - |
 | pburn | identical (2.1, built with `SCC`/`GLD`, see `host/KNOWLEDGE.md`); `verify-wega` builds it since 2026-10-22 (not run yet) | - | - |
-| doscopy/* | not built yet | - | EPU emulation now present, build not run yet, see above |
 | cas | rebuilt, see "In progress" | not measured (segmented, slibc.a) | older scc |
 
 ## Compiler differences (old compiler)
