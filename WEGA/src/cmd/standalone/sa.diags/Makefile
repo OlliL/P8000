@@ -3,10 +3,10 @@
 SA_DIAGS_VERSION = p8000
 
 all:
-	cd $(SA_DIAGS_VERSION) ; make $@
+	cd $(SA_DIAGS_VERSION) ; $(MAKE) $@
 
 clean:
-	cd $(SA_DIAGS_VERSION) ; make $@
+	cd $(SA_DIAGS_VERSION) ; $(MAKE) $@
 
 install:
-	cd $(SA_DIAGS_VERSION) ; make $@
+	cd $(SA_DIAGS_VERSION) ; $(MAKE) $@

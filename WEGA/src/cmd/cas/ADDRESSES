@@ -1,4 +1,5 @@
 # names used in the source <-> addresses in /bin/cas (text, segment 4)
+# address = the call target (entry; in modules built without -O a jump or jr to the prologue behind the body)
 # ifile.c
 iputb 0042  iputw 0080  iputl 009e  sputb 00c0  sputw 00fe  sputl 011c
 sgetb 013e  sgetw 017c  sgetl 01a0  igetb 01d0  igetw 020e  igetl 0232  igetaddr 0262
@@ -38,7 +39,7 @@ ohdrinit 6394  ohdrput 6634  symtype 66cc  osymout 676a  stabout 6952  nlwrite 6
 # gen.c
 genb 6da6  genw 6e9a  genl 6f66  genlop 6fba  genwop 70b0  genaddr 7192  genbop 71c2  seekout 7286
 # assemble.c
-asmins 742a  asmword 75f4  asmfield 7754  asmimm 796a  asmfix 7c2e  asmfix2 7ce8  asmrel 7d8a  asmreg 7eba  putbits 7f2e  rangechk 7fb0
+asmins 742a  asmword 75ee  asmfield 774e  asmimm 7964  asmfix 7c2c  asmfix2 7ce6  asmrel 7d84  asmreg 7eb8  putbits 7f2c  rangechk 7fae
 # getops.c
 igetexpr 7fee  sgetexpr 8146  getop 829e  sgetnode 8358
 # error.c

@@ -16,9 +16,9 @@
 # compared with the originals:
 #
 #   make verify          all checks below
-#   make verify-wega     build ../src/cmd with the original cc, cas, as, ld,
-#                        ar and strip, run strip-programs, then report per
-#                        program whether it is identical to the original
+#   make verify-wega     build ../src/cmd with the original cc, scc, cas, as,
+#                        ld, sld, gld, yacc, ar and strip, then report per program
+#                        whether it is identical to the original
 #                        (report only, does not fail on differences)
 #
 # WEGA: the WEGA file tree (bin/, lib/, usr/...), not in git.
@@ -31,20 +31,23 @@ WEMU  = $(EMU) -r $(ROOT)
 SRC   = ../src/cmd
 
 # the original tools run under the emulator
-WTOOLS = CC='$(WEMU) /bin/cc' CAS='$(WEMU) /bin/cas' AS='$(WEMU) /bin/as' \
-         LD='$(WEMU) /bin/ld' AR='$(WEMU) /bin/ar' STRIP='$(WEMU) /usr/bin/strip'
+WTOOLS = CC='$(WEMU) /bin/cc' SCC='$(WEMU) /bin/scc' CAS='$(WEMU) /bin/cas' \
+         AS='$(WEMU) /bin/as' LD='$(WEMU) /bin/ld' SLD='$(WEMU) /bin/sld' \
+         GLD='$(WEMU) /bin/gld' YACC='$(WEMU) /usr/bin/yacc' AR='$(WEMU) /bin/ar' \
+         STRIP='$(WEMU) /usr/bin/strip'
 
-# program (in ../src/cmd) : original (in the WEGA tree)
+# program (in ../src/cmd) : original (in the WEGA tree); commands with several
+# versions are built in the subdirectory of the version shipped with WEGA 3.1
 WEGA_PROGS = ar:bin/ar cc/cc:bin/cc cc/scc:bin/scc ranlib/ranlib:usr/bin/ranlib size/size:bin/size strip/strip:usr/bin/strip \
-	getud:bin/getud putud:bin/putud copydisk:bin/copydisk dump:etc/dump \
-	dumpdir:etc/dumpdir format:bin/format restor:etc/restor sync:bin/sync \
-	tar:bin/tar verify:bin/verify \
+	getud:bin/getud putud:bin/putud copydisk/1.5/copydisk:bin/copydisk dump:etc/dump \
+	dumpdir:etc/dumpdir format/1.5/format:bin/format restor:etc/restor sync:bin/sync \
+	tar:bin/tar verify/1.5/verify:bin/verify cas/cas:bin/cas \
 	BOOT0/pb.image:pb.image \
 	doscopy/doscat:usr/bin/doscat doscopy/dosrm:usr/bin/dosrm \
 	doscopy/doscp:usr/bin/doscp doscopy/dosdir:usr/bin/dosdir \
 	doscopy/dosls:usr/bin/dosls doscopy/dosmkdir:usr/bin/dosmkdir \
 	doscopy/dosrmdir:usr/bin/dosrmdir doscopy/dosformat:usr/bin/dosformat \
-	pburn/pburn:bin/pburn \
+	pburn/2.1/pburn:bin/pburn \
 	standalone/sa.cat:sa.cat standalone/sa.format:sa.format \
 	standalone/sa.verify:sa.verify standalone/sa.mkfs:sa.mkfs \
 	standalone/sa.install:sa.install standalone/sa.timer:sa.timer \
@@ -69,7 +72,6 @@ verify: all check verify-wega
 verify-wega:
 	$(MAKE) -C $(SRC) clean >/dev/null
 	-$(MAKE) -C $(SRC) all $(WTOOLS)
-	-$(MAKE) -C $(SRC) strip-programs $(WTOOLS)
 	@for pair in $(WEGA_PROGS); do \
 	  p=$${pair%%:*}; o=$(WEGAABS)/$${pair#*:}; f=$(SRC)/$$p; \
 	  if [ ! -f $$f ]; then echo "$$p: not built"; \

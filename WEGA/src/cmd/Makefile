@@ -1,14 +1,12 @@
 # cmd: WEGA system commands, in the V7 layout: a command with a single source
 # file is a file here (ar.c, tar.c, ...); a command with several files, several versions or its own
 # libc has its own subdirectory with its own Makefile (BOOT0, doscopy, pburn, standalone, size, strip,
-# ranlib, cc). Start-up variants of the commands live in ../lib/libc/crt (crt0.s.in + crt0.list,
+# ranlib, cc, cas). Start-up variants of the commands live in ../lib/libc/crt (crt0.s.in + crt0.list,
 # made into crt0-<command>.s by mkcrt0.sh).
 # cc/cc.c is the source of both drivers, cc and scc (scc is cc.c compiled with -DSCC).
 # The Linux versions of the cc driver (with cc.conf) and of popt live in ../../host.
 #
-#   make                       build everything (with the WEGA cc/cas/ld)
-#   make strip-programs        strip the programs that the original ships
-#                              stripped (STRIPFILES); run it before comparing
+#   make                       build everything (with the WEGA cc/scc/cas/as/ld/sld/gld/yacc)
 #   make install PREFIX=dir    install below dir (default /)
 #   make clean                 remove the objects and the programs
 
@@ -25,9 +23,9 @@ PROGS = ar
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o
-SUBDIRS=	BOOT0 pburn standalone verify copydisk format size strip ranlib cc
+SUBDIRS=	BOOT0 pburn standalone verify copydisk format size strip ranlib cc cas
 
-all: $(PROGS) $(FILES) $(STRIPFILES) subdirs
+all: $(PROGS) $(FILES) subdirs
 
 subdirs:
 	-cd doscopy ; $(MAKE) all ; cd ..
@@ -73,13 +71,13 @@ sync.o: sync.c
 sync: $(CRT)/crt0-sync.o sync.o
 	$(LD) -s -o $@ -e start $(CRT)/crt0-sync.o sync.o -lc
 
-install: $(PROGS) $(FILES) $(STRIPFILES)
+install: $(PROGS) $(FILES)
 	for file in ar chkdiff getud putud tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
 	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; done
 	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
 
 clean:
-	rm -f $(PROGS) $(FILES) $(STRIPFILES) $(CLEANFILES)
+	rm -f $(PROGS) $(FILES) $(CLEANFILES)
 	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-sync.o $(CRT)/crt0-ar.s $(CRT)/crt0-sync.s
 	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) clean ; cd .. ; done
 

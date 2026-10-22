@@ -6,27 +6,31 @@
   system, compiled by the WEGA tools (cc, scc, cas, as, ld, gld, ...) and
   meant to build with WEGA's own `make` as well. Layout as in V7
   (/usr/src/cmd): a command with one source file is a file in `src/cmd/`
-  (`ar.c`, `tar.c`, ...); a command with several files has its own
-  subdirectory with its own Makefile (`doscopy`, `standalone`, `BOOT0`). Where
+  (`ar.c`, `tar.c`, ...); a command with several files or its own libc part
+  has its own subdirectory with its own Makefile (`doscopy`, `standalone`,
+  `BOOT0`, `cas`, `cc`, `size`, `strip`, `ranlib`). Where
   several shipped versions of a command exist (`pburn` 1.4/2.1/2.3/2.6,
   `copydisk`, `format`, `verify` 1.5/1.6, `standalone/sa.diags` p8000/p8000c),
   every version has its own subdirectory and the Makefile one level up builds
   the version shipped with WEGA 3.1. Start-up variants are in
-  `src/lib/libc/crt/`, libc in `src/lib/libc`, the other libc versions (members made by
-  the older cc, libc states inside size, strip, ranlib, cc) in `src/lib/oldlibc`, headers in `src/head`, kernel in `src/uts`. Objects
+  `src/lib/libc/crt/`, libc in `src/lib/libc` (the members made by the older cc as
+  cas sources in `src/lib/libc/oldcc`), the other libc versions (libc states inside
+  size, strip, ranlib, cc) in `src/lib/oldlibc`, headers in `src/head`, kernel in `src/uts`. Objects
   and programs are built next to the sources. `make` there needs the tool
-  variables (`CC SCC CAS AS LD GLD AR STRIP`); `src/make_cmd_linux.sh` is the
-  owner's wrapper that runs `make` with all tools under z8k-emu (it holds the
-  owner's local paths; the generic recipe is in `CLAUDE.md`).
+  variables (`CC SCC CAS AS LD GLD AR STRIP`; `src/cmd/cas` also `SLD`,
+  `YACC`); `src/make_cmd_linux.sh` is the owner's wrapper that runs `make`
+  with the original tools under z8k-emu and the host driver `host/cc/cc` as
+  `CC` (it holds the owner's local paths; the generic recipe is in `CLAUDE.md`).
 - `WEGA/host/...` the Linux side. `z8k-emu` (the oracle that runs the original
   binaries), `tools` (analysis scripts), and the Linux-native cross tools
-  `cc`, `scc` (the drivers), `popt` and `cas`: their source
-  is in the same directory, they behave like the WEGA originals and replace
-  the emulator calls later. Check scripts and `Makefile` targets:
-  `make -C WEGA/host check` (cc, popt, libc, oldcc). `make -C WEGA/host
-  verify-wega` is outdated since the version subdirectories, `GLD`/`SCC` and
-  the Makefile changes of 2026-10-18; see `HANDOFF_wega_disasm.md`. The status
-  of the programs against the originals is kept in `WEGA/src/TODO.md`.
+  `cc`, `scc` (the drivers), `popt`, `cas`, `ar` and `ranlib`, `strip`, `size`
+  (`binutils`): their source is in the same directory, they behave like the
+  WEGA originals and replace the emulator calls later. Check scripts and
+  `Makefile` targets: `make -C WEGA/host check` (cc, ar, binutils, cas, popt,
+  libc, oldcc). `make -C WEGA/host verify-wega` builds `src/cmd` with the
+  original tools (`CC SCC CAS AS LD SLD GLD YACC AR STRIP`) and compares per
+  program (`cas` differs by design, see "cas: decompilation"). The
+  status of the programs against the originals is kept in `WEGA/src/TODO.md`.
 - `WEGA/contrib/...` third-party and own extras, unchanged.
 
 Living document. Goal: rebuild the WEGA tool chain (cc, scc, cas, as, ld, sld,
@@ -106,7 +110,7 @@ Size = s_imsize, I&D = combined (E?07) or separate (E?11).
 | /lib/scodgen | E711 | nonseg | 54784 | 28730 | 17512 | as codgen, table3.szcc instead of table3.nzcc |
 | /lib/gopt | E611 | seg (4 segments) | 65534+... | | 42496 | alias2, beta2, comm2, debug2, dom2, ebbo2, flow2, init2, live2, lpind2, lpinv2, quads2, rdr2, reader2, reg2, wrtil2 |
 | /lib/popt, /lib/spopt | E711 | nonseg | 22272 / 22528 | 3308 / 3312 | 3420 | z20.c 1.3, z21.c 1.4, z22.c 1.6, z23.c 1.6 |
-| /bin/cas | E611 | seg (segs 4,5,7,8) | 46848 | 38360+1280+1280 | 12328 | parser.y, main.c, getops.c, ifile.c, ofile.c, pst.c, assemble.c, error.c, expr.c, gen.c, instr.c, itable.c, jpr.c, jpr2.c, listing.c, locntr.c, nodes.c, ntable.c, optim.c, p2loop.c, scanner.c, ssymtab.c, stable.c, subr.c, symbols.c, table1.c, table2.c |
+| /bin/cas | E611 | seg (segs 4,5,7,8,9) | 46848 | 38360+1280+1280+1280 | 12328 | parser.y, main.c, getops.c, ifile.c, ofile.c, pst.c, assemble.c, error.c, expr.c, gen.c, instr.c, itable.c, jpr.c, jpr2.c, listing.c, locntr.c, nodes.c, ntable.c, optim.c, p2loop.c, scanner.c, ssymtab.c, stable.c, subr.c, symbols.c, table1.c, table2.c |
 | /bin/ld | E711 | nonseg | 18944 | 2748 | 27082 | ld.c 1.18, copyname.c 1.3, printname.c 1.5, symbols.c 1.8, crt0.s |
 | /bin/sld | E611 | seg | 38912 | 7090 | 31054+63488 | ld.c, ldm.c, dump.c, ext.c, swap.c, copyname.c, printname.c, symbols.c, malloc.c, scrt0.s |
 | /bin/gld | E607 | seg | 22924 | 4652 | 4680 | gld.c, malloc.c |
@@ -123,8 +127,9 @@ libl.a / slibl.a, doprnt.o / sdoprnt.o, cnvt.o / scnvt.o, the full
 /usr/include. Each library contains a member `Library.SC` with the SCCS
 ids of the member sources (e.g. `crt0.s Rev 3.2`, `fgets.c 2.1`). libc.a
 has no `__.SYMDEF` (not ranlib'ed). Missing on the machine: libu8000.a /
-slibu8000.a (native disassembler library, disasm(3)), /usr/lib/yaccpar,
-lint1/lint2.
+slibu8000.a (native disassembler library, disasm(3)), lint1/lint2.
+(`/usr/lib/yaccpar` is there: the original `yacc` runs with it, see "Done:
+parser".)
 
 Oracle pairs with original source and object: `/usr/sys/dev/{lp,udev1..6}.c`
 vs members of `/usr/sys/dev/LIB2`; `/usr/sys/conf/wpar.c` vs `wpar.o`
@@ -258,8 +263,9 @@ Floating point uses EPU mnemonics (`fadd`, `fldd`, ...).
 `ARMAG` 0177545 (0xFF65), then per member `struct ar_hdr { char
 ar_name[14]; long ar_date; char ar_uid; char ar_gid; int ar_mode; long
 ar_size; }` (26 bytes), data padded to even length. ranlib adds a first
-member `__.SYMDEF` (entries of 12 bytes, see the ranlib section; not yet
-checked against a `__.SYMDEF` that the original ranlib produced).
+member `__.SYMDEF` (entries of 12 bytes, see the ranlib section; checked
+against the `__.SYMDEF` that the original ranlib produces under the oracle,
+see "ranlib, strip, size on the host").
 
 ## ld / sld / gld (ld(1), sld(1), gld(1))
 
@@ -369,11 +375,12 @@ executables on Linux. It is the reference ("oracle") for everything we
 reconstruct: run the original tool, run our rebuilt tool, compare the output
 byte for byte.
 
-    z8k-emu [-r ROOT] [-t] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
+    z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
 
 `ROOT` is the extracted WEGA disk image; absolute guest paths are looked up
 below it (`/dev/*` goes to the host, `ROOT/tmp` is created). `-t` traces every
-instruction, `-v` reports lazily allocated segments.
+instruction (`-T` also those of the floating point emulator), `-v` reports
+lazily allocated segments.
 
 Results (all byte-identical to the objects shipped with WEGA, see
 `z8k-emu/selftest.sh`, `make check-oracle`):
@@ -389,7 +396,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
   so the whole pipeline cpp, cparse, codgen, popt, cas, ld works unmodified.
 - ar, size run correctly; nothing in the tool chain needed more than the
   system calls listed below.
-- The whole `src/cmd` builds under the oracle (`CC SCC CAS AS LD GLD AR STRIP`
+- The whole `src/cmd` builds under the oracle (`CC SCC CAS AS LD SLD GLD YACC AR STRIP`
   all run as `z8k-emu -r ROOT <tool>`); the per-program results are in
   `src/TODO.md`. The segmented chain `scc` -> `gld` (E607/E611, `gld` called by hand) reproduces
   `pburn` 2.1 byte for byte. `make` itself runs on the host, not in the
@@ -438,18 +445,34 @@ Results (all byte-identical to the objects shipped with WEGA, see
 - `struct stat` is 26 bytes: dev, ino, mode, nlink, uid, gid, rdev (16 bit each),
   size, atime, mtime, ctime (32 bit each), big endian.
 
+### EPU (floating point)
+
+EPU instructions (0E/0F/4E/4F/8E/8F) run through a C port of the kernel's
+floating point emulator `src/uts/conf/fpe.s` (2026-10-22): `z8k-emu/fpe2c.py`
+translates it instruction by instruction into `z8k-emu/fpe_gen.c`, which
+`z8k-emu/epu.c` runs on a second CPU context with the semantics of the CPU
+core, `struct state` and `u.u_fpstate` in its memory, like `uniminstr` in
+`trap.c`. `gettext`, `getmem`, `putmem` come from `mch.s` (word counts) and are
+written in C. Details and limits: `z8k-emu/README.md`.
+
+- Checked on the host with random operands against exact arithmetic (Python
+  fractions): add, sub, div, sqrt correctly rounded to 64 bits; fint, BCD and
+  integer conversion, over/underflow, special values, segmented and
+  non-segmented addressing, the varargs spill `4FFC 8303 off` give sensible
+  results.
+- Quirk of `fpe.s` (reproduced, not fixed): in `mulno`, when the mantissa
+  product is below 2, the normalising shift takes bit 55 (`addb rl0,rl0`)
+  instead of bit 63 and the guard byte rh0 is not shifted, so about 1 in 5
+  extended products has a wrong last bit.
+- Not checked: whether `fpe.s` is the code of the shipped kernel (compare with
+  the kernel object on the disk image), and the run of `/lib/cparse` on
+  `src/cmd/doscopy/dosopn.c` (no WEGA tree on the development machine).
+- Defaults: control registers 0 (round to nearest, projective infinity, no
+  traps); exec sets the registers to 1.0 (`setregs()` in `sys1.c`). SIGFPE and
+  SIGSEG from the emulator stop z8k-emu with a message (no signal handlers).
+
 ### Not yet emulated
 
-- EPU (Z8070 floating point) arithmetic. Only EPU loads/stores between memory
-  and the EPU registers are implemented (as plain data moves), which is all
-  varargs prologues (`4FFC 8x03 off`: store fr3..fr0) need. WEGA emulates
-  floating point in the kernel (`conf/fpe.s`, full soft float); to run float code
-  we have to port or reimplement it. First concrete victim: `/lib/cparse` stops
-  with "EPU instruction 8e04 not implemented at 00:b270" on a floating
-  constant, e.g. `lseek(fd, fat + (long)(1.5 * first), 0)` in
-  `src/cmd/doscopy/dosopn.c` line 175. This blocks all `doscopy` commands
-  (every one links `dosopn.o`); `cc -S` already fails, so it is the front end,
-  not the assembler or the optimizer.
 - Signal handlers installed by the guest (signals keep their host default or
   are ignored for SIG_IGN), terminal ioctls (always ENOTTY), I/O and
   privileged instructions (user mode only).
@@ -459,15 +482,34 @@ Results (all byte-identical to the objects shipped with WEGA, see
 
 ## Open questions
 
-- Check the `__.SYMDEF` entry format (12 bytes, from the ranlib binary) against
-  a `__.SYMDEF` that the original `ranlib` produces under the oracle.
-- EPU arithmetic in the emulator (see "Not yet emulated"). The instruction
-  formats are decoded (`tools/epu.py`); what is missing is the semantics and
-  the cas mnemonics for the arithmetic.
+- Is `src/uts/conf/fpe.s` the floating point emulator of the shipped kernel?
+  z8k-emu reproduces exactly that file (see "EPU (floating point)").
 - Which cas condition code and flag names to emit (both `ne`/`nz`,
   `c`/`ult` exist).
-- What `p8000c` (second `sa.diags`) and the `87wega3.2` SCCS suffix mean;
-  `gld` options beyond the man page.
+- What the `87wega3.2` SCCS suffix means; `gld` options beyond the man page.
+  (`p8000c`, the second `sa.diags`, is for the P8000 compact, a newer hardware;
+  not relevant, answer of the owner.)
+
+## Bugs and quirks of the originals
+
+Defects of the shipped programs found while rebuilding them, one line each; the details are in
+the named section. "Kept" means the rebuilt or emulated program does the same, "not reproduced"
+means it does something fixed instead (only possible where the original's result is undefined).
+
+| Program | Bug or quirk | Rebuild | Details |
+|---------|--------------|---------|---------|
+| kernel `fpe.s` (`mulno`) | a mantissa product below 2 is normalised with bit 55 instead of bit 63 and an unshifted guard byte: wrong last bit in about 1 of 5 extended `fmul` results | kept (z8k-emu) | "EPU (floating point)", `z8k-emu/README.md` |
+| `/lib/gopt` (`cc -Or`) | register pointer parameters get a wrong frame offset (`ld r4,~L1+-1275(fp)`); same output on the real hardware | kept (emulated binary) | "gopt (-Or) output with register pointer parameters" |
+| `/bin/cas` | after more than one semantic error in a statement, `error()` returns a long whose low word is a leftover of `r3`, the parser uses it as a pointer | not reproduced (`errnode`) | "cas: decompilation", "cas on the host", `cas/README` |
+| `/bin/cas` | value of a rule after a syntax error is a stack leftover | not reproduced (`synnode`) | "cas on the host", `cas/README` |
+| `/bin/cas` | `jpr cc` without an address, `^O n` with `-^`: assembles leftover register contents | not reproduced | "cas on the host", `cas/README` |
+| `/bin/cas` | an unclosed string, `.byte ""`, `"\%4"`: the scanner runs past the end, `Out of nodes`; the pool is not emptied, so the next statement fails too | messages kept | "cas: decompilation", "cas on the host", `cas/README` |
+| `/bin/cas` | does not terminate on a syntax error in the last statement of a file without newline, an unclosed comment or string, and some tokens (`<<`, `^$`, `5\|3`) | not reproduced (stops at end of file) | "cas: decompilation", `cas/README` |
+| `/bin/cas` | a `}` too many uses the memory in front of the block stack | not reproduced (level stays 0) | `cas/README` |
+| `/usr/bin/ranlib` | the old `readsym` linked into it reads the pieces of a long name over the symbol itself: most long names are missing in `__.SYMDEF`, some entries are garbage (238 entries for `libc.a` instead of ~290) | kept | "ranlib, strip, size on the host" |
+| `/usr/bin/strip` | `hflag` is uninitialised without an option; for 8-bit objects with relocation removal the result depends on uninitialised variables; the output file is left open | `hflag` kept in `src/cmd/strip`; host strip refuses 8-bit objects and closes the file | "size and strip", "ranlib, strip, size on the host" |
+| `/bin/cc` | `-o` as last argument leaves `outfile` NULL (reads the byte at address 0); `-l...` is passed to ld with the byte in front overwritten by `-` | kept | "cc (compiler driver, /bin/cc)" |
+| `/lib/popt` | `killreg()` always looks at rr0 (`n % 1`); nodes without operand text read the code at address 0; the "preceded by alnum" test of `procopt` has no effect; the `rN(` recursion passes a character as a pointer | kept, except the `rN(` recursion | `popt/NOTES.md`, "Quirks that are reproduced on purpose" |
 
 ## ar (reconstructed, byte-identical)
 
@@ -499,8 +541,9 @@ Results (all byte-identical to the objects shipped with WEGA, see
   Layout: crt0 variant (as in ar, but no data string), `ranlib.o` = 0x42-0x53a
   (trim, main, nextel, stash, fnew, fixdate), then libc members.
 - The libc members inside this binary come from an OLDER libc than the shipped
-  `/lib/libc.a` (e.g. fseek has a 14-byte frame, shipped fseek.o 20 bytes), so a
-  byte-identical link is not possible until that older libc is reconstructed.
+  `/lib/libc.a` (e.g. fseek has a 14-byte frame, shipped fseek.o 20 bytes). They
+  are now linked from the old modules in `src/lib/oldlibc` and the libc part is
+  identical (see "Start-up files (crt0) and the libc part as building blocks");
   `ranlib.o` itself can only be compared instruction-wise.
 - The original ranlib.o was compiled with different optimizer behaviour than
   `cc -O` of the shipped compiler: `register` variables of leaf functions sit in
@@ -515,7 +558,8 @@ Results (all byte-identical to the objects shipped with WEGA, see
   `Z8K_SC_TRACE=FILE` logs system calls to a host file (guest may close fd 2).
 - `WEGA/src/lib/libc/csu/crt0.s` (PLZ/ASM, Rev 3.2 09/12/83) matches the shipped
   `/lib/crt0.o` (42 bytes text, data `.word 0`). The ar/ranlib binaries use a
-  later crt0 variant (version string in text and data), see `src/lib/libc/crt/crt0-ar.s`.
+  later crt0 variant (version string in the text; ar also has the SCCS stamp in the data,
+  ranlib not), made from `src/lib/libc/crt/crt0.s.in` (see "Start-up files").
 
 ## Plexis System III sources (s3plxsrc.tar.gz, not in git)
 
@@ -546,8 +590,8 @@ Results (all byte-identical to the objects shipped with WEGA, see
 - `size` (E707, text 5652): own code is only main() at 0x42-0x224 (s.out aware:
   `goodmagic`, `swab`, segment table of 16 byte entries, prints
   `%U + %U + %U = ` and `%U = 0x%lx`), then the old libc (fread at 0x224, fwrite
-  at 0x2a0, ...). Draft in `src/cmd/size/size.c`; it compiles but differs from the
-  original (older compiler revision, see "Compiler revisions").
+  at 0x2a0, ...). Reconstructed in `src/cmd/size/size.c`; the own code is identical,
+  see "size and strip".
 - z8k-emu now also runs Plexus a.out (0407/0410/0411) with the Plexus system
   call ABI (`sc INDIR; .word blk`, first argument in r0 for some calls). In 0410
   files data addresses start at the text size and wrap around 64K.
@@ -565,15 +609,17 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   (`fldctl`, `flds`, `fmul`, `fldd`, ...); without it they give ERROR 91.
   Module names matter: they appear as `<module>_p`/`<module>_d` symbols
   (abort.s is module `abort_s`).
-- Result: 168 of 174 members identical.
+- Result: 170 of the 180 members identical, 7 differ, 3 have no C source (the 10 are
+  kept as cas sources in `src/lib/libc/oldcc`, see "oldlibc").
 - Same code, different compiler revision (cannot match with the shipped cc): `malloc`,
   `nlist`, `length`, `swap` (differences D1, D3, D4, D8 in "Compiler revisions"). The shipped
   libc was built with more than one compiler revision.
 - Different source revision (Nov 1983 float versions, files dated Nov 16-17 1983):
   `printf` (printf/fprintf/sprintf with `_pfile`, `_rc`, `_flsbuf`; calls
   `_doprnt(fmt, args, argend, flag, file)`), `scanf`, `doscan` (calls `_inflt`).
-  Together with the still missing `doprnt`, `cnvt`, `ecvt`, `fltioc` and `symscan`
-  they form the floating-point stdio cluster that remains to be reconstructed.
+  Together with `cnvt`, `fltioc` and `symscan` (no C source yet) they form the
+  floating-point stdio cluster that remains to be reconstructed as C (`doprnt` and
+  `ecvt` rebuild byte-identical now, see below).
 - Findings while fixing sources: getpass uses `struct termio` (`c_lflag`, ioctl 0x5401/0x5404/0x5403);
   execvp is the 4.3BSD one with `index`, a `/bin/csh` fallback (`whichshell`) and `-` as
   path separator in `execat`; malloc is a variant that extends the top free block when the
@@ -591,8 +637,8 @@ Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, m
 
 ## size and strip (reconstructed, own code identical)
 
-- `src/cmd/size/size.c` + `src/lib/libc/crt/crt0-size.s` and `src/cmd/strip/strip.c` + `crt0-strip.s` rebuild with the
-  ORIGINAL `cc -O`; `make verify` compares the instructions of the own code
+- `src/cmd/size/size.c` + `crt0-size.s` and `src/cmd/strip/strip.c` + `crt0-strip.s` (both made from
+  `src/lib/libc/crt/crt0.s.in`) rebuild with the ORIGINAL `cc -O`; `make -C host verify-wega` compares the instructions of the own code
   (`tools/cmpins.py`, from 0x42 up to the first libc member, `fseek` resp. `rdwr`).
   size: 0 differences. strip: one expression (`head.s_imsize = code + data` as long uses
   rr4/rr6 in the original, rr2/rr4 in our build; the same kind of expression elsewhere in
@@ -604,7 +650,7 @@ Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, m
   `doprnt`, `fprintf`, `malloc`, `length`, `swap` are not the members of the shipped
   libc.a (those are dated Sep/Nov 1983). The old members can be reconstructed from these
   binaries (printf family in size/strip, malloc in strip/ranlib) - they are the
-  predecessors of the float stdio cluster that is still missing from `src/lib/libc`.
+  predecessors of the float stdio cluster; they are now kept as modules in `src/lib/oldlibc`.
 - strip: `strip [-h] file ...`. `-h` removes header and segment table. For the 8-bit
   magics (E507/E511/E505) it rewrites image size/codesz and filters the image through the
   relocation bytes (`rcopy`). Signals 1-3 are ignored while copying. `hflag` is
@@ -626,7 +672,8 @@ Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, m
   D O U X, l-prefix, and e/f/g via an empty stub (no float support in this revision).
 - The old cc differs from the shipped one (D14 and others in "Compiler revisions"). No older compiler
   binary exists in any archive, so size/strip as whole binaries cannot be reproduced bit-exact by compiling.
-  Their own code (size 0x42..0x224, strip) is identical to the shipped cc output.
+  Their own code (size 0x42..0x224, strip) is identical to the shipped cc output, except the one
+  expression of strip (D2).
 - `src/lib/libc/stdio/doprnt.c` is the Nov-1983 `_doprnt` and now rebuilds byte-identical with the shipped cc -O
   (findings: `static char nullstr[]` declared after `fldone` explains the data order, `_pfile` must be
   declared between `_align` and `_doprnt` for the symbol order, `putc((int)*str++,f)` gives
@@ -664,7 +711,7 @@ Results (nonsegmented programs of `src/cmd`):
 - Versions **size**, **strip**, **ranlib**: each has its own libc part (13, 14, 10 functions differ). size and strip share
   4 functions (rew, ttyname, 2 swap) and the cnvt and length of cc; their `_doprnt` is the same function with another
   frame size and another post-increment code: the two programs were not compiled by the same compiler. ranlib
-  shares nothing with the others except tiny stubs.
+  shares only `ffltioc` with the others (see below) and tiny stubs.
 - Counted as no difference: functions of up to 3 instructions (`__callex`, `fakcu`, the `sync` stub). SCCS ids of the
   own sources: ar.c 2.2 11/18/83, size.c 2.1 01/14/83, strip.c 1.2 11/19/82, ranlib.c 1.1 07/24/82; cc has none.
 - The names of the nearest members are a hint only (members of another revision look different; below ratio 0.6 they
@@ -717,7 +764,7 @@ Plexus is read only where a place in the binary is unclear.
 
 **File.** E611 (segmented, separate I&D), `-e` entry `04000000`, flags STRIP|7FSTK. Segments: 4 code
 (46848 bytes), 5 data (38360) + bss (12328), 7, 8, 9 each 1280 bytes data. Code from `scrt0` (0x0..0x41), the
-28 modules of cas, then the libc members (from 0x9694, about 8.3 KB: stdio, `_doprnt`, `sys_errlist`, syscall stubs).
+modules of cas (`src/cmd/cas/MODULES`), then the libc members (from 0x9694, about 8.3 KB: stdio, `_doprnt`, `sys_errlist`, syscall stubs).
 Segment 5 holds the data of all modules in link order (each begins with its SCCS id); segments 7, 8, 9 are
 the three symbol tables `stable.c`, `itable.c`, `ntable.c`: each starts with its SCCS id and has the table
 area at offset 0x30. `ssymtab.c` allocates from them like a bump allocator and grows the segment by 1024
@@ -736,18 +783,19 @@ table segments last) and the strings each function loads:
 | ifile | 0042-04f5 | 20 small functions: put byte/word/long into the intermediate file (via `fwrite`), expression nodes (`Unknown expression type`) |
 | instr | 04f6-0789 | 4 functions, `Illegal opcode`, `Invalid operand combination`, use of `table2` data |
 | scanner | 078a-1277 | `yylex` (2600 bytes), 2 helpers; `::=`, `^FS`, `^FD`, `Invalid token`, `Unknown keyword` |
-| main | 1278-1b01 | `main` (2064 bytes, option switch on `c - '^'`, jump table at data 0x350), 0x1a90 = fatal error exit |
+| main | 1278-1a87 | `main` (2064 bytes, option switch on `c - '^'`, jump table at data 0x350) |
+| done | 1a88-1b01 | `sigdone` 1a88, `done` 1a90 (exit with the messages; no SCCS id, a module of its own) |
 | nodes | 1b02-1ef7 | 8 functions, node allocation (`Out of nodes`) |
 | parser | 1ef8-3b05 | `yyparse` 0x1ff6 (6910 bytes, with YYDEBUG strings), stub 0x3af4, helpers; actions print `Expecting ...` |
 | pst | 3b06-3d1d | 5 functions: look up a name in the permanent symbol table (mnemonics, registers), case insensitive compare (`3b6a`); called by the scanner, the nodes and the jpr modules |
 | subr | 3d1e-3d8f | one function, the name hash (`3d1e`); `3b06` calls it with `call`, not `calr`, so it is another module; also used by ssymtab (`479e`, `4996`, `4a30`) |
-| symbols | 3d90-4579 | 10 functions; the last three (`43d4`, `4472`, `44ee`) write records of type `0x2a` to the intermediate file and are called by `yyparse` directly; the border to ssymtab is not proven |
+| symbols | 3d90-4579 | 10 functions; the last three (`43d4`, `4472`, `44ee`) write records of type `0x2a`/`0x2b` to the symbol file and are called by `yyparse` directly |
 | ssymtab | 457a-4b3d | the three table allocators (`457a`, `4618`, `46b6`) and accessors (`4772`, `4788`, `479e` ...) |
 | table1, table2 | data only | 0x5526-0x655e, 0x655e-0x6b82: instruction and operand tables (5.7 KB) |
 | locntr | 4b3e-4ecb | location counters per section, 9 functions |
 | expr | 4ecc-5f31 | expression evaluation, 18 functions (the operators `+ - * / ^< ^> ^& ^\| ^X ^S ^O` ...) |
 | p2loop | 5f32-6393 | pass 2 main loop, 3 functions |
-| ofile | 6394-6da5 | object file writer: header (24 bytes `fwrite`), segment table, relocation, the 14 byte symbol entries (`6b66`), seeks into the temporary files (`6b96`, `6cb2` writes the symbols of segment 7) |
+| ofile | 6394-6da5 | object file writer: header (24 bytes `fwrite`), segment table, relocation, the 14 byte symbol entries (`6b66`), appends the temporary files (`6b96`), `6cb2` adjusts the values of the symbols in segment 7 |
 | gen | 6da6-7429 | code generation, 8 functions linked by `calr` (6da6, 6e9a, 6f66, 6fba, 70b0, 7192, 71c2, 7286; the last one runs to 7424) |
 | assemble | 742a-7fed | instruction assembly (the block `729e` that had no `calr` partner is the second half of `seekout` in gen) |
 | getops | 7fee-83ff | operand parsing helpers, 4 functions |
@@ -809,8 +857,8 @@ a buffer of `n` bytes (`6672`, `66a8`) and arrays of 14 byte `s_nlist` entries (
 version has to write these big endian and without padding explicitly.
 
 **System calls** in the binary: exit, read, write, open, creat, close, unlink, chmod, lseek, getpid, access,
-signal (48), umask (60), ioctl (54), 55 (via a libc stub, not yet named) and `ssgbrk` (45).
-Temporary files `/tmp/as{i,r,s,o,t}XXXXXX` (the meaning of the letters is a guess: intermediate, relocation, symbol, object, ...), debug
+signal (48), umask (60), ioctl (54), `mkseg` (55) and `ssgbrk` (45).
+Temporary files `/tmp/as{i,r,s,o,t}XXXXXX` (the letters: see "Temporary files" above), debug
 names `i.out`, `sym.out`, `list.out`, `r.out`, `osym.out`, default output `a.out`.
 
 **yacc (parser.y 1.2).** System III yacc skeleton (`yaccpar`) with YYDEBUG strings (`state %d, char 0%o`,
@@ -822,11 +870,12 @@ words), `yypact` 0x11fa (379 states), `yypgo` 0x14f0 (55), `yyr1` 0x155e (287 pr
 the parser's `yyerror` texts, one per rule). The tables are the original ones; the grammar can be rebuilt
 from them: the automaton gives for every production the accessing symbols (`yychk`) of the states a
 reduction pops, so the right hand side of each rule follows. Token names are not in the binary (no
-`yytoks`), they follow from `yylex` (return values) and from the action texts. The original `yacc` is not
-usable (`/usr/lib/yaccpar` is missing on the machine); for a byte identical parser the tables are taken
-over from the binary, a rebuilt parser with another yacc is functionally the same only.
+`yytoks`), they follow from `yylex` (return values) and from the action texts. The original `/usr/bin/yacc`
+(with `/usr/lib/yaccpar`) runs under z8k-emu and turns the rebuilt grammar into the tables of the binary (see
+"Done: parser"); a parser made by another yacc is not equivalent (see "cas on the host").
 
-**To do for the decompilation:** the border symbols/ssymtab, the bss layout per module (the module bss
+**To do for the decompilation** (the list of the first analysis; all of it is done now, see the sections
+below): the border symbols/ssymtab, the bss layout per module (the module bss
 variables are in link order; only 56 addresses are used directly), the intermediate file records
 (ifile/p2loop), the grammar from the tables (Plexus has a SysIII `yacc` with `yaccpar` in
 `tmp/plexus/cmd/yacc` that can be built locally to regenerate and compare the tables; not for git), and the places that depend on the Z8000 types (16 bit `int`, 32 bit
@@ -854,7 +903,7 @@ the compiler: the sources of cas are dated up to 07/83 and were compiled by the 
 **Not differences of the compiler.**
 - Position of the prologue: with `-O` both scc put `dec r15,#n; ldm ...` in front of the body; without `-O` the
   prologue is behind the body (`jr Lp` at the entry, `Lp: dec r15 ... jr Lb`). The cas parser was compiled
-  without `-O` (`yyparse` starts with `jr 1ff4`), the other cas modules with `-O`. `cmpmod.py` converts the
+  without `-O` (`yyparse` starts with `jr 1ff4`), so was `assemble`; the other cas modules with `-O`. `cmpmod.py` converts the
   behind form to the front form before it compares.
 - The gopt defect of `cc -Or` (`ld ~L1+12(fp),r7` with `~L2 := 12`, verified on real hardware, the emulator
   reproduces it): the shipped libc cannot have been built with `-Or` for such functions; the 2-byte frame and
@@ -1037,9 +1086,10 @@ first appearance. yacc reports 3 shift/reduce conflicts (as for the original gra
   indirect `@r`, 0x61 `expr(r)`, 0x62 immediate `#expr`, 0x63 `r(#expr)`, 0x64 `r(r)`; register nodes
   `mknode2(tok, mknode1(1, regnumber), 0)`; the kind byte at offset 6 of a name node (0 extern/common, 2 `::=`, 3 `::`, 4 `:=`, 5 `:`)
   is set before `defsym` (0x3d90) or the label list.
-- The functions of the modules that are not reconstructed yet are called by address (`fn4CDA` / `fn4DC4` even / odd, `fn4BB0` select the section, `fn4A0E` / `fn4A30` `{` / `}`, `fn84FC` jpr /
-  callr, `fn4ECC` the type of an expression, `fn52C6 fn538A fn543C fn5CCC fn59FC fn57C0 fn5708 fn5650 fn5598 fn54E0 fn5876
-  fn5928 fn59DC fn5CAC` the operators of `expr.c`, `fn4DF6` the value of `.`); they get their names when their modules are done.
+- Functions of other modules that the actions call (first called by address, now named, see `src/cmd/cas/ADDRESSES`):
+  `even` / `odd` (4cda, 4dc4), `setsub` (4bb0), `blkopen` / `blkclose` (4a0e, 4a30: `{` / `}`), `jpr` (84fc, jpr / callr), `exprtype`
+  (4ecc), the operators of `expr.c` (`opshort opseg opoff opadd opsub opshl opshr opand opor opxor opmul opdiv opneg opplus`), `dotval`
+  (4df6, the value of `.`).
 - Code check: `cmpmod.py` on `parser.o` (compiled WITHOUT `-O`, as `yyparse` has the prologue behind the body there):
   the sequence of the 283 calls of the module is identical to the binary (checked by a script, only the names of
   `yyerror`/`synrecover` differ), the remaining differences are those of the old compiler (D2, D3, D5, D6, D10). Data: the tables are equal, the strings are the same set; the layout
@@ -1052,9 +1102,9 @@ kind 7-9 whose word at offset 8 is the index of the symbol in the symbol table (
 value is in the itable entry (`itabp(s_8)`: `s_0` = `section << 8 | subsection`, `s_2` the value).
 - `defsym(np, val)` (3d90): `Unknown symbol`; an already defined symbol: a kind-0 name (extern) only counts `nfreed += 2`;
   scope 6 (local, `:=`) in the same block level -> `Symbol redefined`, in another level a new generation of the
-  symbol (`fn479E(s_2, 6)`); other scopes -> `Symbol redefined`. Records 0x14 + word go to the intermediate file, and to
-  the symbol file for a new symbol. Then a switch on the expression type (`fn4ECC`): 3 constant (value into the itable
-  entry, kept if not larger when redefined), 1 relative to another symbol (copy of its `s_0`, value `fn4F52(val)`),
+  symbol (`stenter(s_2, 6)`); other scopes -> `Symbol redefined`. Records 0x14 + word go to the intermediate file, and to
+  the symbol file for a new symbol. Then a switch on the expression type (`exprtype`): 3 constant (value into the itable
+  entry, kept if not larger when redefined), 1 relative to another symbol (copy of its `s_0`, value `evalint(val)`),
   0 and 4-7 `Invalid assignment`. `s_0` is taken from the pair table `lcaux[cursec][cursub]` (bss 0xac26, stride 4).
 - `defalias` (4084, `:=` with a reserved word): type 3, the itable entry holds the pointer to the permanent symbol.
 - `symval(idx)` (40f4) (a relocatable symbol carries its section in bits 24-30), `isdef(idx)` (4184: type 1, scope
@@ -1131,13 +1181,13 @@ constants and build a type 25 node for the rest, which `exprval`/`exprreloc` eva
   the old compiler (D2, D3, D4, D6, D10); the strings are the same set; the four jump tables (data 0x6c22-0x6c9f) are there (D12).
 
 **Done: p2loop (`p2loop.c`, 5f32-6393).** Three functions, the loop of pass 2. `pass2()` (5f32) calls four initialisations of the
-object file and the code generator (0x6cb2, 0x6394, 0x676a, 0x6634), sets `cursec = 0`, `cursub = 1`, `curline = 1`, reads the
+object file and the code generator (`symadjust` 0x6cb2, `ohdrinit` 0x6394, `osymout` 0x676a, `ohdrput` 0x6634), sets `cursec = 0`, `cursub = 1`, `curline = 1`, reads the
 tags of the intermediate file with `igetb()` until 0xF0 and calls `p2tag` and `chknodes()` for each; at the end it
-writes the last listing line (`-l`) and, without semantic errors, the object file (0x6b96). `p2tag(tag)` (5fc2) is a switch over
+writes the last listing line (`-l`) and, without semantic errors, the object file (`ofinish` 0x6b96). `p2tag(tag)` (5fc2) is a switch over
 the tags: 15 line number (`curline = igetw()`, listing line 0x94d4 with `-l`), 16/17/18 the next 1/2/3 lines, 11 location
 counter (`igetw() + lcaux[cursec][cursub].la_0`; in code and data the gap to the counter is generated by 0x6da6, with the
-listing switched off meanwhile, in bss the counter is set), 1/2/3 a byte, word or long element (0x6da6, 0x6e9a, 0x6f66), 10 a
-segmented address (0x742a), 12/13/14 the subsection 0/1/2, 41 the section (`setsec(igetb())`, subsection 1), 6 a repeat
+listing switched off meanwhile, in bss the counter is set), 1/2/3 a byte, word or long element (`genb`, `genw`, `genl`), 10 an
+instruction (`asmins` 0x742a), 12/13/14 the subsection 0/1/2, 41 the section (`setsec(igetb())`, subsection 1), 6 a repeat
 record (`p2rep(igetw())`), 7/8/9 an operand from a name (`mknode7(igetw())`) and 23/24/25 an operand read by
 0x7fee, given to 0x6fba/0x70b0/0x71c2 (7 and 25, 8 and 24, 9 and 23 are pairs), 20 a word that is skipped, 38/39 jpr (0x89c2);
 every other tag is `Unknown tag in intermediate file`. `p2rep(n)` (6262) reads the tag of the element that follows
@@ -1188,7 +1238,7 @@ write the object code; `fwrite` errors are `perror(outname)` (the relocation fil
 A record 10 of the intermediate file points to a row of `itab1`. `asmins(row)` (742a): `opcls + row->ir_cls` is the list of operand classes up to 0x12 or
 0x1C; every class reads operands with `getop(n)` (829e, getops.c) into `ops[0..3]` (bss 0xc13e): 6/12/13 two operands; 8 the low 4 bits of the value;
 17 the value `>> 4`; 9/10/11 a relative address (`asmrel(n, pc, class)`, pc = counter + length of the instruction); 0x1C one more operand. Then
-`asmword(row)` (75f4) assembles the words: `instlen[kind].x[0..4]` are field codes: 1 ... 8 and 0xff take bits of the opcode word of the row (8 bits >> 8,
+`asmword(row)` (75ee) assembles the words: `instlen[kind].x[0..4]` are field codes: 1 ... 8 and 0xff take bits of the opcode word of the row (8 bits >> 8,
 4 >> 12, 4 (>>4)&F, 4 &F, bit 7, bit 3, 2 bits >> 6, 7 bits >> 9; 0xff all 16), 9 goes on with the next descriptor; the other codes go to `asmfield(code)`
 (774e): 14-18 and 21-23 (value less 1), 61-63 (value 0-7), 73/74 (value * 5 - 1) a 4 bit register field (`asmreg`, 7eb8, range check, `putbits(4, ...)`),
 26-28 `genbop`, 29-31 `genwop`, 32-34 `genaddr`, 36/37 `genlop`, else `asmimm(code)` (7964): immediate fields of 1 to 16 bits made from the constants of
@@ -1228,7 +1278,7 @@ in pass 2). Check: 6 functions; differences D3, D4, D6, D7, D8, D12 only; the st
 **Done: jpr2 (`jpr2.c`, 89c2-8af3).** `jpr2(tag)` (pass 2, tags 38/39 of `p2tag`) reads the entry index and the condition flag, then looks at
 `j_12` of the entry (set by the second pass logic when the jump became long): long = `jp`/`call` (`asmins` of row 4 of `jp` with a condition, else row 1;
 `call` row 1) and `la_0` of the location counter grows by 4 (2 without `segmode`); short = `jr`/`calr` (row 1 with a condition, else row 0).
-(Who sets `j_12` is not yet known; probably `optim`.) Check: one function, the differences are the address calculation of `lcaux[][]` (D3 class).
+(`j_12` is set by `optim` at the end of pass 1, see below.) Check: one function, the differences are the address calculation of `lcaux[][]` (D3 class).
 
 **Done: optim (`optim.c`, 8af4-92f5).** `optim(sub, sec)` (main calls it for every section with sub 1, 0, 2 at the end of pass 1) decides the length of the
 undecided jpr/callr entries (`struct jent`, chained newest first through `j_10`, `jn = lcaux[sec][sub].la_0` of them). It gets a new segment
@@ -1329,7 +1379,7 @@ shipped `libc.a` and `slibc.a`. All identical.
 
 ## ranlib, strip, size on the host (`host/binutils`)
 
-`ranlib`, `strip` and `size` for Linux, derived from `src/cmd/{ranlib,strip,size}.c`. `make -C
+`ranlib`, `strip` and `size` for Linux, derived from `src/cmd/{ranlib,strip,size}/*.c`. `make -C
 host/binutils check` runs 40 cases with the originals under z8k-emu and with the host programs on
 copies of a corpus (all members of `libc.a`/`slibc.a`, binaries, 30 libraries of the tree, byte swapped
 copies, damaged and non-object files, archives with swapped, stripped, text and too many members) and
@@ -1357,8 +1407,8 @@ compares output, exit code and every file afterwards: all identical.
   and `src/cmd/ranlib/ranlib.c` keep it (identical `__.SYMDEF`). The tables are not cleared between two
   archives of one call.
 - `src/cmd/ranlib/ranlib.c` now follows the binary: the earlier version had the `ar rl` arguments swapped
-  and passed `&exp` to `goodmagic`; the old readsym is `src/cmd/ranlib/readsym.c`, linked in by
-  `src/cmd/Makefile`. Built with the WEGA cc the program behaves exactly like the original (same
+  and passed `&exp` to `goodmagic`; the old readsym is linked as the module `src/lib/oldlibc/readsym/0_1.s`
+  by `src/cmd/ranlib/Makefile` (`src/cmd/ranlib/readsym.c` is its C form, not built). Built with the WEGA cc the program behaves exactly like the original (same
   `__.SYMDEF` for libc.a, slibc.a, libcurses.a); the code is not byte identical because the original
   was compiled by an older cc (own code and readsym differ in register use, frame and spills).
 

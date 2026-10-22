@@ -1,7 +1,7 @@
 /*
  * wega.c - s.out loader and WEGA system call emulation on top of z8k.c.
  *
- * Usage: z8k-emu [-r ROOT] [-t] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
+ * Usage: z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
  *
  * PROGRAM is a WEGA s.out executable (E707/E711 non-segmented, E607/E611
  * segmented).  Absolute path names used by the guest are looked up below
@@ -159,6 +159,7 @@ static void exec_map(Z8K *c, Exec *x, char **argv, char **envp)
 	memset(segsz, 0, sizeof segsz);
 	memset(segused, 0, sizeof segused);
 	memset(c->r, 0, sizeof c->r);
+	z8k_epu_reset(c);
 	c->fl = 0;
 	c->segmode = x->segmented;
 	c->sepid = x->sep && !x->segmented;
@@ -637,12 +638,13 @@ int main(int argc, char **argv)
 	for (i = 1; i < argc && argv[i][0] == '-'; i++) {
 		if (!strcmp(argv[i], "-r") && i + 1 < argc) root = argv[++i];
 		else if (!strcmp(argv[i], "-t")) c->trace = 1;
+		else if (!strcmp(argv[i], "-T")) c->trace = 2;
 		else if (!strcmp(argv[i], "-v")) c->verbose = 1;
 		else if (!strcmp(argv[i], "-e") && i + 1 < argc && nenv < 62) envv[nenv++] = argv[++i];
 		else if (!strcmp(argv[i], "--")) { i++; break; }
-		else { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t] [-v] [-e NAME=VALUE] PROGRAM [ARG...]\n"); return 2; }
+		else { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]\n"); return 2; }
 	}
-	if (i >= argc) { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t] [-v] [-e NAME=VALUE] PROGRAM [ARG...]\n"); return 2; }
+	if (i >= argc) { fprintf(stderr, "usage: z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]\n"); return 2; }
 	if (*root) {
 		char t[1100];
 		snprintf(t, sizeof t, "%s/tmp", root);

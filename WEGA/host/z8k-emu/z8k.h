@@ -26,7 +26,7 @@ struct Z8K {
 	uint8_t *imem[128];	/* instruction space, one 64K block per segment */
 	uint8_t *dmem[128];	/* data space; same blocks as imem if combined I&D */
 	int      sepid;		/* separate instruction and data space */
-	uint8_t  fr[16][32];	/* raw EPU register contents (load/store only) */
+	uint8_t  fps[0x90];	/* u.u_fpstate of the EPU emulation (sys/user.h) */
 	int      halted;
 	int      trace;
 	int      verbose;
@@ -41,5 +41,7 @@ struct Z8K {
 uint8_t *z8k_block(Z8K *c, int space, unsigned seg); /* space 0 = I, 1 = D */
 int  z8k_step(Z8K *c);		/* execute one instruction, 0 = ok */
 void z8k_dump(Z8K *c, FILE *f);
+int  z8k_epu(Z8K *c, uint16_t w0);	/* EPU instruction (epu.c) */
+void z8k_epu_reset(Z8K *c);		/* EPU registers after exec */
 
 #endif

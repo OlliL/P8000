@@ -2,6 +2,7 @@
 #
 #   make                 build cas
 #   make check WEGA=dir  compare the modules with the original (see check.sh, MODULES)
+#   make install PREFIX=dir
 #   make clean
 #
 # The modules are linked in the order of MODULES. As in /bin/cas, text goes to segment 4, data
@@ -15,6 +16,7 @@ SLD = sld
 SLDFLAGS = -i -s -e start -z -Mt4 -Md5 -Mb5
 SCRT0 = /lib/scrt0.o
 SLIBC = /lib/slibc.a
+PREFIX = /
 OBJS = ifile.o instr.o scanner.o main.o done.o nodes.o parser.o pst.o subr.o symbols.o ssymtab.o table1.o table2.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o getops.o error.o pstab.o jpr.o jpr2.o optim.o listing.o
 
 all: cas
@@ -44,7 +46,10 @@ assemble.o: assemble.c
 check:
 	sh check.sh WEGA=$(WEGA)
 
+install: cas
+	cp cas $(PREFIX)/bin/cas
+
 clean:
 	rm -f *.o cas parser.c y.tab.c y.tab.h
 
-.PHONY: all check clean
+.PHONY: all check install clean

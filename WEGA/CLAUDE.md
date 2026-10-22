@@ -62,11 +62,12 @@ Examples (run in the directory of the source, `E="z8k-emu -r <WEGA_ROOT>"`):
     $E /usr/bin/pcat /usr/man/man1/gld.1    # read a man page
 
 Whole tree: `make -C WEGA/src/cmd` with `CC="z8k-emu -r <WEGA_ROOT> /bin/cc"` and the same for
-`CAS AS LD GLD AR STRIP` (see the top of `host/Makefile`, variable `WTOOLS`).
+`SCC CAS AS LD SLD GLD YACC AR STRIP` (see the top of `host/Makefile`, variable `WTOOLS`).
 Make itself runs on the host, not in the emulator.
 
-Limits: EPU (floating point) arithmetic is not emulated, so `/lib/cparse` fails on floating
-constants (blocks `src/cmd/doscopy`). Guest signal handlers do not run.
+Limits: EPU (floating point) instructions run through a C port of the kernel's `fpe.s`
+(`host/z8k-emu/README.md`); a floating point trap (SIGFPE) stops the emulator. Guest signal
+handlers do not run.
 
 ## Compare
 
