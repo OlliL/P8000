@@ -604,6 +604,14 @@ means it does something fixed instead (only possible where the original's result
 | `/usr/bin/strip` | `hflag` is uninitialised without an option; for 8-bit objects with relocation removal the result depends on uninitialised variables; the output file is left open | `hflag` kept in `src/cmd/strip`; host strip refuses 8-bit objects and closes the file | "size and strip", "ranlib, strip, size on the host" |
 | `/bin/cc` | `-o` as last argument leaves `outfile` NULL (reads the byte at address 0); `-l...` is passed to ld with the byte in front overwritten by `-` | kept | "cc (compiler driver, /bin/cc)" |
 | `/lib/popt` | `killreg()` always looks at rr0 (`n % 1`); nodes without operand text read the code at address 0; the "preceded by alnum" test of `procopt` has no effect; the `rN(` recursion passes a character as a pointer | kept, except the `rN(` recursion | `popt/NOTES.md`, "Quirks that are reproduced on purpose" |
+| `/bin/ld` | the `segt` byte (offset 5) of a global symbol entry is never written, it keeps what the slot held before (leftover of a long name or an earlier entry) and lands in the output | kept (`stale5`) | "ld on the host" |
+| `/bin/ld` | the exit status is the level of the last message, not the worst one; fatal errors exit with 4 | kept | "ld on the host" |
+| `/bin/sld` | same stale `segt` byte as `ld`; additionally the byte of a non-area symbol is the object's `segt` plus the segment table entries of the files loaded before (68 for `_u` of the kernel) | kept | "sld on the host" |
+| `/bin/sld` | `_edata` and `_end` are 0 when the last chain segment is an overflow segment that also holds earlier areas | kept | "sld on the host" |
+| `/bin/sld` | more than one start segment overflowing in combined mode (`-i`/`-Ms` with large sections): the output gets segment 0xFF and `_end` = 0 | not reproduced | "sld on the host" |
+| `/bin/sld` | `-Ms n` without a reference to `_stkseg`: the warning `sld: warning: _stkseg undefined` goes to stdout, not stderr, and the status is 1 although the file is written | kept | "sld on the host" |
+| `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
+| `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
 
 ## ar (reconstructed, byte-identical)
 
