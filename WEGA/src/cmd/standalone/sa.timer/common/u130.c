@@ -48,7 +48,7 @@ long time;
 	struct tm *clktime;
 
 	clktime = gmtime(&time);
-	if(clktime->tm_year > 100)
+	if(clktime->tm_year >= 100)
 		clktime->tm_year -= 100;
 	clktime->tm_mon ++;
 
@@ -110,6 +110,7 @@ u130get()
 {
 	long time;
 	int tm_year, tm_mday, tm_mon, tm_sec, tm_min, tm_hour;
+	int tries;
 
 	outvalue(0x02);				/* Umschalten auf Datum */
 	tm_year = rdvalue(U130YYx1);
@@ -124,7 +125,10 @@ u130get()
 		outvalue(0x02);
 		outvalue(0x00);
 	}
-	while ((tm_sec = rdvalue(U130SSx1)) == 59);
+	tries = 10000;
+	while ((tm_sec = rdvalue(U130SSx1)) == 59)
+		if (--tries == 0)
+			return(0);
 	tm_min = rdvalue(U130MIx1);
 	tm_hour = rdvalue(U130HHx1);
 

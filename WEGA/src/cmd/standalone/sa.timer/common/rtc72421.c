@@ -37,12 +37,22 @@ extern long		timegm();
 extern struct tm	*gmtime();
 
 
+static int		r421fail;
+
+/* Schreib-/Lesetest auf REGF, damit ein offener Bus nicht als RTC gilt */
 int
 r421init()
 {
+	r421fail = 0;
+	outb(R421REGF,R421CLR);
+	if (rdnibble(R421REGF) != R421CLR)
+		return(-1);
+	outb(R421REGF,R4212412);
+	if (rdnibble(R421REGF) != R4212412)
+		return(-1);
 	outb(R421REGD,R421IRQF);
 	outb(R421REGE,R421CLR);
-	outb(R421REGF,R4212412);
+	return(0);
 }
 
 
@@ -53,7 +63,7 @@ long time;
 	struct tm *clktime;
 
 	clktime = gmtime(&time);
-	if(clktime->tm_year > 100)
+	if(clktime->tm_year >= 100)
 		clktime->tm_year -= 100;
 	clktime->tm_mon++;
 	outb(R421REGF,R421RST|R421STOP|R4212412);
@@ -77,6 +87,7 @@ r421get()
 	long time = 0;
 	int tm_year, tm_mday, tm_mon, tm_sec, tm_min, tm_hour;
 
+	r421fail = 0;
 	tm_sec  = rdbyte(R421SS1x,R421SSx1);
 	tm_min  = rdbyte(R421MI1x,R421MIx1);
 	tm_hour = rdbyte(R421HH1x,R421HHx1);
@@ -84,6 +95,8 @@ r421get()
 	tm_mon  = rdbyte(R421MM1x,R421MMx1);
 	tm_year = rdbyte(R421YY1x,R421YYx1);
 
+	if (r421fail)
+		return(0);
 	if (tm_year < 70)
 		tm_year+=100;
 	tm_mon --;
@@ -96,10 +109,16 @@ r421get()
 
 r421bsy()
 {
+	register tries = 1000;
+
 busy:
 	outb(R421REGD,R421HOLD);
 	if( rdnibble(R421REGD) & R421BUSY ) {
 		outb(R421REGD,R421CLR);
+		if (--tries <= 0) {
+			r421fail = 1;
+			return;
+		}
 		goto busy;
 	}
 	outb(R421REGD,R421CLR);
