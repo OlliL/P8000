@@ -14,15 +14,17 @@ extern int rstatus[];
 int fldsz, fldoff, fldshf;	/* the field that tshape found (size, offset, shift) */
 
 /* local3.c helpers used here */
-extern int special(struct node *p, int shape);	/* SPECIAL | n shapes of the machine */
-extern int shltype(int op, struct node *p);	/* a leaf, or a star over something addressable */
-extern int shtemp(struct node *p);		/* the operand lives in a register variable or is a constant */
-extern int shumul(struct node *p);		/* STARNM / STARREG / SOREG shapes that p fits */
-extern int ltypeop(struct node *p);		/* the operator of p is NAME, REG, ICON or OREG */
+extern int special();	/* SPECIAL | n shapes of the machine */
+extern int shltype();	/* a leaf, or a star over something addressable */
+extern int shtemp();		/* the operand lives in a register variable or is a constant */
+extern int shumul();		/* STARNM / STARREG / SOREG shapes that p fits */
+extern int ltypeop();		/* the operator of p is NAME, REG, ICON or OREG */
 
 /* does the node p fit the shape? */
 int
-tshape(struct node *p, int shape)
+tshape(p, shape)
+	struct node *p;
+	int shape;
 {
 	int o = p->op, r;
 
@@ -66,7 +68,9 @@ tshape(struct node *p, int shape)
 
 /* does the type fit the type word of a table entry? */
 int
-ttype(int t, int tword)
+ttype(t, tword)
+	int t;
+	int tword;
 {
 	if ((tword & TANY) || tword == 0x4000 || tword == 0x8000)
 		return 1;
@@ -109,12 +113,12 @@ int opclass[] = {
 
 struct optab *opptr[128];	/* the first table entry that can serve an operator */
 struct optab *rwdefault;	/* the entry with needs == 0x1000 (the default rewrite entry) */
-extern int cerror(const char *, ...);
-extern int ltypeok(int op, struct node *p);	/* local3.c 0x3e1c */
+extern int cerror();
+extern int ltypeok();	/* local3.c 0x3e1c */
 
 /* build opptr[] */
 void
-setrew(void)
+setrew()
 {
 	struct optab *q;
 	int op, mask;
@@ -163,20 +167,22 @@ setrew(void)
 #define SCONV	110
 #define REWRITE	0x1000		/* in q->needs: the entry only rewrites the tree, q->rewrite is the answer */
 
-extern void rcount(void);
-extern int ltypeok(int op, struct node *p);
-extern void fixname(struct node *p);		/* 0xa0c6: a NAME that lives in a register becomes REG, an auto becomes OREG */
-extern void oregfix(struct node *p);		/* 0xa12a: a NAME of an auto or a parameter becomes OREG off the frame pointer */
-extern void symuse(struct sym *s);			/* 0x964c: note that the symbol of an assignment target is used */
-extern int allo(struct node *p, struct optab *q);	/* 0x67e8: get the registers the entry needs */
-extern void expand(struct node *p, int cookie, char *cp);	/* 0x6444 */
-extern void reclaim(struct node *p, int rewrite, int cookie);	/* 0x7058 */
-extern int bsize(int t);
+extern void rcount();
+extern int ltypeok();
+extern void fixname();		/* 0xa0c6: a NAME that lives in a register becomes REG, an auto becomes OREG */
+extern void oregfix();		/* 0xa12a: a NAME of an auto or a parameter becomes OREG off the frame pointer */
+extern void symuse();			/* 0x964c: note that the symbol of an assignment target is used */
+extern int allo();	/* 0x67e8: get the registers the entry needs */
+extern void expand();	/* 0x6444 */
+extern void reclaim();	/* 0x7058 */
+extern int bsize();
 extern struct node resc[];			/* the work registers RESC1 .. RESC3 (0x12 byte nodes at 0x8f24) */
 
 /* the node an operand letter of a template stands for */
 struct node *
-getlr(struct node *p, int c)
+getlr(p, c)
+	struct node *p;
+	int c;
 {
 	switch (c) {
 	case '1': case '2': case '3':
@@ -195,7 +201,9 @@ getlr(struct node *p, int c)
  * Returns MDONE, NOMATCH, or (REWRITE entries) the rewrite request of the entry.
  */
 int
-match(struct node *p, int cookie)
+match(p, cookie)
+	struct node *p;
+	int cookie;
 {
 	struct optab *q;
 	struct node *l, *r;

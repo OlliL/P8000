@@ -468,17 +468,21 @@ SNAME 0100, SCON 0200, SFLD 0400, SOREG 01000, STARNM 02000, STARREG 04000, INTE
 types TCHAR 01, TSHORT 02, TINT 04, TLONG 010, TFLOAT 020, TDOUBLE 040, TPOINT 0100, TUCHAR 0200, TUSHORT 0400, TUNSIGNED 01000,
 TULONG 02000, TANY 010000, TSTRUCT 020000. A node is 0x12 bytes: op, rall (0x2000 = none), type, +6, +8 (symbol of a NAME), +0xA
 (struct size, TEMP number), lval (long, +0xC), left (+0xE), rval (+0x10); the format of `base.I` has no names (symbols come from the tags).
-`host/codgen/cg.h` has them; `regallo3.c` has the register lists (`rsinit rsbuild newnode rsinsert roverlap regjam getreg rsreturn nullsyms`, from 0x740c-0x8112; `rsfreeall rspush rsmerge rsrestart rsdump` are open); `match3.c` has tshape, ttype and setrew (the index `opptr[op]` of the first table entry for an operator; entries with
-op >= 0x1000 are operator classes selected by the masks in `opclass[]`). The operators (`host/codgen/ops_*.c`, from `tools/codgentab.py --ops`) are the PCC ones.
+`src/cmd/codgen/cg.h` has them; `allo3.c` has `rclass rfind rbusy rfree rfreenode freetemp freeparm usable freereg allocreg allo tfree tcopy reclaim rfreeall` (0x66bc-0x7058, 0x873c-0x8a24, 0x96e6, 0x9696; quirks kept: `rbusy` counts the node in front of the long register it split, `allo` reads `resc[k]` one past the last register when it releases, `reclaim` sets every non-LONG type to UNSIGNED after taking the second register of a pair, the rewrite and `freereg` tests with `or` that are always true); `regallo3.c` has the register lists (`rsinit rsbuild newnode rsinsert roverlap regjam getreg rsreturn nullsyms`, from 0x740c-0x8112; `rsfreeall rspush rsmerge rsrestart rsdump` are open); `match3.c` has tshape, ttype and setrew (the index `opptr[op]` of the first table entry for an operator; entries with
+op >= 0x1000 are operator classes selected by the masks in `opclass[]`). The operators (`src/cmd/codgen/ops_*.c`, from `tools/codgentab.py --ops`) are the PCC ones.
 
 **Table.** The templates are an array of 10 word entries `op visit lshape ltype rshape rtype needs nx rewrite cstring` behind the version string
 `table3.nzcc.c` (codgen: 150 entries, last one the sentinel "/*NULL*/") or `table3.szcc.c` (scodgen: 174 entries, sentinel "/*hi mom*/"). The text
 of a template begins with its number as a comment (`/* 000 */` ...), which shows in the output. `tools/codgentab.py <original> > table3.c`
-writes the table as C source (`host/codgen/table3_codgen.c`, `table3_scodgen.c`, `table.h`).
+writes the table as C source (`src/cmd/codgen/table3_codgen.c`, `table3_scodgen.c`).
 
-Test harness: `host/codgen/corpus.sh SRC OUT` (PROG=scodgen for scc) runs the original `cc -S -:d` over all C sources of the tree and keeps
+Test harness: `src/cmd/codgen/corpus.sh SRC OUT` (PROG=scodgen for scc) runs the original `cc -S -:d` over all C sources of the tree and keeps
 `<id>.I .D .S` and the reference `<id>.out.s`; `check.sh` compares a rebuilt `./codgen -E x <x.I` with the original on that corpus.
 `match3.c` also has `getlr` and `match()` (the selection loop: operator or class entry, cookie, shapes and types of both operands, the "same type"/"same size" markers 0x4000/0x8000, `needs & 0x1000` = rewrite entry, then `allo`, `expand`, `reclaim`), `local3.c` the helpers `special` (the SPECIAL+1..8 constant shapes), `shtemp`, `shumul`, `shincr`, `ltypeok`, `ltypeop`, `ispow2`, `bsize`, `szty`, `rcount` (compiler loop guard, 5000). `out3.c` has `expand` (0x6444) with the template macros and the printing functions: `A`x operand (`adrput` 0x41d0), `B` low bit of lval, `F` (line only when the value is used, i.e. cookie has no FOREFF), `H`/`S` field shift/size, `I` (insput: always an error), `L` the label of a CBRANCH, `M`/`N` field mask and its complement, `O`x (`hopcode` 0x2de0: mnemonic by operator and type from the tables `fhoptab`/`ihoptab`, `tools/codgentab.py --hop`), `T` flag, `U`x (`upput` 0x40d4: second word), `V` registers print as `rr2`, `W` as `rl2`, `X` back to normal, `Y` right operand as a constant, `Z`x (`zzzcode` 0x2edc) and `C` (not done). Operands print through `acon` (0x437e: `Ln` for negative rval, `_name`, `Lnn` for a local static, `~L1`/`~L2` frame symbols, `+offset`) and `oregput` (`off(reg)`, `(fp)`). `fixname` (0xa0c6: NAME in a register becomes REG, auto becomes OREG), `oregfix` (0xa12a), `allo` (0x67e8, uses the register counts in `needs`), `reclaim` (0x7058) and `zzzcode` are next. Next: allo, regallo, order, local, wrt, regs, lcl, tr, optim and the reader main loop (about 6000 lines in all; the module map is: reader/rdr 0x19e..0x2790, local 0x2780..0x3e00 and 0x3e1c..0x4804, order 0x49c0..0x5c7a, match 0x5d2c..0x66bc, allo/regallo/comm/optim after).
+
+The sources are in `src/cmd/codgen` in K&R C for the WEGA cc/scc (goal: the byte-identical `codgen`/`scodgen`; the same files make both, the
+tables `*_codgen.c` / `*_scodgen.c` differ). The WEGA cc does not know prototypes, `const`, `signed`, anonymous unions or `(void)expr;`: a statement
+`(void)sym;` made `cparse` loop forever (measured, the compile never ended).
 
 ### codgen / scodgen: register machinery (notes from reading allo3, regallo3, regs3; not yet rebuilt)
 
@@ -495,6 +499,9 @@ f4-f7 for every function) and 0xa166 the ones in use. Function map (address, PCC
 | 0x67e8 | allo(p, q): resources for an entry: `needs` nibbles count A registers (bits 0-3), B registers (4-7), temps (8-9, 10-11); fills `resc[0..2]` (0x12 byte nodes at 0x8f24) |
 | 0x6ba6 | argument offset (`paroff`, `parmax`) |
 | 0x6bf4 | rclass(type, reg) |
+| 0x98e4 | nxwork(p, nx): the action selected by the field `nx` of the entry (35 cases, a jump table at 0x5f2e); next |
+| 0x9308 | tmpcleanup: the table of temporaries at 0xa7be (8 byte entries, 80) loses the finished ones; next |
+| 0x3cf2 | rmove(to, from, type): prints `ld rTO,rFROM` (`/* rmove */`); next |
 | 0x6c4e | getreg for a node (register variable or free register, "register jam") |
 | 0x6d5a | freereg(p, r, cookie): look for a free or reusable register |
 | 0x6e78 | usable(p, side, r): does the operand already live in register r |

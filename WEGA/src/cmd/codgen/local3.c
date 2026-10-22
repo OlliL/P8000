@@ -7,7 +7,7 @@
  */
 #include "cg.h"
 
-extern int cerror(const char *, ...);
+extern int cerror();
 extern int rstatus[];		/* regs3.c: status bits of the registers (SAREG, STAREG, ... by register number) */
 
 #define MAXRCOUNT 5000
@@ -15,23 +15,29 @@ extern int rstatus[];		/* regs3.c: status bits of the registers (SAREG, STAREG, 
 /* a loop guard: the matcher is called more than 5000 times for one expression */
 static int nrecur;
 void
-rcount(void)
+rcount()
 {
 	if (++nrecur > MAXRCOUNT)
 		cerror("expression causes compiler loop: try simplifying");
 }
-void rcount_reset(void) { nrecur = 0; }
+void
+rcount_reset()
+{
+	nrecur = 0;
+}
 
 /* the operator is a leaf that can be addressed: NAME, REG, ICON, OREG */
 int
-ltypeop(struct node *p)
+ltypeop(p)
+	struct node *p;
 {
 	return p->op == NAME || p->op == REG || p->op == ICON || p->op == OREG;
 }
 
 /* log2 of a power of two, else -1 */
 int
-ispow2(long c)
+ispow2(c)
+	long c;
 {
 	int n;
 
@@ -44,7 +50,8 @@ ispow2(long c)
 
 /* size of a type in bits (non-segmented: pointers 16); SHORT and USHORT do not occur (cparse maps them to int) */
 int
-bsize(int t)
+bsize(t)
+	int t;
 {
 	switch (t) {
 	case 2: case 12: return 8;			/* CHAR UCHAR */
@@ -60,7 +67,8 @@ bsize(int t)
 
 /* size of a type in words: long, float and unsigned long 2, double 4, everything else 1 */
 int
-szty(int t)
+szty(t)
+	int t;
 {
 	switch (t) {
 	case 5: case 6: case 15: return 2;
@@ -71,14 +79,17 @@ szty(int t)
 
 /* is p->lval an operand that a one word instruction takes: an unnamed constant */
 static int
-plainicon(struct node *p)
+plainicon(p)
+	struct node *p;
 {
 	return p->op == ICON && p->sname == 0 && p->rval >= 0;
 }
 
 /* the SPECIAL shapes: small constants and powers of two */
 int
-special(struct node *p, int shape)
+special(p, shape)
+	struct node *p;
+	int shape;
 {
 	long v;
 
@@ -111,7 +122,8 @@ special(struct node *p, int shape)
 
 /* STAR over p: a register variable or a constant (operand that needs no register) */
 int
-shtemp(struct node *p)
+shtemp(p)
+	struct node *p;
 {
 	if (p->op == STAR)
 		p = p->left;
@@ -122,7 +134,9 @@ shtemp(struct node *p)
 
 /* does an increment of incr bytes on a pointer of type t step by the size of the object it points to? */
 int
-shincr(int t, long incr)
+shincr(t, incr)
+	int t;
+	long incr;
 {
 	if ((t & 0x30) != 0x10)
 		return 0;
@@ -140,7 +154,8 @@ shincr(int t, long incr)
 
 /* STAR over p: which address shapes does it fit? STARNM for a name, STARREG for a post increment through a register */
 int
-shumul(struct node *p)
+shumul(p)
+	struct node *p;
 {
 	int o = p->op;
 
@@ -154,7 +169,9 @@ shumul(struct node *p)
 
 /* an operator that is a leaf, or (with p) a STAR over a leaf that shumul accepts */
 int
-ltypeok(int op, struct node *p)
+ltypeok(op, p)
+	int op;
+	struct node *p;
 {
 	if (op == NAME || op == REG || op == ICON || op == OREG)
 		return 1;

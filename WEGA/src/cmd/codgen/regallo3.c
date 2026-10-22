@@ -13,13 +13,13 @@
  */
 #include "cg.h"
 
-extern int cerror(const char *, ...);
+extern int cerror();
 
 struct rs {
-	signed char reg;	/* register number (byte registers 0..15, word registers 0..15, long registers even) */
-	signed char cls;
-	signed char kind;	/* 8: holds a symbol */
-	signed char busy;	/* use count */
+	char reg;	/* register number (byte registers 0..15, word registers 0..15, long registers even) */
+	char cls;
+	char kind;	/* 8: holds a symbol */
+	char busy;	/* use count */
 	long	off;		/* frame offset of the symbol it holds */
 	unsigned flags;		/* bit 15: ... */
 	struct rs *next;
@@ -36,10 +36,10 @@ int rsmark[3];
 int rsflag1, rsflag2;		/* 0xa2d6, 0xa7ac: not used by the functions below */
 
 /* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
-static const int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
+static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
 
 void
-rsinit(void)
+rsinit()
 {
 	int i;
 
@@ -58,7 +58,8 @@ rsinit(void)
 
 /* give the nodes of a list back to the pool */
 void
-rsrelease(struct rs *l)
+rsrelease(l)
+	struct rs *l;
 {
 	struct rs *last;
 
@@ -72,7 +73,7 @@ rsrelease(struct rs *l)
 
 /* the free list at the start of a function: rr2 rr4 rr6 rr0, f0-f3, r14, rr8 rr10 rr12, f4-f7 */
 void
-rsbuild(void)
+rsbuild()
 {
 	struct rs *n, *last = 0;
 	int r;
@@ -117,7 +118,9 @@ rsbuild(void)
  * a long variable node into two word variable nodes. The new node gets the lower register.
  */
 struct rs *
-newnode(struct rs *n, int k)
+newnode(n, k)
+	struct rs *n;
+	int k;
 {
 	struct rs *m;
 
@@ -146,7 +149,9 @@ newnode(struct rs *n, int k)
  * made by merging.
  */
 void
-rsinsert(struct rs *n, int mode)
+rsinsert(n, mode)
+	struct rs *n;
+	int mode;
 {
 	struct rs *a, *b, *p, *prev;
 	int key;
@@ -212,7 +217,10 @@ rsinsert(struct rs *n, int mode)
 
 /* does register reg of class cls overlap the register of the node n? */
 int
-roverlap(int cls, int reg, struct rs *n)
+roverlap(cls, reg, n)
+	int cls;
+	int reg;
+	struct rs *n;
 {
 	switch (cls) {
 	case 1:
@@ -262,7 +270,9 @@ roverlap(int cls, int reg, struct rs *n)
 
 /* a node of the use list takes over the symbol sym */
 static int
-take(struct rs *n, struct sym *sym)
+take(n, sym)
+	struct rs *n;
+	struct sym *sym;
 {
 	n->flags &= ~0x8000;
 	n->sym = sym;
@@ -271,12 +281,14 @@ take(struct rs *n, struct sym *sym)
 	return n->reg;
 }
 
-extern int getreg(int cls, int reg, int flag, struct sym *sym);
-void rsreturn(int cls, int reg);
+extern int getreg();
+void rsreturn();
 
 /* take a free node out of rsfree and put it on the front of rsuse */
 static void
-touse(struct rs *n, struct rs *prev)
+touse(n, prev)
+	struct rs *n;
+	struct rs *prev;
 {
 	struct rs *old = rsuse;
 
@@ -293,7 +305,11 @@ touse(struct rs *n, struct rs *prev)
  * node that can be split (regjam). Returns the register, or -1.
  */
 int
-regjam(int cls, int reg, int flag, struct sym *sym)
+regjam(cls, reg, flag, sym)
+	int cls;
+	int reg;
+	int flag;
+	struct sym *sym;
 {
 	struct rs *n, *m, *w;
 	int found = 0;
@@ -408,7 +424,11 @@ fail:
  * number, or -1.
  */
 int
-getreg(int cls, int reg, int flag, struct sym *sym)
+getreg(cls, reg, flag, sym)
+	int cls;
+	int reg;
+	int flag;
+	struct sym *sym;
 {
 	struct rs *n, *prev, *w, *m, *t;
 
@@ -546,7 +566,9 @@ getreg(int cls, int reg, int flag, struct sym *sym)
  * place; a node whose partner (reg ^ 1) is free too is merged into one node of the next class.
  */
 void
-rsreturn(int cls, int reg)
+rsreturn(cls, reg)
+	int cls;
+	int reg;
 {
 	struct rs *n, *prev, *a, *b, *it, *itprev;
 	int cl, key, partner;
@@ -622,7 +644,8 @@ rsreturn(int cls, int reg)
 
 /* the registers in use no longer hold symbols */
 void
-nullsyms(int mode)
+nullsyms(mode)
+	int mode;
 {
 	struct rs *n;
 
@@ -638,7 +661,8 @@ nullsyms(int mode)
 
 /* the other register of a pair */
 int
-pairmate(int r)
+pairmate(r)
+	int r;
 {
 	return r & 1 ? r - 1 : r + 1;
 }

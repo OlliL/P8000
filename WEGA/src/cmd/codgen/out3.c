@@ -7,9 +7,9 @@
  */
 #include "cg.h"
 
-extern int cerror(const char *, ...);
-extern struct node *getlr(struct node *p, int c);
-extern int ttype(int t, int tword);
+extern int cerror();
+extern struct node *getlr();
+extern int ttype();
 extern char *opst[];		/* operator names (comm3) */
 extern int fldsz, fldshf;	/* the field that tshape found */
 extern char *rnames[];		/* r0 .. r14 fp f0 .. f3, 3fca */
@@ -17,11 +17,12 @@ extern char *rlnames[];		/* rl0 .. rl7, 27ca */
 extern int rlmode, rmode;	/* 0x280c (W: low byte registers) and 0x280a (V: long registers) */
 extern int upperlval;		/* 0xa148: print the high word of a long constant */
 extern int tflag;		/* 0x35d0: set by the macro T */
-extern int zzzcode(struct node *p, int c);	/* 0x2edc */
+extern int zzzcode();	/* 0x2edc */
 
 /* a name or constant: label, name, +offset */
 void
-acon(struct node *p)
+acon(p)
+	struct node *p;
 {
 	struct sym *s;
 	char c0;
@@ -66,7 +67,8 @@ off:
 
 /* offset(register) of an OREG */
 void
-oregput(struct node *p)
+oregput(p)
+	struct node *p;
 {
 	acon(p);
 	if (p->rval == 15)
@@ -77,7 +79,8 @@ oregput(struct node *p)
 
 /* a constant or a register as an operand part */
 void
-conput(struct node *p)
+conput(p)
+	struct node *p;
 {
 	switch (p->op) {
 	case ICON:
@@ -106,15 +109,16 @@ conput(struct node *p)
 }
 
 void
-insput(struct node *p)
+insput(p)
+	struct node *p;
 {
-	(void)p;
 	cerror("insput");
 }
 
 /* the second word of an operand */
 void
-upput(struct node *p)
+upput(p)
+	struct node *p;
 {
 	long save;
 	int r;
@@ -159,7 +163,8 @@ upput(struct node *p)
 
 /* an operand */
 void
-adrput(struct node *p)
+adrput(p)
+	struct node *p;
 {
 	long save;
 	int r;
@@ -217,7 +222,8 @@ struct hoptab { int op; char *str; int tword; };
 extern struct hoptab fhoptab[], ihoptab[];	/* floating and integer tables, hoptab_*.c */
 
 void
-hopcode(struct node *p)
+hopcode(p)
+	struct node *p;
 {
 	struct hoptab *q;
 	int t = p->type;
@@ -233,7 +239,10 @@ hopcode(struct node *p)
 
 /* expand the template cp for the tree p */
 void
-expand(struct node *p, int cookie, char *cp)
+expand(p, cookie, cp)
+	struct node *p;
+	int cookie;
+	char *cp;
 {
 	struct node *r;
 	long m;

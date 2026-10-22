@@ -5,7 +5,7 @@
 C=${1:?corpus dir}
 PROG=${PROG:-codgen}
 HERE=$(cd "$(dirname "$0")" && pwd)
-E=${E:-$HERE/../z8k-emu/z8k-emu}; R=${WEGA:?set WEGA to the WEGA file tree}
+E=${E:-$HERE/../../../host/z8k-emu/z8k-emu}; R=${WEGA:?set WEGA to the WEGA file tree}
 T=$(mktemp -d); ok=0; bad=0
 for f in "$C"/*.I; do
   id=$(basename "$f" .I)

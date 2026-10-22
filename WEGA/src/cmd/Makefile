@@ -1,7 +1,7 @@
 # cmd: WEGA system commands, in the V7 layout: a command with a single source
 # file is a file here (ar.c, tar.c, ...); a command with several files, several versions or its own
 # libc has its own subdirectory with its own Makefile (BOOT0, doscopy, pburn, standalone, size, strip,
-# ranlib, cc, cas). Start-up variants of the commands live in ../lib/libc/crt (crt0.s.in + crt0.list,
+# ranlib, cc, cas, codgen). Start-up variants of the commands live in ../lib/libc/crt (crt0.s.in + crt0.list,
 # made into crt0-<command>.s by mkcrt0.sh).
 # cc/cc.c is the source of both drivers, cc and scc (scc is cc.c compiled with -DSCC).
 # The Linux versions of the cc driver (with cc.conf) and of popt live in ../../host.

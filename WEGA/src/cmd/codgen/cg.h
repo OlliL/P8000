@@ -4,8 +4,6 @@
  * in it (SAREG, TBYTE, RLEFT ...). See ../KNOWLEDGE.md, "codgen / scodgen".
  */
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /* operators (the dope table in ops_*.c has the flags: arity in bits 1-3) */
 #define NAME	2
@@ -72,10 +70,8 @@ struct node {
 	int	rall;		/* register preference, NOPREF when none */
 	int	type;
 	int	global;		/* 6 */
-	union {
-		struct sym *sname;	/* 8: symbol of a NAME or ICON; non-zero: the constant has a name */
-		int	label;		/* the target label of a CBRANCH */
-	};
+	struct sym *sname;	/* 8: symbol of a NAME or ICON; non-zero: the constant has a name */
+	int	label;		/* the target label of a CBRANCH (shares the slot of sname in the original) */
 	int	stsize;		/* 0xA: STASG size, TEMP number */
 	long	lval;		/* 0xC */
 	struct node *left;	/* 0xE */
@@ -91,7 +87,6 @@ struct sym {
 	long	soffset;	/* +8: bit offset in the frame, or the label number of a static */
 	int	sflags;		/* +0x10 */
 };
-struct sym;
 extern char ascii[];		/* the ascii table (names of the symbols) */
 extern struct sym *fpsym1, *fpsym2;	/* the pseudo symbols ~L1 and ~L2 of the frame */
 
