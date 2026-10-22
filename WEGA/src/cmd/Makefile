@@ -63,6 +63,9 @@ $(CRT)/crt0-ar.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 $(CRT)/crt0-ar.o: $(CRT)/crt0-ar.s
 	$(CAS) -u -o $@ $(CRT)/crt0-ar.s
 
+$(CRT)/crt0-sync.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+	sh $(CRT)/mkcrt0.sh sync > $@
+
 $(CRT)/crt0-sync.o: $(CRT)/crt0-sync.s
 	$(CAS) -u -o $@ $(CRT)/crt0-sync.s
 
@@ -77,7 +80,7 @@ install: $(PROGS) $(FILES) $(STRIPFILES)
 
 clean:
 	rm -f $(PROGS) $(FILES) $(STRIPFILES) $(CLEANFILES)
-	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-sync.o $(CRT)/crt0-ar.s
+	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-sync.o $(CRT)/crt0-ar.s $(CRT)/crt0-sync.s
 	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) clean ; cd .. ; done
 
 .PHONY: all subdirs clean install
