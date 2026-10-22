@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare the host ld with the original /bin/ld (run under z8k-emu).
+"""Compare the host ld and sld with the original /bin/ld and /bin/sld (run under z8k-emu).
 
 usage: check.py [-n RANDOM_RUNS] [-s SEED]     (environment: WEGA=file tree of the original system, EMU=emulator)
 
@@ -12,7 +12,7 @@ import os, random, shutil, subprocess, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.environ.get('WEGA', ''))
 EMU = os.environ.get('EMU', os.path.join(HERE, '..', 'z8k-emu', 'z8k-emu'))
-HOST = os.path.join(HERE, 'ld')
+HOST = {'ld': os.path.join(HERE, 'ld'), 'sld': os.path.join(HERE, 'sld')}
 W = None
 
 
@@ -20,19 +20,18 @@ def orig(args, cwd, tool='ld'):
     return subprocess.run([EMU, '-r', ROOT, '/bin/' + tool] + args, cwd=cwd, capture_output=True, timeout=120)
 
 
-def link(args):
+def link(args, tool='ld', base='base'):
     """run both linkers in separate copies of the work dir; returns (ok, message)"""
     res = []
     for who in ('orig', 'host'):
         d = os.path.join(W, who)
         shutil.rmtree(d, ignore_errors=True)
-        shutil.copytree(os.path.join(W, 'base'), d, copy_function=shutil.copy2)
+        shutil.copytree(os.path.join(W, base), d, copy_function=shutil.copy2)
         if who == 'orig':
-            r = orig(args, d)
+            r = orig(args, d, tool)
         else:
-            env = dict(os.environ, WEGA_LIBPATH=ROOT + '/lib:' + ROOT + '/usr/lib')
-            r = subprocess.run([HOST] + [ROOT + a if a.startswith('/') else a for a in args], cwd=d,
-                               capture_output=True, env=env, timeout=120)
+            env = dict(os.environ, WEGA_ROOT=ROOT)
+            r = subprocess.run([HOST[tool]] + args, cwd=d, capture_output=True, env=env, timeout=120)
         out = 'a.out'
         for i, a in enumerate(args):
             if a == '-o' and i + 1 < len(args):
@@ -74,6 +73,69 @@ def setup():
     for name, opts, objs in (('r1.o', [], ['a.o', 'b.o']), ('r2.o', ['-i'], ['b.o', 'c.o', 'd.o']),
                              ('r3.o', ['-d'], ['a.o', 'b.o', 'c.o', 'f.o']), ('r4.o', ['-x'], ['c.o', 'e.o'])):
         orig(['-r'] + opts + ['-o', name] + objs, base)
+
+
+def setup_seg():
+    base = os.path.join(W, 'sbase')
+    os.makedirs(base)
+    for f in os.listdir(os.path.join(HERE, 'test')):
+        if f.endswith('.c') or f.endswith('.s'):
+            shutil.copy(os.path.join(HERE, 'test', f), base)
+    for f in sorted(os.listdir(base)):
+        if f.endswith('.c'):
+            r = orig(['-c', '-O', f], base, 'scc')
+        else:
+            r = orig(['-u', '-o', f[:-2] + '.o', f], base, 'cas')
+        if r.returncode:
+            sys.exit('%s failed: %s' % (f, r.stderr.decode()))
+    mk = os.path.join(HERE, 'test', 'mklib.py')
+    subprocess.run(['python3', mk, 'libs1.a', 'b.o', 'c.o', 'd.o', 'u.o', 'e.o', 'f.o'], cwd=base, check=True, capture_output=True)
+    # the kernel link of make.wega: the objects of the system, a ver.o of our own
+    sysdir = os.path.join(ROOT, 'usr/sys')
+    if os.path.isdir(sysdir):
+        for n in ('wpar.o', 'event.o', 'mch.o', 'u.o', 'fpe.o', 'conf.o'):
+            shutil.copy(os.path.join(sysdir, 'conf', n), os.path.join(base, 'k_' + n))
+        shutil.copy(os.path.join(sysdir, 'sys/LIB1'), os.path.join(base, 'LIB1'))
+        shutil.copy(os.path.join(sysdir, 'dev/LIB2'), os.path.join(base, 'LIB2'))
+        open(os.path.join(base, 'ver.c'), 'w').write('char version[] = "WEGA test";\nchar copyrit[] = "c";\n'
+                                                      'char utsrelease[] = "r";\nint cpu2_flags;\n')
+        orig(['-c', 'ver.c'], base, 'scc')
+
+
+SFIXED = [
+    '-o t /lib/scrt0.o a.o b.o u.o -lc', '-X -e start -z -o t /lib/scrt0.o a.o b.o u.o -lc', '-i -o t /lib/scrt0.o a.o b.o u.o -lc',
+    '-i -z -o t /lib/scrt0.o a.o b.o u.o -lc', '-Mt4 -o t /lib/scrt0.o a.o b.o u.o -lc', '-Md4 -o t /lib/scrt0.o a.o b.o u.o -lc',
+    '-M5 -o t /lib/scrt0.o a.o b.o u.o -lc', '-i -M5 -Mt4 -o t /lib/scrt0.o a.o b.o u.o -lc', '-Ms62 -o t /lib/scrt0.o a.o b.o u.o -lc',
+    '-R9 -z -o t /lib/scrt0.o a.o b.o u.o -lc', '-M7 -Md1 -o t /lib/scrt0.o a.o b.o u.o -lc', '-Md2 -Mb3 -o t /lib/scrt0.o a.o b.o u.o -lc',
+    '-x -o t /lib/scrt0.o a.o b.o u.o -lc', '-X -S -Ns -o t /lib/scrt0.o a.o b.o u.o -lc', '-w -o t /lib/scrt0.o a.o libs1.a u.o -lc',
+    '-r -o t a.o b.o', '-r -d -o t a.o b.o c.o', '-r -i -z -o t a.o big1.o', '-r -x -o t /lib/scrt0.o a.o',
+    '-r -i -d -o t a.o b.o big2.o big5.o', '-o t /lib/scrt0.o a.o b.o -lc', '-Mt4 -o t a.o b.o', '-i -o t a.o b.o big5.o',
+    '-i -o t /lib/scrt0.o a.o b.o u.o big1.o big2.o big3.o big4.o -lc', '-Mt3 -Md9 -Mb11 -o t /lib/scrt0.o a.o b.o u.o big1.o big2.o big3.o big4.o -lc',
+    '-o t /lib/scrt0.o a.o b.o u.o big5.o big6.o big7.o big8.o big1.o -lc', '-i -o t /lib/scrt0.o a.o b.o u.o big5.o big6.o big7.o big8.o big1.o -lc',
+    '-M4 -o t /lib/scrt0.o a.o b.o u.o big5.o big6.o big7.o big8.o big1.o -lc',
+    '-o t al1.o', '-i -o t al1.o', '-Md3 -o t al1.o', '-Mt3 -o t al1.o', '-i -o t al2.o', '-o t al2.o', '-i -Ms62 -o t al1.o', '-R5 -o t al1.o',
+    '-o t abs1.o', '-e _f1 -o t abs1.o', '-Q', '-o t nofile.o',
+    '-Ns -o wega -e start -X -i -Ms62 k_wpar.o k_event.o k_mch.o k_u.o ver.o k_fpe.o k_conf.o LIB1 LIB2',
+]
+
+
+def rnd_seg(n, seed):
+    random.seed(seed)
+    extra = ['c.o', 'e.o', 'big3.o', 'big4.o', 'big5.o', 'big7.o']
+    for _ in range(n):
+        objs = ['a.o', 'b.o', 'u.o'] + random.sample(extra, random.randint(0, 3))
+        random.shuffle(objs)
+        args = ['/lib/scrt0.o'] + objs + ['-lc']
+        fl = []
+        if random.random() < 0.5: fl.append('-i')
+        if random.random() < 0.5: fl.append('-z')
+        fl += random.sample(['-x', '-X', '-S', '-Ns', '-w'], random.randint(0, 2))
+        if random.random() < 0.6: fl += ['-e', 'start']
+        for _ in range(random.choice([0, 0, 1, 2])):     # -M options in front of the files
+            fl.append(random.choice(['-M', '-Mt', '-Md', '-Mb']) + str(random.choice([0, 1, 2, 3, 4, 5, 7, 9, 11, 20, 62])))
+        if random.random() < 0.15 and '-z' not in fl: fl.append('-Ms' + str(random.choice([40, 62, 100])))
+        if random.random() < 0.1: fl.append('-R' + str(random.choice([30, 50])))
+        yield fl + ['-o', 't'] + args
 
 
 FIXED = [
@@ -129,7 +191,7 @@ def main():
         elif o == '-s': seed = int(a.pop(0))
     if not ROOT or not os.path.isdir(ROOT):
         sys.exit('set WEGA to the file tree of the original system')
-    if not os.path.exists(HOST):
+    if not os.path.exists(HOST['ld']):
         sys.exit('build ./ld first')
     W = tempfile.mkdtemp(prefix='ldcheck')
     try:
@@ -148,7 +210,27 @@ def main():
                 bad += 1
                 print('DIFF', msg)
         print('ld: %s (%d of %d command lines identical)' % ('identical' if not bad else 'DIFFERENT', total - bad, total))
-        return 1 if bad else 0
+        rc = 1 if bad else 0
+        if os.path.exists(HOST['sld']):
+            setup_seg()
+            bad = total = 0
+            for line in SFIXED:
+                if line.startswith('-Ns -o wega') and not os.path.exists(os.path.join(W, 'sbase', 'LIB1')):
+                    continue
+                total += 1
+                ok, msg = link(line.split(), 'sld', 'sbase')
+                if not ok:
+                    bad += 1
+                    print('DIFF', msg)
+            for args in rnd_seg(n // 2, seed):
+                total += 1
+                ok, msg = link(args, 'sld', 'sbase')
+                if not ok:
+                    bad += 1
+                    print('DIFF', msg)
+            print('sld: %s (%d of %d command lines identical)' % ('identical' if not bad else 'DIFFERENT', total - bad, total))
+            rc |= 1 if bad else 0
+        return rc
     finally:
         shutil.rmtree(W, ignore_errors=True)
 

@@ -117,8 +117,10 @@ the marks of D14 only: that is all that was checked for them.
   semantic error in an expression in one statement, `"\%4"` (one hex digit). The host fork `host/cas` (modern C) exists and is tested against the original with the same scripts (KNOWLEDGE.md "cas on the host").
 
 - Host tool chain (compile without z8k-emu): native on the host are the `cc`/`scc` drivers, `popt`, `cas`, `ar`, `ranlib`, `strip`, `size` and
-  since 2026-10-22 `ld` (`host/ld`, nonsegmented, same files as `/bin/ld` on 146 command lines; no 8 bit objects, no `-T`/`-v`). Still under the
-  emulator: `cpp`, `cparse`/`scparse`, `codgen`/`scodgen`, `gopt`, `spopt`, `as`, `sld`, `gld`. Next: `sld` and `gld` (segmented), then the wrapper
+  since 2026-10-22 `ld` (`host/ld`, nonsegmented, same files as `/bin/ld` on 146 command lines; no 8 bit objects, no `-T`/`-v`) and `sld`
+  (`host/ld/sld.c`, same files as `/bin/sld` on 91 command lines; not implemented: `-f`, `-A`, `-b`, `-t`, `-M` with `:t`/`:b`/`+files+`, `-M` changing
+  between large files, several overflowing start segments in combined mode, see KNOWLEDGE.md). Still under the
+  emulator: `cpp`, `cparse`/`scparse`, `codgen`/`scodgen`, `gopt`, `spopt`, `as`, `gld`. Next: `gld` (segmented), then the wrapper
   scripts, `spopt`, the back end, the front end (order in `host/HANDOFF_wega_disasm.md`). `src/cmd/ld` (a source that builds the byte-identical
   `/bin/ld`) does not exist yet; `host/ld/ld.c` is written from the binary and measurements, not transcribed function by function.
 

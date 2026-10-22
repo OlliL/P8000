@@ -343,6 +343,50 @@ see "ranlib, strip, size on the host").
   Bad format, ...) ends with status 4, no arguments with 4, "cannot create output" with 2.
 - **Checks in pass 2:** a symbol defined with another type or value than in the table gives "- Multiply defined" (error).
 
+### sld on the host (`host/ld/sld.c`, measured with the original `/bin/sld`, ld.c 3.8)
+
+`sld.c` writes the same files as `/bin/sld` on 91 command lines (`make -C host/ld check`), among them the `cas` link of `src/cmd/cas`
+(`-i -s -e start -z -Mt4 -Md5 -Mb5 ... -Md7 stable.o ...`) and the kernel link of `usr/sys/conf/make.wega` (`-Ns -e start -X -i -Ms62`, the
+objects of the system and its LIB1/LIB2, a `ver.o` of our own). It shares the symbol table, archive and message logic with `ld.c`
+(see "ld on the host"); `sld` is another program (it has `dump.c`, `ext.c`, `ldm.c`; the debug dump strings are in the binary but no
+option reaches them). Facts:
+
+- **Objects.** Segmented objects have one segment table entry per section kind (scc: entry 0 code, entry 1 data; `signal.o`: 3 entries). A
+  symbol value is `entry << 24 | offset`, the `segt` byte is the entry; commons are undefined symbols with the size as value. In an entry
+  that holds code and data (cas with one `.psec`) the data offsets count from the start of the entry: subtract the code size (and the
+  data size for bss), as in a combined `ld` object.
+- **Streams and chains.** `-M n` sets the start segment of text, data and bss (with `-i`: text n, data and bss n+1), `-Mt/-Md/-Mb n` one of
+  them; the options act on the files that follow, the rightmost conflicting one wins. Default: all 0, with `-i` text 0, data and bss 1.
+  The sections of one start segment form a chain of segments. A section that does not fit (limit 0xFFFE bytes per segment, code + data +
+  bss) goes to the lowest segment number that is neither in use nor the start of a chain.
+- **Placement.** Text: first fit over the chain. Data: first fit from the last segment of the chain that holds text on (so data does not
+  fall back into an earlier segment). Bss of the files and the commons together form one block: if it fits behind the last segment it
+  goes there, else it gets a segment of its own (the number above all used ones) when it fits into one segment, else it is split
+  next-fit from the last segment on. Inside a segment: code, data, bss. A segment is padded by a full or partial 256 (new size =
+  `(size | 0xFF) + 1`, at most 0xFFFE), the pad belongs to the last area (bss, else data, else code); the segment made for the bss block is
+  not padded. Not seen the same way in the original: more than one start segment overflowing in combined mode (it writes segment 0xFF
+  and `_end` = 0), a `-M` that changes between the files with large sections, `-M` with the `:t`/`:b` offsets and the `+file+` lists, `-f`,
+  `-A`, `-b`, `-t`: not implemented.
+- **Table.** Entries in the order of the segment numbers; the image is, per segment, its code and then its data (not all code first).
+  `atr`: 1 code, 2 data, 4 bss, 8 stack; a stack in a segment that also holds other areas ors the 8 in. `-R n` makes an empty entry
+  (atr 4) and reserves the number. Header: magic E611 with `-i`, E605 with `-O`, else E607; flag 1 (no relocation), 0x20 with `-z`
+  (stack segment 127, no entry); entry = the symbol of `-e`, else offset 0 of the lowest text segment.
+- **Stack.** `_stkseg` is defined by the linker (type 0x61, segt = segment). A stack entry is made only when `_stkseg` is referenced or `-Ms n` was
+  given (without a reference: "sld: warning: _stkseg undefined" on stdout, status 1). Segment: `-z` 127; `-Ms n`; one used segment: that
+  one; a plain `-M n` (or no `-M`) without `-i`, `-R` and `-Mt/-Md/-Mb`: the highest segment with code or data (no entry); else a new entry
+  above everything used or named in `-M`/`-R`.
+- **Symbols.** Defined externals get type | 0x40 (`SEG`), area symbols value `seg << 24 | offset` and `segt` = seg; `_etext`, `_edata`,
+  `_end` = the end of the text, data, bss in the last segment of the chain that has such an area (the original gives 0 when it is an overflow
+  segment that also holds earlier areas). The `segt` byte of the other symbols (abs, undefined) is the one of the object **plus the number of
+  segment table entries of the files loaded before** (so `_u` of the kernel has 62 + 6). Locals: `N_FN` (value: start of the text of the file, 0
+  without text) and the symbols of the file, area symbols moved; `-X` keeps `N_SN` here (unlike `ld`), drops names with `L`.
+- **Relocation.** Kind 0 offset: add the offset; kind 1 segment part: `(x & 0x8000) | seg << 8`; kind 2 short address: `seg << 8 | (low byte + offset) & 0xFF`.
+- **Undefined symbols and `-r`.** The output is relocatable (flag 0, relocation words kept, commons not allocated, the reserved symbols stay
+  undefined, no padding, all external symbols type | 0x40, `segt` of the object without the entry base), and the file stays (status 1, "Undefined:"
+  on stderr; unlike `ld`). `-r -d` defines commons and `_etext`, `_edata`, `_end`. A relocation word keeps the output **segment number** in bits 15-8;
+  an external word of an undefined symbol gets `slot + number of local slots` as index. With `-i` and no `-z` the stack entry is also made when
+  the output is relocatable by undefined symbols (not with an explicit `-r`).
+
 ## Z8000 decoder (tools/z8k.py)
 
 Own table, written from the Z8000 encoding rules, segmented and
