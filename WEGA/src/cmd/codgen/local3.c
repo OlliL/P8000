@@ -51,7 +51,7 @@ ispow2(c)
 	return n;
 }
 
-/* size of a type in bits (non-segmented: pointers 16); SHORT and USHORT do not occur (cparse maps them to int) */
+/* size of a type in bits (pointers 16, segmented 32); SHORT and USHORT do not occur (cparse maps them to int) */
 int
 bsize(t)
 	int t;
@@ -63,7 +63,11 @@ bsize(t)
 	case 7: return 64;				/* DOUBLE */
 	}
 	if ((t & 0x30) == 0x10)
+#ifdef SEG
+		return 32;				/* a pointer */
+#else
 		return 16;				/* a pointer */
+#endif
 	cerror("illegal bsize type: %%%0.2x\n", t);
 	return 0;
 }
@@ -77,6 +81,10 @@ szty(t)
 	case 5: case 6: case 15: return 2;
 	case 7: return 4;
 	}
+#ifdef SEG
+	if ((t & 0x30) == 0x10)
+		return 2;
+#endif
 	return 1;
 }
 

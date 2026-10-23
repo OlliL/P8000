@@ -51,12 +51,31 @@ bcon(bits)
 	return n;
 }
 
+#ifdef SEG
+/* PLUS(frame register, offset): the offset goes first and takes the pointer type, the register becomes an int */
+static void
+chk(p)
+	register struct node *p;
+{
+	register struct node *r, *c;
+
+	r = p->left;
+	c = p->right;
+	c->type = r->type;
+	p->left = c;
+	if (r->op != REG)
+		cerror("badly formed offset");
+	p->right = r;
+	r->type = 4;
+}
+#else
 /* a debugging hook that does nothing */
 static void
 chk(p)
 	struct node *p;
 {
 }
+#endif
 
 /* the node p after the conversions: names to addresses of their class, conversions of constants */
 struct node *
@@ -128,6 +147,16 @@ clocal(p)
 		lt = l->type;
 		if (l->op == ICON) {
 			val = l->lval;
+#ifdef SEG
+			if (pt == 4 && (lt & 0x30) == 0x10) {
+				l->lval = (long)(int)val;
+				goto done;
+			}
+			if (pt == 14 && (lt & 0x30) == 0x10) {
+				l->lval = val & 0xFFFFL;
+				goto done;
+			}
+#endif
 			switch (pt) {
 			case 2:
 				l->lval = (long)(char)val;
@@ -153,9 +182,17 @@ clocal(p)
 			l->type = pt;
 		}
 		if (tbytes(pt) != tbytes(lt)) {
+#ifdef SEG
+			goto done;
+#else
 			p->op = FREE;
 			return l;
+#endif
 		}
+#ifdef SEG
+		if ((pt & 0x30) == 0x10)
+			goto done;
+#endif
 		l->type = p->type;
 		l->rval = p->rval;
 		l->lval = p->lval;

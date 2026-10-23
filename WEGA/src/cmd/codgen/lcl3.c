@@ -29,7 +29,7 @@ extern int minreg, maxreg, ifline;
 extern long maxoff;
 extern char ifname[];
 extern struct rs *rsuse;
-extern struct sym *fpsym1, *fpsym2;
+extern struct sym *fpsym1, *fpsym2, *symtab0;
 extern struct tmpent { int off; char done; char cls; unsigned flags; int reg; } tmptab[];
 
 struct rv { struct sym *sym; int rtag; int rreg; int rtype; int rcls; };
@@ -48,8 +48,14 @@ extern long frame0;			/* 0x69ce */
 void
 hdrout()
 {
+#ifdef SEG
+	printf("\t.seg\n\t.psec data\n\t.data\n\n");
+	printf("\n\tfp\t\t:= r15;\n");
+	printf("\tsp\t\t:= rr14;\n");
+#else
 	printf("\n\tfp\t\t:= r15;\n");
 	printf("\tsp\t\t:= r15;\n");
+#endif
 }
 
 /* with -l: the line directive for a source file with the extension .c */
@@ -89,8 +95,13 @@ parminit(p)
 	s = p->sname;
 	n = s->sbyte5;
 	t = s->stype;
+#ifdef SEG
+	if (t == 6 || t == 7)
+		n -= 6;
+#else
 	if (t == 6 || t == 7)
 		n -= 5;
+#endif
 	else
 		n -= 7;
 	if (rflag && s->sclass == 4 && regvar[n].sym != s)
@@ -130,7 +141,11 @@ parminit(p)
 				printf("%s,", rnames[r]);
 			}
 			if (p->lval >= 0)
+#ifdef SEG
+				printf("_stkseg+~L2+%ld(fp)\n", p->lval);
+#else
 				printf("~L2+%ld(fp)\n", p->lval);
+#endif
 			else {
 				if (sz == 2)
 					putchar('r');
@@ -140,9 +155,17 @@ parminit(p)
 		}
 		if (s->stype == 8) {
 			if (sz == 1)
+#ifdef SEG
+				printf("\tld\t|_stkseg+~L1+%ld|(fp),%s\n", s->soffset / 8, rnames[r]);
+#else
 				printf("\tld\t~L1+%ld(fp),%s\n", s->soffset / 8, rnames[r]);
+#endif
 			else if (sz == 2)
+#ifdef SEG
+				printf("\tldl\t|_stkseg+~L1+%ld|(fp),r%s\n", s->soffset / 8, rnames[r]);
+#else
 				printf("\tldl\t~L1+%ld(fp),r%s\n", s->soffset / 8, rnames[r]);
+#endif
 			else
 				cerror("structure argument too long");
 			s->sflags &= ~8;
@@ -168,10 +191,17 @@ void
 structretcode()
 {
 	if (structret) {
+#ifdef SEG
+		printf("\tldl\trr4,#L%d\n", structlab);
+		printf("\tld\tr1,#%ld\n", (long)structsz);
+		printf("\tldir\t@rr4,@r%s,r1\n", rnames[rallkind(0)]);
+		printf("\tldl\tr%s,#L%d\n", rnames[rallkind(0)], structlab);
+#else
 		printf("\tld\tr4,#L%d\n", structlab);
 		printf("\tld\tr1,#%ld\n", (long)structsz);
 		printf("\tldir\t@r4,@%s,r1\n", rnames[rallkind(0)]);
 		printf("\tld\t%s,#L%d\n", rnames[rallkind(0)], structlab);
+#endif
 	}
 }
 
@@ -190,7 +220,11 @@ fbegin(s)
 		;
 	if (s->sclass == 5)
 		printf("/*~~%s:*/\n", ascii + s->nameoff);
+#ifdef SEG
+	printf("\n\t.psec\n\t.code\n\n");
+#else
 	printf("\n\t.code\n\n");
+#endif
 	printf("\t%s:", fname);
 	if (s->sclass == 5)
 		printf(":");
@@ -204,8 +238,15 @@ fbegin(s)
 	retlab = getlab();
 	if (pflag) {
 		mcountlab = s->soffset;
+#ifdef SEG
+		printf("\tpushl\t@sp,rr2\n\tldl\trr2,#L%d\n", mcountlab);
+		printf("\tpushl\t@sp,rr2\n");
+		printf("\tcall\tmcount\n\tinc\tfp,#4\n");
+		printf("\tpopl\trr2,@sp\n");
+#else
 		printf("\tpush\t@sp,#L%d\n", mcountlab);
 		printf("\tcall\tmcount\n\tinc\tsp,#2\n");
+#endif
 	}
 	entlab = getlab();
 	jlab = getlab();
@@ -296,7 +337,11 @@ fixtemp(p)
 		p->lval = (long)(unsigned)tmptab[i].reg;
 		p->rval = 15;
 		p->stsize = 0;
+#ifdef SEG
+		p->sname = symtab0;
+#else
 		p->sname = 0;
+#endif
 	}
 }
 
@@ -540,7 +585,11 @@ regreset(flag)
 	register int i;
 	register struct sym *s;
 
+#ifdef SEG
+	for (i = 0; i < 11; i++) {
+#else
 	for (i = 0; i < 12; i++) {
+#endif
 		s = regvar[i].sym;
 		if (flag && s)
 			s->sclass = regvar[i].rcls;
@@ -549,7 +598,11 @@ regreset(flag)
 		regvar[i].rreg = -1;
 		regvar[i].rtype = -1;
 	}
+#ifdef SEG
+	for (i = 8; i <= 13; i++)
+#else
 	for (i = 8; i <= 14; i++)
+#endif
 		if (rsuse)
 			rsreturn(9, i);
 	for (i = 20; i <= 23; i++)
@@ -576,7 +629,11 @@ rcmd(a, b, type)
 		tag = -b;
 	}
 	if (type == 6 || type == 7) {
+#ifdef SEG
+		i = a + 6;
+#else
 		i = a + 7;
+#endif
 		old = regvar[i].sym;
 		regvar[i].sym = s;
 		regvar[i].rtag = tag;
@@ -627,8 +684,12 @@ memname(s, off)
 	else if (s && s->sclass == 3) {
 		putchar('L');
 		printf("%ld", off);
-	} else
+	} else {
+#ifdef SEG
+		printf("_stkseg+");
+#endif
 		printf("~L1+%ld(fp)", off);
+	}
 }
 
 /* command S: a register variable or a temporary is stored in its memory place */
@@ -660,6 +721,10 @@ scmd(n)
 		reg = regvar[j].rreg;
 	}
 	printf("/* rvstore */\n");
+#ifdef SEG
+	if ((t & 0x30) == 0x10)
+		t = 5;
+#endif
 	switch (t) {
 	case 5:
 		printf("\tldl\t");
@@ -711,6 +776,10 @@ tcmd(n)
 		reg = regvar[j].rreg;
 	}
 	printf("/* rvrestore */\n");
+#ifdef SEG
+	if ((t & 0x30) == 0x10)
+		t = 5;
+#endif
 	switch (t) {
 	case 5:
 		printf("\tldl\t");
@@ -753,6 +822,29 @@ newreg(avoid)
 	return r;
 }
 
+#ifdef SEG
+/* a free long register that does not overlap avoid, not rr0 */
+static int
+newlreg(avoid)
+	int avoid;
+{
+	int r, t, t2;
+
+	r = getreg(3, -1, 0x1000, 0);
+	if (r == avoid || (avoid ^ 1) == r || r == 0) {
+		t = r;
+		r = getreg(3, -1, 0x1000, 0);
+		if (r == avoid || (avoid ^ 1) == r || r == 0) {
+			t2 = r;
+			r = getreg(3, -1, 0x1000, 0);
+			rfree(t2, 5);
+		}
+		rfree(t, 5);
+	}
+	return r;
+}
+#endif
+
 /* the code for a switch: a jump table, or a search with cpir */
 void
 gswitch(p)
@@ -782,13 +874,35 @@ gswitch(p)
 			rmove(reg, save, 3);
 			rfree(save, 3);
 		}
+#ifdef SEG
+		ra = newlreg(reg);
+		printf("\trl\t%s,#2\n", rnames[reg]);
+		printf("\tldl\tr%s,L%d(%s)\n", rnames[ra], tab, rnames[reg]);
+		printf("\tjp\t@r%s\n", rnames[ra]);
+#else
 		printf("\trl\t%s,#1\n", rnames[reg]);
 		printf("\tld\t%s,L%d(%s)\n", rnames[reg], tab, rnames[reg]);
 		printf("\tjp\t@%s\n", rnames[reg]);
+#endif
 		return;
 	}
 	cnt = (int)l->right->lval;
 	tlab = l->right->rval;
+#ifdef SEG
+	ra = newlreg(reg);
+	rb = newreg(reg);
+	printf("\tldl\tr%s,#L%d\n", rnames[ra], tlab);
+	printf("\tld\t%s,#%d\n", rnames[rb], cnt);
+	printf("\tcpir\t%s,@r%s,%s,eq\n", rnames[reg], rnames[ra], rnames[rb]);
+	printf("\tjpr\tne,L%d\n", dlab);
+	printf("\tsll\t%s,#2\n", rnames[rb]);
+	printf("\tneg\t%s\n", rnames[rb]);
+	printf("\tldl\tr%s,L%d+%d(%s)\n", rnames[ra], tab, (cnt - 1) << 2, rnames[rb]);
+	printf("\tjp\t@r%s\n", rnames[ra]);
+	rfree(ra, 5);
+	rfree(rb, 3);
+	rfree(reg, 3);
+#else
 	if (reg == 0) {
 		save = reg;
 		reg = getreg(2, -1, 0x1000, 0);
@@ -808,4 +922,5 @@ gswitch(p)
 	rfree(ra, 3);
 	rfree(rb, 3);
 	rfree(reg, 3);
+#endif
 }

@@ -388,8 +388,13 @@ mapnm(p)
 			if (rflag) {
 				n = s->sbyte5;
 				t = s->stype;
+#ifdef SEG
+				if (t == 6 || t == 7)
+					n -= 13;
+#else
 				if (t == 6 || t == 7)
 					n -= 12;
+#endif
 				else
 					n -= 7;
 			}

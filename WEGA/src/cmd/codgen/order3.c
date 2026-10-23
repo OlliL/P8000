@@ -21,6 +21,13 @@ extern int allo(), argsize();
 extern void tfree(), reclaim();
 extern struct node resc[];
 
+#ifdef SEG
+#define OFFSTARL(l)	offstar(l)
+#else
+#define OFFSTARL(l)	offstar((l)->left)
+#endif
+#define OFFSTARA(l)	offstar((l)->left)
+
 #define MAX(a, b)	((a) < (b) ? (b) : (a))
 #define MIN(a, b)	((a) > (b) ? (b) : (a))
 
@@ -75,6 +82,10 @@ sucomp(p)
 		}
 		p->su = nr >= l->su ? nr : l->su;
 		p->fsu = l->fsu <= nf ? nf : l->fsu;
+#ifdef SEG
+		if (o == STAR && p->su <= 2)	/* an indirection through a long pointer needs a register pair */
+			p->su = 2;
+#endif
 		return;
 	}
 	if (arity != 8)
@@ -280,6 +291,99 @@ orderadd(p)
 	return n;
 }
 
+#ifdef SEG
+extern struct sym *symtab0;
+extern void oreg2();
+
+/* an indirection through a register plus a constant or a register plus a register becomes an OREG
+   (rval: ((base + 1) << 8) | (index + 1)); 1 when it did */
+int
+mkoreg(p)
+	register struct node *p;
+{
+	register struct node *q, *l, *r;
+	int rv;
+	long off;
+	struct sym *sym;
+
+	if (p->op != STAR)
+		return 0;
+	q = p->left;
+	l = q->left;
+	r = q->right;
+	if (q->op == PLUS || q->op == MINUS) {
+		if (r->op == ICON && l->op == REG && p->type != 6 && p->type != 7) {
+			off = r->lval;
+			rv = (l->rval + 1) << 8;
+			sym = r->sname;
+			if (q->op == MINUS) {
+				if (sym ? sym->nameoff : 0)
+					return 0;
+				off = -off;
+			}
+			goto set;
+		}
+	}
+	if (q->op == PLUS && r->op == REG && l->op == REG && p->type != 6 && p->type != 7) {
+		if (r->rval == 0)
+			return 0;
+		rv = ((l->rval + 1) << 8) | (r->rval + 1);
+		off = 0;
+		sym = r->sname;
+		goto set;
+	}
+	oreg2(p);
+	return p->op == OREG;
+set:
+	if ((rv >> 8) == 1)
+		return 0;
+	p->op = OREG;
+	p->rval = rv;
+	p->lval = off;
+	p->stsize = 0;
+	if (sym == symtab0 || sym == fpsym1 || sym == fpsym2)
+		p->sname = sym;
+	else
+		p->sname = 0;
+	tfree(q);
+	return 1;
+}
+
+/* handle indirections: get the address of *p into a register; p is the STAR itself or its operand */
+void
+offstar(p)
+	register struct node *p;
+{
+	register struct node *l;
+
+	if (p->op == STAR) {
+		l = p->left;
+		if (l->op == PLUS || l->op == MINUS) {
+			orderadd(l);
+			if (mkoreg(p)) {
+				order(p, p->type == 6 || p->type == 7 ? 0x18 : 6);
+				return;
+			}
+		}
+		if (l->op == REG) {
+			oreg2(p);
+			if (p->op == OREG && !(p->rall & MUSTDO))
+				return;
+		}
+		if (p->rall & MUSTDO) {
+			if ((dope[p->op] & 0xE) != LTYPE) {
+				orderadd(l);
+				order(l, 6);
+			}
+			order(p, p->type == 6 || p->type == 7 ? 0x18 : 6);
+			return;
+		}
+		p = l;
+	}
+	orderadd(p);
+	order(p, 6);
+}
+#else
 /* handle indirections: get the address of *p into a register */
 void
 offstar(p)
@@ -310,6 +414,7 @@ offstar(p)
 			order(star, 6);
 	}
 }
+#endif
 
 /* is p an indirection that offstar can make addressable */
 int
@@ -341,7 +446,7 @@ setbin(p)
 	if (r->su == 0 && r->fsu == 0) {
 		if (dope[p->op] & 0x10) {
 			if (l->op == STAR && shumul(l->left) != 0x800)
-				offstar(l->left);
+				OFFSTARL(l);
 			else
 				order(l, 0x101e);
 			return 1;
@@ -357,7 +462,7 @@ setbin(p)
 	if (dope[p->op] & 0x10) {
 		if (r->su > l->su || (r->su == l->su && r->fsu >= l->fsu)) {
 			if (niceuty(r)) {
-				offstar(r->left);
+				OFFSTARA(r);
 				return 1;
 			}
 			if (r->su > l->su || (r->su == l->su && r->fsu > l->fsu)) {
@@ -368,7 +473,7 @@ setbin(p)
 			}
 		}
 		if (niceuty(l)) {
-			offstar(l->left);
+			OFFSTARL(l);
 			return 1;
 		}
 		if (!istnode(l)) {
@@ -376,7 +481,7 @@ setbin(p)
 			return 1;
 		}
 		if (niceuty(r)) {
-			offstar(r->left);
+			OFFSTARA(r);
 			return 1;
 		}
 		if (!istnode(r)) {
@@ -387,7 +492,7 @@ setbin(p)
 	}
 	if (!istnode(r) && (r->su > l->su || (r->su == l->su && r->fsu > l->fsu))) {
 		if (niceuty(r)) {
-			offstar(r->left);
+			OFFSTARA(r);
 			return 1;
 		}
 		order(r, 0x101e);
@@ -453,7 +558,7 @@ leftadr:
 				p->left->left->rall = 0x1001;
 				p->left->left->left->rall = 0x1001;
 			}
-			offstar(p->left->left);
+			OFFSTARA(p->left);
 			return 1;
 		}
 		if (p->left->op == FLD && p->left->left->op == STAR) {
@@ -461,7 +566,7 @@ leftadr:
 				p->left->left->left->rall = 0x1001;
 				p->left->left->left->left->rall = 0x1001;
 			}
-			offstar(p->left->left->left);
+			OFFSTARA(p->left->left);
 			return 1;
 		}
 rew:
@@ -493,18 +598,27 @@ rew:
 	}
 	if (p->op == ASG MOD || p->op == ASG DIV) {
 		if (p->type == 5 || p->type == 15) {
+#ifdef SEG
+			if (sul) {
+				p->right->rall = 0x2000;
+				order(p->right, 0x1000);
+				return 1;
+			}
+#endif
 			order(p->right, 4);
 			return 1;
 		}
 	}
 	if (sul > sur && p->left->op == STAR) {
+#ifndef SEG
 		if (lmuldiv(p))
 			p->left->left->rall = 0x1002;
-		offstar(p->left->left);
+#endif
+		OFFSTARA(p->left);
 		return 1;
 	}
 	if (p->right->op == STAR) {
-		offstar(p->right->left);
+		OFFSTARL(p->right);
 		return 1;
 	}
 	if (p->right->op == REG)
@@ -523,12 +637,12 @@ setasg(p)
 	l = p->left;
 	r = p->right;
 	if (l->su > r->su && l->op == STAR) {
-		offstar(l->left);
+		OFFSTARA(l);
 		return 1;
 	}
 	if (r->su != 0 && r->op != REG) {
 		if (r->op == STAR)
-			offstar(r->left);
+			OFFSTARL(r);
 		else
 			order(r, 0x2ca);
 		return 1;
@@ -538,11 +652,11 @@ setasg(p)
 		return 1;
 	}
 	if (l->op == STAR) {
-		offstar(l->left);
+		OFFSTARA(l);
 		return 1;
 	}
 	if (l->op == FLD && l->left->op == STAR) {
-		offstar(l->left->left);
+		OFFSTARA(l->left);
 		return 1;
 	}
 	if (r->op != REG) {

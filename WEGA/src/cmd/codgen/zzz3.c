@@ -275,6 +275,15 @@ zzzcode(p, c)
 		}
 		return;
 	case 'u':
+#ifdef SEG
+		q = p->left;
+		if (q->op == OREG && q->lval == 0 && q->sname == 0 && q->stsize >= 0) {
+			printf("\tinc\t%s,#2\n", rnames[q->rval + 1]);
+			expand(p, FOREFF, "\tZtZi\tAL,AR\n");
+			printf("\tdec\t%s,#2\n", rnames[q->rval + 1]);
+			return;
+		}
+#endif
 		expand(p, FOREFF, "\tZtZi\tUL,AR\n");
 		return;
 	case 'K':
@@ -298,8 +307,17 @@ zzzcode(p, c)
 		case 8:
 			if (fldoff % 8)
 				break;
-			if (fldoff)
+			if (fldoff) {
+#ifdef SEG
+				q = p->left->left;
+				if (q->lval != 0)
+					q->lval++;
+				else
+					printf("\tinc\t%s,#1\n", rnames[q->rval + 1]);
+#else
 				p->left->left->lval++;
+#endif
+			}
 			if (p->right->lval & 0xFFFF)
 				expand(p, FOREFF, "\tldb\tWAL,AR\n");
 			else
@@ -327,11 +345,20 @@ zzzcode(p, c)
 			return;
 		}
 		if (q->rval >= 0x100 || q->lval != 0 || q->sname != 0 || (q->op == OREG && q->stsize < 0)) {
+#ifdef SEG
+			expand(p, FOREFF, "\tlda\tVA1X,AL\n");
+			expand(p, FOREFF, "\tand\tA1,#%7f00\n");
+#else
 			expand(p, FOREFF, "\tlda\tA1,AL\n");
+#endif
 			return;
 		}
 		expand(p, FOREFF, "\tldZB\tA1");
+#ifdef SEG
+		printf(",r%s\n", rnames[q->rval]);
+#else
 		printf(",%s\n", rnames[q->rval]);
+#endif
 		return;
 	case 'M':
 		/* load the operand into U1 and extend it */
@@ -423,14 +450,26 @@ zzzcode(p, c)
 				printf("\tldk\t%s,#%d\n", name, n);
 			else
 				printf("\tld\t%s,#%d\n", name, n);
+#ifdef SEG
+			expand(p, FOREFF, "\tldir\t@rAL,@rAR,");
+#else
 			expand(p, FOREFF, "\tldir\t@AL,@AR,");
+#endif
 			printf("%s\n", name);
 			rfree(rn, k);
 			if (c == 's') {
 				if (!tmp || ((tmp->op == REG || tmp->op == OREG) && tmp->rval == q->rval))
+#ifdef SEG
+					printf("\tsub\t%s,#%d\n", rnames[q->rval + 1], n * 2);
+#else
 					printf("\tsub\t%s,#%d\n", rnames[q->rval], n * 2);
+#endif
 			} else
+#ifdef SEG
+				printf("\tsub\t%s,#%d\n", rnames[r->rval + 1], n * 2);
+#else
 				printf("\tsub\t%s,#%d\n", rnames[r->rval], n * 2);
+#endif
 			if (tmp) {
 				if (c == 's') {
 					fwalk(q, rfreenode);
@@ -460,7 +499,11 @@ zzzcode(p, c)
 				order(q, STAREG);
 			n >>= 1;
 			printf("\tldm\t%s,", rnames[p->rall & 0xEFFF]);
+#ifdef SEG
+			expand(p, FOREFF, "@VAL");
+#else
 			expand(p, FOREFF, "@AL");
+#endif
 			printf(",#%d\n", n);
 			return;
 		}
@@ -500,6 +543,12 @@ zzzcode(p, c)
 		switch (p->op) {
 		case NAME:
 		case OREG:
+#ifdef SEG
+			if (p->rval != 15) {
+				order(p, 6);
+				goto longreg;
+			}
+#endif
 			if (p->sname->sclass == 3 && p->op == NAME && !(p->sname->sflags >> 2 & 1) && p->rval >= 0) {
 				if (szty(k) == 2) {
 					if (m == 2 || m == 12)
@@ -519,6 +568,9 @@ zzzcode(p, c)
 				p->lval += 1;
 			return;
 		case REG:
+#ifdef SEG
+		longreg:
+#endif
 			if (szty(k) != 2)
 				return;
 			rfree(p->rval, p->type);

@@ -92,9 +92,11 @@ rsbuild()
 		last = n;
 		n = n->next;
 	}
+#ifndef SEG
 	n->cls = 6;
 	n->reg = 14;
 	n = n->next;
+#endif
 	for (r = 8; r <= 12; r += 2) {
 		n->cls = 7;
 		n->reg = r;

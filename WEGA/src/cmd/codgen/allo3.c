@@ -13,6 +13,7 @@
 extern int cerror();
 extern char *calloc();
 extern struct node *getlr(), *talloc();
+extern struct sym *symtab0;
 extern int tshape();
 extern int szty();
 extern int getreg();
@@ -53,7 +54,11 @@ rclass(type, reg)
 {
 	if (type == 6 || type == 7)
 		return reg > 0x13 ? 8 : 4;
+#ifdef SEG
+	if (szty(type) == 2 || type == 8 || type == 9)
+#else
 	if (szty(type) == 2)
+#endif
 		return reg > 7 ? 7 : 3;
 	return reg > 7 ? 6 : 2;
 }
@@ -114,7 +119,11 @@ rfree(reg, type)
 	struct rs *n;
 	int cls = rclass(type, reg);
 
+#ifdef SEG
+	if (reg == 15 || reg == 14)
+#else
 	if (reg == 15)
+#endif
 		return;
 	for (n = rsuse; n; n = n->next)
 		if (n->cls == cls && n->reg == reg) {
@@ -202,6 +211,22 @@ usable(p, side, r)
 	if (q->op == STAR)
 		q = q->left;
 	rv = q->rval;
+#ifdef SEG
+	if (q->op == OREG) {
+		if (rv >= 0x100)
+			return (rv >> 8) - 1 == r || (rv >> 8) + 0 == r || (rv & 0xFF) - 1 == r;
+		if (rv == r)
+			return 1;
+		if (q->lval != 0 || q->sname != 0 || (q->op == OREG && q->stsize < 0))
+			return 0;
+		return rv + 1 == r;
+	}
+	if (q->op != REG)
+		return 0;
+	if (rv == r)
+		return 1;
+	return szty(q->type) == 2 && rv + 1 == r;
+#else
 	if (q->op == OREG)
 		return rv == r;
 	if (q->op != REG)
@@ -209,6 +234,7 @@ usable(p, side, r)
 	if (rv == r && (r != 0 || (q->type & 0x30) != 0x10))
 		return 1;
 	return szty(q->type) == 2 && rv + 1 == r;
+#endif
 }
 
 /* a register that the operand of the result can reuse */
@@ -254,8 +280,13 @@ allocreg(p, cookie)
 		fpsym1->soffset = p->lval;
 	else if (p->sname == fpsym2)
 		fpsym2->soffset = p->lval;
+#ifdef SEG
+	if (((cookie & 0xF) != 0 && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
+	    p->type == 8 || p->type == 9 || (dope[p->op] & 0x80))
+#else
 	if (((cookie & 0xF) != 0 && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
 	    (dope[p->op] & 0x80))
+#endif
 		cls = 3;
 	else
 		cls = rclass(p->type, want);
@@ -281,7 +312,11 @@ tempwords(p, nfield)
 	if (p->type == 5 || p->type == 15)
 		return 2;
 	if ((p->type & 0x30) == 0x10)
+#ifdef SEG
+		return 2;
+#else
 		return 1;
+#endif
 	if (p->type == 7)
 		return 4;
 	if (p->type == 6)
@@ -363,7 +398,11 @@ allo(p, q)
 		n = tempwords(p, (need & 0xC00) >> 10);
 		resc[k].lval = freeparm(n);
 		resc[k].lval >>= 3;
+#ifdef SEG
+		resc[k].sname = symtab0;
+#else
 		resc[k].sname = 0;
+#endif
 		k++;
 	}
 	for (n = 0; n < k; n++)

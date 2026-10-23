@@ -17,6 +17,8 @@ extern int ltypeok();
 extern struct node *stotree;
 extern int stocook;
 extern int argstop;		/* order3.c, 0xa156 */
+extern int argreg;		/* order3.c: the next argument register */
+extern long freetemp();
 extern long maxoff;		/* 0x8fcc: the size of the automatic variables, ~L1 */
 extern long tmpoff;		/* 0x69d4 */
 extern int dope[];
@@ -31,6 +33,10 @@ gencall(p, cookie)
 	register struct node *f;
 	register int fop;
 	int indirect;
+#ifdef SEG
+	int r;
+	long save;
+#endif
 
 	f = p->left;
 	fop = f->op;
@@ -49,6 +55,25 @@ gencall(p, cookie)
 	}
 	if (p->right)
 		genargs(p->right);
+#ifdef SEG
+	if (indirect) {
+		if (argstop == 0 && argreg >= 3) {
+			/* the address is still in reach of a free register pair */
+			f->rall = 0x1002;
+			order(f, 6);
+			rfree(f->rval, 0x14);
+			indirect = 0;
+		} else {
+			/* rr8 holds the address during the call; its old contents wait in a temporary */
+			save = freetemp(2) / 8;
+			printf("\tldl\t_stkseg+~L1+%ld(fp),rr8\n", save);
+			printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", f->lval);
+			f->rval = 8;
+			f->lval = 0;
+			f->sname = 0;
+		}
+	}
+#else
 	if (indirect) {
 		if (maxoff + f->lval != 0)
 			printf("\tld\tr1,~L1+%ld(fp)\n", f->lval);
@@ -58,6 +83,7 @@ gencall(p, cookie)
 		f->lval = 0;
 		f->sname = 0;
 	}
+#endif
 	if (f->op == REG) {
 		f->op = OREG;
 		f->stsize = 0;
@@ -65,7 +91,14 @@ gencall(p, cookie)
 	p->op = UCALL;
 	rsfreeall(1);
 	tmpoff = 0;
+#ifdef SEG
+	r = match(p, 0x16);
+	if (indirect)
+		printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", save);
+	return r != MDONE;
+#else
 	return match(p, 0x16) != MDONE;
+#endif
 }
 
 int

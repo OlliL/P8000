@@ -15,9 +15,13 @@ extern int fldsz, fldshf;	/* the field that tshape found */
 extern char *rnames[];		/* r0 .. r14 fp f0 .. f3, 3fca */
 extern char *rlnames[];		/* rl0 .. rl7, 27ca */
 int rlmode, rmode;	/* 0x280c (W: low byte registers) and 0x280a (V: long registers) */
+extern int nosuffix;
 int upperlval;		/* 0xa148: print the high word of a long constant */
 extern int tflag;		/* 0x35d0: set by the macro T */
 extern int zzzcode();
+extern struct sym *symtab0;
+extern long frame0;
+extern void adrput();
 extern int rclass();
 extern struct rs *rfind();
 extern struct node resc[];	/* 0x2edc */
@@ -48,6 +52,22 @@ acon(p)
 	}
 	s = p->sname;
 	c0 = ascii[s->nameoff];
+#ifdef SEG
+	if (s == symtab0 || c0 == '~') {		/* an address in the stack segment: _stkseg+~L1+offset */
+		printf("_stkseg");
+		if (c0 == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c0)
+			printf("+%s", ascii + s->nameoff);
+		goto off;
+	}
+	if (p->op == NAME && s->sclass == 3 && !(s->sflags >> 2 & 1)) {	/* a local static: its label */
+		putchar('L');
+		printf("%ld", s->soffset);
+		p->lval = p->rval;
+	} else {
+		putchar('_');
+		printf("%s", ascii + s->nameoff);
+	}
+#else
 	if (c0 != '~') {
 		if (p->op == NAME && s->sclass == 3 && !(s->sflags >> 2 & 1)) {	/* a local static: its label */
 			putchar('L');
@@ -61,6 +81,7 @@ acon(p)
 		printf("%s", ascii + s->nameoff);		/* ~L1, ~L2 */
 	else
 		goto off;
+#endif
 off:
 	if (p->lval) {
 		putchar('+');
@@ -73,11 +94,30 @@ void
 oregput(p)
 	struct node *p;
 {
+#ifdef SEG
+	int bar = 0;
+
+	if (p->rval == 15) {
+		if ((p->sname == symtab0 && (unsigned)(int)p->lval <= 0xFF) ||
+		    (p->sname == fpsym1 && (unsigned)(int)(p->lval + frame0) <= 0xFF)) {
+			bar++;
+			putchar('|');
+		}
+		acon(p);
+		if (bar)
+			putchar('|');
+		printf("(fp)");
+	} else {
+		acon(p);
+		printf("(%s)", rnames[p->rval]);
+	}
+#else
 	acon(p);
 	if (p->rval == 15)
 		printf("(fp)");
 	else
 		printf("(%s)", rnames[p->rval]);
+#endif
 }
 
 /* a constant or a register as an operand part */
@@ -104,7 +144,11 @@ conput(p)
 		if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
 			oregput(p);
 		else
+#ifdef SEG
+			printf("@r%s", rnames[p->rval]);
+#else
 			printf("@%s", rnames[p->rval]);
+#endif
 		break;
 	default:
 		cerror("illegal conput");
@@ -155,8 +199,21 @@ upput(p)
 	case OREG:
 		if (p->rval >= 0x100)
 			cerror("illegal OREG upput");
+#ifdef SEG
+		if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0)) {
+			p->lval += 2;
+			oregput(p);
+		} else {
+			p->lval = 2;
+			r = p->rval;
+			p->rval = (r + 1) << 8;
+			adrput(p);
+			p->rval = r;
+		}
+#else
 		p->lval += 2;
 		oregput(p);
+#endif
 		break;
 	default:
 		cerror("illegal upper address");
@@ -203,14 +260,22 @@ adrput(p)
 		r = p->rval;
 		if (r >= 0x100) {			/* base and index register */
 			if (r & 0xFF)
+#ifdef SEG
+				printf("r%s(%s)", rnames[(r >> 8) - 1], rnames[(r & 0xFF) - 1]);
+#else
 				printf("r%s(%s)", rnames[(r & 0xFF) - 1], rnames[(r >> 8) - 1]);
+#endif
 			else {
 				printf("r%s(#", rnames[(r >> 8) - 1]);
 				acon(p);
 				putchar(')');
 			}
 		} else if (p->lval == 0 && p->sname == 0 && p->stsize == 0)
+#ifdef SEG
+			printf("@r%s", rnames[r]);
+#else
 			printf("@%s", rnames[r]);
+#endif
 		else
 			oregput(p);
 		break;
@@ -332,7 +397,7 @@ expand(p, cookie, cp)
 			putchar(*cp);
 		}
 	}
-	rlmode = rmode = 0;
+	nosuffix = rlmode = rmode = 0;
 }
 
 /*
@@ -370,7 +435,15 @@ tsuffix(t)
 		putchar('d');
 		break;
 	default:
+#ifdef SEG
+		if ((t & 0x30) == 0x10) {
+			putchar('l');
+			rmode++;
+		} else
+			cerror("zzzcode - bad type");
+#else
 		if ((t & 0x30) != 0x10)
 			cerror("zzzcode - bad type");
+#endif
 	}
 }

@@ -42,6 +42,9 @@ funcend(a, b)
 	printf("\t~L1 := %u\n", a);
 	printf("\t~L2 := %u\n", b);
 	printf("\n\t}\t/* %s */\n\n", fname);
+#ifdef SEG
+	printf("\t.psec data\n");
+#endif
 	printf("\t.data\n\n");
 	endline();
 }
@@ -84,6 +87,12 @@ regrestore(a, sz, b, w, tot)
 
 	if (!tot)
 		return;
+#ifdef SEG
+	if (a > 1)
+		printf("\tldm\t%s,_stkseg+%d(fp),#%d\n", rnames[minreg + 1], (int)sz, a);
+	else if (a == 1)
+		printf("\tld\t%s,_stkseg+%d(fp)\n", rnames[minreg + 1], (int)sz);
+#else
 	if (a > 1) {
 		if (sz != 0)
 			printf("\tldm\t%s,%d(fp),#%d\n", rnames[minreg + 1], (int)sz, a);
@@ -95,10 +104,15 @@ regrestore(a, sz, b, w, tot)
 		else
 			printf("\tld\t%s,@fp\n", rnames[minreg + 1]);
 	}
+#endif
 	if (b >= 1) {
 		off = (int)w;
 		for (k = maxreg; k < 0x17; k++, off += 8)
+#ifdef SEG
+			printf("\tfldd\t%s,_stkseg+%d(fp)\n", rnames[k + 1], off);
+#else
 			printf("\tfldd\t%s,%d(fp)\n", rnames[k + 1], off);
+#endif
 	}
 }
 
@@ -114,6 +128,12 @@ regsave(a, sz, b, w, tot)
 
 	if (!tot)
 		return;
+#ifdef SEG
+	if (a > 1)
+		printf("\tldm\t_stkseg+%d(fp),%s,#%d\n", (int)sz, rnames[minreg + 1], a);
+	else if (a == 1)
+		printf("\tld\t_stkseg+%d(fp),%s\n", (int)sz, rnames[minreg + 1]);
+#else
 	if (a > 1) {
 		if (sz != 0)
 			printf("\tldm\t%d(fp),%s,#%d\n", (int)sz, rnames[minreg + 1], a);
@@ -125,10 +145,15 @@ regsave(a, sz, b, w, tot)
 		else
 			printf("\tld\t@fp,%s\n", rnames[minreg + 1]);
 	}
+#endif
 	if (b >= 1) {
 		off = (int)w;
 		for (k = maxreg; k < 0x17; k++, off += 8)
+#ifdef SEG
+			printf("\tfldd\t_stkseg+%d(fp),%s\n", off, rnames[k + 1]);
+#else
 			printf("\tfldd\t%d(fp),%s\n", off, rnames[k + 1]);
+#endif
 	}
 }
 
@@ -186,14 +211,26 @@ regargs(tot)
 	fl:
 		if (cls == 4) {
 			mn = s->stype == 6 ? "flds" : "fldd";
+#ifdef SEG
+			printf("\t%s\t|_stkseg+~L1+%ld|(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
+#else
 			if (maxoff + s->soffset != 0)
 				printf("\t%s\t~L1+%ld(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
 			else
 				printf("\t%s\t@fp,%s\n", mn, rnames[reg]);
+#endif
 		}
 	}
 	if (hi < lo)
 		return;
+#ifdef SEG
+	if (hi == lo)
+		printf("\tld\t|_stkseg+~L1+%u|(fp),r%d\n", t, lo);
+	else if (!(lo & 1) && hi - lo == 1)
+		printf("\tldl\t|_stkseg+~L1+%u|(fp),rr%d\n", t, lo);
+	else
+		printf("\tldm\t|_stkseg+~L1+%u|(fp),r%d,#%d\n", t, lo, hi - lo + 1);
+#else
 	if (hi == lo) {
 		if ((long)(unsigned)t + maxoff != 0)
 			printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
@@ -210,6 +247,7 @@ regargs(tot)
 		else
 			printf("\tldm\t@fp,r%d,#%d\n", lo, hi - lo + 1);
 	}
+#endif
 }
 
 /* the entry of the function */
@@ -239,7 +277,11 @@ efcode()
 	sz = (parmax + maxoff) / 8;
 	if (sz % 2)
 		sz = (sz / 2 + 1) * 2;
+#ifdef SEG
+	a = 13 - minreg;
+#else
 	a = 14 - minreg;
+#endif
 	b = 23 - maxreg;
 	w = a * 2 + sz;
 	tot = b * 8 + w;

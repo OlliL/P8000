@@ -35,8 +35,13 @@ long frame0;			/* 0x69ce */
 extern long maxoff, parmax, baseoff, maxtemp, paroff, tmpoff;
 int nlabsave;			/* 0x69e0 */
 int nparm;			/* 0x69d2 */
+#ifdef SEG
+int minreg = 0xD, maxreg = 0x17;	/* 0x958a, ... */
+int regtop = 0xD;		/* 0x958e */
+#else
 int minreg = 0xE, maxreg = 0x17;	/* 0x8f1c, 0x8f90 */
 int regtop = 0xE;		/* 0x8f20 */
+#endif
 int regmask;			/* 0x8fc2 */
 int regA, regB, regC, regD;	/* 0x8e12 (7), 0x8f1e (0x10), 0x8e18 (0x13), 0x8f8c (1) */
 int regE, regF, regG;		/* 0x8fc4, 0x8f8e, 0x8e10 */
@@ -132,9 +137,17 @@ init()
 	maxoff = 0;
 	maxtemp = 0;
 	parmax = 0;
+#ifdef SEG
+	minreg = 0xD;
+#else
 	minreg = 0xE;
+#endif
 	maxreg = 0x17;
+#ifdef SEG
+	regtop = 0xD;
+#else
 	regtop = 0xE;
+#endif
 	regmask = (regtop - 1) & ~1;
 	regreset(0);
 	nparmtab = 0;
@@ -286,6 +299,9 @@ loop:
 		while (c == ' ');
 		ungetc(c, stdin);
 		n = rdin(10);
+#ifdef SEG
+		printf("\t.psec data\n");
+#endif
 		printf("\t.data\n");
 		printf("\t.even\n");
 		printf("L%d:\n", n);
@@ -295,7 +311,11 @@ loop:
 			n = rdin(10);
 			printf("\t.addr\tL%d\n", n);
 		}
+#ifdef SEG
+		printf("\t.psec\n\t.code\n");
+#else
 		printf("\t.code\n");
+#endif
 		goto loop;
 	default:
 		cerror("intermediate file format error");

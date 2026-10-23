@@ -39,7 +39,7 @@ our own C sources, checked byte for byte against the original binaries.
 |---|---|
 | `cpp` | not started (original `/lib/cpp`; Plexus-free reconstruction needed) |
 | `cparse` / `scparse` | not started; the parser is the biggest part |
-| `codgen` / `scodgen` | `codgen`: complete as source (`src/cmd/codgen`, K&R C for the WEGA `cc`, `cc -O -i`), gives the same assembler text as `/lib/codgen` on the test corpus (see KNOWLEDGE.md, "codgen runs"); not yet byte-compared per function and not yet in `src/cmd/Makefile`. `scodgen`: 33 of the 253 functions differ from `codgen` (pointer size 32 bit; listed in KNOWLEDGE.md), still to do; harness `src/cmd/codgen/{corpus,check}.sh` |
+| `codgen` / `scodgen` | both complete as source (`src/cmd/codgen`, K&R C for the WEGA `cc`, `cc -O -i`; scodgen = the same files with `-DSEG`, `make scodgen`): same assembler text as `/lib/codgen` / `/lib/scodgen` on the test corpus (13 programs of `src/cmd`, 103 libc files; KNOWLEDGE.md "codgen runs", "scodgen runs"). Open: byte comparison per function (`host/tools/cmpins.py`), not yet in `src/cmd/Makefile`; harness `src/cmd/codgen/{corpus,check}.sh` |
 | `gopt` | not started (only used with -Ol/-Or) |
 | `popt`, `spopt` | done: `host/popt` (`make` builds both; `spopt` is the same sources with `-DSPOPT`), checked against the originals with `make -C host/popt check` / `PROG=spopt` |
 | `cas` | done: all modules decompiled to `src/cmd/cas/` (same behaviour as the original, code of the older scc not byte identical, see `src/cmd/cas/MODULES`); host version `host/cas`, checked against the original |

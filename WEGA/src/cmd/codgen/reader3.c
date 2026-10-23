@@ -247,7 +247,13 @@ again:
 			p->op = FREE;
 			return;
 		}
+#ifdef SEG
+		offstar(p);
+		if (p->op != STAR)
+			goto cleanup;
+#else
 		offstar(p->left);
+#endif
 		goto again;
 	case INCR:
 		if (cook & FOREFF) {
@@ -649,10 +655,16 @@ oreg2(p)
 		stw = 0;
 		cp = 0;
 	} else {
+#ifdef SEG
+		if (q->op != PLUS)
+			return;
+#else
 		if (q->op != PLUS && q->op != MINUS)
 			return;
+#endif
 		ql = q->left;
 		qr = q->right;
+#ifndef SEG
 		if (ql->op == REG && qr->op == ICON) {
 			temp = qr->lval;
 			if (q->op == MINUS)
@@ -660,7 +672,9 @@ oreg2(p)
 			r = ql->rval;
 			stw = 0;
 			cp = qr->sname;
-		} else if (q->op == PLUS && ql->op == ICON && qr->op == REG) {
+		} else
+#endif
+		if (q->op == PLUS && ql->op == ICON && qr->op == REG) {
 			if (ql->rval >= 0)
 				stw = 0;
 			else if (ql->sname && ql->sname->sclass == 3 && !(ql->sname->sflags >> 2 & 1))
@@ -860,10 +874,18 @@ delay(p)
 	if (ret && ndelay) {
 		printf("/* delay */\n");
 		if (sz == 2) {
+#ifdef SEG
+			printf("\tldl\t_stkseg+~L1+%ld(fp),rr2\n", off);
+#else
 			printf("\tldl\t~L1+%ld(fp),rr2\n", off);
+#endif
 			rfree(2, 5);
 		} else {
+#ifdef SEG
+			printf("\tld\t_stkseg+~L1+%ld(fp),r2\n", off);
+#else
 			printf("\tld\t~L1+%ld(fp),r2\n", off);
+#endif
 			rfree(2, 4);
 		}
 	}
@@ -872,9 +894,17 @@ delay(p)
 	if (ret && ndelay) {
 		printf("/* delay */\n");
 		if (sz == 2)
+#ifdef SEG
+			printf("\tldl\trr2,_stkseg+~L1+%ld(fp)\n", off);
+#else
 			printf("\tldl\trr2,~L1+%ld(fp)\n", off);
+#endif
 		else
+#ifdef SEG
+			printf("\tld\tr2,_stkseg+~L1+%ld(fp)\n", off);
+#else
 			printf("\tld\tr2,~L1+%ld(fp)\n", off);
+#endif
 	}
 }
 

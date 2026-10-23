@@ -232,6 +232,10 @@ tbytes(t)
 	case 15:
 		return 4;
 	}
+#ifdef SEG
+	if ((t & 0x30) == 0x10)
+		return 4;
+#endif
 	return 2;
 }
 

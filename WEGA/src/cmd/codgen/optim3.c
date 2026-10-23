@@ -137,6 +137,12 @@ conval(p, o, q)
 		return 0;
 	switch (o) {
 	case PLUS:
+#ifdef SEG
+		if ((p->type & 0x30) == 0x10) {
+			p->lval = ((val & 0x7F00FFFFL) + p->lval) & 0x7F00FFFFL;
+			return 1;
+		}
+#endif
 		p->lval += val;
 		if (nncon(p)) {
 			p->type = q->type;
@@ -145,6 +151,12 @@ conval(p, o, q)
 		}
 		break;
 	case MINUS:
+#ifdef SEG
+		if ((p->type & 0x30) == 0x10) {		/* the difference of pointer constants keeps only its low byte */
+			p->lval = (p->lval - val) & 0xFFL;
+			break;
+		}
+#endif
 		p->lval -= val;
 		break;
 	case MUL:
