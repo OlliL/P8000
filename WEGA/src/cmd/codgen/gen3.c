@@ -32,7 +32,7 @@ gencall(p, cookie)
 {
 	register struct node *f;
 	register int fop;
-	int indirect;
+	register int indirect;
 #ifdef SEG
 	int r;
 	long save;
@@ -195,40 +195,31 @@ mkadrs(p)
 	register struct node *p;
 {
 	register int o;
-	register struct node *l, *r;
-	struct node *t;
 
 	o = p->op;
-	l = p->left;
-	r = p->right;
 	if (dope[o] & 1) {
-		if (l->su > r->su || (l->su == r->su && l->fsu >= r->fsu)) {
-			if (l->op == STAR) {
-				if (l->su > 0 || l->fsu > 0) {
-					t = l->left;
-					goto set;
+		if (p->left->su > p->right->su ||
+		    (p->left->su == p->right->su && p->left->fsu >= p->right->fsu)) {
+			if (p->left->op == STAR) {
+				if (p->left->su > 0 || p->left->fsu > 0)
+					stotree = p->left->left;
+				else if (p->right->su > 0 || p->right->fsu > 0)
+					stotree = p->right;
+				else {
+					cerror("store finds both sides trivial");
+					return;
 				}
-				if (r->su > 0 || r->fsu > 0) {
-					t = r;
-					goto set;
-				}
-				cerror("store finds both sides trivial");
-				return;
-			}
-			if (l->op == FLD && l->left->op == STAR) {
-				t = l->left->left;
-				goto set;
-			}
-			t = l;
+			} else if (p->left->op == FLD && p->left->left->op == STAR)
+				stotree = p->left->left->left;
+			else
+				stotree = p->left;
 		} else
-			t = r;
+			stotree = p->right;
 	} else {
-		if (l->su > r->su || (l->su == r->su && l->fsu > r->fsu))
-			t = l;
+		if (p->left->su > p->right->su || (p->left->su == p->right->su && p->left->fsu > p->right->fsu))
+			stotree = p->left;
 		else
-			t = r;
+			stotree = p->right;
 	}
-set:
-	stotree = t;
 	stocook = 0x1000;
 }

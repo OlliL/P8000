@@ -6,6 +6,7 @@
 /cmd/strip/strip
 /cmd/cc/cc
 /cmd/cc/scc
+/cmd/codgen/codgen
 /cmd/copydisk/*/copydisk
 /cmd/dump
 /cmd/dumpdir

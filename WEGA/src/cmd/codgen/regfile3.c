@@ -31,9 +31,9 @@ static void rnnull();
 /* p1 now holds what p2 holds: copy the symbol and offset in the register file */
 static void
 rnassign(p1, p2)
-	struct node *p1, *p2;
+	register struct node *p1, *p2;
 {
-	struct rs *a, *b;
+	register struct rs *a, *b;
 	long l;
 
 	if (p1->op != REG)
@@ -71,9 +71,9 @@ rnassign(p1, p2)
 /* the register of the REG node p no longer holds anything known */
 static void
 rnnullp(p)
-	struct node *p;
+	register struct node *p;
 {
-	struct rs *n;
+	register struct rs *n;
 
 	n = rfind(p->rval, rclass(p->type, p->rval));
 	if (n) {
@@ -111,7 +111,7 @@ rnnullall()
 
 static void
 rnnulll(r)
-	int r;
+	register int r;
 {
 	rnnull(r, 5);
 	rnnull(r, 4);
@@ -202,12 +202,13 @@ rnnull(reg, type)
 
 void
 nxwork(p, nx)
-	struct node *p;
-	int nx;
+	register struct node *p;
+	register int nx;
 {
-	struct node *a, *b;
-	struct rs *n;
-	int r, m, l;
+	register struct node *a, *b;
+	register struct rs *n;
+	register int r;
+	int m, l;
 
 	switch (nx) {
 	case 8:

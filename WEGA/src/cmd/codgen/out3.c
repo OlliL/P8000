@@ -92,11 +92,11 @@ off:
 /* offset(register) of an OREG */
 void
 oregput(p)
-	struct node *p;
+	register struct node *p;
 {
-#ifdef SEG
-	int bar = 0;
+	int bar = 0;		/* only the segmented version uses it */
 
+#ifdef SEG
 	if (p->rval == 15) {
 		if ((p->sname == symtab0 && (unsigned)(int)p->lval <= 0xFF) ||
 		    (p->sname == fpsym1 && (unsigned)(int)(p->lval + frame0) <= 0xFF)) {
@@ -112,11 +112,13 @@ oregput(p)
 		printf("(%s)", rnames[p->rval]);
 	}
 #else
-	acon(p);
-	if (p->rval == 15)
+	if (p->rval == 15) {
+		acon(p);
 		printf("(fp)");
-	else
+	} else {
+		acon(p);
 		printf("(%s)", rnames[p->rval]);
+	}
 #endif
 }
 
@@ -165,10 +167,10 @@ insput(p)
 /* the second word of an operand */
 void
 upput(p)
-	struct node *p;
+	register struct node *p;
 {
-	long save;
-	int r;
+	register long save;
+	register int r;
 
 	if (p->op == FLD)
 		p = p->left;
@@ -224,10 +226,10 @@ upput(p)
 /* an operand */
 void
 adrput(p)
-	struct node *p;
+	register struct node *p;
 {
 	long save;
-	int r;
+	register int r;
 
 	if (p->op == FLD)
 		p = p->left;
@@ -291,30 +293,31 @@ extern struct hoptab fhoptab[], ihoptab[];	/* floating and integer tables, hopta
 
 void
 hopcode(p)
-	struct node *p;
+	register struct node *p;
 {
-	struct hoptab *q;
-	int t = p->type;
+	register int o = p->op;
+	register struct hoptab *q;
+	register int t = p->type;
 
 	q = (t == 6 || t == 7) ? fhoptab : ihoptab;
 	for (; q->op >= 0; q++)
-		if (q->op == p->op && ttype(t, q->tword)) {
+		if (q->op == o && ttype(t, q->tword)) {
 			printf("%s", q->str);
 			return;
 		}
-	cerror("no hoptab for %s", opst[p->op]);
+	cerror("no hoptab for %s", opst[o]);
 }
 
 /* expand the template cp for the tree p */
 void
 expand(p, cookie, cp)
-	struct node *p;
-	int cookie;
-	char *cp;
+	register struct node *p;
+	register int cookie;
+	register char *cp;
 {
-	struct node *r;
-	struct rs *n;
-	long m;
+	register long m;
+	register struct node *r;
+	register struct rs *n;
 	int k;
 
 	tflag = 0;

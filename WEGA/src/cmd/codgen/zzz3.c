@@ -68,8 +68,8 @@ psuffix(p)
 /* print inc/dec or add/sub for the operator, depending on the size of the constant n; returns the constant to print */
 long
 geninc(op, n)
-	int op;
-	long n;
+	register int op;
+	register long n;
 {
 	switch (op) {
 	case PLUS:

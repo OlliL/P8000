@@ -16,7 +16,7 @@ extern int rstatus[];		/* regs3.c: status bits of the registers (SAREG, STAREG, 
 #define MAXRCOUNT 5000
 
 /* a loop guard: the matcher is called more than 5000 times for one expression */
-static int nrecur;
+int nrecur;		/* 0x8fd0: cleared by stmt() itself */
 void
 rcount()
 {
@@ -26,7 +26,7 @@ rcount()
 void
 rcount_reset()
 {
-	nrecur = 0;
+	/* the original has this empty function at 0x778e and nobody calls it; stmt() clears nrecur */
 }
 
 /* the operator is a leaf that can be addressed: NAME, REG, ICON, OREG */
@@ -40,7 +40,7 @@ ltypeop(p)
 /* log2 of a power of two, else -1 */
 int
 ispow2(c)
-	long c;
+	register long c;
 {
 	int n;
 
@@ -69,7 +69,7 @@ bsize(t)
 		return 16;				/* a pointer */
 #endif
 	cerror("illegal bsize type: %%%0.2x\n", t);
-	return 0;
+	return t;
 }
 
 /* size of a type in words: long, float and unsigned long 2, double 4, everything else 1 */
@@ -78,12 +78,15 @@ szty(t)
 	int t;
 {
 	switch (t) {
+	case 4: return 1;
 	case 5: case 6: case 15: return 2;
 	case 7: return 4;
 	}
-#ifdef SEG
 	if ((t & 0x30) == 0x10)
+#ifdef SEG
 		return 2;
+#else
+		return 1;		/* no effect: the original has the test in both versions */
 #endif
 	return 1;
 }
@@ -147,7 +150,7 @@ shtemp(p)
 int
 shincr(t, incr)
 	int t;
-	long incr;
+	register long incr;
 {
 	if ((t & 0x30) != 0x10)
 		return 0;
@@ -166,9 +169,9 @@ shincr(t, incr)
 /* STAR over p: which address shapes does it fit? STARNM for a name, STARREG for a post increment through a register */
 int
 shumul(p)
-	struct node *p;
+	register struct node *p;
 {
-	int o = p->op;
+	register int o = p->op;
 
 	if (o == NAME || o == OREG || o == ICON)
 		return STARNM;
@@ -181,8 +184,8 @@ shumul(p)
 /* an operator that is a leaf, or (with p) a STAR over a leaf that shumul accepts */
 int
 ltypeok(op, p)
-	int op;
-	struct node *p;
+	register int op;
+	register struct node *p;
 {
 	if (op == NAME || op == REG || op == ICON || op == OREG)
 		return 1;
@@ -197,9 +200,10 @@ ltypeok(op, p)
  */
 void
 rmove(to, from, type)
-	int to, from, type;
+	register int to, from;
+	int type;
 {
-	struct rs *t, *f;
+	register struct rs *t, *f;
 
 	for (t = rsuse; t; t = t->next)
 		if (t->reg == to)
@@ -244,14 +248,14 @@ rmove(to, from, type)
 /* size of an argument in words (0x88f6): a structure argument by its size, a float counts as a double */
 int
 argsize(p)
-	struct node *p;
+	register struct node *p;
 {
 	int t;
 
 	if (p->op == STARG)
-		return (unsigned)(p->stsize & ~1) >> 1;
+		return (unsigned)p->stsize >> 1;
 	if (p->op == NAME && p->type == 8)
 		return p->sname->ssize / 16;
-	t = p->type == 6 ? 7 : p->type;
-	return szty(t);
+	t = szty(p->type == 6 ? 7 : p->type);
+	return t;
 }

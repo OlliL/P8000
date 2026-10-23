@@ -30,6 +30,7 @@ extern struct node *talloc(), *tcopy(), *optim();
 extern void genargs();
 extern void sucomp();
 extern void rcount();
+extern int nrecur;
 extern char *opst[];
 extern int dope[];
 extern int fregs, ffregs;
@@ -53,8 +54,8 @@ struct node *canon(), *argprep();
 /* generate the code for p: stores first, then the tree itself */
 void
 codgen(p, cookie)
-	struct node *p;
-	int cookie;
+	register struct node *p;
+	register int cookie;
 {
 	for (;;) {
 		p = canon(optim(p));
@@ -71,9 +72,9 @@ codgen(p, cookie)
 /* print a cookie (debug) */
 void
 prcook(cookie)
-	int cookie;
+	register int cookie;
 {
-	int i, flag;
+	register int i, flag;
 
 	if (cookie & 0x8000) {
 		if (cookie == 0x8000)
@@ -101,10 +102,11 @@ prcook(cookie)
 void
 order(p, cook)
 	register struct node *p;
-	int cook;
+	register int cook;
 {
 	register int o, ty, m;
-	int cookie, lab, lab2, ck;
+	register int cookie;
+	int lab, lab2, ck;
 	struct node *p1, *p2, *q;
 
 again:
@@ -452,6 +454,8 @@ stoarg(p, calltype)
 		stoarg(p->left, calltype);
 		p = p->right;
 	}
+	if (calltype == 0x46 || calltype == 0x67)
+		;		/* the original tests this and does nothing */
 	callflag = 0;
 	store(p);
 	if (callflag) {
@@ -464,11 +468,12 @@ stoarg(p, calltype)
 /* evaluate p for the truth value and jump to true or false; a label < 0 means to fall through */
 void
 cbranch(p, true, false)
-	struct node *p;
-	int true, false;
+	register struct node *p;
+	register int true, false;
 {
 	register int o;
-	int lab, flab, tlab, t;
+	register int lab;
+	int flab, tlab, t;
 	struct node *c;
 
 	lab = -1;
@@ -591,13 +596,12 @@ cbranch(p, true, false)
 /* the fields that are not on the left of an assignment become mask and shift */
 void
 ffld(p, down, down1, down2)
-	register struct node *p;
+	struct node *p;
 	int down;
 	int *down1, *down2;
 {
-	register int ty, s, o;
-	int v;
 	register struct node *shp;
+	register int s, o, v, ty;
 
 	*down1 = dope[p->op] & 1;
 	*down2 = 0;
@@ -640,9 +644,11 @@ void
 oreg2(p)
 	register struct node *p;
 {
-	register struct node *q, *ql, *qr;
+	register struct node *q;
+	register int spare1;		/* unused: the original reserves this register */
+	register struct node *ql, *qr;
 	register int r;
-	struct sym *cp;
+	register struct sym *cp;
 	long temp;
 	int stw;
 
@@ -678,7 +684,7 @@ oreg2(p)
 			if (ql->rval >= 0)
 				stw = 0;
 			else if (ql->sname && ql->sname->sclass == 3 && !(ql->sname->sflags >> 2 & 1))
-				stw = -(int)ql->sname->soffset;
+				stw = -ql->sname->soffset;
 			else
 				stw = ql->rval;
 			temp = ql->lval;
@@ -712,10 +718,11 @@ canon(p)
 /* a structure argument is stored through a temporary: STARG becomes an STASG to the stack */
 struct node *
 argprep(p, cookie)
-	struct node *p;
-	int cookie;
+	register struct node *p;
+	register int cookie;
 {
-	struct node *copy, *n;
+	register struct node *copy;
+	struct node *n;
 	struct optab fake;
 
 	if (p->op != STARG || cookie != INTEMP_)
@@ -771,10 +778,11 @@ static void
 delay2(p)
 	register struct node *p;
 {
+	register int o, ty;
 	register struct node *q;
-	register int ty;
 
-	switch (p->op) {
+	o = p->op;
+	switch (o) {
 	case QUEST:
 	case ANDAND:
 	case OROR:
@@ -815,15 +823,16 @@ static int
 delay1(p)
 	register struct node *p;
 {
+	register int o, ty;
 	register struct node *q;
-	register int ty;
 
-	ty = dope[p->op] & 0xE;
+	o = p->op;
+	ty = dope[o] & 0xE;
 	if (ty == LTYPE)
 		return 0;
 	if (ty == UTYPE)
 		return delay1(p->left);
-	switch (p->op) {
+	switch (o) {
 	case QUEST:
 	case ANDAND:
 	case OROR:
@@ -843,12 +852,10 @@ void
 delay(p)
 	register struct node *p;
 {
-	register int ret, sz;
+	register int i, ret, sz;
 	long off;
-	int i;
 
-	ret = 0;
-	sz = 0;
+	sz = ret = 0;
 	ndelay = 0;
 	if (p->op == RET) {
 		switch (p->type) {
@@ -858,7 +865,7 @@ delay(p)
 		case 9:
 			break;
 		default:
-			ret = 1;
+			ret++;
 			sz = szty(p->type);
 			off = freetemp(sz) / 8;
 		}
@@ -917,7 +924,7 @@ stmt(p)
 {
 	int tag;
 
-	rcount_reset();
+	nrecur = 0;
 	switch (p->op) {
 	case 118:
 		mapnm(p->left);

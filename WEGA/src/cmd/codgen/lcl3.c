@@ -37,7 +37,8 @@ int nparmtab;			/* 0x8f98 */
 struct { struct sym *sym; int reg; } parmtab[10];	/* 0x8f5c */
 struct rv regvar[12];		/* 0x8fe8: symbol, tag of the symbol or of the temporary, register, type, saved class */
 int structret;			/* 0xa15a: the function returns a structure */
-int structlab, structsz;	/* 0xa7b8, 0xa7ba */
+int structlab;		/* 0xa7b8 */
+long structsz;		/* 0xa7ba */
 int retlab;			/* 0x8fca */
 int entlab, jlab;		/* 0xa0e2, 0xa14c */
 int mcountlab;			/* 0xa7b6 */
@@ -62,10 +63,12 @@ hdrout()
 void
 endline()
 {
+	register int n;
 	register char *cp;
 
 	if (lflag) {
-		cp = ifname + strlen(ifname) - 1;
+		n = strlen(ifname);
+		cp = &ifname[n - 1];
 		if (*cp == '"')
 			cp--;
 		if (*cp-- == 'c' && *cp == '.')
@@ -85,7 +88,8 @@ parminit(p)
 	register struct node *p;
 {
 	register struct sym *s;
-	int sz, n, t, r, t2, cls;
+	register int sz, n, t, r, t2;
+	int cls;
 	struct rs *q;
 
 	if (p->op != NAME)
@@ -193,12 +197,12 @@ structretcode()
 	if (structret) {
 #ifdef SEG
 		printf("\tldl\trr4,#L%d\n", structlab);
-		printf("\tld\tr1,#%ld\n", (long)structsz);
+		printf("\tld\tr1,#%ld\n", structsz);
 		printf("\tldir\t@rr4,@r%s,r1\n", rnames[rallkind(0)]);
 		printf("\tldl\tr%s,#L%d\n", rnames[rallkind(0)], structlab);
 #else
 		printf("\tld\tr4,#L%d\n", structlab);
-		printf("\tld\tr1,#%ld\n", (long)structsz);
+		printf("\tld\tr1,#%ld\n", structsz);
 		printf("\tldir\t@r4,@%s,r1\n", rnames[rallkind(0)]);
 		printf("\tld\t%s,#L%d\n", rnames[rallkind(0)], structlab);
 #endif
@@ -208,10 +212,12 @@ structretcode()
 /* the head of a function: the label and the jumps to the entry code */
 void
 fbegin(s)
-	register struct sym *s;
+	struct sym *s;
 {
+	register int spare1;		/* unused: the original reserves these registers */
+	register int t;
+	register int spare2;
 	register char *cp, *np;
-	int t;
 
 	endline();
 	cp = fname;
@@ -268,7 +274,7 @@ tabfind(key)
 	register int i;
 
 	for (i = 0; ; ) {
-		if (tmptab[i].off < 0 || tmptab[i].off == key)
+		if (tmptab[i].off < 0 || key == tmptab[i].off)
 			break;
 		if (++i > 0x4f)
 			break;
@@ -295,7 +301,7 @@ fixtemp(p)
 	register struct node *p;
 {
 	register int i;
-	int j, cls, reg;
+	register int j, cls, reg;
 	struct rs *n;
 
 	if (rflag) {
@@ -351,7 +357,8 @@ fixfld(p)
 	register struct node *p;
 {
 	register struct node *m, *a;
-	int ismember, t;
+	register int ismember;
+	int t;
 
 	if (p->op == FLD) {
 		m = p->left;
@@ -464,9 +471,12 @@ symreg(s, off)
 	long off;
 {
 	register struct rs *n;
+	register struct sym *f1, *f2;
 
+	f1 = fpsym1;
+	f2 = fpsym2;
 	for (n = rsuse; n; n = n->next) {
-		if (s == fpsym1 || s == fpsym2) {
+		if (s == f1 || s == f2) {
 			if (n->off != off)
 				continue;
 		} else if (s != n->sym)
@@ -480,12 +490,12 @@ symreg(s, off)
 /* the register that can serve for the symbol; -1 if none */
 int
 regforsym(reg, s, type, off)
-	int reg;
+	register int reg;
 	register struct sym *s;
-	int type;
+	register int type;
 	long off;
 {
-	int cls, r;
+	register int r, cls;
 
 	if (s->sclass == 4) {
 		cls = rclass(type, reg);
@@ -509,10 +519,10 @@ void
 fixname(p)
 	register struct node *p;
 {
-	int reg, r;
+	register int r;
 
-	reg = (p->rall & 0x1000) ? p->rall & ~0x1000 : -1;
-	r = regforsym(reg, p->sname, p->type, p->sname->soffset / 8);
+	r = (p->rall & 0x1000) ? p->rall & ~0x1000 : -1;
+	r = regforsym(r, p->sname, p->type, p->sname->soffset / 8);
 	if (r >= 0) {
 		p->op = REG;
 		p->rval = r;
@@ -524,9 +534,9 @@ fixname(p)
 /* a NAME of an automatic variable or a parameter becomes an OREG off the frame pointer */
 void
 oregfix(p)
-	register struct node *p;
+	struct node *p;
 {
-	if (p->sname->sflags >> 2 & 1)
+	if ((p->sname->sflags >> 2 & 1) == 1)
 		return;
 	if (p->op == NAME && p->sname->sclass == 3)
 		return;
@@ -536,7 +546,7 @@ oregfix(p)
 	p->rval = 15;
 	p->lval = p->sname->soffset / 8;
 	p->stsize = 0;
-	p->sname = p->sname->sclass == 9 && (p->sname->sflags >> 3 & 1) ? fpsym2 : fpsym1;
+	p->sname = p->sname->sclass == 9 && ((p->sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
 }
 
 int
@@ -557,7 +567,7 @@ fcmd(n)
 	int n;
 {
 	register struct sym *s;
-	int i;
+	register int i;
 
 	if (n > 0) {
 		s = mapn(n);
@@ -613,11 +623,12 @@ regreset(flag)
 /* command R: a variable (b > 0: by its tag, else a temporary) is placed in register a */
 void
 rcmd(a, b, type)
-	int a, b, type;
+	register int a, b, type;
 {
 	register struct sym *s;
-	struct sym *old;
-	int tag, i, r, cls, got, saved;
+	register struct sym *old;
+	register int tag, i;
+	int r, cls, got, saved;
 	struct rs *n;
 
 	if (b > 0) {
@@ -695,11 +706,12 @@ memname(s, off)
 /* command S: a register variable or a temporary is stored in its memory place */
 void
 scmd(n)
-	int n;
+	register int n;
 {
 	register struct sym *s;
-	long off;
-	int t, reg, i, j, tmp;
+	register long off;
+	register int t, reg;
+	int i, j, tmp;
 
 	if (n > 0) {
 		s = mapn(n);
@@ -753,11 +765,12 @@ scmd(n)
 /* command T: a register variable or a temporary is loaded from its memory place */
 void
 tcmd(n)
-	int n;
+	register int n;
 {
 	register struct sym *s;
-	long off;
-	int t, reg, j;
+	register long off;
+	register int t, reg;
+	int j;
 
 	if (n > 0) {
 		s = mapn(n);
@@ -848,12 +861,13 @@ newlreg(avoid)
 /* the code for a switch: a jump table, or a search with cpir */
 void
 gswitch(p)
-	struct node *p;
+	register struct node *p;
 {
 	register struct node *l, *r;
-	struct node *x;
-	long n;
-	int dlab, tab, reg, save, ra, rb, cnt, tlab;
+	register struct node *x;
+	register long n;
+	register int dlab;
+	int tab, reg, save, ra, rb, cnt, tlab;
 
 	l = p->left;
 	r = p->right;

@@ -180,13 +180,12 @@ mkrall(p, r)
 /* register preferences for the subtrees */
 void
 rallo(p, down)
-	struct node *p;
+	register struct node *p;
 	int down;
 {
-	int o, type, down1, down2, ty;
+	register int o, down1, down2, ty;
 
-	type = p->type;
-	if (type == 6 || type == 7) {
+	if (p->type == 6 || p->type == 7) {
 		fltused++;
 		return;
 	}
@@ -238,7 +237,7 @@ rallo(p, down)
 		down1 = NOPREF;
 		break;
 	case RET:
-		if (type == 6 || type == 7)
+		if (p->type == 6 || p->type == 7)
 			down1 = MUSTDO | 0x10;
 		else
 			down1 = MUSTDO | 2;
@@ -257,9 +256,9 @@ int ordflag;		/* 0xa16e: set to 0x14 while offstar orders a register that is not
 /* order the operands of an address sum that are not yet addressable; returns the number of orders done */
 static int
 orderadd(p)
-	struct node *p;
+	register struct node *p;
 {
-	int n;
+	register int n;
 
 	n = 0;
 	if (p->op == PLUS || p->op == MINUS) {
@@ -387,10 +386,11 @@ offstar(p)
 /* handle indirections: get the address of *p into a register */
 void
 offstar(p)
-	struct node *p;
+	register struct node *p;
 {
-	struct node *star;
-	int save;
+	register struct node *l;		/* not used here: the declarations are those of the segmented version */
+	register struct node *star;
+	register int save;
 
 	star = 0;
 	if (p->op == STAR) {
@@ -419,9 +419,9 @@ offstar(p)
 /* is p an indirection that offstar can make addressable */
 int
 niceuty(p)
-	struct node *p;
+	register struct node *p;
 {
-	int t;
+	register int t;
 
 	if (p->op == STAR) {
 		t = p->type;
@@ -437,9 +437,9 @@ niceuty(p)
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */
 int
 setbin(p)
-	struct node *p;
+	register struct node *p;
 {
-	struct node *l, *r;
+	register struct node *r, *l;
 
 	r = p->right;
 	l = p->left;
@@ -540,10 +540,11 @@ lmuldiv(p)
 /* setup for the assignment operators (=ops) */
 int
 setasop(p)
-	struct node *p;
+	register struct node *p;
 {
-	int sul, sur, fl, fr;
-	struct node *q, *c;
+	register int sul, sur;
+	register struct node *q, *c;
+	register int fl, fr;
 
 	sul = p->left->su;
 	sur = p->right->su;
@@ -630,9 +631,9 @@ rew:
 /* setup for the assignment operator */
 int
 setasg(p)
-	struct node *p;
+	register struct node *p;
 {
-	struct node *l, *r;
+	register struct node *l, *r;
 
 	l = p->left;
 	r = p->right;
@@ -648,7 +649,7 @@ setasg(p)
 		return 1;
 	}
 	if (r->op != REG && (p->type == 6 || p->type == 7)) {
-		order(r, 0x18);
+		order(p->right, 0x18);
 		return 1;
 	}
 	if (l->op == STAR) {
@@ -697,9 +698,9 @@ struct {
 
 static struct node *
 argscan(p)
-	struct node *p;
+	register struct node *p;
 {
-	struct node *q, *rest;
+	register struct node *q, *rest;
 
 	q = p;
 	rest = p;
@@ -817,7 +818,7 @@ fixstarg(p)
 /* remove the arguments that were collected from the tree up to rest and order the first of the rest */
 static void
 argstrip(p, rest)
-	struct node *p, *rest;
+	register struct node *p, *rest;
 {
 	if (rest == p->right) {
 		p->op = FREE;
@@ -854,9 +855,10 @@ argstrip(p, rest)
 static void
 argplace()
 {
+	register struct node *q;
+	register int nleft, fleft, regs, i;
 	int cnt[4];
-	int i, k, regs, nleft, fleft;
-	struct node *q;
+	int k;
 	int reg;
 
 	regs = 3;
@@ -906,9 +908,9 @@ argplace()
 
 void
 genargs(p)
-	struct node *p;
+	register struct node *p;
 {
-	struct node *rest;
+	register struct node *rest;
 
 	nargs = 0;
 	argl[nargs].node = 0;

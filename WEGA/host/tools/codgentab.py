@@ -86,8 +86,8 @@ def ops(path):
     print("#include \"cg.h\"\n")
     print("struct indope indope[] = {")
     for op, name, flags in ents:
-        print("\t{ %d, 0x%x, %s }," % (op, flags, cstr(name)))
-    print("\t{ -1, 0, 0 }\n};")
+        print("\t{ %d, %s, 0x%x }," % (op, cstr(name), flags))
+    print("\t{ -1, \"\", 0 }\n};")
 
 
 def hop(path):

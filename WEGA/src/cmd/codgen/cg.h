@@ -5,6 +5,12 @@
  */
 #include <stdio.h>
 
+/* the older stdio.h of the original masks the byte (getc returns 0..255, EOF stays -1) */
+#undef getc
+#undef getchar
+#define getc(p)		(--(p)->_cnt >= 0 ? (int)*(p)->_ptr++ & 0377 : _filbuf(p))
+#define getchar()	getc(stdin)
+
 /*
  * The printf of the C library of WEGA prints a stray '-' in front of a %s argument when the stack in the place of its
  * work area holds an old negative number with the radix of %d. cgprintf() clears that part of the stack before it calls printf.
@@ -185,6 +191,6 @@ struct optab {
 extern struct optab table[];
 extern int ntable;
 
-struct indope { int op; int flags; char *name; };
+struct indope { int op; char name[8]; int flags; };	/* 12 bytes like the original */
 extern struct indope indope[];
 extern int dope[];		/* dope flags by operator, filled from indope[] */

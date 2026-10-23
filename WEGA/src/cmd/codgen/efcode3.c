@@ -32,7 +32,7 @@ lineout(line, file)
 /* the end of the text of a function */
 void
 funcend(a, b)
-	int a, b;
+	register int a, b;
 {
 	printf("\n");
 	if (fltused) {
@@ -77,11 +77,11 @@ fpdec(tot)
 /* load back the registers saved in the frame: a word registers, b float registers */
 static void
 regrestore(a, sz, b, w, tot)
-	int a;
-	long sz;
-	int b;
+	register int a;
+	register long sz;
+	register int b;
 	long w;
-	int tot;
+	register int tot;
 {
 	int k, off;
 
@@ -118,11 +118,11 @@ regrestore(a, sz, b, w, tot)
 
 static void
 regsave(a, sz, b, w, tot)
-	int a;
-	long sz;
-	int b;
+	register int a;
+	register long sz;
+	register int b;
 	long w;
-	int tot;
+	register int tot;
 {
 	int k, off;
 
@@ -160,11 +160,11 @@ regsave(a, sz, b, w, tot)
 /* the exit of the function: the label, the registers back, ret */
 static void
 epilog(a, sz, b, w, tot)
-	int a;
-	long sz;
-	int b;
+	register int a;
+	register long sz;
+	register int b;
 	long w;
-	int tot;
+	register int tot;
 {
 	if (!structret)
 		deflab(retlab);
@@ -178,9 +178,10 @@ epilog(a, sz, b, w, tot)
 /* the registers that arrive as arguments but live in the frame go to their place */
 static void
 regargs(tot)
-	int tot;
+	register int tot;
 {
-	int lo, hi, t, i, reg, cls, k;
+	register int lo, hi, t;
+	int i, reg, cls, k;
 	struct sym *s;
 	struct rs *n;
 	char *mn;
@@ -253,11 +254,11 @@ regargs(tot)
 /* the entry of the function */
 static void
 prolog(a, sz, b, w, tot)
-	int a;
-	long sz;
-	int b;
+	register int a;
+	register long sz;
+	register int b;
 	long w;
-	int tot;
+	register int tot;
 {
 	deflab(entlab);
 	fpdec(tot);

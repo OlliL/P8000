@@ -33,6 +33,7 @@ int nglob;			/* 0xa0d4: the entries of tagtab */
 long nsymbytes;			/* 0xa0dc */
 long gsymbytes, gasciibytes;	/* 0xa0d6, 0xa0ce: the global section */
 int gnumbytes;			/* 0x9834 */
+int gnumcount;			/* 0x9060: only written */
 long nasciibytes;		/* 0x8fd4 */
 int nnumbytes;			/* 0xa0e0 */
 int nmembytes;			/* 0xa0da */
@@ -54,10 +55,10 @@ int ifline;			/* 0x8fc8 */
 /* one number from the intermediate file or the data file; the input is f */
 long
 rdin2(base, f)
-	int base;
-	FILE *f;
+	register int base;
+	register FILE *f;
 {
-	register int c, sign;
+	register int sign, c;
 	long val;
 
 	sign = 1;
@@ -114,8 +115,8 @@ mkhash()
 	fpsym1 = (struct sym *)((char *)symtab + 0x16);
 	fpsym2 = (struct sym *)((char *)symtab + 0x2C);
 	symtab->nameoff = 0;
-	fpsym1->nameoff = 5;
-	fpsym2->nameoff = 9;
+	symtab[1].nameoff = 5;
+	symtab[2].nameoff = 9;
 }
 
 /* copy a section of the data file to the output */
@@ -194,7 +195,7 @@ readnums(n)
 	int n;
 {
 	static int buf[500];
-	register int *src, *dst;
+	int *src, *dst;
 	int base, k;
 
 	if (n <= 0)
@@ -219,8 +220,9 @@ readmems(n)
 	int n;
 {
 	static struct { long off; int x; } mem[500];
-	register struct { long off; int x; } *cur, *first;
+	struct { long off; int x; } *cur, *first;
 	long base;
+	struct sym *dp;
 	int rem, dest, cnt, k;
 
 	if (n <= 0)
@@ -237,8 +239,8 @@ readmems(n)
 		fseek(stfile, symbase + gsymbytes, 0);
 		if (gasciibytes + nasciibytes + 0x15 > MAXASCII)
 			cerror("global ascii table overflow");
-		readtab(ascii + MAXASCII - gasciibytes, gasciibytes);
-		readnums(gnumbytes / 2);
+		readtab(ascii + (MAXASCII - gasciibytes), gasciibytes);
+		readnums(gnumcount = gnumbytes / 2);
 		firstsect = 0;
 	}
 	rem = n;
@@ -255,8 +257,9 @@ readmems(n)
 			cur++;
 			cnt++;
 		}
+		dp = (struct sym *)((char *)symtab + dest * 22);
 		fseek(stfile, symbase + base, 0);
-		readsyms(cnt, (struct sym *)((char *)symtab + dest * 22), MAXASCII - gasciibytes);
+		readsyms(cnt, dp, MAXASCII - gasciibytes);
 		dest += cnt;
 		rem -= cnt;
 	}
@@ -316,7 +319,7 @@ int
 tagfind(tag)
 	int tag;
 {
-	register int lo, hi, mid;
+	int lo, hi, mid;
 
 	if (tag < 0 || nglob == 0)
 		return -1;
@@ -356,9 +359,9 @@ mapn(tag)
 /* the symbol of a node from its tag */
 void
 mapsym(p)
-	register struct node *p;
+	struct node *p;
 {
-	register int i;
+	int i;
 
 	if (p->rval) {
 		i = tagfind(p->rval);
@@ -372,9 +375,9 @@ mapsym(p)
 /* a leaf of the tree from the file: symbols, register variables and fields */
 void
 mapnm(p)
-	register struct node *p;
+	struct node *p;
 {
-	register struct sym *s;
+	struct sym *s;
 	struct node *m, *nb;
 	int n, t, rg, nt, ot;
 	long ofs;
@@ -461,8 +464,10 @@ struct node *
 eread()
 {
 	register struct node *p;
-	register int ty, c;
-	int op;
+	register int op;
+	register int spare1, spare2, spare3;	/* unused: the original reserves these registers */
+	int ty;
+	char c;
 
 	for (;;) {
 		c = getchar();

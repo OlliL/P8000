@@ -23,10 +23,11 @@ extern int ltypeop();		/* the operator of p is NAME, REG, ICON or OREG */
 /* does the node p fit the shape? */
 int
 tshape(p, shape)
-	struct node *p;
-	int shape;
+	register struct node *p;
+	register int shape;
 {
-	int o = p->op, r;
+	register int o = p->op;
+	int r;
 
 	if (shape == SANY)
 		return 1;
@@ -69,8 +70,8 @@ tshape(p, shape)
 /* does the type fit the type word of a table entry? */
 int
 ttype(t, tword)
-	int t;
-	int tword;
+	register int t;
+	register int tword;
 {
 	if ((tword & TANY) || tword == 0x4000 || tword == 0x8000)
 		return 1;
@@ -120,8 +121,8 @@ extern int ltypeok();	/* local3.c 0x3e1c */
 void
 setrew()
 {
-	struct optab *q;
-	int op, mask;
+	register struct optab *q;
+	register int op, mask;
 
 	for (q = table; q->op != FREE; q++)
 		if (q->needs == 0x1000) {
@@ -182,7 +183,7 @@ extern struct node resc[];			/* the work registers RESC1 .. RESC3 (0x12 byte nod
 struct node *
 getlr(p, c)
 	struct node *p;
-	int c;
+	char c;
 {
 	switch (c) {
 	case '1': case '2': case '3':
@@ -202,12 +203,13 @@ getlr(p, c)
  */
 int
 match(p, cookie)
-	struct node *p;
-	int cookie;
+	register struct node *p;
+	register int cookie;
 {
-	struct optab *q;
-	struct node *l, *r;
-	int kind, mask, rv;
+	register struct optab *q;
+	register struct node *l, *r;
+	register int kind, mask;
+	int rv;
 
 	rcount();
 	kind = dope[p->op] & 0xE;

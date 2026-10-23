@@ -69,7 +69,7 @@ rfind(reg, cls)
 	int reg;
 	int cls;
 {
-	struct rs *n;
+	register struct rs *n;
 
 	for (n = rsuse; n; n = n->next)
 		if (n->reg == reg && n->cls == cls)
@@ -85,39 +85,40 @@ rbusy(reg, type, sym, lv)
 	struct sym *sym;
 	long lv;
 {
-	struct rs *n, *prev;
-	int cls = rclass(type, reg), l;
+	register int cls = rclass(type, reg);
+	register struct rs *n, *prev;
+	int l;
 
 	if (cls == 6 || cls == 7 || cls == 8)
 		return;
-	for (prev = n = rsuse; n; prev = n, n = n->next)
-		if (n->cls == cls && n->reg == reg) {
-			n->busy++;
-			return;
-		}
-	if (cls != 2)
-		cerror("rbusy: register to be made busy not found on rslist");
-	l = reg & 1 ? reg - 1 : reg;		/* the long register that holds the word register */
-	for (prev = n = rsuse; n; prev = n, n = n->next)
-		if (n->cls == 3 && n->reg == l) {
-			rsreturn(3, l);
-			if (getreg(2, reg, 0x1000, 0) != reg)
-				cerror("rbusy: register %d not free", reg);
-			/* the original counts the node in front of the one it found */
-			prev->busy++;
-			return;
-		}
+	for (n = rsuse; n; n = n->next)
+		if (n->cls == cls && n->reg == reg)
+			goto found;
+	if (cls == 2) {
+		l = reg & 1 ? reg - 1 : reg;		/* the long register that holds the word register */
+		for (prev = n = rsuse; n; prev = n, n = n->next)
+			if (n->cls == 3 && n->reg == l) {
+				rsreturn(3, l);
+				if (getreg(2, reg, 0x1000, 0) != reg)
+					cerror("rbusy: register %d not free", reg);
+				/* the original counts the node in front of the one it found */
+				n = prev;
+				goto found;
+			}
+	}
 	cerror("rbusy: register to be made busy not found on rslist");
+found:
+	n->busy++;
 }
 
 /* the register is no longer needed by one more operand */
 void
 rfree(reg, type)
-	int reg;
-	int type;
+	register int reg;
+	register int type;
 {
-	struct rs *n;
-	int cls = rclass(type, reg);
+	register struct rs *n, *prev;
+	register int cls = rclass(type, reg);
 
 #ifdef SEG
 	if (reg == 15 || reg == 14)
@@ -126,19 +127,18 @@ rfree(reg, type)
 #endif
 		return;
 	for (n = rsuse; n; n = n->next)
-		if (n->cls == cls && n->reg == reg) {
-			if (n->busy > 0)
-				n->busy--;
-			return;
-		}
+		if (n->cls == cls && n->reg == reg)
+			break;
+	if (n && n->busy > 0)
+		n->busy--;
 }
 
 /* free the registers an operand node holds */
 void
 rfreenode(p)
-	struct node *p;
+	register struct node *p;
 {
-	int r = p->rval;
+	register int r = p->rval;
 
 	if (p->op == REG) {
 		rfree(r, p->type);
@@ -152,7 +152,7 @@ rfreenode(p)
 			rfree((r & 0xFF) - 1, 4);
 		return;
 	}
-	if (p->lval != 0 || p->sname != 0 || p->stsize < 0)
+	if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
 		rfree(r, 4);
 	else
 		rfree(r, 0x14);
@@ -163,24 +163,24 @@ rfreenode(p)
 /* k words of temporary space for parameters (the area behind the parameters of a call) */
 long
 freeparm(k)
-	int k;
+	register int k;
 {
-	long t = tmpoff;
+	register long t = tmpoff;
 
-	tmpoff += (long)k << 4;
+	tmpoff += k << 4;
 	if (tmpoff > maxoff)
-		cerror("paroff exceeds parmax, %d, %ld", (int)(tmpoff & 0xFFFF) / 8, maxoff / 8);
+		cerror("paroff exceeds parmax, %d, %ld", (int)tmpoff / 8, maxoff / 8);
 	return t;
 }
 
 /* k words of temporary space in the frame */
 long
 freetemp(k)
-	int k;
+	register int k;
 {
-	long t = paroff;
+	register long t = paroff;
 
-	paroff += (long)k << 4;
+	paroff += k << 4;
 	if (paroff > parmax)
 		parmax = paroff;
 	if (paroff - baseoff > maxtemp)
@@ -205,8 +205,8 @@ usable(p, side, r)
 	int side;
 	int r;
 {
-	struct node *q = getlr(p, side);
-	int rv;
+	register struct node *q = getlr(p, side);
+	register int rv;
 
 	if (q->op == STAR)
 		q = q->left;
@@ -268,7 +268,7 @@ allocreg(p, cookie)
 	struct node *p;
 	int cookie;
 {
-	int want, cls, r;
+	register int want, r, cls;
 
 	if (dope[p->op] & 0x400)
 		want = rcookie(p);
@@ -331,10 +331,11 @@ tempwords(p, nfield)
  */
 int
 allo(p, q)
-	struct node *p;
-	struct optab *q;
+	register struct node *p;
+	register struct optab *q;
 {
-	int need = q->needs, a = need, b = need, k = 0, k0, cls, n;
+	register int need = q->needs, a = need, b = need, k = 0;
+	int k0, cls, n;
 	struct rs *s;
 
 	while (a & 3) {				/* A registers */
@@ -417,10 +418,11 @@ allo(p, q)
 /* a copy of the tree; the registers it uses count as busy once more */
 struct node *
 tcopy(p)
-	struct node *p;
+	register struct node *p;
 {
-	struct node *q = talloc();
-	int r = p->rval, kind;
+	register struct node *q = talloc();
+	register int r = p->rval;
+	int kind;
 
 	*q = *p;
 	if (p->op == REG)
@@ -456,11 +458,12 @@ static int rwtab[][2] = {
  */
 void
 reclaim(p, rewrite, cookie)
-	struct node *p;
-	int rewrite;
-	int cookie;
+	register struct node *p;
+	register int rewrite;
+	register int cookie;
 {
-	struct node *a[6], *c = 0, *r;
+	register struct node *c = 0, *r;
+	struct node *a[6];
 	int o = p->op, i, k, want = 0;
 
 	if (rewrite == RNOP)
@@ -568,9 +571,10 @@ done:
 /* idle registers go back to the free list (flag 0: only the ones that hold no symbol) */
 void
 rfreeall(flag)
-	int flag;
+	register int flag;
 {
-	struct rs *n, *next;
+	register struct rs *n;
+	struct rs *next;
 
 	for (n = rsuse; n; n = next) {
 		next = n->next;

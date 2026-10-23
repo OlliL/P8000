@@ -21,11 +21,11 @@ struct node *makeblock(), *clocal(), *bcon(), *member(), *buildstar();
 /* a new node */
 struct node *
 makeblock(op, l, r, type)
-	int op;
-	struct node *l, *r;
+	register int op;
+	register struct node *l, *r;
 	int type;
 {
-	register struct node *n;
+	struct node *n;
 
 	n = talloc();
 	n->op = op;
@@ -80,11 +80,11 @@ chk(p)
 /* the node p after the conversions: names to addresses of their class, conversions of constants */
 struct node *
 clocal(p)
-	struct node *p;
+	register struct node *p;
 {
 	register struct node *l, *r;
-	struct sym *s;
-	struct node *fp, *n, *q;
+	register struct sym *s;
+	register struct node *fp, *n, *q;
 	long val;
 	int o, pf, lf, pt, lt, t, ob;
 
@@ -216,25 +216,28 @@ done:
 /* the address of a structure member: the base pointer plus the offset of the member, then the indirection */
 struct node *
 member(p)
-	struct node *p;
+	register struct node *p;
 {
-	register struct node *base;
-	struct sym *m;
+	register int nt;
+	register int spare;		/* unused: the original keeps a register here */
+	register int sz, cl;		/* set from the symbol and not used afterwards */
+	register struct sym *m;
 	struct node *off, *n;
-	int nt;
 
 	m = p->right->sname;
+	cl = m->sclass;
 	p->right->op = FREE;
 	p->op = FREE;
-	base = p->left;
+	p = p->left;
 	nt = INCREF(m->stype);
-	base->type = nt;
+	p->type = nt;
+	sz = (int)m->ssize;
 	off = bcon(m->soffset);
-	n = makeblock(PLUS, base, off, nt);
-	base = clocal(n);
-	if ((base->type & 0x30) != 0x10)
-		base->type += 16;
-	return buildstar(STAR, base, 0);
+	n = makeblock(PLUS, p, off, nt);
+	p = clocal(n);
+	if ((p->type & 0x30) != 0x10)
+		p->type = p->type + 16;
+	return buildstar(STAR, p, 0);
 }
 
 /* a constant added to or subtracted from an address that has one already: folded */
@@ -243,7 +246,8 @@ foldadd(p)
 	register struct node *p;
 {
 	register struct node *l, *r, *q;
-	int lo, x;
+	register int lo;
+	int x;
 
 	l = p->left;
 	r = p->right;
@@ -284,6 +288,7 @@ buildstar(op, l, r)
 	register struct node *l, *r;
 {
 	register struct node *n;
+	register int spare1, spare2, spare3, spare4;	/* unused: the original reserves these registers */
 
 	n = makeblock(op, l, r, 4);
 	if (n->op == STAR) {

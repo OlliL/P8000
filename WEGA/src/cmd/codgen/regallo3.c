@@ -25,8 +25,7 @@ static struct rs pool[NPOOL];
 struct rs *rsexcl;		/* 0xa79a: nodes taken away from rsuse by rsmerge */
 struct rs *rsfree, *rsuse, *rspool;	/* 0xa154, 0xa166, 0xa79c */
 int rsdepth;			/* 0xa7aa: saved lists */
-struct rs *rssaved[3];
-int rsmark[3];
+struct { struct rs *list; int mark; } rsstk[3];	/* the saved lists and their marks, interleaved */
 int rsflag1;			/* 0xa2d6: number of entries of rstab1 */
 int rstab1[3];			/* 0xa2d0 */
 int rsflag2;			/* 0xa7ac: number of entries of rstab2 */
@@ -56,13 +55,14 @@ rsinit()
 /* give the nodes of a list back to the pool */
 void
 rsrelease(l)
-	struct rs *l;
+	register struct rs *l;
 {
-	struct rs *last;
+	register struct rs *n;
+	register struct rs *last;
 
 	if (l == 0)
 		cerror("freelist: null list");
-	for (last = l; last->next; last = last->next)
+	for (last = n = l; n; last = n, n = n->next)
 		;
 	last->next = rspool;
 	rspool = l;
@@ -72,41 +72,39 @@ rsrelease(l)
 void
 rsbuild()
 {
-	struct rs *n, *last = 0;
-	int r;
+	register struct rs *n;
+	register struct rs *last;
+	register struct rs *unused;	/* the original has a third register pointer here that nothing uses */
+	register int r;
 
 	if (rsfree)
 		rsrelease(rsfree);
 	rsfree = n = rspool;
-	for (r = 2; r <= 6; r += 2) {
+	for (r = 2; r <= 6; n = n->next, r += 2) {
 		n->cls = 3;
 		n->reg = r;
-		n = n->next;
 	}
 	n->cls = 3;
 	n->reg = 0;
 	n = n->next;
-	for (r = 16; r <= 19; r++) {
+	for (r = 16; r <= 19; r++, n = n->next) {
 		n->cls = 4;
 		n->reg = r;
 		last = n;
-		n = n->next;
 	}
 #ifndef SEG
 	n->cls = 6;
 	n->reg = 14;
 	n = n->next;
 #endif
-	for (r = 8; r <= 12; r += 2) {
+	for (r = 8; r <= 12; r += 2, n = n->next) {
 		n->cls = 7;
 		n->reg = r;
-		n = n->next;
 	}
-	for (r = 20; r <= 23; r++) {
+	for (r = 20; r <= 23; r++, n = n->next) {
 		n->cls = 8;
 		n->reg = r;
 		last = n;
-		n = n->next;
 	}
 	last->next = 0;
 	rspool = n;
@@ -118,10 +116,10 @@ rsbuild()
  */
 struct rs *
 newnode(n, k)
-	struct rs *n;
-	int k;
+	register int k;
+	register struct rs *n;
 {
-	struct rs *m;
+	register struct rs *m;
 
 	if (rspool == 0)
 		cerror("splitreg: no nodes left on elist");
@@ -129,7 +127,7 @@ newnode(n, k)
 	rspool = m->next;
 	switch (n->cls) {
 	case 2: case 6:
-		n->reg *= 2;			/* word register r: bytes 2r and 2r+1 */
+		n->reg = n->reg * 2;			/* word register r: bytes 2r and 2r+1 */
 		/* FALLTHROUGH */
 	case 3: case 7:
 		m->reg = n->reg;
@@ -424,12 +422,16 @@ fail:
  */
 int
 getreg(cls, reg, flag, sym)
-	int cls;
-	int reg;
-	int flag;
-	struct sym *sym;
+	register int cls;
+	register int reg;
+	register int flag;
+	register struct sym *sym;
 {
-	struct rs *n, *prev, *w, *m, *t;
+	register struct rs *n;
+	register struct rs *prev;
+	struct rs *w;
+	struct rs *m;
+	struct rs *t;
 
 	if (cls >= 5 && cls <= 8) {		/* register variables: the register is named */
 		for (n = rsuse; n; n = n->next) {
@@ -566,11 +568,18 @@ getreg(cls, reg, flag, sym)
  */
 void
 rsreturn(cls, reg)
-	int cls;
-	int reg;
+	register int cls;
+	register int reg;
 {
-	struct rs *n, *prev, *a, *b, *it, *itprev;
-	int cl, key, partner;
+	register struct rs *n;
+	register struct rs *prev;
+	register struct rs *a;
+	register struct rs *b;
+	register struct rs *it;
+	struct rs *itprev;
+	int cl;
+	int key;
+	int partner;
 
 	if (rsuse == 0)
 		cerror("deletereg allocated register status list empty");
@@ -649,12 +658,10 @@ nullsyms(mode)
 	struct rs *n;
 
 	for (n = rsuse; n; n = n->next) {
-		if (mode != 1) {
-			cerror("nullist: illegal case");
-			continue;
-		}
 		if (n->cls <= 4)
 			n->sym = 0;
+		else if (mode != 1)
+			cerror("nullist: illegal case");
 	}
 }
 
@@ -673,9 +680,9 @@ static char rcname[][8] = {
 
 void
 rsdump(l)
-	struct rs *l;
+	register struct rs *l;
 {
-	struct rs *n;
+	register struct rs *n;
 
 	printf("//\n//   Reg No.\tType\tSymbol\tusecount\toffset\taddr\tdtype\n");
 	for (n = l; n; n = n->next) {
@@ -701,20 +708,27 @@ void
 rsfreeall(flag)
 	int flag;
 {
-	struct rs *n, *next;
+	register struct rs *next;
+	register struct rs *n;
 
 	for (n = rsuse; n; n = next) {
 		next = n->next;
-		if (flag == 1) {
+		switch (flag) {
+		case 1:
 			if (n->cls > 4)
 				continue;
 			if (n->kind == 6)
 				continue;
-		} else if (flag == 2) {
+			break;
+		case 2:
 			if (n->cls <= 4)
 				continue;
-		} else if (flag != 3)
+			break;
+		case 3:
+			break;
+		default:
 			continue;
+		}
 		rsreturn(n->cls, n->reg);
 	}
 }
@@ -725,8 +739,8 @@ rspush(mark)
 	int mark;
 {
 	if (rsdepth < 3) {
-		rssaved[rsdepth] = rsuse;
-		rsmark[rsdepth] = mark;
+		rsstk[rsdepth].list = rsuse;
+		rsstk[rsdepth].mark = mark;
 		rsdepth++;
 		rsuse = 0;
 	}
@@ -840,7 +854,8 @@ rsmerge(hp)
 int
 rsmatch()
 {
-	int i, j;
+	register int i;
+	register int j;
 
 	if (rsflag2 <= 0)
 		return 0;
@@ -848,14 +863,14 @@ rsmatch()
 		for (j = 0; ; j++) {
 			if (j >= rsdepth)
 				return 0;
-			if (rsmark[j] == rstab1[i - 1])
+			if (rsstk[j].mark == rstab1[i - 1])
 				break;
 		}
 	}
 	for (i = rsflag2; i > 0; i--)
 		for (j = 0; j < rsdepth; j++)
-			if (rsmark[j] == rstab1[i - 1])
-				rsmerge(&rssaved[j]);
+			if (rsstk[j].mark == rstab1[i - 1])
+				rsmerge(&rsstk[j].list);
 	return 1;
 }
 
@@ -863,26 +878,29 @@ rsmatch()
 void
 rsrelall()
 {
-	int i, j;
+	register int i;
+	register int j;
 
 	for (i = rsflag1; i < 0; i--)
 		for (j = 0; j < rsdepth; j++)
-			if (rsmark[j] == rstab2[i])
-				rsrelease(rssaved[j]);
+			if (rsstk[j].mark == rstab2[i])
+				rsrelease(rsstk[j].list);
 }
 
 /* take the registers of rsuse again on a fresh free list; never called */
 void
 rsrestart()
 {
-	struct rs *l, *n;
+	register struct rs *l;
+	register struct rs *n;
+	register struct rs *last;
 
 	rsbuild();
 	if (rsuse == 0)
 		return;
 	l = rsuse;
 	rsuse = 0;
-	for (n = l; n; n = n->next)
+	for (last = n = l; n; last = n, n = n->next)
 		getreg(n->cls, n->reg, 0x2000, 0);
 	rsrelease(l);
 }

@@ -55,7 +55,7 @@ tmpcleanup()
 void
 tmpdump()
 {
-	int i;
+	register int i;
 
 	printf("\tTEMP\tREFREM\tOFST/REG\n");
 	for (i = 0; tmptab[i].off >= 0; ) {

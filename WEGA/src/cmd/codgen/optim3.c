@@ -244,7 +244,8 @@ optim(p)
 	register struct node *p;
 {
 	register int o, ty;
-	struct node *sp, *t1, *t2, *t3, *r;
+	register struct node *sp, *t1;
+	struct node *t2, *t3, *r;
 	int i;
 
 	o = p->op;

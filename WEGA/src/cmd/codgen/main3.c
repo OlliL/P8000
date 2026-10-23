@@ -160,11 +160,11 @@ init()
 
 int
 main(argc, argv)
-	int argc;
-	char **argv;
+	register int argc;
+	register char **argv;
 {
 	register int i, c;
-	int n, lab, k;
+	register int n, lab, k;
 	long l1;
 	int a, b;
 

@@ -101,7 +101,7 @@ werror(s, a, b)
 void
 tinit()
 {
-	register struct node *p;
+	struct node *p;
 
 	for (p = node; p <= &node[NTREE - 1]; p++)
 		p->op = FREE;
@@ -112,17 +112,17 @@ tinit()
 struct node *
 talloc()
 {
-	register struct node *p, *start;
+	struct node *p, *start;
 
 	start = lastfree;
-	p = start == &node[NTREE - 1] ? node : start + 1;
+	p = start != &node[NTREE - 1] ? start + 1 : node;
 	while (p != start) {
 		if (p->op == FREE) {
 			p->sname = 0;
 			lastfree = p;
 			return p;
 		}
-		p = p == &node[NTREE - 1] ? node : p + 1;
+		p = p != &node[NTREE - 1] ? p + 1 : node;
 	}
 	cerror("out of tree space; simplify expression");
 }
@@ -131,7 +131,7 @@ talloc()
 void
 tcheck()
 {
-	register struct node *p;
+	struct node *p;
 
 	if (!nerrors)
 		for (p = node; p <= &node[NTREE - 1]; p++)
@@ -172,14 +172,14 @@ fwalkd(p, f, down)
 		down2 = 0;
 		(*f)(p, down, &down1, &down2);
 		switch (dope[p->op] & 0xE) {
+		case UTYPE:
+			p = p->left;
+			down = down1;
+			continue;
 		case BITYPE:
 			fwalkd(p->left, f, down1);
 			p = p->right;
 			down = down2;
-			continue;
-		case UTYPE:
-			p = p->left;
-			down = down1;
 			continue;
 		}
 		return;
@@ -232,9 +232,11 @@ tbytes(t)
 	case 15:
 		return 4;
 	}
-#ifdef SEG
 	if ((t & 0x30) == 0x10)
+#ifdef SEG
 		return 4;
+#else
+		return 2;		/* no effect: the original has the test in both versions */
 #endif
 	return 2;
 }
@@ -275,10 +277,10 @@ ncopy(q, p)
 /* memory from the system in steps of at most 2000 bytes, never freed */
 char *
 alloc(n)
-	register int n;
+	int n;
 {
 	register char *p;
-	int step;
+	register int step;
 
 	if (firstalloc) {
 		firstalloc = 0;
