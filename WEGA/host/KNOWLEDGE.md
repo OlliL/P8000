@@ -781,6 +781,9 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/codgen` | `member` adds 16 to the type of the result as `p->type = p->type + 16` (load, `inc`, store; `+=` would give `inc` in memory) | kept | "codgen fidelity" |
 | `/lib/codgen`, `/lib/scodgen` | `readmems` stores `gnumbytes / 2` in a global at 0x9060 that nothing reads, and builds the destination pointer `symtab + dest * 22` in a local before the `fseek` | kept (`gnumcount`, `dp`) | "codgen fidelity" |
 | `/lib/codgen`, `/lib/scodgen` | `nullsyms` reports `nullist: illegal case` only for nodes of a class above 4 (the check of `mode` is the `else` of `if (n->cls <= 4) n->sym = 0`); `mode` is always 1 | kept | "codgen fidelity" |
+| `/lib/codgen`, `/lib/scodgen` | `allo` takes the busy mark off the register node with `rfind(...)->busy = 0` without testing the result: it writes through a null pointer (address 3) when the register is not on the list; the loops count down `need` itself (and a copy `b`), and the size of a temporary is one expression expanded twice (a macro) | kept (`TEMPWORDS`, no `if (s)`) | "codgen fidelity" |
+| `/lib/codgen`, `/lib/scodgen` | `reclaim`: after a second register for a long result the type is set to UNSIGNED (14) in every case, also after `if (type == 5) type = 4` (the jump of the first case goes to the store of 14; `else if (type == 15)` has an empty body); the test `p->op == OREG` after the rewrite has an empty body (the OREG case is treated like the others: the function ends) | kept (empty `else if`, `switch` with `case OREG: default:`) | "codgen fidelity" |
+| `/lib/codgen`, `/lib/scodgen` | `reclaim` copies `p->op` into `want` before it frees the registers and uses `want` for the `lval` of a CCODES result; it builds the list of candidates with a pointer (`*ap++`) into a local array of 6 | kept | "codgen fidelity" |
 
 ## ar (reconstructed, byte-identical)
 

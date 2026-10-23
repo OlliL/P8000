@@ -114,7 +114,7 @@ the marks of D14 only: that is all that was checked for them.
 | codgen, scodgen | gen3.c |  |  |  | x |  |  |  |  |  |  | ? |  |  |  |
 | codgen, scodgen | order3.c |  |  |  | x |  | x |  |  |  |  | x |  |  |  |
 | codgen, scodgen | match3.c |  |  |  | x |  | x | ? |  |  |  |  |  |  |  |
-| codgen, scodgen | allo3.c |  | x | x | x |  | x |  |  |  |  |  |  |  |  |
+| codgen, scodgen | allo3.c |  | x | x | x |  | x | ? |  |  | x |  |  |  |  |
 | codgen, scodgen | regallo3.c |  |  |  | x |  | x |  |  |  | ? |  |  |  |  |
 | codgen, scodgen | regfile3.c |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |
 | codgen, scodgen | tmp3.c |  |  |  | x |  |  |  |  |  |  |  |  |  |  |

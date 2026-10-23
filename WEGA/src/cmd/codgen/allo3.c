@@ -299,30 +299,16 @@ allocreg(p, cookie)
 	return r;
 }
 
-/* number of words a temporary for the result of p needs */
-static int
-tempwords(p, nfield)
-	struct node *p;
-	int nfield;
-{
-	int o = p->op;
-
-	if (o == STCALL || o == STARG || o == USTCALL || o == STASG)
-		return ((p->stsize << 3) + 15) >> 4;
-	if (p->type == 5 || p->type == 15)
-		return 2;
-	if ((p->type & 0x30) == 0x10)
+/* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
 #ifdef SEG
-		return 2;
+#define PTRWORDS	2
 #else
-		return 1;
+#define PTRWORDS	1
 #endif
-	if (p->type == 7)
-		return 4;
-	if (p->type == 6)
-		return 2;
-	return nfield;
-}
+#define TEMPWORDS(p, nfield) \
+	((p->op == STCALL || p->op == STARG || p->op == USTCALL || p->op == STASG) ? ((unsigned)((p->stsize << 3) + 15)) >> 4 : \
+	 (p->type == 5 || p->type == 15) ? 2 : (p->type & 0x30) == 0x10 ? PTRWORDS : \
+	 p->type == 7 ? 4 : p->type == 6 ? 2 : (nfield))
 
 /*
  * Get the resources of the table entry q for the tree p: the registers (needs bits 0-3: A registers,
@@ -331,20 +317,25 @@ tempwords(p, nfield)
  */
 int
 allo(p, q)
-	register struct node *p;
-	register struct optab *q;
+	struct node *p;
+	struct optab *q;
 {
-	register int need = q->needs, a = need, b = need, k = 0;
-	int k0, cls, n;
-	struct rs *s;
+	register int need, k, k0;
+	register int n;
+	register int b;
+	register struct rs *s;
+	int cls;
 
-	while (a & 3) {				/* A registers */
+	b = need = q->needs;
+	k = 0;
+
+	while (need & 3) {			/* A registers */
 		resc[k].op = REG;
 		resc[k].type = p->type;
-		resc[k].rval = allocreg(p, a & 0xF);
+		resc[k].rval = allocreg(p, need & 0xF);
 		resc[k].lval = 0;
 		resc[k].sname = 0;
-		a--;
+		need--;
 		k++;
 	}
 	k0 = k;
@@ -357,36 +348,31 @@ allo(p, q)
 		b--;
 		k0--;
 		s = rfind(resc[k0].rval, cls);
-		if (s)
-			s->busy = 0;
+		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
 	}
-	a = need;
-	while (a & 0x30) {			/* B registers */
+	while (need & 0x30) {			/* B registers */
 		resc[k].op = REG;
 		resc[k].type = p->type;
-		resc[k].rval = allocreg(p, a & 0xF0);
+		resc[k].rval = allocreg(p, need & 0xF0);
 		resc[k].lval = 0;
 		resc[k].sname = 0;
-		a -= 16;
+		need -= 16;
 		k++;
 	}
 	k0 = k;
-	b = need;
 	while (b & 0x30) {
 		cls = rclass(p->type, resc[k0].rval);
 		b -= 16;
 		k0--;
 		s = rfind(resc[k0].rval, cls);
-		if (s)
-			s->busy = 0;
+		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
 	}
 	if (need & 0x300) {			/* a temporary in the frame */
 		resc[k].op = OREG;
 		resc[k].type = p->type;
 		resc[k].rval = 15;
 		resc[k].stsize = 0;
-		n = tempwords(p, (need & 0x300) >> 8);
-		resc[k].lval = freetemp(n);
+		resc[k].lval = freetemp(TEMPWORDS(p, (need & 0x300) / 0x100));
 		resc[k].sname = fpsym1;
 		resc[k].lval >>= 3;
 		k++;
@@ -396,8 +382,7 @@ allo(p, q)
 		resc[k].type = p->type;
 		resc[k].rval = 15;
 		resc[k].stsize = 0;
-		n = tempwords(p, (need & 0xC00) >> 10);
-		resc[k].lval = freeparm(n);
+		resc[k].lval = freeparm(TEMPWORDS(p, (need & 0xC00) / 0x400));
 		resc[k].lval >>= 3;
 #ifdef SEG
 		resc[k].sname = symtab0;
@@ -458,18 +443,23 @@ static int rwtab[][2] = {
  */
 void
 reclaim(p, rewrite, cookie)
-	register struct node *p;
-	register int rewrite;
-	register int cookie;
+	struct node *p;
+	int rewrite;
+	int cookie;
 {
-	register struct node *c = 0, *r;
+	register int want;
+	register struct node *c;
+	register struct node **ap;
+	register int o;
+	register int *rw;
 	struct node *a[6];
-	int o = p->op, i, k, want = 0;
 
+	o = p->op;
 	if (rewrite == RNOP)
 		goto done;
 	if (o == FREE && rewrite == RNULL)
 		goto done;
+	want = o;
 	fwalk(p, rfreenode);
 	if (rewrite == 0 || (cookie & FOREFF)) {
 		tfree(p);
@@ -478,29 +468,29 @@ reclaim(p, rewrite, cookie)
 	if ((cookie & 0x20) && (rewrite & RESCC)) {	/* the condition codes */
 		tfree(p);
 		p->op = CCODES;
-		p->lval = o;
+		p->lval = want;
 		p->rval = 0;
 		goto done;
 	}
-	i = 0;
+	ap = a;
 	if (rewrite & RLEFT)
-		a[i++] = getlr(p, 'L');
+		*ap++ = getlr(p, 'L');
 	if (rewrite & RRIGHT)
-		a[i++] = getlr(p, 'R');
+		*ap++ = getlr(p, 'R');
 	if (rewrite & RESC1)
-		a[i++] = &resc[0];
+		*ap++ = &resc[0];
 	if (rewrite & RESC2)
-		a[i++] = &resc[1];
+		*ap++ = &resc[1];
 	if (rewrite & RESC3)
-		a[i++] = &resc[2];
-	if (i == 0)
+		*ap++ = &resc[2];
+	if (ap == a)
 		cerror("illegal reclaim");
-	a[i] = 0;
-	for (k = 0; rwtab[k][0]; k++) {
-		if (!(cookie & rwtab[k][0]))
+	*ap = 0;
+	for (rw = (int *)rwtab; *rw; rw += 2) {
+		if (!(cookie & rw[0]))
 			continue;
-		for (i = 0; (c = a[i]) != 0; i++)
-			if (tshape(c, rwtab[k][1]))
+		for (ap = a; (c = *ap) != 0; ap++)
+			if (tshape(c, rw[1]))
 				goto found;
 	}
 	cerror("cannot reclaim");
@@ -508,17 +498,22 @@ found:
 	if (o == STARG)
 		p = p->left;
 	c->type = p->type;
-	r = tcopy(c);
+	c = tcopy(c);
 	tfree(p);
-	p->op = r->op;
-	p->lval = r->lval;
-	p->rval = r->rval;
-	p->sname = r->sname;
-	if (r->op == OREG)
-		p->stsize = r->stsize;
-	r->op = FREE;
-	if (p->op != REG)
+	p->op = c->op;
+	p->lval = c->lval;
+	p->rval = c->rval;
+	p->sname = c->sname;
+	if (c->op == OREG)
+		p->stsize = c->stsize;
+	c->op = FREE;
+	switch (p->op) {
+	case REG:
+		break;
+	case OREG:
+	default:
 		goto done;
+	}
 	if (!tflag) {
 		if (p->type == 3)
 			p->type = 4;
@@ -535,8 +530,9 @@ found:
 		p->rval = want;
 		if (p->type == 5)
 			p->type = 4;
-		else
-			p->type = 14;		/* sic: the original has no test for ULONG here */
+		else if (p->type == 15)
+			;
+		p->type = 14;		/* sic: also after the LONG case (the original jumps to this store) */
 		if (p->rall & 0x1000)
 			want = p->rall & ~0x1000;
 	} else if (o == 0x3E || o == 0x3F) {	/* a long result of a shift or divide goes to rr4 */
