@@ -107,10 +107,10 @@ Z8001 specialist is **not** part of the plan (the author's wish).
 ### 3. Run the MAME review model (`mame-review` skill)
 
 The skill is a MAME code review based on MAME's coding standards (not an official MAMEdev tool;
-passing it does not guarantee acceptance). A copy is installed at `/root/.claude/skills/mame-review`
+passing it does not guarantee acceptance). A copy is in this repo: `mame/skills/mame-review`
 (files `SKILL.md`, `RULES.md`, `STYLE.md`, `SYSTEMS.md`, `DATAFILES.md`, `SUBMISSION.md`,
-`README.md`, BSD-3-Clause). For Claude CLI on another machine copy that folder to
-`~/.claude/skills/`. Then, in the MAME checkout on `p8k-clean`:
+`README.md`, BSD-3-Clause). **Install it once before first use** in Claude CLI:
+`mkdir -p ~/.claude/skills && cp -r mame/skills/mame-review ~/.claude/skills/`, restart the CLI. Then, in the MAME checkout on `p8k-clean`:
 
 ```
 /mame-review f26abf2b..HEAD
