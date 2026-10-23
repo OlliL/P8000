@@ -22,7 +22,7 @@ it and ran all real-machine tests on his P8000 (16 bit board, 4 MiB).
 
 Branches in the fork:
 
-- `p8k-clean` (head `26a7bf3a`): cleaned series on top of mamedev `master` of 2026-10-13
+- `p8k-clean` (head `431de339`): cleaned series on top of mamedev `master` of 2026-10-13
   (`f26abf2b`). Source for the PRs. Includes the PR drafts commits (to be dropped).
 - `p8k-noopt`: reduced series without the optional commits (used to prove the driver does not
   depend on the optional z8000/z80pio/z8010 changes).
@@ -44,18 +44,20 @@ fb7176fb machine/z80pio: Port A has priority over port B, drop a mode 3 request
 9e5d3d17 machine/z80ctc: Added opt-in set_reload_on_reset()
 a54429c4 machine/z80dma: Added a virtual byte_counter() hook and a derivable ...
 25528403 hash/p8000_flop.xml: Added the P8000 floppy disk software list
-9067870b ddr/p8k.cpp: Emulated the 16 bit board, WEGA boots
-d276b808 .. b8757621  PR drafts (PULL_REQUEST_*.md) and updates of them   <- drop before submitting
-a2ee8e76 hash/p8000_flop: titles, part numbers, versions and dates          <- squash into 25528403
-915b2c70 cpu/z8000: block instructions restart without borrowing ...        <- squash into d613b434
-abdc8896 p8k: register the remaining state for save states                  \ driver follow-ups,
-72a1544e p8k: support save states                                           / squash into 9067870b
-61228372 cpu/z8000: use addr_add/addr_sub for the PC fetch and block restart <- squash into d613b434
-7d776fdd drafts: z8000 PR text uses addr_add/addr_sub                       <- drafts
-6ee0c0b6 p8k: tidy the driver                                               <- squash into 9067870b
-03e70d5c p8k: add the console terminal (p8k_term.*, new, by OlliL)
-2c89a5a0 p8k: tidy the console terminal after the review                    <- squash into 03e70d5c
-26a7bf3a PR draft p8k: console terminal, its ROMs and keys                  <- drafts
+64462a93 ddr/p8k.cpp: Emulated the 16 bit board, WEGA boots (incl. the console terminal, p8k_term.*)
+5724c7f6 .. 70bdbad4  PR drafts (PULL_REQUEST_*.md) and updates of them   <- drop before submitting
+caaf82fb hash/p8000_flop: titles, part numbers, versions and dates          <- squash into 25528403
+57986a34 cpu/z8000: block instructions restart without borrowing ...        <- squash into d613b434
+5b80cd69 p8k: register the remaining state for save states                  \ driver follow-ups,
+cb808c50 p8k: support save states                                           / squash into 64462a93
+9959f0ea cpu/z8000: use addr_add/addr_sub for the PC fetch and block restart <- squash into d613b434
+4ff25662 drafts: z8000 PR text uses addr_add/addr_sub                       <- drafts
+0e5cb892 p8k: tidy the driver                                               <- squash into 64462a93
+d0b77337 (now 431de339) PR draft p8k: console terminal, its ROMs and keys     <- drafts
+
+The console terminal commits (`03e70d5c`, `2c89a5a0`) were squashed into the driver commit on
+2026-10-23 (history of `p8k-clean` rewritten, force-pushed; local backup branch
+`backup-p8k-clean-before-squash`, identical tree). Older hashes in this repo's docs may be stale.
 ```
 
 Check with `git log --oneline f26abf2b..p8k-clean`; the exact list may differ slightly.
@@ -86,11 +88,10 @@ Check with `git log --oneline f26abf2b..p8k-clean`; the exact list may differ sl
 
 ### 1. Console terminal (reviewed 2026-10-23)
 
-`03e70d5c` (p8k_term.*) was reviewed with the `mame-review` rules, the findings are fixed in
-`2c89a5a0` (squash into `03e70d5c`), ROM CRC/SHA1 were checked against the files the owner
+The terminal (`p8k_term.*`, now part of the driver commit `64462a93`) was reviewed with the `mame-review` rules, the findings are fixed, ROM CRC/SHA1 were checked against the files the owner
 supplied, the PR draft A, `REVIEW_BRIEF.md`, `LOG.md` and `TODO.md` are updated. Still open:
 
-- Decide: part of PR A, or its own commit/PR after the driver (keep the driver PR small if possible).
+- Decided 2026-10-23: the terminal is part of the driver commit (PR A).
 - Re-run `/mame-review` over the final series (it also covers this commit).
 - Untested: Ctrl+Pause (RESET) and Pause (NMI) on a real keyboard, colour setting, bell, a WEGA session on the new terminal.
 - `make` needs a tag for `git describe`: local annotated tag `mame0289-base` on `f26abf2b` (never push it).
@@ -130,7 +131,7 @@ final PR branches after the split (step 4). Fix findings in fixup commits and sq
    ahead, recheck). A test rebase was clean earlier.
 2. Rebase `p8k-clean` onto current `origin/master` (`git rebase -i`, no interactive flags in the
    agent: use `GIT_SEQUENCE_EDITOR` or `git rebase --onto` with `git cherry-pick`/`git commit --fixup`+`--autosquash`).
-   Squash as listed above (`915b2c70` and `61228372` into `d613b434`; `a2ee8e76` into
+   Squash as listed above (`57986a34` and `9959f0ea` into `d613b434`; `caaf82fb` into
    `25528403`; save-state and tidy commits into the driver commit), drop all drafts commits.
    Keep the author and trailers; the commit message should still be correct after squashing
    (mention addr_add/addr_sub, save states).

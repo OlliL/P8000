@@ -24,9 +24,8 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 - [x] Reviewed with the `mame-review` rules, findings fixed (`2c89a5a0`), ROM CRC/SHA1 checked against the
       owner's files, PR draft A, review brief and LOG updated (2026-10-23).
-- [ ] Decide: terminal stays in PR A or becomes its own commit/PR after the driver.
+- [x] Decided 2026-10-23: the terminal is part of the driver commit (squashed into it; branch history rewritten).
 - [ ] Optional: test Ctrl+Pause / Pause on a real keyboard, colour setting, bell, a WEGA session on the new terminal.
-- [ ] Squash `2c89a5a0` into `03e70d5c` at split time.
 
 ## 1. Code: PC wrap follow-up
 

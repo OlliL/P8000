@@ -158,7 +158,7 @@ Commit [`25528403`](https://github.com/OlliL/mame/commit/25528403), `hash/p8000_
 
 ### Driver
 
-Commit [`9067870b`](https://github.com/OlliL/mame/commit/9067870b): `src/mame/ddr/p8k.cpp`
+Commit [`64462a93`](https://github.com/OlliL/mame/commit/64462a93): `src/mame/ddr/p8k.cpp`
 (about 1800 lines, replaces `skeleton/p8k.cpp`), `p8k_wdc.*` (Winchester controller model),
 `p8k_u130.*` (clock module), `mame.lst`. Modelled on
 `src/devices/bus/zbi/s8k_cpu.cpp` (System 8000 CPU board). Parts that are specific to the
@@ -183,7 +183,7 @@ Z8001/Z8010 side:
 **Known open point in the driver:** the daisy chain device stays outside the anonymous
 namespace (`DEFINE_DEVICE_TYPE_PRIVATE` needs a concrete exposed base class).
 
-### Console terminal (commits `03e70d5c`, `2c89a5a0`)
+### Console terminal (part of the driver commit)
 
 `src/mame/ddr/p8k_term.cpp/.h` (new, about 480 lines) and a few lines in `p8k.cpp`. The
 terminal of the P8000 runs its own firmware: U882 (Z8, `UB8830D` core) at 7.3728 MHz, i8275
@@ -209,7 +209,7 @@ the default of the `rs232` slot of both machines; `-rs232 terminal` still gives 
 - **Reviewed 2026-10-23** with the `mame-review` rules: one Blocking (key queue was a
   `std::vector`, not valid in a save state) and several Tidy (in-class initialisers with an
   out-of-line constructor, `XTAL()` instead of literals, `static const` table, a helper at
-  global scope) fixed in `2c89a5a0`. Left as is: polling `code_pressed` in `nmi_button`
+  global scope) fixed in the driver commit. Left as is: polling `code_pressed` in `nmi_button`
   (a combined key sequence on a second port field would avoid it), `m_conf` read per character
   cell in `display_pixels`, no `PORT_CHAR` on the keys (terminal key matrix, no natural keyboard).
 - **Tested:** `p8000` and `p8000_16` show the firmware banner and the monitor prompt, typed

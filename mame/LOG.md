@@ -875,13 +875,13 @@ No difference between base and the series where the output is deterministic. Not
 
 ## Console terminal (2026-10-23)
 
-Commit `03e70d5c` (by the owner) adds `p8k_term.cpp/.h`: the terminal of the P8000 as a private
+Commit `03e70d5c` (by the owner, since squashed into the driver commit `64462a93`) adds `p8k_term.cpp/.h`: the terminal of the P8000 as a private
 RS-232 device that runs the terminal firmware (U882/Z8, i8275, refresh memory, ZG0/ZG1, XT
 keyboard, bell). It is the default of the `rs232` slot (option `adm31`) of both machines.
 
 - Review with the `mame-review` rules: Blocking: the key queue was a `std::vector` (cannot be
   saved). Tidy: in-class initialisers with out-of-line constructor, `XTAL(...)` literals,
-  `static const` colour table, helper function at global scope. All fixed in `2c89a5a0`.
+  `static const` colour table, helper function at global scope. All fixed (later squashed into the driver commit).
   Not changed: `code_pressed` polling in `nmi_button`, `m_conf` read per character cell,
   no `PORT_CHAR`.
 - ROMs (device romset `p8k_terminal`): `p8t_1_5.0` (4096, CRC `1bd93470`, SHA1
@@ -896,3 +896,6 @@ keyboard, bell). It is the default of the `rs232` slot (option `adm31`) of both 
   firmware banner and the monitor prompt and typed keys arrive; save and load work.
 - Build note: `make` needs a tag in the history for `git describe`; the local annotated tag
   `mame0289-base` (on `f26abf2b`) was added for that and is never pushed.
+- 2026-10-23: the terminal commits were squashed into the driver commit (`64462a93`); `p8k-clean`
+  was force-pushed (head `431de339`), local backup branch `backup-p8k-clean-before-squash`.
+  Hashes of older docs/commit links to the driver commit changed; the other commits keep theirs.
