@@ -24,6 +24,18 @@ extern struct node resc[];
 #define MAX(a, b)	((a) < (b) ? (b) : (a))
 #define MIN(a, b)	((a) > (b) ? (b) : (a))
 
+/* 0x49c0: is the register (rval of a REG node) unusable as the base of an address: r0, or class 1 in the high byte */
+int
+notoff(t, r, off)
+	int t;
+	int r;
+	long off;
+{
+	if (r >= 0x100)
+		return (char)(r >> 8) - 1 == 0;
+	return r == 0;
+}
+
 int fregs;		/* 0x8f8a, set to 8 by the start of the program */
 int ffregs;		/* 0x8f88, set to 4 */
 

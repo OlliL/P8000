@@ -81,7 +81,7 @@ szty(t)
 }
 
 /* is p->lval an operand that a one word instruction takes: an unnamed constant */
-static int
+int
 plainicon(p)
 	struct node *p;
 {
