@@ -16,7 +16,7 @@ extern int rstatus[];
 extern char *opst[];
 extern char *rnames[];
 extern struct node *talloc(), *tcopy();
-extern struct node *optim();		/* 0x1884 */
+extern struct node *canon();		/* 0x1884 */
 extern int allo(), argsize();
 extern void tfree(), reclaim();
 extern struct node resc[];
@@ -485,7 +485,7 @@ rew:
 		q->left->right->op = FREE;
 		q->left->op = FREE;
 		q->left = q->left->left;
-		p = optim(p);
+		p = canon(p);
 		rallo(p, p->rall);
 		order(c->left, 0x14);
 		order(c, 0x14);
@@ -589,7 +589,7 @@ argscan(p)
 
 	q = p;
 	rest = p;
-	if (p->op == COMOP) {
+	if (p->op == CM) {
 		rest = argscan(p->left);
 		if (argstop)
 			return rest;
@@ -710,7 +710,7 @@ argstrip(p, rest)
 		p = p->right;
 	}
 	if (p != rest) {
-		if (p->op == COMOP || p->op == FREE) {
+		if (p->op == CM || p->op == FREE) {
 			argstrip(p->left, rest);
 			p->op = FREE;
 			p = p->right;
@@ -721,7 +721,7 @@ argstrip(p, rest)
 		order(p, 1);
 		return;
 	}
-	if (p->op == COMOP || p->op == FREE)
+	if (p->op == CM || p->op == FREE)
 		return;
 	if (p->op != REG) {
 		if (p->type == 2 || p->type == 12) {

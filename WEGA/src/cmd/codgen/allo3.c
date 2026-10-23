@@ -12,7 +12,7 @@
 
 extern int cerror();
 extern char *calloc();
-extern struct node *getlr();
+extern struct node *getlr(), *talloc();
 extern int tshape();
 extern int szty();
 extern int getreg();
@@ -373,54 +373,7 @@ allo(p, q)
 	return 1;
 }
 
-/* ---- trees --------------------------------------------------------------------------------------------- */
-
-static void
-fwalk(p, f)
-	struct node *p;
-	void (*f)();
-{
-	int kind;
-
-	if (p == 0)
-		return;
-	kind = dope[p->op] & 0xE;
-	if (kind != LTYPE)
-		fwalk(p->left, f);
-	if (kind == BITYPE)
-		fwalk(p->right, f);
-	f(p);
-}
-
-static void
-free1(p)
-	struct node *p;
-{
-	if (p == 0)
-		cerror("freeing blank tree!");
-	else
-		p->op = FREE;
-}
-
-void
-tfree(p)
-	struct node *p;
-{
-	if (p->op != FREE)
-		fwalk(p, free1);
-}
-
-struct node *
-talloc()
-{
-	struct node *p;
-
-	p = (struct node *)calloc(1, sizeof *p);
-
-	if (p == 0)
-		cerror("out of tree space; simplify expression");
-	return p;
-}
+/* ---- trees (the pool and the walkers are in comm3.c) ---- */
 
 /* a copy of the tree; the registers it uses count as busy once more */
 struct node *

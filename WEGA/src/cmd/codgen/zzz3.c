@@ -14,16 +14,6 @@
 
 #define DIVFLAG	0x80		/* dope flag of the division operators: the dividend gets extended */
 
-#define ULE	86
-#define ULT	87
-#define UGE	88
-#define UGT	89
-#define FEQ	90
-#define FNE	91
-#define FLE	92
-#define FLT	93
-#define FGE	94
-#define FGT	95
 
 extern int cerror();
 extern struct node *getlr();

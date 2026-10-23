@@ -20,7 +20,14 @@
 #define ER	19
 #define ANDAND	23
 #define OROR	24
-#define COMOP	56
+#define CM	56
+#define QUEST	21
+#define UMINUS	10
+#define UCALL	72
+#define FCALL	73
+#define UFCALL	75
+#define INIT	116
+#define COMOP	59
 #define ASSIGN	58
 #define DIV	60
 #define MOD	62
@@ -28,6 +35,8 @@
 #define RS	66
 #define CALL	70
 #define NOT	76
+#define COMPL	77
+#define UAND	16
 #define INCR	78
 #define DECR	79
 #define EQ	80
@@ -36,6 +45,16 @@
 #define LT	83
 #define GE	84
 #define GT	85
+#define ULE	86
+#define ULT	87
+#define UGE	88
+#define UGT	89
+#define FEQ	90
+#define FNE	91
+#define FLE	92
+#define FLT	93
+#define FGE	94
+#define FGT	95
 #define RET	114
 #define FREE	100		/* sentinel in the table / free node */
 #define STASG	101
