@@ -31,9 +31,9 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 - [x] Repeating block instructions and the PC wrap: reproduced 2026-10-16 (`ldir` at
       `<<1>>%FFFC`: old core jumps to segment 0 after one round, R1=2) and fixed with
-      `addr_sub(m_pc, 4)` (32 places, commit `915b2c70`; first as `restart_insn()`, changed after a review comment). New core copies all 3 words and
+      `addr_sub(m_pc, 4)` (32 places, commit `57986a34`; first as `restart_insn()`, changed after a review comment). New core copies all 3 words and
       continues at `<<1>>%0000`. Test: `tools/run_blk.sh` + `tools/blk2.lua` (emulator only).
-      **At split time:** squash `915b2c70` into `d613b434`; its change to
+      **At split time:** squash `57986a34` into `d613b434`; its change to
       `PULL_REQUEST_z8000.md` belongs to the drafts commit.
 - [x] Real-machine test 06 (`tests/06-z8000-block-instruction-restart`): measured 2026-10-16, `7F21 D050 8200 0002`, `A001 A002 A003`, as the emulator.
 - [x] Manual references for the PC wrap and the block restart added to the PR draft and the brief (LOG.md).
@@ -57,7 +57,7 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 - [x] `hash/p8000_flop.xml` against the software list rules: mechanical checks pass, all sets verify,
       OS/M tested, titles/part numbers/versions/dates now from the disk labels and the READMEs the
-      owner supplied (commit `a2ee8e76` on `p8k-clean`, to be squashed into the software list commit).
+      owner supplied (commit `caaf82fb` on `p8k-clean`, to be squashed into the software list commit).
   - [ ] Optional: run the two `w31doc` disks once (mount in WEGA, copy a packed manual).
   - [ ] Optional: the checksums printed on the labels ("Pruefsumme", COPY.DISK / COPY.TAR under UDOS)
         could prove that the images equal the originals; algorithm not known, not needed for the list.

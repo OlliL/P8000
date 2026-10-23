@@ -733,7 +733,7 @@ restart with `m_pc -= 4`. An instruction of two words at `seg:FFFC` leaves the P
 `<<1>>%0000`: old core (with the wrap fix only) copies one word, R1=2, then runs away
 (PC=7FE0); with `restart_insn()` all three words are copied, R1=0, R0=1234, PC at
 `<<1>>%0004`. Run with `tools/run_blk.sh <mame binary> <out>` (MON16 reached through `X` and
-NMI, then `blk2.lua` takes over the CPU). Fix: commit `915b2c70` on `p8k-clean`.
+NMI, then `blk2.lua` takes over the CPU). Fix: commit `57986a34` on `p8k-clean`.
 
 Test 06 (`tests/06-z8000-block-instruction-restart`) is the same case as a real-machine program like test 05:
 `ldir` at `<<2>>%FFFC`, `sc #%21` at `<<2>>%0000`, marker `sc #%22` at `<<1>>%FFFC`. Emulator: old core

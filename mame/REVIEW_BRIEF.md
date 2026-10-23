@@ -52,7 +52,7 @@ Commit [`d613b434`](https://github.com/OlliL/mame/commit/d613b434) in
 - **Block instructions:** the repeating block instructions restart themselves with
   `m_pc -= 4` (32 places in `z8000ops.hxx`). After a wrapped fetch (instruction ending at
   offset `FFFC`) this borrowed from the segment number. Fixed in commit
-  [`915b2c70`](https://github.com/OlliL/mame/commit/915b2c70) with `addr_sub(m_pc, 4)`
+  [`57986a34`](https://github.com/OlliL/mame/commit/57986a34) with `addr_sub(m_pc, 4)`
   (to be squashed into `d613b434`; the fetch uses `addr_add(m_pc, 2)`, as suggested in a review comment). Checked on the emulator with an `ldir`
   at `<<1>>%FFFC` (old: leaves segment 1 after one round; new: copies all words). Measured on the
   real machine too: [test 06](tests/06-z8000-block-instruction-restart/README.md) (`7F21 D050 8200 0002`, words `A001 A002 A003`, equal to the emulator).
