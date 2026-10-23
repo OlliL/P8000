@@ -8,6 +8,9 @@
 #include "cg.h"
 
 extern int cerror();
+extern void tsuffix();
+extern char *rnames[], *rlnames[];
+extern int rmode, rlmode;
 extern int rstatus[];		/* regs3.c: status bits of the registers (SAREG, STAREG, ... by register number) */
 
 #define MAXRCOUNT 5000
@@ -178,4 +181,69 @@ ltypeok(op, p)
 	if (op == STAR && p != 0 && shumul(p->left))
 		return 1;
 	return 0;
+}
+
+/*
+ * rmove: copy register `from` to register `to` (assembler text) and let `to` take over what `from` holds
+ * (symbol, offset, kind); when `from` is on no list `to` holds nothing known afterwards (0x3cf2)
+ */
+void
+rmove(to, from, type)
+	int to, from, type;
+{
+	struct rs *t, *f;
+
+	for (t = rsuse; t; t = t->next)
+		if (t->reg == to)
+			break;
+	if (t == 0)
+		for (t = rsfree; t; t = t->next)
+			if (t->reg == to)
+				break;
+	if (t == 0)
+		cerror("rmove: destination reg not found");
+	for (f = rsuse; f; f = f->next)
+		if (f->reg == from)
+			break;
+	if (f == 0)
+		for (f = rsfree; f; f = f->next)
+			if (f->reg == from)
+				break;
+	if (f == 0) {
+		t->sym = 0;
+		t->off = 0;
+		t->kind = 8;
+	} else {
+		t->sym = f->sym;
+		t->off = f->off;
+		t->kind = f->kind;
+	}
+	if (type == 6 || type == 7)
+		printf("/* rmove */\n\tfld");
+	else
+		printf("/* rmove */\n\tld");
+	tsuffix(type);
+	if (rmode) {
+		printf("\tr%s,r%s\n", rnames[to], rnames[from]);
+		rmode = 0;
+	} else if (rlmode) {
+		printf("\t%s,%s\n", rlnames[to], rlnames[from]);
+		rlmode = 0;
+	} else
+		printf("\t%s,%s\n", rnames[to], rnames[from]);
+}
+
+/* size of an argument in words (0x88f6): a structure argument by its size, a float counts as a double */
+int
+argsize(p)
+	struct node *p;
+{
+	int t;
+
+	if (p->op == STARG)
+		return (unsigned)(p->stsize & ~1) >> 1;
+	if (p->op == NAME && p->type == 8)
+		return p->sname->ssize / 16;
+	t = p->type == 6 ? 7 : p->type;
+	return szty(t);
 }

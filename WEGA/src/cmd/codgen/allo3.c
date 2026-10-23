@@ -22,14 +22,6 @@ extern void tmpcleanup();			/* 0x9308 */
 extern void rmove();	/* 0x3cf2 */
 void rfreeall();
 
-struct rs {
-	char reg, cls, kind, busy;
-	long off;
-	unsigned flags;
-	struct rs *next;
-	struct sym *sym;
-};
-extern struct rs *rsuse;
 
 long tmpoff;		/* 0x69d4: the next free temporary (bits) */
 long maxoff;		/* 0x8fcc: the largest frame offset so far */

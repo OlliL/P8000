@@ -2,8 +2,9 @@
  * regallo3.c - the register status lists (codgen / scodgen)
  *
  * Reconstructed from /lib/codgen: rsinit 0x740c, rsbuild 0x7458, newnode 0x75e0, rsinsert 0x7650, roverlap 0x7790,
- * regjam 0x7916, getreg 0x7c10, rsreturn 0x7f50, nullsyms 0x811e, rsrelease 0x847a. Not done yet: rsfreeall 0x815e,
- * rspush 0x81c4, rsmerge 0x81fe, rsrestart 0x8502, rsdump 0x750c (debug).
+ * regjam 0x7916, getreg 0x7c10, rsreturn 0x7f50, nullsyms 0x811e, rsrelease 0x847a. rsfreeall 0x815e,
+ * rspush 0x81c4, rsmerge 0x81fe, rsmatch 0x83ec, rsrelall 0x84b6, rsrestart 0x8502, rsdump 0x750c (debug).
+ * rspush, rsmatch, rsrelall, rsrestart and rsdump are never called in codgen.
  *
  * The registers are kept on two lists of 14 byte nodes: rsfree (the free registers, ordered by class) and rsuse
  * (the ones that are in use). A register class is: 1 byte register, 2 word register, 3 long register, 4 float
@@ -14,26 +15,21 @@
 #include "cg.h"
 
 extern int cerror();
+extern int roverlap();
+extern int getreg();
+extern void rsreturn();
 
-struct rs {
-	char reg;	/* register number (byte registers 0..15, word registers 0..15, long registers even) */
-	char cls;
-	char kind;	/* 8: holds a symbol */
-	char busy;	/* use count */
-	long	off;		/* frame offset of the symbol it holds */
-	unsigned flags;		/* bit 15: ... */
-	struct rs *next;
-	struct sym *sym;
-};
 
 #define NPOOL	87
 static struct rs pool[NPOOL];
-struct rs *rsfree, *rsuse, *rspool;
 struct rs *rsexcl;		/* 0xa79a: nodes taken away from rsuse by rsmerge */
 int rsdepth;			/* 0xa7aa: saved lists */
 struct rs *rssaved[3];
 int rsmark[3];
-int rsflag1, rsflag2;		/* 0xa2d6, 0xa7ac: not used by the functions below */
+int rsflag1;			/* 0xa2d6: number of entries of rstab1 */
+int rstab1[3];			/* 0xa2d0 */
+int rsflag2;			/* 0xa7ac: number of entries of rstab2 */
+int rstab2[3];			/* 0xa7ae */
 
 /* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
 static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
@@ -665,4 +661,225 @@ pairmate(r)
 	int r;
 {
 	return r & 1 ? r - 1 : r + 1;
+}
+
+/* debug: print a list of register nodes */
+static char rcname[][8] = {
+	"TBYTE", "TWORD", "TLONG", "TFLOAT", "GBYTE", "GWORD", "GLONG", "GFLOAT", "RANY", "NULL"
+};
+
+void
+rsdump(l)
+	struct rs *l;
+{
+	struct rs *n;
+
+	printf("//\n//   Reg No.\tType\tSymbol\tusecount\toffset\taddr\tdtype\n");
+	for (n = l; n; n = n->next) {
+		printf("//\t%d", n->reg);
+		printf("\t%s", rcname[n->cls - 1]);
+		printf("\t%s", ascii + n->sym->nameoff);
+		printf("\t%d", n->busy);
+		printf("\t\t%ld", n->off);
+		printf("\t%d", n->flags >> 15 & 1);
+		if (n->kind == 8)
+			printf("\tDNULL");
+		else if (n->kind == 6)
+			printf("\tDETMP");
+		putchar('\n');
+	}
+}
+
+/*
+ * Free the nodes of rsuse that flag selects: 1 the variables of the classes up to 4 that are not
+ * register variables (kind 6), 2 the nodes of the classes above 4, 3 all of them.
+ */
+void
+rsfreeall(flag)
+	int flag;
+{
+	struct rs *n, *next;
+
+	for (n = rsuse; n; n = next) {
+		next = n->next;
+		if (flag == 1) {
+			if (n->cls > 4)
+				continue;
+			if (n->kind == 6)
+				continue;
+		} else if (flag == 2) {
+			if (n->cls <= 4)
+				continue;
+		} else if (flag != 3)
+			continue;
+		rsreturn(n->cls, n->reg);
+	}
+}
+
+/* save rsuse (with a mark) and start with an empty list; never called */
+void
+rspush(mark)
+	int mark;
+{
+	if (rsdepth < 3) {
+		rssaved[rsdepth] = rsuse;
+		rsmark[rsdepth] = mark;
+		rsdepth++;
+		rsuse = 0;
+	}
+}
+
+/* put the nodes of a saved list back: those that overlap one of rsuse or rsexcl replace or are dropped */
+void
+rsmerge(hp)
+	struct rs **hp;
+{
+	struct rs *n, *prev, *p, *q;
+	char gone1, gone2, drop1, drop2;
+
+	if (rsuse == 0) {
+		rsuse = *hp;
+		rsexcl = 0;
+		return;
+	}
+	gone2 = gone1 = 0;
+	n = prev = *hp;
+	while (n) {
+		drop2 = drop1 = 0;
+		q = p = rsexcl;
+		while (p) {
+			if (roverlap(p->cls, p->reg, n)) {
+				gone1 = 1;
+				if (p->cls < n->cls) {
+					drop1 = 0;
+					if (q == p) {
+						rsexcl = p->next;
+						q = rsexcl;
+					} else
+						q->next = p->next;
+					p->next = rspool;
+					rspool = p;
+					p = q;
+					if (q == rsexcl)
+						continue;
+				} else
+					drop1 = 1;
+			}
+			q = p;
+			p = p->next;
+		}
+		if (!drop1) {
+			q = p = rsuse;
+			while (p) {
+				if (roverlap(p->cls, p->reg, n)) {
+					gone2 = 1;
+					if (p->cls >= n->cls) {
+						drop2 = 1;
+						if (q == p) {
+							rsuse = p->next;
+							q = rsuse;
+						} else
+							q->next = p->next;
+						p->next = rsexcl;
+						rsexcl = p;
+					} else {
+						drop2 = 0;
+						if (q == p) {
+							rsuse = p->next;
+							q = rsuse;
+						} else
+							q->next = p->next;
+						p->next = rspool;
+						rspool = p;
+					}
+					p = q;
+					if (q == rsuse)
+						continue;
+				}
+				q = p;
+				p = p->next;
+			}
+		}
+		if (gone2 || gone1) {
+			if (drop1 || drop2) {
+				if (prev == n) {
+					*hp = prev->next;
+					prev = *hp;
+				} else
+					prev->next = n->next;
+				n->next = rspool;
+				rspool = n;
+			} else {
+				if (prev == n) {
+					*hp = prev->next;
+					prev = *hp;
+				} else
+					prev->next = n->next;
+				n->next = rsexcl;
+				rsexcl = n;
+			}
+		} else {
+			if (prev == n) {
+				*hp = prev->next;
+				prev = *hp;
+			} else
+				prev->next = n->next;
+			n->next = rsuse;
+			rsuse = n;
+		}
+		n = prev;
+		if (prev != *hp)
+			n = n->next;
+	}
+}
+
+/* merge the saved lists whose marks are all in rstab1; 0 when one is missing; never called */
+int
+rsmatch()
+{
+	int i, j;
+
+	if (rsflag2 <= 0)
+		return 0;
+	for (i = rsflag2; i > 0; i--) {
+		for (j = 0; ; j++) {
+			if (j >= rsdepth)
+				return 0;
+			if (rsmark[j] == rstab1[i - 1])
+				break;
+		}
+	}
+	for (i = rsflag2; i > 0; i--)
+		for (j = 0; j < rsdepth; j++)
+			if (rsmark[j] == rstab1[i - 1])
+				rsmerge(&rssaved[j]);
+	return 1;
+}
+
+/* give back the saved lists named in rstab2 (the loop runs only for a negative count: dead code); never called */
+void
+rsrelall()
+{
+	int i, j;
+
+	for (i = rsflag1; i < 0; i--)
+		for (j = 0; j < rsdepth; j++)
+			if (rsmark[j] == rstab2[i])
+				rsrelease(rssaved[j]);
+}
+
+/* take the registers of rsuse again on a fresh free list; never called */
+void
+rsrestart()
+{
+	struct rs *l, *n;
+
+	rsbuild();
+	if (rsuse == 0)
+		return;
+	l = rsuse;
+	rsuse = 0;
+	for (n = l; n; n = n->next)
+		getreg(n->cls, n->reg, 0x2000, 0);
+	rsrelease(l);
 }

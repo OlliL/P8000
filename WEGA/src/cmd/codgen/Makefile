@@ -9,7 +9,7 @@
 CC = cc
 SCC = scc
 CFLAGS = -O
-OBJS = allo3.o local3.o match3.o out3.o regallo3.o
+OBJS = allo3.o local3.o match3.o order3.o out3.o regallo3.o regfile3.o tmp3.o
 
 all: objs
 

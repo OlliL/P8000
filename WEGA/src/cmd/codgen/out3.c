@@ -318,3 +318,43 @@ expand(p, cookie, cp)
 	}
 	rlmode = rmode = 0;
 }
+
+/*
+ * The suffix letter of an instruction for a type: b for bytes (and the W mode), l for longs (and the V mode),
+ * s float, d double, nothing for words and pointers (0x2796). Used by the macro ZB and by rmove.
+ */
+int nosuffix;	/* 0x280e */
+
+void
+tsuffix(t)
+	int t;
+{
+	if (nosuffix)
+		return;
+	switch (t) {
+	case 2:
+	case 12:
+		putchar('b');
+		rlmode++;
+		break;
+	case 3:
+	case 4:
+	case 13:
+	case 14:
+		break;
+	case 5:
+	case 15:
+		putchar('l');
+		rmode++;
+		break;
+	case 6:
+		putchar('s');
+		break;
+	case 7:
+		putchar('d');
+		break;
+	default:
+		if ((t & 0x30) != 0x10)
+			cerror("zzzcode - bad type");
+	}
+}

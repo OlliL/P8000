@@ -39,7 +39,7 @@ our own C sources, checked byte for byte against the original binaries.
 |---|---|
 | `cpp` | not started (original `/lib/cpp`; Plexus-free reconstruction needed) |
 | `cparse` / `scparse` | not started; the parser is the biggest part |
-| `codgen` / `scodgen` | in progress: formats read and checked (`tools/cgread.py`), table written as source (`tools/codgentab.py`, `src/cmd/codgen/table3_*.c`), harness `src/cmd/codgen/{corpus,check}.sh`; `src/cmd/codgen/{cg.h,ops_*.c,match3.c}`: constants, operator table, tshape/ttype/setrew; the rest of the engine (about 6000 lines of PCC pass 2 code) is next |
+| `codgen` / `scodgen` | in progress: formats read and checked (`tools/cgread.py`), table written as source (`tools/codgentab.py`, `src/cmd/codgen/table3_*.c`), harness `src/cmd/codgen/{corpus,check}.sh`; `src/cmd/codgen/{cg.h,ops_*.c,match3.c}`: constants, operator table, tshape/ttype/setrew; `order3.c`, `regfile3.c`, `tmp3.c`, `regallo3.c`, `allo3.c`, `local3.c`, `out3.c` written (compile with cc and scc, not yet compared with the original); open: zzzcode, fixname/oregfix/symuse, rvstore/rvrestore, wrt/lcl/regs/tr/optim/comm, the reader and main |
 | `gopt` | not started (only used with -Ol/-Or) |
 | `popt`, `spopt` | done: `host/popt` (`make` builds both; `spopt` is the same sources with `-DSPOPT`), checked against the originals with `make -C host/popt check` / `PROG=spopt` |
 | `cas` | done: all modules decompiled to `src/cmd/cas/` (same behaviour as the original, code of the older scc not byte identical, see `src/cmd/cas/MODULES`); host version `host/cas`, checked against the original |

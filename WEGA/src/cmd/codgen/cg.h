@@ -11,6 +11,32 @@
 #define ICON	4
 #define FCON	5
 #define STAR	13		/* unary * */
+#define ASG	1+		/* the assignment form of an operator: ASG PLUS is 7 */
+#define PLUS	6
+#define MINUS	8
+#define MUL	11
+#define AND	14
+#define OR	17
+#define ER	19
+#define ANDAND	23
+#define OROR	24
+#define COMOP	56
+#define ASSIGN	58
+#define DIV	60
+#define MOD	62
+#define LS	64
+#define RS	66
+#define CALL	70
+#define NOT	76
+#define INCR	78
+#define DECR	79
+#define EQ	80
+#define NE	81
+#define LE	82
+#define LT	83
+#define GE	84
+#define GT	85
+#define RET	114
 #define FREE	100		/* sentinel in the table / free node */
 #define STASG	101
 #define STARG	102
@@ -69,7 +95,8 @@ struct node {
 	int	op;
 	int	rall;		/* register preference, NOPREF when none */
 	int	type;
-	int	global;		/* 6 */
+	char	su;		/* 6: registers the subtree needs (word registers) */
+	char	fsu;		/* 7: float registers the subtree needs */
 	struct sym *sname;	/* 8: symbol of a NAME or ICON; non-zero: the constant has a name */
 	int	label;		/* the target label of a CBRANCH (shares the slot of sname in the original) */
 	int	stsize;		/* 0xA: STASG size, TEMP number */
@@ -84,11 +111,28 @@ struct sym {
 	int	nameoff;	/* +0: offset of the name in the ascii table */
 	int	stype;		/* +2 */
 	int	sclass;		/* +4 (high byte of the third word): 1 auto, 3 static, 9 parameter ... */
+	int	sx6;		/* +6 */
 	long	soffset;	/* +8: bit offset in the frame, or the label number of a static */
+	long	ssize;		/* +0xC: size in bits (a structure argument) */
 	int	sflags;		/* +0x10 */
+	int	sx12;		/* +0x12 */
+	int	sx14;		/* +0x14: 0xFFFF */
 };
 extern char ascii[];		/* the ascii table (names of the symbols) */
 extern struct sym *fpsym1, *fpsym2;	/* the pseudo symbols ~L1 and ~L2 of the frame */
+
+struct rs {
+	char reg;	/* register number (byte registers 0..15, word registers 0..15, long registers even) */
+	char cls;
+	char kind;	/* 8: holds a symbol */
+	char busy;	/* use count */
+	long	off;		/* frame offset of the symbol it holds */
+	unsigned flags;		/* bit 15: ... */
+	struct rs *next;
+	struct sym *sym;
+};
+extern int fregs, ffregs;	/* 0x8f8a, 0x8f88: the number of word and float registers (8, 4) */
+extern struct rs *rsfree, *rsuse, *rspool;
 
 struct optab {
 	int	op;
