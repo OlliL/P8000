@@ -12,7 +12,7 @@ extern int deflab(), branch();
 extern struct rs *rfind();
 extern int rclass();
 extern char *rnames[];
-extern long autooff, maxauto;
+extern long maxoff, parmax;
 extern int minreg, maxreg;
 extern int fltused;
 extern char fname[];		/* 0xa0e4: the name of the function */
@@ -186,7 +186,7 @@ regargs(tot)
 	fl:
 		if (cls == 4) {
 			mn = s->stype == 6 ? "flds" : "fldd";
-			if (autooff + s->soffset != 0)
+			if (maxoff + s->soffset != 0)
 				printf("\t%s\t~L1+%ld(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
 			else
 				printf("\t%s\t@fp,%s\n", mn, rnames[reg]);
@@ -195,17 +195,17 @@ regargs(tot)
 	if (hi < lo)
 		return;
 	if (hi == lo) {
-		if ((long)(unsigned)t + autooff != 0)
+		if ((long)(unsigned)t + maxoff != 0)
 			printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
 		else
 			printf("\tld\t@fp,r%d\n", lo);
 	} else if (!(lo & 1) && hi - lo == 1) {
-		if ((long)(unsigned)t + autooff != 0)
+		if ((long)(unsigned)t + maxoff != 0)
 			printf("\tldl\t~L1+%u(fp),rr%d\n", t, lo);
 		else
 			printf("\tldl\t@fp,rr%d\n", lo);
 	} else {
-		if ((long)(unsigned)t + autooff != 0)
+		if ((long)(unsigned)t + maxoff != 0)
 			printf("\tldm\t~L1+%u(fp),r%d,#%d\n", t, lo, hi - lo + 1);
 		else
 			printf("\tldm\t@fp,r%d,#%d\n", lo, hi - lo + 1);
@@ -226,7 +226,7 @@ prolog(a, sz, b, w, tot)
 	regsave(a, sz, b, w, tot);
 	regargs(tot);
 	branch(jlab);
-	funcend((int)(autooff / 8), tot);
+	funcend((int)(maxoff / 8), tot);
 }
 
 /* the end of the function: entry and exit code with the frame sizes now known */
@@ -236,7 +236,7 @@ efcode()
 	long sz, w;
 	int a, b, tot;
 
-	sz = (maxauto + autooff) / 8;
+	sz = (parmax + maxoff) / 8;
 	if (sz % 2)
 		sz = (sz / 2 + 1) * 2;
 	a = 14 - minreg;

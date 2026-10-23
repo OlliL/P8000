@@ -741,7 +741,7 @@ static void
 argplace()
 {
 	int cnt[4];
-	int i, k, regs, left, fleft;
+	int i, k, regs, nleft, fleft;
 	struct node *q;
 	int reg;
 
@@ -752,10 +752,10 @@ argplace()
 	q = argl[nargs].node;
 	if (q == 0)
 		return;
-	left = 8;
+	nleft = 8;
 	fleft = 4;
 	while ((q = argl[nargs].node) != 0) {
-		if (left < q->su || fleft < q->fsu || (regs < 1 && q->su > 1)) {
+		if (nleft < q->su || fleft < q->fsu || (regs < 1 && q->su > 1)) {
 			order(q, 0x1000);
 			nargs++;
 			continue;
@@ -765,7 +765,7 @@ argplace()
 			nargs++;
 			continue;
 		}
-		left -= argsize(q);
+		nleft -= argsize(q);
 		regs = 3;
 		cnt[argl[nargs].reg / 2]++;
 		for (i = 1; i < 4; i++)

@@ -74,11 +74,11 @@ rfind(reg, cls)
 
 /* count the register of an operand as busy; sym and lval are only passed on */
 void
-rbusy(reg, type, sym, lval)
+rbusy(reg, type, sym, lv)
 	int reg;
 	int type;
 	struct sym *sym;
-	long lval;
+	long lv;
 {
 	struct rs *n, *prev;
 	int cls = rclass(type, reg), l;
@@ -307,7 +307,7 @@ allo(p, q)
 		resc[k].type = p->type;
 		resc[k].rval = allocreg(p, a & 0xF);
 		resc[k].lval = 0;
-		resc[k].stsize = 0;
+		resc[k].sname = 0;
 		a--;
 		k++;
 	}
@@ -330,7 +330,7 @@ allo(p, q)
 		resc[k].type = p->type;
 		resc[k].rval = allocreg(p, a & 0xF0);
 		resc[k].lval = 0;
-		resc[k].stsize = 0;
+		resc[k].sname = 0;
 		a -= 16;
 		k++;
 	}

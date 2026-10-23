@@ -3,7 +3,7 @@
  *
  * Reconstructed from /lib/codgen: acon() 0x437e, oregput() 0x409a, conput() 0x3fda, upput() 0x40d4, adrput() 0x41d0,
  * hopcode() 0x2de0, expand() 0x6444. The output goes to the standard output. The macros Z (zzzcode) and C of
- * the templates are not done yet.
+ * the templates are done.
  */
 #include "cg.h"
 
@@ -14,10 +14,13 @@ extern char *opst[];		/* operator names (comm3) */
 extern int fldsz, fldshf;	/* the field that tshape found */
 extern char *rnames[];		/* r0 .. r14 fp f0 .. f3, 3fca */
 extern char *rlnames[];		/* rl0 .. rl7, 27ca */
-extern int rlmode, rmode;	/* 0x280c (W: low byte registers) and 0x280a (V: long registers) */
-extern int upperlval;		/* 0xa148: print the high word of a long constant */
+int rlmode, rmode;	/* 0x280c (W: low byte registers) and 0x280a (V: long registers) */
+int upperlval;		/* 0xa148: print the high word of a long constant */
 extern int tflag;		/* 0x35d0: set by the macro T */
-extern int zzzcode();	/* 0x2edc */
+extern int zzzcode();
+extern int rclass();
+extern struct rs *rfind();
+extern struct node resc[];	/* 0x2edc */
 
 /* a name or constant: label, name, +offset */
 void
@@ -245,7 +248,9 @@ expand(p, cookie, cp)
 	char *cp;
 {
 	struct node *r;
+	struct rs *n;
 	long m;
+	int k;
 
 	tflag = 0;
 	for (; *cp; cp++) {
@@ -310,7 +315,18 @@ expand(p, cookie, cp)
 			zzzcode(p, *++cp);
 			break;
 		case 'C':
-			cerror("expand: macro C is not done yet");
+			/* the result register of a call holds the value of the right operand: note it for the register file */
+			r = getlr(p, *++cp);
+			k = rclass(p->type, resc[0].rval);
+			n = rfind(resc[0].rval, k);
+			if (p->op == UCALL)
+				n->sym = 0;
+			else {
+				n->off = r->lval;
+				n->sym = fpsym1;
+				n->flags |= 0x8000;
+			}
+			conput(r);
 			break;
 		default:
 			putchar(*cp);

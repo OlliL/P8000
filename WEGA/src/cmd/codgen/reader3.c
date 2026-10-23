@@ -31,15 +31,21 @@ extern void genargs();
 extern void sucomp();
 extern void rcount();
 extern char *opst[];
-extern char *cnames[];		/* 0x120: SANY .. SWADD, 0 */
 extern int dope[];
-extern int negrel[];		/* 0x274 */
 extern int fregs, ffregs;
 extern struct node resc[];
 int lmuldiv;		/* 0x3e: the second long multiplication or division in an expression forces a store */
 struct node *stotree;	/* 0x8f92: the subtree that has to be stored first */
 int stocook;		/* 0x8fc6 */
 int callflag;		/* 0x8f5a */
+
+char *cnames[] = {		/* 0x120 */
+	"SANY", "SAREG", "STAREG", "SBREG", "STBREG", "SCC", "SNAME", "SCON", "SFLD", "SOREG", "STARNM", "STARREG",
+	"INTEMP", "FORARG", "SWADD", 0
+};
+
+/* the relation that is true when the one in the index is false */
+int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE, FLT, FLE };	/* 0x274 */
 
 void delay(), order(), cbranch(), store(), constore(), markcall(), stoarg();
 struct node *canon(), *argprep();
@@ -729,7 +735,7 @@ extern long freetemp();
 extern void walkd();
 extern int tbytes();
 extern void canon2();
-extern void fixmap(), mapregs();	/* 0x20c0: map the symbols of a tree, 0x9512 */
+extern void mapnm(), mapregs();	/* 0x20c0: map the symbols of a tree, 0x9512 */
 int ndelay;			/* 0x69de */
 struct node *deltrees[NDELAY];	/* 0x8f9a */
 
@@ -843,7 +849,7 @@ delay(p)
 			off = freetemp(sz) / 8;
 		}
 	}
-	fwalkd(p, fixmap, 0);
+	fwalkd(p, mapnm, 0);
 	fwalk(p, mapregs);
 	canon2(p);
 	while (delay1(p))
@@ -870,4 +876,48 @@ delay(p)
 		else
 			printf("\tld\tr2,~L1+%ld(fp)\n", off);
 	}
+}
+
+extern void fbegin(), parminit(), fixtemp(), tabclear(), gswitch(), tmpcleanup(), rcount_reset(), tcheck();
+
+/* a statement of the intermediate file: a function head, a switch, or an expression tree */
+void
+stmt(p)
+	register struct node *p;
+{
+	int tag;
+
+	rcount_reset();
+	switch (p->op) {
+	case 118:
+		mapnm(p->left);
+		fbegin(p->left->sname);
+		fwalkd(p->right, parminit, 0);
+		tfree(p);
+		return;
+	case 119:
+		mapnm(p->left);
+		fbegin(p->left->sname);
+		tfree(p);
+		return;
+	case 122:
+		if (p->left->op == TEMP) {
+			tag = p->left->rval;
+			fixtemp(p->left);
+			if (p->left->op == REG)
+				tabclear(tag);
+		} else {
+			tag = p->left->left->rval;
+			fixtemp(p->left->left);
+			if (p->left->left->op == REG)
+				tabclear(tag);
+		}
+		gswitch(p);
+		tmpcleanup();
+		tfree(p);
+		return;
+	}
+	delay(p);
+	reclaim(p, 0, 0);
+	tcheck();
 }

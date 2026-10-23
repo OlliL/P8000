@@ -23,6 +23,7 @@ extern void rsreturn();
 #define NPOOL	87
 static struct rs pool[NPOOL];
 struct rs *rsexcl;		/* 0xa79a: nodes taken away from rsuse by rsmerge */
+struct rs *rsfree, *rsuse, *rspool;	/* 0xa154, 0xa166, 0xa79c */
 int rsdepth;			/* 0xa7aa: saved lists */
 struct rs *rssaved[3];
 int rsmark[3];

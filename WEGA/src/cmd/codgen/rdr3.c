@@ -25,8 +25,9 @@ void sortsyms();
 FILE *stfile;			/* 0x8e14: the symbol table file */
 FILE *dfile;			/* 0x69dc: the data file */
 long stg;			/* 0x8f94: the offset of the global section in the symbol table file */
-long stpos = 4;			/* 0x17c6 */
-int stflag;			/* 0x17c4 */
+long stpos;			/* 0x17c6 */
+long symbase;			/* 0x8fde: the start of the symbols of the global section */
+int stflag = 2;			/* 0x17c4 */
 int firstsect = 1;		/* 0x17ca */
 int nglob;			/* 0xa0d4: the entries of tagtab */
 long nsymbytes;			/* 0xa0dc */
@@ -41,13 +42,14 @@ int nmems;			/* 0x8fe2 */
 struct sym *symtab;		/* 0x8fd2 */
 struct sym *symtab0;		/* 0x8fd8 */
 struct sym *fpsym1, *fpsym2;	/* 0x8fda, 0x8fdc */
-char ascii[MAXASCII];		/* 0x630: the ascii table; "NULL", "~L1", "~L2" come first */
+char ascii[MAXASCII] = "NULL\0~L1\0~L2";		/* 0x630: the ascii table; "NULL", "~L1", "~L2" come first */
 int numtab[2000];		/* 0x9062: the number table, a word and a -1 per entry */
 struct { int tag; struct sym *sym; } tagtab[500];	/* 0x9836 */
-int rflag, eflag;		/* 0x42, 0x44 */
-struct rv { struct sym *sym; int a; int b; int c; int d; };
-extern struct rv regvar[];	/* 0x8fe8: the register variables */
-extern int ifline;		/* 0x8fc8 */
+extern int rflag, eflag;		/* 0x42, 0x44 */
+struct rv { struct sym *sym; int rtag; int rreg; int rtype; int rcls; };
+extern struct rv regvar[];
+extern void fixmap();	/* 0x8fe8: the register variables */
+int ifline;			/* 0x8fc8 */
 
 /* one number from the intermediate file or the data file; the input is f */
 long
@@ -120,7 +122,7 @@ mkhash()
 int
 rddata()
 {
-	char buf[512];
+	static char buf[512];
 	long n;
 	int chunk, got;
 
@@ -191,7 +193,7 @@ void
 readnums(n)
 	int n;
 {
-	int buf[500];
+	static int buf[500];
 	register int *src, *dst;
 	int base, k;
 
@@ -216,8 +218,9 @@ void
 readmems(n)
 	int n;
 {
-	struct { long off; int x; } mem[500], *cur, *first;
-	long len, base, at;
+	static struct { long off; int x; } mem[500];
+	register struct { long off; int x; } *cur, *first;
+	long base;
 	int rem, dest, cnt, k;
 
 	if (n <= 0)
@@ -226,12 +229,12 @@ readmems(n)
 	stpos = ftell(stfile);
 	cur = mem;
 	if (firstsect) {
-		len = stg + 14;
+		symbase = stg + 14;
 		fseek(stfile, stg + 2, 0);
 		fread(&gsymbytes, 4, 1, stfile);
 		fread(&gasciibytes, 4, 1, stfile);
 		fread(&gnumbytes, 2, 1, stfile);
-		fseek(stfile, len + gsymbytes, 0);
+		fseek(stfile, symbase + gsymbytes, 0);
 		if (gasciibytes + nasciibytes + 0x15 > MAXASCII)
 			cerror("global ascii table overflow");
 		readtab(ascii + MAXASCII - gasciibytes, gasciibytes);
@@ -252,7 +255,7 @@ readmems(n)
 			cur++;
 			cnt++;
 		}
-		fseek(stfile, len + base, 0);
+		fseek(stfile, symbase + base, 0);
 		readsyms(cnt, (struct sym *)((char *)symtab + dest * 22), MAXASCII - gasciibytes);
 		dest += cnt;
 		rem -= cnt;
@@ -391,7 +394,7 @@ mapnm(p)
 					n -= 7;
 			}
 			if (rflag && regvar[n].sym != p->sname) {
-				s->sclass = regvar[n].c;
+				s->sclass = regvar[n].rcls;
 				goto done;
 			}
 			n = s->sbyte5;

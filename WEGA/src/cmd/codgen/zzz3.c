@@ -22,11 +22,11 @@ extern struct rs *rfind();
 extern int tshape(), order(), getreg(), szty(), rclass(), notoff();
 extern int getlab(), deflab(), plainicon();
 extern void cbgen();
-extern long ispow2();
+extern int ispow2();
 extern void tsuffix(), hopcode(), expand(), adrput(), rfree(), rfreenode(), rbusy(), rsreturn(), rfreeall();
 extern void tfree(), fwalk();
 extern char *rnames[];		/* 0x3fca */
-extern char *rlnames[];		/* 0x27ba */
+extern char *rhnames[];		/* 0x27ba */
 extern char *opst[];		/* 0x8e1a */
 extern int dope[];		/* 0x8d0a */
 extern int negrel[];		/* 0x274: the relation that is true when the one in the index is false */
@@ -80,7 +80,7 @@ geninc(op, n)
 			goto dec;
 		}
 	inc:
-		if (n != 0 && n <= 2)
+		if (n != 0 && n <= 16)
 			printf("inc");
 		else
 			printf("add");
@@ -93,7 +93,7 @@ geninc(op, n)
 			goto inc;
 		}
 	dec:
-		if (n != 0 && n <= 2)
+		if (n != 0 && n <= 16)
 			printf("dec");
 		else
 			printf("sub");
@@ -232,7 +232,7 @@ zzzcode(p, c)
 		p = getlr(p, c == 'H' ? 'L' : 'R');
 		if (p->rval > 7 || p->rval < 0)
 			cerror("bad %c call: register = %s\n", c, rnames[p->rval]);
-		printf(rlnames[p->rval]);
+		printf(rhnames[p->rval]);
 		return;
 	case 'l':
 	case 'r':

@@ -17,20 +17,44 @@ extern char *sbrk();
 extern int dope[];
 extern char *opst[];
 extern struct indope indope[];	/* 0x3b92: op, dope flags, name; ends with op -1 */
-extern char ifname[];		/* 0x3b36: the file name of the intermediate file line */
-extern int lineno;		/* 0x8fc8 */
+char ifname[72];		/* 0x3b36: the file name of the intermediate file line */
+int dope[128];			/* 0x8d0a */
+char *opst[128];		/* 0x8e1a */
+extern int ifline;		/* 0x8fc8 */
 int nerrors;			/* 0x3b7e */
 struct node node[NTREE];	/* 0x69e2 */
 struct node *lastfree = node;	/* 0xa7b4 */
 static char *curbrk, *endbrk;	/* 0x4060, 0x405e */
 static int firstalloc = 1;	/* 0x4062 */
 
+/* clear the stack below the caller, where the work area of printf will be (see cg.h) */
+static void
+cgwipe()
+{
+	char buf[400];
+	register int i;
+
+	for (i = 0; i < 400; i++)
+		buf[i] = 0;
+}
+
+/* printf with the stack cleared; up to five words of arguments (a long takes two) */
+#undef printf
+int
+cgprintf(fmt, a, b, c, d, e)
+	char *fmt;
+	int a, b, c, d, e;
+{
+	cgwipe();
+	return printf(fmt, a, b, c, d, e);
+}
+
 /* the file and line of the intermediate file in front of an error message */
 static void
 prline(c)
 	int c;
 {
-	fprintf(stderr, "%s:%d: ", ifname, lineno);
+	fprintf(stderr, "%s:%d: ", ifname, ifline);
 }
 
 /* an error in the source program */

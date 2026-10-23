@@ -87,7 +87,7 @@ def ops(path):
     print("struct indope indope[] = {")
     for op, name, flags in ents:
         print("\t{ %d, 0x%x, %s }," % (op, flags, cstr(name)))
-    print("\t{ 0, 0, 0 }\n};")
+    print("\t{ -1, 0, 0 }\n};")
 
 
 def hop(path):

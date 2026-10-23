@@ -12,7 +12,7 @@
 
 extern int cerror(), uerror();
 extern int bsize(), ispow2_();
-extern long ispow2();
+extern int ispow2();
 extern int plainicon();
 extern void tfree(), ncopy();
 extern struct node *tcopy();

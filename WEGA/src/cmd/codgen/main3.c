@@ -12,39 +12,34 @@
 
 extern int cerror(), uerror();
 extern char *malloc();
+extern long ftell();
 extern long rdin();
 extern struct node *eread();
-extern void tinit(), dopeinit(), nlcheck(), mkhash(), delay(), deflab(), branch(), rsfreeall();
+extern void tinit(), dopeinit(), nlcheck(), mkhash(), stmt(), deflab(), branch(), rsfreeall();
 extern int rddata(), rdsym();
 extern void setrew(), allocinit(), tcheck();
-extern void efcode(), lineout(), fcmd(), rcmd(), scmd(), tcmd(), regreset(), regtabinit(), rsinit(), rsinit2(), bfcode(), endrun();
+extern void efcode(), lineout(), fcmd(), rcmd(), scmd(), tcmd(), regreset(), regtabinit(), rsinit(), rsbuild(), endrun();
+extern int nparmtab;
+extern struct { struct sym *sym; int reg; } parmtab[];
 extern void hdrout();
 extern FILE *stfile, *dfile;
 extern long stg, stpos;
 extern char ifname[];
 extern int ifline;
 extern int fregs, ffregs;
-extern long autooff;
 extern struct sym *symtab0;
 extern int nerrors;
 
 int pflag, rflag, eflag, oflag, lflag;	/* 0x40, 0x42, 0x44, 0x4c, 0x8f22 */
-long maxauto = 0;		/* 0x69d8 */
 long frame0;			/* 0x69ce */
-long frame1;			/* 0x8fcc is autooff */
+extern long maxoff, parmax, baseoff, maxtemp, paroff, tmpoff;
 int nlabsave;			/* 0x69e0 */
 int nparm;			/* 0x69d2 */
-long parmoff;			/* 0x0050 */
-long parm0;			/* 0x0054 */
-long stmtoff;			/* 0x8e0c */
-long delayoff;			/* 0x69d4 */
 int minreg = 0xE, maxreg = 0x17;	/* 0x8f1c, 0x8f90 */
 int regtop = 0xE;		/* 0x8f20 */
 int regmask;			/* 0x8fc2 */
 int regA, regB, regC, regD;	/* 0x8e12 (7), 0x8f1e (0x10), 0x8e18 (0x13), 0x8f8c (1) */
 int regE, regF, regG;		/* 0x8fc4, 0x8f8e, 0x8e10 */
-int g8f98;
-struct { int a; int b; } g8f5c[1];	/* 0x8f5c */
 
 /* the options: the number of the first argument that is no option, or 0 */
 int
@@ -134,20 +129,20 @@ init()
 	regB = 0x10;
 	regC = 0x13;
 	frame0 = 0;
-	autooff = 0;
-	parm0 = 0;
-	maxauto = 0;
+	maxoff = 0;
+	maxtemp = 0;
+	parmax = 0;
 	minreg = 0xE;
 	maxreg = 0x17;
 	regtop = 0xE;
 	regmask = (regtop - 1) & ~1;
 	regreset(0);
-	g8f98 = 0;
-	g8f5c[g8f98].a = 0;
-	g8f5c[g8f98].b = -1;
+	nparmtab = 0;
+	parmtab[nparmtab].sym = 0;
+	parmtab[nparmtab].reg = -1;
 	regtabinit();
 	rsinit();
-	rsinit2();
+	rsbuild();
 }
 
 int
@@ -184,8 +179,8 @@ loop:
 		mkhash();
 		nlabsave = rdin(10);
 		frame0 = rdin(10);
-		autooff = rdin(10) << 3;
-		autooff += frame0 << 3;
+		maxoff = rdin(10) << 3;
+		maxoff += frame0 << 3;
 		nparm = rdin(10);
 		nlcheck();
 		if (!rddata())
@@ -194,16 +189,19 @@ loop:
 			cerror("error in reading symbol table file");
 		goto loop;
 	case '}':
-		if (maxauto % 16)
-			maxauto = (maxauto / 16 + 1) << 4;
-		if (autooff % 16)
-			autooff = (autooff / 16 + 1) << 4;
+		if (parmax % 16)
+			parmax = (parmax / 16 + 1) << 4;
+		if (maxoff % 16)
+			maxoff = (maxoff / 16 + 1) << 4;
 		efcode();
 		nlcheck();
 		allocinit(symtab0);
 		goto loop;
+	case ']':
+		nlcheck();
+		goto loop;
 	case '[':
-		parmoff = rdin(10);
+		baseoff = rdin(10);
 		regE = rdin(10);
 		regF = rdin(10);
 		if (rflag) {
@@ -211,8 +209,8 @@ loop:
 			regF = 0x17;
 		}
 		nlcheck();
-		if (parmoff > maxauto)
-			maxauto = parmoff;
+		if (baseoff > parmax)
+			parmax = baseoff;
 		if (minreg > regE)
 			minreg = regE;
 		if (maxreg > regF)
@@ -232,9 +230,9 @@ loop:
 		}
 		if (lflag)
 			lineout(ifline, ifname);
-		stmtoff = parmoff;
-		delayoff = 0;
-		delay(eread());
+		paroff = baseoff;
+		tmpoff = 0;
+		stmt(eread());
 		goto loop;
 	case 'L':
 		lab = rdin(10);

@@ -91,5 +91,5 @@ struct indope indope[] = {
 	{ 125, 0x2, "TMPS" },
 	{ 127, 0x2, "LAB" },
 	{ 100, 0x2, "FREE" },
-	{ 0, 0, 0 }
+	{ -1, 0, 0 }
 };

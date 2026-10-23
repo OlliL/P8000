@@ -12,13 +12,13 @@
 
 extern int cerror();
 extern int match();
-extern void order(), rfree(), rfreeall(), genargs(), fwalk();
+extern void order(), rfree(), rsfreeall(), genargs(), fwalk();
 extern int ltypeok();
 extern struct node *stotree;
 extern int stocook;
 extern int argstop;		/* order3.c, 0xa156 */
-extern long autooff;		/* 0x8fcc: the size of the automatic variables, ~L1 */
-extern long delayoff;		/* 0x69d4 */
+extern long maxoff;		/* 0x8fcc: the size of the automatic variables, ~L1 */
+extern long tmpoff;		/* 0x69d4 */
 extern int dope[];
 extern struct node *canon();
 
@@ -50,7 +50,7 @@ gencall(p, cookie)
 	if (p->right)
 		genargs(p->right);
 	if (indirect) {
-		if (autooff + f->lval != 0)
+		if (maxoff + f->lval != 0)
 			printf("\tld\tr1,~L1+%ld(fp)\n", f->lval);
 		else
 			printf("\tld\tr1,@fp\n");
@@ -63,8 +63,8 @@ gencall(p, cookie)
 		f->stsize = 0;
 	}
 	p->op = UCALL;
-	rfreeall(1);
-	delayoff = 0;
+	rsfreeall(1);
+	tmpoff = 0;
 	return match(p, 0x16) != MDONE;
 }
 

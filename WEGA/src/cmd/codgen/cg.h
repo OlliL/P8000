@@ -5,6 +5,13 @@
  */
 #include <stdio.h>
 
+/*
+ * The printf of the C library of WEGA prints a stray '-' in front of a %s argument when the stack in the place of its
+ * work area holds an old negative number with the radix of %d. cgprintf() clears that part of the stack before it calls printf.
+ */
+extern int cgprintf();
+#define printf	cgprintf
+
 /* operators (the dope table in ops_*.c has the flags: arity in bits 1-3) */
 #define NAME	2
 #define STRING	3
@@ -37,6 +44,7 @@
 #define NOT	76
 #define COMPL	77
 #define UAND	16
+#define STREF	69
 #define INCR	78
 #define DECR	79
 #define EQ	80
@@ -116,14 +124,22 @@ struct node {
 	int	type;
 	char	su;		/* 6: registers the subtree needs (word registers) */
 	char	fsu;		/* 7: float registers the subtree needs */
-	struct sym *sname;	/* 8: symbol of a NAME or ICON; non-zero: the constant has a name */
-	int	label;		/* the target label of a CBRANCH (shares the slot of sname in the original) */
+	struct sym *sname;	/* 8: symbol of a NAME or ICON; non-zero: the constant has a name; the label of a CBRANCH (label) */
 	int	stsize;		/* 0xA: STASG size, TEMP number */
-	long	lval;		/* 0xC */
-	struct node *left;	/* 0xE */
-	int	rval;		/* 0x10 (BITYPE: the right subtree) */
-	struct node *right;
+	union {
+		long	lvv;			/* 0xC: the value of a leaf */
+		struct { int hi; struct node *lp; } nu;	/* 0xC, 0xE: the left subtree overlays the low word of lval */
+	} nla;
+	union {
+		int	rvv;		/* 0x10: the register, the tag */
+		struct node *rpp;	/* 0x10: the right subtree */
+	} nrb;
 };
+#define lval	nla.lvv
+#define left	nla.nu.lp
+#define rval	nrb.rvv
+#define right	nrb.rpp
+#define label	sname
 
 /* a symbol of the symbol table file (22 bytes there), see ../KNOWLEDGE.md */
 struct sym {
