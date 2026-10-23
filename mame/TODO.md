@@ -20,6 +20,11 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 - Real-machine tests 01 to 05 (4 MiB board) equal the emulator: saved PC bit 15, Z8010
   `%15/%16`, SAR wrap, `%10`, PC wrap at FFFF. See [tests/](tests/README.md).
 
+## 0. New: console terminal (commit `03e70d5c`, by the author)
+
+- [ ] Review `p8k_term.*` and the `p8k.cpp` changes (`mame-review`), check ROM entries, decide PR A or separate,
+      update PR draft, review brief and LOG. See [../HANDOFF_mame.md](../HANDOFF_mame.md).
+
 ## 1. Code: PC wrap follow-up
 
 - [x] Repeating block instructions and the PC wrap: reproduced 2026-10-16 (`ldir` at
