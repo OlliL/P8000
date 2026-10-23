@@ -22,8 +22,11 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 
 ## 0. New: console terminal (commit `03e70d5c`, by the author)
 
-- [ ] Review `p8k_term.*` and the `p8k.cpp` changes (`mame-review`), check ROM entries, decide PR A or separate,
-      update PR draft, review brief and LOG. See [../HANDOFF_mame.md](../HANDOFF_mame.md).
+- [x] Reviewed with the `mame-review` rules, findings fixed (`2c89a5a0`), ROM CRC/SHA1 checked against the
+      owner's files, PR draft A, review brief and LOG updated (2026-10-23).
+- [ ] Decide: terminal stays in PR A or becomes its own commit/PR after the driver.
+- [ ] Optional: test Ctrl+Pause / Pause on a real keyboard, colour setting, bell, a WEGA session on the new terminal.
+- [ ] Squash `2c89a5a0` into `03e70d5c` at split time.
 
 ## 1. Code: PC wrap follow-up
 

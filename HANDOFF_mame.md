@@ -22,7 +22,7 @@ it and ran all real-machine tests on his P8000 (16 bit board, 4 MiB).
 
 Branches in the fork:
 
-- `p8k-clean` (head `03e70d5c`): cleaned series on top of mamedev `master` of 2026-10-13
+- `p8k-clean` (head `26a7bf3a`): cleaned series on top of mamedev `master` of 2026-10-13
   (`f26abf2b`). Source for the PRs. Includes the PR drafts commits (to be dropped).
 - `p8k-noopt`: reduced series without the optional commits (used to prove the driver does not
   depend on the optional z8000/z80pio/z8010 changes).
@@ -53,7 +53,9 @@ abdc8896 p8k: register the remaining state for save states                  \ dr
 61228372 cpu/z8000: use addr_add/addr_sub for the PC fetch and block restart <- squash into d613b434
 7d776fdd drafts: z8000 PR text uses addr_add/addr_sub                       <- drafts
 6ee0c0b6 p8k: tidy the driver                                               <- squash into 9067870b
-03e70d5c p8k: add the console terminal (p8k_term.*, new, by OlliL)           <- see "Open questions"
+03e70d5c p8k: add the console terminal (p8k_term.*, new, by OlliL)
+2c89a5a0 p8k: tidy the console terminal after the review                    <- squash into 03e70d5c
+26a7bf3a PR draft p8k: console terminal, its ROMs and keys                  <- drafts
 ```
 
 Check with `git log --oneline f26abf2b..p8k-clean`; the exact list may differ slightly.
@@ -73,7 +75,7 @@ Check with `git log --oneline f26abf2b..p8k-clean`; the exact list may differ sl
 - Comparison with the Zilog S8000 and SADIE regression run (`mame/S8000_COMPARISON.md`, LOG.md);
   the S8000 HPCPU (SCC) tests cannot run with the existing loader.
 - Console terminal with its own firmware (U882/Z8, i8275, ZG0/ZG1) added by the author in
-  `03e70d5c`; it is not yet covered by the PR drafts, the review brief or LOG.md.
+  `03e70d5c`, reviewed and documented (PR draft A, brief, LOG).
 - Tools: `mame/tools/wegafs.py` (unpack WEGA file systems from raw floppy/HD images),
   `mame/tools/wega_install.py` (installs the files of the w31 floppies by their `CONTENTS`
   with `install`), generators and Lua/shell test helpers (see LOG.md section 14).
@@ -82,18 +84,16 @@ Check with `git log --oneline f26abf2b..p8k-clean`; the exact list may differ sl
 
 ## Next steps
 
-### 1. Review the terminal commit first (new, not reviewed)
+### 1. Console terminal (reviewed 2026-10-23)
 
-`03e70d5c` adds `p8k_term.cpp/.h` (480 lines) and changes `p8k.cpp`. Before it goes anywhere:
+`03e70d5c` (p8k_term.*) was reviewed with the `mame-review` rules, the findings are fixed in
+`2c89a5a0` (squash into `03e70d5c`), ROM CRC/SHA1 were checked against the files the owner
+supplied, the PR draft A, `REVIEW_BRIEF.md`, `LOG.md` and `TODO.md` are updated. Still open:
 
-- Read it completely and run the `mame-review` skill on it (see 3).
-- Check ROM entries (`p8t_1_5.0`, `p8tezs`, `p8tdzs`, CRC/SHA1) against the real ROMs and the
-  ROM naming in the driver; the ROM set must be listed in the ROM definitions of `p8000`/`p8000_16`.
-- Decide: part of PR A, or its own commit/PR after the driver? Keep the driver PR small if possible.
-- Terminal key changes (RESET = Ctrl+Pause, NMI = Pause instead of F12) must be in the PR text.
-- Save state of the terminal, `-rs232 terminal` vs generic terminal, build for the `p8000`
-  subtarget without other drivers (the commit added `z8.h`/`i8275.h` includes for that reason).
-- Update `PULL_REQUEST_p8k.md`, `REVIEW_BRIEF.md`, `LOG.md` and `TODO.md` for it.
+- Decide: part of PR A, or its own commit/PR after the driver (keep the driver PR small if possible).
+- Re-run `/mame-review` over the final series (it also covers this commit).
+- Untested: Ctrl+Pause (RESET) and Pause (NMI) on a real keyboard, colour setting, bell, a WEGA session on the new terminal.
+- `make` needs a tag for `git describe`: local annotated tag `mame0289-base` on `f26abf2b` (never push it).
 
 ### 2. Read the four PR drafts and verify every statement
 

@@ -631,6 +631,7 @@ tested.
   8" drives; parity/ECC NMI of the 16 bit board.
 - Save states: see the section at the end (flag set since 2026-10-17).
 - ROMs: the `nur8bit` ones are dumps of real EPROMs; others carry the EAW file names.
+- Console terminal (2026-10-23): see the last section.
 - Decision: no links to the ROM or floppy collection in the driver or in the PR (MAME does not
   point to downloads). Hosting a `mame/` collection of ROMs/images in the user's repository
   was discussed: rights for WEGA, UDOS and firmware images are for the owner to clear.
@@ -871,3 +872,27 @@ No difference between base and the series where the output is deterministic. Not
 - MEMTEST needs more than 150 s: after 150 s it is still in "SEG 0 self parity bit test" (both binaries), with a
   1800 s limit both binaries finish with **PASS, ERRORS=0** (16 segments = 1 MiB found, parity memory).
 - Comparison of the manuals with the P8000 16 bit board: [S8000_COMPARISON.md](S8000_COMPARISON.md).
+
+## Console terminal (2026-10-23)
+
+Commit `03e70d5c` (by the owner) adds `p8k_term.cpp/.h`: the terminal of the P8000 as a private
+RS-232 device that runs the terminal firmware (U882/Z8, i8275, refresh memory, ZG0/ZG1, XT
+keyboard, bell). It is the default of the `rs232` slot (option `adm31`) of both machines.
+
+- Review with the `mame-review` rules: Blocking: the key queue was a `std::vector` (cannot be
+  saved). Tidy: in-class initialisers with out-of-line constructor, `XTAL(...)` literals,
+  `static const` colour table, helper function at global scope. All fixed in `2c89a5a0`.
+  Not changed: `code_pressed` polling in `nmi_button`, `m_conf` read per character cell,
+  no `PORT_CHAR`.
+- ROMs (device romset `p8k_terminal`): `p8t_1_5.0` (4096, CRC `1bd93470`, SHA1
+  `436a9441971c2c88fe10791807742b7e727bb4ee`), `p8tezs` (2048, CRC `f9321251`, SHA1
+  `a6a796b58d50ec4a416f2accc34bd76bc83f18ea`), `p8tdzs` (2048, CRC `32736503`, SHA1
+  `6a1d7c55dddc64a7d601dfdbf917ce1afaefbb0a`). Checked against the three files the owner
+  supplied. Without them the machines need `-rs232 terminal`; this goes into the PR text.
+  Files for a local run: `/home/claude/roms/p8k_terminal/`.
+- Keys: RESET = Ctrl+Pause, NMI = Pause (was F12), because the terminal keyboard takes all
+  keys including F3.
+- Tests: `-validate` for both machines, `-verifyroms p8k_terminal` good, both machines show the
+  firmware banner and the monitor prompt and typed keys arrive; save and load work.
+- Build note: `make` needs a tag in the history for `git describe`; the local annotated tag
+  `mame0289-base` (on `f26abf2b`) was added for that and is never pushed.
