@@ -27,6 +27,7 @@ register struct dosdisc *dp;
  register int i, bps, fat=0;
  unsigned long off=0;
  unsigned char b[17];	/* Boot-Record-Informationen */
+ unsigned nclust;	/* Anzahl der Cluster */
 
  if ((dp->fd=open(fn,mode)) < 0)
 	return(-1);
@@ -75,10 +76,10 @@ register struct dosdisc *dp;
  dp->data = dp->maindir+(dp->dirnum * 32);
  dp->clustsiz = b[2] * bps;
  dp->vol = b[9]*256 + b[8];
- dp->nclust = ((long)dp->vol*bps - dp->data + off) / dp->clustsiz;
+ 	nclust = ((long)dp->vol*bps - dp->data + off) / dp->clustsiz;
 
  if (fat == 0) {
-	if (dp->nclust > 4095)
+	if (nclust > 4095)
 		fat = 16;
 	else
 		fat = 12;

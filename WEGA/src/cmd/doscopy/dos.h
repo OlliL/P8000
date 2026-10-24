@@ -28,7 +28,6 @@ struct dosdisc {
 	int dirnum;		/* Anzahl der Verzeichniseintraege */
 	unsigned long data;	/* Startadresse Datenbereich */
 	unsigned clustsiz;	/* Anzahl Byte / Cluster */
-	unsigned nclust;	/* Anzahl der Cluster */
 	int fatlen;		/* Anzahl Bit / FAT-Eintrag */
 	unsigned vol;		/* Anzahl Sektoren gesamt */
 };
