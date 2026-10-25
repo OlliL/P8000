@@ -106,10 +106,10 @@ char f96ds15[31] = {
 
 
 main(argc,argv)
-register char **argv;
+ char **argv;
 {
- register char *fdname;
- register char *fdtyp;
+  char *fdname;
+  char *fdtyp;
  int dev = 0;
  struct stat mstat;
  char *pboot;
