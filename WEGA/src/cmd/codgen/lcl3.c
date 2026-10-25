@@ -239,7 +239,7 @@ fbegin(s)
 	structret = t == 8 || t == 9;
 	if (structret) {
 		structlab = s->sx6;
-		structsz = s->ssize / 2;
+		structsz = s->ssize / 16;
 	}
 	retlab = getlab();
 	if (pflag) {
@@ -568,12 +568,12 @@ fcmd(n)
 {
 	register struct sym *s;
 	register int i;
+	register int spare;	/* unused: the original reserves this register */
 
 	if (n > 0) {
 		s = mapn(n);
 		i = s->sbyte5;
 	} else {
-		s = 0;
 		i = findtemp(-n);
 		if (i == -1)
 			cerror("Can't find temp to be freed");

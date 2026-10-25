@@ -112,8 +112,8 @@ genscall(p, cookie)
 /* the next cookie to try when no table entry matched */
 int
 nextcook(p, cookie)
-	struct node *p;
-	int cookie;
+	register struct node *p;
+	register int cookie;
 {
 	if (cookie == FORREW)
 		return 0;
@@ -166,8 +166,12 @@ mycanon(p)
 {
 	register struct node *t;
 
-	if (p->op < EQ || p->op > UGT)
+	switch (p->op) {
+	case EQ: case NE: case GE: case GT: case LE: case LT: case UGE: case UGT: case ULE: case ULT:
+		break;
+	default:
 		return;
+	}
 	if (p->right->op != REG)
 		return;
 	if (p->left->op == REG)

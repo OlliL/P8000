@@ -422,6 +422,8 @@ void
 markcall(p)
 	register struct node *p;
 {
+	int ty;
+
 again:
 	switch (p->op) {
 	case CALL:
@@ -433,14 +435,14 @@ again:
 		callflag++;
 		return;
 	}
-	switch (dope[p->op] & 0xE) {
-	case BITYPE:
+	ty = dope[p->op] & 0xE;
+	if (ty == LTYPE)
+		return;
+	if (ty == BITYPE)
 		markcall(p->right);
-	case UTYPE:
+	if (ty == UTYPE || ty == BITYPE) {
 		p = p->left;
 		goto again;
-	case LTYPE:
-		return;
 	}
 }
 
@@ -925,19 +927,20 @@ stmt(p)
 	int tag;
 
 	nrecur = 0;
-	switch (p->op) {
-	case 118:
+	if (p->op == 118) {
 		mapnm(p->left);
 		fbegin(p->left->sname);
-		fwalkd(p->right, parminit, 0);
+		fwalkd(p->right, parminit);	/* no third argument: the original passes only two, down is what r5 holds */
 		tfree(p);
 		return;
-	case 119:
+	}
+	if (p->op == 119) {
 		mapnm(p->left);
 		fbegin(p->left->sname);
 		tfree(p);
 		return;
-	case 122:
+	}
+	if (p->op == 122) {
 		if (p->left->op == TEMP) {
 			tag = p->left->rval;
 			fixtemp(p->left);

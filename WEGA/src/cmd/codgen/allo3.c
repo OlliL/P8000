@@ -466,9 +466,12 @@ reclaim(p, rewrite, cookie)
 		goto done;
 	}
 	if ((cookie & 0x20) && (rewrite & RESCC)) {	/* the condition codes */
+		long *lp;
+
 		tfree(p);
 		p->op = CCODES;
-		p->lval = want;
+		lp = &p->lval;
+		*lp = want;
 		p->rval = 0;
 		goto done;
 	}

@@ -277,18 +277,22 @@ ncopy(q, p)
 /* memory from the system in steps of at most 2000 bytes, never freed */
 char *
 alloc(n)
-	int n;
+	register int n;
 {
 	register char *p;
-	register int step;
+	int step;
 
 	if (firstalloc) {
 		firstalloc = 0;
 		curbrk = endbrk = sbrk(0);
 	}
-	n = (n + 1) & ~1;
+	n++;
+	n &= ~1;
 	if (curbrk + n >= endbrk) {
-		step = n > 2000 ? n : 2000;
+		if (n > 2000)
+			step = n;
+		else
+			step = 2000;
 		if ((int)sbrk(step) == -1)
 			cerror("Code generator: out of space\n");
 		endbrk += step;
