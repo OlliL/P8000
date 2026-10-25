@@ -173,13 +173,18 @@ char **argv;
 			status = 2;
 			continue;
 		}
-		if ((dosdev(upath, 0, &dos) >= 0)) {
-			fprintf(stderr, "%s: kein DCP Pfad\n", upath);
+		if ((dosdev(upath, 0, &dos) < 0)) {
+			fprintf(stderr, "%s: Fehler in %s\n", arg0, upath);
 			status = 2;
 			continue;
 		}
 		res = dosopn(dpath, &dos, &dstat);
-		if(res!=0 || res < 0) {
+		if(!res) {
+			fprintf(stderr, "%s: %s nicht gefunden\n", arg0, upath);
+			status = 2;
+			continue;
+		}
+		 if(res < 0) {
 			fprintf(stderr, "%s: %s - Lesefehler\n", arg0, upath);
 			status = 2;
 			continue;
@@ -192,14 +197,17 @@ char **argv;
 		while (*p != '\0')
 			*p++ = isupper(*p) ? tolower(*p) : *p;
 		if ((fd = creat(t, 0664)) < 0) {
-			fprintf(stderr, "%s: %s nicht erzeugbar\n", arg0, upath);
+			fprintf(stderr, "%s: %s nicht erzeugbar\n", arg0, t);
 			status = 2;
 			continue;
 		}
 		switch (dosout(&dstat, fd, &dos, conv)) {
 		case -1:
+			fprintf(stderr,"%s: %s Schreibfehler\n",arg0, t);
+			status = 2;
+			break;
 		case -2:
-			fprintf(stderr,"%s: Fehler beim Schreiben\n",arg0);
+			fprintf(stderr,"%s: %s Lesefehler\n",arg0, t);
 			status = 2;
 			break;
 		}
@@ -223,11 +231,20 @@ char **argv;
 			*p++ = islower(*p) ? toupper(*p) : *p;
 
 		switch (dosin(*argv, t, &dos, conv)) {
-		case 0:
+	    	case 0:
+			fprintf(stderr,"%s: Verzeichnis nicht gefunden\n",arg0);
+			status = 2;
+			break;
 		case -1:
+			fprintf(stderr,"%s: %s Schreibfehler\n",arg0, *argv);
+			status = 2;
+			break;
 		case -2:
+			fprintf(stderr,"%s: %s Lesefehler\n",arg0, upath);
+			status = 2;
+			break;
 		case -3:
-		    fprintf(stderr,"%s: Fehler bei DCP-Übertragung\n",arg0);
+		    fprintf(stderr,"%s: %s ist schreibgeschuetzt\n",arg0, t);
 		    status = 2;
 		    break;
 		}

@@ -27,7 +27,7 @@
  */
 
 dosplit(path,upath,dpath)
-register char *path,*upath,*dpath;
+char *path,*upath,*dpath;
 {
 	char *p,line[LMAX],lw,*strrchr(), *getenv();
 	FILE *fp;

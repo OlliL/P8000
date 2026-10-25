@@ -22,23 +22,15 @@
 dosdev(fn,mode,dp)
 char *fn;
 int mode;
-register struct dosdisc *dp;
+struct dosdisc *dp;
 {
- register int i, bps, fat=0;
+ int i, bps, fat=0;
  unsigned long off=0;
  unsigned char b[17];	/* Boot-Record-Informationen */
  unsigned nclust;	/* Anzahl der Cluster */
 
  if ((dp->fd=open(fn,mode)) < 0)
 	return(-1);
-
- if (mode) {	/* nicht read only */
-	signal(SIGALRM, SIG_IGN);
-	signal(SIGHUP, SIG_IGN);
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
-	signal(SIGTERM, SIG_IGN);
- }
 
  /* Ermitteln ob Floppy oder Harddisk */
 
