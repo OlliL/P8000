@@ -1,75 +1,12 @@
-# doscopy: DOS file commands (doscat, dosrm, doscp, dosdir, dosls, dosmkdir,
-# dosrmdir, dosformat). Compiled with the WEGA cc, linked through the cc
-# driver (crt0 and libc), stripped at link time as in the original build.
-#
-#   make                       build the DOS commands
-#   make install PREFIX=dir    install below dir (default /)
-#   make clean                 remove the objects and the programs
+# 1.0 is the version on WEGA 3.1 - currently not working
 
-CC = cc
-CFLAGS = -O
-PREFIX = /
+DOSCOPY_VERSION = 1.3
 
-PROGS = doscat dosrm doscp dosdir dosls dosmkdir dosrmdir dosformat
-
-OBJECTS = dosdev.o dosplit.o dosopn.o dosdel.o dosfat.o dosin.o dosout.o \
-          doscat.o dosrm.o doscp.o dosdir.o dosls.o dosmkdir.o \
-          dosrmdir.o dosformat.o
-I = /usr/include
-
-all: $(PROGS)
-
-.c.o:
-	$(CC) $(CFLAGS) -c $<
-
-$(OBJECTS): dos.h
-
-doscat: doscat.o dosplit.o dosdev.o dosopn.o dosout.o
-	$(CC) doscat.o dosplit.o dosdev.o dosopn.o dosout.o -o $@ -s
-
-dosrm: dosrm.o dosplit.o dosdev.o dosopn.o dosdel.o
-	$(CC) dosrm.o dosplit.o dosdev.o dosopn.o dosdel.o -o $@ -s
-
-doscp: doscp.o dosplit.o dosdev.o dosopn.o dosdel.o dosfat.o dosin.o dosout.o
-	$(CC) doscp.o dosplit.o dosdev.o dosopn.o dosdel.o dosfat.o dosin.o \
-	dosout.o -o $@ -s
-
-dosdir: dosdir.o dosplit.o dosdev.o dosopn.o
-	$(CC) dosdir.o dosplit.o dosdev.o dosopn.o -o $@ -s
-
-dosls: dosls.o dosplit.o dosdev.o dosopn.o
-	$(CC) dosls.o dosplit.o dosdev.o dosopn.o -o $@ -s
-
-dosmkdir: dosmkdir.o dosplit.o dosdev.o dosopn.o dosdel.o dosfat.o
-	$(CC) dosmkdir.o dosplit.o dosdev.o dosopn.o dosin.o dosdel.o \
-	dosfat.o -o $@ -s
-
-dosrmdir: dosrmdir.o dosplit.o dosdev.o dosopn.o dosdel.o
-	$(CC) dosrmdir.o dosplit.o dosdev.o dosopn.o dosdel.o -o $@ -s
-
-dosformat: dosformat.o dosplit.o
-	$(CC) dosformat.o dosplit.o -o $@ -s
-
-install: $(PROGS)
-	for p in $(PROGS); do cp $$p $(PREFIX)/usr/bin/$$p; done
+all:
+	cd $(DOSCOPY_VERSION) ; $(MAKE) $@
 
 clean:
-	rm -f $(PROGS) $(OBJECTS)
+	cd $(DOSCOPY_VERSION) ; $(MAKE) $@
 
-dosdev.o:  dosdev.c
-dosplit.o: dosplit.c $I/stdio.h $I/ctype.h
-dosopn.o:  dosopn.c
-dosdel.o:  dosdel.c
-dosfat.o:  dosfat.c
-dosin.o:   dosin.c $I/time.h $I/sys/types.h $I/sys/stat.h
-dosout.o:  dosout.c
-doscat.o:  doscat.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosrm.o:   dosrm.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-doscp.o:   doscp.c $I/stdio.h $I/ctype.h $I/sys/types.h $I/sys/stat.h
-dosdir.o:  dosdir.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosls.o:   dosls.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosmkdir.o: dosmkdir.c $I/time.h $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosrmdir.o: dosrmdir.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosformat.o: dosformat.c $I/stdio.h $I/sys/types.h $I/sys/stat.h $I/fcntl.h
-
-.PHONY: all install clean
+install:
+	cd $(DOSCOPY_VERSION) ; $(MAKE) $@
