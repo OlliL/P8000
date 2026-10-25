@@ -33,9 +33,23 @@ subdirs:
 
 getud: getud.c
 	$(CC) -o $@ getud.c
+	@echo "Patching getud with scratchfilename used in original cc (contains PID)"
+	@dd if=getud of=getud1 bs=1 count=6975 >/dev/null 2>&1
+	@echo -n '524.o' >>getud1
+	@dd if=getud of=getud2 bs=1 skip=6980 >/dev/null 2>&1
+	@cat getud2 >> getud1
+	@mv getud1 getud
+	@rm getud2
 
 putud: putud.c
 	$(CC) -o $@ putud.c
+	@echo "Patching putud with scratchfilename used in original cc (contains PID)"
+	@dd if=putud of=putud1 bs=1 count=6885 >/dev/null 2>&1
+	@echo -n '330.o' >>putud1
+	@dd if=putud of=putud2 bs=1 skip=6890 >/dev/null 2>&1
+	@cat putud2 >> putud1
+	@mv putud1 putud
+	@rm putud2
 
 dump: dump.c
 	$(CC) $(CFLAGS) -s -o $@ dump.c
