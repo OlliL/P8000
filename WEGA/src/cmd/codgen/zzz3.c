@@ -394,41 +394,7 @@ zzzcode(p, c)
 		rp = rfind(rn, cls);
 		rp->busy = 1;
 		tmp = 0;
-		if (n <= 4) {
-			if (r->op == ICON) {
-				tmp = tcopy(r);
-				r->op = NAME;
-				r->type = DECREF(r->type);
-			} else if (!tshape(r, STAREG | SAREG))
-				order(r, STAREG | SAREG);
-			if (r->op == REG) {
-				if (notoff(r->type, r->rval))
-					order(r, STAREG);
-				tmp = tcopy(r);
-				r->op = OREG;
-				r->sname = 0;
-				r->stsize = 0;
-			}
-			printf("\tld");
-			if (n == 4) {
-				printf("l\tr%s,", name);
-				rmode++;
-			} else
-				printf("\t%s,", name);
-			expand(p, FOREFF, "AR\n\tld");
-			if (n == 4) {
-				putchar('l');
-				rmode++;
-			}
-			expand(p, FOREFF, "\tAL,");
-			printf(n == 4 ? "r%s\n" : "%s\n", name);
-			rfree(rn, k);
-			if (tmp) {
-				fwalk(r, rfreenode);
-				tfree(r);
-				p->right = tmp;
-			}
-		} else {
+		if (n > 4) {
 			if (!tshape(r, STAREG))
 				order(r, STAREG);
 			if (notoff(r->type, r->rval))
@@ -480,6 +446,40 @@ zzzcode(p, c)
 					fwalk(tmp, rfreenode);
 					tfree(tmp);
 				}
+			}
+		} else {
+			if (r->op == ICON) {
+				tmp = tcopy(r);
+				r->op = NAME;
+				r->type = DECREF(r->type);
+			} else if (!tshape(r, STAREG | SAREG))
+				order(r, STAREG | SAREG);
+			if (r->op == REG) {
+				if (notoff(r->type, r->rval))
+					order(r, STAREG);
+				tmp = tcopy(r);
+				r->op = OREG;
+				r->sname = 0;
+				r->stsize = 0;
+			}
+			printf("\tld");
+			if (n == 4) {
+				printf("l\tr%s,", name);
+				rmode++;
+			} else
+				printf("\t%s,", name);
+			expand(p, FOREFF, "AR\n\tld");
+			if (n == 4) {
+				putchar('l');
+				rmode++;
+			}
+			expand(p, FOREFF, "\tAL,");
+			printf(n == 4 ? "r%s\n" : "%s\n", name);
+			rfree(rn, k);
+			if (tmp) {
+				fwalk(r, rfreenode);
+				tfree(r);
+				p->right = tmp;
 			}
 		}
 		if (c == 's')

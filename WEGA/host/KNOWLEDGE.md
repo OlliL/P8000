@@ -455,9 +455,9 @@ Sources: `src/cmd/codgen` (K&R C for the WEGA cc, the same files build `codgen` 
   All 206 are paired with a function of the original (`tools/confirm.py`: the same instructions, the same strings, or a review).
   The entries `start` (the crt0 entry, not codgen code), `rcookie` (a duplicate of `rallkind`, removed) and the `printf` wrapper
   `cgwipe`/`cgprintf` (removed, see below) are no longer in the list.
-- **Differences of the 206 paired functions** (`tools/classify.py`, pattern check of the old-cc differences D1-D14):
+- **Differences of the 206 paired functions** (`tools/classify.py`, pattern check of the old-cc differences D1-D15):
   21 have no differing instruction after normalisation (addresses, frame offsets and scratch registers masked); 181 differ only by
-  old-cc patterns (D1 to D14); 4 have other differences: `clocal`, `sucomp`, `tshape`, `zzzcode` (see "Open" below).
+  old-cc patterns (D1 to D14, pattern check); 4 have other differences: `clocal`, `sucomp`, `tshape`, `zzzcode` (see "Open" below). `clocal` and `zzzcode` carry the layout class D15 as a manual annotation (`layout_classes` in findings.json, added to `d_classes` by classify.py; the difference class stays "other differences").
 - **Tools.** `src/cmd/codgen/tools` (see its `README.md`): `locate.py` (our functions by name), `confirm.py` (pairing check),
   `patterns.py` (pattern check of the D classes), `classify.py` (writes the class into `findings.json`), `inventory.py`
   (`INVENTORY.md`), `blocks.py` (differing blocks of one function), `check.sh` and `corpus.sh` (corpus comparison). The single
@@ -506,13 +506,22 @@ Listed by function; the current evidence is in `findings.json` (`findings_pendin
   out of line in the original, D7 or source). Swapping the `NAME` and `SCONV` branches was tried: block count 26 to 10, but the
   alignment fell from 47 % to 17 %, so it was reverted.
 - `zzzcode` (`zzz3.c`, `zzzcode-order-01`): the block `if (notoff(...)) order(r, STAREG)` sits at another place (808 in ours, 920 in
-  the original). The two `sra rS,#1` forms are the same in context; shift counts are equal (`shift-type-02` is closed for them).
+  the original, before the swap below). The two `sra rS,#1` forms are the same in context; shift counts are equal (`shift-type-02` is closed for them).
+  Done (`zzz3.c`): the `if (n <= 4)` / `else` branches of the structure move (`ZS`) were swapped to `if (n > 4)` first;
+  the original lays out the big branch after the small one, the swap is a layout change. Differing blocks 95 -> 80, 1045 -> 1044
+  instructions; corpus codgen 101/101 and scodgen 101/101. Still open: the `if (!tshape(r, STAREG))` block of the big branch
+  (orig 920, ours 809 before the swap) and about 20 other blocks in the same function.
+  The original lays out the small branch first (`cp n,#4; jp gt,BIG`, small code, `jp` to the end, then BIG). Ours keeps the big branch
+  first with `jr le,SMALL`, in both source forms (`if (n <= 4)` and the swapped one). A variant with `return` at the end of the big
+  branch (duplicating the tail of the `S` case) gave 78 differing blocks; not kept (duplicated code for 2 blocks).
 - `sucomp` (`order3.c`, `sucomp-size-01`): 731 instructions against 684 (after the register declarations; 756 before). 55 `add rS,F`
   forms remain: the original adds a frame slot directly in 49 places, we load it into a register first. Operand order in the sums
   and temporaries for `l->su` were tried without gain; the register declarations were the only change with an effect. The cause is
   not found.
 - `tshape` (`match3.c`, `tshape-order-01`): the last operand of the `SZERO` return is a value in the original (`cpl rr2,#0; ldk r2,#0;
-  tcc eq,r2`), a branch in ours. The `if` form gave no gain.
+  tcc eq,r2`), a branch in ours. The `if` form gave no gain. Also tried (scratch copy, tsmeas2): `!p->lval` and a parenthesised
+  `&&` chain (both 117 instructions, ratio 0.776, same as now), `? 1 : 0` (113, 0.754), a local `r` before `return r` (117, 0.759).
+  None produces `tcc`/`cpl`; the form that does is not found.
 - Left from earlier rounds, not re-checked in this round: `cbranch` (the table dispatch after the `cpir` search, D6, and the
   compare chain order 0x56-0x59), `gswitch` (the original is a structurally different case code with about 20 `printf` calls against
   our 10; not reconstructed), `rdsym` (frame of two bytes, D1), `freeparm` (scratch register choice, D2), `ffld` (parameter spilled in
@@ -1323,7 +1332,7 @@ intermediate files: the small functions of `ifile` (0x42-0x1d0) write single byt
 Several WEGA programs were built by an older revision of the C compilers: cas by an older scc; ranlib, strip
 and some libc members by an older cc. No old compiler binary exists in any archive (the old libc members and
 the old objects only show its output), so these differences are the base for rebuilding the old compiler at the
-end of the project. Each difference has its own number D1 ... D14; `src/TODO.md` (section "Compiler
+end of the project. Each difference has its own number D1 ... D15; `src/TODO.md` (section "Compiler
 differences") lists which objects show which difference. "old" = the compiler that built the original, "shipped"
 = the scc/cc in `/bin` of the system. Evidence: `cmpmod.py` listings of the cas modules (`-s` shows frames and
 scratch registers), the `oldcc` objects, ranlib, strip.
@@ -1435,6 +1444,20 @@ the source are possible; only differences that the compiler explains are counted
   shipped member (cas: freopen, fopen, ungetc, `_deciml`, `_length`, strcmp, strcpy, strncpy, strlen, tolower).
 - `_filbuf` of size and ranlib: the conditional value `(flag & _IONBF) ? 1 : BUFSIZ` goes through a stack temporary
   (`ld @r15,#1` ... `ld r5,@r15`) where the shipped cc uses the register; not counted as D14 (not seen elsewhere, no D number yet).
+
+### D15 Block layout of if/else
+
+The old compiler lays out the two branches of an `if`/`else` in another order than the shipped one. In codgen
+`zzzcode` (`zzz3.c`, the structure move, case `S`), the original has the `n <= 4` branch first: `cp n,#4; jp gt,BIG`,
+the small code, then the big branch. Ours has the big branch first with `jr le,SMALL`. Both source forms were tried
+(the original `if (n <= 4)` and the swapped `if (n > 4)`); the swapped form gave 95 -> 80 differing blocks, a
+variant with an early `return` gave 78 and was not kept. In `clocal` (`tr3.c`) the block order differs too
+(80 instructions at another place); the swap of the branches in the source was rejected (alignment 47 -> 17 %).
+
+Not checked for the other `if`/`else` of codgen and cas. Status: pattern, not a measured compiler rule. The old
+compiler is not available to compile a test, so the cause is a guess from the layout of the original.
+Recorded in `tools/findings.json` as `layout_classes` (`zzzcode`, `clocal`); `tools/classify.py` adds the class to `audit.d_classes`.
+Not in the pattern check (`patterns.py`), which tests instructions, not their order.
 
 ## cas: decompilation (src/cmd/cas)
 

@@ -6,6 +6,7 @@ The class is decided by one rule set, the pattern check of patterns.py (the same
     "other differences" and a note that names the finding) is "other differences";
   - else, if every differing instruction matches a D pattern: "D only (pattern-verified)" with the D classes found;
   - else: "other differences", with the unexplained instruction forms as the note.
+A layout class (D15, findings.json "layout_classes") is added to d_classes; it does not decide the difference class.
 The reordered_instructions count (lower bound: chunks of two or more identical instructions that moved) is written too.
 The alignment (d_normalised_pct) is written as information only.
 
@@ -43,6 +44,7 @@ def main():
     oend = P.orig_end_fn(o)
     fj = json.load(open(a.findings))
     ov = fj.get('class_overrides', {})
+    lay = fj.get('layout_classes', {})
     cnt = collections.Counter()
     for n, v in fj['functions'].items():
         if v.get('pairing') != 'confirmed' or not v.get('ours'):
@@ -62,6 +64,11 @@ def main():
         else:
             audit['difference_class'] = 'other differences'
             audit['difference_note'] = 'unexplained instruction forms: ' + '; '.join(r['examples'])
+        if n in lay:
+            # D15 is a layout class (block order of if/else branches): it is not an instruction pattern, so it
+            # is added from findings.json "layout_classes" and does not change the difference class.
+            audit['d_classes'] = sorted(set(audit.get('d_classes', [])) | {lay[n]['class']})
+            audit['layout_note'] = lay[n]['note']
         v['audit'] = audit
         cnt[audit['difference_class']] += 1
     json.dump(fj, open(a.findings, 'w'), indent=1)

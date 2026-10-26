@@ -64,69 +64,69 @@ state the original was linked with; `shipped` = the members of the shipped `/lib
 
 ## Compiler differences (old compiler)
 
-The numbers D1 ... D14 are the sections of "Compiler revisions" in `host/KNOWLEDGE.md`. `x` = the difference
+The numbers D1 ... D15 are the sections of "Compiler revisions" in `host/KNOWLEDGE.md`. `x` = the difference
 was seen in this object; `?` = the construct is in the source but the difference was not separated from the
 others yet; empty = not seen (no proof that it is absent). All cas modules with code are listed (table1,
 table2, pstab and the three table segments are data only). The old libc members that are only inside the binaries (size, strip, ranlib, cas) are listed with
 the marks of D14 only: that is all that was checked for them.
 
-| Binary | Object | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| cas | ifile.c | x | x | x |  |  | x |  | x | x | x |  | x |  |  |
-| cas | instr.c | x | x |  |  |  | ? | ? |  |  |  |  | x |  |  |
-| cas | scanner.c | x | x | x |  |  | ? | ? |  |  |  | x | x |  |  |
-| cas | main.c |  | x |  |  |  | ? | ? |  |  |  |  | x |  |  |
-| cas | nodes.c | x | x |  |  | x | x | ? |  |  |  |  | x |  |  |
-| cas | parser.y (parser.c) | x | x | x |  | x | x | ? |  |  | x |  | x |  |  |
-| cas | expr.c | x | x | x |  |  | x |  |  |  | x |  | x |  |  |
-| cas | p2loop.c |  | x | x |  |  | x |  | x |  |  |  |  |  |  |
-| cas | ofile.c |  | x | x |  |  | x |  | x |  |  |  | x |  |  |
-| cas | gen.c |  | x | x |  |  | x |  | x |  |  |  | x |  |  |
-| cas | assemble.c |  | x | x |  |  | x |  |  |  | x |  | x |  |  |
-| cas | getops.c |  | x | x |  |  | x |  |  |  |  | x | x |  |  |
-| cas | error.c |  |  | x |  |  | x |  |  |  |  |  | x |  |  |
-| cas | listing.c |  |  | x |  |  |  | x | x |  |  |  | x |  |  |
-| cas | optim.c |  |  | x | x |  | x | x |  |  |  | x | x |  |  |
-| cas | jpr2.c |  |  | x |  |  |  |  |  |  |  |  | x |  |  |
-| cas | jpr.c |  |  | x | x |  | x | x | x |  |  |  | x |  |  |
-| cas | locntr.c | x | x | x | x |  | x |  |  |  |  |  | x |  |  |
-| cas | ssymtab.c |  |  |  |  |  | x |  |  |  |  | x | x | x |  |
-| cas | symbols.c | x | x |  |  |  | x |  | x |  | x | x | x |  |  |
-| cas | pst.c | x | x |  |  |  |  | ? | x |  |  |  |  |  |  |
-| cas | subr.c |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |
-| ranlib | ranlib.c, readsym.c | x | x |  | x |  |  |  |  |  |  |  | x |  |  |
-| strip | strip.c |  | x |  |  |  |  |  |  |  |  |  | x |  |  |
-| size | size.c |  |  |  |  |  |  |  |  |  |  |  | x |  |  |
-| libc.a | malloc.o (gen/malloc.c) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | nlist.o (gen/nlist.c) | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | length.o (gen/length.c) | x |  |  |  |  |  |  | x |  |  |  |  |  |  |
-| libc.a | swap.o (gen/swap.c) |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
-| size | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
-| size | libc: rdwr.o (fread, fwrite) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
-| size | libc: doprnt.o (_doprnt) |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |
-| strip | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
-| cas | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
-| codgen, scodgen | main3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |
-| codgen, scodgen | reader3.c |  |  |  | x |  | x | x | ? |  |  |  |  |  |  |
-| codgen, scodgen | rdr3.c |  |  | x | x |  | x |  | ? |  |  |  |  |  |  |
-| codgen, scodgen | efcode3.c | x |  |  | x |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | local3.c |  | x |  | x |  | ? |  |  |  | x |  |  |  |  |
-| codgen, scodgen | gen3.c |  |  |  | x |  |  |  |  |  |  | ? |  |  |  |
-| codgen, scodgen | order3.c |  |  |  | x |  | x |  |  |  |  | x |  |  |  |
-| codgen, scodgen | match3.c |  |  |  | x |  | x | ? |  |  |  |  |  |  |  |
-| codgen, scodgen | allo3.c |  | x | x | x |  | x | ? |  |  | x |  |  |  |  |
-| codgen, scodgen | regallo3.c |  |  |  | x |  | x |  |  |  | ? |  |  |  |  |
-| codgen, scodgen | regfile3.c |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | tmp3.c |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | zzz3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |
-| codgen, scodgen | comm3.c |  |  | x | x |  | x |  | x |  |  |  |  |  |  |
-| codgen, scodgen | out3.c |  | x |  |  |  | x | x | x |  | x | x |  |  |  |
-| codgen, scodgen | regs3.c |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | lcl3.c |  | x |  | x |  | x |  |  |  |  |  |  |  |  |
-| codgen, scodgen | tr3.c |  |  |  | x |  |  | x | ? |  |  |  |  |  |  |
-| codgen, scodgen | optim3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |
+| Binary | Object | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| cas | ifile.c | x | x | x |  |  | x |  | x | x | x |  | x |  |  |  |
+| cas | instr.c | x | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |
+| cas | scanner.c | x | x | x |  |  | ? | ? |  |  |  | x | x |  |  |  |
+| cas | main.c |  | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |
+| cas | nodes.c | x | x |  |  | x | x | ? |  |  |  |  | x |  |  |  |
+| cas | parser.y (parser.c) | x | x | x |  | x | x | ? |  |  | x |  | x |  |  |  |
+| cas | expr.c | x | x | x |  |  | x |  |  |  | x |  | x |  |  |  |
+| cas | p2loop.c |  | x | x |  |  | x |  | x |  |  |  |  |  |  |  |
+| cas | ofile.c |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |
+| cas | gen.c |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |
+| cas | assemble.c |  | x | x |  |  | x |  |  |  | x |  | x |  |  |  |
+| cas | getops.c |  | x | x |  |  | x |  |  |  |  | x | x |  |  |  |
+| cas | error.c |  |  | x |  |  | x |  |  |  |  |  | x |  |  |  |
+| cas | listing.c |  |  | x |  |  |  | x | x |  |  |  | x |  |  |  |
+| cas | optim.c |  |  | x | x |  | x | x |  |  |  | x | x |  |  |  |
+| cas | jpr2.c |  |  | x |  |  |  |  |  |  |  |  | x |  |  |  |
+| cas | jpr.c |  |  | x | x |  | x | x | x |  |  |  | x |  |  |  |
+| cas | locntr.c | x | x | x | x |  | x |  |  |  |  |  | x |  |  |  |
+| cas | ssymtab.c |  |  |  |  |  | x |  |  |  |  | x | x | x |  |  |
+| cas | symbols.c | x | x |  |  |  | x |  | x |  | x | x | x |  |  |  |
+| cas | pst.c | x | x |  |  |  |  | ? | x |  |  |  |  |  |  |  |
+| cas | subr.c |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |
+| ranlib | ranlib.c, readsym.c | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |
+| strip | strip.c |  | x |  |  |  |  |  |  |  |  |  | x |  |  |  |
+| size | size.c |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |
+| libc.a | malloc.o (gen/malloc.c) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | nlist.o (gen/nlist.c) | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | length.o (gen/length.c) | x |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
+| libc.a | swap.o (gen/swap.c) |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
+| size | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |
+| size | libc: rdwr.o (fread, fwrite) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |
+| size | libc: doprnt.o (_doprnt) |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |  |
+| strip | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |
+| cas | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |
+| codgen, scodgen | main3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | reader3.c |  |  |  | x |  | x | x | ? |  |  |  |  |  |  |  |
+| codgen, scodgen | rdr3.c |  |  | x | x |  | x |  | ? |  |  |  |  |  |  |  |
+| codgen, scodgen | efcode3.c | x |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | local3.c |  | x |  | x |  | ? |  |  |  | x |  |  |  |  |  |
+| codgen, scodgen | gen3.c |  |  |  | x |  |  |  |  |  |  | ? |  |  |  |  |
+| codgen, scodgen | order3.c |  |  |  | x |  | x |  |  |  |  | x |  |  |  |  |
+| codgen, scodgen | match3.c |  |  |  | x |  | x | ? |  |  |  |  |  |  |  |  |
+| codgen, scodgen | allo3.c |  | x | x | x |  | x | ? |  |  | x |  |  |  |  |  |
+| codgen, scodgen | regallo3.c |  |  |  | x |  | x |  |  |  | ? |  |  |  |  |  |
+| codgen, scodgen | regfile3.c |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | tmp3.c |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | zzz3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  | x |
+| codgen, scodgen | comm3.c |  |  | x | x |  | x |  | x |  |  |  |  |  |  |  |
+| codgen, scodgen | out3.c |  | x |  |  |  | x | x | x |  | x | x |  |  |  |  |
+| codgen, scodgen | regs3.c |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | lcl3.c |  | x |  | x |  | x |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | tr3.c |  |  |  | x |  |  | x | ? |  |  |  |  |  |  | x |
+| codgen, scodgen | optim3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |
 
-The codgen / scodgen rows are the per-object marks of the D classes of the function findings (`src/cmd/codgen/tools/findings.json`, written by `classify.py`), completed by reading the disassembly where noted. `x` = seen in a function of the object; `?` = construct present, not separated. D12 (data order), D13 and D14 are not checked for codgen. Open for codgen: `clocal`, `zzzcode` (block order), `sucomp` (`add` with a frame operand), `tshape` (value form of the SZERO return); see `host/KNOWLEDGE.md`, section "codgen / scodgen".
+The codgen / scodgen rows are the per-object marks of the D classes of the function findings (`src/cmd/codgen/tools/findings.json`, written by `classify.py`), completed by reading the disassembly where noted. `x` = seen in a function of the object; `?` = construct present, not separated. D12 (data order), D13 and D14 are not checked for codgen. D15 (block layout of if/else) is marked for `zzz3.c` and `tr3.c` only (the two functions `zzzcode` and `clocal`); the other objects are not checked for it. Open for codgen: `clocal` (D15), `zzzcode` (D15, partly), `sucomp` (`add` with a frame operand), `tshape` (value form of the SZERO return); see `host/KNOWLEDGE.md`, section "codgen / scodgen".
 
 ## In progress
 
