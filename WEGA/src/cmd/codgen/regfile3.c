@@ -100,7 +100,7 @@ rnnullcall()
 static void
 rnnullall()
 {
-	int i;
+	register int i;
 
 	for (i = 0; i <= 7; i++)
 		rnnull(i, 4);

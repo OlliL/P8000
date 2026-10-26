@@ -465,8 +465,8 @@ eread()
 {
 	register struct node *p;
 	register int op;
-	register int spare1, spare2, spare3;	/* unused: the original reserves these registers */
-	int ty;
+	register int spare1, spare2;	/* unused: the original reserves these registers */
+	register int ty;
 	char c;
 
 	for (;;) {

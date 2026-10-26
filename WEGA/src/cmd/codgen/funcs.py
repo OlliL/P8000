@@ -12,6 +12,7 @@ fidelity"); the comparison is the instruction multiset of the code from the star
 The tools sdis.py and sout.py are read from ../../../host/tools (the repository layout).
 """
 import argparse
+import bisect
 import collections
 import os
 import re
@@ -24,6 +25,17 @@ sys.path.insert(0, TOOLS)
 from sout import SOut  # noqa: E402
 
 LIM = 0xbbc4   # the program part of the original ends here (the C library follows)
+
+# static functions of our build (no symbol in the binary), named by their source (checked by the callers and the body)
+# static functions of our build, by their caller: the names of the static functions that a function calls, in the
+# order of their first call (identified from the source: the call sequence and the body; see FUNCTIONS.md).
+# None = not identified. The address is found from the caller, so the table survives rebuilds.
+STATIC_NAMES = {
+    'allocreg': ['rcookie'],                                              # allo3.c
+    'genargs': ['fixstarg', None, 'argsort', 'argplace'],                 # order3.c (None: 0x2ea4, not identified)
+    'nxwork': ['rnnullw', 'rnnulll', 'rnnullp', 'rnnullall', 'rnnullcall'],  # regfile3.c
+    'gswitch': ['newreg'],                                                # lcl3.c
+}
 
 # name (as in the symbol table of our binary): (start in the original, verdict or None, note)
 # verdict None: the comparison decides; otherwise the verdict is written as it is (for functions whose first `ret`
@@ -69,11 +81,21 @@ ORIG = {
     'nxwork':    (0x98e4, None, 'D6 table starts at 0 (old cc)'),
     'rdsym':     (0x1a86, None, 'D1 frame (no frame in the original first part)'),
     'mapregs':   (0x9512, None, 'D3, D6 partly; if chain now'),
-    'gswitch':   (0xa7e0, None, 'not compared yet'),
-    'eread':     (0x2480, None, 'not compared yet'),
+    'gswitch':   (0xa7e0, None, 'd=53: the original repeats the register blocks (getreg, rmove, rfree) and calls makeblock; not reconstructed yet'),
+    'eread':     (0x2480, None, 'd=22 after ty as register variable: getchar byte load and masking (D8), lval store form, D7'),
     'main':      (0x23c,  None, 'not compared yet'),
     'zzzcode':   (0x2edc, None, 'd=37 after char c and register locals: switch dispatch (D6), D3, D7; the old name table was data'),
     'start':     (None,   'crt0', 'entry of crt0, not codgen code'),
+    'rcookie':   (0x89a2, None, 'identical after the null test `if (p && ...)` was written (allo3.c fix)'),
+    'fixstarg':  (None, 'open', 'identified by the call sequence in genargs (recursion on p->left); no counterpart found'),
+    'rnnullw':   (0x988c, None, 'identical up to the ret (regfile3.c rnnullw)'),
+    'rnnulll':   (0x986a, None, 'identical up to the ret (regfile3.c rnnulll)'),
+    'rnnullp':   (0x97cc, None, 'identical up to the ret (regfile3.c rnnullp)'),
+    'rnnullcall': (0x9816, None, 'identical up to the ret (regfile3.c rnnullcall)'),
+    'argplace':  (0x5d2c, None, 'D5: the local array cnt is addressed with lda (original: direct); 13 instructions, else identical'),
+    'argsort':   (None,   'open', 'identified by the source (the swap of argl by su); no counterpart found in the original'),
+    'rnnullall': (0x983c, None, 'identical up to the ret after register int i (regfile3.c)'),
+    'newreg':    (None,   'inline', 'in the original there is no function: the getreg blocks are inline in gswitch (5-6 copies)'),
     # automatic pairings from the function-boundary work (not yet checked one by one)
     'allocinit': (0x8bea, None, 'auto, verified: identical'),
     'argsize': (0x88f6, None, 'auto, verified: identical'),
@@ -178,6 +200,20 @@ ORIG = {
 }
 
 
+OWN_OBJ = re.compile(r'^(crt0|allo3|local3|match3|order3|out3|regallo3|regfile3|tmp3|zzz3|reader3|gen3|optim3|'
+                     r'comm3|rdr3|main3|efcode3|lcl3|tr3|regs3|table3_c|ops_codg|hop_codg)')
+
+
+def own_limit(s):
+    """End of our program part: the first object file after the codgen objects (the C library follows)."""
+    marks = sorted((x['value'], x['name']) for x in s.symbols if x['type'] == 31 and x['segt'] == 0)
+    for v, n in marks:
+        if not OWN_OBJ.match(n):
+            return v
+    return LIM
+
+
+
 def n3(raw):
     m = raw.split()[0]
     if m in ('dec', 'inc', 'add', 'sub') and re.match(r'\w+\s+r15,', raw):
@@ -222,7 +258,7 @@ def n5(seq):
     return o
 
 
-def disasm(path):
+def disasm(path, lim=LIM):
     out = subprocess.run([sys.executable, os.path.join(TOOLS, 'sdis.py'), '-l', path],
                          capture_output=True, text=True, check=True).stdout
     rows = []
@@ -232,7 +268,7 @@ def disasm(path):
         m = re.match(r'^([0-9a-f]{4}) [0-9a-f ]+?\t(.*)$', l)
         if m:
             a = int(m.group(1), 16)
-            if a < LIM:
+            if a < lim:
                 rows.append((a, m.group(2).strip()))
     return rows
 
@@ -270,6 +306,62 @@ def strict_bag(rows_):
     return collections.Counter(out)
 
 
+
+def orig_candidates(orig_rows):
+    """Possible starts of functions in the original: call targets (strong) and the instruction after a ret (weak);
+    a prologue after a ret is strong. A function ends at the next strong start."""
+    tg = set()
+    for a, raw in orig_rows:
+        m = re.match(r'^(call|calr)\s+(?:%([0-9A-F]{4})|L0t_([0-9a-f]+))', raw)
+        if m:
+            tg.add(int(m.group(2) or m.group(3), 16))
+    strong = set(tg)
+    weak = set()
+    prev = None
+    for a, raw in orig_rows:
+        if prev == 'ret':
+            weak.add(a)
+            if re.match(r'(dec|sub)\s+r15,', raw):
+                strong.add(a)
+        prev = raw
+    return sorted(strong), sorted(strong | weak)
+
+
+def auto_pairs(mine_syms, mine_rows, orig_rows, mine_lim):
+    """Greedy one-to-one pairing of our functions with candidate starts of the original (bag distance).
+    Returns {our start: (orig start, distance)}. A proposal, not the table: the table in ORIG decides."""
+    import bisect
+    strong, cand = orig_candidates(orig_rows)
+    orig_idx = {a: k for k, (a, _) in enumerate(orig_rows)}
+    starts = [v for v, n in mine_syms]
+    extents = {}
+    for i, st in enumerate(starts):
+        end = starts[i + 1] if i + 1 < len(starts) else mine_lim
+        extents[st] = [r for a, r in mine_rows if st <= a < end]
+    bags = {}
+    for c in cand:
+        j = bisect.bisect_right(strong, c)
+        e = strong[j] if j < len(strong) else LIM
+        bags[c] = collections.Counter(n5([x for x in map(n3, [r for a, r in orig_rows if c <= a < e]) if x]))
+    scored = []
+    for st in starts:
+        bm = collections.Counter(n5([x for x in map(n3, extents[st]) if x]))
+        size = sum(bm.values()) + 1
+        for c in cand:
+            bo = bags[c]
+            d = sum(((bm - bo) + (bo - bm)).values())
+            scored.append((d / (size + sum(bo.values())), d, st, c))
+    scored.sort()
+    used_m, used_c, out = set(), set(), {}
+    for r, d, st, c in scored:
+        if st in used_m or c in used_c or r > 0.3:
+            continue
+        used_m.add(st)
+        used_c.add(c)
+        out[st] = (c, d)
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--mine', default='codgen', help='our binary (codgen or scodgen)')
@@ -279,67 +371,130 @@ def main():
     a = ap.parse_args()
     orig = a.orig or os.path.join(os.environ.get('WEGA', ''), 'lib', a.name)
     s = SOut(open(a.mine, 'rb').read())
-    mine_rows = disasm(a.mine)
+    mine_lim = own_limit(s)
+    mine_rows = disasm(a.mine, mine_lim)
     code = {addr: raw for addr, raw in mine_rows}
     # symbols of type 34 also name data (tables); a function starts with an instruction, not with .word/.byte
-    syms = sorted({(x['value'], x['name']) for x in s.symbols
-                   if x['segt'] == 0 and x['type'] == 34 and x['value'] < LIM
-                   and not code.get(x['value'], '.').startswith('.')})
+    syms = {(x['value'], x['name'].lstrip('_')) for x in s.symbols
+            if x['segt'] == 0 and x['type'] == 34 and x['value'] < mine_lim
+            and not code.get(x['value'], '.').startswith('.')}
+    # static functions have no symbol in our binary: they show up only as call targets (calr to a label)
+    symv = {x['value'] for x in s.symbols if x['segt'] == 0}
+    named = sorted((x['value'], x['name'].lstrip('_')) for x in s.symbols
+                   if x['segt'] == 0 and x['type'] == 34 and x['value'] < mine_lim)
+
+    def owner_of(a):
+        o = None
+        for v, n in named:
+            if v <= a:
+                o = n
+        return o
+    static_seq = {}
+    for addr, raw in mine_rows:
+        m = re.match(r'^(call|calr)\s+(?:%([0-9A-F]{4})|L0t_([0-9a-f]+))', raw)
+        if m:
+            t = int(m.group(2) or m.group(3), 16)
+            if t < mine_lim and t not in symv and not code.get(t, '.').startswith('.'):
+                seq = static_seq.setdefault(owner_of(addr), [])
+                if t not in seq:
+                    seq.append(t)
+    for caller, seq in static_seq.items():
+        names = STATIC_NAMES.get(caller, [])
+        for k, t in enumerate(seq):
+            name = names[k] if k < len(names) and names[k] else 'static_%04x' % t
+            syms.add((t, name))
+    syms = sorted(syms)
     starts = [v for v, n in syms]
     orig_rows = disasm(orig)
-    omap = {addr: raw for addr, raw in orig_rows}
+    auto = auto_pairs(syms, mine_rows, orig_rows, mine_lim)
+    strong, cand = orig_candidates(orig_rows)
+
+    # the original start of each of our functions: the table ORIG, else the automatic proposal (marked)
+    rows = []
+    for i, (st, short) in enumerate(syms):
+        end = starts[i + 1] if i + 1 < len(starts) else mine_lim
+        o_man, verdict, note = ORIG.get(short, (None, None, ''))
+        if o_man is not None or verdict is not None:
+            rows.append((short, st, end, o_man, 'table', verdict, note))
+        elif st in auto:
+            rows.append((short, st, end, auto[st][0], 'auto', None, 'automatic proposal, distance %d, not confirmed' % auto[st][1]))
+        else:
+            rows.append((short, st, end, None, None, None, ''))
+    assigned = {r[3]: r[0] for r in rows if r[3] is not None}
+
     lines = []
     lines.append('# %s: functions and their places in the binaries' % a.name)
     lines.append('')
     lines.append('Generated by `funcs.py` (do not edit by hand; change the table `ORIG` in `funcs.py`).')
     lines.append('')
-    lines.append('- Our binary: `%s` (%d functions from the symbol table; start and end are exact).' % (a.mine, len(syms)))
-    lines.append('- Original: `%s` (stripped; its starts are in `ORIG` in `funcs.py`).' % os.path.basename(orig))
-    lines.append('- `identical*`: the same instruction multiset, but register-to-register moves differ (they are not in the first comparison).')
+    lines.append('- Our binary: `%s`: %d functions from the symbol table (start and end are exact).' % (a.mine, len(syms)))
+    lines.append('- Original: `%s` (stripped). Its starts come from the table `ORIG` (`table`) or from the automatic '
+                 'pairing (`auto`, not confirmed).' % os.path.basename(orig))
     lines.append('- Comparison: instruction multiset from the start up to the first `ret`, old-cc effects masked '
-                 '(the normalisation of `host/tools/cgcmp.py`). `gleich` = same multiset; the notes give the old-cc '
-                 'classes (D1-D14 of `src/TODO.md`) or the open point.')
+                 '(normalisation of `host/tools/cgcmp.py`). `identical` = same multiset; `identical*` = only '
+                 'register-to-register moves differ; `differs (n)` = n instructions differ.')
     lines.append('')
-    lines.append('| Function | Our start | Our end | Original start | Comparison | Note |')
-    lines.append('|---|---|---|---|---|---|')
+    lines.append('| Function | Our start | Our end | Original start | Source | Comparison | Note |')
+    lines.append('|---|---|---|---|---|---|---|')
     nsame = 0
     ncmp = 0
-    for i, (st, name) in enumerate(syms):
-        end = starts[i + 1] if i + 1 < len(starts) else LIM
-        short = name.lstrip('_')
-        o_start, verdict, note = ORIG.get(short, (None, None, ''))
+    for short, st, end, o, src, verdict, note in rows:
         if verdict == 'crt0':
-            cmp_txt = 'not codgen code'
-            o_txt = '-'
-        elif o_start is None:
-            cmp_txt = 'not paired'
-            o_txt = '-'
+            lines.append('| %s | 0x%04x | 0x%04x | - | table | not codgen code | %s |' % (short, st, end, note))
+            continue
+        if o is None:
+            lines.append('| %s | 0x%04x | 0x%04x | - | %s | %s | %s |' % (short, st, end, src or '-', verdict or 'not paired', note))
+            continue
+        ob = bag(body_to_ret(orig_rows, o))
+        mb = bag(body_to_ret(mine_rows, st))
+        d = sum(((mb - ob) + (ob - mb)).values())
+        ds = sum(((strict_bag(body_to_ret(mine_rows, st)) - strict_bag(body_to_ret(orig_rows, o)))
+                  + (strict_bag(body_to_ret(orig_rows, o)) - strict_bag(body_to_ret(mine_rows, st)))).values())
+        if verdict is not None:
+            cmp_txt = verdict
         else:
-            o_txt = '0x%04x' % o_start
-            mine_b = bag([r for r in body_to_ret(mine_rows, st)])
-            orig_b = bag(body_to_ret(orig_rows, o_start))
-            if verdict is not None:
-                cmp_txt = verdict
+            ncmp += 1
+            if d == 0 and ds == 0:
+                cmp_txt = 'identical'
+            elif d == 0:
+                cmp_txt = 'identical*'
             else:
-                d = sum(((mine_b - orig_b) + (orig_b - mine_b)).values())
-                ncmp += 1
-                ds = sum(((strict_bag(body_to_ret(mine_rows, st)) - strict_bag(body_to_ret(orig_rows, o_start)))
-                          + (strict_bag(body_to_ret(orig_rows, o_start)) - strict_bag(body_to_ret(mine_rows, st)))).values())
-                if d == 0 and ds == 0:
-                    cmp_txt = 'identical'
-                    nsame += 1
-                elif d == 0:
-                    cmp_txt = 'identical*'
-                    nsame += 1
-                else:
-                    cmp_txt = 'differs (%d)' % d
-        lines.append('| %s | 0x%04x | 0x%04x | %s | %s | %s |' % (short, st, end, o_txt, cmp_txt, note))
+                cmp_txt = 'differs (%d)' % d
+            if d == 0:
+                nsame += 1
+        lines.append('| %s | 0x%04x | 0x%04x | 0x%04x | %s | %s | %s |' % (short, st, end, o, src, cmp_txt, note))
     lines.append('')
-    lines.append('Summary: %d of %d paired functions identical up to the first `ret`.' % (nsame, ncmp))
+    lines.append('Summary: %d of %d functions with a table entry identical up to the first `ret`; %d with an automatic '
+                 'proposal only.' % (nsame, ncmp, sum(1 for r in rows if r[4] == 'auto')))
+    lines.append('')
+    lines.append('## Open: our functions without an original')
+    lines.append('')
+    for short, st, end, o, src, verdict, note in rows:
+        if o is None:
+            lines.append('- `%s` at 0x%04x' % (short, st))
+    lines.append('')
+    lines.append('## Open: original call targets without one of our functions')
+    lines.append('')
+    lines.append('The nearest function of ours (bag distance over the same extent) is given only as a hint.')
+    lines.append('')
+    ext = {}
+    for i, (st, short) in enumerate(syms):
+        end = starts[i + 1] if i + 1 < len(starts) else mine_lim
+        ext[short] = bag(body_to_ret(mine_rows, st))
+    for c in strong:
+        if c >= LIM or c in assigned:
+            continue
+        j = bisect.bisect_right(strong, c)
+        e = strong[j] if j < len(strong) else LIM
+        ob = bag([r for a2, r in orig_rows if c <= a2 < e])
+        best = min(((sum(((ext[n] - ob) + (ob - ext[n])).values()), n) for n in ext), default=(0, '-'))
+        lines.append('- 0x%04x (%d instructions up to the next call target): nearest `%s` (distance %d)'
+                     % (c, sum(ob.values()), best[1], best[0]))
     lines.append('')
     with open(a.out, 'w') as f:
         f.write('\n'.join(lines) + '\n')
-    print('wrote', a.out, 'identical', nsame, 'of', ncmp)
+    print('wrote', a.out, 'identical', nsame, 'of', ncmp, 'auto-only', sum(1 for r in rows if r[4] == 'auto'),
+          'open ours', sum(1 for r in rows if r[3] is None), 'open orig', sum(1 for c in strong if c < LIM and c not in assigned))
 
 
 if __name__ == '__main__':

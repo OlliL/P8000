@@ -195,7 +195,9 @@ static int
 rcookie(p)
 	struct node *p;
 {
-	return p->type == 7 || p->type == 6 ? 0x10 : 2;
+	if (p && (p->type == 7 || p->type == 6))
+		return 0x10;
+	return 2;
 }
 
 /* does the operand on side of p already live in register r (or is its long register r - 1)? */
