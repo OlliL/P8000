@@ -701,6 +701,7 @@ argscan(p)
 	register struct node *p;
 {
 	register struct node *q, *rest;
+	int sz;
 
 	q = p;
 	rest = p;
@@ -743,8 +744,8 @@ argscan(p)
 		argfreg--;
 		return rest;
 	}
-	switch (argsize(q)) {
-	case 1:
+	sz = argsize(q);
+	if (sz == 1) {
 push:
 		argl[nargs].reg = argreg;
 		argl[nargs].node = q;
@@ -752,7 +753,8 @@ push:
 		argl[nargs].node = 0;
 		argreg--;
 		return rest;
-	case 2:
+	}
+	if (sz == 2) {
 		argreg--;
 		if (argreg & 1)
 			argreg--;
@@ -762,7 +764,8 @@ push:
 			return q;
 		}
 		goto push;
-	case 4:
+	}
+	if (sz == 4) {
 		if (argreg == 7) {
 			argl[nargs].reg = argreg - 3;
 			argl[nargs].node = q;

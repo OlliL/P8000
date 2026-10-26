@@ -32,7 +32,8 @@ LIM = 0xbbc4   # the program part of the original ends here (the C library follo
 # None = not identified. The address is found from the caller, so the table survives rebuilds.
 STATIC_NAMES = {
     'allocreg': ['rcookie'],                                              # allo3.c
-    'genargs': ['fixstarg', None, 'argsort', 'argplace'],                 # order3.c (None: 0x2ea4, not identified)
+    'genargs': ['argscan', 'argstrip', 'argsort', 'argplace'],            # order3.c
+    'argstrip': ['fixstarg'],                                             # order3.c
     'nxwork': ['rnnullw', 'rnnulll', 'rnnullp', 'rnnullall', 'rnnullcall'],  # regfile3.c
     'gswitch': ['newreg'],                                                # lcl3.c
 }
@@ -87,11 +88,12 @@ ORIG = {
     'zzzcode':   (0x2edc, None, 'd=37 after char c and register locals: switch dispatch (D6), D3, D7; the old name table was data'),
     'start':     (None,   'crt0', 'entry of crt0, not codgen code'),
     'rcookie':   (0x89a2, None, 'identical after the null test `if (p && ...)` was written (allo3.c fix)'),
-    'fixstarg':  (None, 'open', 'identified by the call sequence in genargs (recursion on p->left); no counterpart found'),
+    'fixstarg':  (0x5c1c, None, 'identical up to the ret (order3.c; identified by the body: STASG, resc[0].type = 8, type 0x18)'),
     'rnnullw':   (0x988c, None, 'identical up to the ret (regfile3.c rnnullw)'),
     'rnnulll':   (0x986a, None, 'identical up to the ret (regfile3.c rnnulll)'),
     'rnnullp':   (0x97cc, None, 'identical up to the ret (regfile3.c rnnullp)'),
     'rnnullcall': (0x9816, None, 'identical up to the ret (regfile3.c rnnullcall)'),
+    'argscan':   (0x5a4c, None, 'd=14 after switch(argsize) as if chain (order3.c); left: the argsize value in a stack slot (original: register), jump layout (D7)'),
     'argplace':  (0x5d2c, None, 'D5: the local array cnt is addressed with lda (original: direct); 13 instructions, else identical'),
     'argsort':   (None,   'open', 'identified by the source (the swap of argl by su); no counterpart found in the original'),
     'rnnullall': (0x983c, None, 'identical up to the ret after register int i (regfile3.c)'),
@@ -382,27 +384,40 @@ def main():
     symv = {x['value'] for x in s.symbols if x['segt'] == 0}
     named = sorted((x['value'], x['name'].lstrip('_')) for x in s.symbols
                    if x['segt'] == 0 and x['type'] == 34 and x['value'] < mine_lim)
-
-    def owner_of(a):
-        o = None
-        for v, n in named:
-            if v <= a:
-                o = n
-        return o
-    static_seq = {}
+    static_calls = []
     for addr, raw in mine_rows:
         m = re.match(r'^(call|calr)\s+(?:%([0-9A-F]{4})|L0t_([0-9a-f]+))', raw)
         if m:
             t = int(m.group(2) or m.group(3), 16)
             if t < mine_lim and t not in symv and not code.get(t, '.').startswith('.'):
-                seq = static_seq.setdefault(owner_of(addr), [])
-                if t not in seq:
-                    seq.append(t)
-    for caller, seq in static_seq.items():
-        names = STATIC_NAMES.get(caller, [])
-        for k, t in enumerate(seq):
-            name = names[k] if k < len(names) and names[k] else 'static_%04x' % t
-            syms.add((t, name))
+                static_calls.append((addr, t))
+    # static functions have no symbol: their name comes from the caller (STATIC_NAMES), resolved in rounds
+    resolved = {}
+    for _ in range(4):
+        starts_now = sorted(named + [(v, n) for v, n in resolved.items()])
+
+        def owner_of(a):
+            o = None
+            for v, n in starts_now:
+                if v <= a:
+                    o = n
+            return o
+        seqs = {}
+        for addr, t in static_calls:
+            seq = seqs.setdefault(owner_of(addr), [])
+            if t not in seq:
+                seq.append(t)
+        for caller, seq in seqs.items():
+            names = STATIC_NAMES.get(caller, [])
+            todo = [t for t in seq if t not in resolved]   # the names are given for the unresolved callees in order
+            for t, nm in zip(todo, names):
+                if nm:
+                    resolved[t] = nm
+    for addr, t in static_calls:
+        pass
+    all_static = {t for addr, t in static_calls}
+    for t in sorted(all_static):
+        syms.add((t, resolved.get(t, 'static_%04x' % t)))
     syms = sorted(syms)
     starts = [v for v, n in syms]
     orig_rows = disasm(orig)
