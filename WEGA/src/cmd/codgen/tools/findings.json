@@ -5656,9 +5656,9 @@
    "function": "sucomp",
    "where": "see evidence",
    "detail": "sucomp: 756 instructions against 684; the difference is in the body (not yet analysed)",
-   "action": "check the operand order of the add in the MAX/ternary expressions and the register choice of the old compiler",
+   "action": "find the expression that makes the old compiler add a frame slot directly (49 places); the register declaration is only an approximation",
    "status": "partly fixed",
-   "result": "Source change in order3.c: the locals of sucomp (o, arity, nr, nf, sul, sur, fl, fr, t, l, r) are register variables, as in other functions of the module. Memory loads 226 -> 54, unexplained add forms 91 -> 55, alignment 36 -> 46 %, length 756 -> 731 (original 684). Corpus 101/101 equal. Earlier experiment (temporaries for l->su, l->fsu) had no effect. Open: add rS,F with a frame slot as the second operand (the original uses a register); operand order not checked.",
+   "result": "Source change in order3.c: the locals of sucomp (o, arity, nr, nf, sul, sur, fl, fr, t, l, r) are register variables, as in other functions of the module. Memory loads 226 -> 54, unexplained add forms 91 -> 55, alignment 36 -> 46 %, length 756 -> 731 (original 684). Corpus 101/101 equal. Earlier experiment (temporaries for l->su, l->fsu) had no effect. Open: add rS,F with a frame slot as the second operand (the original uses a register); operand order not checked. Add-operand kinds (sucomp, reg,reg / reg,mem): original 52 / 49, now 80 / 22: the original adds a frame slot directly in 49 places, ours loads it into a register first. Variants (scratch, not kept): operand order swapped in the sums (unexplained 55 -> 49, alignment 46 -> 45, diff 739 -> 756: no gain); only the pointers register (742 instructions, alignment 34, unexplained 85); only the integers register (= current source); only o/arity/t register (757, alignment 35); only the sums register (731, alignment 34, unexplained 49). The current source is kept (best alignment and length of the variants); the real cause is not found yet.",
    "classification": "fixed: locals register (source); open: add with frame operand"
   },
   {
