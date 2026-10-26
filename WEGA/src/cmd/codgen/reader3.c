@@ -771,7 +771,7 @@ delstrip(p)
 	if (p->op == INCR || p->op == DECR) {
 		p->right->op = FREE;
 		q = p->left;
-		ncopy(p, q);
+		*p = *p->left;
 		q->op = FREE;
 	}
 }

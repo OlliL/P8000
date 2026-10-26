@@ -308,6 +308,14 @@ hopcode(p)
 	cerror("no hoptab for %s", opst[o]);
 }
 
+/* print a long mask of the M and N templates */
+static void
+prlong(v)
+	long v;
+{
+	printf("%ld", v);
+}
+
 /* expand the template cp for the tree p */
 void
 expand(p, cookie, cp)
@@ -346,7 +354,7 @@ expand(p, cookie, cp)
 			break;
 		case 'M': case 'N':
 			m = ((1L << fldsz) - 1) << fldshf;
-			printf("%ld", *cp == 'M' ? m : ~m);
+			prlong(*cp == 'M' ? m : ~m);
 			break;
 		case 'O':
 			hopcode(p);

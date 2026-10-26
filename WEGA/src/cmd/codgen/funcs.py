@@ -30,12 +30,15 @@ LIM = 0xbbc4   # the program part of the original ends here (the C library follo
 # static functions of our build, by their caller: the names of the static functions that a function calls, in the
 # order of their first call (identified from the source: the call sequence and the body; see FUNCTIONS.md).
 # None = not identified. The address is found from the caller, so the table survives rebuilds.
+CALLBACKS = {0x7592: 'delstrip'}   # reader3.c: fwalk(p, delstrip) in delay2, no call instruction
+
 STATIC_NAMES = {
     'allocreg': ['rcookie'],                                              # allo3.c
     'genargs': ['argscan', 'argstrip', 'argsort', 'argplace'],            # order3.c
     'argstrip': ['fixstarg'],                                             # order3.c
     'nxwork': ['rnassign', 'rnnullw', 'rnnulll', 'rnnullp', 'rnnullall', 'rnnullcall'],  # regfile3.c, call order
     'rnnullw': ['rnnull'],                                                # regfile3.c
+    'expand': ['prlong'],                                                 # out3.c
     'gswitch': ['newreg'],                                                # lcl3.c
 }
 
@@ -99,12 +102,13 @@ ORIG = {
     'argsort':   (0x5bcc, None, 'identical up to the ret after argl became a tagged struct and the loops use pointers (order3.c)'),
     'rnnullall': (0x983c, None, 'identical up to the ret after register int i (regfile3.c)'),
     'static_8696': (None, 'own', 'clears the 400-byte work area before printf (cgprintf wrapper, comm3.c); the original calls printf directly'),
+    'delstrip': (0x9d2, None, 'delstrip (reader3.c), the callback of fwalk in delay2; the struct copy is inline in the original'),
     'newreg':    (None,   'inline', 'in the original there is no function: the getreg blocks are inline in gswitch (5-6 copies)'),
     # automatic pairings from the function-boundary work (not yet checked one by one)
     'allocinit': (0x8bea, None, 'auto, verified: identical'),
     'argsize': (0x88f6, None, 'auto, verified: identical'),
     'bcon': (0xb0a0, None, 'auto-paired, identical, two ret in our function: check'),
-    'branch': (0x2880, None, 'auto, verified: identical'),
+    'branch': (0x89e8, None, 'comm3.c: printf("\\tjpr\\tL%d\\n", n); same calls as the original'),
     'bsize': (0x8878, None, 'auto, verified: identical'),
     'canon': (0x1884, None, 'auto, verified: identical'),
     'canon2': (0x46fe, None, 'auto, verified: identical'),
@@ -131,10 +135,11 @@ ORIG = {
     'hdrout': (0x8c0c, None, 'auto, verified: identical'),
     'hopcode': (0x2de0, None, 'auto, verified: identical'),
     'init': (0x019e, None, 'auto, verified: identical'),
-    'insput': (0x269a, None, 'auto, verified: identical'),
+    'prlong': (0x3fc4, None, 'out3.c, the printf("%ld") of the M and N templates; the original calls it as a function'),
+    'insput': (0x4088, None, 'called by expand (case I); the original spills its argument and calls cerror("insput")'),
     'ispow2': (0x8af6, None, 'verified: old cc (clr/ZERO, inc form)'),
     'lastchance': (0x46ae, None, 'auto, verified: identical'),
-    'lineout': (None, None, 'auto pairing 0x4088 was a one-argument call (wrong), removed'),
+    'lineout': (0x2880, None, 'efcode3.c: printf("\\t.line\\t%d\\t%s\\t\\n", ...); called from main (case .) with ifline and ifname'),
     'ltypeok': (0x3e1c, None, 'auto, verified: identical'),
     'makeblock': (0xaece, None, 'D4: the original homes all four parameters (ldm of r4-r7), the rebuild one'),
     'mapn': (0x2038, None, 'auto, verified: identical'),
@@ -157,7 +162,7 @@ ORIG = {
     'rbusy': (0x66bc, None, 'auto, verified: identical'),
     'rcount': (0x15ba, None, 'auto, verified: identical'),
     'rcount_reset': (0x778e, None, 'auto, verified: identical'),
-    'rdin': (0x3fc4, None, 'auto, verified: identical'),
+    'rdin': (0x269a, None, 'rdin(base) = rdin2(base, stdin): same calls and spill, the original keeps a 2-byte frame (ours 6)'),
     'rdin2': (0x26ae, None, 'auto, verified: identical'),
     'readmems': (0x1d0e, None, 'auto, verified: identical'),
     'readsyms': (None, None, 'auto-paired distance 7 (unclear), removed'),
@@ -420,6 +425,9 @@ def main():
     all_static = {t for addr, t in static_calls}
     for t in sorted(all_static):
         syms.add((t, resolved.get(t, 'static_%04x' % t)))
+    # static functions that are only passed as a pointer (fwalk callbacks) have no call: named here, in our layout
+    for t, nm in CALLBACKS.items():
+        syms.add((t, nm))
     syms = sorted(syms)
     starts = [v for v, n in syms]
     orig_rows = disasm(orig)
