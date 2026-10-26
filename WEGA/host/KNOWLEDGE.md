@@ -450,11 +450,11 @@ Sources: `src/cmd/codgen` (K&R C for the WEGA cc, the same files build `codgen` 
 - **scodgen.** `locate.py --seg` finds all objects of `scodgen` (18 objects, 211 functions, no problems). Its functions are the
   209 names of `codgen` plus `newlreg` (`lcl3.c`) and `mkoreg` (`order3.c`), which exist only under `SEG`. The corpus check
   `tools/check.sh` with `PROG=scodgen` gives 100 of 100 and 1 of 1.
-- **Functions.** The program part of `/lib/codgen` (0x0 .. 0xbbc4) and of our build (the codgen objects, up to 0xbc2a) contain 210
-  functions. Original boundaries come from the call targets and prologues (the original is stripped). 206 functions are paired with a
-  function of the original (`tools/confirm.py`, the same instructions and call targets). 4 have no counterpart: `start` (crt0 entry),
-  `rcookie` (a duplicate of `rallkind` in `allo3.c`, removed from the source), `cgwipe` and `cgprintf` (our helpers: the work-area
-  clearing and the `printf` wrapper; the original has no separate functions for them).
+- **Functions.** The program part of `/lib/codgen` (0x0 .. 0xbbc4) and of our build (the codgen objects, up to 0xbc2a) contain 206
+  functions (`tools/findings.json`). Original boundaries come from the call targets and prologues (the original is stripped).
+  All 206 are paired with a function of the original (`tools/confirm.py`: the same instructions, the same strings, or a review).
+  The entries `start` (the crt0 entry, not codgen code), `rcookie` (a duplicate of `rallkind`, removed) and the `printf` wrapper
+  `cgwipe`/`cgprintf` (removed, see below) are no longer in the list.
 - **Differences of the 206 paired functions** (`tools/classify.py`, pattern check of the old-cc differences D1-D14):
   21 have no differing instruction after normalisation (addresses, frame offsets and scratch registers masked); 181 differ only by
   old-cc patterns (D1 to D14); 4 have other differences: `clocal`, `sucomp`, `tshape`, `zzzcode` (see "Open" below).
@@ -513,9 +513,6 @@ Listed by function; the current evidence is in `findings.json` (`findings_pendin
   not found.
 - `tshape` (`match3.c`, `tshape-order-01`): the last operand of the `SZERO` return is a value in the original (`cpl rr2,#0; ldk r2,#0;
   tcc eq,r2`), a branch in ours. The `if` form gave no gain.
-- The stray `-` in `scodgen` (`execvp`, `getopt`): the wrong character comes from `printf("%s", rnames[...])` (the
-  register name loses its first character), not from the `r` prefix. The stack contents at that call differ from the original
-  (the frame layout differs, D1); without `cgprintf` the two cases fail. The cause is not yet shown.
 - Left from earlier rounds, not re-checked in this round: `cbranch` (the table dispatch after the `cpir` search, D6, and the
   compare chain order 0x56-0x59), `gswitch` (the original is a structurally different case code with about 20 `printf` calls against
   our 10; not reconstructed), `rdsym` (frame of two bytes, D1), `freeparm` (scratch register choice, D2), `ffld` (parameter spilled in
@@ -528,9 +525,13 @@ Listed by function; the current evidence is in `findings.json` (`findings_pendin
 - `struct node` is laid out as in the original (0x12 bytes: `sname` at 8 doubles as the CBRANCH label, the left subtree overlays the
   low word of `lval`, `rval`/`right` share 0x10). The members are reached through macros (`lval left rval right label`), because the
   K&R `cc` has one member name space (`struct rv` must not use `a`/`b`).
-- `printf` of the WEGA C library writes a stray `-` in front of a `%s` argument (and drops its first character) when the stack at the
-  place of its work area holds an old `%d` radix of -10 and a negative number. The original `codgen` only escapes by its stack layout.
-  `cg.h` therefore redefines `printf` as `cgprintf()`, which clears 400 bytes of stack first (`comm3.c`). See the quirks table.
+- **The stray `-` in `printf` (solved).** The `printf` of the shipped `libc.a` (Nov 1983, frame 0x1e) writes a stray `-` in front of
+  a `%s` argument (and drops its first character) when the stack at its work area holds an old `%d` radix of -10 and a negative
+  number. The original `codgen` and `scodgen` do not use that library version: they link the older `printf` and `doprnt`
+  (`src/lib/oldlibc/printf/0_3.s`, `doprnt/0_3.s`, the version `ranlib` uses; frame 0x16 and 0x68 in the original). With these two
+  modules the stray character does not occur, so the workaround `cgprintf` was removed; the Makefile assembles and links them.
+  Found by comparing the frames of `printf` and `doprnt` in the original binaries with the members of `libc.a`, and by the return
+  value of `printf` (the old one returns 0, the shipped one the count).
 - `allo` clears `resc[k].sname` (not `stsize`) for the A and B registers; a stale symbol made the result register look as if it held a
   variable.
 - `ispow2` returns an `int`; the table `indope` must end with op -1; `ftell` and `ispow2` must be declared (a long return read as int
@@ -906,7 +907,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld`, `/bin/gld` | the code and data of an object are stored entry by entry (not all code first); `tools/sout.py` and `host/ld/sld.c` had assumed all code first | fixed | "gld on the host" |
 | `/lib/codgen` 0x6fca..0x7056 | dead code: a routine that no call, `calr` or table in the binary refers to (checked by `sdis.py -l`, no label, no word 0x6fca outside code); it prints the names of the set bits of its word argument (0x0000 and 0x1000 print fixed texts), with a column counter (0x65a0) and a buffer (0x659e) | not reproduced (`prcookie`, a debug routine named in a comment of `allo3.c`; no counterpart in the rebuild) | `src/cmd/codgen/tools/findings.json` |
 | `/lib/codgen` 0x854c..0x856e | dead code: `fprintf(stderr, "system call error: ")`, then a call with the argument (0xcba0), then `errexit(0x40)`; no call, `calr`, jump or word in the binary refers to it (checked with `sdis.py -l` and a byte search) | not reproduced (no counterpart in the rebuild) | `src/cmd/codgen/tools/findings.json` |
-| libc `printf` (seen in `/lib/codgen`) | `%s` prints a stray `-` and drops the first character of the string when the stack at the place of its work area holds an old radix -10 with a negative number from an earlier `%d`; the original codgen only escapes by luck of its stack layout | not reproduced (`cgprintf` clears the stack first) | "codgen runs" |
+| libc `printf` of the shipped `libc.a` (not in the original codgen/scodgen) | `%s` prints a stray `-` and drops the first character of the string when the stack at the place of its work area holds an old radix -10 with a negative number from an earlier `%d` | not reproduced: codgen and scodgen link the older `printf`/`doprnt` (oldlibc 0_3) as the original does | "codgen runs" |
 | `/lib/scodgen` | `conval` folds the difference of two pointer constants as `(a - b) & 0xFF` (the high word is cleared), the sum as `& 0x7F00FFFF`; the mask of MINUS looks like a slip | kept (`-DSEG`), not reached by the test files | "scodgen runs" |
 | `/lib/codgen`, `/lib/scodgen` | a file name argument (no `-`) is reopened as stdin and, after the end of the input, scanned and reopened again for ever (the index is not advanced); only `-E name` with stdin is used | kept | "codgen runs" |
 | `/lib/codgen`, `/lib/scodgen` | `eread` tests the operator class against 0x73 (CBRANCH) instead of the operator; `tbytes` has a dead compare for pointers; `reclaim` has no ULONG test for the second register (`sic`); `allo` reads `resc[k]` one past the last register; `rbusy` counts the node in front of the long register it split | kept | "codgen" |

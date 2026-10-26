@@ -4,9 +4,9 @@ Generated from findings.json by inventory.py. Method and limits: see classificat
 
 ## Pairings
 
-- functions of our codgen: 210
+- functions of our codgen: 206
 - confirmed with a counterpart in /lib/codgen: 206
-- without counterpart on our side: `cgprintf`, `cgwipe`, `rcookie`, `start`
+- without counterpart on our side: 
 - original functions without counterpart on our side: `0x4868` (forwarder of main, main-wrapper-01), `0x6fca` and `0x854c` (dead code, quirk table)
 - code coverage: every instruction of our codgen belongs to a function; in the original only the start code (0x0-0x28) lies outside the pairings, and the continuation of rdsym (0x1aae) belongs to rdsym
 
@@ -47,6 +47,7 @@ Identical under metric strict-1 (the same instruction sequence, only addresses m
 - `lineout-type-01` (fixed (efcode3.c: long line -> int line; 100 % identical)): our lineout declares long line; the original takes int line (r7). main passes ifline (int) in r7 and ifname in r6. Ours reads the file from r5, so the file name
 - `shift-type-02` (fixed except the order of zzzcode): the sign of a shift with a constant count differs (srl in the original, sra in ours, or the other way round): the variable shifted is unsigned in the original; 
 - `zzzcode-order-01` (open): block order: the block if (notoff(...)) order(r, STAREG) lies at another place (808 ours, 920 original); 96 differing blocks, 86 % aligned
+- `printf-wrapper-01` (fixed): the cgprintf wrapper (clears 400 bytes of stack before printf) was a workaround for the stray minus bug of the shipped printf
 
 ## Limits
 

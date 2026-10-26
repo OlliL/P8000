@@ -9,24 +9,35 @@
 #   make clean
 
 CC = cc
+CAS = cas
 CFLAGS = -O
+# the old printf and doprnt of the original codgen and scodgen (ranlib uses the same version, 0_3; the frames and the
+# output of the original are reproduced, see KNOWLEDGE.md); the shipped libc.a has a newer printf with the stray '-' bug
+OLD = ../../lib/oldlibc
+OLDLIBC = $(OLD)/printf/0_3.o $(OLD)/doprnt/0_3.o
 SRCS = allo3.c local3.c match3.c order3.c out3.c regallo3.c regfile3.c tmp3.c zzz3.c reader3.c gen3.c optim3.c comm3.c rdr3.c main3.c efcode3.c lcl3.c tr3.c regs3.c
 OBJS = allo3.o local3.o match3.o order3.o out3.o regallo3.o regfile3.o tmp3.o zzz3.o reader3.o gen3.o optim3.o comm3.o rdr3.o main3.o efcode3.o lcl3.o tr3.o regs3.o
 SOBJS = allo3.o local3.o match3.o order3.o out3.o regallo3.o regfile3.o tmp3.o zzz3.o reader3.o gen3.o optim3.o comm3.o rdr3.o main3.o efcode3.o lcl3.o tr3.o regs3.o table3_scodgen.o ops_scodgen.o hop_scodgen.o
 
 all: codgen scodgen
 
-codgen: objs
-	$(CC) -i -o codgen $(OBJS) table3_codgen.o ops_codgen.o hop_codgen.o
+codgen: objs $(OLDLIBC)
+	$(CC) -i -o codgen $(OBJS) table3_codgen.o ops_codgen.o hop_codgen.o $(OLDLIBC)
 
 objs: $(OBJS) table3_codgen.o ops_codgen.o hop_codgen.o
 
 $(OBJS) table3_codgen.o ops_codgen.o hop_codgen.o: cg.h
 
-scodgen: $(SRCS) table3_scodgen.c ops_scodgen.c hop_scodgen.c cg.h
+scodgen: $(SRCS) table3_scodgen.c ops_scodgen.c hop_scodgen.c cg.h $(OLDLIBC)
 	-mkdir seg
 	for f in $(SRCS) table3_scodgen.c ops_scodgen.c hop_scodgen.c ; do ( cd seg ; $(CC) $(CFLAGS) -DSEG -c ../$$f ) || exit 1 ; done
-	cd seg ; $(CC) -i -o ../scodgen $(SOBJS)
+	cd seg ; $(CC) -i -o ../scodgen $(SOBJS) ../$(OLD)/printf/0_3.o ../$(OLD)/doprnt/0_3.o
+
+$(OLD)/printf/0_3.o: $(OLD)/printf/0_3.s
+	$(CAS) -u -o $@ $(OLD)/printf/0_3.s
+
+$(OLD)/doprnt/0_3.o: $(OLD)/doprnt/0_3.s
+	$(CAS) -u -o $@ $(OLD)/doprnt/0_3.s
 
 clean:
 	rm -f *.o codgen scodgen

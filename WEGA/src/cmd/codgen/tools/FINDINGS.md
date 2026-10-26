@@ -6,20 +6,18 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 ## Summary
 
-**Functions:** 210
+**Functions:** 206
 
 | Pairing | Count |
 |---|---|
 | confirmed | 206 |
-| none | 4 |
 
 | Difference class | Count |
 |---|---|
-| - | 4 |
 | D only (pattern-verified) | 202 |
 | other differences | 4 |
 
-**Pending findings:** 23
+**Pending findings:** 24
 
 | Status | Count |
 |---|---|
@@ -28,6 +26,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | closed | 1 |
 | explained | 2 |
 | explained: layout | 1 |
+| fixed | 1 |
 | fixed (allo3.c: rcookie removed, allocreg calls rallkind) | 1 |
 | fixed (allo3.c: tcopy calls ncopy(q, p)) | 1 |
 | fixed (efcode3.c: long line -> int line; 100 % identical) | 1 |
@@ -43,174 +42,171 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | Function | Ours | Original | Pairing | Level | Difference class | Old-cc classes | Note |
 |---|---|---|---|---|---|---|---|
 | acon | 0x2e0a-0x2fdc | 0x437e | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| adrput | 0x320e-0x33de | 0x41d0 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8 |  |
+| adrput | 0x320e-0x33ba | 0x41d0 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8 |  |
 | allo | 0x05a2-0x0950 | 0x67e8 | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D6, D7, D8/D2 |  |
-| alloc | 0x87fa-0x8876 | 0x8b6e | confirmed | differs | D only (pattern-verified) | D1 |  |
-| allocinit | 0x8876-0x8894 | 0x8bea | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
+| alloc | 0x878a-0x8806 | 0x8b6e | confirmed | differs | D only (pattern-verified) | D1 |  |
+| allocinit | 0x8806-0x8824 | 0x8bea | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
 | allocreg | 0x0494-0x05a2 | 0x6c4e | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D7, D8/D2 |  |
 | argplace | 0x2c36-0x2db6 | 0x5d2c | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D5, D6, D7, D8/D2 |  |
-| argprep | 0x7202-0x72f2 | 0x18be | confirmed | differs | D only (pattern-verified) | D2, D3, D7 |  |
+| argprep | 0x71de-0x72ce | 0x18be | confirmed | differs | D only (pattern-verified) | D2, D3, D7 |  |
 | argscan | 0x293a-0x2aba | 0x5a4c | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D7, D8/D2 |  |
 | argsize | 0x130c-0x1366 | 0x88f6 | confirmed | differs | D only (pattern-verified) | D1, D10, D3 |  |
 | argsort | 0x2aba-0x2b1a | 0x5bcc | confirmed | differs | D only (pattern-verified) | D3 |  |
 | argstrip | 0x2b84-0x2c36 | 0x5c7a | confirmed | differs | D only (pattern-verified) | D1 |  |
-| bcon | 0xb6ce-0xb700 | 0xb0a0 | confirmed | differs | D only (pattern-verified) | D1 |  |
-| branch | 0x87d0-0x87e4 | 0x89e8 | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
+| bcon | 0xb65e-0xb690 | 0xb0a0 | confirmed | differs | D only (pattern-verified) | D1 |  |
+| branch | 0x8760-0x8774 | 0x89e8 | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
 | bsize | 0x0eae-0x0efc | 0x8878 | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D6, D7 |  |
-| buildstar | 0xbb78-0xbc2a | 0xafe4 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8, D8/D2 |  |
-| canon | 0x71c8-0x7202 | 0x1884 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| canon2 | 0x77b0-0x77cc | 0x46fe | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| cbgen | 0x63ca-0x6434 | 0x460e | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D6, D8/D2 |  |
-| cbranch | 0x6c42-0x6f0e | 0x12bc | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8/D2 |  |
-| cerror | 0x8496-0x8518 | 0x85ae | confirmed | differs | D only (pattern-verified) | D10, D13, D7, D8 |  |
-| cgprintf | 0x8416-0x843e |  | none | differs |  |  |  |
-| cgwipe | 0x83f2-0x8416 |  | none | own |  |  |  |
-| chk | 0xb700-0xb708 | 0xab3e | confirmed | differs | D only (pattern-verified) |  |  |
-| clocal | 0xb708-0xba0e | 0xab48 | confirmed | differs | other differences |  | clocal-size-01: 80 instructions at another place (block order) |
-| codgen | 0x6434-0x647e | 0x0aaa | confirmed | differs | D only (pattern-verified) | D1, D7 |  |
+| buildstar | 0xbb08-0xbbba | 0xafe4 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8, D8/D2 |  |
+| canon | 0x71a4-0x71de | 0x1884 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| canon2 | 0x778c-0x77a8 | 0x46fe | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| cbgen | 0x63a6-0x6410 | 0x460e | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D6, D8/D2 |  |
+| cbranch | 0x6c1e-0x6eea | 0x12bc | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8/D2 |  |
+| cerror | 0x8426-0x84a8 | 0x85ae | confirmed | differs | D only (pattern-verified) | D10, D13, D7, D8 |  |
+| chk | 0xb690-0xb698 | 0xab3e | confirmed | differs | D only (pattern-verified) |  |  |
+| clocal | 0xb698-0xb99e | 0xab48 | confirmed | differs | other differences |  | clocal-size-01: 80 instructions at another place (block order) |
+| codgen | 0x6410-0x645a | 0x0aaa | confirmed | differs | D only (pattern-verified) | D1, D7 |  |
 | conput | 0x3016-0x3102 | 0x3fda | confirmed | differs | D only (pattern-verified) | D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| constore | 0x6b4e-0x6b8a | 0x11da | confirmed | differs | D only (pattern-verified) | D1, D6 |  |
-| conval | 0x7b5e-0x7ddc | 0xb774 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8/D2 |  |
-| convelim | 0x798c-0x7aba | 0xba7c | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D8, D8/D2 |  |
+| constore | 0x6b2a-0x6b66 | 0x11da | confirmed | differs | D only (pattern-verified) | D1, D6 |  |
+| conval | 0x7b3a-0x7db8 | 0xb774 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8/D2 |  |
+| convelim | 0x7968-0x7a96 | 0xba7c | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D8, D8/D2 |  |
 | deflab | 0x2926-0x293a | 0x59de | confirmed | differs | D only (pattern-verified) |  |  |
-| delay | 0x7452-0x755e | 0x0838 | confirmed | differs | D only (pattern-verified) | D13, D7 |  |
-| delay1 | 0x73ca-0x7452 | 0x094e | confirmed | differs | D only (pattern-verified) | D1, D6 |  |
-| delay2 | 0x7326-0x73ca | 0x0a0a | confirmed | differs | D only (pattern-verified) | D1, D6 |  |
-| delstrip | 0x72f2-0x7326 | 0x09d2 | confirmed | differs | D only (pattern-verified) | D2, D3, D8/D2 |  |
-| dopeinit | 0x872c-0x875c | 0x8844 | confirmed | differs | D only (pattern-verified) |  |  |
-| efcode | 0xa17c-0xa232 | 0x28f6 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3 |  |
-| endline | 0xa244-0xa292 | 0x8c22 | confirmed | differs | D only (pattern-verified) |  |  |
-| endrun | 0xa292-0xa296 | 0x8c1e | confirmed | exact | D only (pattern-verified) |  |  |
-| epilog | 0x9ef8-0x9f4a | 0x2990 | confirmed | differs | D only (pattern-verified) | D1, D13, D3 |  |
-| eread | 0x93b4-0x95b0 | 0x2480 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8, D8/D2 |  |
-| errexit | 0x87b8-0x87d0 | 0x89ce | confirmed | exact | D only (pattern-verified) |  |  |
-| expand | 0x345e-0x3652 | 0x6444 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| fbegin | 0xa5be-0xa6f2 | 0x8fda | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3 |  |
-| fcmd | 0xad20-0xadb4 | 0xa1ba | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
-| ffld | 0x6f0e-0x70a4 | 0x15d0 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| findtemp | 0xacee-0xad20 | 0xa7ac | confirmed | differs | D only (pattern-verified) | D1 |  |
-| fixfld | 0xa8e6-0xa9a4 | 0x944a | confirmed | differs | D only (pattern-verified) | D1, D3, D7, D8, D8/D2 |  |
-| fixname | 0xabd2-0xac38 | 0xa0c6 | confirmed | differs | D only (pattern-verified) | D1, D10 |  |
+| delay | 0x742e-0x753a | 0x0838 | confirmed | differs | D only (pattern-verified) | D13, D7 |  |
+| delay1 | 0x73a6-0x742e | 0x094e | confirmed | differs | D only (pattern-verified) | D1, D6 |  |
+| delay2 | 0x7302-0x73a6 | 0x0a0a | confirmed | differs | D only (pattern-verified) | D1, D6 |  |
+| delstrip | 0x72ce-0x7302 | 0x09d2 | confirmed | differs | D only (pattern-verified) | D2, D3, D8/D2 |  |
+| dopeinit | 0x86bc-0x86ec | 0x8844 | confirmed | differs | D only (pattern-verified) |  |  |
+| efcode | 0xa10c-0xa1c2 | 0x28f6 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3 |  |
+| endline | 0xa1d4-0xa222 | 0x8c22 | confirmed | differs | D only (pattern-verified) |  |  |
+| endrun | 0xa222-0xa226 | 0x8c1e | confirmed | exact | D only (pattern-verified) |  |  |
+| epilog | 0x9e88-0x9eda | 0x2990 | confirmed | differs | D only (pattern-verified) | D1, D13, D3 |  |
+| eread | 0x9344-0x9540 | 0x2480 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8, D8/D2 |  |
+| errexit | 0x8748-0x8760 | 0x89ce | confirmed | exact | D only (pattern-verified) |  |  |
+| expand | 0x343a-0x362e | 0x6444 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| fbegin | 0xa54e-0xa682 | 0x8fda | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3 |  |
+| fcmd | 0xacb0-0xad44 | 0xa1ba | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
+| ffld | 0x6eea-0x7080 | 0x15d0 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| findtemp | 0xac7e-0xacb0 | 0xa7ac | confirmed | differs | D only (pattern-verified) | D1 |  |
+| fixfld | 0xa876-0xa934 | 0x944a | confirmed | differs | D only (pattern-verified) | D1, D3, D7, D8, D8/D2 |  |
+| fixname | 0xab62-0xabc8 | 0xa0c6 | confirmed | differs | D only (pattern-verified) | D1, D10 |  |
 | fixstarg | 0x2b1a-0x2b84 | 0x5c1c | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
-| fixtemp | 0xa76c-0xa8e6 | 0x918e | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D7, D8, D8/D2 |  |
-| foldadd | 0xbaa8-0xbb78 | 0xaf14 | confirmed | differs | D only (pattern-verified) | D1 |  |
-| fpdec | 0x9d46-0x9d66 | 0x2b20 | confirmed | differs | D only (pattern-verified) | D2, D3, D7 |  |
-| fpinc | 0x9d26-0x9d46 | 0x2aa2 | confirmed | differs | D only (pattern-verified) | D2, D3, D7 |  |
-| free1 | 0x8626-0x8642 | 0x8758 | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
+| fixtemp | 0xa6fc-0xa876 | 0x918e | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D7, D8, D8/D2 |  |
+| foldadd | 0xba38-0xbb08 | 0xaf14 | confirmed | differs | D only (pattern-verified) | D1 |  |
+| fpdec | 0x9cd6-0x9cf6 | 0x2b20 | confirmed | differs | D only (pattern-verified) | D2, D3, D7 |  |
+| fpinc | 0x9cb6-0x9cd6 | 0x2aa2 | confirmed | differs | D only (pattern-verified) | D2, D3, D7 |  |
+| free1 | 0x85b6-0x85d2 | 0x8758 | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
 | freeparm | 0x025a-0x02ac | 0x6792 | confirmed | differs | D only (pattern-verified) | D1, D13 |  |
 | freereg | 0x037c-0x0494 | 0x6d5a | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8, D8/D2 |  |
 | freetemp | 0x02ac-0x02fc | 0x6ba6 | confirmed | differs | D only (pattern-verified) | D1, D2 |  |
-| funcend | 0x9cca-0x9d26 | 0x289a | confirmed | differs | D only (pattern-verified) | D1 |  |
-| fwalk | 0x86d6-0x872c | 0x87ec | confirmed | differs | D only (pattern-verified) | D1 |  |
-| fwalkd | 0x865c-0x86d6 | 0x8774 | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D7 |  |
+| funcend | 0x9c5a-0x9cb6 | 0x289a | confirmed | differs | D only (pattern-verified) | D1 |  |
+| fwalk | 0x8666-0x86bc | 0x87ec | confirmed | differs | D only (pattern-verified) | D1 |  |
+| fwalkd | 0x85ec-0x8666 | 0x8774 | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D7 |  |
 | genargs | 0x2db6-0x2e0a | 0x59f4 | confirmed | differs | D only (pattern-verified) | D1, D7 |  |
-| gencall | 0x7642-0x771c | 0x4534 | confirmed | differs | D only (pattern-verified) | D10 |  |
-| geninc | 0x55b6-0x564e | 0x2e4c | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D6 |  |
-| genscall | 0x771c-0x772a | 0x4520 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| gencall | 0x761e-0x76f8 | 0x4534 | confirmed | differs | D only (pattern-verified) | D10 |  |
+| geninc | 0x5592-0x562a | 0x2e4c | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D6 |  |
+| genscall | 0x76f8-0x7706 | 0x4520 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
 | getlab | 0x2914-0x2926 | 0x59d4 | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
 | getlr | 0x1658-0x16e8 | 0x6636 | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D6, D7, D8 |  |
-| getreg | 0x402c-0x4392 | 0x7c10 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| gswitch | 0xb346-0xb66e | 0xa7e0 | confirmed | differs | D only (pattern-verified) | D2, D3, D7, D8/D2 |  |
-| hdrout | 0xa232-0xa244 | 0x8c0c | confirmed | exact | D only (pattern-verified) |  |  |
-| hopcode | 0x33de-0x344a | 0x2de0 | confirmed | differs | D only (pattern-verified) | D1 |  |
-| icright | 0x7788-0x77b0 | 0x46d0 | confirmed | differs | D only (pattern-verified) | D1, D3, D7, D8/D2 |  |
-| init | 0x9724-0x97b6 | 0x019e | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
+| getreg | 0x4008-0x436e | 0x7c10 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| gswitch | 0xb2d6-0xb5fe | 0xa7e0 | confirmed | differs | D only (pattern-verified) | D2, D3, D7, D8/D2 |  |
+| hdrout | 0xa1c2-0xa1d4 | 0x8c0c | confirmed | exact | D only (pattern-verified) |  |  |
+| hopcode | 0x33ba-0x3426 | 0x2de0 | confirmed | differs | D only (pattern-verified) | D1 |  |
+| icright | 0x7764-0x778c | 0x46d0 | confirmed | differs | D only (pattern-verified) | D1, D3, D7, D8/D2 |  |
+| init | 0x96b4-0x9746 | 0x019e | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
 | insput | 0x3102-0x3112 | 0x4088 | confirmed | differs | D only (pattern-verified) |  |  |
-| isint | 0x7972-0x798c | 0xbba2 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| isint | 0x794e-0x7968 | 0xbba2 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
 | ispow2 | 0x0e5e-0x0eae | 0x8af6 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6 |  |
-| lastchance | 0x7764-0x7788 | 0x46ae | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| lineout | 0x9cb2-0x9cca | 0x2880 | confirmed | differs | D only (pattern-verified) |  |  |
+| lastchance | 0x7740-0x7764 | 0x46ae | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| lineout | 0x9c42-0x9c5a | 0x2880 | confirmed | differs | D only (pattern-verified) |  |  |
 | lmuldiv | 0x25fa-0x263c | 0x576e | confirmed | differs | D only (pattern-verified) | D1, D3, D7, D8/D2 |  |
 | ltypeok | 0x118c-0x11d4 | 0x3e1c | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D7 |  |
 | ltypeop | 0x0e32-0x0e5e | 0x3e66 | confirmed | differs | D only (pattern-verified) | D3, D7, D8/D2 |  |
-| main | 0x97b6-0x9cb2 | 0x023c | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| makeblock | 0xb66e-0xb6ce | 0xaece | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3 |  |
-| mapn | 0x900e-0x903e | 0x2038 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| mapnm | 0x908e-0x93b4 | 0x20c0 | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3, D7, D8 |  |
-| mapregs | 0xa9a4-0xaaa4 | 0x9512 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8, D8/D2 |  |
-| mapsym | 0x903e-0x908e | 0x206a | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
-| markcall | 0x6b8a-0x6bf4 | 0x1212 | confirmed | differs | D only (pattern-verified) | D1, D3, D6, D7, D8/D2 |  |
+| main | 0x9746-0x9c42 | 0x023c | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| makeblock | 0xb5fe-0xb65e | 0xaece | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3 |  |
+| mapn | 0x8f9e-0x8fce | 0x2038 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| mapnm | 0x901e-0x9344 | 0x20c0 | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3, D7, D8 |  |
+| mapregs | 0xa934-0xaa34 | 0x9512 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8, D8/D2 |  |
+| mapsym | 0x8fce-0x901e | 0x206a | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
+| markcall | 0x6b66-0x6bd0 | 0x1212 | confirmed | differs | D only (pattern-verified) | D1, D3, D6, D7, D8/D2 |  |
 | match | 0x16e8-0x1962 | 0x6196 | confirmed | differs | D only (pattern-verified) | D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| member | 0xba0e-0xbaa8 | 0xb0d4 | confirmed | differs | D only (pattern-verified) | D10, D2, D3, D7 |  |
-| memname | 0xb002-0xb078 | 0xa734 | confirmed | differs | D only (pattern-verified) | D1, D13, D7, D8 |  |
-| mkadrs | 0x784e-0x7972 | 0x48a0 | confirmed | differs | D only (pattern-verified) | D1, D3, D7, D8/D2 |  |
-| mkhash | 0x89b2-0x89ee | 0x2406 | confirmed | differs | D only (pattern-verified) | D13, D2 |  |
+| member | 0xb99e-0xba38 | 0xb0d4 | confirmed | differs | D only (pattern-verified) | D10, D2, D3, D7 |  |
+| memname | 0xaf92-0xb008 | 0xa734 | confirmed | differs | D only (pattern-verified) | D1, D13, D7, D8 |  |
+| mkadrs | 0x782a-0x794e | 0x48a0 | confirmed | differs | D only (pattern-verified) | D1, D3, D7, D8/D2 |  |
+| mkhash | 0x8942-0x897e | 0x2406 | confirmed | differs | D only (pattern-verified) | D13, D2 |  |
 | mkrall | 0x20ec-0x214e | 0x51c0 | confirmed | differs | D only (pattern-verified) | D1 |  |
-| mycanon | 0x77cc-0x7830 | 0x4804 | confirmed | differs | D only (pattern-verified) | D1 |  |
-| ncopy | 0x87e4-0x87fa | 0x8a02 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| newnode | 0x386e-0x38dc | 0x75e0 | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D6, D7, D8 |  |
-| nextcook | 0x772a-0x7764 | 0x4674 | confirmed | differs | D only (pattern-verified) | D1 |  |
+| mycanon | 0x77a8-0x780c | 0x4804 | confirmed | differs | D only (pattern-verified) | D1 |  |
+| ncopy | 0x8774-0x878a | 0x8a02 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| newnode | 0x384a-0x38b8 | 0x75e0 | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D6, D7, D8 |  |
+| nextcook | 0x7706-0x7740 | 0x4674 | confirmed | differs | D only (pattern-verified) | D1 |  |
 | niceuty | 0x23ac-0x23f6 | 0x547a | confirmed | differs | D only (pattern-verified) | D1, D10, D2 |  |
-| nlcheck | 0x897a-0x89b2 | 0x244a | confirmed | differs | D only (pattern-verified) | D2, D8 |  |
+| nlcheck | 0x890a-0x8942 | 0x244a | confirmed | differs | D only (pattern-verified) | D2, D8 |  |
 | notoff | 0x1962-0x1992 | 0x49c0 | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D8 |  |
-| nullsyms | 0x4550-0x4594 | 0x811e | confirmed | differs | D only (pattern-verified) | D13, D3, D7, D8, D8/D2 |  |
-| nxwork | 0x4d20-0x544e | 0x98e4 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D6, D7, D8/D2 |  |
+| nullsyms | 0x452c-0x4570 | 0x811e | confirmed | differs | D only (pattern-verified) | D13, D3, D7, D8, D8/D2 |  |
+| nxwork | 0x4cfc-0x542a | 0x98e4 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D6, D7, D8/D2 |  |
 | offstar | 0x232c-0x23ac | 0x53fa | confirmed | differs | D only (pattern-verified) | D1 |  |
-| optim | 0x7ddc-0x83f2 | 0xb178 | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| options | 0x95b0-0x9724 | 0x002a | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D6, D7 |  |
-| order | 0x6528-0x69f4 | 0x0ba2 | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3, D6, D7, D8/D2 |  |
+| optim | 0x7db8-0x83ce | 0xb178 | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| options | 0x9540-0x96b4 | 0x002a | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D6, D7 |  |
+| order | 0x6504-0x69d0 | 0x0ba2 | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3, D6, D7, D8/D2 |  |
 | orderadd | 0x226a-0x232c | 0x5338 | confirmed | differs | D only (pattern-verified) | D1 |  |
-| oreg2 | 0x70a4-0x71c8 | 0x175e | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
-| oregfix | 0xac38-0xacee | 0xa12a | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
+| oreg2 | 0x7080-0x71a4 | 0x175e | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
+| oregfix | 0xabc8-0xac7e | 0xa12a | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
 | oregput | 0x2fdc-0x3016 | 0x409a | confirmed | differs | D only (pattern-verified) | D1 |  |
-| pairmate | 0x4594-0x45ac | 0x73f0 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| parminit | 0xa296-0xa562 | 0x8c74 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| pairmate | 0x4570-0x4588 | 0x73f0 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| parminit | 0xa226-0xa4f2 | 0x8c74 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
 | plainicon | 0x0f2c-0x0f56 | 0x8b44 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| prcook | 0x647e-0x6528 | 0x0af6 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D7, D8 |  |
-| prline | 0x843e-0x845a | 0x8952 | confirmed | differs | D only (pattern-verified) |  |  |
-| prlong | 0x344a-0x345e | 0x3fc4 | confirmed | differs | D only (pattern-verified) |  |  |
-| prolog | 0xa122-0xa17c | 0x2aca | confirmed | differs | D only (pattern-verified) | D1, D13, D3 |  |
-| psuffix | 0x55a4-0x55b6 | 0x2780 | confirmed | differs | D only (pattern-verified) | D3, D7 |  |
-| rallkind | 0x878c-0x87b8 | 0x89a2 | confirmed | differs | D only (pattern-verified) | D1 |  |
+| prcook | 0x645a-0x6504 | 0x0af6 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D7, D8 |  |
+| prline | 0x83ce-0x83ea | 0x8952 | confirmed | differs | D only (pattern-verified) |  |  |
+| prlong | 0x3426-0x343a | 0x3fc4 | confirmed | differs | D only (pattern-verified) |  |  |
+| prolog | 0xa0b2-0xa10c | 0x2aca | confirmed | differs | D only (pattern-verified) | D1, D13, D3 |  |
+| psuffix | 0x5580-0x5592 | 0x2780 | confirmed | differs | D only (pattern-verified) | D3, D7 |  |
+| rallkind | 0x871c-0x8748 | 0x89a2 | confirmed | differs | D only (pattern-verified) | D1 |  |
 | rallo | 0x214e-0x226a | 0x5222 | confirmed | differs | D only (pattern-verified) | D1, D13, D3, D6, D7 |  |
 | rbusy | 0x00b4-0x018a | 0x66bc | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
 | rclass | 0x002a-0x007a | 0x6bf4 | confirmed | differs | D only (pattern-verified) | D10, D2, D3, D7, D8/D2 |  |
-| rcmd | 0xae54-0xb002 | 0xa2f4 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D7, D8/D2 |  |
-| rcookie |  |  | none | differs |  |  |  |
+| rcmd | 0xade4-0xaf92 | 0xa2f4 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D7, D8/D2 |  |
 | rcount | 0x0e1a-0x0e30 | 0x15ba | confirmed | differs | D only (pattern-verified) |  |  |
 | rcount_reset | 0x0e30-0x0e32 | 0x778e | confirmed | exact | D only (pattern-verified) |  |  |
-| rddata | 0x89ee-0x8ab4 | 0x19ac | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D3, D5, D7, D8 |  |
-| rdin | 0x896c-0x897a | 0x269a | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
-| rdin2 | 0x8894-0x896c | 0x26ae | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D8 |  |
-| rdsym | 0x8dd6-0x8eb8 | 0x1a86 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D7, D8/D2 |  |
-| readmems | 0x8c26-0x8dd6 | 0x1d0e | confirmed | differs | D only (pattern-verified) | D8/D2 |  |
-| readnums | 0x8b8c-0x8c26 | 0x1c6c | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D6, D7, D8/D2 |  |
-| readsyms | 0x8ab4-0x8b5e | 0x1b64 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D5, D7, D8/D2 |  |
-| readtab | 0x8b5e-0x8b8c | 0x1c30 | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
+| rddata | 0x897e-0x8a44 | 0x19ac | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D3, D5, D7, D8 |  |
+| rdin | 0x88fc-0x890a | 0x269a | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
+| rdin2 | 0x8824-0x88fc | 0x26ae | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D8 |  |
+| rdsym | 0x8d66-0x8e48 | 0x1a86 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D7, D8/D2 |  |
+| readmems | 0x8bb6-0x8d66 | 0x1d0e | confirmed | differs | D only (pattern-verified) | D8/D2 |  |
+| readnums | 0x8b1c-0x8bb6 | 0x1c6c | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D6, D7, D8/D2 |  |
+| readsyms | 0x8a44-0x8aee | 0x1b64 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D5, D7, D8/D2 |  |
+| readtab | 0x8aee-0x8b1c | 0x1c30 | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
 | reclaim | 0x0a18-0x0dc8 | 0x7058 | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D7, D8/D2 |  |
-| regargs | 0x9f4a-0xa122 | 0x2c0e | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3 |  |
-| regforsym | 0xab46-0xabd2 | 0xa03a | confirmed | differs | D only (pattern-verified) | D1, D13, D2 |  |
-| regjam | 0x3c6c-0x402c | 0x7916 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| regreset | 0xadb4-0xae54 | 0xa252 | confirmed | exact | D only (pattern-verified) |  |  |
-| regrestore | 0x9d66-0x9e2e | 0x29de | confirmed | differs | D only (pattern-verified) | D1, D13, D3 |  |
-| regsave | 0x9e2e-0x9ef8 | 0x2b48 | confirmed | differs | D only (pattern-verified) | D1, D13, D3 |  |
-| regtabinit | 0xa6f2-0xa6fa | 0x910e | confirmed | exact | D only (pattern-verified) |  |  |
+| regargs | 0x9eda-0xa0b2 | 0x2c0e | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3 |  |
+| regforsym | 0xaad6-0xab62 | 0xa03a | confirmed | differs | D only (pattern-verified) | D1, D13, D2 |  |
+| regjam | 0x3c48-0x4008 | 0x7916 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| regreset | 0xad44-0xade4 | 0xa252 | confirmed | exact | D only (pattern-verified) |  |  |
+| regrestore | 0x9cf6-0x9dbe | 0x29de | confirmed | differs | D only (pattern-verified) | D1, D13, D3 |  |
+| regsave | 0x9dbe-0x9e88 | 0x2b48 | confirmed | differs | D only (pattern-verified) | D1, D13, D3 |  |
+| regtabinit | 0xa682-0xa68a | 0x910e | confirmed | exact | D only (pattern-verified) |  |  |
 | rfind | 0x007a-0x00b4 | 0x96e6 | confirmed | differs | D only (pattern-verified) | D1 |  |
 | rfree | 0x018a-0x01de | 0x6f76 | confirmed | differs | D only (pattern-verified) | D1 |  |
 | rfreeall | 0x0dc8-0x0e1a | 0x9696 | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D8/D2 |  |
 | rfreenode | 0x01de-0x025a | 0x6efa | confirmed | differs | D only (pattern-verified) | D1 |  |
 | rmove | 0x11d4-0x130c | 0x3cf2 | confirmed | differs | D only (pattern-verified) | D1, D3, D6, D7, D8/D2 |  |
-| rnassign | 0x4b4c-0x4c04 | 0x9722 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D6, D7 |  |
-| rnnull | 0x4cce-0x4d20 | 0x989e | confirmed | differs | D only (pattern-verified) | D2, D3, D7 |  |
-| rnnullall | 0x4c76-0x4ca0 | 0x983c | confirmed | exact | D only (pattern-verified) |  |  |
-| rnnullcall | 0x4c50-0x4c76 | 0x9816 | confirmed | exact | D only (pattern-verified) |  |  |
-| rnnulll | 0x4ca0-0x4cc2 | 0x986a | confirmed | differs | D only (pattern-verified) | D1 |  |
-| rnnullp | 0x4c04-0x4c50 | 0x97cc | confirmed | differs | D only (pattern-verified) | D1, D7 |  |
-| rnnullw | 0x4cc2-0x4cce | 0x988c | confirmed | differs | D only (pattern-verified) | D3 |  |
-| roverlap | 0x3ae6-0x3c6c | 0x7790 | confirmed | differs | D only (pattern-verified) | D1, D3, D6 |  |
-| rsbuild | 0x37c2-0x386e | 0x7458 | confirmed | differs | D only (pattern-verified) | D2, D7 |  |
-| rsdump | 0x45ac-0x4680 | 0x750c | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D7, D8 |  |
-| rsfreeall | 0x4680-0x46e6 | 0x815e | confirmed | differs | D only (pattern-verified) | D13, D2, D3, D6, D7, D8/D2 |  |
-| rsinit | 0x3738-0x3786 | 0x740c | confirmed | differs | D only (pattern-verified) | D1, D13, D5 |  |
-| rsinsert | 0x38dc-0x3ae6 | 0x7650 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| rsmatch | 0x4a2c-0x4aba | 0x83ec | confirmed | differs | D only (pattern-verified) | D1, D7 |  |
-| rsmerge | 0x471a-0x4a2c | 0x81fe | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D7, D8, D8/D2 |  |
-| rspush | 0x46e6-0x471a | 0x81c4 | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
-| rsrelall | 0x4aba-0x4b04 | 0x84b6 | confirmed | differs | D only (pattern-verified) | D7 |  |
-| rsrelease | 0x3786-0x37c2 | 0x847a | confirmed | differs | D only (pattern-verified) | D1 |  |
-| rsrestart | 0x4b04-0x4b4c | 0x8502 | confirmed | differs | D only (pattern-verified) | D7 |  |
-| rsreturn | 0x4392-0x4550 | 0x7f50 | confirmed | differs | D only (pattern-verified) | D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| scmd | 0xb078-0xb1ae | 0xa4aa | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3, D6, D7, D8/D2 |  |
+| rnassign | 0x4b28-0x4be0 | 0x9722 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D6, D7 |  |
+| rnnull | 0x4caa-0x4cfc | 0x989e | confirmed | differs | D only (pattern-verified) | D2, D3, D7 |  |
+| rnnullall | 0x4c52-0x4c7c | 0x983c | confirmed | exact | D only (pattern-verified) |  |  |
+| rnnullcall | 0x4c2c-0x4c52 | 0x9816 | confirmed | exact | D only (pattern-verified) |  |  |
+| rnnulll | 0x4c7c-0x4c9e | 0x986a | confirmed | differs | D only (pattern-verified) | D1 |  |
+| rnnullp | 0x4be0-0x4c2c | 0x97cc | confirmed | differs | D only (pattern-verified) | D1, D7 |  |
+| rnnullw | 0x4c9e-0x4caa | 0x988c | confirmed | differs | D only (pattern-verified) | D3 |  |
+| roverlap | 0x3ac2-0x3c48 | 0x7790 | confirmed | differs | D only (pattern-verified) | D1, D3, D6 |  |
+| rsbuild | 0x379e-0x384a | 0x7458 | confirmed | differs | D only (pattern-verified) | D2, D7 |  |
+| rsdump | 0x4588-0x465c | 0x750c | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D7, D8 |  |
+| rsfreeall | 0x465c-0x46c2 | 0x815e | confirmed | differs | D only (pattern-verified) | D13, D2, D3, D6, D7, D8/D2 |  |
+| rsinit | 0x3714-0x3762 | 0x740c | confirmed | differs | D only (pattern-verified) | D1, D13, D5 |  |
+| rsinsert | 0x38b8-0x3ac2 | 0x7650 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| rsmatch | 0x4a08-0x4a96 | 0x83ec | confirmed | differs | D only (pattern-verified) | D1, D7 |  |
+| rsmerge | 0x46f6-0x4a08 | 0x81fe | confirmed | differs | D only (pattern-verified) | D1, D2, D3, D7, D8, D8/D2 |  |
+| rspush | 0x46c2-0x46f6 | 0x81c4 | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
+| rsrelall | 0x4a96-0x4ae0 | 0x84b6 | confirmed | differs | D only (pattern-verified) | D7 |  |
+| rsrelease | 0x3762-0x379e | 0x847a | confirmed | differs | D only (pattern-verified) | D1 |  |
+| rsrestart | 0x4ae0-0x4b28 | 0x8502 | confirmed | differs | D only (pattern-verified) | D7 |  |
+| rsreturn | 0x436e-0x452c | 0x7f50 | confirmed | differs | D only (pattern-verified) | D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| scmd | 0xb008-0xb13e | 0xa4aa | confirmed | differs | D only (pattern-verified) | D10, D13, D2, D3, D6, D7, D8/D2 |  |
 | setasg | 0x286a-0x2914 | 0x56c6 | confirmed | differs | D only (pattern-verified) | D1, D2 |  |
 | setasop | 0x263c-0x286a | 0x57b0 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3 |  |
 | setbin | 0x23f6-0x25a0 | 0x54c4 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
@@ -219,39 +215,38 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | shincr | 0x1092-0x1112 | 0x3ed6 | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
 | shtemp | 0x1034-0x1092 | 0x3e8e | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D6, D7, D8, D8/D2 |  |
 | shumul | 0x1112-0x118c | 0x3f4e | confirmed | differs | D only (pattern-verified) | D1, D10, D2 |  |
-| sortsyms | 0x8eb8-0x8f52 | 0x1ec2 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D8/D2 |  |
+| sortsyms | 0x8e48-0x8ee2 | 0x1ec2 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D8/D2 |  |
 | special | 0x0f56-0x1034 | 0x471a | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D7, D8/D2 |  |
-| start |  |  | none | not |  |  |  |
-| stmt | 0x755e-0x7642 | 0x075a | confirmed | differs | D only (pattern-verified) | D1, D2 |  |
-| stoarg | 0x6bf4-0x6c42 | 0x126a | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| stoasg | 0x7830-0x784e | 0x487e | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
-| store | 0x69f4-0x6b4e | 0x1084 | confirmed | differs | D only (pattern-verified) | D1, D6 |  |
-| structretcode | 0xa562-0xa5be | 0x8f7e | confirmed | differs | D only (pattern-verified) |  |  |
+| stmt | 0x753a-0x761e | 0x075a | confirmed | differs | D only (pattern-verified) | D1, D2 |  |
+| stoarg | 0x6bd0-0x6c1e | 0x126a | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| stoasg | 0x780c-0x782a | 0x487e | confirmed | differs | D only (pattern-verified) | D1, D2, D3 |  |
+| store | 0x69d0-0x6b2a | 0x1084 | confirmed | differs | D only (pattern-verified) | D1, D6 |  |
+| structretcode | 0xa4f2-0xa54e | 0x8f7e | confirmed | differs | D only (pattern-verified) |  |  |
 | sucomp | 0x1992-0x20ec | 0x49f0 | confirmed | differs | other differences |  | sucomp-size-01: 55 add rS,F forms (a frame slot as the second operand; the original loads the value into a register first); locals now register variables (source change) |
-| symreg | 0xaaee-0xab46 | 0x9fdc | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8/D2 |  |
-| symuse | 0xaaa4-0xaaee | 0x964c | confirmed | differs | D only (pattern-verified) | D1 |  |
+| symreg | 0xaa7e-0xaad6 | 0x9fdc | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8/D2 |  |
+| symuse | 0xaa34-0xaa7e | 0x964c | confirmed | differs | D only (pattern-verified) | D1 |  |
 | szty | 0x0efc-0x0f2c | 0x88c4 | confirmed | differs | D only (pattern-verified) | D1, D3, D6 |  |
-| tabclear | 0xa734-0xa76c | 0x9152 | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
-| tabfind | 0xa6fa-0xa734 | 0x9116 | confirmed | differs | D only (pattern-verified) | D1 |  |
-| tagfind | 0x8f52-0x900e | 0x1f82 | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
-| talloc | 0x8584-0x85e2 | 0x869c | confirmed | differs | D only (pattern-verified) | D13, D3, D7 |  |
-| tbytes | 0x875c-0x878c | 0x8970 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D6, D7 |  |
-| tcheck | 0x85e2-0x8626 | 0x86fa | confirmed | differs | D only (pattern-verified) | D2 |  |
-| tcmd | 0xb1ae-0xb2c6 | 0xa5de | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| tabclear | 0xa6c4-0xa6fc | 0x9152 | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
+| tabfind | 0xa68a-0xa6c4 | 0x9116 | confirmed | differs | D only (pattern-verified) | D1 |  |
+| tagfind | 0x8ee2-0x8f9e | 0x1f82 | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
+| talloc | 0x8514-0x8572 | 0x869c | confirmed | differs | D only (pattern-verified) | D13, D3, D7 |  |
+| tbytes | 0x86ec-0x871c | 0x8970 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D6, D7 |  |
+| tcheck | 0x8572-0x85b6 | 0x86fa | confirmed | differs | D only (pattern-verified) | D2 |  |
+| tcmd | 0xb13e-0xb256 | 0xa5de | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
 | tcopy | 0x0950-0x0a18 | 0x8a24 | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D7, D8/D2 |  |
-| tfree | 0x8642-0x865c | 0x873c | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
-| tinit | 0x8554-0x8584 | 0x866c | confirmed | differs | D only (pattern-verified) |  |  |
-| tmpcleanup | 0x544e-0x5550 | 0x9308 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D7, D8, D8/D2 |  |
-| tmpdump | 0x5550-0x55a4 | 0x93f4 | confirmed | differs | D only (pattern-verified) | D2 |  |
-| treeeq | 0x7aba-0x7b5e | 0xb9ea | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8/D2 |  |
+| tfree | 0x85d2-0x85ec | 0x873c | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
+| tinit | 0x84e4-0x8514 | 0x866c | confirmed | differs | D only (pattern-verified) |  |  |
+| tmpcleanup | 0x542a-0x552c | 0x9308 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D7, D8, D8/D2 |  |
+| tmpdump | 0x552c-0x5580 | 0x93f4 | confirmed | differs | D only (pattern-verified) | D2 |  |
+| treeeq | 0x7a96-0x7b3a | 0xb9ea | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8/D2 |  |
 | tshape | 0x1366-0x14ba | 0x5e92 | confirmed | differs | other differences |  | tshape-order-01: SZERO value form only (cpl + tcc in the original, a branch in ours); the call order is fixed by the case order (FLD before STAR) |
-| tsuffix | 0x3652-0x3738 | 0x2796 | confirmed | differs | D only (pattern-verified) | D13, D2, D3, D7, D8 |  |
+| tsuffix | 0x362e-0x3714 | 0x2796 | confirmed | differs | D only (pattern-verified) | D13, D2, D3, D7, D8 |  |
 | ttype | 0x14ba-0x15a6 | 0x5ff6 | confirmed | differs | D only (pattern-verified) | D1, D3, D6 |  |
-| uerror | 0x845a-0x8496 | 0x8570 | confirmed | differs | D only (pattern-verified) |  |  |
+| uerror | 0x83ea-0x8426 | 0x8570 | confirmed | differs | D only (pattern-verified) |  |  |
 | upput | 0x3112-0x320e | 0x40d4 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D6, D7, D8 |  |
 | usable | 0x02fc-0x037c | 0x6e78 | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D7 |  |
-| werror | 0x8518-0x8554 | 0x862e | confirmed | differs | D only (pattern-verified) |  |  |
-| zzzcode | 0x564e-0x63ca | 0x2edc | confirmed | differs | other differences |  | zzzcode-order-01: block order only: the block "if (notoff(...)) order(r, STAREG)" (ld, ldk, call, test, jr ne) lies at another place (808 in ours, 920 in the original); the two sra #1 forms are the same in context (the frame offsets differ, D1); source unchanged |
+| werror | 0x84a8-0x84e4 | 0x862e | confirmed | differs | D only (pattern-verified) |  |  |
+| zzzcode | 0x562a-0x63a6 | 0x2edc | confirmed | differs | other differences |  | zzzcode-order-01: block order only: the block "if (notoff(...)) order(r, STAREG)" (ld, ldk, call, test, jr ne) lies at another place (808 in ours, 920 in the original); the two sra #1 forms are the same in context (the frame offsets differ, D1); source unchanged |
 
 ## Pending findings
 
@@ -280,3 +275,4 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | lineout-type-01 | source | lineout | fixed (efcode3.c: long line -> int line; 100 % identical) |  | declare int line in lineout() (the cast (int)line then is not needed); check with codgen -l on a file that prints .line | Experiment: long line -> int line in efcode3.c gives lineout 100 % identical (8 / 8 instructions, 0 differences). |
 | shift-type-02 | source | fixfld, buildstar, shincr, rsdump, tmpcleanup, fbegin, fixtemp, zzzcode | fixed except the order of zzzcode |  | find the variables of these shifts and their declarations (same type question as shift-type-01); check each site separately | fixed: rsdump, tmpcleanup, fixtemp (struct tmpent and struct rs flags are int in the original); shincr (t >> 2 unsigned, local3.c); fbegin (DECREF in lcl3.c signed); buildstar (the two sflags tests in tr3.c unsigned). rejected: sflags unsigned in struct sym for all uses (six other functions became unexplained: mapnm, mapregs, memname, oreg2, oregfix, readsyms). open: fixfld (one shift of the original not reproduced, 5 unexplained forms), zzzcode (shift counts equal, 2 unexplained forms sra #1, to analyse). \| fixfld: fixed: INCREF(DECREF((unsigned)m->type)) without the temporary t (the original expands the macro twice; the second srl is the second use of the expression); zzzcode: the shift counts equal the original; the two sra #1 forms are the same in context (sra r2,#1 after the load of the frame slot; offsets differ, D1), so not a sign difference. The pattern check still counts them as unexplained because the block is moved. |
 | zzzcode-order-01 | other | zzzcode | open |  | find the case or branch of the original that holds this block; decide between source order and layout (D6/D7) before changing the source | The two sra #1 forms are the same in context (shift counts equal); the difference is the block order. Not analysed further; source unchanged. |
+| printf-wrapper-01 | source | cgprintf, cgwipe, rcookie, start | fixed | source change, Makefile links the old printf and doprnt (oldlibc 0_3) | none | The original codgen and scodgen link printf and doprnt of the older libc (frame 0x16, doprnt frame 0x68 = oldlibc 0_3, the same version ranlib uses). With them the stray minus does not occur and the wrapper is gone: codgen 100/100 and 1/1, scodgen 100/100 and 1/1 (corpus). rcookie was removed as a duplicate of rallkind, start is the crt0 entry and not codgen code. |

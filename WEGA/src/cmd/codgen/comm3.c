@@ -27,28 +27,6 @@ struct node *lastfree = node;	/* 0xa7b4 */
 static char *curbrk, *endbrk;	/* 0x4060, 0x405e */
 static int firstalloc = 1;	/* 0x4062 */
 
-/* clear the stack below the caller, where the work area of printf will be (see cg.h) */
-static void
-cgwipe()
-{
-	char buf[400];
-	register int i;
-
-	for (i = 0; i < 400; i++)
-		buf[i] = 0;
-}
-
-/* printf with the stack cleared; up to five words of arguments (a long takes two) */
-#undef printf
-int
-cgprintf(fmt, a, b, c, d, e)
-	char *fmt;
-	int a, b, c, d, e;
-{
-	cgwipe();
-	return printf(fmt, a, b, c, d, e);
-}
-
 /* the file and line of the intermediate file in front of an error message */
 static void
 prline(c)

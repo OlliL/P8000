@@ -11,13 +11,6 @@
 #define getc(p)		(--(p)->_cnt >= 0 ? (int)*(p)->_ptr++ & 0377 : _filbuf(p))
 #define getchar()	getc(stdin)
 
-/*
- * The printf of the C library of WEGA prints a stray '-' in front of a %s argument when the stack in the place of its
- * work area holds an old negative number with the radix of %d. cgprintf() clears that part of the stack before it calls printf.
- */
-extern int cgprintf();
-#define printf	cgprintf
-
 /* operators (the dope table in ops_*.c has the flags: arity in bits 1-3) */
 #define NAME	2
 #define STRING	3
