@@ -72,7 +72,7 @@ ORIG = {
     'gswitch':   (0xa7e0, None, 'not compared yet'),
     'eread':     (0x2480, None, 'not compared yet'),
     'main':      (0x23c,  None, 'not compared yet'),
-    'table':     (0x2edc, None, 'not compared yet'),
+    'zzzcode':   (0x2edc, None, 'd=37 after char c and register locals: switch dispatch (D6), D3, D7; the old name table was data'),
     'start':     (None,   'crt0', 'entry of crt0, not codgen code'),
     # automatic pairings from the function-boundary work (not yet checked one by one)
     'allocinit': (0x8bea, None, 'auto, verified: identical'),
@@ -279,10 +279,13 @@ def main():
     a = ap.parse_args()
     orig = a.orig or os.path.join(os.environ.get('WEGA', ''), 'lib', a.name)
     s = SOut(open(a.mine, 'rb').read())
-    syms = sorted({(x['value'], x['name']) for x in s.symbols
-                   if x['segt'] == 0 and x['type'] == 34 and x['value'] < LIM})
-    starts = [v for v, n in syms]
     mine_rows = disasm(a.mine)
+    code = {addr: raw for addr, raw in mine_rows}
+    # symbols of type 34 also name data (tables); a function starts with an instruction, not with .word/.byte
+    syms = sorted({(x['value'], x['name']) for x in s.symbols
+                   if x['segt'] == 0 and x['type'] == 34 and x['value'] < LIM
+                   and not code.get(x['value'], '.').startswith('.')})
+    starts = [v for v, n in syms]
     orig_rows = disasm(orig)
     omap = {addr: raw for addr, raw in orig_rows}
     lines = []

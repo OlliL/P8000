@@ -107,14 +107,15 @@ geninc(op, n)
 void
 zzzcode(p, c)
 	register struct node *p;
-	int c;
+	char c;
 {
 	register struct node *q, *r;
 	register int m;
-	struct node *l, *tmp, *rg;
+	register struct node *l, *tmp, *rg;
 	struct rs *rp, *rn2;
-	int n, k, cls, rn;
-	unsigned t;
+	register int n, k;
+	int cls, rn;
+	register unsigned t;
 	char *name;
 
 	switch (c) {
