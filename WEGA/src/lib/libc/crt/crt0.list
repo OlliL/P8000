@@ -240,3 +240,5 @@ fwtmp	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/fwtmp
 wtmpfix	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/wtmpfix
 crpost	COPR. 1981 87wega3.2.			usr/lib/cref/crpost
 upost	COPR. 1981 87wega3.2.			usr/lib/cref/upost
+codgen	-			lib/codgen
+scodgen	-			lib/scodgen

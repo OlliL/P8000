@@ -525,13 +525,26 @@ Listed by function; the current evidence is in `findings.json` (`findings_pendin
 - `struct node` is laid out as in the original (0x12 bytes: `sname` at 8 doubles as the CBRANCH label, the left subtree overlays the
   low word of `lval`, `rval`/`right` share 0x10). The members are reached through macros (`lval left rval right label`), because the
   K&R `cc` has one member name space (`struct rv` must not use `a`/`b`).
-- **The stray `-` in `printf` (solved).** The `printf` of the shipped `libc.a` (Nov 1983, frame 0x1e) writes a stray `-` in front of
-  a `%s` argument (and drops its first character) when the stack at its work area holds an old `%d` radix of -10 and a negative
-  number. The original `codgen` and `scodgen` do not use that library version: they link the older `printf` and `doprnt`
-  (`src/lib/oldlibc/printf/0_3.s`, `doprnt/0_3.s`, the version `ranlib` uses; frame 0x16 and 0x68 in the original). With these two
-  modules the stray character does not occur, so the workaround `cgprintf` was removed; the Makefile assembles and links them.
-  Found by comparing the frames of `printf` and `doprnt` in the original binaries with the members of `libc.a`, and by the return
-  value of `printf` (the old one returns 0, the shipped one the count).
+- **Link without /lib/libc.a (codgen, scodgen).** The programs are linked from our objects, `crt0-codgen.o` (made by
+  `mkcrt0.sh codgen`, pad field `-`: no jump and no text in front of the code), the oldlibc versions listed in the
+  Makefile (cut from the original, see `VERSIONS`) and the members of `libc.a` that are identical to the original
+  (`ar x`: `__callex data brk cuexit ffltioc write close read lseek decimal cerror open creat ioctl umask chmod`).
+  Corpus 101/101 for both programs. Byte comparison of the libc functions in the linked `codgen` against the original
+  (`sdis -l`, words per instruction): 1328 of 1434 words identical, the other 106 differ only in addresses of calls, jumps
+  and data. Versions that were first taken as identical and were not (frame sizes of `strlen` and `freopen`, `isatty`,
+  `endopen`) are replaced by versions cut from the original: `strlen/0_2`, `freopen/0_1`, `isatty/0_2`, `endopen/0_4`.
+  Stubs and data checked against the original (`sdis -l`, words): `write read lseek open creat close chmod umask cerror
+  ioctl decimal` identical except the addresses of the calls (to `cerror`, `_errno`); `data` identical except the pointers
+  the linker sets. `gtty` (`stty/0_2`, the shipped `stty.o` has a frame of 6 instead of 4) and `isatty` (`isatty/0_2`)
+  replaced by versions cut from the original. `__callex` identical.
+- **The stray `-` in `printf` (solved).** The `printf` of the shipped `libc.a` (Nov 1983, frame 0x1e) writes a stray `-` in front
+  of a `%s` argument (and drops its first character) when the stack at its work area holds an old `%d` radix of -10 and a negative
+  number. The original `codgen` and `scodgen` link an older `printf` and `doprnt` that are not in the shipped library. They are now
+  cut out of `/lib/codgen` as `src/lib/oldlibc/printf/0_5.s` and `doprnt/0_5.s` (listed in `VERSIONS`; checked instruction by
+  instruction against the original, the data block of `doprnt` at program address 0x6532). With these modules the stray character
+  does not occur, the workaround `cgprintf` is gone, and the corpus is 101/101 for both programs.
+  Lesson: the first attempt used `doprnt/0_3`, which is a different revision (it calls `__cnvt` where the original tests the radix
+  inline); it only worked by luck of the stack layout. A `.s` cut from the binary has to keep absolute jump targets as labels.
 - `allo` clears `resc[k].sname` (not `stsize`) for the A and B registers; a stale symbol made the result register look as if it held a
   variable.
 - `ispow2` returns an `int`; the table `indope` must end with op -1; `ftell` and `ispow2` must be declared (a long return read as int
@@ -907,7 +920,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld`, `/bin/gld` | the code and data of an object are stored entry by entry (not all code first); `tools/sout.py` and `host/ld/sld.c` had assumed all code first | fixed | "gld on the host" |
 | `/lib/codgen` 0x6fca..0x7056 | dead code: a routine that no call, `calr` or table in the binary refers to (checked by `sdis.py -l`, no label, no word 0x6fca outside code); it prints the names of the set bits of its word argument (0x0000 and 0x1000 print fixed texts), with a column counter (0x65a0) and a buffer (0x659e) | not reproduced (`prcookie`, a debug routine named in a comment of `allo3.c`; no counterpart in the rebuild) | `src/cmd/codgen/tools/findings.json` |
 | `/lib/codgen` 0x854c..0x856e | dead code: `fprintf(stderr, "system call error: ")`, then a call with the argument (0xcba0), then `errexit(0x40)`; no call, `calr`, jump or word in the binary refers to it (checked with `sdis.py -l` and a byte search) | not reproduced (no counterpart in the rebuild) | `src/cmd/codgen/tools/findings.json` |
-| libc `printf` of the shipped `libc.a` (not in the original codgen/scodgen) | `%s` prints a stray `-` and drops the first character of the string when the stack at the place of its work area holds an old radix -10 with a negative number from an earlier `%d` | not reproduced: codgen and scodgen link the older `printf`/`doprnt` (oldlibc 0_3) as the original does | "codgen runs" |
+| libc `printf` of the shipped `libc.a` (not in the original codgen/scodgen) | `%s` prints a stray `-` and drops the first character of the string when the stack at the place of its work area holds an old radix -10 with a negative number from an earlier `%d` | not reproduced: codgen and scodgen link the older `printf`/`doprnt` (oldlibc 0_5, cut from the original) | "codgen runs" |
 | `/lib/scodgen` | `conval` folds the difference of two pointer constants as `(a - b) & 0xFF` (the high word is cleared), the sum as `& 0x7F00FFFF`; the mask of MINUS looks like a slip | kept (`-DSEG`), not reached by the test files | "scodgen runs" |
 | `/lib/codgen`, `/lib/scodgen` | a file name argument (no `-`) is reopened as stdin and, after the end of the input, scanned and reopened again for ever (the index is not advanced); only `-E name` with stdin is used | kept | "codgen runs" |
 | `/lib/codgen`, `/lib/scodgen` | `eread` tests the operator class against 0x73 (CBRANCH) instead of the operator; `tbytes` has a dead compare for pointers; `reclaim` has no ULONG test for the second register (`sic`); `allo` reads `resc[k]` one past the last register; `rbusy` counts the node in front of the long register it split | kept | "codgen" |

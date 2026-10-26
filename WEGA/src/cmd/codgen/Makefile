@@ -10,37 +10,118 @@
 
 CC = cc
 CAS = cas
+LD = ld
+AR = ar
 CFLAGS = -O
-# the old printf and doprnt of the original codgen and scodgen (ranlib uses the same version, 0_3; the frames and the
-# output of the original are reproduced, see KNOWLEDGE.md); the shipped libc.a has a newer printf with the stray '-' bug
+LIBC = /lib/libc.a
+CRT = ../../lib/libc/crt
 OLD = ../../lib/oldlibc
-OLDLIBC = $(OLD)/printf/0_3.o $(OLD)/doprnt/0_3.o
+# The libc of codgen and scodgen is not linked from /lib/libc.a: the members are the versions of the original
+# (VERSIONS in oldlibc, the same cut as KNOWLEDGE.md describes) and members of the shipped libc.a that are
+# identical to the original ones (ar x), like ranlib does. The start-up file is made by mkcrt0.sh codgen.
+OLDOBJS = $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/flsbuf/0_2.o $(OLD)/filbuf/0_3.o \
+	$(OLD)/rdwr/0_3.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/cnvt/0_2.o $(OLD)/length/0_2.o \
+	$(OLD)/strcat/0_2.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o $(OLD)/fopen/0_1.o \
+	$(OLD)/findiop/0_2.o $(OLD)/endopen/0_4.o $(OLD)/ungetc/0_1.o $(OLD)/malloc/0_5.o \
+	$(OLD)/setbuf/0_1.o $(OLD)/getw/0_1.o $(OLD)/isatty/0_2.o $(OLD)/freopen/0_1.o $(OLD)/stty/0_2.o
+SHIPOBJS = __callex.o data.o brk.o cuexit.o ffltioc.o write.o close.o read.o \
+	lseek.o decimal.o cerror.o open.o creat.o ioctl.o umask.o chmod.o
 SRCS = allo3.c local3.c match3.c order3.c out3.c regallo3.c regfile3.c tmp3.c zzz3.c reader3.c gen3.c optim3.c comm3.c rdr3.c main3.c efcode3.c lcl3.c tr3.c regs3.c
 OBJS = allo3.o local3.o match3.o order3.o out3.o regallo3.o regfile3.o tmp3.o zzz3.o reader3.o gen3.o optim3.o comm3.o rdr3.o main3.o efcode3.o lcl3.o tr3.o regs3.o
 SOBJS = allo3.o local3.o match3.o order3.o out3.o regallo3.o regfile3.o tmp3.o zzz3.o reader3.o gen3.o optim3.o comm3.o rdr3.o main3.o efcode3.o lcl3.o tr3.o regs3.o table3_scodgen.o ops_scodgen.o hop_scodgen.o
 
 all: codgen scodgen
 
-codgen: objs $(OLDLIBC)
-	$(CC) -i -o codgen $(OBJS) table3_codgen.o ops_codgen.o hop_codgen.o $(OLDLIBC)
+codgen: objs $(OLDOBJS) ship $(CRT)/crt0-codgen.o
+	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(OBJS) table3_codgen.o ops_codgen.o hop_codgen.o $(OLDOBJS) $(SHIPOBJS) -o codgen
 
 objs: $(OBJS) table3_codgen.o ops_codgen.o hop_codgen.o
 
 $(OBJS) table3_codgen.o ops_codgen.o hop_codgen.o: cg.h
 
-scodgen: $(SRCS) table3_scodgen.c ops_scodgen.c hop_scodgen.c cg.h $(OLDLIBC)
+scodgen: $(SRCS) table3_scodgen.c ops_scodgen.c hop_scodgen.c cg.h $(OLDOBJS) ship $(CRT)/crt0-codgen.o
 	-mkdir seg
 	for f in $(SRCS) table3_scodgen.c ops_scodgen.c hop_scodgen.c ; do ( cd seg ; $(CC) $(CFLAGS) -DSEG -c ../$$f ) || exit 1 ; done
-	cd seg ; $(CC) -i -o ../scodgen $(SOBJS) ../$(OLD)/printf/0_3.o ../$(OLD)/doprnt/0_3.o
+	cd seg ; $(LD) -X -e start -i ../$(CRT)/crt0-codgen.o $(SOBJS) ../$(OLD)/printf/0_5.o ../$(OLD)/doprnt/0_5.o ../$(OLD)/flsbuf/0_2.o ../$(OLD)/filbuf/0_3.o ../$(OLD)/rdwr/0_3.o ../$(OLD)/fseek/0_2.o ../$(OLD)/ftell/0_2.o ../$(OLD)/cnvt/0_2.o ../$(OLD)/length/0_2.o ../$(OLD)/strcat/0_2.o ../$(OLD)/strcpy/0_2.o ../$(OLD)/strlen/0_2.o ../$(OLD)/fopen/0_1.o ../$(OLD)/findiop/0_2.o ../$(OLD)/endopen/0_4.o ../$(OLD)/ungetc/0_1.o ../$(OLD)/malloc/0_5.o ../$(OLD)/setbuf/0_1.o ../$(OLD)/getw/0_1.o ../__callex.o ../data.o ../brk.o ../cuexit.o ../ffltioc.o ../write.o ../close.o ../read.o ../lseek.o ../decimal.o ../cerror.o ../open.o ../creat.o ../$(OLD)/stty/0_2.o ../ioctl.o ../$(OLD)/isatty/0_2.o ../$(OLD)/freopen/0_1.o ../umask.o ../chmod.o -o ../scodgen
 
-$(OLD)/printf/0_3.o: $(OLD)/printf/0_3.s
-	$(CAS) -u -o $@ $(OLD)/printf/0_3.s
+$(OLD)/printf/0_5.o: $(OLD)/printf/0_5.s
+	$(CAS) -u -o $@ $(OLD)/printf/0_5.s
 
-$(OLD)/doprnt/0_3.o: $(OLD)/doprnt/0_3.s
-	$(CAS) -u -o $@ $(OLD)/doprnt/0_3.s
+$(OLD)/doprnt/0_5.o: $(OLD)/doprnt/0_5.s
+	$(CAS) -u -o $@ $(OLD)/doprnt/0_5.s
+
+# members of the shipped libc.a that are identical to the original ones
+ship:
+	$(AR) x $(LIBC) $(SHIPOBJS)
+
+$(CRT)/crt0-codgen.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+	sh $(CRT)/mkcrt0.sh codgen > $@
+
+$(CRT)/crt0-codgen.o: $(CRT)/crt0-codgen.s
+	$(CAS) -u -o $@ $(CRT)/crt0-codgen.s
+
+$(OLD)/flsbuf/0_2.o: $(OLD)/flsbuf/0_2.s
+	$(CAS) -u -o $@ $(OLD)/flsbuf/0_2.s
+
+$(OLD)/filbuf/0_3.o: $(OLD)/filbuf/0_3.s
+	$(CAS) -u -o $@ $(OLD)/filbuf/0_3.s
+
+$(OLD)/rdwr/0_3.o: $(OLD)/rdwr/0_3.s
+	$(CAS) -u -o $@ $(OLD)/rdwr/0_3.s
+
+$(OLD)/fseek/0_2.o: $(OLD)/fseek/0_2.s
+	$(CAS) -u -o $@ $(OLD)/fseek/0_2.s
+
+$(OLD)/ftell/0_2.o: $(OLD)/ftell/0_2.s
+	$(CAS) -u -o $@ $(OLD)/ftell/0_2.s
+
+$(OLD)/cnvt/0_2.o: $(OLD)/cnvt/0_2.s
+	$(CAS) -u -o $@ $(OLD)/cnvt/0_2.s
+
+$(OLD)/length/0_2.o: $(OLD)/length/0_2.s
+	$(CAS) -u -o $@ $(OLD)/length/0_2.s
+
+$(OLD)/strcat/0_2.o: $(OLD)/strcat/0_2.s
+	$(CAS) -u -o $@ $(OLD)/strcat/0_2.s
+
+$(OLD)/strcpy/0_2.o: $(OLD)/strcpy/0_2.s
+	$(CAS) -u -o $@ $(OLD)/strcpy/0_2.s
+
+$(OLD)/strlen/0_2.o: $(OLD)/strlen/0_2.s
+	$(CAS) -u -o $@ $(OLD)/strlen/0_2.s
+
+$(OLD)/fopen/0_1.o: $(OLD)/fopen/0_1.s
+	$(CAS) -u -o $@ $(OLD)/fopen/0_1.s
+
+$(OLD)/findiop/0_2.o: $(OLD)/findiop/0_2.s
+	$(CAS) -u -o $@ $(OLD)/findiop/0_2.s
+
+$(OLD)/endopen/0_4.o: $(OLD)/endopen/0_4.s
+	$(CAS) -u -o $@ $(OLD)/endopen/0_4.s
+
+$(OLD)/ungetc/0_1.o: $(OLD)/ungetc/0_1.s
+	$(CAS) -u -o $@ $(OLD)/ungetc/0_1.s
+
+$(OLD)/malloc/0_5.o: $(OLD)/malloc/0_5.s
+	$(CAS) -u -o $@ $(OLD)/malloc/0_5.s
+
+$(OLD)/setbuf/0_1.o: $(OLD)/setbuf/0_1.s
+	$(CAS) -u -o $@ $(OLD)/setbuf/0_1.s
+
+$(OLD)/isatty/0_2.o: $(OLD)/isatty/0_2.s
+	$(CAS) -u -o $@ $(OLD)/isatty/0_2.s
+
+$(OLD)/freopen/0_1.o: $(OLD)/freopen/0_1.s
+	$(CAS) -u -o $@ $(OLD)/freopen/0_1.s
+
+$(OLD)/stty/0_2.o: $(OLD)/stty/0_2.s
+	$(CAS) -u -o $@ $(OLD)/stty/0_2.s
+
+$(OLD)/getw/0_1.o: $(OLD)/getw/0_1.s
+	$(CAS) -u -o $@ $(OLD)/getw/0_1.s
 
 clean:
-	rm -f *.o codgen scodgen
+	rm -f *.o codgen scodgen $(SHIPOBJS)
 	rm -rf seg
 
 # not installed: the rebuilt programs are not byte-identical to the originals yet, so /lib/codgen and
