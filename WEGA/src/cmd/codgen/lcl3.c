@@ -358,7 +358,6 @@ fixfld(p)
 {
 	register struct node *m, *a;
 	register int ismember;
-	int t;
 
 	if (p->op == FLD) {
 		m = p->left;
@@ -381,8 +380,7 @@ fixfld(p)
 	else {
 		m->op = FREE;
 		a->op = FREE;
-		t = DECREF(m->type);
-		p->type = INCREF(t);
+		p->type = INCREF(DECREF((unsigned)m->type));
 		p->left = m->left;
 	}
 }
