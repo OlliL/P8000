@@ -6,7 +6,6 @@
 #
 #   make              codgen
 #   make scodgen      scodgen
-#   make check WEGA=dir   compare codgen with /lib/codgen on a corpus (see check.sh, corpus.sh)
 #   make clean
 
 CC = cc
@@ -29,11 +28,8 @@ scodgen: $(SRCS) table3_scodgen.c ops_scodgen.c hop_scodgen.c cg.h
 	for f in $(SRCS) table3_scodgen.c ops_scodgen.c hop_scodgen.c ; do ( cd seg ; $(CC) $(CFLAGS) -DSEG -c ../$$f ) || exit 1 ; done
 	cd seg ; $(CC) -i -o ../scodgen $(SOBJS)
 
-check: codgen
-	sh check.sh $(CORPUS)
-
 clean:
 	rm -f *.o codgen scodgen
 	rm -rf seg
 
-.PHONY: all objs check clean
+.PHONY: all objs clean

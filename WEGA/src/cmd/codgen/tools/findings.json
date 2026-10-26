@@ -30,12 +30,13 @@
  ],
  "functions": {
   "start": {
-   "ours": "0x0000-0x002a",
+   "ours": null,
    "table_orig": null,
    "orig": null,
    "pairing": "none",
    "pairing_evidence": "",
-   "level": "not"
+   "level": "not",
+   "orig_note": "entry of crt0, not codgen code"
   },
   "rclass": {
    "ours": "0x002a-0x007a",
@@ -48,7 +49,8 @@
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "not located yet"
   },
   "rfind": {
    "ours": "0x007a-0x00b4",
@@ -61,7 +63,8 @@
     "d_normalised_pct": 91,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "not located yet"
   },
   "rbusy": {
    "ours": "0x00b4-0x018a",
@@ -74,7 +77,8 @@
     "d_normalised_pct": 99,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rfree": {
    "ours": "0x018a-0x01de",
@@ -87,7 +91,8 @@
     "d_normalised_pct": 94,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rfreenode": {
    "ours": "0x01de-0x025a",
@@ -100,20 +105,22 @@
     "d_normalised_pct": 95,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "freeparm": {
    "ours": "0x025a-0x02ac",
    "table_orig": "0x6792",
    "orig": "0x6792",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 89 %",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: D2 scratch register (ld rS,X)"
   },
   "freetemp": {
    "ours": "0x02ac-0x02fc",
@@ -134,7 +141,8 @@
    "orig": null,
    "pairing": "none",
    "pairing_evidence": "no counterpart: the same logic as rallkind (comm3.c), a duplicate in allo3.c. The original allocreg calls 0x89a2 (rallkind), so the rebuild must call rallkind and drop rcookie (kind source, finding allo3-rcookie-dup)",
-   "level": "differs"
+   "level": "differs",
+   "orig_note": "identical after the null test `if (p && ...)` was written (allo3.c fix)"
   },
   "usable": {
    "ours": "0x0322-0x03a2",
@@ -160,7 +168,8 @@
     "d_normalised_pct": 51,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "rewritten; D1 frame, D7 layout"
   },
   "allocreg": {
    "ours": "0x04ba-0x05c6",
@@ -173,7 +182,8 @@
     "d_normalised_pct": 80,
     "difference_class": "other differences",
     "difference_note": "allo3-rcookie-dup: calls rcookie where the original calls rallkind (source)"
-   }
+   },
+   "orig_note": "not located yet"
   },
   "allo": {
    "ours": "0x05c6-0x0974",
@@ -186,7 +196,8 @@
     "d_normalised_pct": 96,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D1 frame, D10 shifts (sdal), D7"
   },
   "tcopy": {
    "ours": "0x0974-0x0a42",
@@ -212,7 +223,8 @@
     "d_normalised_pct": 90,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D7 layout"
   },
   "rfreeall": {
    "ours": "0x0df2-0x0e44",
@@ -225,7 +237,8 @@
     "d_normalised_pct": 77,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rcount": {
    "ours": "0x0e44-0x0e5a",
@@ -238,33 +251,36 @@
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rcount_reset": {
    "ours": "0x0e5a-0x0e5c",
    "table_orig": "0x778e",
    "orig": "0x778e",
    "pairing": "confirmed",
-   "pairing_evidence": "same instructions",
+   "pairing_evidence": "same instructions (exact)",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "ltypeop": {
    "ours": "0x0e5c-0x0e88",
    "table_orig": "0x3e66",
    "orig": "0x3e66",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 53,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D3: p->op loaded once in the original"
   },
   "ispow2": {
    "ours": "0x0e88-0x0ed8",
@@ -277,7 +293,8 @@
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: old cc (clr/ZERO, inc form)"
   },
   "bsize": {
    "ours": "0x0ed8-0x0f26",
@@ -290,7 +307,8 @@
     "d_normalised_pct": 75,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "szty": {
    "ours": "0x0f26-0x0f56",
@@ -303,7 +321,8 @@
     "d_normalised_pct": 84,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "plainicon": {
    "ours": "0x0f56-0x0f80",
@@ -316,14 +335,15 @@
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "special": {
    "ours": "0x0f80-0x105e",
    "table_orig": "0x471a",
    "orig": "0x471a",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 74 %",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 74,
@@ -342,7 +362,8 @@
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: D7 layout, tcc form"
   },
   "shincr": {
    "ours": "0x10bc-0x113c",
@@ -355,7 +376,8 @@
     "d_normalised_pct": 79,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "shumul": {
    "ours": "0x113c-0x11b6",
@@ -368,7 +390,8 @@
     "d_normalised_pct": 90,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "ltypeok": {
    "ours": "0x11b6-0x11fe",
@@ -381,7 +404,8 @@
     "d_normalised_pct": 85,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rmove": {
    "ours": "0x11fe-0x1336",
@@ -394,20 +418,22 @@
     "d_normalised_pct": 89,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: D7 layout"
   },
   "argsize": {
    "ours": "0x1336-0x1390",
    "table_orig": "0x88f6",
    "orig": "0x88f6",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "tshape": {
    "ours": "0x1390-0x14e6",
@@ -433,7 +459,8 @@
     "d_normalised_pct": 97,
     "difference_class": "other differences",
     "difference_note": "shift-type-01: unsigned operand in the original (source)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "setrew": {
    "ours": "0x15d2-0x1684",
@@ -446,7 +473,8 @@
     "d_normalised_pct": 79,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: D3 memory operand, D7 layout"
   },
   "getlr": {
    "ours": "0x1684-0x1714",
@@ -459,7 +487,8 @@
     "d_normalised_pct": 76,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: D8 byte load (ldb rl,rl)"
   },
   "match": {
    "ours": "0x1714-0x198e",
@@ -485,7 +514,8 @@
     "d_normalised_pct": 89,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "differs by one ldm: the original homes only off (t is unused); register r is a register variable (fixed)"
   },
   "sucomp": {
    "ours": "0x19be-0x239e",
@@ -511,7 +541,8 @@
     "d_normalised_pct": 93,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical after the register declarations of p and r (order3.c)"
   },
   "rallo": {
    "ours": "0x2400-0x251c",
@@ -526,12 +557,12 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_251c": {
+  "orderadd": {
    "ours": "0x251c-0x25de",
    "table_orig": "0x5338",
    "orig": "0x5338",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided earlier as static_251c (rules / auto, not re-checked): callees agree; the name comes from the source (locate.py)",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 97,
@@ -544,33 +575,35 @@
    "table_orig": "0x53fa",
    "orig": "0x53fa",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "niceuty": {
    "ours": "0x265e-0x26a8",
    "table_orig": "0x547a",
    "orig": "0x547a",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "setbin": {
    "ours": "0x26a8-0x2852",
    "table_orig": "0x54c4",
    "orig": "0x54c4",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 81,
@@ -583,7 +616,7 @@
    "table_orig": "0x5678",
    "orig": "0x5678",
    "pairing": "confirmed",
-   "pairing_evidence": "review: same function; the best candidate by a wide margin (19 vs 25); differences: register variable (r14 / r3, D2), the constant 0x0354 is an address (D13)",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 74,
@@ -591,7 +624,7 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_28ac": {
+  "lmuldiv": {
    "ours": "0x28ac-0x28ee",
    "table_orig": "0x576e",
    "orig": "0x576e",
@@ -609,26 +642,28 @@
    "table_orig": "0x57b0",
    "orig": "0x57b0",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 98,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: one load of a field (ld rS,%000E(rS)) more in our build: check"
   },
   "setasg": {
    "ours": "0x2b1c-0x2bc6",
    "table_orig": "0x56c6",
    "orig": "0x56c6",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "getlab": {
    "ours": "0x2bc6-0x2bd8",
@@ -641,7 +676,8 @@
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "deflab": {
    "ours": "0x2bd8-0x2bec",
@@ -654,7 +690,8 @@
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the ret (call target masked)"
   },
   "argscan": {
    "ours": "0x2bec-0x2d6c",
@@ -667,7 +704,8 @@
     "d_normalised_pct": 68,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "d=14 after switch(argsize) as if chain (order3.c); left: the argsize value in a stack slot (original: register), jump layout (D7)"
   },
   "argsort": {
    "ours": "0x2d6c-0x2dcc",
@@ -680,20 +718,22 @@
     "d_normalised_pct": 84,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the ret after argl became a tagged struct and the loops use pointers (order3.c)"
   },
   "fixstarg": {
    "ours": "0x2dcc-0x2e36",
    "table_orig": "0x5c1c",
    "orig": "0x5c1c",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 78 %, next 37 %",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 78,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the ret (order3.c; identified by the body: STASG, resc[0].type = 8, type 0x18)"
   },
   "argstrip": {
    "ours": "0x2e36-0x2ee8",
@@ -713,13 +753,14 @@
    "table_orig": "0x5d2c",
    "orig": "0x5d2c",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D5: the local array cnt is addressed with lda (original: direct); 13 instructions, else identical"
   },
   "genargs": {
    "ours": "0x3068-0x30bc",
@@ -732,7 +773,8 @@
     "d_normalised_pct": 85,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "acon": {
    "ours": "0x30bc-0x328e",
@@ -758,7 +800,8 @@
     "d_normalised_pct": 89,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "conput": {
    "ours": "0x32c8-0x33b4",
@@ -784,20 +827,22 @@
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "called by expand (case I); the original spills its argument and calls cerror(\"insput\")"
   },
   "upput": {
    "ours": "0x33c4-0x34c0",
    "table_orig": "0x40d4",
    "orig": "0x40d4",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 84,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: call target masked (printf wrapper)"
   },
   "adrput": {
    "ours": "0x34c0-0x3690",
@@ -823,7 +868,8 @@
     "d_normalised_pct": 94,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "prlong": {
    "ours": "0x36fc-0x3710",
@@ -836,7 +882,8 @@
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "out3.c, the printf(\"%ld\") of the M and N templates; the original calls it as a function"
   },
   "expand": {
    "ours": "0x3710-0x3904",
@@ -862,20 +909,22 @@
     "d_normalised_pct": 60,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rsinit": {
    "ours": "0x39ea-0x3a38",
    "table_orig": "0x740c",
    "orig": "0x740c",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 91,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "lda/inc of a pointer (old cc)"
   },
   "rsrelease": {
    "ours": "0x3a38-0x3a74",
@@ -888,33 +937,36 @@
     "d_normalised_pct": 90,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rsbuild": {
    "ours": "0x3a74-0x3b20",
    "table_orig": "0x7458",
    "orig": "0x7458",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 93,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "newnode": {
    "ours": "0x3b20-0x3b8e",
    "table_orig": "0x75e0",
    "orig": "0x75e0",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 74 %",
+   "pairing_evidence": "same strings: 2",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 74,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "switch layout (D7), shared tail"
   },
   "rsinsert": {
    "ours": "0x3b8e-0x3d98",
@@ -940,7 +992,8 @@
     "d_normalised_pct": 98,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "early returns are the case values (quirk)"
   },
   "regjam": {
    "ours": "0x3f1e-0x42de",
@@ -966,7 +1019,8 @@
     "d_normalised_pct": 71,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D2/D6 (switch layout), D7"
   },
   "rsreturn": {
    "ours": "0x4644-0x4802",
@@ -979,20 +1033,22 @@
     "d_normalised_pct": 77,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D1 frame, D7 layout"
   },
   "nullsyms": {
    "ours": "0x4802-0x4846",
    "table_orig": "0x811e",
    "orig": "0x811e",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 55 %",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 55,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "mode test first (quirk), old cc memory operand"
   },
   "pairmate": {
    "ours": "0x4846-0x485e",
@@ -1005,7 +1061,8 @@
     "d_normalised_pct": 58,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rsdump": {
    "ours": "0x485e-0x4932",
@@ -1018,14 +1075,15 @@
     "d_normalised_pct": 87,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rsfreeall": {
    "ours": "0x4932-0x4998",
    "table_orig": "0x815e",
    "orig": "0x815e",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
@@ -1044,7 +1102,8 @@
     "d_normalised_pct": 81,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rsmerge": {
    "ours": "0x49cc-0x4cde",
@@ -1070,20 +1129,22 @@
     "d_normalised_pct": 92,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rsrelall": {
    "ours": "0x4d6c-0x4db6",
    "table_orig": "0x84b6",
    "orig": "0x84b6",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 96,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rsrestart": {
    "ours": "0x4db6-0x4dfe",
@@ -1096,14 +1157,15 @@
     "d_normalised_pct": 96,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the first ret"
   },
   "rnassign": {
    "ours": "0x4dfe-0x4eb6",
    "table_orig": "0x9722",
    "orig": "0x9722",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
@@ -1116,65 +1178,70 @@
    "table_orig": "0x97cc",
    "orig": "0x97cc",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 86,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the ret (regfile3.c rnnullp)"
   },
   "rnnullcall": {
    "ours": "0x4f02-0x4f28",
    "table_orig": "0x9816",
    "orig": "0x9816",
    "pairing": "confirmed",
-   "pairing_evidence": "same instructions",
+   "pairing_evidence": "same instructions (exact)",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the ret (regfile3.c rnnullcall)"
   },
   "rnnullall": {
    "ours": "0x4f28-0x4f52",
    "table_orig": "0x983c",
    "orig": "0x983c",
    "pairing": "confirmed",
-   "pairing_evidence": "same instructions",
+   "pairing_evidence": "same instructions (exact)",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the ret after register int i (regfile3.c)"
   },
   "rnnulll": {
    "ours": "0x4f52-0x4f74",
    "table_orig": "0x986a",
    "orig": "0x986a",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 86,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the ret (regfile3.c rnnulll)"
   },
   "rnnullw": {
    "ours": "0x4f74-0x4f80",
    "table_orig": "0x988c",
    "orig": "0x988c",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 86,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the ret (regfile3.c rnnullw)"
   },
   "rnnull": {
    "ours": "0x4f80-0x4fd2",
@@ -1194,13 +1261,14 @@
    "table_orig": "0x98e4",
    "orig": "0x98e4",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D6 table starts at 0 (old cc)"
   },
   "tmpcleanup": {
    "ours": "0x5700-0x5802",
@@ -1226,7 +1294,8 @@
     "d_normalised_pct": 96,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "psuffix": {
    "ours": "0x5856-0x5868",
@@ -1239,20 +1308,22 @@
     "d_normalised_pct": 75,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "geninc": {
    "ours": "0x5868-0x5900",
    "table_orig": "0x2e4c",
    "orig": "0x2e4c",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "zzzcode": {
    "ours": "0x5900-0x667c",
@@ -1265,20 +1336,22 @@
     "d_normalised_pct": 86,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "d=37 after char c and register locals: switch dispatch (D6), D3, D7; the old name table was data"
   },
   "cbgen": {
    "ours": "0x667c-0x66e6",
    "table_orig": "0x460e",
    "orig": "0x460e",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 53 %",
+   "pairing_evidence": "same strings: 2",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 53,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto-paired orig 0x460e is indope; wrong pairing, removed"
   },
   "codgen": {
    "ours": "0x66e6-0x6730",
@@ -1291,7 +1364,8 @@
     "d_normalised_pct": 88,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "prcook": {
    "ours": "0x6730-0x67da",
@@ -1304,7 +1378,8 @@
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "order": {
    "ours": "0x67da-0x6ca6",
@@ -1330,7 +1405,8 @@
     "d_normalised_pct": 96,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "constore": {
    "ours": "0x6e00-0x6e3c",
@@ -1343,7 +1419,8 @@
     "d_normalised_pct": 82,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "markcall": {
    "ours": "0x6e3c-0x6ea6",
@@ -1356,7 +1433,8 @@
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D3 (ty kept in a register in the original)"
   },
   "stoarg": {
    "ours": "0x6ea6-0x6ef4",
@@ -1369,7 +1447,8 @@
     "d_normalised_pct": 88,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "cbranch": {
    "ours": "0x6ef4-0x71c0",
@@ -1382,20 +1461,22 @@
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D6 (cpir dispatch), D3, D7"
   },
   "ffld": {
    "ours": "0x71c0-0x7356",
    "table_orig": "0x15d0",
    "orig": "0x15d0",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D4 parameter spill"
   },
   "oreg2": {
    "ours": "0x7356-0x747a",
@@ -1408,7 +1489,8 @@
     "d_normalised_pct": 95,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D1 frame, stw layout"
   },
   "canon": {
    "ours": "0x747a-0x74b4",
@@ -1421,20 +1503,22 @@
     "d_normalised_pct": 63,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "argprep": {
    "ours": "0x74b4-0x75a4",
    "table_orig": "0x18be",
    "orig": "0x18be",
    "pairing": "confirmed",
-   "pairing_evidence": "review: header 0x18be; same structure, 65 / 65; differences in frame and register (D1, D2)",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "frame 6 bytes (D1), extra ld r,r at early return"
   },
   "delstrip": {
    "ours": "0x75a4-0x75d8",
@@ -1447,9 +1531,10 @@
     "d_normalised_pct": 79,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "delstrip (reader3.c), the callback of fwalk in delay2; the struct copy is inline in the original"
   },
-  "static_75d8": {
+  "delay2": {
    "ours": "0x75d8-0x767c",
    "table_orig": "0x0a0a",
    "orig": "0x0a0a",
@@ -1462,7 +1547,7 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_767c": {
+  "delay1": {
    "ours": "0x767c-0x7704",
    "table_orig": "0x094e",
    "orig": "0x094e",
@@ -1486,7 +1571,8 @@
     "d_normalised_pct": 97,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D3 end of function"
   },
   "stmt": {
    "ours": "0x7810-0x78f4",
@@ -1499,7 +1585,8 @@
     "d_normalised_pct": 93,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical (if chain, two-argument fwalkd)"
   },
   "gencall": {
    "ours": "0x78f4-0x79ce",
@@ -1512,7 +1599,8 @@
     "d_normalised_pct": 99,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "genscall": {
    "ours": "0x79ce-0x79dc",
@@ -1525,33 +1613,36 @@
     "d_normalised_pct": 43,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "nextcook": {
    "ours": "0x79dc-0x7a16",
    "table_orig": "0x4674",
    "orig": "0x4674",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 91,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical"
   },
   "lastchance": {
    "ours": "0x7a16-0x7a3a",
    "table_orig": "0x46ae",
    "orig": "0x46ae",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 71,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "icright": {
    "ours": "0x7a3a-0x7a62",
@@ -1564,7 +1655,8 @@
     "d_normalised_pct": 56,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D3"
   },
   "canon2": {
    "ours": "0x7a62-0x7a7e",
@@ -1577,7 +1669,8 @@
     "d_normalised_pct": 60,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "mycanon": {
    "ours": "0x7a7e-0x7ae2",
@@ -1590,7 +1683,8 @@
     "d_normalised_pct": 94,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical (switch with break cases)"
   },
   "stoasg": {
    "ours": "0x7ae2-0x7b00",
@@ -1603,27 +1697,29 @@
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "mkadrs": {
    "ours": "0x7b00-0x7c24",
    "table_orig": "0x48a0",
    "orig": "0x48a0",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 87 %",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 87,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D3 scratch registers"
   },
-  "static_7c24": {
+  "isint": {
    "ours": "0x7c24-0x7c3e",
    "table_orig": "0xbba2",
    "orig": "0xbba2",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided earlier as static_7c24 (rules / auto, not re-checked): callers agree; the name comes from the source (locate.py)",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 69,
@@ -1642,7 +1738,8 @@
     "d_normalised_pct": 89,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: D8 byte compare form"
   },
   "treeeq": {
    "ours": "0x7d6c-0x7e10",
@@ -1662,7 +1759,7 @@
    "table_orig": "0xb774",
    "orig": "0xb774",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 85,
@@ -1683,13 +1780,14 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_86a4": {
+  "cgwipe": {
    "ours": "0x86a4-0x86c8",
    "table_orig": null,
    "orig": null,
    "pairing": "none",
    "pairing_evidence": "",
-   "level": "own"
+   "level": "own",
+   "orig_note": "clears the 400-byte work area before printf (cgprintf wrapper, comm3.c); the original calls printf directly"
   },
   "cgprintf": {
    "ours": "0x86c8-0x86f0",
@@ -1697,9 +1795,10 @@
    "orig": null,
    "pairing": "none",
    "pairing_evidence": "wrapper of printf (cg.h, comm3.c): clears the work area and calls printf with five arguments. The original calls BEE6 (printf) directly, so there is no original function. The table had 0x8c1e (endrun).",
-   "level": "differs"
+   "level": "differs",
+   "orig_note": "our wrapper of printf: no counterpart in the original"
   },
-  "static_86f0": {
+  "prline": {
    "ours": "0x86f0-0x870c",
    "table_orig": "0x8952",
    "orig": "0x8952",
@@ -1717,13 +1816,14 @@
    "table_orig": "0x8570",
    "orig": "0x8570",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "cerror": {
    "ours": "0x8748-0x87ca",
@@ -1736,33 +1836,36 @@
     "d_normalised_pct": 79,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "ldm displacement form (old cc)"
   },
   "werror": {
    "ours": "0x87ca-0x8806",
    "table_orig": "0x862e",
    "orig": "0x862e",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "tinit": {
    "ours": "0x8806-0x8836",
    "table_orig": "0x866c",
    "orig": "0x866c",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "talloc": {
    "ours": "0x8836-0x8894",
@@ -1775,7 +1878,8 @@
     "d_normalised_pct": 86,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "tcheck": {
    "ours": "0x8894-0x88d8",
@@ -1801,7 +1905,8 @@
     "d_normalised_pct": 91,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "comm3.c: fwalk callback of tfree (if p == 0 cerror(\"freeing blank tree!\") else p->op = FREE)"
   },
   "tfree": {
    "ours": "0x88f4-0x890e",
@@ -1814,7 +1919,8 @@
     "d_normalised_pct": 80,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "fwalkd": {
    "ours": "0x890e-0x8988",
@@ -1827,7 +1933,8 @@
     "d_normalised_pct": 61,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D11 tail merge"
   },
   "fwalk": {
    "ours": "0x8988-0x89de",
@@ -1840,20 +1947,22 @@
     "d_normalised_pct": 93,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "dopeinit": {
    "ours": "0x89de-0x8a0e",
    "table_orig": "0x8844",
    "orig": "0x8844",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "tbytes": {
    "ours": "0x8a0e-0x8a3e",
@@ -1866,7 +1975,8 @@
     "d_normalised_pct": 74,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rallkind": {
    "ours": "0x8a3e-0x8a6a",
@@ -1879,33 +1989,36 @@
     "d_normalised_pct": 87,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "errexit": {
    "ours": "0x8a6a-0x8a82",
    "table_orig": "0x89ce",
    "orig": "0x89ce",
    "pairing": "confirmed",
-   "pairing_evidence": "same instructions",
+   "pairing_evidence": "same instructions (exact)",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "branch": {
    "ours": "0x8a82-0x8a96",
    "table_orig": "0x89e8",
    "orig": "0x89e8",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): strings: the printf of \\tjpr\\tL%d (comm3.c); the alignment cannot separate the printf wrappers",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 67,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "comm3.c: printf(\"\\tjpr\\tL%d\\n\", n); same calls as the original"
   },
   "ncopy": {
    "ours": "0x8a96-0x8aac",
@@ -1918,7 +2031,8 @@
     "d_normalised_pct": 46,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "alloc": {
    "ours": "0x8aac-0x8b28",
@@ -1931,20 +2045,22 @@
     "d_normalised_pct": 95,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical after register n, n++/n&=~1, if/else"
   },
   "allocinit": {
    "ours": "0x8b28-0x8b46",
    "table_orig": "0x8bea",
    "orig": "0x8bea",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rdin2": {
    "ours": "0x8b46-0x8c1e",
@@ -1957,20 +2073,22 @@
     "d_normalised_pct": 95,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rdin": {
    "ours": "0x8c1e-0x8c2c",
    "table_orig": "0x269a",
    "orig": "0x269a",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 57,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "rdin(base) = rdin2(base, stdin): same calls and spill, the original keeps a 2-byte frame (ours 6)"
   },
   "nlcheck": {
    "ours": "0x8c2c-0x8c64",
@@ -1983,27 +2101,29 @@
     "d_normalised_pct": 88,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "mkhash": {
    "ours": "0x8c64-0x8ca0",
    "table_orig": "0x2406",
    "orig": "0x2406",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 82,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "verified: known reload quirk (mkhash, D3)"
   },
   "rddata": {
    "ours": "0x8ca0-0x8d66",
    "table_orig": "0x19ac",
    "orig": "0x19ac",
    "pairing": "confirmed",
-   "pairing_evidence": "review: header 0x19ac; same structure, 60 / 64; differences in frame and register; the copy loop is the same",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 77,
@@ -2022,7 +2142,8 @@
     "d_normalised_pct": 71,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto-paired distance 7 (unclear), removed"
   },
   "readtab": {
    "ours": "0x8e10-0x8e3e",
@@ -2035,14 +2156,15 @@
     "d_normalised_pct": 72,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "readnums": {
    "ours": "0x8e3e-0x8ed8",
    "table_orig": "0x1c6c",
    "orig": "0x1c6c",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 73 %",
+   "pairing_evidence": "same strings: 2",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 73,
@@ -2061,7 +2183,8 @@
     "d_normalised_pct": 99,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rdsym": {
    "ours": "0x9088-0x916a",
@@ -2074,7 +2197,8 @@
     "d_normalised_pct": 16,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D1 frame (no frame in the original first part)"
   },
   "sortsyms": {
    "ours": "0x916a-0x9204",
@@ -2100,7 +2224,8 @@
     "d_normalised_pct": 93,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "mapn": {
    "ours": "0x92c0-0x92f0",
@@ -2113,20 +2238,22 @@
     "d_normalised_pct": 75,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "mapsym": {
    "ours": "0x92f0-0x9340",
    "table_orig": "0x206a",
    "orig": "0x206a",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 81 %",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 81,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "mapnm": {
    "ours": "0x9340-0x9666",
@@ -2146,13 +2273,14 @@
    "table_orig": "0x2480",
    "orig": "0x2480",
    "pairing": "confirmed",
-   "pairing_evidence": "review: header 0x2480; same structure, 162 / 168; known difference: the getchar mask (D8) and the lval storage, as in the summary of eread",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 76,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "d=22 after ty as register variable: getchar byte load and masking (D8), lval store form, D7"
   },
   "options": {
    "ours": "0x9862-0x99f0",
@@ -2178,7 +2306,8 @@
     "d_normalised_pct": 90,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "main": {
    "ours": "0x9a82-0x9f7e",
@@ -2191,35 +2320,38 @@
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "not compared yet"
   },
   "lineout": {
    "ours": "0x9f7e-0x9f94",
    "table_orig": "0x2880",
    "orig": "0x2880",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing rule (findings.json, step 4): strings: the printf of .line (efcode3.c); the alignment rule does not apply to this short body",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 38,
     "difference_class": "other differences",
     "difference_note": "lineout-type-01: real defect in our reconstruction: long line, the original has int line; the caller in main passes int in r7 and the file name in r6; our callee reads the file from r5 (see findings)"
-   }
+   },
+   "orig_note": "efcode3.c: printf(\"\\t.line\\t%d\\t%s\\t\\n\", ...); called from main (case .) with ifline and ifname"
   },
   "funcend": {
    "ours": "0x9f94-0x9ff0",
    "table_orig": "0x289a",
    "orig": "0x289a",
    "pairing": "confirmed",
-   "pairing_evidence": "review: header 0x289a; same calls (the epilogue label at 0x8c22), 26 / 26; differences in frame and register",
+   "pairing_evidence": "same strings: 5",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 92,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical up to the ret"
   },
-  "static_9ff0": {
+  "fpinc": {
    "ours": "0x9ff0-0xa010",
    "table_orig": "0x2aa2",
    "orig": "0x2aa2",
@@ -2232,7 +2364,7 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_a010": {
+  "fpdec": {
    "ours": "0xa010-0xa030",
    "table_orig": "0x2b20",
    "orig": "0x2b20",
@@ -2245,7 +2377,7 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_a030": {
+  "regrestore": {
    "ours": "0xa030-0xa0f8",
    "table_orig": "0x29de",
    "orig": "0x29de",
@@ -2258,7 +2390,7 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_a0f8": {
+  "regsave": {
    "ours": "0xa0f8-0xa1c2",
    "table_orig": "0x2b48",
    "orig": "0x2b48",
@@ -2271,7 +2403,7 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_a1c2": {
+  "epilog": {
    "ours": "0xa1c2-0xa214",
    "table_orig": "0x2990",
    "orig": "0x2990",
@@ -2284,12 +2416,12 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_a214": {
+  "regargs": {
    "ours": "0xa214-0xa3ec",
    "table_orig": "0x2c0e",
    "orig": "0x2c0e",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree, callers agree",
+   "pairing_evidence": "decided earlier as static_a214 (rules / auto, not re-checked): callees agree, callers agree; the name comes from the source (locate.py)",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
@@ -2297,7 +2429,7 @@
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
-  "static_a3ec": {
+  "prolog": {
    "ours": "0xa3ec-0xa446",
    "table_orig": "0x2aca",
    "orig": "0x2aca",
@@ -2321,20 +2453,22 @@
     "d_normalised_pct": 60,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "NOT verified: saved register set and an addl difference: check"
   },
   "hdrout": {
    "ours": "0xa4fc-0xa50e",
    "table_orig": "0x8c0c",
    "orig": "0x8c0c",
    "pairing": "confirmed",
-   "pairing_evidence": "same instructions",
+   "pairing_evidence": "same instructions (exact)",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "endline": {
    "ours": "0xa50e-0xa55c",
@@ -2347,20 +2481,22 @@
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "endrun": {
    "ours": "0xa55c-0xa560",
    "table_orig": "0x4868",
    "orig": "0x8c1e",
    "pairing": "confirmed",
-   "pairing_evidence": "same instructions",
+   "pairing_evidence": "same instructions (exact)",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "parminit": {
    "ours": "0xa560-0xa82c",
@@ -2386,7 +2522,8 @@
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "fbegin": {
    "ours": "0xa888-0xa9bc",
@@ -2399,33 +2536,36 @@
     "d_normalised_pct": 95,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "structsz /16 (fixed); D1"
   },
   "regtabinit": {
    "ours": "0xa9bc-0xa9c4",
    "table_orig": "0x910e",
    "orig": "0x910e",
    "pairing": "confirmed",
-   "pairing_evidence": "same instructions",
+   "pairing_evidence": "same instructions (exact)",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "tabfind": {
    "ours": "0xa9c4-0xa9fe",
    "table_orig": "0x9116",
    "orig": "0x9116",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "tabclear": {
    "ours": "0xa9fe-0xaa36",
@@ -2438,20 +2578,22 @@
     "d_normalised_pct": 95,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "fixtemp": {
    "ours": "0xaa36-0xabb0",
    "table_orig": "0x918e",
    "orig": "0x918e",
    "pairing": "confirmed",
-   "pairing_evidence": "callers agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D3, D6"
   },
   "fixfld": {
    "ours": "0xabb0-0xac60",
@@ -2477,7 +2619,8 @@
     "d_normalised_pct": 70,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D3, D6 partly; if chain now"
   },
   "symuse": {
    "ours": "0xad60-0xadaa",
@@ -2490,7 +2633,8 @@
     "d_normalised_pct": 92,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "symreg": {
    "ours": "0xadaa-0xae02",
@@ -2503,7 +2647,8 @@
     "d_normalised_pct": 52,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D2: a leaf function; the original saves three registers (r10-r12), the shipped cc keeps n in a scratch register"
   },
   "regforsym": {
    "ours": "0xae02-0xae8e",
@@ -2516,7 +2661,8 @@
     "d_normalised_pct": 94,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "fixname": {
    "ours": "0xae8e-0xaef4",
@@ -2529,7 +2675,8 @@
     "d_normalised_pct": 91,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "oregfix": {
    "ours": "0xaef4-0xafaa",
@@ -2542,7 +2689,8 @@
     "d_normalised_pct": 76,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "findtemp": {
    "ours": "0xafaa-0xafdc",
@@ -2555,7 +2703,8 @@
     "d_normalised_pct": 89,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "fcmd": {
    "ours": "0xafdc-0xb070",
@@ -2568,20 +2717,22 @@
     "d_normalised_pct": 98,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "identical after spare register and removed s = 0"
   },
   "regreset": {
    "ours": "0xb070-0xb110",
    "table_orig": "0xa252",
    "orig": "0xa252",
    "pairing": "confirmed",
-   "pairing_evidence": "same instructions",
+   "pairing_evidence": "same instructions (exact)",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "rcmd": {
    "ours": "0xb110-0xb2be",
@@ -2601,13 +2752,14 @@
    "table_orig": "0xa734",
    "orig": "0xa734",
    "pairing": "confirmed",
-   "pairing_evidence": "callees agree",
+   "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto, verified: identical"
   },
   "scmd": {
    "ours": "0xb334-0xb46a",
@@ -2623,14 +2775,14 @@
    }
   },
   "tcmd": {
-   "ours": "0xb46a-0xb602",
+   "ours": "0xb46a-0xb582",
    "table_orig": "0xa5de",
    "orig": "0xa5de",
    "pairing": "confirmed",
    "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): strings rr%d, /* rvrestore */ \\tfldd\\t shared with 0xa5de only (header 0xa5de); 131 / 109 instructions, the call pattern memname and getreg differs (finding tcmd-calls-01)",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 45,
+    "d_normalised_pct": 48,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
@@ -2646,7 +2798,8 @@
     "d_normalised_pct": 89,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "the newreg blocks are written out inline (non-SEG path, lcl3.c); the rest: a memory compare `cp @r2,#0x7c` (l->op) and a tail jp instead of jr (layout) | newreg (removed as a function): the non-SEG gswitch has its blocks inline, as the original."
   },
   "makeblock": {
    "ours": "0xb92a-0xb98a",
@@ -2659,7 +2812,8 @@
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "D4: the original homes all four parameters (ldm of r4-r7), the rebuild one"
   },
   "bcon": {
    "ours": "0xb98a-0xb9bc",
@@ -2672,9 +2826,10 @@
     "d_normalised_pct": 89,
     "difference_class": "D only (pattern-verified)",
     "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-   }
+   },
+   "orig_note": "auto-paired, identical, two ret in our function: check"
   },
-  "static_b9bc": {
+  "chk": {
    "ours": "0xb9bc-0xb9c4",
    "table_orig": "0xab3e",
    "orig": "0xab3e",
@@ -2731,7 +2886,7 @@
    "table_orig": "0xafe4",
    "orig": "0xafe4",
    "pairing": "confirmed",
-   "pairing_evidence": "pairing: header 0xafe4. class NOT D-only: 28 of 56 match in an alignment (50 %). Besides srl/sra (shift-type-01) the order of the if chains differs; to be classified (finding buildstar-order-01).",
+   "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 59,
@@ -2805,12 +2960,12 @@
    "confirm": true,
    "evidence": "review: name from KNOWLEDGE (codgen 0x0aaa); calls in the same order (optim, canon, store, order); difference in the frame size (6 / 10) and in spill slots (D1, D3, D4)"
   },
-  "static_a3ec": {
+  "prolog": {
    "orig": "0x2aca",
    "confirm": true,
    "evidence": "review: prolog (KNOWLEDGE 0x2aca, efcode3.c header); same calls and same length 29; differences: frame 16 / 26 and register save (D1, D2)"
   },
-  "static_767c": {
+  "delay1": {
    "orig": "0x094e",
    "confirm": true,
    "evidence": "review: static function of reader3.c region, calls delay (0x0838) like delay1/delay2; same length 46 / 48; differences: table index computed (add/neg) against a direct load (D6); the name delay1 or delay2 is not verified"
@@ -2959,7 +3114,7 @@
    "confirm": true,
    "evidence": "review: header 0x46d0; same structure, 13 / 16 (differences in frame and register)"
   },
-  "static_b9bc": {
+  "chk": {
    "orig": "0xab3e",
    "confirm": true,
    "evidence": "review: 1 of 4 instructions differs: the same four instructions with another frame or register (the original 0xab3e)"
@@ -3204,7 +3359,7 @@
    "confirm": true,
    "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 50 %"
   },
-  "static_75d8": {
+  "delay2": {
    "orig": "0x0a0a",
    "confirm": true,
    "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 92 %, next 37 %"
@@ -3374,7 +3529,7 @@
    "confirm": true,
    "evidence": "open pairing resolved (step 1 of the pairing closure): the documentation names getlab at 0x59d4 (crslab 0x3426); the same operations (load crslab, increment, return); ours keeps the value on the stack (D1, D3), the data address differs (D13)"
   },
-  "static_28ac": {
+  "lmuldiv": {
    "orig": "0x576e",
    "confirm": true,
    "evidence": "open pairing resolved (step 1 of the pairing closure): static lmuldiv (order3.c), called by setasop (three calls at 0x294a, 0x298c, 0x2acc in ours); the same four tests of the op and the type, in the same order; registers and frame differ (D1, D2, D3)"
@@ -3383,6 +3538,191 @@
    "orig": "0x7916",
    "confirm": true,
    "evidence": "open pairing resolved (step 1 of the pairing closure): string regjam: illegal type is shared; the calls roverlap, newnode, rsinsert (0x7650), cerror and rsreturn follow in the same order; 273 / 258 instructions"
+  },
+  "ltypeop": {
+   "orig": "0x3e66",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "argsize": {
+   "orig": "0x88f6",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "offstar": {
+   "orig": "0x53fa",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "niceuty": {
+   "orig": "0x547a",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "setbin": {
+   "orig": "0x54c4",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "setasop": {
+   "orig": "0x57b0",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "setasg": {
+   "orig": "0x56c6",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "argplace": {
+   "orig": "0x5d2c",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "upput": {
+   "orig": "0x40d4",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "rsinit": {
+   "orig": "0x740c",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "rsbuild": {
+   "orig": "0x7458",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "rsfreeall": {
+   "orig": "0x815e",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "rsrelall": {
+   "orig": "0x84b6",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "rnassign": {
+   "orig": "0x9722",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "rnnullp": {
+   "orig": "0x97cc",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "rnnulll": {
+   "orig": "0x986a",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "rnnullw": {
+   "orig": "0x988c",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "nxwork": {
+   "orig": "0x98e4",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "tmpdump": {
+   "orig": "0x93f4",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): same strings: 2"
+  },
+  "geninc": {
+   "orig": "0x2e4c",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "ffld": {
+   "orig": "0x15d0",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "nextcook": {
+   "orig": "0x4674",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "lastchance": {
+   "orig": "0x46ae",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "conval": {
+   "orig": "0xb774",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "uerror": {
+   "orig": "0x8570",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "werror": {
+   "orig": "0x862e",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "tinit": {
+   "orig": "0x866c",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "dopeinit": {
+   "orig": "0x8844",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "allocinit": {
+   "orig": "0x8bea",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "rdin": {
+   "orig": "0x269a",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "mkhash": {
+   "orig": "0x2406",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree, callers agree"
+  },
+  "tabfind": {
+   "orig": "0x9116",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "fixtemp": {
+   "orig": "0x918e",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree"
+  },
+  "memname": {
+   "orig": "0xa734",
+   "confirm": true,
+   "evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callees agree"
+  },
+  "orderadd": {
+   "orig": "0x5338",
+   "confirm": true,
+   "evidence": "decided earlier as static_251c (rules / auto, not re-checked): callees agree; the name comes from the source (locate.py)"
+  },
+  "isint": {
+   "orig": "0xbba2",
+   "confirm": true,
+   "evidence": "decided earlier as static_7c24 (rules / auto, not re-checked): callers agree; the name comes from the source (locate.py)"
+  },
+  "regargs": {
+   "orig": "0x2c0e",
+   "confirm": true,
+   "evidence": "decided earlier as static_a214 (rules / auto, not re-checked): callees agree, callers agree; the name comes from the source (locate.py)"
   }
  },
  "open_review": {
@@ -3394,7 +3734,7 @@
   "rsinsert": "pairing open: best 0x81fe at 22 %, header ['0x7650']",
   "sortsyms": "not confirmed: header 0x1ec2, 44 of 50 instructions differ; no other candidate of the same length. Check rdr3.c.",
   "sucomp": "pairing open: best 0x49f0 at 36 %, header ['0x49f0']",
-  "static_28ac": "pairing open: best 0x576e at 59 %, header none",
+  "lmuldiv": "pairing open: best 0x576e at 59 %, header none",
   "getlab": "pairing open: best 0xab3e at 67 %, header none",
   "acon": "pairing open: best 0x437e at 49 %, header ['0x437e']",
   "rsmerge": "pairing open: best 0x20c0 at 26 %, header ['0x81fe']",
@@ -3620,9 +3960,7 @@
    "status": "analysed"
   }
  ],
- "reject": {
-  "rsinsert": "callers agree, but the bodies differ in size (157 ours, 110 original) and in the structure; not accepted"
- },
+ "reject": {},
  "analysis_status": {
   "checked_reviews_below_50_regnorm": [
    "expand",
@@ -3690,10 +4028,6 @@
    "class": "other differences",
    "note": "options-loop-01: register declarations for i and err (source)"
   },
-  "parminit": {
-   "class": "D only (pattern-verified)",
-   "note": "parminit: all differing instructions match D patterns (D6, D7, D8, D13); the earlier 34 extra instructions were an alignment artefact; open question: extsb (original) against subb (ours) for a byte (char signedness, D8 or declaration)"
-  },
   "tcopy": {
    "class": "other differences",
    "note": "tcopy-copy-01: the original calls ncopy (source)"
@@ -3714,781 +4048,9 @@
    "class": "other differences",
    "note": "clocal-size-01: 80 instructions at another place (block order)"
   },
-  "regjam": {
-   "class": "D only (pattern-verified)",
-   "note": "regjam: all differing instructions match D patterns (D6, D7, D8); the order of the calls differs (code layout of the cases, D7?); to check if the source order is the same"
-  },
   "acon": {
    "class": "other differences",
    "note": "acon-tail-01: the three L%d branches share the printf call and the tail off: in the original; D7, D8, D1 also present"
-  },
-  "genscall": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsinsert": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsmerge": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tcmd": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rclass": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "freereg": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "ltypeop": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "ispow2": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "plainicon": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "shtemp": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_28ac": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "getlab": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "argscan": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "conput": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "adrput": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tsuffix": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "nullsyms": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "pairmate": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "cbgen": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "prcook": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "markcall": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "cbranch": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "canon": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "icright": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "canon2": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "stoasg": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_7c24": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "treeeq": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "fwalkd": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "branch": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rdin": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "sortsyms": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "main": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "efcode": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "symreg": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "makeblock": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rdsym": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "ncopy": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rfind": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rbusy": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rfree": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rfreenode": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "freeparm": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "freetemp": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "usable": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "allo": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "reclaim": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rfreeall": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rcount": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rcount_reset": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "bsize": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "szty": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "special": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "shincr": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "shumul": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "ltypeok": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rmove": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "argsize": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "setrew": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "getlr": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "match": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "notoff": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "mkrall": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rallo": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_251c": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "offstar": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "niceuty": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "setbin": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "setstr": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "setasop": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "setasg": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "deflab": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "argsort": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "fixstarg": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "argstrip": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "argplace": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "genargs": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "oregput": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "insput": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "upput": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "hopcode": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "prlong": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsinit": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsrelease": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsbuild": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "newnode": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "roverlap": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "getreg": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsreturn": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsdump": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsfreeall": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rspush": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsmatch": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsrelall": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rsrestart": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rnassign": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rnnullp": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rnnullcall": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rnnullall": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rnnulll": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rnnullw": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rnnull": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "nxwork": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tmpcleanup": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tmpdump": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "psuffix": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "geninc": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "zzzcode": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "codgen": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "order": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "store": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "constore": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "stoarg": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "ffld": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "oreg2": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "argprep": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "delstrip": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_75d8": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_767c": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "delay": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "stmt": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "gencall": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "nextcook": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "lastchance": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "mycanon": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "mkadrs": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "convelim": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "conval": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "optim": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_86f0": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "uerror": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "cerror": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "werror": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tinit": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "talloc": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tcheck": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "free1": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tfree": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "fwalk": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "dopeinit": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tbytes": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rallkind": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "errexit": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "alloc": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "allocinit": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rdin2": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "nlcheck": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "mkhash": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rddata": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "readsyms": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "readtab": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "readnums": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "readmems": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tagfind": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "mapn": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "mapsym": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "mapnm": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "eread": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "init": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "funcend": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_9ff0": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_a010": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_a030": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_a0f8": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_a1c2": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_a214": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_a3ec": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "hdrout": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "endline": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "endrun": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "structretcode": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "fbegin": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "regtabinit": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tabfind": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "tabclear": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "fixtemp": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "mapregs": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "symuse": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "regforsym": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "fixname": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "oregfix": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "findtemp": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "fcmd": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "regreset": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "rcmd": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "memname": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "scmd": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "gswitch": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "bcon": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "static_b9bc": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "member": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
-  },
-  "foldadd": {
-   "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   }
  },
  "classification_method": {

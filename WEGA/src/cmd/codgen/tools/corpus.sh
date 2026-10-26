@@ -7,7 +7,7 @@
 SRC=${1:?source dir}; OUT=${2:?output dir}
 PROG=${PROG:-codgen}; case $PROG in scodgen) CCP=/bin/scc;; *) CCP=/bin/cc;; esac
 HERE=$(cd "$(dirname "$0")" && pwd)
-E=${E:-$HERE/../../../host/z8k-emu/z8k-emu}; R=${WEGA:?set WEGA to the WEGA file tree}
+E=${E:-$HERE/../../../../host/z8k-emu/z8k-emu}; R=${WEGA:?set WEGA to the WEGA file tree}
 mkdir -p "$OUT"; OUT=$(cd "$OUT" && pwd); W=$OUT/.work
 find "$SRC" -name '*.c' | sort | while read f; do
   d=$(dirname "$f"); b=$(basename "$f" .c)
