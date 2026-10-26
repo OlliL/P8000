@@ -30,7 +30,7 @@ LIM = 0xbbc4   # the program part of the original ends here (the C library follo
 # static functions of our build, by their caller: the names of the static functions that a function calls, in the
 # order of their first call (identified from the source: the call sequence and the body; see FUNCTIONS.md).
 # None = not identified. The address is found from the caller, so the table survives rebuilds.
-CALLBACKS = {0x7592: 'delstrip'}   # reader3.c: fwalk(p, delstrip) in delay2, no call instruction
+CALLBACKS = {0x7592: 'delstrip', 0x88d8: 'free1'}   # fwalk callbacks (reader3.c delstrip, comm3.c free1), no call instruction
 
 STATIC_NAMES = {
     'allocreg': ['rcookie'],                                              # allo3.c
@@ -136,6 +136,7 @@ ORIG = {
     'hopcode': (0x2de0, None, 'auto, verified: identical'),
     'init': (0x019e, None, 'auto, verified: identical'),
     'prlong': (0x3fc4, None, 'out3.c, the printf("%ld") of the M and N templates; the original calls it as a function'),
+    'free1': (0x8758, None, 'comm3.c: fwalk callback of tfree (if p == 0 cerror("freeing blank tree!") else p->op = FREE)'),
     'insput': (0x4088, None, 'called by expand (case I); the original spills its argument and calls cerror("insput")'),
     'ispow2': (0x8af6, None, 'verified: old cc (clr/ZERO, inc form)'),
     'lastchance': (0x46ae, None, 'auto, verified: identical'),
