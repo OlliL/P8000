@@ -5832,5 +5832,13 @@
    "eread": 2,
    "parminit": 2
   }
+ },
+ "order_analysis": {
+  "clocal": "candidate source reorder: a block of about 58 instructions of the original sits at the end, ours at the start (tools/blocks.py clocal). Next: compare the statement order in tr3.c with the original.",
+  "buildstar": "probably layout (D7): swapping the two exclusive branches gives 62 % instead of 59 % and no instruction changes; not changed in the source (not confirmed).",
+  "tshape": "case blocks of the switch in another order (cc layout of the cases, D6/D7) or source order: not decided.",
+  "expand": "case blocks of the switch in another order (moved 92:154 of the original): layout or source order, not decided.",
+  "zzzcode": "95 differing blocks, mostly case blocks in another order: layout or source order, not decided.",
+  "acon": "the L%d branches and the shared tail: layout (D11) or source structure, not decided (acon-tail-01)."
  }
 }
