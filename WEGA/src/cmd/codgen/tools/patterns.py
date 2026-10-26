@@ -87,7 +87,33 @@ def check(m, o, st, en, g, oend):
                 cls[c] += 1
             else:
                 unexp.append(x)
-    return {'diff': ndiff, 'unexplained': len(unexp), 'classes': dict(cls), 'examples': sorted(set(unexp))[:5]}
+    moved, ex = order_moves(b_, a_)
+    return {'diff': ndiff, 'unexplained': len(unexp), 'classes': dict(cls), 'examples': sorted(set(unexp))[:5], 'moved': moved, 'moved_examples': ex}
+
+
+def order_moves(b_, a_, minlen=2):
+    """Instructions that are moved: a chunk that the original has at one place (deleted in the alignment) and that
+    we have at another place (inserted in the alignment). Chunks shorter than minlen do not count.
+    Returns (moved instructions, the chunks as strings for the first few)."""
+    sm = difflib.SequenceMatcher(None, b_, a_, autojunk=False)
+    dels = []
+    inss = []
+    for t, i1, i2, j1, j2 in sm.get_opcodes():
+        if t in ('delete', 'replace') and i2 - i1 >= minlen:
+            dels.append(b_[i1:i2])
+        if t in ('insert', 'replace') and j2 - j1 >= minlen:
+            inss.append(a_[j1:j2])
+    moved = 0
+    ex = []
+    for chunk in dels:
+        for ins in inss:
+            n = len(chunk)
+            hit = any(ins[k:k + n] == chunk for k in range(len(ins) - n + 1))
+            if hit:
+                moved += n
+                ex.append(chunk[0])
+                break
+    return moved, ex[:3]
 
 
 def orig_end_fn(o):
@@ -123,6 +149,9 @@ def main():
     for n, r in sorted(out.items()):
         if r['unexplained']:
             print('  %-12s unexplained %3d  e.g. %s' % (n, r['unexplained'], '; '.join(r['examples'])[:120]))
+    print('reordered (moved) instructions per function:')
+    for n, r in sorted(out.items(), key=lambda x: -x[1]['moved'])[:15]:
+        print('  %-12s moved %4d' % (n, r['moved']))
     if a.json:
         json.dump(out, open(a.json, 'w'), indent=1)
 

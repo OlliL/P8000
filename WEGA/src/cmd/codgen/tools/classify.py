@@ -6,6 +6,7 @@ The class is decided by one rule set, the pattern check of patterns.py (the same
     "other differences" and a note that names the finding) is "other differences";
   - else, if every differing instruction matches a D pattern: "D only (pattern-verified)" with the D classes found;
   - else: "other differences", with the unexplained instruction forms as the note.
+The reordered_instructions count (lower bound: chunks of two or more identical instructions that moved) is written too.
 The alignment (d_normalised_pct) is written as information only.
 
 Usage: python3 classify.py --mine ./codgen --orig $WEGA/lib/codgen
@@ -50,7 +51,8 @@ def main():
         g = int(v['orig'], 16)
         r = P.check(m, o, st, en, g, oend)
         s = align([P.dn(x) for x in F.extent(m, st, en)], [P.dn(x) for x in F.extent(o, g, oend(g))])
-        audit = {'d_normalised_pct': s, 'pattern_diff': r['diff'], 'pattern_unexplained': r['unexplained']}
+        audit = {'d_normalised_pct': s, 'pattern_diff': r['diff'], 'pattern_unexplained': r['unexplained'],
+                 'reordered_instructions': r['moved'], 'reordered_examples': r['moved_examples']}
         if n in ov and ov[n]['class'] == 'other differences':
             audit['difference_class'] = 'other differences'
             audit['difference_note'] = ov[n]['note']

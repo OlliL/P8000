@@ -49,6 +49,8 @@
     "d_normalised_pct": 69,
     "pattern_diff": 17,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -71,6 +73,8 @@
     "d_normalised_pct": 91,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -89,6 +93,8 @@
     "d_normalised_pct": 99,
     "pattern_diff": 2,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -108,6 +114,8 @@
     "d_normalised_pct": 94,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -126,6 +134,8 @@
     "d_normalised_pct": 95,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -144,6 +154,8 @@
     "d_normalised_pct": 89,
     "pattern_diff": 5,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -163,6 +175,8 @@
     "d_normalised_pct": 88,
     "pattern_diff": 5,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -190,6 +204,8 @@
     "d_normalised_pct": 71,
     "pattern_diff": 23,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -211,6 +227,10 @@
     "d_normalised_pct": 51,
     "pattern_diff": 88,
     "pattern_unexplained": 0,
+    "reordered_instructions": 6,
+    "reordered_examples": [
+     "calr T"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -236,6 +256,8 @@
     "d_normalised_pct": 80,
     "pattern_diff": 32,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "allo3-rcookie-dup: calls rcookie where the original calls rallkind (source)"
    },
@@ -252,6 +274,8 @@
     "d_normalised_pct": 96,
     "pattern_diff": 23,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -275,6 +299,8 @@
     "d_normalised_pct": 72,
     "pattern_diff": 37,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "tcopy-copy-01: the original calls ncopy (source)"
    }
@@ -290,6 +316,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 40,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -312,6 +340,8 @@
     "d_normalised_pct": 77,
     "pattern_diff": 11,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -333,6 +363,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -349,6 +381,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -365,6 +399,8 @@
     "d_normalised_pct": 53,
     "pattern_diff": 15,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D3",
@@ -385,6 +421,8 @@
     "d_normalised_pct": 69,
     "pattern_diff": 15,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -408,6 +446,8 @@
     "d_normalised_pct": 75,
     "pattern_diff": 13,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -430,6 +470,8 @@
     "d_normalised_pct": 84,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -450,6 +492,8 @@
     "d_normalised_pct": 69,
     "pattern_diff": 9,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -470,6 +514,8 @@
     "d_normalised_pct": 74,
     "pattern_diff": 34,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -492,6 +538,8 @@
     "d_normalised_pct": 50,
     "pattern_diff": 25,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -517,6 +565,8 @@
     "d_normalised_pct": 79,
     "pattern_diff": 15,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -537,6 +587,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -557,6 +609,8 @@
     "d_normalised_pct": 85,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -578,6 +632,8 @@
     "d_normalised_pct": 89,
     "pattern_diff": 16,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -600,6 +656,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -620,6 +678,8 @@
     "d_normalised_pct": 56,
     "pattern_diff": 102,
     "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "tshape-order-01: call order and SZERO return"
    }
@@ -635,6 +695,8 @@
     "d_normalised_pct": 97,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "shift-type-01: unsigned operand in the original (source)"
    },
@@ -651,6 +713,8 @@
     "d_normalised_pct": 79,
     "pattern_diff": 26,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -675,6 +739,8 @@
     "d_normalised_pct": 76,
     "pattern_diff": 20,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -698,6 +764,11 @@
     "d_normalised_pct": 76,
     "pattern_diff": 94,
     "pattern_unexplained": 0,
+    "reordered_instructions": 4,
+    "reordered_examples": [
+     "ld\trS,A(rS)",
+     "ld\trS,rS"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -721,6 +792,8 @@
     "d_normalised_pct": 89,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -742,6 +815,11 @@
     "d_normalised_pct": 36,
     "pattern_diff": 890,
     "pattern_unexplained": 91,
+    "reordered_instructions": 4,
+    "reordered_examples": [
+     "test\tF",
+     "ld\trS,A"
+    ],
     "difference_class": "other differences",
     "difference_note": "sucomp-size-01: expression evaluated twice, block order"
    }
@@ -757,6 +835,8 @@
     "d_normalised_pct": 93,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -775,6 +855,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 13,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -796,6 +878,8 @@
     "d_normalised_pct": 97,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -813,6 +897,8 @@
     "d_normalised_pct": 95,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -831,6 +917,8 @@
     "d_normalised_pct": 88,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -851,6 +939,8 @@
     "d_normalised_pct": 81,
     "pattern_diff": 54,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -876,6 +966,8 @@
     "d_normalised_pct": 74,
     "pattern_diff": 11,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -895,6 +987,8 @@
     "d_normalised_pct": 59,
     "pattern_diff": 18,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -915,6 +1009,8 @@
     "d_normalised_pct": 98,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -936,6 +1032,8 @@
     "d_normalised_pct": 95,
     "pattern_diff": 5,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -955,6 +1053,8 @@
     "d_normalised_pct": 50,
     "pattern_diff": 3,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -974,6 +1074,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -990,6 +1092,8 @@
     "d_normalised_pct": 68,
     "pattern_diff": 67,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1013,6 +1117,8 @@
     "d_normalised_pct": 84,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D3"
@@ -1031,6 +1137,8 @@
     "d_normalised_pct": 78,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -1050,6 +1158,8 @@
     "d_normalised_pct": 96,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -1067,6 +1177,10 @@
     "d_normalised_pct": 79,
     "pattern_diff": 44,
     "pattern_unexplained": 0,
+    "reordered_instructions": 5,
+    "reordered_examples": [
+     "inc\tA,#1"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1092,6 +1206,8 @@
     "d_normalised_pct": 85,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1111,6 +1227,8 @@
     "d_normalised_pct": 49,
     "pattern_diff": 126,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "acon-tail-01: the three L%d branches share the printf call and the tail off: in the original; D7, D8, D1 also present"
    }
@@ -1126,6 +1244,8 @@
     "d_normalised_pct": 89,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -1144,6 +1264,8 @@
     "d_normalised_pct": 59,
     "pattern_diff": 44,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -1167,6 +1289,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -1183,6 +1307,8 @@
     "d_normalised_pct": 84,
     "pattern_diff": 23,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1207,6 +1333,8 @@
     "d_normalised_pct": 67,
     "pattern_diff": 88,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1231,6 +1359,8 @@
     "d_normalised_pct": 94,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -1249,6 +1379,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -1265,6 +1397,11 @@
     "d_normalised_pct": 33,
     "pattern_diff": 226,
     "pattern_unexplained": 0,
+    "reordered_instructions": 15,
+    "reordered_examples": [
+     "dec\tA,#1",
+     "call T"
+    ],
     "difference_class": "other differences",
     "difference_note": "expand-loop-01: loop and dispatch (33 %)"
    }
@@ -1280,6 +1417,8 @@
     "d_normalised_pct": 60,
     "pattern_diff": 56,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -1302,6 +1441,8 @@
     "d_normalised_pct": 91,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1322,6 +1463,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -1340,6 +1483,8 @@
     "d_normalised_pct": 93,
     "pattern_diff": 7,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -1359,6 +1504,8 @@
     "d_normalised_pct": 74,
     "pattern_diff": 19,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1382,6 +1529,8 @@
     "d_normalised_pct": 43,
     "pattern_diff": 131,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1406,6 +1555,8 @@
     "d_normalised_pct": 98,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1426,6 +1577,8 @@
     "d_normalised_pct": 37,
     "pattern_diff": 327,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1451,6 +1604,10 @@
     "d_normalised_pct": 71,
     "pattern_diff": 159,
     "pattern_unexplained": 0,
+    "reordered_instructions": 3,
+    "reordered_examples": [
+     "decb\tF,#1"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1477,6 +1634,8 @@
     "d_normalised_pct": 77,
     "pattern_diff": 71,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -1501,6 +1660,8 @@
     "d_normalised_pct": 55,
     "pattern_diff": 18,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -1523,6 +1684,8 @@
     "d_normalised_pct": 58,
     "pattern_diff": 9,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1543,6 +1706,8 @@
     "d_normalised_pct": 87,
     "pattern_diff": 16,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1565,6 +1730,8 @@
     "d_normalised_pct": 79,
     "pattern_diff": 14,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -1587,6 +1754,8 @@
     "d_normalised_pct": 81,
     "pattern_diff": 5,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1606,6 +1775,8 @@
     "d_normalised_pct": 56,
     "pattern_diff": 134,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1628,6 +1799,8 @@
     "d_normalised_pct": 92,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1647,6 +1820,8 @@
     "d_normalised_pct": 96,
     "pattern_diff": 2,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D7"
@@ -1665,6 +1840,8 @@
     "d_normalised_pct": 96,
     "pattern_diff": 2,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D7"
@@ -1683,6 +1860,8 @@
     "d_normalised_pct": 88,
     "pattern_diff": 12,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1705,6 +1884,8 @@
     "d_normalised_pct": 86,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1724,6 +1905,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -1740,6 +1923,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -1756,6 +1941,8 @@
     "d_normalised_pct": 86,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -1774,6 +1961,8 @@
     "d_normalised_pct": 86,
     "pattern_diff": 1,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D3"
@@ -1792,6 +1981,8 @@
     "d_normalised_pct": 71,
     "pattern_diff": 12,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -1811,6 +2002,8 @@
     "d_normalised_pct": 94,
     "pattern_diff": 56,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1835,6 +2028,8 @@
     "d_normalised_pct": 76,
     "pattern_diff": 33,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1860,6 +2055,8 @@
     "d_normalised_pct": 96,
     "pattern_diff": 1,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2"
@@ -1878,6 +2075,8 @@
     "d_normalised_pct": 75,
     "pattern_diff": 3,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D3",
@@ -1897,6 +2096,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1918,6 +2119,12 @@
     "d_normalised_pct": 86,
     "pattern_diff": 270,
     "pattern_unexplained": 0,
+    "reordered_instructions": 6,
+    "reordered_examples": [
+     "ld\tF,rS",
+     "ld\tF,rS",
+     "ld\trS,F"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1944,6 +2151,8 @@
     "d_normalised_pct": 53,
     "pattern_diff": 30,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1967,6 +2176,8 @@
     "d_normalised_pct": 88,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -1986,6 +2197,8 @@
     "d_normalised_pct": 69,
     "pattern_diff": 35,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2008,6 +2221,10 @@
     "d_normalised_pct": 88,
     "pattern_diff": 92,
     "pattern_unexplained": 0,
+    "reordered_instructions": 2,
+    "reordered_examples": [
+     "ld\trS,#A"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -2031,6 +2248,8 @@
     "d_normalised_pct": 96,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2050,6 +2269,8 @@
     "d_normalised_pct": 82,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2069,6 +2290,8 @@
     "d_normalised_pct": 50,
     "pattern_diff": 30,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2091,6 +2314,8 @@
     "d_normalised_pct": 88,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2111,6 +2336,10 @@
     "d_normalised_pct": 50,
     "pattern_diff": 228,
     "pattern_unexplained": 0,
+    "reordered_instructions": 3,
+    "reordered_examples": [
+     "ld\trS,rS"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2136,6 +2365,8 @@
     "d_normalised_pct": 94,
     "pattern_diff": 12,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2156,6 +2387,8 @@
     "d_normalised_pct": 95,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -2176,6 +2409,8 @@
     "d_normalised_pct": 63,
     "pattern_diff": 12,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2196,6 +2431,8 @@
     "d_normalised_pct": 94,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -2216,6 +2453,8 @@
     "d_normalised_pct": 79,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -2236,6 +2475,8 @@
     "d_normalised_pct": 92,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2254,6 +2495,8 @@
     "d_normalised_pct": 92,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2272,6 +2515,8 @@
     "d_normalised_pct": 97,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -2291,6 +2536,8 @@
     "d_normalised_pct": 93,
     "pattern_diff": 7,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2310,6 +2557,8 @@
     "d_normalised_pct": 99,
     "pattern_diff": 1,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10"
@@ -2328,6 +2577,8 @@
     "d_normalised_pct": 43,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2348,6 +2599,8 @@
     "d_normalised_pct": 91,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -2366,6 +2619,8 @@
     "d_normalised_pct": 71,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2386,6 +2641,8 @@
     "d_normalised_pct": 56,
     "pattern_diff": 11,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2407,6 +2664,8 @@
     "d_normalised_pct": 60,
     "pattern_diff": 7,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2427,6 +2686,8 @@
     "d_normalised_pct": 94,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -2445,6 +2706,8 @@
     "d_normalised_pct": 50,
     "pattern_diff": 11,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2465,6 +2728,8 @@
     "d_normalised_pct": 87,
     "pattern_diff": 21,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2486,6 +2751,8 @@
     "d_normalised_pct": 69,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2505,6 +2772,8 @@
     "d_normalised_pct": 89,
     "pattern_diff": 16,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2527,6 +2796,8 @@
     "d_normalised_pct": 67,
     "pattern_diff": 32,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2551,6 +2822,10 @@
     "d_normalised_pct": 85,
     "pattern_diff": 59,
     "pattern_unexplained": 0,
+    "reordered_instructions": 10,
+    "reordered_examples": [
+     "ldl\trrS,F"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2575,6 +2850,11 @@
     "d_normalised_pct": 84,
     "pattern_diff": 136,
     "pattern_unexplained": 0,
+    "reordered_instructions": 11,
+    "reordered_examples": [
+     "ld\trS,F",
+     "jr\teq,L"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -2617,6 +2897,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    }
@@ -2632,6 +2914,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -2648,6 +2932,8 @@
     "d_normalised_pct": 79,
     "pattern_diff": 15,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -2669,6 +2955,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -2685,6 +2973,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -2701,6 +2991,8 @@
     "d_normalised_pct": 86,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -2721,6 +3013,8 @@
     "d_normalised_pct": 95,
     "pattern_diff": 1,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2"
@@ -2738,6 +3032,8 @@
     "d_normalised_pct": 91,
     "pattern_diff": 2,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -2757,6 +3053,8 @@
     "d_normalised_pct": 80,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -2776,6 +3074,8 @@
     "d_normalised_pct": 61,
     "pattern_diff": 29,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2797,6 +3097,8 @@
     "d_normalised_pct": 93,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -2815,6 +3117,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -2831,6 +3135,8 @@
     "d_normalised_pct": 74,
     "pattern_diff": 10,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2853,6 +3159,8 @@
     "d_normalised_pct": 87,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -2871,6 +3179,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -2887,6 +3197,8 @@
     "d_normalised_pct": 67,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -2906,6 +3218,8 @@
     "d_normalised_pct": 46,
     "pattern_diff": 10,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2926,6 +3240,8 @@
     "d_normalised_pct": 95,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -2944,6 +3260,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 2,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -2963,6 +3281,8 @@
     "d_normalised_pct": 95,
     "pattern_diff": 7,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2984,6 +3304,8 @@
     "d_normalised_pct": 57,
     "pattern_diff": 5,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3003,6 +3325,8 @@
     "d_normalised_pct": 88,
     "pattern_diff": 3,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -3022,6 +3346,8 @@
     "d_normalised_pct": 82,
     "pattern_diff": 5,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D13",
@@ -3041,6 +3367,8 @@
     "d_normalised_pct": 77,
     "pattern_diff": 26,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3064,6 +3392,8 @@
     "d_normalised_pct": 71,
     "pattern_diff": 24,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3088,6 +3418,8 @@
     "d_normalised_pct": 72,
     "pattern_diff": 7,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3107,6 +3439,8 @@
     "d_normalised_pct": 73,
     "pattern_diff": 24,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3132,6 +3466,8 @@
     "d_normalised_pct": 99,
     "pattern_diff": 2,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D8/D2"
@@ -3150,6 +3486,8 @@
     "d_normalised_pct": 16,
     "pattern_diff": 59,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3173,6 +3511,8 @@
     "d_normalised_pct": 56,
     "pattern_diff": 44,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3196,6 +3536,8 @@
     "d_normalised_pct": 93,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3215,6 +3557,8 @@
     "d_normalised_pct": 75,
     "pattern_diff": 7,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3235,6 +3579,8 @@
     "d_normalised_pct": 81,
     "pattern_diff": 9,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -3254,6 +3600,8 @@
     "d_normalised_pct": 87,
     "pattern_diff": 56,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -3276,6 +3624,10 @@
     "d_normalised_pct": 76,
     "pattern_diff": 76,
     "pattern_unexplained": 0,
+    "reordered_instructions": 2,
+    "reordered_examples": [
+     "ld\trS,A"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3301,6 +3653,8 @@
     "d_normalised_pct": 69,
     "pattern_diff": 74,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "options-loop-01: register declarations for i and err (source)"
    }
@@ -3316,6 +3670,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3335,6 +3691,11 @@
     "d_normalised_pct": 69,
     "pattern_diff": 234,
     "pattern_unexplained": 0,
+    "reordered_instructions": 4,
+    "reordered_examples": [
+     "ld\trS,rS",
+     "ld\trS,rS"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3361,6 +3722,8 @@
     "d_normalised_pct": 38,
     "pattern_diff": 10,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "lineout-type-01: real defect in our reconstruction: long line, the original has int line; the caller in main passes int in r7 and the file name in r6; our callee reads the file from r5 (see findings)"
    },
@@ -3377,6 +3740,8 @@
     "d_normalised_pct": 92,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -3395,6 +3760,8 @@
     "d_normalised_pct": 79,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -3414,6 +3781,8 @@
     "d_normalised_pct": 79,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -3433,6 +3802,8 @@
     "d_normalised_pct": 92,
     "pattern_diff": 10,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3452,6 +3823,8 @@
     "d_normalised_pct": 92,
     "pattern_diff": 10,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3471,6 +3844,8 @@
     "d_normalised_pct": 88,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3490,6 +3865,8 @@
     "d_normalised_pct": 89,
     "pattern_diff": 25,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -3510,6 +3887,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 6,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3529,6 +3908,8 @@
     "d_normalised_pct": 60,
     "pattern_diff": 41,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3551,6 +3932,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -3567,6 +3950,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -3583,6 +3968,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -3599,6 +3986,10 @@
     "d_normalised_pct": 80,
     "pattern_diff": 74,
     "pattern_unexplained": 0,
+    "reordered_instructions": 2,
+    "reordered_examples": [
+     "ld\trS,A"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3624,6 +4015,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -3640,6 +4033,8 @@
     "d_normalised_pct": 95,
     "pattern_diff": 9,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3662,6 +4057,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -3678,6 +4075,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -3696,6 +4095,8 @@
     "d_normalised_pct": 95,
     "pattern_diff": 2,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -3715,6 +4116,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 21,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3738,6 +4141,8 @@
     "d_normalised_pct": 82,
     "pattern_diff": 15,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "shift-type-01: shift signedness per site (source)"
    }
@@ -3753,6 +4158,8 @@
     "d_normalised_pct": 70,
     "pattern_diff": 39,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3778,6 +4185,8 @@
     "d_normalised_pct": 92,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -3796,6 +4205,8 @@
     "d_normalised_pct": 52,
     "pattern_diff": 27,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3820,6 +4231,8 @@
     "d_normalised_pct": 94,
     "pattern_diff": 5,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3840,6 +4253,8 @@
     "d_normalised_pct": 91,
     "pattern_diff": 5,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3859,6 +4274,8 @@
     "d_normalised_pct": 76,
     "pattern_diff": 14,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3878,6 +4295,8 @@
     "d_normalised_pct": 89,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -3896,6 +4315,8 @@
     "d_normalised_pct": 98,
     "pattern_diff": 2,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -3915,6 +4336,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    },
@@ -3931,6 +4354,8 @@
     "d_normalised_pct": 70,
     "pattern_diff": 79,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3955,6 +4380,8 @@
     "d_normalised_pct": 79,
     "pattern_diff": 16,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -3976,6 +4403,10 @@
     "d_normalised_pct": 80,
     "pattern_diff": 39,
     "pattern_unexplained": 0,
+    "reordered_instructions": 4,
+    "reordered_examples": [
+     "call T"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -3999,6 +4430,8 @@
     "d_normalised_pct": 48,
     "pattern_diff": 95,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -4024,6 +4457,8 @@
     "d_normalised_pct": 89,
     "pattern_diff": 44,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D2",
@@ -4045,6 +4480,8 @@
     "d_normalised_pct": 50,
     "pattern_diff": 20,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -4066,6 +4503,8 @@
     "d_normalised_pct": 89,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -4084,6 +4523,8 @@
     "d_normalised_pct": 100,
     "pattern_diff": 0,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": []
    }
@@ -4099,6 +4540,12 @@
     "d_normalised_pct": 47,
     "pattern_diff": 246,
     "pattern_unexplained": 0,
+    "reordered_instructions": 6,
+    "reordered_examples": [
+     "jp\tA",
+     "jp\tA",
+     "ld\tF,#A"
+    ],
     "difference_class": "other differences",
     "difference_note": "clocal-size-01: 80 instructions at another place (block order)"
    }
@@ -4114,6 +4561,8 @@
     "d_normalised_pct": 90,
     "pattern_diff": 7,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
@@ -4134,6 +4583,8 @@
     "d_normalised_pct": 97,
     "pattern_diff": 4,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1"
@@ -4151,6 +4602,8 @@
     "d_normalised_pct": 59,
     "pattern_diff": 41,
     "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "buildstar-order-01 and shift-type-01 (source)"
    }
@@ -5013,8 +5466,8 @@
    "where": "allo3.c: rcookie() and allocreg (want = rcookie(p))",
    "detail": "the original allocreg calls 0x89a2 (rallkind in comm3.c); we have a second copy of the same function in allo3.c",
    "action": "delete rcookie in allo3.c, declare rallkind as extern in allo3.c and call it from allocreg",
-   "status": "analysed",
-   "result": "confirmed: the original allocreg (0x6c4e) calls 0x89a2 (call %89A2); ours calls the local rcookie. rcookie has the same logic as rallkind (comm3.c). The local copy has no counterpart in the original."
+   "status": "analysed: source (confirmed)",
+   "result": "The original allocreg calls 0x89a2 (rallkind). The change itself is invisible to the pattern check, because call targets are masked; the fix follows from the call target."
   },
   {
    "id": "allo3-tcopy-copy-01",
@@ -5023,8 +5476,8 @@
    "where": "allo3.c: tcopy()",
    "detail": "original 0x8a24 calls ncopy (0x8a02) for the copy of the node; the rebuild copies inline (ldir)",
    "action": "call ncopy(q, p) instead of the struct assignment in tcopy",
-   "status": "analysed",
-   "result": "confirmed: the original tcopy (0x8a24) calls ncopy (0x8a02) for the node copy; ours copies inline (ldir). The source must call ncopy(q, p)."
+   "status": "analysed: source (confirmed)",
+   "result": "Experiment: *q = *p -> ncopy(q, p): tcopy 69 -> 67 instructions, the rest is D (0 unexplained)."
   },
   {
    "id": "ttype-shift-01",
@@ -5051,8 +5504,8 @@
    "where": "local3.c, reader3.c, tr3.c",
    "detail": "three functions shift a field value with srl (unsigned) in the original and with sra (signed) in ours",
    "action": "find the variable whose type is unsigned in the original (a bit field or an unsigned member); make the shift unsigned in all three",
-   "status": "analysed-partly",
-   "result": "hypothesis tested in a scratch copy (not in the repo): making the operand of DECREF/INCREF and of the shift in ttype unsigned produces srl in ttype (the original has srl) and in buildstar; values of type codes are never negative, so both shifts give the same results and the difference is only the declaration. ttype: align 75 -> 76 (D-normalised 97). fixfld: the original has both sra and srl (srl r2, srl r3, sra r2), so not every operand is unsigned there: check each site separately.",
+   "status": "analysed: source (confirmed for ttype)",
+   "result": "Experiment (see before): unsigned operand in DECREF/INCREF and ttype gives srl as in the original; ttype pattern-explained after it. fixfld and buildstar: per site, not yet changed.",
    "scratch": "/tmp/claude-1000/-mnt-share-cvs-P8000/c1dc3ef9-1faf-446a-8c04-2a8a9e3f0c4b/scratchpad/exp"
   },
   {
@@ -5073,8 +5526,8 @@
    "where": "tr3.c, buildstar()",
    "detail": "only 50 % match; the if chains come in another order",
    "action": "classify, then fix the order of the tests",
-   "status": "analysed",
-   "result": "D-normalised alignment 59 %. The original tests the case l->op == UAND/STAR and the type checks in another order; the shift of the type is the one of shift-type-01. The reorder of the else-if branch is the open part."
+   "status": "open",
+   "result": "Order of the if chains not yet reproduced; the shift part is shift-type-01."
   },
   {
    "id": "expand-loop-01",
@@ -5083,9 +5536,9 @@
    "where": "out3.c, expand()",
    "detail": "the original reads *cp into a byte and dispatches through a table; ours tests *cp and then dispatches",
    "action": "none in the source; check with the old cc reconstruction",
-   "status": "checked",
+   "status": "open",
    "classification": "D7",
-   "result": "not a source difference: the original places the test of the for loop at the bottom (jp to the test), ours at the top; the putchar expansion of the default case is the same. Compiler layout (D7)."
+   "result": "Loop form and dispatch; the test of the for loop is at the bottom in the original (D7 candidate), not tested."
   },
   {
    "id": "options-loop-01",
@@ -5094,9 +5547,9 @@
    "where": "main3.c, options()",
    "detail": "the loop variable is a register in the original and in memory in ours; the layout of the switch differs",
    "action": "declare i and err as register variables in options() (main3.c); verify the byte identity of options afterwards",
-   "status": "checked",
+   "status": "analysed: source (confirmed), residual D",
    "classification": "real (source)",
-   "result": "the original keeps i in r14 and err in r12 (register variables); ours keeps i and err in memory, only cp is a register variable. The old cc gives registers only to declared register variables, so the source lacks register declarations for i and err."
+   "result": "Experiment: register int i, err in main3.c: 69 -> 76 %, the differences left are D classes (0 unexplained). i alone is not enough (75 %)."
   },
   {
    "id": "main-char-01",
@@ -5116,9 +5569,9 @@
    "where": "local3.c, tshape()",
    "detail": "the call order special / shtemp / shumul / ltypeop differs; a long test is written differently (cpl and tcc in the original)",
    "action": "compare the SZERO return of tshape (match3.c) with the original form; the switch order is D6",
-   "status": "checked",
+   "status": "open: hypothesis rejected for SZERO",
    "classification": "partly D6, partly real (to verify)",
-   "result": "tshape is in match3.c, not local3.c as noted before. The call order special, shtemp, ltypeop, shumul is the order of the case chain of the original (D6). The return of SZERO (cpl + tcc in the original, testl + jr in ours) is the same expression compiled differently by the same cc: a source difference is likely, not verified."
+   "result": "Experiment: SZERO return as if-form: no gain (alignment 56 -> 53 %). Still open: call order special/shtemp/ltypeop/shumul and cpl/tcc."
   },
   {
    "id": "efcode-shift-01",
@@ -5138,8 +5591,8 @@
    "where": "see evidence",
    "detail": "sucomp: 756 instructions against 684; the difference is in the body (not yet analysed)",
    "action": "analyse the difference (later, in the correction phase)",
-   "status": "analysed",
-   "result": "other: (a) the ternary nr = szty(t) > (dope[o] & 0x800 ? 2 : 1) ? szty(t) : (dope[o] & 0x800 ? 2 : 1) evaluates szty and the dope test twice in ours; the original evaluates them once (the expression is written differently, or a temporary is used) (source question); (b) about 170 instructions of the original sit in another place (block order of the arity branches), 225 of ours in another place. Class: other differences."
+   "status": "open: hypothesis rejected",
+   "result": "Experiment: the double evaluation of szty and of the dope test is replaced by temporaries: no gain (756 -> 747 instructions, alignment 36 -> 35 %). Still open: 91 unexplained add forms with a memory operand."
   },
   {
    "id": "rsinsert-size-01",
@@ -5178,8 +5631,8 @@
    "where": "see evidence",
    "detail": "clocal: 230 against 264; the difference is in the body (not yet analysed)",
    "action": "analyse the difference (later, in the correction phase)",
-   "status": "analysed",
-   "result": "other: 80 instructions of the original (the load of several struct fields at the start) are not at that place in ours; the order of the first tests and of the table code differs. Source difference in the order of the statements (block order), not D-only. Class: other differences."
+   "status": "open",
+   "result": "80 instructions at another place (block order), not analysed further."
   },
   {
    "id": "header-rdsym-01",
@@ -5198,7 +5651,8 @@
    "where": "out3.c, acon()",
    "detail": "the original shares the printf and the off: tail between the three L%d branches; ours has the call in each branch",
    "action": "check how the original writes the three branches (one printf with a computed value?) before changing the source",
-   "status": "analysed"
+   "status": "open",
+   "result": "Shared tail (jp to the printf of the original) not reproduced yet."
   },
   {
    "id": "main-wrapper-01",
@@ -5218,7 +5672,8 @@
    "where": "efcode3.c, lineout(); main3.c (extern declarations without prototype)",
    "detail": "our lineout declares long line; the original takes int line (r7). main passes ifline (int) in r7 and ifname in r6. Ours reads the file from r5, so the file name printed by .line is wrong.",
    "action": "declare int line in lineout() (the cast (int)line then is not needed); check with codgen -l on a file that prints .line",
-   "status": "analysed"
+   "status": "analysed: source (confirmed)",
+   "result": "Experiment: long line -> int line in efcode3.c gives lineout 100 % identical (8 / 8 instructions, 0 differences)."
   }
  ],
  "reject": {},
@@ -5329,5 +5784,28 @@
    "evidence": "dead code: no caller; fprintf(stderr, 'system call error: '), a call with the argument, errexit(0x40) - to be added to the source"
   }
  },
- "orig_side_note": "0x1aae is not a function: jr from 0x1aa8 (inside rdsym) reaches it; it belongs to rdsym (0x1a86)."
+ "orig_side_note": "0x1aae is not a function: jr from 0x1aa8 (inside rdsym) reaches it; it belongs to rdsym (0x1a86).",
+ "reorder_check": {
+  "method": "tools/patterns.py order_moves: instructions of chunks (>= 2 identical normalised instructions) that are deleted at one place and inserted at another in the alignment; a lower bound",
+  "functions_with_moved_instructions": 16,
+  "total_moved": 87,
+  "per_function": {
+   "expand": 15,
+   "optim": 11,
+   "conval": 10,
+   "freereg": 6,
+   "zzzcode": 6,
+   "clocal": 6,
+   "argplace": 5,
+   "match": 4,
+   "sucomp": 4,
+   "main": 4,
+   "scmd": 4,
+   "getreg": 3,
+   "cbranch": 3,
+   "order": 2,
+   "eread": 2,
+   "parminit": 2
+  }
+ }
 }
