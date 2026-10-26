@@ -738,8 +738,8 @@ argprep(p, cookie)
 	p->left->op = STASG;
 	p->left->type = INCREF(p->left->type);
 	p->left->right = copy;
-	fake.needs = 0x100;
 	fake.nx = 0x20;
+	fake.needs = 0x100;
 	if (!allo(p, &fake))
 		cerror("bad STASG allocation");
 	resc[0].type = DECREF(p->left->type);

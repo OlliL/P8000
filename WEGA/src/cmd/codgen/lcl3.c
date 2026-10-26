@@ -394,11 +394,11 @@ mapregs(p)
 {
 	register struct node *m, *n, *r;
 
-	switch (p->op) {
-	case 120:
+	if (p->op == 120) {
 		fixfld(p);
 		return;
-	case STREF:
+	}
+	if (p->op == STREF) {
 		fixfld(p);
 		r = p->right;
 		if (p->left->op == UAND)
@@ -420,7 +420,8 @@ mapregs(p)
 		p->rval = n->rval;
 		n->op = FREE;
 		return;
-	case UAND:
+	}
+	if (p->op == UAND) {
 		m = p->left;
 		if (m->op != NAME)
 			return;

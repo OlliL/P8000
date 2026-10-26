@@ -244,22 +244,45 @@ freereg(p, r, cookie)
 	int r;
 	int cookie;
 {
-	int reg, cls;
+	register struct node *q;
+	register int ty;
+	register struct node *spare;
+	register int reg;
+	register struct sym *sym;
+	char side;
+	int cls;
 
-	if (r == -1) {
-		for (reg = 0; reg <= 7; reg++)
-			if (usable(p, 'L', reg) > 0) {
-				rfree(reg, p->type);
-				cls = rclass(p->type, reg);
-				return getreg(cls, reg, 0x1000, p->sname);
-			}
+	if (cookie & 04 | 0100)
+		side = 'L';
+	else if (cookie & 010 | 0200)
+		side = 'R';
+	else
 		return -1;
+	q = getlr(p, side);
+	spare = q->right;
+	ty = p->type;
+	sym = p->sname;
+	if (r != -1) {
+		if (usable(p, side, r) <= 0)
+			return -1;
+		rfree(r, ty);
+		cls = rclass(ty, r);
+		return getreg(cls, r, 0x1000, sym);
 	}
-	if (usable(p, 'L', r) <= 0)
-		return -1;
-	rfree(r, p->type);
-	cls = rclass(p->type, r);
-	return getreg(cls, r, 0x1000, p->sname);
+	if (cookie & 04 | 010) {
+		for (reg = 0; reg <= 7; reg++)
+			if (usable(p, side, reg) > 0)
+				goto found;
+	} else if (cookie & 0100 | 0200) {
+		for (reg = 0x10; reg <= 0x13; reg++)
+			if (usable(p, side, reg) > 0)
+				goto found;
+	}
+	return -1;
+found:
+	rfree(reg, ty);
+	cls = rclass(ty, reg);
+	return getreg(cls, reg, 0x1000, sym);
 }
 
 /* a register for the result of p; cookie says what the caller wants */
