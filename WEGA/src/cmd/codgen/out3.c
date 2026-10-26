@@ -254,7 +254,7 @@ adrput(p)
 			printf("%s", rlnames[p->rval]);
 		else {
 			if (rmode)
-				putchar('r');
+				printf("r");
 			printf("%s", rnames[p->rval]);
 		}
 		break;

@@ -485,6 +485,9 @@ These changes are in the sources; the git history has the exact diffs. Each keep
   chain, D6). `argsort` uses pointers `ai`, `aj` over `struct arg` (`argl` as a named type).
 - `rnnullall` (`regfile3.c`): `register int i`.
 - `delstrip` (`reader3.c`): `*p = *p->left` (the original copies the node inline).
+- `conput` (`out3.c`, REG case): the `r` prefix of a register in rmode is `printf("r")`, not `putchar('r')`. Checked with
+  the printf call sequence of `scodgen` (`execvp`): with this change the 512 calls equal the original's; the original
+  calls `printf` from a single site (`if (rmode) printf("r")`, `test` of a global, then the register name).
 - `expand` (`out3.c`): the `%ld` helper `prlong` (the original calls a one-line function for `M` and `N`).
 - `gswitch` (`lcl3.c`): the `newreg` register blocks written out inline in the non-SEG path (the original calls `getreg` directly).
 - `mycanon` (`gen3.c`): the `switch` over the ten relation operators (the jump table of the original).
@@ -510,6 +513,9 @@ Listed by function; the current evidence is in `findings.json` (`findings_pendin
   not found.
 - `tshape` (`match3.c`, `tshape-order-01`): the last operand of the `SZERO` return is a value in the original (`cpl rr2,#0; ldk r2,#0;
   tcc eq,r2`), a branch in ours. The `if` form gave no gain.
+- The stray `-` in `scodgen` (`execvp`, `getopt`): the wrong character comes from `printf("%s", rnames[...])` (the
+  register name loses its first character), not from the `r` prefix. The stack contents at that call differ from the original
+  (the frame layout differs, D1); without `cgprintf` the two cases fail. The cause is not yet shown.
 - Left from earlier rounds, not re-checked in this round: `cbranch` (the table dispatch after the `cpir` search, D6, and the
   compare chain order 0x56-0x59), `gswitch` (the original is a structurally different case code with about 20 `printf` calls against
   our 10; not reconstructed), `rdsym` (frame of two bytes, D1), `freeparm` (scratch register choice, D2), `ffld` (parameter spilled in
