@@ -185,7 +185,7 @@
    }
   },
   "rcookie": {
-   "ours": "0x02fc-0x0322",
+   "ours": null,
    "table_orig": "0x89a2",
    "orig": null,
    "pairing": "none",
@@ -194,7 +194,7 @@
    "orig_note": "identical after the null test `if (p && ...)` was written (allo3.c fix)"
   },
   "usable": {
-   "ours": "0x0322-0x03a2",
+   "ours": "0x02fc-0x037c",
    "table_orig": "0x6e78",
    "orig": "0x6e78",
    "pairing": "confirmed",
@@ -217,7 +217,7 @@
    }
   },
   "freereg": {
-   "ours": "0x03a2-0x04ba",
+   "ours": "0x037c-0x0494",
    "table_orig": "0x6d5a",
    "orig": "0x6d5a",
    "pairing": "confirmed",
@@ -246,7 +246,7 @@
    "orig_note": "rewritten; D1 frame, D7 layout"
   },
   "allocreg": {
-   "ours": "0x04ba-0x05c6",
+   "ours": "0x0494-0x05a2",
    "table_orig": "0x6c4e",
    "orig": "0x6c4e",
    "pairing": "confirmed",
@@ -258,13 +258,20 @@
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "allo3-rcookie-dup: calls rcookie where the original calls rallkind (source)"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ]
    },
    "orig_note": "not located yet"
   },
   "allo": {
-   "ours": "0x05c6-0x0974",
+   "ours": "0x05a2-0x0950",
    "table_orig": "0x67e8",
    "orig": "0x67e8",
    "pairing": "confirmed",
@@ -289,7 +296,7 @@
    "orig_note": "D1 frame, D10 shifts (sdal), D7"
   },
   "tcopy": {
-   "ours": "0x0974-0x0a42",
+   "ours": "0x0950-0x0a18",
    "table_orig": "0x8a24",
    "orig": "0x8a24",
    "pairing": "confirmed",
@@ -297,16 +304,23 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 72,
-    "pattern_diff": 37,
+    "pattern_diff": 35,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "tcopy-copy-01: the original calls ncopy (source)"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ]
    }
   },
   "reclaim": {
-   "ours": "0x0a42-0x0df2",
+   "ours": "0x0a18-0x0dc8",
    "table_orig": "0x7058",
    "orig": "0x7058",
    "pairing": "confirmed",
@@ -330,7 +344,7 @@
    "orig_note": "D7 layout"
   },
   "rfreeall": {
-   "ours": "0x0df2-0x0e44",
+   "ours": "0x0dc8-0x0e1a",
    "table_orig": "0x9696",
    "orig": "0x9696",
    "pairing": "confirmed",
@@ -353,7 +367,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rcount": {
-   "ours": "0x0e44-0x0e5a",
+   "ours": "0x0e1a-0x0e30",
    "table_orig": "0x15ba",
    "orig": "0x15ba",
    "pairing": "confirmed",
@@ -371,7 +385,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rcount_reset": {
-   "ours": "0x0e5a-0x0e5c",
+   "ours": "0x0e30-0x0e32",
    "table_orig": "0x778e",
    "orig": "0x778e",
    "pairing": "confirmed",
@@ -389,7 +403,7 @@
    "orig_note": "auto, verified: identical"
   },
   "ltypeop": {
-   "ours": "0x0e5c-0x0e88",
+   "ours": "0x0e32-0x0e5e",
    "table_orig": "0x3e66",
    "orig": "0x3e66",
    "pairing": "confirmed",
@@ -411,7 +425,7 @@
    "orig_note": "D3: p->op loaded once in the original"
   },
   "ispow2": {
-   "ours": "0x0e88-0x0ed8",
+   "ours": "0x0e5e-0x0eae",
    "table_orig": "0x8af6",
    "orig": "0x8af6",
    "pairing": "confirmed",
@@ -436,7 +450,7 @@
    "orig_note": "verified: old cc (clr/ZERO, inc form)"
   },
   "bsize": {
-   "ours": "0x0ed8-0x0f26",
+   "ours": "0x0eae-0x0efc",
    "table_orig": "0x8878",
    "orig": "0x8878",
    "pairing": "confirmed",
@@ -460,7 +474,7 @@
    "orig_note": "auto, verified: identical"
   },
   "szty": {
-   "ours": "0x0f26-0x0f56",
+   "ours": "0x0efc-0x0f2c",
    "table_orig": "0x88c4",
    "orig": "0x88c4",
    "pairing": "confirmed",
@@ -482,7 +496,7 @@
    "orig_note": "auto, verified: identical"
   },
   "plainicon": {
-   "ours": "0x0f56-0x0f80",
+   "ours": "0x0f2c-0x0f56",
    "table_orig": "0x8b44",
    "orig": "0x8b44",
    "pairing": "confirmed",
@@ -504,7 +518,7 @@
    "orig_note": "auto, verified: identical"
   },
   "special": {
-   "ours": "0x0f80-0x105e",
+   "ours": "0x0f56-0x1034",
    "table_orig": "0x471a",
    "orig": "0x471a",
    "pairing": "confirmed",
@@ -528,7 +542,7 @@
    }
   },
   "shtemp": {
-   "ours": "0x105e-0x10bc",
+   "ours": "0x1034-0x1092",
    "table_orig": "0x3e8e",
    "orig": "0x3e8e",
    "pairing": "confirmed",
@@ -555,29 +569,25 @@
    "orig_note": "verified: D7 layout, tcc form"
   },
   "shincr": {
-   "ours": "0x10bc-0x113c",
+   "ours": "0x1092-0x1112",
    "table_orig": "0x3ed6",
    "orig": "0x3ed6",
    "pairing": "confirmed",
    "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 79 %",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 79,
-    "pattern_diff": 15,
-    "pattern_unexplained": 0,
+    "d_normalised_pct": 77,
+    "pattern_diff": 17,
+    "pattern_unexplained": 2,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ]
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#2; srl\trS,#2"
    },
    "orig_note": "auto, verified: identical"
   },
   "shumul": {
-   "ours": "0x113c-0x11b6",
+   "ours": "0x1112-0x118c",
    "table_orig": "0x3f4e",
    "orig": "0x3f4e",
    "pairing": "confirmed",
@@ -599,7 +609,7 @@
    "orig_note": "auto, verified: identical"
   },
   "ltypeok": {
-   "ours": "0x11b6-0x11fe",
+   "ours": "0x118c-0x11d4",
    "table_orig": "0x3e1c",
    "orig": "0x3e1c",
    "pairing": "confirmed",
@@ -622,7 +632,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rmove": {
-   "ours": "0x11fe-0x1336",
+   "ours": "0x11d4-0x130c",
    "table_orig": "0x3cf2",
    "orig": "0x3cf2",
    "pairing": "confirmed",
@@ -646,7 +656,7 @@
    "orig_note": "verified: D7 layout"
   },
   "argsize": {
-   "ours": "0x1336-0x1390",
+   "ours": "0x130c-0x1366",
    "table_orig": "0x88f6",
    "orig": "0x88f6",
    "pairing": "confirmed",
@@ -668,7 +678,7 @@
    "orig_note": "auto, verified: identical"
   },
   "tshape": {
-   "ours": "0x1390-0x14e6",
+   "ours": "0x1366-0x14bc",
    "table_orig": "0x5e92",
    "orig": "0x5e92",
    "pairing": "confirmed",
@@ -685,7 +695,7 @@
    }
   },
   "ttype": {
-   "ours": "0x14e6-0x15d2",
+   "ours": "0x14bc-0x15a8",
    "table_orig": "0x5ff6",
    "orig": "0x5ff6",
    "pairing": "confirmed",
@@ -697,13 +707,17 @@
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "shift-type-01: unsigned operand in the original (source)"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D3",
+     "D6"
+    ]
    },
    "orig_note": "auto, verified: identical"
   },
   "setrew": {
-   "ours": "0x15d2-0x1684",
+   "ours": "0x15a8-0x165a",
    "table_orig": "0x60e2",
    "orig": "0x60e2",
    "pairing": "confirmed",
@@ -729,7 +743,7 @@
    "orig_note": "verified: D3 memory operand, D7 layout"
   },
   "getlr": {
-   "ours": "0x1684-0x1714",
+   "ours": "0x165a-0x16ea",
    "table_orig": "0x6636",
    "orig": "0x6636",
    "pairing": "confirmed",
@@ -754,7 +768,7 @@
    "orig_note": "verified: D8 byte load (ldb rl,rl)"
   },
   "match": {
-   "ours": "0x1714-0x198e",
+   "ours": "0x16ea-0x1964",
    "table_orig": "0x6196",
    "orig": "0x6196",
    "pairing": "confirmed",
@@ -782,7 +796,7 @@
    }
   },
   "notoff": {
-   "ours": "0x198e-0x19be",
+   "ours": "0x1964-0x1994",
    "table_orig": "0x49c0",
    "orig": "0x49c0",
    "pairing": "confirmed",
@@ -805,7 +819,7 @@
    "orig_note": "differs by one ldm: the original homes only off (t is unused); register r is a register variable (fixed)"
   },
   "sucomp": {
-   "ours": "0x19be-0x239e",
+   "ours": "0x1994-0x2374",
    "table_orig": "0x49f0",
    "orig": "0x49f0",
    "pairing": "confirmed",
@@ -825,7 +839,7 @@
    }
   },
   "mkrall": {
-   "ours": "0x239e-0x2400",
+   "ours": "0x2374-0x23d6",
    "table_orig": "0x51c0",
    "orig": "0x51c0",
    "pairing": "confirmed",
@@ -845,7 +859,7 @@
    "orig_note": "identical after the register declarations of p and r (order3.c)"
   },
   "rallo": {
-   "ours": "0x2400-0x251c",
+   "ours": "0x23d6-0x24f2",
    "table_orig": "0x5222",
    "orig": "0x5222",
    "pairing": "confirmed",
@@ -868,7 +882,7 @@
    }
   },
   "orderadd": {
-   "ours": "0x251c-0x25de",
+   "ours": "0x24f2-0x25b4",
    "table_orig": "0x5338",
    "orig": "0x5338",
    "pairing": "confirmed",
@@ -887,7 +901,7 @@
    }
   },
   "offstar": {
-   "ours": "0x25de-0x265e",
+   "ours": "0x25b4-0x2634",
    "table_orig": "0x53fa",
    "orig": "0x53fa",
    "pairing": "confirmed",
@@ -907,7 +921,7 @@
    "orig_note": "auto, verified: identical"
   },
   "niceuty": {
-   "ours": "0x265e-0x26a8",
+   "ours": "0x2634-0x267e",
    "table_orig": "0x547a",
    "orig": "0x547a",
    "pairing": "confirmed",
@@ -929,7 +943,7 @@
    "orig_note": "auto, verified: identical"
   },
   "setbin": {
-   "ours": "0x26a8-0x2852",
+   "ours": "0x267e-0x2828",
    "table_orig": "0x54c4",
    "orig": "0x54c4",
    "pairing": "confirmed",
@@ -956,7 +970,7 @@
    }
   },
   "setstr": {
-   "ours": "0x2852-0x28ac",
+   "ours": "0x2828-0x2882",
    "table_orig": "0x5678",
    "orig": "0x5678",
    "pairing": "confirmed",
@@ -977,7 +991,7 @@
    }
   },
   "lmuldiv": {
-   "ours": "0x28ac-0x28ee",
+   "ours": "0x2882-0x28c4",
    "table_orig": "0x576e",
    "orig": "0x576e",
    "pairing": "confirmed",
@@ -999,7 +1013,7 @@
    }
   },
   "setasop": {
-   "ours": "0x28ee-0x2b1c",
+   "ours": "0x28c4-0x2af2",
    "table_orig": "0x57b0",
    "orig": "0x57b0",
    "pairing": "confirmed",
@@ -1022,7 +1036,7 @@
    "orig_note": "verified: one load of a field (ld rS,%000E(rS)) more in our build: check"
   },
   "setasg": {
-   "ours": "0x2b1c-0x2bc6",
+   "ours": "0x2af2-0x2b9c",
    "table_orig": "0x56c6",
    "orig": "0x56c6",
    "pairing": "confirmed",
@@ -1043,7 +1057,7 @@
    "orig_note": "auto, verified: identical"
   },
   "getlab": {
-   "ours": "0x2bc6-0x2bd8",
+   "ours": "0x2b9c-0x2bae",
    "table_orig": "0x59d4",
    "orig": "0x59d4",
    "pairing": "confirmed",
@@ -1064,7 +1078,7 @@
    "orig_note": "auto, verified: identical"
   },
   "deflab": {
-   "ours": "0x2bd8-0x2bec",
+   "ours": "0x2bae-0x2bc2",
    "table_orig": "0x59de",
    "orig": "0x59de",
    "pairing": "confirmed",
@@ -1082,7 +1096,7 @@
    "orig_note": "identical up to the ret (call target masked)"
   },
   "argscan": {
-   "ours": "0x2bec-0x2d6c",
+   "ours": "0x2bc2-0x2d42",
    "table_orig": "0x5a4c",
    "orig": "0x5a4c",
    "pairing": "confirmed",
@@ -1107,7 +1121,7 @@
    "orig_note": "d=14 after switch(argsize) as if chain (order3.c); left: the argsize value in a stack slot (original: register), jump layout (D7)"
   },
   "argsort": {
-   "ours": "0x2d6c-0x2dcc",
+   "ours": "0x2d42-0x2da2",
    "table_orig": "0x5bcc",
    "orig": "0x5bcc",
    "pairing": "confirmed",
@@ -1127,7 +1141,7 @@
    "orig_note": "identical up to the ret after argl became a tagged struct and the loops use pointers (order3.c)"
   },
   "fixstarg": {
-   "ours": "0x2dcc-0x2e36",
+   "ours": "0x2da2-0x2e0c",
    "table_orig": "0x5c1c",
    "orig": "0x5c1c",
    "pairing": "confirmed",
@@ -1148,7 +1162,7 @@
    "orig_note": "identical up to the ret (order3.c; identified by the body: STASG, resc[0].type = 8, type 0x18)"
   },
   "argstrip": {
-   "ours": "0x2e36-0x2ee8",
+   "ours": "0x2e0c-0x2ebe",
    "table_orig": "0x5c7a",
    "orig": "0x5c7a",
    "pairing": "confirmed",
@@ -1167,7 +1181,7 @@
    }
   },
   "argplace": {
-   "ours": "0x2ee8-0x3068",
+   "ours": "0x2ebe-0x303e",
    "table_orig": "0x5d2c",
    "orig": "0x5d2c",
    "pairing": "confirmed",
@@ -1196,7 +1210,7 @@
    "orig_note": "D5: the local array cnt is addressed with lda (original: direct); 13 instructions, else identical"
   },
   "genargs": {
-   "ours": "0x3068-0x30bc",
+   "ours": "0x303e-0x3092",
    "table_orig": "0x59f4",
    "orig": "0x59f4",
    "pairing": "confirmed",
@@ -1217,7 +1231,7 @@
    "orig_note": "auto, verified: identical"
   },
   "acon": {
-   "ours": "0x30bc-0x328e",
+   "ours": "0x3092-0x3264",
    "table_orig": "0x437e",
    "orig": "0x437e",
    "pairing": "confirmed",
@@ -1234,7 +1248,7 @@
    }
   },
   "oregput": {
-   "ours": "0x328e-0x32c8",
+   "ours": "0x3264-0x329e",
    "table_orig": "0x409a",
    "orig": "0x409a",
    "pairing": "confirmed",
@@ -1254,7 +1268,7 @@
    "orig_note": "auto, verified: identical"
   },
   "conput": {
-   "ours": "0x32c8-0x33b4",
+   "ours": "0x329e-0x338a",
    "table_orig": "0x3fda",
    "orig": "0x3fda",
    "pairing": "confirmed",
@@ -1279,7 +1293,7 @@
    }
   },
   "insput": {
-   "ours": "0x33b4-0x33c4",
+   "ours": "0x338a-0x339a",
    "table_orig": "0x4088",
    "orig": "0x4088",
    "pairing": "confirmed",
@@ -1297,7 +1311,7 @@
    "orig_note": "called by expand (case I); the original spills its argument and calls cerror(\"insput\")"
   },
   "upput": {
-   "ours": "0x33c4-0x34c0",
+   "ours": "0x339a-0x3496",
    "table_orig": "0x40d4",
    "orig": "0x40d4",
    "pairing": "confirmed",
@@ -1323,7 +1337,7 @@
    "orig_note": "verified: call target masked (printf wrapper)"
   },
   "adrput": {
-   "ours": "0x34c0-0x3690",
+   "ours": "0x3496-0x3666",
    "table_orig": "0x41d0",
    "orig": "0x41d0",
    "pairing": "confirmed",
@@ -1349,7 +1363,7 @@
    }
   },
   "hopcode": {
-   "ours": "0x3690-0x36fc",
+   "ours": "0x3666-0x36d2",
    "table_orig": "0x2de0",
    "orig": "0x2de0",
    "pairing": "confirmed",
@@ -1369,7 +1383,7 @@
    "orig_note": "auto, verified: identical"
   },
   "prlong": {
-   "ours": "0x36fc-0x3710",
+   "ours": "0x36d2-0x36e6",
    "table_orig": "0x3fc4",
    "orig": "0x3fc4",
    "pairing": "confirmed",
@@ -1387,7 +1401,7 @@
    "orig_note": "out3.c, the printf(\"%ld\") of the M and N templates; the original calls it as a function"
   },
   "expand": {
-   "ours": "0x3710-0x3904",
+   "ours": "0x36e6-0x38da",
    "table_orig": "0x6444",
    "orig": "0x6444",
    "pairing": "confirmed",
@@ -1407,7 +1421,7 @@
    }
   },
   "tsuffix": {
-   "ours": "0x3904-0x39ea",
+   "ours": "0x38da-0x39c0",
    "table_orig": "0x2796",
    "orig": "0x2796",
    "pairing": "confirmed",
@@ -1431,7 +1445,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rsinit": {
-   "ours": "0x39ea-0x3a38",
+   "ours": "0x39c0-0x3a0e",
    "table_orig": "0x740c",
    "orig": "0x740c",
    "pairing": "confirmed",
@@ -1453,7 +1467,7 @@
    "orig_note": "lda/inc of a pointer (old cc)"
   },
   "rsrelease": {
-   "ours": "0x3a38-0x3a74",
+   "ours": "0x3a0e-0x3a4a",
    "table_orig": "0x847a",
    "orig": "0x847a",
    "pairing": "confirmed",
@@ -1473,7 +1487,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rsbuild": {
-   "ours": "0x3a74-0x3b20",
+   "ours": "0x3a4a-0x3af6",
    "table_orig": "0x7458",
    "orig": "0x7458",
    "pairing": "confirmed",
@@ -1494,7 +1508,7 @@
    "orig_note": "auto, verified: identical"
   },
   "newnode": {
-   "ours": "0x3b20-0x3b8e",
+   "ours": "0x3af6-0x3b64",
    "table_orig": "0x75e0",
    "orig": "0x75e0",
    "pairing": "confirmed",
@@ -1519,7 +1533,7 @@
    "orig_note": "switch layout (D7), shared tail"
   },
   "rsinsert": {
-   "ours": "0x3b8e-0x3d98",
+   "ours": "0x3b64-0x3d6e",
    "table_orig": "0x7650",
    "orig": "0x7650",
    "pairing": "confirmed",
@@ -1545,7 +1559,7 @@
    }
   },
   "roverlap": {
-   "ours": "0x3d98-0x3f1e",
+   "ours": "0x3d6e-0x3ef4",
    "table_orig": "0x7790",
    "orig": "0x7790",
    "pairing": "confirmed",
@@ -1567,7 +1581,7 @@
    "orig_note": "early returns are the case values (quirk)"
   },
   "regjam": {
-   "ours": "0x3f1e-0x42de",
+   "ours": "0x3ef4-0x42b4",
    "table_orig": "0x7916",
    "orig": "0x7916",
    "pairing": "confirmed",
@@ -1594,7 +1608,7 @@
    }
   },
   "getreg": {
-   "ours": "0x42de-0x4644",
+   "ours": "0x42b4-0x461a",
    "table_orig": "0x7c10",
    "orig": "0x7c10",
    "pairing": "confirmed",
@@ -1624,7 +1638,7 @@
    "orig_note": "D2/D6 (switch layout), D7"
   },
   "rsreturn": {
-   "ours": "0x4644-0x4802",
+   "ours": "0x461a-0x47d8",
    "table_orig": "0x7f50",
    "orig": "0x7f50",
    "pairing": "confirmed",
@@ -1650,7 +1664,7 @@
    "orig_note": "D1 frame, D7 layout"
   },
   "nullsyms": {
-   "ours": "0x4802-0x4846",
+   "ours": "0x47d8-0x481c",
    "table_orig": "0x811e",
    "orig": "0x811e",
    "pairing": "confirmed",
@@ -1674,7 +1688,7 @@
    "orig_note": "mode test first (quirk), old cc memory operand"
   },
   "pairmate": {
-   "ours": "0x4846-0x485e",
+   "ours": "0x481c-0x4834",
    "table_orig": "0x73f0",
    "orig": "0x73f0",
    "pairing": "confirmed",
@@ -1696,31 +1710,25 @@
    "orig_note": "auto, verified: identical"
   },
   "rsdump": {
-   "ours": "0x485e-0x4932",
+   "ours": "0x4834-0x4908",
    "table_orig": "0x750c",
    "orig": "0x750c",
    "pairing": "confirmed",
    "pairing_evidence": "same strings: 8",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 87,
-    "pattern_diff": 16,
-    "pattern_unexplained": 0,
+    "d_normalised_pct": 85,
+    "pattern_diff": 18,
+    "pattern_unexplained": 2,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D7",
-     "D8"
-    ]
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#15; srl\trS,#15"
    },
    "orig_note": "auto, verified: identical"
   },
   "rsfreeall": {
-   "ours": "0x4932-0x4998",
+   "ours": "0x4908-0x496e",
    "table_orig": "0x815e",
    "orig": "0x815e",
    "pairing": "confirmed",
@@ -1744,7 +1752,7 @@
    }
   },
   "rspush": {
-   "ours": "0x4998-0x49cc",
+   "ours": "0x496e-0x49a2",
    "table_orig": "0x81c4",
    "orig": "0x81c4",
    "pairing": "confirmed",
@@ -1765,7 +1773,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rsmerge": {
-   "ours": "0x49cc-0x4cde",
+   "ours": "0x49a2-0x4cb4",
    "table_orig": "0x81fe",
    "orig": "0x81fe",
    "pairing": "confirmed",
@@ -1789,7 +1797,7 @@
    }
   },
   "rsmatch": {
-   "ours": "0x4cde-0x4d6c",
+   "ours": "0x4cb4-0x4d42",
    "table_orig": "0x83ec",
    "orig": "0x83ec",
    "pairing": "confirmed",
@@ -1810,7 +1818,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rsrelall": {
-   "ours": "0x4d6c-0x4db6",
+   "ours": "0x4d42-0x4d8c",
    "table_orig": "0x84b6",
    "orig": "0x84b6",
    "pairing": "confirmed",
@@ -1830,7 +1838,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rsrestart": {
-   "ours": "0x4db6-0x4dfe",
+   "ours": "0x4d8c-0x4dd4",
    "table_orig": "0x8502",
    "orig": "0x8502",
    "pairing": "confirmed",
@@ -1850,7 +1858,7 @@
    "orig_note": "identical up to the first ret"
   },
   "rnassign": {
-   "ours": "0x4dfe-0x4eb6",
+   "ours": "0x4dd4-0x4e8c",
    "table_orig": "0x9722",
    "orig": "0x9722",
    "pairing": "confirmed",
@@ -1874,7 +1882,7 @@
    }
   },
   "rnnullp": {
-   "ours": "0x4eb6-0x4f02",
+   "ours": "0x4e8c-0x4ed8",
    "table_orig": "0x97cc",
    "orig": "0x97cc",
    "pairing": "confirmed",
@@ -1895,7 +1903,7 @@
    "orig_note": "identical up to the ret (regfile3.c rnnullp)"
   },
   "rnnullcall": {
-   "ours": "0x4f02-0x4f28",
+   "ours": "0x4ed8-0x4efe",
    "table_orig": "0x9816",
    "orig": "0x9816",
    "pairing": "confirmed",
@@ -1913,7 +1921,7 @@
    "orig_note": "identical up to the ret (regfile3.c rnnullcall)"
   },
   "rnnullall": {
-   "ours": "0x4f28-0x4f52",
+   "ours": "0x4efe-0x4f28",
    "table_orig": "0x983c",
    "orig": "0x983c",
    "pairing": "confirmed",
@@ -1931,7 +1939,7 @@
    "orig_note": "identical up to the ret after register int i (regfile3.c)"
   },
   "rnnulll": {
-   "ours": "0x4f52-0x4f74",
+   "ours": "0x4f28-0x4f4a",
    "table_orig": "0x986a",
    "orig": "0x986a",
    "pairing": "confirmed",
@@ -1951,7 +1959,7 @@
    "orig_note": "identical up to the ret (regfile3.c rnnulll)"
   },
   "rnnullw": {
-   "ours": "0x4f74-0x4f80",
+   "ours": "0x4f4a-0x4f56",
    "table_orig": "0x988c",
    "orig": "0x988c",
    "pairing": "confirmed",
@@ -1971,7 +1979,7 @@
    "orig_note": "identical up to the ret (regfile3.c rnnullw)"
   },
   "rnnull": {
-   "ours": "0x4f80-0x4fd2",
+   "ours": "0x4f56-0x4fa8",
    "table_orig": "0x989e",
    "orig": "0x989e",
    "pairing": "confirmed",
@@ -1992,7 +2000,7 @@
    }
   },
   "nxwork": {
-   "ours": "0x4fd2-0x5700",
+   "ours": "0x4fa8-0x56d6",
    "table_orig": "0x98e4",
    "orig": "0x98e4",
    "pairing": "confirmed",
@@ -2018,34 +2026,24 @@
    "orig_note": "D6 table starts at 0 (old cc)"
   },
   "tmpcleanup": {
-   "ours": "0x5700-0x5802",
+   "ours": "0x56d6-0x57d8",
    "table_orig": "0x9308",
    "orig": "0x9308",
    "pairing": "confirmed",
    "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 76 %",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 76,
-    "pattern_diff": 33,
-    "pattern_unexplained": 0,
+    "d_normalised_pct": 75,
+    "pattern_diff": 35,
+    "pattern_unexplained": 2,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2",
-     "D3",
-     "D5",
-     "D7",
-     "D8",
-     "D8/D2"
-    ]
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#15; srl\trS,#15"
    }
   },
   "tmpdump": {
-   "ours": "0x5802-0x5856",
+   "ours": "0x57d8-0x582c",
    "table_orig": "0x93f4",
    "orig": "0x93f4",
    "pairing": "confirmed",
@@ -2065,7 +2063,7 @@
    "orig_note": "auto, verified: identical"
   },
   "psuffix": {
-   "ours": "0x5856-0x5868",
+   "ours": "0x582c-0x583e",
    "table_orig": "0x2780",
    "orig": "0x2780",
    "pairing": "confirmed",
@@ -2086,7 +2084,7 @@
    "orig_note": "auto, verified: identical"
   },
   "geninc": {
-   "ours": "0x5868-0x5900",
+   "ours": "0x583e-0x58d6",
    "table_orig": "0x2e4c",
    "orig": "0x2e4c",
    "pairing": "confirmed",
@@ -2109,7 +2107,7 @@
    "orig_note": "auto, verified: identical"
   },
   "zzzcode": {
-   "ours": "0x5900-0x667c",
+   "ours": "0x58d6-0x6652",
    "table_orig": "0x2edc",
    "orig": "0x2edc",
    "pairing": "confirmed",
@@ -2118,30 +2116,20 @@
    "audit": {
     "d_normalised_pct": 86,
     "pattern_diff": 270,
-    "pattern_unexplained": 0,
+    "pattern_unexplained": 2,
     "reordered_instructions": 6,
     "reordered_examples": [
      "ld\tF,rS",
      "ld\tF,rS",
      "ld\trS,F"
     ],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2",
-     "D3",
-     "D6",
-     "D7",
-     "D8",
-     "D8/D2"
-    ]
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#1"
    },
    "orig_note": "d=37 after char c and register locals: switch dispatch (D6), D3, D7; the old name table was data"
   },
   "cbgen": {
-   "ours": "0x667c-0x66e6",
+   "ours": "0x6652-0x66bc",
    "table_orig": "0x460e",
    "orig": "0x460e",
    "pairing": "confirmed",
@@ -2166,7 +2154,7 @@
    "orig_note": "auto-paired orig 0x460e is indope; wrong pairing, removed"
   },
   "codgen": {
-   "ours": "0x66e6-0x6730",
+   "ours": "0x66bc-0x6706",
    "table_orig": "0x0aaa",
    "orig": "0x0aaa",
    "pairing": "confirmed",
@@ -2187,7 +2175,7 @@
    "orig_note": "auto, verified: identical"
   },
   "prcook": {
-   "ours": "0x6730-0x67da",
+   "ours": "0x6706-0x67b0",
    "table_orig": "0x0af6",
    "orig": "0x0af6",
    "pairing": "confirmed",
@@ -2211,7 +2199,7 @@
    "orig_note": "auto, verified: identical"
   },
   "order": {
-   "ours": "0x67da-0x6ca6",
+   "ours": "0x67b0-0x6c7c",
    "table_orig": "0x0ba2",
    "orig": "0x0ba2",
    "pairing": "confirmed",
@@ -2238,7 +2226,7 @@
    }
   },
   "store": {
-   "ours": "0x6ca6-0x6e00",
+   "ours": "0x6c7c-0x6dd6",
    "table_orig": "0x1084",
    "orig": "0x1084",
    "pairing": "confirmed",
@@ -2259,7 +2247,7 @@
    "orig_note": "auto, verified: identical"
   },
   "constore": {
-   "ours": "0x6e00-0x6e3c",
+   "ours": "0x6dd6-0x6e12",
    "table_orig": "0x11da",
    "orig": "0x11da",
    "pairing": "confirmed",
@@ -2280,7 +2268,7 @@
    "orig_note": "auto, verified: identical"
   },
   "markcall": {
-   "ours": "0x6e3c-0x6ea6",
+   "ours": "0x6e12-0x6e7c",
    "table_orig": "0x1212",
    "orig": "0x1212",
    "pairing": "confirmed",
@@ -2304,7 +2292,7 @@
    "orig_note": "D3 (ty kept in a register in the original)"
   },
   "stoarg": {
-   "ours": "0x6ea6-0x6ef4",
+   "ours": "0x6e7c-0x6eca",
    "table_orig": "0x126a",
    "orig": "0x126a",
    "pairing": "confirmed",
@@ -2326,7 +2314,7 @@
    "orig_note": "auto, verified: identical"
   },
   "cbranch": {
-   "ours": "0x6ef4-0x71c0",
+   "ours": "0x6eca-0x7196",
    "table_orig": "0x12bc",
    "orig": "0x12bc",
    "pairing": "confirmed",
@@ -2355,7 +2343,7 @@
    "orig_note": "D6 (cpir dispatch), D3, D7"
   },
   "ffld": {
-   "ours": "0x71c0-0x7356",
+   "ours": "0x7196-0x732c",
    "table_orig": "0x15d0",
    "orig": "0x15d0",
    "pairing": "confirmed",
@@ -2377,7 +2365,7 @@
    "orig_note": "D4 parameter spill"
   },
   "oreg2": {
-   "ours": "0x7356-0x747a",
+   "ours": "0x732c-0x7450",
    "table_orig": "0x175e",
    "orig": "0x175e",
    "pairing": "confirmed",
@@ -2399,7 +2387,7 @@
    "orig_note": "D1 frame, stw layout"
   },
   "canon": {
-   "ours": "0x747a-0x74b4",
+   "ours": "0x7450-0x748a",
    "table_orig": "0x1884",
    "orig": "0x1884",
    "pairing": "confirmed",
@@ -2421,7 +2409,7 @@
    "orig_note": "auto, verified: identical"
   },
   "argprep": {
-   "ours": "0x74b4-0x75a4",
+   "ours": "0x748a-0x757a",
    "table_orig": "0x18be",
    "orig": "0x18be",
    "pairing": "confirmed",
@@ -2443,7 +2431,7 @@
    "orig_note": "frame 6 bytes (D1), extra ld r,r at early return"
   },
   "delstrip": {
-   "ours": "0x75a4-0x75d8",
+   "ours": "0x757a-0x75ae",
    "table_orig": "0x09d2",
    "orig": "0x09d2",
    "pairing": "confirmed",
@@ -2465,7 +2453,7 @@
    "orig_note": "delstrip (reader3.c), the callback of fwalk in delay2; the struct copy is inline in the original"
   },
   "delay2": {
-   "ours": "0x75d8-0x767c",
+   "ours": "0x75ae-0x7652",
    "table_orig": "0x0a0a",
    "orig": "0x0a0a",
    "pairing": "confirmed",
@@ -2485,7 +2473,7 @@
    }
   },
   "delay1": {
-   "ours": "0x767c-0x7704",
+   "ours": "0x7652-0x76da",
    "table_orig": "0x094e",
    "orig": "0x094e",
    "pairing": "confirmed",
@@ -2505,7 +2493,7 @@
    }
   },
   "delay": {
-   "ours": "0x7704-0x7810",
+   "ours": "0x76da-0x77e6",
    "table_orig": "0x0838",
    "orig": "0x0838",
    "pairing": "confirmed",
@@ -2526,7 +2514,7 @@
    "orig_note": "D3 end of function"
   },
   "stmt": {
-   "ours": "0x7810-0x78f4",
+   "ours": "0x77e6-0x78ca",
    "table_orig": "0x075a",
    "orig": "0x075a",
    "pairing": "confirmed",
@@ -2547,7 +2535,7 @@
    "orig_note": "identical (if chain, two-argument fwalkd)"
   },
   "gencall": {
-   "ours": "0x78f4-0x79ce",
+   "ours": "0x78ca-0x79a4",
    "table_orig": "0x4534",
    "orig": "0x4534",
    "pairing": "confirmed",
@@ -2567,7 +2555,7 @@
    "orig_note": "auto, verified: identical"
   },
   "genscall": {
-   "ours": "0x79ce-0x79dc",
+   "ours": "0x79a4-0x79b2",
    "table_orig": "0x4520",
    "orig": "0x4520",
    "pairing": "confirmed",
@@ -2589,7 +2577,7 @@
    "orig_note": "auto, verified: identical"
   },
   "nextcook": {
-   "ours": "0x79dc-0x7a16",
+   "ours": "0x79b2-0x79ec",
    "table_orig": "0x4674",
    "orig": "0x4674",
    "pairing": "confirmed",
@@ -2609,7 +2597,7 @@
    "orig_note": "identical"
   },
   "lastchance": {
-   "ours": "0x7a16-0x7a3a",
+   "ours": "0x79ec-0x7a10",
    "table_orig": "0x46ae",
    "orig": "0x46ae",
    "pairing": "confirmed",
@@ -2631,7 +2619,7 @@
    "orig_note": "auto, verified: identical"
   },
   "icright": {
-   "ours": "0x7a3a-0x7a62",
+   "ours": "0x7a10-0x7a38",
    "table_orig": "0x46d0",
    "orig": "0x46d0",
    "pairing": "confirmed",
@@ -2654,7 +2642,7 @@
    "orig_note": "D3"
   },
   "canon2": {
-   "ours": "0x7a62-0x7a7e",
+   "ours": "0x7a38-0x7a54",
    "table_orig": "0x46fe",
    "orig": "0x46fe",
    "pairing": "confirmed",
@@ -2676,7 +2664,7 @@
    "orig_note": "auto, verified: identical"
   },
   "mycanon": {
-   "ours": "0x7a7e-0x7ae2",
+   "ours": "0x7a54-0x7ab8",
    "table_orig": "0x4804",
    "orig": "0x4804",
    "pairing": "confirmed",
@@ -2696,7 +2684,7 @@
    "orig_note": "identical (switch with break cases)"
   },
   "stoasg": {
-   "ours": "0x7ae2-0x7b00",
+   "ours": "0x7ab8-0x7ad6",
    "table_orig": "0x487e",
    "orig": "0x487e",
    "pairing": "confirmed",
@@ -2718,7 +2706,7 @@
    "orig_note": "auto, verified: identical"
   },
   "mkadrs": {
-   "ours": "0x7b00-0x7c24",
+   "ours": "0x7ad6-0x7bfa",
    "table_orig": "0x48a0",
    "orig": "0x48a0",
    "pairing": "confirmed",
@@ -2741,7 +2729,7 @@
    "orig_note": "D3 scratch registers"
   },
   "isint": {
-   "ours": "0x7c24-0x7c3e",
+   "ours": "0x7bfa-0x7c14",
    "table_orig": "0xbba2",
    "orig": "0xbba2",
    "pairing": "confirmed",
@@ -2762,7 +2750,7 @@
    }
   },
   "convelim": {
-   "ours": "0x7c3e-0x7d6c",
+   "ours": "0x7c14-0x7d42",
    "table_orig": "0xba7c",
    "orig": "0xba7c",
    "pairing": "confirmed",
@@ -2786,7 +2774,7 @@
    "orig_note": "verified: D8 byte compare form"
   },
   "treeeq": {
-   "ours": "0x7d6c-0x7e10",
+   "ours": "0x7d42-0x7de6",
    "table_orig": "0xb9ea",
    "orig": "0xb9ea",
    "pairing": "confirmed",
@@ -2812,7 +2800,7 @@
    }
   },
   "conval": {
-   "ours": "0x7e10-0x808e",
+   "ours": "0x7de6-0x8064",
    "table_orig": "0xb774",
    "orig": "0xb774",
    "pairing": "confirmed",
@@ -2840,7 +2828,7 @@
    }
   },
   "optim": {
-   "ours": "0x808e-0x86a4",
+   "ours": "0x8064-0x867a",
    "table_orig": "0xb178",
    "orig": "0xb178",
    "pairing": "confirmed",
@@ -2869,7 +2857,7 @@
    }
   },
   "cgwipe": {
-   "ours": "0x86a4-0x86c8",
+   "ours": "0x867a-0x869e",
    "table_orig": null,
    "orig": null,
    "pairing": "none",
@@ -2878,7 +2866,7 @@
    "orig_note": "clears the 400-byte work area before printf (cgprintf wrapper, comm3.c); the original calls printf directly"
   },
   "cgprintf": {
-   "ours": "0x86c8-0x86f0",
+   "ours": "0x869e-0x86c6",
    "table_orig": "0x8c1e",
    "orig": null,
    "pairing": "none",
@@ -2887,11 +2875,11 @@
    "orig_note": "our wrapper of printf: no counterpart in the original"
   },
   "prline": {
-   "ours": "0x86f0-0x870c",
+   "ours": "0x86c6-0x86e2",
    "table_orig": "0x8952",
    "orig": "0x8952",
    "pairing": "confirmed",
-   "pairing_evidence": "same strings: 1",
+   "pairing_evidence": "review: the formatted string of the function is the same as in the original (%s:%d: resp. \\t.line\\t%d\\t%s\\t\\n); the strings check of confirm.py also sees a data word read through a constant (spow2), which occurs on both sides in the same way; the location is right (locate.py)",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
@@ -2904,7 +2892,7 @@
    }
   },
   "uerror": {
-   "ours": "0x870c-0x8748",
+   "ours": "0x86e2-0x871e",
    "table_orig": "0x8570",
    "orig": "0x8570",
    "pairing": "confirmed",
@@ -2922,7 +2910,7 @@
    "orig_note": "auto, verified: identical"
   },
   "cerror": {
-   "ours": "0x8748-0x87ca",
+   "ours": "0x871e-0x87a0",
    "table_orig": "0x85ae",
    "orig": "0x85ae",
    "pairing": "confirmed",
@@ -2945,7 +2933,7 @@
    "orig_note": "ldm displacement form (old cc)"
   },
   "werror": {
-   "ours": "0x87ca-0x8806",
+   "ours": "0x87a0-0x87dc",
    "table_orig": "0x862e",
    "orig": "0x862e",
    "pairing": "confirmed",
@@ -2963,7 +2951,7 @@
    "orig_note": "auto, verified: identical"
   },
   "tinit": {
-   "ours": "0x8806-0x8836",
+   "ours": "0x87dc-0x880c",
    "table_orig": "0x866c",
    "orig": "0x866c",
    "pairing": "confirmed",
@@ -2981,7 +2969,7 @@
    "orig_note": "auto, verified: identical"
   },
   "talloc": {
-   "ours": "0x8836-0x8894",
+   "ours": "0x880c-0x886a",
    "table_orig": "0x869c",
    "orig": "0x869c",
    "pairing": "confirmed",
@@ -3003,7 +2991,7 @@
    "orig_note": "auto, verified: identical"
   },
   "tcheck": {
-   "ours": "0x8894-0x88d8",
+   "ours": "0x886a-0x88ae",
    "table_orig": "0x86fa",
    "orig": "0x86fa",
    "pairing": "confirmed",
@@ -3022,7 +3010,7 @@
    }
   },
   "free1": {
-   "ours": "0x88d8-0x88f4",
+   "ours": "0x88ae-0x88ca",
    "table_orig": "0x8758",
    "orig": "0x8758",
    "pairing": "confirmed",
@@ -3043,7 +3031,7 @@
    "orig_note": "comm3.c: fwalk callback of tfree (if p == 0 cerror(\"freeing blank tree!\") else p->op = FREE)"
   },
   "tfree": {
-   "ours": "0x88f4-0x890e",
+   "ours": "0x88ca-0x88e4",
    "table_orig": "0x873c",
    "orig": "0x873c",
    "pairing": "confirmed",
@@ -3064,7 +3052,7 @@
    "orig_note": "auto, verified: identical"
   },
   "fwalkd": {
-   "ours": "0x890e-0x8988",
+   "ours": "0x88e4-0x895e",
    "table_orig": "0x8774",
    "orig": "0x8774",
    "pairing": "confirmed",
@@ -3087,7 +3075,7 @@
    "orig_note": "D11 tail merge"
   },
   "fwalk": {
-   "ours": "0x8988-0x89de",
+   "ours": "0x895e-0x89b4",
    "table_orig": "0x87ec",
    "orig": "0x87ec",
    "pairing": "confirmed",
@@ -3107,7 +3095,7 @@
    "orig_note": "auto, verified: identical"
   },
   "dopeinit": {
-   "ours": "0x89de-0x8a0e",
+   "ours": "0x89b4-0x89e4",
    "table_orig": "0x8844",
    "orig": "0x8844",
    "pairing": "confirmed",
@@ -3125,7 +3113,7 @@
    "orig_note": "auto, verified: identical"
   },
   "tbytes": {
-   "ours": "0x8a0e-0x8a3e",
+   "ours": "0x89e4-0x8a14",
    "table_orig": "0x8970",
    "orig": "0x8970",
    "pairing": "confirmed",
@@ -3149,7 +3137,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rallkind": {
-   "ours": "0x8a3e-0x8a6a",
+   "ours": "0x8a14-0x8a40",
    "table_orig": "0x89a2",
    "orig": "0x89a2",
    "pairing": "confirmed",
@@ -3169,7 +3157,7 @@
    "orig_note": "auto, verified: identical"
   },
   "errexit": {
-   "ours": "0x8a6a-0x8a82",
+   "ours": "0x8a40-0x8a58",
    "table_orig": "0x89ce",
    "orig": "0x89ce",
    "pairing": "confirmed",
@@ -3187,7 +3175,7 @@
    "orig_note": "auto, verified: identical"
   },
   "branch": {
-   "ours": "0x8a82-0x8a96",
+   "ours": "0x8a58-0x8a6c",
    "table_orig": "0x89e8",
    "orig": "0x89e8",
    "pairing": "confirmed",
@@ -3208,7 +3196,7 @@
    "orig_note": "comm3.c: printf(\"\\tjpr\\tL%d\\n\", n); same calls as the original"
   },
   "ncopy": {
-   "ours": "0x8a96-0x8aac",
+   "ours": "0x8a6c-0x8a82",
    "table_orig": "0x8a02",
    "orig": "0x8a02",
    "pairing": "confirmed",
@@ -3230,7 +3218,7 @@
    "orig_note": "auto, verified: identical"
   },
   "alloc": {
-   "ours": "0x8aac-0x8b28",
+   "ours": "0x8a82-0x8afe",
    "table_orig": "0x8b6e",
    "orig": "0x8b6e",
    "pairing": "confirmed",
@@ -3250,7 +3238,7 @@
    "orig_note": "identical after register n, n++/n&=~1, if/else"
   },
   "allocinit": {
-   "ours": "0x8b28-0x8b46",
+   "ours": "0x8afe-0x8b1c",
    "table_orig": "0x8bea",
    "orig": "0x8bea",
    "pairing": "confirmed",
@@ -3271,7 +3259,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rdin2": {
-   "ours": "0x8b46-0x8c1e",
+   "ours": "0x8b1c-0x8bf4",
    "table_orig": "0x26ae",
    "orig": "0x26ae",
    "pairing": "confirmed",
@@ -3294,7 +3282,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rdin": {
-   "ours": "0x8c1e-0x8c2c",
+   "ours": "0x8bf4-0x8c02",
    "table_orig": "0x269a",
    "orig": "0x269a",
    "pairing": "confirmed",
@@ -3315,7 +3303,7 @@
    "orig_note": "rdin(base) = rdin2(base, stdin): same calls and spill, the original keeps a 2-byte frame (ours 6)"
   },
   "nlcheck": {
-   "ours": "0x8c2c-0x8c64",
+   "ours": "0x8c02-0x8c3a",
    "table_orig": "0x244a",
    "orig": "0x244a",
    "pairing": "confirmed",
@@ -3336,7 +3324,7 @@
    "orig_note": "auto, verified: identical"
   },
   "mkhash": {
-   "ours": "0x8c64-0x8ca0",
+   "ours": "0x8c3a-0x8c76",
    "table_orig": "0x2406",
    "orig": "0x2406",
    "pairing": "confirmed",
@@ -3357,7 +3345,7 @@
    "orig_note": "verified: known reload quirk (mkhash, D3)"
   },
   "rddata": {
-   "ours": "0x8ca0-0x8d66",
+   "ours": "0x8c76-0x8d3c",
    "table_orig": "0x19ac",
    "orig": "0x19ac",
    "pairing": "confirmed",
@@ -3382,7 +3370,7 @@
    }
   },
   "readsyms": {
-   "ours": "0x8d66-0x8e10",
+   "ours": "0x8d3c-0x8de6",
    "table_orig": "0x1b64",
    "orig": "0x1b64",
    "pairing": "confirmed",
@@ -3408,7 +3396,7 @@
    "orig_note": "auto-paired distance 7 (unclear), removed"
   },
   "readtab": {
-   "ours": "0x8e10-0x8e3e",
+   "ours": "0x8de6-0x8e14",
    "table_orig": "0x1c30",
    "orig": "0x1c30",
    "pairing": "confirmed",
@@ -3429,7 +3417,7 @@
    "orig_note": "auto, verified: identical"
   },
   "readnums": {
-   "ours": "0x8e3e-0x8ed8",
+   "ours": "0x8e14-0x8eae",
    "table_orig": "0x1c6c",
    "orig": "0x1c6c",
    "pairing": "confirmed",
@@ -3456,7 +3444,7 @@
    }
   },
   "readmems": {
-   "ours": "0x8ed8-0x9088",
+   "ours": "0x8eae-0x905e",
    "table_orig": "0x1d0e",
    "orig": "0x1d0e",
    "pairing": "confirmed",
@@ -3476,7 +3464,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rdsym": {
-   "ours": "0x9088-0x916a",
+   "ours": "0x905e-0x9140",
    "table_orig": "0x1a86",
    "orig": "0x1a86",
    "pairing": "confirmed",
@@ -3501,7 +3489,7 @@
    "orig_note": "D1 frame (no frame in the original first part)"
   },
   "sortsyms": {
-   "ours": "0x916a-0x9204",
+   "ours": "0x9140-0x91da",
    "table_orig": "0x1ec2",
    "orig": "0x1ec2",
    "pairing": "confirmed",
@@ -3526,7 +3514,7 @@
    }
   },
   "tagfind": {
-   "ours": "0x9204-0x92c0",
+   "ours": "0x91da-0x9296",
    "table_orig": "0x1f82",
    "orig": "0x1f82",
    "pairing": "confirmed",
@@ -3547,7 +3535,7 @@
    "orig_note": "auto, verified: identical"
   },
   "mapn": {
-   "ours": "0x92c0-0x92f0",
+   "ours": "0x9296-0x92c6",
    "table_orig": "0x2038",
    "orig": "0x2038",
    "pairing": "confirmed",
@@ -3569,7 +3557,7 @@
    "orig_note": "auto, verified: identical"
   },
   "mapsym": {
-   "ours": "0x92f0-0x9340",
+   "ours": "0x92c6-0x9316",
    "table_orig": "0x206a",
    "orig": "0x206a",
    "pairing": "confirmed",
@@ -3590,7 +3578,7 @@
    "orig_note": "auto, verified: identical"
   },
   "mapnm": {
-   "ours": "0x9340-0x9666",
+   "ours": "0x9316-0x963c",
    "table_orig": "0x20c0",
    "orig": "0x20c0",
    "pairing": "confirmed",
@@ -3614,7 +3602,7 @@
    }
   },
   "eread": {
-   "ours": "0x9666-0x9862",
+   "ours": "0x963c-0x9838",
    "table_orig": "0x2480",
    "orig": "0x2480",
    "pairing": "confirmed",
@@ -3643,24 +3631,35 @@
    "orig_note": "d=22 after ty as register variable: getchar byte load and masking (D8), lval store form, D7"
   },
   "options": {
-   "ours": "0x9862-0x99f0",
+   "ours": "0x9838-0x99ac",
    "table_orig": "0x002a",
    "orig": "0x002a",
    "pairing": "confirmed",
    "pairing_evidence": "review: name from KNOWLEDGE (options 0x002a); the same formatted strings (error in opening the symbol table file, bad option). Layout differs: the loop variable is in r14 in the original and in memory in ours (D2/D7, to classify)",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 69,
-    "pattern_diff": 74,
+    "d_normalised_pct": 76,
+    "pattern_diff": 56,
     "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "options-loop-01: register declarations for i and err (source)"
+    "reordered_instructions": 6,
+    "reordered_examples": [
+     "inc\tA,#1"
+    ],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D6",
+     "D7"
+    ]
    }
   },
   "init": {
-   "ours": "0x99f0-0x9a82",
+   "ours": "0x99ac-0x9a3e",
    "table_orig": "0x019e",
    "orig": "0x019e",
    "pairing": "confirmed",
@@ -3681,7 +3680,7 @@
    "orig_note": "auto, verified: identical"
   },
   "main": {
-   "ours": "0x9a82-0x9f7e",
+   "ours": "0x9a3e-0x9f3a",
    "table_orig": "0x023c",
    "orig": "0x023c",
    "pairing": "confirmed",
@@ -3712,25 +3711,25 @@
    "orig_note": "not compared yet"
   },
   "lineout": {
-   "ours": "0x9f7e-0x9f94",
+   "ours": "0x9f3a-0x9f52",
    "table_orig": "0x2880",
    "orig": "0x2880",
    "pairing": "confirmed",
    "pairing_evidence": "same strings: 1",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 38,
-    "pattern_diff": 10,
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "lineout-type-01: real defect in our reconstruction: long line, the original has int line; the caller in main passes int in r7 and the file name in r6; our callee reads the file from r5 (see findings)"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": []
    },
    "orig_note": "efcode3.c: printf(\"\\t.line\\t%d\\t%s\\t\\n\", ...); called from main (case .) with ifline and ifname"
   },
   "funcend": {
-   "ours": "0x9f94-0x9ff0",
+   "ours": "0x9f52-0x9fae",
    "table_orig": "0x289a",
    "orig": "0x289a",
    "pairing": "confirmed",
@@ -3750,7 +3749,7 @@
    "orig_note": "identical up to the ret"
   },
   "fpinc": {
-   "ours": "0x9ff0-0xa010",
+   "ours": "0x9fae-0x9fce",
    "table_orig": "0x2aa2",
    "orig": "0x2aa2",
    "pairing": "confirmed",
@@ -3771,7 +3770,7 @@
    }
   },
   "fpdec": {
-   "ours": "0xa010-0xa030",
+   "ours": "0x9fce-0x9fee",
    "table_orig": "0x2b20",
    "orig": "0x2b20",
    "pairing": "confirmed",
@@ -3792,7 +3791,7 @@
    }
   },
   "regrestore": {
-   "ours": "0xa030-0xa0f8",
+   "ours": "0x9fee-0xa0b6",
    "table_orig": "0x29de",
    "orig": "0x29de",
    "pairing": "confirmed",
@@ -3813,7 +3812,7 @@
    }
   },
   "regsave": {
-   "ours": "0xa0f8-0xa1c2",
+   "ours": "0xa0b6-0xa180",
    "table_orig": "0x2b48",
    "orig": "0x2b48",
    "pairing": "confirmed",
@@ -3834,7 +3833,7 @@
    }
   },
   "epilog": {
-   "ours": "0xa1c2-0xa214",
+   "ours": "0xa180-0xa1d2",
    "table_orig": "0x2990",
    "orig": "0x2990",
    "pairing": "confirmed",
@@ -3855,7 +3854,7 @@
    }
   },
   "regargs": {
-   "ours": "0xa214-0xa3ec",
+   "ours": "0xa1d2-0xa3aa",
    "table_orig": "0x2c0e",
    "orig": "0x2c0e",
    "pairing": "confirmed",
@@ -3877,7 +3876,7 @@
    }
   },
   "prolog": {
-   "ours": "0xa3ec-0xa446",
+   "ours": "0xa3aa-0xa404",
    "table_orig": "0x2aca",
    "orig": "0x2aca",
    "pairing": "confirmed",
@@ -3898,7 +3897,7 @@
    }
   },
   "efcode": {
-   "ours": "0xa446-0xa4fc",
+   "ours": "0xa404-0xa4ba",
    "table_orig": "0x28f6",
    "orig": "0x28f6",
    "pairing": "confirmed",
@@ -3922,7 +3921,7 @@
    "orig_note": "NOT verified: saved register set and an addl difference: check"
   },
   "hdrout": {
-   "ours": "0xa4fc-0xa50e",
+   "ours": "0xa4ba-0xa4cc",
    "table_orig": "0x8c0c",
    "orig": "0x8c0c",
    "pairing": "confirmed",
@@ -3940,11 +3939,11 @@
    "orig_note": "auto, verified: identical"
   },
   "endline": {
-   "ours": "0xa50e-0xa55c",
+   "ours": "0xa4cc-0xa51a",
    "table_orig": "0x8c22",
    "orig": "0x8c22",
    "pairing": "confirmed",
-   "pairing_evidence": "same strings: 1",
+   "pairing_evidence": "review: the formatted string of the function is the same as in the original (%s:%d: resp. \\t.line\\t%d\\t%s\\t\\n); the strings check of confirm.py also sees a data word read through a constant (spow2), which occurs on both sides in the same way; the location is right (locate.py)",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
@@ -3958,7 +3957,7 @@
    "orig_note": "auto, verified: identical"
   },
   "endrun": {
-   "ours": "0xa55c-0xa560",
+   "ours": "0xa51a-0xa51e",
    "table_orig": "0x4868",
    "orig": "0x8c1e",
    "pairing": "confirmed",
@@ -3976,7 +3975,7 @@
    "orig_note": "auto, verified: identical"
   },
   "parminit": {
-   "ours": "0xa560-0xa82c",
+   "ours": "0xa51e-0xa7ea",
    "table_orig": "0x8c74",
    "orig": "0x8c74",
    "pairing": "confirmed",
@@ -4005,7 +4004,7 @@
    }
   },
   "structretcode": {
-   "ours": "0xa82c-0xa888",
+   "ours": "0xa7ea-0xa846",
    "table_orig": "0x8f7e",
    "orig": "0x8f7e",
    "pairing": "confirmed",
@@ -4023,31 +4022,25 @@
    "orig_note": "auto, verified: identical"
   },
   "fbegin": {
-   "ours": "0xa888-0xa9bc",
+   "ours": "0xa846-0xa97a",
    "table_orig": "0x8fda",
    "orig": "0x8fda",
    "pairing": "confirmed",
    "pairing_evidence": "same strings: 9",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 9,
-    "pattern_unexplained": 0,
+    "d_normalised_pct": 93,
+    "pattern_diff": 11,
+    "pattern_unexplained": 2,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2",
-     "D3"
-    ]
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#2; srl\trS,#2"
    },
    "orig_note": "structsz /16 (fixed); D1"
   },
   "regtabinit": {
-   "ours": "0xa9bc-0xa9c4",
+   "ours": "0xa97a-0xa982",
    "table_orig": "0x910e",
    "orig": "0x910e",
    "pairing": "confirmed",
@@ -4065,7 +4058,7 @@
    "orig_note": "auto, verified: identical"
   },
   "tabfind": {
-   "ours": "0xa9c4-0xa9fe",
+   "ours": "0xa982-0xa9bc",
    "table_orig": "0x9116",
    "orig": "0x9116",
    "pairing": "confirmed",
@@ -4085,7 +4078,7 @@
    "orig_note": "auto, verified: identical"
   },
   "tabclear": {
-   "ours": "0xa9fe-0xaa36",
+   "ours": "0xa9bc-0xa9f4",
    "table_orig": "0x9152",
    "orig": "0x9152",
    "pairing": "confirmed",
@@ -4106,32 +4099,25 @@
    "orig_note": "auto, verified: identical"
   },
   "fixtemp": {
-   "ours": "0xaa36-0xabb0",
+   "ours": "0xa9f4-0xab6e",
    "table_orig": "0x918e",
    "orig": "0x918e",
    "pairing": "confirmed",
    "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 90,
-    "pattern_diff": 21,
-    "pattern_unexplained": 0,
+    "d_normalised_pct": 89,
+    "pattern_diff": 23,
+    "pattern_unexplained": 2,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3",
-     "D7",
-     "D8",
-     "D8/D2"
-    ]
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#15; srl\trS,#15"
    },
    "orig_note": "D3, D6"
   },
   "fixfld": {
-   "ours": "0xabb0-0xac60",
+   "ours": "0xab6e-0xac1e",
    "table_orig": "0x944a",
    "orig": "0x944a",
    "pairing": "confirmed",
@@ -4140,7 +4126,7 @@
    "audit": {
     "d_normalised_pct": 82,
     "pattern_diff": 15,
-    "pattern_unexplained": 0,
+    "pattern_unexplained": 1,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "other differences",
@@ -4148,7 +4134,7 @@
    }
   },
   "mapregs": {
-   "ours": "0xac60-0xad60",
+   "ours": "0xac1e-0xad1e",
    "table_orig": "0x9512",
    "orig": "0x9512",
    "pairing": "confirmed",
@@ -4175,7 +4161,7 @@
    "orig_note": "D3, D6 partly; if chain now"
   },
   "symuse": {
-   "ours": "0xad60-0xadaa",
+   "ours": "0xad1e-0xad68",
    "table_orig": "0x964c",
    "orig": "0x964c",
    "pairing": "confirmed",
@@ -4195,7 +4181,7 @@
    "orig_note": "auto, verified: identical"
   },
   "symreg": {
-   "ours": "0xadaa-0xae02",
+   "ours": "0xad68-0xadc0",
    "table_orig": "0x9fdc",
    "orig": "0x9fdc",
    "pairing": "confirmed",
@@ -4221,7 +4207,7 @@
    "orig_note": "D2: a leaf function; the original saves three registers (r10-r12), the shipped cc keeps n in a scratch register"
   },
   "regforsym": {
-   "ours": "0xae02-0xae8e",
+   "ours": "0xadc0-0xae4c",
    "table_orig": "0xa03a",
    "orig": "0xa03a",
    "pairing": "confirmed",
@@ -4243,7 +4229,7 @@
    "orig_note": "auto, verified: identical"
   },
   "fixname": {
-   "ours": "0xae8e-0xaef4",
+   "ours": "0xae4c-0xaeb2",
    "table_orig": "0xa0c6",
    "orig": "0xa0c6",
    "pairing": "confirmed",
@@ -4264,7 +4250,7 @@
    "orig_note": "auto, verified: identical"
   },
   "oregfix": {
-   "ours": "0xaef4-0xafaa",
+   "ours": "0xaeb2-0xaf68",
    "table_orig": "0xa12a",
    "orig": "0xa12a",
    "pairing": "confirmed",
@@ -4285,7 +4271,7 @@
    "orig_note": "auto, verified: identical"
   },
   "findtemp": {
-   "ours": "0xafaa-0xafdc",
+   "ours": "0xaf68-0xaf9a",
    "table_orig": "0xa7ac",
    "orig": "0xa7ac",
    "pairing": "confirmed",
@@ -4305,7 +4291,7 @@
    "orig_note": "auto, verified: identical"
   },
   "fcmd": {
-   "ours": "0xafdc-0xb070",
+   "ours": "0xaf9a-0xb02e",
    "table_orig": "0xa1ba",
    "orig": "0xa1ba",
    "pairing": "confirmed",
@@ -4326,7 +4312,7 @@
    "orig_note": "identical after spare register and removed s = 0"
   },
   "regreset": {
-   "ours": "0xb070-0xb110",
+   "ours": "0xb02e-0xb0ce",
    "table_orig": "0xa252",
    "orig": "0xa252",
    "pairing": "confirmed",
@@ -4344,7 +4330,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rcmd": {
-   "ours": "0xb110-0xb2be",
+   "ours": "0xb0ce-0xb27c",
    "table_orig": "0xa2f4",
    "orig": "0xa2f4",
    "pairing": "confirmed",
@@ -4370,7 +4356,7 @@
    }
   },
   "memname": {
-   "ours": "0xb2be-0xb334",
+   "ours": "0xb27c-0xb2f2",
    "table_orig": "0xa734",
    "orig": "0xa734",
    "pairing": "confirmed",
@@ -4393,7 +4379,7 @@
    "orig_note": "auto, verified: identical"
   },
   "scmd": {
-   "ours": "0xb334-0xb46a",
+   "ours": "0xb2f2-0xb428",
    "table_orig": "0xa4aa",
    "orig": "0xa4aa",
    "pairing": "confirmed",
@@ -4420,7 +4406,7 @@
    }
   },
   "tcmd": {
-   "ours": "0xb46a-0xb582",
+   "ours": "0xb428-0xb540",
    "table_orig": "0xa5de",
    "orig": "0xa5de",
    "pairing": "confirmed",
@@ -4447,7 +4433,7 @@
    }
   },
   "gswitch": {
-   "ours": "0xb602-0xb92a",
+   "ours": "0xb5c0-0xb8e8",
    "table_orig": "0xa7e0",
    "orig": "0xa7e0",
    "pairing": "confirmed",
@@ -4470,7 +4456,7 @@
    "orig_note": "the newreg blocks are written out inline (non-SEG path, lcl3.c); the rest: a memory compare `cp @r2,#0x7c` (l->op) and a tail jp instead of jr (layout) | newreg (removed as a function): the non-SEG gswitch has its blocks inline, as the original."
   },
   "makeblock": {
-   "ours": "0xb92a-0xb98a",
+   "ours": "0xb8e8-0xb948",
    "table_orig": "0xaece",
    "orig": "0xaece",
    "pairing": "confirmed",
@@ -4493,7 +4479,7 @@
    "orig_note": "D4: the original homes all four parameters (ldm of r4-r7), the rebuild one"
   },
   "bcon": {
-   "ours": "0xb98a-0xb9bc",
+   "ours": "0xb948-0xb97a",
    "table_orig": "0xb0a0",
    "orig": "0xb0a0",
    "pairing": "confirmed",
@@ -4513,7 +4499,7 @@
    "orig_note": "auto-paired, identical, two ret in our function: check"
   },
   "chk": {
-   "ours": "0xb9bc-0xb9c4",
+   "ours": "0xb97a-0xb982",
    "table_orig": "0xab3e",
    "orig": "0xab3e",
    "pairing": "confirmed",
@@ -4530,7 +4516,7 @@
    }
   },
   "clocal": {
-   "ours": "0xb9c4-0xbcca",
+   "ours": "0xb982-0xbc88",
    "table_orig": "0xab48",
    "orig": "0xab48",
    "pairing": "confirmed",
@@ -4539,7 +4525,7 @@
    "audit": {
     "d_normalised_pct": 47,
     "pattern_diff": 246,
-    "pattern_unexplained": 0,
+    "pattern_unexplained": 2,
     "reordered_instructions": 6,
     "reordered_examples": [
      "jp\tA",
@@ -4551,7 +4537,7 @@
    }
   },
   "member": {
-   "ours": "0xbcca-0xbd64",
+   "ours": "0xbc88-0xbd22",
    "table_orig": "0xb0d4",
    "orig": "0xb0d4",
    "pairing": "confirmed",
@@ -4573,7 +4559,7 @@
    }
   },
   "foldadd": {
-   "ours": "0xbd64-0xbe34",
+   "ours": "0xbd22-0xbdf2",
    "table_orig": "0xaf14",
    "orig": "0xaf14",
    "pairing": "confirmed",
@@ -4592,7 +4578,7 @@
    }
   },
   "buildstar": {
-   "ours": "0xbe34-0xbee6",
+   "ours": "0xbdf2-0xbea4",
    "table_orig": "0xafe4",
    "orig": "0xafe4",
    "pairing": "confirmed",
@@ -5437,6 +5423,16 @@
    "orig": "0x2c0e",
    "confirm": true,
    "evidence": "decided earlier as static_a214 (rules / auto, not re-checked): callees agree, callers agree; the name comes from the source (locate.py)"
+  },
+  "prline": {
+   "orig": "0x8952",
+   "confirm": true,
+   "evidence": "review: the formatted string of the function is the same as in the original (%s:%d: resp. \\t.line\\t%d\\t%s\\t\\n); the strings check of confirm.py also sees a data word read through a constant (spow2), which occurs on both sides in the same way; the location is right (locate.py)"
+  },
+  "endline": {
+   "orig": "0x8c22",
+   "confirm": true,
+   "evidence": "review: the formatted string of the function is the same as in the original (%s:%d: resp. \\t.line\\t%d\\t%s\\t\\n); the strings check of confirm.py also sees a data word read through a constant (spow2), which occurs on both sides in the same way; the location is right (locate.py)"
   }
  },
  "open_review": {
@@ -5466,7 +5462,7 @@
    "where": "allo3.c: rcookie() and allocreg (want = rcookie(p))",
    "detail": "the original allocreg calls 0x89a2 (rallkind in comm3.c); we have a second copy of the same function in allo3.c",
    "action": "delete rcookie in allo3.c, declare rallkind as extern in allo3.c and call it from allocreg",
-   "status": "analysed: source (confirmed)",
+   "status": "fixed (allo3.c: rcookie removed, allocreg calls rallkind)",
    "result": "The original allocreg calls 0x89a2 (rallkind). The change itself is invisible to the pattern check, because call targets are masked; the fix follows from the call target."
   },
   {
@@ -5476,7 +5472,7 @@
    "where": "allo3.c: tcopy()",
    "detail": "original 0x8a24 calls ncopy (0x8a02) for the copy of the node; the rebuild copies inline (ldir)",
    "action": "call ncopy(q, p) instead of the struct assignment in tcopy",
-   "status": "analysed: source (confirmed)",
+   "status": "fixed (allo3.c: tcopy calls ncopy(q, p))",
    "result": "Experiment: *q = *p -> ncopy(q, p): tcopy 69 -> 67 instructions, the rest is D (0 unexplained)."
   },
   {
@@ -5504,7 +5500,7 @@
    "where": "local3.c, reader3.c, tr3.c",
    "detail": "three functions shift a field value with srl (unsigned) in the original and with sra (signed) in ours",
    "action": "find the variable whose type is unsigned in the original (a bit field or an unsigned member); make the shift unsigned in all three",
-   "status": "analysed: source (confirmed for ttype)",
+   "status": "partly fixed: ttype and DECREF/INCREF unsigned; the other sites are shift-type-02",
    "result": "Experiment (see before): unsigned operand in DECREF/INCREF and ttype gives srl as in the original; ttype pattern-explained after it. fixfld and buildstar: per site, not yet changed.",
    "scratch": "/tmp/claude-1000/-mnt-share-cvs-P8000/c1dc3ef9-1faf-446a-8c04-2a8a9e3f0c4b/scratchpad/exp"
   },
@@ -5547,7 +5543,7 @@
    "where": "main3.c, options()",
    "detail": "the loop variable is a register in the original and in memory in ours; the layout of the switch differs",
    "action": "declare i and err as register variables in options() (main3.c); verify the byte identity of options afterwards",
-   "status": "analysed: source (confirmed), residual D",
+   "status": "fixed (main3.c: register int i, err; 76 %, the rest D)",
    "classification": "real (source)",
    "result": "Experiment: register int i, err in main3.c: 69 -> 76 %, the differences left are D classes (0 unexplained). i alone is not enough (75 %)."
   },
@@ -5672,8 +5668,17 @@
    "where": "efcode3.c, lineout(); main3.c (extern declarations without prototype)",
    "detail": "our lineout declares long line; the original takes int line (r7). main passes ifline (int) in r7 and ifname in r6. Ours reads the file from r5, so the file name printed by .line is wrong.",
    "action": "declare int line in lineout() (the cast (int)line then is not needed); check with codgen -l on a file that prints .line",
-   "status": "analysed: source (confirmed)",
+   "status": "fixed (efcode3.c: long line -> int line; 100 % identical)",
    "result": "Experiment: long line -> int line in efcode3.c gives lineout 100 % identical (8 / 8 instructions, 0 differences)."
+  },
+  {
+   "id": "shift-type-02",
+   "kind": "source",
+   "function": "fixfld, buildstar, shincr, rsdump, tmpcleanup, fbegin, fixtemp, zzzcode",
+   "where": "reader3.c, tr3.c, optim3.c, regallo3.c, comm3.c, lcl3.c, zzz3.c (to find)",
+   "detail": "the sign of a shift with a constant count differs (srl in the original, sra in ours, or the other way round): the variable shifted is unsigned in the original; the pattern check now reports these forms as unexplained",
+   "action": "find the variables of these shifts and their declarations (same type question as shift-type-01); check each site separately",
+   "status": "open (found by the check of srl/sra, not yet changed)"
   }
  ],
  "reject": {},
@@ -5720,10 +5725,6 @@
   "options_D_normalised_pct": 69
  },
  "class_overrides": {
-  "allocreg": {
-   "class": "other differences",
-   "note": "allo3-rcookie-dup: calls rcookie where the original calls rallkind (source)"
-  },
   "buildstar": {
    "class": "other differences",
    "note": "buildstar-order-01 and shift-type-01 (source)"
@@ -5736,25 +5737,9 @@
    "class": "other differences",
    "note": "shift-type-01: shift signedness per site (source)"
   },
-  "lineout": {
-   "class": "other differences",
-   "note": "lineout-type-01: real defect in our reconstruction: long line, the original has int line; the caller in main passes int in r7 and the file name in r6; our callee reads the file from r5 (see findings)"
-  },
-  "options": {
-   "class": "other differences",
-   "note": "options-loop-01: register declarations for i and err (source)"
-  },
-  "tcopy": {
-   "class": "other differences",
-   "note": "tcopy-copy-01: the original calls ncopy (source)"
-  },
   "tshape": {
    "class": "other differences",
    "note": "tshape-order-01: call order and SZERO return"
-  },
-  "ttype": {
-   "class": "other differences",
-   "note": "shift-type-01: unsigned operand in the original (source)"
   },
   "sucomp": {
    "class": "other differences",

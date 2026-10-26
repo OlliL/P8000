@@ -21,6 +21,8 @@ extern void rsreturn();
 extern void nxwork();	/* 0x98e4 */
 extern void tmpcleanup();			/* 0x9308 */
 extern void rmove();	/* 0x3cf2 */
+extern void ncopy();
+extern int rallkind();
 void rfreeall();
 
 
@@ -190,16 +192,6 @@ freetemp(k)
 
 /* ---- getting registers ------------------------------------------------------------------------------- */
 
-/* the register class for a result of type of a node: float registers (16) for float, else word registers (2) */
-static int
-rcookie(p)
-	struct node *p;
-{
-	if (p && (p->type == 7 || p->type == 6))
-		return 0x10;
-	return 2;
-}
-
 /* does the operand on side of p already live in register r (or is its long register r - 1)? */
 int
 usable(p, side, r)
@@ -296,7 +288,7 @@ allocreg(p, cookie)
 	register int want, r, cls;
 
 	if (dope[p->op] & 0x400)
-		want = rcookie(p);
+		want = rallkind(p);
 	else if (!(p->rall & 0x1000) && (p->rall & 0x2000))
 		want = -1;
 	else
@@ -434,7 +426,7 @@ tcopy(p)
 	register int r = p->rval;
 	int kind;
 
-	*q = *p;
+	ncopy(q, p);
 	if (p->op == REG)
 		rbusy(r, p->type, p->sname, p->lval);
 	else if (p->op == OREG) {

@@ -136,24 +136,16 @@ def locate(mine, src, seg=False):
 
 
 def check(result, findings, skipped=()):
-    """every function of findings.json (outside the objects without source, e.g. crt0) must be at a located address."""
+    """every named function of findings.json (pairing not none) must be found by its name in the located list.
+    Addresses are not compared: they change with every source change (findings "ours" is generated)."""
     f = json.load(open(findings))['functions']
-    located = {}
-    for fn, lst in result.items():
-        for e in lst:
-            located['%s:%s' % (fn, e['name'])] = e['addr']
+    located = {e['name'] for lst in result.values() for e in lst}
     bad = []
     for name, v in f.items():
-        if not v.get('ours'):
-            continue   # not located (the start code): not a codgen function
-        a = int(v['ours'].split('-')[0], 16)
-        if any(lo <= a < hi for lo, hi in skipped):
+        if v.get('pairing') == 'none' or name.startswith('static_'):
             continue
-        hits = [k for k, x in located.items() if x == a]
-        if not hits:
-            bad.append('%s at %s: no located function' % (name, v['ours']))
-        elif not name.startswith('static_') and not any(h.split(':')[1] == name for h in hits):
-            bad.append('%s at %s: located as %s' % (name, v['ours'], hits[0]))
+        if name not in located:
+            bad.append('%s: not located by name' % name)
     return bad
 
 
@@ -173,7 +165,7 @@ def main():
         bad = check(result, a.findings, skipped)
         for b in bad:
             print('MISMATCH', b)
-        print('check: %d functions in findings, %d mismatches, %d problems' % (
+        print('check: %d functions in findings, %d not found by name, %d problems' % (
             len(json.load(open(a.findings))['functions']), len(bad), len(problems)))
         sys.exit(1 if (bad or problems) else 0)
     if a.out:

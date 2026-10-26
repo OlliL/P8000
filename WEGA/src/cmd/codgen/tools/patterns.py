@@ -30,7 +30,7 @@ LIBC_FROM = 0xbbc4
 def dn(x):
     x=F.canon(x); x=re.sub(r'\b(r[lh]?|rr|rq)\d+\b', r'\1S', x)
     x=re.sub(r'%[0-9A-F]{4}\(rS\)', 'F', x); x=re.sub(r'@rS','F',x)
-    x=re.sub(r'\b(sdal|slal|sdll|slll|sdl|sla|sll|sda)\b','SH',x); x=re.sub(r'\b(srl|sra)\b','SHR',x)
+    x=re.sub(r'\b(sdal|slal|sdll|slll|sdl|sla|sll|sda)\b','SH',x)   # srl and sra stay apart (shift-type-01)
     x=re.sub(r'\bA\b|%[0-9A-F]{4}','A',x); x=re.sub(r'#%[0-9A-F]{4}','#N',x)
     x=re.sub(r'^(dec|inc|sub|add)\trS,#N$','FRAME',x); return x
 def explained(t):
@@ -46,7 +46,7 @@ def explained(t):
     if re.search(r'\brlS\b|\brhS\b|^(ldb|cpb|extsb|clrb|decb|incb|subb|andb)', t): return 'D8 byte'
     if re.match(r'^(test|bit|cp)\s*(rS|F)?(,#\w+)?$', t) or t.startswith(('test\t','bit\t','cp\trS,rS','test\tF')): return 'D8/D2 test form'
     if re.match(r'^(and|or)\trS,#A$', t) or re.match(r'^(and|or)\trS,#N$', t): return 'D8 mask'
-    if t.startswith(('SH','SHR')) or re.match(r'^(sdal|slal|sdll|slll|sla|sll|sda|sdl|srl|sra)\b', t): return 'D10 shift'
+    if t.startswith('SH') or re.match(r'^(sdal|slal|sdll|slll|sla|sll|sda|sdl)\b', t): return 'D10 shift'
     if re.match(r'^(addl|subl|ldl|cpl|ldk|ldl)\t', t) or re.match(r'^(addl|subl|cpl|extsl|divl|mult)\b', t): return 'D10 long op'
     if re.match(r'^(inc|dec)\tA,#\d+$', t) or re.match(r'^(inc|dec)\tF,#\d+$', t): return 'D13 counter'
     if re.match(r'^(ldk|ld)\trS,#\d+$', t): return 'D2 constant'

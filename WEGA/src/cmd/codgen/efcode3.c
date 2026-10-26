@@ -23,7 +23,7 @@ extern int nparmtab;		/* 0x8f98 */
 
 void
 lineout(line, file)
-	long line;
+	int line;
 	char *file;
 {
 	printf("\t.line\t%d\t%s\t\n", (int)line, file);

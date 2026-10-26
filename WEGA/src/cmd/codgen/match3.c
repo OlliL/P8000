@@ -79,7 +79,7 @@ ttype(t, tword)
 		t = TINT;		/* FARG / undefined: an int */
 	if ((t & 0x30) == 0x10 && (tword & TPOINT2)) {
 		do
-			t = (t >> 2 & ~0xF) | (t & 0xF);	/* strip one level of pointer */
+			t = ((unsigned)t >> 2 & ~0xF) | (t & 0xF);	/* strip one level of pointer */
 		while ((t & 0x30) == 0x30);
 		return ttype(t, tword & ~TPOINT2);
 	}

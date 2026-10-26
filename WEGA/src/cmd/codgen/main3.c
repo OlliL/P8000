@@ -52,7 +52,7 @@ options(argc, argv)
 	int argc;
 	char **argv;
 {
-	int i, err;
+	register int i, err;
 	register char *cp;
 	char buf[50];
 

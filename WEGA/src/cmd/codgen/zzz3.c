@@ -10,7 +10,7 @@
 
 #define FOREFF	01
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
+#define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 #define DIVFLAG	0x80		/* dope flag of the division operators: the dividend gets extended */
 

@@ -16,23 +16,23 @@ Identical under metric strict-1 (the same instruction sequence, only addresses m
 
 ## Only D1-D14 (pattern-verified)
 
-194 functions: every differing instruction matches a D pattern (D1, D2, D3, D5, D6, D7, D8, D10, D11, D13). The order of the instructions is not part of this check. D4, D9, D12 and D14 are not separable by these patterns.
+193 functions: every differing instruction matches a D pattern (D1, D2, D3, D5, D6, D7, D8, D10, D11, D13). The order of the instructions is not part of this check. D4, D9, D12 and D14 are not separable by these patterns.
 
 ## D1-D14 and real differences
 
-12 functions with real differences (the D part is not separated from them): `acon`, `allocreg`, `buildstar`, `clocal`, `expand`, `fixfld`, `lineout`, `options`, `sucomp`, `tcopy`, `tshape`, `ttype`
+13 functions with real differences (the D part is not separated from them): `acon`, `buildstar`, `clocal`, `expand`, `fbegin`, `fixfld`, `fixtemp`, `rsdump`, `shincr`, `sucomp`, `tmpcleanup`, `tshape`, `zzzcode`
 
 ## Real differences (findings)
 
-- `allo3-rcookie-dup` (analysed: source (confirmed)): the original allocreg calls 0x89a2 (rallkind in comm3.c); we have a second copy of the same function in allo3.c
-- `allo3-tcopy-copy-01` (analysed: source (confirmed)): original 0x8a24 calls ncopy (0x8a02) for the copy of the node; the rebuild copies inline (ldir)
+- `allo3-rcookie-dup` (fixed (allo3.c: rcookie removed, allocreg calls rallkind)): the original allocreg calls 0x89a2 (rallkind in comm3.c); we have a second copy of the same function in allo3.c
+- `allo3-tcopy-copy-01` (fixed (allo3.c: tcopy calls ncopy(q, p))): original 0x8a24 calls ncopy (0x8a02) for the copy of the node; the rebuild copies inline (ldir)
 - `ttype-shift-01` (merged into shift-type-01): the original shifts with srl (unsigned), ours with sra (signed)
 - `fixfld-shift-01` (merged into shift-type-01): the original shifts the field value with srl, ours with sra
-- `shift-type-01` (analysed: source (confirmed for ttype)): three functions shift a field value with srl (unsigned) in the original and with sra (signed) in ours
+- `shift-type-01` (partly fixed: ttype and DECREF/INCREF unsigned; the other sites are shift-type-02): three functions shift a field value with srl (unsigned) in the original and with sra (signed) in ours
 - `mapnm-real-01` (analysed): pairing confirmed by strings; only 33 % of the instructions match; the statement order and the expressions differ (sdal / slal, the test order)
 - `buildstar-order-01` (open): only 50 % match; the if chains come in another order
 - `expand-loop-01` (open): the original reads *cp into a byte and dispatches through a table; ours tests *cp and then dispatches
-- `options-loop-01` (analysed: source (confirmed), residual D): the loop variable is a register in the original and in memory in ours; the layout of the switch differs
+- `options-loop-01` (fixed (main3.c: register int i, err; 76 %, the rest D)): the loop variable is a register in the original and in memory in ours; the layout of the switch differs
 - `main-char-01` (checked): the original reads the input character as a byte; ours as int; the switch is a compare chain there (D6)
 - `tshape-order-01` (open: hypothesis rejected for SZERO): the call order special / shtemp / shumul / ltypeop differs; a long test is written differently (cpl and tcc in the original)
 - `efcode-shift-01` (checked): sdal (original) against slal (ours) for the same scaling of sz; the sequence of the additions differs
@@ -44,7 +44,8 @@ Identical under metric strict-1 (the same instruction sequence, only addresses m
 - `header-rdsym-01` (closed): the header comment of rdr3.c gives rdsym at 0x1a86; the body at 0x1aae matches (strings and calls); the comment must be corrected in the source (kind source)
 - `acon-tail-01` (open): the original shares the printf and the off: tail between the three L%d branches; ours has the call in each branch
 - `main-wrapper-01` (analysed): the original crt0 calls 0x4868, which passes argc and argv to the body at 0x023c; ours calls the body directly
-- `lineout-type-01` (analysed: source (confirmed)): our lineout declares long line; the original takes int line (r7). main passes ifline (int) in r7 and ifname in r6. Ours reads the file from r5, so the file name
+- `lineout-type-01` (fixed (efcode3.c: long line -> int line; 100 % identical)): our lineout declares long line; the original takes int line (r7). main passes ifline (int) in r7 and ifname in r6. Ours reads the file from r5, so the file name
+- `shift-type-02` (open (found by the check of srl/sra, not yet changed)): the sign of a shift with a constant count differs (srl in the original, sra in ours, or the other way round): the variable shifted is unsigned in the original; 
 
 ## Limits
 

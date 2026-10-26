@@ -16,7 +16,7 @@
 #define FORREW	0x4000
 #define FREE_	100
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
+#define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 extern int cerror(), uerror();
 extern int match(), tshape(), allo(), szty(), notoff();
