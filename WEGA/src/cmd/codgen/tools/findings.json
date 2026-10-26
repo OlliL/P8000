@@ -2144,7 +2144,7 @@
      "ld\trS,F"
     ],
     "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: sra\trS,#1"
+    "difference_note": "zzzcode: the shift counts equal the original; the unexplained forms are inside a moved block of switch cases (reorder of the case blocks, shift-type-02 closed for zzzcode); to analyse with the order check"
    },
    "orig_note": "d=37 after char c and register locals: switch dispatch (D6), D3, D7; the old name table was data"
   },
@@ -4150,24 +4150,30 @@
    "orig_note": "D3, D6"
   },
   "fixfld": {
-   "ours": "0xab6e-0xac1e",
+   "ours": "0xab6e-0xac2c",
    "table_orig": "0x944a",
    "orig": "0x944a",
    "pairing": "confirmed",
    "pairing_evidence": "review: header 0x944a; same function; real differences: the original uses srl (unsigned) for the field shift where ours uses sra (finding fixfld-shift-01); the statements come in other order; the register of the struct pointer differs",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 80,
-    "pattern_diff": 17,
-    "pattern_unexplained": 3,
+    "d_normalised_pct": 90,
+    "pattern_diff": 9,
+    "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "shift-type-01: shift signedness per site (source)"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ]
    }
   },
   "mapregs": {
-   "ours": "0xac1e-0xad1e",
+   "ours": "0xac2c-0xad2c",
    "table_orig": "0x9512",
    "orig": "0x9512",
    "pairing": "confirmed",
@@ -4194,7 +4200,7 @@
    "orig_note": "D3, D6 partly; if chain now"
   },
   "symuse": {
-   "ours": "0xad1e-0xad68",
+   "ours": "0xad2c-0xad76",
    "table_orig": "0x964c",
    "orig": "0x964c",
    "pairing": "confirmed",
@@ -4214,7 +4220,7 @@
    "orig_note": "auto, verified: identical"
   },
   "symreg": {
-   "ours": "0xad68-0xadc0",
+   "ours": "0xad76-0xadce",
    "table_orig": "0x9fdc",
    "orig": "0x9fdc",
    "pairing": "confirmed",
@@ -4240,7 +4246,7 @@
    "orig_note": "D2: a leaf function; the original saves three registers (r10-r12), the shipped cc keeps n in a scratch register"
   },
   "regforsym": {
-   "ours": "0xadc0-0xae4c",
+   "ours": "0xadce-0xae5a",
    "table_orig": "0xa03a",
    "orig": "0xa03a",
    "pairing": "confirmed",
@@ -4262,7 +4268,7 @@
    "orig_note": "auto, verified: identical"
   },
   "fixname": {
-   "ours": "0xae4c-0xaeb2",
+   "ours": "0xae5a-0xaec0",
    "table_orig": "0xa0c6",
    "orig": "0xa0c6",
    "pairing": "confirmed",
@@ -4283,7 +4289,7 @@
    "orig_note": "auto, verified: identical"
   },
   "oregfix": {
-   "ours": "0xaeb2-0xaf68",
+   "ours": "0xaec0-0xaf76",
    "table_orig": "0xa12a",
    "orig": "0xa12a",
    "pairing": "confirmed",
@@ -4304,7 +4310,7 @@
    "orig_note": "auto, verified: identical"
   },
   "findtemp": {
-   "ours": "0xaf68-0xaf9a",
+   "ours": "0xaf76-0xafa8",
    "table_orig": "0xa7ac",
    "orig": "0xa7ac",
    "pairing": "confirmed",
@@ -4324,7 +4330,7 @@
    "orig_note": "auto, verified: identical"
   },
   "fcmd": {
-   "ours": "0xaf9a-0xb02e",
+   "ours": "0xafa8-0xb03c",
    "table_orig": "0xa1ba",
    "orig": "0xa1ba",
    "pairing": "confirmed",
@@ -4345,7 +4351,7 @@
    "orig_note": "identical after spare register and removed s = 0"
   },
   "regreset": {
-   "ours": "0xb02e-0xb0ce",
+   "ours": "0xb03c-0xb0dc",
    "table_orig": "0xa252",
    "orig": "0xa252",
    "pairing": "confirmed",
@@ -4363,7 +4369,7 @@
    "orig_note": "auto, verified: identical"
   },
   "rcmd": {
-   "ours": "0xb0ce-0xb27c",
+   "ours": "0xb0dc-0xb28a",
    "table_orig": "0xa2f4",
    "orig": "0xa2f4",
    "pairing": "confirmed",
@@ -4389,7 +4395,7 @@
    }
   },
   "memname": {
-   "ours": "0xb27c-0xb2f2",
+   "ours": "0xb28a-0xb300",
    "table_orig": "0xa734",
    "orig": "0xa734",
    "pairing": "confirmed",
@@ -4412,7 +4418,7 @@
    "orig_note": "auto, verified: identical"
   },
   "scmd": {
-   "ours": "0xb2f2-0xb428",
+   "ours": "0xb300-0xb436",
    "table_orig": "0xa4aa",
    "orig": "0xa4aa",
    "pairing": "confirmed",
@@ -4439,7 +4445,7 @@
    }
   },
   "tcmd": {
-   "ours": "0xb428-0xb540",
+   "ours": "0xb436-0xb54e",
    "table_orig": "0xa5de",
    "orig": "0xa5de",
    "pairing": "confirmed",
@@ -4466,7 +4472,7 @@
    }
   },
   "gswitch": {
-   "ours": "0xb5c0-0xb8e8",
+   "ours": "0xb5ce-0xb8f6",
    "table_orig": "0xa7e0",
    "orig": "0xa7e0",
    "pairing": "confirmed",
@@ -4489,7 +4495,7 @@
    "orig_note": "the newreg blocks are written out inline (non-SEG path, lcl3.c); the rest: a memory compare `cp @r2,#0x7c` (l->op) and a tail jp instead of jr (layout) | newreg (removed as a function): the non-SEG gswitch has its blocks inline, as the original."
   },
   "makeblock": {
-   "ours": "0xb8e8-0xb948",
+   "ours": "0xb8f6-0xb956",
    "table_orig": "0xaece",
    "orig": "0xaece",
    "pairing": "confirmed",
@@ -4512,7 +4518,7 @@
    "orig_note": "D4: the original homes all four parameters (ldm of r4-r7), the rebuild one"
   },
   "bcon": {
-   "ours": "0xb948-0xb97a",
+   "ours": "0xb956-0xb988",
    "table_orig": "0xb0a0",
    "orig": "0xb0a0",
    "pairing": "confirmed",
@@ -4532,7 +4538,7 @@
    "orig_note": "auto-paired, identical, two ret in our function: check"
   },
   "chk": {
-   "ours": "0xb97a-0xb982",
+   "ours": "0xb988-0xb990",
    "table_orig": "0xab3e",
    "orig": "0xab3e",
    "pairing": "confirmed",
@@ -4549,7 +4555,7 @@
    }
   },
   "clocal": {
-   "ours": "0xb982-0xbc88",
+   "ours": "0xb990-0xbc96",
    "table_orig": "0xab48",
    "orig": "0xab48",
    "pairing": "confirmed",
@@ -4570,7 +4576,7 @@
    }
   },
   "member": {
-   "ours": "0xbc88-0xbd22",
+   "ours": "0xbc96-0xbd30",
    "table_orig": "0xb0d4",
    "orig": "0xb0d4",
    "pairing": "confirmed",
@@ -4592,7 +4598,7 @@
    }
   },
   "foldadd": {
-   "ours": "0xbd22-0xbdf2",
+   "ours": "0xbd30-0xbe00",
    "table_orig": "0xaf14",
    "orig": "0xaf14",
    "pairing": "confirmed",
@@ -4611,7 +4617,7 @@
    }
   },
   "buildstar": {
-   "ours": "0xbdf2-0xbea4",
+   "ours": "0xbe00-0xbeb2",
    "table_orig": "0xafe4",
    "orig": "0xafe4",
    "pairing": "confirmed",
@@ -5711,8 +5717,8 @@
    "where": "reader3.c, tr3.c, optim3.c, regallo3.c, comm3.c, lcl3.c, zzz3.c (to find)",
    "detail": "the sign of a shift with a constant count differs (srl in the original, sra in ours, or the other way round): the variable shifted is unsigned in the original; the pattern check now reports these forms as unexplained",
    "action": "find the variables of these shifts and their declarations (same type question as shift-type-01); check each site separately",
-   "status": "partly fixed",
-   "result": "fixed: rsdump, tmpcleanup, fixtemp (struct tmpent and struct rs flags are int in the original); shincr (t >> 2 unsigned, local3.c); fbegin (DECREF in lcl3.c signed); buildstar (the two sflags tests in tr3.c unsigned). rejected: sflags unsigned in struct sym for all uses (six other functions became unexplained: mapnm, mapregs, memname, oreg2, oregfix, readsyms). open: fixfld (one shift of the original not reproduced, 5 unexplained forms), zzzcode (shift counts equal, 2 unexplained forms sra #1, to analyse)."
+   "status": "fixed except zzzcode (order only)",
+   "result": "fixed: rsdump, tmpcleanup, fixtemp (struct tmpent and struct rs flags are int in the original); shincr (t >> 2 unsigned, local3.c); fbegin (DECREF in lcl3.c signed); buildstar (the two sflags tests in tr3.c unsigned). rejected: sflags unsigned in struct sym for all uses (six other functions became unexplained: mapnm, mapregs, memname, oreg2, oregfix, readsyms). open: fixfld (one shift of the original not reproduced, 5 unexplained forms), zzzcode (shift counts equal, 2 unexplained forms sra #1, to analyse). | fixfld: fixed: INCREF(DECREF((unsigned)m->type)) without the temporary t (the original expands the macro twice; the second srl is the second use of the expression); zzzcode: the shift counts equal the original, the remaining unexplained sra #1 forms are inside a moved block of switch cases (reorder), not a sign difference."
   }
  ],
  "reject": {},
@@ -5767,10 +5773,6 @@
    "class": "other differences",
    "note": "expand-loop-01: loop and dispatch (33 %)"
   },
-  "fixfld": {
-   "class": "other differences",
-   "note": "shift-type-01: shift signedness per site (source)"
-  },
   "tshape": {
    "class": "other differences",
    "note": "tshape-order-01: call order and SZERO return"
@@ -5786,6 +5788,10 @@
   "acon": {
    "class": "other differences",
    "note": "acon-tail-01: the three L%d branches share the printf call and the tail off: in the original; D7, D8, D1 also present"
+  },
+  "zzzcode": {
+   "class": "other differences",
+   "note": "zzzcode: the shift counts equal the original; the unexplained forms are inside a moved block of switch cases (reorder of the case blocks, shift-type-02 closed for zzzcode); to analyse with the order check"
   }
  },
  "classification_method": "Class per confirmed function, decided by tools/classify.py: 'other differences' for the functions with a documented real difference (class_overrides, with the finding); else 'D only (pattern-verified)' when tools/patterns.py explains every differing instruction by a D pattern (D classes in audit.d_classes); else 'other differences' with the unexplained forms. The pattern check does not test the order of instructions; D4, D9, D12 and D14 are not separable by the patterns.",

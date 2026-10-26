@@ -16,11 +16,11 @@ Identical under metric strict-1 (the same instruction sequence, only addresses m
 
 ## Only D1-D14 (pattern-verified)
 
-198 functions: every differing instruction matches a D pattern (D1, D2, D3, D5, D6, D7, D8, D10, D11, D13). The order of the instructions is not part of this check. D4, D9, D12 and D14 are not separable by these patterns.
+199 functions: every differing instruction matches a D pattern (D1, D2, D3, D5, D6, D7, D8, D10, D11, D13). The order of the instructions is not part of this check. D4, D9, D12 and D14 are not separable by these patterns.
 
 ## D1-D14 and real differences
 
-8 functions with real differences (the D part is not separated from them): `acon`, `buildstar`, `clocal`, `expand`, `fixfld`, `sucomp`, `tshape`, `zzzcode`
+7 functions with real differences (the D part is not separated from them): `acon`, `buildstar`, `clocal`, `expand`, `sucomp`, `tshape`, `zzzcode`
 
 ## Real differences (findings)
 
@@ -28,7 +28,7 @@ Identical under metric strict-1 (the same instruction sequence, only addresses m
 - `allo3-tcopy-copy-01` (fixed (allo3.c: tcopy calls ncopy(q, p))): original 0x8a24 calls ncopy (0x8a02) for the copy of the node; the rebuild copies inline (ldir)
 - `ttype-shift-01` (merged into shift-type-01): the original shifts with srl (unsigned), ours with sra (signed)
 - `fixfld-shift-01` (merged into shift-type-01): the original shifts the field value with srl, ours with sra
-- `shift-type-01` (partly fixed: ttype and DECREF/INCREF unsigned; the other sites are shift-type-02): three functions shift a field value with srl (unsigned) in the original and with sra (signed) in ours
+- `shift-type-01` (fixed for ttype; the rest is shift-type-02): three functions shift a field value with srl (unsigned) in the original and with sra (signed) in ours
 - `mapnm-real-01` (analysed): pairing confirmed by strings; only 33 % of the instructions match; the statement order and the expressions differ (sdal / slal, the test order)
 - `buildstar-order-01` (open): only 50 % match; the if chains come in another order
 - `expand-loop-01` (open): the original reads *cp into a byte and dispatches through a table; ours tests *cp and then dispatches
@@ -45,7 +45,7 @@ Identical under metric strict-1 (the same instruction sequence, only addresses m
 - `acon-tail-01` (open): the original shares the printf and the off: tail between the three L%d branches; ours has the call in each branch
 - `main-wrapper-01` (analysed): the original crt0 calls 0x4868, which passes argc and argv to the body at 0x023c; ours calls the body directly
 - `lineout-type-01` (fixed (efcode3.c: long line -> int line; 100 % identical)): our lineout declares long line; the original takes int line (r7). main passes ifline (int) in r7 and ifname in r6. Ours reads the file from r5, so the file name
-- `shift-type-02` (open (found by the check of srl/sra, not yet changed)): the sign of a shift with a constant count differs (srl in the original, sra in ours, or the other way round): the variable shifted is unsigned in the original; 
+- `shift-type-02` (fixed except zzzcode (order only)): the sign of a shift with a constant count differs (srl in the original, sra in ours, or the other way round): the variable shifted is unsigned in the original; 
 
 ## Limits
 
