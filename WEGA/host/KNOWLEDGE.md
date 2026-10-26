@@ -447,6 +447,9 @@ Sources: `src/cmd/codgen` (K&R C for the WEGA cc, the same files build `codgen` 
 - **Assembler text.** `codgen` and `scodgen` give the same assembler text and exit status as `/lib/codgen` and `/lib/scodgen` on the
   test corpus: 101 of 101 cases each (`corp4test` with 100 cases plus `corpsr`, and the scodgen counterparts), checked on the final sources.
   The corpus is small and does not contain structure returns (see the `fbegin` note below).
+- **scodgen.** `locate.py --seg` finds all objects of `scodgen` (18 objects, 211 functions, no problems). Its functions are the
+  209 names of `codgen` plus `newlreg` (`lcl3.c`) and `mkoreg` (`order3.c`), which exist only under `SEG`. The corpus check
+  `tools/check.sh` with `PROG=scodgen` gives 100 of 100 and 1 of 1.
 - **Functions.** The program part of `/lib/codgen` (0x0 .. 0xbbc4) and of our build (the codgen objects, up to 0xbc2a) contain 210
   functions. Original boundaries come from the call targets and prologues (the original is stripped). 206 functions are paired with a
   function of the original (`tools/confirm.py`, the same instructions and call targets). 4 have no counterpart: `start` (crt0 entry),
