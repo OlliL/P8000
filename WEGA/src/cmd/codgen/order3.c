@@ -691,7 +691,7 @@ int nargs;		/* 0xa16a */
 int argreg;		/* 0xa16c: the next word register for an argument, counts down from 7 */
 int argfreg;		/* 0xa19e: the next float register, counts down from 0x13 */
 int argstop;		/* 0xa156: the rest of the arguments go to the stack */
-struct {
+struct arg {
 	int	reg;
 	struct node *node;
 } argl[8];		/* 0xa1a0 */
@@ -784,18 +784,19 @@ push:
 static void
 argsort()
 {
-	int i, j, r;
+	register struct arg *ai, *aj;
+	int r;
 	struct node *n;
 
-	for (i = 0; argl[i].node; i++)
-		for (j = i + 1; argl[j].node; j++)
-			if (argl[i].node->su < argl[j].node->su) {
-				r = argl[j].reg;
-				n = argl[j].node;
-				argl[j].reg = argl[i].reg;
-				argl[j].node = argl[i].node;
-				argl[i].reg = r;
-				argl[i].node = n;
+	for (ai = argl; ai->node; ai++)
+		for (aj = ai + 1; aj->node; aj++)
+			if (ai->node->su < aj->node->su) {
+				r = aj->reg;
+				n = aj->node;
+				aj->reg = ai->reg;
+				aj->node = ai->node;
+				ai->reg = r;
+				ai->node = n;
 			}
 }
 

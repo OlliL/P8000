@@ -34,7 +34,8 @@ STATIC_NAMES = {
     'allocreg': ['rcookie'],                                              # allo3.c
     'genargs': ['argscan', 'argstrip', 'argsort', 'argplace'],            # order3.c
     'argstrip': ['fixstarg'],                                             # order3.c
-    'nxwork': ['rnnullw', 'rnnulll', 'rnnullp', 'rnnullall', 'rnnullcall'],  # regfile3.c
+    'nxwork': ['rnassign', 'rnnullw', 'rnnulll', 'rnnullp', 'rnnullall', 'rnnullcall'],  # regfile3.c, call order
+    'rnnullw': ['rnnull'],                                                # regfile3.c
     'gswitch': ['newreg'],                                                # lcl3.c
 }
 
@@ -95,8 +96,9 @@ ORIG = {
     'rnnullcall': (0x9816, None, 'identical up to the ret (regfile3.c rnnullcall)'),
     'argscan':   (0x5a4c, None, 'd=14 after switch(argsize) as if chain (order3.c); left: the argsize value in a stack slot (original: register), jump layout (D7)'),
     'argplace':  (0x5d2c, None, 'D5: the local array cnt is addressed with lda (original: direct); 13 instructions, else identical'),
-    'argsort':   (None,   'open', 'identified by the source (the swap of argl by su); no counterpart found in the original'),
+    'argsort':   (0x5bcc, None, 'identical up to the ret after argl became a tagged struct and the loops use pointers (order3.c)'),
     'rnnullall': (0x983c, None, 'identical up to the ret after register int i (regfile3.c)'),
+    'static_8696': (None, 'own', 'clears the 400-byte work area before printf (cgprintf wrapper, comm3.c); the original calls printf directly'),
     'newreg':    (None,   'inline', 'in the original there is no function: the getreg blocks are inline in gswitch (5-6 copies)'),
     # automatic pairings from the function-boundary work (not yet checked one by one)
     'allocinit': (0x8bea, None, 'auto, verified: identical'),
@@ -381,7 +383,7 @@ def main():
             if x['segt'] == 0 and x['type'] == 34 and x['value'] < mine_lim
             and not code.get(x['value'], '.').startswith('.')}
     # static functions have no symbol in our binary: they show up only as call targets (calr to a label)
-    symv = {x['value'] for x in s.symbols if x['segt'] == 0}
+    symv = {x['value'] for x in s.symbols if x['segt'] == 0 and x['type'] in (34, 35, 36)}
     named = sorted((x['value'], x['name'].lstrip('_')) for x in s.symbols
                    if x['segt'] == 0 and x['type'] == 34 and x['value'] < mine_lim)
     static_calls = []
