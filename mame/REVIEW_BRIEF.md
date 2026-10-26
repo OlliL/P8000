@@ -52,7 +52,7 @@ Commit [`d613b434`](https://github.com/OlliL/mame/commit/d613b434) in
 - **Block instructions:** the repeating block instructions restart themselves with
   `m_pc -= 4` (32 places in `z8000ops.hxx`). After a wrapped fetch (instruction ending at
   offset `FFFC`) this borrowed from the segment number. Fixed in commit
-  [`915b2c70`](https://github.com/OlliL/mame/commit/915b2c70) with `addr_sub(m_pc, 4)`
+  [`57986a34`](https://github.com/OlliL/mame/commit/57986a34) with `addr_sub(m_pc, 4)`
   (to be squashed into `d613b434`; the fetch uses `addr_add(m_pc, 2)`, as suggested in a review comment). Checked on the emulator with an `ldir`
   at `<<1>>%FFFC` (old: leaves segment 1 after one round; new: copies all words). Measured on the
   real machine too: [test 06](tests/06-z8000-block-instruction-restart/README.md) (`7F21 D050 8200 0002`, words `A001 A002 A003`, equal to the emulator).
@@ -158,7 +158,7 @@ Commit [`25528403`](https://github.com/OlliL/mame/commit/25528403), `hash/p8000_
 
 ### Driver
 
-Commit [`9067870b`](https://github.com/OlliL/mame/commit/9067870b): `src/mame/ddr/p8k.cpp`
+Commit [`64462a93`](https://github.com/OlliL/mame/commit/64462a93): `src/mame/ddr/p8k.cpp`
 (about 1800 lines, replaces `skeleton/p8k.cpp`), `p8k_wdc.*` (Winchester controller model),
 `p8k_u130.*` (clock module), `mame.lst`. Modelled on
 `src/devices/bus/zbi/s8k_cpu.cpp` (System 8000 CPU board). Parts that are specific to the
@@ -180,9 +180,43 @@ Z8001/Z8010 side:
 - **Memory:** 1 MiB default, up to 8 MiB; segment 127 is left out like on the real
   16 MiB card.
 
-**Known open points in the driver** (see TODO): helper device classes outside the anonymous
-namespace, RS232 slots still named by tag strings, `m_dram8` as `unique_ptr`, resets of child
-devices in `board16_reset()`.
+**Known open point in the driver:** the daisy chain device stays outside the anonymous
+namespace (`DEFINE_DEVICE_TYPE_PRIVATE` needs a concrete exposed base class).
+
+### Console terminal (part of the driver commit)
+
+`src/mame/ddr/p8k_term.cpp/.h` (new, about 480 lines) and a few lines in `p8k.cpp`. The
+terminal of the P8000 runs its own firmware: U882 (Z8, `UB8830D` core) at 7.3728 MHz, i8275
+CRTC at 12 MHz / 8 with DMA from the refresh memory, two character generators (ZG0 ASCII,
+ZG1 umlauts, selected by a latch), IBM XT keyboard (scancode set 1, shifted into port 2),
+bell. It is a private RS-232 port device (`DEFINE_DEVICE_TYPE_PRIVATE`, slot option `adm31`) and
+the default of the `rs232` slot of both machines; `-rs232 terminal` still gives the generic one.
+
+- **ROMs** (device romset `p8k_terminal`, verified 2026-10-23 against the files supplied by the
+  owner): `p8t_1_5.0` 4096 bytes CRC `1bd93470` SHA1 `436a9441...`, `p8tezs` (ZG0) 2048 bytes
+  CRC `f9321251`, `p8tdzs` (ZG1) 2048 bytes CRC `32736503`. The names are the EAW file names
+  in lower case (`P8T_1_5.0`, `P8TEZS`, `P8TDZS`); the UDOS floppy carries `P8T_1_4.1` and
+  `P8TDZS`. Without these files the machines do not start with the default console
+  (`-rs232 terminal` does). Where the owner got `P8T_1_5.0` has to be stated in the PR if asked.
+- **Keys:** the terminal takes every key while its keyboard is active (F3 is its VIDEO key).
+  The RESET button of the computer is therefore Ctrl+Pause (`schedule_soft_reset()` from
+  `nmi_button`, which polls the Ctrl keys with `input_manager::code_pressed`) and the NMI
+  button moved from F12 to Pause. The right shift key sends the left shift code (the
+  firmware knows only that one), Backspace sends BS, the key left of `1` sends DEL.
+- **Timing:** the keyboard delivers nothing for 100 ms after reset, because the firmware
+  enables its interrupts later and otherwise ignores the host.
+- **Save state:** key queue (ring buffer), refresh memory and all other state are registered.
+- **Reviewed 2026-10-23** with the `mame-review` rules: one Blocking (key queue was a
+  `std::vector`, not valid in a save state) and several Tidy (in-class initialisers with an
+  out-of-line constructor, `XTAL()` instead of literals, `static const` table, a helper at
+  global scope) fixed in the driver commit. Left as is: polling `code_pressed` in `nmi_button`
+  (a combined key sequence on a second port field would avoid it), `m_conf` read per character
+  cell in `display_pixels`, no `PORT_CHAR` on the keys (terminal key matrix, no natural keyboard).
+- **Tested:** `p8000` and `p8000_16` show the firmware banner and the monitor prompt, typed
+  keys reach the monitor, save and load work. Not tested by me: Ctrl+Pause and Pause on a
+  real keyboard, colour setting, bell, VT100 mode, a WEGA session on the new terminal.
+- **Please check:** the hardware description in the file header (taken from the firmware
+  sources), the DMA/DRQ handling and the screen timing (`set_raw`, 12 MHz, 102 x 8 by 338 lines).
 
 Save states: all driver state is registered and `MACHINE_SUPPORTS_SAVE` is set; save and load were checked in WEGA (at the shell) and on the 8 bit board. Hard disk contents are not part of a state (as in MAME generally).
 
