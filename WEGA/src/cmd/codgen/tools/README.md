@@ -12,7 +12,7 @@ Or step by step (the same commands as the Makefile runs):
     O=$WEGA/lib/codgen                                  # the original, /lib/codgen of WEGA
     python3 tools/locate.py  --mine ./codgen --check    # reproduction test: our functions found by name
     python3 tools/confirm.py --mine ./codgen --orig $O  # checks the stored pairings, writes ours/pairing/level
-    python3 tools/patterns.py --mine ./codgen --orig $O # which instructions differ, D patterns (D1-D14 by form)
+    python3 tools/patterns.py --mine ./codgen --orig $O # which instructions differ, D patterns (D1-D14 by form), length and order warnings
     python3 tools/classify.py --mine ./codgen --orig $O # writes the difference class per function
     python3 tools/inventory.py                          # writes INVENTORY.md
 
@@ -20,7 +20,8 @@ Files:
 - `funcs.py`      library: disassembly, function extents, strict-1 comparison, original candidates
 - `locate.py`     finds our functions by name in a built binary (object markers, source order)
 - `confirm.py`    checks the pairings in findings.json (no discovery; decisions are stored there)
-- `patterns.py`   pattern check of the D classes (instruction forms that still differ); also used by classify.py
+- `patterns.py`   pattern check of the D classes (instruction forms that still differ) and the structure check
+  (`structure_flags`: order of moved chunks by more than 5 %; the length is reported, not a warning); also used by classify.py
 - `Makefile`      the pipeline and the corpus check (the codgen Makefile contains only the build)
 - `classify.py`   writes the difference classes (alignment, overrides in findings.json)
 - `inventory.py`  writes INVENTORY.md from findings.json

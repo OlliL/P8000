@@ -455,9 +455,25 @@ Sources: `src/cmd/codgen` (K&R C for the WEGA cc, the same files build `codgen` 
   All 206 are paired with a function of the original (`tools/confirm.py`: the same instructions, the same strings, or a review).
   The entries `start` (the crt0 entry, not codgen code), `rcookie` (a duplicate of `rallkind`, removed) and the `printf` wrapper
   `cgwipe`/`cgprintf` (removed, see below) are no longer in the list.
-- **Differences of the 206 paired functions** (`tools/classify.py`, pattern check of the old-cc differences D1-D15):
-  21 have no differing instruction after normalisation (addresses, frame offsets and scratch registers masked); 181 differ only by
-  old-cc patterns (D1 to D14, pattern check); 4 have other differences: `clocal`, `sucomp`, `tshape`, `zzzcode` (see "Open" below). `clocal` and `zzzcode` carry the layout class D15 as a manual annotation (`layout_classes` in findings.json, added to `d_classes` by classify.py; the difference class stays "other differences").
+- **Pairings** (`tools/findings.json`, `pairing_evidence`): all 206 confirmed. The open review entries of `clocal`, `sucomp`, `canon2`, `rsinsert`, `rsmerge`, `psuffix`, `getlab`, `rdsym`, `markcall`, `acon`, `tcmd`, `sortsyms`, `lmuldiv`, `genscall`, `argscan` are closed with the callee and body evidence (the local `L0t_` call targets of the original resolve to paired functions). `rdsym` continues after an internal `ret` (`jr gt` into `0x1aae`), so its original end is set by `orig_end` (0x1b64); `classify.py` honours `orig_end`. Still open in the review: `parminit` and `regjam` (classes, not pairings).
+- **Limit of "D only (pattern-verified)"**: `patterns.py` checks the kind of each differing instruction, every extra or missing
+  instruction included (`explained()`), and the order of moved blocks (`structure_flags`). The length gap is not a warning of its own:
+  the 20 functions with a length difference (`acon`, `rsinsert`, `rsmerge`, `tcmd`, `markcall`, `conput`, `treeeq`, `shtemp`, `mapregs`,
+  `makeblock`, `oregfix`, `readsyms`, `setstr`, `init`, `ncopy`, `fixstarg`, `argsort`, `rdsym`) were checked one by one in round
+  "20 new cases": all their extra instructions are reloads (D3), frame changes (D1), byte operations (D8), the table form of a switch
+  (D6) or the boolean value form (D7), with no unexplained instruction. The check is at the level of instruction kinds: `explained()`
+  accepts a generic reload such as `ld rS,F` as D3 without proof of its purpose, so the verdict is a pattern verdict, not a proof of the
+  per-instruction behaviour. A function whose original body is not cut at its last `ret` gets an explicit end (`orig_end` in
+  findings.json, e.g. `rdsym` 0x1b64); `extent(..., explicit=True)` keeps the internal returns.
+- **Stop line for the source search (decided 2026-10-26).** The search for source forms that reproduce the original's code in `codgen` / `scodgen` ends here. Rule used: a round counts only if it gives a new explanation or a measured gain with the corpus green. Two rounds in a row without a new explanation stop the search. The rounds since the last rule: `tshape` (case order, no gain), `sucomp` (storage classes, a measured gain, reason unknown), `clocal` and `zzzcode` (storage classes, no gain), and the last source round on the shift forms (`clocal`: the unsigned casts removed, 4 -> 2 unexplained forms, corpus green; `zzzcode`: no change). What stays open: the layout classes D15 (`clocal`, `zzzcode`, `freereg`, `expand`), the operand forms D16 (`sucomp`, `tshape`), the SZERO value form (`tshape`), the `sra`/`srl rS,#n` forms (not in the pattern set), and the `zzzcode` shift `srl rS,#2` (source of it not found). These go to the compiler track (reconstruction of the old C compiler); there is no oracle for that compiler (decided by the owner).
+- **Differences of the 206 paired functions** (`tools/classify.py`, pattern check of the old-cc differences D1-D16):
+  21 have no differing instruction after normalisation (addresses, frame offsets and scratch registers masked); 200 are
+  "D only (pattern-verified)": every differing instruction matches an old-cc pattern (D1 to D16) and no block is moved by more
+  than 5 % of the original (`patterns.structure_flags`). 6 have other differences: 4 known (`clocal`, `sucomp`, `tshape`, `zzzcode`,
+  see "Open" below; `clocal` and `zzzcode` carry the layout class D15 as a manual annotation, `layout_classes` in findings.json) and
+  2 with a moved block that the source does not change: `expand` (D7 loop layout) and `freereg` (D7, the goto target `found` of the
+  first loop is placed after its body; findings `expand-layout-01`, `freereg-layout-01`). `conval` was fixed by the case order (below).
+
 - **Tools.** `src/cmd/codgen/tools` (see its `README.md`): `locate.py` (our functions by name), `confirm.py` (pairing check),
   `patterns.py` (pattern check of the D classes), `classify.py` (writes the class into `findings.json`), `inventory.py`
   (`INVENTORY.md`), `blocks.py` (differing blocks of one function), `check.sh` and `corpus.sh` (corpus comparison). The single
@@ -505,6 +521,15 @@ Listed by function; the current evidence is in `findings.json` (`findings_pendin
 - `clocal` (`tr3.c`, `clocal-size-01`): 230 against 264 instructions; the body is in another block order (the `NAME` block is
   out of line in the original, D7 or source). Swapping the `NAME` and `SCONV` branches was tried: block count 26 to 10, but the
   alignment fell from 47 % to 17 %, so it was reverted.
+  Measured again in this round (scratch copy, `blocks.py` and `patterns.check`): the swap gives 10 differing blocks (26 before),
+  but the pattern check gets worse: 406 differing instructions (246 before), 6 unexplained (4 before), no moved chunk. The
+  original is not a plain `NAME` then `SCONV` order either: its `SCONV` switch (`dec`/`cp`/`jp ugt`/table) sits in the middle of
+  the function, after the `NAME` class tests. Rejected again; the layout class of `clocal` is D15 (annotation in findings.json),
+  the source form that gives the original order is not found.
+  Round "clocal and zzzcode check": storage classes tested (each pointer local automatic in turn; the int locals): no gain, so the difference is the
+  layout (D15), not the declarations. The 4 unexplained forms are the immediate shifts `sra`/`srl rS,#n`, which the pattern set does not cover.
+  Pairing: confirmed with the original at 0xab48 (the only strong start candidate; the same calls to `makeblock`, `member`, `tbytes`, `szty`, `cerror`; the counts differ). The open review entry is closed.
+- `zzzcode` (`zzz3.c`, `zzzcode-order-01`), round "clocal and zzzcode check": storage classes of the locals tested one at a time (q, r, l, tmp, rg, m, n, k, t to automatic; rp, rn2, cls, rn to register): no gain, the source is unchanged. The 4 unexplained forms are immediate shifts (`sra rS,#1`, `srl rS,#2`).
 - `zzzcode` (`zzz3.c`, `zzzcode-order-01`): the block `if (notoff(...)) order(r, STAREG)` sits at another place (808 in ours, 920 in
   the original, before the swap below). The two `sra rS,#1` forms are the same in context; shift counts are equal (`shift-type-02` is closed for them).
   Done (`zzz3.c`): the `if (n <= 4)` / `else` branches of the structure move (`ZS`) were swapped to `if (n > 4)` first;
@@ -514,10 +539,11 @@ Listed by function; the current evidence is in `findings.json` (`findings_pendin
   The original lays out the small branch first (`cp n,#4; jp gt,BIG`, small code, `jp` to the end, then BIG). Ours keeps the big branch
   first with `jr le,SMALL`, in both source forms (`if (n <= 4)` and the swapped one). A variant with `return` at the end of the big
   branch (duplicating the tail of the `S` case) gave 78 differing blocks; not kept (duplicated code for 2 blocks).
-- `sucomp` (`order3.c`, `sucomp-size-01`): 731 instructions against 684 (after the register declarations; 756 before). 55 `add rS,F`
+- `sucomp` (`order3.c`, `sucomp-size-01`; pairing confirmed with the original at 0x49f0, the only strong start candidate, three calls to `szty` in both), round "sucomp check": the locals `nf`, `fl` and `t` are no longer `register` (same meaning; corpus 101/101 for codgen and scodgen). Measured: 715 instructions against 684 (was 731), differing 607 (was 739), moved 19 (was 33), alignment 55 % (was 46 %). The saved registers stay at 7 against the original's 6 (D1). The other locals, one at a time and in pairs, gave no further gain. Before the change: 731 instructions against 684 (after the register declarations; 756 before). 55 `add rS,F`
   forms remain: the original adds a frame slot directly in 49 places, we load it into a register first. Operand order in the sums
   and temporaries for `l->su` were tried without gain; the register declarations were the only change with an effect. The cause is
   not found.
+- `tshape` (`match3.c`, `tshape-order-01`), round "tshape check": seven case orders of the switch were tested in a scratch copy. The source order (NAME, ICON, FLD, STAR, REG, OREG, CCODES, FLD before STAR) is the best: 60 differing instructions, 2 unexplained (`and rS,F`), 0 moved, alignment 74 %. The other orders give 64 to 96 differing instructions. No source change. The remaining difference is the SZERO value form (see below) and the operand form `and rS,F`, the same kind as `sucomp` (`add rS,F`): a frame operand used directly in arithmetic, where the original loads the value first. Class D16 (operand form of a frame slot), added in the next round.
 - `tshape` (`match3.c`, `tshape-order-01`): the last operand of the `SZERO` return is a value in the original (`cpl rr2,#0; ldk r2,#0;
   tcc eq,r2`), a branch in ours. The `if` form gave no gain. Also tried (scratch copy, tsmeas2): `!p->lval` and a parenthesised
   `&&` chain (both 117 instructions, ratio 0.776, same as now), `? 1 : 0` (113, 0.754), a local `r` before `return r` (117, 0.759).
@@ -1332,7 +1358,7 @@ intermediate files: the small functions of `ifile` (0x42-0x1d0) write single byt
 Several WEGA programs were built by an older revision of the C compilers: cas by an older scc; ranlib, strip
 and some libc members by an older cc. No old compiler binary exists in any archive (the old libc members and
 the old objects only show its output), so these differences are the base for rebuilding the old compiler at the
-end of the project. Each difference has its own number D1 ... D15; `src/TODO.md` (section "Compiler
+end of the project. Each difference has its own number D1 ... D16; `src/TODO.md` (section "Compiler
 differences") lists which objects show which difference. "old" = the compiler that built the original, "shipped"
 = the scc/cc in `/bin` of the system. Evidence: `cmpmod.py` listings of the cas modules (`-s` shows frames and
 scratch registers), the `oldcc` objects, ranlib, strip.
@@ -1391,6 +1417,10 @@ behind the bodies: `ld r6,#n; cpir ...; sll r6,#2; neg r6; ldl rr2,L(r6); jp @rr
 old compiler also uses the `cpir` table (parser, nested switches), the values sorted, the bodies in source order.
 In codgen, `tshape` (`match3.c`) shows that the bodies can follow another order: the original has the `FLD` body before the
 `STAR` body; the source was reordered to match. Not checked for the other switches.
+
+In `conval` (`optim3.c`) the bodies of the comparison cases follow another order in the original: LT, LE, GT, GE, the unsigned
+four, then EQ, NE; our source had EQ, NE first. The source order was changed to the original's (no change of meaning: every case ends
+with `break`); differing blocks 17 -> 14, moved instructions 10 -> 0, corpus 101/101 for codgen and scodgen.
 
 ### D7 Loop layout
 The old compiler puts the loop test at the bottom (`jr` into the test first); the shipped scc tests at the top.
@@ -1458,6 +1488,15 @@ Not checked for the other `if`/`else` of codgen and cas. Status: pattern, not a 
 compiler is not available to compile a test, so the cause is a guess from the layout of the original.
 Recorded in `tools/findings.json` as `layout_classes` (`zzzcode`, `clocal`); `tools/classify.py` adds the class to `audit.d_classes`.
 Not in the pattern check (`patterns.py`), which tests instructions, not their order.
+
+### D16 Frame operand in arithmetic
+
+The old compiler loads a frame slot into a register before an arithmetic operation (`ld rS,F; add rS,rS`), or uses the
+slot directly in some places. Seen in codgen `sucomp` (`order3.c`): 55 `add rS,F` forms in our code, where the original
+loads the value first (the frame slot as the second operand is what the shipped compiler produces). In `tshape` (`match3.c`):
+`and rS,F` (two forms), the same operand form in the other direction (the original loads first). Both sides use the
+same instruction kinds with another operand form. The pattern check accepts `add/sub/and/or/xor rS,F` as D16
+(`patterns.explained`). This is a pattern verdict: the operand form is the same, the reason for the choice is not known.
 
 ## cas: decompilation (src/cmd/cas)
 

@@ -58,10 +58,13 @@ def canon(raw):
     s = s.replace('%0000(r15)', '@r15')           # the same operand, two encodings (old cc)
     return s
 
-def extent(rows, start, end):
+def extent(rows, start, end, explicit=False):
     """The instructions of [start, end) in address order, without the data words (`.word`) and without what
-    follows the last `ret` of the range (constants and strings are placed behind the code)."""
+    follows the last `ret` of the range (constants and strings are placed behind the code). With explicit=True the
+    end is known (findings.json "orig_end"): internal `ret`s stay, nothing is cut."""
     out = [raw for a, raw in rows if start <= a < end and not raw.startswith('.word')]
+    if explicit:
+        return out
     last = max((i for i, raw in enumerate(out) if raw == 'ret'), default=len(out) - 1)
     return out[:last + 1]
 

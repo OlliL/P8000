@@ -4,8 +4,10 @@
 The class is decided by one rule set, the pattern check of patterns.py (the same as in the analysis):
   - a function with a documented real difference (findings.json, "class_overrides" with class
     "other differences" and a note that names the finding) is "other differences";
-  - else, if every differing instruction matches a D pattern: "D only (pattern-verified)" with the D classes found;
+  - else, if every differing instruction matches a D pattern and patterns.structure_flags() gives no warning (length,
+    order, unmatched): "D only (pattern-verified)" with the D classes found;
   - else: "other differences", with the unexplained instruction forms as the note.
+A function may name its own end in the original ("orig_end", for an internal ret that is followed by more of the same function).
 A layout class (D15, findings.json "layout_classes") is added to d_classes; it does not decide the difference class.
 The reordered_instructions count (lower bound: chunks of two or more identical instructions that moved) is written too.
 The alignment (d_normalised_pct) is written as information only.
@@ -45,25 +47,34 @@ def main():
     fj = json.load(open(a.findings))
     ov = fj.get('class_overrides', {})
     lay = fj.get('layout_classes', {})
+    ends = {int(v['orig'], 16): int(v['orig_end'], 16) for v in fj['functions'].values() if v.get('orig_end')}
     cnt = collections.Counter()
     for n, v in fj['functions'].items():
         if v.get('pairing') != 'confirmed' or not v.get('ours'):
             continue
         st, en = [int(x, 16) for x in v['ours'].split('-')]
         g = int(v['orig'], 16)
-        r = P.check(m, o, st, en, g, oend)
-        s = align([P.dn(x) for x in F.extent(m, st, en)], [P.dn(x) for x in F.extent(o, g, oend(g))])
+        end = lambda x: ends.get(x, oend(x))
+        r = P.check(m, o, st, en, g, end, g in ends)
+        flags = P.structure_flags(r)
+        s = align([P.dn(x) for x in F.extent(m, st, en)], [P.dn(x) for x in F.extent(o, g, end(g), g in ends)])
         audit = {'d_normalised_pct': s, 'pattern_diff': r['diff'], 'pattern_unexplained': r['unexplained'],
                  'reordered_instructions': r['moved'], 'reordered_examples': r['moved_examples']}
         if n in ov and ov[n]['class'] == 'other differences':
             audit['difference_class'] = 'other differences'
             audit['difference_note'] = ov[n]['note']
-        elif r['unexplained'] == 0:
+        elif r['unexplained'] == 0 and not flags:
             audit['difference_class'] = 'D only (pattern-verified)'
             audit['d_classes'] = sorted({k.split(' ')[0] for k in r['classes']})
         else:
             audit['difference_class'] = 'other differences'
-            audit['difference_note'] = 'unexplained instruction forms: ' + '; '.join(r['examples'])
+            if r['unexplained']:
+                audit['difference_note'] = 'unexplained instruction forms: ' + '; '.join(r['examples'])
+            else:
+                audit['difference_note'] = 'structure (not a D pattern): ' + '; '.join(flags)
+        audit['structure_flags'] = flags
+        audit['len_ours'] = r['len_ours']
+        audit['len_orig'] = r['len_orig']
         if n in lay:
             # D15 is a layout class (block order of if/else branches): it is not an instruction pattern, so it
             # is added from findings.json "layout_classes" and does not change the difference class.

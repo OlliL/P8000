@@ -202,23 +202,17 @@ conval(p, o, q)
 	case NOT:
 		p->lval = !p->lval;
 		break;
-	case EQ:
-		p->lval = p->lval == val;
-		break;
-	case NE:
-		p->lval = p->lval != val;
+	case LT:
+		p->lval = p->lval < val;
 		break;
 	case LE:
 		p->lval = p->lval <= val;
 		break;
-	case LT:
-		p->lval = p->lval < val;
+	case GT:
+		p->lval = p->lval > val;
 		break;
 	case GE:
 		p->lval = p->lval >= val;
-		break;
-	case GT:
-		p->lval = p->lval > val;
 		break;
 	case ULE:
 		p->lval = p->lval - val <= 0;
@@ -231,6 +225,12 @@ conval(p, o, q)
 		break;
 	case UGT:
 		p->lval = p->lval - val > 0;
+		break;
+	case EQ:
+		p->lval = p->lval == val;
+		break;
+	case NE:
+		p->lval = p->lval != val;
 		break;
 	default:
 		return 0;

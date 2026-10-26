@@ -4,8 +4,8 @@
 For every confirmed function the instructions of our binary and of the original are compared in the normalised form
 (dn: registers, frame, spill slots, data addresses and shift forms removed). Each instruction that still differs is
 looked up in explained(): if it matches a D pattern (D1 frame, D2 registers, D3 spill/reload, D5 lda, D6 switch,
-D7 jumps, D8 bytes, D10 shifts, D11 tail merge, D13 addresses) it is explained, otherwise it is "unexplained".
-A function is pattern-verified when nothing is unexplained. This checks which kind of instruction differs, not
+D7 jumps, D8 bytes, D10 shifts, D11 tail merge, D13 addresses, D16 frame operand in arithmetic) it is explained, otherwise it is "unexplained".
+A function is pattern-verified when nothing is unexplained and structure_flags() gives no warning (order). This checks which kind of instruction differs, not
 the order; it is a necessary, not a sufficient condition.
 
 Needs: findings.json with the current "ours" ranges (run confirm.py first), the built binary, the original.
@@ -58,6 +58,7 @@ def explained(t):
     if re.match(r'^clr\tF$', t): return 'D3 clear'
     if re.match(r'^(sral|sdal|slal|sdll|slll)\b', t): return 'D10 shift'
     if re.match(r'^cp\trS,F$', t): return 'D3 compare with spill'
+    if re.match(r'^(add|sub|and|or|xor)\trS,F$', t): return 'D16 operand form'
     if re.match(r'^rl\trS,#1$', t): return 'D6 index'
     if re.match(r'^sub\trS,rS$', t): return 'D2 zero'
     if t == 'ret': return 'D11 tail merge'
@@ -68,11 +69,11 @@ def explained(t):
     if re.match(r'^ld\tA,rS$', t): return 'D13 store absolute'
     return None
 
-def check(m, o, st, en, g, oend):
+def check(m, o, st, en, g, oend, explicit=False):
     """Compares our [st, en) with the original from g (its end from oend). Returns a dict: diff (differing
     instructions), unexplained (count), classes (D label -> count), examples (unexplained forms)."""
     a_ = [dn(x) for x in F.extent(m, st, en)]
-    b_ = [dn(x) for x in F.extent(o, g, oend(g))]
+    b_ = [dn(x) for x in F.extent(o, g, oend(g), explicit)]
     sm = difflib.SequenceMatcher(None, b_, a_, autojunk=False)
     unexp = []
     cls = collections.Counter()
@@ -88,7 +89,28 @@ def check(m, o, st, en, g, oend):
             else:
                 unexp.append(x)
     moved, ex = order_moves(b_, a_)
-    return {'diff': ndiff, 'unexplained': len(unexp), 'classes': dict(cls), 'examples': sorted(set(unexp))[:5], 'moved': moved, 'moved_examples': ex}
+    # instructions without a counterpart: inserted or deleted ones, and the length gap of a replaced block
+    # (a 1:1 replacement by a D pattern is not counted here; it is counted in diff and in unexplained)
+    unmatched = sum(abs((i2 - i1) - (j2 - j1)) if t == 'replace' else (i2 - i1) + (j2 - j1)
+                    for t, i1, i2, j1, j2 in sm.get_opcodes() if t != 'equal')
+    return {'diff': ndiff, 'unexplained': len(unexp), 'classes': dict(cls), 'examples': sorted(set(unexp))[:5], 'moved': moved, 'moved_examples': ex,
+            'len_ours': len(a_), 'len_orig': len(b_), 'unmatched': unmatched}
+
+
+ORDER_TOL = 0.05  # order warning: more than 5 % of the original moved (and at least 3 instructions)
+
+
+def structure_flags(r):
+    """Warnings that the D patterns cannot explain. 'order': chunks of two or more instructions that the original has
+    at another place, more than ORDER_TOL of the original (and at least 3 instructions); such a move is a layout
+    difference (D7, D15), not a kind of instruction. The length difference is not a warning: every extra or missing
+    instruction is checked by explained() like any other differing instruction (unexplained), so a length gap that
+    the D patterns explain (reloads, frame, bytes) does not demote a function. The length is kept in audit.len_ours
+    and audit.len_orig."""
+    flags = []
+    if r['moved'] > max(3, ORDER_TOL * r['len_orig']):
+        flags.append('order %d moved' % r['moved'])
+    return flags
 
 
 def order_moves(b_, a_, minlen=2):
@@ -138,14 +160,21 @@ def main():
     oend = orig_end_fn(o)
     f = json.load(open(a.findings))['functions']
     out = {}
+    ends = {int(v['orig'], 16): int(v['orig_end'], 16) for v in f.values() if v.get('orig_end')}
     for name, v in f.items():
         if v.get('pairing') != 'confirmed' or not v.get('ours'):
             continue
         st, en = [int(x, 16) for x in v['ours'].split('-')]
-        out[name] = check(m, o, st, en, int(v['orig'], 16), oend)
-    full = sum(1 for r in out.values() if r['unexplained'] == 0)
-    print('confirmed functions checked: %d; fully explained by D patterns: %d; with unexplained items: %d'
+        g = int(v['orig'], 16)
+        out[name] = check(m, o, st, en, g, lambda x: ends.get(x, oend(x)), g in ends)
+    for r in out.values():
+        r['flags'] = structure_flags(r)
+    full = sum(1 for r in out.values() if r['unexplained'] == 0 and not r['flags'])
+    print('confirmed functions checked: %d; fully explained (D patterns, no length/order flag): %d; not: %d'
           % (len(out), full, len(out) - full))
+    for n, r in sorted(out.items()):
+        if r['flags']:
+            print('  %-12s flags: %s' % (n, '; '.join(r['flags'])))
     for n, r in sorted(out.items()):
         if r['unexplained']:
             print('  %-12s unexplained %3d  e.g. %s' % (n, r['unexplained'], '; '.join(r['examples'])[:120]))
