@@ -470,3 +470,62 @@ Fix (host copy): `(lval & 0xFFFF) <= 0xFF` for `symtab0`, `((lval + maxoff) & 0x
 Result: `scodgen` 100 of 100 corpus cases identical; large corpus 213 of 213 comparable files identical (3 not comparable, see above).
 The method: the scratch emulator was patched to dump memory at the n-th hit of an address (`Z8K_MEM_NTH`); the host debug copy printed the
 values at the same calls.
+
+### popt: feasibility test for byte identity in `src/cmd` (scratch)
+
+Two small functions written as K&R (`absval`, `equstr`, from `host/popt`) compiled with the shipped WEGA `cc -S -O` and compared with
+`/lib/popt`. Neither matches:
+- `absval`: original frame 2 bytes, no spill of the parameter; the WEGA `cc` gives frame 4 and spills the parameter (D1, D4).
+- `equstr`: original keeps the two pointers in `r1` and `r3`; the WEGA `cc` keeps them in the frame (D1, D2).
+The shipped `popt` was therefore built by an older compiler revision, as `codgen` was. A K&R source alone cannot give byte identity with
+the shipped `cc` for these functions. Result: not feasible for byte identity without the old compiler; behaviour (the corpus of `host/popt`)
+is the only check the K&R source can meet until the compiler question is settled. Sample of two functions only.
+
+### popt in `src/cmd/popt` (K&R, first build)
+
+Files: `z2.h`, `z20.c`, `z21.c`, `z22.c`, `z23.c` (K&R versions of `host/popt`; all four compile with the WEGA `cc -c -O`).
+Changes against the host copy, needed for the WEGA `cc`: no prototypes with parameter types, no `signed` (`char` is signed on the WEGA),
+no `stdlib.h`/`string.h` (missing in the tree), no `calloc`/`memset`/`snprintf` (the WEGA libc has `malloc`, `sprintf`, `strchr`, `strrchr`):
+`zalloc` (malloc and clear) and `clearmem` are own helpers. Open questions: the original's heap (the `alloc`/`heaplim` model) and calloc.
+Link: `ld -X -e start` with `/lib/crt0.o`, the four objects and `/lib/libc.a` (the byte identity needs the old-cc libc parts of the original,
+not done yet).
+
+Behaviour (corpus `host/popt/corpus.sh`, 272 cases from the WEGA sources): 243 identical, 29 fail with "C Optimizer: out of space".
+Size: text 26158 against 22272 bytes, data 3582 against 3308. The original fits its heap in the 64 KB limit, this build does not for the
+large inputs. Next: the original's allocation (a bump heap, no per-block overhead) and the size difference per function (D classes).
+Byte identity: not measured yet.
+
+### popt: analysis setup (`src/cmd/popt/tools`, like codgen)
+
+The original `/lib/popt` is stripped (no symbol table). The setup follows `src/cmd/codgen/tools`:
+- `mksym.py`: copy of the sources with `static` removed from the function heads and prototypes (the code is the same; the
+  disassembly differs only in the names of the call targets). Build with the WEGA `cc` under the emulator: `popt_sym`, 73 functions.
+- `locate.py`: finds each function of `popt_sym` in the symbol table; `--update` writes our range into `findings.json` (73 of 73 found).
+- `pair.py`: ranks the candidate starts of `/lib/popt` (`funcs.orig_candidates`) per function by the similarity of the strict
+  instruction form (`funcs.canon`, difflib ratio). Output: key `candidates` in `findings.json`. A pairing is not set by the script
+  (`pairing` stays `open`); the owner confirms it by hand, as for codgen.
+- `classify.py`, `patterns.py`, `findings_md.py`: the same classification as for codgen; they need confirmed pairings.
+- `Makefile`: `make pipeline WEGA=<WEGA_ROOT> EMU=...` runs symbuild, locate, pair, classify, findings_md. Work files in `tmp/tmp/popt`.
+
+Ranking of the best candidate per function (`pair.py`, first run; similarity of the whole function in per cent):
+`findcopy` 0x26c2 (73), `ccinval` 0x2dda (70), `findlong` 0x2656 (66), `findword` 0x25f4 (52), `findbyte` 0x25b6 (51),
+`absval` 0x23a0 (53), `setreg` 0x28ae (47), `killreg` 0x2a46 (56), `isreg` 0x2d22 (39), `compare` 0x31ec (43),
+`main` has no usable candidate: 0x002a (43 %) is the start of crt0 in the original (`host/popt/NOTES.md`), not of `main`.
+Most functions stay below 40 %; `rmove` (13 %), `usesreg` (9 %), `ovlap` (11 %), `iterate` (10 %) have no usable candidate.
+
+Superseded: the earlier "first function mapping" (approximate, another metric) gave `cleargroup` 0x2a46 (86 %) and `ovlap`,
+`movedat` 0x2e2c as plausible. The new ranking does not confirm these (`cleargroup` best candidate 0x2c16, 45 %). Those numbers
+are not used any more.
+
+Confirmed pairings (`findings.json`, `pairing` = confirmed, `level` = analysed): `findcopy` 0x26c2, `ccinval` 0x2dda, `findlong` 0x2656.
+The callee addresses agree with the other candidates: `isreg` 0x2d22, `findword` 0x25f4, `findlong` 0x2656, `findreg` 0x255a, `equstr` 0x3340.
+- `findcopy`: same calls and cases (TB/TW findword, TL findlong, TQ findlong(r+2), return -1). The switch is lowered differently
+  (the original uses a table of value/target pairs behind `cpir`, ours an index table): D6. Not byte identical.
+- `ccinval`: the original reloads `s` from the frame and, after `clrb`, sets `r2` to 0 (`sub r2,r2`) before the return; ours has
+  neither. The reload is D3; the `sub r2,r2` is not clearly one of D1 to D16 (open, reviewed by reading, the classifier says
+  "D only").
+- `findlong`: our `pat[0]`, `pat[1]` are stored at run time (`ldb`), in the original they are not stored in the code (likely a static
+  initialiser, not verified); the char arithmetic is done in another register (D8, D2). Not byte identical.
+The classifier verdict "D only (pattern-verified)" is a pattern verdict, not a proof of the reason (see the open point for `ccinval`).
+Byte identity: not reached for any function yet. Next: `absval`, `equstr` (small), then the functions with 50 % to 60 %.
+

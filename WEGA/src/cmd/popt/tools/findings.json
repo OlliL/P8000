@@ -1,0 +1,1676 @@
+{
+ "metric": "popt: strict-1 instruction comparison (as codgen)",
+ "metric_def": "see codgen/tools/funcs.py canon(); popt uses the same normalisation",
+ "schema": "functions: name -> file, ours (range from locate.py), orig (start in /lib/popt), pairing (open|confirmed), level; findings_pending: open findings; class_overrides: documented real differences",
+ "status_values": [
+  "open",
+  "analysed",
+  "partly fixed",
+  "fixed",
+  "closed"
+ ],
+ "functions": {
+  "main": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x002a-0x02c8",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x002a",
+     "similarity_pct": 43.4
+    },
+    {
+     "orig": "0x06ba",
+     "similarity_pct": 9.1
+    },
+    {
+     "orig": "0x36d0",
+     "similarity_pct": 9.0
+    }
+   ]
+  },
+  "statline": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x02c8-0x02f4",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0322",
+     "similarity_pct": 45.2
+    },
+    {
+     "orig": "0x092a",
+     "similarity_pct": 32.3
+    },
+    {
+     "orig": "0x2df8",
+     "similarity_pct": 31.2
+    }
+   ]
+  },
+  "input": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x02f4-0x04e2",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0358",
+     "similarity_pct": 20.7
+    },
+    {
+     "orig": "0x30ec",
+     "similarity_pct": 11.8
+    },
+    {
+     "orig": "0x2fc8",
+     "similarity_pct": 11.7
+    }
+   ]
+  },
+  "jswcheck": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x04e2-0x0556",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x02c8",
+     "similarity_pct": 33.3
+    },
+    {
+     "orig": "0x12e6",
+     "similarity_pct": 24.6
+    },
+    {
+     "orig": "0x100e",
+     "similarity_pct": 22.8
+    }
+   ]
+  },
+  "getch": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0556-0x0580",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x23a0",
+     "similarity_pct": 43.5
+    },
+    {
+     "orig": "0x0610",
+     "similarity_pct": 30.8
+    },
+    {
+     "orig": "0x244e",
+     "similarity_pct": 27.6
+    }
+   ]
+  },
+  "getln": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0580-0x0630",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x04d6",
+     "similarity_pct": 34.1
+    },
+    {
+     "orig": "0x100e",
+     "similarity_pct": 24.7
+    },
+    {
+     "orig": "0x0630",
+     "similarity_pct": 23.8
+    }
+   ]
+  },
+  "getnum": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0630-0x0688",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x05d2",
+     "similarity_pct": 32.7
+    },
+    {
+     "orig": "0x21fe",
+     "similarity_pct": 25.9
+    },
+    {
+     "orig": "0x2dda",
+     "similarity_pct": 20.5
+    }
+   ]
+  },
+  "output": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0688-0x098c",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x06ba",
+     "similarity_pct": 12.6
+    },
+    {
+     "orig": "0x31ec",
+     "similarity_pct": 9.9
+    },
+    {
+     "orig": "0x0358",
+     "similarity_pct": 8.3
+    }
+   ]
+  },
+  "prefix": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x098c-0x0a3c",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x255a",
+     "similarity_pct": 20.0
+    },
+    {
+     "orig": "0x2d22",
+     "similarity_pct": 19.8
+    },
+    {
+     "orig": "0x21fe",
+     "similarity_pct": 19.3
+    }
+   ]
+  },
+  "copy": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0a3c-0x0ad6",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0964",
+     "similarity_pct": 20.2
+    },
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 16.4
+    },
+    {
+     "orig": "0x3396",
+     "similarity_pct": 16.4
+    }
+   ]
+  },
+  "hashname": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0ad6-0x0b30",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2dda",
+     "similarity_pct": 22.7
+    },
+    {
+     "orig": "0x25b6",
+     "similarity_pct": 18.5
+    },
+    {
+     "orig": "0x29f4",
+     "similarity_pct": 18.2
+    }
+   ]
+  },
+  "opsetup": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0b30-0x0b84",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 24.4
+    },
+    {
+     "orig": "0x25f4",
+     "similarity_pct": 24.1
+    },
+    {
+     "orig": "0x29f4",
+     "similarity_pct": 23.3
+    }
+   ]
+  },
+  "cclook": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0b84-0x0c58",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0630",
+     "similarity_pct": 17.7
+    },
+    {
+     "orig": "0x12e6",
+     "similarity_pct": 16.8
+    },
+    {
+     "orig": "0x02c8",
+     "similarity_pct": 16.7
+    }
+   ]
+  },
+  "oplook": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0c58-0x0e1e",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0b02",
+     "similarity_pct": 26.8
+    },
+    {
+     "orig": "0x2fc8",
+     "similarity_pct": 13.9
+    },
+    {
+     "orig": "0x28ae",
+     "similarity_pct": 12.5
+    }
+   ]
+  },
+  "refcount": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x0e1e-0x105a",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0ca0",
+     "similarity_pct": 25.5
+    },
+    {
+     "orig": "0x23b4",
+     "similarity_pct": 11.3
+    },
+    {
+     "orig": "0x270e",
+     "similarity_pct": 10.8
+    }
+   ]
+  },
+  "iterate": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x105a-0x130e",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x23b4",
+     "similarity_pct": 9.8
+    },
+    {
+     "orig": "0x0ca0",
+     "similarity_pct": 9.7
+    },
+    {
+     "orig": "0x2fc8",
+     "similarity_pct": 9.5
+    }
+   ]
+  },
+  "xjump": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x130e-0x13c2",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x100e",
+     "similarity_pct": 18.2
+    },
+    {
+     "orig": "0x29f4",
+     "similarity_pct": 18.0
+    },
+    {
+     "orig": "0x2c16",
+     "similarity_pct": 15.8
+    }
+   ]
+  },
+  "insertl": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x13c2-0x147c",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x100e",
+     "similarity_pct": 17.0
+    },
+    {
+     "orig": "0x0630",
+     "similarity_pct": 16.3
+    },
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 15.4
+    }
+   ]
+  },
+  "codemove": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x147c-0x1774",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x1102",
+     "similarity_pct": 10.7
+    },
+    {
+     "orig": "0x2a46",
+     "similarity_pct": 9.2
+    },
+    {
+     "orig": "0x23b4",
+     "similarity_pct": 8.7
+    }
+   ]
+  },
+  "comjump": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x1774-0x17ec",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x12e6",
+     "similarity_pct": 38.8
+    },
+    {
+     "orig": "0x0630",
+     "similarity_pct": 23.5
+    },
+    {
+     "orig": "0x100e",
+     "similarity_pct": 22.2
+    }
+   ]
+  },
+  "backjmp": {
+   "file": "z21.c",
+   "pairing": "open",
+   "ours": "0x17ec-0x1890",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x100e",
+     "similarity_pct": 21.7
+    },
+    {
+     "orig": "0x2c16",
+     "similarity_pct": 20.3
+    },
+    {
+     "orig": "0x133c",
+     "similarity_pct": 18.4
+    }
+   ]
+  },
+  "clearmem": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1890-0x18b8",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2c16",
+     "similarity_pct": 29.4
+    },
+    {
+     "orig": "0x2c4a",
+     "similarity_pct": 20.0
+    },
+    {
+     "orig": "0x05d2",
+     "similarity_pct": 19.5
+    }
+   ]
+  },
+  "alloc": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x18f6-0x1950",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2dda",
+     "similarity_pct": 25.6
+    },
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 23.8
+    },
+    {
+     "orig": "0x2c4a",
+     "similarity_pct": 22.7
+    }
+   ]
+  },
+  "heapreset": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1950-0x1958",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x23a0",
+     "similarity_pct": 18.2
+    },
+    {
+     "orig": "0x2dda",
+     "similarity_pct": 15.4
+    },
+    {
+     "orig": "0x24d4",
+     "similarity_pct": 14.3
+    }
+   ]
+  },
+  "allocnode": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1958-0x199c",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2476",
+     "similarity_pct": 31.4
+    },
+    {
+     "orig": "0x3362",
+     "similarity_pct": 28.6
+    },
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 27.8
+    }
+   ]
+  },
+  "nonlab": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x199c-0x19cc",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 33.3
+    },
+    {
+     "orig": "0x244e",
+     "similarity_pct": 32.3
+    },
+    {
+     "orig": "0x02c8",
+     "similarity_pct": 30.4
+    }
+   ]
+  },
+  "decref": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x19cc-0x1a06",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2416",
+     "similarity_pct": 28.6
+    },
+    {
+     "orig": "0x2dda",
+     "similarity_pct": 26.7
+    },
+    {
+     "orig": "0x23a0",
+     "similarity_pct": 21.4
+    }
+   ]
+  },
+  "equstr": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1a06-0x1a38",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x3340",
+     "similarity_pct": 37.8
+    },
+    {
+     "orig": "0x2df8",
+     "similarity_pct": 31.6
+    },
+    {
+     "orig": "0x3396",
+     "similarity_pct": 26.1
+    }
+   ]
+  },
+  "absval": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1a38-0x1a50",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x23a0",
+     "similarity_pct": 52.6
+    },
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 50.0
+    },
+    {
+     "orig": "0x25f4",
+     "similarity_pct": 34.1
+    }
+   ]
+  },
+  "equop": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1a50-0x1aca",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0a44",
+     "similarity_pct": 21.8
+    },
+    {
+     "orig": "0x3396",
+     "similarity_pct": 20.3
+    },
+    {
+     "orig": "0x0630",
+     "similarity_pct": 20.0
+    }
+   ]
+  },
+  "clearreg": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1aca-0x1af4",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x23a0",
+     "similarity_pct": 28.6
+    },
+    {
+     "orig": "0x2dda",
+     "similarity_pct": 26.1
+    },
+    {
+     "orig": "0x0610",
+     "similarity_pct": 25.0
+    }
+   ]
+  },
+  "savereg": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1af4-0x1b6c",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x24f6",
+     "similarity_pct": 27.4
+    },
+    {
+     "orig": "0x0630",
+     "similarity_pct": 19.0
+    },
+    {
+     "orig": "0x2352",
+     "similarity_pct": 18.5
+    }
+   ]
+  },
+  "findreg": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1b6c-0x1bd2",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x255a",
+     "similarity_pct": 46.2
+    },
+    {
+     "orig": "0x2cd8",
+     "similarity_pct": 36.7
+    },
+    {
+     "orig": "0x3196",
+     "similarity_pct": 36.1
+    }
+   ]
+  },
+  "findbyte": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1bd2-0x1c08",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x25b6",
+     "similarity_pct": 51.3
+    },
+    {
+     "orig": "0x25f4",
+     "similarity_pct": 28.6
+    },
+    {
+     "orig": "0x2656",
+     "similarity_pct": 26.4
+    }
+   ]
+  },
+  "findword": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1c08-0x1c74",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x25f4",
+     "similarity_pct": 51.6
+    },
+    {
+     "orig": "0x2656",
+     "similarity_pct": 42.4
+    },
+    {
+     "orig": "0x25b6",
+     "similarity_pct": 30.8
+    }
+   ]
+  },
+  "findlong": {
+   "file": "z22.c",
+   "pairing": "confirmed",
+   "ours": "0x1c74-0x1cea",
+   "orig": "0x2656",
+   "level": "analysed",
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2656",
+     "similarity_pct": 65.7
+    },
+    {
+     "orig": "0x25f4",
+     "similarity_pct": 42.4
+    },
+    {
+     "orig": "0x25b6",
+     "similarity_pct": 28.6
+    }
+   ],
+   "audit": {
+    "d_normalised_pct": 83,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 35,
+    "len_orig": 35
+   }
+  },
+  "findcopy": {
+   "file": "z22.c",
+   "pairing": "confirmed",
+   "ours": "0x1cea-0x1d38",
+   "orig": "0x26c2",
+   "level": "analysed",
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x26c2",
+     "similarity_pct": 73.1
+    },
+    {
+     "orig": "0x3196",
+     "similarity_pct": 35.1
+    },
+    {
+     "orig": "0x21fe",
+     "similarity_pct": 29.6
+    }
+   ],
+   "audit": {
+    "d_normalised_pct": 71,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 28,
+    "len_orig": 24
+   }
+  },
+  "memreg": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1d38-0x1f5e",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x270e",
+     "similarity_pct": 28.5
+    },
+    {
+     "orig": "0x2fc8",
+     "similarity_pct": 11.7
+    },
+    {
+     "orig": "0x213c",
+     "similarity_pct": 11.5
+    }
+   ]
+  },
+  "setreg": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x1f5e-0x204e",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x28ae",
+     "similarity_pct": 47.2
+    },
+    {
+     "orig": "0x26c2",
+     "similarity_pct": 20.4
+    },
+    {
+     "orig": "0x2a46",
+     "similarity_pct": 19.0
+    }
+   ]
+  },
+  "makereg": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x204e-0x20e4",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2988",
+     "similarity_pct": 21.2
+    },
+    {
+     "orig": "0x2352",
+     "similarity_pct": 19.4
+    },
+    {
+     "orig": "0x255a",
+     "similarity_pct": 18.2
+    }
+   ]
+  },
+  "dest": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x20e4-0x2148",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0630",
+     "similarity_pct": 27.8
+    },
+    {
+     "orig": "0x21fe",
+     "similarity_pct": 27.6
+    },
+    {
+     "orig": "0x26c2",
+     "similarity_pct": 25.0
+    }
+   ]
+  },
+  "killreg": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2148-0x2312",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2a46",
+     "similarity_pct": 56.1
+    },
+    {
+     "orig": "0x224c",
+     "similarity_pct": 13.5
+    },
+    {
+     "orig": "0x28ae",
+     "similarity_pct": 12.7
+    }
+   ]
+  },
+  "cleargroup": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2312-0x2354",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2c16",
+     "similarity_pct": 45.0
+    },
+    {
+     "orig": "0x05d2",
+     "similarity_pct": 21.3
+    },
+    {
+     "orig": "0x2352",
+     "similarity_pct": 20.8
+    }
+   ]
+  },
+  "singop": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2354-0x237a",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2dda",
+     "similarity_pct": 41.7
+    },
+    {
+     "orig": "0x23a0",
+     "similarity_pct": 36.4
+    },
+    {
+     "orig": "0x0610",
+     "similarity_pct": 32.0
+    }
+   ]
+  },
+  "dualop": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x237a-0x23f2",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0630",
+     "similarity_pct": 23.8
+    },
+    {
+     "orig": "0x100e",
+     "similarity_pct": 22.5
+    },
+    {
+     "orig": "0x12e6",
+     "similarity_pct": 21.2
+    }
+   ]
+  },
+  "findslot": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x23f2-0x2448",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2cd8",
+     "similarity_pct": 42.9
+    },
+    {
+     "orig": "0x3196",
+     "similarity_pct": 38.6
+    },
+    {
+     "orig": "0x255a",
+     "similarity_pct": 32.8
+    }
+   ]
+  },
+  "isreg": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2448-0x2512",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2d22",
+     "similarity_pct": 38.6
+    },
+    {
+     "orig": "0x26c2",
+     "similarity_pct": 21.4
+    },
+    {
+     "orig": "0x213c",
+     "similarity_pct": 19.5
+    }
+   ]
+  },
+  "ccinval": {
+   "file": "z22.c",
+   "pairing": "confirmed",
+   "ours": "0x2512-0x2528",
+   "orig": "0x2dda",
+   "level": "analysed",
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2dda",
+     "similarity_pct": 70.0
+    },
+    {
+     "orig": "0x0610",
+     "similarity_pct": 38.1
+    },
+    {
+     "orig": "0x244e",
+     "similarity_pct": 33.3
+    }
+   ],
+   "audit": {
+    "d_normalised_pct": 82,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 9,
+    "len_orig": 11
+   }
+  },
+  "regprefix": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2528-0x2558",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2df8",
+     "similarity_pct": 34.3
+    },
+    {
+     "orig": "0x2352",
+     "similarity_pct": 31.1
+    },
+    {
+     "orig": "0x12e6",
+     "similarity_pct": 30.4
+    }
+   ]
+  },
+  "repladdr": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2558-0x26d2",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2e2c",
+     "similarity_pct": 34.3
+    },
+    {
+     "orig": "0x28ae",
+     "similarity_pct": 15.6
+    },
+    {
+     "orig": "0x2352",
+     "similarity_pct": 13.1
+    }
+   ]
+  },
+  "movedat": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x26d2-0x28b2",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2fc8",
+     "similarity_pct": 16.7
+    },
+    {
+     "orig": "0x0e1a",
+     "similarity_pct": 14.0
+    },
+    {
+     "orig": "0x2d22",
+     "similarity_pct": 11.6
+    }
+   ]
+  },
+  "redunbr": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x28b2-0x2998",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x30ec",
+     "similarity_pct": 36.9
+    },
+    {
+     "orig": "0x24f6",
+     "similarity_pct": 12.8
+    },
+    {
+     "orig": "0x21fe",
+     "similarity_pct": 12.1
+    }
+   ]
+  },
+  "findcon": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2998-0x29e4",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x3196",
+     "similarity_pct": 48.1
+    },
+    {
+     "orig": "0x26c2",
+     "similarity_pct": 32.7
+    },
+    {
+     "orig": "0x2cd8",
+     "similarity_pct": 26.4
+    }
+   ]
+  },
+  "compare": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x29e4-0x2b5c",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x31ec",
+     "similarity_pct": 43.1
+    },
+    {
+     "orig": "0x224c",
+     "similarity_pct": 13.3
+    },
+    {
+     "orig": "0x270e",
+     "similarity_pct": 9.7
+    }
+   ]
+  },
+  "setcon": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2b5c-0x2c0e",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x26c2",
+     "similarity_pct": 17.5
+    },
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 17.1
+    },
+    {
+     "orig": "0x3196",
+     "similarity_pct": 16.5
+    }
+   ]
+  },
+  "setcc": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2c0e-0x2c30",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2dda",
+     "similarity_pct": 50.0
+    },
+    {
+     "orig": "0x0610",
+     "similarity_pct": 40.0
+    },
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 37.0
+    }
+   ]
+  },
+  "natural": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2c30-0x2c74",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x3396",
+     "similarity_pct": 40.8
+    },
+    {
+     "orig": "0x12e6",
+     "similarity_pct": 34.6
+    },
+    {
+     "orig": "0x3340",
+     "similarity_pct": 30.0
+    }
+   ]
+  },
+  "jumpsw": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2c74-0x2da4",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0964",
+     "similarity_pct": 13.0
+    },
+    {
+     "orig": "0x100e",
+     "similarity_pct": 12.4
+    },
+    {
+     "orig": "0x2fc8",
+     "similarity_pct": 12.3
+    }
+   ]
+  },
+  "shortjump": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2da4-0x2ebc",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x213c",
+     "similarity_pct": 32.7
+    },
+    {
+     "orig": "0x26c2",
+     "similarity_pct": 18.5
+    },
+    {
+     "orig": "0x2352",
+     "similarity_pct": 17.9
+    }
+   ]
+  },
+  "toofar": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2ebc-0x2f06",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x21fe",
+     "similarity_pct": 40.0
+    },
+    {
+     "orig": "0x2352",
+     "similarity_pct": 23.1
+    },
+    {
+     "orig": "0x3196",
+     "similarity_pct": 22.6
+    }
+   ]
+  },
+  "ilen": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x2f06-0x3052",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x224c",
+     "similarity_pct": 25.9
+    },
+    {
+     "orig": "0x0630",
+     "similarity_pct": 17.5
+    },
+    {
+     "orig": "0x2a46",
+     "similarity_pct": 16.9
+    }
+   ]
+  },
+  "adrlen": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x3052-0x308e",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2352",
+     "similarity_pct": 51.0
+    },
+    {
+     "orig": "0x12e6",
+     "similarity_pct": 30.8
+    },
+    {
+     "orig": "0x05d2",
+     "similarity_pct": 28.0
+    }
+   ]
+  },
+  "newcode1": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x308e-0x30a2",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x36a6",
+     "similarity_pct": 45.5
+    },
+    {
+     "orig": "0x092a",
+     "similarity_pct": 40.0
+    },
+    {
+     "orig": "0x0322",
+     "similarity_pct": 40.0
+    }
+   ]
+  },
+  "rmove": {
+   "file": "z22.c",
+   "pairing": "open",
+   "ours": "0x30a2-0x4052",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x13b6",
+     "similarity_pct": 13.0
+    },
+    {
+     "orig": "0x224c",
+     "similarity_pct": 4.9
+    },
+    {
+     "orig": "0x33d6",
+     "similarity_pct": 3.9
+    }
+   ]
+  },
+  "itoa_": {
+   "file": "z23.c",
+   "pairing": "open",
+   "ours": "0x4052-0x40ec",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x133c",
+     "similarity_pct": 13.6
+    },
+    {
+     "orig": "0x23b4",
+     "similarity_pct": 13.0
+    },
+    {
+     "orig": "0x2df8",
+     "similarity_pct": 11.8
+    }
+   ]
+  },
+  "scan": {
+   "file": "z23.c",
+   "pairing": "open",
+   "ours": "0x40ec-0x416e",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x23b4",
+     "similarity_pct": 20.7
+    },
+    {
+     "orig": "0x12e6",
+     "similarity_pct": 18.9
+    },
+    {
+     "orig": "0x0964",
+     "similarity_pct": 18.6
+    }
+   ]
+  },
+  "ovlap": {
+   "file": "z23.c",
+   "pairing": "open",
+   "ours": "0x416e-0x4462",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x2a46",
+     "similarity_pct": 11.3
+    },
+    {
+     "orig": "0x224c",
+     "similarity_pct": 9.1
+    },
+    {
+     "orig": "0x213c",
+     "similarity_pct": 8.5
+    }
+   ]
+  },
+  "usesreg": {
+   "file": "z23.c",
+   "pairing": "open",
+   "ours": "0x4462-0x4814",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x36d0",
+     "similarity_pct": 9.2
+    },
+    {
+     "orig": "0x28ae",
+     "similarity_pct": 9.2
+    },
+    {
+     "orig": "0x270e",
+     "similarity_pct": 9.0
+    }
+   ]
+  },
+  "isused": {
+   "file": "z23.c",
+   "pairing": "open",
+   "ours": "0x4814-0x48d8",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x32f0",
+     "similarity_pct": 18.2
+    },
+    {
+     "orig": "0x30ec",
+     "similarity_pct": 17.7
+    },
+    {
+     "orig": "0x26c2",
+     "similarity_pct": 17.6
+    }
+   ]
+  },
+  "markregs": {
+   "file": "z23.c",
+   "pairing": "open",
+   "ours": "0x48d8-0x4a16",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x0630",
+     "similarity_pct": 15.2
+    },
+    {
+     "orig": "0x224c",
+     "similarity_pct": 12.9
+    },
+    {
+     "orig": "0x24f6",
+     "similarity_pct": 11.9
+    }
+   ]
+  },
+  "rename_regs": {
+   "file": "z23.c",
+   "pairing": "open",
+   "ours": "0x4a16-0x4b78",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x36d0",
+     "similarity_pct": 16.2
+    },
+    {
+     "orig": "0x213c",
+     "similarity_pct": 13.0
+    },
+    {
+     "orig": "0x23b4",
+     "similarity_pct": 12.2
+    }
+   ]
+  },
+  "fixldm": {
+   "file": "z23.c",
+   "pairing": "open",
+   "ours": "0x4b78-0x4bfc",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x37cc",
+     "similarity_pct": 23.7
+    },
+    {
+     "orig": "0x0322",
+     "similarity_pct": 20.3
+    },
+    {
+     "orig": "0x2df8",
+     "similarity_pct": 20.0
+    }
+   ]
+  },
+  "procopt": {
+   "file": "z23.c",
+   "pairing": "open",
+   "ours": "0x4bfc-0x4f58",
+   "orig": null,
+   "level": null,
+   "note": "K&R source, see src/cmd/popt",
+   "candidates": [
+    {
+     "orig": "0x33d6",
+     "similarity_pct": 17.8
+    },
+    {
+     "orig": "0x224c",
+     "similarity_pct": 8.9
+    },
+    {
+     "orig": "0x31ec",
+     "similarity_pct": 6.7
+    }
+   ]
+  }
+ },
+ "findings": [],
+ "manual": [],
+ "findings_pending": [],
+ "class_overrides": {},
+ "classification_method": "as codgen: D-only when every differing instruction matches a D pattern and no block is moved by more than 5 %; other differences otherwise"
+}

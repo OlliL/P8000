@@ -24,7 +24,7 @@ Source of truth for the state: `../src/TODO.md` (per program) and the check comm
 | `cc`, `scc` (driver) | `/bin/cc`, `/bin/scc` | `src/cmd/cc/cc.c` | `host/cc` | no (WEGA source) | done: 74 command lines identical; `cc` and `scc` byte-identical | `make -C host check` (cc) |
 | `cpp` | `/lib/cpp` | - | - | - | not started | - |
 | `cparse`, `scparse` | `/lib/cparse`, `/lib/scparse` | - | - | - | not started (largest part) | - |
-| `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | `src/cmd/codgen` | only built via `z8k-emu` (with the shipped `cc`) | yes | behaviour: corpus 101/101 (codgen and scodgen); byte identity open (D1 to D16) | `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
+| `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | `src/cmd/codgen` (K&R, WEGA `cc`; byte identity is the goal, D1 to D16 open) | `host/codgen` (ANSI, gcc `-Wall`; `-DSEG` for scodgen; functional equality) | yes | host: corpus 100/100 identical for codgen and scodgen; large corpus (213 source files of `src/cmd` and `src/lib`) 213/213 for both, 3 files not comparable. WEGA side: corpus 101/101 (behaviour), byte identity open | `host/codgen` (`host_corp.sh`-style test, see `src/TODO.md`); `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
 | `gopt` | `/lib/gopt` (only with `-Ol`/`-Or`) | - | - | - | not started | - |
 | `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | - (source in `host/popt`) | `host/popt` | yes (`z20.c` to `z23.c`) | done: 522 corpus runs byte-identical | `make -C host check` (popt) |
 | `cas` | `/bin/cas` | `src/cmd/cas` (`MODULES`) | `host/cas` | yes (decompiled, see `src/cmd/cas/README`) | done in behaviour; code not byte-identical (older scc) | `make -C host check` (cas) |
@@ -66,8 +66,10 @@ original tools and compares each program).
 
 ## Next steps, in this order
 
-1. **Complete the tool chain.** Order: front end (`cpp`, `cparse`/`scparse`, `gopt`), then `as`, then `codgen`/`scodgen`
-   native on the host, then the check of the libraries (`libc`, `crt0`). Each tool passes the check in the table.
+1. **Complete the tool chain.** Current step: `popt` in `src/cmd/popt` (K&R, built with the WEGA `cc`, compared with `/lib/popt`). Analysis setup in `src/cmd/popt/tools` (like codgen): `make pipeline`; next step is the hand confirmation of the pairings in `findings.json` (`src/TODO.md`, "popt: analysis setup").
+   The WEGA `cc` rejects ANSI prototypes (tested), so the K&R version is a separate rewrite of `host/popt` (about 74 function heads).
+   Then the host copy of `codgen` (done for the corpus) is checked again by the same harness. Order after that: `cpp`, `cparse`/`scparse`,
+   `gopt`, `as`, then the check of the libraries (`libc`, `crt0`). Each tool passes the check in the table.
    Step 3 starts only after that.
 2. **Bring the source to its natural form.** Revert the compensating changes or justify them. New baseline:
    bytes, functions, D classes.
