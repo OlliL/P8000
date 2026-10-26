@@ -43,6 +43,13 @@ Not a tool of the chain but the oracle: `host/z8k-emu` (runs the original binari
 Overall checks: `make -C host check` (all tools except `codgen`), `make -C host verify-wega` (builds `src/cmd` with the
 original tools and compares each program).
 
+## Decided: two independent code bases
+
+- `host/` holds ANSI C that compiles with a current gcc and `-Wall`. It is checked by behaviour (check lines, corpora).
+- `src/cmd/` holds K&R C that compiles with the WEGA `cc`. It is checked by behaviour and by `cmp` of the built binaries.
+- The two are functionally equal but have no relation to each other: no shared sources, no `#ifdef`, no build switch.
+  A tool that exists in both worlds is written twice; a copy from `host/` to `src/cmd/` is a new K&R source, not a transfer.
+
 ## Decisions open for the owner
 
 - **Compensating source changes.** Some changes adapt the source to the old compiler instead of correcting it:
