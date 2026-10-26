@@ -75,106 +75,106 @@ ORIG = {
     'table':     (0x2edc, None, 'not compared yet'),
     'start':     (None,   'crt0', 'entry of crt0, not codgen code'),
     # automatic pairings from the function-boundary work (not yet checked one by one)
-    'allocinit': (0x8bea, None, 'auto-paired (bag distance 0), check'),
-    'argsize': (0x88f6, None, 'auto-paired (bag distance 0), check'),
-    'bcon': (0xb0a0, None, 'auto-paired (bag distance 1), check'),
-    'branch': (0x2880, None, 'auto-paired (bag distance 0), check'),
-    'bsize': (0x8878, None, 'auto-paired (bag distance 0), check'),
-    'canon': (0x1884, None, 'auto-paired (bag distance 0), check'),
-    'canon2': (0x46fe, None, 'auto-paired (bag distance 0), check'),
-    'cbgen': (0x460e, None, 'auto-paired (bag distance 4), check'),
-    'cgprintf': (0x854c, None, 'auto-paired (bag distance 2), check'),
-    'codgen': (0x0aaa, None, 'auto-paired (bag distance 0), check'),
-    'constore': (0x11da, None, 'auto-paired (bag distance 0), check'),
-    'convelim': (0xba7c, None, 'auto-paired (bag distance 4), check'),
-    'dopeinit': (0x8844, None, 'auto-paired (bag distance 0), check'),
-    'efcode': (0x28f6, None, 'auto-paired (bag distance 3), check'),
-    'endline': (0x8c22, None, 'auto-paired (bag distance 0), check'),
-    'endrun': (0x4868, None, 'auto-paired (bag distance 0), check'),
-    'errexit': (0x89ce, None, 'auto-paired (bag distance 0), check'),
-    'findtemp': (0xa7ac, None, 'auto-paired (bag distance 0), check'),
-    'fixname': (0xa0c6, None, 'auto-paired (bag distance 0), check'),
-    'freeparm': (0x6792, None, 'auto-paired (bag distance 1), check'),
-    'fwalk': (0x87ec, None, 'auto-paired (bag distance 0), check'),
-    'genargs': (0x59f4, None, 'auto-paired (bag distance 0), check'),
-    'gencall': (0x4534, None, 'auto-paired (bag distance 0), check'),
-    'geninc': (0x2e4c, None, 'auto-paired (bag distance 0), check'),
-    'genscall': (0x4520, None, 'auto-paired (bag distance 0), check'),
-    'getlab': (0x59d4, None, 'auto-paired (bag distance 0), check'),
-    'getlr': (0x6636, None, 'auto-paired (bag distance 2), check'),
-    'hdrout': (0x8c0c, None, 'auto-paired (bag distance 0), check'),
-    'hopcode': (0x2de0, None, 'auto-paired (bag distance 0), check'),
-    'init': (0x019e, None, 'auto-paired (bag distance 0), check'),
-    'insput': (0x269a, None, 'auto-paired (bag distance 0), check'),
-    'ispow2': (0x8af6, None, 'auto-paired (bag distance 5), check'),
-    'lastchance': (0x46ae, None, 'auto-paired (bag distance 0), check'),
-    'lineout': (0x4088, None, 'auto-paired (bag distance 0), check'),
-    'ltypeok': (0x3e1c, None, 'auto-paired (bag distance 0), check'),
-    'makeblock': (0xaece, None, 'auto-paired (bag distance 0), check'),
-    'mapn': (0x2038, None, 'auto-paired (bag distance 0), check'),
-    'mapsym': (0x206a, None, 'auto-paired (bag distance 0), check'),
-    'memname': (0xa734, None, 'auto-paired (bag distance 0), check'),
-    'mkhash': (0x2406, None, 'auto-paired (bag distance 3), check'),
-    'mkrall': (0x51c0, None, 'auto-paired (bag distance 0), check'),
-    'ncopy': (0x8a02, None, 'auto-paired (bag distance 0), check'),
-    'niceuty': (0x547a, None, 'auto-paired (bag distance 0), check'),
-    'nlcheck': (0x244a, None, 'auto-paired (bag distance 0), check'),
-    'notoff': (0x49c0, None, 'auto-paired (bag distance 0), check'),
-    'offstar': (0x53fa, None, 'auto-paired (bag distance 0), check'),
-    'oregfix': (0xa12a, None, 'auto-paired (bag distance 0), check'),
-    'oregput': (0x409a, None, 'auto-paired (bag distance 0), check'),
-    'pairmate': (0x73f0, None, 'auto-paired (bag distance 0), check'),
-    'plainicon': (0x8b44, None, 'auto-paired (bag distance 0), check'),
-    'prcook': (0x0af6, None, 'auto-paired (bag distance 0), check'),
-    'psuffix': (0x2780, None, 'auto-paired (bag distance 0), check'),
-    'rallkind': (0x89a2, None, 'auto-paired (bag distance 0), check'),
-    'rbusy': (0x66bc, None, 'auto-paired (bag distance 0), check'),
-    'rcount': (0x15ba, None, 'auto-paired (bag distance 0), check'),
-    'rcount_reset': (0x778e, None, 'auto-paired (bag distance 0), check'),
-    'rdin': (0x3fc4, None, 'auto-paired (bag distance 0), check'),
-    'rdin2': (0x26ae, None, 'auto-paired (bag distance 0), check'),
-    'readmems': (0x1d0e, None, 'auto-paired (bag distance 0), check'),
-    'readsyms': (0x1b64, None, 'auto-paired (bag distance 5), check'),
-    'readtab': (0x1c30, None, 'auto-paired (bag distance 0), check'),
-    'regforsym': (0xa03a, None, 'auto-paired (bag distance 0), check'),
-    'regreset': (0xa252, None, 'auto-paired (bag distance 0), check'),
-    'regtabinit': (0x910e, None, 'auto-paired (bag distance 0), check'),
-    'rfree': (0x6f76, None, 'auto-paired (bag distance 0), check'),
-    'rfreeall': (0x9696, None, 'auto-paired (bag distance 0), check'),
-    'rfreenode': (0x6efa, None, 'auto-paired (bag distance 0), check'),
-    'rmove': (0x3cf2, None, 'auto-paired (bag distance 4), check'),
-    'rsbuild': (0x7458, None, 'auto-paired (bag distance 0), check'),
-    'rsdump': (0x750c, None, 'auto-paired (bag distance 0), check'),
-    'rsmatch': (0x83ec, None, 'auto-paired (bag distance 0), check'),
-    'rspush': (0x81c4, None, 'auto-paired (bag distance 0), check'),
-    'rsrelall': (0x84b6, None, 'auto-paired (bag distance 0), check'),
-    'rsrelease': (0x847a, None, 'auto-paired (bag distance 0), check'),
-    'setasg': (0x56c6, None, 'auto-paired (bag distance 0), check'),
-    'setasop': (0x57b0, None, 'auto-paired (bag distance 1), check'),
-    'setrew': (0x60e2, None, 'auto-paired (bag distance 3), check'),
-    'shincr': (0x3ed6, None, 'auto-paired (bag distance 0), check'),
-    'shtemp': (0x3e8e, None, 'auto-paired (bag distance 4), check'),
-    'shumul': (0x3f4e, None, 'auto-paired (bag distance 0), check'),
-    'stoarg': (0x126a, None, 'auto-paired (bag distance 0), check'),
-    'stoasg': (0x487e, None, 'auto-paired (bag distance 0), check'),
-    'store': (0x1084, None, 'auto-paired (bag distance 0), check'),
-    'structretcode': (0x8f7e, None, 'auto-paired (bag distance 0), check'),
-    'symreg': (0x9fdc, None, 'auto-paired (bag distance 1), check'),
-    'symuse': (0x964c, None, 'auto-paired (bag distance 0), check'),
-    'szty': (0x88c4, None, 'auto-paired (bag distance 0), check'),
-    'tabclear': (0x9152, None, 'auto-paired (bag distance 0), check'),
-    'tabfind': (0x9116, None, 'auto-paired (bag distance 0), check'),
-    'tagfind': (0x1f82, None, 'auto-paired (bag distance 0), check'),
-    'talloc': (0x869c, None, 'auto-paired (bag distance 0), check'),
-    'tbytes': (0x8970, None, 'auto-paired (bag distance 0), check'),
-    'tfree': (0x873c, None, 'auto-paired (bag distance 0), check'),
-    'tinit': (0x866c, None, 'auto-paired (bag distance 0), check'),
-    'tmpdump': (0x93f4, None, 'auto-paired (bag distance 0), check'),
-    'tsuffix': (0x2796, None, 'auto-paired (bag distance 0), check'),
-    'ttype': (0x5ff6, None, 'auto-paired (bag distance 0), check'),
-    'uerror': (0x8570, None, 'auto-paired (bag distance 0), check'),
-    'upput': (0x40d4, None, 'auto-paired (bag distance 1), check'),
-    'werror': (0x862e, None, 'auto-paired (bag distance 0), check'),
+    'allocinit': (0x8bea, None, 'auto, verified: identical'),
+    'argsize': (0x88f6, None, 'auto, verified: identical'),
+    'bcon': (0xb0a0, None, 'auto-paired, identical, two ret in our function: check'),
+    'branch': (0x2880, None, 'auto, verified: identical'),
+    'bsize': (0x8878, None, 'auto, verified: identical'),
+    'canon': (0x1884, None, 'auto, verified: identical'),
+    'canon2': (0x46fe, None, 'auto, verified: identical'),
+    'cbgen': (None, None, 'auto-paired orig 0x460e is indope; wrong pairing, removed'),
+    'cgprintf': (None, None, 'our wrapper of printf: no counterpart in the original'),
+    'codgen': (0x0aaa, None, 'auto, verified: identical'),
+    'constore': (0x11da, None, 'auto, verified: identical'),
+    'convelim': (0xba7c, None, 'verified: D8 byte compare form'),
+    'dopeinit': (0x8844, None, 'auto, verified: identical'),
+    'efcode': (0x28f6, None, 'NOT verified: saved register set and an addl difference: check'),
+    'endline': (0x8c22, None, 'auto, verified: identical'),
+    'endrun': (0x4868, None, 'auto, verified: identical'),
+    'errexit': (0x89ce, None, 'auto, verified: identical'),
+    'findtemp': (0xa7ac, None, 'auto, verified: identical'),
+    'fixname': (0xa0c6, None, 'auto, verified: identical'),
+    'freeparm': (0x6792, None, 'verified: D2 scratch register (ld rS,X)'),
+    'fwalk': (0x87ec, None, 'auto, verified: identical'),
+    'genargs': (0x59f4, None, 'auto, verified: identical'),
+    'gencall': (0x4534, None, 'auto, verified: identical'),
+    'geninc': (0x2e4c, None, 'auto, verified: identical'),
+    'genscall': (0x4520, None, 'auto, verified: identical'),
+    'getlab': (0x59d4, None, 'auto, verified: identical'),
+    'getlr': (0x6636, None, 'verified: D8 byte load (ldb rl,rl)'),
+    'hdrout': (0x8c0c, None, 'auto, verified: identical'),
+    'hopcode': (0x2de0, None, 'auto, verified: identical'),
+    'init': (0x019e, None, 'auto, verified: identical'),
+    'insput': (0x269a, None, 'auto, verified: identical'),
+    'ispow2': (0x8af6, None, 'verified: old cc (clr/ZERO, inc form)'),
+    'lastchance': (0x46ae, None, 'auto, verified: identical'),
+    'lineout': (None, None, 'auto pairing 0x4088 was a one-argument call (wrong), removed'),
+    'ltypeok': (0x3e1c, None, 'auto, verified: identical'),
+    'makeblock': (0xaece, None, 'D4: the original homes all four parameters (ldm of r4-r7), the rebuild one'),
+    'mapn': (0x2038, None, 'auto, verified: identical'),
+    'mapsym': (0x206a, None, 'auto, verified: identical'),
+    'memname': (0xa734, None, 'auto, verified: identical'),
+    'mkhash': (0x2406, None, 'verified: known reload quirk (mkhash, D3)'),
+    'mkrall': (0x51c0, None, 'identical after the register declarations of p and r (order3.c)'),
+    'ncopy': (0x8a02, None, 'auto, verified: identical'),
+    'niceuty': (0x547a, None, 'auto, verified: identical'),
+    'nlcheck': (0x244a, None, 'auto, verified: identical'),
+    'notoff': (0x49c0, None, 'differs by one ldm: the original homes only off (t is unused); register r is a register variable (fixed)'),
+    'offstar': (0x53fa, None, 'auto, verified: identical'),
+    'oregfix': (0xa12a, None, 'auto, verified: identical'),
+    'oregput': (0x409a, None, 'auto, verified: identical'),
+    'pairmate': (0x73f0, None, 'auto, verified: identical'),
+    'plainicon': (0x8b44, None, 'auto, verified: identical'),
+    'prcook': (0x0af6, None, 'auto, verified: identical'),
+    'psuffix': (0x2780, None, 'auto, verified: identical'),
+    'rallkind': (0x89a2, None, 'auto, verified: identical'),
+    'rbusy': (0x66bc, None, 'auto, verified: identical'),
+    'rcount': (0x15ba, None, 'auto, verified: identical'),
+    'rcount_reset': (0x778e, None, 'auto, verified: identical'),
+    'rdin': (0x3fc4, None, 'auto, verified: identical'),
+    'rdin2': (0x26ae, None, 'auto, verified: identical'),
+    'readmems': (0x1d0e, None, 'auto, verified: identical'),
+    'readsyms': (None, None, 'auto-paired distance 7 (unclear), removed'),
+    'readtab': (0x1c30, None, 'auto, verified: identical'),
+    'regforsym': (0xa03a, None, 'auto, verified: identical'),
+    'regreset': (0xa252, None, 'auto, verified: identical'),
+    'regtabinit': (0x910e, None, 'auto, verified: identical'),
+    'rfree': (0x6f76, None, 'auto, verified: identical'),
+    'rfreeall': (0x9696, None, 'auto, verified: identical'),
+    'rfreenode': (0x6efa, None, 'auto, verified: identical'),
+    'rmove': (0x3cf2, None, 'verified: D7 layout'),
+    'rsbuild': (0x7458, None, 'auto, verified: identical'),
+    'rsdump': (0x750c, None, 'auto, verified: identical'),
+    'rsmatch': (0x83ec, None, 'auto, verified: identical'),
+    'rspush': (0x81c4, None, 'auto, verified: identical'),
+    'rsrelall': (0x84b6, None, 'auto, verified: identical'),
+    'rsrelease': (0x847a, None, 'auto, verified: identical'),
+    'setasg': (0x56c6, None, 'auto, verified: identical'),
+    'setasop': (0x57b0, None, 'verified: one load of a field (ld rS,%000E(rS)) more in our build: check'),
+    'setrew': (0x60e2, None, 'verified: D3 memory operand, D7 layout'),
+    'shincr': (0x3ed6, None, 'auto, verified: identical'),
+    'shtemp': (0x3e8e, None, 'verified: D7 layout, tcc form'),
+    'shumul': (0x3f4e, None, 'auto, verified: identical'),
+    'stoarg': (0x126a, None, 'auto, verified: identical'),
+    'stoasg': (0x487e, None, 'auto, verified: identical'),
+    'store': (0x1084, None, 'auto, verified: identical'),
+    'structretcode': (0x8f7e, None, 'auto, verified: identical'),
+    'symreg': (0x9fdc, None, 'D2: a leaf function; the original saves three registers (r10-r12), the shipped cc keeps n in a scratch register'),
+    'symuse': (0x964c, None, 'auto, verified: identical'),
+    'szty': (0x88c4, None, 'auto, verified: identical'),
+    'tabclear': (0x9152, None, 'auto, verified: identical'),
+    'tabfind': (0x9116, None, 'auto, verified: identical'),
+    'tagfind': (0x1f82, None, 'auto, verified: identical'),
+    'talloc': (0x869c, None, 'auto, verified: identical'),
+    'tbytes': (0x8970, None, 'auto, verified: identical'),
+    'tfree': (0x873c, None, 'auto, verified: identical'),
+    'tinit': (0x866c, None, 'auto, verified: identical'),
+    'tmpdump': (0x93f4, None, 'auto, verified: identical'),
+    'tsuffix': (0x2796, None, 'auto, verified: identical'),
+    'ttype': (0x5ff6, None, 'auto, verified: identical'),
+    'uerror': (0x8570, None, 'auto, verified: identical'),
+    'upput': (0x40d4, None, 'verified: call target masked (printf wrapper)'),
+    'werror': (0x862e, None, 'auto, verified: identical'),
 }
 
 
@@ -254,6 +254,22 @@ def bag(rows_):
     return collections.Counter(n5([x for x in map(n3, rows_) if x]))
 
 
+def strict_bag(rows_):
+    """The same comparison but register-to-register moves and the frame arithmetic are kept (n3 drops them)."""
+    out = []
+    for r in rows_:
+        if re.match(r'(dec|inc|sub|add)\s+r15,', r):
+            continue
+        r = re.sub(r'L0t_[0-9a-f]+', 'L', r)
+        r = re.sub(r'%[0-9A-F]{4}\(r15\)', 'F', r)
+        r = re.sub(r'@r15', 'F', r)
+        r = re.sub(r'^(call|calr)\s+.*', r'\1 T', r)
+        r = re.sub(r'\b(r[lh]?|rr|rq)\d+\b', r'\1S', r)
+        r = re.sub(r'%[0-9A-F]{4}', 'X', r)
+        out.append(r)
+    return collections.Counter(out)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--mine', default='codgen', help='our binary (codgen or scodgen)')
@@ -276,6 +292,7 @@ def main():
     lines.append('')
     lines.append('- Our binary: `%s` (%d functions from the symbol table; start and end are exact).' % (a.mine, len(syms)))
     lines.append('- Original: `%s` (stripped; its starts are in `ORIG` in `funcs.py`).' % os.path.basename(orig))
+    lines.append('- `identical*`: the same instruction multiset, but register-to-register moves differ (they are not in the first comparison).')
     lines.append('- Comparison: instruction multiset from the start up to the first `ret`, old-cc effects masked '
                  '(the normalisation of `host/tools/cgcmp.py`). `gleich` = same multiset; the notes give the old-cc '
                  'classes (D1-D14 of `src/TODO.md`) or the open point.')
@@ -303,8 +320,13 @@ def main():
             else:
                 d = sum(((mine_b - orig_b) + (orig_b - mine_b)).values())
                 ncmp += 1
-                if d == 0:
+                ds = sum(((strict_bag(body_to_ret(mine_rows, st)) - strict_bag(body_to_ret(orig_rows, o_start)))
+                          + (strict_bag(body_to_ret(orig_rows, o_start)) - strict_bag(body_to_ret(mine_rows, st)))).values())
+                if d == 0 and ds == 0:
                     cmp_txt = 'identical'
+                    nsame += 1
+                elif d == 0:
+                    cmp_txt = 'identical*'
                     nsame += 1
                 else:
                     cmp_txt = 'differs (%d)' % d

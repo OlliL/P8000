@@ -35,7 +35,7 @@ extern struct node resc[];
 int
 notoff(t, r, off)
 	int t;
-	int r;
+	register int r;
 	long off;
 {
 	if (r >= 0x100)
@@ -156,8 +156,8 @@ int fltused;		/* 0x33d4: floating point is used, the output gets .extern __fltus
 /* make sure the use of p gets done with register r: simulates offstar */
 void
 mkrall(p, r)
-	struct node *p;
-	int r;
+	register struct node *p;
+	register int r;
 {
 	if (p->op == FLD) {
 		p->left->rall = p->rall;
