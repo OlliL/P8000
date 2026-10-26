@@ -5,7 +5,8 @@ Goal: portable C that turns `cc -S` output into the same text the shipped
 built by corpus.sh).  Source is written from the WEGA binary (not from Plexus c2).
 
 ## Binary layout (stripped, 22272 text, 3308 data, 3420 bss)
-- text 0x42.. : z21 (main, input, getline, oplook, output, refcount, iterate, xjump, ...),
+- text 0x0..0x29: crt0 (argv setup, `call main` at 0x1e, `exit` call at 0x24).
+- text 0x2a.. : z21 (main at 0x2a, input, getline, oplook, output, refcount, iterate, xjump, ...),
   z22 (rmove 0x13b6 ... register tracking helpers), z23 (procopt 0x33d6 ...).
   z20.c = tables (optab/ccodes/revbr) in data.  libc (old cc) from ~0x3838 on.
 - node (14 bytes): op(0) subop(1) forw(2) back(4) ref(6) labno(8) code(10) refc(12)

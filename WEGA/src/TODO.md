@@ -527,5 +527,184 @@ The callee addresses agree with the other candidates: `isreg` 0x2d22, `findword`
 - `findlong`: our `pat[0]`, `pat[1]` are stored at run time (`ldb`), in the original they are not stored in the code (likely a static
   initialiser, not verified); the char arithmetic is done in another register (D8, D2). Not byte identical.
 The classifier verdict "D only (pattern-verified)" is a pattern verdict, not a proof of the reason (see the open point for `ccinval`).
+Band 40 % to 60 % (initial rating, rule: similarity >= 50 %, start not taken, internal calls agree in both directions,
+length ratio 0.8 to 1.25; `findings.json` keys `pairing`, `rating`):
+- Confirmed: `absval` 0x23a0, `findbyte` 0x25b6, `findword` 0x25f4, `killreg` 0x2a46.
+- Correction: the first call comparison of this band missed the internal calls, because the symbol build shows them as
+  `calr _name` and the check only read `call %addr`. `setreg`, `findreg` were rejected on that wrong reading. Redone with the
+  call graph (below): `setreg` 0x28ae, `findreg` 0x255a, `findslot` 0x2cd8 are confirmed.
+- Call graph method (`findings.json` `rating`): our internal calls from `calr _name` in the symbol build, the original's calls from
+  `calr L0t_hhhh` and `call %hhhh`. A pairing is confirmed when the confirmed neighbours agree in both directions. Functions with
+  no confirmed neighbour cannot be decided this way (e.g. `adrlen`, `cleargroup`, `compare`).
+- Rejected (kept `open`, reason in `rating`): `singop`, `setcc`
+  (0x2dda is `ccinval`), `getch` (0x23a0 is `absval`), `main` (0x2a was taken as crt0; wrong, see below), `newcode1` (length), `statline` (similarity 45 %),
+  and the others below 50 %.
+- `classify.py` puts all confirmed functions (now 10: plus `setreg`, `findreg`, `findslot`) in "D only (pattern-verified)". Spot checks show this verdict is too lenient:
+  `findcopy`, `ccinval`, `findlong` have differences that are not D1 to D16 (see above). Treat the class as a pattern verdict only.
+Call graph, second step: `makereg` 0x2988 (callers `setreg` and `killreg` both call it), `memreg` 0x270e (called by `setreg`),
+`isreg` 0x2d22 (called by `findcopy` and `setreg`) are confirmed. Libc calls agree too (ours 0x5EB8 and 0x6494 against the
+original 0x5016 and 0x54D6). 13 functions are confirmed now; all 13 are "D only (pattern-verified)" by the classifier,
+which is a pattern verdict only.
+Entry and main (call order): crt0 is 0x0 to 0x29 (argv setup, `call` main at 0x001e, `exit` call at 0x0024), so 0x002a is `main`.
+An earlier note put crt0 at 0x2a; that was wrong, and `host/popt/NOTES.md` said `z21` starts at 0x42 (wrong too); both are corrected. Ours and the original
+call the same functions in the same order in `main`: the libc groups (3 + 3 calls), `opsetup`, `input`, `movedat`, `refcount`,
+`iterate`, `clearreg`, `comjump`, `rmove`, `jumpsw`, `shortjump`, `procopt`, `output`, `heapreset`, and 23 calls of `statline`
+(ours `calr _statline` 23 times, original 23 calls to 0x0322). Confirmed by the call order and by the two-way check of the
+callees: `main` 0x002a, `statline` 0x0322, `input` 0x0358, `movedat` 0x2fc8, `refcount` 0x0ca0, `comjump` 0x12e6,
+`rmove` 0x13b6, `shortjump` 0x213c, `procopt` 0x33d6. Not yet decided: `opsetup`, `clearreg`, `jumpsw`, `iterate`,
+`output`, `heapreset` (main's call order gives one original call fewer than ours for `output` and `heapreset` in that stretch;
+open).
+Classifier after this step: 22 confirmed functions; 21 "D only (pattern-verified)"; `main` is "other differences": the forms
+`sra rS,#10` and `srl rS,#10` are not in the pattern set (the same open point as in codgen, see above).
+Note on the call form in the symbol build: internal calls appear both as `calr _name` and as `call %hhhh` (absolute), so
+both must be read; a reading that takes only one form gives wrong call sets.
+Next step in `main`: `clearreg` 0x24d4 (same length 12, no calls either side), `jumpsw` 0x207e (two calls to `absval` on both
+sides, length 86 against 57: larger difference), `iterate` 0x0e1a (the four callees agree as a set, length 202 against 150: larger
+difference). 25 functions were confirmed at that point (`opsetup` was open then, see the later entry). Open in this stretch: `opsetup` (the original 0x09ec makes no calls, ours `opsetup` calls
+`hashname`), `output` and `heapreset` (one call at 0x0610 in the original, a loop over the node list that calls 0x06ba; ours calls
+`output` and `heapreset`; `heapreset` is a store of HEAP0 and `ret` and does not appear in the original `main`).
+Classifier: 24 "D only (pattern-verified)", 1 "other differences" (`main`, see above). The length differences of `jumpsw` and
+`iterate` are not explained yet.
+`opsetup` (now confirmed, see below), `output`, `heapreset` (main, after `procopt`): output and heapreset still open.
+- `output`: probable 0x06ba. The original's call counts match ours (3 calls to the prefix function, 6 to one libc function, 3 to
+  another); order and length differ (178 against 235 instructions). Its caller in the original is the loop function 0x0610 (a separate
+  function that loops over the node list and calls 0x06ba); ours has the loop inside `main`. That is a difference of the source
+  structure of `main`, not yet classified.
+- `heapreset`: the constant of `HEAP0` (0x1a48) is not stored anywhere in the original code; main in the original calls no reset
+  function. Probably no reset in the original (to be decided; it changes memory use per iteration).
+`opsetup` = 0x09ec (confirmed): the original loops over `optab` (start 0x004e, entries of 4 bytes) and probes the table of 73
+two-byte entries (`cp` with 0x1630, restart at 0x159e). The hash is computed inline: `div` by 73 at 0x0a16. Ours calls `hashname`,
+a separate function in `z21.c`. The original has no call there; the same inline hash appears at 0x0aa2 (in the function at 0x0a44) and
+0x0baa (in the function at 0x0b02, probably `oplook`). Ours reads the name conditionally (`c0 ? s[1] : 0`); the original reads
+`s[1]` and `s[2]` without a test. So `hashname` as a function is a source difference (inline hash as a macro would match the code
+shape). Classifier: "other differences" (`push @r5,r4` form is not in the pattern set, and the call of `hashname`).
+26 functions confirmed; 24 "D only (pattern-verified)"; 2 "other differences" (`main`, `opsetup`).
+`jumpsw` and `iterate` (length differences): both are confirmed by the call sequence in `main` and `iterate`, and the length is not
+a sign of a different function. `jumpsw` (0x207e): two calls to `absval` on both sides; the original keeps its pointers in `r13`/`r14`,
+ours reloads them from the frame (D2, D3); 86 against 57 instructions. `iterate` (0x0e1a): the calls come in the same order (`nonlab`,
+`decref` four times, `xjump`, `codemove`); the first lines are the same (`nchange = 0`, `first.forw`, the JP/CJP tests, `nbrbr++`);
+the code differs in register use and reloads; 202 against 150 instructions, 29 % instruction alignment. The classifier says "D only",
+but that alignment does not support the verdict; the function needs a closer look (open).
+Confirmed in this step: `nonlab` 0x244e, `decref` 0x2416, `codemove` 0x1102, `xjump` 0x100e (the callees `insertl` and `equop` are
+confirmed in the next step). 30 functions confirmed.
+`iterate` (block comparison, 0x0e1a, complete): the six sections of `iterate` are in the same order in both versions and have the same
+tests and calls:
+| section | source | original (lines of `iterate`) | ours (instructions) |
+| S1 loop head, `nchange = 0` | first lines | 1-6 | 1-6 |
+| S2 redirect jumps to jumps (`nonlab`, `decref`, `nbrbr`) | JP/CJP/JSW with ref | 7-34 | 7-46 |
+| S3 CJP over JP (`revbr`, `nskip`) | CJP block | 35-67 | 47-96 |
+| S4 dead code after JP/RET | break set LABEL, DLABEL, OBRACE, CBRACE, 0, DATA | 68-112 | 97-151 |
+| S5 jump to next label (`njp1`) | JP/CJP to label | 113-136 | 152-186 |
+| S6 `xjump` and `codemove` | JP | 137-143 | 187-194 |
+| loop step and return | | 144-150 | 195-202 |
+The differences are register use and reloads (the original keeps `p` in `r14`, `rp` in `r13`, `rp2` in `r12` and saves them with
+`ldm`; ours keeps them in the frame): D2, D3, and the prologue D1. The block order is the same, so the earlier suspicion of D15
+(layout) was wrong. Classifier: "D only" is supported by this block map (a block map, not a byte proof).
+`insertl` = 0x108c and `equop` = 0x23b4 (confirmed via callers). `insertl`: the original has the same three callers (`xjump` 0x100e,
+`codemove` 0x1102, `backjmp` 0x133c), calls `allocnode` (0x2476) with size 14, and the same field assignments as `z21.c`; 34 against 51
+instructions, the difference is the frame reloads (D2, D3). `equop`: same callers (`xjump`, `backjmp`), no calls, 42 against 43
+instructions. With these, the tentative callees of `xjump` and `codemove` are confirmed. 32 functions confirmed.
+`heapreset` and `allocnode` (heap model). The original never resets its allocation pointer: `main` has no call to a reset, and the
+constant of `HEAP0` (0x1a48) is not stored anywhere in the code. The original `allocnode` (0x2476) is a bump allocator on the
+pointer at data 0x163c with the limit at 0x163e; it grows the break in steps of 0x7d0 through a call at 0x5564 and calls an error
+routine at a failed growth (the message is probably the one of `out of space`, the text address 0x0b36 is not verified). Ours calls `heapreset` in every pass of `main`, and our `allocnode` takes its memory
+from `zalloc` (malloc) and keeps the bump only for the statistics (`heaplim`, `heapcur`). So: (1) the call to `heapreset` is a source
+difference (not in the original); (2) the memory model of `allocnode` is a source difference (malloc against the original bump on the
+break). Both change the behaviour when memory runs out: the corpus cases "C Optimizer: out of space" (29 of 272) are probably from
+this (not measured separately). Decision for the owner: whether to rebuild the bump model on the break (as in the original, byte
+identity) or keep malloc.
+`output` (probable 0x06ba, not confirmed): the original calls 0x06ba from the separate loop function at 0x0610; ours calls `output`
+from the loop inside `main`. Counts of the calls agree (3, 6, 3), order and length differ (178 against 235). So `output` stays open,
+and the loop is a source-structure difference.
+Initial rating, call-graph step (assignment only, no source change): the confirmed neighbours fix further functions uniquely.
+The check runs in both directions; start addresses already taken by a confirmed function are excluded. Result:
+`allocnode` (corrected below), `backjmp` 0x133c, `cleargroup` 0x2c16, `dualop` 0x2c72, `equstr` 0x3340, `findcon` 0x3196, `getnum` 0x05d2,
+`ilen` 0x224c, `jswcheck` 0x02c8, `redunbr` 0x30ec, `repladdr` 0x2e2c, `savereg` 0x24f6, `toofar` 0x21fe, `adrlen` 0x2352,
+`dest` 0x29f4 (`rating` in `findings.json`: "confirmed by call graph"). `isused` also points to 0x3196; `findcon` takes it because
+its callees (`equstr`, `isreg`) are on the original 0x3196; `isused` stays open. `hashname` has no start in the original (its hash is
+inline at three places). 47 functions confirmed; classifier: 44 "D only (pattern-verified)", 3 "other differences". Open (26):
+`alloc`, `cclook`, `clearmem`, `compare`, `copy`, `fixldm`, `getch`, `getln`, `hashname`, `heapreset`, `isused`, `itoa_`, `markregs`,
+`natural`, `newcode1`, `oplook`, `output`, `ovlap`, `prefix`, `regprefix`, `rename_regs`, `scan`, `setcc`, `setcon`, `singop`, `usesreg`.
+No source file was changed in this step.
+
+Open functions, second pass (assignment only): `markregs` 0x432c (calls itself as ours does; libc call agrees), `rename_regs` 0x36d0
+and `fixldm` 0x37cc (called by `procopt` in our order), `regprefix` 0x2df8 (three calls in `repladdr`, as ours). 51 confirmed.
+`copy` stays open: the candidate 0x0964 calls `allocnode` (0x2476), ours `copy` calls `alloc` (0x18f6).
+Corrections of the tools: the original was disassembled only up to 0x3838 (the default limit `LIM`) in `classify.py`, `patterns.py`
+and `pair.py`. But 0x3838 is a popt function (it calls `isreg` and itself), so the popt code goes beyond 0x3838 and the libc start is
+not known yet (the "libc from ~0x3838" in `host/popt/NOTES.md` is a guess and wrong). The three tools now read the whole original
+(`lim=0x10000`). The end rule of the classifier gives 145 instructions for `markregs` (we count 86) and 97 for `fixldm` (34): the
+audits of these three are not reliable yet; their class "D only" is not checked.
+procopt: the call order in the original starts with `dualop`, ours with `clearmem` twice; `markregs` appears twice in both, once
+before and once after `dualop` in ours. The order of the calls differs: not classified yet.
+Open functions, third pass (assignment only): by call graph and call order, `getln` 0x04d6 (called twice by `input` as ours; calls
+`oplook`), `oplook` 0x0b02 (138 against 138 instructions), `cclook` 0x0a44 (66 against 67; the hash is inline in the original),
+`compare` 0x31ec, `singop` 0x2c4a (both in `redunbr` in our order), `isused` 0x3838, `usesreg` 0x38d0 (calls `dualop`, `equstr`, `isreg`
+and 0x3c5a), `natural` 0x3396 (the two callers 0x32f0 and 0x3362 are the callers of ours setcon and setcc), `setcon` 0x32f0 (between
+`savereg` and `ccinval` in `rmove`, as ours; 32 against 56 instructions). 60 functions confirmed.
+Not assigned: `getch` (the original 0x04d6 calls only libc here; the getc call is probably inline, as `hashname`), `hashname`
+(inline, no start), `heapreset` (no start in the original), `setcc` (candidate 0x3362, order unclear), `ovlap` (candidate 0x3c5a: it
+calls 0x3c06, 0x551c, 0x5016, not `scan` as ours), `prefix` (candidate 0x0630: three calls from the output loop; depends on `output`,
+which is probable 0x06ba but not confirmed), `output`, `alloc`, `clearmem`, `copy`, `newcode1`, `scan`.
+Open (count 13): `alloc`, `clearmem`, `copy`, `getch`, `hashname`, `heapreset`, `itoa_`, `newcode1`, `output`, `ovlap`, `prefix`, `scan`, `setcc`.
+`output` = 0x06ba and `prefix` = 0x0630 (confirmed by structure). `output`: the same cases in both versions; `prefix` is called three
+times (JP, CALL and CJP cases), six printf calls and three putchar of the newline; the original shares the printf tail (`jp` to 0x08e6
+and 0x08ea), which is the tail merge of D11; 178 against 235 instructions. `prefix`: the tests of CALL (0x20), of `@` (0x40) and of `(`
+(0x28) and the four strings are the same as ours; 47 against 57 instructions.
+Caller difference (in `main`, not in `output`): the original has the output loop as a separate function at 0x0610 (it walks the node
+list from `first` and calls 0x06ba for each node); `main` in ours contains this loop. So the original has a function without counterpart
+in our source (0x0610), and `main` differs from it in structure. Not classified yet.
+11 functions remain open: `alloc`, `clearmem`, `copy`, `getch`, `hashname`, `heapreset`, `itoa_`, `newcode1`, `ovlap`, `scan`, `setcc`.
+`alloc` = 0x2476 and `copy` = 0x0964 (confirmed by structure). The original has ONE allocation function (0x2476) that takes the size
+in `r7`: it rounds the size, compares the break pointer (data 0x163c) with the limit (0x163e), grows by 0x7d0 through the call at 0x5564
+(error exit on failure) and returns the old pointer. Its callers pass 14 for nodes (`insertl`, `input`, `rmove`, `jswcheck`). Ours
+`alloc` has this structure; our `allocnode` is a second function for the node size (zalloc of `sizeof node`), with no counterpart in the
+original. So the earlier entry "allocnode 0x2476" was wrong: `allocnode` stays open (no own start in the original). The memory itself:
+the original takes it from the break (sbrk, pointer at 0x163c), ours from `zalloc` (malloc); the bump is kept only for statistics.
+`copy` 0x0964: the string length is computed by inline loops in the original, ours calls `strlen` (libc); the rest matches.
+`clearmem` and `newcode1` have no own function in the original. `clearmem`: `procopt` (0x33d6) clears its two arrays with inline loops
+(`clrb @r2` in two loops at the start), and `movedat` (0x2fc8) makes no call at all. `newcode1` (ours a wrapper of `copy(1, tmpl, 0)`):
+`rmove` calls 0x0964 (`copy`) 11 times in the original; ours calls `copy` 5 times directly and `newcode1` 6 times (which calls `copy`),
+so the wrapper is inlined in the original. Like `allocnode`, `hashname`, `getch` and `heapreset`, both are source differences
+(function boundaries), not a different function.
+`setcc` = 0x3362 (confirmed: the second caller of `natural` next to `setcon`; the copy of `strcpy` is inline in the original)
+and `itoa_` = 0x3c06 (confirmed by structure: the only `div` by 10; the reversal is the separate function 0x3b9a in the original, which
+calls `strlen` and swaps; ours has it inline). Open: `scan` (no start in the original matches: no call of a scan-like function in the
+region of `ovlap`), `ovlap` (candidate 0x3c5a: calls `itoa_` as ours, but not `scan`, and its extent of 661 instructions has no end).
+`ovlap` (second look): the original region 0x3c5a to 0x42f4 has one `ret` (at 0x42f4), 661 instructions, calls `itoa_` (0x3c06) eight
+times, libc (0x551c seven times, 0x5016 three times), and no call of a scan-like function and no `r` compare. Ours `ovlap` and `scan`
+together have 264 instructions and call `scan` about 17 times. So 0x3c5a is probably not `ovlap` with `scan` inline; no start for
+`scan` and no clean candidate for `ovlap`. Both stay open.
+`ovlap` = 0x3c5a (confirmed by call count): `usesreg` (0x38d0) calls it seven times, as ours calls `ovlap` seven times; the other calls of
+`usesreg` agree (`isreg` 8/8, `equstr` 2/2, libc 1/1; `dualop` 6 against 7 is open). The libc calls of `ovlap` agree (10/10); `itoa_`
+is called 8 times in the original against 7 in ours (open). `scan`: no start in the original; the 24 compares with `r` in 0x3c5a to
+0x42f4 and our 18 calls of `scan` suggest that `scan` is inline in `ovlap` (probable, not confirmed).
+Differences in `ovlap`, `itoa_`, `scan`, `dualop` (resolved to a cause, except the dualop location):
+- `scan` has no function in the original: its body is repeated inline at each call site (19 references of the `isalnum` table in
+  0x3c5a to 0x42f4, the same number as the 19 call sites in `ovlap`; the body is recognisable by the `r` compares). Ours is a function.
+- `itoa_` and `scan` counts in our binary are one lower than in the source (`itoa_` 7 against 8, `scan` 18 against 19): a test with the
+  WEGA cc shows that `return g(y)` in one case becomes a jump to the call of `g` in another case (tail merge, D11). The original keeps all
+  calls. So the difference is D11 (compiler), not the source.
+- `dualop` in `usesreg`: the source has 6 call sites, our binary 6, the original 7. The original has one call more than the source;
+  the place is not determined (open).
+Review of the classification (manual, replaces the pattern verdict as the basis; the pattern verdict is kept in `findings.json`, `audit`):
+
+| review class | count | functions |
+|---|---|---|
+| reviewed: D-pattern | 5 | `findcopy`, `insertl`, `iterate`, `jumpsw`, `prefix` |
+| reviewed: structure | 11 | `alloc`, `copy`, `ilen`, `itoa_`, `main`, `opsetup`, `output`, `ovlap`, `procopt`, `setcc`, `usesreg` |
+| open | 2 | `ccinval`, `findlong` |
+| pattern only, not supported | 16 | `clearreg`, `codemove`, `dest`, `dualop`, `equop`, `fixldm`, `getln`, `input`, `isused`, `markregs`, `regprefix`, `rename_regs`, `rmove`, `setcon`, `singop`, `xjump` |
+| pattern only, not inspected | 32 | `absval`, `adrlen`, `backjmp`, `cclook`, `cleargroup`, `comjump`, `compare`, `decref`, `equstr`, `findbyte`, `findcon`, `findreg`, `findslot`, `findword`, `getnum`, `isreg`, `jswcheck`, `killreg`, `makereg`, `memreg`, `movedat`, `natural`, `nonlab`, `oplook`, `redunbr`, `refcount`, `repladdr`, `savereg`, `setreg`, `shortjump`, `statline`, `toofar` |
+
+`reviewed: D-pattern`: read in detail; the differences are register use, reloads, frame and switch lowering (D1, D2, D3, D6, D8).
+`reviewed: structure`: the source (or the function boundary) differs from the original; needs an owner decision before any change.
+`pattern only, not supported`: the pattern verdict says "D only", but the instruction alignment is below 40 %; the verdict does not prove anything.
+`pattern only, not inspected`: the pattern verdict only; not read in detail.
+`open`: a difference found that the D classes do not explain (`ccinval`: `sub r2,r2`; `findlong`: static initialisation of `pat`).
+
+Open functions without a start in the original: `allocnode`, `clearmem`, `getch`, `hashname`, `heapreset`, `newcode1`, `scan` (`allocnode`, `clearmem`, `newcode1`, `getch`, `hashname`, `heapreset`: no own function, `scan`: inline in `ovlap`; `ovlap` confirmed at 0x3c5a).
+Open difference: one `dualop` call more in the original `usesreg` (location not found).
+
 Byte identity: not reached for any function yet. Next: `absval`, `equstr` (small), then the functions with 50 % to 60 %.
 

@@ -28,7 +28,7 @@ ap.add_argument('--write', action='store_true')
 a = ap.parse_args()
 
 m = F.disasm(a.mine, F.own_limit(SOut(open(a.mine, 'rb').read())))
-o = F.disasm(a.orig)
+o = F.disasm(a.orig, lim=0x10000)
 strong, _ = F.orig_candidates(o)
 fj = json.load(open(a.findings))
 for name, v in fj['functions'].items():

@@ -42,7 +42,7 @@ def main():
     ap.add_argument('--findings', default=os.path.join(HERE, 'findings.json'))
     a = ap.parse_args()
     m = F.disasm(a.mine, F.own_limit(SOut(open(a.mine, 'rb').read())))
-    o = F.disasm(a.orig)
+    o = F.disasm(a.orig, lim=0x10000)
     oend = P.orig_end_fn(o)
     fj = json.load(open(a.findings))
     ov = fj.get('class_overrides', {})

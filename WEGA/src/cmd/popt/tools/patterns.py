@@ -156,7 +156,7 @@ def main():
     ap.add_argument('--json', default=None, help='write the result per function')
     a = ap.parse_args()
     m = F.disasm(a.mine, F.own_limit(SOut(open(a.mine, 'rb').read())))
-    o = F.disasm(a.orig)
+    o = F.disasm(a.orig, lim=0x10000)
     oend = orig_end_fn(o)
     f = json.load(open(a.findings))['functions']
     out = {}
