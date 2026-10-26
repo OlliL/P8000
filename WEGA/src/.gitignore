@@ -7,6 +7,7 @@
 /cmd/cc/cc
 /cmd/cc/scc
 /cmd/codgen/codgen
+/cmd/codgen/scodgen
 /cmd/copydisk/*/copydisk
 /cmd/dump
 /cmd/dumpdir

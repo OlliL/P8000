@@ -428,131 +428,203 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   first object: `gld libq.a` alone gives a header with segment number 127 and sizes of unrelated memory); the host stops with an error.
   The original hangs (or runs very long) when a single section comes near 64K (`gld` with one 60000 byte text); not investigated.
 
-## codgen / scodgen (`/lib/codgen`, `/lib/scodgen`): analysis and first parts
+## codgen / scodgen (`/lib/codgen`, `/lib/scodgen`): reconstruction status
 
 Second pass of a Portable C Compiler (PCC) derivation: `cparse` (pass 1) writes three files, `codgen` reads them and prints cas source.
 `cc` calls `cparse -E base <x.p`, which creates `base.I` (the trees, text), `base.D` (initialised data, text) and `base.S` (symbol table,
 binary, big endian), then `codgen [-l] [-p] [-R] -E base <base.I >x.s`; `gopt` (cc -O1..5) rewrites `base.I` in between. `-R`: register
-variables for -O3/-O5, `-l`/`-p`: line numbers, profiling. Both are E711 (non-segmented programs; scodgen generates Z8001 code): text 53760/54784,
-data 27084/28730, bss 17522/17512. Modules and versions (strings in the binary): reader3.c 2.5, rdr3.c 2.1, local3.c 2.4, order3.c 2.4,
-match3.c 2.4, allo3.c 2.4, regallo3.c 2.5, comm3.c 2.1, common 2.5, table3.c 2.2 with table3.nzcc.c 2.4 (scodgen: table3.szcc), wrt3.c 2.4,
-regs3.c 2.5, lcl3.c 2.4, tr3.c 2.3, optim3.c 2.4, all 08/83-10/83. The names follow PCC (`reader`, `match`, `allo`, `order`, `local`, `table`,
-`optim`, `comm2`). Not the Plexus `pcc` (it prints `csv2`/`cret2`); the Plexus sources (`cmd/cc/pcc.d/mip`) only help to read the
-structure (private reference).
+variables for -O3/-O5, `-l`/`-p`: line numbers, profiling. `codgen` is E711 (non-segmented programs), `scodgen` generates Z8001 code.
+Module versions (strings in the binary): reader3.c 2.5, rdr3.c 2.1, local3.c 2.4, order3.c 2.4, match3.c 2.4, allo3.c 2.4, regallo3.c 2.5,
+comm3.c 2.1, common 2.5, table3.c 2.2 with table3.nzcc.c 2.4 (scodgen: table3.szcc), wrt3.c 2.4, regs3.c 2.5, lcl3.c 2.4, tr3.c 2.3,
+optim3.c 2.4, all 08/83-10/83. The names follow PCC (`reader`, `match`, `allo`, `order`, `local`, `table`, `optim`, `comm2`). This is not
+the Plexus `pcc` (it prints `csv2`/`cret2`); the Plexus sources only help to read the structure (private reference).
 
-**Options** of codgen (list at data 0x58): `E M O R a e f l o p r s t u x y`, `-E base` names the files.
+### Status (current)
+
+Sources: `src/cmd/codgen` (K&R C for the WEGA cc, the same files build `codgen` and `scodgen` with `-DSEG`; the tables
+`table3_codgen.c` / `table3_scodgen.c` and `ops_*.c` / `hop_*.c` differ). They are built by `src/cmd/Makefile` (subdirectory `codgen`).
+
+- **Assembler text.** `codgen` and `scodgen` give the same assembler text and exit status as `/lib/codgen` and `/lib/scodgen` on the
+  test corpus: 101 of 101 cases each (`corp4test` with 100 cases plus `corpsr`, and the scodgen counterparts), checked on the final sources.
+  The corpus is small and does not contain structure returns (see the `fbegin` note below).
+- **Functions.** The program part of `/lib/codgen` (0x0 .. 0xbbc4) and of our build (the codgen objects, up to 0xbc2a) contain 210
+  functions. Original boundaries come from the call targets and prologues (the original is stripped). 206 functions are paired with a
+  function of the original (`tools/confirm.py`, the same instructions and call targets). 4 have no counterpart: `start` (crt0 entry),
+  `rcookie` (a duplicate of `rallkind` in `allo3.c`, removed from the source), `cgwipe` and `cgprintf` (our helpers: the work-area
+  clearing and the `printf` wrapper; the original has no separate functions for them).
+- **Differences of the 206 paired functions** (`tools/classify.py`, pattern check of the old-cc differences D1-D14):
+  21 have no differing instruction after normalisation (addresses, frame offsets and scratch registers masked); 181 differ only by
+  old-cc patterns (D1 to D14); 4 have other differences: `clocal`, `sucomp`, `tshape`, `zzzcode` (see "Open" below).
+- **Tools.** `src/cmd/codgen/tools` (see its `README.md`): `locate.py` (our functions by name), `confirm.py` (pairing check),
+  `patterns.py` (pattern check of the D classes), `classify.py` (writes the class into `findings.json`), `inventory.py`
+  (`INVENTORY.md`), `blocks.py` (differing blocks of one function), `check.sh` and `corpus.sh` (corpus comparison). The single
+  source of truth for the per-function state is `src/cmd/codgen/tools/findings.json`; the pipeline is `make -C tools pipeline`.
+  Host tools: `host/tools/cgread.py` (reads `.I` files: 100 of 100 corpus files without remainder), `cgsym.py` (symbol files `.S`:
+  100 of 100), `cgcmp.py` (instruction comparison of functions), `regdecl.py` (toggles `register` on the declarations of a function),
+  `codgentab.py` (writes the operator and template tables as C).
+
+### Source changes that made functions equal to the original
+
+These changes are in the sources; the git history has the exact diffs. Each keeps the corpus result (101 of 101).
+
+- `allo3.c`: duplicate static `rcookie` removed (it had the logic of `rallkind`); `allocreg` calls `rallkind`; `tcopy` uses `ncopy(q, p)`.
+- `efcode3.c`: `lineout` takes `int line` (the original's `long` was wrong).
+- `main3.c`: `options` declares `register int i, err`.
+- Unsigned shifts (the original shifts the field values with `srl`): `DECREF`/`INCREF` operands unsigned in `reader3.c`, `tr3.c`,
+  `zzz3.c`, `lcl3.c` (`fixfld`: `INCREF(DECREF((unsigned)m->type))`); `ttype` in `match3.c`; `shincr` in `local3.c`; `buildstar`
+  in `tr3.c` (per site); `rsdump`, `tmpcleanup`, `fixtemp`: `struct rs` and `struct tmpent` flags are `int`. `struct sym` `sflags`
+  stays `int`: making it unsigned broke six other functions. `fbegin` (`lcl3.c`) keeps the signed `DECREF`.
+- `fbegin`: `structsz` is the structure size in words (`s->ssize / 16`), not `/ 2`.
+- `tshape` (`match3.c`): the `case FLD:` block precedes `case STAR:` (the original's body order; the call order now matches).
+- `sucomp` (`order3.c`): the locals and `l`, `r` are register variables (`register int o, arity, nr, ...`). This is an approximation,
+  see "Open".
+- `argscan` (`order3.c`): `switch (argsize(q))` written as `if` statements with the result in `int sz` (the original is a compare
+  chain, D6). `argsort` uses pointers `ai`, `aj` over `struct arg` (`argl` as a named type).
+- `rnnullall` (`regfile3.c`): `register int i`.
+- `delstrip` (`reader3.c`): `*p = *p->left` (the original copies the node inline).
+- `expand` (`out3.c`): the `%ld` helper `prlong` (the original calls a one-line function for `M` and `N`).
+- `gswitch` (`lcl3.c`): the `newreg` register blocks written out inline in the non-SEG path (the original calls `getreg` directly).
+- `mycanon` (`gen3.c`): the `switch` over the ten relation operators (the jump table of the original).
+- `stmt` (`reader3.c`), `markcall`, `mapregs` (first switch): `switch` statements written as `if` statements, so the shipped cc makes
+  the compare chain of the original.
+- `alloc` (`comm3.c`), `reclaim` (`allo3.c`), `nextcook` (`gen3.c`), `eread` (`rdr3.c`), `zzzcode` (`zzz3.c`, `c` is `char`,
+  register variables): see `findings.json` for the per-function evidence.
+- Tried and not kept: `makeblock` (`l` and `r` as register variables made it worse) and `cbranch` (`true` and `false` as stack
+  variables changed the saved register sets).
+
+### Open differences
+
+Listed by function; the current evidence is in `findings.json` (`findings_pending`).
+
+- `clocal` (`tr3.c`, `clocal-size-01`): 230 against 264 instructions; the body is in another block order (the `NAME` block is
+  out of line in the original, D7 or source). Swapping the `NAME` and `SCONV` branches was tried: block count 26 to 10, but the
+  alignment fell from 47 % to 17 %, so it was reverted.
+- `zzzcode` (`zzz3.c`, `zzzcode-order-01`): the block `if (notoff(...)) order(r, STAREG)` sits at another place (808 in ours, 920 in
+  the original). The two `sra rS,#1` forms are the same in context; shift counts are equal (`shift-type-02` is closed for them).
+- `sucomp` (`order3.c`, `sucomp-size-01`): 731 instructions against 684 (after the register declarations; 756 before). 55 `add rS,F`
+  forms remain: the original adds a frame slot directly in 49 places, we load it into a register first. Operand order in the sums
+  and temporaries for `l->su` were tried without gain; the register declarations were the only change with an effect. The cause is
+  not found.
+- `tshape` (`match3.c`, `tshape-order-01`): the last operand of the `SZERO` return is a value in the original (`cpl rr2,#0; ldk r2,#0;
+  tcc eq,r2`), a branch in ours. The `if` form gave no gain.
+- Left from earlier rounds, not re-checked in this round: `cbranch` (the table dispatch after the `cpir` search, D6, and the
+  compare chain order 0x56-0x59), `gswitch` (the original is a structurally different case code with about 20 `printf` calls against
+  our 10; not reconstructed), `rdsym` (frame of two bytes, D1), `freeparm` (scratch register choice, D2), `ffld` (parameter spilled in
+  ours, D4), `ascii` (one reload, D3), `newnode` (the original jumps back into the case 3/7 body, layout), `cerror` (`ldm` with a
+  displacement in the original, old cc), `argplace` (local array `cnt` addressed directly in the original, D5), `ltypeop` (the
+  original loads `p->op` once into a scratch register, D3).
+
+### codgen runs (facts, not all re-checked in this round)
+
+- `struct node` is laid out as in the original (0x12 bytes: `sname` at 8 doubles as the CBRANCH label, the left subtree overlays the
+  low word of `lval`, `rval`/`right` share 0x10). The members are reached through macros (`lval left rval right label`), because the
+  K&R `cc` has one member name space (`struct rv` must not use `a`/`b`).
+- `printf` of the WEGA C library writes a stray `-` in front of a `%s` argument (and drops its first character) when the stack at the
+  place of its work area holds an old `%d` radix of -10 and a negative number. The original `codgen` only escapes by its stack layout.
+  `cg.h` therefore redefines `printf` as `cgprintf()`, which clears 400 bytes of stack first (`comm3.c`). See the quirks table.
+- `allo` clears `resc[k].sname` (not `stsize`) for the A and B registers; a stale symbol made the result register look as if it held a
+  variable.
+- `ispow2` returns an `int`; the table `indope` must end with op -1; `ftell` and `ispow2` must be declared (a long return read as int
+  loses the high word).
+- The statement dispatcher is `stmt()` (0x075a): op 118 `PROC` (function head with the parameters, `fwalkd(parminit)`), 119 (head
+  without parameters), 122 `SWTCH` (`gswitch`), else `delay`.
+- `fbegin`: a structure return is only covered by the test file `t2.c` (kept in a scratch directory, not in the corpus): a function
+  returning a 40 byte structure gives `ld r1,#20` in both builds.
+
+### scodgen (facts from earlier rounds)
+
+`make scodgen` compiles the same sources with `cc -DSEG` (objects in `seg/`). Facts that were not obvious from the function list:
+
+1. A pointer is 32 bit in scodgen: `szty` 2 words, `tbytes` 4, `bsize` 32. The template test `0x8000` ("same size") depends on it.
+   With 16 the template `addl AR,AL` matched an int register and gave a bad register pair. `rclass`/`allocreg` put types 8 and 9 into
+   the long class; `rsbuild` leaves r14 out of the register sets, `rfree` ignores r14.
+2. The frame is `_stkseg+~L1+n(fp)` (fp = r15, sp = rr14). The short form `|_stkseg+~L1+n|(fp)` is used when the offset fits a byte
+   (`oregput`). Indexed addresses are `rrB(rI)` with the base in the high byte of `rval` (`adrput`), direct ones `name(rI)`.
+3. The sites of `offstar` are not alike: `offstar(p)` takes the STAR itself at the left operand of `setbin`, the right site of `setasg`,
+   the right site of `setasop` and the STAR case of `order`; the other sites pass `p->left`. The two versions differ only in the jump
+   targets of the shared tail, so a comparison with the addresses removed does not show it.
+4. `sucomp` gives a STAR at least `su` 2.
+5. In `zzzcode`, `ZT` (long to short): an operand that is neither a REG nor frame based goes to a register by `order(p,6)` first.
+6. `gencall` of an indirect call: if no argument register pair is in the way, the address is loaded into a free pair (`rall` 0x1002);
+   otherwise rr8 is saved in a temporary (`freetemp(2)/8`) and restored after the call.
+7. `conval` for PLUS of pointer constants masks the offset (`& 0x7F00FFFF`, segment byte kept); MINUS keeps only the low byte of the
+   difference, the high word becomes 0 (`(lval - val) & 0xFF`). The MINUS mask looks like a slip in the original; kept (no test file
+   reaches it, see the quirks table).
+
+### codgen fidelity: method and reading rules
+
+- The pairing is by name (object markers and source order, `locate.py`), then by the instruction multiset with addresses, frame offsets,
+  call targets and scratch registers masked (`confirm.py`, `patterns.py`).
+- The original declares `register` variables in an order that determines the registers: declaration order from r14 downwards (a `long`
+  takes a pair); K&R parameters first, then the locals. A register parameter is copied from r7, r6, ... into its register at the entry.
+- Some original functions keep register variables that nothing uses (`offstar` without SEG: `l`; `rfree`: `prev`; `oreg2`, `eread`,
+  `fbegin`, `buildstar`, `rsbuild`). The source is shared with the SEG variant, so they are kept as `spareN` declarations.
+- In leaf functions the shipped cc puts register variables into scratch registers where the original uses r8-r14 (D2). Those cannot match.
+- The saved register sets (`ldm`) are equal for all non-leaf functions checked.
+- Static functions without a symbol (only reached by `calr`) are named by their caller (`static_<address>` until named).
+
+### Function map of `/lib/codgen` (addresses of the original)
+
+Module map by the version strings in the data (code order): reader3.c (0x2a main part, 0x0838 delay, 0x0aaa codgen, 0x0ba2 order,
+store ... 0x18be), rdr3.c and rdr (the readers of the intermediate files, 0x19ac .. 0x2780), local3.c (0x2780 .. 0x4804, with `zzzcode`,
+`cbgen`, `gencall` 0x4534, `nextcook` 0x4674, `lastchance` 0x46ae), order3.c (0x49c0 .. 0x5c7a), match3.c, allo3.c, regallo3.c, comm3.c and
+`common` (0x8570 .. 0x8c72: `uerror`, `cerror` (stops with status 0x40), `werror`, the tree pool of 500 nodes of 0x12 bytes at 0x69e2,
+`fwalkd` 0x8774, `fwalk` 0x87ec, `alloc` 0x8b6e), wrt3.c (0x8c74 ..), regs3.c, lcl3.c (0x9116 ..), tr3.c (0xa1b8 ..), optim3.c (0xb0a0 ..),
+then the C library from 0xbbc4.
+
+Operator numbers: `CM` (comma of the arguments) is 56, `COMOP` 59, `QUEST` 21, `UCALL` 72, `FCALL` 73, `UFCALL` 75, `INIT` 116;
+`ULE .. UGT` are 86-89 and `FEQ .. FGT` 90-95.
+
+`main3.c`: `options` 0x002a, `init` 0x019e, `main` 0x023c (the command loop; `{` begins a function: reads the sizes, the data file section,
+the symbol file; `.` a statement tree into `delay`; a non-option argument is reopened as stdin and, a quirk of the original, scanned again
+after the end of the input). `rdr3.c`: `rdin` 0x269a/0x26ae, `eread` 0x2480, the loaders of the symbol file (`rdsym` 0x1a86, `readsyms`
+0x1b64, `readtab`, `readnums`, `readmems`, sorted tag list with binary search) and `mapnm` 0x20c0, `rddata` 0x19ac. `efcode3.c`: the function
+exit and entry text (`efcode` 0x28f6, `epilog` 0x2990, `prolog` 0x2aca, `regargs` 0x2c0e).
+
+`/lib/codgen` in detail: `reader3.c` (`codgen` 0x0aaa, `prcook`, `order` 0x0ba2 with the PCC structure and the tables at data 0x140/0x1a4,
+`store` 0x1084, `constore`, `markcall`, `stoarg`, `cbranch` 0x12bc, `ffld` 0x15d0, `oreg2` 0x175e, `canon` 0x1884, `argprep` 0x18be,
+`delay` 0x0838 with `delay1`/`delay2`), `gen3.c` (`gencall`, `genscall`, `nextcook`, `lastchance`, `icright` 0x46d0, `canon2` 0x46fe,
+`mycanon` 0x4804, `stoasg` 0x487e, `mkadrs` 0x48a0), `optim3.c` (`optim` 0xb178, the second pass; `conval` 0xb774, `treeeq` 0xb9ea,
+`convelim` 0xba7c), `comm3.c`.
+
+**Symbol table file `base.S`** (binary, big endian; `rdr3`, functions at 0x1a86..0x2090): a long G (offset of the last section = the global
+symbols), then sections up to the end of the file, one per function (`{`) and the global one last. A section: word flag (member table
+present), long bytes of symbols, long bytes of the ascii table, word bytes of the number table, word bytes of the member table, then the
+22 byte symbol entries (11 words: name offset, type, class/flags, ..., the tag in `w8 >> 4 & 0xFFF`, last word 0xFFFF), the ascii table
+(names, NUL terminated), the number table (2 byte entries), the member table (6 byte entries). The symbols are sorted by tag for the
+lookups (binary search at 0x1f82). `base.D` is copied to the output in pieces: a 7 digit count, TAB, LF, then that many bytes; one piece at
+each `{` and `}`.
 
 **Intermediate file `base.I`** (text; numbers decimal and tab terminated). A record starts with one character (table at data 0x98 in
 codgen: `# . / B C F L R S T [ ] { }`):
 - `{ n TAB autooff TAB size TAB nreg TAB`: begin of a function (generates the prologue); `}`: end (epilogue, `~L1`, `~L2` lines).
 - `[ autooff TAB maxtreg TAB x TAB` begin and `]` end of a block; `. lineno TAB "file"` followed by an expression tree;
-  `L n TAB` label, `B n TAB` branch label, `F n`, `S n`, `T n`, `R a TAB b [TAB c]`, `C n TAB l1 TAB l2 ... TAB` switch table
-  (`.data`, `.even`, `Ln:`, `.addr Lx`..., `.code`), `# text` and `/ text` copied or ignored lines.
-- A tree node in prefix order: `op TAB [lval TAB] [rval TAB] type(octal) TAB name LF`; lval for leaves (arity LTYPE), rval except for binary
-  nodes, `stsize TAB stalign LF` instead of the name for STASG, STARG, STCALL, USTCALL (101, 102, 103, 105). Then the left subtree
-  (not for leaves) and the right subtree (binary nodes). Op numbers and arity come from a table of 12 byte entries
-  (op, name[8], flags; flags & 0xE: 2 leaf, 4 unary, 8 binary) at data 0x3b92 (89 operators: NAME 2, STRING 3, ICON 4, FCON 5, + 6, ... PROC 118).
-- `tools/cgread.py /lib/codgen x.I ...` reads these files with exactly these rules: all 230 files of the cc corpus (136k nodes) and
-  all 253 files of the scc corpus (168k nodes) parse without a remainder.
+  `L n TAB` label, `B n TAB` branch label, `F n`, `S n`, `T n`, `R a TAB b [TAB c]`, `C n TAB l1 TAB l2 ... TAB` switch table, `# text` and
+  `/ text` copied or ignored lines.
+- A tree node in prefix order: `op TAB [lval TAB] [rval TAB] type(octal) TAB name LF`; `lval` for leaves, `rval` except for binary nodes,
+  `stsize TAB stalign LF` instead of the name for STASG, STARG, STCALL, USTCALL (101, 102, 103, 105). Then the left subtree and the right
+  subtree (binary nodes). Operator numbers and arity come from a table of 12 byte entries (op, name[8], flags; flags & 0xE: 2 leaf, 4 unary,
+  8 binary) at data 0x3b92 (89 operators: NAME 2, STRING 3, ICON 4, FCON 5, + 6, ... PROC 118).
+- `host/tools/cgread.py` reads these files with these rules (100 of 100 corpus files).
 
-**Symbol table file `base.S`** (binary, big endian; `rdr3`, functions at 0x1a86..0x2090): a long G (offset of the last section = the global
-symbols), then sections up to the end of the file, one per function (`{`) and the global one last. A section: word flag (member table
-present), long bytes of symbols, long bytes of the ascii table, word bytes of the number table, word bytes of the member table, then the
-22 byte symbol entries (11 words: name offset, type, class/flags, ..., the tag in `w8 >> 4 & 0xFFF`, last word 0xFFFF), the ascii table (names,
-NUL terminated), the number table (2 byte entries), the member table (6 byte entries). The symbols are sorted by tag for the lookups
-(binary search at 0x1f82). `tools/cgsym.py` reads the files: the sections of all 483 files of both corpora tile the file exactly.
-`base.D` (the data text) is copied to the output in pieces: a 7 digit count, TAB, LF, then that many bytes; one piece at each `{` and `}`.
+**Options** of codgen (list at data 0x58): `E M O R a e f l o p r s t u x y`; `-E base` names the files.
 
 **Constants** (the same values and names as the PCC pass 2, in octal): shapes SANY 01, SAREG 02, STAREG 04, SBREG 010, STBREG 020, SCC 040,
 SNAME 0100, SCON 0200, SFLD 0400, SOREG 01000, STARNM 02000, STARREG 04000, INTEMP 010000, FORARG 020000, SWADD 040000, SPECIAL 0100000;
 types TCHAR 01, TSHORT 02, TINT 04, TLONG 010, TFLOAT 020, TDOUBLE 040, TPOINT 0100, TUCHAR 0200, TUSHORT 0400, TUNSIGNED 01000,
-TULONG 02000, TANY 010000, TSTRUCT 020000. A node is 0x12 bytes: op, rall (0x2000 = none), type, +6, +8 (symbol of a NAME), +0xA
-(struct size, TEMP number), lval (long, +0xC), left (+0xE), rval (+0x10); the format of `base.I` has no names (symbols come from the tags).
-`src/cmd/codgen/cg.h` has them; `allo3.c` has `rclass rfind rbusy rfree rfreenode freetemp freeparm usable freereg allocreg allo tfree tcopy reclaim rfreeall` (0x66bc-0x7058, 0x873c-0x8a24, 0x96e6, 0x9696; quirks kept: `rbusy` counts the node in front of the long register it split, `allo` reads `resc[k]` one past the last register when it releases, `reclaim` sets every non-LONG type to UNSIGNED after taking the second register of a pair, the rewrite and `freereg` tests with `or` that are always true); `regallo3.c` has the register lists (`rsinit rsbuild newnode rsinsert roverlap regjam getreg rsreturn nullsyms`, from 0x740c-0x8112; `rsfreeall rspush rsmerge rsrestart rsdump` are open); `match3.c` has tshape, ttype and setrew (the index `opptr[op]` of the first table entry for an operator; entries with
-op >= 0x1000 are operator classes selected by the masks in `opclass[]`). The operators (`src/cmd/codgen/ops_*.c`, from `tools/codgentab.py --ops`) are the PCC ones.
+TULONG 02000, TANY 010000, TSTRUCT 020000. A node is 0x12 bytes: op, rall (0x2000 = none), type, +6, +8 (symbol of a NAME), +0xA (struct
+size, TEMP number), lval (long, +0xC), left (+0xE), rval (+0x10). `src/cmd/codgen/cg.h` has them.
 
-**Table.** The templates are an array of 10 word entries `op visit lshape ltype rshape rtype needs nx rewrite cstring` behind the version string
-`table3.nzcc.c` (codgen: 150 entries, last one the sentinel "/*NULL*/") or `table3.szcc.c` (scodgen: 174 entries, sentinel "/*hi mom*/"). The text
-of a template begins with its number as a comment (`/* 000 */` ...), which shows in the output. `tools/codgentab.py <original> > table3.c`
-writes the table as C source (`src/cmd/codgen/table3_codgen.c`, `table3_scodgen.c`).
+**Table.** The templates are an array of 10 word entries `op visit lshape ltype rshape rtype needs nx rewrite cstring` behind the version
+string `table3.nzcc.c` (codgen: 150 entries, sentinel "/*NULL*/") or `table3.szcc.c` (scodgen: 174 entries, sentinel "/*hi mom*/"). The
+text of a template begins with its number as a comment (`/* 000 */` ...), which shows in the output. `host/tools/codgentab.py <original>`
+writes the table as C source (`table3_codgen.c`, `table3_scodgen.c`).
 
-Test harness: `src/cmd/codgen/corpus.sh SRC OUT` (PROG=scodgen for scc) runs the original `cc -S -:d` over all C sources of the tree and keeps
-`<id>.I .D .S` and the reference `<id>.out.s`; `check.sh` compares a rebuilt `./codgen -E x <x.I` with the original on that corpus.
-`match3.c` also has `getlr` and `match()` (the selection loop: operator or class entry, cookie, shapes and types of both operands, the "same type"/"same size" markers 0x4000/0x8000, `needs & 0x1000` = rewrite entry, then `allo`, `expand`, `reclaim`), `local3.c` the helpers `special` (the SPECIAL+1..8 constant shapes), `shtemp`, `shumul`, `shincr`, `ltypeok`, `ltypeop`, `ispow2`, `bsize`, `szty`, `rcount` (compiler loop guard, 5000). `out3.c` has `expand` (0x6444) with the template macros and the printing functions: `A`x operand (`adrput` 0x41d0), `B` low bit of lval, `F` (line only when the value is used, i.e. cookie has no FOREFF), `H`/`S` field shift/size, `I` (insput: always an error), `L` the label of a CBRANCH, `M`/`N` field mask and its complement, `O`x (`hopcode` 0x2de0: mnemonic by operator and type from the tables `fhoptab`/`ihoptab`, `tools/codgentab.py --hop`), `T` flag, `U`x (`upput` 0x40d4: second word), `V` registers print as `rr2`, `W` as `rl2`, `X` back to normal, `Y` right operand as a constant, `Z`x (`zzzcode` 0x2edc, done in `zzz3.c`) and `C` (not done). Operands print through `acon` (0x437e: `Ln` for negative rval, `_name`, `Lnn` for a local static, `~L1`/`~L2` frame symbols, `+offset`) and `oregput` (`off(reg)`, `(fp)`). `fixname` (0xa0c6: NAME in a register becomes REG, auto becomes OREG), `oregfix` (0xa12a), `allo` (0x67e8, uses the register counts in `needs`), `reclaim` (0x7058) are next. `zzz3.c` (done, compiles, not yet compared byte for byte) has `psuffix` (0x2780), `geninc` (0x2e4c: inc/dec/add/sub by constant size), `zzzcode` (jump table at data 0x296a indexed by `c - '0'`, 32 cases: `<>B` type suffix, `R` sgl/dbl, `f`, `UVW` .word/.byte/.long, `FI` cbgen, `2 ~` log2, `i t C c N H h l r Q`, `0` (undo the register moves of nxwork 33/34), `u K` (field store) `L M S s A T P`) and `cbgen` (0x460e); `notoff` (0x49c0) is in `order3.c`. The `negrel` table at data 0x274 (EQ..FGT -> the negated relation) is used by `ZN`. Open: `nosuffix`, `upperlval`, `negrel`, `cbflag` are only declared, the node struct in `cg.h` has `label` as an extra field (the original shares the slot of `sname`, node size 0x12), so offsets differ from the binary until that is fixed. Next: allo, regallo, order, local, wrt, regs, lcl, tr, optim and the reader main loop (about 6000 lines in all; the module map is: reader/rdr 0x19e..0x2790, local 0x2780..0x3e00 and 0x3e1c..0x4804, order 0x49c0..0x5e90, match 0x5d2c..0x66bc, allo/regallo/comm/optim after).
+**Test harness.** `src/cmd/codgen/tools/corpus.sh SRC OUT` (PROG=scodgen for scc) runs the original `cc -S -:d` over the C sources and keeps
+`<id>.I .D .S` and the reference output; `check.sh CORPUSDIR` compares `./codgen -E x <x.I` (or `./scodgen`) with the original on that corpus
+(assembler text and exit status).
 
-Module map of `/lib/codgen` by the version strings in the data (code order): reader3.c (0x2a main-part, 0x0838 delay, 0x0aaa codgen, 0x0ba2 order, store ... 0x18be), rdr3.c and rdr (the readers of the intermediate files, 0x19ac .. 0x2780), local3.c (0x2780 .. 0x4804, with `zzzcode`, `cbgen`, `gencall` 0x4534, `nextcook` 0x4674, `lastchance` 0x46ae), order3.c (0x49c0 .. 0x5c7a), match3.c, allo3.c, regallo3.c, comm3.c and `common` (0x8570 .. 0x8c72: `uerror`, `cerror` (stops with status 0x40), `werror`, the tree pool of 500 nodes of 0x12 bytes at 0x69e2, `fwalkd` 0x8774, `fwalk` 0x87ec, `alloc` 0x8b6e), wrt3.c (0x8c74 ..), regs3.c, lcl3.c (0x9116 ..), tr3.c (0xa1b8 ..), optim3.c (0xb0a0 ..), then the C library from 0xbbc4. Done so far in `src/cmd/codgen`: `reader3.c` (`codgen` 0x0aaa, `prcook`, `order` 0x0ba2 with the PCC structure and the tables at data 0x140/0x1a4, `store` 0x1084, `constore`, `markcall`, `stoarg`, `cbranch` 0x12bc (no zero-compare optimisation for EQ..GT, `ASSIGN` of a constant is known), `ffld` 0x15d0, `oreg2` 0x175e, `canon` 0x1884, `argprep` 0x18be, `delay` 0x0838 with `delay1`/`delay2`), `gen3.c` (`gencall`, `genscall`, `nextcook`, `lastchance`, `icright` 0x46d0, `canon2` 0x46fe, `mycanon` 0x4804, `stoasg` 0x487e, `mkadrs` 0x48a0), `optim3.c` (`optim` 0xb178 = the second pass `optim`, not 0x1884; `conval` 0xb774, `treeeq` 0xb9ea, `convelim` 0xba7c), `comm3.c`. Operator numbers: `CM` (comma of the arguments) is 56, `COMOP` 59, `QUEST` 21, `UCALL` 72, `FCALL` 73, `UFCALL` 75, `INIT` 116; `ULE .. UGT` are 86-89 and `FEQ .. FGT` 90-95. `main3.c`: `options` 0x002a, `init` 0x019e, `main` 0x023c (the command loop; `{` begin of a function: reads the sizes, the data file section, the symbol file; `.` a statement tree into `delay`; a non-option argument is reopened as stdin and, a quirk of the original, scanned again after the end of the input). `rdr3.c`: `rdin` 0x269a/0x26ae, `eread` 0x2480, the loaders of the symbol file (`rdsym` 0x1a86, `readsyms` 0x1b64, `readtab`, `readnums`, `readmems`, sorted tag list with binary search) and `mapnm` 0x20c0 (symbols, register variables, fields), `rddata` 0x19ac (copies a section of the data file to the output). `efcode3.c`: the function exit/entry text (`efcode` 0x28f6, `epilog` 0x2990, `prolog` 0x2aca, `regargs` 0x2c0e ...). **scodgen differs from codgen** in 33 of 253 functions (found by comparing the instruction streams with the addresses removed): `main`, `order`, `oreg2`, `mapnm`, `tsuffix`, `funcend`/`efcode`, `regrestore`, `regsave`/`regargs`, `zzzcode`, `ltypeok`-area 0x3ed6, `oregput`/`upput`, `acon`, `gencall`, `sucomp`, `offstar`, `setbin`, `setasg`, `setasop`, `genargs`, `allo`, `rclass`/`allocreg`, `usable`, `rfree`, `rsbuild`, `szty`, `tbytes`, `hdrout`, `parminit`, `fbegin`, `fixtemp`, `rcmd`/`scmd`/`tcmd`/`memname`, `gswitch`/`clocal`, `conval`; scodgen has one more function (`mkoreg`, 0x5466 in its layout). All of them are rebuilt under `#ifdef SEG` in the same sources (see "scodgen runs" below).
-
-**codgen runs (status).** `src/cmd/codgen` now links to a `codgen` (`cc -O -i`, about 88 KB; without `-O` the text overflows) that gives the same assembler text as the original `/lib/codgen` on the test files (sync.c, ar.c, dump.c and a set of small cases: 0 differences, same exit status); `check.sh` and `corpus.sh` work with it. `struct node` is now laid out exactly like the original (0x12 bytes: `sname` at 8 doubles as the CBRANCH label, the left subtree overlays the low word of `lval`, `rval`/`right` share 0x10); the members are reached through macros (`lval left rval right label`) so the K&R `cc` needs unique member names (it has one member name space: `struct rv` must not use `a`/`b`). Things found on the way: (1) **the C library `printf` of WEGA writes a stray `-` in front of a `%s` argument (and drops its first character) when the stack at the place of its work area holds an old `%d` radix of -10 and a negative number**; the original `codgen` only escapes by luck of its stack layout. `cg.h` therefore redefines `printf` as `cgprintf()`, which clears 400 bytes of stack first (`comm3.c`). (2) `allo` clears `resc[k].sname` (not `stsize`) for the A and B registers; a stale symbol made the result register look as if it held a variable and kept it from being merged into a long pair again. (3) `ispow2` returns an int, the table `indope` must end with op -1, `ftell`/`ispow2` have to be declared (a long return read as int loses the high word). (4) The statement dispatcher is `stmt()` (0x075a): op 118 `PROC` (function head with the parameters, `fwalkd(parminit)`), 119 (head without), 122 `SWTCH` (`gswitch`), else `delay`.
-
-**scodgen runs (status).** `src/cmd/codgen` also makes `scodgen` (`make scodgen`: the same sources compiled with `cc -DSEG`, objects in `seg/`, linked with `cc -i`; `table3_scodgen.c`, `ops_scodgen.c`, `hop_scodgen.c`). It gives the same assembler text as `/lib/scodgen` on all test files: the 13 programs of `src/cmd` that `scc` compiles (ar, doprnt, dump, dumpdir, getud, putud, ranlib, readsym, restor, size, strip, sync, tar), 103 libc files (gen, stdio) and the small cases `g(&a)` / struct and array access. Facts that were not obvious from the function list: (1) A pointer is 32 bit: `szty` 2 words, `tbytes` 4, `bsize` 32 (the template type test `0x8000` "same size" depends on it: with 16 the template `addl AR,AL` matched an int register and gave a bad register pair), `rclass`/`allocreg` put types 8 and 9 (pointer to char / other) into the long class, `rsbuild` leaves r14 out of the register sets, `rfree` ignores r14. (2) The frame is `_stkseg+~L1+n(fp)` (fp = r15, sp = rr14, `fp := r15`); the short-offset form is written `|_stkseg+~L1+n|(fp)` when the offset fits a byte (`oregput`). Indexed addresses are `rrB(rI)` with the base in the high byte of `rval` (`out3.c`, `adrput`), direct ones `name(rI)`. (3) **The sites of `offstar` are not alike**: `offstar(p)` of scodgen takes the STAR itself (`mkoreg` makes the OREG, then `order(p,6)` loads it), but only at the left operand sites of `setbin`, the right site of `setasg`, the right site of `setasop` and the STAR case of `order`; all the other sites still pass `p->left` (the pointer expression). The text of the two functions differs only in the jump targets of the shared tail (`jp 587c` / `jp 5af6`), so a comparison with the addresses removed does not show it. (4) `sucomp` gives a STAR at least `su` 2. (5) In `zzzcode` `ZT` (long to short) an operand that is not a REG and not frame-based goes to a register by `order(p,6)` first; a REG is used as it is (low word `rval+1`). (6) `gencall` of an indirect call (function pointer): if no argument register pair is in the way (`argstop` 0 and `argreg` >= 3) the address is loaded into a free pair (`rall` 0x1002); otherwise rr8 is saved in a temporary (`freetemp(2)/8`, text `ldl _stkseg+~L1+n(fp),rr8`), loaded from the stored address, and restored after the call. (7) `conval` for PLUS of pointer constants masks the offset (`0x7F00FFFF`, segment byte kept). Check with `PROG=scodgen sh check.sh CORPUSDIR`; the corpus is built with `PROG=scodgen sh corpus.sh SRC OUT` and is not kept in git. (8) `conval` MINUS of pointer constants keeps only the low byte of the result (`(lval - val) & 0xFF`, the high word becomes 0), while PLUS keeps the segment byte (`& 0x7F00FFFF`): an original quirk, kept (no test file reaches it). Not yet done: byte comparison per function (see "codgen fidelity" below), codgen/scodgen in `src/cmd/Makefile`.
-
-**codgen fidelity: register variables (status).** The aim is that the rebuilt `codgen`/`scodgen` equal the originals except for the known old-cc differences (D1-D14, "Compiler revisions"). Method: the 209 functions of the program part of `/lib/codgen` (0x0 .. 0xbbc4) are paired with the own ones (instruction text, then the call graph), and each pair is compared as a multiset of instructions with addresses, frame offsets, call targets (`call`/`calr`), condition codes, scratch registers and the old-cc forms (D6 switch dispatch, D8 `extsb`/`subb`, D10 shifts, spills of arguments, D1 frame sizes) masked (`host/tools/cgcmp.py`, listings from `sdis.py -l` and `nm`; `host/tools/regdecl.py FILE FUNC k|names` toggles `register` on the declarations of a function). Findings: (1) the original declares far more `register` variables than the first reconstruction did; registers are handed out in declaration order r14, r13, ... (a `long` takes a pair), K&R parameters first, then the locals, and a register parameter is copied from r7, r6, ... into its register at the entry. (2) Some functions keep a register variable that nothing uses (`offstar` without SEG: `l`; `rfree`: `prev`; `oreg2`, `eread`, `fbegin`, `buildstar`, `rsbuild`): the source is shared with the SEG variant. They are kept as declarations, `spareN` where no real variable fits. (3) In leaf functions the shipped cc puts register variables into scratch registers where the original uses r8-r14 (D2): those cannot match. (4) The sets of saved registers (`ldm ...,rN,#k`) are now equal for all non-leaf functions. (5) 122 of the 194 paired functions have the same instruction multiset, 134 are within two instructions (`rsinit` 0x740c: the pointer loop is written out; its only difference is one pointer increment by 14 that the shipped cc compiles as `lda` where the original has `inc r,#14`: the whole program has 19 such `inc` in the original and 14 in the rebuild, an old-cc effect) (also found: the original stdio `getc` masks the byte with `& 0377` (`cg.h`), `rssaved`/`rsmark` are one interleaved array; the loop guard `nrecur` is cleared inline by `stmt()`, the function at 0x778e is empty and never called); the rest still differs in structure, `getreg` has the same blocks as the original: `switch` on `cls` (cases 5-8 share one loop), `take` and `touse` written out inline, the shared tail `found: busy = 1; ret: return reg` reached by `goto` from the four paths (the original jumps there too), the final `flag == 0x1000 ? regjam : -1` as one expression, `roverlap(cls, ...)` in the cases 2 and 6, and in the split `default:` a `goto` past `rsinsert` to the take block (the original jumps there too; the path is unreachable after `cerror`). What is left: the cp chain of the three-case `switch` (cases 1, 2, 6: the original cc makes a compare chain, the shipped cc a jump table: D6), the choice of `jr` or `jp` and the block order (D7)
-
-**codgen fidelity: functions finished in the last round.** `nextcook` (0x4674) is now the same instruction multiset: its parameters `p` and `cookie` are register variables (r1, r3 in the original). `nullsyms` (0x811e) has the `mode` test first (see the quirks table); its one remaining difference is the memory operand of `cp mode,#1` (the original loads `mode` into r2 first, old cc). Still different, with the cause identified but not changed: `freeparm` (0x6792: the original keeps the temporary of `k << 4` in r1, the shipped cc in r5: scratch register choice, D2); `ffld` (0x15d0: the original keeps the parameter `p` in r7 where the shipped cc spills it, D4); `ascii` (0x57b0: one reload of `p->left` that the original keeps in a register, D3); `crslab` (0x3cf2: loop layout, the test at the bottom of the loop in the original, D7); `newnode` (0x75e0: the original jumps back into the case 3/7 body from case 2/6 after the doubling of `n->reg`, the old cc keeps the value in rl2, not reloaded); `cerror` (0x85ae: `ldm` with displacement `%0000(r15)` where the shipped cc uses `@r15`, old cc).
-
-**codgen fidelity: two functions with source changes (this round).** `reclaim` (0x7058): the condition-code result stores its `lval` through a pointer variable (`lp = &p->lval; *lp = want;`), as the original does (`inc r0,#12; ld r1,r0; ldl @r1,rr2`); only the jump layout differs now (D7). `fbegin` (0x8fda): `structsz` is the structure size in words, `s->ssize / 16` (the original divides by 16, the rebuild had `/ 2`). The corpus did not cover structure returns, so this was not seen before: a test file with a function returning a 40-byte structure now gives `ld r1,#20` in both (the rebuild gave `#160`); the test source is kept in the scratch directory only (`t2.c`: `struct s { int a[20]; }; struct s f(x) int x; {...}`).
-
-**codgen fidelity: `alloc` and `mycanon` (the next round).** `alloc` (0x8b6e, `comm3.c`): the parameter `n` is a register variable (r14), `step` is a stack variable, `n = (n + 1) & ~1` is written as `n++; n &= ~1;` (`inc r14,#1; res r14,#0` in the original) and `step = n > 2000 ? n : 2000` as an `if`/`else` (the original branches and stores to the stack): the function now has the same instruction multiset. `mycanon` (0x4804, `gen3.c`): the original is a `switch (p->op)` with the ten cases EQ..UGT (ops 0x50-0x59) that all `break`, and `default: return`; its jump table at data 0x2a9e has ten entries, all 0x481c (the `break`), so the cc emits `sub r2,#0x50; cp r2,#9; jr ugt` and the table dispatch. The rebuild now has the same `switch`: the function has the same instruction multiset. (The table is in the data section: the listing of `sdis.py` shows data and text with the same addresses, so the table has to be read from the data section.)
-
-**codgen fidelity: `fcmd` (the same round).** The original reserves one more register variable (`ldm` of three registers) and does not store `s = 0` in the else branch: both are in the quirks table. Left: the encoding of the stack store `ld @r15` (shipped cc) against `%0000(r15)` (old cc), which `cgcmp` does not count as a difference.
-
-**codgen fidelity: `stmt` (0x75a, the same round).** The original switches on `p->op` with three cases (118, 119, 122) as a compare chain (`cp @r,#n` each; the shipped cc makes a `cpir` table for a switch of this size, D6): the rebuild writes the three cases as `if` statements, which the shipped cc compiles to the same chain. The call `fwalkd(p->right, parminit)` has two arguments in the original (quirk table). Now bag-equal.
-
-**codgen fidelity: `markcall` (0x1212, `reader3.c`).** The second switch (on `dope[p->op] & 0xE`, three cases) is written as `if` statements, as in `stmt`, so the shipped cc makes the compare chain of the original (`cp r,#2 / #4 / #8`); the value is kept in a stack variable `ty`. The original keeps it in a scratch register (`ld r2,@r1; ...; cp r2,#n`): that register caching is an old-cc effect (D3), so `markcall` is not bag-equal yet. Parameter `p` stays a register variable (the original spills `p` to the stack and reloads it, D4).
-
-**codgen fidelity: `cbranch` (0x12bc, `reader3.c`), analysed, not changed.** The first switch (the 23 operator codes of the relations 0x50-0x5F and the 0x17 search table) is the same `cpir` search in both; the dispatch after the search differs (the original takes the matched entry through the pointer `ld r2,%002C(r3)`, the shipped cc computes the index from the count: `add r4,r4; neg r4; ld r2,table(r4)`), an old-cc form of the table switch (D6). The later compares of the operator with 0x56-0x59 (the original has `cp #0x0F` after `sub #0x50`) are not yet lined up. Not bag-equal.
-
-**codgen fidelity: `cbranch`, the second part (the same round).** The rest of the function compares the stack copies of the parameters `true` and `false` with `cp mem,#0` in the original (`cp %0000(r15),#0; jr ge`), the shipped cc loads them into a register first (`cp rS,#0`); the saved register sets of `cbranch` (`ldm r10-r14`, and `ldm r4-r5` for the parameters) are the same. Making `true` and `false` plain stack variables changes the saved sets and was rejected (tested: regvar mismatch 5 to 6). Remaining: memory versus register operands of the shipped cc (D3/D4), the compare chain 0x56-0x59 in the original's order, and the `jr`/`jp` layout.
-
-**codgen fidelity: `rdsym` (0x1a86, `rdr3.c`), analysed, not changed.** The original has no stack frame in the first part (`clr` of `nglob`, `fseek`, `getw`, `return 0` by `sub r2,r2; ret`); the shipped cc gives the function a two-byte frame (`dec r15,#2`) and returns through the epilogue. The frame size comes from the shipped cc's temporaries (old cc: D1), not from the source. Not bag-equal.
-
-**codgen fidelity: unpaired functions (the function-boundary round).** Our function boundaries now come from the symbol table (`starts` of type 34; the original is stripped, its boundaries come from call targets and prologues). `argprep` (0x750c, mine; original 0x18be): the original stores `fake.nx = 0x20` before `fake.needs = 0x100`; the order is now the same (the stores are equal). Left: frame size (6 bytes more here, D1), and the early return `return p` (an extra `ld r,r` in the rebuild). Not yet found a counterpart for `freereg` (0x39e, the original 0x6d5a has the tests of `usable` in its body), `ltypeop` (0xe00, 12 instructions: no counterpart; the original may have it inline), `deflab` (0x2b9a), `rsrestart` (0x4dd4) and `funcend` (0x9ff8). `start` (0x0) is the crt0 entry, not codgen code.
-
-**codgen fidelity: `delstrip` (0x09d2, the callback of `fwalk` in `delay2`).** It is passed as a pointer, so it has no call instruction and the function table did not see it. The original copies the node inline (`ldir`, 9 words); `ncopy(p, q)` gave a call instead. `reader3.c` now assigns `*p = *p->left` (the original reads `p->left` twice), which brings the body to 3 and 2 instructions of difference (register choice of `op` and of the copy destination, not reproduced). Corpus checks codgen and scodgen: 100/100 and 1/1 unchanged.
-
-**codgen fidelity: the `%ld` helper of `expand` (0x3fc4) and `insput` (0x4088).** The original `expand` calls a one-line function for the `M` and `N` templates (`printf("%ld", m)`, 0x3fc4); `out3.c` now has `prlong` for it, which compiles to the same shape. `insput` (0x4088) is the same as our `insput`. The table had both and `rdin` (0x269a) at wrong addresses; corrected in `src/cmd/codgen/funcs.py`. Corpus checks codgen and scodgen unchanged (100/100 and 1/1).
-
-**codgen fidelity: `gswitch` (0xa7e0, the same round).** The original writes the `newreg` blocks out in place (8 `getreg` calls), so `lcl3.c` now has them inline in the non-SEG path, and `dlab = -r->left->lval` without the `int` cast (the original negates as a long). The `printf` calls of `gswitch` (`BEE6`) print the assembler lines that our source prints too. Left: a memory compare of `l->op` (`cp @r2,#0x7c`) and a tail `jp` where we have `jr`. Bag distance 53 -> 3. Corpus checks codgen and scodgen unchanged (100/100, 1/1). The SEG path still calls `newreg` (scodgen).
-
-**codgen fidelity: `freereg` (0x6d5a, `allo3.c`), rewritten.** The original has two always-true tests on the cookie: `cookie & 04 | 0100` (side `'L'`) and `cookie & 010 | 0200` (side `'R'`), a test `cookie & 04 | 010` for the loop over the integer registers 0..7, and `cookie & 0100 | 0200` for the loop over the registers 0x10..0x13 (the floats). The first test of the side is always true, so the `'R'` side and the float loop are dead code in the original (and are in the rebuild, as the same tests). `usable(p, side, reg)` is called in the loops and for a given register; the found part (`rfree`, `rclass`, `getreg` with flag 0x1000) is shared. The original keeps `side` at 7(r15), `cls` at 8(r15), and five saved register variables (r10-r14: the node of `getlr`, the type, an unused node pointer, the register, the symbol). Result: the instruction multiset equals the original except for one `jr`; the frame is 2 bytes larger (0x16 against 0x14, cc temporaries, D1) and the blocks are laid out differently (D7).
-
-**codgen fidelity: `ltypeop` (0x3e66 original, `local3.c`).** The four compares of `p->op` (2, 0x60, 4, 0x61, in this order in both) are the same. The original loads `p->op` into a scratch register once (`ld r3,@r1`) and compares the register; the shipped cc compares the memory word each time (`cp @r14,#n`). A register variable would save a register (the original is a leaf without saved registers), so this stays as the one difference: register caching of the old cc (D3).
-
-**codgen fidelity: the other unpaired functions, checked (the same round).** `deflab` (mine 0x2bf2, original 0x59de, KNOWLEDGE 0x59de): the same instruction multiset up to the `ret`; the call goes to `cgprintf` in our build (our wrapper of printf, `call` target masked) and to printf in the original. `rsrestart` (mine 0x4e2c, original 0x8502): the same multiset up to the first `ret` (the encodings `ld @r15` against `%0000(r15)` differ only, old cc). `funcend` (mine 0xa050, original 0x289a): the same multiset up to the `ret`. `start` (0x0) is crt0. `freereg`, `argprep` and `ltypeop`: see above.
-
-**codgen fidelity: function table.** `src/cmd/codgen/FUNCTIONS.md` lists every function of `codgen` with its place in our binary (exact, from the symbol table) and in `/lib/codgen`, and the comparison result. It is generated by `src/cmd/codgen/funcs.py` (`python3 funcs.py --mine ./codgen --orig $WEGA/lib/codgen --name codgen`); the original's start addresses are kept in the table `ORIG` of that script, which is the place to update them. The entries marked `auto-paired` are not yet checked one by one.
-
-**codgen fidelity: the five register-set cases (the same round).** `mkrall` (0x51c0, `order3.c`): identical now, after the parameters `p` and `r` became register variables (the original keeps them in r14 and r13). `notoff` (0x49c0): one `ldm` less in the original (it homes only `off`, `t` is unused); `symreg` (0x9fdc): a leaf function, the original saves three registers, the shipped cc keeps the node in a scratch register (D2). `makeblock` (0xaece, `tr3.c`): the original homes all four parameters (`ldm` of r4-r7), the rebuild only `op` (D4); declaring `l`/`r` as registers was tried and made it worse. `lineout` (0x4088): the auto pairing was wrong (that function is a one-argument call), removed from the table. Caveat: the comparison of `funcs.py` drops register-to-register moves; `identical*` in `FUNCTIONS.md` marks the functions where only such moves differ.
-
-**codgen fidelity: `table` (the same round).** The name `table` in our symbol table is a data array (`.word` lines, a symbol of type 34 too), not a function: `funcs.py` now skips symbols whose address starts with data. The function of the original at 0x2edc is `zzzcode` (`zzz3.c`, switch on the operator character). Two changes in `zzz3.c`: the parameter `c` is `char` (the original compares the byte, `cpb F,#n`), and the locals `l`, `tmp`, `rg`, `n`, `k` and `t` are register variables (the original saves seven registers, r8-r14, as now). Difference by the comparison: 37 instructions (39 before). Left: the dispatch of the switch on the character with values 2, 3, 13 (the original a compare chain, D6), the register caching of the field stores (D3), and the frame (D1).
-
-**codgen fidelity: `eread` (0x2480, `rdr3.c`).** `ty` (the operator class) is a register variable (the original compares it in a register; one of the three reserved spare registers went away, so the saved set stays five registers as in the original). Difference 22 instructions (28 before). Left: the character from `getchar()` (the original loads the byte and masks it with `and #0xff`, D8), the store of `rdin` results into the long `lval` (the original stores the low word, `ld %000c(r),r`), and the layout (D7).
-
-**codgen fidelity: `gswitch` (0xa7e0, `lcl3.c`), analysed, not changed.** The printf formats of the original are the same as in our `gswitch` (`cp`, `jpr ugt`, `rl`, `ld` table, `cpir`, `jpr ne`, `sll`, `neg`, `jp @`). The original is much larger: its register blocks (`getreg(2,-1,0x1000,0)`, `rmove`, `rfree`) are repeated five to six times, it calls `makeblock` (0xaece) with the operators 0x60 and 0x45, and it has about 20 printf calls against our 10. Our `newreg`/`newlreg` are functions; the original calls `getreg` directly where they would be. This is a real structural difference (the case code of the original is not one table/search branch), not an old-cc effect. Not reconstructed yet.
-
-**codgen fidelity: Bestandsaufnahme der Funktionsgrenzen (Stand dieses Schritts, keine Korrektur).** Unsere Funktionen: 178 (plus `start`, crt0), Grenzen exakt aus der Symboltabelle. Die Programmgrenze unseres Builds ist nicht 0xbbc4 wie im Original, sondern die Grenze der codgen-Objekte (`own_limit` in `funcs.py`, 0xbe78 hier): `member`, `foldadd`, `buildstar` lagen darüber und fehlten zunächst. Die Funktionsstarts des Originals sind gestrippt: 137 stehen in der Tabelle `ORIG` (`funcs.py`, mit Vergleich), 41 sind eine automatische Zuordnung (Bag-Abstand, nicht bestätigt). Offen: 31 Aufrufziele des Originals ohne Gegenstück (Liste im Abschnitt „Open“ von `FUNCTIONS.md`; die meisten sind kurze Stücke wie 0x89e8, 0xab3e, die wie Sprungziele aussehen und nicht eigene Funktionen sein müssen; die größeren wie 0x2c0e, 0x5a4c, 0x5d2c, 0x9722 haben nur ferne Gegenstücke). Eine Zählung „identisch“ gilt nur für die Tabelle, und unter Ausschluss der Registerkopien („identical*“). Korrekturen kommen erst nach dieser Bestandsaufnahme.
-
-**codgen fidelity: Bestandsaufnahme, Ergebnis der Einordnung (Schritt danach).** Unsere Binärdatei hat statische Funktionen ohne Symbol (sie erscheinen nur als `calr` auf ein Label, z. B. `delay1`, `delay2`). `funcs.py` nimmt diese Aufrufziele jetzt als eigene Funktionen auf (Name `static_<adresse>`). Damit: 200 Funktionen unserer Seite (ohne `start`: 199); 137 Starts des Originals aus der Tabelle, weitere aus der automatischen Zuordnung (`auto`, nicht bestätigt); Gleichheit bis zum ersten `ret`: 118 von 200 (einschließlich der `auto`-Zuordnungen, die noch geprüft werden). Offen auf der Originalseite: 10 Aufrufziele (in `FUNCTIONS.md`, Abschnitt „Open“): 0x09d2 (14 Befehle, kein Aufrufer im Programm), 0x4088 (eine Fehlerfunktion mit einem Argument), 0x5bcc, 0x6fca, 0x854c, 0x8758, 0x89e8, 0x9722, 0x983c, 0xbba2. Offen auf unserer Seite: `static_02fc`, `static_2d66`, `static_4f80`, `static_b5ea` (ohne Gegenstück).
-
-**codgen fidelity: offene Einträge geprüft.** Statische Funktionen (ohne Symbol, nur als Aufrufziel) sind jetzt über ihren Aufrufer benannt (`STATIC_NAMES` in `funcs.py`). Ergebnis: `rcookie` (allo3.c): Der Nachbau hatte keine Nullprüfung; mit `if (p && (p->type == 7 || p->type == 6)) return 0x10; return 2;` ist die Funktion gleich dem Original 0x89a2 (quelle geändert). `rnnullp`, `rnnullcall`, `rnnulll`, `rnnullw` (regfile3.c) sind bis zum `ret` gleich den Originalen 0x97cc, 0x9816, 0x986a, 0x988c. `rnnullall` (0x989e) ist nicht gleich (Abstand 428, Grenze prüfen). `argsort` (order3.c), `fixstarg` (order3.c), `argplace` (order3.c) sind nach Quelle und Aufrufen identifiziert, aber ohne Gegenstück im Original (argplace: Abstand 99 zum Kandidaten 0x5d2c). `newreg` (lcl3.c) gibt es im Original nicht als Funktion: die Registerblöcke stehen in `gswitch` mehrfach eingesetzt (inline). Offen auf der Originalseite: 11 Aufrufziele (`FUNCTIONS.md`, Abschnitt „Open“).
-
-**codgen fidelity: `rnnullall` und `argplace` (geprüft).** `rnnullall`: Das Original hat 0x989e falsch zugeordnet, dort liegt `rnnull` (gleich unserem `rnnull`, 4fe8); `rnnullall` ist das Original 0x983c. Der Nachbau hatte `i` im Stack, das Original hält `i` in r14: mit `register int i;` (regfile3.c) ist die Funktion bis zum `ret` gleich (Abstand 0). `argplace` (order3.c, Original 0x5d2c, Grenze 0x5e92): gleich bis auf 13 Befehle; das Original adressiert das lokale Feld `cnt` direkt, unser Build mit `lda` (D5, konstanter Index in lokalen Feldern). `cnt[reg >> 1]` statt `/ 2` hilft nicht (Abstand 16), deshalb unverändert.
-
-**codgen fidelity: `fixstarg` (geprüft).** Die Zuordnung „fixstarg = 0x2bec“ war falsch: 0x2bec ist `argscan` (rekursiv über CM, schreibt argl), 0x2ea4 ist `argstrip`. `fixstarg` (order3.c, von `argstrip` aufgerufen) liegt bei 0x2e3a und ist gleich dem Original 0x5c1c bis zum `ret` (Abstand 0: `allo`-Aufruf, `resc[0].type = 8`, `op = STASG`, `type = 0x18`). Die Namensauflösung für statische Funktionen wird jetzt in Runden über den Aufrufer aufgelöst (`STATIC_NAMES` in `funcs.py`). Offen: `argscan` (automatische Zuordnung 0x5a4c mit Abstand 18, nicht geprüft).
-
-**codgen fidelity: `argscan` (geprüft).** Original 0x5a4c (Grenze 0x5bcc). Der Nachbau hatte `switch (argsize(q))` mit den Fällen 1, 2 (mit `goto push`) und 4; das Original ist eine Vergleichskette (`cp r,#1`, `#2`, `#4`), unser cc macht daraus eine Sprungtabelle (D6). Umgestellt auf `if`-Anweisungen mit dem Ergebnis in `int sz` (order3.c): Abstand 18 → 14, Korpus grün. Als `register int sz` wird der Abstand wieder größer (eine gesicherte Registervariable zu viel), deshalb `int sz`. Offen: der Wert von `sz` liegt im Stack (Original: Register) und das Layout der Sprünge (D7).
-
-**codgen fidelity: `argsort` (geprüft).** Original 0x5bcc (Aufruf aus `genargs` als zweiter Aufruf nach `argscan` und `argstrip`). Der Nachbau indizierte `argl[i]` mit Schiebeoperationen; das Original läuft mit Zeigern (Schritt 4 je Element, `ld r1,#argl`). Umgestellt: `argl` ist ein benannter Typ `struct arg`, `argsort` nutzt die Zeiger `ai`, `aj` (order3.c). Danach ist die Funktion bis zum `ret` gleich dem Original (Abstand 0). Der Typname `struct arg` ist die einzige Änderung an `argl`; Korpus grün.
-
-**codgen fidelity: `mapregs` (0x9512, `lcl3.c`), partly.** The first `switch (p->op)` (three cases: 120, STREF, UAND) is written as three `if` statements: the shipped cc no longer makes a `cpir` table for it (the original has a compare chain on a register loaded from `p->op`, the old cc). The rest of the function differs in the register caching of the field copies (`ld %0004(r),r` etc., D3) and in `(x >> 2) & 1` as `and`+`test` in the original against `bit` in the rebuild (cc). Not bag-equal yet.
-
-In `struct sym` the bytes at +4 and +5 are chars (`sclass`, `sbyte5`). Not done yet: the functions behind the commands `F R S T` (0xa1ba, 0xa2f4, 0xa4aa, 0xa5de), the register file init (0x740c, 0x7458, 0x910e, 0xa252), `hdrout` 0x8c0c, `endrun` 0x8c1e, `endline` 0x8c22, the parameter code 0x8c74 and 0x8f7e, `fixtemp` 0x918e, `fixfld` 0x944a, `mapregs` 0x9512, the tree builders of tr3.c (0xaece `makeblock`, 0xab48 `clocal`, 0xafe4 `buildstar`, 0xb0a0 `bcon`) and the local functions 0x2c.. / 0x3e.. not listed above. `talloc`/`tfree`/`fwalk` moved from `allo3.c` to `comm3.c` (real pool).
-
-The sources are in `src/cmd/codgen` in K&R C for the WEGA cc/scc (goal: the byte-identical `codgen`/`scodgen`; the same files make both, the
-tables `*_codgen.c` / `*_scodgen.c` differ). The WEGA cc does not know prototypes, `const`, `signed`, anonymous unions or `(void)expr;`: a statement
-`(void)sym;` made `cparse` loop forever (measured, the compile never ended).
-
-### codgen / scodgen: register machinery (notes from reading allo3, regallo3, regs3; not yet rebuilt)
+### codgen / scodgen: register machinery (function map of `/lib/codgen`)
 
 Register classes (`rclass(type, reg)` at 0x6bf4): 2 word register r0-r7, 3 long register (rr), 4 float register f0-f3 (regs 16-19), 6 word
 variable register r8+, 7 long variable register, 8 float variable register (20-23). `rstatus[]` (data 0x27da): r0-r7 0x6 (SAREG|STAREG), r8-r15 0x2,
@@ -823,8 +895,8 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/gld` | `kind 3`/`4` relocations against external symbols print debug lines ("extern 12bit rel. adr. name") on every use; internal short/relative relocations print "aufgeloeste ..." and are not resolved | kept | "gld on the host" |
 | `/bin/gld` | no object loaded at all: header and segment table are written from unallocated memory; sections of about 50000 bytes: "out of memory(load2td)"; a section near 64K: hangs | not reproduced | "gld on the host" |
 | `/bin/sld`, `/bin/gld` | the code and data of an object are stored entry by entry (not all code first); `tools/sout.py` and `host/ld/sld.c` had assumed all code first | fixed | "gld on the host" |
-| `/lib/codgen` 0x6fca..0x7056 | dead code: a routine that no call, `calr` or table in the binary refers to (checked by `sdis.py -l`, no label, no word 0x6fca outside code); it prints the names of the set bits of its word argument (0x0000 and 0x1000 print fixed texts), with a column counter (0x65a0) and a buffer (0x659e) | not reproduced (no counterpart in the rebuild; the function is not in the sources) | `src/cmd/codgen/FUNCTIONS.md` "Open: original call targets" |
-| `/lib/codgen` 0x854c..0x856e | dead code: `fprintf(stderr, "system call error: ")`, then a call with the argument (0xcba0), then `errexit(0x40)`; no call, `calr`, jump or word in the binary refers to it (checked with `sdis.py -l` and a byte search) | not reproduced (no counterpart in the rebuild) | `src/cmd/codgen/FUNCTIONS.md` "Open: original call targets" |
+| `/lib/codgen` 0x6fca..0x7056 | dead code: a routine that no call, `calr` or table in the binary refers to (checked by `sdis.py -l`, no label, no word 0x6fca outside code); it prints the names of the set bits of its word argument (0x0000 and 0x1000 print fixed texts), with a column counter (0x65a0) and a buffer (0x659e) | not reproduced (`prcookie`, a debug routine named in a comment of `allo3.c`; no counterpart in the rebuild) | `src/cmd/codgen/tools/findings.json` |
+| `/lib/codgen` 0x854c..0x856e | dead code: `fprintf(stderr, "system call error: ")`, then a call with the argument (0xcba0), then `errexit(0x40)`; no call, `calr`, jump or word in the binary refers to it (checked with `sdis.py -l` and a byte search) | not reproduced (no counterpart in the rebuild) | `src/cmd/codgen/tools/findings.json` |
 | libc `printf` (seen in `/lib/codgen`) | `%s` prints a stray `-` and drops the first character of the string when the stack at the place of its work area holds an old radix -10 with a negative number from an earlier `%d`; the original codgen only escapes by luck of its stack layout | not reproduced (`cgprintf` clears the stack first) | "codgen runs" |
 | `/lib/scodgen` | `conval` folds the difference of two pointer constants as `(a - b) & 0xFF` (the high word is cleared), the sum as `& 0x7F00FFFF`; the mask of MINUS looks like a slip | kept (`-DSEG`), not reached by the test files | "scodgen runs" |
 | `/lib/codgen`, `/lib/scodgen` | a file name argument (no `-`) is reopened as stdin and, after the end of the input, scanned and reopened again for ever (the index is not advanced); only `-E name` with stdin is used | kept | "codgen runs" |
@@ -1262,7 +1334,8 @@ The old compiler uses r0/r1 (`rr0`) as scratch where the shipped one uses r4/r5 
 (`ldl rr0,S4(r15)` against `ldl rr4,S4(r15)`), strip (`head.s_imsize = (long)code + data` is compiled with
 rr4/rr6 by the original, rr2/rr4 by ours; the same kind of expression elsewhere in strip.c compiles identically),
 ranlib. Register variables of leaf functions are placed in scratch registers. Error blocks are moved ahead
-of a loop (ranlib, size).
+of a loop (ranlib, size). In codgen: `expand` (`out3.c`) loads the switch character into `rl2` in the original and
+into `rl3` with a copy to `r2` in the rebuild (scratch register choice).
 
 ### D3 Register contents (redundant reloads, memory operands)
 The old popt does not remove a reload after a store (`ld S0,r7` followed by `ld r7,S0`): 2 times in ifile,
@@ -1284,9 +1357,13 @@ Up to 3 case labels the old scc compares one after the other and puts the dispat
 bodies; the shipped scc uses a table from 1 or 3 cases on (`cpir` over the case values, then a jump table
 behind the bodies: `ld r6,#n; cpir ...; sll r6,#2; neg r6; ldl rr2,L(r6); jp @rr2`). With 4 or more labels the
 old compiler also uses the `cpir` table (parser, nested switches), the values sorted, the bodies in source order.
+In codgen, `tshape` (`match3.c`) shows that the bodies can follow another order: the original has the `FLD` body before the
+`STAR` body; the source was reordered to match. Not checked for the other switches.
 
 ### D7 Loop layout
 The old compiler puts the loop test at the bottom (`jr` into the test first); the shipped scc tests at the top.
+In codgen: the `for` loop of `expand` (`out3.c`) and the else branch of `buildstar` (`tr3.c`, placed out of line and
+jumping back to the shared store).
 
 ### D8 Conversion and loads of bytes
 Unsigned char argument: old `ldb rh7,#0`, shipped `subb rh7,rh7` (cas `ifile`). Old libc `length`:
@@ -1302,7 +1379,8 @@ Old: `ld r2,#24; sdal rr4,r2` (also `ldk r0,#0; ld r1,r2; ld r2,#16; sdal rr0,r2
 
 ### D11 Tail merging (popt)
 The old popt merges common tails of branches (`call xtol; jp` shared by the number cases of the scanner).
-The shipped popt does not.
+The shipped popt does not. In codgen: `acon` (`out3.c`): the three `L%d` branches jump to one shared `printf` call
+(`jp` into the call) in the original.
 
 ### D12 String literals and data layout
 The old compiler writes all string literals and the jump tables of a module behind its other data

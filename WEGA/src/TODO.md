@@ -120,13 +120,13 @@ the marks of D14 only: that is all that was checked for them.
 | codgen, scodgen | tmp3.c |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
 | codgen, scodgen | zzz3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |
 | codgen, scodgen | comm3.c |  |  | x | x |  | x |  | x |  |  |  |  |  |  |
-| codgen, scodgen | out3.c |  |  |  |  |  | x |  | x |  | x | ? |  |  |  |
+| codgen, scodgen | out3.c |  | x |  |  |  | x | x | x |  | x | x |  |  |  |
 | codgen, scodgen | regs3.c |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | codgen, scodgen | lcl3.c |  | x |  | x |  | x |  |  |  |  |  |  |  |  |
-| codgen, scodgen | tr3.c |  |  |  | x |  |  |  | ? |  |  |  |  |  |  |
+| codgen, scodgen | tr3.c |  |  |  | x |  |  | x | ? |  |  |  |  |  |  |
 | codgen, scodgen | optim3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |
 
-The codgen / scodgen rows come from the function comparison of `host/tools/cgcmp.py` (KNOWLEDGE.md "codgen fidelity"; the original has the same source for both): `x` = seen in a function of the module, `?` = construct present, not yet separated; D12 (data order) and D13 / D14 are not checked yet. What was seen: D1/D4 functions with register parameters have no home slots in the original and copy the parameters first-to-last (the shipped cc reserves the slots and copies last-to-first: `funcend`, `epilog`); D2 register variables of leaf functions sit in r8-r14 in the original (`freetemp`, `symreg`); D3 the old popt reloads globals (`freeparm`, `mkhash`, `tagfind`); D4 spills (`getlr`, `member`, `nullsyms`); D6 up to 3 case labels as a compare chain and `ld r,off(r3)` after `cpir` (`rsfreeall`, `store`, `geninc`); D7 loop inversion (`delay`); D8 `extsb`/`subb` (`adrput`, `cerror`); D10 `sdal` for shifts (`ispow2`, `adrput`); D11 shared tails (`setasop`, `fwalkd`). The choice of `call` or `calr` depends on the distance and is not a compiler difference.
+The codgen / scodgen rows are the per-object marks of the D classes of the function findings (`src/cmd/codgen/tools/findings.json`, written by `classify.py`), completed by reading the disassembly where noted. `x` = seen in a function of the object; `?` = construct present, not separated. D12 (data order), D13 and D14 are not checked for codgen. Open for codgen: `clocal`, `zzzcode` (block order), `sucomp` (`add` with a frame operand), `tshape` (value form of the SZERO return); see `host/KNOWLEDGE.md`, section "codgen / scodgen".
 
 ## In progress
 
@@ -140,8 +140,8 @@ The codgen / scodgen rows come from the function comparison of `host/tools/cgcmp
 - Host tool chain (compile without z8k-emu): native on the host are the `cc`/`scc` drivers, `popt`, `cas`, `ar`, `ranlib`, `strip`, `size` and
   since 2026-10-22 `ld` (`host/ld`, nonsegmented, same files as `/bin/ld` on 146 command lines; no 8 bit objects, no `-T`/`-v`) and `sld`
   (`host/ld/sld.c`, same files as `/bin/sld` on 91 command lines; not implemented: `-f`, `-A`, `-b`, `-t`, `-M` with `:t`/`:b`/`+files+`, `-M` changing
-  between large files, several overflowing start segments in combined mode, see KNOWLEDGE.md). `gld` (`host/ld/gld.c`, same files and messages as `/bin/gld`; not reproduced: the original's undefined output when no object is loaded, its memory limit ("out of memory(load2td)" with sections of about 50000 bytes) and hangs with sections near 64K). Still under the
-  emulator: `cpp`, `cparse`/`scparse`, `codgen`/`scodgen`, `gopt`, `as`. `spopt` is done (`host/popt`, `make spopt`). `codgen`/`scodgen` exist as source (`src/cmd/codgen`; text-identical on the corpus; byte equality per function in progress, register variables done, see KNOWLEDGE.md "codgen fidelity"; the `src/cmd/Makefile` entry open). Next: `gopt`, the front end (order in `host/HANDOFF_wega_disasm.md`). `src/cmd/ld` (a source that builds the byte-identical
+  between large files, several overflowing start segments in combined mode, see KNOWLEDGE.md). `gld` (`host/ld/gld.c`, same files and messages as `/bin/gld`; not reproduced: the original's undefined output when no object is loaded, its memory limit ("out of memory(load2td)" with sections of about 50000 bytes) and hangs with sections near 64K). Still only the
+  original binaries under the emulator: `cpp`, `cparse`/`scparse`, `gopt`, `as`. `spopt` is done (`host/popt`, `make spopt`). `codgen`/`scodgen` exist as source (`src/cmd/codgen`; the same assembler text as the originals on the test corpus, 101 of 101 cases each; 206 of 210 functions paired with the original, 202 of them differ only by old-cc patterns, 4 have open differences; see KNOWLEDGE.md "codgen / scodgen"; built by `src/cmd/Makefile`). Next: `gopt`, the front end (order in `host/HANDOFF_wega_disasm.md`). `src/cmd/ld` (a source that builds the byte-identical
   `/bin/ld`) does not exist yet; `host/ld/ld.c` is written from the binary and measurements, not transcribed function by function.
 
 ## Scripts without an object check

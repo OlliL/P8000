@@ -32,4 +32,9 @@ clean:
 	rm -f *.o codgen scodgen
 	rm -rf seg
 
-.PHONY: all objs clean
+# not installed: the rebuilt programs are not byte-identical to the originals yet, so /lib/codgen and
+# /lib/scodgen stay as they are (the install loop of ../Makefile calls this target)
+install:
+	@echo "codgen and scodgen are not installed; the originals in $(PREFIX)lib stay"
+
+.PHONY: all objs clean install
