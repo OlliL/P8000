@@ -383,3 +383,74 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   break is contiguous (`maxbytes` 0xFFF8, `maxblocks` 64 as data); nlist/readsym use the
   s.out long-name encoding (`readby`, `(len+13)/14` entries).
 
+## codgen host version (`host/codgen`, ANSI C, separate source)
+
+Working copy of `src/cmd/codgen` for the host, made with `host/tools/kr_code_transform.py` (run on the copy only; the script overwrites its input).
+Rule: no sharing with `src/cmd/codgen`; each file is checked with `gcc -Wall`.
+
+- `main3.c`: done at syntax level (`gcc -Wall -std=gnu99 -fsyntax-only` clean). ANSI heads for `options`, `init`, `main`; unused variables removed; `malloc`, `strcpy`, `strcat` from the standard headers.
+- `rdr3.c`: done at syntax level, also clean with `-Wold-style-definition`. The binary symbol table file is no longer copied into C structs (the host `struct sym` has another size):
+  `get_sym` decodes the 22-byte records field by field; `rd16be` and `rd32be` read the big-endian words and longs (`rd32be` moved from `main3.c`);
+  the number and member tables are decoded the same way; all byte offsets (`+ 0x16`, `* 22`, `+ 0x42`) became element indices (`symtab + 1`, `symtab + dest`, `symtab + 3`).
+  `eread` keeps the 16-bit truncation of the original (macro `S16` in `cg.h`). A pointer that was passed through an `int` is kept as a pointer (`mapnm`).
+  The debug print of a pointer uses `%p`.
+- `cg.h`: the stdio macros of the original (`getc` on `_cnt`/`_ptr`) are replaced by the standard `getc`; declarations of `rd16be`, `rd32be`, `S16`.
+- `regallo3.c`: done at syntax level (also clean with `-Wold-style-definition`). Findings:
+  - `rsmerge(hp)` took `struct rs *hp` but dereferences it as a pointer to the list head (`*hp`); the original loads the word at `hp` (`ld r3,@r2`),
+    so the parameter is `struct rs **hp` (the only caller passes `&rsstk[j].list`). The WEGA `cc` accepted the mistake silently.
+  - `rweight[8]` is indexed with `reg` (a `char` 0..15 in the struct) for the classes 2 and 3 only; the index range for those classes is not checked yet.
+  - The unused third register pointer in `rsbuild` and the unused `last` in `rsrestart` are removed (no effect on the behaviour; only the register use of the original is not reproduced).
+  - Register numbers used as array indices are cast to `unsigned char` (the `char` fields hold 0..15).
+- `comm3.c`: done at syntax level. Findings:
+  - `alloc` and `allocinit` no longer use `sbrk`/`brk`: on the host `malloc` (used in `main3.c`) keeps its heap on the same break, so the
+    original scheme would corrupt it. One static arena of 4 MB replaces it; `alloc` keeps the order of the reservations (symbol tables must be contiguous),
+    `allocinit(base)` resets the pointer. Behaviour change: out of space is reported at 4 MB instead of at the system limit.
+  - `cerror`, `uerror` and `werror` are variadic (`...`, `vfprintf`); their prototypes are in `cg.h`; the K&R `extern` declarations in all files were removed.
+    `uerror` returns `int` (as the other declarations say); the original returned nothing.
+  - The wasted-space message prints the node address as `%lx` of an `unsigned long` (the address itself is different on the host).
+- `lcl3.c`: done at syntax level (also clean with `-Wold-style-definition`). The copy loop of `fbegin` tests the copied byte explicitly (same meaning);
+  `findtemp` gets a forward declaration (it is used before its definition); two unused register variables of `fbegin` and one of `regtabinit`-era code removed.
+- `reader3.c`: done at syntax level (also clean with `-Wold-style-definition`). Findings:
+  - `label` was a macro for `sname` (the same word of the node). On the host `sname` is a pointer, the label an `int`; `cg.h` now puts both in one union
+    (`nsn.sy` as `sname`, `nsn.lb` as `label`), so the overlap of the original is kept.
+  - The cookie names are printed with `printf("%s", ...)` (no format from data); the hex width of the SPECIAL and cookie messages stays `%02x`.
+  - `oreg2`: unused register variable removed; `ffld` converted to ANSI.
+- `allo3.c`: done at syntax level (also clean with `-Wold-style-definition`). The `calloc` declaration (not used) is removed; `fwalk` and `tfree` are declared;
+  the mask tests `cookie & 04 | 0100` get explicit parentheses (the same meaning, `&` binds tighter than `|`); unused variables removed (`prev`, `spare`, `q`);
+  `getlr` is still called in `freereg` for its effect (it can stop the run on a bad cookie).
+- `tr3.c`: done at syntax level (also clean with `-Wold-style-definition`). Unused variables removed (`ob`, `t`, `spare`, `spare1` to `spare4`, `sz`, `cl`).
+  The assignments of `sz` (`(int)m->ssize`) and `cl` (`m->sclass`) in `member` had no further use; `makeblock` and `buildstar` converted to ANSI.
+- The remaining files of the host copy (`order3`, `out3`, `zzz3`, `optim3`): done at syntax level and the K&R heads converted (all files are clean with `gcc -Wall` and `-DSEG`, with and without `-Wold-style-definition`). Next: the four small ones (`order3`, `out3`, `zzz3`, `optim3`), then the 16-bit width audit (`int` fields and comparisons, `printf` formats with negative values).
+- Acceptance: the host `codgen` must produce the same text as `/lib/codgen` (emulator) on the corpus. Not yet possible: the program does not link yet.
+
+### codgen host version: first run against the original (corpus, not finished)
+
+Status: the host `codgen` (`host/codgen`, non-SEG) links and runs. Test: `host_corp.sh` (scratch), 100 cases of the codgen corpus,
+output compared with `/lib/codgen` under the emulator: 69 identical, 25 crash (SIGSEGV), 6 stop in `cerror` (exit 64), 0 other differences.
+
+Bugs found by the run and fixed (host copy only):
+- `setbuf(dfile, malloc(0x200))`: glibc `setbuf` writes a `BUFSIZ` buffer (8192 bytes); now `setvbuf(..., _IOFBF, 0x200)`.
+- `opclass[]` had 24 entries, the table uses `op = 0x1000 + k` up to k = 24; the original array has k = 24 -> `0x4000` and k = 25 -> `0xe` (read from the binary at 0x3530).
+- `dope[]` and `opptr[]` had 128 entries; `setrew` runs to `op 128`; both arrays now have 129 entries (the entry is 0).
+
+Node overlay (decided: option A, separate fields): `lval`/`left`, `sname`/`label` and `rval`/`right` are separate fields in the host copy (`cg.h`).
+The corpus result did not change (70/100); the crashes are not caused by the overlay (see below).
+
+### codgen host version: corpus status (current)
+
+Result: 80 of 100 corpus cases identical to the original (`host_corp.sh`, scratch). 13 crash (SIGSEGV), 7 stop with
+"expression causes compiler loop" (exit 64). 0 cases with differing text and normal exit.
+
+Host decisions made so far (functional equality; the original is undefined here):
+- `rweight[]` has 16 entries: 8..15 get their own numbers (the original reads past its 8 entries for register numbers 8..15).
+- `lcl3.c` `mapregs`-side check for `UAND`: a NAME without symbol is not a static (the original reads the flags at address 0).
+- Node fields `lval`/`left`, `sname`/`label`, `rval`/`right` are separate fields in the host copy (option A). No change in results.
+
+The remaining 20 failures have one cause: the `INCR`/`DECR` rewrite in `reader3.c` (`case INCR`). The step is in `rval`, the rewritten
+binary node has no right operand; the original reads the step as a pointer (`right` and `rval` are one word). Tried:
+- right operand = `bcon(rval)` (a constant node of the step): 76 of 100, the rewrite then loops for 4 more cases (exit 64).
+  Not kept.
+- Not yet tried: the original's own rewrite of INCR in the disassembly (what the code after `p->op = PLUS` expects from the right operand),
+  and a functional test with a test program under the emulator for the INCR cases.
+
+Next: find what the original's code after the INCR rewrite expects (disassembly of the INCR case in `/lib/codgen`), then decide the host rule.

@@ -813,6 +813,7 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/codgen`, `/lib/scodgen` | `rsreturn`: after the partner loop a branch `if (b == a)` (0x80d4) that is never taken: the first node has the class of the loop, so the loop either returns or moves on | kept (dead code) | "codgen fidelity" |
 | `/lib/codgen`, `/lib/scodgen` | `rsreturn`: the weight table `rweight` is indexed by the register number itself (no `& 7`, 0x8002 `add r2,r2`) | kept: `rweight[reg]` | "codgen fidelity" |
 | `/lib/codgen`, `/lib/scodgen` | `reclaim` copies `p->op` into `want` before it frees the registers and uses `want` for the `lval` of a CCODES result; it builds the list of candidates with a pointer (`*ap++`) into a local array of 6 | kept | "codgen fidelity" |
+| `/lib/codgen` (host copy) | An `INCR`/`DECR` node keeps its step in `rval`; the rewrite to `PLUS`/`MINUS` (or `ASG PLUS`/`ASG MINUS`) does not set the right operand, so the original reads the step as a pointer (`right` and `rval` are one word). The walks then read low memory of the program image. | not reproduced in the host copy: the output depends on what the original finds there (a constant right operand instead of the step makes 4 corpus cases fail more (rewrite loops); see TODO.md) | `host/codgen`, `src/TODO.md` (codgen host version) |
 
 ## ar (reconstructed, byte-identical)
 
@@ -1845,3 +1846,11 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
   `savestr` are single statements; a `switch` with 6 or more labels in a dense range gets a jump table, fewer or
   sparse ones a `cpir` search; popt moves blocks, so the order of the `case` bodies, the `default` and a `goto`
   target after the `switch` decides the final layout (see `compile`).
+
+### codgen input files: byte order and sizes (for the host version)
+
+- The symbol table file `base.S` begins with a 4-byte `long` (big endian) read by `main3.c` (`options`, `-E`).
+  The file is written by the WEGA `cparse`; a little-endian host must read it byte by byte.
+- The WEGA `int` is 16 bit and `long` 32 bit; on the Linux host `int` is 32 bit and `long` 64 bit. Any value that is read from a
+  file or printed with a format must keep the WEGA width (see `host/codgen` for the places already handled).
+
