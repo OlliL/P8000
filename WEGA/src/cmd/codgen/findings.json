@@ -1,0 +1,3985 @@
+{
+ "metric": "strict-1",
+ "metric_def": "Whole extent of a function (ours: symbol table; original: up to the next start). Data words and what follows the last ret are left out. Masked: jump labels, call targets, address constants (#%XXXX >= 0x3000 and displacements >= 0x3000), the two encodings of a frame operand (%0000(r15) and @r15). Compared: the sequence of instructions. Levels: exact (same sequence), order (same instructions in another order), differs (n = instructions not matched in an alignment).",
+ "schema": {
+  "functions": {
+   "<name of our function>": {
+    "ours": "start and end in our binary (hex)",
+    "orig": "start in /lib/codgen (hex), or null",
+    "pairing": "confirmed | auto | none",
+    "pairing_evidence": "how it is confirmed (caller, string, body) or why it is only automatic",
+    "level": "exact | order | differs (n) | own | not codgen code",
+    "classes": "list of D1..D14 that explain the differences, or empty",
+    "notes": "free text, short"
+   }
+  },
+  "findings": {
+   "id": "unique, e.g. allo3-order-01",
+   "kind": "pairing | source | order | dead | data | D1..D14",
+   "function": "our function name",
+   "where": "source file and function, or a line range",
+   "detail": "what differs, with original address and instruction range",
+   "action": "the change to make, complete enough to do without new analysis",
+   "status": "open | fixed | verified"
+  }
+ },
+ "status_values": [
+  "open",
+  "fixed",
+  "verified"
+ ],
+ "functions": {
+  "start": {
+   "ours": "0x0000-0x002a",
+   "table_orig": null,
+   "orig": null,
+   "pairing": "none",
+   "pairing_evidence": "",
+   "level": "not"
+  },
+  "rclass": {
+   "ours": "0x002a-0x007a",
+   "table_orig": "0x6bf4",
+   "orig": "0x6bf4",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x6bf4; the same if chain for the class of the register; the original keeps the value in r14, ours in r2 (D2); the jump layout differs (D6)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 69,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "rfind": {
+   "ours": "0x007a-0x00b4",
+   "table_orig": "0x96e6",
+   "orig": "0x96e6",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 91 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 91,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rbusy": {
+   "ours": "0x00b4-0x018a",
+   "table_orig": "0x66bc",
+   "orig": "0x66bc",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x66bc; same structure, 69 / 69; differences: spill slot, data addresses (D3, D13)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 99,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rfree": {
+   "ours": "0x018a-0x01de",
+   "table_orig": "0x6f76",
+   "orig": "0x6f76",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x6f76; same structure, 31 / 31; differences: frame 14 / 10, spill slot and data addresses (D1, D3)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 94,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rfreenode": {
+   "ours": "0x01de-0x025a",
+   "table_orig": "0x6efa",
+   "orig": "0x6efa",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x6efa; same structure, 44 / 44; differences: register and data addresses (D2, D13)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "freeparm": {
+   "ours": "0x025a-0x02ac",
+   "table_orig": "0x6792",
+   "orig": "0x6792",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 89 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 89,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "freetemp": {
+   "ours": "0x02ac-0x02fc",
+   "table_orig": "0x6ba6",
+   "orig": "0x6ba6",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 88 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 88,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rcookie": {
+   "ours": "0x02fc-0x0322",
+   "table_orig": "0x89a2",
+   "orig": null,
+   "pairing": "none",
+   "pairing_evidence": "no counterpart: the same logic as rallkind (comm3.c), a duplicate in allo3.c. The original allocreg calls 0x89a2 (rallkind), so the rebuild must call rallkind and drop rcookie (kind source, finding allo3-rcookie-dup)",
+   "level": "differs"
+  },
+  "usable": {
+   "ours": "0x0322-0x03a2",
+   "table_orig": "0x6e78",
+   "orig": "0x6e78",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 71 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 71,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "freereg": {
+   "ours": "0x03a2-0x04ba",
+   "table_orig": "0x6d5a",
+   "orig": "0x6d5a",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 51 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 51,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "allocreg": {
+   "ours": "0x04ba-0x05c6",
+   "table_orig": "0x6c4e",
+   "orig": "0x6c4e",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x6c4e; same structure, 87 / 85; the one real difference: it calls the local rcookie where the original calls 0x89a2 (rallkind), see finding allo3-rcookie-dup",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 80,
+    "difference_class": "other differences",
+    "difference_note": "allo3-rcookie-dup: calls rcookie where the original calls rallkind (source)"
+   }
+  },
+  "allo": {
+   "ours": "0x05c6-0x0974",
+   "table_orig": "0x67e8",
+   "orig": "0x67e8",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: callee sequence equal under the claimed partners (allocreg, rclass, rfind, szty, allocreg, rclass, rfind, freetemp, freeparm, nxwork); length 297 / 298",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 96,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tcopy": {
+   "ours": "0x0974-0x0a42",
+   "table_orig": "0x8a24",
+   "orig": "0x8a24",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x8a24; same function. Real difference (finding tcopy-copy-01): the original calls ncopy (0x8a02) for the node copy, our tcopy copies inline with ldir (9 words); the source must call ncopy",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 72,
+    "difference_class": "other differences",
+    "difference_note": "tcopy-copy-01: the original calls ncopy (source)"
+   }
+  },
+  "reclaim": {
+   "ours": "0x0a42-0x0df2",
+   "table_orig": "0x7058",
+   "orig": "0x7058",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from KNOWLEDGE (reclaim 0x7058, allo3.c); same structure; differences frame 0x1c / 0x1e and register choice (D1, D2); jump targets differ by the layout",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rfreeall": {
+   "ours": "0x0df2-0x0e44",
+   "table_orig": "0x9696",
+   "orig": "0x9696",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 77 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 77,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rcount": {
+   "ours": "0x0e44-0x0e5a",
+   "table_orig": "0x15ba",
+   "orig": "0x15ba",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rcount_reset": {
+   "ours": "0x0e5a-0x0e5c",
+   "table_orig": "0x778e",
+   "orig": "0x778e",
+   "pairing": "confirmed",
+   "pairing_evidence": "same instructions",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "ltypeop": {
+   "ours": "0x0e5c-0x0e88",
+   "table_orig": "0x3e66",
+   "orig": "0x3e66",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 53,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "ispow2": {
+   "ours": "0x0e88-0x0ed8",
+   "table_orig": "0x8af6",
+   "orig": "0x8af6",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 69 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 69,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "bsize": {
+   "ours": "0x0ed8-0x0f26",
+   "table_orig": "0x8878",
+   "orig": "0x8878",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 75 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 75,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "szty": {
+   "ours": "0x0f26-0x0f56",
+   "table_orig": "0x88c4",
+   "orig": "0x88c4",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x88c4; same structure, 19 / 19; differences: frame and register (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 84,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "plainicon": {
+   "ours": "0x0f56-0x0f80",
+   "table_orig": "0x8b44",
+   "orig": "0x8b44",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 69 %, next 50 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 69,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "special": {
+   "ours": "0x0f80-0x105e",
+   "table_orig": "0x471a",
+   "orig": "0x471a",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 74 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 74,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "shtemp": {
+   "ours": "0x105e-0x10bc",
+   "table_orig": "0x3e8e",
+   "orig": "0x3e8e",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 50 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 50,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "shincr": {
+   "ours": "0x10bc-0x113c",
+   "table_orig": "0x3ed6",
+   "orig": "0x3ed6",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 79 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "shumul": {
+   "ours": "0x113c-0x11b6",
+   "table_orig": "0x3f4e",
+   "orig": "0x3f4e",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 90 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "ltypeok": {
+   "ours": "0x11b6-0x11fe",
+   "table_orig": "0x3e1c",
+   "orig": "0x3e1c",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 85 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 85,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rmove": {
+   "ours": "0x11fe-0x1336",
+   "table_orig": "0x3cf2",
+   "orig": "0x3cf2",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 5",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 89,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "argsize": {
+   "ours": "0x1336-0x1390",
+   "table_orig": "0x88f6",
+   "orig": "0x88f6",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tshape": {
+   "ours": "0x1390-0x14e6",
+   "table_orig": "0x5e92",
+   "orig": "0x5e92",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: callee set equal under the claimed partners (special, shtemp, shumul, ltypeop). Difference: call order (ours shumul before ltypeop, original ltypeop before shumul); length 117 / 115",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 56,
+    "difference_class": "other differences",
+    "difference_note": "tshape-order-01: call order and SZERO return"
+   }
+  },
+  "ttype": {
+   "ours": "0x14e6-0x15d2",
+   "table_orig": "0x5ff6",
+   "orig": "0x5ff6",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: same function (claim 0x5ff6 is the only candidate of the same length); real difference: the original uses srl (unsigned) where ours uses sra (signed); the bit tests come in another order (finding ttype-shift-01)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 97,
+    "difference_class": "other differences",
+    "difference_note": "shift-type-01: unsigned operand in the original (source)"
+   }
+  },
+  "setrew": {
+   "ours": "0x15d2-0x1684",
+   "table_orig": "0x60e2",
+   "orig": "0x60e2",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "getlr": {
+   "ours": "0x1684-0x1714",
+   "table_orig": "0x6636",
+   "orig": "0x6636",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 76 %, next 41 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 76,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "match": {
+   "ours": "0x1714-0x198e",
+   "table_orig": "0x6196",
+   "orig": "0x6196",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 76 %, next 30 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 76,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "notoff": {
+   "ours": "0x198e-0x19be",
+   "table_orig": "0x49c0",
+   "orig": "0x49c0",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: best candidate by strict comparison over all original starts (6 of 18 instructions differ; the others are the frame and the register)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 89,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "sucomp": {
+   "ours": "0x19be-0x239e",
+   "table_orig": "0x49f0",
+   "orig": "0x49f0",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): header 0x49f0 (order3.c); the same three calls to szty in the same order; sizes 756 / 684, the difference is an open finding (sucomp-size-01)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 36,
+    "difference_class": "other differences",
+    "difference_note": "sucomp-size-01: expression evaluated twice, block order"
+   }
+  },
+  "mkrall": {
+   "ours": "0x239e-0x2400",
+   "table_orig": "0x51c0",
+   "orig": "0x51c0",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: best candidate by strict comparison (6 of 30); same structure, frame and register differences",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 93,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rallo": {
+   "ours": "0x2400-0x251c",
+   "table_orig": "0x5222",
+   "orig": "0x5222",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: same function (header missing, claim 0x5222 is the only candidate of the same length); differences: order of some statements (D7 / D11), frame and data addresses",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_251c": {
+   "ours": "0x251c-0x25de",
+   "table_orig": "0x5338",
+   "orig": "0x5338",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 97,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "offstar": {
+   "ours": "0x25de-0x265e",
+   "table_orig": "0x53fa",
+   "orig": "0x53fa",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "niceuty": {
+   "ours": "0x265e-0x26a8",
+   "table_orig": "0x547a",
+   "orig": "0x547a",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 88,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "setbin": {
+   "ours": "0x26a8-0x2852",
+   "table_orig": "0x54c4",
+   "orig": "0x54c4",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 81,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "setstr": {
+   "ours": "0x2852-0x28ac",
+   "table_orig": "0x5678",
+   "orig": "0x5678",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: same function; the best candidate by a wide margin (19 vs 25); differences: register variable (r14 / r3, D2), the constant 0x0354 is an address (D13)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 74,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_28ac": {
+   "ours": "0x28ac-0x28ee",
+   "table_orig": "0x576e",
+   "orig": "0x576e",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): static lmuldiv (order3.c), called by setasop (three calls at 0x294a, 0x298c, 0x2acc in ours); the same four tests of the op and the type, in the same order; registers and frame differ (D1, D2, D3)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 59,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "setasop": {
+   "ours": "0x28ee-0x2b1c",
+   "table_orig": "0x57b0",
+   "orig": "0x57b0",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 98,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "setasg": {
+   "ours": "0x2b1c-0x2bc6",
+   "table_orig": "0x56c6",
+   "orig": "0x56c6",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "getlab": {
+   "ours": "0x2bc6-0x2bd8",
+   "table_orig": "0x59d4",
+   "orig": "0x59d4",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): the documentation names getlab at 0x59d4 (crslab 0x3426); the same operations (load crslab, increment, return); ours keeps the value on the stack (D1, D3), the data address differs (D13)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 50,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "deflab": {
+   "ours": "0x2bd8-0x2bec",
+   "table_orig": "0x59de",
+   "orig": "0x59de",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "argscan": {
+   "ours": "0x2bec-0x2d6c",
+   "table_orig": "0x5a4c",
+   "orig": "0x5a4c",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 68 %, next 23 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 68,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "argsort": {
+   "ours": "0x2d6c-0x2dcc",
+   "table_orig": "0x5bcc",
+   "orig": "0x5bcc",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 84 %, next 34 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 84,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "fixstarg": {
+   "ours": "0x2dcc-0x2e36",
+   "table_orig": "0x5c1c",
+   "orig": "0x5c1c",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 78 %, next 37 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 78,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "argstrip": {
+   "ours": "0x2e36-0x2ee8",
+   "table_orig": "0x5c7a",
+   "orig": "0x5c7a",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 2",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 96,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "argplace": {
+   "ours": "0x2ee8-0x3068",
+   "table_orig": "0x5d2c",
+   "orig": "0x5d2c",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "genargs": {
+   "ours": "0x3068-0x30bc",
+   "table_orig": "0x59f4",
+   "orig": "0x59f4",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: best candidate, 13 of 27 differ; the calls to argscan, argstrip, argsort and argplace are the same, the frame and the register differ",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 85,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "acon": {
+   "ours": "0x30bc-0x328e",
+   "table_orig": "0x437e",
+   "orig": "0x437e",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): header 0x437e (out3.c); six calls to the library in both; sizes 140 / 124",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 49,
+    "difference_class": "other differences",
+    "difference_note": "acon-tail-01: the three L%d branches share the printf call and the tail off: in the original; D7, D8, D1 also present"
+   }
+  },
+  "oregput": {
+   "ours": "0x328e-0x32c8",
+   "table_orig": "0x409a",
+   "orig": "0x409a",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 2",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 89,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "conput": {
+   "ours": "0x32c8-0x33b4",
+   "table_orig": "0x3fda",
+   "orig": "0x3fda",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 59 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 59,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "insput": {
+   "ours": "0x33b4-0x33c4",
+   "table_orig": "0x4088",
+   "orig": "0x4088",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "upput": {
+   "ours": "0x33c4-0x34c0",
+   "table_orig": "0x40d4",
+   "orig": "0x40d4",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 84,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "adrput": {
+   "ours": "0x34c0-0x3690",
+   "table_orig": "0x41d0",
+   "orig": "0x41d0",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 67 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 67,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "hopcode": {
+   "ours": "0x3690-0x36fc",
+   "table_orig": "0x2de0",
+   "orig": "0x2de0",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 2",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 94,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "prlong": {
+   "ours": "0x36fc-0x3710",
+   "table_orig": "0x3fc4",
+   "orig": "0x3fc4",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "expand": {
+   "ours": "0x3710-0x3904",
+   "table_orig": "0x6444",
+   "orig": "0x6444",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from out3.c header and KNOWLEDGE (expand 0x6444); the callees (getlr, adrput, upput, acon, prlong, insput, hopcode, conput, zzzcode, rclass, rfind, buildstar) agree; length 169 / 169",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 33,
+    "difference_class": "other differences",
+    "difference_note": "expand-loop-01: loop and dispatch (33 %)"
+   }
+  },
+  "tsuffix": {
+   "ours": "0x3904-0x39ea",
+   "table_orig": "0x2796",
+   "orig": "0x2796",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 60 %, next 27 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 60,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "rsinit": {
+   "ours": "0x39ea-0x3a38",
+   "table_orig": "0x740c",
+   "orig": "0x740c",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 91,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rsrelease": {
+   "ours": "0x3a38-0x3a74",
+   "table_orig": "0x847a",
+   "orig": "0x847a",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rsbuild": {
+   "ours": "0x3a74-0x3b20",
+   "table_orig": "0x7458",
+   "orig": "0x7458",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 93,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "newnode": {
+   "ours": "0x3b20-0x3b8e",
+   "table_orig": "0x75e0",
+   "orig": "0x75e0",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 74 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 74,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rsinsert": {
+   "ours": "0x3b8e-0x3d98",
+   "table_orig": "0x7650",
+   "orig": "0x7650",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): header 0x7650 (regallo3.c); the first tests are the same (cp r6,#1; cp r7,A); 43 % aligned, 157 / 110 instructions; the difference is an open finding (rsinsert-size-01); no other candidate of similar size",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 43,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "roverlap": {
+   "ours": "0x3d98-0x3f1e",
+   "table_orig": "0x7790",
+   "orig": "0x7790",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 98,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "regjam": {
+   "ours": "0x3f1e-0x42de",
+   "table_orig": "0x7916",
+   "orig": "0x7916",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): string regjam: illegal type is shared; the calls roverlap, newnode, rsinsert (0x7650), cerror and rsreturn follow in the same order; 273 / 258 instructions",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 37,
+    "difference_class": "other differences",
+    "difference_note": "regjam: 37 % alignment, not analysed"
+   }
+  },
+  "getreg": {
+   "ours": "0x42de-0x4644",
+   "table_orig": "0x7c10",
+   "orig": "0x7c10",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x7c10; the switch layout and the register blocks are the known difference of getreg (D2, D6, D7, see ORIG notes)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 71,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rsreturn": {
+   "ours": "0x4644-0x4802",
+   "table_orig": "0x7f50",
+   "orig": "0x7f50",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 2",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 77,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "nullsyms": {
+   "ours": "0x4802-0x4846",
+   "table_orig": "0x811e",
+   "orig": "0x811e",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 55 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 55,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "pairmate": {
+   "ours": "0x4846-0x485e",
+   "table_orig": "0x73f0",
+   "orig": "0x73f0",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from allo3 / lcl usage (pairmate: other register of the pair); the same formula r+1 / r-1 with the parameter in r14 against r7 (D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 58,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "rsdump": {
+   "ours": "0x485e-0x4932",
+   "table_orig": "0x750c",
+   "orig": "0x750c",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 8",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 87,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rsfreeall": {
+   "ours": "0x4932-0x4998",
+   "table_orig": "0x815e",
+   "orig": "0x815e",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rspush": {
+   "ours": "0x4998-0x49cc",
+   "table_orig": "0x81c4",
+   "orig": "0x81c4",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x81c4; the same table index and the same stores with other registers (D2); the frame differs (D1)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 81,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rsmerge": {
+   "ours": "0x49cc-0x4cde",
+   "table_orig": "0x81fe",
+   "orig": "0x81fe",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): header 0x81fe (regallo3.c); the same two calls to roverlap; 225 / 159 instructions; the size difference is an open finding (rsmerge-size-01)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 56,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "rsmatch": {
+   "ours": "0x4cde-0x4d6c",
+   "table_orig": "0x83ec",
+   "orig": "0x83ec",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 92 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 92,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rsrelall": {
+   "ours": "0x4d6c-0x4db6",
+   "table_orig": "0x84b6",
+   "orig": "0x84b6",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 96,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rsrestart": {
+   "ours": "0x4db6-0x4dfe",
+   "table_orig": "0x8502",
+   "orig": "0x8502",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: callee set equal (rsbuild, getreg, rsrelease); length 26 / 26",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 96,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rnassign": {
+   "ours": "0x4dfe-0x4eb6",
+   "table_orig": "0x9722",
+   "orig": "0x9722",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 88,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rnnullp": {
+   "ours": "0x4eb6-0x4f02",
+   "table_orig": "0x97cc",
+   "orig": "0x97cc",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 86,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rnnullcall": {
+   "ours": "0x4f02-0x4f28",
+   "table_orig": "0x9816",
+   "orig": "0x9816",
+   "pairing": "confirmed",
+   "pairing_evidence": "same instructions",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rnnullall": {
+   "ours": "0x4f28-0x4f52",
+   "table_orig": "0x983c",
+   "orig": "0x983c",
+   "pairing": "confirmed",
+   "pairing_evidence": "same instructions",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rnnulll": {
+   "ours": "0x4f52-0x4f74",
+   "table_orig": "0x986a",
+   "orig": "0x986a",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 86,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rnnullw": {
+   "ours": "0x4f74-0x4f80",
+   "table_orig": "0x988c",
+   "orig": "0x988c",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 86,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rnnull": {
+   "ours": "0x4f80-0x4fd2",
+   "table_orig": "0x989e",
+   "orig": "0x989e",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 71 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 71,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "nxwork": {
+   "ours": "0x4fd2-0x5700",
+   "table_orig": "0x98e4",
+   "orig": "0x98e4",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 94,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tmpcleanup": {
+   "ours": "0x5700-0x5802",
+   "table_orig": "0x9308",
+   "orig": "0x9308",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 76 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 76,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tmpdump": {
+   "ours": "0x5802-0x5856",
+   "table_orig": "0x93f4",
+   "orig": "0x93f4",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 2",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 96,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "psuffix": {
+   "ours": "0x5856-0x5868",
+   "table_orig": "0x2780",
+   "orig": "0x2780",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): header 0x2780 (zzz3.c); the same call to tsuffix",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 75,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "geninc": {
+   "ours": "0x5868-0x5900",
+   "table_orig": "0x2e4c",
+   "orig": "0x2e4c",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "zzzcode": {
+   "ours": "0x5900-0x667c",
+   "table_orig": "0x2edc",
+   "orig": "0x2edc",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from zzz3.c header and KNOWLEDGE (zzzcode 0x2edc); length 1045 / 1063; differences in the switch layout (D6) and the frame (D1)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 86,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "cbgen": {
+   "ours": "0x667c-0x66e6",
+   "table_orig": "0x460e",
+   "orig": "0x460e",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 53 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 53,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "codgen": {
+   "ours": "0x66e6-0x6730",
+   "table_orig": "0x0aaa",
+   "orig": "0x0aaa",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from KNOWLEDGE (codgen 0x0aaa); calls in the same order (optim, canon, store, order); difference in the frame size (6 / 10) and in spill slots (D1, D3, D4)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 88,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "prcook": {
+   "ours": "0x6730-0x67da",
+   "table_orig": "0x0af6",
+   "orig": "0x0af6",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 69 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 69,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "order": {
+   "ours": "0x67da-0x6ca6",
+   "table_orig": "0x0ba2",
+   "orig": "0x0ba2",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: callee set equal under the claimed partners; length 385 / 385",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 88,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "store": {
+   "ours": "0x6ca6-0x6e00",
+   "table_orig": "0x1084",
+   "orig": "0x1084",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: callee set equal under the claimed partners (stoasg, store, stoarg, markcall, constore, mkadrs); length 109 / 107",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 96,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "constore": {
+   "ours": "0x6e00-0x6e3c",
+   "table_orig": "0x11da",
+   "orig": "0x11da",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x11da; same structure (3 calls), 22 / 20; differences: frame and register (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 82,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "markcall": {
+   "ours": "0x6e3c-0x6ea6",
+   "table_orig": "0x1212",
+   "orig": "0x1212",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 50 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 50,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "stoarg": {
+   "ours": "0x6ea6-0x6ef4",
+   "table_orig": "0x126a",
+   "orig": "0x126a",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x126a; same structure and 3 calls, 25 / 25; differences: frame and register (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 88,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "cbranch": {
+   "ours": "0x6ef4-0x71c0",
+   "table_orig": "0x12bc",
+   "orig": "0x12bc",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from KNOWLEDGE (cbranch 0x12bc); same structure, 235 / 227 instructions; differences frame and register choice (D1, D2) and the table index computed with add/neg (D6)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 50,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "ffld": {
+   "ours": "0x71c0-0x7356",
+   "table_orig": "0x15d0",
+   "orig": "0x15d0",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 94,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "oreg2": {
+   "ours": "0x7356-0x747a",
+   "table_orig": "0x175e",
+   "orig": "0x175e",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x175e; same structure and the same calls (notoff, tfree), 86 / 86; differences in frame and register (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "canon": {
+   "ours": "0x747a-0x74b4",
+   "table_orig": "0x1884",
+   "orig": "0x1884",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x1884; the same two fwalk callbacks (ffld and oreg2) in the same order; 17 / 19; differences in the frame and the register variable (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 63,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "argprep": {
+   "ours": "0x74b4-0x75a4",
+   "table_orig": "0x18be",
+   "orig": "0x18be",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x18be; same structure, 65 / 65; differences in frame and register (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 94,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "delstrip": {
+   "ours": "0x75a4-0x75d8",
+   "table_orig": "0x09d2",
+   "orig": "0x09d2",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: callback of fwalk in delay2 (see KNOWLEDGE, delstrip); the same condition and the same copy (inline ldir), 17 / 19",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_75d8": {
+   "ours": "0x75d8-0x767c",
+   "table_orig": "0x0a0a",
+   "orig": "0x0a0a",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 92 %, next 37 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 92,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_767c": {
+   "ours": "0x767c-0x7704",
+   "table_orig": "0x094e",
+   "orig": "0x094e",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: static function of reader3.c region, calls delay (0x0838) like delay1/delay2; same length 46 / 48; differences: table index computed (add/neg) against a direct load (D6); the name delay1 or delay2 is not verified",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 92,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "delay": {
+   "ours": "0x7704-0x7810",
+   "table_orig": "0x0838",
+   "orig": "0x0838",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 5",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 97,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "stmt": {
+   "ours": "0x7810-0x78f4",
+   "table_orig": "0x075a",
+   "orig": "0x075a",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: callee set equal and the same strings; length 69 / 66",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 93,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "gencall": {
+   "ours": "0x78f4-0x79ce",
+   "table_orig": "0x4534",
+   "orig": "0x4534",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x4534; 6 of 68 differ; the rest is the same, frame and register differences",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 99,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "genscall": {
+   "ours": "0x79ce-0x79dc",
+   "table_orig": "0x4520",
+   "orig": "0x4520",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): header 0x4520 (gen3.c); seven instructions, the same call to gencall",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 43,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "return gencall(p, cookie): reload from the spill (D3), copies in r2/r3 (D2), frame 4/6 (D1)"
+   }
+  },
+  "nextcook": {
+   "ours": "0x79dc-0x7a16",
+   "table_orig": "0x4674",
+   "orig": "0x4674",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 91,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "lastchance": {
+   "ours": "0x7a16-0x7a3a",
+   "table_orig": "0x46ae",
+   "orig": "0x46ae",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 71,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "icright": {
+   "ours": "0x7a3a-0x7a62",
+   "table_orig": "0x46d0",
+   "orig": "0x46d0",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x46d0; same structure, 13 / 16 (differences in frame and register)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 56,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "canon2": {
+   "ours": "0x7a62-0x7a7e",
+   "table_orig": "0x46fe",
+   "orig": "0x46fe",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): header 0x46fe (gen3.c); the same calls (canon, fwalk); nine and ten instructions",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 60,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "mycanon": {
+   "ours": "0x7a7e-0x7ae2",
+   "table_orig": "0x4804",
+   "orig": "0x4804",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x4804; same structure, 33 / 33; differences: frame and register (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 94,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "stoasg": {
+   "ours": "0x7ae2-0x7b00",
+   "table_orig": "0x487e",
+   "orig": "0x487e",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 50 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 50,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "mkadrs": {
+   "ours": "0x7b00-0x7c24",
+   "table_orig": "0x48a0",
+   "orig": "0x48a0",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 87 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 87,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_7c24": {
+   "ours": "0x7c24-0x7c3e",
+   "table_orig": "0xbba2",
+   "orig": "0xbba2",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 69,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "convelim": {
+   "ours": "0x7c3e-0x7d6c",
+   "table_orig": "0xba7c",
+   "orig": "0xba7c",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from KNOWLEDGE (convelim 0xba7c); same loop and the same calls; differences: the byte compare cpb rl6,#0x72 against the word compare cp r6,#0x0072 (D8), frame 12 / 14",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 89,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "treeeq": {
+   "ours": "0x7d6c-0x7e10",
+   "table_orig": "0xb9ea",
+   "orig": "0xb9ea",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x b9ea; same function; the switch is encoded differently (cpir table in ours, a compare chain in the original: D6)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 67,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "conval": {
+   "ours": "0x7e10-0x808e",
+   "table_orig": "0xb774",
+   "orig": "0xb774",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 85,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "optim": {
+   "ours": "0x808e-0x86a4",
+   "table_orig": "0xb178",
+   "orig": "0xb178",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from optim3.c header and KNOWLEDGE (optim 0xb178); same structure, 466 / 452 instructions; the differences seen are register choice (r2 / r3 for the same table access, D2) and the layout of the jumps",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 84,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_86a4": {
+   "ours": "0x86a4-0x86c8",
+   "table_orig": null,
+   "orig": null,
+   "pairing": "none",
+   "pairing_evidence": "",
+   "level": "own"
+  },
+  "cgprintf": {
+   "ours": "0x86c8-0x86f0",
+   "table_orig": "0x8c1e",
+   "orig": null,
+   "pairing": "none",
+   "pairing_evidence": "wrapper of printf (cg.h, comm3.c): clears the work area and calls printf with five arguments. The original calls BEE6 (printf) directly, so there is no original function. The table had 0x8c1e (endrun).",
+   "level": "differs"
+  },
+  "static_86f0": {
+   "ours": "0x86f0-0x870c",
+   "table_orig": "0x8952",
+   "orig": "0x8952",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "uerror": {
+   "ours": "0x870c-0x8748",
+   "table_orig": "0x8570",
+   "orig": "0x8570",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "cerror": {
+   "ours": "0x8748-0x87ca",
+   "table_orig": "0x85ae",
+   "orig": "0x85ae",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name and role from KNOWLEDGE (cerror stops with status 0x40); body the same except layout and the putc expansion (0x65a6 / 0x693c stdio data, D12 and layout)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "werror": {
+   "ours": "0x87ca-0x8806",
+   "table_orig": "0x862e",
+   "orig": "0x862e",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tinit": {
+   "ours": "0x8806-0x8836",
+   "table_orig": "0x866c",
+   "orig": "0x866c",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "talloc": {
+   "ours": "0x8836-0x8894",
+   "table_orig": "0x869c",
+   "orig": "0x869c",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 86,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tcheck": {
+   "ours": "0x8894-0x88d8",
+   "table_orig": "0x86fa",
+   "orig": "0x86fa",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "free1": {
+   "ours": "0x88d8-0x88f4",
+   "table_orig": "0x8758",
+   "orig": "0x8758",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 91,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tfree": {
+   "ours": "0x88f4-0x890e",
+   "table_orig": "0x873c",
+   "orig": "0x873c",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x873c; same calls (fwalk with free1), 10 / 10; differences: frame and register (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 80,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "fwalkd": {
+   "ours": "0x890e-0x8988",
+   "table_orig": "0x8774",
+   "orig": "0x8774",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x8774; same calls; the tail is merged differently in the original (D11), frame and register",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 61,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "fwalk": {
+   "ours": "0x8988-0x89de",
+   "table_orig": "0x87ec",
+   "orig": "0x87ec",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x87ec; same structure, 29 / 29; differences: frame 8 / 10, the register of the table index r2 / r3 (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 93,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "dopeinit": {
+   "ours": "0x89de-0x8a0e",
+   "table_orig": "0x8844",
+   "orig": "0x8844",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tbytes": {
+   "ours": "0x8a0e-0x8a3e",
+   "table_orig": "0x8970",
+   "orig": "0x8970",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x8970; same structure, 19 / 19; differences: frame and register (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 74,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rallkind": {
+   "ours": "0x8a3e-0x8a6a",
+   "table_orig": "0x89a2",
+   "orig": "0x89a2",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from comm3.c header (rallkind 0x89a2); the body equals ours at 0x8a3e apart from the frame and the spill slot; the original allocreg calls 0x89a2 (call %89A2 at 0x6c6a)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 87,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "errexit": {
+   "ours": "0x8a6a-0x8a82",
+   "table_orig": "0x89ce",
+   "orig": "0x89ce",
+   "pairing": "confirmed",
+   "pairing_evidence": "same instructions",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "branch": {
+   "ours": "0x8a82-0x8a96",
+   "table_orig": "0x89e8",
+   "orig": "0x89e8",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): strings: the printf of \\tjpr\\tL%d (comm3.c); the alignment cannot separate the printf wrappers",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 67,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "ncopy": {
+   "ours": "0x8a96-0x8aac",
+   "table_orig": "0x8a02",
+   "orig": "0x8a02",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x8a02; the same copy (ldir of nine words) with other registers (D2); the frame differs (D1)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 46,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "D1, D3, D4 (copy identical); pattern check"
+   }
+  },
+  "alloc": {
+   "ours": "0x8aac-0x8b28",
+   "table_orig": "0x8b6e",
+   "orig": "0x8b6e",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "allocinit": {
+   "ours": "0x8b28-0x8b46",
+   "table_orig": "0x8bea",
+   "orig": "0x8bea",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rdin2": {
+   "ours": "0x8b46-0x8c1e",
+   "table_orig": "0x26ae",
+   "orig": "0x26ae",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 3",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rdin": {
+   "ours": "0x8c1e-0x8c2c",
+   "table_orig": "0x269a",
+   "orig": "0x269a",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 57,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "nlcheck": {
+   "ours": "0x8c2c-0x8c64",
+   "table_orig": "0x244a",
+   "orig": "0x244a",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 88,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "mkhash": {
+   "ours": "0x8c64-0x8ca0",
+   "table_orig": "0x2406",
+   "orig": "0x2406",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 82,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rddata": {
+   "ours": "0x8ca0-0x8d66",
+   "table_orig": "0x19ac",
+   "orig": "0x19ac",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x19ac; same structure, 60 / 64; differences in frame and register; the copy loop is the same",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 77,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "readsyms": {
+   "ours": "0x8d66-0x8e10",
+   "table_orig": "0x1b64",
+   "orig": "0x1b64",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 71 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 71,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "readtab": {
+   "ours": "0x8e10-0x8e3e",
+   "table_orig": "0x1c30",
+   "orig": "0x1c30",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 72,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "readnums": {
+   "ours": "0x8e3e-0x8ed8",
+   "table_orig": "0x1c6c",
+   "orig": "0x1c6c",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 73 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 73,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "readmems": {
+   "ours": "0x8ed8-0x9088",
+   "table_orig": "0x1d0e",
+   "orig": "0x1d0e",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 99,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rdsym": {
+   "ours": "0x9088-0x916a",
+   "table_orig": "0x1a86",
+   "orig": "0x1a86",
+   "pairing": "confirmed",
+   "pairing_evidence": "corrected: the original rdsym starts at 0x1a86 (the header is right); the part at 0x1aae is its continuation after a ret (reached by jr). Aligned 92.8 % over 0x1a86..0x1b64 (67 / 69 instructions); the earlier 0x1aae candidate came from a cut of the extent (step: analysis of header-rdsym-01)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 16,
+    "difference_class": "D only (aligned >= 70 %)",
+    "difference_note": "aligned 92.8 % over 0x1a86..0x1b64; header-rdsym-01 closed"
+   }
+  },
+  "sortsyms": {
+   "ours": "0x916a-0x9204",
+   "table_orig": "0x1ec2",
+   "orig": "0x1ec2",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 56 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 56,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "tagfind": {
+   "ours": "0x9204-0x92c0",
+   "table_orig": "0x1f82",
+   "orig": "0x1f82",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 93 %, next 32 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 93,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "mapn": {
+   "ours": "0x92c0-0x92f0",
+   "table_orig": "0x2038",
+   "orig": "0x2038",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 75,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "mapsym": {
+   "ours": "0x92f0-0x9340",
+   "table_orig": "0x206a",
+   "orig": "0x206a",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 81 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 81,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "mapnm": {
+   "ours": "0x9340-0x9666",
+   "table_orig": "0x20c0",
+   "orig": "0x20c0",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing: same formatted strings (mapnm, p->op=%d ...) and name; class NOT D-only: 77 of 226 instructions match in an alignment (33 %). Real differences in the order of the statements and in the expressions: to be classified (finding mapnm-real-01).",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 87,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "eread": {
+   "ours": "0x9666-0x9862",
+   "table_orig": "0x2480",
+   "orig": "0x2480",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x2480; same structure, 162 / 168; known difference: the getchar mask (D8) and the lval storage, as in the summary of eread",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 76,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "options": {
+   "ours": "0x9862-0x99f0",
+   "table_orig": "0x002a",
+   "orig": "0x002a",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from KNOWLEDGE (options 0x002a); the same formatted strings (error in opening the symbol table file, bad option). Layout differs: the loop variable is in r14 in the original and in memory in ours (D2/D7, to classify)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 69,
+    "difference_class": "other differences",
+    "difference_note": "options-loop-01: register declarations for i and err (source)"
+   }
+  },
+  "init": {
+   "ours": "0x99f0-0x9a82",
+   "table_orig": "0x019e",
+   "orig": "0x019e",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: callee set equal (regreset, regtabinit, rsinit, rsbuild); length 35 / 39",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "main": {
+   "ours": "0x9a82-0x9f7e",
+   "table_orig": "0x023c",
+   "orig": "0x023c",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from KNOWLEDGE (main 0x023c); the same strings (error in reading data file, .even, .addr); length 386 / 390",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 69,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "lineout": {
+   "ours": "0x9f7e-0x9f94",
+   "table_orig": "0x2880",
+   "orig": "0x2880",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): strings: the printf of .line (efcode3.c); the alignment rule does not apply to this short body",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 38,
+    "difference_class": "other differences",
+    "difference_note": "short body, 38 %, not classified"
+   }
+  },
+  "funcend": {
+   "ours": "0x9f94-0x9ff0",
+   "table_orig": "0x289a",
+   "orig": "0x289a",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x289a; same calls (the epilogue label at 0x8c22), 26 / 26; differences in frame and register",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 92,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_9ff0": {
+   "ours": "0x9ff0-0xa010",
+   "table_orig": "0x2aa2",
+   "orig": "0x2aa2",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 2",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_a010": {
+   "ours": "0xa010-0xa030",
+   "table_orig": "0x2b20",
+   "orig": "0x2b20",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 2",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_a030": {
+   "ours": "0xa030-0xa0f8",
+   "table_orig": "0x29de",
+   "orig": "0x29de",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 5",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 92,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_a0f8": {
+   "ours": "0xa0f8-0xa1c2",
+   "table_orig": "0x2b48",
+   "orig": "0x2b48",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 5",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 92,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_a1c2": {
+   "ours": "0xa1c2-0xa214",
+   "table_orig": "0x2990",
+   "orig": "0x2990",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 88,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_a214": {
+   "ours": "0xa214-0xa3ec",
+   "table_orig": "0x2c0e",
+   "orig": "0x2c0e",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree, callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 89,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_a3ec": {
+   "ours": "0xa3ec-0xa446",
+   "table_orig": "0x2aca",
+   "orig": "0x2aca",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: prolog (KNOWLEDGE 0x2aca, efcode3.c header); same calls and same length 29; differences: frame 16 / 26 and register save (D1, D2)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "efcode": {
+   "ours": "0xa446-0xa4fc",
+   "table_orig": "0x28f6",
+   "orig": "0x28f6",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from efcode3.c header and KNOWLEDGE (efcode 0x28f6); calls epilog and prolog. Real difference, not yet classified: the frame value sz is computed with a different sequence of shifts after sz % 2 (sdal / slal); to be checked against the source",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 60,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "hdrout": {
+   "ours": "0xa4fc-0xa50e",
+   "table_orig": "0x8c0c",
+   "orig": "0x8c0c",
+   "pairing": "confirmed",
+   "pairing_evidence": "same instructions",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "endline": {
+   "ours": "0xa50e-0xa55c",
+   "table_orig": "0x8c22",
+   "orig": "0x8c22",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "endrun": {
+   "ours": "0xa55c-0xa560",
+   "table_orig": "0x4868",
+   "orig": "0x8c1e",
+   "pairing": "confirmed",
+   "pairing_evidence": "same instructions",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "parminit": {
+   "ours": "0xa560-0xa82c",
+   "table_orig": "0x8c74",
+   "orig": "0x8c74",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 80 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 80,
+    "difference_class": "other differences",
+    "difference_note": "about 34 extra instructions at the start (source)"
+   }
+  },
+  "structretcode": {
+   "ours": "0xa82c-0xa888",
+   "table_orig": "0x8f7e",
+   "orig": "0x8f7e",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 4",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "fbegin": {
+   "ours": "0xa888-0xa9bc",
+   "table_orig": "0x8fda",
+   "orig": "0x8fda",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 9",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "regtabinit": {
+   "ours": "0xa9bc-0xa9c4",
+   "table_orig": "0x910e",
+   "orig": "0x910e",
+   "pairing": "confirmed",
+   "pairing_evidence": "same instructions",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tabfind": {
+   "ours": "0xa9c4-0xa9fe",
+   "table_orig": "0x9116",
+   "orig": "0x9116",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tabclear": {
+   "ours": "0xa9fe-0xaa36",
+   "table_orig": "0x9152",
+   "orig": "0x9152",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "fixtemp": {
+   "ours": "0xaa36-0xabb0",
+   "table_orig": "0x918e",
+   "orig": "0x918e",
+   "pairing": "confirmed",
+   "pairing_evidence": "callers agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "fixfld": {
+   "ours": "0xabb0-0xac60",
+   "table_orig": "0x944a",
+   "orig": "0x944a",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: header 0x944a; same function; real differences: the original uses srl (unsigned) for the field shift where ours uses sra (finding fixfld-shift-01); the statements come in other order; the register of the struct pointer differs",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 82,
+    "difference_class": "other differences",
+    "difference_note": "shift-type-01: shift signedness per site (source)"
+   }
+  },
+  "mapregs": {
+   "ours": "0xac60-0xad60",
+   "table_orig": "0x9512",
+   "orig": "0x9512",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 70 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 70,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "symuse": {
+   "ours": "0xad60-0xadaa",
+   "table_orig": "0x964c",
+   "orig": "0x964c",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 92 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 92,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "symreg": {
+   "ours": "0xadaa-0xae02",
+   "table_orig": "0x9fdc",
+   "orig": "0x9fdc",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 52 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 52,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "regforsym": {
+   "ours": "0xae02-0xae8e",
+   "table_orig": "0xa03a",
+   "orig": "0xa03a",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 94 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 94,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "fixname": {
+   "ours": "0xae8e-0xaef4",
+   "table_orig": "0xa0c6",
+   "orig": "0xa0c6",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 91 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 91,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "oregfix": {
+   "ours": "0xaef4-0xafaa",
+   "table_orig": "0xa12a",
+   "orig": "0xa12a",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 76 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 76,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "findtemp": {
+   "ours": "0xafaa-0xafdc",
+   "table_orig": "0xa7ac",
+   "orig": "0xa7ac",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 89 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 89,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "fcmd": {
+   "ours": "0xafdc-0xb070",
+   "table_orig": "0xa1ba",
+   "orig": "0xa1ba",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 98,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "regreset": {
+   "ours": "0xb070-0xb110",
+   "table_orig": "0xa252",
+   "orig": "0xa252",
+   "pairing": "confirmed",
+   "pairing_evidence": "same instructions",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "rcmd": {
+   "ours": "0xb110-0xb2be",
+   "table_orig": "0xa2f4",
+   "orig": "0xa2f4",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 70 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 70,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "memname": {
+   "ours": "0xb2be-0xb334",
+   "table_orig": "0xa734",
+   "orig": "0xa734",
+   "pairing": "confirmed",
+   "pairing_evidence": "callees agree",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "scmd": {
+   "ours": "0xb334-0xb46a",
+   "table_orig": "0xa4aa",
+   "orig": "0xa4aa",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 80 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 80,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "tcmd": {
+   "ours": "0xb46a-0xb602",
+   "table_orig": "0xa5de",
+   "orig": "0xa5de",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): strings rr%d, /* rvrestore */ \\tfldd\\t shared with 0xa5de only (header 0xa5de); 131 / 109 instructions, the call pattern memname and getreg differs (finding tcmd-calls-01)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 45,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "gswitch": {
+   "ours": "0xb602-0xb92a",
+   "table_orig": "0xa7e0",
+   "orig": "0xa7e0",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: callee set equal under the claimed partners (mapnm, delay, reclaim, getreg, rmove, rfree); the printf calls are the same lines; length 240 / 250",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 89,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "makeblock": {
+   "ours": "0xb92a-0xb98a",
+   "table_orig": "0xaece",
+   "orig": "0xaece",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 50 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 50,
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern"
+   }
+  },
+  "bcon": {
+   "ours": "0xb98a-0xb9bc",
+   "table_orig": "0xb0a0",
+   "orig": "0xb0a0",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 89 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 89,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "static_b9bc": {
+   "ours": "0xb9bc-0xb9c4",
+   "table_orig": "0xab3e",
+   "orig": "0xab3e",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: 1 of 4 instructions differs: the same four instructions with another frame or register (the original 0xab3e)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 100,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "clocal": {
+   "ours": "0xb9c4-0xbcca",
+   "table_orig": "0xab48",
+   "orig": "0xab48",
+   "pairing": "confirmed",
+   "pairing_evidence": "open pairing resolved (step 1 of the pairing closure): header 0xab48 (tr3.c); the string lcl: NAME op has illegal class is shared; the same makeblock / member sequence; 230 / 264 instructions (finding clocal-size-01)",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 47,
+    "difference_class": "other differences",
+    "difference_note": "clocal-size-01: 80 instructions at another place (block order)"
+   }
+  },
+  "member": {
+   "ours": "0xbcca-0xbd64",
+   "table_orig": "0xb0d4",
+   "orig": "0xb0d4",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 90 %",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 90,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "foldadd": {
+   "ours": "0xbd64-0xbe34",
+   "table_orig": "0xaf14",
+   "orig": "0xaf14",
+   "pairing": "confirmed",
+   "pairing_evidence": "same strings: 1",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 97,
+    "difference_class": "D only (aligned >= 70 %)"
+   }
+  },
+  "buildstar": {
+   "ours": "0xbe34-0xbee6",
+   "table_orig": "0xafe4",
+   "orig": "0xafe4",
+   "pairing": "confirmed",
+   "pairing_evidence": "pairing: header 0xafe4. class NOT D-only: 28 of 56 match in an alignment (50 %). Besides srl/sra (shift-type-01) the order of the if chains differs; to be classified (finding buildstar-order-01).",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 59,
+    "difference_class": "other differences",
+    "difference_note": "buildstar-order-01 and shift-type-01 (source)"
+   }
+  }
+ },
+ "findings": [],
+ "manual": {
+  "endrun": {
+   "orig": "0x8c1e",
+   "evidence": "body of ours: calr endline, ret. Original 0x8c1e: calr L0t_8c22, ret. The table had 0x4868, a function with two arguments that calls 0x023c (main), not a match."
+  },
+  "cgprintf": {
+   "orig": null,
+   "evidence": "wrapper of printf (cg.h, comm3.c): clears the work area and calls printf with five arguments. The original calls BEE6 (printf) directly, so there is no original function. The table had 0x8c1e (endrun)."
+  },
+  "allo": {
+   "orig": "0x67e8",
+   "confirm": true,
+   "evidence": "review: callee sequence equal under the claimed partners (allocreg, rclass, rfind, szty, allocreg, rclass, rfind, freetemp, freeparm, nxwork); length 297 / 298"
+  },
+  "tshape": {
+   "orig": "0x5e92",
+   "confirm": true,
+   "evidence": "review: callee set equal under the claimed partners (special, shtemp, shumul, ltypeop). Difference: call order (ours shumul before ltypeop, original ltypeop before shumul); length 117 / 115"
+  },
+  "rsrestart": {
+   "orig": "0x8502",
+   "confirm": true,
+   "evidence": "review: callee set equal (rsbuild, getreg, rsrelease); length 26 / 26"
+  },
+  "order": {
+   "orig": "0x0ba2",
+   "confirm": true,
+   "evidence": "review: callee set equal under the claimed partners; length 385 / 385"
+  },
+  "store": {
+   "orig": "0x1084",
+   "confirm": true,
+   "evidence": "review: callee set equal under the claimed partners (stoasg, store, stoarg, markcall, constore, mkadrs); length 109 / 107"
+  },
+  "stmt": {
+   "orig": "0x075a",
+   "confirm": true,
+   "evidence": "review: callee set equal and the same strings; length 69 / 66"
+  },
+  "init": {
+   "orig": "0x019e",
+   "confirm": true,
+   "evidence": "review: callee set equal (regreset, regtabinit, rsinit, rsbuild); length 35 / 39"
+  },
+  "mapnm": {
+   "orig": "0x20c0",
+   "confirm": true,
+   "evidence": "pairing: same formatted strings (mapnm, p->op=%d ...) and name; class NOT D-only: 77 of 226 instructions match in an alignment (33 %). Real differences in the order of the statements and in the expressions: to be classified (finding mapnm-real-01)."
+  },
+  "gswitch": {
+   "orig": "0xa7e0",
+   "confirm": true,
+   "evidence": "review: callee set equal under the claimed partners (mapnm, delay, reclaim, getreg, rmove, rfree); the printf calls are the same lines; length 240 / 250"
+  },
+  "cerror": {
+   "orig": "0x85ae",
+   "confirm": true,
+   "evidence": "review: name and role from KNOWLEDGE (cerror stops with status 0x40); body the same except layout and the putc expansion (0x65a6 / 0x693c stdio data, D12 and layout)"
+  },
+  "codgen": {
+   "orig": "0x0aaa",
+   "confirm": true,
+   "evidence": "review: name from KNOWLEDGE (codgen 0x0aaa); calls in the same order (optim, canon, store, order); difference in the frame size (6 / 10) and in spill slots (D1, D3, D4)"
+  },
+  "static_a3ec": {
+   "orig": "0x2aca",
+   "confirm": true,
+   "evidence": "review: prolog (KNOWLEDGE 0x2aca, efcode3.c header); same calls and same length 29; differences: frame 16 / 26 and register save (D1, D2)"
+  },
+  "static_767c": {
+   "orig": "0x094e",
+   "confirm": true,
+   "evidence": "review: static function of reader3.c region, calls delay (0x0838) like delay1/delay2; same length 46 / 48; differences: table index computed (add/neg) against a direct load (D6); the name delay1 or delay2 is not verified"
+  },
+  "expand": {
+   "orig": "0x6444",
+   "confirm": true,
+   "evidence": "review: name from out3.c header and KNOWLEDGE (expand 0x6444); the callees (getlr, adrput, upput, acon, prlong, insput, hopcode, conput, zzzcode, rclass, rfind, buildstar) agree; length 169 / 169"
+  },
+  "zzzcode": {
+   "orig": "0x2edc",
+   "confirm": true,
+   "evidence": "review: name from zzz3.c header and KNOWLEDGE (zzzcode 0x2edc); length 1045 / 1063; differences in the switch layout (D6) and the frame (D1)"
+  },
+  "efcode": {
+   "orig": "0x28f6",
+   "confirm": true,
+   "evidence": "review: name from efcode3.c header and KNOWLEDGE (efcode 0x28f6); calls epilog and prolog. Real difference, not yet classified: the frame value sz is computed with a different sequence of shifts after sz % 2 (sdal / slal); to be checked against the source"
+  },
+  "options": {
+   "orig": "0x002a",
+   "confirm": true,
+   "evidence": "review: name from KNOWLEDGE (options 0x002a); the same formatted strings (error in opening the symbol table file, bad option). Layout differs: the loop variable is in r14 in the original and in memory in ours (D2/D7, to classify)"
+  },
+  "main": {
+   "orig": "0x023c",
+   "confirm": true,
+   "evidence": "review: name from KNOWLEDGE (main 0x023c); the same strings (error in reading data file, .even, .addr); length 386 / 390"
+  },
+  "reclaim": {
+   "orig": "0x7058",
+   "confirm": true,
+   "evidence": "review: name from KNOWLEDGE (reclaim 0x7058, allo3.c); same structure; differences frame 0x1c / 0x1e and register choice (D1, D2); jump targets differ by the layout"
+  },
+  "convelim": {
+   "orig": "0xba7c",
+   "confirm": true,
+   "evidence": "review: name from KNOWLEDGE (convelim 0xba7c); same loop and the same calls; differences: the byte compare cpb rl6,#0x72 against the word compare cp r6,#0x0072 (D8), frame 12 / 14"
+  },
+  "cbranch": {
+   "orig": "0x12bc",
+   "confirm": true,
+   "evidence": "review: name from KNOWLEDGE (cbranch 0x12bc); same structure, 235 / 227 instructions; differences frame and register choice (D1, D2) and the table index computed with add/neg (D6)"
+  },
+  "optim": {
+   "orig": "0xb178",
+   "confirm": true,
+   "evidence": "review: name from optim3.c header and KNOWLEDGE (optim 0xb178); same structure, 466 / 452 instructions; the differences seen are register choice (r2 / r3 for the same table access, D2) and the layout of the jumps"
+  },
+  "rallkind": {
+   "orig": "0x89a2",
+   "confirm": true,
+   "evidence": "review: name from comm3.c header (rallkind 0x89a2); the body equals ours at 0x8a3e apart from the frame and the spill slot; the original allocreg calls 0x89a2 (call %89A2 at 0x6c6a)"
+  },
+  "rcookie": {
+   "orig": null,
+   "evidence": "no counterpart: the same logic as rallkind (comm3.c), a duplicate in allo3.c. The original allocreg calls 0x89a2 (rallkind), so the rebuild must call rallkind and drop rcookie (kind source, finding allo3-rcookie-dup)"
+  },
+  "rbusy": {
+   "orig": "0x66bc",
+   "confirm": true,
+   "evidence": "review: header 0x66bc; same structure, 69 / 69; differences: spill slot, data addresses (D3, D13)"
+  },
+  "rfree": {
+   "orig": "0x6f76",
+   "confirm": true,
+   "evidence": "review: header 0x6f76; same structure, 31 / 31; differences: frame 14 / 10, spill slot and data addresses (D1, D3)"
+  },
+  "rfreenode": {
+   "orig": "0x6efa",
+   "confirm": true,
+   "evidence": "review: header 0x6efa; same structure, 44 / 44; differences: register and data addresses (D2, D13)"
+  },
+  "szty": {
+   "orig": "0x88c4",
+   "confirm": true,
+   "evidence": "review: header 0x88c4; same structure, 19 / 19; differences: frame and register (D1, D2)"
+  },
+  "constore": {
+   "orig": "0x11da",
+   "confirm": true,
+   "evidence": "review: header 0x11da; same structure (3 calls), 22 / 20; differences: frame and register (D1, D2)"
+  },
+  "stoarg": {
+   "orig": "0x126a",
+   "confirm": true,
+   "evidence": "review: header 0x126a; same structure and 3 calls, 25 / 25; differences: frame and register (D1, D2)"
+  },
+  "mycanon": {
+   "orig": "0x4804",
+   "confirm": true,
+   "evidence": "review: header 0x4804; same structure, 33 / 33; differences: frame and register (D1, D2)"
+  },
+  "tfree": {
+   "orig": "0x873c",
+   "confirm": true,
+   "evidence": "review: header 0x873c; same calls (fwalk with free1), 10 / 10; differences: frame and register (D1, D2)"
+  },
+  "fwalk": {
+   "orig": "0x87ec",
+   "confirm": true,
+   "evidence": "review: header 0x87ec; same structure, 29 / 29; differences: frame 8 / 10, the register of the table index r2 / r3 (D1, D2)"
+  },
+  "rclass": {
+   "orig": "0x6bf4",
+   "confirm": true,
+   "evidence": "review: header 0x6bf4; the same if chain for the class of the register; the original keeps the value in r14, ours in r2 (D2); the jump layout differs (D6)"
+  },
+  "rspush": {
+   "orig": "0x81c4",
+   "confirm": true,
+   "evidence": "review: header 0x81c4; the same table index and the same stores with other registers (D2); the frame differs (D1)"
+  },
+  "ncopy": {
+   "orig": "0x8a02",
+   "confirm": true,
+   "evidence": "review: header 0x8a02; the same copy (ldir of nine words) with other registers (D2); the frame differs (D1)"
+  },
+  "pairmate": {
+   "orig": "0x73f0",
+   "confirm": true,
+   "evidence": "review: name from allo3 / lcl usage (pairmate: other register of the pair); the same formula r+1 / r-1 with the parameter in r14 against r7 (D2)"
+  },
+  "delstrip": {
+   "orig": "0x09d2",
+   "confirm": true,
+   "evidence": "review: callback of fwalk in delay2 (see KNOWLEDGE, delstrip); the same condition and the same copy (inline ldir), 17 / 19"
+  },
+  "tcopy": {
+   "orig": "0x8a24",
+   "confirm": true,
+   "evidence": "review: header 0x8a24; same function. Real difference (finding tcopy-copy-01): the original calls ncopy (0x8a02) for the node copy, our tcopy copies inline with ldir (9 words); the source must call ncopy"
+  },
+  "notoff": {
+   "orig": "0x49c0",
+   "confirm": true,
+   "evidence": "review: best candidate by strict comparison over all original starts (6 of 18 instructions differ; the others are the frame and the register)"
+  },
+  "mkrall": {
+   "orig": "0x51c0",
+   "confirm": true,
+   "evidence": "review: best candidate by strict comparison (6 of 30); same structure, frame and register differences"
+  },
+  "icright": {
+   "orig": "0x46d0",
+   "confirm": true,
+   "evidence": "review: header 0x46d0; same structure, 13 / 16 (differences in frame and register)"
+  },
+  "static_b9bc": {
+   "orig": "0xab3e",
+   "confirm": true,
+   "evidence": "review: 1 of 4 instructions differs: the same four instructions with another frame or register (the original 0xab3e)"
+  },
+  "tbytes": {
+   "orig": "0x8970",
+   "confirm": true,
+   "evidence": "review: header 0x8970; same structure, 19 / 19; differences: frame and register (D1, D2)"
+  },
+  "rallo": {
+   "orig": "0x5222",
+   "confirm": true,
+   "evidence": "review: same function (header missing, claim 0x5222 is the only candidate of the same length); differences: order of some statements (D7 / D11), frame and data addresses"
+  },
+  "treeeq": {
+   "orig": "0xb9ea",
+   "confirm": true,
+   "evidence": "review: header 0x b9ea; same function; the switch is encoded differently (cpir table in ours, a compare chain in the original: D6)"
+  },
+  "getreg": {
+   "orig": "0x7c10",
+   "confirm": true,
+   "evidence": "review: header 0x7c10; the switch layout and the register blocks are the known difference of getreg (D2, D6, D7, see ORIG notes)"
+  },
+  "fwalkd": {
+   "orig": "0x8774",
+   "confirm": true,
+   "evidence": "review: header 0x8774; same calls; the tail is merged differently in the original (D11), frame and register"
+  },
+  "ttype": {
+   "orig": "0x5ff6",
+   "confirm": true,
+   "evidence": "review: same function (claim 0x5ff6 is the only candidate of the same length); real difference: the original uses srl (unsigned) where ours uses sra (signed); the bit tests come in another order (finding ttype-shift-01)"
+  },
+  "fixfld": {
+   "orig": "0x944a",
+   "confirm": true,
+   "evidence": "review: header 0x944a; same function; real differences: the original uses srl (unsigned) for the field shift where ours uses sra (finding fixfld-shift-01); the statements come in other order; the register of the struct pointer differs"
+  },
+  "allocreg": {
+   "orig": "0x6c4e",
+   "confirm": true,
+   "evidence": "review: header 0x6c4e; same structure, 87 / 85; the one real difference: it calls the local rcookie where the original calls 0x89a2 (rallkind), see finding allo3-rcookie-dup"
+  },
+  "setstr": {
+   "orig": "0x5678",
+   "confirm": true,
+   "evidence": "review: same function; the best candidate by a wide margin (19 vs 25); differences: register variable (r14 / r3, D2), the constant 0x0354 is an address (D13)"
+  },
+  "genargs": {
+   "orig": "0x59f4",
+   "confirm": true,
+   "evidence": "review: best candidate, 13 of 27 differ; the calls to argscan, argstrip, argsort and argplace are the same, the frame and the register differ"
+  },
+  "oreg2": {
+   "orig": "0x175e",
+   "confirm": true,
+   "evidence": "review: header 0x175e; same structure and the same calls (notoff, tfree), 86 / 86; differences in frame and register (D1, D2)"
+  },
+  "canon": {
+   "orig": "0x1884",
+   "confirm": true,
+   "evidence": "review: header 0x1884; the same two fwalk callbacks (ffld and oreg2) in the same order; 17 / 19; differences in the frame and the register variable (D1, D2)"
+  },
+  "argprep": {
+   "orig": "0x18be",
+   "confirm": true,
+   "evidence": "review: header 0x18be; same structure, 65 / 65; differences in frame and register (D1, D2)"
+  },
+  "gencall": {
+   "orig": "0x4534",
+   "confirm": true,
+   "evidence": "review: header 0x4534; 6 of 68 differ; the rest is the same, frame and register differences"
+  },
+  "rddata": {
+   "orig": "0x19ac",
+   "confirm": true,
+   "evidence": "review: header 0x19ac; same structure, 60 / 64; differences in frame and register; the copy loop is the same"
+  },
+  "funcend": {
+   "orig": "0x289a",
+   "confirm": true,
+   "evidence": "review: header 0x289a; same calls (the epilogue label at 0x8c22), 26 / 26; differences in frame and register"
+  },
+  "eread": {
+   "orig": "0x2480",
+   "confirm": true,
+   "evidence": "review: header 0x2480; same structure, 162 / 168; known difference: the getchar mask (D8) and the lval storage, as in the summary of eread"
+  },
+  "buildstar": {
+   "orig": "0xafe4",
+   "confirm": true,
+   "evidence": "pairing: header 0xafe4. class NOT D-only: 28 of 56 match in an alignment (50 %). Besides srl/sra (shift-type-01) the order of the if chains differs; to be classified (finding buildstar-order-01)."
+  },
+  "rfind": {
+   "orig": "0x96e6",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 91 %"
+  },
+  "freeparm": {
+   "orig": "0x6792",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 89 %"
+  },
+  "freetemp": {
+   "orig": "0x6ba6",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 88 %"
+  },
+  "usable": {
+   "orig": "0x6e78",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 71 %"
+  },
+  "freereg": {
+   "orig": "0x6d5a",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 51 %"
+  },
+  "rfreeall": {
+   "orig": "0x9696",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 77 %"
+  },
+  "ispow2": {
+   "orig": "0x8af6",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 69 %"
+  },
+  "bsize": {
+   "orig": "0x8878",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 75 %"
+  },
+  "plainicon": {
+   "orig": "0x8b44",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 69 %, next 50 %"
+  },
+  "special": {
+   "orig": "0x471a",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 74 %"
+  },
+  "shtemp": {
+   "orig": "0x3e8e",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 50 %"
+  },
+  "shincr": {
+   "orig": "0x3ed6",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 79 %"
+  },
+  "shumul": {
+   "orig": "0x3f4e",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 90 %"
+  },
+  "ltypeok": {
+   "orig": "0x3e1c",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 85 %"
+  },
+  "getlr": {
+   "orig": "0x6636",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 76 %, next 41 %"
+  },
+  "match": {
+   "orig": "0x6196",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 76 %, next 30 %"
+  },
+  "argscan": {
+   "orig": "0x5a4c",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 68 %, next 23 %"
+  },
+  "argsort": {
+   "orig": "0x5bcc",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 84 %, next 34 %"
+  },
+  "fixstarg": {
+   "orig": "0x5c1c",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 78 %, next 37 %"
+  },
+  "conput": {
+   "orig": "0x3fda",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 59 %"
+  },
+  "adrput": {
+   "orig": "0x41d0",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 67 %"
+  },
+  "tsuffix": {
+   "orig": "0x2796",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 60 %, next 27 %"
+  },
+  "newnode": {
+   "orig": "0x75e0",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 74 %"
+  },
+  "nullsyms": {
+   "orig": "0x811e",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 55 %"
+  },
+  "rsmatch": {
+   "orig": "0x83ec",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 92 %"
+  },
+  "rnnull": {
+   "orig": "0x989e",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 71 %"
+  },
+  "tmpcleanup": {
+   "orig": "0x9308",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 76 %"
+  },
+  "cbgen": {
+   "orig": "0x460e",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 53 %"
+  },
+  "prcook": {
+   "orig": "0x0af6",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 69 %"
+  },
+  "markcall": {
+   "orig": "0x1212",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 50 %"
+  },
+  "static_75d8": {
+   "orig": "0x0a0a",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 92 %, next 37 %"
+  },
+  "stoasg": {
+   "orig": "0x487e",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 50 %"
+  },
+  "mkadrs": {
+   "orig": "0x48a0",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 87 %"
+  },
+  "branch": {
+   "orig": "0x89e8",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): strings: the printf of \\tjpr\\tL%d (comm3.c); the alignment cannot separate the printf wrappers"
+  },
+  "readsyms": {
+   "orig": "0x1b64",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 71 %"
+  },
+  "readnums": {
+   "orig": "0x1c6c",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 73 %"
+  },
+  "sortsyms": {
+   "orig": "0x1ec2",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 56 %"
+  },
+  "tagfind": {
+   "orig": "0x1f82",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R2: unique best candidate, bereinigte Ausrichtung 93 %, next 32 %"
+  },
+  "mapsym": {
+   "orig": "0x206a",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 81 %"
+  },
+  "lineout": {
+   "orig": "0x2880",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): strings: the printf of .line (efcode3.c); the alignment rule does not apply to this short body"
+  },
+  "parminit": {
+   "orig": "0x8c74",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 80 %"
+  },
+  "mapregs": {
+   "orig": "0x9512",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 70 %"
+  },
+  "symuse": {
+   "orig": "0x964c",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 92 %"
+  },
+  "symreg": {
+   "orig": "0x9fdc",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 52 %"
+  },
+  "regforsym": {
+   "orig": "0xa03a",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 94 %"
+  },
+  "fixname": {
+   "orig": "0xa0c6",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 91 %"
+  },
+  "oregfix": {
+   "orig": "0xa12a",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 76 %"
+  },
+  "findtemp": {
+   "orig": "0xa7ac",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 89 %"
+  },
+  "rcmd": {
+   "orig": "0xa2f4",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 70 %"
+  },
+  "scmd": {
+   "orig": "0xa4aa",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 80 %"
+  },
+  "makeblock": {
+   "orig": "0xaece",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 50 %"
+  },
+  "bcon": {
+   "orig": "0xb0a0",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 89 %"
+  },
+  "member": {
+   "orig": "0xb0d4",
+   "confirm": true,
+   "evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 90 %"
+  },
+  "sucomp": {
+   "orig": "0x49f0",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): header 0x49f0 (order3.c); the same three calls to szty in the same order; sizes 756 / 684, the difference is an open finding (sucomp-size-01)"
+  },
+  "rsinsert": {
+   "orig": "0x7650",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): header 0x7650 (regallo3.c); the first tests are the same (cp r6,#1; cp r7,A); 43 % aligned, 157 / 110 instructions; the difference is an open finding (rsinsert-size-01); no other candidate of similar size"
+  },
+  "rsmerge": {
+   "orig": "0x81fe",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): header 0x81fe (regallo3.c); the same two calls to roverlap; 225 / 159 instructions; the size difference is an open finding (rsmerge-size-01)"
+  },
+  "rdsym": {
+   "orig": "0x1a86",
+   "confirm": true,
+   "evidence": "corrected: the original rdsym starts at 0x1a86 (the header is right); the part at 0x1aae is its continuation after a ret (reached by jr). Aligned 92.8 % over 0x1a86..0x1b64 (67 / 69 instructions); the earlier 0x1aae candidate came from a cut of the extent (step: analysis of header-rdsym-01)"
+  },
+  "tcmd": {
+   "orig": "0xa5de",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): strings rr%d, /* rvrestore */ \\tfldd\\t shared with 0xa5de only (header 0xa5de); 131 / 109 instructions, the call pattern memname and getreg differs (finding tcmd-calls-01)"
+  },
+  "clocal": {
+   "orig": "0xab48",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): header 0xab48 (tr3.c); the string lcl: NAME op has illegal class is shared; the same makeblock / member sequence; 230 / 264 instructions (finding clocal-size-01)"
+  },
+  "acon": {
+   "orig": "0x437e",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): header 0x437e (out3.c); six calls to the library in both; sizes 140 / 124"
+  },
+  "genscall": {
+   "orig": "0x4520",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): header 0x4520 (gen3.c); seven instructions, the same call to gencall"
+  },
+  "canon2": {
+   "orig": "0x46fe",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): header 0x46fe (gen3.c); the same calls (canon, fwalk); nine and ten instructions"
+  },
+  "psuffix": {
+   "orig": "0x2780",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): header 0x2780 (zzz3.c); the same call to tsuffix"
+  },
+  "getlab": {
+   "orig": "0x59d4",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): the documentation names getlab at 0x59d4 (crslab 0x3426); the same operations (load crslab, increment, return); ours keeps the value on the stack (D1, D3), the data address differs (D13)"
+  },
+  "static_28ac": {
+   "orig": "0x576e",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): static lmuldiv (order3.c), called by setasop (three calls at 0x294a, 0x298c, 0x2acc in ours); the same four tests of the op and the type, in the same order; registers and frame differ (D1, D2, D3)"
+  },
+  "regjam": {
+   "orig": "0x7916",
+   "confirm": true,
+   "evidence": "open pairing resolved (step 1 of the pairing closure): string regjam: illegal type is shared; the calls roverlap, newnode, rsinsert (0x7650), cerror and rsreturn follow in the same order; 273 / 258 instructions"
+  }
+ },
+ "open_review": {
+  "parminit": "not confirmed: our body has about 34 more instructions (type tests cp r10,#6 / #7 and the subtraction of 5 / 7 on the sizes) at the start; the original has none of them there. Real difference, to be checked against the source (KNOWLEDGE lists 0x8c74 as not yet reconstructed).",
+  "regjam": "pairing open: best 0x7916 at 37 %, header ['0x7916']",
+  "clocal": "pairing open: best 0xab48 at 47 %, header ['0xab48']",
+  "argscan": "not confirmed: structure differs (90 of 105); the original keeps the switch as a jump, ours as an if chain (see summary of argscan). Real difference.",
+  "markcall": "not confirmed: 32 of 34 differ; header 0x1212 but the bodies are not similar enough to decide.",
+  "rsinsert": "pairing open: best 0x81fe at 22 %, header ['0x7650']",
+  "sortsyms": "not confirmed: header 0x1ec2, 44 of 50 instructions differ; no other candidate of the same length. Check rdr3.c.",
+  "sucomp": "pairing open: best 0x49f0 at 36 %, header ['0x49f0']",
+  "static_28ac": "pairing open: best 0x576e at 59 %, header none",
+  "getlab": "pairing open: best 0xab3e at 67 %, header none",
+  "acon": "pairing open: best 0x437e at 49 %, header ['0x437e']",
+  "rsmerge": "pairing open: best 0x20c0 at 26 %, header ['0x81fe']",
+  "psuffix": "pairing open: best 0x59de at 86 %, header ['0x2780']",
+  "genscall": "pairing open: best 0x4520 at 43 %, header ['0x4520']",
+  "canon2": "pairing open: best 0x487e at 64 %, header ['0x46fe']",
+  "rdsym": "pairing open: best 0x1aae at 78 %, header ['0x1a86']",
+  "tcmd": "pairing open: best 0xa5de at 45 %, header ['0xa5de']"
+ },
+ "findings_pending": [
+  {
+   "id": "allo3-rcookie-dup",
+   "kind": "source",
+   "function": "rcookie",
+   "where": "allo3.c: rcookie() and allocreg (want = rcookie(p))",
+   "detail": "the original allocreg calls 0x89a2 (rallkind in comm3.c); we have a second copy of the same function in allo3.c",
+   "action": "delete rcookie in allo3.c, declare rallkind as extern in allo3.c and call it from allocreg",
+   "status": "analysed",
+   "result": "confirmed: the original allocreg (0x6c4e) calls 0x89a2 (call %89A2); ours calls the local rcookie. rcookie has the same logic as rallkind (comm3.c). The local copy has no counterpart in the original."
+  },
+  {
+   "id": "allo3-tcopy-copy-01",
+   "kind": "source",
+   "function": "tcopy",
+   "where": "allo3.c: tcopy()",
+   "detail": "original 0x8a24 calls ncopy (0x8a02) for the copy of the node; the rebuild copies inline (ldir)",
+   "action": "call ncopy(q, p) instead of the struct assignment in tcopy",
+   "status": "analysed",
+   "result": "confirmed: the original tcopy (0x8a24) calls ncopy (0x8a02) for the node copy; ours copies inline (ldir). The source must call ncopy(q, p)."
+  },
+  {
+   "id": "ttype-shift-01",
+   "kind": "source",
+   "function": "ttype",
+   "where": "local3.c or reader3.c, ttype()",
+   "detail": "the original shifts with srl (unsigned), ours with sra (signed)",
+   "action": "make the shifted value unsigned, check which variable's type gives srl",
+   "status": "merged into shift-type-01"
+  },
+  {
+   "id": "fixfld-shift-01",
+   "kind": "source",
+   "function": "fixfld",
+   "where": "reader3.c, fixfld()",
+   "detail": "the original shifts the field value with srl, ours with sra",
+   "action": "same type check as ttype-shift-01",
+   "status": "merged into shift-type-01"
+  },
+  {
+   "id": "shift-type-01",
+   "kind": "source",
+   "function": "ttype, fixfld, buildstar",
+   "where": "local3.c, reader3.c, tr3.c",
+   "detail": "three functions shift a field value with srl (unsigned) in the original and with sra (signed) in ours",
+   "action": "find the variable whose type is unsigned in the original (a bit field or an unsigned member); make the shift unsigned in all three",
+   "status": "analysed-partly",
+   "result": "hypothesis tested in a scratch copy (not in the repo): making the operand of DECREF/INCREF and of the shift in ttype unsigned produces srl in ttype (the original has srl) and in buildstar; values of type codes are never negative, so both shifts give the same results and the difference is only the declaration. ttype: align 75 -> 76 (D-normalised 97). fixfld: the original has both sra and srl (srl r2, srl r3, sra r2), so not every operand is unsigned there: check each site separately.",
+   "scratch": "/tmp/claude-1000/-mnt-share-cvs-P8000/c1dc3ef9-1faf-446a-8c04-2a8a9e3f0c4b/scratchpad/exp"
+  },
+  {
+   "id": "mapnm-real-01",
+   "kind": "source",
+   "function": "mapnm",
+   "where": "reader3.c or rdr3.c, mapnm()",
+   "detail": "pairing confirmed by strings; only 33 % of the instructions match; the statement order and the expressions differ (sdal / slal, the test order)",
+   "action": "classify each block against the original, then fix the source",
+   "status": "analysed",
+   "result": "reclassified: after removing the known D-classes (frame and spill offsets, registers, shift forms, data addresses) mapnm aligns to 87 %. The remaining differences are D-classes too, not a source difference found so far (13 % open).",
+   "classification": "D-classes (mostly)"
+  },
+  {
+   "id": "buildstar-order-01",
+   "kind": "source",
+   "function": "buildstar",
+   "where": "tr3.c, buildstar()",
+   "detail": "only 50 % match; the if chains come in another order",
+   "action": "classify, then fix the order of the tests",
+   "status": "analysed",
+   "result": "D-normalised alignment 59 %. The original tests the case l->op == UAND/STAR and the type checks in another order; the shift of the type is the one of shift-type-01. The reorder of the else-if branch is the open part."
+  },
+  {
+   "id": "expand-loop-01",
+   "kind": "source",
+   "function": "expand",
+   "where": "out3.c, expand()",
+   "detail": "the original reads *cp into a byte and dispatches through a table; ours tests *cp and then dispatches",
+   "action": "none in the source; check with the old cc reconstruction",
+   "status": "checked",
+   "classification": "D7",
+   "result": "not a source difference: the original places the test of the for loop at the bottom (jp to the test), ours at the top; the putchar expansion of the default case is the same. Compiler layout (D7)."
+  },
+  {
+   "id": "options-loop-01",
+   "kind": "source",
+   "function": "options",
+   "where": "main3.c, options()",
+   "detail": "the loop variable is a register in the original and in memory in ours; the layout of the switch differs",
+   "action": "declare i and err as register variables in options() (main3.c); verify the byte identity of options afterwards",
+   "status": "checked",
+   "classification": "real (source)",
+   "result": "the original keeps i in r14 and err in r12 (register variables); ours keeps i and err in memory, only cp is a register variable. The old cc gives registers only to declared register variables, so the source lacks register declarations for i and err."
+  },
+  {
+   "id": "main-char-01",
+   "kind": "source",
+   "function": "main",
+   "where": "main3.c, main()",
+   "detail": "the original reads the input character as a byte; ours as int; the switch is a compare chain there (D6)",
+   "action": "none in the source; check with the old cc reconstruction",
+   "status": "checked",
+   "classification": "D6 + D8",
+   "result": "not a type difference: the getc expansion occurs 10 times in both (10 / 10), calls 66 / 66; the byte loads (10 / 18) and masks (7 / 8) differ, which is D8; the switch as a compare chain is D6."
+  },
+  {
+   "id": "tshape-order-01",
+   "kind": "source",
+   "function": "tshape",
+   "where": "local3.c, tshape()",
+   "detail": "the call order special / shtemp / shumul / ltypeop differs; a long test is written differently (cpl and tcc in the original)",
+   "action": "compare the SZERO return of tshape (match3.c) with the original form; the switch order is D6",
+   "status": "checked",
+   "classification": "partly D6, partly real (to verify)",
+   "result": "tshape is in match3.c, not local3.c as noted before. The call order special, shtemp, ltypeop, shumul is the order of the case chain of the original (D6). The return of SZERO (cpl + tcc in the original, testl + jr in ours) is the same expression compiled differently by the same cc: a source difference is likely, not verified."
+  },
+  {
+   "id": "efcode-shift-01",
+   "kind": "source",
+   "function": "efcode",
+   "where": "efcode3.c, efcode()",
+   "detail": "sdal (original) against slal (ours) for the same scaling of sz; the sequence of the additions differs",
+   "action": "none in the source; D10 in the old cc reconstruction",
+   "status": "checked",
+   "classification": "D10",
+   "result": "the same divisions (divl by 8 and by 2) in both; the multiplication by 2 is sdal with a register count in the original and slal #1 in ours (long shift form, D10); register and spill differ (D2, D4)."
+  },
+  {
+   "id": "sucomp-size-01",
+   "kind": "other",
+   "function": "sucomp",
+   "where": "see evidence",
+   "detail": "sucomp: 756 instructions against 684; the difference is in the body (not yet analysed)",
+   "action": "analyse the difference (later, in the correction phase)",
+   "status": "analysed",
+   "result": "other: (a) the ternary nr = szty(t) > (dope[o] & 0x800 ? 2 : 1) ? szty(t) : (dope[o] & 0x800 ? 2 : 1) evaluates szty and the dope test twice in ours; the original evaluates them once (the expression is written differently, or a temporary is used) (source question); (b) about 170 instructions of the original sit in another place (block order of the arity branches), 225 of ours in another place. Class: other differences."
+  },
+  {
+   "id": "rsinsert-size-01",
+   "kind": "other",
+   "function": "rsinsert",
+   "where": "see evidence",
+   "detail": "rsinsert: 157 against 110; first tests equal, the difference is in the body (not yet analysed)",
+   "action": "analyse the difference (later, in the correction phase)",
+   "status": "analysed",
+   "result": "D8 and D3 mostly (byte compares of char locals, reloads); one block of the original (a table lookup followed by the byte test) is missing at that place in ours, the order of the tests differs (D6 / D7 candidate). Class: D-classes, to verify; one block to check in the source."
+  },
+  {
+   "id": "rsmerge-size-01",
+   "kind": "other",
+   "function": "rsmerge",
+   "where": "see evidence",
+   "detail": "rsmerge: 225 against 159; not yet analysed",
+   "action": "analyse the difference (later, in the correction phase)",
+   "status": "analysed",
+   "result": "D3 and D8: 59 differing blocks, mostly spill and reload of the register variables (D3); byte compares of the char variables gone1, gone2, drop1, drop2 are written as load and compare in ours, as a memory compare in the original (D8). Size difference 225 / 159 is spill code. No source difference found. Class: D-classes, to verify."
+  },
+  {
+   "id": "tcmd-calls-01",
+   "kind": "other",
+   "function": "tcmd",
+   "where": "see evidence",
+   "detail": "tcmd: the calls memname and getreg are arranged differently (not yet analysed)",
+   "action": "analyse the difference (later, in the correction phase)",
+   "status": "analysed",
+   "result": "D6 and D14: the switch is a cpir table in ours and a compare chain in the original (D6); the call sites of the varargs printf wrapper differ in the frame setup (cgprintf with its five arguments, D14). The calls memname and getreg are the same blocks, shifted. Class: D-classes, to verify."
+  },
+  {
+   "id": "clocal-size-01",
+   "kind": "other",
+   "function": "clocal",
+   "where": "see evidence",
+   "detail": "clocal: 230 against 264; the difference is in the body (not yet analysed)",
+   "action": "analyse the difference (later, in the correction phase)",
+   "status": "analysed",
+   "result": "other: 80 instructions of the original (the load of several struct fields at the start) are not at that place in ours; the order of the first tests and of the table code differs. Source difference in the order of the statements (block order), not D-only. Class: other differences."
+  },
+  {
+   "id": "header-rdsym-01",
+   "kind": "source",
+   "function": "header",
+   "where": "see evidence",
+   "detail": "the header comment of rdr3.c gives rdsym at 0x1a86; the body at 0x1aae matches (strings and calls); the comment must be corrected in the source (kind source)",
+   "action": "analyse the difference (later, in the correction phase)",
+   "status": "closed",
+   "result": "not a defect: the header is right (0x1a86). The earlier finding came from an extent that was cut after a ret at 0x1aae, which is the continuation of the same function. Alignment 92.8 %."
+  },
+  {
+   "id": "acon-tail-01",
+   "kind": "source",
+   "function": "acon",
+   "where": "out3.c, acon()",
+   "detail": "the original shares the printf and the off: tail between the three L%d branches; ours has the call in each branch",
+   "action": "check how the original writes the three branches (one printf with a computed value?) before changing the source",
+   "status": "analysed"
+  },
+  {
+   "id": "main-wrapper-01",
+   "kind": "source",
+   "function": "main",
+   "where": "gen3.c or main3.c (unknown)",
+   "detail": "the original crt0 calls 0x4868, which passes argc and argv to the body at 0x023c; ours calls the body directly",
+   "action": "add to gen3.c, between mycanon and stoasg, a function main(argc, argv) that returns the body; rename the body in main3.c (not main); crt0 then calls the forwarder. Check the bytes of gen3 after the change (the return value needs no extra code if it is returned directly).",
+   "status": "analysed",
+   "result": "0x4868 is a separate function (after a ret at 0x4866, no jumps into it). Its only reference is the call from the start code at 0x1e. Body: spill argc/argv as one long, load them into r7 and r6, call the body at 0x023c, return. Position: in the original it lies between mycanon (0x4804) and stoasg (0x487e), i.e. at the place of a function of gen3.c; our gen3.c has no function there (mycanon is followed by stoasg). Conclusion: the original gen3.c contains a two-argument function that forwards to the body of main (main3.c, 0x023c), and this forwarder is the linked symbol main (crt0 calls it). The body in main3.c must then have another name (a static or differently named function); the name does not appear in the bytes, the link does.",
+   "classification": "source (missing function in gen3.c)"
+  }
+ ],
+ "reject": {
+  "rsinsert": "callers agree, but the bodies differ in size (157 ours, 110 original) and in the structure; not accepted"
+ },
+ "analysis_status": {
+  "checked_reviews_below_50_regnorm": [
+   "expand",
+   "ncopy",
+   "canon",
+   "fwalkd",
+   "options",
+   "main",
+   "tshape",
+   "efcode",
+   "rspush",
+   "init"
+  ],
+  "real_source_findings": [
+   "options-loop-01"
+  ],
+  "to_verify": [
+   "tshape-order-01 (SZERO return)"
+  ],
+  "d_classes_only": [
+   "ncopy",
+   "rspush",
+   "canon",
+   "init",
+   "fwalkd",
+   "expand-loop-01",
+   "main-char-01",
+   "efcode-shift-01"
+  ],
+  "open_findings_analysed": [
+   "allo3-rcookie-dup",
+   "allo3-tcopy-copy-01",
+   "shift-type-01",
+   "mapnm-real-01",
+   "buildstar-order-01"
+  ],
+  "expand_D_normalised_pct": 33,
+  "tshape_D_normalised_pct": 56,
+  "efcode_D_normalised_pct": 60,
+  "main_D_normalised_pct": 69,
+  "options_D_normalised_pct": 69
+ },
+ "class_overrides": {
+  "allocreg": {
+   "class": "other differences",
+   "note": "allo3-rcookie-dup: calls rcookie where the original calls rallkind (source)"
+  },
+  "buildstar": {
+   "class": "other differences",
+   "note": "buildstar-order-01 and shift-type-01 (source)"
+  },
+  "expand": {
+   "class": "other differences",
+   "note": "expand-loop-01: loop and dispatch (33 %)"
+  },
+  "fixfld": {
+   "class": "other differences",
+   "note": "shift-type-01: shift signedness per site (source)"
+  },
+  "lineout": {
+   "class": "other differences",
+   "note": "short body, 38 %, not classified"
+  },
+  "options": {
+   "class": "other differences",
+   "note": "options-loop-01: register declarations for i and err (source)"
+  },
+  "parminit": {
+   "class": "other differences",
+   "note": "about 34 extra instructions at the start (source)"
+  },
+  "tcopy": {
+   "class": "other differences",
+   "note": "tcopy-copy-01: the original calls ncopy (source)"
+  },
+  "tshape": {
+   "class": "other differences",
+   "note": "tshape-order-01: call order and SZERO return"
+  },
+  "ttype": {
+   "class": "other differences",
+   "note": "shift-type-01: unsigned operand in the original (source)"
+  },
+  "sucomp": {
+   "class": "other differences",
+   "note": "sucomp-size-01: expression evaluated twice, block order"
+  },
+  "clocal": {
+   "class": "other differences",
+   "note": "clocal-size-01: 80 instructions at another place (block order)"
+  },
+  "regjam": {
+   "class": "other differences",
+   "note": "regjam: 37 % alignment, not analysed"
+  },
+  "acon": {
+   "class": "other differences",
+   "note": "acon-tail-01: the three L%d branches share the printf call and the tail off: in the original; D7, D8, D1 also present"
+  },
+  "genscall": {
+   "class": "D only (pattern-verified)",
+   "note": "return gencall(p, cookie): reload from the spill (D3), copies in r2/r3 (D2), frame 4/6 (D1)",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3"
+   ]
+  },
+  "rsinsert": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D13",
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8"
+   ]
+  },
+  "rsmerge": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "tcmd": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D11",
+    "D13",
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8"
+   ]
+  },
+  "rclass": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D10",
+    "D2",
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "freereg": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D13",
+    "D2",
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "ltypeop": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "ispow2": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D13",
+    "D2",
+    "D3",
+    "D6"
+   ]
+  },
+  "plainicon": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3"
+   ]
+  },
+  "shtemp": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8"
+   ]
+  },
+  "static_28ac": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "getlab": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D3"
+   ]
+  },
+  "argscan": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D13",
+    "D2",
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "conput": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D13",
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8"
+   ]
+  },
+  "adrput": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D13",
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8"
+   ]
+  },
+  "tsuffix": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D13",
+    "D2",
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "nullsyms": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D13",
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "pairmate": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3"
+   ]
+  },
+  "cbgen": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D13",
+    "D2",
+    "D3",
+    "D6",
+    "D8"
+   ]
+  },
+  "prcook": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D13",
+    "D2",
+    "D7",
+    "D8"
+   ]
+  },
+  "markcall": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D3",
+    "D6",
+    "D7",
+    "D8"
+   ]
+  },
+  "cbranch": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D13",
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8"
+   ]
+  },
+  "canon": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3"
+   ]
+  },
+  "icright": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "canon2": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3"
+   ]
+  },
+  "stoasg": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3"
+   ]
+  },
+  "static_7c24": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3"
+   ]
+  },
+  "treeeq": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D13",
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8"
+   ]
+  },
+  "fwalkd": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3",
+    "D7"
+   ]
+  },
+  "branch": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D2",
+    "D3"
+   ]
+  },
+  "rdin": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D3"
+   ]
+  },
+  "sortsyms": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D13",
+    "D2",
+    "D3",
+    "D6",
+    "D8"
+   ]
+  },
+  "main": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D13",
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8"
+   ]
+  },
+  "efcode": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D13",
+    "D2",
+    "D3"
+   ]
+  },
+  "symreg": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D10",
+    "D13",
+    "D2",
+    "D3",
+    "D7",
+    "D8"
+   ]
+  },
+  "makeblock": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern",
+   "d_classes": [
+    "D1",
+    "D13",
+    "D2",
+    "D3"
+   ]
+  },
+  "rdsym": {
+   "class": "D only (aligned >= 70 %)",
+   "note": "aligned 92.8 % over 0x1a86..0x1b64; header-rdsym-01 closed"
+  },
+  "ncopy": {
+   "class": "D only (pattern-verified)",
+   "note": "D1, D3, D4 (copy identical); pattern check"
+  }
+ },
+ "classification_method": {
+  "d_only": "a difference item is D only when every differing instruction of the normalised alignment matches a D pattern (funcs/dcheck patterns); D4, D5, D9, D12, D14 are not separable by these patterns and are hidden under D1/D3/D13"
+ },
+ "orig_side_unpaired": {
+  "0x4868": {
+   "status": "analysed",
+   "evidence": "the forwarder main (gen3.c, between mycanon and stoasg); see main-wrapper-01"
+  },
+  "0x6fca": {
+   "status": "analysed",
+   "evidence": "dead code: no caller (see KNOWLEDGE, quirk table); the debug printer prcookie in allo3.c (comment) - to be added to the source"
+  },
+  "0x854c": {
+   "status": "analysed",
+   "evidence": "dead code: no caller; fprintf(stderr, 'system call error: '), a call with the argument, errexit(0x40) - to be added to the source"
+  }
+ },
+ "orig_side_note": "0x1aae is not a function: jr from 0x1aa8 (inside rdsym) reaches it; it belongs to rdsym (0x1a86)."
+}

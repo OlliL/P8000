@@ -30,7 +30,7 @@ LIM = 0xbbc4   # the program part of the original ends here (the C library follo
 # static functions of our build, by their caller: the names of the static functions that a function calls, in the
 # order of their first call (identified from the source: the call sequence and the body; see FUNCTIONS.md).
 # None = not identified. The address is found from the caller, so the table survives rebuilds.
-CALLBACKS = {0x7592: 'delstrip', 0x88d8: 'free1'}   # fwalk callbacks (reader3.c delstrip, comm3.c free1), no call instruction
+CALLBACKS = {0x75a4: 'delstrip', 0x88d8: 'free1'}   # fwalk callbacks (reader3.c delstrip, comm3.c free1), no call instruction
 
 STATIC_NAMES = {
     'allocreg': ['rcookie'],                                              # allo3.c
@@ -101,7 +101,7 @@ ORIG = {
     'argplace':  (0x5d2c, None, 'D5: the local array cnt is addressed with lda (original: direct); 13 instructions, else identical'),
     'argsort':   (0x5bcc, None, 'identical up to the ret after argl became a tagged struct and the loops use pointers (order3.c)'),
     'rnnullall': (0x983c, None, 'identical up to the ret after register int i (regfile3.c)'),
-    'static_8696': (None, 'own', 'clears the 400-byte work area before printf (cgprintf wrapper, comm3.c); the original calls printf directly'),
+    'static_86a4': (None, 'own', 'clears the 400-byte work area before printf (cgprintf wrapper, comm3.c); the original calls printf directly'),
     'delstrip': (0x9d2, None, 'delstrip (reader3.c), the callback of fwalk in delay2; the struct copy is inline in the original'),
     'newreg':    (None,   'inline', 'the non-SEG gswitch has the blocks inline (as the original); newreg stays only for the SEG path (scodgen)'),
     # automatic pairings from the function-boundary work (not yet checked one by one)
@@ -317,6 +317,45 @@ def strict_bag(rows_):
 
 
 
+def canon(raw):
+    """Strict form of one instruction (metric 'strict-1'): only the labels of jumps, the targets of calls and
+    the address constants (#%XXXX >= 0x3000) are masked; registers, frame offsets and other constants stay."""
+    s = re.sub(r'L0t_[0-9a-f]+', 'L', raw)
+    s = re.sub(r'^(call|calr)\s+.*', r'\1 T', s)
+    s = re.sub(r'#%([0-9A-F]{4})', lambda x: '#A' if int(x.group(1), 16) >= 0x3000 else x.group(0), s)
+    s = re.sub(r'%([0-9A-F]{4})\((r\d+)\)', lambda x: 'A(%s)' % x.group(2) if int(x.group(1), 16) >= 0x3000
+               else x.group(0), s)
+    s = re.sub(r'(?<![A-Za-z])%([0-9A-F]{4})(?!\()', lambda x: 'A' if int(x.group(1), 16) >= 0x3000 else x.group(0), s)
+    s = s.replace('%0000(r15)', '@r15')           # the same operand, two encodings (old cc)
+    return s
+
+
+def extent(rows, start, end):
+    """The instructions of [start, end) in address order, without the data words (`.word`) and without what
+    follows the last `ret` of the range (constants and strings are placed behind the code)."""
+    out = [raw for a, raw in rows if start <= a < end and not raw.startswith('.word')]
+    last = max((i for i, raw in enumerate(out) if raw == 'ret'), default=len(out) - 1)
+    return out[:last + 1]
+
+
+def strict_compare(mine_seq, orig_seq):
+    """Returns (level, n): 'exact' (same sequence), 'order' (same instructions in another order), or
+    'differs' with n = the number of instructions that are not matched in a sequence alignment."""
+    import difflib
+    a = [canon(x) for x in mine_seq]
+    b = [canon(x) for x in orig_seq]
+    if a == b:
+        return 'exact', 0
+    if collections.Counter(a) == collections.Counter(b):
+        return 'order', 0
+    sm = difflib.SequenceMatcher(None, a, b, autojunk=False)
+    n = 0
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag != 'equal':
+            n += max(i2 - i1, j2 - j1)
+    return 'differs', n
+
+
 def orig_candidates(orig_rows):
     """Possible starts of functions in the original: call targets (strong) and the instruction after a ret (weak);
     a prologue after a ret is strong. A function ends at the next strong start."""
@@ -429,6 +468,8 @@ def main():
     # static functions that are only passed as a pointer (fwalk callbacks) have no call: named here, in our layout
     for t, nm in CALLBACKS.items():
         syms.add((t, nm))
+        if not any(a == t and r.startswith('dec\tr15,') for a, r in mine_rows):
+            print('warning: callback %s at 0x%04x does not start with a prologue; update CALLBACKS' % (nm, t))
     syms = sorted(syms)
     starts = [v for v, n in syms]
     orig_rows = disasm(orig)
@@ -456,9 +497,12 @@ def main():
     lines.append('- Our binary: `%s`: %d functions from the symbol table (start and end are exact).' % (a.mine, len(syms)))
     lines.append('- Original: `%s` (stripped). Its starts come from the table `ORIG` (`table`) or from the automatic '
                  'pairing (`auto`, not confirmed).' % os.path.basename(orig))
-    lines.append('- Comparison: instruction multiset from the start up to the first `ret`, old-cc effects masked '
-                 '(normalisation of `host/tools/cgcmp.py`). `identical` = same multiset; `identical*` = only '
-                 'register-to-register moves differ; `differs (n)` = n instructions differ.')
+    lines.append('- Comparison (metric `strict-1`, see `findings.json`): the whole extent of the function (ours: symbol '
+                 'table; original: up to the next start), data words and what follows the last `ret` left out. Only '
+                 'jump labels, call targets, address constants (#%XXXX >= 0x3000, displacements >= 0x3000) and the '
+                 'two encodings of a frame operand are masked. `exact` = same sequence; `order` = same instructions '
+                 'in another order; `differs (n)` = n instructions not matched in an alignment. Nothing is classified '
+                 'yet; the `[claimed: ...]` text is an old manual verdict that has not been re-checked.')
     lines.append('')
     lines.append('| Function | Our start | Our end | Original start | Source | Comparison | Note |')
     lines.append('|---|---|---|---|---|---|---|')
@@ -471,26 +515,18 @@ def main():
         if o is None:
             lines.append('| %s | 0x%04x | 0x%04x | - | %s | %s | %s |' % (short, st, end, src or '-', verdict or 'not paired', note))
             continue
-        ob = bag(body_to_ret(orig_rows, o))
-        mb = bag(body_to_ret(mine_rows, st))
-        d = sum(((mb - ob) + (ob - mb)).values())
-        ds = sum(((strict_bag(body_to_ret(mine_rows, st)) - strict_bag(body_to_ret(orig_rows, o)))
-                  + (strict_bag(body_to_ret(orig_rows, o)) - strict_bag(body_to_ret(mine_rows, st)))).values())
+        nxt = [c for c in cand if c > o]
+        oend = nxt[0] if nxt else o + 0x200
+        level, n = strict_compare(extent(mine_rows, st, end), extent(orig_rows, o, oend))
+        ncmp += 1
+        if level in ('exact', 'order'):
+            nsame += 1
+        cmp_txt = level if level == 'exact' else ('order' if level == 'order' else 'differs (%d)' % n)
         if verdict is not None:
-            cmp_txt = verdict
-        else:
-            ncmp += 1
-            if d == 0 and ds == 0:
-                cmp_txt = 'identical'
-            elif d == 0:
-                cmp_txt = 'identical*'
-            else:
-                cmp_txt = 'differs (%d)' % d
-            if d == 0:
-                nsame += 1
+            cmp_txt += ' [claimed: %s]' % verdict
         lines.append('| %s | 0x%04x | 0x%04x | 0x%04x | %s | %s | %s |' % (short, st, end, o, src, cmp_txt, note))
     lines.append('')
-    lines.append('Summary: %d of %d functions with a table entry identical up to the first `ret`; %d with an automatic '
+    lines.append('Summary: %d of %d functions with a table entry exact or in another order (strict-1); %d with an automatic '
                  'proposal only.' % (nsame, ncmp, sum(1 for r in rows if r[4] == 'auto')))
     lines.append('')
     lines.append('## Open: our functions without an original')
