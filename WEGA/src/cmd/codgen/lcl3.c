@@ -868,13 +868,13 @@ gswitch(p)
 	register struct node *x;
 	register long n;
 	register int dlab;
-	int tab, reg, save, ra, rb, cnt, tlab;
+	int tab, reg, save, ra, rb, cnt, tlab, t, t2;
 
 	l = p->left;
 	r = p->right;
 	n = r->right->lval;
 	tab = r->right->rval;
-	dlab = -(int)r->left->lval;
+	dlab = -r->left->lval;
 	x = l->op == REG ? l : l->left;
 	reg = x->rval;
 	if (l->op != 124) {
@@ -924,8 +924,28 @@ gswitch(p)
 		rmove(reg, save, 3);
 		rfree(save, 3);
 	}
-	ra = newreg(reg);
-	rb = newreg(reg);
+	ra = getreg(2, -1, 0x1000, 0);
+	if (ra == reg || ra == 0) {
+		t = ra;
+		ra = getreg(2, -1, 0x1000, 0);
+		if (ra == reg || ra == 0) {
+			t2 = ra;
+			ra = getreg(2, -1, 0x1000, 0);
+			rfree(t2, 3);
+		}
+		rfree(t, 3);
+	}
+	rb = getreg(2, -1, 0x1000, 0);
+	if (rb == reg || rb == 0) {
+		t = rb;
+		rb = getreg(2, -1, 0x1000, 0);
+		if (rb == reg || rb == 0) {
+			t2 = rb;
+			rb = getreg(2, -1, 0x1000, 0);
+			rfree(t2, 3);
+		}
+		rfree(t, 3);
+	}
 	printf("\tld\t%s,#L%d\n", rnames[ra], tlab);
 	printf("\tld\t%s,#%d\n", rnames[rb], cnt);
 	printf("\tcpir\t%s,@%s,%s,eq\n", rnames[reg], rnames[ra], rnames[rb]);

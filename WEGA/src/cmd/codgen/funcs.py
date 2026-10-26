@@ -86,7 +86,7 @@ ORIG = {
     'nxwork':    (0x98e4, None, 'D6 table starts at 0 (old cc)'),
     'rdsym':     (0x1a86, None, 'D1 frame (no frame in the original first part)'),
     'mapregs':   (0x9512, None, 'D3, D6 partly; if chain now'),
-    'gswitch':   (0xa7e0, None, 'd=53: the original has 8 inline getreg blocks (ldk r7,#2 / call 7c10), about 20 printf calls (BEE6) with string constants, which our gswitch does not make (what they print is not yet determined), and jumps to a shared tail at 0xab32; no call of makeblock; not reconstructed yet'),
+    'gswitch':   (0xa7e0, None, 'the newreg blocks are written out inline (non-SEG path, lcl3.c); the rest: a memory compare `cp @r2,#0x7c` (l->op) and a tail jp instead of jr (layout)'),
     'eread':     (0x2480, None, 'd=22 after ty as register variable: getchar byte load and masking (D8), lval store form, D7'),
     'main':      (0x23c,  None, 'not compared yet'),
     'zzzcode':   (0x2edc, None, 'd=37 after char c and register locals: switch dispatch (D6), D3, D7; the old name table was data'),
@@ -103,7 +103,7 @@ ORIG = {
     'rnnullall': (0x983c, None, 'identical up to the ret after register int i (regfile3.c)'),
     'static_8696': (None, 'own', 'clears the 400-byte work area before printf (cgprintf wrapper, comm3.c); the original calls printf directly'),
     'delstrip': (0x9d2, None, 'delstrip (reader3.c), the callback of fwalk in delay2; the struct copy is inline in the original'),
-    'newreg':    (None,   'inline', 'in the original there is no function: the getreg blocks are inline in gswitch (8 copies of the getreg call); the printf calls of gswitch are not in our source, so newreg stays a function (lcl3.c)'),
+    'newreg':    (None,   'inline', 'the non-SEG gswitch has the blocks inline (as the original); newreg stays only for the SEG path (scodgen)'),
     # automatic pairings from the function-boundary work (not yet checked one by one)
     'allocinit': (0x8bea, None, 'auto, verified: identical'),
     'argsize': (0x88f6, None, 'auto, verified: identical'),
