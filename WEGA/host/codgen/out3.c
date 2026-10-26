@@ -20,6 +20,7 @@ extern int tflag;		/* 0x35d0: set by the macro T */
 extern int zzzcode();
 extern struct sym *symtab0;
 extern long frame0;
+extern long maxoff;
 extern void adrput();
 extern int rclass();
 extern struct rs *rfind();
@@ -95,8 +96,9 @@ void oregput(struct node * p)
 
 #ifdef SEG
 	if (p->rval == 15) {
-		if ((p->sname == symtab0 && (unsigned)(int)p->lval <= 0xFF) ||
-		    (p->sname == fpsym1 && (unsigned)(int)(p->lval + frame0) <= 0xFF)) {
+		/* the original tests the low words: lval for symtab0, lval + maxoff for ~L1 (maxoff is the frame size in bits, not frame0) */
+		if ((p->sname == symtab0 && (p->lval & 0xFFFFL) <= 0xFF) ||
+		    (p->sname == fpsym1 && ((p->lval + maxoff) & 0xFFFFL) <= 0xFF)) {
 			bar++;
 			putchar('|');
 		}

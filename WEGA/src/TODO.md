@@ -461,3 +461,12 @@ Each file: `cpp` and `cparse` (or `scparse`) of the original make the intermedia
   a `|` around `_stkseg+~L1` operands (`oregput`, the SEG branch with `bar`), the original does not. Cause not found. The union of `sname` and
   `label` was tried (no change); the cause is not the field split.
 
+### scodgen SEG: the `|` difference (resolved)
+
+Cause: the bar test in `oregput` (SEG). The original's code (`scodgen` at 0x4076) tests the low words only: for `sname == symtab0` the
+low word of `lval`; for `sname == fpsym1` the low word of `lval + X`, where X is the global at 0x963A. The dump of that global at the
+calls in question shows `maxoff` (288 = 36 * 8), not `frame0` (36). The host used `frame0` and the full value.
+Fix (host copy): `(lval & 0xFFFF) <= 0xFF` for `symtab0`, `((lval + maxoff) & 0xFFFF) <= 0xFF` for `fpsym1`.
+Result: `scodgen` 100 of 100 corpus cases identical; large corpus 213 of 213 comparable files identical (3 not comparable, see above).
+The method: the scratch emulator was patched to dump memory at the n-th hit of an address (`Z8K_MEM_NTH`); the host debug copy printed the
+values at the same calls.
