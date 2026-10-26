@@ -47,7 +47,7 @@
    "audit": {
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rfind": {
@@ -59,7 +59,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 91,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rbusy": {
@@ -71,7 +72,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 99,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rfree": {
@@ -83,7 +85,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rfreenode": {
@@ -95,7 +98,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "freeparm": {
@@ -107,7 +111,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "freetemp": {
@@ -119,7 +124,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rcookie": {
@@ -139,7 +145,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 71,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "freereg": {
@@ -152,7 +159,7 @@
    "audit": {
     "d_normalised_pct": 51,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "allocreg": {
@@ -177,7 +184,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 96,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tcopy": {
@@ -202,7 +210,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rfreeall": {
@@ -214,7 +223,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 77,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rcount": {
@@ -226,7 +236,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rcount_reset": {
@@ -238,7 +249,8 @@
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "ltypeop": {
@@ -251,7 +263,7 @@
    "audit": {
     "d_normalised_pct": 53,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "ispow2": {
@@ -264,7 +276,7 @@
    "audit": {
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "bsize": {
@@ -276,7 +288,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 75,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "szty": {
@@ -288,7 +301,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 84,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "plainicon": {
@@ -301,7 +315,7 @@
    "audit": {
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "special": {
@@ -313,7 +327,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 74,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "shtemp": {
@@ -326,7 +341,7 @@
    "audit": {
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "shincr": {
@@ -338,7 +353,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "shumul": {
@@ -350,7 +366,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "ltypeok": {
@@ -362,7 +379,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 85,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rmove": {
@@ -374,7 +392,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "argsize": {
@@ -386,7 +405,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tshape": {
@@ -424,7 +444,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "getlr": {
@@ -436,7 +457,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 76,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "match": {
@@ -448,7 +470,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 76,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "notoff": {
@@ -460,7 +483,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "sucomp": {
@@ -485,7 +509,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 93,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rallo": {
@@ -497,7 +522,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_251c": {
@@ -509,7 +535,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 97,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "offstar": {
@@ -521,7 +548,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "niceuty": {
@@ -533,7 +561,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "setbin": {
@@ -545,7 +574,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 81,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "setstr": {
@@ -557,7 +587,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 74,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_28ac": {
@@ -570,7 +601,7 @@
    "audit": {
     "d_normalised_pct": 59,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "setasop": {
@@ -582,7 +613,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 98,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "setasg": {
@@ -594,7 +626,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "getlab": {
@@ -607,7 +640,7 @@
    "audit": {
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "deflab": {
@@ -619,7 +652,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "argscan": {
@@ -632,7 +666,7 @@
    "audit": {
     "d_normalised_pct": 68,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "argsort": {
@@ -644,7 +678,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 84,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "fixstarg": {
@@ -656,7 +691,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 78,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "argstrip": {
@@ -668,7 +704,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 96,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "argplace": {
@@ -680,7 +717,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "genargs": {
@@ -692,7 +730,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 85,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "acon": {
@@ -717,7 +756,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "conput": {
@@ -730,7 +770,7 @@
    "audit": {
     "d_normalised_pct": 59,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "insput": {
@@ -742,7 +782,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "upput": {
@@ -754,7 +795,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 84,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "adrput": {
@@ -767,7 +809,7 @@
    "audit": {
     "d_normalised_pct": 67,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "hopcode": {
@@ -779,7 +821,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "prlong": {
@@ -791,7 +834,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "expand": {
@@ -817,7 +861,7 @@
    "audit": {
     "d_normalised_pct": 60,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsinit": {
@@ -829,7 +873,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 91,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsrelease": {
@@ -841,7 +886,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsbuild": {
@@ -853,7 +899,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 93,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "newnode": {
@@ -865,7 +912,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 74,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsinsert": {
@@ -878,7 +926,7 @@
    "audit": {
     "d_normalised_pct": 43,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "roverlap": {
@@ -890,7 +938,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 98,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "regjam": {
@@ -902,8 +951,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 37,
-    "difference_class": "other differences",
-    "difference_note": "regjam: 37 % alignment, not analysed"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "regjam: all differing instructions match D patterns (D6, D7, D8); the order of the calls differs (code layout of the cases, D7?); to check if the source order is the same"
    }
   },
   "getreg": {
@@ -915,7 +964,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 71,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsreturn": {
@@ -927,7 +977,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 77,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "nullsyms": {
@@ -940,7 +991,7 @@
    "audit": {
     "d_normalised_pct": 55,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "pairmate": {
@@ -953,7 +1004,7 @@
    "audit": {
     "d_normalised_pct": 58,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsdump": {
@@ -965,7 +1016,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 87,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsfreeall": {
@@ -977,7 +1029,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rspush": {
@@ -989,7 +1042,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 81,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsmerge": {
@@ -1002,7 +1056,7 @@
    "audit": {
     "d_normalised_pct": 56,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsmatch": {
@@ -1014,7 +1068,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 92,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsrelall": {
@@ -1026,7 +1081,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 96,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rsrestart": {
@@ -1038,7 +1094,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 96,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rnassign": {
@@ -1050,7 +1107,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rnnullp": {
@@ -1062,7 +1120,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 86,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rnnullcall": {
@@ -1074,7 +1133,8 @@
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rnnullall": {
@@ -1086,7 +1146,8 @@
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rnnulll": {
@@ -1098,7 +1159,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 86,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rnnullw": {
@@ -1110,7 +1172,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 86,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rnnull": {
@@ -1122,7 +1185,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 71,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "nxwork": {
@@ -1134,7 +1198,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tmpcleanup": {
@@ -1146,7 +1211,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 76,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tmpdump": {
@@ -1158,7 +1224,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 96,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "psuffix": {
@@ -1170,7 +1237,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 75,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "geninc": {
@@ -1182,7 +1250,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "zzzcode": {
@@ -1194,7 +1263,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 86,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "cbgen": {
@@ -1207,7 +1277,7 @@
    "audit": {
     "d_normalised_pct": 53,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "codgen": {
@@ -1219,7 +1289,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "prcook": {
@@ -1232,7 +1303,7 @@
    "audit": {
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "order": {
@@ -1244,7 +1315,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "store": {
@@ -1256,7 +1328,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 96,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "constore": {
@@ -1268,7 +1341,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 82,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "markcall": {
@@ -1281,7 +1355,7 @@
    "audit": {
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "stoarg": {
@@ -1293,7 +1367,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "cbranch": {
@@ -1306,7 +1381,7 @@
    "audit": {
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "ffld": {
@@ -1318,7 +1393,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "oreg2": {
@@ -1330,7 +1406,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "canon": {
@@ -1343,7 +1420,7 @@
    "audit": {
     "d_normalised_pct": 63,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "argprep": {
@@ -1355,7 +1432,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "delstrip": {
@@ -1367,7 +1445,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_75d8": {
@@ -1379,7 +1458,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 92,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_767c": {
@@ -1391,7 +1471,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 92,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "delay": {
@@ -1403,7 +1484,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 97,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "stmt": {
@@ -1415,7 +1497,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 93,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "gencall": {
@@ -1427,7 +1510,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 99,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "genscall": {
@@ -1440,7 +1524,7 @@
    "audit": {
     "d_normalised_pct": 43,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "return gencall(p, cookie): reload from the spill (D3), copies in r2/r3 (D2), frame 4/6 (D1)"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "nextcook": {
@@ -1452,7 +1536,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 91,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "lastchance": {
@@ -1464,7 +1549,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 71,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "icright": {
@@ -1477,7 +1563,7 @@
    "audit": {
     "d_normalised_pct": 56,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "canon2": {
@@ -1490,7 +1576,7 @@
    "audit": {
     "d_normalised_pct": 60,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "mycanon": {
@@ -1502,7 +1588,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "stoasg": {
@@ -1515,7 +1602,7 @@
    "audit": {
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "mkadrs": {
@@ -1527,7 +1614,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 87,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_7c24": {
@@ -1540,7 +1628,7 @@
    "audit": {
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "convelim": {
@@ -1552,7 +1640,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "treeeq": {
@@ -1565,7 +1654,7 @@
    "audit": {
     "d_normalised_pct": 67,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "conval": {
@@ -1577,7 +1666,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 85,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "optim": {
@@ -1589,7 +1679,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 84,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_86a4": {
@@ -1617,7 +1708,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "uerror": {
@@ -1629,7 +1721,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "cerror": {
@@ -1641,7 +1734,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "werror": {
@@ -1653,7 +1747,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tinit": {
@@ -1665,7 +1760,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "talloc": {
@@ -1677,7 +1773,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 86,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tcheck": {
@@ -1689,7 +1786,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "free1": {
@@ -1701,7 +1799,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 91,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tfree": {
@@ -1713,7 +1812,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 80,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "fwalkd": {
@@ -1726,7 +1826,7 @@
    "audit": {
     "d_normalised_pct": 61,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "fwalk": {
@@ -1738,7 +1838,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 93,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "dopeinit": {
@@ -1750,7 +1851,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tbytes": {
@@ -1762,7 +1864,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 74,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rallkind": {
@@ -1774,7 +1877,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 87,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "errexit": {
@@ -1786,7 +1890,8 @@
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "branch": {
@@ -1799,7 +1904,7 @@
    "audit": {
     "d_normalised_pct": 67,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "ncopy": {
@@ -1812,7 +1917,7 @@
    "audit": {
     "d_normalised_pct": 46,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "D1, D3, D4 (copy identical); pattern check"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "alloc": {
@@ -1824,7 +1929,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "allocinit": {
@@ -1836,7 +1942,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rdin2": {
@@ -1848,7 +1955,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rdin": {
@@ -1861,7 +1969,7 @@
    "audit": {
     "d_normalised_pct": 57,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "nlcheck": {
@@ -1873,7 +1981,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "mkhash": {
@@ -1885,7 +1994,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 82,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rddata": {
@@ -1897,7 +2007,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 77,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "readsyms": {
@@ -1909,7 +2020,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 71,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "readtab": {
@@ -1921,7 +2033,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 72,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "readnums": {
@@ -1933,7 +2046,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 73,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "readmems": {
@@ -1945,7 +2059,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 99,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rdsym": {
@@ -1957,8 +2072,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 16,
-    "difference_class": "D only (aligned >= 70 %)",
-    "difference_note": "aligned 92.8 % over 0x1a86..0x1b64; header-rdsym-01 closed"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "sortsyms": {
@@ -1971,7 +2086,7 @@
    "audit": {
     "d_normalised_pct": 56,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tagfind": {
@@ -1983,7 +2098,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 93,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "mapn": {
@@ -1995,7 +2111,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 75,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "mapsym": {
@@ -2007,7 +2124,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 81,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "mapnm": {
@@ -2019,7 +2137,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 87,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "eread": {
@@ -2031,7 +2150,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 76,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "options": {
@@ -2056,7 +2176,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "main": {
@@ -2069,7 +2190,7 @@
    "audit": {
     "d_normalised_pct": 69,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "lineout": {
@@ -2082,7 +2203,7 @@
    "audit": {
     "d_normalised_pct": 38,
     "difference_class": "other differences",
-    "difference_note": "short body, 38 %, not classified"
+    "difference_note": "lineout-type-01: real defect in our reconstruction: long line, the original has int line; the caller in main passes int in r7 and the file name in r6; our callee reads the file from r5 (see findings)"
    }
   },
   "funcend": {
@@ -2094,7 +2215,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 92,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_9ff0": {
@@ -2106,7 +2228,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_a010": {
@@ -2118,7 +2241,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_a030": {
@@ -2130,7 +2254,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 92,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_a0f8": {
@@ -2142,7 +2267,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 92,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_a1c2": {
@@ -2154,7 +2280,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_a214": {
@@ -2166,7 +2293,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_a3ec": {
@@ -2178,7 +2306,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "efcode": {
@@ -2191,7 +2320,7 @@
    "audit": {
     "d_normalised_pct": 60,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "hdrout": {
@@ -2203,7 +2332,8 @@
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "endline": {
@@ -2215,7 +2345,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "endrun": {
@@ -2227,7 +2358,8 @@
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "parminit": {
@@ -2239,8 +2371,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 80,
-    "difference_class": "other differences",
-    "difference_note": "about 34 extra instructions at the start (source)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "parminit: all differing instructions match D patterns (D6, D7, D8, D13); the earlier 34 extra instructions were an alignment artefact; open question: extsb (original) against subb (ours) for a byte (char signedness, D8 or declaration)"
    }
   },
   "structretcode": {
@@ -2252,7 +2384,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "fbegin": {
@@ -2264,7 +2397,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "regtabinit": {
@@ -2276,7 +2410,8 @@
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tabfind": {
@@ -2288,7 +2423,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tabclear": {
@@ -2300,7 +2436,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "fixtemp": {
@@ -2312,7 +2449,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "fixfld": {
@@ -2337,7 +2475,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 70,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "symuse": {
@@ -2349,7 +2488,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 92,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "symreg": {
@@ -2362,7 +2502,7 @@
    "audit": {
     "d_normalised_pct": 52,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "regforsym": {
@@ -2374,7 +2514,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 94,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "fixname": {
@@ -2386,7 +2527,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 91,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "oregfix": {
@@ -2398,7 +2540,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 76,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "findtemp": {
@@ -2410,7 +2553,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "fcmd": {
@@ -2422,7 +2566,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 98,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "regreset": {
@@ -2434,7 +2579,8 @@
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "rcmd": {
@@ -2446,7 +2592,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 70,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "memname": {
@@ -2458,7 +2605,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "scmd": {
@@ -2470,7 +2618,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 80,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "tcmd": {
@@ -2483,7 +2632,7 @@
    "audit": {
     "d_normalised_pct": 45,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "gswitch": {
@@ -2495,7 +2644,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "makeblock": {
@@ -2508,7 +2658,7 @@
    "audit": {
     "d_normalised_pct": 50,
     "difference_class": "D only (pattern-verified)",
-    "difference_note": "every differing instruction matches a D pattern"
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "bcon": {
@@ -2520,7 +2670,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 89,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "static_b9bc": {
@@ -2532,7 +2683,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 100,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "clocal": {
@@ -2557,7 +2709,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 90,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "foldadd": {
@@ -2569,7 +2722,8 @@
    "level": "differs",
    "audit": {
     "d_normalised_pct": 97,
-    "difference_class": "D only (aligned >= 70 %)"
+    "difference_class": "D only (pattern-verified)",
+    "difference_note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
    }
   },
   "buildstar": {
@@ -3232,8 +3386,8 @@
   }
  },
  "open_review": {
-  "parminit": "not confirmed: our body has about 34 more instructions (type tests cp r10,#6 / #7 and the subtraction of 5 / 7 on the sizes) at the start; the original has none of them there. Real difference, to be checked against the source (KNOWLEDGE lists 0x8c74 as not yet reconstructed).",
-  "regjam": "pairing open: best 0x7916 at 37 %, header ['0x7916']",
+  "parminit": "retracted: the 34 extra instructions were an alignment artefact; all differing instructions match D patterns. Open question: extsb / subb (byte signedness).",
+  "regjam": "all differing instructions match D patterns; the call order differs (case order / layout); check the source order",
   "clocal": "pairing open: best 0xab48 at 47 %, header ['0xab48']",
   "argscan": "not confirmed: structure differs (90 of 105); the original keeps the switch as a jump, ours as an if chain (see summary of argscan). Real difference.",
   "markcall": "not confirmed: 32 of 34 differ; header 0x1212 but the bodies are not similar enough to decide.",
@@ -3455,6 +3609,15 @@
    "status": "analysed",
    "result": "0x4868 is a separate function (after a ret at 0x4866, no jumps into it). Its only reference is the call from the start code at 0x1e. Body: spill argc/argv as one long, load them into r7 and r6, call the body at 0x023c, return. Position: in the original it lies between mycanon (0x4804) and stoasg (0x487e), i.e. at the place of a function of gen3.c; our gen3.c has no function there (mycanon is followed by stoasg). Conclusion: the original gen3.c contains a two-argument function that forwards to the body of main (main3.c, 0x023c), and this forwarder is the linked symbol main (crt0 calls it). The body in main3.c must then have another name (a static or differently named function); the name does not appear in the bytes, the link does.",
    "classification": "source (missing function in gen3.c)"
+  },
+  {
+   "id": "lineout-type-01",
+   "kind": "source",
+   "function": "lineout",
+   "where": "efcode3.c, lineout(); main3.c (extern declarations without prototype)",
+   "detail": "our lineout declares long line; the original takes int line (r7). main passes ifline (int) in r7 and ifname in r6. Ours reads the file from r5, so the file name printed by .line is wrong.",
+   "action": "declare int line in lineout() (the cast (int)line then is not needed); check with codgen -l on a file that prints .line",
+   "status": "analysed"
   }
  ],
  "reject": {
@@ -3521,15 +3684,15 @@
   },
   "lineout": {
    "class": "other differences",
-   "note": "short body, 38 %, not classified"
+   "note": "lineout-type-01: real defect in our reconstruction: long line, the original has int line; the caller in main passes int in r7 and the file name in r6; our callee reads the file from r5 (see findings)"
   },
   "options": {
    "class": "other differences",
    "note": "options-loop-01: register declarations for i and err (source)"
   },
   "parminit": {
-   "class": "other differences",
-   "note": "about 34 extra instructions at the start (source)"
+   "class": "D only (pattern-verified)",
+   "note": "parminit: all differing instructions match D patterns (D6, D7, D8, D13); the earlier 34 extra instructions were an alignment artefact; open question: extsb (original) against subb (ours) for a byte (char signedness, D8 or declaration)"
   },
   "tcopy": {
    "class": "other differences",
@@ -3552,8 +3715,8 @@
    "note": "clocal-size-01: 80 instructions at another place (block order)"
   },
   "regjam": {
-   "class": "other differences",
-   "note": "regjam: 37 % alignment, not analysed"
+   "class": "D only (pattern-verified)",
+   "note": "regjam: all differing instructions match D patterns (D6, D7, D8); the order of the calls differs (code layout of the cases, D7?); to check if the source order is the same"
   },
   "acon": {
    "class": "other differences",
@@ -3561,407 +3724,771 @@
   },
   "genscall": {
    "class": "D only (pattern-verified)",
-   "note": "return gencall(p, cookie): reload from the spill (D3), copies in r2/r3 (D2), frame 4/6 (D1)",
-   "d_classes": [
-    "D1",
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "rsinsert": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D13",
-    "D2",
-    "D3",
-    "D6",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "rsmerge": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D2",
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "tcmd": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D11",
-    "D13",
-    "D2",
-    "D3",
-    "D6",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "rclass": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D10",
-    "D2",
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "freereg": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D13",
-    "D2",
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "ltypeop": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "ispow2": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D13",
-    "D2",
-    "D3",
-    "D6"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "plainicon": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "shtemp": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D2",
-    "D3",
-    "D6",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "static_28ac": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "getlab": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "argscan": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D13",
-    "D2",
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "conput": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D13",
-    "D2",
-    "D3",
-    "D6",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "adrput": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D13",
-    "D2",
-    "D3",
-    "D6",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "tsuffix": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D13",
-    "D2",
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "nullsyms": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D13",
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "pairmate": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "cbgen": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D13",
-    "D2",
-    "D3",
-    "D6",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "prcook": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D13",
-    "D2",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "markcall": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D3",
-    "D6",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "cbranch": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D13",
-    "D2",
-    "D3",
-    "D6",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "canon": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "icright": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "canon2": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "stoasg": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "static_7c24": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "treeeq": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D13",
-    "D2",
-    "D3",
-    "D6",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "fwalkd": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D2",
-    "D3",
-    "D7"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "branch": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "rdin": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "sortsyms": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D13",
-    "D2",
-    "D3",
-    "D6",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "main": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D13",
-    "D2",
-    "D3",
-    "D6",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "efcode": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D13",
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "symreg": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D10",
-    "D13",
-    "D2",
-    "D3",
-    "D7",
-    "D8"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "makeblock": {
    "class": "D only (pattern-verified)",
-   "note": "every differing instruction matches a D pattern",
-   "d_classes": [
-    "D1",
-    "D13",
-    "D2",
-    "D3"
-   ]
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "rdsym": {
-   "class": "D only (aligned >= 70 %)",
-   "note": "aligned 92.8 % over 0x1a86..0x1b64; header-rdsym-01 closed"
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   },
   "ncopy": {
    "class": "D only (pattern-verified)",
-   "note": "D1, D3, D4 (copy identical); pattern check"
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rfind": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rbusy": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rfree": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rfreenode": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "freeparm": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "freetemp": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "usable": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "allo": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "reclaim": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rfreeall": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rcount": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rcount_reset": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "bsize": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "szty": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "special": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "shincr": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "shumul": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "ltypeok": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rmove": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "argsize": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "setrew": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "getlr": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "match": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "notoff": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "mkrall": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rallo": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_251c": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "offstar": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "niceuty": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "setbin": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "setstr": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "setasop": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "setasg": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "deflab": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "argsort": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "fixstarg": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "argstrip": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "argplace": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "genargs": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "oregput": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "insput": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "upput": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "hopcode": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "prlong": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rsinit": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rsrelease": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rsbuild": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "newnode": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "roverlap": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "getreg": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rsreturn": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rsdump": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rsfreeall": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rspush": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rsmatch": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rsrelall": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rsrestart": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rnassign": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rnnullp": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rnnullcall": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rnnullall": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rnnulll": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rnnullw": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rnnull": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "nxwork": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "tmpcleanup": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "tmpdump": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "psuffix": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "geninc": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "zzzcode": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "codgen": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "order": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "store": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "constore": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "stoarg": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "ffld": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "oreg2": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "argprep": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "delstrip": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_75d8": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_767c": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "delay": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "stmt": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "gencall": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "nextcook": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "lastchance": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "mycanon": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "mkadrs": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "convelim": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "conval": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "optim": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_86f0": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "uerror": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "cerror": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "werror": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "tinit": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "talloc": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "tcheck": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "free1": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "tfree": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "fwalk": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "dopeinit": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "tbytes": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rallkind": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "errexit": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "alloc": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "allocinit": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rdin2": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "nlcheck": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "mkhash": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rddata": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "readsyms": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "readtab": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "readnums": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "readmems": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "tagfind": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "mapn": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "mapsym": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "mapnm": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "eread": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "init": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "funcend": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_9ff0": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_a010": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_a030": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_a0f8": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_a1c2": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_a214": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_a3ec": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "hdrout": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "endline": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "endrun": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "structretcode": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "fbegin": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "regtabinit": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "tabfind": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "tabclear": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "fixtemp": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "mapregs": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "symuse": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "regforsym": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "fixname": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "oregfix": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "findtemp": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "fcmd": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "regreset": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "rcmd": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "memname": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "scmd": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "gswitch": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "bcon": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "static_b9bc": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "member": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
+  },
+  "foldadd": {
+   "class": "D only (pattern-verified)",
+   "note": "every differing instruction matches a D pattern (D1-D3, D5-D8, D10, D11, D13)"
   }
  },
  "classification_method": {
