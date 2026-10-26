@@ -1,102 +1,65 @@
 # Handoff: WEGA build chain back to C
 
-Status 2026-10-22. Read `../CLAUDE.md` first (how to build, where to look things up),
-then `KNOWLEDGE.md` (all facts, long) and `../src/TODO.md` (what is not yet identical).
+Status 2026-10-26. Entry point. Read `../CLAUDE.md` first (rules, how to build, where to look things up),
+then this file (inventory, decisions, next steps), then `KNOWLEDGE.md` (facts) and `../src/TODO.md` (status per program).
 
 ## Goal
 
-A tool chain on the Linux host (`WEGA/host/`) that is output-identical to the native WEGA
-one: `cc`, `scc`, `cas`, `as`, `ld`, `gld`, `ar`, `ranlib`, `strip`, `size`, `libc`, built from
-our own C sources, checked byte for byte against the original binaries.
+A tool chain on the Linux host (`WEGA/host/`) that is output-identical to the native WEGA one: `cc`, `scc`,
+`cpp`, `cparse`, `scparse`, `codgen`, `scodgen`, `gopt`, `popt`, `cas`, `as`, `ld`, `sld`, `gld`, `ar`, `ranlib`,
+`strip`, `size`, `libc` and `crt0`, built from our own C sources and checked byte for byte against the originals.
+The original binaries run under the emulator (`host/z8k-emu`, the oracle); they are not part of the tool chain.
 
-## What exists
+Byte identity is the only guarantee of identical behaviour, so it stays the goal (owner decision). Where the
+original was built by an older compiler revision (D1 to D16 in `KNOWLEDGE.md`), byte identity needs that
+compiler, which does not exist any more; this is the open task of step 3 below.
 
-- **Oracle:** `host/z8k-emu` runs the original WEGA binaries on Linux (Z8001/Z8002 user mode,
-  system calls mapped to Linux, incl. `fcntl`). The whole original chain runs under it:
-  `cc scc cas as ld sld gld ar strip ranlib yacc` and `pcat` (man pages).
-- **Native host tools:**
-  - `host/cc`: decompiled `cc` driver, 74 command lines identical to the original. Pass paths,
-    `mv` and the temp directory are set in `cc.conf` next to the executable (library
-    `host/tools/lib/conf.c`, template `cc/cc.conf.example`); `scc` is the same source built with `-DSCC` (`scc.conf`).
-  - `host/popt`: peephole optimizer, 522 corpus runs byte identical.
-  - `host/ar`: `ar`, archives and output identical with the original.
-  - `host/binutils`: `ranlib`, `strip`, `size`, output and files identical with the originals.
-  - `host/cas`: the cas assembler, messages, objects and listings identical with the original
-    (see `KNOWLEDGE.md`, "cas on the host").
-- **Checks:** `make -C host check` (cc, ar, binutils, cas, popt, libc 170 identical / 7 different /
-  3 without C source, oldcc). `make -C host verify-wega` builds `src/cmd` with the original tools and
-  compares per program (see `../src/TODO.md`).
-- **Sources:** `src/cmd` builds under the oracle (see `src/TODO.md` for the per program state;
-  `ar`, `tar`, `dump`, `dumpdir`, `restor`, `sync`, `cc`, `scc`, `pb.image`, `standalone/sa.*`,
-  `pburn` 2.1 identical; `cas` rebuilt with the same behaviour). `src/lib/libc` has
-  C sources for 170 members, `src/lib/libc/oldcc/<member>/<version>.s` for the rest; other libc versions: `src/lib/oldlibc/README`.
-- **Analysis scripts:** `host/tools` (`sdis.py` disassembler, `cmpins.py` instruction compare,
-  `epu*.py`, `war.py`, ...).
+## Inventory: what belongs to the tool chain
 
-## What is missing for a complete host tool chain
+Source of truth for the state: `../src/TODO.md` (per program) and the check commands in the last column.
+"Source from binary" = our source was written from the original binary, not from a source tree.
 
-| Part | State |
-|---|---|
-| `cpp` | not started (original `/lib/cpp`; Plexus-free reconstruction needed) |
-| `cparse` / `scparse` | not started; the parser is the biggest part |
-| `codgen` / `scodgen` | both complete as source (`src/cmd/codgen`, K&R C for the WEGA `cc`, `cc -O -i`; scodgen = the same files with `-DSEG`, `make scodgen`): same assembler text as `/lib/codgen` / `/lib/scodgen` on the test corpus (13 programs of `src/cmd`, 103 libc files; KNOWLEDGE.md "codgen runs", "scodgen runs"). Open: byte equality per function: register variables done (saved register sets equal in all non-leaf functions), 122 of 194 functions have the same instruction multiset, 134 are within two instructions, the rest differs in structure (KNOWLEDGE.md "codgen fidelity", tool `host/tools/cgcmp.py`); scodgen not yet measured; not yet in `src/cmd/Makefile`; harness `src/cmd/codgen/{corpus,check}.sh` |
-| `gopt` | not started (only used with -Ol/-Or) |
-| `popt`, `spopt` | done: `host/popt` (`make` builds both; `spopt` is the same sources with `-DSPOPT`), checked against the originals with `make -C host/popt check` / `PROG=spopt` |
-| `cas` | done: all modules decompiled to `src/cmd/cas/` (same behaviour as the original, code of the older scc not byte identical, see `src/cmd/cas/MODULES`); host version `host/cas`, checked against the original |
-| `as` | not started |
-| `ld` | done: `host/ld` (nonsegmented), 146 command lines identical to the original, `make -C host/ld check` |
-| `sld` | done: `host/ld/sld.c`, 91 command lines identical (kernel link, cas link included), `make -C host/ld check` |
-| `gld` | done: `host/ld/gld.c`, same files and messages as `/bin/gld` on the check lines (pburn link included), `make -C host/ld check` |
-| `ar` | done on the host (`host/ar`, identical behaviour and archives) |
-| `ranlib`, `strip`, `size` | done on the host (`host/binutils`); the `src/cmd` versions still differ from the originals (see TODO) |
-| `cc`, `scc` drivers | done, paths in `cc.conf` / `scc.conf`; WEGA source `src/cmd/cc/cc.c`; cc and scc built there are byte-identical with the originals |
-| libc | 170 of 180 members from C; 7 differ (4 made by an older cc, 3 of another source revision), 3 without C |
+| Tool | Original (WEGA 3.1 tree) | WEGA source (`src/`) | Host version (`host/`) | Source from binary | State | Check |
+|---|---|---|---|---|---|---|
+| `cc`, `scc` (driver) | `/bin/cc`, `/bin/scc` | `src/cmd/cc/cc.c` | `host/cc` | no (WEGA source) | done: 74 command lines identical; `cc` and `scc` byte-identical | `make -C host check` (cc) |
+| `cpp` | `/lib/cpp` | - | - | - | not started | - |
+| `cparse`, `scparse` | `/lib/cparse`, `/lib/scparse` | - | - | - | not started (largest part) | - |
+| `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | `src/cmd/codgen` | only built via `z8k-emu` (with the shipped `cc`) | yes | behaviour: corpus 101/101 (codgen and scodgen); byte identity open (D1 to D16) | `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
+| `gopt` | `/lib/gopt` (only with `-Ol`/`-Or`) | - | - | - | not started | - |
+| `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | - (source in `host/popt`) | `host/popt` | yes (`z20.c` to `z23.c`) | done: 522 corpus runs byte-identical | `make -C host check` (popt) |
+| `cas` | `/bin/cas` | `src/cmd/cas` (`MODULES`) | `host/cas` | yes (decompiled, see `src/cmd/cas/README`) | done in behaviour; code not byte-identical (older scc) | `make -C host check` (cas) |
+| `as` | `/bin/as` (PLZ/ASM) | - | - | - | not started | - |
+| `ld` | `/bin/ld` | - (source in `host/ld`) | `host/ld/ld` | yes (`ld.c` from the binary) | done: 146 command lines identical | `make -C host check` (ld) |
+| `sld` | `/bin/sld` | - (source in `host/ld`) | `host/ld/sld` | yes | done: 91 command lines identical | `make -C host check` (ld) |
+| `gld` | `/bin/gld` | - (source in `host/ld`) | `host/ld/gld` | yes | done on the check lines | `make -C host check` (ld) |
+| `ar` | `/bin/ar` | `src/cmd/ar.c` | `host/ar/ar` | to be checked | done on the host (archives identical) | `make -C host check` (ar) |
+| `ranlib`, `strip`, `size` | `/usr/bin/ranlib`, `/usr/bin/strip`, `/bin/size` | `src/cmd/ranlib`, `strip`, `size` | `host/binutils` | to be checked | done on the host; the `src/cmd` versions still differ (`src/TODO.md`) | `make -C host check` (binutils) |
+| `libc` | `/lib/libc.a` | `src/lib/libc` (170 modules in C), `src/lib/libc/oldcc` (10 modules as `.s`), `src/lib/oldlibc` (versions) | `host/libc` | partly | 170 of 180 from C; 7 differ (4 older cc, 3 other revision); 3 without C | `make -C host check` (libc), `make -C host/oldcc verify` |
+| `crt0` (start-up files) | `/lib/crt0.o` and others | `src/lib/libc/crt` (`crt0.list`, `mkcrt0.sh`) | - | to be checked | generated; start code checked against the original | `src/lib/libc/crt` |
+| `yacc` | `/usr/bin/yacc` (used by `verify-wega`) | - | - | - | not inventoried | open |
 
-## Next steps, in this order (fastest way to a usable local tool chain)
+Not a tool of the chain but the oracle: `host/z8k-emu` (runs the original binaries). Analysis tools: `host/tools`.
 
-1. **Drivers `cc` and `scc` stand-alone: done** (`host/cc`, one source, `cc.conf` / `scc.conf` set the
-   passes; `scc` uses `sld`, not `gld`; both checked with `make -C host/cc check`).
-2. **Using the native tools in builds: done without wrapper scripts.** `cc.conf`/`scc.conf` name the passes (native or
-   `z8k-emu` command); `ld`, `sld` and `gld` find the file tree of the original through `ld.conf` next to the executable
-   (`root = ...`, template `host/ld/ld.conf.example`) or `$WEGA_ROOT`. `src/make_cmd_linux.sh` is the owner's older stand-in.
-3. **Small data-format tools first, native:** `ar` (done, `host/ar`, checked against the original),
-   `ranlib`, `strip`, `size` (done, `host/binutils`, checked against the originals), then an
-   `nm`-like reader.
-4. **Assembler `cas` (and `as`):** `cas` done (`src/cmd/cas`, `host/cas`); `as` not started. Closed grammar, good oracle (every `.s` in the tree, every
-   `cc -S` output, `src/lib/libc/oldcc/*/*.s`). Decode from the binary with `tools/sdis.py`; check with
-   `cmpins.py`. Do `cas` before `as` (PLZ/ASM is separate and used less).
-5. **Linkers:** `ld`, `sld` and `gld` done (`host/ld`, see `KNOWLEDGE.md`, "ld/sld/gld on the host"). Oracle: relink every program in the tree and
-   compare; the recorded link lines of `src/cmd` (cas, pburn) are the first test input.
-6. **Emulator: EPU arithmetic** (needed for `cparse` on floating constants and for the doscopy
-   commands): done 2026-10-22 as a C port of the kernel's `src/uts/conf/fpe.s`
-   (`z8k-emu/fpe2c.py` -> `fpe_gen.c`, `epu.c`; checked on the host, see `KNOWLEDGE.md`, "EPU
-   (floating point)"). Still to do: run `cparse` on `dosopn.c` and build the doscopy commands
-   (see `src/TODO.md`).
-7. **Back end `codgen` (+ `scodgen`), then `gopt`, `spopt`:** table driven, check against the
-   oracle's `-S` output on the whole source tree (libc, cmd, kernel). `popt` experience applies.
-8. **Front end `cpp`, `cparse` (+ `scparse`):** largest part, leave it to last; with
-   the oracle the intermediate file (`cc -:z` temp files) can be compared pass by pass.
-9. **libc leftovers:** the 7 differing and 3 missing members (older cc, other source revision; see
-   the TODO table); target: the libc on the system first, then every version the shipped binaries need.
-10. **Close out:** `make verify` with only native tools and no emulator; keep the emulator as
-    oracle in CI-like checks.
+Overall checks: `make -C host check` (all tools except `codgen`), `make -C host verify-wega` (builds `src/cmd` with the
+original tools and compares each program).
 
-Steps 1 to 3 are a few sessions; 4 to 5 follow; 6 to 8 are the real decompilation work.
+## Decisions open for the owner
 
-## Working rules of the owner (Oliver Lehmann, @OlliL)
+- **Compensating source changes.** Some changes adapt the source to the old compiler instead of correcting it:
+  `conval` (case order), `sucomp` (storage classes), `zzzcode` (if/else swap, commit `cc1df27`), `tshape` (case order),
+  `clocal` (casts). They are behaviour-neutral but not justified for the source. Keep or revert? This is decided in step 2 below.
+- **`host/oldcc`** stays: it checks the ten `.s` modules that the old cc produced. Its paths are corrected.
+- **`yacc`:** should it be added to the inventory and to the tool chain?
 
-- Conversation in German, short messages. Documents, commit messages, PR texts in English.
-- The owner handles the repository (commit, push, branches). Claude only edits files.
-- Facts only from documents or measurements; mark guesses.
-- Keep `host/KNOWLEDGE.md` and `src/TODO.md` current.
-- Originals, binaries and copyrighted material stay out of git (explicit exceptions by the owner).
-  Plexus sources are private reference only; reconstructed code is not a copy of them.
-- V7 layout in `src/cmd`; Makefiles must also work with WEGA's native `make`
-  (`=` not `?=`, `cd dir ; $(MAKE)`).
+## Next steps, in this order
 
-## Open questions for the owner
+1. **Complete the tool chain.** Order: front end (`cpp`, `cparse`/`scparse`, `gopt`), then `as`, then `codgen`/`scodgen`
+   native on the host, then the check of the libraries (`libc`, `crt0`). Each tool passes the check in the table.
+   Step 3 starts only after that.
+2. **Bring the source to its natural form.** Revert the compensating changes or justify them. New baseline:
+   bytes, functions, D classes.
+3. **Reconstruct the old compiler.** Derive a model of the differences D1 to D16 from the fit functions, check it on a
+   separate validation set. Goal: the original binaries reproduced byte-identical from our sources. Fix a time box
+   and an abort criterion before starting.
 
-- Which revision of libc is the target (of the 7 differing members 4 were made by an older cc, 3 are another source revision)?
-  - answer: currently the one on the system. After that all the ones which are needed to get every binary bit-compatible to the delivered version 
-- What does `p8000c` (second `sa.diags`) and the `87wega3.2` SCCS suffix stand for?
-  - p8000c mean P8000 compact - which is a newer hardware. Not relevant for us.
+The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").

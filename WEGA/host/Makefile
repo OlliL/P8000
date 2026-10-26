@@ -22,11 +22,11 @@
 #                        whether it is identical to the original
 #                        (report only, does not fail on differences)
 #
-# WEGA: the WEGA file tree (bin/, lib/, usr/...), not in git.
 
-WEGA ?= ../../../wega/arc/cpio
+# WEGA: the original WEGA 3.1 file tree (ROOT of the emulator); default: the placeholder of CLAUDE.md (tmp/wega31_root, not in git)
+WEGA = ../../tmp/wega31_root
 WEGAABS = $(abspath $(WEGA))
-EMU  ?= $(abspath z8k-emu/z8k-emu)
+EMU  = $(abspath z8k-emu/z8k-emu)
 ROOT  = $(WEGAABS)
 WEMU  = $(EMU) -r $(ROOT)
 SRC   = ../src/cmd

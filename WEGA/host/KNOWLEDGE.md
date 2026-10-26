@@ -61,7 +61,9 @@ Local copies used in the work:
   is the reference for every "identical" in `src/TODO.md`: the version
   subdirectories under `src/cmd` build exactly the versions found here (the
   owner calls them the versions shipped with WEGA 3.1; the SCCS ids in the
-  binaries end in `87wega3.2`, the meaning of that suffix is not clarified).
+  binaries end in `87wega3.2`; the suffix is a literal string in the binaries, not an
+  identifier with a meaning: the owner reports that the WEGA developers edited out what looked like ZEUS or
+  Zilog provenance from the binaries, so such strings are reproduced as they are, not interpreted or corrected).
 - WEGA 3.1 start and floppy disks (images and raw conversions). The owner
   compared `BOOT0` and `standalone/sa.diags` with them; `sa.diags` is not
   part of the file tree.
@@ -79,20 +81,7 @@ non-segmented. Not used.
 
 ## Ground rules from the owner
 
-- Not every WEGA binary was rebuilt with each compiler release. Some code
-  may never be reproducible with the compiler we have; then several C
-  compiler versions must be maintained side by side.
-- V7 layout for `src/cmd` (a flat file for a single-source command, a
-  subdirectory with its own Makefile for several files or several versions,
-  see "Directory layout"); `make all` builds everything.
-- Makefiles keep to what WEGA's own `make` understands: plain `=` assignments
-  (no `?=`), `cd dir ; $(MAKE)` instead of `$(MAKE) -C`, no GNU extensions.
-  The owner moved them that way in the commits "work on supporting WEGA native
-  make" (d914fd9, adabdd8, 2b62862). Variables come from the command line.
-- Git content in English.
-- Original binaries and copyrighted material stay out of git. Plexus sources
-  are private reference only; our decompiled cc and popt are not copies of
-  Plexus code.
+The rules for the work (language, git, Makefiles, originals, Plexus) are in `WEGA/CLAUDE.md`. Not repeated here.
 
 ## Files of the tool chain
 
@@ -441,21 +430,9 @@ the Plexus `pcc` (it prints `csv2`/`cret2`); the Plexus sources only help to rea
 
 ### Status (current)
 
-Sources: `src/cmd/codgen` (K&R C for the WEGA cc, the same files build `codgen` and `scodgen` with `-DSEG`; the tables
-`table3_codgen.c` / `table3_scodgen.c` and `ops_*.c` / `hop_*.c` differ). They are built by `src/cmd/Makefile` (subdirectory `codgen`).
+Status of codgen and scodgen (done parts, open differences, test runs): `src/TODO.md`, section "codgen / scodgen: status".
 
-- **Assembler text.** `codgen` and `scodgen` give the same assembler text and exit status as `/lib/codgen` and `/lib/scodgen` on the
-  test corpus: 101 of 101 cases each (`corp4test` with 100 cases plus `corpsr`, and the scodgen counterparts), checked on the final sources.
-  The corpus is small and does not contain structure returns (see the `fbegin` note below).
-- **scodgen.** `locate.py --seg` finds all objects of `scodgen` (18 objects, 211 functions, no problems). Its functions are the
-  209 names of `codgen` plus `newlreg` (`lcl3.c`) and `mkoreg` (`order3.c`), which exist only under `SEG`. The corpus check
-  `tools/check.sh` with `PROG=scodgen` gives 100 of 100 and 1 of 1.
-- **Functions.** The program part of `/lib/codgen` (0x0 .. 0xbbc4) and of our build (the codgen objects, up to 0xbc2a) contain 206
-  functions (`tools/findings.json`). Original boundaries come from the call targets and prologues (the original is stripped).
-  All 206 are paired with a function of the original (`tools/confirm.py`: the same instructions, the same strings, or a review).
-  The entries `start` (the crt0 entry, not codgen code), `rcookie` (a duplicate of `rallkind`, removed) and the `printf` wrapper
-  `cgwipe`/`cgprintf` (removed, see below) are no longer in the list.
-- **Pairings** (`tools/findings.json`, `pairing_evidence`): all 206 confirmed. The open review entries of `clocal`, `sucomp`, `canon2`, `rsinsert`, `rsmerge`, `psuffix`, `getlab`, `rdsym`, `markcall`, `acon`, `tcmd`, `sortsyms`, `lmuldiv`, `genscall`, `argscan` are closed with the callee and body evidence (the local `L0t_` call targets of the original resolve to paired functions). `rdsym` continues after an internal `ret` (`jr gt` into `0x1aae`), so its original end is set by `orig_end` (0x1b64); `classify.py` honours `orig_end`. Still open in the review: `parminit` and `regjam` (classes, not pairings).
+### codgen fidelity: method and reading rules
 - **Limit of "D only (pattern-verified)"**: `patterns.py` checks the kind of each differing instruction, every extra or missing
   instruction included (`explained()`), and the order of moved blocks (`structure_flags`). The length gap is not a warning of its own:
   the 20 functions with a length difference (`acon`, `rsinsert`, `rsmerge`, `tcmd`, `markcall`, `conput`, `treeeq`, `shtemp`, `mapregs`,
@@ -465,151 +442,6 @@ Sources: `src/cmd/codgen` (K&R C for the WEGA cc, the same files build `codgen` 
   accepts a generic reload such as `ld rS,F` as D3 without proof of its purpose, so the verdict is a pattern verdict, not a proof of the
   per-instruction behaviour. A function whose original body is not cut at its last `ret` gets an explicit end (`orig_end` in
   findings.json, e.g. `rdsym` 0x1b64); `extent(..., explicit=True)` keeps the internal returns.
-- **Stop line for the source search (decided 2026-10-26).** The search for source forms that reproduce the original's code in `codgen` / `scodgen` ends here. Rule used: a round counts only if it gives a new explanation or a measured gain with the corpus green. Two rounds in a row without a new explanation stop the search. The rounds since the last rule: `tshape` (case order, no gain), `sucomp` (storage classes, a measured gain, reason unknown), `clocal` and `zzzcode` (storage classes, no gain), and the last source round on the shift forms (`clocal`: the unsigned casts removed, 4 -> 2 unexplained forms, corpus green; `zzzcode`: no change). What stays open: the layout classes D15 (`clocal`, `zzzcode`, `freereg`, `expand`), the operand forms D16 (`sucomp`, `tshape`), the SZERO value form (`tshape`), the `sra`/`srl rS,#n` forms (not in the pattern set), and the `zzzcode` shift `srl rS,#2` (source of it not found). These go to the compiler track (reconstruction of the old C compiler); there is no oracle for that compiler (decided by the owner).
-- **Differences of the 206 paired functions** (`tools/classify.py`, pattern check of the old-cc differences D1-D16):
-  21 have no differing instruction after normalisation (addresses, frame offsets and scratch registers masked); 200 are
-  "D only (pattern-verified)": every differing instruction matches an old-cc pattern (D1 to D16) and no block is moved by more
-  than 5 % of the original (`patterns.structure_flags`). 6 have other differences: 4 known (`clocal`, `sucomp`, `tshape`, `zzzcode`,
-  see "Open" below; `clocal` and `zzzcode` carry the layout class D15 as a manual annotation, `layout_classes` in findings.json) and
-  2 with a moved block that the source does not change: `expand` (D7 loop layout) and `freereg` (D7, the goto target `found` of the
-  first loop is placed after its body; findings `expand-layout-01`, `freereg-layout-01`). `conval` was fixed by the case order (below).
-
-- **Tools.** `src/cmd/codgen/tools` (see its `README.md`): `locate.py` (our functions by name), `confirm.py` (pairing check),
-  `patterns.py` (pattern check of the D classes), `classify.py` (writes the class into `findings.json`), `inventory.py`
-  (`INVENTORY.md`), `blocks.py` (differing blocks of one function), `check.sh` and `corpus.sh` (corpus comparison). The single
-  source of truth for the per-function state is `src/cmd/codgen/tools/findings.json`; the pipeline is `make -C tools pipeline`.
-  Host tools: `host/tools/cgread.py` (reads `.I` files: 100 of 100 corpus files without remainder), `cgsym.py` (symbol files `.S`:
-  100 of 100), `cgcmp.py` (instruction comparison of functions), `regdecl.py` (toggles `register` on the declarations of a function),
-  `codgentab.py` (writes the operator and template tables as C).
-
-### Source changes that made functions equal to the original
-
-These changes are in the sources; the git history has the exact diffs. Each keeps the corpus result (101 of 101).
-
-- `allo3.c`: duplicate static `rcookie` removed (it had the logic of `rallkind`); `allocreg` calls `rallkind`; `tcopy` uses `ncopy(q, p)`.
-- `efcode3.c`: `lineout` takes `int line` (the original's `long` was wrong).
-- `main3.c`: `options` declares `register int i, err`.
-- Unsigned shifts (the original shifts the field values with `srl`): `DECREF`/`INCREF` operands unsigned in `reader3.c`, `tr3.c`,
-  `zzz3.c`, `lcl3.c` (`fixfld`: `INCREF(DECREF((unsigned)m->type))`); `ttype` in `match3.c`; `shincr` in `local3.c`; `buildstar`
-  in `tr3.c` (per site); `rsdump`, `tmpcleanup`, `fixtemp`: `struct rs` and `struct tmpent` flags are `int`. `struct sym` `sflags`
-  stays `int`: making it unsigned broke six other functions. `fbegin` (`lcl3.c`) keeps the signed `DECREF`.
-- `fbegin`: `structsz` is the structure size in words (`s->ssize / 16`), not `/ 2`.
-- `tshape` (`match3.c`): the `case FLD:` block precedes `case STAR:` (the original's body order; the call order now matches).
-- `sucomp` (`order3.c`): the locals and `l`, `r` are register variables (`register int o, arity, nr, ...`). This is an approximation,
-  see "Open".
-- `argscan` (`order3.c`): `switch (argsize(q))` written as `if` statements with the result in `int sz` (the original is a compare
-  chain, D6). `argsort` uses pointers `ai`, `aj` over `struct arg` (`argl` as a named type).
-- `rnnullall` (`regfile3.c`): `register int i`.
-- `delstrip` (`reader3.c`): `*p = *p->left` (the original copies the node inline).
-- `conput` (`out3.c`, REG case): the `r` prefix of a register in rmode is `printf("r")`, not `putchar('r')`. Checked with
-  the printf call sequence of `scodgen` (`execvp`): with this change the 512 calls equal the original's; the original
-  calls `printf` from a single site (`if (rmode) printf("r")`, `test` of a global, then the register name).
-- `expand` (`out3.c`): the `%ld` helper `prlong` (the original calls a one-line function for `M` and `N`).
-- `gswitch` (`lcl3.c`): the `newreg` register blocks written out inline in the non-SEG path (the original calls `getreg` directly).
-- `mycanon` (`gen3.c`): the `switch` over the ten relation operators (the jump table of the original).
-- `stmt` (`reader3.c`), `markcall`, `mapregs` (first switch): `switch` statements written as `if` statements, so the shipped cc makes
-  the compare chain of the original.
-- `alloc` (`comm3.c`), `reclaim` (`allo3.c`), `nextcook` (`gen3.c`), `eread` (`rdr3.c`), `zzzcode` (`zzz3.c`, `c` is `char`,
-  register variables): see `findings.json` for the per-function evidence.
-- Tried and not kept: `makeblock` (`l` and `r` as register variables made it worse) and `cbranch` (`true` and `false` as stack
-  variables changed the saved register sets).
-
-### Open differences
-
-Listed by function; the current evidence is in `findings.json` (`findings_pending`).
-
-- `clocal` (`tr3.c`, `clocal-size-01`): 230 against 264 instructions; the body is in another block order (the `NAME` block is
-  out of line in the original, D7 or source). Swapping the `NAME` and `SCONV` branches was tried: block count 26 to 10, but the
-  alignment fell from 47 % to 17 %, so it was reverted.
-  Measured again in this round (scratch copy, `blocks.py` and `patterns.check`): the swap gives 10 differing blocks (26 before),
-  but the pattern check gets worse: 406 differing instructions (246 before), 6 unexplained (4 before), no moved chunk. The
-  original is not a plain `NAME` then `SCONV` order either: its `SCONV` switch (`dec`/`cp`/`jp ugt`/table) sits in the middle of
-  the function, after the `NAME` class tests. Rejected again; the layout class of `clocal` is D15 (annotation in findings.json),
-  the source form that gives the original order is not found.
-  Round "clocal and zzzcode check": storage classes tested (each pointer local automatic in turn; the int locals): no gain, so the difference is the
-  layout (D15), not the declarations. The 4 unexplained forms are the immediate shifts `sra`/`srl rS,#n`, which the pattern set does not cover.
-  Pairing: confirmed with the original at 0xab48 (the only strong start candidate; the same calls to `makeblock`, `member`, `tbytes`, `szty`, `cerror`; the counts differ). The open review entry is closed.
-- `zzzcode` (`zzz3.c`, `zzzcode-order-01`), round "clocal and zzzcode check": storage classes of the locals tested one at a time (q, r, l, tmp, rg, m, n, k, t to automatic; rp, rn2, cls, rn to register): no gain, the source is unchanged. The 4 unexplained forms are immediate shifts (`sra rS,#1`, `srl rS,#2`).
-- `zzzcode` (`zzz3.c`, `zzzcode-order-01`): the block `if (notoff(...)) order(r, STAREG)` sits at another place (808 in ours, 920 in
-  the original, before the swap below). The two `sra rS,#1` forms are the same in context; shift counts are equal (`shift-type-02` is closed for them).
-  Done (`zzz3.c`): the `if (n <= 4)` / `else` branches of the structure move (`ZS`) were swapped to `if (n > 4)` first;
-  the original lays out the big branch after the small one, the swap is a layout change. Differing blocks 95 -> 80, 1045 -> 1044
-  instructions; corpus codgen 101/101 and scodgen 101/101. Still open: the `if (!tshape(r, STAREG))` block of the big branch
-  (orig 920, ours 809 before the swap) and about 20 other blocks in the same function.
-  The original lays out the small branch first (`cp n,#4; jp gt,BIG`, small code, `jp` to the end, then BIG). Ours keeps the big branch
-  first with `jr le,SMALL`, in both source forms (`if (n <= 4)` and the swapped one). A variant with `return` at the end of the big
-  branch (duplicating the tail of the `S` case) gave 78 differing blocks; not kept (duplicated code for 2 blocks).
-- `sucomp` (`order3.c`, `sucomp-size-01`; pairing confirmed with the original at 0x49f0, the only strong start candidate, three calls to `szty` in both), round "sucomp check": the locals `nf`, `fl` and `t` are no longer `register` (same meaning; corpus 101/101 for codgen and scodgen). Measured: 715 instructions against 684 (was 731), differing 607 (was 739), moved 19 (was 33), alignment 55 % (was 46 %). The saved registers stay at 7 against the original's 6 (D1). The other locals, one at a time and in pairs, gave no further gain. Before the change: 731 instructions against 684 (after the register declarations; 756 before). 55 `add rS,F`
-  forms remain: the original adds a frame slot directly in 49 places, we load it into a register first. Operand order in the sums
-  and temporaries for `l->su` were tried without gain; the register declarations were the only change with an effect. The cause is
-  not found.
-- `tshape` (`match3.c`, `tshape-order-01`), round "tshape check": seven case orders of the switch were tested in a scratch copy. The source order (NAME, ICON, FLD, STAR, REG, OREG, CCODES, FLD before STAR) is the best: 60 differing instructions, 2 unexplained (`and rS,F`), 0 moved, alignment 74 %. The other orders give 64 to 96 differing instructions. No source change. The remaining difference is the SZERO value form (see below) and the operand form `and rS,F`, the same kind as `sucomp` (`add rS,F`): a frame operand used directly in arithmetic, where the original loads the value first. Class D16 (operand form of a frame slot), added in the next round.
-- `tshape` (`match3.c`, `tshape-order-01`): the last operand of the `SZERO` return is a value in the original (`cpl rr2,#0; ldk r2,#0;
-  tcc eq,r2`), a branch in ours. The `if` form gave no gain. Also tried (scratch copy, tsmeas2): `!p->lval` and a parenthesised
-  `&&` chain (both 117 instructions, ratio 0.776, same as now), `? 1 : 0` (113, 0.754), a local `r` before `return r` (117, 0.759).
-  None produces `tcc`/`cpl`; the form that does is not found.
-- Left from earlier rounds, not re-checked in this round: `cbranch` (the table dispatch after the `cpir` search, D6, and the
-  compare chain order 0x56-0x59), `gswitch` (the original is a structurally different case code with about 20 `printf` calls against
-  our 10; not reconstructed), `rdsym` (frame of two bytes, D1), `freeparm` (scratch register choice, D2), `ffld` (parameter spilled in
-  ours, D4), `ascii` (one reload, D3), `newnode` (the original jumps back into the case 3/7 body, layout), `cerror` (`ldm` with a
-  displacement in the original, old cc), `argplace` (local array `cnt` addressed directly in the original, D5), `ltypeop` (the
-  original loads `p->op` once into a scratch register, D3).
-
-### codgen runs (facts, not all re-checked in this round)
-
-- `struct node` is laid out as in the original (0x12 bytes: `sname` at 8 doubles as the CBRANCH label, the left subtree overlays the
-  low word of `lval`, `rval`/`right` share 0x10). The members are reached through macros (`lval left rval right label`), because the
-  K&R `cc` has one member name space (`struct rv` must not use `a`/`b`).
-- **Link without /lib/libc.a (codgen, scodgen).** The programs are linked from our objects, `crt0-codgen.o` (made by
-  `mkcrt0.sh codgen`, pad field `-`: no jump and no text in front of the code), the oldlibc versions listed in the
-  Makefile (cut from the original, see `VERSIONS`) and the members of `libc.a` that are identical to the original
-  (`ar x`: `__callex data brk cuexit ffltioc write close read lseek decimal cerror open creat ioctl umask chmod`).
-  Corpus 101/101 for both programs. Byte comparison of the libc functions in the linked `codgen` against the original
-  (`sdis -l`, words per instruction): 1328 of 1434 words identical, the other 106 differ only in addresses of calls, jumps
-  and data. Versions that were first taken as identical and were not (frame sizes of `strlen` and `freopen`, `isatty`,
-  `endopen`) are replaced by versions cut from the original: `strlen/0_2`, `freopen/0_1`, `isatty/0_2`, `endopen/0_4`.
-  Stubs and data checked against the original (`sdis -l`, words): `write read lseek open creat close chmod umask cerror
-  ioctl decimal` identical except the addresses of the calls (to `cerror`, `_errno`); `data` identical except the pointers
-  the linker sets. `gtty` (`stty/0_2`, the shipped `stty.o` has a frame of 6 instead of 4) and `isatty` (`isatty/0_2`)
-  replaced by versions cut from the original. `__callex` identical.
-- **The stray `-` in `printf` (solved).** The `printf` of the shipped `libc.a` (Nov 1983, frame 0x1e) writes a stray `-` in front
-  of a `%s` argument (and drops its first character) when the stack at its work area holds an old `%d` radix of -10 and a negative
-  number. The original `codgen` and `scodgen` link an older `printf` and `doprnt` that are not in the shipped library. They are now
-  cut out of `/lib/codgen` as `src/lib/oldlibc/printf/0_5.s` and `doprnt/0_5.s` (listed in `VERSIONS`; checked instruction by
-  instruction against the original, the data block of `doprnt` at program address 0x6532). With these modules the stray character
-  does not occur, the workaround `cgprintf` is gone, and the corpus is 101/101 for both programs.
-  Lesson: the first attempt used `doprnt/0_3`, which is a different revision (it calls `__cnvt` where the original tests the radix
-  inline); it only worked by luck of the stack layout. A `.s` cut from the binary has to keep absolute jump targets as labels.
-- `allo` clears `resc[k].sname` (not `stsize`) for the A and B registers; a stale symbol made the result register look as if it held a
-  variable.
-- `ispow2` returns an `int`; the table `indope` must end with op -1; `ftell` and `ispow2` must be declared (a long return read as int
-  loses the high word).
-- The statement dispatcher is `stmt()` (0x075a): op 118 `PROC` (function head with the parameters, `fwalkd(parminit)`), 119 (head
-  without parameters), 122 `SWTCH` (`gswitch`), else `delay`.
-- `fbegin`: a structure return is only covered by the test file `t2.c` (kept in a scratch directory, not in the corpus): a function
-  returning a 40 byte structure gives `ld r1,#20` in both builds.
-
-### scodgen (facts from earlier rounds)
-
-`make scodgen` compiles the same sources with `cc -DSEG` (objects in `seg/`). Facts that were not obvious from the function list:
-
-1. A pointer is 32 bit in scodgen: `szty` 2 words, `tbytes` 4, `bsize` 32. The template test `0x8000` ("same size") depends on it.
-   With 16 the template `addl AR,AL` matched an int register and gave a bad register pair. `rclass`/`allocreg` put types 8 and 9 into
-   the long class; `rsbuild` leaves r14 out of the register sets, `rfree` ignores r14.
-2. The frame is `_stkseg+~L1+n(fp)` (fp = r15, sp = rr14). The short form `|_stkseg+~L1+n|(fp)` is used when the offset fits a byte
-   (`oregput`). Indexed addresses are `rrB(rI)` with the base in the high byte of `rval` (`adrput`), direct ones `name(rI)`.
-3. The sites of `offstar` are not alike: `offstar(p)` takes the STAR itself at the left operand of `setbin`, the right site of `setasg`,
-   the right site of `setasop` and the STAR case of `order`; the other sites pass `p->left`. The two versions differ only in the jump
-   targets of the shared tail, so a comparison with the addresses removed does not show it.
-4. `sucomp` gives a STAR at least `su` 2.
-5. In `zzzcode`, `ZT` (long to short): an operand that is neither a REG nor frame based goes to a register by `order(p,6)` first.
-6. `gencall` of an indirect call: if no argument register pair is in the way, the address is loaded into a free pair (`rall` 0x1002);
-   otherwise rr8 is saved in a temporary (`freetemp(2)/8`) and restored after the call.
-7. `conval` for PLUS of pointer constants masks the offset (`& 0x7F00FFFF`, segment byte kept); MINUS keeps only the low byte of the
-   difference, the high word becomes 0 (`(lval - val) & 0xFF`). The MINUS mask looks like a slip in the original; kept (no test file
-   reaches it, see the quirks table).
-
-### codgen fidelity: method and reading rules
 
 - The pairing is by name (object markers and source order, `locate.py`), then by the instruction multiset with addresses, frame offsets,
   call targets and scratch registers masked (`confirm.py`, `patterns.py`).
@@ -914,9 +746,10 @@ written in C. Details and limits: `z8k-emu/README.md`.
   z8k-emu reproduces exactly that file (see "EPU (floating point)").
 - Which cas condition code and flag names to emit (both `ne`/`nz`,
   `c`/`ult` exist).
-- What the `87wega3.2` SCCS suffix means; `gld` options beyond the man page.
+- `gld` options beyond the man page.
   (`p8000c`, the second `sa.diags`, is for the P8000 compact, a newer hardware;
-  not relevant, answer of the owner.)
+  not relevant, answer of the owner. The `87wega3.2` suffix is a literal string; its meaning
+  is not needed for the rebuild, see the facts section on the versions.)
 
 ## Bugs and quirks of the originals
 
@@ -1066,35 +899,9 @@ means it does something fixed instead (only possible where the original's result
   call ABI (`sc INDIR; .word blk`, first argument in r0 for some calls). In 0410
   files data addresses start at the text size and wrap around 64K.
 
-## libc check against the original library (status)
+## libc check against the original library
 
-`libc/check.sh WEGA_ROOT LIBC_SRC ORIG_MEMBERS [member ...]` rebuilds each
-member of `WEGA/src/lib/libc` with the original tools and compares it byte for byte
-with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` without a
-`module` header with `cas`, `.c` with `/bin/cc` (-O, "", -Or, -Ol).
-
-- `/bin/as` is the PLZ/ASM assembler (not `cas`). It execs the overlay `/lib/as2`
-  (magic E705), so the emulator implements overlay exec (I-space replaced, data,
-  stack and registers kept). `-f` allows the EPU (floating point) mnemonics
-  (`fldctl`, `flds`, `fmul`, `fldd`, ...); without it they give ERROR 91.
-  Module names matter: they appear as `<module>_p`/`<module>_d` symbols
-  (abort.s is module `abort_s`).
-- Result: 170 of the 180 members identical, 7 differ, 3 have no C source (the 10 are
-  kept as cas sources in `src/lib/libc/oldcc`, see "oldlibc").
-- Same code, different compiler revision (cannot match with the shipped cc): `malloc`,
-  `nlist`, `length`, `swap` (differences D1, D3, D4, D8 in "Compiler revisions"). The shipped
-  libc was built with more than one compiler revision.
-- Different source revision (Nov 1983 float versions, files dated Nov 16-17 1983):
-  `printf` (printf/fprintf/sprintf with `_pfile`, `_rc`, `_flsbuf`; calls
-  `_doprnt(fmt, args, argend, flag, file)`), `scanf`, `doscan` (calls `_inflt`).
-  Together with `cnvt`, `fltioc` and `symscan` (no C source yet) they form the
-  floating-point stdio cluster that remains to be reconstructed as C (`doprnt` and
-  `ecvt` rebuild byte-identical now, see below).
-- Findings while fixing sources: getpass uses `struct termio` (`c_lflag`, ioctl 0x5401/0x5404/0x5403);
-  execvp is the 4.3BSD one with `index`, a `/bin/csh` fallback (`whichshell`) and `-` as
-  path separator in `execat`; malloc is a variant that extends the top free block when the
-  break is contiguous (`maxbytes` 0xFFF8, `maxblocks` 64 as data); nlist/readsym use the
-  s.out long-name encoding (`readby`, `(len+13)/14` entries).
+Status of the libc check: `src/TODO.md`, section "libc check". The facts about the original library (versions, start-up files) stay here.
 
 ### gopt (-Or) output with register pointer parameters: real behaviour, not an emulator bug
 
@@ -1354,6 +1161,8 @@ intermediate files: the small functions of `ifile` (0x42-0x1d0) write single byt
 `fwrite`, which is good for the host; whether other places write raw structures is not checked yet).
 
 ## Compiler revisions: how the old compiler differs from the shipped one
+
+Not every WEGA binary was rebuilt with each compiler release. Some code may never be reproducible with the compiler we have; then several C compiler versions must be maintained side by side (owner statement, moved here from the former "Ground rules").
 
 Several WEGA programs were built by an older revision of the C compilers: cas by an older scc; ranlib, strip
 and some libc members by an older cc. No old compiler binary exists in any archive (the old libc members and
