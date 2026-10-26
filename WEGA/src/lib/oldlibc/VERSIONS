@@ -1,23 +1,23 @@
 # module  version  programs that contain this version (made by host/tools/unlink.py)
 cnvt       0_1   cc scc size strip
-cnvt       0_2   ranlib codgen scodgen
+cnvt       0_2  ranlib codgen scodgen popt
 doprnt     0_1   size
 doprnt     0_2   strip
 doprnt     0_3   ranlib
 doprnt     0_4   cc scc
-doprnt     0_5   codgen scodgen
+doprnt     0_5  codgen scodgen popt
 endopen    0_1   size
 endopen    0_2   strip
 endopen    0_3   ranlib
-endopen    0_4   codgen scodgen
+endopen    0_4  codgen scodgen popt
 ffltioc    0_1   cc ranlib scc size strip
 filbuf     0_1   size
 filbuf     0_2   strip
-filbuf     0_3   ranlib
+filbuf     0_3  ranlib popt
 findiop    0_1   size strip
 findiop    0_2   ranlib
 flsbuf     0_1   size strip
-flsbuf     0_2   ranlib
+flsbuf     0_2  ranlib popt
 fopen      0_1   ranlib
 fseek      0_1   strip
 fseek      0_2   ranlib codgen scodgen
@@ -26,12 +26,12 @@ ftell      0_2   codgen scodgen
 goodmagic  0_1   size strip
 goodmagic  0_2   ranlib
 isatty     0_1   ranlib
-isatty     0_2   codgen scodgen
+isatty     0_2  codgen scodgen popt
 length     0_1   cc scc size strip
-length     0_2   ranlib codgen scodgen
+length     0_2  ranlib codgen scodgen popt
 malloc     0_1   size
 malloc     0_2   strip
-malloc     0_3   ranlib
+malloc     0_3  ranlib popt
 malloc     0_4   cc scc
 malloc     0_5   codgen scodgen
 mktemp     0_1   strip
@@ -40,28 +40,31 @@ printf     0_1   size
 printf     0_2   strip
 printf     0_3   ranlib
 printf     0_4   cc scc
-printf     0_5   codgen scodgen
+printf     0_5  codgen scodgen popt
 rdwr       0_1   size
 rdwr       0_2   strip
 rdwr       0_3   ranlib codgen scodgen
 readsym    0_1   ranlib
 strcat     0_1   cc scc
-strcat     0_2   codgen scodgen
+strcat     0_2  codgen scodgen popt
 strcpy     0_1   cc scc strip
-strcpy     0_2   codgen scodgen
+strcpy     0_2  codgen scodgen popt
 strlen     0_1   cc scc
-strlen     0_2   codgen scodgen
-strncmp    0_1   ranlib
+strlen     0_2  codgen scodgen popt
+strncmp    0_1  ranlib popt
 strncpy    0_1   ranlib
 stty       0_1   ranlib
-stty       0_2   codgen scodgen
+stty       0_2  codgen scodgen popt
 swab       0_1   ranlib
 swap       0_1   size
 swap       0_2   strip
 swap       0_3   ranlib
 system     0_1   ranlib
 ungetc     0_1   codgen scodgen
-setbuf     0_1   codgen scodgen
+setbuf     0_1  codgen scodgen popt
 getw       0_1   codgen scodgen
 
-freopen    0_1   codgen scodgen
+freopen    0_1  codgen scodgen popt
+
+atoi       0_1  popt
+strrchr    0_1  popt

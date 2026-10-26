@@ -3102,7 +3102,56 @@
    "review_note": "array clearing inline in the original (no clearmem call); call order differs"
   }
  },
- "findings": [],
+ "findings": [
+  {
+   "id": "popt-01",
+   "status": "open",
+   "functions": [
+    "equop"
+   ],
+   "orig": "0x23b4",
+   "ours": "z22.c:182 strcmp(a, b) == 0",
+   "summary": "original equop compares the strings inline (no call); ours calls strcmp of the shipped libc",
+   "decide": "match the original structure (inline compare) or keep strcmp as a source difference"
+  },
+  {
+   "id": "popt-02",
+   "status": "open",
+   "functions": [
+    "fixldm"
+   ],
+   "orig": "0x37cc (calls 0x548c = strrchr)",
+   "ours": "z23.c:542 strchr(p->code, '#')",
+   "summary": "original calls strrchr (last occurrence of the character), ours strchr (first occurrence); behaviour differs if # occurs twice in the operand text",
+   "decide": "owner decision: rebuild strrchr behaviour (byte identity first, as for other original quirks) and record in the quirks table"
+  },
+  {
+   "id": "popt-03",
+   "status": "open",
+   "functions": [
+    "isreg",
+    "rename_regs",
+    "scan"
+   ],
+   "orig": "2d22, 36d0, 3c5a region (inline table at data 0x0be5)",
+   "ours": "z22.c:652, 661 (isalnum), z22.c (isdigit via rename_regs), z23.c:58 (isalnum in scan)",
+   "summary": "character classes: the original reads its own table at data 0x0be5 inline (no call); ours uses the table __ctype of the shipped libc (ctype_.o). Calls agree, the table contents and its place in the data differ",
+   "decide": "compare the table contents of the original with ctype_.o; if equal, the table is a data difference only (link layout), otherwise a source difference"
+  },
+  {
+   "id": "popt-04",
+   "status": "open",
+   "functions": [
+    "memreg",
+    "rmove",
+    "rename_regs"
+   ],
+   "orig": "calls 0x54d6 (strncmp)",
+   "ours": "strncmp in memreg, rmove, rename_regs",
+   "summary": "checked: the original calls strncmp at the same places (0x54d6); no difference found, listed for completeness",
+   "decide": "none (closed when the next review confirms it)"
+  }
+ ],
  "manual": [],
  "findings_pending": [],
  "class_overrides": {},

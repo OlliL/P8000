@@ -148,6 +148,7 @@ _free::
 	ld	@r3,r2
 	inc	r15,#4
 	ret
+_realloc::
 	dec	r15,#14
 	ldm	%0008(r15),r12,#3
 	ld	%0000(r15),r6

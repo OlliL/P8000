@@ -706,5 +706,30 @@ Review of the classification (manual, replaces the pattern verdict as the basis;
 Open functions without a start in the original: `allocnode`, `clearmem`, `getch`, `hashname`, `heapreset`, `newcode1`, `scan` (`allocnode`, `clearmem`, `newcode1`, `getch`, `hashname`, `heapreset`: no own function, `scan`: inline in `ovlap`; `ovlap` confirmed at 0x3c5a).
 Open difference: one `dualop` call more in the original `usesreg` (location not found).
 
+libc of the original `popt` (step 2 of the libc plan; read-only, no source changed). The libc part is 0x4422 to 0x56fc.
+- Identical to the shipped `lib/libc.a` (14): ffltioc, cuexit, decimal, brk, chmod, close, creat, ioctl, lseek, open, read, umask, write,
+  cerror.
+- Identical to a module of `src/lib/oldlibc` (18 exact matches, all 65 versions assembled with cas and searched as one archive):
+  freopen 0_1 (0x4422), printf 0_5 (0x444a), doprnt 0_5 (0x455a), ffltioc 0_1 (0x4b80), filbuf 0_3 (0x4b88), setbuf 0_1 (0x4c62),
+  flsbuf 0_2 (0x4cb6), endopen 0_4 (0x4e94), cnvt 0_2 (0x506e), length 0_2 (0x51fe), malloc 0_3 or 0_5 (0x521c, both match; to decide),
+  isatty 0_2 (0x5436), stty 0_2 (0x5458), strcat 0_2 (0x54ae), strncmp 0_1 (0x54d6), strcpy 0_2 (0x551c), strlen 0_2 (0x553a).
+- Not in any source yet (call targets without a matched member): 0x5006 `exit` (a stub that calls cuexit at 0x500c and returns),
+  0x5016 `atoi` (the digit loop, differs from the shipped member), 0x548c `strrchr` (keeps the last match; differs from the shipped member),
+  0x5472 unknown (calls ioctl 0x55b4, constant 0x7408; 1 call). These need new versions in `src/lib/oldlibc`.
+- Name tool notes: `libcver.py` names by fingerprint (ratio below 0.6 is a guess); the exact matches above are names with the instruction sequence.
+  A false match of `getchar.o` on our own `getch` (0x0556) shows that single short members must be checked by hand.
+Findings from the libc of the original (`findings.json`, key `findings`):
+- `popt-01` `equop`: the original compares inline (no call); ours calls `strcmp` (libc).
+- `popt-02` `fixldm`: the original calls `strrchr` (last occurrence of `#`), ours `strchr` (first). Behaviour differs if `#` occurs twice;
+  decision of the owner (rebuild the original behaviour first, record in the quirks table).
+- `popt-03` `isreg`, `rename_regs`, `scan`: `isalnum` and `isdigit` are inline table references in the original (table at data 0x0be5);
+  ours use the table `__ctype` of the shipped `ctype_.o`. Calls agree; table contents and place differ (to check).
+- `popt-04` `memreg`, `rmove`, `rename_regs`: `strncmp` at the same places in the original (0x54d6); no difference, closed when confirmed.
+malloc in `oldlibc` (checked): version 0_3 is the complete object of the original malloc.o (0x521c to 0x5434): `_malloc`, `_free`,
+and after the ret of `_free` the routine `_realloc` (it calls `_free` and `_malloc`, copies the data). `0_3.s` lacked the label `_realloc`
+(added; the instructions are unchanged, the module still matches the original as 191 instructions). Version 0_5 is malloc and free only
+(it ends at the ret of `_free`); there is no foreign code in 0_5. The shipped `malloc.o` exports `_malloc`, `_free`, `_realloc`, `_calloc`,
+`_cfree`. popt uses 0_3 (malloc in popt is not called by realloc; the symbol is only completeness). Correction: the code after 0x5392 is `realloc`,
+not an unknown routine.
 Byte identity: not reached for any function yet. Next: `absval`, `equstr` (small), then the functions with 50 % to 60 %.
 
