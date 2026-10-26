@@ -576,13 +576,17 @@
    "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 79 %",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 77,
-    "pattern_diff": 17,
-    "pattern_unexplained": 2,
+    "d_normalised_pct": 79,
+    "pattern_diff": 15,
+    "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: sra\trS,#2; srl\trS,#2"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ]
    },
    "orig_note": "auto, verified: identical"
   },
@@ -1717,13 +1721,19 @@
    "pairing_evidence": "same strings: 8",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 85,
-    "pattern_diff": 18,
-    "pattern_unexplained": 2,
+    "d_normalised_pct": 87,
+    "pattern_diff": 16,
+    "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: sra\trS,#15; srl\trS,#15"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D7",
+     "D8"
+    ]
    },
    "orig_note": "auto, verified: identical"
   },
@@ -2033,13 +2043,23 @@
    "pairing_evidence": "pairing rule (findings.json, step 4): R1: header and best candidate agree, bereinigte Ausrichtung 76 %",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 75,
-    "pattern_diff": 35,
-    "pattern_unexplained": 2,
+    "d_normalised_pct": 76,
+    "pattern_diff": 33,
+    "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: sra\trS,#15; srl\trS,#15"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D7",
+     "D8",
+     "D8/D2"
+    ]
    }
   },
   "tmpdump": {
@@ -4029,13 +4049,19 @@
    "pairing_evidence": "same strings: 9",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 11,
-    "pattern_unexplained": 2,
+    "d_normalised_pct": 95,
+    "pattern_diff": 9,
+    "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: sra\trS,#2; srl\trS,#2"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D3"
+    ]
    },
    "orig_note": "structsz /16 (fixed); D1"
   },
@@ -4106,13 +4132,20 @@
    "pairing_evidence": "decided by rules in an earlier run (not re-checked by instructions, strings or a review): callers agree",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 89,
-    "pattern_diff": 23,
-    "pattern_unexplained": 2,
+    "d_normalised_pct": 90,
+    "pattern_diff": 21,
+    "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: sra\trS,#15; srl\trS,#15"
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ]
    },
    "orig_note": "D3, D6"
   },
@@ -4124,9 +4157,9 @@
    "pairing_evidence": "review: header 0x944a; same function; real differences: the original uses srl (unsigned) for the field shift where ours uses sra (finding fixfld-shift-01); the statements come in other order; the register of the struct pointer differs",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 82,
-    "pattern_diff": 15,
-    "pattern_unexplained": 1,
+    "d_normalised_pct": 80,
+    "pattern_diff": 17,
+    "pattern_unexplained": 3,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "other differences",
@@ -4525,7 +4558,7 @@
    "audit": {
     "d_normalised_pct": 47,
     "pattern_diff": 246,
-    "pattern_unexplained": 2,
+    "pattern_unexplained": 4,
     "reordered_instructions": 6,
     "reordered_examples": [
      "jp\tA",
@@ -5500,7 +5533,7 @@
    "where": "local3.c, reader3.c, tr3.c",
    "detail": "three functions shift a field value with srl (unsigned) in the original and with sra (signed) in ours",
    "action": "find the variable whose type is unsigned in the original (a bit field or an unsigned member); make the shift unsigned in all three",
-   "status": "partly fixed: ttype and DECREF/INCREF unsigned; the other sites are shift-type-02",
+   "status": "fixed for ttype; the rest is shift-type-02",
    "result": "Experiment (see before): unsigned operand in DECREF/INCREF and ttype gives srl as in the original; ttype pattern-explained after it. fixfld and buildstar: per site, not yet changed.",
    "scratch": "/tmp/claude-1000/-mnt-share-cvs-P8000/c1dc3ef9-1faf-446a-8c04-2a8a9e3f0c4b/scratchpad/exp"
   },
@@ -5678,7 +5711,8 @@
    "where": "reader3.c, tr3.c, optim3.c, regallo3.c, comm3.c, lcl3.c, zzz3.c (to find)",
    "detail": "the sign of a shift with a constant count differs (srl in the original, sra in ours, or the other way round): the variable shifted is unsigned in the original; the pattern check now reports these forms as unexplained",
    "action": "find the variables of these shifts and their declarations (same type question as shift-type-01); check each site separately",
-   "status": "open (found by the check of srl/sra, not yet changed)"
+   "status": "partly fixed",
+   "result": "fixed: rsdump, tmpcleanup, fixtemp (struct tmpent and struct rs flags are int in the original); shincr (t >> 2 unsigned, local3.c); fbegin (DECREF in lcl3.c signed); buildstar (the two sflags tests in tr3.c unsigned). rejected: sflags unsigned in struct sym for all uses (six other functions became unexplained: mapnm, mapregs, memname, oreg2, oregfix, readsyms). open: fixfld (one shift of the original not reproduced, 5 unexplained forms), zzzcode (shift counts equal, 2 unexplained forms sra #1, to analyse)."
   }
  ],
  "reject": {},

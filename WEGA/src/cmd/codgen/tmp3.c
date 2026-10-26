@@ -12,7 +12,7 @@ struct tmpent {
 	int	off;		/* +0: frame offset of the temporary, negative: end of the table */
 	char	done;		/* +2: not zero: the temporary is still needed */
 	char	cls;		/* +3: class of the register */
-	unsigned flags;		/* +4: bit 15: the register still holds the value */
+	int flags;		/* +4: bit 15: the register still holds the value */
 	int	reg;		/* +6: the register */
 };
 struct tmpent tmptab[80];

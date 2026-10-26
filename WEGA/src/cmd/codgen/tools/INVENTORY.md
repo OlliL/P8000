@@ -16,11 +16,11 @@ Identical under metric strict-1 (the same instruction sequence, only addresses m
 
 ## Only D1-D14 (pattern-verified)
 
-193 functions: every differing instruction matches a D pattern (D1, D2, D3, D5, D6, D7, D8, D10, D11, D13). The order of the instructions is not part of this check. D4, D9, D12 and D14 are not separable by these patterns.
+198 functions: every differing instruction matches a D pattern (D1, D2, D3, D5, D6, D7, D8, D10, D11, D13). The order of the instructions is not part of this check. D4, D9, D12 and D14 are not separable by these patterns.
 
 ## D1-D14 and real differences
 
-13 functions with real differences (the D part is not separated from them): `acon`, `buildstar`, `clocal`, `expand`, `fbegin`, `fixfld`, `fixtemp`, `rsdump`, `shincr`, `sucomp`, `tmpcleanup`, `tshape`, `zzzcode`
+8 functions with real differences (the D part is not separated from them): `acon`, `buildstar`, `clocal`, `expand`, `fixfld`, `sucomp`, `tshape`, `zzzcode`
 
 ## Real differences (findings)
 

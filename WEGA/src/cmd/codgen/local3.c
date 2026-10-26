@@ -154,7 +154,7 @@ shincr(t, incr)
 {
 	if ((t & 0x30) != 0x10)
 		return 0;
-	t = (t >> 2 & ~0xF) | (t & 0xF);
+	t = ((unsigned)t >> 2 & ~0xF) | (t & 0xF);
 	if ((t & 0x30) == 0x10)
 		return incr == 2;		/* a pointer to a pointer (16 bit) */
 	switch (t) {

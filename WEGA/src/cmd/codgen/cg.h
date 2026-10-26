@@ -169,7 +169,7 @@ struct rs {
 	char kind;	/* 8: holds a symbol */
 	char busy;	/* use count */
 	long	off;		/* frame offset of the symbol it holds */
-	unsigned flags;		/* bit 15: ... */
+	int	flags;		/* bit 15: ... */
 	struct rs *next;
 	struct sym *sym;
 };

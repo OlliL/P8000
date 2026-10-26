@@ -104,7 +104,7 @@ clocal(p)
 			q = p->left;
 			if (q->op == PLUS) {
 				if (q->right->op == ICON) {
-					if (s->sclass == 9 && (s->sflags >> 3 & 1))
+					if (s->sclass == 9 && ((unsigned)s->sflags >> 3 & 1))
 						q->right->sname = fpsym2;
 					else
 						q->right->sname = fpsym1;
@@ -114,7 +114,7 @@ clocal(p)
 			break;
 		case 3:
 		case 6:
-			if (s->sflags >> 2 & 1)
+			if ((unsigned)s->sflags >> 2 & 1)
 				return p;
 			p->lval = 0;
 			p->rval = -(int)s->soffset;

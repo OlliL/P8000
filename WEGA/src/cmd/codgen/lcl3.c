@@ -11,7 +11,7 @@
 #include "cg.h"
 
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
-#define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
+#define DECREF(t)	((((t) >> 2) & ~0xF) | ((t) & 0xF))
 
 extern int cerror(), uerror();
 extern int deflab(), getlab();
@@ -30,7 +30,7 @@ extern long maxoff;
 extern char ifname[];
 extern struct rs *rsuse;
 extern struct sym *fpsym1, *fpsym2, *symtab0;
-extern struct tmpent { int off; char done; char cls; unsigned flags; int reg; } tmptab[];
+extern struct tmpent { int off; char done; char cls; int flags; int reg; } tmptab[];
 
 struct rv { struct sym *sym; int rtag; int rreg; int rtype; int rcls; };
 int nparmtab;			/* 0x8f98 */
