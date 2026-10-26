@@ -438,19 +438,13 @@ The corpus result did not change (70/100); the crashes are not caused by the ove
 
 ### codgen host version: corpus status (current)
 
-Result: 80 of 100 corpus cases identical to the original (`host_corp.sh`, scratch). 13 crash (SIGSEGV), 7 stop with
-"expression causes compiler loop" (exit 64). 0 cases with differing text and normal exit.
+`codgen` (non-SEG): 100 of 100 corpus cases identical to `/lib/codgen` (`host_corp.sh`, scratch). Last step: in `lcl3.c` the rewrite
+of `STREF` and `UAND` nodes (`mapregs`) copied only some fields of the replacement node; the original's overlaid `lval`/`rval` carry the
+operands `left`/`right` along by accident. The host copy now copies the whole node (`ncopy`). That removed all 20 failures.
 
-Host decisions made so far (functional equality; the original is undefined here):
-- `rweight[]` has 16 entries: 8..15 get their own numbers (the original reads past its 8 entries for register numbers 8..15).
-- `lcl3.c` `mapregs`-side check for `UAND`: a NAME without symbol is not a static (the original reads the flags at address 0).
-- Node fields `lval`/`left`, `sname`/`label`, `rval`/`right` are separate fields in the host copy (option A). No change in results.
+Corrections of earlier notes in this file:
+- `INCR`/`DECR` (`78`/`79`) are binary nodes (dope flags `0x9`): the step is the right subtree, not `rval`. The earlier "INCR is the cause"
+  was wrong; the cause was the incomplete copy above. The INCR rewrite in `reader3.c` is the original's and is not changed.
 
-The remaining 20 failures have one cause: the `INCR`/`DECR` rewrite in `reader3.c` (`case INCR`). The step is in `rval`, the rewritten
-binary node has no right operand; the original reads the step as a pointer (`right` and `rval` are one word). Tried:
-- right operand = `bcon(rval)` (a constant node of the step): 76 of 100, the rewrite then loops for 4 more cases (exit 64).
-  Not kept.
-- Not yet tried: the original's own rewrite of INCR in the disassembly (what the code after `p->op = PLUS` expects from the right operand),
-  and a functional test with a test program under the emulator for the INCR cases.
-
-Next: find what the original's code after the INCR rewrite expects (disassembly of the INCR case in `/lib/codgen`), then decide the host rule.
+`scodgen` (`-DSEG`): 46 of 100 identical (`host_scorp.sh`). Not yet analysed: 39 text differences with normal exit and 15 crashes. The
+SEG-specific code paths were never run in the host copy before. The copy change above raised the count from 26 to 46.

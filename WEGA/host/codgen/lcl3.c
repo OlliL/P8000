@@ -9,6 +9,7 @@
  * entries are word registers, the next ones float registers.
  */
 #include "cg.h"
+void ncopy(struct node *q, struct node *p);
 int findtemp(int tag);
 
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
@@ -390,11 +391,7 @@ void mapregs(struct node * p)
 		n = foldadd(p);
 		if (n == p)
 			return;
-		p->type = n->type;
-		p->op = n->op;
-		p->sname = n->sname;
-		p->lval = n->lval;
-		p->rval = n->rval;
+		ncopy(p, n);		/* the whole node, with its operands (the original copies the overlaid fields, which carry the operands) */
 		n->op = FREE;
 		return;
 	}
@@ -412,11 +409,7 @@ void mapregs(struct node * p)
 		m->op = FREE;
 		p->op = FREE;
 		n = m->left;
-		p->type = n->type;
-		p->op = n->op;
-		p->sname = n->sname;
-		p->lval = n->lval;
-		p->rval = n->rval;
+		ncopy(p, n);
 		n->op = FREE;
 		return;
 	}
