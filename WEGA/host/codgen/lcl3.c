@@ -480,6 +480,8 @@ void fixname(struct node * p)
 {
 	register int r;
 
+	if (p->sname == 0)	/* a label used as a NAME has no symbol (variant A) */
+		return;
 	r = (p->rall & 0x1000) ? p->rall & ~0x1000 : -1;
 	r = regforsym(r, p->sname, p->type, p->sname->soffset / 8);
 	if (r >= 0) {

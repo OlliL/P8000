@@ -446,5 +446,18 @@ Corrections of earlier notes in this file:
 - `INCR`/`DECR` (`78`/`79`) are binary nodes (dope flags `0x9`): the step is the right subtree, not `rval`. The earlier "INCR is the cause"
   was wrong; the cause was the incomplete copy above. The INCR rewrite in `reader3.c` is the original's and is not changed.
 
-`scodgen` (`-DSEG`): 46 of 100 identical (`host_scorp.sh`). Not yet analysed: 39 text differences with normal exit and 15 crashes. The
-SEG-specific code paths were never run in the host copy before. The copy change above raised the count from 26 to 46.
+`scodgen` (`-DSEG`): 100 of 100 corpus cases identical to `/lib/scodgen` (`host_scorp.sh`, scratch). An earlier run showed
+46 of 100 (15 crashes); that was an error of the test script, which copied the codgen corpus data (`.D`, `.S`) for the scodgen cases.
+With the corrected script both host versions are complete for the corpus.
+
+### Large corpus: source files of `src/cmd` and `src/lib` (scratch, `big_corp.sh`, `big_scorp.sh`)
+
+Each file: `cpp` and `cparse` (or `scparse`) of the original make the intermediate files; the original and the host code generator run on them.
+- `codgen`: 213 of 213 comparable files identical to `/lib/codgen`, after two host corrections found by this run:
+  `zzzcode` tested `sname->sclass` before `op == NAME` (an `OREG` has no symbol); `fixname` returns for a `NAME` without symbol (a label;
+  the original reads memory there; the five `doscopy` cases match the original with this rule). 3 files are not comparable: `cas/scanner.c`
+  needs the yacc output `y.tab.h` (not in the tree); `doscopy/dosdir.c` and `dosfat.c` fail in the original `cparse` itself.
+- `scodgen` (`-DSEG`): 209 of 213 identical; 4 text differences (`doscopy/1.3/dosdir.c`, `pburn/2.1|2.3|2.6/pb.cmdline.c`): the host prints
+  a `|` around `_stkseg+~L1` operands (`oregput`, the SEG branch with `bar`), the original does not. Cause not found. The union of `sname` and
+  `label` was tried (no change); the cause is not the field split.
+

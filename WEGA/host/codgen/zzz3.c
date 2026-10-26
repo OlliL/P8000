@@ -542,7 +542,7 @@ void zzzcode(register struct node *p, char c)
 				goto longreg;
 			}
 #endif
-			if (p->sname->sclass == 3 && p->op == NAME && !(p->sname->sflags >> 2 & 1) && p->rval >= 0) {
+			if (p->op == NAME && p->sname->sclass == 3 && !(p->sname->sflags >> 2 & 1) && p->rval >= 0) {	/* the symbol test only for NAME (OREG has none) */
 				if (szty(k) == 2) {
 					if (m == 2 || m == 12)
 						p->rval += 3;
