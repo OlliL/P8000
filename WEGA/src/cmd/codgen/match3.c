@@ -45,6 +45,13 @@ tshape(p, shape)
 		return shape & SNAME;
 	case ICON:
 		return shape & SCON;
+	case FLD:
+		if (!(shape & SFLD) || !ltypeop(p->left))
+			return 0;
+		fldsz = p->rval & 0x3F;
+		fldoff = p->rval >> 6;
+		fldshf = 16 - fldsz - (p->rval >> 6);
+		return 1;
 	case STAR:
 		return shumul(p->left) & shape;
 	case REG:
@@ -56,13 +63,6 @@ tshape(p, shape)
 		return shape & SOREG;
 	case CCODES:
 		return shape & SCC;
-	case FLD:
-		if (!(shape & SFLD) || !ltypeop(p->left))
-			return 0;
-		fldsz = p->rval & 0x3F;
-		fldoff = p->rval >> 6;
-		fldshf = 16 - fldsz - (p->rval >> 6);
-		return 1;
 	}
 	return 0;
 }

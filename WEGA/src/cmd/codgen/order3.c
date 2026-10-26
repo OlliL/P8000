@@ -50,8 +50,8 @@ void
 sucomp(p)
 	struct node *p;
 {
-	int o, arity, nr, nf, sul, sur, fl, fr, t;
-	struct node *l, *r;
+	register int o, arity, nr, nf, sul, sur, fl, fr, t;
+	register struct node *l, *r;
 
 	o = p->op;
 	arity = dope[o] & 0xE;

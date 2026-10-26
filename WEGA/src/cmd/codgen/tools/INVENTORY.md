@@ -16,11 +16,11 @@ Identical under metric strict-1 (the same instruction sequence, only addresses m
 
 ## Only D1-D14 (pattern-verified)
 
-199 functions: every differing instruction matches a D pattern (D1, D2, D3, D5, D6, D7, D8, D10, D11, D13). The order of the instructions is not part of this check. D4, D9, D12 and D14 are not separable by these patterns.
+202 functions: every differing instruction matches a D pattern (D1, D2, D3, D5, D6, D7, D8, D10, D11, D13). The order of the instructions is not part of this check. D4, D9, D12 and D14 are not separable by these patterns.
 
 ## D1-D14 and real differences
 
-7 functions with real differences (the D part is not separated from them): `acon`, `buildstar`, `clocal`, `expand`, `sucomp`, `tshape`, `zzzcode`
+4 functions with real differences (the D part is not separated from them): `clocal`, `sucomp`, `tshape`, `zzzcode`
 
 ## Real differences (findings)
 
@@ -30,22 +30,23 @@ Identical under metric strict-1 (the same instruction sequence, only addresses m
 - `fixfld-shift-01` (merged into shift-type-01): the original shifts the field value with srl, ours with sra
 - `shift-type-01` (fixed for ttype; the rest is shift-type-02): three functions shift a field value with srl (unsigned) in the original and with sra (signed) in ours
 - `mapnm-real-01` (analysed): pairing confirmed by strings; only 33 % of the instructions match; the statement order and the expressions differ (sdal / slal, the test order)
-- `buildstar-order-01` (open): only 50 % match; the if chains come in another order
-- `expand-loop-01` (open): the original reads *cp into a byte and dispatches through a table; ours tests *cp and then dispatches
+- `buildstar-order-01` (explained: layout): only 50 % match; the if chains come in another order
+- `expand-loop-01` (explained): the original reads *cp into a byte and dispatches through a table; ours tests *cp and then dispatches
 - `options-loop-01` (fixed (main3.c: register int i, err; 76 %, the rest D)): the loop variable is a register in the original and in memory in ours; the layout of the switch differs
 - `main-char-01` (checked): the original reads the input character as a byte; ours as int; the switch is a compare chain there (D6)
-- `tshape-order-01` (open: hypothesis rejected for SZERO): the call order special / shtemp / shumul / ltypeop differs; a long test is written differently (cpl and tcc in the original)
+- `tshape-order-01` (partly fixed): the call order special / shtemp / shumul / ltypeop differs; a long test is written differently (cpl and tcc in the original)
 - `efcode-shift-01` (checked): sdal (original) against slal (ours) for the same scaling of sz; the sequence of the additions differs
-- `sucomp-size-01` (open: hypothesis rejected): sucomp: 756 instructions against 684; the difference is in the body (not yet analysed)
+- `sucomp-size-01` (partly fixed): sucomp: 756 instructions against 684; the difference is in the body (not yet analysed)
 - `rsinsert-size-01` (analysed): rsinsert: 157 against 110; first tests equal, the difference is in the body (not yet analysed)
 - `rsmerge-size-01` (analysed): rsmerge: 225 against 159; not yet analysed
 - `tcmd-calls-01` (analysed): tcmd: the calls memname and getreg are arranged differently (not yet analysed)
-- `clocal-size-01` (open): clocal: 230 against 264; the difference is in the body (not yet analysed)
+- `clocal-size-01` (open): clocal: 230 against 264; block order of the NAME and SCONV branches (swap tried, rejected: alignment 47 -> 17 %)
 - `header-rdsym-01` (closed): the header comment of rdr3.c gives rdsym at 0x1a86; the body at 0x1aae matches (strings and calls); the comment must be corrected in the source (kind source)
-- `acon-tail-01` (open): the original shares the printf and the off: tail between the three L%d branches; ours has the call in each branch
+- `acon-tail-01` (explained): the original shares the printf and the off: tail between the three L%d branches; ours has the call in each branch
 - `main-wrapper-01` (analysed): the original crt0 calls 0x4868, which passes argc and argv to the body at 0x023c; ours calls the body directly
 - `lineout-type-01` (fixed (efcode3.c: long line -> int line; 100 % identical)): our lineout declares long line; the original takes int line (r7). main passes ifline (int) in r7 and ifname in r6. Ours reads the file from r5, so the file name
-- `shift-type-02` (fixed except zzzcode (order only)): the sign of a shift with a constant count differs (srl in the original, sra in ours, or the other way round): the variable shifted is unsigned in the original; 
+- `shift-type-02` (fixed except the order of zzzcode): the sign of a shift with a constant count differs (srl in the original, sra in ours, or the other way round): the variable shifted is unsigned in the original; 
+- `zzzcode-order-01` (open): block order: the block if (notoff(...)) order(r, STAREG) lies at another place (808 ours, 920 original); 96 differing blocks, 86 % aligned
 
 ## Limits
 
