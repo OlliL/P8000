@@ -125,9 +125,9 @@ the marks of D14 only: that is all that was checked for them.
 | codgen, scodgen | lcl3.c |  | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |
 | codgen, scodgen | tr3.c |  |  |  | x |  |  | x | ? |  |  |  |  |  |  | x |  |  |
 | codgen, scodgen | optim3.c |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| popt | z21.c (main..backjmp) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
-| popt | z22.c (rmove..natural) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
-| popt | z23.c (procopt..markregs) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |
+| popt | z21.c (main..backjmp) |  |  |  | x |  | x |  | x |  |  |  |  |  |  |  |  | x |
+| popt | z22.c (rmove..natural) |  | x |  | x | x | x |  |  |  |  |  |  |  |  |  | x | x |
+| popt | z23.c (procopt..markregs) |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  | x |
 
 The codgen / scodgen rows are the per-object marks of the D classes of the function findings (`src/cmd/codgen/tools/findings.json`, written by `classify.py`), completed by reading the disassembly where noted. `x` = seen in a function of the object; `?` = construct present, not separated. D12 (data order), D13 and D14 are not checked for codgen. D15 (block layout of if/else) is marked for `zzz3.c` and `tr3.c` only (the two functions `zzzcode` and `clocal`); the other objects are not checked for it. Open for codgen: `clocal` (D15), `zzzcode` (D15, partly), `sucomp` (`add` with a frame operand, D16), `tshape` (value form of the SZERO return; `and` with a frame operand, D16; the case order was checked: the current order is the best of seven; two `and rS,F` forms, see KNOWLEDGE.md); and 2 functions with a moved block that the source does not change (`expand` D7, `freereg` D7 goto placement; findings `expand-layout-01`, `freereg-layout-01`); `conval` was fixed by the case order of the comparisons (`optim3.c`, finding `conval-layout-01`); the 17 other length checks were explained by D patterns, see KNOWLEDGE.md.
 
@@ -582,6 +582,36 @@ The classifier verdict "D only (pattern-verified)" is a pattern verdict, not a p
   D2/D4/D5), `usesreg` (241 against 239, D4/D2), `oplook` (D1/D2), `codemove` (143 = 143, 75 equal), `repladdr` (109 against
   130, register variants tried, no gain: frame/scratch, D2/D4), `input` (130 against 125), `killreg` (135 against 136, 80 equal).
   Text size of the 68 functions: 608 bytes over the original.
+- `output` (179 against 210 instructions, 77 equal): classified as D6. The original indexes its jump table directly from the
+  operation value (`ld r2,%0016(r3)`), the shipped scc computes the index with `add`/`neg` and loads from the table (the form
+  described in `host/KNOWLEDGE.md`, D6). The bodies are in source order in both. No source change: the switch form is fixed by
+  the compiler, not by the source.
+- `memreg` (162 against 146, 58 equal): the register loops are the same; the difference is the address form of `regs[reg]` (the
+  original computes index times 32, then adds the base from its register; the shipped cc adds the constant base first, D5/D16).
+  Writing the access as `*(regs + reg)` gives the same code (58 equal). Classified, no source change.
+- Open items, classified in this round: `usesreg` (241 against 239, 159 equal): frame 6 bytes more (home slots of the three
+  register parameters, D4), scratch registers (D2). `killreg` (135 against 136, 80 equal): the array index form `sla`/`clrb`
+  and the jump table of the switch (D5, D6). `input` (130 against 125): the comparison chain of the switch (D6), the byte flag
+  `echo` (D8). `codemove` (143 = 143, 75 equal): three declaration orders tried, the parameter goes into another register
+  than in the original, the cause is not found yet (open, not classified).
+- Next group, classified (no source change): `setcc` (22 against 20): frame 6 against 4 (D4) and the scratch byte `rl4` against
+  `rl0` (D2). `dest` (32 against 33): scratch registers (`r1` against `r4`, D2) and the switch order of the value cases (D6).
+  `natural` (27 against 26): frame and loop layout (D4, D7). `itoa_` (26 against 27): scratch registers `r0`/`r2`/`r3` against
+  `r4`/`r5` (D2). `singop` (16 = 16, 8 equal): scratch byte `rl0` against `rl4` (D2). `statline` (17 = 17, 11 equal): frame
+  and the register parameter (D4, D16).
+- Batch of the remaining functions, classified (no source change): `cclook` (71 against 67, 17 equal): scratch registers for
+  the copy loop (`r1`/`r6` against `r4`/`r5`, D2). `rmove` (957 against 949, 397 equal): call forms (D17), saving of registers
+  (D1, D2). `opsetup` (40 against 35): scratch registers for the hash (D2), frame (D1). `absval` (12 against 9): argument
+  spill (D4). `procopt` (257 against 248): address form of local arrays (D5). `repladdr` (109 against 130): frame and scratch
+  (D2, D4). `regprefix` (17 against 18): string pointers loaded from data (`ld r2,%0800`), not yet assigned to D12/D13.
+- `codemove` (143 = 143, 75 equal), open: the parameter as register or not (73 or 75 equal), and the declaration orders tried so far
+  give no gain. Not classified yet.
+- `ovlap` (743 against 682, 93 equal), classified in part: the 19 copies have the same shape as in the original (outer loop over
+  `r`, inner compare, the table test at the end). Differences per copy: the scratch registers of the character loads (`rl3`
+  against `rl2`, D2) and the address of the pattern `b+1`, which the original keeps in a register (`ld r13,r12`) and we compute
+  with `lda` in each copy: the original keeps a value across statements (`lda` once, then `ld r13,r12`), which is closest to D3
+  (register contents kept), not proven; a test with a register variable `pat` changes the allocation of the whole function. A register `pat = b + 1` gives 726 instructions but only 84 equal:
+  not kept. Frame 26 against 54 bytes (D1, D4). Status: mostly D, the address form not yet proven.
   Function order: the 68 confirmed functions are in the same order as in the original (`findings.json`, key
   `order_original`). The three source files keep their link order (z21, z22, z23) and the definitions inside each file
   follow the original; global declarations stay at the top of their file in their order, prototypes were added for

@@ -1754,7 +1754,7 @@ compares output, exit code and every file afterwards: all identical.
 - Compare method: `tools/cmpins.py` on the own code (0x42 up to the first libc member at 0x1db8), then
   `cmp` of the whole file. Differences in the data section show up as shifted string addresses.
 - String pool order is the order of the strings in the source, but `popt` moves code blocks
-  (`codemove` in `host/popt/z21.c`: a `jr` to a block that is preceded by an unconditional jump or
+  (`codemove` in `src/cmd/popt/z21.c`: a `jr` to a block that is preceded by an unconditional jump or
   `ret` is replaced by the block itself; loop inversion). So the code order of the original can differ
   from the source order. Use the string addresses to recover the lexical order: in `readarchiv` and
   `writearchiv` the "change error-disk" / "format error-disk" blocks stand before the read/write in
@@ -1771,13 +1771,18 @@ compares output, exit code and every file afterwards: all identical.
 
 ## popt (C optimizer, /lib/popt)
 
-`popt/` is a portable C decompilation of the shipped /lib/popt (and, with `-DSPOPT`, of /lib/spopt: `make` builds `popt` and `spopt`) (written from the binary only,
-not from Plexus c2). Modules like the original: z20 tables, z21 (input/output, jump optimizations),
-z22 (rmove: register contents tracking, redundant loads, push/pop, shifts), z23 (isused liveness
-and `stripldm` register renaming). Verified byte-identical (output, `-l`, `-d` incl. statistics)
-against the original run in z8k-emu on 174 compiler outputs of the WEGA sources plus ~200 other .s
-files: `make -C popt check WEGA=<tree> CORPUS=<dir>` (`popt/corpus.sh` builds the corpus; the corpus
-is compiler output and is not kept in git). Details and reproduced quirks: `popt/NOTES.md`.
+Source: `src/cmd/popt/` (K&R, modules z20.c, z21.c, z22.c, z23.c, as in the original; z20 tables, z21 input/output and jump
+optimizations, z22 rmove and the register tables, z23 isused, usesreg, procopt). Written from the binary, not from Plexus c2.
+Status (2026-10-27): NOT byte-identical yet. Measured against the original in z8k-emu:
+- Corpus (`cmp.sh`, 816 comparisons): 813 identical; the 3 differences are the `-d` K core line (program size), not the output.
+- Function level: 68 of 75 functions are paired with the original; 3 are byte-identical (`dumpnodes`, `clearreg`, `comjump`).
+  Remaining text is 608 bytes larger than the original (the 68 functions, sum of the instruction ranges).
+- The differences are classified per function in `src/TODO.md` (D1, D2, D4, D5, D6, D7, D8, D16, D17), and as findings in
+  `src/cmd/popt/tools/findings.json` (popt-01 .. popt-33; open: popt-29 text sum, popt-30 codemove, popt-31 regprefix,
+  popt-32 ovlap, popt-33 call forms = D17). `FINDINGS.md` is generated from findings.json.
+- Open items that need the old compiler: D2, D4, D5, D6, D16 per function, and the call form D17.
+Reproduced quirks: singop reads address 0 when a node has no operand text; conloc is 20 bytes and overwritten into the
+counters ndirect, nbrbr; movedat clears nothing; fixldm uses strrchr. See the table "Bugs and quirks of the originals".
 
 ## cc (compiler driver, /bin/cc)
 

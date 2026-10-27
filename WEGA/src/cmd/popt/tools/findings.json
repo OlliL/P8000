@@ -1234,35 +1234,33 @@
    "candidates": [
     {
      "orig": "0x24f6",
-     "similarity_pct": 27.4
+     "similarity_pct": 31.0
     },
     {
-     "orig": "0x0630",
-     "similarity_pct": 19.0
+     "orig": "0x32f0",
+     "similarity_pct": 26.9
     },
     {
-     "orig": "0x2352",
-     "similarity_pct": 18.5
+     "orig": "0x0964",
+     "similarity_pct": 23.0
     }
    ],
    "rating": "confirmed by call graph: unique start that agrees with its confirmed neighbours in both directions (start not taken by another confirmed function)",
    "audit": {
-    "d_normalised_pct": 46,
-    "pattern_diff": 39,
+    "d_normalised_pct": 78,
+    "pattern_diff": 15,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D13",
      "D2",
-     "D3",
      "D7",
      "D8"
     ],
     "structure_flags": [],
-    "len_ours": 37,
+    "len_ours": 35,
     "len_orig": 36
    },
    "review": "pattern only: not inspected (alignment 46 %)"
@@ -2194,22 +2192,22 @@
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
-     "orig": "0x36a6",
-     "similarity_pct": 45.2
+     "orig": "0x32f0",
+     "similarity_pct": 30.8
     },
     {
-     "orig": "0x5472",
-     "similarity_pct": 40.0
+     "orig": "0x2cd8",
+     "similarity_pct": 23.0
     },
     {
-     "orig": "0x5458",
-     "similarity_pct": 40.0
+     "orig": "0x3362",
+     "similarity_pct": 22.6
     }
    ],
    "rating": "confirmed by call order in rmove: between savereg and ccinval as ours; calls natural (0x3396); 32 against 56 instructions (open difference)",
    "audit": {
-    "d_normalised_pct": 31,
-    "pattern_diff": 29,
+    "d_normalised_pct": 82,
+    "pattern_diff": 11,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2217,12 +2215,10 @@
     "d_classes": [
      "D1",
      "D2",
-     "D3",
-     "D7",
-     "D8"
+     "D3"
     ],
     "structure_flags": [],
-    "len_ours": 17,
+    "len_ours": 33,
     "len_orig": 32
    },
    "review": "pattern only: alignment 20 %, verdict not supported"
@@ -3364,6 +3360,102 @@
    "ours": "z21.c getch (function) and its three calls in getln",
    "summary": "the original has no getch function: getln reads with getc inline; ours calls the function getch, which calls getc",
    "done": "getch removed; getln calls getc(stdin) directly; getln 37 of 81 instructions equal (was 25); corpus 813 of 816 (K core line only; corpus rebuilt in tmp/tmp/popt/corpus)"
+  },
+  {
+   "id": "popt-26",
+   "status": "fixed",
+   "functions": [
+    "ovlap",
+    "scan"
+   ],
+   "orig": "0x3c5a (scan body inline 19 times)",
+   "ours": "z23.c ovlap (scan removed, loop inline per site)",
+   "summary": "the original has no scan function; the scan loop is copied at each of the 19 call sites of ovlap",
+   "done": "scan removed from z23.c, loop written inline at each site with register variables; corpus 813 of 816 (only the -d K core line)",
+   "decide": "none; the shape of the copies still differs (frame, register choice, address of the pattern kept in a register)"
+  },
+  {
+   "id": "popt-27",
+   "status": "fixed",
+   "functions": [
+    "all 68 confirmed"
+   ],
+   "orig": "findings order_original",
+   "summary": "function order in the binary differed from the original (275 pairs inverted)",
+   "done": "definitions reordered inside z21/z22/z23 to the original order; global declarations kept at the top; prototypes added where a function is used before its definition; corpus 813 of 816",
+   "decide": "none"
+  },
+  {
+   "id": "popt-28",
+   "status": "partly fixed",
+   "functions": [
+    "z20",
+    "z21",
+    "z22",
+    "z23"
+   ],
+   "orig": "data: @[$]zNN.c SCCS strings at the start of each file data",
+   "summary": "the original data holds the SCCS identification of each file (name, version, date); the sources had none",
+   "done": "each file has its sccsid string as first data item (same bytes); data layout otherwise not checked; the -d K core line still differs (size of the whole program)",
+   "decide": "none; the K core difference is the size of the whole program (see popt-29)"
+  },
+  {
+   "id": "popt-29",
+   "status": "open",
+   "functions": [
+    "all"
+   ],
+   "orig": "text 17400 bytes for the 68 functions",
+   "summary": "text of the 68 functions is 608 bytes larger than the original (1386 at the start of the step)",
+   "done": "classified per function in TODO.md: D1, D2, D4, D5, D6, D7, D8, D16, D17; the sum is not yet split by class",
+   "decide": "after the old compiler is reconstructed, or by splitting the sum per class"
+  },
+  {
+   "id": "popt-30",
+   "status": "open",
+   "functions": [
+    "codemove"
+   ],
+   "orig": "0x1102",
+   "ours": "z21.c codemove",
+   "summary": "the parameter goes into another register than in the original; declaration orders and the parameter as register tried, 73 to 75 equal",
+   "done": "no source change found",
+   "decide": "not classified yet"
+  },
+  {
+   "id": "popt-31",
+   "status": "open",
+   "functions": [
+    "regprefix"
+   ],
+   "orig": "0x2df8",
+   "ours": "z22.c regprefix",
+   "summary": "the original loads string pointers from a table (ld r2,%0800); the table is not the string table (checked at 0x800 in the binary)",
+   "done": "nothing changed",
+   "decide": "D12 or D13 unconfirmed"
+  },
+  {
+   "id": "popt-32",
+   "status": "open",
+   "functions": [
+    "ovlap"
+   ],
+   "orig": "0x3c5a..0x432c",
+   "ours": "z23.c ovlap",
+   "summary": "ovlap is 743 instructions against 682; the copies differ in register choice (D2), frame (D1, D4) and in keeping the pattern address in a register (closest to D3, not proven)",
+   "done": "goto variant (211 instructions, 56 equal) and a pattern variable (726, 84 equal) tried; not kept",
+   "decide": "needs the old compiler (D3 test)"
+  },
+  {
+   "id": "popt-33",
+   "status": "open",
+   "functions": [
+    "all 68 confirmed"
+   ],
+   "orig": "call forms of the original",
+   "summary": "the original calls global functions with call even inside one object file (D17); 51 of 68 functions agree with the storage class in our sources",
+   "done": "recorded as D17 in host/KNOWLEDGE.md and as column in TODO.md",
+   "decide": "none within the file split (see D17)"
   }
  ],
  "manual": [],
@@ -3711,5 +3803,202 @@
    "orig": "0x432c",
    "file": "z23.c"
   }
- ]
+ ],
+ "manual_classes": {
+  "opsetup": {
+   "d_classes": [
+    "D1",
+    "D2"
+   ],
+   "basis": "read",
+   "note": "hash scratch registers r0/r4 (D2), frame size (D1)"
+  },
+  "singop": {
+   "d_classes": [
+    "D2"
+   ],
+   "basis": "read",
+   "note": "scratch byte rl0 against rl4, register of the source pointer (D2)"
+  },
+  "comjump": {
+   "d_classes": [],
+   "basis": "measured",
+   "note": "byte-identical (measure.py); no class needed"
+  },
+  "clearreg": {
+   "d_classes": [],
+   "basis": "measured",
+   "note": "byte-identical (measure.py); no class needed"
+  },
+  "dumpnodes": {
+   "d_classes": [],
+   "basis": "measured",
+   "note": "byte-identical with the frame operand form masked (@r15 against 0(r15), D16)"
+  },
+  "ilen": {
+   "d_classes": null,
+   "basis": "open",
+   "note": "call forms (D17), register and frame differences; not classified as a whole"
+  },
+  "codemove": {
+   "d_classes": null,
+   "basis": "open",
+   "note": "parameter in another register than in the original; not classified (popt-30)"
+  },
+  "ovlap": {
+   "d_classes": null,
+   "basis": "open",
+   "note": "copies of the scan loop: scratch registers (D2), frame (D1, D4), pattern address (D3 likely, not proven) (popt-32)"
+  },
+  "regprefix": {
+   "d_classes": null,
+   "basis": "open",
+   "note": "string pointers loaded from data; D12 or D13 not confirmed (popt-31)"
+  },
+  "usesreg": {
+   "d_classes": [
+    "D2",
+    "D4"
+   ],
+   "basis": "read",
+   "note": "home slots of the register parameters (D4), scratch registers (D2)"
+  },
+  "killreg": {
+   "d_classes": [
+    "D5",
+    "D6"
+   ],
+   "basis": "read",
+   "note": "array index form (D5), jump table of the switch (D6)"
+  },
+  "input": {
+   "d_classes": [
+    "D4",
+    "D6",
+    "D8"
+   ],
+   "basis": "read",
+   "note": "comparison chain of the switch (D6), byte flag echo (D8), frame (D4)"
+  },
+  "output": {
+   "d_classes": [
+    "D6"
+   ],
+   "basis": "read",
+   "note": "jump table indexed directly by the original (D6)"
+  },
+  "memreg": {
+   "d_classes": [
+    "D2",
+    "D4",
+    "D5"
+   ],
+   "basis": "read",
+   "note": "scratch registers, home slots, address form of regs[reg] (D5)"
+  },
+  "procopt": {
+   "d_classes": [
+    "D5"
+   ],
+   "basis": "read",
+   "note": "address form of local arrays with a register index (D5)"
+  },
+  "setcc": {
+   "d_classes": [
+    "D2",
+    "D4"
+   ],
+   "basis": "read",
+   "note": "frame 6 against 4 bytes (D4), scratch byte rl4 against rl0 (D2)"
+  },
+  "natural": {
+   "d_classes": [
+    "D4",
+    "D7"
+   ],
+   "basis": "read",
+   "note": "frame and loop layout"
+  },
+  "itoa_": {
+   "d_classes": [
+    "D2"
+   ],
+   "basis": "read",
+   "note": "scratch registers r0/r2/r3 against r4/r5"
+  },
+  "absval": {
+   "d_classes": [
+    "D4"
+   ],
+   "basis": "read",
+   "note": "argument spilled to the frame by ours (D4)"
+  },
+  "reverse": {
+   "d_classes": [
+    "D2"
+   ],
+   "basis": "read",
+   "note": "temporaries in other scratch registers"
+  },
+  "rmove": {
+   "d_classes": [
+    "D17",
+    "D1",
+    "D2"
+   ],
+   "basis": "read",
+   "note": "call forms (D17), register saving and frame (D1, D2)"
+  },
+  "cclook": {
+   "d_classes": [
+    "D2"
+   ],
+   "basis": "read",
+   "note": "scratch registers of the copy loop"
+  },
+  "repladdr": {
+   "d_classes": [
+    "D2",
+    "D4"
+   ],
+   "basis": "read",
+   "note": "frame and scratch registers"
+  },
+  "statline": {
+   "d_classes": [
+    "D4",
+    "D16"
+   ],
+   "basis": "read",
+   "note": "register parameter home slot (D4), frame operand form (D16)"
+  },
+  "dest": {
+   "d_classes": [
+    "D2",
+    "D6"
+   ],
+   "basis": "read",
+   "note": "scratch registers (D2), order of the value cases (D6)"
+  },
+  "fixldm": {
+   "d_classes": [
+    "D1",
+    "D4"
+   ],
+   "basis": "read",
+   "note": "frame; no register variant helped"
+  },
+  "findword": {
+   "d_classes": [],
+   "basis": "read",
+   "note": "open: 18 equal with register n, length 33 against 31"
+  },
+  "equstr": {
+   "d_classes": [
+    "D2"
+   ],
+   "basis": "read",
+   "note": "scratch registers r1/r3 against r4/r6"
+  }
+ }
 }
