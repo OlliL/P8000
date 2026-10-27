@@ -84,29 +84,29 @@ char **argv;
 			maxiter = niter;
 	} while (isend);
 	if (nflag) {
-		statline(maxiter, "iterations");
-		statline(nrevbr, "branches reversed");
-		statline(nclr, "clears \"simpilified\"");
-		statline(ncmot, "code motions");
-		statline(ncomj, "common seqs before jp's");
-		statline(nxjump, "cross-jumps");
-		statline(nsob, "djnz's added");
-		statline(iaftbr, "inst. after jumps");
-		statline(njp1, "jumps to .+2");
-		statline(nbrbr, "jumps to jumps");
-		statline(nlda, "lda + ld modified");
-		statline(loopiv, "loops inverted");
-		statline(ndirect, "operations made more direct");
-		statline(npushpop, "push and pops generated");
-		statline(npushdirect, "push/pop's made more direct");
-		statline(nredunj, "redundant jumps");
-		statline(nrlab, "redundant labels");
-		statline(redunm, "redundant ld's");
-		statline(nrtst, "redundant test's");
-		statline(nrename, "registers renamed");
-		statline(nshft, "shifts modified");
-		statline(nsaddr, "simplified addresses");
-		statline(nskip, "skips over jumps");
+		statline("iterations", maxiter);
+		statline("branches reversed", nrevbr);
+		statline("clears \"simpilified\"", nclr);
+		statline("code motions", ncmot);
+		statline("common seqs before jp's", ncomj);
+		statline("cross-jumps", nxjump);
+		statline("djnz's added", nsob);
+		statline("inst. after jumps", iaftbr);
+		statline("jumps to .+2", njp1);
+		statline("jumps to jumps", nbrbr);
+		statline("lda + ld modified", nlda);
+		statline("loops inverted", loopiv);
+		statline("operations made more direct", ndirect);
+		statline("push and pops generated", npushpop);
+		statline("push/pop's made more direct", npushdirect);
+		statline("redundant jumps", nredunj);
+		statline("redundant labels", nrlab);
+		statline("redundant ld's", redunm);
+		statline("redundant test's", nrtst);
+		statline("registers renamed", nrename);
+		statline("shifts modified", nshft);
+		statline("simplified addresses", nsaddr);
+		statline("skips over jumps", nskip);
 		fprintf(stderr, "%dK core\n", (int)(((heaplim + 0x3ff) >> 10) & 0x3f));
 	}
 	exit(0);
@@ -114,9 +114,9 @@ char **argv;
 }
 
 static void
-statline(n, s)
-int n;
+statline(s, n)
 char *s;
+int n;
 {
 	if (n) {
 		fprintf(stderr, "%d ", n);

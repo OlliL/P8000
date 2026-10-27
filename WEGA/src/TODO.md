@@ -736,5 +736,24 @@ popt corpus after the allocator change (`tmp/tmp/popt/run/cmp.sh`): 814 of 816 i
 (sbrk(2) in main) is the end of data+bss, which is 0x7148 in the original and 0x7bf4 in ours (program size). Correction: the original DOES reset
 the heap in main (inline: heapcur = base); the earlier statement that it does not was wrong. The original's base is the break from sbrk(2).
 Also found: the original main calls setbuf (0x4c62, oldlibc setbuf 0_1) before the heap start; our main does not (open difference).
+main, analysis before any edit (after masking all absolute addresses: 101 of 196 instructions equal). Differences:
+- D-classes: entry (`dec #12` and `ldm` against `dec #14` and `ldl`, the register set), reloads from the frame, `ldk r13,#0` against a
+  frame clear: D1, D2, D3.
+- Structure, source level: (1) the original calls `setbuf` (0x4c62, oldlibc setbuf 0_1) before the heap start; ours does not. (2) the
+  output loop is the separate function 0x0610 in the original (it calls 0x06ba = output for each node); ours loops in `main`. (3) argument
+  order of `statline`: the original passes the text in r7 and the number in r6 (statline 0x0322 tests r6 first), ours passes the number
+  first; the signature of `statline` in the original is `(s, n)`, to be checked against the other calls. (4) `sra` against `srl`: the
+  original's `heaplim` expression is signed (`int`), ours `unsigned short`.
+- The `-d` line of the corpus (K core) follows from (4) only in form; the value differs by the program layout (see above).
+Order of the functions to be worked through (proposal, no edits yet): 1 statline (argument order), 2 main (setbuf, output loop as its own
+function, heaplim type), 3 itoa_ (reversal as a separate function), 4 copy and setcc (inline strlen and strcpy), 5 equop (inline compare),
+6 fixldm (strchr against strrchr: owner decision first), 7 isreg, rename_regs, scan (ctype table: compare the table first), 8 the functions
+without own start in the original (allocnode, clearmem, newcode1, getch, hashname) as inline code or macros, 9 ovlap and usesreg (scan inline,
+one dualop call more), 10 procopt (inline clear loops), 11 opsetup (inline hash), 12 ilen (order of five instructions), 13 open: ccinval,
+findlong. The D-only functions need no source change.
+Step 1 of the order done: `statline`. The original is `statline(s, n)`: it tests `n` first (r6), prints `%d ` with `n` and then `%s\n` with
+`s`; the text is passed in r7, the number in r6. Ours was `statline(n, s)` with the same body. Changed: signature `statline(s, n)` and the 23
+calls of `main` now pass the text first (z21.c; the old version is in `tmp/tmp/popt/z21.c.before_statline`). Compared after masking: the two
+fprintf calls and the test are the same; the rest is register and frame use (D1 to D3). Corpus result: see the next entry.
 Byte identity: not reached for any function yet. Next: `absval`, `equstr` (small), then the functions with 50 % to 60 %.
 

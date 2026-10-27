@@ -13,7 +13,7 @@
   "main": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x002a-0x02c8",
+   "ours": "0x002a-0x02da",
    "orig": "0x002a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -50,7 +50,7 @@
   "statline": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x02c8-0x02f4",
+   "ours": "0x02da-0x0306",
    "orig": "0x0322",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -89,7 +89,7 @@
   "input": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x02f4-0x04e2",
+   "ours": "0x0306-0x04f4",
    "orig": "0x0358",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -135,7 +135,7 @@
   "jswcheck": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x04e2-0x0556",
+   "ours": "0x04f4-0x0568",
    "orig": "0x02c8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -178,7 +178,7 @@
   "getch": {
    "file": "z21.c",
    "pairing": "open",
-   "ours": "0x0556-0x0580",
+   "ours": "0x0568-0x0592",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -201,7 +201,7 @@
   "getln": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0580-0x0630",
+   "ours": "0x0592-0x0642",
    "orig": "0x04d6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -245,7 +245,7 @@
   "getnum": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0630-0x0688",
+   "ours": "0x0642-0x069a",
    "orig": "0x05d2",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -291,7 +291,7 @@
   "output": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0688-0x098c",
+   "ours": "0x069a-0x099e",
    "orig": "0x06ba",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -340,7 +340,7 @@
   "prefix": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x098c-0x0a3c",
+   "ours": "0x099e-0x0a4e",
    "orig": "0x0630",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -386,7 +386,7 @@
   "copy": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0a3c-0x0ad6",
+   "ours": "0x0a4e-0x0ae8",
    "orig": "0x0964",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -432,7 +432,7 @@
   "hashname": {
    "file": "z21.c",
    "pairing": "open",
-   "ours": "0x0ad6-0x0b30",
+   "ours": "0x0ae8-0x0b42",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -454,7 +454,7 @@
   "opsetup": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0b30-0x0b84",
+   "ours": "0x0b42-0x0b96",
    "orig": "0x09ec",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -491,7 +491,7 @@
   "cclook": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0b84-0x0c58",
+   "ours": "0x0b96-0x0c6a",
    "orig": "0x0a44",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -537,7 +537,7 @@
   "oplook": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0c58-0x0e1e",
+   "ours": "0x0c6a-0x0e30",
    "orig": "0x0b02",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -583,7 +583,7 @@
   "refcount": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0e1e-0x105a",
+   "ours": "0x0e30-0x106c",
    "orig": "0x0ca0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -628,7 +628,7 @@
   "iterate": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x105a-0x130e",
+   "ours": "0x106c-0x1320",
    "orig": "0x0e1a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -675,7 +675,7 @@
   "xjump": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x130e-0x13c2",
+   "ours": "0x1320-0x13d4",
    "orig": "0x100e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -718,7 +718,7 @@
   "insertl": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x13c2-0x147c",
+   "ours": "0x13d4-0x148e",
    "orig": "0x108c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -762,7 +762,7 @@
   "codemove": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x147c-0x1774",
+   "ours": "0x148e-0x1786",
    "orig": "0x1102",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -808,7 +808,7 @@
   "comjump": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x1774-0x17ec",
+   "ours": "0x1786-0x17fe",
    "orig": "0x12e6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -850,7 +850,7 @@
   "backjmp": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x17ec-0x1890",
+   "ours": "0x17fe-0x18a2",
    "orig": "0x133c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -892,7 +892,7 @@
   "clearmem": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x1890-0x18b8",
+   "ours": "0x18a2-0x18ca",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -915,7 +915,7 @@
   "alloc": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x18f6-0x1950",
+   "ours": "0x1908-0x1966",
    "orig": "0x2476",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -962,7 +962,7 @@
   "heapreset": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x1950-0x1958",
+   "ours": "0x1966-0x1970",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -985,7 +985,7 @@
   "allocnode": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x1958-0x199c",
+   "ours": "0x1970-0x197a",
    "orig": null,
    "level": null,
    "note": "original allocnode 0x2476 is a bump allocator on the pointer at 0x163c (limit 0x163e, growth 0x7d0 via 0x5564); ours uses zalloc (malloc) for the memory and keeps the bump only for the statistics (heaplim)",
@@ -1030,7 +1030,7 @@
   "nonlab": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x199c-0x19cc",
+   "ours": "0x197a-0x19aa",
    "orig": "0x244e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1071,7 +1071,7 @@
   "decref": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x19cc-0x1a06",
+   "ours": "0x19aa-0x19e4",
    "orig": "0x2416",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1111,7 +1111,7 @@
   "equstr": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1a06-0x1a38",
+   "ours": "0x19e4-0x1a16",
    "orig": "0x3340",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1154,7 +1154,7 @@
   "absval": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1a38-0x1a50",
+   "ours": "0x1a16-0x1a2e",
    "orig": "0x23a0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1194,7 +1194,7 @@
   "equop": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1a50-0x1aca",
+   "ours": "0x1a2e-0x1aa8",
    "orig": "0x23b4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1238,7 +1238,7 @@
   "clearreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1aca-0x1af4",
+   "ours": "0x1aa8-0x1ad2",
    "orig": "0x24d4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1281,7 +1281,7 @@
   "savereg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1af4-0x1b6c",
+   "ours": "0x1ad2-0x1b4a",
    "orig": "0x24f6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1324,7 +1324,7 @@
   "findreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1b6c-0x1bd2",
+   "ours": "0x1b4a-0x1bb0",
    "orig": "0x255a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1370,7 +1370,7 @@
   "findbyte": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1bd2-0x1c08",
+   "ours": "0x1bb0-0x1be6",
    "orig": "0x25b6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1410,7 +1410,7 @@
   "findword": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1c08-0x1c74",
+   "ours": "0x1be6-0x1c52",
    "orig": "0x25f4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1452,7 +1452,7 @@
   "findlong": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1c74-0x1cea",
+   "ours": "0x1c52-0x1cc8",
    "orig": "0x2656",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1493,7 +1493,7 @@
   "findcopy": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1cea-0x1d38",
+   "ours": "0x1cc8-0x1d16",
    "orig": "0x26c2",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1536,7 +1536,7 @@
   "memreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1d38-0x1f5e",
+   "ours": "0x1d16-0x1f3c",
    "orig": "0x270e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1584,7 +1584,7 @@
   "setreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1f5e-0x204e",
+   "ours": "0x1f3c-0x202c",
    "orig": "0x28ae",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1628,7 +1628,7 @@
   "makereg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x204e-0x20e4",
+   "ours": "0x202c-0x20c2",
    "orig": "0x2988",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1672,7 +1672,7 @@
   "dest": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x20e4-0x2148",
+   "ours": "0x20c2-0x2126",
    "orig": "0x29f4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1716,7 +1716,7 @@
   "killreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2148-0x2312",
+   "ours": "0x2126-0x22f0",
    "orig": "0x2a46",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1759,7 +1759,7 @@
   "cleargroup": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2312-0x2354",
+   "ours": "0x22f0-0x2332",
    "orig": "0x2c16",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1803,7 +1803,7 @@
   "singop": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2354-0x237a",
+   "ours": "0x2332-0x2358",
    "orig": "0x2c4a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1847,7 +1847,7 @@
   "dualop": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x237a-0x23f2",
+   "ours": "0x2358-0x23d0",
    "orig": "0x2c72",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1891,7 +1891,7 @@
   "findslot": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x23f2-0x2448",
+   "ours": "0x23d0-0x2426",
    "orig": "0x2cd8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1937,7 +1937,7 @@
   "isreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2448-0x2512",
+   "ours": "0x2426-0x24f0",
    "orig": "0x2d22",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1981,7 +1981,7 @@
   "ccinval": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2512-0x2528",
+   "ours": "0x24f0-0x2506",
    "orig": "0x2dda",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2020,7 +2020,7 @@
   "regprefix": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2528-0x2558",
+   "ours": "0x2506-0x2536",
    "orig": "0x2df8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2061,7 +2061,7 @@
   "repladdr": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2558-0x26d2",
+   "ours": "0x2536-0x26b0",
    "orig": "0x2e2c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2105,7 +2105,7 @@
   "movedat": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x26d2-0x28b2",
+   "ours": "0x26b0-0x2890",
    "orig": "0x2fc8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2150,7 +2150,7 @@
   "redunbr": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x28b2-0x2998",
+   "ours": "0x2890-0x2976",
    "orig": "0x30ec",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2193,7 +2193,7 @@
   "findcon": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2998-0x29e4",
+   "ours": "0x2976-0x29c2",
    "orig": "0x3196",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2233,7 +2233,7 @@
   "compare": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x29e4-0x2b5c",
+   "ours": "0x29c2-0x2b3a",
    "orig": "0x31ec",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2279,7 +2279,7 @@
   "setcon": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2b5c-0x2c0e",
+   "ours": "0x2b3a-0x2bec",
    "orig": "0x32f0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2326,7 +2326,7 @@
   "setcc": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2c0e-0x2c30",
+   "ours": "0x2bec-0x2c0e",
    "orig": "0x3362",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2369,7 +2369,7 @@
   "natural": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2c30-0x2c74",
+   "ours": "0x2c0e-0x2c52",
    "orig": "0x3396",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2412,7 +2412,7 @@
   "jumpsw": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2c74-0x2da4",
+   "ours": "0x2c52-0x2d82",
    "orig": "0x207e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2458,7 +2458,7 @@
   "shortjump": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2da4-0x2ebc",
+   "ours": "0x2d82-0x2e9a",
    "orig": "0x213c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2503,7 +2503,7 @@
   "toofar": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2ebc-0x2f06",
+   "ours": "0x2e9a-0x2ee4",
    "orig": "0x21fe",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2545,7 +2545,7 @@
   "ilen": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2f06-0x3052",
+   "ours": "0x2ee4-0x3030",
    "orig": "0x224c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2586,7 +2586,7 @@
   "adrlen": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x3052-0x308e",
+   "ours": "0x3030-0x306c",
    "orig": "0x2352",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2629,7 +2629,7 @@
   "newcode1": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x308e-0x30a2",
+   "ours": "0x306c-0x3080",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -2652,7 +2652,7 @@
   "rmove": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x30a2-0x4052",
+   "ours": "0x3080-0x4030",
    "orig": "0x13b6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2704,7 +2704,7 @@
   "itoa_": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4052-0x40ec",
+   "ours": "0x4030-0x40ca",
    "orig": "0x3c06",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2749,7 +2749,7 @@
   "scan": {
    "file": "z23.c",
    "pairing": "open",
-   "ours": "0x40ec-0x416e",
+   "ours": "0x40ca-0x414c",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -2774,7 +2774,7 @@
   "ovlap": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x416e-0x4462",
+   "ours": "0x414c-0x4440",
    "orig": "0x3c5a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2822,7 +2822,7 @@
   "usesreg": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4462-0x4814",
+   "ours": "0x4440-0x47f2",
    "orig": "0x38d0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2871,7 +2871,7 @@
   "isused": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4814-0x48d8",
+   "ours": "0x47f2-0x48b6",
    "orig": "0x3838",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2916,7 +2916,7 @@
   "markregs": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x48d8-0x4a16",
+   "ours": "0x48b6-0x49f4",
    "orig": "0x432c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2964,7 +2964,7 @@
   "rename_regs": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4a16-0x4b78",
+   "ours": "0x49f4-0x4b56",
    "orig": "0x36d0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -3009,7 +3009,7 @@
   "fixldm": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4b78-0x4bfc",
+   "ours": "0x4b56-0x4bda",
    "orig": "0x37cc",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -3056,7 +3056,7 @@
   "procopt": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4bfc-0x4f58",
+   "ours": "0x4bda-0x4f36",
    "orig": "0x33d6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
