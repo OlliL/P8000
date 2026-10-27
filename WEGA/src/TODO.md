@@ -133,8 +133,22 @@ produce the same bytes with the shipped cc.
   cut of an unknown module.
 
 - sld libc modules CUT AND VERIFIED (`host/tools/unlink_seg.py`, the segmented version of unlink.py; `src/lib/oldslibc/`):
-  13 modules, each assembled with cas -u and its code bytes equal to sld (0 differing words, relocated words masked). Data not
-  yet. Open: the cross references are addresses (x<addr>), not yet symbols; the ld Makefile in `src/cmd/ld` is not written yet.
+  14 modules, each assembled with cas -u and its code bytes equal to sld (0 differing words, relocated words masked). Cross
+  references are symbols now (`_name`, `_fXXXX`), export labels also for calls from the own code. Data not yet compared.
+- sld own code CUT AND VERIFIED as one block (`src/cmd/ld/sld_own.s`, 0x0018..0x8680, 34408 bytes, 0 differing words).
+  Not split into modules yet. The own code has 348 direct and 58 indexed references into segment 1 (data) and 442 direct
+  references into segment 2 (bss). Their owners by data range vote (`src/cmd/ld/tools/own_functions.txt` lists functions;
+  the votes are not final): the vote shows the owner of the data, not of the code (global variables of one module are
+  used by another), so the code boundaries of the SCCS modules (scrt0, copyname, dump, ext, ld, ldm, printname, swap,
+  symbols, malloc) are still open.
+  Function boundaries: 94 functions (`src/cmd/ld/tools/own_functions.txt`): entries are the call targets and the proven
+  starts of the own code; no fall-through between them except 0x18 (ends with `sc`) and 0x85f8 (ends with `add`; its
+  `ret` is the first instruction of the shipped ffltioc at 0x8680). Entry 0x8000 is no function start (inner jump target).
+  Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
+  Open: the split into the module files (module order of the data SCCS strings is the link order, not checked against
+  the code); the start code 0x18 is not `/lib/scrt0.o` (same start, but `scrt0.o` has the word pair `5df8 0000` after the
+  first word that sld lacks, and its stack operands are 0x0004/0x0006 where sld has 0x7f04/0x7f06; see `host/KNOWLEDGE.md`). `src/cmd/ld/Makefile` builds the libc objects and `sld_own.o` (tested with the emulator).
+  The link is not done yet.
 
 ## Programs and libc versions
 

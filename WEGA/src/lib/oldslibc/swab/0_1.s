@@ -4,6 +4,7 @@
 
 _swab::
 	ret
+_f932e::
 	sub	r15,#%0014
 	ldm	_stkseg+10(r15),r9,#5
 	ldl	rr10,rr4
@@ -31,6 +32,7 @@ L9360:
 	ldm	r9,_stkseg+10(r15),#5
 	add	r15,#%0014
 	ret
+_f9376::
 	sub	r15,#%0012
 	ldm	_stkseg+10(r15),r10,#4
 	ld	|_stkseg+0|(r15),r5
@@ -50,6 +52,7 @@ L9394:
 	ldm	r10,_stkseg+10(r15),#4
 	add	r15,#%0012
 	ret
+_f93ac::
 	sub	r15,#%0018
 	ldm	_stkseg+12(r15),r8,#6
 	ldl	rr10,rr4
@@ -74,6 +77,7 @@ L93c8:
 	ldm	r8,_stkseg+12(r15),#6
 	add	r15,#%0018
 	ret
+_f93e8::
 	sub	r15,#%0016
 	ldm	_stkseg+12(r15),r9,#5
 	ld	r9,r3

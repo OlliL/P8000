@@ -322,6 +322,7 @@ _f903a::
 	ldm	r12,_stkseg+4(r15),#2
 	inc	r15,#8
 	ret
+_f9072::
 	sub	r15,#%0026
 	ldm	_stkseg+26(r15),r8,#6
 	ld	|_stkseg+0|(r15),r5
@@ -418,6 +419,7 @@ L9172:
 	ldm	r8,_stkseg+26(r15),#6
 	add	r15,#%0026
 	ret
+_f9184::
 	sub	r15,#%0016
 	ldm	_stkseg+10(r15),r8,#6
 	ldl	|_stkseg+0|(r15),rr6

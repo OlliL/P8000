@@ -90,6 +90,7 @@ _f952c::
 	ld	r2,r4
 	ret	nc
 	jp	_f971c
+_f953e::
 	dec	r15,#6
 	ld	_stkseg+4(r15),r13
 	ld	r13,r7
@@ -103,6 +104,7 @@ L9558:
 	ld	r13,_stkseg+4(r15)
 	inc	r15,#6
 	ret
+_f9564::
 	ldl	rr0,rr6
 	ld	r2,r5
 	xor	r4,r4
@@ -117,12 +119,14 @@ _f9576::
 	ld	r2,r4
 	ret	nc
 	jp	_f971c
+_f9586::
 	ldl	rr0,rr6
 	ld	r2,r5
 	sc	#%08
 	ld	r2,r4
 	ret	nc
 	jp	_f971c
+_f9596::
 	ld	r0,r7
 	ld	r1,r4
 	ld	r2,r5

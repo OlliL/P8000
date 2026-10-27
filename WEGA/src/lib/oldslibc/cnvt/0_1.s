@@ -9,6 +9,7 @@ _cnvt::
 	call	_f898e
 	ld	r0,r8
 	sc	#%01
+_f8a5c::
 	dec	r15,#14
 	ldm	_stkseg+6(r15),r10,#4
 	ldl	rr12,rr6
@@ -57,6 +58,7 @@ L8ac4:
 	ldm	r10,_stkseg+6(r15),#4
 	inc	r15,#14
 	ret
+_f8ad0::
 	sub	r15,#%0028
 	ldm	_stkseg+32(r15),r10,#4
 	ldm	|_stkseg+0|(r15),r2,#6

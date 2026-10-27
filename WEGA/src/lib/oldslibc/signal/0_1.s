@@ -12,6 +12,7 @@ _signal::
 	ld	r2,r4
 	ret	nc
 	jp	_f971c
+_f95c8::
 	ldl	rr0,rr6
 	ldl	rr2,rr4
 	xor	r4,r4
@@ -19,6 +20,7 @@ _signal::
 	ld	r2,r4
 	ret	nc
 	jp	_f971c
+_f95da::
 	ld	r0,r7
 	ld	r1,r4
 	ld	r2,r5
@@ -34,6 +36,7 @@ _f95ee::
 	ldl	rr2,rr4
 	jp	c,_f971c
 	ret
+_f95fe::
 	ldl	rr0,rr6
 	ld	r2,r5
 	ld	r3,r4
@@ -57,6 +60,7 @@ _f9622::
 	ldl	rr2,rr4
 	jp	c,_f971c
 	ret
+_f9638::
 	ld	r0,r7
 	cp	r0,#%0014
 	jp	ge,_f971c

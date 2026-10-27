@@ -50,6 +50,11 @@ def main():
             k, t = U.target_of(i)
             if i.mn in ('call', 'calr', 'jp') and k in ('abs', 'rel') and t is not None and 0x8680 <= t < 0x9800:
                 targets.add(t)
+    # calls from the own part of sld (0x18..0x8680, cut as sld_own.s) into the libc part need the same names
+    for pc, i in U.decode_range(prog, seg, 0x18, 0x8680):
+        k, t = U.target_of(i)
+        if i.mn in ('call', 'calr', 'jp') and k in ('abs', 'rel') and t is not None and 0x8680 <= t < 0x9800:
+            targets.add(t)
     names = {t: KNOWN.get(t, 'f%x' % t) for t in targets}
     # a module start carries the module name as its label (header of the .s file), callers must use the same
     names.update({a: name for name, a, _ in MODULES})
@@ -61,6 +66,12 @@ def main():
                 o = owner(t)
                 if o is not None and o != name:
                     exports.setdefault(o, {})[t] = names[t]
+    for pc, i in U.decode_range(prog, seg, 0x18, 0x8680):
+        k, t = U.target_of(i)
+        if i.mn in ('call', 'calr', 'jp') and k in ('abs', 'rel') and t is not None and 0x8680 <= t < 0x9800:
+            o = owner(t)
+            if o is not None:
+                exports.setdefault(o, {})[t] = names[t]
     extnames = {'0x%x' % t: n for t, n in names.items()}
     for name, a, b in MODULES:
         exp = exports.get(name, {})

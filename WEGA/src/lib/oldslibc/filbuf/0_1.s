@@ -6,6 +6,7 @@
 
 _filbuf::
 	ret
+_f8688::
 	dec	r15,#14
 	ldm	_stkseg+10(r15),r12,#2
 	ld	|_stkseg+6|(r15),r7
@@ -54,6 +55,7 @@ L86ee:
 	ldm	r12,_stkseg+10(r15),#2
 	inc	r15,#14
 	ret
+_f86fa::
 	dec	r15,#10
 	ldm	_stkseg+6(r15),r12,#2
 	ldl	rr12,rr6
@@ -170,6 +172,7 @@ L8802:
 	ldm	r12,_stkseg+6(r15),#2
 	inc	r15,#10
 	ret
+_f880e::
 	sub	r15,#%0018
 	ldm	_stkseg+12(r15),r8,#6
 	ld	|_stkseg+6|(r15),r7

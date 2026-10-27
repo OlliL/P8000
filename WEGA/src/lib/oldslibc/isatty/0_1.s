@@ -22,6 +22,7 @@ L920a:
 L920c:
 	inc	r15,#10
 	ret
+_f9210::
 	dec	r15,#16
 	ldm	_stkseg+8(r15),r10,#4
 	ldl	|_stkseg+0|(r15),rr6

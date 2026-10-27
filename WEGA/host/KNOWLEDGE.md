@@ -1,5 +1,8 @@
 # WEGA tool chain: what we know
 
+For the procedure of reconstructing a binary (function starts, libc cut, own code, C work file, findings,
+split, link) read `host/HOWTO_reconstruct.md` first. This file holds the facts.
+
 ## Directory layout
 
 - `WEGA/src/...`  WEGA source code, as it would sit in /usr/src of a WEGA
@@ -416,6 +419,25 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
 - **Not reproduced.** The original writes undefined data when no object was loaded at all (the table of segments is allocated with the
   first object: `gld libq.a` alone gives a header with segment number 127 and sizes of unrelated memory); the host stops with an error.
   The original hangs (or runs very long) when a single section comes near 64K (`gld` with one 60000 byte text); not investigated.
+
+### sld: cut of the original (2026-10-27)
+
+- `/bin/sld` (E611, stripped): segment 0 code 38912 bytes, segment 1 data 7090, bss 31054 (segment 1) and 63488 (segment 2).
+  Data offsets in segment 0 addresses: `off & 0x7fff` (the `%8000` form). Stack segment 127 is `_stkseg`.
+- Own code 0x0018..0x8680 (34408 bytes) assembles byte-identical as one block (`src/cmd/ld/sld_own.s`, `host/tools/unlink_seg.py`).
+- Data references of the own code (decoded with the segmented flag, as the cut does): 348 direct and 58 indexed references
+  into segment 1 (data), 442 direct into segment 2 (bss), 1816 stack references (segment 127). Data references do not say
+  which module owns the code: a global of one module is used by code of another. The SCCS modules of the data (scrt0.s,
+  copyname.c, dump.c, ext.c, ld.c, ldm.c, printname.c, swap.c, symbols.c, malloc.c) have no code boundaries yet.
+  Correction: an earlier reading "only three direct data addresses" came from decoding with the non-segmented flag.
+- Function boundaries of the own code (`src/cmd/ld/tools/own_functions.txt`): 94 functions, entries = call targets and proven
+  starts. The start code 0x18 is not `/lib/scrt0.o`: `scrt0.o` (code 66 bytes) has the word pair `5df8 0000` after its first
+  word, which sld lacks; the stack operands are 0x7f04/0x7f06 in sld and 0x0004/0x0006 in scrt0.o (relocated words of the
+  stack segment, so the values may differ at link time: guess, not checked).
+- 0x85f8 (last own function) has no `ret`: it falls into the shipped ffltioc, whose first word 9e08 is a `ret`.
+- libc part 0x8680..0x9800: 14 modules cut and verified (`src/lib/oldslibc`, README there); shipped members of `/lib/slibc.a`
+  ffltioc, getpid, umask are identical to the original code.
+- Sources of the cut use the names of `host/tools/link_libc_seg.py` (module starts by module name, others `f<addr>`).
 
 ## codgen / scodgen (`/lib/codgen`, `/lib/scodgen`): reconstruction status
 

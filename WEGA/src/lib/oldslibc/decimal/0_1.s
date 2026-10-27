@@ -79,6 +79,7 @@ L8c30:
 	ldl	rr8,|_stkseg+0|(r15)
 	inc	r15,#4
 	ret
+_f8c86::
 	dec	r15,#12
 	ldm	_stkseg+6(r15),r11,#3
 	ldl	rr12,rr6

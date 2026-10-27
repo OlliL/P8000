@@ -1,0 +1,99 @@
+# status: open | done (byte-identical) | findings:<ids> (documented, not identical)
+# own code of /bin/sld, 0x0018..0x8680: function entries (call targets and proven starts), end = next entry
+# columns: entry, end (exclusive), size, number of callers, first 4 callers, kind (P proven, c call target only), last instruction
+# 0x8000 is not an entry (inner jump target of the function at 0x7c26). 0x85f8 ends with add; its ret is the first
+# instruction of the shipped ffltioc (0x8680, 9e08 = ret), so the function falls into ffltioc.
+0018 0056    62   0  - P sc  open
+0056 00ee   152   5  124 1c4 6a28 6b92 P ret  open
+00ee 0178   138   1  6b68 c ret  open
+0178 0220   168   1  6898 c ret  open
+0220 06c6  1190   1  204 P ret  open
+06c6 0762   156  55  350 1828 3784 3a0c c ret  open
+0762 078c    42   1  85c c ret  open
+078c 0a5c   720   1  46 c ret  open
+0a5c 0aba    94   2  2d44 34a4 c ret  open
+0aba 0b04    74   1  79e P ret  open
+0b04 0f26  1058   1  854 P ret  open
+0f26 1070   330   1  ba8 c ret  open
+1070 11ea   378   1  980 P ret  open
+11ea 1364   378   1  a4c P ret  open
+1364 14a4   320   1  9d6 P ret  open
+14a4 1560   188   3  13a2 1486 1640 P ret  open
+1560 1664   260   1  1426 c ret  open
+1664 1696    50   1  1898 P ret  open
+1696 18f2   604   2  1392 1542 P ret  open
+18f2 1f96  1700   3  5018 5226 554c c ret  open
+1f96 2056   192   1  1bbe P ret  open
+2056 22a4   590   1  120e c ret  open
+22a4 2346   162   7  206a 2080 208a 20a4 P ret  open
+2346 23fe   184   1  2248 P ret  open
+23fe 2492   148   1  1312 c ret  open
+2492 2624   402   2  2438 2464 P ret  open
+2624 27d8   436   1  2614 P ret  open
+27d8 2cbc  1252   2  273a 2788 P ret  open
+2cbc 2d4c   144   1  1350 c ret  open
+2d4c 2dde   146   1  2d42 P ret  open
+2dde 2e4c   110   2  2cd0 2ce8 P ret  open
+2e4c 2e76    42   5  1dfc 1e3c 1e54 1eb0 P ret  open
+2e76 2f04   142  11  14ea 14fa 2454 26b4 P ret  open
+2f04 2f3a    54   6  227e 2294 6378 63ea P ret  open
+2f3a 3090   342  17  14b8 1720 2448 24f2 P ret  open
+3090 30a4    20   4  271c 276a 27b2 3060 P ret  open
+30a4 3144   160   4  2820 287c 2ef0 3384 P ret  open
+3144 3408   708   2  1374 240e P ret  open
+3408 34b8   176 103  1b6 6e4 72c 782 P ret  open
+34b8 3516    94   1  2b08 P ret  open
+3516 3760   586   2  16ae 24a8 c ret  open
+3760 3a30   720   1  374e P ret  open
+3a30 3a88    88   2  37cc 4162 P ret  open
+3a88 3ac6    62  10  299a 29b2 2a28 2ad4 P ret  open
+3ac6 3b58   146   7  2cf6 2dee 3ab8 6142 P ret  open
+3b58 3c16   190   2  17de 6fb6 c ret  open
+3c16 410c  1270   1  9b6 c ret  open
+410c 42f8   492   1  3ffa P ret  open
+42f8 4444   332   3  c28 e90 40ee P ret  open
+4444 44e6   162   1  37a6 c ret  open
+44e6 4968  1154   1  1208 c ret  open
+4968 4a16   174   1  4d68 P ret  open
+4a16 5a2c  4118   1  469e P ret  open
+5a2c 5eec  1216   3  4a96 4b32 4bce P ret  open
+5eec 60f0   516   8  4a02 506e 5252 5406 P ret  open
+60f0 6134    68   1  63fc P ret  open
+6134 620e   218   1  2cbc c ret  open
+620e 642e   544   2  61ba 61f8 P ret  open
+642e 64d0   162   1  5a00 P ret  open
+64d0 6522    82   1  612e P ret  open
+6522 65c6   164   6  1a8 23a 25d6 3be0 c ret  open
+65c6 65ec    38  17  28aa 28b4 2982 298c P ret  open
+65ec 6620    52   3  1622 66f4 6e7c c ret  open
+6620 6684   100   3  222c 26c6 363a c ret  open
+6684 6800   380   2  1756 24fc c ret  open
+6800 68a2   162   1  67d8 P ret  open
+68a2 6a08   358   4  46ba 46ca 46da 46f2 c ret  open
+6a08 6a58    80   1  24b2 c ret  open
+6a58 6b5a   258   4  1798 257c 6b7e 6ba8 P ret  open
+6b5a 6b84    42   5  c78 44fc 4510 4524 c ret  open
+6b84 6bae    42   2  15ee 6f9a P ret  open
+6bae 6c6a   188   2  c84 17a4 c ret  open
+6c6a 6da8   318   5  2508 2936 29f6 2a90 P ret  open
+6da8 6e1a   114   1  1850 c ret  open
+6e1a 6efe   228   3  2574 6a52 6f28 P ret  open
+6efe 6f46    72   1  2cea c ret  open
+6f46 6fd0   138   1  1420 c ret  open
+6fd0 6ffe    46   9  1ee 1f8 45b0 45c4 P ret  open
+6ffe 702a    44   1  846 c ret  open
+702a 705e    52   1  df8 c ret  open
+705e 70ce   112   5  208 4662 484e 489c P ret  open
+70ce 7112    68   1  2b18 c ret  open
+7112 719e   140   1  13d8 c ret  open
+719e 71ca    44   5  1fca 2014 4990 595a c ret  open
+71ca 7286   188   8  25e4 25ec 3bee 3bf8 c ret  open
+7286 7300   122   5  c00 daa e1c 11ac c ret  open
+7300 7526   550   3  7242 727a 72ec c ret  open
+7526 7808   738   1  7436 P ret  open
+7808 7956   334   1  7578 P ret  open
+7956 79ca   116   1  73e6 P ret  open
+79ca 7bbc   498  52  1e2 250 266 2ee c ret  open
+7bbc 7c26   106   2  7f0a 81c0 P ret  open
+7c26 85f8  2514   3  7a4c 7ad0 7b78 c ret  open
+85f8 8680   136   2  7db0 7e0c P add  open

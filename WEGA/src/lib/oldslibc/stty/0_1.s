@@ -19,6 +19,7 @@ _f92ae::
 	call	_signal
 	inc	r15,#10
 	ret
+_f92c6::
 	dec	r15,#14
 	ldm	_stkseg+10(r15),r12,#2
 	ld	|_stkseg+0|(r15),r5
@@ -39,6 +40,7 @@ L92ec:
 	ldm	r12,_stkseg+10(r15),#2
 	inc	r15,#14
 	ret
+_f92f8::
 	sub	r15,#%0012
 	ldm	_stkseg+10(r15),r10,#4
 	ld	|_stkseg+0|(r15),r5

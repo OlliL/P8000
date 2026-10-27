@@ -3,7 +3,7 @@
 # cut and verified with host/tools/unlink_seg.py). Only ffltioc, getpid and umask are shipped members of
 # /lib/slibc.a, identical to the original code (taken with ar x, like popt does).
 #
-#   make              libc objects of sld
+#   make              libc objects of sld and the own code of sld (sld_own.o)
 #   make clean
 
 CAS = cas
@@ -19,9 +19,15 @@ LIBCOBJS = $(OLD)/filbuf/0_1.o $(OLD)/flsbuf/0_1.o $(OLD)/cnvt/0_1.o $(OLD)/deci
 # shipped members of slibc.a that are identical to the original code of sld
 SHIPOBJS = ffltioc.o getpid.o umask.o
 
-all: libc
+all: libc own
 
 libc: $(LIBCOBJS) $(SHIPOBJS)
+
+# own code of sld (0x18..0x8680 of /bin/sld, one block; cut with host/tools/unlink_seg.py, verified)
+own: sld_own.o
+
+sld_own.o: sld_own.s
+	$(CAS) -u -o $@ sld_own.s
 
 ffltioc.o:
 	$(AR) x $(SLIBC) ffltioc.o
@@ -75,4 +81,4 @@ $(OLD)/stubs/0_1.o: $(OLD)/stubs/0_1.s
 	$(CAS) -u -o $@ $(OLD)/stubs/0_1.s
 
 clean:
-	rm -f $(LIBCOBJS) $(SHIPOBJS)
+	rm -f $(LIBCOBJS) $(SHIPOBJS) sld_own.o
