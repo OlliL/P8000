@@ -147,8 +147,11 @@ produce the same bytes with the shipped cc.
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
   2026-10-27: 23 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
-  42 with findings (see the audit in findings.json),
-  35 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
+  44 with findings (see the audit in findings.json),
+  33 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
+  Last rounds: 0x42f8 accepted (D6, D15, D16: switch on the type byte of the long parameter); 0x6c6a accepted (D2, D6, D15:
+  state machine on bE46E). 0x68a2 (358 bytes, branches on the type bytes 0x21..0x24, globals 0x3c0a, 0x3c06, 0x3c0e,
+  0x0474) analysed, not drafted.
   Done in the last rounds: 0x64d0 (D2), 0x0f26 read_words (D15), 0x3408 report_error (done), 0x4968 (D5, one dead increment
   open by reading), 0x2f3a refill_wbuf (D5, D9, D15). Open small ones: 0x1070 (378, parser with a jump table, not started),
   0x7286 (wrapper of 0x7300, which is deferred), 0x6a58 (hash lookup with linear probing; draft in the scratch folder: same

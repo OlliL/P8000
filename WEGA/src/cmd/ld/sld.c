@@ -1671,3 +1671,111 @@ common:
 	if (*(int *)(obj + 4) <= 0)
 		*(int *)(obj + 10) = 0;
 }
+
+/* f42f8..4444: findings:D6,D15,D16 */
+int bE474;
+int report_error();
+int f42f8();
+
+int f42f8(x)
+long x;
+{
+	if (((int)x) < 0 || ((int)x) >= 0x80)
+		report_error(2, "x", ((int)x));
+	if (((int)x) > bE3E82)
+		bE3E82 = ((int)x);
+	switch (((char *)&x)[1]) {
+	case 'M':
+		if (*(int *)(tabF338 + ((int)x) * 8) == 0x07d0) {
+			report_error(0, "x");
+			bE474 = -1;
+		}
+		*(int *)(tabF338 + ((int)x) * 8) = 0x01f4;
+		break;
+	case 'r':
+		if (*(int *)(tabF338 + ((int)x) * 8) == 0x07d0) {
+			report_error(0, "x");
+			bE474 = -1;
+		}
+		*(int *)(tabF338 + ((int)x) * 8) = 0x03e8;
+		break;
+	case 's':
+		if (bE474 > -1)
+			*(int *)(tabF338 + bE474 * 8) = -1;
+		if (*(int *)(tabF338 + ((int)x) * 8) == 0x03e8) {
+			report_error(0, "x");
+			bE474 = -1;
+		} else {
+			*(int *)(tabF338 + ((int)x) * 8) = 0x07d0;
+			bE474 = ((int)x);
+		}
+		break;
+	}
+}
+
+/* f6c6a..6da8: findings:D2,D6,D15 */
+int bE3C02;
+int bEF32C;
+char *f06c6();
+int f6c6a();
+
+f6c6a()
+{
+	register char *w;
+	register char *p;
+	int i;
+
+	i = bE3C02 + 0x0470;
+	p = f06c6(i);
+	w = (char *)&bE46A;
+	switch (bE46E) {
+	case 2:
+	case 0x22:
+		goto h2;
+	case 3:
+	case 0x23:
+		goto h3;
+	case 4:
+	case 0x24:
+		goto h4;
+	case 0x1f:
+		goto loop;
+	case 0x20:
+		goto end;
+	default:
+		if (bE46E & 0x20)
+			bE46E = 0x21;
+		goto end;
+	}
+loop:
+	if (i >= bEF32C)
+		goto clear;
+	p = f06c6(i);
+	if (*(int *)(p + 4))
+		goto h2;
+	i++;
+	goto loop;
+clear:
+	bE470 = 0;
+	bE46A = 0;
+	goto end;
+h2:
+	*(int *)w = *(*(char **)(p + 0x16)) << 8;
+	w += 2;
+	*(int *)w = *(int *)(p + 0x10) + *(int *)(p + 0x22) + *(int *)(*(char **)(p + 0x16) + 0x1a) + *(int *)w;
+	bE470 = *(int *)(*(char **)(p + 0x16) + 0x10);
+	goto end;
+h3:
+	*(int *)w = *(*(char **)(p + 0x1a)) << 8;
+	w += 2;
+	*(int *)w = *(int *)(p + 0x12) + *(int *)(p + 0x24) + *(int *)(*(char **)(p + 0x1a) + 0x1c) + *(int *)w;
+	bE470 = *(int *)(*(char **)(p + 0x1a) + 0x10);
+	goto end;
+h4:
+	*(int *)w = *(*(char **)(p + 0x1e)) << 8;
+	w += 2;
+	*(int *)w = *(int *)(p + 0x14) + *(int *)(p + 0x26) + *(int *)(*(char **)(p + 0x1e) + 0x1e) + *(int *)w;
+	bE470 = *(int *)(*(char **)(p + 0x1e) + 0x10);
+end:
+	;
+}

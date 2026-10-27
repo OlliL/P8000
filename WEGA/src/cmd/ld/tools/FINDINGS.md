@@ -10,15 +10,15 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 65 |
-| open | 35 |
+| confirmed | 67 |
+| open | 33 |
 
 | Difference class | Count |
 |---|---|
-| - | 35 |
+| - | 33 |
 | D only (manual reading) | 6 |
 | D only (pattern-verified) | 58 |
-| other differences | 1 |
+| other differences | 3 |
 
 **Pending findings:** 23
 
@@ -63,7 +63,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f3b58 | 0x0c58-0x0ce8 | 0x3b58 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D7, D8, D8/D2 |  |
 | f3c16 | f3c16..410c | 0x3c16 | open | open |  |  |  |
 | f410c | f410c..42f8 | 0x410c | open | open |  |  |  |
-| f42f8 | f42f8..4444 | 0x42f8 | open | open |  |  |  |
+| f42f8 | 0x1efa-0x204e | 0x42f8 | confirmed | differs | other differences |  | unexplained instruction forms: ld	@rrS,#N; ld	A,#N |
 | f44e6 | f44e6..4968 | 0x44e6 | open | open |  |  |  |
 | f4968 | 0x1cfc-0x1da6 | 0x4968 | confirmed | differs | D only (pattern-verified) | D1, D3, D6, D7 |  |
 | f4a16 | f4a16..5a2c | 0x4a16 | open | open |  |  |  |
@@ -80,7 +80,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f6b5a | 0x035a-0x0388 | 0x6b5a | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f6b84 | 0x0388-0x03b2 | 0x6b84 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f6bae | 0x0940-0x09f8 | 0x6bae | confirmed | differs | D only (pattern-verified) | D7 |  |
-| f6c6a | f6c6a..6da8 | 0x6c6a | open | open |  |  |  |
+| f6c6a | 0x204e-0x218c | 0x6c6a | confirmed | differs | other differences |  | unexplained instruction forms: add	rS,@rrS; ld	@rrS,rS; ld	rS,rrS(#N) |
 | f6da8 | 0x09f8-0x0a6a | 0x6da8 | confirmed | differs | D only (pattern-verified) | D10, D13, D7, D8, D8/D2 |  |
 | f6e1a | 0x11dc-0x12bc | 0x6e1a | confirmed | differs | D only (manual reading) | D8 | byte b[7] read as the low byte of a word load in the original; D8 by reading, no popt pattern |
 | f6efe | 0x03b2-0x03fe | 0x6efe | confirmed | exact | D only (pattern-verified) | D7 |  |

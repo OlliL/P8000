@@ -54,7 +54,7 @@
 3b58 f3b58 3c16 190 2 17de 6fb6 c ret findings:D7
 3c16 f3c16 410c 1270 1 9b6 c ret open
 410c f410c 42f8 492 1 3ffa P ret open
-42f8 f42f8 4444 332 3 c28 e90 40ee P ret open
+42f8 f42f8 4444 332 3 c28 e90 40ee P ret findings:D6,D15,D16
 4444 copy_leafname 44e6 162 1 37a6 c ret done
 44e6 f44e6 4968 1154 1 1208 c ret open
 4968 f4968 4a16 174 1 4d68 P ret findings:D5
@@ -79,7 +79,7 @@
 6b5a f6b5a 6b84 42 5 c78 44fc 4510 4524 c ret done
 6b84 f6b84 6bae 42 2 15ee 6f9a P ret done
 6bae f6bae 6c6a 188 2 c84 17a4 c ret findings:D2
-6c6a f6c6a 6da8 318 5 2508 2936 29f6 2a90 P ret open
+6c6a f6c6a 6da8 318 5 2508 2936 29f6 2a90 P ret findings:D2,D6,D15
 6da8 f6da8 6e1a 114 1 1850 c ret findings:D6
 6e1a f6e1a 6efe 228 3 2574 6a52 6f28 P ret findings:D4
 6efe f6efe 6f46 72 1 2cea c ret done

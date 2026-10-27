@@ -508,11 +508,24 @@
    "level": "open"
   },
   "f42f8": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x42f8",
-   "ours": "f42f8..4444",
-   "level": "open"
+   "ours": "0x1efa-0x204e",
+   "level": "differs",
+   "pairing_evidence": "switch on the type byte (the low byte of the high word of the long parameter): the old cc lowers it to cpir and a jump table (D6); the case blocks are laid out in another order (D15); the index stays in r7 in the original, ours reloads it from the frame (D16). Same 82 instructions",
+   "audit": {
+    "d_normalised_pct": 64,
+    "pattern_diff": 57,
+    "pattern_unexplained": 4,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: ld\t@rrS,#N; ld\tA,#N",
+    "structure_flags": [],
+    "len_ours": 91,
+    "len_orig": 82
+   }
   },
   "f44e6": {
    "file": null,
@@ -768,11 +781,30 @@
    }
   },
   "f6c6a": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6c6a",
-   "ours": "f6c6a..6da8",
-   "level": "open"
+   "ours": "0x204e-0x218c",
+   "level": "differs",
+   "pairing_evidence": "state machine on the byte bE46E: the switch is lowered to cpir and a jump table (D6); the first value goes through r2 where the original uses r7 (D2); the case blocks are laid out in another order (D15). Same 98 instructions, same globals.",
+   "audit": {
+    "d_normalised_pct": 63,
+    "pattern_diff": 73,
+    "pattern_unexplained": 12,
+    "reordered_instructions": 11,
+    "reordered_examples": [
+     "ldl\trrS,rrS(#N)",
+     "ldb\trhS,rlS",
+     "ld\trS,F"
+    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: add\trS,@rrS; ld\t@rrS,rS; ld\trS,rrS(#N)",
+    "structure_flags": [
+     "order 11 moved"
+    ],
+    "len_ours": 99,
+    "len_orig": 98
+   }
   },
   "f6da8": {
    "file": "sld.c",
