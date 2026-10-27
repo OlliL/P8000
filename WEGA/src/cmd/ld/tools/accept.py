@@ -10,8 +10,9 @@ Usage: accept.py DRAFT.c ENTRY END [CLASS RESULT]
   RESULT   optional text: what differs (required with CLASS)
 
 The draft is checked with fncheck.py. Only on OK it is appended to ../sld.c and the status in
-own_functions.txt is set: 'done' without CLASS, 'findings:CLASS' with CLASS. With CLASS a pending finding
-is added to findings.json (findings_pending, status open), and the function entry f_ENTRY gets file sld.c.
+own_functions.txt is set: 'done' without CLASS, 'findings:CLASS' with CLASS. With CLASS the D class goes to the
+function's audit in findings.json (d_classes, difference_note); findings_pending is only for items without a
+D class.
 Declarations repeated in sld.c are kept only once.
 """
 import json
@@ -39,20 +40,14 @@ def whole_file_ok():
     return r.returncode == 0
 
 
-def record_finding(entry, end, cls, result):
+def record_evidence(entry, result):
+    """the manual reading of a difference goes to pairing_evidence (codgen style); the audit is classify_sld.py"""
+    name = [line.split()[1] for line in open(TABLE) if line.startswith(entry + ' ')][0]
     data = json.load(open(FINDINGS))
-    ids = [x['id'] for x in data['findings_pending']] + [x['id'] for x in data['findings']]
-    fid = 'sld-%02d' % (len([i for i in ids if i.startswith('sld-')]) + 1)
-    data['findings_pending'].append({
-        'id': fid, 'kind': 'compiler difference', 'function': 'f_%s' % entry, 'status': 'open',
-        'classification': cls, 'action': 'record; rebuild as the original (byte identity first)',
-        'result': result})
-    fn = data['functions'].setdefault('f_%s' % entry, {})
-    fn.update({'file': 'sld.c', 'pairing': 'confirmed', 'orig': '0x%s' % entry,
-               'ours': 'f%s..%s' % (entry, end), 'level': 'analysed'})
+    data['functions'][name]['pairing_evidence'] = result
     json.dump(data, open(FINDINGS, 'w'), indent=1)
     open(FINDINGS, 'a').write('\n')
-    return fid
+    return name
 
 
 def main():
@@ -98,11 +93,14 @@ def main():
             line = line[:-len(line.split()[-1])] + status
         res.append(line)
     open(TABLE, 'w').write('\n'.join(res))
-    if cls:
-        fid = record_finding(entry, end, cls, result or 'see fncheck output')
-        print('recorded %s (%s) in findings.json' % (fid, cls))
     # names, status and findings in findings.json follow own_functions.txt
     subprocess.run([sys.executable, os.path.join(HERE, 'sync_findings.py')], check=True)
+    subprocess.run([sys.executable, os.path.join(HERE, 'findings_md.py')], check=True, capture_output=True)
+    if cls:
+        name = record_evidence(entry, result or 'see fncheck output')
+        print('pairing_evidence of %s: %s' % (name, cls))
+    # the audit (D classes, pattern check) of all checked functions
+    subprocess.run([sys.executable, os.path.join(HERE, 'classify_sld.py')], check=True, capture_output=True)
     subprocess.run([sys.executable, os.path.join(HERE, 'findings_md.py')], check=True, capture_output=True)
     print('accepted f%s: %s' % (entry, status))
     return 0

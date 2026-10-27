@@ -47,7 +47,7 @@
 3516 f3516 3760 586 2 16ae 24a8 c ret open
 3760 f3760 3a30 720 1 374e P ret open
 3a30 str_compare 3a88 88 2 37cc 4162 P ret findings:D2
-3a88 f3a88 3ac6 62 10 299a 29b2 2a28 2ad4 P ret open
+3a88 f3a88 3ac6 62 10 299a 29b2 2a28 2ad4 P ret findings:D5
 3ac6 f3ac6 3b58 146 7 2cf6 2dee 3ab8 6142 P ret open
 3b58 f3b58 3c16 190 2 17de 6fb6 c ret open
 3c16 f3c16 410c 1270 1 9b6 c ret open
@@ -72,10 +72,10 @@
 6800 f6800 6866 102 1 67d8 P ret open
 6866 f6866 68a2 60 0 - x ret open
 68a2 f68a2 6a08 358 4 46ba 46ca 46da 46f2 c ret open
-6a08 f6a08 6a58 80 1 24b2 c ret open
+6a08 f6a08 6a58 80 1 24b2 c ret done
 6a58 f6a58 6b5a 258 4 1798 257c 6b7e 6ba8 P ret open
-6b5a f6b5a 6b84 42 5 c78 44fc 4510 4524 c ret open
-6b84 f6b84 6bae 42 2 15ee 6f9a P ret open
+6b5a f6b5a 6b84 42 5 c78 44fc 4510 4524 c ret done
+6b84 f6b84 6bae 42 2 15ee 6f9a P ret done
 6bae f6bae 6c6a 188 2 c84 17a4 c ret open
 6c6a f6c6a 6da8 318 5 2508 2936 29f6 2a90 P ret open
 6da8 f6da8 6e1a 114 1 1850 c ret open

@@ -2582,895 +2582,963 @@
    "file": null,
    "pairing": "open",
    "orig": "0x0018",
-   "level": "open",
    "ours": "f0018..0056",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 1
+   "level": "open"
   },
   "f0056": {
+   "audit": {
+    "d_normalised_pct": 70,
+    "pattern_diff": 28,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D7",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 47,
+    "len_orig": 47
+   },
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0056",
-   "level": "finding D2",
-   "ours": "f0056..00ee",
-   "note": "own source sld.c; difference recorded in findings_pending",
-   "module_hint": null
+   "ours": "0x035c-0x03f0",
+   "level": "differs",
+   "pairing_evidence": "register numbers differ (dst in rr10, src in rr12 equal; counter in r13 in the original, r9 here), ch kept in memory in the original; frame and local offsets equal"
   },
   "f00ee": {
    "file": null,
    "pairing": "open",
    "orig": "0x00ee",
    "ours": "f00ee..0178",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f0178": {
    "file": null,
    "pairing": "open",
    "orig": "0x0178",
    "ours": "f0178..0220",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f0220": {
    "file": null,
    "pairing": "open",
    "orig": "0x0220",
-   "level": "open",
    "ours": "f0220..06c6",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f06c6": {
    "file": null,
    "pairing": "open",
    "orig": "0x06c6",
    "ours": "f06c6..0762",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f0762": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0762",
-   "ours": "f0762..078c",
-   "level": "byte-identical (fncheck)",
-   "note": "own source sld.c"
+   "ours": "0x0000-0x002a",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 92,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 12,
+    "len_orig": 12
+   }
   },
   "f078c": {
    "file": null,
    "pairing": "open",
    "orig": "0x078c",
    "ours": "f078c..0a5c",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "sig_handler": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0a5c",
-   "ours": "f0a5c..0aba",
-   "level": "byte-identical (fncheck)",
-   "note": "own source sld.c"
+   "ours": "0x01c8-0x0226",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 83,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 23,
+    "len_orig": 23
+   }
   },
   "init_signals": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0aba",
-   "level": "byte-identical (fncheck)",
-   "ours": "f0aba..0b04",
-   "note": "own source sld.c",
-   "module_hint": null
+   "ours": "0x002a-0x0074",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 17,
+    "len_orig": 17
+   }
   },
   "f0b04": {
    "file": null,
    "pairing": "open",
    "orig": "0x0b04",
-   "level": "open",
    "ours": "f0b04..0f26",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f0f26": {
    "file": null,
    "pairing": "open",
    "orig": "0x0f26",
    "ours": "f0f26..1070",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f1070": {
    "file": null,
    "pairing": "open",
    "orig": "0x1070",
-   "level": "open",
    "ours": "f1070..11ea",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f11ea": {
    "file": null,
    "pairing": "open",
    "orig": "0x11ea",
-   "level": "open",
    "ours": "f11ea..1364",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 2
+   "level": "open"
   },
   "f1364": {
    "file": null,
    "pairing": "open",
    "orig": "0x1364",
-   "level": "open",
    "ours": "f1364..14a4",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f14a4": {
    "file": null,
    "pairing": "open",
    "orig": "0x14a4",
-   "level": "open",
    "ours": "f14a4..1560",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 1
+   "level": "open"
   },
   "f1560": {
    "file": null,
    "pairing": "open",
    "orig": "0x1560",
    "ours": "f1560..1664",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f1664": {
    "file": null,
    "pairing": "open",
    "orig": "0x1664",
-   "level": "open",
    "ours": "f1664..1696",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f1696": {
    "file": null,
    "pairing": "open",
    "orig": "0x1696",
-   "level": "open",
    "ours": "f1696..18f2",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 2
+   "level": "open"
   },
   "f18f2": {
    "file": null,
    "pairing": "open",
    "orig": "0x18f2",
    "ours": "f18f2..1f96",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f1f96": {
    "file": null,
    "pairing": "open",
    "orig": "0x1f96",
-   "level": "open",
    "ours": "f1f96..2056",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f2056": {
    "file": null,
    "pairing": "open",
    "orig": "0x2056",
    "ours": "f2056..22a4",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f22a4": {
    "file": null,
    "pairing": "open",
    "orig": "0x22a4",
-   "level": "open",
    "ours": "f22a4..2346",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f2346": {
    "file": null,
    "pairing": "open",
    "orig": "0x2346",
-   "level": "open",
    "ours": "f2346..23fe",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 5
+   "level": "open"
   },
   "f23fe": {
    "file": null,
    "pairing": "open",
    "orig": "0x23fe",
    "ours": "f23fe..2492",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f2492": {
    "file": null,
    "pairing": "open",
    "orig": "0x2492",
-   "level": "open",
    "ours": "f2492..2624",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 5
+   "level": "open"
   },
   "f2624": {
    "file": null,
    "pairing": "open",
    "orig": "0x2624",
-   "level": "open",
    "ours": "f2624..27d8",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 5
+   "level": "open"
   },
   "f27d8": {
    "file": null,
    "pairing": "open",
    "orig": "0x27d8",
-   "level": "open",
    "ours": "f27d8..2cbc",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 3
+   "level": "open"
   },
   "f2cbc": {
    "file": null,
    "pairing": "open",
    "orig": "0x2cbc",
    "ours": "f2cbc..2d4c",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f2d4c": {
    "file": null,
    "pairing": "open",
    "orig": "0x2d4c",
-   "level": "open",
    "ours": "f2d4c..2dde",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f2dde": {
    "file": null,
    "pairing": "open",
    "orig": "0x2dde",
-   "level": "open",
    "ours": "f2dde..2e4c",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "high_byte": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2e4c",
-   "level": "byte-identical (fncheck)",
-   "ours": "f2e4c..2e76",
-   "note": "own source sld.c",
-   "module_hint": null
+   "ours": "0x0074-0x00a2",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 86,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 14,
+    "len_orig": 14
+   }
   },
   "f2e76": {
    "file": null,
    "pairing": "open",
    "orig": "0x2e76",
-   "level": "open",
    "ours": "f2e76..2f04",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 6
+   "level": "open"
   },
   "f2f04": {
    "file": null,
    "pairing": "open",
    "orig": "0x2f04",
-   "level": "open",
    "ours": "f2f04..2f3a",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f2f3a": {
    "file": null,
    "pairing": "open",
    "orig": "0x2f3a",
-   "level": "open",
    "ours": "f2f3a..3090",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 5
+   "level": "open"
   },
   "f3090": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3090",
-   "level": "byte-identical (fncheck)",
-   "ours": "f3090..30a4",
-   "note": "own source sld.c",
-   "module_hint": null
+   "ours": "0x00a2-0x00b6",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 7,
+    "len_orig": 7
+   }
   },
   "f30a4": {
    "file": null,
    "pairing": "open",
    "orig": "0x30a4",
-   "level": "open",
    "ours": "f30a4..3144",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 1
+   "level": "open"
   },
   "f3144": {
    "file": null,
    "pairing": "open",
    "orig": "0x3144",
-   "level": "open",
    "ours": "f3144..3408",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 3
+   "level": "open"
   },
   "f3408": {
    "file": null,
    "pairing": "open",
    "orig": "0x3408",
-   "level": "open",
    "ours": "f3408..34b8",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 1
+   "level": "open"
   },
   "table_lookup": {
+   "audit": {
+    "d_normalised_pct": 56,
+    "pattern_diff": 21,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 24,
+    "len_orig": 25
+   },
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x34b8",
-   "level": "finding D2",
-   "ours": "f34b8..3516",
-   "note": "own source sld.c; difference recorded in findings_pending",
-   "module_hint": null
+   "ours": "0x0226-0x0288",
+   "level": "differs",
+   "pairing_evidence": "register choice differs (end pointer kept in rr8 in the original, p in rr10); frame 32 bytes in the original against 8 here (D1 share); otherwise equal"
   },
   "f3516": {
    "file": null,
    "pairing": "open",
    "orig": "0x3516",
    "ours": "f3516..3760",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f3760": {
    "file": null,
    "pairing": "open",
    "orig": "0x3760",
-   "level": "open",
    "ours": "f3760..3a30",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 1
+   "level": "open"
   },
   "str_compare": {
+   "audit": {
+    "d_normalised_pct": 77,
+    "pattern_diff": 14,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 31,
+    "len_orig": 31
+   },
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3a30",
-   "level": "finding D2",
-   "ours": "f3a30..3a88",
-   "note": "own source sld.c; difference recorded in findings_pending",
-   "module_hint": null
+   "ours": "0x0170-0x01c8",
+   "level": "differs",
+   "pairing_evidence": "loop test loads q into rr4 in the original (testb @rr4), rr2 here; otherwise equal"
   },
   "f3a88": {
-   "file": null,
-   "pairing": "open",
+   "audit": {
+    "d_normalised_pct": 68,
+    "pattern_diff": 13,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 21,
+    "len_orig": 22
+   },
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x3a88",
-   "level": "open",
-   "ours": "f3a88..3ac6",
-   "note": "no own source yet",
-   "module_hint": null
+   "ours": "0x049c-0x04de",
+   "level": "differs",
+   "pairing_evidence": "constant index address form of p[3] (D5); argument v spilled to the frame in the original (D4); otherwise equal"
   },
   "f3ac6": {
    "file": null,
    "pairing": "open",
    "orig": "0x3ac6",
-   "level": "open",
    "ours": "f3ac6..3b58",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f3b58": {
    "file": null,
    "pairing": "open",
    "orig": "0x3b58",
    "ours": "f3b58..3c16",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f3c16": {
    "file": null,
    "pairing": "open",
    "orig": "0x3c16",
    "ours": "f3c16..410c",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f410c": {
    "file": null,
    "pairing": "open",
    "orig": "0x410c",
-   "level": "open",
    "ours": "f410c..42f8",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f42f8": {
    "file": null,
    "pairing": "open",
    "orig": "0x42f8",
-   "level": "open",
    "ours": "f42f8..4444",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f4444": {
    "file": null,
    "pairing": "open",
    "orig": "0x4444",
    "ours": "f4444..44e6",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f44e6": {
    "file": null,
    "pairing": "open",
    "orig": "0x44e6",
    "ours": "f44e6..4968",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f4968": {
    "file": null,
    "pairing": "open",
    "orig": "0x4968",
-   "level": "open",
    "ours": "f4968..4a16",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 1
+   "level": "open"
   },
   "f4a16": {
    "file": null,
    "pairing": "open",
    "orig": "0x4a16",
-   "level": "open",
    "ours": "f4a16..5a2c",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f5a2c": {
    "file": null,
    "pairing": "open",
    "orig": "0x5a2c",
-   "level": "open",
    "ours": "f5a2c..5eec",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f5eec": {
    "file": null,
    "pairing": "open",
    "orig": "0x5eec",
-   "level": "open",
    "ours": "f5eec..60f0",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f60f0": {
+   "audit": {
+    "d_normalised_pct": 29,
+    "pattern_diff": 31,
+    "pattern_unexplained": 4,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: ld\trS,@rrS; ld\trS,rrS(#N)",
+    "structure_flags": [],
+    "len_ours": 24,
+    "len_orig": 21
+   },
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x60f0",
-   "level": "finding D2",
-   "ours": "f60f0..6134",
-   "note": "own source sld.c; difference recorded in findings_pending",
-   "module_hint": null
+   "ours": "0x0288-0x02d2",
+   "level": "differs",
+   "pairing_evidence": "unexplained instruction forms: ld\trS,@rrS; ld\trS,rrS(#N)"
   },
   "f6134": {
    "file": null,
    "pairing": "open",
    "orig": "0x6134",
    "ours": "f6134..620e",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f620e": {
    "file": null,
    "pairing": "open",
    "orig": "0x620e",
-   "level": "open",
    "ours": "f620e..642e",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f642e": {
    "file": null,
    "pairing": "open",
    "orig": "0x642e",
-   "level": "open",
    "ours": "f642e..64d0",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 2
+   "level": "open"
   },
   "f64d0": {
    "file": null,
    "pairing": "open",
    "orig": "0x64d0",
-   "level": "open",
    "ours": "f64d0..6522",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 1
+   "level": "open"
   },
   "f6522": {
    "file": null,
    "pairing": "open",
    "orig": "0x6522",
    "ours": "f6522..65c6",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f65c6": {
    "file": null,
    "pairing": "open",
    "orig": "0x65c6",
-   "level": "open",
    "ours": "f65c6..65ec",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f65ec": {
+   "audit": {
+    "d_normalised_pct": 72,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 18
+   },
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x65ec",
-   "ours": "f65ec..6620",
-   "level": "finding D3",
-   "note": "own source sld.c; difference recorded in findings_pending"
+   "ours": "0x0322-0x035c",
+   "level": "differs",
+   "pairing_evidence": "parameter reloaded from the frame into rr12 in the original (store and load), copied from rr6 here; otherwise equal"
   },
   "f6620": {
    "file": null,
    "pairing": "open",
    "orig": "0x6620",
    "ours": "f6620..6684",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f6684": {
    "file": null,
    "pairing": "open",
    "orig": "0x6684",
    "ours": "f6684..6800",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f6800": {
    "file": null,
    "pairing": "open",
    "orig": "0x6800",
-   "level": "open",
    "ours": "f6800..6866",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f6866": {
    "file": null,
    "pairing": "open",
    "orig": "0x6866",
    "ours": "f6866..68a2",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f68a2": {
    "file": null,
    "pairing": "open",
    "orig": "0x68a2",
    "ours": "f68a2..6a08",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f6a08": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6a08",
-   "ours": "f6a08..6a58",
-   "level": "open",
-   "note": "no own source yet"
+   "ours": "0x0448-0x049c",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 53,
+    "pattern_diff": 18,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 19,
+    "len_orig": 19
+   }
   },
   "f6a58": {
    "file": null,
    "pairing": "open",
    "orig": "0x6a58",
-   "level": "open",
    "ours": "f6a58..6b5a",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f6b5a": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6b5a",
-   "ours": "f6b5a..6b84",
-   "level": "open",
-   "note": "no own source yet"
+   "ours": "0x041a-0x0448",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 55,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 11,
+    "len_orig": 11
+   }
   },
   "f6b84": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6b84",
-   "level": "open",
-   "ours": "f6b84..6bae",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 2
+   "ours": "0x03f0-0x041a",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 45,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 11,
+    "len_orig": 11
+   }
   },
   "f6bae": {
    "file": null,
    "pairing": "open",
    "orig": "0x6bae",
    "ours": "f6bae..6c6a",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f6c6a": {
    "file": null,
    "pairing": "open",
    "orig": "0x6c6a",
-   "level": "open",
    "ours": "f6c6a..6da8",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f6da8": {
    "file": null,
    "pairing": "open",
    "orig": "0x6da8",
    "ours": "f6da8..6e1a",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f6e1a": {
    "file": null,
    "pairing": "open",
    "orig": "0x6e1a",
-   "level": "open",
    "ours": "f6e1a..6efe",
-   "note": "no own source yet",
-   "module_hint": "dump.c",
-   "module_refs": 1
+   "level": "open"
   },
   "f6efe": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6efe",
-   "ours": "f6efe..6f46",
-   "level": "byte-identical (fncheck)",
-   "note": "own source sld.c"
+   "ours": "0x02d2-0x0322",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 85,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 26,
+    "len_orig": 26
+   }
   },
   "f6f46": {
    "file": null,
    "pairing": "open",
    "orig": "0x6f46",
    "ours": "f6f46..6fd0",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "table16_entry": {
+   "audit": {
+    "d_normalised_pct": 69,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 13,
+    "len_orig": 13
+   },
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6fd0",
-   "level": "finding D1",
-   "ours": "f6fd0..6ffe",
-   "note": "own source sld.c; difference recorded in findings_pending",
-   "module_hint": "dump.c",
-   "module_refs": 1
+   "ours": "0x010e-0x013c",
+   "level": "differs",
+   "pairing_evidence": "frame 14 bytes against 6 bytes of the draft; all other instructions equal"
   },
   "f6ffe": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6ffe",
-   "ours": "f6ffe..702a",
-   "level": "byte-identical (fncheck)",
-   "note": "own source sld.c"
+   "ours": "0x00b6-0x00e2",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 92,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 12,
+    "len_orig": 12
+   }
   },
   "f702a": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x702a",
-   "ours": "f702a..705e",
-   "level": "byte-identical (fncheck)",
-   "note": "own source sld.c"
+   "ours": "0x013c-0x0170",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 14,
+    "len_orig": 14
+   }
   },
   "f705e": {
    "file": null,
    "pairing": "open",
    "orig": "0x705e",
-   "level": "open",
    "ours": "f705e..70ce",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f70ce": {
    "file": null,
    "pairing": "open",
    "orig": "0x70ce",
    "ours": "f70ce..7112",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f7112": {
    "file": null,
    "pairing": "open",
    "orig": "0x7112",
    "ours": "f7112..719e",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "table32_entry": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x719e",
-   "ours": "f719e..71ca",
-   "level": "byte-identical (fncheck)",
-   "note": "own source sld.c"
+   "ours": "0x00e2-0x010e",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 85,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 13,
+    "len_orig": 13
+   }
   },
   "f71ca": {
    "file": null,
    "pairing": "open",
    "orig": "0x71ca",
    "ours": "f71ca..7286",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f7286": {
    "file": null,
    "pairing": "open",
    "orig": "0x7286",
    "ours": "f7286..7300",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f7300": {
    "file": null,
    "pairing": "open",
    "orig": "0x7300",
    "ours": "f7300..7526",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f7526": {
    "file": null,
    "pairing": "open",
    "orig": "0x7526",
-   "level": "open",
    "ours": "f7526..7808",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f7808": {
    "file": null,
    "pairing": "open",
    "orig": "0x7808",
-   "level": "open",
    "ours": "f7808..7956",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f7956": {
    "file": null,
    "pairing": "open",
    "orig": "0x7956",
-   "level": "open",
    "ours": "f7956..79ca",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f79ca": {
    "file": null,
    "pairing": "open",
    "orig": "0x79ca",
    "ours": "f79ca..7bbc",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f7bbc": {
    "file": null,
    "pairing": "open",
    "orig": "0x7bbc",
-   "level": "open",
    "ours": "f7bbc..7c26",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   },
   "f7c26": {
    "file": null,
    "pairing": "open",
    "orig": "0x7c26",
    "ours": "f7c26..85f8",
-   "level": "open",
-   "note": "no own source yet"
+   "level": "open"
   },
   "f85f8": {
    "file": null,
    "pairing": "open",
    "orig": "0x85f8",
-   "level": "open",
    "ours": "f85f8..8680",
-   "note": "no own source yet",
-   "module_hint": null
+   "level": "open"
   }
  },
  "findings": [],
- "findings_pending": [
-  {
-   "id": "sld-01",
-   "kind": "compiler difference",
-   "function": "table16_entry",
-   "status": "open",
-   "classification": "D1",
-   "action": "record; rebuild as the original (byte identity first)",
-   "result": "frame 14 bytes against 6 bytes of the draft; all other instructions equal"
-  },
-  {
-   "id": "sld-02",
-   "kind": "compiler difference",
-   "function": "str_compare",
-   "status": "open",
-   "classification": "D2",
-   "action": "record; rebuild as the original (byte identity first)",
-   "result": "loop test loads q into rr4 in the original (testb @rr4), rr2 here; otherwise equal"
-  },
-  {
-   "id": "sld-03",
-   "kind": "compiler difference",
-   "function": "table_lookup",
-   "status": "open",
-   "classification": "D2",
-   "action": "record; rebuild as the original (byte identity first)",
-   "result": "register choice differs (end pointer kept in rr8 in the original, p in rr10); frame 32 bytes in the original against 8 here (D1); otherwise equal"
-  },
-  {
-   "id": "sld-04",
-   "kind": "compiler difference",
-   "function": "f60f0",
-   "status": "open",
-   "classification": "D2",
-   "action": "record; rebuild as the original (byte identity first)",
-   "result": "value v kept in the frame (frame 8 against 10 here), saved register set r5..r7 in the original; otherwise equal"
-  },
-  {
-   "id": "sld-05",
-   "kind": "compiler difference",
-   "function": "f65ec",
-   "status": "open",
-   "classification": "D3",
-   "action": "record; rebuild as the original (byte identity first)",
-   "result": "parameter reloaded from the frame into rr12 in the original (store and load), copied from rr6 here; otherwise equal"
-  },
-  {
-   "id": "sld-06",
-   "kind": "compiler difference",
-   "function": "f0056",
-   "status": "open",
-   "classification": "D2",
-   "action": "record; rebuild as the original (byte identity first)",
-   "result": "register numbers differ (dst in rr10, src in rr12 equal; counter in r13 in the original, r9 here), ch kept in memory in the original; frame and local offsets equal"
-  }
- ],
+ "findings_pending": [],
  "manual_classes": {},
  "inventory": {
   "source": "tools/inventory.py",

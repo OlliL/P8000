@@ -9,7 +9,9 @@ findings.json "functions" gets one entry per own function, keyed by the name (f<
   file (sld.c once the function is in the work file), pairing (open | confirmed), orig (entry address),
   ours (entry..end), level (byte-identical or the finding class), note.
 An older entry f_<entry> (from the first inventory) is renamed to the new key, keeping its other fields.
-findings_pending entries refer to the function by its key ('function' field) and are updated too.
+findings_pending entries (non-D items only) refer to the function by its key ('function' field) and are updated too.
+D classes of the old compiler go to the function's audit (d_classes, difference_class, difference_note), not to
+findings_pending.
 Then run findings_md.py to regenerate FINDINGS.md.
 """
 import json
@@ -39,22 +41,24 @@ def main():
         old = 'f_' + r['entry']
         key = r['name']
         rename[old] = key
-        entry = funcs.pop(old, {})
+        # an entry is either still under the old key f_<entry> or already under its name
+        entry = funcs.pop(old, None) or funcs.get(key, {})
         status = r['status']
+        # level as in codgen: exact (same instruction sequence, fncheck) or differs (class in audit)
         if status == 'done':
-            level, pairing, note = 'byte-identical (fncheck)', 'confirmed', 'own source sld.c'
+            level, pairing = 'exact', 'confirmed'
         elif status.startswith('findings:'):
-            level, pairing = 'finding ' + status.split(':', 1)[1], 'confirmed'
-            note = 'own source sld.c; difference recorded in findings_pending'
+            level, pairing = 'differs', 'confirmed'
         else:
-            level, pairing, note = 'open', 'open', 'no own source yet'
+            level, pairing = 'open', 'open'
+        # the audit (D classes) is written by classify_sld.py, not here
+        entry.pop('note', None)
         entry.update({
             'file': 'sld.c' if status != 'open' else None,
             'pairing': pairing,
             'orig': '0x' + r['entry'],
-            'ours': 'f%s..%s' % (r['entry'], r['end']),
+            'ours': entry.get('ours') if status != 'open' and entry.get('audit') else entry.get('ours'),
             'level': level,
-            'note': note,
         })
         funcs[key] = entry
     for x in data['findings_pending']:

@@ -231,3 +231,77 @@ register char *dst;
 	}
 	return n;
 }
+
+/* f6b84..6bae: done */
+/* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
+char bE472[];
+char bE46E;
+long bE46A;
+int f0056();
+int f00ee();
+int f6a58();
+
+f6b84(p)
+{
+	long dummy;
+
+	f0056(p, bE472);
+	bE46E = 0x20;
+	bE46A = 0;
+	f6a58();
+}
+
+/* f6b5a..6b84: done */
+/* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
+int f0056();
+int f00ee();
+int f6a58();
+
+f6b5a(p)
+{
+	long dummy;
+
+	f00ee(p, bE472);
+	bE46E = 0x20;
+	bE46A = 0;
+	f6a58();
+}
+
+/* f6a08..6a58: done */
+int bE4A4;
+int bE4AA;
+int bE470;
+char bF10A[];
+int f0056();
+int f6c6a();
+f6e1a();
+
+f6a08(p)
+{
+	if (bE4A4)
+		return;
+	if (bE4AA)
+		return;
+	f0056(p, bE472);
+	bE46E = 0x1f;
+	bE46A = 0;
+	bE470 = 0;
+	f6c6a();
+	f6e1a(bF10A, &bE46A);
+}
+
+/* f3a88..3ac6: findings:D5 */
+int f3ac6();
+
+f3a88(v, a)
+int v;
+char *a;
+{
+	register int *p;
+
+	p = a;
+	p[2] = v;
+	p[3] += 2;
+	if (--p[1] <= 0)
+		f3ac6(p);
+}
