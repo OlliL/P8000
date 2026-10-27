@@ -815,6 +815,7 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/codgen`, `/lib/scodgen` | `reclaim` copies `p->op` into `want` before it frees the registers and uses `want` for the `lval` of a CCODES result; it builds the list of candidates with a pointer (`*ap++`) into a local array of 6 | kept | "codgen fidelity" |
 | `/lib/codgen`, `/lib/scodgen` | The rewrite of a field access or an address of a static (`mapregs` in `lcl3.c`, the `STREF` and `UAND` cases) copies only some fields of the replacement node (`op`, `type`, `sname`, `lval`, `rval`). The original's `lval` and `rval` overlay `left` and `right`, so the operands come along by accident. | kept in the original; the host copy copies the whole node | `host/codgen`, `src/TODO.md` (codgen host version) |
 | `/lib/scodgen` | The SEG bar test in `oregput` (the `|` around a stack-segment operand) compares low words: `lval` for the symbol `symtab0`, and `lval + maxoff` (not `frame0`) for `~L1`. | kept: host copy uses the same tests | `host/codgen` (`out3.c`), `src/TODO.md` |
+| popt | `fixldm` looks up the last `#` of an operand with `strrchr` (the original calls 0x548c = strrchr), not the first with `strchr` | kept: `strrchr` (oldlibc 0_1); the difference matters only if `#` occurs twice in an operand | popt-02 in `src/cmd/popt/tools/findings.json`; popt corpus 813 of 816 |
 
 ## ar (reconstructed, byte-identical)
 

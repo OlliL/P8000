@@ -74,10 +74,10 @@ static int toofar();
 
 /*
  * Like the original: a bump allocator on the break (sbrk).  heapbase is the break at the start (main), heapcur the
- * next free byte, heaplim the end of the core asked for so far (grown in steps of 2000 bytes).  heapreset() puts
- * heapcur back to heapbase in every pass of main.  The -d statistics report heaplim.
+ * next free byte, heaplim the end of the core asked for so far (grown in steps of 2000 bytes).  main sets heapcur back
+ * to heapbase in every pass.  The -d statistics report heaplim.
  */
-unsigned short heapbase, heaplim, heapcur;
+int heapbase, heaplim, heapcur;
 
 char *
 alloc(n)
@@ -86,7 +86,7 @@ int n;
 	char *p;
 
 	n = (n + 1) & ~1;
-	if ((unsigned short)(heapcur + n) >= heaplim) {
+	if ((unsigned)(heapcur + n) >= (unsigned)heaplim) {
 		if (sbrk(2000) == (char *)-1) {
 			fprintf(stderr, "C Optimizer: out of space\n");
 			exit(1);
@@ -96,12 +96,6 @@ int n;
 	p = (char *)heapcur;
 	heapcur += n;
 	return p;
-}
-
-void
-heapreset()
-{
-	heapcur = heapbase;
 }
 
 struct node *
@@ -156,7 +150,7 @@ equop(p1, p2)
 struct node *p1;
 struct node *p2;
 {
-	char *a, *b;
+	register char *a, *b;
 
 	if (p1 == 0 || p2 == 0)
 		return 0;
@@ -170,7 +164,12 @@ struct node *p2;
 		return b == 0;
 	if (b == 0)
 		return 0;
-	return strcmp(a, b) == 0;
+	for (;;) {
+		if (*b++ != *a)
+			return 0;
+		if (*a++ == 0)
+			return 1;
+	}
 }
 
 /* --------------------------------------------------------------- */
@@ -1005,10 +1004,13 @@ static void
 setcc(s)
 char *s;
 {
+	register char *p, *q;
+
 	if (!natural(s))
 		ccloc[0] = 0;
 	else
-		strcpy(ccloc, s);
+		for (p = s, q = ccloc; (*q++ = *p++) != 0;)
+			;
 }
 
 /* a location that stays the same while registers change */

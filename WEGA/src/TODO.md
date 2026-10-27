@@ -755,5 +755,29 @@ Step 1 of the order done: `statline`. The original is `statline(s, n)`: it tests
 `s`; the text is passed in r7, the number in r6. Ours was `statline(n, s)` with the same body. Changed: signature `statline(s, n)` and the 23
 calls of `main` now pass the text first (z21.c; the old version is in `tmp/tmp/popt/z21.c.before_statline`). Compared after masking: the two
 fprintf calls and the test are the same; the rest is register and frame use (D1 to D3). Corpus result: see the next entry.
+Step 2 of the order: `main` (done in an experiment copy first, then applied; the old files are in `tmp/tmp/popt/*.before_main`).
+- setbuf: after a successful `freopen` of argv[2] the original calls `setbuf(stdout, buf)` with a static `buf[BUFSIZ]` (512, from head/stdio.h).
+  Added in the same place (only when argc > 2).
+- output loop: a separate function (0x0610 in the original, `dumpnodes()` in ours), entered at the step of the loop (`p = &first`, then `p = p->forw`).
+- heap reset: the original sets `heapcur = heapbase` inline after the `maxiter` test; `heapreset()` is removed (no function in the original).
+- `heaplim`, `heapbase`, `heapcur` are `int` (the original shifts with `sra` in the `-d` line); the alloc compare uses unsigned casts.
+- Result after masking absolute addresses: `main` 158 of 195 instructions equal, length 195 against 195; `dumpnodes` 12 of 12 with the same structure;
+  the rest is register and frame use (D1 to D3). `alloc` 16 of 28 (register for n, D2).
+`main`, second round (experiments in `tmp/tmp/popt/exp`, measured with `try.sh`): `register` for `niter`, `maxiter`, `isend` (the original
+keeps them in r14, r13, r12); the freopen check as `if ... else setbuf(...)` (the original places the setbuf branch out of line). Result:
+171 of 198 instructions equal (original 195; the rest: frame size 14 against 12 (D1), register choice for argv and the reloads (D2, D3)).
+Calls: the original calls the global functions `opsetup`, `refcount`, `iterate` with absolute `call`; our compiler emits `calr` for them
+(static functions are `calr` in both). A difference of the compiler revision, to be classified (not D1 to D16 as far as known; open).
+Re-sync after the changes to `main` and `statline` (symbol build rebuilt from the current sources, `locate.py --update`, `classify.py`):
+72 function ranges moved and were updated in `findings.json`; `heapreset` is no longer a function (its reset is inline in `main`, marked
+open with no start); `dumpnodes` (the output loop, 0x002a to 0x004e) is added and confirmed against the original 0x0610. The classifier:
+65 "D only (pattern-verified)", 2 "other differences" (`opsetup`, `ilen`). `main` is no longer "other differences" (the `sra` form matches).
+`main`, end: the original calls `exit(0)` and returns; our `return 0;` after `exit(0)` was removed (the original has no such instruction;
+byte identity first). `main`: 175 of 197 instructions equal (original 195). Remaining: frame size and register choice (D1 to D3) and the call form
+of the global functions `opsetup`, `refcount`, `iterate` (the original uses absolute `call`, our compiler `calr`; no source form reproduces it:
+static functions are `calr` in both). The call form is an open point of the compiler revision (candidate for the D classes; owner decision).
+usesreg, after the register change: 143 of 242 instructions equal. Calls by target agree in number except dualop: the original calls it seven
+times (0x3918, 0x393c, 0x39b0, 0x39f2, 0x3a40, 0x3a84, 0x3ac0), the source has six sites and the binary six calls. Open as popt-17 (the case of
+the extra call is not mapped yet).
 Byte identity: not reached for any function yet. Next: `absval`, `equstr` (small), then the functions with 50 % to 60 %.
 

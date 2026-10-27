@@ -6,13 +6,28 @@
 #include <ctype.h>
 #include "z2.h"
 
+/* reverse the string s in place */
+static void
+reverse(s)
+char *s;
+{
+	int t, j, i;
+
+	i = strlen(s) - 1;
+	for (j = 0; j < i; j++, i--) {
+		t = s[j];
+		s[j] = s[i];
+		s[i] = t;
+	}
+}
+
 /* write the decimal digits of n to buf */
 static void
 itoa_(n, buf)
 int n;
 char *buf;
 {
-	int i, j, t;
+	int i;
 
 	i = 0;
 	do {
@@ -20,11 +35,7 @@ char *buf;
 		n /= 10;
 	} while (n > 0);
 	buf[i] = 0;
-	for (j = 0, i--; j < i; j++, i--) {
-		t = buf[j];
-		buf[j] = buf[i];
-		buf[i] = t;
-	}
+	reverse(buf);
 }
 
 /*
@@ -178,50 +189,43 @@ char *name;
  */
 static int
 usesreg(node, str, reg)
-struct node *node;
-char *str;
-int reg;
+register struct node *node;
+register char *str;
+register int reg;
 {
 	char buf[50];
-	struct node *p;
-	int r10, r9;
-	int res;
+	register struct node *p;
+	register int r10, r9;
 
 	strcpy(buf, str);
-	res = 0;
 	for (p = node->forw; p; p = p->forw) {
 		switch (p->op) {
 		case CJP:
 		case JP:
-			res = 1;
-			goto out;
+			goto out1;
 		case LD:
 		case POP:
 		case LDA:
 			dualop(p);
 			if (p->op == POP) {
 				if (ovlap(RT1 + 1, buf)) {
-					res = 1;
-					goto out;
+					goto out1;
 				}
 			} else if (ovlap(RT1, buf)) {
-				res = 1;
-				goto out;
+				goto out1;
 			}
 			if (p->subop == SBYTE && reg == isreg(RT1)) {
-				res = 1;
-				goto out;
+				goto out1;
 			}
 			if (equstr(RT2, buf))
-				goto out;
+				goto out0;
 			if (p->subop == SLONG) {
 				r10 = isreg(RT2);
 				if (r10 >= 0 && reg == r10 + 1)
-					goto out;
+					goto out0;
 			}
 			if (ovlap(RT2, buf)) {
-				res = 1;
-				goto out;
+				goto out1;
 			}
 			continue;
 		case CLR:
@@ -229,14 +233,13 @@ int reg;
 			if (p->subop == SLONG) {
 				r10 = isreg(p->code);
 				if (r10 >= 0 && reg == r10 + 1)
-					goto out;
+					goto out0;
 			}
 			if (r10 >= 0 && equstr(p->code, buf))
-				goto out;
+				goto out0;
 			dualop(p);
 			if (ovlap(RT1, buf)) {
-				res = 1;
-				goto out;
+				goto out1;
 			}
 			continue;
 		case EXTS:
@@ -246,24 +249,21 @@ int reg;
 			switch (p->subop) {
 			case 0:
 				if (reg == r10 + 1) {
-					res = 1;
-					goto out;
+					goto out1;
 				}
 				if (r10 != reg)
 					continue;
-				goto out;
+				goto out0;
 			case SBYTE:
 				if (r10 != reg)
 					continue;
-				res = 1;
-				goto out;
+				goto out1;
 			case SLONG:
 				if (reg == r10 + 2 || reg == r10 + 3) {
-					res = 1;
-					goto out;
+					goto out1;
 				}
 				if (r10 == reg || reg == r10 + 1)
-					goto out;
+					goto out0;
 				continue;
 			}
 			continue;
@@ -275,8 +275,7 @@ int reg;
 			if (r10 < 0)
 				break;
 			if (reg == r10 + 1) {
-				res = 1;
-				goto out;
+				goto out1;
 			}
 			break;
 		case MUL:
@@ -286,34 +285,30 @@ int reg;
 				break;
 			if (p->subop == 0) {
 				if (ovlap(RT1, buf) || reg == r10 + 1) {
-					res = 1;
-					goto out;
+					goto out1;
 				}
 				if (reg != r10)
 					break;
-				goto out;
+				goto out0;
 			}
 			if (p->subop != SLONG)
 				break;
 			if (ovlap(RT1, buf) || reg == r10 + 2 || reg == r10 + 3) {
-				res = 1;
-				goto out;
+				goto out1;
 			}
 			if (reg == r10 || reg == r10 + 1)
-				goto out;
+				goto out0;
 			break;
 		case DIV:
 			dualop(p);
 			r10 = isreg(RT2);
 			if (r10 >= 0 && reg == r10 + 1) {
-				res = 1;
-				goto out;
+				goto out1;
 			}
 			if (p->subop != SLONG)
 				break;
 			if (reg == r10 + 2 || reg == r10 + 3) {
-				res = 1;
-				goto out;
+				goto out1;
 			}
 			break;
 		case CALL:
@@ -321,8 +316,7 @@ int reg;
 			if (node->subop == SBYTE && reg > 8)
 				r9 = reg - 8;
 			if (r9 >= 2 && r9 <= 7) {
-				res = 1;
-				goto out;
+				goto out1;
 			}
 #ifdef SPOPT
 			if (reg >= 2) {
@@ -330,56 +324,55 @@ int reg;
 					continue;
 				r10 = isreg(p->code + 1);
 				if (reg == r10) {
-					res = 1;
-					goto out;
+					goto out1;
 				}
 				r10 = reg ^ 1;
 				if (r10 == 0)
 					continue;
-				res = 1;
-				goto out;
+				goto out1;
 			}
 #else
 			if (reg >= 2)
 				continue;
 #endif
 			if (p->code[0] != '@')
-				goto out;
+				goto out0;
 			r10 = isreg(p->code + 1);
 			if (reg != r10)
-				goto out;
-			res = 1;
-			goto out;
+				goto out0;
+			goto out1;
 		case RET:
 #ifdef SPOPT
 			if (reg == 2 || reg == 3 || reg == 12 || reg == 13) {
 #else
 			if (reg == 2 || reg == 3 || reg == 14) {
 #endif
-				res = 1;
-				goto out;
+				goto out1;
 			}
-			goto out;
+			goto out0;
 		default:
 			break;
 		}
 		/* default: any mention of the register counts as a use */
 		if (ovlap(p->code, buf)) {
-			res = 1;
-			goto out;
+			goto out1;
 		}
 	}
-out:
+out0:
 	dualop(node);
-	return res;
+	return 0;
+out1:
+	dualop(node);
+	return 1;
 }
 
 int
 isused(p, reg)
-struct node *p;
-char *reg;
+register struct node *p;
+register char *reg;
 {
-	int r12, c;
+	register int r12;
+	int c;
 
 	r12 = isreg(reg);
 	if (r12 < 0)
@@ -539,7 +532,7 @@ int n;
 		q = strrchr(p->code, ',');
 		*q = 0;
 	} else {
-		q = strchr(p->code, '#');
+		q = strrchr(p->code, '#');
 		sprintf(q + 1, "%d", n);
 	}
 }

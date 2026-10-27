@@ -13,7 +13,7 @@
   "main": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x002a-0x02da",
+   "ours": "0x004e-0x02e4",
    "orig": "0x002a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -33,13 +33,19 @@
    ],
    "rating": "confirmed via call graph and call order in main: entry: the start code at 0x0 calls 0x002a (orig 0x001e); calls of main agree in order with ours (libc groups, 23 statline calls, procopt, shortjump, comjump, rmove, input, movedat, refcount); NOTES.md says crt0 at 0x2a, which is not the case",
    "audit": {
-    "d_normalised_pct": 68,
-    "pattern_diff": 126,
-    "pattern_unexplained": 2,
+    "d_normalised_pct": 96,
+    "pattern_diff": 14,
+    "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: sra\trS,#10; srl\trS,#10",
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8"
+    ],
     "structure_flags": [],
     "len_ours": 197,
     "len_orig": 195
@@ -50,7 +56,7 @@
   "statline": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x02da-0x0306",
+   "ours": "0x02e4-0x0310",
    "orig": "0x0322",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -89,7 +95,7 @@
   "input": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0306-0x04f4",
+   "ours": "0x0310-0x04fe",
    "orig": "0x0358",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -135,7 +141,7 @@
   "jswcheck": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x04f4-0x0568",
+   "ours": "0x04fe-0x0572",
    "orig": "0x02c8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -178,7 +184,7 @@
   "getch": {
    "file": "z21.c",
    "pairing": "open",
-   "ours": "0x0568-0x0592",
+   "ours": "0x0572-0x059c",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -201,7 +207,7 @@
   "getln": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0592-0x0642",
+   "ours": "0x059c-0x064c",
    "orig": "0x04d6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -245,7 +251,7 @@
   "getnum": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0642-0x069a",
+   "ours": "0x064c-0x06a4",
    "orig": "0x05d2",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -291,7 +297,7 @@
   "output": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x069a-0x099e",
+   "ours": "0x06a4-0x09a8",
    "orig": "0x06ba",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -340,7 +346,7 @@
   "prefix": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x099e-0x0a4e",
+   "ours": "0x09a8-0x0a58",
    "orig": "0x0630",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -386,7 +392,7 @@
   "copy": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0a4e-0x0ae8",
+   "ours": "0x0a58-0x0ae6",
    "orig": "0x0964",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -406,8 +412,8 @@
    ],
    "rating": "confirmed by structure: empty string returns 0, length loop, concatenation for na > 1, alloc(n) (0x2476), byte copy loops, return of the new string; the original has the length loops inline (no strlen call), ours calls strlen of the libc (difference in the source)",
    "audit": {
-    "d_normalised_pct": 50,
-    "pattern_diff": 47,
+    "d_normalised_pct": 81,
+    "pattern_diff": 19,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -416,14 +422,11 @@
      "D1",
      "D10",
      "D13",
-     "D16",
      "D2",
-     "D3",
-     "D7",
-     "D8"
+     "D3"
     ],
     "structure_flags": [],
-    "len_ours": 47,
+    "len_ours": 53,
     "len_orig": 52
    },
    "review": "reviewed: structure",
@@ -432,7 +435,7 @@
   "hashname": {
    "file": "z21.c",
    "pairing": "open",
-   "ours": "0x0ae8-0x0b42",
+   "ours": "0x0ae6-0x0b40",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -454,7 +457,7 @@
   "opsetup": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0b42-0x0b96",
+   "ours": "0x0b40-0x0b94",
    "orig": "0x09ec",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -491,7 +494,7 @@
   "cclook": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0b96-0x0c6a",
+   "ours": "0x0b94-0x0c68",
    "orig": "0x0a44",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -537,7 +540,7 @@
   "oplook": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0c6a-0x0e30",
+   "ours": "0x0c68-0x0e2e",
    "orig": "0x0b02",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -583,7 +586,7 @@
   "refcount": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0e30-0x106c",
+   "ours": "0x0e2e-0x106a",
    "orig": "0x0ca0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -628,7 +631,7 @@
   "iterate": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x106c-0x1320",
+   "ours": "0x106a-0x131e",
    "orig": "0x0e1a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -675,7 +678,7 @@
   "xjump": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x1320-0x13d4",
+   "ours": "0x131e-0x13d2",
    "orig": "0x100e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -718,7 +721,7 @@
   "insertl": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x13d4-0x148e",
+   "ours": "0x13d2-0x148c",
    "orig": "0x108c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -762,7 +765,7 @@
   "codemove": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x148e-0x1786",
+   "ours": "0x148c-0x1784",
    "orig": "0x1102",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -808,7 +811,7 @@
   "comjump": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x1786-0x17fe",
+   "ours": "0x1784-0x17fc",
    "orig": "0x12e6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -850,7 +853,7 @@
   "backjmp": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x17fe-0x18a2",
+   "ours": "0x17fc-0x18a0",
    "orig": "0x133c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -892,7 +895,7 @@
   "clearmem": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x18a2-0x18ca",
+   "ours": "0x18a0-0x18c8",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -915,7 +918,7 @@
   "alloc": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1908-0x1966",
+   "ours": "0x1906-0x1964",
    "orig": "0x2476",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -935,8 +938,8 @@
    ],
    "rating": "confirmed by structure; since the allocator was rebuilt on sbrk (as the original), the popt corpus gives 814 of 816 identical; the two differences are the -d line \"K core\" (program size: the break start depends on the end of data+bss, 0x7148 original against 0x7bf4 ours)",
    "audit": {
-    "d_normalised_pct": 41,
-    "pattern_diff": 33,
+    "d_normalised_pct": 69,
+    "pattern_diff": 17,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -948,9 +951,7 @@
      "D2",
      "D3",
      "D6",
-     "D7",
-     "D8",
-     "D8/D2"
+     "D8"
     ],
     "structure_flags": [],
     "len_ours": 28,
@@ -962,7 +963,7 @@
   "heapreset": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x1966-0x1970",
+   "ours": null,
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -980,12 +981,12 @@
      "similarity_pct": 33.3
     }
    ],
-   "rating": "open, corrected: the original does reset the heap in main (heapcur = saved base at 0x0154/0x01a8, inline, no call); ours calls heapreset(); the base of the original is the break from sbrk(2) at the start of main, ours now the same"
+   "rating": "removed from the source: main sets heapcur = heapbase inline after the maxiter test, as the original does (no function)"
   },
   "allocnode": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x1970-0x197a",
+   "ours": "0x1964-0x196e",
    "orig": null,
    "level": null,
    "note": "original allocnode 0x2476 is a bump allocator on the pointer at 0x163c (limit 0x163e, growth 0x7d0 via 0x5564); ours uses zalloc (malloc) for the memory and keeps the bump only for the statistics (heaplim)",
@@ -1030,7 +1031,7 @@
   "nonlab": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x197a-0x19aa",
+   "ours": "0x196e-0x199e",
    "orig": "0x244e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1071,7 +1072,7 @@
   "decref": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x19aa-0x19e4",
+   "ours": "0x199e-0x19d8",
    "orig": "0x2416",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1111,7 +1112,7 @@
   "equstr": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x19e4-0x1a16",
+   "ours": "0x19d8-0x1a0a",
    "orig": "0x3340",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1154,7 +1155,7 @@
   "absval": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1a16-0x1a2e",
+   "ours": "0x1a0a-0x1a22",
    "orig": "0x23a0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1194,7 +1195,7 @@
   "equop": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1a2e-0x1aa8",
+   "ours": "0x1a22-0x1aa0",
    "orig": "0x23b4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1214,14 +1215,15 @@
    ],
    "rating": "confirmed via callers: xjump (0x100e) and backjmp (0x133c) call both; no calls on either side; length 43 against 42",
    "audit": {
-    "d_normalised_pct": 37,
-    "pattern_diff": 53,
+    "d_normalised_pct": 58,
+    "pattern_diff": 34,
     "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
+    "reordered_instructions": 2,
+    "reordered_examples": [
+     "test\trS"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D1",
      "D10",
      "D2",
      "D3",
@@ -1230,7 +1232,7 @@
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 43,
+    "len_ours": 50,
     "len_orig": 42
    },
    "review": "pattern only: alignment 37 %, verdict not supported"
@@ -1238,7 +1240,7 @@
   "clearreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1aa8-0x1ad2",
+   "ours": "0x1aa0-0x1aca",
    "orig": "0x24d4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1281,7 +1283,7 @@
   "savereg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1ad2-0x1b4a",
+   "ours": "0x1aca-0x1b42",
    "orig": "0x24f6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1324,7 +1326,7 @@
   "findreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1b4a-0x1bb0",
+   "ours": "0x1b42-0x1ba8",
    "orig": "0x255a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1370,7 +1372,7 @@
   "findbyte": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1bb0-0x1be6",
+   "ours": "0x1ba8-0x1bde",
    "orig": "0x25b6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1410,7 +1412,7 @@
   "findword": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1be6-0x1c52",
+   "ours": "0x1bde-0x1c4a",
    "orig": "0x25f4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1452,7 +1454,7 @@
   "findlong": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1c52-0x1cc8",
+   "ours": "0x1c4a-0x1cc0",
    "orig": "0x2656",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1493,7 +1495,7 @@
   "findcopy": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1cc8-0x1d16",
+   "ours": "0x1cc0-0x1d0e",
    "orig": "0x26c2",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1536,7 +1538,7 @@
   "memreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1d16-0x1f3c",
+   "ours": "0x1d0e-0x1f34",
    "orig": "0x270e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1584,7 +1586,7 @@
   "setreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1f3c-0x202c",
+   "ours": "0x1f34-0x2024",
    "orig": "0x28ae",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1628,7 +1630,7 @@
   "makereg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x202c-0x20c2",
+   "ours": "0x2024-0x20ba",
    "orig": "0x2988",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1672,7 +1674,7 @@
   "dest": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x20c2-0x2126",
+   "ours": "0x20ba-0x211e",
    "orig": "0x29f4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1716,7 +1718,7 @@
   "killreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2126-0x22f0",
+   "ours": "0x211e-0x22e8",
    "orig": "0x2a46",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1759,7 +1761,7 @@
   "cleargroup": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x22f0-0x2332",
+   "ours": "0x22e8-0x232a",
    "orig": "0x2c16",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1803,7 +1805,7 @@
   "singop": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2332-0x2358",
+   "ours": "0x232a-0x2350",
    "orig": "0x2c4a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1847,7 +1849,7 @@
   "dualop": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2358-0x23d0",
+   "ours": "0x2350-0x23c8",
    "orig": "0x2c72",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1891,7 +1893,7 @@
   "findslot": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x23d0-0x2426",
+   "ours": "0x23c8-0x241e",
    "orig": "0x2cd8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1937,7 +1939,7 @@
   "isreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2426-0x24f0",
+   "ours": "0x241e-0x24e8",
    "orig": "0x2d22",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1981,7 +1983,7 @@
   "ccinval": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x24f0-0x2506",
+   "ours": "0x24e8-0x24fe",
    "orig": "0x2dda",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2020,7 +2022,7 @@
   "regprefix": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2506-0x2536",
+   "ours": "0x24fe-0x252e",
    "orig": "0x2df8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2061,7 +2063,7 @@
   "repladdr": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2536-0x26b0",
+   "ours": "0x252e-0x26a8",
    "orig": "0x2e2c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2105,7 +2107,7 @@
   "movedat": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x26b0-0x2890",
+   "ours": "0x26a8-0x2888",
    "orig": "0x2fc8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2150,7 +2152,7 @@
   "redunbr": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2890-0x2976",
+   "ours": "0x2888-0x296e",
    "orig": "0x30ec",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2193,7 +2195,7 @@
   "findcon": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2976-0x29c2",
+   "ours": "0x296e-0x29ba",
    "orig": "0x3196",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2233,7 +2235,7 @@
   "compare": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x29c2-0x2b3a",
+   "ours": "0x29ba-0x2b32",
    "orig": "0x31ec",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2279,7 +2281,7 @@
   "setcon": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2b3a-0x2bec",
+   "ours": "0x2b32-0x2be4",
    "orig": "0x32f0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2326,7 +2328,7 @@
   "setcc": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2bec-0x2c0e",
+   "ours": "0x2be4-0x2c1e",
    "orig": "0x3362",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2346,21 +2348,18 @@
    ],
    "rating": "confirmed by call graph: 0x3362 is the second caller of natural (0x3396), the other being setcon (0x32f0, confirmed); calls natural only, no libc call (ours calls strcpy: the copy is inline in the original); 20 against 13 instructions",
    "audit": {
-    "d_normalised_pct": 40,
-    "pattern_diff": 17,
+    "d_normalised_pct": 82,
+    "pattern_diff": 6,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D2",
-     "D3",
-     "D7",
-     "D8"
+     "D3"
     ],
     "structure_flags": [],
-    "len_ours": 13,
+    "len_ours": 22,
     "len_orig": 20
    },
    "review": "reviewed: structure",
@@ -2369,7 +2368,7 @@
   "natural": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2c0e-0x2c52",
+   "ours": "0x2c1e-0x2c62",
    "orig": "0x3396",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2412,7 +2411,7 @@
   "jumpsw": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2c52-0x2d82",
+   "ours": "0x2c62-0x2d92",
    "orig": "0x207e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2458,7 +2457,7 @@
   "shortjump": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2d82-0x2e9a",
+   "ours": "0x2d92-0x2eaa",
    "orig": "0x213c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2503,7 +2502,7 @@
   "toofar": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2e9a-0x2ee4",
+   "ours": "0x2eaa-0x2ef4",
    "orig": "0x21fe",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2545,7 +2544,7 @@
   "ilen": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2ee4-0x3030",
+   "ours": "0x2ef4-0x3040",
    "orig": "0x224c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2586,7 +2585,7 @@
   "adrlen": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x3030-0x306c",
+   "ours": "0x3040-0x307c",
    "orig": "0x2352",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2629,7 +2628,7 @@
   "newcode1": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x306c-0x3080",
+   "ours": "0x307c-0x3090",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -2652,7 +2651,7 @@
   "rmove": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x3080-0x4030",
+   "ours": "0x3090-0x4040",
    "orig": "0x13b6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2704,7 +2703,7 @@
   "itoa_": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4030-0x40ca",
+   "ours": "0x40a2-0x40f2",
    "orig": "0x3c06",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2724,23 +2723,17 @@
    ],
    "rating": "confirmed by structure (see above); 8 calls in the original and in the source, 7 in ours: the WEGA cc merges one tail (D11, shown by a test: return g(y) becomes a jump to a shared call of g)",
    "audit": {
-    "d_normalised_pct": 46,
-    "pattern_diff": 31,
+    "d_normalised_pct": 96,
+    "pattern_diff": 1,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D1",
-     "D13",
-     "D2",
-     "D3",
-     "D6",
-     "D7",
-     "D8"
+     "D2"
     ],
     "structure_flags": [],
-    "len_ours": 50,
+    "len_ours": 26,
     "len_orig": 27
    },
    "review": "reviewed: structure",
@@ -2749,7 +2742,7 @@
   "scan": {
    "file": "z23.c",
    "pairing": "open",
-   "ours": "0x40ca-0x414c",
+   "ours": "0x40f2-0x4174",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -2774,7 +2767,7 @@
   "ovlap": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x414c-0x4440",
+   "ours": "0x4174-0x4468",
    "orig": "0x3c5a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2822,7 +2815,7 @@
   "usesreg": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4440-0x47f2",
+   "ours": "0x4468-0x4754",
    "orig": "0x38d0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2842,11 +2835,13 @@
    ],
    "rating": "confirmed by call graph and call order: calls dualop (0x2c72), equstr (0x3340), isreg (0x2d22) and 0x3c5a (ovlap candidate) as ours; called by isused (0x3838)",
    "audit": {
-    "d_normalised_pct": 18,
-    "pattern_diff": 352,
+    "d_normalised_pct": 51,
+    "pattern_diff": 167,
     "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
+    "reordered_instructions": 2,
+    "reordered_examples": [
+     "call T"
+    ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -2862,7 +2857,7 @@
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 278,
+    "len_ours": 241,
     "len_orig": 174
    },
    "review": "reviewed: structure",
@@ -2871,7 +2866,7 @@
   "isused": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x47f2-0x48b6",
+   "ours": "0x4754-0x47f6",
    "orig": "0x3838",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2891,24 +2886,22 @@
    ],
    "rating": "confirmed by call graph and call order: calls isreg (0x2d22) and usesreg (0x38d0) as ours; 63 against 67 instructions",
    "audit": {
-    "d_normalised_pct": 27,
-    "pattern_diff": 94,
+    "d_normalised_pct": 62,
+    "pattern_diff": 48,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D10",
      "D2",
      "D3",
      "D5",
      "D7",
-     "D8",
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 67,
+    "len_ours": 65,
     "len_orig": 63
    },
    "review": "pattern only: alignment 27 %, verdict not supported"
@@ -2916,7 +2909,7 @@
   "markregs": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x48b6-0x49f4",
+   "ours": "0x47f6-0x4934",
    "orig": "0x432c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2964,7 +2957,7 @@
   "rename_regs": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x49f4-0x4b56",
+   "ours": "0x4934-0x4a96",
    "orig": "0x36d0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -3009,7 +3002,7 @@
   "fixldm": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4b56-0x4bda",
+   "ours": "0x4a96-0x4b1a",
    "orig": "0x37cc",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -3056,7 +3049,7 @@
   "procopt": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4bda-0x4f36",
+   "ours": "0x4b1a-0x4e76",
    "orig": "0x33d6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -3100,6 +3093,61 @@
    },
    "review": "reviewed: structure",
    "review_note": "array clearing inline in the original (no clearmem call); call order differs"
+  },
+  "dumpnodes": {
+   "file": "z21.c",
+   "pairing": "confirmed",
+   "ours": "0x002a-0x004e",
+   "orig": "0x0610",
+   "level": "analysed",
+   "rating": "confirmed by structure: the output loop of main as its own function, 12 instructions in both; calls output (0x06ba) for each node; the register for p differs (D2)",
+   "audit": {
+    "d_normalised_pct": 67,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 12,
+    "len_orig": 12
+   }
+  },
+  "reverse": {
+   "file": "z23.c",
+   "pairing": "confirmed",
+   "ours": "0x4040-0x40a2",
+   "orig": "0x3b9a",
+   "level": "analysed",
+   "rating": "confirmed by structure: the original calls strlen (0x553a) and swaps from both ends; reverse is called by itoa_ (0x3c06) as in ours; 15 of 35 instructions equal, the rest is frame order and register choice (D2, D3)",
+   "audit": {
+    "d_normalised_pct": 50,
+    "pattern_diff": 33,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 33,
+    "len_orig": 62
+   }
   }
  },
  "findings": [
@@ -3116,14 +3164,15 @@
   },
   {
    "id": "popt-02",
-   "status": "open",
+   "status": "fixed",
    "functions": [
     "fixldm"
    ],
    "orig": "0x37cc (calls 0x548c = strrchr)",
    "ours": "z23.c:542 strchr(p->code, '#')",
    "summary": "original calls strrchr (last occurrence of the character), ours strchr (first occurrence); behaviour differs if # occurs twice in the operand text",
-   "decide": "owner decision: rebuild strrchr behaviour (byte identity first, as for other original quirks) and record in the quirks table"
+   "decide": "owner decision: rebuild strrchr behaviour (byte identity first, as for other original quirks) and record in the quirks table",
+   "done": "strchr replaced by strrchr (as the original); recorded in host/KNOWLEDGE.md quirks table; corpus 813 of 816 (K core line only)"
   },
   {
    "id": "popt-03",
@@ -3150,6 +3199,166 @@
    "ours": "strncmp in memreg, rmove, rename_regs",
    "summary": "checked: the original calls strncmp at the same places (0x54d6); no difference found, listed for completeness",
    "decide": "none (closed when the next review confirms it)"
+  },
+  {
+   "id": "popt-05",
+   "status": "fixed",
+   "functions": [
+    "alloc",
+    "allocnode",
+    "heapreset"
+   ],
+   "orig": "0x2476 (alloc), 0x0154/0x01a8 (heap start and reset in main)",
+   "ours": "z22.c alloc, allocnode; z21.c main",
+   "summary": "original allocator is a bump pointer on the break (sbrk), reset to the base in main; ours used malloc for the memory and a constant HEAP0",
+   "done": "alloc rebuilt on sbrk(2000), heapbase from sbrk(2) in main, heapreset removed (inline reset), allocnode calls alloc(14); corpus 814 of 816 (rest: K core line, layout)"
+  },
+  {
+   "id": "popt-06",
+   "status": "fixed",
+   "functions": [
+    "statline"
+   ],
+   "orig": "0x0322",
+   "ours": "z21.c statline, calls in main",
+   "summary": "original statline(s, n) takes the text first; ours had statline(n, s)",
+   "done": "signature and the 23 calls changed; corpus unchanged (814 of 816)"
+  },
+  {
+   "id": "popt-07",
+   "status": "fixed",
+   "functions": [
+    "main"
+   ],
+   "orig": "0x0610 (output loop), 0x4c62 (setbuf)",
+   "ours": "z21.c main",
+   "summary": "original calls setbuf(stdout, buf) after a successful freopen of argv[2]; the output loop is a function (0x0610), ours had it inline; heaplim is int (sra)",
+   "done": "setbuf added with static buf[BUFSIZ]; dumpnodes() added; heaplim, heapbase, heapcur are int; corpus 813 of 816 (K core line only)"
+  },
+  {
+   "id": "popt-08",
+   "status": "fixed",
+   "functions": [
+    "main"
+   ],
+   "orig": "0x02c2-0x02c6 (end of main)",
+   "ours": "z21.c main, last lines",
+   "summary": "original ends with exit(0) and no return instruction; ours had return 0 after exit(0)",
+   "done": "return 0 removed; main 175 of 197 equal; corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+  },
+  {
+   "id": "popt-09",
+   "status": "open",
+   "functions": [
+    "opsetup",
+    "refcount",
+    "iterate"
+   ],
+   "orig": "call %09EC, %0CA0, %0E1A (absolute)",
+   "ours": "calr _opsetup, _refcount, _iterate (calr _input etc. for static functions)",
+   "summary": "the original calls the global functions absolutely (call), our compiler emits calr; static functions are calr in both; no source form reproduces the call form",
+   "decide": "owner decision: compiler revision difference (candidate for D1 to D16 or a new class); no source change planned"
+  },
+  {
+   "id": "popt-10",
+   "status": "fixed",
+   "functions": [
+    "malloc (oldlibc 0_3)"
+   ],
+   "orig": "0x5392 (realloc, after the ret of free)",
+   "ours": "src/lib/oldlibc/malloc/0_3.s",
+   "summary": "the label _realloc was missing in 0_3.s (the code after free is realloc)",
+   "done": "label added; the module still matches the original as 191 instructions"
+  },
+  {
+   "id": "popt-11",
+   "status": "fixed",
+   "functions": [
+    "itoa_",
+    "reverse"
+   ],
+   "orig": "0x3c06 (itoa_), 0x3b9a (reversal)",
+   "ours": "z23.c itoa_, reverse",
+   "summary": "the original reverses the digit string in a separate function (strlen, swap from both ends); ours had the loop inline in itoa_",
+   "done": "reverse() split out with the locals in the order int t, j, i; corpus result: see the next entry; corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+  },
+  {
+   "id": "popt-12",
+   "status": "fixed",
+   "functions": [
+    "setcc"
+   ],
+   "orig": "0x3362 (copy loop inline, 0x0d0e = ccloc)",
+   "ours": "z22.c setcc (strcpy from libc)",
+   "summary": "the original copies the operand inline into ccloc (loop with the byte store); ours calls strcpy of the libc",
+   "done": "strcpy replaced by the loop with register p, q; setcc 12 of 22 instructions equal (was 6 of 13); corpus 813 of 816 (K core only); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+  },
+  {
+   "id": "popt-13",
+   "status": "fixed",
+   "functions": [
+    "copy"
+   ],
+   "orig": "0x0964 (length loops inline)",
+   "ours": "z21.c copy (strlen from libc)",
+   "summary": "the original counts the lengths in loops (strlen(a)+1 and strlen(b)) and has no libc call; ours calls strlen",
+   "done": "length loops inline with register p, np, onp; copy 31 of 53 instructions equal (was 8 of 47); corpus run pending (result9.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+  },
+  {
+   "id": "popt-14",
+   "status": "fixed",
+   "functions": [
+    "equop"
+   ],
+   "orig": "0x23b4 (inline compare, no call)",
+   "ours": "z22.c equop (strcmp from libc)",
+   "summary": "the original compares the two strings inline (loop with post-increments, return 0 or 1); ours calls strcmp of the libc",
+   "done": "strcmp replaced by the loop with register a, b; equop 16 of 50 instructions equal (original 42; the head with the op and subop checks differs, D2/D3); corpus run pending (result10.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+  },
+  {
+   "id": "popt-15",
+   "status": "fixed",
+   "functions": [
+    "isused"
+   ],
+   "orig": "0x3838",
+   "ours": "z23.c isused",
+   "summary": "the original keeps p, reg and r12 in registers (r14, r13, r12); ours in the frame (D2)",
+   "done": "register declarations; isused 33 of 67 instructions equal (original 63); corpus run pending (result12.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+  },
+  {
+   "id": "popt-16",
+   "status": "fixed",
+   "functions": [
+    "usesreg"
+   ],
+   "orig": "0x38d0",
+   "ours": "z23.c usesreg",
+   "summary": "the original keeps the parameters and the loop variables in registers (r9 to r14); ours in the frame (D2, D3)",
+   "done": "register declarations for parameters and locals; usesreg 143 of 242 instructions equal (original 239); corpus run pending (result13.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+  },
+  {
+   "id": "popt-17",
+   "status": "fixed",
+   "functions": [
+    "usesreg"
+   ],
+   "orig": "0x38d0; dualop calls at 0x3918, 0x393c, 0x39b0, 0x39f2, 0x3a40, 0x3a84, 0x3ac0 (7)",
+   "ours": "z23.c usesreg (6 call sites of dualop in the source, 6 calls in the binary)",
+   "summary": "the original has the common exit of usesreg twice (one tail for result 1, one for result 0, the result constant inlined by the old cc); ours had one tail",
+   "decide": "locate the case (switch of usesreg) of the extra call by mapping the jump table entries of the original; then decide the source form",
+   "done": "exit split into out0/out1 (every goto out gets its result); the seven dualop calls and all other call counts agree; corpus run pending (result14.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+  },
+  {
+   "id": "popt-18",
+   "status": "open",
+   "functions": [
+    "procopt"
+   ],
+   "orig": "0x33d6 (clear loops at frame 0x15 and 0x06)",
+   "ours": "z23.c procopt (clearmem(a, 16), clearmem(b, 16))",
+   "summary": "the original clears its two arrays with inline loops at frame offsets 0x15 (8 bytes, a[0] set to 1 first) and 0x06 (15 bytes); ours calls clearmem for two 16-byte arrays. Sizes 8 and 15 alone lower the match (44 against 49 of 248 instructions), so the frame layout must be analysed first",
+   "decide": "analyse the frame layout (declaration order and sizes) against the original before changing the source"
   }
  ],
  "manual": [],

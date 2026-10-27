@@ -17,12 +17,23 @@ static int cclook();
 static void backjmp();
 static void statline();
 
+static void
+dumpnodes()
+{
+	struct node *p;
+
+	for (p = &first; (p = p->forw) != 0;)
+		output(p);
+}
+
 int
 main(argc, argv)
 int argc;
 char **argv;
 {
-	int niter, maxiter, isend, nflag;
+	register int niter, maxiter, isend;
+	int nflag;
+	static char buf[BUFSIZ];
 
 	if (argc > 1 && argv[1][0] == '+') {
 		argc--;
@@ -51,7 +62,8 @@ char **argv;
 		if (freopen(argv[2], "w", stdout) == NULL) {
 			fprintf(stderr, "C2: can't create %s\n", argv[2]);
 			exit(1);
-		}
+		} else
+			setbuf(stdout, buf);
 	}
 	heaplim = heapbase = heapcur = (unsigned short)sbrk(2);
 	maxiter = 0;
@@ -73,15 +85,10 @@ char **argv;
 		shortjump();
 		if (!flag136a)
 			procopt();
-		{
-			struct node *p;
-
-			for (p = first.forw; p; p = p->forw)
-				output(p);
-		}
-		heapreset();
+		dumpnodes();
 		if (niter > maxiter)
 			maxiter = niter;
+		heapcur = heapbase;
 	} while (isend);
 	if (nflag) {
 		statline("iterations", maxiter);
@@ -110,7 +117,6 @@ char **argv;
 		fprintf(stderr, "%dK core\n", (int)(((heaplim + 0x3ff) >> 10) & 0x3f));
 	}
 	exit(0);
-	return 0;
 }
 
 static void
@@ -451,14 +457,21 @@ int na;
 char *a;
 char *b;
 {
-	char *p, *np, *onp;
+	register char *p, *np, *onp;
 	int n;
 
 	if (*a == 0)
 		return 0;
-	n = strlen(a) + 1;
-	if (na > 1)
-		n += strlen(b);
+	n = 0;
+	p = a;
+	do
+		n++;
+	while (*p++);
+	if (na > 1) {
+		p = b;
+		while (*p++)
+			n++;
+	}
 	onp = np = alloc(n);
 	for (p = a; (*np++ = *p++) != 0;)
 		;
