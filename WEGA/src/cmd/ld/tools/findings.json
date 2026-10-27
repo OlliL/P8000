@@ -275,11 +275,11 @@
    "module_refs": 1
   },
   "f_34b8": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x34b8",
-   "level": "proven: target of a call in the code",
-   "ours": null,
+   "level": "analysed",
+   "ours": "f34b8..3516",
    "note": "no own source yet; name unknown (stripped binary)",
    "module_hint": null
   },
@@ -376,11 +376,11 @@
    "module_hint": null
   },
   "f_60f0": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x60f0",
-   "level": "proven: target of a call in the code",
-   "ours": null,
+   "level": "analysed",
+   "ours": "f60f0..6134",
    "note": "no own source yet; name unknown (stripped binary)",
    "module_hint": null
   },
@@ -3092,6 +3092,13 @@
    "level": "candidate: starts after ret, not called",
    "ours": null,
    "note": "to be checked by hand against the code"
+  },
+  "f_65ec": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x65ec",
+   "ours": "f65ec..6620",
+   "level": "analysed"
   }
  },
  "findings": [],
@@ -3113,6 +3120,33 @@
    "classification": "D2",
    "action": "record; rebuild as the original (byte identity first)",
    "result": "loop test loads q into rr4 in the original (testb @rr4), rr2 here; otherwise equal"
+  },
+  {
+   "id": "sld-03",
+   "kind": "compiler difference",
+   "function": "f_34b8",
+   "status": "open",
+   "classification": "D2",
+   "action": "record; rebuild as the original (byte identity first)",
+   "result": "register choice differs (end pointer kept in rr8 in the original, p in rr10); frame 32 bytes in the original against 8 here (D1); otherwise equal"
+  },
+  {
+   "id": "sld-04",
+   "kind": "compiler difference",
+   "function": "f_60f0",
+   "status": "open",
+   "classification": "D2",
+   "action": "record; rebuild as the original (byte identity first)",
+   "result": "value v kept in the frame (frame 8 against 10 here), saved register set r5..r7 in the original; otherwise equal"
+  },
+  {
+   "id": "sld-05",
+   "kind": "compiler difference",
+   "function": "f_65ec",
+   "status": "open",
+   "classification": "D3",
+   "action": "record; rebuild as the original (byte identity first)",
+   "result": "parameter reloaded from the frame into rr12 in the original (store and load), copied from rr6 here; otherwise equal"
   }
  ],
  "manual_classes": {},

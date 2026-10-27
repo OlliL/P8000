@@ -16,13 +16,27 @@ Declarations repeated in sld.c are kept only once.
 """
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SLD = os.path.join(HERE, '..', 'sld.c')
 TABLE = os.path.join(HERE, 'own_functions.txt')
 FINDINGS = os.path.join(HERE, 'findings.json')
+EMU = '/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu'
+WEGA = '/mnt/share/cvs/P8000/tmp/wega31_root'
+
+
+def whole_file_ok():
+    tmp = tempfile.mkdtemp(prefix='acceptall', dir='/mnt/share/cvs/P8000/tmp/tmp')
+    shutil.copy(SLD, os.path.join(tmp, 'all.c'))
+    r = subprocess.run([EMU, '-r', WEGA, '/bin/scc', '-c', '-O', 'all.c'], cwd=tmp,
+                       capture_output=True, text=True, timeout=900)
+    if r.returncode != 0:
+        print((r.stdout + r.stderr).strip()[:400])
+    return r.returncode == 0
 
 
 def record_finding(entry, end, cls, result):
@@ -46,7 +60,7 @@ def main():
     if len(args) not in (3, 5):
         print(__doc__)
         return 2
-    draft, entry, end = args[0], args[1], args[2]
+    draft, entry, end = args[0], args[1].zfill(4), args[2].zfill(4)
     cls = args[3] if len(args) == 5 else None
     result = args[4] if len(args) == 5 else ''
     r = subprocess.run([sys.executable, os.path.join(HERE, 'fncheck.py'), draft, entry, end],
@@ -69,8 +83,14 @@ def main():
             out.append(line)
     text = '\n'.join(out).strip('\n')
     status = 'done' if not cls else 'findings:' + cls
+    before = open(SLD).read()
     with open(SLD, 'a') as f:
         f.write('\n/* f%s..%s: %s */\n%s\n' % (entry, end, status, text))
+    # the whole work file must still compile (declarations of later functions can clash)
+    if not whole_file_ok():
+        open(SLD, 'w').write(before)
+        print('whole sld.c does not compile with this function; restored, not accepted')
+        return 1
     lines = open(TABLE).read().split('\n')
     res = []
     for line in lines:

@@ -22,14 +22,15 @@ int a;
 
 /* init_signals..0b04: byte-identical (fncheck) */
 long f9638();
-long f0a5c();
+
+int sig_handler();
 
 init_signals()
 {
 	if (f9638(2, 1L) != 1)
-		f9638(2, f0a5c);
+		f9638(2, sig_handler);
 	if (f9638(15, 1L) != 1)
-		f9638(15, f0a5c);
+		f9638(15, sig_handler);
 }
 
 /* high_byte..2e76: byte-identical (fncheck) */
@@ -110,4 +111,95 @@ char *q;
 	if (!g0476)
 		return 1;
 	return 0;
+}
+
+/* sig_handler..0aba: done */
+int g04e8;
+int g04e6;
+int bE496;
+int bE4A2;
+char tmpname[];
+char *p0494;
+
+sig_handler()
+{
+	f96fa(tmpname);
+	if (!g04e8 && !(bE496 && g04e6) && !bE4A2) {
+		f9564(p0494, (~umask(0)) & 0x1ff);
+	}
+	f8a50(g04e8);
+}
+
+/* table_lookup..3516: findings:D2 */
+char tab84d8[];
+
+char *table_lookup(a, end)
+long a;
+char *end;
+{
+	register int k;
+	register char *p;
+
+	k = ((int)a >> 4) & 0x0fff;
+	p = tab84d8;
+	while (p < end) {
+		if (k == *(int *)p)
+			return *(char **)(p + 2);
+		p += 6;
+	}
+	f79ca("x", (int)a);
+	f3408(2, "x");
+}
+
+/* f60f0..6134: findings:D2 */
+int g3e7a;
+
+f60f0(q, a)
+{
+	int v;
+
+	if ((char)a == 0x74)
+		v = *(int *)(q + 4) - g3e7a;
+	else
+		v = *(int *)(q + 6) - g3e7a;
+	if (v)
+		f64d0(v);
+}
+
+/* f6efe..6f46: done */
+int g04fa;
+char bE4DA[];
+char *table16_entry();
+char *f705e();
+f6e1a();
+
+f6efe()
+{
+	register char *p;
+	register char *end;
+
+	p = table16_entry(0);
+	end = table16_entry(g04fa);
+	while (p < end) {
+		p[4] |= 0x40;
+		f6e1a(bE4DA, p);
+		p[4] &= ~0x40;
+		p = f705e(p);
+	}
+}
+
+/* f65ec..6620: findings:D3 */
+int f65c6();
+
+f65ec(a)
+int *a;
+{
+	register int *p;
+
+	p = a;
+	if (*p)
+		*p = f65c6(*p);
+	p++;
+	if (*p)
+		*p = f65c6(*p);
 }
