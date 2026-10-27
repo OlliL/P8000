@@ -79,3 +79,13 @@ char *f6fd0(x)
 		return gE47E + (x << 4);
 	f3408(2, "x");
 }
+
+/* f702a..705e: done */
+char *f9072();
+
+f702a(a)
+{
+	gE47E = f9072(gE47E, a << 4);
+	if (!gE47E)
+		f3408(2, "x");
+}
