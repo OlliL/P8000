@@ -242,7 +242,7 @@ int unpack_run();
 int f00ee();
 int f6a58();
 
-f6b84(p)
+long f6b84(p)
 char *p;
 {
 	long dummy;
@@ -386,7 +386,7 @@ char *p;
 }
 
 /* f0178..01d2: findings:D2 */
-int f6522();
+int put_name();
 int unpack_run();
 
 f0178(src, dst)
@@ -402,7 +402,7 @@ char *dst;
 		k++;
 		if ((*src & 0x7f) > 8) {
 			k--;
-			f6522(s);
+			put_name(s);
 			f3408(1, "x");
 			k++;
 		}
@@ -752,10 +752,10 @@ char *a;
 		if (a[8] == 0x5f)
 			return;
 	}
-	n = f6522(a + 8);
+	n = put_name(a + 8);
 	if (n < 8)
-		f71ca(9);
-	f71ca(0x20);
+		put_char(9);
+	put_char(0x20);
 	f3408(0, "x");
 }
 
@@ -919,4 +919,407 @@ long p;
 		}
 	}
 	return 1;
+}
+
+/* put_char..7212: findings:D4 */
+char *bE194E;
+int bE1950;
+int bE1952;
+int f880e();
+
+int put_char(c)
+register int c;
+{
+	if (--bE1952 < 0)
+		f880e(c, &bE194E);
+	else {
+		bE1950++;
+		*bE194E = c;
+	}
+	return (unsigned char)c;
+}
+
+/* f06c6..0762: findings:D7 */
+int bE4EC;
+int bE3B8;
+long bE3BA[];
+long f9184();
+
+long get_block(n)
+int n;
+{
+	long p;
+
+	if (n > bE4EC)
+		f3408(2, "x");
+	while (n > bE3B8) {
+		p = f9184(1, 0x36);
+		bE3B8++;
+		bE3BA[bE3B8] = p;
+		if (p == 0)
+			f3408(2, "y");
+	}
+	return bE3BA[n];
+}
+
+/* f22a4..2346: findings:D7 */
+char *bE494;
+char bE49E[];
+int f9586();
+int f9576();
+int f95fe();
+int f96fa();
+
+open_tmp(out, flag)
+char *out;
+int flag;
+{
+	register int fd;
+	char *name;
+
+	if (flag)
+		name = bE49E;
+	else
+		name = bE494;
+	fd = f9586(name, 0x1b6);
+	if (fd < 0) {
+		if (flag)
+			f3408(2, "x");
+		else
+			f3408(2, "y");
+	}
+	f9576(fd);
+	*(int *)out = f95fe(name, 2);
+	if (flag)
+		f96fa(bE49E);
+	*(int *)(out + 2) = 0x100;
+	*(char **)(out + 4) = out + 8;
+}
+
+/* f00ee..0178: findings:D2 */
+int unpack_run();
+
+pack_name(src, dst)
+register char *src;
+register char *dst;
+{
+	register char *s;
+	register char *q;
+	char cnt;
+
+	cnt = 0;
+	s = src;
+	while (*s++ != 0)
+		cnt++;
+	if (cnt > 8) {
+		*dst++ = cnt | 0x80;
+		s--;
+		q = src;
+		while (q < s)
+			*dst++ = *q++;
+		cnt -= 8;
+		while (cnt > 0)
+			cnt -= 16;
+		do {
+			*dst++ = 0;
+		} while (cnt-- != 0);
+	} else
+		unpack_run(src, dst);
+}
+
+/* f6e1a..6f46: findings:D4 */
+int f2f04();
+int f65ec();
+
+f6e1a(a, b)
+char *a;
+char *b;
+{
+	char buf[8];
+	char c4;
+	char c7;
+	long v;
+	int i;
+	int k;
+	int cnt;
+	char *q;
+
+	c4 = b[4];
+	c7 = b[7];
+	v = *(long *)b;
+	for (i = 0; i < 8; i++)
+		buf[i] = b[i];
+	if (bE4B6)
+		f65ec(&v);
+	f2f04(a, &v, 14);
+	bE4F0++;
+	if (b[8] & 0x80) {
+		q = b + 16;
+		k = 1;
+		cnt = (b[8] & 0x7f) - 8;
+		while (cnt > 0) {
+			f2f04(a, q, 14);
+			bE4F0++;
+			q += 14;
+			k++;
+			cnt -= 14;
+		}
+		return k;
+	}
+	return 1;
+}
+
+/* put_name..65c6: done */
+int bE4EA;
+int bE1532;
+int put_char();
+int f3408();
+int f79ca();
+
+int put_name(p)
+char *p;
+{
+	register char *q;
+	register int n;
+	register int k;
+	char flag;
+
+	q = p;
+	flag = 0;
+	n = *q & 0x7f;
+	if (n != *q) {
+		q++;
+		n--;
+		if (bE4EA == 0) {
+			n = 8;
+			if (bE1532 == 0) {
+				bE1532++;
+				f3408(0, "x");
+			}
+		} else if (n > 0x2c) {
+			flag++;
+			n = 0x28;
+		}
+	} else
+		n = 8;
+	k = 0;
+	while (n-- != 0) {
+		if (*q == 0)
+			break;
+		put_char(*q);
+		k++;
+		q++;
+	}
+	if (flag) {
+		f79ca("y");
+		k += 3;
+	}
+	return k;
+}
+
+/* ensure_buf..7186: done */
+unsigned bE15DA;
+long bE190DE;
+long f9184();
+int f903a();
+int f3408();
+
+long ensure_buf(n)
+unsigned long n;
+{
+	if (bE15DA < n) {
+		if (n > 0xffff)
+			f3408(2, "x");
+		if (bE15DA != 0)
+			f903a(bE190DE);
+		bE190DE = f9184(1, (int)n);
+		if (bE190DE == 0)
+			f3408(2, "y");
+		bE15DA = (unsigned)n;
+	}
+	return bE190DE;
+}
+
+/* f23fe..2492: findings:D2 */
+long bE486;
+int bE4BE;
+int f3144();
+int f2f3a();
+int f2e76();
+int f2492();
+int f9576();
+
+f23fe(p)
+char *p;
+{
+	register char *q;
+	register long *lp;
+
+	q = p;
+	if (f3144(p) == 0) {
+		while (*q != 0)
+			q++;
+		for (;;) {
+			if (q < p)
+				break;
+			q--;
+			if (*q == 0x2f)
+				break;
+		}
+		q++;
+		f2492(0L, q);
+	} else {
+		lp = (long *)bE486;
+		while (*lp != -1) {
+			f2f3a(bE414, *lp, 26);
+			f2e76(bE438, 26);
+			f2492(*lp + 13, bE438);
+			lp++;
+		}
+		bE486 = (long)lp;
+	}
+	f9576(bE4BE);
+}
+
+/* f1f96..2056: findings:D4 */
+int bE3C04;
+char *bF324;
+char *bF328;
+char *table32_entry();
+int f3408();
+
+f1f96(p, kind)
+char *p;
+long kind;
+{
+	register char *e;
+
+	if (bE3C04 > 0x100)
+		f3408(2, "x");
+	if ((int)kind == 2) {
+		e = table32_entry(bE3C04++);
+		bF324 = e;
+		*e = 0xff;
+		*(int *)(e + 6) = *(int *)(p + 6);
+		*(int *)(e + 10) |= 2;
+		*(int *)(p + 6) = 0;
+		*(int *)(p + 10) &= ~2;
+		*(char *)(p + 2) = 0;
+	} else {
+		e = table32_entry(bE3C04++);
+		bF328 = e;
+		*e = 0xff;
+		*(int *)(e + 8) = *(int *)(p + 8);
+		*(int *)(e + 10) |= 4;
+		*(int *)(p + 8) = 0;
+		*(int *)(p + 10) &= ~4;
+		*(char *)(p + 3) = 0;
+	}
+}
+
+/* swab12..3b58: findings:D2 */
+swab12(p)
+register char *p;
+{
+	register int k;
+	register int t;
+
+	k = 12;
+	do {
+		t = p[0];
+		p[0] = p[1];
+		p[1] = t;
+		p += 2;
+	} while (--k);
+}
+
+/* pack_entry..68a2: findings:D4 */
+int f0178();
+
+pack_entry(p, q)
+char *p;
+char *q;
+{
+	*(int *)(q + 10) = (int)*(long *)p;
+	*(int *)(q + 8) = *(char *)(p + 4);
+	f0178(p + 8, q);
+}
+
+/* f01d2..0220: done */
+char *table16_entry();
+char *f705e();
+int f0220();
+int f79ca();
+
+walk_entries()
+{
+	register char *a;
+	register char *b;
+
+	f79ca("x");
+	b = table16_entry(bE4FA);
+	a = table16_entry(0);
+	while (a < b) {
+		f0220(a);
+		a = f705e(a);
+	}
+}
+
+/* report_limit..719e: done */
+int f79ca();
+
+report_limit()
+{
+	f79ca("x", bE4FA, 0x0ffa);
+}
+
+/* f705e..7112: findings:D2 */
+char *bE47E;
+
+next_entry(p)
+char *p;
+{
+	register char *q;
+	register char *e;
+	int b;
+
+	b = *(char *)(p + 8);
+	b = (b << 8) >> 8;
+	if (b < 0) {
+		e = p + 8 + (b & 0x7f);
+		q = p + 16;
+		while (e > q)
+			q += 16;
+	} else
+		q = p + 16;
+	if (q < bE47E)
+		f3408(2, "x");
+	if (q >= bE47E + (g04ee << 4))
+		f3408(2, "y");
+	return q;
+}
+
+/* f6f46..6fce: findings:D7 */
+int f3b58();
+int f3408();
+
+f6f46(p, n)
+char *p;
+int n;
+{
+	register char *e;
+	char *q;
+	long q2;
+
+	e = p + n * 12;
+	while (p < e) {
+		if (p[4] & 0x80)
+			q = p + 4 + (p[4] & 0x7f);
+		q2 = *(long *)f6b84(p + 4);
+		if (q2 != 0) {
+			if (*(char *)(q2 + 4) != 0x20)
+				f3b58(0, q2);
+		}
+		p += 12;
+	}
 }

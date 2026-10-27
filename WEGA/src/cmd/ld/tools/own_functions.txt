@@ -6,11 +6,11 @@
 # instruction of the shipped ffltioc (0x8680, 9e08 = ret), so the function falls into ffltioc.
 0018 f0018 0056 62 0 - P sc open
 0056 unpack_run 00ee 152 5 124 1c4 6a28 6b92 P ret findings:D2
-00ee f00ee 0178 138 1 6b68 c ret open
+00ee pack_name 0178 138 1 6b68 c ret findings:D2
 0178 f0178 01d2 90 1 6898 c ret findings:D2
-01d2 f01d2 0220 78 0 - x ret open
+01d2 walk_entries 0220 78 0 - x ret done
 0220 f0220 06c6 1190 1 204 P ret open
-06c6 f06c6 0762 156 55 350 1828 3784 3a0c c ret open
+06c6 get_block 0762 156 55 350 1828 3784 3a0c c ret findings:D7
 0762 f0762 078c 42 1 85c c ret done
 078c f078c 0a5c 720 1 46 c ret open
 0a5c sig_handler 0aba 94 2 2d44 34a4 c ret done
@@ -25,11 +25,11 @@
 1664 add16_checked 1696 50 1 1898 P ret findings:D4
 1696 f1696 18f2 604 2 1392 1542 P ret open
 18f2 f18f2 1f96 1700 3 5018 5226 554c c ret open
-1f96 f1f96 2056 192 1 1bbe P ret open
+1f96 f1f96 2056 192 1 1bbe P ret findings:D4
 2056 f2056 22a4 590 1 120e c ret open
-22a4 f22a4 2346 162 7 206a 2080 208a 20a4 P ret open
+22a4 open_tmp 2346 162 7 206a 2080 208a 20a4 P ret findings:D7
 2346 init_entry 23fe 184 1 2248 P ret done
-23fe f23fe 2492 148 1 1312 c ret open
+23fe f23fe 2492 148 1 1312 c ret findings:D2
 2492 f2492 2624 402 2 2438 2464 P ret open
 2624 f2624 27d8 436 1 2614 P ret open
 27d8 f27d8 2cbc 1252 2 273a 2788 P ret open
@@ -50,7 +50,7 @@
 3a30 str_compare 3a88 88 2 37cc 4162 P ret findings:D2
 3a88 f3a88 3ac6 62 10 299a 29b2 2a28 2ad4 P ret findings:D5
 3ac6 flush_buffer 3b1e 88 7 2cf6 2dee 3ab8 6142 P ret findings:D1
-3b1e f3b1e 3b58 58 0 - x ret open
+3b1e swab12 3b58 58 0 - x ret findings:D2
 3b58 f3b58 3c16 190 2 17de 6fb6 c ret findings:D7
 3c16 f3c16 410c 1270 1 9b6 c ret open
 410c f410c 42f8 492 1 3ffa P ret open
@@ -66,13 +66,13 @@
 620e f620e 642e 544 2 61ba 61f8 P ret open
 642e list_move_after 64d0 162 1 5a00 P ret findings:D4
 64d0 f64d0 6522 82 1 612e P ret open
-6522 f6522 65c6 164 6 1a8 23a 25d6 3be0 c ret open
+6522 put_name 65c6 164 6 1a8 23a 25d6 3be0 c ret done
 65c6 swap_bytes 65ec 38 17 28aa 28b4 2982 298c P ret findings:D4
 65ec swap_pair 6620 52 3 1622 66f4 6e7c c ret findings:D3
 6620 swap_quad 6684 100 3 222c 26c6 363a c ret findings:D3
 6684 f6684 6800 380 2 1756 24fc c ret open
 6800 f6800 6866 102 1 67d8 P ret findings:D2
-6866 f6866 68a2 60 0 - x ret open
+6866 pack_entry 68a2 60 0 - x ret findings:D4
 68a2 f68a2 6a08 358 4 46ba 46ca 46da 46f2 c ret open
 6a08 f6a08 6a58 80 1 24b2 c ret done
 6a58 f6a58 6b5a 258 4 1798 257c 6b7e 6ba8 P ret open
@@ -81,17 +81,20 @@
 6bae f6bae 6c6a 188 2 c84 17a4 c ret findings:D2
 6c6a f6c6a 6da8 318 5 2508 2936 29f6 2a90 P ret open
 6da8 f6da8 6e1a 114 1 1850 c ret findings:D6
-6e1a f6e1a 6efe 228 3 2574 6a52 6f28 P ret open
+6e1a f6e1a 6efe 228 3 2574 6a52 6f28 P ret findings:D4
 6efe f6efe 6f46 72 1 2cea c ret done
-6f46 f6f46 6fd0 138 1 1420 c ret open
+6f46 f6f46 6fd0 138 1 1420 c ret findings:D7
 6fd0 table16_entry 6ffe 46 9 1ee 1f8 45b0 45c4 P ret findings:D1
 6ffe f6ffe 702a 44 1 846 c ret done
 702a f702a 705e 52 1 df8 c ret done
-705e f705e 70ce 112 5 208 4662 484e 489c P ret open
+705e next_entry 70ce 112 5 208 4662 484e 489c P ret findings:D2
 70ce table16_index 7112 68 1 2b18 c ret findings:D4
-7112 f7112 719e 140 1 13d8 c ret open
+7112 ensure_buf 7186 116 1 6c6 c ret done
+7186 report_limit 719e 24 0 - x ret done
 719e table32_entry 71ca 44 5 1fca 2014 4990 595a c ret done
-71ca f71ca 7286 188 8 25e4 25ec 3bee 3bf8 c ret open
+71ca put_char 7212 72 6 2d4c 7286 P ret findings:D4
+7212 f7212 724e 60 0 - x ret open
+724e f724e 7286 56 0 - x ret open
 7286 f7286 7300 122 5 c00 daa e1c 11ac c ret open
 7300 f7300 7526 550 3 7242 727a 72ec c ret open
 7526 f7526 7808 738 1 7436 P ret open

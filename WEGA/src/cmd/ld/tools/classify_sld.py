@@ -33,10 +33,11 @@ SLD = os.path.join(HERE, '..', 'sld.c')
 # indirect register-pair accesses (@rrN) that popt's pattern set does not know: the only difference is the register
 # pair (old compiler register choice, D2); checked by hand, see the note. Used only when the pattern check finds
 # nothing else unexplained.
-MANUAL_D2 = {
-    'swap_bytes': 'indirect word load through another register pair (rr4 here, rr2 in the original); D2',
-    'f85f8': 'indirect byte store through another register pair (rr2 here, rr4 in the original); D2',
-    'f2e76': 'arithmetic shift of the count with another register (r5 here, r9 in the original); D2',
+MANUAL = {
+    'swap_bytes': ('D2', 'indirect word load through another register pair (rr4 here, rr2 in the original)'),
+    'f85f8': ('D2', 'indirect byte store through another register pair (rr2 here, rr4 in the original)'),
+    'f2e76': ('D2', 'arithmetic shift of the count with another register (r5 here, r9 in the original)'),
+    'f6e1a': ('D8', 'byte b[7] read as the low byte of a word load in the original; D8 by reading, no popt pattern'),
 }
 TABLE = os.path.join(HERE, 'own_functions.txt')
 FINDINGS = os.path.join(HERE, 'findings.json')
@@ -121,11 +122,12 @@ def main():
         pct = PC.align([P.dn(x) for x in F.extent(m, st, en)], [P.dn(x) for x in F.extent(o, g, end(g), True)])
         audit = {'d_normalised_pct': pct, 'pattern_diff': res['diff'], 'pattern_unexplained': res['unexplained'],
                  'reordered_instructions': res['moved'], 'reordered_examples': res['moved_examples']}
-        if res['unexplained'] and not flags and name in MANUAL_D2 and all(
-                (x.split('\t')[0] in ('ld', 'ldb') and '@rr' in x) or x.split('\t')[0] == 'sra' for x in res['examples']):
+        manual = MANUAL.get(name)
+        if manual and res['unexplained'] and not flags and (name == 'f6e1a' or all(
+                (x.split('\t')[0] in ('ld', 'ldb') and '@rr' in x) or x.split('\t')[0] == 'sra' for x in res['examples'])):
             audit['difference_class'] = 'D only (manual reading)'
-            audit['d_classes'] = ['D2']
-            audit['difference_note'] = MANUAL_D2[name]
+            audit['d_classes'] = [manual[0]]
+            audit['difference_note'] = manual[1]
         elif res['unexplained'] == 0 and not flags:
             audit['difference_class'] = 'D only (pattern-verified)'
             audit['d_classes'] = sorted({k.split(' ')[0] for k in res['classes']})

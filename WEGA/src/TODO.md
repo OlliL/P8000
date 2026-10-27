@@ -146,12 +146,14 @@ produce the same bytes with the shipped cc.
   `ret` is the first instruction of the shipped ffltioc at 0x8680). Entry 0x8000 is no function start (inner jump target).
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
-  2026-10-27: 18 done (0762, 0aba/init_signals, 2e4c/high_byte, 3090, 6ffe, 702a, 719e/table32_entry, 0a5c/sig_handler,
-  6efe, 6b5a, 6b84, 6a08, 2dde, 4444/copy_leafname, 6134, 2cbc/finish_output, 2346/init_entry, 14a4/load_header),
-  24 with findings (D1: 6fd0/table16_entry, 3ac6/flush_buffer; D2: 3a30/str_compare, 34b8/table_lookup, 60f0, 0056/unpack_run,
-  0178, 2f04, 85f8, 6bae, 7956/make_ccl, 6800, 2d4c, 2e76; D3: 65ec/swap_pair, 6620/swap_quad; D4: 70ce/table16_index,
-  1664/add16_checked, 65c6/swap_bytes, 642e/list_move_after, 7bbc; D5: 3a88; D6: 6da8; D7: 3b58),
-  55 open, 97 entries. Dead code candidates (no caller, no address reference): 6866, 01d2, 3b1e.
+  2026-10-27: 22 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
+  35 with findings (see the audit in findings.json),
+  43 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
+  Dead code (no caller, no address reference): 0x724e and 0x7212 still open; rebuilt: 0x6866 pack_entry, 0x01d2 walk_entries,
+  0x3b1e swab12, 0x7186 report_limit. 0x0018 is the start code (asm with sc, to be kept as assembler, not C).
+  Large open functions: 0x79ca (498 bytes, EPU float formatting, calls 0x7c26) and 0x7c26 (2514 bytes). The first 12
+  bytes of 0x7c26 occur in no file of the WEGA 3.1 root except sld itself, so there is no library member to take (sdoprnt.o
+  starts differently). Both need the EPU instructions (see host/z8k-emu/README.md) in the drafts.
   6b5a and 6b84 need an unused 4-byte local to reproduce the 8-byte frame (role unknown, noted in the source).
   Open with notes: 00ee (string packing: a run longer than 8 gets a header byte cnt|0x80; the padding loop counts a char
   down; guess: it runs to char wrap-around when cnt is negative, to be checked), 1664 (parameter form unclear). 65c6 (byte swap, frame 10 in the original) open: the form of the local buffer is not found.

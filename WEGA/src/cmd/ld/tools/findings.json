@@ -2585,30 +2585,24 @@
    "ours": "f0018..0056",
    "level": "open"
   },
-  "f00ee": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x00ee",
-   "ours": "f00ee..0178",
-   "level": "open"
-  },
   "f0178": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0178",
-   "ours": "0x05c6-0x0624",
+   "ours": "0x05be-0x0618",
    "level": "differs",
    "pairing_evidence": "register choice of the copy of src (rr12 in the original, rr10 here) and the first byte read through a copy in rr2 (D2); frame and calls equal",
    "audit": {
-    "d_normalised_pct": 82,
-    "pattern_diff": 10,
+    "d_normalised_pct": 79,
+    "pattern_diff": 12,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D10"
+     "D10",
+     "D7"
     ],
     "structure_flags": [],
     "len_ours": 28,
@@ -2620,13 +2614,6 @@
    "pairing": "open",
    "orig": "0x0220",
    "ours": "f0220..06c6",
-   "level": "open"
-  },
-  "f06c6": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x06c6",
-   "ours": "f06c6..0762",
    "level": "open"
   },
   "f0762": {
@@ -2750,11 +2737,27 @@
    "level": "open"
   },
   "f1f96": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x1f96",
-   "ours": "f1f96..2056",
-   "level": "open"
+   "ours": "0x1496-0x1566",
+   "level": "differs",
+   "pairing_evidence": "the argument p is kept in the frame in the original (D4), the pointer e in rr2 there and rr12 here (D2); the table index, the field moves and the bit operations are equal",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10"
+    ],
+    "structure_flags": [],
+    "len_ours": 59,
+    "len_orig": 57
+   }
   },
   "f2056": {
    "file": null,
@@ -2763,19 +2766,30 @@
    "ours": "f2056..22a4",
    "level": "open"
   },
-  "f22a4": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x22a4",
-   "ours": "f22a4..2346",
-   "level": "open"
-  },
   "f23fe": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x23fe",
-   "ours": "f23fe..2492",
-   "level": "open"
+   "ours": "0x13f4-0x1496",
+   "level": "differs",
+   "pairing_evidence": "frame 16 bytes in the original against 12 here (D1 share); the byte compare of the name goes through a copy register (rl2) in the original (D2); instructions otherwise equal",
+   "audit": {
+    "d_normalised_pct": 78,
+    "pattern_diff": 19,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D7",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 44,
+    "len_orig": 45
+   }
   },
   "f2492": {
    "file": null,
@@ -2802,7 +2816,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2d4c",
-   "ours": "0x0d8c-0x0e1a",
+   "ours": "0x0d74-0x0e02",
    "level": "differs",
    "pairing_evidence": "the original computes the distance of two frame arrays (rest - buf) into a register that is overwritten by the constant 0 of the call (a register leftover of the old compiler, D2); the rest is equal",
    "audit": {
@@ -2827,7 +2841,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2dde",
-   "ours": "0x0558-0x05c6",
+   "ours": "0x0550-0x05be",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -2867,7 +2881,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2e76",
-   "ours": "0x0e1a-0x0eae",
+   "ours": "0x0e02-0x0e96",
    "level": "differs",
    "pairing_evidence": "register choice differs (output pointer in rr10 and the count in r9 in the original, rr12 and r11 here); frame 16 bytes against 14 (D1 share); the two counters and the copy paths are equal",
    "audit": {
@@ -2880,7 +2894,7 @@
     "d_classes": [
      "D2"
     ],
-    "difference_note": "arithmetic shift of the count with another register (r5 here, r9 in the original); D2",
+    "difference_note": "arithmetic shift of the count with another register (r5 here, r9 in the original)",
     "structure_flags": [],
     "len_ours": 38,
     "len_orig": 38
@@ -2890,7 +2904,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2f04",
-   "ours": "0x0526-0x0558",
+   "ours": "0x051e-0x0550",
    "level": "differs",
    "pairing_evidence": "register choice differs: the original keeps the pointer in rr10 and the count in r13 (saves r3..r7), here rr12 and r11 (D2); otherwise equal",
    "audit": {
@@ -3044,12 +3058,12 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3b58",
-   "ours": "0x0c64-0x0d04",
+   "ours": "0x0c58-0x0cec",
    "level": "differs",
    "pairing_evidence": "the logical test of the blank checks is compiled with a zero-flag and a bit test in the original (r4 = 0/1, bit 5); the branch layout differs (D7); the conditions and the calls are equal",
    "audit": {
-    "d_normalised_pct": 46,
-    "pattern_diff": 49,
+    "d_normalised_pct": 36,
+    "pattern_diff": 61,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3154,7 +3168,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6134",
-   "ours": "0x07ae-0x0890",
+   "ours": "0x07a2-0x0884",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 85,
@@ -3187,13 +3201,6 @@
    "ours": "f64d0..6522",
    "level": "open"
   },
-  "f6522": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x6522",
-   "ours": "f6522..65c6",
-   "level": "open"
-  },
   "f6684": {
    "file": null,
    "pairing": "open",
@@ -3205,7 +3212,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6800",
-   "ours": "0x0bfe-0x0c64",
+   "ours": "0x0bf2-0x0c58",
    "level": "differs",
    "pairing_evidence": "register choice of the byte loads (rl2 in the original, rl4 here); frame 12 bytes in the original against 14 here (D1 share); otherwise equal",
    "audit": {
@@ -3223,13 +3230,6 @@
     "len_orig": 36
    }
   },
-  "f6866": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x6866",
-   "ours": "f6866..68a2",
-   "level": "open"
-  },
   "f68a2": {
    "file": null,
    "pairing": "open",
@@ -3241,11 +3241,11 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6a08",
-   "ours": "0x030a-0x035e",
+   "ours": "0x030a-0x035a",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 84,
-    "pattern_diff": 6,
+    "d_normalised_pct": 89,
+    "pattern_diff": 4,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3269,7 +3269,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6b5a",
-   "ours": "0x035e-0x038c",
+   "ours": "0x035a-0x0388",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 91,
@@ -3290,7 +3290,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6b84",
-   "ours": "0x038c-0x03b6",
+   "ours": "0x0388-0x03b2",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 82,
@@ -3311,7 +3311,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6bae",
-   "ours": "0x094c-0x0a04",
+   "ours": "0x0940-0x09f8",
    "level": "differs",
    "pairing_evidence": "register choice of the pointer argument for the last store (rr4 in the original, loaded from the frame here); long bE46A; otherwise equal",
    "audit": {
@@ -3340,7 +3340,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6da8",
-   "ours": "0x0a04-0x0a76",
+   "ours": "0x09f8-0x0a6a",
    "level": "differs",
    "pairing_evidence": "switch table (cpir over the case values, jump table at 0x165c): case order and layout differ (D6); the bit test of the default case reloads the character (D2); the case actions are equal",
    "audit": {
@@ -3363,21 +3363,37 @@
    }
   },
   "f6e1a": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6e1a",
-   "ours": "f6e1a..6efe",
-   "level": "open"
+   "ours": "0x1200-0x12e0",
+   "level": "differs",
+   "pairing_evidence": "argument and loop pointer are reloaded from the frame in the original (D4) and the byte copy is addressed through a saved pointer; the calls, the flag test and the count are equal",
+   "audit": {
+    "d_normalised_pct": 63,
+    "pattern_diff": 46,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (manual reading)",
+    "d_classes": [
+     "D8"
+    ],
+    "difference_note": "byte b[7] read as the low byte of a word load in the original; D8 by reading, no popt pattern",
+    "structure_flags": [],
+    "len_ours": 63,
+    "len_orig": 67
+   }
   },
   "f6efe": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6efe",
-   "ours": "0x03b6-0x0406",
+   "ours": "0x03b2-0x03fe",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 4,
+    "d_normalised_pct": 96,
+    "pattern_diff": 2,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3391,11 +3407,31 @@
    }
   },
   "f6f46": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6f46",
-   "ours": "f6f46..6fd0",
-   "level": "open"
+   "ours": "0x16d2-0x1750",
+   "level": "differs",
+   "pairing_evidence": "loop shape (test at the bottom in the original) and register numbers differ (D7, D2 share); the entry walk with 12-byte steps, the call of 0x6b84 and the blank test are equal",
+   "audit": {
+    "d_normalised_pct": 70,
+    "pattern_diff": 20,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 38,
+    "len_orig": 44
+   }
   },
   "table16_entry": {
    "audit": {
@@ -3415,7 +3451,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6fd0",
-   "ours": "0x0406-0x0434",
+   "ours": "0x03fe-0x042c",
    "level": "differs",
    "pairing_evidence": "frame 14 bytes against 6 bytes of the draft; all other instructions equal"
   },
@@ -3423,7 +3459,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6ffe",
-   "ours": "0x0434-0x0460",
+   "ours": "0x042c-0x0458",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3442,7 +3478,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x702a",
-   "ours": "0x0460-0x0494",
+   "ours": "0x0458-0x048c",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3457,25 +3493,11 @@
     "len_orig": 14
    }
   },
-  "f705e": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x705e",
-   "ours": "f705e..70ce",
-   "level": "open"
-  },
-  "f7112": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x7112",
-   "ours": "f7112..719e",
-   "level": "open"
-  },
   "table32_entry": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x719e",
-   "ours": "0x0494-0x04c0",
+   "ours": "0x048c-0x04b8",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3489,13 +3511,6 @@
     "len_ours": 13,
     "len_orig": 13
    }
-  },
-  "f71ca": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x71ca",
-   "ours": "f71ca..7286",
-   "level": "open"
   },
   "f7286": {
    "file": null,
@@ -3536,7 +3551,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x7bbc",
-   "ours": "0x0b8e-0x0bfe",
+   "ours": "0x0b82-0x0bf2",
    "level": "differs",
    "pairing_evidence": "frame 14 bytes against 8 here; arguments and the swap of two words are reloaded from the frame in the original (D4); semantics equal",
    "audit": {
@@ -3567,7 +3582,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x85f8",
-   "ours": "0x0890-0x0922",
+   "ours": "0x0884-0x0916",
    "level": "differs",
    "pairing_evidence": "register allocation differs (counter r11, value r10, pointer rr12 in the original; the character is also kept in the frame). Semantics equal, including the count quirk: with a sign the loop counts the original n, the return uses the decremented n (see KNOWLEDGE quirks)",
    "audit": {
@@ -3580,18 +3595,11 @@
     "d_classes": [
      "D2"
     ],
-    "difference_note": "indirect byte store through another register pair (rr2 here, rr4 in the original); D2",
+    "difference_note": "indirect byte store through another register pair (rr2 here, rr4 in the original)",
     "structure_flags": [],
     "len_ours": 46,
     "len_orig": 45
    }
-  },
-  "f01d2": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x01d2",
-   "ours": null,
-   "level": "open"
   },
   "unpack_run": {
    "file": "sld.c",
@@ -3643,7 +3651,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6620",
-   "ours": "0x04c0-0x0526",
+   "ours": "0x04b8-0x051e",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 97,
@@ -3665,7 +3673,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x4444",
-   "ours": "0x0624-0x06c6",
+   "ours": "0x0618-0x06ba",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3684,7 +3692,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3ac6",
-   "ours": "0x06c6-0x0726",
+   "ours": "0x06ba-0x071a",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
@@ -3703,18 +3711,11 @@
     "len_orig": 31
    }
   },
-  "f3b1e": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x3b1e",
-   "ours": null,
-   "level": "open"
-  },
   "table16_index": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x70ce",
-   "ours": "0x0726-0x0780",
+   "ours": "0x071a-0x0774",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 52,
@@ -3740,7 +3741,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x1664",
-   "ours": "0x0780-0x07ae",
+   "ours": "0x0774-0x07a2",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 87,
@@ -3762,7 +3763,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x65c6",
-   "ours": "0x0922-0x094c",
+   "ours": "0x0916-0x0940",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 73,
@@ -3774,7 +3775,7 @@
     "d_classes": [
      "D2"
     ],
-    "difference_note": "indirect word load through another register pair (rr4 here, rr2 in the original); D2",
+    "difference_note": "indirect word load through another register pair (rr4 here, rr2 in the original)",
     "structure_flags": [],
     "len_ours": 15,
     "len_orig": 14
@@ -3784,7 +3785,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x642e",
-   "ours": "0x0a76-0x0b18",
+   "ours": "0x0a6a-0x0b0c",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 93,
@@ -3806,7 +3807,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x7956",
-   "ours": "0x0b18-0x0b8e",
+   "ours": "0x0b0c-0x0b82",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 76,
@@ -3831,7 +3832,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2cbc",
-   "ours": "0x0d04-0x0d8c",
+   "ours": "0x0cec-0x0d74",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 87,
@@ -3853,7 +3854,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2346",
-   "ours": "0x0eae-0x0f66",
+   "ours": "0x0e96-0x0f4e",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3872,7 +3873,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x14a4",
-   "ours": "0x0f66-0x101e",
+   "ours": "0x0f4e-0x1006",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 94,
@@ -3888,10 +3889,478 @@
     "len_ours": 47,
     "len_orig": 47
    }
+  },
+  "f7212": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7212",
+   "ours": null,
+   "level": "open"
+  },
+  "f724e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x724e",
+   "ours": null,
+   "level": "open"
+  },
+  "put_char": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x71ca",
+   "ours": "0x1006-0x104e",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 19,
+    "len_orig": 19
+   }
+  },
+  "get_block": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x06c6",
+   "ours": "0x104e-0x10c8",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 58,
+    "pattern_diff": 27,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 33,
+    "len_orig": 40
+   }
+  },
+  "open_tmp": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x22a4",
+   "ours": "0x10c8-0x116c",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10"
+    ],
+    "structure_flags": [],
+    "len_ours": 45,
+    "len_orig": 44
+   }
+  },
+  "pack_name": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x00ee",
+   "ours": "0x116c-0x1200",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 71,
+    "pattern_diff": 27,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D3",
+     "D7",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 48,
+    "len_orig": 47
+   }
+  },
+  "put_name": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x6522",
+   "ours": "0x12e0-0x1380",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 53,
+    "len_orig": 53
+   }
+  },
+  "ensure_buf": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7112",
+   "ours": "0x1380-0x13f4",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 29,
+    "len_orig": 29
+   }
+  },
+  "swab12": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x3b1e",
+   "ours": "0x1566-0x1598",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 74,
+    "pattern_diff": 9,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 19
+   }
+  },
+  "pack_entry": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x6866",
+   "ours": "0x1598-0x15d2",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 21,
+    "len_orig": 21
+   }
+  },
+  "walk_entries": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x01d2",
+   "ours": "0x15d2-0x1624",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 21,
+    "len_orig": 21
+   }
+  },
+  "report_limit": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7186",
+   "ours": "0x1624-0x163c",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 5,
+    "len_orig": 5
+   }
+  },
+  "next_entry": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x705e",
+   "ours": "0x163c-0x16d2",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 48,
+    "pattern_diff": 37,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 46,
+    "len_orig": 35
+   }
   }
  },
  "findings": [],
- "findings_pending": [],
+ "findings_pending": [
+  {
+   "id": "sld-deferred-0220",
+   "kind": "deferred (large function)",
+   "function": "f0220",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x0220, 1190 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-078c",
+   "kind": "deferred (large function)",
+   "function": "f078c",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x078c, 720 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-0b04",
+   "kind": "deferred (large function)",
+   "function": "f0b04",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x0b04, 1058 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-1696",
+   "kind": "deferred (large function)",
+   "function": "f1696",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x1696, 604 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-18f2",
+   "kind": "deferred (large function)",
+   "function": "f18f2",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x18f2, 1700 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-2056",
+   "kind": "deferred (large function)",
+   "function": "f2056",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x2056, 590 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-2492",
+   "kind": "deferred (large function)",
+   "function": "f2492",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x2492, 402 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-2624",
+   "kind": "deferred (large function)",
+   "function": "f2624",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x2624, 436 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-27d8",
+   "kind": "deferred (large function)",
+   "function": "f27d8",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x27d8, 1252 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-3144",
+   "kind": "deferred (large function)",
+   "function": "f3144",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x3144, 708 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-3516",
+   "kind": "deferred (large function)",
+   "function": "f3516",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x3516, 586 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-3760",
+   "kind": "deferred (large function)",
+   "function": "f3760",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x3760, 720 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-3c16",
+   "kind": "deferred (large function)",
+   "function": "f3c16",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x3c16, 1270 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-410c",
+   "kind": "deferred (large function)",
+   "function": "f410c",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x410c, 492 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-44e6",
+   "kind": "deferred (large function)",
+   "function": "f44e6",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x44e6, 1154 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-4a16",
+   "kind": "deferred (large function)",
+   "function": "f4a16",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x4a16, 4118 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-5a2c",
+   "kind": "deferred (large function)",
+   "function": "f5a2c",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x5a2c, 1216 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-5eec",
+   "kind": "deferred (large function)",
+   "function": "f5eec",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x5eec, 516 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-620e",
+   "kind": "deferred (large function)",
+   "function": "f620e",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x620e, 544 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-7300",
+   "kind": "deferred (large function)",
+   "function": "f7300",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x7300, 550 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-7526",
+   "kind": "deferred (large function)",
+   "function": "f7526",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x7526, 738 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-79ca",
+   "kind": "deferred (large function)",
+   "function": "f79ca",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x79ca, 498 bytes, not started"
+  },
+  {
+   "id": "sld-deferred-7c26",
+   "kind": "deferred (large function)",
+   "function": "f7c26",
+   "status": "open",
+   "classification": "-",
+   "action": "second pass: rebuild after the small and medium functions (large, complex)",
+   "result": "entry 0x7c26, 2514 bytes, not started"
+  }
+ ],
  "manual_classes": {},
  "inventory": {
   "source": "tools/inventory.py",

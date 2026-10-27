@@ -438,6 +438,12 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   reach, `call` for an undefined callee or one out of reach (the original calls 0x3408 from 0x71c0 with `call`, the distance
   is above the calr range). The form of the final sld is therefore decided by the whole-file compile (D17).
 - Segment operands in the object are `<<0>>` (not linked); the stack is `<<127>>` after the link. Compare without segments.
+- Message function 0x79ca (own code, deferred): every call (about 90 sites) passes the format in `rr6` and up to four
+  argument words in `r5`, `r4`, `r3`, `r2` (in that order; a long argument is the pair `r4:r5` or `r2:r3`), e.g. `ld r5,..`
+  `ld r4,..` `ld r3,..` `ld r2,..` then `ldl rr6,#fmt` and `call 79CA`. It saves the argument registers into its frame and
+  passes a pointer to them to 0x7c26 (the formatting core, deferred). Inferred from the call sites, not from its body.
+- Error function 0x3408 (own code): the callers seen set `r7` (the level) and `rr4` (the message) and nothing else (not checked for all call sites); the printf
+  arguments that 0x3408 passes on are therefore whatever the caller left in `r2`, `r3`, `r5`, the stack (a quirk to check).
 - 0x85f8 (last own function) has no `ret`: it falls into the shipped ffltioc, whose first word 9e08 is a `ret`.
 - libc part 0x8680..0x9800: 14 modules cut and verified (`src/lib/oldslibc`, README there); shipped members of `/lib/slibc.a`
   ffltioc, getpid, umask are identical to the original code.
