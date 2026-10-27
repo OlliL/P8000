@@ -36,6 +36,7 @@ SLD = os.path.join(HERE, '..', 'sld.c')
 MANUAL_D2 = {
     'swap_bytes': 'indirect word load through another register pair (rr4 here, rr2 in the original); D2',
     'f85f8': 'indirect byte store through another register pair (rr2 here, rr4 in the original); D2',
+    'f2e76': 'arithmetic shift of the count with another register (r5 here, r9 in the original); D2',
 }
 TABLE = os.path.join(HERE, 'own_functions.txt')
 FINDINGS = os.path.join(HERE, 'findings.json')
@@ -121,7 +122,7 @@ def main():
         audit = {'d_normalised_pct': pct, 'pattern_diff': res['diff'], 'pattern_unexplained': res['unexplained'],
                  'reordered_instructions': res['moved'], 'reordered_examples': res['moved_examples']}
         if res['unexplained'] and not flags and name in MANUAL_D2 and all(
-                x.split('\t')[0] in ('ld', 'ldb') and '@rr' in x for x in res['examples']):
+                (x.split('\t')[0] in ('ld', 'ldb') and '@rr' in x) or x.split('\t')[0] == 'sra' for x in res['examples']):
             audit['difference_class'] = 'D only (manual reading)'
             audit['d_classes'] = ['D2']
             audit['difference_note'] = MANUAL_D2[name]

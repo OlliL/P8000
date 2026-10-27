@@ -687,3 +687,236 @@ char *p;
 	} while (c != -1);
 	return q;
 }
+
+/* f7bbc..7c26: findings:D4 */
+int f7bbc(p, q, a)
+int *p;
+char *q;
+char *a;
+{
+	register char *r;
+	int c;
+
+	if (*p == 0 || *p == 2) {
+		(*p)++;
+		*(int *)(q + 2) += 2;
+	} else if (*p == 4) {
+		*p += 2;
+		*(char **)q = a;
+		return;
+	}
+	r = *(char **)q;
+	c = *(int *)r;
+	*(int *)r = *(int *)(r + 2);
+	*(int *)(r + 2) = c;
+}
+
+/* f6800..6866: findings:D2 */
+int f6800(p, q, a)
+char *p;
+char *q;
+long a;
+{
+	char b;
+
+	*(long *)q = *(unsigned *)(p + 10);
+	*(char *)(q + 4) = *(int *)(p + 8);
+	*(int *)(p + 6) = 0;
+	if ((int)a != 0) {
+		b = *(char *)(p + 4) & 0x1f;
+		if (b == 3 || b == 4)
+			*(int *)(q + 6) = 1;
+	}
+}
+
+/* f3b58..3c16: findings:D7 */
+int bE4BA;
+
+f3b58(p, a)
+char *p;
+char *a;
+{
+	register int k;
+	int n;
+
+	if (bE4BA)
+		return;
+	if (p != 0 && p[4] == 0x20)
+		return;
+	if (a[4] == 0x20)
+		return;
+	if (a[8] < 0)
+		k++;
+	if (a[8] == 0x5f) {
+		k++;
+		if (a[8] == 0x5f)
+			return;
+	}
+	n = f6522(a + 8);
+	if (n < 8)
+		f71ca(9);
+	f71ca(0x20);
+	f3408(0, "x");
+}
+
+/* finish_output 0x2cbc..0x2d4c: done */
+int bE4BC;
+int bE4E8;
+int bE4A3A;
+char bECFA[];
+char *bE048A;
+char *bE0494;
+int f6134();
+int f2dde();
+int f6efe();
+int f3ac6();
+int f9576();
+int f96fa();
+int f95c8();
+int f2d4c();
+int sig_handler();
+
+finish_output()
+{
+	f6134();
+	if (bE4A2)
+		f2dde(bECFA);
+	if (!bE4A4) {
+		if (!bE4AA)
+			f2dde(bF10A);
+		f6efe();
+	}
+	f3ac6(bE4DA);
+	f9576(*(int *)bE4DA);
+	if (!bE4BC) {
+		f96fa(bE048A);
+		f95c8("x", bE048A);
+		bE0494 = bE048A;
+	}
+	bE4E8 = bE4A3A;
+	f2d4c();
+	sig_handler();
+}
+
+/* f2d4c..2dde: findings:D2 */
+int bE4F0;
+int f95fe();
+int f95da();
+int f970a();
+int f3408();
+
+f2d4c()
+{
+	char buf[12];
+	char rest[12];
+	int n;
+
+	n = f95fe(bE0494, 1);
+	if (n == -1)
+		f3408(2, "x");
+	if (f95da(n, buf, 0) == -1)
+		f3408(2, "y");
+	bE4F0 = bE4F0 * 14;
+	if (f970a(n, &bE4F0, 2) != 2)
+		f3408(2, "z");
+}
+
+/* f2e76..2f3a: findings:D2 */
+int bE418;
+int bE41E;
+char *bE41A;
+char bE414[];
+int f30a4();
+
+f2e76(p, n)
+register char *p;
+int n;
+{
+	register int k;
+	register char *q;
+
+	k = n >> 1;
+	bE418 -= k;
+	if (bE418 >= 0) {
+		bE41E -= k;
+		if (bE41E > 0) {
+			q = bE41A;
+			do {
+				*(int *)p = *(int *)q;
+				q += 2;
+				p += 2;
+			} while (--k);
+			bE41A = q;
+			return;
+		}
+		bE41E += k;
+	}
+	bE418 += k;
+	do {
+		*(int *)p = f30a4(bE414);
+		p += 2;
+	} while (--k);
+}
+
+/* f2346..23fe: done */
+int bE452;
+long bE3C16;
+long bE3C1A;
+long b3C1E;
+long bE462;
+int bE468;
+int bE4A8;
+int bE4AE;
+
+init_entry(p, a)
+char *p;
+int a;
+{
+	*(int *)p = bE452;
+	*(long *)(p + 2) = bE3C16 + bE3C1A;
+	if (*(long *)(p + 2) > 0x10000 && bE4A8)
+		f3408(2, "x");
+	*(long *)(p + 6) = b3C1E;
+	*(int *)(p + 10) = a << 4;
+	*(int *)(p + 18) = bE468;
+	if (bE4AE)
+		*(int *)(p + 18) |= 0x20;
+	*(int *)(p + 12) = 0;
+	*(long *)(p + 14) = bE462;
+	*(int *)(p + 22) = 0;
+	*(int *)(p + 20) = 0;
+}
+
+/* f14a4..1560: done */
+long b3486;
+int b488;
+int bE4B6;
+char bE438[];
+int f2f3a();
+int f2e76();
+int f946e();
+int f1696();
+
+load_header(p)
+long p;
+{
+	int magic;
+
+	f2f3a(bE414, p, 0x1c);
+	if (bE41E <= 0) {
+		*(long *)b3486 = -1;
+		b488 += 4;
+		return 0;
+	}
+	f2e76(bE438, 0x1a);
+	f2e76(&magic, 2);
+	if (bE4B6)
+		magic = f946e(magic);
+	if (magic == 0xe707 || magic == 0xe711 || magic == 0xe607 || magic == 0xe611) {
+		if (f1696(1, p + 13)) {
+			*(long *)b3486 = p;
+			b488 += 4;
+		}
+	}
+	return 1;
+}

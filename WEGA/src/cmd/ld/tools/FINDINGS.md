@@ -10,14 +10,14 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 34 |
-| open | 382 |
+| confirmed | 42 |
+| open | 374 |
 
 | Difference class | Count |
 |---|---|
-| - | 382 |
-| D only (manual reading) | 2 |
-| D only (pattern-verified) | 32 |
+| - | 374 |
+| D only (manual reading) | 3 |
+| D only (pattern-verified) | 39 |
 
 **Pending findings:** 0
 
@@ -354,22 +354,19 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1070 | f1070..11ea | 0x1070 | open | open |  |  |  |
 | f11ea | f11ea..1364 | 0x11ea | open | open |  |  |  |
 | f1364 | f1364..14a4 | 0x1364 | open | open |  |  |  |
-| f14a4 | f14a4..1560 | 0x14a4 | open | open |  |  |  |
 | f1560 | f1560..1664 | 0x1560 | open | open |  |  |  |
 | f1696 | f1696..18f2 | 0x1696 | open | open |  |  |  |
 | f18f2 | f18f2..1f96 | 0x18f2 | open | open |  |  |  |
 | f1f96 | f1f96..2056 | 0x1f96 | open | open |  |  |  |
 | f2056 | f2056..22a4 | 0x2056 | open | open |  |  |  |
 | f22a4 | f22a4..2346 | 0x22a4 | open | open |  |  |  |
-| f2346 | f2346..23fe | 0x2346 | open | open |  |  |  |
 | f23fe | f23fe..2492 | 0x23fe | open | open |  |  |  |
 | f2492 | f2492..2624 | 0x2492 | open | open |  |  |  |
 | f2624 | f2624..27d8 | 0x2624 | open | open |  |  |  |
 | f27d8 | f27d8..2cbc | 0x27d8 | open | open |  |  |  |
-| f2cbc | f2cbc..2d4c | 0x2cbc | open | open |  |  |  |
-| f2d4c | f2d4c..2dde | 0x2d4c | open | open |  |  |  |
+| f2d4c | 0x0d8c-0x0e1a | 0x2d4c | confirmed | differs | D only (pattern-verified) | D10, D2, D6, D7 |  |
 | f2dde | 0x0558-0x05c6 | 0x2dde | confirmed | exact | D only (pattern-verified) |  |  |
-| f2e76 | f2e76..2f04 | 0x2e76 | open | open |  |  |  |
+| f2e76 | 0x0e1a-0x0eae | 0x2e76 | confirmed | differs | D only (manual reading) | D2 | arithmetic shift of the count with another register (r5 here, r9 in the original); D2 |
 | f2f04 | 0x0526-0x0558 | 0x2f04 | confirmed | differs | D only (pattern-verified) | D1 |  |
 | f2f3a | f2f3a..3090 | 0x2f3a | open | open |  |  |  |
 | f3090 | 0x0194-0x01a8 | 0x3090 | confirmed | exact | D only (pattern-verified) |  |  |
@@ -380,7 +377,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f3760 | f3760..3a30 | 0x3760 | open | open |  |  |  |
 | f3a88 | 0x0262-0x02a0 | 0x3a88 | confirmed | differs | D only (pattern-verified) | D1, D10, D3 |  |
 | f3b1e |  | 0x3b1e | open | open |  |  |  |
-| f3b58 | f3b58..3c16 | 0x3b58 | open | open |  |  |  |
+| f3b58 | 0x0c64-0x0d04 | 0x3b58 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D7, D8, D8/D2 |  |
 | f3c16 | f3c16..410c | 0x3c16 | open | open |  |  |  |
 | f410c | f410c..42f8 | 0x410c | open | open |  |  |  |
 | f42f8 | f42f8..4444 | 0x42f8 | open | open |  |  |  |
@@ -395,7 +392,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f64d0 | f64d0..6522 | 0x64d0 | open | open |  |  |  |
 | f6522 | f6522..65c6 | 0x6522 | open | open |  |  |  |
 | f6684 | f6684..6800 | 0x6684 | open | open |  |  |  |
-| f6800 | f6800..6866 | 0x6800 | open | open |  |  |  |
+| f6800 | 0x0bfe-0x0c64 | 0x6800 | confirmed | differs | D only (pattern-verified) | D1 |  |
 | f6866 | f6866..68a2 | 0x6866 | open | open |  |  |  |
 | f68a2 | f68a2..6a08 | 0x68a2 | open | open |  |  |  |
 | f6a08 | 0x030a-0x035e | 0x6a08 | confirmed | exact | D only (pattern-verified) | D7 |  |
@@ -418,7 +415,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f7526 | f7526..7808 | 0x7526 | open | open |  |  |  |
 | f7808 | f7808..7956 | 0x7808 | open | open |  |  |  |
 | f79ca | f79ca..7bbc | 0x79ca | open | open |  |  |  |
-| f7bbc | f7bbc..7c26 | 0x7bbc | open | open |  |  |  |
+| f7bbc | 0x0b8e-0x0bfe | 0x7bbc | confirmed | differs | D only (pattern-verified) | D1, D10, D3 |  |
 | f7c26 | f7c26..85f8 | 0x7c26 | open | open |  |  |  |
 | f85f8 | 0x0890-0x0922 | 0x85f8 | confirmed | differs | D only (manual reading) | D2 | indirect byte store through another register pair (rr2 here, rr4 in the original); D2 |
 | f_8000 |  | 0x8000 | open | proven: target of a call in the code |  |  |  |
@@ -429,10 +426,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f_903a |  | 0x903a | open | proven: target of a call in the code |  |  |  |
 | f_946e |  | 0x946e | open | proven: target of a call in the code |  |  |  |
 | f_96be |  | 0x96be | open | proven: target of a call in the code |  |  |  |
+| finish_output | 0x0d04-0x0d8c | 0x2cbc | confirmed | exact | D only (pattern-verified) | D10, D7 |  |
 | flush_buffer | 0x06c6-0x0726 | 0x3ac6 | confirmed | differs | D only (pattern-verified) | D1, D3, D7 |  |
 | high_byte | 0x0166-0x0194 | 0x2e4c | confirmed | exact | D only (pattern-verified) | D7 |  |
+| init_entry | 0x0eae-0x0f66 | 0x2346 | confirmed | exact | D only (pattern-verified) |  |  |
 | init_signals | 0x011c-0x0166 | 0x0aba | confirmed | exact | D only (pattern-verified) |  |  |
 | list_move_after | 0x0a76-0x0b18 | 0x642e | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
+| load_header | 0x0f66-0x101e | 0x14a4 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | make_ccl | 0x0b18-0x0b8e | 0x7956 | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D8/D2 |  |
 | sig_handler | 0x00be-0x011c | 0x0a5c | confirmed | exact | D only (pattern-verified) |  |  |
 | str_compare | 0x020a-0x0262 | 0x3a30 | confirmed | differs | D only (pattern-verified) | D13 |  |
