@@ -147,7 +147,9 @@ produce the same bytes with the shipped cc.
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
   2026-10-27: 9 done (0762, 0aba/init_signals, 2e4c/high_byte, 3090, 6ffe, 702a, 719e/table32_entry, 0a5c/sig_handler,
-  6efe), 5 with findings (6fd0 D1; 3a30, 34b8, 60f0 D2; 65ec D3), 81 open. 65c6 (byte swap, frame 10 in the original) open: the form of the local buffer is not found.
+  6efe), 6 with findings (6fd0 D1; 3a30, 34b8, 60f0 D2; 65ec D3; 0056 D2), 80 open.
+  Open with notes: 00ee (string packing: a run longer than 8 gets a header byte cnt|0x80; the padding loop counts a char
+  down; guess: it runs to char wrap-around when cnt is negative, to be checked), 1664 (parameter form unclear). 65c6 (byte swap, frame 10 in the original) open: the form of the local buffer is not found.
   (95 entries: 6866 added, no caller and no address reference found, dead code candidate).
   Open hard cases: 0056 (register parameters, bit-7 coding), 70ce (parameter order and frame), 64d0 (loop temporary in
   r2 against r12). Check tools: `tools/fncheck.py` (one draft against the original range), `tools/accept.py` (accept into

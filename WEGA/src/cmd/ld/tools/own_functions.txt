@@ -5,7 +5,7 @@
 # 0x8000 is not an entry (inner jump target of the function at 0x7c26). 0x85f8 ends with add; its ret is the first
 # instruction of the shipped ffltioc (0x8680, 9e08 = ret), so the function falls into ffltioc.
 0018 f0018 0056 62 0 - P sc open
-0056 f0056 00ee 152 5 124 1c4 6a28 6b92 P ret open
+0056 f0056 00ee 152 5 124 1c4 6a28 6b92 P ret findings:D2
 00ee f00ee 0178 138 1 6b68 c ret open
 0178 f0178 0220 168 1 6898 c ret open
 0220 f0220 06c6 1190 1 204 P ret open

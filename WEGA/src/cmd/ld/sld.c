@@ -203,3 +203,31 @@ int *a;
 	if (*p)
 		*p = f65c6(*p);
 }
+
+/* f0056..00ee: findings:D2 */
+int f0056(src, dst)
+register char *src;
+register char *dst;
+{
+	int n;
+	char ch;
+	register int k;
+
+	n = 0;
+	k = 0;
+	ch = *src;
+	if (ch & 0x80) {
+		ch &= 0x7f;
+		n = (ch + 7) / 16;
+		ch = n * 16 + 8;
+	} else if (g0476 > 0)
+		ch = 14;
+	else
+		ch = 8;
+	while (ch-- != 0) {
+		*dst++ = *src;
+		if (*src)
+			k++;
+	}
+	return n;
+}

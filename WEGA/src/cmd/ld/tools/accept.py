@@ -101,6 +101,9 @@ def main():
     if cls:
         fid = record_finding(entry, end, cls, result or 'see fncheck output')
         print('recorded %s (%s) in findings.json' % (fid, cls))
+    # names, status and findings in findings.json follow own_functions.txt
+    subprocess.run([sys.executable, os.path.join(HERE, 'sync_findings.py')], check=True)
+    subprocess.run([sys.executable, os.path.join(HERE, 'findings_md.py')], check=True, capture_output=True)
     print('accepted f%s: %s' % (entry, status))
     return 0
 

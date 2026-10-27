@@ -6,20 +6,22 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 ## Summary
 
-**Functions:** 374
+**Functions:** 414
 
 | Pairing | Count |
 |---|---|
-| open | 374 |
+| confirmed | 15 |
+| open | 399 |
 
 | Difference class | Count |
 |---|---|
-| - | 374 |
+| - | 414 |
 
-**Pending findings:** 0
+**Pending findings:** 6
 
 | Status | Count |
 |---|---|
+| open | 6 |
 
 ## Functions
 
@@ -336,62 +338,95 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | c_9704 |  | 0x9704 | open | candidate: starts after ret, not called |  |  |  |
 | c_9716 |  | 0x9716 | open | candidate: starts after ret, not called |  |  |  |
 | c_9730 |  | 0x9730 | open | candidate: starts after ret, not called |  |  |  |
-| f_0018 |  | 0x0018 | open | proven: target of a call in the code |  |  |  |
-| f_0056 |  | 0x0056 | open | proven: target of a call in the code |  |  |  |
-| f_0220 |  | 0x0220 | open | proven: target of a call in the code |  |  |  |
-| f_0aba |  | 0x0aba | open | proven: target of a call in the code |  |  |  |
-| f_0b04 |  | 0x0b04 | open | proven: target of a call in the code |  |  |  |
-| f_1070 |  | 0x1070 | open | proven: target of a call in the code |  |  |  |
-| f_11ea |  | 0x11ea | open | proven: target of a call in the code |  |  |  |
-| f_1364 |  | 0x1364 | open | proven: target of a call in the code |  |  |  |
-| f_14a4 |  | 0x14a4 | open | proven: target of a call in the code |  |  |  |
-| f_1664 |  | 0x1664 | open | proven: target of a call in the code |  |  |  |
-| f_1696 |  | 0x1696 | open | proven: target of a call in the code |  |  |  |
-| f_1f96 |  | 0x1f96 | open | proven: target of a call in the code |  |  |  |
-| f_22a4 |  | 0x22a4 | open | proven: target of a call in the code |  |  |  |
-| f_2346 |  | 0x2346 | open | proven: target of a call in the code |  |  |  |
-| f_2492 |  | 0x2492 | open | proven: target of a call in the code |  |  |  |
-| f_2624 |  | 0x2624 | open | proven: target of a call in the code |  |  |  |
-| f_27d8 |  | 0x27d8 | open | proven: target of a call in the code |  |  |  |
-| f_2d4c |  | 0x2d4c | open | proven: target of a call in the code |  |  |  |
-| f_2dde |  | 0x2dde | open | proven: target of a call in the code |  |  |  |
-| f_2e4c |  | 0x2e4c | open | proven: target of a call in the code |  |  |  |
-| f_2e76 |  | 0x2e76 | open | proven: target of a call in the code |  |  |  |
-| f_2f04 |  | 0x2f04 | open | proven: target of a call in the code |  |  |  |
-| f_2f3a |  | 0x2f3a | open | proven: target of a call in the code |  |  |  |
-| f_3090 |  | 0x3090 | open | proven: target of a call in the code |  |  |  |
-| f_30a4 |  | 0x30a4 | open | proven: target of a call in the code |  |  |  |
-| f_3144 |  | 0x3144 | open | proven: target of a call in the code |  |  |  |
-| f_3408 |  | 0x3408 | open | proven: target of a call in the code |  |  |  |
-| f_34b8 |  | 0x34b8 | open | proven: target of a call in the code |  |  |  |
-| f_3760 |  | 0x3760 | open | proven: target of a call in the code |  |  |  |
-| f_3a30 |  | 0x3a30 | open | proven: target of a call in the code |  |  |  |
-| f_3a88 |  | 0x3a88 | open | proven: target of a call in the code |  |  |  |
-| f_3ac6 |  | 0x3ac6 | open | proven: target of a call in the code |  |  |  |
-| f_410c |  | 0x410c | open | proven: target of a call in the code |  |  |  |
-| f_42f8 |  | 0x42f8 | open | proven: target of a call in the code |  |  |  |
-| f_4968 |  | 0x4968 | open | proven: target of a call in the code |  |  |  |
-| f_4a16 |  | 0x4a16 | open | proven: target of a call in the code |  |  |  |
-| f_5a2c |  | 0x5a2c | open | proven: target of a call in the code |  |  |  |
-| f_5eec |  | 0x5eec | open | proven: target of a call in the code |  |  |  |
-| f_60f0 |  | 0x60f0 | open | proven: target of a call in the code |  |  |  |
-| f_620e |  | 0x620e | open | proven: target of a call in the code |  |  |  |
-| f_642e |  | 0x642e | open | proven: target of a call in the code |  |  |  |
-| f_64d0 |  | 0x64d0 | open | proven: target of a call in the code |  |  |  |
-| f_65c6 |  | 0x65c6 | open | proven: target of a call in the code |  |  |  |
-| f_6800 |  | 0x6800 | open | proven: target of a call in the code |  |  |  |
-| f_6a58 |  | 0x6a58 | open | proven: target of a call in the code |  |  |  |
-| f_6b84 |  | 0x6b84 | open | proven: target of a call in the code |  |  |  |
-| f_6c6a |  | 0x6c6a | open | proven: target of a call in the code |  |  |  |
-| f_6e1a |  | 0x6e1a | open | proven: target of a call in the code |  |  |  |
-| f_6fd0 |  | 0x6fd0 | open | proven: target of a call in the code |  |  |  |
-| f_705e |  | 0x705e | open | proven: target of a call in the code |  |  |  |
-| f_7526 |  | 0x7526 | open | proven: target of a call in the code |  |  |  |
-| f_7808 |  | 0x7808 | open | proven: target of a call in the code |  |  |  |
-| f_7956 |  | 0x7956 | open | proven: target of a call in the code |  |  |  |
-| f_7bbc |  | 0x7bbc | open | proven: target of a call in the code |  |  |  |
+| f0018 | f0018..0056 | 0x0018 | open | open |  |  |  |
+| f0056 | f0056..00ee | 0x0056 | confirmed | finding D2 |  |  |  |
+| f00ee | f00ee..0178 | 0x00ee | open | open |  |  |  |
+| f0178 | f0178..0220 | 0x0178 | open | open |  |  |  |
+| f0220 | f0220..06c6 | 0x0220 | open | open |  |  |  |
+| f06c6 | f06c6..0762 | 0x06c6 | open | open |  |  |  |
+| f0762 | f0762..078c | 0x0762 | confirmed | byte-identical (fncheck) |  |  |  |
+| f078c | f078c..0a5c | 0x078c | open | open |  |  |  |
+| f0b04 | f0b04..0f26 | 0x0b04 | open | open |  |  |  |
+| f0f26 | f0f26..1070 | 0x0f26 | open | open |  |  |  |
+| f1070 | f1070..11ea | 0x1070 | open | open |  |  |  |
+| f11ea | f11ea..1364 | 0x11ea | open | open |  |  |  |
+| f1364 | f1364..14a4 | 0x1364 | open | open |  |  |  |
+| f14a4 | f14a4..1560 | 0x14a4 | open | open |  |  |  |
+| f1560 | f1560..1664 | 0x1560 | open | open |  |  |  |
+| f1664 | f1664..1696 | 0x1664 | open | open |  |  |  |
+| f1696 | f1696..18f2 | 0x1696 | open | open |  |  |  |
+| f18f2 | f18f2..1f96 | 0x18f2 | open | open |  |  |  |
+| f1f96 | f1f96..2056 | 0x1f96 | open | open |  |  |  |
+| f2056 | f2056..22a4 | 0x2056 | open | open |  |  |  |
+| f22a4 | f22a4..2346 | 0x22a4 | open | open |  |  |  |
+| f2346 | f2346..23fe | 0x2346 | open | open |  |  |  |
+| f23fe | f23fe..2492 | 0x23fe | open | open |  |  |  |
+| f2492 | f2492..2624 | 0x2492 | open | open |  |  |  |
+| f2624 | f2624..27d8 | 0x2624 | open | open |  |  |  |
+| f27d8 | f27d8..2cbc | 0x27d8 | open | open |  |  |  |
+| f2cbc | f2cbc..2d4c | 0x2cbc | open | open |  |  |  |
+| f2d4c | f2d4c..2dde | 0x2d4c | open | open |  |  |  |
+| f2dde | f2dde..2e4c | 0x2dde | open | open |  |  |  |
+| f2e76 | f2e76..2f04 | 0x2e76 | open | open |  |  |  |
+| f2f04 | f2f04..2f3a | 0x2f04 | open | open |  |  |  |
+| f2f3a | f2f3a..3090 | 0x2f3a | open | open |  |  |  |
+| f3090 | f3090..30a4 | 0x3090 | confirmed | byte-identical (fncheck) |  |  |  |
+| f30a4 | f30a4..3144 | 0x30a4 | open | open |  |  |  |
+| f3144 | f3144..3408 | 0x3144 | open | open |  |  |  |
+| f3408 | f3408..34b8 | 0x3408 | open | open |  |  |  |
+| f3516 | f3516..3760 | 0x3516 | open | open |  |  |  |
+| f3760 | f3760..3a30 | 0x3760 | open | open |  |  |  |
+| f3a88 | f3a88..3ac6 | 0x3a88 | open | open |  |  |  |
+| f3ac6 | f3ac6..3b58 | 0x3ac6 | open | open |  |  |  |
+| f3b58 | f3b58..3c16 | 0x3b58 | open | open |  |  |  |
+| f3c16 | f3c16..410c | 0x3c16 | open | open |  |  |  |
+| f410c | f410c..42f8 | 0x410c | open | open |  |  |  |
+| f42f8 | f42f8..4444 | 0x42f8 | open | open |  |  |  |
+| f4444 | f4444..44e6 | 0x4444 | open | open |  |  |  |
+| f44e6 | f44e6..4968 | 0x44e6 | open | open |  |  |  |
+| f4968 | f4968..4a16 | 0x4968 | open | open |  |  |  |
+| f4a16 | f4a16..5a2c | 0x4a16 | open | open |  |  |  |
+| f5a2c | f5a2c..5eec | 0x5a2c | open | open |  |  |  |
+| f5eec | f5eec..60f0 | 0x5eec | open | open |  |  |  |
+| f60f0 | f60f0..6134 | 0x60f0 | confirmed | finding D2 |  |  |  |
+| f6134 | f6134..620e | 0x6134 | open | open |  |  |  |
+| f620e | f620e..642e | 0x620e | open | open |  |  |  |
+| f642e | f642e..64d0 | 0x642e | open | open |  |  |  |
+| f64d0 | f64d0..6522 | 0x64d0 | open | open |  |  |  |
+| f6522 | f6522..65c6 | 0x6522 | open | open |  |  |  |
+| f65c6 | f65c6..65ec | 0x65c6 | open | open |  |  |  |
+| f65ec | f65ec..6620 | 0x65ec | confirmed | finding D3 |  |  |  |
+| f6620 | f6620..6684 | 0x6620 | open | open |  |  |  |
+| f6684 | f6684..6800 | 0x6684 | open | open |  |  |  |
+| f6800 | f6800..6866 | 0x6800 | open | open |  |  |  |
+| f6866 | f6866..68a2 | 0x6866 | open | open |  |  |  |
+| f68a2 | f68a2..6a08 | 0x68a2 | open | open |  |  |  |
+| f6a08 | f6a08..6a58 | 0x6a08 | open | open |  |  |  |
+| f6a58 | f6a58..6b5a | 0x6a58 | open | open |  |  |  |
+| f6b5a | f6b5a..6b84 | 0x6b5a | open | open |  |  |  |
+| f6b84 | f6b84..6bae | 0x6b84 | open | open |  |  |  |
+| f6bae | f6bae..6c6a | 0x6bae | open | open |  |  |  |
+| f6c6a | f6c6a..6da8 | 0x6c6a | open | open |  |  |  |
+| f6da8 | f6da8..6e1a | 0x6da8 | open | open |  |  |  |
+| f6e1a | f6e1a..6efe | 0x6e1a | open | open |  |  |  |
+| f6efe | f6efe..6f46 | 0x6efe | confirmed | byte-identical (fncheck) |  |  |  |
+| f6f46 | f6f46..6fd0 | 0x6f46 | open | open |  |  |  |
+| f6ffe | f6ffe..702a | 0x6ffe | confirmed | byte-identical (fncheck) |  |  |  |
+| f702a | f702a..705e | 0x702a | confirmed | byte-identical (fncheck) |  |  |  |
+| f705e | f705e..70ce | 0x705e | open | open |  |  |  |
+| f70ce | f70ce..7112 | 0x70ce | open | open |  |  |  |
+| f7112 | f7112..719e | 0x7112 | open | open |  |  |  |
+| f71ca | f71ca..7286 | 0x71ca | open | open |  |  |  |
+| f7286 | f7286..7300 | 0x7286 | open | open |  |  |  |
+| f7300 | f7300..7526 | 0x7300 | open | open |  |  |  |
+| f7526 | f7526..7808 | 0x7526 | open | open |  |  |  |
+| f7808 | f7808..7956 | 0x7808 | open | open |  |  |  |
+| f7956 | f7956..79ca | 0x7956 | open | open |  |  |  |
+| f79ca | f79ca..7bbc | 0x79ca | open | open |  |  |  |
+| f7bbc | f7bbc..7c26 | 0x7bbc | open | open |  |  |  |
+| f7c26 | f7c26..85f8 | 0x7c26 | open | open |  |  |  |
+| f85f8 | f85f8..8680 | 0x85f8 | open | open |  |  |  |
 | f_8000 |  | 0x8000 | open | proven: target of a call in the code |  |  |  |
-| f_85f8 |  | 0x85f8 | open | proven: target of a call in the code |  |  |  |
 | f_8924 |  | 0x8924 | open | proven: target of a call in the code |  |  |  |
 | f_89ba |  | 0x89ba | open | proven: target of a call in the code |  |  |  |
 | f_8cb4 |  | 0x8cb4 | open | proven: target of a call in the code |  |  |  |
@@ -399,8 +434,21 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f_903a |  | 0x903a | open | proven: target of a call in the code |  |  |  |
 | f_946e |  | 0x946e | open | proven: target of a call in the code |  |  |  |
 | f_96be |  | 0x96be | open | proven: target of a call in the code |  |  |  |
+| high_byte | f2e4c..2e76 | 0x2e4c | confirmed | byte-identical (fncheck) |  |  |  |
+| init_signals | f0aba..0b04 | 0x0aba | confirmed | byte-identical (fncheck) |  |  |  |
+| sig_handler | f0a5c..0aba | 0x0a5c | confirmed | byte-identical (fncheck) |  |  |  |
+| str_compare | f3a30..3a88 | 0x3a30 | confirmed | finding D2 |  |  |  |
+| table16_entry | f6fd0..6ffe | 0x6fd0 | confirmed | finding D1 |  |  |  |
+| table32_entry | f719e..71ca | 0x719e | confirmed | byte-identical (fncheck) |  |  |  |
+| table_lookup | f34b8..3516 | 0x34b8 | confirmed | finding D2 |  |  |  |
 
 ## Pending findings
 
 | ID | Kind | Function | Status | Classification | Action | Result |
 |---|---|---|---|---|---|---|
+| sld-01 | compiler difference | table16_entry | open | D1 | record; rebuild as the original (byte identity first) | frame 14 bytes against 6 bytes of the draft; all other instructions equal |
+| sld-02 | compiler difference | str_compare | open | D2 | record; rebuild as the original (byte identity first) | loop test loads q into rr4 in the original (testb @rr4), rr2 here; otherwise equal |
+| sld-03 | compiler difference | table_lookup | open | D2 | record; rebuild as the original (byte identity first) | register choice differs (end pointer kept in rr8 in the original, p in rr10); frame 32 bytes in the original against 8 here (D1); otherwise equal |
+| sld-04 | compiler difference | f60f0 | open | D2 | record; rebuild as the original (byte identity first) | value v kept in the frame (frame 8 against 10 here), saved register set r5..r7 in the original; otherwise equal |
+| sld-05 | compiler difference | f65ec | open | D3 | record; rebuild as the original (byte identity first) | parameter reloaded from the frame into rr12 in the original (store and load), copied from rr6 here; otherwise equal |
+| sld-06 | compiler difference | f0056 | open | D2 | record; rebuild as the original (byte identity first) | register numbers differ (dst in rr10, src in rr12 equal; counter in r13 in the original, r9 here), ch kept in memory in the original; frame and local offsets equal |
