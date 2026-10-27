@@ -147,10 +147,13 @@ produce the same bytes with the shipped cc.
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
   2026-10-27: 23 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
-  41 with findings (see the audit in findings.json),
-  36 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
-  Done in the last round: 0x64d0 (D2), 0x0f26 read_words (D15), 0x3408 report_error (done), 0x4968 (D5, one dead increment
-  open by reading). Open small ones: 0x1070 (378, parser with a jump table, not started), 0x7286 (wrapper of 0x7300, which is deferred).
+  42 with findings (see the audit in findings.json),
+  35 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
+  Done in the last rounds: 0x64d0 (D2), 0x0f26 read_words (D15), 0x3408 report_error (done), 0x4968 (D5, one dead increment
+  open by reading), 0x2f3a refill_wbuf (D5, D9, D15). Open small ones: 0x1070 (378, parser with a jump table, not started),
+  0x7286 (wrapper of 0x7300, which is deferred), 0x6a58 (hash lookup with linear probing; draft in the scratch folder: same
+  82 instructions, but the register of the probe pointer (rr6 in the original) and the loop shape differ; not accepted),
+  0x1560 (table loop, 12-byte entries, not drafted fully).
   Dead code (no caller, no address reference): 0x724e and 0x7212 still open; rebuilt: 0x6866 pack_entry, 0x01d2 walk_entries,
   0x3b1e swab12, 0x7186 report_limit. 0x0018 is the start code (asm with sc, to be kept as assembler, not C).
   0x7808 (334 bytes, open): a scanf-like reader: stream at rr10 (count at +4, pointer at +0), conversion characters c, s, [ (character

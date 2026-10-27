@@ -64,6 +64,11 @@ def main():
             'level': level,
         })
         funcs[key] = entry
+    # only the own functions of the table are entries; first-inventory candidates (c_<addr>, f_<addr>) and starts
+    # above the own range are not functions of sld and are dropped (they carry no audit data)
+    names = {r['name'] for r in rows}
+    for k in [k for k in funcs if k not in names]:
+        del funcs[k]
     for x in data['findings_pending']:
         if x.get('function') in rename:
             x['function'] = rename[x['function']]

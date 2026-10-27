@@ -441,7 +441,11 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
 - Stream layout of the input side (read from 0x7808 and 0x30a4, not yet confirmed by a draft): a long pointer to the next
   character at offset 0 (advanced by its low word at offset 2), a word count of the characters left at offset 4; count
   below zero refills through 0x86fa (filbuf-like, the stream as argument), a character pushed back goes through 0x8688
-  (ungetc-like). The output side of 0x30a4 uses the same count at offset 4 and refills through 0x2f3a (flush-like).
+  (ungetc-like). The output side of 0x30a4 uses the same count at offset 4 and refills through 0x2f3a (`refill_wbuf`).
+  `refill_wbuf` (2026-10-27, draft matches the instructions up to layout and register forms): the object at offset 12 is a
+  pointer to one of two buffers (0x0004 and 0x020a, a counter word at offset 0 and the block number at offset 2). It seeks
+  to block (v >> 8) * 512 on the file `bE4BE`, reads 512 bytes into the buffer at +6, stores the word count (bytes / 2) at +4,
+  and sets the pointer at offset 6 of the object to buffer + 6 + 2 * low byte of v.
   The write buffer of 0x3ac6 (flush_buffer) has another layout (word at offset 2, pointer at offset 4, end at offset 6).
 - Word buffer object used by 0x30a4 (callers 0x2820, 0x287c, 0x2ef0, 0x3384 pass the address: base 0x0414, and 0x0424 at
   the second use): word count at +4 (0x0418, decremented by 0x30a4 and by 0x2e76), long pointer at +6 (0x041a, copied from by
@@ -833,6 +837,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` (own code, 0x85f8, number parser) | with a leading `-` the digit loop counts the original length (one character more than the rest after the sign), the return value uses the shortened count | kept (`f85f8` in `src/cmd/ld/sld.c`; `src/cmd/ld/tools/own_functions.txt`) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x0f26, read_words) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/ld/sld.c`) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `src/cmd/ld/tools/own_functions.txt` |
+| `/bin/sld` (own code, 0x6a58) | two counters (`0x06`, `0x0a` of the frame) are incremented on the name flag and never read: write-only locals of the compiler output | kept (`src/cmd/ld/tools/own_functions.txt`, not accepted yet) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x6866, 0x01d2, 0x3b1e) | three functions without any caller and without an address reference in the program (dead code) | open (not yet rebuilt) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/gld` | in the second pass every `l` (and `e`, `o`) in an option argument counts: `-L/usr/lib` is read as `-lib` and fails with "cannot open"; an `o` or `e` skips the next argument | kept | "gld on the host" |
 | `/bin/gld` | a common with a size is not replaced by a text definition; a member found through a table of contents is loaded by name of at most 8 characters only (long names never match) | kept | "gld on the host" |

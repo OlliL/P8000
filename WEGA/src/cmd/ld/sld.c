@@ -892,7 +892,7 @@ long b3486;
 int b488;
 int bE4B6;
 char bE438[];
-int f2f3a();
+int refill_wbuf();
 int f2e76();
 int f946e();
 int f1696();
@@ -902,7 +902,7 @@ long p;
 {
 	int magic;
 
-	f2f3a(bE414, p, 0x1c);
+	refill_wbuf(bE414, p, 0x1c);
 	if (bE41E <= 0) {
 		*(long *)b3486 = -1;
 		b488 += 4;
@@ -1144,7 +1144,7 @@ unsigned long n;
 long bE486;
 int bE4BE;
 int f3144();
-int f2f3a();
+int refill_wbuf();
 int f2e76();
 int f2492();
 int f9576();
@@ -1171,7 +1171,7 @@ char *p;
 	} else {
 		lp = (long *)bE486;
 		while (*lp != -1) {
-			f2f3a(bE414, *lp, 26);
+			refill_wbuf(bE414, *lp, 26);
 			f2e76(bE438, 26);
 			f2492(*lp + 13, bE438);
 			lp++;
@@ -1326,7 +1326,7 @@ int n;
 
 /* getw_buf..3144: findings:D2 */
 int bE410;
-int f2f3a();
+int refill_wbuf();
 int report_error();
 
 getw_buf(p)
@@ -1340,7 +1340,7 @@ char *p;
 	*(int *)(q + 4) -= 1;
 	if (*(int *)(q + 4) < 0) {
 		v = (long)(*(int *)(q + 2) + 1) << 8;
-		f2f3a(q, v, -1);
+		refill_wbuf(q, v, -1);
 		*(int *)(q + 4) -= 1;
 	}
 	*(int *)(q + 10) -= 1;
@@ -1357,7 +1357,7 @@ char *p;
 }
 
 /* scan_field..7956: findings:D2 */
-int f2f3a();
+int refill_wbuf();
 int f8688();
 int f86fa();
 
@@ -1615,4 +1615,59 @@ int *res;
 		*(int *)q = 4;
 	lcl = 1;
 	*res = f5eec(q, p, 0, 0x72, &lcl);
+}
+
+/* f2f3a..3090: findings:D5,D9,D15 */
+char b0004[];
+char b020a[];
+int f95da();
+int f9610();
+int f3090();
+int report_error();
+
+int refill_wbuf(q, v, n)
+char *q;
+long v;
+int n;
+{
+	long hi;
+	long lo;
+	register char *cur;
+	register char *obj;
+	int nw;
+
+	obj = q;
+	hi = (v >> 8) & 0xff;
+	lo = v & 0xff;
+	*(int *)(*(char **)(obj + 12)) -= 1;
+	cur = b0004;
+	if ((long)*(int *)(cur + 2) == hi)
+		goto common;
+	cur = b020a;
+	if ((long)*(int *)(cur + 2) == lo)
+		goto common;
+	if (*(int *)cur) {
+		cur = b0004;
+		if (*(int *)cur) {
+			report_error(2, "x");
+			goto common;
+		}
+	} else if (!*(int *)b0004 && *(int *)(b0004 + 2) < *(int *)(b020a + 2))
+		cur = b0004;
+	*(int *)(cur + 2) = hi;
+	f95da(bE4BE, (v & 0xff00) << 1, 0);
+	nw = f9610(bE4BE, cur + 6, 0x200) >> 1;
+	if (nw < 0)
+		nw = 0;
+	*(int *)(cur + 4) = nw;
+common:
+	*(int *)cur += 1;
+	*(int *)(obj + 2) = hi;
+	*(char **)(obj + 12) = cur;
+	*(char **)(obj + 6) = cur + 6 + (lo << 1);
+	if (n != -1)
+		*(int *)(obj + 10) = f3090(n);
+	*(int *)(obj + 4) = *(int *)(cur + 4) - (int)lo;
+	if (*(int *)(obj + 4) <= 0)
+		*(int *)(obj + 10) = 0;
 }
