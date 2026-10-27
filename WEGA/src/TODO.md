@@ -152,9 +152,17 @@ produce the same bytes with the shipped cc.
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
   2026-10-27: 23 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
-  52 with findings (see the audit in findings.json),
-  25 open (23 large functions deferred: pending findings kind 'deferred (large function)'; 0x0018 asm; 0x6a58 not accepted),
-  100 entries.
+  54 with findings (see the audit in findings.json),
+  23 open: 21 large functions deferred (kind 'deferred (large function)' in findings_pending, 0x2492 and 0x2624 are done
+  now), 0x0018 (start code, now scrt0.o; table row still open), 0x6a58 (not accepted). 100 entries.
+  Second pass (2026-10-27): 0x2492 accepted (D2, D7), 0x2624 accepted (D7, D16), 0x27d8 accepted (D2, D7, D15) with the open
+  finding sld-27d8-layout (42 of 361 instructions differ: block placement of 0x2b02 and 0x2882; semantics checked by reading only). Next deferred: 0x27d8 (1252 bytes, bit
+  stream decoder with two jump tables at 0x0cf6 and 0x0da4): goto skeleton complete (361 instructions, equal), register
+  allocation of the old compiler is now known (declaration order from r13 down, pointer = highest free pair, see KNOWLEDGE
+  'Register allocation'); the registers of 0x27d8 match with the declaration order w13, w12, w11, e, w10. The block order
+  was searched (scratch f27d8_m.c: 42 differing of 361 instructions, not identical, not accepted. The classifier gives 59 pattern
+  differences and 1 unexplained: sra rS,#4, because the if/else form folds the bit-3 ternary of the key). Open: the table path
+  placement, the byte move of bE470, the switch count register. Notes in the scratch folder.
   0x68a2 accepted (D2, D16; same 118 instructions).
   0x11ea accepted as parse_args (D2, D5, D6, D7, D15, D16; same 112 instructions; layout by reading).
   0x1070 accepted (D6, D15) with one open point: 111 instructions against 112 in the original (pending finding sld-1070-count).

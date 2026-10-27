@@ -72,6 +72,11 @@ def main():
     for x in data['findings_pending']:
         if x.get('function') in rename:
             x['function'] = rename[x['function']]
+    # a deferred (large) function that is no longer open is done: its pending entry goes
+    status = {r['name']: r['status'] for r in rows}
+    data['findings_pending'] = [x for x in data['findings_pending']
+                                if not (x.get('kind', '').startswith('deferred') and x.get('function') in status
+                                        and status[x['function']] != 'open')]
     json.dump(data, open(FINDINGS, 'w'), indent=1)
     open(FINDINGS, 'a').write('\n')
     print('functions: %d own, %d entries in total' % (len(rows), len(funcs)))

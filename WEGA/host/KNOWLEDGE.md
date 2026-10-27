@@ -143,6 +143,13 @@ The kernel assembler sources (mch.s, event.s, fpe.s, ...) are PLZ/ASM
   /lib/slibc.a`. No global optimizer.
 - PCC derived (System III C): void, enum, struct assignment, unsigned char,
   initialised bit fields. `u8000` predefined as 1.
+- Register allocation of the old cc (segmented, `scc -O`, measured 2026-10-27 with `scc -S` on small test functions that
+  contain a call): the register variables of a function are assigned in declaration order, from r13 downwards. An int or
+  char takes one register; a pointer or long takes the highest free aligned pair (rr10 = r10:r11, rr8 = r8:r9, ...). Measured:
+  `int a, b; char *e` gives a=r13, b=r12, e=rr10; five variables `int a,b,c,d; char *e` give r13, r12, r11, r10 and rr8; `char *e`
+  declared first takes rr12, then r11 and r10. A leaf function (no call) puts them into scratch registers instead (D2).
+  For the reconstruction of a function this means: the declaration order of the register variables is part of the source
+  form (0x27d8 needs w13, w12, w11, e, w10). The front end (cparse) numbers them; codgen takes the number (`sbyte5`).
 - Register variables r8..r14 (nonseg, 7) / r8..r13 (seg, 6); `register
   char` ignored. int/short 16, long 32, pointer 16 (nonseg) / 32 (seg),
   float 32, double 64 (80 bit in registers).

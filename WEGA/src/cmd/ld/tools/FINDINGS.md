@@ -10,21 +10,21 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 75 |
-| open | 25 |
+| confirmed | 78 |
+| open | 22 |
 
 | Difference class | Count |
 |---|---|
-| - | 25 |
+| - | 22 |
 | D only (manual reading) | 6 |
-| D only (pattern-verified) | 64 |
-| other differences | 5 |
+| D only (pattern-verified) | 65 |
+| other differences | 7 |
 
-**Pending findings:** 24
+**Pending findings:** 22
 
 | Status | Count |
 |---|---|
-| open | 24 |
+| open | 22 |
 
 ## Functions
 
@@ -47,9 +47,9 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1f96 | 0x1462-0x152e | 0x1f96 | confirmed | differs | D only (pattern-verified) | D1, D10, D7 |  |
 | f2056 | f2056..22a4 | 0x2056 | open | open |  |  |  |
 | f23fe | 0x13c4-0x1462 | 0x23fe | confirmed | differs | D only (pattern-verified) | D1, D10, D7, D8 |  |
-| f2492 | f2492..2624 | 0x2492 | open | open |  |  |  |
-| f2624 | f2624..27d8 | 0x2624 | open | open |  |  |  |
-| f27d8 | f27d8..2cbc | 0x27d8 | open | open |  |  |  |
+| f2492 | 0x28ee-0x2a88 | 0x2492 | confirmed | differs | D only (pattern-verified) | D10, D3, D7, D8 |  |
+| f2624 | 0x2a88-0x2c9c | 0x2624 | confirmed | differs | other differences |  | unexplained instruction forms: ld	rS,rrS(#N) |
+| f27d8 | 0x2c9c-0x31a8 | 0x27d8 | confirmed | differs | other differences |  | unexplained instruction forms: sra	rS,#4 |
 | f2d4c | 0x0d70-0x0df2 | 0x2d4c | confirmed | differs | D only (pattern-verified) | D10, D2, D6 |  |
 | f2dde | 0x0550-0x05be | 0x2dde | confirmed | exact | D only (pattern-verified) |  |  |
 | f2e76 | 0x0df2-0x0e82 | 0x2e76 | confirmed | differs | D only (manual reading) | D2 | arithmetic shift of the count with another register (r5 here, r9 in the original) |
@@ -141,9 +141,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | sld-deferred-1696 | deferred (large function) | f1696 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x1696, 604 bytes, not started |
 | sld-deferred-18f2 | deferred (large function) | f18f2 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x18f2, 1700 bytes, not started |
 | sld-deferred-2056 | deferred (large function) | f2056 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x2056, 590 bytes, not started |
-| sld-deferred-2492 | deferred (large function) | f2492 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x2492, 402 bytes, not started |
-| sld-deferred-2624 | deferred (large function) | f2624 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x2624, 436 bytes, not started |
-| sld-deferred-27d8 | deferred (large function) | f27d8 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x27d8, 1252 bytes, not started |
 | sld-deferred-3144 | deferred (large function) | f3144 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x3144, 708 bytes, not started |
 | sld-deferred-3516 | deferred (large function) | f3516 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x3516, 586 bytes, not started |
 | sld-deferred-3760 | deferred (large function) | f3760 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x3760, 720 bytes, not started |
@@ -159,3 +156,4 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | sld-deferred-79ca | deferred (large function) | f79ca | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x79ca, 498 bytes, not started |
 | sld-deferred-7c26 | deferred (large function) | f7c26 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7c26, 2514 bytes, not started |
 | sld-1070-count | open (instruction count) | f1070 | open | - | find the one instruction of the original (112 against 111 in our draft) and the block order of the switch | entry 0x1070: 111 instructions against 112 in the original; not explained by a D pattern (D6 and D15 are the known layout and switch forms) |
+| sld-27d8-layout | open (block placement, semantic check by reading) | f27d8 | open | - | place the blocks of the table path (0x2b02) and of the stream B refill (0x2882) as in the original; then check the remaining 42 instructions (register choices D2 and the sra form) and run the function on the machine or in a test harness | entry 0x27d8, 1252 bytes: 361 instructions, 42 differ (block placement of 0x2b02 and 0x2882, scratch registers of the key, count and byte temporaries); the classifier reports 1 unexplained form (sra rS,#4); semantics checked by reading only |

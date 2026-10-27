@@ -30,9 +30,9 @@
 22a4 open_tmp 2346 162 7 206a 2080 208a 20a4 P ret findings:D7
 2346 init_entry 23fe 184 1 2248 P ret done
 23fe f23fe 2492 148 1 1312 c ret findings:D2
-2492 f2492 2624 402 2 2438 2464 P ret open
-2624 f2624 27d8 436 1 2614 P ret open
-27d8 f27d8 2cbc 1252 2 273a 2788 P ret open
+2492 f2492 2624 402 2 2438 2464 P ret findings:D2,D7
+2624 f2624 27d8 436 1 2614 P ret findings:D7,D16
+27d8 f27d8 2cbc 1252 2 273a 2788 P ret findings:D2,D7,D15
 2cbc finish_output 2d4c 144 1 1350 c ret done
 2d4c f2d4c 2dde 146 1 2d42 P ret findings:D2
 2dde f2dde 2e4c 110 2 2cd0 2ce8 P ret done

@@ -220,7 +220,7 @@ char bE46E;
 long bE46A;
 int unpack_run();
 int f00ee();
-int f6a58();
+char *f6a58();
 
 f6b5a(p)
 char *p;
@@ -240,7 +240,7 @@ char bE46E;
 long bE46A;
 int unpack_run();
 int f00ee();
-int f6a58();
+char *f6a58();
 
 long f6b84(p)
 char *p;
@@ -2175,6 +2175,350 @@ add:
 	*(long *)p = *(long *)p + ((long)(*q) << 24);
 tail:
 	*(int *)(p + 6) = *(int *)(q + 0x10);
+end:
+	;
+}
+
+/* f2492..2624: findings:D2,D7 */
+int bE434;
+int bE436;
+long bE454;
+long bE458;
+int bE460;
+int bE4A6;
+int bE4AC;
+int f3516();
+int f6a08();
+int f6c6a();
+int f6e1a();
+char *f6a58();
+int report_error();
+int read_entry_hdr();
+int put_name();
+int put_char();
+int f2624();
+int refill_wbuf();
+
+int f2492(a, b)
+long a;
+char *b;
+{
+	register int k;
+	register char *rec;
+	register char *t;
+	long v;
+	int n;
+	char c;
+	char d;
+
+	f3516(a, 2);
+	f6a08(b);
+	t = tab84d8;
+	v = (unsigned)((bE436 + bE434) & ~1) >> 1;
+	v = v + a;
+	refill_wbuf(bE414, v + bE454 + bE458, bE460);
+	k = 0;
+	while (bE41E > 0) {
+		n = read_entry_hdr() + 1;
+		f6c6a();
+		c = bE46E;
+		if (bE4A6) {
+			d = c & 0x1f;
+			if (d == 1 || d > 4)
+				goto next;
+		}
+		if ((c & 0x20) == 0) {
+			if (bE4A4 || bE4AA)
+				goto next;
+			if (bE4AC && bE472[0] == 0x4c)
+				goto next;
+			f6e1a(bF10A, &bE46A);
+			goto next;
+		}
+		rec = *(char **)f6a58();
+		if (!rec)
+			report_error(2, "x");
+		if (bE46E != 0x20)
+			goto other;
+		if (t >= (char *)&gE47E)
+			report_error(2, "x");
+		*(int *)t = k;
+		*(char **)(t + 2) = rec;
+		t += 6;
+		goto next;
+other:
+		if (*(char *)(rec + 4) == bE46E && bE46A == *(long *)rec)
+			goto next;
+		if (put_name(bE472) < 8)
+			put_char(9);
+		put_char(9);
+		report_error(1, "x");
+next:
+		k += n;
+	}
+	f2624(v, t);
+}
+
+/* f2624..27d8: findings:D7,D16 */
+char bE424[];
+int f3090();
+int f2e76();
+int swap_quad();
+int refill_wbuf();
+int f27d8();
+
+int f2624(a, b)
+long a;
+char *b;
+{
+	int i;
+	long acc;
+	long base;
+	long half;
+	int lim;
+	char tmp[16];
+	int key;
+	int n;
+	acc = a;
+	base = a - (bE434 / 2);
+	lim = bE434 / (n * 2);
+	half = (bE454 + bE458) >> 1;
+	for (i = 0; i < lim; i++) {
+		refill_wbuf(bE414, base + i, n * 2);
+		f2e76(tmp, n * 2);
+		if (bE4B6)
+			swap_quad(tmp);
+		key = *(int *)(tmp + 10) & 3;
+		switch (key) {
+		case 1:
+			refill_wbuf(bE414, acc, *(int *)(tmp + 4));
+			refill_wbuf(bE424, acc + half, *(int *)(tmp + 4));
+			acc += f3090(*(int *)(tmp + 4));
+			f27d8(b, bE6E2, bEF02);
+			break;
+		case 3:
+			refill_wbuf(bE414, acc, *(int *)(tmp + 4));
+			refill_wbuf(bE424, acc + half, *(int *)(tmp + 4));
+			acc += f3090(*(int *)(tmp + 4));
+			f27d8(b, bE6E2, bEF02);
+		case 2:
+			refill_wbuf(bE414, acc, *(int *)(tmp + 6));
+			refill_wbuf(bE424, acc + half, *(int *)(tmp + 6));
+			acc += f3090(*(int *)(tmp + 6));
+			f27d8(b, bE8EA, bEAF2);
+			break;
+		}
+	}
+}
+
+/* f27d8..2cbc: findings:D2,D7,D15 */
+int bEF312;
+int f3a88();
+int f6c6a();
+int f65c6();
+char *table_lookup();
+int table16_index();
+int getw_buf();
+int report_error();
+
+int f27d8(p, q, r)
+char *p;
+char *q;
+char *r;
+{
+	int flag;
+	char *save;
+	register int w13;
+	register int w12;
+	register int w11;
+	register char *e;
+	register int w10;
+
+	flag = 0;
+
+top:
+	bE41E -= 1;
+	if (bE41E > 0)
+		goto c2826;
+	if (bE41E >= 0)
+		goto c2814;
+	goto end;
+c280e:
+	*(int *)(bE414 + 4) += 1;
+	goto c2814;
+c2814:
+	bE41E += 1;
+	w12 = getw_buf(bE414);
+	goto c2844;
+c2826:
+	*(int *)(bE414 + 4) -= 1;
+	if (*(int *)(bE414 + 4) < 0)
+		goto c280e;
+	w12 = *(int *)*(char **)(bE414 + 6);
+	*(int *)(bE414 + 8) += 2;
+c2844:
+	*(int *)(bE424 + 10) -= 1;
+	if (*(int *)(bE424 + 10) > 0)
+		goto c2882;
+	if (*(int *)(bE424 + 10) >= 0)
+		goto c2870;
+	report_error(2, "x");
+	goto c2870;
+c286a:
+	*(int *)(bE424 + 4) += 1;
+c2870:
+	*(int *)(bE424 + 10) += 1;
+	w13 = getw_buf(bE424);
+	goto c28a0;
+c2882:
+	*(int *)(bE424 + 4) -= 1;
+	if (*(int *)(bE424 + 4) < 0)
+		goto c286a;
+	w13 = *(int *)*(char **)(bE424 + 6);
+	*(int *)(bE424 + 8) += 2;
+	goto c28a0;
+c28a0:
+	if (bE4B6) {
+		w12 = f65c6(w12);
+		w13 = f65c6(w13);
+	}
+	if (!(w13 & 8)) {
+	switch (((w13 & 8) ? w13 : (w13 >> 4)) & 7) {
+	case 0:
+		goto c2a3c;
+	case 1:
+		goto c29be;
+	case 2:
+		goto c28fa;
+	}
+	goto e1;
+c28fa:
+	if (!(w13 & 1))
+		report_error(2, "x");
+	bE46E = ((w13 & 7) >> 1) + 1;
+	bE46A = (long)(w12 & 0xff);
+	bE470 = (unsigned)w13 >> 8;
+	f6c6a();
+	w12 = (int)bE46A;
+	if (w12 & 0xff00)
+		report_error(2, "x");
+c2954:
+	w12 += ((int)(bE46A >> 16)) & 0xff00;
+c2964:
+	w13 = ((bE470 & 0xff) << 8) + (w13 & 0xff);
+emit:
+	if (bE4B6) {
+		w12 = f65c6(w12);
+		w13 = f65c6(w13);
+	}
+	f3a88(w12, q);
+	if (bE4A2)
+		f3a88(w13, r);
+	goto top;
+c29be:
+	if (!(w13 & 1))
+		report_error(2, "x");
+	w10 = w12;
+	bE470 = (unsigned)w13 >> 8;
+	bE46E = ((w13 & 7) >> 1) + 1;
+	bE46A = (long)w12;
+	f6c6a();
+	w10 = (w10 & 0x8000) | (int)(bE46A >> 16);
+	if (bE4B6)
+		w10 = f65c6(w10);
+	f3a88(w10, q);
+	w11 = w13;
+	flag = 1;
+	goto top;
+c2a3c:
+	if (!(w13 & 0xe))
+		goto c2a96;
+	if (!flag)
+		goto c2a68;
+	if (((w13 != 0xff0f) & w11 & 0xff0f) == 0)
+		goto c2a68;
+	w13 &= 0xf0;
+	w13 |= w11 & 0xff0f;
+c2a68:
+	bE470 = (unsigned)w13 >> 8;
+	bE46E = ((w13 & 7) >> 1) + 1;
+	bE46A = (long)w12;
+	f6c6a();
+c2a96:
+	if (!flag)
+		goto c2ad6;
+	flag = 0;
+	w11 = ((bE470 & 0xff) << 8) + (w11 & 0xff);
+	if (bE4B6)
+		w11 = f65c6(w11);
+	if (bE4A2)
+		f3a88(w11, r);
+c2ad6:
+	if (!(w13 & 0xe))
+		goto emit;
+	w12 = (int)bE46A;
+	goto c2964;
+e1:
+	report_error(2, "x");
+	goto emit;
+	} else {
+		e = table_lookup(p, w13);
+		if (e[4] != 0x20)
+			goto c2b46;
+		w13 = (w13 & 7) + ((table16_index(e) + bEF312) << 4) + 8;
+		goto emit;
+	}
+
+c2b46:
+	switch (((w13 & 8) ? w13 : (w13 >> 4)) & 7) {
+	case 0:
+		goto c2c12;
+	case 1:
+		goto c2bcc;
+	case 2:
+		goto c2b7c;
+	}
+	goto e2;
+c2b7c:
+	w13 = (e[4] - 0x21) * 2 + 0x21;
+	w13 = ((*(int *)(e + 6)) << 8) + (w13 & 0xff);
+	w12 = (w12 + 0xff) & (w12 & 0xffff);
+	w12 = (w12 & 0xffff);
+	if (w12 & 0xff00)
+		report_error(2, "x");
+	w12 += ((int)(*(long *)e >> 16)) & 0xff00;
+	goto emit;
+c2bcc:
+	if (!(w13 & 1))
+		report_error(2, "x");
+	w10 = (w12 & 0x8000) | ((int)(*(long *)e >> 16) & 0xff00);
+	if (bE4B6)
+		w10 = f65c6(w10);
+	f3a88(w10, q);
+	save = e;
+	w11 = w13;
+	flag = 1;
+	goto top;
+c2c12:
+	if (!flag)
+		goto c2c72;
+	flag = 0;
+	if (e != save)
+		report_error(2, "x");
+	w11 = (e[4] - 0x21) * 2 + 0x11;
+	w11 = ((*(int *)(e + 6)) << 8) + (w11 & 0xff);
+	if (bE4B6)
+		w11 = f65c6(w11);
+	if (bE4A2)
+		f3a88(w11, r);
+c2c72:
+	w13 = (e[4] - 0x21) * 2 + 1;
+	w13 = ((*(int *)(e + 6)) << 8) + (w13 & 0xff);
+	w12 = w12 + (int)*(long *)e;
+	goto emit;
+e2:
+	report_error(2, "x");
+	goto emit;
 end:
 	;
 }
