@@ -146,7 +146,8 @@ produce the same bytes with the shipped cc.
   `ret` is the first instruction of the shipped ffltioc at 0x8680). Entry 0x8000 is no function start (inner jump target).
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
-  2026-10-27: 7 done (0762, 0aba, 2e4c, 3090, 6ffe, 702a, 719e), 1 with finding D1 (6fd0, frame 14 against 6), 87 open
+  2026-10-27: 7 done (0762, 0aba, 2e4c, 3090, 6ffe, 702a, 719e), 2 with findings (6fd0 D1 frame 14 against 6; 3a30 D2
+  register of the loop test), 86 open. 65c6 (byte swap, frame 10 in the original) open: the form of the local buffer is not found.
   (95 entries: 6866 added, no caller and no address reference found, dead code candidate).
   Open hard cases: 0056 (register parameters, bit-7 coding), 70ce (parameter order and frame), 64d0 (loop temporary in
   r2 against r12). Check tools: `tools/fncheck.py` (one draft against the original range), `tools/accept.py` (accept into

@@ -20,11 +20,11 @@ int a;
 		f3408(2, "x");
 }
 
-/* f0aba..0b04: byte-identical (fncheck) */
+/* init_signals..0b04: byte-identical (fncheck) */
 long f9638();
 long f0a5c();
 
-f0aba()
+init_signals()
 {
 	if (f9638(2, 1L) != 1)
 		f9638(2, f0a5c);
@@ -32,8 +32,8 @@ f0aba()
 		f9638(15, f0a5c);
 }
 
-/* f2e4c..2e76: byte-identical (fncheck) */
-f2e4c(x)
+/* high_byte..2e76: byte-identical (fncheck) */
+high_byte(x)
 int x;
 {
 	if ((x & 0xff00) != x)
@@ -58,10 +58,10 @@ f6ffe(a)
 		f3408(2, "x");
 }
 
-/* f719e..71c8: done */
+/* table32_entry..71c8: done */
 char tab1c02[];
 
-char *f719e(x)
+char *table32_entry(x)
 unsigned x;
 {
 	if (x < 0x0100)
@@ -69,11 +69,11 @@ unsigned x;
 	f3408(2, "x");
 }
 
-/* f6fd0..6ffc: findings:D1 */
+/* table16_entry..6ffc: findings:D1 */
 unsigned g04ee;
 char *gE47E;
 
-char *f6fd0(x)
+char *table16_entry(x)
 {
 	if (x < g04ee)
 		return gE47E + (x << 4);
@@ -88,4 +88,26 @@ f702a(a)
 	gE47E = f9072(gE47E, a << 4);
 	if (!gE47E)
 		f3408(2, "x");
+}
+
+/* str_compare..3a88: findings:D2 */
+int g0476;
+
+int str_compare(p, q)
+char *p;
+char *q;
+{
+	do {
+		if (*q == *p) {
+			p++;
+			q++;
+		} else {
+			if (g0476)
+				return *q - *p;
+			return 0;
+		}
+	} while (*q);
+	if (!g0476)
+		return 1;
+	return 0;
 }

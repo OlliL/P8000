@@ -294,11 +294,11 @@
    "module_refs": 1
   },
   "f_3a30": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x3a30",
-   "level": "proven: target of a call in the code",
-   "ours": null,
+   "level": "analysed",
+   "ours": "f3a30..3a88",
    "note": "no own source yet; name unknown (stripped binary)",
    "module_hint": null
   },
@@ -3104,6 +3104,15 @@
    "classification": "D1",
    "action": "record; rebuild as the original (byte identity first)",
    "result": "frame 14 bytes against 6 bytes of the draft; all other instructions equal"
+  },
+  {
+   "id": "sld-02",
+   "kind": "compiler difference",
+   "function": "f_3a30",
+   "status": "open",
+   "classification": "D2",
+   "action": "record; rebuild as the original (byte identity first)",
+   "result": "loop test loads q into rr4 in the original (testb @rr4), rr2 here; otherwise equal"
   }
  ],
  "manual_classes": {},
