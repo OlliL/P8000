@@ -527,6 +527,24 @@ The callee addresses agree with the other candidates: `isreg` 0x2d22, `findword`
 - `findlong`: our `pat[0]`, `pat[1]` are stored at run time (`ldb`), in the original they are not stored in the code (likely a static
   initialiser, not verified); the char arithmetic is done in another register (D8, D2). Not byte identical.
 The classifier verdict "D only (pattern-verified)" is a pattern verdict, not a proof of the reason (see the open point for `ccinval`).
+- `ovlap` / `scan` (open, measured 2026-10-27): the original has no `scan` function; `ovlap` is 0x3c5a..0x432c (682 instructions with the
+  19 inline copies of the scan loop). A copy of the scan loop at each call site (return 1 on match) passes the corpus (813 of 816,
+  only the known `-d` lines), but our `ovlap` is 862 instructions with 80 equal in the comparison, against 219 instructions and
+  48 equal without the change. Not adopted. Differences: frame size (0x1a in the original, 0x36 ours), buffer at frame offset 4,
+  and the loop jumps back into a shared part (0x3cea, 0x3cd8). The `isalnum` table lookup and `and #7` match the macro.
+- popt state (measured 2026-10-27, symbol build vs `/lib/popt`, call forms and the `@r15`/`0(r15)` form masked): 3 functions
+  byte-identical (`dumpnodes`, `clearreg`, `comjump`); the rest differs mostly in the frame size (D4: a register parameter gets no
+  home slot in the original, D1), scratch registers (D2), loop layout (D7), frame operand form (D16) and the switch (D6).
+  Total gap 3347 instructions over 68 functions (3836 at the start of this round, 5778 before the later register rewrites).
+  Changes in this round: register declarations and pointer loops in `ilen`, `ccinval` (`return 0`), `dumpnodes`, `statline`,
+  `clearreg` (pointer loop), `cleargroup`, `nonlab`, `decref`, `singop` (inline copy, reads address 0 for a missing code text as
+  the original does), `natural`, `alloc`, `findslot`, `findreg`, `getnum`, `toofar`, `jswcheck`, `adrlen`, `jumpsw`, `refcount`
+  (labhash clear as pointer loop), `codemove`, `iterate`, `shortjump`, `movedat`, `input`, `oplook`, `rmove` (184 -> 405 equal),
+  and `ovlap` with `scan` inline (`scan` removed from `z23.c`). A greedy search (`register` on single declarations, measured per
+  function) changed 18 functions. Corpus after each step: 813 of 816 (only the known `-d` lines).
+  Open and not D-classified: `dest` (the original branches on the value in another order), the call form `call`/`calr`
+  (open: the original uses `calr` for some calls across what we build as separate objects; the file split of the original
+  is not known), and the orders of the remaining functions.
 Band 40 % to 60 % (initial rating, rule: similarity >= 50 %, start not taken, internal calls agree in both directions,
 length ratio 0.8 to 1.25; `findings.json` keys `pairing`, `rating`):
 - Confirmed: `absval` 0x23a0, `findbyte` 0x25b6, `findword` 0x25f4, `killreg` 0x2a46.

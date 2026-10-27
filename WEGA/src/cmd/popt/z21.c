@@ -20,7 +20,7 @@ static void statline();
 static void
 dumpnodes()
 {
-	struct node *p;
+	register struct node *p;
 
 	for (p = &first; (p = p->forw) != 0;)
 		output(p);
@@ -122,7 +122,7 @@ char **argv;
 static void
 statline(s, n)
 char *s;
-int n;
+register int n;
 {
 	if (n) {
 		fprintf(stderr, "%d ", n);
@@ -138,7 +138,7 @@ int n;
 static int
 input()
 {
-	struct node *p, *lastp;
+	register struct node *p, *lastp;
 	int oper, op, echo;
 
 	echo = 1;
@@ -245,8 +245,8 @@ input()
 static struct node *
 jswcheck()
 {
-	char *p;
-	struct node *n;
+	register struct node *n;
+	register char *p;
 
 	for (p = curlp; *p; p++)
 		if (*p == '\n' || *p == 'L')
@@ -265,24 +265,18 @@ jswcheck()
 }
 
 static int
-getch()
-{
-	return getc(stdin);
-}
-
-static int
 getln()
 {
-	char *lp;
-	int c;
+	register char *lp;
+	register int c;
 
 	lp = line;
 	do
-		c = getch();
+		c = getc(stdin);
 	while (c == ' ' || c == '\t');
 	for (;;) {
 		if (c == ':') {
-			c = getch();
+			c = getc(stdin);
 			if (c == '\n' || c == ' ' || c == '\t') {
 				*lp++ = 0;
 				return LABEL;
@@ -298,7 +292,7 @@ getln()
 			exit(1);
 		}
 		*lp++ = c;
-		c = getch();
+		c = getc(stdin);
 		if (c == EOF) {
 			*lp++ = 0;
 			return EOFOP;
@@ -310,9 +304,9 @@ int
 getnum(ap)
 char *ap;
 {
-	char *p;
-	short n;
-	int c;
+	register char *p;
+	register int n;
+	register int c;
 
 	p = ap;
 	n = 0;
@@ -328,9 +322,9 @@ char *ap;
  */
 static void
 output(n)
-struct node *n;
+register struct node *n;
 {
-	struct optab *t;
+	register struct optab *t;
 	int sub;
 
 	switch (n->op) {
@@ -429,7 +423,7 @@ struct node *n;
  */
 static void
 prefix(n)
-struct node *n;
+register struct node *n;
 {
 	char *s, *p;
 	int call;
@@ -519,7 +513,7 @@ static int
 cclook(opw)
 int opw;
 {
-	char *p, *q;
+	register char *p, *q;
 	int h, start;
 	struct optab *o;
 	char *a, *b;
@@ -556,7 +550,8 @@ int opw;
 int
 oplook()
 {
-	char *lp, *np, *name, *tp;
+	register char *np, *lp;
+	char *name, *tp;
 	int h, start, suffix;
 	struct optab *o;
 
@@ -619,11 +614,12 @@ oplook()
 void
 refcount()
 {
+	register struct node **h;
 	struct node *p, *lp, *tp;
 	int i, n;
 
-	for (i = 0; i < LABHS; i++)
-		labhash[i] = 0;
+	for (h = labhash; h < &labhash[LABHS]; h++)
+		*h = 0;
 	for (p = first.forw; p; p = p->forw)
 		if (p->op == LABEL) {
 			labhash[p->labno % LABHS] = p;
@@ -676,7 +672,8 @@ refcount()
 void
 iterate()
 {
-	struct node *p, *rp, *p1, *start;
+	register struct node *p, *rp, *p1;
+	struct node *start;
 
 	nchange = 0;
 	for (p = first.forw; p; p = p->forw) {
@@ -755,7 +752,7 @@ iterate()
 
 void
 xjump(p1)
-struct node *p1;
+register struct node *p1;
 {
 	struct node *p2, *p3;
 
@@ -783,9 +780,9 @@ struct node *p1;
 
 struct node *
 insertl(oldp)
-struct node *oldp;
+register struct node *oldp;
 {
-	struct node *lp;
+	register struct node *lp;
 
 	if (oldp->op == LABEL) {
 		oldp->refc++;
@@ -812,9 +809,10 @@ struct node *oldp;
 
 struct node *
 codemove(p)
-struct node *p;
+register struct node *p;
 {
-	struct node *p1, *p2, *p3, *t, *tl;
+	register struct node *p2, *p1;
+	struct node *p3, *t, *tl;
 	int n;
 
 	p1 = p;
@@ -897,7 +895,7 @@ struct node *p;
 void
 comjump()
 {
-	struct node *p1, *p2, *p3;
+	register struct node *p1, *p2, *p3;
 
 	for (p1 = first.forw; p1; p1 = p1->forw)
 		if (p1->op == JP && (p2 = p1->ref) && p2->refc > 1)
@@ -908,10 +906,10 @@ comjump()
 
 static void
 backjmp(p1, p2)
-struct node *p1;
-struct node *p2;
+register struct node *p1;
+register struct node *p2;
 {
-	struct node *p3;
+	register struct node *p3;
 
 	for (;;) {
 		while ((p1 = p1->back) && p1->op == LABEL)

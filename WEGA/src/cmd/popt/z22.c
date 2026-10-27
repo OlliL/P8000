@@ -60,7 +60,7 @@ static int dest();
 static void killreg();
 static void cleargroup();
 static int findslot();
-static void ccinval();
+static int ccinval();
 static char *regprefix();
 static void repladdr();
 static void savereg();
@@ -81,11 +81,12 @@ int heapbase, heaplim, heapcur;
 
 char *
 alloc(n)
-int n;
+register int n;
 {
-	char *p;
+	register char *p;
 
-	n = (n + 1) & ~1;
+	n++;
+	n &= ~1;
 	if ((unsigned)(heapcur + n) >= (unsigned)heaplim) {
 		if (sbrk(2000) == (char *)-1) {
 			fprintf(stderr, "C Optimizer: out of space\n");
@@ -101,7 +102,7 @@ int n;
 
 struct node *
 nonlab(p)
-struct node *p;
+register struct node *p;
 {
 	while (p && (p->op == LABEL || p->op == KCOMMENT))
 		p = p->forw;
@@ -110,7 +111,7 @@ struct node *p;
 
 void
 decref(p)
-struct node *p;
+register struct node *p;
 {
 	if (--p->refc <= 0) {
 		nrlab++;
@@ -135,7 +136,7 @@ char *b;
 
 static int
 absval(n)
-int n;
+register int n;
 {
 	return n < 0 ? -n : n;
 }
@@ -172,10 +173,14 @@ struct node *p2;
 void
 clearreg()
 {
-	int i;
+	register int i;
+	register char *p;
 
-	for (i = 0; i < NREGS; i++)
-		regs[i][0] = 0;
+	p = &regs[0][0];
+	for (i = 0; i < NREGS; i++) {
+		*p = 0;
+		p += 32;
+	}
 	conloc[0] = 0;
 	ccloc[0] = 0;
 }
@@ -209,13 +214,15 @@ int b;
 /* which register of class `base' holds the value s? */
 static int
 findreg(base, s)
-int base;
+register int base;
 char *s;
 {
-	int i;
+	register int i;
+	register char *p;
 
-	for (i = 0; i < 15; i++) {
-		if (regs[base + i][0] && equstr(regs[base + i], s))
+	p = regs[base];
+	for (i = 0; i < 15; i++, p += 32) {
+		if (*p && equstr(p, s))
 			return (base == 0 && i > 8) ? i - 8 : i;
 	}
 	return -1;
@@ -238,7 +245,7 @@ int n;
 
 static int
 findword(n)
-int n;
+register int n;
 {
 	static char pat[4];
 	int r;
@@ -318,7 +325,7 @@ int type;
  */
 static int
 memreg(s, size)
-char *s;
+register char *s;
 int size;
 {
 	int n, off, roff, i, reg;
@@ -382,7 +389,7 @@ int size;
 /* the location s of class `type' was modified: forget what it affects */
 static void
 setreg(s, type)
-char *s;
+register char *s;
 int type;
 {
 	int r, r2, t;
@@ -428,7 +435,7 @@ int n;
 char *buf;
 int type;
 {
-	char *p;
+	register char *p;
 
 	p = buf;
 	*p++ = 'r';
@@ -450,7 +457,7 @@ int type;
 /* register class of the destination of an instruction */
 static int
 dest(p)
-struct node *p;
+register struct node *p;
 {
 	int sub, op;
 
@@ -549,10 +556,10 @@ int type;
 /* forget the first n registers (but keep "#const" ones when keep) */
 static void
 cleargroup(n, keep)
-int n;
-int keep;
+register int n;
+register int keep;
 {
-	int i;
+	register int i;
 
 	for (i = 0; i < n; i++)
 		if (!keep || regs[i][0] != '#')
@@ -571,7 +578,12 @@ void
 singop(p)
 struct node *p;
 {
-	strcpy(RT1, p->code ? p->code : nullcode);
+	register char *s, *d;
+
+	s = p->code;
+	d = RT1;
+	while ((*d++ = *s++))
+		;
 	RT2[0] = 0;
 }
 
@@ -599,15 +611,17 @@ struct node *p;
 
 static int
 findslot(s, base)
-char *s;
-int base;
+register char *s;
+register int base;
 {
-	int i;
+	register int i;
+	register char *p;
 
 	if (*s == 0)
 		return -1;
-	for (i = 0; i < 15; i++)
-		if (regs[base + i][0] && equstr(regs[base + i], s))
+	p = regs[base];
+	for (i = 0; i < 15; i++, p += 32)
+		if (*p && equstr(p, s))
 			return i;
 	return -1;
 }
@@ -615,7 +629,7 @@ int base;
 /* register number of operand s, or -1 */
 int
 isreg(s)
-char *s;
+register char *s;
 {
 	int hi, n;
 	char *p;
@@ -650,12 +664,13 @@ char *s;
 	return -1;
 }
 
-static void
+static int
 ccinval(s)
 char *s;
 {
 	if (equstr(s, ccloc))
 		ccloc[0] = 0;
+	return 0;
 }
 
 static char *
@@ -805,7 +820,8 @@ movedat()
 	}
 #else
 
-	struct node hd, *r1, *r4, *r6, *r7;
+	struct node hd;
+	register struct node *r1, *r4, *r6, *r7;
 	int cur;
 
 	if (first.forw == 0)
@@ -866,9 +882,9 @@ movedat()
  */
 static void
 redunbr(p)
-struct node *p;
+register struct node *p;
 {
-	struct node *t;
+	register struct node *t;
 	char *a, *b;
 	int ty, r;
 
@@ -905,8 +921,8 @@ findcon(n, t)
 int n;
 int t;
 {
-	char *p;
-	int r;
+	register char *p;
+	register int r;
 
 	p = regs[n];
 	if (*p == '#')
@@ -1010,18 +1026,16 @@ char *s;
 /* a location that stays the same while registers change */
 static int
 natural(s)
-char *s;
+register char *s;
 {
-	char *p;
-
 	if (*s == '@')
 		return 0;
-	for (p = s; *p; p++)
+	for (; *s; s++)
 		;
-	if (p[-1] == ')') {
-		if (p[-2] != 'p')
+	if (*--s == ')') {
+		if (*--s != 'p')
 			return 0;
-		if (p[-3] != 'f')
+		if (*--s != 'f')
 			return 0;
 	}
 	return 1;
@@ -1033,8 +1047,9 @@ char *s;
 int
 jumpsw()
 {
-	struct node *p, *p1;
-	int n, count, d1, d2, subop;
+	register struct node *p, *p1;
+	register int n;
+	int count, d1, d2, subop;
 	struct node *t;
 	int tl;
 
@@ -1068,7 +1083,7 @@ jumpsw()
 void
 shortjump()
 {
-	struct node *p, *p1, *q;
+	register struct node *p, *p1, *q;
 	char *s;
 
 	for (p = &first; (p1 = p->forw) != 0; p = p1) {
@@ -1100,7 +1115,7 @@ static int
 toofar(p)
 struct node *p;
 {
-	struct node *q;
+	register struct node *q;
 	int sum;
 
 	sum = 0;
@@ -1109,13 +1124,15 @@ struct node *p;
 			break;
 		sum += ilen(q);
 	}
-	return sum >= 256;
+	if (sum >= 256)
+		return 1;
+	return 0;
 }
 
 /* size in bytes of the instruction in node p */
 int
 ilen(p)
-struct node *p;
+register struct node *p;
 {
 	int op;
 
@@ -1175,7 +1192,7 @@ struct node *p;
 
 static int
 adrlen(s, op)
-char *s;
+register char *s;
 int op;
 {
 	if (*s == 0)
@@ -1223,7 +1240,7 @@ int isused();
 void
 rmove()
 {
-	struct node *p, *p1, *n;
+	register struct node *p, *p1, *n;
 	int t, r11, r12, r10, r, op;
 	char b1[24], b2[24];
 	char *s;
