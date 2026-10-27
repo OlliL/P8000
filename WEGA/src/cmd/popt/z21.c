@@ -168,7 +168,7 @@ input()
 		case 0:
 			if (*curlp == 0)
 				continue;
-			p = allocnode();
+			p = (struct node *)alloc(14);
 			p->op = op;
 			p->code = copy(1, line, 0);
 			p->labno = 0;
@@ -176,7 +176,7 @@ input()
 			break;
 		case CJP:
 		case JP:
-			p = allocnode();
+			p = (struct node *)alloc(14);
 			p->op = op;
 			p->subop = oper >> 8;
 			if (*curlp == 'L' && (p->labno = getnum(curlp + 1)) != 0)
@@ -187,7 +187,7 @@ input()
 			}
 			break;
 		case LABEL:
-			p = allocnode();
+			p = (struct node *)alloc(14);
 			if (line[0] == 'L') {
 				p->op = LABEL;
 				p->subop = 0;
@@ -214,7 +214,7 @@ input()
 			continue;
 		case CBRACE:
 		case KCOMMENT:
-			p = allocnode();
+			p = (struct node *)alloc(14);
 			p->op = op;
 			p->code = copy(1, line, 0);
 			p->labno = 0;
@@ -222,7 +222,7 @@ input()
 			break;
 		default:
 		dflt:
-			p = allocnode();
+			p = (struct node *)alloc(14);
 			p->op = op;
 			p->subop = oper >> 8;
 			p->labno = 0;
@@ -252,7 +252,7 @@ jswcheck()
 		if (*p == '\n' || *p == 'L')
 			break;
 	if (*p == 'L') {
-		n = allocnode();
+		n = (struct node *)alloc(14);
 		n->labno = getnum(p + 1);
 		if (n->labno) {
 			n->code = 0;
@@ -796,7 +796,7 @@ struct node *oldp;
 		oldp->refc++;
 		return oldp;
 	}
-	lp = allocnode();
+	lp = (struct node *)alloc(14);
 	lp->op = LABEL;
 	lp->subop = 0;
 	lp->labno = isn++;

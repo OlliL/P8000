@@ -98,11 +98,6 @@ int n;
 	return p;
 }
 
-struct node *
-allocnode()
-{
-	return (struct node *)alloc(sizeof (struct node));
-}
 
 struct node *
 nonlab(p)
@@ -815,7 +810,6 @@ movedat()
 
 	if (first.forw == 0)
 		return;
-	clearmem(&hd, sizeof hd);
 	r7 = &hd;
 	for (r1 = first.forw; r1; r1 = r1->forw) {
 		if (r1->op != DATA)
@@ -1221,14 +1215,6 @@ int op;
 
 int isused();
 
-/* does char sequence str hold? helper for building operand text */
-static char *
-newcode1(tmpl)
-char *tmpl;
-{
-	return copy(1, tmpl, 0);
-}
-
 /*
  * rmove: walk the code of the function and keep track of what the
  * registers contain; remove redundant loads, merge instructions into
@@ -1540,7 +1526,7 @@ rmove()
 		if (equstr(RT1, "#1")) {
 			p->op = RES;
 			sprintf(p->code, "%s,#0", RT2);
-			n = allocnode();
+			n = (struct node *)alloc(14);
 			n->op = RR;
 			strcat(RT2, ",#1");
 			n->code = copy(1, RT2, 0);
@@ -1558,19 +1544,19 @@ rmove()
 		r12 = isreg(RT2);
 		if (r12 < 0 || r12 >= 8)
 			goto disp;
-		n = allocnode();
+		n = (struct node *)alloc(14);
 		if (p->op == SRA) {
-			n->code = newcode1("rX");
+			n->code = copy(1, "rX", 0);
 			n->op = EXTS;
 			strcpy(n->code, RT2);
 		} else {
-			n->code = newcode1("rhX");
+			n->code = copy(1, "rhX", 0);
 			n->op = CLR;
 			sprintf(n->code, "rh%d", r12);
 		}
 		p->op = LD;
 		p->subop = SBYTE;
-		p->code = newcode1("rlX,rhX");
+		p->code = copy(1, "rlX,rhX", 0);
 		sprintf(p->code, "rl%d,rh%d", r12, r12);
 	shins:
 		n->subop = p->subop;
@@ -1588,7 +1574,7 @@ rmove()
 			goto disp;
 		if (equstr(RT1, "#1")) {
 			p->op = ADD;
-			p->code = newcode1("rXX,rXX");
+			p->code = copy(1, "rXX,rXX", 0);
 			sprintf(p->code, "%s,%s", RT2, RT2);
 			nshft++;
 			nchange++;
@@ -1606,11 +1592,11 @@ rmove()
 			goto disp;
 		p->op = LD;
 		p->subop = SBYTE;
-		p->code = newcode1("rhX,rlX");
+		p->code = copy(1, "rhX,rlX", 0);
 		sprintf(p->code, "rh%d,rl%d", r12, r12);
-		n = allocnode();
+		n = (struct node *)alloc(14);
 		n->op = CLR;
-		n->code = newcode1("rlxx");
+		n->code = copy(1, "rlxx", 0);
 		sprintf(n->code, "rl%d", r12);
 		goto shins;
 

@@ -986,7 +986,7 @@
   "allocnode": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x1964-0x196e",
+   "ours": null,
    "orig": null,
    "level": null,
    "note": "original allocnode 0x2476 is a bump allocator on the pointer at 0x163c (limit 0x163e, growth 0x7d0 via 0x5564); ours uses zalloc (malloc) for the memory and keeps the bump only for the statistics (heaplim)",
@@ -1004,7 +1004,7 @@
      "similarity_pct": 31.4
     }
    ],
-   "rating": "open: no own function in the original; its callers (input, insertl, jswcheck, rmove) call 0x2476 (alloc) with size 14. Ours allocnode duplicates alloc(14) with zalloc(sizeof node). An earlier entry \"allocnode = 0x2476\" was wrong",
+   "rating": "removed: the original has no such function (popt-23); the callers call alloc / copy directly",
    "audit": {
     "d_normalised_pct": 41,
     "pattern_diff": 27,
@@ -2628,7 +2628,7 @@
   "newcode1": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x307c-0x3090",
+   "ours": null,
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -2646,7 +2646,7 @@
      "similarity_pct": 45.5
     }
    ],
-   "rating": "open, no own function in the original: rmove calls copy (0x0964) 11 times in total (ours: 5 direct calls of copy and 6 calls of newcode1, which calls copy); the wrapper is inlined in the original"
+   "rating": "removed: the original has no such function (popt-23); the callers call alloc / copy directly"
   },
   "rmove": {
    "file": "z22.c",
@@ -2977,8 +2977,8 @@
    ],
    "rating": "confirmed by call order: called by procopt before fixldm, as ours; libc call agrees (ours 0x6494, original 0x54D6); 106 against 92 instructions",
    "audit": {
-    "d_normalised_pct": 31,
-    "pattern_diff": 132,
+    "d_normalised_pct": 43,
+    "pattern_diff": 106,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3049,7 +3049,7 @@
   "procopt": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4b1a-0x4e76",
+   "ours": "0x4b1a-0x4e7e",
    "orig": "0x33d6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -3069,8 +3069,8 @@
    ],
    "rating": "confirmed via call graph and call order in main: called by main after shortjump, as ours; the only candidate main calls",
    "audit": {
-    "d_normalised_pct": 47,
-    "pattern_diff": 248,
+    "d_normalised_pct": 52,
+    "pattern_diff": 223,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3088,7 +3088,7 @@
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 248,
+    "len_ours": 257,
     "len_orig": 234
    },
    "review": "reviewed: structure",
@@ -3351,14 +3351,89 @@
   },
   {
    "id": "popt-18",
-   "status": "open",
+   "status": "fixed",
    "functions": [
     "procopt"
    ],
    "orig": "0x33d6 (clear loops at frame 0x15 and 0x06)",
    "ours": "z23.c procopt (clearmem(a, 16), clearmem(b, 16))",
-   "summary": "the original clears its two arrays with inline loops at frame offsets 0x15 (8 bytes, a[0] set to 1 first) and 0x06 (15 bytes); ours calls clearmem for two 16-byte arrays. Sizes 8 and 15 alone lower the match (44 against 49 of 248 instructions), so the frame layout must be analysed first",
-   "decide": "analyse the frame layout (declaration order and sizes) against the original before changing the source"
+   "summary": "the original keeps its arrays in the frame at offset 0x15 (char a[8], a[0] = 1, a[1..7] cleared inline) and 0x06 (char b[15], cleared inline), after three pointers at 0..5; ours had two 16-byte arrays at offset 0 and clearmem calls",
+   "decide": "",
+   "done": "declarations in the original order (pointers, b[15], a[8]), inline clearing loops, register int i; procopt 62 of 248 instructions equal (was 49); corpus 813 of 816 (K core line only)"
+  },
+  {
+   "id": "popt-19",
+   "status": "fixed",
+   "functions": [
+    "markregs",
+    "procopt"
+   ],
+   "orig": "0x432c (markregs(s, b15, a8): the first array is the 15-byte one, indexed for registers 8 to 14)",
+   "ours": "z23.c markregs signature and its 5 calls",
+   "summary": "the original passes the 15-byte array first; ours passed the 8-byte array first (parameter order)",
+   "done": "parameter order (s, b, a) in markregs and all calls; corpus 813 of 816 (K core line only)"
+  },
+  {
+   "id": "popt-20",
+   "status": "fixed",
+   "functions": [
+    "procopt",
+    "rename_regs"
+   ],
+   "orig": "0x33d6 (mult rr,#10 for the table index)",
+   "ours": "z23.c struct rent",
+   "summary": "the original struct rent has 10 bytes (len 2, s1 4, s2 4); ours 26 (s1[12], s2[12])",
+   "done": "struct rent with s1[4], s2[4]; corpus 813 of 816 (K core line only)"
+  },
+  {
+   "id": "popt-21",
+   "status": "open",
+   "functions": [
+    "procopt"
+   ],
+   "orig": "0x3562, 0x359e, 0x35ba, 0x360c, 0x3646 (sprintf, 5 calls)",
+   "ours": "z23.c procopt, the six sprintf sites in the loop over r14",
+   "summary": "the original has five sprintf sites in the loop: s1(n-1), s2(r14) of the first branch, s1(n) of the first branch, s1(n) of the else branch, and one s2(r14) shared by the end of the first branch and the else branch (tail merge of the old compiler, D11); ours has six separate sites",
+   "decide": "find a source form that gives exactly one shared s2 tail and two separate s1(n) sites (the original code order), then apply",
+   "done": "tried: one shared label for the two s2 tails (goto s2tail): procopt 238 instructions (was 257), but the compiler then also merges the two s1(n) sequences, giving four sprintf sites instead of five; not applied"
+  },
+  {
+   "id": "popt-22",
+   "status": "open",
+   "functions": [
+    "opsetup",
+    "cclook",
+    "oplook"
+   ],
+   "orig": "0x09ec (hash inline; also 0x0a44, 0x0b02)",
+   "ours": "z21.c hashname (function, called from opsetup, cclook, oplook)",
+   "summary": "the original has no hash function: the hash of the operation name is computed inline at three places and reads the three characters unconditionally (cclook 0x0a76 to 0x0aa2 reads the bytes behind the terminator of tmpcc); ours is a function with conditional reads",
+   "done": "tried: macro with unconditional reads -> corpus 63 of 816 (lookups fail, the bytes behind the name of the buffers differ); reverted. The buffers tmpcc and tmpop must end the same way as in the original before the unconditional read can be used",
+   "decide": "analyse how the original fills and clears tmpcc and tmpop (bytes behind the terminator), then rebuild that"
+  },
+  {
+   "id": "popt-23",
+   "status": "fixed",
+   "functions": [
+    "allocnode",
+    "newcode1"
+   ],
+   "orig": "0x2476 (alloc, size 14 passed by the callers); copy(1, s, 0) called from rmove",
+   "ours": "z21.c, z22.c allocnode, newcode1 and their callers",
+   "summary": "the original has no allocnode or newcode1 function: the callers call alloc with size 14 and copy with 1, 0 directly",
+   "done": "both functions removed; callers call (struct node *)alloc(14) and copy(1, s, 0); rmove calls copy 11 times as the original; corpus 813 of 816 (K core line only)"
+  },
+  {
+   "id": "popt-24",
+   "status": "fixed",
+   "functions": [
+    "movedat",
+    "clearmem"
+   ],
+   "orig": "0x2fc8 (no clearing call; hd.forw is read after the loop, the original does not clear hd)",
+   "ours": "z22.c movedat (non-SPOPT), clearmem",
+   "summary": "the original movedat does not clear its head node hd (no call, no loop); the read of hd.forw when no data section is found uses what the frame holds (a defect of the original, to be recorded)",
+   "done": "clearmem call removed from the non-SPOPT movedat; corpus 813 of 816 (K core line only)"
   }
  ],
  "manual": [],

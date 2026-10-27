@@ -397,10 +397,10 @@ register char *reg;
  * partners of long/quad registers), b[n] for the long registers r8..r14.
  */
 static void
-markregs(s, a, b)
+markregs(s, b, a)
 char *s;
-char *a;
 char *b;
+char *a;
 {
 	char *p;
 	int n, flag;
@@ -449,7 +449,7 @@ char *b;
 scanparen:
 	while (*p) {
 		if (*p == '(') {
-			markregs(p + 1, a, b);
+			markregs(p + 1, b, a);
 			return;
 		}
 		p++;
@@ -458,8 +458,8 @@ scanparen:
 
 struct rent {
 	int len;
-	char s1[12];
-	char s2[12];
+	char s1[4];
+	char s2[4];
 };
 
 /* rename registers in the code between the two ldm's */
@@ -544,29 +544,32 @@ int n;
 void
 procopt()
 {
-	char a[16], b[16];
 	struct node *p, *ld1, *ld2;
+	char b[15], a[8];
 	struct rent t[16];
 	char *s;
-	int i, r8, r9, k, r14, n;
+	register int i;
+	int r8, r9, k, r14, n;
 
 	ld1 = ld2 = 0;
-	clearmem(a, sizeof a);
-	clearmem(b, sizeof b);
 	a[0] = 1;
+	for (i = 1; i < 8; i++)
+		a[i] = 0;
+	for (i = 0; i < 15; i++)
+		b[i] = 0;
 	for (p = &first; p; p = p->forw) {
 		switch (p->op) {
 		case JP: case CLR: case COM: case INC: case DEC: case NEG:
 		case TST: case SRA: case SLA: case EXTS: case SOB: case LDA:
 		case 38: case 41: case 43: case SRL: case SLL:
-			markregs(p->code, a, b);
+			markregs(p->code, b, a);
 			break;
 		case LD: case CP: case ADD: case SUB: case BIT: case AND:
 		case OR: case MUL: case DIV: case SDA: case XOR: case PUSH:
 		case POP: case SET: case RES: case SDL:
 			dualop(p);
-			markregs(RT2, a, b);
-			markregs(RT1, a, b);
+			markregs(RT2, b, a);
+			markregs(RT1, b, a);
 			break;
 		case CALL:
 			fprintf(stderr, "CALL instruction in stripldm()\n");

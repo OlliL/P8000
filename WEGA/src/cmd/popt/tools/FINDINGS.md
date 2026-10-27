@@ -31,7 +31,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | absval | 0x1a0a-0x1a22 | 0x23a0 | confirmed | analysed | D only (pattern-verified) | D1, D2, D3, D6 |  |
 | adrlen | 0x3040-0x307c | 0x2352 | confirmed | analysed | D only (pattern-verified) | D1, D13, D2, D3, D7, D8 |  |
 | alloc | 0x1906-0x1964 | 0x2476 | confirmed | analysed | D only (pattern-verified) | D1, D13, D16, D2, D3, D6, D8 |  |
-| allocnode | 0x1964-0x196e |  | open |  | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| allocnode |  |  | open |  | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
 | backjmp | 0x17fc-0x18a0 | 0x133c | confirmed | analysed | D only (pattern-verified) | D1, D2, D3, D7, D8 |  |
 | ccinval | 0x24e8-0x24fe | 0x2dda | confirmed | analysed | D only (pattern-verified) | D2, D3 |  |
 | cclook | 0x0b94-0x0c68 | 0x0a44 | confirmed | analysed | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D6, D7, D8 |  |
@@ -77,14 +77,14 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | memreg | 0x1d0e-0x1f34 | 0x270e | confirmed | analysed | D only (pattern-verified) | D1, D10, D13, D16, D2, D3, D5, D6, D7, D8, D8/D2 |  |
 | movedat | 0x26a8-0x2888 | 0x2fc8 | confirmed | analysed | D only (pattern-verified) | D10, D13, D2, D3, D5, D7, D8, D8/D2 |  |
 | natural | 0x2c1e-0x2c62 | 0x3396 | confirmed | analysed | D only (pattern-verified) | D1, D13, D2, D3, D7, D8 |  |
-| newcode1 | 0x307c-0x3090 |  | open |  |  |  |  |
+| newcode1 |  |  | open |  |  |  |  |
 | nonlab | 0x196e-0x199e | 0x244e | confirmed | analysed | D only (pattern-verified) | D1, D2, D3, D8/D2 |  |
 | oplook | 0x0c68-0x0e2e | 0x0b02 | confirmed | analysed | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
 | opsetup | 0x0b40-0x0b94 | 0x09ec | confirmed | analysed | other differences |  | unexplained instruction forms: push	F,rS |
 | output | 0x06a4-0x09a8 | 0x06ba | confirmed | analysed | D only (pattern-verified) | D1, D10, D13, D2, D3, D6, D7, D8, D8/D2 |  |
 | ovlap | 0x4174-0x4468 | 0x3c5a | confirmed | analysed | D only (pattern-verified) | D1, D11, D13, D2, D3, D5, D6, D7, D8, D8/D2 |  |
 | prefix | 0x09a8-0x0a58 | 0x0630 | confirmed | analysed | D only (pattern-verified) | D1, D10, D13, D2, D3, D7, D8, D8/D2 |  |
-| procopt | 0x4b1a-0x4e76 | 0x33d6 | confirmed | analysed | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D6, D7, D8, D8/D2 |  |
+| procopt | 0x4b1a-0x4e7e | 0x33d6 | confirmed | analysed | D only (pattern-verified) | D1, D10, D13, D2, D3, D5, D6, D7, D8, D8/D2 |  |
 | redunbr | 0x2888-0x296e | 0x30ec | confirmed | analysed | D only (pattern-verified) | D1, D2, D3, D7, D8, D8/D2 |  |
 | refcount | 0x0e2e-0x106a | 0x0ca0 | confirmed | analysed | D only (pattern-verified) | D1, D13, D2, D3, D6, D7, D8, D8/D2 |  |
 | regprefix | 0x24fe-0x252e | 0x2df8 | confirmed | analysed | D only (pattern-verified) | D1, D13, D2, D7 |  |
