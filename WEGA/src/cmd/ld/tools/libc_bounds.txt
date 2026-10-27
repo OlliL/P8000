@@ -1,0 +1,35 @@
+# sld libc, function boundaries (start = start of the function, end = next start), 2026-10-27
+# sld = instructions of the range, member = instructions of the function in slibc.a, ratio over the whole range
+0x8686 0x86dc ungetc.o _ungetc      sld 35  member 46  ratio 0.79
+0x86dc 0x881e filbuf.o __filbuf     sld 117 member 110 ratio 0.855
+0x881e 0x8924 flsbuf.o __flsbuf     sld 96  member 106 ratio 0.812
+0x8924 0x89ba flsbuf.o _fflush      sld 49  member 40  ratio 0.764
+0x89ba 0x8a50 flsbuf.o _fclose      sld 50  member 52  ratio 0.863
+0x8a50 0x8be8 cnvt.o __cnvt         sld 130 member 90  ratio 0.555  (range too long: check)
+0x8be8 0x8cb4 decimal.o decimal_p   sld 89  member 73  ratio 0.877
+0x8cb4 0x9170 malloc.o _malloc      sld 373 member 319 ratio 0.613
+0x9170 0x91d8 malloc.o _calloc      sld 33  member 31  ratio 0.688
+0x91d8 0x91e8 malloc.o _cfree       sld 6   member 6   ratio 0.667
+0x91e8 0x9224 isatty.o _isatty      sld 18  member 14  ratio 0.625
+0x9224 0x9296 mktemp.o _mktemp      sld 40  member 48  ratio 0.773
+0x9296 0x946e stty.o _stty          sld 161 member 8   ratio 0.059  (range too long: gap, check)
+0x946e 0x95b0 swap.o _swap+_longswap+_swapsegt  sld 120 member 71 (three functions, see libc_funcs.txt)
+0x95b0 0x96be signal.o signal_p    (0.49 on the module level, check)
+# open: 0x92xx..0x946e (stty and more), 0x94f0..0x95b0, 0x96be..0x97fc (write, read, unlink candidates), 0x8f7c..0x9038 (tail of malloc?)
+
+# gap results (libc_slide.py on the open gaps; ratio = best sliding window, function of slibc.a):
+# 0x9296..0x946e  _stty first (8 instructions), then string functions:
+#   strrchr 0x92e6 (0.62), swab 0x932c (0.79), strcat 0x9398 (0.77), strncmp 0x93d6 (0.83), strcmp 0x93f6 (0.73),
+#   strcpy 0x943c (0.83)
+# 0x946e..0x94f0  swap: _swap, _longswap, _swapsegt
+# 0x94f0..0x95b0  fstat 0x9596 (0.70), getpid 0x95aa (identical, shipped), getuid 0x95ac (0.80), getgid 0x95ac (0.80)
+# 0x95b0..0x96be  ioctl 0x95b0 (0.64), lseek 0x95ca (0.64), open 0x95fe (0.60), read 0x9600 (0.60), ssgbrk 0x9622 (0.60),
+#                 signal 0x9638 (0.75)
+# 0x96be..0x96f0  12 instructions, no match
+# 0x96f0..0x97fc  umask 0x96f2 (0.67, shipped identical), unlink 0x96f6 (0.56), write 0x9700 (0.60), read/alarm (0.50)
+# 0x8f7c..0x9038  no match (tail of malloc or data)
+
+# remaining code gaps (2026-10-27):
+#   0x8f7c..0x9038: inside _malloc (0x8cb4..0x9170); best window _malloc.o 0.31 -> part of the malloc module, not a module of its own
+#   0x96be..0x96f0: own function (sub, ldm, srl x2, call, addl), no match in slibc.a at 0.3 -> open
+#   0x96fa..0x9714: syscall stub group (ldl, xor, sc, ret; jp to 0x970a, sc stubs); see umask, unlink, write, alarm, read above

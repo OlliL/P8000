@@ -1,0 +1,3172 @@
+{
+ "metric": "sld: function identification and comparison with /bin/sld (segmented, stripped)",
+ "metric_def": "instruction comparison as for popt (tools/funcs.py, once it exists); segment 0 (code, 38912 bytes) only",
+ "schema": "functions: name -> file (our source), ours (range), orig (start in /bin/sld), pairing (open|confirmed), level; findings: list of findings with id, status, functions, orig, ours, summary, done, decide (as popt)",
+ "status_values": [
+  "open",
+  "analysed",
+  "partly fixed",
+  "fixed",
+  "closed"
+ ],
+ "binary": "/mnt/share/cvs/P8000/tmp/wega31_root/bin/sld",
+ "binary_facts": {
+  "magic": "E611 (segmented, nonsegmented data layout)",
+  "code_bytes": 38912,
+  "data_bytes": 7090,
+  "bss_bytes": 94542,
+  "symbols": "none (stripped)"
+ },
+ "functions": {
+  "f_0018": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0018",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 1
+  },
+  "f_0056": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0056",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_0220": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0220",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_0aba": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0aba",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_0b04": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0b04",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_1070": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1070",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_11ea": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x11ea",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 2
+  },
+  "f_1364": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1364",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_14a4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x14a4",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 1
+  },
+  "f_1664": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1664",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_1696": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1696",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 2
+  },
+  "f_1f96": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1f96",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_22a4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x22a4",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_2346": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2346",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 5
+  },
+  "f_2492": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2492",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 5
+  },
+  "f_2624": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2624",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 5
+  },
+  "f_27d8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x27d8",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 3
+  },
+  "f_2d4c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2d4c",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_2dde": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2dde",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_2e4c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2e4c",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_2e76": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2e76",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 6
+  },
+  "f_2f04": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2f04",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_2f3a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2f3a",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 5
+  },
+  "f_3090": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3090",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_30a4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x30a4",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 1
+  },
+  "f_3144": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3144",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 3
+  },
+  "f_3408": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3408",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 1
+  },
+  "f_34b8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x34b8",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_3760": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3760",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 1
+  },
+  "f_3a30": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3a30",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_3a88": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3a88",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_3ac6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3ac6",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_410c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x410c",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_42f8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x42f8",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_4968": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4968",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 1
+  },
+  "f_4a16": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4a16",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_5a2c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5a2c",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_5eec": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5eec",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_60f0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x60f0",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_620e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x620e",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_642e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x642e",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 2
+  },
+  "f_64d0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x64d0",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 1
+  },
+  "f_65c6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x65c6",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_6800": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6800",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_6a58": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6a58",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_6b84": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6b84",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 2
+  },
+  "f_6c6a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6c6a",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_6e1a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6e1a",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 1
+  },
+  "f_6fd0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6fd0",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": "dump.c",
+   "module_refs": 1
+  },
+  "f_705e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x705e",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_7526": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7526",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_7808": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7808",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_7956": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7956",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_7bbc": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7bbc",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_8000": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8000",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_85f8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x85f8",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_8924": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8924",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_89ba": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x89ba",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_8cb4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8cb4",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_8f7c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8f7c",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_903a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x903a",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_946e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x946e",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "f_96be": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x96be",
+   "level": "proven: target of a call in the code",
+   "ours": null,
+   "note": "no own source yet; name unknown (stripped binary)",
+   "module_hint": null
+  },
+  "c_0018": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0018",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_00ee": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x00ee",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0178": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0178",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_01d2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x01d2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_01e8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x01e8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_020e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x020e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0256": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0256",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_026c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x026c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_02f4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x02f4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0334": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0334",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_034a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x034a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_036a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x036a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0382": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0382",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_039a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x039a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_03b2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x03b2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_03ce": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x03ce",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_03e6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x03e6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_03fc": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x03fc",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0412": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0412",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_043a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x043a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0464": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0464",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_047c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x047c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0494": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0494",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_04a0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x04a0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_04b4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x04b4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_04c8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x04c8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_04dc": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x04dc",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_04f0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x04f0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0504": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0504",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0518": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0518",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_052c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x052c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0540": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0540",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_054c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x054c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0566": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0566",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0574": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0574",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_05ac": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x05ac",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_05c4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x05c4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_05d6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x05d6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_05f8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x05f8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0610": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0610",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0632": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0632",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_064a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x064a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_066c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x066c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0684": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0684",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_06a6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x06a6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_06c6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x06c6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0762": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0762",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_078c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x078c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0a44": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0a44",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0a5c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0a5c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0a6a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0a6a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0a92": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0a92",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0ac8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0ac8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0ade": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0ade",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0aec": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0aec",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0b02": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0b02",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0c06": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0c06",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0db0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0db0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0dfe": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0dfe",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0e22": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0e22",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0f26": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0f26",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_0ff2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0ff2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1038": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1038",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_11b2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x11b2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1224": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1224",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1238": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1238",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_13de": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x13de",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1414": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1414",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1560": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1560",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_16ec": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x16ec",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_172c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x172c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_173c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x173c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1742": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1742",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1756": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1756",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_17e4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x17e4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_181c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x181c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_18dc": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x18dc",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_18f2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x18f2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1a3a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1a3a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1bba": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1bba",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1c8e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1c8e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1d20": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1d20",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1fc4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1fc4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1fca": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1fca",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_1fd0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x1fd0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_200e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x200e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2014": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2014",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_201a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x201a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2056": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2056",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2078": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2078",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2324": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2324",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_23fe": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x23fe",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_24fc": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x24fc",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2566": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2566",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_25ea": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x25ea",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_25f2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x25f2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_26f2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x26f2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_28c4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x28c4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_29a0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x29a0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_29b8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x29b8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2a2e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2a2e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2b1e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2b1e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2cbc": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2cbc",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2d18": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2d18",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2dc8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2dc8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_2e30": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x2e30",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3006": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3006",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_313c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x313c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_319e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x319e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_31c4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x31c4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_31fe": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x31fe",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_321e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x321e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_325c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x325c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_32ac": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x32ac",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_342a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x342a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3442": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3442",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_345c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x345c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3468": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3468",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3490": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3490",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_349c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x349c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_34fe": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x34fe",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3516": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3516",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_377e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x377e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3a22": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3a22",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3af2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3af2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3b1e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3b1e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3b58": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3b58",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3bf4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3bf4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3bfe": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3bfe",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3c16": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3c16",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3f4a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3f4a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_3fd8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3fd8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4168": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4168",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4444": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4444",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_44e6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x44e6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4668": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4668",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4854": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4854",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4882": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4882",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_489a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x489a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_48a2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x48a2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4990": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4990",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4996": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4996",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_49a0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x49a0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_49a6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x49a6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4a2a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4a2a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4a32": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4a32",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4a3a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4a3a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_4a50": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x4a50",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_501e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x501e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5040": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5040",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_521e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x521e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_522c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x522c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_53d8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x53d8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5552": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5552",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_555c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x555c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_56e6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x56e6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5868": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5868",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_595a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x595a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5960": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5960",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_596a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x596a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5970": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5970",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5a4a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5a4a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5a56": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5a56",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5d0a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5d0a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5da2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5da2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5e60": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5e60",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5e66": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5e66",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_5e6c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x5e6c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6134": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6134",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6244": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6244",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_632e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x632e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6354": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6354",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_637e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x637e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_63a4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x63a4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_63c8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x63c8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_63f0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x63f0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_64fa": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x64fa",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6510": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6510",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6522": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6522",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6598": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6598",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_65b6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x65b6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_65ec": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x65ec",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6620": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6620",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6684": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6684",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6866": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6866",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_68a2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x68a2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_68e4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x68e4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_68ee": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x68ee",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6920": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6920",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6942": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6942",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_695c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x695c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6964": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6964",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6984": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6984",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6a08": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6a08",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6a36": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6a36",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6b5a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6b5a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6bae": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6bae",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6c7a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6c7a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6da8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6da8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6e96": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6e96",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6ed4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6ed4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6efe": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6efe",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6f46": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6f46",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6fbc": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6fbc",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_6ffe": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x6ffe",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_702a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x702a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7042": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7042",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_70ce": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x70ce",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7112": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7112",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7148": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7148",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_714e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x714e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7160": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7160",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7182": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7182",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7186": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7186",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_719c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x719c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_719e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x719e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_71ca": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x71ca",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7212": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7212",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7248": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7248",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_724e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x724e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7280": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7280",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7286": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7286",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_72f2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x72f2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7300": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7300",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7326": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7326",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7348": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7348",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_73a2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x73a2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_73f0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x73f0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7414": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7414",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_74ca": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x74ca",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7580": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7580",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_75b8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x75b8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7684": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7684",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_76a0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x76a0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_76f2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x76f2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_77d2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x77d2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_79ca": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x79ca",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7a52": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7a52",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7a5e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7a5e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7ad6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7ad6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7ae2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7ae2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7b7e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7b7e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7c26": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7c26",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7d3a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7d3a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_7e64": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7e64",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8394": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8394",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_84b0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x84b0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_84b6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x84b6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8572": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8572",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8582": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8582",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8682": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8682",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8684": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8684",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8686": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8686",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8688": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8688",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_86fa": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x86fa",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_87a2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x87a2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8806": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8806",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_880e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x880e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8860": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8860",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8882": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8882",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_88ee": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x88ee",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8970": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8970",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_898e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x898e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_89ac": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x89ac",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8a14": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8a14",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8a48": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8a48",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8a50": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8a50",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8aac": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8aac",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8ad0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8ad0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8be8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8be8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8c86": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8c86",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8e58": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8e58",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8e5e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8e5e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_8ec0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x8ec0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9072": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9072",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9184": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9184",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_91da": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x91da",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_91ea": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x91ea",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9210": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9210",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9296": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9296",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_92ae": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x92ae",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_92c6": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x92c6",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_92f8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x92f8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_932e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x932e",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9376": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9376",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_93ac": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x93ac",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_93e8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x93e8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_943c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x943c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9494": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9494",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_94c8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x94c8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_952c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x952c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9538": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9538",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9564": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9564",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9570": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9570",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9580": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9580",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9590": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9590",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_95a4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x95a4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_95b0": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x95b0",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_95c2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x95c2",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_95d4": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x95d4",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_95e8": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x95e8",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_95fe": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x95fe",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_960a": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x960a",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_961c": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x961c",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9638": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9638",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9678": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9678",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9690": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9690",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_96fa": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x96fa",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9704": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9704",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9716": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9716",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  },
+  "c_9730": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x9730",
+   "level": "candidate: starts after ret, not called",
+   "ours": null,
+   "note": "to be checked by hand against the code"
+  }
+ },
+ "findings": [],
+ "findings_pending": [],
+ "manual_classes": {},
+ "inventory": {
+  "source": "tools/inventory.py",
+  "binary": "/mnt/share/cvs/P8000/tmp/wega31_root/bin/sld",
+  "codesz": 38912,
+  "proven_starts": 63,
+  "candidate_starts": 311,
+  "linear_instructions": 12279
+ },
+ "module_list": [
+  "scrt0.s",
+  "copyname.c",
+  "dump.c",
+  "ext.c",
+  "ld.c",
+  "ldm.c",
+  "printname.c",
+  "swap.c",
+  "symbols.c",
+  "malloc.c"
+ ],
+ "module_ranges": [
+  [
+   "0x2",
+   "0x2c",
+   "scrt0.s"
+  ],
+  [
+   "0x2c",
+   "0x78",
+   "copyname.c"
+  ],
+  [
+   "0x78",
+   "0x38a",
+   "dump.c"
+  ],
+  [
+   "0x38a",
+   "0x448",
+   "ext.c"
+  ],
+  [
+   "0x448",
+   "0xf60",
+   "ld.c"
+  ],
+  [
+   "0xf60",
+   "0x14fe",
+   "ldm.c"
+  ],
+  [
+   "0x14fe",
+   "0x156c",
+   "printname.c"
+  ],
+  [
+   "0x156c",
+   "0x159a",
+   "swap.c"
+  ],
+  [
+   "0x159a",
+   "0x1a60",
+   "symbols.c"
+  ],
+  [
+   "0x1a60",
+   "0x1bb2",
+   "malloc.c"
+  ]
+ ]
+}

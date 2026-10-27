@@ -1,0 +1,20 @@
+member functions 242
+p01 8686-8922 247  [(0.144, 'fseek.o', '_fseek'), (0.088, 'doscan.o', '__innum'), (0.083, 'endopen.o', '__endopen')]
+p02 8924-89b8  48  [(0.773, 'flsbuf.o', '_fflush'), (0.194, 'getgrnam.o', '_getgrnam'), (0.184, 'setbuf.o', '_setbuf')]
+p03 89ba-8a50  50  [(0.863, 'flsbuf.o', '_fclose'), (0.382, 'setbuf.o', '_setbuf'), (0.235, 'rew.o', '_rewind')]
+p03 8a50-8be8 130  [(0.555, 'cnvt.o', '__cnvt'), (0.138, 'ctime.o', '_tzset'), (0.098, 'getpw.o', '_getpw')]
+p03 8be8-8cb2  88  [(0.882, 'decimal.o', 'decimal_p'), (0.106, 'doscan.o', '__getccl'), (0.101, 'getenv.o', '_getenv')]
+p04 8cb4-8f7a 207  [(0.574, 'malloc.o', '_malloc'), (0.066, 'fseek.o', '_fseek'), (0.05, 'filbuf.o', '__filbuf')]
+p05 8f7c-9038  65  [(0.118, 'ssignal.o', '_gsignal'), (0.118, 'ctime.o', '_tzset'), (0.113, 'getpw.o', '_getpw')]
+p06 903a-92ae 203  [(0.122, 'execvp.o', '_execvp'), (0.088, 'endopen.o', '__endopen'), (0.077, 'filbuf.o', '__filbuf')]
+p06 92ae-946c 153  [(0.133, 'strout.o', '__strout'), (0.1, 'symscan.o', '_symscan'), (0.097, 'getpw.o', '_getpw')]
+p07 946e-95a4 116  [(0.081, 'flsbuf.o', '__flsbuf'), (0.08, 'filbuf.o', '__filbuf'), (0.078, 'ctime.o', '_tzset')]
+p08 95b0-96bc  97  [(0.512, 'signal.o', 'signal_p'), (0.048, 'atof.o', '__atof'), (0.041, 'putw.o', '_putw')]
+p09 96be-96f0  12  [(0.0, 'write.o', 'write_p'), (0.0, 'wait.o', 'wait_p'), (0.0, 'utime.o', 'utime_p')]
+p10 96fa-97fc  68  [(0.059, 'signal.o', 'signal_p'), (0.058, 'l64a.o', '_l64a'), (0.049, 'getw.o', '_getw')]
+
+# check of 0x946e (swap.o of slibc.a, three functions, sliding window over the sld code):
+#   _swap      14 instructions, best window at 0x947a: ratio 0.72
+#   _longswap  18 instructions, best window at 0x94a6: ratio 0.81
+#   _swapsegt  39 instructions, best window at 0x94d6: ratio 0.93
+# the piece 0x946e..0x95a4 of the first table is swap plus code behind _swapsegt; swap is confirmed.

@@ -43,6 +43,99 @@ produce the same bytes with the shipped cc.
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | builds under z8k-emu, but all files differ from the originals | `dosopn.c` line 175 (`1.5*first`) needed EPU instructions; z8k-emu now runs them (2026-10-22, `host/z8k-emu/README.md`) and the commands compile. Locally the build fails only on the `/usr/include` make dependencies (outside the guest ROOT). The owner believes they were built with the current cc and libc (no old-libc version needed; belief, not measured). The differences are not analysed yet | analyse **after the host tool chain is complete** (nearest-version method, `cmpins.py`) |
 
+## sld (segmented loader): preparation (started 2026-10-27)
+
+- Structure: `src/cmd/ld/tools/` with `Makefile`, `inventory.py`, `findings_md.py`, `findings.json` (empty function list, binary facts),
+  `FINDINGS.md` (generated). Our sources of sld are not in `src/cmd/ld` yet: `host/ld/sld.c` is a Linux program written from the
+  binary (not compiled by the WEGA cc), so it is a guide for names and structure, not the comparison basis.
+- The original `/bin/sld`: segmented (E611), code 38912 bytes in segment 0, data 7090, bss 31054 + 63488. Stripped (no symbols).
+- Function starts: `src/cmd/ld/tools/inventory.py`. Recursive descent from the start (0x18) found 2 starts only: the
+  control flow of the start code leaves through a return and the rest is reached by calls. The linear sweep over the code
+  (12279 instructions, no undecodable words in the paths that matter) collects all `call`/`calr` targets: 63 starts are
+  proven (targets of calls). 311 more candidates start right after a `ret` and are not called from anywhere; they are
+  unproven and need a check by hand. `findings.json` lists them as `f_xxxx` (proven) and `c_xxxx` (candidate). The
+  decoder (`host/tools/z8k.py`) works for these paths; the earlier blocker (undecodable words) was a wrong branch
+  target (the `cc` operand of conditional jumps was taken as target), fixed in inventory.py.
+
+- sld modules (from the SCCS strings in the data of `/bin/sld`): scrt0.s, copyname.c 3.1, dump.c 3.1, ext.c 3.3, ld.c 3.8,
+  ldm.c 3.10, printname.c, swap.c, symbols.c, malloc.c (the data of each module lies in the order of the link). Module hints for
+  the proven functions: `src/cmd/ld/tools/modules.py`; 20 of 63 proven functions refer to strings of dump.c, 43 refer to no
+  message string (not decided). Plexus `ld.z8000.c` is a reference for names only (private, never copied).
+
+- sld, libc part (`host/tools/libcver.py`): the libc of `/bin/sld` starts at 0x8680 and runs to the end of the code (0x9800).
+  Shipped members found unchanged: ffltioc, getpid, umask. The other parts (0x8686 .. 0x97fc, 10 pieces) are an older libc,
+  not matched yet (nearest names by fingerprint are guesses only). The own code of sld is 0x0018 .. 0x8680: 56 of the 63
+  proven starts and 250 of the 311 candidates are there; 7 and 61 are libc.
+  Plan: first libc (shipped members by ar, oldlibc members by CATALOG, the rest as new versions), then the own code.
+
+- sld libc, first result (`src/cmd/ld/tools/libc.spec.draft`): against all 67 oldlibc modules (assembled with cas, archived with
+  ar) only `ffltioc` matches; 8 pieces have no counterpart (best ratios 0.03 to 0.16). They need new oldlibc versions, which
+  need names, data ranges and symbols. The libc work is not finished: `src/cmd/ld/Makefile` does not exist yet.
+- sld libc, status (2026-10-27): 14 modules are cut from `/bin/sld` (`host/tools/link_libc_seg.py`, `unlink_seg.py`) and verified
+  byte-identical (`src/lib/oldslibc/<module>/0_1.s`, README there); cross references are symbols (`_name`, `_fXXXX` for inner
+  entries); data spans added (`host/tools/libc_data_seg.py`, not yet compared with the original); the bss of segment 1 (0x1bb2)
+  is the external `_bss1`. Shipped members of `/lib/slibc.a`, identical: ffltioc (0x8680), getpid (0x95aa), umask (0x96f2).
+  `src/cmd/ld/Makefile` builds the libc objects of sld (cut modules with `cas -u`, shipped members with `ar x`); tested with the
+  emulator. Open: names of the `_fXXXX` entries, the own modules of sld and the link, the scrt0 start file, data verification.
+
+- sld libc, second result (against `slibc.a`, the segmented library that sld links, not `libc.a`): `ffltioc`, `getpid`, `umask`
+  identical. `src/cmd/ld/tools/libc_rank.txt`: p07 = `swap` (0.59), p08 = `signal` (0.49), p01 = `flsbuf` (0.34, probable), p06 =
+  `malloc` (0.21, not matched). p02, p03, p04, p05, p09, p10 are below 0.2: not matched at module level, a function-level
+  comparison is needed. Names are candidates only until the behaviour is checked.
+
+- sld libc, function level (`src/cmd/ld/tools/libc_funcs.py`, result `libc_funcs.txt`, against the functions of the members of
+  `slibc.a`): `_fflush` 0.77 (flsbuf.o), `_fclose` 0.86 (flsbuf.o), `__cnvt` 0.56 (cnvt.o), `decimal` 0.88 (decimal.o),
+  `_malloc` 0.57 (malloc.o), `signal` 0.51 (signal.o). Not matched: 0x8686 (best 0.14), 0x8f7c, 0x903a, 0x96be, 0x96fa.
+  `swap` 0.59 on module level (0x946e), not on function level: the function boundaries there need a check. The libc of sld is
+  therefore not complete; the next steps are the open pieces, the check of 0x946e, then the new oldlibc versions and the Makefile.
+
+- sld libc, `swap` at 0x946e (checked): the three functions of swap.o of slibc.a (`_swap`, `_longswap`, `_swapsegt`) lie in
+  sld in this order (ratios 0.72, 0.81, 0.93, sliding window). The earlier piece 0x946e..0x95a4 contains swap and code behind it.
+
+- sld libc, boundaries (`src/cmd/ld/tools/libc_bounds.txt`): 12 functions with whole-range ratios 0.55 to 0.88 (ungetc, filbuf,
+  flsbuf, _fflush, _fclose, __cnvt, decimal, _malloc, _calloc, _cfree, _isatty, _mktemp). Open: the gap 0x92xx..0x946e (`_stty`
+  and more), the gap 0x94f0..0x95b0, 0x96be..0x97fc (write, read, unlink candidates), and the tail of malloc at 0x8f7c..0x9038.
+
+- sld libc, gaps resolved to candidates (`src/cmd/ld/tools/libc_bounds.txt`): the string functions strrchr, swab, strcat, strncmp,
+  strcmp, strcpy at 0x92e6..0x946e; the system call stubs fstat, getpid (identical), getuid, getgid, ioctl, lseek, open, read,
+  ssgbrk, umask (identical), unlink, write, alarm at 0x94f0..0x97fc; signal at 0x9638. Still open: 0x8f7c..0x9038 and 12 bytes at
+  0x96be. The libc of sld is not finished: the cut of the modules (unlink.py spec with data sizes and symbols), the new oldlibc
+  versions and src/cmd/ld/Makefile remain.
+
+- sld libc data (`src/cmd/ld/tools/libc_data.txt`): the libc ranges reference data that lies inside the SCCS areas of sld's own
+  modules (symbols.c at 0x159a..0x1a60, malloc.c at 0x1a60..0x1bb2). The own modules malloc.c and swap.c are in the same program,
+  so the libc data is not a separate block. Open: which data belongs to which libc module; whether the libc malloc at 0x8cb4
+  is a second copy of sld's own malloc.c. This blocks the cut of the libc modules (unlink.py needs the data per module).
+
+- sld libc data, result of the ownership test (`libc_data.txt`): the malloc area (SCCS malloc.c, 0x1a60..0x1bb2) is used only by
+  the libc code at 0x8cb4 and 0x96f0 ff. So the libc malloc is a libc module with its SCCS string; sld's own modules are copyname,
+  dump, ext, ld, ldm, printname, swap. 23 data words are used only by libc code, 6 by both. Still open: the symbols area
+  (0x159a..0x1a60), which holds own data and libc globals.
+
+- sld symbols area split (`libc_data.txt`): 20 referenced words. Own blocks 0x15c8..0x1638, 0x16f2, 0x16fa, 0x194e..0x1952;
+  libc words scattered between them (0x15aa, 0x15b0, 0x15ee, 0x1622, 0x171c, 0x1959, 0x1a32); mixed 0x1610, 0x170a. The libc data
+  is not one block here; the cut needs a word list per module, and the mixed words are assigned by hand.
+
+- sld data, CORRECTED: the earlier ownership result counted call targets as data (see `libc_data.txt`). Without branch and call
+  operands 40 data words are referenced: 10 only by libc code (0x1959, 0x1a32, 0x1a90..0x1aa8, 0x1bae, 0x1bb0), 30 only by own
+  code, none mixed. The malloc data (0x1a90..0x1aa8) stays libc. The libc stdio functions reference no data word.
+
+- sld libc, remaining code gaps: 0x8f7c..0x9038 lies inside `_malloc` (part of the malloc module); 0x96be..0x96f0 is a function
+  with `srl`/`call` and no match at 0.3 (open); 0x96fa..0x9714 is the syscall stub group. Still open for the libc: the cut of the
+  modules with unlink.py (spec with word lists for the data), the new oldlibc versions where the members are not identical, and
+  src/cmd/ld/Makefile.
+
+- sld libc, cutting the modules: NOT possible with the present tool. `host/tools/unlink.py` handles nonsegmented programs only
+  (its docstring: PROGRAM nonsegmented, I&D combined; it reads segs[0] and absolute addresses). `/bin/sld` is segmented (E611):
+  the calls and data references carry segment numbers (call 0, 0x8000 | off; ldl with segment 1 offsets), and the modules of the
+  libc part must be assembled as segmented objects. Next step: extend unlink.py to the segmented form (E611, the segment bit of
+  the addresses, the segmented call and data symbols), test it on a member that is identical (ffltioc, getpid, umask) before any
+  cut of an unknown module.
+
+- sld libc modules CUT AND VERIFIED (`host/tools/unlink_seg.py`, the segmented version of unlink.py; `src/lib/oldslibc/`):
+  13 modules, each assembled with cas -u and its code bytes equal to sld (0 differing words, relocated words masked). Data not
+  yet. Open: the cross references are addresses (x<addr>), not yet symbols; the ld Makefile in `src/cmd/ld` is not written yet.
+
 ## Programs and libc versions
 
 Result of `make verify-wega` (2026-10-21) and the libc version of the original program (measured with

@@ -1,0 +1,15 @@
+# libc part of /bin/sld (draft, 2026-10-27): one line per piece in address order.
+# Names are NOT known yet (fingerprints are guesses only, see libcver.py); "match" is the best oldlibc member
+# by libcver (no exact match except ffltioc). KIND: shipped = member of /lib/libc.a identical; new = needs a new
+# oldlibc version (cut with host/tools/unlink.py and a spec, as for size/strip/ranlib).
+# START  END    INSTR  KIND     MATCH
+ffltioc  8680  8686  -   shipped  ffltioc_0_1 (identical)
+piece01  8686  8922  247 new      none exact (best: flsbuf_0_2, ratio 0.09)
+piece02  8924  89b8   49 new      none exact (best: getw_0_1, ratio 0.16)
+piece03  89ba  8cb2  269 new      none exact (best: flsbuf_0_2, ratio 0.09)
+piece04  8cb4  8f7a  208 new      none exact (best: malloc_0_4, ratio 0.10)
+piece05  8f7c  9038   66 new      none exact (best: mktemp_0_1, ratio 0.11)
+piece06  903a  946c  357 new      none exact (best: malloc_0_4, ratio 0.06)
+piece07  946e  96bc  218 new      none exact (best: flsbuf_0_2, ratio 0.06)
+piece08  96be  97fc   86 new      none exact (best: swap_0_1, ratio 0.03)
+# getpid and umask: shipped members found in an earlier libcver run (not in the listing above, see KNOWLEDGE.md)

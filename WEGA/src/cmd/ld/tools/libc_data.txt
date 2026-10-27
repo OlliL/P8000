@@ -1,0 +1,56 @@
+# sld libc data, first look (2026-10-27): data offsets (in the data segment of sld, 7090 bytes, bss from 0x1bb2) that the
+# libc ranges reference. Source: the same reference rule as modules.py (segment 1 addresses, nonsegmented 0x8000 bit).
+# SCCS markers in the data (own modules of sld, link order): scrt0.s 0x2, copyname.c 0x2c, dump.c 0x78, ext.c 0x38a,
+#   ld.c 0x448, ldm.c 0xf60, printname.c 0x14fe, swap.c 0x156c, symbols.c 0x159a, malloc.c 0x1a60 (to 0x1bb2).
+ungetc     8686-86dc  -
+filbuf     86dc-881e  cb4 1610
+flsbuf     881e-8924  cb4 11ea 170a 1959          (170a: inside symbols.c data)
+_fflush    8924-89ba  170a 1a32                   (1a32: inside malloc.c data)
+_fclose    89ba-8a50  a50 103a 1576
+cnvt       8a50-8be8  98e be8
+decimal    8be8-8cb4  -
+malloc     8cb4-9170  cce f3c f6e 15ee 1622 1a90 1a92 1a94 1aa0 1aa4 1aa8   (1a90..1aa8: inside malloc.c data)
+calloc     9170-91d8  -
+cfree      91d8-91e8  -
+isatty     91e8-9224  12ae 15aa
+mktemp     9224-9296  152c
+stty       9296-92e6  15b0
+stubs      94f0-95b0  171c
+signal     95b0-96be  171c
+stubs3     96f0-97fc  171c 1bae 1bb0               (1bae, 1bb0: end of data)
+# Conclusion so far: the libc code uses data that lies inside the SCCS areas of sld's own modules (symbols.c, malloc.c).
+# The own modules are linked into the same program, so the libc data is not a separate block. To cut the libc modules the
+# data assignment must be settled first (which data item belongs to which libc module, and which to sld's own module).
+# Open question: are malloc.c and swap.c of sld the own sources, and does the libc malloc (0x8cb4) duplicate them?
+
+# RESULT of the ownership test (2026-10-27): for every data word of sld (0..0x1bb2) the code that references it was
+# split into own code (< 0x8680) and libc code (>= 0x8680). Counts per SCCS area:
+#   scrt0 -, copyname own 3, dump own 1, ext own 7, ld own 136 (libc 8), ldm own 30 (libc 4), printname own 6 (libc 1),
+#   swap own 8 (libc 1), symbols own 44 (libc 28), malloc libc 35 (own 0).
+# => the malloc area (SCCS "malloc.c", 0x1a60..0x1bb2) is the data of the LIBC malloc module (only libc code uses it), not of
+#    sld's own code. The own modules are copyname, dump, ext, ld, ldm, printname, swap (mostly own code).
+# Words used only by libc code (23): 0x98e, 0xbe8 (cnvt), 0xcb4, 0x11ea, 0x1959, 0x1a32 (flsbuf/filbuf), 0xcce, 0xf3c, 0xf6e,
+#   0x15ee, 0x1622, 0x1a90..0x1aa8 (malloc), 0x12ae, 0x15aa (isatty), 0x15b0 (stty), 0x171c (syscall stubs), 0x1bae, 0x1bb0.
+# Words used by both (6): 0xa50, 0x103a, 0x152c, 0x1576, 0x1610, 0x170a -> libc globals that own code touches too
+#   (stdio buffers and the like); they belong to the libc part, the own code only reaches them through libc.
+# Remaining question: the symbols area (0x159a..0x1a60) holds both own data (44 own users) and libc globals (28 libc users).
+
+# SPLIT of the symbols area 0x159a..0x1a60 (20 words referenced; own = users below 0x8680, libc = users from 0x8680):
+#   own blocks:   0x15c8..0x1638 (0x15c8 0x15d4 0x15d6 0x15da 0x15fe 0x1638), 0x16f2, 0x16fa, 0x194e..0x1952
+#   libc words:   0x15aa (isatty, 1 user), 0x15b0 (stty, 2), 0x15ee (2), 0x1622 (1), 0x171c (16 users: syscall stubs, errno-like),
+#                 0x1959 (1), 0x1a32 (1: _fflush)
+#   mixed:        0x1610 (own 8, libc 1), 0x170a (own 2, libc 3)
+# The libc words lie between the own blocks, so the libc data of the symbols area is not one block: it is scattered word by word.
+# Consequence for the cut: each libc module needs its own list of data words (not a range) unless the data of the module is
+# contiguous in the original. The mixed words 0x1610 and 0x170a must be assigned by hand (they are referenced from both sides).
+
+# CORRECTION (2026-10-27): the data rule of the earlier steps also counted the operands of call, calr, jp, jr (their targets are
+# code addresses with the 0x8000 bit, not data). The mixed words 0x1610 and 0x170a were such call targets (0x9610, 0x970a).
+# Recomputed without branch and call operands: 40 data words referenced.
+#   libc only (10): 0x1959, 0x1a32 (flsbuf/_fflush area), 0x1a90 0x1a92 0x1a94 0x1aa0 0x1aa4 0x1aa8 (malloc),
+#                   0x1bae 0x1bb0 (end of data, referenced from the stubs at 0x971c, 0x9722)
+#   own only (30):  0x0, 0x3b8..0x4f0 (ld), 0xf8e, 0x1532, 0x15d4 0x15d6 0x15da, 0x194e 0x1950 0x1952
+#   mixed (0): none
+# The earlier libc word lists (0x98e, 0xbe8, 0xcb4, 0x11ea, 0x12ae, 0x15aa, 0x15b0, 0x15ee, 0x1622, 0x171c) were call targets:
+# they are not data. So the libc data of sld is small: the 10 words above. The malloc result (only libc code uses 0x1a90..0x1aa8)
+# stays valid. The libc stdio modules (ungetc, filbuf, flsbuf, fflush, fclose, cnvt) reference no data word at all.

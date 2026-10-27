@@ -1,0 +1,13 @@
+# sld libc pieces: best slibc.a members by instruction similarity (libcver normalisation, difflib ratio).
+# ratio >= 0.5 candidate name (same function, older revision), 0.3-0.5 probable, below 0.3 not matched.
+# Source: /lib/slibc.a of the WEGA tree (current revision, the sources are in src/lib/libc). Made 2026-10-27.
+p01  flsbuf.o  0.339  (probable; next fseek.o)
+p02  getgrnam.o  0.179  (not matched; next setbuf.o)
+p03  flsbuf.o  0.174  (not matched; next fseek.o)
+p04  getpw.o  0.075  (not matched; next fseek.o)
+p05  ssignal.o  0.117  (not matched; next getpw.o)
+p06  malloc.o  0.206  (not matched; next ctime.o)
+p07  swap.o  0.585  (candidate; next filbuf.o)
+p08  signal.o  0.494  (probable; next swap.o)
+p09  write.o  0.0  (not matched; next wait.o)
+p10  signal.o  0.057  (not matched; next l64a.o)

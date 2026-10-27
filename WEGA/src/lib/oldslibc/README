@@ -1,0 +1,22 @@
+oldslibc - libc modules of the segmented program /bin/sld (slibc revision of sld, not the shipped slibc.a).
+Each directory <module>/0_1.s is cut from /bin/sld by host/tools/unlink_seg.py and verified: assembled with cas -u, the
+code bytes equal those of sld (relocated words masked). Module names are the names of the best matching functions
+(libc_funcs.txt, libc_bounds.txt); a module with several functions is named after its first function.
+  filbuf   = ungetc + filbuf (0x8686..0x881e)      flsbuf  = flsbuf + _fflush + _fclose (0x881e..0x8a50)
+  cnvt, decimal, malloc (incl. _calloc, _cfree), isatty, mktemp
+  stty     = _stty + strrchr (0x9296..0x932c)      swab    = swab + strcat + strncmp (0x932c..0x93f6)
+  strcmp, strcpy
+  swap     = swap + longswap + swapsegt + getuid, getgid, fstat, ioctl, lseek, open, read, ssgbrk (0x946e..0x95aa)
+  signal   = signal + stubs up to 0x96f2 (0x95b0..0x96f2)
+  stubs    = unlink, write, alarm, read stubs (0x96fa..0x97fc)
+Shipped members of slibc.a (identical, full code match): ffltioc (0x8680), getpid (0x95aa), umask (0x96f2).
+They are not cut; the Makefile takes them from /lib/slibc.a.
+Jumps and calls: a target inside the module is a label L<addr>; a target in another module is a symbol.
+No fixed code address is left in the sources (also lda of a table: lda rr4,L9696(r3)).
+Cross references: resolved to symbols (_name, export label _name:: in the defining module; a module start is labelled with the
+module name). Unnamed inner entries are f<addr> (e.g. _f91ea in isatty, _f903a in malloc). _stkseg comes from the loader.
+Data: the data words the code refers to are in the modules (.data, labels _dXXXX = start offset of the span, the code
+refers to _dXXXX+off). Spans: cnvt 1A4A..1A5E, flsbuf 1959..195B and 1A32..1A34, malloc 1A90..1AAA, stubs 1BAE..1BB2.
+The offset 1BB2 is the start of the bss of segment 1 (data is 7090 bytes): signal and stubs refer to it as _bss1+off
+(extern, the loader places it). Tool: host/tools/libc_data_seg.py. Checked: all 14 modules assemble with cas -u; the
+data bytes are not yet compared with the original (needs the final link).
