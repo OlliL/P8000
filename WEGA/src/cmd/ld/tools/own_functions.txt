@@ -17,11 +17,11 @@
 0aba init_signals 0b04 74 1 79e P ret done
 0b04 f0b04 0f26 1058 1 854 P ret open
 0f26 read_words 1070 330 1 ba8 c ret findings:D15
-1070 f1070 11ea 378 1 980 P ret open
+1070 f1070 11ea 378 1 980 P ret findings:D6,D15
 11ea f11ea 1364 378 1 a4c P ret open
-1364 f1364 14a4 320 1 9d6 P ret open
+1364 f1364 14a4 320 1 9d6 P ret findings:D7,D15
 14a4 load_header 1560 188 3 13a2 1486 1640 P ret done
-1560 f1560 1664 260 1 1426 c ret open
+1560 f1560 1664 260 1 1426 c ret findings:D2,D5,D8
 1664 add16_checked 1696 50 1 1898 P ret findings:D4
 1696 f1696 18f2 604 2 1392 1542 P ret open
 18f2 f18f2 1f96 1700 3 5018 5226 554c c ret open
@@ -93,9 +93,9 @@
 7186 report_limit 719e 24 0 - x ret done
 719e table32_entry 71ca 44 5 1fca 2014 4990 595a c ret done
 71ca put_char 7212 72 6 2d4c 7286 P ret findings:D4
-7212 f7212 724e 60 0 - x ret open
-724e f724e 7286 56 0 - x ret open
-7286 f7286 7300 122 5 c00 daa e1c 11ac c ret open
+7212 f7212 724e 60 0 - x ret findings:D5,D16
+724e f724e 7286 56 0 - x ret findings:D5,D16
+7286 f7286 7300 122 5 c00 daa e1c 11ac c ret findings:D4,D16
 7300 f7300 7526 550 3 7242 727a 72ec c ret open
 7526 f7526 7808 738 1 7436 P ret open
 7808 scan_field 7956 334 1 7578 P ret findings:D2

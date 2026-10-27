@@ -10,21 +10,21 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 67 |
-| open | 33 |
+| confirmed | 73 |
+| open | 27 |
 
 | Difference class | Count |
 |---|---|
-| - | 33 |
+| - | 27 |
 | D only (manual reading) | 6 |
-| D only (pattern-verified) | 58 |
+| D only (pattern-verified) | 64 |
 | other differences | 3 |
 
-**Pending findings:** 23
+**Pending findings:** 24
 
 | Status | Count |
 |---|---|
-| open | 23 |
+| open | 24 |
 
 ## Functions
 
@@ -39,10 +39,10 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f0762 | 0x0094-0x00be | 0x0762 | confirmed | exact | D only (pattern-verified) |  |  |
 | f078c | f078c..0a5c | 0x078c | open | open |  |  |  |
 | f0b04 | f0b04..0f26 | 0x0b04 | open | open |  |  |  |
-| f1070 | f1070..11ea | 0x1070 | open | open |  |  |  |
+| f1070 | 0x24ca-0x2628 | 0x1070 | confirmed | differs | D only (pattern-verified) | D10, D2, D3, D6, D7, D8, D8/D2 |  |
 | f11ea | f11ea..1364 | 0x11ea | open | open |  |  |  |
-| f1364 | f1364..14a4 | 0x1364 | open | open |  |  |  |
-| f1560 | f1560..1664 | 0x1560 | open | open |  |  |  |
+| f1364 | 0x2296-0x23bc | 0x1364 | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
+| f1560 | 0x218c-0x2296 | 0x1560 | confirmed | differs | D only (pattern-verified) | D1, D10, D6, D7, D8, D8/D2 |  |
 | f1696 | f1696..18f2 | 0x1696 | open | open |  |  |  |
 | f18f2 | f18f2..1f96 | 0x18f2 | open | open |  |  |  |
 | f1f96 | 0x1462-0x152e | 0x1f96 | confirmed | differs | D only (pattern-verified) | D1, D10, D7 |  |
@@ -87,9 +87,9 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f6f46 | 0x168e-0x170c | 0x6f46 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D7, D8, D8/D2 |  |
 | f6ffe | 0x042c-0x0458 | 0x6ffe | confirmed | exact | D only (pattern-verified) |  |  |
 | f702a | 0x0458-0x048c | 0x702a | confirmed | exact | D only (pattern-verified) |  |  |
-| f7212 |  | 0x7212 | open | open |  |  |  |
-| f724e |  | 0x724e | open | open |  |  |  |
-| f7286 | f7286..7300 | 0x7286 | open | open |  |  |  |
+| f7212 | 0x2402-0x2448 | 0x7212 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D6 |  |
+| f724e | 0x23bc-0x2402 | 0x724e | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D6 |  |
+| f7286 | 0x2448-0x24ca | 0x7286 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D8 |  |
 | f7300 | f7300..7526 | 0x7300 | open | open |  |  |  |
 | f7526 | f7526..7808 | 0x7526 | open | open |  |  |  |
 | f79ca | f79ca..7bbc | 0x79ca | open | open |  |  |  |
@@ -158,3 +158,4 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | sld-deferred-7526 | deferred (large function) | f7526 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7526, 738 bytes, not started |
 | sld-deferred-79ca | deferred (large function) | f79ca | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x79ca, 498 bytes, not started |
 | sld-deferred-7c26 | deferred (large function) | f7c26 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7c26, 2514 bytes, not started |
+| sld-1070-count | open (instruction count) | f1070 | open | - | find the one instruction of the original (112 against 111 in our draft) and the block order of the switch | entry 0x1070: 111 instructions against 112 in the original; not explained by a D pattern (D6 and D15 are the known layout and switch forms) |

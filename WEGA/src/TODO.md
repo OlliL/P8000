@@ -147,8 +147,13 @@ produce the same bytes with the shipped cc.
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
   2026-10-27: 23 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
-  44 with findings (see the audit in findings.json),
-  33 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
+  50 with findings (see the audit in findings.json),
+  27 open (23 large functions deferred: pending findings kind 'deferred (large function)'; 0x0018 asm; 0x11ea,
+  0x68a2, 0x6a58 not accepted), 100 entries.
+  0x1070 accepted (D6, D15) with one open point: 111 instructions against 112 in the original (pending finding sld-1070-count).
+  Latest: 0x1560 (D2, D5, D8: table loop over 12-byte entries), 0x1364 (D7, D15: dispatcher, file reading),
+  0x724e and 0x7212 (dead wrappers, D5, D16), 0x7286 (wrapper of 0x7300, D4, D16). Open non-deferred: 0x0018 (asm);
+  0x11ea (main argument loop, calls 0x1070 family, not drafted), 0x68a2, 0x6a58.
   Last rounds: 0x42f8 accepted (D6, D15, D16: switch on the type byte of the long parameter); 0x6c6a accepted (D2, D6, D15:
   state machine on bE46E). 0x68a2 (358 bytes, branches on the type bytes 0x21..0x24, globals 0x3c0a, 0x3c06, 0x3c0e,
   0x0474) analysed, not drafted.
@@ -157,7 +162,7 @@ produce the same bytes with the shipped cc.
   0x7286 (wrapper of 0x7300, which is deferred), 0x6a58 (hash lookup with linear probing; draft in the scratch folder: same
   82 instructions, but the register of the probe pointer (rr6 in the original) and the loop shape differ; not accepted),
   0x1560 (table loop, 12-byte entries, not drafted fully).
-  Dead code (no caller, no address reference): 0x724e and 0x7212 still open; rebuilt: 0x6866 pack_entry, 0x01d2 walk_entries,
+  Dead code (no caller, no address reference): rebuilt: 0x724e and 0x7212 (wrappers of the deferred 0x7300, D5, D16), 0x6866 pack_entry, 0x01d2 walk_entries,
   0x3b1e swab12, 0x7186 report_limit. 0x0018 is the start code (asm with sc, to be kept as assembler, not C).
   0x7808 (334 bytes, open): a scanf-like reader: stream at rr10 (count at +4, pointer at +0), conversion characters c, s, [ (character
   class table 0x17BA, filled by make_ccl 0x7956), calls ungetc 0x86fa and store 0x8688. Not started; needs the stream layout first.

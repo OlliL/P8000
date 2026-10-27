@@ -128,11 +128,34 @@
    "level": "open"
   },
   "f1070": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x1070",
-   "ours": "f1070..11ea",
-   "level": "open"
+   "ours": "0x24ca-0x2628",
+   "level": "differs",
+   "pairing_evidence": "option argument parser: the letter after the dash is looked up in a 4-entry table (b, d, t, NUL) with a jump table (D6); the case blocks, the flag test and the error path are laid out in another order (D15). Open point: 111 instructions against 112 in the original, the one missing instruction is not identified (not a known D pattern)",
+   "audit": {
+    "d_normalised_pct": 73,
+    "pattern_diff": 55,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 2,
+    "reordered_examples": [
+     "ldk\trS,#1"
+    ],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 107,
+    "len_orig": 112
+   }
   },
   "f11ea": {
    "file": null,
@@ -142,18 +165,55 @@
    "level": "open"
   },
   "f1364": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x1364",
-   "ours": "f1364..14a4",
-   "level": "open"
+   "ours": "0x2296-0x23bc",
+   "level": "differs",
+   "pairing_evidence": "dispatcher on f3144 with a jump table (cases 0 to 3, cases 0 and 3 out of range go to the end). The old cc places the loop step (computed from bE44E) in two copies and orders the blocks differently (D7 loop layout, D15). Same 75 instructions.",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 26,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 71,
+    "len_orig": 75
+   }
   },
   "f1560": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x1560",
-   "ours": "f1560..1664",
-   "level": "open"
+   "ours": "0x218c-0x2296",
+   "level": "differs",
+   "pairing_evidence": "table loop over 12-byte entries at bE3E84 (count bE3E88): the flag test uses the and/test form (D8, byte value), the field offset +4 is folded into the pointer (D5, const index), the base is loaded into another register pair (D2). Same 73 instructions.",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 18,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 73,
+    "len_orig": 73
+   }
   },
   "f1696": {
    "file": null,
@@ -983,11 +1043,29 @@
    }
   },
   "f7286": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x7286",
-   "ours": "f7286..7300",
-   "level": "open"
+   "ours": "0x2448-0x24ca",
+   "level": "differs",
+   "pairing_evidence": "wrapper of the formatter 0x7300 (5 callers): the old cc spills all four argument registers and the parameter in rr6 (D4), the byte local is placed one byte later in the frame (D16). Same 30 instructions; the formatter 0x7300 is still a deferred function (declared as a call)",
+   "audit": {
+    "d_normalised_pct": 84,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 32,
+    "len_orig": 30
+   }
   },
   "f7300": {
    "file": null,
@@ -1356,18 +1434,54 @@
    }
   },
   "f7212": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x7212",
-   "ours": null,
-   "level": "open"
+   "ours": "0x2402-0x2448",
+   "level": "differs",
+   "pairing_evidence": "dead code (no caller, no address reference): wrapper of 0x7300 with a constant format; the address forms of the local pair and of the fourth argument differ (D5/D16). Same 14 instructions; the order of the format load differs (D15)",
+   "audit": {
+    "d_normalised_pct": 72,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 14
+   }
   },
   "f724e": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x724e",
-   "ours": null,
-   "level": "open"
+   "ours": "0x23bc-0x2402",
+   "level": "differs",
+   "pairing_evidence": "dead code (no caller, no address reference): wrapper of 0x7300 that copies the third and fourth argument into a local pair; the stack address of the fifth argument is formed through rr0 in the original (D5/D16, address forms). Same 13 instructions",
+   "audit": {
+    "d_normalised_pct": 67,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 13
+   }
   },
   "put_char": {
    "file": "sld.c",
@@ -1971,6 +2085,15 @@
    "classification": "-",
    "action": "second pass: rebuild after the small and medium functions (large, complex)",
    "result": "entry 0x7c26, 2514 bytes, not started"
+  },
+  {
+   "id": "sld-1070-count",
+   "kind": "open (instruction count)",
+   "function": "f1070",
+   "status": "open",
+   "classification": "-",
+   "action": "find the one instruction of the original (112 against 111 in our draft) and the block order of the switch",
+   "result": "entry 0x1070: 111 instructions against 112 in the original; not explained by a D pattern (D6 and D15 are the known layout and switch forms)"
   }
  ],
  "manual_classes": {},

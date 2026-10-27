@@ -1779,3 +1779,218 @@ h4:
 end:
 	;
 }
+
+/* f1560..1664: findings:D2,D5,D8 */
+char *bE3E84;
+int bE3E88;
+long f6b84();
+int f65ec();
+int f14a4();
+int f1560();
+
+int f1560()
+{
+	long sv;
+	char *end;
+	int i;
+	long t;
+
+	sv = bE486;
+	end = bE3E84;
+	i = 0;
+	goto test;
+body:
+	if (bE3E84 + i * 12 < end)
+		goto next;
+	if (*(bE3E84 + i * 12 + 4) & 0x80)
+		end = bE3E84 + i * 12 + 4 + (*(bE3E84 + i * 12 + 4) & 0x7f);
+	t = *(long *)f6b84(bE3E84 + i * 12 + 4);
+	if (!t)
+		goto next;
+	if (*(char *)(t + 4) != 0x20)
+		goto next;
+	if (bE4B6)
+		f65ec(bE3E84 + i * 12);
+	f14a4((*(long *)(bE3E84 + i * 12)) >> 1);
+next:
+	i++;
+test:
+	if ((unsigned)i < (unsigned)bE3E88)
+		goto body;
+	return sv != bE486;
+}
+
+/* f1364..14a4: findings:D7,D15 */
+long bE44E;
+int bE488;
+int f3144();
+int f1696();
+int f1560();
+int f6f46();
+int f95da();
+int f9610();
+int f9576();
+int load_header();
+long ensure_buf();
+int report_error();
+
+int f1364(p)
+char *p;
+{
+	register char *r;
+	long n;
+
+	r = p;
+	switch (f3144(p)) {
+	case 0:
+		f1696(0, 0L);
+		goto end;
+	case 1:
+		n = 1;
+		if (!load_header(n))
+			goto end;
+		goto step;
+	case 2:
+		bE3E88 = bE44E / 12;
+		bE3E84 = ensure_buf(bE44E);
+		f95da(bE4BE, 28L, 0);
+		f9610(bE4BE, bE3E84, bE3E88 * 12);
+		f6f46(bE3E84, bE3E88);
+		while (f1560())
+			;
+		*(long *)bE486 = -1;
+		bE488 += 4;
+		goto end;
+	case 3:
+		report_error(0, "x");
+		n = ((bE44E + 27) >> 1) + 1;
+		goto check;
+	}
+step:
+	n = ((bE44E + 27) >> 1) + n;
+check:
+	if (load_header(n))
+		goto step;
+end:
+	f9576(bE4BE);
+}
+
+/* f724e..7286: findings:D5,D16 */
+int f7300();
+int f724e();
+
+int f724e(a, b, c, d, e)
+long a;
+long b;
+long c;
+long d;
+long e;
+{
+	long arr[2];
+
+	arr[0] = c;
+	arr[1] = d;
+	f7300(a, b, arr, &e);
+}
+
+/* f7212..724e: findings:D5,D16 */
+int f7300();
+int f7212();
+
+int f7212(a, b, c, d)
+long a;
+long b;
+long c;
+long d;
+{
+	long arr[2];
+
+	arr[0] = b;
+	arr[1] = c;
+	f7300("x", a, arr, &d);
+}
+
+/* f7286..7300: findings:D4,D16 */
+int f7300();
+int f7286();
+
+int f7286(s, b, a, c, d)
+char *s;
+long b;
+long a;
+long c;
+long d;
+{
+	register char *q;
+	long p1;
+	int len;
+	long p2;
+	char ch;
+	long a1;
+	long c1;
+
+	p2 = s;
+	p1 = s;
+	len = 0;
+	ch = 'A';
+	q = s;
+	while (*q++)
+		len++;
+	a1 = a;
+	c1 = c;
+	f7300(&p1, b, &a1, &d);
+}
+
+/* f1070..11ea: findings:D6,D15 */
+char bE42B2;
+int bE49A;
+char tab42b4[];
+char tab4534[];
+int f7286();
+int report_error();
+
+int f1070(s, t)
+char *s;
+char *t;
+{
+	register int k;
+	register int g;
+	register char *u;
+	char *fmt;
+
+	bE42B2++;
+	switch (*(s + 1)) {
+	case 0:
+		k = 0;
+		break;
+	case 'b':
+		k = 3;
+		break;
+	case 'd':
+		k = 2;
+		break;
+	case 't':
+		k = 1;
+		break;
+	default:
+		report_error(2, "x", s);
+		break;
+	}
+	u = t;
+	g = 0;
+	if (bE49A && (k == 2 || k == 3))
+		g = 1;
+	if (tab42b4[g * 5 + k])
+		report_error(2, "x", s, tab42b4[g * 5 + k], s[1]);
+	tab42b4[g * 5 + k] = *s;
+	fmt = "x";
+	if (*u != '0')
+		fmt = "x";
+	else if ((u[1] | 0x20) == 'x') {
+		u += 2;
+		fmt = "x";
+	}
+	if (f7286(u, fmt, tab4534 + g * 10 + k * 2) != 1)
+		report_error(2, "x", s, t);
+	return k != 0;
+}
