@@ -953,6 +953,24 @@ means it does something fixed instead (only possible where the original's result
   later crt0 variant (version string in the text; ar also has the SCCS stamp in the data,
   ranlib not), made from `src/lib/libc/crt/crt0.s.in` (see "Start-up files").
 
+### sld: printf core 0x7c26 and the stream macro (2026-10-28)
+
+- The printf core of sld (`0x7c26`, int result) and its callers: `0x79ca` (printf: stream `str194e`, four doubles), `0x7a5e` (fprintf:
+  stream as first argument, two word arguments, four doubles) and `0x7ae2` (sprintf: builds a local stream `{ptr, cnt = 0x7fff,
+  base, flag = 0x42}` at flag offset 10, calls the core, stores the end byte). All three keep the stream in `pE90E4` and the
+  result in `bE90E2`. The core returns -1 if `pE90E4` is set and its flag byte (offset 10) has bit 0x20, else the count `nout`.
+- The stream writes of the original are the stdio macro `putc`: `--p->cnt < 0 ? f880e(c, p) : (int)(*p->ptr++ = c)` with
+  `struct sio { unsigned char *ptr; int cnt; char *base; char flag; }` (cnt at +4, flag at +10), written as an expression
+  statement. With that form the compiler produces the original sequence (slow path first, `inc` of the low pointer word, the
+  zero-extended result `subb rh2,rh2`). `if`/`else` forms do not (earlier drafts assumed a `ptr - 1` store quirk: not real).
+  The string output of the core is `putc(*s++, p)` with the pointer in a frame slot.
+- Argument pointers are `char *` (`ap`, `dp`, `sptr`, `wptr`): `wptr += 2` is `inc low word`; a long parameter cast to a
+  pointer is read from its spill slot instead (D4).
+- `fncheck.py` compared frame offsets as `ADDR` until 2026-10-28; a wrong frame field was invisible. It now keeps `(r15)`
+  displacements and local addresses (`#%7Fxxxxxx`, stack segment mapped to 0); `STRICT=0` restores the old behaviour and
+  `SCCFLAGS` sets the compiler flags (default `-O`; without `-O` the code is not that of the original).
+- Layout rules measured with `scc -O -S` (scratch `tmp/layout`): if/else keeps the source order; loops are rotated (D7).
+
 ## Plexis System III sources (s3plxsrc.tar.gz, not in git)
 
 - Zilog Z8000 SysIII source tree from Plexis (cmd/, lib/, uts/, ...), 2440 files.

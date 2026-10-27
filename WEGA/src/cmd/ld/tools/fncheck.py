@@ -7,8 +7,8 @@ Usage: fncheck.py SOURCE.c LO HI [ORIGINAL]
   LO HI     the code range of the original (hex), e.g. 0762 078c; the instructions are compared in order
   ORIGINAL  the original segmented program (default: /bin/sld of the WEGA 3.1 root)
 
-The object is built with 'scc -O -c'. Addresses in operands are normalized (ADDR), because the object
-is not linked; calr and call are equal here (D17, see norm). Prints OK when the instruction sequences are equal, otherwise the differing instructions.
+The object is built with 'scc -O -c' (flags from the environment variable SCCFLAGS, default -O). Addresses in operands are normalized (ADDR), because the object
+is not linked; calr and call are equal here (D17, see norm). Frame offsets are compared (environment STRICT=0 turns that off). Prints OK when the instruction sequences are equal, otherwise the differing instructions.
 """
 import difflib
 import os
@@ -45,7 +45,23 @@ def insns(code, lo, hi, seg):
 def norm(t):
     # segment numbers are set by the linker (the stack is segment 127 only after the link)
     t = re.sub(r'<<\d+>>', '', t)
-    t = re.sub(r'%[0-9A-Fa-f]{3,}', 'ADDR', t)
+    if os.environ.get('STRICT', '1') != '0':
+        # frame displacements (...)(r15) and addresses of locals (#%7Fxxxxxx) are kept: they are not
+        # changed by the link, so a wrong offset is a real difference
+        keep = []
+
+        def hold(m):
+            keep.append(m.group(0))
+            return '\0%d\0' % (len(keep) - 1)
+        t = re.sub(r'%[0-9A-Fa-f]{3,}\|?\(r15\)', hold, t)
+        t = re.sub(r'#%7F([0-9A-Fa-f]{6})', r'#%00\1', t)   # stack segment is set by the linker
+        # a local address is #%7Fxxxxxx in the original and a non-zero small offset in the object; an offset of 0
+        # in the object is a symbol (relocated address of a global), masked below
+        t = re.sub(r'#%00(?!000000)[0-9A-Fa-f]{6}', hold, t)
+        t = re.sub(r'%[0-9A-Fa-f]{3,}', 'ADDR', t)
+        t = re.sub(r'\0(\d+)\0', lambda m: keep[int(m.group(1))], t)
+    else:
+        t = re.sub(r'%[0-9A-Fa-f]{3,}', 'ADDR', t)
     # calr or call: the call form depends on the distance to the target in the final object (D17);
     # it is checked again when the whole file is compiled
     return re.sub(r'^calr\t', 'call\t', t)
@@ -55,7 +71,7 @@ def compile_obj(src):
     tmp = tempfile.mkdtemp(prefix='fncheck', dir='/mnt/share/cvs/P8000/tmp/tmp')
     base = os.path.splitext(os.path.basename(src))[0]
     shutil.copy(src, os.path.join(tmp, base + '.c'))
-    r = subprocess.run([EMU, '-r', WEGA, '/bin/scc', '-O', '-c', base + '.c'], cwd=tmp,
+    r = subprocess.run([EMU, '-r', WEGA, '/bin/scc'] + os.environ.get('SCCFLAGS', '-O').split() + ['-c', base + '.c'], cwd=tmp,
                        capture_output=True, text=True, timeout=600)
     if r.returncode != 0 or not os.path.exists(os.path.join(tmp, base + '.o')):
         return None, (r.stdout + r.stderr).strip()

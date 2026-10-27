@@ -10,14 +10,14 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 82 |
-| open | 20 |
+| confirmed | 85 |
+| open | 17 |
 
 | Difference class | Count |
 |---|---|
-| - | 20 |
+| - | 17 |
 | D only (manual reading) | 6 |
-| D only (pattern-verified) | 66 |
+| D only (pattern-verified) | 69 |
 | other differences | 10 |
 
 **Pending findings:** 19
@@ -75,7 +75,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f6800 | 0x0bf2-0x0c58 | 0x6800 | confirmed | differs | D only (pattern-verified) | D1 |  |
 | f68a2 | 0x2792-0x28ee | 0x68a2 | confirmed | differs | other differences |  | unexplained instruction forms: add	rS,@rrS; ld	@rrS,rS; ld	rS,rrS(#N) |
 | f6a08 | 0x030a-0x035a | 0x6a08 | confirmed | exact | D only (pattern-verified) | D7 |  |
-| f6a58 | f6a58..6b5a | 0x6a58 | open | open |  |  |  |
 | f6b5a | 0x035a-0x0388 | 0x6b5a | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f6b84 | 0x0388-0x03b2 | 0x6b84 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f6bae | 0x0940-0x09f8 | 0x6bae | confirmed | differs | D only (pattern-verified) | D7 |  |
@@ -91,11 +90,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f7286 | 0x2448-0x24ca | 0x7286 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D8 |  |
 | f7300 | f7300..7526 | 0x7300 | open | open |  |  |  |
 | f7526 | f7526..7808 | 0x7526 | open | open |  |  |  |
-| f79ca | 0x3648-0x36d8 | 0x79ca | confirmed | exact | D only (pattern-verified) | D7 |  |
-| f7a5e |  | 0x7a5e | open | open |  |  |  |
-| f7ae2 |  | 0x7ae2 | open | open |  |  |  |
 | f7bbc | 0x0b82-0x0bf2 | 0x7bbc | confirmed | differs | D only (pattern-verified) | D1, D10, D3 |  |
-| f7c26 | 0x36d8-0x413e | 0x7c26 | confirmed | differs | read by hand | D7, D8 | semantics not run; block placement (loop head rotated in the draft, top in the original; D7) and format character read (D8); 479 of 714 instructions differ, instruction count equal; frame 144, stack offsets equal |
 | f85f8 | 0x0884-0x0916 | 0x85f8 | confirmed | differs | D only (manual reading) | D2 | indirect byte store through another register pair (rr2 here, rr4 in the original) |
 | finish_output | 0x0ce8-0x0d70 | 0x2cbc | confirmed | exact | D only (pattern-verified) | D10, D7 |  |
 | flush_buffer | 0x06ba-0x071a | 0x3ac6 | confirmed | differs | D only (pattern-verified) | D1, D3, D7 |  |
@@ -104,8 +99,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | high_byte | 0x0166-0x0194 | 0x2e4c | confirmed | exact | D only (pattern-verified) | D7 |  |
 | init_entry | 0x0e82-0x0f36 | 0x2346 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | init_signals | 0x011c-0x0166 | 0x0aba | confirmed | exact | D only (pattern-verified) |  |  |
+| ld_doprnt | 0x36d8-0x40f8 | 0x7c26 | confirmed | differs | read by hand | D2, D7 | putc macro form (--cnt < 0 ? _flsbuf : (int)(*ptr++ = c)) reproduces the stream writes; 714 instructions equal in count, 60 differ in content: register choice of temporaries (rr4/r3 where ours uses rr2/r4, D2) and block placement of the output block and jump lengths (jr/jp, D7); frame 144 and stack offsets equal; semantics checked by reading only |
+| ld_fprintf | 0x40f8-0x4178 | 0x7a5e | confirmed | exact | D only (pattern-verified) | D7 |  |
+| ld_printf | 0x3648-0x36d8 | 0x79ca | confirmed | exact | D only (pattern-verified) | D7 |  |
+| ld_sprintf | 0x4178-0x424e | 0x7ae2 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | list_move_after | 0x0a6a-0x0b0c | 0x642e | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
 | load_header | 0x0f36-0x0fea | 0x14a4 | confirmed | exact | D only (pattern-verified) | D7 |  |
+| lookup_name | 0x424e-0x4350 | 0x6a58 | confirmed | exact | D only (pattern-verified) |  |  |
 | make_ccl | 0x0b0c-0x0b82 | 0x7956 | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D8/D2 |  |
 | next_entry | 0x1600-0x168e | 0x705e | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D7, D8, D8/D2 |  |
 | open_tmp | 0x10a8-0x1148 | 0x22a4 | confirmed | differs | D only (pattern-verified) | D10, D7 |  |
@@ -155,4 +155,4 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | sld-deferred-7526 | deferred (large function) | f7526 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7526, 738 bytes, not started |
 | sld-1070-count | open (instruction count) | f1070 | open | - | find the one instruction of the original (112 against 111 in our draft) and the block order of the switch | entry 0x1070: 111 instructions against 112 in the original; not explained by a D pattern (D6 and D15 are the known layout and switch forms) |
 | sld-27d8-layout | open (block placement, semantic check by reading) | f27d8 | open | - | place the blocks of the table path (0x2b02) and of the stream B refill (0x2882) as in the original; then check the remaining 42 instructions (register choices D2 and the sra form) and run the function on the machine or in a test harness | entry 0x27d8, 1252 bytes: 361 instructions, 42 differ (block placement of 0x2b02 and 0x2882, scratch registers of the key, count and byte temporaries); the classifier reports 1 unexplained form (sra rS,#4); semantics checked by reading only |
-| sld-7c26-semantics | open (semantic check not done) | f7c26 | open | - | run the function against the original (test harness or the whole sld) and compare the output; then close the 479 differing instructions (block placement, format character read) and re-check the stream, wptr/scnt and float argument logic | entry 0x7c26, 2514 bytes, 714 instructions equal in count, frame 144 and stack offsets equal, 479 lines differ (block placement D7, byte read D8); semantics checked by reading only, the external helpers f8684, f8ad0, f943c, f8c86 are not checked against their own definitions |
+| sld-7c26-semantics | open (semantic check not done) | ld_doprnt | open | - | run the function against the original (test harness or the whole sld) and compare the output; then close the remaining content differences (register choice of temporaries, block placement of the output block) and re-check the stream, wptr/scnt and float argument logic | entry 0x7c26, 2514 bytes, 714 instructions equal in count, 60 differ in content (order-independent comparison), frame 144 and stack offsets equal; the putc macro form and pointer-typed wptr/ap/dp/sptr are measured against the original; semantics checked by reading only, the external helpers f8684, f8ad0, f943c, f8c86 are not checked against their own definitions |

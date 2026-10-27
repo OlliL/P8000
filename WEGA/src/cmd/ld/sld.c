@@ -111,7 +111,7 @@ char *end;
 			return *(char **)(p + 2);
 		p += 6;
 	}
-	f79ca("x", (int)a);
+	ld_printf("x", (int)a);
 	report_error(2, "x");
 }
 
@@ -220,7 +220,7 @@ char bE46E;
 long bE46A;
 int unpack_run();
 int f00ee();
-char *f6a58();
+char *lookup_name();
 
 f6b5a(p)
 char *p;
@@ -230,7 +230,7 @@ char *p;
 	f00ee(p, bE472);
 	bE46E = 0x20;
 	bE46A = 0;
-	f6a58();
+	lookup_name();
 }
 
 /* f6b84 0x6b84..0x6bae: done */
@@ -240,7 +240,7 @@ char bE46E;
 long bE46A;
 int unpack_run();
 int f00ee();
-char *f6a58();
+char *lookup_name();
 
 long f6b84(p)
 char *p;
@@ -250,7 +250,7 @@ char *p;
 	unpack_run(p, bE472);
 	bE46E = 0x20;
 	bE46A = 0;
-	f6a58();
+	lookup_name();
 }
 
 /* f6efe 0x6efe..0x6f46: done */
@@ -1074,7 +1074,7 @@ int bE4EA;
 int bE1532;
 int put_char();
 int report_error();
-int f79ca();
+int ld_printf();
 
 int put_name(p)
 char *p;
@@ -1111,7 +1111,7 @@ char *p;
 		q++;
 	}
 	if (flag) {
-		f79ca("y");
+		ld_printf("y");
 		k += 3;
 	}
 	return k;
@@ -1249,14 +1249,14 @@ char *q;
 char *table16_entry();
 char *f705e();
 int f0220();
-int f79ca();
+int ld_printf();
 
 walk_entries()
 {
 	register char *a;
 	register char *b;
 
-	f79ca("x");
+	ld_printf("x");
 	b = table16_entry(bE4FA);
 	a = table16_entry(0);
 	while (a < b) {
@@ -1266,11 +1266,11 @@ walk_entries()
 }
 
 /* report_limit..719e: done */
-int f79ca();
+int ld_printf();
 
 report_limit()
 {
-	f79ca("x", bE4FA, 0x0ffa);
+	ld_printf("x", bE4FA, 0x0ffa);
 }
 
 /* f705e..7112: findings:D2 */
@@ -1562,7 +1562,7 @@ rd:
 /* f3408..34b8: done */
 char *pE4D6;
 char *pE4C0;
-int f79ca();
+int ld_printf();
 int sig_handler();
 
 int report_error(level, msg, a, b, c, d, e)
@@ -1575,14 +1575,14 @@ int d;
 int e;
 {
 	if (!bE4A3A)
-		f79ca("x", pE4D6);
+		ld_printf("x", pE4D6);
 	if (pE4C0)
-		f79ca("x", pE4C0);
+		ld_printf("x", pE4C0);
 	if (bE438[0])
-		f79ca("x", bE438);
-	f79ca("x");
-	f79ca(msg, b, a, c, d, e);
-	f79ca("x");
+		ld_printf("x", bE438);
+	ld_printf("x");
+	ld_printf(msg, b, a, c, d, e);
+	ld_printf("x");
 	if (level > 1)
 		sig_handler();
 	bE4A3A = level;
@@ -2191,7 +2191,7 @@ int f3516();
 int f6a08();
 int f6c6a();
 int f6e1a();
-char *f6a58();
+char *lookup_name();
 int report_error();
 int read_entry_hdr();
 int put_name();
@@ -2235,7 +2235,7 @@ char *b;
 			f6e1a(bF10A, &bE46A);
 			goto next;
 		}
-		rec = *(char **)f6a58();
+		rec = *(char **)lookup_name();
 		if (!rec)
 			report_error(2, "x");
 		if (bE46E != 0x20)
@@ -2657,13 +2657,13 @@ attr:
 	bE476 = 0;
 }
 
-/* f79ca..7a5e: done */
+/* ld_printf..7a5e: done */
 int bE90E2;
 char *pE90E4;
 char str194e[];
-int f7c26();
+int ld_doprnt();
 
-int f79ca(fmt, w1, w2, w3, w4, d1, d2, d3, d4, s1)
+int ld_printf(fmt, w1, w2, w3, w4, d1, d2, d3, d4, s1)
 long fmt;
 int w1;
 int w2;
@@ -2693,37 +2693,39 @@ long s1;
 	db2 = d2;
 	db3 = d1;
 	pE90E4 = str194e;
-	bE90E2 = f7c26(fmt, &wb0, &db0, &s1, 1, str194e);
+	bE90E2 = ld_doprnt(fmt, &wb0, &db0, &s1, 1, str194e);
 }
 
-/* f7c26..85c6: findings:D7,D8 */
-struct iob {
-	char *ptr;
+/* ld_doprnt..85c6: findings:D2,D7 */
+struct sio {
+	unsigned char *ptr;
 	int cnt;
+	char *base;
+	char flag;
 };
 int f8c86();
 int f880e();
 int f85c6();
 
-int f7c26(f, ap, dp, sptr, scnt, iop)
+int ld_doprnt(f, ap, dp, sptr, scnt, iop)
 register unsigned char *f;
-long ap;
-long dp;
-long sptr;
+char *ap;
+char *dp;
+char *sptr;
 int scnt;
-struct iob *iop;
+struct sio *iop;
 {
 	register int c;
 	register int rem;
 	register int pn;
 	int ncnt;
-	long wptr;
+	char *wptr;
 	char pa12[4];
 	int prec;
 	int width;
 	int size1a;
 	char pd1c[4];
-	char pe20[4];
+	char *pe20;
 	char buf24[64];
 	char *bufp;
 	char pad68[1];
@@ -2750,27 +2752,21 @@ struct iob *iop;
 	rem = f8c86(f);
 	goto l7c8c;
 l7c50:
-	if ((iop->cnt -= 1) < 0) {
-		f880e(c, iop);
-	} else {
-		*((int *)&iop->ptr + 1) += 1;
-		*(iop->ptr - 1) = c;
-	}
+	--iop->cnt < 0 ? f880e(c, iop) : (int)(*iop->ptr++ = c);
 	nout += 1;
 l7c8c:
 	if (rem-- == 0)
 		goto l85c6;
-	c = *f++ & 0xff;
-	if (c != 0x25)
+	if ((c = *f++) != 0x25)
 		goto l7c50;
 	if (rem == 0)
 		goto l85c6;
 	rem -= 1;
-	c = *f++ & 0xff;
+	c = *f++;
 	prec = 0;
 	width = -1;
 	padc[0] = 0x20;
-	nout = 0;
+	outc = 0;
 	fsp = 0;
 	fplus = 0;
 	fhash = 0;
@@ -2809,7 +2805,7 @@ l7d64:
 	if (c != 0x2a)
 		goto l7d94;
 	prec = *(int *)wptr;
-	*((int *)&wptr + 1) += 2;
+	wptr += 2;
 	scnt += 1;
 	if (scnt == 5)
 		wptr = sptr;
@@ -2836,7 +2832,7 @@ l7dbc:
 	if (*f != 0x2a)
 		goto l7e00;
 	width = *(int *)wptr;
-	*((int *)&wptr + 1) += 2;
+	wptr += 2;
 	pn = 1;
 	scnt += 1;
 	if (scnt == 5)
@@ -2851,7 +2847,7 @@ l7e18:
 	if (rem == 0)
 		goto l7e3e;
 	rem -= 1;
-	c = *f++ & 0xff;
+	c = *f++;
 l7e26:
 	if (c == 0x2a)
 		goto l7d64;
@@ -2920,7 +2916,7 @@ l7eaa:
 	size1a = 10;
 l7eb0:
 	*(long *)pd1c = (long)*(int *)wptr;
-	*((int *)&wptr + 1) += 2;
+	wptr += 2;
 	*(int *)pd1c = 0;
 	scnt += 1;
 	if (scnt == 5)
@@ -2940,10 +2936,10 @@ l7f46:
 l7eea:
 	if (scnt >= 5)
 		goto l7f0c;
-	f7bbc(&scnt, (char *)&wptr, (char *)sptr);
+	f7bbc(&scnt, (char *)&wptr, sptr);
 l7f0c:
 	*(long *)pd1c = *(long *)wptr;
-	*((int *)&wptr + 1) += 4;
+	wptr += 4;
 	scnt += 2;
 	if (scnt != 5)
 		goto l8052;
@@ -2953,8 +2949,7 @@ l7f4e:
 	if (rem == 0)
 		goto l7fee;
 	rem -= 1;
-	c = *f++;
-	if (c == 'o')
+	if ((c = *f++) == 'o')
 		goto l7edc;
 	if (c == 'x')
 		goto l7ee4;
@@ -2962,18 +2957,8 @@ l7f4e:
 		goto l7f46;
 	if (c == 'u')
 		goto l7f3e;
-	if ((iop->cnt -= 1) < 0)
-		f880e(0x6c, iop);
-	else {
-		*((int *)&iop->ptr + 1) += 1;
-		*(iop->ptr - 1) = 0x6c;
-	}
-	if ((iop->cnt -= 1) < 0)
-		f880e(c, iop);
-	else {
-		*((int *)&iop->ptr + 1) += 1;
-		*(iop->ptr - 1) = c;
-	}
+	--iop->cnt < 0 ? f880e(0x6c, iop) : (int)(*iop->ptr++ = 0x6c);
+	--iop->cnt < 0 ? f880e(c, iop) : (int)(*iop->ptr++ = c);
 	nout += 2;
 l7fee:
 	if (width == 0)
@@ -2990,7 +2975,7 @@ l8006:
 l8020:
 	size1a = -10;
 	*(long *)pd1c = (long)*(int *)wptr;
-	*((int *)&wptr + 1) += 2;
+	wptr += 2;
 	scnt += 1;
 	if (scnt == 5)
 		wptr = sptr;
@@ -3039,24 +3024,19 @@ l8100:
 		goto l8170;
 	if (*(long *)pd1c == 0x80000000)
 		size1a = 10;
-	*(long *)pd1c = -*(long *)pd1c;
-	if ((iop->cnt -= 1) < 0)
-		f880e(0x2d, iop);
-	else {
-		*((int *)&iop->ptr + 1) += 1;
-		*(iop->ptr - 1) = 0x2d;
-	}
+	*(long *)pd1c *= -1;
+	--iop->cnt < 0 ? f880e(0x2d, iop) : (int)(*iop->ptr++ = 0x2d);
 	nout += 1;
 l8170:
-	*(char **)pe20 = buf24;
+	pe20 = buf24;
 	pn = f8ad0(bufp, size1a, *(long *)pd1c) + outc;
 	goto l7fee;
 l8212:
 	padc[0] = 0x20;
 	pn = 1;
-	*(long *)pe20 = *(long *)&wptr;
-	*((int *)pe20 + 1) += 1;
-	*((int *)&wptr + 1) += 2;
+	pe20 = wptr;
+	pe20 += 1;
+	wptr += 2;
 	scnt += 1;
 	if (scnt != 5)
 		goto l7fee;
@@ -3066,13 +3046,13 @@ l819a:
 	padc[0] = 0x20;
 	if (scnt >= 5)
 		goto l81c2;
-	f7bbc(&scnt, (char *)&wptr, (char *)sptr);
+	f7bbc(&scnt, (char *)&wptr, sptr);
 l81c2:
-	*(long *)pe20 = *(long *)wptr;
-	*((int *)&wptr + 1) += 4;
-	if (*(long *)pe20 == 0)
-		*(long *)pe20 = 0x0100186A;
-	pn = f8c86(*(char **)pe20);
+	pe20 = (char *)*(long *)wptr;
+	wptr += 4;
+	if (pe20 == 0)
+		pe20 = (char *)0x0100186AL;
+	pn = f8c86(pe20);
 	scnt += 2;
 	if (scnt != 5)
 		goto l7fee;
@@ -3081,9 +3061,9 @@ l81c2:
 l824e:
 	if (ncnt >= 4)
 		goto l8270;
-	*(long *)pa12 = *(long *)wptr;
+	*(long *)pa12 = (long)wptr;
 	wptr = dp;
-	*((int *)&dp + 1) += 8;
+	dp += 8;
 	ncnt += 1;
 	goto l8286;
 l8270:
@@ -3091,18 +3071,18 @@ l8270:
 	wptr = sptr;
 	scnt += 5;
 l8286:
-	*(char **)pe20 = f8684(width, buf24, *(double *)wptr, c);
+	pe20 = f8684(width, buf24, *(double *)wptr, c);
 	if (*(long *)pa12 == 0)
-		*((int *)&wptr + 1) += 8;
+		wptr += 8;
 	else
-		wptr = *(long *)pa12;
+		wptr = (char *)*(long *)pa12;
 	if (!fplus)
 		goto l8312;
-	if ((*(char **)pe20)[0] == 0x2d)
+	if (pe20[0] == 0x2d)
 		goto l8312;
-	if ((*(char **)pe20)[0] == 0)
+	if (pe20[0] == 0)
 		goto l8312;
-	bufp = *(char **)pe20;
+	bufp = pe20;
 	b69[0] = bufp[0];
 	bufp[0] = sign[0];
 	bufp += 1;
@@ -3124,7 +3104,7 @@ l8312:
 	if (c != 0x45)
 		goto l8370;
 l8324:
-	bufp = *(char **)pe20;
+	bufp = pe20;
 	goto l8342;
 l832e:
 	bufp[0] = bufp[1];
@@ -3151,7 +3131,7 @@ l8370:
 	if (c != 0x47)
 		goto l845e;
 l837c:
-	bufp = *(char **)pe20;
+	bufp = pe20;
 	goto l839a;
 l8396:
 	bufp += 1;
@@ -3177,7 +3157,7 @@ l8386:
 l83c4:
 	if (c != 0x66)
 		goto l83fc;
-	bufp = *(char **)pe20;
+	bufp = pe20;
 	goto l83e2;
 l83d4:
 	if (bufp[0] == 0x2e)
@@ -3198,7 +3178,7 @@ l83fc:
 	if (c != 0x47)
 		goto l845e;
 l8408:
-	bufp = *(char **)pe20;
+	bufp = pe20;
 	goto l8420;
 l8412:
 	if (bufp[0] == 0x2e)
@@ -3229,7 +3209,7 @@ l845e:
 	if (c != 0x47)
 		goto l8484;
 l846a:
-	bufp = *(char **)pe20;
+	bufp = pe20;
 l8472:
 	if (bufp[0] == 0)
 		goto l8484;
@@ -3240,7 +3220,7 @@ l8494:
 	bufp += 1;
 	goto l8472;
 l8484:
-	pn = f8c86(*(char **)pe20);
+	pn = f8c86(pe20);
 	goto l7fee;
 l849a:
 	goto l7c50;
@@ -3251,25 +3231,14 @@ l84ba:
 		goto l8504;
 	goto l8560;
 l84c2:
-	f880e(padc[0], iop);
+	--iop->cnt < 0 ? f880e(padc[0], iop) : (int)(*iop->ptr++ = padc[0]);
 	nout += 1;
 l8504:
-	pn = padn;
-	padn -= 1;
-	if (pn != 0)
+	if (padn-- != 0)
 		goto l84c2;
 	goto l8560;
 l8512:
-	if ((iop->cnt -= 1) >= 0)
-		goto l853e;
-	*((int *)pe20 + 1) += 1;
-	f880e((*(char **)pe20)[-1], iop);
-	goto l855c;
-l853e:
-	*((int *)pe20 + 1) += 1;
-	*((int *)&iop->ptr + 1) += 1;
-	*(iop->ptr - 1) = (*(char **)pe20)[-1];
-l855c:
+	--iop->cnt < 0 ? f880e(*pe20++, iop) : (int)(*iop->ptr++ = *pe20++);
 	nout += 1;
 l8560:
 	if (pn-- != 0)
@@ -3279,14 +3248,7 @@ l8560:
 l8572:
 	if (padn-- == 0)
 		goto l7c8c;
-	if ((iop->cnt -= 1) >= 0)
-		goto l85a8;
-	f880e(padc[0], iop);
-	goto l85c0;
-l85a8:
-	*((int *)&iop->ptr + 1) += 1;
-	*(iop->ptr - 1) = padc[0];
-l85c0:
+	--iop->cnt < 0 ? f880e(padc[0], iop) : (int)(*iop->ptr++ = padc[0]);
 	nout += 1;
 	goto l8572;
 l7d02:
@@ -3314,7 +3276,7 @@ l7d48:
 		goto l7d1e;
 	goto l7d50;
 l7d1e:
-	c = *f++ & 0xff;
+	c = *f++;
 	goto l7d26;
 l85c6:
 	if (pE90E4 == 0)
@@ -3324,4 +3286,73 @@ l85c6:
 	return -1;
 l85e6:
 	return nout;
+}
+
+/* ld_fprintf..7ae2: done */
+int ld_doprnt();
+
+int ld_fprintf(iop, fmt, w1, w2, d1, d2, d3, d4, s1)
+char *iop;
+long fmt;
+int w1;
+int w2;
+double d1;
+double d2;
+double d3;
+double d4;
+long s1;
+{
+	int wb0;
+	int wb1;
+	double db0;
+	double db1;
+	double db2;
+	double db3;
+
+	wb0 = w1;
+	wb1 = w2;
+	db0 = d4;
+	db1 = d3;
+	db2 = d2;
+	db3 = d1;
+	pE90E4 = iop;
+	bE90E2 = ld_doprnt(fmt, &wb0, &db0, &s1, 3, iop);
+}
+
+/* ld_sprintf..7bbc: done */
+int ld_doprnt();
+int f880e();
+
+int ld_sprintf(buf, fmt, w1, w2, d1, d2, d3, d4, s1)
+char *buf;
+long fmt;
+int w1;
+int w2;
+double d1;
+double d2;
+double d3;
+double d4;
+long s1;
+{
+	struct sio io;
+	int wb0;
+	int wb1;
+	double db0;
+	double db1;
+	double db2;
+	double db3;
+
+	io.flag = 0x42;
+	io.ptr = buf;
+	io.cnt = 0x7fff;
+	wb0 = w1;
+	wb1 = w2;
+	db0 = d4;
+	db1 = d3;
+	db2 = d2;
+	db3 = d1;
+	pE90E4 = (char *)&io;
+	bE90E2 = ld_doprnt(fmt, &wb0, &db0, &s1, 3, &io);
+	--io.cnt < 0 ? f880e(0, &io) : (int)(*io.ptr++ = 0);
+	return bE90E2;
 }

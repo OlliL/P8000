@@ -84,7 +84,7 @@ def main():
             out.append(line)
         elif header:
             out.append(line)
-        elif line.endswith(';') and '(' not in line and line in sld:
+        elif line.endswith(';') and '(' not in line and line in sld and line.strip() not in ('};', '}'):
             continue
         else:
             out.append(line)
