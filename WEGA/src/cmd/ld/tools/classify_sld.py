@@ -37,6 +37,8 @@ MANUAL = {
     'swap_bytes': ('D2', 'indirect word load through another register pair (rr4 here, rr2 in the original)'),
     'f85f8': ('D2', 'indirect byte store through another register pair (rr2 here, rr4 in the original)'),
     'f2e76': ('D2', 'arithmetic shift of the count with another register (r5 here, r9 in the original)'),
+    'scan_field': ('D5', 'addressing of the count and pointer fields through register pairs and constant index (indirect and indexed forms, D5); by reading, no popt pattern'),
+    'getw_buf': ('D5', 'counter fields addressed through a copy of the pointer in the original (constant index form, D5); by reading, no popt pattern'),
     'f6e1a': ('D8', 'byte b[7] read as the low byte of a word load in the original; D8 by reading, no popt pattern'),
 }
 TABLE = os.path.join(HERE, 'own_functions.txt')
@@ -123,7 +125,7 @@ def main():
         audit = {'d_normalised_pct': pct, 'pattern_diff': res['diff'], 'pattern_unexplained': res['unexplained'],
                  'reordered_instructions': res['moved'], 'reordered_examples': res['moved_examples']}
         manual = MANUAL.get(name)
-        if manual and res['unexplained'] and not flags and (name == 'f6e1a' or all(
+        if manual and res['unexplained'] and not flags and (name in ('f6e1a', 'getw_buf', 'scan_field') or all(
                 (x.split('\t')[0] in ('ld', 'ldb') and '@rr' in x) or x.split('\t')[0] == 'sra' for x in res['examples'])):
             audit['difference_class'] = 'D only (manual reading)'
             audit['d_classes'] = [manual[0]]

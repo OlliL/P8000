@@ -826,7 +826,7 @@ int bE418;
 int bE41E;
 char *bE41A;
 char bE414[];
-int f30a4();
+int getw_buf();
 
 f2e76(p, n)
 register char *p;
@@ -853,7 +853,7 @@ int n;
 	}
 	bE418 += k;
 	do {
-		*(int *)p = f30a4(bE414);
+		*(int *)p = getw_buf(bE414);
 		p += 2;
 	} while (--k);
 }
@@ -1322,4 +1322,166 @@ int n;
 		}
 		p += 12;
 	}
+}
+
+/* getw_buf..3144: findings:D2 */
+int bE410;
+int f2f3a();
+int f3408();
+
+getw_buf(p)
+char *p;
+{
+	register char *q;
+	long v;
+	int w;
+
+	q = p;
+	*(int *)(q + 4) -= 1;
+	if (*(int *)(q + 4) < 0) {
+		v = (long)(*(int *)(q + 2) + 1) << 8;
+		f2f3a(q, v, -1);
+		*(int *)(q + 4) -= 1;
+	}
+	*(int *)(q + 10) -= 1;
+	if (*(int *)(q + 10) <= 0) {
+		if (*(int *)(q + 10) < 0)
+			f3408(2, "x");
+		bE410++;
+		*(int *)(q + 12) -= 1;
+		*(char **)(q + 12) = (char *)&bE410;
+	}
+	w = *(int *)(*(char **)(q + 6));
+	*(int *)(q + 8) += 2;
+	return w;
+}
+
+/* scan_field..7956: findings:D2 */
+int f2f3a();
+int f8688();
+int f86fa();
+
+scan_field(dest, wc, stream, nret)
+char *dest;
+long wc;
+char *stream;
+int *nret;
+{
+	int width;
+	int mode;
+	int c;
+	int conv;
+	char *save;
+
+	width = (int)(wc >> 16);
+	conv = (int)wc;
+	*nret = 0;
+	save = dest;
+	if (conv == 0x63 && width == 0x7530)
+		width = 1;
+	mode = 0;
+	if (conv == 0x73)
+		mode = 1;
+	do {
+		*(int *)(stream + 4) -= 1;
+		if (*(int *)(stream + 4) >= 0) {
+			c = *(unsigned char *)(*(char **)stream);
+			*(char **)stream += 1;
+		} else
+			c = f86fa(stream);
+		if (c == -1)
+			break;
+	} while (bE17BA[c] & mode);
+	if (conv == 0x63)
+		mode = 0;
+	else if (conv == 0x5b)
+		mode = 2;
+	else
+		mode = 1;
+	while (c != -1) {
+		if (bE17BA[c] & mode)
+			break;
+		if (dest != 0)
+			*dest++ = c;
+		width -= 1;
+		if (width <= 0)
+			break;
+		*(int *)(stream + 4) -= 1;
+		if (*(int *)(stream + 4) >= 0) {
+			c = *(unsigned char *)(*(char **)stream);
+			*(char **)stream += 1;
+		} else
+			c = f86fa(stream);
+	}
+	if (c == -1)
+		*nret = 1;
+	else {
+		if (width > 0)
+			f8688(c, stream);
+		*nret = 0;
+	}
+	if (dest == 0 || dest == save)
+		return 0;
+	if (conv != 0x63)
+		*dest++ = 0;
+	return 1;
+}
+
+/* read_entry_hdr..6800: findings:D2 */
+char bE47A[];
+char bE15CC[];
+int bE15D4;
+int bE15D6;
+int bE4B0;
+int bE4B2;
+int f2e76();
+int f6800();
+int f65ec();
+int f65c6();
+
+read_entry_hdr()
+{
+	char buf[14];
+	char cnt;
+	char *cur;
+	char *end;
+	int total;
+	int result;
+	int i;
+
+	result = 0;
+	if (bE4B2) {
+		f2e76(buf, 14);
+		bE46A = *(long *)buf;
+		bE46E = buf[4];
+		bE470 = buf[5];
+		for (i = 0; i < 8; i++)
+			bE472[i] = buf[6 + i];
+		if (bE4B6)
+			f65ec(&bE46A);
+		if (bE472[0] & 0x80) {
+			cnt = bE472[0] & 0x7f;
+			end = buf + 6 + cnt;
+			cur = buf;
+			total = 0;
+			while (cur < end) {
+				f2e76(bE47A, 14);
+				total += 14;
+				cur += 14;
+			}
+			result = total / 16;
+			if (total % 16 != 0)
+				result += 1;
+		}
+	} else {
+		f2e76(bE15CC, 12);
+		if (bE4B6) {
+			bE15D4 = f65c6(bE15D4);
+			bE15D6 = f65c6(bE15D6);
+		}
+		f6800(bE15CC, &bE46A, bE4B0);
+	}
+	bE46A &= 0xff00ffffL;
+	bE46E &= ~0x40;
+	return result;
 }

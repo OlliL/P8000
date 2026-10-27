@@ -41,7 +41,7 @@
 2f04 f2f04 2f3a 54 6 227e 2294 6378 63ea P ret findings:D2
 2f3a f2f3a 3090 342 17 14b8 1720 2448 24f2 P ret open
 3090 f3090 30a4 20 4 271c 276a 27b2 3060 P ret done
-30a4 f30a4 3144 160 4 2820 287c 2ef0 3384 P ret open
+30a4 getw_buf 3144 160 4 2820 287c 2ef0 3384 P ret findings:D2
 3144 f3144 3408 708 2 1374 240e P ret open
 3408 f3408 34b8 176 103 1b6 6e4 72c 782 P ret open
 34b8 table_lookup 3516 94 1 2b08 P ret findings:D2
@@ -70,7 +70,7 @@
 65c6 swap_bytes 65ec 38 17 28aa 28b4 2982 298c P ret findings:D4
 65ec swap_pair 6620 52 3 1622 66f4 6e7c c ret findings:D3
 6620 swap_quad 6684 100 3 222c 26c6 363a c ret findings:D3
-6684 f6684 6800 380 2 1756 24fc c ret open
+6684 read_entry_hdr 6800 380 2 1756 24fc c ret findings:D2
 6800 f6800 6866 102 1 67d8 P ret findings:D2
 6866 pack_entry 68a2 60 0 - x ret findings:D4
 68a2 f68a2 6a08 358 4 46ba 46ca 46da 46f2 c ret open
@@ -98,7 +98,7 @@
 7286 f7286 7300 122 5 c00 daa e1c 11ac c ret open
 7300 f7300 7526 550 3 7242 727a 72ec c ret open
 7526 f7526 7808 738 1 7436 P ret open
-7808 f7808 7956 334 1 7578 P ret open
+7808 scan_field 7956 334 1 7578 P ret findings:D2
 7956 make_ccl 79ca 116 1 73e6 P ret findings:D2
 79ca f79ca 7bbc 498 52 1e2 250 266 2ee c ret open
 7bbc f7bbc 7c26 106 2 7f0a 81c0 P ret findings:D4

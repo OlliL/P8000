@@ -147,10 +147,13 @@ produce the same bytes with the shipped cc.
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
   2026-10-27: 22 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
-  35 with findings (see the audit in findings.json),
-  43 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
+  38 with findings (see the audit in findings.json),
+  40 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
   Dead code (no caller, no address reference): 0x724e and 0x7212 still open; rebuilt: 0x6866 pack_entry, 0x01d2 walk_entries,
   0x3b1e swab12, 0x7186 report_limit. 0x0018 is the start code (asm with sc, to be kept as assembler, not C).
+  0x7808 (334 bytes, open): a scanf-like reader: stream at rr10 (count at +4, pointer at +0), conversion characters c, s, [ (character
+  class table 0x17BA, filled by make_ccl 0x7956), calls ungetc 0x86fa and store 0x8688. Not started; needs the stream layout first.
+  0x6684 done as read_entry_hdr (D2).
   Large open functions: 0x79ca (498 bytes, EPU float formatting, calls 0x7c26) and 0x7c26 (2514 bytes). The first 12
   bytes of 0x7c26 occur in no file of the WEGA 3.1 root except sld itself, so there is no library member to take (sdoprnt.o
   starts differently). Both need the EPU instructions (see host/z8k-emu/README.md) in the drafts.

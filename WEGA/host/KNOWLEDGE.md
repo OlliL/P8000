@@ -438,6 +438,20 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   reach, `call` for an undefined callee or one out of reach (the original calls 0x3408 from 0x71c0 with `call`, the distance
   is above the calr range). The form of the final sld is therefore decided by the whole-file compile (D17).
 - Segment operands in the object are `<<0>>` (not linked); the stack is `<<127>>` after the link. Compare without segments.
+- Stream layout of the input side (read from 0x7808 and 0x30a4, not yet confirmed by a draft): a long pointer to the next
+  character at offset 0 (advanced by its low word at offset 2), a word count of the characters left at offset 4; count
+  below zero refills through 0x86fa (filbuf-like, the stream as argument), a character pushed back goes through 0x8688
+  (ungetc-like). The output side of 0x30a4 uses the same count at offset 4 and refills through 0x2f3a (flush-like).
+  The write buffer of 0x3ac6 (flush_buffer) has another layout (word at offset 2, pointer at offset 4, end at offset 6).
+- Word buffer object used by 0x30a4 (callers 0x2820, 0x287c, 0x2ef0, 0x3384 pass the address: base 0x0414, and 0x0424 at
+  the second use): word count at +4 (0x0418, decremented by 0x30a4 and by 0x2e76), long pointer at +6 (0x041a, copied from by
+  0x2e76), second word count at +10 (0x041e), and the counter at base-4 (0x0410) incremented on the refill path. The value
+  returned by 0x30a4 is stored as a word by the caller (0x2e76). Layout from the callers; confirmed by the draft of 0x30a4 (getw_buf in sld.c, D2): the refill call f2f3a(object, (word at +2 + 1) << 8, -1) is equal.
+- Field scanner 0x7808 (`scan_field` in sld.c, D2/D5): called only from 0x7578 in the deferred scanf front end 0x7526. Arguments:
+  `rr6` = destination (may be 0), `rr4` = conversion word in the low half (`c`, `s`, `[` as 0x63, 0x73, 0x5b) and the field
+  width in the high half (0x7530 with `%c` means width 1), `rr2` = input stream (layout above), and a pointer to the
+  result count as fourth argument (on the stack). Returns 1 when a field was stored, else 0. The character class table
+  0x17ba (filled by make_ccl 0x7956) decides the skipped and the stopping characters.
 - Message function 0x79ca (own code, deferred): every call (about 90 sites) passes the format in `rr6` and up to four
   argument words in `r5`, `r4`, `r3`, `r2` (in that order; a long argument is the pair `r4:r5` or `r2:r3`), e.g. `ld r5,..`
   `ld r4,..` `ld r3,..` `ld r2,..` then `ldl rr6,#fmt` and `call 79CA`. It saves the argument registers into its frame and

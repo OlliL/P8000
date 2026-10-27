@@ -2740,7 +2740,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x1f96",
-   "ours": "0x1496-0x1566",
+   "ours": "0x1492-0x1562",
    "level": "differs",
    "pairing_evidence": "the argument p is kept in the frame in the original (D4), the pointer e in rr2 there and rr12 here (D2); the table index, the field moves and the bit operations are equal",
    "audit": {
@@ -2770,7 +2770,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x23fe",
-   "ours": "0x13f4-0x1496",
+   "ours": "0x13f0-0x1492",
    "level": "differs",
    "pairing_evidence": "frame 16 bytes in the original against 12 here (D1 share); the byte compare of the name goes through a copy register (rl2) in the original (D2); instructions otherwise equal",
    "audit": {
@@ -2881,12 +2881,12 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2e76",
-   "ours": "0x0e02-0x0e96",
+   "ours": "0x0e02-0x0e92",
    "level": "differs",
    "pairing_evidence": "register choice differs (output pointer in rr10 and the count in r9 in the original, rr12 and r11 here); frame 16 bytes against 14 (D1 share); the two counters and the copy paths are equal",
    "audit": {
-    "d_normalised_pct": 79,
-    "pattern_diff": 16,
+    "d_normalised_pct": 82,
+    "pattern_diff": 14,
     "pattern_unexplained": 2,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2947,13 +2947,6 @@
     "len_ours": 7,
     "len_orig": 7
    }
-  },
-  "f30a4": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x30a4",
-   "ours": "f30a4..3144",
-   "level": "open"
   },
   "f3144": {
    "file": null,
@@ -3201,13 +3194,6 @@
    "ours": "f64d0..6522",
    "level": "open"
   },
-  "f6684": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x6684",
-   "ours": "f6684..6800",
-   "level": "open"
-  },
   "f6800": {
    "file": "sld.c",
    "pairing": "confirmed",
@@ -3366,7 +3352,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6e1a",
-   "ours": "0x1200-0x12e0",
+   "ours": "0x11fc-0x12dc",
    "level": "differs",
    "pairing_evidence": "argument and loop pointer are reloaded from the frame in the original (D4) and the byte copy is addressed through a saved pointer; the calls, the flag test and the count are equal",
    "audit": {
@@ -3410,7 +3396,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6f46",
-   "ours": "0x16d2-0x1750",
+   "ours": "0x16ce-0x174c",
    "level": "differs",
    "pairing_evidence": "loop shape (test at the bottom in the original) and register numbers differ (D7, D2 share); the entry walk with 12-byte steps, the call of 0x6b84 and the blank test are equal",
    "audit": {
@@ -3531,13 +3517,6 @@
    "pairing": "open",
    "orig": "0x7526",
    "ours": "f7526..7808",
-   "level": "open"
-  },
-  "f7808": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x7808",
-   "ours": "f7808..7956",
    "level": "open"
   },
   "f79ca": {
@@ -3854,7 +3833,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2346",
-   "ours": "0x0e96-0x0f4e",
+   "ours": "0x0e92-0x0f4a",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3873,7 +3852,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x14a4",
-   "ours": "0x0f4e-0x1006",
+   "ours": "0x0f4a-0x1002",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 94,
@@ -3908,7 +3887,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x71ca",
-   "ours": "0x1006-0x104e",
+   "ours": "0x1002-0x104a",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
@@ -3931,7 +3910,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x06c6",
-   "ours": "0x104e-0x10c8",
+   "ours": "0x104a-0x10c4",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 58,
@@ -3956,7 +3935,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x22a4",
-   "ours": "0x10c8-0x116c",
+   "ours": "0x10c4-0x1168",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 96,
@@ -3977,7 +3956,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x00ee",
-   "ours": "0x116c-0x1200",
+   "ours": "0x1168-0x11fc",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 71,
@@ -4003,7 +3982,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6522",
-   "ours": "0x12e0-0x1380",
+   "ours": "0x12dc-0x137c",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 98,
@@ -4024,7 +4003,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x7112",
-   "ours": "0x1380-0x13f4",
+   "ours": "0x137c-0x13f0",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -4043,7 +4022,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3b1e",
-   "ours": "0x1566-0x1598",
+   "ours": "0x1562-0x1594",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 74,
@@ -4065,7 +4044,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6866",
-   "ours": "0x1598-0x15d2",
+   "ours": "0x1594-0x15ce",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 95,
@@ -4087,7 +4066,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x01d2",
-   "ours": "0x15d2-0x1624",
+   "ours": "0x15ce-0x1620",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 95,
@@ -4108,7 +4087,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x7186",
-   "ours": "0x1624-0x163c",
+   "ours": "0x1620-0x1638",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -4127,7 +4106,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x705e",
-   "ours": "0x163c-0x16d2",
+   "ours": "0x1638-0x16ce",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 48,
@@ -4148,6 +4127,80 @@
     "structure_flags": [],
     "len_ours": 46,
     "len_orig": 35
+   }
+  },
+  "getw_buf": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x30a4",
+   "ours": "0x174c-0x17ec",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 76,
+    "pattern_diff": 23,
+    "pattern_unexplained": 5,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (manual reading)",
+    "d_classes": [
+     "D5"
+    ],
+    "difference_note": "counter fields addressed through a copy of the pointer in the original (constant index form, D5); by reading, no popt pattern",
+    "structure_flags": [],
+    "len_ours": 51,
+    "len_orig": 54
+   }
+  },
+  "scan_field": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7808",
+   "ours": "0x17ec-0x198a",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 52,
+    "pattern_diff": 103,
+    "pattern_unexplained": 8,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (manual reading)",
+    "d_classes": [
+     "D5"
+    ],
+    "difference_note": "addressing of the count and pointer fields through register pairs and constant index (indirect and indexed forms, D5); by reading, no popt pattern",
+    "structure_flags": [],
+    "len_ours": 118,
+    "len_orig": 107
+   }
+  },
+  "read_entry_hdr": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x6684",
+   "ours": "0x198a-0x1b0a",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 69,
+    "pattern_diff": 58,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D16",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 97,
+    "len_orig": 95
    }
   }
  },
