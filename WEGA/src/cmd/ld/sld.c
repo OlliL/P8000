@@ -47,7 +47,7 @@ int a;
 {
 	g03ba = f9184(a, 4);
 	if (!g03ba)
-		f3408(2, "x");
+		report_error(2, "x");
 }
 
 /* sig_handler 0x0a5c..0x0aba: done */
@@ -83,7 +83,7 @@ high_byte(x)
 int x;
 {
 	if ((x & 0xff00) != x)
-		f3408(2, "x");
+		report_error(2, "x");
 	return ((unsigned)x >> 8) & 0xff;
 }
 
@@ -112,7 +112,7 @@ char *end;
 		p += 6;
 	}
 	f79ca("x", (int)a);
-	f3408(2, "x");
+	report_error(2, "x");
 }
 
 /* str_compare 0x3a30..0x3a88: findings:D2 */
@@ -284,7 +284,7 @@ unsigned x;
 {
 	if (x < g04ee)
 		return gE47E + (x << 4);
-	f3408(2, "x");
+	report_error(2, "x");
 }
 
 /* f6ffe 0x6ffe..0x702a: done */
@@ -296,7 +296,7 @@ int a;
 {
 	g1688 = f9184(a, 16);
 	if (!g1688)
-		f3408(2, "x");
+		report_error(2, "x");
 }
 
 /* f702a 0x702a..0x705e: done */
@@ -308,7 +308,7 @@ int a;
 {
 	gE47E = f9072(gE47E, a << 4);
 	if (!gE47E)
-		f3408(2, "x");
+		report_error(2, "x");
 }
 
 /* table32_entry 0x719e..0x71ca: done */
@@ -319,7 +319,7 @@ unsigned x;
 {
 	if (x < 0x0100)
 		return tab1c02 + (x << 5);
-	f3408(2, "x");
+	report_error(2, "x");
 }
 
 /* swap_quad..6684: findings:D3 */
@@ -403,7 +403,7 @@ char *dst;
 		if ((*src & 0x7f) > 8) {
 			k--;
 			put_name(s);
-			f3408(1, "x");
+			report_error(1, "x");
 			k++;
 		}
 	}
@@ -452,7 +452,7 @@ char *a;
 	n = *(char **)(p + 4) - (p + 8);
 	if (n > 0) {
 		if (f970a(*(int *)p, p + 8, n) != n)
-			f3408(2, "x");
+			report_error(2, "x");
 	}
 	*(char **)(p + 4) = p + 8;
 	*(int *)(p + 2) = 0x100;
@@ -466,12 +466,12 @@ char *a;
 	char *p;
 
 	if (gE47E > x)
-		f3408(2, "x");
+		report_error(2, "x");
 	else {
 		p = gE47E + (g04ee << 4);
 		if (p > x)
 			return ((int)x - (int)a) >> 4;
-		f3408(2, "x");
+		report_error(2, "x");
 	}
 }
 
@@ -485,7 +485,7 @@ unsigned y;
 
 	s = (long)x + y;
 	if (s >= 0x10000)
-		f3408(1);
+		report_error(1);
 	return s;
 }
 
@@ -583,7 +583,7 @@ char **a;
 
 	if (*a == 0) {
 		if (bE4FA >= 0x0ffa)
-			f3408(2, "x");
+			report_error(2, "x");
 		tblE500[bE4FA] = a;
 		r = table16_entry(bE4FA++);
 		bE4FC = r;
@@ -756,7 +756,7 @@ char *a;
 	if (n < 8)
 		put_char(9);
 	put_char(0x20);
-	f3408(0, "x");
+	report_error(0, "x");
 }
 
 /* finish_output 0x2cbc..0x2d4c: done */
@@ -803,7 +803,7 @@ int bE4F0;
 int f95fe();
 int f95da();
 int f970a();
-int f3408();
+int report_error();
 
 f2d4c()
 {
@@ -813,12 +813,12 @@ f2d4c()
 
 	n = f95fe(bE0494, 1);
 	if (n == -1)
-		f3408(2, "x");
+		report_error(2, "x");
 	if (f95da(n, buf, 0) == -1)
-		f3408(2, "y");
+		report_error(2, "y");
 	bE4F0 = bE4F0 * 14;
 	if (f970a(n, &bE4F0, 2) != 2)
-		f3408(2, "z");
+		report_error(2, "z");
 }
 
 /* f2e76..2f3a: findings:D2 */
@@ -875,7 +875,7 @@ int a;
 	*(int *)p = bE452;
 	*(long *)(p + 2) = bE3C16 + bE3C1A;
 	if (*(long *)(p + 2) > 0x10000 && bE4A8)
-		f3408(2, "x");
+		report_error(2, "x");
 	*(long *)(p + 6) = b3C1E;
 	*(int *)(p + 10) = a << 4;
 	*(int *)(p + 18) = bE468;
@@ -951,13 +951,13 @@ int n;
 	long p;
 
 	if (n > bE4EC)
-		f3408(2, "x");
+		report_error(2, "x");
 	while (n > bE3B8) {
 		p = f9184(1, 0x36);
 		bE3B8++;
 		bE3BA[bE3B8] = p;
 		if (p == 0)
-			f3408(2, "y");
+			report_error(2, "y");
 	}
 	return bE3BA[n];
 }
@@ -984,9 +984,9 @@ int flag;
 	fd = f9586(name, 0x1b6);
 	if (fd < 0) {
 		if (flag)
-			f3408(2, "x");
+			report_error(2, "x");
 		else
-			f3408(2, "y");
+			report_error(2, "y");
 	}
 	f9576(fd);
 	*(int *)out = f95fe(name, 2);
@@ -1073,7 +1073,7 @@ char *b;
 int bE4EA;
 int bE1532;
 int put_char();
-int f3408();
+int report_error();
 int f79ca();
 
 int put_name(p)
@@ -1094,7 +1094,7 @@ char *p;
 			n = 8;
 			if (bE1532 == 0) {
 				bE1532++;
-				f3408(0, "x");
+				report_error(0, "x");
 			}
 		} else if (n > 0x2c) {
 			flag++;
@@ -1122,19 +1122,19 @@ unsigned bE15DA;
 long bE190DE;
 long f9184();
 int f903a();
-int f3408();
+int report_error();
 
 long ensure_buf(n)
 unsigned long n;
 {
 	if (bE15DA < n) {
 		if (n > 0xffff)
-			f3408(2, "x");
+			report_error(2, "x");
 		if (bE15DA != 0)
 			f903a(bE190DE);
 		bE190DE = f9184(1, (int)n);
 		if (bE190DE == 0)
-			f3408(2, "y");
+			report_error(2, "y");
 		bE15DA = (unsigned)n;
 	}
 	return bE190DE;
@@ -1186,7 +1186,7 @@ int bE3C04;
 char *bF324;
 char *bF328;
 char *table32_entry();
-int f3408();
+int report_error();
 
 f1f96(p, kind)
 char *p;
@@ -1195,7 +1195,7 @@ long kind;
 	register char *e;
 
 	if (bE3C04 > 0x100)
-		f3408(2, "x");
+		report_error(2, "x");
 	if ((int)kind == 2) {
 		e = table32_entry(bE3C04++);
 		bF324 = e;
@@ -1293,15 +1293,15 @@ char *p;
 	} else
 		q = p + 16;
 	if (q < bE47E)
-		f3408(2, "x");
+		report_error(2, "x");
 	if (q >= bE47E + (g04ee << 4))
-		f3408(2, "y");
+		report_error(2, "y");
 	return q;
 }
 
 /* f6f46..6fce: findings:D7 */
 int f3b58();
-int f3408();
+int report_error();
 
 f6f46(p, n)
 char *p;
@@ -1327,7 +1327,7 @@ int n;
 /* getw_buf..3144: findings:D2 */
 int bE410;
 int f2f3a();
-int f3408();
+int report_error();
 
 getw_buf(p)
 char *p;
@@ -1346,7 +1346,7 @@ char *p;
 	*(int *)(q + 10) -= 1;
 	if (*(int *)(q + 10) <= 0) {
 		if (*(int *)(q + 10) < 0)
-			f3408(2, "x");
+			report_error(2, "x");
 		bE410++;
 		*(int *)(q + 12) -= 1;
 		*(char **)(q + 12) = (char *)&bE410;
@@ -1484,4 +1484,135 @@ read_entry_hdr()
 	bE46A &= 0xff00ffffL;
 	bE46E &= ~0x40;
 	return result;
+}
+
+/* f64d0..6522: findings:D2 */
+int f3a88();
+
+int f64d0(n)
+register int n;
+{
+	if (bE4A2)
+		return 0;
+	while (n > 0) {
+		f3a88(0, bE4DA);
+		if (bE4A2)
+			f3a88(0, bECFA);
+		n = n - 2;
+	}
+	return n;
+}
+
+/* f0f26..1070: findings:D15 */
+char buf6988[];
+char buf9098[];
+char tab1aad[];
+char *tab4a48[];
+char **g4a40;
+int g4a44;
+
+int read_words(name)
+char *name;
+{
+	int fd;
+	int n;
+	int idx;
+	char c;
+	int inword;
+	char *p;
+
+	fd = f95fe(name, 0);
+	if (fd < 0)
+		report_error(2, "x");
+	p = buf6988;
+	tab4a48[0] = buf6988;
+	inword = 0;
+	idx = 0;
+	goto rd;
+body:
+	if (n == -1)
+		report_error(2, "x");
+	if (!(tab1aad[c] & 8)) {
+		inword = 0;
+		*p = c;
+		p++;
+		if (p > buf9098)
+			report_error(2, "x");
+	} else if (!inword) {
+		inword++;
+		*p = 0;
+		p++;
+		if (p > buf9098)
+			report_error(2, "x");
+		idx++;
+		if (idx > 2000)
+			report_error(2, "x");
+		tab4a48[idx] = p;
+	}
+rd:
+	n = f9610(fd, &c, 1) != 0;
+	if (n)
+		goto body;
+	g4a40 = tab4a48;
+	g4a44 = idx;
+	f9576(fd);
+	return 0;
+}
+
+/* f3408..34b8: done */
+char *pE4D6;
+char *pE4C0;
+int f79ca();
+int sig_handler();
+
+int report_error(level, msg, a, b, c, d, e)
+int level;
+char *msg;
+int a;
+int b;
+int c;
+int d;
+int e;
+{
+	if (!bE4A3A)
+		f79ca("x", pE4D6);
+	if (pE4C0)
+		f79ca("x", pE4C0);
+	if (bE438[0])
+		f79ca("x", bE438);
+	f79ca("x");
+	f79ca(msg, b, a, c, d, e);
+	f79ca("x");
+	if (level > 1)
+		sig_handler();
+	bE4A3A = level;
+}
+
+/* f4968..4a16: findings:D5 */
+int tabF338[];
+char *table32_entry();
+int f5eec();
+int report_error();
+
+int f4968(q, p, x, res)
+char *q;
+int *p;
+int x;
+int *res;
+{
+	int lcl;
+
+	if (bE4AE && x == 0x7f) {
+		(*p)++;
+		return 0;
+	}
+	q = table32_entry(bE3C04);
+	if (bE3C04++ > 0x100)
+		report_error(2, "x");
+	if (*(int *)(tabF338 + x * 8) == 0x0bb8)
+		*(int *)(q + 10) |= 8;
+	else
+		*(int *)q = 4;
+	lcl = 1;
+	*res = f5eec(q, p, 0, 0x72, &lcl);
 }

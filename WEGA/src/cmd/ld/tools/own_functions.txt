@@ -16,7 +16,7 @@
 0a5c sig_handler 0aba 94 2 2d44 34a4 c ret done
 0aba init_signals 0b04 74 1 79e P ret done
 0b04 f0b04 0f26 1058 1 854 P ret open
-0f26 f0f26 1070 330 1 ba8 c ret open
+0f26 read_words 1070 330 1 ba8 c ret findings:D15
 1070 f1070 11ea 378 1 980 P ret open
 11ea f11ea 1364 378 1 a4c P ret open
 1364 f1364 14a4 320 1 9d6 P ret open
@@ -43,7 +43,7 @@
 3090 f3090 30a4 20 4 271c 276a 27b2 3060 P ret done
 30a4 getw_buf 3144 160 4 2820 287c 2ef0 3384 P ret findings:D2
 3144 f3144 3408 708 2 1374 240e P ret open
-3408 f3408 34b8 176 103 1b6 6e4 72c 782 P ret open
+3408 report_error 34b8 176 103 1b6 6e4 72c 782 P ret done
 34b8 table_lookup 3516 94 1 2b08 P ret findings:D2
 3516 f3516 3760 586 2 16ae 24a8 c ret open
 3760 f3760 3a30 720 1 374e P ret open
@@ -57,7 +57,7 @@
 42f8 f42f8 4444 332 3 c28 e90 40ee P ret open
 4444 copy_leafname 44e6 162 1 37a6 c ret done
 44e6 f44e6 4968 1154 1 1208 c ret open
-4968 f4968 4a16 174 1 4d68 P ret open
+4968 f4968 4a16 174 1 4d68 P ret findings:D5
 4a16 f4a16 5a2c 4118 1 469e P ret open
 5a2c f5a2c 5eec 1216 3 4a96 4b32 4bce P ret open
 5eec f5eec 60f0 516 8 4a02 506e 5252 5406 P ret open
@@ -65,7 +65,7 @@
 6134 f6134 620e 218 1 2cbc c ret done
 620e f620e 642e 544 2 61ba 61f8 P ret open
 642e list_move_after 64d0 162 1 5a00 P ret findings:D4
-64d0 f64d0 6522 82 1 612e P ret open
+64d0 f64d0 6522 82 1 612e P ret findings:D2
 6522 put_name 65c6 164 6 1a8 23a 25d6 3be0 c ret done
 65c6 swap_bytes 65ec 38 17 28aa 28b4 2982 298c P ret findings:D4
 65ec swap_pair 6620 52 3 1622 66f4 6e7c c ret findings:D3

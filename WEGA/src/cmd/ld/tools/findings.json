@@ -2687,13 +2687,6 @@
    "ours": "f0b04..0f26",
    "level": "open"
   },
-  "f0f26": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x0f26",
-   "ours": "f0f26..1070",
-   "level": "open"
-  },
   "f1070": {
    "file": null,
    "pairing": "open",
@@ -2740,19 +2733,20 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x1f96",
-   "ours": "0x1492-0x1562",
+   "ours": "0x146a-0x1536",
    "level": "differs",
    "pairing_evidence": "the argument p is kept in the frame in the original (D4), the pointer e in rr2 there and rr12 here (D2); the table index, the field moves and the bit operations are equal",
    "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 12,
+    "d_normalised_pct": 86,
+    "pattern_diff": 14,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D10"
+     "D10",
+     "D7"
     ],
     "structure_flags": [],
     "len_ours": 59,
@@ -2770,7 +2764,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x23fe",
-   "ours": "0x13f0-0x1492",
+   "ours": "0x13c8-0x146a",
    "level": "differs",
    "pairing_evidence": "frame 16 bytes in the original against 12 here (D1 share); the byte compare of the name goes through a copy register (rl2) in the original (D2); instructions otherwise equal",
    "audit": {
@@ -2816,12 +2810,12 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2d4c",
-   "ours": "0x0d74-0x0e02",
+   "ours": "0x0d70-0x0df2",
    "level": "differs",
    "pairing_evidence": "the original computes the distance of two frame arrays (rest - buf) into a register that is overwritten by the constant 0 of the call (a register leftover of the old compiler, D2); the rest is equal",
    "audit": {
-    "d_normalised_pct": 78,
-    "pattern_diff": 12,
+    "d_normalised_pct": 85,
+    "pattern_diff": 6,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2829,8 +2823,7 @@
     "d_classes": [
      "D10",
      "D2",
-     "D6",
-     "D7"
+     "D6"
     ],
     "structure_flags": [],
     "len_ours": 34,
@@ -2881,7 +2874,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2e76",
-   "ours": "0x0e02-0x0e92",
+   "ours": "0x0df2-0x0e82",
    "level": "differs",
    "pairing_evidence": "register choice differs (output pointer in rr10 and the count in r9 in the original, rr12 and r11 here); frame 16 bytes against 14 (D1 share); the two counters and the copy paths are equal",
    "audit": {
@@ -2953,13 +2946,6 @@
    "pairing": "open",
    "orig": "0x3144",
    "ours": "f3144..3408",
-   "level": "open"
-  },
-  "f3408": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x3408",
-   "ours": "f3408..34b8",
    "level": "open"
   },
   "table_lookup": {
@@ -3051,12 +3037,12 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3b58",
-   "ours": "0x0c58-0x0cec",
+   "ours": "0x0c58-0x0ce8",
    "level": "differs",
    "pairing_evidence": "the logical test of the blank checks is compiled with a zero-flag and a bit test in the original (r4 = 0/1, bit 5); the branch layout differs (D7); the conditions and the calls are equal",
    "audit": {
-    "d_normalised_pct": 36,
-    "pattern_diff": 61,
+    "d_normalised_pct": 37,
+    "pattern_diff": 59,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3103,11 +3089,29 @@
    "level": "open"
   },
   "f4968": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x4968",
-   "ours": "f4968..4a16",
-   "level": "open"
+   "ours": "0x1d08-0x1db2",
+   "level": "differs",
+   "pairing_evidence": "table index scaled to 8 bytes: the old cc emits sla 2 plus add r2,r2 (D5); the original has sla 3 only. In the second branch the original increments r3 (inc r3,#10) and the value is overwritten before use: dead code of the original, not a source form found (open, read by hand)",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D3",
+     "D6",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 45,
+    "len_orig": 45
+   }
   },
   "f4a16": {
    "file": null,
@@ -3188,11 +3192,26 @@
    "level": "open"
   },
   "f64d0": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x64d0",
-   "ours": "f64d0..6522",
-   "level": "open"
+   "ours": "0x1ace-0x1b22",
+   "level": "differs",
+   "pairing_evidence": "return value: the old cc computes the result in r2 again (r2 = n - 2 as a scratch value) where the original keeps the loop value in r2; register choice, D2",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 1,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 25,
+    "len_orig": 24
+   }
   },
   "f6800": {
    "file": "sld.c",
@@ -3352,7 +3371,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6e1a",
-   "ours": "0x11fc-0x12dc",
+   "ours": "0x11e0-0x12c0",
    "level": "differs",
    "pairing_evidence": "argument and loop pointer are reloaded from the frame in the original (D4) and the byte copy is addressed through a saved pointer; the calls, the flag test and the count are equal",
    "audit": {
@@ -3396,7 +3415,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6f46",
-   "ours": "0x16ce-0x174c",
+   "ours": "0x1696-0x1714",
    "level": "differs",
    "pairing_evidence": "loop shape (test at the bottom in the original) and register numbers differ (D7, D2 share); the entry walk with 12-byte steps, the call of 0x6b84 and the blank test are equal",
    "audit": {
@@ -3811,7 +3830,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2cbc",
-   "ours": "0x0cec-0x0d74",
+   "ours": "0x0ce8-0x0d70",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 87,
@@ -3833,16 +3852,18 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2346",
-   "ours": "0x0e92-0x0f4a",
+   "ours": "0x0e82-0x0f36",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 98,
+    "pattern_diff": 2,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D7"
+    ],
     "structure_flags": [],
     "len_ours": 52,
     "len_orig": 52
@@ -3852,7 +3873,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x14a4",
-   "ours": "0x0f4a-0x1002",
+   "ours": "0x0f36-0x0fee",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 94,
@@ -3887,7 +3908,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x71ca",
-   "ours": "0x1002-0x104a",
+   "ours": "0x0fee-0x1036",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 79,
@@ -3910,11 +3931,11 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x06c6",
-   "ours": "0x104a-0x10c4",
+   "ours": "0x1036-0x10ac",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 58,
-    "pattern_diff": 27,
+    "d_normalised_pct": 55,
+    "pattern_diff": 29,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3935,17 +3956,18 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x22a4",
-   "ours": "0x10c4-0x1168",
+   "ours": "0x10ac-0x114c",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 3,
+    "d_normalised_pct": 93,
+    "pattern_diff": 5,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D10"
+     "D10",
+     "D7"
     ],
     "structure_flags": [],
     "len_ours": 45,
@@ -3956,7 +3978,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x00ee",
-   "ours": "0x1168-0x11fc",
+   "ours": "0x114c-0x11e0",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 71,
@@ -3982,11 +4004,11 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6522",
-   "ours": "0x12dc-0x137c",
+   "ours": "0x12c0-0x135c",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 2,
+    "d_normalised_pct": 96,
+    "pattern_diff": 4,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -4003,16 +4025,18 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x7112",
-   "ours": "0x137c-0x13f0",
+   "ours": "0x135c-0x13c8",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 93,
+    "pattern_diff": 4,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D7"
+    ],
     "structure_flags": [],
     "len_ours": 29,
     "len_orig": 29
@@ -4022,7 +4046,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3b1e",
-   "ours": "0x1562-0x1594",
+   "ours": "0x1536-0x1568",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 74,
@@ -4044,18 +4068,19 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6866",
-   "ours": "0x1594-0x15ce",
+   "ours": "0x1568-0x159e",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 2,
+    "d_normalised_pct": 90,
+    "pattern_diff": 4,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
-     "D3"
+     "D3",
+     "D7"
     ],
     "structure_flags": [],
     "len_ours": 21,
@@ -4066,7 +4091,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x01d2",
-   "ours": "0x15ce-0x1620",
+   "ours": "0x159e-0x15f0",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 95,
@@ -4087,7 +4112,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x7186",
-   "ours": "0x1620-0x1638",
+   "ours": "0x15f0-0x1608",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -4106,11 +4131,11 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x705e",
-   "ours": "0x1638-0x16ce",
+   "ours": "0x1608-0x1696",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 48,
-    "pattern_diff": 37,
+    "d_normalised_pct": 46,
+    "pattern_diff": 39,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -4133,11 +4158,11 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x30a4",
-   "ours": "0x174c-0x17ec",
+   "ours": "0x1714-0x17b0",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 76,
-    "pattern_diff": 23,
+    "d_normalised_pct": 78,
+    "pattern_diff": 21,
     "pattern_unexplained": 5,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -4155,7 +4180,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x7808",
-   "ours": "0x17ec-0x198a",
+   "ours": "0x17b0-0x194e",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 52,
@@ -4177,7 +4202,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6684",
-   "ours": "0x198a-0x1b0a",
+   "ours": "0x194e-0x1ace",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 69,
@@ -4201,6 +4226,55 @@
     "structure_flags": [],
     "len_ours": 97,
     "len_orig": 95
+   }
+  },
+  "read_words": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x0f26",
+   "ours": "0x1b22-0x1c58",
+   "level": "differs",
+   "pairing_evidence": "block order: the separator block (word end) is placed before the test of -1 in the original, after it in ours; the -1 test is dead in the original (the read result was already turned into a flag by the != 0 test, so the -1 branch is never taken; quirk); instructions identical (85)",
+   "audit": {
+    "d_normalised_pct": 62,
+    "pattern_diff": 64,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 4,
+    "reordered_examples": [
+     "ldl\trrS,#N"
+    ],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 85,
+    "len_orig": 85
+   }
+  },
+  "report_error": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x3408",
+   "ours": "0x1c58-0x1d08",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 37,
+    "len_orig": 37
    }
   }
  },

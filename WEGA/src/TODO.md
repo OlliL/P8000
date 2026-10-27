@@ -146,9 +146,11 @@ produce the same bytes with the shipped cc.
   `ret` is the first instruction of the shipped ffltioc at 0x8680). Entry 0x8000 is no function start (inner jump target).
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
-  2026-10-27: 22 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
-  38 with findings (see the audit in findings.json),
-  40 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
+  2026-10-27: 23 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
+  41 with findings (see the audit in findings.json),
+  36 open (23 large functions deferred: pending findings kind 'deferred (large function)'), 100 entries.
+  Done in the last round: 0x64d0 (D2), 0x0f26 read_words (D15), 0x3408 report_error (done), 0x4968 (D5, one dead increment
+  open by reading). Open small ones: 0x1070 (378, parser with a jump table, not started), 0x7286 (wrapper of 0x7300, which is deferred).
   Dead code (no caller, no address reference): 0x724e and 0x7212 still open; rebuilt: 0x6866 pack_entry, 0x01d2 walk_entries,
   0x3b1e swab12, 0x7186 report_limit. 0x0018 is the start code (asm with sc, to be kept as assembler, not C).
   0x7808 (334 bytes, open): a scanf-like reader: stream at rr10 (count at +4, pointer at +0), conversion characters c, s, [ (character

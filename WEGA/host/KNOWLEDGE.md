@@ -458,6 +458,10 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   passes a pointer to them to 0x7c26 (the formatting core, deferred). Inferred from the call sites, not from its body.
 - Error function 0x3408 (own code): the callers seen set `r7` (the level) and `rr4` (the message) and nothing else (not checked for all call sites); the printf
   arguments that 0x3408 passes on are therefore whatever the caller left in `r2`, `r3`, `r5`, the stack (a quirk to check).
+  Layout read from the code (2026-10-27, `report_error` in `sld.c`): level `r7`, message `rr4`, two words `r2`, `r3`, three stack
+  words after the frame; it prints the program name (`pE4D6`), the file name (`pE4C0`) and the text `bE438` through the message
+  printer 0x79ca, the message with the words (`r5` = the word from `r3`, `r4` = from `r2`, `r3` and `r2` from the stack, one more on
+  the stack), a closing line, then calls `sig_handler` for level above 1 and stores the level in `bE4A3A`.
 - 0x85f8 (last own function) has no `ret`: it falls into the shipped ffltioc, whose first word 9e08 is a `ret`.
 - libc part 0x8680..0x9800: 14 modules cut and verified (`src/lib/oldslibc`, README there); shipped members of `/lib/slibc.a`
   ffltioc, getpid, umask are identical to the original code.
@@ -827,6 +831,8 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
 | `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
 | `/bin/sld` (own code, 0x85f8, number parser) | with a leading `-` the digit loop counts the original length (one character more than the rest after the sign), the return value uses the shortened count | kept (`f85f8` in `src/cmd/ld/sld.c`; `src/cmd/ld/tools/own_functions.txt`) | `src/cmd/ld/tools/own_functions.txt` |
+| `/bin/sld` (own code, 0x0f26, read_words) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/ld/sld.c`) | `src/cmd/ld/tools/own_functions.txt` |
+| `/bin/sld` (own code, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x6866, 0x01d2, 0x3b1e) | three functions without any caller and without an address reference in the program (dead code) | open (not yet rebuilt) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/gld` | in the second pass every `l` (and `e`, `o`) in an option argument counts: `-L/usr/lib` is read as `-lib` and fails with "cannot open"; an `o` or `e` skips the next argument | kept | "gld on the host" |
 | `/bin/gld` | a common with a size is not replaced by a text definition; a member found through a table of contents is loaded by name of at most 8 characters only (long names never match) | kept | "gld on the host" |
