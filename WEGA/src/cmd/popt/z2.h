@@ -128,15 +128,8 @@ char *strrchr();
 char *calloc();
 char *alloc();
 struct node * allocnode();
-extern unsigned short heaplim;
+extern unsigned short heapbase, heaplim, heapcur;
 void heapreset();
-#ifndef HEAP0
-#ifdef SPOPT
-#define HEAP0 0x1a4c	/* end of data+bss of the original spopt */
-#else
-#define HEAP0 0x1a48	/* end of data+bss of the original */
-#endif
-#endif
 struct node * nonlab();
 void decref();
 int equop();

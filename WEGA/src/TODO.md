@@ -731,5 +731,10 @@ and after the ret of `_free` the routine `_realloc` (it calls `_free` and `_mall
 (it ends at the ret of `_free`); there is no foreign code in 0_5. The shipped `malloc.o` exports `_malloc`, `_free`, `_realloc`, `_calloc`,
 `_cfree`. popt uses 0_3 (malloc in popt is not called by realloc; the symbol is only completeness). Correction: the code after 0x5392 is `realloc`,
 not an unknown routine.
+popt corpus after the allocator change (`tmp/tmp/popt/run/cmp.sh`): 814 of 816 identical (272 cases, flags none, -l, -d). The earlier
+21 differences ("C Optimizer: out of space") are gone. The 2 rest differ only in the -d line "K core" (31K against 30K): the break at the start
+(sbrk(2) in main) is the end of data+bss, which is 0x7148 in the original and 0x7bf4 in ours (program size). Correction: the original DOES reset
+the heap in main (inline: heapcur = base); the earlier statement that it does not was wrong. The original's base is the break from sbrk(2).
+Also found: the original main calls setbuf (0x4c62, oldlibc setbuf 0_1) before the heap start; our main does not (open difference).
 Byte identity: not reached for any function yet. Next: `absval`, `equstr` (small), then the functions with 50 % to 60 %.
 

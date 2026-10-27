@@ -933,7 +933,7 @@
      "similarity_pct": 23.8
     }
    ],
-   "rating": "confirmed by structure: rounds the size (n+1 and res 0), compares the break pointer (0x163c) with the limit (0x163e), grows by 0x7d0 through 0x5564 with an error exit, adds n and returns the old pointer; callers of 0x2476 include copy (0x0964) and insertl (0x108c), as ours. The original does the memory by the pointer, ours by zalloc (malloc); see the note on heaplim",
+   "rating": "confirmed by structure; since the allocator was rebuilt on sbrk (as the original), the popt corpus gives 814 of 816 identical; the two differences are the -d line \"K core\" (program size: the break start depends on the end of data+bss, 0x7148 original against 0x7bf4 ours)",
    "audit": {
     "d_normalised_pct": 41,
     "pattern_diff": 33,
@@ -980,7 +980,7 @@
      "similarity_pct": 33.3
     }
    ],
-   "rating": "open, source difference: the original has no reset: no call in main and no store of the HEAP0 constant (0x1a48) anywhere in the code; its bump pointer 0x163c (limit 0x163e) only grows (allocnode 0x2476, growth in steps of 0x7d0 via 0x5564). Ours calls heapreset in every pass of main (line after the output loop)"
+   "rating": "open, corrected: the original does reset the heap in main (heapcur = saved base at 0x0154/0x01a8, inline, no call); ours calls heapreset(); the base of the original is the break from sbrk(2) at the start of main, ours now the same"
   },
   "allocnode": {
    "file": "z22.c",

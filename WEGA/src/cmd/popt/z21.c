@@ -53,6 +53,7 @@ char **argv;
 			exit(1);
 		}
 	}
+	heaplim = heapbase = heapcur = (unsigned short)sbrk(2);
 	maxiter = 0;
 	opsetup();
 	do {

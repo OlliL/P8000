@@ -73,11 +73,11 @@ static int adrlen();
 static int toofar();
 
 /*
- * The original has a bump allocator on top of sbrk(); it grows the break
- * in steps of 2000 bytes.  The amount of core used is only reported by
- * the -d statistics, so that bookkeeping is kept (heaplim).
+ * Like the original: a bump allocator on the break (sbrk).  heapbase is the break at the start (main), heapcur the
+ * next free byte, heaplim the end of the core asked for so far (grown in steps of 2000 bytes).  heapreset() puts
+ * heapcur back to heapbase in every pass of main.  The -d statistics report heaplim.
  */
-unsigned short heaplim = HEAP0, heapcur = HEAP0;
+unsigned short heapbase, heaplim, heapcur;
 
 char *
 alloc(n)
@@ -86,37 +86,28 @@ int n;
 	char *p;
 
 	n = (n + 1) & ~1;
-	if ((unsigned short)(heapcur + n) >= heaplim)
+	if ((unsigned short)(heapcur + n) >= heaplim) {
+		if (sbrk(2000) == (char *)-1) {
+			fprintf(stderr, "C Optimizer: out of space\n");
+			exit(1);
+		}
 		heaplim += 2000;
-	heapcur += n;
-	p = zalloc(n);
-	if (p == 0) {
-		fprintf(stderr, "C Optimizer: out of space\n");
-		exit(1);
 	}
+	p = (char *)heapcur;
+	heapcur += n;
 	return p;
 }
 
 void
 heapreset()
 {
-	heapcur = HEAP0;
+	heapcur = heapbase;
 }
 
 struct node *
 allocnode()
 {
-	struct node *p;
-
-	p = (struct node *)zalloc(sizeof *p);
-	if (p == 0) {
-		fprintf(stderr, "C Optimizer: out of space\n");
-		exit(1);
-	}
-	if ((unsigned short)(heapcur + 14) >= heaplim)
-		heaplim += 2000;
-	heapcur += 14;
-	return p;
+	return (struct node *)alloc(sizeof (struct node));
 }
 
 struct node *
