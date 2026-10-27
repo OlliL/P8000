@@ -476,10 +476,10 @@ char *a;
 }
 
 /* add16_checked..1696: findings:D4 */
-int add16_checked(a, x, y)
-long a;
+int add16_checked(x, y, a)
 unsigned x;
 unsigned y;
+long a;
 {
 	long s;
 
@@ -497,8 +497,8 @@ char bE8EA[];
 char bEF02[];
 char bEAF2[];
 struct { int a; int b; int c; int d; } tblF332[];
-char *f06c6();
-int f620e();
+char *get_block();
+int copy_blocks();
 int f3ac6();
 
 f6134()
@@ -514,9 +514,9 @@ f6134()
 	for (i = 0; i <= bE3E82; i++) {
 		bE3E7A = 0;
 		if (tblF332[i].a > -1)
-			f620e(tblF332[i].a, 0x74, *(char **)(f06c6(tblF332[i].a) + 22));
+			copy_blocks(tblF332[i].a, 0x74, *(char **)(get_block(tblF332[i].a) + 22));
 		if (tblF332[i].b > -1)
-			f620e(tblF332[i].b, 0x64, *(char **)(f06c6(tblF332[i].b) + 26));
+			copy_blocks(tblF332[i].b, 0x64, *(char **)(get_block(tblF332[i].b) + 26));
 	}
 }
 
@@ -939,13 +939,13 @@ register int c;
 	return (unsigned char)c;
 }
 
-/* f06c6..0762: findings:D7 */
+/* get_block..0762: findings:D7 */
 int bE4EC;
 int bE3B8;
 long bE3BA[];
 long f9184();
 
-long get_block(n)
+char *get_block(n)
 int n;
 {
 	long p;
@@ -1581,7 +1581,7 @@ int e;
 	if (bE438[0])
 		ld_printf("x", bE438);
 	ld_printf("x");
-	ld_printf(msg, b, a, c, d, e);
+	ld_printf(msg, a, b, c, d, e);
 	ld_printf("x");
 	if (level > 1)
 		sig_handler();
@@ -1591,7 +1591,7 @@ int e;
 /* f4968..4a16: findings:D5 */
 int tabF338[];
 char *table32_entry();
-int f5eec();
+int alloc_segment();
 int report_error();
 
 int f4968(q, p, x, res)
@@ -1614,7 +1614,7 @@ int *res;
 	else
 		*(int *)q = 4;
 	lcl = 1;
-	*res = f5eec(q, p, 0, 0x72, &lcl);
+	*res = alloc_segment(q, p, 0, 0x72, &lcl);
 }
 
 /* f2f3a..3090: findings:D5,D9,D15 */
@@ -1716,7 +1716,7 @@ long x;
 /* f6c6a..6da8: findings:D2,D6,D15 */
 int bE3C02;
 int bEF32C;
-char *f06c6();
+char *get_block();
 int f6c6a();
 
 f6c6a()
@@ -1726,7 +1726,7 @@ f6c6a()
 	int i;
 
 	i = bE3C02 + 0x0470;
-	p = f06c6(i);
+	p = get_block(i);
 	w = (char *)&bE46A;
 	switch (bE46E) {
 	case 2:
@@ -1750,7 +1750,7 @@ f6c6a()
 loop:
 	if (i >= bEF32C)
 		goto clear;
-	p = f06c6(i);
+	p = get_block(i);
 	if (*(int *)(p + 4))
 		goto h2;
 	i++;
@@ -1875,11 +1875,11 @@ end:
 	f9576(bE4BE);
 }
 
-/* f724e..7286: findings:D5,D16 */
-int f7300();
-int f724e();
+/* ld_fscanf..7286: findings:D5,D16 */
+int ld_doscan();
+int ld_fscanf();
 
-int f724e(a, b, c, d, e)
+int ld_fscanf(a, b, c, d, e)
 long a;
 long b;
 long c;
@@ -1890,14 +1890,14 @@ long e;
 
 	arr[0] = c;
 	arr[1] = d;
-	f7300(a, b, arr, &e);
+	ld_doscan(a, b, arr, &e);
 }
 
-/* f7212..724e: findings:D5,D16 */
-int f7300();
-int f7212();
+/* ld_scanf..724e: findings:D5,D16 */
+int ld_doscan();
+int ld_scanf();
 
-int f7212(a, b, c, d)
+int ld_scanf(a, b, c, d)
 long a;
 long b;
 long c;
@@ -1907,14 +1907,14 @@ long d;
 
 	arr[0] = b;
 	arr[1] = c;
-	f7300("x", a, arr, &d);
+	ld_doscan("x", a, arr, &d);
 }
 
-/* f7286..7300: findings:D4,D16 */
-int f7300();
-int f7286();
+/* ld_sscanf..7300: findings:D4,D16 */
+int ld_doscan();
+int ld_sscanf();
 
-int f7286(s, b, a, c, d)
+int ld_sscanf(s, b, a, c, d)
 char *s;
 long b;
 long a;
@@ -1938,7 +1938,7 @@ long d;
 		len++;
 	a1 = a;
 	c1 = c;
-	f7300(&p1, b, &a1, &d);
+	ld_doscan(&p1, b, &a1, &d);
 }
 
 /* f1070..11ea: findings:D6,D15 */
@@ -1946,7 +1946,7 @@ char bE42B2;
 int bE49A;
 char tab42b4[];
 char tab4534[];
-int f7286();
+int ld_sscanf();
 int report_error();
 
 int f1070(s, t)
@@ -1990,7 +1990,7 @@ char *t;
 		u += 2;
 		fmt = "x";
 	}
-	if (f7286(u, fmt, tab4534 + g * 10 + k * 2) != 1)
+	if (ld_sscanf(u, fmt, tab4534 + g * 10 + k * 2) != 1)
 		report_error(2, "x", s, t);
 	return k != 0;
 }
@@ -2683,6 +2683,7 @@ long s1;
 	double db1;
 	double db2;
 	double db3;
+	int z;
 
 	wb0 = w1;
 	wb1 = w2;
@@ -2746,9 +2747,9 @@ struct sio *iop;
 	char padc[1];
 	int conv82;
 
-	wptr = ap;
-	nout = 0;
 	ncnt = 0;
+	nout = 0;
+	wptr = ap;
 	rem = f8c86(f);
 	goto l7c8c;
 l7c50:
@@ -3281,7 +3282,7 @@ l7d1e:
 l85c6:
 	if (pE90E4 == 0)
 		goto l85e6;
-	if (!(pE90E4[10] & 0x20))
+	if (!((((struct sio *)pE90E4)->flag & 0x20) != 0))
 		goto l85e6;
 	return -1;
 l85e6:
@@ -3308,6 +3309,7 @@ long s1;
 	double db1;
 	double db2;
 	double db3;
+	int z;
 
 	wb0 = w1;
 	wb1 = w2;
@@ -3355,4 +3357,399 @@ long s1;
 	bE90E2 = ld_doprnt(fmt, &wb0, &db0, &s1, 3, &io);
 	--io.cnt < 0 ? f880e(0, &io) : (int)(*io.ptr++ = 0);
 	return bE90E2;
+}
+
+/* f6a58..6b5a: done */
+int b04EA;
+char tab44E8[];
+char *lookup_name();
+
+char *lookup_name()
+{
+	register char *slot;
+	register char *cur;
+	register char *rec;
+	int h;
+	int flag;
+	char *start;
+	char *end;
+
+	h = 0;
+	cur = bE472;
+	start = cur;
+	end = bE47A;
+	if (*cur & 0x80) {
+		start++;
+		if (b04EA == 0)
+			end++;
+		else
+			end = bE472 + (*cur & 0x7f);
+	}
+	for (cur = start; cur < end; cur++)
+		h = h * 2 + *cur;
+	slot = tab44E8 + ((h & 0x7fff) % 0x0ffa + 2) * 4;
+	while (*(char **)slot) {
+		rec = *(char **)slot + 8;
+		flag = 0;
+		if (b04EA == 0)
+			goto l1;
+		cur = bE472;
+		goto l2;
+l1:
+		cur = start;
+		if (*rec & 0x80)
+			rec++;
+l2:
+		while (cur < end) {
+			if (*cur++ != *rec++) {
+				flag = 1;
+				break;
+			}
+		}
+		if (!flag)
+			break;
+		slot += 4;
+		if (slot >= tab84d8)
+			slot = tab44E8;
+	}
+	return slot;
+}
+
+/* f5eec..60f0: done */
+int report_error();
+
+int alloc_segment(rec, pidx, a, b, q)
+register int *pidx;
+register char *rec;
+int a;
+char b;
+int *q;
+{
+	register int sum;
+	register int i;
+
+	if (a) {
+		for (i = 0; i < 128; i++) {
+			if (tblF332[i].a == -1 && tblF332[i].b == -1 && tblF332[i].c == -1 && tblF332[i].d == -1) {
+				*(int *)(rec + 16) = i;
+				rec[0] = i;
+				switch (b) {
+				case 't':
+					tblF332[i].a = *q;
+					break;
+				case 'd':
+					tblF332[i].b = *q;
+					break;
+				case 'b':
+					tblF332[i].c = *q;
+					break;
+				}
+				if (i > bE3E82)
+					bE3E82 = i;
+				tblF332[i].d = 100;
+				*q = i;
+				break;
+			}
+		}
+		if (i == 128)
+			report_error(2, "No more segments");
+	} else {
+		if (b != 'r') {
+			while (tblF332[*pidx].d == 1000 || tblF332[*pidx].d == 100 || tblF332[*pidx].d == 3000)
+				(*pidx)++;
+			if (tblF332[*pidx].d == -1)
+				tblF332[*pidx].d = 50;
+		}
+		*(int *)(rec + 16) = *pidx;
+		rec[0] = *pidx;
+		*pidx = *pidx + 1;
+	}
+	if (bF32E == 0) {
+		b3C12 = (long)rec;
+		bF32E = (long)rec;
+	} else {
+		*(char **)((char *)b3C12 + 0x12) = rec;
+		*(char **)(rec + 0x16) = (char *)b3C12;
+		b3C12 = (long)rec;
+	}
+	sum = *(int *)(rec + 4) + *(int *)(rec + 6) + *(int *)(rec + 8);
+	if ((unsigned)sum > 0xff00)
+		sum += 2;
+	sum = sum & 0xff;
+	if (bE4A2 == 0 && sum != 0)
+		return 0x100 - sum;
+	return 0;
+}
+
+/* copy_blocks..642e: done */
+char *get_block();
+int f95da();
+int f9610();
+int f2f04();
+int f60f0();
+int report_error();
+
+int copy_blocks(idx, type, p)
+register int idx;
+char type;
+char *p;
+{
+	register int m;
+	register int n;
+	register long q;
+	char *cur;
+	int k;
+	long w;
+	char buf[512];
+	int j;
+	char *rec;
+
+	cur = p;
+head:
+	if (idx == -1)
+		goto done;
+	if (p != cur)
+		goto done;
+	if (type == 0x74) {
+		rec = get_block(idx);
+		n = *(int *)(rec + 4);
+		q = *(long *)(rec + 0x28);
+		idx = *(int *)(rec + 0x30);
+		cur = *(char **)(get_block(idx) + 0x16);
+		f95da(*(int *)bE6E2, q, 0);
+	} else {
+		rec = get_block(idx);
+		n = *(int *)(rec + 6);
+		q = *(long *)(rec + 0x2c);
+		idx = *(int *)(rec + 0x32);
+		cur = *(char **)(get_block(idx) + 0x1a);
+		f95da(*(int *)bE8EA, q, 0);
+	}
+	if (bE4A2) {
+		f95da(*(int *)bEF02, q, 0);
+		f95da(*(int *)bEAF2, q, 0);
+	}
+	g3e7a += n;
+	while (n) {
+		if ((unsigned)n > 0x200) {
+			n = n - 0x200;
+			m = 0x200;
+		} else {
+			m = n;
+			n = 0;
+		}
+		if (type == 0x74) {
+			if (f9610(*(int *)bE6E2, buf, m) < 1)
+				report_error(2, "i/o error reading from tmpoutb");
+		} else {
+			if (f9610(*(int *)bE8EA, buf, m) < 1)
+				report_error(2, "i/o error reading from doutb");
+		}
+		f2f04(bE4DA, buf, m);
+		if (bE4A2) {
+			if (type == 0x74) {
+				if (m != f9610(*(int *)bEF02, buf, m))
+					report_error(2, "eof error on trout.b");
+			} else {
+				if (m != f9610(*(int *)bEAF2, buf, m))
+					report_error(2, "eof error on droutb");
+			}
+			f2f04(bECFA, buf, m);
+		}
+	}
+	goto head;
+done:
+	f60f0(p, type);
+	if (idx != -1) {
+		p = cur;
+		g3e7a = 0;
+		goto head;
+	}
+	g3e7a = 0;
+	return 0;
+}
+
+/* ld_doscan..7526: findings:D2 */
+char *make_ccl();
+int f86fa();
+int f8688();
+int f953e();
+int ld_innum();
+
+int ld_doscan(iop, fmt, ap, sp)
+struct sio *iop;
+register char *fmt;
+register long *ap;
+long *sp;
+{
+	register int ch;
+	int nassign;
+	int n;
+	int c;
+	long p;
+	int flag;
+	int size;
+	int cnt;
+
+	nassign = 0;
+	flag = 0;
+	cnt = 0;
+	for (;;) {
+		switch (ch = *fmt++) {
+		case '%':
+			if ((ch = *fmt++) == '%')
+				goto lit;
+			p = 0;
+			if (ch != '*') {
+				p = (long)ap;
+				ap++;
+				cnt++;
+				if (cnt == 2)
+					ap = sp;
+			} else
+				ch = *fmt++;
+			n = 0;
+			size = 1;
+			while (tab1aad[ch] & 4) {
+				n = n * 10 + ch - '0';
+				ch = *fmt++;
+			}
+			if (n == 0)
+				n = 30000;
+			if (ch == 'l') {
+				ch = *fmt++;
+				size = 2;
+			} else if (ch == 'h') {
+				size = 0;
+				ch = *fmt++;
+			} else if (ch == '[')
+				fmt = make_ccl(fmt);
+			if (tab1aad[ch] & 1) {
+				ch = f953e(ch);
+				size = 2;
+			}
+			if (ch == 0)
+				return -1;
+			if (ld_innum(p, ch, n, size, iop, &flag) && p != 0)
+				nassign++;
+			if (flag) {
+				if (nassign == 0)
+					return -1;
+				return nassign;
+			}
+			continue;
+		case '\t':
+		case '\n':
+		case ' ':
+			do {
+				c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+			} while (c == ' ' || c == '\t' || c == '\n');
+			if (c != -1)
+				f8688(c, iop);
+			continue;
+		default:
+lit:
+			c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+			if (ch == c)
+				continue;
+			if (c == -1)
+				return -1;
+			f8688(c, iop);
+			return nassign;
+		case 0:
+			return nassign;
+		}
+	}
+}
+
+/* ld_innum..7808: done */
+int f7808();
+int f8686();
+int f86fa();
+int f8688();
+
+int ld_innum(p, ch, n, size, iop, pflag)
+char **p;
+int ch;
+int n;
+int size;
+struct sio *iop;
+int *pflag;
+{
+	register int c;
+	register int base;
+	int neg;
+	int tmp;
+	int gotdig;
+	long val;
+
+	gotdig = 0;
+	if (ch == 'c' || ch == 's' || ch == '[')
+		return f7808(p ? *p : 0, ch, n, iop, pflag);
+	if (ch == 'e' || ch == 'f')
+		return f8686(p, n, size, iop, pflag);
+	val = 0;
+	base = 10;
+	if (ch == 'o')
+		base = 8;
+	else if (ch == 'x')
+		base = 16;
+	neg = 0;
+	do {
+		c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+	} while (c == ' ' || c == '\t' || c == '\n');
+	if (c == '-') {
+		neg++;
+		c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+		n--;
+	} else if (c == '+') {
+		n--;
+		c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+	}
+	while (--n >= 0) {
+		if (!(tab1aad[c] & 4)) {
+			if (base != 16)
+				break;
+			if (!((c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')))
+				break;
+		}
+		gotdig = 1;
+		if (base == 8)
+			val = val << 3;
+		else if (base == 10)
+			val = ((val << 2) + val) << 1;
+		else
+			val = val << 4;
+		tmp = c;
+		if (c >= '0' && c <= '9')
+			c -= '0';
+		else if (c >= 'a' && c <= 'f')
+			c -= 'a' - 10;
+		else
+			c -= 'A' - 10;
+		val += c;
+		c = tmp;
+		c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+	}
+	if (neg)
+		val = -val;
+	if (c != -1) {
+		f8688(c, iop);
+		*pflag = 0;
+	} else
+		*pflag = 1;
+	if (p) {
+		switch (size) {
+		case 0:
+		case 1:
+			*(int *)*p = (int)val;
+			break;
+		case 2:
+			*(long *)*p = val;
+			break;
+		}
+		if (gotdig)
+			return 1;
+	}
+	return 0;
 }

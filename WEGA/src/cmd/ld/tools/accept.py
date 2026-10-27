@@ -17,6 +17,7 @@ Declarations repeated in sld.c are kept only once.
 """
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -71,6 +72,19 @@ def main():
     # global declarations that already are in sld.c are not repeated; K&R parameter declarations are kept
     # (they sit between a function header and its '{'); the compile check below catches any other clash
     sld = open(SLD).read().split('\n')
+    # a struct defined in the draft (for the check) is dropped when sld.c defines it already
+    drop = []
+    i = 0
+    while i < len(body):
+        m = re.match(r'^struct (\w+) \{$', body[i])
+        if m and ('struct %s {' % m.group(1)) in sld:
+            j = i
+            while body[j] != '};':
+                j += 1
+            drop.extend(range(i, j + 1))
+            i = j
+        i += 1
+    body = [l for k, l in enumerate(body) if k not in drop]
     out = []
     header = False
     for line in body:

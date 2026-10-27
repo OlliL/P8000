@@ -55,9 +55,9 @@ def norm(t):
             return '\0%d\0' % (len(keep) - 1)
         t = re.sub(r'%[0-9A-Fa-f]{3,}\|?\(r15\)', hold, t)
         t = re.sub(r'#%7F([0-9A-Fa-f]{6})', r'#%00\1', t)   # stack segment is set by the linker
-        # a local address is #%7Fxxxxxx in the original and a non-zero small offset in the object; an offset of 0
-        # in the object is a symbol (relocated address of a global), masked below
-        t = re.sub(r'#%00(?!000000)[0-9A-Fa-f]{6}', hold, t)
+        # a local address is #%7Fxxxxxx in the original and #%00xxxxxx in the object; whether an object immediate
+        # is a local address (followed by add rN,r15) or the offset of a global is decided in keep_locals()
+        t = re.sub(r'#%00[0-9A-Fa-f]{6}', hold, t)
         t = re.sub(r'%[0-9A-Fa-f]{3,}', 'ADDR', t)
         t = re.sub(r'\0(\d+)\0', lambda m: keep[int(m.group(1))], t)
     else:
@@ -65,6 +65,19 @@ def norm(t):
     # calr or call: the call form depends on the distance to the target in the final object (D17);
     # it is checked again when the whole file is compiled
     return re.sub(r'^calr\t', 'call\t', t)
+
+
+def keep_locals(lst):
+    """an immediate #%00xxxxxx stays only in ldl followed by an add of the frame register (address of a local);
+    in every other instruction it is the offset of a global (relocated in the link) and is masked"""
+    out = []
+    for i, t in enumerate(lst):
+        local = re.match(r'^ldl\trr\d+,#%00[0-9A-Fa-f]{6}$', t) and i + 1 < len(lst) and \
+            re.match(r'^add\tr\d+,r15$', lst[i + 1])
+        if not local:
+            t = re.sub(r'#%00[0-9A-Fa-f]{6}', '#ADDR', t)
+        out.append(t)
+    return out
 
 
 def compile_obj(src):
@@ -91,8 +104,8 @@ def main():
     s = SOut(open(orig, 'rb').read())
     cs = s.segs[0]['code']
     ref = insns(bytes(s.image[:cs]), lo, hi, (s.magic >> 8) == 0xE6)
-    A = [norm(t) for _, t in mine]
-    B = [norm(t) for _, t in ref]
+    A = keep_locals([norm(t) for _, t in mine])
+    B = keep_locals([norm(t) for _, t in ref])
     # instructions after the range (stubs of callees in the test file) are not compared
     extra = len(A) - len(B)
     A = A[:len(B)]

@@ -60,10 +60,10 @@
 4968 f4968 4a16 174 1 4d68 P ret findings:D5
 4a16 f4a16 5a2c 4118 1 469e P ret open
 5a2c f5a2c 5eec 1216 3 4a96 4b32 4bce P ret open
-5eec f5eec 60f0 516 8 4a02 506e 5252 5406 P ret open
+5eec alloc_segment 60f0 516 8 4a02 506e 5252 5406 P ret done
 60f0 f60f0 6134 68 1 63fc P ret findings:D2
 6134 f6134 620e 218 1 2cbc c ret done
-620e f620e 642e 544 2 61ba 61f8 P ret open
+620e copy_blocks 642e 544 2 61ba 61f8 P ret done
 642e list_move_after 64d0 162 1 5a00 P ret findings:D4
 64d0 f64d0 6522 82 1 612e P ret findings:D2
 6522 put_name 65c6 164 6 1a8 23a 25d6 3be0 c ret done
@@ -93,11 +93,11 @@
 7186 report_limit 719e 24 0 - x ret done
 719e table32_entry 71ca 44 5 1fca 2014 4990 595a c ret done
 71ca put_char 7212 72 6 2d4c 7286 P ret findings:D4
-7212 f7212 724e 60 0 - x ret findings:D5,D16
-724e f724e 7286 56 0 - x ret findings:D5,D16
-7286 f7286 7300 122 5 c00 daa e1c 11ac c ret findings:D4,D16
-7300 f7300 7526 550 3 7242 727a 72ec c ret open
-7526 f7526 7808 738 1 7436 P ret open
+7212 ld_scanf 724e 60 0 - x ret findings:D5,D16
+724e ld_fscanf 7286 56 0 - x ret findings:D5,D16
+7286 ld_sscanf 7300 122 5 c00 daa e1c 11ac c ret findings:D4,D16
+7300 ld_doscan 7526 550 3 7242 727a 72ec c ret findings:D2
+7526 ld_innum 7808 738 1 7436 P ret done
 7808 scan_field 7956 334 1 7578 P ret findings:D2
 7956 make_ccl 79ca 116 1 73e6 P ret findings:D2
 79ca ld_printf 7a5e 148 52 1e2 250 266 2ee c ret done
