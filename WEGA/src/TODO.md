@@ -156,7 +156,11 @@ produce the same bytes with the shipped cc.
   23 open: 21 large functions deferred (kind 'deferred (large function)' in findings_pending, 0x2492 and 0x2624 are done
   now), 0x0018 (start code, now scrt0.o; table row still open), 0x6a58 (not accepted). 100 entries.
   Second pass (2026-10-27): 0x2492 accepted (D2, D7), 0x2624 accepted (D7, D16), 0x27d8 accepted (D2, D7, D15) with the open
-  finding sld-27d8-layout (42 of 361 instructions differ: block placement of 0x2b02 and 0x2882; semantics checked by reading only). Next deferred: 0x27d8 (1252 bytes, bit
+  finding sld-27d8-layout (42 of 361 instructions differ: block placement of 0x2b02 and 0x2882; semantics checked by reading only).
+  0x3516 accepted (D2, D16; same 156 instructions; the classifier reports 5 forms without pattern: indexed through a
+  register pair, rr #1, sra #1; the record fields are frame operands in the original).
+  0x410c accepted (D2, D5; same 120 instructions; quirk: the attributes of a name already in the list go to the step
+  counter, not the entry index). Next deferred: 0x27d8 (1252 bytes, bit
   stream decoder with two jump tables at 0x0cf6 and 0x0da4): goto skeleton complete (361 instructions, equal), register
   allocation of the old compiler is now known (declaration order from r13 down, pointer = highest free pair, see KNOWLEDGE
   'Register allocation'); the registers of 0x27d8 match with the declaration order w13, w12, w11, e, w10. The block order
@@ -1026,3 +1030,6 @@ times (0x3918, 0x393c, 0x39b0, 0x39f2, 0x3a40, 0x3a84, 0x3ac0), the source has s
 the extra call is not mapped yet).
 Byte identity: not reached for any function yet. Next: `absval`, `equstr` (small), then the functions with 50 % to 60 %.
 
+
+- 0x79ca accepted (done, 2026-10-27): the message printer (EPU spills, argument block form in KNOWLEDGE). Dead entries
+  0x7a5e and 0x7ae2 (not called, no references) stay open.

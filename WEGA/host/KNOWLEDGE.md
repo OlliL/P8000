@@ -185,6 +185,16 @@ Floating point uses EPU mnemonics (`fadd`, `fldd`, ...).
   matching length whose byte subregisters are all free (long -> rr6, rr4,
   rr2); floating point into fr3..fr0. Once one argument is on the stack, all
   following ones are too. Results from r2 upward (long in rr2), fr0 upward.
+- Floating point arguments (measured 2026-10-27 with `scc -O -S`): a `double` parameter comes in f3 for the last one, then
+  f2, f1, f0 for the earlier ones (K&R order). The caller stores the value and loads it with `fldd f3,mem`; the callee spills
+  each with `fldd` at the prologue. Word arguments follow the word rule (r6 for the first in the test, r5 r4 r3 r2 after a long).
+  Varargs (`...`) are not in the old cc: the message printer 0x79ca takes the long format in rr6, four words (r5..r2) and four
+  doubles (f0..f3). Its prologue spills the doubles (`fstd` at the frame) and the words, then copies the words to an argument
+  block (words at 0x36, doubles at 0x3e..0x55) and calls the format core 0x7c26 with that block; 0x7c26 walks it like
+  `_doprnt` in `src/lib/libc/stdio/doprnt.c` (`*(double *)ap`, `_align` for longs).
+- Argument blocks of a call (measured 2026-10-27): a block of words and doubles that is passed by address is built
+  with separate scalar locals (`int wb0; ... double db0;`) and the address of the first one is passed in the call
+  (`&wb0`). Arrays or structs passed by address are stored through a pointer (not frame-direct). Shown by 0x79ca.
 - Saved registers in the frame as after `sub r15,#2n; ldm @r15,rx,#n`.
 - One register serves as frame and stack pointer; no frame chain.
   setjmp/longjmp are replaced by setret/longret.
@@ -850,6 +860,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
 | `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
 | `/bin/sld` (own code, 0x85f8, number parser) | with a leading `-` the digit loop counts the original length (one character more than the rest after the sign), the return value uses the shortened count | kept (`f85f8` in `src/cmd/ld/sld.c`; `src/cmd/ld/tools/own_functions.txt`) | `src/cmd/ld/tools/own_functions.txt` |
+| `/bin/sld` (own code, 0x410c, insert into the name table) | when the name is already in the list (compare result 0) the attribute words are written at the step counter (0x0e of the frame), not at the index of the entry found (0x0a); with a new name both are the same | kept (`src/cmd/ld/sld.c`, `f410c`) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x0f26, read_words) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/ld/sld.c`) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x6a58) | two counters (`0x06`, `0x0a` of the frame) are incremented on the name flag and never read: write-only locals of the compiler output | kept (`src/cmd/ld/tools/own_functions.txt`, not accepted yet) | `src/cmd/ld/tools/own_functions.txt` |

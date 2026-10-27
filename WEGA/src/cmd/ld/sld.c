@@ -2522,3 +2522,176 @@ e2:
 end:
 	;
 }
+
+/* f3516..3760: findings:D2,D16 */
+int bE4B4;
+long bE45C;
+char bE466;
+char bE467;
+int f2e76();
+int refill_wbuf();
+int f65c6();
+int f6620();
+int f932e();
+int f3760();
+int f3408();
+
+int f3516(a, b)
+long a;
+int b;
+{
+	int magic;
+	char tmp[24];
+	char rec[8208];
+	register char *p;
+	register int n;
+	register int w;
+
+	refill_wbuf(bE414, a, 2);
+	f2e76(&magic, 2);
+	if (bE4B6)
+		magic = f65c6(magic);
+	if (magic == 0xe607 || magic == 0xe611)
+		bE4B4 = 1;
+	if (magic != 0xe707 && magic != 0xe711) {
+		if (!bE4B4)
+			return;
+	}
+	bE4B2 += 1;
+	bE436 = 0x18;
+	refill_wbuf(bE414, a, bE436);
+	f2e76(tmp, bE436);
+	if (bE4B6)
+		f932e(tmp, tmp, bE436);
+	bE434 = *(int *)(tmp + 10);
+	n = bE434 / 16;
+	refill_wbuf(bE414, a + ((bE436 & ~1) >> 1), bE434);
+	f2e76(rec, bE434);
+	if (bE4B6) {
+		for (p = rec; p < rec + n * 16; p += 16)
+			f6620(p);
+	}
+	bE452 = magic & 0xf7ff;
+	bE454 = 0;
+	bE458 = 0;
+	bE45C = *(long *)(tmp + 6);
+	bE466 = 0;
+	bE467 = 0;
+	w = 0;
+	for (p = rec; p < rec + n * 16; p += 16) {
+		*(int *)(p + 4) = (*(int *)(p + 4) + 1) & 0xfffe;
+		*(int *)(p + 6) = (*(int *)(p + 6) + 1) & 0xfffe;
+		*(int *)(p + 8) = (*(int *)(p + 8) + 1) & 0xfffe;
+		bE454 += (unsigned)*(int *)(p + 4);
+		bE458 += (unsigned)*(int *)(p + 6);
+		w |= *(int *)(p + 10);
+	}
+	if (w & 0xf8)
+		f3408(2, "x");
+	bE462 = *(long *)(tmp + 14);
+	bE468 = *(int *)(tmp + 18) & 1;
+	bE460 = *(int *)(tmp + 12);
+	f3760(rec, n, b);
+	return 1;
+}
+
+/* f410c..42f8: findings:D2,D5 */
+int bE476;
+int bE478;
+char tab3c22[];
+int f3a30();
+int report_error();
+
+int f410c(x, y, c)
+int x;
+char *y;
+char c;
+{
+	int i;
+	int prev;
+	int k;
+	int r;
+
+	if ((*(int *)bE47A) == 0x32)
+		report_error(2, "x", 0x32);
+	i = bE478;
+	prev = 0;
+	bE476 = 1;
+	k = 0;
+	goto cond;
+body:
+	r = f3a30(y, *(char **)(tab3c22 + i * 12 + 8));
+	if (r < 0)
+		goto nxt;
+	if (r == 0)
+		goto attr;
+	prev = i;
+	i = *(int *)(tab3c22 + i * 12 + 6);
+nxt:
+	k++;
+cond:
+	if (k < (*(int *)bE47A))
+		goto body;
+	if (i != bE478 || k != 0)
+		goto l41de;
+	*(int *)(tab3c22 + (*(int *)bE47A) * 12 + 6) = bE478;
+	bE478 = (*(int *)bE47A);
+	goto l4218;
+l41de:
+	*(int *)(tab3c22 + (*(int *)bE47A) * 12 + 6) = *(int *)(tab3c22 + prev * 12 + 6);
+	*(int *)(tab3c22 + prev * 12 + 6) = (*(int *)bE47A);
+l4218:
+	k = (*(int *)bE47A);
+	(*(int *)bE47A)++;
+	*(char **)(tab3c22 + k * 12 + 8) = y;
+	*(int *)(tab3c22 + k * 12 + 4) = -1;
+	*(int *)(tab3c22 + k * 12 + 2) = -1;
+	*(int *)(tab3c22 + k * 12) = -1;
+attr:
+	if (c == 0x61 || c == 0x74)
+		*(int *)(tab3c22 + k * 12) = x;
+	if (c == 0x61 || c == 0x64)
+		*(int *)(tab3c22 + k * 12 + 2) = x;
+	if (c == 0x61 || c == 0x62)
+		*(int *)(tab3c22 + k * 12 + 4) = x;
+	bE476 = 0;
+}
+
+/* f79ca..7a5e: done */
+int bE90E2;
+char *pE90E4;
+char str194e[];
+int f7c26();
+
+int f79ca(fmt, w1, w2, w3, w4, d1, d2, d3, d4, s1)
+long fmt;
+int w1;
+int w2;
+int w3;
+int w4;
+double d1;
+double d2;
+double d3;
+double d4;
+long s1;
+{
+	int wb0;
+	int wb1;
+	int wb2;
+	int wb3;
+	double db0;
+	double db1;
+	double db2;
+	double db3;
+
+	wb0 = w1;
+	wb1 = w2;
+	wb2 = w3;
+	wb3 = w4;
+	db0 = d4;
+	db1 = d3;
+	db2 = d2;
+	db3 = d1;
+	pE90E4 = str194e;
+	bE90E2 = f7c26(fmt, &wb0, &db0, &s1, 1, str194e);
+}

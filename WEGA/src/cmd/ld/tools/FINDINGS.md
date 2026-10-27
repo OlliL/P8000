@@ -6,25 +6,25 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 ## Summary
 
-**Functions:** 100
+**Functions:** 102
 
 | Pairing | Count |
 |---|---|
-| confirmed | 78 |
-| open | 22 |
+| confirmed | 81 |
+| open | 21 |
 
 | Difference class | Count |
 |---|---|
-| - | 22 |
+| - | 21 |
 | D only (manual reading) | 6 |
-| D only (pattern-verified) | 65 |
-| other differences | 7 |
+| D only (pattern-verified) | 66 |
+| other differences | 9 |
 
-**Pending findings:** 22
+**Pending findings:** 19
 
 | Status | Count |
 |---|---|
-| open | 22 |
+| open | 19 |
 
 ## Functions
 
@@ -47,21 +47,21 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1f96 | 0x1462-0x152e | 0x1f96 | confirmed | differs | D only (pattern-verified) | D1, D10, D7 |  |
 | f2056 | f2056..22a4 | 0x2056 | open | open |  |  |  |
 | f23fe | 0x13c4-0x1462 | 0x23fe | confirmed | differs | D only (pattern-verified) | D1, D10, D7, D8 |  |
-| f2492 | 0x28ee-0x2a88 | 0x2492 | confirmed | differs | D only (pattern-verified) | D10, D3, D7, D8 |  |
-| f2624 | 0x2a88-0x2c9c | 0x2624 | confirmed | differs | other differences |  | unexplained instruction forms: ld	rS,rrS(#N) |
-| f27d8 | 0x2c9c-0x31a8 | 0x27d8 | confirmed | differs | other differences |  | unexplained instruction forms: sra	rS,#4 |
+| f2492 | 0x28ee-0x2a84 | 0x2492 | confirmed | differs | D only (pattern-verified) | D10, D3, D7, D8 |  |
+| f2624 | 0x2a84-0x2c98 | 0x2624 | confirmed | differs | other differences |  | unexplained instruction forms: ld	rS,rrS(#N) |
+| f27d8 | 0x2c98-0x31a4 | 0x27d8 | confirmed | differs | other differences |  | unexplained instruction forms: sra	rS,#4 |
 | f2d4c | 0x0d70-0x0df2 | 0x2d4c | confirmed | differs | D only (pattern-verified) | D10, D2, D6 |  |
 | f2dde | 0x0550-0x05be | 0x2dde | confirmed | exact | D only (pattern-verified) |  |  |
 | f2e76 | 0x0df2-0x0e82 | 0x2e76 | confirmed | differs | D only (manual reading) | D2 | arithmetic shift of the count with another register (r5 here, r9 in the original) |
 | f2f04 | 0x051e-0x0550 | 0x2f04 | confirmed | differs | D only (pattern-verified) | D1 |  |
 | f3090 | 0x0194-0x01a8 | 0x3090 | confirmed | exact | D only (pattern-verified) |  |  |
 | f3144 | f3144..3408 | 0x3144 | open | open |  |  |  |
-| f3516 | f3516..3760 | 0x3516 | open | open |  |  |  |
+| f3516 | 0x31a4-0x343a | 0x3516 | confirmed | differs | other differences |  | unexplained instruction forms: ld	rS,rrS(#N); rr	rS,#1; sra	rS,#1 |
 | f3760 | f3760..3a30 | 0x3760 | open | open |  |  |  |
 | f3a88 | 0x0262-0x02a0 | 0x3a88 | confirmed | differs | D only (pattern-verified) | D1, D10, D3 |  |
 | f3b58 | 0x0c58-0x0ce8 | 0x3b58 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D7, D8, D8/D2 |  |
 | f3c16 | f3c16..410c | 0x3c16 | open | open |  |  |  |
-| f410c | f410c..42f8 | 0x410c | open | open |  |  |  |
+| f410c | 0x343a-0x3648 | 0x410c | confirmed | differs | other differences |  | unexplained instruction forms: ld	rS,rrS(#N) |
 | f42f8 | 0x1efa-0x204e | 0x42f8 | confirmed | differs | other differences |  | unexplained instruction forms: ld	@rrS,#N; ld	A,#N |
 | f44e6 | f44e6..4968 | 0x44e6 | open | open |  |  |  |
 | f4968 | 0x1cfc-0x1da6 | 0x4968 | confirmed | differs | D only (pattern-verified) | D1, D3, D6, D7 |  |
@@ -91,7 +91,9 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f7286 | 0x2448-0x24ca | 0x7286 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D8 |  |
 | f7300 | f7300..7526 | 0x7300 | open | open |  |  |  |
 | f7526 | f7526..7808 | 0x7526 | open | open |  |  |  |
-| f79ca | f79ca..7bbc | 0x79ca | open | open |  |  |  |
+| f79ca | 0x3648-0x36dc | 0x79ca | confirmed | exact | D only (pattern-verified) |  |  |
+| f7a5e |  | 0x7a5e | open | open |  |  |  |
+| f7ae2 |  | 0x7ae2 | open | open |  |  |  |
 | f7bbc | 0x0b82-0x0bf2 | 0x7bbc | confirmed | differs | D only (pattern-verified) | D1, D10, D3 |  |
 | f7c26 | f7c26..85f8 | 0x7c26 | open | open |  |  |  |
 | f85f8 | 0x0884-0x0916 | 0x85f8 | confirmed | differs | D only (manual reading) | D2 | indirect byte store through another register pair (rr2 here, rr4 in the original) |
@@ -142,10 +144,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | sld-deferred-18f2 | deferred (large function) | f18f2 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x18f2, 1700 bytes, not started |
 | sld-deferred-2056 | deferred (large function) | f2056 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x2056, 590 bytes, not started |
 | sld-deferred-3144 | deferred (large function) | f3144 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x3144, 708 bytes, not started |
-| sld-deferred-3516 | deferred (large function) | f3516 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x3516, 586 bytes, not started |
 | sld-deferred-3760 | deferred (large function) | f3760 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x3760, 720 bytes, not started |
 | sld-deferred-3c16 | deferred (large function) | f3c16 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x3c16, 1270 bytes, not started |
-| sld-deferred-410c | deferred (large function) | f410c | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x410c, 492 bytes, not started |
 | sld-deferred-44e6 | deferred (large function) | f44e6 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x44e6, 1154 bytes, not started |
 | sld-deferred-4a16 | deferred (large function) | f4a16 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x4a16, 4118 bytes, not started |
 | sld-deferred-5a2c | deferred (large function) | f5a2c | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x5a2c, 1216 bytes, not started |
@@ -153,7 +153,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | sld-deferred-620e | deferred (large function) | f620e | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x620e, 544 bytes, not started |
 | sld-deferred-7300 | deferred (large function) | f7300 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7300, 550 bytes, not started |
 | sld-deferred-7526 | deferred (large function) | f7526 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7526, 738 bytes, not started |
-| sld-deferred-79ca | deferred (large function) | f79ca | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x79ca, 498 bytes, not started |
 | sld-deferred-7c26 | deferred (large function) | f7c26 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7c26, 2514 bytes, not started |
 | sld-1070-count | open (instruction count) | f1070 | open | - | find the one instruction of the original (112 against 111 in our draft) and the block order of the switch | entry 0x1070: 111 instructions against 112 in the original; not explained by a D pattern (D6 and D15 are the known layout and switch forms) |
 | sld-27d8-layout | open (block placement, semantic check by reading) | f27d8 | open | - | place the blocks of the table path (0x2b02) and of the stream B refill (0x2882) as in the original; then check the remaining 42 instructions (register choices D2 and the sra form) and run the function on the machine or in a test harness | entry 0x27d8, 1252 bytes: 361 instructions, 42 differ (block placement of 0x2b02 and 0x2882, scratch registers of the key, count and byte temporaries); the classifier reports 1 unexplained form (sra rS,#4); semantics checked by reading only |

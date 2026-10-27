@@ -282,12 +282,12 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2492",
-   "ours": "0x28ee-0x2a88",
+   "ours": "0x28ee-0x2a84",
    "level": "differs",
    "pairing_evidence": "loader step: the sum of the word fields 0x434/0x436 (halved) and the long fields 0x454/0x458 goes to the word buffer; the record loop (count bE41E) calls the state machine 6c6a, the probe 6a58 and the name check 6522; the summation is done through a stack long in the original (D2) and the loop test is at the bottom in the original (D7). Same 103 instructions",
    "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 6,
+    "d_normalised_pct": 94,
+    "pattern_diff": 8,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -307,7 +307,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2624",
-   "ours": "0x2a88-0x2c9c",
+   "ours": "0x2a84-0x2c98",
    "level": "differs",
    "pairing_evidence": "loop over the entries (count bE434/16) with refill of the word buffers 0x414 and 0x424, a 16-byte record (f2e76, swap_quad under bE4B6) and a switch on its word at +10 (keys 1, 2, 3; case 3 falls into case 2 as in the original). Same 117 instructions; the record array sits at another frame offset (0x18 instead of 0x08), frame layout (D16); the loop test is at the top in ours (D7). The data targets 0xE6E2, 0xEF02, 0xE8EA, 0xEAF2 are not yet named",
    "audit": {
@@ -327,7 +327,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x27d8",
-   "ours": "0x2c9c-0x31a8",
+   "ours": "0x2c98-0x31a4",
    "level": "differs",
    "pairing_evidence": "reading check: every block has the same instructions in the same order as the original, apart from the block placement and the register choices of the old cc (scratch registers of the key, count and byte temporaries); the bit-3 key of both switches is computed as in the original (jr ne / sra #4 path). Not run on the machine: the semantic equivalence is by reading. 42 of 361 instructions differ; the audit shows 1 unexplained form (sra rS,#4 in the layout of the first switch path)",
    "audit": {
@@ -504,11 +504,24 @@
    "pairing_evidence": "register choice differs (end pointer kept in rr8 in the original, p in rr10); frame 32 bytes in the original against 8 here (D1 share); otherwise equal"
   },
   "f3516": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x3516",
-   "ours": "f3516..3760",
-   "level": "open"
+   "ours": "0x31a4-0x343a",
+   "level": "differs",
+   "pairing_evidence": "loader step of the program header: magic check (E607/E611 set bE4B4, E707/E711 accepted), two refills of the word buffer, a 16-byte record table of count bE434/16 with the flags and the sums; the record fields are read through a pointer into the frame (D16) and the signed division takes another register pair (D2). Same 156 instructions. Calls to 3760 (deferred) and 932e (libc swap) are declared",
+   "audit": {
+    "d_normalised_pct": 84,
+    "pattern_diff": 42,
+    "pattern_unexplained": 5,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: ld\trS,rrS(#N); rr\trS,#1; sra\trS,#1",
+    "structure_flags": [],
+    "len_ours": 166,
+    "len_orig": 156
+   }
   },
   "f3760": {
    "file": null,
@@ -598,11 +611,24 @@
    "level": "open"
   },
   "f410c": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x410c",
-   "ours": "f410c..42f8",
-   "level": "open"
+   "ours": "0x343a-0x3648",
+   "level": "differs",
+   "pairing_evidence": "list insert of a name into the table at 0x3c22 (12-byte entries, sorted by the name with str_compare 0x3a30, head bE478, count at 0x047a, limit 0x32): the constant base of the table is an indexed displacement in the original (D5), the index multiply takes other registers (D2). Same 120 instructions. Quirk found by reading: when the name is already in the list (compare result 0) the attribute words are written at the step counter, not at the entry index; recorded in KNOWLEDGE",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 20,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: ld\trS,rrS(#N)",
+    "structure_flags": [],
+    "len_ours": 134,
+    "len_orig": 120
+   }
   },
   "f42f8": {
    "file": "sld.c",
@@ -1132,11 +1158,23 @@
    "level": "open"
   },
   "f79ca": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x79ca",
-   "ours": "f79ca..7bbc",
-   "level": "open"
+   "ours": "0x3648-0x36dc",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 23,
+    "len_orig": 23
+   }
   },
   "f7bbc": {
    "file": "sld.c",
@@ -1947,6 +1985,20 @@
     "len_ours": 110,
     "len_orig": 112
    }
+  },
+  "f7a5e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7a5e",
+   "ours": null,
+   "level": "open"
+  },
+  "f7ae2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x7ae2",
+   "ours": null,
+   "level": "open"
   }
  },
  "findings": [],
@@ -2015,15 +2067,6 @@
    "result": "entry 0x3144, 708 bytes, not started"
   },
   {
-   "id": "sld-deferred-3516",
-   "kind": "deferred (large function)",
-   "function": "f3516",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x3516, 586 bytes, not started"
-  },
-  {
    "id": "sld-deferred-3760",
    "kind": "deferred (large function)",
    "function": "f3760",
@@ -2040,15 +2083,6 @@
    "classification": "-",
    "action": "second pass: rebuild after the small and medium functions (large, complex)",
    "result": "entry 0x3c16, 1270 bytes, not started"
-  },
-  {
-   "id": "sld-deferred-410c",
-   "kind": "deferred (large function)",
-   "function": "f410c",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x410c, 492 bytes, not started"
   },
   {
    "id": "sld-deferred-44e6",
@@ -2112,15 +2146,6 @@
    "classification": "-",
    "action": "second pass: rebuild after the small and medium functions (large, complex)",
    "result": "entry 0x7526, 738 bytes, not started"
-  },
-  {
-   "id": "sld-deferred-79ca",
-   "kind": "deferred (large function)",
-   "function": "f79ca",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x79ca, 498 bytes, not started"
   },
   {
    "id": "sld-deferred-7c26",
