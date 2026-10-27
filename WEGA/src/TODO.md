@@ -146,10 +146,12 @@ produce the same bytes with the shipped cc.
   `ret` is the first instruction of the shipped ffltioc at 0x8680). Entry 0x8000 is no function start (inner jump target).
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
-  2026-10-27: 14 done (0762, 0aba/init_signals, 2e4c/high_byte, 3090, 6ffe, 702a, 719e/table32_entry, 0a5c/sig_handler,
-  6efe, 6b5a, 6b84, 6a08, 2dde, 4444/copy_leafname), 11 with findings (D1: 6fd0, 3ac6/flush_buffer; D2: 3a30, 34b8, 60f0,
-  0056/unpack_run, 0178, 2f04; D3: 65ec/swap_pair, 6620/swap_quad; D5: 3a88), 72 open, 97 entries.
-  Dead code candidates (no caller, no address reference): 6866, 01d2, 3b1e.
+  2026-10-27: 15 done (0762, 0aba/init_signals, 2e4c/high_byte, 3090, 6ffe, 702a, 719e/table32_entry, 0a5c/sig_handler,
+  6efe, 6b5a, 6b84, 6a08, 2dde, 4444/copy_leafname, 6134),
+  19 with findings: D1 (6fd0/table16_entry, 3ac6/flush_buffer); D2 (3a30/str_compare, 34b8/table_lookup, 60f0, 0056/unpack_run,
+  0178, 2f04, 85f8, 6bae, 7956/make_ccl); D3 (65ec/swap_pair, 6620/swap_quad); D4 (70ce/table16_index, 1664/add16_checked,
+  65c6/swap_bytes, 642e/list_move_after); D5 (3a88); D6 (6da8),
+  63 open, 97 entries. Dead code candidates (no caller, no address reference): 6866, 01d2, 3b1e.
   6b5a and 6b84 need an unused 4-byte local to reproduce the 8-byte frame (role unknown, noted in the source).
   Open with notes: 00ee (string packing: a run longer than 8 gets a header byte cnt|0x80; the padding loop counts a char
   down; guess: it runs to char wrap-around when cnt is negative, to be checked), 1664 (parameter form unclear). 65c6 (byte swap, frame 10 in the original) open: the form of the local buffer is not found.

@@ -171,7 +171,7 @@ long a;
 }
 
 /* swap_pair 0x65ec..0x6620: findings:D3 */
-int f65c6();
+int swap_bytes();
 
 swap_pair(a)
 int *a;
@@ -180,10 +180,10 @@ int *a;
 
 	p = a;
 	if (*p)
-		*p = f65c6(*p);
+		*p = swap_bytes(*p);
 	p++;
 	if (*p)
-		*p = f65c6(*p);
+		*p = swap_bytes(*p);
 }
 
 /* f6a08 0x6a08..0x6a58: done */
@@ -323,7 +323,7 @@ unsigned x;
 }
 
 /* swap_quad..6684: findings:D3 */
-int f65c6();
+int swap_bytes();
 
 swap_quad(a)
 char *a;
@@ -332,13 +332,13 @@ char *a;
 
 	p = a;
 	if (p[2])
-		p[2] = f65c6(p[2]);
+		p[2] = swap_bytes(p[2]);
 	if (p[3])
-		p[3] = f65c6(p[3]);
+		p[3] = swap_bytes(p[3]);
 	if (p[4])
-		p[4] = f65c6(p[4]);
+		p[4] = swap_bytes(p[4]);
 	if (p[5])
-		p[5] = f65c6(p[5]);
+		p[5] = swap_bytes(p[5]);
 }
 
 /* f2f04..2f3a: findings:D2 */
@@ -456,4 +456,234 @@ char *a;
 	}
 	*(char **)(p + 4) = p + 8;
 	*(int *)(p + 2) = 0x100;
+}
+
+/* table16_index..7112: findings:D4 */
+int table16_index(x, a)
+char *x;
+char *a;
+{
+	char *p;
+
+	if (gE47E > x)
+		f3408(2, "x");
+	else {
+		p = gE47E + (g04ee << 4);
+		if (p > x)
+			return ((int)x - (int)a) >> 4;
+		f3408(2, "x");
+	}
+}
+
+/* add16_checked..1696: findings:D4 */
+int add16_checked(a, x, y)
+long a;
+unsigned x;
+unsigned y;
+{
+	long s;
+
+	s = (long)x + y;
+	if (s >= 0x10000)
+		f3408(1);
+	return s;
+}
+
+/* f6134..620e: done */
+int bE3E7A;
+int bE3E82;
+char bE6E2[];
+char bE8EA[];
+char bEF02[];
+char bEAF2[];
+struct { int a; int b; int c; int d; } tblF332[];
+char *f06c6();
+int f620e();
+int f3ac6();
+
+f6134()
+{
+	register int i;
+
+	f3ac6(bE6E2);
+	f3ac6(bE8EA);
+	if (bE4A2) {
+		f3ac6(bEF02);
+		f3ac6(bEAF2);
+	}
+	for (i = 0; i <= bE3E82; i++) {
+		bE3E7A = 0;
+		if (tblF332[i].a > -1)
+			f620e(tblF332[i].a, 0x74, *(char **)(f06c6(tblF332[i].a) + 22));
+		if (tblF332[i].b > -1)
+			f620e(tblF332[i].b, 0x64, *(char **)(f06c6(tblF332[i].b) + 26));
+	}
+}
+
+/* f85f8..8680: findings:D2 */
+int f85f8(s, out, n)
+char *s;
+int *out;
+int n;
+{
+	register int m;
+	register int v;
+	register char *p;
+	char c;
+	int sign;
+
+	m = n;
+	sign = 0;
+	p = s;
+	if (m != 0 && *p == 0x2d) {
+		n--;
+		sign = 1;
+		p++;
+	}
+	v = 0;
+	while (m != 0) {
+		c = *p++;
+		if (c < 0x30 || c > 0x39)
+			break;
+		v = v * 10 + (c - 0x30);
+		m--;
+	}
+	if (sign)
+		*out = -v;
+	else
+		*out = v;
+	return n - m;
+}
+
+/* swap_bytes..65ec: findings:D4 */
+int swap_bytes(u)
+struct { int i; } u;
+{
+	char b[2];
+	register char *p;
+
+	p = b;
+	*p = u.i;
+	p++;
+	*p = u.i >> 8;
+	return *(int *)b;
+}
+
+/* f6bae..6c6a: findings:D2 */
+int bE4FA;
+char *bE4FC;
+char *table16_entry();
+int unpack_run();
+char **tblE500[];
+
+f6bae(a)
+char **a;
+{
+	register char *r;
+
+	if (*a == 0) {
+		if (bE4FA >= 0x0ffa)
+			f3408(2, "x");
+		tblE500[bE4FA] = a;
+		r = table16_entry(bE4FA++);
+		bE4FC = r;
+		*a = r;
+		bE4FA = unpack_run(bE472, r + 8) + bE4FA;
+		*(char *)(r + 4) = bE46E;
+		*(long *)r = bE46A;
+		*(int *)(r + 6) = bE470;
+		return 1;
+	}
+	bE4FC = *a;
+	return 0;
+}
+
+/* f6da8..6e1a: findings:D6 */
+int bE4D0;
+int bE4D2;
+int bE4D4;
+
+f6da8()
+{
+	switch (bE46E) {
+	case 2:
+	case 0x22:
+		bE46A = (unsigned)((unsigned)bE46A + bE4D0);
+		break;
+	case 3:
+	case 0x23:
+		bE46A = (unsigned)((unsigned)bE46A + bE4D2);
+		break;
+	case 4:
+	case 0x24:
+		bE46A = (unsigned)((unsigned)bE46A + bE4D4);
+		break;
+	case 0x20:
+		break;
+	default:
+		if (bE46E & 0x20)
+			bE46E = 0x21;
+	}
+}
+
+/* list_move_after..64d0: findings:D4 */
+long bF32E;
+long b3C12;
+
+int list_move_after(p, e)
+char *p;
+char *e;
+{
+	register char *q;
+	register char *r;
+
+	q = *(char **)(p + 0x16);
+	r = *(char **)(e + 0x12);
+	if (p == bF32E)
+		bF32E = e;
+	else
+		*(char **)(q + 0x12) = e;
+	if (e == b3C12)
+		b3C12 = p;
+	else
+		*(char **)(r + 0x16) = e;
+	*(char **)(p + 0x12) = r;
+	*(char **)(p + 0x16) = e;
+	*(char **)(e + 0x12) = p;
+	*(char **)(e + 0x16) = q;
+}
+
+/* make_ccl 0x7956..0x79ca: findings:D2 */
+char bE17BA[];
+
+char *make_ccl(p)
+char *p;
+{
+	register char *q;
+	register int neg;
+	register int i;
+	register int c;
+
+	neg = 0;
+	q = p;
+	if (*q == 0x5e) {
+		neg = 1;
+		q++;
+	}
+	for (i = 0; i < 128; i++) {
+		if (neg)
+			bE17BA[i] &= ~2;
+		else
+			bE17BA[i] |= 2;
+	}
+	do {
+		c = *q++;
+		if ((c & 0x7f) == 0x5d)
+			break;
+		if (neg)
+			bE17BA[c] |= 2;
+		else
+			bE17BA[c] &= ~2;
+	} while (c != -1);
+	return q;
 }

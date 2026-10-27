@@ -22,7 +22,7 @@
 1364 f1364 14a4 320 1 9d6 P ret open
 14a4 f14a4 1560 188 3 13a2 1486 1640 P ret open
 1560 f1560 1664 260 1 1426 c ret open
-1664 f1664 1696 50 1 1898 P ret open
+1664 add16_checked 1696 50 1 1898 P ret findings:D4
 1696 f1696 18f2 604 2 1392 1542 P ret open
 18f2 f18f2 1f96 1700 3 5018 5226 554c c ret open
 1f96 f1f96 2056 192 1 1bbe P ret open
@@ -62,12 +62,12 @@
 5a2c f5a2c 5eec 1216 3 4a96 4b32 4bce P ret open
 5eec f5eec 60f0 516 8 4a02 506e 5252 5406 P ret open
 60f0 f60f0 6134 68 1 63fc P ret findings:D2
-6134 f6134 620e 218 1 2cbc c ret open
+6134 f6134 620e 218 1 2cbc c ret done
 620e f620e 642e 544 2 61ba 61f8 P ret open
-642e f642e 64d0 162 1 5a00 P ret open
+642e list_move_after 64d0 162 1 5a00 P ret findings:D4
 64d0 f64d0 6522 82 1 612e P ret open
 6522 f6522 65c6 164 6 1a8 23a 25d6 3be0 c ret open
-65c6 f65c6 65ec 38 17 28aa 28b4 2982 298c P ret open
+65c6 swap_bytes 65ec 38 17 28aa 28b4 2982 298c P ret findings:D4
 65ec swap_pair 6620 52 3 1622 66f4 6e7c c ret findings:D3
 6620 swap_quad 6684 100 3 222c 26c6 363a c ret findings:D3
 6684 f6684 6800 380 2 1756 24fc c ret open
@@ -78,9 +78,9 @@
 6a58 f6a58 6b5a 258 4 1798 257c 6b7e 6ba8 P ret open
 6b5a f6b5a 6b84 42 5 c78 44fc 4510 4524 c ret done
 6b84 f6b84 6bae 42 2 15ee 6f9a P ret done
-6bae f6bae 6c6a 188 2 c84 17a4 c ret open
+6bae f6bae 6c6a 188 2 c84 17a4 c ret findings:D2
 6c6a f6c6a 6da8 318 5 2508 2936 29f6 2a90 P ret open
-6da8 f6da8 6e1a 114 1 1850 c ret open
+6da8 f6da8 6e1a 114 1 1850 c ret findings:D6
 6e1a f6e1a 6efe 228 3 2574 6a52 6f28 P ret open
 6efe f6efe 6f46 72 1 2cea c ret done
 6f46 f6f46 6fd0 138 1 1420 c ret open
@@ -88,7 +88,7 @@
 6ffe f6ffe 702a 44 1 846 c ret done
 702a f702a 705e 52 1 df8 c ret done
 705e f705e 70ce 112 5 208 4662 484e 489c P ret open
-70ce f70ce 7112 68 1 2b18 c ret open
+70ce table16_index 7112 68 1 2b18 c ret findings:D4
 7112 f7112 719e 140 1 13d8 c ret open
 719e table32_entry 71ca 44 5 1fca 2014 4990 595a c ret done
 71ca f71ca 7286 188 8 25e4 25ec 3bee 3bf8 c ret open
@@ -96,8 +96,8 @@
 7300 f7300 7526 550 3 7242 727a 72ec c ret open
 7526 f7526 7808 738 1 7436 P ret open
 7808 f7808 7956 334 1 7578 P ret open
-7956 f7956 79ca 116 1 73e6 P ret open
+7956 make_ccl 79ca 116 1 73e6 P ret findings:D2
 79ca f79ca 7bbc 498 52 1e2 250 266 2ee c ret open
 7bbc f7bbc 7c26 106 2 7f0a 81c0 P ret open
 7c26 f7c26 85f8 2514 3 7a4c 7ad0 7b78 c ret open
-85f8 f85f8 8680 136 2 7db0 7e0c P add open
+85f8 f85f8 8680 136 2 7db0 7e0c P add findings:D2

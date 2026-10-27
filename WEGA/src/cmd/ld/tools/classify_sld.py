@@ -30,6 +30,13 @@ import patterns as P  # noqa: E402
 from sout import SOut  # noqa: E402
 
 SLD = os.path.join(HERE, '..', 'sld.c')
+# indirect register-pair accesses (@rrN) that popt's pattern set does not know: the only difference is the register
+# pair (old compiler register choice, D2); checked by hand, see the note. Used only when the pattern check finds
+# nothing else unexplained.
+MANUAL_D2 = {
+    'swap_bytes': 'indirect word load through another register pair (rr4 here, rr2 in the original); D2',
+    'f85f8': 'indirect byte store through another register pair (rr2 here, rr4 in the original); D2',
+}
 TABLE = os.path.join(HERE, 'own_functions.txt')
 FINDINGS = os.path.join(HERE, 'findings.json')
 ORIG = '/mnt/share/cvs/P8000/tmp/wega31_root/bin/sld'
@@ -53,6 +60,7 @@ def mine_text(t):
     """our object names the stack and the data by symbol (not linked yet): symbols become addresses"""
     t = re.sub(r'_stkseg\+(\d+)', lambda m: '%%%04X' % int(m.group(1)), t)
     t = re.sub(r'_stkseg', '%0000', t)
+    t = re.sub(r'_[A-Za-z0-9_]+\+(\d+)', lambda m: '%%%04X' % int(m.group(1)), t)
     t = re.sub(r'_[A-Za-z0-9_]+', '%0000', t)
     # object labels of jumps and address constants (L<n>, L<n>t, L<n>d) are addresses too
     t = re.sub(r'\bL[0-9A-Za-z_]+(%0000)?', '%0000', t)
@@ -112,7 +120,12 @@ def main():
         pct = PC.align([P.dn(x) for x in F.extent(m, st, en)], [P.dn(x) for x in F.extent(o, g, end(g), True)])
         audit = {'d_normalised_pct': pct, 'pattern_diff': res['diff'], 'pattern_unexplained': res['unexplained'],
                  'reordered_instructions': res['moved'], 'reordered_examples': res['moved_examples']}
-        if res['unexplained'] == 0 and not flags:
+        if res['unexplained'] and not flags and name in MANUAL_D2 and all(
+                x.split('\t')[0] in ('ld', 'ldb') and '@rr' in x for x in res['examples']):
+            audit['difference_class'] = 'D only (manual reading)'
+            audit['d_classes'] = ['D2']
+            audit['difference_note'] = MANUAL_D2[name]
+        elif res['unexplained'] == 0 and not flags:
             audit['difference_class'] = 'D only (pattern-verified)'
             audit['d_classes'] = sorted({k.split(' ')[0] for k in res['classes']})
         else:

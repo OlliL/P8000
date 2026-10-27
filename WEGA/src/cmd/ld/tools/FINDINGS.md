@@ -10,13 +10,14 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 25 |
-| open | 391 |
+| confirmed | 34 |
+| open | 382 |
 
 | Difference class | Count |
 |---|---|
-| - | 391 |
-| D only (pattern-verified) | 25 |
+| - | 382 |
+| D only (manual reading) | 2 |
+| D only (pattern-verified) | 32 |
 
 **Pending findings:** 0
 
@@ -27,6 +28,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Function | Ours | Original | Pairing | Level | Difference class | Old-cc classes | Note |
 |---|---|---|---|---|---|---|---|
+| add16_checked | 0x0780-0x07ae | 0x1664 | confirmed | differs | D only (pattern-verified) | D2, D3 |  |
 | c_0018 |  | 0x0018 | open | candidate: starts after ret, not called |  |  |  |
 | c_00ee |  | 0x00ee | open | candidate: starts after ret, not called |  |  |  |
 | c_0178 |  | 0x0178 | open | candidate: starts after ret, not called |  |  |  |
@@ -338,10 +340,10 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | c_9704 |  | 0x9704 | open | candidate: starts after ret, not called |  |  |  |
 | c_9716 |  | 0x9716 | open | candidate: starts after ret, not called |  |  |  |
 | c_9730 |  | 0x9730 | open | candidate: starts after ret, not called |  |  |  |
-| copy_leafname | 0x063c-0x06de | 0x4444 | confirmed | exact | D only (pattern-verified) |  |  |
+| copy_leafname | 0x0624-0x06c6 | 0x4444 | confirmed | exact | D only (pattern-verified) |  |  |
 | f0018 | f0018..0056 | 0x0018 | open | open |  |  |  |
 | f00ee | f00ee..0178 | 0x00ee | open | open |  |  |  |
-| f0178 | 0x05de-0x063c | 0x0178 | confirmed | differs | D only (pattern-verified) | D1, D10 |  |
+| f0178 | 0x05c6-0x0624 | 0x0178 | confirmed | differs | D only (pattern-verified) | D1, D10 |  |
 | f01d2 |  | 0x01d2 | open | open |  |  |  |
 | f0220 | f0220..06c6 | 0x0220 | open | open |  |  |  |
 | f06c6 | f06c6..0762 | 0x06c6 | open | open |  |  |  |
@@ -354,7 +356,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1364 | f1364..14a4 | 0x1364 | open | open |  |  |  |
 | f14a4 | f14a4..1560 | 0x14a4 | open | open |  |  |  |
 | f1560 | f1560..1664 | 0x1560 | open | open |  |  |  |
-| f1664 | f1664..1696 | 0x1664 | open | open |  |  |  |
 | f1696 | f1696..18f2 | 0x1696 | open | open |  |  |  |
 | f18f2 | f18f2..1f96 | 0x18f2 | open | open |  |  |  |
 | f1f96 | f1f96..2056 | 0x1f96 | open | open |  |  |  |
@@ -367,9 +368,9 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f27d8 | f27d8..2cbc | 0x27d8 | open | open |  |  |  |
 | f2cbc | f2cbc..2d4c | 0x2cbc | open | open |  |  |  |
 | f2d4c | f2d4c..2dde | 0x2d4c | open | open |  |  |  |
-| f2dde | 0x0570-0x05de | 0x2dde | confirmed | exact | D only (pattern-verified) |  |  |
+| f2dde | 0x0558-0x05c6 | 0x2dde | confirmed | exact | D only (pattern-verified) |  |  |
 | f2e76 | f2e76..2f04 | 0x2e76 | open | open |  |  |  |
-| f2f04 | 0x053e-0x0570 | 0x2f04 | confirmed | differs | D only (pattern-verified) | D1 |  |
+| f2f04 | 0x0526-0x0558 | 0x2f04 | confirmed | differs | D only (pattern-verified) | D1 |  |
 | f2f3a | f2f3a..3090 | 0x2f3a | open | open |  |  |  |
 | f3090 | 0x0194-0x01a8 | 0x3090 | confirmed | exact | D only (pattern-verified) |  |  |
 | f30a4 | f30a4..3144 | 0x30a4 | open | open |  |  |  |
@@ -389,41 +390,37 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f5a2c | f5a2c..5eec | 0x5a2c | open | open |  |  |  |
 | f5eec | f5eec..60f0 | 0x5eec | open | open |  |  |  |
 | f60f0 | 0x02a0-0x02d8 | 0x60f0 | confirmed | differs | D only (pattern-verified) | D1, D13, D2, D3, D7, D8/D2 |  |
-| f6134 | f6134..620e | 0x6134 | open | open |  |  |  |
+| f6134 | 0x07ae-0x0890 | 0x6134 | confirmed | exact | D only (pattern-verified) | D3, D6, D7 |  |
 | f620e | f620e..642e | 0x620e | open | open |  |  |  |
-| f642e | f642e..64d0 | 0x642e | open | open |  |  |  |
 | f64d0 | f64d0..6522 | 0x64d0 | open | open |  |  |  |
 | f6522 | f6522..65c6 | 0x6522 | open | open |  |  |  |
-| f65c6 | f65c6..65ec | 0x65c6 | open | open |  |  |  |
 | f6684 | f6684..6800 | 0x6684 | open | open |  |  |  |
 | f6800 | f6800..6866 | 0x6800 | open | open |  |  |  |
 | f6866 | f6866..68a2 | 0x6866 | open | open |  |  |  |
 | f68a2 | f68a2..6a08 | 0x68a2 | open | open |  |  |  |
-| f6a08 | 0x0312-0x0366 | 0x6a08 | confirmed | exact | D only (pattern-verified) | D7 |  |
+| f6a08 | 0x030a-0x035e | 0x6a08 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f6a58 | f6a58..6b5a | 0x6a58 | open | open |  |  |  |
-| f6b5a | 0x0366-0x0394 | 0x6b5a | confirmed | exact | D only (pattern-verified) | D7 |  |
-| f6b84 | 0x0394-0x03be | 0x6b84 | confirmed | exact | D only (pattern-verified) | D7 |  |
-| f6bae | f6bae..6c6a | 0x6bae | open | open |  |  |  |
+| f6b5a | 0x035e-0x038c | 0x6b5a | confirmed | exact | D only (pattern-verified) | D7 |  |
+| f6b84 | 0x038c-0x03b6 | 0x6b84 | confirmed | exact | D only (pattern-verified) | D7 |  |
+| f6bae | 0x094c-0x0a04 | 0x6bae | confirmed | differs | D only (pattern-verified) | D7 |  |
 | f6c6a | f6c6a..6da8 | 0x6c6a | open | open |  |  |  |
-| f6da8 | f6da8..6e1a | 0x6da8 | open | open |  |  |  |
+| f6da8 | 0x0a04-0x0a76 | 0x6da8 | confirmed | differs | D only (pattern-verified) | D10, D13, D7, D8, D8/D2 |  |
 | f6e1a | f6e1a..6efe | 0x6e1a | open | open |  |  |  |
-| f6efe | 0x03be-0x040e | 0x6efe | confirmed | exact | D only (pattern-verified) | D7 |  |
+| f6efe | 0x03b6-0x0406 | 0x6efe | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f6f46 | f6f46..6fd0 | 0x6f46 | open | open |  |  |  |
-| f6ffe | 0x043c-0x0468 | 0x6ffe | confirmed | exact | D only (pattern-verified) |  |  |
-| f702a | 0x0468-0x049c | 0x702a | confirmed | exact | D only (pattern-verified) |  |  |
+| f6ffe | 0x0434-0x0460 | 0x6ffe | confirmed | exact | D only (pattern-verified) |  |  |
+| f702a | 0x0460-0x0494 | 0x702a | confirmed | exact | D only (pattern-verified) |  |  |
 | f705e | f705e..70ce | 0x705e | open | open |  |  |  |
-| f70ce | f70ce..7112 | 0x70ce | open | open |  |  |  |
 | f7112 | f7112..719e | 0x7112 | open | open |  |  |  |
 | f71ca | f71ca..7286 | 0x71ca | open | open |  |  |  |
 | f7286 | f7286..7300 | 0x7286 | open | open |  |  |  |
 | f7300 | f7300..7526 | 0x7300 | open | open |  |  |  |
 | f7526 | f7526..7808 | 0x7526 | open | open |  |  |  |
 | f7808 | f7808..7956 | 0x7808 | open | open |  |  |  |
-| f7956 | f7956..79ca | 0x7956 | open | open |  |  |  |
 | f79ca | f79ca..7bbc | 0x79ca | open | open |  |  |  |
 | f7bbc | f7bbc..7c26 | 0x7bbc | open | open |  |  |  |
 | f7c26 | f7c26..85f8 | 0x7c26 | open | open |  |  |  |
-| f85f8 | f85f8..8680 | 0x85f8 | open | open |  |  |  |
+| f85f8 | 0x0890-0x0922 | 0x85f8 | confirmed | differs | D only (manual reading) | D2 | indirect byte store through another register pair (rr2 here, rr4 in the original); D2 |
 | f_8000 |  | 0x8000 | open | proven: target of a call in the code |  |  |  |
 | f_8924 |  | 0x8924 | open | proven: target of a call in the code |  |  |  |
 | f_89ba |  | 0x89ba | open | proven: target of a call in the code |  |  |  |
@@ -432,15 +429,19 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f_903a |  | 0x903a | open | proven: target of a call in the code |  |  |  |
 | f_946e |  | 0x946e | open | proven: target of a call in the code |  |  |  |
 | f_96be |  | 0x96be | open | proven: target of a call in the code |  |  |  |
-| flush_buffer | 0x06de-0x073e | 0x3ac6 | confirmed | differs | D only (pattern-verified) | D1, D3, D7 |  |
+| flush_buffer | 0x06c6-0x0726 | 0x3ac6 | confirmed | differs | D only (pattern-verified) | D1, D3, D7 |  |
 | high_byte | 0x0166-0x0194 | 0x2e4c | confirmed | exact | D only (pattern-verified) | D7 |  |
 | init_signals | 0x011c-0x0166 | 0x0aba | confirmed | exact | D only (pattern-verified) |  |  |
+| list_move_after | 0x0a76-0x0b18 | 0x642e | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
+| make_ccl | 0x0b18-0x0b8e | 0x7956 | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D8/D2 |  |
 | sig_handler | 0x00be-0x011c | 0x0a5c | confirmed | exact | D only (pattern-verified) |  |  |
 | str_compare | 0x020a-0x0262 | 0x3a30 | confirmed | differs | D only (pattern-verified) | D13 |  |
-| swap_pair | 0x02d8-0x0312 | 0x65ec | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
-| swap_quad | 0x04c8-0x053e | 0x6620 | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
-| table16_entry | 0x040e-0x043c | 0x6fd0 | confirmed | differs | D only (pattern-verified) | D1 |  |
-| table32_entry | 0x049c-0x04c8 | 0x719e | confirmed | exact | D only (pattern-verified) |  |  |
+| swap_bytes | 0x0922-0x094c | 0x65c6 | confirmed | differs | D only (manual reading) | D2 | indirect word load through another register pair (rr4 here, rr2 in the original); D2 |
+| swap_pair | 0x02d8-0x030a | 0x65ec | confirmed | differs | D only (pattern-verified) | D10, D3 |  |
+| swap_quad | 0x04c0-0x0526 | 0x6620 | confirmed | differs | D only (pattern-verified) | D10, D3 |  |
+| table16_entry | 0x0406-0x0434 | 0x6fd0 | confirmed | differs | D only (pattern-verified) | D1 |  |
+| table16_index | 0x0726-0x0780 | 0x70ce | confirmed | differs | D only (pattern-verified) | D1, D10, D16, D2, D3, D7 |  |
+| table32_entry | 0x0494-0x04c0 | 0x719e | confirmed | exact | D only (pattern-verified) |  |  |
 | table_lookup | 0x01a8-0x020a | 0x34b8 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D7 |  |
 | unpack_run | 0x0000-0x0094 | 0x0056 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D8 |  |
 

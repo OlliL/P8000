@@ -2596,7 +2596,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0178",
-   "ours": "0x05de-0x063c",
+   "ours": "0x05c6-0x0624",
    "level": "differs",
    "pairing_evidence": "register choice of the copy of src (rr12 in the original, rr10 here) and the first byte read through a copy in rr2 (D2); frame and calls equal",
    "audit": {
@@ -2742,13 +2742,6 @@
    "ours": "f1560..1664",
    "level": "open"
   },
-  "f1664": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x1664",
-   "ours": "f1664..1696",
-   "level": "open"
-  },
   "f1696": {
    "file": null,
    "pairing": "open",
@@ -2837,7 +2830,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2dde",
-   "ours": "0x0570-0x05de",
+   "ours": "0x0558-0x05c6",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -2884,7 +2877,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2f04",
-   "ours": "0x053e-0x0570",
+   "ours": "0x0526-0x0558",
    "level": "differs",
    "pairing_evidence": "register choice differs: the original keeps the pointer in rr10 and the count in r13 (saves r3..r7), here rr12 and r11 (D2); otherwise equal",
    "audit": {
@@ -3125,24 +3118,33 @@
    "pairing_evidence": "unexplained instruction forms: ld\trS,@rrS; ld\trS,rrS(#N)"
   },
   "f6134": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6134",
-   "ours": "f6134..620e",
-   "level": "open"
+   "ours": "0x07ae-0x0890",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 85,
+    "pattern_diff": 16,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D3",
+     "D6",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 53,
+    "len_orig": 53
+   }
   },
   "f620e": {
    "file": null,
    "pairing": "open",
    "orig": "0x620e",
    "ours": "f620e..642e",
-   "level": "open"
-  },
-  "f642e": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x642e",
-   "ours": "f642e..64d0",
    "level": "open"
   },
   "f64d0": {
@@ -3157,13 +3159,6 @@
    "pairing": "open",
    "orig": "0x6522",
    "ours": "f6522..65c6",
-   "level": "open"
-  },
-  "f65c6": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x65c6",
-   "ours": "f65c6..65ec",
    "level": "open"
   },
   "f6684": {
@@ -3198,7 +3193,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6a08",
-   "ours": "0x0312-0x0366",
+   "ours": "0x030a-0x035e",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 84,
@@ -3226,7 +3221,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6b5a",
-   "ours": "0x0366-0x0394",
+   "ours": "0x035e-0x038c",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 91,
@@ -3247,7 +3242,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6b84",
-   "ours": "0x0394-0x03be",
+   "ours": "0x038c-0x03b6",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 82,
@@ -3265,11 +3260,26 @@
    }
   },
   "f6bae": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6bae",
-   "ours": "f6bae..6c6a",
-   "level": "open"
+   "ours": "0x094c-0x0a04",
+   "level": "differs",
+   "pairing_evidence": "register choice of the pointer argument for the last store (rr4 in the original, loaded from the frame here); long bE46A; otherwise equal",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 50,
+    "len_orig": 50
+   }
   },
   "f6c6a": {
    "file": null,
@@ -3279,11 +3289,30 @@
    "level": "open"
   },
   "f6da8": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6da8",
-   "ours": "f6da8..6e1a",
-   "level": "open"
+   "ours": "0x0a04-0x0a76",
+   "level": "differs",
+   "pairing_evidence": "switch table (cpir over the case values, jump table at 0x165c): case order and layout differ (D6); the bit test of the default case reloads the character (D2); the case actions are equal",
+   "audit": {
+    "d_normalised_pct": 59,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 17,
+    "len_orig": 29
+   }
   },
   "f6e1a": {
    "file": null,
@@ -3296,7 +3325,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6efe",
-   "ours": "0x03be-0x040e",
+   "ours": "0x03b6-0x0406",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 92,
@@ -3338,7 +3367,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6fd0",
-   "ours": "0x040e-0x043c",
+   "ours": "0x0406-0x0434",
    "level": "differs",
    "pairing_evidence": "frame 14 bytes against 6 bytes of the draft; all other instructions equal"
   },
@@ -3346,7 +3375,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6ffe",
-   "ours": "0x043c-0x0468",
+   "ours": "0x0434-0x0460",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3365,7 +3394,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x702a",
-   "ours": "0x0468-0x049c",
+   "ours": "0x0460-0x0494",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3387,13 +3416,6 @@
    "ours": "f705e..70ce",
    "level": "open"
   },
-  "f70ce": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x70ce",
-   "ours": "f70ce..7112",
-   "level": "open"
-  },
   "f7112": {
    "file": null,
    "pairing": "open",
@@ -3405,7 +3427,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x719e",
-   "ours": "0x049c-0x04c8",
+   "ours": "0x0494-0x04c0",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3455,13 +3477,6 @@
    "ours": "f7808..7956",
    "level": "open"
   },
-  "f7956": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x7956",
-   "ours": "f7956..79ca",
-   "level": "open"
-  },
   "f79ca": {
    "file": null,
    "pairing": "open",
@@ -3484,11 +3499,27 @@
    "level": "open"
   },
   "f85f8": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x85f8",
-   "ours": "f85f8..8680",
-   "level": "open"
+   "ours": "0x0890-0x0922",
+   "level": "differs",
+   "pairing_evidence": "register allocation differs (counter r11, value r10, pointer rr12 in the original; the character is also kept in the frame). Semantics equal, including the count quirk: with a sign the loop counts the original n, the return uses the decremented n (see KNOWLEDGE quirks)",
+   "audit": {
+    "d_normalised_pct": 72,
+    "pattern_diff": 25,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (manual reading)",
+    "d_classes": [
+     "D2"
+    ],
+    "difference_note": "indirect byte store through another register pair (rr2 here, rr4 in the original); D2",
+    "structure_flags": [],
+    "len_ours": 46,
+    "len_orig": 45
+   }
   },
   "f01d2": {
    "file": null,
@@ -3525,19 +3556,18 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x65ec",
-   "ours": "0x02d8-0x0312",
+   "ours": "0x02d8-0x030a",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 83,
-    "pattern_diff": 6,
+    "d_normalised_pct": 94,
+    "pattern_diff": 2,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
-     "D3",
-     "D7"
+     "D3"
     ],
     "structure_flags": [],
     "len_ours": 18,
@@ -3548,19 +3578,18 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6620",
-   "ours": "0x04c8-0x053e",
+   "ours": "0x04c0-0x0526",
    "level": "differs",
    "audit": {
-    "d_normalised_pct": 87,
-    "pattern_diff": 10,
+    "d_normalised_pct": 97,
+    "pattern_diff": 2,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D10",
-     "D3",
-     "D7"
+     "D3"
     ],
     "structure_flags": [],
     "len_ours": 39,
@@ -3571,7 +3600,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x4444",
-   "ours": "0x063c-0x06de",
+   "ours": "0x0624-0x06c6",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -3590,7 +3619,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3ac6",
-   "ours": "0x06de-0x073e",
+   "ours": "0x06c6-0x0726",
    "level": "differs",
    "audit": {
     "d_normalised_pct": 88,
@@ -3615,6 +3644,123 @@
    "orig": "0x3b1e",
    "ours": null,
    "level": "open"
+  },
+  "table16_index": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x70ce",
+   "ours": "0x0726-0x0780",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 52,
+    "pattern_diff": 19,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D16",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 25,
+    "len_orig": 20
+   }
+  },
+  "add16_checked": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x1664",
+   "ours": "0x0780-0x07ae",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 15,
+    "len_orig": 15
+   }
+  },
+  "swap_bytes": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x65c6",
+   "ours": "0x0922-0x094c",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 73,
+    "pattern_diff": 7,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (manual reading)",
+    "d_classes": [
+     "D2"
+    ],
+    "difference_note": "indirect word load through another register pair (rr4 here, rr2 in the original); D2",
+    "structure_flags": [],
+    "len_ours": 15,
+    "len_orig": 14
+   }
+  },
+  "list_move_after": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x642e",
+   "ours": "0x0a76-0x0b18",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 5,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 46,
+    "len_orig": 45
+   }
+  },
+  "make_ccl": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7956",
+   "ours": "0x0b18-0x0b8e",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 76,
+    "pattern_diff": 17,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D2",
+     "D3",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 37,
+    "len_orig": 38
+   }
   }
  },
  "findings": [],
