@@ -45,7 +45,8 @@ def common(t):
 
 
 def orig_text(t):
-    return common(t)
+    # the disassembler labels the jump targets of the original (L<addr>): the same masking as in mine_text
+    return common(re.sub(r'\bL[0-9A-Za-z_]+', '%0000', t))
 
 
 def mine_text(t):
@@ -54,7 +55,7 @@ def mine_text(t):
     t = re.sub(r'_stkseg', '%0000', t)
     t = re.sub(r'_[A-Za-z0-9_]+', '%0000', t)
     # object labels of jumps and address constants (L<n>, L<n>t, L<n>d) are addresses too
-    t = re.sub(r'\bL[0-9A-Za-z]+%0000', '%0000', t)
+    t = re.sub(r'\bL[0-9A-Za-z_]+(%0000)?', '%0000', t)
     return common(t)
 
 

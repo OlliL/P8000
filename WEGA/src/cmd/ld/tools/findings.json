@@ -2585,32 +2585,6 @@
    "ours": "f0018..0056",
    "level": "open"
   },
-  "f0056": {
-   "audit": {
-    "d_normalised_pct": 70,
-    "pattern_diff": 28,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D3",
-     "D7",
-     "D8"
-    ],
-    "structure_flags": [],
-    "len_ours": 47,
-    "len_orig": 47
-   },
-   "file": "sld.c",
-   "pairing": "confirmed",
-   "orig": "0x0056",
-   "ours": "0x0000-0x0094",
-   "level": "differs",
-   "pairing_evidence": "register numbers differ (dst in rr10, src in rr12 equal; counter in r13 in the original, r9 here), ch kept in memory in the original; frame and local offsets equal"
-  },
   "f00ee": {
    "file": null,
    "pairing": "open",
@@ -2619,11 +2593,27 @@
    "level": "open"
   },
   "f0178": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x0178",
-   "ours": "f0178..0220",
-   "level": "open"
+   "ours": "0x05de-0x063c",
+   "level": "differs",
+   "pairing_evidence": "register choice of the copy of src (rr12 in the original, rr10 here) and the first byte read through a copy in rr2 (D2); frame and calls equal",
+   "audit": {
+    "d_normalised_pct": 82,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10"
+    ],
+    "structure_flags": [],
+    "len_ours": 28,
+    "len_orig": 28
+   }
   },
   "f0220": {
    "file": null,
@@ -2646,15 +2636,13 @@
    "ours": "0x0094-0x00be",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 2,
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D7"
-    ],
+    "d_classes": [],
     "structure_flags": [],
     "len_ours": 12,
     "len_orig": 12
@@ -2674,15 +2662,13 @@
    "ours": "0x00be-0x011c",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 83,
-    "pattern_diff": 8,
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D7"
-    ],
+    "d_classes": [],
     "structure_flags": [],
     "len_ours": 23,
     "len_orig": 23
@@ -2695,15 +2681,13 @@
    "ours": "0x011c-0x0166",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 4,
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D7"
-    ],
+    "d_classes": [],
     "structure_flags": [],
     "len_ours": 17,
     "len_orig": 17
@@ -2850,11 +2834,23 @@
    "level": "open"
   },
   "f2dde": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x2dde",
-   "ours": "f2dde..2e4c",
-   "level": "open"
+   "ours": "0x0570-0x05de",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 32,
+    "len_orig": 32
+   }
   },
   "high_byte": {
    "file": "sld.c",
@@ -2863,8 +2859,8 @@
    "ours": "0x0166-0x0194",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 86,
-    "pattern_diff": 4,
+    "d_normalised_pct": 93,
+    "pattern_diff": 2,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2885,11 +2881,26 @@
    "level": "open"
   },
   "f2f04": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x2f04",
-   "ours": "f2f04..2f3a",
-   "level": "open"
+   "ours": "0x053e-0x0570",
+   "level": "differs",
+   "pairing_evidence": "register choice differs: the original keeps the pointer in rr10 and the count in r13 (saves r3..r7), here rr12 and r11 (D2); otherwise equal",
+   "audit": {
+    "d_normalised_pct": 67,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 15,
+    "len_orig": 15
+   }
   },
   "f2f3a": {
    "file": null,
@@ -2940,8 +2951,8 @@
   },
   "table_lookup": {
    "audit": {
-    "d_normalised_pct": 56,
-    "pattern_diff": 21,
+    "d_normalised_pct": 72,
+    "pattern_diff": 13,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2979,15 +2990,14 @@
   },
   "str_compare": {
    "audit": {
-    "d_normalised_pct": 77,
-    "pattern_diff": 14,
+    "d_normalised_pct": 97,
+    "pattern_diff": 2,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D13",
-     "D7"
+     "D13"
     ],
     "structure_flags": [],
     "len_ours": 31,
@@ -3002,8 +3012,8 @@
   },
   "f3a88": {
    "audit": {
-    "d_normalised_pct": 68,
-    "pattern_diff": 13,
+    "d_normalised_pct": 77,
+    "pattern_diff": 9,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3011,8 +3021,7 @@
     "d_classes": [
      "D1",
      "D10",
-     "D3",
-     "D7"
+     "D3"
     ],
     "structure_flags": [],
     "len_ours": 21,
@@ -3021,16 +3030,9 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3a88",
-   "ours": "0x0262-0x02a4",
+   "ours": "0x0262-0x02a0",
    "level": "differs",
    "pairing_evidence": "constant index address form of p[3] (D5); argument v spilled to the frame in the original (D4); otherwise equal"
-  },
-  "f3ac6": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x3ac6",
-   "ours": "f3ac6..3b58",
-   "level": "open"
   },
   "f3b58": {
    "file": null,
@@ -3058,13 +3060,6 @@
    "pairing": "open",
    "orig": "0x42f8",
    "ours": "f42f8..4444",
-   "level": "open"
-  },
-  "f4444": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x4444",
-   "ours": "f4444..44e6",
    "level": "open"
   },
   "f44e6": {
@@ -3104,8 +3099,8 @@
   },
   "f60f0": {
    "audit": {
-    "d_normalised_pct": 43,
-    "pattern_diff": 20,
+    "d_normalised_pct": 57,
+    "pattern_diff": 14,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3125,7 +3120,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x60f0",
-   "ours": "0x02a4-0x02dc",
+   "ours": "0x02a0-0x02d8",
    "level": "differs",
    "pairing_evidence": "unexplained instruction forms: ld\trS,@rrS; ld\trS,rrS(#N)"
   },
@@ -3171,37 +3166,6 @@
    "ours": "f65c6..65ec",
    "level": "open"
   },
-  "f65ec": {
-   "audit": {
-    "d_normalised_pct": 72,
-    "pattern_diff": 10,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D3",
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 18,
-    "len_orig": 18
-   },
-   "file": "sld.c",
-   "pairing": "confirmed",
-   "orig": "0x65ec",
-   "ours": "0x02dc-0x0316",
-   "level": "differs",
-   "pairing_evidence": "parameter reloaded from the frame into rr12 in the original (store and load), copied from rr6 here; otherwise equal"
-  },
-  "f6620": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x6620",
-   "ours": "f6620..6684",
-   "level": "open"
-  },
   "f6684": {
    "file": null,
    "pairing": "open",
@@ -3234,11 +3198,11 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6a08",
-   "ours": "0x0316-0x036a",
+   "ours": "0x0312-0x0366",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 74,
-    "pattern_diff": 10,
+    "d_normalised_pct": 84,
+    "pattern_diff": 6,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3262,7 +3226,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6b5a",
-   "ours": "0x036a-0x0398",
+   "ours": "0x0366-0x0394",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 91,
@@ -3283,7 +3247,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6b84",
-   "ours": "0x0398-0x03c2",
+   "ours": "0x0394-0x03be",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 82,
@@ -3332,11 +3296,11 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6efe",
-   "ours": "0x03c2-0x0412",
+   "ours": "0x03be-0x040e",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 85,
-    "pattern_diff": 8,
+    "d_normalised_pct": 92,
+    "pattern_diff": 4,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -3358,15 +3322,14 @@
   },
   "table16_entry": {
    "audit": {
-    "d_normalised_pct": 69,
-    "pattern_diff": 8,
+    "d_normalised_pct": 85,
+    "pattern_diff": 4,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D1",
-     "D7"
+     "D1"
     ],
     "structure_flags": [],
     "len_ours": 13,
@@ -3375,7 +3338,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6fd0",
-   "ours": "0x0412-0x0440",
+   "ours": "0x040e-0x043c",
    "level": "differs",
    "pairing_evidence": "frame 14 bytes against 6 bytes of the draft; all other instructions equal"
   },
@@ -3383,18 +3346,16 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6ffe",
-   "ours": "0x0440-0x046c",
+   "ours": "0x043c-0x0468",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 2,
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D7"
-    ],
+    "d_classes": [],
     "structure_flags": [],
     "len_ours": 12,
     "len_orig": 12
@@ -3404,18 +3365,16 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x702a",
-   "ours": "0x046c-0x04a0",
+   "ours": "0x0468-0x049c",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 2,
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D7"
-    ],
+    "d_classes": [],
     "structure_flags": [],
     "len_ours": 14,
     "len_orig": 14
@@ -3446,18 +3405,16 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x719e",
-   "ours": "0x04a0-0x04cc",
+   "ours": "0x049c-0x04c8",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 85,
-    "pattern_diff": 4,
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D7"
-    ],
+    "d_classes": [],
     "structure_flags": [],
     "len_ours": 13,
     "len_orig": 13
@@ -3531,6 +3488,132 @@
    "pairing": "open",
    "orig": "0x85f8",
    "ours": "f85f8..8680",
+   "level": "open"
+  },
+  "f01d2": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x01d2",
+   "ours": null,
+   "level": "open"
+  },
+  "unpack_run": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x0056",
+   "ours": "0x0000-0x0094",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 85,
+    "pattern_diff": 14,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 47,
+    "len_orig": 47
+   }
+  },
+  "swap_pair": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x65ec",
+   "ours": "0x02d8-0x0312",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 83,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 18
+   }
+  },
+  "swap_quad": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x6620",
+   "ours": "0x04c8-0x053e",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 39,
+    "len_orig": 39
+   }
+  },
+  "copy_leafname": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x4444",
+   "ours": "0x063c-0x06de",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 48,
+    "len_orig": 48
+   }
+  },
+  "flush_buffer": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x3ac6",
+   "ours": "0x06de-0x073e",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 32,
+    "len_orig": 31
+   }
+  },
+  "f3b1e": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x3b1e",
+   "ours": null,
    "level": "open"
   }
  },

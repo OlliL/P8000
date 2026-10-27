@@ -8,10 +8,10 @@
  * this file is then removed.
  */
 
-/* f0056 0x0056..0x00ee: findings:D2 */
+/* unpack_run 0x0056..0x00ee: findings:D2 */
 int g0476;
 
-int f0056(src, dst)
+int unpack_run(src, dst)
 register char *src;
 register char *dst;
 {
@@ -138,7 +138,7 @@ char *q;
 }
 
 /* f3a88 0x3a88..0x3ac6: findings:D5 */
-int f3ac6();
+int flush_buffer();
 
 f3a88(v, a)
 int v;
@@ -150,7 +150,7 @@ char *a;
 	p[2] = v;
 	p[3] += 2;
 	if (--p[1] <= 0)
-		f3ac6(p);
+		flush_buffer(p);
 }
 
 /* f60f0 0x60f0..0x6134: findings:D2 */
@@ -170,10 +170,10 @@ long a;
 		f64d0(v);
 }
 
-/* f65ec 0x65ec..0x6620: findings:D3 */
+/* swap_pair 0x65ec..0x6620: findings:D3 */
 int f65c6();
 
-f65ec(a)
+swap_pair(a)
 int *a;
 {
 	register int *p;
@@ -194,7 +194,7 @@ char bE46E;
 long bE46A;
 int bE470;
 char bF10A[];
-int f0056();
+int unpack_run();
 int f6c6a();
 f6e1a();
 
@@ -205,7 +205,7 @@ char *p;
 		return;
 	if (bE4AA)
 		return;
-	f0056(p, bE472);
+	unpack_run(p, bE472);
 	bE46E = 0x1f;
 	bE46A = 0;
 	bE470 = 0;
@@ -218,7 +218,7 @@ char *p;
 char bE472[];
 char bE46E;
 long bE46A;
-int f0056();
+int unpack_run();
 int f00ee();
 int f6a58();
 
@@ -238,7 +238,7 @@ char *p;
 char bE472[];
 char bE46E;
 long bE46A;
-int f0056();
+int unpack_run();
 int f00ee();
 int f6a58();
 
@@ -247,7 +247,7 @@ char *p;
 {
 	long dummy;
 
-	f0056(p, bE472);
+	unpack_run(p, bE472);
 	bE46E = 0x20;
 	bE46A = 0;
 	f6a58();
@@ -320,4 +320,140 @@ unsigned x;
 	if (x < 0x0100)
 		return tab1c02 + (x << 5);
 	f3408(2, "x");
+}
+
+/* swap_quad..6684: findings:D3 */
+int f65c6();
+
+swap_quad(a)
+char *a;
+{
+	register int *p;
+
+	p = a;
+	if (p[2])
+		p[2] = f65c6(p[2]);
+	if (p[3])
+		p[3] = f65c6(p[3]);
+	if (p[4])
+		p[4] = f65c6(p[4]);
+	if (p[5])
+		p[5] = f65c6(p[5]);
+}
+
+/* f2f04..2f3a: findings:D2 */
+int f3a88();
+
+f2f04(p, q, n)
+register int *p;
+char *q;
+int n;
+{
+	register int k;
+
+	k = n >> 1;
+	do {
+		f3a88(*p++, q);
+	} while (--k);
+}
+
+/* f2dde..2e4c: done */
+int flush_buffer();
+int f95da();
+int f9610();
+int f9576();
+char bE6EA[];
+int f3a88();
+
+f2dde(p)
+char *p;
+{
+	register int n;
+	register int c;
+	register int *q;
+
+	flush_buffer(p);
+	n = *(int *)p;
+	f95da(n, 0L, 0);
+	while ((c = f9610(n, bE6EA, 0x200)) > 1) {
+		c >>= 1;
+		q = (int *)bE6EA;
+		do {
+			f3a88(*q++, bE4DA);
+		} while (--c);
+	}
+	f9576(n);
+}
+
+/* f0178..01d2: findings:D2 */
+int f6522();
+int unpack_run();
+
+f0178(src, dst)
+char *src;
+char *dst;
+{
+	register int k;
+	register char *s;
+
+	k = 0;
+	s = src;
+	if (*src & 0x80) {
+		k++;
+		if ((*src & 0x7f) > 8) {
+			k--;
+			f6522(s);
+			f3408(1, "x");
+			k++;
+		}
+	}
+	return unpack_run(s, dst);
+}
+
+/* copy_leafname..44e6: done */
+copy_leafname(s, d)
+char *s;
+char *d;
+{
+	int k;
+	int last;
+	int n;
+
+	k = 0;
+	last = -1;
+	while (s[k] != 0) {
+		if (s[k] == 0x2f)
+			last = k;
+		k++;
+	}
+	n = k - last - 15;
+	if (n > 0)
+		k = k - n;
+	last++;
+	n = 0;
+	while (last < k) {
+		d[n] = s[last];
+		n++;
+		last++;
+	}
+	d[n] = 0;
+}
+
+/* flush_buffer..3b1e: findings:D1 */
+int f970a();
+
+flush_buffer(a)
+char *a;
+{
+	register char *p;
+	register int n;
+
+	p = a;
+	n = *(char **)(p + 4) - (p + 8);
+	if (n > 0) {
+		if (f970a(*(int *)p, p + 8, n) != n)
+			f3408(2, "x");
+	}
+	*(char **)(p + 4) = p + 8;
+	*(int *)(p + 2) = 0x100;
 }
