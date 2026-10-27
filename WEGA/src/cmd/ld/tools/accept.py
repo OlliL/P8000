@@ -65,14 +65,26 @@ def main():
         print('not accepted')
         return 1
     body = open(draft).read().split('\n')
+    # the draft may carry stubs of callees after the marker; only the function before it is accepted
     if '/* test stubs */' in body:
         body = body[:body.index('/* test stubs */')]
+    # global declarations that already are in sld.c are not repeated; K&R parameter declarations are kept
+    # (they sit between a function header and its '{'); the compile check below catches any other clash
     sld = open(SLD).read().split('\n')
     out = []
+    header = False
     for line in body:
-        if line.strip() == '':
+        if line.startswith(('\t', ' ')) or line.strip() == '':
             out.append(line)
-        elif line.endswith(';') and not line.startswith(('\t', ' ')) and '(' not in line and line in sld:
+        elif line.strip() == '{':
+            header = False
+            out.append(line)
+        elif '(' in line and not line.rstrip().endswith(';'):
+            header = True
+            out.append(line)
+        elif header:
+            out.append(line)
+        elif line.endswith(';') and '(' not in line and line in sld:
             continue
         else:
             out.append(line)

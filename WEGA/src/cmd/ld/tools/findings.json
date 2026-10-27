@@ -2607,7 +2607,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0056",
-   "ours": "0x035c-0x03f0",
+   "ours": "0x0000-0x0094",
    "level": "differs",
    "pairing_evidence": "register numbers differ (dst in rr10, src in rr12 equal; counter in r13 in the original, r9 here), ch kept in memory in the original; frame and local offsets equal"
   },
@@ -2643,7 +2643,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0762",
-   "ours": "0x0000-0x002a",
+   "ours": "0x0094-0x00be",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 92,
@@ -2671,7 +2671,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0a5c",
-   "ours": "0x01c8-0x0226",
+   "ours": "0x00be-0x011c",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 83,
@@ -2692,7 +2692,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0aba",
-   "ours": "0x002a-0x0074",
+   "ours": "0x011c-0x0166",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 88,
@@ -2860,7 +2860,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2e4c",
-   "ours": "0x0074-0x00a2",
+   "ours": "0x0166-0x0194",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 86,
@@ -2902,7 +2902,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3090",
-   "ours": "0x00a2-0x00b6",
+   "ours": "0x0194-0x01a8",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -2959,7 +2959,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x34b8",
-   "ours": "0x0226-0x0288",
+   "ours": "0x01a8-0x020a",
    "level": "differs",
    "pairing_evidence": "register choice differs (end pointer kept in rr8 in the original, p in rr10); frame 32 bytes in the original against 8 here (D1 share); otherwise equal"
   },
@@ -2996,7 +2996,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3a30",
-   "ours": "0x0170-0x01c8",
+   "ours": "0x020a-0x0262",
    "level": "differs",
    "pairing_evidence": "loop test loads q into rr4 in the original (testb @rr4), rr2 here; otherwise equal"
   },
@@ -3021,7 +3021,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3a88",
-   "ours": "0x049c-0x04de",
+   "ours": "0x0262-0x02a4",
    "level": "differs",
    "pairing_evidence": "constant index address form of p[3] (D5); argument v spilled to the frame in the original (D4); otherwise equal"
   },
@@ -3104,21 +3104,28 @@
   },
   "f60f0": {
    "audit": {
-    "d_normalised_pct": 29,
-    "pattern_diff": 31,
-    "pattern_unexplained": 4,
+    "d_normalised_pct": 43,
+    "pattern_diff": 20,
+    "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: ld\trS,@rrS; ld\trS,rrS(#N)",
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
     "structure_flags": [],
-    "len_ours": 24,
+    "len_ours": 17,
     "len_orig": 21
    },
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x60f0",
-   "ours": "0x0288-0x02d2",
+   "ours": "0x02a4-0x02dc",
    "level": "differs",
    "pairing_evidence": "unexplained instruction forms: ld\trS,@rrS; ld\trS,rrS(#N)"
   },
@@ -3184,7 +3191,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x65ec",
-   "ours": "0x0322-0x035c",
+   "ours": "0x02dc-0x0316",
    "level": "differs",
    "pairing_evidence": "parameter reloaded from the frame into rr12 in the original (store and load), copied from rr6 here; otherwise equal"
   },
@@ -3227,18 +3234,16 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6a08",
-   "ours": "0x0448-0x049c",
+   "ours": "0x0316-0x036a",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 53,
-    "pattern_diff": 18,
+    "d_normalised_pct": 74,
+    "pattern_diff": 10,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D1",
-     "D3",
      "D7"
     ],
     "structure_flags": [],
@@ -3257,20 +3262,16 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6b5a",
-   "ours": "0x041a-0x0448",
+   "ours": "0x036a-0x0398",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 55,
-    "pattern_diff": 10,
+    "d_normalised_pct": 91,
+    "pattern_diff": 2,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D1",
-     "D10",
-     "D2",
-     "D3",
      "D7"
     ],
     "structure_flags": [],
@@ -3282,20 +3283,16 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6b84",
-   "ours": "0x03f0-0x041a",
+   "ours": "0x0398-0x03c2",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 45,
-    "pattern_diff": 12,
+    "d_normalised_pct": 82,
+    "pattern_diff": 4,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D1",
-     "D10",
-     "D2",
-     "D3",
      "D7"
     ],
     "structure_flags": [],
@@ -3335,7 +3332,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6efe",
-   "ours": "0x02d2-0x0322",
+   "ours": "0x03c2-0x0412",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 85,
@@ -3378,7 +3375,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6fd0",
-   "ours": "0x010e-0x013c",
+   "ours": "0x0412-0x0440",
    "level": "differs",
    "pairing_evidence": "frame 14 bytes against 6 bytes of the draft; all other instructions equal"
   },
@@ -3386,7 +3383,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x6ffe",
-   "ours": "0x00b6-0x00e2",
+   "ours": "0x0440-0x046c",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 92,
@@ -3407,7 +3404,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x702a",
-   "ours": "0x013c-0x0170",
+   "ours": "0x046c-0x04a0",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 93,
@@ -3449,7 +3446,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x719e",
-   "ours": "0x00e2-0x010e",
+   "ours": "0x04a0-0x04cc",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 85,
