@@ -3064,402 +3064,406 @@
    ]
   }
  },
- "findings": [
+ "findings": [],
+ "manual": [],
+ "findings_pending": [
   {
    "id": "popt-01",
-   "status": "open",
-   "functions": [
-    "equop"
-   ],
-   "orig": "0x23b4",
-   "ours": "z22.c:182 strcmp(a, b) == 0",
-   "summary": "original equop compares the strings inline (no call); ours calls strcmp of the shipped libc",
-   "decide": "match the original structure (inline compare) or keep strcmp as a source difference"
+   "kind": "source",
+   "function": "equop",
+   "where": "z22.c:182 strcmp(a, b) == 0",
+   "detail": "original equop compares the strings inline (no call); ours calls strcmp of the shipped libc",
+   "action": "match the original structure (inline compare) or keep strcmp as a source difference",
+   "status": "fixed",
+   "classification": "",
+   "result": "equop is an inline compare loop in z22.c now (popt-14); no call to strcmp",
+   "orig": "0x23b4"
   },
   {
    "id": "popt-02",
+   "kind": "source",
+   "function": "fixldm",
+   "where": "z23.c:542 strchr(p->code, '#')",
+   "detail": "original calls strrchr (last occurrence of the character), ours strchr (first occurrence); behaviour differs if # occurs twice in the operand text",
+   "action": "owner decision: rebuild strrchr behaviour (byte identity first, as for other original quirks) and record in the quirks table",
    "status": "fixed",
-   "functions": [
-    "fixldm"
-   ],
-   "orig": "0x37cc (calls 0x548c = strrchr)",
-   "ours": "z23.c:542 strchr(p->code, '#')",
-   "summary": "original calls strrchr (last occurrence of the character), ours strchr (first occurrence); behaviour differs if # occurs twice in the operand text",
-   "decide": "owner decision: rebuild strrchr behaviour (byte identity first, as for other original quirks) and record in the quirks table",
-   "done": "strchr replaced by strrchr (as the original); recorded in host/KNOWLEDGE.md quirks table; corpus 813 of 816 (K core line only)"
+   "classification": "",
+   "result": "strchr replaced by strrchr (as the original); recorded in host/KNOWLEDGE.md quirks table; corpus 813 of 816 (K core line only)",
+   "orig": "0x37cc (calls 0x548c = strrchr)"
   },
   {
    "id": "popt-03",
+   "kind": "analysis",
+   "function": "isreg, rename_regs, scan",
+   "where": "z22.c:652, 661 (isalnum), z22.c (isdigit via rename_regs), z23.c:58 (isalnum in scan)",
+   "detail": "character classes: the original reads its own table at data 0x0be5 inline (no call); ours uses the table __ctype of the shipped libc (ctype_.o). Calls agree, the table contents and its place in the data differ",
+   "action": "compare the table contents of the original with ctype_.o; if equal, the table is a data difference only (link layout), otherwise a source difference",
    "status": "open",
-   "functions": [
-    "isreg",
-    "rename_regs",
-    "scan"
-   ],
-   "orig": "2d22, 36d0, 3c5a region (inline table at data 0x0be5)",
-   "ours": "z22.c:652, 661 (isalnum), z22.c (isdigit via rename_regs), z23.c:58 (isalnum in scan)",
-   "summary": "character classes: the original reads its own table at data 0x0be5 inline (no call); ours uses the table __ctype of the shipped libc (ctype_.o). Calls agree, the table contents and its place in the data differ",
-   "decide": "compare the table contents of the original with ctype_.o; if equal, the table is a data difference only (link layout), otherwise a source difference"
+   "classification": "",
+   "result": "open: the original tests isalnum/isdigit with an inline table at 0x0be5, ours uses the shipped __ctype table; the table contents are not compared yet",
+   "orig": "2d22, 36d0, 3c5a region (inline table at data 0x0be5)"
   },
   {
    "id": "popt-04",
+   "kind": "analysis",
+   "function": "memreg, rmove, rename_regs",
+   "where": "strncmp in memreg, rmove, rename_regs",
+   "detail": "checked: the original calls strncmp at the same places (0x54d6); no difference found, listed for completeness",
+   "action": "none (closed when the next review confirms it)",
    "status": "open",
-   "functions": [
-    "memreg",
-    "rmove",
-    "rename_regs"
-   ],
-   "orig": "calls 0x54d6 (strncmp)",
-   "ours": "strncmp in memreg, rmove, rename_regs",
-   "summary": "checked: the original calls strncmp at the same places (0x54d6); no difference found, listed for completeness",
-   "decide": "none (closed when the next review confirms it)"
+   "classification": "",
+   "result": "no difference found (strncmp); kept in the list for the record",
+   "orig": "calls 0x54d6 (strncmp)"
   },
   {
    "id": "popt-05",
+   "kind": "source",
+   "function": "alloc, allocnode, heapreset",
+   "where": "z22.c alloc, allocnode; z21.c main",
+   "detail": "original allocator is a bump pointer on the break (sbrk), reset to the base in main; ours used malloc for the memory and a constant HEAP0",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "alloc",
-    "allocnode",
-    "heapreset"
-   ],
-   "orig": "0x2476 (alloc), 0x0154/0x01a8 (heap start and reset in main)",
-   "ours": "z22.c alloc, allocnode; z21.c main",
-   "summary": "original allocator is a bump pointer on the break (sbrk), reset to the base in main; ours used malloc for the memory and a constant HEAP0",
-   "done": "alloc rebuilt on sbrk(2000), heapbase from sbrk(2) in main, heapreset removed (inline reset), allocnode calls alloc(14); corpus 814 of 816 (rest: K core line, layout)"
+   "classification": "",
+   "result": "alloc rebuilt on sbrk(2000), heapbase from sbrk(2) in main, heapreset removed (inline reset), allocnode calls alloc(14); corpus 814 of 816 (rest: K core line, layout)",
+   "orig": "0x2476 (alloc), 0x0154/0x01a8 (heap start and reset in main)"
   },
   {
    "id": "popt-06",
+   "kind": "source",
+   "function": "statline",
+   "where": "z21.c statline, calls in main",
+   "detail": "original statline(s, n) takes the text first; ours had statline(n, s)",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "statline"
-   ],
-   "orig": "0x0322",
-   "ours": "z21.c statline, calls in main",
-   "summary": "original statline(s, n) takes the text first; ours had statline(n, s)",
-   "done": "signature and the 23 calls changed; corpus unchanged (814 of 816)"
+   "classification": "",
+   "result": "signature and the 23 calls changed; corpus unchanged (814 of 816)",
+   "orig": "0x0322"
   },
   {
    "id": "popt-07",
+   "kind": "source",
+   "function": "main",
+   "where": "z21.c main",
+   "detail": "original calls setbuf(stdout, buf) after a successful freopen of argv[2]; the output loop is a function (0x0610), ours had it inline; heaplim is int (sra)",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "main"
-   ],
-   "orig": "0x0610 (output loop), 0x4c62 (setbuf)",
-   "ours": "z21.c main",
-   "summary": "original calls setbuf(stdout, buf) after a successful freopen of argv[2]; the output loop is a function (0x0610), ours had it inline; heaplim is int (sra)",
-   "done": "setbuf added with static buf[BUFSIZ]; dumpnodes() added; heaplim, heapbase, heapcur are int; corpus 813 of 816 (K core line only)"
+   "classification": "",
+   "result": "setbuf added with static buf[BUFSIZ]; dumpnodes() added; heaplim, heapbase, heapcur are int; corpus 813 of 816 (K core line only)",
+   "orig": "0x0610 (output loop), 0x4c62 (setbuf)"
   },
   {
    "id": "popt-08",
+   "kind": "source",
+   "function": "main",
+   "where": "z21.c main, last lines",
+   "detail": "original ends with exit(0) and no return instruction; ours had return 0 after exit(0)",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "main"
-   ],
-   "orig": "0x02c2-0x02c6 (end of main)",
-   "ours": "z21.c main, last lines",
-   "summary": "original ends with exit(0) and no return instruction; ours had return 0 after exit(0)",
-   "done": "return 0 removed; main 175 of 197 equal; corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+   "classification": "",
+   "result": "return 0 removed; main 175 of 197 equal; corpus 813 of 816 (3 differ only in the -d K core line, layout)",
+   "orig": "0x02c2-0x02c6 (end of main)"
   },
   {
    "id": "popt-09",
+   "kind": "analysis",
+   "function": "opsetup, refcount, iterate",
+   "where": "calr _opsetup, _refcount, _iterate (calr _input etc. for static functions)",
+   "detail": "the original calls the global functions absolutely (call), our compiler emits calr; static functions are calr in both; no source form reproduces the call form",
+   "action": "owner decision: compiler revision difference (candidate for D1 to D16 or a new class); no source change planned",
    "status": "open",
-   "functions": [
-    "opsetup",
-    "refcount",
-    "iterate"
-   ],
-   "orig": "call %09EC, %0CA0, %0E1A (absolute)",
-   "ours": "calr _opsetup, _refcount, _iterate (calr _input etc. for static functions)",
-   "summary": "the original calls the global functions absolutely (call), our compiler emits calr; static functions are calr in both; no source form reproduces the call form",
-   "decide": "owner decision: compiler revision difference (candidate for D1 to D16 or a new class); no source change planned"
+   "classification": "",
+   "result": "open: the original calls global functions with absolute call (D17); the shipped cc emits calr in one object file; see host/KNOWLEDGE.md D17",
+   "orig": "call %09EC, %0CA0, %0E1A (absolute)"
   },
   {
    "id": "popt-10",
+   "kind": "source",
+   "function": "malloc (oldlibc 0_3)",
+   "where": "src/lib/oldlibc/malloc/0_3.s",
+   "detail": "the label _realloc was missing in 0_3.s (the code after free is realloc)",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "malloc (oldlibc 0_3)"
-   ],
-   "orig": "0x5392 (realloc, after the ret of free)",
-   "ours": "src/lib/oldlibc/malloc/0_3.s",
-   "summary": "the label _realloc was missing in 0_3.s (the code after free is realloc)",
-   "done": "label added; the module still matches the original as 191 instructions"
+   "classification": "",
+   "result": "label added; the module still matches the original as 191 instructions",
+   "orig": "0x5392 (realloc, after the ret of free)"
   },
   {
    "id": "popt-11",
+   "kind": "source",
+   "function": "itoa_, reverse",
+   "where": "z23.c itoa_, reverse",
+   "detail": "the original reverses the digit string in a separate function (strlen, swap from both ends); ours had the loop inline in itoa_",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "itoa_",
-    "reverse"
-   ],
-   "orig": "0x3c06 (itoa_), 0x3b9a (reversal)",
-   "ours": "z23.c itoa_, reverse",
-   "summary": "the original reverses the digit string in a separate function (strlen, swap from both ends); ours had the loop inline in itoa_",
-   "done": "reverse() split out with the locals in the order int t, j, i; corpus result: see the next entry; corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+   "classification": "",
+   "result": "reverse() split out with the locals in the order int t, j, i; corpus result: see the next entry; corpus 813 of 816 (3 differ only in the -d K core line, layout)",
+   "orig": "0x3c06 (itoa_), 0x3b9a (reversal)"
   },
   {
    "id": "popt-12",
+   "kind": "source",
+   "function": "setcc",
+   "where": "z22.c setcc (strcpy from libc)",
+   "detail": "the original copies the operand inline into ccloc (loop with the byte store); ours calls strcpy of the libc",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "setcc"
-   ],
-   "orig": "0x3362 (copy loop inline, 0x0d0e = ccloc)",
-   "ours": "z22.c setcc (strcpy from libc)",
-   "summary": "the original copies the operand inline into ccloc (loop with the byte store); ours calls strcpy of the libc",
-   "done": "strcpy replaced by the loop with register p, q; setcc 12 of 22 instructions equal (was 6 of 13); corpus 813 of 816 (K core only); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+   "classification": "",
+   "result": "strcpy replaced by the loop with register p, q; setcc 12 of 22 instructions equal (was 6 of 13); corpus 813 of 816 (K core only); corpus 813 of 816 (3 differ only in the -d K core line, layout)",
+   "orig": "0x3362 (copy loop inline, 0x0d0e = ccloc)"
   },
   {
    "id": "popt-13",
+   "kind": "source",
+   "function": "copy",
+   "where": "z21.c copy (strlen from libc)",
+   "detail": "the original counts the lengths in loops (strlen(a)+1 and strlen(b)) and has no libc call; ours calls strlen",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "copy"
-   ],
-   "orig": "0x0964 (length loops inline)",
-   "ours": "z21.c copy (strlen from libc)",
-   "summary": "the original counts the lengths in loops (strlen(a)+1 and strlen(b)) and has no libc call; ours calls strlen",
-   "done": "length loops inline with register p, np, onp; copy 31 of 53 instructions equal (was 8 of 47); corpus run pending (result9.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+   "classification": "",
+   "result": "length loops inline with register p, np, onp; copy 31 of 53 instructions equal (was 8 of 47); corpus run pending (result9.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)",
+   "orig": "0x0964 (length loops inline)"
   },
   {
    "id": "popt-14",
+   "kind": "source",
+   "function": "equop",
+   "where": "z22.c equop (strcmp from libc)",
+   "detail": "the original compares the two strings inline (loop with post-increments, return 0 or 1); ours calls strcmp of the libc",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "equop"
-   ],
-   "orig": "0x23b4 (inline compare, no call)",
-   "ours": "z22.c equop (strcmp from libc)",
-   "summary": "the original compares the two strings inline (loop with post-increments, return 0 or 1); ours calls strcmp of the libc",
-   "done": "strcmp replaced by the loop with register a, b; equop 16 of 50 instructions equal (original 42; the head with the op and subop checks differs, D2/D3); corpus run pending (result10.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+   "classification": "",
+   "result": "strcmp replaced by the loop with register a, b; equop 16 of 50 instructions equal (original 42; the head with the op and subop checks differs, D2/D3); corpus run pending (result10.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)",
+   "orig": "0x23b4 (inline compare, no call)"
   },
   {
    "id": "popt-15",
+   "kind": "source",
+   "function": "isused",
+   "where": "z23.c isused",
+   "detail": "the original keeps p, reg and r12 in registers (r14, r13, r12); ours in the frame (D2)",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "isused"
-   ],
-   "orig": "0x3838",
-   "ours": "z23.c isused",
-   "summary": "the original keeps p, reg and r12 in registers (r14, r13, r12); ours in the frame (D2)",
-   "done": "register declarations; isused 33 of 67 instructions equal (original 63); corpus run pending (result12.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+   "classification": "",
+   "result": "register declarations; isused 33 of 67 instructions equal (original 63); corpus run pending (result12.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)",
+   "orig": "0x3838"
   },
   {
    "id": "popt-16",
+   "kind": "source",
+   "function": "usesreg",
+   "where": "z23.c usesreg",
+   "detail": "the original keeps the parameters and the loop variables in registers (r9 to r14); ours in the frame (D2, D3)",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "usesreg"
-   ],
-   "orig": "0x38d0",
-   "ours": "z23.c usesreg",
-   "summary": "the original keeps the parameters and the loop variables in registers (r9 to r14); ours in the frame (D2, D3)",
-   "done": "register declarations for parameters and locals; usesreg 143 of 242 instructions equal (original 239); corpus run pending (result13.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+   "classification": "",
+   "result": "register declarations for parameters and locals; usesreg 143 of 242 instructions equal (original 239); corpus run pending (result13.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)",
+   "orig": "0x38d0"
   },
   {
    "id": "popt-17",
+   "kind": "source",
+   "function": "usesreg",
+   "where": "z23.c usesreg (6 call sites of dualop in the source, 6 calls in the binary)",
+   "detail": "the original has the common exit of usesreg twice (one tail for result 1, one for result 0, the result constant inlined by the old cc); ours had one tail",
+   "action": "locate the case (switch of usesreg) of the extra call by mapping the jump table entries of the original; then decide the source form",
    "status": "fixed",
-   "functions": [
-    "usesreg"
-   ],
-   "orig": "0x38d0; dualop calls at 0x3918, 0x393c, 0x39b0, 0x39f2, 0x3a40, 0x3a84, 0x3ac0 (7)",
-   "ours": "z23.c usesreg (6 call sites of dualop in the source, 6 calls in the binary)",
-   "summary": "the original has the common exit of usesreg twice (one tail for result 1, one for result 0, the result constant inlined by the old cc); ours had one tail",
-   "decide": "locate the case (switch of usesreg) of the extra call by mapping the jump table entries of the original; then decide the source form",
-   "done": "exit split into out0/out1 (every goto out gets its result); the seven dualop calls and all other call counts agree; corpus run pending (result14.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)"
+   "classification": "",
+   "result": "exit split into out0/out1 (every goto out gets its result); the seven dualop calls and all other call counts agree; corpus run pending (result14.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout)",
+   "orig": "0x38d0; dualop calls at 0x3918, 0x393c, 0x39b0, 0x39f2, 0x3a40, 0x3a84, 0x3ac0 (7)"
   },
   {
    "id": "popt-18",
+   "kind": "source",
+   "function": "procopt",
+   "where": "z23.c procopt (clearmem(a, 16), clearmem(b, 16))",
+   "detail": "the original keeps its arrays in the frame at offset 0x15 (char a[8], a[0] = 1, a[1..7] cleared inline) and 0x06 (char b[15], cleared inline), after three pointers at 0..5; ours had two 16-byte arrays at offset 0 and clearmem calls",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "procopt"
-   ],
-   "orig": "0x33d6 (clear loops at frame 0x15 and 0x06)",
-   "ours": "z23.c procopt (clearmem(a, 16), clearmem(b, 16))",
-   "summary": "the original keeps its arrays in the frame at offset 0x15 (char a[8], a[0] = 1, a[1..7] cleared inline) and 0x06 (char b[15], cleared inline), after three pointers at 0..5; ours had two 16-byte arrays at offset 0 and clearmem calls",
-   "decide": "",
-   "done": "declarations in the original order (pointers, b[15], a[8]), inline clearing loops, register int i; procopt 62 of 248 instructions equal (was 49); corpus 813 of 816 (K core line only)"
+   "classification": "",
+   "result": "declarations in the original order (pointers, b[15], a[8]), inline clearing loops, register int i; procopt 62 of 248 instructions equal (was 49); corpus 813 of 816 (K core line only)",
+   "orig": "0x33d6 (clear loops at frame 0x15 and 0x06)"
   },
   {
    "id": "popt-19",
+   "kind": "source",
+   "function": "markregs, procopt",
+   "where": "z23.c markregs signature and its 5 calls",
+   "detail": "the original passes the 15-byte array first; ours passed the 8-byte array first (parameter order)",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "markregs",
-    "procopt"
-   ],
-   "orig": "0x432c (markregs(s, b15, a8): the first array is the 15-byte one, indexed for registers 8 to 14)",
-   "ours": "z23.c markregs signature and its 5 calls",
-   "summary": "the original passes the 15-byte array first; ours passed the 8-byte array first (parameter order)",
-   "done": "parameter order (s, b, a) in markregs and all calls; corpus 813 of 816 (K core line only)"
+   "classification": "",
+   "result": "parameter order (s, b, a) in markregs and all calls; corpus 813 of 816 (K core line only)",
+   "orig": "0x432c (markregs(s, b15, a8): the first array is the 15-byte one, indexed for registers 8 to 14)"
   },
   {
    "id": "popt-20",
+   "kind": "source",
+   "function": "procopt, rename_regs",
+   "where": "z23.c struct rent",
+   "detail": "the original struct rent has 10 bytes (len 2, s1 4, s2 4); ours 26 (s1[12], s2[12])",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "procopt",
-    "rename_regs"
-   ],
-   "orig": "0x33d6 (mult rr,#10 for the table index)",
-   "ours": "z23.c struct rent",
-   "summary": "the original struct rent has 10 bytes (len 2, s1 4, s2 4); ours 26 (s1[12], s2[12])",
-   "done": "struct rent with s1[4], s2[4]; corpus 813 of 816 (K core line only)"
+   "classification": "",
+   "result": "struct rent with s1[4], s2[4]; corpus 813 of 816 (K core line only)",
+   "orig": "0x33d6 (mult rr,#10 for the table index)"
   },
   {
    "id": "popt-21",
+   "kind": "analysis",
+   "function": "procopt",
+   "where": "z23.c procopt, the six sprintf sites in the loop over r14",
+   "detail": "the original has five sprintf sites in the loop: s1(n-1), s2(r14) of the first branch, s1(n) of the first branch, s1(n) of the else branch, and one s2(r14) shared by the end of the first branch and the else branch (tail merge of the old compiler, D11); ours has six separate sites",
+   "action": "find a source form that gives exactly one shared s2 tail and two separate s1(n) sites (the original code order), then apply",
    "status": "open",
-   "functions": [
-    "procopt"
-   ],
-   "orig": "0x3562, 0x359e, 0x35ba, 0x360c, 0x3646 (sprintf, 5 calls)",
-   "ours": "z23.c procopt, the six sprintf sites in the loop over r14",
-   "summary": "the original has five sprintf sites in the loop: s1(n-1), s2(r14) of the first branch, s1(n) of the first branch, s1(n) of the else branch, and one s2(r14) shared by the end of the first branch and the else branch (tail merge of the old compiler, D11); ours has six separate sites",
-   "decide": "find a source form that gives exactly one shared s2 tail and two separate s1(n) sites (the original code order), then apply",
-   "done": "tried: one shared label for the two s2 tails (goto s2tail): procopt 238 instructions (was 257), but the compiler then also merges the two s1(n) sequences, giving four sprintf sites instead of five; not applied"
+   "classification": "",
+   "result": "tried: one shared label for the two s2 tails (goto s2tail): procopt 238 instructions (was 257), but the compiler then also merges the two s1(n) sequences, giving four sprintf sites instead of five; not applied",
+   "orig": "0x3562, 0x359e, 0x35ba, 0x360c, 0x3646 (sprintf, 5 calls)"
   },
   {
    "id": "popt-22",
+   "kind": "source",
+   "function": "opsetup, cclook, oplook",
+   "where": "z21.c HASHNAME (macro, inline at opsetup, cclook, oplook); no function",
+   "detail": "the original has no hash function: the hash of the operation name is computed inline at three places and reads the three characters unconditionally (cclook 0x0a76 to 0x0aa2 reads the bytes behind the terminator of tmpcc); ours is a function with conditional reads",
+   "action": "none",
    "status": "fixed",
-   "functions": [
-    "opsetup",
-    "cclook",
-    "oplook"
-   ],
-   "orig": "0x09ec (hash inline; also 0x0a44, 0x0b02)",
-   "ours": "z21.c HASHNAME (macro, inline at opsetup, cclook, oplook); no function",
-   "summary": "the original has no hash function: the hash of the operation name is computed inline at three places and reads the three characters unconditionally (cclook 0x0a76 to 0x0aa2 reads the bytes behind the terminator of tmpcc); ours is a function with conditional reads",
-   "done": "fixed: the hash reads the three characters unconditionally as the original does (cclook 0x0a7e to 0x0a9a). The failure was the one-character optab names \"{\" and \"}\": the original stores them with a NUL pad (3 bytes), ours without; the unconditional read then sees the next literal and the name is not found. z20.c now writes \"{\\0\" and \"}\\0\". Corpus: 0 differences without -d (only the K core line, see TODO.md).",
-   "decide": "none"
+   "classification": "",
+   "result": "fixed: the hash reads the three characters unconditionally as the original does (cclook 0x0a7e to 0x0a9a). The failure was the one-character optab names \"{\" and \"}\": the original stores them with a NUL pad (3 bytes), ours without; the unconditional read then sees the next literal and the name is not found. z20.c now writes \"{\\0\" and \"}\\0\". Corpus: 0 differences without -d (only the K core line, see TODO.md).",
+   "orig": "0x09ec (hash inline; also 0x0a44, 0x0b02)"
   },
   {
    "id": "popt-23",
+   "kind": "source",
+   "function": "allocnode, newcode1",
+   "where": "z21.c, z22.c allocnode, newcode1 and their callers",
+   "detail": "the original has no allocnode or newcode1 function: the callers call alloc with size 14 and copy with 1, 0 directly",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "allocnode",
-    "newcode1"
-   ],
-   "orig": "0x2476 (alloc, size 14 passed by the callers); copy(1, s, 0) called from rmove",
-   "ours": "z21.c, z22.c allocnode, newcode1 and their callers",
-   "summary": "the original has no allocnode or newcode1 function: the callers call alloc with size 14 and copy with 1, 0 directly",
-   "done": "both functions removed; callers call (struct node *)alloc(14) and copy(1, s, 0); rmove calls copy 11 times as the original; corpus 813 of 816 (K core line only)"
+   "classification": "",
+   "result": "both functions removed; callers call (struct node *)alloc(14) and copy(1, s, 0); rmove calls copy 11 times as the original; corpus 813 of 816 (K core line only)",
+   "orig": "0x2476 (alloc, size 14 passed by the callers); copy(1, s, 0) called from rmove"
   },
   {
    "id": "popt-24",
+   "kind": "source",
+   "function": "movedat, clearmem",
+   "where": "z22.c movedat (non-SPOPT), clearmem",
+   "detail": "the original movedat does not clear its head node hd (no call, no loop); the read of hd.forw when no data section is found uses what the frame holds (a defect of the original, to be recorded)",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "movedat",
-    "clearmem"
-   ],
-   "orig": "0x2fc8 (no clearing call; hd.forw is read after the loop, the original does not clear hd)",
-   "ours": "z22.c movedat (non-SPOPT), clearmem",
-   "summary": "the original movedat does not clear its head node hd (no call, no loop); the read of hd.forw when no data section is found uses what the frame holds (a defect of the original, to be recorded)",
-   "done": "clearmem call removed from the non-SPOPT movedat; corpus 813 of 816 (K core line only)"
+   "classification": "",
+   "result": "clearmem call removed from the non-SPOPT movedat; corpus 813 of 816 (K core line only)",
+   "orig": "0x2fc8 (no clearing call; hd.forw is read after the loop, the original does not clear hd)"
   },
   {
    "id": "popt-25",
+   "kind": "source",
+   "function": "getln, getch",
+   "where": "z21.c getch (function) and its three calls in getln",
+   "detail": "the original has no getch function: getln reads with getc inline; ours calls the function getch, which calls getc",
+   "action": "",
    "status": "fixed",
-   "functions": [
-    "getln",
-    "getch"
-   ],
-   "orig": "0x04d6 (getln: getc inline, filbuf 0x4b88 called when the buffer is empty)",
-   "ours": "z21.c getch (function) and its three calls in getln",
-   "summary": "the original has no getch function: getln reads with getc inline; ours calls the function getch, which calls getc",
-   "done": "getch removed; getln calls getc(stdin) directly; getln 37 of 81 instructions equal (was 25); corpus 813 of 816 (K core line only; corpus rebuilt in tmp/tmp/popt/corpus)"
+   "classification": "",
+   "result": "getch removed; getln calls getc(stdin) directly; getln 37 of 81 instructions equal (was 25); corpus 813 of 816 (K core line only; corpus rebuilt in tmp/tmp/popt/corpus)",
+   "orig": "0x04d6 (getln: getc inline, filbuf 0x4b88 called when the buffer is empty)"
   },
   {
    "id": "popt-26",
+   "kind": "source",
+   "function": "ovlap, scan",
+   "where": "z23.c ovlap (scan removed, loop inline per site)",
+   "detail": "the original has no scan function; the scan loop is copied at each of the 19 call sites of ovlap",
+   "action": "none; the shape of the copies still differs (frame, register choice, address of the pattern kept in a register)",
    "status": "fixed",
-   "functions": [
-    "ovlap",
-    "scan"
-   ],
-   "orig": "0x3c5a (scan body inline 19 times)",
-   "ours": "z23.c ovlap (scan removed, loop inline per site)",
-   "summary": "the original has no scan function; the scan loop is copied at each of the 19 call sites of ovlap",
-   "done": "scan removed from z23.c, loop written inline at each site with register variables; corpus 813 of 816 (only the -d K core line)",
-   "decide": "none; the shape of the copies still differs (frame, register choice, address of the pattern kept in a register)"
+   "classification": "",
+   "result": "scan removed from z23.c, loop written inline at each site with register variables; corpus 813 of 816 (only the -d K core line)",
+   "orig": "0x3c5a (scan body inline 19 times)"
   },
   {
    "id": "popt-27",
+   "kind": "source",
+   "function": "all 68 confirmed",
+   "where": "",
+   "detail": "function order in the binary differed from the original (275 pairs inverted)",
+   "action": "none",
    "status": "fixed",
-   "functions": [
-    "all 68 confirmed"
-   ],
-   "orig": "findings order_original",
-   "summary": "function order in the binary differed from the original (275 pairs inverted)",
-   "done": "definitions reordered inside z21/z22/z23 to the original order; global declarations kept at the top; prototypes added where a function is used before its definition; corpus 813 of 816",
-   "decide": "none"
+   "classification": "",
+   "result": "definitions reordered inside z21/z22/z23 to the original order; global declarations kept at the top; prototypes added where a function is used before its definition; corpus 813 of 816",
+   "orig": "findings order_original"
   },
   {
    "id": "popt-28",
+   "kind": "source",
+   "function": "z20, z21, z22, z23",
+   "where": "",
+   "detail": "the original data holds the SCCS identification of each file (name, version, date); the sources had none",
+   "action": "none; the K core difference is the size of the whole program (see popt-29)",
    "status": "partly fixed",
-   "functions": [
-    "z20",
-    "z21",
-    "z22",
-    "z23"
-   ],
-   "orig": "data: @[$]zNN.c SCCS strings at the start of each file data",
-   "summary": "the original data holds the SCCS identification of each file (name, version, date); the sources had none",
-   "done": "each file has its sccsid string as first data item (same bytes); data layout otherwise not checked; the -d K core line still differs (size of the whole program)",
-   "decide": "none; the K core difference is the size of the whole program (see popt-29)"
+   "classification": "",
+   "result": "each file has its sccsid string as first data item (same bytes); data layout otherwise not checked; the -d K core line still differs (size of the whole program)",
+   "orig": "data: @[$]zNN.c SCCS strings at the start of each file data"
   },
   {
    "id": "popt-29",
+   "kind": "analysis",
+   "function": "all",
+   "where": "",
+   "detail": "text of the 68 functions is 608 bytes larger than the original (1386 at the start of the step)",
+   "action": "after the old compiler is reconstructed, or by splitting the sum per class",
    "status": "open",
-   "functions": [
-    "all"
-   ],
-   "orig": "text 17400 bytes for the 68 functions",
-   "summary": "text of the 68 functions is 608 bytes larger than the original (1386 at the start of the step)",
-   "done": "classified per function in TODO.md: D1, D2, D4, D5, D6, D7, D8, D16, D17; the sum is not yet split by class",
-   "decide": "after the old compiler is reconstructed, or by splitting the sum per class"
+   "classification": "",
+   "result": "classified per function in TODO.md: D1, D2, D4, D5, D6, D7, D8, D16, D17; the sum is not yet split by class",
+   "orig": "text 17400 bytes for the 68 functions"
   },
   {
    "id": "popt-30",
+   "kind": "analysis",
+   "function": "codemove",
+   "where": "z21.c codemove",
+   "detail": "the parameter goes into another register than in the original; declaration orders and the parameter as register tried, 73 to 75 equal",
+   "action": "not classified yet",
    "status": "open",
-   "functions": [
-    "codemove"
-   ],
-   "orig": "0x1102",
-   "ours": "z21.c codemove",
-   "summary": "the parameter goes into another register than in the original; declaration orders and the parameter as register tried, 73 to 75 equal",
-   "done": "no source change found",
-   "decide": "not classified yet"
+   "classification": "",
+   "result": "no source change found",
+   "orig": "0x1102"
   },
   {
    "id": "popt-31",
+   "kind": "analysis",
+   "function": "regprefix",
+   "where": "z22.c regprefix",
+   "detail": "the original loads string pointers from a table (ld r2,%0800); the table is not the string table (checked at 0x800 in the binary)",
+   "action": "D12 or D13 unconfirmed",
    "status": "open",
-   "functions": [
-    "regprefix"
-   ],
-   "orig": "0x2df8",
-   "ours": "z22.c regprefix",
-   "summary": "the original loads string pointers from a table (ld r2,%0800); the table is not the string table (checked at 0x800 in the binary)",
-   "done": "nothing changed",
-   "decide": "D12 or D13 unconfirmed"
+   "classification": "",
+   "result": "nothing changed",
+   "orig": "0x2df8"
   },
   {
    "id": "popt-32",
+   "kind": "analysis",
+   "function": "ovlap",
+   "where": "z23.c ovlap",
+   "detail": "ovlap is 743 instructions against 682; the copies differ in register choice (D2), frame (D1, D4) and in keeping the pattern address in a register (closest to D3, not proven)",
+   "action": "needs the old compiler (D3 test)",
    "status": "open",
-   "functions": [
-    "ovlap"
-   ],
-   "orig": "0x3c5a..0x432c",
-   "ours": "z23.c ovlap",
-   "summary": "ovlap is 743 instructions against 682; the copies differ in register choice (D2), frame (D1, D4) and in keeping the pattern address in a register (closest to D3, not proven)",
-   "done": "goto variant (211 instructions, 56 equal) and a pattern variable (726, 84 equal) tried; not kept",
-   "decide": "needs the old compiler (D3 test)"
+   "classification": "",
+   "result": "goto variant (211 instructions, 56 equal) and a pattern variable (726, 84 equal) tried; not kept",
+   "orig": "0x3c5a..0x432c"
   },
   {
    "id": "popt-33",
+   "kind": "analysis",
+   "function": "all 68 confirmed",
+   "where": "",
+   "detail": "the original calls global functions with call even inside one object file (D17); 51 of 68 functions agree with the storage class in our sources",
+   "action": "none within the file split (see D17)",
    "status": "open",
-   "functions": [
-    "all 68 confirmed"
-   ],
-   "orig": "call forms of the original",
-   "summary": "the original calls global functions with call even inside one object file (D17); 51 of 68 functions agree with the storage class in our sources",
-   "done": "recorded as D17 in host/KNOWLEDGE.md and as column in TODO.md",
-   "decide": "none within the file split (see D17)"
+   "classification": "",
+   "result": "recorded as D17 in host/KNOWLEDGE.md and as column in TODO.md",
+   "orig": "call forms of the original"
   }
  ],
- "manual": [],
- "findings_pending": [],
  "class_overrides": {},
  "classification_method": "as codgen: D-only when every differing instruction matches a D pattern and no block is moved by more than 5 %; other differences otherwise",
  "order_original": [

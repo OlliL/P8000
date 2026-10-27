@@ -20,10 +20,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | D only (pattern-verified) | 67 |
 | other differences | 2 |
 
-**Pending findings:** 0
+**Pending findings:** 33
 
 | Status | Count |
 |---|---|
+| fixed | 23 |
+| open | 9 |
+| partly fixed | 1 |
 
 ## Functions
 
@@ -109,3 +112,36 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | ID | Kind | Function | Status | Classification | Action | Result |
 |---|---|---|---|---|---|---|
+| popt-01 | source | equop | fixed |  | match the original structure (inline compare) or keep strcmp as a source difference | equop is an inline compare loop in z22.c now (popt-14); no call to strcmp |
+| popt-02 | source | fixldm | fixed |  | owner decision: rebuild strrchr behaviour (byte identity first, as for other original quirks) and record in the quirks table | strchr replaced by strrchr (as the original); recorded in host/KNOWLEDGE.md quirks table; corpus 813 of 816 (K core line only) |
+| popt-03 | analysis | isreg, rename_regs, scan | open |  | compare the table contents of the original with ctype_.o; if equal, the table is a data difference only (link layout), otherwise a source difference | open: the original tests isalnum/isdigit with an inline table at 0x0be5, ours uses the shipped __ctype table; the table contents are not compared yet |
+| popt-04 | analysis | memreg, rmove, rename_regs | open |  | none (closed when the next review confirms it) | no difference found (strncmp); kept in the list for the record |
+| popt-05 | source | alloc, allocnode, heapreset | fixed |  |  | alloc rebuilt on sbrk(2000), heapbase from sbrk(2) in main, heapreset removed (inline reset), allocnode calls alloc(14); corpus 814 of 816 (rest: K core line, layout) |
+| popt-06 | source | statline | fixed |  |  | signature and the 23 calls changed; corpus unchanged (814 of 816) |
+| popt-07 | source | main | fixed |  |  | setbuf added with static buf[BUFSIZ]; dumpnodes() added; heaplim, heapbase, heapcur are int; corpus 813 of 816 (K core line only) |
+| popt-08 | source | main | fixed |  |  | return 0 removed; main 175 of 197 equal; corpus 813 of 816 (3 differ only in the -d K core line, layout) |
+| popt-09 | analysis | opsetup, refcount, iterate | open |  | owner decision: compiler revision difference (candidate for D1 to D16 or a new class); no source change planned | open: the original calls global functions with absolute call (D17); the shipped cc emits calr in one object file; see host/KNOWLEDGE.md D17 |
+| popt-10 | source | malloc (oldlibc 0_3) | fixed |  |  | label added; the module still matches the original as 191 instructions |
+| popt-11 | source | itoa_, reverse | fixed |  |  | reverse() split out with the locals in the order int t, j, i; corpus result: see the next entry; corpus 813 of 816 (3 differ only in the -d K core line, layout) |
+| popt-12 | source | setcc | fixed |  |  | strcpy replaced by the loop with register p, q; setcc 12 of 22 instructions equal (was 6 of 13); corpus 813 of 816 (K core only); corpus 813 of 816 (3 differ only in the -d K core line, layout) |
+| popt-13 | source | copy | fixed |  |  | length loops inline with register p, np, onp; copy 31 of 53 instructions equal (was 8 of 47); corpus run pending (result9.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout) |
+| popt-14 | source | equop | fixed |  |  | strcmp replaced by the loop with register a, b; equop 16 of 50 instructions equal (original 42; the head with the op and subop checks differs, D2/D3); corpus run pending (result10.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout) |
+| popt-15 | source | isused | fixed |  |  | register declarations; isused 33 of 67 instructions equal (original 63); corpus run pending (result12.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout) |
+| popt-16 | source | usesreg | fixed |  |  | register declarations for parameters and locals; usesreg 143 of 242 instructions equal (original 239); corpus run pending (result13.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout) |
+| popt-17 | source | usesreg | fixed |  | locate the case (switch of usesreg) of the extra call by mapping the jump table entries of the original; then decide the source form | exit split into out0/out1 (every goto out gets its result); the seven dualop calls and all other call counts agree; corpus run pending (result14.txt); corpus 813 of 816 (3 differ only in the -d K core line, layout) |
+| popt-18 | source | procopt | fixed |  |  | declarations in the original order (pointers, b[15], a[8]), inline clearing loops, register int i; procopt 62 of 248 instructions equal (was 49); corpus 813 of 816 (K core line only) |
+| popt-19 | source | markregs, procopt | fixed |  |  | parameter order (s, b, a) in markregs and all calls; corpus 813 of 816 (K core line only) |
+| popt-20 | source | procopt, rename_regs | fixed |  |  | struct rent with s1[4], s2[4]; corpus 813 of 816 (K core line only) |
+| popt-21 | analysis | procopt | open |  | find a source form that gives exactly one shared s2 tail and two separate s1(n) sites (the original code order), then apply | tried: one shared label for the two s2 tails (goto s2tail): procopt 238 instructions (was 257), but the compiler then also merges the two s1(n) sequences, giving four sprintf sites instead of five; not applied |
+| popt-22 | source | opsetup, cclook, oplook | fixed |  | none | fixed: the hash reads the three characters unconditionally as the original does (cclook 0x0a7e to 0x0a9a). The failure was the one-character optab names "{" and "}": the original stores them with a NUL pad (3 bytes), ours without; the unconditional read then sees the next literal and the name is not found. z20.c now writes "{\0" and "}\0". Corpus: 0 differences without -d (only the K core line, see TODO.md). |
+| popt-23 | source | allocnode, newcode1 | fixed |  |  | both functions removed; callers call (struct node *)alloc(14) and copy(1, s, 0); rmove calls copy 11 times as the original; corpus 813 of 816 (K core line only) |
+| popt-24 | source | movedat, clearmem | fixed |  |  | clearmem call removed from the non-SPOPT movedat; corpus 813 of 816 (K core line only) |
+| popt-25 | source | getln, getch | fixed |  |  | getch removed; getln calls getc(stdin) directly; getln 37 of 81 instructions equal (was 25); corpus 813 of 816 (K core line only; corpus rebuilt in tmp/tmp/popt/corpus) |
+| popt-26 | source | ovlap, scan | fixed |  | none; the shape of the copies still differs (frame, register choice, address of the pattern kept in a register) | scan removed from z23.c, loop written inline at each site with register variables; corpus 813 of 816 (only the -d K core line) |
+| popt-27 | source | all 68 confirmed | fixed |  | none | definitions reordered inside z21/z22/z23 to the original order; global declarations kept at the top; prototypes added where a function is used before its definition; corpus 813 of 816 |
+| popt-28 | source | z20, z21, z22, z23 | partly fixed |  | none; the K core difference is the size of the whole program (see popt-29) | each file has its sccsid string as first data item (same bytes); data layout otherwise not checked; the -d K core line still differs (size of the whole program) |
+| popt-29 | analysis | all | open |  | after the old compiler is reconstructed, or by splitting the sum per class | classified per function in TODO.md: D1, D2, D4, D5, D6, D7, D8, D16, D17; the sum is not yet split by class |
+| popt-30 | analysis | codemove | open |  | not classified yet | no source change found |
+| popt-31 | analysis | regprefix | open |  | D12 or D13 unconfirmed | nothing changed |
+| popt-32 | analysis | ovlap | open |  | needs the old compiler (D3 test) | goto variant (211 instructions, 56 equal) and a pattern variable (726, 84 equal) tried; not kept |
+| popt-33 | analysis | all 68 confirmed | open |  | none within the file split (see D17) | recorded as D17 in host/KNOWLEDGE.md and as column in TODO.md |

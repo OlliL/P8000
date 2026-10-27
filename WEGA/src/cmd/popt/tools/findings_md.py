@@ -33,20 +33,28 @@ def table(headers, rows):
     return lines
 
 
-def function_rows(functions):
+def function_rows(functions, manual=None):
+    # manual: hand classification (findings.json "manual_classes"); it overrides the pattern audit of classify.py
+    manual = manual or {}
     rows = []
     for name in sorted(functions):
         v = functions[name]
         audit = v.get('audit') or {}
         classes = audit.get('d_classes')
         note = audit.get('difference_note', '')
+        cls = audit.get('difference_class', '')
+        m = manual.get(name)
+        if m:
+            classes = m.get('d_classes')
+            note = m.get('note', '')
+            cls = {'read': 'read by hand', 'measured': 'identical', 'open': 'open (not classified)'}.get(m.get('basis'), cls)
         rows.append([
             name,
             v.get('ours', ''),
             v.get('orig', ''),
             v.get('pairing', ''),
             v.get('level', ''),
-            audit.get('difference_class', ''),
+            cls,
             classes if classes else '',
             note,
         ])
@@ -83,13 +91,14 @@ def summary(functions, items):
 def build(data):
     functions = data.get('functions', {})
     items = data.get('findings_pending', [])
+    manual = (data or {}).get('manual_classes') or {}
     out = ['# popt findings', '', DISCLAIMER, '',
            'Source: `findings.json` (single source of truth). Functions are the program part of `popt` '
            'compared with `/lib/popt`; pending findings are the open items of the analysis.', '']
     out += summary(functions, items) + ['']
     out += ['## Functions', '']
     out += table(['Function', 'Ours', 'Original', 'Pairing', 'Level', 'Difference class', 'Old-cc classes', 'Note'],
-                 function_rows(functions))
+                 function_rows(functions, manual))
     out += ['', '## Pending findings', '']
     out += table(['ID', 'Kind', 'Function', 'Status', 'Classification', 'Action', 'Result'], pending_rows(items))
     return '\n'.join(out) + '\n'
