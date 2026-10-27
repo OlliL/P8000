@@ -42,6 +42,9 @@ def main():
         key = r['name']
         rename[old] = key
         # an entry is either still under the old key f_<entry> or already under its name
+        # a renamed function leaves no entry under its unnamed key f<entry>
+        if key != 'f' + r['entry']:
+            funcs.pop('f' + r['entry'], None)
         entry = funcs.pop(old, None) or funcs.get(key, {})
         status = r['status']
         # level as in codgen: exact (same instruction sequence, fncheck) or differs (class in audit)
