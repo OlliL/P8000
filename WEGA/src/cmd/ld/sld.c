@@ -1994,3 +1994,187 @@ char *t;
 		report_error(2, "x", s, t);
 	return k != 0;
 }
+
+/* f11ea..1364: findings:D2,D5,D6,D7,D15,D16 */
+long bE4A40;
+int bE4A44;
+char tab3e8a[];
+int f44e6();
+int f2056();
+int f23fe();
+int f2cbc();
+char *f92c6();
+int parse_args();
+
+int parse_args(argc, argv)
+int argc;
+char **argv;
+{
+	register int k;
+	register char *a;
+	register char **av;
+	register int j;
+	int saved_k;
+	char **saved_av;
+	char **base;
+	int saved_argc;
+	int flag;
+	char *p;
+
+	pE4C0 = 0;
+	f44e6();
+	f2056();
+	av = argv + 1;
+	bEF32C = 0;
+	bE3C02 = 0;
+	bE486 = (long)tab3e8a;
+	k = 1;
+	goto test;
+body:
+	a = *av++;
+	if (*a != '-') {
+		f23fe(a);
+		goto next;
+	}
+	j = 1;
+scan:
+	if (!a[j])
+		goto next;
+	switch (a[j]) {
+	case 'A':
+	case 'e':
+	case 'o':
+	case 'u':
+	case 'v':
+		goto consume;
+	case 'b':
+	case 't':
+		if (!a[j + 1])
+			goto consume;
+		j++;
+		goto consume;
+	case 'N':
+		j += 2;
+		goto scan;
+	case 'M':
+		p = f92c6(a, ':');
+		if (p && !p[2]) {
+			k++;
+			av++;
+		}
+		if (**av != '+')
+			goto next;
+		do {
+			k++;
+			av++;
+		} while (**av != '+');
+		k++;
+		av++;
+		goto next;
+	case 'f':
+		saved_k = k;
+		k = -1;
+		saved_av = av;
+		base = argv;
+		saved_argc = argc;
+		argc = bE4A44;
+		av = (char **)bE4A40;
+		flag = 1;
+		goto next;
+	case 'l':
+		j--;
+		a[j] = '-';
+		f23fe(a + j);
+		goto next;
+	case 'R':
+		goto next;
+	default:
+		j++;
+		goto scan;
+	}
+consume:
+	k++;
+	av++;
+	j++;
+	goto scan;
+next:
+	k++;
+test:
+	if (k < argc)
+		goto body;
+	if (flag) {
+		k = saved_k + 2;
+		av = saved_av + 1;
+		argv = base;
+		argc = saved_argc;
+		flag = 0;
+		goto test;
+	}
+	f2cbc();
+}
+
+/* f68a2..6a08: findings:D2,D16 */
+char *pE3C0A;
+char *pE3C06;
+char *pE3C0E;
+int put_name();
+int put_char();
+int report_error();
+int f68a2();
+
+int f68a2(p, c)
+register char *p;
+int c;
+{
+	char *q;
+
+	if (!p)
+		goto end;
+	if (p[4] == 0x20 && *(long *)p == 0)
+		goto init;
+	if (put_name(p + 8) < 8)
+		put_char(9);
+	put_char(0x20);
+	report_error(1, "x");
+	goto end;
+init:
+	p[4] = c;
+	*(long *)p = 0;
+	*(int *)(p + 6) = 0;
+	if (c == 0x22) {
+		q = pE3C0A;
+		if (!q)
+			goto end;
+		*(long *)p = ((long)(*q) << 24) + *(int *)(q + 4);
+		goto tail;
+	}
+	if (c == 0x23) {
+		q = pE3C06;
+		if (!q)
+			goto end;
+		*(long *)p = *(int *)(q + 4) + *(int *)(q + 6);
+		goto add;
+	}
+	if (c == 0x24) {
+		q = pE3C0E;
+		if (!q)
+			goto end;
+		*(long *)p = *(int *)(q + 4) + *(int *)(q + 6) + *(int *)(q + 8);
+		goto add;
+	}
+	if (c != 0x21)
+		goto end;
+	*(long *)p = 0;
+	if (bE474 == -1 || bE474 == -3)
+		*(int *)(p + 6) = bE3E82;
+	else
+		*(int *)(p + 6) = bE474;
+	*(long *)p = *(long *)p + ((long)*(int *)(p + 6) << 24);
+	goto end;
+add:
+	*(long *)p = *(long *)p + ((long)(*q) << 24);
+tail:
+	*(int *)(p + 6) = *(int *)(q + 0x10);
+end:
+	;
+}

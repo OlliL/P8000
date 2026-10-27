@@ -147,13 +147,14 @@ produce the same bytes with the shipped cc.
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
   Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
   2026-10-27: 23 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
-  50 with findings (see the audit in findings.json),
-  27 open (23 large functions deferred: pending findings kind 'deferred (large function)'; 0x0018 asm; 0x11ea,
-  0x68a2, 0x6a58 not accepted), 100 entries.
+  52 with findings (see the audit in findings.json),
+  25 open (23 large functions deferred: pending findings kind 'deferred (large function)'; 0x0018 asm; 0x6a58 not accepted),
+  100 entries.
+  0x68a2 accepted (D2, D16; same 118 instructions).
+  0x11ea accepted as parse_args (D2, D5, D6, D7, D15, D16; same 112 instructions; layout by reading).
   0x1070 accepted (D6, D15) with one open point: 111 instructions against 112 in the original (pending finding sld-1070-count).
   Latest: 0x1560 (D2, D5, D8: table loop over 12-byte entries), 0x1364 (D7, D15: dispatcher, file reading),
-  0x724e and 0x7212 (dead wrappers, D5, D16), 0x7286 (wrapper of 0x7300, D4, D16). Open non-deferred: 0x0018 (asm);
-  0x11ea (main argument loop, calls 0x1070 family, not drafted), 0x68a2, 0x6a58.
+  0x724e and 0x7212 (dead wrappers, D5, D16), 0x7286 (wrapper of 0x7300, D4, D16). Open non-deferred: 0x0018 (asm); 0x6a58 (draft in the scratch folder: the probe pointer must sit in rr6 as in the original; not found).
   Last rounds: 0x42f8 accepted (D6, D15, D16: switch on the type byte of the long parameter); 0x6c6a accepted (D2, D6, D15:
   state machine on bE46E). 0x68a2 (358 bytes, branches on the type bytes 0x21..0x24, globals 0x3c0a, 0x3c06, 0x3c0e,
   0x0474) analysed, not drafted.

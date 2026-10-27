@@ -157,13 +157,6 @@
     "len_orig": 112
    }
   },
-  "f11ea": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x11ea",
-   "ours": "f11ea..1364",
-   "level": "open"
-  },
   "f1364": {
    "file": "sld.c",
    "pairing": "confirmed",
@@ -742,11 +735,24 @@
    }
   },
   "f68a2": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x68a2",
-   "ours": "f68a2..6a08",
-   "level": "open"
+   "ours": "0x2792-0x28ee",
+   "level": "differs",
+   "pairing_evidence": "entry of a stream-like record (parameter c stored at +4): the sums of the table words are built in rr6 in the original, through memory in ours (D2); the frame holds the pointer copy in a register and a stack temporary (D16). Same 118 instructions; the semantics are checked by reading (branches for c = 0x22, 0x23, 0x24, 0x21)",
+   "audit": {
+    "d_normalised_pct": 70,
+    "pattern_diff": 66,
+    "pattern_unexplained": 7,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: add\trS,@rrS; ld\t@rrS,rS; ld\trS,rrS(#N)",
+    "structure_flags": [],
+    "len_ours": 114,
+    "len_orig": 118
+   }
   },
   "f6a08": {
    "file": "sld.c",
@@ -1874,6 +1880,28 @@
     "structure_flags": [],
     "len_ours": 103,
     "len_orig": 105
+   }
+  },
+  "parse_args": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x11ea",
+   "ours": "0x2628-0x2792",
+   "level": "differs",
+   "pairing_evidence": "main argument loop: option letters from the table 0x099E (12 entries, jump table), the state of the -f option saved and restored (list at bE4A40, count bE4A44). Same 112 instructions. The differences are block order, switch lowering (D6), loop layout (D7, D15), register and index forms (D2, D5, D16). Not checked against the library after the layout; by reading",
+   "audit": {
+    "d_normalised_pct": 59,
+    "pattern_diff": 90,
+    "pattern_unexplained": 6,
+    "reordered_instructions": 2,
+    "reordered_examples": [
+     "call T"
+    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: ld\trS,#N; popl\trrS,@rrS",
+    "structure_flags": [],
+    "len_ours": 110,
+    "len_orig": 112
    }
   }
  },

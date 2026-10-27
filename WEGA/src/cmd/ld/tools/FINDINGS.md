@@ -10,15 +10,15 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 73 |
-| open | 27 |
+| confirmed | 75 |
+| open | 25 |
 
 | Difference class | Count |
 |---|---|
-| - | 27 |
+| - | 25 |
 | D only (manual reading) | 6 |
 | D only (pattern-verified) | 64 |
-| other differences | 3 |
+| other differences | 5 |
 
 **Pending findings:** 24
 
@@ -40,7 +40,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f078c | f078c..0a5c | 0x078c | open | open |  |  |  |
 | f0b04 | f0b04..0f26 | 0x0b04 | open | open |  |  |  |
 | f1070 | 0x24ca-0x2628 | 0x1070 | confirmed | differs | D only (pattern-verified) | D10, D2, D3, D6, D7, D8, D8/D2 |  |
-| f11ea | f11ea..1364 | 0x11ea | open | open |  |  |  |
 | f1364 | 0x2296-0x23bc | 0x1364 | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
 | f1560 | 0x218c-0x2296 | 0x1560 | confirmed | differs | D only (pattern-verified) | D1, D10, D6, D7, D8, D8/D2 |  |
 | f1696 | f1696..18f2 | 0x1696 | open | open |  |  |  |
@@ -74,7 +73,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f620e | f620e..642e | 0x620e | open | open |  |  |  |
 | f64d0 | 0x1ac2-0x1b16 | 0x64d0 | confirmed | differs | D only (pattern-verified) | D2 |  |
 | f6800 | 0x0bf2-0x0c58 | 0x6800 | confirmed | differs | D only (pattern-verified) | D1 |  |
-| f68a2 | f68a2..6a08 | 0x68a2 | open | open |  |  |  |
+| f68a2 | 0x2792-0x28ee | 0x68a2 | confirmed | differs | other differences |  | unexplained instruction forms: add	rS,@rrS; ld	@rrS,rS; ld	rS,rrS(#N) |
 | f6a08 | 0x030a-0x035a | 0x6a08 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f6a58 | f6a58..6b5a | 0x6a58 | open | open |  |  |  |
 | f6b5a | 0x035a-0x0388 | 0x6b5a | confirmed | exact | D only (pattern-verified) | D7 |  |
@@ -110,6 +109,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | open_tmp | 0x10a8-0x1148 | 0x22a4 | confirmed | differs | D only (pattern-verified) | D10, D7 |  |
 | pack_entry | 0x1560-0x1596 | 0x6866 | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
 | pack_name | 0x1148-0x11dc | 0x00ee | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D3, D7, D8 |  |
+| parse_args | 0x2628-0x2792 | 0x11ea | confirmed | differs | other differences |  | unexplained instruction forms: ld	rS,#N; popl	rrS,@rrS |
 | put_char | 0x0fea-0x1032 | 0x71ca | confirmed | differs | D only (pattern-verified) | D1, D13, D2 |  |
 | put_name | 0x12bc-0x1358 | 0x6522 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | read_entry_hdr | 0x1942-0x1ac2 | 0x6684 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D16, D2, D3, D6, D7, D8, D8/D2 |  |

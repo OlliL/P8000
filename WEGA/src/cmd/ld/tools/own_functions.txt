@@ -18,7 +18,7 @@
 0b04 f0b04 0f26 1058 1 854 P ret open
 0f26 read_words 1070 330 1 ba8 c ret findings:D15
 1070 f1070 11ea 378 1 980 P ret findings:D6,D15
-11ea f11ea 1364 378 1 a4c P ret open
+11ea parse_args 1364 378 1 a4c P ret findings:D2,D5,D6,D7,D15,D16
 1364 f1364 14a4 320 1 9d6 P ret findings:D7,D15
 14a4 load_header 1560 188 3 13a2 1486 1640 P ret done
 1560 f1560 1664 260 1 1426 c ret findings:D2,D5,D8
@@ -73,7 +73,7 @@
 6684 read_entry_hdr 6800 380 2 1756 24fc c ret findings:D2
 6800 f6800 6866 102 1 67d8 P ret findings:D2
 6866 pack_entry 68a2 60 0 - x ret findings:D4
-68a2 f68a2 6a08 358 4 46ba 46ca 46da 46f2 c ret open
+68a2 f68a2 6a08 358 4 46ba 46ca 46da 46f2 c ret findings:D2,D16
 6a08 f6a08 6a58 80 1 24b2 c ret done
 6a58 f6a58 6b5a 258 4 1798 257c 6b7e 6ba8 P ret open
 6b5a f6b5a 6b84 42 5 c78 44fc 4510 4524 c ret done
