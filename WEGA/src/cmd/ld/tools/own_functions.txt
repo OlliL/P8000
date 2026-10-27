@@ -9,10 +9,10 @@
 0178 0220   168   1  6898 c ret  open
 0220 06c6  1190   1  204 P ret  open
 06c6 0762   156  55  350 1828 3784 3a0c c ret  open
-0762 078c    42   1  85c c ret  open
+0762 078c    42   1  85c c ret  done
 078c 0a5c   720   1  46 c ret  open
 0a5c 0aba    94   2  2d44 34a4 c ret  open
-0aba 0b04    74   1  79e P ret  open
+0aba 0b04    74   1  79e P ret  done
 0b04 0f26  1058   1  854 P ret  open
 0f26 1070   330   1  ba8 c ret  open
 1070 11ea   378   1  980 P ret  open
@@ -34,11 +34,11 @@
 2cbc 2d4c   144   1  1350 c ret  open
 2d4c 2dde   146   1  2d42 P ret  open
 2dde 2e4c   110   2  2cd0 2ce8 P ret  open
-2e4c 2e76    42   5  1dfc 1e3c 1e54 1eb0 P ret  open
+2e4c 2e76    42   5  1dfc 1e3c 1e54 1eb0 P ret  done
 2e76 2f04   142  11  14ea 14fa 2454 26b4 P ret  open
 2f04 2f3a    54   6  227e 2294 6378 63ea P ret  open
 2f3a 3090   342  17  14b8 1720 2448 24f2 P ret  open
-3090 30a4    20   4  271c 276a 27b2 3060 P ret  open
+3090 30a4    20   4  271c 276a 27b2 3060 P ret  done
 30a4 3144   160   4  2820 287c 2ef0 3384 P ret  open
 3144 3408   708   2  1374 240e P ret  open
 3408 34b8   176 103  1b6 6e4 72c 782 P ret  open
@@ -80,13 +80,13 @@
 6e1a 6efe   228   3  2574 6a52 6f28 P ret  open
 6efe 6f46    72   1  2cea c ret  open
 6f46 6fd0   138   1  1420 c ret  open
-6fd0 6ffe    46   9  1ee 1f8 45b0 45c4 P ret  open
-6ffe 702a    44   1  846 c ret  open
+6fd0 6ffe    46   9  1ee 1f8 45b0 45c4 P ret  findings:D1
+6ffe 702a    44   1  846 c ret  done
 702a 705e    52   1  df8 c ret  open
 705e 70ce   112   5  208 4662 484e 489c P ret  open
 70ce 7112    68   1  2b18 c ret  open
 7112 719e   140   1  13d8 c ret  open
-719e 71ca    44   5  1fca 2014 4990 595a c ret  open
+719e 71ca    44   5  1fca 2014 4990 595a c ret  done
 71ca 7286   188   8  25e4 25ec 3bee 3bf8 c ret  open
 7286 7300   122   5  c00 daa e1c 11ac c ret  open
 7300 7526   550   3  7242 727a 72ec c ret  open

@@ -470,11 +470,11 @@
    "module_refs": 1
   },
   "f_6fd0": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x6fd0",
-   "level": "proven: target of a call in the code",
-   "ours": null,
+   "level": "analysed",
+   "ours": "f6fd0..6ffc",
    "note": "no own source yet; name unknown (stripped binary)",
    "module_hint": "dump.c",
    "module_refs": 1
@@ -3095,7 +3095,17 @@
   }
  },
  "findings": [],
- "findings_pending": [],
+ "findings_pending": [
+  {
+   "id": "sld-01",
+   "kind": "compiler difference",
+   "function": "f_6fd0",
+   "status": "open",
+   "classification": "D1",
+   "action": "record; rebuild as the original (byte identity first)",
+   "result": "frame 14 bytes against 6 bytes of the draft; all other instructions equal"
+  }
+ ],
  "manual_classes": {},
  "inventory": {
   "source": "tools/inventory.py",

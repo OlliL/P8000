@@ -434,6 +434,10 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   starts. The start code 0x18 is not `/lib/scrt0.o`: `scrt0.o` (code 66 bytes) has the word pair `5df8 0000` after its first
   word, which sld lacks; the stack operands are 0x7f04/0x7f06 in sld and 0x0004/0x0006 in scrt0.o (relocated words of the
   stack segment, so the values may differ at link time: guess, not checked).
+- Call form (checked with `src/cmd/ld/tools/fncheck.py`): scc emits `calr` for a callee defined in the same object within
+  reach, `call` for an undefined callee or one out of reach (the original calls 0x3408 from 0x71c0 with `call`, the distance
+  is above the calr range). The form of the final sld is therefore decided by the whole-file compile (D17).
+- Segment operands in the object are `<<0>>` (not linked); the stack is `<<127>>` after the link. Compare without segments.
 - 0x85f8 (last own function) has no `ret`: it falls into the shipped ffltioc, whose first word 9e08 is a `ret`.
 - libc part 0x8680..0x9800: 14 modules cut and verified (`src/lib/oldslibc`, README there); shipped members of `/lib/slibc.a`
   ffltioc, getpid, umask are identical to the original code.

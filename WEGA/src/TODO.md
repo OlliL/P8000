@@ -145,6 +145,11 @@ produce the same bytes with the shipped cc.
   starts of the own code; no fall-through between them except 0x18 (ends with `sc`) and 0x85f8 (ends with `add`; its
   `ret` is the first instruction of the shipped ffltioc at 0x8680). Entry 0x8000 is no function start (inner jump target).
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
+  Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
+  2026-10-27: 6 done (0762, 0aba, 2e4c, 3090, 6ffe, 719e), 1 with finding D1 (6fd0, frame 14 against 6), 87 open.
+  Open hard cases: 0056 (register parameters, bit-7 coding), 70ce (parameter order and frame), 64d0 (loop temporary in
+  r2 against r12). Check tools: `tools/fncheck.py` (one draft against the original range), `tools/accept.py` (accept into
+  sld.c and record).
   Open: the split into the module files (module order of the data SCCS strings is the link order, not checked against
   the code); the start code 0x18 is not `/lib/scrt0.o` (same start, but `scrt0.o` has the word pair `5df8 0000` after the
   first word that sld lacks, and its stack operands are 0x0004/0x0006 where sld has 0x7f04/0x7f06; see `host/KNOWLEDGE.md`). `src/cmd/ld/Makefile` builds the libc objects and `sld_own.o` (tested with the emulator).
