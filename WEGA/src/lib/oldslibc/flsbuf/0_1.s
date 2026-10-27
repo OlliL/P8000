@@ -223,7 +223,7 @@ L8a3c:
 	ldm	r11,_stkseg+6(r15),#3
 	inc	r15,#12
 	ret
-_f8a48::
+__callex::
 	call	_cnvt
 	ret
 

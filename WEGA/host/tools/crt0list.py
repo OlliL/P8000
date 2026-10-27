@@ -21,6 +21,10 @@ from sout import SOut  # noqa: E402
 import libcver  # noqa: E402
 
 STAMP = re.compile(rb"^\x00\x00@\[\$\]crt0\.s\t\tRev : (\S+)\t(\d\d/\d\d/\d\d \d\d:\d\d:\d\d)\x00")
+STAMP_S = re.compile(rb"^\x00\x00@\[\$\]scrt0\.s\t\tRev : (\S+)\t(\d\d/\d\d/\d\d \d\d:\d\d:\d\d)\x00")
+# start-up code of the segmented programs (src/lib/libc/crt/scrt0.s.in): a jump and the text as in crt0, the code
+# starts at 0x18 with dec r15,#4; the byte at 0x3c is the segment of _environ (0x82: segment 2, 0x80: segment 0)
+SCRT0_HEAD = b"\xab\xf3\x61\xf7"
 
 
 def scan(tree, verbose=False):
@@ -37,12 +41,24 @@ def scan(tree, verbose=False):
                 s = SOut(d)
             except (ValueError, OSError, struct.error):
                 continue
-            if s.magic not in (0xE707, 0xE711):
+            if s.magic not in (0xE607, 0xE611, 0xE707, 0xE711):
                 continue
             g = s.segs[0]
             if g["code"] < 0x40:
                 continue
             img = s.image
+            if img[0x18:0x1c] == SCRT0_HEAD and img[0] == 0xE8 and img[1] == 0x0B:
+                data = img[g["code"]:g["code"] + 64]
+                m = STAMP_S.match(data)
+                if not m:
+                    other.append(p)
+                    why[p] = "scrt0 start without stamp"
+                    continue
+                envseg = {0x82: "2", 0x80: "0"}.get(img[0x3c], "?")
+                text = img[2:0x17].decode("latin-1")
+                rows.append((f, text, m.group(1).decode(), m.group(2).decode(), os.path.relpath(p, tree),
+                             "scrt0", envseg))
+                continue
             # code without the text: the jr at 0, the text at 2..0x17, code from 0x18
             if img[0] != 0xE8 or img[1] != 0x0B:
                 other.append(p)

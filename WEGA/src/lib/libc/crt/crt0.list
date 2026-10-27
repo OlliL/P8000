@@ -242,3 +242,8 @@ crpost	COPR. 1981 87wega3.2.			usr/lib/cref/crpost
 upost	COPR. 1981 87wega3.2.			usr/lib/cref/upost
 codgen	-			lib/codgen
 scodgen	-			lib/scodgen
+# segmented start-up code (scrt0.s.in): name, pad, revision, stamp, path, template, segment of _environ
+sld	......1981 87wega3.2.	3.2	10/27/83 00:05:16	bin/sld	scrt0	2
+ps	......1981 87wega3.2.	3.2	11/18/83 00:05:15	bin/ps	scrt0	0
+pstat	......1981 87wega3.2.	3.2	11/18/83 00:05:15	bin/pstat	scrt0	0
+yacc	COPR. 1981 87wega3.2.	3.2	07/21/83 00:05:17	usr/bin/yacc	scrt0	2

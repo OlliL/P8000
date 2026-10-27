@@ -1,0 +1,33 @@
+	.seg
+	.extern	_stkseg
+	.extern	_main
+	.extern	__callex
+	.psec
+	.code
+start::
+	jr	L1
+	.byte	"PADTEXT",%00
+L1:
+	dec	r15,#4
+	ld	r7,|_stkseg+4|(r15)
+	lda	rr4,|_stkseg+6|(r15)
+	ldl	rr2,@rr4
+	sub	r3,#2
+	clr	@rr2
+	add	r3,#2
+	ld	r8,r7
+	inc	r8,#1
+	sla	r8,#2
+	ldl	rr2,rr4
+	add	r3,r8
+	ldl	<<ENVSEG>>%0000,rr2
+	ldl	rr8,|_stkseg+0|(r15)
+	inc	r15,#4
+	call	_main
+	ld	r7,r2
+	call	__callex
+	sc	#%01
+	.psec
+	.data
+	.word	%0000
+	.byte	"@[$]scrt0.s",%09,%09,"Rev : REVNUM",%09,"STAMPTIME",%00

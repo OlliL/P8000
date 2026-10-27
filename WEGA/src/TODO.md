@@ -136,6 +136,11 @@ produce the same bytes with the shipped cc.
   14 modules, each assembled with cas -u and its code bytes equal to sld (0 differing words, relocated words masked). Cross
   references are symbols now (`_name`, `_fXXXX`), export labels also for calls from the own code. Data not yet compared.
 - sld own code CUT AND VERIFIED as one block (`src/cmd/ld/sld_own.s`, 0x0018..0x8680, 34408 bytes, 0 differing words).
+  Since 2026-10-27 the start (0x18..0x55) is its own object `scrt0.o` (`make` in src/cmd/ld, from mkcrt0.sh + scrt0.s.in);
+  sld_own.s now is 0x56..0x8680 (34346 bytes, 0 differing words, `_main` exported at 0x78c). Linked (2026-10-27): `make link` (src/cmd/ld) gives sld.new with the original sld as linker: code segment
+  38834 of 38912 bytes equal; the 78 other bytes are data references of the libc modules (data of sld not cut yet, the libc
+  data spans are at other offsets), data and bss of sld.new are 256 bytes (original 7090 + 31054 + 63488). Symbol fixes:
+  `__callex` exported by flsbuf (0x8a48; the old label _f8a48 is removed), `__inflt` (ffltioc at 0x8684) in sld_own.s, `_bss1` absolute in signal.
   Not split into modules yet. The own code has 348 direct and 58 indexed references into segment 1 (data) and 442 direct
   references into segment 2 (bss). Their owners by data range vote (`src/cmd/ld/tools/own_functions.txt` lists functions;
   the votes are not final): the vote shows the owner of the data, not of the code (global variables of one module are
@@ -164,7 +169,7 @@ produce the same bytes with the shipped cc.
   82 instructions, but the register of the probe pointer (rr6 in the original) and the loop shape differ; not accepted),
   0x1560 (table loop, 12-byte entries, not drafted fully).
   Dead code (no caller, no address reference): rebuilt: 0x724e and 0x7212 (wrappers of the deferred 0x7300, D5, D16), 0x6866 pack_entry, 0x01d2 walk_entries,
-  0x3b1e swab12, 0x7186 report_limit. 0x0018 is the start code (asm with sc, to be kept as assembler, not C).
+  0x3b1e swab12, 0x7186 report_limit. 0x0018 is the start code: the template src/lib/libc/crt/scrt0.s.in reproduces its 62 bytes (see KNOWLEDGE, sld section); open: take the start out of sld_own.s and link scrt0.o first (needs the link test).
   0x7808 (334 bytes, open): a scanf-like reader: stream at rr10 (count at +4, pointer at +0), conversion characters c, s, [ (character
   class table 0x17BA, filled by make_ccl 0x7956), calls ungetc 0x86fa and store 0x8688. Not started; needs the stream layout first.
   0x6684 done as read_entry_hdr (D2).

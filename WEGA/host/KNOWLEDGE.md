@@ -425,12 +425,20 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
 - `/bin/sld` (E611, stripped): segment 0 code 38912 bytes, segment 1 data 7090, bss 31054 (segment 1) and 63488 (segment 2).
   Data offsets in segment 0 addresses: `off & 0x7fff` (the `%8000` form). Stack segment 127 is `_stkseg`.
 - Own code 0x0018..0x8680 (34408 bytes) assembles byte-identical as one block (`src/cmd/ld/sld_own.s`, `host/tools/unlink_seg.py`).
+  Since 2026-10-27 the start 0x18..0x55 is `scrt0.o` (template `src/lib/libc/crt/scrt0.s.in`); `sld_own.s` is 0x56..0x8680 (34346 bytes, verified from 0x56).
 - Data references of the own code (decoded with the segmented flag, as the cut does): 348 direct and 58 indexed references
   into segment 1 (data), 442 direct into segment 2 (bss), 1816 stack references (segment 127). Data references do not say
   which module owns the code: a global of one module is used by code of another. The SCCS modules of the data (scrt0.s,
   copyname.c, dump.c, ext.c, ld.c, ldm.c, printname.c, swap.c, symbols.c, malloc.c) have no code boundaries yet.
   Correction: an earlier reading "only three direct data addresses" came from decoding with the non-segmented flag.
 - Function boundaries of the own code (`src/cmd/ld/tools/own_functions.txt`): 94 functions, entries = call targets and proven
+- Start-up code of the segmented programs (2026-10-27, measured): the 62 bytes at 0x18..0x55 of `/bin/sld` are the same code as
+  the start of `/bin/ps`, `/bin/pstat` and `/usr/bin/yacc` (stamp `@[$]scrt0.s`, revision 3.2). They differ only in the segment of
+  `_environ` (sld and yacc: segment 2, byte 0x82; ps and pstat: segment 0, byte 0x80) and in the relocated words. The code takes
+  argc and argv from the stack and sets `_environ` to argv + 4 * (argc + 1); it calls `_main` and then `__callex`, exit by `sc #1`.
+  Template `src/lib/libc/crt/scrt0.s.in` (ENVSEG, REVNUM, STAMPTIME); it assembles to these 62 bytes, and the stamp line equals
+  the one in the program (sld and ps checked). Rows in `crt0.list` with template `scrt0`; `host/tools/crt0list.py` finds them.
+  The SCCS list of the library (`Library.SC` in `lib/slibc.a`) carries the stamp 09/12/83 00:05:11 for scrt0.s (not a program).
   starts. The start code 0x18 is not `/lib/scrt0.o`: `scrt0.o` (code 66 bytes) has the word pair `5df8 0000` after its first
   word, which sld lacks; the stack operands are 0x7f04/0x7f06 in sld and 0x0004/0x0006 in scrt0.o (relocated words of the
   stack segment, so the values may differ at link time: guess, not checked).

@@ -1,6 +1,5 @@
 	.seg
 	.extern	_stkseg
-	.extern	_f8a48
 	.extern	_f9184
 	.extern	_cnvt
 	.extern	_f9376
@@ -35,29 +34,9 @@
 	.extern	_filbuf
 	.extern	_f8c86
 	.extern	_f8ad0
-	.extern	_f8684
+	.extern	__inflt
 	.code
 
-_sld_own::
-	dec	r15,#4
-	ld	r7,|_stkseg+4|(r15)
-	lda	rr4,|_stkseg+6|(r15)
-	ldl	rr2,@rr4
-	sub	r3,#%0002
-	clr	@rr2
-	add	r3,#%0002
-	ld	r8,r7
-	inc	r8,#1
-	sla	r8,#2
-	ldl	rr2,rr4
-	add	r3,r8
-	ldl	<<2>>%0000,rr2
-	ldl	rr8,|_stkseg+0|(r15)
-	inc	r15,#4
-	call	L78c
-	ld	r7,r2
-	call	_f8a48
-	sc	#%01
 L56:
 	sub	r15,#%0016
 	ldm	_stkseg+14(r15),r10,#4
@@ -587,6 +566,7 @@ L762:
 L788:
 	inc	r15,#2
 	ret
+_main::
 L78c:
 	sub	r15,#%001E
 	ldm	_stkseg+22(r15),r10,#4
@@ -10056,7 +10036,7 @@ L8286:
 	.word	%0F24,%8303	// EPU
 	ld	r7,|_stkseg+24|(r15)
 	ld	r3,r11
-	call	_f8684
+	call	__inflt
 	ldl	|_stkseg+32|(r15),rr2
 	ldl	rr2,|_stkseg+18|(r15)
 	testl	rr2

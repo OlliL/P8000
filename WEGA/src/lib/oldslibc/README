@@ -17,6 +17,6 @@ Cross references: resolved to symbols (_name, export label _name:: in the defini
 module name). Unnamed inner entries are f<addr> (e.g. _f91ea in isatty, _f903a in malloc). _stkseg comes from the loader.
 Data: the data words the code refers to are in the modules (.data, labels _dXXXX = start offset of the span, the code
 refers to _dXXXX+off). Spans: cnvt 1A4A..1A5E, flsbuf 1959..195B and 1A32..1A34, malloc 1A90..1AAA, stubs 1BAE..1BB2.
-The offset 1BB2 is the start of the bss of segment 1 (data is 7090 bytes): signal and stubs refer to it as _bss1+off
-(extern, the loader places it). Tool: host/tools/libc_data_seg.py. Checked: all 14 modules assemble with cas -u; the
+The offset 1BB2 is the start of the bss of segment 1 (data is 7090 bytes): signal refers to it as <<1>>%1BB2 + off
+(absolute, as the original does; since the link of sld the module no longer has an extern _bss1). Tool: host/tools/libc_data_seg.py. Checked: all 14 modules assemble with cas -u; the
 data bytes are not yet compared with the original (needs the final link).
