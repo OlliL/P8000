@@ -1161,16 +1161,18 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x79ca",
-   "ours": "0x3648-0x36dc",
+   "ours": "0x3648-0x36d8",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 96,
+    "pattern_diff": 2,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D7"
+    ],
     "structure_flags": [],
     "len_ours": 23,
     "len_orig": 23
@@ -1201,11 +1203,28 @@
    }
   },
   "f7c26": {
-   "file": null,
-   "pairing": "open",
+   "file": "sld.c",
+   "pairing": "confirmed",
    "orig": "0x7c26",
-   "ours": "f7c26..85f8",
-   "level": "open"
+   "ours": "0x36d8-0x413e",
+   "level": "differs",
+   "pairing_evidence": "479 of 714 instructions differ in block placement (loop head at the top in the original, D7) and in the byte read of the format character (ldb/subb, D8); instruction count 714 equal; frame 144 and stack offsets equal; semantics checked by reading only, not run",
+   "audit": {
+    "d_normalised_pct": 72,
+    "pattern_diff": 407,
+    "pattern_unexplained": 24,
+    "reordered_instructions": 12,
+    "reordered_examples": [
+     "ldl\trrS,F",
+     "ld\tF,#N",
+     "ldl\trrS,F"
+    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: dec\t@rrS,#1; inc\t@rrS,#1; inc\t@rrS,#2; inc\t@rrS,#4; inc\t@rrS,#8",
+    "structure_flags": [],
+    "len_ours": 739,
+    "len_orig": 728
+   }
   },
   "f85f8": {
    "file": "sld.c",
@@ -2148,15 +2167,6 @@
    "result": "entry 0x7526, 738 bytes, not started"
   },
   {
-   "id": "sld-deferred-7c26",
-   "kind": "deferred (large function)",
-   "function": "f7c26",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x7c26, 2514 bytes, not started"
-  },
-  {
    "id": "sld-1070-count",
    "kind": "open (instruction count)",
    "function": "f1070",
@@ -2173,9 +2183,27 @@
    "classification": "-",
    "action": "place the blocks of the table path (0x2b02) and of the stream B refill (0x2882) as in the original; then check the remaining 42 instructions (register choices D2 and the sra form) and run the function on the machine or in a test harness",
    "result": "entry 0x27d8, 1252 bytes: 361 instructions, 42 differ (block placement of 0x2b02 and 0x2882, scratch registers of the key, count and byte temporaries); the classifier reports 1 unexplained form (sra rS,#4); semantics checked by reading only"
+  },
+  {
+   "id": "sld-7c26-semantics",
+   "kind": "open (semantic check not done)",
+   "function": "f7c26",
+   "status": "open",
+   "classification": "-",
+   "action": "run the function against the original (test harness or the whole sld) and compare the output; then close the 479 differing instructions (block placement, format character read) and re-check the stream, wptr/scnt and float argument logic",
+   "result": "entry 0x7c26, 2514 bytes, 714 instructions equal in count, frame 144 and stack offsets equal, 479 lines differ (block placement D7, byte read D8); semantics checked by reading only, the external helpers f8684, f8ad0, f943c, f8c86 are not checked against their own definitions"
   }
  ],
- "manual_classes": {},
+ "manual_classes": {
+  "f7c26": {
+   "basis": "read",
+   "d_classes": [
+    "D7",
+    "D8"
+   ],
+   "note": "semantics not run; block placement (loop head rotated in the draft, top in the original; D7) and format character read (D8); 479 of 714 instructions differ, instruction count equal; frame 144, stack offsets equal"
+  }
+ },
  "inventory": {
   "source": "tools/inventory.py",
   "binary": "/mnt/share/cvs/P8000/tmp/wega31_root/bin/sld",

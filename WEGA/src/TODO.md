@@ -430,6 +430,9 @@ Listed by function; the current evidence is in `findings.json` (`findings_pendin
   the source form that gives the original order is not found.
   Round "clocal and zzzcode check": storage classes tested (each pointer local automatic in turn; the int locals): no gain, so the difference is the
   layout (D15), not the declarations. The 4 unexplained forms are the immediate shifts `sra`/`srl rS,#n`, which the pattern set does not cover.
+  Note on D15 (2026-10-28): D15 names a difference in block order whose cause is not measured. Measured with the old cc
+  (`scc -O -S`): an if/else keeps the source order of its branches, so an if/else reorder is not the cause (`host/KNOWLEDGE.md`, D15).
+  The layout annotations of `clocal` and `zzzcode` and the D15 tags of the sld functions are kept as recorded; they are not re-evaluated.
   Pairing: confirmed with the original at 0xab48 (the only strong start candidate; the same calls to `makeblock`, `member`, `tbytes`, `szty`, `cerror`; the counts differ). The open review entry is closed.
 - `zzzcode` (`zzz3.c`, `zzzcode-order-01`), round "clocal and zzzcode check": storage classes of the locals tested one at a time (q, r, l, tmp, rg, m, n, k, t to automatic; rp, rn2, cls, rn to register): no gain, the source is unchanged. The 4 unexplained forms are immediate shifts (`sra rS,#1`, `srl rS,#2`).
 - `zzzcode` (`zzz3.c`, `zzzcode-order-01`): the block `if (notoff(...)) order(r, STAREG)` sits at another place (808 in ours, 920 in

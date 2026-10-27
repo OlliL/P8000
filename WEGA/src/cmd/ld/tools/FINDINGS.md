@@ -10,15 +10,15 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 81 |
-| open | 21 |
+| confirmed | 82 |
+| open | 20 |
 
 | Difference class | Count |
 |---|---|
-| - | 21 |
+| - | 20 |
 | D only (manual reading) | 6 |
 | D only (pattern-verified) | 66 |
-| other differences | 9 |
+| other differences | 10 |
 
 **Pending findings:** 19
 
@@ -91,11 +91,11 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f7286 | 0x2448-0x24ca | 0x7286 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D8 |  |
 | f7300 | f7300..7526 | 0x7300 | open | open |  |  |  |
 | f7526 | f7526..7808 | 0x7526 | open | open |  |  |  |
-| f79ca | 0x3648-0x36dc | 0x79ca | confirmed | exact | D only (pattern-verified) |  |  |
+| f79ca | 0x3648-0x36d8 | 0x79ca | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f7a5e |  | 0x7a5e | open | open |  |  |  |
 | f7ae2 |  | 0x7ae2 | open | open |  |  |  |
 | f7bbc | 0x0b82-0x0bf2 | 0x7bbc | confirmed | differs | D only (pattern-verified) | D1, D10, D3 |  |
-| f7c26 | f7c26..85f8 | 0x7c26 | open | open |  |  |  |
+| f7c26 | 0x36d8-0x413e | 0x7c26 | confirmed | differs | read by hand | D7, D8 | semantics not run; block placement (loop head rotated in the draft, top in the original; D7) and format character read (D8); 479 of 714 instructions differ, instruction count equal; frame 144, stack offsets equal |
 | f85f8 | 0x0884-0x0916 | 0x85f8 | confirmed | differs | D only (manual reading) | D2 | indirect byte store through another register pair (rr2 here, rr4 in the original) |
 | finish_output | 0x0ce8-0x0d70 | 0x2cbc | confirmed | exact | D only (pattern-verified) | D10, D7 |  |
 | flush_buffer | 0x06ba-0x071a | 0x3ac6 | confirmed | differs | D only (pattern-verified) | D1, D3, D7 |  |
@@ -153,6 +153,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | sld-deferred-620e | deferred (large function) | f620e | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x620e, 544 bytes, not started |
 | sld-deferred-7300 | deferred (large function) | f7300 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7300, 550 bytes, not started |
 | sld-deferred-7526 | deferred (large function) | f7526 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7526, 738 bytes, not started |
-| sld-deferred-7c26 | deferred (large function) | f7c26 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x7c26, 2514 bytes, not started |
 | sld-1070-count | open (instruction count) | f1070 | open | - | find the one instruction of the original (112 against 111 in our draft) and the block order of the switch | entry 0x1070: 111 instructions against 112 in the original; not explained by a D pattern (D6 and D15 are the known layout and switch forms) |
 | sld-27d8-layout | open (block placement, semantic check by reading) | f27d8 | open | - | place the blocks of the table path (0x2b02) and of the stream B refill (0x2882) as in the original; then check the remaining 42 instructions (register choices D2 and the sra form) and run the function on the machine or in a test harness | entry 0x27d8, 1252 bytes: 361 instructions, 42 differ (block placement of 0x2b02 and 0x2882, scratch registers of the key, count and byte temporaries); the classifier reports 1 unexplained form (sra rS,#4); semantics checked by reading only |
+| sld-7c26-semantics | open (semantic check not done) | f7c26 | open | - | run the function against the original (test harness or the whole sld) and compare the output; then close the 479 differing instructions (block placement, format character read) and re-check the stream, wptr/scnt and float argument logic | entry 0x7c26, 2514 bytes, 714 instructions equal in count, frame 144 and stack offsets equal, 479 lines differ (block placement D7, byte read D8); semantics checked by reading only, the external helpers f8684, f8ad0, f943c, f8c86 are not checked against their own definitions |

@@ -1322,6 +1322,10 @@ with `break`); differing blocks 17 -> 14, moved instructions 10 -> 0, corpus 101
 
 ### D7 Loop layout
 The old compiler puts the loop test at the bottom (`jr` into the test first); the shipped scc tests at the top.
+Measured (2026-10-28, `scc -O -S`): `while`/`for` loops and `goto` loops with the test at the head are rotated: the entry
+jumps to the test, the test stands at the bottom and branches back to the body (`lp1.c`, `ha.c`, `hb.c`). A far exit
+does not prevent it (`hc.c`). Without `-O` the head stays at the top. Open: the original 0x7C26 keeps its loop head at the
+top, although sld is built with `-O`; the rule that prevents the rotation there is not found.
 In codgen: the `for` loop of `expand` (`out3.c`) and the else branch of `buildstar` (`tr3.c`, placed out of line and
 jumping back to the shared store).
 
@@ -1375,17 +1379,13 @@ the source are possible; only differences that the compiler explains are counted
 
 ### D15 Block layout of if/else
 
-The old compiler lays out the two branches of an `if`/`else` in another order than the shipped one. In codgen
-`zzzcode` (`zzz3.c`, the structure move, case `S`), the original has the `n <= 4` branch first: `cp n,#4; jp gt,BIG`,
-the small code, then the big branch. Ours has the big branch first with `jr le,SMALL`. Both source forms were tried
-(the original `if (n <= 4)` and the swapped `if (n > 4)`); the swapped form gave 95 -> 80 differing blocks, a
-variant with an early `return` gave 78 and was not kept. In `clocal` (`tr3.c`) the block order differs too
-(80 instructions at another place); the swap of the branches in the source was rejected (alignment 47 -> 17 %).
-
-Not checked for the other `if`/`else` of codgen and cas. Status: pattern, not a measured compiler rule. The old
-compiler is not available to compile a test, so the cause is a guess from the layout of the original.
-Recorded in `tools/findings.json` as `layout_classes` (`zzzcode`, `clocal`); `tools/classify.py` adds the class to `audit.d_classes`.
-Not in the pattern check (`patterns.py`), which tests instructions, not their order.
+Measured (2026-10-28, `scc -O -S` in the emulator, tests in the scratch folder `tmp/layout`): the old compiler keeps the
+source order of the two branches of an `if`/`else`. The `then` branch comes first, whatever its size (`if (a > 4) g = 1; else g = 2;`
+gives `jpr le,ELSE` and the then-code first). Labels reached by `goto` are placed where they stand in the source (`gt1`, `gt2`).
+So an if/else reorder cannot explain a block-order difference: the earlier note (the original puts the `n <= 4` branch
+first, the compiler reorders) is wrong for if/else. The layout entries of `zzzcode` and `clocal` (`layout_classes` in
+findings.json, D15) are kept as recorded and not re-evaluated; their cause is open. Other functions tagged D15 by reading
+(`sld` 0x0f26, 0x1070, 0x1364, 0x11ea, 0x27d8, 0x2f3a, 0x42f8, 0x6c6a) are open to the same check.
 
 ### D17 Call form: absolute `call` for global functions (popt)
 

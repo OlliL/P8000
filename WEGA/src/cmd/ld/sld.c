@@ -2695,3 +2695,633 @@ long s1;
 	pE90E4 = str194e;
 	bE90E2 = f7c26(fmt, &wb0, &db0, &s1, 1, str194e);
 }
+
+/* f7c26..85c6: findings:D7,D8 */
+struct iob {
+	char *ptr;
+	int cnt;
+};
+int f8c86();
+int f880e();
+int f85c6();
+
+int f7c26(f, ap, dp, sptr, scnt, iop)
+register unsigned char *f;
+long ap;
+long dp;
+long sptr;
+int scnt;
+struct iob *iop;
+{
+	register int c;
+	register int rem;
+	register int pn;
+	int ncnt;
+	long wptr;
+	char pa12[4];
+	int prec;
+	int width;
+	int size1a;
+	char pd1c[4];
+	char pe20[4];
+	char buf24[64];
+	char *bufp;
+	char pad68[1];
+	char b69[1];
+	char pad6a[1];
+	char b6b[1];
+	char pad6c[1];
+	char sign[1];
+	char pb6e[4];
+	int fleft;
+	int padn;
+	int fhash;
+	int fsp;
+	int fplus;
+	int outc;
+	int nout;
+	char c80[1];
+	char padc[1];
+	int conv82;
+
+	wptr = ap;
+	nout = 0;
+	ncnt = 0;
+	rem = f8c86(f);
+	goto l7c8c;
+l7c50:
+	if ((iop->cnt -= 1) < 0) {
+		f880e(c, iop);
+	} else {
+		*((int *)&iop->ptr + 1) += 1;
+		*(iop->ptr - 1) = c;
+	}
+	nout += 1;
+l7c8c:
+	if (rem-- == 0)
+		goto l85c6;
+	c = *f++ & 0xff;
+	if (c != 0x25)
+		goto l7c50;
+	if (rem == 0)
+		goto l85c6;
+	rem -= 1;
+	c = *f++ & 0xff;
+	prec = 0;
+	width = -1;
+	padc[0] = 0x20;
+	nout = 0;
+	fsp = 0;
+	fplus = 0;
+	fhash = 0;
+	fleft = 0;
+l7d26:
+	if (c - 0x20 > 0x0d)
+		goto l7d50;
+	switch (c - 0x20) {
+	case 0:
+		goto l7d02;
+	case 1:
+		goto l7cf4;
+	case 3:
+		goto l7d10;
+	case 13:
+		goto l7d3c;
+	}
+l7d50:
+	if (!fplus)
+		goto l7ce0;
+	sign[0] = 0x2b;
+l7d5c:
+	if (c < 0x61)
+		goto l7e26;
+	goto l7e3e;
+l7ce0:
+	if (!fsp)
+		goto l7d56;
+	sign[0] = 0x20;
+	fplus = 1;
+	goto l7d5c;
+l7d56:
+	sign[0] = 0x2b;
+	goto l7d5c;
+l7d64:
+	if (c != 0x2a)
+		goto l7d94;
+	prec = *(int *)wptr;
+	*((int *)&wptr + 1) += 2;
+	scnt += 1;
+	if (scnt == 5)
+		wptr = sptr;
+	goto l7dbc;
+l7d94:
+	if (c != 0x30)
+		goto l7da0;
+	padc[0] = 0x30;
+l7da0:
+	f -= 1;
+	rem += 1;
+	pn = f85f8(f, &prec, rem);
+	f += pn;
+	rem -= pn;
+l7dbc:
+	if (rem == 0)
+		goto l7e3e;
+	if (*f != 0x2e)
+		goto l7e18;
+	f += 1;
+	rem -= 1;
+	if (rem == 0)
+		goto l7e3e;
+	if (*f != 0x2a)
+		goto l7e00;
+	width = *(int *)wptr;
+	*((int *)&wptr + 1) += 2;
+	pn = 1;
+	scnt += 1;
+	if (scnt == 5)
+		wptr = sptr;
+	goto l7e10;
+l7e00:
+	pn = f85f8(f, &width, rem);
+l7e10:
+	rem -= pn;
+	f += pn;
+l7e18:
+	if (rem == 0)
+		goto l7e3e;
+	rem -= 1;
+	c = *f++ & 0xff;
+l7e26:
+	if (c == 0x2a)
+		goto l7d64;
+	if (c < 0x30)
+		goto l7e38;
+	if (c <= 0x39)
+		goto l7d64;
+l7e38:
+	if (c == 0x2e)
+		goto l7d64;
+l7e3e:
+	if (width >= 0)
+		goto l7e6a;
+	switch (c) {
+	case 'E':
+	case 'G':
+	case 'e':
+	case 'f':
+	case 'g':
+		width = 6;
+		goto l7e6a;
+	case 's':
+		width = 0;
+		goto l7e6a;
+	}
+l7e6a:
+	conv82 = c;
+	switch (c) {
+	case 'D':
+		goto l7f46;
+	case 'O':
+		goto l7edc;
+	case 'U':
+		goto l7f3e;
+	case 'X':
+		goto l7ee4;
+	case 'o':
+		goto l7e9a;
+	case 'u':
+		goto l7eaa;
+	case 'x':
+		goto l7ea2;
+	case 'l':
+		goto l7f4e;
+	case 'c':
+		goto l8212;
+	case 'd':
+		goto l8020;
+	case 'E':
+	case 'G':
+	case 'e':
+	case 'f':
+	case 'g':
+		goto l824e;
+	case 's':
+		goto l819a;
+	}
+	goto l849a;
+l7e9a:
+	size1a = 8;
+	goto l7eb0;
+l7ea2:
+	size1a = 16;
+	goto l7eb0;
+l7eaa:
+	size1a = 10;
+l7eb0:
+	*(long *)pd1c = (long)*(int *)wptr;
+	*((int *)&wptr + 1) += 2;
+	*(int *)pd1c = 0;
+	scnt += 1;
+	if (scnt == 5)
+		wptr = sptr;
+	goto l8052;
+l7edc:
+	size1a = 8;
+	goto l7eea;
+l7ee4:
+	size1a = 16;
+	goto l7eea;
+l7f3e:
+	size1a = 10;
+	goto l7eea;
+l7f46:
+	size1a = -10;
+l7eea:
+	if (scnt >= 5)
+		goto l7f0c;
+	f7bbc(&scnt, (char *)&wptr, (char *)sptr);
+l7f0c:
+	*(long *)pd1c = *(long *)wptr;
+	*((int *)&wptr + 1) += 4;
+	scnt += 2;
+	if (scnt != 5)
+		goto l8052;
+	wptr = sptr;
+	goto l8052;
+l7f4e:
+	if (rem == 0)
+		goto l7fee;
+	rem -= 1;
+	c = *f++;
+	if (c == 'o')
+		goto l7edc;
+	if (c == 'x')
+		goto l7ee4;
+	if (c == 'd')
+		goto l7f46;
+	if (c == 'u')
+		goto l7f3e;
+	if ((iop->cnt -= 1) < 0)
+		f880e(0x6c, iop);
+	else {
+		*((int *)&iop->ptr + 1) += 1;
+		*(iop->ptr - 1) = 0x6c;
+	}
+	if ((iop->cnt -= 1) < 0)
+		f880e(c, iop);
+	else {
+		*((int *)&iop->ptr + 1) += 1;
+		*(iop->ptr - 1) = c;
+	}
+	nout += 2;
+l7fee:
+	if (width == 0)
+		goto l8006;
+	if (conv82 != 's')
+		goto l8006;
+	if (pn > width)
+		pn = width;
+l8006:
+	if (pn >= prec)
+		goto l84b6;
+	padn = prec - pn;
+	goto l84ba;
+l8020:
+	size1a = -10;
+	*(long *)pd1c = (long)*(int *)wptr;
+	*((int *)&wptr + 1) += 2;
+	scnt += 1;
+	if (scnt == 5)
+		wptr = sptr;
+	goto l8052;
+l8052:
+	if (!fplus)
+		goto l808a;
+	if (size1a != -10)
+		goto l808a;
+	if (*(long *)pd1c < 0)
+		goto l808a;
+	buf24[0] = sign[0];
+	outc = 1;
+	bufp = buf24 + 1;
+	goto l8100;
+l808a:
+	if (size1a != 8)
+		goto l80b8;
+	if (!fhash)
+		goto l80b8;
+	if (*(long *)pd1c == 0)
+		goto l80b8;
+	buf24[0] = 0x30;
+	outc = 1;
+	bufp = buf24 + 1;
+	goto l80fc;
+l80b8:
+	if (size1a != 16)
+		goto l80f4;
+	if (!fhash)
+		goto l80f4;
+	if (*(long *)pd1c == 0)
+		goto l80f4;
+	buf24[0] = 0x30;
+	buf24[1] = 0x78;
+	outc = 2;
+	bufp = buf24 + 2;
+	goto l80fc;
+l80f4:
+	bufp = buf24;
+l80fc:
+l8100:
+	if (size1a != -10)
+		goto l8170;
+	if (*(long *)pd1c >= 0)
+		goto l8170;
+	if (*(long *)pd1c == 0x80000000)
+		size1a = 10;
+	*(long *)pd1c = -*(long *)pd1c;
+	if ((iop->cnt -= 1) < 0)
+		f880e(0x2d, iop);
+	else {
+		*((int *)&iop->ptr + 1) += 1;
+		*(iop->ptr - 1) = 0x2d;
+	}
+	nout += 1;
+l8170:
+	*(char **)pe20 = buf24;
+	pn = f8ad0(bufp, size1a, *(long *)pd1c) + outc;
+	goto l7fee;
+l8212:
+	padc[0] = 0x20;
+	pn = 1;
+	*(long *)pe20 = *(long *)&wptr;
+	*((int *)pe20 + 1) += 1;
+	*((int *)&wptr + 1) += 2;
+	scnt += 1;
+	if (scnt != 5)
+		goto l7fee;
+	wptr = sptr;
+	goto l7fee;
+l819a:
+	padc[0] = 0x20;
+	if (scnt >= 5)
+		goto l81c2;
+	f7bbc(&scnt, (char *)&wptr, (char *)sptr);
+l81c2:
+	*(long *)pe20 = *(long *)wptr;
+	*((int *)&wptr + 1) += 4;
+	if (*(long *)pe20 == 0)
+		*(long *)pe20 = 0x0100186A;
+	pn = f8c86(*(char **)pe20);
+	scnt += 2;
+	if (scnt != 5)
+		goto l7fee;
+	wptr = sptr;
+	goto l7fee;
+l824e:
+	if (ncnt >= 4)
+		goto l8270;
+	*(long *)pa12 = *(long *)wptr;
+	wptr = dp;
+	*((int *)&dp + 1) += 8;
+	ncnt += 1;
+	goto l8286;
+l8270:
+	*(long *)pa12 = 0;
+	wptr = sptr;
+	scnt += 5;
+l8286:
+	*(char **)pe20 = f8684(width, buf24, *(double *)wptr, c);
+	if (*(long *)pa12 == 0)
+		*((int *)&wptr + 1) += 8;
+	else
+		wptr = *(long *)pa12;
+	if (!fplus)
+		goto l8312;
+	if ((*(char **)pe20)[0] == 0x2d)
+		goto l8312;
+	if ((*(char **)pe20)[0] == 0)
+		goto l8312;
+	bufp = *(char **)pe20;
+	b69[0] = bufp[0];
+	bufp[0] = sign[0];
+	bufp += 1;
+	goto l8306;
+l82e6:
+	b6b[0] = bufp[0];
+	bufp[0] = b69[0];
+	bufp += 1;
+	b69[0] = b6b[0];
+l8306:
+	if (b69[0] != 0)
+		goto l82e6;
+	bufp[0] = 0;
+l8312:
+	if (fhash)
+		goto l83c4;
+	if (c == 0x65)
+		goto l8324;
+	if (c != 0x45)
+		goto l8370;
+l8324:
+	bufp = *(char **)pe20;
+	goto l8342;
+l832e:
+	bufp[0] = bufp[1];
+	bufp += 1;
+l8366:
+	if (bufp[0] != 0)
+		goto l832e;
+	goto l845e;
+l833e:
+	bufp += 1;
+l8342:
+	if (bufp[0] == 0)
+		goto l845e;
+	if (bufp[0] != 0x2e)
+		goto l833e;
+	bufp += 1;
+	if (bufp[0] != 0x65)
+		goto l833e;
+	bufp -= 1;
+	goto l8366;
+l8370:
+	if (c == 0x67)
+		goto l837c;
+	if (c != 0x47)
+		goto l845e;
+l837c:
+	bufp = *(char **)pe20;
+	goto l839a;
+l8396:
+	bufp += 1;
+l839a:
+	if (bufp[0] == 0)
+		goto l845e;
+	if (bufp[0] != 0x2e)
+		goto l8396;
+	*(char **)pb6e = bufp;
+	bufp += 1;
+l83b2:
+	if (bufp[0] != 0x30)
+		goto l83bc;
+	bufp += 1;
+	goto l83b2;
+l83bc:
+	if (bufp[0] == 0x65)
+		goto l8386;
+	goto l845e;
+l8386:
+	f943c(*(char **)pb6e, bufp);
+	goto l845e;
+l83c4:
+	if (c != 0x66)
+		goto l83fc;
+	bufp = *(char **)pe20;
+	goto l83e2;
+l83d4:
+	if (bufp[0] == 0x2e)
+		goto l83ea;
+	bufp += 1;
+l83e2:
+	if (bufp[0] != 0)
+		goto l83d4;
+l83ea:
+	if (bufp[0] != 0)
+		goto l845e;
+	bufp[0] = 0x2e;
+	bufp += 1;
+	goto l8458;
+l83fc:
+	if (c == 0x67)
+		goto l8408;
+	if (c != 0x47)
+		goto l845e;
+l8408:
+	bufp = *(char **)pe20;
+	goto l8420;
+l8412:
+	if (bufp[0] == 0x2e)
+		goto l8428;
+	bufp += 1;
+l8420:
+	if (bufp[0] != 0)
+		goto l8412;
+l8428:
+	if (bufp[0] != 0)
+		goto l845e;
+	bufp[0] = 0x2e;
+	bufp += 1;
+	outc = 0;
+	goto l844e;
+l843e:
+	bufp[0] = 0x30;
+	bufp += 1;
+	outc += 1;
+l844e:
+	if (outc < width)
+		goto l843e;
+l8458:
+	bufp[0] = 0;
+l845e:
+	if (c == 0x45)
+		goto l846a;
+	if (c != 0x47)
+		goto l8484;
+l846a:
+	bufp = *(char **)pe20;
+l8472:
+	if (bufp[0] == 0)
+		goto l8484;
+	if (bufp[0] != 0x65)
+		goto l8494;
+	bufp[0] = 0x45;
+l8494:
+	bufp += 1;
+	goto l8472;
+l8484:
+	pn = f8c86(*(char **)pe20);
+	goto l7fee;
+l849a:
+	goto l7c50;
+l84b6:
+	padn = 0;
+l84ba:
+	if (!fleft)
+		goto l8504;
+	goto l8560;
+l84c2:
+	f880e(padc[0], iop);
+	nout += 1;
+l8504:
+	pn = padn;
+	padn -= 1;
+	if (pn != 0)
+		goto l84c2;
+	goto l8560;
+l8512:
+	if ((iop->cnt -= 1) >= 0)
+		goto l853e;
+	*((int *)pe20 + 1) += 1;
+	f880e((*(char **)pe20)[-1], iop);
+	goto l855c;
+l853e:
+	*((int *)pe20 + 1) += 1;
+	*((int *)&iop->ptr + 1) += 1;
+	*(iop->ptr - 1) = (*(char **)pe20)[-1];
+l855c:
+	nout += 1;
+l8560:
+	if (pn-- != 0)
+		goto l8512;
+	if (!fleft)
+		goto l7c8c;
+l8572:
+	if (padn-- == 0)
+		goto l7c8c;
+	if ((iop->cnt -= 1) >= 0)
+		goto l85a8;
+	f880e(padc[0], iop);
+	goto l85c0;
+l85a8:
+	*((int *)&iop->ptr + 1) += 1;
+	*(iop->ptr - 1) = padc[0];
+l85c0:
+	nout += 1;
+	goto l8572;
+l7d02:
+	if (fsp)
+		goto l7d50;
+	fsp = 1;
+	goto l7d48;
+l7cf4:
+	if (fplus)
+		goto l7d50;
+	fplus = 1;
+	goto l7d48;
+l7d10:
+	if (fhash)
+		goto l7d50;
+	fhash = 1;
+	goto l7d48;
+l7d3c:
+	if (fleft)
+		goto l7d50;
+	fleft = 1;
+l7d48:
+	rem -= 1;
+	if (rem != 0)
+		goto l7d1e;
+	goto l7d50;
+l7d1e:
+	c = *f++ & 0xff;
+	goto l7d26;
+l85c6:
+	if (pE90E4 == 0)
+		goto l85e6;
+	if (!(pE90E4[10] & 0x20))
+		goto l85e6;
+	return -1;
+l85e6:
+	return nout;
+}

@@ -6480,11 +6480,11 @@
  "layout_classes": {
   "zzzcode": {
    "class": "D15",
-   "note": "D15 block layout of if/else: the structure move (ZS) has the n <= 4 branch first in the original; ours has the big branch first in both source forms. Partly: 95 -> 80 differing blocks after the branch swap; the rest is open (see zzzcode-order-01)."
+   "note": "D15 block order (cause not measured; if/else order ruled out, see host/KNOWLEDGE.md D15): the structure move (ZS) has the n <= 4 branch first in the original; ours has the big branch first in both source forms. Partly: 95 -> 80 differing blocks after the branch swap; the rest is open (see zzzcode-order-01)."
   },
   "clocal": {
    "class": "D15",
-   "note": "D15 block layout: 80 instructions at another place (block order of the branches). Branch swap in the source rejected (clocal-size-01)."
+   "note": "D15 block order (cause not measured; if/else order ruled out, see host/KNOWLEDGE.md D15): 80 instructions at another place. Branch swap in the source rejected (clocal-size-01)."
   }
  }
 }
