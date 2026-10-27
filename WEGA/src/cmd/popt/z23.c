@@ -6,6 +6,420 @@
 #include <ctype.h>
 #include "z2.h"
 
+static char sccsid[] = "@[$]z23.c\t1.6  03/25/83 18:10:30 Copr.1981 87wega3.2.";
+
+static void rename_regs();
+static void fixldm();
+static int usesreg();
+static int ovlap();
+static void markregs();
+
+
+
+
+
+
+
+struct rent {
+	int len;
+	char s1[4];
+	char s2[4];
+};
+
+
+
+
+
+/*
+ * The register save/restore ldm pair of a function is shortened by
+ * renaming register variables to unused low registers.
+ */
+void
+procopt()
+{
+	struct node *p, *ld1, *ld2;
+	char b[15], a[8];
+	struct rent t[16];
+	char *s;
+	register int i;
+	int r8, r9, k, r14, n;
+
+	ld1 = ld2 = 0;
+	a[0] = 1;
+	for (i = 1; i < 8; i++)
+		a[i] = 0;
+	for (i = 0; i < 15; i++)
+		b[i] = 0;
+	for (p = &first; p; p = p->forw) {
+		switch (p->op) {
+		case JP: case CLR: case COM: case INC: case DEC: case NEG:
+		case TST: case SRA: case SLA: case EXTS: case SOB: case LDA:
+		case 38: case 41: case 43: case SRL: case SLL:
+			markregs(p->code, b, a);
+			break;
+		case LD: case CP: case ADD: case SUB: case BIT: case AND:
+		case OR: case MUL: case DIV: case SDA: case XOR: case PUSH:
+		case POP: case SET: case RES: case SDL:
+			dualop(p);
+			markregs(RT2, b, a);
+			markregs(RT1, b, a);
+			break;
+		case CALL:
+			fprintf(stderr, "CALL instruction in stripldm()\n");
+			return;
+		case LDM:
+			if (ld1 == 0)
+				ld1 = p;
+			else
+				ld2 = p;
+			break;
+		default:
+			break;
+		}
+	}
+	if (ld1 == 0 || ld2 == 0)
+		return;
+	s = ld1->code;
+	while (*s++ != ',')
+		;
+	while (*s++ != ',')
+		;
+	if (*s++ != '#') {
+		fprintf(stderr, "malformed ldm instruction:\tldm\t%s\n", ld1->code);
+		return;
+	}
+	r8 = atoi(s);
+	r9 = 0;
+	for (i = 1; i < 8; i++)
+		if (a[i] == 0)
+			r9++;
+	if (r9 == 0)
+		return;
+	k = 0;
+	for (r14 = 1; r9 > k && r14 < 8; r14++) {
+		if (a[r14])
+			continue;
+#ifdef SPOPT
+		n = 13 - k;
+#else
+		n = 14 - k;
+#endif
+		if ((n & 1) && b[n - 1] && n <= 13) {
+			if ((r14 & 1) || r14 + 1 >= 8 || a[r14 + 1])
+				continue;
+			sprintf(t[k].s1, "r%d", n - 1);
+			t[k].len = strlen(t[k].s1);
+			sprintf(t[k].s2, "r%d", r14);
+			k++;
+			r14++;
+			sprintf(t[k].s1, "r%d", n);
+			t[k].len = strlen(t[k].s1);
+			sprintf(t[k].s2, "r%d", r14);
+			k++;
+		} else {
+			sprintf(t[k].s1, "r%d", n);
+			t[k].len = strlen(t[k].s1);
+			sprintf(t[k].s2, "r%d", r14);
+			k++;
+		}
+	}
+	if (r8 < k) {
+		k = r8;
+		r8 = 0;
+	} else
+		r8 -= k;
+	nrename += k;
+	t[k].len = -1;
+	rename_regs(t, ld1, ld2);
+	fixldm(ld1, r8);
+	fixldm(ld2, r8);
+}
+
+/* rename registers in the code between the two ldm's */
+static void
+rename_regs(t, first_ldm, last_ldm)
+register struct rent *t;
+struct node *first_ldm;
+struct node *last_ldm;
+{
+	register struct node *p;
+	register struct rent *e;
+	register char *r11, *r12, *r9;
+	char *q;
+	int changed;
+
+	for (p = first_ldm->forw; p != last_ldm; p = p->forw) {
+		if (p->op == LABEL || p->op == COMMENT)
+			continue;
+		changed = 0;
+		if (p->code == 0)
+			continue;
+		for (e = t; e->len > 0; e++) {
+			r11 = p->code;
+			while (*r11) {
+				if (strncmp(e->s1, r11, e->len) == 0) {
+					r9 = r11 + 1;
+					if (*r9 == '1' && isdigit((unsigned char)r9[1]))
+						r9++;
+					r9++;
+					for (q = e->s2; *q; )
+						*r11++ = *q++;
+					while (r11 != r9) {
+						*r11++ = (char)0xff;
+						changed = 1;
+					}
+					r11--;
+				}
+				r11++;
+			}
+		}
+		if (changed) {
+			r12 = p->code;
+			while (*r12 != (char)0xff)
+				r12++;
+			r11 = r12 + 1;
+			for (;;) {
+				while (*r11 == (char)0xff)
+					r11++;
+				*r12++ = *r11;
+				if (*r11++ == 0)
+					break;
+			}
+		}
+	}
+}
+
+/* shorten the ldm to n registers: delete it, make it an ld, or recount */
+static void
+fixldm(p, n)
+register struct node *p;
+register int n;
+{
+	char *q;
+
+	if (n == 0) {
+		p->back->forw = p->forw;
+		if (p->forw)
+			p->forw->back = p->back;
+	} else if (n == 1) {
+		p->op = LD;
+		q = strrchr(p->code, ',');
+		*q = 0;
+	} else {
+		q = strrchr(p->code, '#');
+		sprintf(q + 1, "%d", n);
+	}
+}
+
+int
+isused(p, reg)
+register struct node *p;
+register char *reg;
+{
+	register int r12;
+	int c;
+
+	r12 = isreg(reg);
+	if (r12 < 0)
+		return 1;
+	c = reg[1];
+	if (c == 'q') {
+		if (usesreg(p, reg, r12) || usesreg(p, reg, r12 + 1) ||
+		    usesreg(p, reg, r12 + 2) || usesreg(p, reg, r12 + 3))
+			return 1;
+		return 0;
+	}
+	if (c == 'r') {
+		if (usesreg(p, reg, r12))
+			return 1;
+		return usesreg(p, reg, r12 + 1) != 0;
+	}
+	return usesreg(p, reg, r12);
+}
+
+/*
+ * Is register number `reg' (spelled `str') read by the code following
+ * node before it is overwritten?  Unknown cases count as "used".
+ */
+static int
+usesreg(node, str, reg)
+register struct node *node;
+register char *str;
+register int reg;
+{
+	char buf[50];
+	register struct node *p;
+	register int r10, r9;
+
+	strcpy(buf, str);
+	for (p = node->forw; p; p = p->forw) {
+		switch (p->op) {
+		case CJP:
+		case JP:
+			goto out1;
+		case LD:
+		case POP:
+		case LDA:
+			dualop(p);
+			if (p->op == POP) {
+				if (ovlap(RT1 + 1, buf)) {
+					goto out1;
+				}
+			} else if (ovlap(RT1, buf)) {
+				goto out1;
+			}
+			if (p->subop == SBYTE && reg == isreg(RT1)) {
+				goto out1;
+			}
+			if (equstr(RT2, buf))
+				goto out0;
+			if (p->subop == SLONG) {
+				r10 = isreg(RT2);
+				if (r10 >= 0 && reg == r10 + 1)
+					goto out0;
+			}
+			if (ovlap(RT2, buf)) {
+				goto out1;
+			}
+			continue;
+		case CLR:
+			r10 = 0;
+			if (p->subop == SLONG) {
+				r10 = isreg(p->code);
+				if (r10 >= 0 && reg == r10 + 1)
+					goto out0;
+			}
+			if (r10 >= 0 && equstr(p->code, buf))
+				goto out0;
+			dualop(p);
+			if (ovlap(RT1, buf)) {
+				goto out1;
+			}
+			continue;
+		case EXTS:
+			r10 = isreg(p->code);
+			if (r10 < 0)
+				continue;
+			switch (p->subop) {
+			case 0:
+				if (reg == r10 + 1) {
+					goto out1;
+				}
+				if (r10 != reg)
+					continue;
+				goto out0;
+			case SBYTE:
+				if (r10 != reg)
+					continue;
+				goto out1;
+			case SLONG:
+				if (reg == r10 + 2 || reg == r10 + 3) {
+					goto out1;
+				}
+				if (r10 == reg || reg == r10 + 1)
+					goto out0;
+				continue;
+			}
+			continue;
+		case PUSH:
+			if (p->subop != SLONG)
+				break;
+			dualop(p);
+			r10 = isreg(RT1);
+			if (r10 < 0)
+				break;
+			if (reg == r10 + 1) {
+				goto out1;
+			}
+			break;
+		case MUL:
+			dualop(p);
+			r10 = isreg(RT2);
+			if (r10 < 0)
+				break;
+			if (p->subop == 0) {
+				if (ovlap(RT1, buf) || reg == r10 + 1) {
+					goto out1;
+				}
+				if (reg != r10)
+					break;
+				goto out0;
+			}
+			if (p->subop != SLONG)
+				break;
+			if (ovlap(RT1, buf) || reg == r10 + 2 || reg == r10 + 3) {
+				goto out1;
+			}
+			if (reg == r10 || reg == r10 + 1)
+				goto out0;
+			break;
+		case DIV:
+			dualop(p);
+			r10 = isreg(RT2);
+			if (r10 >= 0 && reg == r10 + 1) {
+				goto out1;
+			}
+			if (p->subop != SLONG)
+				break;
+			if (reg == r10 + 2 || reg == r10 + 3) {
+				goto out1;
+			}
+			break;
+		case CALL:
+			r9 = reg;
+			if (node->subop == SBYTE && reg > 8)
+				r9 = reg - 8;
+			if (r9 >= 2 && r9 <= 7) {
+				goto out1;
+			}
+#ifdef SPOPT
+			if (reg >= 2) {
+				if (p->code[0] != '@')
+					continue;
+				r10 = isreg(p->code + 1);
+				if (reg == r10) {
+					goto out1;
+				}
+				r10 = reg ^ 1;
+				if (r10 == 0)
+					continue;
+				goto out1;
+			}
+#else
+			if (reg >= 2)
+				continue;
+#endif
+			if (p->code[0] != '@')
+				goto out0;
+			r10 = isreg(p->code + 1);
+			if (reg != r10)
+				goto out0;
+			goto out1;
+		case RET:
+#ifdef SPOPT
+			if (reg == 2 || reg == 3 || reg == 12 || reg == 13) {
+#else
+			if (reg == 2 || reg == 3 || reg == 14) {
+#endif
+				goto out1;
+			}
+			goto out0;
+		default:
+			break;
+		}
+		/* default: any mention of the register counts as a use */
+		if (ovlap(p->code, buf)) {
+			goto out1;
+		}
+	}
+out0:
+	dualop(node);
+	return 0;
+out1:
+	dualop(node);
+	return 1;
+}
+
 /* reverse the string s in place */
 static void
 reverse(s)
@@ -572,226 +986,18 @@ char *name;
 }
 
 /*
- * Is register number `reg' (spelled `str') read by the code following
- * node before it is overwritten?  Unknown cases count as "used".
- */
-static int
-usesreg(node, str, reg)
-register struct node *node;
-register char *str;
-register int reg;
-{
-	char buf[50];
-	register struct node *p;
-	register int r10, r9;
-
-	strcpy(buf, str);
-	for (p = node->forw; p; p = p->forw) {
-		switch (p->op) {
-		case CJP:
-		case JP:
-			goto out1;
-		case LD:
-		case POP:
-		case LDA:
-			dualop(p);
-			if (p->op == POP) {
-				if (ovlap(RT1 + 1, buf)) {
-					goto out1;
-				}
-			} else if (ovlap(RT1, buf)) {
-				goto out1;
-			}
-			if (p->subop == SBYTE && reg == isreg(RT1)) {
-				goto out1;
-			}
-			if (equstr(RT2, buf))
-				goto out0;
-			if (p->subop == SLONG) {
-				r10 = isreg(RT2);
-				if (r10 >= 0 && reg == r10 + 1)
-					goto out0;
-			}
-			if (ovlap(RT2, buf)) {
-				goto out1;
-			}
-			continue;
-		case CLR:
-			r10 = 0;
-			if (p->subop == SLONG) {
-				r10 = isreg(p->code);
-				if (r10 >= 0 && reg == r10 + 1)
-					goto out0;
-			}
-			if (r10 >= 0 && equstr(p->code, buf))
-				goto out0;
-			dualop(p);
-			if (ovlap(RT1, buf)) {
-				goto out1;
-			}
-			continue;
-		case EXTS:
-			r10 = isreg(p->code);
-			if (r10 < 0)
-				continue;
-			switch (p->subop) {
-			case 0:
-				if (reg == r10 + 1) {
-					goto out1;
-				}
-				if (r10 != reg)
-					continue;
-				goto out0;
-			case SBYTE:
-				if (r10 != reg)
-					continue;
-				goto out1;
-			case SLONG:
-				if (reg == r10 + 2 || reg == r10 + 3) {
-					goto out1;
-				}
-				if (r10 == reg || reg == r10 + 1)
-					goto out0;
-				continue;
-			}
-			continue;
-		case PUSH:
-			if (p->subop != SLONG)
-				break;
-			dualop(p);
-			r10 = isreg(RT1);
-			if (r10 < 0)
-				break;
-			if (reg == r10 + 1) {
-				goto out1;
-			}
-			break;
-		case MUL:
-			dualop(p);
-			r10 = isreg(RT2);
-			if (r10 < 0)
-				break;
-			if (p->subop == 0) {
-				if (ovlap(RT1, buf) || reg == r10 + 1) {
-					goto out1;
-				}
-				if (reg != r10)
-					break;
-				goto out0;
-			}
-			if (p->subop != SLONG)
-				break;
-			if (ovlap(RT1, buf) || reg == r10 + 2 || reg == r10 + 3) {
-				goto out1;
-			}
-			if (reg == r10 || reg == r10 + 1)
-				goto out0;
-			break;
-		case DIV:
-			dualop(p);
-			r10 = isreg(RT2);
-			if (r10 >= 0 && reg == r10 + 1) {
-				goto out1;
-			}
-			if (p->subop != SLONG)
-				break;
-			if (reg == r10 + 2 || reg == r10 + 3) {
-				goto out1;
-			}
-			break;
-		case CALL:
-			r9 = reg;
-			if (node->subop == SBYTE && reg > 8)
-				r9 = reg - 8;
-			if (r9 >= 2 && r9 <= 7) {
-				goto out1;
-			}
-#ifdef SPOPT
-			if (reg >= 2) {
-				if (p->code[0] != '@')
-					continue;
-				r10 = isreg(p->code + 1);
-				if (reg == r10) {
-					goto out1;
-				}
-				r10 = reg ^ 1;
-				if (r10 == 0)
-					continue;
-				goto out1;
-			}
-#else
-			if (reg >= 2)
-				continue;
-#endif
-			if (p->code[0] != '@')
-				goto out0;
-			r10 = isreg(p->code + 1);
-			if (reg != r10)
-				goto out0;
-			goto out1;
-		case RET:
-#ifdef SPOPT
-			if (reg == 2 || reg == 3 || reg == 12 || reg == 13) {
-#else
-			if (reg == 2 || reg == 3 || reg == 14) {
-#endif
-				goto out1;
-			}
-			goto out0;
-		default:
-			break;
-		}
-		/* default: any mention of the register counts as a use */
-		if (ovlap(p->code, buf)) {
-			goto out1;
-		}
-	}
-out0:
-	dualop(node);
-	return 0;
-out1:
-	dualop(node);
-	return 1;
-}
-
-int
-isused(p, reg)
-register struct node *p;
-register char *reg;
-{
-	register int r12;
-	int c;
-
-	r12 = isreg(reg);
-	if (r12 < 0)
-		return 1;
-	c = reg[1];
-	if (c == 'q') {
-		if (usesreg(p, reg, r12) || usesreg(p, reg, r12 + 1) ||
-		    usesreg(p, reg, r12 + 2) || usesreg(p, reg, r12 + 3))
-			return 1;
-		return 0;
-	}
-	if (c == 'r') {
-		if (usesreg(p, reg, r12))
-			return 1;
-		return usesreg(p, reg, r12 + 1) != 0;
-	}
-	return usesreg(p, reg, r12);
-}
-
-/*
  * Record the registers named in operand s: a[n] for r0..r7 (and the
  * partners of long/quad registers), b[n] for the long registers r8..r14.
  */
 static void
 markregs(s, b, a)
-char *s;
-char *b;
-char *a;
+register char *s;
+register char *b;
+register char *a;
 {
-	char *p;
-	int n, flag;
+	register char *p;
+	register int n;
+	int flag;
 
 	flag = 0;
 	p = s;
@@ -842,190 +1048,4 @@ scanparen:
 		}
 		p++;
 	}
-}
-
-struct rent {
-	int len;
-	char s1[4];
-	char s2[4];
-};
-
-/* rename registers in the code between the two ldm's */
-static void
-rename_regs(t, first_ldm, last_ldm)
-register struct rent *t;
-struct node *first_ldm;
-struct node *last_ldm;
-{
-	struct node *p;
-	register struct rent *e;
-	char *r11, *r12, *r9, *q;
-	int changed;
-
-	for (p = first_ldm->forw; p != last_ldm; p = p->forw) {
-		if (p->op == LABEL || p->op == COMMENT)
-			continue;
-		changed = 0;
-		if (p->code == 0)
-			continue;
-		for (e = t; e->len > 0; e++) {
-			r11 = p->code;
-			while (*r11) {
-				if (strncmp(e->s1, r11, e->len) == 0) {
-					r9 = r11 + 1;
-					if (*r9 == '1' && isdigit((unsigned char)r9[1]))
-						r9++;
-					r9++;
-					for (q = e->s2; *q; )
-						*r11++ = *q++;
-					while (r11 != r9) {
-						*r11++ = (char)0xff;
-						changed = 1;
-					}
-					r11--;
-				}
-				r11++;
-			}
-		}
-		if (changed) {
-			r12 = p->code;
-			while (*r12 != (char)0xff)
-				r12++;
-			r11 = r12 + 1;
-			for (;;) {
-				while (*r11 == (char)0xff)
-					r11++;
-				*r12++ = *r11;
-				if (*r11++ == 0)
-					break;
-			}
-		}
-	}
-}
-
-/* shorten the ldm to n registers: delete it, make it an ld, or recount */
-static void
-fixldm(p, n)
-register struct node *p;
-register int n;
-{
-	char *q;
-
-	if (n == 0) {
-		p->back->forw = p->forw;
-		if (p->forw)
-			p->forw->back = p->back;
-	} else if (n == 1) {
-		p->op = LD;
-		q = strrchr(p->code, ',');
-		*q = 0;
-	} else {
-		q = strrchr(p->code, '#');
-		sprintf(q + 1, "%d", n);
-	}
-}
-
-/*
- * The register save/restore ldm pair of a function is shortened by
- * renaming register variables to unused low registers.
- */
-void
-procopt()
-{
-	struct node *p, *ld1, *ld2;
-	char b[15], a[8];
-	struct rent t[16];
-	char *s;
-	register int i;
-	int r8, r9, k, r14, n;
-
-	ld1 = ld2 = 0;
-	a[0] = 1;
-	for (i = 1; i < 8; i++)
-		a[i] = 0;
-	for (i = 0; i < 15; i++)
-		b[i] = 0;
-	for (p = &first; p; p = p->forw) {
-		switch (p->op) {
-		case JP: case CLR: case COM: case INC: case DEC: case NEG:
-		case TST: case SRA: case SLA: case EXTS: case SOB: case LDA:
-		case 38: case 41: case 43: case SRL: case SLL:
-			markregs(p->code, b, a);
-			break;
-		case LD: case CP: case ADD: case SUB: case BIT: case AND:
-		case OR: case MUL: case DIV: case SDA: case XOR: case PUSH:
-		case POP: case SET: case RES: case SDL:
-			dualop(p);
-			markregs(RT2, b, a);
-			markregs(RT1, b, a);
-			break;
-		case CALL:
-			fprintf(stderr, "CALL instruction in stripldm()\n");
-			return;
-		case LDM:
-			if (ld1 == 0)
-				ld1 = p;
-			else
-				ld2 = p;
-			break;
-		default:
-			break;
-		}
-	}
-	if (ld1 == 0 || ld2 == 0)
-		return;
-	s = ld1->code;
-	while (*s++ != ',')
-		;
-	while (*s++ != ',')
-		;
-	if (*s++ != '#') {
-		fprintf(stderr, "malformed ldm instruction:\tldm\t%s\n", ld1->code);
-		return;
-	}
-	r8 = atoi(s);
-	r9 = 0;
-	for (i = 1; i < 8; i++)
-		if (a[i] == 0)
-			r9++;
-	if (r9 == 0)
-		return;
-	k = 0;
-	for (r14 = 1; r9 > k && r14 < 8; r14++) {
-		if (a[r14])
-			continue;
-#ifdef SPOPT
-		n = 13 - k;
-#else
-		n = 14 - k;
-#endif
-		if ((n & 1) && b[n - 1] && n <= 13) {
-			if ((r14 & 1) || r14 + 1 >= 8 || a[r14 + 1])
-				continue;
-			sprintf(t[k].s1, "r%d", n - 1);
-			t[k].len = strlen(t[k].s1);
-			sprintf(t[k].s2, "r%d", r14);
-			k++;
-			r14++;
-			sprintf(t[k].s1, "r%d", n);
-			t[k].len = strlen(t[k].s1);
-			sprintf(t[k].s2, "r%d", r14);
-			k++;
-		} else {
-			sprintf(t[k].s1, "r%d", n);
-			t[k].len = strlen(t[k].s1);
-			sprintf(t[k].s2, "r%d", r14);
-			k++;
-		}
-	}
-	if (r8 < k) {
-		k = r8;
-		r8 = 0;
-	} else
-		r8 -= k;
-	nrename += k;
-	t[k].len = -1;
-	rename_regs(t, ld1, ld2);
-	fixldm(ld1, r8);
-	fixldm(ld2, r8);
 }

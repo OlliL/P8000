@@ -13,7 +13,7 @@
   "main": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0046-0x02dc",
+   "ours": "0x002a-0x02c0",
    "orig": "0x002a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -56,7 +56,7 @@
   "statline": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x02dc-0x0312",
+   "ours": "0x031a-0x0350",
    "orig": "0x0322",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -94,7 +94,7 @@
   "input": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0312-0x04aa",
+   "ours": "0x0350-0x04e8",
    "orig": "0x0358",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -143,7 +143,7 @@
   "jswcheck": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x04aa-0x0504",
+   "ours": "0x02c0-0x031a",
    "orig": "0x02c8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -204,7 +204,7 @@
   "getln": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0504-0x05f8",
+   "ours": "0x04e8-0x05dc",
    "orig": "0x04d6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -246,7 +246,7 @@
   "getnum": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x05f8-0x0638",
+   "ours": "0x05dc-0x061c",
    "orig": "0x05d2",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -285,7 +285,7 @@
   "output": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0638-0x088c",
+   "ours": "0x06c8-0x091c",
    "orig": "0x06ba",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -334,33 +334,31 @@
   "prefix": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x088c-0x093a",
+   "ours": "0x0638-0x06c8",
    "orig": "0x0630",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x0630",
-     "similarity_pct": 27.2
+     "similarity_pct": 51.0
     },
     {
-     "orig": "0x4e94",
-     "similarity_pct": 18.8
+     "orig": "0x32f0",
+     "similarity_pct": 21.7
     },
     {
-     "orig": "0x0ca0",
-     "similarity_pct": 18.5
+     "orig": "0x133c",
+     "similarity_pct": 20.2
     }
    ],
    "rating": "confirmed by structure: tests of op == CALL (0x20), of the code starting with @ (0x40) and of the ( (0x28), the four strings call, jp, callr, jpr as ours; called three times by output (0x06ba)",
    "audit": {
-    "d_normalised_pct": 50,
-    "pattern_diff": 47,
+    "d_normalised_pct": 69,
+    "pattern_diff": 28,
     "pattern_unexplained": 0,
-    "reordered_instructions": 2,
-    "reordered_examples": [
-     "jr\tL"
-    ],
+    "reordered_instructions": 0,
+    "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
@@ -373,7 +371,7 @@
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 56,
+    "len_ours": 51,
     "len_orig": 47
    },
    "review": "reviewed: D-pattern",
@@ -382,7 +380,7 @@
   "copy": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x093a-0x09c8",
+   "ours": "0x091c-0x09aa",
    "orig": "0x0964",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -425,57 +423,57 @@
   "hashname": {
    "file": "z21.c",
    "pairing": "open",
-   "ours": "0x09c8-0x0a22",
+   "ours": "0x14c0-0x151a",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
-     "orig": "0x2dda",
-     "similarity_pct": 22.7
+     "orig": "0x4f9c",
+     "similarity_pct": 28.6
     },
     {
-     "orig": "0x449a",
-     "similarity_pct": 21.4
+     "orig": "0x224c",
+     "similarity_pct": 24.6
     },
     {
-     "orig": "0x444a",
-     "similarity_pct": 21.4
+     "orig": "0x213c",
+     "similarity_pct": 20.2
     }
    ]
   },
   "opsetup": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0a22-0x0a76",
+   "ours": "0x09aa-0x0a1c",
    "orig": "0x09ec",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x36a6",
-     "similarity_pct": 24.4
-    },
-    {
-     "orig": "0x25f4",
-     "similarity_pct": 24.1
+     "similarity_pct": 22.2
     },
     {
      "orig": "0x29f4",
-     "similarity_pct": 23.3
+     "similarity_pct": 19.2
+    },
+    {
+     "orig": "0x4c62",
+     "similarity_pct": 17.9
     }
    ],
    "rating": "confirmed: the original 0x09ec is the optab loop with the probe loop (cp 0x1630, ld 0x159e: the table of 73 two-byte entries), the hash is computed inline (div by 73 at 0x0a16); ours calls hashname (a separate function with conditional reads); this is a source structure difference (inline hash), not a D pattern; 35 against 27 instructions (ours plus the inline hash)",
    "audit": {
-    "d_normalised_pct": 20,
-    "pattern_diff": 48,
+    "d_normalised_pct": 52,
+    "pattern_diff": 33,
     "pattern_unexplained": 1,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "other differences",
     "difference_note": "unexplained instruction forms: push\tF,rS",
     "structure_flags": [],
-    "len_ours": 27,
+    "len_ours": 40,
     "len_orig": 35
    },
    "review": "reviewed: structure",
@@ -484,45 +482,43 @@
   "cclook": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0a76-0x0b36",
+   "ours": "0x0a1c-0x0af2",
    "orig": "0x0a44",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
-     "orig": "0x0630",
-     "similarity_pct": 17.7
+     "orig": "0x2c72",
+     "similarity_pct": 21.1
     },
     {
-     "orig": "0x12e6",
-     "similarity_pct": 16.8
+     "orig": "0x0a44",
+     "similarity_pct": 17.4
     },
     {
-     "orig": "0x02c8",
-     "similarity_pct": 16.7
+     "orig": "0x36d0",
+     "similarity_pct": 17.2
     }
    ],
    "rating": "confirmed by call graph: 66 against 67 instructions; called by oplook 0x0b02 as ours; the hash is inline in the original (div by 73 at 0x0aa2), ours calls hashname",
    "audit": {
-    "d_normalised_pct": 45,
-    "pattern_diff": 73,
+    "d_normalised_pct": 69,
+    "pattern_diff": 40,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D10",
      "D13",
      "D2",
      "D3",
-     "D5",
      "D6",
      "D7",
      "D8"
     ],
     "structure_flags": [],
-    "len_ours": 66,
+    "len_ours": 71,
     "len_orig": 67
    },
    "review": "pattern only: not inspected (alignment 45 %)"
@@ -530,35 +526,34 @@
   "oplook": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0b36-0x0ce4",
+   "ours": "0x0af2-0x0cc2",
    "orig": "0x0b02",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x0b02",
-     "similarity_pct": 29.4
+     "similarity_pct": 33.8
     },
     {
-     "orig": "0x36d0",
+     "orig": "0x0a44",
+     "similarity_pct": 17.8
+    },
+    {
+     "orig": "0x09ec",
      "similarity_pct": 13.3
-    },
-    {
-     "orig": "0x2fc8",
-     "similarity_pct": 13.2
     }
    ],
    "rating": "confirmed by call graph: 138 against 138 instructions; the only call is 0x0a44 (ours cclook); called by getln 0x04d6 as ours",
    "audit": {
-    "d_normalised_pct": 61,
-    "pattern_diff": 104,
+    "d_normalised_pct": 67,
+    "pattern_diff": 88,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D10",
      "D13",
      "D2",
      "D3",
@@ -568,7 +563,7 @@
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 134,
+    "len_ours": 146,
     "len_orig": 138
    },
    "review": "pattern only: not inspected (alignment 57 %)"
@@ -576,28 +571,28 @@
   "refcount": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0ce4-0x0f1e",
+   "ours": "0x0cc2-0x0e46",
    "orig": "0x0ca0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x0ca0",
-     "similarity_pct": 30.8
+     "similarity_pct": 74.4
     },
     {
-     "orig": "0x270e",
-     "similarity_pct": 11.4
+     "orig": "0x207e",
+     "similarity_pct": 19.3
     },
     {
-     "orig": "0x29f4",
-     "similarity_pct": 10.8
+     "orig": "0x0e1a",
+     "similarity_pct": 16.4
     }
    ],
    "rating": "confirmed via call graph and call order in main: called by main after movedat, as ours; ours refcount calls getnum; the only candidate that main calls",
    "audit": {
-    "d_normalised_pct": 55,
-    "pattern_diff": 111,
+    "d_normalised_pct": 91,
+    "pattern_diff": 22,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -609,11 +604,10 @@
      "D3",
      "D6",
      "D7",
-     "D8",
-     "D8/D2"
+     "D8"
     ],
     "structure_flags": [],
-    "len_ours": 171,
+    "len_ours": 130,
     "len_orig": 128
    },
    "review": "pattern only: not inspected (alignment 52 %)"
@@ -621,7 +615,7 @@
   "iterate": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x0f1e-0x10fc",
+   "ours": "0x0e46-0x1024",
    "orig": "0x0e1a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -663,7 +657,7 @@
   "xjump": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x10fc-0x1192",
+   "ours": "0x1024-0x10ba",
    "orig": "0x100e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -707,7 +701,7 @@
   "insertl": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x1192-0x1208",
+   "ours": "0x10ba-0x1130",
    "orig": "0x108c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -746,28 +740,28 @@
   "codemove": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x1208-0x1454",
+   "ours": "0x1130-0x1312",
    "orig": "0x1102",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x1102",
-     "similarity_pct": 35.5
+     "similarity_pct": 47.6
     },
     {
      "orig": "0x100e",
-     "similarity_pct": 13.3
+     "similarity_pct": 15.1
     },
     {
      "orig": "0x0e1a",
-     "similarity_pct": 12.6
+     "similarity_pct": 14.3
     }
    ],
    "rating": "confirmed via call order in iterate: callee of iterate (call 6 of 7); its callees agree with ours: decref (0x2416) and one more call, 0x108c, which is ours insertl (tentative)",
    "audit": {
-    "d_normalised_pct": 32,
-    "pattern_diff": 204,
+    "d_normalised_pct": 94,
+    "pattern_diff": 16,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -777,12 +771,10 @@
      "D13",
      "D2",
      "D3",
-     "D7",
-     "D8",
-     "D8/D2"
+     "D8"
     ],
     "structure_flags": [],
-    "len_ours": 167,
+    "len_ours": 143,
     "len_orig": 143
    },
    "review": "pattern only: alignment 32 %, verdict not supported"
@@ -790,7 +782,7 @@
   "comjump": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x1454-0x14a6",
+   "ours": "0x1312-0x1364",
    "orig": "0x12e6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -826,7 +818,7 @@
   "backjmp": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x14a6-0x151a",
+   "ours": "0x1364-0x13d8",
    "orig": "0x133c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -866,7 +858,7 @@
   "clearmem": {
    "file": "z22.c",
    "pairing": "open",
-   "ours": "0x151a-0x1542",
+   "ours": "0x3526-0x354e",
    "orig": null,
    "level": null,
    "note": "K&R source, see src/cmd/popt",
@@ -889,7 +881,7 @@
   "alloc": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1580-0x15de",
+   "ours": "0x2510-0x256e",
    "orig": "0x2476",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -996,7 +988,7 @@
   "nonlab": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x15de-0x1606",
+   "ours": "0x24e8-0x2510",
    "orig": "0x244e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1034,7 +1026,7 @@
   "decref": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1606-0x163e",
+   "ours": "0x24b0-0x24e8",
    "orig": "0x2416",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1072,7 +1064,7 @@
   "equstr": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x163e-0x1670",
+   "ours": "0x3478-0x34aa",
    "orig": "0x3340",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1115,7 +1107,7 @@
   "absval": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1670-0x168e",
+   "ours": "0x2414-0x2432",
    "orig": "0x23a0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1154,7 +1146,7 @@
   "equop": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x168e-0x170c",
+   "ours": "0x2432-0x24b0",
    "orig": "0x23b4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1199,7 +1191,7 @@
   "clearreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x170c-0x172e",
+   "ours": "0x256e-0x2590",
    "orig": "0x24d4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1235,7 +1227,7 @@
   "savereg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x172e-0x17a6",
+   "ours": "0x2590-0x2608",
    "orig": "0x24f6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1278,7 +1270,7 @@
   "findreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x17a6-0x17fc",
+   "ours": "0x2608-0x265e",
    "orig": "0x255a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1318,7 +1310,7 @@
   "findbyte": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x17fc-0x1832",
+   "ours": "0x265e-0x2694",
    "orig": "0x25b6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1358,7 +1350,7 @@
   "findword": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1832-0x18a0",
+   "ours": "0x2694-0x2702",
    "orig": "0x25f4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1401,7 +1393,7 @@
   "findlong": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x18a0-0x1916",
+   "ours": "0x2702-0x2778",
    "orig": "0x2656",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1442,7 +1434,7 @@
   "findcopy": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1916-0x1964",
+   "ours": "0x2778-0x27c6",
    "orig": "0x26c2",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1485,28 +1477,28 @@
   "memreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1964-0x1b8e",
+   "ours": "0x27c6-0x29d2",
    "orig": "0x270e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x270e",
-     "similarity_pct": 29.5
+     "similarity_pct": 33.8
     },
     {
-     "orig": "0x255a",
-     "similarity_pct": 12.1
+     "orig": "0x4f9c",
+     "similarity_pct": 16.1
     },
     {
      "orig": "0x36d0",
-     "similarity_pct": 11.6
+     "similarity_pct": 13.4
     }
    ],
    "rating": "confirmed via call graph: caller setreg 0x28ae calls 0x270e; the other candidates are not called by setreg; libc calls agree (ours 0x5EB8, 0x6494; original 0x5016, 0x54D6); 163/146 instructions",
    "audit": {
-    "d_normalised_pct": 46,
-    "pattern_diff": 158,
+    "d_normalised_pct": 59,
+    "pattern_diff": 118,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -1515,17 +1507,15 @@
      "D1",
      "D10",
      "D13",
-     "D16",
      "D2",
      "D3",
      "D5",
-     "D6",
      "D7",
      "D8",
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 166,
+    "len_ours": 162,
     "len_orig": 146
    },
    "review": "pattern only: not inspected (alignment 45 %)"
@@ -1533,7 +1523,7 @@
   "setreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1b8e-0x1c7c",
+   "ours": "0x29d2-0x2ac0",
    "orig": "0x28ae",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1577,7 +1567,7 @@
   "makereg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1c7c-0x1cf4",
+   "ours": "0x2ac0-0x2b38",
    "orig": "0x2988",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1620,7 +1610,7 @@
   "dest": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1cf4-0x1d5a",
+   "ours": "0x2b38-0x2b9e",
    "orig": "0x29f4",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1664,7 +1654,7 @@
   "killreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1d5a-0x1f24",
+   "ours": "0x2b9e-0x2d68",
    "orig": "0x2a46",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1707,7 +1697,7 @@
   "cleargroup": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1f24-0x1f58",
+   "ours": "0x2d68-0x2d9c",
    "orig": "0x2c16",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1746,7 +1736,7 @@
   "singop": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1f58-0x1f7e",
+   "ours": "0x2d9c-0x2dc2",
    "orig": "0x2c4a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1782,7 +1772,7 @@
   "dualop": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1f7e-0x1ff6",
+   "ours": "0x2dc2-0x2e3a",
    "orig": "0x2c72",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1826,7 +1816,7 @@
   "findslot": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x1ff6-0x2040",
+   "ours": "0x2e3a-0x2e84",
    "orig": "0x2cd8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1864,7 +1854,7 @@
   "isreg": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2040-0x2110",
+   "ours": "0x2e84-0x2f54",
    "orig": "0x2d22",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1908,7 +1898,7 @@
   "ccinval": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2110-0x2128",
+   "ours": "0x2f54-0x2f6c",
    "orig": "0x2dda",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1947,7 +1937,7 @@
   "regprefix": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2128-0x2158",
+   "ours": "0x2f6c-0x2f9c",
    "orig": "0x2df8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -1988,7 +1978,7 @@
   "repladdr": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2158-0x22d2",
+   "ours": "0x2f9c-0x3116",
    "orig": "0x2e2c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2032,14 +2022,14 @@
   "movedat": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x22d2-0x23f6",
+   "ours": "0x3116-0x323a",
    "orig": "0x2fc8",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x2fc8",
-     "similarity_pct": 57.9
+     "similarity_pct": 59.0
     },
     {
      "orig": "0x23b4",
@@ -2075,7 +2065,7 @@
   "redunbr": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x23f6-0x24ae",
+   "ours": "0x323a-0x32f2",
    "orig": "0x30ec",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2117,7 +2107,7 @@
   "findcon": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x24ae-0x24fe",
+   "ours": "0x32f2-0x3342",
    "orig": "0x3196",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2156,45 +2146,41 @@
   "compare": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x24fe-0x2676",
+   "ours": "0x3342-0x3446",
    "orig": "0x31ec",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x31ec",
-     "similarity_pct": 43.1
+     "similarity_pct": 69.7
+    },
+    {
+     "orig": "0x5016",
+     "similarity_pct": 17.9
     },
     {
      "orig": "0x224c",
-     "similarity_pct": 13.3
-    },
-    {
-     "orig": "0x4e94",
-     "similarity_pct": 12.0
+     "similarity_pct": 15.2
     }
    ],
    "rating": "confirmed by call graph and call order: the fourth call in redunbr after findcon, as ours; no calls on either side; 109 against 123 instructions",
    "audit": {
-    "d_normalised_pct": 54,
-    "pattern_diff": 100,
+    "d_normalised_pct": 91,
+    "pattern_diff": 20,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D10",
-     "D13",
      "D2",
      "D3",
      "D6",
-     "D7",
-     "D8",
-     "D8/D2"
+     "D8"
     ],
     "structure_flags": [],
-    "len_ours": 123,
+    "len_ours": 109,
     "len_orig": 109
    },
    "review": "pattern only: not inspected (alignment 54 %)"
@@ -2202,46 +2188,41 @@
   "setcon": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2676-0x2728",
+   "ours": "0x3446-0x3478",
    "orig": "0x32f0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
-     "orig": "0x3b9a",
-     "similarity_pct": 19.8
-    },
-    {
-     "orig": "0x26c2",
-     "similarity_pct": 17.5
-    },
-    {
      "orig": "0x36a6",
-     "similarity_pct": 17.1
+     "similarity_pct": 45.2
+    },
+    {
+     "orig": "0x5472",
+     "similarity_pct": 40.0
+    },
+    {
+     "orig": "0x5458",
+     "similarity_pct": 40.0
     }
    ],
    "rating": "confirmed by call order in rmove: between savereg and ccinval as ours; calls natural (0x3396); 32 against 56 instructions (open difference)",
    "audit": {
-    "d_normalised_pct": 20,
-    "pattern_diff": 66,
+    "d_normalised_pct": 31,
+    "pattern_diff": 29,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D10",
-     "D13",
-     "D16",
      "D2",
      "D3",
-     "D6",
      "D7",
-     "D8",
-     "D8/D2"
+     "D8"
     ],
     "structure_flags": [],
-    "len_ours": 56,
+    "len_ours": 17,
     "len_orig": 32
    },
    "review": "pattern only: alignment 20 %, verdict not supported"
@@ -2249,7 +2230,7 @@
   "setcc": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2728-0x2762",
+   "ours": "0x34aa-0x34e4",
    "orig": "0x3362",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2289,7 +2270,7 @@
   "natural": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2762-0x27a4",
+   "ours": "0x34e4-0x3526",
    "orig": "0x3396",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2331,28 +2312,28 @@
   "jumpsw": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x27a4-0x2882",
+   "ours": "0x20f2-0x21cc",
    "orig": "0x207e",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x207e",
-     "similarity_pct": 60.0
+     "similarity_pct": 63.3
     },
     {
      "orig": "0x0964",
      "similarity_pct": 17.4
     },
     {
-     "orig": "0x100e",
-     "similarity_pct": 17.0
+     "orig": "0x0ca0",
+     "similarity_pct": 15.7
     }
    ],
    "rating": "confirmed via the call sequence (two calls to absval on both sides); length 86 against 57: the original keeps pointers in r13/r14, ours reloads from the frame (D2, D3); classifier says D only",
    "audit": {
-    "d_normalised_pct": 78,
-    "pattern_diff": 22,
+    "d_normalised_pct": 81,
+    "pattern_diff": 18,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2361,7 +2342,6 @@
      "D1",
      "D13",
      "D3",
-     "D7",
      "D8"
     ],
     "structure_flags": [],
@@ -2374,7 +2354,7 @@
   "shortjump": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2882-0x2952",
+   "ours": "0x21cc-0x229c",
    "orig": "0x213c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2415,7 +2395,7 @@
   "toofar": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2952-0x2996",
+   "ours": "0x229c-0x22e0",
    "orig": "0x21fe",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2455,7 +2435,7 @@
   "ilen": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2996-0x2a8c",
+   "ours": "0x22e0-0x23d6",
    "orig": "0x224c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2496,7 +2476,7 @@
   "adrlen": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2a8c-0x2aca",
+   "ours": "0x23d6-0x2414",
    "orig": "0x2352",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2560,34 +2540,34 @@
   "rmove": {
    "file": "z22.c",
    "pairing": "confirmed",
-   "ours": "0x2aca-0x37a6",
+   "ours": "0x1416-0x20f2",
    "orig": "0x13b6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x13b6",
-     "similarity_pct": 21.5
+     "similarity_pct": 22.7
     },
     {
      "orig": "0x224c",
-     "similarity_pct": 7.5
+     "similarity_pct": 7.8
     },
     {
-     "orig": "0x45b2",
-     "similarity_pct": 5.5
+     "orig": "0x38d0",
+     "similarity_pct": 5.7
     }
    ],
    "rating": "confirmed via call graph and call order in main: called by main between comjump and jumpsw, as ours; callees agree both ways (ccinval, findslot, isreg, killreg, makereg, setreg)",
    "audit": {
     "d_normalised_pct": 47,
-    "pattern_diff": 1012,
+    "pattern_diff": 998,
     "pattern_unexplained": 0,
-    "reordered_instructions": 37,
+    "reordered_instructions": 21,
     "reordered_examples": [
+     "cpb\tF,#%10",
      "call T",
-     "call T",
-     "call T"
+     "jr\tne,L"
     ],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
@@ -2611,7 +2591,7 @@
   "itoa_": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x3808-0x3858",
+   "ours": "0x3e0e-0x3e5e",
    "orig": "0x3c06",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2675,7 +2655,7 @@
   "ovlap": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x3858-0x3fec",
+   "ours": "0x3e5e-0x45f2",
    "orig": "0x3c5a",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2729,7 +2709,7 @@
   "usesreg": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x3fec-0x42d8",
+   "ours": "0x3ac0-0x3dac",
    "orig": "0x38d0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2780,7 +2760,7 @@
   "isused": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x42d8-0x437a",
+   "ours": "0x3a1e-0x3ac0",
    "orig": "0x3838",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2823,28 +2803,28 @@
   "markregs": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x437a-0x44b8",
+   "ours": "0x45f2-0x46e4",
    "orig": "0x432c",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x432c",
-     "similarity_pct": 22.8
+     "similarity_pct": 65.1
     },
     {
      "orig": "0x0630",
-     "similarity_pct": 15.2
+     "similarity_pct": 18.5
     },
     {
      "orig": "0x4e94",
-     "similarity_pct": 14.7
+     "similarity_pct": 17.0
     }
    ],
    "rating": "confirmed by call order: calls itself as ours does; the libc call agrees (ours 0x5EB8, original 0x5016); 98 against 86 instructions; called by procopt",
    "audit": {
-    "d_normalised_pct": 22,
-    "pattern_diff": 140,
+    "d_normalised_pct": 73,
+    "pattern_diff": 43,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2861,7 +2841,7 @@
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 98,
+    "len_ours": 83,
     "len_orig": 86
    },
    "review": "pattern only: alignment 15 %, verdict not supported",
@@ -2870,34 +2850,35 @@
   "rename_regs": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x44b8-0x4610",
+   "ours": "0x38b4-0x39a8",
    "orig": "0x36d0",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
    "candidates": [
     {
      "orig": "0x36d0",
-     "similarity_pct": 28.7
+     "similarity_pct": 48.0
     },
     {
      "orig": "0x4b88",
-     "similarity_pct": 18.1
+     "similarity_pct": 18.6
     },
     {
-     "orig": "0x3838",
-     "similarity_pct": 13.3
+     "orig": "0x213c",
+     "similarity_pct": 17.3
     }
    ],
    "rating": "confirmed by call order: called by procopt before fixldm, as ours; libc call agrees (ours 0x6494, original 0x54D6); 106 against 92 instructions",
    "audit": {
-    "d_normalised_pct": 50,
-    "pattern_diff": 91,
+    "d_normalised_pct": 78,
+    "pattern_diff": 35,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
+     "D10",
      "D13",
      "D2",
      "D3",
@@ -2907,7 +2888,7 @@
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 103,
+    "len_ours": 87,
     "len_orig": 92
    },
    "review": "pattern only: alignment 31 %, verdict not supported"
@@ -2915,7 +2896,7 @@
   "fixldm": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4610-0x4686",
+   "ours": "0x39a8-0x3a1e",
    "orig": "0x37cc",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2962,7 +2943,7 @@
   "procopt": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x4686-0x49ea",
+   "ours": "0x354e-0x38b4",
    "orig": "0x33d6",
    "level": "analysed",
    "note": "K&R source, see src/cmd/popt",
@@ -2972,12 +2953,12 @@
      "similarity_pct": 21.2
     },
     {
-     "orig": "0x224c",
-     "similarity_pct": 8.7
-    },
-    {
      "orig": "0x2e2c",
      "similarity_pct": 8.3
+    },
+    {
+     "orig": "0x0358",
+     "similarity_pct": 7.9
     }
    ],
    "rating": "confirmed via call graph and call order in main: called by main after shortjump, as ours; the only candidate main calls",
@@ -3010,7 +2991,7 @@
   "dumpnodes": {
    "file": "z21.c",
    "pairing": "confirmed",
-   "ours": "0x002a-0x0046",
+   "ours": "0x061c-0x0638",
    "orig": "0x0610",
    "level": "analysed",
    "rating": "confirmed by structure: the output loop of main as its own function, 12 instructions in both; calls output (0x06ba) for each node; the register for p differs (D2)",
@@ -3044,7 +3025,7 @@
   "reverse": {
    "file": "z23.c",
    "pairing": "confirmed",
-   "ours": "0x37a6-0x3808",
+   "ours": "0x3dac-0x3e0e",
    "orig": "0x3b9a",
    "level": "analysed",
    "rating": "confirmed by structure: the original calls strlen (0x553a) and swaps from both ends; reverse is called by itoa_ (0x3c06) as in ours; 15 of 35 instructions equal, the rest is frame order and register choice (D2, D3)",
@@ -3336,17 +3317,17 @@
   },
   {
    "id": "popt-22",
-   "status": "open",
+   "status": "fixed",
    "functions": [
     "opsetup",
     "cclook",
     "oplook"
    ],
    "orig": "0x09ec (hash inline; also 0x0a44, 0x0b02)",
-   "ours": "z21.c hashname (function, called from opsetup, cclook, oplook)",
+   "ours": "z21.c HASHNAME (macro, inline at opsetup, cclook, oplook); no function",
    "summary": "the original has no hash function: the hash of the operation name is computed inline at three places and reads the three characters unconditionally (cclook 0x0a76 to 0x0aa2 reads the bytes behind the terminator of tmpcc); ours is a function with conditional reads",
-   "done": "tried: macro with unconditional reads -> corpus 63 of 816 (lookups fail, the bytes behind the name of the buffers differ); reverted. The buffers tmpcc and tmpop must end the same way as in the original before the unconditional read can be used",
-   "decide": "analyse how the original fills and clears tmpcc and tmpop (bytes behind the terminator), then rebuild that"
+   "done": "fixed: the hash reads the three characters unconditionally as the original does (cclook 0x0a7e to 0x0a9a). The failure was the one-character optab names \"{\" and \"}\": the original stores them with a NUL pad (3 bytes), ours without; the unconditional read then sees the next literal and the name is not found. z20.c now writes \"{\\0\" and \"}\\0\". Corpus: 0 differences without -d (only the K core line, see TODO.md).",
+   "decide": "none"
   },
   {
    "id": "popt-23",
@@ -3388,5 +3369,347 @@
  "manual": [],
  "findings_pending": [],
  "class_overrides": {},
- "classification_method": "as codgen: D-only when every differing instruction matches a D pattern and no block is moved by more than 5 %; other differences otherwise"
+ "classification_method": "as codgen: D-only when every differing instruction matches a D pattern and no block is moved by more than 5 %; other differences otherwise",
+ "order_original": [
+  {
+   "name": "main",
+   "orig": "0x002a",
+   "file": "z21.c"
+  },
+  {
+   "name": "jswcheck",
+   "orig": "0x02c8",
+   "file": "z21.c"
+  },
+  {
+   "name": "statline",
+   "orig": "0x0322",
+   "file": "z21.c"
+  },
+  {
+   "name": "input",
+   "orig": "0x0358",
+   "file": "z21.c"
+  },
+  {
+   "name": "getln",
+   "orig": "0x04d6",
+   "file": "z21.c"
+  },
+  {
+   "name": "getnum",
+   "orig": "0x05d2",
+   "file": "z21.c"
+  },
+  {
+   "name": "dumpnodes",
+   "orig": "0x0610",
+   "file": "z21.c"
+  },
+  {
+   "name": "prefix",
+   "orig": "0x0630",
+   "file": "z21.c"
+  },
+  {
+   "name": "output",
+   "orig": "0x06ba",
+   "file": "z21.c"
+  },
+  {
+   "name": "copy",
+   "orig": "0x0964",
+   "file": "z21.c"
+  },
+  {
+   "name": "opsetup",
+   "orig": "0x09ec",
+   "file": "z21.c"
+  },
+  {
+   "name": "cclook",
+   "orig": "0x0a44",
+   "file": "z21.c"
+  },
+  {
+   "name": "oplook",
+   "orig": "0x0b02",
+   "file": "z21.c"
+  },
+  {
+   "name": "refcount",
+   "orig": "0x0ca0",
+   "file": "z21.c"
+  },
+  {
+   "name": "iterate",
+   "orig": "0x0e1a",
+   "file": "z21.c"
+  },
+  {
+   "name": "xjump",
+   "orig": "0x100e",
+   "file": "z21.c"
+  },
+  {
+   "name": "insertl",
+   "orig": "0x108c",
+   "file": "z21.c"
+  },
+  {
+   "name": "codemove",
+   "orig": "0x1102",
+   "file": "z21.c"
+  },
+  {
+   "name": "comjump",
+   "orig": "0x12e6",
+   "file": "z21.c"
+  },
+  {
+   "name": "backjmp",
+   "orig": "0x133c",
+   "file": "z21.c"
+  },
+  {
+   "name": "rmove",
+   "orig": "0x13b6",
+   "file": "z22.c"
+  },
+  {
+   "name": "jumpsw",
+   "orig": "0x207e",
+   "file": "z22.c"
+  },
+  {
+   "name": "shortjump",
+   "orig": "0x213c",
+   "file": "z22.c"
+  },
+  {
+   "name": "toofar",
+   "orig": "0x21fe",
+   "file": "z22.c"
+  },
+  {
+   "name": "ilen",
+   "orig": "0x224c",
+   "file": "z22.c"
+  },
+  {
+   "name": "adrlen",
+   "orig": "0x2352",
+   "file": "z22.c"
+  },
+  {
+   "name": "absval",
+   "orig": "0x23a0",
+   "file": "z22.c"
+  },
+  {
+   "name": "equop",
+   "orig": "0x23b4",
+   "file": "z22.c"
+  },
+  {
+   "name": "decref",
+   "orig": "0x2416",
+   "file": "z22.c"
+  },
+  {
+   "name": "nonlab",
+   "orig": "0x244e",
+   "file": "z22.c"
+  },
+  {
+   "name": "alloc",
+   "orig": "0x2476",
+   "file": "z22.c"
+  },
+  {
+   "name": "clearreg",
+   "orig": "0x24d4",
+   "file": "z22.c"
+  },
+  {
+   "name": "savereg",
+   "orig": "0x24f6",
+   "file": "z22.c"
+  },
+  {
+   "name": "findreg",
+   "orig": "0x255a",
+   "file": "z22.c"
+  },
+  {
+   "name": "findbyte",
+   "orig": "0x25b6",
+   "file": "z22.c"
+  },
+  {
+   "name": "findword",
+   "orig": "0x25f4",
+   "file": "z22.c"
+  },
+  {
+   "name": "findlong",
+   "orig": "0x2656",
+   "file": "z22.c"
+  },
+  {
+   "name": "findcopy",
+   "orig": "0x26c2",
+   "file": "z22.c"
+  },
+  {
+   "name": "memreg",
+   "orig": "0x270e",
+   "file": "z22.c"
+  },
+  {
+   "name": "setreg",
+   "orig": "0x28ae",
+   "file": "z22.c"
+  },
+  {
+   "name": "makereg",
+   "orig": "0x2988",
+   "file": "z22.c"
+  },
+  {
+   "name": "dest",
+   "orig": "0x29f4",
+   "file": "z22.c"
+  },
+  {
+   "name": "killreg",
+   "orig": "0x2a46",
+   "file": "z22.c"
+  },
+  {
+   "name": "cleargroup",
+   "orig": "0x2c16",
+   "file": "z22.c"
+  },
+  {
+   "name": "singop",
+   "orig": "0x2c4a",
+   "file": "z22.c"
+  },
+  {
+   "name": "dualop",
+   "orig": "0x2c72",
+   "file": "z22.c"
+  },
+  {
+   "name": "findslot",
+   "orig": "0x2cd8",
+   "file": "z22.c"
+  },
+  {
+   "name": "isreg",
+   "orig": "0x2d22",
+   "file": "z22.c"
+  },
+  {
+   "name": "ccinval",
+   "orig": "0x2dda",
+   "file": "z22.c"
+  },
+  {
+   "name": "regprefix",
+   "orig": "0x2df8",
+   "file": "z22.c"
+  },
+  {
+   "name": "repladdr",
+   "orig": "0x2e2c",
+   "file": "z22.c"
+  },
+  {
+   "name": "movedat",
+   "orig": "0x2fc8",
+   "file": "z22.c"
+  },
+  {
+   "name": "redunbr",
+   "orig": "0x30ec",
+   "file": "z22.c"
+  },
+  {
+   "name": "findcon",
+   "orig": "0x3196",
+   "file": "z22.c"
+  },
+  {
+   "name": "compare",
+   "orig": "0x31ec",
+   "file": "z22.c"
+  },
+  {
+   "name": "setcon",
+   "orig": "0x32f0",
+   "file": "z22.c"
+  },
+  {
+   "name": "equstr",
+   "orig": "0x3340",
+   "file": "z22.c"
+  },
+  {
+   "name": "setcc",
+   "orig": "0x3362",
+   "file": "z22.c"
+  },
+  {
+   "name": "natural",
+   "orig": "0x3396",
+   "file": "z22.c"
+  },
+  {
+   "name": "procopt",
+   "orig": "0x33d6",
+   "file": "z23.c"
+  },
+  {
+   "name": "rename_regs",
+   "orig": "0x36d0",
+   "file": "z23.c"
+  },
+  {
+   "name": "fixldm",
+   "orig": "0x37cc",
+   "file": "z23.c"
+  },
+  {
+   "name": "isused",
+   "orig": "0x3838",
+   "file": "z23.c"
+  },
+  {
+   "name": "usesreg",
+   "orig": "0x38d0",
+   "file": "z23.c"
+  },
+  {
+   "name": "reverse",
+   "orig": "0x3b9a",
+   "file": "z23.c"
+  },
+  {
+   "name": "itoa_",
+   "orig": "0x3c06",
+   "file": "z23.c"
+  },
+  {
+   "name": "ovlap",
+   "orig": "0x3c5a",
+   "file": "z23.c"
+  },
+  {
+   "name": "markregs",
+   "orig": "0x432c",
+   "file": "z23.c"
+  }
+ ]
 }

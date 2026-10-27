@@ -542,6 +542,23 @@ The classifier verdict "D only (pattern-verified)" is a pattern verdict, not a p
   (labhash clear as pointer loop), `codemove`, `iterate`, `shortjump`, `movedat`, `input`, `oplook`, `rmove` (184 -> 405 equal),
   and `ovlap` with `scan` inline (`scan` removed from `z23.c`). A greedy search (`register` on single declarations, measured per
   function) changed 18 functions. Corpus after each step: 813 of 816 (only the known `-d` lines).
+- popt-22 (hash inline) is fixed: `HASHNAME` reads the three characters without a test, as the original does. The earlier
+  failures were the one-character optab names `{` and `}`: the original stores them with a NUL pad, ours did not, so the
+  unconditional read gave another hash at insertion than at lookup. `z20.c` now has `"{\0"` and `"}\0"`.
+- Text, step 2 (started): `setcon` no longer emulates the overwrite of the counters. The original has `conloc` with 20 bytes
+  and the counters `ndirect`, `nbrbr` directly behind it (in `z22.c` now, as globals). `strcpy` then does what the original does.
+  setcon 56 -> 17 instructions (original 32). Corpus: 0 differences without `-d`. Text is still about 1386 bytes larger
+  over the 68 functions (ovlap +194, refcount +192, memreg +138, compare +116, procopt +110, codemove +104, rename_regs +92).
+- Text, step 2, round 2 (corpus 0 differences without `-d`): register declarations and pointer loops in `refcount` (labhash
+  clear as pointer loop, now 107 equal, length 130 vs 128), `compare` (length 109 = 109, 77 equal), `codemove` (length 143 = 143),
+  `memreg`, `rename_regs`, `markregs`, `prefix`, `opsetup`; `setcon` without emulation of the counter overwrite. The text of the
+  68 functions is now 604 bytes larger than the original (1386 at the start of the step). Left: `ovlap` (+194, inline `scan`
+  with other frame and order), `procopt` (+108, address form of local arrays: D5), `memreg` (+108), `oplook` (+50), `usesreg`
+  (+34, home slots, D4), `equop`/`jumpsw` (D2). Most of what is left is the old compiler (D2, D4, D5, D16).
+  Function order: the 68 confirmed functions are in the same order as in the original (`findings.json`, key
+  `order_original`). The three source files keep their link order (z21, z22, z23) and the definitions inside each file
+  follow the original; global declarations stay at the top of their file in their order, prototypes were added for
+  functions used before their definition (no change of code). Corpus after the reorder: 813 of 816.
   Open and not D-classified: `dest` (the original branches on the value in another order), the call form `call`/`calr`
   (open: the original uses `calr` for some calls across what we build as separate objects; the file split of the original
   is not known), and the orders of the remaining functions.

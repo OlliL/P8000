@@ -3,6 +3,8 @@
  */
 #include "z2.h"
 
+static char sccsid[] = "@[$]z20.c\t1.3  12/21/82 17:53:10 Copr.1981 87wega3.2.";
+
 /*
  * Mnemonic table.  Entry order matters: it determines the hash chains
  * built by opsetup() and the entry that output() picks for a node.
@@ -17,7 +19,7 @@ struct optab optab[] = {
 	{ "flt",   0x0c01 }, { "fle",   0x0d01 }, { "fgt",   0x0e01 },
 	{ "fge",   0x0f01 },
 	{ "jpr",   0x0002 },
-	{ "{",     0x0005 },
+	{ "{\0",    0x0005 },
 	{ "ld",    0x0007 }, { "clr",   0x0008 }, { "com",   0x0009 },
 	{ "inc",   0x000a }, { "dec",   0x000b }, { "neg",   0x000c },
 	{ "test",  0x000d }, { "sra",   0x000e }, { "sla",   0x000f },
@@ -32,7 +34,7 @@ struct optab optab[] = {
 	{ "lda",   0x0025 }, { "ldk",   0x1207 }, { "res",   0x0028 },
 	{ "set",   0x0027 }, { "rl",    0x0029 }, { "rr",    0x002b },
 	{ "jp",    0x002c }, { "srl",   0x002d }, { "sll",   0x002e },
-	{ "sdl",   0x002f }, { "}",     0x0032 }, { ".psec", 0x0033 },
+	{ "sdl",   0x002f }, { "}\0",    0x0032 }, { ".psec", 0x0033 },
 	{ ".addr", 0x0035 }, { "callr", 0x0020 },
 	{ 0, 0 }
 };
@@ -52,6 +54,6 @@ int debug;
 char flag136a;
 char regs[NREGS][32];
 
-int nbrbr, nrevbr, nskip, nrlab, nxjump, ncomj, ncmot, loopiv, nsob;
+int nrevbr, nskip, nrlab, nxjump, ncomj, ncmot, loopiv, nsob;
 int iaftbr, njp1, redunm, nredunj, nsaddr, nshft, nrtst, nclr;
-int nlda, nrmove, nrename, npushpop, npushdirect, ndirect;
+int nlda, nrmove, nrename, npushpop, npushdirect;

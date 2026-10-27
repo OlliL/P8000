@@ -3,10 +3,15 @@
  */
 #include "z2.h"
 
+static char sccsid[] = "@[$]z21.c\t1.4  12/21/82 17:58:05 Copr.1981 87wega3.2.";
+
 static struct optab *ophash[OPHS];
 static struct node *labhash[LABHS];
 static char tmpop[32];
 static char tmpcc[32];
+
+/* hash of the first three characters, read without a test as the original does (names "{" and "}" are padded with a NUL, see z20.c) */
+#define HASHNAME(s) (((((int)(char)(s)[0] << 3) + 2 * (int)(char)(s)[1] + (int)(char)(s)[2]) & 0x7fff) % OPHS)
 
 static int getln();
 static int input();
@@ -16,15 +21,39 @@ static struct node *jswcheck();
 static int cclook();
 static void backjmp();
 static void statline();
+int getnum();
+static void dumpnodes();
+char * copy();
+void opsetup();
+int oplook();
+void refcount();
+void iterate();
+void xjump();
+struct node * insertl();
+struct node * codemove();
+void comjump();
 
-static void
-dumpnodes()
-{
-	register struct node *p;
 
-	for (p = &first; (p = p->forw) != 0;)
-		output(p);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int
 main(argc, argv)
@@ -117,6 +146,29 @@ char **argv;
 		fprintf(stderr, "%dK core\n", (int)(((heaplim + 0x3ff) >> 10) & 0x3f));
 	}
 	exit(0);
+}
+
+/* .word / .addr with an Lnnn operand becomes a JSW node */
+static struct node *
+jswcheck()
+{
+	register struct node *n;
+	register char *p;
+
+	for (p = curlp; *p; p++)
+		if (*p == '\n' || *p == 'L')
+			break;
+	if (*p == 'L') {
+		n = (struct node *)alloc(14);
+		n->labno = getnum(p + 1);
+		if (n->labno) {
+			n->code = 0;
+			n->op = JSW;
+			n->subop = 0;
+			return n;
+		}
+	}
+	return 0;
 }
 
 static void
@@ -241,29 +293,6 @@ input()
 	}
 }
 
-/* .word / .addr with an Lnnn operand becomes a JSW node */
-static struct node *
-jswcheck()
-{
-	register struct node *n;
-	register char *p;
-
-	for (p = curlp; *p; p++)
-		if (*p == '\n' || *p == 'L')
-			break;
-	if (*p == 'L') {
-		n = (struct node *)alloc(14);
-		n->labno = getnum(p + 1);
-		if (n->labno) {
-			n->code = 0;
-			n->op = JSW;
-			n->subop = 0;
-			return n;
-		}
-	}
-	return 0;
-}
-
 static int
 getln()
 {
@@ -315,6 +344,44 @@ char *ap;
 	if (*--p != 0)
 		return 0;
 	return n;
+}
+
+static void
+dumpnodes()
+{
+	register struct node *p;
+
+	for (p = &first; (p = p->forw) != 0;)
+		output(p);
+}
+
+/*
+ * Print the mnemonic of a jump or call: absolute (jp/call) when the
+ * operand is indirect or indexed, relative (jpr/callr) otherwise.
+ */
+static void
+prefix(n)
+register struct node *n;
+{
+	char *s;
+	register char *p;
+	register int call;
+
+	call = n->op == CALL;
+	if (n->code) {
+		if (n->code[0] == '@')
+			s = call ? "\tcall\t" : "\tjp\t";
+		else {
+			for (p = n->code; *p && *p != '('; p++)
+				;
+			if (*p)
+				s = call ? "\tcall\t" : "\tjp\t";
+			else
+				s = call ? "\tcallr\t" : "\tjpr\t";
+		}
+	} else
+		s = call ? "\tcallr\t" : "\tjpr\t";
+	printf("%s", s);
 }
 
 /*
@@ -417,34 +484,6 @@ register struct node *n;
 	n->subop = sub;
 }
 
-/*
- * Print the mnemonic of a jump or call: absolute (jp/call) when the
- * operand is indirect or indexed, relative (jpr/callr) otherwise.
- */
-static void
-prefix(n)
-register struct node *n;
-{
-	char *s, *p;
-	int call;
-
-	call = n->op == CALL;
-	if (n->code) {
-		if (n->code[0] == '@')
-			s = call ? "\tcall\t" : "\tjp\t";
-		else {
-			for (p = n->code; *p && *p != '('; p++)
-				;
-			if (*p)
-				s = call ? "\tcall\t" : "\tjp\t";
-			else
-				s = call ? "\tcallr\t" : "\tjpr\t";
-		}
-	} else
-		s = call ? "\tcallr\t" : "\tjpr\t";
-	printf("%s", s);
-}
-
 char *
 copy(na, a, b)
 int na;
@@ -477,26 +516,14 @@ char *b;
 	return onp;
 }
 
-static int
-hashname(s)
-char *s;
-{
-	int c0, c1, c2;
-
-	c0 = (char)s[0];
-	c1 = c0 ? (char)s[1] : 0;
-	c2 = c1 ? (char)s[2] : 0;
-	return (((c0 << 3) + (c1 + c1) + c2) & 0x7fff) % OPHS;
-}
-
 void
 opsetup()
 {
-	struct optab *o;
+	register struct optab *o;
 	int h;
 
 	for (o = optab; o->name; o++) {
-		h = hashname(o->name);
+		h = HASHNAME(o->name);
 		while (ophash[h]) {
 			if (++h >= OPHS)
 				h = 0;
@@ -526,7 +553,7 @@ int opw;
 	if (*p != ',')
 		return opw;
 	curlp = p + 1;
-	h = start = hashname(tmpcc);
+	h = start = HASHNAME(tmpcc);
 	while ((o = ophash[h]) != 0) {
 		a = o->name;
 		b = tmpcc;
@@ -572,7 +599,7 @@ oplook()
 			return KCOMMENT;
 		return COMMENT;
 	}
-	h = start = hashname(tmpop);
+	h = start = HASHNAME(tmpop);
 	suffix = np[-2] == 'b' || np[-2] == 'l';
 	for (;;) {
 		o = ophash[h];
@@ -614,8 +641,8 @@ oplook()
 void
 refcount()
 {
+	register struct node *p, *lp, *tp;
 	register struct node **h;
-	struct node *p, *lp, *tp;
 	int i, n;
 
 	for (h = labhash; h < &labhash[LABHS]; h++)
@@ -811,8 +838,8 @@ struct node *
 codemove(p)
 register struct node *p;
 {
-	register struct node *p2, *p1;
-	struct node *p3, *t, *tl;
+	register struct node *p2, *p1, *p3;
+	struct node *t, *tl;
 	int n;
 
 	p1 = p;
@@ -929,3 +956,4 @@ register struct node *p2;
 			return;
 	}
 }
+
