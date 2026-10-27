@@ -983,10 +983,10 @@ clearreg()
 static void
 savereg(a, s, b)
 int a;
-char *s;
+register char *s;
 int b;
 {
-	char *p, *d0, *d;
+	register char *p, *d0, *d;
 
 	d0 = d = regs[a + b];
 	ccinval(s);
@@ -1774,12 +1774,20 @@ char *b;
 
 static void
 setcon(val, loc)
-char *val;
-char *loc;
+register char *val;
+register char *loc;
 {
+	register char *s, *d;
+
 	if (*val == '#' && natural(loc)) {
-		strcpy(conloc, loc);
-		strcpy(conval, val);
+		s = loc;
+		d = conloc;
+		while ((*d++ = *s++))
+			;
+		s = val;
+		d = conval;
+		while ((*d++ = *s++))
+			;
 	}
 }
 

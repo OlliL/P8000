@@ -1302,6 +1302,23 @@ compiler is not available to compile a test, so the cause is a guess from the la
 Recorded in `tools/findings.json` as `layout_classes` (`zzzcode`, `clocal`); `tools/classify.py` adds the class to `audit.d_classes`.
 Not in the pattern check (`patterns.py`), which tests instructions, not their order.
 
+### D17 Call form: absolute `call` for global functions (popt)
+
+The original popt calls a global function with the absolute `call` even when the caller is in the same object file;
+a static function is called with the PC-relative `calr`. Our build (shipped cc, same object) always emits `calr` for
+a call inside the file; `call` only appears for targets in another object file, where the linker makes it absolute.
+Evidence (popt, from `tools`: call forms of the 68 confirmed functions against the storage class in our sources):
+- `ilen` (z22, global `dualop` in the same file) calls `dualop` with `call 0x2c72`; `adrlen` (static, same file) with `calr`.
+- Targets global in our source are called with `call` in 166 places of the original, with `calr` in 22; static targets
+  with `calr` in 106 places, with `call` in 59. For 51 of 68 functions the storage class of the original's call pattern
+  agrees with our source; 17 do not (`getnum`, `xjump`, `insertl`, `codemove`, `ilen`, `clearreg`, `savereg`, `setreg`,
+  `dest`, `killreg`, `cleargroup`, `ccinval`, `repladdr`, `redunbr`, `setcon`, `setcc`, `markregs`).
+- The original has exactly four object files with popt code (SCCS ids z20.c, z21.c, z22.c, z23.c in the data), and
+  its functions form three contiguous blocks (z21: `main`..`backjmp`, z22: `rmove`..`natural`, z23: `procopt`..`markregs`),
+  which our file split already has. A different split cannot produce `call` for a same-file global call.
+Status: pattern, not a compiler rule that was tested: the old compiler is not available to compile a test. Not
+reproducible with the shipped cc; the difference counts in `call` against `calr` sites of popt (not byte identity).
+
 ### D16 Frame operand in arithmetic
 
 The old compiler loads a frame slot into a register before an arithmetic operation (`ld rS,F; add rS,rS`), or uses the
