@@ -1,7 +1,7 @@
 # Handoff: WEGA build chain back to C
 
-Status 2026-10-26. Entry point. Read `../CLAUDE.md` first (rules, how to build, where to look things up),
-then this file (inventory, decisions, next steps), then `KNOWLEDGE.md` (facts) and `../src/TODO.md` (status per program).
+Status 2026-10-28. Entry point. Read `../CLAUDE.md` first (rules, how to build, where to look things up),
+then this file (inventory, decisions, next steps), then `KNOWLEDGE.md` (facts), `../src/TODO.md` (status per program) and, for the reconstruction of a binary, `HOWTO_reconstruct.md`.
 
 ## Goal
 
@@ -66,10 +66,11 @@ original tools and compares each program).
 
 ## Next steps, in this order
 
-1. **Complete the tool chain.** Current step: `popt` in `src/cmd/popt` (K&R, built with the WEGA `cc`, compared with `/lib/popt`). Analysis setup in `src/cmd/popt/tools` (like codgen): `make pipeline`; next step is the hand confirmation of the pairings in `findings.json` (`src/TODO.md`, "popt: analysis setup").
-   The WEGA `cc` rejects ANSI prototypes (tested), so the K&R version is a separate rewrite of `host/popt` (about 74 function heads).
-   Then the host copy of `codgen` (done for the corpus) is checked again by the same harness. Order after that: `cpp`, `cparse`/`scparse`,
-   `gopt`, `as`, then the check of the libraries (`libc`, `crt0`). Each tool passes the check in the table.
+1. **Complete the tool chain.** `codgen`/`scodgen` (stop line reached) and `popt` (K&R, analysed) are done as far as the
+   old compiler allows; `sld` is reconstructed in `src/cmd/sld` (K&R, 58 of 90 functions exact, data/bss equal, corpus test
+   51 of 51 identical). The procedure for every further binary is `HOWTO_reconstruct.md` (two phases: cheap model, then
+   expensive model once), the shared scripts are in `recon/` (`recon/README.md`). The order of the next binaries
+   (`ld`, `gld`, `cpp`, `cparse`, ...) and the open items are in `../src/TODO.md`, section "Plan after the sld naming".
    Step 3 starts only after that.
 2. **Bring the source to its natural form.** Revert the compensating changes or justify them. New baseline:
    bytes, functions, D classes.
