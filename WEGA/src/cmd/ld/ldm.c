@@ -5,7 +5,7 @@
 #include "ld.h"
 
 static char sccsid[] = "@[$]ldm.c\t3.10  10/27/83 12:21:07 - 87wega3.2";
-int bE0F8E = -1;
+int np2new = -1;
 
 /* scan_m_opt..410c: findings:D2,D11 */
 int scan_m_opt(s, ip, argc)
@@ -31,7 +31,7 @@ int argc;
 	} else {
 		k = 2;
 		type = s[1];
-		bE49C++;
+		mcnt++;
 	}
 	if (s[k] == 0)
 		report_error(2, "usage error: -%s", s);
@@ -53,14 +53,14 @@ int argc;
 	}
 	digs[m] = 0;
 	v = atoi(digs);
-	if (bE4AE && v == 127)
+	if (zflag && v == 127)
 		report_error(2, "segment number in illegal range with %d", v);
 	if (v < 0 || v > 127)
 		report_error(2, "segment number out of range with %d", v);
-	if (v > bE3E82)
-		bE3E82 = v;
+	if (v > maxseg)
+		maxseg = v;
 	if (s[k] == ':') {
-		bE42B2++;
+		secspec++;
 		k++;
 		switch (type) {
 		case 'a':
@@ -79,14 +79,14 @@ int argc;
 			report_error(2, "-%s: invalid section selector (must be t, d or b)", s);
 		}
 		if (s[k] == 't' || s[k] == 'b') {
-			if (bE42B4[v][w] != 0)
+			if (secflg[v][w] != 0)
 				report_error(2, "-%s: section already specified", s);
-			bE42B4[v][w] = s[k];
+			secflg[v][w] = s[k];
 			k++;
 		} else
 			report_error(2, "-%s: invalid location selector (must be t or b)", s);
 		if (s[k] == 0) {
-			s = *bE4A36++;
+			s = *curarg++;
 			(*ip)++;
 			k = 0;
 		}
@@ -101,17 +101,17 @@ int argc;
 			}
 		}
 		if (s[k] != 0) {
-			if (sscanf(s + k, fmt, &tab4534[v][w]) != 1)
+			if (sscanf(s + k, fmt, &secorg[v][w]) != 1)
 				report_error(2, "-%s: bad offset", s);
 		}
 	} else if (s[k] != 0)
 		report_error(2, "-%s: usage error", s);
-	p = *bE4A36;
+	p = *curarg;
 	if (p[0] == '+') {
 		if (type == 's')
 			report_error(2, "invalid -Ms option ");
-		bE4A36++;
-		p = *bE4A36;
+		curarg++;
+		p = *curarg;
 		(*ip)++;
 		while (p[0] != '+') {
 			if (*ip >= argc)
@@ -123,34 +123,34 @@ int argc;
 			}
 			mlist_add(type, p, v);
 			(*ip)++;
-			bE4A36++;
-			p = *bE4A36;
+			curarg++;
+			p = *curarg;
 		}
 		if (*ip == argc)
 			report_error(2, "no closing + for M file list");
 		(*ip)++;
-		bE4A36++;
+		curarg++;
 	} else {
 		switch (type) {
 		case 't':
-			bE3E7E = v;
+			tseg = v;
 			break;
 		case 'd':
-			bE3E7C = v;
+			dseg = v;
 			break;
 		case 'b':
-			bE3E80 = v;
+			bseg = v;
 			break;
 		case 'a':
-			w = bE49A ? v + 1 : v;
-			bE3E80 = w;
-			bE3E7C = w;
-			bE3E7E = v;
-			if (bE3E7C > bE3E82)
-				bE3E82 = bE3E7C;
+			w = iflag ? v + 1 : v;
+			bseg = w;
+			dseg = w;
+			tseg = v;
+			if (dseg > maxseg)
+				maxseg = dseg;
 			break;
 		case 's':
-			if (bE4AE)
+			if (zflag)
 				report_error(2, "cannot use -Ms option after -z");
 			resv_seg(v, 's');
 			break;
@@ -171,49 +171,49 @@ int x;
 	int k;
 	int r;
 
-	if (g047a == 0x32)
+	if (mlcnt == 0x32)
 		report_error(2, "-M list overflow, maximum number is %d", 0x32);
-	i = bE478;
+	i = mlhead;
 	prev = 0;
-	g0476 = 1;
+	cmpmode = 1;
 	k = 0;
 	goto cond;
 body:
-	r = str_compare(y, tab3c22[i].mname);
+	r = str_compare(y, mlist[i].mname);
 	if (r < 0)
 		goto nxt;
 	if (r == 0)
 		goto attr;
 	prev = i;
-	i = tab3c22[i].mnext;
+	i = mlist[i].mnext;
 nxt:
 	k++;
 cond:
-	if (k < g047a)
+	if (k < mlcnt)
 		goto body;
-	if (i != bE478 || k != 0)
+	if (i != mlhead || k != 0)
 		goto l41de;
-	tab3c22[g047a].mnext = bE478;
-	bE478 = g047a;
+	mlist[mlcnt].mnext = mlhead;
+	mlhead = mlcnt;
 	goto l4218;
 l41de:
-	tab3c22[g047a].mnext = tab3c22[prev].mnext;
-	tab3c22[prev].mnext = g047a;
+	mlist[mlcnt].mnext = mlist[prev].mnext;
+	mlist[prev].mnext = mlcnt;
 l4218:
-	k = g047a;
-	g047a++;
-	tab3c22[k].mname = y;
-	tab3c22[k].mbss = -1;
-	tab3c22[k].mdata = -1;
-	tab3c22[k].mtext = -1;
+	k = mlcnt;
+	mlcnt++;
+	mlist[k].mname = y;
+	mlist[k].mbss = -1;
+	mlist[k].mdata = -1;
+	mlist[k].mtext = -1;
 attr:
 	if (c == 0x61 || c == 0x74)
-		tab3c22[k].mtext = x;
+		mlist[k].mtext = x;
 	if (c == 0x61 || c == 0x64)
-		tab3c22[k].mdata = x;
+		mlist[k].mdata = x;
 	if (c == 0x61 || c == 0x62)
-		tab3c22[k].mbss = x;
-	g0476 = 0;
+		mlist[k].mbss = x;
+	cmpmode = 0;
 }
 
 /* resv_seg 0x42f8..0x4444: done */
@@ -223,33 +223,33 @@ char c;
 {
 	if (x < 0 || x >= 0x80)
 		report_error(2, "reserved segment is out of range with %d", x);
-	if (x > bE3E82)
-		bE3E82 = x;
+	if (x > maxseg)
+		maxseg = x;
 	switch (c) {
 	case 'r':
-		if (tblF332[x].res == 0x07d0) {
+		if (reslist[x].res == 0x07d0) {
 			report_error(0, "warning: stack seg has been moved because seg is reserved");
-			g0474 = -1;
+			stksegn = -1;
 		}
-		tblF332[x].res = 0x03e8;
+		reslist[x].res = 0x03e8;
 		break;
 	case 's':
-		if (g0474 > -1)
-			tblF332[g0474].res = -1;
-		if (tblF332[x].res == 0x03e8) {
+		if (stksegn > -1)
+			reslist[stksegn].res = -1;
+		if (reslist[x].res == 0x03e8) {
 			report_error(0, "warning: stack seg has been moved because seg is reserved");
-			g0474 = -1;
+			stksegn = -1;
 		} else {
-			tblF332[x].res = 0x07d0;
-			g0474 = x;
+			reslist[x].res = 0x07d0;
+			stksegn = x;
 		}
 		break;
 	case 'M':
-		if (tblF332[x].res == 0x07d0) {
+		if (reslist[x].res == 0x07d0) {
 			report_error(0, "warning: stack seg has been moved because seg is reserved");
-			g0474 = -1;
+			stksegn = -1;
 		}
-		tblF332[x].res = 0x01f4;
+		reslist[x].res = 0x01f4;
 		break;
 	}
 }
@@ -298,44 +298,44 @@ int end_pass1()
 	int i;
 
 	flg = 0;
-	bE482 = *slookup("_etext");
-	bE486 = *slookup("_edata");
-	bE48A = *slookup("_end");
-	bE48E = *slookup("_stkseg");
-	if (bE48E == 0) {
-		if (g0474 > -1)
+	p_etext = *slookup("_etext");
+	p_edata = *slookup("_edata");
+	p_end = *slookup("_end");
+	p_stkseg = *slookup("_stkseg");
+	if (p_stkseg == 0) {
+		if (stksegn > -1)
 			report_error(1, "warning: _stkseg undefined");
 		else
-			g0474 = -2;
+			stksegn = -2;
 	} else {
-		if (!*(int *)bE49E && !bE49A && g0474 == -1 && bE49C < 2 && !bE4AE)
-			g0474 = -3;
-		else if (bE4A2)
-			g0474 = -3;
+		if (!nrflag && !iflag && stksegn == -1 && mcnt < 2 && !zflag)
+			stksegn = -3;
+		else if (rflag)
+			stksegn = -3;
 	}
-	end = table16_entry(bE4FA);
-	if (!bE4A2) {
+	end = table16_entry(symindex);
+	if (!rflag) {
 		ep = table16_entry(0);
 		while (ep < end) {
-			if (ep->stype == ' ' && ep->svalue == 0 && ep != bE48A && ep != bE486 && ep != bE482 && ep != bE48E) {
-				bE4A2++;
-				bE498 = 0;
+			if (ep->stype == ' ' && ep->svalue == 0 && ep != p_end && ep != p_edata && ep != p_etext && ep != p_stkseg) {
+				rflag++;
+				dflag = 0;
 				break;
 			}
 			ep = next_entry(ep);
 		}
 	}
-	if (bE4A2) {
-		bE4A0 = 0;
-		bE4A4 = 0;
-		bE42B2 = 0;
+	if (rflag) {
+		Oflag = 0;
+		sflag = 0;
+		secspec = 0;
 		for (i = 0; i < 128; i++) {
 			for (t8 = 0; t8 < 4; t8++)
-				bE42B4[i][(int)t8] = 0;
+				secflg[i][(int)t8] = 0;
 		}
 	}
-	bE4C8 = 0;
-	if (bE498 == 0 && bE4A2)
+	comsize = 0;
+	if (dflag == 0 && rflag)
 		goto l469e;
 	ep = table16_entry(0);
 	while (ep < end) {
@@ -343,50 +343,50 @@ int end_pass1()
 			t8 = ep->svalue & 0xffff;
 			if (t8 != 0) {
 				t8 = (t8 + 1) & 0xfffe;
-				t4 = bE4C8 + t8;
+				t4 = comsize + t8;
 				if (t4 > 0x10000L || flg == 0) {
-					if (bEF32C >= bE4EC)
+					if (nblk >= maxblk)
 						report_error(2, "pass one segment table overflow -- Try -Ap option");
-					bE4C8 = 0;
+					comsize = 0;
 					t4 = t8;
-					blk2 = get_block(bEF32C++);
+					blk2 = get_block(nblk++);
 					blk2->bssnext = -1;
 					blk2->s_code = 0;
 					blk2->s_data = 0;
-					blk2->nboff = bE3E80;
+					blk2->nboff = bseg;
 					flg++;
 				}
-				ep->sseg = bEF32C - 1;
-				ep->svalue = bE4C8;
+				ep->sseg = nblk - 1;
+				ep->svalue = comsize;
 				ep->stype = '%';
-				get_block(bEF32C - 1)->s_bss = (int)(bE4C8 = t4);
+				get_block(nblk - 1)->s_bss = (int)(comsize = t4);
 			}
 		}
 		ep = next_entry(ep);
 	}
 l469e:
 	lay_out();
-	if (bE498 || !bE4A2) {
-		ldrsym(bE482, 0x22);
-		ldrsym(bE486, 0x23);
-		ldrsym(bE48A, 0x24);
-		if (!bE4A2)
-			ldrsym(bE48E, 0x21);
+	if (dflag || !rflag) {
+		ldrsym(p_etext, 0x22);
+		ldrsym(p_edata, 0x23);
+		ldrsym(p_end, 0x24);
+		if (!rflag)
+			ldrsym(p_stkseg, 0x21);
 	}
-	g04e6 = 0;
+	nundef = 0;
 	ep = table16_entry(0);
 	while (ep < end) {
-		if (ep != bE482 && ep != bE486 && ep != bE48A && ep != bE48E) {
+		if (ep != p_etext && ep != p_edata && ep != p_end && ep != p_stkseg) {
 			switch (ep->stype) {
 			case 0x20:
-				if (bE496)
+				if (arflag)
 					break;
-				bE4A3A |= 1;
+				exstat |= 1;
 				if (ep->svalue)
 					break;
-				if (g04e6 == 0)
+				if (nundef == 0)
 					printf("Undefined:\n");
-				g04e6++;
+				nundef++;
 				put_name(ep->sname);
 				putchar(10);
 				break;
@@ -411,9 +411,9 @@ l469e:
 		}
 		ep = next_entry(ep);
 	}
-	if (bE4A4 || bE4AA)
-		bE4CE = 0;
-	bEF312 = (unsigned)bE4CE >> 4;
+	if (sflag || xflag)
+		symbytes = 0;
+	nsymf = (unsigned)symbytes >> 4;
 }
 
 /* alloc_resv 0x4968..0x4a16: done */
@@ -425,14 +425,14 @@ int *res;
 {
 	int lcl;
 
-	if (bE4AE && x == 0x7f) {
+	if (zflag && x == 0x7f) {
 		(*p)++;
 		return 0;
 	}
-	q = table32_entry(bE3C04);
-	if (bE3C04++ > 0x100)
+	q = table32_entry(np2seg);
+	if (np2seg++ > 0x100)
 		report_error(2, "pass2 segment table overflow");
-	if (tblF332[x].res == 0x0bb8)
+	if (reslist[x].res == 0x0bb8)
 		q->atr |= 8;
 	else
 		q->atr = 4;
@@ -463,84 +463,84 @@ int lay_out()
 	struct p2seg *e;
 	int swapped;
 
-	pE3C0E = 0;
-	pE3C0A = 0;
-	pE3C06 = 0;
-	b3C12 = 0;
-	bF32E = 0;
-	bE3C04 = 0;
+	lastb = 0;
+	lastt = 0;
+	lastd = 0;
+	p2tail = 0;
+	p2head = 0;
+	np2seg = 0;
 	for (k = 1; k < 4; k++) {
-		for (i = 0; i < bEF32C; i++) {
+		for (i = 0; i < nblk; i++) {
 			blk = get_block(i);
 			if (blk->s_code && k == 1) {
-				blk->ncode = ins_block(2, blk->s_code, tblF332[blk->ncoff].txtptr, i, blk->ncoff);
+				blk->ncode = ins_block(2, blk->s_code, reslist[blk->ncoff].txtptr, i, blk->ncoff);
 				blk->ncoff = blk->ncode->s_code;
 				blk->ncode->s_code += blk->s_code;
-				bE3C16 += (unsigned)blk->s_code;
+				ttotal += (unsigned)blk->s_code;
 				blk->ncode->atr |= 1;
 			}
 			if (blk->s_data && k == 2) {
-				if (tblF332[blk->ndoff].bssptr > -1)
-					blk->ndata = ins_block(3, blk->s_data, tblF332[blk->ndoff].bssptr - 0x4b0, i, blk->ndoff);
+				if (reslist[blk->ndoff].bssptr > -1)
+					blk->ndata = ins_block(3, blk->s_data, reslist[blk->ndoff].bssptr - 0x4b0, i, blk->ndoff);
 				else
-					blk->ndata = ins_block(3, blk->s_data, tblF332[blk->ndoff].datptr, i, blk->ndoff);
+					blk->ndata = ins_block(3, blk->s_data, reslist[blk->ndoff].datptr, i, blk->ndoff);
 				blk->ndoff = blk->ndata->s_data;
 				blk->ndata->s_data += blk->s_data;
-				bE3C1A += (unsigned)blk->s_data;
+				dtotal += (unsigned)blk->s_data;
 				blk->ndata->atr |= 2;
 			}
 			if (blk->s_bss && k == 3) {
-				if (tblF332[blk->nboff].bssptr > 0x4af)
-					blk->nbss = ins_block(4, blk->s_bss, tblF332[blk->nboff].bssptr - 0x4b0, i, blk->nboff);
+				if (reslist[blk->nboff].bssptr > 0x4af)
+					blk->nbss = ins_block(4, blk->s_bss, reslist[blk->nboff].bssptr - 0x4b0, i, blk->nboff);
 				else
-					blk->nbss = ins_block(4, blk->s_bss, tblF332[blk->nboff].bssptr, i, blk->nboff);
+					blk->nbss = ins_block(4, blk->s_bss, reslist[blk->nboff].bssptr, i, blk->nboff);
 				blk->nboff = blk->nbss->s_bss;
 				blk->nbss->s_bss += blk->s_bss;
-				b3C1E += (unsigned)blk->s_bss;
+				btotal += (unsigned)blk->s_bss;
 				blk->nbss->atr |= 4;
 			}
 		}
 	}
-	if (g0474 >= 0 && g0474 < 128) {
+	if (stksegn >= 0 && stksegn < 128) {
 		l1 = (struct p2seg *)0x7f00ffff;
 		l2 = (struct p2seg *)0x7f00ffff;
-		i = tblF332[g0474].txtptr;
+		i = reslist[stksegn].txtptr;
 		if (i != -1)
 			l1 = (get_block(i))->ncode;
 		else {
-			i = tblF332[g0474].datptr;
+			i = reslist[stksegn].datptr;
 			if (i != -1)
 				l1 = (get_block(i))->ndata;
 			else {
-				i = tblF332[g0474].bssptr;
+				i = reslist[stksegn].bssptr;
 				if (i != -1)
 					l1 = (get_block(i))->nbss;
 			}
 		}
 		if (l2 == l1)
-			tblF332[g0474].res = 3000;
+			reslist[stksegn].res = 3000;
 	}
-	bF32E = 0;
-	max = bE3E82;
+	p2head = 0;
+	max = maxseg;
 	cnt = 0;
 	k = 0;
 	while (k <= max) {
-		if (tblF332[k].res > 500 && tblF332[k].res != 2000) {
+		if (reslist[k].res > 500 && reslist[k].res != 2000) {
 			alloc_resv(l1, &cnt, k, &delta);
 			cnt--;
-			if (!(tblF332[k].txtptr == -1 && tblF332[k].datptr == -1 && tblF332[k].bssptr == -1)) {
+			if (!(reslist[k].txtptr == -1 && reslist[k].datptr == -1 && reslist[k].bssptr == -1)) {
 				for (j = 0; j < 128; j++) {
-					if (tblF332[j].txtptr == -1 && tblF332[j].datptr == -1 && tblF332[j].bssptr == -1 && tblF332[j].res == -1) {
+					if (reslist[j].txtptr == -1 && reslist[j].datptr == -1 && reslist[j].bssptr == -1 && reslist[j].res == -1) {
 						report_error(0, "warning: image in seg %d has been moved to seg %d because of -R; origins are reset", k, j);
-						tblF332[j].txtptr = tblF332[k].txtptr;
-						tblF332[j].datptr = tblF332[k].datptr;
-						tblF332[j].bssptr = tblF332[k].bssptr;
-						tblF332[j].res = 500;
-						tblF332[k].txtptr = -1;
-						tblF332[k].datptr = -1;
-						tblF332[k].bssptr = -1;
-						if (j > bE3E82)
-							bE3E82 = j;
+						reslist[j].txtptr = reslist[k].txtptr;
+						reslist[j].datptr = reslist[k].datptr;
+						reslist[j].bssptr = reslist[k].bssptr;
+						reslist[j].res = 500;
+						reslist[k].txtptr = -1;
+						reslist[k].datptr = -1;
+						reslist[k].bssptr = -1;
+						if (j > maxseg)
+							maxseg = j;
 						break;
 					}
 				}
@@ -549,134 +549,134 @@ int lay_out()
 		k++;
 		cnt++;
 	}
-	max = bE3E82;
+	max = maxseg;
 	k = 0;
 	cnt = 0;
 	for (; k <= max; k++) {
-		if (tblF332[k].res == 100 || tblF332[k].res == 50 || (tblF332[k].res == -1 && tblF332[k].txtptr < 0 && tblF332[k].datptr < 0 && (tblF332[k].bssptr < 0 || tblF332[k].bssptr > 0x4af))) {
+		if (reslist[k].res == 100 || reslist[k].res == 50 || (reslist[k].res == -1 && reslist[k].txtptr < 0 && reslist[k].datptr < 0 && (reslist[k].bssptr < 0 || reslist[k].bssptr > 0x4af))) {
 			cnt++;
 			continue;
 		}
-		if (tblF332[k].res == 1000 || tblF332[k].res == 3000) {
+		if (reslist[k].res == 1000 || reslist[k].res == 3000) {
 			cnt++;
 			continue;
 		}
-		i = tblF332[k].txtptr;
+		i = reslist[k].txtptr;
 		if (i != -1)
 			l1 = (get_block(i))->ncode;
 		else {
-			i = tblF332[k].datptr;
+			i = reslist[k].datptr;
 			if (i != -1)
 				l1 = (get_block(i))->ndata;
 			else {
-				i = tblF332[k].bssptr;
+				i = reslist[k].bssptr;
 				if (i == -1)
 					continue;
 				l1 = (get_block(i))->nbss;
 			}
 		}
-		bF320 = 0;
-		bF322 = 0;
+		dsplf = 0;
+		bsplf = 0;
 		place_sec(l1, cnt);
-		if (tblF332[k].txtptr > -1) {
-			pE3C0A = (char *)l1;
+		if (reslist[k].txtptr > -1) {
+			lastt = (char *)l1;
 			if (*(char *)l1 == -1) {
 				q = 1;
 				delta = alloc_segment(l1, &cnt, 0, 't', &q);
 			}
-			if (!bE4A2) {
-				if ((f4a34 == 1 && (l1->torig & 0xff)) || bE42B4[cnt - 1][1] == 't')
+			if (!rflag) {
+				if ((placekd == 1 && (l1->torig & 0xff)) || secflg[cnt - 1][1] == 't')
 					delta = 0x100 - (l1->s_code & 0xff);
-				else if (f4a34 == 1)
+				else if (placekd == 1)
 					delta = 0x100 - ((l1->torig - (l1->torig & 0xff00) + l1->s_code) & 0xff);
 				else
 					delta = 0;
-				if (f4a34 == 1 && (unsigned)l1->s_code > 0xff00)
+				if (placekd == 1 && (unsigned)l1->s_code > 0xff00)
 					delta = delta - 2;
 			} else
 				delta = 0;
-			bE3C16 += delta;
+			ttotal += delta;
 			l1->s_code += delta;
-			if (l1->segno == g0474)
+			if (l1->segno == stksegn)
 				l1->atr |= 8;
 			while ((i = (cur = get_block(i))->xtnext) > -1) {
 				if (l1 != (get_block(i))->ncode) {
-					if (bE42B4[k][1])
-						report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, ptrs04ac[1]);
+					if (secflg[k][1])
+						report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[1]);
 					l1 = (get_block(i))->ncode;
 					l1->torig = 0;
-					pE3C0A = (char *)l1;
+					lastt = (char *)l1;
 					place_sec(l1, cnt);
 					q = i;
 					delta = alloc_segment(l1, &cnt, 1, 't', &q);
 					if (l1->s_bss + l1->s_data) {
-						tblF332[q].bssptr = tblF332[k].bssptr;
-						tblF332[q].datptr = tblF332[k].datptr;
-						tblF332[k].bssptr = -1;
-						tblF332[k].datptr = -1;
+						reslist[q].bssptr = reslist[k].bssptr;
+						reslist[q].datptr = reslist[k].datptr;
+						reslist[k].bssptr = -1;
+						reslist[k].datptr = -1;
 					}
 					cur->xtnext = -1;
-					if (f4a34 == 1) {
-						bE3C16 += delta;
+					if (placekd == 1) {
+						ttotal += delta;
 						l1->s_code += delta;
-					} else if (f4a34 == 2) {
-						bE3C1A += delta;
+					} else if (placekd == 2) {
+						dtotal += delta;
 						l1->s_data += delta;
-					} else if (f4a34 == 3) {
-						b3C1E += delta;
+					} else if (placekd == 3) {
+						btotal += delta;
 						l1->s_bss += delta;
 					}
 				}
 			}
 		}
-		if (tblF332[k].datptr > -1) {
-			i = tblF332[k].datptr;
+		if (reslist[k].datptr > -1) {
+			i = reslist[k].datptr;
 			blk = get_block(i);
 			l2 = blk->ndata;
-			if (bF320) {
-				l1 = bF324;
+			if (dsplf) {
+				l1 = dsplseg;
 				blk->ndata = l1;
 				cnt--;
 			} else
 				l1 = l2;
-			pE3C06 = (char *)l1;
+			lastd = (char *)l1;
 			if (*(char *)l1 == -1) {
 				q = 1;
 				delta = alloc_segment(l1, &cnt, 0, 'd', &q);
 			}
-			if (!bE4A2) {
-				if ((f4a34 == 2 && (l1->dorig & 0xff) == 0) || bE42B4[cnt - 1][2] == 't')
+			if (!rflag) {
+				if ((placekd == 2 && (l1->dorig & 0xff) == 0) || secflg[cnt - 1][2] == 't')
 					delta = 0x100 - (l1->s_data & 0xff);
-				else if (f4a34 == 2)
+				else if (placekd == 2)
 					delta = 0x100 - ((l1->dorig - (l1->dorig & 0xff00) + l1->s_data) & 0xff);
 				else
 					delta = 0;
-				if (f4a34 == 2 && (unsigned)(l1->s_code + l1->s_data) > 0xff00)
+				if (placekd == 2 && (unsigned)(l1->s_code + l1->s_data) > 0xff00)
 					delta = delta - 2;
 			} else
 				delta = 0;
-			bE3C1A += delta;
+			dtotal += delta;
 			l1->s_data += delta;
-			if (l1->segno == g0474)
+			if (l1->segno == stksegn)
 				l1->atr |= 8;
 			goto ltd;
 lhd:
-			if (bE42B4[k][2])
-				report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, ptrs04ac[2]);
+			if (secflg[k][2])
+				report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[2]);
 			l1 = (get_block(i))->ndata;
 			l1->dorig = 0;
 			place_sec(l1, cnt);
-			pE3C06 = (char *)l1;
+			lastd = (char *)l1;
 			q = i;
 			delta = alloc_segment(l1, &cnt, 1, 'd', &q);
 			cur->datnext = -1;
-			if (f4a34 == 2) {
-				bE3C1A += delta;
+			if (placekd == 2) {
+				dtotal += delta;
 				l1->s_data += delta;
 			} else {
-				tblF332[q].bssptr = tblF332[k].bssptr;
-				tblF332[k].bssptr = -1;
-				b3C1E += delta;
+				reslist[q].bssptr = reslist[k].bssptr;
+				reslist[k].bssptr = -1;
+				btotal += delta;
 				l1->s_bss += delta;
 			}
 			l2 = l1;
@@ -691,48 +691,48 @@ ltd:
 			if (i > -1)
 				goto lbd;
 		}
-		if (tblF332[k].bssptr > -1 && tblF332[k].bssptr < 0x4b0) {
-			i = tblF332[k].bssptr;
+		if (reslist[k].bssptr > -1 && reslist[k].bssptr < 0x4b0) {
+			i = reslist[k].bssptr;
 			blk = get_block(i);
 			l2 = blk->nbss;
-			if (bF322) {
-				l1 = bF328;
+			if (bsplf) {
+				l1 = bsplseg;
 				blk->nbss = l1;
 				cnt--;
 			} else
 				l1 = l2;
-			pE3C0E = (char *)l1;
+			lastb = (char *)l1;
 			if (*(char *)l1 == -1) {
 				q = 1;
 				delta = alloc_segment(l1, &cnt, 0, 'b', &q);
 			}
-			if (!bE4A2) {
-				if ((f4a34 == 3 && (l1->borig & 0xff) == 0) || bE42B4[cnt - 1][3] == 't')
+			if (!rflag) {
+				if ((placekd == 3 && (l1->borig & 0xff) == 0) || secflg[cnt - 1][3] == 't')
 					delta = 0x100 - (l1->s_bss & 0xff);
-				else if (f4a34 == 3)
+				else if (placekd == 3)
 					delta = 0x100 - ((l1->borig - (l1->borig & 0xff00) + l1->s_bss) & 0xff);
 				else
 					delta = 0;
-				if (f4a34 == 3 && (unsigned)(l1->s_code + l1->s_data + l1->s_bss) > 0xff00)
+				if (placekd == 3 && (unsigned)(l1->s_code + l1->s_data + l1->s_bss) > 0xff00)
 					delta = delta - 2;
 			} else
 				delta = 0;
-			b3C1E += delta;
+			btotal += delta;
 			l1->s_bss += delta;
-			if (l1->segno == g0474)
+			if (l1->segno == stksegn)
 				l1->atr |= 8;
 			goto ltb;
 lhb:
-			if (bE42B4[k][3])
-				report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, ptrs04ac[3]);
+			if (secflg[k][3])
+				report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[3]);
 			l1 = (get_block(i))->nbss;
 			l1->borig = l1->dorig + l1->s_data;
-			pE3C0E = (char *)l1;
+			lastb = (char *)l1;
 			if (*(char *)l1 == -1) {
 				q = i;
 				delta = alloc_segment(l1, &cnt, 1, 'b', &q);
 				cur->bssnext = -1;
-				b3C1E += delta;
+				btotal += delta;
 				l1->s_bss += delta;
 			}
 			l2 = l1;
@@ -747,23 +747,23 @@ ltb:
 			if (i > -1)
 				goto lbb;
 		}
-		if (tblF332[k].bssptr > 0x4af)
-			tblF332[k].bssptr = -1;
+		if (reslist[k].bssptr > 0x4af)
+			reslist[k].bssptr = -1;
 	}
-	if (g0474 == -1) {
-		l1 = table32_entry(bE3C04);
-		if (bE3C04++ > 0x100)
+	if (stksegn == -1) {
+		l1 = table32_entry(np2seg);
+		if (np2seg++ > 0x100)
 			report_error(2, "pass2 segment table overflow");
-		bE3E82++;
+		maxseg++;
 		l1->atr = 8;
 		q = 1;
 		delta = alloc_segment(l1, &cnt, 0, 's', &q);
-		g0474 = cnt - 1;
+		stksegn = cnt - 1;
 	}
-	if (b3C12 != bF32E) {
+	if (p2tail != p2head) {
 		do {
 			swapped = 0;
-			p = bF32E;
+			p = p2head;
 			e = p->nxt;
 			do {
 				if (e->segno < p->segno) {
@@ -771,7 +771,7 @@ ltb:
 					list_move_after(p, e);
 				}
 				e = (p = e)->nxt;
-			} while (p != b3C12);
+			} while (p != p2tail);
 		} while (swapped);
 	}
 }
@@ -798,20 +798,20 @@ int idx;
 				blk = b->xtnext;
 				break;
 			case 3:
-				if (tblF332[idx].bssptr > 0x4af) {
+				if (reslist[idx].bssptr > 0x4af) {
 					s = (get_block(blk))->ncode;
 					blk = -1;
-					tblF332[idx].bssptr = -1;
+					reslist[idx].bssptr = -1;
 				} else {
 					s = (b = get_block(blk))->ndata;
 					blk = b->datnext;
 				}
 				break;
 			case 4:
-				if (tblF332[idx].bssptr > 0x4af) {
+				if (reslist[idx].bssptr > 0x4af) {
 					s = (get_block(blk))->ncode;
 					blk = -1;
-					tblF332[idx].bssptr = -1;
+					reslist[idx].bssptr = -1;
 				} else {
 					s = (b = get_block(blk))->nbss;
 					blk = b->bssnext;
@@ -822,8 +822,8 @@ int idx;
 				continue;
 			switch (kind) {
 			case 4:
-				if (tblF332[idx].bssptr == -1) {
-					tblF332[idx].bssptr = val;
+				if (reslist[idx].bssptr == -1) {
+					reslist[idx].bssptr = val;
 					return s;
 				}
 				tmp = (b = get_block(prev))->bssnext;
@@ -845,8 +845,8 @@ int idx;
 				(get_block(val))->xtnext = tmp;
 				return s;
 			case 3:
-				if (tblF332[idx].datptr == -1) {
-					tblF332[idx].datptr = val;
+				if (reslist[idx].datptr == -1) {
+					reslist[idx].datptr = val;
 					return s;
 				}
 				blk = prev;
@@ -867,7 +867,7 @@ int idx;
 		}
 	}
 	if (kind == 4) {
-		blk = tblF332[idx].datptr;
+		blk = reslist[idx].datptr;
 		while (blk > -1) {
 			s = (b = get_block(blk))->ndata;
 			blk = b->datnext;
@@ -875,44 +875,44 @@ int idx;
 				goto l5e82;
 		}
 	}
-	if (bE3C04 < 0x100) {
-		bE0F8E++;
+	if (np2seg < 0x100) {
+		np2new++;
 		switch (kind) {
 		case 2:
-			tblF332[idx].bssptr = val + 0x4b0;
-			if (tblF332[idx].txtptr < 0)
-				tblF332[idx].txtptr = val;
+			reslist[idx].bssptr = val + 0x4b0;
+			if (reslist[idx].txtptr < 0)
+				reslist[idx].txtptr = val;
 			else
 				(get_block(prev))->xtnext = val;
 			break;
 		case 3:
-			if (tblF332[idx].datptr < 0)
-				tblF332[idx].datptr = val;
+			if (reslist[idx].datptr < 0)
+				reslist[idx].datptr = val;
 			else
 				(get_block(prev))->datnext = val;
 			break;
 		case 4:
-			if (tblF332[idx].bssptr < 0 || tblF332[idx].bssptr > 0x4af)
-				tblF332[idx].bssptr = val;
+			if (reslist[idx].bssptr < 0 || reslist[idx].bssptr > 0x4af)
+				reslist[idx].bssptr = val;
 			else
 				(get_block(prev))->bssnext = val;
 			break;
 		}
-		if (bF32E == 0) {
-			b3C12 = tab1c02;
-			bF32E = tab1c02;
-			bE3C04++;
-			*(char *)bF32E = 0xff;
-			return (struct p2seg *)bF32E;
+		if (p2head == 0) {
+			p2tail = p2tab;
+			p2head = p2tab;
+			np2seg++;
+			*(char *)p2head = 0xff;
+			return (struct p2seg *)p2head;
 		}
-		s = table32_entry(bE3C04++);
+		s = table32_entry(np2seg++);
 		*(char *)s = 0xff;
 		return s;
 	} else
 		report_error(2, "pass two segment table overflow");
 l5e82:
-	if (tblF332[idx].bssptr == -1) {
-		tblF332[idx].bssptr = val;
+	if (reslist[idx].bssptr == -1) {
+		reslist[idx].bssptr = val;
 		return s;
 	}
 	tmp = (b = get_block(prev))->bssnext;
@@ -934,23 +934,23 @@ int *q;
 
 	if (a) {
 		for (i = 0; i < 128; i++) {
-			if (tblF332[i].txtptr == -1 && tblF332[i].datptr == -1 && tblF332[i].bssptr == -1 && tblF332[i].res == -1) {
+			if (reslist[i].txtptr == -1 && reslist[i].datptr == -1 && reslist[i].bssptr == -1 && reslist[i].res == -1) {
 				rec->segidx = i;
 				rec->segno = i;
 				switch (b) {
 				case 't':
-					tblF332[i].txtptr = *q;
+					reslist[i].txtptr = *q;
 					break;
 				case 'd':
-					tblF332[i].datptr = *q;
+					reslist[i].datptr = *q;
 					break;
 				case 'b':
-					tblF332[i].bssptr = *q;
+					reslist[i].bssptr = *q;
 					break;
 				}
-				if (i > bE3E82)
-					bE3E82 = i;
-				tblF332[i].res = 100;
+				if (i > maxseg)
+					maxseg = i;
+				reslist[i].res = 100;
 				*q = i;
 				break;
 			}
@@ -959,28 +959,28 @@ int *q;
 			report_error(2, "No more segments");
 	} else {
 		if (b != 'r') {
-			while (tblF332[*pidx].res == 1000 || tblF332[*pidx].res == 100 || tblF332[*pidx].res == 3000)
+			while (reslist[*pidx].res == 1000 || reslist[*pidx].res == 100 || reslist[*pidx].res == 3000)
 				(*pidx)++;
-			if (tblF332[*pidx].res == -1)
-				tblF332[*pidx].res = 50;
+			if (reslist[*pidx].res == -1)
+				reslist[*pidx].res = 50;
 		}
 		rec->segidx = *pidx;
 		rec->segno = *pidx;
 		*pidx = *pidx + 1;
 	}
-	if (bF32E == 0) {
-		b3C12 = rec;
-		bF32E = rec;
+	if (p2head == 0) {
+		p2tail = rec;
+		p2head = rec;
 	} else {
-		b3C12->nxt = rec;
-		rec->prv = b3C12;
-		b3C12 = rec;
+		p2tail->nxt = rec;
+		rec->prv = p2tail;
+		p2tail = rec;
 	}
 	sum = rec->s_code + rec->s_data + rec->s_bss;
 	if ((unsigned)sum > 0xff00)
 		sum += 2;
 	sum = sum & 0xff;
-	if (bE4A2 == 0 && sum != 0)
+	if (rflag == 0 && sum != 0)
 		return 0x100 - sum;
 	return 0;
 }
@@ -993,11 +993,11 @@ int a;
 	int v;
 
 	if ((char)a == 0x74) {
-		v = q->s_code - bE3E7A;
+		v = q->s_code - ncopied;
 		if (v)
 			put_pad(v);
 	} else {
-		v = q->s_data - bE3E7A;
+		v = q->s_data - ncopied;
 		if (v)
 			put_pad(v);
 	}
@@ -1008,18 +1008,18 @@ copy_segs()
 {
 	register int i;
 
-	flush_buffer(&bE6E2);
-	flush_buffer(&bE8EA);
-	if (bE4A2) {
-		flush_buffer(&bEF02);
-		flush_buffer(&bEAF2);
+	flush_buffer(&tmpoutb);
+	flush_buffer(&doutb);
+	if (rflag) {
+		flush_buffer(&troutb);
+		flush_buffer(&droutb);
 	}
-	for (i = 0; i <= bE3E82; i++) {
-		bE3E7A = 0;
-		if (tblF332[i].txtptr > -1)
-			copy_blocks(tblF332[i].txtptr, 0x74, get_block(tblF332[i].txtptr)->ncode);
-		if (tblF332[i].datptr > -1)
-			copy_blocks(tblF332[i].datptr, 0x64, get_block(tblF332[i].datptr)->ndata);
+	for (i = 0; i <= maxseg; i++) {
+		ncopied = 0;
+		if (reslist[i].txtptr > -1)
+			copy_blocks(reslist[i].txtptr, 0x74, get_block(reslist[i].txtptr)->ncode);
+		if (reslist[i].datptr > -1)
+			copy_blocks(reslist[i].datptr, 0x64, get_block(reslist[i].datptr)->ndata);
 	}
 }
 
@@ -1051,20 +1051,20 @@ head:
 		q = rec->tbase;
 		idx = rec->xtnext;
 		cur = get_block(idx)->ncode;
-		lseek(bE6E2.fildes, q, 0);
+		lseek(tmpoutb.fildes, q, 0);
 	} else {
 		rec = get_block(idx);
 		n = rec->s_data;
 		q = rec->dbase;
 		idx = rec->datnext;
 		cur = get_block(idx)->ndata;
-		lseek(bE8EA.fildes, q, 0);
+		lseek(doutb.fildes, q, 0);
 	}
-	if (bE4A2) {
-		lseek(bEF02.fildes, q, 0);
-		lseek(bEAF2.fildes, q, 0);
+	if (rflag) {
+		lseek(troutb.fildes, q, 0);
+		lseek(droutb.fildes, q, 0);
 	}
-	bE3E7A += n;
+	ncopied += n;
 	while (n) {
 		if ((unsigned)n > 0x200) {
 			n = n - 0x200;
@@ -1074,22 +1074,22 @@ head:
 			n = 0;
 		}
 		if (type == 0x74) {
-			if (read(bE6E2.fildes, buf, m) < 1)
+			if (read(tmpoutb.fildes, buf, m) < 1)
 				report_error(2, "i/o error reading from tmpoutb");
 		} else {
-			if (read(bE8EA.fildes, buf, m) < 1)
+			if (read(doutb.fildes, buf, m) < 1)
 				report_error(2, "i/o error reading from doutb");
 		}
-		mput(&bE4DA, buf, m);
-		if (bE4A2) {
+		mput(&toutb, buf, m);
+		if (rflag) {
 			if (type == 0x74) {
-				if (m != read(bEF02.fildes, buf, m))
+				if (m != read(troutb.fildes, buf, m))
 					report_error(2, "eof error on trout.b");
 			} else {
-				if (m != read(bEAF2.fildes, buf, m))
+				if (m != read(droutb.fildes, buf, m))
 					report_error(2, "eof error on droutb");
 			}
-			mput(&bECFA, buf, m);
+			mput(&routb, buf, m);
 		}
 	}
 	goto head;
@@ -1097,10 +1097,10 @@ done:
 	seg_pad(p, type);
 	if (idx != -1) {
 		p = cur;
-		bE3E7A = 0;
+		ncopied = 0;
 		goto head;
 	}
-	bE3E7A = 0;
+	ncopied = 0;
 	return 0;
 }
 
@@ -1115,12 +1115,12 @@ struct p2seg *e;
 
 	q = p->prv;
 	r = e->nxt;
-	if (p == bF32E)
-		bF32E = e;
+	if (p == p2head)
+		p2head = e;
 	else
 		q->nxt = e;
-	if (e == b3C12)
-		b3C12 = p;
+	if (e == p2tail)
+		p2tail = p;
 	else
 		r->prv = p;
 	p->nxt = r;
@@ -1133,12 +1133,12 @@ struct p2seg *e;
 int put_pad(n)
 register int n;
 {
-	if (bE4A2)
+	if (rflag)
 		return 0;
 	while (n > 0) {
-		put_int_buf(0, &bE4DA);
-		if (bE4A2)
-			put_int_buf(0, &bECFA);
+		put_int_buf(0, &toutb);
+		if (rflag)
+			put_int_buf(0, &routb);
 		n = n - 2;
 	}
 }

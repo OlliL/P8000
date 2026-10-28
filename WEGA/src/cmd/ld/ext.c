@@ -5,9 +5,9 @@
 #include "ld.h"
 
 static char sccsid[] = "@[$]ext.c\t3.3  10/27/83 12:15:38 - 87wega3.2";
-int bE3B8 = -1;
-struct p1seg **g03ba = 0;
-int g03be = 0;
+int nblks = -1;
+struct p1seg **blktab = 0;
+int unused3be = 0;
 
 /* get_block 0x06c6..0x0762: done */
 struct p1seg *get_block(n)
@@ -15,27 +15,27 @@ int n;
 {
 	register struct p1seg *p;
 
-	if (n > bE4EC)
+	if (n > maxblk)
 		report_error(2, "Too many pass 1 segment table entries --try -Ap option");
-	if (n > bE3B8) {
+	if (n > nblks) {
 		goto test;
 body:
-		p = g03ba[++bE3B8] = calloc(1, 0x36);
+		p = blktab[++nblks] = calloc(1, 0x36);
 		if (p == 0)
 			report_error(2, "malloc unable to allocate enough memory");
 test:
-		if (n > bE3B8)
+		if (n > nblks)
 			goto body;
 		return p;
 	}
-	return g03ba[n];
+	return blktab[n];
 }
 
 /* segtab_alloc 0x0762..0x078c: done */
 segtab_alloc(a)
 int a;
 {
-	g03ba = calloc(a, 4);
-	if (!g03ba)
+	blktab = calloc(a, 4);
+	if (!blktab)
 		report_error(2, "malloc unable to allocate enough memory");
 }

@@ -5,26 +5,26 @@
 #include "ld.h"
 
 static char sccsid[] = "@[$]ld.c\t3.8  10/27/83 12:16:07 - 87wega3.2";
-int g0474 = -1;
-int g0476 = 0;
-int bE478 = 0;
-int g047a = 0;
-long bE47C = 0;
-long bE480 = 0;
-int g0484 = 0;
-long *g0486 = (long *)tab3e8a;
-char *bE048A = "a.out";
-char *p0494 = "l.out";
-char g049e[] = "/tmp/ldaXXXXX";
-char *ptrs04ac[] = {"all", "text", "data", "bss"};
-char g04ce[] = "__.SYMDEF";
-char g04d8[] = "Premature EOF";
-int g04e6 = 0;
-int g04e8 = 4;
-int g04ea = 1;
-int bE4EC = 2000;
-unsigned g04ee = 2000;
-int bE4F0 = 0;
+int stksegn = -1;
+int cmpmode = 0;
+int mlhead = 0;
+int mlcnt = 0;
+long tcum = 0;
+long dcum = 0;
+int unused484 = 0;
+long *libp = (long *)liblist;
+char *aoutnam = "a.out";
+char *ofilnam = "l.out";
+char tfname[] = "/tmp/ldaXXXXX";
+char *secnam[] = {"all", "text", "data", "bss"};
+char symdef[] = "__.SYMDEF";
+char premeof[] = "Premature EOF";
+int nundef = 0;
+int delarg = 4;
+int nlflag = 1;
+int maxblk = 2000;
+unsigned nsym = 2000;
+int nwsym = 0;
 
 /* main..0a5c: findings:D2,D7 */
 int main(argc, argv)
@@ -42,27 +42,27 @@ char **argv;
 	init_signals();
 	if (argc == 1)
 		exit(4);
-	pE4D6 = rindex(*argv, '/');
-	if (pE4D6 == 0)
-		pE4D6 = *argv;
+	pname = rindex(*argv, '/');
+	if (pname == 0)
+		pname = *argv;
 	else
-		pE4D6++;
+		pname++;
 	for (i = 0; i < 128; i++) {
-		tblF332[i].bssptr = -1;
-		tblF332[i].datptr = -1;
-		tblF332[i].txtptr = -1;
-		tblF332[i].res = -1;
+		reslist[i].bssptr = -1;
+		reslist[i].datptr = -1;
+		reslist[i].txtptr = -1;
+		reslist[i].res = -1;
 	}
-	symtab_alloc(g04ee);
+	symtab_alloc(nsym);
 	scan_options(argc, argv);
-	segtab_alloc(bE4EC);
-	bE4A46 = 0;
+	segtab_alloc(maxblk);
+	incmd = 0;
 	i = 1;
-	bE4A36 = argv + 1;
+	curarg = argv + 1;
 	goto test;
 body:
-	bE4C0 = 0;
-	s = *bE4A36++;
+	filname = 0;
+	s = *curarg++;
 	if (s[0] != '-')
 		goto lib;
 	j = 1;
@@ -73,13 +73,13 @@ l08a2:
 	case 'f':
 		savei = i;
 		i = -1;
-		savep = bE4A36;
+		savep = curarg;
 		savev = argv;
 		savec = argc;
-		argv = g4a40;
-		argc = bE4A44;
-		bE4A36 = argv;
-		bE4A46++;
+		argv = cmdav;
+		argc = cmdac;
+		curarg = argv;
+		incmd++;
 		break;
 	case 'A':
 		j++;
@@ -87,7 +87,7 @@ l08a2:
 	case 'o':
 	case 'u':
 		i++;
-		bE4A36++;
+		curarg++;
 		j++;
 		goto l08a2;
 	case 'l':
@@ -95,21 +95,21 @@ l08a2:
 		break;
 	case 'b':
 	case 't':
-		if (bE49C)
+		if (mcnt)
 			report_error(2, "Cannot use -t or -b options with -M");
-		bE4A8 = 1;
+		tbflag = 1;
 		i++;
 		if (i >= argc)
 			report_error(2, "-%c: arg missing", s[j]);
-		if (reg_sect_addr(s + j, *bE4A36))
+		if (reg_sect_addr(s + j, *curarg))
 			j++;
-		bE4A36++;
+		curarg++;
 		j++;
 		goto l08a2;
 	case 'M':
-		if (bE4A8)
+		if (tbflag)
 			report_error(2, "Cannot use -t or -b options with -M");
-		bE49C++;
+		mcnt++;
 		scan_m_opt(s + j, &i, argc);
 		break;
 	default:
@@ -139,17 +139,17 @@ next:
 restore:
 	i = savei + 2;
 	savep++;
-	bE4A36 = savep;
+	curarg = savep;
 	argv = savev;
 	argc = savec;
-	bE4A46 = 0;
+	incmd = 0;
 test:
 	if (i < argc)
 		goto body;
-	if (bE4A46)
+	if (incmd)
 		goto restore;
-	if (bE4A2 && bE42B2)
-		printf("%s: warning, -r option overrides -t, -b\n", pE4D6);
+	if (rflag && secspec)
+		printf("%s: warning, -r option overrides -t, -b\n", pname);
 	parse_args(argc, argv);
 }
 
@@ -159,10 +159,10 @@ char tmpname[] = "l.out";
 sig_handler()
 {
 	unlink(tmpname);
-	if (!g04e8 && !(bE496 && g04e6) && !bE4A2) {
-		chmod(p0494, (~umask(0)) & 0x1ff);
+	if (!delarg && !(arflag && nundef) && !rflag) {
+		chmod(ofilnam, (~umask(0)) & 0x1ff);
 	}
-	exit(g04e8);
+	exit(delarg);
 }
 
 /* init_signals 0x0aba..0x0b04: done */
@@ -197,36 +197,36 @@ loop:
 		if (argc <= 1)
 			report_error(2, "Bad command file");
 		argv++;
-		bE4A3C = (char **)*argv;
+		cmdfile = (char **)*argv;
 		argc--;
 		savev = argv;
 		savec = argc;
-		read_words(bE4A3C);
-		argv = g4a40 - 1;
-		argc = bE4A44 + 1;
+		read_words(cmdfile);
+		argv = cmdav - 1;
+		argc = cmdac + 1;
 		fflag++;
-		bE4A46++;
+		incmd++;
 		goto next;
 	case 'X':
-		bE4AC++;
+		Xflag++;
 		goto next;
 	case 'S':
-		bE4A6++;
+		Sflag++;
 		goto next;
 	case 'R':
 		if (sscanf(*argv, "-R%d", &v0a) < 1)
 			report_error(2, "invalid syntax for R option");
-		(*(int *)bE49E)++;
+		nrflag++;
 		resv_seg(v0a, 'r');
 		goto next;
 	case 'r':
-		bE4A2++;
-		bE496++;
+		rflag++;
+		arflag++;
 		goto next;
 	case 's':
-		bE4A4++;
+		sflag++;
 	case 'x':
-		bE4AA++;
+		xflag++;
 		goto next;
 	case 'e':
 	case 'u':
@@ -235,32 +235,32 @@ loop:
 		p = (char **)slookup(argv[1]);
 		enter(p);
 		if ((*argv)[1] == 'e')
-			bE492 = (long)bE4FC;
+			entrypt = (long)lastsym;
 		goto skip2;
 	case 'd':
-		bE498++;
+		dflag++;
 		goto next;
 	case 'i':
-		bE49A++;
-		bE3E80 = 1;
-		bE3E7C = 1;
-		if (bE3E82 == 0)
-			bE3E82++;
+		iflag++;
+		bseg = 1;
+		dseg = 1;
+		if (maxseg == 0)
+			maxseg++;
 		goto next;
 	case 'O':
-		bE4A0++;
+		Oflag++;
 		goto next;
 	case 'o':
 		if (argc <= 1)
 			report_error(2, "Bad output file");
 		argv++;
-		p0494 = *argv;
-		if (access(p0494, 0) == 0) {
-			if (access(p0494, 2) != 0)
-				report_error(2, "%s is write protected", p0494);
+		ofilnam = *argv;
+		if (access(ofilnam, 0) == 0) {
+			if (access(ofilnam, 2) != 0)
+				report_error(2, "%s is write protected", ofilnam);
 		}
 		argc--;
-		bE4BC++;
+		ofilfnd++;
 		goto next;
 	case 'A':
 		if (argc <= 1)
@@ -271,7 +271,7 @@ loop:
 				report_error(2, "Unable to convert symbol table size specification");
 			if ((long)(unsigned)v08 + 2 << 4 > 0xfff8L)
 				report_error(2, "Symbol table size specification is too big");
-			g04ee = v08;
+			nsym = v08;
 			resize_symtab(v08);
 			goto skip2;
 		case 'p':
@@ -279,7 +279,7 @@ loop:
 				report_error(2, "Unable to convert pass 1 segment table size specification");
 			if ((long)(unsigned)v08 + 2 << 2 > 0xfff8L)
 				report_error(2, "Pass 1 segment table size specification is too big");
-			bE4EC = v08;
+			maxblk = v08;
 			goto skip2;
 		default:
 			report_error(2, "Invalid character after -A");
@@ -289,19 +289,19 @@ skip2:
 		argv++;
 		goto next;
 	case 'w':
-		bE4BA++;
+		wflag++;
 		goto next;
 	case 'z':
 		resv_seg(0x7f, 's');
-		bE4AE = 1;
+		zflag = 1;
 		goto next;
 	case 'N':
 		switch ((*argv)[2]) {
 		case 'l':
-			g04ea = 1;
+			nlflag = 1;
 			break;
 		case 's':
-			g04ea = 0;
+			nlflag = 0;
 			break;
 		default:
 			report_error(2, "-N%c :bad argument (l or s)", (*argv)[2]);
@@ -314,7 +314,7 @@ next:
 test:
 	if (argc > 0)
 		goto loop;
-	if (bE4A46--) {
+	if (incmd--) {
 		savev++;
 		argv = savev;
 		argc = --savec;
@@ -333,8 +333,8 @@ char *name;
 	int inword;
 	char *p;
 
-	p = buf6988;
-	tab4a48[0] = buf6988;
+	p = cmdbuf;
+	cmdargv[0] = cmdbuf;
 	fd = open(name, 0);
 	if (fd < 0)
 		report_error(2, "Unable to open command file");
@@ -344,29 +344,29 @@ char *name;
 body:
 	if (n == -1)
 		report_error(2, "Bad command file read");
-	if (!(tab1aad[c] & 8)) {
+	if (!(ctab[c] & 8)) {
 		inword = 0;
 		*p = c;
 		p++;
-		if (p > buf9098)
+		if (p > libname)
 			report_error(2, "Command file arguments too long");
 	} else if (!inword) {
 		inword++;
 		*p = 0;
 		p++;
-		if (p > buf9098)
+		if (p > libname)
 			report_error(2, "Too many command file arguments");
 		idx++;
 		if (idx > 2000)
 			report_error(2, "Command file arguments too long");
-		tab4a48[idx] = p;
+		cmdargv[idx] = p;
 	}
 rd:
 	n = read(fd, &c, 1) != 0;
 	if (n)
 		goto body;
-	g4a40 = tab4a48;
-	bE4A44 = idx;
+	cmdav = cmdargv;
+	cmdac = idx;
 	close(fd);
 	return 0;
 }
@@ -381,7 +381,7 @@ char *t;
 	register char *u;
 	char *fmt;
 
-	bE42B2++;
+	secspec++;
 	switch (*(s + 1)) {
 	case 't':
 		k = 1;
@@ -400,7 +400,7 @@ char *t;
 	}
 	u = t;
 	g = 0;
-	if (bE49A && (k == 2 || k == 3))
+	if (iflag && (k == 2 || k == 3))
 		g = 1;
 	if ((tab42b4 + g * 5)[k])
 		report_error(2, "-%.2s: -%c%c already specified", s, (tab42b4 + g * 5)[k], s[1]);
@@ -412,7 +412,7 @@ char *t;
 		u += 2;
 		fmt = "%x%c";
 	}
-	if (sscanf(u, fmt, &tab4534[g][k]) != 1)
+	if (sscanf(u, fmt, &secorg[g][k]) != 1)
 		report_error(2, "-%.2s %s: bad address", s, t);
 	return k != 0;
 }
@@ -434,13 +434,13 @@ char **argv;
 	char *p;
 
 	flag = 0;
-	bE4C0 = 0;
+	filname = 0;
 	end_pass1();
 	start_output();
 	av = argv + 1;
-	bEF32C = 0;
-	bE3C02 = 0;
-	g0486 = (long *)tab3e8a;
+	nblk = 0;
+	fblk = 0;
+	libp = (long *)liblist;
 	k = 1;
 	goto test;
 body:
@@ -458,8 +458,8 @@ scan:
 		saved_av = av;
 		base = argv;
 		saved_argc = argc;
-		argv = g4a40;
-		argc = bE4A44;
+		argv = cmdav;
+		argc = cmdac;
 		av = argv;
 		flag = 1;
 		goto next;
@@ -542,14 +542,14 @@ char *p;
 			;
 		break;
 	case 2:
-		bE3E88 = archdr.asize / 12;
-		bE3E84 = (struct rlent *)ensure_buf(archdr.asize);
-		lseek(bE4BE, 28L, 0);
-		read(bE4BE, bE3E84, bE3E88 * 12);
-		chk_ranlib(bE3E84, bE3E88);
+		rlcnt = archdr.asize / 12;
+		rltab = (struct rlent *)ensure_buf(archdr.asize);
+		lseek(infil, 28L, 0);
+		read(infil, rltab, rlcnt * 12);
+		chk_ranlib(rltab, rlcnt);
 		while (ranlib_scan())
 			;
-		*g0486++ = -1;
+		*libp++ = -1;
 		break;
 	case 3:
 		report_error(0, "out of date (warning)");
@@ -557,7 +557,7 @@ char *p;
 			;
 		break;
 	}
-	close(bE4BE);
+	close(infil);
 }
 
 /* load_header..1560: done */
@@ -568,16 +568,16 @@ long p;
 
 	dseek(&text, p, 0x1c);
 	if (text.size <= 0) {
-		*g0486++ = -1;
+		*libp++ = -1;
 		return 0;
 	}
 	mget(&archdr, 0x1a);
 	mget(&magic, 2);
-	if (bE4B6)
+	if (swapflg)
 		magic = swap(magic);
 	if (magic == 0xe707 || magic == 0xe711 || magic == 0xe607 || magic == 0xe611) {
 		if (read_symbols(1, p + 13)) {
-			*g0486++ = p;
+			*libp++ = p;
 		}
 	}
 	return 1;
@@ -591,29 +591,29 @@ int ranlib_scan()
 	struct symbol *t;
 	long *sv;
 
-	sv = g0486;
-	end = bE3E84;
+	sv = libp;
+	end = rltab;
 	i = 0;
 	goto test;
 body:
-	if (bE3E84 + i < end)
+	if (rltab + i < end)
 		goto next;
-	if ((bE3E84[i].rname[0] & 0x80) != 0)
-		end = (struct rlent *)(bE3E84[i].rname + (bE3E84[i].rname[0] & 0x7f));
-	t = *pslookup(bE3E84[i].rname);
+	if ((rltab[i].rname[0] & 0x80) != 0)
+		end = (struct rlent *)(rltab[i].rname + (rltab[i].rname[0] & 0x7f));
+	t = *pslookup(rltab[i].rname);
 	if (!t)
 		goto next;
 	if (t->stype != 0x20)
 		goto next;
-	if (bE4B6)
-		swap_pair(&bE3E84[i]);
-	load_header(bE3E84[i].roff >> 1);
+	if (swapflg)
+		swap_pair(&rltab[i]);
+	load_header(rltab[i].roff >> 1);
 next:
 	i++;
 test:
-	if ((unsigned)i < (unsigned)bE3E88)
+	if ((unsigned)i < (unsigned)rlcnt)
 		goto body;
-	return sv != g0486;
+	return sv != libp;
 }
 
 /* add16_checked..1696: findings:D4 */
@@ -652,34 +652,34 @@ long c;
 	readhdr(c, 1);
 	cnt = 0;
 	k = 1;
-	saved = bE4FA;
+	saved = symindex;
 	if ((filhdr.relflg & 1) == 1) {
 		report_error(1, "No relocation bits");
 		return 0;
 	}
-	c = (long)(unsigned)(((bE436 + bE434) & 0xfffe) >> 1) + filhdr.tsize + filhdr.dsize + c;
+	c = (long)(unsigned)(((hdrsz + segtsz) & 0xfffe) >> 1) + filhdr.tsize + filhdr.dsize + c;
 	dseek(&text, c, filhdr.ssize);
 	while (text.size > 0) {
 		n = read_entry_hdr();
 		type = cursym.stype;
-		if (bE4A6) {
+		if (Sflag) {
 			d = type & 0x1f;
 			if (d == 1 || d > 4)
 				continue;
 		}
 		if (!((type & 0x20) != 0)) {
-			if (bE4AC && cursym.sname[0] == 0x4c)
+			if (Xflag && cursym.sname[0] == 0x4c)
 				continue;
 			k += n + 1;
 			continue;
 		}
 		slot = lookup_name();
 		if (enter(slot)) {
-			cur = bE4FC;
+			cur = lastsym;
 			if (cur->stype == ' ')
 				continue;
 		} else {
-			cur = bE4FC;
+			cur = lastsym;
 			if (cur->stype != ' ') {
 				if (a)
 					warn_sym_redef(cur, &cursym);
@@ -694,10 +694,10 @@ long c;
 				continue;
 			cnt++;
 		}
-		cur->sseg = bE3C02 + cursym.sseg;
-		bE4D0 = (blk = get_block(cur->sseg))->ctrel;
-		bE4D2 = blk->cdrel;
-		bE4D4 = blk->cbrel;
+		cur->sseg = fblk + cursym.sseg;
+		fctrel = (blk = get_block(cur->sseg))->ctrel;
+		fcdrel = blk->cdrel;
+		fcbrel = blk->cbrel;
 		*(int *)&cur->svalue = 0;
 		symreloc();
 		cur->stype = cursym.stype;
@@ -705,16 +705,16 @@ lstore:
 		cur->svalue = cursym.svalue;
 	}
 	if (a == 0 || cnt != 0) {
-		bE4CE = add16_checked(bE4CE, k << 4, "symbol table overflow");
+		symbytes = add16_checked(symbytes, k << 4, "symbol table overflow");
 		return 1;
 	}
-	while (bE4FA > saved) {
-		bE4FA--;
-		p2 = tblE500[bE4FA];
+	while (symindex > saved) {
+		symindex--;
+		p2 = symhash[symindex];
 		if (p2)
 			*p2 = 0;
 	}
-	bEF32C = bE3C02;
+	nblk = fblk;
 	return 0;
 }
 
@@ -728,136 +728,136 @@ int k;
 	register int z;
 	register unsigned r8;
 	int u0;
-	struct tab428a *q;
+	struct areas *q;
 	int u1;
 	int a;
 	int b;
 	int c;
 
-	bF328 = 0;
-	bF324 = 0;
+	bsplseg = 0;
+	dsplseg = 0;
 	a = p->s_code;
 	b = p->s_data;
 	c = p->s_bss;
-	tab428a[1].kind = bE49A ? 4 : 0;
-	tab428a[2].kind = bE49A ? 0 : 1;
-	tab428a[3].kind = b ? 2 : 1;
-	tab428a[1].tsize = a;
-	tab428a[2].tsize = b;
-	tab428a[3].tsize = c;
+	areas[1].kind = iflag ? 4 : 0;
+	areas[2].kind = iflag ? 0 : 1;
+	areas[3].kind = b ? 2 : 1;
+	areas[1].tsize = a;
+	areas[2].tsize = b;
+	areas[3].tsize = c;
 	for (i = 0; i < 4; i++) {
-		tab428a[i].tend = 0;
-		tab428a[i].tstart = 0;
+		areas[i].tend = 0;
+		areas[i].tstart = 0;
 	}
-	if (bE42B4[k][0]) {
-		i = bE49A ? 2 : 1;
+	if (secflg[k][0]) {
+		i = iflag ? 2 : 1;
 		for (; i < 4; i++) {
-			if (bE42B4[k][i]) {
-				printf("%s: warning, -%c overrides -%c%c\n", pE4D6, bE42B4[k][0], bE42B4[k][i], *ptrs04ac[i]);
-				bE42B4[k][i] = 0;
+			if (secflg[k][i]) {
+				printf("%s: warning, -%c overrides -%c%c\n", pname, secflg[k][0], secflg[k][i], *secnam[i]);
+				secflg[k][i] = 0;
 			}
 		}
 	}
-	tab428a[0].kind = 4;
-	tab428a[1].kind = 0;
-	tab428a[2].kind = 1;
-	tab428a[0].tsize = a + b + c;
-	f4a34 = 1;
+	areas[0].kind = 4;
+	areas[1].kind = 0;
+	areas[2].kind = 1;
+	areas[0].tsize = a + b + c;
+	placekd = 1;
 	if (c)
-		f4a34 = 3;
+		placekd = 3;
 	else if (b)
-		f4a34 = 2;
-	j = bE42B4[k][0] ? 0 : 1;
+		placekd = 2;
+	j = secflg[k][0] ? 0 : 1;
 	for (; j < 4; j++) {
-		q = &tab428a[j];
-		r8 = tab428a[q->kind].tend;
-		switch (bE42B4[k][j]) {
+		q = &areas[j];
+		r8 = areas[q->kind].tend;
+		switch (secflg[k][j]) {
 		case 't':
-			if (q->tsize > tab4534[k][j])
-				report_error(1, "top address of %s in segment %d too low", ptrs04ac[j], k);
-			if ((r8 = tab4534[k][j] & 0xff00) != tab4534[k][j])
-				printf("%s: warning, top address of %s in segment %d relocated to 0x%x\n", pE4D6, ptrs04ac[j], k, r8);
+			if (q->tsize > secorg[k][j])
+				report_error(1, "top address of %s in segment %d too low", secnam[j], k);
+			if ((r8 = secorg[k][j] & 0xff00) != secorg[k][j])
+				printf("%s: warning, top address of %s in segment %d relocated to 0x%x\n", pname, secnam[j], k, r8);
 			r8 = (r8 - q->tsize) & 0xff00;
 			q->tsize = (q->tsize + 255) & 0xff00;
 			break;
 		case 'b':
-			r8 = tab4534[k][j] & 0xff00;
-			if (r8 != tab4534[k][j])
-				printf("%s: warning, bottom address of %s in segment %d relocated to 0x%x\n", pE4D6, ptrs04ac[j], k, r8);
+			r8 = secorg[k][j] & 0xff00;
+			if (r8 != secorg[k][j])
+				printf("%s: warning, bottom address of %s in segment %d relocated to 0x%x\n", pname, secnam[j], k, r8);
 			break;
 		}
-		tab428a[0].tsize = 0;
+		areas[0].tsize = 0;
 		q->tend = r8 + q->tsize;
 		if (r8 > q->tend)
-			report_error(1, "%s area wrap around", ptrs04ac[j]);
+			report_error(1, "%s area wrap around", secnam[j]);
 		for (i = 1; i < j; i++) {
-			if (r8 < tab428a[i].tend && q->tend > tab428a[i].tstart) {
-				printf("sld: warning, %s and %s overlap in segment %d - creating overlay segment\n", ptrs04ac[i], ptrs04ac[j], k);
+			if (r8 < areas[i].tend && q->tend > areas[i].tstart) {
+				printf("sld: warning, %s and %s overlap in segment %d - creating overlay segment\n", secnam[i], secnam[j], k);
 				split_seg(p, j);
 				if (j == 2) {
-					tab428a[2].tend = 0;
-					tab428a[3].kind = 1;
-					bF320++;
+					areas[2].tend = 0;
+					areas[3].kind = 1;
+					dsplf++;
 				} else {
-					tab428a[3].tend = 0;
-					bF322++;
+					areas[3].tend = 0;
+					bsplf++;
 				}
-				bE4A0++;
+				Oflag++;
 			}
 		}
 		q->tstart = r8;
 	}
-	p->torig = tab428a[1].tstart;
-	(bF320 ? bF324 : p)->dorig = tab428a[2].tstart;
-	(bF322 ? bF328 : p)->borig = tab428a[3].tstart;
-	if (bE42B4[k][0]) {
+	p->torig = areas[1].tstart;
+	(dsplf ? dsplseg : p)->dorig = areas[2].tstart;
+	(bsplf ? bsplseg : p)->borig = areas[3].tstart;
+	if (secflg[k][0]) {
 		i = 1;
 		if (!a) {
 			i = 2;
 			if (!b)
 				i = 3;
 		}
-		bE42B4[k][i] = 1;
+		secflg[k][i] = 1;
 	}
-	if (bE42B4[k][1]) {
+	if (secflg[k][1]) {
 		p->atr |= 0x10;
 		p->s_coff = high_byte(p->torig);
 	}
-	if (bE42B4[k][2]) {
-		if (bF320) {
-			bF324->atr |= 0x20;
-			bF324->s_doff = high_byte(bF324->dorig);
+	if (secflg[k][2]) {
+		if (dsplf) {
+			dsplseg->atr |= 0x20;
+			dsplseg->s_doff = high_byte(dsplseg->dorig);
 		} else {
 			p->atr |= 0x20;
 			p->s_doff = high_byte(p->dorig);
 		}
 	}
-	if (bF322) {
-		bF328->atr |= 0x40;
-		if (!bE42B4[k][3])
-			bF328->borig = (p->s_data + p->dorig + 255) & 0xff00;
-		bF328->s_boff = high_byte(bF328->borig);
-	} else if (bE42B4[k][3]) {
+	if (bsplf) {
+		bsplseg->atr |= 0x40;
+		if (!secflg[k][3])
+			bsplseg->borig = (p->s_data + p->dorig + 255) & 0xff00;
+		bsplseg->s_boff = high_byte(bsplseg->borig);
+	} else if (secflg[k][3]) {
 		p->atr |= 0x40;
 		p->s_boff = high_byte(p->borig);
 	}
-	if (!bE42B4[k][0]) {
-		if (bF320 || bF322)
-			f4a34 = 0;
+	if (!secflg[k][0]) {
+		if (dsplf || bsplf)
+			placekd = 0;
 		else {
-			f4a34 = 1;
-			if (tab428a[1].tend < tab428a[2].tend)
-				f4a34 = 2;
-			else if (tab428a[1].tend < tab428a[3].tend)
-				f4a34 = 3;
-			switch (f4a34) {
+			placekd = 1;
+			if (areas[1].tend < areas[2].tend)
+				placekd = 2;
+			else if (areas[1].tend < areas[3].tend)
+				placekd = 3;
+			switch (placekd) {
 			case 2:
-				if (tab428a[2].tend < tab428a[3].tend)
-					f4a34 = 3;
+				if (areas[2].tend < areas[3].tend)
+					placekd = 3;
 				break;
 			case 3:
-				if (tab428a[2].tend > tab428a[3].tend)
-					f4a34 = 2;
+				if (areas[2].tend > areas[3].tend)
+					placekd = 2;
 				break;
 			}
 		}
@@ -869,21 +869,21 @@ split_seg(p, kind)
 struct p2seg *p;
 int kind;
 {
-	if (bE3C04 > 0x100)
+	if (np2seg > 0x100)
 		report_error(2, "Pass2 segment table overflow");
 	if (kind == 2) {
-		bF324 = table32_entry(bE3C04++);
-		bF324->segno = 0xff;
-		bF324->s_data = p->s_data;
-		bF324->atr |= 2;
+		dsplseg = table32_entry(np2seg++);
+		dsplseg->segno = 0xff;
+		dsplseg->s_data = p->s_data;
+		dsplseg->atr |= 2;
 		p->s_data = 0;
 		p->atr &= ~2;
 		p->s_coff = 0;
 	} else {
-		bF328 = table32_entry(bE3C04++);
-		bF328->segno = 0xff;
-		bF328->s_bss = p->s_bss;
-		bF328->atr |= 4;
+		bsplseg = table32_entry(np2seg++);
+		bsplseg->segno = 0xff;
+		bsplseg->s_bss = p->s_bss;
+		bsplseg->atr |= 4;
 		p->s_bss = 0;
 		p->atr &= ~4;
 		p->s_boff = 0;
@@ -900,29 +900,29 @@ int start_output()
 	char arr[8192];
 	char hdr[24];
 
-	open_tmp(&bE4DA, 0);
-	mktemp(g049e);
-	open_tmp(&bE6E2, 1);
-	open_tmp(&bE8EA, 1);
-	if (!bE4A4 || !bE4AA)
-		open_tmp(&bF10A, 1);
-	if (bE4A2) {
-		open_tmp(&bEF02, 1);
-		open_tmp(&bEAF2, 1);
-		open_tmp(&bECFA, 1);
+	open_tmp(&toutb, 0);
+	mktemp(tfname);
+	open_tmp(&tmpoutb, 1);
+	open_tmp(&doutb, 1);
+	if (!sflag || !xflag)
+		open_tmp(&soutb, 1);
+	if (rflag) {
+		open_tmp(&troutb, 1);
+		open_tmp(&droutb, 1);
+		open_tmp(&routb, 1);
 	}
-	filhdr.fmagic = bE4B4 == 1 ? (bE4A0 ? 0xe605 : bE49A ? 0xe611 : 0xe607) : (bE4A0 ? 0xe705 : bE49A ? 0xe711 : 0xe707);
-	filhdr.tsize = bE3C16;
-	filhdr.dsize = bE3C1A;
-	filhdr.bsize = b3C1E;
-	filhdr.ssize = bE4A4 ? 0 : (((unsigned)bE4CE >> 4) + bE4FA) * 12;
-	if (bE492) {
-		if (bE492->stype != '"')
+	filhdr.fmagic = segmode == 1 ? (Oflag ? 0xe605 : iflag ? 0xe611 : 0xe607) : (Oflag ? 0xe705 : iflag ? 0xe711 : 0xe707);
+	filhdr.tsize = ttotal;
+	filhdr.dsize = dtotal;
+	filhdr.bsize = btotal;
+	filhdr.ssize = sflag ? 0 : (((unsigned)symbytes >> 4) + symindex) * 12;
+	if (entrypt) {
+		if (entrypt->stype != '"')
 			report_error(1, "Entry point not in text");
 		else
-			filhdr.entry = bE492->svalue;
+			filhdr.entry = entrypt->svalue;
 	} else {
-		for (p = bF32E; p; p = p->nxt) {
+		for (p = p2head; p; p = p->nxt) {
 			if (p->s_code) {
 				filhdr.entry = (long)(unsigned)p->torig + ((long)p->segno << 24);
 				break;
@@ -931,19 +931,19 @@ int start_output()
 	}
 	filhdr.fstamp[0] = 0;
 	filhdr.fstamp[1] = 0;
-	filhdr.relflg = bE4A2 ? 0 : 1;
+	filhdr.relflg = rflag ? 0 : 1;
 	n = 0;
-	for (p = bF32E; p; p = p->nxt) {
+	for (p = p2head; p; p = p->nxt) {
 		*(struct fseg *)(arr + (n << 4)) = *(struct fseg *)p;
-		if (bE4B6)
+		if (swapflg)
 			swap_quad(arr + (n << 4));
 		n++;
 	}
 	init_entry(hdr, n);
-	if (bE4B6)
+	if (swapflg)
 		swab(hdr, hdr, 0x18);
-	mput(&bE4DA, hdr, 0x18);
-	mput(&bE4DA, arr, n << 4);
+	mput(&toutb, hdr, 0x18);
+	mput(&toutb, arr, n << 4);
 }
 
 /* open_tmp 0x22a4..0x2346: done */
@@ -955,16 +955,16 @@ int flag;
 	char *name;
 
 	if (flag)
-		name = g049e;
+		name = tfname;
 	else
-		name = p0494;
+		name = ofilnam;
 	fd = creat(name, 0x1b6);
 	if (fd < 0)
 		report_error(2, flag ? "cannot create temp" : "cannot create output");
 	close(fd);
 	out->fildes = open(name, 2);
 	if (flag)
-		unlink(g049e);
+		unlink(tfname);
 	out->nleft = 0x100;
 	out->xnext = out->iobuf;
 }
@@ -975,13 +975,13 @@ struct objhdr *p;
 int a;
 {
 	p->hmagic = filhdr.fmagic;
-	p->hx = bE3C16 + bE3C1A;
-	if (p->hx > 0x10000 && bE4A8)
+	p->hx = ttotal + dtotal;
+	if (p->hx > 0x10000 && tbflag)
 		report_error(2, "cannot have segment overflow with t or b option");
-	p->hbss = b3C1E;
+	p->hbss = btotal;
 	p->hsegsz = a << 4;
 	p->hrelflg = filhdr.relflg;
-	if (bE4AE)
+	if (zflag)
 		p->hrelflg |= 0x20;
 	p->hsymsz = 0;
 	p->hentry = filhdr.entry;
@@ -1014,7 +1014,7 @@ test0:
 		q++;
 		load2(0L, q);
 	} else {
-		lp = g0486;
+		lp = libp;
 		goto test1;
 body1:
 		dseek(&text, *lp, 26);
@@ -1025,9 +1025,9 @@ test1:
 		if (*lp != -1)
 			goto body1;
 		lp++;
-		g0486 = lp;
+		libp = lp;
 	}
-	close(bE4BE);
+	close(infil);
 }
 
 /* load2..2624: findings:D2,D7 */
@@ -1045,25 +1045,25 @@ char *b;
 
 	readhdr(a, 2);
 	mkfsym(b);
-	t = tab84d8;
-	a += (unsigned)((bE436 + bE434) & ~1) >> 1;
+	t = local;
+	a += (unsigned)((hdrsz + segtsz) & ~1) >> 1;
 	dseek(&text, a + filhdr.tsize + filhdr.dsize, filhdr.ssize);
 	k = 0;
 	while (text.size > 0) {
 		n = read_entry_hdr() + 1;
 		map_sym();
 		c = cursym.stype;
-		if (bE4A6) {
+		if (Sflag) {
 			d = c & 0x1f;
 			if (d == 1 || d > 4)
 				goto next;
 		}
 		if ((c & 0x20) == 0) {
-			if (bE4A4 || bE4AA)
+			if (sflag || xflag)
 				goto next;
-			if (bE4AC && cursym.sname[0] == 0x4c)
+			if (Xflag && cursym.sname[0] == 0x4c)
 				goto next;
-			put_sym(&bF10A, &cursym);
+			put_sym(&soutb, &cursym);
 			goto next;
 		}
 		rec = *lookup_name();
@@ -1071,7 +1071,7 @@ char *b;
 			report_error(2, "internal error: symbol not found");
 		if (cursym.stype != 0x20)
 			goto other;
-		if (t >= (struct local *)&gE47E)
+		if (t >= (struct local *)&symtab)
 			report_error(2, "Local symbol overflow");
 		t->locindex = k;
 		t->locsymbol = rec;
@@ -1106,32 +1106,32 @@ struct local *b;
 	long hw;
 
 	acc = a;
-	base = a - bE434 / 2;
+	base = a - segtsz / 2;
 	n = 8;
-	lim = bE434 / (n * 2);
+	lim = segtsz / (n * 2);
 	hw = (filhdr.tsize + filhdr.dsize) >> 1;
 	for (i = 0; i < lim; i++) {
 		dseek(&text, base + i * n, n * 2);
 		mget(&tmp, n * 2);
-		if (bE4B6)
+		if (swapflg)
 			swap_quad(&tmp);
 		switch (tmp.tw5 & 3) {
 		case 1:
 			dseek(&text, acc, tmp.tw2);
 			dseek(&reloc, acc + hw, tmp.tw2);
 			acc += half(tmp.tw2);
-			load2td(b, &bE6E2, &bEF02);
+			load2td(b, &tmpoutb, &troutb);
 			break;
 		case 3:
 			dseek(&text, acc, tmp.tw2);
 			dseek(&reloc, acc + hw, tmp.tw2);
 			acc += half(tmp.tw2);
-			load2td(b, &bE6E2, &bEF02);
+			load2td(b, &tmpoutb, &troutb);
 		case 2:
 			dseek(&text, acc, tmp.tw3);
 			dseek(&reloc, acc + hw, tmp.tw3);
 			acc += half(tmp.tw3);
-			load2td(b, &bE8EA, &bEAF2);
+			load2td(b, &doutb, &droutb);
 			break;
 		}
 	}
@@ -1178,7 +1178,7 @@ top:
 			w13 = get(&reloc);
 		} else
 			w13 = *reloc.ptr++;
-	if (bE4B6) {
+	if (swapflg) {
 		w12 = swap_bytes(w12);
 		w13 = swap_bytes(w13);
 	}
@@ -1198,12 +1198,12 @@ c2954:
 c2964:
 	w13 = (cursym.sseg << 8) + (w13 & 0xff);
 emit:
-	if (bE4B6) {
+	if (swapflg) {
 		w12 = swap_bytes(w12);
 		w13 = swap_bytes(w13);
 	}
 	put_int_buf(w12, q);
-	if (bE4A2)
+	if (rflag)
 		put_int_buf(w13, r);
 	goto top;
 		break;
@@ -1216,7 +1216,7 @@ emit:
 	cursym.svalue = (long)w12;
 	map_sym();
 	w10 = (w10 & 0x8000) | (int)(cursym.svalue >> 16);
-	if (bE4B6)
+	if (swapflg)
 		w10 = swap_bytes(w10);
 	put_int_buf(w10, q);
 	w11 = w13;
@@ -1241,9 +1241,9 @@ c2a96:
 		goto c2ad6;
 	flag = 0;
 	w11 = (cursym.sseg << 8) + (w11 & 0xff);
-	if (bE4B6)
+	if (swapflg)
 		w11 = swap_bytes(w11);
-	if (bE4A2)
+	if (rflag)
 		put_int_buf(w11, r);
 c2ad6:
 	if ((w13 & 0xe) == 0)
@@ -1258,7 +1258,7 @@ c2ad6:
 		e = table_lookup(p, w13);
 		if (e->stype != 0x20)
 			goto c2b46;
-		w13 = (((w13 & 8) ? w13 : (w13 >> 4)) & 7) + ((index16(e) + bEF312) << 4) + 8;
+		w13 = (((w13 & 8) ? w13 : (w13 >> 4)) & 7) + ((index16(e) + nsymf) << 4) + 8;
 		goto emit;
 	}
 
@@ -1276,7 +1276,7 @@ c2b46:
 	if (!(w13 & 1))
 		report_error(2, "bad segmented bit in relocation word");
 	w10 = (w12 & 0x8000) | ((int)(e->svalue >> 16) & 0xff00);
-	if (bE4B6)
+	if (swapflg)
 		w10 = swap_bytes(w10);
 	put_int_buf(w10, q);
 	save = e;
@@ -1291,9 +1291,9 @@ c2b46:
 		report_error(2, "mismatched segment & offset relocation words");
 	w11 = (e->stype - 0x21) * 2 + 0x11;
 	w11 = (e->sseg << 8) + (w11 & 0xff);
-	if (bE4B6)
+	if (swapflg)
 		w11 = swap_bytes(w11);
-	if (bE4A2)
+	if (rflag)
 		put_int_buf(w11, r);
 c2c72:
 	w13 = (e->stype - 0x21) * 2 + 1;
@@ -1312,21 +1312,21 @@ c2c72:
 finish_output()
 {
 	copy_segs();
-	if (bE4A2)
-		copy(&bECFA);
-	if (!bE4A4) {
-		if (!bE4AA)
-			copy(&bF10A);
+	if (rflag)
+		copy(&routb);
+	if (!sflag) {
+		if (!xflag)
+			copy(&soutb);
 		put_all();
 	}
-	flush_buffer(&bE4DA);
-	close(bE4DA.fildes);
-	if (!bE4BC) {
-		unlink(bE048A);
-		link("l.out", bE048A);
-		p0494 = bE048A;
+	flush_buffer(&toutb);
+	close(toutb.fildes);
+	if (!ofilfnd) {
+		unlink(aoutnam);
+		link("l.out", aoutnam);
+		ofilnam = aoutnam;
 	}
-	g04e8 = bE4A3A;
+	delarg = exstat;
 	patch_hdr();
 	sig_handler();
 }
@@ -1341,13 +1341,13 @@ patch_hdr()
 		int rest[5];
 	} h;
 
-	n = open(p0494, 1);
+	n = open(ofilnam, 1);
 	if (n == -1)
 		report_error(2, "Unable to reopen output file");
 	if (lseek(n, (long)((char *)&h.syms - (char *)&h), 0) == -1)
 		report_error(2, "Unable to seek in output file");
-	bE4F0 = bE4F0 * 14;
-	if (write(n, &bE4F0, 2) != 2)
+	nwsym = nwsym * 14;
+	if (write(n, &nwsym, 2) != 2)
 		report_error(2, "Unable to write in output file");
 }
 
@@ -1362,11 +1362,11 @@ struct buf *p;
 	flush_buffer(p);
 	n = p->fildes;
 	lseek(n, 0L, 0);
-	while ((c = read(n, bE6E2.iobuf, 0x200)) > 1) {
+	while ((c = read(n, tmpoutb.iobuf, 0x200)) > 1) {
 		c >>= 1;
-		q = (int *)bE6E2.iobuf;
+		q = (int *)tmpoutb.iobuf;
 		do {
-			put_int_buf(*q++, &bE4DA);
+			put_int_buf(*q++, &toutb);
 		} while (--c);
 	}
 	close(n);
@@ -1464,8 +1464,8 @@ int n;
 	if (page[0].nuser == 0 && page[1].nuser == 0 && page[0].bno < page[1].bno)
 		cur = &page[0];
 	cur->bno = hi;
-	lseek(bE4BE, (v & 0xffffff00L) << 1, 0);
-	nw = read(bE4BE, cur->buff, 0x200) >> 1;
+	lseek(infil, (v & 0xffffff00L) << 1, 0);
+	nw = read(infil, cur->buff, 0x200) >> 1;
 	if (nw < 0)
 		nw = 0;
 	cur->nibuf = nw;
@@ -1501,7 +1501,7 @@ struct stream *sp;
 	}
 	if (--q->size <= 0) {
 		if (q->size < 0)
-			report_error(2, g04d8);
+			report_error(2, premeof);
 		fpage.nuser++;
 		--q->pno->nuser;
 		q->pno = (struct page *)&fpage;
@@ -1531,43 +1531,43 @@ char *name;
 
 	s = name;
 
-	bE4BE = -1;
+	infil = -1;
 	archdr.aname[0] = 0;
-	bE4C0 = name;
+	filname = name;
 	if (s[0] == '-' && s[1] == 'l') {
-		if (bE4B4 == 1) {
-			strcpy(buf9098, "/lib/slib");
-			p = rindex(buf9098, '/') + 5;
+		if (segmode == 1) {
+			strcpy(libname, "/lib/slib");
+			p = rindex(libname, '/') + 5;
 		} else {
-			strcpy(buf9098, "/lib/lib");
-			p = rindex(buf9098, '/') + 4;
+			strcpy(libname, "/lib/lib");
+			p = rindex(libname, '/') + 4;
 		}
-		bE4C0 = buf90b6;
+		filname = libpath;
 		if (s[2] == 0)
 			s = "-lc";
 		strcpy(p, s + 2);
 		strcat(p, ".a");
-		strcpy(buf90b6, pfx0);
-		strcat(buf90b6, buf9098);
-		bE4BE = open(buf90b6, 0);
-		if (bE4BE == -1) {
-			strcpy(buf90b6, pfx0);
-			strcat(buf90b6, pfx1);
-			strcat(buf90b6, buf9098);
-			bE4BE = open(buf90b6, 0);
-			if (bE4BE == -1) {
-				strcpy(buf90b6, pfx0);
-				strcat(buf90b6, pfx2);
-				strcat(buf90b6, buf9098);
-				bE4BE = open(buf90b6, 0);
-				if (bE4BE == -1)
+		strcpy(libpath, pfx0);
+		strcat(libpath, libname);
+		infil = open(libpath, 0);
+		if (infil == -1) {
+			strcpy(libpath, pfx0);
+			strcat(libpath, pfx1);
+			strcat(libpath, libname);
+			infil = open(libpath, 0);
+			if (infil == -1) {
+				strcpy(libpath, pfx0);
+				strcat(libpath, pfx2);
+				strcat(libpath, libname);
+				infil = open(libpath, 0);
+				if (infil == -1)
 					report_error(2, "cannot open library");
 			}
 		}
 	}
-	if (bE4BE == -1) {
-		bE4BE = open(bE4C0, 0);
-		if (bE4BE < 0)
+	if (infil == -1) {
+		infil = open(filname, 0);
+		if (infil < 0)
 			report_error(2, "cannot open");
 	}
 	page[1].bno = -1;
@@ -1579,16 +1579,16 @@ char *name;
 	fpage.nuser = 2;
 	dseek(&text, 0L, 2);
 	if (text.size <= 0)
-		report_error(2, g04d8);
+		report_error(2, premeof);
 	if (get(&text) != -155)
 		return 0;
 	dseek(&text, 1L, 0x1a);
 	if (text.size <= 0)
 		return 1;
 	mget(&archdr, 0x1a);
-	if (strncmp(archdr.aname, g04ce, 14))
+	if (strncmp(archdr.aname, symdef, 14))
 		return 1;
-	fstat(bE4BE, &st);
+	fstat(infil, &st);
 	if (st.mtime > archdr.atime)
 		return 3;
 	return 2;
@@ -1604,10 +1604,10 @@ int c;
 int d;
 int e;
 {
-	if (!bE4A3A)
-		printf("%s: ", pE4D6);
-	if (bE4C0)
-		printf("%s", bE4C0);
+	if (!exstat)
+		printf("%s: ", pname);
+	if (filname)
+		printf("%s", filname);
 	if (archdr.aname[0])
 		printf("(%.14s)", archdr.aname);
 	printf(": ");
@@ -1615,7 +1615,7 @@ int e;
 	printf("\n");
 	if (level > 1)
 		sig_handler();
-	bE4A3A = level;
+	exstat = level;
 }
 
 /* table_lookup 0x34b8..0x3516: done */
@@ -1631,7 +1631,7 @@ int a;
 
 	e = end;
 	k = (a >> 4) & 0x0fff;
-	p = tab84d8;
+	p = local;
 	while (p < e) {
 		if (k == p->locindex)
 			return p->locsymbol;
@@ -1656,25 +1656,25 @@ int b;
 
 	dseek(&text, a, 2);
 	mget(&magic, 2);
-	if (bE4B6)
+	if (swapflg)
 		magic = swap_bytes(magic);
 	if (magic == 0xe607 || magic == 0xe611)
-		bE4B4 = 1;
+		segmode = 1;
 	if (magic != 0xe707 && magic != 0xe711) {
-		if (!bE4B4)
+		if (!segmode)
 			return;
 	}
-	bE4B2 += 1;
-	bE436 = 0x18;
-	dseek(&text, a, bE436);
-	mget(&tmp, bE436);
-	if (bE4B6)
-		swab(&tmp, &tmp, bE436);
-	bE434 = tmp.hsegsz;
-	n = bE434 / 16;
-	dseek(&text, a + ((unsigned)(bE436 & ~1) >> 1), bE434);
-	mget(rec, bE434);
-	if (bE4B6) {
+	segobj += 1;
+	hdrsz = 0x18;
+	dseek(&text, a, hdrsz);
+	mget(&tmp, hdrsz);
+	if (swapflg)
+		swab(&tmp, &tmp, hdrsz);
+	segtsz = tmp.hsegsz;
+	n = segtsz / 16;
+	dseek(&text, a + ((unsigned)(hdrsz & ~1) >> 1), segtsz);
+	mget(rec, segtsz);
+	if (swapflg) {
 		for (p = rec; p < rec + n; p++)
 			swap_quad(p);
 	}
@@ -1714,32 +1714,32 @@ register int kind;
 	char key[16];
 	struct p1seg *blk;
 
-	bE3C02 = bEF32C;
-	blk = get_block(bEF32C);
+	fblk = nblk;
+	blk = get_block(nblk);
 	if (kind == 1) {
-		copy_leafname(bE4C0, key);
-		j = bE478;
+		copy_leafname(filname, key);
+		j = mlhead;
 		idx = 0;
-		while (idx < g047a) {
-			if (str_compare(tab3c22[j].mname, key))
+		while (idx < mlcnt) {
+			if (str_compare(mlist[j].mname, key))
 				break;
-			j = tab3c22[j].mnext;
+			j = mlist[j].mnext;
 			idx++;
 		}
-		loc[0] = bE3E7E;
-		loc[1] = bE3E7C;
-		loc[2] = bE3E80;
-		if (idx != g047a) {
-			if (tab3c22[j].mtext > -1)
-				loc[0] = tab3c22[j].mtext;
-			if (tab3c22[j].mdata > -1)
-				loc[1] = tab3c22[j].mdata;
-			if (tab3c22[j].mbss > -1)
-				loc[2] = tab3c22[j].mbss;
+		loc[0] = tseg;
+		loc[1] = dseg;
+		loc[2] = bseg;
+		if (idx != mlcnt) {
+			if (mlist[j].mtext > -1)
+				loc[0] = mlist[j].mtext;
+			if (mlist[j].mdata > -1)
+				loc[1] = mlist[j].mdata;
+			if (mlist[j].mbss > -1)
+				loc[2] = mlist[j].mbss;
 		}
 	}
 	while (n--) {
-		if (bEF32C >= bE4EC)
+		if (nblk >= maxblk)
 			report_error(2, "pass one segment table overflow --Try -Ap option");
 		if (kind == 1) {
 			*(struct fseg *)blk = *src++;
@@ -1760,13 +1760,13 @@ register int kind;
 			blk->datnext = -1;
 			blk->bssnext = -1;
 		} else {
-			blk->tbase = bE47C;
-			bE47C += (unsigned)blk->s_code;
-			blk->dbase = bE480;
-			bE480 += (unsigned)blk->s_data;
+			blk->tbase = tcum;
+			tcum += (unsigned)blk->s_code;
+			blk->dbase = dcum;
+			dcum += (unsigned)blk->s_data;
 		}
-		bEF32C++;
-		blk = get_block(bEF32C);
+		nblk++;
+		blk = get_block(nblk);
 	}
 }
 
@@ -1779,12 +1779,12 @@ char *q;
 		if (*p == *q)
 			q++;
 		else {
-			if (g0476)
+			if (cmpmode)
 				return *p - *q;
 			return 0;
 		}
 	} while (*p++);
-	if (!g0476)
+	if (!cmpmode)
 		return 1;
 	return 0;
 }
@@ -1842,7 +1842,7 @@ struct symbol *a;
 	int n;
 	int m;
 
-	if (bE4BA)
+	if (wflag)
 		return;
 	if (p != 0) {
 		c = p->stype;

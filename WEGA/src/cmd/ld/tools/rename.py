@@ -6,7 +6,7 @@ Usage: rename.py OLD NEW   (OLD a function of own_functions.txt, or any other id
 own_functions.txt is the source of the names (findings.json is generated from it, see sync_findings.py). This tool
 changes, in one step: the name column of own_functions.txt, the identifier in the C files and ld.h (whole words), the keys of
 findings.json (functions, manual_classes, the 'function' field of findings_pending), then runs sync_findings.py,
-classify_sld.py and findings_md.py. Names in prose files (TODO.md, KNOWLEDGE.md) are not changed.
+classify_sld.py and findings_md.py. Names in prose files (TODO.md, KNOWLEDGE.md) are not changed. A variable is renamed in the sources, var_addr.txt, var_fn_addr.txt and order_vars.py.
 """
 import json
 import os
@@ -30,6 +30,14 @@ def rename_variable(old, new):
         return 1
     for path, t in texts.items():
         open(path, 'w').write(re.sub(r'\b%s\b' % re.escape(old), new, t))
+    # the tables of the variable addresses and the layout tool keep the names too (quoted or first word)
+    for name in ('var_addr.txt', 'var_fn_addr.txt', 'order_vars.py'):
+        p = os.path.join(HERE, name)
+        if os.path.exists(p):
+            t = open(p).read()
+            n = re.sub(r"(?m)^%s\b" % re.escape(old), new, t) if name.endswith('.txt') else re.sub(r"'%s'" % re.escape(old), "'%s'" % new, t)
+            if n != t:
+                open(p, 'w').write(n)
     print('renamed %s -> %s (not a function: sources only)' % (old, new))
     return 0
 

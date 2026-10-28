@@ -13,7 +13,7 @@ walk_entries()
 	register struct symbol *b;
 
 	printf("\nSYM TABLE DUMP:\n");
-	b = table16_entry(bE4FA);
+	b = table16_entry(symindex);
 	a = table16_entry(0);
 	while (a < b) {
 		dump_sym(a);
@@ -85,7 +85,7 @@ int dmp_p1()
 	int z;
 
 	printf("\nPASS ONE SEG TABLE:\n");
-	for (i = 0; i < bEF32C; i++) {
+	for (i = 0; i < nblk; i++) {
 		p = get_block(i);
 		printf("P1 %d:\t%d\n", i, p->segno);
 		printf("\ts_code, s_data, s_bss:\t0x%x 0x%x 0x%x\n", p->s_code, p->s_data, p->s_bss);
@@ -102,7 +102,7 @@ int dump_p2()
 	register struct p2seg *p;
 
 	printf("\nPASS TWO SEG TABLE:\n");
-	for (p = bF32E; p; p = p->nxt) {
+	for (p = p2head; p; p = p->nxt) {
 		printf("P2 %d:\t segno %d\n", p->segidx & 0xff, p->segno & 0xff);
 		printf("\ts_coff, s_doff, s_boff:\t0x%x 0x%x 0x%x\n", p->s_coff & 0xff, p->s_doff & 0xff, p->s_boff & 0xff);
 		printf("\ts_code, s_data, s_bss:\t0x%x 0x%x 0x%x\n", p->s_code, p->s_data, p->s_bss);
@@ -135,22 +135,22 @@ int dump_res()
 	int j;
 
 	printf("RESLIST DUMP\n");
-	printf("t,d,b0 and 1 %d %d %d %d %d %d\n", tblF332[0].txtptr, tblF332[1].txtptr, tblF332[0].datptr, tblF332[1].datptr, tblF332[0].bssptr, tblF332[1].bssptr);
-	printf(" res 0 1 %d %d", tblF332[0].res, tblF332[1].res);
+	printf("t,d,b0 and 1 %d %d %d %d %d %d\n", reslist[0].txtptr, reslist[1].txtptr, reslist[0].datptr, reslist[1].datptr, reslist[0].bssptr, reslist[1].bssptr);
+	printf(" res 0 1 %d %d", reslist[0].res, reslist[1].res);
 	k = 2;
 	do {
 		printf("\n txtptr");
 		for (j = 0; j < 9; j++)
-			printf("  %d ", tblF332[j + k].txtptr);
+			printf("  %d ", reslist[j + k].txtptr);
 		printf("\n datptr");
 		for (j = 0; j < 9; j++)
-			printf("  %d", tblF332[j + k].datptr);
+			printf("  %d", reslist[j + k].datptr);
 		printf("\n bssptr");
 		for (j = 0; j < 9; j++)
-			printf("  %d", tblF332[j + k].bssptr);
+			printf("  %d", reslist[j + k].bssptr);
 		printf("\n res");
 		for (j = 0; j < 9; j++)
-			printf("  %d", tblF332[j + k].res);
+			printf("  %d", reslist[j + k].res);
 		k = k + 9;
 	} while (k < 128);
 }

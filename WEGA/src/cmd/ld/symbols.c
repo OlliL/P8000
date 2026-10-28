@@ -6,8 +6,8 @@
 
 static char sccsid[] = "@[$]symbols.c\t3.2  10/27/83 12:25:22 - 87wega3.2";
 struct fsym fsym = {{0, 0, 0, 0, 0, 0, 0, 0}, 0, 0};
-int g15d8 = 0;
-unsigned bE15DA = 0;
+int unused15d8 = 0;
+unsigned rlsize = 0;
 
 /* read_entry_hdr 0x6684..0x6800: done */
 read_entry_hdr()
@@ -22,21 +22,21 @@ read_entry_hdr()
 	char *base;
 
 	result = 0;
-	if (bE4B2) {
+	if (segobj) {
 		mget(&r, 14);
 		cursym.svalue = r.ssval;
 		cursym.stype = r.sstyp;
 		cursym.sseg = r.ssseg;
 		for (i = 0; i < 8; i++)
 			cursym.sname[i] = r.ssnam[i];
-		if (bE4B6)
+		if (swapflg)
 			swap_pair(&cursym);
 		if (cursym.sname[0] & 0x80) {
 			cnt = cursym.sname[0] & 0x7f;
 			cur = &r;
 			end = r.ssnam + cnt;
-			base = k047a;
-			q = k047a;
+			base = lnbuf;
+			q = lnbuf;
 			goto test;
 body:
 			mget(q, 14);
@@ -51,11 +51,11 @@ test:
 		}
 	} else {
 		mget(&fsym, 12);
-		if (bE4B6) {
+		if (swapflg) {
 			fsym.ftype = swap_bytes(fsym.ftype);
 			fsym.fvalue = swap_bytes(fsym.fvalue);
 		}
-		cvt_fsym(&fsym, &cursym, bE4B0);
+		cvt_fsym(&fsym, &cursym, fsegflg);
 	}
 	cursym.svalue &= 0xff00ffffL;
 	cursym.stype &= ~0x40;
@@ -112,7 +112,7 @@ char c;
 	p->svalue = 0;
 	p->sseg = 0;
 	if (c == 0x22) {
-		q = (struct p2seg *)pE3C0A;
+		q = (struct p2seg *)lastt;
 		if (!q)
 			return;
 		p->svalue = ((long)(q->segno) << 24) + (unsigned)q->s_code;
@@ -120,7 +120,7 @@ char c;
 		return;
 	}
 	if (c == 0x23) {
-		q = (struct p2seg *)pE3C06;
+		q = (struct p2seg *)lastd;
 		if (!q)
 			return;
 		p->svalue = (unsigned)(q->s_code + q->s_data);
@@ -129,7 +129,7 @@ char c;
 		return;
 	}
 	if (c == 0x24) {
-		q = (struct p2seg *)pE3C0E;
+		q = (struct p2seg *)lastb;
 		if (!q)
 			return;
 		p->svalue = (unsigned)(q->s_code + q->s_data + q->s_bss);
@@ -140,10 +140,10 @@ char c;
 	if (c != 0x21)
 		return;
 	p->svalue = 0;
-	if (g0474 == -1 || g0474 == -3)
-		p->sseg = bE3E82;
+	if (stksegn == -1 || stksegn == -3)
+		p->sseg = maxseg;
 	else
-		p->sseg = g0474;
+		p->sseg = stksegn;
 	p->svalue = p->svalue + ((long)p->sseg << 24);
 }
 
@@ -151,16 +151,16 @@ char c;
 mkfsym(p)
 char *p;
 {
-	if (bE4A4)
+	if (sflag)
 		return;
-	if (bE4AA)
+	if (xflag)
 		return;
 	unpack_run(p, cursym.sname);
 	cursym.stype = 0x1f;
 	cursym.svalue = 0;
 	cursym.sseg = 0;
 	map_sym();
-	put_sym(&bF10A, &cursym);
+	put_sym(&soutb, &cursym);
 }
 
 /* lookup_name..6b5a: done */
@@ -177,21 +177,21 @@ struct symbol **lookup_name()
 	h = 0;
 	cur = cursym.sname;
 	start = cur;
-	end = k047a;
+	end = lnbuf;
 	if (*cur & 0x80) {
 		start++;
-		if (g04ea == 0)
+		if (nlflag == 0)
 			end++;
 		else
 			end = cursym.sname + (*cur & 0x7f);
 	}
 	for (cur = start; cur < end; cur++)
 		h = h * 2 + *cur;
-	slot = &tab44E8[(h & 0x7fff) % 0x0ffa + 2];
+	slot = &hshtab[(h & 0x7fff) % 0x0ffa + 2];
 	while (*slot) {
 		rec = (*slot)->sname;
 		flag = 0;
-		if (g04ea == 0)
+		if (nlflag == 0)
 			goto l1;
 		cur = cursym.sname;
 		goto l2;
@@ -209,8 +209,8 @@ l2:
 		if (!flag)
 			break;
 		slot++;
-		if (slot >= (struct symbol **)tab84d8)
-			slot = tab44E8;
+		if (slot >= (struct symbol **)local)
+			slot = hshtab;
 	}
 	return slot;
 }
@@ -248,19 +248,19 @@ struct symbol **a;
 	register struct symbol *r;
 
 	if (*a == 0) {
-		if (bE4FA >= 0x0ffa)
+		if (symindex >= 0x0ffa)
 			report_error(2, "Symbol table overflow");
-		tblE500[bE4FA] = a;
-		r = table16_entry(bE4FA++);
-		bE4FC = r;
+		symhash[symindex] = a;
+		r = table16_entry(symindex++);
+		lastsym = r;
 		*a = r;
-		bE4FA = unpack_run(cursym.sname, r->sname) + bE4FA;
+		symindex = unpack_run(cursym.sname, r->sname) + symindex;
 		r->stype = cursym.stype;
 		r->svalue = cursym.svalue;
 		r->sseg = cursym.sseg;
 		return 1;
 	}
-	bE4FC = *a;
+	lastsym = *a;
 	return 0;
 }
 
@@ -271,7 +271,7 @@ map_sym()
 	register struct p1seg *p;
 	int i;
 
-	i = bE3C02 + cursym.sseg;
+	i = fblk + cursym.sseg;
 	p = get_block(i);
 	w = (char *)&cursym.svalue;
 	switch (cursym.stype) {
@@ -294,7 +294,7 @@ map_sym()
 		goto end;
 	}
 loop:
-	if (i >= bEF32C)
+	if (i >= nblk)
 		goto clear;
 	p = get_block(i);
 	if (p->s_code)
@@ -332,15 +332,15 @@ symreloc()
 	switch (cursym.stype) {
 	case 2:
 	case 0x22:
-		cursym.svalue = (unsigned)((unsigned)cursym.svalue + bE4D0);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fctrel);
 		break;
 	case 3:
 	case 0x23:
-		cursym.svalue = (unsigned)((unsigned)cursym.svalue + bE4D2);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcdrel);
 		break;
 	case 4:
 	case 0x24:
-		cursym.svalue = (unsigned)((unsigned)cursym.svalue + bE4D4);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcbrel);
 		break;
 	case 0x20:
 		break;
@@ -366,17 +366,17 @@ struct symbol *b;
 	r.ssseg = b->sseg;
 	for (i = 0; i < 8; i++)
 		r.ssnam[i] = b->sname[i];
-	if (bE4B6)
+	if (swapflg)
 		swap_pair(&r.ssval);
 	mput(a, &r, 14);
-	bE4F0++;
+	nwsym++;
 	if (b->sname[0] & 0x80) {
 		q = (char *)(b + 1);
 		cnt = (b->sname[0] & 0x7f) - 8;
 		k = 1;
 		while (cnt > 0) {
 			mput(a, q, 14);
-			bE4F0++;
+			nwsym++;
 			q += 14;
 			k++;
 			cnt -= 14;
@@ -393,10 +393,10 @@ put_all()
 	register struct symbol *end;
 
 	p = table16_entry(0);
-	end = table16_entry(bE4FA);
+	end = table16_entry(symindex);
 	while (p < end) {
 		p->stype |= 0x40;
-		put_sym(&bE4DA, p);
+		put_sym(&toutb, p);
 		p->stype &= ~0x40;
 		p = next_entry(p);
 	}
@@ -436,8 +436,8 @@ unsigned x;
 {
 	int spare[4];	/* unused: the frame of the original has 8 more bytes */
 
-	if (x < g04ee)
-		return gE47E + x;
+	if (x < nsym)
+		return symtab + x;
 	report_error(2, "Symbol table overflow --try -As option");
 }
 
@@ -445,8 +445,8 @@ unsigned x;
 symtab_alloc(a)
 int a;
 {
-	gE47E = calloc(a, 16);
-	if (!gE47E)
+	symtab = calloc(a, 16);
+	if (!symtab)
 		report_error(2, "malloc unable to allocate enough memory for symbol table");
 }
 
@@ -454,8 +454,8 @@ int a;
 resize_symtab(a)
 int a;
 {
-	gE47E = realloc(gE47E, a << 4);
-	if (!gE47E)
+	symtab = realloc(symtab, a << 4);
+	if (!symtab)
 		report_error(2, "realloc unable to allocate enough memory for symbol table");
 }
 
@@ -474,7 +474,7 @@ register struct symbol *p;
 			p++;
 	} else
 		p++;
-	if (p >= gE47E && p < gE47E + g04ee)
+	if (p >= symtab && p < symtab + nsym)
 		return p;
 	report_error(2, "Error in stepsym");
 }
@@ -485,8 +485,8 @@ struct symbol *x;
 {
 	int spare;	/* unused: the frame of the original has 2 more bytes */
 
-	if (gE47E <= x && gE47E + g04ee > x)
-		return ((int)x - (int)gE47E) >> 4;
+	if (symtab <= x && symtab + nsym > x)
+		return ((int)x - (int)symtab) >> 4;
 	report_error(2, "Error in getindex");
 }
 
@@ -494,23 +494,23 @@ struct symbol *x;
 long ensure_buf(n)
 unsigned long n;
 {
-	if (bE15DA < n) {
+	if (rlsize < n) {
 		if (n > 0xffff)
 			report_error(2, "ranlib table of contents too large");
-		if (bE15DA != 0)
-			free(bE190DE);
-		bE190DE = calloc(1, (int)n);
-		if (bE190DE == 0)
+		if (rlsize != 0)
+			free(rlbuf);
+		rlbuf = calloc(1, (int)n);
+		if (rlbuf == 0)
 			report_error(2, "malloc unable to allocate enough memory for ranlib contents");
-		bE15DA = (unsigned)n;
+		rlsize = (unsigned)n;
 	}
-	return bE190DE;
+	return rlbuf;
 }
 
 /* limit_msg..719e: done */
 limit_msg()
 {
-	printf("%d symbols / %d available\n", bE4FA, 0x0ffa);
+	printf("%d symbols / %d available\n", symindex, 0x0ffa);
 }
 
 /* table32_entry 0x719e..0x71ca: done */
@@ -518,6 +518,6 @@ struct p2seg *table32_entry(x)
 unsigned x;
 {
 	if (x < 0x0100)
-		return tab1c02 + x;
+		return p2tab + x;
 	report_error(2, "Pass 2 segment table overflow");
 }

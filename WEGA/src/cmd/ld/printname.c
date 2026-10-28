@@ -5,7 +5,7 @@
 #include "ld.h"
 
 static char sccsid[] = "@[$]printname.c\t2.2  10/27/83 12:24:42 - 87wega3.2";
-int bE1532 = 0;
+int pnflag = 0;
 
 /* put_name..65c6: done */
 int put_name(p)
@@ -22,10 +22,10 @@ char *p;
 	if (n != *q) {
 		q++;
 		n--;
-		if (g04ea == 0) {
+		if (nlflag == 0) {
 			n = 8;
-			if (bE1532 == 0) {
-				bE1532++;
+			if (pnflag == 0) {
+				pnflag++;
 				report_error(0, "Warning - only 8 characters of name are significant");
 			}
 		} else if (n > 0x2c) {

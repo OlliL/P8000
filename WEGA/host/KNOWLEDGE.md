@@ -469,7 +469,7 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   (ungetc-like). The output side of 0x30a4 uses the same count at offset 4 and refills through 0x2f3a (`dseek`).
   `dseek` (2026-10-27, draft matches the instructions up to layout and register forms): the object at offset 12 is a
   pointer to one of two buffers (0x0004 and 0x020a, a counter word at offset 0 and the block number at offset 2). It seeks
-  to block (v >> 8) * 512 on the file `bE4BE`, reads 512 bytes into the buffer at +6, stores the word count (bytes / 2) at +4,
+  to block (v >> 8) * 512 on the file `infil`, reads 512 bytes into the buffer at +6, stores the word count (bytes / 2) at +4,
   and sets the pointer at offset 6 of the object to buffer + 6 + 2 * low byte of v.
   The write buffer of 0x3ac6 (flush_buffer) has another layout (word at offset 2, pointer at offset 4, end at offset 6).
 - Word buffer object used by 0x30a4 (callers 0x2820, 0x287c, 0x2ef0, 0x3384 pass the address: base 0x0414, and 0x0424 at
@@ -488,9 +488,9 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
 - Error function 0x3408 (own code): the callers seen set `r7` (the level) and `rr4` (the message) and nothing else (not checked for all call sites); the printf
   arguments that 0x3408 passes on are therefore whatever the caller left in `r2`, `r3`, `r5`, the stack (a quirk to check).
   Layout read from the code (2026-10-27, `report_error` in `sld.c`): level `r7`, message `rr4`, two words `r2`, `r3`, three stack
-  words after the frame; it prints the program name (`pE4D6`), the file name (`pE4C0`) and the text `bE438` through the message
+  words after the frame; it prints the program name (`pname`), the file name (`pE4C0`) and the text `archdr` through the message
   printer 0x79ca, the message with the words (`r5` = the word from `r3`, `r4` = from `r2`, `r3` and `r2` from the stack, one more on
-  the stack), a closing line, then calls `sig_handler` for level above 1 and stores the level in `bE4A3A`.
+  the stack), a closing line, then calls `sig_handler` for level above 1 and stores the level in `exstat`.
 - 0x85f8 (last own function) has no `ret`: it falls into the shipped ffltioc, whose first word 9e08 is a `ret`.
 - libc part 0x8680..0x9800: 14 modules cut and verified (`src/lib/oldslibc`, README there); shipped members of `/lib/slibc.a`
   ffltioc, getpid, umask are identical to the original code.
@@ -1018,7 +1018,7 @@ in `src/cmd/ld` gives a code segment that differs from /bin/sld in 78 bytes, all
 `make link` in `src/cmd/ld` now gives the data (7090) and bss (31054 + 63488) of `/bin/sld` and every variable at its original address. Facts
 found on the way: (1) sld allocates the commons (`.comm`, undefined symbols with a size) in the order of its global symbol table, i.e. in the
 order of the first mention in the objects in link order, and fills the segment of the commons from the LAST segment of the chain
-on: the original has the variables of segment 2 first in its order, then those of segment 1 (tab1c02 ... buf90b6, then the `__sobuf`/`__sibuf`
+on: the original has the variables of segment 2 first in its order, then those of segment 1 (p2tab ... libpath, then the `__sobuf`/`__sibuf`
 of libc). Our definitions therefore stand in `copyname.c` (the first object) in this order; in `ext.c` the references of `dump.o` would come first.
 `tools/order_vars.py` sorts the list (lowest referenced address of a variable from `var_addr.txt`; spare variables fill the gaps that no
 function uses). (2) The old compiler does not share equal string literals, and the pool of a function follows the order of the
@@ -1026,8 +1026,8 @@ source: the original of getfile has one "" for three uses and "", "/usr", "/z/bi
 char arrays in front of the function (same code: the address constant of an array), see the comment in ld.c. (3) The data of the libc objects lies in
 link order, `data.o` (`__iob`) behind the data of filbuf and `ctype_.o` behind malloc (measured: `&_iob[1]` = 0x194e is used by printf);
 printf and doprnt of the older revision need their data (strings, the 22 conversion letters, 36 jump table longs) as `.data` with labels, the
-absolute addresses of the cut tool are no use when the layout shifts. (4) `bE466`/`bE467` are the two bytes of one 2-byte variable, `pE4D6` has a
-second word at 0xe4d8; an array size of the original is the distance of the addresses (tab4a48 8000 bytes, buf6988 10000).
+absolute addresses of the cut tool are no use when the layout shifts. (4) `bE466`/`bE467` are the two bytes of one 2-byte variable, `pname` has a
+second word at 0xe4d8; an array size of the original is the distance of the addresses (cmdargv 8000 bytes, cmdbuf 10000).
 
 ### sld: what fixed the findings functions (2026-10-28)
 
@@ -1051,15 +1051,15 @@ reading the original code with `tools/odis.py NAME`:
   (unpack_run). `x = n; x >>= 1;` gives `ld r9,r5; sra r9,#1` (mget). `return *(*(int **)(q + 6))++;` keeps the old value in a local (get);
   `if (--*(int *)(q + 4) < 0)` is the pre-decrement test (get). `!c & 0x20` (precedence bug of the original) gives `ldk 1/0; bit` (warn_sym_redef).
   `flag ? "a" : "b"` as argument gives one call (open_tmp). A function without a `return` at the end leaves r2 as it is (put_pad).
-  `tblF332[x].d` (8-byte rows) instead of `*(int *)(tabF338 + x * 8)` (alloc_resv, resv_seg). The offset of a field in a stack struct is
+  `reslist[x].d` (8-byte rows) instead of `*(int *)(tabF338 + x * 8)` (alloc_resv, resv_seg). The offset of a field in a stack struct is
   `(char *)&h.f - (char *)&h` (patch_hdr); a 14-byte record built on the stack is a struct (put_sym).
 - **Stack records.** A stack array accessed with constant offsets in the original (`|C|(r15)`) is a struct of words/bytes in the source,
   not `char tmp[16]` with casts (load2seg: `struct { int tw0 ... tw7; } tmp`; put_sym, read_entry_hdr: the 14-byte symbol record).
 - **Stream pick-up (load2td).** The relocation loop is the inlined `get` of Plexus `load2td` (private reference): `if (--size <= 0) { if (size < 0)
-  break; size++; w = get(s); } else if (--nibuf < 0) { nibuf++; size++; w = get(s); } else w = *ptr++;` for the text stream (bE414,
-  size +10, nibuf +4, ptr +6) and the relocation stream (bE424; "Relocation error" when size < 0). `for (;;)` with the break at the top is
+  break; size++; w = get(s); } else if (--nibuf < 0) { nibuf++; size++; w = get(s); } else w = *ptr++;` for the text stream (text,
+  size +10, nibuf +4, ptr +6) and the relocation stream (reloc; "Relocation error" when size < 0). `for (;;)` with the break at the top is
   turned around by our compiler (test moved to the bottom); a `top:` label with `goto end` keeps the original order. `(w13 & 8) ? w13 :
-  (w13 >> 4)) & 7` is part of the external-symbol arithmetic as well; `bE470 << 8` (no mask), `if ((w12 = ...) & 0xff00)` and
+  (w13 >> 4)) & 7` is part of the external-symbol arithmetic as well; `cursym.sseg << 8` (no mask), `if ((w12 = ...) & 0xff00)` and
   `if (!(a & b & c))` give the `and` forms of the original.
 - **Open layout (lay_out 0x4a16, ins_block 0x5a2c).** The original places the later arms of the section selection (`i = a / b / c`, `l1 = s2 / s3 / s4`)
   behind the then-arm of the delta statement that follows (the selection arms share one store, popt tail merge, and jump back with
@@ -1067,8 +1067,8 @@ reading the original code with `tools/odis.py NAME`:
   (all three bodies end in the shared `ld |4|,r2`, `jr 0x5a96`). Our compiler writes the arms and bodies in source order, so 66
   (lay_out) and 82 (ins_block) instructions stay different; case permutations in the source did not help (94 -> 82). Not solved.
 - **Call with a register copy.** `r = p; ... getfile(r)` (the copy, not the parameter) gives the call without the extra `ldl rr4,rr6`
-  (load_lib_syms, load2arg). `for (n = 1; load_header(n); n = ((bE44E + 27) >> 1) + n) ;` per case reproduces the shared `n =` head of the
-  loop (load_lib_syms). The 24-byte header in readhdr is a struct (mixed int/long fields), its record buffer 8198 bytes; `bE42B4[g][k]`-style
+  (load_lib_syms, load2arg). `for (n = 1; load_header(n); n = ((archdr.asize + 27) >> 1) + n) ;` per case reproduces the shared `n =` head of the
+  loop (load_lib_syms). The 24-byte header in readhdr is a struct (mixed int/long fields), its record buffer 8198 bytes; `secflg[g][k]`-style
   indexing with a variable row is `(tab42b4 + g * 5)[k]`.
 - **Cold blocks and the library call (main, parse_args).** The original puts the call for a non-option argument (`load_lib_syms(s)`,
   `load2arg(a)`) at the end of the loop body in front of the increment (`if (s[0] != '-') goto lib; ... lib: call; next: i++`), not in an
@@ -1090,7 +1090,7 @@ areas, `-r` chains, the objects big1..big8 with many segments, the kernel link o
 `/bin/sld` under z8k-emu and compares the output file, stdout/stderr and the exit status: 51 of 51 identical (2026-10-28). The test found four
 errors of the reconstruction that `strict_audit.py` does not show because it only compares instruction forms and masks addresses:
 (1) `dseek`: `*(int **)(obj + 6) = cur->buf + (lo << 1)` scaled the offset (pointer arithmetic on `int *`): "Invalid segment attributes";
-(2) `map_sym`: `i = bE3C02 + 0x0470` is the VARIABLE `bE470` (`add r7,<<2>>%0470`, memory operand), not the constant: "Multiply defined" for every symbol;
+(2) `map_sym`: `i = fblk + 0x0470` is the VARIABLE `cursym.sseg` (`add r7,<<2>>%0470`, memory operand), not the constant: "Multiply defined" for every symbol;
 (3) `dseek`: `lseek(fd, (v & 0xff00) << 1, 0)` cleared the high word of the long, the original masks only the low word (`v & 0xffffff00L`);
 (4) `ldrsym`: the values of `_etext/_edata/_end` are `(unsigned)` sums (zero extension), an `int` sum gave 0xffff in the segment word.
 Method to find such errors: run both programs with `z8k-emu -t`, extract the calls (opcode `call`/`calr`, the next trace line is the callee), map the
@@ -1109,26 +1109,26 @@ borig, ctrel, cdrel, cbrel, ncoff, ndoff, nboff, ncode, ndata, nbss, xtnext, dat
 | struct | size | what | variables |
 |---|---|---|---|
 | page | 518 | input buffer page (Plexus page) | `page[2]` (was b0004, b020a) |
-| pghdr | 4 | dummy page (Plexus fpage) | `fpage` (bE410) |
-| stream | 16 | input stream (sres, bno, nibuf, ptr, size, pno) | `text` (bE414), `reloc` (bE424) |
-| buf | 520 | output buffer (Plexus buf) | bE4DA, bE6E2, bE8EA, bEF02, bEAF2, bECFA, bF10A |
-| archdr | 26 | archive member header (the times and the size are longs) | `archdr` (bE438, bE446, bE44A, bE44E) |
-| filhdr | 24 | header of the object being read / of the output | `filhdr` (bE452..bE468) |
+| pghdr | 4 | dummy page (Plexus fpage) | `fpage` (was bE410, bE412) |
+| stream | 16 | input stream (sres, bno, nibuf, ptr, size, pno) | `text` (was bE414, bE420), `reloc` (was bE424, bE430) |
+| buf | 520 | output buffer (Plexus buf) | toutb, tmpoutb, doutb, troutb, droutb, routb, soutb |
+| archdr | 26 | archive member header (the times and the size are longs) | `archdr` (was bE438, bE446, bE44A, bE44E) |
+| filhdr | 24 | header of the object being read / of the output | `filhdr` (was bE452..bE468) |
 | objhdr | 24 | the header as it is read from a file | tmp of readhdr, init_entry |
-| symbol | 16 | symbol table entry; `cursym` is the current symbol (svalue, stype, sxtra, sseg, sname[8]) | gE47E table, `cursym` (bE46A, bE46E, bE470, bE472) |
-| fsym | 12 | symbol of a nonsegmented file (Plexus symbol) | `fsym` (bE15CC..) |
+| symbol | 16 | symbol table entry; `cursym` is the current symbol (svalue, stype, sxtra, sseg, sname[8]) | `symtab` (was gE47E), `cursym` (was bE46A, bE46E, bE470, bE472) |
+| fsym | 12 | symbol of a nonsegmented file (Plexus symbol) | `fsym` (was bE15CC, bE15D4, bE15D6) |
 | ssym | 14 | symbol of a segmented file | locals of read_entry_hdr, put_sym |
-| local | 6 | local symbol table (locindex, locsymbol) | tab84d8[4081] |
-| rlent | 12 | entry of the ranlib table of contents (roff, rname[8]) | bE3E84 |
-| p1seg | 54 | pass one segment table entry | get_block, g03ba |
-| p2seg | 32 | pass two segment table entry (list nxt/prv) | tab1c02[256], bF32E, b3C12, bF324, bF328 |
+| local | 6 | local symbol table (locindex, locsymbol) | local[4081] |
+| rlent | 12 | entry of the ranlib table of contents (roff, rname[8]) | rltab |
+| p1seg | 54 | pass one segment table entry | get_block, blktab |
+| p2seg | 32 | pass two segment table entry (list nxt/prv) | p2tab[256], p2head, p2tail, dsplseg, bsplseg |
 | fseg | 16 | segment table entry of an object file (first 16 bytes of a p1seg) | rec of readhdr |
-| reslist | 8 | per segment number: txtptr, datptr, bssptr, res | tblF332[128] |
-| mlist | 12 | entry of the -M file list (mtext, mdata, mbss, mnext, mname) | tab3c22[50] |
-| tab428a | 8 | areas of a section in place_sec (kind, tstart, tsize, tend) | tab428a[5] |
+| reslist | 8 | per segment number: txtptr, datptr, bssptr, res | reslist[128] |
+| mlist | 12 | entry of the -M file list (mtext, mdata, mbss, mnext, mname) | mlist[50] |
+| areas | 8 | areas of a section in place_sec (kind, tstart, tsize, tend) | areas[5] |
 
-The special symbols bE482 (_etext), bE486 (_edata), bE48A (_end), bE48E (_stkseg), bE492 (entry) and bE4FC (last symbol entered) are `struct symbol *`.
-The hash table tab44E8 holds 4092 `struct symbol *`, tblE500 the slots of the entries in use. The 4 bytes in front of `page` (bE000) and the bytes
+The special symbols p_etext (_etext), p_edata (_edata), p_end (_end), p_stkseg (_stkseg), entrypt (entry) and lastsym (last symbol entered) are `struct symbol *`.
+The hash table hshtab holds 4092 `struct symbol *`, symhash the slots of the entries in use. The 4 bytes in front of `page` (bE000) and the bytes
 of the old `spare` variables are not explained.
 
 ### sld: names of the functions (2026-10-28)
@@ -1164,6 +1164,128 @@ show no two own functions with equal first 7 characters (put_sym / put_all, sloo
 | f6e1a / f6efe | put_sym / put_all | write one symbol / all symbols to the output |
 | f6f46 | chk_ranlib | warn about symbols of the ranlib table that are already defined |
 | f702a | resize_symtab | realloc of the symbol table (-As) |
+
+### sld: names of the global variables (2026-10-28)
+
+The addresses of the original are in `tools/var_addr.txt`. Names follow Plexus/V7 `ld` where the variable is the same (symtab, hshtab, symhash, symindex, lastsym, local, libp, liblist, entrypt, p_etext, p_edata, p_end, tfname, premeof, delarg, infil, filname, flags xflag Xflag Sflag rflag arflag sflag dflag iflag Oflag wflag zflag); strings of the original give toutb/tmpoutb/doutb/troutb/droutb. Own names otherwise (WEGA additions: -M lists, segment tables, pass two segments, split segments).
+
+| old | new |
+|---|---|
+| g0474 | stksegn |
+| g0476 | cmpmode |
+| bE478 | mlhead |
+| g047a | mlcnt |
+| bE47C | tcum |
+| bE480 | dcum |
+| g0486 | libp |
+| bE048A | aoutnam |
+| p0494 | ofilnam |
+| g049e | tfname |
+| ptrs04ac | secnam |
+| g04ce | symdef |
+| g04d8 | premeof |
+| g04e6 | nundef |
+| g04e8 | delarg |
+| g04ea | nlflag |
+| bE4EC | maxblk |
+| g04ee | nsym |
+| bE4F0 | nwsym |
+| bE0F8E | np2new |
+| bE1532 | pnflag |
+| bE15DA | rlsize |
+| bE190DE | rlbuf |
+| bE3B8 | nblks |
+| g03ba | blktab |
+| tab1c02 | p2tab |
+| bE3C02 | fblk |
+| bE3C04 | np2seg |
+| pE3C0A | lastt |
+| pE3C06 | lastd |
+| pE3C0E | lastb |
+| b3C12 | p2tail |
+| bF32E | p2head |
+| bE3C16 | ttotal |
+| bE3C1A | dtotal |
+| b3C1E | btotal |
+| tab3c22 | mlist |
+| bE3E7A | ncopied |
+| bE3E7C | dseg |
+| bE3E7E | tseg |
+| bE3E80 | bseg |
+| bE3E82 | maxseg |
+| bE3E84 | rltab |
+| bE3E88 | rlcnt |
+| tab3e8a | liblist |
+| bE42B2 | secspec |
+| bE42B4 | secflg |
+| tab4534 | secorg |
+| tab428a | areas |
+| f4a34 | placekd |
+| bE434 | segtsz |
+| bE436 | hdrsz |
+| bE4A36 | curarg |
+| bE4A3A | exstat |
+| bE4A3C | cmdfile |
+| g4a40 | cmdav |
+| bE4A44 | cmdac |
+| bE4A46 | incmd |
+| tab4a48 | cmdargv |
+| buf6988 | cmdbuf |
+| buf9098 | libname |
+| buf90b6 | libpath |
+| bE49A | iflag |
+| bE4A0 | Oflag |
+| bE496 | arflag |
+| bE498 | dflag |
+| bE49C | mcnt |
+| bE4A2 | rflag |
+| bE4A4 | sflag |
+| bE4A6 | Sflag |
+| bE4A8 | tbflag |
+| bE4AA | xflag |
+| bE4AC | Xflag |
+| bE4AE | zflag |
+| bE4B0 | fsegflg |
+| bE4B2 | segobj |
+| bE4B4 | segmode |
+| bE4B6 | swapflg |
+| bE4BA | wflag |
+| bE4BC | ofilfnd |
+| bE4BE | infil |
+| bE4C0 | filname |
+| bE4C8 | comsize |
+| bE4CE | symbytes |
+| bE4D0 | ctrel |
+| bE4D2 | cdrel |
+| bE4D4 | cbrel |
+| pE4D6 | pname |
+| bE4FA | symindex |
+| bE4FC | lastsym |
+| gE47E | symtab |
+| tab44E8 | hshtab |
+| tblE500 | symhash |
+| tab84d8 | local |
+| bEF312 | nsymf |
+| bEF32C | nblk |
+| bF320 | dsplf |
+| bF322 | bsplf |
+| bF324 | dsplseg |
+| bF328 | bsplseg |
+| bE4DA | toutb |
+| bE6E2 | tmpoutb |
+| bE8EA | doutb |
+| bEF02 | troutb |
+| bEAF2 | droutb |
+| bECFA | routb |
+| bF10A | soutb |
+| bE482 | p_etext |
+| bE486 | p_edata |
+| bE48A | p_end |
+| bE48E | p_stkseg |
+| bE492 | entrypt |
+| tblF332 | reslist |
+
+Spare variables that fill gaps of the original layout (not used by any function of sld): spare0, spare4b8, spare4c4, spare4d0 (the address in its name is E4CC), sparef314, unused15d8, unused484, unused3be.
 
 ### sld: C files of the program and the libc objects in the own range (2026-10-28)
 
@@ -1217,16 +1339,16 @@ dump.c, ext.c, ldm.c, printname.c, swap.c and symbols.c equals the original byte
 What the data showed:
 - The initialized variables of a file come first (after the SCCS string) in the order of their definition, then the strings of the
   functions, and variables can sit between functions (`char tmpname[] = "l.out"` at 0x66c, before sig_handler). A pointer
-  initialized with a string is followed by the string (`char *bE048A = "a.out"` 0x48a, `char *p0494 = "l.out"` 0x494), an array of
-  pointers by its strings (`ptrs04ac` = "all", "text", "data", "bss"); a `long *` can be initialized with the address of a bss array
-  (`long *g0486 = (long *)tab3e8a`, a cursor: the code does `*g0486++ = -1`). Variables initialized with 0 are data, not bss.
+  initialized with a string is followed by the string (`char *aoutnam = "a.out"` 0x48a, `char *ofilnam = "l.out"` 0x494), an array of
+  pointers by its strings (`secnam` = "all", "text", "data", "bss"); a `long *` can be initialized with the address of a bss array
+  (`long *libp = (long *)liblist`, a cursor: the code does `*libp++ = -1`). Variables initialized with 0 are data, not bss.
 - Names that were one name in our sources for two variables (bE47A: an int counter at data 0x47a in ld.c/ldm.c, a buffer at bss2 0x47a in
-  symbols.c; bE486: the cursor in data 0x486, `_edata` at bss2 0xe486 in ldm.c; bE49E: the template string array at 0x49e and an int at
-  bss2 0xe49e) are split (g047a/k047a, g0486/bE486, g049e/bE49E); aliases of one address are merged (e.g. bE474 and g0474).
+  symbols.c; p_edata: the cursor in data 0x486, `_edata` at bss2 0xe486 in ldm.c; nrflag: the template string array at 0x49e and an int at
+  bss2 0xe49e) are split (mlcnt/lnbuf, libp/p_edata, tfname/nrflag); aliases of one address are merged (e.g. bE474 and stksegn).
 - Dead giveaways of the source order: the order of the string literals is the order of the statements of the original source. Reordering
   our statements to that order improved the code, too (differing lines of the strict audit): scan_m_opt 145 -> 49 (the `+` list case before
   the switch), load2td 61 -> 38 (the case bodies inside the two switches, the table behind the strings), scan_options 80 -> 33 (case 's' before
-  'p'), get_block 30 -> 23 (the block table is the pointer `char **g03ba` that calloc fills, not an array), next_entry 36 -> 32 and
+  'p'), get_block 30 -> 23 (the block table is the pointer `char **blktab` that calloc fills, not an array), next_entry 36 -> 32 and
   index16 20 -> 11 (one error call per function: the original has one string).
 - Open in ld.c (getfile, 285 bytes after 0x0e38): the original has the empty string once for three uses and the directory strings
   ("", "/usr", "/z/bin") before "/lib/slib", "/lib/lib": either the old compiler shares equal literals of a function and
@@ -1238,10 +1360,10 @@ What the data showed:
 - Records: the block record (`get_block`, size unknown: sizes f4/f6/f8 at +4/+6/+8, pointers to the three segment records s2/s3/s4
   at +0x16/+0x1a/+0x1e, section ids f22/f24/f26 at +0x22/+0x24/+0x26, next-in-chain n2/n3/n4 at +0x30/+0x32/+0x34) and the
   32-byte segment record (`table32_entry`: type byte, f4/f6/f8 sizes, flags at +10, list links +0x12/+0x16, start values
-  f1a/f1c/f1e at +0x1a/+0x1c/+0x1e). `tblF332[128]` (8 bytes: text, data, bss block id, state d) holds the chain heads;
+  f1a/f1c/f1e at +0x1a/+0x1c/+0x1e). `reslist[128]` (8 bytes: text, data, bss block id, state d) holds the chain heads;
   state d: values 50, 100, 500, 1000, 2000, 3000 are tested; the meanings (guess: 50/100 free, 500 moved, 1000/3000 fixed, 2000 skipped) are not verified. Section kinds 2/3/4 = text/data/bss, `t`/`d`/`b`/`s` in the
   segment allocator `alloc_segment`.
-- `lay_out` (pass 1 end): inserts all blocks into the chains (`ins_block`), compacts `tblF332`, walks the chains, aligns each
+- `lay_out` (pass 1 end): inserts all blocks into the chains (`ins_block`), compacts `reslist`, walks the chains, aligns each
   section start to 0x100 (the "delta" with the `0x100 - (x & 0xff)` and the -2 correction near 0xff00), calls `place_sec` per
   chain head and finally sorts the segment record list by its type byte with `list_move_after` (bubble sort).
 - Compiler facts (measured with the strict check): a call whose conditional argument is a `?:` expression is compiled with the

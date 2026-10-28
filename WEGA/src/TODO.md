@@ -188,7 +188,7 @@ produce the same bytes with the shipped cc.
   (check_data.py: 0 differing bytes in all 8 files), the code bytes still differ because the own functions with findings differ in
   length and shift the code. What made the layout equal: (1) the commons are allocated in the order of the first mention in the
   objects in link order, so all of them are defined in copyname.c in the order of the original (segment 2 group first, each by
-  address; tools/order_vars.py); (2) tab4a48 has 2000 pointers, unused gaps are spare variables (bE000, bE412, bE44A, bE4B8,
+  address; tools/order_vars.py); (2) cmdargv has 2000 pointers, unused gaps are spare variables (bE000, bE412, bE44A, bE4B8,
   bE4C4, bE4CC, bF314), bE466/bE467 are the two bytes of `struct bytes2 bE466s` (macros); (3) getfile: the prefixes "", "/usr",
   "/z/bin" are static arrays in front of the function (shared "" and the pool order of the original); (4) printf/doprnt of
   oldslibc have their complete data and symbolic references (host/tools/oldslibc_doprnt_data.py); (5) data.o is linked behind
@@ -209,14 +209,14 @@ produce the same bytes with the shipped cc.
   'Register allocation'); the registers of 0x27d8 match with the declaration order w13, w12, w11, e, w10. The block order
   was searched (scratch f27d8_m.c: 42 differing of 361 instructions, not identical, not accepted. The classifier gives 59 pattern
   differences and 1 unexplained: sra rS,#4, because the if/else form folds the bit-3 ternary of the key). Open: the table path
-  placement, the byte move of bE470, the switch count register. Notes in the scratch folder.
+  placement, the byte move of cursym.sseg, the switch count register. Notes in the scratch folder.
   0x68a2 accepted (D2, D16; same 118 instructions).
   0x11ea accepted as parse_args (D2, D5, D6, D7, D15, D16; same 112 instructions; layout by reading).
   0x1070 accepted (D6, D15) with one open point: 111 instructions against 112 in the original (pending finding sld-1070-count).
   Latest: 0x1560 (D2, D5, D8: table loop over 12-byte entries), 0x1364 (D7, D15: dispatcher, file reading),
   0x724e and 0x7212 (dead wrappers, D5, D16), 0x7286 (wrapper of 0x7300, D4, D16). Open non-deferred: 0x0018 (asm); 0x6a58 (draft in the scratch folder: the probe pointer must sit in rr6 as in the original; not found).
   Last rounds: 0x42f8 accepted (D6, D15, D16: switch on the type byte of the long parameter); 0x6c6a accepted (D2, D6, D15:
-  state machine on bE46E). 0x68a2 (358 bytes, branches on the type bytes 0x21..0x24, globals 0x3c0a, 0x3c06, 0x3c0e,
+  state machine on cursym.stype). 0x68a2 (358 bytes, branches on the type bytes 0x21..0x24, globals 0x3c0a, 0x3c06, 0x3c0e,
   0x0474) analysed, not drafted.
   Done in the last rounds: 0x64d0 (D2), 0x0f26 read_words (D15), 0x3408 report_error (done), 0x4968 (D5, one dead increment
   open by reading), 0x2f3a dseek (D5, D9, D15). Open small ones: 0x1070 (378, parser with a jump table, not started),
