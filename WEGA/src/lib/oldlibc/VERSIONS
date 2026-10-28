@@ -10,7 +10,6 @@ endopen    0_1   size
 endopen    0_2   strip
 endopen    0_3   ranlib
 endopen    0_4  codgen scodgen popt
-ffltioc    0_1   cc ranlib scc size strip
 filbuf     0_1   size
 filbuf     0_2   strip
 filbuf     0_3  ranlib popt
@@ -68,3 +67,7 @@ freopen    0_1  codgen scodgen popt
 
 atoi       0_1  popt
 strrchr    0_1  popt
+doprnt     0_6   ld
+printf     0_6   ld
+doscan     0_1   ld
+f473a      0_1   ld

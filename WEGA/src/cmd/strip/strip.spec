@@ -4,8 +4,8 @@ fseek      old     068c 07ca    0   _fseek=068c
 rdwr       old     07ca 08c2    0   _fread=07ca _fwrite=0844
 fopen      shipped 08c2 08e0    0
 printf     old     08e0 0a82    0   _printf=08e0 _fprintf=095e _sprintf=09e0
-doprnt     old     0a82 13ce  124   __align=0a82 __doprnt=0ade __atoip=1356
-ffltioc    old     13ce 13d6    0   __fltuse=13ce __fegcvt=13d0 __inflt=13d2
+doprnt     old     0a82 13d0  124   __align=0a82 __doprnt=0ade __atoip=1356
+ffltioc    shipped 13d0 13d6    0
 filbuf     old     13d6 14b8   20   __filbuf=13d6
 flsbuf     old     14b8 169a    0   __flsbuf=14b8 _fflush=159e __cleanup=15fc _fclose=161c
 endopen    old     169a 181e   12   __endopen=169a

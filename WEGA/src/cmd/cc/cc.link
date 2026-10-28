@@ -2,7 +2,7 @@ shipped freopen
 shipped fopen
 old printf 0_4
 old doprnt 0_4
-old ffltioc 0_1
+shipped ffltioc
 shipped flsbuf
 shipped endopen
 shipped findiop

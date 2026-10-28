@@ -1,4 +1,4 @@
-	.extern	__cnvt, __flsbuf, __inflt, __length
+	.extern	__cnvt, __flsbuf, __fegcvt, __length
 	.psec
 	.code
 __align::
@@ -371,7 +371,7 @@ L03e8:
 	.word	%0F34,%8003
 	.word	%8F00,%8403
 	ld	r3,%000E(r15)
-	call	__inflt
+	call	__fegcvt
 	ld	%0016(r15),r2
 	inc	%000A(r15),#8
 	inc	%0004(r15),#5
@@ -535,6 +535,7 @@ L059a:
 	ld	r2,%0002(r15)
 	sub	r2,r4
 	inc	r15,#14
+	ret
 	.psec
 	.data
 D0000:

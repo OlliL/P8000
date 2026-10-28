@@ -10,8 +10,8 @@ rdwr       old     079c 0888    0   _fread=079c _fwrite=0810
 system     old     0888 0946   30   _system=0888 _csystem=0896 __system=08a4
 fopen      old     0946 0966    0   _fopen=0946
 printf     old     0966 0a72    0   _printf=0966 _fprintf=09b2 _sprintf=0a02
-doprnt     old     0a72 101a   80   __align=0a72 __doprnt=0aca __atoip=0fa4
-ffltioc    old     101a 1022    0   __fltuse=101a __fegcvt=101c __inflt=101e
+doprnt     old     0a72 101c   80   __align=0a72 __doprnt=0aca __atoip=0fa4
+ffltioc    shipped 101c 1022    0
 filbuf     old     1022 10fc   20   __filbuf=1022
 flsbuf     old     10fc 12da    0   __flsbuf=10fc _fflush=11de __cleanup=123c _fclose=125c
 endopen    old     12da 1422    0   __endopen=12da

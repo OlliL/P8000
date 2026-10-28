@@ -3,7 +3,7 @@ old rdwr 0_2
 shipped fopen
 old printf 0_2
 old doprnt 0_2
-old ffltioc 0_1
+shipped ffltioc
 old filbuf 0_2
 old flsbuf 0_1
 old endopen 0_2

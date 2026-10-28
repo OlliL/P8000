@@ -6,7 +6,7 @@ old system 0_1
 old fopen 0_1
 old printf 0_3
 old doprnt 0_3
-old ffltioc 0_1
+shipped ffltioc
 old filbuf 0_3
 old flsbuf 0_2
 old endopen 0_3

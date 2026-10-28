@@ -21,7 +21,7 @@ CRT = ../../lib/libc/crt
 OLD = ../../lib/oldlibc
 
 OBJS = $(OLD)/rdwr/0_1.o fopen.o $(OLD)/printf/0_1.o \
-	$(OLD)/doprnt/0_1.o $(OLD)/ffltioc/0_1.o $(OLD)/filbuf/0_1.o \
+	$(OLD)/doprnt/0_1.o ffltioc.o $(OLD)/filbuf/0_1.o \
 	$(OLD)/flsbuf/0_1.o $(OLD)/endopen/0_1.o $(OLD)/findiop/0_1.o \
 	data.o __callex.o cuexit.o \
 	$(OLD)/cnvt/0_1.o decimal.o $(OLD)/length/0_1.o \
@@ -47,8 +47,8 @@ $(CRT)/crt0-size.o: $(CRT)/crt0-size.s
 	$(CAS) -u -o $@ $(CRT)/crt0-size.s
 
 # members of the shipped libc
-fopen.o data.o __callex.o cuexit.o decimal.o isatty.o stty.o swab.o brk.o chmod.o close.o creat.o ioctl.o lseek.o open.o read.o umask.o write.o cerror.o:
-	$(AR) x $(LIBC) fopen.o data.o __callex.o cuexit.o decimal.o isatty.o stty.o swab.o brk.o chmod.o close.o creat.o ioctl.o lseek.o open.o read.o umask.o write.o cerror.o
+fopen.o ffltioc.o data.o __callex.o cuexit.o decimal.o isatty.o stty.o swab.o brk.o chmod.o close.o creat.o ioctl.o lseek.o open.o read.o umask.o write.o cerror.o:
+	$(AR) x $(LIBC) fopen.o ffltioc.o data.o __callex.o cuexit.o decimal.o isatty.o stty.o swab.o brk.o chmod.o close.o creat.o ioctl.o lseek.o open.o read.o umask.o write.o cerror.o
 
 # modules of the old libc
 $(OLD)/rdwr/0_1.o: $(OLD)/rdwr/0_1.s
@@ -59,9 +59,6 @@ $(OLD)/printf/0_1.o: $(OLD)/printf/0_1.s
 
 $(OLD)/doprnt/0_1.o: $(OLD)/doprnt/0_1.s
 	$(CAS) -u -o $@ $(OLD)/doprnt/0_1.s
-
-$(OLD)/ffltioc/0_1.o: $(OLD)/ffltioc/0_1.s
-	$(CAS) -u -o $@ $(OLD)/ffltioc/0_1.s
 
 $(OLD)/filbuf/0_1.o: $(OLD)/filbuf/0_1.s
 	$(CAS) -u -o $@ $(OLD)/filbuf/0_1.s
@@ -96,6 +93,6 @@ install: size
 clean:
 	rm -f size size.o fopen.o data.o __callex.o cuexit.o decimal.o isatty.o stty.o swab.o brk.o chmod.o close.o creat.o ioctl.o lseek.o open.o read.o umask.o write.o cerror.o
 	rm -f $(CRT)/crt0-size.s $(CRT)/crt0-size.o
-	rm -f $(OLD)/rdwr/0_1.o $(OLD)/printf/0_1.o $(OLD)/doprnt/0_1.o $(OLD)/ffltioc/0_1.o $(OLD)/filbuf/0_1.o $(OLD)/flsbuf/0_1.o $(OLD)/endopen/0_1.o $(OLD)/findiop/0_1.o $(OLD)/cnvt/0_1.o $(OLD)/length/0_1.o $(OLD)/malloc/0_1.o $(OLD)/goodmagic/0_1.o $(OLD)/swap/0_1.o
+	rm -f $(OLD)/rdwr/0_1.o $(OLD)/printf/0_1.o $(OLD)/doprnt/0_1.o $(OLD)/filbuf/0_1.o $(OLD)/flsbuf/0_1.o $(OLD)/endopen/0_1.o $(OLD)/findiop/0_1.o $(OLD)/cnvt/0_1.o $(OLD)/length/0_1.o $(OLD)/malloc/0_1.o $(OLD)/goodmagic/0_1.o $(OLD)/swap/0_1.o
 
 .PHONY: all install clean

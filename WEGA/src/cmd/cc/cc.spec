@@ -3,8 +3,8 @@
 freopen    shipped 15f2 161a    0
 fopen      shipped 161a 1638    0
 printf     old     1638 17cc    0   _printf=1638 _fprintf=16aa _sprintf=171a comm:_rc=3bbc:2
-doprnt     old     17cc 2158  124   __align=17cc __doprnt=182c __atoip=20e0 comm:__pfile=3bbe:2
-ffltioc    old     2158 2160    0   __fltuse=2158 __fegcvt=215a __inflt=215c
+doprnt     old     17cc 215a  124   __align=17cc __doprnt=182c __atoip=20e0 comm:__pfile=3bbe:2
+ffltioc    shipped 215a 2160    0
 flsbuf     shipped 2160 233c    0
 endopen    shipped 233c 24bc   12
 findiop    shipped 24bc 24ea    0

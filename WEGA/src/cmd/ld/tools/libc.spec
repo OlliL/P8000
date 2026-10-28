@@ -1,0 +1,47 @@
+# libc part of /bin/ld: one line per libc module in link order (unlink.py format, see host/tools/unlink.py)
+# NAME     KIND    START END  DATA  (data sizes not yet known: 0, see HANDOFF_ld.md)
+scanf      shipped 2c4c 2d28  0
+u2d28      old     2d28 2f1e  0
+u2f1e      old     2f1e 31ba  0
+u31ba      old     31ba 32ea  0
+u32ea      old     32ea 34d2  0
+u34d2      old     34d2 3df8  0
+u3df8      old     3df8 3e70  0
+ffltioc    old     3e70 3e78  0
+ungetc     shipped 3e78 3ece  0
+filbuf     old     3ece 3fb0  0
+flsbuf     old     3fb0 4198  0
+cuexit     shipped 4198 41a2  0
+cnvt       old     41a2 4296  0
+decimal    shipped 4296 4322  0
+length     old     4322 4340  0
+malloc     old     4340 455a  0
+isatty     shipped 455a 4578  0
+mktemp     old     4578 45f2  0
+stty       shipped 45f2 461e  0
+swab       shipped 461e 465c  0
+tolower    shipped 467c 469e  0
+strcat     old     469e 46ce  0
+strncmp    shipped 46ce 4714  0
+strcpy     old     4714 473a  0
+u473a      old     473a 4786  0
+swap       old     4786 4828  0
+access     shipped 4828 4838  0
+brk        shipped 4838 486e  0
+chmod      shipped 486e 487e  0
+close      shipped 487e 488c  0
+creat      shipped 488c 489a  0
+fstat      shipped 489a 48aa  0
+getpid     shipped 48aa 48b0  0
+ioctl      shipped 48b0 48c2  0
+link       shipped 48c2 48d2  0
+lseek      shipped 48d2 48e4  0
+open       shipped 48e4 48f4  0
+read       shipped 48f4 4904  0
+signal     shipped 4904 4986  0
+umask      shipped 4986 498e  0
+unlink     shipped 498e 499c  0
+write      shipped 499c 49ac  0
+cerror     shipped 49ac 49bc  0
+u49bc      old     49bc 49fe  0
+noown

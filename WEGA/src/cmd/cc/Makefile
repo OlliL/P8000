@@ -19,7 +19,7 @@ LIBC = /lib/libc.a
 OLD = ../../lib/oldlibc
 
 OBJS = freopen.o fopen.o $(OLD)/printf/0_4.o \
-	$(OLD)/doprnt/0_4.o $(OLD)/ffltioc/0_1.o flsbuf.o \
+	$(OLD)/doprnt/0_4.o ffltioc.o flsbuf.o \
 	endopen.o findiop.o data.o \
 	__callex.o cuexit.o abort.o \
 	$(OLD)/cnvt/0_1.o decimal.o $(OLD)/length/0_1.o \
@@ -50,8 +50,8 @@ scc.o: cc.c
 	rm -f scc.c
 
 # members of the shipped libc
-freopen.o fopen.o flsbuf.o endopen.o findiop.o data.o __callex.o cuexit.o abort.o decimal.o ctype_.o isatty.o stty.o strcmp.o access.o brk.o chmod.o close.o creat.o execl.o execv.o fork.o getpid.o ioctl.o lseek.o open.o signal.o stat.o umask.o unlink.o wait.o write.o cerror.o:
-	$(AR) x $(LIBC) freopen.o fopen.o flsbuf.o endopen.o findiop.o data.o __callex.o cuexit.o abort.o decimal.o ctype_.o isatty.o stty.o strcmp.o access.o brk.o chmod.o close.o creat.o execl.o execv.o fork.o getpid.o ioctl.o lseek.o open.o signal.o stat.o umask.o unlink.o wait.o write.o cerror.o
+freopen.o fopen.o flsbuf.o ffltioc.o endopen.o findiop.o data.o __callex.o cuexit.o abort.o decimal.o ctype_.o isatty.o stty.o strcmp.o access.o brk.o chmod.o close.o creat.o execl.o execv.o fork.o getpid.o ioctl.o lseek.o open.o signal.o stat.o umask.o unlink.o wait.o write.o cerror.o:
+	$(AR) x $(LIBC) freopen.o fopen.o flsbuf.o ffltioc.o endopen.o findiop.o data.o __callex.o cuexit.o abort.o decimal.o ctype_.o isatty.o stty.o strcmp.o access.o brk.o chmod.o close.o creat.o execl.o execv.o fork.o getpid.o ioctl.o lseek.o open.o signal.o stat.o umask.o unlink.o wait.o write.o cerror.o
 
 # modules of the old libc
 $(OLD)/printf/0_4.o: $(OLD)/printf/0_4.s
@@ -59,9 +59,6 @@ $(OLD)/printf/0_4.o: $(OLD)/printf/0_4.s
 
 $(OLD)/doprnt/0_4.o: $(OLD)/doprnt/0_4.s
 	$(CAS) -u -o $@ $(OLD)/doprnt/0_4.s
-
-$(OLD)/ffltioc/0_1.o: $(OLD)/ffltioc/0_1.s
-	$(CAS) -u -o $@ $(OLD)/ffltioc/0_1.s
 
 $(OLD)/cnvt/0_1.o: $(OLD)/cnvt/0_1.s
 	$(CAS) -u -o $@ $(OLD)/cnvt/0_1.s
@@ -87,6 +84,6 @@ install: cc scc
 
 clean:
 	rm -f cc scc cc.o scc.o scc.c freopen.o fopen.o flsbuf.o endopen.o findiop.o data.o __callex.o cuexit.o abort.o decimal.o ctype_.o isatty.o stty.o strcmp.o access.o brk.o chmod.o close.o creat.o execl.o execv.o fork.o getpid.o ioctl.o lseek.o open.o signal.o stat.o umask.o unlink.o wait.o write.o cerror.o
-	rm -f $(OLD)/printf/0_4.o $(OLD)/doprnt/0_4.o $(OLD)/ffltioc/0_1.o $(OLD)/cnvt/0_1.o $(OLD)/length/0_1.o $(OLD)/malloc/0_4.o $(OLD)/strcat/0_1.o $(OLD)/strcpy/0_1.o $(OLD)/strlen/0_1.o
+	rm -f $(OLD)/printf/0_4.o $(OLD)/doprnt/0_4.o $(OLD)/cnvt/0_1.o $(OLD)/length/0_1.o $(OLD)/malloc/0_4.o $(OLD)/strcat/0_1.o $(OLD)/strcpy/0_1.o $(OLD)/strlen/0_1.o
 
 .PHONY: all install clean

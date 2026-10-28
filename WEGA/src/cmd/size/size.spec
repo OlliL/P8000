@@ -3,8 +3,8 @@
 rdwr       old     0224 031e    0   _fread=0224 _fwrite=02a0
 fopen      shipped 031e 033c    0
 printf     old     033c 04ec    0   _printf=033c _fprintf=03be _sprintf=0444
-doprnt     old     04ec 0b4c   94   __align=04ec __doprnt=054c __atoip=0ace
-ffltioc    old     0b4c 0b54    0   __fltuse=0b4c __fegcvt=0b4e __inflt=0b50
+doprnt     old     04ec 0b4e   94   __align=04ec __doprnt=054c __atoip=0ace
+ffltioc    shipped 0b4e 0b54    0
 filbuf     old     0b54 0c3a   20   __filbuf=0b54
 flsbuf     old     0c3a 0e1c    0   __flsbuf=0c3a _fflush=0d20 __cleanup=0d7e _fclose=0d9e
 endopen    old     0e1c 0fd0   12   __endopen=0e1c
