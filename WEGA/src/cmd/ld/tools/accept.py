@@ -38,7 +38,15 @@ def whole_file_ok():
                        capture_output=True, text=True, timeout=900)
     if r.returncode != 0:
         print((r.stdout + r.stderr).strip()[:400])
-    return r.returncode == 0
+        return False
+    # the old compiler loses the name of a function now and then (symbol table, names equal in the first
+    # 8 characters): the assembler text then has an empty label; check that none is empty
+    r = subprocess.run([EMU, '-r', WEGA, '/bin/scc', '-S', '-O', 'all.c'], cwd=tmp,
+                       capture_output=True, text=True, timeout=900)
+    if '/*~~:*/' in open(os.path.join(tmp, 'all.s')).read():
+        print('a function of the whole file got no name (rename a function; see KNOWLEDGE, sld compiler limits)')
+        return False
+    return True
 
 
 def record_evidence(entry, result):

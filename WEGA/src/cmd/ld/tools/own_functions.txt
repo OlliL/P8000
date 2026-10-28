@@ -12,10 +12,10 @@
 0220 f0220 06c6 1190 1 204 P ret open
 06c6 get_block 0762 156 55 350 1828 3784 3a0c c ret findings:D7
 0762 f0762 078c 42 1 85c c ret done
-078c f078c 0a5c 720 1 46 c ret open
+078c main 0a5c 720 1 46 c ret findings:D2,D7
 0a5c sig_handler 0aba 94 2 2d44 34a4 c ret done
 0aba init_signals 0b04 74 1 79e P ret done
-0b04 f0b04 0f26 1058 1 854 P ret open
+0b04 scan_options 0f26 1058 1 854 P ret findings:D2,D7
 0f26 read_words 1070 330 1 ba8 c ret findings:D15
 1070 f1070 11ea 378 1 980 P ret findings:D6,D15
 11ea parse_args 1364 378 1 a4c P ret findings:D2,D5,D6,D7,D15,D16
@@ -23,10 +23,10 @@
 14a4 load_header 1560 188 3 13a2 1486 1640 P ret done
 1560 f1560 1664 260 1 1426 c ret findings:D2,D5,D8
 1664 add16_checked 1696 50 1 1898 P ret findings:D4
-1696 f1696 18f2 604 2 1392 1542 P ret open
+1696 read_symbols 18f2 604 2 1392 1542 P ret findings:D1,D2
 18f2 f18f2 1f96 1700 3 5018 5226 554c c ret open
 1f96 f1f96 2056 192 1 1bbe P ret findings:D4
-2056 f2056 22a4 590 1 120e c ret open
+2056 start_output 22a4 590 1 120e c ret findings:D2
 22a4 open_tmp 2346 162 7 206a 2080 208a 20a4 P ret findings:D7
 2346 init_entry 23fe 184 1 2248 P ret done
 23fe f23fe 2492 148 1 1312 c ret findings:D2
@@ -42,11 +42,11 @@
 2f3a refill_wbuf 3090 342 17 14b8 1720 2448 24f2 P ret findings:D5,D9,D15
 3090 f3090 30a4 20 4 271c 276a 27b2 3060 P ret done
 30a4 getw_buf 3144 160 4 2820 287c 2ef0 3384 P ret findings:D2
-3144 f3144 3408 708 2 1374 240e P ret open
+3144 open_library 3408 708 2 1374 240e P ret done
 3408 report_error 34b8 176 103 1b6 6e4 72c 782 P ret done
 34b8 table_lookup 3516 94 1 2b08 P ret findings:D2
 3516 f3516 3760 586 2 16ae 24a8 c ret findings:D2,D16
-3760 f3760 3a30 720 1 374e P ret open
+3760 make_blocks 3a30 720 1 374e P ret done
 3a30 str_compare 3a88 88 2 37cc 4162 P ret findings:D2
 3a88 f3a88 3ac6 62 10 299a 29b2 2a28 2ad4 P ret findings:D5
 3ac6 flush_buffer 3b1e 88 7 2cf6 2dee 3ab8 6142 P ret findings:D1
@@ -88,16 +88,16 @@
 6ffe f6ffe 702a 44 1 846 c ret done
 702a f702a 705e 52 1 df8 c ret done
 705e next_entry 70ce 112 5 208 4662 484e 489c P ret findings:D2
-70ce table16_index 7112 68 1 2b18 c ret findings:D4
+70ce index16 7112 68 1 2b18 c ret findings:D4
 7112 ensure_buf 7186 116 1 6c6 c ret done
-7186 report_limit 719e 24 0 - x ret done
+7186 limit_msg 719e 24 0 - x ret done
 719e table32_entry 71ca 44 5 1fca 2014 4990 595a c ret done
 71ca put_char 7212 72 6 2d4c 7286 P ret findings:D4
 7212 ld_scanf 724e 60 0 - x ret findings:D5,D16
 724e ld_fscanf 7286 56 0 - x ret findings:D5,D16
 7286 ld_sscanf 7300 122 5 c00 daa e1c 11ac c ret findings:D4,D16
 7300 ld_doscan 7526 550 3 7242 727a 72ec c ret findings:D2
-7526 ld_innum 7808 738 1 7436 P ret done
+7526 ld_inum 7808 738 1 7436 P ret done
 7808 scan_field 7956 334 1 7578 P ret findings:D2
 7956 make_ccl 79ca 116 1 73e6 P ret findings:D2
 79ca ld_printf 7a5e 148 52 1e2 250 266 2ee c ret done
