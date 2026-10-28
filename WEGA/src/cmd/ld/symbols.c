@@ -5,9 +5,7 @@
 #include "ld.h"
 
 static char sccsid[] = "@[$]symbols.c\t3.2  10/27/83 12:25:22 - 87wega3.2";
-char bE15CC[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-int bE15D4 = 0;
-int bE15D6 = 0;
+struct fsym fsym = {{0, 0, 0, 0, 0, 0, 0, 0}, 0, 0};
 int g15d8 = 0;
 unsigned bE15DA = 0;
 
@@ -19,29 +17,24 @@ read_entry_hdr()
 	register char *cur;
 	char cnt;
 	char *end;
-	struct {
-		long rv;
-		char rt;
-		char rs;
-		char rn[8];
-	} r;
+	struct ssym r;
 	char *q;
 	char *base;
 
 	result = 0;
 	if (bE4B2) {
 		mget(&r, 14);
-		bE46A = r.rv;
-		bE46E = r.rt;
-		bE470 = r.rs;
+		cursym.svalue = r.ssval;
+		cursym.stype = r.sstyp;
+		cursym.sseg = r.ssseg;
 		for (i = 0; i < 8; i++)
-			bE472[i] = r.rn[i];
+			cursym.sname[i] = r.ssnam[i];
 		if (bE4B6)
-			swap_pair(&bE46A);
-		if (bE472[0] & 0x80) {
-			cnt = bE472[0] & 0x7f;
+			swap_pair(&cursym);
+		if (cursym.sname[0] & 0x80) {
+			cnt = cursym.sname[0] & 0x7f;
 			cur = &r;
-			end = r.rn + cnt;
+			end = r.ssnam + cnt;
 			base = k047a;
 			q = k047a;
 			goto test;
@@ -57,101 +50,101 @@ test:
 				result++;
 		}
 	} else {
-		mget(bE15CC, 12);
+		mget(&fsym, 12);
 		if (bE4B6) {
-			bE15D4 = swap_bytes(bE15D4);
-			bE15D6 = swap_bytes(bE15D6);
+			fsym.ftype = swap_bytes(fsym.ftype);
+			fsym.fvalue = swap_bytes(fsym.fvalue);
 		}
-		f6800(bE15CC, &bE46A, bE4B0);
+		f6800(&fsym, &cursym, bE4B0);
 	}
-	bE46A &= 0xff00ffffL;
-	bE46E &= ~0x40;
+	cursym.svalue &= 0xff00ffffL;
+	cursym.stype &= ~0x40;
 	return result;
 }
 
 /* f6800 0x6800..0x6866: done */
 int f6800(p, q, a)
-char *p;
-char *q;
+struct fsym *p;
+struct symbol *q;
 int a;
 {
 	char b;
 
-	*(long *)q = *(unsigned *)(p + 10);
-	*(char *)(q + 4) = *(int *)(p + 8);
-	*(int *)(q + 6) = 0;
+	q->svalue = p->fvalue;
+	q->stype = p->ftype;
+	q->sseg = 0;
 	if (a != 0) {
-		b = *(char *)(q + 4) & 0x1f;
+		b = q->stype & 0x1f;
 		if (b == 3 || b == 4)
-			*(int *)(q + 6) = 1;
+			q->sseg = 1;
 	}
 }
 
 /* pack_entry..68a2: findings:D4 */
 pack_entry(p, q)
-char *p;
-char *q;
+struct symbol *p;
+struct fsym *q;
 {
-	*(int *)(q + 10) = (int)*(long *)p;
-	*(int *)(q + 8) = *(char *)(p + 4);
-	f0178(p + 8, q);
+	q->fvalue = (int)p->svalue;
+	q->ftype = p->stype;
+	f0178(p->sname, q);
 }
 
 /* f68a2..6a08: findings:D2,D16 */
 int f68a2(a, c)
-char *a;
+struct symbol *a;
 char c;
 {
-	register char *p;
-	char *q;
+	register struct symbol *p;
+	struct p2seg *q;
 
 	p = a;
 	if (!p)
 		return;
-	if (p[4] != 0x20 || *(long *)p != 0) {
-		if (put_name(p + 8) < 8)
+	if (p->stype != 0x20 || p->svalue != 0) {
+		if (put_name(p->sname) < 8)
 			putchar(9);
 		putchar(0x20);
 		report_error(1, "-- Multiply defined");
 		return;
 	}
-	p[4] = c;
-	*(long *)p = 0;
-	*(int *)(p + 6) = 0;
+	p->stype = c;
+	p->svalue = 0;
+	p->sseg = 0;
 	if (c == 0x22) {
-		q = pE3C0A;
+		q = (struct p2seg *)pE3C0A;
 		if (!q)
 			return;
-		*(long *)p = ((long)(*q) << 24) + (unsigned)*(int *)(q + 4);
-		*(int *)(p + 6) = *(int *)(q + 0x10);
+		p->svalue = ((long)(q->segno) << 24) + (unsigned)q->s_code;
+		p->sseg = q->segidx;
 		return;
 	}
 	if (c == 0x23) {
-		q = pE3C06;
+		q = (struct p2seg *)pE3C06;
 		if (!q)
 			return;
-		*(long *)p = (unsigned)(*(int *)(q + 4) + *(int *)(q + 6));
-		*(long *)p = *(long *)p + ((long)(*q) << 24);
-		*(int *)(p + 6) = *(int *)(q + 0x10);
+		p->svalue = (unsigned)(q->s_code + q->s_data);
+		p->svalue = p->svalue + ((long)(q->segno) << 24);
+		p->sseg = q->segidx;
 		return;
 	}
 	if (c == 0x24) {
-		q = pE3C0E;
+		q = (struct p2seg *)pE3C0E;
 		if (!q)
 			return;
-		*(long *)p = (unsigned)(*(int *)(q + 4) + *(int *)(q + 6) + *(int *)(q + 8));
-		*(long *)p = *(long *)p + ((long)(*q) << 24);
-		*(int *)(p + 6) = *(int *)(q + 0x10);
+		p->svalue = (unsigned)(q->s_code + q->s_data + q->s_bss);
+		p->svalue = p->svalue + ((long)(q->segno) << 24);
+		p->sseg = q->segidx;
 		return;
 	}
 	if (c != 0x21)
 		return;
-	*(long *)p = 0;
+	p->svalue = 0;
 	if (g0474 == -1 || g0474 == -3)
-		*(int *)(p + 6) = bE3E82;
+		p->sseg = bE3E82;
 	else
-		*(int *)(p + 6) = g0474;
-	*(long *)p = *(long *)p + ((long)*(int *)(p + 6) << 24);
+		p->sseg = g0474;
+	p->svalue = p->svalue + ((long)p->sseg << 24);
 }
 
 /* f6a08 0x6a08..0x6a58: done */
@@ -162,18 +155,18 @@ char *p;
 		return;
 	if (bE4AA)
 		return;
-	unpack_run(p, bE472);
-	bE46E = 0x1f;
-	bE46A = 0;
-	bE470 = 0;
+	unpack_run(p, cursym.sname);
+	cursym.stype = 0x1f;
+	cursym.svalue = 0;
+	cursym.sseg = 0;
 	f6c6a();
-	f6e1a(bF10A, &bE46A);
+	f6e1a(&bF10A, &cursym);
 }
 
 /* lookup_name..6b5a: done */
-char *lookup_name()
+struct symbol **lookup_name()
 {
-	register char *slot;
+	register struct symbol **slot;
 	register char *cur;
 	register char *rec;
 	int h;
@@ -182,7 +175,7 @@ char *lookup_name()
 	char *end;
 
 	h = 0;
-	cur = bE472;
+	cur = cursym.sname;
 	start = cur;
 	end = k047a;
 	if (*cur & 0x80) {
@@ -190,17 +183,17 @@ char *lookup_name()
 		if (g04ea == 0)
 			end++;
 		else
-			end = bE472 + (*cur & 0x7f);
+			end = cursym.sname + (*cur & 0x7f);
 	}
 	for (cur = start; cur < end; cur++)
 		h = h * 2 + *cur;
-	slot = tab44E8 + ((h & 0x7fff) % 0x0ffa + 2) * 4;
-	while (*(char **)slot) {
-		rec = *(char **)slot + 8;
+	slot = &tab44E8[(h & 0x7fff) % 0x0ffa + 2];
+	while (*slot) {
+		rec = (*slot)->sname;
 		flag = 0;
 		if (g04ea == 0)
 			goto l1;
-		cur = bE472;
+		cur = cursym.sname;
 		goto l2;
 l1:
 		cur = start;
@@ -215,8 +208,8 @@ l2:
 		}
 		if (!flag)
 			break;
-		slot += 4;
-		if (slot >= tab84d8)
+		slot++;
+		if (slot >= (struct symbol **)tab84d8)
 			slot = tab44E8;
 	}
 	return slot;
@@ -224,35 +217,35 @@ l2:
 
 /* f6b5a 0x6b5a..0x6b84: done */
 /* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
-char *f6b5a(p)
+struct symbol **f6b5a(p)
 char *p;
 {
 	long dummy;
 
-	pack_name(p, bE472);
-	bE46E = 0x20;
-	bE46A = 0;
+	pack_name(p, cursym.sname);
+	cursym.stype = 0x20;
+	cursym.svalue = 0;
 	lookup_name();
 }
 
 /* f6b84 0x6b84..0x6bae: done */
 /* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
-long f6b84(p)
+struct symbol **f6b84(p)
 char *p;
 {
 	long dummy;
 
-	unpack_run(p, bE472);
-	bE46E = 0x20;
-	bE46A = 0;
+	unpack_run(p, cursym.sname);
+	cursym.stype = 0x20;
+	cursym.svalue = 0;
 	lookup_name();
 }
 
 /* f6bae..6c6a: findings:D2 */
 f6bae(a)
-char **a;
+struct symbol **a;
 {
-	register char *r;
+	register struct symbol *r;
 
 	if (*a == 0) {
 		if (bE4FA >= 0x0ffa)
@@ -261,10 +254,10 @@ char **a;
 		r = table16_entry(bE4FA++);
 		bE4FC = r;
 		*a = r;
-		bE4FA = unpack_run(bE472, r + 8) + bE4FA;
-		*(char *)(r + 4) = bE46E;
-		*(long *)r = bE46A;
-		*(int *)(r + 6) = bE470;
+		bE4FA = unpack_run(cursym.sname, r->sname) + bE4FA;
+		r->stype = cursym.stype;
+		r->svalue = cursym.svalue;
+		r->sseg = cursym.sseg;
 		return 1;
 	}
 	bE4FC = *a;
@@ -275,13 +268,13 @@ char **a;
 f6c6a()
 {
 	register char *w;
-	register char *p;
+	register struct p1seg *p;
 	int i;
 
-	i = bE3C02 + bE470;
+	i = bE3C02 + cursym.sseg;
 	p = get_block(i);
-	w = (char *)&bE46A;
-	switch (bE46E) {
+	w = (char *)&cursym.svalue;
+	switch (cursym.stype) {
 	case 2:
 	case 0x22:
 		goto h2;
@@ -296,39 +289,39 @@ f6c6a()
 	case 0x20:
 		goto end;
 	default:
-		if (bE46E & 0x20)
-			bE46E = 0x21;
+		if (cursym.stype & 0x20)
+			cursym.stype = 0x21;
 		goto end;
 	}
 loop:
 	if (i >= bEF32C)
 		goto clear;
 	p = get_block(i);
-	if (*(int *)(p + 4))
+	if (p->s_code)
 		goto h2;
 	i++;
 	goto loop;
 clear:
-	bE470 = 0;
-	bE46A = 0;
+	cursym.sseg = 0;
+	cursym.svalue = 0;
 	goto end;
 h2:
-	*(int *)w = *(*(char **)(p + 0x16)) << 8;
+	*(int *)w = p->ncode->segno << 8;
 	w += 2;
-	*(int *)w = *(int *)(p + 0x10) + *(int *)(p + 0x22) + *(int *)(*(char **)(p + 0x16) + 0x1a) + *(int *)w;
-	bE470 = *(int *)(*(char **)(p + 0x16) + 0x10);
+	*(int *)w = p->ctrel + p->ncoff + p->ncode->torig + *(int *)w;
+	cursym.sseg = p->ncode->segidx;
 	goto end;
 h3:
-	*(int *)w = *(*(char **)(p + 0x1a)) << 8;
+	*(int *)w = p->ndata->segno << 8;
 	w += 2;
-	*(int *)w = *(int *)(p + 0x12) + *(int *)(p + 0x24) + *(int *)(*(char **)(p + 0x1a) + 0x1c) + *(int *)w;
-	bE470 = *(int *)(*(char **)(p + 0x1a) + 0x10);
+	*(int *)w = p->cdrel + p->ndoff + p->ndata->dorig + *(int *)w;
+	cursym.sseg = p->ndata->segidx;
 	goto end;
 h4:
-	*(int *)w = *(*(char **)(p + 0x1e)) << 8;
+	*(int *)w = p->nbss->segno << 8;
 	w += 2;
-	*(int *)w = *(int *)(p + 0x14) + *(int *)(p + 0x26) + *(int *)(*(char **)(p + 0x1e) + 0x1e) + *(int *)w;
-	bE470 = *(int *)(*(char **)(p + 0x1e) + 0x10);
+	*(int *)w = p->cbrel + p->nboff + p->nbss->borig + *(int *)w;
+	cursym.sseg = p->nbss->segidx;
 end:
 	;
 }
@@ -336,55 +329,50 @@ end:
 /* f6da8..6e1a: findings:D6 */
 f6da8()
 {
-	switch (bE46E) {
+	switch (cursym.stype) {
 	case 2:
 	case 0x22:
-		bE46A = (unsigned)((unsigned)bE46A + bE4D0);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + bE4D0);
 		break;
 	case 3:
 	case 0x23:
-		bE46A = (unsigned)((unsigned)bE46A + bE4D2);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + bE4D2);
 		break;
 	case 4:
 	case 0x24:
-		bE46A = (unsigned)((unsigned)bE46A + bE4D4);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + bE4D4);
 		break;
 	case 0x20:
 		break;
 	default:
-		if (bE46E & 0x20)
-			bE46E = 0x21;
+		if (cursym.stype & 0x20)
+			cursym.stype = 0x21;
 	}
 }
 
 /* f6e1a 0x6e1a..0x6efe: done */
 f6e1a(a, b)
-char *a;
-char *b;
+struct buf *a;
+struct symbol *b;
 {
 	char cnt;
-	struct {
-		long rv;
-		char rt;
-		char rs;
-		char rn[8];
-	} r;
+	struct ssym r;
 	register char *q;
 	register int k;
 	register int i;
 
-	r.rv = *(long *)b;
-	r.rt = *(b + 4);
-	r.rs = *(int *)(b + 6);
+	r.ssval = b->svalue;
+	r.sstyp = b->stype;
+	r.ssseg = b->sseg;
 	for (i = 0; i < 8; i++)
-		r.rn[i] = (b + 8)[i];
+		r.ssnam[i] = b->sname[i];
 	if (bE4B6)
-		swap_pair(&r.rv);
+		swap_pair(&r.ssval);
 	f2f04(a, &r, 14);
 	bE4F0++;
-	if (b[8] & 0x80) {
-		q = b + 16;
-		cnt = (b[8] & 0x7f) - 8;
+	if (b->sname[0] & 0x80) {
+		q = (char *)(b + 1);
+		cnt = (b->sname[0] & 0x7f) - 8;
 		k = 1;
 		while (cnt > 0) {
 			f2f04(a, q, 14);
@@ -401,55 +389,55 @@ char *b;
 /* f6efe 0x6efe..0x6f46: done */
 f6efe()
 {
-	register char *p;
-	register char *end;
+	register struct symbol *p;
+	register struct symbol *end;
 
 	p = table16_entry(0);
 	end = table16_entry(bE4FA);
 	while (p < end) {
-		p[4] |= 0x40;
-		f6e1a(bE4DA, p);
-		p[4] &= ~0x40;
+		p->stype |= 0x40;
+		f6e1a(&bE4DA, p);
+		p->stype &= ~0x40;
 		p = next_entry(p);
 	}
 }
 
 /* f6f46..6fce: findings:D7 */
 f6f46(p, n)
-char *p;
+struct rlent *p;
 int n;
 {
-	char *e;
-	char *q;
-	char *q2;
+	struct rlent *e;
+	struct rlent *q;
+	struct symbol *q2;
 
 	q = p;
-	e = p + n * 12;
+	e = p + n;
 	goto test;
 body:
 	if (p >= q) {
-		if ((p[4] & 0x80) != 0)
-			q = p + 4 + (p[4] & 0x7f);
-		q2 = *(char **)f6b84(p + 4);
+		if ((p->rname[0] & 0x80) != 0)
+			q = (struct rlent *)(p->rname + (p->rname[0] & 0x7f));
+		q2 = *f6b84(p->rname);
 		if (q2 != 0) {
-			if (q2[4] != 0x20)
+			if (q2->stype != 0x20)
 				warn_sym_redef(0, q2);
 		}
 	}
-	p += 12;
+	p++;
 test:
 	if (p < e)
 		goto body;
 }
 
 /* table16_entry 0x6fd0..0x6ffe: done */
-char *table16_entry(x)
+struct symbol *table16_entry(x)
 unsigned x;
 {
 	int spare[4];	/* unused: the frame of the original has 8 more bytes */
 
 	if (x < g04ee)
-		return gE47E + (x << 4);
+		return gE47E + x;
 	report_error(2, "Symbol table overflow --try -As option");
 }
 
@@ -472,32 +460,32 @@ int a;
 }
 
 /* next_entry 0x705e..0x70ce: done */
-char *next_entry(p)
-register char *p;
+struct symbol *next_entry(p)
+register struct symbol *p;
 {
 	register int b;
 	register char *e;
 
-	b = p[8];
+	b = p->sname[0];
 	if (b & 0x80) {
-		e = p + 8 + (b & 0x7f);
-		p += 16;
-		while (e > p)
-			p += 16;
+		e = p->sname + (b & 0x7f);
+		p++;
+		while (e > (char *)p)
+			p++;
 	} else
-		p += 16;
-	if (p >= gE47E && p < gE47E + (g04ee << 4))
+		p++;
+	if (p >= gE47E && p < gE47E + g04ee)
 		return p;
 	report_error(2, "Error in stepsym");
 }
 
 /* index16 0x70ce..0x7112: done */
 int index16(x)
-char *x;
+struct symbol *x;
 {
 	int spare;	/* unused: the frame of the original has 2 more bytes */
 
-	if (gE47E <= x && gE47E + (g04ee << 4) > x)
+	if (gE47E <= x && gE47E + g04ee > x)
 		return ((int)x - (int)gE47E) >> 4;
 	report_error(2, "Error in getindex");
 }
@@ -526,10 +514,10 @@ limit_msg()
 }
 
 /* table32_entry 0x719e..0x71ca: done */
-char *table32_entry(x)
+struct p2seg *table32_entry(x)
 unsigned x;
 {
 	if (x < 0x0100)
-		return tab1c02 + (x << 5);
+		return tab1c02 + x;
 	report_error(2, "Pass 2 segment table overflow");
 }

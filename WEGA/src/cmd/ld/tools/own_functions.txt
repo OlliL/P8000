@@ -68,7 +68,7 @@
 60f0 f60f0 6134 68 1 63fc P ret done
 6134 f6134 620e 218 1 2cbc c ret done
 620e copy_blocks 642e 544 2 61ba 61f8 P ret done
-642e list_move_after 64d0 162 1 5a00 P ret findings:D4
+642e list_move_after 64d0 162 1 5a00 P ret done
 64d0 f64d0 6522 82 1 612e P ret done
 6522 put_name 65c6 164 6 1a8 23a 25d6 3be0 c ret done
 65c6 swap_bytes 65ec 38 17 28aa 28b4 2982 298c P ret findings:D4

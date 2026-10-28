@@ -6,14 +6,14 @@
 
 static char sccsid[] = "@[$]ext.c\t3.3  10/27/83 12:15:38 - 87wega3.2";
 int bE3B8 = -1;
-char **g03ba = 0;
+struct p1seg **g03ba = 0;
 int g03be = 0;
 
 /* get_block 0x06c6..0x0762: done */
-char *get_block(n)
+struct p1seg *get_block(n)
 int n;
 {
-	register char *p;
+	register struct p1seg *p;
 
 	if (n > bE4EC)
 		report_error(2, "Too many pass 1 segment table entries --try -Ap option");

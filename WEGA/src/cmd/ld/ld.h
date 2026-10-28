@@ -4,46 +4,159 @@
  * file that owns them.
  */
 
-struct seg {
-	char c[4];
-	int f4;
-	int f6;
-	int f8;
-	int flags;
-	char pad[6];
-	struct seg *nxt;
-	struct seg *prv;
-	int f1a;
-	int f1c;
-	int f1e;
+/* pass two segment table entry (dump strings: segno, s_coff, s_doff, s_boff, s_code, s_data, s_bss, atr, torig, dorig, borig) */
+struct p2seg {
+	char segno;
+	char s_coff;
+	char s_doff;
+	char s_boff;
+	int s_code;
+	int s_data;
+	int s_bss;
+	int atr;
+	char pad[4];
+	int segidx;
+	struct p2seg *nxt;
+	struct p2seg *prv;
+	int torig;
+	int dorig;
+	int borig;
 };
-struct e16 {
-	int w[8];
+/* segment table entry of an object file: the first 16 bytes of a p1seg */
+struct fseg {
+	char segno;
+	char s_coff;
+	char s_doff;
+	char s_boff;
+	int s_code;
+	int s_data;
+	int s_bss;
+	int atr;
+	char pad1[4];
 };
 struct bytes2 {
 	char c0;
 	char c1;
 };
-struct pg { int use; int bno; int nib; int buf[1]; };
-struct sg4 { int a; int b; int c; int d; };
-struct sg5 { int a; int b; int c; int nxt; char *str; };
-struct tab428a { char kind; unsigned f2; unsigned f4; unsigned f6; };
-struct ent {
-	char pad0[4];
-	int f4;
-	int f6;
-	int f8;
-	char pad1[12];
-	struct seg *s2;
-	struct seg *s3;
-	struct seg *s4;
-	int f22;
-	int f24;
-	int f26;
-	char pad2[8];
-	int n2;
-	int n3;
-	int n4;
+/* input buffering (Plexus ld: page, stream) */
+struct page {
+	int nuser;
+	int bno;
+	int nibuf;
+	int buff[256];
+};
+/* archive member header (Plexus ld: archdr; the times and the size are longs here) */
+struct archdr {
+	char aname[14];
+	long atime;
+	char auid;
+	char agid;
+	int amode;
+	long asize;
+};
+/* symbol table entry and the current symbol (Plexus ld: symbol, cursym; the layout is WEGA's: 16 bytes) */
+struct symbol {
+	long svalue;
+	char stype;
+	char sxtra;
+	int sseg;
+	char sname[8];
+};
+/* symbol of a nonsegmented object file (Plexus ld: symbol; 12 bytes) */
+struct fsym {
+	char fname[8];
+	int ftype;
+	unsigned fvalue;
+};
+/* symbol of a segmented object file (14 bytes) */
+struct ssym {
+	long ssval;
+	char sstyp;
+	char ssseg;
+	char ssnam[8];
+};
+/* entry of the ranlib table of contents of an archive (12 bytes) */
+struct rlent {
+	long roff;
+	char rname[8];
+};
+/* local symbol table of a file: index in the file -> symbol (Plexus ld: local; 6 bytes) */
+struct local {
+	int locindex;
+	struct symbol *locsymbol;
+};
+/* header of an object file as it is read (hx: not used here) and the header of the output (Plexus ld: filhdr; 24 bytes) */
+struct objhdr {
+	int hmagic;
+	long hx;
+	long hbss;
+	int hsegsz;
+	int hsymsz;
+	long hentry;
+	int hrelflg;
+	int hy;
+	int hz;
+};
+struct filhdr {
+	unsigned fmagic;
+	long tsize;
+	long dsize;
+	long bsize;
+	unsigned ssize;
+	long entry;
+	char fstamp[2];
+	int relflg;
+};
+/* output buffer (Plexus ld: buf) */
+struct buf {
+	int fildes;
+	int nleft;
+	int *xnext;
+	int iobuf[256];
+};
+struct pghdr {
+	int nuser;
+	int bno;
+};
+struct stream {
+	int sres;
+	int bno;
+	int nibuf;
+	int *ptr;
+	int size;
+	struct page *pno;
+};
+/* reservation list of the segments (dump_res: txtptr, datptr, bssptr, res); one row per segment number */
+struct reslist { int txtptr; int datptr; int bssptr; int res; };
+/* entry of the list of files of -M (f410c): the segments for t, d, b of a file name */
+struct mlist { int mtext; int mdata; int mbss; int mnext; char *mname; };
+/* the areas of a section while it is placed (place_sec): kind, start, size, end */
+struct tab428a { char kind; unsigned tstart; unsigned tsize; unsigned tend; };
+/* pass one segment table entry (one per segment of an input file; dump strings: s_code, ctrel, ncoff, ncode, xtnext ...) */
+struct p1seg {
+	char segno;
+	char s_coff;
+	char s_doff;
+	char s_boff;
+	int s_code;
+	int s_data;
+	int s_bss;
+	int atr;
+	char pad1[4];
+	int ctrel;
+	int cdrel;
+	int cbrel;
+	struct p2seg *ncode;
+	struct p2seg *ndata;
+	struct p2seg *nbss;
+	int ncoff;
+	int ndoff;
+	int nboff;
+	long tbase;
+	long dbase;
+	int xtnext;
+	int datnext;
+	int bssnext;
 };
 
 /* functions */
@@ -55,9 +168,9 @@ int unpack_run();
 int f6c6a();
 f6e1a();
 int pack_name();
-char *lookup_name();
-char *table16_entry();
-char *next_entry();
+struct symbol **lookup_name();
+struct symbol *table16_entry();
+struct symbol *next_entry();
 char *realloc();
 int put_int_buf();
 int lseek();
@@ -65,7 +178,7 @@ int read();
 int close();
 int put_name();
 int write();
-char *get_block();
+struct p1seg *get_block();
 int copy_blocks();
 int f6134();
 int f2dde();
@@ -89,7 +202,7 @@ int printf();
 int free();
 int getfile();
 int load2();
-char *table32_entry();
+struct p2seg *table32_entry();
 int f0178();
 int dump_sym();
 int warn_sym_redef();
@@ -97,7 +210,7 @@ int f6800();
 int alloc_segment();
 int half();
 int f42f8();
-long f6b84();
+struct symbol **f6b84();
 int load_header();
 int f1560();
 int f6f46();
@@ -116,7 +229,7 @@ int read_entry_hdr();
 int f2624();
 int swap_quad();
 int f27d8();
-char *table_lookup();
+struct symbol *table_lookup();
 int index16();
 int swab();
 int make_blk();
@@ -143,7 +256,7 @@ int load_lib_syms();
 int reg_sect_addr();
 int scan_m_opt();
 int read_words();
-char *f6b5a();
+struct symbol **f6b5a();
 int f702a();
 int access();
 int lay_out();
@@ -152,7 +265,7 @@ char *strrchr();
 int f410c();
 int high_byte();
 int f1f96();
-struct seg *ins_block();
+struct p2seg *ins_block();
 int place_sec();
 int f4968();
 int list_move_after();
@@ -168,7 +281,7 @@ int dump_res();
 
 /* variables */
 extern int g0476;
-extern char **g03ba;
+extern struct p1seg **g03ba;
 extern int g04e8;
 extern int g04e6;
 extern int bE496;
@@ -176,51 +289,50 @@ extern int bE4A2;
 extern char tmpname[];
 extern char g049e[];
 extern char *p0494;
-extern char tab84d8[];
+extern struct local tab84d8[];
 extern int bE3E7A;
 extern int bE4A4;
 extern int bE4AA;
-extern char bE472[];
-extern char bE46E;
-extern long bE46A;
-extern int bE470;
-extern char bF10A[];
+extern struct buf bF10A;
 extern int bE4FA;
-extern char bE4DA[];
+extern struct buf bE4DA;
 extern unsigned g04ee;
-extern char *gE47E;
-extern char tab1c02[];
+extern struct symbol *gE47E;
+extern struct p2seg tab1c02[];
 extern int bE3E82;
-extern char bE6E2[];
-extern char bE8EA[];
-extern char bEF02[];
-extern char bEAF2[];
-extern struct sg4 tblF332[];
-extern char *bE4FC;
-extern char **tblE500[];
+extern struct buf bE6E2;
+extern struct buf bE8EA;
+extern struct buf bEF02;
+extern struct buf bEAF2;
+extern struct reslist tblF332[];
+extern struct symbol *bE4FC;
+extern struct symbol **tblE500[];
 extern int bE4D0;
 extern int bE4D2;
 extern int bE4D4;
-extern long bF32E;
-extern long b3C12;
+extern struct p2seg *bF32E;
+extern struct p2seg *b3C12;
 extern int bE4BA;
 extern int bE4BC;
 extern int bE4A3A;
-extern char bECFA[];
+extern struct buf bECFA;
 extern char *bE048A;
 extern int bE4F0;
-extern char bE414[];
-extern int bE452;
 extern long bE3C16;
 extern long bE3C1A;
 extern long b3C1E;
-extern long bE462;
-extern int bE468;
 extern int bE4A8;
 extern int bE4AE;
 extern long *g0486;
 extern int bE4B6;
-extern char bE438[];
+extern struct page page[2];
+extern struct pghdr fpage;
+extern struct stream text;
+extern struct stream reloc;
+extern struct archdr archdr;
+extern struct fsym fsym;
+extern struct symbol cursym;
+extern struct filhdr filhdr;
 extern int bE4EC;
 extern int bE3B8;
 extern int g03be;
@@ -229,16 +341,12 @@ extern int g04ea;
 extern int bE1532;
 extern unsigned bE15DA;
 extern long bE190DE;
-extern long bE486;
+extern struct symbol *bE486;
 extern int bE4BE;
 extern int bE3C04;
-extern struct seg *bF324;
-extern struct seg *bF328;
-extern int bE410;
-extern char bE15CC[8];
+extern struct p2seg *bF324;
+extern struct p2seg *bF328;
 extern int g15d8;
-extern int bE15D4;
-extern int bE15D6;
 extern int bE4B0;
 extern int bE4B2;
 extern char buf6988[];
@@ -248,14 +356,11 @@ extern char **g4a40;
 extern int bE4A44;
 extern char *pE4D6;
 extern char *bE4C0;
-extern char b0004[];
-extern char b020a[];
 extern int g0474;
 extern int bE3C02;
 extern int bEF32C;
-extern char *bE3E84;
+extern struct rlent *bE3E84;
 extern int bE3E88;
-extern long bE44E;
 extern char bE42B2;
 extern int bE49A;
 extern int tab4534[][5];
@@ -265,39 +370,30 @@ extern char *pE3C06;
 extern char *pE3C0E;
 extern int bE434;
 extern int bE436;
-extern long bE454;
-extern long bE458;
-extern int bE460;
 extern int bE4A6;
 extern int bE4AC;
-extern char bE424[];
 extern int bEF312;
 extern int bE4B4;
-extern long bE45C;
-extern struct bytes2 bE466s;
 extern int bE478;
-extern struct sg5 tab3c22[];
-extern char tab44E8[];
+extern struct mlist tab3c22[];
+extern struct symbol *tab44E8[];
 extern int bE4CE;
 extern char buf90b6[];
-extern char *bE430;
-extern char *bE420;
-extern long bE446;
 extern long bE47C;
 extern long bE480;
 extern int bE3E7C;
 extern int bE3E7E;
 extern int bE3E80;
 extern int bE4A0;
-extern long bE492;
+extern struct symbol *bE492;
 extern char **bE4A36;
 extern int bE4A46;
 extern int bE49C;
 extern int bE498;
 extern char **bE4A3C;
-extern long bE482;
-extern long bE48A;
-extern long bE48E;
+extern struct symbol *bE482;
+extern struct symbol *bE48A;
+extern struct symbol *bE48E;
 extern long bE4C8;
 extern char bE42B4[][5];
 extern struct tab428a tab428a[];
@@ -314,16 +410,5 @@ extern char g04d8[];
 
 /* names that are part of a larger variable (same address in the original) */
 extern char _ctype[];
-#define bE004 (*(int *)b0004)
-#define bE006 (*(int *)(b0004 + 2))
-#define bE20A (*(int *)b020a)
-#define bE20C (*(int *)(b020a + 2))
-#define bE418 (*(int *)(bE414 + 4))
-#define bE466 bE466s.c0
-#define bE467 bE466s.c1
-#define bE41A (*(char **)(bE414 + 6))
-#define bE41E (*(int *)(bE414 + 10))
-#define bE6EA (bE6E2 + 8)
 #define tab42b4 ((char *)bE42B4)
 #define tab1aad (_ctype + 1)
-#define tabF338 ((int *)((char *)tblF332 + 6))

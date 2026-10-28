@@ -15,9 +15,9 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXT = os.path.join(HERE, '..', 'copyname.c')
 # name: (segment, address); the unused variables fill the gaps of the original
-SPARE = {'bE000': (2, 0x0000), 'bE412': (2, 0x0412), 'bE44A': (2, 0x044a), 'bE4B8': (2, 0x4b8 + 0xe000), 'bE4C4': (2, 0xe4c4), 'bE4CC': (2, 0xe4cc), 'bF314': (2, 0xf314)}
-SPARE_DEF = {'bE000': 'long bE000;', 'bE412': 'int bE412;', 'bE44A': 'long bE44A;', 'bE4B8': 'int bE4B8;', 'bE4C4': 'long bE4C4;', 'bE4CC': 'int bE4CC;', 'bF314': 'char bF314[12];'}
-EXTRA = {'buf6988': (1, 0x6988), 'bE466s': (2, 0x0466)}
+SPARE = {'bE000': (2, 0x0000), 'bE4B8': (2, 0x4b8 + 0xe000), 'bE4C4': (2, 0xe4c4), 'bE4CC': (2, 0xe4cc), 'bF314': (2, 0xf314)}
+SPARE_DEF = {'bE000': 'long bE000;', 'bE4B8': 'int bE4B8;', 'bE4C4': 'long bE4C4;', 'bE4CC': 'int bE4CC;', 'bF314': 'char bF314[12];'}
+EXTRA = {'buf6988': (1, 0x6988), 'page': (2, 0x0004), 'fpage': (2, 0x0410), 'archdr': (2, 0x0438), 'cursym': (2, 0x046a), 'filhdr': (2, 0x0452), 'text': (2, 0x0414), 'reloc': (2, 0x0424)}
 HEAD = '/* the global variables of sld */'
 
 

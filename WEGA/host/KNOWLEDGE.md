@@ -1098,6 +1098,39 @@ addresses to function names (`nm` of sld.new, `own_functions.txt` and `libc_name
 arguments; the first divergence names the function, then compare the registers/flow inside. A memory operand `ADDR` against an immediate
 `#ADDR` in `strict_audit.py` output is a real difference of the source, not a register choice.
 
+### sld: the structs (2026-10-28)
+
+The raw offsets of the sources are replaced by structs (`src/cmd/ld/ld.h`); the code is unchanged (`strict_audit.py` 58 of 90 exact, data equal, corpus
+test identical). Names come from the debug strings of the original (`dump.c`: segno, s_coff, s_doff, s_boff, s_code, s_data, s_bss, atr, torig, dorig,
+borig, ctrel, cdrel, cbrel, ncoff, ndoff, nboff, ncode, ndata, nbss, xtnext, datnext, bssnext, txtptr, datptr, bssptr, res) and from Plexus
+`ld.z8000.c` (page, stream, buf, symbol, local, archdr, filhdr, fpage); the old cc keeps members of different structs with equal name, offset and type
+(`s_code` is in p1seg, p2seg and fseg; `bno`, `nibuf` in page and stream).
+
+| struct | size | what | variables |
+|---|---|---|---|
+| page | 518 | input buffer page (Plexus page) | `page[2]` (was b0004, b020a) |
+| pghdr | 4 | dummy page (Plexus fpage) | `fpage` (bE410) |
+| stream | 16 | input stream (sres, bno, nibuf, ptr, size, pno) | `text` (bE414), `reloc` (bE424) |
+| buf | 520 | output buffer (Plexus buf) | bE4DA, bE6E2, bE8EA, bEF02, bEAF2, bECFA, bF10A |
+| archdr | 26 | archive member header (the times and the size are longs) | `archdr` (bE438, bE446, bE44A, bE44E) |
+| filhdr | 24 | header of the object being read / of the output | `filhdr` (bE452..bE468) |
+| objhdr | 24 | the header as it is read from a file | tmp of f3516, init_entry |
+| symbol | 16 | symbol table entry; `cursym` is the current symbol (svalue, stype, sxtra, sseg, sname[8]) | gE47E table, `cursym` (bE46A, bE46E, bE470, bE472) |
+| fsym | 12 | symbol of a nonsegmented file (Plexus symbol) | `fsym` (bE15CC..) |
+| ssym | 14 | symbol of a segmented file | locals of read_entry_hdr, f6e1a |
+| local | 6 | local symbol table (locindex, locsymbol) | tab84d8[4081] |
+| rlent | 12 | entry of the ranlib table of contents (roff, rname[8]) | bE3E84 |
+| p1seg | 54 | pass one segment table entry | get_block, g03ba |
+| p2seg | 32 | pass two segment table entry (list nxt/prv) | tab1c02[256], bF32E, b3C12, bF324, bF328 |
+| fseg | 16 | segment table entry of an object file (first 16 bytes of a p1seg) | rec of f3516 |
+| reslist | 8 | per segment number: txtptr, datptr, bssptr, res | tblF332[128] |
+| mlist | 12 | entry of the -M file list (mtext, mdata, mbss, mnext, mname) | tab3c22[50] |
+| tab428a | 8 | areas of a section in place_sec (kind, tstart, tsize, tend) | tab428a[5] |
+
+The special symbols bE482 (_etext), bE486 (_edata), bE48A (_end), bE48E (_stkseg), bE492 (entry) and bE4FC (last symbol entered) are `struct symbol *`.
+The hash table tab44E8 holds 4092 `struct symbol *`, tblE500 the slots of the entries in use. The 4 bytes in front of `page` (bE000) and the bytes
+of the old `spare` variables are not explained.
+
 ### sld: C files of the program and the libc objects in the own range (2026-10-28)
 
 `src/cmd/ld/tools/module_map.py` (output `module_map.txt`) assigns every function to a C file by the string literals it uses. The data

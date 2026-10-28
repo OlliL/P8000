@@ -9,8 +9,8 @@ static char sccsid[] = "@[$]dump.c\t3.1  10/27/83 12:14:51 - 87wega3.2";
 /* walk_entries..0220: done */
 walk_entries()
 {
-	register char *a;
-	register char *b;
+	register struct symbol *a;
+	register struct symbol *b;
 
 	printf("\nSYM TABLE DUMP:\n");
 	b = table16_entry(bE4FA);
@@ -23,7 +23,7 @@ walk_entries()
 
 /* dump_sym..0334: done */
 int dump_sym(p)
-register char *p;
+register struct symbol *p;
 {
 	register char *s;
 	int k;
@@ -31,11 +31,11 @@ register char *p;
 
 	if (p == 0)
 		return 0;
-	put_name(p + 8);
-	printf("\tvalue 0x%lx, segt 0x%x, ", *(long *)p, *(int *)(p + 6) & 0xff);
-	if (p[4] & 0x20)
+	put_name(p->sname);
+	printf("\tvalue 0x%lx, segt 0x%x, ", p->svalue, p->sseg & 0xff);
+	if (p->stype & 0x20)
 		printf("EXT+");
-	switch (p[4] & 0x1f) {
+	switch (p->stype & 0x1f) {
 	case 0:
 		s = "UNDF";
 		break;
@@ -64,9 +64,9 @@ register char *p;
 		s = "";
 	}
 	printf("%s\n", s);
-	if (p[8] & 0x80) {
-		n = (p[8] & 0x7f) - 8;
-		p += 16;
+	if (p->sname[0] & 0x80) {
+		n = (p->sname[0] & 0x7f) - 8;
+		p++;
 		k = 1;
 		while (n > 0) {
 			k++;
@@ -80,49 +80,49 @@ register char *p;
 /* dmp_p1..03fc: done */
 int dmp_p1()
 {
-	register char *p;
+	register struct p1seg *p;
 	register int i;
 	int z;
 
 	printf("\nPASS ONE SEG TABLE:\n");
 	for (i = 0; i < bEF32C; i++) {
 		p = get_block(i);
-		printf("P1 %d:\t%d\n", i, p[0]);
-		printf("\ts_code, s_data, s_bss:\t0x%x 0x%x 0x%x\n", *(int *)(p + 4), *(int *)(p + 6), *(int *)(p + 8));
-		printf("\tctrel, cdrel, cbrel:\t0x%x 0x%x 0x%x\n", *(int *)(p + 0x10), *(int *)(p + 0x12), *(int *)(p + 0x14));
-		printf("\tncoff, ndoff, nboff:\t0x%x 0x%x 0x%x\n", *(int *)(p + 0x22), *(int *)(p + 0x24), *(int *)(p + 0x26));
-		printf("\tncode, ndata, nbss:\t0x%x 0x%x 0x%x\n", *(long *)(p + 0x16), *(long *)(p + 0x1a), *(long *)(p + 0x1e));
-		printf("\txtnext,datnext,bssnext: %d %d %d \n", *(int *)(p + 0x30), *(int *)(p + 0x32), *(int *)(p + 0x34));
+		printf("P1 %d:\t%d\n", i, p->segno);
+		printf("\ts_code, s_data, s_bss:\t0x%x 0x%x 0x%x\n", p->s_code, p->s_data, p->s_bss);
+		printf("\tctrel, cdrel, cbrel:\t0x%x 0x%x 0x%x\n", p->ctrel, p->cdrel, p->cbrel);
+		printf("\tncoff, ndoff, nboff:\t0x%x 0x%x 0x%x\n", p->ncoff, p->ndoff, p->nboff);
+		printf("\tncode, ndata, nbss:\t0x%x 0x%x 0x%x\n", p->ncode, p->ndata, p->nbss);
+		printf("\txtnext,datnext,bssnext: %d %d %d \n", p->xtnext, p->datnext, p->bssnext);
 	}
 }
 
 /* dump_p2..0566: done */
 int dump_p2()
 {
-	register char *p;
+	register struct p2seg *p;
 
 	printf("\nPASS TWO SEG TABLE:\n");
-	for (p = (char *)bF32E; p; p = *(char **)(p + 0x12)) {
-		printf("P2 %d:\t segno %d\n", *(int *)(p + 0x10) & 0xff, p[0] & 0xff);
-		printf("\ts_coff, s_doff, s_boff:\t0x%x 0x%x 0x%x\n", p[1] & 0xff, p[2] & 0xff, p[3] & 0xff);
-		printf("\ts_code, s_data, s_bss:\t0x%x 0x%x 0x%x\n", *(int *)(p + 4), *(int *)(p + 6), *(int *)(p + 8));
-		printf("\ttorig, dorig, borig:\t0x%x 0x%x 0x%x\n", *(int *)(p + 0x1a), *(int *)(p + 0x1c), *(int *)(p + 0x1e));
+	for (p = bF32E; p; p = p->nxt) {
+		printf("P2 %d:\t segno %d\n", p->segidx & 0xff, p->segno & 0xff);
+		printf("\ts_coff, s_doff, s_boff:\t0x%x 0x%x 0x%x\n", p->s_coff & 0xff, p->s_doff & 0xff, p->s_boff & 0xff);
+		printf("\ts_code, s_data, s_bss:\t0x%x 0x%x 0x%x\n", p->s_code, p->s_data, p->s_bss);
+		printf("\ttorig, dorig, borig:\t0x%x 0x%x 0x%x\n", p->torig, p->dorig, p->borig);
 		printf("\tatr: ");
-		if (*(int *)(p + 0xa) & 1)
+		if (p->atr & 1)
 			printf(" SG_CODE");
-		if (*(int *)(p + 0xa) & 2)
+		if (p->atr & 2)
 			printf(" SG_DATA");
-		if (*(int *)(p + 0xa) & 4)
+		if (p->atr & 4)
 			printf(" SG_BSS");
-		if (*(int *)(p + 0xa) & 0x10)
+		if (p->atr & 0x10)
 			printf(" SG_OCODE");
-		if (*(int *)(p + 0xa) & 0x20)
+		if (p->atr & 0x20)
 			printf(" SG_ODATA");
-		if (*(int *)(p + 0xa) & 0x40)
+		if (p->atr & 0x40)
 			printf(" SG_OBSS");
-		if (*(int *)(p + 0xa) & 8)
+		if (p->atr & 8)
 			printf(" SG_STACK");
-		if (*(int *)(p + 0xa) & 0x100)
+		if (p->atr & 0x100)
 			printf(" SG_RESERVE");
 		printf("\n");
 	}
@@ -135,22 +135,22 @@ int dump_res()
 	int j;
 
 	printf("RESLIST DUMP\n");
-	printf("t,d,b0 and 1 %d %d %d %d %d %d\n", tblF332[0].a, tblF332[1].a, tblF332[0].b, tblF332[1].b, tblF332[0].c, tblF332[1].c);
-	printf(" res 0 1 %d %d", tblF332[0].d, tblF332[1].d);
+	printf("t,d,b0 and 1 %d %d %d %d %d %d\n", tblF332[0].txtptr, tblF332[1].txtptr, tblF332[0].datptr, tblF332[1].datptr, tblF332[0].bssptr, tblF332[1].bssptr);
+	printf(" res 0 1 %d %d", tblF332[0].res, tblF332[1].res);
 	k = 2;
 	do {
 		printf("\n txtptr");
 		for (j = 0; j < 9; j++)
-			printf("  %d ", tblF332[j + k].a);
+			printf("  %d ", tblF332[j + k].txtptr);
 		printf("\n datptr");
 		for (j = 0; j < 9; j++)
-			printf("  %d", tblF332[j + k].b);
+			printf("  %d", tblF332[j + k].datptr);
 		printf("\n bssptr");
 		for (j = 0; j < 9; j++)
-			printf("  %d", tblF332[j + k].c);
+			printf("  %d", tblF332[j + k].bssptr);
 		printf("\n res");
 		for (j = 0; j < 9; j++)
-			printf("  %d", tblF332[j + k].d);
+			printf("  %d", tblF332[j + k].res);
 		k = k + 9;
 	} while (k < 128);
 }
