@@ -192,8 +192,8 @@ produce the same bytes with the shipped cc.
   bE4C4, bE4CC, bF314), bE466/bE467 are the two bytes of `struct bytes2 bE466s` (macros); (3) getfile: the prefixes "", "/usr",
   "/z/bin" are static arrays in front of the function (shared "" and the pool order of the original); (4) printf/doprnt of
   oldslibc have their complete data and symbolic references (host/tools/oldslibc_doprnt_data.py); (5) data.o is linked behind
-  filbuf.o and ctype_.o behind malloc.o (place of their data). Findings functions (2026-10-28): 55 of 90 functions equal in strict_audit.py,
-  35 differ (rules in KNOWLEDGE, "what fixed the findings functions"; tools/odis.py shows the original). Next: byte comparison after the findings functions are exact;
+  filbuf.o and ctype_.o behind malloc.o (place of their data). Findings functions (2026-10-28): 56 of 90 functions equal in strict_audit.py (f27d8 done; lay_out, ins_block: layout of the arms, see KNOWLEDGE),
+  34 differ (rules in KNOWLEDGE, "what fixed the findings functions"; tools/odis.py shows the original). Next: byte comparison after the findings functions are exact;
   the other directories of src/lib/oldslibc are not used any more and can go.
   Next: improve the findings-class functions found by `strict_audit.py` (parse_args, f6c6a, make_ccl, scan_field, ...),
   re-check the D15 tags, cut the data (7090 bytes, bss), map the libc `fXXXX` addresses to libc names, `make link` and

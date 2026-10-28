@@ -1031,7 +1031,7 @@ second word at 0xe4d8; an array size of the original is the distance of the addr
 
 ### sld: what fixed the findings functions (2026-10-28)
 
-Rules found while bringing the "findings" functions of sld to the exact code (strict_audit.py, 55 of 90 equal, 35 left). Each came from
+Rules found while bringing the "findings" functions of sld to the exact code (strict_audit.py, 56 of 90 equal, 34 left). Each came from
 reading the original code with `tools/odis.py NAME`:
 
 - **Argument registers.** The first argument is in rr6 (|4| in the spill), the second in rr4 (|0|), a word argument after them in r5/r3. A
@@ -1055,6 +1055,17 @@ reading the original code with `tools/odis.py NAME`:
   `(char *)&h.f - (char *)&h` (f2d4c); a 14-byte record built on the stack is a struct (f6e1a).
 - **Stack records.** A stack array accessed with constant offsets in the original (`|C|(r15)`) is a struct of words/bytes in the source,
   not `char tmp[16]` with casts (f2624: `struct { int tw0 ... tw7; } tmp`; f6e1a, read_entry_hdr: the 14-byte symbol record).
+- **Stream pick-up (f27d8).** The relocation loop is the inlined `get` of Plexus `load2td` (private reference): `if (--size <= 0) { if (size < 0)
+  break; size++; w = get(s); } else if (--nibuf < 0) { nibuf++; size++; w = get(s); } else w = *ptr++;` for the text stream (bE414,
+  size +10, nibuf +4, ptr +6) and the relocation stream (bE424; "Relocation error" when size < 0). `for (;;)` with the break at the top is
+  turned around by our compiler (test moved to the bottom); a `top:` label with `goto end` keeps the original order. `(w13 & 8) ? w13 :
+  (w13 >> 4)) & 7` is part of the external-symbol arithmetic as well; `bE470 << 8` (no mask), `if ((w12 = ...) & 0xff00)` and
+  `if (!(a & b & c))` give the `and` forms of the original.
+- **Open layout (lay_out 0x4a16, ins_block 0x5a2c).** The original places the later arms of the section selection (`i = a / b / c`, `l1 = s2 / s3 / s4`)
+  behind the then-arm of the delta statement that follows (the selection arms share one store, popt tail merge, and jump back with
+  `jr 0x5002`), and the bodies of the cases 3 and 4 of the first `switch (kind)` of ins_block behind the dispatch of the second switch
+  (all three bodies end in the shared `ld |4|,r2`, `jr 0x5a96`). Our compiler writes the arms and bodies in source order, so 66
+  (lay_out) and 82 (ins_block) instructions stay different; case permutations in the source did not help (94 -> 82). Not solved.
 - **Case order.** The cases of a switch lie in the code in the order of the source (f42f8: 'r', 's', 'M').
 - Remaining differences are the old compiler's own: the optimizer moves non-register locals into scratch registers (f1f96: `e` stays in
   rr2 in the original; ours keeps it on the stack), `and r2,#0xFFFE` becomes `res r2,#0` in the original (load2), `jr cc,a; jr b` is

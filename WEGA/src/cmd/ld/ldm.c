@@ -821,6 +821,15 @@ int idx;
 			if (size > 0xfffe - (s->f4 + s->f6 + s->f8))
 				continue;
 			switch (kind) {
+			case 4:
+				if (tblF332[idx].c == -1) {
+					tblF332[idx].c = val;
+					return s;
+				}
+				tmp = (b = (struct ent *)get_block(prev))->n4;
+				b->n4 = val;
+				((struct ent *)get_block(val))->n4 = tmp;
+				return s;
 			case 2:
 				blk = prev;
 				while ((b = (struct ent *)get_block(blk))->s2 == s) {
@@ -852,15 +861,6 @@ int idx;
 				tmp = (b = (struct ent *)get_block(prev))->n3;
 				b->n3 = val;
 				((struct ent *)get_block(val))->n3 = tmp;
-				return s;
-			case 4:
-				if (tblF332[idx].c == -1) {
-					tblF332[idx].c = val;
-					return s;
-				}
-				tmp = (b = (struct ent *)get_block(prev))->n4;
-				b->n4 = val;
-				((struct ent *)get_block(val))->n4 = tmp;
 				return s;
 			}
 			return s;

@@ -1141,14 +1141,15 @@ char *b;
 	}
 }
 
-/* f27d8..2cbc: findings:D2,D7,D15 */
+/* f27d8 0x27d8..0x2cbc: done */
 int f27d8(p, q, r)
 char *p;
 char *q;
 char *r;
 {
-	int flag;
 	char *save;
+	int spare[3];	/* unused: the frame of the original has 6 more bytes */
+	int flag;
 	register int w13;
 	register int w12;
 	register int w11;
@@ -1158,47 +1159,29 @@ char *r;
 	flag = 0;
 
 top:
-	bE41E -= 1;
-	if (bE41E > 0)
-		goto c2826;
-	if (bE41E >= 0)
-		goto c2814;
-	goto end;
-c280e:
-	*(int *)(bE414 + 4) += 1;
-	goto c2814;
-c2814:
-	bE41E += 1;
-	w12 = get(bE414);
-	goto c2844;
-c2826:
-	*(int *)(bE414 + 4) -= 1;
-	if (*(int *)(bE414 + 4) < 0)
-		goto c280e;
-	w12 = *(int *)*(char **)(bE414 + 6);
-	*(int *)(bE414 + 8) += 2;
-c2844:
-	*(int *)(bE424 + 10) -= 1;
-	if (*(int *)(bE424 + 10) > 0)
-		goto c2882;
-	if (*(int *)(bE424 + 10) >= 0)
-		goto c2870;
-	report_error(2, "Relocation error");
-	goto c2870;
-c286a:
-	*(int *)(bE424 + 4) += 1;
-c2870:
-	*(int *)(bE424 + 10) += 1;
-	w13 = get(bE424);
-	goto c28a0;
-c2882:
-	*(int *)(bE424 + 4) -= 1;
-	if (*(int *)(bE424 + 4) < 0)
-		goto c286a;
-	w13 = *(int *)*(char **)(bE424 + 6);
-	*(int *)(bE424 + 8) += 2;
-	goto c28a0;
-c28a0:
+	{
+		if (--bE41E <= 0) {
+			if (bE41E < 0)
+				goto end;
+			bE41E++;
+			w12 = get(bE414);
+		} else if (--*(int *)(bE414 + 4) < 0) {
+			*(int *)(bE414 + 4) += 1;
+			bE41E++;
+			w12 = get(bE414);
+		} else
+			w12 = *(*(int **)(bE414 + 6))++;
+		if (--*(int *)(bE424 + 10) <= 0) {
+			if (*(int *)(bE424 + 10) < 0)
+				report_error(2, "Relocation error");
+			*(int *)(bE424 + 10) += 1;
+			w13 = get(bE424);
+		} else if (--*(int *)(bE424 + 4) < 0) {
+			*(int *)(bE424 + 4) += 1;
+			*(int *)(bE424 + 10) += 1;
+			w13 = get(bE424);
+		} else
+			w13 = *(*(int **)(bE424 + 6))++;
 	if (bE4B6) {
 		w12 = swap_bytes(w12);
 		w13 = swap_bytes(w13);
@@ -1212,13 +1195,12 @@ c28a0:
 	bE46A = (long)(w12 & 0xff);
 	bE470 = (unsigned)w13 >> 8;
 	f6c6a();
-	w12 = (int)bE46A;
-	if (w12 & 0xff00)
+	if ((w12 = (int)bE46A) & 0xff00)
 		report_error(2, "short segmented offset too large");
 c2954:
 	w12 += ((int)(bE46A >> 16)) & 0xff00;
 c2964:
-	w13 = ((bE470 & 0xff) << 8) + (w13 & 0xff);
+	w13 = (bE470 << 8) + (w13 & 0xff);
 emit:
 	if (bE4B6) {
 		w12 = swap_bytes(w12);
@@ -1245,11 +1227,11 @@ emit:
 	flag = 1;
 	goto top;
 	case 0:
-	if (!(w13 & 0xe))
+	if ((w13 & 0xe) == 0)
 		goto c2a96;
 	if (!flag)
 		goto c2a68;
-	if (((w13 != 0xff0f) & w11 & 0xff0f) == 0)
+	if (!((w13 != 0xff0f) & w11 & 0xff0f))
 		goto c2a68;
 	w13 &= 0xf0;
 	w13 |= w11 & 0xff0f;
@@ -1262,13 +1244,13 @@ c2a96:
 	if (!flag)
 		goto c2ad6;
 	flag = 0;
-	w11 = ((bE470 & 0xff) << 8) + (w11 & 0xff);
+	w11 = (bE470 << 8) + (w11 & 0xff);
 	if (bE4B6)
 		w11 = swap_bytes(w11);
 	if (bE4A2)
 		put_int_buf(w11, r);
 c2ad6:
-	if (!(w13 & 0xe))
+	if ((w13 & 0xe) == 0)
 		goto emit;
 	w12 = (int)bE46A;
 	goto c2964;
@@ -1280,7 +1262,7 @@ c2ad6:
 		e = table_lookup(p, w13);
 		if (e[4] != 0x20)
 			goto c2b46;
-		w13 = (w13 & 7) + ((index16(e) + bEF312) << 4) + 8;
+		w13 = (((w13 & 8) ? w13 : (w13 >> 4)) & 7) + ((index16(e) + bEF312) << 4) + 8;
 		goto emit;
 	}
 
@@ -1289,9 +1271,7 @@ c2b46:
 	case 2:
 	w13 = (e[4] - 0x21) * 2 + 0x21;
 	w13 = ((*(int *)(e + 6)) << 8) + (w13 & 0xff);
-	w12 = (w12 + 0xff) & (w12 & 0xffff);
-	w12 = (w12 & 0xffff);
-	if (w12 & 0xff00)
+	if ((w12 = ((int)*(long *)e + 0xff) & w12) & 0xff00)
 		report_error(2, "short segment offset too large");
 	w12 += ((int)(*(long *)e >> 16)) & 0xff00;
 	goto emit;
@@ -1328,7 +1308,7 @@ c2c72:
 		report_error(2, "unrecognized relocation address type");
 	}
 	goto emit;
-end:
+	}end:
 	;
 }
 
