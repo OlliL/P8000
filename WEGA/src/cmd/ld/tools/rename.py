@@ -4,7 +4,7 @@
 Usage: rename.py OLD NEW
 
 own_functions.txt is the source of the names (findings.json is generated from it, see sync_findings.py). This tool
-changes, in one step: the name column of own_functions.txt, the identifier in ../sld.c (whole words), the keys of
+changes, in one step: the name column of own_functions.txt, the identifier in the C files and ld.h (whole words), the keys of
 findings.json (functions, manual_classes, the 'function' field of findings_pending), then runs sync_findings.py,
 classify_sld.py and findings_md.py. Names in prose files (TODO.md, KNOWLEDGE.md) are not changed.
 """
@@ -33,12 +33,15 @@ def main():
         return 1
     lines = [l.replace(' ' + old + ' ', ' ' + new + ' ', 1) if l.split()[1:2] == [old] else l for l in lines]
     open(table, 'w').write('\n'.join(lines))
-    sld = os.path.join(HERE, '..', 'sld.c')
-    text = open(sld).read()
-    if not text:
-        print('sld.c is empty; nothing renamed')
-        return 1
-    open(sld, 'w').write(re.sub(r'\b%s\b' % re.escape(old), new, text))
+    import ldsrc
+    changed = 0
+    for path in ldsrc.sources():
+        text = open(path).read()
+        new_text = re.sub(r'\b%s\b' % re.escape(old), new, text)
+        if new_text != text:
+            open(path, 'w').write(new_text)
+            changed += 1
+    print('%d source files changed' % changed)
     fj = os.path.join(HERE, 'findings.json')
     d = json.load(open(fj))
     if old in d['functions']:

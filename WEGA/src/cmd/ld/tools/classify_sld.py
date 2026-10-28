@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """classify_sld.py - writes the audit of every checked own function of sld into findings.json.
 
-The same rules as popt/tools/classify.py: the instructions of each function of our work file (object of sld.c,
+The same rules as popt/tools/classify.py: the instructions of each function of our work file (objects of the C files,
 compiled with the original scc) are compared with the original /bin/sld (patterns.check of popt); every differing
 instruction must match a D pattern and the structure must be equal (patterns.structure_flags), then the class is
 "D only (pattern-verified)" with the D classes found; otherwise "other differences" with the unexplained forms.
@@ -29,7 +29,6 @@ import funcs as F  # noqa: E402
 import patterns as P  # noqa: E402
 from sout import SOut  # noqa: E402
 
-SLD = os.path.join(HERE, '..', 'sld.c')
 # indirect register-pair accesses (@rrN) that popt's pattern set does not know: the only difference is the register
 # pair (old compiler register choice, D2); checked by hand, see the note. Used only when the pattern check finds
 # nothing else unexplained.
@@ -71,16 +70,6 @@ def mine_text(t):
     return common(t)
 
 
-def compile_object():
-    tmp = tempfile.mkdtemp(prefix='classify', dir='/mnt/share/cvs/P8000/tmp/tmp')
-    shutil.copy(SLD, os.path.join(tmp, 'all.c'))
-    r = subprocess.run([EMU, '-r', WEGA, '/bin/scc', '-c', '-O', 'all.c'], cwd=tmp,
-                       capture_output=True, text=True, timeout=900)
-    if r.returncode != 0:
-        sys.exit('sld.c does not compile: ' + (r.stdout + r.stderr)[:300])
-    return os.path.join(tmp, 'all.o')
-
-
 def read_table():
     rows = []
     for line in open(TABLE):
@@ -92,16 +81,21 @@ def read_table():
 
 
 def main():
-    obj = compile_object()
-    o_sym = SOut(open(obj, 'rb').read())
-    tsz = o_sym.segs[0]['code']
-    starts = sorted((x['value'], x['name'].lstrip('_')) for x in o_sym.symbols
-                    if x['type'] == 34 and x['segt'] == 0)
-    ours = {}
-    for i, (v, n) in enumerate(starts):
-        e = starts[i + 1][0] if i + 1 < len(starts) else tsz
-        ours[n] = (v, e)
-    m = [(a, mine_text(t)) for a, t in F.disasm(obj, lim=0x10000)]
+    import ldsrc
+    objs, errs = ldsrc.compile_all('-O')
+    if errs:
+        sys.exit('does not compile: ' + errs[:300])
+    # the objects of the C files are put behind each other (address base per file)
+    ours, m, base = {}, [], 0
+    for f, obj in objs.items():
+        o_sym = SOut(open(obj, 'rb').read())
+        tsz = o_sym.segs[0]['code']
+        starts = sorted((x['value'], x['name'].lstrip('_')) for x in o_sym.symbols if x['type'] == 34 and x['segt'] == 0)
+        for i, (v, n) in enumerate(starts):
+            e = starts[i + 1][0] if i + 1 < len(starts) else tsz
+            ours[n] = (base + v, base + e)
+        m += [(base + a, mine_text(t)) for a, t in F.disasm(obj, lim=0x10000)]
+        base += tsz + 2
     o = [(a, orig_text(t)) for a, t in F.disasm(ORIG, lim=0x10000)]
     rows = read_table()
     ends = {int(r['entry'], 16): int(r['end'], 16) for r in rows}

@@ -40,3 +40,17 @@
 9638 signal    _signal    signal.o
 96fa unlink    _unlink    unlink.o   sc #0x0a
 970a write     _write     write.o    sc #4
+71ca putchar   _putchar  putchar.o  (72 bytes) identical to the member of slibc.a
+7212 scanf     _scanf     scanf.o    identical to the member (scanf, fscanf 724e, sscanf 7286)
+724e fscanf    _fscanf    scanf.o
+7286 sscanf    _sscanf    scanf.o
+7300 _doscan   __doscan   doscan.o   identical to the member (1738 bytes)
+7526 _innum    __innum    doscan.o
+7808 _instr    __instr    doscan.o
+7956 _getccl   __getccl   doscan.o
+79ca printf     _printf    printf.o   OTHER REVISION than the member of slibc.a (498 bytes against 314; four double arguments)
+7a5e fprintf    _fprintf   printf.o
+7ae2 sprintf    _sprintf   printf.o
+7bbc _align    __align    doprnt.o   first 106 bytes equal to the member; the object is another revision (2758 bytes against 2792)
+7c26 _doprnt   __doprnt   doprnt.o
+85f8 _atoip    __atoip    doprnt.o

@@ -965,11 +965,16 @@ means it does something fixed instead (only possible where the original's result
   (`ld_innum` and `scan_options` triggered it together; `ld_inum` does not). `accept.py` now checks the whole file for empty
   labels (`scc -S`). A rename can trigger it again.
 - Which function loses its name is chaotic, not a length budget (measured 2026-10-28: renaming one identifier to a shorter one
-  can trigger it, renaming three together does not; 23 of 34 single libc renames triggered it). The compile checks of
-  `tools/` therefore compile `sld.c` with the libc names turned back into `f<address>` (`fncheck.alias_text`, table
-  `tools/libc_names.txt`; comments and strings are untouched). The source shows the real names, the checked file is the one
-  that was verified before. A split into modules (smaller files) is the real fix.
-- The whole file will be split into the modules of the plan, which also removes these limits.
+  can trigger it, renaming three together does not). The cure is the split: sld.c is cut into the C files of the program
+  (`src/cmd/ld/{copyname,dump,ext,ld,ldm,printname,swap,symbols}.c` and `ld.h`) and every file is compiled alone; none of them loses a
+  name (checked with the real libc names, 512 identifiers in all). The temporary alias of the libc names to `f<address>`
+  (`fncheck.alias_text`, `LDALIAS=1`) is off since then.
+- Split of 2026-10-28: `tools/split_sld.py` (one-off) cut the 90 blocks of sld.c into the files of `tools/module_ranges.txt` (functions in
+  address order). `ld.h` holds the structs, the function declarations (types from the definitions) and the variables as extern;
+  `ext.c` defines all variables (`DEFINE_VARS`). With the variables defined in `ext.c` and extern elsewhere the audit
+  (`strict_audit.py`) of all functions stays the same except two single jumps (`f2492` one `jr` fewer in the difference, `f42f8` one
+  `jp` instead of `jr` in the switch): the choice between `jr` and `jp` depends on whether a variable is defined in the same file.
+  The real owner of each variable (bss band of its C file) can be found with this effect; open.
 
 ### sld: printf core 0x7c26 and the stream macro (2026-10-28)
 
@@ -1007,6 +1012,26 @@ is 0x56..0x8682; `__fegcvt` = 0x8684 (printf), `__inflt` = 0x8686 (scanf). `unge
 split (filbuf, flsbuf, cnvt, decimal, stty, swab, swap, signal, stubs) had wrong boundaries and placeholder labels; the
 directories `src/lib/oldslibc/<object>/0_1.s` now follow the objects (README there). The code of the link is right: `make link`
 in `src/cmd/ld` gives a code segment that differs from /bin/sld in 78 bytes, all data addresses (the data of sld is not cut).
+
+### sld: C files of the program and the libc objects in the own range (2026-10-28)
+
+`src/cmd/ld/tools/module_map.py` (output `module_map.txt`) assigns every function to a C file by the string literals it uses. The data
+area starts with the SCCS strings of the files in link order: copyname.c 0x2c, dump.c 0x78, ext.c 0x38a, ld.c 0x448, ldm.c 0xf60,
+printname.c 0x14fe, swap.c 0x156c, symbols.c 0x159a; the code of the files is in the same order and the assignment is monotonic
+(no file after a later one). Code ranges (function boundaries; the cuts at the first function of the next file):
+copyname 0x56..0x1d2, dump 0x1d2..0x6c6, ext 0x6c6..0x78c, ld 0x78c..0x3c16, ldm 0x3c16..0x6522, printname 0x6522..0x65c6,
+swap 0x65c6..0x6684, symbols 0x6684..0x71ca. `unpack_run` and `pack_name` (0x56..0x178) use no string and lie before the first
+copyname string function: copyname by order. References to variables are no witness (a file uses the variables of the others).
+
+From 0x71ca on there is no own code: the objects are members of slibc.a, in the order the original linker took them:
+`putchar` 0x71ca, `scanf` 0x7212, `doscan` 0x7300 (all three equal the shipped members, 0 differing words; the reconstructed
+C functions `ld_scanf`, `ld_doscan`, `ld_inum` ... were the libc sources, now taken out of sld.c, audit data in
+`tools/libc_archive.json`), `printf` 0x79ca (498 bytes against 314 of the member: four double arguments, EPU) and `doprnt`
+0x7bbc..0x8682 (2758 bytes against 2792; `__align` 106 bytes equal to the member, `__doprnt` 0x7c26, `__atoip` 0x85f8), then
+`ffltioc` 0x8682 and the objects of the libc part (oldslibc README). `printf` and `doprnt` are another revision than the
+shipped member: they are the only objects that need their assembler source (`src/lib/oldslibc/printf`, `doprnt`; the C
+sources of this revision are not reconstructed, by decision). The data of the libc objects (doscan 176 bytes, doprnt 198, ...)
+lies in the data area behind the symbols.c data (0x17ba..0x1958 and the objects up to 0x1bb2).
 
 ### sld: section allocator (0x4a16 lay_out, 0x18f2 place_sec, 0x5a2c ins_block) (2026-10-28)
 

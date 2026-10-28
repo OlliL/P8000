@@ -1,5 +1,5 @@
 # status: open | done (byte-identical) | findings:<ids> (documented, not identical)
-# own code of /bin/sld, 0x0018..0x8680: function entries (call targets and proven starts), end = next entry
+# own code of /bin/sld, 0x0018..0x71ca: function entries (call targets and proven starts), end = next entry; from 0x71ca on the objects are libc objects (see libc_names.txt, src/lib/oldslibc/README)
 # columns: entry, name (f<entry> until understood), end (exclusive), size, number of callers, first 4 callers, kind (P proven, c call target only), last instruction, status
 # 0x0018 (startcode) is not C: it is built from the template crt0 scrt0.s.in (row sld of crt0.list, mkcrt0.sh), verified: the 62 bytes equal 0x18..0x55 of /bin/sld except the relocated operands
 # 6866: no caller and no address reference found (dead code candidate, see KNOWLEDGE quirks)
@@ -96,17 +96,3 @@
 7112 ensure_buf 7186 116 1 6c6 c ret done
 7186 limit_msg 719e 24 0 - x ret done
 719e table32_entry 71ca 44 5 1fca 2014 4990 595a c ret done
-71ca put_char 7212 72 6 2d4c 7286 P ret findings:D4
-7212 ld_scanf 724e 60 0 - x ret findings:D5,D16
-724e ld_fscanf 7286 56 0 - x ret findings:D5,D16
-7286 ld_sscanf 7300 122 5 c00 daa e1c 11ac c ret findings:D4,D16
-7300 ld_doscan 7526 550 3 7242 727a 72ec c ret findings:D2
-7526 ld_inum 7808 738 1 7436 P ret done
-7808 scan_field 7956 334 1 7578 P ret findings:D2
-7956 make_ccl 79ca 116 1 73e6 P ret findings:D2
-79ca ld_printf 7a5e 148 52 1e2 250 266 2ee c ret done
-7a5e ld_fprintf 7ae2 132 0 - x ret done
-7ae2 ld_sprintf 7bbc 218 0 - x ret done
-7bbc f7bbc 7c26 106 2 7f0a 81c0 P ret findings:D4
-7c26 ld_doprnt 85f8 2514 3 7a4c 7ad0 7b78 c ret findings:D2,D7
-85f8 f85f8 8680 136 2 7db0 7e0c P add findings:D2

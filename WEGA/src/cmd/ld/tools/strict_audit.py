@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""strict_audit.py - compare every accepted function of ../sld.c with the original in the strict mode of fncheck.
+"""strict_audit.py - compare every accepted function of the C files of sld (../*.c) with the original in the strict mode of fncheck.
 
 Usage: strict_audit.py [NAME ...]
 
-sld.c is compiled once with scc -O; each function is cut out of the object by its symbol and compared with the code
+Each C file is compiled alone with scc -O; each function is cut out of its object by its symbol and compared with the code
 range of the original (own_functions.txt) after fncheck.norm and keep_locals (frame offsets are compared, link
 addresses are masked). Prints per function: the status of the table, the instruction counts and the number of
 differing instructions after a sequence alignment, so functions that were accepted with the old loose check but
@@ -23,17 +23,18 @@ from sout import SOut  # noqa: E402
 
 
 def main():
-    tmp = tempfile.mkdtemp(prefix='saudit', dir='/mnt/share/cvs/P8000/tmp/tmp')
-    F.alias_copy(os.path.join(HERE, '..', 'sld.c'), os.path.join(tmp, 'all.c'))
-    r = subprocess.run([F.EMU, '-r', F.WEGA, '/bin/scc', '-c', '-O', 'all.c'], cwd=tmp, capture_output=True,
-                       text=True, timeout=900)
-    if r.returncode != 0:
-        sys.exit('sld.c does not compile')
-    o = SOut(open(os.path.join(tmp, 'all.o'), 'rb').read())
-    tsz = o.segs[0]['code']
-    code = bytes(o.image[:tsz])
-    starts = sorted((x['value'], x['name'].lstrip('_')) for x in o.symbols if x['type'] == 34 and x['segt'] == 0)
-    ours = {n: (v, starts[i + 1][0] if i + 1 < len(starts) else tsz) for i, (v, n) in enumerate(starts)}
+    import ldsrc
+    objs, errs = ldsrc.compile_all('-O')
+    if errs:
+        sys.exit('does not compile:\n' + errs)
+    codes, ours = {}, {}
+    for f, obj in objs.items():
+        o = SOut(open(obj, 'rb').read())
+        tsz = o.segs[0]['code']
+        codes[f] = bytes(o.image[:tsz])
+        starts = sorted((x['value'], x['name'].lstrip('_')) for x in o.symbols if x['type'] == 34 and x['segt'] == 0)
+        for i, (v, n) in enumerate(starts):
+            ours[n] = (f, v, starts[i + 1][0] if i + 1 < len(starts) else tsz)
     s = SOut(open(F.ORIG, 'rb').read())
     cs = s.segs[0]['code']
     ocode = bytes(s.image[:cs])
@@ -43,8 +44,8 @@ def main():
         entry, name, end, status = int(p[0], 16), p[1], int(p[2], 16), p[-1]
         if status == 'open' or (want and name not in want) or name not in ours:
             continue
-        lo, hi = ours[name]
-        A = F.keep_locals([F.norm(t) for _, t in F.insns(code, lo, hi, True)])
+        f, lo, hi = ours[name]
+        A = F.keep_locals([F.norm(t) for _, t in F.insns(codes[f], lo, hi, True)])
         B = F.keep_locals([F.norm(t) for _, t in F.insns(ocode, entry, end, (s.magic >> 8) == 0xE6)])
         sm = difflib.SequenceMatcher(None, A, B, autojunk=False)
         diff = sum(max(i2 - i1, j2 - j1) for tag, i1, i2, j1, j2 in sm.get_opcodes() if tag != 'equal')

@@ -1,14 +1,16 @@
 # ld: the segmented loader of WEGA (sld, gld), reconstructed from /bin/sld. This Makefile builds the libc part of sld.
-# The libc part of sld (0x8682..0x9730) is a sequence of members of slibc.a, in the order the original linker took them. Every
-# object has a directory in ../../lib/oldslibc/<object>/<revision>.s, cut from /bin/sld and verified with
-# host/tools/oldslibc_cut.py (the revision number REV is invented: other programs carry other revisions of the same objects).
-# ffltioc, getpid and umask (6 to 8 bytes) are shipped members of /lib/slibc.a, taken with ar x. The code of all objects equals
-# the members of /lib/slibc.a (oldslibc_cut.py checks that); the data is not cut exactly yet (see ../../lib/oldslibc/README).
+# The libc part of sld (0x71ca..0x9730) is a sequence of members of slibc.a, in the order the original linker took them.
+# Objects whose code equals the member of /lib/slibc.a are taken from there (SHIPOBJS, ar x). The others have a directory
+# ../../lib/oldslibc/<object>/<revision>.s, cut from /bin/sld and verified with host/tools/oldslibc_cut.py (the revision number REV
+# is invented: other programs carry other revisions of the same objects). printf and doprnt are another revision than the member
+# of /lib/slibc.a; the other cut objects equal their members (oldslibc_cut.py checks that) and can be dropped when the data is cut.
 #
 #   make              libc objects of sld, the own code of sld (sld_own.o) and the start-up code (scrt0.o)
+#   make cobjs       compile the C files of sld (not linked yet: the data of sld is not cut)
 #   make link         sld.new, linked from these objects by the original sld (SLDBIN)
-#   make linkslibc    sld.new.slibc: same link, but the objects are the members of /lib/slibc.a
+#   make linkslibc    sld.new.slibc: same link, but all objects (except printf, doprnt) are the members of /lib/slibc.a
 #   make clean
+#   (this file is written by tools/gen_makefile.py)
 
 CRT = ../../lib/libc/crt
 OLD = ../../lib/oldslibc
@@ -18,42 +20,52 @@ SLDBIN = /bin/sld
 CAS = cas
 AR = ar
 SLIBC = /lib/slibc.a
+SCC = scc
+CFLAGS = -O
 
-# shipped members of slibc.a that are identical to the original code of sld
-SHIPOBJS = ffltioc.o getpid.o umask.o
+# the C files of sld (code ranges: tools/module_ranges.txt); each one is compiled alone
+COBJS = copyname.o dump.o ext.o ld.o ldm.o printname.o swap.o symbols.o
+
+# members of slibc.a that are identical to the original code of sld
+SHIPOBJS = putchar.o scanf.o doscan.o ffltioc.o getpid.o umask.o data.o ctype_.o
 # link order of sld (= address order in /bin/sld): start code, own code, then the libc objects
-LINKOBJS = scrt0.o sld_own.o \
-	ffltioc.o $(OLD)/ungetc/$(REV).o $(OLD)/filbuf/$(REV).o $(OLD)/flsbuf/$(REV).o $(OLD)/__callex/$(REV).o  \
-	$(OLD)/cuexit/$(REV).o $(OLD)/atoi/$(REV).o $(OLD)/cnvt/$(REV).o $(OLD)/decimal/$(REV).o  \
-	$(OLD)/length/$(REV).o $(OLD)/malloc/$(REV).o $(OLD)/isatty/$(REV).o $(OLD)/mktemp/$(REV).o  \
-	$(OLD)/stty/$(REV).o $(OLD)/strchr/$(REV).o $(OLD)/strrchr/$(REV).o $(OLD)/swab/$(REV).o  \
-	$(OLD)/rindex/$(REV).o $(OLD)/strcat/$(REV).o $(OLD)/strncmp/$(REV).o $(OLD)/strcpy/$(REV).o  \
-	$(OLD)/swap/$(REV).o $(OLD)/access/$(REV).o $(OLD)/tolower/$(REV).o $(OLD)/chmod/$(REV).o  \
-	$(OLD)/close/$(REV).o $(OLD)/creat/$(REV).o $(OLD)/fstat/$(REV).o getpid.o $(OLD)/ioctl/$(REV).o  \
-	$(OLD)/link/$(REV).o $(OLD)/lseek/$(REV).o $(OLD)/mkseg/$(REV).o $(OLD)/open/$(REV).o $(OLD)/read/$(REV).o  \
-	$(OLD)/ssgbrk/$(REV).o $(OLD)/signal/$(REV).o umask.o $(OLD)/unlink/$(REV).o $(OLD)/write/$(REV).o  \
+LINKOBJS = scrt0.o sld_own.o putchar.o scanf.o doscan.o $(OLD)/printf/$(REV).o \
+	$(OLD)/doprnt/$(REV).o ffltioc.o $(OLD)/ungetc/$(REV).o $(OLD)/filbuf/$(REV).o \
+	$(OLD)/flsbuf/$(REV).o $(OLD)/__callex/$(REV).o $(OLD)/cuexit/$(REV).o $(OLD)/atoi/$(REV).o \
+	$(OLD)/cnvt/$(REV).o $(OLD)/decimal/$(REV).o $(OLD)/length/$(REV).o $(OLD)/malloc/$(REV).o \
+	$(OLD)/isatty/$(REV).o $(OLD)/mktemp/$(REV).o $(OLD)/stty/$(REV).o $(OLD)/strchr/$(REV).o \
+	$(OLD)/strrchr/$(REV).o $(OLD)/swab/$(REV).o $(OLD)/rindex/$(REV).o $(OLD)/strcat/$(REV).o \
+	$(OLD)/strncmp/$(REV).o $(OLD)/strcpy/$(REV).o $(OLD)/swap/$(REV).o $(OLD)/access/$(REV).o \
+	$(OLD)/tolower/$(REV).o $(OLD)/chmod/$(REV).o $(OLD)/close/$(REV).o $(OLD)/creat/$(REV).o \
+	$(OLD)/fstat/$(REV).o getpid.o $(OLD)/ioctl/$(REV).o $(OLD)/link/$(REV).o $(OLD)/lseek/$(REV).o \
+	$(OLD)/mkseg/$(REV).o $(OLD)/open/$(REV).o $(OLD)/read/$(REV).o $(OLD)/ssgbrk/$(REV).o \
+	$(OLD)/signal/$(REV).o umask.o $(OLD)/unlink/$(REV).o $(OLD)/write/$(REV).o $(OLD)/cerror/$(REV).o \
+	data.o ctype_.o
+# the same with the objects of slibc.a (printf and doprnt: the old revision)
+SLIBCOBJS = scrt0.o sld_own.o slibc/putchar.o slibc/scanf.o slibc/doscan.o $(OLD)/printf/$(REV).o \
+	$(OLD)/doprnt/$(REV).o slibc/ffltioc.o slibc/ungetc.o slibc/filbuf.o slibc/flsbuf.o \
+	slibc/__callex.o slibc/cuexit.o slibc/atoi.o slibc/cnvt.o slibc/decimal.o slibc/length.o \
+	slibc/malloc.o slibc/isatty.o slibc/mktemp.o slibc/stty.o slibc/strchr.o slibc/strrchr.o \
+	slibc/swab.o slibc/rindex.o slibc/strcat.o slibc/strncmp.o slibc/strcpy.o slibc/swap.o \
+	slibc/access.o slibc/tolower.o slibc/chmod.o slibc/close.o slibc/creat.o slibc/fstat.o \
+	slibc/getpid.o slibc/ioctl.o slibc/link.o slibc/lseek.o slibc/mkseg.o slibc/open.o slibc/read.o \
+	slibc/ssgbrk.o slibc/signal.o slibc/umask.o slibc/unlink.o slibc/write.o slibc/cerror.o \
+	slibc/data.o slibc/ctype_.o
+LIBCOBJS = $(OLD)/printf/$(REV).o $(OLD)/doprnt/$(REV).o $(OLD)/ungetc/$(REV).o \
+	$(OLD)/filbuf/$(REV).o $(OLD)/flsbuf/$(REV).o $(OLD)/__callex/$(REV).o $(OLD)/cuexit/$(REV).o \
+	$(OLD)/atoi/$(REV).o $(OLD)/cnvt/$(REV).o $(OLD)/decimal/$(REV).o $(OLD)/length/$(REV).o \
+	$(OLD)/malloc/$(REV).o $(OLD)/isatty/$(REV).o $(OLD)/mktemp/$(REV).o $(OLD)/stty/$(REV).o \
+	$(OLD)/strchr/$(REV).o $(OLD)/strrchr/$(REV).o $(OLD)/swab/$(REV).o $(OLD)/rindex/$(REV).o \
+	$(OLD)/strcat/$(REV).o $(OLD)/strncmp/$(REV).o $(OLD)/strcpy/$(REV).o $(OLD)/swap/$(REV).o \
+	$(OLD)/access/$(REV).o $(OLD)/tolower/$(REV).o $(OLD)/chmod/$(REV).o $(OLD)/close/$(REV).o \
+	$(OLD)/creat/$(REV).o $(OLD)/fstat/$(REV).o $(OLD)/ioctl/$(REV).o $(OLD)/link/$(REV).o \
+	$(OLD)/lseek/$(REV).o $(OLD)/mkseg/$(REV).o $(OLD)/open/$(REV).o $(OLD)/read/$(REV).o \
+	$(OLD)/ssgbrk/$(REV).o $(OLD)/signal/$(REV).o $(OLD)/unlink/$(REV).o $(OLD)/write/$(REV).o \
 	$(OLD)/cerror/$(REV).o
-# the same with all objects taken from slibc.a
-SLIBCOBJS = scrt0.o sld_own.o \
-	slibc/ffltioc.o slibc/ungetc.o slibc/filbuf.o slibc/flsbuf.o slibc/__callex.o slibc/cuexit.o \
-	slibc/atoi.o slibc/cnvt.o slibc/decimal.o slibc/length.o slibc/malloc.o slibc/isatty.o \
-	slibc/mktemp.o slibc/stty.o slibc/strchr.o slibc/strrchr.o slibc/swab.o slibc/rindex.o \
-	slibc/strcat.o slibc/strncmp.o slibc/strcpy.o slibc/swap.o slibc/access.o slibc/tolower.o \
-	slibc/chmod.o slibc/close.o slibc/creat.o slibc/fstat.o slibc/getpid.o slibc/ioctl.o slibc/link.o \
-	slibc/lseek.o slibc/mkseg.o slibc/open.o slibc/read.o slibc/ssgbrk.o slibc/signal.o slibc/umask.o \
-	slibc/unlink.o slibc/write.o slibc/cerror.o slibc/data.o
-
-LIBCOBJS = $(OLD)/ungetc/$(REV).o $(OLD)/filbuf/$(REV).o $(OLD)/flsbuf/$(REV).o $(OLD)/__callex/$(REV).o  \
-	$(OLD)/cuexit/$(REV).o $(OLD)/atoi/$(REV).o $(OLD)/cnvt/$(REV).o $(OLD)/decimal/$(REV).o  \
-	$(OLD)/length/$(REV).o $(OLD)/malloc/$(REV).o $(OLD)/isatty/$(REV).o $(OLD)/mktemp/$(REV).o  \
-	$(OLD)/stty/$(REV).o $(OLD)/strchr/$(REV).o $(OLD)/strrchr/$(REV).o $(OLD)/swab/$(REV).o  \
-	$(OLD)/rindex/$(REV).o $(OLD)/strcat/$(REV).o $(OLD)/strncmp/$(REV).o $(OLD)/strcpy/$(REV).o  \
-	$(OLD)/swap/$(REV).o $(OLD)/access/$(REV).o $(OLD)/tolower/$(REV).o $(OLD)/chmod/$(REV).o  \
-	$(OLD)/close/$(REV).o $(OLD)/creat/$(REV).o $(OLD)/fstat/$(REV).o $(OLD)/ioctl/$(REV).o $(OLD)/link/$(REV).o  \
-	$(OLD)/lseek/$(REV).o $(OLD)/mkseg/$(REV).o $(OLD)/open/$(REV).o $(OLD)/read/$(REV).o $(OLD)/ssgbrk/$(REV).o  \
-	$(OLD)/signal/$(REV).o $(OLD)/unlink/$(REV).o $(OLD)/write/$(REV).o $(OLD)/cerror/$(REV).o
 
 all: libc own start
+
+cobjs: $(COBJS)
 
 libc: $(LIBCOBJS) $(SHIPOBJS)
 
@@ -66,12 +78,12 @@ sld.new: $(LINKOBJS)
 linkslibc: sld.new.slibc
 
 slibc/stamp:
-	mkdir slibc ; cd slibc ; $(AR) x $(SLIBC) ffltioc.o ungetc.o filbuf.o flsbuf.o __callex.o cuexit.o atoi.o cnvt.o decimal.o length.o malloc.o isatty.o mktemp.o stty.o strchr.o strrchr.o swab.o rindex.o strcat.o strncmp.o strcpy.o swap.o access.o tolower.o chmod.o close.o creat.o fstat.o getpid.o ioctl.o link.o lseek.o mkseg.o open.o read.o ssgbrk.o signal.o umask.o unlink.o write.o cerror.o data.o ; touch stamp
+	mkdir slibc ; cd slibc ; $(AR) x $(SLIBC) putchar.o scanf.o doscan.o ffltioc.o ungetc.o filbuf.o flsbuf.o __callex.o cuexit.o atoi.o cnvt.o decimal.o length.o malloc.o isatty.o mktemp.o stty.o strchr.o strrchr.o swab.o rindex.o strcat.o strncmp.o strcpy.o swap.o access.o tolower.o chmod.o close.o creat.o fstat.o getpid.o ioctl.o link.o lseek.o mkseg.o open.o read.o ssgbrk.o signal.o umask.o unlink.o write.o cerror.o data.o ctype_.o ; touch stamp
 
 sld.new.slibc: slibc/stamp $(SLIBCOBJS)
 	$(SLDBIN) -i -z -e start $(SLIBCOBJS) -o $@
 
-# own code of sld (0x56..0x8682 of /bin/sld, one block; cut with host/tools/oldslibc_cut.py, verified)
+# own code of sld (0x56..0x71ca of /bin/sld, one block; cut with host/tools/oldslibc_cut.py, verified)
 own: sld_own.o
 
 # start-up code (0x18..0x55 of /bin/sld): written by mkcrt0.sh from the template scrt0.s.in (row sld in crt0.list)
@@ -86,6 +98,39 @@ scrt0.o: scrt0.s
 sld_own.o: sld_own.s
 	$(CAS) -u -o $@ sld_own.s
 
+copyname.o: copyname.c ld.h
+	$(SCC) $(CFLAGS) -c copyname.c
+
+dump.o: dump.c ld.h
+	$(SCC) $(CFLAGS) -c dump.c
+
+ext.o: ext.c ld.h
+	$(SCC) $(CFLAGS) -c ext.c
+
+ld.o: ld.c ld.h
+	$(SCC) $(CFLAGS) -c ld.c
+
+ldm.o: ldm.c ld.h
+	$(SCC) $(CFLAGS) -c ldm.c
+
+printname.o: printname.c ld.h
+	$(SCC) $(CFLAGS) -c printname.c
+
+swap.o: swap.c ld.h
+	$(SCC) $(CFLAGS) -c swap.c
+
+symbols.o: symbols.c ld.h
+	$(SCC) $(CFLAGS) -c symbols.c
+
+putchar.o:
+	$(AR) x $(SLIBC) putchar.o
+
+scanf.o:
+	$(AR) x $(SLIBC) scanf.o
+
+doscan.o:
+	$(AR) x $(SLIBC) doscan.o
+
 ffltioc.o:
 	$(AR) x $(SLIBC) ffltioc.o
 
@@ -94,6 +139,18 @@ getpid.o:
 
 umask.o:
 	$(AR) x $(SLIBC) umask.o
+
+data.o:
+	$(AR) x $(SLIBC) data.o
+
+ctype_.o:
+	$(AR) x $(SLIBC) ctype_.o
+
+$(OLD)/printf/$(REV).o: $(OLD)/printf/$(REV).s
+	$(CAS) -u -o $@ $(OLD)/printf/$(REV).s
+
+$(OLD)/doprnt/$(REV).o: $(OLD)/doprnt/$(REV).s
+	$(CAS) -u -o $@ $(OLD)/doprnt/$(REV).s
 
 $(OLD)/ungetc/$(REV).o: $(OLD)/ungetc/$(REV).s
 	$(CAS) -u -o $@ $(OLD)/ungetc/$(REV).s
@@ -210,5 +267,5 @@ $(OLD)/cerror/$(REV).o: $(OLD)/cerror/$(REV).s
 	$(CAS) -u -o $@ $(OLD)/cerror/$(REV).s
 
 clean:
-	rm -f $(LIBCOBJS) $(SHIPOBJS) sld_own.o scrt0.s scrt0.o sld.new sld.new.slibc
+	rm -f $(COBJS) $(LIBCOBJS) $(SHIPOBJS) sld_own.o scrt0.s scrt0.o sld.new sld.new.slibc
 	rm -rf slibc

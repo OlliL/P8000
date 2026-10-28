@@ -2,21 +2,23 @@ oldslibc - the libc objects of the segmented program /bin/sld, one directory per
 one assembler source per revision: <object>/0_1.s. The revision number 0_1 is invented (other programs of the WEGA 3.1 root
 will carry other revisions of the same objects; they get their own file next to it).
 
-Origin: the libc part of /bin/sld (0x8682..0x9730) is a sequence of members of slibc.a in the order the original linker took
+Origin: the libc part of /bin/sld (0x71ca..0x9730) is a sequence of members of slibc.a in the order the original linker took
 them. host/tools/oldslibc_cut.py cuts every object from /bin/sld (boundaries = sizes of the members), names the entry points
 as the global text symbols of the member (_exit, __flsbuf, _fflush, __cleanup, _fclose, _swap, _longswap ...), writes the sources
 and verifies each of them: assembled with cas -u the code bytes equal those of sld (relocated words masked). The tool also checks
-that the code of every object equals the member of /lib/slibc.a (relocated words masked): all 41 objects do, so these are not
+that the code of every object equals the member of /lib/slibc.a (relocated words masked): all objects do except printf and doprnt, so these are not
 older revisions but the shipped ones (the earlier assumption "old revision of slibc" was wrong). ffltioc, getpid and umask are
 not cut (6 to 8 bytes): src/cmd/ld/Makefile takes them from slibc.a.
 
-Link order (address order): ffltioc 8682, ungetc 8688, filbuf 86fa, flsbuf 880e (__flsbuf, _fflush, __cleanup, _fclose),
+Link order (address order): putchar 71ca, scanf 7212, doscan 7300 (shipped, identical), printf 79ca and doprnt 7bbc..8682 (another
+revision than the member: cut here, the only objects that need their assembler source), ffltioc 8682, ungetc 8688, filbuf 86fa, flsbuf 880e (__flsbuf, _fflush, __cleanup, _fclose),
 __callex 8a48, cuexit 8a50 (_exit), atoi 8a5c, cnvt 8ad0, decimal 8be8, length 8c86, malloc 8cb4 (_malloc, _free, _realloc,
 _calloc, _cfree), isatty 91ea, mktemp 9210, stty 9296, strchr 92c6, strrchr 92f8, swab 932e, rindex 9376, strcat 93ac,
 strncmp 93e8, strcpy 943c, swap 946e (_swap, _longswap, _swapsegt), access 952c, tolower 953e, chmod 9564, close 9576,
 creat 9586, fstat 9596, getpid 95aa, ioctl 95b0, link 95c8, lseek 95da, mkseg 95ee, open 95fe, read 9610, ssgbrk 9622,
 signal 9638, umask 96f2, unlink 96fa, write 970a, cerror 971c..9730. The rest up to 0x9800 is zero padding of the code segment.
-The own code ends at 0x8682 (sld_own.s); the `ret` at 0x8680 is its last instruction (end of the function at 0x85f8).
+The own code ends at 0x71ca (sld_own.s 0x56..0x71ca). `printf` (0x79ca..0x7bbc) and `doprnt` (0x7bbc..0x8682, with __align, __doprnt
+0x7c26 and __atoip 0x85f8) contain EPU instructions (.word lines marked // EPU).
 
 Jumps and calls: a target inside the object is a label L<addr>; a target in another object is its symbol name.
 No fixed code address is left in the code (also lda of a table: lda rr4,L9696(r3)).

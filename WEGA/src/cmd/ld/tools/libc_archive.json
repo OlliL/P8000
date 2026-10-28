@@ -1,0 +1,334 @@
+{
+ "note": "Functions of /bin/sld between 0x71ca and 0x8682 that are libc objects (putchar, scanf, doscan identical to slibc.a; printf, doprnt another revision), reconstructed as C earlier (2026-10-27/28) and then taken out of sld.c (git history has the sources). The audit data is kept here.",
+ "functions": {
+  "f7bbc": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7bbc",
+   "ours": "0x0b66-0x0bd6",
+   "level": "differs",
+   "pairing_evidence": "frame 14 bytes against 8 here; arguments and the swap of two words are reloaded from the frame in the original (D4); semantics equal",
+   "audit": {
+    "d_normalised_pct": 79,
+    "pattern_diff": 13,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 35,
+    "len_orig": 38
+   }
+  },
+  "f85f8": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x85f8",
+   "ours": "0x0868-0x08fa",
+   "level": "differs",
+   "pairing_evidence": "register allocation differs (counter r11, value r10, pointer rr12 in the original; the character is also kept in the frame). Semantics equal, including the count quirk: with a sign the loop counts the original n, the return uses the decremented n (see KNOWLEDGE quirks)",
+   "audit": {
+    "d_normalised_pct": 72,
+    "pattern_diff": 25,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (manual reading)",
+    "d_classes": [
+     "D2"
+    ],
+    "difference_note": "indirect byte store through another register pair (rr2 here, rr4 in the original)",
+    "structure_flags": [],
+    "len_ours": 46,
+    "len_orig": 45
+   }
+  },
+  "make_ccl": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7956",
+   "ours": "0x0af0-0x0b66",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 76,
+    "pattern_diff": 17,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D2",
+     "D3",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 37,
+    "len_orig": 38
+   }
+  },
+  "put_char": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x71ca",
+   "ours": "0x0fca-0x1012",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 79,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 19,
+    "len_orig": 19
+   }
+  },
+  "scan_field": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7808",
+   "ours": "0x177c-0x191a",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 52,
+    "pattern_diff": 103,
+    "pattern_unexplained": 8,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (manual reading)",
+    "d_classes": [
+     "D5"
+    ],
+    "difference_note": "addressing of the count and pointer fields through register pairs and constant index (indirect and indexed forms, D5); by reading, no popt pattern",
+    "structure_flags": [],
+    "len_ours": 118,
+    "len_orig": 107
+   }
+  },
+  "ld_printf": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x79ca",
+   "ours": "0x35fc-0x368c",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 23,
+    "len_orig": 23
+   }
+  },
+  "ld_fprintf": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7a5e",
+   "ours": "0x40b0-0x4130",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 20,
+    "len_orig": 20
+   }
+  },
+  "ld_sprintf": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7ae2",
+   "ours": "0x4130-0x4206",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 42,
+    "len_orig": 42
+   }
+  },
+  "ld_doprnt": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7c26",
+   "ours": "0x368c-0x40b0",
+   "level": "differs",
+   "pairing_evidence": "714 instructions, same count as the original; 60 differ in content (order-independent comparison): register choice of temporaries (D2) and block placement / jump lengths (D7); frame 144 and stack offsets equal (fncheck strict); stream writes use the putc macro form; semantics checked by reading only, not run",
+   "audit": {
+    "d_normalised_pct": 79,
+    "pattern_diff": 306,
+    "pattern_unexplained": 14,
+    "reordered_instructions": 10,
+    "reordered_examples": [
+     "ld\tF,#N",
+     "ldl\trrS,F",
+     "ldl\trrS,F"
+    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: dec\t@rrS,#1; ld\trS,#N; ld\trS,@rrS; multl\trqS,#N",
+    "structure_flags": [],
+    "len_ours": 724,
+    "len_orig": 728
+   }
+  },
+  "ld_doscan": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7300",
+   "ours": "0x4730-0x495a",
+   "level": "differs",
+   "pairing_evidence": "175 instructions equal in count and order; only the temporaries differ: the old compiler keeps r2 reserved inside the switch body (ours: pointer copy in rr4 and byte in r3, original rr2 and r4); the form with the case bodies outside the switch has the original registers but puts the jump table stub after the compare (layout); semantics checked by reading only",
+   "audit": {
+    "d_normalised_pct": 99,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 175,
+    "len_orig": 175
+   }
+  },
+  "ld_scanf": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7212",
+   "ours": "0x23da-0x2420",
+   "level": "differs",
+   "pairing_evidence": "dead code (no caller, no address reference): wrapper of 0x7300 with a constant format; the address forms of the local pair and of the fourth argument differ (D5/D16). Same 14 instructions; the order of the format load differs (D15)",
+   "audit": {
+    "d_normalised_pct": 72,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 14
+   }
+  },
+  "ld_fscanf": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x724e",
+   "ours": "0x2394-0x23da",
+   "level": "differs",
+   "pairing_evidence": "dead code (no caller, no address reference): wrapper of 0x7300 that copies the third and fourth argument into a local pair; the stack address of the fifth argument is formed through rr0 in the original (D5/D16, address forms). Same 13 instructions",
+   "audit": {
+    "d_normalised_pct": 67,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 13
+   }
+  },
+  "ld_sscanf": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7286",
+   "ours": "0x2420-0x24a2",
+   "level": "differs",
+   "pairing_evidence": "wrapper of the formatter 0x7300 (5 callers): the old cc spills all four argument registers and the parameter in rr6 (D4), the byte local is placed one byte later in the frame (D16). Same 30 instructions; the formatter 0x7300 is still a deferred function (declared as a call)",
+   "audit": {
+    "d_normalised_pct": 84,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 32,
+    "len_orig": 30
+   }
+  },
+  "ld_inum": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x7526",
+   "ours": "f7526..7808",
+   "level": "exact"
+  }
+ },
+ "manual_classes": {
+  "ld_doprnt": {
+   "basis": "read",
+   "d_classes": [
+    "D2",
+    "D7"
+   ],
+   "note": "putc macro form (--cnt < 0 ? _flsbuf : (int)(*ptr++ = c)) reproduces the stream writes; 714 instructions equal in count, 60 differ in content: register choice of temporaries (rr4/r3 where ours uses rr2/r4, D2) and block placement of the output block and jump lengths (jr/jp, D7); frame 144 and stack offsets equal; semantics checked by reading only"
+  }
+ },
+ "findings_pending": [
+  {
+   "id": "sld-7c26-semantics",
+   "kind": "open (semantic check not done)",
+   "function": "ld_doprnt",
+   "status": "open",
+   "classification": "-",
+   "action": "run the function against the original (test harness or the whole sld) and compare the output; then close the remaining content differences (register choice of temporaries, block placement of the output block) and re-check the stream, wptr/scnt and float argument logic",
+   "result": "entry 0x7c26, 2514 bytes, 714 instructions equal in count, 60 differ in content (order-independent comparison), frame 144 and stack offsets equal; the putc macro form and pointer-typed wptr/ap/dp/sptr are measured against the original; semantics checked by reading only, the external helpers f8684, f8ad0, f943c, f8c86 are not checked against their own definitions"
+  }
+ ]
+}

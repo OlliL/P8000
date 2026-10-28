@@ -1,5 +1,6 @@
 	.seg
 	.extern	_stkseg
+	.extern	_printf
 	.extern	_calloc
 	.extern	_exit
 	.extern	_rindex
@@ -7,6 +8,7 @@
 	.extern	_umask
 	.extern	_chmod
 	.extern	_signal
+	.extern	_sscanf
 	.extern	_access
 	.extern	_open
 	.extern	_read
@@ -17,6 +19,7 @@
 	.extern	_mktemp
 	.extern	_swab
 	.extern	_creat
+	.extern	_putchar
 	.extern	_link
 	.extern	_write
 	.extern	_strcpy
@@ -27,14 +30,6 @@
 	.extern	_strrchr
 	.extern	_realloc
 	.extern	_free
-	.extern	__flsbuf
-	.extern	_tolower
-	.extern	__filbuf
-	.extern	_ungetc
-	.extern	__inflt
-	.extern	__length
-	.extern	__cnvt
-	.extern	__fegcvt
 	.code
 
 L56:
@@ -180,7 +175,7 @@ L1be:
 	dec	r15,#8
 	ldm	_stkseg+0(r15),r10,#4
 	ldl	rr6,#%010000A6
-	call	L79ca
+	call	_printf
 	ld	r7,<<2>>%04FA
 	call	L6fd0
 	ldl	rr10,rr2
@@ -217,13 +212,13 @@ L236:
 	and	r3,#%00FF
 	ldl	rr4,@rr12
 	ldl	rr6,#%010000B8
-	call	L79ca
+	call	_printf
 	ldb	rl2,rr12(#%0004)
 	extsb	r2
 	bit	r2,#5
 	jr	eq,L26c
 	ldl	rr6,#%010000D2
-	call	L79ca
+	call	_printf
 L26c:
 	ldb	rl3,rr12(#%0004)
 	extsb	r3
@@ -262,7 +257,7 @@ L2e0:
 L2e6:
 	ldl	rr6,#%01000112
 	ldl	rr4,rr10
-	call	L79ca
+	call	_printf
 	ldb	rl2,rr12(#%0008)
 	extsb	r2
 	bit	r2,#7
@@ -288,7 +283,7 @@ L326:
 	dec	r15,#12
 	ldm	_stkseg+6(r15),r11,#3
 	ldl	rr6,#%01000136
-	call	L79ca
+	call	_printf
 	ldk	r11,#0
 	jr	L3e8
 L34e:
@@ -299,33 +294,33 @@ L34e:
 	ld	r5,r11
 	ldb	rl4,@rr12
 	extsb	r4
-	call	L79ca
+	call	_printf
 	ld	r5,rr12(#%0004)
 	ld	r4,rr12(#%0006)
 	ld	r3,rr12(#%0008)
 	ldl	rr6,#%01000158
-	call	L79ca
+	call	_printf
 	ld	r5,rr12(#%0010)
 	ld	r4,rr12(#%0012)
 	ld	r3,rr12(#%0014)
 	ldl	rr6,#%01000180
-	call	L79ca
+	call	_printf
 	ld	r5,rr12(#%0022)
 	ld	r4,rr12(#%0024)
 	ld	r3,rr12(#%0026)
 	ldl	rr6,#%010001A6
-	call	L79ca
+	call	_printf
 	ldl	rr2,rr12(#%001E)
 	ldl	|_stkseg+0|(r15),rr2
 	ldl	rr4,rr12(#%0016)
 	ldl	rr2,rr12(#%001A)
 	ldl	rr6,#%010001CC
-	call	L79ca
+	call	_printf
 	ld	r5,rr12(#%0030)
 	ld	r4,rr12(#%0032)
 	ld	r3,rr12(#%0034)
 	ldl	rr6,#%010001F2
-	call	L79ca
+	call	_printf
 	inc	r11,#1
 L3e8:
 	cp	r11,<<2>>%F32C
@@ -336,7 +331,7 @@ L3e8:
 	dec	r15,#4
 	ldm	_stkseg+0(r15),r12,#2
 	ldl	rr6,#%01000216
-	call	L79ca
+	call	_printf
 	ldl	rr12,<<2>>%F32E
 	jp	L552
 L41e:
@@ -346,7 +341,7 @@ L41e:
 	extsb	r4
 	and	r4,#%00FF
 	ldl	rr6,#%0100022C
-	call	L79ca
+	call	_printf
 	ldb	rl5,rr12(#%0001)
 	extsb	r5
 	and	r5,#%00FF
@@ -357,69 +352,69 @@ L41e:
 	extsb	r3
 	and	r3,#%00FF
 	ldl	rr6,#%0100023E
-	call	L79ca
+	call	_printf
 	ld	r5,rr12(#%0004)
 	ld	r4,rr12(#%0006)
 	ld	r3,rr12(#%0008)
 	ldl	rr6,#%01000268
-	call	L79ca
+	call	_printf
 	ld	r5,rr12(#%001A)
 	ld	r4,rr12(#%001C)
 	ld	r3,rr12(#%001E)
 	ldl	rr6,#%01000290
-	call	L79ca
+	call	_printf
 	ldl	rr6,#%010002B6
-	call	L79ca
+	call	_printf
 	ld	r2,rr12(#%000A)
 	bit	r2,#0
 	jr	eq,L4b4
 	ldl	rr6,#%010002BE
-	call	L79ca
+	call	_printf
 L4b4:
 	ld	r2,rr12(#%000A)
 	bit	r2,#1
 	jr	eq,L4c8
 	ldl	rr6,#%010002C8
-	call	L79ca
+	call	_printf
 L4c8:
 	ld	r2,rr12(#%000A)
 	bit	r2,#2
 	jr	eq,L4dc
 	ldl	rr6,#%010002D2
-	call	L79ca
+	call	_printf
 L4dc:
 	ld	r2,rr12(#%000A)
 	bit	r2,#4
 	jr	eq,L4f0
 	ldl	rr6,#%010002DA
-	call	L79ca
+	call	_printf
 L4f0:
 	ld	r2,rr12(#%000A)
 	bit	r2,#5
 	jr	eq,L504
 	ldl	rr6,#%010002E4
-	call	L79ca
+	call	_printf
 L504:
 	ld	r2,rr12(#%000A)
 	bit	r2,#6
 	jr	eq,L518
 	ldl	rr6,#%010002EE
-	call	L79ca
+	call	_printf
 L518:
 	ld	r2,rr12(#%000A)
 	bit	r2,#3
 	jr	eq,L52c
 	ldl	rr6,#%010002F8
-	call	L79ca
+	call	_printf
 L52c:
 	ld	r2,rr12(#%000A)
 	bit	r2,#8
 	jr	eq,L540
 	ldl	rr6,#%01000302
-	call	L79ca
+	call	_printf
 L540:
 	ldl	rr6,#%0100030E
-	call	L79ca
+	call	_printf
 	ldl	rr2,rr12(#%0012)
 	ldl	rr12,rr2
 L552:
@@ -430,7 +425,7 @@ L552:
 	ret
 	dec	r15,#8
 	ldl	rr6,#%01000310
-	call	L79ca
+	call	_printf
 	ld	r2,<<2>>%F336
 	ld	|_stkseg+0|(r15),r2
 	ld	r2,<<2>>%F33E
@@ -440,15 +435,15 @@ L552:
 	ld	r4,<<2>>%F33A
 	ld	r3,<<2>>%F334
 	ld	r2,<<2>>%F33C
-	call	L79ca
+	call	_printf
 	ldl	rr6,#%0100033E
 	ld	r5,<<2>>%F338
 	ld	r4,<<2>>%F340
-	call	L79ca
+	call	_printf
 	ld	|_stkseg+4|(r15),#%0002
 L5ca:
 	ldl	rr6,#%0100034E
-	call	L79ca
+	call	_printf
 	clr	|_stkseg+6|(r15)
 L5da:
 	ld	r2,|_stkseg+6|(r15)
@@ -456,12 +451,12 @@ L5da:
 	sla	r2,#3
 	ld	r5,<<2>>%F332(r2)
 	ldl	rr6,#%01000358
-	call	L79ca
+	call	_printf
 	inc	|_stkseg+6|(r15),#1
 	cp	|_stkseg+6|(r15),#%0009
 	jr	lt,L5da
 	ldl	rr6,#%0100035E
-	call	L79ca
+	call	_printf
 	clr	|_stkseg+6|(r15)
 L614:
 	ld	r2,|_stkseg+6|(r15)
@@ -469,12 +464,12 @@ L614:
 	sla	r2,#3
 	ld	r5,<<2>>%F334(r2)
 	ldl	rr6,#%01000368
-	call	L79ca
+	call	_printf
 	inc	|_stkseg+6|(r15),#1
 	cp	|_stkseg+6|(r15),#%0009
 	jr	lt,L614
 	ldl	rr6,#%0100036E
-	call	L79ca
+	call	_printf
 	clr	|_stkseg+6|(r15)
 L64e:
 	ld	r2,|_stkseg+6|(r15)
@@ -482,12 +477,12 @@ L64e:
 	sla	r2,#3
 	ld	r5,<<2>>%F336(r2)
 	ldl	rr6,#%01000378
-	call	L79ca
+	call	_printf
 	inc	|_stkseg+6|(r15),#1
 	cp	|_stkseg+6|(r15),#%0009
 	jr	lt,L64e
 	ldl	rr6,#%0100037E
-	call	L79ca
+	call	_printf
 	clr	|_stkseg+6|(r15)
 L688:
 	ld	r2,|_stkseg+6|(r15)
@@ -495,7 +490,7 @@ L688:
 	sla	r2,#3
 	ld	r5,<<2>>%F338(r2)
 	ldl	rr6,#%01000384
-	call	L79ca
+	call	_printf
 	inc	|_stkseg+6|(r15),#1
 	cp	|_stkseg+6|(r15),#%0009
 	jr	lt,L688
@@ -758,7 +753,7 @@ La0c:
 	jr	eq,La44
 	ldl	rr6,#%0100055A
 	ldl	rr4,<<2>>%E4D6
-	call	L79ca
+	call	_printf
 La44:
 	ld	r7,|_stkseg+6|(r15)
 	ldl	rr4,|_stkseg+0|(r15)
@@ -876,7 +871,7 @@ Lb7e:
 	ldl	rr4,@rr6
 	ldl	rr6,rr4
 	ldl	rr4,#%01000698
-	call	L7286
+	call	_sscanf
 	cp	r2,#%0001
 	jr	ge,Lc1a
 	ldk	r7,#2
@@ -978,7 +973,7 @@ Ld7a:
 	ldl	rr2,#%7F000008
 	add	r3,r15
 	ldl	rr4,#%0100070E
-	call	L7286
+	call	_sscanf
 	cp	r2,#%0001
 	jr	eq,Ldc4
 	ldk	r7,#2
@@ -1007,7 +1002,7 @@ Le04:
 	ldl	rr2,#%7F000008
 	add	r3,r15
 	ldl	rr4,#%01000770
-	call	L7286
+	call	_sscanf
 	cp	r2,#%0001
 	jr	eq,Le36
 	ldk	r7,#2
@@ -1278,7 +1273,7 @@ L1190:
 	ldl	rr2,rr4
 	ldl	rr4,|_stkseg+12|(r15)
 	ldl	rr6,rr10
-	call	L7286
+	call	_sscanf
 	cp	r2,#%0001
 	jr	eq,L11d2
 	ldl	rr2,|_stkseg+4|(r15)
@@ -1924,7 +1919,7 @@ L19d2:
 	extsb	r2
 	ldl	rr6,#%01000A36
 	ldl	rr4,<<2>>%E4D6
-	call	L79ca
+	call	_printf
 	ld	r3,|_stkseg+4|(r15)
 	mult	rr2,#%0005
 	ldl	rr4,#%010042B4
@@ -2038,7 +2033,7 @@ L1b58:
 	ldl	rr6,<<1>>%04AC(r3)
 	ldl	rr2,rr6
 	ldl	rr6,#%01000B18
-	call	L79ca
+	call	_printf
 	ldl	rr6,rr12
 	ld	r5,r11
 	calr	L1f96
@@ -2098,7 +2093,7 @@ L1c28:
 	ldl	rr2,rr4
 	ldl	rr4,<<2>>%E4D6
 	ldl	rr6,#%01000A80
-	call	L79ca
+	call	_printf
 L1c8e:
 	ldl	rr2,|_stkseg+12|(r15)
 	inc	r3,#4
@@ -2141,7 +2136,7 @@ L1cb8:
 	ldl	rr2,rr4
 	ldl	rr4,<<2>>%E4D6
 	ldl	rr6,#%01000AC0
-	call	L79ca
+	call	_printf
 	jp	L1b12
 L1d26:
 	clr	<<1>>%42A8
@@ -2842,10 +2837,10 @@ L25d0:
 	cp	r2,#%0008
 	jr	ge,L25ea
 	ldk	r7,#9
-	call	L71ca
+	call	_putchar
 L25ea:
 	ldk	r7,#9
-	call	L71ca
+	call	_putchar
 	ldk	r7,#1
 	ldl	rr4,#%01000C2A
 	calr	L3408
@@ -3928,22 +3923,22 @@ L3408:
 	jr	ne,L342a
 	ldl	rr6,#%01000E84
 	ldl	rr4,<<2>>%E4D6
-	call	L79ca
+	call	_printf
 L342a:
 	ldl	rr2,<<2>>%E4C0
 	testl	rr2
 	jr	eq,L3468
 	ldl	rr6,#%01000E8A
 	ldl	rr4,rr2
-	call	L79ca
+	call	_printf
 	testb	<<2>>%0438
 	jr	eq,L345c
 	ldl	rr6,#%01000E8E
 	ldl	rr4,#%02000438
-	call	L79ca
+	call	_printf
 L345c:
 	ldl	rr6,#%01000E96
-	call	L79ca
+	call	_printf
 L3468:
 	ld	r2,_stkseg+22(r15)
 	ld	|_stkseg+0|(r15),r2
@@ -3952,9 +3947,9 @@ L3468:
 	ld	r4,|_stkseg+2|(r15)
 	ld	r3,_stkseg+18(r15)
 	ld	r2,_stkseg+20(r15)
-	call	L79ca
+	call	_printf
 	ldl	rr6,#%01000E9A
-	call	L79ca
+	call	_printf
 	cp	|_stkseg+12|(r15),#%0001
 	jr	le,L34aa
 	call	La5c
@@ -3985,7 +3980,7 @@ L34ea:
 	jr	c,L34de
 	ldl	rr6,#%01000E9C
 	ld	r5,|_stkseg+0|(r15)
-	call	L79ca
+	call	_printf
 	ldk	r7,#2
 	ldl	rr4,#%01000EAA
 	calr	L3408
@@ -4535,10 +4530,10 @@ L3bda:
 	cp	r2,#%0008
 	jr	ge,L3bf4
 	ldk	r7,#9
-	call	L71ca
+	call	_putchar
 L3bf4:
 	ld	r7,#%0020
-	call	L71ca
+	call	_putchar
 	sub	r7,r7
 	ldl	rr4,#%01000F38
 	calr	L3408
@@ -4791,7 +4786,7 @@ L3f14:
 	add	r0,r0
 	add	r3,r0
 	ldl	rr4,|_stkseg+20|(r15)
-	call	L7286
+	call	_sscanf
 	cp	r2,#%0001
 	jr	eq,L3f7c
 	ldk	r7,#2
@@ -5454,14 +5449,14 @@ L484c:
 	test	<<1>>%04E6
 	jr	ne,L4882
 	ldl	rr6,#%010012E4
-	call	L79ca
+	call	_printf
 L4882:
 	inc	<<1>>%04E6,#1
 	ldl	rr6,rr8
 	inc	r7,#8
 	call	L6522
 	ldk	r7,#10
-	call	L71ca
+	call	_putchar
 L489a:
 	ldl	rr6,rr8
 	call	L705e
@@ -7617,7 +7612,7 @@ L658a:
 	jr	eq,L65a4
 	ldb	rl7,@rr12
 	extsb	r7
-	call	L71ca
+	call	_putchar
 	inc	r10,#1
 	inc	r13,#1
 L659c:
@@ -7629,7 +7624,7 @@ L65a4:
 	testb	|_stkseg+5|(r15)
 	jr	eq,L65b8
 	ldl	rr6,#%01001568
-	call	L79ca
+	call	_printf
 	inc	r10,#3
 L65b8:
 	ld	r2,r10
@@ -7899,10 +7894,10 @@ L68cc:
 	cp	r2,#%0008
 	jr	ge,L68e4
 	ldk	r7,#9
-	call	L71ca
+	call	_putchar
 L68e4:
 	ld	r7,#%0020
-	call	L71ca
+	call	_putchar
 	ldk	r7,#1
 	ldl	rr4,#%010015DC
 	call	L3408
@@ -8639,7 +8634,7 @@ L717c:
 	ldl	rr6,#%01001780
 	ld	r5,<<2>>%04FA
 	ld	r4,#%0FFA
-	call	L79ca
+	call	_printf
 	ret
 L719e:
 	dec	r15,#6
@@ -8656,1750 +8651,4 @@ L71b8:
 	call	L3408
 L71c6:
 	inc	r15,#6
-	ret
-L71ca:
-	dec	r15,#4
-	ld	_stkseg+2(r15),r13
-	ld	r13,r7
-	dec	<<1>>%1952,#1
-	cp	<<1>>%1952,#%0000
-	jr	ge,L71f4
-	ld	r7,r13
-	ldl	rr4,#%0100194E
-	call	__flsbuf
-	jr	L7208
-L71f4:
-	ldl	rr2,<<1>>%194E
-	inc	<<1>>%1950,#1
-	ld	r4,r13
-	ldb	@rr2,rl4
-	subb	rh4,rh4
-	ld	r2,r4
-L7208:
-	ld	r13,_stkseg+2(r15)
-	inc	r15,#4
-	ret
-	sub	r15,#%0026
-	ldm	|_stkseg+4|(r15),r2,#6
-	ldl	|_stkseg+16|(r15),rr4
-	ldl	|_stkseg+20|(r15),rr2
-	ldl	rr0,#%7F00002A
-	add	r1,r15
-	ldl	|_stkseg+0|(r15),rr0
-	ldl	rr2,#%7F000010
-	add	r3,r15
-	ldl	rr4,|_stkseg+12|(r15)
-	ldl	rr6,#%01001942
-	call	L7300
-	add	r15,#%0026
-	ret
-	sub	r15,#%0026
-	ldm	|_stkseg+4|(r15),r2,#6
-	ldl	|_stkseg+16|(r15),rr2
-	ldl	rr0,_stkseg+42(r15)
-	ldl	|_stkseg+20|(r15),rr0
-	ldl	rr0,#%7F00002E
-	add	r1,r15
-	ldl	|_stkseg+0|(r15),rr0
-	ldl	rr2,#%7F000010
-	add	r3,r15
-	call	L7300
-	add	r15,#%0026
-	ret
-L7286:
-	sub	r15,#%0036
-	ldm	_stkseg+50(r15),r12,#2
-	ldm	|_stkseg+4|(r15),r2,#4
-	ldl	rr12,rr6
-	ldb	|_stkseg+26|(r15),#%41
-	ldl	|_stkseg+22|(r15),rr6
-	ldl	|_stkseg+16|(r15),rr6
-	clr	|_stkseg+20|(r15)
-	jr	L72b2
-L72ae:
-	inc	|_stkseg+20|(r15),#1
-L72b2:
-	ldl	rr2,rr12
-	inc	r13,#1
-	testb	@rr2
-	jr	ne,L72ae
-	ldl	rr2,|_stkseg+4|(r15)
-	ldl	|_stkseg+28|(r15),rr2
-	ldl	rr4,_stkseg+58(r15)
-	ldl	|_stkseg+32|(r15),rr4
-	ldl	rr6,#%7F00003E
-	add	r7,r15
-	ldl	|_stkseg+0|(r15),rr6
-	ldl	rr6,#%7F000010
-	add	r7,r15
-	ldl	rr2,#%7F00001C
-	add	r3,r15
-	ldl	rr4,|_stkseg+8|(r15)
-	call	L7300
-	ldm	r12,_stkseg+50(r15),#2
-	add	r15,#%0036
-	ret
-L7300:
-	sub	r15,#%0030
-	ldm	_stkseg+38(r15),r9,#5
-	ldl	|_stkseg+16|(r15),rr6
-	ldl	rr10,rr2
-	ldl	rr12,rr4
-	clr	|_stkseg+20|(r15)
-	clr	|_stkseg+30|(r15)
-	clr	|_stkseg+34|(r15)
-	jp	L74ac
-L7326:
-	sll	r6,#2
-	neg	r6
-	ldl	rr4,<<1>>%1854(r6)
-	jp	@rr4
-	ldl	rr2,rr12
-	inc	r13,#1
-	ldb	rl4,@rr2
-	extsb	r4
-	ld	r9,r4
-	cp	r4,#%0025
-	jp	eq,L74ca
-	subl	rr2,rr2
-	ldl	|_stkseg+26|(r15),rr2
-	cp	r4,#%002A
-	jr	eq,L736e
-	ldl	|_stkseg+26|(r15),rr10
-	inc	r11,#4
-	inc	|_stkseg+34|(r15),#1
-	cp	|_stkseg+34|(r15),#%0002
-	jr	ne,L7376
-	ldl	rr10,_stkseg+52(r15)
-	jr	L7376
-L736e:
-	ldb	rl2,@rr12
-	extsb	r2
-	ld	r9,r2
-	inc	r13,#1
-L7376:
-	clr	|_stkseg+22|(r15)
-	ld	|_stkseg+32|(r15),#%0001
-	jr	L739c
-L7382:
-	ld	r3,|_stkseg+22|(r15)
-	mult	rr2,#%000A
-	add	r3,r9
-	sub	r3,#%0030
-	ld	|_stkseg+22|(r15),r3
-	ldb	rl2,@rr12
-	extsb	r2
-	ld	r9,r2
-	inc	r13,#1
-L739c:
-	ldb	rl2,<<1>>%1AAD(r9)
-	extsb	r2
-	bit	r2,#2
-	jr	ne,L7382
-	test	|_stkseg+22|(r15)
-	jr	ne,L73b4
-	ld	|_stkseg+22|(r15),#%7530
-L73b4:
-	cp	r9,#%006C
-	jr	ne,L73ca
-	ldb	rl2,@rr12
-	extsb	r2
-	ld	r9,r2
-	inc	r13,#1
-	ld	|_stkseg+32|(r15),#%0002
-	jr	L73ea
-L73ca:
-	cp	r9,#%0068
-	jr	ne,L73de
-	clr	|_stkseg+32|(r15)
-	ldb	rl2,@rr12
-	extsb	r2
-	ld	r9,r2
-	inc	r13,#1
-	jr	L73ea
-L73de:
-	cp	r9,#%005B
-	jr	ne,L73ea
-	ldl	rr6,rr12
-	calr	L7956
-	ldl	rr12,rr2
-L73ea:
-	ldb	rl2,<<1>>%1AAD(r9)
-	extsb	r2
-	bit	r2,#0
-	jr	eq,L7406
-	ld	r7,r9
-	call	_tolower
-	ld	r9,r2
-	ld	|_stkseg+32|(r15),#%0002
-L7406:
-	test	r9
-	jr	ne,L7414
-L740a:
-	ld	r2,#%FFFF
-	jp	L7518
-L7414:
-	ldl	rr2,|_stkseg+16|(r15)
-	ldl	|_stkseg+0|(r15),rr2
-	ldl	rr4,#%7F00001E
-	add	r5,r15
-	ldl	|_stkseg+4|(r15),rr4
-	ldl	rr6,|_stkseg+26|(r15)
-	ld	r5,r9
-	ld	r4,|_stkseg+22|(r15)
-	ld	r3,|_stkseg+32|(r15)
-	calr	L7526
-	test	r2
-	jr	eq,L7448
-	ldl	rr2,|_stkseg+26|(r15)
-	testl	rr2
-	jr	eq,L7448
-	inc	|_stkseg+20|(r15),#1
-L7448:
-	test	|_stkseg+30|(r15)
-	jr	eq,L74ac
-	test	|_stkseg+20|(r15)
-	jr	eq,L740a
-	jr	L7514
-L7456:
-	ldl	rr2,|_stkseg+16|(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L7472
-	ldl	rr6,|_stkseg+16|(r15)
-	call	__filbuf
-	jr	L7484
-L7472:
-	ldl	rr2,|_stkseg+16|(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ldb	rl2,@rr4
-	subb	rh2,rh2
-L7484:
-	ld	|_stkseg+24|(r15),r2
-	cp	r2,#%0020
-	jr	eq,L7456
-	cp	r2,#%0009
-	jr	eq,L7456
-	cp	r2,#%000A
-	jr	eq,L7456
-	cp	r2,#%FFFF
-	jr	eq,L74ac
-	ld	r7,r2
-	ldl	rr4,|_stkseg+16|(r15)
-	call	_ungetc
-L74ac:
-	ldb	rl3,@rr12
-	extsb	r3
-	ld	r9,r3
-	ld	r2,r3
-	inc	r13,#1
-	ldl	rr4,#%0100183A
-	ld	r6,#%0005
-	cpir	r2,@rr4,r6,eq
-	jp	eq,L7326
-L74ca:
-	ldl	rr2,|_stkseg+16|(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L74e6
-	ldl	rr6,|_stkseg+16|(r15)
-	call	__filbuf
-	jr	L74f8
-L74e6:
-	ldl	rr2,|_stkseg+16|(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ldb	rl2,@rr4
-	subb	rh2,rh2
-L74f8:
-	ld	|_stkseg+24|(r15),r2
-	cp	r9,|_stkseg+24|(r15)
-	jr	eq,L74ac
-	cp	r2,#%FFFF
-	jr	eq,L740a
-	ld	r7,r2
-	ldl	rr4,|_stkseg+16|(r15)
-	call	_ungetc
-L7514:
-	ld	r2,|_stkseg+20|(r15)
-L7518:
-	ldm	r9,_stkseg+38(r15),#5
-	add	r15,#%0030
-	ret
-L7526:
-	sub	r15,#%001E
-	ldm	_stkseg+26(r15),r12,#2
-	ldm	|_stkseg+4|(r15),r3,#5
-	clr	|_stkseg+18|(r15)
-	cp	r5,#%0063
-	jr	eq,L7550
-	cp	r5,#%0073
-	jr	eq,L7550
-	cp	|_stkseg+8|(r15),#%005B
-	jr	ne,L7580
-L7550:
-	ldl	rr2,_stkseg+38(r15)
-	ldl	|_stkseg+0|(r15),rr2
-	ldl	rr6,|_stkseg+10|(r15)
-	testl	rr6
-	jr	eq,L7568
-	ldl	rr4,@rr6
-	ldl	rr6,rr4
-	jr	L756a
-L7568:
-	subl	rr6,rr6
-L756a:
-	ld	r5,|_stkseg+8|(r15)
-	ld	r4,|_stkseg+6|(r15)
-	ldl	rr2,_stkseg+34(r15)
-	calr	L7808
-	jp	L77fa
-L7580:
-	cp	|_stkseg+8|(r15),#%0065
-	jr	eq,L7590
-	cp	|_stkseg+8|(r15),#%0066
-	jr	ne,L75b8
-L7590:
-	ldl	rr2,_stkseg+38(r15)
-	ldl	|_stkseg+0|(r15),rr2
-	ldl	rr6,|_stkseg+10|(r15)
-	ld	r5,|_stkseg+6|(r15)
-	ld	r4,|_stkseg+4|(r15)
-	ldl	rr2,_stkseg+34(r15)
-	call	__inflt
-	jp	L77fa
-L75b8:
-	subl	rr2,rr2
-	ldl	|_stkseg+20|(r15),rr2
-	ldk	r12,#10
-	cp	|_stkseg+8|(r15),#%006F
-	jr	ne,L75cc
-	ldk	r12,#8
-	jr	L75d8
-L75cc:
-	cp	|_stkseg+8|(r15),#%0078
-	jr	ne,L75d8
-	ld	r12,#%0010
-L75d8:
-	clr	|_stkseg+14|(r15)
-L75dc:
-	ldl	rr2,_stkseg+34(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L75fc
-	ldl	rr6,_stkseg+34(r15)
-	call	__filbuf
-	jr	L7610
-L75fc:
-	ldl	rr2,_stkseg+34(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ldb	rl2,@rr4
-	subb	rh2,rh2
-L7610:
-	ld	r13,r2
-	cp	r2,#%0020
-	jr	eq,L75dc
-	cp	r2,#%0009
-	jr	eq,L75dc
-	cp	r2,#%000A
-	jr	eq,L75dc
-	cp	r2,#%002D
-	jr	ne,L76a0
-	inc	|_stkseg+14|(r15),#1
-	ldl	rr2,_stkseg+34(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L764e
-	ldl	rr6,_stkseg+34(r15)
-	call	__filbuf
-	jr	L7662
-L764e:
-	ldl	rr2,_stkseg+34(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ldb	rl2,@rr4
-	subb	rh2,rh2
-L7662:
-	ld	r13,r2
-	dec	|_stkseg+6|(r15),#1
-	jr	L76e0
-L766a:
-	test	|_stkseg+14|(r15)
-	jr	eq,L767a
-	subl	rr2,rr2
-	subl	rr2,|_stkseg+20|(r15)
-	ldl	|_stkseg+20|(r15),rr2
-L767a:
-	cp	r13,#%FFFF
-	jp	eq,L77a0
-	ld	r7,r13
-	ldl	rr4,_stkseg+34(r15)
-	call	_ungetc
-	ldl	rr2,_stkseg+38(r15)
-	clr	@rr2
-	jp	L77aa
-L76a0:
-	cp	r13,#%002B
-	jr	ne,L76e0
-	dec	|_stkseg+6|(r15),#1
-	ldl	rr2,_stkseg+34(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L76ca
-L76bc:
-	ldl	rr6,_stkseg+34(r15)
-	call	__filbuf
-	jr	L76de
-L76ca:
-	ldl	rr2,_stkseg+34(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ldb	rl2,@rr4
-	subb	rh2,rh2
-L76de:
-	ld	r13,r2
-L76e0:
-	dec	|_stkseg+6|(r15),#1
-	cp	|_stkseg+6|(r15),#%0000
-	jr	lt,L766a
-	ldb	rl2,<<1>>%1AAD(r13)
-	extsb	r2
-	bit	r2,#2
-	jr	ne,L7716
-	cp	r12,#%0010
-	jr	ne,L766a
-	cp	r13,#%0061
-	jr	lt,L770a
-	cp	r13,#%0066
-	jr	le,L7716
-L770a:
-	cp	r13,#%0041
-	jr	lt,L766a
-	cp	r13,#%0046
-	jr	gt,L766a
-L7716:
-	ld	|_stkseg+18|(r15),#%0001
-	cp	r12,#%0008
-	jr	ne,L772c
-	ldl	rr2,|_stkseg+20|(r15)
-	slal	rr2,#3
-	jr	L774c
-L772c:
-	cp	r12,#%000A
-	jr	ne,L7744
-	ldl	rr2,|_stkseg+20|(r15)
-	slal	rr2,#2
-	addl	rr2,|_stkseg+20|(r15)
-	slal	rr2,#1
-	jr	L774c
-L7744:
-	ldl	rr2,|_stkseg+20|(r15)
-	slal	rr2,#4
-L774c:
-	ldl	|_stkseg+20|(r15),rr2
-	ld	|_stkseg+16|(r15),r13
-	cp	r13,#%0030
-	jr	lt,L7766
-	cp	r13,#%0039
-	jr	gt,L7766
-	sub	r13,#%0030
-	jr	L777c
-L7766:
-	cp	r13,#%0061
-	jr	lt,L7778
-	cp	r13,#%0066
-	jr	gt,L7778
-	sub	r13,#%0057
-	jr	L777c
-L7778:
-	sub	r13,#%0037
-L777c:
-	ld	r3,r13
-	exts	rr2
-	addl	rr2,|_stkseg+20|(r15)
-	ldl	|_stkseg+20|(r15),rr2
-	ld	r13,|_stkseg+16|(r15)
-	ldl	rr2,_stkseg+34(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L76ca
-	jr	L76bc
-L77a0:
-	ldl	rr2,_stkseg+38(r15)
-	ld	@rr2,#%0001
-L77aa:
-	ldl	rr2,|_stkseg+10|(r15)
-	testl	rr2
-	jr	eq,L77f8
-	ld	r2,|_stkseg+4|(r15)
-	ldl	rr4,#%01001858
-	ld	r3,#%0003
-	cpir	r2,@rr4,r3,eq
-	jr	ne,L77f2
-	sll	r3,#2
-	neg	r3
-	ldl	rr4,<<1>>%1866(r3)
-	jp	@rr4
-	ldl	rr4,|_stkseg+10|(r15)
-	ldl	rr6,@rr4
-	ld	r3,|_stkseg+22|(r15)
-	ld	@rr6,r3
-	jr	L77f2
-L77e2:
-	ldk	r2,#1
-	jr	L77fa
-	ldl	rr4,|_stkseg+10|(r15)
-	ldl	rr6,@rr4
-	ldl	rr0,|_stkseg+20|(r15)
-	ldl	@rr6,rr0
-L77f2:
-	test	|_stkseg+18|(r15)
-	jr	ne,L77e2
-L77f8:
-	sub	r2,r2
-L77fa:
-	ldm	r12,_stkseg+26(r15),#2
-	add	r15,#%001E
-	ret
-L7808:
-	sub	r15,#%001E
-	ldm	_stkseg+20(r15),r9,#5
-	ldl	|_stkseg+4|(r15),rr4
-	ldl	rr10,rr2
-	ldl	rr12,rr6
-	ldl	rr2,_stkseg+34(r15)
-	clr	@rr2
-	ldl	|_stkseg+12|(r15),rr12
-	cp	r5,#%0063
-	jr	ne,L783a
-	cp	r4,#%7530
-	jr	ne,L783a
-	ld	|_stkseg+4|(r15),#%0001
-L783a:
-	clr	|_stkseg+16|(r15)
-	cp	|_stkseg+6|(r15),#%0073
-	jr	ne,L784c
-	ld	|_stkseg+16|(r15),#%0001
-L784c:
-	ldl	rr2,rr10
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L7864
-	ldl	rr6,rr10
-	call	__filbuf
-	jr	L7872
-L7864:
-	ldl	rr2,@rr10
-	inc	r11,#2
-	inc	@rr10,#1
-	dec	r11,#2
-	ldb	rl4,@rr2
-	subb	rh4,rh4
-	ld	r2,r4
-L7872:
-	ld	r9,r2
-	ldb	rl3,<<1>>%17BA(r2)
-	extsb	r3
-	and	r3,|_stkseg+16|(r15)
-	jr	eq,L7888
-	cp	r9,#%FFFF
-	jr	ne,L784c
-L7888:
-	ld	|_stkseg+16|(r15),#%0001
-	cp	|_stkseg+6|(r15),#%0063
-	jr	ne,L789c
-	clr	|_stkseg+16|(r15)
-	jr	L78fa
-L789c:
-	cp	|_stkseg+6|(r15),#%005B
-	jr	ne,L78fa
-	ld	|_stkseg+16|(r15),#%0002
-	jr	L78fa
-L78ac:
-	ldb	rl2,<<1>>%17BA(r9)
-	extsb	r2
-	and	r2,|_stkseg+16|(r15)
-	test	r2
-	jr	ne,L7900
-	testl	rr12
-	jr	eq,L78c6
-	ld	r2,r9
-	ldb	@rr12,rl2
-	inc	r13,#1
-L78c6:
-	dec	|_stkseg+4|(r15),#1
-	cp	|_stkseg+4|(r15),#%0000
-	jr	le,L7900
-	ldl	rr2,rr10
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L78ea
-	ldl	rr6,rr10
-	call	__filbuf
-	jr	L78f8
-L78ea:
-	ldl	rr2,@rr10
-	inc	r11,#2
-	inc	@rr10,#1
-	dec	r11,#2
-	ldb	rl4,@rr2
-	subb	rh4,rh4
-	ld	r2,r4
-L78f8:
-	ld	r9,r2
-L78fa:
-	cp	r9,#%FFFF
-	jr	ne,L78ac
-L7900:
-	cp	r9,#%FFFF
-	jr	eq,L7922
-	cp	|_stkseg+4|(r15),#%0000
-	jr	le,L7918
-	ld	r7,r9
-	ldl	rr4,rr10
-	call	_ungetc
-L7918:
-	ldl	rr2,_stkseg+34(r15)
-	clr	@rr2
-	jr	L792c
-L7922:
-	ldl	rr2,_stkseg+34(r15)
-	ld	@rr2,#%0001
-L792c:
-	testl	rr12
-	jr	eq,L7946
-	cpl	rr12,|_stkseg+12|(r15)
-	jr	eq,L7946
-	cp	|_stkseg+6|(r15),#%0063
-	jr	eq,L7942
-	clrb	@rr12
-	inc	r13,#1
-L7942:
-	ldk	r2,#1
-	jr	L7948
-L7946:
-	sub	r2,r2
-L7948:
-	ldm	r9,_stkseg+20(r15),#5
-	add	r15,#%001E
-	ret
-L7956:
-	sub	r15,#%0014
-	ldm	_stkseg+12(r15),r10,#4
-	ldl	rr12,rr6
-	ldk	r10,#0
-	cpb	@rr12,#%5E
-	jr	ne,L7970
-	inc	r10,#1
-	inc	r13,#1
-L7970:
-	ldk	r11,#0
-L7972:
-	test	r10
-	jr	eq,L797e
-	resb	<<1>>%17BA(r11),#1
-	jr	L7984
-L797e:
-	setb	<<1>>%17BA(r11),#1
-L7984:
-	inc	r11,#1
-	cp	r11,#%0080
-	jr	lt,L7972
-L798c:
-	ldl	rr2,rr12
-	inc	r13,#1
-	ldb	rl4,@rr2
-	extsb	r4
-	ld	r11,r4
-	and	r4,#%007F
-	cp	r4,#%005D
-	jr	eq,L79ba
-	test	r10
-	jr	eq,L79ac
-	setb	<<1>>%17BA(r11),#1
-	jr	L79b2
-L79ac:
-	resb	<<1>>%17BA(r11),#1
-L79b2:
-	inc	r11,#1
-	test	r11
-	jr	ne,L798c
-	dec	r13,#1
-L79ba:
-	ldl	rr2,rr12
-	ldm	r10,_stkseg+12(r15),#4
-	add	r15,#%0014
-	ret
-L79ca:
-	sub	r15,#%0060
-	.word	%4FFC,%8303,%7F2E	// EPU
-	.word	%4FFC,%8203,%7F26	// EPU
-	.word	%4FFC,%8103,%7F1E	// EPU
-	.word	%4FFC,%8003,%7F16	// EPU
-	ldm	|_stkseg+10|(r15),r2,#6
-	ld	|_stkseg+54|(r15),r5
-	ld	|_stkseg+56|(r15),r4
-	ld	|_stkseg+58|(r15),r3
-	ld	|_stkseg+60|(r15),r2
-	.word	%4FFC,%8303,%7F3E	// EPU
-	.word	%4FFC,%8203,%7F46	// EPU
-	.word	%4FFC,%8103,%7F4E	// EPU
-	.word	%4FFC,%8003,%7F56	// EPU
-	ldl	rr0,#%0100194E
-	ldl	<<1>>%90E4,rr0
-	ldl	rr0,#%7F000064
-	add	r1,r15
-	ldl	|_stkseg+0|(r15),rr0
-	ldk	r0,#1
-	ld	|_stkseg+4|(r15),r0
-	ldl	rr0,#%0100194E
-	ldl	|_stkseg+6|(r15),rr0
-	ldl	rr4,#%7F000036
-	add	r5,r15
-	ldl	rr2,#%7F00003E
-	add	r3,r15
-	call	L7c26
-	ld	<<1>>%90E2,r2
-	add	r15,#%0060
-	ret
-	sub	r15,#%005C
-	.word	%4FFC,%8303,%7F2E	// EPU
-	.word	%4FFC,%8203,%7F26	// EPU
-	.word	%4FFC,%8103,%7F1E	// EPU
-	.word	%4FFC,%8003,%7F16	// EPU
-	ldm	|_stkseg+10|(r15),r2,#6
-	ld	|_stkseg+54|(r15),r3
-	ld	|_stkseg+56|(r15),r2
-	.word	%4FFC,%8303,%7F3A	// EPU
-	.word	%4FFC,%8203,%7F42	// EPU
-	.word	%4FFC,%8103,%7F4A	// EPU
-	.word	%4FFC,%8003,%7F52	// EPU
-	ldl	<<1>>%90E4,rr6
-	ldl	rr0,#%7F000060
-	add	r1,r15
-	ldl	|_stkseg+0|(r15),rr0
-	ldk	r0,#3
-	ld	|_stkseg+4|(r15),r0
-	ldl	|_stkseg+6|(r15),rr6
-	ldl	rr4,#%7F000036
-	add	r5,r15
-	ldl	rr2,#%7F00003A
-	add	r3,r15
-	ldl	rr6,|_stkseg+14|(r15)
-	call	L7c26
-	ld	<<1>>%90E2,r2
-	add	r15,#%005C
-	ret
-	sub	r15,#%0068
-	.word	%4FFC,%8303,%7F2E	// EPU
-	.word	%4FFC,%8203,%7F26	// EPU
-	.word	%4FFC,%8103,%7F1E	// EPU
-	.word	%4FFC,%8003,%7F16	// EPU
-	ldm	|_stkseg+10|(r15),r2,#6
-	ldb	|_stkseg+64|(r15),#%42
-	ldl	rr0,|_stkseg+18|(r15)
-	ldl	|_stkseg+54|(r15),rr0
-	ld	|_stkseg+58|(r15),#%7FFF
-	ld	|_stkseg+66|(r15),r3
-	ld	|_stkseg+68|(r15),r2
-	.word	%4FFC,%8303,%7F46	// EPU
-	.word	%4FFC,%8203,%7F4E	// EPU
-	.word	%4FFC,%8103,%7F56	// EPU
-	.word	%4FFC,%8003,%7F5E	// EPU
-	ldl	rr0,#%7F000036
-	add	r1,r15
-	ldl	<<1>>%90E4,rr0
-	ldl	rr0,#%7F00006C
-	add	r1,r15
-	ldl	|_stkseg+0|(r15),rr0
-	ldk	r0,#3
-	ld	|_stkseg+4|(r15),r0
-	ldl	rr0,#%7F000036
-	add	r1,r15
-	ldl	|_stkseg+6|(r15),rr0
-	ldl	rr4,#%7F000042
-	add	r5,r15
-	ldl	rr2,#%7F000046
-	add	r3,r15
-	ldl	rr6,|_stkseg+14|(r15)
-	call	L7c26
-	ld	<<1>>%90E2,r2
-	dec	|_stkseg+58|(r15),#1
-	cp	|_stkseg+58|(r15),#%0000
-	jr	ge,L7ba2
-	ldl	rr4,#%7F000036
-	add	r5,r15
-	sub	r7,r7
-	call	__flsbuf
-	jr	L7bb0
-L7ba2:
-	ldl	rr2,|_stkseg+54|(r15)
-	inc	|_stkseg+56|(r15),#1
-	clrb	@rr2
-	subb	rl2,rl2
-	subb	rh2,rh2
-L7bb0:
-	ld	r2,<<1>>%90E2
-	add	r15,#%0068
-	ret
-L7bbc:
-	dec	r15,#14
-	ldm	|_stkseg+0|(r15),r2,#6
-	ldl	rr0,rr6
-	test	@rr6
-	jr	eq,L7bd0
-	cp	@rr6,#%0002
-	jr	ne,L7be2
-L7bd0:
-	ldl	rr2,|_stkseg+8|(r15)
-	inc	@rr2,#1
-	ldl	rr4,|_stkseg+4|(r15)
-	inc	r5,#2
-	inc	@rr4,#2
-	dec	r5,#2
-	jr	L7bfa
-L7be2:
-	ldl	rr2,|_stkseg+8|(r15)
-	cp	@rr2,#%0004
-	jr	ne,L7bfa
-	inc	@rr2,#2
-	ldl	rr4,|_stkseg+4|(r15)
-	ldl	rr6,|_stkseg+0|(r15)
-	ldl	@rr4,rr6
-	jr	L7c22
-L7bfa:
-	ldl	rr2,|_stkseg+4|(r15)
-	ldl	rr4,@rr2
-	ld	r6,@rr4
-	ld	|_stkseg+12|(r15),r6
-	ldl	rr2,|_stkseg+4|(r15)
-	ldl	rr4,@rr2
-	ld	r7,rr4(#%0002)
-	ldl	rr4,@rr2
-	ld	@rr4,r7
-	ldl	rr2,|_stkseg+4|(r15)
-	ldl	rr4,@rr2
-	inc	r5,#2
-	ld	r7,|_stkseg+12|(r15)
-	ld	@rr4,r7
-L7c22:
-	inc	r15,#14
-	ret
-L7c26:
-	sub	r15,#%0090
-	ldm	_stkseg+134(r15),r9,#5
-	ldm	|_stkseg+0|(r15),r2,#4
-	ldl	rr12,rr6
-	clr	|_stkseg+12|(r15)
-	clr	|_stkseg+126|(r15)
-	ldl	|_stkseg+14|(r15),rr4
-	call	__length
-	ld	r10,r2
-	jr	L7c8c
-L7c50:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L7c72
-L7c62:
-	ld	r7,r11
-	ldl	rr4,_stkseg+154(r15)
-	call	__flsbuf
-	jr	L7c88
-L7c72:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ld	r2,r11
-	ldb	@rr4,rl2
-	subb	rh2,rh2
-L7c88:
-	inc	|_stkseg+126|(r15),#1
-L7c8c:
-	ld	r2,r10
-	dec	r10,#1
-	test	r2
-	jp	eq,L85c6
-	ldl	rr2,rr12
-	inc	r13,#1
-	ldb	rl4,@rr2
-	subb	rh4,rh4
-	ld	r11,r4
-	cp	r4,#%0025
-	jr	ne,L7c50
-	test	r10
-	jp	eq,L85c6
-	dec	r10,#1
-	ldk	r2,#0
-	ldb	rl2,@rr12
-	ld	r11,r2
-	inc	r13,#1
-	clr	|_stkseg+22|(r15)
-	ld	|_stkseg+24|(r15),#%FFFF
-	ldb	|_stkseg+129|(r15),#%20
-	clr	|_stkseg+124|(r15)
-	clr	|_stkseg+120|(r15)
-	clr	|_stkseg+118|(r15)
-	clr	|_stkseg+122|(r15)
-	clr	|_stkseg+114|(r15)
-	jr	L7d26
-L7ce0:
-	test	|_stkseg+120|(r15)
-	jr	eq,L7d56
-	ldb	|_stkseg+109|(r15),#%20
-	ld	|_stkseg+122|(r15),#%0001
-	jr	L7d5c
-	test	|_stkseg+122|(r15)
-	jr	ne,L7d50
-	ld	|_stkseg+122|(r15),#%0001
-	jr	L7d48
-	test	|_stkseg+120|(r15)
-	jr	ne,L7d50
-	ld	|_stkseg+120|(r15),#%0001
-	jr	L7d48
-	test	|_stkseg+118|(r15)
-	jr	ne,L7d50
-	ld	|_stkseg+118|(r15),#%0001
-	jr	L7d48
-L7d1e:
-	ldk	r3,#0
-	ldb	rl3,@rr12
-	ld	r11,r3
-	inc	r13,#1
-L7d26:
-	ld	r2,r11
-	sub	r2,#%0020
-	cp	r2,#%000D
-	jr	ugt,L7d50
-	rl	r2,#2
-	ldl	rr4,<<1>>%189E(r2)
-	jp	@rr4
-	test	|_stkseg+114|(r15)
-	jr	ne,L7d50
-	ld	|_stkseg+114|(r15),#%0001
-L7d48:
-	ld	r3,r10
-	dec	r10,#1
-	test	r3
-	jr	ne,L7d1e
-L7d50:
-	test	|_stkseg+122|(r15)
-	jr	eq,L7ce0
-L7d56:
-	ldb	|_stkseg+109|(r15),#%2B
-L7d5c:
-	cp	r11,#%0061
-	jr	lt,L7e26
-	jr	L7e3e
-L7d64:
-	cp	r11,#%002A
-	jr	ne,L7d94
-	ldl	rr2,|_stkseg+14|(r15)
-	ld	r4,@rr2
-	ld	|_stkseg+22|(r15),r4
-	inc	|_stkseg+16|(r15),#2
-	inc	_stkseg+152(r15),#1
-	cp	_stkseg+152(r15),#%0005
-	jr	ne,L7dbc
-	ldl	rr6,_stkseg+148(r15)
-	ldl	|_stkseg+14|(r15),rr6
-	jr	L7dbc
-L7d94:
-	cp	r11,#%0030
-	jr	ne,L7da0
-	ldb	|_stkseg+129|(r15),#%30
-L7da0:
-	ldl	rr2,#%7F000016
-	add	r3,r15
-	dec	r13,#1
-	ldl	rr6,rr12
-	inc	r10,#1
-	ld	r5,r10
-	calr	L85f8
-	ld	r9,r2
-	ld	r3,r13
-	add	r3,r2
-	ld	r13,r3
-	sub	r10,r2
-L7dbc:
-	test	r10
-	jr	eq,L7e3e
-	cpb	@rr12,#%2E
-	jr	ne,L7e18
-	inc	r13,#1
-	dec	r10,#1
-	test	r10
-	jr	eq,L7e3e
-	cpb	@rr12,#%2A
-	jr	ne,L7e00
-	ldl	rr2,|_stkseg+14|(r15)
-	ld	r4,@rr2
-	ld	|_stkseg+24|(r15),r4
-	inc	|_stkseg+16|(r15),#2
-	ldk	r9,#1
-	inc	_stkseg+152(r15),#1
-	cp	_stkseg+152(r15),#%0005
-	jr	ne,L7e10
-	ldl	rr6,_stkseg+148(r15)
-	ldl	|_stkseg+14|(r15),rr6
-	jr	L7e10
-L7e00:
-	ldl	rr2,#%7F000018
-	add	r3,r15
-	ld	r5,r10
-	ldl	rr6,rr12
-	calr	L85f8
-	ld	r9,r2
-L7e10:
-	sub	r10,r9
-	ld	r3,r13
-	add	r3,r9
-	ld	r13,r3
-L7e18:
-	test	r10
-	jr	eq,L7e3e
-	dec	r10,#1
-	ldk	r2,#0
-	ldb	rl2,@rr12
-	ld	r11,r2
-	inc	r13,#1
-L7e26:
-	cp	r11,#%002A
-	jr	eq,L7d64
-	cp	r11,#%0030
-	jr	lt,L7e38
-	cp	r11,#%0039
-	jr	le,L7d64
-L7e38:
-	cp	r11,#%002E
-	jr	eq,L7d64
-L7e3e:
-	cp	|_stkseg+24|(r15),#%0000
-	jr	ge,L7e6a
-	ld	r2,r11
-	ldl	rr4,#%01001872
-	ld	r3,#%0006
-	cpir	r2,@rr4,r3,eq
-	jr	ne,L7e6a
-	sll	r3,#2
-	neg	r3
-	ldl	rr4,<<1>>%18EA(r3)
-	jp	@rr4
-	clr	|_stkseg+24|(r15)
-L7e6a:
-	ld	|_stkseg+130|(r15),r11
-	ld	r2,r11
-	ldl	rr4,#%0100187E
-	ld	r6,#%0010
-	cpir	r2,@rr4,r6,eq
-	jp	ne,L849a
-	sll	r6,#2
-	neg	r6
-	ldl	rr4,<<1>>%192A(r6)
-	jp	@rr4
-	ld	|_stkseg+24|(r15),#%0006
-	jr	L7e6a
-	ld	|_stkseg+26|(r15),#%0008
-	jr	L7eb0
-	ld	|_stkseg+26|(r15),#%0010
-	jr	L7eb0
-	ld	|_stkseg+26|(r15),#%000A
-L7eb0:
-	ldl	rr4,|_stkseg+14|(r15)
-	ld	r3,@rr4
-	ld	r7,r3
-	exts	rr6
-	ldl	|_stkseg+28|(r15),rr6
-	inc	|_stkseg+16|(r15),#2
-	clr	|_stkseg+28|(r15)
-	inc	_stkseg+152(r15),#1
-	cp	_stkseg+152(r15),#%0005
-	jr	eq,L7f2e
-	jp	L8052
-L7edc:
-	ld	|_stkseg+26|(r15),#%0008
-	jr	L7eea
-L7ee4:
-	ld	|_stkseg+26|(r15),#%0010
-L7eea:
-	cp	_stkseg+152(r15),#%0005
-	jr	ge,L7f0c
-	ldl	rr6,#%7F000098
-	add	r7,r15
-	ldl	rr4,#%7F00000E
-	add	r5,r15
-	ldl	rr2,_stkseg+148(r15)
-	calr	L7bbc
-L7f0c:
-	ldl	rr2,|_stkseg+14|(r15)
-	ldl	rr4,@rr2
-	ldl	|_stkseg+28|(r15),rr4
-	inc	|_stkseg+16|(r15),#4
-	inc	_stkseg+152(r15),#2
-	cp	_stkseg+152(r15),#%0005
-	jp	ne,L8052
-L7f2e:
-	ldl	rr6,_stkseg+148(r15)
-	ldl	|_stkseg+14|(r15),rr6
-	jp	L8052
-L7f3e:
-	ld	|_stkseg+26|(r15),#%000A
-	jr	L7eea
-L7f46:
-	ld	|_stkseg+26|(r15),#%FFF6
-	jr	L7eea
-	test	r10
-	jr	eq,L7fee
-	dec	r10,#1
-	ldl	rr4,rr12
-	inc	r13,#1
-	ldb	rl3,@rr4
-	subb	rh3,rh3
-	ld	r11,r3
-	cp	r3,#%006F
-	jr	eq,L7edc
-	cp	r3,#%0078
-	jr	eq,L7ee4
-	cp	r3,#%0064
-	jr	eq,L7f46
-	cp	r3,#%0075
-	jr	eq,L7f3e
-	ldl	rr4,_stkseg+154(r15)
-	inc	r5,#4
-	dec	@rr4,#1
-	ld	r3,@rr4
-	cp	r3,#%0000
-	jr	ge,L7f9a
-	ld	r7,#%006C
-	ldl	rr4,_stkseg+154(r15)
-	call	__flsbuf
-	jr	L7fb2
-L7f9a:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ldb	@rr4,#%6C
-	ldb	rl2,#%6C
-	subb	rh2,rh2
-L7fb2:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L7fd4
-	ld	r7,r11
-	ldl	rr4,_stkseg+154(r15)
-	call	__flsbuf
-	jr	L7fea
-L7fd4:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ld	r2,r11
-	ldb	@rr4,rl2
-	subb	rh2,rh2
-L7fea:
-	inc	|_stkseg+126|(r15),#2
-L7fee:
-	test	|_stkseg+24|(r15)
-	jr	eq,L8006
-	cp	|_stkseg+130|(r15),#%0073
-	jr	ne,L8006
-	cp	r9,|_stkseg+24|(r15)
-	jr	le,L8006
-	ld	r9,|_stkseg+24|(r15)
-L8006:
-	cp	r9,|_stkseg+22|(r15)
-	jp	ge,L84b6
-	ld	r2,|_stkseg+22|(r15)
-	sub	r2,r9
-	ld	|_stkseg+116|(r15),r2
-	jp	L84ba
-	ld	|_stkseg+26|(r15),#%FFF6
-	ldl	rr2,|_stkseg+14|(r15)
-	ld	r4,@rr2
-	ld	r7,r4
-	exts	rr6
-	ldl	|_stkseg+28|(r15),rr6
-	inc	|_stkseg+16|(r15),#2
-	inc	_stkseg+152(r15),#1
-	cp	_stkseg+152(r15),#%0005
-	jr	ne,L8052
-	ldl	rr4,_stkseg+148(r15)
-	ldl	|_stkseg+14|(r15),rr4
-L8052:
-	test	|_stkseg+122|(r15)
-	jr	eq,L808a
-	cp	|_stkseg+26|(r15),#%FFF6
-	jr	ne,L808a
-	ldl	rr2,|_stkseg+28|(r15)
-	cpl	rr2,#%00000000
-	jr	lt,L808a
-	ldb	rl2,|_stkseg+109|(r15)
-	ldb	|_stkseg+36|(r15),rl2
-	ldl	rr4,#%7F000024
-	add	r5,r15
-	ld	|_stkseg+124|(r15),#%0001
-	inc	r5,#1
-	ldl	|_stkseg+100|(r15),rr4
-	jr	L8100
-L808a:
-	cp	|_stkseg+26|(r15),#%0008
-	jr	ne,L80b8
-	test	|_stkseg+118|(r15)
-	jr	eq,L80b8
-	ldl	rr2,|_stkseg+28|(r15)
-	testl	rr2
-	jr	eq,L80b8
-	ldb	|_stkseg+36|(r15),#%30
-	ldl	rr2,#%7F000024
-	add	r3,r15
-	ld	|_stkseg+124|(r15),#%0001
-	inc	r3,#1
-	jr	L80fc
-L80b8:
-	cp	|_stkseg+26|(r15),#%0010
-	jr	ne,L80f4
-	test	|_stkseg+118|(r15)
-	jr	eq,L80f4
-	ldl	rr2,|_stkseg+28|(r15)
-	testl	rr2
-	jr	eq,L80f4
-	ldb	|_stkseg+36|(r15),#%30
-	ldl	rr2,#%7F000024
-	add	r3,r15
-	inc	r3,#1
-	ldb	@rr2,#%78
-	ldl	rr2,#%7F000024
-	add	r3,r15
-	ld	|_stkseg+124|(r15),#%0002
-	inc	r3,#2
-	jr	L80fc
-L80f4:
-	ldl	rr2,#%7F000024
-	add	r3,r15
-L80fc:
-	ldl	|_stkseg+100|(r15),rr2
-L8100:
-	cp	|_stkseg+26|(r15),#%FFF6
-	jr	ne,L8170
-	ldl	rr2,|_stkseg+28|(r15)
-	cpl	rr2,#%00000000
-	jr	ge,L8170
-	cpl	rr2,#%80000000
-	jr	ne,L8122
-	ld	|_stkseg+26|(r15),#%000A
-L8122:
-	ldl	rr6,|_stkseg+28|(r15)
-	multl	rq4,#%FFFFFFFF
-	ldl	|_stkseg+28|(r15),rr6
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L8154
-	ld	r7,#%002D
-	ldl	rr4,_stkseg+154(r15)
-	call	__flsbuf
-	jr	L816c
-L8154:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ldb	@rr4,#%2D
-	ldb	rl2,#%2D
-	subb	rh2,rh2
-L816c:
-	inc	|_stkseg+126|(r15),#1
-L8170:
-	ldl	rr2,#%7F000024
-	add	r3,r15
-	ldl	|_stkseg+32|(r15),rr2
-	ldl	rr6,|_stkseg+100|(r15)
-	ld	r5,|_stkseg+26|(r15)
-	ldl	rr2,|_stkseg+28|(r15)
-	call	__cnvt
-	add	r2,|_stkseg+124|(r15)
-L8192:
-	ld	r9,r2
-	jp	L7fee
-	ldb	|_stkseg+129|(r15),#%20
-	cp	_stkseg+152(r15),#%0005
-	jr	ge,L81c2
-	ldl	rr6,#%7F000098
-	add	r7,r15
-	ldl	rr4,#%7F00000E
-	add	r5,r15
-	ldl	rr2,_stkseg+148(r15)
-	calr	L7bbc
-L81c2:
-	ldl	rr2,|_stkseg+14|(r15)
-	ldl	rr4,@rr2
-	ldl	|_stkseg+32|(r15),rr4
-	inc	|_stkseg+16|(r15),#4
-	ldl	rr4,|_stkseg+32|(r15)
-	testl	rr4
-	jr	ne,L81e2
-	ldl	rr6,#%0100186A
-	ldl	|_stkseg+32|(r15),rr6
-L81e2:
-	ldl	rr6,|_stkseg+32|(r15)
-	call	__length
-	ld	r9,r2
-	inc	_stkseg+152(r15),#2
-	cp	_stkseg+152(r15),#%0005
-	jp	ne,L7fee
-	ldl	rr2,_stkseg+148(r15)
-	ldl	|_stkseg+14|(r15),rr2
-	jp	L7fee
-	ldb	|_stkseg+129|(r15),#%20
-	ldk	r9,#1
-	ldl	rr2,|_stkseg+14|(r15)
-	ldl	|_stkseg+32|(r15),rr2
-	inc	|_stkseg+16|(r15),#2
-	inc	|_stkseg+34|(r15),#1
-	inc	_stkseg+152(r15),#1
-	cp	_stkseg+152(r15),#%0005
-	jp	ne,L7fee
-	ldl	rr4,_stkseg+148(r15)
-	ldl	|_stkseg+14|(r15),rr4
-	jp	L7fee
-	cp	|_stkseg+12|(r15),#%0004
-	jr	ge,L8270
-	ldl	rr2,|_stkseg+14|(r15)
-	ldl	|_stkseg+18|(r15),rr2
-	ldl	rr4,|_stkseg+0|(r15)
-	ldl	|_stkseg+14|(r15),rr4
-	inc	|_stkseg+2|(r15),#8
-	inc	|_stkseg+12|(r15),#1
-	jr	L8286
-L8270:
-	subl	rr2,rr2
-	ldl	|_stkseg+18|(r15),rr2
-	ldl	rr2,_stkseg+148(r15)
-	ldl	|_stkseg+14|(r15),rr2
-	inc	_stkseg+152(r15),#5
-L8286:
-	ldl	rr4,#%7F000024
-	add	r5,r15
-	ldl	rr2,|_stkseg+14|(r15)
-	.word	%0F24,%8303	// EPU
-	ld	r7,|_stkseg+24|(r15)
-	ld	r3,r11
-	call	__fegcvt
-	ldl	|_stkseg+32|(r15),rr2
-	ldl	rr2,|_stkseg+18|(r15)
-	testl	rr2
-	jr	eq,L82b4
-	ldl	|_stkseg+14|(r15),rr2
-	jr	L82b8
-L82b4:
-	inc	|_stkseg+16|(r15),#8
-L82b8:
-	test	|_stkseg+122|(r15)
-	jr	eq,L8312
-	ldl	rr2,|_stkseg+32|(r15)
-	cpb	@rr2,#%2D
-	jr	eq,L8312
-	testb	@rr2
-	jr	eq,L8312
-	ldl	|_stkseg+100|(r15),rr2
-	ldb	rl4,@rr2
-	ldb	|_stkseg+105|(r15),rl4
-	ldl	rr2,|_stkseg+100|(r15)
-	ldb	rl5,|_stkseg+109|(r15)
-	ldb	@rr2,rl5
-	inc	|_stkseg+102|(r15),#1
-	jr	L8306
-L82e6:
-	ldl	rr2,|_stkseg+100|(r15)
-	ldb	rl4,@rr2
-	ldb	|_stkseg+107|(r15),rl4
-	ldl	rr2,|_stkseg+100|(r15)
-	ldb	rl5,|_stkseg+105|(r15)
-	ldb	@rr2,rl5
-	inc	|_stkseg+102|(r15),#1
-	ldb	rl5,|_stkseg+107|(r15)
-	ldb	|_stkseg+105|(r15),rl5
-L8306:
-	testb	|_stkseg+105|(r15)
-	jr	ne,L82e6
-	ldl	rr2,|_stkseg+100|(r15)
-	clrb	@rr2
-L8312:
-	test	|_stkseg+118|(r15)
-	jr	ne,L83c4
-	cp	r11,#%0065
-	jr	eq,L8324
-	cp	r11,#%0045
-	jr	ne,L8370
-L8324:
-	ldl	rr2,|_stkseg+32|(r15)
-	ldl	|_stkseg+100|(r15),rr2
-	jr	L8342
-L832e:
-	ldl	rr2,|_stkseg+100|(r15)
-	ldb	rl4,rr2(#%0001)
-	ldb	@rr2,rl4
-	inc	|_stkseg+102|(r15),#1
-	jr	L8366
-L833e:
-	inc	|_stkseg+102|(r15),#1
-L8342:
-	ldl	rr2,|_stkseg+100|(r15)
-	testb	@rr2
-	jp	eq,L845e
-	cpb	@rr2,#%2E
-	jr	ne,L833e
-	inc	|_stkseg+102|(r15),#1
-	ldl	rr2,|_stkseg+100|(r15)
-	cpb	@rr2,#%65
-	jr	ne,L833e
-	dec	|_stkseg+102|(r15),#1
-L8366:
-	ldl	rr2,|_stkseg+100|(r15)
-	testb	@rr2
-	jr	ne,L832e
-	jr	L845e
-L8370:
-	cp	r11,#%0067
-	jr	eq,L837c
-	cp	r11,#%0047
-	jr	ne,L845e
-L837c:
-	ldl	rr2,|_stkseg+32|(r15)
-	ldl	|_stkseg+100|(r15),rr2
-	jr	L839a
-L8386:
-	ldl	rr6,|_stkseg+110|(r15)
-	ldl	rr4,|_stkseg+100|(r15)
-	call	_strcpy
-	jr	L845e
-L8396:
-	inc	|_stkseg+102|(r15),#1
-L839a:
-	ldl	rr2,|_stkseg+100|(r15)
-	testb	@rr2
-	jr	eq,L845e
-	cpb	@rr2,#%2E
-	jr	ne,L8396
-	ldl	rr4,rr2
-	ldl	|_stkseg+110|(r15),rr2
-L83ae:
-	inc	|_stkseg+102|(r15),#1
-	ldl	rr2,|_stkseg+100|(r15)
-	cpb	@rr2,#%30
-	jr	eq,L83ae
-	cpb	@rr2,#%65
-	jr	eq,L8386
-	jr	L845e
-L83c4:
-	cp	r11,#%0066
-	jr	ne,L83fc
-	ldl	rr2,|_stkseg+32|(r15)
-	ldl	|_stkseg+100|(r15),rr2
-	jr	L83e2
-L83d4:
-	ldl	rr2,|_stkseg+100|(r15)
-	cpb	@rr2,#%2E
-	jr	eq,L83ea
-	inc	|_stkseg+102|(r15),#1
-L83e2:
-	ldl	rr2,|_stkseg+100|(r15)
-	testb	@rr2
-	jr	ne,L83d4
-L83ea:
-	ldl	rr2,|_stkseg+100|(r15)
-	testb	@rr2
-	jr	ne,L845e
-	ldb	@rr2,#%2E
-	inc	|_stkseg+102|(r15),#1
-	jr	L8458
-L83fc:
-	cp	r11,#%0067
-	jr	eq,L8408
-	cp	r11,#%0047
-	jr	ne,L845e
-L8408:
-	ldl	rr2,|_stkseg+32|(r15)
-	ldl	|_stkseg+100|(r15),rr2
-	jr	L8420
-L8412:
-	ldl	rr2,|_stkseg+100|(r15)
-	cpb	@rr2,#%2E
-	jr	eq,L8428
-	inc	|_stkseg+102|(r15),#1
-L8420:
-	ldl	rr2,|_stkseg+100|(r15)
-	testb	@rr2
-	jr	ne,L8412
-L8428:
-	ldl	rr2,|_stkseg+100|(r15)
-	testb	@rr2
-	jr	ne,L845e
-	ldb	@rr2,#%2E
-	inc	|_stkseg+102|(r15),#1
-	clr	|_stkseg+124|(r15)
-	jr	L844e
-L843e:
-	ldl	rr4,|_stkseg+100|(r15)
-	ldb	@rr4,#%30
-	inc	|_stkseg+102|(r15),#1
-	inc	|_stkseg+124|(r15),#1
-L844e:
-	ld	r2,|_stkseg+124|(r15)
-	cp	r2,|_stkseg+24|(r15)
-	jr	lt,L843e
-L8458:
-	ldl	rr2,|_stkseg+100|(r15)
-	clrb	@rr2
-L845e:
-	cp	r11,#%0045
-	jr	eq,L846a
-	cp	r11,#%0047
-	jr	ne,L8484
-L846a:
-	ldl	rr2,|_stkseg+32|(r15)
-	ldl	|_stkseg+100|(r15),rr2
-L8472:
-	ldl	rr2,|_stkseg+100|(r15)
-	testb	@rr2
-	jr	eq,L8484
-	cpb	@rr2,#%65
-	jr	ne,L8494
-	ldb	@rr2,#%45
-L8484:
-	ldl	rr6,|_stkseg+32|(r15)
-	call	__length
-	jp	L8192
-L8494:
-	inc	|_stkseg+102|(r15),#1
-	jr	L8472
-L849a:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jp	ge,L7c72
-	jp	L7c62
-L84b6:
-	clr	|_stkseg+116|(r15)
-L84ba:
-	test	|_stkseg+114|(r15)
-	jr	eq,L8504
-	jr	L8560
-L84c2:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L84e8
-	ldb	rl7,|_stkseg+129|(r15)
-	extsb	r7
-	ldl	rr4,_stkseg+154(r15)
-	call	__flsbuf
-	jr	L8500
-L84e8:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ldb	rl2,|_stkseg+129|(r15)
-	ldb	@rr4,rl2
-	subb	rh2,rh2
-L8500:
-	inc	|_stkseg+126|(r15),#1
-L8504:
-	ld	r2,|_stkseg+116|(r15)
-	dec	|_stkseg+116|(r15),#1
-	test	r2
-	jr	ne,L84c2
-	jr	L8560
-L8512:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L853e
-	ldl	rr2,|_stkseg+32|(r15)
-	inc	|_stkseg+34|(r15),#1
-	ldb	rl7,@rr2
-	extsb	r7
-	ldl	rr4,_stkseg+154(r15)
-	call	__flsbuf
-	jr	L855c
-L853e:
-	ldl	rr2,|_stkseg+32|(r15)
-	inc	|_stkseg+34|(r15),#1
-	ldl	rr4,_stkseg+154(r15)
-	inc	r5,#2
-	inc	@rr4,#1
-	dec	r5,#2
-	ldl	rr6,@rr4
-	dec	r7,#1
-	ldb	rl4,@rr2
-	ldb	@rr6,rl4
-	subb	rh4,rh4
-L855c:
-	inc	|_stkseg+126|(r15),#1
-L8560:
-	ld	r2,r9
-	dec	r9,#1
-	test	r2
-	jr	ne,L8512
-	test	|_stkseg+114|(r15)
-	jp	eq,L7c8c
-L8572:
-	ld	r2,|_stkseg+116|(r15)
-	dec	|_stkseg+116|(r15),#1
-	test	r2
-	jp	eq,L7c8c
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#4
-	dec	@rr2,#1
-	ld	r4,@rr2
-	cp	r4,#%0000
-	jr	ge,L85a8
-	ldb	rl7,|_stkseg+129|(r15)
-	extsb	r7
-	ldl	rr4,_stkseg+154(r15)
-	call	__flsbuf
-	jr	L85c0
-L85a8:
-	ldl	rr2,_stkseg+154(r15)
-	inc	r3,#2
-	inc	@rr2,#1
-	dec	r3,#2
-	ldl	rr4,@rr2
-	dec	r5,#1
-	ldb	rl2,|_stkseg+129|(r15)
-	ldb	@rr4,rl2
-	subb	rh2,rh2
-L85c0:
-	inc	|_stkseg+126|(r15),#1
-	jr	L8572
-L85c6:
-	ldl	rr2,<<1>>%90E4
-	testl	rr2
-	jr	eq,L85e6
-	ldl	rr4,rr2
-	ldb	rl6,rr4(#%000A)
-	extsb	r6
-	and	r6,#%0020
-	test	r6
-	jr	eq,L85e6
-	ld	r2,#%FFFF
-	jr	L85ea
-L85e6:
-	ld	r2,|_stkseg+126|(r15)
-L85ea:
-	ldm	r9,_stkseg+134(r15),#5
-	add	r15,#%0090
-	ret
-L85f8:
-	sub	r15,#%001A
-	ldm	_stkseg+18(r15),r10,#4
-	ldm	|_stkseg+0|(r15),r2,#4
-	ldl	rr12,rr6
-	clr	|_stkseg+12|(r15)
-	ld	r11,r5
-	test	r5
-	jr	eq,L8628
-	cpb	@rr12,#%2D
-	jr	ne,L8628
-	dec	|_stkseg+6|(r15),#1
-	inc	r13,#1
-	ld	|_stkseg+12|(r15),#%0001
-L8628:
-	ldk	r10,#0
-	jr	L8656
-L862c:
-	ldl	rr2,rr12
-	inc	r13,#1
-	ldb	rl4,@rr2
-	ldb	|_stkseg+15|(r15),rl4
-	cpb	rl4,#%30
-	jr	lt,L865a
-	cpb	rl4,#%39
-	jr	gt,L865a
-	ld	r3,r10
-	mult	rr2,#%000A
-	ldb	rl2,rl4
-	extsb	r2
-	sub	r2,#%0030
-	add	r3,r2
-	ld	r10,r3
-	dec	r11,#1
-L8656:
-	test	r11
-	jr	ne,L862c
-L865a:
-	test	|_stkseg+12|(r15)
-	jr	eq,L8666
-	ld	r2,r10
-	neg	r2
-	jr	L8668
-L8666:
-	ld	r2,r10
-L8668:
-	ldl	rr4,|_stkseg+0|(r15)
-	ld	@rr4,r2
-	ld	r2,|_stkseg+6|(r15)
-	sub	r2,r11
-	ldm	r10,_stkseg+18(r15),#4
-	add	r15,#%001A
 	ret

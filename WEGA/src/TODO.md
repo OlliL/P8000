@@ -164,10 +164,18 @@ produce the same bytes with the shipped cc.
   function, `check_names.py` checks the 8-character rule, `tryname.py` finds a name the compiler does not lose. Renamed
   because the compiler lost the function name: `make_blocks` -> `make_blk`, `dump_p1` -> `dmp_p1`.
   The libc call targets of sld.c have their names (tools/libc_names.txt, 34 functions: exit, atoi, read, write, strcpy ...).
-  oldslibc/<object>/0_1.s and sld_own.s use the libc names now; the objects follow the members of slibc.a (all equal to the shipped
-  ones), ffltioc is at 0x8682, `make link` and `make linkslibc` work (78 / 110 differing code bytes, all data addresses).
-  Open: the data of the libc objects (members' data, jump tables with code labels, immediate table addresses), the data and bss
-  of sld itself, then the split of sld.c into modules (SCCS tags of the binary give the module names).
+  Module cut (2026-10-28): module_map.py assigns the functions to copyname, dump, ext, ld, ldm, printname, swap, symbols (code
+  0x56..0x71ca, see KNOWLEDGE "C files of the program"). From 0x71ca the objects are libc: putchar, scanf, doscan are the shipped
+  members; the C functions that were reconstructed for them (14 functions) are taken out of sld.c (tools/libc_archive.json).
+  printf and doprnt (0x79ca..0x8682) are another revision; they stay as cas sources in src/lib/oldslibc (no C by decision).
+  91 own functions remain in sld.c (34 done, 57 with findings). `make link` / `make linkslibc` (src/cmd/ld/Makefile, written by
+  tools/gen_makefile.py) link; code differs only in data addresses behind 0x71ca.
+  Split done (2026-10-28): src/cmd/ld/{copyname,dump,ext,ld,ldm,printname,swap,symbols}.c + ld.h replace sld.c (removed); every file
+  compiles alone with the old compiler (no lost names), `make cobjs`. Tools follow the files (tools/ldsrc.py: module_ranges.txt, sources(),
+  compile_all()): accept.py (new function or replacement of a function in its C file, new declarations into ld.h/ext.c), rename.py,
+  strict_audit.py, classify_sld.py, check_names.py, tryname.py, sync_findings.py. Names of functions and variables can still be changed
+  with rename.py at the end. Open: original strings into the files (sizes against the SCCS ranges of the data), owner file of each
+  variable (now all defined in ext.c), the data and bss cut, the full link and the byte comparison.
   Next: improve the findings-class functions found by `strict_audit.py` (parse_args, f6c6a, make_ccl, scan_field, ...),
   re-check the D15 tags, cut the data (7090 bytes, bss), map the libc `fXXXX` addresses to libc names, `make link` and
   compare the bytes, split sld.c into modules.

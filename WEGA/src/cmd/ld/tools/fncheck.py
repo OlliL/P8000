@@ -81,7 +81,7 @@ def keep_locals(lst):
 
 
 def libc_aliases():
-    """name of a libc function in sld.c -> f<address> (tools/libc_names.txt)"""
+    """name of a libc function in the sources of sld -> f<address> (tools/libc_names.txt)"""
     al = {}
     for line in open(os.path.join(HERE, 'libc_names.txt')):
         if line.startswith('#') or not line.strip():
@@ -97,7 +97,9 @@ _TOK = re.compile(r'/\*.*?\*/|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|[A-Za-z_][A
 def alias_text(text):
     """The old compiler loses function names depending on the exact identifiers (symbol table, see KNOWLEDGE, sld compiler
     limits); the compile checks therefore see the libc names as f<address> (as before they were named). Comments and
-    strings are not touched."""
+    strings are not touched. Since the sources are compiled file by file this is off (environment LDALIAS=1 turns it on)."""
+    if not os.environ.get('LDALIAS'):
+        return text
     al = libc_aliases()
 
     def rep(m):
@@ -115,6 +117,9 @@ def compile_obj(src):
     tmp = tempfile.mkdtemp(prefix='fncheck', dir='/mnt/share/cvs/P8000/tmp/tmp')
     base = os.path.splitext(os.path.basename(src))[0]
     alias_copy(src, os.path.join(tmp, base + '.c'))
+    hdr = os.path.join(HERE, '..', 'ld.h')
+    if os.path.exists(hdr):
+        alias_copy(hdr, os.path.join(tmp, 'ld.h'))
     r = subprocess.run([EMU, '-r', WEGA, '/bin/scc'] + os.environ.get('SCCFLAGS', '-O').split() + ['-c', base + '.c'], cwd=tmp,
                        capture_output=True, text=True, timeout=600)
     if r.returncode != 0 or not os.path.exists(os.path.join(tmp, base + '.o')):

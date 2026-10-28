@@ -3,12 +3,13 @@
 
 Usage: oldslibc_cut.py OLDSLIBC_DIR SLD_OWN.s [VERSION]
 
-The libc part of sld (0x8682..0x9730) is a sequence of members of slibc.a. The boundaries are the sizes of the members
+The libc part of sld (0x71ca..0x9730) is a sequence of members of slibc.a (in the order the original linker took them). The boundaries are the sizes of the members
 (checked: the code of every object equals the member of /lib/slibc.a with the relocated words masked, `cmp_shipped()`),
 the names of the entry points are the global text symbols of the members. Every object gets the directory
 OLDSLIBC_DIR/<object>/<VERSION>.s (VERSION default 0_1: an invented revision number, other programs will carry other
-revisions of the same objects). ffltioc, getpid and umask (6 to 8 bytes) are not cut: the Makefile takes them from slibc.a.
-The own code (0x56..0x8682, the start code 0x18..0x55 is scrt0.s) is written to SLD_OWN.s with calls into the libc part
+revisions of the same objects). Objects whose code equals the member of slibc.a ("shipped") are not cut: the Makefile takes
+them from slibc.a. Two objects are another revision than the member (printf, doprnt): they are cut as assembler source and are the
+only reason for the directory oldslibc. The own code (0x56..0x71ca, the start code 0x18..0x55 is scrt0.s) is written to SLD_OWN.s with calls into the libc part
 resolved to the same names. Data: run libc_data_seg.py on OLDSLIBC_DIR afterwards.
 """
 import os
@@ -27,23 +28,28 @@ WEGA = '/mnt/share/cvs/P8000/tmp/wega31_root'
 PROG = os.path.join(WEGA, 'bin', 'sld')
 SLIBC = os.path.join(WEGA, 'lib', 'slibc.a')
 
-# (object, start, end, shipped): in link order; sizes = sizes of the members of slibc.a
-OBJECTS = [('ffltioc', 0x8682, 0x8688, True), ('ungetc', 0x8688, 0x86fa, False), ('filbuf', 0x86fa, 0x880e, False),
-           ('flsbuf', 0x880e, 0x8a48, False), ('__callex', 0x8a48, 0x8a50, False), ('cuexit', 0x8a50, 0x8a5c, False),
-           ('atoi', 0x8a5c, 0x8ad0, False), ('cnvt', 0x8ad0, 0x8be8, False), ('decimal', 0x8be8, 0x8c86, False),
-           ('length', 0x8c86, 0x8cb4, False), ('malloc', 0x8cb4, 0x91ea, False), ('isatty', 0x91ea, 0x9210, False),
-           ('mktemp', 0x9210, 0x9296, False), ('stty', 0x9296, 0x92c6, False), ('strchr', 0x92c6, 0x92f8, False),
-           ('strrchr', 0x92f8, 0x932e, False), ('swab', 0x932e, 0x9376, False), ('rindex', 0x9376, 0x93ac, False),
-           ('strcat', 0x93ac, 0x93e8, False), ('strncmp', 0x93e8, 0x943c, False), ('strcpy', 0x943c, 0x946e, False),
-           ('swap', 0x946e, 0x952c, False), ('access', 0x952c, 0x953e, False), ('tolower', 0x953e, 0x9564, False),
-           ('chmod', 0x9564, 0x9576, False), ('close', 0x9576, 0x9586, False), ('creat', 0x9586, 0x9596, False),
-           ('fstat', 0x9596, 0x95aa, False), ('getpid', 0x95aa, 0x95b0, True), ('ioctl', 0x95b0, 0x95c8, False),
-           ('link', 0x95c8, 0x95da, False), ('lseek', 0x95da, 0x95ee, False), ('mkseg', 0x95ee, 0x95fe, False),
-           ('open', 0x95fe, 0x9610, False), ('read', 0x9610, 0x9622, False), ('ssgbrk', 0x9622, 0x9638, False),
-           ('signal', 0x9638, 0x96f2, False), ('umask', 0x96f2, 0x96fa, True), ('unlink', 0x96fa, 0x970a, False),
-           ('write', 0x970a, 0x971c, False), ('cerror', 0x971c, 0x9730, False)]
-OWN = (0x56, 0x8682)
-LIBC_LO, LIBC_HI = 0x8682, 0x9730
+# (object, start, end, kind): in link order; kind 'shipped' = code equals the member of slibc.a (taken from slibc.a, not cut),
+# 'cut' = equals the member, cut anyway, 'old' = another revision than the member (cut, the only sources that are needed)
+OBJECTS = [('putchar', 0x71ca, 0x7212, 'shipped'), ('scanf', 0x7212, 0x7300, 'shipped'), ('doscan', 0x7300, 0x79ca, 'shipped'),
+           ('printf', 0x79ca, 0x7bbc, 'old'), ('doprnt', 0x7bbc, 0x8682, 'old'),
+           ('ffltioc', 0x8682, 0x8688, 'shipped'), ('ungetc', 0x8688, 0x86fa, 'cut'), ('filbuf', 0x86fa, 0x880e, 'cut'),
+           ('flsbuf', 0x880e, 0x8a48, 'cut'), ('__callex', 0x8a48, 0x8a50, 'cut'), ('cuexit', 0x8a50, 0x8a5c, 'cut'),
+           ('atoi', 0x8a5c, 0x8ad0, 'cut'), ('cnvt', 0x8ad0, 0x8be8, 'cut'), ('decimal', 0x8be8, 0x8c86, 'cut'),
+           ('length', 0x8c86, 0x8cb4, 'cut'), ('malloc', 0x8cb4, 0x91ea, 'cut'), ('isatty', 0x91ea, 0x9210, 'cut'),
+           ('mktemp', 0x9210, 0x9296, 'cut'), ('stty', 0x9296, 0x92c6, 'cut'), ('strchr', 0x92c6, 0x92f8, 'cut'),
+           ('strrchr', 0x92f8, 0x932e, 'cut'), ('swab', 0x932e, 0x9376, 'cut'), ('rindex', 0x9376, 0x93ac, 'cut'),
+           ('strcat', 0x93ac, 0x93e8, 'cut'), ('strncmp', 0x93e8, 0x943c, 'cut'), ('strcpy', 0x943c, 0x946e, 'cut'),
+           ('swap', 0x946e, 0x952c, 'cut'), ('access', 0x952c, 0x953e, 'cut'), ('tolower', 0x953e, 0x9564, 'cut'),
+           ('chmod', 0x9564, 0x9576, 'cut'), ('close', 0x9576, 0x9586, 'cut'), ('creat', 0x9586, 0x9596, 'cut'),
+           ('fstat', 0x9596, 0x95aa, 'cut'), ('getpid', 0x95aa, 0x95b0, 'shipped'), ('ioctl', 0x95b0, 0x95c8, 'cut'),
+           ('link', 0x95c8, 0x95da, 'cut'), ('lseek', 0x95da, 0x95ee, 'cut'), ('mkseg', 0x95ee, 0x95fe, 'cut'),
+           ('open', 0x95fe, 0x9610, 'cut'), ('read', 0x9610, 0x9622, 'cut'), ('ssgbrk', 0x9622, 0x9638, 'cut'),
+           ('signal', 0x9638, 0x96f2, 'cut'), ('umask', 0x96f2, 0x96fa, 'shipped'), ('unlink', 0x96fa, 0x970a, 'cut'),
+           ('write', 0x970a, 0x971c, 'cut'), ('cerror', 0x971c, 0x9730, 'cut')]
+# entry points of the objects that are another revision (the symbols of the member are at other offsets)
+OLD_SYMBOLS = {0x79ca: ['_printf'], 0x7a5e: ['_fprintf'], 0x7ae2: ['_sprintf'], 0x7bbc: ['__align'], 0x7c26: ['__doprnt'],
+               0x85f8: ['__atoip']}
+OWN = (0x56, 0x71ca)
 
 
 def extract_members(tmp):
@@ -85,23 +91,27 @@ def main():
     tmp = tempfile.mkdtemp(prefix='oldslibc', dir='/mnt/share/cvs/P8000/tmp/tmp')
     extract_members(tmp)
     syms = {}
-    for obj, a, b, _ in OBJECTS:
+    for obj, a, b, kind in OBJECTS:
         d = cmp_shipped(tmp, prog, obj, a, b)
         print('%-9s %04x-%04x  against the member of slibc.a: %s' % (obj, a, b, 'equal' if d == 0 else 'DIFFERENT (%d)' % d))
-        if d != 0:
-            sys.exit(1)
+        if (d == 0) != (kind != 'old'):
+            sys.exit('%s: kind %s does not fit the comparison' % (obj, kind))
+        if kind == 'old':
+            for addr, ns in OLD_SYMBOLS.items():
+                if a <= addr < b:
+                    syms.setdefault(addr, []).extend(ns)
+            continue
         for addr, ns in member_symbols(tmp, obj, a).items():
             syms.setdefault(addr, []).extend(ns)
     extnames = {'0x%x' % t: ns[0] for t, ns in syms.items()}
     work = os.path.join(tmp, 'work')
     os.makedirs(work)
-    for obj, a, b, shipped in OBJECTS:
-        if shipped:
+    for obj, a, b, kind in OBJECTS:
+        if kind == 'shipped':
             continue
         exp = {t: ns for t, ns in syms.items() if a <= t < b}
         first = exp[a][0]
-        src = U.write_source(prog, seg, a, b, first, work,
-                             extnames, exports=exp)
+        src = U.write_source(prog, seg, a, b, first, work, extnames, exports=exp)
         diff, info = U.verify(prog, seg, a, b, src, work)
         print('%-9s verify: differing words %s, %s' % (obj, diff, info))
         if diff != 0:

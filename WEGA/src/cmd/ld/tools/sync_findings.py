@@ -6,7 +6,7 @@ Usage: sync_findings.py
 own_functions.txt is the source for the name and the status of each own function of /bin/sld:
   entry name end size callers first-callers kind last-insn status
 findings.json "functions" gets one entry per own function, keyed by the name (f<entry> while unnamed):
-  file (sld.c once the function is in the work file), pairing (open | confirmed), orig (entry address),
+  file (the C file once the function is in the sources), pairing (open | confirmed), orig (entry address),
   ours (entry..end), level (byte-identical or the finding class), note.
 An older entry f_<entry> (from the first inventory) is renamed to the new key, keeping its other fields.
 findings_pending entries (non-D items only) refer to the function by its key ('function' field) and are updated too.
@@ -16,6 +16,10 @@ Then run findings_md.py to regenerate FINDINGS.md.
 """
 import json
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import ldsrc  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TABLE = os.path.join(HERE, 'own_functions.txt')
@@ -57,7 +61,7 @@ def main():
         # the audit (D classes) is written by classify_sld.py, not here
         entry.pop('note', None)
         entry.update({
-            'file': 'sld.c' if status != 'open' else None,
+            'file': (ldsrc.module_of(r['entry']) if status != 'open' else None),
             'pairing': pairing,
             'orig': '0x' + r['entry'],
             'ours': entry.get('ours') if status != 'open' and entry.get('audit') else entry.get('ours'),

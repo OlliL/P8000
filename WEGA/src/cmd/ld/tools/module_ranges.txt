@@ -1,0 +1,10 @@
+# C files of /bin/sld in link order: file, first and last+1 code address of the own code (see module_map.py, KNOWLEDGE "C files of the program").
+# ld.h (not listed) holds the structs and the declarations shared by the files; ext.c also defines the global variables.
+copyname.c 0056 01d2
+dump.c 01d2 06c6
+ext.c 06c6 078c
+ld.c 078c 3c16
+ldm.c 3c16 6522
+printname.c 6522 65c6
+swap.c 65c6 6684
+symbols.c 6684 71ca
