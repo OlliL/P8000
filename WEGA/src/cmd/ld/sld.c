@@ -1182,9 +1182,22 @@ char *p;
 }
 
 /* f1f96..2056: findings:D4 */
+struct seg {
+	char c[4];
+	int f4;
+	int f6;
+	int f8;
+	int flags;
+	char pad[6];
+	struct seg *nxt;
+	struct seg *prv;
+	int f1a;
+	int f1c;
+	int f1e;
+};
 int bE3C04;
-char *bF324;
-char *bF328;
+struct seg *bF324;
+struct seg *bF328;
 char *table32_entry();
 int report_error();
 
@@ -2533,7 +2546,7 @@ int refill_wbuf();
 int swap_bytes();
 int swap_quad();
 int f932e();
-int make_blocks();
+int make_blk();
 int report_error();
 
 int f3516(a, b)
@@ -2591,7 +2604,7 @@ int b;
 	bE462 = *(long *)(tmp + 14);
 	bE468 = *(int *)(tmp + 18) & 1;
 	bE460 = *(int *)(tmp + 12);
-	make_blocks(rec, n, b);
+	make_blk(rec, n, b);
 	return 1;
 }
 
@@ -3951,7 +3964,7 @@ char *name;
 	return 2;
 }
 
-/* make_blocks..3a30: done */
+/* make_blk..3a30: done */
 long bE47C;
 long bE480;
 int bE3E7C;
@@ -3966,7 +3979,7 @@ struct e16 {
 	int w[8];
 };
 
-int make_blocks(src, n, kind)
+int make_blk(src, n, kind)
 register struct e16 *src;
 register int n;
 register int kind;
@@ -4459,11 +4472,11 @@ register char *p;
 	return 1;
 }
 
-/* dump_p1..03fc: done */
+/* dmp_p1..03fc: done */
 char *get_block();
 int ld_printf();
 
-int dump_p1()
+int dmp_p1()
 {
 	register char *p;
 	register int i;
@@ -4560,7 +4573,7 @@ int ld_printf();
 int put_name();
 int put_char();
 int f68a2();
-int f4a16();
+int lay_out();
 
 int end_pass1()
 {
@@ -4643,7 +4656,7 @@ int end_pass1()
 		ep = next_entry(ep);
 	}
 l469e:
-	f4a16();
+	lay_out();
 	if (bE498 || !bE4A2) {
 		f68a2(bE482, 0x22);
 		f68a2(bE486, 0x23);
@@ -4852,4 +4865,673 @@ int argc;
 		report_error(2, "no closing + for M file list");
 	(*ip)++;
 	bE4A36++;
+}
+
+/* place_sec..1f96: done */
+struct tab428a { char kind; unsigned f2; unsigned f4; unsigned f6; };
+struct tab428a tab428a[];
+int bF320;
+int bF322;
+int f4a34;
+char *ptrs04ac[];
+int report_error();
+int ld_printf();
+int high_byte();
+int f1f96();
+
+int place_sec(p, k)
+register struct seg *p;
+int k;
+{
+	register int j;
+	register int i;
+	register int z;
+	register unsigned r8;
+	int u0;
+	struct tab428a *q;
+	int u1;
+	int a;
+	int b;
+	int c;
+
+	bF328 = 0;
+	bF324 = 0;
+	a = p->f4;
+	b = p->f6;
+	c = p->f8;
+	tab428a[1].kind = bE49A ? 4 : 0;
+	tab428a[2].kind = bE49A ? 0 : 1;
+	tab428a[3].kind = b ? 2 : 1;
+	tab428a[1].f4 = a;
+	tab428a[2].f4 = b;
+	tab428a[3].f4 = c;
+	for (i = 0; i < 4; i++) {
+		tab428a[i].f6 = 0;
+		tab428a[i].f2 = 0;
+	}
+	if (bE42B4[k][0]) {
+		i = bE49A ? 2 : 1;
+		for (; i < 4; i++) {
+			if (bE42B4[k][i]) {
+				ld_printf("x", pE4D6, bE42B4[k][0], bE42B4[k][i], *ptrs04ac[i]);
+				bE42B4[k][i] = 0;
+			}
+		}
+	}
+	tab428a[0].kind = 4;
+	tab428a[1].kind = 0;
+	tab428a[2].kind = 1;
+	tab428a[0].f4 = a + b + c;
+	f4a34 = 1;
+	if (c)
+		f4a34 = 3;
+	else if (b)
+		f4a34 = 2;
+	j = bE42B4[k][0] ? 0 : 1;
+	for (; j < 4; j++) {
+		q = &tab428a[j];
+		r8 = tab428a[q->kind].f6;
+		switch (bE42B4[k][j]) {
+		case 't':
+			if (q->f4 > tab4534[k][j])
+				report_error(1, "x", ptrs04ac[j], k);
+			if ((r8 = tab4534[k][j] & 0xff00) != tab4534[k][j])
+				ld_printf("x", pE4D6, ptrs04ac[j], k, r8);
+			r8 = (r8 - q->f4) & 0xff00;
+			q->f4 = (q->f4 + 255) & 0xff00;
+			break;
+		case 'b':
+			r8 = tab4534[k][j] & 0xff00;
+			if (r8 != tab4534[k][j])
+				ld_printf("x", pE4D6, ptrs04ac[j], k, r8);
+			break;
+		}
+		tab428a[0].f4 = 0;
+		q->f6 = r8 + q->f4;
+		if (r8 > q->f6)
+			report_error(1, "x", ptrs04ac[j]);
+		for (i = 1; i < j; i++) {
+			if (r8 < tab428a[i].f6 && q->f6 > tab428a[i].f2) {
+				ld_printf("x", ptrs04ac[i], ptrs04ac[j], k);
+				f1f96(p, j);
+				if (j == 2) {
+					tab428a[2].f6 = 0;
+					tab428a[3].kind = 1;
+					bF320++;
+				} else {
+					tab428a[3].f6 = 0;
+					bF322++;
+				}
+				bE4A0++;
+			}
+		}
+		q->f2 = r8;
+	}
+	p->f1a = tab428a[1].f2;
+	(bF320 ? bF324 : p)->f1c = tab428a[2].f2;
+	(bF322 ? bF328 : p)->f1e = tab428a[3].f2;
+	if (bE42B4[k][0]) {
+		i = 1;
+		if (!a) {
+			i = 2;
+			if (!b)
+				i = 3;
+		}
+		bE42B4[k][i] = 1;
+	}
+	if (bE42B4[k][1]) {
+		p->flags |= 0x10;
+		p->c[1] = high_byte(p->f1a);
+	}
+	if (bE42B4[k][2]) {
+		if (bF320) {
+			bF324->flags |= 0x20;
+			bF324->c[2] = high_byte(bF324->f1c);
+		} else {
+			p->flags |= 0x20;
+			p->c[2] = high_byte(p->f1c);
+		}
+	}
+	if (bF322) {
+		bF328->flags |= 0x40;
+		if (!bE42B4[k][3])
+			bF328->f1e = (p->f6 + p->f1c + 255) & 0xff00;
+		bF328->c[3] = high_byte(bF328->f1e);
+	} else if (bE42B4[k][3]) {
+		p->flags |= 0x40;
+		p->c[3] = high_byte(p->f1e);
+	}
+	if (!bE42B4[k][0]) {
+		if (bF320 || bF322)
+			f4a34 = 0;
+		else {
+			f4a34 = 1;
+			if (tab428a[1].f6 < tab428a[2].f6)
+				f4a34 = 2;
+			else if (tab428a[1].f6 < tab428a[3].f6)
+				f4a34 = 3;
+			switch (f4a34) {
+			case 2:
+				if (tab428a[2].f6 < tab428a[3].f6)
+					f4a34 = 3;
+				break;
+			case 3:
+				if (tab428a[2].f6 > tab428a[3].f6)
+					f4a34 = 2;
+				break;
+			}
+		}
+	}
+}
+
+/* ins_block..5eec: findings:D11 */
+struct ent {
+	char pad0[4];
+	int f4;
+	int f6;
+	int f8;
+	char pad1[12];
+	struct seg *s2;
+	struct seg *s3;
+	struct seg *s4;
+	int f22;
+	int f24;
+	int f26;
+	char pad2[8];
+	int n2;
+	int n3;
+	int n4;
+};
+int bE0F8E;
+char *get_block();
+char *table32_entry();
+int report_error();
+
+struct seg *ins_block(kind, size, blk, val, idx)
+int kind;
+register unsigned size;
+int blk;
+int val;
+int idx;
+{
+	register struct seg *s;
+	register struct ent *b;
+	int prev;
+	int tmp;
+
+	if (blk > -1) {
+		while (blk != -1) {
+			prev = blk;
+			switch (kind) {
+			case 2:
+				s = (b = (struct ent *)get_block(blk))->s2;
+				blk = b->n2;
+				break;
+			case 3:
+				if (tblF332[idx].c > 0x4af) {
+					s = ((struct ent *)get_block(blk))->s2;
+					blk = -1;
+					tblF332[idx].c = -1;
+				} else {
+					s = (b = (struct ent *)get_block(blk))->s3;
+					blk = b->n3;
+				}
+				break;
+			case 4:
+				if (tblF332[idx].c > 0x4af) {
+					s = ((struct ent *)get_block(blk))->s2;
+					blk = -1;
+					tblF332[idx].c = -1;
+				} else {
+					s = (b = (struct ent *)get_block(blk))->s4;
+					blk = b->n4;
+				}
+				break;
+			}
+			if (size > 0xfffe - (s->f4 + s->f6 + s->f8))
+				continue;
+			switch (kind) {
+			case 2:
+				blk = prev;
+				while ((b = (struct ent *)get_block(blk))->s2 == s) {
+					if (b->n2 == -1)
+						break;
+					prev = blk;
+					blk = ((struct ent *)get_block(blk))->n2;
+				}
+				if (((struct ent *)get_block(blk))->s2 == s)
+					prev = blk;
+				tmp = (b = (struct ent *)get_block(prev))->n2;
+				b->n2 = val;
+				((struct ent *)get_block(val))->n2 = tmp;
+				return s;
+			case 3:
+				if (tblF332[idx].b == -1) {
+					tblF332[idx].b = val;
+					return s;
+				}
+				blk = prev;
+				while ((b = (struct ent *)get_block(blk))->s3 == s) {
+					if (b->n3 == -1)
+						break;
+					prev = blk;
+					blk = ((struct ent *)get_block(blk))->n3;
+				}
+				if (((struct ent *)get_block(blk))->s3 == s)
+					prev = blk;
+				tmp = (b = (struct ent *)get_block(prev))->n3;
+				b->n3 = val;
+				((struct ent *)get_block(val))->n3 = tmp;
+				return s;
+			case 4:
+				if (tblF332[idx].c == -1) {
+					tblF332[idx].c = val;
+					return s;
+				}
+				tmp = (b = (struct ent *)get_block(prev))->n4;
+				b->n4 = val;
+				((struct ent *)get_block(val))->n4 = tmp;
+				return s;
+			}
+			return s;
+		}
+	}
+	if (kind == 4) {
+		blk = tblF332[idx].b;
+		while (blk > -1) {
+			s = (b = (struct ent *)get_block(blk))->s3;
+			blk = b->n3;
+			if (size <= 0xfffe - (s->f4 + s->f6 + s->f8))
+				goto l5e82;
+		}
+	}
+	if (bE3C04 < 0x100) {
+		bE0F8E++;
+		switch (kind) {
+		case 2:
+			tblF332[idx].c = val + 0x4b0;
+			if (tblF332[idx].a < 0)
+				tblF332[idx].a = val;
+			else
+				((struct ent *)get_block(prev))->n2 = val;
+			break;
+		case 3:
+			if (tblF332[idx].b < 0)
+				tblF332[idx].b = val;
+			else
+				((struct ent *)get_block(prev))->n3 = val;
+			break;
+		case 4:
+			if (tblF332[idx].c < 0 || tblF332[idx].c > 0x4af)
+				tblF332[idx].c = val;
+			else
+				((struct ent *)get_block(prev))->n4 = val;
+			break;
+		}
+		if (bF32E == 0) {
+			b3C12 = (long)tab1c02;
+			bF32E = (long)tab1c02;
+			bE3C04++;
+			*(char *)bF32E = 0xff;
+			return (struct seg *)bF32E;
+		}
+		s = (struct seg *)table32_entry(bE3C04++);
+		*(char *)s = 0xff;
+		return s;
+	} else
+		report_error(2, "x");
+l5e82:
+	if (tblF332[idx].c == -1) {
+		tblF332[idx].c = val;
+		return s;
+	}
+	tmp = (b = (struct ent *)get_block(prev))->n4;
+	b->n4 = val;
+	((struct ent *)get_block(val))->n4 = tmp;
+	return s;
+}
+
+/* f4a16..5a2c: findings:D2,D15 */
+char *get_block();
+char *table32_entry();
+struct seg *ins_block();
+int place_sec();
+int alloc_segment();
+int f4968();
+int list_move_after();
+int report_error();
+
+int lay_out()
+{
+	register struct ent *blk;
+	register struct ent *cur;
+	register struct seg *p;
+	int max;
+	int u0;
+	int u1;
+	int u2;
+	int u3;
+	struct seg *l1;
+	struct seg *l2;
+	int cnt;
+	int k;
+	int i;
+	int delta;
+	int j;
+	int q;
+	int u4;
+	struct seg *e;
+	int swapped;
+
+	pE3C0E = 0;
+	pE3C0A = 0;
+	pE3C06 = 0;
+	b3C12 = 0;
+	bF32E = 0;
+	bE3C04 = 0;
+	for (k = 1; k < 4; k++) {
+		for (i = 0; i < bEF32C; i++) {
+			blk = (struct ent *)get_block(i);
+			if (blk->f4 && k == 1) {
+				blk->s2 = ins_block(2, blk->f4, tblF332[blk->f22].a, i, blk->f22);
+				blk->f22 = blk->s2->f4;
+				blk->s2->f4 += blk->f4;
+				bE3C16 += (unsigned)blk->f4;
+				blk->s2->flags |= 1;
+			}
+			if (blk->f6 && k == 2) {
+				if (tblF332[blk->f24].c > -1)
+					blk->s3 = ins_block(3, blk->f6, tblF332[blk->f24].c - 0x4b0, i, blk->f24);
+				else
+					blk->s3 = ins_block(3, blk->f6, tblF332[blk->f24].b, i, blk->f24);
+				blk->f24 = blk->s3->f6;
+				blk->s3->f6 += blk->f6;
+				bE3C1A += (unsigned)blk->f6;
+				blk->s3->flags |= 2;
+			}
+			if (blk->f8 && k == 3) {
+				if (tblF332[blk->f26].c > 0x4af)
+					blk->s4 = ins_block(4, blk->f8, tblF332[blk->f26].c - 0x4b0, i, blk->f26);
+				else
+					blk->s4 = ins_block(4, blk->f8, tblF332[blk->f26].c, i, blk->f26);
+				blk->f26 = blk->s4->f8;
+				blk->s4->f8 += blk->f8;
+				b3C1E += (unsigned)blk->f8;
+				blk->s4->flags |= 4;
+			}
+		}
+	}
+	if (g0474 >= 0 && g0474 < 128) {
+		l1 = (struct seg *)0x7f00ffff;
+		l2 = (struct seg *)0x7f00ffff;
+		i = tblF332[g0474].a;
+		if (i != -1)
+			l1 = ((struct ent *)get_block(i))->s2;
+		else {
+			i = tblF332[g0474].b;
+			if (i != -1)
+				l1 = ((struct ent *)get_block(i))->s3;
+			else {
+				i = tblF332[g0474].c;
+				if (i != -1)
+					l1 = ((struct ent *)get_block(i))->s4;
+			}
+		}
+		if (l2 == l1)
+			tblF332[g0474].d = 3000;
+	}
+	bF32E = 0;
+	max = bE3E82;
+	cnt = 0;
+	k = 0;
+	while (k <= max) {
+		if (tblF332[k].d > 500 && tblF332[k].d != 2000) {
+			f4968(l1, &cnt, k, &delta);
+			cnt--;
+			if (!(tblF332[k].a == -1 && tblF332[k].b == -1 && tblF332[k].c == -1)) {
+				for (j = 0; j < 128; j++) {
+					if (tblF332[j].a == -1 && tblF332[j].b == -1 && tblF332[j].c == -1 && tblF332[j].d == -1) {
+						report_error(0, "x", k, j);
+						tblF332[j].a = tblF332[k].a;
+						tblF332[j].b = tblF332[k].b;
+						tblF332[j].c = tblF332[k].c;
+						tblF332[j].d = 500;
+						tblF332[k].a = -1;
+						tblF332[k].b = -1;
+						tblF332[k].c = -1;
+						if (j > bE3E82)
+							bE3E82 = j;
+						break;
+					}
+				}
+			}
+		}
+		k++;
+		cnt++;
+	}
+	max = bE3E82;
+	k = 0;
+	cnt = 0;
+	for (; k <= max; k++) {
+		if (tblF332[k].d == 100 || tblF332[k].d == 50 || (tblF332[k].d == -1 && tblF332[k].a < 0 && tblF332[k].b < 0 && (tblF332[k].c < 0 || tblF332[k].c > 0x4af))) {
+			cnt++;
+			continue;
+		}
+		if (tblF332[k].d == 1000 || tblF332[k].d == 3000) {
+			cnt++;
+			continue;
+		}
+		i = tblF332[k].a;
+		if (i != -1)
+			l1 = ((struct ent *)get_block(i))->s2;
+		else {
+			i = tblF332[k].b;
+			if (i != -1)
+				l1 = ((struct ent *)get_block(i))->s3;
+			else {
+				i = tblF332[k].c;
+				if (i == -1)
+					continue;
+				l1 = ((struct ent *)get_block(i))->s4;
+			}
+		}
+		bF320 = 0;
+		bF322 = 0;
+		place_sec(l1, cnt);
+		if (tblF332[k].a > -1) {
+			pE3C0A = (char *)l1;
+			if (*(char *)l1 == -1) {
+				q = 1;
+				delta = alloc_segment(l1, &cnt, 0, 't', &q);
+			}
+			if (!bE4A2) {
+				if ((f4a34 == 1 && (l1->f1a & 0xff)) || bE42B4[cnt - 1][1] == 't')
+					delta = 0x100 - (l1->f4 & 0xff);
+				else if (f4a34 == 1)
+					delta = 0x100 - ((l1->f1a - (l1->f1a & 0xff00) + l1->f4) & 0xff);
+				else
+					delta = 0;
+				if (f4a34 == 1 && (unsigned)l1->f4 > 0xff00)
+					delta = delta - 2;
+			} else
+				delta = 0;
+			bE3C16 += delta;
+			l1->f4 += delta;
+			if (l1->c[0] == g0474)
+				l1->flags |= 8;
+			while ((i = (cur = (struct ent *)get_block(i))->n2) > -1) {
+				if (l1 != ((struct ent *)get_block(i))->s2) {
+					if (bE42B4[k][1])
+						report_error(2, "x", cnt - 1, ptrs04ac[1]);
+					l1 = ((struct ent *)get_block(i))->s2;
+					l1->f1a = 0;
+					pE3C0A = (char *)l1;
+					place_sec(l1, cnt);
+					q = i;
+					delta = alloc_segment(l1, &cnt, 1, 't', &q);
+					if (l1->f8 + l1->f6) {
+						tblF332[q].c = tblF332[k].c;
+						tblF332[q].b = tblF332[k].b;
+						tblF332[k].c = -1;
+						tblF332[k].b = -1;
+					}
+					cur->n2 = -1;
+					if (f4a34 == 1) {
+						bE3C16 += delta;
+						l1->f4 += delta;
+					} else if (f4a34 == 2) {
+						bE3C1A += delta;
+						l1->f6 += delta;
+					} else if (f4a34 == 3) {
+						b3C1E += delta;
+						l1->f8 += delta;
+					}
+				}
+			}
+		}
+		if (tblF332[k].b > -1) {
+			i = tblF332[k].b;
+			blk = (struct ent *)get_block(i);
+			l2 = blk->s3;
+			if (bF320) {
+				l1 = bF324;
+				blk->s3 = l1;
+				cnt--;
+			} else
+				l1 = l2;
+			pE3C06 = (char *)l1;
+			if (*(char *)l1 == -1) {
+				q = 1;
+				delta = alloc_segment(l1, &cnt, 0, 'd', &q);
+			}
+			if (!bE4A2) {
+				if ((f4a34 == 2 && (l1->f1c & 0xff) == 0) || bE42B4[cnt - 1][2] == 't')
+					delta = 0x100 - (l1->f6 & 0xff);
+				else if (f4a34 == 2)
+					delta = 0x100 - ((l1->f1c - (l1->f1c & 0xff00) + l1->f6) & 0xff);
+				else
+					delta = 0;
+				if (f4a34 == 2 && (unsigned)(l1->f4 + l1->f6) > 0xff00)
+					delta = delta - 2;
+			} else
+				delta = 0;
+			bE3C1A += delta;
+			l1->f6 += delta;
+			if (l1->c[0] == g0474)
+				l1->flags |= 8;
+			goto ltd;
+lhd:
+			if (bE42B4[k][2])
+				report_error(2, "x", cnt - 1, ptrs04ac[2]);
+			l1 = ((struct ent *)get_block(i))->s3;
+			l1->f1c = 0;
+			place_sec(l1, cnt);
+			pE3C06 = (char *)l1;
+			q = i;
+			delta = alloc_segment(l1, &cnt, 1, 'd', &q);
+			cur->n3 = -1;
+			if (f4a34 == 2) {
+				bE3C1A += delta;
+				l1->f6 += delta;
+			} else {
+				tblF332[q].c = tblF332[k].c;
+				tblF332[k].c = -1;
+				b3C1E += delta;
+				l1->f8 += delta;
+			}
+			l2 = l1;
+			goto ltd;
+lbd:
+			blk = (struct ent *)get_block(i);
+			if (l2 != blk->s3)
+				goto lhd;
+			blk->s3 = l1;
+ltd:
+			i = (cur = (struct ent *)get_block(i))->n3;
+			if (i > -1)
+				goto lbd;
+		}
+		if (tblF332[k].c > -1 && tblF332[k].c < 0x4b0) {
+			i = tblF332[k].c;
+			blk = (struct ent *)get_block(i);
+			l2 = blk->s4;
+			if (bF322) {
+				l1 = bF328;
+				blk->s4 = l1;
+				cnt--;
+			} else
+				l1 = l2;
+			pE3C0E = (char *)l1;
+			if (*(char *)l1 == -1) {
+				q = 1;
+				delta = alloc_segment(l1, &cnt, 0, 'b', &q);
+			}
+			if (!bE4A2) {
+				if ((f4a34 == 3 && (l1->f1e & 0xff) == 0) || bE42B4[cnt - 1][3] == 't')
+					delta = 0x100 - (l1->f8 & 0xff);
+				else if (f4a34 == 3)
+					delta = 0x100 - ((l1->f1e - (l1->f1e & 0xff00) + l1->f8) & 0xff);
+				else
+					delta = 0;
+				if (f4a34 == 3 && (unsigned)(l1->f4 + l1->f6 + l1->f8) > 0xff00)
+					delta = delta - 2;
+			} else
+				delta = 0;
+			b3C1E += delta;
+			l1->f8 += delta;
+			if (l1->c[0] == g0474)
+				l1->flags |= 8;
+			goto ltb;
+lhb:
+			if (bE42B4[k][3])
+				report_error(2, "x", cnt - 1, ptrs04ac[3]);
+			l1 = ((struct ent *)get_block(i))->s4;
+			l1->f1e = l1->f1c + l1->f6;
+			pE3C0E = (char *)l1;
+			if (*(char *)l1 == -1) {
+				q = i;
+				delta = alloc_segment(l1, &cnt, 1, 'b', &q);
+				cur->n4 = -1;
+				b3C1E += delta;
+				l1->f8 += delta;
+			}
+			l2 = l1;
+			goto ltb;
+lbb:
+			blk = (struct ent *)get_block(i);
+			if (l2 != blk->s4)
+				goto lhb;
+			blk->s4 = l1;
+ltb:
+			i = (cur = (struct ent *)get_block(i))->n4;
+			if (i > -1)
+				goto lbb;
+		}
+		if (tblF332[k].c > 0x4af)
+			tblF332[k].c = -1;
+	}
+	if (g0474 == -1) {
+		l1 = (struct seg *)table32_entry(bE3C04);
+		if (bE3C04++ > 0x100)
+			report_error(2, "x");
+		bE3E82++;
+		l1->flags = 8;
+		q = 1;
+		delta = alloc_segment(l1, &cnt, 0, 's', &q);
+		g0474 = cnt - 1;
+	}
+	if (b3C12 != bF32E) {
+		do {
+			swapped = 0;
+			p = (struct seg *)bF32E;
+			e = p->nxt;
+			do {
+				if (e->c[0] < p->c[0]) {
+					swapped = 1;
+					list_move_after(p, e);
+				}
+				e = (p = e)->nxt;
+			} while (p != (struct seg *)b3C12);
+		} while (swapped);
+	}
 }

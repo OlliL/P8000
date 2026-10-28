@@ -1,16 +1,17 @@
 # status: open | done (byte-identical) | findings:<ids> (documented, not identical)
 # own code of /bin/sld, 0x0018..0x8680: function entries (call targets and proven starts), end = next entry
 # columns: entry, name (f<entry> until understood), end (exclusive), size, number of callers, first 4 callers, kind (P proven, c call target only), last instruction, status
+# 0x0018 (startcode) is not C: it is built from the template crt0 scrt0.s.in (row sld of crt0.list, mkcrt0.sh), verified: the 62 bytes equal 0x18..0x55 of /bin/sld except the relocated operands
 # 6866: no caller and no address reference found (dead code candidate, see KNOWLEDGE quirks)
 # 0x8000 is not an entry (inner jump target of the function at 0x7c26). 0x85f8 ends with add; its ret is the first
 # instruction of the shipped ffltioc (0x8680, 9e08 = ret), so the function falls into ffltioc.
-0018 f0018 0056 62 0 - P sc open
+0018 startcode 0056 62 0 - P sc done
 0056 unpack_run 00ee 152 5 124 1c4 6a28 6b92 P ret findings:D2
 00ee pack_name 0178 138 1 6b68 c ret findings:D2
 0178 f0178 01d2 90 1 6898 c ret findings:D2
 01d2 walk_entries 0220 78 0 - x ret done
 0220 dump_sym 0334 276 1 204 P ret done
-0334 dump_p1 03fc 200 0 - x ret done
+0334 dmp_p1 03fc 200 0 - x ret done
 03fc dump_p2 0566 362 0 - x ret done
 0566 dump_res 06c6 352 0 - x ret done
 06c6 get_block 0762 156 55 350 1828 3784 3a0c c ret findings:D7
@@ -27,7 +28,7 @@
 1560 f1560 1664 260 1 1426 c ret findings:D2,D5,D8
 1664 add16_checked 1696 50 1 1898 P ret findings:D4
 1696 read_symbols 18f2 604 2 1392 1542 P ret findings:D1,D2
-18f2 f18f2 1f96 1700 3 5018 5226 554c c ret open
+18f2 place_sec 1f96 1700 3 5018 5226 554c c ret done
 1f96 f1f96 2056 192 1 1bbe P ret findings:D4
 2056 start_output 22a4 590 1 120e c ret findings:D2
 22a4 open_tmp 2346 162 7 206a 2080 208a 20a4 P ret findings:D7
@@ -49,7 +50,7 @@
 3408 report_error 34b8 176 103 1b6 6e4 72c 782 P ret done
 34b8 table_lookup 3516 94 1 2b08 P ret findings:D2
 3516 f3516 3760 586 2 16ae 24a8 c ret findings:D2,D16
-3760 make_blocks 3a30 720 1 374e P ret done
+3760 make_blk 3a30 720 1 374e P ret done
 3a30 str_compare 3a88 88 2 37cc 4162 P ret findings:D2
 3a88 f3a88 3ac6 62 10 299a 29b2 2a28 2ad4 P ret findings:D5
 3ac6 flush_buffer 3b1e 88 7 2cf6 2dee 3ab8 6142 P ret findings:D1
@@ -61,8 +62,8 @@
 4444 copy_leafname 44e6 162 1 37a6 c ret done
 44e6 end_pass1 4968 1154 1 1208 c ret findings:D2
 4968 f4968 4a16 174 1 4d68 P ret findings:D5
-4a16 f4a16 5a2c 4118 1 469e P ret open
-5a2c f5a2c 5eec 1216 3 4a96 4b32 4bce P ret open
+4a16 lay_out 5a2c 4118 1 469e P ret findings:D2,D15
+5a2c ins_block 5eec 1216 3 4a96 4b32 4bce P ret findings:D11
 5eec alloc_segment 60f0 516 8 4a02 506e 5252 5406 P ret done
 60f0 f60f0 6134 68 1 63fc P ret findings:D2
 6134 f6134 620e 218 1 2cbc c ret done

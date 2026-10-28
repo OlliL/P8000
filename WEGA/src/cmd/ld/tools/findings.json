@@ -18,13 +18,6 @@
   "symbols": "none (stripped)"
  },
  "functions": {
-  "f0018": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x0018",
-   "ours": "f0018..0056",
-   "level": "open"
-  },
   "f0178": {
    "file": "sld.c",
    "pairing": "confirmed",
@@ -186,13 +179,6 @@
     "len_ours": 73,
     "len_orig": 73
    }
-  },
-  "f18f2": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x18f2",
-   "ours": "f18f2..1f96",
-   "level": "open"
   },
   "f1f96": {
    "file": "sld.c",
@@ -622,20 +608,6 @@
     "len_ours": 45,
     "len_orig": 45
    }
-  },
-  "f4a16": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x4a16",
-   "ours": "f4a16..5a2c",
-   "level": "open"
-  },
-  "f5a2c": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x5a2c",
-   "ours": "f5a2c..5eec",
-   "level": "open"
   },
   "f60f0": {
    "audit": {
@@ -2019,47 +1991,28 @@
    "ours": "0x4e9e-0x517e",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 20,
-    "pattern_unexplained": 5,
+    "d_normalised_pct": 85,
+    "pattern_diff": 46,
+    "pattern_unexplained": 2,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: clr\t_; ld\tA,#N; ld\t_,#N",
+    "difference_note": "unexplained instruction forms: ld\tA,#N; ld\t_,#N",
     "structure_flags": [],
     "len_ours": 153,
     "len_orig": 153
-   }
-  },
-  "make_blocks": {
-   "file": "sld.c",
-   "pairing": "confirmed",
-   "orig": "0x3760",
-   "ours": "0x517e-0x545a",
-   "level": "exact",
-   "audit": {
-    "d_normalised_pct": 94,
-    "pattern_diff": 24,
-    "pattern_unexplained": 1,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: ld\trS,_",
-    "structure_flags": [],
-    "len_ours": 187,
-    "len_orig": 187
    }
   },
   "start_output": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2056",
-   "ours": "0x545a-0x56d0",
+   "ours": "0x5456-0x56cc",
    "level": "differs",
    "pairing_evidence": "160 instructions equal in count and order; frame offsets equal (strict); differences are scratch register choices: the third global copy goes through rr6 (original rr2), the result of the conditional expression for bE460 through r0 (original r4), and ld r5,r2 follows ldk r4,#0 (original before it); semantics by reading only",
    "audit": {
-    "d_normalised_pct": 90,
-    "pattern_diff": 32,
+    "d_normalised_pct": 92,
+    "pattern_diff": 26,
     "pattern_unexplained": 1,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2142,7 +2095,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0220",
-   "ours": "0x5dd2-0x5ee6",
+   "ours": "0x5dc2-0x5ed6",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -2156,13 +2109,6 @@
     "len_ours": 75,
     "len_orig": 75
    }
-  },
-  "dump_p1": {
-   "file": "sld.c",
-   "pairing": "confirmed",
-   "orig": "0x0334",
-   "ours": null,
-   "level": "exact"
   },
   "dump_p2": {
    "file": "sld.c",
@@ -2205,37 +2151,66 @@
    "ours": "f3c16..410c",
    "level": "differs",
    "pairing_evidence": "340 instructions equal in count; order-independent comparison: 38 differ; the temporaries of the switches use other registers (original r3/r6, here r7/r6: D2) and the original shares the tail of three report_error calls with the same arguments (jr to one call; D11); frame equal (strict); the 2-dimensional tables bE42B4[v][w] and tab4534[v][w] reproduce the indexed addressing; semantics by reading only"
+  },
+  "make_blk": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x3760",
+   "ours": "0x517e-0x545a",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 94,
+    "pattern_diff": 24,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: ld\trS,_",
+    "structure_flags": [],
+    "len_ours": 187,
+    "len_orig": 187
+   }
+  },
+  "place_sec": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x18f2",
+   "ours": "f18f2..1f96",
+   "level": "exact"
+  },
+  "ins_block": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x5a2c",
+   "ours": "f5a2c..5eec",
+   "level": "differs",
+   "pairing_evidence": "same 310 instructions; two shared blocks are placed the other way round (tail merge keeps the later copy: the then-block of the kind 3/4 test with tbl.c > 0x4af, and the store of tbl.b/tbl.c = val before the kind 3 test); block placement only"
+  },
+  "lay_out": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x4a16",
+   "ours": "f4a16..5a2c",
+   "level": "differs",
+   "pairing_evidence": "1072 of 1073 instructions; else arms of the section selection and of the delta calculation of the text section are laid out in source order instead of after the next unconditional jump (block layout), scratch register choices (rr4/rr6, one register copy), tail merge direction"
+  },
+  "dmp_p1": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x0334",
+   "ours": null,
+   "level": "exact"
+  },
+  "startcode": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x0018",
+   "ours": "f0018..0056",
+   "level": "exact"
   }
  },
  "findings": [],
  "findings_pending": [
-  {
-   "id": "sld-deferred-18f2",
-   "kind": "deferred (large function)",
-   "function": "f18f2",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x18f2, 1700 bytes, not started"
-  },
-  {
-   "id": "sld-deferred-4a16",
-   "kind": "deferred (large function)",
-   "function": "f4a16",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x4a16, 4118 bytes, not started"
-  },
-  {
-   "id": "sld-deferred-5a2c",
-   "kind": "deferred (large function)",
-   "function": "f5a2c",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x5a2c, 1216 bytes, not started"
-  },
   {
    "id": "sld-1070-count",
    "kind": "open (instruction count)",

@@ -984,6 +984,27 @@ means it does something fixed instead (only possible where the original's result
   `SCCFLAGS` sets the compiler flags (default `-O`; without `-O` the code is not that of the original).
 - Layout rules measured with `scc -O -S` (scratch `tmp/layout`): if/else keeps the source order; loops are rotated (D7).
 
+### sld: section allocator (0x4a16 lay_out, 0x18f2 place_sec, 0x5a2c ins_block) (2026-10-28)
+
+- Records: the block record (`get_block`, size unknown: sizes f4/f6/f8 at +4/+6/+8, pointers to the three segment records s2/s3/s4
+  at +0x16/+0x1a/+0x1e, section ids f22/f24/f26 at +0x22/+0x24/+0x26, next-in-chain n2/n3/n4 at +0x30/+0x32/+0x34) and the
+  32-byte segment record (`table32_entry`: type byte, f4/f6/f8 sizes, flags at +10, list links +0x12/+0x16, start values
+  f1a/f1c/f1e at +0x1a/+0x1c/+0x1e). `tblF332[128]` (8 bytes: text, data, bss block id, state d) holds the chain heads;
+  state d: values 50, 100, 500, 1000, 2000, 3000 are tested; the meanings (guess: 50/100 free, 500 moved, 1000/3000 fixed, 2000 skipped) are not verified. Section kinds 2/3/4 = text/data/bss, `t`/`d`/`b`/`s` in the
+  segment allocator `alloc_segment`.
+- `lay_out` (pass 1 end): inserts all blocks into the chains (`ins_block`), compacts `tblF332`, walks the chains, aligns each
+  section start to 0x100 (the "delta" with the `0x100 - (x & 0xff)` and the -2 correction near 0xff00), calls `place_sec` per
+  chain head and finally sorts the segment record list by its type byte with `list_move_after` (bubble sort).
+- Compiler facts (measured with the strict check): a call whose conditional argument is a `?:` expression is compiled with the
+  call duplicated in both arms (tail merge restores one call); write it as `if`/`else` with two calls. A `switch` with
+  three case constants is `cpir` + jump table, the tests run in ascending order, the bodies in source order. A case body that is
+  identical to an earlier one is merged by popt, which keeps the later copy for `if` arms with a shared then-block (D11) and the
+  earlier one for `goto` targets. Struct fields declared `unsigned` give `ule/ugt` branches; `(unsigned)x` in `long += x` gives
+  `ldk r4,#0` (zero extension), a plain int `exts`.
+- Not reproducible (D15, recorded in findings.json): the original places the else arms of the section selection and of the
+  delta calculation (text section) after the next unconditional jump; with `goto` labels our compiler keeps the source order
+  (see D15), so the layout of those blocks differs although the instruction multiset is the same.
+
 ## Plexis System III sources (s3plxsrc.tar.gz, not in git)
 
 - Zilog Z8000 SysIII source tree from Plexis (cmd/, lib/, uts/, ...), 2440 files.

@@ -155,6 +155,17 @@ produce the same bytes with the shipped cc.
   54 with findings (see the audit in findings.json),
   23 open: 21 large functions deferred (kind 'deferred (large function)' in findings_pending, 0x2492 and 0x2624 are done
   now), 0x0018 (start code, now scrt0.o; table row still open), 0x6a58 (not accepted). 100 entries.
+  2026-10-28 (end of the session): all 105 entries are processed: 37 done, 68 with findings, 0 open. The last three large
+  functions are accepted: `place_sec` 0x18f2 (1700 bytes, identical in strict mode), `ins_block` 0x5a2c (310 instructions, D11:
+  two shared blocks placed the other way round) and `lay_out` 0x4a16 (1072 of 1073 instructions, D2 and D15: else arms of the
+  section selection and of the delta calculation are placed after the next unconditional jump in the original, in source
+  order by our compiler). 0x0018 is the start code `startcode`, built from `scrt0.s.in` (status done). Tools: `fncheck.py`
+  is strict (frame offsets), `rename.py` renames table + sld.c + findings.json, `strict_audit.py` compares every accepted
+  function, `check_names.py` checks the 8-character rule, `tryname.py` finds a name the compiler does not lose. Renamed
+  because the compiler lost the function name: `make_blocks` -> `make_blk`, `dump_p1` -> `dmp_p1`.
+  Next: improve the findings-class functions found by `strict_audit.py` (parse_args, f6c6a, make_ccl, scan_field, ...),
+  re-check the D15 tags, cut the data (7090 bytes, bss), map the libc `fXXXX` addresses to libc names, `make link` and
+  compare the bytes, split sld.c into modules.
   Second pass (2026-10-27): 0x2492 accepted (D2, D7), 0x2624 accepted (D7, D16), 0x27d8 accepted (D2, D7, D15) with the open
   finding sld-27d8-layout (42 of 361 instructions differ: block placement of 0x2b02 and 0x2882; semantics checked by reading only).
   0x3516 accepted (D2, D16; same 156 instructions; the classifier reports 5 forms without pattern: indexed through a
