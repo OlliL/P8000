@@ -55,15 +55,15 @@ test:
 			fsym.ftype = swap_bytes(fsym.ftype);
 			fsym.fvalue = swap_bytes(fsym.fvalue);
 		}
-		f6800(&fsym, &cursym, bE4B0);
+		cvt_fsym(&fsym, &cursym, bE4B0);
 	}
 	cursym.svalue &= 0xff00ffffL;
 	cursym.stype &= ~0x40;
 	return result;
 }
 
-/* f6800 0x6800..0x6866: done */
-int f6800(p, q, a)
+/* cvt_fsym 0x6800..0x6866: done */
+int cvt_fsym(p, q, a)
 struct fsym *p;
 struct symbol *q;
 int a;
@@ -87,11 +87,11 @@ struct fsym *q;
 {
 	q->fvalue = (int)p->svalue;
 	q->ftype = p->stype;
-	f0178(p->sname, q);
+	trunc_name(p->sname, q);
 }
 
-/* f68a2..6a08: findings:D2,D16 */
-int f68a2(a, c)
+/* ldrsym..6a08: findings:D2,D16 */
+int ldrsym(a, c)
 struct symbol *a;
 char c;
 {
@@ -147,8 +147,8 @@ char c;
 	p->svalue = p->svalue + ((long)p->sseg << 24);
 }
 
-/* f6a08 0x6a08..0x6a58: done */
-f6a08(p)
+/* mkfsym 0x6a08..0x6a58: done */
+mkfsym(p)
 char *p;
 {
 	if (bE4A4)
@@ -159,8 +159,8 @@ char *p;
 	cursym.stype = 0x1f;
 	cursym.svalue = 0;
 	cursym.sseg = 0;
-	f6c6a();
-	f6e1a(&bF10A, &cursym);
+	map_sym();
+	put_sym(&bF10A, &cursym);
 }
 
 /* lookup_name..6b5a: done */
@@ -215,9 +215,9 @@ l2:
 	return slot;
 }
 
-/* f6b5a 0x6b5a..0x6b84: done */
+/* slookup 0x6b5a..0x6b84: done */
 /* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
-struct symbol **f6b5a(p)
+struct symbol **slookup(p)
 char *p;
 {
 	long dummy;
@@ -228,9 +228,9 @@ char *p;
 	lookup_name();
 }
 
-/* f6b84 0x6b84..0x6bae: done */
+/* pslookup 0x6b84..0x6bae: done */
 /* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
-struct symbol **f6b84(p)
+struct symbol **pslookup(p)
 char *p;
 {
 	long dummy;
@@ -241,8 +241,8 @@ char *p;
 	lookup_name();
 }
 
-/* f6bae..6c6a: findings:D2 */
-f6bae(a)
+/* enter..6c6a: findings:D2 */
+enter(a)
 struct symbol **a;
 {
 	register struct symbol *r;
@@ -264,8 +264,8 @@ struct symbol **a;
 	return 0;
 }
 
-/* f6c6a..6da8: findings:D2,D6,D15 */
-f6c6a()
+/* map_sym..6da8: findings:D2,D6,D15 */
+map_sym()
 {
 	register char *w;
 	register struct p1seg *p;
@@ -326,8 +326,8 @@ end:
 	;
 }
 
-/* f6da8..6e1a: findings:D6 */
-f6da8()
+/* symreloc..6e1a: findings:D6 */
+symreloc()
 {
 	switch (cursym.stype) {
 	case 2:
@@ -350,8 +350,8 @@ f6da8()
 	}
 }
 
-/* f6e1a 0x6e1a..0x6efe: done */
-f6e1a(a, b)
+/* put_sym 0x6e1a..0x6efe: done */
+put_sym(a, b)
 struct buf *a;
 struct symbol *b;
 {
@@ -368,14 +368,14 @@ struct symbol *b;
 		r.ssnam[i] = b->sname[i];
 	if (bE4B6)
 		swap_pair(&r.ssval);
-	f2f04(a, &r, 14);
+	mput(a, &r, 14);
 	bE4F0++;
 	if (b->sname[0] & 0x80) {
 		q = (char *)(b + 1);
 		cnt = (b->sname[0] & 0x7f) - 8;
 		k = 1;
 		while (cnt > 0) {
-			f2f04(a, q, 14);
+			mput(a, q, 14);
 			bE4F0++;
 			q += 14;
 			k++;
@@ -386,8 +386,8 @@ struct symbol *b;
 	return 1;
 }
 
-/* f6efe 0x6efe..0x6f46: done */
-f6efe()
+/* put_all 0x6efe..0x6f46: done */
+put_all()
 {
 	register struct symbol *p;
 	register struct symbol *end;
@@ -396,14 +396,14 @@ f6efe()
 	end = table16_entry(bE4FA);
 	while (p < end) {
 		p->stype |= 0x40;
-		f6e1a(&bE4DA, p);
+		put_sym(&bE4DA, p);
 		p->stype &= ~0x40;
 		p = next_entry(p);
 	}
 }
 
-/* f6f46..6fce: findings:D7 */
-f6f46(p, n)
+/* chk_ranlib..6fce: findings:D7 */
+chk_ranlib(p, n)
 struct rlent *p;
 int n;
 {
@@ -418,7 +418,7 @@ body:
 	if (p >= q) {
 		if ((p->rname[0] & 0x80) != 0)
 			q = (struct rlent *)(p->rname + (p->rname[0] & 0x7f));
-		q2 = *f6b84(p->rname);
+		q2 = *pslookup(p->rname);
 		if (q2 != 0) {
 			if (q2->stype != 0x20)
 				warn_sym_redef(0, q2);
@@ -450,8 +450,8 @@ int a;
 		report_error(2, "malloc unable to allocate enough memory for symbol table");
 }
 
-/* f702a 0x702a..0x705e: done */
-f702a(a)
+/* resize_symtab 0x702a..0x705e: done */
+resize_symtab(a)
 int a;
 {
 	gE47E = realloc(gE47E, a << 4);

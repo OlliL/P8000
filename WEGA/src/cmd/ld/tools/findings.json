@@ -18,29 +18,6 @@
   "symbols": "none (stripped)"
  },
  "functions": {
-  "f0178": {
-   "file": "copyname.c",
-   "pairing": "confirmed",
-   "orig": "0x0178",
-   "ours": "0x0122-0x017a",
-   "level": "differs",
-   "pairing_evidence": "register choice of the copy of src (rr12 in the original, rr10 here) and the first byte read through a copy in rr2 (D2); frame and calls equal",
-   "audit": {
-    "d_normalised_pct": 89,
-    "pattern_diff": 5,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10"
-    ],
-    "structure_flags": [],
-    "len_ours": 27,
-    "len_orig": 28
-   }
-  },
   "sig_handler": {
    "file": "ld.c",
    "pairing": "confirmed",
@@ -79,147 +56,6 @@
     "len_orig": 17
    }
   },
-  "f1560": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x1560",
-   "ours": "0x150a-0x160e",
-   "level": "differs",
-   "pairing_evidence": "table loop over 12-byte entries at bE3E84 (count bE3E88): the flag test uses the and/test form (D8, byte value), the field offset +4 is folded into the pointer (D5, const index), the base is loaded into another register pair (D2). Same 73 instructions.",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 73,
-    "len_orig": 73
-   }
-  },
-  "f1f96": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x1f96",
-   "ours": "0x1f3e-0x1ffe",
-   "level": "differs",
-   "pairing_evidence": "the argument p is kept in the frame in the original (D4), the pointer e in rr2 there and rr12 here (D2); the table index, the field moves and the bit operations are equal",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 57,
-    "len_orig": 57
-   }
-  },
-  "f2624": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x2624",
-   "ours": "0x25d0-0x2784",
-   "level": "exact",
-   "pairing_evidence": "loop over the entries (count bE434/16) with refill of the word buffers 0x414 and 0x424, a 16-byte record (mget, swap_quad under bE4B6) and a switch on its word at +10 (keys 1, 2, 3; case 3 falls into case 2 as in the original). Same 117 instructions; the record array sits at another frame offset (0x18 instead of 0x08), frame layout (D16); the loop test is at the top in ours (D7). The data targets 0xE6E2, 0xEF02, 0xE8EA, 0xEAF2 are not yet named",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 117,
-    "len_orig": 117
-   }
-  },
-  "f27d8": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x27d8",
-   "ours": "0x2784-0x2c68",
-   "level": "exact",
-   "pairing_evidence": "reading check: every block has the same instructions in the same order as the original, apart from the block placement and the register choices of the old cc (scratch registers of the key, count and byte temporaries); the bit-3 key of both switches is computed as in the original (jr ne / sra #4 path). Not run on the machine: the semantic equivalence is by reading. 42 of 361 instructions differ; the audit shows 1 unexplained form (sra rS,#4 in the layout of the first switch path)",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 361,
-    "len_orig": 361
-   }
-  },
-  "f2d4c": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x2d4c",
-   "ours": "0x2cf8-0x2d8a",
-   "level": "exact",
-   "pairing_evidence": "the original computes the distance of two frame arrays (rest - buf) into a register that is overwritten by the constant 0 of the call (a register leftover of the old compiler, D2); the rest is equal",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 40,
-    "len_orig": 40
-   }
-  },
-  "f2dde": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x2dde",
-   "ours": "0x2d8a-0x2df8",
-   "level": "exact",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 32,
-    "len_orig": 32
-   }
-  },
-  "f2f04": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x2f04",
-   "ours": "0x2eb0-0x2ee6",
-   "level": "exact",
-   "pairing_evidence": "register choice differs: the original keeps the pointer in rr10 and the count in r13 (saves r3..r7), here rr12 and r11 (D2); otherwise equal",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 15,
-    "len_orig": 15
-   }
-  },
   "table_lookup": {
    "audit": {
     "d_normalised_pct": 100,
@@ -239,28 +75,6 @@
    "ours": "0x3462-0x34c0",
    "level": "exact",
    "pairing_evidence": "register choice differs (end pointer kept in rr8 in the original, p in rr10); frame 32 bytes in the original against 8 here (D1 share); otherwise equal"
-  },
-  "f3516": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x3516",
-   "ours": "0x34c0-0x370e",
-   "level": "differs",
-   "pairing_evidence": "loader step of the program header: magic check (E607/E611 set bE4B4, E707/E711 accepted), two refills of the word buffer, a 16-byte record table of count bE434/16 with the flags and the sums; the record fields are read through a pointer into the frame (D16) and the signed division takes another register pair (D2). Same 156 instructions. Calls to 3760 (deferred) and 932e (libc swap) are declared",
-   "audit": {
-    "d_normalised_pct": 99,
-    "pattern_diff": 1,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D8"
-    ],
-    "structure_flags": [],
-    "len_ours": 157,
-    "len_orig": 156
-   }
   },
   "str_compare": {
    "audit": {
@@ -282,371 +96,6 @@
    "level": "differs",
    "pairing_evidence": "loop test loads q into rr4 in the original (testb @rr4), rr2 here; otherwise equal"
   },
-  "f410c": {
-   "file": "ldm.c",
-   "pairing": "confirmed",
-   "orig": "0x410c",
-   "ours": "0x40c2-0x42ac",
-   "level": "differs",
-   "pairing_evidence": "list insert of a name into the table at 0x3c22 (12-byte entries, sorted by the name with str_compare 0x3a30, head bE478, count at 0x047a, limit 0x32): the constant base of the table is an indexed displacement in the original (D5), the index multiply takes other registers (D2). Same 120 instructions. Quirk found by reading: when the name is already in the list (compare result 0) the attribute words are written at the step counter, not at the entry index; recorded in KNOWLEDGE",
-   "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 7,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D3",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 119,
-    "len_orig": 120
-   }
-  },
-  "f42f8": {
-   "file": "ldm.c",
-   "pairing": "confirmed",
-   "orig": "0x42f8",
-   "ours": "0x42ac-0x43f8",
-   "level": "exact",
-   "pairing_evidence": "switch on the type byte (the low byte of the high word of the long parameter): the old cc lowers it to cpir and a jump table (D6); the case blocks are laid out in another order (D15); the index stays in r7 in the original, ours reloads it from the frame (D16). Same 82 instructions",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D3",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 82,
-    "len_orig": 82
-   }
-  },
-  "f4968": {
-   "file": "ldm.c",
-   "pairing": "confirmed",
-   "orig": "0x4968",
-   "ours": "0x491c-0x49ca",
-   "level": "exact",
-   "pairing_evidence": "table index scaled to 8 bytes: the old cc emits sla 2 plus add r2,r2 (D5); the original has sla 3 only. In the second branch the original increments r3 (inc r3,#10) and the value is overwritten before use: dead code of the original, not a source form found (open, read by hand)",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D3",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 45,
-    "len_orig": 45
-   }
-  },
-  "f60f0": {
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 21,
-    "len_orig": 21
-   },
-   "file": "ldm.c",
-   "pairing": "confirmed",
-   "orig": "0x60f0",
-   "ours": "0x60d2-0x6116",
-   "level": "exact",
-   "pairing_evidence": "unexplained instruction forms: ld\trS,@rrS; ld\trS,rrS(#N)"
-  },
-  "f6134": {
-   "file": "ldm.c",
-   "pairing": "confirmed",
-   "orig": "0x6134",
-   "ours": "0x6116-0x61f0",
-   "level": "exact",
-   "audit": {
-    "d_normalised_pct": 89,
-    "pattern_diff": 12,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D3",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 53,
-    "len_orig": 53
-   }
-  },
-  "f64d0": {
-   "file": "ldm.c",
-   "pairing": "confirmed",
-   "orig": "0x64d0",
-   "ours": "0x64b2-0x6504",
-   "level": "exact",
-   "pairing_evidence": "return value: the old cc computes the result in r2 again (r2 = n - 2 as a scratch value) where the original keeps the loop value in r2; register choice, D2",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 24,
-    "len_orig": 24
-   }
-  },
-  "f6800": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6800",
-   "ours": "0x67ec-0x6852",
-   "level": "exact",
-   "pairing_evidence": "register choice of the byte loads (rl2 in the original, rl4 here); frame 12 bytes in the original against 14 here (D1 share); otherwise equal",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 36,
-    "len_orig": 36
-   }
-  },
-  "f68a2": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x68a2",
-   "ours": "0x688c-0x69ec",
-   "level": "differs",
-   "pairing_evidence": "entry of a stream-like record (parameter c stored at +4): the sums of the table words are built in rr6 in the original, through memory in ours (D2); the frame holds the pointer copy in a register and a stack temporary (D16). Same 118 instructions; the semantics are checked by reading (branches for c = 0x22, 0x23, 0x24, 0x21)",
-   "audit": {
-    "d_normalised_pct": 80,
-    "pattern_diff": 43,
-    "pattern_unexplained": 7,
-    "reordered_instructions": 3,
-    "reordered_examples": [
-     "ld\trS,rrS(#N)"
-    ],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: add\trS,@rrS; ld\trS,rrS(#N)",
-    "structure_flags": [],
-    "len_ours": 113,
-    "len_orig": 118
-   }
-  },
-  "f6a08": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6a08",
-   "ours": "0x69ec-0x6a3c",
-   "level": "exact",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 19,
-    "len_orig": 19
-   }
-  },
-  "f6b5a": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6b5a",
-   "ours": "0x6b3e-0x6b68",
-   "level": "exact",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 11,
-    "len_orig": 11
-   }
-  },
-  "f6b84": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6b84",
-   "ours": "0x6b68-0x6b92",
-   "level": "exact",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 11,
-    "len_orig": 11
-   }
-  },
-  "f6bae": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6bae",
-   "ours": "0x6b92-0x6c4e",
-   "level": "differs",
-   "pairing_evidence": "register choice of the pointer argument for the last store (rr4 in the original, loaded from the frame here); long bE46A; otherwise equal",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 50,
-    "len_orig": 50
-   }
-  },
-  "f6c6a": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6c6a",
-   "ours": "0x6c4e-0x6d8e",
-   "level": "differs",
-   "pairing_evidence": "state machine on the byte bE46E: the switch is lowered to cpir and a jump table (D6); the first value goes through r2 where the original uses r7 (D2); the case blocks are laid out in another order (D15). Same 98 instructions, same globals.",
-   "audit": {
-    "d_normalised_pct": 64,
-    "pattern_diff": 71,
-    "pattern_unexplained": 12,
-    "reordered_instructions": 11,
-    "reordered_examples": [
-     "ldl\trrS,rrS(#N)",
-     "ldb\trhS,rlS",
-     "ld\trS,F"
-    ],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: add\trS,@rrS; ld\t@rrS,rS; ld\trS,rrS(#N)",
-    "structure_flags": [
-     "order 11 moved"
-    ],
-    "len_ours": 99,
-    "len_orig": 98
-   }
-  },
-  "f6da8": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6da8",
-   "ours": "0x6d8e-0x6e00",
-   "level": "differs",
-   "pairing_evidence": "switch table (cpir over the case values, jump table at 0x165c): case order and layout differ (D6); the bit test of the default case reloads the character (D2); the case actions are equal",
-   "audit": {
-    "d_normalised_pct": 59,
-    "pattern_diff": 12,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13",
-     "D7",
-     "D8",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 17,
-    "len_orig": 29
-   }
-  },
-  "f6e1a": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6e1a",
-   "ours": "0x6e00-0x6ee4",
-   "level": "exact",
-   "pairing_evidence": "argument and loop pointer are reloaded from the frame in the original (D4) and the byte copy is addressed through a saved pointer; the calls, the flag test and the count are equal",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 67,
-    "len_orig": 67
-   }
-  },
-  "f6efe": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6efe",
-   "ours": "0x6ee4-0x6f2c",
-   "level": "exact",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 26,
-    "len_orig": 26
-   }
-  },
-  "f6f46": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x6f46",
-   "ours": "0x6f2c-0x6fae",
-   "level": "differs",
-   "pairing_evidence": "loop shape (test at the bottom in the original) and register numbers differ (D7, D2 share); the entry walk with 12-byte steps, the call of 0x6b84 and the blank test are equal",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 3,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 41,
-    "len_orig": 44
-   }
-  },
   "table16_entry": {
    "audit": {
     "d_normalised_pct": 100,
@@ -666,25 +115,6 @@
    "ours": "0x6fae-0x6fdc",
    "level": "exact",
    "pairing_evidence": "frame 14 bytes against 6 bytes of the draft; all other instructions equal"
-  },
-  "f702a": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x702a",
-   "ours": "0x7008-0x703c",
-   "level": "exact",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 14,
-    "len_orig": 14
-   }
   },
   "table32_entry": {
    "file": "symbols.c",
@@ -1886,6 +1316,576 @@
     "len_ours": 54,
     "len_orig": 54
    }
+  },
+  "trunc_name": {
+   "file": "copyname.c",
+   "pairing": "confirmed",
+   "orig": "0x0178",
+   "ours": "0x0122-0x017a",
+   "level": "differs",
+   "pairing_evidence": "register choice of the copy of src (rr12 in the original, rr10 here) and the first byte read through a copy in rr2 (D2); frame and calls equal",
+   "audit": {
+    "d_normalised_pct": 89,
+    "pattern_diff": 5,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10"
+    ],
+    "structure_flags": [],
+    "len_ours": 27,
+    "len_orig": 28
+   }
+  },
+  "ranlib_scan": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1560",
+   "ours": "0x150a-0x160e",
+   "level": "differs",
+   "pairing_evidence": "table loop over 12-byte entries at bE3E84 (count bE3E88): the flag test uses the and/test form (D8, byte value), the field offset +4 is folded into the pointer (D5, const index), the base is loaded into another register pair (D2). Same 73 instructions.",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 73,
+    "len_orig": 73
+   }
+  },
+  "split_seg": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1f96",
+   "ours": "0x1f3e-0x1ffe",
+   "level": "differs",
+   "pairing_evidence": "the argument p is kept in the frame in the original (D4), the pointer e in rr2 there and rr12 here (D2); the table index, the field moves and the bit operations are equal",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 57,
+    "len_orig": 57
+   }
+  },
+  "load2seg": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x2624",
+   "ours": "0x25d0-0x2784",
+   "level": "exact",
+   "pairing_evidence": "loop over the entries (count bE434/16) with refill of the word buffers 0x414 and 0x424, a 16-byte record (mget, swap_quad under bE4B6) and a switch on its word at +10 (keys 1, 2, 3; case 3 falls into case 2 as in the original). Same 117 instructions; the record array sits at another frame offset (0x18 instead of 0x08), frame layout (D16); the loop test is at the top in ours (D7). The data targets 0xE6E2, 0xEF02, 0xE8EA, 0xEAF2 are not yet named",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 117,
+    "len_orig": 117
+   }
+  },
+  "load2td": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x27d8",
+   "ours": "0x2784-0x2c68",
+   "level": "exact",
+   "pairing_evidence": "reading check: every block has the same instructions in the same order as the original, apart from the block placement and the register choices of the old cc (scratch registers of the key, count and byte temporaries); the bit-3 key of both switches is computed as in the original (jr ne / sra #4 path). Not run on the machine: the semantic equivalence is by reading. 42 of 361 instructions differ; the audit shows 1 unexplained form (sra rS,#4 in the layout of the first switch path)",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 361,
+    "len_orig": 361
+   }
+  },
+  "patch_hdr": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x2d4c",
+   "ours": "0x2cf8-0x2d8a",
+   "level": "exact",
+   "pairing_evidence": "the original computes the distance of two frame arrays (rest - buf) into a register that is overwritten by the constant 0 of the call (a register leftover of the old compiler, D2); the rest is equal",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 40,
+    "len_orig": 40
+   }
+  },
+  "copy": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x2dde",
+   "ours": "0x2d8a-0x2df8",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 32,
+    "len_orig": 32
+   }
+  },
+  "mput": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x2f04",
+   "ours": "0x2eb0-0x2ee6",
+   "level": "exact",
+   "pairing_evidence": "register choice differs: the original keeps the pointer in rr10 and the count in r13 (saves r3..r7), here rr12 and r11 (D2); otherwise equal",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 15,
+    "len_orig": 15
+   }
+  },
+  "readhdr": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x3516",
+   "ours": "0x34c0-0x370e",
+   "level": "differs",
+   "pairing_evidence": "loader step of the program header: magic check (E607/E611 set bE4B4, E707/E711 accepted), two refills of the word buffer, a 16-byte record table of count bE434/16 with the flags and the sums; the record fields are read through a pointer into the frame (D16) and the signed division takes another register pair (D2). Same 156 instructions. Calls to 3760 (deferred) and 932e (libc swap) are declared",
+   "audit": {
+    "d_normalised_pct": 99,
+    "pattern_diff": 1,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 157,
+    "len_orig": 156
+   }
+  },
+  "mlist_add": {
+   "file": "ldm.c",
+   "pairing": "confirmed",
+   "orig": "0x410c",
+   "ours": "0x40c2-0x42ac",
+   "level": "differs",
+   "pairing_evidence": "list insert of a name into the table at 0x3c22 (12-byte entries, sorted by the name with str_compare 0x3a30, head bE478, count at 0x047a, limit 0x32): the constant base of the table is an indexed displacement in the original (D5), the index multiply takes other registers (D2). Same 120 instructions. Quirk found by reading: when the name is already in the list (compare result 0) the attribute words are written at the step counter, not at the entry index; recorded in KNOWLEDGE",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 119,
+    "len_orig": 120
+   }
+  },
+  "resv_seg": {
+   "file": "ldm.c",
+   "pairing": "confirmed",
+   "orig": "0x42f8",
+   "ours": "0x42ac-0x43f8",
+   "level": "exact",
+   "pairing_evidence": "switch on the type byte (the low byte of the high word of the long parameter): the old cc lowers it to cpir and a jump table (D6); the case blocks are laid out in another order (D15); the index stays in r7 in the original, ours reloads it from the frame (D16). Same 82 instructions",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 82,
+    "len_orig": 82
+   }
+  },
+  "alloc_resv": {
+   "file": "ldm.c",
+   "pairing": "confirmed",
+   "orig": "0x4968",
+   "ours": "0x491c-0x49ca",
+   "level": "exact",
+   "pairing_evidence": "table index scaled to 8 bytes: the old cc emits sla 2 plus add r2,r2 (D5); the original has sla 3 only. In the second branch the original increments r3 (inc r3,#10) and the value is overwritten before use: dead code of the original, not a source form found (open, read by hand)",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 45,
+    "len_orig": 45
+   }
+  },
+  "seg_pad": {
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 21,
+    "len_orig": 21
+   },
+   "file": "ldm.c",
+   "pairing": "confirmed",
+   "orig": "0x60f0",
+   "ours": "0x60d2-0x6116",
+   "level": "exact",
+   "pairing_evidence": "unexplained instruction forms: ld\trS,@rrS; ld\trS,rrS(#N)"
+  },
+  "copy_segs": {
+   "file": "ldm.c",
+   "pairing": "confirmed",
+   "orig": "0x6134",
+   "ours": "0x6116-0x61f0",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 89,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 53,
+    "len_orig": 53
+   }
+  },
+  "put_pad": {
+   "file": "ldm.c",
+   "pairing": "confirmed",
+   "orig": "0x64d0",
+   "ours": "0x64b2-0x6504",
+   "level": "exact",
+   "pairing_evidence": "return value: the old cc computes the result in r2 again (r2 = n - 2 as a scratch value) where the original keeps the loop value in r2; register choice, D2",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 24,
+    "len_orig": 24
+   }
+  },
+  "cvt_fsym": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6800",
+   "ours": "0x67ec-0x6852",
+   "level": "exact",
+   "pairing_evidence": "register choice of the byte loads (rl2 in the original, rl4 here); frame 12 bytes in the original against 14 here (D1 share); otherwise equal",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 36,
+    "len_orig": 36
+   }
+  },
+  "ldrsym": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x68a2",
+   "ours": "0x688c-0x69ec",
+   "level": "differs",
+   "pairing_evidence": "entry of a stream-like record (parameter c stored at +4): the sums of the table words are built in rr6 in the original, through memory in ours (D2); the frame holds the pointer copy in a register and a stack temporary (D16). Same 118 instructions; the semantics are checked by reading (branches for c = 0x22, 0x23, 0x24, 0x21)",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 43,
+    "pattern_unexplained": 7,
+    "reordered_instructions": 3,
+    "reordered_examples": [
+     "ld\trS,rrS(#N)"
+    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: add\trS,@rrS; ld\trS,rrS(#N)",
+    "structure_flags": [],
+    "len_ours": 113,
+    "len_orig": 118
+   }
+  },
+  "mkfsym": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6a08",
+   "ours": "0x69ec-0x6a3c",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 19,
+    "len_orig": 19
+   }
+  },
+  "slookup": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6b5a",
+   "ours": "0x6b3e-0x6b68",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 11,
+    "len_orig": 11
+   }
+  },
+  "enter": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6bae",
+   "ours": "0x6b92-0x6c4e",
+   "level": "differs",
+   "pairing_evidence": "register choice of the pointer argument for the last store (rr4 in the original, loaded from the frame here); long bE46A; otherwise equal",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 50,
+    "len_orig": 50
+   }
+  },
+  "map_sym": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6c6a",
+   "ours": "0x6c4e-0x6d8e",
+   "level": "differs",
+   "pairing_evidence": "state machine on the byte bE46E: the switch is lowered to cpir and a jump table (D6); the first value goes through r2 where the original uses r7 (D2); the case blocks are laid out in another order (D15). Same 98 instructions, same globals.",
+   "audit": {
+    "d_normalised_pct": 64,
+    "pattern_diff": 71,
+    "pattern_unexplained": 12,
+    "reordered_instructions": 11,
+    "reordered_examples": [
+     "ldl\trrS,rrS(#N)",
+     "ldb\trhS,rlS",
+     "ld\trS,F"
+    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: add\trS,@rrS; ld\t@rrS,rS; ld\trS,rrS(#N)",
+    "structure_flags": [
+     "order 11 moved"
+    ],
+    "len_ours": 99,
+    "len_orig": 98
+   }
+  },
+  "symreloc": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6da8",
+   "ours": "0x6d8e-0x6e00",
+   "level": "differs",
+   "pairing_evidence": "switch table (cpir over the case values, jump table at 0x165c): case order and layout differ (D6); the bit test of the default case reloads the character (D2); the case actions are equal",
+   "audit": {
+    "d_normalised_pct": 59,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 17,
+    "len_orig": 29
+   }
+  },
+  "put_sym": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6e1a",
+   "ours": "0x6e00-0x6ee4",
+   "level": "exact",
+   "pairing_evidence": "argument and loop pointer are reloaded from the frame in the original (D4) and the byte copy is addressed through a saved pointer; the calls, the flag test and the count are equal",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 67,
+    "len_orig": 67
+   }
+  },
+  "chk_ranlib": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6f46",
+   "ours": "0x6f2c-0x6fae",
+   "level": "differs",
+   "pairing_evidence": "loop shape (test at the bottom in the original) and register numbers differ (D7, D2 share); the entry walk with 12-byte steps, the call of 0x6b84 and the blank test are equal",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 41,
+    "len_orig": 44
+   }
+  },
+  "put_all": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6efe",
+   "ours": "0x6ee4-0x6f2c",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 26,
+    "len_orig": 26
+   }
+  },
+  "pslookup": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x6b84",
+   "ours": "0x6b68-0x6b92",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 11,
+    "len_orig": 11
+   }
+  },
+  "resize_symtab": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x702a",
+   "ours": "0x7008-0x703c",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 14,
+    "len_orig": 14
+   }
   }
  },
  "findings": [],
@@ -1902,7 +1902,7 @@
   {
    "id": "sld-27d8-layout",
    "kind": "open (block placement, semantic check by reading)",
-   "function": "f27d8",
+   "function": "load2td",
    "status": "open",
    "classification": "-",
    "action": "place the blocks of the table path (0x2b02) and of the stream B refill (0x2882) as in the original; then check the remaining 42 instructions (register choices D2 and the sra form) and run the function on the machine or in a test harness",
@@ -1936,30 +1936,6 @@
    "d_classes": [],
    "note": "pass 2026-10-28, compiler: original code has the word branch first, the strings have the char branch first (D15); init before open done"
   },
-  "f68a2": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "pass 2026-10-28, compiler: q lives in rr2 in the original (popt promotes the auto), ours spills it; p is a register copy, c is char"
-  },
-  "f1f96": {
-   "basis": "read",
-   "d_classes": [
-    "D10"
-   ],
-   "note": "pass 2026-10-28, compiler: e stays in rr2 in the original (auto promoted into a scratch register)"
-  },
-  "f6c6a": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "pass 2026-10-28, compiler: scratch register choice (r7/r6 vs r2/r3)"
-  },
-  "f3516": {
-   "basis": "read",
-   "d_classes": [
-    "D8"
-   ],
-   "note": "pass 2026-10-28, compiler: res vs and (x & ~1), temporaries; header is a struct, rec[8198]"
-  },
   "load2": {
    "basis": "read",
    "d_classes": [
@@ -1986,14 +1962,6 @@
    "d_classes": [],
    "note": "pass 2026-10-28, compiler: temp register rr2 vs rr4"
   },
-  "f0178": {
-   "basis": "read",
-   "d_classes": [
-    "D1",
-    "D10"
-   ],
-   "note": "pass 2026-10-28, open: frame 12 vs 14, extra copy ldl rr2,rr6; s++ forms tried"
-  },
   "swab12": {
    "basis": "read",
    "d_classes": [
@@ -2014,15 +1982,6 @@
    "basis": "read",
    "d_classes": [],
    "note": "pass 2026-10-28, open: cur copied to rr4 before each field access in the original; struct pg tried"
-  },
-  "f410c": {
-   "basis": "read",
-   "d_classes": [
-    "D10",
-    "D3",
-    "D6"
-   ],
-   "note": "pass 2026-10-28, compiler: str_compare second argument goes through rr6 -> rr4"
   },
   "swap_bytes": {
    "basis": "read",
@@ -2055,30 +2014,6 @@
    ],
    "note": "pass 2026-10-28, compiler: D4"
   },
-  "f6bae": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "pass 2026-10-28, compiler: scratch register"
-  },
-  "f6da8": {
-   "basis": "read",
-   "d_classes": [
-    "D10",
-    "D13",
-    "D7",
-    "D8",
-    "D8/D2"
-   ],
-   "note": "pass 2026-10-28, compiler: jump to ret threaded in ours; default case copy"
-  },
-  "f6f46": {
-   "basis": "read",
-   "d_classes": [
-    "D10",
-    "D3"
-   ],
-   "note": "pass 2026-10-28, open: q = p comes after the spill in the original; rr2 copy before the byte test"
-  },
   "add16_checked": {
    "basis": "read",
    "d_classes": [
@@ -2102,14 +2037,6 @@
     "D10"
    ],
    "note": "pass 2026-10-28, compiler: scratch registers (r0 vs r4)"
-  },
-  "f1560": {
-   "basis": "read",
-   "d_classes": [
-    "D1",
-    "D6"
-   ],
-   "note": "pass 2026-10-28, open: mult/add register choice (rr4/rr6 vs rr2/rr4), inc r3,#4 order"
   },
   "main": {
    "basis": "read",
@@ -2146,6 +2073,79 @@
    "basis": "read",
    "d_classes": [],
    "note": "pass 2026-10-28, compiler: 7 instructions differ (scratch registers rr2/rr4 of the copies); done: flag = 0 first, locals flag/saved_argc/saved_k/saved_av/base/p, library call as label lib: before next:, case bodies in the code order of the original (f, b/t+consume, default, N, l, M, R), restore: saved_av++; av = saved_av"
+  },
+  "trunc_name": {
+   "basis": "read",
+   "d_classes": [
+    "D1",
+    "D10"
+   ],
+   "note": "pass 2026-10-28, open: frame 12 vs 14, extra copy ldl rr2,rr6; s++ forms tried"
+  },
+  "ranlib_scan": {
+   "basis": "read",
+   "d_classes": [
+    "D1",
+    "D6"
+   ],
+   "note": "pass 2026-10-28, open: mult/add register choice (rr4/rr6 vs rr2/rr4), inc r3,#4 order"
+  },
+  "split_seg": {
+   "basis": "read",
+   "d_classes": [
+    "D10"
+   ],
+   "note": "pass 2026-10-28, compiler: e stays in rr2 in the original (auto promoted into a scratch register)"
+  },
+  "readhdr": {
+   "basis": "read",
+   "d_classes": [
+    "D8"
+   ],
+   "note": "pass 2026-10-28, compiler: res vs and (x & ~1), temporaries; header is a struct, rec[8198]"
+  },
+  "mlist_add": {
+   "basis": "read",
+   "d_classes": [
+    "D10",
+    "D3",
+    "D6"
+   ],
+   "note": "pass 2026-10-28, compiler: str_compare second argument goes through rr6 -> rr4"
+  },
+  "ldrsym": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "pass 2026-10-28, compiler: q lives in rr2 in the original (popt promotes the auto), ours spills it; p is a register copy, c is char"
+  },
+  "enter": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "pass 2026-10-28, compiler: scratch register"
+  },
+  "map_sym": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "pass 2026-10-28, compiler: scratch register choice (r7/r6 vs r2/r3)"
+  },
+  "symreloc": {
+   "basis": "read",
+   "d_classes": [
+    "D10",
+    "D13",
+    "D7",
+    "D8",
+    "D8/D2"
+   ],
+   "note": "pass 2026-10-28, compiler: jump to ret threaded in ours; default case copy"
+  },
+  "chk_ranlib": {
+   "basis": "read",
+   "d_classes": [
+    "D10",
+    "D3"
+   ],
+   "note": "pass 2026-10-28, open: q = p comes after the spill in the original; rr2 copy before the byte test"
   }
  },
  "inventory": {

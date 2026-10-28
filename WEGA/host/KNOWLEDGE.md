@@ -860,7 +860,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
 | `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
 | `/bin/sld` (own code, 0x85f8, number parser) | with a leading `-` the digit loop counts the original length (one character more than the rest after the sign), the return value uses the shortened count | kept (`f85f8` in `src/cmd/ld/sld.c`; `src/cmd/ld/tools/own_functions.txt`) | `src/cmd/ld/tools/own_functions.txt` |
-| `/bin/sld` (own code, 0x410c, insert into the name table) | when the name is already in the list (compare result 0) the attribute words are written at the step counter (0x0e of the frame), not at the index of the entry found (0x0a); with a new name both are the same | kept (`src/cmd/ld/sld.c`, `f410c`) | `src/cmd/ld/tools/own_functions.txt` |
+| `/bin/sld` (own code, 0x410c, insert into the name table) | when the name is already in the list (compare result 0) the attribute words are written at the step counter (0x0e of the frame), not at the index of the entry found (0x0a); with a new name both are the same | kept (`src/cmd/ld/sld.c`, `mlist_add`) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x0f26, read_words) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/ld/sld.c`) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `src/cmd/ld/tools/own_functions.txt` |
 | `/bin/sld` (own code, 0x6a58) | two counters (`0x06`, `0x0a` of the frame) are incremented on the name flag and never read: write-only locals of the compiler output | kept (`src/cmd/ld/tools/own_functions.txt`, not accepted yet) | `src/cmd/ld/tools/own_functions.txt` |
@@ -972,7 +972,7 @@ means it does something fixed instead (only possible where the original's result
 - Split of 2026-10-28: `tools/split_sld.py` (one-off) cut the 90 blocks of sld.c into the files of `tools/module_ranges.txt` (functions in
   address order). `ld.h` holds the structs, the function declarations (types from the definitions) and the variables as extern;
   `ext.c` defines all variables (`DEFINE_VARS`). With the variables defined in `ext.c` and extern elsewhere the audit
-  (`strict_audit.py`) of all functions stays the same except two single jumps (`load2` one `jr` fewer in the difference, `f42f8` one
+  (`strict_audit.py`) of all functions stays the same except two single jumps (`load2` one `jr` fewer in the difference, `resv_seg` one
   `jp` instead of `jr` in the switch): the choice between `jr` and `jp` depends on whether a variable is defined in the same file.
   The real owner of each variable (bss band of its C file) can be found with this effect; open.
 
@@ -1035,27 +1035,27 @@ Rules found while bringing the "findings" functions of sld to the exact code (st
 reading the original code with `tools/odis.py NAME`:
 
 - **Argument registers.** The first argument is in rr6 (|4| in the spill), the second in rr4 (|0|), a word argument after them in r5/r3. A
-  wrong parameter order or type (`long` for `int`) shows as spilled offsets that differ (f6800, table_lookup, f60f0, str_compare, f2f04).
-  The callers show the order (f2f04(stream, data, n); warn_sym_redef(p, a) with p null-checked).
+  wrong parameter order or type (`long` for `int`) shows as spilled offsets that differ (cvt_fsym, table_lookup, seg_pad, str_compare, mput).
+  The callers show the order (mput(stream, data, n); warn_sym_redef(p, a) with p null-checked).
 - **Register variables.** The old compiler gives register variables from r13 downwards in the order of declaration, the pair of a pointer
   takes two registers, a `register` parameter comes first (rr12). `ldm` saves exactly the used ones. A copy `ldl rr12,rr6` of a spilled
   parameter means a local `register char *p; p = a;`; no spill of an argument means the parameter itself is `register`
   (put_int_buf, next_entry). A register that is incremented (`inc r13,#1` on a pointer in rr12) is the pointer, not a counter
-  (warn_sym_redef, f0178). Unused local arrays give the frame bytes that the original has more (load2, load2arg, table_lookup: `spare`).
+  (warn_sym_redef, trunc_name). Unused local arrays give the frame bytes that the original has more (load2, load2arg, table_lookup: `spare`).
 - **Loops.** The original loop of `while`/`for` tests at the bottom (`jr test; body; test: ...; jr cc,body`). Our compiler writes
   `while` with the test on top (`jr ncc,end; body; jr top`), which is also what some original loops have (next_entry:
   `p += 16; while (e > p) p += 16;`). Bottom tests are written with goto (`goto test; body: ...; test: if (c) goto body;`)
-  (get_block, f6f46, pack_name, unpack_run, load2arg).
+  (get_block, chk_ranlib, pack_name, unpack_run, load2arg).
 - **Expressions.** `switch (ep[4])` with the case values 0x20.. instead of `switch (ep[4] - 0x20)` gives `ld r2,r3; sub r2,#0x20`
-  (end_pass1). `if ((p[4] & 0x80) != 0)` gives `and; test`, `if (p[4] & 0x80)` gives `bit` (f6f46). `if ((ch = *s) & 0x80)` avoids a copy
+  (end_pass1). `if ((p[4] & 0x80) != 0)` gives `and; test`, `if (p[4] & 0x80)` gives `bit` (chk_ranlib). `if ((ch = *s) & 0x80)` avoids a copy
   (unpack_run). `x = n; x >>= 1;` gives `ld r9,r5; sra r9,#1` (mget). `return *(*(int **)(q + 6))++;` keeps the old value in a local (get);
   `if (--*(int *)(q + 4) < 0)` is the pre-decrement test (get). `!c & 0x20` (precedence bug of the original) gives `ldk 1/0; bit` (warn_sym_redef).
-  `flag ? "a" : "b"` as argument gives one call (open_tmp). A function without a `return` at the end leaves r2 as it is (f64d0).
-  `tblF332[x].d` (8-byte rows) instead of `*(int *)(tabF338 + x * 8)` (f4968, f42f8). The offset of a field in a stack struct is
-  `(char *)&h.f - (char *)&h` (f2d4c); a 14-byte record built on the stack is a struct (f6e1a).
+  `flag ? "a" : "b"` as argument gives one call (open_tmp). A function without a `return` at the end leaves r2 as it is (put_pad).
+  `tblF332[x].d` (8-byte rows) instead of `*(int *)(tabF338 + x * 8)` (alloc_resv, resv_seg). The offset of a field in a stack struct is
+  `(char *)&h.f - (char *)&h` (patch_hdr); a 14-byte record built on the stack is a struct (put_sym).
 - **Stack records.** A stack array accessed with constant offsets in the original (`|C|(r15)`) is a struct of words/bytes in the source,
-  not `char tmp[16]` with casts (f2624: `struct { int tw0 ... tw7; } tmp`; f6e1a, read_entry_hdr: the 14-byte symbol record).
-- **Stream pick-up (f27d8).** The relocation loop is the inlined `get` of Plexus `load2td` (private reference): `if (--size <= 0) { if (size < 0)
+  not `char tmp[16]` with casts (load2seg: `struct { int tw0 ... tw7; } tmp`; put_sym, read_entry_hdr: the 14-byte symbol record).
+- **Stream pick-up (load2td).** The relocation loop is the inlined `get` of Plexus `load2td` (private reference): `if (--size <= 0) { if (size < 0)
   break; size++; w = get(s); } else if (--nibuf < 0) { nibuf++; size++; w = get(s); } else w = *ptr++;` for the text stream (bE414,
   size +10, nibuf +4, ptr +6) and the relocation stream (bE424; "Relocation error" when size < 0). `for (;;)` with the break at the top is
   turned around by our compiler (test moved to the bottom); a `top:` label with `goto end` keeps the original order. `(w13 & 8) ? w13 :
@@ -1068,7 +1068,7 @@ reading the original code with `tools/odis.py NAME`:
   (lay_out) and 82 (ins_block) instructions stay different; case permutations in the source did not help (94 -> 82). Not solved.
 - **Call with a register copy.** `r = p; ... getfile(r)` (the copy, not the parameter) gives the call without the extra `ldl rr4,rr6`
   (load_lib_syms, load2arg). `for (n = 1; load_header(n); n = ((bE44E + 27) >> 1) + n) ;` per case reproduces the shared `n =` head of the
-  loop (load_lib_syms). The 24-byte header in f3516 is a struct (mixed int/long fields), its record buffer 8198 bytes; `bE42B4[g][k]`-style
+  loop (load_lib_syms). The 24-byte header in readhdr is a struct (mixed int/long fields), its record buffer 8198 bytes; `bE42B4[g][k]`-style
   indexing with a variable row is `(tab42b4 + g * 5)[k]`.
 - **Cold blocks and the library call (main, parse_args).** The original puts the call for a non-option argument (`load_lib_syms(s)`,
   `load2arg(a)`) at the end of the loop body in front of the increment (`if (s[0] != '-') goto lib; ... lib: call; next: i++`), not in an
@@ -1078,8 +1078,8 @@ reading the original code with `tools/odis.py NAME`:
 - **Moved error blocks (scan_m_opt).** popt moves an error block (call of report_error) into the gap behind an earlier `break` and shares the common
   tail with the other error calls (`ldl rr2,s; call report_error`); a goto stub in the source reproduces the code (49 -> 7 differences)
   but puts the string into the pool in the wrong place, so it is not used.
-- **Case order.** The cases of a switch lie in the code in the order of the source (f42f8: 'r', 's', 'M').
-- Remaining differences are the old compiler's own: the optimizer moves non-register locals into scratch registers (f1f96: `e` stays in
+- **Case order.** The cases of a switch lie in the code in the order of the source (resv_seg: 'r', 's', 'M').
+- Remaining differences are the old compiler's own: the optimizer moves non-register locals into scratch registers (split_seg: `e` stays in
   rr2 in the original; ours keeps it on the stack), `and r2,#0xFFFE` becomes `res r2,#0` in the original (load2), `jr cc,a; jr b` is
   merged by ours (pack_name).
 
@@ -1090,9 +1090,9 @@ areas, `-r` chains, the objects big1..big8 with many segments, the kernel link o
 `/bin/sld` under z8k-emu and compares the output file, stdout/stderr and the exit status: 51 of 51 identical (2026-10-28). The test found four
 errors of the reconstruction that `strict_audit.py` does not show because it only compares instruction forms and masks addresses:
 (1) `dseek`: `*(int **)(obj + 6) = cur->buf + (lo << 1)` scaled the offset (pointer arithmetic on `int *`): "Invalid segment attributes";
-(2) `f6c6a`: `i = bE3C02 + 0x0470` is the VARIABLE `bE470` (`add r7,<<2>>%0470`, memory operand), not the constant: "Multiply defined" for every symbol;
+(2) `map_sym`: `i = bE3C02 + 0x0470` is the VARIABLE `bE470` (`add r7,<<2>>%0470`, memory operand), not the constant: "Multiply defined" for every symbol;
 (3) `dseek`: `lseek(fd, (v & 0xff00) << 1, 0)` cleared the high word of the long, the original masks only the low word (`v & 0xffffff00L`);
-(4) `f68a2`: the values of `_etext/_edata/_end` are `(unsigned)` sums (zero extension), an `int` sum gave 0xffff in the segment word.
+(4) `ldrsym`: the values of `_etext/_edata/_end` are `(unsigned)` sums (zero extension), an `int` sum gave 0xffff in the segment word.
 Method to find such errors: run both programs with `z8k-emu -t`, extract the calls (opcode `call`/`calr`, the next trace line is the callee), map the
 addresses to function names (`nm` of sld.new, `own_functions.txt` and `libc_names.txt` for the original) and compare the sequences with their
 arguments; the first divergence names the function, then compare the registers/flow inside. A memory operand `ADDR` against an immediate
@@ -1114,15 +1114,15 @@ borig, ctrel, cdrel, cbrel, ncoff, ndoff, nboff, ncode, ndata, nbss, xtnext, dat
 | buf | 520 | output buffer (Plexus buf) | bE4DA, bE6E2, bE8EA, bEF02, bEAF2, bECFA, bF10A |
 | archdr | 26 | archive member header (the times and the size are longs) | `archdr` (bE438, bE446, bE44A, bE44E) |
 | filhdr | 24 | header of the object being read / of the output | `filhdr` (bE452..bE468) |
-| objhdr | 24 | the header as it is read from a file | tmp of f3516, init_entry |
+| objhdr | 24 | the header as it is read from a file | tmp of readhdr, init_entry |
 | symbol | 16 | symbol table entry; `cursym` is the current symbol (svalue, stype, sxtra, sseg, sname[8]) | gE47E table, `cursym` (bE46A, bE46E, bE470, bE472) |
 | fsym | 12 | symbol of a nonsegmented file (Plexus symbol) | `fsym` (bE15CC..) |
-| ssym | 14 | symbol of a segmented file | locals of read_entry_hdr, f6e1a |
+| ssym | 14 | symbol of a segmented file | locals of read_entry_hdr, put_sym |
 | local | 6 | local symbol table (locindex, locsymbol) | tab84d8[4081] |
 | rlent | 12 | entry of the ranlib table of contents (roff, rname[8]) | bE3E84 |
 | p1seg | 54 | pass one segment table entry | get_block, g03ba |
 | p2seg | 32 | pass two segment table entry (list nxt/prv) | tab1c02[256], bF32E, b3C12, bF324, bF328 |
-| fseg | 16 | segment table entry of an object file (first 16 bytes of a p1seg) | rec of f3516 |
+| fseg | 16 | segment table entry of an object file (first 16 bytes of a p1seg) | rec of readhdr |
 | reslist | 8 | per segment number: txtptr, datptr, bssptr, res | tblF332[128] |
 | mlist | 12 | entry of the -M file list (mtext, mdata, mbss, mnext, mname) | tab3c22[50] |
 | tab428a | 8 | areas of a section in place_sec (kind, tstart, tsize, tend) | tab428a[5] |
@@ -1130,6 +1130,40 @@ borig, ctrel, cdrel, cbrel, ncoff, ndoff, nboff, ncode, ndata, nbss, xtnext, dat
 The special symbols bE482 (_etext), bE486 (_edata), bE48A (_end), bE48E (_stkseg), bE492 (entry) and bE4FC (last symbol entered) are `struct symbol *`.
 The hash table tab44E8 holds 4092 `struct symbol *`, tblE500 the slots of the entries in use. The 4 bytes in front of `page` (bE000) and the bytes
 of the old `spare` variables are not explained.
+
+### sld: names of the functions (2026-10-28)
+
+All 27 functions that were named by their address got a name; Plexus `ld.z8000.c` names where the function is the same (load2td, copy, mput, readhdr,
+ldrsym, mkfsym, slookup, enter, symreloc), otherwise own names. External names are significant for 7 characters (the symbol is `_name` in 8), so `check_names.py` must
+show no two own functions with equal first 7 characters (put_sym / put_all, slookup / pslookup, symtab_alloc / resize_symtab).
+
+| old | new | role |
+|---|---|---|
+| f0178 | trunc_name | name of a symbol longer than 8 characters: warning "symbol name truncated", then unpack_run |
+| f1560 | ranlib_scan | one pass over the ranlib table of contents: load the members that define undefined symbols |
+| f1f96 | split_seg | split a pass two segment (data or bss part into a new segment) |
+| f2624 | load2seg | load2 of the segments of one object file: the loop over its segment table entries |
+| f27d8 | load2td | text and data with relocation words of a segment (Plexus load2td) |
+| f2d4c | patch_hdr | reopen the output, write the symbol count into the header |
+| f2dde | copy | copy a temporary file into the output (Plexus copy) |
+| f2f04 | mput | write a block of words to an output buffer (Plexus mput) |
+| f3516 | readhdr | read the header and the segment table of an object file (Plexus readhdr) |
+| f410c | mlist_add | enter a file into the -M list |
+| f42f8 | resv_seg | mark a segment number as reserved (-Mx, -R, -z) |
+| f4968 | alloc_resv | pass two segment for a reserved segment number |
+| f60f0 | seg_pad | pad the output behind the blocks of a segment |
+| f6134 | copy_segs | flush the temporary files and copy all blocks of all segments |
+| f64d0 | put_pad | write n padding bytes |
+| f6800 | cvt_fsym | file symbol (nonsegmented) -> cursym |
+| f68a2 | ldrsym | define _etext/_edata/_end/_stkseg (Plexus ldrsym) |
+| f6a08 | mkfsym | file name symbol (Plexus mkfsym) |
+| f6b5a / f6b84 | slookup / pslookup | find a symbol by name (packed from a string / from a packed name) |
+| f6bae | enter | enter a symbol into the table (Plexus enter) |
+| f6c6a | map_sym | map cursym of a file to the output segment and offset |
+| f6da8 | symreloc | add the relocation of the current file by type (Plexus symreloc) |
+| f6e1a / f6efe | put_sym / put_all | write one symbol / all symbols to the output |
+| f6f46 | chk_ranlib | warn about symbols of the ranlib table that are already defined |
+| f702a | resize_symtab | realloc of the symbol table (-As) |
 
 ### sld: C files of the program and the libc objects in the own range (2026-10-28)
 
@@ -1191,7 +1225,7 @@ What the data showed:
   bss2 0xe49e) are split (g047a/k047a, g0486/bE486, g049e/bE49E); aliases of one address are merged (e.g. bE474 and g0474).
 - Dead giveaways of the source order: the order of the string literals is the order of the statements of the original source. Reordering
   our statements to that order improved the code, too (differing lines of the strict audit): scan_m_opt 145 -> 49 (the `+` list case before
-  the switch), f27d8 61 -> 38 (the case bodies inside the two switches, the table behind the strings), scan_options 80 -> 33 (case 's' before
+  the switch), load2td 61 -> 38 (the case bodies inside the two switches, the table behind the strings), scan_options 80 -> 33 (case 's' before
   'p'), get_block 30 -> 23 (the block table is the pointer `char **g03ba` that calloc fills, not an array), next_entry 36 -> 32 and
   index16 20 -> 11 (one error call per function: the original has one string).
 - Open in ld.c (getfile, 285 bytes after 0x0e38): the original has the empty string once for three uses and the directory strings

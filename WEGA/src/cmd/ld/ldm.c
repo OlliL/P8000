@@ -121,7 +121,7 @@ int argc;
 				cnt++;
 				p = q;
 			}
-			f410c(type, p, v);
+			mlist_add(type, p, v);
 			(*ip)++;
 			bE4A36++;
 			p = *bE4A36;
@@ -152,7 +152,7 @@ int argc;
 		case 's':
 			if (bE4AE)
 				report_error(2, "cannot use -Ms option after -z");
-			f42f8(v, 's');
+			resv_seg(v, 's');
 			break;
 		default:
 			report_error(2, "%c illegal type for M; not s, t,d or b", type);
@@ -160,8 +160,8 @@ int argc;
 	}
 }
 
-/* f410c..42f8: findings:D2,D5 */
-int f410c(c, y, x)
+/* mlist_add..42f8: findings:D2,D5 */
+int mlist_add(c, y, x)
 char c;
 char *y;
 int x;
@@ -216,8 +216,8 @@ attr:
 	g0476 = 0;
 }
 
-/* f42f8 0x42f8..0x4444: done */
-int f42f8(x, c)
+/* resv_seg 0x42f8..0x4444: done */
+int resv_seg(x, c)
 int x;
 char c;
 {
@@ -298,10 +298,10 @@ int end_pass1()
 	int i;
 
 	flg = 0;
-	bE482 = *f6b5a("_etext");
-	bE486 = *f6b5a("_edata");
-	bE48A = *f6b5a("_end");
-	bE48E = *f6b5a("_stkseg");
+	bE482 = *slookup("_etext");
+	bE486 = *slookup("_edata");
+	bE48A = *slookup("_end");
+	bE48E = *slookup("_stkseg");
 	if (bE48E == 0) {
 		if (g0474 > -1)
 			report_error(1, "warning: _stkseg undefined");
@@ -367,11 +367,11 @@ int end_pass1()
 l469e:
 	lay_out();
 	if (bE498 || !bE4A2) {
-		f68a2(bE482, 0x22);
-		f68a2(bE486, 0x23);
-		f68a2(bE48A, 0x24);
+		ldrsym(bE482, 0x22);
+		ldrsym(bE486, 0x23);
+		ldrsym(bE48A, 0x24);
 		if (!bE4A2)
-			f68a2(bE48E, 0x21);
+			ldrsym(bE48E, 0x21);
 	}
 	g04e6 = 0;
 	ep = table16_entry(0);
@@ -416,8 +416,8 @@ l469e:
 	bEF312 = (unsigned)bE4CE >> 4;
 }
 
-/* f4968 0x4968..0x4a16: done */
-int f4968(q, p, x, res)
+/* alloc_resv 0x4968..0x4a16: done */
+int alloc_resv(q, p, x, res)
 struct p2seg *q;
 int *p;
 int x;
@@ -526,7 +526,7 @@ int lay_out()
 	k = 0;
 	while (k <= max) {
 		if (tblF332[k].res > 500 && tblF332[k].res != 2000) {
-			f4968(l1, &cnt, k, &delta);
+			alloc_resv(l1, &cnt, k, &delta);
 			cnt--;
 			if (!(tblF332[k].txtptr == -1 && tblF332[k].datptr == -1 && tblF332[k].bssptr == -1)) {
 				for (j = 0; j < 128; j++) {
@@ -985,8 +985,8 @@ int *q;
 	return 0;
 }
 
-/* f60f0 0x60f0..0x6134: done */
-f60f0(q, a)
+/* seg_pad 0x60f0..0x6134: done */
+seg_pad(q, a)
 struct p2seg *q;
 int a;
 {
@@ -995,16 +995,16 @@ int a;
 	if ((char)a == 0x74) {
 		v = q->s_code - bE3E7A;
 		if (v)
-			f64d0(v);
+			put_pad(v);
 	} else {
 		v = q->s_data - bE3E7A;
 		if (v)
-			f64d0(v);
+			put_pad(v);
 	}
 }
 
-/* f6134..620e: done */
-f6134()
+/* copy_segs..620e: done */
+copy_segs()
 {
 	register int i;
 
@@ -1080,7 +1080,7 @@ head:
 			if (read(bE8EA.fildes, buf, m) < 1)
 				report_error(2, "i/o error reading from doutb");
 		}
-		f2f04(&bE4DA, buf, m);
+		mput(&bE4DA, buf, m);
 		if (bE4A2) {
 			if (type == 0x74) {
 				if (m != read(bEF02.fildes, buf, m))
@@ -1089,12 +1089,12 @@ head:
 				if (m != read(bEAF2.fildes, buf, m))
 					report_error(2, "eof error on droutb");
 			}
-			f2f04(&bECFA, buf, m);
+			mput(&bECFA, buf, m);
 		}
 	}
 	goto head;
 done:
-	f60f0(p, type);
+	seg_pad(p, type);
 	if (idx != -1) {
 		p = cur;
 		bE3E7A = 0;
@@ -1129,8 +1129,8 @@ struct p2seg *e;
 	e->prv = q;
 }
 
-/* f64d0 0x64d0..0x6522: done */
-int f64d0(n)
+/* put_pad 0x64d0..0x6522: done */
+int put_pad(n)
 register int n;
 {
 	if (bE4A2)

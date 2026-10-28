@@ -217,7 +217,7 @@ loop:
 		if (sscanf(*argv, "-R%d", &v0a) < 1)
 			report_error(2, "invalid syntax for R option");
 		(*(int *)bE49E)++;
-		f42f8(v0a, 'r');
+		resv_seg(v0a, 'r');
 		goto next;
 	case 'r':
 		bE4A2++;
@@ -232,8 +232,8 @@ loop:
 	case 'u':
 		if (argc <= 1)
 			report_error(2, "Bad 'use' or 'entry'");
-		p = (char **)f6b5a(argv[1]);
-		f6bae(p);
+		p = (char **)slookup(argv[1]);
+		enter(p);
 		if ((*argv)[1] == 'e')
 			bE492 = (long)bE4FC;
 		goto skip2;
@@ -272,7 +272,7 @@ loop:
 			if ((long)(unsigned)v08 + 2 << 4 > 0xfff8L)
 				report_error(2, "Symbol table size specification is too big");
 			g04ee = v08;
-			f702a(v08);
+			resize_symtab(v08);
 			goto skip2;
 		case 'p':
 			if (sscanf(argv[1], "%d", &v08) != 1)
@@ -292,7 +292,7 @@ skip2:
 		bE4BA++;
 		goto next;
 	case 'z':
-		f42f8(0x7f, 's');
+		resv_seg(0x7f, 's');
 		bE4AE = 1;
 		goto next;
 	case 'N':
@@ -546,8 +546,8 @@ char *p;
 		bE3E84 = (struct rlent *)ensure_buf(archdr.asize);
 		lseek(bE4BE, 28L, 0);
 		read(bE4BE, bE3E84, bE3E88 * 12);
-		f6f46(bE3E84, bE3E88);
-		while (f1560())
+		chk_ranlib(bE3E84, bE3E88);
+		while (ranlib_scan())
 			;
 		*g0486++ = -1;
 		break;
@@ -583,8 +583,8 @@ long p;
 	return 1;
 }
 
-/* f1560..1664: findings:D2,D5,D8 */
-int f1560()
+/* ranlib_scan..1664: findings:D2,D5,D8 */
+int ranlib_scan()
 {
 	int i;
 	struct rlent *end;
@@ -600,7 +600,7 @@ body:
 		goto next;
 	if ((bE3E84[i].rname[0] & 0x80) != 0)
 		end = (struct rlent *)(bE3E84[i].rname + (bE3E84[i].rname[0] & 0x7f));
-	t = *f6b84(bE3E84[i].rname);
+	t = *pslookup(bE3E84[i].rname);
 	if (!t)
 		goto next;
 	if (t->stype != 0x20)
@@ -649,7 +649,7 @@ long c;
 	long u2;
 	struct symbol **slot;
 
-	f3516(c, 1);
+	readhdr(c, 1);
 	cnt = 0;
 	k = 1;
 	saved = bE4FA;
@@ -674,7 +674,7 @@ long c;
 			continue;
 		}
 		slot = lookup_name();
-		if (f6bae(slot)) {
+		if (enter(slot)) {
 			cur = bE4FC;
 			if (cur->stype == ' ')
 				continue;
@@ -699,7 +699,7 @@ long c;
 		bE4D2 = blk->cdrel;
 		bE4D4 = blk->cbrel;
 		*(int *)&cur->svalue = 0;
-		f6da8();
+		symreloc();
 		cur->stype = cursym.stype;
 lstore:
 		cur->svalue = cursym.svalue;
@@ -793,7 +793,7 @@ int k;
 		for (i = 1; i < j; i++) {
 			if (r8 < tab428a[i].tend && q->tend > tab428a[i].tstart) {
 				printf("sld: warning, %s and %s overlap in segment %d - creating overlay segment\n", ptrs04ac[i], ptrs04ac[j], k);
-				f1f96(p, j);
+				split_seg(p, j);
 				if (j == 2) {
 					tab428a[2].tend = 0;
 					tab428a[3].kind = 1;
@@ -864,8 +864,8 @@ int k;
 	}
 }
 
-/* f1f96..2056: findings:D4 */
-f1f96(p, kind)
+/* split_seg..2056: findings:D4 */
+split_seg(p, kind)
 struct p2seg *p;
 int kind;
 {
@@ -942,8 +942,8 @@ int start_output()
 	init_entry(hdr, n);
 	if (bE4B6)
 		swab(hdr, hdr, 0x18);
-	f2f04(&bE4DA, hdr, 0x18);
-	f2f04(&bE4DA, arr, n << 4);
+	mput(&bE4DA, hdr, 0x18);
+	mput(&bE4DA, arr, n << 4);
 }
 
 /* open_tmp 0x22a4..0x2346: done */
@@ -1043,15 +1043,15 @@ char *b;
 	char d;
 	int spare[5];	/* unused: the frame of the original has 10 more bytes */
 
-	f3516(a, 2);
-	f6a08(b);
+	readhdr(a, 2);
+	mkfsym(b);
 	t = tab84d8;
 	a += (unsigned)((bE436 + bE434) & ~1) >> 1;
 	dseek(&text, a + filhdr.tsize + filhdr.dsize, filhdr.ssize);
 	k = 0;
 	while (text.size > 0) {
 		n = read_entry_hdr() + 1;
-		f6c6a();
+		map_sym();
 		c = cursym.stype;
 		if (bE4A6) {
 			d = c & 0x1f;
@@ -1063,7 +1063,7 @@ char *b;
 				goto next;
 			if (bE4AC && cursym.sname[0] == 0x4c)
 				goto next;
-			f6e1a(&bF10A, &cursym);
+			put_sym(&bF10A, &cursym);
 			goto next;
 		}
 		rec = *lookup_name();
@@ -1087,11 +1087,11 @@ other:
 next:
 		k += n;
 	}
-	f2624(a, t);
+	load2seg(a, t);
 }
 
-/* f2624 0x2624..0x27d8: done */
-int f2624(a, b)
+/* load2seg 0x2624..0x27d8: done */
+int load2seg(a, b)
 long a;
 struct local *b;
 {
@@ -1120,25 +1120,25 @@ struct local *b;
 			dseek(&text, acc, tmp.tw2);
 			dseek(&reloc, acc + hw, tmp.tw2);
 			acc += half(tmp.tw2);
-			f27d8(b, &bE6E2, &bEF02);
+			load2td(b, &bE6E2, &bEF02);
 			break;
 		case 3:
 			dseek(&text, acc, tmp.tw2);
 			dseek(&reloc, acc + hw, tmp.tw2);
 			acc += half(tmp.tw2);
-			f27d8(b, &bE6E2, &bEF02);
+			load2td(b, &bE6E2, &bEF02);
 		case 2:
 			dseek(&text, acc, tmp.tw3);
 			dseek(&reloc, acc + hw, tmp.tw3);
 			acc += half(tmp.tw3);
-			f27d8(b, &bE8EA, &bEAF2);
+			load2td(b, &bE8EA, &bEAF2);
 			break;
 		}
 	}
 }
 
-/* f27d8 0x27d8..0x2cbc: done */
-int f27d8(p, q, r)
+/* load2td 0x27d8..0x2cbc: done */
+int load2td(p, q, r)
 struct local *p;
 struct buf *q;
 struct buf *r;
@@ -1190,7 +1190,7 @@ top:
 	cursym.stype = ((w13 & 7) >> 1) + 1;
 	cursym.svalue = (long)(w12 & 0xff);
 	cursym.sseg = (unsigned)w13 >> 8;
-	f6c6a();
+	map_sym();
 	if ((w12 = (int)cursym.svalue) & 0xff00)
 		report_error(2, "short segmented offset too large");
 c2954:
@@ -1214,7 +1214,7 @@ emit:
 	cursym.sseg = (unsigned)w13 >> 8;
 	cursym.stype = ((w13 & 7) >> 1) + 1;
 	cursym.svalue = (long)w12;
-	f6c6a();
+	map_sym();
 	w10 = (w10 & 0x8000) | (int)(cursym.svalue >> 16);
 	if (bE4B6)
 		w10 = swap_bytes(w10);
@@ -1235,7 +1235,7 @@ c2a68:
 	cursym.sseg = (unsigned)w13 >> 8;
 	cursym.stype = ((w13 & 7) >> 1) + 1;
 	cursym.svalue = (long)w12;
-	f6c6a();
+	map_sym();
 c2a96:
 	if (!flag)
 		goto c2ad6;
@@ -1311,13 +1311,13 @@ c2c72:
 /* finish_output 0x2cbc..0x2d4c: done */
 finish_output()
 {
-	f6134();
+	copy_segs();
 	if (bE4A2)
-		f2dde(&bECFA);
+		copy(&bECFA);
 	if (!bE4A4) {
 		if (!bE4AA)
-			f2dde(&bF10A);
-		f6efe();
+			copy(&bF10A);
+		put_all();
 	}
 	flush_buffer(&bE4DA);
 	close(bE4DA.fildes);
@@ -1327,12 +1327,12 @@ finish_output()
 		p0494 = bE048A;
 	}
 	g04e8 = bE4A3A;
-	f2d4c();
+	patch_hdr();
 	sig_handler();
 }
 
-/* f2d4c 0x2d4c..0x2dde: done */
-f2d4c()
+/* patch_hdr 0x2d4c..0x2dde: done */
+patch_hdr()
 {
 	int n;
 	struct {
@@ -1351,8 +1351,8 @@ f2d4c()
 		report_error(2, "Unable to write in output file");
 }
 
-/* f2dde..2e4c: done */
-f2dde(p)
+/* copy..2e4c: done */
+copy(p)
 struct buf *p;
 {
 	register int n;
@@ -1415,8 +1415,8 @@ int n;
 	} while (--k);
 }
 
-/* f2f04 0x2f04..0x2f3a: done */
-f2f04(q, a, n)
+/* mput 0x2f04..0x2f3a: done */
+mput(q, a, n)
 struct buf *q;
 int *a;
 int n;
@@ -1641,8 +1641,8 @@ int a;
 	report_error(2, "Local symbol botch");
 }
 
-/* f3516..3760: findings:D2,D16 */
-int f3516(a, b)
+/* readhdr..3760: findings:D2,D16 */
+int readhdr(a, b)
 long a;
 int b;
 {

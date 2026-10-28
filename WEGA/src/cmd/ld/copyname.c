@@ -195,8 +195,8 @@ test:
 	}
 }
 
-/* f0178..01d2: findings:D2 */
-f0178(src, dst)
+/* trunc_name..01d2: findings:D2 */
+trunc_name(src, dst)
 char *src;
 char *dst;
 {
