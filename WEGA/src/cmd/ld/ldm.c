@@ -1111,6 +1111,7 @@ char *e;
 {
 	register char *q;
 	register char *r;
+	int spare[2];	/* unused: the frame of the original has 4 more bytes */
 
 	q = *(char **)(p + 0x16);
 	r = *(char **)(e + 0x12);
@@ -1121,7 +1122,7 @@ char *e;
 	if (e == b3C12)
 		b3C12 = p;
 	else
-		*(char **)(r + 0x16) = e;
+		*(char **)(r + 0x16) = p;
 	*(char **)(p + 0x12) = r;
 	*(char **)(p + 0x16) = e;
 	*(char **)(e + 0x12) = p;

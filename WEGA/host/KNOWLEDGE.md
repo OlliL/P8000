@@ -1029,6 +1029,35 @@ printf and doprnt of the older revision need their data (strings, the 22 convers
 absolute addresses of the cut tool are no use when the layout shifts. (4) `bE466`/`bE467` are the two bytes of one 2-byte variable, `pE4D6` has a
 second word at 0xe4d8; an array size of the original is the distance of the addresses (tab4a48 8000 bytes, buf6988 10000).
 
+### sld: what fixed the findings functions (2026-10-28)
+
+Rules found while bringing the "findings" functions of sld to the exact code (strict_audit.py, 51 of 90 equal, 39 left). Each came from
+reading the original code with `tools/odis.py NAME`:
+
+- **Argument registers.** The first argument is in rr6 (|4| in the spill), the second in rr4 (|0|), a word argument after them in r5/r3. A
+  wrong parameter order or type (`long` for `int`) shows as spilled offsets that differ (f6800, table_lookup, f60f0, str_compare, f2f04).
+  The callers show the order (f2f04(stream, data, n); warn_sym_redef(p, a) with p null-checked).
+- **Register variables.** The old compiler gives register variables from r13 downwards in the order of declaration, the pair of a pointer
+  takes two registers, a `register` parameter comes first (rr12). `ldm` saves exactly the used ones. A copy `ldl rr12,rr6` of a spilled
+  parameter means a local `register char *p; p = a;`; no spill of an argument means the parameter itself is `register`
+  (put_int_buf, next_entry). A register that is incremented (`inc r13,#1` on a pointer in rr12) is the pointer, not a counter
+  (warn_sym_redef, f0178). Unused local arrays give the frame bytes that the original has more (load2, load2arg, table_lookup: `spare`).
+- **Loops.** The original loop of `while`/`for` tests at the bottom (`jr test; body; test: ...; jr cc,body`). Our compiler writes
+  `while` with the test on top (`jr ncc,end; body; jr top`), which is also what some original loops have (next_entry:
+  `p += 16; while (e > p) p += 16;`). Bottom tests are written with goto (`goto test; body: ...; test: if (c) goto body;`)
+  (get_block, f6f46, pack_name, unpack_run, load2arg).
+- **Expressions.** `switch (ep[4])` with the case values 0x20.. instead of `switch (ep[4] - 0x20)` gives `ld r2,r3; sub r2,#0x20`
+  (end_pass1). `if ((p[4] & 0x80) != 0)` gives `and; test`, `if (p[4] & 0x80)` gives `bit` (f6f46). `if ((ch = *s) & 0x80)` avoids a copy
+  (unpack_run). `x = n; x >>= 1;` gives `ld r9,r5; sra r9,#1` (mget). `return *(*(int **)(q + 6))++;` keeps the old value in a local (get);
+  `if (--*(int *)(q + 4) < 0)` is the pre-decrement test (get). `!c & 0x20` (precedence bug of the original) gives `ldk 1/0; bit` (warn_sym_redef).
+  `flag ? "a" : "b"` as argument gives one call (open_tmp). A function without a `return` at the end leaves r2 as it is (f64d0).
+  `tblF332[x].d` (8-byte rows) instead of `*(int *)(tabF338 + x * 8)` (f4968, f42f8). The offset of a field in a stack struct is
+  `(char *)&h.f - (char *)&h` (f2d4c); a 14-byte record built on the stack is a struct (f6e1a).
+- **Case order.** The cases of a switch lie in the code in the order of the source (f42f8: 'r', 's', 'M').
+- Remaining differences are the old compiler's own: the optimizer moves non-register locals into scratch registers (f1f96: `e` stays in
+  rr2 in the original; ours keeps it on the stack), `and r2,#0xFFFE` becomes `res r2,#0` in the original (load2), `jr cc,a; jr b` is
+  merged by ours (pack_name).
+
 ### sld: C files of the program and the libc objects in the own range (2026-10-28)
 
 `src/cmd/ld/tools/module_map.py` (output `module_map.txt`) assigns every function to a C file by the string literals it uses. The data

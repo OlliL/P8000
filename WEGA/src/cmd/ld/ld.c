@@ -999,28 +999,36 @@ char *p;
 {
 	register char *q;
 	register long *lp;
+	int spare[2];	/* unused: the frame of the original has 4 more bytes */
 
 	q = p;
 	if (getfile(p) == 0) {
-		while (*q != 0)
-			q++;
+		goto test0;
+body0:
+		q++;
+test0:
+		if (*q != 0)
+			goto body0;
 		for (;;) {
 			if (q < p)
 				break;
-			q--;
-			if (*q == 0x2f)
+			if (*--q == 0x2f)
 				break;
 		}
 		q++;
 		load2(0L, q);
 	} else {
 		lp = g0486;
-		while (*lp != -1) {
-			dseek(bE414, *lp, 26);
-			mget(bE438, 26);
-			load2(*lp + 13, bE438);
-			lp++;
-		}
+		goto test1;
+body1:
+		dseek(bE414, *lp, 26);
+		mget(bE438, 26);
+		load2(*lp + 13, bE438);
+		lp++;
+test1:
+		if (*lp != -1)
+			goto body1;
+		lp++;
 		g0486 = lp;
 	}
 	close(bE4BE);
@@ -1086,45 +1094,47 @@ next:
 	f2624(a, t);
 }
 
-/* f2624..27d8: findings:D7,D16 */
+/* f2624 0x2624..0x27d8: done */
 int f2624(a, b)
 long a;
 char *b;
 {
-	int i;
-	long acc;
-	long base;
-	long hw;
+	struct {
+		int tw0, tw1, tw2, tw3, tw4, tw5, tw6, tw7;
+	} tmp;
+	unsigned i;
 	int lim;
-	char tmp[16];
-	int key;
 	int n;
+	long base;
+	long acc;
+	long hw;
+
 	acc = a;
-	base = a - (bE434 / 2);
+	base = a - bE434 / 2;
+	n = 8;
 	lim = bE434 / (n * 2);
 	hw = (bE454 + bE458) >> 1;
 	for (i = 0; i < lim; i++) {
-		dseek(bE414, base + i, n * 2);
-		mget(tmp, n * 2);
+		dseek(bE414, base + i * n, n * 2);
+		mget(&tmp, n * 2);
 		if (bE4B6)
-			swap_quad(tmp);
-		key = *(int *)(tmp + 10) & 3;
-		switch (key) {
+			swap_quad(&tmp);
+		switch (tmp.tw5 & 3) {
 		case 1:
-			dseek(bE414, acc, *(int *)(tmp + 4));
-			dseek(bE424, acc + hw, *(int *)(tmp + 4));
-			acc += half(*(int *)(tmp + 4));
+			dseek(bE414, acc, tmp.tw2);
+			dseek(bE424, acc + hw, tmp.tw2);
+			acc += half(tmp.tw2);
 			f27d8(b, bE6E2, bEF02);
 			break;
 		case 3:
-			dseek(bE414, acc, *(int *)(tmp + 4));
-			dseek(bE424, acc + hw, *(int *)(tmp + 4));
-			acc += half(*(int *)(tmp + 4));
+			dseek(bE414, acc, tmp.tw2);
+			dseek(bE424, acc + hw, tmp.tw2);
+			acc += half(tmp.tw2);
 			f27d8(b, bE6E2, bEF02);
 		case 2:
-			dseek(bE414, acc, *(int *)(tmp + 6));
-			dseek(bE424, acc + hw, *(int *)(tmp + 6));
-			acc += half(*(int *)(tmp + 6));
+			dseek(bE414, acc, tmp.tw3);
+			dseek(bE424, acc + hw, tmp.tw3);
+			acc += half(tmp.tw3);
 			f27d8(b, bE8EA, bEAF2);
 			break;
 		}

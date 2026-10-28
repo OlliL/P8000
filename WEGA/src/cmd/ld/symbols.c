@@ -11,40 +11,50 @@ int bE15D6 = 0;
 int g15d8 = 0;
 unsigned bE15DA = 0;
 
-/* read_entry_hdr..6800: findings:D2 */
+/* read_entry_hdr 0x6684..0x6800: done */
 read_entry_hdr()
 {
-	char buf[14];
+	register int i;
+	register int result;
+	register char *cur;
 	char cnt;
-	char *cur;
 	char *end;
-	int total;
-	int result;
-	int i;
+	struct {
+		long rv;
+		char rt;
+		char rs;
+		char rn[8];
+	} r;
+	char *q;
+	char *base;
 
 	result = 0;
 	if (bE4B2) {
-		mget(buf, 14);
-		bE46A = *(long *)buf;
-		bE46E = buf[4];
-		bE470 = buf[5];
+		mget(&r, 14);
+		bE46A = r.rv;
+		bE46E = r.rt;
+		bE470 = r.rs;
 		for (i = 0; i < 8; i++)
-			bE472[i] = buf[6 + i];
+			bE472[i] = r.rn[i];
 		if (bE4B6)
 			swap_pair(&bE46A);
 		if (bE472[0] & 0x80) {
 			cnt = bE472[0] & 0x7f;
-			end = buf + 6 + cnt;
-			cur = buf;
-			total = 0;
-			while (cur < end) {
-				mget(k047a, 14);
-				total += 14;
-				cur += 14;
-			}
-			result = total / 16;
-			if (total % 16 != 0)
-				result += 1;
+			cur = &r;
+			end = r.rn + cnt;
+			base = k047a;
+			q = k047a;
+			goto test;
+body:
+			mget(q, 14);
+			q += 14;
+test:
+			cur += 14;
+			if (cur < end)
+				goto body;
+			result = ((int)q - (int)base) / 16;
+			if (((int)q - (int)base) % 16 != 0)
+				result++;
 		}
 	} else {
 		mget(bE15CC, 12);
@@ -433,10 +443,12 @@ test:
 		goto body;
 }
 
-/* table16_entry 0x6fd0..0x6ffe: findings:D1 */
+/* table16_entry 0x6fd0..0x6ffe: done */
 char *table16_entry(x)
 unsigned x;
 {
+	int spare[4];	/* unused: the frame of the original has 8 more bytes */
+
 	if (x < g04ee)
 		return gE47E + (x << 4);
 	report_error(2, "Symbol table overflow --try -As option");
@@ -480,18 +492,14 @@ register char *p;
 	report_error(2, "Error in stepsym");
 }
 
-/* index16..7112: findings:D4 */
-int index16(x, a)
+/* index16 0x70ce..0x7112: done */
+int index16(x)
 char *x;
-char *a;
 {
-	char *p;
+	int spare;	/* unused: the frame of the original has 2 more bytes */
 
-	if (gE47E <= x) {
-		p = gE47E + (g04ee << 4);
-		if (p > x)
-			return ((int)x - (int)a) >> 4;
-	}
+	if (gE47E <= x && gE47E + (g04ee << 4) > x)
+		return ((int)x - (int)gE47E) >> 4;
 	report_error(2, "Error in getindex");
 }
 
