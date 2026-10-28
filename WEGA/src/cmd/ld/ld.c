@@ -59,91 +59,95 @@ char **argv;
 	bE4A46 = 0;
 	i = 1;
 	bE4A36 = argv + 1;
-	for (;;) {
-		while (i < argc) {
-			bE4C0 = 0;
-			s = *bE4A36++;
-			if (s[0] != '-') {
-				load_lib_syms(s);
-				goto next;
-			}
-			j = 1;
-		l08a2:
-			if (s[j] == 0)
-				goto next;
-			switch (s[j]) {
-			case 'f':
-				savei = i;
-				i = -1;
-				savep = bE4A36;
-				savev = argv;
-				savec = argc;
-				argv = g4a40;
-				argc = bE4A44;
-				bE4A36 = argv;
-				bE4A46++;
-				break;
-			case 'A':
-				j++;
-			case 'e':
-			case 'o':
-			case 'u':
-				i++;
-				bE4A36++;
-				j++;
-				goto l08a2;
-			case 'l':
-				load_lib_syms(s + (j - 1));
-				break;
-			case 'b':
-			case 't':
-				if (bE49C)
-					report_error(2, "Cannot use -t or -b options with -M");
-				bE4A8 = 1;
-				i++;
-				if (i >= argc)
-					report_error(2, "-%c: arg missing", s[j]);
-				if (reg_sect_addr(s + j, *bE4A36))
-					j++;
-				bE4A36++;
-				j++;
-				goto l08a2;
-			case 'M':
-				if (bE4A8)
-					report_error(2, "Cannot use -t or -b options with -M");
-				bE49C++;
-				scan_m_opt(s + j, &i, argc);
-				break;
-			default:
-				report_error(2, "-%c: bad flag", s[j]);
-				break;
-			case 'N':
-			case 'O':
-			case 'R':
-			case 'S':
-			case 'T':
-			case 'X':
-			case 'd':
-			case 'i':
-			case 'r':
-			case 's':
-			case 'w':
-			case 'x':
-			case 'z':
-				break;
-			}
-next:
-			i++;
-		}
-		if (!bE4A46)
-			break;
-		i = savei + 2;
-		savep++;
-		bE4A36 = savep;
-		argv = savev;
-		argc = savec;
-		bE4A46 = 0;
+	goto test;
+body:
+	bE4C0 = 0;
+	s = *bE4A36++;
+	if (s[0] != '-')
+		goto lib;
+	j = 1;
+l08a2:
+	if (s[j] == 0)
+		goto next;
+	switch (s[j]) {
+	case 'f':
+		savei = i;
+		i = -1;
+		savep = bE4A36;
+		savev = argv;
+		savec = argc;
+		argv = g4a40;
+		argc = bE4A44;
+		bE4A36 = argv;
+		bE4A46++;
+		break;
+	case 'A':
+		j++;
+	case 'e':
+	case 'o':
+	case 'u':
+		i++;
+		bE4A36++;
+		j++;
+		goto l08a2;
+	case 'l':
+		load_lib_syms(s + (j - 1));
+		break;
+	case 'b':
+	case 't':
+		if (bE49C)
+			report_error(2, "Cannot use -t or -b options with -M");
+		bE4A8 = 1;
+		i++;
+		if (i >= argc)
+			report_error(2, "-%c: arg missing", s[j]);
+		if (reg_sect_addr(s + j, *bE4A36))
+			j++;
+		bE4A36++;
+		j++;
+		goto l08a2;
+	case 'M':
+		if (bE4A8)
+			report_error(2, "Cannot use -t or -b options with -M");
+		bE49C++;
+		scan_m_opt(s + j, &i, argc);
+		break;
+	default:
+		report_error(2, "-%c: bad flag", s[j]);
+		break;
+	case 'N':
+	case 'O':
+	case 'R':
+	case 'S':
+	case 'T':
+	case 'X':
+	case 'd':
+	case 'i':
+	case 'r':
+	case 's':
+	case 'w':
+	case 'x':
+	case 'z':
+		break;
 	}
+	goto next;
+lib:
+	load_lib_syms(s);
+next:
+	i++;
+	goto test;
+restore:
+	i = savei + 2;
+	savep++;
+	bE4A36 = savep;
+	argv = savev;
+	argc = savec;
+	bE4A46 = 0;
+test:
+	if (i < argc)
+		goto body;
+	if (bE4A46)
+		goto restore;
 	if (bE4A2 && bE42B2)
 		printf("%s: warning, -r option overrides -t, -b\n", pE4D6);
 	parse_args(argc, argv);
@@ -185,8 +189,7 @@ char **argv;
 	fflag = 0;
 	goto test;
 loop:
-	if (**argv != '-')
-		goto next;
+	if (**argv == '-')
 	switch ((*argv)[1]) {
 	case 'f':
 		if (fflag)
@@ -423,13 +426,14 @@ char **argv;
 	register char *a;
 	register char **av;
 	register int j;
+	int flag;
+	int saved_argc;
 	int saved_k;
 	char **saved_av;
 	char **base;
-	int saved_argc;
-	int flag;
 	char *p;
 
+	flag = 0;
 	bE4C0 = 0;
 	end_pass1();
 	start_output();
@@ -441,30 +445,49 @@ char **argv;
 	goto test;
 body:
 	a = *av++;
-	if (*a != '-') {
-		load2arg(a);
-		goto next;
-	}
+	if (*a != '-')
+		goto lib;
 	j = 1;
 scan:
 	if (!a[j])
 		goto next;
 	switch (a[j]) {
-	case 'A':
-	case 'e':
-	case 'o':
-	case 'u':
-	case 'v':
-		goto consume;
+	case 'f':
+		saved_k = k;
+		k = -1;
+		saved_av = av;
+		base = argv;
+		saved_argc = argc;
+		argv = g4a40;
+		argc = bE4A44;
+		av = argv;
+		flag = 1;
+		goto next;
 	case 'b':
 	case 't':
 		if (!a[j + 1])
 			goto consume;
 		j++;
-		goto consume;
-	case 'N':
-		j += 2;
+	case 'A':
+	case 'e':
+	case 'o':
+	case 'u':
+	case 'v':
+consume:
+		k++;
+		av++;
+	default:
+dflt:
+		j++;
 		goto scan;
+	case 'N':
+		j++;
+		goto dflt;
+	case 'l':
+		j--;
+		a[j] = '-';
+		load2arg(a + j);
+		goto next;
 	case 'M':
 		p = strchr(a, ':');
 		if (p && !p[2]) {
@@ -480,32 +503,11 @@ scan:
 		k++;
 		av++;
 		goto next;
-	case 'f':
-		saved_k = k;
-		k = -1;
-		saved_av = av;
-		base = argv;
-		saved_argc = argc;
-		argc = bE4A44;
-		av = g4a40;
-		flag = 1;
-		goto next;
-	case 'l':
-		j--;
-		a[j] = '-';
-		load2arg(a + j);
-		goto next;
 	case 'R':
 		goto next;
-	default:
-		j++;
-		goto scan;
 	}
-consume:
-	k++;
-	av++;
-	j++;
-	goto scan;
+lib:
+	load2arg(a);
 next:
 	k++;
 test:
@@ -513,7 +515,8 @@ test:
 		goto body;
 	if (flag) {
 		k = saved_k + 2;
-		av = saved_av + 1;
+		saved_av++;
+		av = saved_av;
 		argv = base;
 		argc = saved_argc;
 		flag = 0;

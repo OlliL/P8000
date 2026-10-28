@@ -2129,7 +2129,7 @@
    "note": "pass 2026-10-28, open: mult/add register choice (rr4/rr6 vs rr2/rr4), inc r3,#4 order"
   },
   "main": {
-   "basis": "open",
+   "basis": "read",
    "d_classes": [
     "D1",
     "D10",
@@ -2139,15 +2139,15 @@
     "D8",
     "D8/D2"
    ],
-   "note": "not reviewed in the 2026-10-28 pass (strict_audit.py differs)"
+   "note": "pass 2026-10-28, compiler: 7 instructions differ (scratch registers rr2/rr4); done: one loop with test at the bottom (goto test), the library call as label lib: in front of next:, restore block in front of the test"
   },
   "scan_options": {
-   "basis": "open",
+   "basis": "read",
    "d_classes": [],
-   "note": "not reviewed in the 2026-10-28 pass (strict_audit.py differs)"
+   "note": "pass 2026-10-28, open: the original has the dispatch (cpir, jp @rr2) right after the entry jump, ours puts the body of case f in front of it (compiler block order); 33 instructions differ, rest equal"
   },
   "scan_m_opt": {
-   "basis": "open",
+   "basis": "read",
    "d_classes": [
     "D10",
     "D13",
@@ -2157,12 +2157,12 @@
     "D7",
     "D8"
    ],
-   "note": "not reviewed in the 2026-10-28 pass (strict_audit.py differs)"
+   "note": "pass 2026-10-28, open: the original moves the error block \"section already specified\" behind the break of case a and shares the tail \"ldl rr2,s; call report_error\" (popt); a goto stub in the source gets the code right (49 -> 7) but changes the string pool order, so it is not used"
   },
   "parse_args": {
-   "basis": "open",
+   "basis": "read",
    "d_classes": [],
-   "note": "not reviewed in the 2026-10-28 pass (strict_audit.py differs)"
+   "note": "pass 2026-10-28, compiler: 7 instructions differ (scratch registers rr2/rr4 of the copies); done: flag = 0 first, locals flag/saved_argc/saved_k/saved_av/base/p, library call as label lib: before next:, case bodies in the code order of the original (f, b/t+consume, default, N, l, M, R), restore: saved_av++; av = saved_av"
   }
  },
  "inventory": {

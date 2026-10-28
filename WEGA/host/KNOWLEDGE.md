@@ -1070,6 +1070,14 @@ reading the original code with `tools/odis.py NAME`:
   (load_lib_syms, load2arg). `for (n = 1; load_header(n); n = ((bE44E + 27) >> 1) + n) ;` per case reproduces the shared `n =` head of the
   loop (load_lib_syms). The 24-byte header in f3516 is a struct (mixed int/long fields), its record buffer 8198 bytes; `bE42B4[g][k]`-style
   indexing with a variable row is `(tab42b4 + g * 5)[k]`.
+- **Cold blocks and the library call (main, parse_args).** The original puts the call for a non-option argument (`load_lib_syms(s)`,
+  `load2arg(a)`) at the end of the loop body in front of the increment (`if (s[0] != '-') goto lib; ... lib: call; next: i++`), not in an
+  `if` block at the top; with that the loop head and the dispatch lie right behind the entry jump. The case bodies of a switch with shared tails
+  lie in the order of the code of the original (parse_args: f, b/t falling into the shared `k++; av++`, `default: j++; goto scan`, N, l, M, R);
+  the jump table sends several characters to one body. `saved_av++; av = saved_av;` is the `inc |10|,#4` of the restore.
+- **Moved error blocks (scan_m_opt).** popt moves an error block (call of report_error) into the gap behind an earlier `break` and shares the common
+  tail with the other error calls (`ldl rr2,s; call report_error`); a goto stub in the source reproduces the code (49 -> 7 differences)
+  but puts the string into the pool in the wrong place, so it is not used.
 - **Case order.** The cases of a switch lie in the code in the order of the source (f42f8: 'r', 's', 'M').
 - Remaining differences are the old compiler's own: the optimizer moves non-register locals into scratch registers (f1f96: `e` stays in
   rr2 in the original; ours keeps it on the stack), `and r2,#0xFFFE` becomes `res r2,#0` in the original (load2), `jr cc,a; jr b` is

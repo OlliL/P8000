@@ -86,14 +86,14 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | load_header | 0x143c-0x14f8 | 0x14a4 | confirmed | exact | D only (pattern-verified) |  |  |
 | load_lib_syms | 0x12fc-0x143c | 0x1364 | confirmed | differs | D only (pattern-verified) |  |  |
 | lookup_name | 0x6a44-0x6b46 | 0x6a58 | confirmed | exact | D only (pattern-verified) |  |  |
-| main | 0x073a-0x0a0a | 0x078c | confirmed | differs | open (not classified) | D1, D10, D13, D2, D7, D8, D8/D2 | not reviewed in the 2026-10-28 pass (strict_audit.py differs) |
+| main | 0x073a-0x0a0a | 0x078c | confirmed | differs | read by hand | D1, D10, D13, D2, D7, D8, D8/D2 | pass 2026-10-28, compiler: 7 instructions differ (scratch registers rr2/rr4); done: one loop with test at the bottom (goto test), the library call as label lib: in front of next:, restore block in front of the test |
 | make_blk | 0x3712-0x39e2 | 0x3760 | confirmed | exact | D only (pattern-verified) | D10, D3, D6 |  |
 | mget | 0x2e20-0x2eae | 0x2e76 | confirmed | exact | D only (pattern-verified) |  |  |
 | next_entry | 0x7042-0x70b2 | 0x705e | confirmed | exact | D only (pattern-verified) |  |  |
 | open_tmp | 0x224a-0x22ec | 0x22a4 | confirmed | exact | D only (pattern-verified) |  |  |
 | pack_entry | 0x685a-0x6894 | 0x6866 | confirmed | differs | read by hand | D10, D3 | pass 2026-10-28, compiler: D4 |
 | pack_name | 0x0098-0x0122 | 0x00ee | confirmed | differs | read by hand | D7 | pass 2026-10-28, compiler: jr gt,body; jr test3 merged by our popt |
-| parse_args | 0x1196-0x12fc | 0x11ea | confirmed | differs | open (not classified) |  | not reviewed in the 2026-10-28 pass (strict_audit.py differs) |
+| parse_args | 0x1196-0x12fc | 0x11ea | confirmed | differs | read by hand |  | pass 2026-10-28, compiler: 7 instructions differ (scratch registers rr2/rr4 of the copies); done: flag = 0 first, locals flag/saved_argc/saved_k/saved_av/base/p, library call as label lib: before next:, case bodies in the code order of the original (f, b/t+consume, default, N, l, M, R), restore: saved_av++; av = saved_av |
 | place_sec | 0x1888-0x1f30 | 0x18f2 | confirmed | exact | D only (pattern-verified) | D3, D6, D7, D8 |  |
 | put_int_buf | 0x3a3a-0x3a78 | 0x3a88 | confirmed | exact | D only (pattern-verified) |  |  |
 | put_name | 0x650e-0x65b2 | 0x6522 | confirmed | exact | D only (pattern-verified) |  |  |
@@ -102,8 +102,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | read_words | 0x0ed6-0x1020 | 0x0f26 | confirmed | differs | read by hand |  | pass 2026-10-28, compiler: original code has the word branch first, the strings have the char branch first (D15); init before open done |
 | reg_sect_addr | 0x1020-0x1196 | 0x1070 | confirmed | differs | read by hand | D10, D2, D3, D7, D8/D2 | pass 2026-10-28, compiler: original keeps all case bodies before the join code, ours moves the join behind the first case; switch order t,d,b,0,default done |
 | report_error | 0x33b6-0x3466 | 0x3408 | confirmed | exact | D only (pattern-verified) |  |  |
-| scan_m_opt | 0x3bc6-0x40c6 | 0x3c16 | confirmed | differs | open (not classified) | D10, D13, D2, D3, D6, D7, D8 | not reviewed in the 2026-10-28 pass (strict_audit.py differs) |
-| scan_options | 0x0ab2-0x0ed6 | 0x0b04 | confirmed | differs | open (not classified) |  | not reviewed in the 2026-10-28 pass (strict_audit.py differs) |
+| scan_m_opt | 0x3bc6-0x40c6 | 0x3c16 | confirmed | differs | read by hand | D10, D13, D2, D3, D6, D7, D8 | pass 2026-10-28, open: the original moves the error block "section already specified" behind the break of case a and shares the tail "ldl rr2,s; call report_error" (popt); a goto stub in the source gets the code right (49 -> 7) but changes the string pool order, so it is not used |
+| scan_options | 0x0ab2-0x0ed6 | 0x0b04 | confirmed | differs | read by hand |  | pass 2026-10-28, open: the original has the dispatch (cpir, jp @rr2) right after the entry jump, ours puts the body of case f in front of it (compiler block order); 33 instructions differ, rest equal |
 | segtab_alloc | 0x070e-0x0738 | 0x0762 | confirmed | exact | D only (pattern-verified) |  |  |
 | sig_handler | 0x0a0a-0x0a68 | 0x0a5c | confirmed | exact | D only (pattern-verified) |  |  |
 | start_output | 0x1ffc-0x224a | 0x2056 | confirmed | differs | read by hand | D10 | pass 2026-10-28, compiler: scratch registers (r0 vs r4) |
