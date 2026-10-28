@@ -174,8 +174,12 @@ produce the same bytes with the shipped cc.
   compiles alone with the old compiler (no lost names), `make cobjs`. Tools follow the files (tools/ldsrc.py: module_ranges.txt, sources(),
   compile_all()): accept.py (new function or replacement of a function in its C file, new declarations into ld.h/ext.c), rename.py,
   strict_audit.py, classify_sld.py, check_names.py, tryname.py, sync_findings.py. Names of functions and variables can still be changed
-  with rename.py at the end. Open: original strings into the files (sizes against the SCCS ranges of the data), owner file of each
-  variable (now all defined in ext.c), the data and bss cut, the full link and the byte comparison.
+  with rename.py at the end.
+  Strings and initialized variables (2026-10-28): the original texts are in the C files (tools/fill_strings.py), SCCS strings as `static char
+  sccsid[]`; the initialized variables with their values are defined in their files; the data of 7 of the 8 files equals the original
+  (tools/check_data.py), ld.c to 0x0e38. Several functions came closer by following the string order (KNOWLEDGE, "initialized
+  variables"). Open: open_library and the rest of the ld.c data, the owner file of each uninitialized variable (bss bands; all in ext.c now),
+  the bss cut, the full link and the byte comparison; use the string order for the other findings functions (D15 block layout).
   Next: improve the findings-class functions found by `strict_audit.py` (parse_args, f6c6a, make_ccl, scan_field, ...),
   re-check the D15 tags, cut the data (7090 bytes, bss), map the libc `fXXXX` addresses to libc names, `make link` and
   compare the bytes, split sld.c into modules.

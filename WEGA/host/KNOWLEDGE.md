@@ -1033,6 +1033,54 @@ shipped member: they are the only objects that need their assembler source (`src
 sources of this revision are not reconstructed, by decision). The data of the libc objects (doscan 176 bytes, doprnt 198, ...)
 lies in the data area behind the symbols.c data (0x17ba..0x1958 and the objects up to 0x1bb2).
 
+### sld: the string literals and the data of the C files (2026-10-28)
+
+`src/cmd/ld/tools/fill_strings.py` put the original texts into the C files (the placeholders "x" are gone; every file starts with
+`static char sccsid[]`, the SCCS what-string of the binary). Method: the compiler emits the string literals of a file in source
+order into the data and the original keeps that order. (1) The literals of one function are consecutive: the k-th literal of the
+function is the k-th lowest string address among the string references (`#%0100XXXX`) of the original function. (2) A literal that
+already had text is checked against the original (176 equal). Result: data sizes of the objects against the data range of
+the file in the original: copyname 76 = 76, dump 786 = 786, swap 46 = 46 (equal); ext 182 of 190, ld 2764 of 2840, ldm 1436 of
+1438, printname 108 of 110, symbols 564 against 544 (the duplicate literals of next_entry and index16). The differences are the
+initialized variables of the files (not modelled yet: all variables are defined without value in ext.c).
+Findings from the order of the strings (`fill_strings.py` prints them):
+- Some strings are global initialized arrays, not literals: "/tmp/ldaXXXXX" (0x49e, tmpname), "Premature EOF" (0x4d8), "__.SYMDEF"
+  (0x4ce), the empty string (0xe38, used three times), they lie at the start of the data of ld.c, before the strings of the
+  functions. The functions refer to them by name.
+- `next_entry` and `index16` have one error string in the original, two literals in our source (the original calls `report_error`
+  from one place); the texts are equal for now.
+- The literals of `scan_options`, `f1070`, `scan_m_opt` are in another order in the original source than in ours (e.g. the symbol
+  table size handler comes before the pass 1 segment table handler in the original): the order of the statements in our source differs;
+  with the right order the block layout (D15) of these functions may come out right. In `read_words` the check of the `idx`
+  and of the pointer follow the data order (Bad command file read, Command file arguments too long, Too many command file
+  arguments, Command file arguments too long) with our statement order.
+
+### sld: initialized variables and the data of the files (2026-10-28)
+
+Tools (`src/cmd/ld/tools`): `var_addr.py` (address of each global variable of our sources: the instruction sequences of ours and the
+original are aligned by mnemonic and the variable operands paired; votes in `var_addr.txt`, per function `var_fn_addr.txt`),
+`data_map.py` (the data area per C file: SCCS string, strings, jump tables, words), `check_data.py` (data section of each compiled C file
+against the original range; relocated words, jump tables and pointers into segment 1/2 are masked). Result: the data of copyname.c,
+dump.c, ext.c, ldm.c, printname.c, swap.c and symbols.c equals the original byte for byte; ld.c to 0x0e38 (open_library).
+What the data showed:
+- The initialized variables of a file come first (after the SCCS string) in the order of their definition, then the strings of the
+  functions, and variables can sit between functions (`char tmpname[] = "l.out"` at 0x66c, before sig_handler). A pointer
+  initialized with a string is followed by the string (`char *bE048A = "a.out"` 0x48a, `char *p0494 = "l.out"` 0x494), an array of
+  pointers by its strings (`ptrs04ac` = "all", "text", "data", "bss"); a `long *` can be initialized with the address of a bss array
+  (`long *g0486 = (long *)tab3e8a`, a cursor: the code does `*g0486++ = -1`). Variables initialized with 0 are data, not bss.
+- Names that were one name in our sources for two variables (bE47A: an int counter at data 0x47a in ld.c/ldm.c, a buffer at bss2 0x47a in
+  symbols.c; bE486: the cursor in data 0x486, `_edata` at bss2 0xe486 in ldm.c; bE49E: the template string array at 0x49e and an int at
+  bss2 0xe49e) are split (g047a/k047a, g0486/bE486, g049e/bE49E); aliases of one address are merged (e.g. bE474 and g0474).
+- Dead giveaways of the source order: the order of the string literals is the order of the statements of the original source. Reordering
+  our statements to that order improved the code, too (differing lines of the strict audit): scan_m_opt 145 -> 49 (the `+` list case before
+  the switch), f27d8 61 -> 38 (the case bodies inside the two switches, the table behind the strings), scan_options 80 -> 33 (case 's' before
+  'p'), get_block 30 -> 23 (the block table is the pointer `char **g03ba` that calloc fills, not an array), next_entry 36 -> 32 and
+  index16 20 -> 11 (one error call per function: the original has one string).
+- Open in ld.c (open_library, 285 bytes after 0x0e38): the original has the empty string once for three uses and the directory strings
+  ("", "/usr", "/z/bin") before "/lib/slib", "/lib/lib": either the old compiler shares equal literals of a function and
+  orders them differently, or the source differs; not solved.
+- bss: all variables without value are still defined in ext.c (one place); their files follow from the bss bands, open.
+
 ### sld: section allocator (0x4a16 lay_out, 0x18f2 place_sec, 0x5a2c ins_block) (2026-10-28)
 
 - Records: the block record (`get_block`, size unknown: sizes f4/f6/f8 at +4/+6/+8, pointers to the three segment records s2/s3/s4

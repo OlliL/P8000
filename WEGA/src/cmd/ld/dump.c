@@ -4,13 +4,15 @@
 
 #include "ld.h"
 
+static char sccsid[] = "@[$]dump.c\t3.1  10/27/83 12:14:51 - 87wega3.2";
+
 /* walk_entries..0220: done */
 walk_entries()
 {
 	register char *a;
 	register char *b;
 
-	printf("x");
+	printf("\nSYM TABLE DUMP:\n");
 	b = table16_entry(bE4FA);
 	a = table16_entry(0);
 	while (a < b) {

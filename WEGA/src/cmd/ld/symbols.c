@@ -4,6 +4,13 @@
 
 #include "ld.h"
 
+static char sccsid[] = "@[$]symbols.c\t3.2  10/27/83 12:25:22 - 87wega3.2";
+char bE15CC[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+int bE15D4 = 0;
+int bE15D6 = 0;
+int g15d8 = 0;
+unsigned bE15DA = 0;
+
 /* read_entry_hdr..6800: findings:D2 */
 read_entry_hdr()
 {
@@ -31,7 +38,7 @@ read_entry_hdr()
 			cur = buf;
 			total = 0;
 			while (cur < end) {
-				f2e76(bE47A, 14);
+				f2e76(k047a, 14);
 				total += 14;
 				cur += 14;
 			}
@@ -94,7 +101,7 @@ int c;
 	if (put_name(p + 8) < 8)
 		putchar(9);
 	putchar(0x20);
-	report_error(1, "x");
+	report_error(1, "-- Multiply defined");
 	goto end;
 init:
 	p[4] = c;
@@ -124,10 +131,10 @@ init:
 	if (c != 0x21)
 		goto end;
 	*(long *)p = 0;
-	if (bE474 == -1 || bE474 == -3)
+	if (g0474 == -1 || g0474 == -3)
 		*(int *)(p + 6) = bE3E82;
 	else
-		*(int *)(p + 6) = bE474;
+		*(int *)(p + 6) = g0474;
 	*(long *)p = *(long *)p + ((long)*(int *)(p + 6) << 24);
 	goto end;
 add:
@@ -168,10 +175,10 @@ char *lookup_name()
 	h = 0;
 	cur = bE472;
 	start = cur;
-	end = bE47A;
+	end = k047a;
 	if (*cur & 0x80) {
 		start++;
-		if (b04EA == 0)
+		if (g04ea == 0)
 			end++;
 		else
 			end = bE472 + (*cur & 0x7f);
@@ -182,7 +189,7 @@ char *lookup_name()
 	while (*(char **)slot) {
 		rec = *(char **)slot + 8;
 		flag = 0;
-		if (b04EA == 0)
+		if (g04ea == 0)
 			goto l1;
 		cur = bE472;
 		goto l2;
@@ -240,7 +247,7 @@ char **a;
 
 	if (*a == 0) {
 		if (bE4FA >= 0x0ffa)
-			report_error(2, "x");
+			report_error(2, "Symbol table overflow");
 		tblE500[bE4FA] = a;
 		r = table16_entry(bE4FA++);
 		bE4FC = r;
@@ -387,7 +394,7 @@ f6efe()
 	register char *end;
 
 	p = table16_entry(0);
-	end = table16_entry(g04fa);
+	end = table16_entry(bE4FA);
 	while (p < end) {
 		p[4] |= 0x40;
 		f6e1a(bE4DA, p);
@@ -424,16 +431,16 @@ unsigned x;
 {
 	if (x < g04ee)
 		return gE47E + (x << 4);
-	report_error(2, "x");
+	report_error(2, "Symbol table overflow --try -As option");
 }
 
 /* f6ffe 0x6ffe..0x702a: done */
 f6ffe(a)
 int a;
 {
-	g1688 = calloc(a, 16);
-	if (!g1688)
-		report_error(2, "x");
+	gE47E = calloc(a, 16);
+	if (!gE47E)
+		report_error(2, "malloc unable to allocate enough memory for symbol table");
 }
 
 /* f702a 0x702a..0x705e: done */
@@ -442,7 +449,7 @@ int a;
 {
 	gE47E = realloc(gE47E, a << 4);
 	if (!gE47E)
-		report_error(2, "x");
+		report_error(2, "realloc unable to allocate enough memory for symbol table");
 }
 
 /* next_entry..7112: findings:D2 */
@@ -462,10 +469,8 @@ char *p;
 			q += 16;
 	} else
 		q = p + 16;
-	if (q < bE47E)
-		report_error(2, "x");
-	if (q >= bE47E + (g04ee << 4))
-		report_error(2, "y");
+	if (q < gE47E || q >= gE47E + (g04ee << 4))
+		report_error(2, "Error in stepsym");
 	return q;
 }
 
@@ -476,14 +481,12 @@ char *a;
 {
 	char *p;
 
-	if (gE47E > x)
-		report_error(2, "x");
-	else {
+	if (gE47E <= x) {
 		p = gE47E + (g04ee << 4);
 		if (p > x)
 			return ((int)x - (int)a) >> 4;
-		report_error(2, "x");
 	}
+	report_error(2, "Error in getindex");
 }
 
 /* ensure_buf..7186: done */
@@ -492,12 +495,12 @@ unsigned long n;
 {
 	if (bE15DA < n) {
 		if (n > 0xffff)
-			report_error(2, "x");
+			report_error(2, "ranlib table of contents too large");
 		if (bE15DA != 0)
 			free(bE190DE);
 		bE190DE = calloc(1, (int)n);
 		if (bE190DE == 0)
-			report_error(2, "y");
+			report_error(2, "malloc unable to allocate enough memory for ranlib contents");
 		bE15DA = (unsigned)n;
 	}
 	return bE190DE;
@@ -506,7 +509,7 @@ unsigned long n;
 /* limit_msg..719e: done */
 limit_msg()
 {
-	printf("x", bE4FA, 0x0ffa);
+	printf("%d symbols / %d available\n", bE4FA, 0x0ffa);
 }
 
 /* table32_entry 0x719e..0x71ca: done */
@@ -515,5 +518,5 @@ unsigned x;
 {
 	if (x < 0x0100)
 		return tab1c02 + (x << 5);
-	report_error(2, "x");
+	report_error(2, "Pass 2 segment table overflow");
 }

@@ -4,6 +4,8 @@
 
 #include "ld.h"
 
+static char sccsid[] = "@[$]swap.c\t2.1  10/27/83 12:25:00 - 87wega3.2";
+
 /* swap_bytes..65ec: findings:D4 */
 int swap_bytes(u)
 struct { int i; } u;

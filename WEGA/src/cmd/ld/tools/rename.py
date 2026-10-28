@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """rename.py - rename an own function of sld consistently.
 
-Usage: rename.py OLD NEW
+Usage: rename.py OLD NEW   (OLD a function of own_functions.txt, or any other identifier of the sources: variable, struct, label)
 
 own_functions.txt is the source of the names (findings.json is generated from it, see sync_findings.py). This tool
 changes, in one step: the name column of own_functions.txt, the identifier in the C files and ld.h (whole words), the keys of
@@ -17,6 +17,23 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
+def rename_variable(old, new):
+    """OLD is no function: a global variable, a struct, a label ... Renamed in the C files and ld.h (whole words); the name must be free"""
+    sys.path.insert(0, HERE)
+    import ldsrc
+    texts = ldsrc.read_all()
+    if not any(re.search(r'\b%s\b' % re.escape(old), t) for t in texts.values()):
+        print('%s is neither in own_functions.txt nor in the sources' % old)
+        return 1
+    if any(re.search(r'\b%s\b' % re.escape(new), t) for t in texts.values()):
+        print('%s exists already (to merge two variables of the same address edit the sources by hand)' % new)
+        return 1
+    for path, t in texts.items():
+        open(path, 'w').write(re.sub(r'\b%s\b' % re.escape(old), new, t))
+    print('renamed %s -> %s (not a function: sources only)' % (old, new))
+    return 0
+
+
 def main():
     if len(sys.argv) != 3:
         print(__doc__)
@@ -26,8 +43,7 @@ def main():
     lines = open(table).read().split('\n')
     hit = [l for l in lines if l.split()[1:2] == [old]]
     if len(hit) != 1:
-        print('%s is not a name in own_functions.txt' % old)
-        return 1
+        return rename_variable(old, new)
     if any(l.split()[1:2] == [new] for l in lines):
         print('%s exists already' % new)
         return 1

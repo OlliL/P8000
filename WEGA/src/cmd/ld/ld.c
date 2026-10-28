@@ -4,6 +4,28 @@
 
 #include "ld.h"
 
+static char sccsid[] = "@[$]ld.c\t3.8  10/27/83 12:16:07 - 87wega3.2";
+int g0474 = -1;
+int g0476 = 0;
+int bE478 = 0;
+int g047a = 0;
+long bE47C = 0;
+long bE480 = 0;
+int g0484 = 0;
+long *g0486 = (long *)tab3e8a;
+char *bE048A = "a.out";
+char *p0494 = "l.out";
+char g049e[] = "/tmp/ldaXXXXX";
+char *ptrs04ac[] = {"all", "text", "data", "bss"};
+char g04ce[] = "__.SYMDEF";
+char g04d8[] = "Premature EOF";
+int g04e6 = 0;
+int g04e8 = 4;
+int g04ea = 1;
+int bE4EC = 2000;
+unsigned g04ee = 2000;
+int bE4F0 = 0;
+
 /* main..0a5c: findings:D2,D7 */
 int main(argc, argv)
 int argc;
@@ -39,7 +61,7 @@ char **argv;
 	bE4A36 = argv + 1;
 	for (;;) {
 		while (i < argc) {
-			pE4C0 = 0;
+			bE4C0 = 0;
 			s = *bE4A36++;
 			if (s[0] != '-') {
 				f1364(s);
@@ -56,7 +78,7 @@ char **argv;
 				savep = bE4A36;
 				savev = argv;
 				savec = argc;
-				argv = (char **)bE4A40;
+				argv = g4a40;
 				argc = bE4A44;
 				bE4A36 = argv;
 				bE4A46++;
@@ -76,11 +98,11 @@ char **argv;
 			case 'b':
 			case 't':
 				if (bE49C)
-					report_error(2, "x");
+					report_error(2, "Cannot use -t or -b options with -M");
 				bE4A8 = 1;
 				i++;
 				if (i >= argc)
-					report_error(2, "x", s[j]);
+					report_error(2, "-%c: arg missing", s[j]);
 				if (f1070(s + j, *bE4A36))
 					j++;
 				bE4A36++;
@@ -88,12 +110,12 @@ char **argv;
 				goto l08a2;
 			case 'M':
 				if (bE4A8)
-					report_error(2, "x");
+					report_error(2, "Cannot use -t or -b options with -M");
 				bE49C++;
 				scan_m_opt(s + j, &i, argc);
 				break;
 			default:
-				report_error(2, "x", s[j]);
+				report_error(2, "-%c: bad flag", s[j]);
 				break;
 			case 'N':
 			case 'O':
@@ -123,9 +145,11 @@ next:
 		bE4A46 = 0;
 	}
 	if (bE4A2 && bE42B2)
-		printf("x", pE4D6);
+		printf("%s: warning, -r option overrides -t, -b\n", pE4D6);
 	parse_args(argc, argv);
 }
+
+char tmpname[] = "l.out";
 
 /* sig_handler 0x0a5c..0x0aba: done */
 sig_handler()
@@ -175,7 +199,7 @@ loop:
 		savev = argv;
 		savec = argc;
 		read_words(bE4A3C);
-		argv = (char **)bE4A40 - 1;
+		argv = g4a40 - 1;
 		argc = bE4A44 + 1;
 		fflag++;
 		bE4A46++;
@@ -227,10 +251,10 @@ loop:
 		if (argc <= 1)
 			report_error(2, "Bad output file");
 		argv++;
-		bE494 = *argv;
-		if (access(bE494, 0) == 0) {
-			if (access(bE494, 2) != 0)
-				report_error(2, "%s is write protected", bE494);
+		p0494 = *argv;
+		if (access(p0494, 0) == 0) {
+			if (access(p0494, 2) != 0)
+				report_error(2, "%s is write protected", p0494);
 		}
 		argc--;
 		bE4BC++;
@@ -239,13 +263,6 @@ loop:
 		if (argc <= 1)
 			report_error(2, "Need size specification");
 		switch ((*argv)[2]) {
-		case 'p':
-			if (sscanf(argv[1], "%d", &v08) != 1)
-				report_error(2, "Unable to convert pass 1 segment table size specification");
-			if ((long)(unsigned)v08 + 2 << 2 > 0xfff8L)
-				report_error(2, "Pass 1 segment table size specification is too big");
-			bE4EC = v08;
-			goto skip2;
 		case 's':
 			if (sscanf(argv[1], "%d", &v08) != 1)
 				report_error(2, "Unable to convert symbol table size specification");
@@ -253,6 +270,13 @@ loop:
 				report_error(2, "Symbol table size specification is too big");
 			g04ee = v08;
 			f702a(v08);
+			goto skip2;
+		case 'p':
+			if (sscanf(argv[1], "%d", &v08) != 1)
+				report_error(2, "Unable to convert pass 1 segment table size specification");
+			if ((long)(unsigned)v08 + 2 << 2 > 0xfff8L)
+				report_error(2, "Pass 1 segment table size specification is too big");
+			bE4EC = v08;
 			goto skip2;
 		default:
 			report_error(2, "Invalid character after -A");
@@ -308,7 +332,7 @@ char *name;
 
 	fd = open(name, 0);
 	if (fd < 0)
-		report_error(2, "x");
+		report_error(2, "Unable to open command file");
 	p = buf6988;
 	tab4a48[0] = buf6988;
 	inword = 0;
@@ -316,22 +340,22 @@ char *name;
 	goto rd;
 body:
 	if (n == -1)
-		report_error(2, "x");
+		report_error(2, "Bad command file read");
 	if (!(tab1aad[c] & 8)) {
 		inword = 0;
 		*p = c;
 		p++;
 		if (p > buf9098)
-			report_error(2, "x");
+			report_error(2, "Command file arguments too long");
 	} else if (!inword) {
 		inword++;
 		*p = 0;
 		p++;
 		if (p > buf9098)
-			report_error(2, "x");
+			report_error(2, "Too many command file arguments");
 		idx++;
 		if (idx > 2000)
-			report_error(2, "x");
+			report_error(2, "Command file arguments too long");
 		tab4a48[idx] = p;
 	}
 rd:
@@ -339,7 +363,7 @@ rd:
 	if (n)
 		goto body;
 	g4a40 = tab4a48;
-	g4a44 = idx;
+	bE4A44 = idx;
 	close(fd);
 	return 0;
 }
@@ -369,7 +393,7 @@ char *t;
 		k = 1;
 		break;
 	default:
-		report_error(2, "x", s);
+		report_error(2, "-%.2s: invalid selector (must be t, d or b)", s);
 		break;
 	}
 	u = t;
@@ -377,17 +401,17 @@ char *t;
 	if (bE49A && (k == 2 || k == 3))
 		g = 1;
 	if (tab42b4[g * 5 + k])
-		report_error(2, "x", s, tab42b4[g * 5 + k], s[1]);
+		report_error(2, "-%.2s: -%c%c already specified", s, tab42b4[g * 5 + k], s[1]);
 	tab42b4[g * 5 + k] = *s;
-	fmt = "x";
+	fmt = "%o%c";
 	if (*u != '0')
-		fmt = "x";
+		fmt = "%d%c";
 	else if ((u[1] | 0x20) == 'x') {
 		u += 2;
-		fmt = "x";
+		fmt = "%x%c";
 	}
 	if (sscanf(u, fmt, &tab4534[g][k]) != 1)
-		report_error(2, "x", s, t);
+		report_error(2, "-%.2s %s: bad address", s, t);
 	return k != 0;
 }
 
@@ -407,13 +431,13 @@ char **argv;
 	int flag;
 	char *p;
 
-	pE4C0 = 0;
+	bE4C0 = 0;
 	end_pass1();
 	start_output();
 	av = argv + 1;
 	bEF32C = 0;
 	bE3C02 = 0;
-	bE486 = (long)tab3e8a;
+	g0486 = (long *)tab3e8a;
 	k = 1;
 	goto test;
 body:
@@ -464,7 +488,7 @@ scan:
 		base = argv;
 		saved_argc = argc;
 		argc = bE4A44;
-		av = (char **)bE4A40;
+		av = g4a40;
 		flag = 1;
 		goto next;
 	case 'l':
@@ -524,11 +548,10 @@ char *p;
 		f6f46(bE3E84, bE3E88);
 		while (f1560())
 			;
-		*(long *)bE486 = -1;
-		bE488 += 4;
+		*g0486++ = -1;
 		goto end;
 	case 3:
-		report_error(0, "x");
+		report_error(0, "out of date (warning)");
 		n = ((bE44E + 27) >> 1) + 1;
 		goto check;
 	}
@@ -549,8 +572,7 @@ long p;
 
 	refill_wbuf(bE414, p, 0x1c);
 	if (bE41E <= 0) {
-		*(long *)b3486 = -1;
-		b488 += 4;
+		*g0486++ = -1;
 		return 0;
 	}
 	f2e76(bE438, 0x1a);
@@ -559,8 +581,7 @@ long p;
 		magic = swap(magic);
 	if (magic == 0xe707 || magic == 0xe711 || magic == 0xe607 || magic == 0xe611) {
 		if (read_symbols(1, p + 13)) {
-			*(long *)b3486 = p;
-			b488 += 4;
+			*g0486++ = p;
 		}
 	}
 	return 1;
@@ -569,12 +590,12 @@ long p;
 /* f1560..1664: findings:D2,D5,D8 */
 int f1560()
 {
-	long sv;
+	long *sv;
 	char *end;
 	int i;
 	long t;
 
-	sv = bE486;
+	sv = g0486;
 	end = bE3E84;
 	i = 0;
 	goto test;
@@ -596,7 +617,7 @@ next:
 test:
 	if ((unsigned)i < (unsigned)bE3E88)
 		goto body;
-	return sv != bE486;
+	return sv != g0486;
 }
 
 /* add16_checked..1696: findings:D4 */
@@ -637,7 +658,7 @@ long c;
 	k = 1;
 	saved = bE4FA;
 	if ((bE468 & 1) == 1) {
-		report_error(1, "x");
+		report_error(1, "No relocation bits");
 		return 0;
 	}
 	c = (long)(unsigned)(((bE436 + bE434) & 0xfffe) >> 1) + bE454 + bE458 + c;
@@ -688,7 +709,7 @@ lstore:
 		*(long *)cur = bE46A;
 	}
 	if (a == 0 || cnt != 0) {
-		bE4CE = add16_checked(bE4CE, k << 4, "x");
+		bE4CE = add16_checked(bE4CE, k << 4, "symbol table overflow");
 		return 1;
 	}
 	while (bE4FA > saved) {
@@ -736,7 +757,7 @@ int k;
 		i = bE49A ? 2 : 1;
 		for (; i < 4; i++) {
 			if (bE42B4[k][i]) {
-				printf("x", pE4D6, bE42B4[k][0], bE42B4[k][i], *ptrs04ac[i]);
+				printf("%s: warning, -%c overrides -%c%c\n", pE4D6, bE42B4[k][0], bE42B4[k][i], *ptrs04ac[i]);
 				bE42B4[k][i] = 0;
 			}
 		}
@@ -757,25 +778,25 @@ int k;
 		switch (bE42B4[k][j]) {
 		case 't':
 			if (q->f4 > tab4534[k][j])
-				report_error(1, "x", ptrs04ac[j], k);
+				report_error(1, "top address of %s in segment %d too low", ptrs04ac[j], k);
 			if ((r8 = tab4534[k][j] & 0xff00) != tab4534[k][j])
-				printf("x", pE4D6, ptrs04ac[j], k, r8);
+				printf("%s: warning, top address of %s in segment %d relocated to 0x%x\n", pE4D6, ptrs04ac[j], k, r8);
 			r8 = (r8 - q->f4) & 0xff00;
 			q->f4 = (q->f4 + 255) & 0xff00;
 			break;
 		case 'b':
 			r8 = tab4534[k][j] & 0xff00;
 			if (r8 != tab4534[k][j])
-				printf("x", pE4D6, ptrs04ac[j], k, r8);
+				printf("%s: warning, bottom address of %s in segment %d relocated to 0x%x\n", pE4D6, ptrs04ac[j], k, r8);
 			break;
 		}
 		tab428a[0].f4 = 0;
 		q->f6 = r8 + q->f4;
 		if (r8 > q->f6)
-			report_error(1, "x", ptrs04ac[j]);
+			report_error(1, "%s area wrap around", ptrs04ac[j]);
 		for (i = 1; i < j; i++) {
 			if (r8 < tab428a[i].f6 && q->f6 > tab428a[i].f2) {
-				printf("x", ptrs04ac[i], ptrs04ac[j], k);
+				printf("sld: warning, %s and %s overlap in segment %d - creating overlay segment\n", ptrs04ac[i], ptrs04ac[j], k);
 				f1f96(p, j);
 				if (j == 2) {
 					tab428a[2].f6 = 0;
@@ -855,7 +876,7 @@ long kind;
 	register char *e;
 
 	if (bE3C04 > 0x100)
-		report_error(2, "x");
+		report_error(2, "Pass2 segment table overflow");
 	if ((int)kind == 2) {
 		e = table32_entry(bE3C04++);
 		bF324 = e;
@@ -888,7 +909,7 @@ int start_output()
 	char hdr[24];
 
 	open_tmp(bE4DA, 0);
-	mktemp("/tmp/ldaXXXXX");
+	mktemp(g049e);
 	open_tmp(bE6E2, 1);
 	open_tmp(bE8EA, 1);
 	if (!bE4A4 || !bE4AA)
@@ -942,20 +963,20 @@ int flag;
 	char *name;
 
 	if (flag)
-		name = bE49E;
+		name = g049e;
 	else
-		name = bE494;
+		name = p0494;
 	fd = creat(name, 0x1b6);
 	if (fd < 0) {
 		if (flag)
-			report_error(2, "x");
+			report_error(2, "cannot create temp");
 		else
-			report_error(2, "y");
+			report_error(2, "cannot create output");
 	}
 	close(fd);
 	*(int *)out = open(name, 2);
 	if (flag)
-		unlink(bE49E);
+		unlink(g049e);
 	*(int *)(out + 2) = 0x100;
 	*(char **)(out + 4) = out + 8;
 }
@@ -968,7 +989,7 @@ int a;
 	*(int *)p = bE452;
 	*(long *)(p + 2) = bE3C16 + bE3C1A;
 	if (*(long *)(p + 2) > 0x10000 && bE4A8)
-		report_error(2, "x");
+		report_error(2, "cannot have segment overflow with t or b option");
 	*(long *)(p + 6) = b3C1E;
 	*(int *)(p + 10) = a << 4;
 	*(int *)(p + 18) = bE468;
@@ -1001,14 +1022,14 @@ char *p;
 		q++;
 		f2492(0L, q);
 	} else {
-		lp = (long *)bE486;
+		lp = g0486;
 		while (*lp != -1) {
 			refill_wbuf(bE414, *lp, 26);
 			f2e76(bE438, 26);
 			f2492(*lp + 13, bE438);
 			lp++;
 		}
-		bE486 = (long)lp;
+		g0486 = lp;
 	}
 	close(bE4BE);
 }
@@ -1052,11 +1073,11 @@ char *b;
 		}
 		rec = *(char **)lookup_name();
 		if (!rec)
-			report_error(2, "x");
+			report_error(2, "internal error: symbol not found");
 		if (bE46E != 0x20)
 			goto other;
 		if (t >= (char *)&gE47E)
-			report_error(2, "x");
+			report_error(2, "Local symbol overflow");
 		*(int *)t = k;
 		*(char **)(t + 2) = rec;
 		t += 6;
@@ -1067,7 +1088,7 @@ other:
 		if (put_name(bE472) < 8)
 			putchar(9);
 		putchar(9);
-		report_error(1, "x");
+		report_error(1, "- Multiply defined");
 next:
 		k += n;
 	}
@@ -1161,7 +1182,7 @@ c2844:
 		goto c2882;
 	if (*(int *)(bE424 + 10) >= 0)
 		goto c2870;
-	report_error(2, "x");
+	report_error(2, "Relocation error");
 	goto c2870;
 c286a:
 	*(int *)(bE424 + 4) += 1;
@@ -1183,24 +1204,16 @@ c28a0:
 	}
 	if (!(w13 & 8)) {
 	switch (((w13 & 8) ? w13 : (w13 >> 4)) & 7) {
-	case 0:
-		goto c2a3c;
-	case 1:
-		goto c29be;
 	case 2:
-		goto c28fa;
-	}
-	goto e1;
-c28fa:
 	if (!(w13 & 1))
-		report_error(2, "x");
+		report_error(2, "bad segmented bit in relocation word");
 	bE46E = ((w13 & 7) >> 1) + 1;
 	bE46A = (long)(w12 & 0xff);
 	bE470 = (unsigned)w13 >> 8;
 	f6c6a();
 	w12 = (int)bE46A;
 	if (w12 & 0xff00)
-		report_error(2, "x");
+		report_error(2, "short segmented offset too large");
 c2954:
 	w12 += ((int)(bE46A >> 16)) & 0xff00;
 c2964:
@@ -1214,9 +1227,10 @@ emit:
 	if (bE4A2)
 		f3a88(w13, r);
 	goto top;
-c29be:
+		break;
+	case 1:
 	if (!(w13 & 1))
-		report_error(2, "x");
+		report_error(2, "bad segmented bit in relocation word");
 	w10 = w12;
 	bE470 = (unsigned)w13 >> 8;
 	bE46E = ((w13 & 7) >> 1) + 1;
@@ -1229,7 +1243,7 @@ c29be:
 	w11 = w13;
 	flag = 1;
 	goto top;
-c2a3c:
+	case 0:
 	if (!(w13 & 0xe))
 		goto c2a96;
 	if (!flag)
@@ -1257,8 +1271,9 @@ c2ad6:
 		goto emit;
 	w12 = (int)bE46A;
 	goto c2964;
-e1:
-	report_error(2, "x");
+	default:
+		report_error(2, "unrecognized relocation address type");
+	}
 	goto emit;
 	} else {
 		e = table_lookup(p, w13);
@@ -1270,26 +1285,19 @@ e1:
 
 c2b46:
 	switch (((w13 & 8) ? w13 : (w13 >> 4)) & 7) {
-	case 0:
-		goto c2c12;
-	case 1:
-		goto c2bcc;
 	case 2:
-		goto c2b7c;
-	}
-	goto e2;
-c2b7c:
 	w13 = (e[4] - 0x21) * 2 + 0x21;
 	w13 = ((*(int *)(e + 6)) << 8) + (w13 & 0xff);
 	w12 = (w12 + 0xff) & (w12 & 0xffff);
 	w12 = (w12 & 0xffff);
 	if (w12 & 0xff00)
-		report_error(2, "x");
+		report_error(2, "short segment offset too large");
 	w12 += ((int)(*(long *)e >> 16)) & 0xff00;
 	goto emit;
-c2bcc:
+		break;
+	case 1:
 	if (!(w13 & 1))
-		report_error(2, "x");
+		report_error(2, "bad segmented bit in relocation word");
 	w10 = (w12 & 0x8000) | ((int)(*(long *)e >> 16) & 0xff00);
 	if (bE4B6)
 		w10 = swap_bytes(w10);
@@ -1298,12 +1306,12 @@ c2bcc:
 	w11 = w13;
 	flag = 1;
 	goto top;
-c2c12:
+	case 0:
 	if (!flag)
 		goto c2c72;
 	flag = 0;
 	if (e != save)
-		report_error(2, "x");
+		report_error(2, "mismatched segment & offset relocation words");
 	w11 = (e[4] - 0x21) * 2 + 0x11;
 	w11 = ((*(int *)(e + 6)) << 8) + (w11 & 0xff);
 	if (bE4B6)
@@ -1315,8 +1323,9 @@ c2c72:
 	w13 = ((*(int *)(e + 6)) << 8) + (w13 & 0xff);
 	w12 = w12 + (int)*(long *)e;
 	goto emit;
-e2:
-	report_error(2, "x");
+	default:
+		report_error(2, "unrecognized relocation address type");
+	}
 	goto emit;
 end:
 	;
@@ -1337,10 +1346,10 @@ finish_output()
 	close(*(int *)bE4DA);
 	if (!bE4BC) {
 		unlink(bE048A);
-		link("x", bE048A);
-		bE0494 = bE048A;
+		link("l.out", bE048A);
+		p0494 = bE048A;
 	}
-	bE4E8 = bE4A3A;
+	g04e8 = bE4A3A;
 	f2d4c();
 	sig_handler();
 }
@@ -1352,14 +1361,14 @@ f2d4c()
 	char rest[12];
 	int n;
 
-	n = open(bE0494, 1);
+	n = open(p0494, 1);
 	if (n == -1)
-		report_error(2, "x");
+		report_error(2, "Unable to reopen output file");
 	if (lseek(n, buf, 0) == -1)
-		report_error(2, "y");
+		report_error(2, "Unable to seek in output file");
 	bE4F0 = bE4F0 * 14;
 	if (write(n, &bE4F0, 2) != 2)
-		report_error(2, "z");
+		report_error(2, "Unable to write in output file");
 }
 
 /* f2dde..2e4c: done */
@@ -1388,7 +1397,7 @@ high_byte(x)
 int x;
 {
 	if ((x & 0xff00) != x)
-		report_error(2, "x");
+		report_error(2, "internal error - mkchar");
 	return ((unsigned)x >> 8) & 0xff;
 }
 
@@ -1462,7 +1471,7 @@ int n;
 	if (*(int *)cur) {
 		cur = b0004;
 		if (*(int *)cur) {
-			report_error(2, "x");
+			report_error(2, "No pages");
 			goto common;
 		}
 	} else if (!*(int *)b0004 && *(int *)(b0004 + 2) < *(int *)(b020a + 2))
@@ -1510,7 +1519,7 @@ char *p;
 	*(int *)(q + 10) -= 1;
 	if (*(int *)(q + 10) <= 0) {
 		if (*(int *)(q + 10) < 0)
-			report_error(2, "x");
+			report_error(2, g04d8);
 		bE410++;
 		*(int *)(q + 12) -= 1;
 		*(char **)(q + 12) = (char *)&bE410;
@@ -1582,14 +1591,14 @@ char *name;
 	bE410 = 2;
 	refill_wbuf(bE414, 0L, 2);
 	if (bE41E <= 0)
-		report_error(2, "Premature EOF");
+		report_error(2, g04d8);
 	if (getw_buf(bE414) != -155)
 		return 0;
 	refill_wbuf(bE414, 1L, 0x1a);
 	if (bE41E <= 0)
 		return 1;
 	f2e76(bE438, 0x1a);
-	if (strncmp(bE438, "__.SYMDEF", 14))
+	if (strncmp(bE438, g04ce, 14))
 		return 1;
 	fstat(bE4BE, &st);
 	if (st.mtime > bE446)
@@ -1608,14 +1617,14 @@ int d;
 int e;
 {
 	if (!bE4A3A)
-		printf("x", pE4D6);
-	if (pE4C0)
-		printf("x", pE4C0);
+		printf("%s: ", pE4D6);
+	if (bE4C0)
+		printf("%s", bE4C0);
 	if (bE438[0])
-		printf("x", bE438);
-	printf("x");
+		printf("(%.14s)", bE438);
+	printf(": ");
 	printf(msg, a, b, c, d, e);
-	printf("x");
+	printf("\n");
 	if (level > 1)
 		sig_handler();
 	bE4A3A = level;
@@ -1636,8 +1645,8 @@ char *end;
 			return *(char **)(p + 2);
 		p += 6;
 	}
-	printf("x", (int)a);
-	report_error(2, "x");
+	printf("botch on %x\n", (int)a);
+	report_error(2, "Local symbol botch");
 }
 
 /* f3516..3760: findings:D2,D16 */
@@ -1692,7 +1701,7 @@ int b;
 		w |= *(int *)(p + 10);
 	}
 	if (w & 0xf8)
-		report_error(2, "x");
+		report_error(2, "Invalid segment attributes");
 	bE462 = *(long *)(tmp + 14);
 	bE468 = *(int *)(tmp + 18) & 1;
 	bE460 = *(int *)(tmp + 12);
@@ -1718,7 +1727,7 @@ register int kind;
 		copy_leafname(bE4C0, key);
 		j = bE478;
 		idx = 0;
-		while (idx < *(int *)bE47A) {
+		while (idx < g047a) {
 			if (str_compare(tab3c22[j].str, key))
 				break;
 			j = tab3c22[j].nxt;
@@ -1727,7 +1736,7 @@ register int kind;
 		loc[0] = bE3E7E;
 		loc[1] = bE3E7C;
 		loc[2] = bE3E80;
-		if (idx != *(int *)bE47A) {
+		if (idx != g047a) {
 			if (tab3c22[j].a > -1)
 				loc[0] = tab3c22[j].a;
 			if (tab3c22[j].b > -1)
@@ -1738,11 +1747,11 @@ register int kind;
 	}
 	while (n--) {
 		if (bEF32C >= bE4EC)
-			report_error(2, "x");
+			report_error(2, "pass one segment table overflow --Try -Ap option");
 		if (kind == 1) {
 			*(struct e16 *)blk = *src++;
 			if (bE452 != 0xe707 && bE452 != 0xe607)
-				report_error(0, "x");
+				report_error(0, "warning: nonsegmented object");
 			if (bE452 == 0xe707 || bE452 == 0xe607) {
 				*(int *)(blk + 0x12) = -*(int *)(blk + 4);
 				*(int *)(blk + 0x14) = *(int *)(blk + 0x12) - *(int *)(blk + 6);
@@ -1813,7 +1822,7 @@ char *a;
 	n = *(char **)(p + 4) - (p + 8);
 	if (n > 0) {
 		if (write(*(int *)p, p + 8, n) != n)
-			report_error(2, "x");
+			report_error(2, "output error");
 	}
 	*(char **)(p + 4) = p + 8;
 	*(int *)(p + 2) = 0x100;
@@ -1860,5 +1869,5 @@ char *a;
 	if (n < 8)
 		putchar(9);
 	putchar(0x20);
-	report_error(0, "x");
+	report_error(0, "- warning: symbol redefined in archive");
 }

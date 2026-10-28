@@ -4,6 +4,9 @@
 
 #include "ld.h"
 
+static char sccsid[] = "@[$]ldm.c\t3.10  10/27/83 12:21:07 - 87wega3.2";
+int bE0F8E = -1;
+
 /* scan_m_opt..410c: findings:D2,D11 */
 int scan_m_opt(s, ip, argc)
 char *s;
@@ -104,7 +107,30 @@ int argc;
 	} else if (s[k] != 0)
 		report_error(2, "-%s: usage error", s);
 	p = *bE4A36;
-	if (p[0] != '+') {
+	if (p[0] == '+') {
+		if (type == 's')
+			report_error(2, "invalid -Ms option ");
+		bE4A36++;
+		p = *bE4A36;
+		(*ip)++;
+		while (p[0] != '+') {
+			if (*ip >= argc)
+				break;
+			q = strrchr(p, '/');
+			if (q) {
+				cnt++;
+				p = q;
+			}
+			f410c(type, p, v);
+			(*ip)++;
+			bE4A36++;
+			p = *bE4A36;
+		}
+		if (*ip == argc)
+			report_error(2, "no closing + for M file list");
+		(*ip)++;
+		bE4A36++;
+	} else {
 		switch (type) {
 		case 't':
 			bE3E7E = v;
@@ -131,30 +157,7 @@ int argc;
 		default:
 			report_error(2, "%c illegal type for M; not s, t,d or b", type);
 		}
-		return;
 	}
-	if (type == 's')
-		report_error(2, "invalid -Ms option ");
-	bE4A36++;
-	p = *bE4A36;
-	(*ip)++;
-	while (p[0] != '+') {
-		if (*ip >= argc)
-			break;
-		q = strrchr(p, '/');
-		if (q) {
-			cnt++;
-			p = q;
-		}
-		f410c(type, p, v);
-		(*ip)++;
-		bE4A36++;
-		p = *bE4A36;
-	}
-	if (*ip == argc)
-		report_error(2, "no closing + for M file list");
-	(*ip)++;
-	bE4A36++;
 }
 
 /* f410c..42f8: findings:D2,D5 */
@@ -168,11 +171,11 @@ int x;
 	int k;
 	int r;
 
-	if ((*(int *)bE47A) == 0x32)
-		report_error(2, "x", 0x32);
+	if (g047a == 0x32)
+		report_error(2, "-M list overflow, maximum number is %d", 0x32);
 	i = bE478;
 	prev = 0;
-	bE476 = 1;
+	g0476 = 1;
 	k = 0;
 	goto cond;
 body:
@@ -186,19 +189,19 @@ body:
 nxt:
 	k++;
 cond:
-	if (k < (*(int *)bE47A))
+	if (k < g047a)
 		goto body;
 	if (i != bE478 || k != 0)
 		goto l41de;
-	tab3c22[*(int *)bE47A].nxt = bE478;
-	bE478 = (*(int *)bE47A);
+	tab3c22[g047a].nxt = bE478;
+	bE478 = g047a;
 	goto l4218;
 l41de:
-	tab3c22[*(int *)bE47A].nxt = tab3c22[prev].nxt;
-	tab3c22[prev].nxt = (*(int *)bE47A);
+	tab3c22[g047a].nxt = tab3c22[prev].nxt;
+	tab3c22[prev].nxt = g047a;
 l4218:
-	k = (*(int *)bE47A);
-	(*(int *)bE47A)++;
+	k = g047a;
+	g047a++;
 	tab3c22[k].str = y;
 	tab3c22[k].c = -1;
 	tab3c22[k].b = -1;
@@ -210,7 +213,7 @@ attr:
 		tab3c22[k].b = x;
 	if (c == 0x61 || c == 0x62)
 		tab3c22[k].c = x;
-	bE476 = 0;
+	g0476 = 0;
 }
 
 /* f42f8..4444: findings:D6,D15,D16 */
@@ -218,33 +221,33 @@ int f42f8(x)
 long x;
 {
 	if (((int)x) < 0 || ((int)x) >= 0x80)
-		report_error(2, "x", ((int)x));
+		report_error(2, "reserved segment is out of range with %d", ((int)x));
 	if (((int)x) > bE3E82)
 		bE3E82 = ((int)x);
 	switch (((char *)&x)[1]) {
 	case 'M':
 		if (*(int *)(tabF338 + ((int)x) * 8) == 0x07d0) {
-			report_error(0, "x");
-			bE474 = -1;
+			report_error(0, "warning: stack seg has been moved because seg is reserved");
+			g0474 = -1;
 		}
 		*(int *)(tabF338 + ((int)x) * 8) = 0x01f4;
 		break;
 	case 'r':
 		if (*(int *)(tabF338 + ((int)x) * 8) == 0x07d0) {
-			report_error(0, "x");
-			bE474 = -1;
+			report_error(0, "warning: stack seg has been moved because seg is reserved");
+			g0474 = -1;
 		}
 		*(int *)(tabF338 + ((int)x) * 8) = 0x03e8;
 		break;
 	case 's':
-		if (bE474 > -1)
-			*(int *)(tabF338 + bE474 * 8) = -1;
+		if (g0474 > -1)
+			*(int *)(tabF338 + g0474 * 8) = -1;
 		if (*(int *)(tabF338 + ((int)x) * 8) == 0x03e8) {
-			report_error(0, "x");
-			bE474 = -1;
+			report_error(0, "warning: stack seg has been moved because seg is reserved");
+			g0474 = -1;
 		} else {
 			*(int *)(tabF338 + ((int)x) * 8) = 0x07d0;
-			bE474 = ((int)x);
+			g0474 = ((int)x);
 		}
 		break;
 	}
@@ -342,7 +345,7 @@ int end_pass1()
 				t4 = bE4C8 + t8;
 				if (t4 > 0x10000L || flg == 0) {
 					if (bEF32C >= bE4EC)
-						report_error(2, "x");
+						report_error(2, "pass one segment table overflow -- Try -Ap option");
 					bE4C8 = 0;
 					t4 = t8;
 					blk2 = get_block(bEF32C++);
@@ -381,7 +384,7 @@ l469e:
 				if (*(long *)ep)
 					break;
 				if (g04e6 == 0)
-					printf("x");
+					printf("Undefined:\n");
 				g04e6++;
 				put_name(ep + 8);
 				putchar(10);
@@ -427,7 +430,7 @@ int *res;
 	}
 	q = table32_entry(bE3C04);
 	if (bE3C04++ > 0x100)
-		report_error(2, "x");
+		report_error(2, "pass2 segment table overflow");
 	if (*(int *)(tabF338 + x * 8) == 0x0bb8)
 		*(int *)(q + 10) |= 8;
 	else
@@ -527,7 +530,7 @@ int lay_out()
 			if (!(tblF332[k].a == -1 && tblF332[k].b == -1 && tblF332[k].c == -1)) {
 				for (j = 0; j < 128; j++) {
 					if (tblF332[j].a == -1 && tblF332[j].b == -1 && tblF332[j].c == -1 && tblF332[j].d == -1) {
-						report_error(0, "x", k, j);
+						report_error(0, "warning: image in seg %d has been moved to seg %d because of -R; origins are reset", k, j);
 						tblF332[j].a = tblF332[k].a;
 						tblF332[j].b = tblF332[k].b;
 						tblF332[j].c = tblF332[k].c;
@@ -598,7 +601,7 @@ int lay_out()
 			while ((i = (cur = (struct ent *)get_block(i))->n2) > -1) {
 				if (l1 != ((struct ent *)get_block(i))->s2) {
 					if (bE42B4[k][1])
-						report_error(2, "x", cnt - 1, ptrs04ac[1]);
+						report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, ptrs04ac[1]);
 					l1 = ((struct ent *)get_block(i))->s2;
 					l1->f1a = 0;
 					pE3C0A = (char *)l1;
@@ -658,7 +661,7 @@ int lay_out()
 			goto ltd;
 lhd:
 			if (bE42B4[k][2])
-				report_error(2, "x", cnt - 1, ptrs04ac[2]);
+				report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, ptrs04ac[2]);
 			l1 = ((struct ent *)get_block(i))->s3;
 			l1->f1c = 0;
 			place_sec(l1, cnt);
@@ -720,7 +723,7 @@ ltd:
 			goto ltb;
 lhb:
 			if (bE42B4[k][3])
-				report_error(2, "x", cnt - 1, ptrs04ac[3]);
+				report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, ptrs04ac[3]);
 			l1 = ((struct ent *)get_block(i))->s4;
 			l1->f1e = l1->f1c + l1->f6;
 			pE3C0E = (char *)l1;
@@ -749,7 +752,7 @@ ltb:
 	if (g0474 == -1) {
 		l1 = (struct seg *)table32_entry(bE3C04);
 		if (bE3C04++ > 0x100)
-			report_error(2, "x");
+			report_error(2, "pass2 segment table overflow");
 		bE3E82++;
 		l1->flags = 8;
 		q = 1;
@@ -905,7 +908,7 @@ int idx;
 		*(char *)s = 0xff;
 		return s;
 	} else
-		report_error(2, "x");
+		report_error(2, "pass two segment table overflow");
 l5e82:
 	if (tblF332[idx].c == -1) {
 		tblF332[idx].c = val;
@@ -989,9 +992,9 @@ long a;
 	int v;
 
 	if ((char)a == 0x74)
-		v = *(int *)(q + 4) - g3e7a;
+		v = *(int *)(q + 4) - bE3E7A;
 	else
-		v = *(int *)(q + 6) - g3e7a;
+		v = *(int *)(q + 6) - bE3E7A;
 	if (v)
 		f64d0(v);
 }
@@ -1057,7 +1060,7 @@ head:
 		lseek(*(int *)bEF02, q, 0);
 		lseek(*(int *)bEAF2, q, 0);
 	}
-	g3e7a += n;
+	bE3E7A += n;
 	while (n) {
 		if ((unsigned)n > 0x200) {
 			n = n - 0x200;
@@ -1090,10 +1093,10 @@ done:
 	f60f0(p, type);
 	if (idx != -1) {
 		p = cur;
-		g3e7a = 0;
+		bE3E7A = 0;
 		goto head;
 	}
-	g3e7a = 0;
+	bE3E7A = 0;
 	return 0;
 }
 

@@ -4,6 +4,8 @@
 
 #include "ld.h"
 
+static char sccsid[] = "@[$]copyname.c\t3.1  10/27/83 12:14:19 - 87wega3.2";
+
 /* unpack_run 0x0056..0x00ee: findings:D2 */
 int unpack_run(src, dst)
 register char *src;
@@ -76,7 +78,7 @@ char *dst;
 		if ((*src & 0x7f) > 8) {
 			k--;
 			put_name(s);
-			report_error(1, "x");
+			report_error(1, "-- symbol name truncated\n");
 			k++;
 		}
 	}
