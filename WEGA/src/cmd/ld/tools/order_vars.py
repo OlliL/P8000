@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+"""order_vars.py - write the block of global (bss) definitions of copyname.c in the order of /bin/sld.
+
+The old sld allocates the commons in the order of the global symbol table, which is the order of the first mention in the objects
+in link order; the program was built with all commons in one place in the order of their address in the original, segment 2
+before segment 1 (the segment with the data gets the end of the commons). The block between "/* the global variables of sld */"
+and the next empty line is sorted by (segment 2, 1; lowest referenced address of the variable from var_addr.txt). SPARE are
+variables that no function of /bin/sld uses (gaps between the addresses).
+Usage: order_vars.py [--check]
+"""
+import os
+import re
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+EXT = os.path.join(HERE, '..', 'copyname.c')
+# name: (segment, address); the unused variables fill the gaps of the original
+SPARE = {'bE000': (2, 0x0000), 'bE412': (2, 0x0412), 'bE44A': (2, 0x044a), 'bE4B8': (2, 0x4b8 + 0xe000), 'bE4C4': (2, 0xe4c4), 'bE4CC': (2, 0xe4cc), 'bF314': (2, 0xf314)}
+SPARE_DEF = {'bE000': 'long bE000;', 'bE412': 'int bE412;', 'bE44A': 'long bE44A;', 'bE4B8': 'int bE4B8;', 'bE4C4': 'long bE4C4;', 'bE4CC': 'int bE4CC;', 'bF314': 'char bF314[12];'}
+EXTRA = {'buf6988': (1, 0x6988), 'bE466s': (2, 0x0466)}
+HEAD = '/* the global variables of sld */'
+
+
+def base_addresses():
+    addr = dict(EXTRA)
+    for l in open(os.path.join(HERE, 'var_addr.txt')):
+        refs = re.findall(r'(\d):([0-9a-f]+)\((\d+)\)', l)
+        if refs:
+            addr[l.split()[0]] = min((int(s), int(a, 16)) for s, a, v in refs)
+    return addr
+
+
+def name_of(line):
+    return re.search(r'(\w+)(\[[^;]*)?;$', line).group(1)
+
+
+def main():
+    lines = open(EXT).read().split('\n')
+    i0 = lines.index(HEAD) + 1
+    i1 = next(i for i in range(i0, len(lines)) if lines[i] == '')
+    blk = [l for l in lines[i0:i1] if name_of(l) not in SPARE]
+
+    addr = base_addresses()
+    addr.update(SPARE)
+    blk += [SPARE_DEF[n] for n in SPARE]
+
+    def key(l):
+        s, a = addr.get(name_of(l), (9, 0))
+        return (0 if s == 2 else 1 if s == 1 else 2, a)
+    blk.sort(key=key)
+    lines[i0:i1] = blk
+    new = '\n'.join(lines)
+    if '--check' in sys.argv:
+        print('ordered' if new == open(EXT).read() else 'NOT ordered')
+        return
+    open(EXT, 'w').write(new)
+
+
+if __name__ == '__main__':
+    main()

@@ -29,3 +29,8 @@ cerror 4) is cut by the spans the code refers to, the switch table address of at
 addresses in the jump tables are still absolute numbers, and the structures of data.o (__iob, __sobuf, __lastbuf) appear as
 _d1959 and _d1A32 in flsbuf. The link (make link in src/cmd/ld) has the right code; the 78 differing bytes are data addresses.
 `make linkslibc` links the same program with the members of slibc.a (110 differing bytes: the data layout).
+
+Update 2026-10-28: only printf and doprnt are linked from here (the Makefile of src/cmd/ld takes all other members from slibc.a). Their data is complete
+now: doprnt has its strings, letter tables and the 36 jump table entries (labels L<addr> in the code) as .data, printf refers to __iob+12, written by
+host/tools/oldslibc_doprnt_data.py. The directories of the other objects were deleted (they were cut by oldslibc_cut.py and are
+not needed: the members of slibc.a are identical).

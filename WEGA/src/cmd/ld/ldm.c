@@ -216,39 +216,40 @@ attr:
 	g0476 = 0;
 }
 
-/* f42f8..4444: findings:D6,D15,D16 */
-int f42f8(x)
-long x;
+/* f42f8 0x42f8..0x4444: done */
+int f42f8(x, c)
+int x;
+char c;
 {
-	if (((int)x) < 0 || ((int)x) >= 0x80)
-		report_error(2, "reserved segment is out of range with %d", ((int)x));
-	if (((int)x) > bE3E82)
-		bE3E82 = ((int)x);
-	switch (((char *)&x)[1]) {
-	case 'M':
-		if (*(int *)(tabF338 + ((int)x) * 8) == 0x07d0) {
-			report_error(0, "warning: stack seg has been moved because seg is reserved");
-			g0474 = -1;
-		}
-		*(int *)(tabF338 + ((int)x) * 8) = 0x01f4;
-		break;
+	if (x < 0 || x >= 0x80)
+		report_error(2, "reserved segment is out of range with %d", x);
+	if (x > bE3E82)
+		bE3E82 = x;
+	switch (c) {
 	case 'r':
-		if (*(int *)(tabF338 + ((int)x) * 8) == 0x07d0) {
+		if (tblF332[x].d == 0x07d0) {
 			report_error(0, "warning: stack seg has been moved because seg is reserved");
 			g0474 = -1;
 		}
-		*(int *)(tabF338 + ((int)x) * 8) = 0x03e8;
+		tblF332[x].d = 0x03e8;
 		break;
 	case 's':
 		if (g0474 > -1)
-			*(int *)(tabF338 + g0474 * 8) = -1;
-		if (*(int *)(tabF338 + ((int)x) * 8) == 0x03e8) {
+			tblF332[g0474].d = -1;
+		if (tblF332[x].d == 0x03e8) {
 			report_error(0, "warning: stack seg has been moved because seg is reserved");
 			g0474 = -1;
 		} else {
-			*(int *)(tabF338 + ((int)x) * 8) = 0x07d0;
-			g0474 = ((int)x);
+			tblF332[x].d = 0x07d0;
+			g0474 = x;
 		}
+		break;
+	case 'M':
+		if (tblF332[x].d == 0x07d0) {
+			report_error(0, "warning: stack seg has been moved because seg is reserved");
+			g0474 = -1;
+		}
+		tblF332[x].d = 0x01f4;
 		break;
 	}
 }
@@ -282,7 +283,7 @@ char *d;
 	d[n] = 0;
 }
 
-/* end_pass1..4968: findings:D2 */
+/* end_pass1 0x44e6..0x4968: done */
 int end_pass1()
 {
 	register char *blk;
@@ -376,8 +377,8 @@ l469e:
 	ep = table16_entry(0);
 	while (ep < end) {
 		if ((long)ep != bE482 && (long)ep != bE486 && (long)ep != bE48A && (long)ep != bE48E) {
-			switch (ep[4] - 0x20) {
-			case 0:
+			switch (ep[4]) {
+			case 0x20:
 				if (bE496)
 					break;
 				bE4A3A |= 1;
@@ -389,19 +390,19 @@ l469e:
 				put_name(ep + 8);
 				putchar(10);
 				break;
-			case 2:
+			case 0x22:
 				a = *(char **)((blk = get_block(*(int *)(ep + 6))) + 0x16);
 				*(long *)ep = (unsigned)(*(long *)ep) + *(int *)(blk + 0x22) + *(int *)(a + 0x1a) + ((long)a[0] << 24);
 				*(int *)(ep + 6) = *(int *)(a + 0x10);
 				break;
-			case 3:
+			case 0x23:
 				a = *(char **)((blk = get_block(*(int *)(ep + 6))) + 0x1a);
 				*(long *)ep = (unsigned)(*(long *)ep) + *(int *)(blk + 0x24) + *(int *)(a + 0x1c) + ((long)a[0] << 24);
 				*(int *)(ep + 6) = *(int *)(a + 0x10);
 				break;
-			case 5:
+			case 0x25:
 				ep[4] = '$';
-			case 4:
+			case 0x24:
 				a = *(char **)((blk = get_block(*(int *)(ep + 6))) + 0x1e);
 				*(long *)ep = (unsigned)(*(long *)ep) + *(int *)(blk + 0x26) + *(int *)(a + 0x1e) + ((long)a[0] << 24);
 				*(int *)(ep + 6) = *(int *)(a + 0x10);
@@ -415,7 +416,7 @@ l469e:
 	bEF312 = (unsigned)bE4CE >> 4;
 }
 
-/* f4968..4a16: findings:D5 */
+/* f4968 0x4968..0x4a16: done */
 int f4968(q, p, x, res)
 char *q;
 int *p;
@@ -431,10 +432,10 @@ int *res;
 	q = table32_entry(bE3C04);
 	if (bE3C04++ > 0x100)
 		report_error(2, "pass2 segment table overflow");
-	if (*(int *)(tabF338 + x * 8) == 0x0bb8)
+	if (tblF332[x].d == 0x0bb8)
 		*(int *)(q + 10) |= 8;
 	else
-		*(int *)q = 4;
+		*(int *)(q + 10) = 4;
 	lcl = 1;
 	*res = alloc_segment(q, p, 0, 0x72, &lcl);
 }
@@ -984,19 +985,22 @@ int *q;
 	return 0;
 }
 
-/* f60f0 0x60f0..0x6134: findings:D2 */
+/* f60f0 0x60f0..0x6134: done */
 f60f0(q, a)
 char *q;
-long a;
+int a;
 {
 	int v;
 
-	if ((char)a == 0x74)
+	if ((char)a == 0x74) {
 		v = *(int *)(q + 4) - bE3E7A;
-	else
+		if (v)
+			f64d0(v);
+	} else {
 		v = *(int *)(q + 6) - bE3E7A;
-	if (v)
-		f64d0(v);
+		if (v)
+			f64d0(v);
+	}
 }
 
 /* f6134..620e: done */
@@ -1124,17 +1128,16 @@ char *e;
 	*(char **)(e + 0x16) = q;
 }
 
-/* f64d0..6522: findings:D2 */
+/* f64d0 0x64d0..0x6522: done */
 int f64d0(n)
 register int n;
 {
 	if (bE4A2)
 		return 0;
 	while (n > 0) {
-		f3a88(0, bE4DA);
+		put_int_buf(0, bE4DA);
 		if (bE4A2)
-			f3a88(0, bECFA);
+			put_int_buf(0, bECFA);
 		n = n - 2;
 	}
-	return n;
 }

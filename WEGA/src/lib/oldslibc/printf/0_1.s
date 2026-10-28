@@ -1,4 +1,5 @@
 	.seg
+	.extern	__iob
 	.extern	_stkseg
 	.extern	__doprnt
 	.extern	__flsbuf
@@ -19,14 +20,14 @@ _printf::
 	.word	%4FFC,%8203,%7F46	// EPU
 	.word	%4FFC,%8103,%7F4E	// EPU
 	.word	%4FFC,%8003,%7F56	// EPU
-	ldl	rr0,#%0100194E
+	ldl	rr0,#__iob+12
 	ldl	<<1>>%90E4,rr0
 	ldl	rr0,#%7F000064
 	add	r1,r15
 	ldl	|_stkseg+0|(r15),rr0
 	ldk	r0,#1
 	ld	|_stkseg+4|(r15),r0
-	ldl	rr0,#%0100194E
+	ldl	rr0,#__iob+12
 	ldl	|_stkseg+6|(r15),rr0
 	ldl	rr4,#%7F000036
 	add	r5,r15

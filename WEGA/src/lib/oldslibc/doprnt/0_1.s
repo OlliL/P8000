@@ -120,14 +120,17 @@ L7ce0:
 	ldb	|_stkseg+109|(r15),#%20
 	ld	|_stkseg+122|(r15),#%0001
 	jr	L7d5c
+L7cf4:
 	test	|_stkseg+122|(r15)
 	jr	ne,L7d50
 	ld	|_stkseg+122|(r15),#%0001
 	jr	L7d48
+L7d02:
 	test	|_stkseg+120|(r15)
 	jr	ne,L7d50
 	ld	|_stkseg+120|(r15),#%0001
 	jr	L7d48
+L7d10:
 	test	|_stkseg+118|(r15)
 	jr	ne,L7d50
 	ld	|_stkseg+118|(r15),#%0001
@@ -145,6 +148,7 @@ L7d26:
 	rl	r2,#2
 	ldl	rr4,_d189E+0(r2)
 	jp	@rr4
+L7d3c:
 	test	|_stkseg+114|(r15)
 	jr	ne,L7d50
 	ld	|_stkseg+114|(r15),#%0001
@@ -248,7 +252,7 @@ L7e3e:
 	cp	|_stkseg+24|(r15),#%0000
 	jr	ge,L7e6a
 	ld	r2,r11
-	ldl	rr4,#%01001872
+	ldl	rr4,#_d1872
 	ld	r3,#%0006
 	cpir	r2,@rr4,r3,eq
 	jr	ne,L7e6a
@@ -256,11 +260,12 @@ L7e3e:
 	neg	r3
 	ldl	rr4,_d18EA+0(r3)
 	jp	@rr4
+L7e66:
 	clr	|_stkseg+24|(r15)
 L7e6a:
 	ld	|_stkseg+130|(r15),r11
 	ld	r2,r11
-	ldl	rr4,#%0100187E
+	ldl	rr4,#_d187E
 	ld	r6,#%0010
 	cpir	r2,@rr4,r6,eq
 	jp	ne,L849a
@@ -268,12 +273,16 @@ L7e6a:
 	neg	r6
 	ldl	rr4,_d192A+0(r6)
 	jp	@rr4
+L7e92:
 	ld	|_stkseg+24|(r15),#%0006
 	jr	L7e6a
+L7e9a:
 	ld	|_stkseg+26|(r15),#%0008
 	jr	L7eb0
+L7ea2:
 	ld	|_stkseg+26|(r15),#%0010
 	jr	L7eb0
+L7eaa:
 	ld	|_stkseg+26|(r15),#%000A
 L7eb0:
 	ldl	rr4,|_stkseg+14|(r15)
@@ -319,6 +328,7 @@ L7f3e:
 L7f46:
 	ld	|_stkseg+26|(r15),#%FFF6
 	jr	L7eea
+L7f4e:
 	test	r10
 	jr	eq,L7fee
 	dec	r10,#1
@@ -393,6 +403,7 @@ L8006:
 	sub	r2,r9
 	ld	|_stkseg+116|(r15),r2
 	jp	L84ba
+L8020:
 	ld	|_stkseg+26|(r15),#%FFF6
 	ldl	rr2,|_stkseg+14|(r15)
 	ld	r4,@rr2
@@ -505,6 +516,7 @@ L8170:
 L8192:
 	ld	r9,r2
 	jp	L7fee
+L819a:
 	ldb	|_stkseg+129|(r15),#%20
 	cp	_stkseg+152(r15),#%0005
 	jr	ge,L81c2
@@ -522,7 +534,7 @@ L81c2:
 	ldl	rr4,|_stkseg+32|(r15)
 	testl	rr4
 	jr	ne,L81e2
-	ldl	rr6,#%0100186A
+	ldl	rr6,#_d186A
 	ldl	|_stkseg+32|(r15),rr6
 L81e2:
 	ldl	rr6,|_stkseg+32|(r15)
@@ -534,6 +546,7 @@ L81e2:
 	ldl	rr2,_stkseg+148(r15)
 	ldl	|_stkseg+14|(r15),rr2
 	jp	L7fee
+L8212:
 	ldb	|_stkseg+129|(r15),#%20
 	ldk	r9,#1
 	ldl	rr2,|_stkseg+14|(r15)
@@ -546,6 +559,7 @@ L81e2:
 	ldl	rr4,_stkseg+148(r15)
 	ldl	|_stkseg+14|(r15),rr4
 	jp	L7fee
+L824e:
 	cp	|_stkseg+12|(r15),#%0004
 	jr	ge,L8270
 	ldl	rr2,|_stkseg+14|(r15)
@@ -940,11 +954,70 @@ L8668:
 
 	.data
 
+_d186A::
+	.byte	40,110,117,108,108,41,0,0
+
+_d1872::
+	.word	%0045
+	.word	%0047
+	.word	%0065
+	.word	%0066
+	.word	%0067
+	.word	%0073
+_d187E::
+	.word	%0044
+	.word	%0045
+	.word	%0047
+	.word	%004F
+	.word	%0055
+	.word	%0058
+	.word	%0063
+	.word	%0064
+	.word	%0065
+	.word	%0066
+	.word	%0067
+	.word	%006C
+	.word	%006F
+	.word	%0073
+	.word	%0075
+	.word	%0078
+
 _d189E::
-	.word	%0000
-
+	.long	L7d02
+	.long	L7d50
+	.long	L7d50
+	.long	L7d10
+	.long	L7d50
+	.long	L7d50
+	.long	L7d50
+	.long	L7d50
+	.long	L7d50
+	.long	L7d50
+	.long	L7d50
+	.long	L7cf4
+	.long	L7d50
+	.long	L7d3c
+	.long	L7e92
+	.long	L7e92
+	.long	L7e92
+	.long	L7e92
+	.long	L7e92
 _d18EA::
-	.word	%0000
-
+	.long	L7e66
+	.long	L7f46
+	.long	L824e
+	.long	L824e
+	.long	L7edc
+	.long	L7f3e
+	.long	L7ee4
+	.long	L8212
+	.long	L8020
+	.long	L824e
+	.long	L824e
+	.long	L824e
+	.long	L7f4e
+	.long	L7e9a
+	.long	L819a
+	.long	L7eaa
 _d192A::
-	.word	%0000
+	.long	L7ea2

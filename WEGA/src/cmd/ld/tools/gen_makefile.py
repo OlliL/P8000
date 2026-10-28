@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""gen_makefile.py - write src/cmd/ld/Makefile from the object list of host/tools/oldslibc_cut.py (link order, shipped / cut / old)."""
+"""gen_makefile.py - write src/cmd/ld/Makefile (link of sld from the C files, the members of slibc.a and the two old objects).
+
+The link order is the order of /bin/sld: scrt0.o, the C files (tools/module_ranges.txt), then the libc objects in the order of
+host/tools/oldslibc_cut.py (OBJECTS) and the data-only members. All libc objects are members of /lib/slibc.a except printf and
+doprnt (another revision), which come from src/lib/oldslibc as cas sources.
+"""
 import os
 import sys
 
@@ -9,7 +14,8 @@ sys.path.insert(0, HERE)
 import oldslibc_cut as C  # noqa: E402
 import ldsrc  # noqa: E402
 
-C_MODULES = ldsrc.modules()
+# data-only members of slibc.a (no code in sld); their data lies behind the data of the object named here (measured in the data of sld)
+DATAOBJS = [('data', 'filbuf'), ('ctype_', 'malloc')]
 
 
 def wrap(head, items, width=100):
@@ -23,76 +29,64 @@ def wrap(head, items, width=100):
     return '\n'.join(lines)
 
 
-# data-only members of slibc.a that the shipped objects refer to (no code in sld; their place in the data is open)
-DATAOBJS = ['data', 'ctype_']
-
-
 def main():
-    objs = C.OBJECTS
-    ship = [o for o, a, b, k in objs if k == 'shipped'] + DATAOBJS
-    cut = [o for o, a, b, k in objs if k != 'shipped']
-    link = [('$(OLD)/%s/$(REV).o' % o) if k != 'shipped' else o + '.o' for o, a, b, k in objs] + [o + '.o' for o in DATAOBJS]
-    mk = '''# ld: the segmented loader of WEGA (sld, gld), reconstructed from /bin/sld. This Makefile builds the libc part of sld.
-# The libc part of sld (0x71ca..0x9730) is a sequence of members of slibc.a, in the order the original linker took them.
-# Objects whose code equals the member of /lib/slibc.a are taken from there (SHIPOBJS, ar x). The others have a directory
-# ../../lib/oldslibc/<object>/<revision>.s, cut from /bin/sld and verified with host/tools/oldslibc_cut.py (the revision number REV
-# is invented: other programs carry other revisions of the same objects). printf and doprnt are another revision than the member
-# of /lib/slibc.a; the other cut objects equal their members (oldslibc_cut.py checks that) and can be dropped when the data is cut.
+    mods = [f[:-2] for f, _, _ in ldsrc.modules()]
+    members = [o for o, a, b, k in C.OBJECTS if k != 'old'] + [d for d, _ in DATAOBJS]
+    old = [o for o, a, b, k in C.OBJECTS if k == 'old']
+    libc = []
+    for o, a, b, k in C.OBJECTS:
+        libc.append(('$(OLD)/%s/$(REV).o' % o) if k == 'old' else 'slibc/%s.o' % o)
+        libc += ['slibc/%s.o' % d for d, after in DATAOBJS if after == o]
+    mk = '''# ld: the segmented loader of WEGA (sld), reconstructed from /bin/sld.
 #
-#   make              libc objects of sld, the own code of sld (sld_own.o) and the start-up code (scrt0.o)
-#   make cobjs       compile the C files of sld (not linked yet: the data of sld is not cut)
-#   make link         sld.new, linked from these objects by the original sld (SLDBIN)
-#   make linkslibc    sld.new.slibc: same link, but all objects (except printf, doprnt) are the members of /lib/slibc.a
+#   make             compile the C files, assemble the start code and the old libc objects (printf, doprnt)
+#   make link        sld.new: scrt0.o, the C files, the members of /lib/slibc.a and the two old objects, linked by the original
+#                    sld (SLDBIN: segmented program, -i -z -e start)
+#   make linkown     sld.own: the same with the cut own code (sld_own.s, 0x56..0x71ca of /bin/sld) instead of the C files
 #   make clean
 #   (this file is written by tools/gen_makefile.py)
+#
+# The libc part of sld (0x71ca..0x9730) consists of members of /lib/slibc.a in the order of /bin/sld; only printf and doprnt are
+# another revision than the shipped members: their assembler sources are in ../../lib/oldslibc/<object>/<revision>.s (the
+# revision number REV is invented). The code of the other objects equals the members (host/tools/oldslibc_cut.py checks that).
 
 CRT = ../../lib/libc/crt
 OLD = ../../lib/oldslibc
 REV = 0_1
-# linker for the test link: the original sld (segmented program: -i -z -e start)
 SLDBIN = /bin/sld
 CAS = cas
 AR = ar
-SLIBC = /lib/slibc.a
 SCC = scc
 CFLAGS = -O
+SLIBC = /lib/slibc.a
 
 # the C files of sld (code ranges: tools/module_ranges.txt); each one is compiled alone
-COBJS = %s
-
-# members of slibc.a that are identical to the original code of sld
-SHIPOBJS = %s
-# link order of sld (= address order in /bin/sld): start code, own code, then the libc objects
 %s
-# the same with the objects of slibc.a (printf and doprnt: the old revision)
+# members of slibc.a (extracted into slibc/)
+MEMBERS = %s
+OLDOBJS = %s
+
+# link order of /bin/sld
 %s
-%s
+LINKOBJS = scrt0.o $(COBJS) $(LIBCOBJS)
+OWNOBJS = scrt0.o sld_own.o $(LIBCOBJS)
 
-all: libc own start
+all: $(COBJS) scrt0.o $(OLDOBJS)
 
-cobjs: $(COBJS)
-
-libc: $(LIBCOBJS) $(SHIPOBJS)
-
-# the link: not byte identical yet (the data of sld is not cut, the libc data spans are at other offsets)
 link: sld.new
 
 sld.new: $(LINKOBJS)
 	$(SLDBIN) -i -z -e start $(LINKOBJS) -o $@
 
-linkslibc: sld.new.slibc
+linkown: sld.own
+
+sld.own: $(OWNOBJS)
+	$(SLDBIN) -i -z -e start $(OWNOBJS) -o $@
 
 slibc/stamp:
-	mkdir slibc ; cd slibc ; $(AR) x $(SLIBC) %s ; touch stamp
+	mkdir slibc ; cd slibc ; $(AR) x $(SLIBC) $(MEMBERS) ; touch stamp
 
-sld.new.slibc: slibc/stamp $(SLIBCOBJS)
-	$(SLDBIN) -i -z -e start $(SLIBCOBJS) -o $@
-
-# own code of sld (0x56..0x71ca of /bin/sld, one block; cut with host/tools/oldslibc_cut.py, verified)
-own: sld_own.o
-
-# start-up code (0x18..0x55 of /bin/sld): written by mkcrt0.sh from the template scrt0.s.in (row sld in crt0.list)
-start: scrt0.o
+$(MEMBERS:%%=slibc/%%): slibc/stamp
 
 scrt0.s: $(CRT)/mkcrt0.sh $(CRT)/scrt0.s.in $(CRT)/crt0.list
 	sh $(CRT)/mkcrt0.sh sld > $@
@@ -103,19 +97,17 @@ scrt0.o: scrt0.s
 sld_own.o: sld_own.s
 	$(CAS) -u -o $@ sld_own.s
 
-''' % (' '.join(f[:-2] + '.o' for f, _, _ in C_MODULES), ' '.join(o + '.o' for o in ship),
-       wrap('LINKOBJS = ', ['scrt0.o', 'sld_own.o'] + link),
-       wrap('SLIBCOBJS = ', ['scrt0.o', 'sld_own.o'] + [('$(OLD)/%s/$(REV).o' % o) if k == 'old' else 'slibc/%s.o' % o
-                                                      for o, a, b, k in objs] + ['slibc/%s.o' % o for o in DATAOBJS]),
-       wrap('LIBCOBJS = ', ['$(OLD)/%s/$(REV).o' % o for o in cut]),
-       ' '.join(o + '.o' for o, a, b, k in objs if k != 'old') + ' ' + ' '.join(o + '.o' for o in DATAOBJS))
-    for f, _, _ in C_MODULES:
-        mk += '%s.o: %s ld.h\n\t$(SCC) $(CFLAGS) -c %s\n\n' % (f[:-2], f, f)
-    for o in ship:
-        mk += '%s.o:\n\t$(AR) x $(SLIBC) %s.o\n\n' % (o, o)
-    for o in cut:
+''' % (wrap('COBJS = ', [m + '.o' for m in mods]),
+       ' '.join(o + '.o' for o in [o for o, a, b, k in C.OBJECTS if k != 'old'] + [d for d, _ in DATAOBJS]),
+       ' '.join('$(OLD)/%s/$(REV).o' % o for o in old),
+       wrap('LIBCOBJS = ', libc))
+    # the make of the WEGA does not know pattern substitution: write the dependency of every member
+    mk = mk.replace('$(MEMBERS:%=slibc/%): slibc/stamp\n\n', ''.join('slibc/%s.o: slibc/stamp\n' % o for o in members) + '\n')
+    for m in mods:
+        mk += '%s.o: %s.c ld.h\n\t$(SCC) $(CFLAGS) -c %s.c\n\n' % (m, m, m)
+    for o in old:
         mk += '$(OLD)/%s/$(REV).o: $(OLD)/%s/$(REV).s\n\t$(CAS) -u -o $@ $(OLD)/%s/$(REV).s\n\n' % (o, o, o)
-    mk += 'clean:\n\trm -f $(COBJS) $(LIBCOBJS) $(SHIPOBJS) sld_own.o scrt0.s scrt0.o sld.new sld.new.slibc\n\trm -rf slibc\n'
+    mk += 'clean:\n\trm -f $(COBJS) $(OLDOBJS) scrt0.s scrt0.o sld_own.o sld.new sld.own\n\trm -rf slibc\n'
     open(os.path.join(HERE, '..', 'Makefile'), 'w').write(mk)
 
 

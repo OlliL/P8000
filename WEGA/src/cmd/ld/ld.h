@@ -1,7 +1,7 @@
 /*
  * ld.h - declarations shared by the C files of sld (structs, functions, variables).
- * The variables are defined in ext.c
- * (the extern declarations here are followed by the definitions); initialized ones are defined in the file that owns them.
+ * The uninitialized variables are defined in copyname.c (in the order of their allocation, see there), the initialized ones in the
+ * file that owns them.
  */
 
 struct seg {
@@ -20,6 +20,11 @@ struct seg {
 struct e16 {
 	int w[8];
 };
+struct bytes2 {
+	char c0;
+	char c1;
+};
+struct pg { int use; int bno; int nib; int buf[1]; };
 struct sg4 { int a; int b; int c; int d; };
 struct sg5 { int a; int b; int c; int nxt; char *str; };
 struct tab428a { char kind; unsigned f2; unsigned f4; unsigned f6; };
@@ -54,7 +59,7 @@ char *lookup_name();
 char *table16_entry();
 char *next_entry();
 char *realloc();
-int f3a88();
+int put_int_buf();
 int lseek();
 int read();
 int close();
@@ -71,9 +76,9 @@ int f2d4c();
 int sig_handler();
 int open();
 int report_error();
-int getw_buf();
-int refill_wbuf();
-int f2e76();
+int get();
+int dseek();
+int mget();
 int swap();
 int read_symbols();
 int creat();
@@ -82,15 +87,15 @@ int swap_pair();
 int putchar();
 int printf();
 int free();
-int open_library();
-int f2492();
+int getfile();
+int load2();
 char *table32_entry();
 int f0178();
 int dump_sym();
-int f3b58();
+int warn_sym_redef();
 int f6800();
 int alloc_segment();
-int f3090();
+int half();
 int f42f8();
 long f6b84();
 int load_header();
@@ -100,7 +105,7 @@ long ensure_buf();
 int sscanf();
 int end_pass1();
 int start_output();
-int f23fe();
+int load2arg();
 int finish_output();
 char *strchr();
 int parse_args();
@@ -131,11 +136,11 @@ int open_tmp();
 int init_entry();
 int init_signals();
 int exit();
-int f6ffe();
+int symtab_alloc();
 int scan_options();
-int f0762();
-int f1364();
-int f1070();
+int segtab_alloc();
+int load_lib_syms();
+int reg_sect_addr();
 int scan_m_opt();
 int read_words();
 char *f6b5a();
@@ -185,7 +190,6 @@ extern char bE4DA[];
 extern unsigned g04ee;
 extern char *gE47E;
 extern char tab1c02[];
-extern char bE6EA[];
 extern int bE3E82;
 extern char bE6E2[];
 extern char bE8EA[];
@@ -205,9 +209,6 @@ extern int bE4A3A;
 extern char bECFA[];
 extern char *bE048A;
 extern int bE4F0;
-extern int bE418;
-extern int bE41E;
-extern char *bE41A;
 extern char bE414[];
 extern int bE452;
 extern long bE3C16;
@@ -242,13 +243,11 @@ extern int bE4B0;
 extern int bE4B2;
 extern char buf6988[];
 extern char buf9098[];
-extern char tab1aad[];
 extern char *tab4a48[];
 extern char **g4a40;
 extern int bE4A44;
 extern char *pE4D6;
 extern char *bE4C0;
-extern int tabF338[];
 extern char b0004[];
 extern char b020a[];
 extern int g0474;
@@ -259,7 +258,6 @@ extern int bE3E88;
 extern long bE44E;
 extern char bE42B2;
 extern int bE49A;
-extern char tab42b4[];
 extern int tab4534[][5];
 extern char tab3e8a[];
 extern char *pE3C0A;
@@ -276,17 +274,12 @@ extern char bE424[];
 extern int bEF312;
 extern int bE4B4;
 extern long bE45C;
-extern char bE466;
-extern char bE467;
+extern struct bytes2 bE466s;
 extern int bE478;
 extern struct sg5 tab3c22[];
 extern char tab44E8[];
 extern int bE4CE;
 extern char buf90b6[];
-extern int bE20C;
-extern int bE006;
-extern int bE20A;
-extern int bE004;
 extern char *bE430;
 extern char *bE420;
 extern long bE446;
@@ -297,7 +290,6 @@ extern int bE3E7E;
 extern int bE3E80;
 extern int bE4A0;
 extern long bE492;
-extern int bE4D8;
 extern char **bE4A36;
 extern int bE4A46;
 extern int bE49C;
@@ -319,3 +311,19 @@ extern int g0484;
 extern char k047a[];
 extern char g04ce[];
 extern char g04d8[];
+
+/* names that are part of a larger variable (same address in the original) */
+extern char _ctype[];
+#define bE004 (*(int *)b0004)
+#define bE006 (*(int *)(b0004 + 2))
+#define bE20A (*(int *)b020a)
+#define bE20C (*(int *)(b020a + 2))
+#define bE418 (*(int *)(bE414 + 4))
+#define bE466 bE466s.c0
+#define bE467 bE466s.c1
+#define bE41A (*(char **)(bE414 + 6))
+#define bE41E (*(int *)(bE414 + 10))
+#define bE6EA (bE6E2 + 8)
+#define tab42b4 ((char *)bE42B4)
+#define tab1aad (_ctype + 1)
+#define tabF338 ((int *)((char *)tblF332 + 6))

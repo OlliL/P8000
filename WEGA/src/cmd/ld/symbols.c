@@ -24,7 +24,7 @@ read_entry_hdr()
 
 	result = 0;
 	if (bE4B2) {
-		f2e76(buf, 14);
+		mget(buf, 14);
 		bE46A = *(long *)buf;
 		bE46E = buf[4];
 		bE470 = buf[5];
@@ -38,7 +38,7 @@ read_entry_hdr()
 			cur = buf;
 			total = 0;
 			while (cur < end) {
-				f2e76(k047a, 14);
+				mget(k047a, 14);
 				total += 14;
 				cur += 14;
 			}
@@ -47,7 +47,7 @@ read_entry_hdr()
 				result += 1;
 		}
 	} else {
-		f2e76(bE15CC, 12);
+		mget(bE15CC, 12);
 		if (bE4B6) {
 			bE15D4 = swap_bytes(bE15D4);
 			bE15D6 = swap_bytes(bE15D6);
@@ -59,19 +59,19 @@ read_entry_hdr()
 	return result;
 }
 
-/* f6800..6866: findings:D2 */
+/* f6800 0x6800..0x6866: done */
 int f6800(p, q, a)
 char *p;
 char *q;
-long a;
+int a;
 {
 	char b;
 
 	*(long *)q = *(unsigned *)(p + 10);
 	*(char *)(q + 4) = *(int *)(p + 8);
-	*(int *)(p + 6) = 0;
-	if ((int)a != 0) {
-		b = *(char *)(p + 4) & 0x1f;
+	*(int *)(q + 6) = 0;
+	if (a != 0) {
+		b = *(char *)(q + 4) & 0x1f;
 		if (b == 3 || b == 4)
 			*(int *)(q + 6) = 1;
 	}
@@ -348,33 +348,35 @@ f6da8()
 	}
 }
 
-/* f6e1a..6f46: findings:D4 */
+/* f6e1a 0x6e1a..0x6efe: done */
 f6e1a(a, b)
 char *a;
 char *b;
 {
-	char buf[8];
-	char c4;
-	char c7;
-	long v;
-	int i;
-	int k;
-	int cnt;
-	char *q;
+	char cnt;
+	struct {
+		long rv;
+		char rt;
+		char rs;
+		char rn[8];
+	} r;
+	register char *q;
+	register int k;
+	register int i;
 
-	c4 = b[4];
-	c7 = b[7];
-	v = *(long *)b;
+	r.rv = *(long *)b;
+	r.rt = *(b + 4);
+	r.rs = *(int *)(b + 6);
 	for (i = 0; i < 8; i++)
-		buf[i] = b[i];
+		r.rn[i] = (b + 8)[i];
 	if (bE4B6)
-		swap_pair(&v);
-	f2f04(a, &v, 14);
+		swap_pair(&r.rv);
+	f2f04(a, &r, 14);
 	bE4F0++;
 	if (b[8] & 0x80) {
 		q = b + 16;
-		k = 1;
 		cnt = (b[8] & 0x7f) - 8;
+		k = 1;
 		while (cnt > 0) {
 			f2f04(a, q, 14);
 			bE4F0++;
@@ -408,21 +410,27 @@ f6f46(p, n)
 char *p;
 int n;
 {
-	register char *e;
+	char *e;
 	char *q;
-	long q2;
+	char *q2;
 
+	q = p;
 	e = p + n * 12;
-	while (p < e) {
-		if (p[4] & 0x80)
+	goto test;
+body:
+	if (p >= q) {
+		if ((p[4] & 0x80) != 0)
 			q = p + 4 + (p[4] & 0x7f);
-		q2 = *(long *)f6b84(p + 4);
+		q2 = *(char **)f6b84(p + 4);
 		if (q2 != 0) {
-			if (*(char *)(q2 + 4) != 0x20)
-				f3b58(0, q2);
+			if (q2[4] != 0x20)
+				warn_sym_redef(0, q2);
 		}
-		p += 12;
 	}
+	p += 12;
+test:
+	if (p < e)
+		goto body;
 }
 
 /* table16_entry 0x6fd0..0x6ffe: findings:D1 */
@@ -434,8 +442,8 @@ unsigned x;
 	report_error(2, "Symbol table overflow --try -As option");
 }
 
-/* f6ffe 0x6ffe..0x702a: done */
-f6ffe(a)
+/* symtab_alloc 0x6ffe..0x702a: done */
+symtab_alloc(a)
 int a;
 {
 	gE47E = calloc(a, 16);
@@ -452,26 +460,24 @@ int a;
 		report_error(2, "realloc unable to allocate enough memory for symbol table");
 }
 
-/* next_entry..7112: findings:D2 */
+/* next_entry 0x705e..0x70ce: done */
 char *next_entry(p)
-char *p;
+register char *p;
 {
-	register char *q;
+	register int b;
 	register char *e;
-	int b;
 
-	b = *(char *)(p + 8);
-	b = (b << 8) >> 8;
-	if (b < 0) {
+	b = p[8];
+	if (b & 0x80) {
 		e = p + 8 + (b & 0x7f);
-		q = p + 16;
-		while (e > q)
-			q += 16;
+		p += 16;
+		while (e > p)
+			p += 16;
 	} else
-		q = p + 16;
-	if (q < gE47E || q >= gE47E + (g04ee << 4))
-		report_error(2, "Error in stepsym");
-	return q;
+		p += 16;
+	if (p >= gE47E && p < gE47E + (g04ee << 4))
+		return p;
+	report_error(2, "Error in stepsym");
 }
 
 /* index16..7112: findings:D4 */

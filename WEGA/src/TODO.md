@@ -178,8 +178,22 @@ produce the same bytes with the shipped cc.
   Strings and initialized variables (2026-10-28): the original texts are in the C files (tools/fill_strings.py), SCCS strings as `static char
   sccsid[]`; the initialized variables with their values are defined in their files; the data of 7 of the 8 files equals the original
   (tools/check_data.py), ld.c to 0x0e38. Several functions came closer by following the string order (KNOWLEDGE, "initialized
-  variables"). Open: open_library and the rest of the ld.c data, the owner file of each uninitialized variable (bss bands; all in ext.c now),
+  variables"). Open: getfile and the rest of the ld.c data, the owner file of each uninitialized variable (bss bands; all in ext.c now),
   the bss cut, the full link and the byte comparison; use the string order for the other findings functions (D15 block layout).
+  Link (2026-10-28): `make link` in src/cmd/ld links sld.new from scrt0.o, the 8 C files, the members of /lib/slibc.a and the two old
+  objects (oldslibc printf, doprnt); Makefile written by tools/gen_makefile.py; `make linkown` is the old link with sld_own.s. The
+  uninitialized arrays have sizes now; names that lie inside a larger variable are macros in ld.h. Layout (2026-10-28): the data
+  (7090 bytes) and the bss (94542 bytes: segment 1 31054, segment 2 63488) of sld.new are equal in size to /bin/sld and EVERY
+  variable has the address of the original (checked for the 139 variables with an address in var_addr.txt). The data of the C files is exact
+  (check_data.py: 0 differing bytes in all 8 files), the code bytes still differ because the own functions with findings differ in
+  length and shift the code. What made the layout equal: (1) the commons are allocated in the order of the first mention in the
+  objects in link order, so all of them are defined in copyname.c in the order of the original (segment 2 group first, each by
+  address; tools/order_vars.py); (2) tab4a48 has 2000 pointers, unused gaps are spare variables (bE000, bE412, bE44A, bE4B8,
+  bE4C4, bE4CC, bF314), bE466/bE467 are the two bytes of `struct bytes2 bE466s` (macros); (3) getfile: the prefixes "", "/usr",
+  "/z/bin" are static arrays in front of the function (shared "" and the pool order of the original); (4) printf/doprnt of
+  oldslibc have their complete data and symbolic references (host/tools/oldslibc_doprnt_data.py); (5) data.o is linked behind
+  filbuf.o and ctype_.o behind malloc.o (place of their data). Next: byte comparison after the findings functions are exact;
+  the other directories of src/lib/oldslibc are not used any more and can go.
   Next: improve the findings-class functions found by `strict_audit.py` (parse_args, f6c6a, make_ccl, scan_field, ...),
   re-check the D15 tags, cut the data (7090 bytes, bss), map the libc `fXXXX` addresses to libc names, `make link` and
   compare the bytes, split sld.c into modules.
@@ -204,7 +218,7 @@ produce the same bytes with the shipped cc.
   state machine on bE46E). 0x68a2 (358 bytes, branches on the type bytes 0x21..0x24, globals 0x3c0a, 0x3c06, 0x3c0e,
   0x0474) analysed, not drafted.
   Done in the last rounds: 0x64d0 (D2), 0x0f26 read_words (D15), 0x3408 report_error (done), 0x4968 (D5, one dead increment
-  open by reading), 0x2f3a refill_wbuf (D5, D9, D15). Open small ones: 0x1070 (378, parser with a jump table, not started),
+  open by reading), 0x2f3a dseek (D5, D9, D15). Open small ones: 0x1070 (378, parser with a jump table, not started),
   0x7286 (wrapper of 0x7300, which is deferred), 0x6a58 (hash lookup with linear probing; draft in the scratch folder: same
   82 instructions, but the register of the probe pointer (rr6 in the original) and the loop shape differ; not accepted),
   0x1560 (table loop, 12-byte entries, not drafted fully).

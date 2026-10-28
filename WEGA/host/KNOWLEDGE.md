@@ -466,8 +466,8 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
 - Stream layout of the input side (read from 0x7808 and 0x30a4, not yet confirmed by a draft): a long pointer to the next
   character at offset 0 (advanced by its low word at offset 2), a word count of the characters left at offset 4; count
   below zero refills through 0x86fa (filbuf-like, the stream as argument), a character pushed back goes through 0x8688
-  (ungetc-like). The output side of 0x30a4 uses the same count at offset 4 and refills through 0x2f3a (`refill_wbuf`).
-  `refill_wbuf` (2026-10-27, draft matches the instructions up to layout and register forms): the object at offset 12 is a
+  (ungetc-like). The output side of 0x30a4 uses the same count at offset 4 and refills through 0x2f3a (`dseek`).
+  `dseek` (2026-10-27, draft matches the instructions up to layout and register forms): the object at offset 12 is a
   pointer to one of two buffers (0x0004 and 0x020a, a counter word at offset 0 and the block number at offset 2). It seeks
   to block (v >> 8) * 512 on the file `bE4BE`, reads 512 bytes into the buffer at +6, stores the word count (bytes / 2) at +4,
   and sets the pointer at offset 6 of the object to buffer + 6 + 2 * low byte of v.
@@ -475,7 +475,7 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
 - Word buffer object used by 0x30a4 (callers 0x2820, 0x287c, 0x2ef0, 0x3384 pass the address: base 0x0414, and 0x0424 at
   the second use): word count at +4 (0x0418, decremented by 0x30a4 and by 0x2e76), long pointer at +6 (0x041a, copied from by
   0x2e76), second word count at +10 (0x041e), and the counter at base-4 (0x0410) incremented on the refill path. The value
-  returned by 0x30a4 is stored as a word by the caller (0x2e76). Layout from the callers; confirmed by the draft of 0x30a4 (getw_buf in sld.c, D2): the refill call f2f3a(object, (word at +2 + 1) << 8, -1) is equal.
+  returned by 0x30a4 is stored as a word by the caller (0x2e76). Layout from the callers; confirmed by the draft of 0x30a4 (get in sld.c, D2): the refill call f2f3a(object, (word at +2 + 1) << 8, -1) is equal.
 - Field scanner 0x7808 (`scan_field` in sld.c, D2/D5): called only from 0x7578 in the deferred scanf front end 0x7526. Arguments:
   `rr6` = destination (may be 0), `rr4` = conversion word in the low half (`c`, `s`, `[` as 0x63, 0x73, 0x5b) and the field
   width in the high half (0x7530 with `%c` means width 1), `rr2` = input stream (layout above), and a pointer to the
@@ -972,7 +972,7 @@ means it does something fixed instead (only possible where the original's result
 - Split of 2026-10-28: `tools/split_sld.py` (one-off) cut the 90 blocks of sld.c into the files of `tools/module_ranges.txt` (functions in
   address order). `ld.h` holds the structs, the function declarations (types from the definitions) and the variables as extern;
   `ext.c` defines all variables (`DEFINE_VARS`). With the variables defined in `ext.c` and extern elsewhere the audit
-  (`strict_audit.py`) of all functions stays the same except two single jumps (`f2492` one `jr` fewer in the difference, `f42f8` one
+  (`strict_audit.py`) of all functions stays the same except two single jumps (`load2` one `jr` fewer in the difference, `f42f8` one
   `jp` instead of `jr` in the switch): the choice between `jr` and `jp` depends on whether a variable is defined in the same file.
   The real owner of each variable (bss band of its C file) can be found with this effect; open.
 
@@ -1013,6 +1013,22 @@ split (filbuf, flsbuf, cnvt, decimal, stty, swab, swap, signal, stubs) had wrong
 directories `src/lib/oldslibc/<object>/0_1.s` now follow the objects (README there). The code of the link is right: `make link`
 in `src/cmd/ld` gives a code segment that differs from /bin/sld in 78 bytes, all data addresses (the data of sld is not cut).
 
+### sld: layout of data and bss (2026-10-28)
+
+`make link` in `src/cmd/ld` now gives the data (7090) and bss (31054 + 63488) of `/bin/sld` and every variable at its original address. Facts
+found on the way: (1) sld allocates the commons (`.comm`, undefined symbols with a size) in the order of its global symbol table, i.e. in the
+order of the first mention in the objects in link order, and fills the segment of the commons from the LAST segment of the chain
+on: the original has the variables of segment 2 first in its order, then those of segment 1 (tab1c02 ... buf90b6, then the `__sobuf`/`__sibuf`
+of libc). Our definitions therefore stand in `copyname.c` (the first object) in this order; in `ext.c` the references of `dump.o` would come first.
+`tools/order_vars.py` sorts the list (lowest referenced address of a variable from `var_addr.txt`; spare variables fill the gaps that no
+function uses). (2) The old compiler does not share equal string literals, and the pool of a function follows the order of the
+source: the original of getfile has one "" for three uses and "", "/usr", "/z/bin" before "/lib/slib"; the rebuild writes them as static
+char arrays in front of the function (same code: the address constant of an array), see the comment in ld.c. (3) The data of the libc objects lies in
+link order, `data.o` (`__iob`) behind the data of filbuf and `ctype_.o` behind malloc (measured: `&_iob[1]` = 0x194e is used by printf);
+printf and doprnt of the older revision need their data (strings, the 22 conversion letters, 36 jump table longs) as `.data` with labels, the
+absolute addresses of the cut tool are no use when the layout shifts. (4) `bE466`/`bE467` are the two bytes of one 2-byte variable, `pE4D6` has a
+second word at 0xe4d8; an array size of the original is the distance of the addresses (tab4a48 8000 bytes, buf6988 10000).
+
 ### sld: C files of the program and the libc objects in the own range (2026-10-28)
 
 `src/cmd/ld/tools/module_map.py` (output `module_map.txt`) assigns every function to a C file by the string literals it uses. The data
@@ -1049,7 +1065,7 @@ Findings from the order of the strings (`fill_strings.py` prints them):
   functions. The functions refer to them by name.
 - `next_entry` and `index16` have one error string in the original, two literals in our source (the original calls `report_error`
   from one place); the texts are equal for now.
-- The literals of `scan_options`, `f1070`, `scan_m_opt` are in another order in the original source than in ours (e.g. the symbol
+- The literals of `scan_options`, `reg_sect_addr`, `scan_m_opt` are in another order in the original source than in ours (e.g. the symbol
   table size handler comes before the pass 1 segment table handler in the original): the order of the statements in our source differs;
   with the right order the block layout (D15) of these functions may come out right. In `read_words` the check of the `idx`
   and of the pointer follow the data order (Bad command file read, Command file arguments too long, Too many command file
@@ -1061,7 +1077,7 @@ Tools (`src/cmd/ld/tools`): `var_addr.py` (address of each global variable of ou
 original are aligned by mnemonic and the variable operands paired; votes in `var_addr.txt`, per function `var_fn_addr.txt`),
 `data_map.py` (the data area per C file: SCCS string, strings, jump tables, words), `check_data.py` (data section of each compiled C file
 against the original range; relocated words, jump tables and pointers into segment 1/2 are masked). Result: the data of copyname.c,
-dump.c, ext.c, ldm.c, printname.c, swap.c and symbols.c equals the original byte for byte; ld.c to 0x0e38 (open_library).
+dump.c, ext.c, ldm.c, printname.c, swap.c and symbols.c equals the original byte for byte; ld.c to 0x0e38 (getfile).
 What the data showed:
 - The initialized variables of a file come first (after the SCCS string) in the order of their definition, then the strings of the
   functions, and variables can sit between functions (`char tmpname[] = "l.out"` at 0x66c, before sig_handler). A pointer
@@ -1076,7 +1092,7 @@ What the data showed:
   the switch), f27d8 61 -> 38 (the case bodies inside the two switches, the table behind the strings), scan_options 80 -> 33 (case 's' before
   'p'), get_block 30 -> 23 (the block table is the pointer `char **g03ba` that calloc fills, not an array), next_entry 36 -> 32 and
   index16 20 -> 11 (one error call per function: the original has one string).
-- Open in ld.c (open_library, 285 bytes after 0x0e38): the original has the empty string once for three uses and the directory strings
+- Open in ld.c (getfile, 285 bytes after 0x0e38): the original has the empty string once for three uses and the directory strings
   ("", "/usr", "/z/bin") before "/lib/slib", "/lib/lib": either the old compiler shares equal literals of a function and
   orders them differently, or the source differs; not solved.
 - bss: all variables without value are still defined in ext.c (one place); their files follow from the bss bands, open.

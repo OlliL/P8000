@@ -55,6 +55,8 @@ def main():
             for tag, i1, i2, j1, j2 in sm.get_opcodes():
                 if tag == 'equal':
                     continue
+                for t in A[max(0, i1 - 2):i1]:
+                    print('    ctx  ' + t)
                 for t in A[i1:i2]:
                     print('    mine ' + t)
                 for t in B[j1:j2]:

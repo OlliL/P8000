@@ -11,7 +11,7 @@ Usage: accept.py DRAFT.c ENTRY END [CLASSES RESULT]
 
 The draft is checked with fncheck.py. Only on OK (or with CLASSES) the function goes to the C file of its address
 (module_ranges.txt), in address order; a function that is in the file already is replaced. Structs, function declarations and
-variables of the draft that ld.h does not have yet are added to ld.h (variables as extern, defined in ext.c). The status in
+variables of the draft that ld.h does not have yet are added to ld.h (variables as extern, defined in copyname.c). The status in
 own_functions.txt is set: 'done' without CLASSES, 'findings:CLASSES' with CLASSES. With CLASSES the D classes go to the audit of
 the function in findings.json; findings_pending is only for items without a D class.
 Then every C file is compiled alone (ldsrc.compile_all); a compile error or a lost function name (empty label) restores all files.
@@ -73,8 +73,11 @@ def split_blocks(lines):
     return pre, [(HDRC.match(lines[idx[k]]).group(1), lines[idx[k]:idx[k + 1]]) for k in range(len(idx) - 1)]
 
 
+VARFILE = 'copyname.c'    # the file with the definitions of the uninitialized variables (the order is the order of the allocation)
+
+
 def add_declarations(statements, hdr_text, ext_text):
-    """new structs, function declarations and variables of the draft go to ld.h / ext.c"""
+    """new structs, function declarations and variables of the draft go to ld.h / copyname.c (VARFILE)"""
     hl = hdr_text.split('\n')
     el = ext_text.split('\n')
     have = {'struct': {}, 'fdecl': {}, 'var': {}}
@@ -146,11 +149,11 @@ def main():
     comments = [t for k, t in statements if k == 'comment']
     mod = ldsrc.module_of(entry)
     path = os.path.join(LD, mod)
-    saved = {p: open(p).read() for p in (path, os.path.join(LD, 'ld.h'), os.path.join(LD, 'ext.c'))}
+    saved = {p: open(p).read() for p in (path, os.path.join(LD, 'ld.h'), os.path.join(LD, VARFILE))}
     hdr, ext = add_declarations(statements, saved[os.path.join(LD, 'ld.h')],
-                                saved[os.path.join(LD, 'ext.c')] if mod != 'ext.c' else saved[path])
+                                saved[os.path.join(LD, VARFILE)] if mod != VARFILE else saved[path])
     lines = saved[path].split('\n')
-    if mod == 'ext.c':
+    if mod == VARFILE:
         lines = ext.split('\n')
     pre, blocks = split_blocks(lines)
     new = [comment] + comments + fn + ['']
@@ -167,8 +170,8 @@ def main():
     if not placed:
         out += new
     texts = {path: '\n'.join(out), os.path.join(LD, 'ld.h'): hdr}
-    if mod != 'ext.c':
-        texts[os.path.join(LD, 'ext.c')] = ext
+    if mod != VARFILE:
+        texts[os.path.join(LD, VARFILE)] = ext
     for p, t in texts.items():
         open(p, 'w').write(t)
     if not check_compile():
