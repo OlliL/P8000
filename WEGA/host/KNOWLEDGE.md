@@ -1031,7 +1031,7 @@ second word at 0xe4d8; an array size of the original is the distance of the addr
 
 ### sld: what fixed the findings functions (2026-10-28)
 
-Rules found while bringing the "findings" functions of sld to the exact code (strict_audit.py, 51 of 90 equal, 39 left). Each came from
+Rules found while bringing the "findings" functions of sld to the exact code (strict_audit.py, 55 of 90 equal, 35 left). Each came from
 reading the original code with `tools/odis.py NAME`:
 
 - **Argument registers.** The first argument is in rr6 (|4| in the spill), the second in rr4 (|0|), a word argument after them in r5/r3. A
@@ -1053,6 +1053,8 @@ reading the original code with `tools/odis.py NAME`:
   `flag ? "a" : "b"` as argument gives one call (open_tmp). A function without a `return` at the end leaves r2 as it is (f64d0).
   `tblF332[x].d` (8-byte rows) instead of `*(int *)(tabF338 + x * 8)` (f4968, f42f8). The offset of a field in a stack struct is
   `(char *)&h.f - (char *)&h` (f2d4c); a 14-byte record built on the stack is a struct (f6e1a).
+- **Stack records.** A stack array accessed with constant offsets in the original (`|C|(r15)`) is a struct of words/bytes in the source,
+  not `char tmp[16]` with casts (f2624: `struct { int tw0 ... tw7; } tmp`; f6e1a, read_entry_hdr: the 14-byte symbol record).
 - **Case order.** The cases of a switch lie in the code in the order of the source (f42f8: 'r', 's', 'M').
 - Remaining differences are the old compiler's own: the optimizer moves non-register locals into scratch registers (f1f96: `e` stays in
   rr2 in the original; ours keeps it on the stack), `and r2,#0xFFFE` becomes `res r2,#0` in the original (load2), `jr cc,a; jr b` is
