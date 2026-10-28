@@ -113,17 +113,17 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
     __pfile and _rc (comm 2); constant 0x0900 written as __iob+8 (by hand, as in printf/0_4.s).
     Differences to printf/0_4.s: 33 of 92 instructions (register r0 vs r7 in _fprintf, branch order in the tail).
   - doprnt 0_6 = 34d2..3e70: __align 34d2, __doprnt 352e, __atoip 3df8 (as in size.spec). 0_6 is new.
-  - f473a 0_1 = 473a..4786 (name open, no calls). f49bc: not a module. 49bc..4a00 is zero padding (68 zero bytes, 17 times "addb rh0,#0" when read as code). Every separate-I/D program (E611/E711) has a code size that is a multiple of 0x100: ld 0x4a00, popt 0x5700, codgen 0xd200. Removed.
+  - strncpy 0_2 = 473a..4786 (_strncpy, the loop of gen/strncpy.c; ranlib strncpy/0_1 and shipped strncpy.o differ: frame 14, not 16). f49bc: not a module. 49bc..4a00 is zero padding (68 zero bytes, 17 times "addb rh0,#0" when read as code). Every separate-I/D program (E611/E711) has a code size that is a multiple of 0x100: ld 0x4a00, popt 0x5700, codgen 0xd200. Removed.
 - Data (2026-10-28, after the unlink.py extension): doscan 0_1 has data 07c8..0868 (160 bytes), doprnt 0_6 has data
   0868..08f8 (144 bytes, "(null)" at 0868 as D0000 of doprnt/0_5.s). Both data blocks are byte-identical to the image
   of /bin/ld (checked). Local data labels D<off> and .addr entries (jump tables) are emitted by unlink.py.
   printf 0_6 has no data of its own (__pfile and _rc are bss, comm 2 for _rc). 0x0900 is named __iob+8 in the spec.
-- f473a 0_1 has no data here (not known). Open.
+- strncpy 0_2 has no data: its code uses only the stack and registers (checked), so the data size is 0.
 - unlink.py (host/tools, shared tool): E611/E711 (separate I and D) now use data base 0 and bss base = data size;
   spec field dstart=HEX sets the data start of a module. Combined programs (E707) are unchanged: checked, output of
   `size` identical to the old tool.
 - `VERSIONS` was edited by hand (unlink.py rewrites the whole file). atoip is not a module (part of doprnt).
-- Open: name of f473a; the data of f473a.
+- Open: none for the new modules (strncpy 0_2 complete, doscan, printf 0_6, doprnt 0_6 without open data point).
 
 ## ffltioc, _inflt and _f3e76 (corrected 2026-10-28, owner check)
 

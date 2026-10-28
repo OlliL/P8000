@@ -1,5 +1,6 @@
 	.psec
 	.code
+_strncpy::
 	sub	r15,#%0014
 	ldm	%000C(r15),r11,#3
 	ld	@r15,r5

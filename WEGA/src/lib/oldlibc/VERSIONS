@@ -52,6 +52,7 @@ strlen     0_1   cc scc
 strlen     0_2  codgen scodgen popt
 strncmp    0_1  ranlib popt
 strncpy    0_1   ranlib
+strncpy    0_2   ld
 stty       0_1   ranlib
 stty       0_2  codgen scodgen popt
 swab       0_1   ranlib
@@ -70,4 +71,3 @@ strrchr    0_1  popt
 doprnt     0_6   ld
 printf     0_6   ld
 doscan     0_1   ld
-f473a      0_1   ld
