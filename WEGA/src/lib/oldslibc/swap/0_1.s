@@ -1,6 +1,5 @@
 	.seg
 	.extern	_stkseg
-	.extern	_f971c
 	.code
 
 _swap::
@@ -19,6 +18,7 @@ L946e:
 	ld	r2,@rr4
 	inc	r15,#10
 	ret
+_longswap::
 	dec	r15,#8
 	ldm	_stkseg+4(r15),r12,#2
 	ldl	|_stkseg+0|(r15),rr6
@@ -39,6 +39,7 @@ L94bc:
 	ldm	r12,_stkseg+4(r15),#2
 	inc	r15,#8
 	ret
+_swapsegt::
 	dec	r15,#8
 	ldm	_stkseg+4(r15),r12,#2
 	ldl	|_stkseg+0|(r15),rr6
@@ -82,56 +83,3 @@ L9520:
 	ldm	r12,_stkseg+4(r15),#2
 	inc	r15,#8
 	ret
-_f952c::
-	ldl	rr0,rr6
-	ld	r2,r5
-	xor	r4,r4
-	sc	#%21
-	ld	r2,r4
-	ret	nc
-	jp	_f971c
-_f953e::
-	dec	r15,#6
-	ld	_stkseg+4(r15),r13
-	ld	r13,r7
-	cp	r7,#%0041
-	jr	lt,L9558
-	cp	r7,#%005A
-	jr	gt,L9558
-	sub	r13,#%FFE0
-L9558:
-	ld	r2,r13
-	ld	r13,_stkseg+4(r15)
-	inc	r15,#6
-	ret
-_f9564::
-	ldl	rr0,rr6
-	ld	r2,r5
-	xor	r4,r4
-	sc	#%0F
-	ld	r2,r4
-	ret	nc
-	jp	_f971c
-_f9576::
-	ld	r0,r7
-	xor	r4,r4
-	sc	#%06
-	ld	r2,r4
-	ret	nc
-	jp	_f971c
-_f9586::
-	ldl	rr0,rr6
-	ld	r2,r5
-	sc	#%08
-	ld	r2,r4
-	ret	nc
-	jp	_f971c
-_f9596::
-	ld	r0,r7
-	ld	r1,r4
-	ld	r2,r5
-	xor	r4,r4
-	sc	#%1C
-	ld	r2,r4
-	ret	nc
-	jp	_f971c

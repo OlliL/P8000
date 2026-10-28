@@ -23,6 +23,9 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fncheck as F  # noqa: E402
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 SLD = os.path.join(HERE, '..', 'sld.c')
 TABLE = os.path.join(HERE, 'own_functions.txt')
@@ -33,7 +36,7 @@ WEGA = '/mnt/share/cvs/P8000/tmp/wega31_root'
 
 def whole_file_ok():
     tmp = tempfile.mkdtemp(prefix='acceptall', dir='/mnt/share/cvs/P8000/tmp/tmp')
-    shutil.copy(SLD, os.path.join(tmp, 'all.c'))
+    F.alias_copy(SLD, os.path.join(tmp, 'all.c'))
     r = subprocess.run([EMU, '-r', WEGA, '/bin/scc', '-c', '-O', 'all.c'], cwd=tmp,
                        capture_output=True, text=True, timeout=900)
     if r.returncode != 0:

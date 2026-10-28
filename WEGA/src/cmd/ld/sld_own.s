@@ -1,40 +1,40 @@
 	.seg
 	.extern	_stkseg
-	.extern	_f9184
-	.extern	_cnvt
-	.extern	_f9376
-	.extern	_stubs
+	.extern	_calloc
+	.extern	_exit
+	.extern	_rindex
+	.extern	_unlink
 	.extern	_umask
-	.extern	_f9564
-	.extern	_f9638
-	.extern	_f952c
-	.extern	_f95fe
-	.extern	_f9610
-	.extern	_f9576
-	.extern	_f92c6
-	.extern	_f95da
+	.extern	_chmod
+	.extern	_signal
+	.extern	_access
+	.extern	_open
+	.extern	_read
+	.extern	_close
+	.extern	_strchr
+	.extern	_lseek
 	.extern	_swap
-	.extern	_f9210
-	.extern	_f932e
-	.extern	_f9586
-	.extern	_f95c8
-	.extern	_f970a
+	.extern	_mktemp
+	.extern	_swab
+	.extern	_creat
+	.extern	_link
+	.extern	_write
 	.extern	_strcpy
-	.extern	_f93ac
-	.extern	_f93e8
-	.extern	_f9596
-	.extern	_f8a5c
-	.extern	_f92f8
-	.extern	_f9072
-	.extern	_f903a
-	.extern	_f880e
-	.extern	_f953e
-	.extern	_f86fa
-	.extern	_f8688
-	.extern	_filbuf
-	.extern	_f8c86
-	.extern	_f8ad0
+	.extern	_strcat
+	.extern	_strncmp
+	.extern	_fstat
+	.extern	_atoi
+	.extern	_strrchr
+	.extern	_realloc
+	.extern	_free
+	.extern	__flsbuf
+	.extern	_tolower
+	.extern	__filbuf
+	.extern	_ungetc
 	.extern	__inflt
+	.extern	__length
+	.extern	__cnvt
+	.extern	__fegcvt
 	.code
 
 L56:
@@ -523,7 +523,7 @@ L6ea:
 L6f8:
 	ldk	r7,#1
 	ld	r6,#%0036
-	call	_f9184
+	call	_calloc
 	inc	<<1>>%03B8,#1
 	ld	r4,<<1>>%03B8
 	sla	r4,#2
@@ -556,7 +556,7 @@ L762:
 	dec	r15,#2
 	ld	|_stkseg+0|(r15),r7
 	ldk	r6,#4
-	call	_f9184
+	call	_calloc
 	ldl	<<1>>%03BA,rr2
 	testl	rr2
 	jr	ne,L788
@@ -567,7 +567,6 @@ L788:
 	inc	r15,#2
 	ret
 _main::
-L78c:
 	sub	r15,#%001E
 	ldm	_stkseg+22(r15),r10,#4
 	ldm	|_stkseg+0|(r15),r4,#4
@@ -575,13 +574,13 @@ L78c:
 	cp	|_stkseg+6|(r15),#%0001
 	jr	ne,L7b0
 	ldk	r7,#4
-	call	_cnvt
+	call	_exit
 L7b0:
 	ldl	rr6,|_stkseg+0|(r15)
 	ldl	rr2,@rr6
 	ldl	rr6,rr2
 	ld	r5,#%002F
-	call	_f9376
+	call	_rindex
 	ldl	<<2>>%E4D6,rr2
 	testl	rr2
 	jr	ne,L7da
@@ -770,7 +769,7 @@ La44:
 La5c:
 	dec	r15,#2
 	ldl	rr6,#%0100066C
-	call	_stubs
+	call	_unlink
 	test	<<1>>%04E8
 	jr	ne,Laaa
 	test	<<2>>%E496
@@ -787,30 +786,30 @@ La82:
 	ld	|_stkseg+0|(r15),r2
 	ldl	rr6,<<1>>%0494
 	ld	r5,r2
-	call	_f9564
+	call	_chmod
 Laaa:
 	ld	r7,<<1>>%04E8
-	call	_cnvt
+	call	_exit
 	inc	r15,#2
 	ret
 Laba:
 	ldk	r7,#2
 	ldl	rr4,#%00000001
-	call	_f9638
+	call	_signal
 	cpl	rr2,#%00000001
 	jr	eq,Lade
 	ldk	r7,#2
 	ldl	rr4,#%00000A5C
-	call	_f9638
+	call	_signal
 Lade:
 	ldk	r7,#15
 	ldl	rr4,#%00000001
-	call	_f9638
+	call	_signal
 	cpl	rr2,#%00000001
 	jr	eq,Lb02
 	ldk	r7,#15
 	ldl	rr4,#%00000A5C
-	call	_f9638
+	call	_signal
 Lb02:
 	ret
 Lb04:
@@ -942,12 +941,12 @@ Ld10:
 	ldl	<<1>>%0494,rr4
 	ldl	rr6,rr4
 	sub	r5,r5
-	call	_f952c
+	call	_access
 	test	r2
 	jr	ne,Ld54
 	ldl	rr6,<<1>>%0494
 	ldk	r5,#2
-	call	_f952c
+	call	_access
 	test	r2
 	jr	eq,Ld54
 	ldk	r7,#2
@@ -1090,7 +1089,7 @@ Lf26:
 	ldl	<<1>>%4A48,rr2
 	ldl	rr2,rr6
 	sub	r5,r5
-	call	_f95fe
+	call	_open
 	ld	|_stkseg+4|(r15),r2
 	cp	r2,#%0000
 	jr	ge,Lf66
@@ -1158,7 +1157,7 @@ L1024:
 	add	r5,r15
 	ld	r7,|_stkseg+4|(r15)
 	ldk	r3,#1
-	call	_f9610
+	call	_read
 	cp	r2,#%0000
 	ldk	r2,#0
 	tcc	ne,r2
@@ -1170,7 +1169,7 @@ L1024:
 	ld	r2,|_stkseg+8|(r15)
 	ld	<<1>>%4A44,r2
 	ld	r7,|_stkseg+4|(r15)
-	call	_f9576
+	call	_close
 	sub	r2,r2
 	add	r15,#%0014
 	ret
@@ -1374,7 +1373,7 @@ L12be:
 	jr	L1312
 	ldl	rr6,rr10
 	ld	r5,#%003A
-	call	_f92c6
+	call	_strchr
 	ldl	|_stkseg+22|(r15),rr2
 	testl	rr2
 	jr	eq,L12f6
@@ -1460,12 +1459,12 @@ L139c:
 	ld	r7,<<2>>%E4BE
 	ldl	rr4,#%0000001C
 	sub	r3,r3
-	call	_f95da
+	call	_lseek
 	ld	r3,<<1>>%3E88
 	mult	rr2,#%000C
 	ldl	rr4,<<1>>%3E84
 	ld	r7,<<2>>%E4BE
-	call	_f9610
+	call	_read
 	ldl	rr6,<<1>>%3E84
 	ld	r5,<<1>>%3E88
 	call	L6f46
@@ -1501,7 +1500,7 @@ L1482:
 	jr	ne,L146c
 L148c:
 	ld	r7,<<2>>%E4BE
-	call	_f9576
+	call	_close
 	ldm	r12,_stkseg+8(r15),#2
 	inc	r15,#12
 	ret
@@ -2410,7 +2409,7 @@ L2056:
 	sub	r5,r5
 	calr	L22a4
 	ldl	rr6,#%0100049E
-	call	_f9210
+	call	_mktemp
 	ldl	rr6,#%0200E6E2
 	ldk	r5,#1
 	calr	L22a4
@@ -2571,7 +2570,7 @@ L223a:
 	ldl	rr4,#%7F002006
 	add	r5,r15
 	ld	r3,#%0018
-	call	_f932e
+	call	_swab
 L226c:
 	ldl	rr4,#%7F002006
 	add	r5,r15
@@ -2601,7 +2600,7 @@ L22c4:
 	ldl	|_stkseg+6|(r15),rr2
 	ldl	rr6,rr2
 	ld	r5,#%01B6
-	call	_f9586
+	call	_creat
 	ld	r13,r2
 	cp	r2,#%0000
 	jr	ge,L22f8
@@ -2616,16 +2615,16 @@ L22f0:
 	call	L3408
 L22f8:
 	ld	r7,r13
-	call	_f9576
+	call	_close
 	ldl	rr6,|_stkseg+6|(r15)
 	ldk	r5,#2
-	call	_f95fe
+	call	_open
 	ldl	rr4,|_stkseg+2|(r15)
 	ld	@rr4,r2
 	test	|_stkseg+0|(r15)
 	jr	eq,L2324
 	ldl	rr6,#%0100049E
-	call	_stubs
+	call	_unlink
 L2324:
 	ldl	rr2,|_stkseg+2|(r15)
 	inc	r3,#2
@@ -2742,7 +2741,7 @@ L2468:
 	ldl	<<1>>%0486,rr10
 L247a:
 	ld	r7,<<2>>%E4BE
-	call	_f9576
+	call	_close
 	ldm	r10,_stkseg+8(r15),#4
 	inc	r15,#16
 	ret
@@ -3405,14 +3404,14 @@ L2cf0:
 	ldl	rr6,#%0200E4DA
 	calr	L3ac6
 	ld	r7,<<2>>%E4DA
-	call	_f9576
+	call	_close
 	test	<<2>>%E4BC
 	jr	ne,L2d36
 	ldl	rr6,<<1>>%048A
-	call	_stubs
+	call	_unlink
 	ldl	rr6,#%01000DB4
 	ldl	rr4,<<1>>%048A
-	call	_f95c8
+	call	_link
 	ldl	rr2,<<1>>%048A
 	ldl	<<1>>%0494,rr2
 L2d36:
@@ -3425,7 +3424,7 @@ L2d4c:
 	sub	r15,#%001A
 	ldl	rr6,<<1>>%0494
 	ldk	r5,#1
-	call	_f95fe
+	call	_open
 	ld	|_stkseg+0|(r15),r2
 	cp	r2,#%FFFF
 	jr	ne,L2d72
@@ -3443,7 +3442,7 @@ L2d72:
 	ldl	rr4,rr2
 	ld	r7,|_stkseg+0|(r15)
 	sub	r3,r3
-	call	_f95da
+	call	_lseek
 	cp	r2,#%FFFF
 	jr	ne,L2da6
 	ldk	r7,#2
@@ -3456,7 +3455,7 @@ L2da6:
 	ld	r7,|_stkseg+0|(r15)
 	ldl	rr4,#%010004F0
 	ldk	r3,#2
-	call	_f970a
+	call	_write
 	cp	r2,#%0002
 	jr	eq,L2dd8
 	ldk	r7,#2
@@ -3476,7 +3475,7 @@ L2dde:
 	ld	r7,r13
 	subl	rr4,rr4
 	sub	r3,r3
-	call	_f95da
+	call	_lseek
 	jr	L2e1e
 L2e04:
 	sra	r12,#1
@@ -3492,12 +3491,12 @@ L2e1e:
 	ld	r7,r13
 	ldl	rr4,#%0200E6EA
 	ld	r3,#%0200
-	call	_f9610
+	call	_read
 	ld	r12,r2
 	cp	r2,#%0001
 	jr	gt,L2e04
 	ld	r7,r13
-	call	_f9576
+	call	_close
 	ldm	r10,_stkseg+4(r15),#4
 	inc	r15,#12
 	ret
@@ -3631,12 +3630,12 @@ L2fce:
 	slal	rr4,#1
 	ld	r7,<<2>>%E4BE
 	sub	r3,r3
-	call	_f95da
+	call	_lseek
 	ldl	rr4,rr12
 	inc	r5,#6
 	ld	r7,<<2>>%E4BE
 	ld	r3,#%0200
-	call	_f9610
+	call	_read
 	sra	r2,#1
 	ld	|_stkseg+10|(r15),r2
 	cp	r2,#%0000
@@ -3777,7 +3776,7 @@ L3144:
 	call	_strcpy
 	ldl	rr6,#%01009098
 	ld	r5,#%002F
-	call	_f9376
+	call	_rindex
 	inc	r3,#5
 	jr	L31d6
 L31b2:
@@ -3786,7 +3785,7 @@ L31b2:
 	call	_strcpy
 	ldl	rr6,#%01009098
 	ld	r5,#%002F
-	call	_f9376
+	call	_rindex
 	inc	r3,#4
 L31d6:
 	ldl	rr10,rr2
@@ -3803,16 +3802,16 @@ L31f2:
 	call	_strcpy
 	ldl	rr6,rr10
 	ldl	rr4,#%01000E60
-	call	_f93ac
+	call	_strcat
 	ldl	rr6,#%010090B6
 	ldl	rr4,#%01000E38
 	call	_strcpy
 	ldl	rr6,#%010090B6
 	ldl	rr4,#%01009098
-	call	_f93ac
+	call	_strcat
 	ldl	rr6,#%010090B6
 	sub	r5,r5
-	call	_f95fe
+	call	_open
 	ld	<<2>>%E4BE,r2
 	cp	r2,#%FFFF
 	jr	ne,L32f4
@@ -3821,13 +3820,13 @@ L31f2:
 	call	_strcpy
 	ldl	rr6,#%010090B6
 	ldl	rr4,#%01000E3A
-	call	_f93ac
+	call	_strcat
 	ldl	rr6,#%010090B6
 	ldl	rr4,#%01009098
-	call	_f93ac
+	call	_strcat
 	ldl	rr6,#%010090B6
 	sub	r5,r5
-	call	_f95fe
+	call	_open
 	ld	<<2>>%E4BE,r2
 	cp	r2,#%FFFF
 	jr	ne,L32f4
@@ -3836,13 +3835,13 @@ L31f2:
 	call	_strcpy
 	ldl	rr6,#%010090B6
 	ldl	rr4,#%01000E40
-	call	_f93ac
+	call	_strcat
 	ldl	rr6,#%010090B6
 	ldl	rr4,#%01009098
-	call	_f93ac
+	call	_strcat
 	ldl	rr6,#%010090B6
 	sub	r5,r5
-	call	_f95fe
+	call	_open
 	ld	<<2>>%E4BE,r2
 	cp	r2,#%FFFF
 	jr	ne,L32f4
@@ -3854,7 +3853,7 @@ L32f4:
 	jr	ne,L3322
 	ldl	rr6,<<2>>%E4C0
 	sub	r5,r5
-	call	_f95fe
+	call	_open
 	ld	<<2>>%E4BE,r2
 	cp	r2,#%0000
 	jr	ge,L3322
@@ -3904,13 +3903,13 @@ L33b0:
 	ldl	rr6,#%02000438
 	ldl	rr4,#%010004CE
 	ldk	r3,#14
-	call	_f93e8
+	call	_strncmp
 	test	r2
 	jr	ne,L33ac
 	ldl	rr4,#%7F000004
 	add	r5,r15
 	ld	r7,<<2>>%E4BE
-	call	_f9596
+	call	_fstat
 	ldl	rr2,|_stkseg+26|(r15)
 	cpl	rr2,<<2>>%0446
 	jr	le,L33f8
@@ -4043,7 +4042,7 @@ L358c:
 	ldl	rr4,#%7F000008
 	add	r5,r15
 	ld	r3,<<2>>%0436
-	call	_f932e
+	call	_swab
 L35e0:
 	ld	r2,|_stkseg+18|(r15)
 	ld	<<2>>%0434,r2
@@ -4440,7 +4439,7 @@ L3ac6:
 	inc	r5,#8
 	ld	r7,@rr12
 	ld	r3,r11
-	call	_f970a
+	call	_write
 	cp	r11,r2
 	jr	eq,L3b00
 	ldk	r7,#2
@@ -4642,7 +4641,7 @@ L3d30:
 	clrb	@rr4
 	ldl	rr6,#%7F000010
 	add	r7,r15
-	call	_f8a5c
+	call	_atoi
 	ld	|_stkseg+30|(r15),r2
 	test	<<2>>%E4AE
 	jr	eq,L3d70
@@ -4835,7 +4834,7 @@ L3fbe:
 	jr	ge,L401e
 	ldl	rr6,|_stkseg+10|(r15)
 	ld	r5,#%002F
-	call	_f92f8
+	call	_strrchr
 	ldl	|_stkseg+34|(r15),rr2
 	testl	rr2
 	jr	eq,L3fec
@@ -7389,17 +7388,17 @@ L627e:
 L62b4:
 	ldl	rr4,rr8
 	sub	r3,r3
-	call	_f95da
+	call	_lseek
 	test	<<2>>%E4A2
 	jr	eq,L62e6
 	ld	r7,<<2>>%EF02
 	ldl	rr4,rr8
 	sub	r3,r3
-	call	_f95da
+	call	_lseek
 	ld	r7,<<2>>%EAF2
 	ldl	rr4,rr8
 	sub	r3,r3
-	call	_f95da
+	call	_lseek
 L62e6:
 	ld	r2,<<1>>%3E7A
 	add	r2,r11
@@ -7424,7 +7423,7 @@ L6310:
 	add	r5,r15
 	ld	r7,<<2>>%E6E2
 	ld	r3,r12
-	call	_f9610
+	call	_read
 	cp	r2,#%0001
 	jr	ge,L6368
 	ldk	r7,#2
@@ -7435,7 +7434,7 @@ L633e:
 	add	r5,r15
 	ld	r7,<<2>>%E8EA
 	ld	r3,r12
-	call	_f9610
+	call	_read
 	cp	r2,#%0001
 	jr	ge,L6368
 	ldk	r7,#2
@@ -7456,7 +7455,7 @@ L6368:
 	add	r5,r15
 	ld	r7,<<2>>%EF02
 	ld	r3,r12
-	call	_f9610
+	call	_read
 	cp	r12,r2
 	jr	eq,L63da
 	ldk	r7,#2
@@ -7467,7 +7466,7 @@ L63b2:
 	add	r5,r15
 	ld	r7,<<2>>%EAF2
 	ld	r3,r12
-	call	_f9610
+	call	_read
 	cp	r12,r2
 	jr	eq,L63da
 	ldk	r7,#2
@@ -8513,7 +8512,7 @@ L6ffe:
 	dec	r15,#2
 	ld	|_stkseg+0|(r15),r7
 	ld	r6,#%0010
-	call	_f9184
+	call	_calloc
 	ldl	<<2>>%E47E,rr2
 	testl	rr2
 	jr	ne,L7026
@@ -8529,7 +8528,7 @@ L702a:
 	sla	r7,#4
 	ld	r5,r7
 	ldl	rr6,<<2>>%E47E
-	call	_f9072
+	call	_realloc
 	ldl	<<2>>%E47E,rr2
 	testl	rr2
 	jr	ne,L705a
@@ -8619,11 +8618,11 @@ L713a:
 	test	<<1>>%15DA
 	jr	eq,L714e
 	ldl	rr6,<<1>>%90DE
-	call	_f903a
+	call	_free
 L714e:
 	ld	r6,|_stkseg+2|(r15)
 	ldk	r7,#1
-	call	_f9184
+	call	_calloc
 	ldl	<<1>>%90DE,rr2
 	testl	rr2
 	jr	ne,L7172
@@ -8667,7 +8666,7 @@ L71ca:
 	jr	ge,L71f4
 	ld	r7,r13
 	ldl	rr4,#%0100194E
-	call	_f880e
+	call	__flsbuf
 	jr	L7208
 L71f4:
 	ldl	rr2,<<1>>%194E
@@ -8830,7 +8829,7 @@ L73ea:
 	bit	r2,#0
 	jr	eq,L7406
 	ld	r7,r9
-	call	_f953e
+	call	_tolower
 	ld	r9,r2
 	ld	|_stkseg+32|(r15),#%0002
 L7406:
@@ -8870,7 +8869,7 @@ L7456:
 	cp	r4,#%0000
 	jr	ge,L7472
 	ldl	rr6,|_stkseg+16|(r15)
-	call	_f86fa
+	call	__filbuf
 	jr	L7484
 L7472:
 	ldl	rr2,|_stkseg+16|(r15)
@@ -8893,7 +8892,7 @@ L7484:
 	jr	eq,L74ac
 	ld	r7,r2
 	ldl	rr4,|_stkseg+16|(r15)
-	call	_f8688
+	call	_ungetc
 L74ac:
 	ldb	rl3,@rr12
 	extsb	r3
@@ -8912,7 +8911,7 @@ L74ca:
 	cp	r4,#%0000
 	jr	ge,L74e6
 	ldl	rr6,|_stkseg+16|(r15)
-	call	_f86fa
+	call	__filbuf
 	jr	L74f8
 L74e6:
 	ldl	rr2,|_stkseg+16|(r15)
@@ -8931,7 +8930,7 @@ L74f8:
 	jr	eq,L740a
 	ld	r7,r2
 	ldl	rr4,|_stkseg+16|(r15)
-	call	_f8688
+	call	_ungetc
 L7514:
 	ld	r2,|_stkseg+20|(r15)
 L7518:
@@ -8978,7 +8977,7 @@ L7590:
 	ld	r5,|_stkseg+6|(r15)
 	ld	r4,|_stkseg+4|(r15)
 	ldl	rr2,_stkseg+34(r15)
-	call	_filbuf
+	call	__inflt
 	jp	L77fa
 L75b8:
 	subl	rr2,rr2
@@ -9002,7 +9001,7 @@ L75dc:
 	cp	r4,#%0000
 	jr	ge,L75fc
 	ldl	rr6,_stkseg+34(r15)
-	call	_f86fa
+	call	__filbuf
 	jr	L7610
 L75fc:
 	ldl	rr2,_stkseg+34(r15)
@@ -9031,7 +9030,7 @@ L7610:
 	cp	r4,#%0000
 	jr	ge,L764e
 	ldl	rr6,_stkseg+34(r15)
-	call	_f86fa
+	call	__filbuf
 	jr	L7662
 L764e:
 	ldl	rr2,_stkseg+34(r15)
@@ -9057,7 +9056,7 @@ L767a:
 	jp	eq,L77a0
 	ld	r7,r13
 	ldl	rr4,_stkseg+34(r15)
-	call	_f8688
+	call	_ungetc
 	ldl	rr2,_stkseg+38(r15)
 	clr	@rr2
 	jp	L77aa
@@ -9073,7 +9072,7 @@ L76a0:
 	jr	ge,L76ca
 L76bc:
 	ldl	rr6,_stkseg+34(r15)
-	call	_f86fa
+	call	__filbuf
 	jr	L76de
 L76ca:
 	ldl	rr2,_stkseg+34(r15)
@@ -9218,7 +9217,7 @@ L784c:
 	cp	r4,#%0000
 	jr	ge,L7864
 	ldl	rr6,rr10
-	call	_f86fa
+	call	__filbuf
 	jr	L7872
 L7864:
 	ldl	rr2,@rr10
@@ -9269,7 +9268,7 @@ L78c6:
 	cp	r4,#%0000
 	jr	ge,L78ea
 	ldl	rr6,rr10
-	call	_f86fa
+	call	__filbuf
 	jr	L78f8
 L78ea:
 	ldl	rr2,@rr10
@@ -9291,7 +9290,7 @@ L7900:
 	jr	le,L7918
 	ld	r7,r9
 	ldl	rr4,rr10
-	call	_f8688
+	call	_ungetc
 L7918:
 	ldl	rr2,_stkseg+34(r15)
 	clr	@rr2
@@ -9464,7 +9463,7 @@ L79ca:
 	ldl	rr4,#%7F000036
 	add	r5,r15
 	sub	r7,r7
-	call	_f880e
+	call	__flsbuf
 	jr	L7bb0
 L7ba2:
 	ldl	rr2,|_stkseg+54|(r15)
@@ -9527,7 +9526,7 @@ L7c26:
 	clr	|_stkseg+12|(r15)
 	clr	|_stkseg+126|(r15)
 	ldl	|_stkseg+14|(r15),rr4
-	call	_f8c86
+	call	__length
 	ld	r10,r2
 	jr	L7c8c
 L7c50:
@@ -9540,7 +9539,7 @@ L7c50:
 L7c62:
 	ld	r7,r11
 	ldl	rr4,_stkseg+154(r15)
-	call	_f880e
+	call	__flsbuf
 	jr	L7c88
 L7c72:
 	ldl	rr2,_stkseg+154(r15)
@@ -9811,7 +9810,7 @@ L7f46:
 	jr	ge,L7f9a
 	ld	r7,#%006C
 	ldl	rr4,_stkseg+154(r15)
-	call	_f880e
+	call	__flsbuf
 	jr	L7fb2
 L7f9a:
 	ldl	rr2,_stkseg+154(r15)
@@ -9832,7 +9831,7 @@ L7fb2:
 	jr	ge,L7fd4
 	ld	r7,r11
 	ldl	rr4,_stkseg+154(r15)
-	call	_f880e
+	call	__flsbuf
 	jr	L7fea
 L7fd4:
 	ldl	rr2,_stkseg+154(r15)
@@ -9947,7 +9946,7 @@ L8122:
 	jr	ge,L8154
 	ld	r7,#%002D
 	ldl	rr4,_stkseg+154(r15)
-	call	_f880e
+	call	__flsbuf
 	jr	L816c
 L8154:
 	ldl	rr2,_stkseg+154(r15)
@@ -9968,7 +9967,7 @@ L8170:
 	ldl	rr6,|_stkseg+100|(r15)
 	ld	r5,|_stkseg+26|(r15)
 	ldl	rr2,|_stkseg+28|(r15)
-	call	_f8ad0
+	call	__cnvt
 	add	r2,|_stkseg+124|(r15)
 L8192:
 	ld	r9,r2
@@ -9994,7 +9993,7 @@ L81c2:
 	ldl	|_stkseg+32|(r15),rr6
 L81e2:
 	ldl	rr6,|_stkseg+32|(r15)
-	call	_f8c86
+	call	__length
 	ld	r9,r2
 	inc	_stkseg+152(r15),#2
 	cp	_stkseg+152(r15),#%0005
@@ -10036,7 +10035,7 @@ L8286:
 	.word	%0F24,%8303	// EPU
 	ld	r7,|_stkseg+24|(r15)
 	ld	r3,r11
-	call	__inflt
+	call	__fegcvt
 	ldl	|_stkseg+32|(r15),rr2
 	ldl	rr2,|_stkseg+18|(r15)
 	testl	rr2
@@ -10220,7 +10219,7 @@ L8472:
 	ldb	@rr2,#%45
 L8484:
 	ldl	rr6,|_stkseg+32|(r15)
-	call	_f8c86
+	call	__length
 	jp	L8192
 L8494:
 	inc	|_stkseg+102|(r15),#1
@@ -10249,7 +10248,7 @@ L84c2:
 	ldb	rl7,|_stkseg+129|(r15)
 	extsb	r7
 	ldl	rr4,_stkseg+154(r15)
-	call	_f880e
+	call	__flsbuf
 	jr	L8500
 L84e8:
 	ldl	rr2,_stkseg+154(r15)
@@ -10281,7 +10280,7 @@ L8512:
 	ldb	rl7,@rr2
 	extsb	r7
 	ldl	rr4,_stkseg+154(r15)
-	call	_f880e
+	call	__flsbuf
 	jr	L855c
 L853e:
 	ldl	rr2,|_stkseg+32|(r15)
@@ -10318,7 +10317,7 @@ L8572:
 	ldb	rl7,|_stkseg+129|(r15)
 	extsb	r7
 	ldl	rr4,_stkseg+154(r15)
-	call	_f880e
+	call	__flsbuf
 	jr	L85c0
 L85a8:
 	ldl	rr2,_stkseg+154(r15)
@@ -10403,3 +10402,4 @@ L8668:
 	sub	r2,r11
 	ldm	r10,_stkseg+18(r15),#4
 	add	r15,#%001A
+	ret

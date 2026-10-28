@@ -1,9 +1,14 @@
 	.seg
 	.extern	_stkseg
-	.extern	_f952c
+	.extern	_getpid
+	.extern	_access
 	.code
 
 _mktemp::
+	dec	r15,#16
+	ldm	_stkseg+8(r15),r10,#4
+	ldl	|_stkseg+0|(r15),rr6
+	call	_getpid
 	ld	r11,r2
 	ldl	rr12,|_stkseg+0|(r15)
 L922a:
@@ -43,7 +48,7 @@ L926e:
 L9274:
 	ldl	rr6,|_stkseg+0|(r15)
 	sub	r5,r5
-	call	_f952c
+	call	_access
 	cp	r2,#%FFFF
 	jr	ne,L9260
 	ldl	rr2,|_stkseg+0|(r15)

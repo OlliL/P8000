@@ -51,6 +51,11 @@ def target_of(i):
     return (None, None)
 
 
+def sym(n):
+    """assembler symbol of a name: names that start with an underscore are kept (`__flsbuf`), others get one"""
+    return n if n.startswith('_') else '_' + n
+
+
 def write_source(prog, seg, a, b, name, outdir, extnames, exports=None):
     code = prog[:]
     insns = decode_range(code, seg, a, b)
@@ -71,19 +76,19 @@ def write_source(prog, seg, a, b, name, outdir, extnames, exports=None):
             body.append('L%x:' % pc)
         # the module start already carries the label _name:: in the header
         if pc in exports and pc != a:
-            body.append('_%s::' % exports[pc].lstrip('_'))
+            for en in ([exports[pc]] if isinstance(exports[pc], str) else exports[pc]):
+                body.append('%s::' % sym(en))
         text = z8k.text(i)
         k, t = target_of(i)
         if i.mn in ('call', 'calr', 'jp') and k in ('abs', 'rel') and t is not None and t not in internal:
-            sym = extnames.get('0x%x' % t, 'x%x' % t)
-            sym = '_' + sym.lstrip('_')
-            if sym not in externs:
-                externs.append(sym)
+            esym = sym(extnames.get('0x%x' % t, 'x%x' % t))
+            if esym not in externs:
+                externs.append(esym)
             if i.mn == 'calr':
-                text = '%s\t%s' % (i.mn, sym)
+                text = '%s\t%s' % (i.mn, esym)
             else:
                 # jp keeps its condition code: the target is the only address in the text
-                text = re.sub(r'<<0>>%[0-9A-F]{4}', sym, text, count=1)
+                text = re.sub(r'<<0>>%[0-9A-F]{4}', esym, text, count=1)
         elif i.mn in ('calr', 'jr', 'jpr', 'djnz', 'dbjnz') and k == 'rel' and t in internal:
             text = re.sub(r'%[0-9A-F]{4}', 'L%x' % t, text, count=1)
         elif i.mn in ('call', 'jp', 'lda') and k == 'abs' and t in internal:
@@ -95,7 +100,13 @@ def write_source(prog, seg, a, b, name, outdir, extnames, exports=None):
             if '_stkseg' not in externs:
                 externs.append('_stkseg')
         body.append('\t' + text)
-    lines = ['\t.seg'] + ['\t.extern\t%s' % e for e in externs] + ['\t.code', '', '_%s::' % name] + body
+    # the module start carries its name, further names of the same address (exports[a]) follow
+    heads = ['%s::' % sym(name)] if name else []
+    if a in exports:
+        for en in ([exports[a]] if isinstance(exports[a], str) else exports[a]):
+            if '%s::' % sym(en) not in heads:
+                heads.append('%s::' % sym(en))
+    lines = ['\t.seg'] + ['\t.extern\t%s' % e for e in externs] + ['\t.code', ''] + heads + body
     src = os.path.join(outdir, name + '.s')
     with open(src, 'w') as f:
         f.write('\n'.join(lines) + '\n')

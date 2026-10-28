@@ -1,14 +1,16 @@
 	.seg
 	.extern	_stkseg
-	.extern	_f970a
-	.extern	_f91ea
+	.extern	_write
+	.extern	_isatty
 	.extern	_malloc
-	.extern	_f9576
-	.extern	_f903a
-	.extern	_cnvt
+	.extern	_close
+	.extern	_free
 	.code
 
-_flsbuf::
+__flsbuf::
+	sub	r15,#%0018
+	ldm	_stkseg+12(r15),r8,#6
+	ld	|_stkseg+6|(r15),r7
 	ldl	rr12,rr4
 	ldb	rl6,rr12(#%000A)
 	extsb	r6
@@ -33,7 +35,7 @@ L8836:
 	ldl	rr4,#%7F000009
 	add	r5,r15
 	ld	r3,r8
-	call	_f970a
+	call	_write
 	ld	r9,r2
 	ldl	rr2,rr12
 	inc	r3,#4
@@ -48,7 +50,7 @@ L886a:
 	jr	ne,L88ac
 	ldb	rl7,_d1959+0
 	extsb	r7
-	call	_f91ea
+	call	_isatty
 	test	r2
 	jr	eq,L8896
 L888e:
@@ -91,7 +93,7 @@ L88ce:
 	extsb	r7
 	ldl	rr4,rr10
 	ld	r3,r9
-	call	_f970a
+	call	_write
 	ld	r9,r2
 L88f0:
 	ldl	rr2,rr12
@@ -116,6 +118,7 @@ L8916:
 	add	r15,#%0018
 	ret
 L8924:
+_fflush::
 	dec	r15,#16
 	ldm	_stkseg+6(r15),r9,#5
 	ldl	rr12,rr6
@@ -141,7 +144,7 @@ L8924:
 	extsb	r7
 	ldl	rr4,rr10
 	ld	r3,r9
-	call	_f970a
+	call	_write
 	cp	r9,r2
 	jr	eq,L8980
 	ldl	rr2,rr12
@@ -155,7 +158,7 @@ L8982:
 	ldm	r9,_stkseg+6(r15),#5
 	inc	r15,#16
 	ret
-_f898e::
+__cleanup::
 	dec	r15,#4
 	ldm	_stkseg+0(r15),r12,#2
 	ldl	rr12,#%01001942
@@ -171,6 +174,7 @@ L89a6:
 	inc	r15,#4
 	ret
 L89ba:
+_fclose::
 	dec	r15,#12
 	ldm	_stkseg+6(r15),r11,#3
 	ldl	rr12,rr6
@@ -188,7 +192,7 @@ L89ba:
 	ld	r11,r2
 	ldb	rl7,rr12(#%000B)
 	extsb	r7
-	call	_f9576
+	call	_close
 	cp	r2,#%0000
 	jr	ge,L8a00
 	ld	r2,#%FFFF
@@ -199,7 +203,7 @@ L8a00:
 	bit	r2,#3
 	jr	eq,L8a14
 	ldl	rr6,rr12(#%0006)
-	call	_f903a
+	call	_free
 L8a14:
 	ldb	rl2,rr12(#%000A)
 	extsb	r2
@@ -222,9 +226,6 @@ L8a28:
 L8a3c:
 	ldm	r11,_stkseg+6(r15),#3
 	inc	r15,#12
-	ret
-__callex::
-	call	_cnvt
 	ret
 
 	.data

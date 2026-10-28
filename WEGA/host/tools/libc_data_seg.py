@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """libc_data_seg.py - add the data words of the libc part of /bin/sld to the segmented module sources.
 
-Each module source (src/lib/oldslibc/<module>/0_1.s) refers to its data as <<1>>%XXXX (segment 1 address).
+Each module source (src/lib/oldslibc/<object>/<version>.s, version e.g. 0_1) refers to its data as <<1>>%XXXX (segment 1 address).
 This tool groups the referenced words into spans (gap up to GAP bytes), names each span _dXXXX (XXXX = start
 offset), rewrites the references to _dXXXX+off and appends a .data section with the words of the original.
 The words are read from /bin/sld (data offset = image offset of the data area).
@@ -29,9 +29,10 @@ def main():
     s = SOut(open(PROG, 'rb').read())
     data = bytes(s.image)[s.segs[0]['code']:]
     for mod in sorted(os.listdir(segdir)):
-        src = os.path.join(segdir, mod, '0_1.s')
-        if not os.path.isfile(src):
+        srcs = [f for f in sorted(os.listdir(os.path.join(segdir, mod))) if f.endswith('.s')] if os.path.isdir(os.path.join(segdir, mod)) else []
+        if not srcs:
             continue
+        src = os.path.join(segdir, mod, srcs[0])
         text = open(src).read()
         refs = sorted({int(m, 16) for m in REF.findall(text)})
         if not refs:
@@ -54,12 +55,11 @@ def main():
         lines = text.split('\n')
         new = []
         for ln in lines:
-            ln = REF.sub(lambda m: bss_ref(int(m.group(1), 16), len(data)) if int(m.group(1), 16) >= len(data)
+            # references behind the data area (bss of segment 1) stay absolute, as in the original
+            ln = REF.sub(lambda m: m.group(0) if int(m.group(1), 16) >= len(data)
                          else '%s+%d' % names[int(m.group(1), 16)], ln)
             new.append(ln)
         body = '\n'.join(new).rstrip('\n') + '\n'
-        if bss:
-            body = body.replace('\t.seg\n', '\t.seg\n\t.extern\t_bss1\n', 1)
         for lo, hi in spans if spans else []:
             if lo == spans[0][0]:
                 body += '\n\t.data\n'

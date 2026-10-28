@@ -1,0 +1,42 @@
+# libc functions called by the own code of /bin/sld: address -> name of the (old) slibc member
+# columns: address, C name used in sld.c (asm symbol without the leading underscore), asm symbol, member of /lib/slibc.a, evidence
+# the code is the old slibc revision of sld (not byte equal to /lib/slibc.a); the member sizes of slibc.a fit the address gaps
+# (isatty 38, mktemp 134, stty 48, strchr 50, strrchr 54, swab 72, rindex 54, strcat 60, strncmp 84, strcpy 50, swap 190 ...).
+8684 _fegcvt   __fegcvt  ffltioc.o  printf: converts the double (width, buf, double, conversion char); doprnt.o calls __fegcvt
+8686 _inflt    __inflt    ffltioc.o  scanf: float input (p, n, size, stream, flag); doscan.o calls __inflt
+8688 ungetc    _ungetc    ungetc.o   (c, stream)
+86fa _filbuf   __filbuf   filbuf.o   getc slow path
+880e _flsbuf   __flsbuf   flsbuf.o   putc slow path (stream macro of the printf core)
+898e _cleanup  __cleanup  flsbuf.o   (called by exit only)
+8a50 exit      _exit      cuexit.o   __cleanup, then sc #1 (called by __callex)
+8a5c atoi      _atoi      atoi.o     116 bytes
+8ad0 _cnvt     __cnvt     cnvt.o     (buf, radix, long) number conversion of printf
+8c86 _length   __length   length.o   strlen
+8cb4 malloc    _malloc    malloc.o
+903a free      _free      malloc.o   free(p); allocp = p
+9072 realloc   _realloc   malloc.o
+9184 calloc    _calloc    malloc.o   (n, size) -> long
+9210 mktemp    _mktemp    mktemp.o   mktemp("/tmp/ldaXXXXX"), calls getpid
+92c6 strchr    _strchr    strchr.o   first match
+92f8 strrchr   _strrchr   strrchr.o  last match
+932e swab      _swab      swab.o
+9376 rindex    _rindex    rindex.o   same code as strrchr, 54 bytes
+93ac strcat    _strcat    strcat.o
+93e8 strncmp   _strncmp   strncmp.o
+943c strcpy    _strcpy    strcpy.o
+946e swap      _swap      swap.o     swaps the two bytes of an int
+952c access    _access    access.o   sc #0x21
+953e tolower   _tolower   tolower.o  'A'..'Z' + 0x20
+9564 chmod     _chmod     chmod.o    sc #0x0f
+9576 close     _close     close.o    sc #6
+9586 creat     _creat     creat.o    sc #8
+9596 fstat     _fstat     fstat.o    sc #0x1c
+95c8 link      _link      link.o     sc #9
+95da lseek     _lseek     lseek.o    sc #0x13
+95ee mkseg     _mkseg     mkseg.o    sc #0x37 (not called by the own code)
+95fe open      _open      open.o     sc #5
+9610 read      _read      read.o     sc #3
+9622 ssgbrk    _ssgbrk    ssgbrk.o   sc #0x2d (not called by the own code)
+9638 signal    _signal    signal.o
+96fa unlink    _unlink    unlink.o   sc #0x0a
+970a write     _write     write.o    sc #4

@@ -163,6 +163,11 @@ produce the same bytes with the shipped cc.
   is strict (frame offsets), `rename.py` renames table + sld.c + findings.json, `strict_audit.py` compares every accepted
   function, `check_names.py` checks the 8-character rule, `tryname.py` finds a name the compiler does not lose. Renamed
   because the compiler lost the function name: `make_blocks` -> `make_blk`, `dump_p1` -> `dmp_p1`.
+  The libc call targets of sld.c have their names (tools/libc_names.txt, 34 functions: exit, atoi, read, write, strcpy ...).
+  oldslibc/<object>/0_1.s and sld_own.s use the libc names now; the objects follow the members of slibc.a (all equal to the shipped
+  ones), ffltioc is at 0x8682, `make link` and `make linkslibc` work (78 / 110 differing code bytes, all data addresses).
+  Open: the data of the libc objects (members' data, jump tables with code labels, immediate table addresses), the data and bss
+  of sld itself, then the split of sld.c into modules (SCCS tags of the binary give the module names).
   Next: improve the findings-class functions found by `strict_audit.py` (parse_args, f6c6a, make_ccl, scan_field, ...),
   re-check the D15 tags, cut the data (7090 bytes, bss), map the libc `fXXXX` addresses to libc names, `make link` and
   compare the bytes, split sld.c into modules.

@@ -40,12 +40,12 @@ register char *dst;
 
 /* f0762 0x0762..0x078c: done */
 long g03ba;
-long f9184();
+long calloc();
 
 f0762(a)
 int a;
 {
-	g03ba = f9184(a, 4);
+	g03ba = calloc(a, 4);
 	if (!g03ba)
 		report_error(2, "x");
 }
@@ -60,22 +60,22 @@ char *p0494;
 
 sig_handler()
 {
-	f96fa(tmpname);
+	unlink(tmpname);
 	if (!g04e8 && !(bE496 && g04e6) && !bE4A2) {
-		f9564(p0494, (~umask(0)) & 0x1ff);
+		chmod(p0494, (~umask(0)) & 0x1ff);
 	}
-	f8a50(g04e8);
+	exit(g04e8);
 }
 
 /* init_signals 0x0aba..0x0b04: done */
-long f9638();
+long signal();
 
 init_signals()
 {
-	if (f9638(2, 1L) != 1)
-		f9638(2, sig_handler);
-	if (f9638(15, 1L) != 1)
-		f9638(15, sig_handler);
+	if (signal(2, 1L) != 1)
+		signal(2, sig_handler);
+	if (signal(15, 1L) != 1)
+		signal(15, sig_handler);
 }
 
 /* high_byte 0x2e4c..0x2e76: done */
@@ -289,24 +289,24 @@ unsigned x;
 
 /* f6ffe 0x6ffe..0x702a: done */
 long g1688;
-long f9184();
+long calloc();
 
 f6ffe(a)
 int a;
 {
-	g1688 = f9184(a, 16);
+	g1688 = calloc(a, 16);
 	if (!g1688)
 		report_error(2, "x");
 }
 
 /* f702a 0x702a..0x705e: done */
 char *gE47E;
-char *f9072();
+char *realloc();
 
 f702a(a)
 int a;
 {
-	gE47E = f9072(gE47E, a << 4);
+	gE47E = realloc(gE47E, a << 4);
 	if (!gE47E)
 		report_error(2, "x");
 }
@@ -359,9 +359,9 @@ int n;
 
 /* f2dde..2e4c: done */
 int flush_buffer();
-int f95da();
-int f9610();
-int f9576();
+int lseek();
+int read();
+int close();
 char bE6EA[];
 int f3a88();
 
@@ -374,15 +374,15 @@ char *p;
 
 	flush_buffer(p);
 	n = *(int *)p;
-	f95da(n, 0L, 0);
-	while ((c = f9610(n, bE6EA, 0x200)) > 1) {
+	lseek(n, 0L, 0);
+	while ((c = read(n, bE6EA, 0x200)) > 1) {
 		c >>= 1;
 		q = (int *)bE6EA;
 		do {
 			f3a88(*q++, bE4DA);
 		} while (--c);
 	}
-	f9576(n);
+	close(n);
 }
 
 /* f0178..01d2: findings:D2 */
@@ -440,7 +440,7 @@ char *d;
 }
 
 /* flush_buffer..3b1e: findings:D1 */
-int f970a();
+int write();
 
 flush_buffer(a)
 char *a;
@@ -451,7 +451,7 @@ char *a;
 	p = a;
 	n = *(char **)(p + 4) - (p + 8);
 	if (n > 0) {
-		if (f970a(*(int *)p, p + 8, n) != n)
+		if (write(*(int *)p, p + 8, n) != n)
 			report_error(2, "x");
 	}
 	*(char **)(p + 4) = p + 8;
@@ -770,9 +770,9 @@ int f6134();
 int f2dde();
 int f6efe();
 int flush_buffer();
-int f9576();
-int f96fa();
-int f95c8();
+int close();
+int unlink();
+int link();
 int f2d4c();
 int sig_handler();
 
@@ -787,10 +787,10 @@ finish_output()
 		f6efe();
 	}
 	flush_buffer(bE4DA);
-	f9576(*(int *)bE4DA);
+	close(*(int *)bE4DA);
 	if (!bE4BC) {
-		f96fa(bE048A);
-		f95c8("x", bE048A);
+		unlink(bE048A);
+		link("x", bE048A);
 		bE0494 = bE048A;
 	}
 	bE4E8 = bE4A3A;
@@ -800,9 +800,9 @@ finish_output()
 
 /* f2d4c..2dde: findings:D2 */
 int bE4F0;
-int f95fe();
-int f95da();
-int f970a();
+int open();
+int lseek();
+int write();
 int report_error();
 
 f2d4c()
@@ -811,13 +811,13 @@ f2d4c()
 	char rest[12];
 	int n;
 
-	n = f95fe(bE0494, 1);
+	n = open(bE0494, 1);
 	if (n == -1)
 		report_error(2, "x");
-	if (f95da(n, buf, 0) == -1)
+	if (lseek(n, buf, 0) == -1)
 		report_error(2, "y");
 	bE4F0 = bE4F0 * 14;
-	if (f970a(n, &bE4F0, 2) != 2)
+	if (write(n, &bE4F0, 2) != 2)
 		report_error(2, "z");
 }
 
@@ -894,7 +894,7 @@ int bE4B6;
 char bE438[];
 int refill_wbuf();
 int f2e76();
-int f946e();
+int swap();
 int read_symbols();
 
 load_header(p)
@@ -911,7 +911,7 @@ long p;
 	f2e76(bE438, 0x1a);
 	f2e76(&magic, 2);
 	if (bE4B6)
-		magic = f946e(magic);
+		magic = swap(magic);
 	if (magic == 0xe707 || magic == 0xe711 || magic == 0xe607 || magic == 0xe611) {
 		if (read_symbols(1, p + 13)) {
 			*(long *)b3486 = p;
@@ -925,13 +925,13 @@ long p;
 char *bE194E;
 int bE1950;
 int bE1952;
-int f880e();
+int _flsbuf();
 
 int put_char(c)
 register int c;
 {
 	if (--bE1952 < 0)
-		f880e(c, &bE194E);
+		_flsbuf(c, &bE194E);
 	else {
 		bE1950++;
 		*bE194E = c;
@@ -943,7 +943,7 @@ register int c;
 int bE4EC;
 int bE3B8;
 long bE3BA[];
-long f9184();
+long calloc();
 
 char *get_block(n)
 int n;
@@ -953,7 +953,7 @@ int n;
 	if (n > bE4EC)
 		report_error(2, "x");
 	while (n > bE3B8) {
-		p = f9184(1, 0x36);
+		p = calloc(1, 0x36);
 		bE3B8++;
 		bE3BA[bE3B8] = p;
 		if (p == 0)
@@ -965,10 +965,10 @@ int n;
 /* open_tmp..2346: findings:D7 */
 char *bE494;
 char bE49E[];
-int f9586();
-int f9576();
-int f95fe();
-int f96fa();
+int creat();
+int close();
+int open();
+int unlink();
 
 open_tmp(out, flag)
 char *out;
@@ -981,17 +981,17 @@ int flag;
 		name = bE49E;
 	else
 		name = bE494;
-	fd = f9586(name, 0x1b6);
+	fd = creat(name, 0x1b6);
 	if (fd < 0) {
 		if (flag)
 			report_error(2, "x");
 		else
 			report_error(2, "y");
 	}
-	f9576(fd);
-	*(int *)out = f95fe(name, 2);
+	close(fd);
+	*(int *)out = open(name, 2);
 	if (flag)
-		f96fa(bE49E);
+		unlink(bE49E);
 	*(int *)(out + 2) = 0x100;
 	*(char **)(out + 4) = out + 8;
 }
@@ -1120,8 +1120,8 @@ char *p;
 /* ensure_buf..7186: done */
 unsigned bE15DA;
 long bE190DE;
-long f9184();
-int f903a();
+long calloc();
+int free();
 int report_error();
 
 long ensure_buf(n)
@@ -1131,8 +1131,8 @@ unsigned long n;
 		if (n > 0xffff)
 			report_error(2, "x");
 		if (bE15DA != 0)
-			f903a(bE190DE);
-		bE190DE = f9184(1, (int)n);
+			free(bE190DE);
+		bE190DE = calloc(1, (int)n);
 		if (bE190DE == 0)
 			report_error(2, "y");
 		bE15DA = (unsigned)n;
@@ -1147,7 +1147,7 @@ int open_library();
 int refill_wbuf();
 int f2e76();
 int f2492();
-int f9576();
+int close();
 
 f23fe(p)
 char *p;
@@ -1178,7 +1178,7 @@ char *p;
 		}
 		bE486 = (long)lp;
 	}
-	f9576(bE4BE);
+	close(bE4BE);
 }
 
 /* f1f96..2056: findings:D4 */
@@ -1371,8 +1371,8 @@ char *p;
 
 /* scan_field..7956: findings:D2 */
 int refill_wbuf();
-int f8688();
-int f86fa();
+int ungetc();
+int _filbuf();
 
 scan_field(dest, wc, stream, nret)
 char *dest;
@@ -1401,7 +1401,7 @@ int *nret;
 			c = *(unsigned char *)(*(char **)stream);
 			*(char **)stream += 1;
 		} else
-			c = f86fa(stream);
+			c = _filbuf(stream);
 		if (c == -1)
 			break;
 	} while (bE17BA[c] & mode);
@@ -1424,13 +1424,13 @@ int *nret;
 			c = *(unsigned char *)(*(char **)stream);
 			*(char **)stream += 1;
 		} else
-			c = f86fa(stream);
+			c = _filbuf(stream);
 	}
 	if (c == -1)
 		*nret = 1;
 	else {
 		if (width > 0)
-			f8688(c, stream);
+			ungetc(c, stream);
 		*nret = 0;
 	}
 	if (dest == 0 || dest == save)
@@ -1534,7 +1534,7 @@ char *name;
 	int inword;
 	char *p;
 
-	fd = f95fe(name, 0);
+	fd = open(name, 0);
 	if (fd < 0)
 		report_error(2, "x");
 	p = buf6988;
@@ -1563,12 +1563,12 @@ body:
 		tab4a48[idx] = p;
 	}
 rd:
-	n = f9610(fd, &c, 1) != 0;
+	n = read(fd, &c, 1) != 0;
 	if (n)
 		goto body;
 	g4a40 = tab4a48;
 	g4a44 = idx;
-	f9576(fd);
+	close(fd);
 	return 0;
 }
 
@@ -1633,8 +1633,8 @@ int *res;
 /* refill_wbuf..3090: findings:D5,D9,D15 */
 char b0004[];
 char b020a[];
-int f95da();
-int f9610();
+int lseek();
+int read();
 int f3090();
 int report_error();
 
@@ -1668,8 +1668,8 @@ int n;
 	} else if (!*(int *)b0004 && *(int *)(b0004 + 2) < *(int *)(b020a + 2))
 		cur = b0004;
 	*(int *)(cur + 2) = hi;
-	f95da(bE4BE, (v & 0xff00) << 1, 0);
-	nw = f9610(bE4BE, cur + 6, 0x200) >> 1;
+	lseek(bE4BE, (v & 0xff00) << 1, 0);
+	nw = read(bE4BE, cur + 6, 0x200) >> 1;
 	if (nw < 0)
 		nw = 0;
 	*(int *)(cur + 4) = nw;
@@ -1840,9 +1840,9 @@ int open_library();
 int read_symbols();
 int f1560();
 int f6f46();
-int f95da();
-int f9610();
-int f9576();
+int lseek();
+int read();
+int close();
 int load_header();
 long ensure_buf();
 int report_error();
@@ -1866,8 +1866,8 @@ char *p;
 	case 2:
 		bE3E88 = bE44E / 12;
 		bE3E84 = ensure_buf(bE44E);
-		f95da(bE4BE, 28L, 0);
-		f9610(bE4BE, bE3E84, bE3E88 * 12);
+		lseek(bE4BE, 28L, 0);
+		read(bE4BE, bE3E84, bE3E88 * 12);
 		f6f46(bE3E84, bE3E88);
 		while (f1560())
 			;
@@ -1885,7 +1885,7 @@ check:
 	if (load_header(n))
 		goto step;
 end:
-	f9576(bE4BE);
+	close(bE4BE);
 }
 
 /* ld_fscanf..7286: findings:D5,D16 */
@@ -2016,7 +2016,7 @@ int end_pass1();
 int start_output();
 int f23fe();
 int finish_output();
-char *f92c6();
+char *strchr();
 int parse_args();
 
 int parse_args(argc, argv)
@@ -2070,7 +2070,7 @@ scan:
 		j += 2;
 		goto scan;
 	case 'M':
-		p = f92c6(a, ':');
+		p = strchr(a, ':');
 		if (p && !p[2]) {
 			k++;
 			av++;
@@ -2545,7 +2545,7 @@ int f2e76();
 int refill_wbuf();
 int swap_bytes();
 int swap_quad();
-int f932e();
+int swab();
 int make_blk();
 int report_error();
 
@@ -2575,7 +2575,7 @@ int b;
 	refill_wbuf(bE414, a, bE436);
 	f2e76(tmp, bE436);
 	if (bE4B6)
-		f932e(tmp, tmp, bE436);
+		swab(tmp, tmp, bE436);
 	bE434 = *(int *)(tmp + 10);
 	n = bE434 / 16;
 	refill_wbuf(bE414, a + ((bE436 & ~1) >> 1), bE434);
@@ -2717,8 +2717,8 @@ struct sio {
 	char *base;
 	char flag;
 };
-int f8c86();
-int f880e();
+int _length();
+int _flsbuf();
 int f85c6();
 
 int ld_doprnt(f, ap, dp, sptr, scnt, iop)
@@ -2763,10 +2763,10 @@ struct sio *iop;
 	ncnt = 0;
 	nout = 0;
 	wptr = ap;
-	rem = f8c86(f);
+	rem = _length(f);
 	goto l7c8c;
 l7c50:
-	--iop->cnt < 0 ? f880e(c, iop) : (int)(*iop->ptr++ = c);
+	--iop->cnt < 0 ? _flsbuf(c, iop) : (int)(*iop->ptr++ = c);
 	nout += 1;
 l7c8c:
 	if (rem-- == 0)
@@ -2971,8 +2971,8 @@ l7f4e:
 		goto l7f46;
 	if (c == 'u')
 		goto l7f3e;
-	--iop->cnt < 0 ? f880e(0x6c, iop) : (int)(*iop->ptr++ = 0x6c);
-	--iop->cnt < 0 ? f880e(c, iop) : (int)(*iop->ptr++ = c);
+	--iop->cnt < 0 ? _flsbuf(0x6c, iop) : (int)(*iop->ptr++ = 0x6c);
+	--iop->cnt < 0 ? _flsbuf(c, iop) : (int)(*iop->ptr++ = c);
 	nout += 2;
 l7fee:
 	if (width == 0)
@@ -3039,11 +3039,11 @@ l8100:
 	if (*(long *)pd1c == 0x80000000)
 		size1a = 10;
 	*(long *)pd1c *= -1;
-	--iop->cnt < 0 ? f880e(0x2d, iop) : (int)(*iop->ptr++ = 0x2d);
+	--iop->cnt < 0 ? _flsbuf(0x2d, iop) : (int)(*iop->ptr++ = 0x2d);
 	nout += 1;
 l8170:
 	pe20 = buf24;
-	pn = f8ad0(bufp, size1a, *(long *)pd1c) + outc;
+	pn = _cnvt(bufp, size1a, *(long *)pd1c) + outc;
 	goto l7fee;
 l8212:
 	padc[0] = 0x20;
@@ -3066,7 +3066,7 @@ l81c2:
 	wptr += 4;
 	if (pe20 == 0)
 		pe20 = (char *)0x0100186AL;
-	pn = f8c86(pe20);
+	pn = _length(pe20);
 	scnt += 2;
 	if (scnt != 5)
 		goto l7fee;
@@ -3085,7 +3085,7 @@ l8270:
 	wptr = sptr;
 	scnt += 5;
 l8286:
-	pe20 = f8684(width, buf24, *(double *)wptr, c);
+	pe20 = _fegcvt(width, buf24, *(double *)wptr, c);
 	if (*(long *)pa12 == 0)
 		wptr += 8;
 	else
@@ -3166,7 +3166,7 @@ l83bc:
 		goto l8386;
 	goto l845e;
 l8386:
-	f943c(*(char **)pb6e, bufp);
+	strcpy(*(char **)pb6e, bufp);
 	goto l845e;
 l83c4:
 	if (c != 0x66)
@@ -3234,7 +3234,7 @@ l8494:
 	bufp += 1;
 	goto l8472;
 l8484:
-	pn = f8c86(pe20);
+	pn = _length(pe20);
 	goto l7fee;
 l849a:
 	goto l7c50;
@@ -3245,14 +3245,14 @@ l84ba:
 		goto l8504;
 	goto l8560;
 l84c2:
-	--iop->cnt < 0 ? f880e(padc[0], iop) : (int)(*iop->ptr++ = padc[0]);
+	--iop->cnt < 0 ? _flsbuf(padc[0], iop) : (int)(*iop->ptr++ = padc[0]);
 	nout += 1;
 l8504:
 	if (padn-- != 0)
 		goto l84c2;
 	goto l8560;
 l8512:
-	--iop->cnt < 0 ? f880e(*pe20++, iop) : (int)(*iop->ptr++ = *pe20++);
+	--iop->cnt < 0 ? _flsbuf(*pe20++, iop) : (int)(*iop->ptr++ = *pe20++);
 	nout += 1;
 l8560:
 	if (pn-- != 0)
@@ -3262,7 +3262,7 @@ l8560:
 l8572:
 	if (padn-- == 0)
 		goto l7c8c;
-	--iop->cnt < 0 ? f880e(padc[0], iop) : (int)(*iop->ptr++ = padc[0]);
+	--iop->cnt < 0 ? _flsbuf(padc[0], iop) : (int)(*iop->ptr++ = padc[0]);
 	nout += 1;
 	goto l8572;
 l7d02:
@@ -3336,7 +3336,7 @@ long s1;
 
 /* ld_sprintf..7bbc: done */
 int ld_doprnt();
-int f880e();
+int _flsbuf();
 
 int ld_sprintf(buf, fmt, w1, w2, d1, d2, d3, d4, s1)
 char *buf;
@@ -3368,7 +3368,7 @@ long s1;
 	db3 = d1;
 	pE90E4 = (char *)&io;
 	bE90E2 = ld_doprnt(fmt, &wb0, &db0, &s1, 3, &io);
-	--io.cnt < 0 ? f880e(0, &io) : (int)(*io.ptr++ = 0);
+	--io.cnt < 0 ? _flsbuf(0, &io) : (int)(*io.ptr++ = 0);
 	return bE90E2;
 }
 
@@ -3496,8 +3496,8 @@ int *q;
 
 /* copy_blocks..642e: done */
 char *get_block();
-int f95da();
-int f9610();
+int lseek();
+int read();
 int f2f04();
 int f60f0();
 int report_error();
@@ -3529,18 +3529,18 @@ head:
 		q = *(long *)(rec + 0x28);
 		idx = *(int *)(rec + 0x30);
 		cur = *(char **)(get_block(idx) + 0x16);
-		f95da(*(int *)bE6E2, q, 0);
+		lseek(*(int *)bE6E2, q, 0);
 	} else {
 		rec = get_block(idx);
 		n = *(int *)(rec + 6);
 		q = *(long *)(rec + 0x2c);
 		idx = *(int *)(rec + 0x32);
 		cur = *(char **)(get_block(idx) + 0x1a);
-		f95da(*(int *)bE8EA, q, 0);
+		lseek(*(int *)bE8EA, q, 0);
 	}
 	if (bE4A2) {
-		f95da(*(int *)bEF02, q, 0);
-		f95da(*(int *)bEAF2, q, 0);
+		lseek(*(int *)bEF02, q, 0);
+		lseek(*(int *)bEAF2, q, 0);
 	}
 	g3e7a += n;
 	while (n) {
@@ -3552,19 +3552,19 @@ head:
 			n = 0;
 		}
 		if (type == 0x74) {
-			if (f9610(*(int *)bE6E2, buf, m) < 1)
+			if (read(*(int *)bE6E2, buf, m) < 1)
 				report_error(2, "i/o error reading from tmpoutb");
 		} else {
-			if (f9610(*(int *)bE8EA, buf, m) < 1)
+			if (read(*(int *)bE8EA, buf, m) < 1)
 				report_error(2, "i/o error reading from doutb");
 		}
 		f2f04(bE4DA, buf, m);
 		if (bE4A2) {
 			if (type == 0x74) {
-				if (m != f9610(*(int *)bEF02, buf, m))
+				if (m != read(*(int *)bEF02, buf, m))
 					report_error(2, "eof error on trout.b");
 			} else {
-				if (m != f9610(*(int *)bEAF2, buf, m))
+				if (m != read(*(int *)bEAF2, buf, m))
 					report_error(2, "eof error on droutb");
 			}
 			f2f04(bECFA, buf, m);
@@ -3584,9 +3584,9 @@ done:
 
 /* ld_doscan..7526: findings:D2 */
 char *make_ccl();
-int f86fa();
-int f8688();
-int f953e();
+int _filbuf();
+int ungetc();
+int tolower();
 int ld_inum();
 
 int ld_doscan(iop, fmt, ap, sp)
@@ -3638,7 +3638,7 @@ long *sp;
 			} else if (ch == '[')
 				fmt = make_ccl(fmt);
 			if (tab1aad[ch] & 1) {
-				ch = f953e(ch);
+				ch = tolower(ch);
 				size = 2;
 			}
 			if (ch == 0)
@@ -3655,19 +3655,19 @@ long *sp;
 		case '\n':
 		case ' ':
 			do {
-				c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+				c = --iop->cnt < 0 ? _filbuf(iop) : (int)(*iop->ptr++);
 			} while (c == ' ' || c == '\t' || c == '\n');
 			if (c != -1)
-				f8688(c, iop);
+				ungetc(c, iop);
 			continue;
 		default:
 lit:
-			c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+			c = --iop->cnt < 0 ? _filbuf(iop) : (int)(*iop->ptr++);
 			if (ch == c)
 				continue;
 			if (c == -1)
 				return -1;
-			f8688(c, iop);
+			ungetc(c, iop);
 			return nassign;
 		case 0:
 			return nassign;
@@ -3677,9 +3677,9 @@ lit:
 
 /* ld_inum..7808: done */
 int scan_field();
-int f8686();
-int f86fa();
-int f8688();
+int _inflt();
+int _filbuf();
+int ungetc();
 
 int ld_inum(p, ch, n, size, iop, pflag)
 char **p;
@@ -3700,7 +3700,7 @@ int *pflag;
 	if (ch == 'c' || ch == 's' || ch == '[')
 		return scan_field(p ? *p : 0, ch, n, iop, pflag);
 	if (ch == 'e' || ch == 'f')
-		return f8686(p, n, size, iop, pflag);
+		return _inflt(p, n, size, iop, pflag);
 	val = 0;
 	base = 10;
 	if (ch == 'o')
@@ -3709,15 +3709,15 @@ int *pflag;
 		base = 16;
 	neg = 0;
 	do {
-		c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+		c = --iop->cnt < 0 ? _filbuf(iop) : (int)(*iop->ptr++);
 	} while (c == ' ' || c == '\t' || c == '\n');
 	if (c == '-') {
 		neg++;
-		c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+		c = --iop->cnt < 0 ? _filbuf(iop) : (int)(*iop->ptr++);
 		n--;
 	} else if (c == '+') {
 		n--;
-		c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+		c = --iop->cnt < 0 ? _filbuf(iop) : (int)(*iop->ptr++);
 	}
 	while (--n >= 0) {
 		if (!(tab1aad[c] & 4)) {
@@ -3742,12 +3742,12 @@ int *pflag;
 			c -= 'A' - 10;
 		val += c;
 		c = tmp;
-		c = --iop->cnt < 0 ? f86fa(iop) : (int)(*iop->ptr++);
+		c = --iop->cnt < 0 ? _filbuf(iop) : (int)(*iop->ptr++);
 	}
 	if (neg)
 		val = -val;
 	if (c != -1) {
-		f8688(c, iop);
+		ungetc(c, iop);
 		*pflag = 0;
 	} else
 		*pflag = 1;
@@ -3877,12 +3877,12 @@ int bE004;
 char *bE430;
 char *bE420;
 long bE446;
-char *f9376();
-int f943c();
-int f93ac();
-int f95fe();
-int f93e8();
-int f9596();
+char *rindex();
+int strcpy();
+int strcat();
+int open();
+int strncmp();
+int fstat();
 int f2e76();
 int getw_buf();
 int refill_wbuf();
@@ -3906,37 +3906,37 @@ char *name;
 	bE4C0 = name;
 	if (s[0] == '-' && s[1] == 'l') {
 		if (bE4B4 == 1) {
-			f943c(buf9098, "/lib/slib");
-			p = f9376(buf9098, '/') + 5;
+			strcpy(buf9098, "/lib/slib");
+			p = rindex(buf9098, '/') + 5;
 		} else {
-			f943c(buf9098, "/lib/lib");
-			p = f9376(buf9098, '/') + 4;
+			strcpy(buf9098, "/lib/lib");
+			p = rindex(buf9098, '/') + 4;
 		}
 		bE4C0 = buf90b6;
 		if (s[2] == 0)
 			s = "-lc";
-		f943c(p, s + 2);
-		f93ac(p, ".a");
-		f943c(buf90b6, "");
-		f93ac(buf90b6, buf9098);
-		bE4BE = f95fe(buf90b6, 0);
+		strcpy(p, s + 2);
+		strcat(p, ".a");
+		strcpy(buf90b6, "");
+		strcat(buf90b6, buf9098);
+		bE4BE = open(buf90b6, 0);
 		if (bE4BE == -1) {
-			f943c(buf90b6, "");
-			f93ac(buf90b6, "/usr");
-			f93ac(buf90b6, buf9098);
-			bE4BE = f95fe(buf90b6, 0);
+			strcpy(buf90b6, "");
+			strcat(buf90b6, "/usr");
+			strcat(buf90b6, buf9098);
+			bE4BE = open(buf90b6, 0);
 			if (bE4BE == -1) {
-				f943c(buf90b6, "");
-				f93ac(buf90b6, "/z/bin");
-				f93ac(buf90b6, buf9098);
-				bE4BE = f95fe(buf90b6, 0);
+				strcpy(buf90b6, "");
+				strcat(buf90b6, "/z/bin");
+				strcat(buf90b6, buf9098);
+				bE4BE = open(buf90b6, 0);
 				if (bE4BE == -1)
 					report_error(2, "cannot open library");
 			}
 		}
 	}
 	if (bE4BE == -1) {
-		bE4BE = f95fe(bE4C0, 0);
+		bE4BE = open(bE4C0, 0);
 		if (bE4BE < 0)
 			report_error(2, "cannot open");
 	}
@@ -3956,9 +3956,9 @@ char *name;
 	if (bE41E <= 0)
 		return 1;
 	f2e76(bE438, 0x1a);
-	if (f93e8(bE438, "__.SYMDEF", 14))
+	if (strncmp(bE438, "__.SYMDEF", 14))
 		return 1;
-	f9596(bE4BE, &st);
+	fstat(bE4BE, &st);
 	if (st.mtime > bE446)
 		return 3;
 	return 2;
@@ -4049,11 +4049,11 @@ register int kind;
 /* start_output..22a4: findings:D2 */
 int bE4A0;
 long bE492;
-int f9210();
+int mktemp();
 int open_tmp();
 int swap_quad();
 int init_entry();
-int f932e();
+int swab();
 int f2f04();
 int report_error();
 
@@ -4067,7 +4067,7 @@ int start_output()
 	char hdr[24];
 
 	open_tmp(bE4DA, 0);
-	f9210("/tmp/ldaXXXXX");
+	mktemp("/tmp/ldaXXXXX");
 	open_tmp(bE6E2, 1);
 	open_tmp(bE8EA, 1);
 	if (!bE4A4 || !bE4AA)
@@ -4107,7 +4107,7 @@ int start_output()
 	}
 	init_entry(hdr, n);
 	if (bE4B6)
-		f932e(hdr, hdr, 0x18);
+		swab(hdr, hdr, 0x18);
 	f2f04(bE4DA, hdr, 0x18);
 	f2f04(bE4DA, arr, n << 4);
 }
@@ -4117,9 +4117,9 @@ int bE4D8;
 char **bE4A36;
 int bE4A46;
 int bE49C;
-char *f9376();
+char *rindex();
 int init_signals();
-int f8a50();
+int exit();
 int f6ffe();
 int scan_options();
 int f0762();
@@ -4144,8 +4144,8 @@ char **argv;
 
 	init_signals();
 	if (argc == 1)
-		f8a50(4);
-	pE4D6 = f9376(*argv, '/');
+		exit(4);
+	pE4D6 = rindex(*argv, '/');
 	if (pE4D6 == 0)
 		pE4D6 = *argv;
 	else
@@ -4263,7 +4263,7 @@ int f42f8();
 char *f6b5a();
 int f6bae();
 int f702a();
-int f952c();
+int access();
 
 int scan_options(argc, argv)
 int argc;
@@ -4346,8 +4346,8 @@ loop:
 			report_error(2, "Bad output file");
 		argv++;
 		bE494 = *argv;
-		if (f952c(bE494, 0) == 0) {
-			if (f952c(bE494, 2) != 0)
+		if (access(bE494, 0) == 0) {
+			if (access(bE494, 2) != 0)
 				report_error(2, "%s is write protected", bE494);
 		}
 		argc--;
@@ -4710,8 +4710,8 @@ l469e:
 /* scan_m_opt..410c: findings:D2,D11 */
 int report_error();
 int ld_sscanf();
-int f8a5c();
-char *f92f8();
+int atoi();
+char *strrchr();
 int f410c();
 int f42f8();
 
@@ -4759,7 +4759,7 @@ int argc;
 		m++;
 	}
 	digs[m] = 0;
-	v = f8a5c(digs);
+	v = atoi(digs);
 	if (bE4AE && v == 127)
 		report_error(2, "segment number in illegal range with %d", v);
 	if (v < 0 || v > 127)
@@ -4851,7 +4851,7 @@ int argc;
 	while (p[0] != '+') {
 		if (*ip >= argc)
 			break;
-		q = f92f8(p, '/');
+		q = strrchr(p, '/');
 		if (q) {
 			cnt++;
 			p = q;

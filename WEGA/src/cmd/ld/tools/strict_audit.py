@@ -24,7 +24,7 @@ from sout import SOut  # noqa: E402
 
 def main():
     tmp = tempfile.mkdtemp(prefix='saudit', dir='/mnt/share/cvs/P8000/tmp/tmp')
-    shutil.copy(os.path.join(HERE, '..', 'sld.c'), os.path.join(tmp, 'all.c'))
+    F.alias_copy(os.path.join(HERE, '..', 'sld.c'), os.path.join(tmp, 'all.c'))
     r = subprocess.run([F.EMU, '-r', F.WEGA, '/bin/scc', '-c', '-O', 'all.c'], cwd=tmp, capture_output=True,
                        text=True, timeout=900)
     if r.returncode != 0:

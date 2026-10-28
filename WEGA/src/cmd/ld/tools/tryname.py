@@ -14,6 +14,9 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import fncheck as F  # noqa: E402
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 EMU = '/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu'
 WEGA = '/mnt/share/cvs/P8000/tmp/wega31_root'
@@ -21,7 +24,7 @@ WEGA = '/mnt/share/cvs/P8000/tmp/wega31_root'
 
 def nameless(text):
     tmp = tempfile.mkdtemp(prefix='tryname', dir='/mnt/share/cvs/P8000/tmp/tmp')
-    open(os.path.join(tmp, 'all.c'), 'w').write(text)
+    open(os.path.join(tmp, 'all.c'), 'w').write(F.alias_text(text))
     subprocess.run([EMU, '-r', WEGA, '/bin/scc', '-S', '-O', 'all.c'], cwd=tmp, capture_output=True, text=True,
                    timeout=900)
     try:

@@ -964,6 +964,11 @@ means it does something fixed instead (only possible where the original's result
   (`/*~~:*/`, `_::`), and with two such functions the assembler stops with "Symbol redefined". It depends on the exact names
   (`ld_innum` and `scan_options` triggered it together; `ld_inum` does not). `accept.py` now checks the whole file for empty
   labels (`scc -S`). A rename can trigger it again.
+- Which function loses its name is chaotic, not a length budget (measured 2026-10-28: renaming one identifier to a shorter one
+  can trigger it, renaming three together does not; 23 of 34 single libc renames triggered it). The compile checks of
+  `tools/` therefore compile `sld.c` with the libc names turned back into `f<address>` (`fncheck.alias_text`, table
+  `tools/libc_names.txt`; comments and strings are untouched). The source shows the real names, the checked file is the one
+  that was verified before. A split into modules (smaller files) is the real fix.
 - The whole file will be split into the modules of the plan, which also removes these limits.
 
 ### sld: printf core 0x7c26 and the stream macro (2026-10-28)
@@ -983,6 +988,25 @@ means it does something fixed instead (only possible where the original's result
   displacements and local addresses (`#%7Fxxxxxx`, stack segment mapped to 0); `STRICT=0` restores the old behaviour and
   `SCCFLAGS` sets the compiler flags (default `-O`; without `-O` the code is not that of the original).
 - Layout rules measured with `scc -O -S` (scratch `tmp/layout`): if/else keeps the source order; loops are rotated (D7).
+
+### sld: names of the libc functions called by the own code (2026-10-28)
+
+`src/cmd/ld/tools/libc_names.txt` maps the 34 call targets above 0x8680 to the members of slibc.a: `exit` 0x8a50 (= cuexit.o:
+`__cleanup`, then `sc #1`; `__callex` calls it), `atoi`, `_cnvt`, `_length`, `malloc`/`free`/`realloc`/`calloc`, `mktemp`,
+`strchr`/`strrchr`/`rindex`, `swab`, `strcat`, `strncmp`, `strcpy`, `swap`, `tolower` and the system call stubs (`access`
+`chmod` `close` `creat` `fstat` `link` `lseek` `open` `read` `signal` `unlink` `write`; the number after `sc` fits the call).
+Evidence: the sizes of the slibc.a members fill the address gaps exactly (isatty 38, mktemp 134, stty 48, strchr 50, strrchr 54,
+swab 72, rindex 54, strcat 60, strncmp 84, strcpy 50, swap 190, tolower 38), the offsets inside malloc.o (`free` +902,
+`realloc` +958, `calloc` +1232) and flsbuf.o (`_fflush` +278, `__cleanup` +384) land on the called addresses, and the argument
+lists fit (the printf core calls 0x8684 with the double: `__fegcvt`; `doscan` calls 0x8686: `__inflt`).
+Findings (2026-10-28, `host/tools/oldslibc_cut.py`): (1) `strcmp` is not in sld (0x943c is `strcpy`), `rindex` is a second copy
+of `strrchr` (0x9376). (2) The code of ALL 41 libc objects of sld (0x8682..0x9730) equals the member of `/lib/slibc.a` with the
+relocated words masked: they are the shipped objects, not an older revision. (3) `ffltioc` (3 stubs of 2 bytes: `__fltuse`,
+`__fegcvt`, `__inflt`) lies at 0x8682..0x8688, not at 0x8680: the `ret` at 0x8680 ends the own code (function 0x85f8), `sld_own.s`
+is 0x56..0x8682; `__fegcvt` = 0x8684 (printf), `__inflt` = 0x8686 (scanf). `ungetc.o` starts at 0x8688. (4) The earlier module
+split (filbuf, flsbuf, cnvt, decimal, stty, swab, swap, signal, stubs) had wrong boundaries and placeholder labels; the
+directories `src/lib/oldslibc/<object>/0_1.s` now follow the objects (README there). The code of the link is right: `make link`
+in `src/cmd/ld` gives a code segment that differs from /bin/sld in 78 bytes, all data addresses (the data of sld is not cut).
 
 ### sld: section allocator (0x4a16 lay_out, 0x18f2 place_sec, 0x5a2c ins_block) (2026-10-28)
 

@@ -1,68 +1,11 @@
 	.seg
-	.extern	_f971c
+	.extern	_cerror
 	.code
 
 _signal::
 	ld	r0,r7
-	ld	r1,r6
-	ldl	rr2,rr4
-	ldl	rr4,#%00000000
-	sc	#%36
-	ld	r2,r4
-	ret	nc
-	jp	_f971c
-_f95c8::
-	ldl	rr0,rr6
-	ldl	rr2,rr4
-	xor	r4,r4
-	sc	#%09
-	ld	r2,r4
-	ret	nc
-	jp	_f971c
-_f95da::
-	ld	r0,r7
-	ld	r1,r4
-	ld	r2,r5
-	subl	rr4,rr4
-	sc	#%13
-	ldl	rr2,rr4
-	ret	nc
-	jp	_f971c
-_f95ee::
-	ld	r0,r7
-	ld	r1,r6
-	sc	#%37
-	ldl	rr2,rr4
-	jp	c,_f971c
-	ret
-_f95fe::
-	ldl	rr0,rr6
-	ld	r2,r5
-	ld	r3,r4
-	sc	#%05
-	ld	r2,r4
-	ret	nc
-	jp	_f971c
-_f9610::
-	ld	r0,r7
-	ld	r1,r4
-	ld	r2,r5
-	sc	#%03
-	ld	r2,r4
-	ret	nc
-	jp	_f971c
-_f9622::
-	ld	r0,r7
-	ld	r1,r6
-	ldl	rr4,#%00000000
-	sc	#%2D
-	ldl	rr2,rr4
-	jp	c,_f971c
-	ret
-_f9638::
-	ld	r0,r7
 	cp	r0,#%0014
-	jp	ge,_f971c
+	jp	ge,_cerror
 	ld	r1,r4
 	ld	r2,r5
 	ld	r3,r0
@@ -90,7 +33,7 @@ L968c:
 	ldl	rr2,rr6
 L968e:
 	ret	nc
-	jp	_f971c
+	jp	_cerror
 L9696:
 	calr	L96be
 	calr	L96be

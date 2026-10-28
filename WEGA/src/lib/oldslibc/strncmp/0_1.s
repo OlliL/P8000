@@ -2,7 +2,10 @@
 	.extern	_stkseg
 	.code
 
-_strcmp::
+_strncmp::
+	sub	r15,#%0016
+	ldm	_stkseg+12(r15),r9,#5
+	ld	r9,r3
 	ldl	rr10,rr4
 	ldl	rr12,rr6
 L93fa:

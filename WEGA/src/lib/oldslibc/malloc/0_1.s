@@ -1,7 +1,7 @@
 	.seg
 	.extern	_stkseg
-	.extern	_f95ee
-	.extern	_f9622
+	.extern	_mkseg
+	.extern	_ssgbrk
 	.code
 
 _malloc::
@@ -53,7 +53,7 @@ L8cee:
 	ldl	@rr6,rr0
 	sub	r7,r7
 	sub	r6,r6
-	call	_f95ee
+	call	_mkseg
 	ldl	_d1A90+4,rr2
 L8d68:
 	ld	r2,r13
@@ -147,7 +147,7 @@ L8e06:
 	ldb	rl7,_d1A90+4
 	extsb	r7
 	ld	r6,r2
-	call	_f9622
+	call	_ssgbrk
 	ldl	rr10,rr2
 	cpl	rr2,#%FFFFFFFF
 	jr	ne,L8ecc
@@ -167,7 +167,7 @@ L8e06:
 	ld	r13,r2
 	sub	r7,r7
 	ld	r6,r2
-	call	_f95ee
+	call	_mkseg
 	ldl	rr10,rr2
 	cp	r3,#%FFFF
 	jp	eq,L8cce
@@ -305,7 +305,7 @@ L902c:
 	add	r15,#%0012
 	ret
 L903a:
-_f903a::
+_free::
 	dec	r15,#8
 	ldm	_stkseg+4(r15),r12,#2
 	ldl	|_stkseg+0|(r15),rr6
@@ -322,7 +322,7 @@ _f903a::
 	ldm	r12,_stkseg+4(r15),#2
 	inc	r15,#8
 	ret
-_f9072::
+_realloc::
 	sub	r15,#%0026
 	ldm	_stkseg+26(r15),r8,#6
 	ld	|_stkseg+0|(r15),r5
@@ -419,7 +419,7 @@ L9172:
 	ldm	r8,_stkseg+26(r15),#6
 	add	r15,#%0026
 	ret
-_f9184::
+_calloc::
 	sub	r15,#%0016
 	ldm	_stkseg+10(r15),r8,#6
 	ldl	|_stkseg+0|(r15),rr6
@@ -453,11 +453,13 @@ L91cc:
 	ldm	r8,_stkseg+10(r15),#6
 	add	r15,#%0016
 	ret
+_cfree::
 	dec	r15,#8
 	ldm	|_stkseg+0|(r15),r4,#4
 	ldl	rr2,rr6
 	calr	L903a
 	inc	r15,#8
+	ret
 
 	.data
 
