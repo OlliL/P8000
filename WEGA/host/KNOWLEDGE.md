@@ -1083,6 +1083,21 @@ reading the original code with `tools/odis.py NAME`:
   rr2 in the original; ours keeps it on the stack), `and r2,#0xFFFE` becomes `res r2,#0` in the original (load2), `jr cc,a; jr b` is
   merged by ours (pack_name).
 
+### sld: corpus test of the rebuilt sld (2026-10-28)
+
+`make check` in `src/cmd/ld` (`host/ld/check.py -S` with `SLD_NEW=sld.new`) links the test objects of `host/ld/test` (51 command lines: options,
+areas, `-r` chains, the objects big1..big8 with many segments, the kernel link of `make.wega`) with the rebuilt `sld.new` and with the original
+`/bin/sld` under z8k-emu and compares the output file, stdout/stderr and the exit status: 51 of 51 identical (2026-10-28). The test found four
+errors of the reconstruction that `strict_audit.py` does not show because it only compares instruction forms and masks addresses:
+(1) `dseek`: `*(int **)(obj + 6) = cur->buf + (lo << 1)` scaled the offset (pointer arithmetic on `int *`): "Invalid segment attributes";
+(2) `f6c6a`: `i = bE3C02 + 0x0470` is the VARIABLE `bE470` (`add r7,<<2>>%0470`, memory operand), not the constant: "Multiply defined" for every symbol;
+(3) `dseek`: `lseek(fd, (v & 0xff00) << 1, 0)` cleared the high word of the long, the original masks only the low word (`v & 0xffffff00L`);
+(4) `f68a2`: the values of `_etext/_edata/_end` are `(unsigned)` sums (zero extension), an `int` sum gave 0xffff in the segment word.
+Method to find such errors: run both programs with `z8k-emu -t`, extract the calls (opcode `call`/`calr`, the next trace line is the callee), map the
+addresses to function names (`nm` of sld.new, `own_functions.txt` and `libc_names.txt` for the original) and compare the sequences with their
+arguments; the first divergence names the function, then compare the registers/flow inside. A memory operand `ADDR` against an immediate
+`#ADDR` in `strict_audit.py` output is a real difference of the source, not a register choice.
+
 ### sld: C files of the program and the libc objects in the own range (2026-10-28)
 
 `src/cmd/ld/tools/module_map.py` (output `module_map.txt`) assigns every function to a C file by the string literals it uses. The data

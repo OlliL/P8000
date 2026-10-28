@@ -43,6 +43,9 @@ def main():
 #   make link        sld.new: scrt0.o, the C files, the members of /lib/slibc.a and the two old objects, linked by the original
 #                    sld (SLDBIN: segmented program, -i -z -e start)
 #   make linkown     sld.own: the same with the cut own code (sld_own.s, 0x56..0x71ca of /bin/sld) instead of the C files
+#   make check       link the test objects of host/ld/test with sld.new and with the original sld under z8k-emu and compare the
+#                    output files, messages and exit codes (host/ld/check.py -S, SLD_NEW); needs the file tree of the original
+#                    system (CHECKROOT)
 #   make clean
 #   (this file is written by tools/gen_makefile.py)
 #
@@ -58,6 +61,7 @@ CAS = cas
 AR = ar
 SCC = scc
 CFLAGS = -O
+CHECKROOT = ../../../tmp/wega31_root
 SLIBC = /lib/slibc.a
 
 # the C files of sld (code ranges: tools/module_ranges.txt); each one is compiled alone
@@ -77,6 +81,9 @@ link: sld.new
 
 sld.new: $(LINKOBJS)
 	$(SLDBIN) -i -z -e start $(LINKOBJS) -o $@
+
+check: sld.new
+	cd ../../../host/ld ; SLD_NEW=../../src/cmd/ld/sld.new WEGA=$(CHECKROOT) python3 check.py -S
 
 linkown: sld.own
 

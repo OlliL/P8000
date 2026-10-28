@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Compare the host ld, sld and gld with the original /bin/ld, /bin/sld and /bin/gld (run under z8k-emu).
 
-usage: check.py [-n RANDOM_RUNS] [-s SEED]     (environment: WEGA=file tree of the original system, EMU=emulator)
+usage: check.py [-n RANDOM_RUNS] [-s SEED] [-S]     (environment: WEGA=file tree of the original system, EMU=emulator)
+
+With SLD_NEW=<segmented program> the segmented tests (sld) run that program under z8k-emu instead of the host sld
+(src/cmd/ld: `make check`, the rebuilt sld against the original); -S runs only the segmented tests.
 
 Builds the test objects test/*.c with the original cc, makes archives (ar, ranlib, test/mklib.py), then
 links with both linkers: fixed command lines (options, areas, archives, -r chains) and random ones. The
@@ -22,6 +25,13 @@ def orig(args, cwd, tool='ld'):
 
 def link(args, tool='ld', base='base'):
     """run both linkers in separate copies of the work dir; returns (ok, message)"""
+    try:
+        return link1(args, tool, base)
+    except subprocess.TimeoutExpired:
+        return False, '%s: timeout' % ' '.join(args)
+
+
+def link1(args, tool, base):
     res = []
     for who in ('orig', 'host'):
         d = os.path.join(W, who)
@@ -30,8 +40,12 @@ def link(args, tool='ld', base='base'):
         if who == 'orig':
             r = orig(args, d, tool)
         else:
-            env = dict(os.environ, WEGA_ROOT=ROOT)
-            r = subprocess.run([HOST[tool]] + args, cwd=d, capture_output=True, env=env, timeout=120)
+            if tool == 'sld' and os.environ.get('SLD_NEW'):
+                shutil.copy(os.environ['SLD_NEW'], os.path.join(d, 'sld_under_test'))
+                r = subprocess.run([EMU, '-r', ROOT, 'sld_under_test'] + args, cwd=d, capture_output=True, timeout=120)
+            else:
+                env = dict(os.environ, WEGA_ROOT=ROOT)
+                r = subprocess.run([HOST[tool]] + args, cwd=d, capture_output=True, env=env, timeout=120)
         out = 'a.out'
         for i, a in enumerate(args):
             if a == '-o' and i + 1 < len(args):
@@ -237,35 +251,42 @@ def rnd(n, seed):
 
 def main():
     global W
-    n, seed = 100, 1
+    n, seed, only_sld = 100, 1, False
     a = sys.argv[1:]
     while a:
         o = a.pop(0)
         if o == '-n': n = int(a.pop(0))
         elif o == '-s': seed = int(a.pop(0))
+        elif o == '-S': only_sld = True
     if not ROOT or not os.path.isdir(ROOT):
         sys.exit('set WEGA to the file tree of the original system')
-    if not os.path.exists(HOST['ld']):
+    if only_sld and not os.environ.get('SLD_NEW') and not os.path.exists(HOST['sld']):
+        sys.exit('build ./sld first or set SLD_NEW')
+    if not only_sld and not os.path.exists(HOST['ld']):
         sys.exit('build ./ld first')
     W = tempfile.mkdtemp(prefix='ldcheck')
     try:
-        setup()
-        bad = total = 0
-        for line in FIXED:
-            total += 1
-            ok, msg = link(line.split())
-            if not ok:
-                bad += 1
-                print('DIFF', msg)
-        for args in rnd(n, seed):
-            total += 1
-            ok, msg = link(args)
-            if not ok:
-                bad += 1
-                print('DIFF', msg)
-        print('ld: %s (%d of %d command lines identical)' % ('identical' if not bad else 'DIFFERENT', total - bad, total))
-        rc = 1 if bad else 0
-        if os.path.exists(HOST['sld']):
+        rc = 0
+        if only_sld:
+            os.makedirs(os.path.join(W, 'base'))
+        else:
+            setup()
+            bad = total = 0
+            for line in FIXED:
+                total += 1
+                ok, msg = link(line.split())
+                if not ok:
+                    bad += 1
+                    print('DIFF', msg)
+            for args in rnd(n, seed):
+                total += 1
+                ok, msg = link(args)
+                if not ok:
+                    bad += 1
+                    print('DIFF', msg)
+            print('ld: %s (%d of %d command lines identical)' % ('identical' if not bad else 'DIFFERENT', total - bad, total))
+            rc = 1 if bad else 0
+        if os.environ.get('SLD_NEW') or os.path.exists(HOST['sld']):
             setup_seg()
             bad = total = 0
             for line in SFIXED:
@@ -284,7 +305,7 @@ def main():
                     print('DIFF', msg)
             print('sld: %s (%d of %d command lines identical)' % ('identical' if not bad else 'DIFFERENT', total - bad, total))
             rc |= 1 if bad else 0
-        if os.path.exists(HOST['gld']):
+        if not only_sld and os.path.exists(HOST['gld']):
             setup_gld()
             bad = total = 0
             for line in GFIXED:

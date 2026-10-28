@@ -122,7 +122,7 @@ char c;
 		q = pE3C0A;
 		if (!q)
 			return;
-		*(long *)p = ((long)(*q) << 24) + *(int *)(q + 4);
+		*(long *)p = ((long)(*q) << 24) + (unsigned)*(int *)(q + 4);
 		*(int *)(p + 6) = *(int *)(q + 0x10);
 		return;
 	}
@@ -130,7 +130,7 @@ char c;
 		q = pE3C06;
 		if (!q)
 			return;
-		*(long *)p = *(int *)(q + 4) + *(int *)(q + 6);
+		*(long *)p = (unsigned)(*(int *)(q + 4) + *(int *)(q + 6));
 		*(long *)p = *(long *)p + ((long)(*q) << 24);
 		*(int *)(p + 6) = *(int *)(q + 0x10);
 		return;
@@ -139,7 +139,7 @@ char c;
 		q = pE3C0E;
 		if (!q)
 			return;
-		*(long *)p = *(int *)(q + 4) + *(int *)(q + 6) + *(int *)(q + 8);
+		*(long *)p = (unsigned)(*(int *)(q + 4) + *(int *)(q + 6) + *(int *)(q + 8));
 		*(long *)p = *(long *)p + ((long)(*q) << 24);
 		*(int *)(p + 6) = *(int *)(q + 0x10);
 		return;
@@ -278,7 +278,7 @@ f6c6a()
 	register char *p;
 	int i;
 
-	i = bE3C02 + 0x0470;
+	i = bE3C02 + bE470;
 	p = get_block(i);
 	w = (char *)&bE46A;
 	switch (bE46E) {

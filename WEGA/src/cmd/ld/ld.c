@@ -1464,7 +1464,7 @@ int n;
 	if (bE004 == 0 && bE20A == 0 && bE006 < bE20C)
 		cur = (struct pg *)b0004;
 	cur->bno = hi;
-	lseek(bE4BE, (v & 0xff00) << 1, 0);
+	lseek(bE4BE, (v & 0xffffff00L) << 1, 0);
 	nw = read(bE4BE, cur->buf, 0x200) >> 1;
 	if (nw < 0)
 		nw = 0;
@@ -1473,7 +1473,7 @@ common:
 	cur->use += 1;
 	*(int *)(obj + 2) = hi;
 	*(struct pg **)(obj + 12) = cur;
-	*(int **)(obj + 6) = cur->buf + (lo << 1);
+	*(char **)(obj + 6) = (char *)cur->buf + (lo << 1);
 	if (n != -1)
 		*(int *)(obj + 10) = half(n);
 	*(int *)(obj + 4) = cur->nib - (int)lo;
