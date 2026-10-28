@@ -43,6 +43,31 @@ produce the same bytes with the shipped cc.
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | builds under z8k-emu, but all files differ from the originals | `dosopn.c` line 175 (`1.5*first`) needed EPU instructions; z8k-emu now runs them (2026-10-22, `host/z8k-emu/README.md`) and the commands compile. Locally the build fails only on the `/usr/include` make dependencies (outside the guest ROOT). The owner believes they were built with the current cc and libc (no old-libc version needed; belief, not measured). The differences are not analysed yet | analyse **after the host tool chain is complete** (nearest-version method, `cmpins.py`) |
 
+## Plan after the sld naming (2026-10-28; order of work)
+
+State: sld is rebuilt in C (codgen, popt, sld are the three programs done in this style). sld: 58 of 90 functions exact, data/bss equal,
+corpus test `make check` 51 of 51 identical, structs and all names done. Procedure for a new binary: `host/HOWTO_reconstruct.md`
+(rewritten 2026-10-28 with the lessons of sld, split into Phase A for a cheap model and Phase B for an expensive one; one model change
+per binary).
+
+Order (the documentation first, because the knowledge must not get lost):
+
+1. DONE: `host/HOWTO_reconstruct.md` rewritten (lessons, two phases, corpus test, rules of step 7).
+2. PARTLY DONE (2026-10-28): shared toolkit `host/recon/` (README there): `progcfg.py`, `funcs.py`, `patterns.py`, `classify.py`, `findings_md.py`, `odis.py`, `callcmp.py`; codgen, popt and sld use it through `progcfg.py` plus launchers in their `tools/` (the duplicate `popt/tools/sout.py` is removed; `findings_md.py` reproduces the three FINDINGS.md unchanged; sld strict_audit still 58 exact). Still to move when the next binary needs them: `fncheck.py`, `strict_audit.py`, `accept.py`, `accfn.py`, `firstdiff.py`, `rename.py`, `check_names.py`, `sync_findings.py`, `host/ld/check.py` (they read sld files). Note: `classify.py` regenerated two `layout_note` texts in codgen `findings.json` and `INVENTORY.md` changed (generated files were out of date, not caused by the move). Original text of the item, kept for reference: (the sld scripts that lived in the scratchpad are saved in `src/cmd/ld/tools`: `accfn.py` (accept exact functions by name), `callcmp.py` (call-trace comparison of two runs), `uses.py` (uses of a variable per function), `scratch_build.sh`) (find duplicates first, no new scripts for old problems). Measured duplicates: `findings_md.py` in codgen, popt, ld
+   (three copies, 111-120 lines), `funcs.py` / `patterns.py` / `classify.py` identical in size for codgen and popt, `sout.py` in popt/tools equals
+   `host/tools/sout.py` (delete). The sld tools that are general: `fncheck.py` + `strict_audit.py` (compile, normalise, compare), `accept.py`,
+   `rename.py`, `firstdiff.py`, `odis.py`, `check_names.py`, `tryname.py`, `sync_findings.py`, `classify_sld.py` (= the pattern check of
+   `patterns.py`), the call-trace comparison (scratchpad scripts `calls.py`, `cmpcalls.py`: move them), the corpus runner
+   (`host/ld/check.py` with `SLD_NEW`). Program specific: `ldsrc.py`, `order_vars.py`, `var_addr.py`, `gen_makefile.py`, `split_sld.py`,
+   `libc_*`. Steps: (a) move the identical files, (b) one config per program (binary, segmented flag, module ranges, table, flags),
+   (c) make strict_audit/accept/rename read the config, (d) run codgen and popt tools through it once to prove it.
+3. sld, rest of e): table "Bugs and quirks of the originals" (precedence error `!c & 0x20` in warn_sym_redef, missing return value of
+   put_pad, the unnamed spare variables), function head comments, label names of the goto code (`l08a2`, `c28a0` ...), remove `sld_own.s` and
+   `make linkown`, `.gitignore`, the 32 findings (see `src/cmd/ld/tools/FINDINGS.md`: `manual_classes` says what was tried; layout cases
+   lay_out, ins_block, reg_sect_addr, read_words are probably the old compiler's optimizer), spare variables (spare0 ... unused*).
+4. Next binary: `/lib/cpp` (16522 bytes, 40248 total, nonsegmented) before `/lib/cparse` (67520 bytes, 96284 total). Phase A with the cheap model
+   following the HOWTO, handoff note, then Phase B once. Candidate after that: `scparse`, `c2`/`as`.
+
 ## sld (segmented loader): preparation (started 2026-10-27)
 
 - Structure: `src/cmd/ld/tools/` with `Makefile`, `inventory.py`, `findings_md.py`, `findings.json` (empty function list, binary facts),

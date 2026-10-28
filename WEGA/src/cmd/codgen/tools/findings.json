@@ -2416,7 +2416,7 @@
     "d_classes": [
      "D15"
     ],
-    "layout_note": "D15 block layout of if/else: the structure move (ZS) has the n <= 4 branch first in the original; ours has the big branch first in both source forms. Partly: 95 -> 80 differing blocks after the branch swap; the rest is open (see zzzcode-order-01)."
+    "layout_note": "D15 block order (cause not measured; if/else order ruled out, see host/KNOWLEDGE.md D15): the structure move (ZS) has the n <= 4 branch first in the original; ours has the big branch first in both source forms. Partly: 95 -> 80 differing blocks after the branch swap; the rest is open (see zzzcode-order-01)."
    },
    "orig_note": "d=37 after char c and register locals: switch dispatch (D6), D3, D7; the old name table was data"
   },
@@ -5154,7 +5154,7 @@
     "d_classes": [
      "D15"
     ],
-    "layout_note": "D15 block layout: 80 instructions at another place (block order of the branches). Branch swap in the source rejected (clocal-size-01)."
+    "layout_note": "D15 block order (cause not measured; if/else order ruled out, see host/KNOWLEDGE.md D15): 80 instructions at another place. Branch swap in the source rejected (clocal-size-01)."
    }
   },
   "member": {
