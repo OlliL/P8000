@@ -10,21 +10,21 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 99 |
-| open | 6 |
+| confirmed | 101 |
+| open | 4 |
 
 | Difference class | Count |
 |---|---|
-| - | 12 |
+| - | 11 |
 | D only (manual reading) | 6 |
-| D only (pattern-verified) | 77 |
-| other differences | 10 |
+| D only (pattern-verified) | 74 |
+| other differences | 14 |
 
-**Pending findings:** 8
+**Pending findings:** 6
 
 | Status | Count |
 |---|---|
-| open | 8 |
+| open | 6 |
 
 ## Functions
 
@@ -36,11 +36,12 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | copy_leafname | 0x0614-0x06b6 | 0x4444 | confirmed | exact | D only (pattern-verified) |  |  |
 | dump_p1 |  | 0x0334 | confirmed | exact |  |  |  |
 | dump_p2 |  | 0x03fc | confirmed | exact |  |  |  |
-| dump_sym | 0x5dce-0x5ee2 | 0x0220 | confirmed | exact | D only (pattern-verified) |  |  |
+| dump_res |  | 0x0566 | confirmed | exact |  |  |  |
+| dump_sym | 0x5dd2-0x5ee6 | 0x0220 | confirmed | exact | D only (pattern-verified) |  |  |
+| end_pass1 | 0x6278-0x66fe | 0x44e6 | confirmed | differs | other differences |  | unexplained instruction forms: clr	_; ld	_,rS; ld	rS,_ |
 | ensure_buf | 0x1334-0x13a0 | 0x7112 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f0018 | f0018..0056 | 0x0018 | open | open |  |  |  |
 | f0178 | 0x05ba-0x0614 | 0x0178 | confirmed | differs | D only (pattern-verified) | D1, D10, D7 |  |
-| f0566 |  | 0x0566 | confirmed | exact |  |  |  |
 | f0762 | 0x0094-0x00be | 0x0762 | confirmed | exact | D only (pattern-verified) |  |  |
 | f1070 | 0x24a2-0x2600 | 0x1070 | confirmed | differs | D only (pattern-verified) | D10, D2, D3, D6, D7, D8, D8/D2 |  |
 | f1364 | 0x226e-0x2394 | 0x1364 | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
@@ -59,10 +60,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f3516 | 0x317c-0x3412 | 0x3516 | confirmed | differs | other differences |  | unexplained instruction forms: ld	rS,rrS(#N); rr	rS,#1; sra	rS,#1 |
 | f3a88 | 0x0262-0x02a0 | 0x3a88 | confirmed | differs | D only (pattern-verified) | D1, D10, D3 |  |
 | f3b58 | 0x0c3c-0x0ccc | 0x3b58 | confirmed | differs | D only (pattern-verified) | D1, D10, D3, D7, D8, D8/D2 |  |
-| f3c16 | f3c16..410c | 0x3c16 | open | open |  |  |  |
 | f410c | 0x3412-0x35fc | 0x410c | confirmed | differs | D only (pattern-verified) | D10, D3, D6 |  |
 | f42f8 | 0x1ed2-0x2026 | 0x42f8 | confirmed | differs | other differences |  | unexplained instruction forms: ld	@rrS,#N; ld	A,#N |
-| f44e6 | f44e6..4968 | 0x44e6 | open | open |  |  |  |
 | f4968 | 0x1cd4-0x1d7e | 0x4968 | confirmed | differs | D only (pattern-verified) | D1, D3, D6, D7 |  |
 | f4a16 | f4a16..5a2c | 0x4a16 | open | open |  |  |  |
 | f5a2c | f5a2c..5eec | 0x5a2c | open | open |  |  |  |
@@ -106,10 +105,10 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | load_header | 0x0f16-0x0fca | 0x14a4 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | lookup_name | 0x4206-0x4308 | 0x6a58 | confirmed | exact | D only (pattern-verified) |  |  |
 | main | f078c..0a5c | 0x078c | confirmed | differs |  |  |  |
-| make_blocks | 0x517a-0x5452 | 0x3760 | confirmed | exact | D only (pattern-verified) | D10, D3, D6, D7 |  |
+| make_blocks | 0x517e-0x545a | 0x3760 | confirmed | exact | other differences |  | unexplained instruction forms: ld	rS,_ |
 | make_ccl | 0x0af0-0x0b66 | 0x7956 | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D8/D2 |  |
 | next_entry | 0x15d4-0x1666 | 0x705e | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D7, D8, D8/D2 |  |
-| open_library | 0x4e9e-0x517a | 0x3144 | confirmed | exact | other differences |  | unexplained instruction forms: clr	_; ld	A,#N; ld	_,#N |
+| open_library | 0x4e9e-0x517e | 0x3144 | confirmed | exact | other differences |  | unexplained instruction forms: clr	_; ld	A,#N; ld	_,#N |
 | open_tmp | 0x1088-0x1128 | 0x22a4 | confirmed | differs | D only (pattern-verified) | D10, D7 |  |
 | pack_entry | 0x1538-0x156e | 0x6866 | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
 | pack_name | 0x1128-0x11bc | 0x00ee | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D3, D7, D8 |  |
@@ -117,14 +116,15 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | put_char | 0x0fca-0x1012 | 0x71ca | confirmed | differs | D only (pattern-verified) | D1, D13, D2 |  |
 | put_name | 0x1298-0x1334 | 0x6522 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | read_entry_hdr | 0x191a-0x1a9a | 0x6684 | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D16, D2, D3, D6, D7, D8, D8/D2 |  |
-| read_symbols | 0x4c40-0x4e9e | 0x1696 | confirmed | differs | D only (pattern-verified) | D10, D7, D8 |  |
+| read_symbols | 0x4c40-0x4e9e | 0x1696 | confirmed | differs | other differences |  | unexplained instruction forms: ld	_,rS; ld	rS,_ |
 | read_words | 0x1aee-0x1c24 | 0x0f26 | confirmed | differs | D only (pattern-verified) | D10, D13, D3, D6, D7, D8, D8/D2 |  |
 | refill_wbuf | 0x1d7e-0x1ed2 | 0x2f3a | confirmed | differs | other differences |  | unexplained instruction forms: ld	rS,rrS(#N) |
 | report_error | 0x1c24-0x1cd4 | 0x3408 | confirmed | exact | D only (pattern-verified) |  |  |
 | scan_field | 0x177c-0x191a | 0x7808 | confirmed | differs | D only (manual reading) | D5 | addressing of the count and pointer fields through register pairs and constant index (indirect and indexed forms, D5); by reading, no popt pattern |
+| scan_m_opt | f3c16..410c | 0x3c16 | confirmed | differs |  |  |  |
 | scan_options | f0b04..0f26 | 0x0b04 | confirmed | differs |  |  |  |
 | sig_handler | 0x00be-0x011c | 0x0a5c | confirmed | exact | D only (pattern-verified) |  |  |
-| start_output | 0x5452-0x56c8 | 0x2056 | confirmed | differs | D only (pattern-verified) | D10, D7 |  |
+| start_output | 0x545a-0x56d0 | 0x2056 | confirmed | differs | other differences |  | unexplained instruction forms: ld	rS,_ |
 | str_compare | 0x020a-0x0262 | 0x3a30 | confirmed | differs | D only (pattern-verified) | D13 |  |
 | swab12 | 0x1506-0x1538 | 0x3b1e | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
 | swap_bytes | 0x08fa-0x0924 | 0x65c6 | confirmed | differs | D only (manual reading) | D2 | indirect word load through another register pair (rr4 here, rr2 in the original) |
@@ -141,8 +141,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | ID | Kind | Function | Status | Classification | Action | Result |
 |---|---|---|---|---|---|---|
 | sld-deferred-18f2 | deferred (large function) | f18f2 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x18f2, 1700 bytes, not started |
-| sld-deferred-3c16 | deferred (large function) | f3c16 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x3c16, 1270 bytes, not started |
-| sld-deferred-44e6 | deferred (large function) | f44e6 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x44e6, 1154 bytes, not started |
 | sld-deferred-4a16 | deferred (large function) | f4a16 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x4a16, 4118 bytes, not started |
 | sld-deferred-5a2c | deferred (large function) | f5a2c | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x5a2c, 1216 bytes, not started |
 | sld-1070-count | open (instruction count) | f1070 | open | - | find the one instruction of the original (112 against 111 in our draft) and the block order of the switch | entry 0x1070: 111 instructions against 112 in the original; not explained by a D pattern (D6 and D15 are the known layout and switch forms) |

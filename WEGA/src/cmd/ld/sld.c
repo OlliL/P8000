@@ -1945,7 +1945,7 @@ long d;
 char bE42B2;
 int bE49A;
 char tab42b4[];
-char tab4534[];
+int tab4534[][5];
 int ld_sscanf();
 int report_error();
 
@@ -1990,7 +1990,7 @@ char *t;
 		u += 2;
 		fmt = "x";
 	}
-	if (ld_sscanf(u, fmt, tab4534 + g * 10 + k * 2) != 1)
+	if (ld_sscanf(u, fmt, &tab4534[g][k]) != 1)
 		report_error(2, "x", s, t);
 	return k != 0;
 }
@@ -1999,7 +1999,7 @@ char *t;
 long bE4A40;
 int bE4A44;
 char tab3e8a[];
-int f44e6();
+int end_pass1();
 int start_output();
 int f23fe();
 int finish_output();
@@ -2022,7 +2022,7 @@ char **argv;
 	char *p;
 
 	pE4C0 = 0;
-	f44e6();
+	end_pass1();
 	start_output();
 	av = argv + 1;
 	bEF32C = 0;
@@ -4112,7 +4112,7 @@ int scan_options();
 int f0762();
 int f1364();
 int f1070();
-int f3c16();
+int scan_m_opt();
 int ld_printf();
 int report_error();
 int parse_args();
@@ -4202,7 +4202,7 @@ char **argv;
 				if (bE4A8)
 					report_error(2, "x");
 				bE49C++;
-				f3c16(s + j, &i, argc);
+				scan_m_opt(s + j, &i, argc);
 				break;
 			default:
 				report_error(2, "x", s[j]);
@@ -4542,4 +4542,314 @@ int dump_res()
 			ld_printf("  %d", tblF332[j + k].d);
 		k = k + 9;
 	} while (k < 128);
+}
+
+/* end_pass1..4968: findings:D2 */
+long bE482;
+long bE48A;
+long bE48E;
+long bE4C8;
+int g0474;
+char bE42B4[][5];
+char *table16_entry();
+char *next_entry();
+char *get_block();
+char *f6b5a();
+int report_error();
+int ld_printf();
+int put_name();
+int put_char();
+int f68a2();
+int f4a16();
+
+int end_pass1()
+{
+	register char *blk;
+	register char *a;
+	register char *ep;
+	long u0;
+	unsigned long t4;
+	unsigned long t8;
+	char *end;
+	int flg;
+	char *blk2;
+	int i;
+
+	flg = 0;
+	bE482 = *(long *)f6b5a("_etext");
+	bE486 = *(long *)f6b5a("_edata");
+	bE48A = *(long *)f6b5a("_end");
+	bE48E = *(long *)f6b5a("_stkseg");
+	if (bE48E == 0) {
+		if (g0474 > -1)
+			report_error(1, "warning: _stkseg undefined");
+		else
+			g0474 = -2;
+	} else {
+		if (!*(int *)bE49E && !bE49A && g0474 == -1 && bE49C < 2 && !bE4AE)
+			g0474 = -3;
+		else if (bE4A2)
+			g0474 = -3;
+	}
+	end = table16_entry(bE4FA);
+	if (!bE4A2) {
+		ep = table16_entry(0);
+		while (ep < end) {
+			if (ep[4] == ' ' && *(long *)ep == 0 && (long)ep != bE48A && (long)ep != bE486 && (long)ep != bE482 && (long)ep != bE48E) {
+				bE4A2++;
+				bE498 = 0;
+				break;
+			}
+			ep = next_entry(ep);
+		}
+	}
+	if (bE4A2) {
+		bE4A0 = 0;
+		bE4A4 = 0;
+		bE42B2 = 0;
+		for (i = 0; i < 128; i++) {
+			for (t8 = 0; t8 < 4; t8++)
+				bE42B4[i][(int)t8] = 0;
+		}
+	}
+	bE4C8 = 0;
+	if (bE498 == 0 && bE4A2)
+		goto l469e;
+	ep = table16_entry(0);
+	while (ep < end) {
+		if (ep[4] == ' ') {
+			t8 = *(long *)ep & 0xffff;
+			if (t8 != 0) {
+				t8 = (t8 + 1) & 0xfffe;
+				t4 = bE4C8 + t8;
+				if (t4 > 0x10000L || flg == 0) {
+					if (bEF32C >= bE4EC)
+						report_error(2, "x");
+					bE4C8 = 0;
+					t4 = t8;
+					blk2 = get_block(bEF32C++);
+					*(int *)(blk2 + 0x34) = -1;
+					*(int *)(blk2 + 4) = 0;
+					*(int *)(blk2 + 6) = 0;
+					*(int *)(blk2 + 0x26) = bE3E80;
+					flg++;
+				}
+				*(int *)(ep + 6) = bEF32C - 1;
+				*(long *)ep = bE4C8;
+				ep[4] = '%';
+				*(int *)(get_block(bEF32C - 1) + 8) = (int)(bE4C8 = t4);
+			}
+		}
+		ep = next_entry(ep);
+	}
+l469e:
+	f4a16();
+	if (bE498 || !bE4A2) {
+		f68a2(bE482, 0x22);
+		f68a2(bE486, 0x23);
+		f68a2(bE48A, 0x24);
+		if (!bE4A2)
+			f68a2(bE48E, 0x21);
+	}
+	g04e6 = 0;
+	ep = table16_entry(0);
+	while (ep < end) {
+		if ((long)ep != bE482 && (long)ep != bE486 && (long)ep != bE48A && (long)ep != bE48E) {
+			switch (ep[4] - 0x20) {
+			case 0:
+				if (bE496)
+					break;
+				bE4A3A |= 1;
+				if (*(long *)ep)
+					break;
+				if (g04e6 == 0)
+					ld_printf("x");
+				g04e6++;
+				put_name(ep + 8);
+				put_char(10);
+				break;
+			case 2:
+				a = *(char **)((blk = get_block(*(int *)(ep + 6))) + 0x16);
+				*(long *)ep = (unsigned)(*(long *)ep) + *(int *)(blk + 0x22) + *(int *)(a + 0x1a) + ((long)a[0] << 24);
+				*(int *)(ep + 6) = *(int *)(a + 0x10);
+				break;
+			case 3:
+				a = *(char **)((blk = get_block(*(int *)(ep + 6))) + 0x1a);
+				*(long *)ep = (unsigned)(*(long *)ep) + *(int *)(blk + 0x24) + *(int *)(a + 0x1c) + ((long)a[0] << 24);
+				*(int *)(ep + 6) = *(int *)(a + 0x10);
+				break;
+			case 5:
+				ep[4] = '$';
+			case 4:
+				a = *(char **)((blk = get_block(*(int *)(ep + 6))) + 0x1e);
+				*(long *)ep = (unsigned)(*(long *)ep) + *(int *)(blk + 0x26) + *(int *)(a + 0x1e) + ((long)a[0] << 24);
+				*(int *)(ep + 6) = *(int *)(a + 0x10);
+				break;
+			}
+		}
+		ep = next_entry(ep);
+	}
+	if (bE4A4 || bE4AA)
+		bE4CE = 0;
+	bEF312 = (unsigned)bE4CE >> 4;
+}
+
+/* scan_m_opt..410c: findings:D2,D11 */
+int report_error();
+int ld_sscanf();
+int f8a5c();
+char *f92f8();
+int f410c();
+int f42f8();
+
+int scan_m_opt(s, ip, argc)
+char *s;
+int *ip;
+int argc;
+{
+	char *p;
+	char type;
+	char digs[4];
+	char *fmt;
+	int j;
+	int k;
+	int m;
+	int v;
+	int w;
+	char *q;
+	int cnt;
+
+	if (s[1] <= '9' && s[1] >= '0') {
+		type = 'a';
+		k = 1;
+	} else {
+		k = 2;
+		type = s[1];
+		bE49C++;
+	}
+	if (s[k] == 0)
+		report_error(2, "usage error: -%s", s);
+	j = k;
+	while (s[j] <= '9') {
+		if (s[j] < '0')
+			break;
+		j++;
+	}
+	if (s[j] != 0 && s[j] != ':')
+		report_error(2, "usage error: -%s", s);
+	m = 0;
+	while (s[k] <= '9') {
+		if (s[k] < '0' || m >= 3)
+			break;
+		digs[m] = s[k];
+		k++;
+		m++;
+	}
+	digs[m] = 0;
+	v = f8a5c(digs);
+	if (bE4AE && v == 127)
+		report_error(2, "segment number in illegal range with %d", v);
+	if (v < 0 || v > 127)
+		report_error(2, "segment number out of range with %d", v);
+	if (v > bE3E82)
+		bE3E82 = v;
+	if (s[k] == ':') {
+		bE42B2++;
+		k++;
+		switch (type) {
+		case 'a':
+			w = 0;
+			break;
+		case 'b':
+			w = 3;
+			break;
+		case 'd':
+			w = 2;
+			break;
+		case 't':
+			w = 1;
+			break;
+		default:
+			report_error(2, "-%s: invalid section selector (must be t, d or b)", s);
+		}
+		if (s[k] == 't' || s[k] == 'b') {
+			if (bE42B4[v][w] != 0)
+				report_error(2, "-%s: section already specified", s);
+			bE42B4[v][w] = s[k];
+			k++;
+		} else
+			report_error(2, "-%s: invalid location selector (must be t or b)", s);
+		if (s[k] == 0) {
+			s = *bE4A36++;
+			(*ip)++;
+			k = 0;
+		}
+		fmt = "%o%c";
+		if (s[k] != '0')
+			fmt = "%d%c";
+		else {
+			k++;
+			if ((s[k] | 0x20) == 'x') {
+				k++;
+				fmt = "%x%c";
+			}
+		}
+		if (s[k] != 0) {
+			if (ld_sscanf(s + k, fmt, &tab4534[v][w]) != 1)
+				report_error(2, "-%s: bad offset", s);
+		}
+	} else if (s[k] != 0)
+		report_error(2, "-%s: usage error", s);
+	p = *bE4A36;
+	if (p[0] != '+') {
+		switch (type) {
+		case 't':
+			bE3E7E = v;
+			break;
+		case 'd':
+			bE3E7C = v;
+			break;
+		case 'b':
+			bE3E80 = v;
+			break;
+		case 'a':
+			w = bE49A ? v + 1 : v;
+			bE3E80 = w;
+			bE3E7C = w;
+			bE3E7E = v;
+			if (bE3E7C > bE3E82)
+				bE3E82 = bE3E7C;
+			break;
+		case 's':
+			if (bE4AE)
+				report_error(2, "cannot use -Ms option after -z");
+			f42f8(v, 's');
+			break;
+		default:
+			report_error(2, "%c illegal type for M; not s, t,d or b", type);
+		}
+		return;
+	}
+	if (type == 's')
+		report_error(2, "invalid -Ms option ");
+	bE4A36++;
+	p = *bE4A36;
+	(*ip)++;
+	while (p[0] != '+') {
+		if (*ip >= argc)
+			break;
+		q = f92f8(p, '/');
+		if (q) {
+			cnt++;
+			p = q;
+		}
+		f410c(type, p, v);
+		(*ip)++;
+		bE4A36++;
+		p = *bE4A36;
+	}
+	if (*ip == argc)
+		report_error(2, "no closing + for M file list");
+	(*ip)++;
+	bE4A36++;
 }

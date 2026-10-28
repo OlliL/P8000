@@ -554,13 +554,6 @@
     "len_orig": 59
    }
   },
-  "f3c16": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x3c16",
-   "ours": "f3c16..410c",
-   "level": "open"
-  },
   "f410c": {
    "file": "sld.c",
    "pairing": "confirmed",
@@ -604,13 +597,6 @@
     "len_ours": 91,
     "len_orig": 82
    }
-  },
-  "f44e6": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x44e6",
-   "ours": "f44e6..4968",
-   "level": "open"
   },
   "f4968": {
    "file": "sld.c",
@@ -2014,17 +2000,13 @@
    "level": "differs",
    "pairing_evidence": "150 instructions equal in count and order; all local offsets equal (frame offsets compared); the frame is 2 bytes larger (saved registers at 0x26, original 0x24: D1); zero of the table pointer in rr6 against rr4 (D2); and r2,#0xFFFE against res r2,#0 (popt); the tail merge of the long store (jr to the shared store) is reproduced by a goto; semantics by reading only",
    "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 10,
-    "pattern_unexplained": 0,
+    "d_normalised_pct": 95,
+    "pattern_diff": 14,
+    "pattern_unexplained": 2,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D7",
-     "D8"
-    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: ld\t_,rS; ld\trS,_",
     "structure_flags": [],
     "len_ours": 150,
     "len_orig": 150
@@ -2034,11 +2016,11 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3144",
-   "ours": "0x4e9e-0x517a",
+   "ours": "0x4e9e-0x517e",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 26,
+    "d_normalised_pct": 93,
+    "pattern_diff": 20,
     "pattern_unexplained": 5,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2053,21 +2035,16 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3760",
-   "ours": "0x517a-0x5452",
+   "ours": "0x517e-0x545a",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 34,
-    "pattern_unexplained": 0,
+    "d_normalised_pct": 94,
+    "pattern_diff": 24,
+    "pattern_unexplained": 1,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D3",
-     "D6",
-     "D7"
-    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: ld\trS,_",
     "structure_flags": [],
     "len_ours": 187,
     "len_orig": 187
@@ -2077,20 +2054,17 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2056",
-   "ours": "0x5452-0x56c8",
+   "ours": "0x545a-0x56d0",
    "level": "differs",
    "pairing_evidence": "160 instructions equal in count and order; frame offsets equal (strict); differences are scratch register choices: the third global copy goes through rr6 (original rr2), the result of the conditional expression for bE460 through r0 (original r4), and ld r5,r2 follows ldk r4,#0 (original before it); semantics by reading only",
    "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 22,
-    "pattern_unexplained": 0,
+    "d_normalised_pct": 90,
+    "pattern_diff": 32,
+    "pattern_unexplained": 1,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D7"
-    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: ld\trS,_",
     "structure_flags": [],
     "len_ours": 160,
     "len_orig": 160
@@ -2168,7 +2142,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0220",
-   "ours": "0x5dce-0x5ee2",
+   "ours": "0x5dd2-0x5ee6",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -2203,6 +2177,34 @@
    "orig": "0x0566",
    "ours": null,
    "level": "exact"
+  },
+  "end_pass1": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x44e6",
+   "ours": "0x6278-0x66fe",
+   "level": "differs",
+   "pairing_evidence": "292 against 293 instructions, all blocks in the original order; differences: the address of the 5-byte table entry is built in rr0 in the original (rr4/rr6 here) with one more copy, and the value of the switch is formed in r2 (here r3): scratch register choices (D2); frame equal (strict); semantics by reading only",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 12,
+    "pattern_unexplained": 4,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: clr\t_; ld\t_,rS; ld\trS,_",
+    "structure_flags": [],
+    "len_ours": 293,
+    "len_orig": 293
+   }
+  },
+  "scan_m_opt": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x3c16",
+   "ours": "f3c16..410c",
+   "level": "differs",
+   "pairing_evidence": "340 instructions equal in count; order-independent comparison: 38 differ; the temporaries of the switches use other registers (original r3/r6, here r7/r6: D2) and the original shares the tail of three report_error calls with the same arguments (jr to one call; D11); frame equal (strict); the 2-dimensional tables bE42B4[v][w] and tab4534[v][w] reproduce the indexed addressing; semantics by reading only"
   }
  },
  "findings": [],
@@ -2215,24 +2217,6 @@
    "classification": "-",
    "action": "second pass: rebuild after the small and medium functions (large, complex)",
    "result": "entry 0x18f2, 1700 bytes, not started"
-  },
-  {
-   "id": "sld-deferred-3c16",
-   "kind": "deferred (large function)",
-   "function": "f3c16",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x3c16, 1270 bytes, not started"
-  },
-  {
-   "id": "sld-deferred-44e6",
-   "kind": "deferred (large function)",
-   "function": "f44e6",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x44e6, 1154 bytes, not started"
   },
   {
    "id": "sld-deferred-4a16",
