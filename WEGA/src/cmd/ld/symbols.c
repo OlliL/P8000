@@ -98,61 +98,60 @@ char *q;
 }
 
 /* f68a2..6a08: findings:D2,D16 */
-int f68a2(p, c)
-register char *p;
-int c;
+int f68a2(a, c)
+char *a;
+char c;
 {
+	register char *p;
 	char *q;
 
+	p = a;
 	if (!p)
-		goto end;
-	if (p[4] == 0x20 && *(long *)p == 0)
-		goto init;
-	if (put_name(p + 8) < 8)
-		putchar(9);
-	putchar(0x20);
-	report_error(1, "-- Multiply defined");
-	goto end;
-init:
+		return;
+	if (p[4] != 0x20 || *(long *)p != 0) {
+		if (put_name(p + 8) < 8)
+			putchar(9);
+		putchar(0x20);
+		report_error(1, "-- Multiply defined");
+		return;
+	}
 	p[4] = c;
 	*(long *)p = 0;
 	*(int *)(p + 6) = 0;
 	if (c == 0x22) {
 		q = pE3C0A;
 		if (!q)
-			goto end;
+			return;
 		*(long *)p = ((long)(*q) << 24) + *(int *)(q + 4);
-		goto tail;
+		*(int *)(p + 6) = *(int *)(q + 0x10);
+		return;
 	}
 	if (c == 0x23) {
 		q = pE3C06;
 		if (!q)
-			goto end;
+			return;
 		*(long *)p = *(int *)(q + 4) + *(int *)(q + 6);
-		goto add;
+		*(long *)p = *(long *)p + ((long)(*q) << 24);
+		*(int *)(p + 6) = *(int *)(q + 0x10);
+		return;
 	}
 	if (c == 0x24) {
 		q = pE3C0E;
 		if (!q)
-			goto end;
+			return;
 		*(long *)p = *(int *)(q + 4) + *(int *)(q + 6) + *(int *)(q + 8);
-		goto add;
+		*(long *)p = *(long *)p + ((long)(*q) << 24);
+		*(int *)(p + 6) = *(int *)(q + 0x10);
+		return;
 	}
 	if (c != 0x21)
-		goto end;
+		return;
 	*(long *)p = 0;
 	if (g0474 == -1 || g0474 == -3)
 		*(int *)(p + 6) = bE3E82;
 	else
 		*(int *)(p + 6) = g0474;
 	*(long *)p = *(long *)p + ((long)*(int *)(p + 6) << 24);
-	goto end;
-add:
-	*(long *)p = *(long *)p + ((long)(*q) << 24);
-tail:
-	*(int *)(p + 6) = *(int *)(q + 0x10);
-end:
-	;
 }
 
 /* f6a08 0x6a08..0x6a58: done */

@@ -330,11 +330,11 @@ char *name;
 	int inword;
 	char *p;
 
+	p = buf6988;
+	tab4a48[0] = buf6988;
 	fd = open(name, 0);
 	if (fd < 0)
 		report_error(2, "Unable to open command file");
-	p = buf6988;
-	tab4a48[0] = buf6988;
 	inword = 0;
 	idx = 0;
 	goto rd;
@@ -380,29 +380,28 @@ char *t;
 
 	bE42B2++;
 	switch (*(s + 1)) {
-	case 0:
-		k = 0;
-		break;
-	case 'b':
-		k = 3;
+	case 't':
+		k = 1;
 		break;
 	case 'd':
 		k = 2;
 		break;
-	case 't':
-		k = 1;
+	case 'b':
+		k = 3;
+		break;
+	case 0:
+		k = 0;
 		break;
 	default:
 		report_error(2, "-%.2s: invalid selector (must be t, d or b)", s);
-		break;
 	}
 	u = t;
 	g = 0;
 	if (bE49A && (k == 2 || k == 3))
 		g = 1;
-	if (tab42b4[g * 5 + k])
-		report_error(2, "-%.2s: -%c%c already specified", s, tab42b4[g * 5 + k], s[1]);
-	tab42b4[g * 5 + k] = *s;
+	if ((tab42b4 + g * 5)[k])
+		report_error(2, "-%.2s: -%c%c already specified", s, (tab42b4 + g * 5)[k], s[1]);
+	(tab42b4 + g * 5)[k] = *s;
 	fmt = "%o%c";
 	if (*u != '0')
 		fmt = "%d%c";
@@ -523,7 +522,7 @@ test:
 	finish_output();
 }
 
-/* load_lib_syms..14a4: findings:D7,D15 */
+/* load_lib_syms 0x1364..0x14a4: findings:D15 */
 int load_lib_syms(p)
 char *p;
 {
@@ -531,15 +530,14 @@ char *p;
 	long n;
 
 	r = p;
-	switch (getfile(p)) {
+	switch (getfile(r)) {
 	case 0:
 		read_symbols(0, 0L);
-		goto end;
+		break;
 	case 1:
-		n = 1;
-		if (!load_header(n))
-			goto end;
-		goto step;
+		for (n = 1; load_header(n); n = ((bE44E + 27) >> 1) + n)
+			;
+		break;
 	case 2:
 		bE3E88 = bE44E / 12;
 		bE3E84 = ensure_buf(bE44E);
@@ -549,18 +547,13 @@ char *p;
 		while (f1560())
 			;
 		*g0486++ = -1;
-		goto end;
+		break;
 	case 3:
 		report_error(0, "out of date (warning)");
-		n = ((bE44E + 27) >> 1) + 1;
-		goto check;
+		for (n = ((bE44E + 27) >> 1) + 1; load_header(n); n = ((bE44E + 27) >> 1) + n)
+			;
+		break;
 	}
-step:
-	n = ((bE44E + 27) >> 1) + n;
-check:
-	if (load_header(n))
-		goto step;
-end:
 	close(bE4BE);
 }
 
@@ -590,10 +583,10 @@ long p;
 /* f1560..1664: findings:D2,D5,D8 */
 int f1560()
 {
-	long *sv;
-	char *end;
 	int i;
+	char *end;
 	long t;
+	long *sv;
 
 	sv = g0486;
 	end = bE3E84;
@@ -602,8 +595,8 @@ int f1560()
 body:
 	if (bE3E84 + i * 12 < end)
 		goto next;
-	if (*(bE3E84 + i * 12 + 4) & 0x80)
-		end = bE3E84 + i * 12 + 4 + (*(bE3E84 + i * 12 + 4) & 0x7f);
+	if ((bE3E84[i * 12 + 4] & 0x80) != 0)
+		end = bE3E84 + i * 12 + 4 + (bE3E84[i * 12 + 4] & 0x7f);
 	t = *(long *)f6b84(bE3E84 + i * 12 + 4);
 	if (!t)
 		goto next;
@@ -611,7 +604,7 @@ body:
 		goto next;
 	if (bE4B6)
 		swap_pair(bE3E84 + i * 12);
-	load_header((*(long *)(bE3E84 + i * 12)) >> 1);
+	load_header(*(long *)(bE3E84 + i * 12) >> 1);
 next:
 	i++;
 test:
@@ -1002,7 +995,7 @@ char *p;
 	int spare[2];	/* unused: the frame of the original has 4 more bytes */
 
 	q = p;
-	if (getfile(p) == 0) {
+	if (getfile(q) == 0) {
 		goto test0;
 body0:
 		q++;
@@ -1651,8 +1644,14 @@ long a;
 int b;
 {
 	int magic;
-	char tmp[24];
-	char rec[8208];
+	struct {
+		int h0, h1, h2;
+		long h3;
+		int h5, h6;
+		long h7;
+		int h9, h10, h11;
+	} tmp;
+	char rec[8198];
 	register char *p;
 	register int n;
 	register int w;
@@ -1670,12 +1669,12 @@ int b;
 	bE4B2 += 1;
 	bE436 = 0x18;
 	dseek(bE414, a, bE436);
-	mget(tmp, bE436);
+	mget(&tmp, bE436);
 	if (bE4B6)
-		swab(tmp, tmp, bE436);
-	bE434 = *(int *)(tmp + 10);
+		swab(&tmp, &tmp, bE436);
+	bE434 = tmp.h5;
 	n = bE434 / 16;
-	dseek(bE414, a + ((bE436 & ~1) >> 1), bE434);
+	dseek(bE414, a + ((unsigned)(bE436 & ~1) >> 1), bE434);
 	mget(rec, bE434);
 	if (bE4B6) {
 		for (p = rec; p < rec + n * 16; p += 16)
@@ -1684,7 +1683,7 @@ int b;
 	bE452 = magic & 0xf7ff;
 	bE454 = 0;
 	bE458 = 0;
-	bE45C = *(long *)(tmp + 6);
+	bE45C = tmp.h3;
 	bE466 = 0;
 	bE467 = 0;
 	w = 0;
@@ -1698,9 +1697,9 @@ int b;
 	}
 	if (w & 0xf8)
 		report_error(2, "Invalid segment attributes");
-	bE462 = *(long *)(tmp + 14);
-	bE468 = *(int *)(tmp + 18) & 1;
-	bE460 = *(int *)(tmp + 12);
+	bE462 = tmp.h7;
+	bE468 = tmp.h9 & 1;
+	bE460 = tmp.h6;
 	make_blk(rec, n, b);
 	return 1;
 }

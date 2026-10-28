@@ -23,7 +23,7 @@
 0f26 read_words 1070 330 1 ba8 c ret findings:D15
 1070 reg_sect_addr 11ea 378 1 980 P ret findings:D6,D15
 11ea parse_args 1364 378 1 a4c P ret findings:D2,D5,D6,D7,D15,D16
-1364 load_lib_syms 14a4 320 1 9d6 P ret findings:D7,D15
+1364 load_lib_syms 14a4 320 1 9d6 P ret findings:D15
 14a4 load_header 1560 188 3 13a2 1486 1640 P ret done
 1560 f1560 1664 260 1 1426 c ret findings:D2,D5,D8
 1664 add16_checked 1696 50 1 1898 P ret findings:D4

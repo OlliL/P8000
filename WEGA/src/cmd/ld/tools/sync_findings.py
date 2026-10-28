@@ -12,6 +12,8 @@ An older entry f_<entry> (from the first inventory) is renamed to the new key, k
 findings_pending entries (non-D items only) refer to the function by its key ('function' field) and are updated too.
 D classes of the old compiler go to the function's audit (d_classes, difference_class, difference_note), not to
 findings_pending.
+The hand notes of the findings pass are in manual_classes (basis read = reviewed, open = not reviewed; note = what was tried);
+sync drops the entry when the function becomes exact (status done).
 Then run findings_md.py to regenerate FINDINGS.md.
 """
 import json
@@ -81,6 +83,10 @@ def main():
     data['findings_pending'] = [x for x in data['findings_pending']
                                 if not (x.get('kind', '').startswith('deferred') and x.get('function') in status
                                         and status[x['function']] != 'open')]
+    # a function that became exact needs no hand note any more (manual_classes: the Note column of FINDINGS.md)
+    for r in rows:
+        if r['status'] == 'done':
+            data.get('manual_classes', {}).pop(r['name'], None)
     json.dump(data, open(FINDINGS, 'w'), indent=1)
     open(FINDINGS, 'a').write('\n')
     print('functions: %d own, %d entries in total' % (len(rows), len(funcs)))

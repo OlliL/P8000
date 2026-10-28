@@ -1031,7 +1031,7 @@ second word at 0xe4d8; an array size of the original is the distance of the addr
 
 ### sld: what fixed the findings functions (2026-10-28)
 
-Rules found while bringing the "findings" functions of sld to the exact code (strict_audit.py, 56 of 90 equal, 34 left). Each came from
+Rules found while bringing the "findings" functions of sld to the exact code (strict_audit.py, 57 of 90 equal, 33 left). Each came from
 reading the original code with `tools/odis.py NAME`:
 
 - **Argument registers.** The first argument is in rr6 (|4| in the spill), the second in rr4 (|0|), a word argument after them in r5/r3. A
@@ -1066,6 +1066,10 @@ reading the original code with `tools/odis.py NAME`:
   `jr 0x5002`), and the bodies of the cases 3 and 4 of the first `switch (kind)` of ins_block behind the dispatch of the second switch
   (all three bodies end in the shared `ld |4|,r2`, `jr 0x5a96`). Our compiler writes the arms and bodies in source order, so 66
   (lay_out) and 82 (ins_block) instructions stay different; case permutations in the source did not help (94 -> 82). Not solved.
+- **Call with a register copy.** `r = p; ... getfile(r)` (the copy, not the parameter) gives the call without the extra `ldl rr4,rr6`
+  (load_lib_syms, load2arg). `for (n = 1; load_header(n); n = ((bE44E + 27) >> 1) + n) ;` per case reproduces the shared `n =` head of the
+  loop (load_lib_syms). The 24-byte header in f3516 is a struct (mixed int/long fields), its record buffer 8198 bytes; `bE42B4[g][k]`-style
+  indexing with a variable row is `(tab42b4 + g * 5)[k]`.
 - **Case order.** The cases of a switch lie in the code in the order of the source (f42f8: 'r', 's', 'M').
 - Remaining differences are the old compiler's own: the optimizer moves non-register locals into scratch registers (f1f96: `e` stays in
   rr2 in the original; ours keeps it on the stack), `and r2,#0xFFFE` becomes `res r2,#0` in the original (load2), `jr cc,a; jr b` is
