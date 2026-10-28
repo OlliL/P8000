@@ -1248,7 +1248,7 @@ char *q;
 /* walk_entries..0220: done */
 char *table16_entry();
 char *next_entry();
-int f0220();
+int dump_sym();
 int ld_printf();
 
 walk_entries()
@@ -1260,7 +1260,7 @@ walk_entries()
 	b = table16_entry(bE4FA);
 	a = table16_entry(0);
 	while (a < b) {
-		f0220(a);
+		dump_sym(a);
 		a = next_entry(a);
 	}
 }
@@ -4398,4 +4398,63 @@ test:
 		argc = --savec;
 		goto test;
 	}
+}
+
+/* dump_sym..0334: done */
+int put_name();
+int ld_printf();
+
+int dump_sym(p)
+register char *p;
+{
+	register char *s;
+	int k;
+	int n;
+
+	if (p == 0)
+		return 0;
+	put_name(p + 8);
+	ld_printf("\tvalue 0x%lx, segt 0x%x, ", *(long *)p, *(int *)(p + 6) & 0xff);
+	if (p[4] & 0x20)
+		ld_printf("EXT+");
+	switch (p[4] & 0x1f) {
+	case 0:
+		s = "UNDF";
+		break;
+	case 1:
+		s = "ABS";
+		break;
+	case 4:
+		s = "BSS";
+		break;
+	case 3:
+		s = "DATA";
+		break;
+	case 2:
+		s = "CODE";
+		break;
+	case 0x1f:
+		s = "FN";
+		break;
+	case 0x1e:
+		s = "SEC";
+		break;
+	case 5:
+		s = "COMM";
+		break;
+	default:
+		s = "";
+	}
+	ld_printf("%s\n", s);
+	if (p[8] & 0x80) {
+		n = (p[8] & 0x7f) - 8;
+		p += 16;
+		k = 1;
+		while (n > 0) {
+			k++;
+			n -= 16;
+		}
+		return k;
+	}
+	return 1;
 }

@@ -953,6 +953,19 @@ means it does something fixed instead (only possible where the original's result
   later crt0 variant (version string in the text; ar also has the SCCS stamp in the data,
   ranlib not), made from `src/lib/libc/crt/crt0.s.in` (see "Start-up files").
 
+### sld: limits of the old compiler for the work file (2026-10-28)
+
+- Only the first 8 characters of an identifier count; an external name is `_` + 7 characters in the object. Identifiers equal in
+  the first 8 characters are one symbol. `src/cmd/ld/tools/check_names.py` lists such groups (renamed for that:
+  `table16_index` -> `index16`, `report_limit` -> `limit_msg`; `saved_av`/`saved_argc` are locals and differ at the 8th character).
+- The symbol table of scc is small: a file with more than about 560 global names stops with "Symbol table out of space".
+  `sld.c` has about 310 file-scope names and 620 identifiers in total.
+- Near the limit the compiler loses the name of a function now and then: the assembler text then has an empty label
+  (`/*~~:*/`, `_::`), and with two such functions the assembler stops with "Symbol redefined". It depends on the exact names
+  (`ld_innum` and `scan_options` triggered it together; `ld_inum` does not). `accept.py` now checks the whole file for empty
+  labels (`scc -S`). A rename can trigger it again.
+- The whole file will be split into the modules of the plan, which also removes these limits.
+
 ### sld: printf core 0x7c26 and the stream macro (2026-10-28)
 
 - The printf core of sld (`0x7c26`, int result) and its callers: `0x79ca` (printf: stream `str194e`, four doubles), `0x7a5e` (fprintf:

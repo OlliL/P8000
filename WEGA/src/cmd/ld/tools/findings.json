@@ -49,13 +49,6 @@
     "len_orig": 28
    }
   },
-  "f0220": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x0220",
-   "ours": "f0220..06c6",
-   "level": "open"
-  },
   "f0762": {
    "file": "sld.c",
    "pairing": "confirmed",
@@ -2044,16 +2037,13 @@
    "ours": "0x4e9e-0x517e",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 16,
-    "pattern_unexplained": 0,
+    "d_normalised_pct": 92,
+    "pattern_diff": 24,
+    "pattern_unexplained": 5,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D7"
-    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: clr\t_; ld\tA,#N; ld\t_,#N",
     "structure_flags": [],
     "len_ours": 153,
     "len_orig": 153
@@ -2063,16 +2053,21 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3760",
-   "ours": "0x517e-0x545a",
+   "ours": "0x517e-0x5456",
    "level": "exact",
    "audit": {
-    "d_normalised_pct": 94,
-    "pattern_diff": 24,
-    "pattern_unexplained": 8,
+    "d_normalised_pct": 91,
+    "pattern_diff": 34,
+    "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: ld\trS,_; ld\trS,_(rS); ld\trS,_+2(rS); ld\trS,_+4(rS); ld\trS,_+6(rS)",
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D3",
+     "D6",
+     "D7"
+    ],
     "structure_flags": [],
     "len_ours": 187,
     "len_orig": 187
@@ -2082,7 +2077,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2056",
-   "ours": "0x545a-0x56d0",
+   "ours": "0x5456-0x56cc",
    "level": "differs",
    "pairing_evidence": "160 instructions equal in count and order; frame offsets equal (strict); differences are scratch register choices: the third global copy goes through rr6 (original rr2), the result of the conditional expression for bE460 through r0 (original r4), and ld r5,r2 follows ldk r4,#0 (original before it); semantics by reading only",
    "audit": {
@@ -2168,19 +2163,50 @@
     "len_ours": 5,
     "len_orig": 5
    }
+  },
+  "f0334": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0334",
+   "ours": null,
+   "level": "open"
+  },
+  "f03fc": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x03fc",
+   "ours": null,
+   "level": "open"
+  },
+  "f0566": {
+   "file": null,
+   "pairing": "open",
+   "orig": "0x0566",
+   "ours": null,
+   "level": "open"
+  },
+  "dump_sym": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x0220",
+   "ours": "0x5dd2-0x5ee6",
+   "level": "exact",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 75,
+    "len_orig": 75
+   }
   }
  },
  "findings": [],
  "findings_pending": [
-  {
-   "id": "sld-deferred-0220",
-   "kind": "deferred (large function)",
-   "function": "f0220",
-   "status": "open",
-   "classification": "-",
-   "action": "second pass: rebuild after the small and medium functions (large, complex)",
-   "result": "entry 0x0220, 1190 bytes, not started"
-  },
   {
    "id": "sld-deferred-18f2",
    "kind": "deferred (large function)",

@@ -6,25 +6,25 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 ## Summary
 
-**Functions:** 102
+**Functions:** 105
 
 | Pairing | Count |
 |---|---|
-| confirmed | 95 |
-| open | 7 |
+| confirmed | 96 |
+| open | 9 |
 
 | Difference class | Count |
 |---|---|
-| - | 10 |
+| - | 12 |
 | D only (manual reading) | 6 |
-| D only (pattern-verified) | 76 |
+| D only (pattern-verified) | 77 |
 | other differences | 10 |
 
-**Pending findings:** 9
+**Pending findings:** 8
 
 | Status | Count |
 |---|---|
-| open | 9 |
+| open | 8 |
 
 ## Functions
 
@@ -34,10 +34,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | alloc_segment | 0x4308-0x450c | 0x5eec | confirmed | exact | D only (pattern-verified) | D3, D6 |  |
 | copy_blocks | 0x450c-0x4730 | 0x620e | confirmed | exact | D only (pattern-verified) | D7 |  |
 | copy_leafname | 0x0614-0x06b6 | 0x4444 | confirmed | exact | D only (pattern-verified) |  |  |
+| dump_sym | 0x5dd2-0x5ee6 | 0x0220 | confirmed | exact | D only (pattern-verified) |  |  |
 | ensure_buf | 0x1334-0x13a0 | 0x7112 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | f0018 | f0018..0056 | 0x0018 | open | open |  |  |  |
 | f0178 | 0x05ba-0x0614 | 0x0178 | confirmed | differs | D only (pattern-verified) | D1, D10, D7 |  |
-| f0220 | f0220..06c6 | 0x0220 | open | open |  |  |  |
+| f0334 |  | 0x0334 | open | open |  |  |  |
+| f03fc |  | 0x03fc | open | open |  |  |  |
+| f0566 |  | 0x0566 | open | open |  |  |  |
 | f0762 | 0x0094-0x00be | 0x0762 | confirmed | exact | D only (pattern-verified) |  |  |
 | f1070 | 0x24a2-0x2600 | 0x1070 | confirmed | differs | D only (pattern-verified) | D10, D2, D3, D6, D7, D8, D8/D2 |  |
 | f1364 | 0x226e-0x2394 | 0x1364 | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
@@ -103,10 +106,10 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | load_header | 0x0f16-0x0fca | 0x14a4 | confirmed | exact | D only (pattern-verified) | D7 |  |
 | lookup_name | 0x4206-0x4308 | 0x6a58 | confirmed | exact | D only (pattern-verified) |  |  |
 | main | f078c..0a5c | 0x078c | confirmed | differs |  |  |  |
-| make_blocks | 0x517e-0x545a | 0x3760 | confirmed | exact | other differences |  | unexplained instruction forms: ld	rS,_; ld	rS,_(rS); ld	rS,_+2(rS); ld	rS,_+4(rS); ld	rS,_+6(rS) |
+| make_blocks | 0x517e-0x5456 | 0x3760 | confirmed | exact | D only (pattern-verified) | D10, D3, D6, D7 |  |
 | make_ccl | 0x0af0-0x0b66 | 0x7956 | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D8/D2 |  |
 | next_entry | 0x15d4-0x1666 | 0x705e | confirmed | differs | D only (pattern-verified) | D1, D10, D2, D3, D7, D8, D8/D2 |  |
-| open_library | 0x4e9e-0x517e | 0x3144 | confirmed | exact | D only (pattern-verified) | D10, D7 |  |
+| open_library | 0x4e9e-0x517e | 0x3144 | confirmed | exact | other differences |  | unexplained instruction forms: clr	_; ld	A,#N; ld	_,#N |
 | open_tmp | 0x1088-0x1128 | 0x22a4 | confirmed | differs | D only (pattern-verified) | D10, D7 |  |
 | pack_entry | 0x1538-0x156e | 0x6866 | confirmed | differs | D only (pattern-verified) | D10, D3, D7 |  |
 | pack_name | 0x1128-0x11bc | 0x00ee | confirmed | differs | D only (pattern-verified) | D1, D10, D13, D3, D7, D8 |  |
@@ -121,7 +124,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | scan_field | 0x177c-0x191a | 0x7808 | confirmed | differs | D only (manual reading) | D5 | addressing of the count and pointer fields through register pairs and constant index (indirect and indexed forms, D5); by reading, no popt pattern |
 | scan_options | f0b04..0f26 | 0x0b04 | confirmed | differs |  |  |  |
 | sig_handler | 0x00be-0x011c | 0x0a5c | confirmed | exact | D only (pattern-verified) |  |  |
-| start_output | 0x545a-0x56d0 | 0x2056 | confirmed | differs | D only (pattern-verified) | D10, D7 |  |
+| start_output | 0x5456-0x56cc | 0x2056 | confirmed | differs | D only (pattern-verified) | D10, D7 |  |
 | str_compare | 0x020a-0x0262 | 0x3a30 | confirmed | differs | D only (pattern-verified) | D13 |  |
 | swab12 | 0x1506-0x1538 | 0x3b1e | confirmed | differs | D only (pattern-verified) | D1, D3 |  |
 | swap_bytes | 0x08fa-0x0924 | 0x65c6 | confirmed | differs | D only (manual reading) | D2 | indirect word load through another register pair (rr4 here, rr2 in the original) |
@@ -137,7 +140,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | ID | Kind | Function | Status | Classification | Action | Result |
 |---|---|---|---|---|---|---|
-| sld-deferred-0220 | deferred (large function) | f0220 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x0220, 1190 bytes, not started |
 | sld-deferred-18f2 | deferred (large function) | f18f2 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x18f2, 1700 bytes, not started |
 | sld-deferred-3c16 | deferred (large function) | f3c16 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x3c16, 1270 bytes, not started |
 | sld-deferred-44e6 | deferred (large function) | f44e6 | open | - | second pass: rebuild after the small and medium functions (large, complex) | entry 0x44e6, 1154 bytes, not started |

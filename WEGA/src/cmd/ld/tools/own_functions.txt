@@ -9,7 +9,10 @@
 00ee pack_name 0178 138 1 6b68 c ret findings:D2
 0178 f0178 01d2 90 1 6898 c ret findings:D2
 01d2 walk_entries 0220 78 0 - x ret done
-0220 f0220 06c6 1190 1 204 P ret open
+0220 dump_sym 0334 276 1 204 P ret done
+0334 f0334 03fc 200 0 - x ret open
+03fc f03fc 0566 362 0 - x ret open
+0566 f0566 06c6 352 0 - x ret open
 06c6 get_block 0762 156 55 350 1828 3784 3a0c c ret findings:D7
 0762 f0762 078c 42 1 85c c ret done
 078c main 0a5c 720 1 46 c ret findings:D2,D7
