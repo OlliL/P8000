@@ -2034,11 +2034,11 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3144",
-   "ours": "0x4e9e-0x517e",
+   "ours": "0x4e9e-0x517a",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 92,
-    "pattern_diff": 24,
+    "pattern_diff": 26,
     "pattern_unexplained": 5,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -2053,7 +2053,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x3760",
-   "ours": "0x517e-0x5456",
+   "ours": "0x517a-0x5452",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 91,
@@ -2077,7 +2077,7 @@
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x2056",
-   "ours": "0x5456-0x56cc",
+   "ours": "0x5452-0x56c8",
    "level": "differs",
    "pairing_evidence": "160 instructions equal in count and order; frame offsets equal (strict); differences are scratch register choices: the third global copy goes through rr6 (original rr2), the result of the conditional expression for bE460 through r0 (original r4), and ld r5,r2 follows ldk r4,#0 (original before it); semantics by reading only",
    "audit": {
@@ -2164,32 +2164,11 @@
     "len_orig": 5
    }
   },
-  "f0334": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x0334",
-   "ours": null,
-   "level": "open"
-  },
-  "f03fc": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x03fc",
-   "ours": null,
-   "level": "open"
-  },
-  "f0566": {
-   "file": null,
-   "pairing": "open",
-   "orig": "0x0566",
-   "ours": null,
-   "level": "open"
-  },
   "dump_sym": {
    "file": "sld.c",
    "pairing": "confirmed",
    "orig": "0x0220",
-   "ours": "0x5dd2-0x5ee6",
+   "ours": "0x5dce-0x5ee2",
    "level": "exact",
    "audit": {
     "d_normalised_pct": 100,
@@ -2203,6 +2182,27 @@
     "len_ours": 75,
     "len_orig": 75
    }
+  },
+  "dump_p1": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x0334",
+   "ours": null,
+   "level": "exact"
+  },
+  "dump_p2": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x03fc",
+   "ours": null,
+   "level": "exact"
+  },
+  "dump_res": {
+   "file": "sld.c",
+   "pairing": "confirmed",
+   "orig": "0x0566",
+   "ours": null,
+   "level": "exact"
   }
  },
  "findings": [],

@@ -4458,3 +4458,88 @@ register char *p;
 	}
 	return 1;
 }
+
+/* dump_p1..03fc: done */
+char *get_block();
+int ld_printf();
+
+int dump_p1()
+{
+	register char *p;
+	register int i;
+	int z;
+
+	ld_printf("\nPASS ONE SEG TABLE:\n");
+	for (i = 0; i < bEF32C; i++) {
+		p = get_block(i);
+		ld_printf("P1 %d:\t%d\n", i, p[0]);
+		ld_printf("\ts_code, s_data, s_bss:\t0x%x 0x%x 0x%x\n", *(int *)(p + 4), *(int *)(p + 6), *(int *)(p + 8));
+		ld_printf("\tctrel, cdrel, cbrel:\t0x%x 0x%x 0x%x\n", *(int *)(p + 0x10), *(int *)(p + 0x12), *(int *)(p + 0x14));
+		ld_printf("\tncoff, ndoff, nboff:\t0x%x 0x%x 0x%x\n", *(int *)(p + 0x22), *(int *)(p + 0x24), *(int *)(p + 0x26));
+		ld_printf("\tncode, ndata, nbss:\t0x%x 0x%x 0x%x\n", *(long *)(p + 0x16), *(long *)(p + 0x1a), *(long *)(p + 0x1e));
+		ld_printf("\txtnext,datnext,bssnext: %d %d %d \n", *(int *)(p + 0x30), *(int *)(p + 0x32), *(int *)(p + 0x34));
+	}
+}
+
+/* dump_p2..0566: done */
+int ld_printf();
+
+int dump_p2()
+{
+	register char *p;
+
+	ld_printf("\nPASS TWO SEG TABLE:\n");
+	for (p = (char *)bF32E; p; p = *(char **)(p + 0x12)) {
+		ld_printf("P2 %d:\t segno %d\n", *(int *)(p + 0x10) & 0xff, p[0] & 0xff);
+		ld_printf("\ts_coff, s_doff, s_boff:\t0x%x 0x%x 0x%x\n", p[1] & 0xff, p[2] & 0xff, p[3] & 0xff);
+		ld_printf("\ts_code, s_data, s_bss:\t0x%x 0x%x 0x%x\n", *(int *)(p + 4), *(int *)(p + 6), *(int *)(p + 8));
+		ld_printf("\ttorig, dorig, borig:\t0x%x 0x%x 0x%x\n", *(int *)(p + 0x1a), *(int *)(p + 0x1c), *(int *)(p + 0x1e));
+		ld_printf("\tatr: ");
+		if (*(int *)(p + 0xa) & 1)
+			ld_printf(" SG_CODE");
+		if (*(int *)(p + 0xa) & 2)
+			ld_printf(" SG_DATA");
+		if (*(int *)(p + 0xa) & 4)
+			ld_printf(" SG_BSS");
+		if (*(int *)(p + 0xa) & 0x10)
+			ld_printf(" SG_OCODE");
+		if (*(int *)(p + 0xa) & 0x20)
+			ld_printf(" SG_ODATA");
+		if (*(int *)(p + 0xa) & 0x40)
+			ld_printf(" SG_OBSS");
+		if (*(int *)(p + 0xa) & 8)
+			ld_printf(" SG_STACK");
+		if (*(int *)(p + 0xa) & 0x100)
+			ld_printf(" SG_RESERVE");
+		ld_printf("\n");
+	}
+}
+
+/* dump_res..06c6: done */
+int ld_printf();
+
+int dump_res()
+{
+	int k;
+	int j;
+
+	ld_printf("RESLIST DUMP\n");
+	ld_printf("t,d,b0 and 1 %d %d %d %d %d %d\n", tblF332[0].a, tblF332[1].a, tblF332[0].b, tblF332[1].b, tblF332[0].c, tblF332[1].c);
+	ld_printf(" res 0 1 %d %d", tblF332[0].d, tblF332[1].d);
+	k = 2;
+	do {
+		ld_printf("\n txtptr");
+		for (j = 0; j < 9; j++)
+			ld_printf("  %d ", tblF332[j + k].a);
+		ld_printf("\n datptr");
+		for (j = 0; j < 9; j++)
+			ld_printf("  %d", tblF332[j + k].b);
+		ld_printf("\n bssptr");
+		for (j = 0; j < 9; j++)
+			ld_printf("  %d", tblF332[j + k].c);
+		ld_printf("\n res");
+		for (j = 0; j < 9; j++)
+			ld_printf("  %d", tblF332[j + k].d);
+		k = k + 9;
+	} while (k < 128);
+}
