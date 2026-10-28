@@ -9,7 +9,7 @@ int nblks = -1;
 struct p1seg **blktab = 0;
 int unused3be = 0;
 
-/* get_block 0x06c6..0x0762: done */
+/* get_block: allocate a block of the work area (malloc), fatal when it fails (0x06c6..0x0762 of /bin/sld) */
 struct p1seg *get_block(n)
 int n;
 {
@@ -31,7 +31,7 @@ test:
 	return blktab[n];
 }
 
-/* segtab_alloc 0x0762..0x078c: done */
+/* segtab_alloc: allocate the segment table (0x0762..0x078c of /bin/sld) */
 segtab_alloc(a)
 int a;
 {

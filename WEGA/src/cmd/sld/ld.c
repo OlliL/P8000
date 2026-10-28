@@ -26,7 +26,7 @@ int maxblk = 2000;
 unsigned nsym = 2000;
 int nwsym = 0;
 
-/* main..0a5c: findings:D2,D7 */
+/* main: entry: initialise, scan the options, load the libraries and objects, write the output (0x078c..0x0a5c of /bin/sld) */
 int main(argc, argv)
 int argc;
 char **argv;
@@ -66,7 +66,7 @@ body:
 	if (s[0] != '-')
 		goto lib;
 	j = 1;
-l08a2:
+optchar:
 	if (s[j] == 0)
 		goto next;
 	switch (s[j]) {
@@ -89,7 +89,7 @@ l08a2:
 		i++;
 		curarg++;
 		j++;
-		goto l08a2;
+		goto optchar;
 	case 'l':
 		load_lib_syms(s + (j - 1));
 		break;
@@ -105,7 +105,7 @@ l08a2:
 			j++;
 		curarg++;
 		j++;
-		goto l08a2;
+		goto optchar;
 	case 'M':
 		if (tbflag)
 			report_error(2, "Cannot use -t or -b options with -M");
@@ -155,7 +155,7 @@ test:
 
 char tmpname[] = "l.out";
 
-/* sig_handler 0x0a5c..0x0aba: done */
+/* sig_handler: signal handler: remove the temporary files and exit (0x0a5c..0x0aba of /bin/sld) */
 sig_handler()
 {
 	unlink(tmpname);
@@ -165,7 +165,7 @@ sig_handler()
 	exit(delarg);
 }
 
-/* init_signals 0x0aba..0x0b04: done */
+/* init_signals: catch the interrupt signals (0x0aba..0x0b04 of /bin/sld) */
 init_signals()
 {
 	if (signal(2, 1L) != 1)
@@ -174,7 +174,7 @@ init_signals()
 		signal(15, sig_handler);
 }
 
-/* scan_options..0f26: findings:D2,D7 */
+/* scan_options: scan the options (-l, -o, -M, -f, ...) of the command line or of a command file (0x0b04..0x0f26 of /bin/sld) */
 int scan_options(argc, argv)
 int argc;
 char **argv;
@@ -322,7 +322,7 @@ test:
 	}
 }
 
-/* read_words..1070: findings:D15 */
+/* read_words: read a command file (-f) and split it into the words of the argument list (0x0f26..0x1070 of /bin/sld) */
 int read_words(name)
 char *name;
 {
@@ -371,7 +371,7 @@ rd:
 	return 0;
 }
 
-/* reg_sect_addr..11ea: findings:D6,D15 */
+/* reg_sect_addr: read the address of a section option (-t, -d, -b) and check it (0x1070..0x11ea of /bin/sld) */
 int reg_sect_addr(s, t)
 char *s;
 char *t;
@@ -417,7 +417,7 @@ char *t;
 	return k != 0;
 }
 
-/* parse_args..1364: findings:D2,D5,D6,D7,D15,D16 */
+/* parse_args: second pass over the arguments: load every object and library in order (0x11ea..0x1364 of /bin/sld) */
 int parse_args(argc, argv)
 int argc;
 char **argv;
@@ -525,7 +525,7 @@ test:
 	finish_output();
 }
 
-/* load_lib_syms 0x1364..0x14a4: findings:D15 */
+/* load_lib_syms: load an archive: only the members that define an undefined symbol (ranlib table) (0x1364..0x14a4 of /bin/sld) */
 int load_lib_syms(p)
 char *p;
 {
@@ -560,7 +560,7 @@ char *p;
 	close(infil);
 }
 
-/* load_header..1560: done */
+/* load_header: read the header of an object file or archive member (0x14a4..0x1560 of /bin/sld) */
 load_header(p)
 long p;
 {
@@ -583,7 +583,7 @@ long p;
 	return 1;
 }
 
-/* ranlib_scan..1664: findings:D2,D5,D8 */
+/* ranlib_scan: look up the undefined symbols in the ranlib table of an archive (0x1560..0x1664 of /bin/sld) */
 int ranlib_scan()
 {
 	int i;
@@ -616,7 +616,7 @@ test:
 	return sv != libp;
 }
 
-/* add16_checked..1696: findings:D4 */
+/* add16_checked: sum of two unsigned values; error (level 1) when it exceeds 16 bits (0x1664..0x1696 of /bin/sld) */
 int add16_checked(x, y, a)
 unsigned x;
 unsigned y;
@@ -630,7 +630,7 @@ long a;
 	return s;
 }
 
-/* read_symbols..18f2: findings:D1,D2 */
+/* read_symbols: pass one for one object: read the symbol table, enter the symbols (0x1696..0x18f2 of /bin/sld) */
 int read_symbols(a, b, c)
 int a;
 int b;
@@ -718,7 +718,7 @@ lstore:
 	return 0;
 }
 
-/* place_sec..1f96: done */
+/* place_sec: place the sections (text, data, bss) of the objects into segments and set the addresses (0x18f2..0x1f96 of /bin/sld) */
 int place_sec(p, k)
 register struct p2seg *p;
 int k;
@@ -864,7 +864,7 @@ int k;
 	}
 }
 
-/* split_seg..2056: findings:D4 */
+/* split_seg: start a new pass-two segment when the section does not fit (0x1f96..0x2056 of /bin/sld) */
 split_seg(p, kind)
 struct p2seg *p;
 int kind;
@@ -890,7 +890,7 @@ int kind;
 	}
 }
 
-/* start_output..22a4: findings:D2 */
+/* start_output: open the output and temporary files, write the header (0x2056..0x22a4 of /bin/sld) */
 int start_output()
 {
 	register int n;
@@ -946,7 +946,7 @@ int start_output()
 	mput(&toutb, arr, n << 4);
 }
 
-/* open_tmp 0x22a4..0x2346: done */
+/* open_tmp: create a temporary or output file (0x22a4..0x2346 of /bin/sld) */
 open_tmp(out, flag)
 struct buf *out;
 int flag;
@@ -969,7 +969,7 @@ int flag;
 	out->xnext = out->iobuf;
 }
 
-/* init_entry..23fe: done */
+/* init_entry: fill the header of the output (objhdr) from the totals and the flags (0x2346..0x23fe of /bin/sld) */
 init_entry(p, a)
 struct objhdr *p;
 int a;
@@ -989,7 +989,7 @@ int a;
 	p->hy = 0;
 }
 
-/* load2arg..2492: findings:D2 */
+/* load2arg: pass two for one argument (object file or archive member) (0x23fe..0x2492 of /bin/sld) */
 load2arg(p)
 char *p;
 {
@@ -1030,7 +1030,7 @@ test1:
 	close(infil);
 }
 
-/* load2..2624: findings:D2,D7 */
+/* load2: pass two for one object: relocate its symbols and copy text and data (0x2492..0x2624 of /bin/sld) */
 int load2(a, b)
 long a;
 char *b;
@@ -1090,7 +1090,7 @@ next:
 	load2seg(a, t);
 }
 
-/* load2seg 0x2624..0x27d8: done */
+/* load2seg: pass two: load the text and data of one segment of an object (0x2624..0x27d8 of /bin/sld) */
 int load2seg(a, b)
 long a;
 struct local *b;
@@ -1137,7 +1137,7 @@ struct local *b;
 	}
 }
 
-/* load2td 0x27d8..0x2cbc: done */
+/* load2td: pass two: copy text or data with relocation (0x27d8..0x2cbc of /bin/sld) */
 int load2td(p, q, r)
 struct local *p;
 struct buf *q;
@@ -1193,9 +1193,9 @@ top:
 	map_sym();
 	if ((w12 = (int)cursym.svalue) & 0xff00)
 		report_error(2, "short segmented offset too large");
-c2954:
+addhi:
 	w12 += ((int)(cursym.svalue >> 16)) & 0xff00;
-c2964:
+setseg:
 	w13 = (cursym.sseg << 8) + (w13 & 0xff);
 emit:
 	if (swapflg) {
@@ -1224,32 +1224,32 @@ emit:
 	goto top;
 	case 0:
 	if ((w13 & 0xe) == 0)
-		goto c2a96;
+		goto pairchk;
 	if (!flag)
-		goto c2a68;
+		goto mapsym;
 	if (!((w13 != 0xff0f) & w11 & 0xff0f))
-		goto c2a68;
+		goto mapsym;
 	w13 &= 0xf0;
 	w13 |= w11 & 0xff0f;
-c2a68:
+mapsym:
 	cursym.sseg = (unsigned)w13 >> 8;
 	cursym.stype = ((w13 & 7) >> 1) + 1;
 	cursym.svalue = (long)w12;
 	map_sym();
-c2a96:
+pairchk:
 	if (!flag)
-		goto c2ad6;
+		goto symdone;
 	flag = 0;
 	w11 = (cursym.sseg << 8) + (w11 & 0xff);
 	if (swapflg)
 		w11 = swap_bytes(w11);
 	if (rflag)
 		put_int_buf(w11, r);
-c2ad6:
+symdone:
 	if ((w13 & 0xe) == 0)
 		goto emit;
 	w12 = (int)cursym.svalue;
-	goto c2964;
+	goto setseg;
 	default:
 		report_error(2, "unrecognized relocation address type");
 	}
@@ -1257,12 +1257,12 @@ c2ad6:
 	} else {
 		e = table_lookup(p, w13);
 		if (e->stype != 0x20)
-			goto c2b46;
+			goto extsym;
 		w13 = (((w13 & 8) ? w13 : (w13 >> 4)) & 7) + ((index16(e) + nsymf) << 4) + 8;
 		goto emit;
 	}
 
-c2b46:
+extsym:
 	switch (((w13 & 8) ? w13 : (w13 >> 4)) & 7) {
 	case 2:
 	w13 = (e->stype - 0x21) * 2 + 0x21;
@@ -1285,7 +1285,7 @@ c2b46:
 	goto top;
 	case 0:
 	if (!flag)
-		goto c2c72;
+		goto extoff;
 	flag = 0;
 	if (e != save)
 		report_error(2, "mismatched segment & offset relocation words");
@@ -1295,7 +1295,7 @@ c2b46:
 		w11 = swap_bytes(w11);
 	if (rflag)
 		put_int_buf(w11, r);
-c2c72:
+extoff:
 	w13 = (e->stype - 0x21) * 2 + 1;
 	w13 = (e->sseg << 8) + (w13 & 0xff);
 	w12 = w12 + (int)e->svalue;
@@ -1308,7 +1308,7 @@ c2c72:
 	;
 }
 
-/* finish_output 0x2cbc..0x2d4c: done */
+/* finish_output: write the remaining parts of the output and patch the header (0x2cbc..0x2d4c of /bin/sld) */
 finish_output()
 {
 	copy_segs();
@@ -1331,7 +1331,7 @@ finish_output()
 	sig_handler();
 }
 
-/* patch_hdr 0x2d4c..0x2dde: done */
+/* patch_hdr: rewrite the header of the output file with the final values (0x2d4c..0x2dde of /bin/sld) */
 patch_hdr()
 {
 	int n;
@@ -1351,7 +1351,7 @@ patch_hdr()
 		report_error(2, "Unable to write in output file");
 }
 
-/* copy..2e4c: done */
+/* copy: copy a temporary file to the output (0x2dde..0x2e4c of /bin/sld) */
 copy(p)
 struct buf *p;
 {
@@ -1372,7 +1372,7 @@ struct buf *p;
 	close(n);
 }
 
-/* high_byte 0x2e4c..0x2e76: done */
+/* high_byte: return x >> 8; internal error if the low byte of x is not 0 (0x2e4c..0x2e76 of /bin/sld) */
 high_byte(x)
 int x;
 {
@@ -1381,7 +1381,7 @@ int x;
 	return ((unsigned)x >> 8) & 0xff;
 }
 
-/* mget 0x2e76..0x2f04: done */
+/* mget: read n bytes from the current input into a buffer (0x2e76..0x2f04 of /bin/sld) */
 mget(p, n)
 char *p;
 int n;
@@ -1415,7 +1415,7 @@ int n;
 	} while (--k);
 }
 
-/* mput 0x2f04..0x2f3a: done */
+/* mput: write n bytes to an output buffer (0x2f04..0x2f3a of /bin/sld) */
 mput(q, a, n)
 struct buf *q;
 int *a;
@@ -1432,7 +1432,7 @@ int n;
 	} while (--k);
 }
 
-/* dseek..3090: findings:D5,D9,D15 */
+/* dseek: seek in the input to a given position (page buffered) (0x2f3a..0x3090 of /bin/sld) */
 int dseek(sp, v, n)
 struct stream *sp;
 long v;
@@ -1481,14 +1481,14 @@ common:
 		obj->size = 0;
 }
 
-/* half 0x3090..0x30a4: done */
+/* half: x / 2 as an unsigned word (0x3090..0x30a4 of /bin/sld) */
 half(x)
 int x;
 {
 	return (x >> 1) & 0x7fff;
 }
 
-/* get 0x30a4..0x3144: done */
+/* get: next byte of a stream; reads the next page and checks the end of the member (0x30a4..0x3144 of /bin/sld) */
 get(sp)
 struct stream *sp;
 {
@@ -1509,7 +1509,6 @@ struct stream *sp;
 	return *q->ptr++;
 }
 
-/* getfile..3408: done */
 /*
  * The prefixes of the library search ("", "/usr", "/z/bin") lie in front of the other strings of getfile in the data of the
  * original and the empty string is shared by its three uses: they are strings of their own before the function.
@@ -1518,6 +1517,7 @@ static char pfx0[] = "";
 static char pfx1[] = "/usr";
 static char pfx2[] = "/z/bin";
 
+/* getfile: open an input file, searching the library directories (0x3144..0x3408 of /bin/sld) */
 int getfile(name)
 char *name;
 {
@@ -1594,7 +1594,7 @@ char *name;
 	return 2;
 }
 
-/* report_error..34b8: done */
+/* report_error: print a message with the program and file name; fatal depending on the level (0x3408..0x34b8 of /bin/sld) */
 int report_error(level, msg, a, b, c, d, e)
 int level;
 char *msg;
@@ -1618,7 +1618,7 @@ int e;
 	exstat = level;
 }
 
-/* table_lookup 0x34b8..0x3516: done */
+/* table_lookup: find an entry of the local symbol table (botch on failure) (0x34b8..0x3516 of /bin/sld) */
 struct symbol *table_lookup(end, a)
 struct local *end;
 int a;
@@ -1641,7 +1641,7 @@ int a;
 	report_error(2, "Local symbol botch");
 }
 
-/* readhdr..3760: findings:D2,D16 */
+/* readhdr: read and convert the header of an object file or member (0x3516..0x3760 of /bin/sld) */
 int readhdr(a, b)
 long a;
 int b;
@@ -1702,7 +1702,7 @@ int b;
 	return 1;
 }
 
-/* make_blk..3a30: done */
+/* make_blk: create the segment table block for an object (0x3760..0x3a30 of /bin/sld) */
 int make_blk(src, n, kind)
 register struct fseg *src;
 register int n;
@@ -1770,7 +1770,7 @@ register int kind;
 	}
 }
 
-/* str_compare 0x3a30..0x3a88: findings:D2 */
+/* str_compare: compare two names: in cmpmode the difference of the first unequal characters, else 1 when equal and 0 when not (0x3a30..0x3a88 of /bin/sld) */
 int str_compare(p, q)
 char *p;
 char *q;
@@ -1789,7 +1789,7 @@ char *q;
 	return 0;
 }
 
-/* put_int_buf 0x3a88..0x3ac6: done */
+/* put_int_buf: write a word to an output buffer (0x3a88..0x3ac6 of /bin/sld) */
 put_int_buf(v, p)
 int v;
 register struct buf *p;
@@ -1799,7 +1799,7 @@ register struct buf *p;
 		flush_buffer(p);
 }
 
-/* flush_buffer..3b1e: findings:D1 */
+/* flush_buffer: write an output buffer to its file (0x3ac6..0x3b1e of /bin/sld) */
 flush_buffer(a)
 struct buf *a;
 {
@@ -1816,7 +1816,7 @@ struct buf *a;
 	p->nleft = 0x100;
 }
 
-/* swab12..3b58: findings:D2 */
+/* swab12: swap the bytes of 12 words (never called) (0x3b1e..0x3b58 of /bin/sld) */
 swab12(p)
 register char *p;
 {
@@ -1832,7 +1832,7 @@ register char *p;
 	} while (--k);
 }
 
-/* warn_sym_redef 0x3b58..0x3c16: done */
+/* warn_sym_redef: warn that a symbol is redefined in an archive (0x3b58..0x3c16 of /bin/sld) */
 warn_sym_redef(p, a)
 struct symbol *p;
 struct symbol *a;

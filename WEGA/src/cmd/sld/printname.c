@@ -7,7 +7,7 @@
 static char sccsid[] = "@[$]printname.c\t2.2  10/27/83 12:24:42 - 87wega3.2";
 int pnflag = 0;
 
-/* put_name..65c6: done */
+/* put_name: print a symbol name (0x6522..0x65c6 of /bin/sld) */
 int put_name(p)
 char *p;
 {

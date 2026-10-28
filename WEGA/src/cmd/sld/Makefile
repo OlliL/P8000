@@ -3,7 +3,6 @@
 #   make             compile the C files, assemble the start code and the old libc objects (printf, doprnt)
 #   make link        sld.new: scrt0.o, the C files, the members of /lib/slibc.a and the two old objects, linked by the original
 #                    sld (SLDBIN: segmented program, -i -z -e start)
-#   make linkown     sld.own: the same with the cut own code (sld_own.s, 0x56..0x71ca of /bin/sld) instead of the C files
 #   make check       link the test objects of host/ld/test with sld.new and with the original sld under z8k-emu and compare the
 #                    output files, messages and exit codes (host/ld/check.py -S, SLD_NEW); needs the file tree of the original
 #                    system (CHECKROOT)
@@ -42,7 +41,6 @@ LIBCOBJS = slibc/putchar.o slibc/scanf.o slibc/doscan.o $(OLD)/printf/$(REV).o \
 	slibc/read.o slibc/ssgbrk.o slibc/signal.o slibc/umask.o slibc/unlink.o slibc/write.o \
 	slibc/cerror.o
 LINKOBJS = scrt0.o $(COBJS) $(LIBCOBJS)
-OWNOBJS = scrt0.o sld_own.o $(LIBCOBJS)
 
 all: $(COBJS) scrt0.o $(OLDOBJS)
 
@@ -52,12 +50,7 @@ sld.new: $(LINKOBJS)
 	$(SLDBIN) -i -z -e start $(LINKOBJS) -o $@
 
 check: sld.new
-	cd ../../../host/ld ; SLD_NEW=../../src/cmd/ld/sld.new WEGA=$(CHECKROOT) python3 check.py -S
-
-linkown: sld.own
-
-sld.own: $(OWNOBJS)
-	$(SLDBIN) -i -z -e start $(OWNOBJS) -o $@
+	cd ../../../host/ld ; SLD_NEW=../../src/cmd/sld/sld.new WEGA=$(CHECKROOT) python3 check.py -S
 
 slibc/stamp:
 	mkdir slibc ; cd slibc ; $(AR) x $(SLIBC) $(MEMBERS) ; touch stamp
@@ -115,9 +108,6 @@ scrt0.s: $(CRT)/mkcrt0.sh $(CRT)/scrt0.s.in $(CRT)/crt0.list
 scrt0.o: scrt0.s
 	$(CAS) -u -o $@ scrt0.s
 
-sld_own.o: sld_own.s
-	$(CAS) -u -o $@ sld_own.s
-
 copyname.o: copyname.c ld.h
 	$(SCC) $(CFLAGS) -c copyname.c
 
@@ -149,5 +139,5 @@ $(OLD)/doprnt/$(REV).o: $(OLD)/doprnt/$(REV).s
 	$(CAS) -u -o $@ $(OLD)/doprnt/$(REV).s
 
 clean:
-	rm -f $(COBJS) $(OLDOBJS) scrt0.s scrt0.o sld_own.o sld.new sld.own
+	rm -f $(COBJS) $(OLDOBJS) scrt0.s scrt0.o sld.new
 	rm -rf slibc

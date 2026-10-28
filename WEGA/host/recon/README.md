@@ -17,7 +17,7 @@ Used by codgen, popt and sld (see `host/HOWTO_reconstruct.md`). Each program kee
 | `odis.py NAME` / `odis.py LO HI` | disassemble the original code of a function |
 | `callcmp.py OLD NEW NM` | call-trace comparison of two emulator traces (corpus test) |
 
-Still in `src/cmd/ld/tools` (sld specific so far, to be moved when the next binary needs them): `fncheck.py`,
+Still in `src/cmd/sld/tools` (sld specific so far, to be moved when the next binary needs them): `fncheck.py`,
 `strict_audit.py`, `accept.py`, `accfn.py`, `rename.py`, `firstdiff.py`, `sync_findings.py`, `check_names.py`,
 `classify_sld.py`, the corpus runner `host/ld/check.py`.
 

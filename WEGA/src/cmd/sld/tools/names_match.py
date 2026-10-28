@@ -16,7 +16,7 @@ import modules as M  # noqa: E402
 import z8k  # noqa: E402
 from sout import SOut  # noqa: E402
 
-PLEXUS = '/mnt/share/cvs/P8000/tmp/plexus/cmd/ld/ld.z8000.c'
+PLEXUS = '/mnt/share/cvs/P8000/tmp/plexus/cmd/sld/ld.z8000.c'
 
 
 def plexus_functions(path):

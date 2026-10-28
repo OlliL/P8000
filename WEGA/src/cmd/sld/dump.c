@@ -6,7 +6,7 @@
 
 static char sccsid[] = "@[$]dump.c\t3.1  10/27/83 12:14:51 - 87wega3.2";
 
-/* walk_entries..0220: done */
+/* walk_entries: dump all entries of the symbol table (SYM TABLE DUMP) (0x01d2..0x0220 of /bin/sld) */
 walk_entries()
 {
 	register struct symbol *a;
@@ -21,7 +21,7 @@ walk_entries()
 	}
 }
 
-/* dump_sym..0334: done */
+/* dump_sym: dump one symbol (value, segment type, kind) (0x0220..0x0334 of /bin/sld) */
 int dump_sym(p)
 register struct symbol *p;
 {
@@ -77,7 +77,7 @@ register struct symbol *p;
 	return 1;
 }
 
-/* dmp_p1..03fc: done */
+/* dmp_p1: dump the pass-one segment table (0x0334..0x03fc of /bin/sld) */
 int dmp_p1()
 {
 	register struct p1seg *p;
@@ -96,7 +96,7 @@ int dmp_p1()
 	}
 }
 
-/* dump_p2..0566: done */
+/* dump_p2: dump the pass-two segment table (0x03fc..0x0566 of /bin/sld) */
 int dump_p2()
 {
 	register struct p2seg *p;
@@ -128,7 +128,7 @@ int dump_p2()
 	}
 }
 
-/* dump_res..06c6: done */
+/* dump_res: dump the list of reserved segments (0x0566..0x06c6 of /bin/sld) */
 int dump_res()
 {
 	int k;

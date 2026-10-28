@@ -7,7 +7,7 @@
 static char sccsid[] = "@[$]ldm.c\t3.10  10/27/83 12:21:07 - 87wega3.2";
 int np2new = -1;
 
-/* scan_m_opt..410c: findings:D2,D11 */
+/* scan_m_opt: scan a -M option (memory layout) and fill the segment lists (0x3c16..0x410c of /bin/sld) */
 int scan_m_opt(s, ip, argc)
 char *s;
 int *ip;
@@ -160,7 +160,7 @@ int argc;
 	}
 }
 
-/* mlist_add..42f8: findings:D2,D5 */
+/* mlist_add: add an entry to the -M list, in order (0x410c..0x42f8 of /bin/sld) */
 int mlist_add(c, y, x)
 char c;
 char *y;
@@ -192,14 +192,14 @@ cond:
 	if (k < mlcnt)
 		goto body;
 	if (i != mlhead || k != 0)
-		goto l41de;
+		goto insmid;
 	mlist[mlcnt].mnext = mlhead;
 	mlhead = mlcnt;
-	goto l4218;
-l41de:
+	goto newent;
+insmid:
 	mlist[mlcnt].mnext = mlist[prev].mnext;
 	mlist[prev].mnext = mlcnt;
-l4218:
+newent:
 	k = mlcnt;
 	mlcnt++;
 	mlist[k].mname = y;
@@ -216,7 +216,7 @@ attr:
 	cmpmode = 0;
 }
 
-/* resv_seg 0x42f8..0x4444: done */
+/* resv_seg: reserve a segment number given with an option (0x42f8..0x4444 of /bin/sld) */
 int resv_seg(x, c)
 int x;
 char c;
@@ -254,7 +254,7 @@ char c;
 	}
 }
 
-/* copy_leafname..44e6: done */
+/* copy_leafname: copy the leaf name of a path (0x4444..0x44e6 of /bin/sld) */
 copy_leafname(s, d)
 char *s;
 char *d;
@@ -283,7 +283,7 @@ char *d;
 	d[n] = 0;
 }
 
-/* end_pass1 0x44e6..0x4968: done */
+/* end_pass1: end of pass one: define _etext, _edata, _end, lay out the sections (0x44e6..0x4968 of /bin/sld) */
 int end_pass1()
 {
 	register struct p1seg *blk;
@@ -336,7 +336,7 @@ int end_pass1()
 	}
 	comsize = 0;
 	if (dflag == 0 && rflag)
-		goto l469e;
+		goto dolayout;
 	ep = table16_entry(0);
 	while (ep < end) {
 		if (ep->stype == ' ') {
@@ -364,7 +364,7 @@ int end_pass1()
 		}
 		ep = next_entry(ep);
 	}
-l469e:
+dolayout:
 	lay_out();
 	if (dflag || !rflag) {
 		ldrsym(p_etext, 0x22);
@@ -416,7 +416,7 @@ l469e:
 	nsymf = (unsigned)symbytes >> 4;
 }
 
-/* alloc_resv 0x4968..0x4a16: done */
+/* alloc_resv: allocate the reserved segments (0x4968..0x4a16 of /bin/sld) */
 int alloc_resv(q, p, x, res)
 struct p2seg *q;
 int *p;
@@ -440,7 +440,7 @@ int *res;
 	*res = alloc_segment(q, p, 0, 0x72, &lcl);
 }
 
-/* f4a16..5a2c: findings:D2,D15 */
+/* lay_out: assign the segments and addresses of all sections (the big layout routine) (0x4a16..0x5a2c of /bin/sld) */
 int lay_out()
 {
 	register struct p1seg *blk;
@@ -776,7 +776,7 @@ ltb:
 	}
 }
 
-/* ins_block..5eec: findings:D11 */
+/* ins_block: insert a block into the segment list (0x5a2c..0x5eec of /bin/sld) */
 struct p2seg *ins_block(kind, size, blk, val, idx)
 int kind;
 register unsigned size;
@@ -872,7 +872,7 @@ int idx;
 			s = (b = get_block(blk))->ndata;
 			blk = b->datnext;
 			if (size <= 0xfffe - (s->s_code + s->s_data + s->s_bss))
-				goto l5e82;
+				goto gotblk;
 		}
 	}
 	if (np2seg < 0x100) {
@@ -910,7 +910,7 @@ int idx;
 		return s;
 	} else
 		report_error(2, "pass two segment table overflow");
-l5e82:
+gotblk:
 	if (reslist[idx].bssptr == -1) {
 		reslist[idx].bssptr = val;
 		return s;
@@ -921,7 +921,7 @@ l5e82:
 	return s;
 }
 
-/* alloc_segment..60f0: done */
+/* alloc_segment: allocate the next free segment number (0x5eec..0x60f0 of /bin/sld) */
 int alloc_segment(rec, pidx, a, b, q)
 register int *pidx;
 register struct p2seg *rec;
@@ -985,7 +985,7 @@ int *q;
 	return 0;
 }
 
-/* seg_pad 0x60f0..0x6134: done */
+/* seg_pad: pad the output of a segment (0x60f0..0x6134 of /bin/sld) */
 seg_pad(q, a)
 struct p2seg *q;
 int a;
@@ -1003,7 +1003,7 @@ int a;
 	}
 }
 
-/* copy_segs..620e: done */
+/* copy_segs: copy the segments from the temporary files to the output (0x6134..0x620e of /bin/sld) */
 copy_segs()
 {
 	register int i;
@@ -1023,7 +1023,7 @@ copy_segs()
 	}
 }
 
-/* copy_blocks..642e: done */
+/* copy_blocks: copy the blocks of one segment from the temporary files (0x620e..0x642e of /bin/sld) */
 int copy_blocks(idx, type, p)
 register int idx;
 char type;
@@ -1104,7 +1104,7 @@ done:
 	return 0;
 }
 
-/* list_move_after 0x642e..0x64d0: done */
+/* list_move_after: move the entry p behind the entry e of the doubly linked list of pass-two segments (0x642e..0x64d0 of /bin/sld) */
 int list_move_after(p, e)
 struct p2seg *p;
 struct p2seg *e;
@@ -1129,7 +1129,7 @@ struct p2seg *e;
 	e->prv = q;
 }
 
-/* put_pad 0x64d0..0x6522: done */
+/* put_pad: write n zero bytes (n/2 words) to the output (0x64d0..0x6522 of /bin/sld) */
 int put_pad(n)
 register int n;
 {

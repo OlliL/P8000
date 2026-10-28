@@ -53,7 +53,7 @@ per binary).
 Order (the documentation first, because the knowledge must not get lost):
 
 1. DONE: `host/HOWTO_reconstruct.md` rewritten (lessons, two phases, corpus test, rules of step 7).
-2. PARTLY DONE (2026-10-28): shared toolkit `host/recon/` (README there): `progcfg.py`, `funcs.py`, `patterns.py`, `classify.py`, `findings_md.py`, `odis.py`, `callcmp.py`; codgen, popt and sld use it through `progcfg.py` plus launchers in their `tools/` (the duplicate `popt/tools/sout.py` is removed; `findings_md.py` reproduces the three FINDINGS.md unchanged; sld strict_audit still 58 exact). Still to move when the next binary needs them: `fncheck.py`, `strict_audit.py`, `accept.py`, `accfn.py`, `firstdiff.py`, `rename.py`, `check_names.py`, `sync_findings.py`, `host/ld/check.py` (they read sld files). Note: `classify.py` regenerated two `layout_note` texts in codgen `findings.json` and `INVENTORY.md` changed (generated files were out of date, not caused by the move). Original text of the item, kept for reference: (the sld scripts that lived in the scratchpad are saved in `src/cmd/ld/tools`: `accfn.py` (accept exact functions by name), `callcmp.py` (call-trace comparison of two runs), `uses.py` (uses of a variable per function), `scratch_build.sh`) (find duplicates first, no new scripts for old problems). Measured duplicates: `findings_md.py` in codgen, popt, ld
+2. PARTLY DONE (2026-10-28): shared toolkit `host/recon/` (README there): `progcfg.py`, `funcs.py`, `patterns.py`, `classify.py`, `findings_md.py`, `odis.py`, `callcmp.py`; codgen, popt and sld use it through `progcfg.py` plus launchers in their `tools/` (the duplicate `popt/tools/sout.py` is removed; `findings_md.py` reproduces the three FINDINGS.md unchanged; sld strict_audit still 58 exact). Still to move when the next binary needs them: `fncheck.py`, `strict_audit.py`, `accept.py`, `accfn.py`, `firstdiff.py`, `rename.py`, `check_names.py`, `sync_findings.py`, `host/ld/check.py` (they read sld files). Note: `classify.py` regenerated two `layout_note` texts in codgen `findings.json` and `INVENTORY.md` changed (generated files were out of date, not caused by the move). Original text of the item, kept for reference: (the sld scripts that lived in the scratchpad are saved in `src/cmd/sld/tools`: `accfn.py` (accept exact functions by name), `callcmp.py` (call-trace comparison of two runs), `uses.py` (uses of a variable per function), `scratch_build.sh`) (find duplicates first, no new scripts for old problems). Measured duplicates: `findings_md.py` in codgen, popt, ld
    (three copies, 111-120 lines), `funcs.py` / `patterns.py` / `classify.py` identical in size for codgen and popt, `sout.py` in popt/tools equals
    `host/tools/sout.py` (delete). The sld tools that are general: `fncheck.py` + `strict_audit.py` (compile, normalise, compare), `accept.py`,
    `rename.py`, `firstdiff.py`, `odis.py`, `check_names.py`, `tryname.py`, `sync_findings.py`, `classify_sld.py` (= the pattern check of
@@ -61,20 +61,16 @@ Order (the documentation first, because the knowledge must not get lost):
    (`host/ld/check.py` with `SLD_NEW`). Program specific: `ldsrc.py`, `order_vars.py`, `var_addr.py`, `gen_makefile.py`, `split_sld.py`,
    `libc_*`. Steps: (a) move the identical files, (b) one config per program (binary, segmented flag, module ranges, table, flags),
    (c) make strict_audit/accept/rename read the config, (d) run codgen and popt tools through it once to prove it.
-3. sld, rest of e): table "Bugs and quirks of the originals" (precedence error `!c & 0x20` in warn_sym_redef, missing return value of
-   put_pad, the unnamed spare variables), function head comments, label names of the goto code (`l08a2`, `c28a0` ...), remove `sld_own.s` and
-   `make linkown`, `.gitignore`, the 32 findings (see `src/cmd/ld/tools/FINDINGS.md`: `manual_classes` says what was tried; layout cases
-   lay_out, ins_block, reg_sect_addr, read_words are probably the old compiler's optimizer), spare variables (spare0 ... unused*).
-4. Next binary: `/lib/cpp` (16522 bytes, 40248 total, nonsegmented) before `/lib/cparse` (67520 bytes, 96284 total). Phase A with the cheap model
-   following the HOWTO, handoff note, then Phase B once. Candidate after that: `scparse`, `c2`/`as`.
+3. sld, rest of e): DONE 2026-10-28 except the open findings: quirks table (precedence error `!c & 0x20` in warn_sym_redef, put_pad without return, spare variables, names of the old addresses), function head comments (`tools/headcomments.py` + `headcomments.txt`: one line description and address range per function; edit the txt and run again), goto labels renamed (optchar, addhi, setseg, mapsym, pairchk, symdone, extsym, extoff, insmid, newent, dolayout, gotblk), `sld_own.s` and `make linkown` removed (git rm; the cut block is no longer needed, the C build links byte-identical data/bss). Strict audit still 58 exact, check_data 0. REMAINING: the 32 findings (see `src/cmd/sld/tools/FINDINGS.md`: `manual_classes` says what was tried; layout cases lay_out, ins_block, reg_sect_addr, read_words are probably the old compiler's optimizer); the descriptions in `headcomments.txt` were written from the code by reading, not all verified against the callers.
+4. Next binaries (decided 2026-10-28): `/bin/ld` (27616 bytes, SCCS ld.c 1.18, copyname 1.3, printname 1.5, symbols 1.8, crt0 3.2; 39 of 72 strings equal to sld, same module names: the nonsegmented ancestor of sld, so names, structs and member names of `src/cmd/sld` carry over) in `src/cmd/ld`, then `/bin/gld` (21732 bytes, own code base: German messages, `gld.c V1.0 06/22/88 ZFT-KEAW`, only `malloc.c` has an SCCS string; 6 strings in common with sld/ld) in `src/cmd/gld`, then `/lib/cpp` (16522 bytes, 40248 total, nonsegmented), `/lib/cparse` (67520 bytes, 96284 total). Each with the two-phase HOWTO (Phase A cheap model, handoff, Phase B once). `src/cmd/ld` was renamed to `src/cmd/sld` with `git mv` (2026-10-28) because it holds sld; `host/ld` stays (host tools for ld, sld, gld).
 
 ## sld (segmented loader): preparation (started 2026-10-27)
 
-- Structure: `src/cmd/ld/tools/` with `Makefile`, `inventory.py`, `findings_md.py`, `findings.json` (empty function list, binary facts),
-  `FINDINGS.md` (generated). Our sources of sld are not in `src/cmd/ld` yet: `host/ld/sld.c` is a Linux program written from the
+- Structure: `src/cmd/sld/tools/` with `Makefile`, `inventory.py`, `findings_md.py`, `findings.json` (empty function list, binary facts),
+  `FINDINGS.md` (generated). Our sources of sld are not in `src/cmd/sld` yet: `host/ld/sld.c` is a Linux program written from the
   binary (not compiled by the WEGA cc), so it is a guide for names and structure, not the comparison basis.
 - The original `/bin/sld`: segmented (E611), code 38912 bytes in segment 0, data 7090, bss 31054 + 63488. Stripped (no symbols).
-- Function starts: `src/cmd/ld/tools/inventory.py`. Recursive descent from the start (0x18) found 2 starts only: the
+- Function starts: `src/cmd/sld/tools/inventory.py`. Recursive descent from the start (0x18) found 2 starts only: the
   control flow of the start code leaves through a return and the rest is reached by calls. The linear sweep over the code
   (12279 instructions, no undecodable words in the paths that matter) collects all `call`/`calr` targets: 63 starts are
   proven (targets of calls). 311 more candidates start right after a `ret` and are not called from anywhere; they are
@@ -84,7 +80,7 @@ Order (the documentation first, because the knowledge must not get lost):
 
 - sld modules (from the SCCS strings in the data of `/bin/sld`): scrt0.s, copyname.c 3.1, dump.c 3.1, ext.c 3.3, ld.c 3.8,
   ldm.c 3.10, printname.c, swap.c, symbols.c, malloc.c (the data of each module lies in the order of the link). Module hints for
-  the proven functions: `src/cmd/ld/tools/modules.py`; 20 of 63 proven functions refer to strings of dump.c, 43 refer to no
+  the proven functions: `src/cmd/sld/tools/modules.py`; 20 of 63 proven functions refer to strings of dump.c, 43 refer to no
   message string (not decided). Plexus `ld.z8000.c` is a reference for names only (private, never copied).
 
 - sld, libc part (`host/tools/libcver.py`): the libc of `/bin/sld` starts at 0x8680 and runs to the end of the code (0x9800).
@@ -93,22 +89,22 @@ Order (the documentation first, because the knowledge must not get lost):
   proven starts and 250 of the 311 candidates are there; 7 and 61 are libc.
   Plan: first libc (shipped members by ar, oldlibc members by CATALOG, the rest as new versions), then the own code.
 
-- sld libc, first result (`src/cmd/ld/tools/libc.spec.draft`): against all 67 oldlibc modules (assembled with cas, archived with
+- sld libc, first result (`src/cmd/sld/tools/libc.spec.draft`): against all 67 oldlibc modules (assembled with cas, archived with
   ar) only `ffltioc` matches; 8 pieces have no counterpart (best ratios 0.03 to 0.16). They need new oldlibc versions, which
-  need names, data ranges and symbols. The libc work is not finished: `src/cmd/ld/Makefile` does not exist yet.
+  need names, data ranges and symbols. The libc work is not finished: `src/cmd/sld/Makefile` does not exist yet.
 - sld libc, status (2026-10-27): 14 modules are cut from `/bin/sld` (`host/tools/link_libc_seg.py`, `unlink_seg.py`) and verified
   byte-identical (`src/lib/oldslibc/<module>/0_1.s`, README there); cross references are symbols (`_name`, `_fXXXX` for inner
   entries); data spans added (`host/tools/libc_data_seg.py`, not yet compared with the original); the bss of segment 1 (0x1bb2)
   is the external `_bss1`. Shipped members of `/lib/slibc.a`, identical: ffltioc (0x8680), getpid (0x95aa), umask (0x96f2).
-  `src/cmd/ld/Makefile` builds the libc objects of sld (cut modules with `cas -u`, shipped members with `ar x`); tested with the
+  `src/cmd/sld/Makefile` builds the libc objects of sld (cut modules with `cas -u`, shipped members with `ar x`); tested with the
   emulator. Open: names of the `_fXXXX` entries, the own modules of sld and the link, the scrt0 start file, data verification.
 
 - sld libc, second result (against `slibc.a`, the segmented library that sld links, not `libc.a`): `ffltioc`, `getpid`, `umask`
-  identical. `src/cmd/ld/tools/libc_rank.txt`: p07 = `swap` (0.59), p08 = `signal` (0.49), p01 = `flsbuf` (0.34, probable), p06 =
+  identical. `src/cmd/sld/tools/libc_rank.txt`: p07 = `swap` (0.59), p08 = `signal` (0.49), p01 = `flsbuf` (0.34, probable), p06 =
   `malloc` (0.21, not matched). p02, p03, p04, p05, p09, p10 are below 0.2: not matched at module level, a function-level
   comparison is needed. Names are candidates only until the behaviour is checked.
 
-- sld libc, function level (`src/cmd/ld/tools/libc_funcs.py`, result `libc_funcs.txt`, against the functions of the members of
+- sld libc, function level (`src/cmd/sld/tools/libc_funcs.py`, result `libc_funcs.txt`, against the functions of the members of
   `slibc.a`): `_fflush` 0.77 (flsbuf.o), `_fclose` 0.86 (flsbuf.o), `__cnvt` 0.56 (cnvt.o), `decimal` 0.88 (decimal.o),
   `_malloc` 0.57 (malloc.o), `signal` 0.51 (signal.o). Not matched: 0x8686 (best 0.14), 0x8f7c, 0x903a, 0x96be, 0x96fa.
   `swap` 0.59 on module level (0x946e), not on function level: the function boundaries there need a check. The libc of sld is
@@ -117,17 +113,17 @@ Order (the documentation first, because the knowledge must not get lost):
 - sld libc, `swap` at 0x946e (checked): the three functions of swap.o of slibc.a (`_swap`, `_longswap`, `_swapsegt`) lie in
   sld in this order (ratios 0.72, 0.81, 0.93, sliding window). The earlier piece 0x946e..0x95a4 contains swap and code behind it.
 
-- sld libc, boundaries (`src/cmd/ld/tools/libc_bounds.txt`): 12 functions with whole-range ratios 0.55 to 0.88 (ungetc, filbuf,
+- sld libc, boundaries (`src/cmd/sld/tools/libc_bounds.txt`): 12 functions with whole-range ratios 0.55 to 0.88 (ungetc, filbuf,
   flsbuf, _fflush, _fclose, __cnvt, decimal, _malloc, _calloc, _cfree, _isatty, _mktemp). Open: the gap 0x92xx..0x946e (`_stty`
   and more), the gap 0x94f0..0x95b0, 0x96be..0x97fc (write, read, unlink candidates), and the tail of malloc at 0x8f7c..0x9038.
 
-- sld libc, gaps resolved to candidates (`src/cmd/ld/tools/libc_bounds.txt`): the string functions strrchr, swab, strcat, strncmp,
+- sld libc, gaps resolved to candidates (`src/cmd/sld/tools/libc_bounds.txt`): the string functions strrchr, swab, strcat, strncmp,
   strcmp, strcpy at 0x92e6..0x946e; the system call stubs fstat, getpid (identical), getuid, getgid, ioctl, lseek, open, read,
   ssgbrk, umask (identical), unlink, write, alarm at 0x94f0..0x97fc; signal at 0x9638. Still open: 0x8f7c..0x9038 and 12 bytes at
   0x96be. The libc of sld is not finished: the cut of the modules (unlink.py spec with data sizes and symbols), the new oldlibc
-  versions and src/cmd/ld/Makefile remain.
+  versions and src/cmd/sld/Makefile remain.
 
-- sld libc data (`src/cmd/ld/tools/libc_data.txt`): the libc ranges reference data that lies inside the SCCS areas of sld's own
+- sld libc data (`src/cmd/sld/tools/libc_data.txt`): the libc ranges reference data that lies inside the SCCS areas of sld's own
   modules (symbols.c at 0x159a..0x1a60, malloc.c at 0x1a60..0x1bb2). The own modules malloc.c and swap.c are in the same program,
   so the libc data is not a separate block. Open: which data belongs to which libc module; whether the libc malloc at 0x8cb4
   is a second copy of sld's own malloc.c. This blocks the cut of the libc modules (unlink.py needs the data per module).
@@ -148,7 +144,7 @@ Order (the documentation first, because the knowledge must not get lost):
 - sld libc, remaining code gaps: 0x8f7c..0x9038 lies inside `_malloc` (part of the malloc module); 0x96be..0x96f0 is a function
   with `srl`/`call` and no match at 0.3 (open); 0x96fa..0x9714 is the syscall stub group. Still open for the libc: the cut of the
   modules with unlink.py (spec with word lists for the data), the new oldlibc versions where the members are not identical, and
-  src/cmd/ld/Makefile.
+  src/cmd/sld/Makefile.
 
 - sld libc, cutting the modules: NOT possible with the present tool. `host/tools/unlink.py` handles nonsegmented programs only
   (its docstring: PROGRAM nonsegmented, I&D combined; it reads segs[0] and absolute addresses). `/bin/sld` is segmented (E611):
@@ -160,23 +156,23 @@ Order (the documentation first, because the knowledge must not get lost):
 - sld libc modules CUT AND VERIFIED (`host/tools/unlink_seg.py`, the segmented version of unlink.py; `src/lib/oldslibc/`):
   14 modules, each assembled with cas -u and its code bytes equal to sld (0 differing words, relocated words masked). Cross
   references are symbols now (`_name`, `_fXXXX`), export labels also for calls from the own code. Data not yet compared.
-- sld own code CUT AND VERIFIED as one block (`src/cmd/ld/sld_own.s`, 0x0018..0x8680, 34408 bytes, 0 differing words).
-  Since 2026-10-27 the start (0x18..0x55) is its own object `scrt0.o` (`make` in src/cmd/ld, from mkcrt0.sh + scrt0.s.in);
-  sld_own.s now is 0x56..0x8680 (34346 bytes, 0 differing words, `_main` exported at 0x78c). Linked (2026-10-27): `make link` (src/cmd/ld) gives sld.new with the original sld as linker: code segment
+- sld own code CUT AND VERIFIED as one block (`src/cmd/sld/sld_own.s`, 0x0018..0x8680, 34408 bytes, 0 differing words).
+  Since 2026-10-27 the start (0x18..0x55) is its own object `scrt0.o` (`make` in src/cmd/sld, from mkcrt0.sh + scrt0.s.in);
+  sld_own.s now is 0x56..0x8680 (34346 bytes, 0 differing words, `_main` exported at 0x78c). Linked (2026-10-27): `make link` (src/cmd/sld) gives sld.new with the original sld as linker: code segment
   38834 of 38912 bytes equal; the 78 other bytes are data references of the libc modules (data of sld not cut yet, the libc
   data spans are at other offsets), data and bss of sld.new are 256 bytes (original 7090 + 31054 + 63488). Symbol fixes:
   `__callex` exported by flsbuf (0x8a48; the old label _f8a48 is removed), `__inflt` (ffltioc at 0x8684) in sld_own.s, `_bss1` absolute in signal.
   Not split into modules yet. The own code has 348 direct and 58 indexed references into segment 1 (data) and 442 direct
-  references into segment 2 (bss). Their owners by data range vote (`src/cmd/ld/tools/own_functions.txt` lists functions;
+  references into segment 2 (bss). Their owners by data range vote (`src/cmd/sld/tools/own_functions.txt` lists functions;
   the votes are not final): the vote shows the owner of the data, not of the code (global variables of one module are
   used by another), so the code boundaries of the SCCS modules (scrt0, copyname, dump, ext, ld, ldm, printname, swap,
   symbols, malloc) are still open.
-  Function boundaries: 94 functions (`src/cmd/ld/tools/own_functions.txt`): entries are the call targets and the proven
+  Function boundaries: 94 functions (`src/cmd/sld/tools/own_functions.txt`): entries are the call targets and the proven
   starts of the own code; no fall-through between them except 0x18 (ends with `sc`) and 0x85f8 (ends with `add`; its
   `ret` is the first instruction of the shipped ffltioc at 0x8680). Entry 0x8000 is no function start (inner jump target).
   Guess: entries reached only by jumps are not separate; the largest entries (up to 1700 bytes) may hold such entries.
-  Reconstruction of the functions in `src/cmd/ld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
-  2026-10-27: 23 done (see src/cmd/ld/tools/own_functions.txt; names in sld.c),
+  Reconstruction of the functions in `src/cmd/sld/sld.c` (work file, K&R): status column of `tools/own_functions.txt`.
+  2026-10-27: 23 done (see src/cmd/sld/tools/own_functions.txt; names in sld.c),
   54 with findings (see the audit in findings.json),
   23 open: 21 large functions deferred (kind 'deferred (large function)' in findings_pending, 0x2492 and 0x2624 are done
   now), 0x0018 (start code, now scrt0.o; table row still open), 0x6a58 (not accepted). 100 entries.
@@ -193,9 +189,9 @@ Order (the documentation first, because the knowledge must not get lost):
   0x56..0x71ca, see KNOWLEDGE "C files of the program"). From 0x71ca the objects are libc: putchar, scanf, doscan are the shipped
   members; the C functions that were reconstructed for them (14 functions) are taken out of sld.c (tools/libc_archive.json).
   printf and doprnt (0x79ca..0x8682) are another revision; they stay as cas sources in src/lib/oldslibc (no C by decision).
-  91 own functions remain in sld.c (34 done, 57 with findings). `make link` / `make linkslibc` (src/cmd/ld/Makefile, written by
+  91 own functions remain in sld.c (34 done, 57 with findings). `make link` / `make linkslibc` (src/cmd/sld/Makefile, written by
   tools/gen_makefile.py) link; code differs only in data addresses behind 0x71ca.
-  Split done (2026-10-28): src/cmd/ld/{copyname,dump,ext,ld,ldm,printname,swap,symbols}.c + ld.h replace sld.c (removed); every file
+  Split done (2026-10-28): src/cmd/sld/{copyname,dump,ext,ld,ldm,printname,swap,symbols}.c + ld.h replace sld.c (removed); every file
   compiles alone with the old compiler (no lost names), `make cobjs`. Tools follow the files (tools/ldsrc.py: module_ranges.txt, sources(),
   compile_all()): accept.py (new function or replacement of a function in its C file, new declarations into ld.h/ext.c), rename.py,
   strict_audit.py, classify_sld.py, check_names.py, tryname.py, sync_findings.py. Names of functions and variables can still be changed
@@ -205,8 +201,8 @@ Order (the documentation first, because the knowledge must not get lost):
   (tools/check_data.py), ld.c to 0x0e38. Several functions came closer by following the string order (KNOWLEDGE, "initialized
   variables"). Open: getfile and the rest of the ld.c data, the owner file of each uninitialized variable (bss bands; all in ext.c now),
   the bss cut, the full link and the byte comparison; use the string order for the other findings functions (D15 block layout).
-  Link (2026-10-28): `make link` in src/cmd/ld links sld.new from scrt0.o, the 8 C files, the members of /lib/slibc.a and the two old
-  objects (oldslibc printf, doprnt); Makefile written by tools/gen_makefile.py; `make linkown` is the old link with sld_own.s. The
+  Link (2026-10-28): `make link` in src/cmd/sld links sld.new from scrt0.o, the 8 C files, the members of /lib/slibc.a and the two old
+  objects (oldslibc printf, doprnt); Makefile written by tools/gen_makefile.py; (`make linkown` and `sld_own.s` were removed 2026-10-28.) The
   uninitialized arrays have sizes now; names that lie inside a larger variable are macros in ld.h. Layout (2026-10-28): the data
   (7090 bytes) and the bss (94542 bytes: segment 1 31054, segment 2 63488) of sld.new are equal in size to /bin/sld and EVERY
   variable has the address of the original (checked for the 139 variables with an address in var_addr.txt). The data of the C files is exact
@@ -217,7 +213,7 @@ Order (the documentation first, because the knowledge must not get lost):
   bE4C4, bE4CC, bF314), bE466/bE467 are the two bytes of `struct bytes2 bE466s` (macros); (3) getfile: the prefixes "", "/usr",
   "/z/bin" are static arrays in front of the function (shared "" and the pool order of the original); (4) printf/doprnt of
   oldslibc have their complete data and symbolic references (host/tools/oldslibc_doprnt_data.py); (5) data.o is linked behind
-  filbuf.o and ctype_.o behind malloc.o (place of their data). Findings functions (2026-10-28): 58 of 90 functions equal in strict_audit.py (corpus test `make check` in src/cmd/ld: 51 of 51 command lines identical with the original sld) (state per function: findings.json `manual_classes` = hand notes, shown in the Note column of FINDINGS.md: basis read = reviewed with what was tried, basis open = not yet reviewed; the entry is dropped by sync_findings.py when the function becomes done), (load2td done; lay_out, ins_block: layout of the arms, see KNOWLEDGE),
+  filbuf.o and ctype_.o behind malloc.o (place of their data). Findings functions (2026-10-28): 58 of 90 functions equal in strict_audit.py (corpus test `make check` in src/cmd/sld: 51 of 51 command lines identical with the original sld) (state per function: findings.json `manual_classes` = hand notes, shown in the Note column of FINDINGS.md: basis read = reviewed with what was tried, basis open = not yet reviewed; the entry is dropped by sync_findings.py when the function becomes done), (load2td done; lay_out, ins_block: layout of the arms, see KNOWLEDGE),
   32 differ (rules in KNOWLEDGE, "what fixed the findings functions"; tools/odis.py shows the original). Next: byte comparison after the findings functions are exact;
   the other directories of src/lib/oldslibc are not used any more and can go.
   Next: improve the findings-class functions found by `strict_audit.py` (parse_args, map_sym, make_ccl, scan_field, ...),
@@ -265,7 +261,7 @@ Order (the documentation first, because the knowledge must not get lost):
   sld.c and record).
   Open: the split into the module files (module order of the data SCCS strings is the link order, not checked against
   the code); the start code 0x18 is not `/lib/scrt0.o` (same start, but `scrt0.o` has the word pair `5df8 0000` after the
-  first word that sld lacks, and its stack operands are 0x0004/0x0006 where sld has 0x7f04/0x7f06; see `host/KNOWLEDGE.md`). `src/cmd/ld/Makefile` builds the libc objects and `sld_own.o` (tested with the emulator).
+  first word that sld lacks, and its stack operands are 0x0004/0x0006 where sld has 0x7f04/0x7f06; see `host/KNOWLEDGE.md`). `src/cmd/sld/Makefile` builds the libc objects and `sld_own.o` (tested with the emulator).
   The link is not done yet.
 
 ## Programs and libc versions
@@ -369,7 +365,7 @@ The codgen / scodgen rows are the per-object marks of the D classes of the funct
   since 2026-10-22 `ld` (`host/ld`, nonsegmented, same files as `/bin/ld` on 146 command lines; no 8 bit objects, no `-T`/`-v`) and `sld`
   (`host/ld/sld.c`, same files as `/bin/sld` on 91 command lines; not implemented: `-f`, `-A`, `-b`, `-t`, `-M` with `:t`/`:b`/`+files+`, `-M` changing
   between large files, several overflowing start segments in combined mode, see KNOWLEDGE.md). `gld` (`host/ld/gld.c`, same files and messages as `/bin/gld`; not reproduced: the original's undefined output when no object is loaded, its memory limit ("out of memory(load2td)" with sections of about 50000 bytes) and hangs with sections near 64K). Still only the
-  original binaries under the emulator: `cpp`, `cparse`/`scparse`, `gopt`, `as`. `spopt` is done (`host/popt`, `make spopt`). `codgen`/`scodgen` exist as source (`src/cmd/codgen`; the same assembler text as the originals on the test corpus, 101 of 101 cases each; 206 of 206 functions paired with the original, 202 of them differ only by old-cc patterns, 4 have open differences; codgen and scodgen are linked without /lib/libc.a: their libc members are oldlibc versions (cut from the original) and identical members of libc.a (ar x), corpus 101/101 for both; see KNOWLEDGE.md "codgen / scodgen"; built by `src/cmd/Makefile`). Next: `gopt`, the front end (order in `host/HANDOFF_wega_disasm.md`). `src/cmd/ld` (a source that builds the byte-identical
+  original binaries under the emulator: `cpp`, `cparse`/`scparse`, `gopt`, `as`. `spopt` is done (`host/popt`, `make spopt`). `codgen`/`scodgen` exist as source (`src/cmd/codgen`; the same assembler text as the originals on the test corpus, 101 of 101 cases each; 206 of 206 functions paired with the original, 202 of them differ only by old-cc patterns, 4 have open differences; codgen and scodgen are linked without /lib/libc.a: their libc members are oldlibc versions (cut from the original) and identical members of libc.a (ar x), corpus 101/101 for both; see KNOWLEDGE.md "codgen / scodgen"; built by `src/cmd/Makefile`). Next: `gopt`, the front end (order in `host/HANDOFF_wega_disasm.md`). `src/cmd/sld` (a source that builds the byte-identical
   `/bin/ld`) does not exist yet; `host/ld/ld.c` is written from the binary and measurements, not transcribed function by function.
 
 ## Scripts without an object check

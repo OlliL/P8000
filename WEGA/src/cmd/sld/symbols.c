@@ -9,7 +9,7 @@ struct fsym fsym = {{0, 0, 0, 0, 0, 0, 0, 0}, 0, 0};
 int unused15d8 = 0;
 unsigned rlsize = 0;
 
-/* read_entry_hdr 0x6684..0x6800: done */
+/* read_entry_hdr: read the header of an entry of the symbol table (0x6684..0x6800 of /bin/sld) */
 read_entry_hdr()
 {
 	register int i;
@@ -62,7 +62,7 @@ test:
 	return result;
 }
 
-/* cvt_fsym 0x6800..0x6866: done */
+/* cvt_fsym: convert a file symbol (fsym) to a symbol; the segment flag is set for data and bss symbols when a is set (0x6800..0x6866 of /bin/sld) */
 int cvt_fsym(p, q, a)
 struct fsym *p;
 struct symbol *q;
@@ -80,7 +80,7 @@ int a;
 	}
 }
 
-/* pack_entry..68a2: findings:D4 */
+/* pack_entry: pack an entry of the symbol table (never called) (0x6866..0x68a2 of /bin/sld) */
 pack_entry(p, q)
 struct symbol *p;
 struct fsym *q;
@@ -90,7 +90,7 @@ struct fsym *q;
 	trunc_name(p->sname, q);
 }
 
-/* ldrsym..6a08: findings:D2,D16 */
+/* ldrsym: load a symbol of a relocation entry, error for multiply defined (0x68a2..0x6a08 of /bin/sld) */
 int ldrsym(a, c)
 struct symbol *a;
 char c;
@@ -147,7 +147,7 @@ char c;
 	p->svalue = p->svalue + ((long)p->sseg << 24);
 }
 
-/* mkfsym 0x6a08..0x6a58: done */
+/* mkfsym: make the file symbol of a symbol (0x6a08..0x6a58 of /bin/sld) */
 mkfsym(p)
 char *p;
 {
@@ -163,7 +163,7 @@ char *p;
 	put_sym(&soutb, &cursym);
 }
 
-/* lookup_name..6b5a: done */
+/* lookup_name: look up a name in the hash table of symbols (0x6a58..0x6b5a of /bin/sld) */
 struct symbol **lookup_name()
 {
 	register struct symbol **slot;
@@ -215,8 +215,8 @@ l2:
 	return slot;
 }
 
-/* slookup 0x6b5a..0x6b84: done */
 /* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
+/* slookup: look up a symbol by name (packs the name first) (0x6b5a..0x6b84 of /bin/sld) */
 struct symbol **slookup(p)
 char *p;
 {
@@ -228,8 +228,8 @@ char *p;
 	lookup_name();
 }
 
-/* pslookup 0x6b84..0x6bae: done */
 /* frame: the original reserves 8 bytes; the unused local dummy reproduces that (role unknown) */
+/* pslookup: look up a symbol by a name already packed (0x6b84..0x6bae of /bin/sld) */
 struct symbol **pslookup(p)
 char *p;
 {
@@ -241,7 +241,7 @@ char *p;
 	lookup_name();
 }
 
-/* enter..6c6a: findings:D2 */
+/* enter: enter a symbol into the symbol table (0x6bae..0x6c6a of /bin/sld) */
 enter(a)
 struct symbol **a;
 {
@@ -264,7 +264,7 @@ struct symbol **a;
 	return 0;
 }
 
-/* map_sym..6da8: findings:D2,D6,D15 */
+/* map_sym: map a symbol of the object to its entry in the symbol table (0x6c6a..0x6da8 of /bin/sld) */
 map_sym()
 {
 	register char *w;
@@ -326,7 +326,7 @@ end:
 	;
 }
 
-/* symreloc..6e1a: findings:D6 */
+/* symreloc: relocate the value of cursym by the text, data or bss relocation of the object (0x6da8..0x6e1a of /bin/sld) */
 symreloc()
 {
 	switch (cursym.stype) {
@@ -350,7 +350,7 @@ symreloc()
 	}
 }
 
-/* put_sym 0x6e1a..0x6efe: done */
+/* put_sym: write one symbol to the symbol output (0x6e1a..0x6efe of /bin/sld) */
 put_sym(a, b)
 struct buf *a;
 struct symbol *b;
@@ -386,7 +386,7 @@ struct symbol *b;
 	return 1;
 }
 
-/* put_all 0x6efe..0x6f46: done */
+/* put_all: write all symbols of the table (0x6efe..0x6f46 of /bin/sld) */
 put_all()
 {
 	register struct symbol *p;
@@ -402,7 +402,7 @@ put_all()
 	}
 }
 
-/* chk_ranlib..6fce: findings:D7 */
+/* chk_ranlib: check an archive member against the ranlib table (0x6f46..0x6fd0 of /bin/sld) */
 chk_ranlib(p, n)
 struct rlent *p;
 int n;
@@ -430,7 +430,7 @@ test:
 		goto body;
 }
 
-/* table16_entry 0x6fd0..0x6ffe: done */
+/* table16_entry: address of entry x of the symbol table, error beyond nsym (0x6fd0..0x6ffe of /bin/sld) */
 struct symbol *table16_entry(x)
 unsigned x;
 {
@@ -441,7 +441,7 @@ unsigned x;
 	report_error(2, "Symbol table overflow --try -As option");
 }
 
-/* symtab_alloc 0x6ffe..0x702a: done */
+/* symtab_alloc: allocate the symbol table (0x6ffe..0x702a of /bin/sld) */
 symtab_alloc(a)
 int a;
 {
@@ -450,7 +450,7 @@ int a;
 		report_error(2, "malloc unable to allocate enough memory for symbol table");
 }
 
-/* resize_symtab 0x702a..0x705e: done */
+/* resize_symtab: change the size of the symbol table (0x702a..0x705e of /bin/sld) */
 resize_symtab(a)
 int a;
 {
@@ -459,7 +459,7 @@ int a;
 		report_error(2, "realloc unable to allocate enough memory for symbol table");
 }
 
-/* next_entry 0x705e..0x70ce: done */
+/* next_entry: next entry of the symbol table (a long name occupies several entries) (0x705e..0x70ce of /bin/sld) */
 struct symbol *next_entry(p)
 register struct symbol *p;
 {
@@ -479,7 +479,7 @@ register struct symbol *p;
 	report_error(2, "Error in stepsym");
 }
 
-/* index16 0x70ce..0x7112: done */
+/* index16: index of an entry of the symbol table (byte offset / 16) (0x70ce..0x7112 of /bin/sld) */
 int index16(x)
 struct symbol *x;
 {
@@ -490,7 +490,7 @@ struct symbol *x;
 	report_error(2, "Error in getindex");
 }
 
-/* ensure_buf..7186: done */
+/* ensure_buf: make sure the ranlib buffer is large enough (0x7112..0x7186 of /bin/sld) */
 long ensure_buf(n)
 unsigned long n;
 {
@@ -507,13 +507,13 @@ unsigned long n;
 	return rlbuf;
 }
 
-/* limit_msg..719e: done */
+/* limit_msg: print the size usage "n symbols / m available" (0x7186..0x719e of /bin/sld) */
 limit_msg()
 {
 	printf("%d symbols / %d available\n", symindex, 0x0ffa);
 }
 
-/* table32_entry 0x719e..0x71ca: done */
+/* table32_entry: address of an entry of the pass-two segment table (0x719e..0x71ca of /bin/sld) */
 struct p2seg *table32_entry(x)
 unsigned x;
 {

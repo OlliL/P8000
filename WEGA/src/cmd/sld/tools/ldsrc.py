@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ldsrc.py - the source files of sld (src/cmd/ld/*.c and ld.h) as one unit, for the scripts of tools/.
+"""ldsrc.py - the source files of sld (src/cmd/sld/*.c and ld.h) as one unit, for the scripts of tools/.
 
 module_ranges.txt gives the C files and their code ranges; ld.h holds the structs and the declarations shared by the files.
   sources()        paths of the existing files (the .c files in link order, then ld.h)

@@ -4,7 +4,7 @@
 usage: check.py [-n RANDOM_RUNS] [-s SEED] [-S]     (environment: WEGA=file tree of the original system, EMU=emulator)
 
 With SLD_NEW=<segmented program> the segmented tests (sld) run that program under z8k-emu instead of the host sld
-(src/cmd/ld: `make check`, the rebuilt sld against the original); -S runs only the segmented tests.
+(src/cmd/sld: `make check`, the rebuilt sld against the original); -S runs only the segmented tests.
 
 Builds the test objects test/*.c with the original cc, makes archives (ar, ranlib, test/mklib.py), then
 links with both linkers: fixed command lines (options, areas, archives, -r chains) and random ones. The

@@ -1,0 +1,91 @@
+# name description (one line; input of headcomments.py)
+unpack_run copy the name field of a symbol (8 or 14 bytes, or the long form with length byte 0x80|n) zero padded; returns the number of extra 16 byte entries
+pack_name build the table form of a C string: up to 8 characters padded, longer names with the length byte 0x80|n and padding to 16 bytes
+trunc_name copy a name into the 8 character field; warns "symbol name truncated" when it is longer
+walk_entries dump all entries of the symbol table (SYM TABLE DUMP)
+dump_sym dump one symbol (value, segment type, kind)
+dmp_p1 dump the pass-one segment table
+dump_p2 dump the pass-two segment table
+dump_res dump the list of reserved segments
+get_block allocate a block of the work area (malloc), fatal when it fails
+segtab_alloc allocate the segment table
+main entry: initialise, scan the options, load the libraries and objects, write the output
+sig_handler signal handler: remove the temporary files and exit
+init_signals catch the interrupt signals
+scan_options scan the options (-l, -o, -M, -f, ...) of the command line or of a command file
+read_words read a command file (-f) and split it into the words of the argument list
+reg_sect_addr read the address of a section option (-t, -d, -b) and check it
+parse_args second pass over the arguments: load every object and library in order
+load_lib_syms load an archive: only the members that define an undefined symbol (ranlib table)
+load_header read the header of an object file or archive member
+ranlib_scan look up the undefined symbols in the ranlib table of an archive
+add16_checked sum of two unsigned values; error (level 1) when it exceeds 16 bits
+read_symbols pass one for one object: read the symbol table, enter the symbols
+place_sec place the sections (text, data, bss) of the objects into segments and set the addresses
+split_seg start a new pass-two segment when the section does not fit
+start_output open the output and temporary files, write the header
+open_tmp create a temporary or output file
+init_entry fill the header of the output (objhdr) from the totals and the flags
+load2arg pass two for one argument (object file or archive member)
+load2 pass two for one object: relocate its symbols and copy text and data
+load2seg pass two: load the text and data of one segment of an object
+load2td pass two: copy text or data with relocation
+finish_output write the remaining parts of the output and patch the header
+patch_hdr rewrite the header of the output file with the final values
+copy copy a temporary file to the output
+high_byte return x >> 8; internal error if the low byte of x is not 0
+mget read n bytes from the current input into a buffer
+mput write n bytes to an output buffer
+dseek seek in the input to a given position (page buffered)
+half x / 2 as an unsigned word
+get next byte of a stream; reads the next page and checks the end of the member
+getfile open an input file, searching the library directories
+report_error print a message with the program and file name; fatal depending on the level
+table_lookup find an entry of the local symbol table (botch on failure)
+readhdr read and convert the header of an object file or member
+make_blk create the segment table block for an object
+str_compare compare two names: in cmpmode the difference of the first unequal characters, else 1 when equal and 0 when not
+put_int_buf write a word to an output buffer
+flush_buffer write an output buffer to its file
+swab12 swap the bytes of 12 words (never called)
+warn_sym_redef warn that a symbol is redefined in an archive
+scan_m_opt scan a -M option (memory layout) and fill the segment lists
+mlist_add add an entry to the -M list, in order
+resv_seg reserve a segment number given with an option
+copy_leafname copy the leaf name of a path
+end_pass1 end of pass one: define _etext, _edata, _end, lay out the sections
+alloc_resv allocate the reserved segments
+lay_out assign the segments and addresses of all sections (the big layout routine)
+ins_block insert a block into the segment list
+alloc_segment allocate the next free segment number
+seg_pad pad the output of a segment
+copy_segs copy the segments from the temporary files to the output
+copy_blocks copy the blocks of one segment from the temporary files
+list_move_after move the entry p behind the entry e of the doubly linked list of pass-two segments
+put_pad write n zero bytes (n/2 words) to the output
+put_name print a symbol name
+swap_bytes swap the bytes of a word in place
+swap_pair swap the bytes of two words
+swap_quad swap the bytes of four words
+read_entry_hdr read the header of an entry of the symbol table
+cvt_fsym convert a file symbol (fsym) to a symbol; the segment flag is set for data and bss symbols when a is set
+pack_entry pack an entry of the symbol table (never called)
+ldrsym load a symbol of a relocation entry, error for multiply defined
+mkfsym make the file symbol of a symbol
+lookup_name look up a name in the hash table of symbols
+slookup look up a symbol by name (packs the name first)
+pslookup look up a symbol by a name already packed
+enter enter a symbol into the symbol table
+map_sym map a symbol of the object to its entry in the symbol table
+symreloc relocate the value of cursym by the text, data or bss relocation of the object
+put_sym write one symbol to the symbol output
+put_all write all symbols of the table
+chk_ranlib check an archive member against the ranlib table
+table16_entry address of entry x of the symbol table, error beyond nsym
+symtab_alloc allocate the symbol table
+resize_symtab change the size of the symbol table
+next_entry next entry of the symbol table (a long name occupies several entries)
+index16 index of an entry of the symbol table (byte offset / 16)
+ensure_buf make sure the ranlib buffer is large enough
+limit_msg print the size usage "n symbols / m available"
+table32_entry address of an entry of the pass-two segment table

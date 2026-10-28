@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""gen_makefile.py - write src/cmd/ld/Makefile (link of sld from the C files, the members of slibc.a and the two old objects).
+"""gen_makefile.py - write src/cmd/sld/Makefile (link of sld from the C files, the members of slibc.a and the two old objects).
 
 The link order is the order of /bin/sld: scrt0.o, the C files (tools/module_ranges.txt), then the libc objects in the order of
 host/tools/oldslibc_cut.py (OBJECTS) and the data-only members. All libc objects are members of /lib/slibc.a except printf and
@@ -42,7 +42,6 @@ def main():
 #   make             compile the C files, assemble the start code and the old libc objects (printf, doprnt)
 #   make link        sld.new: scrt0.o, the C files, the members of /lib/slibc.a and the two old objects, linked by the original
 #                    sld (SLDBIN: segmented program, -i -z -e start)
-#   make linkown     sld.own: the same with the cut own code (sld_own.s, 0x56..0x71ca of /bin/sld) instead of the C files
 #   make check       link the test objects of host/ld/test with sld.new and with the original sld under z8k-emu and compare the
 #                    output files, messages and exit codes (host/ld/check.py -S, SLD_NEW); needs the file tree of the original
 #                    system (CHECKROOT)
@@ -73,7 +72,6 @@ OLDOBJS = %s
 # link order of /bin/sld
 %s
 LINKOBJS = scrt0.o $(COBJS) $(LIBCOBJS)
-OWNOBJS = scrt0.o sld_own.o $(LIBCOBJS)
 
 all: $(COBJS) scrt0.o $(OLDOBJS)
 
@@ -83,12 +81,7 @@ sld.new: $(LINKOBJS)
 	$(SLDBIN) -i -z -e start $(LINKOBJS) -o $@
 
 check: sld.new
-	cd ../../../host/ld ; SLD_NEW=../../src/cmd/ld/sld.new WEGA=$(CHECKROOT) python3 check.py -S
-
-linkown: sld.own
-
-sld.own: $(OWNOBJS)
-	$(SLDBIN) -i -z -e start $(OWNOBJS) -o $@
+	cd ../../../host/ld ; SLD_NEW=../../src/cmd/sld/sld.new WEGA=$(CHECKROOT) python3 check.py -S
 
 slibc/stamp:
 	mkdir slibc ; cd slibc ; $(AR) x $(SLIBC) $(MEMBERS) ; touch stamp
@@ -101,9 +94,6 @@ scrt0.s: $(CRT)/mkcrt0.sh $(CRT)/scrt0.s.in $(CRT)/crt0.list
 scrt0.o: scrt0.s
 	$(CAS) -u -o $@ scrt0.s
 
-sld_own.o: sld_own.s
-	$(CAS) -u -o $@ sld_own.s
-
 ''' % (wrap('COBJS = ', [m + '.o' for m in mods]),
        ' '.join(o + '.o' for o in [o for o, a, b, k in C.OBJECTS if k != 'old'] + [d for d, _ in DATAOBJS]),
        ' '.join('$(OLD)/%s/$(REV).o' % o for o in old),
@@ -114,7 +104,7 @@ sld_own.o: sld_own.s
         mk += '%s.o: %s.c ld.h\n\t$(SCC) $(CFLAGS) -c %s.c\n\n' % (m, m, m)
     for o in old:
         mk += '$(OLD)/%s/$(REV).o: $(OLD)/%s/$(REV).s\n\t$(CAS) -u -o $@ $(OLD)/%s/$(REV).s\n\n' % (o, o, o)
-    mk += 'clean:\n\trm -f $(COBJS) $(OLDOBJS) scrt0.s scrt0.o sld_own.o sld.new sld.own\n\trm -rf slibc\n'
+    mk += 'clean:\n\trm -f $(COBJS) $(OLDOBJS) scrt0.s scrt0.o sld.new\n\trm -rf slibc\n'
     open(os.path.join(HERE, '..', 'Makefile'), 'w').write(mk)
 
 

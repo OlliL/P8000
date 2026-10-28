@@ -441,14 +441,14 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
 
 - `/bin/sld` (E611, stripped): segment 0 code 38912 bytes, segment 1 data 7090, bss 31054 (segment 1) and 63488 (segment 2).
   Data offsets in segment 0 addresses: `off & 0x7fff` (the `%8000` form). Stack segment 127 is `_stkseg`.
-- Own code 0x0018..0x8680 (34408 bytes) assembles byte-identical as one block (`src/cmd/ld/sld_own.s`, `host/tools/unlink_seg.py`).
+- Own code 0x0018..0x8680 (34408 bytes) assembles byte-identical as one block (`src/cmd/sld/sld_own.s`, `host/tools/unlink_seg.py`).
   Since 2026-10-27 the start 0x18..0x55 is `scrt0.o` (template `src/lib/libc/crt/scrt0.s.in`); `sld_own.s` is 0x56..0x8680 (34346 bytes, verified from 0x56).
 - Data references of the own code (decoded with the segmented flag, as the cut does): 348 direct and 58 indexed references
   into segment 1 (data), 442 direct into segment 2 (bss), 1816 stack references (segment 127). Data references do not say
   which module owns the code: a global of one module is used by code of another. The SCCS modules of the data (scrt0.s,
   copyname.c, dump.c, ext.c, ld.c, ldm.c, printname.c, swap.c, symbols.c, malloc.c) have no code boundaries yet.
   Correction: an earlier reading "only three direct data addresses" came from decoding with the non-segmented flag.
-- Function boundaries of the own code (`src/cmd/ld/tools/own_functions.txt`): 94 functions, entries = call targets and proven
+- Function boundaries of the own code (`src/cmd/sld/tools/own_functions.txt`): 94 functions, entries = call targets and proven
 - Start-up code of the segmented programs (2026-10-27, measured): the 62 bytes at 0x18..0x55 of `/bin/sld` are the same code as
   the start of `/bin/ps`, `/bin/pstat` and `/usr/bin/yacc` (stamp `@[$]scrt0.s`, revision 3.2). They differ only in the segment of
   `_environ` (sld and yacc: segment 2, byte 0x82; ps and pstat: segment 0, byte 0x80) and in the relocated words. The code takes
@@ -459,7 +459,7 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   starts. The start code 0x18 is not `/lib/scrt0.o`: `scrt0.o` (code 66 bytes) has the word pair `5df8 0000` after its first
   word, which sld lacks; the stack operands are 0x7f04/0x7f06 in sld and 0x0004/0x0006 in scrt0.o (relocated words of the
   stack segment, so the values may differ at link time: guess, not checked).
-- Call form (checked with `src/cmd/ld/tools/fncheck.py`): scc emits `calr` for a callee defined in the same object within
+- Call form (checked with `src/cmd/sld/tools/fncheck.py`): scc emits `calr` for a callee defined in the same object within
   reach, `call` for an undefined callee or one out of reach (the original calls 0x3408 from 0x71c0 with `call`, the distance
   is above the calr range). The form of the final sld is therefore decided by the whole-file compile (D17).
 - Segment operands in the object are `<<0>>` (not linked); the stack is `<<127>>` after the link. Compare without segments.
@@ -859,12 +859,15 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` | `-Ms n` without a reference to `_stkseg`: the warning `sld: warning: _stkseg undefined` goes to stdout, not stderr, and the status is 1 although the file is written | kept | "sld on the host" |
 | `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
 | `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
-| `/bin/sld` (own code, 0x85f8, number parser) | with a leading `-` the digit loop counts the original length (one character more than the rest after the sign), the return value uses the shortened count | kept (`f85f8` in `src/cmd/ld/sld.c`; `src/cmd/ld/tools/own_functions.txt`) | `src/cmd/ld/tools/own_functions.txt` |
-| `/bin/sld` (own code, 0x410c, insert into the name table) | when the name is already in the list (compare result 0) the attribute words are written at the step counter (0x0e of the frame), not at the index of the entry found (0x0a); with a new name both are the same | kept (`src/cmd/ld/sld.c`, `mlist_add`) | `src/cmd/ld/tools/own_functions.txt` |
-| `/bin/sld` (own code, 0x0f26, read_words) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/ld/sld.c`) | `src/cmd/ld/tools/own_functions.txt` |
-| `/bin/sld` (own code, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `src/cmd/ld/tools/own_functions.txt` |
-| `/bin/sld` (own code, 0x6a58) | two counters (`0x06`, `0x0a` of the frame) are incremented on the name flag and never read: write-only locals of the compiler output | kept (`src/cmd/ld/tools/own_functions.txt`, not accepted yet) | `src/cmd/ld/tools/own_functions.txt` |
-| `/bin/sld` (own code, 0x6866, 0x01d2, 0x3b1e, 0x7212, 0x724e) | six functions without any caller and without an address reference in the program (dead code); 0x7212 and 0x724e are wrappers of the formatter 0x7300 | rebuilt (kept, as in the original; `src/cmd/ld/tools/own_functions.txt`) | `src/cmd/ld/tools/own_functions.txt` |
+| `/bin/sld` (libc `_atoip`, 0x85f8, number parser of doprnt) | with a leading `-` the digit loop counts the original length (one character more than the rest after the sign), the return value uses the shortened count | kept (old `doprnt` in `src/lib/oldslibc`) | `src/lib/oldslibc/README` |
+| `/bin/sld` (`mlist_add`, 0x410c, insert into the name table) | when the name is already in the list (compare result 0) the attribute words are written at the step counter (0x0e of the frame), not at the index of the entry found (0x0a); with a new name both are the same | kept (`mlist_add` in `src/cmd/sld/ldm.c`) | `src/cmd/sld/tools/own_functions.txt` |
+| `/bin/sld` (`read_words`, 0x0f26) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/sld/ld.c`) | `src/cmd/sld/tools/own_functions.txt` |
+| `/bin/sld` (`alloc_resv`, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `src/cmd/sld/tools/own_functions.txt` |
+| `/bin/sld` (`lookup_name`, 0x6a58) | two counters (`0x06`, `0x0a` of the frame) are incremented on the name flag and never read: write-only locals of the compiler output | kept (spare locals in `lookup_name`) | `src/cmd/sld/tools/own_functions.txt` |
+| `/bin/sld` (`pack_entry` 0x6866, `walk_entries` 0x01d2, `swab12` 0x3b1e; libc `scanf` 0x7212, `fscanf` 0x724e, one more) | six functions without any caller and without an address reference in the program (dead code); 0x7212 and 0x724e are the library members `scanf`/`fscanf` | rebuilt (kept, as in the original) | `src/cmd/sld/tools/own_functions.txt` |
+| `/bin/sld` (`warn_sym_redef`, 0x3b58) | the test of the symbol type is `!c & 0x20` (the source meant `!(c & 0x20)`): `!c` is 0 or 1, so the test is `(!c) & 0x20` = always 0 and only `c == 0x20` can return | kept (the same expression in `src/cmd/sld/ld.c`) | `src/cmd/sld/tools/own_functions.txt` |
+| `/bin/sld` (`put_pad`, 0x64d0) | the function ends without a `return` in the loop path (the value that comes back is not defined); the callers ignore it | kept (`int put_pad` without a final `return`) | `src/cmd/sld/ldm.c` |
+| `/bin/sld` (variables) | the bss has unused gaps and variables never referenced (`spare0`, `spare4b8`, `spare4c4`, `spare4d0`, `sparef314`, `unused15d8`, `unused484`, `unused3be`): they are leftovers of removed code and are rebuilt so that all variable addresses stay equal | kept (`src/cmd/sld/copyname.c`) | "sld: the structs" |
 | `/bin/gld` | in the second pass every `l` (and `e`, `o`) in an option argument counts: `-L/usr/lib` is read as `-lib` and fails with "cannot open"; an `o` or `e` skips the next argument | kept | "gld on the host" |
 | `/bin/gld` | a common with a size is not replaced by a text definition; a member found through a table of contents is loaded by name of at most 8 characters only (long names never match) | kept | "gld on the host" |
 | `/bin/gld` | the symbol "rollback" of a rejected archive member leaves a stale pointer when the table was empty: the next rejected member gives "symfree botch" (`gld lib.a` without a first object) | kept | "gld on the host" |
@@ -956,7 +959,7 @@ means it does something fixed instead (only possible where the original's result
 ### sld: limits of the old compiler for the work file (2026-10-28)
 
 - Only the first 8 characters of an identifier count; an external name is `_` + 7 characters in the object. Identifiers equal in
-  the first 8 characters are one symbol. `src/cmd/ld/tools/check_names.py` lists such groups (renamed for that:
+  the first 8 characters are one symbol. `src/cmd/sld/tools/check_names.py` lists such groups (renamed for that:
   `table16_index` -> `index16`, `report_limit` -> `limit_msg`; `saved_av`/`saved_argc` are locals and differ at the 8th character).
 - The symbol table of scc is small: a file with more than about 560 global names stops with "Symbol table out of space".
   `sld.c` has about 310 file-scope names and 620 identifiers in total.
@@ -966,7 +969,7 @@ means it does something fixed instead (only possible where the original's result
   labels (`scc -S`). A rename can trigger it again.
 - Which function loses its name is chaotic, not a length budget (measured 2026-10-28: renaming one identifier to a shorter one
   can trigger it, renaming three together does not). The cure is the split: sld.c is cut into the C files of the program
-  (`src/cmd/ld/{copyname,dump,ext,ld,ldm,printname,swap,symbols}.c` and `ld.h`) and every file is compiled alone; none of them loses a
+  (`src/cmd/sld/{copyname,dump,ext,ld,ldm,printname,swap,symbols}.c` and `ld.h`) and every file is compiled alone; none of them loses a
   name (checked with the real libc names, 512 identifiers in all). The temporary alias of the libc names to `f<address>`
   (`fncheck.alias_text`, `LDALIAS=1`) is off since then.
 - Split of 2026-10-28: `tools/split_sld.py` (one-off) cut the 90 blocks of sld.c into the files of `tools/module_ranges.txt` (functions in
@@ -996,7 +999,7 @@ means it does something fixed instead (only possible where the original's result
 
 ### sld: names of the libc functions called by the own code (2026-10-28)
 
-`src/cmd/ld/tools/libc_names.txt` maps the 34 call targets above 0x8680 to the members of slibc.a: `exit` 0x8a50 (= cuexit.o:
+`src/cmd/sld/tools/libc_names.txt` maps the 34 call targets above 0x8680 to the members of slibc.a: `exit` 0x8a50 (= cuexit.o:
 `__cleanup`, then `sc #1`; `__callex` calls it), `atoi`, `_cnvt`, `_length`, `malloc`/`free`/`realloc`/`calloc`, `mktemp`,
 `strchr`/`strrchr`/`rindex`, `swab`, `strcat`, `strncmp`, `strcpy`, `swap`, `tolower` and the system call stubs (`access`
 `chmod` `close` `creat` `fstat` `link` `lseek` `open` `read` `signal` `unlink` `write`; the number after `sc` fits the call).
@@ -1011,11 +1014,11 @@ relocated words masked: they are the shipped objects, not an older revision. (3)
 is 0x56..0x8682; `__fegcvt` = 0x8684 (printf), `__inflt` = 0x8686 (scanf). `ungetc.o` starts at 0x8688. (4) The earlier module
 split (filbuf, flsbuf, cnvt, decimal, stty, swab, swap, signal, stubs) had wrong boundaries and placeholder labels; the
 directories `src/lib/oldslibc/<object>/0_1.s` now follow the objects (README there). The code of the link is right: `make link`
-in `src/cmd/ld` gives a code segment that differs from /bin/sld in 78 bytes, all data addresses (the data of sld is not cut).
+in `src/cmd/sld` gives a code segment that differs from /bin/sld in 78 bytes, all data addresses (the data of sld is not cut).
 
 ### sld: layout of data and bss (2026-10-28)
 
-`make link` in `src/cmd/ld` now gives the data (7090) and bss (31054 + 63488) of `/bin/sld` and every variable at its original address. Facts
+`make link` in `src/cmd/sld` now gives the data (7090) and bss (31054 + 63488) of `/bin/sld` and every variable at its original address. Facts
 found on the way: (1) sld allocates the commons (`.comm`, undefined symbols with a size) in the order of its global symbol table, i.e. in the
 order of the first mention in the objects in link order, and fills the segment of the commons from the LAST segment of the chain
 on: the original has the variables of segment 2 first in its order, then those of segment 1 (p2tab ... libpath, then the `__sobuf`/`__sibuf`
@@ -1085,7 +1088,7 @@ reading the original code with `tools/odis.py NAME`:
 
 ### sld: corpus test of the rebuilt sld (2026-10-28)
 
-`make check` in `src/cmd/ld` (`host/ld/check.py -S` with `SLD_NEW=sld.new`) links the test objects of `host/ld/test` (51 command lines: options,
+`make check` in `src/cmd/sld` (`host/ld/check.py -S` with `SLD_NEW=sld.new`) links the test objects of `host/ld/test` (51 command lines: options,
 areas, `-r` chains, the objects big1..big8 with many segments, the kernel link of `make.wega`) with the rebuilt `sld.new` and with the original
 `/bin/sld` under z8k-emu and compares the output file, stdout/stderr and the exit status: 51 of 51 identical (2026-10-28). The test found four
 errors of the reconstruction that `strict_audit.py` does not show because it only compares instruction forms and masks addresses:
@@ -1100,7 +1103,7 @@ arguments; the first divergence names the function, then compare the registers/f
 
 ### sld: the structs (2026-10-28)
 
-The raw offsets of the sources are replaced by structs (`src/cmd/ld/ld.h`); the code is unchanged (`strict_audit.py` 58 of 90 exact, data equal, corpus
+The raw offsets of the sources are replaced by structs (`src/cmd/sld/ld.h`); the code is unchanged (`strict_audit.py` 58 of 90 exact, data equal, corpus
 test identical). Names come from the debug strings of the original (`dump.c`: segno, s_coff, s_doff, s_boff, s_code, s_data, s_bss, atr, torig, dorig,
 borig, ctrel, cdrel, cbrel, ncoff, ndoff, nboff, ncode, ndata, nbss, xtnext, datnext, bssnext, txtptr, datptr, bssptr, res) and from Plexus
 `ld.z8000.c` (page, stream, buf, symbol, local, archdr, filhdr, fpage); the old cc keeps members of different structs with equal name, offset and type
@@ -1289,7 +1292,7 @@ Spare variables that fill gaps of the original layout (not used by any function 
 
 ### sld: C files of the program and the libc objects in the own range (2026-10-28)
 
-`src/cmd/ld/tools/module_map.py` (output `module_map.txt`) assigns every function to a C file by the string literals it uses. The data
+`src/cmd/sld/tools/module_map.py` (output `module_map.txt`) assigns every function to a C file by the string literals it uses. The data
 area starts with the SCCS strings of the files in link order: copyname.c 0x2c, dump.c 0x78, ext.c 0x38a, ld.c 0x448, ldm.c 0xf60,
 printname.c 0x14fe, swap.c 0x156c, symbols.c 0x159a; the code of the files is in the same order and the assignment is monotonic
 (no file after a later one). Code ranges (function boundaries; the cuts at the first function of the next file):
@@ -1309,7 +1312,7 @@ lies in the data area behind the symbols.c data (0x17ba..0x1958 and the objects 
 
 ### sld: the string literals and the data of the C files (2026-10-28)
 
-`src/cmd/ld/tools/fill_strings.py` put the original texts into the C files (the placeholders "x" are gone; every file starts with
+`src/cmd/sld/tools/fill_strings.py` put the original texts into the C files (the placeholders "x" are gone; every file starts with
 `static char sccsid[]`, the SCCS what-string of the binary). Method: the compiler emits the string literals of a file in source
 order into the data and the original keeps that order. (1) The literals of one function are consecutive: the k-th literal of the
 function is the k-th lowest string address among the string references (`#%0100XXXX`) of the original function. (2) A literal that
@@ -1331,7 +1334,7 @@ Findings from the order of the strings (`fill_strings.py` prints them):
 
 ### sld: initialized variables and the data of the files (2026-10-28)
 
-Tools (`src/cmd/ld/tools`): `var_addr.py` (address of each global variable of our sources: the instruction sequences of ours and the
+Tools (`src/cmd/sld/tools`): `var_addr.py` (address of each global variable of our sources: the instruction sequences of ours and the
 original are aligned by mnemonic and the variable operands paired; votes in `var_addr.txt`, per function `var_fn_addr.txt`),
 `data_map.py` (the data area per C file: SCCS string, strings, jump tables, words), `check_data.py` (data section of each compiled C file
 against the original range; relocated words, jump tables and pointers into segment 1/2 are masked). Result: the data of copyname.c,
@@ -1382,7 +1385,7 @@ What the data showed:
   No ranlib/`__.SYMDEF` anywhere (only a BUGS mention).
 - Contains the PCC based Z8000 compiler: `cmd/cc/z8000/pcc` (ccom: order.c,
   local2.c, table.c, code.c), `c2` (peephole optimizer, c20-c23, ancestor of
-  popt z20-z23), `cpp`, assembler `cmd/as/z8000`, `cmd/ld`, `lib/libc/z8000`
+  popt z20-z23), `cpp`, assembler `cmd/as/z8000`, `cmd/sld`, `lib/libc/z8000`
   (stdio, gen, sys, crt, csu/crt0.s), sources of ar, size, nm, strip.
 - crt0 revision strings in WEGA binaries are an era fingerprint: 3.1 (10/82 -
   03/83) vs 3.2 (07/83 - 12/83), e.g. size = 3.1 01/14/83, strip = 3.1 01/24/83,

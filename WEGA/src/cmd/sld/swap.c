@@ -6,7 +6,7 @@
 
 static char sccsid[] = "@[$]swap.c\t2.1  10/27/83 12:25:00 - 87wega3.2";
 
-/* swap_bytes..65ec: findings:D4 */
+/* swap_bytes: swap the bytes of a word in place (0x65c6..0x65ec of /bin/sld) */
 int swap_bytes(u)
 struct { int i; } u;
 {
@@ -20,7 +20,7 @@ struct { int i; } u;
 	return *(int *)b;
 }
 
-/* swap_pair 0x65ec..0x6620: findings:D3 */
+/* swap_pair: swap the bytes of two words (0x65ec..0x6620 of /bin/sld) */
 swap_pair(a)
 int *a;
 {
@@ -34,7 +34,7 @@ int *a;
 		*p = swap_bytes(*p);
 }
 
-/* swap_quad..6684: findings:D3 */
+/* swap_quad: swap the bytes of four words (0x6620..0x6684 of /bin/sld) */
 swap_quad(a)
 char *a;
 {

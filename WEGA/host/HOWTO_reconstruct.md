@@ -172,7 +172,7 @@ or `codgen/tools` (with symbols) and the launchers (`classify.py`, `findings_md.
 
 - `odis.py NAME` (step 5), `callcmp.py` (step 6), `classify.py` / `patterns.py` (D classes), `findings_md.py`
   (the report, step 5/8).
-- Still sld specific in `src/cmd/ld/tools` (copy and adapt for the next binary, move into `host/recon/` then):
+- Still sld specific in `src/cmd/sld/tools` (copy and adapt for the next binary, move into `host/recon/` then):
   `fncheck.py` + `strict_audit.py` (step 5), `accept.py` / `accfn.py`, `firstdiff.py`, `rename.py` (step 8),
   `check_names.py`, `sync_findings.py`, `host/ld/check.py` (step 6).
 

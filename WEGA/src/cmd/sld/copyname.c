@@ -118,7 +118,7 @@ char libpath[40];
 long rlbuf;
 long bE000;
 
-/* unpack_run 0x0056..0x00ee: done */
+/* unpack_run: copy the name field of a symbol (8 or 14 bytes, or the long form with length byte 0x80|n) zero padded; returns the number of extra 16 byte entries (0x0056..0x00ee of /bin/sld) */
 int unpack_run(src, dst)
 char *src;
 char *dst;
@@ -149,7 +149,7 @@ test:
 	return n;
 }
 
-/* pack_name..0178: findings:D2 */
+/* pack_name: build the table form of a C string: up to 8 characters padded, longer names with the length byte 0x80|n and padding to 16 bytes (0x00ee..0x0178 of /bin/sld) */
 pack_name(src, dst)
 char *src;
 char *dst;
@@ -196,7 +196,7 @@ test:
 	}
 }
 
-/* trunc_name..01d2: findings:D2 */
+/* trunc_name: copy a name into the 8 character field; warns "symbol name truncated" when it is longer (0x0178..0x01d2 of /bin/sld) */
 trunc_name(src, dst)
 char *src;
 char *dst;
