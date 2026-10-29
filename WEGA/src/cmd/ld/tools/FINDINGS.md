@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 21 |
-| open | 43 |
+| confirmed | 22 |
+| open | 42 |
 
 | Difference class | Count |
 |---|---|
@@ -39,7 +39,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f0608 | - | 0x0608 | open | open |  |  |  |
 | f0714 | - | 0x0714 | open | open |  |  |  |
 | f07b2 | - | 0x07b2 | open | open |  |  |  |
-| f089a | - | 0x089a | confirmed | findings | read by hand | D3 | findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c |
+| f089a | 089a-08cc | 0x089a | confirmed | findings | read by hand | D3 | findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c |
 | f08cc | - | 0x08cc | open | open |  |  |  |
 | f0b6e | - | 0x0b6e | open | open |  |  |  |
 | f0d9c | - | 0x0d9c | open | open |  |  |  |
@@ -50,7 +50,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1452 | - | 0x1452 | open | open |  |  |  |
 | f172e | - | 0x172e | open | open |  |  |  |
 | f194a | - | 0x194a | open | open |  |  |  |
-| f1b0a | 1b0a-1b38 | 0x1b0a | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): parameter list (q, p, n), register pointer r and counter i (declared in this order), and two unused int locals (spare1, spare2). The parameter order is the same as f1f22 and f1b0a stands for the rule; the register order (r14 then r13) as in f1f22. |
 | f1ce2 | - | 0x1ce2 | open | open |  |  |  |
 | f1f64 | - | 0x1f64 | open | open |  |  |  |
 | f221e | 221e-226e | 0x221e | open | exact | read by hand |  | exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf. |
@@ -62,7 +61,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f25a2 | - | 0x25a2 | open | open |  |  |  |
 | f26e8 | - | 0x26e8 | open | open |  |  |  |
 | f2766 | - | 0x2766 | open | open |  |  |  |
-| f27be | - | 0x27be | open | open |  |  |  |
 | f282e | - | 0x282e | open | open |  |  |  |
 | f294e | - | 0x294e | open | open |  |  |  |
 | f29d6 | - | 0x29d6 | open | open |  |  |  |
@@ -79,11 +77,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | high_byte | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
 | lookup_name | 25dc-26ac | 0x25dc | confirmed | findings | read by hand | D3 | findings (symbols.c): sld lookup_name with ld names (cursym, nlflag, lnbuf, local, hshtab). Hash modulus 0x0923 in ld (sld 0x0ffa). Six attempts: the original keeps start (r11) and end (r10) in registers and slot, cur, rec in the frame or scratch; the draft has start and end in the frame and the loop test differs (cp r6,frame). Draft: d5/ln1.c. Accepted as finding. |
 | mget | 1a9a-1b0a | 0x1a9a | confirmed | exact | read by hand |  | exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n)). |
+| mput | 1b0a-1b38 | 0x1b0a | confirmed | exact |  |  |  |
 | next_entry | 2aa6-2b04 | 0x2aa6 | confirmed | findings | read by hand | D3 | findings (symbols.c): sld next_entry with ld's 14-byte entries (exact step). Five attempts (d5/ne1..ne5). Register set differs (the original keeps only e in r12; p is in r1 without a spill). The bound test differs: the original compares p with two words of the table (symtab, symtab+nsym*14) in another order than sld's `p >= symtab && p < symtab + nsym`. Draft: d5/ne1.c. Accepted as finding. |
 | open_tmp | 120e-12a8 | 0x120e | confirmed | exact |  |  |  |
 | pslookup | 26ca-26e8 | 0x26ca | confirmed | exact |  |  |  |
 | put_all | 282e-2862 | 0x282e | confirmed | exact |  |  |  |
 | put_int_buf | 226e-229c | 0x226e | confirmed | exact |  |  |  |
+| put_sym | 27be-282e | 0x27be | confirmed | findings | read by hand | D3 | findings (symbols.c): sld put_sym without the struct copy: ld writes the symbol itself (mput(a, p, 14)) and has no nwsym count. Seven attempts (d5/ps1..ps7). Frame size 16 matches with two spares (ps4). Differences: swap_pair gets b from r6 in the original and from the frame here; the position of cnt (frame 7 in the original, 9 here). Draft: d5/ps4.c. Accepted as finding. |
 | report_error | 1e86-1f22 | 0x1e86 | confirmed | exact |  |  |  |
 | sig_handler | 0042-009c | 0x0042 | open | exact | read by hand |  | exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink("l.out"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones. |
 | slookup | 26ac-26ca | 0x26ac | confirmed | exact |  |  |  |

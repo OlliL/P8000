@@ -133,7 +133,7 @@
    "file": "ld.c",
    "pairing": "confirmed",
    "orig": "0x089a",
-   "ours": "-",
+   "ours": "089a-08cc",
    "level": "findings",
    "size_orig": 50,
    "callers_orig": "0b6e",
@@ -238,16 +238,6 @@
    "size_orig": 200,
    "callers_orig": "045e",
    "status": "open"
-  },
-  "f1b0a": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x1b0a",
-   "ours": "1b0a-1b38",
-   "level": "exact",
-   "size_orig": 46,
-   "callers_orig": "108e,27be",
-   "status": "done"
   },
   "f1ce2": {
    "file": "ld.c",
@@ -357,16 +347,6 @@
    "level": "open",
    "size_orig": 88,
    "callers_orig": "1452",
-   "status": "open"
-  },
-  "f27be": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x27be",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 112,
-   "callers_orig": "1452,25a2,282e",
    "status": "open"
   },
   "f282e": {
@@ -658,6 +638,26 @@
    "size_orig": 236,
    "callers_orig": "-",
    "status": "done"
+  },
+  "mput": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1b0a",
+   "ours": "1b0a-1b38",
+   "level": "exact",
+   "size_orig": 46,
+   "callers_orig": "108e,27be",
+   "status": "done"
+  },
+  "put_sym": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x27be",
+   "ours": "27be-282e",
+   "level": "findings",
+   "size_orig": 112,
+   "callers_orig": "1452,25a2,282e",
+   "status": "findings"
   }
  },
  "findings": [],
@@ -760,6 +760,13 @@
     "D3"
    ],
    "note": "findings (symbols.c): sld next_entry with ld's 14-byte entries (exact step). Five attempts (d5/ne1..ne5). Register set differs (the original keeps only e in r12; p is in r1 without a spill). The bound test differs: the original compares p with two words of the table (symtab, symtab+nsym*14) in another order than sld's `p >= symtab && p < symtab + nsym`. Draft: d5/ne1.c. Accepted as finding."
+  },
+  "put_sym": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (symbols.c): sld put_sym without the struct copy: ld writes the symbol itself (mput(a, p, 14)) and has no nwsym count. Seven attempts (d5/ps1..ps7). Frame size 16 matches with two spares (ps4). Differences: swap_pair gets b from r6 in the original and from the frame here; the position of cnt (frame 7 in the original, 9 here). Draft: d5/ps4.c. Accepted as finding."
   }
  },
  "inventory": {

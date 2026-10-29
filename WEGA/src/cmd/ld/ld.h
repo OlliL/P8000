@@ -93,3 +93,7 @@ extern int nsym;
 /* flag of -w (sld: wflag); put_name writes a symbol name and returns its length (copyname.c / printname.c) */
 extern int wflag;
 int put_name();
+/* output of words and bytes (sld: mput, put_int_buf); the swap flag of the input (sld: swapflg) */
+int mput();
+extern int swapflg;
+int swap_pair();

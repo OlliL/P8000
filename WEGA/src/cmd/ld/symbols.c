@@ -157,3 +157,34 @@ struct symbol *a;
 	(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 0x20) : _flsbuf((unsigned)0x20, stderr));
 	report_error(0, "- warning: symbol redefined in archive");
 }
+
+/* put_sym: write a symbol entry (and its continuation entries of a long name) to the output (0x27be..0x282e of /bin/ld; finding) */
+put_sym(a, b)
+struct buf *a;
+struct symbol *b;
+{
+	int spare1, spare2;
+	char cnt;
+	register struct symbol *p;
+	register int k;
+
+	p = b;
+	if (swapflg)
+		swap_pair(b);
+	mput(a, p, 14);
+	if (p->sname[0] & 0x80) {
+		cnt = (p->sname[0] & 0x7f) - 8;
+		p++;
+		k = 1;
+		goto test;
+body:
+		mput(a, p++, 14);
+		k++;
+		cnt -= 14;
+test:
+		if (cnt > 0)
+			goto body;
+		return k;
+	}
+	return 1;
+}

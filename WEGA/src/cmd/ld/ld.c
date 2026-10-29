@@ -173,6 +173,24 @@ int n;
 	while (--i);
 }
 
+/* mput: write n bytes (words) of the array a to the output buffer q (0x1b0a..0x1b38 of /bin/ld) */
+mput(q, p, n)
+struct buf *q;
+int *p;
+int n;
+{
+	int spare1, spare2;
+
+	register int *r;
+	register i;
+
+	r = p;
+	i = n >> 1;
+	do {
+		f221e(*r++, q);
+	} while (--i);
+}
+
 sig_handler()
 {
 	int mode;
@@ -330,3 +348,15 @@ int flag;
 	out->nleft = 0x100;
 	out->xnext = out->iobuf;
 }
+f089a(p3, p2, p1)
+unsigned p3, p2;
+char *p1;
+{
+	long s;
+
+	s = (long)p3 + (long)p2;
+	if (s >= 0x10000)
+		f1e86(1, p1);
+	return(s);
+}
+

@@ -481,3 +481,12 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## warn_sym_redef: stdio check (2026-10-29)
 
 - The original ld compiles the putc store with a signed char: the store is followed by extsb. The header of the repo (src/head/stdio.h, also usr/include of the WEGA root) has unsigned char *_ptr, so the store is zero-extended there. A stub with char *_ptr reproduces the original exactly (wsr7/wsr8). With the repo header the same result comes from (int)(char)(...) (d5/wsr9.c, exact). Status done. The stdio of the 1983 build is not in the repo (only one commit of the header).
+
+## mput and put_sym (2026-10-29)
+
+- f1b0a was missing from ld.c (lost in an earlier rewrite; status done in findings.json). Restored as mput(q, p, n) (sld mput; d5/mp2.c exact, 16 instructions) between mget and sig_handler, and renamed in findings.json. ld.h declares mput, swapflg and swap_pair.
+- f27be = put_sym (symbols.c, finding, d5/ps4.c). Original writes the symbol itself (no struct copy, no nwsym).
+
+## Missing functions restored (2026-10-29)
+
+- Check: every function with status done or findings must be in the C files. f1b0a (done) and f089a (finding) were not in ld.c; f1b0a is restored as mput, f089a from d5/f089a_try3.c (accept --finding). lookup_name and next_entry are present (type prefix in the definition).

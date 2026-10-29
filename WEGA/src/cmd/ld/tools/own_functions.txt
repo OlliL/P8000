@@ -50,7 +50,7 @@
 26ca  f26ca  26e8     30  -                proven    done
 26e8  f26e8  2766    126  -                proven    open
 2766  f2766  27be     88  1452             proven    open
-27be  f27be  282e    112  1452,25a2,282e   proven    open
+27be  f27be  282e    112  1452,25a2,282e   proven    findings
 282e  f282e  2862     52  194a             proven    done
 2862  f2862  294e    236  -                proven    done
 294e  f294e  29d6    136  -                proven    open
