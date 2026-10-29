@@ -34,6 +34,7 @@ L0048:
 	ld	r14,%0004(r15)
 	inc	r15,#6
 	ret
+_swap_quad::
 	dec	r15,#6
 	ld	%0004(r15),r14
 	ld	@r15,r7

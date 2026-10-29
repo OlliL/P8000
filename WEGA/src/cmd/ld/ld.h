@@ -57,7 +57,7 @@ extern int ntab;
 extern struct tent tab[1];
 extern int symindex;
 extern long *libp;
-extern int v66c2, v66c6, v66cc, v66ce;
+extern int ttotal, dtotal, btotal, v66ce;
 extern char *ofilnam;
 extern int v007c, v0080;
 extern char tmpname[];
@@ -90,14 +90,13 @@ extern int nlflag;
 struct symbol **lookup_name();
 /* symbol table (sld: symtab, nsym); entries are 14 bytes in ld */
 extern struct symbol *symtab;
-extern int nsym;
 /* flag of -w (sld: wflag); put_name writes a symbol name and returns its length (copyname.c / printname.c) */
 extern int wflag;
 int put_name();
 /* output of words and bytes (sld: mput, put_int_buf); the swap flag of the input (sld: swapflg) */
 int mput();
 extern int swapflg;
-int swap_pair();
+int longswap();
 /* flags and output buffers of the symbol output (sld: sflag, xflag, soutb); v6bf8 is the word at 0x6bf8 (name open) */
 extern int sflag, xflag;
 extern struct buf soutb;
@@ -110,7 +109,7 @@ limit_msg();
 extern struct symbol **symhash[];
 extern struct symbol *lastsym;
 int enter();
-extern struct symbol *v069c;
+extern struct symbol *nsym;
 int index16();
 int getfile();
 int dseek();

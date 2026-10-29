@@ -9,7 +9,7 @@ int ntab;
 struct tent tab[1];
 int symindex;
 long *libp;
-int v66c2, v66c6, v66cc, v66ce;
+int ttotal, dtotal, btotal, v66ce;
 int fctrel, fcdrel, fcbrel;
 
 char *ofilnam = "l.out";
@@ -27,16 +27,12 @@ int v6bf6;
 long liblist[64];
 long *libp;
 struct symbol *p_etext, *p_edata, *p_end;
-int dflag, Oflag, comsize;
+int dflag, oflag, comsize;
 struct areas areas[4];
 char tab42b4[5];
 char *secnam[4];
 int secorg[4];
-int v66ca;
-int v66cc;
-int dtotal;
-int ttotal;
-int iflag, rflag;
+int iflag;
 int x66b6;
 int hdrsz, segtsz;
 struct stream reloc;
@@ -53,10 +49,9 @@ char secspec;
 struct rlent *rltab;
 int rlcnt;
 char *aoutnam = "a.out";
-int v6bf8, v7012, v6bfa, v701a;
+int v6bf8, v6bfa;
 int oflag, iflag, v66c4, v66c8;
 struct symbol *entrypt;
-unsigned char v67e4[256];
 
 struct archdr archdr;
 char *pname;
@@ -187,9 +182,9 @@ int x, y;
 	e->t4 = fctrel;
 	e->t5 = fcdrel;
 	e->t6 = fcbrel;
-	e->t7 = v66c2;
-	e->t8 = v66c6;
-	e->t9 = v66cc;
+	e->t7 = ttotal;
+	e->t8 = dtotal;
+	e->t9 = btotal;
 	e->t10 = v66ce;
 }
 /* f057c: restore the state of the object at entry i of tab (the bases, libp and ntab) and clear the symbol hash entries
@@ -208,9 +203,9 @@ int i;
 	fctrel = e->t4;
 	fcdrel = e->t5;
 	fcbrel = e->t6;
-	v66c2 = e->t7;
-	v66c6 = e->t8;
-	v66cc = e->t9;
+	ttotal = e->t7;
+	dtotal = e->t8;
+	btotal = e->t9;
 	v66ce = e->t10;
 	saved = e->t1;
 	while (symindex > saved) {
@@ -304,7 +299,7 @@ body:
 	if (t->stype != 0x20)
 		goto next;
 	if (swapflg)
-		swap_pair(&rltab[i]);
+		longswap(&rltab[i]);
 	load_header(rltab[i].roff >> 1);
 next:
 	i++;
@@ -385,7 +380,7 @@ end_pass1()
 		}
 	}
 	if (rflag) {
-		Oflag = 0;
+		oflag = 0;
 		sflag = 0;
 		secspec = 0;
 		for (i = 0; i < 4; i++)
@@ -396,7 +391,7 @@ end_pass1()
 		goto dolayout;
 	ldrsym(p_etext, 0, ttotal, '"');
 	ldrsym(p_edata, 0, dtotal, '#');
-	ldrsym(p_end, 0, v66cc, '$');
+	ldrsym(p_end, 0, btotal, '$');
 dolayout:
 	place_sec();
 	ep = table16_entry(0);
@@ -431,7 +426,7 @@ place_sec()
 	if (iflag == 0 && x66b8 == 0 && x66ba == 0 && rflag == 0)
 		areas[1].tsize = (ttotal + 255) & 0xff00;
 	areas[2].tsize = dtotal;
-	areas[3].tsize = v66ca + v66cc;
+	areas[3].tsize = comsize + btotal;
 	if (tab42b4[0]) {
 		for (i = iflag ? 2 : 1; i < 4; i++) {
 			if (tab42b4[i]) {
@@ -441,7 +436,7 @@ place_sec()
 		}
 	}
 	areas[0].kind = 4;
-	areas[0].tsize = (dtotal + v66ca + v66cc + iflag) == 0 ? ttotal : 0;
+	areas[0].tsize = (dtotal + comsize + btotal + iflag) == 0 ? ttotal : 0;
 	j = tab42b4[0] ? 0 : 1;
 	for (; j < 4; j++) {
 		q = &areas[j];
@@ -476,14 +471,14 @@ place_sec()
 		}
 		q->tstart = r8;
 	}
-	if (areas[3].tsize != v66ca + v66cc)
-		v66cc = areas[3].tsize - v66ca;
+	if (areas[3].tsize != comsize + btotal)
+		btotal = areas[3].tsize - comsize;
 	ttotal = areas[1].tsize;
 	dtotal = areas[2].tsize;
 	v6bf8 = areas[1].tstart;
 	v6bfa = areas[2].tstart;
 	x6bfe = areas[3].tstart;
-	v6bfc = areas[3].tstart + v66ca;
+	v6bfc = areas[3].tstart + comsize;
 	if (tab42b4[0])
 		tab42b4[iflag ? 2 : 1] = tab42b4[0];
 }
@@ -504,9 +499,9 @@ start_output()
 		open_tmp(&doutb, 1);
 	}
 	filhdr.fmagic = x66b8 || x66ba ? (oflag ? 0xe505 : iflag ? 0xe511 : 0xe507) : (oflag ? 0xe705 : iflag ? 0xe711 : 0xe707);
-	filhdr.tsize = v66c2;
-	filhdr.dsize = v66c6;
-	filhdr.bsize = v66cc;
+	filhdr.tsize = ttotal;
+	filhdr.dsize = dtotal;
+	filhdr.bsize = btotal;
 	if (rflag) {
 		filhdr.x1066 = v66c4;
 		filhdr.x106a = v66c8;
@@ -856,7 +851,7 @@ finish_output()
 	register int *end;
 
 	p = (int *)v6bf8;
-	end = (int *)v7012;
+	end = (int *)areas[1].tend;
 	goto test1;
 body1:
 	p++;
@@ -867,7 +862,7 @@ test1:
 	if (p < end)
 		goto body1;
 	p = (int *)v6bfa;
-	end = (int *)v701a;
+	end = (int *)areas[2].tend;
 	goto test2;
 body2:
 	p++;
@@ -910,12 +905,12 @@ struct buf *p;
 	lseek(fd, 0L, 0);
 	goto test;
 body:
-	q = v67e4;
+	q = (unsigned char *)tmpoutb.iobuf;
 	do
 		put_int_buf(*q++, &toutb);
 	while (--n);
 test:
-	n = read(fd, v67e4, 256);
+	n = read(fd, tmpoutb.iobuf, 256);
 	if (n > 1)
 		goto body;
 	close(fd);
@@ -1329,3 +1324,19 @@ register struct buf *a;
 
 /* main: entry of ld (approximation; finding: the order of the option scan and the calls to the signal and file helpers
    are not reproduced; 0x009c..0x0370 of /bin/ld) */
+struct symbol **symhash[2339];
+struct symbol *hshtab[2339];
+struct symbol *lastsym;
+char lnbuf[16];
+int wflag, nlflag;
+struct symbol *nsym;
+
+/* init_signals: catch the interrupt signals (sld init_signals; finding: approximation, the code of ld is not checked) */
+init_signals()
+{
+	if (signal(2, 1L) != 1)
+		signal(2, sig_handler);
+	if (signal(15, 1L) != 1)
+		signal(15, sig_handler);
+}
+

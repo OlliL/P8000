@@ -688,3 +688,20 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - main (f009c), parse_args (f045e), end_pass1 (f0b6e), read_symbols (f08cc) are in ld.c as findings (approximations after the decision of the owner, option 1). Approximations: main without the option and signal calls; parse_args without the option switch; end_pass1 without the second symbol pass; read_symbols without the case bodies. Each function is marked findings with the note. Not exact. The bss analysis (step 5b) may start with the sources complete; these four must be redone before the final link.
 - slookup now returns struct symbol ** (type only, still exact).
 - Globals added: liblist, libp, p_etext, p_edata, p_end, dflag, Oflag, comsize.
+
+## Step 5b (bss), first part (2026-10-29)
+
+- bss_map.txt: 89 globals of ld with their address in /bin/ld (decoded from the code: name, address, size, section). No overlaps. Aliases unified: ttotal (0x66c2), dtotal (0x66c6), btotal (0x66cc), comsize (0x66ca), oflag (0x66a8). tmpoutb.iobuf is the copy buffer at 0x67e4. areas[1].tend (0x7012) and areas[2].tend (0x701a) replace v7012 and v701a.
+- Open for 5b: the check through the object (order of the first mention and the link with /bin/ld) needs the link of the own code, which does not exist yet. Sizes of lnbuf, symhash, hshtab, liblist, local and tab are approximate.
+
+## Link attempt of the own code (2026-10-29)
+
+- Scratch link dir /mnt/share/cvs/P8000/tmp/tmp/link: crt0.o (mkcrt0 ld), ld.o, copyname.o, printname.o, symbols.o, the libc part from ld.link (shipped members extracted with the original ar, old members from oldlibc). Link with the original /bin/ld: 5 names still undefined: __exit (referenced by a libc member), _swap_quad (the routine at 0x47d6 of the swap member; the spec calls it _f47d6, no global symbol), __doscan (shipped scanf needs it, our oldlibc doscan defines _doscan), __pfile (data word at 0x705c, no member defines it here), _end (linker symbol, not defined by /bin/ld here).
+- Own names fixed for the link: swap_pair -> longswap (_longswap at 0x47ac), nsym (end of the static table, a pointer, was v069c), lnbuf, hshtab, lastsym, symhash, wflag, nlflag, init_signals added.
+- Next: decide the naming of the five names (libc side, not our code) and the definition of _end; then the bss addresses of the link output are compared with bss_map.txt.
+
+## Link of the own code, result (2026-10-29)
+
+- The link with the original /bin/ld now succeeds (scratch dir /mnt/share/cvs/P8000/tmp/tmp/link; command: crt0.o ld.o copyname.o printname.o symbols.o <libc part from ld.link> arx/exit.o arx/doscan.o, with -i for the separate I/D layout). Missing names resolved: __exit and __doscan from the on-board libc members exit.o and doscan.o; __pfile as the C name _pfile in symbols.c (the on-board doprnt.o conflicts with the old doprnt); _swap_quad as a global label in src/lib/oldlibc/swap/0_1.s (only the label added, the bytes are unchanged).
+- Sizes: code 0x4a00 (equal to the original). data 0x08da (original 0x0abc, short by 0x1e2). bss 0x3426 (original 0x69ca, short by 0x36a4). So step 5b cannot be closed before step 4 (data) and the sizes of the arrays are done. bss_map.txt addresses are the original ones; the comparison with the linked program is meaningful only after the data size is equal.
+- Next: step 4 (data: strings and initialised data in the order of the original, the missing 0x1e2 bytes), then the array sizes (hshtab, symhash, liblist, local, lnbuf, tab, page) and the bss comparison with bss_map.txt.

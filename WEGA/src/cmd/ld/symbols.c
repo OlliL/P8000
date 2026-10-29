@@ -7,6 +7,7 @@ unsigned int rlsize;
 struct symbol cursym;
 int v067c;
 struct symbol *symtab;
+int *_pfile;
 
 /* read_entry_hdr: read the entry of a symbol into cursym; a long name takes the continuation entries (sld read_entry_hdr,
    the nonsegmented part; 0x249a..0x2502 of /bin/ld). Module: printname.c as assigned (sld has it in symbols.c) */
@@ -21,7 +22,7 @@ int read_entry_hdr()
 	k = 0;
 	mget(&cursym, 14);
 	if (swapflg)
-		swap_pair(&cursym);
+		longswap(&cursym);
 	if (cursym.sname[0] & 0x80) {
 		cnt = cursym.sname[0] & 0x7f;
 		cur = (char *)&cursym;
@@ -170,7 +171,7 @@ struct symbol *b;
 
 	p = b;
 	if (swapflg)
-		swap_pair(b);
+		longswap(b);
 	mput(a, p, 14);
 	if (p->sname[0] & 0x80) {
 		cnt = (p->sname[0] & 0x7f) - 8;
@@ -360,7 +361,7 @@ register struct symbol *p;
 			p++;
 	} else
 		p++;
-	if (p >= symtab && p < symtab + nsym)
+	if (p >= symtab && p < nsym)
 		return p;
 	report_error(2, "Error in stepsym");
 }
@@ -369,13 +370,13 @@ register struct symbol *p;
    sign extension of the original, whose stdio had char *_ptr (the header of src/head has unsigned char *) */
 
 /* index16: index of an entry of the symbol table (sld index16; 0x2b04..0x2b3a of /bin/ld). ld has a static part of 0x258
-   entries at 0x1102 in front of the table at symtab (14 byte entries); v069c is the end of the static part (name open) */
+   entries at 0x1102 in front of the table at symtab (14 byte entries); nsym is the end of the static part (name open) */
 index16(x)
 struct symbol *x;
 {
 	int spare;
 
-	if (x < v069c)
+	if (x < nsym)
 		return ((int)x - 0x1102) / 14;
 	return ((int)x - (int)symtab) / 14 + 0x258;
 }
