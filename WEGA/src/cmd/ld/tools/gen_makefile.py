@@ -48,6 +48,7 @@ def main():
 
 CRT = ../../lib/libc/crt
 OLD = ../../lib/oldlibc
+LDBIN = /bin/ld
 CAS = cas
 AR = ar
 LIBC = /lib/libc.a
@@ -58,12 +59,48 @@ SHIPPED = %s
 
 # link order of the libc part of /bin/ld
 %s
+COBJS = copyname.o ld.o printname.o symbols.o
+LINKOBJS = crt0.o $(COBJS) $(LIBCOBJS)
 
-all: $(LIBCOBJS)
+all: crt0.o $(OLDOBJS)
+
+link: ld
+
+ld: $(COBJS) $(LINKOBJS)
+	$(LDBIN) -i -e start $(LINKOBJS) -o $@
+
+check: ld
+	cd ../../../host/ld ; LD_NEW=../../src/cmd/sld/ld WEGA=$(CHECKROOT) python3 check.py -S
+
+ld: $(LINKOBJS)
+	$(LDBIN) -i -e start $(LINKOBJS) -o $@
 
 shipped/stamp:
-	mkdir shipped ; cd shipped ; $(AR) x $(LIBC) %s ; touch stamp
+	-mkdir shipped
+	cd shipped ; $(AR) x $(LIBC) %s ; touch stamp
 
+
+copyname.o: copyname.c ld.h
+	$(CC) $(CFLAGS) -c copyname.c
+
+dump.o: dump.c ld.h
+	$(CC) $(CFLAGS) -c dump.c
+
+ld.o: ld.c ld.h
+	$(CC) $(CFLAGS) -c ld.c
+
+printname.o: printname.c ld.h
+	$(CC) $(CFLAGS) -c printname.c
+
+symbols.o: symbols.c ld.h
+	$(CC) $(CFLAGS) -c symbols.c
+
+crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
+	sh $(CRT)/mkcrt0.sh ld > $@
+
+crt0.o: crt0.s
+	$(CAS) -u -o $@ crt0.s
+	
 ''' % (' '.join(n + '.o' for n in shipped), wrap('LIBCOBJS = ', libc), ' '.join(n + '.o' for n in shipped))
     for n in shipped:
         mk += 'shipped/%s.o: shipped/stamp\n' % n

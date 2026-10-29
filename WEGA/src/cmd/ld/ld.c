@@ -112,7 +112,7 @@ sig_handler()
 	}
 	if (delarg)
 		unlink(ofilnam);
-	_exit(delarg);
+	exit(delarg);
 }
 
 /* main: entry of ld: the signals, the program name, the option scan over the arguments, the final pass (0x009c..0x0370 of

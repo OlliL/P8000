@@ -12,6 +12,7 @@
 
 CRT = ../../lib/libc/crt
 OLD = ../../lib/oldlibc
+LDBIN = /bin/ld
 CAS = cas
 AR = ar
 LIBC = /lib/libc.a
@@ -30,12 +31,48 @@ LIBCOBJS = shipped/scanf.o $(OLD)/doscan/0_1.o $(OLD)/printf/0_6.o $(OLD)/doprnt
 	shipped/chmod.o shipped/close.o shipped/creat.o shipped/fstat.o shipped/getpid.o shipped/ioctl.o \
 	shipped/link.o shipped/lseek.o shipped/open.o shipped/read.o shipped/signal.o shipped/umask.o \
 	shipped/unlink.o shipped/write.o shipped/cerror.o
+COBJS = copyname.o ld.o printname.o symbols.o
+LINKOBJS = crt0.o $(COBJS) $(LIBCOBJS)
 
-all: $(LIBCOBJS)
+all: crt0.o $(OLDOBJS)
+
+link: ld
+
+ld: $(COBJS) $(LINKOBJS)
+	$(LDBIN) -i -e start $(LINKOBJS) -o $@
+
+check: ld
+	cd ../../../host/ld ; LD_NEW=../../src/cmd/sld/ld WEGA=$(CHECKROOT) python3 check.py -S
+
+ld: $(LINKOBJS)
+	$(LDBIN) -i -e start $(LINKOBJS) -o $@
 
 shipped/stamp:
-	mkdir shipped ; cd shipped ; $(AR) x $(LIBC) scanf.o ffltioc.o ungetc.o data.o __callex.o cuexit.o decimal.o isatty.o ctype_.o stty.o swab.o tolower.o strncmp.o access.o brk.o chmod.o close.o creat.o fstat.o getpid.o ioctl.o link.o lseek.o open.o read.o signal.o umask.o unlink.o write.o cerror.o ; touch stamp
+	-mkdir shipped
+	cd shipped ; $(AR) x $(LIBC) scanf.o ffltioc.o ungetc.o data.o __callex.o cuexit.o decimal.o isatty.o ctype_.o stty.o swab.o tolower.o strncmp.o access.o brk.o chmod.o close.o creat.o fstat.o getpid.o ioctl.o link.o lseek.o open.o read.o signal.o umask.o unlink.o write.o cerror.o ; touch stamp
 
+
+copyname.o: copyname.c ld.h
+	$(CC) $(CFLAGS) -c copyname.c
+
+dump.o: dump.c ld.h
+	$(CC) $(CFLAGS) -c dump.c
+
+ld.o: ld.c ld.h
+	$(CC) $(CFLAGS) -c ld.c
+
+printname.o: printname.c ld.h
+	$(CC) $(CFLAGS) -c printname.c
+
+symbols.o: symbols.c ld.h
+	$(CC) $(CFLAGS) -c symbols.c
+
+crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
+	sh $(CRT)/mkcrt0.sh ld > $@
+
+crt0.o: crt0.s
+	$(CAS) -u -o $@ crt0.s
+	
 shipped/scanf.o: shipped/stamp
 shipped/ffltioc.o: shipped/stamp
 shipped/ungetc.o: shipped/stamp
