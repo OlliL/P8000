@@ -13,7 +13,7 @@
 0608  f0608  0714    268  009c             proven    open
 0714  f0714  07b2    158  -                proven    open
 07b2  f07b2  089a    232  -                proven    open
-089a  f089a  08cc     50  0b6e             proven    open
+089a  f089a  08cc     50  0b6e             proven    findings
 08cc  f08cc  0b6e    674  -                proven    open
 0b6e  f0b6e  0d9c    558  045e             proven    open
 0d9c  f0d9c  108e    754  0b6e             proven    open

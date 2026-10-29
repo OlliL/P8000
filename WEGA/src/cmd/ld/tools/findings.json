@@ -141,13 +141,13 @@
   },
   "f089a": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x089a",
    "ours": "-",
-   "level": "open",
+   "level": "findings",
    "size_orig": 50,
    "callers_orig": "0b6e",
-   "status": "open"
+   "status": "findings"
   },
   "f08cc": {
    "file": "ld.c",
@@ -692,6 +692,13 @@
    "basis": "read",
    "d_classes": [],
    "note": "exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink(\"l.out\"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones."
+  },
+  "f089a": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c"
   }
  },
  "inventory": {

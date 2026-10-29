@@ -315,3 +315,6 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   unlink of v007a, _exit(v007c)). Globals: v007a (char *) and v007c, v0080 (int) are in the DATA section (data offsets
   0x7a, 0x7c, 0x80, not bss); v669a and v66a4 are bss. For step 5b: declared without initial value they would become bss
   (common); they must be initialised like the original (their data bytes are at those offsets), check in step 5b.
+- f089a findings (ld.c): checked long sum (error 1 when the sum is 0x10000 or more); three attempts; the difference is
+  two reloads of the parameters from the frame (D3). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c. Its file
+  is ld.c, not accepted into the file (finding).

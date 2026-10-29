@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 10 |
-| open | 52 |
+| confirmed | 11 |
+| open | 51 |
 
 | Difference class | Count |
 |---|---|
@@ -38,7 +38,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f0608 | - | 0x0608 | open | open |  |  |  |
 | f0714 | - | 0x0714 | open | open |  |  |  |
 | f07b2 | - | 0x07b2 | open | open |  |  |  |
-| f089a | - | 0x089a | open | open |  |  |  |
+| f089a | - | 0x089a | confirmed | findings | read by hand | D3 | findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c |
 | f08cc | - | 0x08cc | open | open |  |  |  |
 | f0b6e | - | 0x0b6e | open | open |  |  |  |
 | f0d9c | - | 0x0d9c | open | open |  |  |  |
