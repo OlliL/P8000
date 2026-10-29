@@ -39,8 +39,8 @@
 221e  f221e  226e     80  172e,194a,1b0a   proven    done
 226e  f226e  229c     46  172e,1a12        proven    done
 229c  f229c  22e8     76  194a,1a12,221e,226e proven    done
-22e8  f22e8  2360    120  2360,25a2        proven    open
-2360  f2360  23e2    130  26ac             proven    open
+22e8  f22e8  2360    120  2360,25a2        proven    done
+2360  f2360  23e2    130  26ac             proven    findings
 23e2  f23e2  249a    184  1452,2502        proven    open
 249a  f249a  2502    104  1452             proven    open
 2502  f2502  25a2    160  0b6e             proven    open

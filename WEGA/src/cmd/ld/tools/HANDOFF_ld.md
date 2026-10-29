@@ -490,3 +490,15 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## Missing functions restored (2026-10-29)
 
 - Check: every function with status done or findings must be in the C files. f1b0a (done) and f089a (finding) were not in ld.c; f1b0a is restored as mput, f089a from d5/f089a_try3.c (accept --finding). lookup_name and next_entry are present (type prefix in the definition).
+
+## Review of the sld counterparts (2026-10-29)
+
+- flush_buffer: sld constants and expressions (0x100, char pointer differences), register parameter kept: exact (24 instructions).
+- f089a renamed add16_checked (sld add16_checked), parameters x, y, a; report_error(1, a). The finding is unchanged (D3 reloads).
+- mget: the sld form (char *p, int stores) is NOT exact (frame 16 with three spares, register order). Kept the exact int form.
+- No sld counterpart: f2bf6, f2bfc (v067c counter), f221e (two-byte put), f050c (tab entry with the tent fields).
+- Counterparts with a different body in ld (kept, because they are exact): table_lookup (no printf), warn_sym_redef (char cast), put_all (no 0x40 bit), str_compare (form without cmpmode), slookup/pslookup, put_sym/next_entry/lookup_name (findings).
+
+## copyname.c (2026-10-29)
+
+- copyname.c created: unpack_run (f22e8, sld unpack_run, exact; 14-byte entries, no cmpmode branch, frame with spares int spare1, spare2 before ch) and pack_name (f2360, sld pack_name, finding: the padding loop branch is inverted in the layout; draft d5/pn3.c, six attempts).

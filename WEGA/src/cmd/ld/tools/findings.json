@@ -129,16 +129,6 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f089a": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x089a",
-   "ours": "089a-08cc",
-   "level": "findings",
-   "size_orig": 50,
-   "callers_orig": "0b6e",
-   "status": "findings"
-  },
   "f08cc": {
    "file": "ld.c",
    "pairing": "open",
@@ -268,26 +258,6 @@
    "size_orig": 80,
    "callers_orig": "172e,194a,1b0a",
    "status": "done"
-  },
-  "f22e8": {
-   "file": "copyname.c",
-   "pairing": "open",
-   "orig": "0x22e8",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 120,
-   "callers_orig": "2360,25a2",
-   "status": "open"
-  },
-  "f2360": {
-   "file": "copyname.c",
-   "pairing": "open",
-   "orig": "0x2360",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 130,
-   "callers_orig": "26ac",
-   "status": "open"
   },
   "f23e2": {
    "file": "printname.c",
@@ -658,6 +628,36 @@
    "size_orig": 112,
    "callers_orig": "1452,25a2,282e",
    "status": "findings"
+  },
+  "add16_checked": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x089a",
+   "ours": "089a-08cc",
+   "level": "findings",
+   "size_orig": 50,
+   "callers_orig": "0b6e",
+   "status": "findings"
+  },
+  "unpack_run": {
+   "file": "copyname.c",
+   "pairing": "confirmed",
+   "orig": "0x22e8",
+   "ours": "22e8-2360",
+   "level": "exact",
+   "size_orig": 120,
+   "callers_orig": "2360,25a2",
+   "status": "done"
+  },
+  "pack_name": {
+   "file": "copyname.c",
+   "pairing": "confirmed",
+   "orig": "0x2360",
+   "ours": "2360-23e2",
+   "level": "findings",
+   "size_orig": 130,
+   "callers_orig": "26ac",
+   "status": "findings"
   }
  },
  "findings": [],
@@ -697,13 +697,6 @@
    "basis": "read",
    "d_classes": [],
    "note": "exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf."
-  },
-  "f089a": {
-   "basis": "read",
-   "d_classes": [
-    "D3"
-   ],
-   "note": "findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c"
   },
   "f050c": {
    "basis": "read",
@@ -767,6 +760,20 @@
     "D3"
    ],
    "note": "findings (symbols.c): sld put_sym without the struct copy: ld writes the symbol itself (mput(a, p, 14)) and has no nwsym count. Seven attempts (d5/ps1..ps7). Frame size 16 matches with two spares (ps4). Differences: swap_pair gets b from r6 in the original and from the frame here; the position of cnt (frame 7 in the original, 9 here). Draft: d5/ps4.c. Accepted as finding."
+  },
+  "add16_checked": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c"
+  },
+  "pack_name": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (copyname.c): sld pack_name with 14-byte steps (ld tables). Six attempts (d5/pn1..pn7). Frame, loops and calls equal; the padding loop test (cnt > 0) is inverted in the layout: the original has jr gt back to the loop and a separate jump to the zero test, the draft jr le over it. Draft: d5/pn3.c. Accepted as finding."
   }
  },
  "inventory": {

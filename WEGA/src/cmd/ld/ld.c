@@ -110,20 +110,21 @@ register struct buf *p;
 		flush_buffer(p);
 }
 
-flush_buffer(p)
-register struct buf *p;
+/* flush_buffer: write the buffer to its file and reset it (sld flush_buffer; 0x229c..0x22e8 of /bin/ld) */
+flush_buffer(a)
+register struct buf *a;
 {
 	int spare1;
 
 	register n;
 
-	n = p->xnext - p->iobuf;
+	n = (char *)a->xnext - (char *)a->iobuf;
 	if (n > 0) {
-		if (write(p->fildes, p->iobuf, n) != n)
+		if (write(a->fildes, a->iobuf, n) != n)
 			report_error(2, "output error");
 	}
-	p->xnext = p->iobuf;
-	p->nleft = 256;
+	a->xnext = a->iobuf;
+	a->nleft = 0x100;
 }
 
 f221e(x, p)
@@ -348,15 +349,17 @@ int flag;
 	out->nleft = 0x100;
 	out->xnext = out->iobuf;
 }
-f089a(p3, p2, p1)
-unsigned p3, p2;
-char *p1;
+/* add16_checked: sum of two words, report_error(1) with the message a when the sum is 0x10000 or more (sld add16_checked;
+   0x089a..0x08cc of /bin/ld) */
+add16_checked(x, y, a)
+unsigned x, y;
+char *a;
 {
 	long s;
 
-	s = (long)p3 + (long)p2;
+	s = (long)x + (long)y;
 	if (s >= 0x10000)
-		f1e86(1, p1);
+		report_error(1, a);
 	return(s);
 }
 

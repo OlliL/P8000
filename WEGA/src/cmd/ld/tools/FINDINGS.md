@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 22 |
-| open | 42 |
+| confirmed | 24 |
+| open | 40 |
 
 | Difference class | Count |
 |---|---|
@@ -26,6 +26,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Function | Ours | Original | Pairing | Level | Difference class | Old-cc classes | Note |
 |---|---|---|---|---|---|---|---|
+| add16_checked | 089a-08cc | 0x089a | confirmed | findings | read by hand | D3 | findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c |
 | copy | 1a12-1a74 | 0x1a12 | confirmed | findings | read by hand | D3 | findings (ld.c): copy of a file to the output buffer (lseek to 0, read 256 bytes, each byte put with f226e, close). Six+ attempts. Everything equal except the reload of the spilled parameter p before the fildes read: the original loads it into r7 (ld r7,p; ld r14,@r7), the draft into r2 (ld r2,p; ld r14,@r2). Also the frame needs two int spares before q (dec 12). Source behaviour of the original: the loop body runs while read returns more than 1 (cp r2,#1; jr gt), so a read that returns exactly 1 byte is not copied (quirk to record in KNOWLEDGE.md). Draft: d5/f1a12_try3.c. Accepted into ld.c as a finding. |
 | dseek | 1b38-1c5a | 0x1b38 | confirmed | findings | read by hand | D3, D16 | findings (ld.c): sld dseek(sp, v, n) of ld. Six attempts: the frame and the register assignment (obj r14, cur r13) are right; the long compare of bno with hi is in rr4 in the original and in rr2 here (register choice, D3-like); two tests of the page pointer are loaded through r2 in the original (test @r2) and direct here (test @r13). The bno temporary (attempt 4) made it worse. Draft (attempt 3): /mnt/share/cvs/P8000/tmp/tmp/d5/f1b38_v3.c. Accepted into ld.c as a finding. |
 | f0000 | - | 0x0000 | open | generated |  |  |  |
@@ -39,7 +40,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f0608 | - | 0x0608 | open | open |  |  |  |
 | f0714 | - | 0x0714 | open | open |  |  |  |
 | f07b2 | - | 0x07b2 | open | open |  |  |  |
-| f089a | 089a-08cc | 0x089a | confirmed | findings | read by hand | D3 | findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c |
 | f08cc | - | 0x08cc | open | open |  |  |  |
 | f0b6e | - | 0x0b6e | open | open |  |  |  |
 | f0d9c | - | 0x0d9c | open | open |  |  |  |
@@ -53,8 +53,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1ce2 | - | 0x1ce2 | open | open |  |  |  |
 | f1f64 | - | 0x1f64 | open | open |  |  |  |
 | f221e | 221e-226e | 0x221e | open | exact | read by hand |  | exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf. |
-| f22e8 | - | 0x22e8 | open | open |  |  |  |
-| f2360 | - | 0x2360 | open | open |  |  |  |
 | f23e2 | - | 0x23e2 | open | open |  |  |  |
 | f249a | - | 0x249a | open | open |  |  |  |
 | f2502 | - | 0x2502 | open | open |  |  |  |
@@ -80,6 +78,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | mput | 1b0a-1b38 | 0x1b0a | confirmed | exact |  |  |  |
 | next_entry | 2aa6-2b04 | 0x2aa6 | confirmed | findings | read by hand | D3 | findings (symbols.c): sld next_entry with ld's 14-byte entries (exact step). Five attempts (d5/ne1..ne5). Register set differs (the original keeps only e in r12; p is in r1 without a spill). The bound test differs: the original compares p with two words of the table (symtab, symtab+nsym*14) in another order than sld's `p >= symtab && p < symtab + nsym`. Draft: d5/ne1.c. Accepted as finding. |
 | open_tmp | 120e-12a8 | 0x120e | confirmed | exact |  |  |  |
+| pack_name | 2360-23e2 | 0x2360 | confirmed | findings | read by hand | D3 | findings (copyname.c): sld pack_name with 14-byte steps (ld tables). Six attempts (d5/pn1..pn7). Frame, loops and calls equal; the padding loop test (cnt > 0) is inverted in the layout: the original has jr gt back to the loop and a separate jump to the zero test, the draft jr le over it. Draft: d5/pn3.c. Accepted as finding. |
 | pslookup | 26ca-26e8 | 0x26ca | confirmed | exact |  |  |  |
 | put_all | 282e-2862 | 0x282e | confirmed | exact |  |  |  |
 | put_int_buf | 226e-229c | 0x226e | confirmed | exact |  |  |  |
@@ -89,6 +88,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | slookup | 26ac-26ca | 0x26ac | confirmed | exact |  |  |  |
 | str_compare | 21f2-221e | 0x21f2 | confirmed | exact |  |  |  |
 | table_lookup | 1f22-1f64 | 0x1f22 | confirmed | exact |  |  |  |
+| unpack_run | 22e8-2360 | 0x22e8 | confirmed | exact |  |  |  |
 | warn_sym_redef | 2862-294e | 0x2862 | confirmed | exact |  |  |  |
 
 ## Pending findings
