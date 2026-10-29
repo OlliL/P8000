@@ -339,36 +339,6 @@
    "callers_orig": "13ca",
    "status": "open"
   },
-  "f25dc": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x25dc",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 208,
-   "callers_orig": "1452,26ac",
-   "status": "open"
-  },
-  "f26ac": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x26ac",
-   "ours": "26ac-26ca",
-   "level": "exact",
-   "size_orig": 30,
-   "callers_orig": "0b6e",
-   "status": "done"
-  },
-  "f26ca": {
-   "file": "symbols.c",
-   "pairing": "confirmed",
-   "orig": "0x26ca",
-   "ours": "26ca-26e8",
-   "level": "exact",
-   "size_orig": 30,
-   "callers_orig": "-",
-   "status": "done"
-  },
   "f26e8": {
    "file": "symbols.c",
    "pairing": "open",
@@ -551,13 +521,13 @@
   },
   "report_error": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x1e86",
-   "ours": "-",
-   "level": "open",
+   "ours": "1e86-1f22",
+   "level": "exact",
    "size_orig": 156,
    "callers_orig": "009c,089a,0d9c,108e,120e,1452,172e,1a74,1b38,1c6c,1ce2,1f22,1f64,229c,23e2,2502,29d6",
-   "status": "open"
+   "status": "done"
   },
   "half": {
    "file": "ld.c",
@@ -638,6 +608,56 @@
    "size_orig": 90,
    "callers_orig": "194a,1e86",
    "status": "done"
+  },
+  "open_tmp": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x120e",
+   "ours": "120e-12a8",
+   "level": "exact",
+   "size_orig": 154,
+   "callers_orig": "",
+   "status": "done"
+  },
+  "put_all": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x282e",
+   "ours": "282e-2862",
+   "level": "exact",
+   "size_orig": 52,
+   "callers_orig": "19c8",
+   "status": "done"
+  },
+  "slookup": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x26ac",
+   "ours": "26ac-26ca",
+   "level": "exact",
+   "size_orig": 30,
+   "callers_orig": "0b6e",
+   "status": "done"
+  },
+  "pslookup": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x26ca",
+   "ours": "26ca-26e8",
+   "level": "exact",
+   "size_orig": 30,
+   "callers_orig": "-",
+   "status": "done"
+  },
+  "lookup_name": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x25dc",
+   "ours": "25dc-26ac",
+   "level": "findings",
+   "size_orig": 208,
+   "callers_orig": "1452,26ac",
+   "status": "findings"
   }
  },
  "findings": [],
@@ -726,6 +746,13 @@
    "basis": "read",
    "d_classes": [],
    "note": "exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink(\"l.out\"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones."
+  },
+  "lookup_name": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (symbols.c): sld lookup_name with ld names (cursym, nlflag, lnbuf, local, hshtab). Hash modulus 0x0923 in ld (sld 0x0ffa). Six attempts: the original keeps start (r11) and end (r10) in registers and slot, cur, rec in the frame or scratch; the draft has start and end in the frame and the loop test differs (cp r6,frame). Draft: d5/ln1.c. Accepted as finding."
   }
  },
  "inventory": {

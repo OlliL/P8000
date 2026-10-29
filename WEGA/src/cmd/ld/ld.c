@@ -1,51 +1,53 @@
-struct pghdr {
-	int nuser;
-	int bno;
-};
-
-struct stream {
-	int *ptr;
-	int bno;
-	int nibuf;
-	int size;
-	struct pghdr *pno;
-};
-
-struct page {
-	int nuser;
-	int bno;
-	int nibuf;
-	int buff[256];
-};
+#include <stdio.h>
+#include "ld.h"
 
 struct page page[2];
 struct pghdr fpage;
 int infil;
 
-struct tent {
-	int t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
-};
-
 int ntab;
 struct tent tab[1];
-int v44a6, v0070;
+int symindex, v0070;
 int v66c2, v66c6, v66cc, v66ce, v66d0, v66d2, v66d4;
 
-char *v007a;
+char *ofilnam = "l.out";
 int v007c, v0080;
+char tmpname[] = "/tmp/ldaXXXXX";
 int v669a, v66a4;
 
 struct stream text;
 
-struct buf {
-	int fildes;
-	int nleft;
-	char *xnext;
-	char iobuf[256];
-};
-
-struct buf v66d8;
+struct buf toutb;
 unsigned char v67e4[256];
+
+struct archdr archdr;
+char *pname;
+char *filname;
+int exstat;
+
+/* report_error: print the message with the file name and stop when the level is above 1 (0x1e86..0x1f22 of /bin/ld) */
+report_error(level, msg, a, b, c, d, e)
+int level;
+char *msg;
+int a;
+int b;
+int c;
+int d;
+int e;
+{
+	if (!exstat)
+		fprintf(stderr, "%s: ", pname);
+	if (filname)
+		fprintf(stderr, "%s", filname);
+	if (archdr.aname[0])
+		fprintf(stderr, "(%.14s)", archdr.aname);
+	fprintf(stderr, ": ");
+	fprintf(stderr, msg, a, b, c, d, e);
+	fprintf(stderr, "\n");
+	if (level > 1)
+		sig_handler();
+	exstat = level;
+}
 
 half(x)
 int x;
@@ -57,15 +59,9 @@ high_byte(x)
 unsigned x;
 {
 	if ((x & 0xff00) != x)
-		report_error(2, "x");
+		report_error(2, "internal error - mkchar");
 	return((x >> 8) & 0xff);
 }
-
-/* local symbol table: index -> value, 4 bytes per entry (sld: struct local with a symbol pointer, 6 bytes) */
-struct local {
-	int locindex;
-	int locsymbol;
-};
 
 struct local local[1];
 
@@ -88,7 +84,7 @@ int a;
 			return(p->locsymbol);
 		p++;
 	}
-	report_error(2, "x");
+	report_error(2, "Local symbol botch");
 }
 
 /* str_compare: 1 when the strings are equal, else 0 (sld str_compare without cmpmode; 0x21f2..0x221e of /bin/ld) */
@@ -124,7 +120,7 @@ register struct buf *p;
 	n = p->xnext - p->iobuf;
 	if (n > 0) {
 		if (write(p->fildes, p->iobuf, n) != n)
-			report_error(2, "x");
+			report_error(2, "output error");
 	}
 	p->xnext = p->iobuf;
 	p->nleft = 256;
@@ -187,11 +183,11 @@ sig_handler()
 	if (!v007c) {
 		if (!v66a4 || !v0080) {
 			mode = ~umask(0) & 0x1ff;
-			chmod(v007a, mode);
+			chmod(ofilnam, mode);
 		}
 	}
 	if (v007c)
-		unlink(v007a);
+		unlink(ofilnam);
 	_exit(v007c);
 }
 
@@ -204,7 +200,7 @@ int x, y;
 
 	e = &tab[ntab++];
 	e->t0 = x;
-	e->t1 = v44a6;
+	e->t1 = symindex;
 	e->t2 = v0070;
 	e->t3 = y;
 	e->t4 = v66d0;
@@ -275,7 +271,7 @@ register struct stream *p;
 	}
 	if (--p->size <= 0) {
 		if (p->size < 0)
-			report_error(2, "x");
+			report_error(2, "Premature EOF");
 		fpage.nuser++;
 		p->pno->nuser--;
 		p->pno = &fpage;
@@ -298,7 +294,7 @@ struct buf *p;
 body:
 	q = v67e4;
 	do
-		put_int_buf(*q++, &v66d8);
+		put_int_buf(*q++, &toutb);
 	while (--n);
 test:
 	n = read(fd, v67e4, 256);
@@ -307,3 +303,30 @@ test:
 	close(fd);
 }
 
+/* open_tmp: create the temporary file (flag) or the output file and open it for the buffer out (0x120e..0x12a8 of /bin/ld) */
+open_tmp(out, flag)
+struct buf *out;
+int flag;
+{
+	int spare;
+	register int fd;
+	char *name;
+
+	name = flag ? tmpname : ofilnam;
+	fd = creat(name, 0x1b6);
+	if (fd < 0) {
+		if (flag)
+			report_error(2, "cannot create temp");
+		else {
+			fprintf(stderr, "ld: cannot create output\n");
+			unlink("l.out");
+			exit(2);
+		}
+	}
+	close(fd);
+	out->fildes = open(name, 2);
+	if (flag)
+		unlink(tmpname);
+	out->nleft = 0x100;
+	out->xnext = out->iobuf;
+}

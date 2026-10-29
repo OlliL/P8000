@@ -424,3 +424,47 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 
 - f229c -> flush_buffer (sld flush_buffer: write the buffer, reset it), f1a12 -> copy (sld copy(p): copy a file to the output; ld reads 256 bytes, sld 0x200), f0042 -> sig_handler (sld: unlink, chmod, exit). Renamed in ld.c and findings.json; ld.c compiles.
 - Not matched yet: f221e (two-byte put), f050c (table entry), f2bf6/f2bfc (counter), f26ac/f26ca (name print), f2360/f22e8 (copyname.c).
+
+## report_error (2026-10-29)
+
+- f1e86 is sld report_error (exact, 1e86..1f22, 42 instructions, draft d5/re2.c). The ld version prints with fprintf(stderr, ...) (_fprintf 33b4 in the printf member of libc; stderr = __iob+16 = 0x0908, _iobuf entries 8 bytes). sig_handler at 0042 (confirmed by the call). Variables: pname 0x66d6, filname 0x66c0, archdr 0x1048 (struct archdr, 26 bytes), exstat 0x703e (step 5b). ld.c now has #include <stdio.h> (WEGA stdio.h; stderr macro).
+
+## ld.h (2026-10-29)
+
+- ld.h in src/cmd/ld (sld style): structs pghdr, stream, page, tent, buf, archdr, local and the extern declarations of the variables.
+  ld.c includes stdio.h and ld.h and defines the variables. No prototypes (K&R). symbols.c and the drafts do not include it.
+
+## Messages and names from sld (2026-10-29)
+
+- Placeholder messages "x" replaced by the strings of /bin/ld (found by mapping the string immediates of the code to
+  functions; data base = code size 0x4a00): high_byte "internal error - mkchar", table_lookup "Local symbol botch",
+  flush_buffer "output error", get "Premature EOF" (string at data 0x58, verified in the call of get).
+- Message to function map (ld binary, sld source line): "area wrap around" f0d9c = place_sec (sld 792); "Entry point not
+  in text" f108e = start_output (921); "cannot create temp" f120e = open_tmp (963, done); "internal error: symbol not found",
+  "Local symbol overflow", "- Multiply defined" f1452 = load2 (1071..1086); "Relocation error" f172e = load2td (1172);
+  "l.out" link f194a = finish_output (1326); "cannot open library/cannot open" f1ce2 = getfile (1564, 1571);
+  "Invalid segment attributes", "Bad format", "-r cannot be used with 8-bit files" f1f64 = readhdr (1697);
+  "- warning: symbol redefined in archive" f2862 = warn_sym_redef (1866).
+- open_tmp differs from sld in the output case: ld prints "ld: cannot create output" with fprintf(stderr), unlink("l.out"),
+  exit(2) (not report_error). Data: tmpname[] at 0x82 ("/tmp/ldaXXXXX"), ofilnam at 0x7a ("l.out"), v007c and v0080 at 7c/80.
+
+## put_all (2026-10-29)
+
+- f282e is sld put_all (symbols.c) without the 0x40 bit of sld (ld has no such instruction). Exact (20 instructions, two spare ints). Uses symindex (v44a6, sld name) and toutb (v66d8, sld name): both renamed in ld.c and ld.h. symbols.c includes ld.h; ld.h declares table16_entry and next_entry as functions returning struct symbol pointers.
+- finish_output (f194a, open) calls put_all (19c8), flush_buffer(toutb), close(toutb.fildes), unlink/link of aoutnam, delarg = exstat
+  and sig_handler. ld does not call patch_hdr there (sld does): a difference of ld, to note in the quirks table.
+
+## symbols.c names (2026-10-29)
+
+- f26ac = sld slookup(p) (pack_name, stype 0x20, svalue 0, lookup_name); f26ca = sld pslookup(p) (unpack_run, same tail). Renamed in symbols.c and findings.json; the calls now use pack_name, unpack_run, lookup_name (copyname.c: f2360 = pack_name, f22e8 = unpack_run, f25dc = lookup_name, still open).
+- f2bf6 (v067c++) and f2bfc (v067c = 0): no function of that name in sld. sld has ncopied (copyname.c) incremented in copy_blocks, not a helper. Kept as f-names. v067c is only used in symbols.c.
+- v1076 (svalue), v107a (stype), v107c (sname) are the fields of sld cursym (struct symbol); not yet a struct in ld.h.
+
+## ld.h: struct symbol and cursym (2026-10-29)
+
+- ld.h has struct symbol (svalue 0, stype 4, sxtra 5, sname 6..13, 14 bytes) and extern struct symbol cursym. The layout follows the code of ld (pack_name target at 0x107c); sld has sseg and sname at 8. sxtra is the sld name for byte 5, not seen in use in ld (no instruction touches 0x107b).
+- symbols.c defines cursym and uses its fields (v1076, v107a, v107c are gone). slookup and pslookup still exact (26ac..26e8, 20 instructions).
+
+## lookup_name (2026-10-29): finding
+
+- f25dc is sld lookup_name (symbols.c). Six attempts (d5/ln1..ln6). Differences: the original keeps start and end in r11 and r10, the drafts keep them in the frame; hash modulus 0x0923 (ld) instead of sld 0x0ffa. Accepted as finding.
