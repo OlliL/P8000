@@ -53,11 +53,11 @@
    "file": "ld.c",
    "pairing": "open",
    "orig": "0x0042",
-   "ours": "-",
-   "level": "open",
+   "ours": "0042-009c",
+   "level": "exact",
    "size_orig": 90,
    "callers_orig": "194a,1e86",
-   "status": "open"
+   "status": "done"
   },
   "f009c": {
    "file": "ld.c",
@@ -273,11 +273,11 @@
    "file": "ld.c",
    "pairing": "open",
    "orig": "0x1a9a",
-   "ours": "-",
-   "level": "open",
+   "ours": "1a9a-1b0a",
+   "level": "exact",
    "size_orig": 112,
    "callers_orig": "13ca,1ce2,1f64,249a",
-   "status": "open"
+   "status": "done"
   },
   "f1b0a": {
    "file": "ld.c",
@@ -373,11 +373,11 @@
    "file": "ld.c",
    "pairing": "open",
    "orig": "0x221e",
-   "ours": "-",
-   "level": "open",
+   "ours": "221e-226e",
+   "level": "exact",
    "size_orig": 80,
    "callers_orig": "172e,194a,1b0a",
-   "status": "open"
+   "status": "done"
   },
   "f226e": {
    "file": "ld.c",
@@ -677,6 +677,21 @@
    "basis": "read",
    "d_classes": [],
    "note": "exact (2026-10-29, fourth attempt): struct _iobuf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets."
+  },
+  "f221e": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct _iobuf."
+  },
+  "f1a9a": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, third attempt): buffer read with refill. Globals v1030 (int *, buffer pointer), v1034 and v1036 (counters, int). The statement order matters: i = n; i >>= 1; r = p; (the form of HOWTO step 7). Three unused int locals (frame 16)."
+  },
+  "f0042": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink(\"l.out\"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones."
   }
  },
  "inventory": {

@@ -4,7 +4,7 @@
 0000  f0000  0010     16  -                proven    crt0
 0010  f0010  0018      8  -                candidate crt0
 0018  f0018  0042     42  -                candidate crt0
-0042  f0042  009c     90  194a,1e86        proven    open
+0042  f0042  009c     90  194a,1e86        proven    done
 009c  f009c  0370    724  0000             proven    open
 0370  f0370  045e    238  -                proven    open
 045e  f045e  050c    174  009c             proven    open
@@ -26,7 +26,7 @@
 194a  f194a  1a12    200  045e             proven    open
 1a12  f1a12  1a74     98  194a             proven    open
 1a74  f1a74  1a9a     38  12a8             proven    done
-1a9a  f1a9a  1b0a    112  13ca,1ce2,1f64,249a proven    open
+1a9a  f1a9a  1b0a    112  13ca,1ce2,1f64,249a proven    done
 1b0a  f1b0a  1b38     46  108e,27be        proven    done
 1b38  f1b38  1c5a    290  13ca,1452,1c6c,1ce2,1f64 proven    open
 1c5a  f1c5a  1c6c     18  1452,1b38        proven    done
@@ -36,7 +36,7 @@
 1f22  f1f22  1f64     66  172e             proven    done
 1f64  f1f64  21f2    654  1452             proven    open
 21f2  f21f2  221e     44  -                proven    done
-221e  f221e  226e     80  172e,194a,1b0a   proven    open
+221e  f221e  226e     80  172e,194a,1b0a   proven    done
 226e  f226e  229c     46  172e,1a12        proven    done
 229c  f229c  22e8     76  194a,1a12,221e,226e proven    done
 22e8  f22e8  2360    120  2360,25a2        proven    open

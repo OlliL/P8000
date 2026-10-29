@@ -305,3 +305,9 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - f229c exact (ld.c, fourth attempt): the buffer flush (write of the used part, reset of pointer and count).
   One struct _iobuf for ld.c { int _fd; int _cnt; char *_ptr; char _buf[256]; }: f226e (offsets 2 and 4) uses the same
   layout. accept_ld.py no longer writes a struct definition whose tag is already in the file (it was written twice).
+- f221e exact at the first attempt (ld.c): two-byte put into the buffer (high byte, low byte), parameter order (x, p).
+- Next candidates (ld.c): f1a9a uses the bss variables 1030, 1034, 1036 (a buffer read, not yet named), f089a (long
+  arithmetic with the error call), f0042 (the entry of ld.c, 90 bytes), f050c (no caller).
+- f1a9a exact at attempt 3 (ld.c): buffer read with refill. The statement order decides the code: `i = n; i >>= 1;`
+  and only then `r = p;` (HOWTO step 7). Globals v1030 (int *), v1034 and v1036 (int) are at the bss addresses 1030,
+  1034, 1036 (names are guesses; step 5b checks them with the other variables). Three unused int locals.
