@@ -587,3 +587,104 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## reg_sect_addr (2026-10-29): finding
 
 - f0370 is sld reg_sect_addr (ld.c), finding after six attempts (d5/rsa4.c): code equal except the frame offset of fmt (6 vs 8) and the saved registers. secspec (0x702c), tab42b4 (0x702e) and secorg (0x7034) are the sld tables, declared in ld.c.
+
+## load_lib_syms (2026-10-29)
+
+- f0608 is sld load_lib_syms (ld.c), exact (79 instructions, draft d5/lls2.c, one spare int). The counter steps are the calls f2bf6() and f2bfc() of symbols.c (not inline increments). ld.h gets the prototypes ensure_buf, f2bf6, f2bfc, chk_ranlib, getfile.
+
+## readhdr (f1f64): analysis only (2026-10-29)
+
+- f1f64 is sld readhdr(a, b) in the nonsegmented form of ld: magic (E707, E711, E507, E511 accepted, else error "Bad format"), header of 0x18 bytes at a+0x14 (objhdr: hsegsz at +10, hentry at +14, hrelflg at +18), segment records of 16 bytes at frame 0x2c (s_code at +4, s_data at +6), words 0x1062 (fmagic), 0x106c, 0x1064, 0x1068, 0x1070 (entry), 0x1074, 0x106e, 0x66b6, 0x66b8, 0x66ba, 0x66d2, 0x66d4, 0x1066, 0x106a. Error "Invalid segment attributes" (0x54d) and "-r cannot be used with 8-bit files" (0x573). Not yet drafted: the frame (0x52) and the layout of the segment records must be fixed first.
+
+## readhdr (f1f64): layout facts (2026-10-29)
+
+- int is 2 bytes here, so struct fseg is 16 bytes: segno 0, s_coff 1, s_doff 2, s_boff 3, s_code 4, s_data 6, s_bss 8, atr 10 (the code reads atr of record 1 at 0x46 = rec+0x10+0x0a, rec at frame 0x2c).
+- The loop over the segment records is unrolled for n <= 2 (cp n,1; jle): record 0 always, record 1 only when n > 1. w = atr(rec0) | atr(rec1) is tested with 0xf8 (error Invalid segment attributes).
+- Counters at frame 0x0c, 0x0e, 0x10 count the records by bit 0, 1, 2 of atr (c0, c1, c2); filhdr.tsize and dsize come from s_code and s_data (+1 and & 0xfffe as in sld).
+- Still open: exact C form of the unrolled loop and the frame (0x52). Draft not yet made.
+
+## readhdr (f1f64): filhdr layout (2026-10-29)
+
+- The words 0x1062..0x1074 are the output header (filhdr) of ld. Uses: 0x1062 fmagic (cmp with E711, E511 in f2104 path); 0x1064 and 0x1068 are read with 16-bit operations (add r2,1064 / 1068 / 106c in place_sec-like code, f1702..171a), so ld uses 16-bit sizes, not the 32-bit longs of sld struct filhdr; 0x106e = ssize (from hsymsz); 0x1070 = entry (low word from hentry at +16); 0x1072/0x1073 cleared (fstamp in sld, 2 bytes); 0x1074 = relflg (hrelflg & 1).
+- sld struct filhdr (fmagic, tsize long, dsize long, bsize long, ssize, entry long, fstamp[2], relflg) does not match these offsets. Before readhdr can be drafted, ld needs its own struct filhdr with the offsets above (step 8, structs). Open: whether 0x1064 to 0x106c are 16-bit or 32-bit in ld (16-bit reads seen at 1702..171a and 0x1066/0x106a uses).
+
+## filhdr and f12a8 (2026-10-29)
+
+- f12a8 reads the header words: p->hmagic = fmagic (0x1062), hx = tsize (0x1064) + dsize (0x1068) (16 bit, zero extended to long), hbss = 0x106c, hrelflg = 0x1074, hsymsz = 0x106e, hentry = 0x1070 (16 bit), hy = 0x1066 (if the flags 0x66b8/0x66ba allow, else 0), hz = 0. So ld header words are 16 bit; 0x1066 and 0x106a are not part of the 16-bit header sums (they are separate variables).
+- f12a8 is not the plain sld init_entry: after the header it zeroes 16 bytes at p and writes the segment records (fields at +4, +6, +8, +10 with segment numbers 7 and flags from 0x702f, 0x7030, 0x7031 and the names at 0x6bf8, 0x6bfa, 0x6bfe). Its C form needs the record struct first.
+
+## struct filhdr of ld (2026-10-29)
+
+- ld.h: struct filhdr with 16 bit fields at bss 0x1062: fmagic 0x1062, tsize 0x1064, x1066 0x1066, dsize 0x1068, x106a 0x106a, bsize 0x106c, ssize 0x106e, entry 0x1070, fstamp[2] 0x1072, relflg 0x1074 (20 bytes). All offsets used in the code (readhdr, init_entry f12a8) fit. x1066 and x106a are the two words between the sums; their use is open. ld.c defines filhdr (the address is set in step 5b).
+
+## init_entry (f12a8, 2026-10-29): finding
+
+- f12a8 is the header and segment record fill of ld (sld init_entry form). Five attempts (d5/ie1..ie5, draft ie5.c): equal except one store of hy (the original goes through r7, the draft reloads hdr from the frame). struct objhdr and struct fseg are in ld.h; char x702f, x7030, x7031 (flags), int x66b8, x66ba (hy flags), x6bfe (open names).
+
+## readhdr (f1f64, 2026-10-29): finding
+
+- readhdr(a) of ld (nonsegmented form, one argument), finding after six attempts (d5/rh_1..rh_6, insertion from rh_7.c). The header, the segment records (16 bytes, rec[0] and rec[1] only), the counters c0..c2 from the atr bits of rec[1], the rounding to even sizes in the nonsegmented case and the flags x66b6, x66b8, x66ba are equal in the code. Open: the two error blocks (Bad format, Invalid segment attributes) are placed inline; the order of the last stores differs.
+
+## start_output (f108e, 2026-10-29): exact
+
+- ld start_output (sld form): open_tmp of toutb, tmpoutb, soutb (if !sflag or !xflag), routb and doutb (if rflag), the magic by segmode (x66b8, x66ba) and the options oflag and iflag, sizes from v66c2, v66c6, v66cc, the rflag bases v66c4 and v66c8, ssize = sflag ? 0 : v66ce + symindex*14, the entry from entrypt (or v6bf8), relflg bits 2 and 3, init_entry, optional swab and swap_quad, then mput of the header (0x18) and the segment record (0x10). Exact (119 instructions, draft d5/so3.c). New globals oflag, iflag, v66c4, v66c8, entrypt (names open for the flags).
+
+## load2 (f1452): structure (2026-10-29), not drafted
+
+- ld load2(a) (one long argument, b not used): readhdr(a) (f1f64), then the segment bases fctrel += 0x6bf8, fcdrel += 0x6bfa, fcbrel += 0x6bfc (the text, data and bss of the object, see place_sec). dseek(&text, a2, ssize) with a2 = a + ((hdrsz + segtsz) & ~1) >> 1, then the table loop over the symbols: n = read_entry_hdr() + 1, symreloc() (0x2766), flags Sflag (0x66a0), Xflag (0x669e), sflag (0x66a6), xflag (0x669c), put_sym to soutb for non-symbols, lookup_name for symbols, with the local table at 0x56f2 (struct local, locindex = k) for entries with stype 0x20, the other entries: "- Multiply defined" (0x4c4, level 1, after put_name and a tab, as in the sld source), "internal error: symbol not found" (0x48d), "Local symbol overflow" (0x4ae) when the table is full. At the end load2td for the text (0x172e) and the data (0x172e again, with 0x67de and 0x69ea), then fctrel/fcdrel/fcbrel base increments of the object, not in the sld version.
+
+## load2 (f1452, 2026-10-29): finding, approximate tail
+
+- load2 is in ld.c as a finding after six attempts (d5/l2_1..l2_6, draft l2_6). The loop over the symbols follows the original. The frame is still 2 bytes off, and the tail (dseek on reloc at 0x103a and text, the half() offsets, the increments of v6bf8, v6bfa, v6bfc) is written from the disassembly but not verified exactly; the draft has an artificial line u2 = 0 + u2 that must go when the tail is checked. Not an exact function yet; load2td (f172e) still open.
+
+## load2 tail (2026-10-29)
+
+- load2 in ld.c now uses the tail of the original: dseek(&text, a, x1066); u1 = half(x106a); dseek(&reloc, half(x1066)+a+u1, x1066); load2td(t, fctrel, toutb, routb); dseek(&text, half(x1066)+a+u1, x106a); dseek(&reloc, x1066+a+half(x106a), x106a); load2td(t, fcdrel, tmpoutb, doutb); the bases v6bf8, v6bfa, v6bfc grow by tsize, dsize, bsize. The draft (l2_9) is still a finding: frame 2 bytes and register choices.
+
+## load2td (f172e): structure (2026-10-29), not drafted
+
+- Arguments (K&R order, first declared = r7): t (struct local *, frame 6), base (r6, fctrel/fcdrel), q (r5, toutb/tmpoutb), r (r4, routb/doutb).
+- Two streams: text at 0x1030 (nibuf 0x1034, size 0x1036, ptr 0x1030) and reloc at 0x103a (nibuf 0x103e, size 0x1040, ptr 0x103a); the word loop reads one text word w12 and one reloc word w13 per step with the get() fallback (1c6c = get), swap_bytes (0x4786) when swapflg (0x66b2), and a second swap for w12 when 0x66ba is set.
+- Switches: on w13 & 0x0e (cases 2, 4, 6; table at 0x142..0x146 with targets at 0x1820, 0x18a0, 0x1898) and on w13 & 0x30 and w13 & 0x0f (cases 0x10, 0x20, 0x30 and 9, 10, 11). Case 2 adds base (66d0/66d2/66d4 = fctrel, fcdrel, fcbrel) to w12; the symbol cases call lookup of the local table (f1f22 = table_lookup) for the index in w13 >> 4.
+- Output: the words are written to q (and r when rflag 0x66a2) with the 2-byte puts f226e (put_int_buf) and f221e (word), flag is a char at frame 0x11, w11 and w10 are in the frame. Draft not yet written.
+
+## load2td (f172e): switch targets (2026-10-29)
+
+- Switch on w13 & 0x0e (cpir table 0x12c, jump table 0x13e): 2 -> 0x17f8 (w12 += fctrel 0x66d0), 4 -> 0x181a (w12 += fcdrel 0x66d2), 6 -> 0x1820 (w12 += fcbrel 0x66d4); no match -> 0x1824.
+- Then if (w13 & 8): symbol reloc via table_lookup (f1f22) with t and w13; e->stype 0x20 -> index16 (f2b04) path (0x17fe), else w12 += e+2 (svalue word) with w13 low bits.
+- Switch on w13 & 0xf8 (table 0x132, targets 0x18a0, 0x1898, 0x18a0 for 0x10, 0x20, 0x30): 0x1898 swaps w12 (f4786); 0x18a0 counts flag (incb 0x11) .
+- Switch on w13 & 0x0f (table 0x138, targets 0x18cc, 0x18c4, 0x18cc for 9, 10, 11).
+- Output after each word: put_int_buf (f226e) to q and r; the last step uses word puts f221e with base values (0x17d6..0x1926).
+
+## load2td (f172e): draft 1 (2026-10-29)
+
+- Draft d5/ltd1.c (first attempt): 161 instructions against 168. The body (text word from nibuf, reloc word, swaps, the switch on w13 & 0x0e with fctrel/fcdrel/fcbrel, table_lookup for bit 8, the two switches on w13 & 0xf8 and w13 & 0x0f with flag counting, the output of put_int_buf or word_put) follows the decoded targets. Open: the loop end. The original leaves the loop by the test of text.size (dec, cp, jr gt), and at size 0 it reads one more word with get() and repeats the body; the draft does not. Also word_put is f221e (not yet named in the draft), and the frame has the locals at the wrong offsets.
+
+## load2td (f172e): draft 4 (2026-10-29)
+
+- Draft d5/ltd4.c: 163 instructions against 168, frame 0x14 right, flag still at 0x13 (should be 0x11). The loop exit is now the sld-like re-read (text.size++ and get, then the reloc part), as the disassembly shows (1926, 1934, 1754, 1758, 1760). Open: the start of the loop (the original tests text.size first and jumps to the text read at 1744; the draft orders the statements differently) and the flag offset. Not yet exact; four attempts used.
+
+## load2td (f172e, 2026-10-29): finding in ld.c
+
+- In ld.c as a finding (draft d5/ltd9.c): frame and main structure equal; 164 against 168 instructions. v6bf6 (index base at 0x6bf6) is a new open global; rflag is the flag at 0x66a2; the table lookup result is cast to struct symbol pointer.
+
+## place_sec (f0d9c): full decode (2026-10-29), no draft yet
+
+- place_sec() of ld has no parameters. areas[4] at 0x7004, 8 bytes each: kind (+0), tstart (+2, the bases v6bf8, v6bfa, v6bfe, v6bfc are areas[1..3].tstart), tsize (+4), tend (+6). Kinds: areas[0].kind = 4, areas[1].kind = iflag(66ae) ? 4 : 0, areas[2].kind = iflag ? 0 : 1, areas[3].kind = x66b8 ? 4 : 2.
+- tsize: areas[1] = ttotal (v66c2), rounded up to 0x100 when !iflag, !x66b8, !x66ba, !rflag; areas[2] = dtotal (v66c6); areas[3] = v66ca + v66cc (bss). areas[0].tsize = (dtotal + v66ca + v66cc + iflag) == 0 ? ttotal : 0 (decoded, looks odd, kept as is).
+- Loop over j = 0..3 (start 1 unless tab42b4[0] is set, then the warning loop over i from 1 or 2 with fprintf and clearing of tab42b4[i]). Cases on tab42b4[j]: t: error "top address of  in segment 0 too low" (level 1, when tsize > secorg[j]), else r8 = (secorg[j] - tsize) & 0xff00 and tsize rounded up; b: r8 = (secorg[j] + 0xff) & 0xff00, warning "bottom address ... relocated" when it differs; then areas[0].tsize = 0 and q->tend = r8 + q->tsize. Overlap test against areas[i] (i < j) with tend and tstart; the message is not in ld at this point.
+- Open: the test on 0x702f + j (tab42b4[j+1] or a different array with stride?), the meaning of 0x66b8, 0x66ba, 0x66a2 in the kinds, and the final stores of 0x6bfc (bss base plus v66ca) and the flag store at the end.
+
+## place_sec (f0d9c): draft 2 (2026-10-29)
+
+- Draft d5/ps_2.c: 175 instructions against 242. Kind stores in the original order (areas[1], areas[3], areas[2]) are in. Missing: the frame (14 bytes in the original, 8 here: locals for the loops and the message arguments), the loop bodies with the message calls and the overlap check against areas[i], the rounding of tend, and the exact stores at the end (0x6bf8..0x6bfe, 0x66cc). Not yet exact; two attempts.
+
+## place_sec (f0d9c, 2026-10-29): finding in ld.c
+
+- place_sec in ld.c as a finding after four attempts (d5/ps_4.c): 233 against 242 instructions. All stores, messages and the loops are in; the kind stores and the overlap loop start differ in the order of the immediates. Names: areas[4] (struct areas in ld.h), tab42b4[5], secnam, secorg, ttotal, dtotal, v66ca, v66cc (open), x6bfe (0x6bfe).
+
+## Four functions as approximations (2026-10-29)
+
+- main (f009c), parse_args (f045e), end_pass1 (f0b6e), read_symbols (f08cc) are in ld.c as findings (approximations after the decision of the owner, option 1). Approximations: main without the option and signal calls; parse_args without the option switch; end_pass1 without the second symbol pass; read_symbols without the case bodies. Each function is marked findings with the note. Not exact. The bss analysis (step 5b) may start with the sources complete; these four must be redone before the final link.
+- slookup now returns struct symbol ** (type only, still exact).
+- Globals added: liblist, libp, p_etext, p_edata, p_end, dflag, Oflag, comsize.

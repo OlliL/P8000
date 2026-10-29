@@ -49,26 +49,6 @@
    "callers_orig": "-",
    "status": "crt0"
   },
-  "f009c": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x009c",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 724,
-   "callers_orig": "0000",
-   "status": "open"
-  },
-  "f045e": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x045e",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 174,
-   "callers_orig": "009c",
-   "status": "open"
-  },
   "f050c": {
    "file": "ld.c",
    "pairing": "open",
@@ -89,106 +69,6 @@
    "callers_orig": "-",
    "status": "done"
   },
-  "f0608": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x0608",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 268,
-   "callers_orig": "009c",
-   "status": "open"
-  },
-  "f08cc": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x08cc",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 674,
-   "callers_orig": "-",
-   "status": "open"
-  },
-  "f0b6e": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x0b6e",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 558,
-   "callers_orig": "045e",
-   "status": "open"
-  },
-  "f0d9c": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x0d9c",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 754,
-   "callers_orig": "0b6e",
-   "status": "open"
-  },
-  "f108e": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x108e",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 384,
-   "callers_orig": "045e",
-   "status": "open"
-  },
-  "f120e": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x120e",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 154,
-   "callers_orig": "108e",
-   "status": "open"
-  },
-  "f12a8": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x12a8",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 290,
-   "callers_orig": "108e",
-   "status": "open"
-  },
-  "f1452": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x1452",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 732,
-   "callers_orig": "13ca",
-   "status": "open"
-  },
-  "f172e": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x172e",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 540,
-   "callers_orig": "1452",
-   "status": "open"
-  },
-  "f1f64": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x1f64",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 654,
-   "callers_orig": "1452",
-   "status": "open"
-  },
   "f221e": {
    "file": "ld.c",
    "pairing": "open",
@@ -198,16 +78,6 @@
    "size_orig": 80,
    "callers_orig": "172e,194a,1b0a",
    "status": "done"
-  },
-  "f282e": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x282e",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 52,
-   "callers_orig": "194a",
-   "status": "open"
   },
   "f2b92": {
    "file": "symbols.c",
@@ -658,6 +528,116 @@
    "size_orig": 238,
    "callers_orig": "-",
    "status": "findings"
+  },
+  "load_lib_syms": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x0608",
+   "ours": "0608-0714",
+   "level": "exact",
+   "size_orig": 268,
+   "callers_orig": "009c",
+   "status": "done"
+  },
+  "init_entry": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x12a8",
+   "ours": "12a8-13ca",
+   "level": "findings",
+   "size_orig": 290,
+   "callers_orig": "108e",
+   "status": "findings"
+  },
+  "readhdr": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1f64",
+   "ours": "1f64-21f2",
+   "level": "findings",
+   "size_orig": 654,
+   "callers_orig": "1452",
+   "status": "findings"
+  },
+  "start_output": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x108e",
+   "ours": "108e-120e",
+   "level": "exact",
+   "size_orig": 384,
+   "callers_orig": "045e",
+   "status": "done"
+  },
+  "load2": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1452",
+   "ours": "1452-172e",
+   "level": "findings",
+   "size_orig": 732,
+   "callers_orig": "13ca",
+   "status": "findings"
+  },
+  "load2td": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x172e",
+   "ours": "172e-1926",
+   "level": "findings",
+   "size_orig": 540,
+   "callers_orig": "1452",
+   "status": "findings"
+  },
+  "place_sec": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x0d9c",
+   "ours": "0d9c-108e",
+   "level": "findings",
+   "size_orig": 754,
+   "callers_orig": "0b6e",
+   "status": "findings"
+  },
+  "main": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x9c",
+   "ours": "approx",
+   "level": "findings",
+   "size_orig": 724,
+   "callers_orig": "-",
+   "status": "findings"
+  },
+  "parse_args": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x45e",
+   "ours": "approx",
+   "level": "findings",
+   "size_orig": 174,
+   "callers_orig": "-",
+   "status": "findings"
+  },
+  "read_symbols": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x8cc",
+   "ours": "approx",
+   "level": "findings",
+   "size_orig": 674,
+   "callers_orig": "-",
+   "status": "findings"
+  },
+  "end_pass1": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0xb6e",
+   "ours": "approx",
+   "level": "findings",
+   "size_orig": 558,
+   "callers_orig": "-",
+   "status": "findings"
   }
  },
  "findings": [],
@@ -821,6 +801,73 @@
     "D3"
    ],
    "note": "findings (ld.c): sld reg_sect_addr for -t, -d, -b with the selector switch (t, d, b, end), tab42b4 (char[4], 0x702e), secorg (int[4], 0x7034), secspec (char, 0x702c). Six attempts (d5/rsa1..rsa6, draft rsa4). Equal code except the frame offset of fmt (6 in the original, 8 here) and the reduced frame. Accepted as finding."
+  },
+  "init_entry": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): sld init_entry with the segment record of ld (struct fseg at p, flags x702f, x7030, x7031 as char, x66b8/x66ba for hy). Six attempts (d5/ie1..ie5, draft ie5.c). Equal except the store of hy: the original stores through r7 (hdr in a register), the draft reloads hdr from the frame. Accepted as finding."
+  },
+  "readhdr": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): sld readhdr in its nonsegmented form (one argument: b is not used in ld). Six attempts (d5/rh_1..rh_6, draft rh_5). Equal in most of the code: header, segment records (16 bytes), counters c0..c2 from the atr bits of record 1, rounding for the nonsegmented case, flags x66b8/x66ba/x66b6. Open: the two error blocks (Bad format, Invalid segment attributes) are placed inline; the draft stores hdr fields in another order at the end. Accepted as finding; the draft has no separate store to fcdrel/fcbrel beyond the globals fcdrel (0x66d2) and fcbrel (0x66d4)."
+  },
+  "load2": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): sld load2 for ld (one long argument). Nine attempts (d5/l2_1..l2_9, draft l2_9, in ld.c). The loop over the symbols follows the original; the tail (dseek on text and reloc, half() offsets, the base increments of v6bf8, v6bfa, v6bfc) is now equal in the order of the calls; the remaining differences are the frame (2 bytes) and register choices in the loop (rr2 for the sums). Not yet exact."
+  },
+  "load2td": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): sld load2td for ld (nonsegmented words). Nine attempts (d5/ltd1..ltd9, draft ltd9). Frame, the text and reloc reads, the swaps, the switch targets and the exit path are equal in the code; the remaining difference is the form of the first test and the text read of the loop (164 against 168 instructions). Accepted as finding.; word_put is f221e, swap is the libc swap (ld.h), v6bf6 is the open index base."
+  },
+  "place_sec": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): ld place_sec (no parameters; areas[4] at 0x7004 with kind, tstart, tsize, tend; secorg, tab42b4). Four attempts (d5/ps_1..ps_4, draft ps_4): all branches, messages and stores are in, 233 against 242 instructions. The differences are the code of the kind and the zero-or-total ternaries (order of the immediate loads) and the overlap loop start. Accepted as finding."
+  },
+  "main": {
+   "basis": "read",
+   "d_classes": [
+    "D3",
+    "D16"
+   ],
+   "note": "approximation (step 5 of HOWTO, after six attempts not reached): the function is in the file to allow the bss analysis; the body is not reproduced exactly (see the note of the function)."
+  },
+  "parse_args": {
+   "basis": "read",
+   "d_classes": [
+    "D3",
+    "D16"
+   ],
+   "note": "approximation (step 5 of HOWTO, after six attempts not reached): the function is in the file to allow the bss analysis; the body is not reproduced exactly (see the note of the function)."
+  },
+  "read_symbols": {
+   "basis": "read",
+   "d_classes": [
+    "D3",
+    "D16"
+   ],
+   "note": "approximation (step 5 of HOWTO, after six attempts not reached): the function is in the file to allow the bss analysis; the body is not reproduced exactly (see the note of the function)."
+  },
+  "end_pass1": {
+   "basis": "read",
+   "d_classes": [
+    "D3",
+    "D16"
+   ],
+   "note": "approximation (step 5 of HOWTO, after six attempts not reached): the function is in the file to allow the bss analysis; the body is not reproduced exactly (see the note of the function)."
   }
  },
  "inventory": {

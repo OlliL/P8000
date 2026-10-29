@@ -89,7 +89,7 @@ l2:
 	return slot;
 }
 
-slookup(x)
+struct symbol **slookup(x)
 int x;
 {
 	int spare;
