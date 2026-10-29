@@ -137,7 +137,16 @@
    "level": "findings",
    "size_orig": 290,
    "callers_orig": "13ca,1452,1c6c,1ce2,1f64",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D2",
+    "D7",
+    "D8",
+    "D10",
+    "D12",
+    "D16"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 21 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "get": {
    "file": "ld.c",
@@ -147,7 +156,12 @@
    "level": "findings",
    "size_orig": 118,
    "callers_orig": "172e,1a9a,1ce2",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D3",
+    "D12"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 3 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "report_error": {
    "file": "ld.c",
@@ -227,7 +241,9 @@
    "level": "findings",
    "size_orig": 98,
    "callers_orig": "194a",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 0 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "sig_handler": {
    "file": "ld.c",
@@ -287,7 +303,15 @@
    "level": "findings",
    "size_orig": 208,
    "callers_orig": "1452,26ac",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3",
+    "D8",
+    "D12"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 24 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "next_entry": {
    "file": "symbols.c",
@@ -297,7 +321,16 @@
    "level": "findings",
    "size_orig": 94,
    "callers_orig": "0b6e,282e",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3",
+    "D7",
+    "D10",
+    "D12"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 22 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "warn_sym_redef": {
    "file": "symbols.c",
@@ -327,7 +360,12 @@
    "level": "findings",
    "size_orig": 112,
    "callers_orig": "1452,25a2,282e",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D2",
+    "D3"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 2 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "add16_checked": {
    "file": "ld.c",
@@ -337,7 +375,12 @@
    "level": "findings",
    "size_orig": 50,
    "callers_orig": "0b6e",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D2",
+    "D3"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 4 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "unpack_run": {
    "file": "copyname.c",
@@ -357,7 +400,11 @@
    "level": "findings",
    "size_orig": 130,
    "callers_orig": "26ac",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D7"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 2 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "put_name": {
    "file": "printname.c",
@@ -427,7 +474,9 @@
    "level": "findings",
    "size_orig": 126,
    "callers_orig": "-",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 0 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "index16": {
    "file": "symbols.c",
@@ -457,7 +506,15 @@
    "level": "findings",
    "size_orig": 420,
    "callers_orig": "0608,13ca",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D6",
+    "D7",
+    "D12"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 13 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "ensure_buf": {
    "file": "symbols.c",
@@ -467,7 +524,11 @@
    "level": "findings",
    "size_orig": 88,
    "callers_orig": "172e",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D7"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 1 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "chk_ranlib": {
    "file": "symbols.c",
@@ -477,7 +538,13 @@
    "level": "findings",
    "size_orig": 136,
    "callers_orig": "-",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D1",
+    "D2",
+    "D3"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 8 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "table16_entry": {
    "file": "symbols.c",
@@ -517,7 +584,9 @@
    "level": "findings",
    "size_orig": 232,
    "callers_orig": "-",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 0 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "reg_sect_addr": {
    "file": "ld.c",
@@ -527,7 +596,14 @@
    "level": "findings",
    "size_orig": 238,
    "callers_orig": "-",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D3",
+    "D6",
+    "D7",
+    "D10"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 8 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "load_lib_syms": {
    "file": "ld.c",
@@ -547,7 +623,12 @@
    "level": "findings",
    "size_orig": 290,
    "callers_orig": "108e",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D2",
+    "D3"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 2 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "readhdr": {
    "file": "ld.c",
@@ -557,7 +638,14 @@
    "level": "findings",
    "size_orig": 654,
    "callers_orig": "1452",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D2",
+    "D7",
+    "D10",
+    "D12"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 17 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "start_output": {
    "file": "ld.c",
@@ -577,7 +665,15 @@
    "level": "findings",
    "size_orig": 732,
    "callers_orig": "13ca",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D3",
+    "D7",
+    "D8",
+    "D10",
+    "D12"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 78 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "load2td": {
    "file": "ld.c",
@@ -587,7 +683,17 @@
    "level": "findings",
    "size_orig": 540,
    "callers_orig": "1452",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8",
+    "D10",
+    "D12"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 82 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "place_sec": {
    "file": "ld.c",
@@ -597,7 +703,17 @@
    "level": "findings",
    "size_orig": 754,
    "callers_orig": "0b6e",
-   "status": "findings"
+   "status": "findings",
+   "d_classes": [
+    "D2",
+    "D3",
+    "D6",
+    "D7",
+    "D8",
+    "D10",
+    "D12"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 56 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "main": {
    "file": "ld.c",
@@ -630,7 +746,14 @@
    "size_orig": 674,
    "callers_orig": "-",
    "status": "findings",
-   "note": "finding (2026-10-29, seventh attempt, scratch d8/rs_1..rs_3): the logic is in place: readhdr, the section totals (fctrel, fcdrel, fcbrel), the relocation test, dseek with the header words, the symbol loop (Sflag, Xflag, the L names, symreloc, lookup_name, enter, the common symbols with the warning of a text value), the totals with add16_checked and the cleanup through goto. 198 instructions equal in the whole-file build. Not exact: the frame is two bytes larger (0x1c against 0x1a: the locals are at the same offsets from 0x0a, the padding of the original is not reproduced), and the copy of cursym.svalue through a long temporary (ldl rr4) is not in the draft."
+   "note": "finding (2026-10-29, seventh attempt, scratch d8/rs_1..rs_3): the logic is in place: readhdr, the section totals (fctrel, fcdrel, fcbrel), the relocation test, dseek with the header words, the symbol loop (Sflag, Xflag, the L names, symreloc, lookup_name, enter, the common symbols with the warning of a text value), the totals with add16_checked and the cleanup through goto. 198 instructions equal in the whole-file build. Not exact: the frame is two bytes larger (0x1c against 0x1a: the locals are at the same offsets from 0x0a, the padding of the original is not reproduced), and the copy of cursym.svalue through a long temporary (ldl rr4) is not in the draft.",
+   "d_classes": [
+    "D2",
+    "D7",
+    "D8",
+    "D10"
+   ],
+   "d_check": "pattern check 2026-10-29 (classify_ld.py): 20 differing instructions, 0 unexplained; D17 (call form) not counted: the difference is the unresolved call of the object, the whole-file build gives calr as the original"
   },
   "end_pass1": {
    "file": "ld.c",

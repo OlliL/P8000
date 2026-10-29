@@ -931,3 +931,58 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   initialisers (ld.c as in tmp/tmp/bss/ld_before_fwd.c). The data order of the initialisers stays open: no natural
   source of ld.c was found that yields the original layout (see the emission experiments above).
 - The mechanism is kept as a hypothesis only: it reproduces 600 of 2748 data bytes, the literal version gives 556.
+
+## D-class check of the ld findings (2026-10-29)
+
+- Done now (before: no d_classes were recorded for the ld findings). The pattern check of host/recon/patterns.py was
+  run with the ld object of the whole-file build against the original (`tmp/tmp/dclass/classify_ld.py`); symbolic
+  address operands are masked. Result: all differing instructions of the findings match a D pattern (0 unexplained),
+  with the exception of f2c20 (wrong range in symbols.o, not a finding). The d_classes of the 20 findings are in
+  findings.json (mapping: D1 frame, D2 registers, D3 spill/reload, D6 switch, D7 jumps, D8 bytes, D10 shifts/long,
+  D12 data addresses, D16 operand form).
+- Caveat: the pattern check accepts many forms, so the labels are a classification, not a proof per instruction.
+  The D17 labels (call form) were removed: they are the unresolved `call` of the single object file; in the whole-file
+  build the calls are calr as in the original (checked on the exact functions main, parse_args, end_pass1).
+- The exact functions also show differences in this check (main 26, end_pass1 4, parse_args 2, load_lib_syms 2,
+  symreloc 2) although the exact comparison (ldcheck on the whole-file build) is identical: the object representation
+  (jump-table words, symbolic operands) differs from the binary. The exact comparison stays the authority.
+
+## Step 1 of the data step: size of the data, by module (2026-10-29)
+
+Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamps (`@[$]...`):
+- crt0 (0x00..0x2a): equal (42 bytes).
+- ld.c (0x2a..): ours 1436 bytes (ld.o), original 1402 (0x2a..0x5a4): +34. Strings: 73 in both, 38 of them of odd length
+  (with the NUL). Our compiler pads each odd string to an even address (`00` after it), the original has no pads
+  (in the original "No pages" 0x506 is followed by "-lc" at 0x50f, no pad). So the +34 is the D12 difference
+  (string literal alignment), not a content difference.
+- copyname: ours 50, original 52 (-2); printname: equal (110). Both are the same strings.
+- symbols.o (own, ours 390 bytes) and the libc members: ours 0x666..0xb86 (+164 net against the original 0x646..0xabc).
+  Per member (blocks found in the original data by content, `tmp/tmp/link`):
+  - `s_data` (162 bytes): 156 equal, the differing bytes are the pointers into the bss (offset dependent).
+  - `o_doscan_0_1` (160): 144 equal; 16 bytes differ at the end (possibly another version of the old member).
+  - `o_doprnt_0_6` (124): 52 equal, 72 differ from byte 52 on: a different version of the member or other messages.
+  - `o_cnvt_0_1` (12): no clear match.
+  - `ctype_` (258) and `o_filbuf_0_2` (20), `o_malloc_0_2` (12), `o_mktemp_0_1` (2): found as blocks.
+  - An extra block of about 760 bytes in ours (0x78e..0xae6) lies where the original has 96 bytes: the libc members in the
+  data are not in the same places (layout of the libc part), not explained yet.
+- Conclusion: about 34 bytes are the D12 string alignment, 2 bytes copyname, and about 160 bytes the libc part
+  (member versions doprnt and doscan, and the membership or order of the members). Pointers into the bss differ as long as
+  the data size differs (circular).
+- Next (step 1 continued): map the original libc data per member with `libc_spec.py` (addresses of the members in the
+  original, from their code), then compare member by member; the doprnt difference decides whether the member is
+  another version.
+
+## Step 1 of the data step, corrected (2026-10-29)
+
+- Correction: the libc members are not the problem. `libc_verify.py` (text and data against the original, relocated words
+  excluded) gives 0 differing words for all 44 members, also after the change below. The earlier "doprnt differs" was a
+  comparison of linked data, where the pointers into bss depend on the layout; it was wrong.
+- Found: the link took the on-board `arx/doscan.o` in addition to the old `doscan` member (both 160 bytes of data). The
+  shipped `scanf` needs the symbol `__doscan`, which the old member does not define (only `_doscan`). The original binary
+  has one doscan. Fix: `__doscan::` is a second label of the old member (`src/lib/oldlibc/doscan/0_1.s`, one line; the
+  bytes are unchanged, libc_verify 0 differing). The link without `arx/doscan.o` gives code 18944 (0x4a00, equal to the
+  original) and data 2784 (original 2748, +36).
+- The +36: ld.c +34 (38 odd-length strings, padded by our compiler to even addresses, the original does not pad: D12
+  string alignment), symbols.o about +4, copyname.o -2 (the original has 2 more zero bytes after its stamp). So the data
+  difference is the string alignment (D12) and a few bytes of the own modules, no library content.
+- Link recipe now: `crt0.o ld.o copyname.o printname.o symbols.o <libc members from ld.link> arx/exit.o` (no arx/doscan.o).

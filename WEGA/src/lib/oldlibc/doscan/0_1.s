@@ -1,7 +1,7 @@
 	.extern	__filbuf, __inflt, _tolower, _ungetc
 	.psec
 	.code
-_doscan::
+__doscan::
 	sub	r15,#%0020
 	ldm	%001A(r15),r12,#3
 	ldm	@r15,r4,#4
