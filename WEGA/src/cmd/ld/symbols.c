@@ -6,6 +6,7 @@ unsigned int rlsize;
 
 struct symbol cursym;
 int v067c;
+struct symbol *symtab;
 
 /* read_entry_hdr: read the entry of a symbol into cursym; a long name takes the continuation entries (sld read_entry_hdr,
    the nonsegmented part; 0x249a..0x2502 of /bin/ld). Module: printname.c as assigned (sld has it in symbols.c) */
@@ -309,6 +310,39 @@ body:
 test:
 	if (p < e)
 		goto body;
+}
+
+/* table16_entry: address of entry x of the symbol table (sld table16_entry; 0x29d6..0x2aa6 of /bin/ld). Entries below 0x258
+   are in the static table at 0x1102 (14 bytes each); the others in symtab, which is allocated on the first use (sbrk, f2c20)
+   or starts at the ranlib buffer (rlbuf) when that is free */
+struct symbol *table16_entry(x)
+unsigned x;
+{
+	int n;
+	char *p;
+
+	if (x < 0x258)
+		return (struct symbol *)(0x1102 + x * 14);
+	if (x > 0x923)
+		report_error(2, "Symbol table overflow");
+	if (symtab == 0) {
+		if (v067c != 0 || rlsize == 0) {
+			n = sbrk(0);
+			symtab = (struct symbol *)f2c20(0x5fa6);
+			if ((int)symtab != n)
+				report_error(2, "Symbol table overflow");
+		} else {
+			n = sbrk(0);
+			symtab = (struct symbol *)f2c20(0x5fa6 - rlsize);
+			if ((int)symtab != n)
+				report_error(2, "Symbol table overflow");
+			symtab = (struct symbol *)rlbuf;
+			for (p = rlbuf; p < rlbuf + rlsize; p++)
+				*p = 0;
+			rlsize = 0;
+		}
+	}
+	return symtab + (x - 0x258);
 }
 
 /* next_entry: next entry of the symbol table (a long name occupies several entries) (0x2aa6..0x2b04 of /bin/ld; finding) */

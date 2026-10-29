@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 39 |
-| open | 25 |
+| confirmed | 41 |
+| open | 23 |
 
 | Difference class | Count |
 |---|---|
@@ -51,15 +51,14 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f12a8 | - | 0x12a8 | open | open |  |  |  |
 | f1452 | - | 0x1452 | open | open |  |  |  |
 | f172e | - | 0x172e | open | open |  |  |  |
-| f194a | - | 0x194a | open | open |  |  |  |
 | f1f64 | - | 0x1f64 | open | open |  |  |  |
 | f221e | 221e-226e | 0x221e | open | exact | read by hand |  | exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf. |
 | f282e | - | 0x282e | open | open |  |  |  |
-| f29d6 | - | 0x29d6 | open | open |  |  |  |
 | f2b92 | 2b92-2bf6 | 0x2b92 | confirmed | exact |  |  |  |
 | f2bf6 | 2bf6-2bfc | 0x2bf6 | confirmed | exact |  |  |  |
 | f2bfc | 2bfc-2c02 | 0x2bfc | confirmed | exact |  |  |  |
 | f2c20 | 2c20-2c4c | 0x2c20 | confirmed | exact |  |  |  |
+| finish_output | 194a-1a12 | 0x194a | confirmed | exact |  |  |  |
 | flush_buffer | 229c-22e8 | 0x229c | open | exact | read by hand |  | exact (2026-10-29, fourth attempt): struct buf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets. |
 | get | 1c6c-1ce2 | 0x1c6c | confirmed | findings | read by hand | D4 | findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c. |
 | getfile | 1ce2-1e86 | 0x1ce2 | confirmed | findings | read by hand | D3 | findings (ld.c): sld getfile for ld (nonsegmented): library search with libname ("/lib/libxxxxxxxxxxx"), prefixes /usr and /z/bin, the strncpy count 0x168 - p, v66b4 selects .a or .8. The instruction count is equal (120). Differences: the original keeps three register variables (r12..r14), the draft two; the count of strncpy is computed as constant minus p (sub) and the last branch is inverted. The third prefix is not opened in the original (the final open of filname does it). reloc is a second stream whose address is not settled (pno at 0x1042, step 5b). Five attempts (d5/gf1..gf5, draft d5/gf4.c). |
@@ -87,6 +86,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | slookup | 26ac-26ca | 0x26ac | confirmed | exact |  |  |  |
 | str_compare | 21f2-221e | 0x21f2 | confirmed | exact |  |  |  |
 | symreloc | 2766-27be | 0x2766 | confirmed | exact |  |  |  |
+| table16_entry | 29d6-2aa6 | 0x29d6 | confirmed | exact |  |  |  |
 | table_lookup | 1f22-1f64 | 0x1f22 | confirmed | exact |  |  |  |
 | unpack_run | 22e8-2360 | 0x22e8 | confirmed | exact |  |  |  |
 | warn_sym_redef | 2862-294e | 0x2862 | confirmed | exact |  |  |  |

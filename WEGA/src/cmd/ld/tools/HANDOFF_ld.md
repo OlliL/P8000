@@ -567,3 +567,11 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## chk_ranlib (2026-10-29): finding
 
 - f294e is sld chk_ranlib (symbols.c; ranlib entries of 12 bytes, struct rlent in ld.h). Five attempts (d5/cr2..cr6, draft cr5). The original keeps a register variable (r14) and stores q = p from a reload; the loop and the calls (pslookup, warn_sym_redef) are equal. pslookup now returns struct symbol ** (type only; still exact, 10 instructions).
+
+## table16_entry (2026-10-29)
+
+- f29d6 is sld table16_entry, exact (65 instructions, draft d5/t16_1.c, first attempt). ld has a static table of 0x258 entries at 0x1102 (14 bytes) and the table at symtab, allocated on first use: sbrk(0), f2c20(0x5fa6) (or 0x5fa6 - rlsize when the ranlib buffer is in use, then symtab = rlbuf and the buffer is cleared). Three error messages "Symbol table overflow" (different string literals in the original). symtab defined in symbols.c.
+
+## finish_output and table16 names (2026-10-29)
+
+- f194a is sld finish_output in ld form (ld.c), exact (64 instructions, draft d5/fo2.c, two spares). Two padding loops (f221e with 0, toutb/soutb if rflag; tmpoutb/doutb if rflag) over the words at 0x6bf8..0x7012 and 0x6bfa..0x701a, then copy(tmpoutb), copy(routb) if rflag, copy(doutb), copy(soutb) if !xflag and put_all if !sflag, flush and close toutb, link of aoutnam if !ofilfnd, delarg = exstat, sig_handler. No patch_hdr. Names: delarg (was v007c, data 0x7c), aoutnam = "a.out". New globals: soutb, tmpoutb, routb, doutb (sld buffer names), rflag, sflag, xflag, ofilfnd (addresses from the code, step 5b); v6bf8, v7012, v6bfa, v701a (open names).

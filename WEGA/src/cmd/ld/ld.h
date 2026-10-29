@@ -131,3 +131,4 @@ struct rlent {
 };
 struct symbol **pslookup();
 int chk_ranlib();
+int sbrk();

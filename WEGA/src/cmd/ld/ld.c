@@ -13,7 +13,7 @@ int v66c2, v66c6, v66cc, v66ce;
 int fctrel, fcdrel, fcbrel;
 
 char *ofilnam = "l.out";
-int v007c, v0080;
+int delarg, v0080;
 char tmpname[] = "/tmp/ldaXXXXX";
 int v669a, v66a4;
 
@@ -24,6 +24,10 @@ char libpath[20];
 int v66b4;
 
 struct buf toutb;
+struct buf soutb, tmpoutb, routb, doutb;
+int rflag, sflag, xflag, ofilfnd;
+char *aoutnam = "a.out";
+int v6bf8, v7012, v6bfa, v701a;
 unsigned char v67e4[256];
 
 struct archdr archdr;
@@ -38,15 +42,15 @@ sig_handler()
 	if (v669a)
 		limit_msg();
 	unlink("l.out");
-	if (!v007c) {
+	if (!delarg) {
 		if (!v66a4 || !v0080) {
 			mode = ~umask(0) & 0x1ff;
 			chmod(ofilnam, mode);
 		}
 	}
-	if (v007c)
+	if (delarg)
 		unlink(ofilnam);
-	_exit(v007c);
+	_exit(delarg);
 }
 
 f050c(x, y)
@@ -71,6 +75,7 @@ int x, y;
 }
 /* f057c: restore the state of the object at entry i of tab (the bases, libp and ntab) and clear the symbol hash entries
    of its symbols (sld read_symbols tail for the hash; no sld function; 0x057c..0x0608 of /bin/ld) */
+
 f057c(i)
 int i;
 {
@@ -98,6 +103,7 @@ int i;
 
 /* add16_checked: sum of two words, report_error(1) with the message a when the sum is 0x10000 or more (sld add16_checked;
    0x089a..0x08cc of /bin/ld) */
+
 add16_checked(x, y, a)
 unsigned x, y;
 char *a;
@@ -137,6 +143,7 @@ int flag;
 	out->nleft = 0x100;
 	out->xnext = out->iobuf;
 }
+
 /* load2arg: pass two for one argument (object file or archive member; sld load2arg; 0x13ca..0x1452 of /bin/ld) */
 load2arg(p)
 char *p;
@@ -178,6 +185,56 @@ test1:
 		libp = lp;
 	}
 	close(infil);
+}
+
+/* finish_output: write the remaining parts of the output and patch the header (sld finish_output; 0x194a..0x1a12 of /bin/ld) */
+finish_output()
+{
+	int spare1, spare2;
+
+	register int *p;
+	register int *end;
+
+	p = (int *)v6bf8;
+	end = (int *)v7012;
+	goto test1;
+body1:
+	p++;
+	f221e(0, &toutb);
+	if (rflag)
+		f221e(0, &soutb);
+test1:
+	if (p < end)
+		goto body1;
+	p = (int *)v6bfa;
+	end = (int *)v701a;
+	goto test2;
+body2:
+	p++;
+	f221e(0, &tmpoutb);
+	if (rflag)
+		f221e(0, &doutb);
+test2:
+	if (p < end)
+		goto body2;
+	copy(&tmpoutb);
+	if (rflag)
+		copy(&routb);
+	copy(&doutb);
+	if (!sflag) {
+		if (!xflag)
+			copy(&soutb);
+		put_all();
+	}
+	flush_buffer(&toutb);
+	close(toutb.fildes);
+	if (!ofilfnd) {
+		unlink(aoutnam);
+		link("l.out", aoutnam);
+		ofilnam = aoutnam;
+	}
+	delarg = exstat;
+	sig_handler();
 }
 
 copy(p)
