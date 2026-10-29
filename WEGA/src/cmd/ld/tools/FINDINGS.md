@@ -10,7 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| open | 62 |
+| confirmed | 10 |
+| open | 52 |
 
 | Difference class | Count |
 |---|---|
@@ -49,20 +50,20 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f172e | - | 0x172e | open | open |  |  |  |
 | f194a | - | 0x194a | open | open |  |  |  |
 | f1a12 | - | 0x1a12 | open | open |  |  |  |
-| f1a74 | - | 0x1a74 | open | open |  |  |  |
+| f1a74 | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
 | f1a9a | - | 0x1a9a | open | open |  |  |  |
-| f1b0a | - | 0x1b0a | open | open |  |  |  |
+| f1b0a | 1b0a-1b38 | 0x1b0a | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): parameter list (q, p, n), register pointer r and counter i (declared in this order), and two unused int locals (spare1, spare2). The parameter order is the same as f1f22 and f1b0a stands for the rule; the register order (r14 then r13) as in f1f22. |
 | f1b38 | - | 0x1b38 | open | open |  |  |  |
-| f1c5a | 1c5a-1c6c | 0x1c5a | open | exact |  |  |  |
+| f1c5a | 1c5a-1c6c | 0x1c5a | confirmed | exact |  |  |  |
 | f1c6c | - | 0x1c6c | open | open |  |  |  |
 | f1ce2 | - | 0x1ce2 | open | open |  |  |  |
 | f1e86 | - | 0x1e86 | open | open |  |  |  |
-| f1f22 | - | 0x1f22 | open | open |  |  |  |
+| f1f22 | 1f22-1f64 | 0x1f22 | confirmed | exact | read by hand |  | exact (2026-10-29, fourth and fifth attempt): parameter list (end, x) and three unused int locals (spare). The parameter order is the one of f1b0a: the first declared parameter takes the last argument register. Frame 18 bytes as the original. |
 | f1f64 | - | 0x1f64 | open | open |  |  |  |
-| f21f2 | - | 0x21f2 | open | open |  |  |  |
+| f21f2 | 21f2-221e | 0x21f2 | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): for loop, the equal case is the main path (if (*t == *s++) { if (*t++) continue; return(1); } return(0)); parameter list (t, s). The earlier D1/D15 reading was the pointer copy and the branch sense, both resolved by the form. |
 | f221e | - | 0x221e | open | open |  |  |  |
-| f226e | - | 0x226e | open | open |  |  |  |
-| f229c | - | 0x229c | open | open |  |  |  |
+| f226e | 226e-229c | 0x226e | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): char c (second argument, r7) and register pointer p (r6 -> r14); struct _iobuf { int _x; int _cnt; char *_ptr; } (the displacements of the original: cnt at 2, ptr at 4). The struct member _x is a name guess; the layout is what matters. |
+| f229c | 229c-22e8 | 0x229c | open | exact | read by hand |  | exact (2026-10-29, fourth attempt): struct _iobuf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets. |
 | f22e8 | - | 0x22e8 | open | open |  |  |  |
 | f2360 | - | 0x2360 | open | open |  |  |  |
 | f23e2 | - | 0x23e2 | open | open |  |  |  |
@@ -70,8 +71,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f2502 | - | 0x2502 | open | open |  |  |  |
 | f25a2 | - | 0x25a2 | open | open |  |  |  |
 | f25dc | - | 0x25dc | open | open |  |  |  |
-| f26ac | - | 0x26ac | open | findings | read by hand |  | findings: draft with f2360(x, &v107c) matches all instructions; the frame is 4 bytes in the original (one unused 2-byte local, spare) and 2 in the draft. Three attempts used (argument order, register parameter, argument order). |
-| f26ca | - | 0x26ca | open | findings | read by hand |  | findings: same as f26ac with f22e8(x, &v107c); frame 4 against 2 (unused local). Three attempts used. |
+| f26ac | 26ac-26ca | 0x26ac | confirmed | exact | read by hand |  | exact (2026-10-29): the frame difference was one unused 2-byte local (spare), as in HOWTO step 7. The earlier char-parameter theory was wrong. |
+| f26ca | 26ca-26e8 | 0x26ca | confirmed | exact | read by hand |  | exact (2026-10-29): the frame difference was one unused 2-byte local (spare), as in HOWTO step 7. The earlier char-parameter theory was wrong. |
 | f26e8 | - | 0x26e8 | open | open |  |  |  |
 | f2766 | - | 0x2766 | open | open |  |  |  |
 | f27be | - | 0x27be | open | open |  |  |  |
@@ -83,8 +84,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f2b04 | - | 0x2b04 | open | open |  |  |  |
 | f2b3a | - | 0x2b3a | open | open |  |  |  |
 | f2b92 | - | 0x2b92 | open | open |  |  |  |
-| f2bf6 | 2bf6-2bfc | 0x2bf6 | open | exact |  |  |  |
-| f2bfc | 2bfc-2c02 | 0x2bfc | open | exact |  |  |  |
+| f2bf6 | 2bf6-2bfc | 0x2bf6 | confirmed | exact |  |  |  |
+| f2bfc | 2bfc-2c02 | 0x2bfc | confirmed | exact |  |  |  |
 | f2c02 | - | 0x2c02 | open | open |  |  |  |
 | f2c20 | - | 0x2c20 | open | open |  |  |  |
 

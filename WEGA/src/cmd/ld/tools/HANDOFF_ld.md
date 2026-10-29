@@ -258,3 +258,50 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   Drafts in /mnt/share/cvs/P8000/tmp/tmp/d5/ (not accepted).
 - ld.c and symbols.c compile alone with the original cc (checked).
 - Next: the remaining functions of ld.c, printname.c and copyname.c, then symbols.c.
+
+## Step 5: second batch (2026-10-29)
+
+- Done (exact, ld.c): f1a74 (unsigned x; the frame and the branch as in the original).
+- Findings (ld.c): f21f2 (string compare loop, three attempts), f226e (buffer put with register pointer, three
+  attempts). Drafts in /mnt/share/cvs/P8000/tmp/tmp/d5/ (f21f2_try3.c, f226e_try3.c).
+- accept_ld.py: parameter declarations (K&R) stay in the function now; only the declarations before the function
+  header are globals (bug of the first version put `unsigned x;` at the top of ld.c; fixed by hand).
+- Pattern check (2026-10-29): the char parameter is NOT the problem. The old cc uses the argument register directly in
+  the same way as our compiler (test: char c in r6/r7, ldb @r2,rl6). The frame differences in f26ac, f26ca and f226e
+  are unused 2-byte locals (spare). f26ac and f26ca are now exact with `int spare;` (accepted, symbols.c). f226e:
+  with `register struct _iobuf *p` the argument order is right, but the original frame (6 bytes: slot 0 unused, c at 2,
+  saved r14 at 4) is one register parameter slot less than ours when p is register: open for the second pass.
+
+## Step 5: f1b0a (2026-10-29)
+
+- Findings (ld.c): loop with djnz (f1b0a). Instructions equal after the parameter list is (q, p, n) and the register
+  declarations are `register int *r; register i;`. Four attempts (the limit is three): the frame is 10 bytes against
+  14 (two unused words). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1b0a_try4.c.
+- Observation: the old cc gives the first parameter of the K&R list the last argument register (here n in r5 with the
+  list (q, p, n)); check this against the other functions in the second pass.
+
+## Parameter order, second data point (2026-10-29)
+
+- f1f22 (ld.c, finding): with the declared list (x, end) our compile gives end the first and x the last argument
+  register; the original has x in r6 and end in r7. f1b0a showed the same. Two functions now point the same way
+  (the first declared parameter takes the last argument register). Not yet confirmed by a function that is exact: the
+  fix (end, x) for f1f22 is the first thing to try in the second pass.
+- Register declarations: the first declared register variable gets r14, the next r13, then r12 (f1f22: p, e, key).
+- f1f22 exact (ld.c) with the parameter list (end, x) and three unused locals (fifth attempt, with the approval of the
+  owner). This is the second function that confirms the parameter rule (f1b0a has the same order; f1b0a stays a finding
+  until its frame is found). Both need the rule checked on a third function.
+- accept_ld.py bug (2026-10-29): a multi-line struct definition before the function header was split line by line,
+  which broke ld.c (found by the compile check after f1f22). Fixed: everything before the header is one block; ld.c
+  repaired by hand; ld.c compiles alone again. After every accept run `cc -O -c` on the file.
+
+## Findings resolved with the six-attempt limit (2026-10-29)
+
+- f21f2 exact at attempt 5 (ld.c): for loop, the equal case is the main path.
+- f226e exact at attempt 5 (ld.c): struct with the count field at 2 and the pointer at 4; char c as the second argument.
+- f1b0a exact at attempt 5 (ld.c): parameters (q, p, n), two unused locals.
+- Status now: done 10 (f1c5a, f1a74, f1f22, f21f2, f226e, f1b0a, f2bf6, f2bfc, f26ac, f26ca), open 49, crt0 3.
+- The parameter order (the first declared parameter takes the last argument register) holds for f1b0a and f1f22,
+  both exact now. f226e has (c, p) with c the second argument, the same rule.
+- f229c exact (ld.c, fourth attempt): the buffer flush (write of the used part, reset of pointer and count).
+  One struct _iobuf for ld.c { int _fd; int _cnt; char *_ptr; char _buf[256]; }: f226e (offsets 2 and 4) uses the same
+  layout. accept_ld.py no longer writes a struct definition whose tag is already in the file (it was written twice).

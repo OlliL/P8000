@@ -18,7 +18,7 @@ The work is split so that a cheap model does the mechanical part and an expensiv
 once. Do not change back and forth.
 
 **Phase A (cheap model): everything where a tool answers yes or no.** Steps 0 to 3, the first pass of
-step 4 (the data layout), the first pass of step 5 (draft, compile, compare; at most 3 attempts per function,
+step 4 (the data layout), the first pass of step 5 (draft, compile, compare; at most 6 attempts per function,
 then mark it and go on), the layout of bss (step 5b), the split into modules, the link and the corpus harness. Phase A ends with a handoff
 note (`HANDOFF_<binary>.md` in the tool directory, deleted when the binary is finished) that contains:
 the function table with status, the list of functions with the first differing instructions (`firstdiff`
@@ -108,7 +108,7 @@ the second pass.
 2. For each function: write K&R C (no prototypes), compile, compare with `strict_audit.py` (frame
    offsets are compared; addresses are masked). Exact: `accept.py` (status `done`). Otherwise
    `firstdiff.py NAME` shows the first differing places with context, `odis.py NAME` the original.
-3. Phase A: at most 3 attempts, then write the diff into `manual_classes` (basis `read`, note) and go on.
+3. Phase A: at most 6 attempts, then write the diff into `manual_classes` (basis `read`, note) and go on.
 4. Names: from messages, system calls, strings; Plexus/V7 names where it is the same function.
    External names are significant for 7 characters (`check_names.py`).
 

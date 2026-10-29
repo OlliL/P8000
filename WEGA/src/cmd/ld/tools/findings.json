@@ -261,13 +261,13 @@
   },
   "f1a74": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x1a74",
-   "ours": "-",
-   "level": "open",
+   "ours": "1a74-1a9a",
+   "level": "exact",
    "size_orig": 38,
    "callers_orig": "12a8",
-   "status": "open"
+   "status": "done"
   },
   "f1a9a": {
    "file": "ld.c",
@@ -281,13 +281,13 @@
   },
   "f1b0a": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x1b0a",
-   "ours": "-",
-   "level": "open",
+   "ours": "1b0a-1b38",
+   "level": "exact",
    "size_orig": 46,
    "callers_orig": "108e,27be",
-   "status": "open"
+   "status": "done"
   },
   "f1b38": {
    "file": "ld.c",
@@ -301,7 +301,7 @@
   },
   "f1c5a": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x1c5a",
    "ours": "1c5a-1c6c",
    "level": "exact",
@@ -341,13 +341,13 @@
   },
   "f1f22": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x1f22",
-   "ours": "-",
-   "level": "open",
+   "ours": "1f22-1f64",
+   "level": "exact",
    "size_orig": 66,
    "callers_orig": "172e",
-   "status": "open"
+   "status": "done"
   },
   "f1f64": {
    "file": "ld.c",
@@ -361,13 +361,13 @@
   },
   "f21f2": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x21f2",
-   "ours": "-",
-   "level": "open",
+   "ours": "21f2-221e",
+   "level": "exact",
    "size_orig": 44,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done"
   },
   "f221e": {
    "file": "ld.c",
@@ -381,23 +381,23 @@
   },
   "f226e": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x226e",
-   "ours": "-",
-   "level": "open",
+   "ours": "226e-229c",
+   "level": "exact",
    "size_orig": 46,
    "callers_orig": "172e,1a12",
-   "status": "open"
+   "status": "done"
   },
   "f229c": {
    "file": "ld.c",
    "pairing": "open",
    "orig": "0x229c",
-   "ours": "-",
-   "level": "open",
+   "ours": "229c-22e8",
+   "level": "exact",
    "size_orig": 76,
    "callers_orig": "194a,1a12,221e,226e",
-   "status": "open"
+   "status": "done"
   },
   "f22e8": {
    "file": "copyname.c",
@@ -471,23 +471,23 @@
   },
   "f26ac": {
    "file": "symbols.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x26ac",
-   "ours": "-",
-   "level": "findings",
+   "ours": "26ac-26ca",
+   "level": "exact",
    "size_orig": 30,
    "callers_orig": "0b6e",
-   "status": "findings"
+   "status": "done"
   },
   "f26ca": {
    "file": "symbols.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x26ca",
-   "ours": "-",
-   "level": "findings",
+   "ours": "26ca-26e8",
+   "level": "exact",
    "size_orig": 30,
    "callers_orig": "-",
-   "status": "findings"
+   "status": "done"
   },
   "f26e8": {
    "file": "symbols.c",
@@ -601,7 +601,7 @@
   },
   "f2bf6": {
    "file": "symbols.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x2bf6",
    "ours": "2bf6-2bfc",
    "level": "exact",
@@ -611,7 +611,7 @@
   },
   "f2bfc": {
    "file": "symbols.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x2bfc",
    "ours": "2bfc-2c02",
    "level": "exact",
@@ -646,12 +646,37 @@
   "f26ac": {
    "basis": "read",
    "d_classes": [],
-   "note": "findings: draft with f2360(x, &v107c) matches all instructions; the frame is 4 bytes in the original (one unused 2-byte local, spare) and 2 in the draft. Three attempts used (argument order, register parameter, argument order)."
+   "note": "exact (2026-10-29): the frame difference was one unused 2-byte local (spare), as in HOWTO step 7. The earlier char-parameter theory was wrong."
   },
   "f26ca": {
    "basis": "read",
    "d_classes": [],
-   "note": "findings: same as f26ac with f22e8(x, &v107c); frame 4 against 2 (unused local). Three attempts used."
+   "note": "exact (2026-10-29): the frame difference was one unused 2-byte local (spare), as in HOWTO step 7. The earlier char-parameter theory was wrong."
+  },
+  "f21f2": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, fifth attempt): for loop, the equal case is the main path (if (*t == *s++) { if (*t++) continue; return(1); } return(0)); parameter list (t, s). The earlier D1/D15 reading was the pointer copy and the branch sense, both resolved by the form."
+  },
+  "f226e": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, fifth attempt): char c (second argument, r7) and register pointer p (r6 -> r14); struct _iobuf { int _x; int _cnt; char *_ptr; } (the displacements of the original: cnt at 2, ptr at 4). The struct member _x is a name guess; the layout is what matters."
+  },
+  "f1b0a": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, fifth attempt): parameter list (q, p, n), register pointer r and counter i (declared in this order), and two unused int locals (spare1, spare2). The parameter order is the same as f1f22 and f1b0a stands for the rule; the register order (r14 then r13) as in f1f22."
+  },
+  "f1f22": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, fourth and fifth attempt): parameter list (end, x) and three unused int locals (spare). The parameter order is the one of f1b0a: the first declared parameter takes the last argument register. Frame 18 bytes as the original."
+  },
+  "f229c": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, fourth attempt): struct _iobuf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets."
   }
  },
  "inventory": {
