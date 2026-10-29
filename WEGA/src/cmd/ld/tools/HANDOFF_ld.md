@@ -201,3 +201,16 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   Tested: `make all` in a scratch tree with the emulator tools (all objects built), `make check` in the repository
   (libc_verify.py: 0 differing words).
 - The own code is not in the Makefile yet (step 3).
+
+## Step 3: own code as one block (2026-10-29)
+
+- Start code: mkcrt0.sh ld (crt0.list has the line for ld) is 0x0000..0x0042 (66 bytes of code, 42 of data). Checked:
+  0 differing words in code and data.
+- Own block: 0x0042..0x2c4c (11274 bytes), cut with unlink.py and `tools/own.spec` (own module first, then the libc
+  members of ld.spec for the names, noown). Written to /mnt/share/cvs/P8000/tmp/tmp/own/oldlibc/own/0_1.s (scratch,
+  not in the repository). It assembles with cas -u (object 11274 bytes = expected), and the code matches /bin/ld with
+  0 differing words. 530 relocated words are not compared (addresses of libc members, data and bss).
+- Names added to ld.spec: _f47d6 (entry of swap, called from own code at 11e8, 202c, 203a), _b325e, _b44a4, _b44a6
+  (bss variables used by own code). One PROBLEM left: 0200 in malloc (a constant, not an address).
+- Open: the 530 relocated words get checked when the link exists (own block + libc objects + crt0); the data of the own
+  block (0..0abc, shared with the libc data) is step 4.

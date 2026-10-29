@@ -49,5 +49,5 @@ umask      shipped 4986 498e  0
 unlink     shipped 498e 499c  0
 write      shipped 499c 49ac  0
 cerror     shipped 49ac 49bc  4 dstart=0ab8
-sym __iob+15=0907 __lastbuf=0998 __sobuf=705e __filbuf=3ece __flsbuf=3fb0 __cnvt=41a2 __length=4322 _strcpy=4714 _ungetc=3e78 _tolower=467c __inflt=3e76 __fegcvt=3e74 __fltuse=3e72 __pfile=705c __iob+8=0900 __iob=08f8
+sym _f47d6=47d6 _b325e=325e _b44a4=44a4 _b44a6=44a6 __iob+15=0907 __lastbuf=0998 __sobuf=705e __filbuf=3ece __flsbuf=3fb0 __cnvt=41a2 __length=4322 _strcpy=4714 _ungetc=3e78 _tolower=467c __inflt=3e76 __fegcvt=3e74 __fltuse=3e72 __pfile=705c __iob+8=0900 __iob=08f8
 noown
