@@ -998,3 +998,22 @@ Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamp
   All bss_map entries equal relative to ntab (the aliases x702f..x7031 are tab42b4 elements).
 - Data: still 2784 against 2748 (+36, see step 1: the string alignment D12).
 - Recorded in src/TODO.md, row `cmd/ld/`.
+
+## Step 6 (corpus test), first run (2026-10-29): not passing
+
+- Set up: `tools/corpus_ld.py LDBIN -n N` runs the corpus of host/ld/check.py (fixed and random command lines, same test
+  objects and archives) with the original `/bin/ld` and with our binary under z8k-emu (`ld_under_test`); the output file
+  and the exit status must be identical. Work directory: tmp/tmp/corpus_ld_work.
+- Result: our ld does not work yet. Our binaries had never been run before: the earlier "link works" was the link of the
+  own code by the ORIGINAL linker, not a run of our ld. Observed:
+  - any single-object link (`-o t d.o`) loops forever in end_pass1 (the rflag scan) at 0x0bb6..0x0bbc, calling next_entry.
+    Cause found and fixed: next_entry had an invented range check (`if (p >= symtab && p < nsym) return p;`, no return
+    otherwise). The original next_entry has no check (0x2aa6..0x2b04 contains no comparison); the check is removed.
+    Still hangs for `-o t d.o`: the next cause is open.
+  - archives: `libx.a(c.o): Premature EOF` (report_error from get, the archive member is read beyond its size).
+  - `-o t a.o b.o u.o`: "Undefined: _end, _etext" (the symbol lookup of the end_pass1 bases, ldrsym/slookup or the
+    table of symbols).
+- Open: the functional path of ld (end_pass1, ldrsym, slookup/enter, getfile/get/dseek, load2) has to be debugged with the
+  trace (z8k-emu -t, compare the traces of our ld and of /bin/ld on the same input). The byte comparison of the code does
+  not show these errors: the findings have 0 unexplained differences, but the findings themselves are not right.
+- Steps 4 and 5 are not closed by this: the correctness of the findings is open.
