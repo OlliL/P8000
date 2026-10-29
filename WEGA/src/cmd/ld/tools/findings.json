@@ -311,13 +311,13 @@
   },
   "f2c20": {
    "file": "symbols.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x2c20",
-   "ours": "-",
-   "level": "open",
+   "ours": "2c20-2c4c",
+   "level": "exact",
    "size_orig": 44,
    "callers_orig": "29d6",
-   "status": "open"
+   "status": "done"
   },
   "mget": {
    "file": "ld.c",

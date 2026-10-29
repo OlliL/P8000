@@ -328,3 +328,18 @@ limit_msg()
 {
 	printf("%d symbols / %d available\n", symindex, symtab ? 0x0923 : 0x0258);
 }
+
+/* f2c20: grow the heap by x bytes and return the old break, or -1 when the break moved (no sld counterpart; calls the entry 0x484a of the
+   shipped brk member, presumably sbrk; 0x2c20..0x2c4c of /bin/ld). Used by table16_entry (f29d6) */
+f2c20(x)
+int x;
+{
+	unsigned b;
+	unsigned a;
+
+	a = sbrk(x);
+	b = sbrk(0);
+	if (b < a)
+		return -1;
+	return a;
+}

@@ -543,3 +543,7 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## getfile (2026-10-29): finding
 
 - f1ce2 is sld getfile (ld.c), finding (120 instructions, equal count, draft d5/gf4.c). libname is the data string "/lib/libxxxxxxxxxxx" (0x156). Open points: three register variables, strncpy count, last branch, the reloc stream address (0x1042 as pno, step 5b).
+
+## f2c20 (2026-10-29)
+
+- f2c20 has no sld counterpart. It calls the entry 0x484a of the shipped brk member twice (grow by x, then query with 0) and returns the old break or -1 when the break moved (unsigned locals a, b, exact). It is the growth helper of table16_entry (f29d6). The name of 0x484a (presumably sbrk) is not verified.
