@@ -193,3 +193,11 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   30 to 39 words in doscan, doprnt and malloc, 1 to 7 in the shipped members. Checking them needs the own code (step 3)
   and the addresses in ld.spec: open.
 - ld.link regenerated (cnvt 0_1, rindex 0_1).
+
+## Makefile of the libc part (2026-10-29)
+
+- `src/cmd/ld/Makefile` is written by `tools/gen_makefile.py` from `tools/ld.link` (model: sld). It builds the 29 shipped
+  members (ar x from /lib/libc.a into shipped/) and the 13 old modules (cas -u from src/lib/oldlibc), in link order.
+  Tested: `make all` in a scratch tree with the emulator tools (all objects built), `make check` in the repository
+  (libc_verify.py: 0 differing words).
+- The own code is not in the Makefile yet (step 3).

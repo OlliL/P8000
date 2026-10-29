@@ -11,19 +11,3 @@ size.spec, size.link   the libc part of /bin/size as modules (input of host/tool
            shipped cc does, so the data is 2 bytes longer (6212 instead of 6210 bytes). With that older size.o
            (the `.even` behind the strings removed from the cc -S output) the file was identical. Run on
            several files the built `size` gives the same output as the original.
-
-doprnt.c   _doprnt (+ fix, getnum, float stubs) reconstructed from the object code of bin/size
-           (0x4ec..0xb54). UNTESTED, NOT BYTE-IDENTICAL; the control flow, local variable layout and
-           jump tables follow the original. The same function in strip has the same structure with
-           another frame size and another code for post-increments, so the two programs were not
-           compiled by the same compiler.
-
-Why the members of this version do not come out byte-identical with the shipped cc:
- * They were compiled with an OLDER cc revision than the one shipped in /bin/cc. Visible differences:
-   post-increment through a pointer in a store (`*p->_ptr++ = c`) is emitted as load/store/inc by the
-   old cc and as inc/load/dec by the shipped cc; the varargs prologue (registers spilled in reverse
-   order into one contiguous argument block, f3..f0 spilled with inline EPU words) is a feature of the
-   old cc only; char loads are `ldb`+`subb` vs `ldk`+`ldb`.
- * No copy of the old compiler is available (all archives contain the same 1990-03-01 cparse/codgen/
-   gopt/popt).
-So printf/fprintf/sprintf, which rely on the old varargs prologue, are not reconstructed as C.

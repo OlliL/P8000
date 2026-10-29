@@ -1471,7 +1471,6 @@ Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, m
   declared between `_align` and `_doprnt` for the symbol order, `putc((int)*str++,f)` gives
   `extsb r6; ld r7,r6`, `if ((c = *str++) < '0' || c > '9')` keeps c in rl3, `_align` falls into the
   swap after the first branch, float tail jumps to the shared `len = r2` store).
-- `src/cmd/size/doprnt.c` holds the structural reconstruction of _doprnt (untested).
 
 ## oldlibc: libc versions and assembler sources of objects made by the old cc
 
