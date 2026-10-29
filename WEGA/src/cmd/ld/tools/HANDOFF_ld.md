@@ -152,3 +152,26 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   the state before; ranlib identical to the state before (its known difference to the original is unchanged).
 - Deleted: src/lib/oldlibc/ffltioc/ and its line in VERSIONS. Stale build products doprnt/0_3.o and 0_5.o removed (they
   were older than the sources and would be used by ranlib, where there is no rule for them in the Makefile).
+
+## swap (2026-10-29)
+
+- oldlibc/swap/0_1.s had no _longswap label (one function less than 0_2.s). Its only user was size. size now uses
+  swap/0_2.o (Makefile, size.spec with _longswap=14ca), the build is byte-identical to the state before, and swap/0_1.s
+  is deleted. VERSIONS: swap 0_2 is used by strip, size and ld (ld: the 0_2 text occurs at 4786).
+
+## Complete libc spec of ld (2026-10-29)
+
+- `tools/ld.spec`: all libc members of /bin/ld from scanf (2c4c) to cerror (49bc) in link order, with kinds, versions,
+  symbols and data where it is checked. `tools/ld.link`: the link order as unlink.py prints it.
+- unlink.py with ld.spec: no PROBLEM lines. Versions that come out identical to src/lib/oldlibc: doscan 0_1, printf 0_6,
+  doprnt 0_6 (124 data bytes: 0868..08e4; the 144 I wrote before overlapped filbuf), filbuf 0_2 (data 20 at 08e4),
+  flsbuf 0_1, malloc 0_2 (data 12 at 09a6), mktemp 0_1 (data 2 at 09b2), length 0_1, strcat 0_1, strcpy 0_1,
+  strncpy 0_2, swap (text identical to 0_2; unlink numbers it 0_1, numbering to check).
+- New version installed: rindex 0_1 (shipped rindex.o has frame 10, ld 12).
+- 4192..4198 (6 bytes: call _exit; ret) is the shipped member __callex.o (6 bytes, call _exit; ret; the same name as in
+  size.spec). Callers: own code at 003c and nothing else. Entry added to ld.spec and ld.link as shipped.
+- Open: cnvt data (12 bytes, installed cnvt/0_1 has D0000 and D000a; in ld the cut is cnvt 0_3 without data),
+  the data of the shipped members brk (2) and cerror (4).
+- unlink.py fix (2026-10-29): data symbols of a shipped member are named only when the member has data.
+- swap renumbered (owner, 2026-10-29): old 0_2 is now swap 0_1 (strip, size, ld), old 0_3 is now swap 0_2 (ranlib).
+  Users updated: size/Makefile, strip/Makefile, ranlib/Makefile, strip.link, ranlib.link. size.link and ld.link say 0_1.

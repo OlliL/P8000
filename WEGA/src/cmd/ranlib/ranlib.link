@@ -24,7 +24,7 @@ old swab 0_1
 old strncmp 0_1
 old strncpy 0_1
 old goodmagic 0_2
-old swap 0_3
+old swap 0_2
 shipped brk
 shipped close
 shipped creat

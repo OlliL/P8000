@@ -20,7 +20,7 @@ isatty     shipped 13ca 13e8    0
 stty       shipped 13e8 1414    0
 swab       shipped 1414 1452    0
 goodmagic  old     1452 14a4   20   _goodmagic=1452 _magics=1800 comm:_swap_flg=281c:2
-swap       old     14a4 1546    0   _swap=14a4
+swap       old     14a4 1546    0   _swap=14a4 _longswap=14ca
 brk        shipped 1546 157c    2
 chmod      shipped 157c 158c    0
 close      shipped 158c 159a    0

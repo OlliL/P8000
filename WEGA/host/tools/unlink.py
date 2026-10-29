@@ -163,7 +163,9 @@ def main():
                 t = y["type"] & 0x1F
                 if t == 2 and m["start"] is not None:
                     names.setdefault(m["start"] + y["value"], y["name"])
-                elif t == 3:
+                elif t == 3 and m["data"]:
+                    # only a member with data: a member without data has no place for its data symbols
+                    # (their dstart is not a real address, small constants would take the names)
                     names.setdefault(m["dstart"] + y["value"], y["name"])
     ins = [(pc, t) for pc, t in libcver.decode(img, tsize) if pc >= ownend]
     starts = {pc for pc, t in ins}

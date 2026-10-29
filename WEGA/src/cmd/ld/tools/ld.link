@@ -1,0 +1,43 @@
+# link order of the libc part of /bin/ld (made from ld.spec by unlink.py; rindex is a new version)
+shipped scanf
+old doscan 0_1
+old printf 0_6
+old doprnt 0_6
+shipped ffltioc
+shipped ungetc
+old filbuf 0_2
+old flsbuf 0_1
+shipped __callex
+shipped cuexit
+old cnvt 0_3
+shipped decimal
+old length 0_1
+old malloc 0_2
+shipped isatty
+old mktemp 0_1
+shipped stty
+shipped swab
+old rindex 0_1
+shipped tolower
+old strcat 0_1
+shipped strncmp
+old strcpy 0_1
+old strncpy 0_2
+old swap 0_1
+shipped access
+shipped brk
+shipped chmod
+shipped close
+shipped creat
+shipped fstat
+shipped getpid
+shipped ioctl
+shipped link
+shipped lseek
+shipped open
+shipped read
+shipped signal
+shipped umask
+shipped unlink
+shipped write
+shipped cerror

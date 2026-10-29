@@ -28,7 +28,7 @@ OBJS = $(OLD)/fseek/0_1.o $(OLD)/rdwr/0_2.o fopen.o \
 	$(OLD)/length/0_1.o $(OLD)/malloc/0_2.o isatty.o \
 	$(OLD)/mktemp/0_1.o stty.o swab.o \
 	strcmp.o $(OLD)/strcpy/0_1.o $(OLD)/goodmagic/0_1.o \
-	$(OLD)/swap/0_2.o access.o brk.o \
+	$(OLD)/swap/0_1.o access.o brk.o \
 	chmod.o close.o creat.o \
 	getpid.o ioctl.o lseek.o \
 	open.o read.o signal.o \
@@ -96,8 +96,8 @@ $(OLD)/strcpy/0_1.o: $(OLD)/strcpy/0_1.s
 $(OLD)/goodmagic/0_1.o: $(OLD)/goodmagic/0_1.s
 	$(CAS) -u -o $@ $(OLD)/goodmagic/0_1.s
 
-$(OLD)/swap/0_2.o: $(OLD)/swap/0_2.s
-	$(CAS) -u -o $@ $(OLD)/swap/0_2.s
+$(OLD)/swap/0_1.o: $(OLD)/swap/0_1.s
+	$(CAS) -u -o $@ $(OLD)/swap/0_1.s
 
 install: strip
 	cp strip $(PREFIX)/usr/bin/strip
@@ -105,6 +105,6 @@ install: strip
 clean:
 	rm -f strip strip.o fopen.o data.o __callex.o cuexit.o decimal.o isatty.o stty.o swab.o strcmp.o access.o brk.o chmod.o close.o creat.o getpid.o ioctl.o lseek.o open.o read.o signal.o umask.o unlink.o write.o cerror.o
 	rm -f $(CRT)/crt0-strip.s $(CRT)/crt0-strip.o
-	rm -f $(OLD)/fseek/0_1.o $(OLD)/rdwr/0_2.o $(OLD)/printf/0_2.o $(OLD)/doprnt/0_2.o $(OLD)/filbuf/0_2.o $(OLD)/flsbuf/0_1.o $(OLD)/endopen/0_2.o $(OLD)/findiop/0_1.o $(OLD)/cnvt/0_1.o $(OLD)/length/0_1.o $(OLD)/malloc/0_2.o $(OLD)/mktemp/0_1.o $(OLD)/strcpy/0_1.o $(OLD)/goodmagic/0_1.o $(OLD)/swap/0_2.o
+	rm -f $(OLD)/fseek/0_1.o $(OLD)/rdwr/0_2.o $(OLD)/printf/0_2.o $(OLD)/doprnt/0_2.o $(OLD)/filbuf/0_2.o $(OLD)/flsbuf/0_1.o $(OLD)/endopen/0_2.o $(OLD)/findiop/0_1.o $(OLD)/cnvt/0_1.o $(OLD)/length/0_1.o $(OLD)/malloc/0_2.o $(OLD)/mktemp/0_1.o $(OLD)/strcpy/0_1.o $(OLD)/goodmagic/0_1.o $(OLD)/swap/0_1.o
 
 .PHONY: all install clean

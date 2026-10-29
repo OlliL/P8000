@@ -13,6 +13,7 @@ _swap::
 	ld	r14,%0008(r15)
 	inc	r15,#10
 	ret
+_longswap::
 	dec	r15,#6
 	ld	%0004(r15),r14
 	ld	@r15,r7

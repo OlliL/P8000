@@ -28,7 +28,7 @@ OBJS = $(OLD)/fseek/0_2.o $(OLD)/ftell/0_1.o $(OLD)/readsym/0_1.o \
 	cuexit.o $(OLD)/cnvt/0_2.o decimal.o \
 	$(OLD)/length/0_2.o $(OLD)/malloc/0_3.o $(OLD)/isatty/0_1.o \
 	$(OLD)/stty/0_1.o $(OLD)/swab/0_1.o $(OLD)/strncmp/0_1.o \
-	$(OLD)/strncpy/0_1.o $(OLD)/goodmagic/0_2.o $(OLD)/swap/0_3.o \
+	$(OLD)/strncpy/0_1.o $(OLD)/goodmagic/0_2.o $(OLD)/swap/0_2.o \
 	brk.o close.o creat.o \
 	execl.o exit.o fork.o \
 	ioctl.o lseek.o $(OLD)/open/0_1.o \
@@ -118,8 +118,8 @@ $(OLD)/strncpy/0_1.o: $(OLD)/strncpy/0_1.s
 $(OLD)/goodmagic/0_2.o: $(OLD)/goodmagic/0_2.s
 	$(CAS) -u -o $@ $(OLD)/goodmagic/0_2.s
 
-$(OLD)/swap/0_3.o: $(OLD)/swap/0_3.s
-	$(CAS) -u -o $@ $(OLD)/swap/0_3.s
+$(OLD)/swap/0_2.o: $(OLD)/swap/0_2.s
+	$(CAS) -u -o $@ $(OLD)/swap/0_2.s
 
 $(OLD)/open/0_1.o: $(OLD)/open/0_1.s
 	$(CAS) -u -o $@ $(OLD)/open/0_1.s
@@ -130,6 +130,6 @@ install: ranlib
 clean:
 	rm -f ranlib ranlib.o data.o __callex.o cuexit.o decimal.o brk.o close.o creat.o execl.o exit.o fork.o ioctl.o lseek.o read.o signal.o time.o unlink.o wait.o write.o cerror.o
 	rm -f $(CRT)/crt0-ranlib.s $(CRT)/crt0-ranlib.o
-	rm -f $(OLD)/fseek/0_2.o $(OLD)/ftell/0_1.o $(OLD)/readsym/0_1.o $(OLD)/rdwr/0_3.o $(OLD)/system/0_1.o $(OLD)/fopen/0_1.o $(OLD)/printf/0_3.o $(OLD)/doprnt/0_3.o $(OLD)/filbuf/0_3.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_3.o $(OLD)/findiop/0_2.o $(OLD)/cnvt/0_2.o $(OLD)/length/0_2.o $(OLD)/malloc/0_3.o $(OLD)/isatty/0_1.o $(OLD)/stty/0_1.o $(OLD)/swab/0_1.o $(OLD)/strncmp/0_1.o $(OLD)/strncpy/0_1.o $(OLD)/goodmagic/0_2.o $(OLD)/swap/0_3.o $(OLD)/open/0_1.o
+	rm -f $(OLD)/fseek/0_2.o $(OLD)/ftell/0_1.o $(OLD)/readsym/0_1.o $(OLD)/rdwr/0_3.o $(OLD)/system/0_1.o $(OLD)/fopen/0_1.o $(OLD)/printf/0_3.o $(OLD)/doprnt/0_3.o $(OLD)/filbuf/0_3.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_3.o $(OLD)/findiop/0_2.o $(OLD)/cnvt/0_2.o $(OLD)/length/0_2.o $(OLD)/malloc/0_3.o $(OLD)/isatty/0_1.o $(OLD)/stty/0_1.o $(OLD)/swab/0_1.o $(OLD)/strncmp/0_1.o $(OLD)/strncpy/0_1.o $(OLD)/goodmagic/0_2.o $(OLD)/swap/0_2.o $(OLD)/open/0_1.o
 
 .PHONY: all install clean

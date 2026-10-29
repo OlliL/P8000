@@ -22,7 +22,7 @@ shipped swab
 shipped strcmp
 old strcpy 0_1
 old goodmagic 0_1
-old swap 0_2
+old swap 0_1
 shipped access
 shipped brk
 shipped chmod
