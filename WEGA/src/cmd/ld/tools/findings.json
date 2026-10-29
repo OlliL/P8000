@@ -1,0 +1,683 @@
+{
+ "metric": "ld: function identification and comparison with /bin/ld (nonsegmented, E711, stripped)",
+ "metric_def": "instruction comparison with tools/ldcheck.py (cc -O object of the draft against the original code range); own code 0x0042..0x2c4c; crt0 0x0000..0x0042 is generated (mkcrt0.sh)",
+ "schema": "functions: name -> file (our source), ours (range of the draft), orig (start in /bin/ld), pairing (open|confirmed), level (open|exact|findings), status (open|done|findings:<classes>); findings: list of findings with id, status, functions, orig, ours, summary, done, decide; findings_pending: items without a D class; manual_classes: hand notes per function (basis read|open, note); d_classes: differences of the old compiler (D1..)",
+ "status_values": [
+  "open",
+  "done",
+  "findings",
+  "deferred"
+ ],
+ "binary": "/mnt/share/cvs/P8000/tmp/wega31_root/bin/ld",
+ "binary_facts": {
+  "magic": "E711 (nonsegmented, I and D separate: data addresses from 0, bss after the data)",
+  "code": 18944,
+  "data": 2748,
+  "bss": 27082,
+  "stripped": true,
+  "strings": "SCCS: crt0.s 3.2 (generated), ld.c 1.18, copyname.c 1.3, printname.c 1.5, symbols.c 1.8",
+  "libc": "libc part 0x2c4c..0x49bc (shipped members and oldlibc versions, tools/ld.spec)"
+ },
+ "functions": {
+  "f0000": {
+   "file": "crt0",
+   "pairing": "open",
+   "orig": "0x0000",
+   "ours": "-",
+   "level": "generated",
+   "size_orig": 16,
+   "callers_orig": "-",
+   "status": "crt0"
+  },
+  "f0010": {
+   "file": "crt0",
+   "pairing": "open",
+   "orig": "0x0010",
+   "ours": "-",
+   "level": "generated",
+   "size_orig": 8,
+   "callers_orig": "-",
+   "status": "crt0"
+  },
+  "f0018": {
+   "file": "crt0",
+   "pairing": "open",
+   "orig": "0x0018",
+   "ours": "-",
+   "level": "generated",
+   "size_orig": 42,
+   "callers_orig": "-",
+   "status": "crt0"
+  },
+  "f0042": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x0042",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 90,
+   "callers_orig": "194a,1e86",
+   "status": "open"
+  },
+  "f009c": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x009c",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 724,
+   "callers_orig": "0000",
+   "status": "open"
+  },
+  "f0370": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x0370",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 238,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f045e": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x045e",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 174,
+   "callers_orig": "009c",
+   "status": "open"
+  },
+  "f050c": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x050c",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 112,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f057c": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x057c",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 140,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f0608": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x0608",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 268,
+   "callers_orig": "009c",
+   "status": "open"
+  },
+  "f0714": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x0714",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 158,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f07b2": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x07b2",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 232,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f089a": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x089a",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 50,
+   "callers_orig": "0b6e",
+   "status": "open"
+  },
+  "f08cc": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x08cc",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 674,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f0b6e": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x0b6e",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 558,
+   "callers_orig": "045e",
+   "status": "open"
+  },
+  "f0d9c": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x0d9c",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 754,
+   "callers_orig": "0b6e",
+   "status": "open"
+  },
+  "f108e": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x108e",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 384,
+   "callers_orig": "045e",
+   "status": "open"
+  },
+  "f120e": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x120e",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 154,
+   "callers_orig": "108e",
+   "status": "open"
+  },
+  "f12a8": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x12a8",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 290,
+   "callers_orig": "108e",
+   "status": "open"
+  },
+  "f13ca": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x13ca",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 136,
+   "callers_orig": "045e",
+   "status": "open"
+  },
+  "f1452": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1452",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 732,
+   "callers_orig": "13ca",
+   "status": "open"
+  },
+  "f172e": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x172e",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 540,
+   "callers_orig": "1452",
+   "status": "open"
+  },
+  "f194a": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x194a",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 200,
+   "callers_orig": "045e",
+   "status": "open"
+  },
+  "f1a12": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1a12",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 98,
+   "callers_orig": "194a",
+   "status": "open"
+  },
+  "f1a74": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1a74",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 38,
+   "callers_orig": "12a8",
+   "status": "open"
+  },
+  "f1a9a": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1a9a",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 112,
+   "callers_orig": "13ca,1ce2,1f64,249a",
+   "status": "open"
+  },
+  "f1b0a": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1b0a",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 46,
+   "callers_orig": "108e,27be",
+   "status": "open"
+  },
+  "f1b38": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1b38",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 290,
+   "callers_orig": "13ca,1452,1c6c,1ce2,1f64",
+   "status": "open"
+  },
+  "f1c5a": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1c5a",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 18,
+   "callers_orig": "1452,1b38",
+   "status": "open"
+  },
+  "f1c6c": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1c6c",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 118,
+   "callers_orig": "172e,1a9a,1ce2",
+   "status": "open"
+  },
+  "f1ce2": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1ce2",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 420,
+   "callers_orig": "0608,13ca",
+   "status": "open"
+  },
+  "f1e86": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1e86",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 156,
+   "callers_orig": "009c,089a,0d9c,108e,120e,1452,172e,1a74,1b38,1c6c,1ce2,1f22,1f64,229c,23e2,2502,29d6",
+   "status": "open"
+  },
+  "f1f22": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1f22",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 66,
+   "callers_orig": "172e",
+   "status": "open"
+  },
+  "f1f64": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1f64",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 654,
+   "callers_orig": "1452",
+   "status": "open"
+  },
+  "f21f2": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x21f2",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 44,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f221e": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x221e",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 80,
+   "callers_orig": "172e,194a,1b0a",
+   "status": "open"
+  },
+  "f226e": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x226e",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 46,
+   "callers_orig": "172e,1a12",
+   "status": "open"
+  },
+  "f229c": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x229c",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 76,
+   "callers_orig": "194a,1a12,221e,226e",
+   "status": "open"
+  },
+  "f22e8": {
+   "file": "copyname.c",
+   "pairing": "open",
+   "orig": "0x22e8",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 120,
+   "callers_orig": "2360,25a2",
+   "status": "open"
+  },
+  "f2360": {
+   "file": "copyname.c",
+   "pairing": "open",
+   "orig": "0x2360",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 130,
+   "callers_orig": "26ac",
+   "status": "open"
+  },
+  "f23e2": {
+   "file": "printname.c",
+   "pairing": "open",
+   "orig": "0x23e2",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 184,
+   "callers_orig": "1452,2502",
+   "status": "open"
+  },
+  "f249a": {
+   "file": "printname.c",
+   "pairing": "open",
+   "orig": "0x249a",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 104,
+   "callers_orig": "1452",
+   "status": "open"
+  },
+  "f2502": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2502",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 160,
+   "callers_orig": "0b6e",
+   "status": "open"
+  },
+  "f25a2": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x25a2",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 58,
+   "callers_orig": "13ca",
+   "status": "open"
+  },
+  "f25dc": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x25dc",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 208,
+   "callers_orig": "1452,26ac",
+   "status": "open"
+  },
+  "f26ac": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x26ac",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 30,
+   "callers_orig": "0b6e",
+   "status": "open"
+  },
+  "f26ca": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x26ca",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 30,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f26e8": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x26e8",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 126,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f2766": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2766",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 88,
+   "callers_orig": "1452",
+   "status": "open"
+  },
+  "f27be": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x27be",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 112,
+   "callers_orig": "1452,25a2,282e",
+   "status": "open"
+  },
+  "f282e": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x282e",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 52,
+   "callers_orig": "194a",
+   "status": "open"
+  },
+  "f2862": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2862",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 236,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f294e": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x294e",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 136,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f29d6": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x29d6",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 208,
+   "callers_orig": "0b6e,282e",
+   "status": "open"
+  },
+  "f2aa6": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2aa6",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 94,
+   "callers_orig": "0b6e,282e",
+   "status": "open"
+  },
+  "f2b04": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2b04",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 54,
+   "callers_orig": "172e",
+   "status": "open"
+  },
+  "f2b3a": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2b3a",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 88,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f2b92": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2b92",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 100,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f2bf6": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2bf6",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 6,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f2bfc": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2bfc",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 6,
+   "callers_orig": "-",
+   "status": "open"
+  },
+  "f2c02": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2c02",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 30,
+   "callers_orig": "0000,0042",
+   "status": "open"
+  },
+  "f2c20": {
+   "file": "symbols.c",
+   "pairing": "open",
+   "orig": "0x2c20",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 44,
+   "callers_orig": "29d6",
+   "status": "open"
+  }
+ },
+ "findings": [],
+ "findings_pending": [],
+ "manual_classes": {},
+ "inventory": {
+  "source": "tools/inventory.py (nonsegmented copy of the sld inventory); tools/own_table.py"
+ },
+ "module_list": [
+  "ld.c",
+  "copyname.c",
+  "printname.c",
+  "symbols.c"
+ ],
+ "module_ranges": [
+  [
+   "0x0042",
+   "0x22e8",
+   "ld.c"
+  ],
+  [
+   "0x22e8",
+   "0x23e2",
+   "copyname.c"
+  ],
+  [
+   "0x23e2",
+   "0x2502",
+   "printname.c"
+  ],
+  [
+   "0x2502",
+   "0x2c4c",
+   "symbols.c"
+  ]
+ ],
+ "data_ranges": {
+  "ld.c": "0x002a..0x05a4",
+  "copyname.c": "0x05a4..0x05d8",
+  "printname.c": "0x05d8..0x0646",
+  "symbols.c": "0x0646..0x07c8"
+ }
+}

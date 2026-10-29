@@ -14,7 +14,9 @@ import os
 import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CRT0_END = 0x0018
+CRT0_END = 0x0042
+# owner decisions (override the rule): the two functions between ld.c and printname.c are copyname.c
+OVERRIDE = {0x22e8: 'copyname.c', 0x2360: 'copyname.c'}
 ORDER = ['ld.c', 'copyname.c', 'printname.c', 'symbols.c']
 
 
@@ -39,6 +41,10 @@ def main():
     for a, n, f in rows:
         if a < CRT0_END:
             out.append('%04x %-8s %-11s %s' % (a, names[a], 'crt0', 'generated start code'))
+            continue
+        if a in OVERRIDE:
+            cur = OVERRIDE[a]
+            out.append('%04x %-8s %-11s %s' % (a, names[a], cur, 'owner decision'))
             continue
         if a in vote:
             if cur and ORDER.index(vote[a]) < ORDER.index(cur):

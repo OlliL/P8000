@@ -229,3 +229,21 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   initialised variables, which come with the C sources of step 5).
 - bss: 27082 bytes at 0abc, not checked. Own variables are unknown until the C sources declare them (step 5); the
   libc commons (_rc at 705a, __pfile 705c, __sobuf 705e) are in the spec as comm.
+
+## Step 5: functions in C (started 2026-10-29)
+
+- Checker: `tools/ldcheck.py DRAFT.c LO HI` (model: sld fncheck.py; /bin/cc -O -c in the emulator, nonsegmented
+  decoding, original /bin/ld). Smoke-tested only; no function of ld is drafted yet.
+- Functions to draft: `tools/assigned.txt` (own functions per file: ld.c 36, copyname.c 2, printname.c 2,
+  symbols.c 20, crt0 2). Per the HOWTO: one C file per module (ld.c, copyname.c, printname.c, symbols.c), each
+  compiled alone; at most 3 attempts per function; then findings.
+- Step 5b (bss) follows the first pass.
+
+## Progress tracking (2026-10-29)
+
+- `tools/findings.json` (schema of sld): 62 own-table entries; functions keyed by name (f<addr> until named), with
+  file (assigned.txt, owner decision for copyname), orig (entry), size and callers, status open; crt0 entries
+  0x0000, 0x0010, 0x0018 have status crt0 (generated start code 0x0000..0x0042).
+- module_ranges: ld.c 0x0042..0x22e8, copyname.c 0x22e8..0x23e2, printname.c 0x23e2..0x2502, symbols.c 0x2502..0x2c4c.
+- `tools/FINDINGS.md` is generated from findings.json (findings_md.py, copied from sld, uses progcfg.py).
+- `tools/own_functions.txt`: status column is `open` / `crt0`; keep it in step with findings.json.
