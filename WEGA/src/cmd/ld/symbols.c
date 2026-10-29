@@ -99,7 +99,7 @@ int x;
 	lookup_name();
 }
 
-pslookup(x)
+struct symbol **pslookup(x)
 int x;
 {
 	int spare;
@@ -278,6 +278,37 @@ struct symbol *a;
 		(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 9) : _flsbuf((unsigned)9, stderr));
 	(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 0x20) : _flsbuf((unsigned)0x20, stderr));
 	report_error(0, "- warning: symbol redefined in archive");
+}
+
+/* chk_ranlib: check an archive member against the ranlib table (sld chk_ranlib; 0x294e..0x29d6 of /bin/ld; finding: the
+   frame is equal, the store q = p is ordered differently) */
+chk_ranlib(p, n)
+struct rlent *p;
+int n;
+{
+	int spare;
+
+	struct rlent *e;
+	struct rlent *q;
+	struct symbol *q2;
+
+	q = p;
+	e = p + n;
+	goto test;
+body:
+	if (p >= q) {
+		if ((p->rname[0] & 0x80) != 0)
+			q = (struct rlent *)(p->rname + (p->rname[0] & 0x7f));
+		q2 = *pslookup(p->rname);
+		if (q2 != 0) {
+			if (q2->stype != 0x20)
+				warn_sym_redef(0, q2);
+		}
+	}
+	p++;
+test:
+	if (p < e)
+		goto body;
 }
 
 /* next_entry: next entry of the symbol table (a long name occupies several entries) (0x2aa6..0x2b04 of /bin/ld; finding) */

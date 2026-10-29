@@ -124,3 +124,10 @@ extern int v66b4;
 int getfile();
 char *rindex();
 char *f2b92();
+/* entry of the ranlib table (sld: rlent, 12 bytes) */
+struct rlent {
+	long roff;
+	char rname[8];
+};
+struct symbol **pslookup();
+int chk_ranlib();

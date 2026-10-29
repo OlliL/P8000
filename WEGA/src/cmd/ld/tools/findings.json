@@ -249,16 +249,6 @@
    "callers_orig": "194a",
    "status": "open"
   },
-  "f294e": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x294e",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 136,
-   "callers_orig": "-",
-   "status": "open"
-  },
   "f29d6": {
    "file": "symbols.c",
    "pairing": "open",
@@ -658,6 +648,16 @@
    "size_orig": 88,
    "callers_orig": "172e",
    "status": "findings"
+  },
+  "chk_ranlib": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x294e",
+   "ours": "294e-29d6",
+   "level": "findings",
+   "size_orig": 136,
+   "callers_orig": "-",
+   "status": "findings"
   }
  },
  "findings": [],
@@ -800,6 +800,13 @@
     "D3"
    ],
    "note": "findings (symbols.c): sld ensure_buf in its sld form (if (rlsize < n) with the zero test first, grow by f2b92 otherwise). 30 instructions, 29 equal: the original keeps a jump to the end after the grow call (jr), the draft falls through. The first form (rlsize >= n first) differed in the comparison copy and the branch sense. Draft: d5/eb9.c. Accepted as finding; the attempts in this round went beyond the limit of six (d5/eb7..eb10)."
+  },
+  "chk_ranlib": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (symbols.c): sld chk_ranlib (ranlib entries of 12 bytes). Five attempts (d5/cr2..cr6, draft cr5). Loop, calls (pslookup, warn_sym_redef) and the frame size are equal with one spare int; the original stores q = p from a reload of the parameter (frame) and keeps a register variable (r14, not identified). Accepted as finding."
   }
  },
  "inventory": {

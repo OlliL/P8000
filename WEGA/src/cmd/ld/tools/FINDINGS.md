@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 38 |
-| open | 26 |
+| confirmed | 39 |
+| open | 25 |
 
 | Difference class | Count |
 |---|---|
@@ -27,6 +27,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | Function | Ours | Original | Pairing | Level | Difference class | Old-cc classes | Note |
 |---|---|---|---|---|---|---|---|
 | add16_checked | 089a-08cc | 0x089a | confirmed | findings | read by hand | D3 | findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c |
+| chk_ranlib | 294e-29d6 | 0x294e | confirmed | findings | read by hand | D3 | findings (symbols.c): sld chk_ranlib (ranlib entries of 12 bytes). Five attempts (d5/cr2..cr6, draft cr5). Loop, calls (pslookup, warn_sym_redef) and the frame size are equal with one spare int; the original stores q = p from a reload of the parameter (frame) and keeps a register variable (r14, not identified). Accepted as finding. |
 | copy | 1a12-1a74 | 0x1a12 | confirmed | findings | read by hand | D3 | findings (ld.c): copy of a file to the output buffer (lseek to 0, read 256 bytes, each byte put with f226e, close). Six+ attempts. Everything equal except the reload of the spilled parameter p before the fildes read: the original loads it into r7 (ld r7,p; ld r14,@r7), the draft into r2 (ld r2,p; ld r14,@r2). Also the frame needs two int spares before q (dec 12). Source behaviour of the original: the loop body runs while read returns more than 1 (cp r2,#1; jr gt), so a read that returns exactly 1 byte is not copied (quirk to record in KNOWLEDGE.md). Draft: d5/f1a12_try3.c. Accepted into ld.c as a finding. |
 | dseek | 1b38-1c5a | 0x1b38 | confirmed | findings | read by hand | D3, D16 | findings (ld.c): sld dseek(sp, v, n) of ld. Six attempts: the frame and the register assignment (obj r14, cur r13) are right; the long compare of bno with hi is in rr4 in the original and in rr2 here (register choice, D3-like); two tests of the page pointer are loaded through r2 in the original (test @r2) and direct here (test @r13). The bno temporary (attempt 4) made it worse. Draft (attempt 3): /mnt/share/cvs/P8000/tmp/tmp/d5/f1b38_v3.c. Accepted into ld.c as a finding. |
 | ensure_buf | 2b3a-2b92 | 0x2b3a | confirmed | findings | read by hand | D3 | findings (symbols.c): sld ensure_buf in its sld form (if (rlsize < n) with the zero test first, grow by f2b92 otherwise). 30 instructions, 29 equal: the original keeps a jump to the end after the grow call (jr), the draft falls through. The first form (rlsize >= n first) differed in the comparison copy and the branch sense. Draft: d5/eb9.c. Accepted as finding; the attempts in this round went beyond the limit of six (d5/eb7..eb10). |
@@ -54,7 +55,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1f64 | - | 0x1f64 | open | open |  |  |  |
 | f221e | 221e-226e | 0x221e | open | exact | read by hand |  | exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf. |
 | f282e | - | 0x282e | open | open |  |  |  |
-| f294e | - | 0x294e | open | open |  |  |  |
 | f29d6 | - | 0x29d6 | open | open |  |  |  |
 | f2b92 | 2b92-2bf6 | 0x2b92 | confirmed | exact |  |  |  |
 | f2bf6 | 2bf6-2bfc | 0x2bf6 | confirmed | exact |  |  |  |

@@ -563,3 +563,7 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## f057c (2026-10-29)
 
 - f057c: exact (40 instructions, draft d5/tr2.c). Restores the state of tab entry i (ntab, libp, the bases, the four words of tent) and clears the symbol hash entries back to saved (the tail of sld read_symbols, without sld function). Placed in ld.c in address order (after f050c). Name stays f057c.
+
+## chk_ranlib (2026-10-29): finding
+
+- f294e is sld chk_ranlib (symbols.c; ranlib entries of 12 bytes, struct rlent in ld.h). Five attempts (d5/cr2..cr6, draft cr5). The original keeps a register variable (r14) and stores q = p from a reload; the loop and the calls (pslookup, warn_sym_redef) are equal. pslookup now returns struct symbol ** (type only; still exact, 10 instructions).
