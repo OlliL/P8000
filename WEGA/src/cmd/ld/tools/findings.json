@@ -49,16 +49,6 @@
    "callers_orig": "-",
    "status": "crt0"
   },
-  "f0042": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x0042",
-   "ours": "0042-009c",
-   "level": "exact",
-   "size_orig": 90,
-   "callers_orig": "194a,1e86",
-   "status": "done"
-  },
   "f009c": {
    "file": "ld.c",
    "pairing": "open",
@@ -249,36 +239,6 @@
    "callers_orig": "045e",
    "status": "open"
   },
-  "f1a12": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x1a12",
-   "ours": "1a12-1a74",
-   "level": "findings",
-   "size_orig": 98,
-   "callers_orig": "194a",
-   "status": "findings"
-  },
-  "f1a74": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x1a74",
-   "ours": "1a74-1a9a",
-   "level": "exact",
-   "size_orig": 38,
-   "callers_orig": "12a8",
-   "status": "done"
-  },
-  "f1a9a": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x1a9a",
-   "ours": "1a9a-1b0a",
-   "level": "exact",
-   "size_orig": 112,
-   "callers_orig": "13ca,1ce2,1f64,249a",
-   "status": "done"
-  },
   "f1b0a": {
    "file": "ld.c",
    "pairing": "confirmed",
@@ -288,36 +248,6 @@
    "size_orig": 46,
    "callers_orig": "108e,27be",
    "status": "done"
-  },
-  "f1b38": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x1b38",
-   "ours": "1b38-1c5a",
-   "level": "findings",
-   "size_orig": 290,
-   "callers_orig": "13ca,1452,1c6c,1ce2,1f64",
-   "status": "findings"
-  },
-  "f1c5a": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x1c5a",
-   "ours": "1c5a-1c6c",
-   "level": "exact",
-   "size_orig": 18,
-   "callers_orig": "1452,1b38",
-   "status": "done"
-  },
-  "f1c6c": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x1c6c",
-   "ours": "1c6c-1ce2",
-   "level": "findings",
-   "size_orig": 118,
-   "callers_orig": "172e,1a9a,1ce2",
-   "status": "findings"
   },
   "f1ce2": {
    "file": "ld.c",
@@ -329,26 +259,6 @@
    "callers_orig": "0608,13ca",
    "status": "open"
   },
-  "f1e86": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x1e86",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 156,
-   "callers_orig": "009c,089a,0d9c,108e,120e,1452,172e,1a74,1b38,1c6c,1ce2,1f22,1f64,229c,23e2,2502,29d6",
-   "status": "open"
-  },
-  "f1f22": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x1f22",
-   "ours": "1f22-1f64",
-   "level": "exact",
-   "size_orig": 66,
-   "callers_orig": "172e",
-   "status": "done"
-  },
   "f1f64": {
    "file": "ld.c",
    "pairing": "open",
@@ -359,16 +269,6 @@
    "callers_orig": "1452",
    "status": "open"
   },
-  "f21f2": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x21f2",
-   "ours": "21f2-221e",
-   "level": "exact",
-   "size_orig": 44,
-   "callers_orig": "-",
-   "status": "done"
-  },
   "f221e": {
    "file": "ld.c",
    "pairing": "open",
@@ -377,26 +277,6 @@
    "level": "exact",
    "size_orig": 80,
    "callers_orig": "172e,194a,1b0a",
-   "status": "done"
-  },
-  "f226e": {
-   "file": "ld.c",
-   "pairing": "confirmed",
-   "orig": "0x226e",
-   "ours": "226e-229c",
-   "level": "exact",
-   "size_orig": 46,
-   "callers_orig": "172e,1a12",
-   "status": "done"
-  },
-  "f229c": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x229c",
-   "ours": "229c-22e8",
-   "level": "exact",
-   "size_orig": 76,
-   "callers_orig": "194a,1a12,221e,226e",
    "status": "done"
   },
   "f22e8": {
@@ -638,6 +518,126 @@
    "size_orig": 44,
    "callers_orig": "29d6",
    "status": "open"
+  },
+  "mget": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1a9a",
+   "ours": "1a9a-1b0a",
+   "level": "exact",
+   "size_orig": 112,
+   "callers_orig": "13ca,1ce2,1f64,249a",
+   "status": "done"
+  },
+  "dseek": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1b38",
+   "ours": "1b38-1c5a",
+   "level": "findings",
+   "size_orig": 290,
+   "callers_orig": "13ca,1452,1c6c,1ce2,1f64",
+   "status": "findings"
+  },
+  "get": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1c6c",
+   "ours": "1c6c-1ce2",
+   "level": "findings",
+   "size_orig": 118,
+   "callers_orig": "172e,1a9a,1ce2",
+   "status": "findings"
+  },
+  "report_error": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x1e86",
+   "ours": "-",
+   "level": "open",
+   "size_orig": 156,
+   "callers_orig": "009c,089a,0d9c,108e,120e,1452,172e,1a74,1b38,1c6c,1ce2,1f22,1f64,229c,23e2,2502,29d6",
+   "status": "open"
+  },
+  "half": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1c5a",
+   "ours": "1c5a-1c6c",
+   "level": "exact",
+   "size_orig": 18,
+   "callers_orig": "1452,1b38",
+   "status": "done"
+  },
+  "high_byte": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1a74",
+   "ours": "1a74-1a9a",
+   "level": "exact",
+   "size_orig": 38,
+   "callers_orig": "12a8",
+   "status": "done"
+  },
+  "table_lookup": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1f22",
+   "ours": "1f22-1f64",
+   "level": "exact",
+   "size_orig": 66,
+   "callers_orig": "172e",
+   "status": "done"
+  },
+  "str_compare": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x21f2",
+   "ours": "21f2-221e",
+   "level": "exact",
+   "size_orig": 44,
+   "callers_orig": "-",
+   "status": "done"
+  },
+  "put_int_buf": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x226e",
+   "ours": "226e-229c",
+   "level": "exact",
+   "size_orig": 46,
+   "callers_orig": "172e,1a12",
+   "status": "done"
+  },
+  "flush_buffer": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x229c",
+   "ours": "229c-22e8",
+   "level": "exact",
+   "size_orig": 76,
+   "callers_orig": "194a,1a12,221e,226e",
+   "status": "done"
+  },
+  "copy": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x1a12",
+   "ours": "1a12-1a74",
+   "level": "findings",
+   "size_orig": 98,
+   "callers_orig": "194a",
+   "status": "findings"
+  },
+  "sig_handler": {
+   "file": "ld.c",
+   "pairing": "open",
+   "orig": "0x0042",
+   "ours": "0042-009c",
+   "level": "exact",
+   "size_orig": 90,
+   "callers_orig": "194a,1e86",
+   "status": "done"
   }
  },
  "findings": [],
@@ -673,25 +673,10 @@
    "d_classes": [],
    "note": "exact (2026-10-29, fourth and fifth attempt): parameter list (end, x) and three unused int locals (spare). The parameter order is the one of f1b0a: the first declared parameter takes the last argument register. Frame 18 bytes as the original."
   },
-  "f229c": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, fourth attempt): struct buf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets."
-  },
   "f221e": {
    "basis": "read",
    "d_classes": [],
    "note": "exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf."
-  },
-  "f1a9a": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, third attempt): buffer read with refill. Globals v1030 (int *, buffer pointer), v1034 and v1036 (counters, int). The statement order matters: i = n; i >>= 1; r = p; (the form of HOWTO step 7). Three unused int locals (frame 16)."
-  },
-  "f0042": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink(\"l.out\"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones."
   },
   "f089a": {
    "basis": "read",
@@ -705,7 +690,12 @@
    "d_classes": [],
    "note": "exact (2026-10-29, second attempt): append entry to the table tab (22-byte records, index ntab): t0 = x, t1 = v44a6, t2 = v0070 (data), t3 = y, t4..t10 = v66d0, v66d2, v66d4, v66c2, v66c6, v66cc, v66ce. One unused int local. No caller in the table (its callers are through the table or unknown). Globals: ntab (bss 0abe), tab (0ac0), the v-names are guesses; v0070 is in the data (step 5b)."
   },
-  "f1b38": {
+  "mget": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n))."
+  },
+  "dseek": {
    "basis": "read",
    "d_classes": [
     "D3",
@@ -713,19 +703,29 @@
    ],
    "note": "findings (ld.c): sld dseek(sp, v, n) of ld. Six attempts: the frame and the register assignment (obj r14, cur r13) are right; the long compare of bno with hi is in rr4 in the original and in rr2 here (register choice, D3-like); two tests of the page pointer are loaded through r2 in the original (test @r2) and direct here (test @r13). The bno temporary (attempt 4) made it worse. Draft (attempt 3): /mnt/share/cvs/P8000/tmp/tmp/d5/f1b38_v3.c. Accepted into ld.c as a finding."
   },
-  "f1c6c": {
+  "get": {
    "basis": "read",
    "d_classes": [
     "D4"
    ],
    "note": "findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c."
   },
-  "f1a12": {
+  "flush_buffer": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, fourth attempt): struct buf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets."
+  },
+  "copy": {
    "basis": "read",
    "d_classes": [
     "D3"
    ],
    "note": "findings (ld.c): copy of a file to the output buffer (lseek to 0, read 256 bytes, each byte put with f226e, close). Six+ attempts. Everything equal except the reload of the spilled parameter p before the fildes read: the original loads it into r7 (ld r7,p; ld r14,@r7), the draft into r2 (ld r2,p; ld r14,@r2). Also the frame needs two int spares before q (dec 12). Source behaviour of the original: the loop body runs while read returns more than 1 (cp r2,#1; jr gt), so a read that returns exactly 1 byte is not copied (quirk to record in KNOWLEDGE.md). Draft: d5/f1a12_try3.c. Accepted into ld.c as a finding."
+  },
+  "sig_handler": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink(\"l.out\"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones."
   }
  },
  "inventory": {

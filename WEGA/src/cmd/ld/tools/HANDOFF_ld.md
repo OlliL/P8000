@@ -388,3 +388,39 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - accept_ld.py skipped the draft's `struct buf` block (already in ld.c), so the new globals of f1a12 landed above it
   ("unknown size"). Fixed by hand: v66d8 after struct buf, v67e4 is `unsigned char v67e4[256]` (no warning).
   ld.c compiles alone without warnings. Known: a global block that comes with a skipped struct must be placed by hand.
+
+## mget / text stream (2026-10-29)
+
+- f1a9a is `mget(p, n)` of the text stream (sld mget structure). The globals v1030 (ptr), v1034 (nibuf), v1036 (size)
+  are one `struct stream text` at bss 1030 (struct stream of ld.c: ptr, bno, nibuf, size, pno; bno 1032, pno 1038 unused here).
+- Readable draft (d5/mget_try1.c) is exact on 1a9a..1b0a: the sld if-structure, `*r++ = get(&text)` in the refill loop.
+- Renamed: f1a9a -> mget, f1c6c -> get, f1b38 -> dseek (names of sld). Keys in findings.json updated.
+- Still open: the struct of ld differs from sld's struct stream (sld: sres first; ld: ptr first, as get proves).
+
+## report_error (2026-10-29)
+
+- f1e86 is sld `report_error(code, msg)`. Renamed in ld.c (all five call sites) and findings.json key. Body not written yet
+  (status still open; the 156 bytes at 1e86 follow the sld message routine). The call sites keep their messages.
+
+## half (2026-10-29)
+
+- f1c5a is sld `half(x)` (`(x >> 1) & 0x7fff`). Renamed in ld.c (definition and the call in dseek) and findings.json key.
+
+## high_byte (2026-10-29)
+
+- f1a74 is sld high_byte(x): check that x fits in a byte (report_error 2 otherwise), return the high byte. Renamed in ld.c and findings.json.
+
+## table_lookup / local (2026-10-29)
+
+- f1f22 is sld table_lookup(end, a). The table at bss 0x56f2 is `struct local local[1]` (ld.h name), but ld's entries are
+  4 bytes (locindex at 0, locsymbol at 2, p++ steps 4), while sld's struct local is 6 bytes (struct symbol pointer).
+  So the layout is ld's own; only the name is taken from ld.h. Renamed in ld.c and findings.json; exact on 1f22..1f64.
+
+## str_compare (2026-10-29)
+
+- f21f2 is sld str_compare without the cmpmode branch (returns 1 when equal, else 0). The shape of sld (do/while with *p++ at the end, if/else) gives other code (D-class of the test order); the body with the test of *q++ and *p++ inside the if is the exact one. Renamed in ld.c and findings.json; exact on 21f2..221e.
+
+## Names from sld (2026-10-29)
+
+- f229c -> flush_buffer (sld flush_buffer: write the buffer, reset it), f1a12 -> copy (sld copy(p): copy a file to the output; ld reads 256 bytes, sld 0x200), f0042 -> sig_handler (sld: unlink, chmod, exit). Renamed in ld.c and findings.json; ld.c compiles.
+- Not matched yet: f221e (two-byte put), f050c (table entry), f2bf6/f2bfc (counter), f26ac/f26ca (name print), f2360/f22e8 (copyname.c).

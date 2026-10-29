@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 14 |
-| open | 48 |
+| confirmed | 15 |
+| open | 47 |
 
 | Difference class | Count |
 |---|---|
@@ -26,10 +26,11 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Function | Ours | Original | Pairing | Level | Difference class | Old-cc classes | Note |
 |---|---|---|---|---|---|---|---|
+| copy | 1a12-1a74 | 0x1a12 | confirmed | findings | read by hand | D3 | findings (ld.c): copy of a file to the output buffer (lseek to 0, read 256 bytes, each byte put with f226e, close). Six+ attempts. Everything equal except the reload of the spilled parameter p before the fildes read: the original loads it into r7 (ld r7,p; ld r14,@r7), the draft into r2 (ld r2,p; ld r14,@r2). Also the frame needs two int spares before q (dec 12). Source behaviour of the original: the loop body runs while read returns more than 1 (cp r2,#1; jr gt), so a read that returns exactly 1 byte is not copied (quirk to record in KNOWLEDGE.md). Draft: d5/f1a12_try3.c. Accepted into ld.c as a finding. |
+| dseek | 1b38-1c5a | 0x1b38 | confirmed | findings | read by hand | D3, D16 | findings (ld.c): sld dseek(sp, v, n) of ld. Six attempts: the frame and the register assignment (obj r14, cur r13) are right; the long compare of bno with hi is in rr4 in the original and in rr2 here (register choice, D3-like); two tests of the page pointer are loaded through r2 in the original (test @r2) and direct here (test @r13). The bno temporary (attempt 4) made it worse. Draft (attempt 3): /mnt/share/cvs/P8000/tmp/tmp/d5/f1b38_v3.c. Accepted into ld.c as a finding. |
 | f0000 | - | 0x0000 | open | generated |  |  |  |
 | f0010 | - | 0x0010 | open | generated |  |  |  |
 | f0018 | - | 0x0018 | open | generated |  |  |  |
-| f0042 | 0042-009c | 0x0042 | open | exact | read by hand |  | exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink("l.out"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones. |
 | f009c | - | 0x009c | open | open |  |  |  |
 | f0370 | - | 0x0370 | open | open |  |  |  |
 | f045e | - | 0x045e | open | open |  |  |  |
@@ -49,21 +50,10 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1452 | - | 0x1452 | open | open |  |  |  |
 | f172e | - | 0x172e | open | open |  |  |  |
 | f194a | - | 0x194a | open | open |  |  |  |
-| f1a12 | 1a12-1a74 | 0x1a12 | confirmed | findings | read by hand | D3 | findings (ld.c): copy of a file to the output buffer (lseek to 0, read 256 bytes, each byte put with f226e, close). Six+ attempts. Everything equal except the reload of the spilled parameter p before the fildes read: the original loads it into r7 (ld r7,p; ld r14,@r7), the draft into r2 (ld r2,p; ld r14,@r2). Also the frame needs two int spares before q (dec 12). Source behaviour of the original: the loop body runs while read returns more than 1 (cp r2,#1; jr gt), so a read that returns exactly 1 byte is not copied (quirk to record in KNOWLEDGE.md). Draft: d5/f1a12_try3.c. Accepted into ld.c as a finding. |
-| f1a74 | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
-| f1a9a | 1a9a-1b0a | 0x1a9a | open | exact | read by hand |  | exact (2026-10-29, third attempt): buffer read with refill. Globals v1030 (int *, buffer pointer), v1034 and v1036 (counters, int). The statement order matters: i = n; i >>= 1; r = p; (the form of HOWTO step 7). Three unused int locals (frame 16). |
 | f1b0a | 1b0a-1b38 | 0x1b0a | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): parameter list (q, p, n), register pointer r and counter i (declared in this order), and two unused int locals (spare1, spare2). The parameter order is the same as f1f22 and f1b0a stands for the rule; the register order (r14 then r13) as in f1f22. |
-| f1b38 | 1b38-1c5a | 0x1b38 | confirmed | findings | read by hand | D3, D16 | findings (ld.c): sld dseek(sp, v, n) of ld. Six attempts: the frame and the register assignment (obj r14, cur r13) are right; the long compare of bno with hi is in rr4 in the original and in rr2 here (register choice, D3-like); two tests of the page pointer are loaded through r2 in the original (test @r2) and direct here (test @r13). The bno temporary (attempt 4) made it worse. Draft (attempt 3): /mnt/share/cvs/P8000/tmp/tmp/d5/f1b38_v3.c. Accepted into ld.c as a finding. |
-| f1c5a | 1c5a-1c6c | 0x1c5a | confirmed | exact |  |  |  |
-| f1c6c | 1c6c-1ce2 | 0x1c6c | confirmed | findings | read by hand | D4 | findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c. |
 | f1ce2 | - | 0x1ce2 | open | open |  |  |  |
-| f1e86 | - | 0x1e86 | open | open |  |  |  |
-| f1f22 | 1f22-1f64 | 0x1f22 | confirmed | exact | read by hand |  | exact (2026-10-29, fourth and fifth attempt): parameter list (end, x) and three unused int locals (spare). The parameter order is the one of f1b0a: the first declared parameter takes the last argument register. Frame 18 bytes as the original. |
 | f1f64 | - | 0x1f64 | open | open |  |  |  |
-| f21f2 | 21f2-221e | 0x21f2 | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): for loop, the equal case is the main path (if (*t == *s++) { if (*t++) continue; return(1); } return(0)); parameter list (t, s). The earlier D1/D15 reading was the pointer copy and the branch sense, both resolved by the form. |
 | f221e | 221e-226e | 0x221e | open | exact | read by hand |  | exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf. |
-| f226e | 226e-229c | 0x226e | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): char c (second argument, r7) and register pointer p (r6 -> r14); struct buf { int _x; int _cnt; char *_ptr; } (the displacements of the original: cnt at 2, ptr at 4). The struct member _x is a name guess; the layout is what matters. |
-| f229c | 229c-22e8 | 0x229c | open | exact | read by hand |  | exact (2026-10-29, fourth attempt): struct buf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets. |
 | f22e8 | - | 0x22e8 | open | open |  |  |  |
 | f2360 | - | 0x2360 | open | open |  |  |  |
 | f23e2 | - | 0x23e2 | open | open |  |  |  |
@@ -88,6 +78,16 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f2bfc | 2bfc-2c02 | 0x2bfc | confirmed | exact |  |  |  |
 | f2c02 | - | 0x2c02 | open | open |  |  |  |
 | f2c20 | - | 0x2c20 | open | open |  |  |  |
+| flush_buffer | 229c-22e8 | 0x229c | open | exact | read by hand |  | exact (2026-10-29, fourth attempt): struct buf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets. |
+| get | 1c6c-1ce2 | 0x1c6c | confirmed | findings | read by hand | D4 | findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c. |
+| half | 1c5a-1c6c | 0x1c5a | confirmed | exact |  |  |  |
+| high_byte | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
+| mget | 1a9a-1b0a | 0x1a9a | confirmed | exact | read by hand |  | exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n)). |
+| put_int_buf | 226e-229c | 0x226e | confirmed | exact |  |  |  |
+| report_error | - | 0x1e86 | open | open |  |  |  |
+| sig_handler | 0042-009c | 0x0042 | open | exact | read by hand |  | exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink("l.out"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones. |
+| str_compare | 21f2-221e | 0x21f2 | confirmed | exact |  |  |  |
+| table_lookup | 1f22-1f64 | 0x1f22 | confirmed | exact |  |  |  |
 
 ## Pending findings
 

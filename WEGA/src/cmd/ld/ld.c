@@ -35,8 +35,7 @@ char *v007a;
 int v007c, v0080;
 int v669a, v66a4;
 
-int *v1030;
-int v1034, v1036;
+struct stream text;
 
 struct buf {
 	int fildes;
@@ -48,54 +47,57 @@ struct buf {
 struct buf v66d8;
 unsigned char v67e4[256];
 
-f1c5a(x)
+half(x)
 int x;
 {
 	return((x >> 1) & 0x7fff);
 }
 
-f1a74(x)
+high_byte(x)
 unsigned x;
 {
 	if ((x & 0xff00) != x)
-		f1e86(2, "x");
+		report_error(2, "x");
 	return((x >> 8) & 0xff);
 }
 
-struct ent {
-	int key;
-	int val;
+/* local symbol table: index -> value, 4 bytes per entry (sld: struct local with a symbol pointer, 6 bytes) */
+struct local {
+	int locindex;
+	int locsymbol;
 };
 
-struct ent vtab[1];
+struct local local[1];
 
-f1f22(end, x)
-struct ent *end;
-int x;
+/* table_lookup: find an entry of the local symbol table (0x1f22..0x1f64 of /bin/ld) */
+table_lookup(end, a)
+struct local *end;
+int a;
 {
 	int spare1, spare2, spare3;
 
-	register struct ent *p;
-	register struct ent *e;
-	register key;
+	register struct local *p;
+	register struct local *e;
+	register k;
 
 	e = end;
-	key = (x >> 4) & 0x0fff;
-	p = vtab;
+	k = (a >> 4) & 0x0fff;
+	p = local;
 	while (p < e) {
-		if (p->key == key)
-			return(p->val);
+		if (p->locindex == k)
+			return(p->locsymbol);
 		p++;
 	}
-	f1e86(2, "x");
+	report_error(2, "x");
 }
 
-f21f2(t, s)
-char *t, *s;
+/* str_compare: 1 when the strings are equal, else 0 (sld str_compare without cmpmode; 0x21f2..0x221e of /bin/ld) */
+str_compare(p, q)
+char *p, *q;
 {
 	for (;;) {
-		if (*t == *s++) {
-			if (*t++)
+		if (*p == *q++) {
+			if (*p++)
 				continue;
 			return(1);
 		}
@@ -103,32 +105,16 @@ char *t, *s;
 	}
 }
 
-f226e(c, p)
-char c;
+put_int_buf(v, p)
+int v;
 register struct buf *p;
 {
-	*p->xnext++ = c;
-	p->nleft--;
-	if (p->nleft <= 0)
-		f229c(p);
+	*p->xnext++ = v;
+	if (--p->nleft <= 0)
+		flush_buffer(p);
 }
 
-f1b0a(q, p, n)
-int q, *p, n;
-{
-	int spare1, spare2;
-
-	register int *r;
-	register i;
-
-	r = p;
-	i = n >> 1;
-	do {
-		f221e(*r++, q);
-	} while (--i);
-}
-
-f229c(p)
+flush_buffer(p)
 register struct buf *p;
 {
 	int spare1;
@@ -138,7 +124,7 @@ register struct buf *p;
 	n = p->xnext - p->iobuf;
 	if (n > 0) {
 		if (write(p->fildes, p->iobuf, n) != n)
-			f1e86(2, "x");
+			report_error(2, "x");
 	}
 	p->xnext = p->iobuf;
 	p->nleft = 256;
@@ -151,14 +137,15 @@ register struct buf *p;
 	*p->xnext++ = x >> 8;
 	p->nleft--;
 	if (p->nleft <= 0)
-		f229c(p);
+		flush_buffer(p);
 	*p->xnext++ = x;
 	p->nleft--;
 	if (p->nleft <= 0)
-		f229c(p);
+		flush_buffer(p);
 }
 
-f1a9a(p, n)
+/* mget: read n bytes of the text stream into the buffer p (0x1a9a..0x1b0a of /bin/ld) */
+mget(p, n)
 int *p;
 int n;
 {
@@ -171,27 +158,26 @@ int n;
 	i = n;
 	i >>= 1;
 	r = p;
-	v1034 -= i;
-	if (v1034 < 0)
-		goto restore34;
-	v1036 -= i;
-	if (v1036 > 0) {
-		q = v1030;
-		do {
-			*r++ = *q++;
-		} while (--i);
-		v1030 = q;
-		return;
+	text.nibuf -= i;
+	if (text.nibuf >= 0) {
+		text.size -= i;
+		if (text.size > 0) {
+			q = text.ptr;
+			do
+				*r++ = *q++;
+			while (--i);
+			text.ptr = q;
+			return;
+		}
+		text.size += i;
 	}
-	v1036 += i;
-restore34:
-	v1034 += i;
-	do {
-		*r++ = f1c6c(&v1030);
-	} while (--i);
+	text.nibuf += i;
+	do
+		*r++ = get(&text);
+	while (--i);
 }
 
-f0042()
+sig_handler()
 {
 	int mode;
 
@@ -230,7 +216,7 @@ int x, y;
 	e->t10 = v66ce;
 }
 
-f1b38(sp, v, n)
+dseek(sp, v, n)
 struct stream *sp;
 long v;
 int n;
@@ -254,7 +240,7 @@ int n;
 	if (cur->nuser) {
 		cur = &page[0];
 		if (cur->nuser) {
-			f1e86(2, "No pages");
+			report_error(2, "No pages");
 			goto common;
 		}
 	}
@@ -272,24 +258,24 @@ common:
 	obj->pno = (struct pghdr *)cur;
 	obj->ptr = (int *)((char *)cur->buff + (lo << 1));
 	if (n != -1)
-		obj->size = f1c5a(n);
+		obj->size = half(n);
 	obj->nibuf = cur->nibuf - (int)lo;
 	if (obj->nibuf <= 0)
 		obj->size = 0;
 }
 
-f1c6c(p)
+get(p)
 register struct stream *p;
 {
 	int spare;
 
 	if (--p->nibuf < 0) {
-		f1b38(p, -1, (long)(p->bno + 1) << 8);
+		dseek(p, -1, (long)(p->bno + 1) << 8);
 		--p->nibuf;
 	}
 	if (--p->size <= 0) {
 		if (p->size < 0)
-			f1e86(2, "x");
+			report_error(2, "x");
 		fpage.nuser++;
 		p->pno->nuser--;
 		p->pno = &fpage;
@@ -297,7 +283,7 @@ register struct stream *p;
 	return(*p->ptr++);
 }
 
-f1a12(p)
+copy(p)
 struct buf *p;
 {
 	int spare1, spare2;
@@ -305,14 +291,14 @@ struct buf *p;
 	register fd;
 	register n;
 
-	f229c(p);
+	flush_buffer(p);
 	fd = p->fildes;
 	lseek(fd, 0L, 0);
 	goto test;
 body:
 	q = v67e4;
 	do
-		f226e(*q++, &v66d8);
+		put_int_buf(*q++, &v66d8);
 	while (--n);
 test:
 	n = read(fd, v67e4, 256);
