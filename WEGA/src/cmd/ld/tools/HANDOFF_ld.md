@@ -547,3 +547,7 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## f2c20 (2026-10-29)
 
 - f2c20 has no sld counterpart. It calls the entry 0x484a of the shipped brk member twice (grow by x, then query with 0) and returns the old break or -1 when the break moved (unsigned locals a, b, exact). It is the growth helper of table16_entry (f29d6). The name of 0x484a (presumably sbrk) is not verified.
+
+## ensure_buf (2026-10-29): finding
+
+- f2b3a is sld ensure_buf (symbols.c), finding after six attempts (d5/eb1..eb6, draft eb4). rlbuf (0x067a) and rlsize (0x0678, one word) are defined in symbols.c. The grow path for a non-empty buffer calls f2b92 (still open, 0x2b92..0x2bf6, with the messages "ranlib table of contents too large" and "table of contents overflow"). The first buffer comes from f2c20.

@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include "ld.h"
 
+char *rlbuf;
+unsigned int rlsize;
+
 struct symbol cursym;
 int v067c;
 
@@ -310,6 +313,26 @@ struct symbol *x;
 	if (x < v069c)
 		return ((int)x - 0x1102) / 14;
 	return ((int)x - (int)symtab) / 14 + 0x258;
+}
+
+/* ensure_buf: make sure the ranlib buffer is large enough (sld ensure_buf; 0x2b3a..0x2b92 of /bin/ld, finding: the copy of
+   n for the comparison and the tail jump differ). The grow path of a non-empty buffer is f2b92 (no sld name yet). */
+char *ensure_buf(n)
+unsigned long n;
+{
+	if ((unsigned long)rlsize >= n)
+		return rlbuf;
+	if (rlsize == 0) {
+		if (n > 0xffff)
+			report_error(2, "ranlib table of contents too large");
+		rlbuf = (char *)f2c20((int)n);
+		if (rlbuf == (char *)-1)
+			report_error(2, "table of contents overflow");
+		rlsize = n;
+		return rlbuf;
+	}
+	f2b92(n);
+	return rlbuf;
 }
 
 f2bf6()

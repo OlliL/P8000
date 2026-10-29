@@ -57,7 +57,7 @@
 29d6  f29d6  2aa6    208  0b6e,282e        proven    open
 2aa6  f2aa6  2b04     94  0b6e,282e        proven    findings
 2b04  f2b04  2b3a     54  172e             proven    done
-2b3a  f2b3a  2b92     88  -                proven    open
+2b3a  f2b3a  2b92     88  -                proven    findings
 2b92  f2b92  2bf6    100  -                proven    open
 2bf6  f2bf6  2bfc      6  -                proven    done
 2bfc  f2bfc  2c02      6  -                proven    done
