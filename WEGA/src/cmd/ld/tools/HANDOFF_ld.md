@@ -778,3 +778,17 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   yet), reg_sect_addr (finding, frame offset of fmt).
 - Stale comment blocks at the end of ld.c (getfile, load_header, ranlib_scan, init_entry, readhdr, load2, load2td,
   place_sec) are headers of functions earlier in the file; ranlib_scan and load_header have no comment of their own.
+
+## read_symbols (2026-10-29): finding
+
+- read_symbols (0x08cc..0x0b6e, 674 bytes) is in ld.c as a finding. The draft (scratch `d8/rs_3.c`) has the logic of the
+  original: readhdr(c); fctrel, fcdrel, fcbrel from the totals; "No relocation bits" with goto done; the offset of the
+  relocation stream (hdrsz + segtsz, halved, plus filhdr 1066 and 106a, added to c); dseek; the loop over the entries
+  (Sflag: skip type 1 and above 4; Xflag: skip type 30; a name with bit 0x20 goes to symreloc, lookup_name, enter;
+  otherwise k += n + 1; the common symbols; the text warning "warning: external data item refers to text symbol" with
+  put_name and a tab or a space); then the totals with add16_checked and symbol table count k*14.
+- Whole-file check: 198 instructions equal. Not exact: the frame is two bytes larger (0x1c against 0x1a; the offsets
+  of the locals agree from 0x0a on, so the padding is at another place), and the copy of cursym.svalue through a long
+  temporary (ldl rr4) is missing. The frame could not be matched with any declaration order (tried: unused spare first or
+  last, pointer or int p, chars or ints); the padding comes from the code generation, not from the names.
+- Still approximate: reg_sect_addr (finding), end_pass1 is exact.

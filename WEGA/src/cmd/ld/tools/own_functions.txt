@@ -14,7 +14,7 @@
 0714  f0714  07b2    158  -                proven    done
 07b2  f07b2  089a    232  -                proven    findings
 089a  f089a  08cc     50  0b6e             proven    findings
-08cc  f08cc  0b6e    674  -                proven    open
+08cc  f08cc  0b6e    674  -                proven    findings
 0b6e  f0b6e  0d9c    558  045e             proven    done
 0d9c  f0d9c  108e    754  0b6e             proven    findings
 108e  f108e  120e    384  045e             proven    done

@@ -487,41 +487,95 @@ char *a;
 	return(s);
 }
 
+/* read_symbols: pass one for one object: read the symbol table and enter the symbols (sld read_symbols; finding: the
+   frame is two bytes larger than in /bin/ld (0x1c against 0x1a, the locals are shifted), the copy of cursym.svalue
+   through a long temporary is not reproduced; 0x08cc..0x0b6e of /bin/ld) */
 read_symbols(a, c)
 int a;
 long c;
 {
-	register struct symbol *cur;
-	int cnt;
+	int spare;
 	int saved;
-	int n;
+	int cnt;
+	char ch;
+	char type;
 	int k;
+	int n;
+	struct symbol **p;
+	register struct symbol *cur;
 
 	readhdr(c);
+	fctrel = ttotal;
+	fcdrel += dtotal;
+	fcbrel += btotal;
 	cnt = 0;
 	k = 1;
 	saved = symindex;
 	if ((filhdr.relflg & 1) == 1) {
 		report_error(1, "No relocation bits");
-		return 0;
+		goto done;
 	}
+	c = ((unsigned long)(((unsigned)(hdrsz + segtsz) & ~1) >> 1) + filhdr.x1066 + filhdr.x106a) + c;
 	dseek(&text, c, filhdr.ssize);
 	while (text.size > 0) {
 		n = read_entry_hdr();
-		cur = 0;
-		if (cursym.stype == 0x20 || (cursym.stype & 0x20) == 0) {
+		ch = cursym.stype;
+		type = ch & 0x1f;
+		if (Sflag && (type == 1 || type > 4))
+			continue;
+		if (Xflag && type == 0x1e)
+			continue;
+		if ((ch & 0x20) == 0) {
+			if (Xflag && cursym.sname[0] == 'L')
+				continue;
 			k += n + 1;
 			continue;
 		}
-		enter(lookup_name());
+		symreloc();
+		p = lookup_name();
+		if (enter(p))
+			continue;
+		cur = lastsym;
+		if (cur->stype != ' ') {
+			if (a)
+				warn_sym_redef(cur, &cursym);
+			continue;
+		}
+		if (cursym.stype == ' ') {
+			if (cursym.svalue <= cur->svalue)
+				continue;
+			cur->svalue = cursym.svalue;
+			continue;
+		}
+		if (cur->svalue != 0 && cursym.stype == '"' && !a) {
+			if (put_name(cursym.sname) < 8)
+				--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = '\t') : _flsbuf(9, stderr);
+			--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = ' ') : _flsbuf(' ', stderr);
+			report_error(0, "warning: external data item refers to text symbol");
+		}
 		cnt++;
+		cur->stype = cursym.stype;
+		cur->svalue = cursym.svalue;
 	}
+	if (a && cnt == 0)
+		goto clean;
+	ttotal = add16_checked(ttotal, filhdr.tsize, "text overflow");
+	dtotal = add16_checked(dtotal, filhdr.dsize, "data overflow");
+	btotal = add16_checked(btotal, filhdr.bsize, "bss overflow");
+	v66ce = add16_checked(v66ce, k * 14, "symbol table overflow");
+	if (rflag) {
+		v66c4 = add16_checked(v66c4, filhdr.x1066, "file text overflow");
+		v66c8 = add16_checked(v66c8, filhdr.x106a, "file data overflow");
+	}
+	return 1;
+clean:
 	while (symindex > saved) {
 		symindex--;
 		*symhash[symindex] = 0;
 		symhash[symindex] = 0;
 	}
-	return cnt != 0;
+done:
+	return 0;
 }
 
 /* end_pass1: the symbols of the output before the layout: _etext, _edata, _end, the rflag decision, the common symbols and

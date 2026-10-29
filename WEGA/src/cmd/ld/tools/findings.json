@@ -625,11 +625,12 @@
    "file": "ld.c",
    "pairing": "confirmed",
    "orig": "0x8cc",
-   "ours": "approx",
+   "ours": "finding",
    "level": "findings",
    "size_orig": 674,
    "callers_orig": "-",
-   "status": "findings"
+   "status": "findings",
+   "note": "finding (2026-10-29, seventh attempt, scratch d8/rs_1..rs_3): the logic is in place: readhdr, the section totals (fctrel, fcdrel, fcbrel), the relocation test, dseek with the header words, the symbol loop (Sflag, Xflag, the L names, symreloc, lookup_name, enter, the common symbols with the warning of a text value), the totals with add16_checked and the cleanup through goto. 198 instructions equal in the whole-file build. Not exact: the frame is two bytes larger (0x1c against 0x1a: the locals are at the same offsets from 0x0a, the padding of the original is not reproduced), and the copy of cursym.svalue through a long temporary (ldl rr4) is not in the draft."
   },
   "end_pass1": {
    "file": "ld.c",
