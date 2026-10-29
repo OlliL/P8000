@@ -635,11 +635,12 @@
    "file": "ld.c",
    "pairing": "confirmed",
    "orig": "0xb6e",
-   "ours": "approx",
-   "level": "findings",
+   "ours": "exact",
+   "level": "exact",
    "size_orig": 558,
    "callers_orig": "-",
-   "status": "findings"
+   "status": "done",
+   "note": "exact (2026-10-29): the rflag scan, the common symbols (comsize), the ldrsym calls, the undefined message (Undefined:, put_name, newline), the switch on the symbol type, the sflag/xflag tail and v6bf6 = v66ce/14. Checked in the whole-file build (558 bytes, same instructions). Two spellings are needed: the unsigned casts (the original zero-extends these values) and the (char) cast on the newline store (the header of this tree has an unsigned char _ptr; the original has extsb). The ldrsym calls pass three arguments; the x parameter of symbols.c is not passed (original behaviour, kept)."
   }
  },
  "findings": [],

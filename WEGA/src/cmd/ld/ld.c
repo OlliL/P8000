@@ -333,9 +333,6 @@ next:
 	finish_output();
 }
 
-/* end_pass1: the symbols of the output before the layout: _etext, _edata, _end, the rflag decision and the symbol bases
-   (approximation; finding: the second pass over the symbols is not reproduced; 0x0b6e..0x0d9c of /bin/ld) */
-
 f050c(x, y)
 int x, y;
 {
@@ -527,11 +524,15 @@ long c;
 	return cnt != 0;
 }
 
+/* end_pass1: the symbols of the output before the layout: _etext, _edata, _end, the rflag decision, the common symbols and
+   the undefined and external symbols (sld end_pass1; 0x0b6e..0x0d9c of /bin/ld). The newline of the undefined message
+   is a char in the original (the cast (char) gives extsb); the calls to in-file functions are calr there. */
 end_pass1()
 {
+	int spare1, spare2, spare3;
 	register struct symbol *ep;
 	register struct symbol *end;
-	int i;
+	register int i;
 
 	p_etext = *slookup("_etext");
 	p_edata = *slookup("_edata");
@@ -558,18 +559,62 @@ end_pass1()
 	comsize = 0;
 	if (dflag == 0 && rflag)
 		goto dolayout;
-	ldrsym(p_etext, 0, ttotal, '"');
-	ldrsym(p_edata, 0, dtotal, '#');
-	ldrsym(p_end, 0, btotal, '$');
+	ldrsym(p_etext, (unsigned long)(unsigned)ttotal, '"');
+	ldrsym(p_edata, (unsigned long)(unsigned)dtotal, '#');
+	ldrsym(p_end, (unsigned long)(unsigned)btotal, '$');
+	ep = table16_entry(0);
+	while (ep < end) {
+		if (ep->stype == ' ') {
+			i = ep->svalue;
+			if (i) {
+				if (!x66b8 && !x66ba)
+					i = (i + 1) & ~1;
+				ep->svalue = (unsigned)comsize;
+				ep->stype = '%';
+				comsize = add16_checked(comsize, i, "bss overflow");
+			}
+		}
+		ep = next_entry(ep);
+	}
 dolayout:
 	place_sec();
+	v0080 = 0;
 	ep = table16_entry(0);
-	while (ep < end)
+	while (ep < end) {
+		switch (ep->stype) {
+		case ' ':
+			if (v66a4 == 0) {
+				exstat |= 1;
+				if (ep->svalue == 0) {
+					if (v0080 == 0)
+						fprintf(stderr, "Undefined:\n");
+					v0080++;
+					put_name(ep->sname);
+					--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = '\n') : _flsbuf(10, stderr);
+				}
+			}
+			break;
+		case '"':
+			ep->svalue += (unsigned)v6bf8;
+			break;
+		case '#':
+			ep->svalue += (unsigned)v6bfa;
+			break;
+		case '$':
+			ep->svalue += (unsigned)v6bfc;
+			break;
+		case '%':
+			ep->stype = '$';
+			ep->svalue += (unsigned)x6bfe;
+			break;
+		}
 		ep = next_entry(ep);
+	}
+	if (sflag || xflag)
+		v66ce = 0;
+	btotal = add16_checked(btotal, comsize, "bss overflow");
+	v6bf6 = (unsigned)v66ce / 14;
 }
-
-/* read_symbols: pass one for one object: read the symbol table and enter the symbols (approximation; finding: the
-   bodies of the cases are not reproduced; 0x08cc..0x0b6e of /bin/ld) */
 
 place_sec()
 {

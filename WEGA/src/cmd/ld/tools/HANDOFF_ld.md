@@ -757,3 +757,24 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - Note: the splice for parse_args had removed reg_sect_addr (it stood between the parse_args comment and the function);
   it is restored in ld.c before parse_args (finding, 238 bytes, unchanged text). Main is 724 bytes again in the
   whole-file build; its call to reg_sect_addr is a calr only when the layout is right, so check the size after each splice.
+
+## end_pass1 exact (2026-10-29)
+
+- end_pass1 (0x0b6e..0x0d9c, 558 bytes) is exact in the whole-file build: the rflag scan, comsize for the common
+  symbols (' ' with value, stype becomes '%'), the ldrsym calls, the switch on the symbol type (' ': undefined
+  message "Undefined:" with put_name and a newline; '"', '#', '$', '%': add the bases v6bf8, v6bfa, v6bfc, x6bfe),
+  the tail with sflag/xflag, btotal and v6bf6 = v66ce / 14. New bss variable use: v0080 is cleared after place_sec.
+- Spellings that the original needs: (unsigned) casts on ttotal, dtotal, btotal, comsize, the bases and v66ce (the
+  original zero-extends them); the (char) cast on the newline store (the stdio.h of this tree has unsigned char
+  _ptr, the original gives extsb); the ldrsym calls pass three arguments (the x parameter in symbols.c is not passed).
+- Mishap (fixed): the splice for end_pass1 cut from the comment of the old end_pass1 (which stood before f050c) to the
+  real end_pass1, so f050c, f057c, load_lib_syms, load_header, ranlib_scan, add16_checked and read_symbols were lost.
+  Restored from tmp/tmp/link/ld.c (the copy of 16:02, lines 243..433). Rule: check the function list (grep '^[a-z]')
+  before and after each splice; a splice must replace exactly one function.
+- Check of all exact functions in the restored build (whole-file, normalized): f050c f057c f221e mget report_error
+  half high_byte table_lookup str_compare put_int_buf flush_buffer sig_handler open_tmp mput load2arg finish_output
+  load_header load_lib_syms start_output main parse_args end_pass1: all SAME.
+- Still approximate: read_symbols (08cc..0b6e, 674 bytes; its body is the one restored from the copy, not checked
+  yet), reg_sect_addr (finding, frame offset of fmt).
+- Stale comment blocks at the end of ld.c (getfile, load_header, ranlib_scan, init_entry, readhdr, load2, load2td,
+  place_sec) are headers of functions earlier in the file; ranlib_scan and load_header have no comment of their own.
