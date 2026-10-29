@@ -303,11 +303,11 @@
    "file": "ld.c",
    "pairing": "open",
    "orig": "0x1c5a",
-   "ours": "-",
-   "level": "open",
+   "ours": "1c5a-1c6c",
+   "level": "exact",
    "size_orig": 18,
    "callers_orig": "1452,1b38",
-   "status": "open"
+   "status": "done"
   },
   "f1c6c": {
    "file": "ld.c",
@@ -474,20 +474,20 @@
    "pairing": "open",
    "orig": "0x26ac",
    "ours": "-",
-   "level": "open",
+   "level": "findings",
    "size_orig": 30,
    "callers_orig": "0b6e",
-   "status": "open"
+   "status": "findings"
   },
   "f26ca": {
    "file": "symbols.c",
    "pairing": "open",
    "orig": "0x26ca",
    "ours": "-",
-   "level": "open",
+   "level": "findings",
    "size_orig": 30,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings"
   },
   "f26e8": {
    "file": "symbols.c",
@@ -603,21 +603,21 @@
    "file": "symbols.c",
    "pairing": "open",
    "orig": "0x2bf6",
-   "ours": "-",
-   "level": "open",
+   "ours": "2bf6-2bfc",
+   "level": "exact",
    "size_orig": 6,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done"
   },
   "f2bfc": {
    "file": "symbols.c",
    "pairing": "open",
    "orig": "0x2bfc",
-   "ours": "-",
-   "level": "open",
+   "ours": "2bfc-2c02",
+   "level": "exact",
    "size_orig": 6,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done"
   },
   "f2c02": {
    "file": "symbols.c",
@@ -642,7 +642,18 @@
  },
  "findings": [],
  "findings_pending": [],
- "manual_classes": {},
+ "manual_classes": {
+  "f26ac": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "findings: draft with f2360(x, &v107c) matches all instructions; the frame is 4 bytes in the original (one unused 2-byte local, spare) and 2 in the draft. Three attempts used (argument order, register parameter, argument order)."
+  },
+  "f26ca": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "findings: same as f26ac with f22e8(x, &v107c); frame 4 against 2 (unused local). Three attempts used."
+  }
+ },
  "inventory": {
   "source": "tools/inventory.py (nonsegmented copy of the sld inventory); tools/own_table.py"
  },

@@ -53,7 +53,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1a9a | - | 0x1a9a | open | open |  |  |  |
 | f1b0a | - | 0x1b0a | open | open |  |  |  |
 | f1b38 | - | 0x1b38 | open | open |  |  |  |
-| f1c5a | - | 0x1c5a | open | open |  |  |  |
+| f1c5a | 1c5a-1c6c | 0x1c5a | open | exact |  |  |  |
 | f1c6c | - | 0x1c6c | open | open |  |  |  |
 | f1ce2 | - | 0x1ce2 | open | open |  |  |  |
 | f1e86 | - | 0x1e86 | open | open |  |  |  |
@@ -70,8 +70,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f2502 | - | 0x2502 | open | open |  |  |  |
 | f25a2 | - | 0x25a2 | open | open |  |  |  |
 | f25dc | - | 0x25dc | open | open |  |  |  |
-| f26ac | - | 0x26ac | open | open |  |  |  |
-| f26ca | - | 0x26ca | open | open |  |  |  |
+| f26ac | - | 0x26ac | open | findings | read by hand |  | findings: draft with f2360(x, &v107c) matches all instructions; the frame is 4 bytes in the original (one unused 2-byte local, spare) and 2 in the draft. Three attempts used (argument order, register parameter, argument order). |
+| f26ca | - | 0x26ca | open | findings | read by hand |  | findings: same as f26ac with f22e8(x, &v107c); frame 4 against 2 (unused local). Three attempts used. |
 | f26e8 | - | 0x26e8 | open | open |  |  |  |
 | f2766 | - | 0x2766 | open | open |  |  |  |
 | f27be | - | 0x27be | open | open |  |  |  |
@@ -83,8 +83,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f2b04 | - | 0x2b04 | open | open |  |  |  |
 | f2b3a | - | 0x2b3a | open | open |  |  |  |
 | f2b92 | - | 0x2b92 | open | open |  |  |  |
-| f2bf6 | - | 0x2bf6 | open | open |  |  |  |
-| f2bfc | - | 0x2bfc | open | open |  |  |  |
+| f2bf6 | 2bf6-2bfc | 0x2bf6 | open | exact |  |  |  |
+| f2bfc | 2bfc-2c02 | 0x2bfc | open | exact |  |  |  |
 | f2c02 | - | 0x2c02 | open | open |  |  |  |
 | f2c20 | - | 0x2c20 | open | open |  |  |  |
 

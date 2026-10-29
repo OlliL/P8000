@@ -247,3 +247,14 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - module_ranges: ld.c 0x0042..0x22e8, copyname.c 0x22e8..0x23e2, printname.c 0x23e2..0x2502, symbols.c 0x2502..0x2c4c.
 - `tools/FINDINGS.md` is generated from findings.json (findings_md.py, copied from sld, uses progcfg.py).
 - `tools/own_functions.txt`: status column is `open` / `crt0`; keep it in step with findings.json.
+
+## Step 5: first functions (2026-10-29)
+
+- Tools: `ldcheck.py` (draft against the original), `accept_ld.py DRAFT ENTRY END NAME` (accepts an exact draft into
+  the C file of its module, sets status in findings.json and own_functions.txt; declarations are written once).
+- Done (exact, in the C files): f1c5a (ld.c), f2bf6 and f2bfc (symbols.c; the variable at 067c is v067c, data).
+- Findings (symbols.c): f26ac, f26ca. Instructions equal with the arguments in the order f2360(x, &v107c)
+  and f22e8(x, &v107c); the original frame is 4 bytes, the draft 2 (one unused 2-byte local). Three attempts used.
+  Drafts in /mnt/share/cvs/P8000/tmp/tmp/d5/ (not accepted).
+- ld.c and symbols.c compile alone with the original cc (checked).
+- Next: the remaining functions of ld.c, printname.c and copyname.c, then symbols.c.

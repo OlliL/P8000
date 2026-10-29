@@ -29,7 +29,7 @@
 1a9a  f1a9a  1b0a    112  13ca,1ce2,1f64,249a proven    open
 1b0a  f1b0a  1b38     46  108e,27be        proven    open
 1b38  f1b38  1c5a    290  13ca,1452,1c6c,1ce2,1f64 proven    open
-1c5a  f1c5a  1c6c     18  1452,1b38        proven    open
+1c5a  f1c5a  1c6c     18  1452,1b38        proven    done
 1c6c  f1c6c  1ce2    118  172e,1a9a,1ce2   proven    open
 1ce2  f1ce2  1e86    420  0608,13ca        proven    open
 1e86  f1e86  1f22    156  009c,089a,0d9c,108e,120e,1452,172e,1a74,1b38,1c6c,1ce2,1f22,1f64,229c,23e2,2502,29d6 proven    open
@@ -46,8 +46,8 @@
 2502  f2502  25a2    160  0b6e             proven    open
 25a2  f25a2  25dc     58  13ca             proven    open
 25dc  f25dc  26ac    208  1452,26ac        proven    open
-26ac  f26ac  26ca     30  0b6e             proven    open
-26ca  f26ca  26e8     30  -                proven    open
+26ac  f26ac  26ca     30  0b6e             proven    findings
+26ca  f26ca  26e8     30  -                proven    findings
 26e8  f26e8  2766    126  -                proven    open
 2766  f2766  27be     88  1452             proven    open
 27be  f27be  282e    112  1452,25a2,282e   proven    open
@@ -59,7 +59,7 @@
 2b04  f2b04  2b3a     54  172e             proven    open
 2b3a  f2b3a  2b92     88  -                proven    open
 2b92  f2b92  2bf6    100  -                proven    open
-2bf6  f2bf6  2bfc      6  -                proven    open
-2bfc  f2bfc  2c02      6  -                proven    open
+2bf6  f2bf6  2bfc      6  -                proven    done
+2bfc  f2bfc  2c02      6  -                proven    done
 2c02  f2c02  2c20     30  0000,0042        proven    open
 2c20  f2c20  2c4c     44  29d6             proven    open
