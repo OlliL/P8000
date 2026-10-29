@@ -6,13 +6,13 @@
 0018  f0018  0042     42  -                candidate crt0
 0042  f0042  009c     90  194a,1e86        proven    done
 009c  f009c  0370    724  0000             proven    open
-0370  f0370  045e    238  -                proven    open
+0370  f0370  045e    238  -                proven    findings
 045e  f045e  050c    174  009c             proven    open
 050c  f050c  057c    112  -                proven    done
 057c  f057c  0608    140  -                proven    done
 0608  f0608  0714    268  009c             proven    open
-0714  f0714  07b2    158  -                proven    open
-07b2  f07b2  089a    232  -                proven    open
+0714  f0714  07b2    158  -                proven    done
+07b2  f07b2  089a    232  -                proven    findings
 089a  f089a  08cc     50  0b6e             proven    findings
 08cc  f08cc  0b6e    674  -                proven    open
 0b6e  f0b6e  0d9c    558  045e             proven    open
@@ -23,7 +23,7 @@
 13ca  f13ca  1452    136  045e             proven    done
 1452  f1452  172e    732  13ca             proven    open
 172e  f172e  194a    540  1452             proven    open
-194a  f194a  1a12    200  045e             proven    open
+194a  f194a  1a12    200  045e             proven    done
 1a12  f1a12  1a74     98  194a             proven    findings
 1a74  f1a74  1a9a     38  12a8             proven    done
 1a9a  f1a9a  1b0a    112  13ca,1ce2,1f64,249a proven    done

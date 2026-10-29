@@ -59,16 +59,6 @@
    "callers_orig": "0000",
    "status": "open"
   },
-  "f0370": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x0370",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 238,
-   "callers_orig": "-",
-   "status": "open"
-  },
   "f045e": {
    "file": "ld.c",
    "pairing": "open",
@@ -107,26 +97,6 @@
    "level": "open",
    "size_orig": 268,
    "callers_orig": "009c",
-   "status": "open"
-  },
-  "f0714": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x0714",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 158,
-   "callers_orig": "-",
-   "status": "open"
-  },
-  "f07b2": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x07b2",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 232,
-   "callers_orig": "-",
    "status": "open"
   },
   "f08cc": {
@@ -658,6 +628,36 @@
    "size_orig": 200,
    "callers_orig": "045e",
    "status": "done"
+  },
+  "load_header": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x0714",
+   "ours": "0714-07b2",
+   "level": "exact",
+   "size_orig": 158,
+   "callers_orig": "0000,13ca",
+   "status": "done"
+  },
+  "ranlib_scan": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x07b2",
+   "ours": "07b2-089a",
+   "level": "findings",
+   "size_orig": 232,
+   "callers_orig": "-",
+   "status": "findings"
+  },
+  "reg_sect_addr": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x0370",
+   "ours": "0370-045e",
+   "level": "findings",
+   "size_orig": 238,
+   "callers_orig": "-",
+   "status": "findings"
   }
  },
  "findings": [],
@@ -807,6 +807,20 @@
     "D3"
    ],
    "note": "findings (symbols.c): sld chk_ranlib (ranlib entries of 12 bytes). Five attempts (d5/cr2..cr6, draft cr5). Loop, calls (pslookup, warn_sym_redef) and the frame size are equal with one spare int; the original stores q = p from a reload of the parameter (frame) and keeps a register variable (r14, not identified). Accepted as finding."
+  },
+  "ranlib_scan": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): sld ranlib_scan with rltab (word at 0x6c00, a pointer) and rlcnt (0x6c02). Six attempts (d5/rs1..rs7, draft rs3). All calls and the frame (sv, t, end, i) are equal; the bound test rltab + i < end is computed through r3 in the draft and through r5 in the original (no form tried gave r5). Accepted as finding."
+  },
+  "reg_sect_addr": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): sld reg_sect_addr for -t, -d, -b with the selector switch (t, d, b, end), tab42b4 (char[4], 0x702e), secorg (int[4], 0x7034), secspec (char, 0x702c). Six attempts (d5/rsa1..rsa6, draft rsa4). Equal code except the frame offset of fmt (6 in the original, 8 here) and the reduced frame. Accepted as finding."
   }
  },
  "inventory": {

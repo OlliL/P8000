@@ -26,6 +26,12 @@ int v66b4;
 struct buf toutb;
 struct buf soutb, tmpoutb, routb, doutb;
 int rflag, sflag, xflag, ofilfnd;
+int swapflg;
+char secspec;
+char tab42b4[4];
+int secorg[4];
+struct rlent *rltab;
+int rlcnt;
 char *aoutnam = "a.out";
 int v6bf8, v7012, v6bfa, v701a;
 unsigned char v67e4[256];
@@ -51,6 +57,54 @@ sig_handler()
 	if (delarg)
 		unlink(ofilnam);
 	_exit(delarg);
+}
+
+/* reg_sect_addr: read the address of a section option (-t, -d, -b) and check it (sld reg_sect_addr; finding: the frame
+   offset of fmt differs; 0x0370..0x045e of /bin/ld) */
+
+int reg_sect_addr(s, t)
+char *s;
+char *t;
+{
+	int spare1, spare2;
+
+	register int k;
+	register char *u;
+	char *fmt;
+
+	secspec++;
+	switch (*(s + 1)) {
+	case 't':
+		k = 1;
+		break;
+	case 'd':
+		k = 2;
+		break;
+	case 'b':
+		k = 3;
+		break;
+	case 0:
+		k = 0;
+		break;
+	default:
+		report_error(2, "-%.2s: invalid selector (must be t, d or b)", s);
+	}
+	u = t;
+	if (tab42b4[k])
+		report_error(2, "-%.2s: -%c%c already specified", s, tab42b4[k], s[1]);
+	tab42b4[k] = *s;
+	fmt = "%o%c";
+	if (*u != '0')
+		fmt = "%d%c";
+	else if ((u[1] | 0x20) == 'x') {
+		u += 2;
+		fmt = "%x%c";
+	}
+	if (sscanf(u, fmt, &secorg[k]) != 1)
+		report_error(2, "-%.2s %s: bad address", s, t);
+	if (k != 0)
+		return 1;
+	return 0;
 }
 
 f050c(x, y)
@@ -103,6 +157,59 @@ int i;
 
 /* add16_checked: sum of two words, report_error(1) with the message a when the sum is 0x10000 or more (sld add16_checked;
    0x089a..0x08cc of /bin/ld) */
+
+load_header(p)
+long p;
+{
+	int magic;
+
+	dseek(&text, p, 0x1c);
+	if (text.size <= 0) {
+		*libp++ = -1;
+		return 0;
+	}
+	mget(&archdr, 0x1a);
+	mget(&magic, 2);
+	if (swapflg)
+		magic = swap(magic);
+	if (magic == 0xe707 || magic == 0xe711 || magic == 0xe507 || magic == 0xe511) {
+		if (read_symbols(1, p + 13))
+			*libp++ = p;
+	}
+	return 1;
+}
+
+int ranlib_scan()
+{
+	int i;
+	struct rlent *end;
+	struct symbol *t;
+	long *sv;
+
+	sv = libp;
+	end = rltab;
+	i = 0;
+	goto test;
+body:
+	if (rltab + i < end)
+		goto next;
+	if ((rltab[i].rname[0] & 0x80) != 0)
+		end = (struct rlent *)(rltab[i].rname + (rltab[i].rname[0] & 0x7f));
+	t = *pslookup(rltab[i].rname);
+	if (!t)
+		goto next;
+	if (t->stype != 0x20)
+		goto next;
+	if (swapflg)
+		swap_pair(&rltab[i]);
+	load_header(rltab[i].roff >> 1);
+next:
+	i++;
+test:
+	if ((unsigned)i < (unsigned)rlcnt)
+		goto body;
+	return sv != libp;
+}
 
 add16_checked(x, y, a)
 unsigned x, y;
@@ -559,3 +666,9 @@ register struct buf *a;
 
 /* getfile: open an input file, searching the library directories (sld getfile; 0x1ce2..0x1e86 of /bin/ld; finding:
    three registers in the original, the count of strncpy and the last branch differ) */
+
+/* load_header: read the header of an object file or archive member; a symbol-bearing object is entered in the list of
+   the library (sld load_header; 0x0714..0x07b2 of /bin/ld) */
+
+/* ranlib_scan: look up the undefined symbols in the ranlib table of an archive and load the members that define them (sld
+   ranlib_scan; finding: the bound test of the table is computed in another register; 0x07b2..0x089a of /bin/ld) */

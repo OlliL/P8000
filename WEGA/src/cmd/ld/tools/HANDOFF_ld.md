@@ -575,3 +575,15 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## finish_output and table16 names (2026-10-29)
 
 - f194a is sld finish_output in ld form (ld.c), exact (64 instructions, draft d5/fo2.c, two spares). Two padding loops (f221e with 0, toutb/soutb if rflag; tmpoutb/doutb if rflag) over the words at 0x6bf8..0x7012 and 0x6bfa..0x701a, then copy(tmpoutb), copy(routb) if rflag, copy(doutb), copy(soutb) if !xflag and put_all if !sflag, flush and close toutb, link of aoutnam if !ofilfnd, delarg = exstat, sig_handler. No patch_hdr. Names: delarg (was v007c, data 0x7c), aoutnam = "a.out". New globals: soutb, tmpoutb, routb, doutb (sld buffer names), rflag, sflag, xflag, ofilfnd (addresses from the code, step 5b); v6bf8, v7012, v6bfa, v701a (open names).
+
+## load_header (2026-10-29)
+
+- f0714 is sld load_header(p) (ld.c), exact (46 instructions, first attempt, d5/lh1.c). ld accepts the magic numbers 0xe707, 0xe711, 0xe507, 0xe511 (no 0xe607/0xe611, nonsegmented). swapflg (0x66b2) is declared in ld.h, not yet defined with an address (ld.c defines it next to rflag).
+
+## ranlib_scan (2026-10-29): finding
+
+- f07b2 is sld ranlib_scan (ld.c), finding after six attempts (d5/rs3.c). rltab (word at 0x6c00, pointer) and rlcnt (0x6c02) added. The bound test rltab + i < end uses another temporary register (r3 instead of r5).
+
+## reg_sect_addr (2026-10-29): finding
+
+- f0370 is sld reg_sect_addr (ld.c), finding after six attempts (d5/rsa4.c): code equal except the frame offset of fmt (6 vs 8) and the saved registers. secspec (0x702c), tab42b4 (0x702e) and secorg (0x7034) are the sld tables, declared in ld.c.

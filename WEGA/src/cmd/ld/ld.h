@@ -132,3 +132,9 @@ struct rlent {
 struct symbol **pslookup();
 int chk_ranlib();
 int sbrk();
+int read_symbols();
+int swap();
+int load_header();
+extern struct rlent *rltab;
+extern int rlcnt;
+int ranlib_scan();

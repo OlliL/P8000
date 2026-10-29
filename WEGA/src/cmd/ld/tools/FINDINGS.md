@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 41 |
-| open | 23 |
+| confirmed | 44 |
+| open | 20 |
 
 | Difference class | Count |
 |---|---|
@@ -36,13 +36,10 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f0010 | - | 0x0010 | open | generated |  |  |  |
 | f0018 | - | 0x0018 | open | generated |  |  |  |
 | f009c | - | 0x009c | open | open |  |  |  |
-| f0370 | - | 0x0370 | open | open |  |  |  |
 | f045e | - | 0x045e | open | open |  |  |  |
 | f050c | 050c-057c | 0x050c | open | exact | read by hand |  | exact (2026-10-29, second attempt): append entry to the table tab (22-byte records, index ntab): t0 = x, t1 = v44a6, t2 = v0070 (data), t3 = y, t4..t10 = v66d0, v66d2, v66d4, v66c2, v66c6, v66cc, v66ce. One unused int local. No caller in the table (its callers are through the table or unknown). Globals: ntab (bss 0abe), tab (0ac0), the v-names are guesses; v0070 is in the data (step 5b). |
 | f057c | 057c-0608 | 0x057c | confirmed | exact |  |  |  |
 | f0608 | - | 0x0608 | open | open |  |  |  |
-| f0714 | - | 0x0714 | open | open |  |  |  |
-| f07b2 | - | 0x07b2 | open | open |  |  |  |
 | f08cc | - | 0x08cc | open | open |  |  |  |
 | f0b6e | - | 0x0b6e | open | open |  |  |  |
 | f0d9c | - | 0x0d9c | open | open |  |  |  |
@@ -68,6 +65,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | ldrsym | 2502-25a2 | 0x2502 | confirmed | exact |  |  |  |
 | limit_msg | 2c02-2c20 | 0x2c02 | confirmed | exact |  |  |  |
 | load2arg | 13ca-1452 | 0x13ca | confirmed | exact |  |  |  |
+| load_header | 0714-07b2 | 0x0714 | confirmed | exact |  |  |  |
 | lookup_name | 25dc-26ac | 0x25dc | confirmed | findings | read by hand | D3 | findings (symbols.c): sld lookup_name with ld names (cursym, nlflag, lnbuf, local, hshtab). Hash modulus 0x0923 in ld (sld 0x0ffa). Six attempts: the original keeps start (r11) and end (r10) in registers and slot, cur, rec in the frame or scratch; the draft has start and end in the frame and the loop test differs (cp r6,frame). Draft: d5/ln1.c. Accepted as finding. |
 | mget | 1a9a-1b0a | 0x1a9a | confirmed | exact | read by hand |  | exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n)). |
 | mkfsym | 25a2-25dc | 0x25a2 | confirmed | exact |  |  |  |
@@ -80,7 +78,9 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | put_int_buf | 226e-229c | 0x226e | confirmed | exact |  |  |  |
 | put_name | 23e2-249a | 0x23e2 | confirmed | exact |  |  |  |
 | put_sym | 27be-282e | 0x27be | confirmed | findings | read by hand | D3 | findings (symbols.c): sld put_sym without the struct copy: ld writes the symbol itself (mput(a, p, 14)) and has no nwsym count. Seven attempts (d5/ps1..ps7). Frame size 16 matches with two spares (ps4). Differences: swap_pair gets b from r6 in the original and from the frame here; the position of cnt (frame 7 in the original, 9 here). Draft: d5/ps4.c. Accepted as finding. |
+| ranlib_scan | 07b2-089a | 0x07b2 | confirmed | findings | read by hand | D3 | findings (ld.c): sld ranlib_scan with rltab (word at 0x6c00, a pointer) and rlcnt (0x6c02). Six attempts (d5/rs1..rs7, draft rs3). All calls and the frame (sv, t, end, i) are equal; the bound test rltab + i < end is computed through r3 in the draft and through r5 in the original (no form tried gave r5). Accepted as finding. |
 | read_entry_hdr | 249a-2502 | 0x249a | confirmed | exact |  |  | owner decision: read_entry_hdr is in symbols.c (first function, address 0x249a), not printname.c. Exact before the move (34 instructions). symbols.c is now in address order (read_entry_hdr, lookup_name, slookup, pslookup, put_sym, put_all, warn_sym_redef, next_entry, f2bf6, f2bfc). |
+| reg_sect_addr | 0370-045e | 0x0370 | confirmed | findings | read by hand | D3 | findings (ld.c): sld reg_sect_addr for -t, -d, -b with the selector switch (t, d, b, end), tab42b4 (char[4], 0x702e), secorg (int[4], 0x7034), secspec (char, 0x702c). Six attempts (d5/rsa1..rsa6, draft rsa4). Equal code except the frame offset of fmt (6 in the original, 8 here) and the reduced frame. Accepted as finding. |
 | report_error | 1e86-1f22 | 0x1e86 | confirmed | exact |  |  |  |
 | sig_handler | 0042-009c | 0x0042 | open | exact | read by hand |  | exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink("l.out"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones. |
 | slookup | 26ac-26ca | 0x26ac | confirmed | exact |  |  |  |
