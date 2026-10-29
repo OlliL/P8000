@@ -324,7 +324,7 @@ unsigned x;
 	char *p;
 
 	if (x < 0x258)
-		return (struct symbol *)(0x1102 + x * 14);
+		return sym16 + x;
 	if (x > 0x923)
 		report_error(2, "Symbol table overflow");
 	if (symtab == 0) {
@@ -376,7 +376,7 @@ struct symbol *x;
 	int spare;
 
 	if (x < nsym)
-		return ((int)x - 0x1102) / 14;
+		return x - sym16;
 	return ((int)x - (int)symtab) / 14 + 0x258;
 }
 

@@ -82,6 +82,7 @@ struct symbol {
 	char sname[8];
 };
 extern struct symbol cursym;
+extern struct symbol sym16[600];
 /* hash table of the symbols (sld: hshtab, indexed from 2; ld hashes with 0x0923), the name buffer of the
    current symbol (sld: lnbuf) and the flag of the -N option (sld: nlflag) */
 extern struct symbol *hshtab[];
