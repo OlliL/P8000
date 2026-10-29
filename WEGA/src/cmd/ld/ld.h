@@ -87,3 +87,9 @@ extern struct symbol *hshtab[];
 extern char lnbuf[];
 extern int nlflag;
 struct symbol **lookup_name();
+/* symbol table (sld: symtab, nsym); entries are 14 bytes in ld */
+extern struct symbol *symtab;
+extern int nsym;
+/* flag of -w (sld: wflag); put_name writes a symbol name and returns its length (copyname.c / printname.c) */
+extern int wflag;
+int put_name();

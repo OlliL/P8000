@@ -52,10 +52,10 @@
 2766  f2766  27be     88  1452             proven    open
 27be  f27be  282e    112  1452,25a2,282e   proven    open
 282e  f282e  2862     52  194a             proven    done
-2862  f2862  294e    236  -                proven    open
+2862  f2862  294e    236  -                proven    done
 294e  f294e  29d6    136  -                proven    open
 29d6  f29d6  2aa6    208  0b6e,282e        proven    open
-2aa6  f2aa6  2b04     94  0b6e,282e        proven    open
+2aa6  f2aa6  2b04     94  0b6e,282e        proven    findings
 2b04  f2b04  2b3a     54  172e             proven    open
 2b3a  f2b3a  2b92     88  -                proven    open
 2b92  f2b92  2bf6    100  -                proven    open

@@ -468,3 +468,16 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## lookup_name (2026-10-29): finding
 
 - f25dc is sld lookup_name (symbols.c). Six attempts (d5/ln1..ln6). Differences: the original keeps start and end in r11 and r10, the drafts keep them in the frame; hash modulus 0x0923 (ld) instead of sld 0x0ffa. Accepted as finding.
+
+## next_entry (2026-10-29): finding
+
+- f2aa6 is sld next_entry (symbols.c), entries 14 bytes in ld (mult #0e, inc #14). Five attempts; finding: register set (only e in r12, p in r1 without spill) and the bound test (two table words, other order). Draft d5/ne1.c.
+
+## warn_sym_redef (2026-10-29): finding
+
+- f2862 is sld warn_sym_redef (symbols.c), message to stderr (_iob[2] = 0x908; sld uses stdout). Six attempts (d5/wsr1..wsr6), exact except the sign extension of the stored char (extsb in the original, subb rh2 here: _ptr of the original stdio is char *, WEGA src/head/stdio.h has unsigned char *). Check the stdio header of the original build.
+- put_name is f23e2 (printname.c, open).
+
+## warn_sym_redef: stdio check (2026-10-29)
+
+- The original ld compiles the putc store with a signed char: the store is followed by extsb. The header of the repo (src/head/stdio.h, also usr/include of the WEGA root) has unsigned char *_ptr, so the store is zero-extended there. A stub with char *_ptr reproduces the original exactly (wsr7/wsr8). With the repo header the same result comes from (int)(char)(...) (d5/wsr9.c, exact). Status done. The stdio of the 1983 build is not in the repo (only one commit of the header).

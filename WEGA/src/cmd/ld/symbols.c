@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "ld.h"
 
 struct symbol cursym;
@@ -101,4 +102,58 @@ l2:
 			slot = hshtab;
 	}
 	return slot;
+}
+
+/* next_entry: next entry of the symbol table (a long name occupies several entries) (0x2aa6..0x2b04 of /bin/ld; finding) */
+struct symbol *next_entry(p)
+register struct symbol *p;
+{
+	register int b;
+	register char *e;
+
+	b = p->sname[0];
+	if (b & 0x80) {
+		e = p->sname + (b & 0x7f);
+		p++;
+		while (e > (char *)p)
+			p++;
+	} else
+		p++;
+	if (p >= symtab && p < symtab + nsym)
+		return p;
+	report_error(2, "Error in stepsym");
+}
+
+/* warn_sym_redef: warn that a symbol is redefined in an archive (0x2862..0x294e of /bin/ld). The (char) casts give the
+   sign extension of the original, whose stdio had char *_ptr (the header of src/head has unsigned char *) */
+warn_sym_redef(p, a)
+struct symbol *p;
+struct symbol *a;
+{
+	register char *s;
+	char c;
+	int n;
+
+	if (wflag)
+		return;
+	if (p != 0) {
+		c = p->stype;
+		if (!c & 0x20 || c == 0x20)
+			return;
+	}
+	c = a->stype;
+	if (!c & 0x20 || c == 0x20)
+		return;
+	s = a->sname;
+	if (*s & 0x80)
+		s++;
+	if (*s == 0x5f) {
+		s++;
+		if (*s == 0x5f)
+			return;
+	}
+	if (put_name(a->sname) < 8)
+		(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 9) : _flsbuf((unsigned)9, stderr));
+	(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 0x20) : _flsbuf((unsigned)0x20, stderr));
+	report_error(0, "- warning: symbol redefined in archive");
 }

@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 19 |
-| open | 45 |
+| confirmed | 21 |
+| open | 43 |
 
 | Difference class | Count |
 |---|---|
@@ -64,10 +64,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f2766 | - | 0x2766 | open | open |  |  |  |
 | f27be | - | 0x27be | open | open |  |  |  |
 | f282e | - | 0x282e | open | open |  |  |  |
-| f2862 | - | 0x2862 | open | open |  |  |  |
 | f294e | - | 0x294e | open | open |  |  |  |
 | f29d6 | - | 0x29d6 | open | open |  |  |  |
-| f2aa6 | - | 0x2aa6 | open | open |  |  |  |
 | f2b04 | - | 0x2b04 | open | open |  |  |  |
 | f2b3a | - | 0x2b3a | open | open |  |  |  |
 | f2b92 | - | 0x2b92 | open | open |  |  |  |
@@ -81,6 +79,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | high_byte | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
 | lookup_name | 25dc-26ac | 0x25dc | confirmed | findings | read by hand | D3 | findings (symbols.c): sld lookup_name with ld names (cursym, nlflag, lnbuf, local, hshtab). Hash modulus 0x0923 in ld (sld 0x0ffa). Six attempts: the original keeps start (r11) and end (r10) in registers and slot, cur, rec in the frame or scratch; the draft has start and end in the frame and the loop test differs (cp r6,frame). Draft: d5/ln1.c. Accepted as finding. |
 | mget | 1a9a-1b0a | 0x1a9a | confirmed | exact | read by hand |  | exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n)). |
+| next_entry | 2aa6-2b04 | 0x2aa6 | confirmed | findings | read by hand | D3 | findings (symbols.c): sld next_entry with ld's 14-byte entries (exact step). Five attempts (d5/ne1..ne5). Register set differs (the original keeps only e in r12; p is in r1 without a spill). The bound test differs: the original compares p with two words of the table (symtab, symtab+nsym*14) in another order than sld's `p >= symtab && p < symtab + nsym`. Draft: d5/ne1.c. Accepted as finding. |
 | open_tmp | 120e-12a8 | 0x120e | confirmed | exact |  |  |  |
 | pslookup | 26ca-26e8 | 0x26ca | confirmed | exact |  |  |  |
 | put_all | 282e-2862 | 0x282e | confirmed | exact |  |  |  |
@@ -90,6 +89,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | slookup | 26ac-26ca | 0x26ac | confirmed | exact |  |  |  |
 | str_compare | 21f2-221e | 0x21f2 | confirmed | exact |  |  |  |
 | table_lookup | 1f22-1f64 | 0x1f22 | confirmed | exact |  |  |  |
+| warn_sym_redef | 2862-294e | 0x2862 | confirmed | exact |  |  |  |
 
 ## Pending findings
 

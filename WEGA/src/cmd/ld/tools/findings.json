@@ -379,16 +379,6 @@
    "callers_orig": "194a",
    "status": "open"
   },
-  "f2862": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x2862",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 236,
-   "callers_orig": "-",
-   "status": "open"
-  },
   "f294e": {
    "file": "symbols.c",
    "pairing": "open",
@@ -406,16 +396,6 @@
    "ours": "-",
    "level": "open",
    "size_orig": 208,
-   "callers_orig": "0b6e,282e",
-   "status": "open"
-  },
-  "f2aa6": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x2aa6",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 94,
    "callers_orig": "0b6e,282e",
    "status": "open"
   },
@@ -658,6 +638,26 @@
    "size_orig": 208,
    "callers_orig": "1452,26ac",
    "status": "findings"
+  },
+  "next_entry": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x2aa6",
+   "ours": "2aa6-2b04",
+   "level": "findings",
+   "size_orig": 94,
+   "callers_orig": "0b6e,282e",
+   "status": "findings"
+  },
+  "warn_sym_redef": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x2862",
+   "ours": "2862-294e",
+   "level": "exact",
+   "size_orig": 236,
+   "callers_orig": "-",
+   "status": "done"
   }
  },
  "findings": [],
@@ -753,6 +753,13 @@
     "D3"
    ],
    "note": "findings (symbols.c): sld lookup_name with ld names (cursym, nlflag, lnbuf, local, hshtab). Hash modulus 0x0923 in ld (sld 0x0ffa). Six attempts: the original keeps start (r11) and end (r10) in registers and slot, cur, rec in the frame or scratch; the draft has start and end in the frame and the loop test differs (cp r6,frame). Draft: d5/ln1.c. Accepted as finding."
+  },
+  "next_entry": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (symbols.c): sld next_entry with ld's 14-byte entries (exact step). Five attempts (d5/ne1..ne5). Register set differs (the original keeps only e in r12; p is in r1 without a spill). The bound test differs: the original compares p with two words of the table (symtab, symtab+nsym*14) in another order than sld's `p >= symtab && p < symtab + nsym`. Draft: d5/ne1.c. Accepted as finding."
   }
  },
  "inventory": {
