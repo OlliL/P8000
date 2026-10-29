@@ -251,13 +251,13 @@
   },
   "f1a12": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x1a12",
-   "ours": "-",
-   "level": "open",
+   "ours": "1a12-1a74",
+   "level": "findings",
    "size_orig": 98,
    "callers_orig": "194a",
-   "status": "open"
+   "status": "findings"
   },
   "f1a74": {
    "file": "ld.c",
@@ -719,6 +719,13 @@
     "D4"
    ],
    "note": "findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c."
+  },
+  "f1a12": {
+   "basis": "read",
+   "d_classes": [
+    "D3"
+   ],
+   "note": "findings (ld.c): copy of a file to the output buffer (lseek to 0, read 256 bytes, each byte put with f226e, close). Six+ attempts. Everything equal except the reload of the spilled parameter p before the fildes read: the original loads it into r7 (ld r7,p; ld r14,@r7), the draft into r2 (ld r2,p; ld r14,@r2). Also the frame needs two int spares before q (dec 12). Source behaviour of the original: the loop body runs while read returns more than 1 (cp r2,#1; jr gt), so a read that returns exactly 1 byte is not copied (quirk to record in KNOWLEDGE.md). Draft: d5/f1a12_try3.c. Accepted into ld.c as a finding."
   }
  },
  "inventory": {

@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 13 |
-| open | 49 |
+| confirmed | 14 |
+| open | 48 |
 
 | Difference class | Count |
 |---|---|
@@ -49,7 +49,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1452 | - | 0x1452 | open | open |  |  |  |
 | f172e | - | 0x172e | open | open |  |  |  |
 | f194a | - | 0x194a | open | open |  |  |  |
-| f1a12 | - | 0x1a12 | open | open |  |  |  |
+| f1a12 | 1a12-1a74 | 0x1a12 | confirmed | findings | read by hand | D3 | findings (ld.c): copy of a file to the output buffer (lseek to 0, read 256 bytes, each byte put with f226e, close). Six+ attempts. Everything equal except the reload of the spilled parameter p before the fildes read: the original loads it into r7 (ld r7,p; ld r14,@r7), the draft into r2 (ld r2,p; ld r14,@r2). Also the frame needs two int spares before q (dec 12). Source behaviour of the original: the loop body runs while read returns more than 1 (cp r2,#1; jr gt), so a read that returns exactly 1 byte is not copied (quirk to record in KNOWLEDGE.md). Draft: d5/f1a12_try3.c. Accepted into ld.c as a finding. |
 | f1a74 | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
 | f1a9a | 1a9a-1b0a | 0x1a9a | open | exact | read by hand |  | exact (2026-10-29, third attempt): buffer read with refill. Globals v1030 (int *, buffer pointer), v1034 and v1036 (counters, int). The statement order matters: i = n; i >>= 1; r = p; (the form of HOWTO step 7). Three unused int locals (frame 16). |
 | f1b0a | 1b0a-1b38 | 0x1b0a | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): parameter list (q, p, n), register pointer r and counter i (declared in this order), and two unused int locals (spare1, spare2). The parameter order is the same as f1f22 and f1b0a stands for the rule; the register order (r14 then r13) as in f1f22. |

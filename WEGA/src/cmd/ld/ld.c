@@ -45,6 +45,9 @@ struct buf {
 	char iobuf[256];
 };
 
+struct buf v66d8;
+unsigned char v67e4[256];
+
 f1c5a(x)
 int x;
 {
@@ -292,5 +295,29 @@ register struct stream *p;
 		p->pno = &fpage;
 	}
 	return(*p->ptr++);
+}
+
+f1a12(p)
+struct buf *p;
+{
+	int spare1, spare2;
+	unsigned char *q;
+	register fd;
+	register n;
+
+	f229c(p);
+	fd = p->fildes;
+	lseek(fd, 0L, 0);
+	goto test;
+body:
+	q = v67e4;
+	do
+		f226e(*q++, &v66d8);
+	while (--n);
+test:
+	n = read(fd, v67e4, 256);
+	if (n > 1)
+		goto body;
+	close(fd);
 }
 

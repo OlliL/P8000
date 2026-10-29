@@ -375,3 +375,16 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - accept_ld.py (2026-10-29): the globals before a function are taken block by block (blank-line separated), so a
   declaration after a struct that is already in ld.c is no longer dropped (f1c6c lost `struct pghdr fpage;` that way;
   added by hand, ld.c compiles).
+
+## f1a12 (2026-10-29): finding
+
+- Draft d5/f1a12_try3.c (goto loop, two int spares before q). Everything equal except the reload of the spilled p
+  before `fd = p->fildes`: original `ld r7,p`, draft `ld r2,p` (D3). Tried variants (struct/int pointer, `(*p).`, extra
+  register s): all keep r2 or change the register numbering; accepted as finding after the attempt limit.
+- Quirk (for KNOWLEDGE.md "Bugs and quirks"): the copy loop continues only while read returns more than 1; a
+  final read of exactly 1 byte is not copied.
+- odis.py NAME does not parse own_functions.txt (two spaces); ld is non-segmented, odis decodes with seg=True
+  (fails at 1a1a). Use unlink_seg.decode_range(prog, False, lo, hi) for ld until odis.py handles the flag.
+- accept_ld.py skipped the draft's `struct buf` block (already in ld.c), so the new globals of f1a12 landed above it
+  ("unknown size"). Fixed by hand: v66d8 after struct buf, v67e4 is `unsigned char v67e4[256]` (no warning).
+  ld.c compiles alone without warnings. Known: a global block that comes with a skipped struct must be placed by hand.
