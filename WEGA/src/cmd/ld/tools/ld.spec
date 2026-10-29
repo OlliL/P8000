@@ -14,6 +14,7 @@ doprnt     old     34d2 3e72  124 dstart=0868  __align=34d2 __doprnt=352e __atoi
 ffltioc    shipped 3e72 3e78  0
 ungetc     shipped 3e78 3ece  0
 filbuf     old     3ece 3fb0  20 dstart=08e4  __filbuf=3ece
+data       shipped -    -     162 dstart=08f8
 flsbuf     old     3fb0 4192  0     __flsbuf=3fb0 _fflush=4096 __cleanup=40f4 _fclose=4114
 __callex    shipped 4192 4198  0
 cuexit     shipped 4198 41a2  0
@@ -23,6 +24,7 @@ length     old     4322 4340  0     __length=4322
 malloc     old     4340 455a  12 dstart=09a6  _malloc=4340 _free=449c
 isatty     shipped 455a 4578  0
 mktemp     old     4578 45f2  2 dstart=09b2  _mktemp=4578
+ctype_     shipped -    -     258 dstart=09b4
 stty       shipped 45f2 461e  0
 swab       shipped 461e 465c  0
 rindex     old     465c 467c  0     _rindex=465c

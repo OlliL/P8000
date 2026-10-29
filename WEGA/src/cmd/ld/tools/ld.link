@@ -6,6 +6,7 @@ old doprnt 0_6
 shipped ffltioc
 shipped ungetc
 old filbuf 0_2
+shipped data
 old flsbuf 0_1
 shipped __callex
 shipped cuexit
@@ -15,6 +16,7 @@ old length 0_1
 old malloc 0_2
 shipped isatty
 old mktemp 0_1
+shipped ctype_
 shipped stty
 shipped swab
 old rindex 0_1

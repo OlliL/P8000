@@ -214,3 +214,18 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   (bss variables used by own code). One PROBLEM left: 0200 in malloc (a constant, not an address).
 - Open: the 530 relocated words get checked when the link exists (own block + libc objects + crt0); the data of the own
   block (0..0abc, shared with the libc data) is step 4.
+
+## Step 4: data and bss (2026-10-29, partly)
+
+- Data layout of /bin/ld (2748 bytes, separate I and D, addresses from 0):
+  own data 0000..07c8 (SCCS strings of ld.c, copyname.c, printname.c, symbols.c; per file: ld.c 002a..05a4,
+  copyname.c 05a4..05d8, printname.c 05d8..0646, symbols.c 0646..07c8), then the libc data in link order:
+  doscan 07c8 (160), doprnt 0868 (124), filbuf 08e4 (20), data (shipped data-only member, 162) 08f8, cnvt 099a (12),
+  malloc 09a6 (12), mktemp 09b2 (2), ctype_ (shipped data-only member, 258) 09b4, brk 0ab6 (2), cerror 0ab8 (4). End 0abc.
+- Checked: sizes add up to 2748; the shipped data-only members data.o and ctype_.o equal the bytes of /bin/ld at their
+  places (0 differing words); __iob at 08f8, __lastbuf at 0998 (= data.o offset a0), __iob+15 at 0907.
+- ld.spec: data and ctype_ are in (kind shipped, start -), ld.link and the Makefile too (make check: 0 differing words).
+- Own data 0000..07c8: not compared (the own block has no data yet; the bytes are the SCCS strings and the own
+  initialised variables, which come with the C sources of step 5).
+- bss: 27082 bytes at 0abc, not checked. Own variables are unknown until the C sources declare them (step 5); the
+  libc commons (_rc at 705a, __pfile 705c, __sobuf 705e) are in the spec as comm.

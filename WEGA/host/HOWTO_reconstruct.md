@@ -18,14 +18,15 @@ The work is split so that a cheap model does the mechanical part and an expensiv
 once. Do not change back and forth.
 
 **Phase A (cheap model): everything where a tool answers yes or no.** Steps 0 to 3, the first pass of
-step 4 (draft, compile, compare; at most 3 attempts per function, then mark it and go on), the layout of
-data and bss, the split into modules, the link and the corpus harness. Phase A ends with a handoff
+step 4 (the data layout), the first pass of step 5 (draft, compile, compare; at most 3 attempts per function,
+then mark it and go on), the layout of bss (step 5b), the split into modules, the link and the corpus harness. Phase A ends with a handoff
 note (`HANDOFF_<binary>.md` in the tool directory, deleted when the binary is finished) that contains:
 the function table with status, the list of functions with the first differing instructions (`firstdiff`
 output), what was tried, and the open questions. Phase A is done when:
 
 - function table complete, every function has a C draft and status `done` or `findings` (with the diff);
-- data and bss of the rebuilt program have the size and the variable addresses of the original;
+- data of the rebuilt program has the size and the bytes of the original, bss has the size and the variable addresses
+  of the original (step 5b, after the first pass of step 5);
 - the program is split into the modules of the original, each compiled alone, and the link works;
 - the corpus test (step 6) exists and runs; the own-code block (step 3) passes it, which proves the harness.
 
@@ -74,20 +75,31 @@ declaration order, not compiler differences.
 Cut the own code range as one module (`unlink_seg.py`), verify 0 differing words. This block is the
 reference for the link and the first corpus run (the link of it must reproduce the original).
 
-## Step 4: data and bss before the functions [A]
+## Step 4: data before the functions [A]
 
-Do this before the long function work; wrong addresses make every instruction differ.
+Do this before the long function work: the strings and initialized data must be at the addresses of the
+original, or every instruction that refers to them differs. The bss is not here: its addresses come from
+the variables the functions use, so it is done in step 5b.
 
 1. Data order = order of the SCCS strings and the initialized variables per module; strings are in the
    order of the source statements of each function (the old cc does not merge equal strings; a string
    used in a different order than the original means a different statement order or a static array in
    front of the function).
-2. Bss: the old linker allocates commons in the order of the FIRST MENTION in the objects in link
+2. Test: size of data equal, then the bytes of the data equal the original at the same addresses.
+
+## Step 5b: bss, after the first pass of step 5 [A]
+
+The variables are known only when the functions are written, so this comes after the first pass of step 5
+(all functions drafted, compiled and compared, the function table has status `done` or `findings`), and before
+the second pass.
+
+1. Bss: the old linker allocates commons in the order of the FIRST MENTION in the objects in link
    order; the group of the second segment comes first. Put all common definitions into the first
    object in the address order of the original (`order_vars.py`), unused gaps become spare variables,
    array sizes are the address distances. Check every variable address against the original
    (`var_addr.py` finds them by instruction voting).
-3. Test: size of data and bss equal, then all variable addresses equal.
+2. Test: size of bss equal, then all variable addresses equal. Afterwards the functions that use a
+   variable are compared again (their addresses moved in the first pass).
 
 ## Step 5: functions in C [A first pass, B second pass]
 
@@ -184,7 +196,8 @@ Do not write a new script for something that exists in the toolkit; extend the t
 - [ ] Inventory and function table with status column
 - [ ] Libc and shipped members identified (code AND data); cut modules verified; Makefile tested
 - [ ] Own code cut as one verified block
-- [ ] Data and bss: sizes and every variable address equal
+- [ ] Data: size and bytes equal (step 4)
+- [ ] Bss: size and every variable address equal (step 5b)
 - [ ] One C file per module, functions compared, `findings.json` notes
 - [ ] Corpus test runs (block passes), then the C build passes
 - [ ] Handoff note written, model change (once)

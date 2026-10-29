@@ -32,7 +32,9 @@ def spec():
         for x in f[5:]:
             if x.startswith('dstart='):
                 dstart = int(x[7:], 16)
-        out[f[0]] = dict(kind=f[1], start=int(f[2], 16), end=int(f[3], 16), data=int(f[4]), dstart=dstart)
+        start = None if f[2] == '-' else int(f[2], 16)
+        end = None if f[3] == '-' else int(f[3], 16)
+        out[f[0]] = dict(kind=f[1], start=start, end=end, data=int(f[4]), dstart=dstart)
     return out
 
 
@@ -96,9 +98,12 @@ def main():
     for name, kind, ver in link_list():
         m = sp[name]
         obj = object_of(kind, name, ver or '')
-        tlen = m['end'] - m['start']
-        tbad, trel = compare(obj, img.image, m['start'], min(tlen, obj.segs[0]['code']), 0)
-        size_ok = obj.segs[0]['code'] == tlen
+        if m['start'] is None:
+            tlen, tbad, trel, size_ok = 0, 0, 0, obj.segs[0]['code'] == 0
+        else:
+            tlen = m['end'] - m['start']
+            tbad, trel = compare(obj, img.image, m['start'], min(tlen, obj.segs[0]['code']), 0)
+            size_ok = obj.segs[0]['code'] == tlen
         dbad = drel = 0
         if m['data']:
             # the data of the module: its .data section in the object, at dstart in the data of the program

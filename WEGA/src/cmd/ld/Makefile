@@ -18,30 +18,33 @@ LIBC = /lib/libc.a
 WEGA = ../../../tmp/wega31_root
 
 # shipped members in link order (the members of /lib/libc.a), extracted into shipped/
-SHIPPED = scanf.o ffltioc.o ungetc.o __callex.o cuexit.o decimal.o isatty.o stty.o swab.o tolower.o strncmp.o access.o brk.o chmod.o close.o creat.o fstat.o getpid.o ioctl.o link.o lseek.o open.o read.o signal.o umask.o unlink.o write.o cerror.o
+SHIPPED = scanf.o ffltioc.o ungetc.o data.o __callex.o cuexit.o decimal.o isatty.o ctype_.o stty.o swab.o tolower.o strncmp.o access.o brk.o chmod.o close.o creat.o fstat.o getpid.o ioctl.o link.o lseek.o open.o read.o signal.o umask.o unlink.o write.o cerror.o
 
 # link order of the libc part of /bin/ld
 LIBCOBJS = shipped/scanf.o $(OLD)/doscan/0_1.o $(OLD)/printf/0_6.o $(OLD)/doprnt/0_6.o \
-	shipped/ffltioc.o shipped/ungetc.o $(OLD)/filbuf/0_2.o $(OLD)/flsbuf/0_1.o shipped/__callex.o \
-	shipped/cuexit.o $(OLD)/cnvt/0_1.o shipped/decimal.o $(OLD)/length/0_1.o $(OLD)/malloc/0_2.o \
-	shipped/isatty.o $(OLD)/mktemp/0_1.o shipped/stty.o shipped/swab.o $(OLD)/rindex/0_1.o \
-	shipped/tolower.o $(OLD)/strcat/0_1.o shipped/strncmp.o $(OLD)/strcpy/0_1.o $(OLD)/strncpy/0_2.o \
-	$(OLD)/swap/0_1.o shipped/access.o shipped/brk.o shipped/chmod.o shipped/close.o shipped/creat.o \
-	shipped/fstat.o shipped/getpid.o shipped/ioctl.o shipped/link.o shipped/lseek.o shipped/open.o \
-	shipped/read.o shipped/signal.o shipped/umask.o shipped/unlink.o shipped/write.o shipped/cerror.o
+	shipped/ffltioc.o shipped/ungetc.o $(OLD)/filbuf/0_2.o shipped/data.o $(OLD)/flsbuf/0_1.o \
+	shipped/__callex.o shipped/cuexit.o $(OLD)/cnvt/0_1.o shipped/decimal.o $(OLD)/length/0_1.o \
+	$(OLD)/malloc/0_2.o shipped/isatty.o $(OLD)/mktemp/0_1.o shipped/ctype_.o shipped/stty.o \
+	shipped/swab.o $(OLD)/rindex/0_1.o shipped/tolower.o $(OLD)/strcat/0_1.o shipped/strncmp.o \
+	$(OLD)/strcpy/0_1.o $(OLD)/strncpy/0_2.o $(OLD)/swap/0_1.o shipped/access.o shipped/brk.o \
+	shipped/chmod.o shipped/close.o shipped/creat.o shipped/fstat.o shipped/getpid.o shipped/ioctl.o \
+	shipped/link.o shipped/lseek.o shipped/open.o shipped/read.o shipped/signal.o shipped/umask.o \
+	shipped/unlink.o shipped/write.o shipped/cerror.o
 
 all: $(LIBCOBJS)
 
 shipped/stamp:
-	mkdir shipped ; cd shipped ; $(AR) x $(LIBC) scanf.o ffltioc.o ungetc.o __callex.o cuexit.o decimal.o isatty.o stty.o swab.o tolower.o strncmp.o access.o brk.o chmod.o close.o creat.o fstat.o getpid.o ioctl.o link.o lseek.o open.o read.o signal.o umask.o unlink.o write.o cerror.o ; touch stamp
+	mkdir shipped ; cd shipped ; $(AR) x $(LIBC) scanf.o ffltioc.o ungetc.o data.o __callex.o cuexit.o decimal.o isatty.o ctype_.o stty.o swab.o tolower.o strncmp.o access.o brk.o chmod.o close.o creat.o fstat.o getpid.o ioctl.o link.o lseek.o open.o read.o signal.o umask.o unlink.o write.o cerror.o ; touch stamp
 
 shipped/scanf.o: shipped/stamp
 shipped/ffltioc.o: shipped/stamp
 shipped/ungetc.o: shipped/stamp
+shipped/data.o: shipped/stamp
 shipped/__callex.o: shipped/stamp
 shipped/cuexit.o: shipped/stamp
 shipped/decimal.o: shipped/stamp
 shipped/isatty.o: shipped/stamp
+shipped/ctype_.o: shipped/stamp
 shipped/stty.o: shipped/stamp
 shipped/swab.o: shipped/stamp
 shipped/tolower.o: shipped/stamp
