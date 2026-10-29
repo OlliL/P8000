@@ -823,3 +823,26 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   in the original after the getfile literals ("/usr", libname, "/z/bin", ""), not right after the table; the pool
   flushes later than the declaration. The data equal count is 492 (of 2748) with the declarations in this order and
   593 with the earlier order (the uninitialised libp); the bss part is needed before the count means something.
+
+## Step 5b (bss), first analysis (2026-10-29)
+
+- Comparison of the bss addresses (original, `bss_map.txt`) with the linked program (scratch `tmp/tmp/link/progd`,
+  symbols kept by our link; table printed by the script in the session, not saved).
+- Original bss starts at 0x0abc (ntab 0x0abe, tab 0x0ac0). Known layout (original offsets from 0x0abe):
+  page +0x162 (1036 bytes), fpage +0x56e, text +0x572, reloc +0x57c, segtsz/hdrsz +0x586/+0x588, archdr +0x58a (26),
+  filhdr +0x5a4 (20), cursym +0x5b8 (14), then a gap of 0x21da bytes (unknown, 0x1084..0x325e), symhash 0x325e
+  (2339 pointers), lastsym 0x44a4, symindex 0x44a6, hshtab 0x44a8 (2341 pointers), local 0x56f2 (local[1000], 4000
+  bytes), p_etext 0x6692 ..., soutb 0x6af0 (the five buffers of 262 bytes, 0x66d8..0x6bf6), rltab 0x6c00, liblist 0x6c04
+  (1024 bytes, up to 0x7004), areas 0x7004 (4 x 8), secspec 0x702c, tab42b4 0x702e (5), x702f..x7031, secorg 0x7034
+  (4 x 2), exstat 0x703e, libpath 0x7040 (20). End of bss 0x7486 (size 0x69ca).
+- Our link: bss starts at 0x0b96 with libc bss (environ, _v6bf6 ...), then our variables in declaration order, ends
+  at 0x3fb0. Our bss is about 0x35b0 bytes shorter: the gap 0x1084..0x325e and the arrays hshtab (4678) and local
+  (4000 bytes, ours is local[1]) are missing or differently sized.
+- Misclassified in bss_map: pnflag (0x060c), rlsize, rlbuf, v067c, symtab, v069c lie below the data end (0x0abc), so
+  they are data (initialised zeros); the original data holds zeros there. Our link puts pnflag etc. in bss.
+- Blockers: (1) the sizes and owners of the gaps 0x0ad6..0x0c20 (330 bytes) and 0x1084..0x325e (8666 bytes) are unknown;
+  (2) the libc bss at the start of ours (environ, sibuf, sobuf, rc, pfile) has no counterpart in the original bss, so
+  the crt0/libc link order or the mention order differs; (3) the arrays symhash and hshtab are two arrays of 2339 and
+  2341 pointers in the original, ours is one.
+- Next: decide the owner of the 8666-byte gap (search the functions for references into 0x1084..0x325e: none in the
+  bss map; candidates are libc arrays), then reorder the declarations of ld.c to the original order and add spares.
