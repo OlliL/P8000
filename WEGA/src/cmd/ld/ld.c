@@ -79,9 +79,6 @@ sig_handler()
 	_exit(delarg);
 }
 
-/* reg_sect_addr: read the address of a section option (-t, -d, -b) and check it (sld reg_sect_addr; finding: the frame
-   offset of fmt differs; 0x0370..0x045e of /bin/ld) */
-
 /* main: entry of ld: the signals, the program name, the option scan over the arguments, the final pass (0x009c..0x0370 of
    /bin/ld; exact in the whole-file compile of ld.c; the draft alone differs in the jump widths, see HANDOFF_ld.md) */
 main(argc, argv)
@@ -237,9 +234,8 @@ test:
 	parse_args(argc, argv);
 }
 
-/* parse_args: the argument pass of ld: the output, then every object and library in order (approximation; finding:
-   the option switch is not reproduced; 0x045e..0x050c of /bin/ld) */
-
+/* reg_sect_addr: read the address of a section option (-t, -d, -b) and check it (sld reg_sect_addr; finding: the frame
+   offset of fmt differs; 0x0370..0x045e of /bin/ld) */
 int reg_sect_addr(s, t)
 char *s;
 char *t;
@@ -285,11 +281,14 @@ char *t;
 	return 0;
 }
 
+/* parse_args: the argument pass of ld: the output, then every object and library in order (0x045e..0x050c of /bin/ld) */
 parse_args(argc, argv)
 int argc;
 char **argv;
 {
+	int spare1, spare2, spare3, spare4, spare5;
 	register int k;
+	register int j;
 	register char *a;
 	register char **av;
 
@@ -301,8 +300,34 @@ char **argv;
 	k = 1;
 	while (k < argc) {
 		a = *av++;
-		if (*a != '-')
+		if (v669a)
+			printf("%s:\n", a);
+		if (*a == '-') {
+			for (j = 1; a[j] != 0; j++)
+				switch (a[j]) {
+				case 'b':
+				case 't':
+					if (a[j + 1])
+						j++;
+				case 'e':
+				case 'o':
+				case 'u':
+				case 'v':
+					k++;
+					av++;
+					break;
+				case 'N':
+					j++;
+					break;
+				case 'l':
+					j--;
+					a[j] = '-';
+					load2arg(a + j);
+					goto next;
+				}
+		} else
 			load2arg(a);
+next:
 		k++;
 	}
 	finish_output();

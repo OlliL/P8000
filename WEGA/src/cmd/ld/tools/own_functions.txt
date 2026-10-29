@@ -7,7 +7,7 @@
 0042  f0042  009c     90  194a,1e86        proven    done
 009c  f009c  0370    724  0000             proven    done
 0370  f0370  045e    238  -                proven    findings
-045e  f045e  050c    174  009c             proven    open
+045e  f045e  050c    174  009c             proven    done
 050c  f050c  057c    112  -                proven    done
 057c  f057c  0608    140  -                proven    done
 0608  f0608  0714    268  009c             proven    done

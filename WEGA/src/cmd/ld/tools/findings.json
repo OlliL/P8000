@@ -614,11 +614,12 @@
    "file": "ld.c",
    "pairing": "confirmed",
    "orig": "0x45e",
-   "ours": "approx",
-   "level": "findings",
+   "ours": "exact",
+   "level": "exact",
    "size_orig": 174,
    "callers_orig": "-",
-   "status": "findings"
+   "status": "done",
+   "note": "exact (2026-10-29): the argument pass with the switch on the option letters (table at data 0xf8, b/t fall into e/o/u/v, N, l with the '-' written before the letter). Checked in the whole-file compile of ld.c (174 bytes, same instructions, frame kept); the draft alone would differ in calr sizes."
   },
   "read_symbols": {
    "file": "ld.c",
@@ -837,14 +838,6 @@
     "D3"
    ],
    "note": "findings (ld.c): ld place_sec (no parameters; areas[4] at 0x7004 with kind, tstart, tsize, tend; secorg, tab42b4). Four attempts (d5/ps_1..ps_4, draft ps_4): all branches, messages and stores are in, 233 against 242 instructions. The differences are the code of the kind and the zero-or-total ternaries (order of the immediate loads) and the overlap loop start. Accepted as finding."
-  },
-  "parse_args": {
-   "basis": "read",
-   "d_classes": [
-    "D3",
-    "D16"
-   ],
-   "note": "approximation (step 5 of HOWTO, after six attempts not reached): the function is in the file to allow the bss analysis; the body is not reproduced exactly (see the note of the function)."
   },
   "read_symbols": {
    "basis": "read",

@@ -745,3 +745,15 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   such variable in the original); v66b0 added (bss 66b0, set to 1 by -v; the bss map entry is added in bss_map.txt).
 - Still approximate: parse_args (045e), read_symbols (08cc), end_pass1 (0b6e). Next: parse_args (ld calls
   end_pass1, start_output, load2arg for the second pass, finish_output), then end_pass1, read_symbols.
+
+## parse_args exact (2026-10-29)
+
+- parse_args (0x045e..0x050c, 174 bytes) is exact: filname = 0, end_pass1, start_output, av = argv+1, libp = liblist,
+  then the argument loop (printf "%s:\n" with v669a, load2arg for names, the option letters in the table at data 0xf8
+  with the targets at 0x108; b/t skip an attached letter and fall into the e/o/u/v group, N skips one letter, l writes '-'
+  before the letter and calls load2arg on the rest). Checked in the whole-file compile (scratch `d7/wcheck.py`, which
+  splices a draft into a copy of ld.c and compares the object function with /bin/ld).
+- Still approximate: end_pass1 (0b6e), read_symbols (08cc).
+- Note: the splice for parse_args had removed reg_sect_addr (it stood between the parse_args comment and the function);
+  it is restored in ld.c before parse_args (finding, 238 bytes, unchanged text). Main is 724 bytes again in the
+  whole-file build; its call to reg_sect_addr is a calr only when the layout is right, so check the size after each splice.
