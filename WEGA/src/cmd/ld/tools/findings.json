@@ -91,13 +91,13 @@
   },
   "f057c": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x057c",
-   "ours": "-",
-   "level": "open",
+   "ours": "057c-0608",
+   "level": "exact",
    "size_orig": 140,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done"
   },
   "f0608": {
    "file": "ld.c",
@@ -271,13 +271,13 @@
   },
   "f2b92": {
    "file": "symbols.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x2b92",
-   "ours": "-",
-   "level": "open",
+   "ours": "2b92-2bf6",
+   "level": "exact",
    "size_orig": 100,
-   "callers_orig": "-",
-   "status": "open"
+   "callers_orig": "2b3a",
+   "status": "done"
   },
   "f2bf6": {
    "file": "symbols.c",
@@ -799,7 +799,7 @@
    "d_classes": [
     "D3"
    ],
-   "note": "findings (symbols.c): sld ensure_buf for the ranlib buffer, ld form: rlsize is one word (0x0678), the grow path of a non-empty buffer is f2b92 (open), the first buffer comes from f2c20. Six attempts (d5/eb1..eb6, draft eb4). Differences: the size check n > 0xffff compares a copy of n (frame) in the draft, the original compares rr6; the tail jump is different. Accepted as finding."
+   "note": "findings (symbols.c): sld ensure_buf in its sld form (if (rlsize < n) with the zero test first, grow by f2b92 otherwise). 30 instructions, 29 equal: the original keeps a jump to the end after the grow call (jr), the draft falls through. The first form (rlsize >= n first) differed in the comparison copy and the branch sense. Draft: d5/eb9.c. Accepted as finding; the attempts in this round went beyond the limit of six (d5/eb7..eb10)."
   }
  },
  "inventory": {

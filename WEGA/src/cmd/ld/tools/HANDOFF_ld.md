@@ -551,3 +551,15 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## ensure_buf (2026-10-29): finding
 
 - f2b3a is sld ensure_buf (symbols.c), finding after six attempts (d5/eb1..eb6, draft eb4). rlbuf (0x067a) and rlsize (0x0678, one word) are defined in symbols.c. The grow path for a non-empty buffer calls f2b92 (still open, 0x2b92..0x2bf6, with the messages "ranlib table of contents too large" and "table of contents overflow"). The first buffer comes from f2c20.
+
+## f2b92 (2026-10-29)
+
+- f2b92 (no sld name): grow path of ensure_buf, exact (32 instructions, draft d5/gb3.c). If sbrk(0) equals rlbuf + rlsize the buffer grows in place by f2c20(n - rlsize), else rlsize is cleared and ensure_buf starts again. Messages: "ranlib table of contents too large", "table of contents overflow".
+
+## ensure_buf in sld form (2026-10-29)
+
+- ensure_buf now in the sld form (if (rlsize < n), zero test first, grow by f2b92). 29 of 30 instructions equal; the missing jump to the end after the grow call is the only difference (eb9).
+
+## f057c (2026-10-29)
+
+- f057c: exact (40 instructions, draft d5/tr2.c). Restores the state of tab entry i (ntab, libp, the bases, the four words of tent) and clears the symbol hash entries back to saved (the tail of sld read_symbols, without sld function). Placed in ld.c in address order (after f050c). Name stays f057c.

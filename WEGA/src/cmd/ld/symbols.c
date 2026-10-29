@@ -315,23 +315,43 @@ struct symbol *x;
 	return ((int)x - (int)symtab) / 14 + 0x258;
 }
 
-/* ensure_buf: make sure the ranlib buffer is large enough (sld ensure_buf; 0x2b3a..0x2b92 of /bin/ld, finding: the copy of
-   n for the comparison and the tail jump differ). The grow path of a non-empty buffer is f2b92 (no sld name yet). */
+/* ensure_buf: make sure the ranlib buffer is large enough (sld ensure_buf; 0x2b3a..0x2b92 of /bin/ld, finding: one jump to the
+   end is missing, the comparison is in the sld form). The grow path of a non-empty buffer is f2b92 (no sld name yet). */
 char *ensure_buf(n)
 unsigned long n;
 {
-	if ((unsigned long)rlsize >= n)
-		return rlbuf;
-	if (rlsize == 0) {
-		if (n > 0xffff)
-			report_error(2, "ranlib table of contents too large");
-		rlbuf = (char *)f2c20((int)n);
-		if (rlbuf == (char *)-1)
+	if (rlsize < n) {
+		if (rlsize == 0) {
+			if (n > 0xffff)
+				report_error(2, "ranlib table of contents too large");
+			rlbuf = (char *)f2c20((int)n);
+			if (rlbuf == (char *)-1)
+				report_error(2, "table of contents overflow");
+			rlsize = n;
+		} else
+			f2b92(n);
+	}
+	return rlbuf;
+}
+
+/* f2b92: grow the ranlib buffer in place when it is the last block of the heap, else start it again (no sld name;
+   0x2b92..0x2bf6 of /bin/ld) */
+char *f2b92(n)
+unsigned long n;
+{
+	int k;
+
+	if (n > 0xffff)
+		report_error(2, "ranlib table of contents too large");
+	if ((char *)sbrk(0) != rlbuf + rlsize) {
+		rlsize = 0;
+		ensure_buf(n);
+	} else {
+		k = (int)n - (int)rlsize;
+		if (f2c20(k) == -1)
 			report_error(2, "table of contents overflow");
 		rlsize = n;
-		return rlbuf;
 	}
-	f2b92(n);
 	return rlbuf;
 }
 

@@ -123,3 +123,4 @@ extern char libpath[];
 extern int v66b4;
 int getfile();
 char *rindex();
+char *f2b92();

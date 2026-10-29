@@ -69,7 +69,35 @@ int x, y;
 	e->t9 = v66cc;
 	e->t10 = v66ce;
 }
+/* f057c: restore the state of the object at entry i of tab (the bases, libp and ntab) and clear the symbol hash entries
+   of its symbols (sld read_symbols tail for the hash; no sld function; 0x057c..0x0608 of /bin/ld) */
+f057c(i)
+int i;
+{
+	int spare1, spare2;
+	register struct tent *e;
+	register int saved;
 
+	e = &tab[i];
+	ntab = i + 1;
+	libp = (long *)e->t2;
+	fctrel = e->t4;
+	fcdrel = e->t5;
+	fcbrel = e->t6;
+	v66c2 = e->t7;
+	v66c6 = e->t8;
+	v66cc = e->t9;
+	v66ce = e->t10;
+	saved = e->t1;
+	while (symindex > saved) {
+		symindex--;
+		*symhash[symindex] = 0;
+		symhash[symindex] = 0;
+	}
+}
+
+/* add16_checked: sum of two words, report_error(1) with the message a when the sum is 0x10000 or more (sld add16_checked;
+   0x089a..0x08cc of /bin/ld) */
 add16_checked(x, y, a)
 unsigned x, y;
 char *a;
@@ -109,9 +137,6 @@ int flag;
 	out->nleft = 0x100;
 	out->xnext = out->iobuf;
 }
-/* add16_checked: sum of two words, report_error(1) with the message a when the sum is 0x10000 or more (sld add16_checked;
-   0x089a..0x08cc of /bin/ld) */
-
 /* load2arg: pass two for one argument (object file or archive member; sld load2arg; 0x13ca..0x1452 of /bin/ld) */
 load2arg(p)
 char *p;
