@@ -1,3 +1,4 @@
+	.comm	2, __pfile
 	.extern	__cnvt, __fegcvt, __flsbuf, __length, __pfile, _strcpy
 	.psec
 	.code

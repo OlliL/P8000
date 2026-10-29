@@ -9,7 +9,6 @@ unsigned int rlsize = 0;
 
 int v067c = 0;
 struct symbol *symtab = 0;
-int *_pfile;
 
 /* read_entry_hdr: read the entry of a symbol into cursym; a long name takes the continuation entries (sld read_entry_hdr,
    the nonsegmented part; 0x249a..0x2502 of /bin/ld). Module: printname.c as assigned (sld has it in symbols.c) */

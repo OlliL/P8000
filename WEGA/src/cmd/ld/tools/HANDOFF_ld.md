@@ -986,3 +986,15 @@ Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamp
   string alignment), symbols.o about +4, copyname.o -2 (the original has 2 more zero bytes after its stamp). So the data
   difference is the string alignment (D12) and a few bytes of the own modules, no library content.
 - Link recipe now: `crt0.o ld.o copyname.o printname.o symbols.o <libc members from ld.link> arx/exit.o` (no arx/doscan.o).
+
+## Step 2 (6 bytes in the libc region): solved (2026-10-29)
+
+- The 6 bytes lie between `libpath` (0x7040..0x7053) and `rc` (0x705a) in the original and are referenced by no code: an
+  unused variable of the original's ld (spare, `spare7054[6]` in ld.c, HOWTO: unused gaps are spares).
+- `rc` (printf member, `.comm 2, _rc`) and `__pfile` must be in this order: `__pfile` is the common of the doprnt member
+  (the original doprnt mentions it after printf). Our `int *_pfile;` in symbols.c was removed and `.comm 2, __pfile` added
+  as the first line of `src/lib/oldlibc/doprnt/0_6.s` (the text is unchanged, libc_verify 0 differing).
+- Result: rc 0x705a, __pfile 0x705c, __sibuf 0x705e, __sobuf 0x725e, environ 0xabc, bss size 27082 (= original).
+  All bss_map entries equal relative to ntab (the aliases x702f..x7031 are tab42b4 elements).
+- Data: still 2784 against 2748 (+36, see step 1: the string alignment D12).
+- Recorded in src/TODO.md, row `cmd/ld/`.

@@ -86,6 +86,7 @@ int secorg[4];
 char spare703c[2];
 int exstat;
 char libpath[20];
+char spare7054[6];
 struct symbol *nsym = 0;
 
 
