@@ -59,7 +59,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | load_header | 0714-07b2 | 0x0714 | confirmed | exact |  |  |  |
 | load_lib_syms | 0608-0714 | 0x0608 | confirmed | exact |  |  |  |
 | lookup_name | 25dc-26ac | 0x25dc | confirmed | findings | read by hand | D3 | findings (symbols.c): sld lookup_name with ld names (cursym, nlflag, lnbuf, local, hshtab). Hash modulus 0x0923 in ld (sld 0x0ffa). Six attempts: the original keeps start (r11) and end (r10) in registers and slot, cur, rec in the frame or scratch; the draft has start and end in the frame and the loop test differs (cp r6,frame). Draft: d5/ln1.c. Accepted as finding. |
-| main | approx | 0x9c | confirmed | findings | read by hand | D3, D16 | approximation (step 5 of HOWTO, after six attempts not reached): the function is in the file to allow the bss analysis; the body is not reproduced exactly (see the note of the function). |
+| main | exact | 0x009c | confirmed | exact |  |  |  |
 | mget | 1a9a-1b0a | 0x1a9a | confirmed | exact | read by hand |  | exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n)). |
 | mkfsym | 25a2-25dc | 0x25a2 | confirmed | exact |  |  |  |
 | mput | 1b0a-1b38 | 0x1b0a | confirmed | exact |  |  |  |

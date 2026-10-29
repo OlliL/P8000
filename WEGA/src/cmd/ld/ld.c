@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "ld.h"
 
+static char sccsid[] = "@[$]ld.c\t1.18  06/27/83 16:44:24 - 87wega3.2";
+
 struct page page[2];
 struct pghdr fpage;
 int infil;
@@ -33,6 +35,7 @@ char tab42b4[5];
 char *secnam[4];
 int secorg[4];
 int iflag;
+int v66b0;
 int x66b6;
 int hdrsz, segtsz;
 struct stream reloc;
@@ -79,18 +82,159 @@ sig_handler()
 /* reg_sect_addr: read the address of a section option (-t, -d, -b) and check it (sld reg_sect_addr; finding: the frame
    offset of fmt differs; 0x0370..0x045e of /bin/ld) */
 
+/* main: entry of ld: the signals, the program name, the option scan over the arguments, the final pass (0x009c..0x0370 of
+   /bin/ld; exact in the whole-file compile of ld.c; the draft alone differs in the jump widths, see HANDOFF_ld.md) */
 main(argc, argv)
 int argc;
 char **argv;
 {
-	pname = rindex(*argv, '/');
-	if (pname == 0)
-		pname = *argv;
+	int spare1, spare2, spare3, spare4, spare5;
+	int found;
+	int k;
+	char c;
+	struct symbol **sp;
+	register int i;
+	register int j;
+	register char *s;
+	register char **av;
+
+	if (signal(2, 1) != 1)
+		signal(2, sig_handler);
+	if (signal(15, 1) != 1)
+		signal(15, sig_handler);
+	if (argc == 1)
+		exit(4);
+	s = rindex(*argv, '/');
+	if (s == 0)
+		s = *argv;
 	else
-		pname++;
-	init_signals();
+		s++;
+	pname = s;
+	if (*s == 's') {
+		swapflg++;
+		aoutnam = "s.out";
+	} else
+		v66b4++;
+	av = argv + 1;
+	i = 1;
+	goto test;
+body:
+	if (v669a)
+		printf("%s:\n", *av);
+	filname = 0;
+	s = *av++;
+	if (s[0] == '-') {
+		for (j = 1; s[j] != 0; j++)
+			switch (s[j]) {
+			case 'o':
+				i++;
+				if (i >= argc)
+					report_error(2, "Bad output file");
+				ofilnam = *av++;
+				ofilfnd++;
+				break;
+			case 'e':
+			case 'u':
+				i++;
+				if (i >= argc)
+					report_error(2, "Bad 'use' or 'entry'");
+				sp = slookup(*av++);
+				enter(sp);
+				if (s[j] == 'e')
+					entrypt = lastsym;
+				break;
+			case 'v':
+				i++;
+				if (i >= argc)
+					report_error(2, "-v: arg missing");
+				v66b0 = 1;
+				k = ntab;
+				found = 0;
+				while (--k >= 0) {
+					if (found)
+						break;
+					found = str_compare(tab[k].t3, *av);
+				}
+				if (found) {
+					parse_args(i, argv);
+					f057c(k);
+				} else
+					f050c(i, *av);
+				av++;
+				break;
+			case 'l':
+				j--;
+				c = s[j];
+				s[j] = '-';
+				load_lib_syms(s + j);
+				s[j] = c;
+				goto next;
+			case 'X':
+				Xflag++;
+				break;
+			case 'S':
+				Sflag++;
+				break;
+			case 'r':
+				rflag++;
+				v66a4++;
+				break;
+			case 's':
+				sflag++;
+			case 'x':
+				xflag++;
+				break;
+			case 'd':
+				dflag++;
+				break;
+			case 'i':
+				iflag++;
+				break;
+			case 'O':
+				oflag++;
+				break;
+			case 'T':
+				v669a++;
+				break;
+			case 'b':
+			case 't':
+				i++;
+				if (i >= argc)
+					report_error(2, "-%c: arg missing", s[j]);
+				if (reg_sect_addr(s + j, *av))
+					j++;
+				av++;
+				break;
+			case 'w':
+				wflag++;
+				break;
+			case 'N':
+				j++;
+				switch (s[j]) {
+				case 'l':
+					nlflag = 1;
+					break;
+				case 's':
+					nlflag = 0;
+					break;
+				default:
+					report_error(2, "-N%c: bad argument (l or s)", s[j]);
+				}
+				break;
+			default:
+				report_error(2, "-%c: bad flag", s[j]);
+				goto next;
+			}
+	} else
+		load_lib_syms(s);
+next:
+	i++;
+test:
+	if (i < argc)
+		goto body;
+	if (rflag && secspec)
+		fprintf(stderr, "%s: warning, -r option overrides -t, -b\n", pname);
 	parse_args(argc, argv);
-	sig_handler();
 }
 
 /* parse_args: the argument pass of ld: the output, then every object and library in order (approximation; finding:
@@ -444,7 +588,7 @@ place_sec()
 		switch (tab42b4[j]) {
 		case 't':
 			if (q->tsize > secorg[j])
-				report_error(1, "top address of %s in segment %d too low", secnam[j], 0);
+				report_error(1, "-t%c: top address too low", *secnam[j]);
 			r8 = (secorg[j] - q->tsize) & 0xff00;
 			q->tsize = (q->tsize + 255) & 0xff00;
 			break;
@@ -1322,21 +1466,10 @@ register struct buf *a;
 /* place_sec: place the text, data and bss areas of the output (sld place_sec in the nonsegmented form of ld; finding: the
    kinds and the sizes are equal in the code, the instruction order of the stores differs; 0x0d9c..0x108e of /bin/ld) */
 
-/* main: entry of ld (approximation; finding: the order of the option scan and the calls to the signal and file helpers
-   are not reproduced; 0x009c..0x0370 of /bin/ld) */
 struct symbol **symhash[2339];
 struct symbol *hshtab[2339];
 struct symbol *lastsym;
 char lnbuf[16];
 int wflag, nlflag;
 struct symbol *nsym;
-
-/* init_signals: catch the interrupt signals (sld init_signals; finding: approximation, the code of ld is not checked) */
-init_signals()
-{
-	if (signal(2, 1L) != 1)
-		signal(2, sig_handler);
-	if (signal(15, 1L) != 1)
-		signal(15, sig_handler);
-}
 

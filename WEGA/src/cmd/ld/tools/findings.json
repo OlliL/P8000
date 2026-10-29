@@ -602,12 +602,13 @@
   "main": {
    "file": "ld.c",
    "pairing": "confirmed",
-   "orig": "0x9c",
-   "ours": "approx",
-   "level": "findings",
+   "orig": "0x009c",
+   "ours": "exact",
+   "level": "exact",
    "size_orig": 724,
    "callers_orig": "-",
-   "status": "findings"
+   "status": "done",
+   "note": "exact (2026-10-29): the option scan with the goto structure of sld main; the whole ld.c compiles to the same 724 bytes and instructions (addresses masked, frame offsets equal). The draft alone (ldcheck) shows jr/jp widths only, because the calr calls to in-file functions are sized by the whole file (HANDOFF_ld.md)."
   },
   "parse_args": {
    "file": "ld.c",
@@ -836,14 +837,6 @@
     "D3"
    ],
    "note": "findings (ld.c): ld place_sec (no parameters; areas[4] at 0x7004 with kind, tstart, tsize, tend; secorg, tab42b4). Four attempts (d5/ps_1..ps_4, draft ps_4): all branches, messages and stores are in, 233 against 242 instructions. The differences are the code of the kind and the zero-or-total ternaries (order of the immediate loads) and the overlap loop start. Accepted as finding."
-  },
-  "main": {
-   "basis": "read",
-   "d_classes": [
-    "D3",
-    "D16"
-   ],
-   "note": "approximation (step 5 of HOWTO, after six attempts not reached): the function is in the file to allow the bss analysis; the body is not reproduced exactly (see the note of the function)."
   },
   "parse_args": {
    "basis": "read",

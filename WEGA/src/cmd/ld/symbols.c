@@ -1,4 +1,7 @@
 #include <stdio.h>
+
+static char sccsid[] = "@[$]symbols.c\t1.8  03/11/83 10:29:38 - 87wega3.2";
+
 #include "ld.h"
 
 char *rlbuf;

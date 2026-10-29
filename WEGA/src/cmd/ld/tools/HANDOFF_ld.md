@@ -705,3 +705,43 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - The link with the original /bin/ld now succeeds (scratch dir /mnt/share/cvs/P8000/tmp/tmp/link; command: crt0.o ld.o copyname.o printname.o symbols.o <libc part from ld.link> arx/exit.o arx/doscan.o, with -i for the separate I/D layout). Missing names resolved: __exit and __doscan from the on-board libc members exit.o and doscan.o; __pfile as the C name _pfile in symbols.c (the on-board doprnt.o conflicts with the old doprnt); _swap_quad as a global label in src/lib/oldlibc/swap/0_1.s (only the label added, the bytes are unchanged).
 - Sizes: code 0x4a00 (equal to the original). data 0x08da (original 0x0abc, short by 0x1e2). bss 0x3426 (original 0x69ca, short by 0x36a4). So step 5b cannot be closed before step 4 (data) and the sizes of the arrays are done. bss_map.txt addresses are the original ones; the comparison with the linked program is meaningful only after the data size is equal.
 - Next: step 4 (data: strings and initialised data in the order of the original, the missing 0x1e2 bytes), then the array sizes (hshtab, symhash, liblist, local, lnbuf, tab, page) and the bss comparison with bss_map.txt.
+
+## Step 4 (data), first pass (2026-10-29)
+
+- Added the SCCS stamp strings of ld.c, copyname.c, printname.c, symbols.c (static char sccsid[]), as in the original (the stamps of crt0 and ld.c match the original bytes 0x00..0x57 now).
+- Data size of the link: 0x09a0 (original 0x0abc). Equal bytes 389 of 2464, 107 runs of difference (d5/dcmp.py).
+- Order found in the original: the string literals of the functions of ld.c come first (Premature EOF at 0x58 from get, __.SYMDEF at 0x5f from getfile), then the initialised globals (libp 0x70 = 0x6c04, secnam[4] 0x72..0x79, ofilnam 0x7a, a word 0x7c = 4, v0080 0x80 = 0, tmpname 0x82 = "/tmp/ldaXXXXX"). So the globals with initial values are declared after getfile in the original source, not at the top of ld.c. Next: move the declarations of these globals behind getfile (and check the value at 0x7c), then the strings of the other functions in the order of the functions.
+
+## Step 4 (data), second pass (2026-10-29)
+
+- The initialised globals of ld (libp 0x70, secnam 0x72, ofilnam 0x7a, delarg 0x7c, v0080 0x80, tmpname 0x82, aoutnam, libname) come after the literals of get and getfile in the original. Experiment: moving their definitions behind getfile (externs in ld.h) did not improve the match (382 instead of 389 equal bytes), so it is not the only difference. The literal pool of the functions (for example "l.out" and the messages of sig_handler and reg_sect_addr) is in another order than in the original; this has to be reconciled function by function (step 4 item 1). The repository ld.c was not changed by the experiment (it ran in the scratch directory).
+- Data size of the link is 0x09a0 against 0x0abc; still open.
+
+## Step 4 (data): the string pool shows what is missing (2026-10-29)
+
+- Aligning the string pools (original 83 strings, ours 65) shows: the messages of the approximated functions are missing (main: "a.out", "l.out", "s.out", "Bad output file", "Bad use or entry", "-v: arg missing"; end_pass1 and place_sec: "text overflow", "data overflow", "bss overflow", "symbol table overflow", "file text overflow", "warning: external data item refers to text symbol"). Their absence explains most of the data difference, so step 4 follows the exact versions of these functions.
+- place_sec message corrected to the original text "-t : top address too low" (the argument is the selector byte *secnam[j]).
+
+## main (2026-10-29): second approximation
+
+- main in ld.c: the messages of /bin/ld (usage exit 4, -v, -o, -e/-u, -N, -r warning, bad flag) and the calls (signal, rindex, load2arg, load_lib_syms, reg_sect_addr, parse_args, sig_handler). Not exact (the -A, -x, -f, -M cases and the tab handling are missing).
+
+## main exact (2026-10-29)
+
+- main (0x009c..0x0370, 724 bytes) is exact: goto structure as in sld main (`test:`/`body:`/`next:`), the option switch
+  on `s[j]` with the jump table at data 0x92 (cases N, b, e, l, o, t, u, v, w, x, X, S, r, s, d, i, O, T; default
+  "-%c: bad flag"). Case order follows the source: o, e/u, v, l, X, S, r, s (falls into x), d, i, O, T, b/t, w, N.
+  The 'v' case (not in the man page) searches tab[].t3 (the object name) and calls parse_args(i, argv) plus f057c, or
+  f050c(i, *argv). The 'N' case is a switch on s[j] (l sets nlflag, s clears it). Prologue: signal(2,1)/signal(15,1)
+  with sig_handler, `s` holds rindex(*argv,'/') (register r12), `*s == 's'` sets swapflg and aoutnam "s.out".
+- The draft in d6/main_b.c (scratch) was checked with ldcheck: only jr/jp widths differed. Cause: the calr forms
+  (calls to in-file functions, 7 in main) are sized by the whole file, the draft alone sees them as call. So the
+  check of a draft alone is misleading for functions with calr; check the whole ld.c instead:
+  copy ld.c and ld.h to a scratch directory, compile with `/bin/cc -O -c`, find `_main` in the symbol list of the
+  object (SOut.symbols), and compare the instructions with ldcheck.insns/norm against /bin/ld 0x009c..0x0370.
+  Result: 724 bytes, same instructions (addresses masked, frame offsets equal).
+- The frame needs five unnamed words (spare1..spare5) before found, k, c and sp, as in the original.
+- Changes in ld.c: main replaces the approximation; init_signals removed (its code is in main); tbflag removed (no
+  such variable in the original); v66b0 added (bss 66b0, set to 1 by -v; the bss map entry is added in bss_map.txt).
+- Still approximate: parse_args (045e), read_symbols (08cc), end_pass1 (0b6e). Next: parse_args (ld calls
+  end_pass1, start_output, load2arg for the second pass, finish_output), then end_pass1, read_symbols.

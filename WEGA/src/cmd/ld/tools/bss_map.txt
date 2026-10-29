@@ -46,6 +46,7 @@ routb 68e4 262 b
 doutb 69ea 262 b
 soutb 6af0 262 b
 v6bf6 6bf6 2 b
+v66b0 66b0 2 b
 v6bf8 6bf8 2 b
 v6bfa 6bfa 2 b
 v6bfc 6bfc 2 b
