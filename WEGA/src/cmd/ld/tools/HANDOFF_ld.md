@@ -527,3 +527,7 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 
 - f2c02 is sld limit_msg (symbols.c), exact (9 instructions). The available count is 0x0923 when symtab is allocated, else 0x0258. sig_handler calls it when v669a is set (the flag name is still open). In sld it is declared but has no caller.
 - Open after this round: f294e (loop over 12-byte entries with pslookup and warn_sym_redef; no clean sld counterpart found), f2b3a and f2b92 (ranlib buffer growth, similar to sld ensure_buf but with other logic). Both not matched.
+
+## enter (2026-10-29): finding
+
+- f26e8 is sld enter (symbols.c), finding: 40 instructions, one store pair differs (register reload of r). Five attempts (d5/en1..en5). Table size 0x0923 and no sseg store.

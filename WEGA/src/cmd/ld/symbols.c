@@ -107,6 +107,30 @@ int x;
 	lookup_name();
 }
 
+/* enter: enter a symbol into the symbol table (sld enter; 0x26e8..0x2766 of /bin/ld; finding: the store *a = r is
+   loaded through r2 in the original; the table size is 0x0923) */
+enter(a)
+struct symbol **a;
+{
+	int spare;
+	register struct symbol *r;
+
+	if (*a == 0) {
+		if (symindex >= 0x0923)
+			report_error(2, "Symbol table overflow");
+		symhash[symindex] = a;
+		r = table16_entry(symindex++);
+		lastsym = r;
+		*a = r;
+		symindex = unpack_run(cursym.sname, r->sname) + symindex;
+		r->stype = cursym.stype;
+		r->svalue = cursym.svalue;
+		return 1;
+	}
+	lastsym = *a;
+	return 0;
+}
+
 /* symreloc: relocate the value of cursym by the text, data or bss relocation of the object (sld symreloc; 0x2766..0x27be of /bin/ld) */
 symreloc()
 {

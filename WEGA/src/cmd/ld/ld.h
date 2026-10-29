@@ -106,3 +106,6 @@ int put_sym();
 /* relocation bases of the object: text, data, bss (sld: fctrel, fcdrel, fcbrel) */
 extern int fctrel, fcdrel, fcbrel;
 limit_msg();
+extern struct symbol **symhash[];
+extern struct symbol *lastsym;
+int enter();
