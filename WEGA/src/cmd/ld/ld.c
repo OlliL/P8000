@@ -1093,7 +1093,7 @@ relpart:
 			w13 = (index16(e) + v6bf6 << 4) + (w13 & 1) + 8;
 		else {
 			w12 += (int)e->svalue;
-			w13 = (w13 & 1) + ((e->stype - 0x21) * 2) + 0x21;
+			w13 = (w13 & 1) + ((e->stype - 0x21) * 2);
 		}
 	}
 	w14 = w13;
@@ -1339,7 +1339,7 @@ register struct stream *p;
 	int spare;
 
 	if (--p->nibuf < 0) {
-		dseek(p, -1, (long)(p->bno + 1) << 8);
+		dseek(p, (long)(p->bno + 1) << 8, -1);
 		--p->nibuf;
 	}
 	if (--p->size <= 0) {

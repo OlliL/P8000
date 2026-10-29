@@ -1,4 +1,4 @@
-	.extern	__filbuf, __inflt, _tolower, _ungetc
+	.extern	__filbuf, __inflt, _tolower, _ungetc, __ctype
 	.psec
 	.code
 __doscan::
@@ -54,7 +54,7 @@ L0074:
 	ld	r12,r2
 	inc	r14,#1
 L008e:
-	ldb	rl2,%09B5(r12)
+	ldb	rl2,__ctype+1(r12)
 	extsb	r2
 	bit	r2,#2
 	jr	ne,L0074
@@ -86,7 +86,7 @@ L00ce:
 	calr	_getccl
 	ld	r14,r2
 L00da:
-	ldb	rl2,%09B5(r12)
+	ldb	rl2,__ctype+1(r12)
 	extsb	r2
 	bit	r2,#0
 	jr	eq,L00f2
@@ -335,7 +335,7 @@ L0378:
 	dec	%0006(r15),#1
 	cp	%0006(r15),#%0000
 	jr	lt,L0312
-	ldb	rl2,%09B5(r14)
+	ldb	rl2,__ctype+1(r14)
 	extsb	r2
 	bit	r2,#2
 	jr	ne,L03ac

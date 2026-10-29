@@ -1070,3 +1070,36 @@ Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamp
   - "-r" outputs differ slightly (938 against 932 bytes): relocation output (load2td / finish_output).
 - Next: the archive path (getfile returns 2 for a symbol archive, ranlib_scan, dseek on the archive offset), then the
   address options (reg_sect_addr), then the -r output.
+
+## Corpus round 2 (2026-10-29): 13 of 76 -> 133 of 146 identical (corpus_ld.py now runs 146 lines)
+
+Three causes found and fixed in this round (all rebuild defects, not quirks of the original):
+
+- get (ld.c): the refill call had its arguments swapped, `dseek(p, -1, (bno+1)<<8)` instead of
+  `dseek(p, (bno+1)<<8, -1)`. Every read that crosses a 256 word page boundary broke ("Premature EOF" on e.o,
+  whose symbol table starts at word 238 and ends after the boundary). Fixed; e.o gives the original's
+  output (`Undefined: _bc`, rc 1).
+- libc member doscan (src/lib/oldlibc/doscan/0_1.s): the ctype table was an absolute address (`%09B5(r12)`,
+  the original's layout, which is `__ctype+1`), so every data size change of ours (+36 bytes, D12) moved the
+  table away from the address the code uses. Changed to `__ctype+1(r12)` / `__ctype+1(r14)` and
+  `.extern __ctype`. This is the rule of step 2 ("data references must be symbolic"); libc_verify.py
+  did not catch it because it compares absolute operands as plain words. Consequence: "-tt 0x2000: bad address"
+  and "-bt" are gone (sscanf of the address failed because the table it reads was not there; the original call
+  also passes r4 = 0 as the fourth argument, so that is not the cause).
+- load2td (ld.c): the symbol branch `w13 = (w13 & 1) + (stype - 0x21) * 2 + 0x21` had an extra `+ 0x21`.
+  The original (0x172e..0x194a, 0x1834..0x185c) computes `(w13 & 1) + (stype - 0x21) * 2` only. The extra
+  constant moved the relocation kind into the one-byte flag ranges, so 72 text bytes were written as one byte
+  and the output was 72 bytes short (every "-o" with crt0 and -lc). Fixed; `a.o b.o u.o` with `-lc` gives
+  the original's bytes.
+
+Still open after round 2 (49 lines differed before the load2td fix; re-count after the run):
+- The ld.o data placement with odd-length strings: an unused string added before the strings of ld.c moved
+  the data by 6 bytes, and the immediates of the string literals in our image still referred to the old offsets
+  (`"%d%c"` at 0x228 in the image, immediate 0x222). Not understood; the linked image is consistent without
+  the extra string. Check with the padded experiment (tmp/tmp/dbg_e) before the next data change.
+- Scratch files of this round: tmp/tmp/dbg_e (debug copies, trace.txt, cmp/ for the output comparison).
+
+Result after the load2td fix: 133 of 146 identical. The 13 remaining lines are: the `-r` (relocatable output)
+lines (sizes equal, content differs: a.o b.o c.o, a.o libx.a, -d -r, -S -x -w -r, -r -td/-tb, -r -b/-bd), the
+`-X` lines (-X -o t ... -lc: 6646 against 6898 bytes; -X -r -tb -bt: 1182 against 1294) and the -X -S -r lines.
+So the `-r` path (load2td with rflag, finish_output) and the -X (no local symbols) output are the next items.
