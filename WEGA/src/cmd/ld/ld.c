@@ -754,7 +754,7 @@ place_sec()
 		case 'b':
 			r8 = (secorg[j] + 255) & 0xff00;
 			if (r8 != secorg[j])
-				fprintf(stderr, "%s: warning, bottom address of %s in segment %d relocated to 0x%x\n", pname, secnam[j], 0, r8);
+				fprintf(stderr, "%s: -b%c:warning, %s top or bottom rounded to 0x%x\n", pname, *secnam[j], secnam[j], r8);
 			break;
 		}
 		areas[0].tsize = 0;

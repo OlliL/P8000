@@ -865,3 +865,69 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   they are exact now, so the literal stays until the data size is right; (3) the position of _end and the 40 bytes
   after sobuf match.
 - Exact functions checked after the change (ld.c, symbols.c, printname.c, copyname.c): all SAME.
+
+## Step 4 (data), fifth pass (2026-10-29): status
+
+- Messages fixed: place_sec rounding warning is "%s: -b%c:warning, %s top or bottom rounded to 0x%x\n" (args pname,
+  *secnam[j], secnam[j], r8, as in the original); next_entry has no report_error (the original has no string there;
+  "Error in stepsym" removed). Strings: 1719 bytes of text in ours against 1730 in the original; the same texts apart
+  from the 'T' artifact and the 't-' prefix of "already specified" (a neighbouring byte).
+- Block alignment of the data (difflib on 8-byte blocks, `tmp/tmp/d5`): 0x70..0x98 equal (globals). Then ours has
+  224 bytes of initialiser strings ("text", "data", "bss", "l.out", "a.out", ...) that the original places later, after
+  the jump tables of main (0x92..0xe8), parse_args (0xf8..0x12c) and the literals of getfile ("/usr" 0x150, libname,
+  "/z/bin" 0x16a). The original order puts: tables, then getfile's and the initialiser's strings, then main's strings.
+  Matching region after that: orig 0x5d8..0x678 = ours 0x5f8..0x698 (+32); orig 0x7c8..0x850 = ours 0xae0..0xb68 (+792).
+- Data size: 2944 against 2748 (196 bytes more).
+- Conclusion: the position of the literal strings of initialisers and of the jump tables depends on the code generator's
+  literal pool flush, not only on the source order; the experiment in tmp/tmp/strexp shows that initialisers and
+  their literals are emitted at their declaration in a small file. The remaining order (main's tables before getfile's
+  strings, and the initialiser strings after getfile) needs the original source order of ld.c, which we do not have.
+- Next: owner input on the order of ld.c's top-level definitions (or a note on which functions come before the globals).
+
+## Step 4 (data), analysis of the emission order (2026-10-29, without source)
+
+- Experiments with the old cc (scratch tmp/tmp/strexp, t2..t7, also `-S` output): a global or static initialiser
+  (pointer table or char array) and its literals are emitted at their declaration, in source order, with -O and
+  without; a later static array or function follows in source order; a switch table does not delay pending strings.
+  The .s file shows the same (`.addr L13` ... `L13: .byte 0`, the label is placed at the declaration).
+- The sld binary agrees with this: its ld.c globals (aoutnam "a.out", ofilnam "l.out", tfname, secnam "all".."bss",
+  symdef, premeof) are consecutive in the data in source order (0x48e..0x4d8), followed by main's strings.
+- The ld binary does not: the pointers secnam (0x72..0x79), ofilnam (0x7a), aoutnam (0x90) point to strings that
+  sit after getfile's library prefixes (secnam[0] = 0x172 is the empty string shared with getfile's prefix; "text"
+  0x174, "data" 0x179, "bss" 0x17e, "l.out" 0x182, "a.out" 0x188). Under the observed rule the strings must be
+  declared before the pointers, so no source order of these declarations yields this layout.
+- The code and the literals of the functions follow the code order (pool order = code order of the referencing
+  functions from main on: sig_handler 0x18e, main 0x194.., parse_args 0x2a8, load_lib_syms 0x2ad, read_symbols 0x2c3,
+  end_pass1 0x36d, place_sec 0x3a6, start_output 0x442, open_tmp 0x45a, load2 0x48d, load2td 0x4d7, finish_output 0x4e8).
+  Only get ("Premature EOF" 0x58) and the getfile part "__.SYMDEF" (0x66) lie before the globals (eofmsg, symdef
+  are global arrays now, which matches the data).
+- Tested: moving the library prefixes ("", "/usr", "/z/bin") and libname in front of getfile as static arrays (as the
+  sld source does, see its comment at ld.c:1513) gives 555 equal bytes against 556 without it; reverted.
+- Open: the placement of the pointer-initialised strings (secnam, ofilnam, aoutnam) after the prefixes is not explained
+  by the cc rules above. Either the original object was built from a different declaration order (e.g. a header
+  included at another point) or the pointers are fixed up differently. Not solved.
+
+## Step 4 (data): the cause of the displaced pointer strings (2026-10-29)
+
+- Solved for the initialisers: the old cc places the literal of an initialiser at the declaration only if it is a
+  literal in that declaration. A pointer that refers to an array declared LATER (`extern char p_text[];` and the
+  definition `char p_text[] = "text";` further down) puts the pointer at the declaration and the array at its own
+  definition (experiment tmp/tmp/strexp/t8.c: the pointer is 0x0004, the string follows the function that comes between).
+- Applied in ld.c: secnam = {p_empty, p_text, p_data, p_bss}, ofilnam = p_lout, aoutnam = p_aout (externs at the top),
+  the definitions after getfile in the original order: pfx1 "/usr", libname, pfx2 "/z/bin", p_empty "" (0x172), then
+  p_text, p_data, p_bss, p_lout, p_aout (0x174..0x18e region). getfile uses pfx1/pfx2 for libpath.
+- Result: 600 of 2748 data bytes equal (was 556). Exact functions (22) still identical.
+- Remaining: the literals of the functions sig_handler ("l.out" 0x18e), main ("s.out" 0x194, "%s:\n" 0x19a ...),
+  parse_args, load_lib_syms, read_symbols ... sit after the arrays in the original (0x18e..0x5xx) but right after the
+  tmpname array in ours (0x94..). Their placement follows the same mechanism as the arrays; the pool for the messages
+  of the functions before getfile seems to be emitted after getfile. Not yet explained; the tables of the functions
+  (0x92..0x150) are in code order and agree.
+- Backup before this change: tmp/tmp/bss/ld_before_fwd.c.
+
+## Step 4 (data): forward-declared arrays reverted (2026-10-29)
+
+- The forward-declared arrays (externs at the top, the arrays defined after getfile) reproduce the displaced
+  strings in the data, but they are not a natural way to write this code. The source is back to the literal
+  initialisers (ld.c as in tmp/tmp/bss/ld_before_fwd.c). The data order of the initialisers stays open: no natural
+  source of ld.c was found that yields the original layout (see the emission experiments above).
+- The mechanism is kept as a hypothesis only: it reproduces 600 of 2748 data bytes, the literal version gives 556.

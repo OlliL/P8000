@@ -365,7 +365,6 @@ register struct symbol *p;
 		p++;
 	if (p >= symtab && p < nsym)
 		return p;
-	report_error(2, "Error in stepsym");
 }
 
 /* warn_sym_redef: warn that a symbol is redefined in an archive (0x2862..0x294e of /bin/ld). The (char) casts give the
