@@ -259,16 +259,6 @@
    "callers_orig": "172e,194a,1b0a",
    "status": "done"
   },
-  "f25a2": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x25a2",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 58,
-   "callers_orig": "13ca",
-   "status": "open"
-  },
   "f26e8": {
    "file": "symbols.c",
    "pairing": "open",
@@ -277,16 +267,6 @@
    "level": "open",
    "size_orig": 126,
    "callers_orig": "-",
-   "status": "open"
-  },
-  "f2766": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x2766",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 88,
-   "callers_orig": "1452",
    "status": "open"
   },
   "f282e": {
@@ -657,6 +637,26 @@
    "level": "exact",
    "size_orig": 160,
    "callers_orig": "0b6e",
+   "status": "done"
+  },
+  "mkfsym": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x25a2",
+   "ours": "25a2-25dc",
+   "level": "exact",
+   "size_orig": 58,
+   "callers_orig": "13ca",
+   "status": "done"
+  },
+  "symreloc": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x2766",
+   "ours": "2766-27be",
+   "level": "exact",
+   "size_orig": 88,
+   "callers_orig": "1452",
    "status": "done"
   }
  },

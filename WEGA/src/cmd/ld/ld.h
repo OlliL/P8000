@@ -56,7 +56,7 @@ extern int infil;
 extern int ntab;
 extern struct tent tab[1];
 extern int symindex, v0070;
-extern int v66c2, v66c6, v66cc, v66ce, v66d0, v66d2, v66d4;
+extern int v66c2, v66c6, v66cc, v66ce;
 extern char *ofilnam;
 extern int v007c, v0080;
 extern char tmpname[];
@@ -97,3 +97,11 @@ int put_name();
 int mput();
 extern int swapflg;
 int swap_pair();
+/* flags and output buffers of the symbol output (sld: sflag, xflag, soutb); v6bf8 is the word at 0x6bf8 (name open) */
+extern int sflag, xflag;
+extern struct buf soutb;
+extern int v6bf8;
+int unpack_run();
+int put_sym();
+/* relocation bases of the object: text, data, bss (sld: fctrel, fcdrel, fcbrel) */
+extern int fctrel, fcdrel, fcbrel;

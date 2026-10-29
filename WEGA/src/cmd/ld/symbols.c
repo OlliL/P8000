@@ -107,6 +107,29 @@ int x;
 	lookup_name();
 }
 
+/* symreloc: relocate the value of cursym by the text, data or bss relocation of the object (sld symreloc; 0x2766..0x27be of /bin/ld) */
+symreloc()
+{
+	switch (cursym.stype) {
+	case 2:
+	case 0x22:
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fctrel);
+		return;
+	case 3:
+	case 0x23:
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcdrel);
+		return;
+	case 4:
+	case 0x24:
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcbrel);
+		return;
+	case 0x20:
+		return;
+	}
+	if (cursym.stype & 0x20)
+		cursym.stype = 0x21;
+}
+
 /* put_sym: write a symbol entry (and its continuation entries of a long name) to the output (0x27be..0x282e of /bin/ld; finding) */
 put_sym(a, b)
 struct buf *a;
@@ -178,6 +201,21 @@ char c;
 	}
 	p->stype = c;
 	p->svalue = v;
+}
+
+/* mkfsym: enter the file symbol of an object into the output (sld mkfsym; 0x25a2..0x25dc of /bin/ld). svalue is the word at
+   0x6bf8 here (sld: 0) */
+mkfsym(p)
+char *p;
+{
+	if (sflag)
+		return;
+	if (xflag)
+		return;
+	unpack_run(p, cursym.sname);
+	cursym.stype = 0x1f;
+	cursym.svalue = (unsigned)v6bf8;
+	put_sym(&soutb, &cursym);
 }
 
 /* lookup_name: look up a name in the hash table of symbols (0x25dc..0x26ac of /bin/ld, finding: register

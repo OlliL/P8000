@@ -44,12 +44,12 @@
 23e2  f23e2  249a    184  1452,2502        proven    done
 249a  f249a  2502    104  1452             proven    done
 2502  f2502  25a2    160  0b6e             proven    done
-25a2  f25a2  25dc     58  13ca             proven    open
+25a2  f25a2  25dc     58  13ca             proven    done
 25dc  f25dc  26ac    208  1452,26ac        proven    findings
 26ac  f26ac  26ca     30  0b6e             proven    done
 26ca  f26ca  26e8     30  -                proven    done
 26e8  f26e8  2766    126  -                proven    open
-2766  f2766  27be     88  1452             proven    open
+2766  f2766  27be     88  1452             proven    done
 27be  f27be  282e    112  1452,25a2,282e   proven    findings
 282e  f282e  2862     52  194a             proven    done
 2862  f2862  294e    236  -                proven    done

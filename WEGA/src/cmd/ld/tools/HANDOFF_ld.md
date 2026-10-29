@@ -514,3 +514,11 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## ldrsym (2026-10-29)
 
 - f2502 is sld ldrsym (symbols.c), exact (50 instructions). The parameter order is (a, x, v, c): the original takes the char c from r3 and the long v from rr4; x is not used in the body (role unknown). Placed in symbols.c between read_entry_hdr and lookup_name (address order).
+
+## mkfsym (2026-10-29)
+
+- f25a2 is sld mkfsym(p) (symbols.c), exact (18 instructions). Differences to sld: svalue is the word at 0x6bf8 (v6bf8, name open), not 0; no map_sym call. sflag and xflag (0x66a6, 0x669c), soutb (0x6af0) are sld names in ld.h.
+
+## symreloc (2026-10-29)
+
+- f2766 is sld symreloc (symbols.c), exact (29 instructions) in the form with a return in each case and the default as a tail (sr5). The bases v66d0, v66d2, v66d4 are renamed fctrel, fcdrel, fcbrel (sld names, used in f050c and symreloc).
