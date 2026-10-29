@@ -5,7 +5,7 @@ static char sccsid[] = "@[$]ld.c\t1.18  06/27/83 16:44:24 - 87wega3.2";
 
 char eofmsg[] = "Premature EOF";
 char symdef[] = "__.SYMDEF";
-long liblist[64];
+extern long liblist[];
 long *libp = liblist;
 char *secnam[4] = {"", "text", "data", "bss"};
 char *ofilnam = "l.out";
@@ -15,55 +15,86 @@ int v0080 = 0;
 char tmpname[] = "/tmp/ldaXXXXX";
 char *aoutnam = "a.out";
 
+/* bss of ld in the order of the original (addresses from 0x0abe): the order of these declarations is the link order
+   of the commons; the gaps are spare variables (see HANDOFF_ld.md, step 5b) */
+int ntab;
+struct tent tab[16];
 struct page page[2];
 struct pghdr fpage;
-int infil;
-
-int ntab;
-struct tent tab[1];
-int symindex;
-int ttotal, dtotal, btotal, v66ce;
-int fctrel, fcdrel, fcbrel;
-
-int v669a, v66a4;
-
 struct stream text;
+struct stream reloc;
+int segtsz;
+int hdrsz;
+struct archdr archdr;
 struct filhdr filhdr;
-char x702f, x7030, x7031;
-int x66b8, x66ba, x6bfe;
-int v6bfc;
-int Sflag, Xflag;
-int v6bf6;
+struct symbol cursym;
+char lnbuf[126];
+struct symbol sym16[600];
+char spare3212[140];
+struct symbol **symhash[2339];
+struct symbol *lastsym;
+int symindex;
+struct symbol *hshtab[2341];
+struct local local[1000];
 struct symbol *p_etext, *p_edata, *p_end;
-int dflag, oflag, comsize;
-struct areas areas[4];
-char tab42b4[5];
-int secorg[4];
+struct symbol *entrypt;
+int v669a;
+int xflag;
+int Xflag;
+int Sflag;
+int rflag;
+int v66a4;
+int sflag;
+int oflag;
+int dflag;
+int wflag;
 int iflag;
 int v66b0;
-int x66b6;
-int hdrsz, segtsz;
-struct stream reloc;
-char libname[] = "/lib/libxxxxxxxxxxx";
-char libpath[20];
-int v66b4;
-
-struct buf toutb;
-struct buf soutb, tmpoutb, routb, doutb;
-int rflag, sflag, xflag, ofilfnd;
 int swapflg;
-char secspec;
-
+int v66b4;
+int x66b6;
+int x66b8;
+int x66ba;
+int ofilfnd;
+int infil;
+char *filname;
+int ttotal;
+int v66c4;
+int dtotal;
+int v66c8;
+int comsize;
+int btotal;
+int v66ce;
+int fctrel, fcdrel, fcbrel;
+char *pname;
+struct buf toutb;
+struct buf tmpoutb;
+struct buf routb;
+struct buf doutb;
+struct buf soutb;
+int v6bf6;
+int v6bf8, v6bfa, v6bfc;
+int x6bfe;
 struct rlent *rltab;
 int rlcnt;
-int v6bf8, v6bfa;
-int oflag, iflag, v66c4, v66c8;
-struct symbol *entrypt;
-
-struct archdr archdr;
-char *pname;
-char *filname;
+long liblist[256];
+struct areas areas[4];
+char spare7024[8];
+char secspec;
+char tab42b4[5];
+int secorg[4];
+char spare703c[2];
 int exstat;
+char libpath[20];
+struct symbol *nsym = 0;
+
+
+
+
+char libname[] = "/lib/libxxxxxxxxxxx";
+
+
+
 
 sig_handler()
 {
@@ -861,15 +892,15 @@ struct fseg *seg;
 	seg->atr = 7;
 	seg->s_data = filhdr.dsize;
 	seg->s_bss = filhdr.bsize;
-	if (x702f) {
+	if (tab42b4[1]) {
 		seg->atr |= 0x10;
 		seg->s_coff = high_byte(v6bf8);
 	}
-	if (x7030) {
+	if (tab42b4[2]) {
 		seg->atr |= 0x20;
 		seg->s_doff = high_byte(v6bfa);
 	}
-	if (x7031) {
+	if (tab42b4[3]) {
 		seg->atr |= 0x40;
 		seg->s_boff = high_byte(x6bfe);
 	}
@@ -1196,7 +1227,6 @@ unsigned x;
 	return((x >> 8) & 0xff);
 }
 
-struct local local[1];
 
 /* mget: read n bytes of the text stream into the buffer p (0x1a9a..0x1b0a of /bin/ld) */
 mget(p, n)
@@ -1594,10 +1624,4 @@ register struct buf *a;
 /* place_sec: place the text, data and bss areas of the output (sld place_sec in the nonsegmented form of ld; finding: the
    kinds and the sizes are equal in the code, the instruction order of the stores differs; 0x0d9c..0x108e of /bin/ld) */
 
-struct symbol **symhash[2339];
-struct symbol *hshtab[2339];
-struct symbol *lastsym;
-char lnbuf[16];
-int wflag;
-struct symbol *nsym;
 

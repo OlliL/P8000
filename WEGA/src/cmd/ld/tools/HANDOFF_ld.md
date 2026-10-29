@@ -846,3 +846,22 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   2341 pointers in the original, ours is one.
 - Next: decide the owner of the 8666-byte gap (search the functions for references into 0x1084..0x325e: none in the
   bss map; candidates are libc arrays), then reorder the declarations of ld.c to the original order and add spares.
+
+## Step 5b (bss), result (2026-10-29)
+
+- The gaps are explained by the code: 0x0ad6..0x0c20 is tab[16] (16 x 22 bytes, `tab[k]` in main is `22*k`);
+  0x1084..0x1102 is lnbuf (126 bytes, end of the name buffer in lookup_name); 0x1102..0x325e is the static symbol table
+  sym16[600] (14 bytes, `table16_entry` uses 0x1102 + 14*x for x < 0x258) and 140 bytes of spare after it;
+  hshtab[2341] (lookup_name: `hshtab[(h % 0x923) + 2]`), local[1000] (4 bytes), liblist[256] (1024 bytes, 0x6c04).
+- ld.c now declares all bss variables in one block after the initialised data, in the address order of the original
+  (block starts with `int ntab;`). Our link: all 70 bss entries of bss_map.txt at the same offset from ntab as in the
+  original (check script: `tmp/tmp/bss/cmp_bss.py`, relative to ntab).
+- Aliases removed: x702f, x7030, x7031 are tab42b4[1..3] (init_entry tests them as tab42b4[k]).
+- Data items (initialised zero in the original, so they are in the data section): pnflag (printname.c, `= 0`), rlsize,
+  rlbuf, v067c, symtab (symbols.c, `= 0`), nsym (ld.c, `= 0`). They are not bss: the data step places them.
+- Remaining: (1) bss size 27076 against 27082: 6 bytes before rc (orig 0x705a) are not in our link (a libc item,
+  probably in the on-board exit.o/doscan.o we add, or in the order of the shipped members); (2) table16_entry and
+  index16 use the literal 0x1102: right only when the absolute layout equals the original (after the data step);
+  they are exact now, so the literal stays until the data size is right; (3) the position of _end and the 40 bytes
+  after sobuf match.
+- Exact functions checked after the change (ld.c, symbols.c, printname.c, copyname.c): all SAME.

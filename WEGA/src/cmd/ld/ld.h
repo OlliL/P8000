@@ -54,7 +54,7 @@ extern struct page page[2];
 extern struct pghdr fpage;
 extern int infil;
 extern int ntab;
-extern struct tent tab[1];
+extern struct tent tab[16];
 extern int symindex;
 extern long *libp;
 extern int ttotal, dtotal, btotal, v66ce;
@@ -69,7 +69,7 @@ extern struct archdr archdr;
 extern char *pname;
 extern char *filname;
 extern int exstat;
-extern struct local local[1];
+extern struct local local[1000];
 /* symbol table: functions that return a symbol pointer (sld: table16_entry, next_entry) */
 struct symbol *table16_entry();
 struct symbol *next_entry();
@@ -100,7 +100,7 @@ int longswap();
 /* flags and output buffers of the symbol output (sld: sflag, xflag, soutb); v6bf8 is the word at 0x6bf8 (name open) */
 extern int sflag, xflag;
 extern struct buf soutb;
-extern int v6bf8;
+extern int v6bf8, v6bf6;
 int unpack_run();
 int put_sym();
 /* relocation bases of the object: text, data, bss (sld: fctrel, fcdrel, fcbrel) */
@@ -195,7 +195,6 @@ int symreloc();
 int put_sym();
 int dseek();
 struct symbol **lookup_name();
-int v6bf6;
 int swap();
 int f221e();
 struct areas { char kind; char pad; int tstart; int tsize; int tend; };

@@ -4,7 +4,7 @@ static char sccsid[] = "@[$]printname.c\t1.5  03/11/83 10:29:11 - 87wega3.2";
 
 #include "ld.h"
 
-int pnflag;
+int pnflag = 0;
 
 /* put_name: print a symbol name (sld put_name; 0x23e2..0x249a of /bin/ld) */
 put_name(p)

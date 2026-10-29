@@ -4,12 +4,11 @@ static char sccsid[] = "@[$]symbols.c\t1.8  03/11/83 10:29:38 - 87wega3.2";
 
 #include "ld.h"
 
-char *rlbuf;
-unsigned int rlsize;
+char *rlbuf = 0;
+unsigned int rlsize = 0;
 
-struct symbol cursym;
-int v067c;
-struct symbol *symtab;
+int v067c = 0;
+struct symbol *symtab = 0;
 int *_pfile;
 
 /* read_entry_hdr: read the entry of a symbol into cursym; a long name takes the continuation entries (sld read_entry_hdr,
