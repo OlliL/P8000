@@ -311,3 +311,7 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - f1a9a exact at attempt 3 (ld.c): buffer read with refill. The statement order decides the code: `i = n; i >>= 1;`
   and only then `r = p;` (HOWTO step 7). Globals v1030 (int *), v1034 and v1036 (int) are at the bss addresses 1030,
   1034, 1036 (names are guesses; step 5b checks them with the other variables). Three unused int locals.
+- f0042 exact at the first attempt (ld.c): the exit path of ld (unlink l.out, chmod with ~umask(0) & 0777 when no error,
+  unlink of v007a, _exit(v007c)). Globals: v007a (char *) and v007c, v0080 (int) are in the DATA section (data offsets
+  0x7a, 0x7c, 0x80, not bss); v669a and v66a4 are bss. For step 5b: declared without initial value they would become bss
+  (common); they must be initialised like the original (their data bytes are at those offsets), check in step 5b.
