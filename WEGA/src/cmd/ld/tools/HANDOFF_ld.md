@@ -522,3 +522,8 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## symreloc (2026-10-29)
 
 - f2766 is sld symreloc (symbols.c), exact (29 instructions) in the form with a return in each case and the default as a tail (sr5). The bases v66d0, v66d2, v66d4 are renamed fctrel, fcdrel, fcbrel (sld names, used in f050c and symreloc).
+
+## limit_msg (2026-10-29)
+
+- f2c02 is sld limit_msg (symbols.c), exact (9 instructions). The available count is 0x0923 when symtab is allocated, else 0x0258. sig_handler calls it when v669a is set (the flag name is still open). In sld it is declared but has no caller.
+- Open after this round: f294e (loop over 12-byte entries with pslookup and warn_sym_redef; no clean sld counterpart found), f2b3a and f2b92 (ranlib buffer growth, similar to sld ensure_buf but with other logic). Both not matched.

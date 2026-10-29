@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 29 |
-| open | 35 |
+| confirmed | 30 |
+| open | 34 |
 
 | Difference class | Count |
 |---|---|
@@ -62,13 +62,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f2b92 | - | 0x2b92 | open | open |  |  |  |
 | f2bf6 | 2bf6-2bfc | 0x2bf6 | confirmed | exact |  |  |  |
 | f2bfc | 2bfc-2c02 | 0x2bfc | confirmed | exact |  |  |  |
-| f2c02 | - | 0x2c02 | open | open |  |  |  |
 | f2c20 | - | 0x2c20 | open | open |  |  |  |
 | flush_buffer | 229c-22e8 | 0x229c | open | exact | read by hand |  | exact (2026-10-29, fourth attempt): struct buf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets. |
 | get | 1c6c-1ce2 | 0x1c6c | confirmed | findings | read by hand | D4 | findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c. |
 | half | 1c5a-1c6c | 0x1c5a | confirmed | exact |  |  |  |
 | high_byte | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
 | ldrsym | 2502-25a2 | 0x2502 | confirmed | exact |  |  |  |
+| limit_msg | 2c02-2c20 | 0x2c02 | confirmed | exact |  |  |  |
 | lookup_name | 25dc-26ac | 0x25dc | confirmed | findings | read by hand | D3 | findings (symbols.c): sld lookup_name with ld names (cursym, nlflag, lnbuf, local, hshtab). Hash modulus 0x0923 in ld (sld 0x0ffa). Six attempts: the original keeps start (r11) and end (r10) in registers and slot, cur, rec in the frame or scratch; the draft has start and end in the frame and the loop test differs (cp r6,frame). Draft: d5/ln1.c. Accepted as finding. |
 | mget | 1a9a-1b0a | 0x1a9a | confirmed | exact | read by hand |  | exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n)). |
 | mkfsym | 25a2-25dc | 0x25a2 | confirmed | exact |  |  |  |

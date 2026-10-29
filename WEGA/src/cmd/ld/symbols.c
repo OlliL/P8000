@@ -285,3 +285,10 @@ f2bfc()
 {
 	v067c = 0;
 }
+
+/* limit_msg: print the size usage "n symbols / m available" (sld limit_msg; 0x2c02..0x2c20 of /bin/ld). The available count is
+   0x0923 when the symbol table is allocated, else 0x0258 */
+limit_msg()
+{
+	printf("%d symbols / %d available\n", symindex, symtab ? 0x0923 : 0x0258);
+}

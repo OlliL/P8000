@@ -61,5 +61,5 @@
 2b92  f2b92  2bf6    100  -                proven    open
 2bf6  f2bf6  2bfc      6  -                proven    done
 2bfc  f2bfc  2c02      6  -                proven    done
-2c02  f2c02  2c20     30  0000,0042        proven    open
+2c02  f2c02  2c20     30  0000,0042        proven    done
 2c20  f2c20  2c4c     44  29d6             proven    open

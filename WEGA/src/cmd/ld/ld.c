@@ -198,7 +198,7 @@ sig_handler()
 	int mode;
 
 	if (v669a)
-		f2c02();
+		limit_msg();
 	unlink("l.out");
 	if (!v007c) {
 		if (!v66a4 || !v0080) {

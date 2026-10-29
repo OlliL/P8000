@@ -105,3 +105,4 @@ int unpack_run();
 int put_sym();
 /* relocation bases of the object: text, data, bss (sld: fctrel, fcdrel, fcbrel) */
 extern int fctrel, fcdrel, fcbrel;
+limit_msg();

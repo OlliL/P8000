@@ -349,16 +349,6 @@
    "callers_orig": "-",
    "status": "done"
   },
-  "f2c02": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x2c02",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 30,
-   "callers_orig": "0000,0042",
-   "status": "open"
-  },
   "f2c20": {
    "file": "symbols.c",
    "pairing": "open",
@@ -657,6 +647,16 @@
    "level": "exact",
    "size_orig": 88,
    "callers_orig": "1452",
+   "status": "done"
+  },
+  "limit_msg": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x2c02",
+   "ours": "2c02-2c20",
+   "level": "exact",
+   "size_orig": 30,
+   "callers_orig": "0042",
    "status": "done"
   }
  },
