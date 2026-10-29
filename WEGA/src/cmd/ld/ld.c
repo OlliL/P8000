@@ -3,6 +3,18 @@
 
 static char sccsid[] = "@[$]ld.c\t1.18  06/27/83 16:44:24 - 87wega3.2";
 
+char eofmsg[] = "Premature EOF";
+char symdef[] = "__.SYMDEF";
+long liblist[64];
+long *libp = liblist;
+char *secnam[4] = {"", "text", "data", "bss"};
+char *ofilnam = "l.out";
+int delarg = 4;
+int nlflag = 1;
+int v0080 = 0;
+char tmpname[] = "/tmp/ldaXXXXX";
+char *aoutnam = "a.out";
+
 struct page page[2];
 struct pghdr fpage;
 int infil;
@@ -10,13 +22,9 @@ int infil;
 int ntab;
 struct tent tab[1];
 int symindex;
-long *libp;
 int ttotal, dtotal, btotal, v66ce;
 int fctrel, fcdrel, fcbrel;
 
-char *ofilnam = "l.out";
-int delarg, v0080;
-char tmpname[] = "/tmp/ldaXXXXX";
 int v669a, v66a4;
 
 struct stream text;
@@ -26,13 +34,10 @@ int x66b8, x66ba, x6bfe;
 int v6bfc;
 int Sflag, Xflag;
 int v6bf6;
-long liblist[64];
-long *libp;
 struct symbol *p_etext, *p_edata, *p_end;
 int dflag, oflag, comsize;
 struct areas areas[4];
 char tab42b4[5];
-char *secnam[4];
 int secorg[4];
 int iflag;
 int v66b0;
@@ -51,7 +56,6 @@ char secspec;
 
 struct rlent *rltab;
 int rlcnt;
-char *aoutnam = "a.out";
 int v6bf8, v6bfa;
 int oflag, iflag, v66c4, v66c8;
 struct symbol *entrypt;
@@ -1310,7 +1314,7 @@ register struct stream *p;
 	}
 	if (--p->size <= 0) {
 		if (p->size < 0)
-			report_error(2, "Premature EOF");
+			report_error(2, eofmsg);
 		fpage.nuser++;
 		p->pno->nuser--;
 		p->pno = &fpage;
@@ -1365,14 +1369,14 @@ char *name;
 	fpage.nuser = 2;
 	dseek(&text, 0L, 2);
 	if (text.size <= 0)
-		report_error(2, "Premature EOF");
+		report_error(2, eofmsg);
 	if (get(&text) != -155)
 		return 0;
 	dseek(&text, 1L, 0x1a);
 	if (text.size <= 0)
 		return 1;
 	mget(&archdr, 0x1a);
-	if (strncmp(archdr.aname, "__.SYMDEF", 14))
+	if (strncmp(archdr.aname, symdef, 14))
 		return 1;
 	fstat(infil, &st);
 	if (st.mtime > archdr.atime)
@@ -1594,6 +1598,6 @@ struct symbol **symhash[2339];
 struct symbol *hshtab[2339];
 struct symbol *lastsym;
 char lnbuf[16];
-int wflag, nlflag;
+int wflag;
 struct symbol *nsym;
 

@@ -792,3 +792,34 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   temporary (ldl rr4) is missing. The frame could not be matched with any declaration order (tried: unused spare first or
   last, pointer or int p, chars or ints); the padding comes from the code generation, not from the names.
 - Still approximate: reg_sect_addr (finding), end_pass1 is exact.
+
+## Step 4 (data), third pass (2026-10-29)
+
+- Link recipe (scratch `tmp/tmp/link`): compile ld.c, copyname.c, printname.c, symbols.c with `/bin/cc -O -c`; link with
+  `/bin/ld -i -o progd crt0.o ld.o copyname.o printname.o symbols.o <libc members from ld.link> arx/exit.o arx/doscan.o`
+  (members: `shipped X` -> libc/s_X.o, `old X v` -> libc/o_X_v.o). Data of progd: 2948 bytes (original 2748), equal bytes 536.
+- Experiment (scratch `tmp/tmp/strexp`): the old cc emits data in SOURCE order: global initialisers and literals of a
+  function appear in the order of the source text. So the data order of ld.c is the order of its top-level definitions.
+- The original shows a conflict with the code order: the literals of get ("Premature EOF", 0x58) and getfile
+  ("__.SYMDEF", 0x66) and the initialised globals (libp 0x70, secnam 0x72, ofilnam 0x7a, delarg 0x7c, tmpname 0x82,
+  aoutnam 0x90, libname 0x156) come BEFORE the literals of main (0x19a), but the code of get (0x1c6c) and getfile (0x1ce2)
+  is AFTER main (0x9c). Our own build has the same code order, so the source order of get/getfile and of the globals
+  must be the one of the data, and the code of the first functions is not in source order, or the data of these
+  functions was emitted from another place. Not yet explained; the step cannot be closed by moving functions.
+- Jump tables are data too: main 0x92, parse_args 0xf8/0x108, end_pass1 0x120 (they sit between the globals and getfile).
+- Open question for the owner: is there a source (or a note) of the order of ld.c's top-level definitions in the
+  original? Without it the data layout (step 4) and the bss order (step 5b) cannot be closed.
+
+## Step 4 (data), fourth pass (2026-10-29): header-like arrays
+
+- Confirmed: "Premature EOF" (get and getfile) and "__.SYMDEF" are char arrays declared right after the SCCS stamp
+  (`eofmsg[]`, `symdef[]` in ld.c), like libname[]. Data 0x58..0x6f equal the original (14 + 10 bytes); both functions
+  use the arrays, and the code of all exact functions is unchanged.
+- The initialised globals are now declared in the original order after them: liblist, libp = liblist, secnam = {"", "text",
+  "data", "bss"}, ofilnam = "l.out", delarg = 4, nlflag = 1, v0080 = 0, tmpname, aoutnam = "a.out". Values from the data:
+  libp 0x70, secnam 0x72..0x79, ofilnam 0x7a, delarg 0x7c, nlflag 0x7e, v0080 0x80, tmpname 0x82, aoutnam 0x90.
+- Differences left: (1) the pointers libp and the pointers into bss depend on the bss layout (step 5b): libp is 0x6c04 in
+  the original; (2) the literal strings of the initialisers ("text", "data", "bss", "l.out", "a.out", "s.out") are placed
+  in the original after the getfile literals ("/usr", libname, "/z/bin", ""), not right after the table; the pool
+  flushes later than the declaration. The data equal count is 492 (of 2748) with the declarations in this order and
+  593 with the earlier order (the uninitialised libp); the bss part is needed before the count means something.
