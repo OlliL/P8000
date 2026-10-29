@@ -183,3 +183,13 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   filbuf 20 at 08e4, doscan 160 at 07c8, brk 2 at 0ab6 (ref 0ab6), cerror 4 at 0ab8 (refs 0ab8, 0aba; ends at 0abc).
 - Everything else has no data (no data references, and the shipped members have data 0 except brk and cerror).
 - VERSIONS: cnvt 0_1 is also used by ld.
+
+## Check of the libc part against /bin/ld (2026-10-29)
+
+- `tools/libc_verify.py` -> `tools/libc_verify.txt`: every module of ld.link is taken (old: src/lib/oldlibc version,
+  assembled with cas -u; shipped: member of libc.a), its text is compared with /bin/ld at the start of ld.spec, its
+  data with /bin/ld at dstart. Result: 42 modules, sizes equal, 0 differing words (text and data).
+- Relocated words are not compared (there the value is an address of another module or of the own code). They are
+  30 to 39 words in doscan, doprnt and malloc, 1 to 7 in the shipped members. Checking them needs the own code (step 3)
+  and the addresses in ld.spec: open.
+- ld.link regenerated (cnvt 0_1, rindex 0_1).
