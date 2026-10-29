@@ -3,56 +3,37 @@
 
 struct symbol cursym;
 int v067c;
-f2bf6()
+
+/* read_entry_hdr: read the entry of a symbol into cursym; a long name takes the continuation entries (sld read_entry_hdr,
+   the nonsegmented part; 0x249a..0x2502 of /bin/ld). Module: printname.c as assigned (sld has it in symbols.c) */
+int read_entry_hdr()
 {
-	v067c++;
-}
+	register int k;
+	register char *cur;
+	char cnt;
+	int spare2, spare3;
+	char *end;
 
-f2bfc()
-{
-	v067c = 0;
-}
-
-slookup(x)
-int x;
-{
-	int spare;
-
-	pack_name(x, cursym.sname);
-	cursym.stype = ' ';
-	cursym.svalue = 0;
-	lookup_name();
-}
-
-pslookup(x)
-int x;
-{
-	int spare;
-
-	unpack_run(x, cursym.sname);
-	cursym.stype = ' ';
-	cursym.svalue = 0;
-	lookup_name();
-}
-
-/* put_all: write all symbols of the table to the output (0x282e..0x2862 of /bin/ld) */
-put_all()
-{
-	int spare1, spare2;
-
-	register struct symbol *p;
-	register struct symbol *end;
-
-	p = table16_entry(0);
-	end = table16_entry(symindex);
-	while (p < end) {
-		put_sym(&toutb, p);
-		p = next_entry(p);
+	k = 0;
+	mget(&cursym, 14);
+	if (swapflg)
+		swap_pair(&cursym);
+	if (cursym.sname[0] & 0x80) {
+		cnt = cursym.sname[0] & 0x7f;
+		cur = (char *)&cursym;
+		end = cursym.sname + cnt;
+		goto test;
+body:
+		k++;
+		mget(cur, 14);
+test:
+		cur += 14;
+		if (cur < end)
+			goto body;
 	}
+	return k;
 }
 
-/* lookup_name: look up a name in the hash table of symbols (0x25dc..0x26ac of /bin/ld, finding: register
-   variables start and end are in the frame here) */
 struct symbol **lookup_name()
 {
 	register struct symbol **slot;
@@ -104,28 +85,104 @@ l2:
 	return slot;
 }
 
-/* next_entry: next entry of the symbol table (a long name occupies several entries) (0x2aa6..0x2b04 of /bin/ld; finding) */
-struct symbol *next_entry(p)
-register struct symbol *p;
+slookup(x)
+int x;
 {
-	register int b;
-	register char *e;
+	int spare;
 
-	b = p->sname[0];
-	if (b & 0x80) {
-		e = p->sname + (b & 0x7f);
-		p++;
-		while (e > (char *)p)
-			p++;
-	} else
-		p++;
-	if (p >= symtab && p < symtab + nsym)
-		return p;
-	report_error(2, "Error in stepsym");
+	pack_name(x, cursym.sname);
+	cursym.stype = ' ';
+	cursym.svalue = 0;
+	lookup_name();
 }
 
-/* warn_sym_redef: warn that a symbol is redefined in an archive (0x2862..0x294e of /bin/ld). The (char) casts give the
-   sign extension of the original, whose stdio had char *_ptr (the header of src/head has unsigned char *) */
+pslookup(x)
+int x;
+{
+	int spare;
+
+	unpack_run(x, cursym.sname);
+	cursym.stype = ' ';
+	cursym.svalue = 0;
+	lookup_name();
+}
+
+/* put_sym: write a symbol entry (and its continuation entries of a long name) to the output (0x27be..0x282e of /bin/ld; finding) */
+put_sym(a, b)
+struct buf *a;
+struct symbol *b;
+{
+	int spare1, spare2;
+	char cnt;
+	register struct symbol *p;
+	register int k;
+
+	p = b;
+	if (swapflg)
+		swap_pair(b);
+	mput(a, p, 14);
+	if (p->sname[0] & 0x80) {
+		cnt = (p->sname[0] & 0x7f) - 8;
+		p++;
+		k = 1;
+		goto test;
+body:
+		mput(a, p++, 14);
+		k++;
+		cnt -= 14;
+test:
+		if (cnt > 0)
+			goto body;
+		return k;
+	}
+	return 1;
+}
+
+/* put_all: write all symbols of the table to the output (0x282e..0x2862 of /bin/ld) */
+put_all()
+{
+	int spare1, spare2;
+
+	register struct symbol *p;
+	register struct symbol *end;
+
+	p = table16_entry(0);
+	end = table16_entry(symindex);
+	while (p < end) {
+		put_sym(&toutb, p);
+		p = next_entry(p);
+	}
+}
+
+/* ldrsym: load a symbol of a relocation entry, error for multiply defined (sld ldrsym; 0x2502..0x25a2 of /bin/ld).
+   The parameter x is not used here; the order of the parameters follows the frame of the original */
+ldrsym(a, x, v, c)
+struct symbol *a;
+int x;
+long v;
+char c;
+{
+	int spare;
+
+	register struct symbol *p;
+
+	p = a;
+	if (!p)
+		return;
+	if (p->stype != 0x20 || p->svalue != 0) {
+		if (put_name(p->sname) < 8)
+			(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 9) : _flsbuf((unsigned)9, stderr));
+		(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 0x20) : _flsbuf((unsigned)0x20, stderr));
+		report_error(1, "-- Multiply defined");
+		return;
+	}
+	p->stype = c;
+	p->svalue = v;
+}
+
+/* lookup_name: look up a name in the hash table of symbols (0x25dc..0x26ac of /bin/ld, finding: register
+   variables start and end are in the frame here) */
+
 warn_sym_redef(p, a)
 struct symbol *p;
 struct symbol *a;
@@ -158,33 +215,35 @@ struct symbol *a;
 	report_error(0, "- warning: symbol redefined in archive");
 }
 
-/* put_sym: write a symbol entry (and its continuation entries of a long name) to the output (0x27be..0x282e of /bin/ld; finding) */
-put_sym(a, b)
-struct buf *a;
-struct symbol *b;
+/* next_entry: next entry of the symbol table (a long name occupies several entries) (0x2aa6..0x2b04 of /bin/ld; finding) */
+struct symbol *next_entry(p)
+register struct symbol *p;
 {
-	int spare1, spare2;
-	char cnt;
-	register struct symbol *p;
-	register int k;
+	register int b;
+	register char *e;
 
-	p = b;
-	if (swapflg)
-		swap_pair(b);
-	mput(a, p, 14);
-	if (p->sname[0] & 0x80) {
-		cnt = (p->sname[0] & 0x7f) - 8;
+	b = p->sname[0];
+	if (b & 0x80) {
+		e = p->sname + (b & 0x7f);
 		p++;
-		k = 1;
-		goto test;
-body:
-		mput(a, p++, 14);
-		k++;
-		cnt -= 14;
-test:
-		if (cnt > 0)
-			goto body;
-		return k;
-	}
-	return 1;
+		while (e > (char *)p)
+			p++;
+	} else
+		p++;
+	if (p >= symtab && p < symtab + nsym)
+		return p;
+	report_error(2, "Error in stepsym");
+}
+
+/* warn_sym_redef: warn that a symbol is redefined in an archive (0x2862..0x294e of /bin/ld). The (char) casts give the
+   sign extension of the original, whose stdio had char *_ptr (the header of src/head has unsigned char *) */
+
+f2bf6()
+{
+	v067c++;
+}
+
+f2bfc()
+{
+	v067c = 0;
 }

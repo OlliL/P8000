@@ -39,7 +39,7 @@
 22e8 f22e8    copyname.c  owner decision
 2360 f2360    copyname.c  owner decision
 23e2 f23e2    printname.c vote
-249a f249a    printname.c guess
+249a f249a    symbols.c   owner decision (read_entry_hdr, moved from printname.c)
 2502 f2502    symbols.c   vote
 25a2 f25a2    symbols.c   guess
 25dc f25dc    symbols.c   guess

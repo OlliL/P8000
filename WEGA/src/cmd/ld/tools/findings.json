@@ -259,36 +259,6 @@
    "callers_orig": "172e,194a,1b0a",
    "status": "done"
   },
-  "f23e2": {
-   "file": "printname.c",
-   "pairing": "open",
-   "orig": "0x23e2",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 184,
-   "callers_orig": "1452,2502",
-   "status": "open"
-  },
-  "f249a": {
-   "file": "printname.c",
-   "pairing": "open",
-   "orig": "0x249a",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 104,
-   "callers_orig": "1452",
-   "status": "open"
-  },
-  "f2502": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x2502",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 160,
-   "callers_orig": "0b6e",
-   "status": "open"
-  },
   "f25a2": {
    "file": "symbols.c",
    "pairing": "open",
@@ -658,6 +628,36 @@
    "size_orig": 130,
    "callers_orig": "26ac",
    "status": "findings"
+  },
+  "put_name": {
+   "file": "printname.c",
+   "pairing": "confirmed",
+   "orig": "0x23e2",
+   "ours": "23e2-249a",
+   "level": "exact",
+   "size_orig": 184,
+   "callers_orig": "1452,2502",
+   "status": "done"
+  },
+  "read_entry_hdr": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x249a",
+   "ours": "249a-2502",
+   "level": "exact",
+   "size_orig": 104,
+   "callers_orig": "1452",
+   "status": "done"
+  },
+  "ldrsym": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x2502",
+   "ours": "2502-25a2",
+   "level": "exact",
+   "size_orig": 160,
+   "callers_orig": "0b6e",
+   "status": "done"
   }
  },
  "findings": [],
@@ -774,6 +774,11 @@
     "D3"
    ],
    "note": "findings (copyname.c): sld pack_name with 14-byte steps (ld tables). Six attempts (d5/pn1..pn7). Frame, loops and calls equal; the padding loop test (cnt > 0) is inverted in the layout: the original has jr gt back to the loop and a separate jump to the zero test, the draft jr le over it. Draft: d5/pn3.c. Accepted as finding."
+  },
+  "read_entry_hdr": {
+   "basis": "owner",
+   "d_classes": [],
+   "note": "owner decision: read_entry_hdr is in symbols.c (first function, address 0x249a), not printname.c. Exact before the move (34 instructions). symbols.c is now in address order (read_entry_hdr, lookup_name, slookup, pslookup, put_sym, put_all, warn_sym_redef, next_entry, f2bf6, f2bfc)."
   }
  },
  "inventory": {

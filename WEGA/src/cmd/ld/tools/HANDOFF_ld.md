@@ -502,3 +502,15 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## copyname.c (2026-10-29)
 
 - copyname.c created: unpack_run (f22e8, sld unpack_run, exact; 14-byte entries, no cmpmode branch, frame with spares int spare1, spare2 before ch) and pack_name (f2360, sld pack_name, finding: the padding loop branch is inverted in the layout; draft d5/pn3.c, six attempts).
+
+## printname.c (2026-10-29)
+
+- printname.c created: put_name (f23e2), sld put_name with stderr (putc macro in the form of warn_sym_redef, fprintf for the dots), frame with spares; exact (65 instructions). pnflag defined here, nlflag in ld.h.
+
+## read_entry_hdr (2026-10-29)
+
+- f249a in printname.c (module of the assignment): sld read_entry_hdr, nonsegmented part (14-byte entries). Exact (34 instructions) with frame layout char cnt, two int spares, end. sld has the function in symbols.c; the module assignment (guess in assigned.txt) should be checked by the owner.
+
+## ldrsym (2026-10-29)
+
+- f2502 is sld ldrsym (symbols.c), exact (50 instructions). The parameter order is (a, x, v, c): the original takes the char c from r3 and the long v from rr4; x is not used in the body (role unknown). Placed in symbols.c between read_entry_hdr and lookup_name (address order).

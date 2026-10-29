@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 24 |
-| open | 40 |
+| confirmed | 27 |
+| open | 37 |
 
 | Difference class | Count |
 |---|---|
@@ -53,9 +53,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1ce2 | - | 0x1ce2 | open | open |  |  |  |
 | f1f64 | - | 0x1f64 | open | open |  |  |  |
 | f221e | 221e-226e | 0x221e | open | exact | read by hand |  | exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf. |
-| f23e2 | - | 0x23e2 | open | open |  |  |  |
-| f249a | - | 0x249a | open | open |  |  |  |
-| f2502 | - | 0x2502 | open | open |  |  |  |
 | f25a2 | - | 0x25a2 | open | open |  |  |  |
 | f26e8 | - | 0x26e8 | open | open |  |  |  |
 | f2766 | - | 0x2766 | open | open |  |  |  |
@@ -73,6 +70,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | get | 1c6c-1ce2 | 0x1c6c | confirmed | findings | read by hand | D4 | findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c. |
 | half | 1c5a-1c6c | 0x1c5a | confirmed | exact |  |  |  |
 | high_byte | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
+| ldrsym | 2502-25a2 | 0x2502 | confirmed | exact |  |  |  |
 | lookup_name | 25dc-26ac | 0x25dc | confirmed | findings | read by hand | D3 | findings (symbols.c): sld lookup_name with ld names (cursym, nlflag, lnbuf, local, hshtab). Hash modulus 0x0923 in ld (sld 0x0ffa). Six attempts: the original keeps start (r11) and end (r10) in registers and slot, cur, rec in the frame or scratch; the draft has start and end in the frame and the loop test differs (cp r6,frame). Draft: d5/ln1.c. Accepted as finding. |
 | mget | 1a9a-1b0a | 0x1a9a | confirmed | exact | read by hand |  | exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n)). |
 | mput | 1b0a-1b38 | 0x1b0a | confirmed | exact |  |  |  |
@@ -82,7 +80,9 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | pslookup | 26ca-26e8 | 0x26ca | confirmed | exact |  |  |  |
 | put_all | 282e-2862 | 0x282e | confirmed | exact |  |  |  |
 | put_int_buf | 226e-229c | 0x226e | confirmed | exact |  |  |  |
+| put_name | 23e2-249a | 0x23e2 | confirmed | exact |  |  |  |
 | put_sym | 27be-282e | 0x27be | confirmed | findings | read by hand | D3 | findings (symbols.c): sld put_sym without the struct copy: ld writes the symbol itself (mput(a, p, 14)) and has no nwsym count. Seven attempts (d5/ps1..ps7). Frame size 16 matches with two spares (ps4). Differences: swap_pair gets b from r6 in the original and from the frame here; the position of cnt (frame 7 in the original, 9 here). Draft: d5/ps4.c. Accepted as finding. |
+| read_entry_hdr | 249a-2502 | 0x249a | confirmed | exact |  |  | owner decision: read_entry_hdr is in symbols.c (first function, address 0x249a), not printname.c. Exact before the move (34 instructions). symbols.c is now in address order (read_entry_hdr, lookup_name, slookup, pslookup, put_sym, put_all, warn_sym_redef, next_entry, f2bf6, f2bfc). |
 | report_error | 1e86-1f22 | 0x1e86 | confirmed | exact |  |  |  |
 | sig_handler | 0042-009c | 0x0042 | open | exact | read by hand |  | exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink("l.out"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones. |
 | slookup | 26ac-26ca | 0x26ac | confirmed | exact |  |  |  |
