@@ -20,7 +20,7 @@
 108e  f108e  120e    384  045e             proven    open
 120e  f120e  12a8    154  108e             proven    done
 12a8  f12a8  13ca    290  108e             proven    open
-13ca  f13ca  1452    136  045e             proven    open
+13ca  f13ca  1452    136  045e             proven    done
 1452  f1452  172e    732  13ca             proven    open
 172e  f172e  194a    540  1452             proven    open
 194a  f194a  1a12    200  045e             proven    open
@@ -56,7 +56,7 @@
 294e  f294e  29d6    136  -                proven    open
 29d6  f29d6  2aa6    208  0b6e,282e        proven    open
 2aa6  f2aa6  2b04     94  0b6e,282e        proven    findings
-2b04  f2b04  2b3a     54  172e             proven    open
+2b04  f2b04  2b3a     54  172e             proven    done
 2b3a  f2b3a  2b92     88  -                proven    open
 2b92  f2b92  2bf6    100  -                proven    open
 2bf6  f2bf6  2bfc      6  -                proven    done

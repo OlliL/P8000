@@ -531,3 +531,11 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## enter (2026-10-29): finding
 
 - f26e8 is sld enter (symbols.c), finding: 40 instructions, one store pair differs (register reload of r). Five attempts (d5/en1..en5). Table size 0x0923 and no sseg store.
+
+## index16 (2026-10-29)
+
+- f2b04 is sld index16 (symbols.c), exact (19 instructions, one spare int). ld has two parts: a static table of 0x258 entries at 0x1102 (14 byte entries), then the table at symtab. v069c (word at 0x069c) is the end of the static part, name open. Same as the static table of table16_entry (f29d6, still open).
+
+## load2arg and ld.c order (2026-10-29)
+
+- f13ca is sld load2arg (ld.c), exact (47 instructions): the archive branch calls mkfsym(archdr.aname) before load2(*lp + 13); load2 takes only the long argument here (the second argument of the draft was wrong). libp is the word at 0x0070 (was v0070, now long *libp; the size stays 2 bytes). ld.c functions are now in address order (sig_handler ... flush_buffer; load2arg at 13ca).

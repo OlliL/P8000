@@ -189,16 +189,6 @@
    "callers_orig": "108e",
    "status": "open"
   },
-  "f13ca": {
-   "file": "ld.c",
-   "pairing": "open",
-   "orig": "0x13ca",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 136,
-   "callers_orig": "045e",
-   "status": "open"
-  },
   "f1452": {
    "file": "ld.c",
    "pairing": "open",
@@ -287,16 +277,6 @@
    "level": "open",
    "size_orig": 208,
    "callers_orig": "0b6e,282e",
-   "status": "open"
-  },
-  "f2b04": {
-   "file": "symbols.c",
-   "pairing": "open",
-   "orig": "0x2b04",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 54,
-   "callers_orig": "172e",
    "status": "open"
   },
   "f2b3a": {
@@ -658,6 +638,26 @@
    "size_orig": 126,
    "callers_orig": "-",
    "status": "findings"
+  },
+  "index16": {
+   "file": "symbols.c",
+   "pairing": "confirmed",
+   "orig": "0x2b04",
+   "ours": "2b04-2b3a",
+   "level": "exact",
+   "size_orig": 54,
+   "callers_orig": "172e",
+   "status": "done"
+  },
+  "load2arg": {
+   "file": "ld.c",
+   "pairing": "confirmed",
+   "orig": "0x13ca",
+   "ours": "13ca-1452",
+   "level": "exact",
+   "size_orig": 136,
+   "callers_orig": "045e",
+   "status": "done"
   }
  },
  "findings": [],

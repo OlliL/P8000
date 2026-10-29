@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 31 |
-| open | 33 |
+| confirmed | 33 |
+| open | 31 |
 
 | Difference class | Count |
 |---|---|
@@ -47,7 +47,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f108e | - | 0x108e | open | open |  |  |  |
 | f120e | - | 0x120e | open | open |  |  |  |
 | f12a8 | - | 0x12a8 | open | open |  |  |  |
-| f13ca | - | 0x13ca | open | open |  |  |  |
 | f1452 | - | 0x1452 | open | open |  |  |  |
 | f172e | - | 0x172e | open | open |  |  |  |
 | f194a | - | 0x194a | open | open |  |  |  |
@@ -57,7 +56,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f282e | - | 0x282e | open | open |  |  |  |
 | f294e | - | 0x294e | open | open |  |  |  |
 | f29d6 | - | 0x29d6 | open | open |  |  |  |
-| f2b04 | - | 0x2b04 | open | open |  |  |  |
 | f2b3a | - | 0x2b3a | open | open |  |  |  |
 | f2b92 | - | 0x2b92 | open | open |  |  |  |
 | f2bf6 | 2bf6-2bfc | 0x2bf6 | confirmed | exact |  |  |  |
@@ -67,8 +65,10 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | get | 1c6c-1ce2 | 0x1c6c | confirmed | findings | read by hand | D4 | findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c. |
 | half | 1c5a-1c6c | 0x1c5a | confirmed | exact |  |  |  |
 | high_byte | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
+| index16 | 2b04-2b3a | 0x2b04 | confirmed | exact |  |  |  |
 | ldrsym | 2502-25a2 | 0x2502 | confirmed | exact |  |  |  |
 | limit_msg | 2c02-2c20 | 0x2c02 | confirmed | exact |  |  |  |
+| load2arg | 13ca-1452 | 0x13ca | confirmed | exact |  |  |  |
 | lookup_name | 25dc-26ac | 0x25dc | confirmed | findings | read by hand | D3 | findings (symbols.c): sld lookup_name with ld names (cursym, nlflag, lnbuf, local, hshtab). Hash modulus 0x0923 in ld (sld 0x0ffa). Six attempts: the original keeps start (r11) and end (r10) in registers and slot, cur, rec in the frame or scratch; the draft has start and end in the frame and the loop test differs (cp r6,frame). Draft: d5/ln1.c. Accepted as finding. |
 | mget | 1a9a-1b0a | 0x1a9a | confirmed | exact | read by hand |  | exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n)). |
 | mkfsym | 25a2-25dc | 0x25a2 | confirmed | exact |  |  |  |

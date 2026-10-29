@@ -300,6 +300,18 @@ register struct symbol *p;
 /* warn_sym_redef: warn that a symbol is redefined in an archive (0x2862..0x294e of /bin/ld). The (char) casts give the
    sign extension of the original, whose stdio had char *_ptr (the header of src/head has unsigned char *) */
 
+/* index16: index of an entry of the symbol table (sld index16; 0x2b04..0x2b3a of /bin/ld). ld has a static part of 0x258
+   entries at 0x1102 in front of the table at symtab (14 byte entries); v069c is the end of the static part (name open) */
+index16(x)
+struct symbol *x;
+{
+	int spare;
+
+	if (x < v069c)
+		return ((int)x - 0x1102) / 14;
+	return ((int)x - (int)symtab) / 14 + 0x258;
+}
+
 f2bf6()
 {
 	v067c++;
