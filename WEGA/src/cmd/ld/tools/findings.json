@@ -93,11 +93,11 @@
    "file": "ld.c",
    "pairing": "open",
    "orig": "0x050c",
-   "ours": "-",
-   "level": "open",
+   "ours": "050c-057c",
+   "level": "exact",
    "size_orig": 112,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done"
   },
   "f057c": {
    "file": "ld.c",
@@ -291,13 +291,13 @@
   },
   "f1b38": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x1b38",
-   "ours": "-",
-   "level": "open",
+   "ours": "1b38-1c5a",
+   "level": "findings",
    "size_orig": 290,
    "callers_orig": "13ca,1452,1c6c,1ce2,1f64",
-   "status": "open"
+   "status": "findings"
   },
   "f1c5a": {
    "file": "ld.c",
@@ -311,13 +311,13 @@
   },
   "f1c6c": {
    "file": "ld.c",
-   "pairing": "open",
+   "pairing": "confirmed",
    "orig": "0x1c6c",
-   "ours": "-",
-   "level": "open",
+   "ours": "1c6c-1ce2",
+   "level": "findings",
    "size_orig": 118,
    "callers_orig": "172e,1a9a,1ce2",
-   "status": "open"
+   "status": "findings"
   },
   "f1ce2": {
    "file": "ld.c",
@@ -661,7 +661,7 @@
   "f226e": {
    "basis": "read",
    "d_classes": [],
-   "note": "exact (2026-10-29, fifth attempt): char c (second argument, r7) and register pointer p (r6 -> r14); struct _iobuf { int _x; int _cnt; char *_ptr; } (the displacements of the original: cnt at 2, ptr at 4). The struct member _x is a name guess; the layout is what matters."
+   "note": "exact (2026-10-29, fifth attempt): char c (second argument, r7) and register pointer p (r6 -> r14); struct buf { int _x; int _cnt; char *_ptr; } (the displacements of the original: cnt at 2, ptr at 4). The struct member _x is a name guess; the layout is what matters."
   },
   "f1b0a": {
    "basis": "read",
@@ -676,12 +676,12 @@
   "f229c": {
    "basis": "read",
    "d_classes": [],
-   "note": "exact (2026-10-29, fourth attempt): struct _iobuf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets."
+   "note": "exact (2026-10-29, fourth attempt): struct buf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets."
   },
   "f221e": {
    "basis": "read",
    "d_classes": [],
-   "note": "exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct _iobuf."
+   "note": "exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf."
   },
   "f1a9a": {
    "basis": "read",
@@ -699,6 +699,26 @@
     "D3"
    ],
    "note": "findings (ld.c): checked long sum of two unsigned parameters, error(1, p1) when the sum is 0x10000 or more, return of the low word. Three attempts: plain sum (int addition, wrong), signed long (addl needs the casts), casts (long). The instructions are equal except two reloads: the original loads p3 and p2 from the frame after the spill (ld r3,%0004(r15)) although they are in r7 and r6 (D3, redundant reloads). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c"
+  },
+  "f050c": {
+   "basis": "read",
+   "d_classes": [],
+   "note": "exact (2026-10-29, second attempt): append entry to the table tab (22-byte records, index ntab): t0 = x, t1 = v44a6, t2 = v0070 (data), t3 = y, t4..t10 = v66d0, v66d2, v66d4, v66c2, v66c6, v66cc, v66ce. One unused int local. No caller in the table (its callers are through the table or unknown). Globals: ntab (bss 0abe), tab (0ac0), the v-names are guesses; v0070 is in the data (step 5b)."
+  },
+  "f1b38": {
+   "basis": "read",
+   "d_classes": [
+    "D3",
+    "D16"
+   ],
+   "note": "findings (ld.c): sld dseek(sp, v, n) of ld. Six attempts: the frame and the register assignment (obj r14, cur r13) are right; the long compare of bno with hi is in rr4 in the original and in rr2 here (register choice, D3-like); two tests of the page pointer are loaded through r2 in the original (test @r2) and direct here (test @r13). The bno temporary (attempt 4) made it worse. Draft (attempt 3): /mnt/share/cvs/P8000/tmp/tmp/d5/f1b38_v3.c. Accepted into ld.c as a finding."
+  },
+  "f1c6c": {
+   "basis": "read",
+   "d_classes": [
+    "D4"
+   ],
+   "note": "findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c."
   }
  },
  "inventory": {

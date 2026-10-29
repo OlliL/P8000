@@ -1,3 +1,36 @@
+struct pghdr {
+	int nuser;
+	int bno;
+};
+
+struct stream {
+	int *ptr;
+	int bno;
+	int nibuf;
+	int size;
+	struct pghdr *pno;
+};
+
+struct page {
+	int nuser;
+	int bno;
+	int nibuf;
+	int buff[256];
+};
+
+struct page page[2];
+struct pghdr fpage;
+int infil;
+
+struct tent {
+	int t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
+};
+
+int ntab;
+struct tent tab[1];
+int v44a6, v0070;
+int v66c2, v66c6, v66cc, v66ce, v66d0, v66d2, v66d4;
+
 char *v007a;
 int v007c, v0080;
 int v669a, v66a4;
@@ -5,11 +38,11 @@ int v669a, v66a4;
 int *v1030;
 int v1034, v1036;
 
-struct _iobuf {
-	int _fd;
-	int _cnt;
-	char *_ptr;
-	char _buf[256];
+struct buf {
+	int fildes;
+	int nleft;
+	char *xnext;
+	char iobuf[256];
 };
 
 f1c5a(x)
@@ -69,11 +102,11 @@ char *t, *s;
 
 f226e(c, p)
 char c;
-register struct _iobuf *p;
+register struct buf *p;
 {
-	*p->_ptr++ = c;
-	p->_cnt--;
-	if (p->_cnt <= 0)
+	*p->xnext++ = c;
+	p->nleft--;
+	if (p->nleft <= 0)
 		f229c(p);
 }
 
@@ -93,32 +126,32 @@ int q, *p, n;
 }
 
 f229c(p)
-register struct _iobuf *p;
+register struct buf *p;
 {
 	int spare1;
 
 	register n;
 
-	n = p->_ptr - p->_buf;
+	n = p->xnext - p->iobuf;
 	if (n > 0) {
-		if (write(p->_fd, p->_buf, n) != n)
+		if (write(p->fildes, p->iobuf, n) != n)
 			f1e86(2, "x");
 	}
-	p->_ptr = p->_buf;
-	p->_cnt = 256;
+	p->xnext = p->iobuf;
+	p->nleft = 256;
 }
 
 f221e(x, p)
 int x;
-register struct _iobuf *p;
+register struct buf *p;
 {
-	*p->_ptr++ = x >> 8;
-	p->_cnt--;
-	if (p->_cnt <= 0)
+	*p->xnext++ = x >> 8;
+	p->nleft--;
+	if (p->nleft <= 0)
 		f229c(p);
-	*p->_ptr++ = x;
-	p->_cnt--;
-	if (p->_cnt <= 0)
+	*p->xnext++ = x;
+	p->nleft--;
+	if (p->nleft <= 0)
 		f229c(p);
 }
 
@@ -171,5 +204,93 @@ f0042()
 	if (v007c)
 		unlink(v007a);
 	_exit(v007c);
+}
+
+f050c(x, y)
+int x, y;
+{
+	int spare;
+
+	register struct tent *e;
+
+	e = &tab[ntab++];
+	e->t0 = x;
+	e->t1 = v44a6;
+	e->t2 = v0070;
+	e->t3 = y;
+	e->t4 = v66d0;
+	e->t5 = v66d2;
+	e->t6 = v66d4;
+	e->t7 = v66c2;
+	e->t8 = v66c6;
+	e->t9 = v66cc;
+	e->t10 = v66ce;
+}
+
+f1b38(sp, v, n)
+struct stream *sp;
+long v;
+int n;
+{
+	int spare1, spare2;
+	int nw;
+	long hi, lo;
+	register struct stream *obj;
+	register struct page *cur;
+
+	hi = (v >> 8) & 0xffffff;
+	lo = v & 0xff;
+	obj = sp;
+	obj->pno->nuser -= 1;
+	cur = &page[0];
+	if ((long)cur->bno == hi)
+		goto common;
+	cur = &page[1];
+	if ((long)cur->bno == hi)
+		goto common;
+	if (cur->nuser) {
+		cur = &page[0];
+		if (cur->nuser) {
+			f1e86(2, "No pages");
+			goto common;
+		}
+	}
+	if (page[0].nuser == 0 && page[1].nuser == 0 && page[0].bno < page[1].bno)
+		cur = &page[0];
+	cur->bno = hi;
+	lseek(infil, (v & 0xffffff00L) << 1, 0);
+	nw = read(infil, cur->buff, 0x200) >> 1;
+	if (nw < 0)
+		nw = 0;
+	cur->nibuf = nw;
+common:
+	cur->nuser += 1;
+	obj->bno = hi;
+	obj->pno = (struct pghdr *)cur;
+	obj->ptr = (int *)((char *)cur->buff + (lo << 1));
+	if (n != -1)
+		obj->size = f1c5a(n);
+	obj->nibuf = cur->nibuf - (int)lo;
+	if (obj->nibuf <= 0)
+		obj->size = 0;
+}
+
+f1c6c(p)
+register struct stream *p;
+{
+	int spare;
+
+	if (--p->nibuf < 0) {
+		f1b38(p, -1, (long)(p->bno + 1) << 8);
+		--p->nibuf;
+	}
+	if (--p->size <= 0) {
+		if (p->size < 0)
+			f1e86(2, "x");
+		fpage.nuser++;
+		p->pno->nuser--;
+		p->pno = &fpage;
+	}
+	return(*p->ptr++);
 }
 

@@ -8,7 +8,7 @@
 009c  f009c  0370    724  0000             proven    open
 0370  f0370  045e    238  -                proven    open
 045e  f045e  050c    174  009c             proven    open
-050c  f050c  057c    112  -                proven    open
+050c  f050c  057c    112  -                proven    done
 057c  f057c  0608    140  -                proven    open
 0608  f0608  0714    268  009c             proven    open
 0714  f0714  07b2    158  -                proven    open
@@ -28,9 +28,9 @@
 1a74  f1a74  1a9a     38  12a8             proven    done
 1a9a  f1a9a  1b0a    112  13ca,1ce2,1f64,249a proven    done
 1b0a  f1b0a  1b38     46  108e,27be        proven    done
-1b38  f1b38  1c5a    290  13ca,1452,1c6c,1ce2,1f64 proven    open
+1b38  f1b38  1c5a    290  13ca,1452,1c6c,1ce2,1f64 proven    findings
 1c5a  f1c5a  1c6c     18  1452,1b38        proven    done
-1c6c  f1c6c  1ce2    118  172e,1a9a,1ce2   proven    open
+1c6c  f1c6c  1ce2    118  172e,1a9a,1ce2   proven    findings
 1ce2  f1ce2  1e86    420  0608,13ca        proven    open
 1e86  f1e86  1f22    156  009c,089a,0d9c,108e,120e,1452,172e,1a74,1b38,1c6c,1ce2,1f22,1f64,229c,23e2,2502,29d6 proven    open
 1f22  f1f22  1f64     66  172e             proven    done

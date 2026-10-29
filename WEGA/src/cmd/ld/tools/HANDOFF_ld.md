@@ -269,7 +269,7 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - Pattern check (2026-10-29): the char parameter is NOT the problem. The old cc uses the argument register directly in
   the same way as our compiler (test: char c in r6/r7, ldb @r2,rl6). The frame differences in f26ac, f26ca and f226e
   are unused 2-byte locals (spare). f26ac and f26ca are now exact with `int spare;` (accepted, symbols.c). f226e:
-  with `register struct _iobuf *p` the argument order is right, but the original frame (6 bytes: slot 0 unused, c at 2,
+  with `register struct buf *p` the argument order is right, but the original frame (6 bytes: slot 0 unused, c at 2,
   saved r14 at 4) is one register parameter slot less than ours when p is register: open for the second pass.
 
 ## Step 5: f1b0a (2026-10-29)
@@ -303,7 +303,7 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - The parameter order (the first declared parameter takes the last argument register) holds for f1b0a and f1f22,
   both exact now. f226e has (c, p) with c the second argument, the same rule.
 - f229c exact (ld.c, fourth attempt): the buffer flush (write of the used part, reset of pointer and count).
-  One struct _iobuf for ld.c { int _fd; int _cnt; char *_ptr; char _buf[256]; }: f226e (offsets 2 and 4) uses the same
+  One struct buf for ld.c { int _fd; int _cnt; char *_ptr; char _buf[256]; }: f226e (offsets 2 and 4) uses the same
   layout. accept_ld.py no longer writes a struct definition whose tag is already in the file (it was written twice).
 - f221e exact at the first attempt (ld.c): two-byte put into the buffer (high byte, low byte), parameter order (x, p).
 - Next candidates (ld.c): f1a9a uses the bss variables 1030, 1034, 1036 (a buffer read, not yet named), f089a (long
@@ -318,3 +318,60 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - f089a findings (ld.c): checked long sum (error 1 when the sum is 0x10000 or more); three attempts; the difference is
   two reloads of the parameters from the frame (D3). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c. Its file
   is ld.c, not accepted into the file (finding).
+- f050c exact at attempt 2 (ld.c): appends an entry (22 bytes) to tab at index ntab (bss 0abe, 0ac0). One unused int.
+  v0070 is a data variable (data offset 0x70), for step 5b.
+- Next (not started): f1c6c (118 bytes, ld.c) is a buffered word reader on a struct with a different layout from
+  buf: count at 4 and 6, a pointer to a pointer at 8, refill through f1b38. Decide the input struct from its callers
+  (f1a9a, f1ce2) first. f1a12 (98 bytes) is a file copy with lseek/read/close and the byte put f226e.
+
+## f1c6c: input stream struct (2026-10-29)
+
+- sld `struct buf` (ld.h: fildes, nleft, xnext, iobuf[256]) has the layout of our `struct buf` (f229c, f226e,
+  f221e): offsets 0, 2, 4 and the buffer at 6. Same type, consistent.
+- sld `struct stream` (ld.h: sres, bno, nibuf, ptr, size, pno) does NOT match f1c6c (sres comes first).
+- Plexus cmd/ld/ld.z8000.c has `struct stream { unsigned *ptr; int bno; int nibuf; int size; struct page *pno; }`
+  (private reference, layout only, no code copied): offsets 0 ptr, 2 bno, 4 nibuf, 6 size, 8 pno. This matches f1c6c:
+  ptr += 2 (inc @r14,#2), nibuf-- (4), size-- (6), and pno->nuser-- (dec @r2) with pno = &fpage (0x102c) on refill.
+- Proposed struct for f1c6c: struct stream { int *ptr; int bno; int nibuf; int size; struct pghdr *pno; } with sld's
+  struct pghdr { int nuser; int bno; }. The refill call f1b38 has a long argument (rr4 from the byte count shifted by 8):
+  its prototype is the next question.
+- Naming (2026-10-29, owner): the output buffer is sld's `struct buf` with the member names of sld ld.h (fildes,
+  nleft, xnext, iobuf). Types: char * and char iobuf[256] (the code uses byte loads; sld uses int * and int[256]).
+  Checked after the rename: f229c, f226e, f221e still OK.
+
+## f1c6c (2026-10-29): open, needs f1b38
+
+- Struct (sld naming): `struct stream { int *ptr; int bno; int nibuf; int size; struct pghdr *pno; }`, with sld's
+  `struct pghdr { int nuser; int bno; }` and `struct pghdr fpage` (bss 0x102c; pno->nuser counts the users).
+- Draft (/mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_try2.c): with `register struct stream *p` the body is equal except
+  the frame (8 against 6: the original keeps the parameter's home slot) and the arguments of the refill call.
+- The refill call `f1b38` has five argument registers: r3 = -1, rr4 = (long)(bno + 1) << 8, r6 not set at the call
+  (stale), r7 = the stream. f1b38 saves r3..r7 with `ldm @r15,r3,#5`. Its prototype is the next step (f1b38 is 290 bytes).
+
+## f1b38 (2026-10-29): structure read, no draft yet
+
+- Entry: `sub r15,#28; ldm @r15,r3,#5`: five argument words r3, rr4 (long), r6, r7; r7 is the stream (r14 = r7).
+  The long rr4 is shifted (sral #8) and kept at frame 14 and 18; the cpl of rr4 against it decides the path.
+- Two struct buf instances at 0x0c20 and 0x0e26 (sld: toutb, soutb or doutb ...): the code chooses one (0x0c20 by
+  default, 0x0e26 when the other is not used), tests its state (test @r13) and reads the limits at 0x0c22 and 0x0e28.
+  Error 2 with the message at 0x0506 if the buffer is not in use.
+- Path: lseek (0x48d2) to the position from the long, read 0x200 bytes (0x48f4) into the buffer at offset 6, the count
+  is sra #1 (words), the result is stored at buffer+4 (nleft). Then the word store at the stream pointer and the call
+  f1c5a-like helper at 0x1c5a when the third argument is not -1, then the count update subl.
+- The pieces that need names first: the two buffers (sld names: which is toutb, which soutb), the position global at
+  0x66be (fd of the input?), the offset 0x0c22 and 0x0e28 (buffer limits).
+- Open: the signature (5 args), the choice of buffer, the call of 0x1c5a (f1c5a, exact: (x >> 1) & 0x7fff).
+- f1b38 = sld `dseek(sp, v, n)` (ld.c): page[0] at 0c20, page[1] at 0e26 (struct page 518 bytes: nuser, bno, nibuf,
+  buff[256]), `No pages` error. Attempt 2 (draft /mnt/share/cvs/P8000/tmp/tmp/d5/f1b38_try2.c): register assignment right
+  (obj r14, cur r13: declare obj first). Open: long compare in rr4 (original) against rr2 (ours), frame 24 against 20.
+  Status open (attempt 2 of 6).
+- f1b38 accepted as a FINDING (ld.c, 2026-10-29): six attempts; the frame and the register assignment match, the
+  compare of bno with hi in rr4 vs rr2 and two page tests through r2 do not (D3, D16). Draft: d5/f1b38_v3.c. New
+  rule (HOWTO step 5, item 3): after six attempts the draft is accepted anyway, its diff goes into findings.json.
+- accept_ld.py: option --finding (accepts a non-matching draft and sets status findings).
+- f1c6c accepted as a FINDING (ld.c): the body matches; the parameter home slot (D4) and the argument registers of the
+  call to f1b38 differ. The call differs because the draft is compiled alone and f1b38 is not known there; the whole-file
+  compile (f1b38 before f1c6c, as in the original) decides it. struct stream and page are in ld.c.
+- accept_ld.py (2026-10-29): the globals before a function are taken block by block (blank-line separated), so a
+  declaration after a struct that is already in ld.c is no longer dropped (f1c6c lost `struct pghdr fpage;` that way;
+  added by hand, ld.c compiles).

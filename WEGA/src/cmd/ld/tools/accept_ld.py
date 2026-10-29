@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """accept_ld.py - accept a checked draft into the C file of its module and update the progress files.
 
-Usage: accept_ld.py DRAFT.c ENTRY END NAME
+Usage: accept_ld.py DRAFT.c ENTRY END NAME [--finding]
 
   DRAFT.c  the draft (one function, K&R); it is checked with ldcheck.py first (exactly, without D classes)
   ENTRY    entry address (hex), END its end (hex), NAME the function name the draft defines (f<addr> until named)
@@ -32,7 +32,8 @@ def main():
     draft, entry, end, name = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
     r = subprocess.run([sys.executable, os.path.join(HERE, 'ldcheck.py'), draft, entry, end], capture_output=True, text=True)
     print(r.stdout.strip())
-    if not r.stdout.startswith('OK'):
+    finding = '--finding' in sys.argv
+    if not r.stdout.startswith('OK') and not finding:
         sys.exit(1)
     fil = module_of(int(entry, 16))
     if fil in (None, 'crt0'):
@@ -44,7 +45,8 @@ def main():
     # declarations stay in the function
     head = next(i for i, l in enumerate(lines) if '(' in l and not l.endswith(';') and not l.endswith('{'))
     glob = '\n'.join(lines[:head]).strip('\n')
-    decl = [glob] if glob else []
+    # one block per top-level declaration (separated by an empty line)
+    decl = [b.strip('\n') for b in glob.split('\n\n') if b.strip()]
     body = '\n'.join(lines[head:]).strip('\n') + '\n\n'
     text = body
     src = open(path).read() if os.path.exists(path) else ''
@@ -62,8 +64,9 @@ def main():
         src = src + text
     open(path, 'w').write(src)
     d = json.load(open(os.path.join(HERE, 'findings.json')))
-    d['functions'][name]['status'] = 'done'
-    d['functions'][name]['level'] = 'exact'
+    d['functions'][name]['status'] = 'findings' if finding else 'done'
+    d['functions'][name]['level'] = 'findings' if finding else 'exact'
+    d['functions'][name]['pairing'] = 'confirmed'
     d['functions'][name]['ours'] = '%s-%s' % (entry, end)
     d['functions'][name]['file'] = fil
     json.dump(d, open(os.path.join(HERE, 'findings.json'), 'w'), indent=1)
@@ -72,7 +75,7 @@ def main():
     for l in lines:
         f = l.split()
         if f and f[0] == entry.lower().zfill(4):
-            l = l.rsplit(' ', 1)[0] + ' done'
+            l = l.rsplit(' ', 1)[0] + (' findings' if finding else ' done')
         out.append(l)
     open(os.path.join(HERE, 'own_functions.txt'), 'w').write('\n'.join(out))
     print('accepted %s into %s' % (name, fil))

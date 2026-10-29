@@ -108,7 +108,9 @@ the second pass.
 2. For each function: write K&R C (no prototypes), compile, compare with `strict_audit.py` (frame
    offsets are compared; addresses are masked). Exact: `accept.py` (status `done`). Otherwise
    `firstdiff.py NAME` shows the first differing places with context, `odis.py NAME` the original.
-3. Phase A: at most 6 attempts, then write the diff into `manual_classes` (basis `read`, note) and go on.
+3. Phase A: at most 6 attempts. Then the draft is accepted anyway into the C file, even if it does not match:
+   the diff goes into `findings.json` (`manual_classes`, basis `read`, note, `d_classes`) and the function status
+   becomes `findings`; the function is not left out of the file.
 4. Names: from messages, system calls, strings; Plexus/V7 names where it is the same function.
    External names are significant for 7 characters (`check_names.py`).
 

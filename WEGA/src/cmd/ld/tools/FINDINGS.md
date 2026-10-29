@@ -10,8 +10,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 | Pairing | Count |
 |---|---|
-| confirmed | 11 |
-| open | 51 |
+| confirmed | 13 |
+| open | 49 |
 
 | Difference class | Count |
 |---|---|
@@ -33,7 +33,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f009c | - | 0x009c | open | open |  |  |  |
 | f0370 | - | 0x0370 | open | open |  |  |  |
 | f045e | - | 0x045e | open | open |  |  |  |
-| f050c | - | 0x050c | open | open |  |  |  |
+| f050c | 050c-057c | 0x050c | open | exact | read by hand |  | exact (2026-10-29, second attempt): append entry to the table tab (22-byte records, index ntab): t0 = x, t1 = v44a6, t2 = v0070 (data), t3 = y, t4..t10 = v66d0, v66d2, v66d4, v66c2, v66c6, v66cc, v66ce. One unused int local. No caller in the table (its callers are through the table or unknown). Globals: ntab (bss 0abe), tab (0ac0), the v-names are guesses; v0070 is in the data (step 5b). |
 | f057c | - | 0x057c | open | open |  |  |  |
 | f0608 | - | 0x0608 | open | open |  |  |  |
 | f0714 | - | 0x0714 | open | open |  |  |  |
@@ -53,17 +53,17 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f1a74 | 1a74-1a9a | 0x1a74 | confirmed | exact |  |  |  |
 | f1a9a | 1a9a-1b0a | 0x1a9a | open | exact | read by hand |  | exact (2026-10-29, third attempt): buffer read with refill. Globals v1030 (int *, buffer pointer), v1034 and v1036 (counters, int). The statement order matters: i = n; i >>= 1; r = p; (the form of HOWTO step 7). Three unused int locals (frame 16). |
 | f1b0a | 1b0a-1b38 | 0x1b0a | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): parameter list (q, p, n), register pointer r and counter i (declared in this order), and two unused int locals (spare1, spare2). The parameter order is the same as f1f22 and f1b0a stands for the rule; the register order (r14 then r13) as in f1f22. |
-| f1b38 | - | 0x1b38 | open | open |  |  |  |
+| f1b38 | 1b38-1c5a | 0x1b38 | confirmed | findings | read by hand | D3, D16 | findings (ld.c): sld dseek(sp, v, n) of ld. Six attempts: the frame and the register assignment (obj r14, cur r13) are right; the long compare of bno with hi is in rr4 in the original and in rr2 here (register choice, D3-like); two tests of the page pointer are loaded through r2 in the original (test @r2) and direct here (test @r13). The bno temporary (attempt 4) made it worse. Draft (attempt 3): /mnt/share/cvs/P8000/tmp/tmp/d5/f1b38_v3.c. Accepted into ld.c as a finding. |
 | f1c5a | 1c5a-1c6c | 0x1c5a | confirmed | exact |  |  |  |
-| f1c6c | - | 0x1c6c | open | open |  |  |  |
+| f1c6c | 1c6c-1ce2 | 0x1c6c | confirmed | findings | read by hand | D4 | findings (ld.c): getw-like read of a word from a stream (sld struct stream layout, Plexus-like field order). The body is equal except (1) the parameter home slot: the original spills p (ld @r15,r7), the draft does not (D4); (2) the arguments of the refill call f1b38(p, -1, (long)(bno + 1) << 8): the original passes -1 in r3, the draft in r6, because the callee f1b38 (same file, defined before) fixes the argument registers and the draft is compiled alone. Check in the whole-file compile. Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_v3.c. |
 | f1ce2 | - | 0x1ce2 | open | open |  |  |  |
 | f1e86 | - | 0x1e86 | open | open |  |  |  |
 | f1f22 | 1f22-1f64 | 0x1f22 | confirmed | exact | read by hand |  | exact (2026-10-29, fourth and fifth attempt): parameter list (end, x) and three unused int locals (spare). The parameter order is the one of f1b0a: the first declared parameter takes the last argument register. Frame 18 bytes as the original. |
 | f1f64 | - | 0x1f64 | open | open |  |  |  |
 | f21f2 | 21f2-221e | 0x21f2 | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): for loop, the equal case is the main path (if (*t == *s++) { if (*t++) continue; return(1); } return(0)); parameter list (t, s). The earlier D1/D15 reading was the pointer copy and the branch sense, both resolved by the form. |
-| f221e | 221e-226e | 0x221e | open | exact | read by hand |  | exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct _iobuf. |
-| f226e | 226e-229c | 0x226e | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): char c (second argument, r7) and register pointer p (r6 -> r14); struct _iobuf { int _x; int _cnt; char *_ptr; } (the displacements of the original: cnt at 2, ptr at 4). The struct member _x is a name guess; the layout is what matters. |
-| f229c | 229c-22e8 | 0x229c | open | exact | read by hand |  | exact (2026-10-29, fourth attempt): struct _iobuf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets. |
+| f221e | 221e-226e | 0x221e | open | exact | read by hand |  | exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf. |
+| f226e | 226e-229c | 0x226e | confirmed | exact | read by hand |  | exact (2026-10-29, fifth attempt): char c (second argument, r7) and register pointer p (r6 -> r14); struct buf { int _x; int _cnt; char *_ptr; } (the displacements of the original: cnt at 2, ptr at 4). The struct member _x is a name guess; the layout is what matters. |
+| f229c | 229c-22e8 | 0x229c | open | exact | read by hand |  | exact (2026-10-29, fourth attempt): struct buf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets. |
 | f22e8 | - | 0x22e8 | open | open |  |  |  |
 | f2360 | - | 0x2360 | open | open |  |  |  |
 | f23e2 | - | 0x23e2 | open | open |  |  |  |
