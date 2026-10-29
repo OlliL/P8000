@@ -1358,6 +1358,7 @@ char *name;
 {
 	register char *s;
 	register char *p;
+	register int n;
 	struct {
 		char pad[0x16];
 		long mtime;
@@ -1384,7 +1385,8 @@ char *name;
 				strcpy(libpath, "/z/bin");
 				strcat(libpath, libname);
 			}
-		}
+		} else
+			filname = libname;
 	}
 	if (infil == -1) {
 		infil = open(filname, 0);

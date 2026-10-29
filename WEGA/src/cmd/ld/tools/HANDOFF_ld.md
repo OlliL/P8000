@@ -1017,3 +1017,17 @@ Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamp
   trace (z8k-emu -t, compare the traces of our ld and of /bin/ld on the same input). The byte comparison of the code does
   not show these errors: the findings have 0 unexplained differences, but the findings themselves are not right.
 - Steps 4 and 5 are not closed by this: the correctness of the findings is open.
+
+## Step 6 (corpus test), debugging (2026-10-29): state
+
+- The test runs on the real binary: `/bin/ld` from an alternative root (tmp/tmp/altroot/bin/ld = our binary, lib and usr
+  are links to the original tree), so argv[0] is the same as in the original (pname "ld" in the messages and the
+  rindex result; the first trace differences came from argv[0] "ld_under_test" and were not errors).
+- Trace method: `z8k-emu -t` for both; `tmp/tmp/dclass/cmp_insn.py` compares the executed instructions, and
+  `cmp_trace.py` compares the function sequence. Instruction comparison is only meaningful where the code shape is the
+  same (the findings differ in register use, so it stops at the first such difference).
+- Fixed so far (functional): next_entry (invented range check removed), getfile (filname = libname after a successful
+  library open; the register variable of the original, the code is still a finding: the frame is 6 bytes smaller).
+- Still wrong: the output of `-o t d.o` is partial (256 bytes) and the program loops in finish_output (`for (p = v6bf8;
+  p < areas[1].tend; p++) f221e(...)`): the area bounds from place_sec (finding, 14 bytes larger) are wrong.
+  Next: place_sec, then dseek/load2td/load2 with values, not with instruction order.
