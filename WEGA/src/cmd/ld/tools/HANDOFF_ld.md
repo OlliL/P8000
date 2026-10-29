@@ -539,3 +539,7 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 ## load2arg and ld.c order (2026-10-29)
 
 - f13ca is sld load2arg (ld.c), exact (47 instructions): the archive branch calls mkfsym(archdr.aname) before load2(*lp + 13); load2 takes only the long argument here (the second argument of the draft was wrong). libp is the word at 0x0070 (was v0070, now long *libp; the size stays 2 bytes). ld.c functions are now in address order (sig_handler ... flush_buffer; load2arg at 13ca).
+
+## getfile (2026-10-29): finding
+
+- f1ce2 is sld getfile (ld.c), finding (120 instructions, equal count, draft d5/gf4.c). libname is the data string "/lib/libxxxxxxxxxxx" (0x156). Open points: three register variables, strncpy count, last branch, the reloc stream address (0x1042 as pno, step 5b).

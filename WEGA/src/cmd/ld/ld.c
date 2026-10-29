@@ -18,6 +18,10 @@ char tmpname[] = "/tmp/ldaXXXXX";
 int v669a, v66a4;
 
 struct stream text;
+struct stream reloc;
+char libname[] = "/lib/libxxxxxxxxxxx";
+char libpath[20];
+int v66b4;
 
 struct buf toutb;
 unsigned char v67e4[256];
@@ -309,6 +313,68 @@ register struct stream *p;
 	return(*p->ptr++);
 }
 
+getfile(name)
+char *name;
+{
+	register char *s;
+	register char *p;
+	struct {
+		char pad[0x16];
+		long mtime;
+		long ctime;
+	} st;
+
+	s = name;
+	infil = -1;
+	archdr.aname[0] = 0;
+	filname = name;
+	if (s[0] == '-' && s[1] == 'l') {
+		filname = libpath;
+		if (s[2] == 0)
+			s = "-lc";
+		p = rindex(libname, '/') + 4;
+		strncpy(p, s + 2, 0x168 - (int)p);
+		strcat(p, v66b4 ? ".a" : ".8");
+		infil = open(libname, 0);
+		if (infil == -1) {
+			strcpy(libpath, "/usr");
+			strcat(libpath, libname);
+			infil = open(libpath, 0);
+			if (infil == -1) {
+				strcpy(libpath, "/z/bin");
+				strcat(libpath, libname);
+			}
+		}
+	}
+	if (infil == -1) {
+		infil = open(filname, 0);
+		if (infil < 0)
+			report_error(2, "cannot open");
+	}
+	page[1].bno = -1;
+	page[0].bno = -1;
+	page[1].nuser = 0;
+	page[0].nuser = 0;
+	reloc.pno = (struct pghdr *)&fpage;
+	text.pno = (struct pghdr *)&fpage;
+	fpage.nuser = 2;
+	dseek(&text, 0L, 2);
+	if (text.size <= 0)
+		report_error(2, "Premature EOF");
+	if (get(&text) != -155)
+		return 0;
+	dseek(&text, 1L, 0x1a);
+	if (text.size <= 0)
+		return 1;
+	mget(&archdr, 0x1a);
+	if (strncmp(archdr.aname, "__.SYMDEF", 14))
+		return 1;
+	fstat(infil, &st);
+	if (st.mtime > archdr.atime)
+		return 3;
+	return 2;
+}
+
 /* report_error: print the message with the file name and stop when the level is above 1 (0x1e86..0x1f22 of /bin/ld) */
 report_error(level, msg, a, b, c, d, e)
 int level;
@@ -408,3 +474,6 @@ register struct buf *a;
 	a->xnext = a->iobuf;
 	a->nleft = 0x100;
 }
+
+/* getfile: open an input file, searching the library directories (sld getfile; 0x1ce2..0x1e86 of /bin/ld; finding:
+   three registers in the original, the count of strncpy and the last branch differ) */
