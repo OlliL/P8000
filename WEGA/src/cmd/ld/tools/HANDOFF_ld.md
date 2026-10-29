@@ -1031,3 +1031,14 @@ Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamp
 - Still wrong: the output of `-o t d.o` is partial (256 bytes) and the program loops in finish_output (`for (p = v6bf8;
   p < areas[1].tend; p++) f221e(...)`): the area bounds from place_sec (finding, 14 bytes larger) are wrong.
   Next: place_sec, then dseek/load2td/load2 with values, not with instruction order.
+
+## place_sec (2026-10-29): corrected, next error in the corpus run
+
+- place_sec rewritten from the disassembly (scratch tmp/tmp/gf/ps_2.c, installed in ld.c). The bug was the compare: the
+  original compares the addresses unsigned (`jr ule`, `jr nc`), ours compared them as signed ints, so an area end of
+  0x8602 counted as negative and "bss area wrap around" was reported. Now the areas of d.o are sane (ttotal 0x100,
+  dtotal 2, btotal 0; areas 0..3 with tstart/tsize/tend consistent).
+- The finish_output loop no longer runs forever. Next error for `-o t d.o` (test object d.o defines _bc (data) and _d1):
+  "_bc ld: d.o: - Multiply defined" (the symbol is entered twice: read_symbols / load2 / ldrsym path). Next: the symbol
+  path (read_symbols finding, load2 finding).
+- Instrumented copy for value checks: tmp/tmp/dbg (prints the totals and areas after place_sec; not in the repo).

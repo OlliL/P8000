@@ -708,11 +708,10 @@ dolayout:
 
 place_sec()
 {
-	int spare1, spare2, spare3;
 	int i;
 	register int j;
 	register struct areas *q;
-	register int r8;
+	register unsigned r8;
 
 	if (iflag)
 		areas[1].kind = 4;
@@ -747,14 +746,14 @@ place_sec()
 		r8 = areas[q->kind].tend;
 		switch (tab42b4[j]) {
 		case 't':
-			if (q->tsize > secorg[j])
+			if ((unsigned)q->tsize > (unsigned)secorg[j])
 				report_error(1, "-t%c: top address too low", *secnam[j]);
 			r8 = (secorg[j] - q->tsize) & 0xff00;
 			q->tsize = (q->tsize + 255) & 0xff00;
 			break;
 		case 'b':
 			r8 = (secorg[j] + 255) & 0xff00;
-			if (r8 != secorg[j])
+			if (r8 != (unsigned)secorg[j])
 				fprintf(stderr, "%s: -b%c:warning, %s top or bottom rounded to 0x%x\n", pname, *secnam[j], secnam[j], r8);
 			break;
 		}
@@ -765,11 +764,11 @@ place_sec()
 				q->tend = (q->tend + 255) & 0xff00;
 		}
 		q->tsize = q->tend - r8;
-		if (r8 > q->tend)
+		if (r8 > (unsigned)q->tend)
 			report_error(1, "%s area wrap around", secnam[j]);
 		if (x66b8 == 0) {
 			for (i = iflag ? 2 : 1; i < j; i++) {
-				if (r8 < areas[i].tend && q->tend > areas[i].tstart)
+				if (r8 < (unsigned)areas[i].tend && (unsigned)q->tend > (unsigned)areas[i].tstart)
 					report_error(1, "%s and %s areas overlap", secnam[j], secnam[i]);
 			}
 		}
