@@ -1,5 +1,5 @@
 # module  version  programs that contain this version (made by host/tools/unlink.py)
-cnvt       0_1   cc scc size strip
+cnvt       0_1   cc scc size strip ld
 cnvt       0_2  ranlib codgen scodgen popt
 doprnt     0_1   size
 doprnt     0_2   strip

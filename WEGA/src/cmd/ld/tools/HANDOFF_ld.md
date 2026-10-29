@@ -175,3 +175,11 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - unlink.py fix (2026-10-29): data symbols of a shipped member are named only when the member has data.
 - swap renumbered (owner, 2026-10-29): old 0_2 is now swap 0_1 (strip, size, ld), old 0_3 is now swap 0_2 (ranlib).
   Users updated: size/Makefile, strip/Makefile, ranlib/Makefile, strip.link, ranlib.link. size.link and ld.link say 0_1.
+
+## Data sizes of the ld libc part (2026-10-29)
+
+- Set from data references in the code (ld data is 2748 bytes at 0..0abc, separate I and D):
+  cnvt 12 at 099a (refs 099a and 09a4; cut identical to cnvt 0_1), malloc 12 at 09a6, mktemp 2 at 09b2, doprnt 124 at 0868,
+  filbuf 20 at 08e4, doscan 160 at 07c8, brk 2 at 0ab6 (ref 0ab6), cerror 4 at 0ab8 (refs 0ab8, 0aba; ends at 0abc).
+- Everything else has no data (no data references, and the shipped members have data 0 except brk and cerror).
+- VERSIONS: cnvt 0_1 is also used by ld.

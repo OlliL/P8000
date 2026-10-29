@@ -17,7 +17,7 @@ filbuf     old     3ece 3fb0  20 dstart=08e4  __filbuf=3ece
 flsbuf     old     3fb0 4192  0     __flsbuf=3fb0 _fflush=4096 __cleanup=40f4 _fclose=4114
 __callex    shipped 4192 4198  0
 cuexit     shipped 4198 41a2  0
-cnvt       old     41a2 4296  0     __cnvt=41a2
+cnvt       old     41a2 4296  12 dstart=099a  __cnvt=41a2
 decimal    shipped 4296 4322  0
 length     old     4322 4340  0     __length=4322
 malloc     old     4340 455a  12 dstart=09a6  _malloc=4340 _free=449c
@@ -33,7 +33,7 @@ strcpy     old     4714 473a  0     _strcpy=4714
 strncpy    old     473a 4786  0     _strncpy=473a
 swap       old     4786 4828  0     _swap=4786 _longswap=47ac
 access     shipped 4828 4838  0
-brk        shipped 4838 486e  0
+brk        shipped 4838 486e  2 dstart=0ab6
 chmod      shipped 486e 487e  0
 close      shipped 487e 488c  0
 creat      shipped 488c 489a  0
@@ -48,6 +48,6 @@ signal     shipped 4904 4986  0
 umask      shipped 4986 498e  0
 unlink     shipped 498e 499c  0
 write      shipped 499c 49ac  0
-cerror     shipped 49ac 49bc  0
+cerror     shipped 49ac 49bc  4 dstart=0ab8
 sym __iob+15=0907 __lastbuf=0998 __sobuf=705e __filbuf=3ece __flsbuf=3fb0 __cnvt=41a2 __length=4322 _strcpy=4714 _ungetc=3e78 _tolower=467c __inflt=3e76 __fegcvt=3e74 __fltuse=3e72 __pfile=705c __iob+8=0900 __iob=08f8
 noown
