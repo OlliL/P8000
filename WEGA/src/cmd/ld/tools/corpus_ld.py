@@ -22,6 +22,8 @@ spec.loader.exec_module(C)
 C.ROOT = os.path.abspath(os.environ.get('WEGA', '/mnt/share/cvs/P8000/tmp/wega31_root'))
 C.EMU = os.environ.get('EMU', '/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu')
 LDBIN = os.path.abspath(sys.argv[1])
+# our ld runs as /bin/ld from an alternative root (same argv[0] as the original): bin/ld = LDBIN, lib and usr = the original's
+ALT = os.environ.get('ALTROOT', '/mnt/share/cvs/P8000/tmp/tmp/corpus_altroot')
 
 
 def link1(args, tool, base):
@@ -33,8 +35,7 @@ def link1(args, tool, base):
         if who == 'orig':
             r = C.orig(args, d, tool)
         else:
-            shutil.copy(LDBIN, os.path.join(d, 'ld_under_test'))
-            r = subprocess.run([C.EMU, '-r', C.ROOT, 'ld_under_test'] + args, cwd=d, capture_output=True, timeout=300)
+            r = subprocess.run([C.EMU, '-r', ALT, '/bin/ld'] + args, cwd=d, capture_output=True, timeout=300)
         out = 'a.out'
         for i, a in enumerate(args):
             if a == '-o' and i + 1 < len(args):
@@ -60,6 +61,11 @@ def main():
         o = a.pop(0)
         if o == '-n': n = int(a.pop(0))
         elif o == '-s': seed = int(a.pop(0))
+    os.makedirs(os.path.join(ALT, 'bin'), exist_ok=True)
+    shutil.copy(LDBIN, os.path.join(ALT, 'bin', 'ld'))
+    for d_ in ('lib', 'usr'):
+        if not os.path.exists(os.path.join(ALT, d_)):
+            os.symlink(os.path.join(C.ROOT, d_), os.path.join(ALT, d_))
     C.W = os.path.join('/mnt/share/cvs/P8000/tmp/tmp', 'corpus_ld_work')
     shutil.rmtree(C.W, ignore_errors=True)
     os.makedirs(C.W)

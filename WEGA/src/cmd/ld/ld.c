@@ -726,7 +726,7 @@ place_sec()
 	else
 		areas[2].kind = 1;
 	areas[1].tsize = ttotal;
-	if (iflag == 0 && x66b8 == 0 && x66ba == 0 && rflag == 0)
+	if (iflag && x66b8 == 0 && x66ba == 0 && rflag == 0)
 		areas[1].tsize = (ttotal + 255) & 0xff00;
 	areas[2].tsize = dtotal;
 	areas[3].tsize = comsize + btotal;
@@ -1022,7 +1022,7 @@ test:
 	u2 = half(filhdr.x1066) + a + u1;
 	dseek(&reloc, u2, filhdr.x1066);
 	load2td(t, fctrel, &toutb, &routb);
-	dseek(&text, half(filhdr.x1066) + a + u1, filhdr.x106a);
+	dseek(&text, half(filhdr.x1066) + a, filhdr.x106a);
 	u1 = filhdr.x1066 + a + half(filhdr.x106a);
 	dseek(&reloc, u1, filhdr.x106a);
 	load2td(t, fcdrel, &tmpoutb, &doutb);

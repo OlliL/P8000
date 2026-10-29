@@ -1042,3 +1042,31 @@ Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamp
   "_bc ld: d.o: - Multiply defined" (the symbol is entered twice: read_symbols / load2 / ldrsym path). Next: the symbol
   path (read_symbols finding, load2 finding).
 - Instrumented copy for value checks: tmp/tmp/dbg (prints the totals and areas after place_sec; not in the repo).
+
+## Symbol path (2026-10-29): state
+
+- The earlier "Multiply defined" for `_bc` did not come back in the instrumented build (repo ld.c with the new
+  place_sec). Now `-o t d.o` finishes with status 0, but the output differs from the original (94 bytes; ours 340 bytes).
+  The header differs from the first flags word: original `00 0c`, ours `01 02`, and the following words differ.
+- Load2 compare (the "other" path, values of rec and cursym) was not reached in this build; the value check code is
+  in tmp/tmp/dbg/ld.c (fprintf before `report_error(1, "- Multiply defined")`).
+- Next: decode the header of both outputs field by field (objhdr/fseg in ld.h, header from the original start_output and
+  finish_output), then compare the symbol table and the text of the output; the first differing field decides the
+  function to look at (init_entry, finish_output, load2td).
+
+## Corpus run after the fixes of this round (2026-10-29): 13 of 76 identical
+
+- Fixed in this round: place_sec (unsigned compares; the rounding of area 1 applies only with iflag set, the
+  original's `jr eq` goes to the unrounded branch when iflag is 0), load2 (the data of an object is read at
+  half(x1066)+a, not + the data half-size), getfile (filname after a library open), next_entry (no range check).
+  With these, `-o t d.o` gives the same 94 bytes as the original.
+- corpus_ld.py now runs our binary as /bin/ld from an alternative root (ALTROOT, default tmp/tmp/corpus_altroot), so
+  argv[0] equals the original's.
+- Remaining failure classes (63 of 76 lines differ):
+  - "Premature EOF" on archive members (getgrnam.o, c.o, e.o, a.o, b.o, reject.o, jn.o, r1.o, r2.o): get/getfile/dseek on
+    archives; 40 lines.
+  - "-bt 0x1000: bad address", "-tt 0x123: bad address": reg_sect_addr (sscanf of the address; the frame of fmt differs).
+  - "symbol redefined in archive" warning missing or wrong (warn_sym_redef, read_symbols with a = 1 path).
+  - "-r" outputs differ slightly (938 against 932 bytes): relocation output (load2td / finish_output).
+- Next: the archive path (getfile returns 2 for a symbol archive, ranlib_scan, dseek on the archive offset), then the
+  address options (reg_sect_addr), then the -r output.
