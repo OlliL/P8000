@@ -1024,6 +1024,7 @@ block( o, l, r, t, d, s ) register NODE *l, *r; TWORD t; {
 	register NODE *p;
 
 	p = talloc();
+	p->rval = 0;	/* WEGA */
 	p->op = o;
 	p->left = l;
 	p->right = r;
@@ -1361,7 +1362,7 @@ prtree(p) register NODE *p; {
 argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call (those that are not in registers) */
 	register n;
 
-	if( p->op == CM ) return( argregs( p->left ) + argregs( p->right ) );
+	if( p->op == CM ) return( argregs( p->right ) + argregs( p->left ) );	/* (the left one is counted first) */
 	n = argsize( p );
 	if( ( (p->type == FLOAT || p->type == DOUBLE) && afregs < 16 ) || afull ){
 	full:

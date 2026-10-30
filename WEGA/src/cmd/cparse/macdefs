@@ -1,6 +1,6 @@
 # define makecc(val,i)  lastcon = i ? (lastcon<<8)|(val&0xff) : val  
 
-# define  ARGINIT 32 
+# define  ARGINIT 16	/* WEGA (dclargs, bfcode) */
 # define  AUTOINIT 96 
 # define  SZCHAR 8
 # define  SZINT 16
