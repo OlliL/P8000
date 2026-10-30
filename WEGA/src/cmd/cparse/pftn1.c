@@ -1,6 +1,8 @@
 # include "mfile1"
 
 
+static char sccsid[] = "@[$]pftn1.c\t2.7  08/24/83 14:40:11 Copr. 1981 87wega3.2.";
+
 	/* defines used for getting things off of the initialization stack */
 
 

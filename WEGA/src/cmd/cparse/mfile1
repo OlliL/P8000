@@ -160,7 +160,7 @@ extern int curdim;
 extern OFFSZ dimtab[];
 extern int paramstk[];	/* WEGA: int (PCC OFFSZ) */
 extern int paramno;
-extern OFFSZ autooff, argoff, strucoff;
+extern OFFSZ autooff, strucoff;
 extern int regvar;
 extern int minrvar;
 extern int fregvar, fminrvar;	/* WEGA: the same for the float registers */

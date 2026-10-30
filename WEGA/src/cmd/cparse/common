@@ -1,3 +1,4 @@
+static char sccsid2[] = "@[$]common\t2.5  08/24/83 16:19:58 Copr. 1981 87wega3.2.";
 # ifndef EXIT
 # define EXIT exit
 # endif

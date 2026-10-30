@@ -1,5 +1,7 @@
 # include "mfile1"
 
+static char sccsid[] = "@[$]xdefs1.c\t2.3  08/24/83 15:25:15 Copr. 1981 87wega3.2.";
+
 /*	communication between lexical routines	*/
 
 int	ncharsig = 125;	/* significant characters of a name (-L: 8) */
@@ -43,7 +45,6 @@ OFFSZ	dimtab[ DIMTABSZ ];
 int	paramstk[ PARAMSZ ];  /* used in the definition of function parameters */
 int	paramno;	  /* the number of parameters */
 OFFSZ	autooff,	/* the next unused automatic offset */
-	argoff,	/* the next unused argument offset */
 	strucoff;	/*  the next structure offset position */
 int	regvar;		/* the next free register for register variables */
 int	minrvar;	/* the smallest that regvar gets witing a function */

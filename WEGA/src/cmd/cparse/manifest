@@ -158,7 +158,7 @@
 # define BITYPE 010
 
 	/* DSIZE is the size of the dope array */
-# define DSIZE 130	/* WEGA: the dope array of /lib/cparse has 130 entries (dope 0x9656, opst 0x975a) */
+# define DSIZE 129	/* WEGA: the dope array of /lib/cparse has 129 entries (dope 0x9656, afull 0x9758, opst 0x975a) */
 
 /*	type names, used in symbol table building */
 # define TNULL PTR    /* pointer to UNDEF */
@@ -255,14 +255,14 @@
 
 # define BCSZ 100 /* size of the table to save break and continue labels */
 # define SYMTSZ 500 /* WEGA: only the limit of chkstr */
-# define DIMTABSZ 750 /* size of the dimension/size table */
+# define DIMTABSZ 1000 /* size of the dimension/size table (WEGA: the bss of /lib/cparse) */
 # define PARAMSZ 150 /* size of the parameter stack */
 # ifndef FORT
 # define TREESZ 350 /* space for building parse tree */
 # else
 # define TREESZ 1000
 # endif
-# define SWITSZ 250 /* size of switch table */
+# define SWITSZ 300 /* size of switch table (WEGA: the bss of /lib/cparse) */
 
 # define NCHNAM 8  /* number of characters in a name */
 

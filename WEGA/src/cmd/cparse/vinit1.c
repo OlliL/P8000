@@ -1,5 +1,7 @@
 # include "mfile1"
 
+static char sccsid[] = "@[$]vinit1.c\t2.3  10/06/83 13:13:44 Copr. 1981 87wega3.2.";
+
 extern int regflag;	/* the flag at 0x1aa0 (char and short register variables get a word on the stack; name is a guess) */
 OFFSZ upoff();
 

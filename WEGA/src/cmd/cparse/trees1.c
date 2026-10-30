@@ -1,5 +1,7 @@
 # include "mfile1"
 
+static char sccsid[] = "@[$]trees1.c\t2.8  08/24/83 15:07:35 Copr. 1981 87wega3.2.";
+
 /*	some special actions, used in finding the type of nodes */
 # define NCVT 01
 # define PUN 02

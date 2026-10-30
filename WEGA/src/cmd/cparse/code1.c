@@ -1,6 +1,8 @@
 # include "mfile1"
 # include <signal.h>
 
+static char sccsid[] = "@[$]code1.c\t2.7  08/24/83 14:23:01 Copr. 1981 87wega3.2.";
+
 int lflag = 0;	/* -l: write .line directives into the .D file */
 int pflag = 0;	/* -p: profiling, a counter word for each function */
 int strftn = 0;	/* is the current function one which returns a value */

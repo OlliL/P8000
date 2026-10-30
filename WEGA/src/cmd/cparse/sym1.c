@@ -1,5 +1,7 @@
 # include "mfile1"
 
+static char sccsid[] = "@[$]sym1.c\t2.8  08/24/83 14:45:09 Copr. 1981 87wega3.2.";
+
 extern int ddebug;
 extern FILE *sfile;	/* the .S file: the symbols for the debugger */
 

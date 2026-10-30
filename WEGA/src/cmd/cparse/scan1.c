@@ -1,6 +1,8 @@
 # include "mfile1"
 
 # include <ctype.h>
+static char sccsid[] = "@[$]scan1.c\t2.4  10/06/83 13:10:32 Copr. 1981 87wega3.2.";
+
 	/* temporarily */
 
 	/* lexical actions */

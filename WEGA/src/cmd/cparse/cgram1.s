@@ -1,19 +1,86 @@
 // cgram1: the parser of /lib/cparse (cgram1.y 2.5) cut from the original by tools/cutgram.py
 // (fallback until the grammar is rebuilt; do not edit, make it again)
-	.comm	4, _yylval
-	.comm	600, _yyv
+	.comm	2, _curftn
+	.comm	200, _asavbc
+	.comm	2, _instruct
+	.comm	6500, _ntab
+	.comm	2, _bssgap1
+	.comm	2, _brklab
 	.comm	4, _yyval
-	.extern	_Ffile, _Fflag, _asavbc, _autooff, _bccode, _bcon, _beginit, _bfend
-	.extern	_blevel, _block, _branch, _brklab, _bstruct, _buildtree, _cerror, _clearst
-	.extern	_contlab, _ctype, _curclass, _curdim, _curftn, _dclargs, _dclstruct, _dcon
-	.extern	_defid, _deflab, _dimtab, _doinit, _doszof, _ecomp, _endinit, _f3970
-	.extern	_falloc, _flostat, _fprintf, _ftnarg, _ftnend, _genswitch, _getlab, _getstr
-	.extern	_icons, _idname, _ilbrace, _instruct, _irbrace, _lastcon, _lcons, _lineno
-	.extern	_locctr, _lookup, _lregvar, _makety, _moedef, _ncopy, _nidcl, _notlval
-	.extern	_ntab, _optim, _paramno, _printf, _psavbc, _reached, _refid, _regvar
-	.extern	_retlab, _retstat, _rstruct, _sprintf, _strucoff, _stwart, _swp, _swtab
-	.extern	_swx, _talloc, _tempnode, _tfree, _tymerge, _types, _uclass, _uerror
-	.extern	_werror, _yyerror, _yylex
+	.comm	2, _stwart
+	.comm	600, _yyv
+	.comm	2, _contlab
+	.comm	2, _paramno
+	.comm	2, _Ffile
+	.comm	2, _flostat
+	.comm	4, _lastcon
+	.comm	2, _curdim
+	.comm	2, _idname
+	.comm	4, _strucoff
+	.comm	8, _dcon
+	.comm	2, _blevel
+	.comm	2, _regvar
+	.comm	2, _curclass
+	.comm	2, _retstat
+	.comm	4, _yylval
+	.comm	1800, _swtab
+	.comm	2, _swp
+	.comm	2, _swx
+	.comm	4, _autooff
+	.comm	2, _lregvar
+	.comm	4000, _dimtab
+	.comm	2, _dfile
+	.comm	5600, _node
+	.comm	2, _dpath
+	.comm	2, _sfile
+	.comm	2, _outfile
+	.comm	2, _minrvar
+	.comm	4, _ftnpos
+	.comm	50, _dfname
+	.comm	2, _fminrvar
+	.comm	4, _inoff
+	.comm	50, _ifname
+	.comm	2, _ipath
+	.comm	2, _fregvar
+	.comm	50, _sfname
+	.comm	2, _spath
+	.comm	2, _strflg
+	.comm	4, _maxoff
+	.comm	258, _lxmask
+	.comm	2, _lxmatch
+	.comm	126, _yytext
+	.comm	2, _lxgcp
+	.comm	258, _lxcp
+	.comm	2, _pregvar
+	.comm	300, _paramstk
+	.comm	4, _dpos
+	.comm	2, _pfregvar
+	.comm	258, _dope
+	.comm	2, _afull
+	.comm	258, _opst
+	.comm	512, _dbuf
+	.comm	512, _ibuf
+	.comm	512, _sbuf
+	.comm	2, _lastfree
+	.comm	220, _instack
+	.comm	2, _iclass
+	.comm	2, _pstk
+	.comm	128, _hashtab
+	.comm	2, _bssgap2
+	.comm	4, _shdrpos
+	.comm	3306, _reftab
+	.comm	2, _commflag
+	.comm	14, _shdr
+	.comm	1102, _refsym
+	.comm	1000, _taglist
+	.extern	_Fflag, _bccode, _bcon, _beginit, _bfend, _block, _branch, _bstruct
+	.extern	_buildtree, _cerror, _clearst, _ctype, _dclargs, _dclstruct, _defid, _deflab
+	.extern	_doinit, _doszof, _ecomp, _endinit, _f3970, _falloc, _fprintf, _ftnarg
+	.extern	_ftnend, _genswitch, _getlab, _getstr, _icons, _ilbrace, _irbrace, _lcons
+	.extern	_lineno, _locctr, _lookup, _makety, _moedef, _ncopy, _nidcl, _notlval
+	.extern	_optim, _printf, _psavbc, _reached, _refid, _retlab, _rstruct, _sprintf
+	.extern	_talloc, _tempnode, _tfree, _tymerge, _types, _uclass, _uerror, _werror
+	.extern	_yyerror, _yylex
 	.psec
 	.code
 _mkty::

@@ -1,5 +1,7 @@
 # include "mfile1"
 
+static char sccsid[] = "@[$]local1.c\t2.7  08/24/83 14:27:54 Copr. 1981 87wega3.2.";
+
 char *dignames[] = { "0", "1", "2" };	/* a name that starts with one of these gets $ (exname; name is a guess) */
 int inwd = 0;	/* current bit offsed in word */
 int word = 0;	/* word being built from fields */
