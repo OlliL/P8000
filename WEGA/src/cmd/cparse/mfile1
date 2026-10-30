@@ -43,6 +43,7 @@ extern char *scnames();
 # define SHIDES 04
 # define SSET 010
 # define SREF 020
+# define SMEMB 040	/* WEGA: a member or a structure name (defid) */
 
 # ifndef FIXDEF
 # define FIXDEF(p)
@@ -156,11 +157,17 @@ extern struct symtab *curftn;
 extern int curclass;
 extern int curdim;
 extern OFFSZ dimtab[];
-extern OFFSZ paramstk[];
+extern int paramstk[];	/* WEGA: int (PCC OFFSZ) */
 extern int paramno;
 extern OFFSZ autooff, argoff, strucoff;
 extern int regvar;
 extern int minrvar;
+extern int fregvar, fminrvar;	/* WEGA: the same for the float registers */
+extern int lregvar;
+extern int symcount;	/* WEGA: the number of the next symbol of the .S file */
+extern int tmpno, tmpoff;	/* WEGA: the TEMP nodes of a function */
+extern long ftnpos;	/* WEGA: the function head in the .I file */
+char getpreg();	/* WEGA: the next register pair for a long register variable */
 extern int brkflag;
 extern char yytext[];
 

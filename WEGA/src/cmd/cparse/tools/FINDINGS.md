@@ -28,6 +28,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | addcase | - | 0x0174 | open | open |  |  |  |
 | adddef | - | 0x01e0 | open | open |  |  |  |
 | aobeg | - | 0x9f04 | open | open |  |  |  |
+| argalloc | - | 0x2db2 | open | open |  |  |  |
 | argsize | - | 0x7eb8 | open | open |  |  |  |
 | bccode | - | 0x6a78 | open | open |  |  |  |
 | bcon | - | 0x4790 | open | open |  |  |  |
@@ -57,7 +58,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | copysym | - | 0x96e2 | open | open |  |  |  |
 | cprint | - | 0x777c | open | open |  |  |  |
 | ctype | - | 0x79d8 | open | open |  |  |  |
-| dclargs | - | 0x2db2 | open | open |  |  |  |
+| dclargs | - | 0x2efc | open | open |  |  |  |
 | dclstruct | - | 0x347c | open | open |  |  |  |
 | defalign | - | 0x6726 | open | open |  |  |  |
 | defid | - | 0x2448 | open | open |  |  |  |
@@ -74,13 +75,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | endinit | - | 0x85f0 | open | open |  |  |  |
 | exname | - | 0x7952 | open | open |  |  |  |
 | f0000 | - | 0x0000 | open | open |  |  |  |
-| f2be2 | - | 0x2be2 | open | open |  |  |  |
-| f2c0e | - | 0x2c0e | open | open |  |  |  |
-| f2efc | - | 0x2efc | open | open |  |  |  |
-| f3144 | - | 0x3144 | open | open |  |  |  |
-| f31e0 | - | 0x31e0 | open | open |  |  |  |
-| f3200 | - | 0x3200 | open | open |  |  |  |
-| f36d4 | - | 0x36d4 | open | open |  |  |  |
 | f3970 | - | 0x3970 | open | open |  |  |  |
 | f4eec | - | 0x4eec | open | open |  |  |  |
 | f51d0 | - | 0x51d0 | open | open |  |  |  |
@@ -104,6 +98,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | genswitch | - | 0x6bf0 | open | open |  |  |  |
 | getlab | - | 0x6786 | open | open |  |  |  |
 | getmem | - | 0x8084 | open | open |  |  |  |
+| getpreg | - | 0x3200 | open | open |  |  |  |
 | getstr | - | 0x83e0 | open | open |  |  |  |
 | gotscal | - | 0x890e | open | open |  |  |  |
 | hash | - | 0x8ae0 | open | open |  |  |  |
@@ -112,6 +107,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | ilbrace | - | 0x8a3c | open | open |  |  |  |
 | incode | - | 0x7574 | open | open |  |  |  |
 | inforce | - | 0x3870 | open | open |  |  |  |
+| initpreg | - | 0x31e0 | open | open |  |  |  |
 | instk | - | 0x821a | open | open |  |  |  |
 | irbrace | - | 0x8aac | open | open |  |  |  |
 | isitfloat | - | 0x7a80 | open | open |  |  |  |
@@ -150,6 +146,8 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | pconvert | - | 0x4970 | open | open |  |  |  |
 | prtdcon | - | 0x5222 | open | open |  |  |  |
 | prtree | - | 0x5318 | open | open |  |  |  |
+| psave | - | 0x2be2 | open | open |  |  |  |
+| psavel | - | 0x2c0e | open | open |  |  |  |
 | psize | - | 0x47ee | open | open |  |  |  |
 | ptmatch | - | 0x4a86 | open | open |  |  |  |
 | putbyte | - | 0x84e4 | open | open |  |  |  |
@@ -169,6 +167,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | scnames | - | 0x1374 | open | open |  |  |  |
 | sectadd | - | 0x65e8 | open | open |  |  |  |
 | sectfull | - | 0x65c4 | open | open |  |  |  |
+| setreg | - | 0x3144 | open | open |  |  |  |
 | sfinit | - | 0x1514 | open | open |  |  |  |
 | sheader | - | 0x9c0c | open | open |  |  |  |
 | sinit | - | 0x9bd4 | open | open |  |  |  |
@@ -202,6 +201,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | werror | - | 0x7c0a | open | open |  |  |  |
 | where | - | 0x7f12 | open | open |  |  |  |
 | yyaccpt | - | 0x36e6 | open | open |  |  |  |
+| yyerror | - | 0x36d4 | open | open |  |  |  |
 | yylex | - | 0x1b2a | open | open |  |  |  |
 | yyparse | - | 0x0312 | open | open |  |  |  |
 | zecode | - | 0x6b2c | open | open |  |  |  |

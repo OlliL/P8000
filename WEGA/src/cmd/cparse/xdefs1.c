@@ -40,12 +40,15 @@ int	curclass,	  /* current storage class */
 
 OFFSZ	dimtab[ DIMTABSZ ];
 
-OFFSZ	paramstk[ PARAMSZ ];  /* used in the definition of function parameters */
+int	paramstk[ PARAMSZ ];  /* used in the definition of function parameters */
 int	paramno;	  /* the number of parameters */
 OFFSZ	autooff,	/* the next unused automatic offset */
 	argoff,	/* the next unused argument offset */
 	strucoff;	/*  the next structure offset position */
+int	regvar;		/* the next free register for register variables */
 int	minrvar;	/* the smallest that regvar gets witing a function */
+int	fregvar, fminrvar;	/* the same for the float registers */
+int	lregvar;	/* the next register pair for a long register variable */
 OFFSZ	inoff;		/* offset of external element being initialized */
 
 struct sw swtab[SWITSZ];  /* table for cases within a switch */

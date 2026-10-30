@@ -289,7 +289,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f2be2": {
+  "psave": {
    "file": "-",
    "pairing": "open",
    "orig": "0x2be2",
@@ -299,7 +299,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f2c0e": {
+  "psavel": {
    "file": "-",
    "pairing": "open",
    "orig": "0x2c0e",
@@ -319,7 +319,7 @@
    "callers_orig": "36e6",
    "status": "open"
   },
-  "dclargs": {
+  "argalloc": {
    "file": "-",
    "pairing": "open",
    "orig": "0x2db2",
@@ -329,7 +329,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f2efc": {
+  "dclargs": {
    "file": "-",
    "pairing": "open",
    "orig": "0x2efc",
@@ -339,7 +339,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f3144": {
+  "setreg": {
    "file": "-",
    "pairing": "open",
    "orig": "0x3144",
@@ -349,7 +349,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f31e0": {
+  "initpreg": {
    "file": "-",
    "pairing": "open",
    "orig": "0x31e0",
@@ -359,7 +359,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f3200": {
+  "getpreg": {
    "file": "-",
    "pairing": "open",
    "orig": "0x3200",
@@ -409,7 +409,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f36d4": {
+  "yyerror": {
    "file": "-",
    "pairing": "open",
    "orig": "0x36d4",

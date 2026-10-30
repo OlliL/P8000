@@ -11,8 +11,6 @@ long sectsize[3] = { 0, 0, 0 };	/* bytes used in each section */
 extern int Fflag;
 FILE *Ffile;	/* the file of -F */
 long ftnpos;	/* position of the function head in the .I file (rewritten by ftnend) */
-int fregvar;	/* float registers in use (with regvar given to codgen) */
-int regvar;
 char ifname[50], dfname[50], sfname[50];	/* the names of the output files */
 char *ipath, *dpath, *spath;
 char ibuf[BUFSIZ], dbuf[BUFSIZ], sbuf[BUFSIZ];
@@ -302,7 +300,7 @@ bfcode( a, n ) struct symtab *a[]; {
 
 bccode(){ /* called just before the first executable statment */
 	SETOFF( autooff, SZINT );
-	bstart( autooff, regvar, fregvar );
+	bstart( autooff, minrvar, fminrvar );
 	}
 
 bfend(){ /* "]" into the .I file */

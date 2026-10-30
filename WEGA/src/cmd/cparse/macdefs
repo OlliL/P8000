@@ -42,7 +42,9 @@
 
 /*	maximum and minimum register variables */
 
-# define MAXRVAR 13
+# define MAXRVAR 14	/* WEGA: ftnend */
+# define MAXFRVAR 23	/* WEGA: the float registers */
+# define MAXLRVAR 12	/* WEGA: the register pairs */
 # define MINRVAR 8
 
 	/* various standard pieces of code are used */
