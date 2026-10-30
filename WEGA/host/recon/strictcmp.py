@@ -48,10 +48,11 @@ def main():
     orig_fn = set(int(f['orig'], 16) for f in fn.values())
     sym = {s['name']: s['value'] for s in o.symbols}
     if masked:
-        n_ours = n_orig = zcode.norm_masked
+        def n_ours(t): return zcode.norm_masked(t, CFG.D18)
+        n_orig = n_ours
     else:
-        def n_ours(t): return zcode.norm_strict(t, ours_fn)
-        def n_orig(t): return zcode.norm_strict(t, orig_fn)
+        def n_ours(t): return zcode.norm_strict(t, ours_fn, d18=CFG.D18)
+        def n_orig(t): return zcode.norm_strict(t, orig_fn, d18=CFG.D18)
     same = diff = 0
     for name, f in sorted(fn.items(), key=lambda x: int(x[1]['orig'], 16)):
         if f.get('status') == 'crt0':

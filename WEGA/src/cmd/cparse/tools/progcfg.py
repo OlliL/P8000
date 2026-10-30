@@ -7,7 +7,7 @@ import os
 
 NAME = 'cparse'
 ORIG = 'lib/cparse'
-OWN_LIM = 0xaf18    # the libc part starts here (host/tools/libcver.py; to be confirmed by the member matching)
+OWN_LIM = 0x9f06    # the own code ends here; the libc part follows (HANDOFF_cparse.md, step 2)
 ORIG_LIM = 0x10000  # the original is stripped
 OWN_OBJ = r'^(crt0|cgram1|xdefs1|scan1|pftn1|trees1|optim1|code1|local1|comm1|vinit1|sym1)'
 CC = '/bin/cc'
@@ -54,3 +54,7 @@ def CORPUS_RUN(binary, base, work):
 
 def CORPUS_OUTPUTS(base):
     return [base + '.I', base + '.D', base + '.S']
+
+# D18: the cc that built /lib/cparse never writes @r15 (506 times %0000(r15), 0 times @r15; ld and codgen use @r15);
+# the comparisons treat the two forms as equal
+D18 = True

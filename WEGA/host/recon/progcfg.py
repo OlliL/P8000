@@ -18,6 +18,8 @@ Used by strictcmp, fncheck, inventory, own_table, d12model, rename (defaults in 
   FINDINGS    findings.json of the program (tools directory)
   MODULES     C modules in link order, without .c (for d12model)
   model_link(work, objs)  argv of the link of the d12model objects (objs: our modules' objects in link order)
+  D18         treat @r15 and %0000(r15) as equal in the comparisons (the original was compiled by a cc that never
+              writes @r15; False)
   MODEL_OUT   output of d12model.py (TMP/d12model_NAME/NAMEm)
   STRICT_INPUT  default input of strictcmp.py (LINKED; MODEL_OUT when our data layout differs only by D12)
   TABLES, DOCS  extra text files for rename.py (beside the sources, findings.json and the .md files of the tools)
@@ -50,7 +52,7 @@ def load():
     if not hasattr(m, 'LIBC_FROM'):
         m.LIBC_FROM = m.OWN_LIM
     defaults = {'SEG': False, 'CC': '/bin/cc', 'SRCDIR': os.path.normpath(os.path.join(d, '..')),
-                'MODULES': [], 'TABLES': [], 'DOCS': []}
+                'MODULES': [], 'TABLES': [], 'DOCS': [], 'D18': False}
     for k, v in defaults.items():
         if not hasattr(m, k):
             setattr(m, k, v)
