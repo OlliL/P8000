@@ -49,7 +49,7 @@
    "callers_orig": "-",
    "status": "crt0"
   },
-  "f050c": {
+  "record": {
    "file": "ld.c",
    "pairing": "open",
    "orig": "0x050c",
@@ -59,7 +59,7 @@
    "callers_orig": "-",
    "status": "done"
   },
-  "f057c": {
+  "restore": {
    "file": "ld.c",
    "pairing": "confirmed",
    "orig": "0x057c",
@@ -69,7 +69,7 @@
    "callers_orig": "-",
    "status": "done"
   },
-  "f221e": {
+  "put_word": {
    "file": "ld.c",
    "pairing": "open",
    "orig": "0x221e",
@@ -79,7 +79,7 @@
    "callers_orig": "172e,194a,1b0a",
    "status": "done"
   },
-  "f2b92": {
+  "grow_rlbuf": {
    "file": "symbols.c",
    "pairing": "confirmed",
    "orig": "0x2b92",
@@ -89,7 +89,7 @@
    "callers_orig": "2b3a",
    "status": "done"
   },
-  "f2bf6": {
+  "lock_rlbuf": {
    "file": "symbols.c",
    "pairing": "confirmed",
    "orig": "0x2bf6",
@@ -99,7 +99,7 @@
    "callers_orig": "-",
    "status": "done"
   },
-  "f2bfc": {
+  "unlock_rlbuf": {
    "file": "symbols.c",
    "pairing": "confirmed",
    "orig": "0x2bfc",
@@ -109,7 +109,7 @@
    "callers_orig": "-",
    "status": "done"
   },
-  "f2c20": {
+  "grow_heap": {
    "file": "symbols.c",
    "pairing": "confirmed",
    "orig": "0x2c20",
@@ -689,7 +689,7 @@
    "d_classes": [
     "D11"
    ],
-   "note": "Remaining (3 lines): our popt copies the return of rlbuf into the end of the first branch, the original jumps to the shared return. Tried: 10 drafts on 2026-10-29 (d5/eb7..eb10, both test orders). Fixed on the way: else return f2b92(n); (the original returns the value of f2b92)."
+   "note": "Remaining (3 lines): our popt copies the return of rlbuf into the end of the first branch, the original jumps to the shared return. Tried: 10 drafts on 2026-10-29 (d5/eb7..eb10, both test orders). Fixed on the way: else return grow_rlbuf(n); (the original returns the value of grow_rlbuf)."
   },
   "chk_ranlib": {
    "basis": "read",
@@ -710,21 +710,21 @@
    "d_classes": [
     "D3"
    ],
-   "note": "Remaining (6 lines): the original still knows r3 = hdr after the join of x66b8 || x66ba and stores hy through it, ours reloads hdr from the frame. Tried: 6 drafts on 2026-10-29 (d5/ie1..ie5), on 2026-10-30 hy = cond ? x1066 : 0 (worse)."
+   "note": "Remaining (6 lines): the original still knows r3 = hdr after the join of n8rel4 || n8swap and stores hy through it, ours reloads hdr from the frame. Tried: 6 drafts on 2026-10-29 (d5/ie1..ie5), on 2026-10-30 hy = cond ? ftsize : 0 (worse)."
   },
   "load2td": {
    "basis": "read",
    "d_classes": [
     "D15"
    ],
-   "note": "Remaining (28 lines, same instructions): our popt moves the then-block of if (flag) up in front of the switches, the original keeps it in place. Guess: ch is a two-byte array in the frame (gives the offset 0x12 of the original). Tried: 9 drafts on 2026-10-29 (d5/ltd1..ltd9), on 2026-10-30 four declaration orders of flag/ch. Fixed on the way (behaviour): the copy w14 = w13 right after the swap block (the two switches test the unchanged word), the first switch only with x66b8 || x66ba, if (x66ba) w12 = swap(w12) after the symbol branch, the flag output byte-wise; source: nibuf < 0 branches first."
+   "note": "Remaining (28 lines, same instructions): our popt moves the then-block of if (flag) up in front of the switches, the original keeps it in place. Guess: ch is a two-byte array in the frame (gives the offset 0x12 of the original). Tried: 9 drafts on 2026-10-29 (d5/ltd1..ltd9), on 2026-10-30 four declaration orders of flag/ch. Fixed on the way (behaviour): the copy w14 = w13 right after the swap block (the two switches test the unchanged word), the first switch only with n8rel4 || n8swap, if (n8swap) w12 = swap(w12) after the symbol branch, the flag output byte-wise; source: nibuf < 0 branches first."
   },
   "place_sec": {
    "basis": "read",
    "d_classes": [
     "D2"
    ],
-   "note": "Remaining (5 lines): in case t the original copies r3 to r2 before the and of r8 = (secorg[j] - q->tsize) & 0xff00. Tried: r8 &= 0xff00 as its own statement, casts (unsigned), (int): no change or worse. Fixed on the way (behaviour): areas[0].kind/tsize only inside if (tab42b4[0]), q->tsize = q->tend - r8 only inside if (tab42b4[j + 1]); source: ?: assignments, register order q, r8, j, the b case as two statements."
+   "note": "Remaining (5 lines): in case t the original copies r3 to r2 before the and of r8 = (secorg[j] - q->tsize) & 0xff00. Tried: r8 &= 0xff00 as its own statement, casts (unsigned), (int): no change or worse. Fixed on the way (behaviour): areas[0].kind/tsize only inside if (secflg[0]), q->tsize = q->tend - r8 only inside if (secflg[j + 1]); source: ?: assignments, register order q, r8, j, the b case as two statements."
   },
   "read_symbols": {
    "basis": "read",

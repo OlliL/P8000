@@ -1,8 +1,9 @@
-/* unpack_run: copy the name of a symbol into the 14 byte table form, zero padded (sld unpack_run; 0x22e8..0x2360 of /bin/ld) */
 
 static char sccsid[] = "@[$]copyname.c\t1.3  03/11/83 10:28:51 - 87wega3.2";
 int spare05d6 = 0;	/* unused word after the stamp in the data of the original (0x05d6); guess: a variable of copyname.c */
 
+/* unpack_run: copy a symbol name in the table form (8 bytes, or a long name with its continuation entries) to dst,
+   zero padded; the number of continuation entries (sld unpack_run, Plexus cp8c; 0x22e8..0x2360 of /bin/ld) */
 unpack_run(src, dst)
 char *src;
 char *dst;
@@ -32,7 +33,8 @@ test:
 	return n;
 }
 
-/* pack_name: build the table form of a C string (sld pack_name; 0x2360..0x23e2 of /bin/ld, finding) */
+/* pack_name: build the table form of a C string: up to 8 characters zero padded, a longer name with the length byte
+   and continuation entries (sld pack_name; 0x2360..0x23e2 of /bin/ld) */
 pack_name(src, dst)
 char *src;
 char *dst;

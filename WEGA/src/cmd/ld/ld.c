@@ -11,14 +11,14 @@ char *secnam[4] = {"?", "text", "data", "bss"};
 char *ofilnam = "l.out";
 int delarg = 4;
 int nlflag = 1;
-int v0080 = 0;
+int nundef = 0;
 char tmpname[] = "/tmp/ldaXXXXX";
 char *aoutnam = "a.out";
 
 /* bss of ld in the order of the original (addresses from 0x0abe): the order of these declarations is the link order
    of the commons; the gaps are spare variables (see HANDOFF_ld.md, step 5b) */
 int ntab;
-struct tent tab[16];
+struct overlay tab[16];
 struct page page[2];
 struct pghdr fpage;
 struct stream text;
@@ -38,33 +38,33 @@ struct symbol *hshtab[2341];
 struct local local[1000];
 struct symbol *p_etext, *p_edata, *p_end;
 struct symbol *entrypt;
-int v669a;
+int Tflag;	/* -T: print each argument and the symbol count at the end */
 int xflag;
 int Xflag;
 int Sflag;
 int rflag;
-int v66a4;
+int arflag;	/* -r was given (rflag can be set later by end_pass1 for undefined symbols) */
 int sflag;
 int oflag;
 int dflag;
 int wflag;
 int iflag;
-int v66b0;
+int vflag;	/* -v was given */
 int swapflg;
-int v66b4;
-int x66b6;
-int x66b8;
-int x66ba;
+int noswap;	/* the program name does not start with s: libraries end in .a, else in .8 */
+int idsep;	/* the current object has separate I and D space (e711, e511) */
+int n8rel4;	/* 8-bit objects (e507, e511) with bit 2 of hrelflg: the bss is not relocated (meaning of the bit: guess) */
+int n8swap;	/* 8-bit objects without that bit: their words are byte-swapped on input and output */
 int ofilfnd;
 int infil;
 char *filname;
 int ttotal;
-int v66c4;
+int fttotal;	/* -r: sum of the text sizes in the files (ftsize) */
 int dtotal;
-int v66c8;
+int fdtotal;	/* -r: sum of the data sizes in the files (fdsize) */
 int comsize;
 int btotal;
-int v66ce;
+int stotal;	/* size of the local symbols of the output in bytes */
 int fctrel, fcdrel, fcbrel;
 char *pname;
 struct buf toutb;
@@ -72,32 +72,34 @@ struct buf tmpoutb;
 struct buf routb;
 struct buf doutb;
 struct buf soutb;
-int v6bf6;
-int v6bf8, v6bfa, v6bfc;
-int x6bfe;
+int nlocsym;	/* number of local symbol entries in front of the globals (stotal / 14) */
+int torigin, dorigin, borigin;	/* start of text, data and bss of the current object in the output (Plexus) */
+int corigin;	/* start of the common symbols (Plexus) */
 struct rlent *rltab;
 int rlcnt;
 long liblist[256];
 struct areas areas[4];
 char spare7024[8];
 char secspec;
-char tab42b4[5];
+char secflg[5];	/* option letter (t or b) given for the area all, text, data, bss */
 int secorg[4];
 char spare703c[2];
 int exstat;
 char libpath[20];
 char spare7054[6];
 
-
+/* sig_handler: the exit path of ld (also the handler of SIGINT and SIGTERM): the symbol count with -T, remove l.out,
+   make the output executable when there was no error, remove it on an error, exit with delarg (Plexus delexit;
+   0x0042..0x009c of /bin/ld) */
 sig_handler()
 {
 	int mode;
 
-	if (v669a)
+	if (Tflag)
 		limit_msg();
 	unlink("l.out");
 	if (!delarg) {
-		if (!v66a4 || !v0080) {
+		if (!arflag || !nundef) {
 			mode = ~umask(0) & 0x1ff;
 			chmod(ofilnam, mode);
 		}
@@ -107,8 +109,8 @@ sig_handler()
 	exit(delarg);
 }
 
-/* main: entry of ld: the signals, the program name, the option scan over the arguments, the final pass (0x009c..0x0370 of
-   /bin/ld; exact in the whole-file compile of ld.c; the draft alone differs in the jump widths, see HANDOFF_ld.md) */
+/* main: entry of ld: the signals, the program name (s* gives swapped output), the option scan of pass one over the
+   arguments, then pass two (parse_args) (sld main, Plexus main; 0x009c..0x0370 of /bin/ld) */
 main(argc, argv)
 int argc;
 char **argv;
@@ -139,12 +141,12 @@ char **argv;
 		swapflg++;
 		aoutnam = "s.out";
 	} else
-		v66b4++;
+		noswap++;
 	av = argv + 1;
 	i = 1;
 	goto test;
 body:
-	if (v669a)
+	if (Tflag)
 		printf("%s:\n", *av);
 	filname = 0;
 	s = *av++;
@@ -172,19 +174,19 @@ body:
 				i++;
 				if (i >= argc)
 					report_error(2, "-v: arg missing");
-				v66b0 = 1;
+				vflag = 1;
 				k = ntab;
 				found = 0;
 				while (--k >= 0) {
 					if (found)
 						break;
-					found = str_compare(tab[k].t3, *av);
+					found = str_compare(tab[k].vname, *av);
 				}
 				if (found) {
 					parse_args(i, argv);
-					f057c(k);
+					restore(k);
 				} else
-					f050c(i, *av);
+					record(i, *av);
 				av++;
 				break;
 			case 'l':
@@ -202,7 +204,7 @@ body:
 				break;
 			case 'r':
 				rflag++;
-				v66a4++;
+				arflag++;
 				break;
 			case 's':
 				sflag++;
@@ -219,7 +221,7 @@ body:
 				oflag++;
 				break;
 			case 'T':
-				v669a++;
+				Tflag++;
 				break;
 			case 'b':
 			case 't':
@@ -262,8 +264,8 @@ test:
 	parse_args(argc, argv);
 }
 
-/* reg_sect_addr: read the address of a section option (-t, -d, -b) and check it (sld reg_sect_addr; finding: the frame
-   offset of fmt differs; 0x0370..0x045e of /bin/ld) */
+/* reg_sect_addr: read the address of a section option (-t, -d, -b with the selector t, d, b or none) into secorg; 1
+   when a selector was given (sld reg_sect_addr; 0x0370..0x045e of /bin/ld) */
 int reg_sect_addr(s, t)
 char *s;
 char *t;
@@ -292,9 +294,9 @@ char *t;
 		report_error(2, "-%.2s: invalid selector (must be t, d or b)", s);
 	}
 	u = t;
-	if (tab42b4[k])
-		report_error(2, "-%.2s: -%c%c already specified", s, tab42b4[k], s[1]);
-	tab42b4[k] = *s;
+	if (secflg[k])
+		report_error(2, "-%.2s: -%c%c already specified", s, secflg[k], s[1]);
+	secflg[k] = *s;
 	fmt = "%o%c";
 	if (*u != '0')
 		fmt = "%d%c";
@@ -309,7 +311,8 @@ char *t;
 	return 1;
 }
 
-/* parse_args: the argument pass of ld: the output, then every object and library in order (0x045e..0x050c of /bin/ld) */
+/* parse_args: pass two over the arguments: end of pass one, open the output, then every object and library in order,
+   then finish_output (Plexus endload; 0x045e..0x050c of /bin/ld) */
 parse_args(argc, argv)
 int argc;
 char **argv;
@@ -328,7 +331,7 @@ char **argv;
 	k = 1;
 	while (k < argc) {
 		a = *av++;
-		if (v669a)
+		if (Tflag)
 			printf("%s:\n", a);
 		if (*a == '-') {
 			for (j = 1; a[j] != 0; j++)
@@ -361,47 +364,51 @@ next:
 	finish_output();
 }
 
-f050c(x, y)
-int x, y;
+/* record: save the state of the load before the object named y (argument index x) in the next entry of tab: the symbol
+   count, libp, the totals and the relocation bases, for a later restore by -v (Plexus record; 0x050c..0x057c of
+   /bin/ld) */
+record(x, y)
+int x;
+char *y;
 {
 	int spare;
 
-	register struct tent *e;
+	register struct overlay *e;
 
 	e = &tab[ntab++];
-	e->t0 = x;
-	e->t1 = symindex;
-	e->t2 = (int)libp;
-	e->t3 = y;
-	e->t7 = ttotal;
-	e->t8 = dtotal;
-	e->t9 = btotal;
-	e->t10 = v66ce;
-	e->t4 = fctrel;
-	e->t5 = fcdrel;
-	e->t6 = fcbrel;
+	e->argsav = x;
+	e->symsav = symindex;
+	e->libsav = libp;
+	e->vname = y;
+	e->offt = ttotal;
+	e->offd = dtotal;
+	e->offb = btotal;
+	e->offs = stotal;
+	e->ctsav = fctrel;
+	e->cdsav = fcdrel;
+	e->cbsav = fcbrel;
 }
-/* f057c: restore the state of the object at entry i of tab (the bases, libp and ntab) and clear the symbol hash entries
-   of its symbols (sld read_symbols tail for the hash; no sld function; 0x057c..0x0608 of /bin/ld) */
 
-f057c(i)
+/* restore: go back to the state saved by record in entry i of tab (libp, the relocation bases, the totals, ntab) and
+   clear the hash slots of the symbols entered since then (Plexus restore; 0x057c..0x0608 of /bin/ld) */
+restore(i)
 int i;
 {
 	int spare1, spare2;
-	register struct tent *e;
+	register struct overlay *e;
 	register int saved;
 
 	e = &tab[i];
 	ntab = i + 1;
-	libp = (long *)e->t2;
-	fctrel = e->t4;
-	fcdrel = e->t5;
-	fcbrel = e->t6;
-	ttotal = e->t7;
-	dtotal = e->t8;
-	btotal = e->t9;
-	v66ce = e->t10;
-	saved = e->t1;
+	libp = e->libsav;
+	fctrel = e->ctsav;
+	fcdrel = e->cdsav;
+	fcbrel = e->cbsav;
+	ttotal = e->offt;
+	dtotal = e->offd;
+	btotal = e->offb;
+	stotal = e->offs;
+	saved = e->symsav;
 	while (symindex > saved) {
 		symindex--;
 		*symhash[symindex] = 0;
@@ -409,10 +416,9 @@ int i;
 	}
 }
 
-/* add16_checked: sum of two words, report_error(1) with the message a when the sum is 0x10000 or more (sld add16_checked;
-   0x089a..0x08cc of /bin/ld) */
-
-/* load_lib_syms: load the members of a library or the object named by p (sld load_lib_syms; 0x0608..0x0714 of /bin/ld) */
+/* load_lib_syms: pass one for one argument: an object, an archive without table of contents (every member through
+   load_header) or an archive with __.SYMDEF (ranlib_scan until nothing more is loaded) (sld load_lib_syms, Plexus
+   load1arg; 0x0608..0x0714 of /bin/ld) */
 load_lib_syms(p)
 char *p;
 {
@@ -430,7 +436,7 @@ char *p;
 			;
 		break;
 	case 2:
-		f2bf6();
+		lock_rlbuf();
 		rlcnt = archdr.asize / 12;
 		rltab = (struct rlent *)ensure_buf(archdr.asize);
 		lseek(infil, 28L, 0);
@@ -439,7 +445,7 @@ char *p;
 		while (ranlib_scan())
 			;
 		*libp++ = -1;
-		f2bfc();
+		unlock_rlbuf();
 		break;
 	case 3:
 		report_error(0, "out of date (warning)");
@@ -450,6 +456,8 @@ char *p;
 	close(infil);
 }
 
+/* load_header: read the header of the archive member at word offset p; an object member whose symbols are needed is
+   entered in the library list (libp); 0 at the end of the archive (sld load_header; 0x0714..0x07b2 of /bin/ld) */
 load_header(p)
 long p;
 {
@@ -471,6 +479,8 @@ long p;
 	return 1;
 }
 
+/* ranlib_scan: one pass over the ranlib table of contents: load the members that define a symbol that is still
+   undefined; 1 when a member was loaded (sld ranlib_scan; 0x07b2..0x089a of /bin/ld) */
 int ranlib_scan()
 {
 	int i;
@@ -503,6 +513,8 @@ test:
 	return sv != libp;
 }
 
+/* add16_checked: sum of two words, report_error(1) with the message a when the sum is 0x10000 or more (sld
+   add16_checked, Plexus add; 0x089a..0x08cc of /bin/ld) */
 add16_checked(x, y, a)
 int x, y;
 char *a;
@@ -515,9 +527,10 @@ char *a;
 	return(s);
 }
 
-/* read_symbols: pass one for one object: read the symbol table and enter the symbols (sld read_symbols; finding: the
-   frame is two bytes larger than in /bin/ld (0x1c against 0x1a, the locals are shifted), the copy of cursym.svalue
-   through a long temporary is not reproduced; 0x08cc..0x0b6e of /bin/ld) */
+/* read_symbols: pass one for one object (a = 1 for an archive member): read the header and the symbol table, enter the
+   symbols and add the sizes to the totals; 0 when an archive member defines nothing that is needed (its symbols are
+   removed again). The putc forms with (char) casts: see warn_sym_redef (sld read_symbols, Plexus load1; 0x08cc..0x0b6e
+   of /bin/ld) */
 read_symbols(a, c)
 int a;
 long c;
@@ -543,7 +556,7 @@ long c;
 		report_error(1, "No relocation bits");
 		goto done;
 	}
-	c = ((unsigned long)((unsigned)(hdrsz + segtsz) >> 1) + filhdr.x1066 + filhdr.x106a) + c;
+	c = ((unsigned long)((unsigned)(hdrsz + segtsz) >> 1) + filhdr.ftsize + filhdr.fdsize) + c;
 	dseek(&text, c, filhdr.ssize);
 	while (text.size > 0) {
 		n = read_entry_hdr();
@@ -590,10 +603,10 @@ long c;
 	ttotal = add16_checked(ttotal, filhdr.tsize, "text overflow");
 	dtotal = add16_checked(dtotal, filhdr.dsize, "data overflow");
 	btotal = add16_checked(btotal, filhdr.bsize, "bss overflow");
-	v66ce = add16_checked(v66ce, k * 14, "symbol table overflow");
+	stotal = add16_checked(stotal, k * 14, "symbol table overflow");
 	if (rflag) {
-		v66c4 = add16_checked(v66c4, filhdr.x1066, "file text overflow");
-		v66c8 = add16_checked(v66c8, filhdr.x106a, "file data overflow");
+		fttotal = add16_checked(fttotal, filhdr.ftsize, "file text overflow");
+		fdtotal = add16_checked(fdtotal, filhdr.fdsize, "file data overflow");
 	}
 	return 1;
 clean:
@@ -606,9 +619,10 @@ done:
 	return 0;
 }
 
-/* end_pass1: the symbols of the output before the layout: _etext, _edata, _end, the rflag decision, the common symbols and
-   the undefined and external symbols (sld end_pass1; 0x0b6e..0x0d9c of /bin/ld). The newline of the undefined message
-   is a char in the original (the cast (char) gives extsb); the calls to in-file functions are calr there. */
+/* end_pass1: end of pass one: _etext, _edata, _end, the rflag decision, the common symbols, the undefined symbols, the
+   layout (place_sec) and the values of the defined symbols. The newline of the undefined message is cast to char: the
+   stdio of the original had char *_ptr (sign extension), src/head has unsigned char * (sld end_pass1, Plexus middle;
+   0x0b6e..0x0d9c of /bin/ld) */
 end_pass1()
 {
 	int spare1, spare2, spare3;
@@ -636,7 +650,7 @@ end_pass1()
 		sflag = 0;
 		secspec = 0;
 		for (i = 0; i < 4; i++)
-			tab42b4[i] = 0;
+			secflg[i] = 0;
 	}
 	comsize = 0;
 	if (dflag == 0 && rflag)
@@ -649,7 +663,7 @@ end_pass1()
 		if (ep->stype == ' ') {
 			i = ep->svalue;
 			if (i) {
-				if (!x66b8 && !x66ba)
+				if (!n8rel4 && !n8swap)
 					i = (i + 1) & ~1;
 				ep->svalue = (unsigned)comsize;
 				ep->stype = '%';
@@ -660,44 +674,46 @@ end_pass1()
 	}
 dolayout:
 	place_sec();
-	v0080 = 0;
+	nundef = 0;
 	ep = table16_entry(0);
 	while (ep < end) {
 		switch (ep->stype) {
 		case ' ':
-			if (v66a4 == 0) {
+			if (arflag == 0) {
 				exstat |= 1;
 				if (ep->svalue == 0) {
-					if (v0080 == 0)
+					if (nundef == 0)
 						fprintf(stderr, "Undefined:\n");
-					v0080++;
+					nundef++;
 					put_name(ep->sname);
 					--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = '\n') : _flsbuf(10, stderr);
 				}
 			}
 			break;
 		case '"':
-			ep->svalue += (unsigned)v6bf8;
+			ep->svalue += (unsigned)torigin;
 			break;
 		case '#':
-			ep->svalue += (unsigned)v6bfa;
+			ep->svalue += (unsigned)dorigin;
 			break;
 		case '$':
-			ep->svalue += (unsigned)v6bfc;
+			ep->svalue += (unsigned)borigin;
 			break;
 		case '%':
 			ep->stype = '$';
-			ep->svalue += (unsigned)x6bfe;
+			ep->svalue += (unsigned)corigin;
 			break;
 		}
 		ep = next_entry(ep);
 	}
 	if (sflag || xflag)
-		v66ce = 0;
+		stotal = 0;
 	btotal = add16_checked(btotal, comsize, "bss overflow");
-	v6bf6 = (unsigned)v66ce / 14;
+	nlocsym = (unsigned)stotal / 14;
 }
 
+/* place_sec: place the text, data and bss areas of the output: sizes, the -t/-b addresses (secorg), rounding to 256
+   bytes, the wrap and overlap checks, then the relocation bases (sld place_sec; 0x0d9c..0x108e of /bin/ld) */
 place_sec()
 {
 	int spare1, spare2, spare3;
@@ -707,25 +723,25 @@ place_sec()
 	register int j;
 
 	areas[1].kind = iflag ? 4 : 0;
-	areas[3].kind = x66b8 ? 4 : 2;
+	areas[3].kind = n8rel4 ? 4 : 2;
 	areas[2].kind = iflag ? 0 : 1;
-	areas[1].tsize = iflag && x66b8 == 0 && x66ba == 0 && rflag == 0 ? (ttotal + 255) & 0xff00 : ttotal;
+	areas[1].tsize = iflag && n8rel4 == 0 && n8swap == 0 && rflag == 0 ? (ttotal + 255) & 0xff00 : ttotal;
 	areas[2].tsize = dtotal;
 	areas[3].tsize = comsize + btotal;
-	if (tab42b4[0]) {
+	if (secflg[0]) {
 		for (i = iflag ? 2 : 1; i < 4; i++) {
-			if (tab42b4[i]) {
-				fprintf(stderr, "%s: warning, -%c overrides -%c%c\n", pname, tab42b4[0], tab42b4[i], *secnam[i]);
-				tab42b4[i] = 0;
+			if (secflg[i]) {
+				fprintf(stderr, "%s: warning, -%c overrides -%c%c\n", pname, secflg[0], secflg[i], *secnam[i]);
+				secflg[i] = 0;
 			}
 		}
 		areas[0].kind = 4;
 		areas[0].tsize = dtotal + comsize + btotal + iflag ? 0 : ttotal;
 	}
-	for (j = tab42b4[0] ? 0 : 1; j < 4; j++) {
+	for (j = secflg[0] ? 0 : 1; j < 4; j++) {
 		q = &areas[j];
 		r8 = areas[q->kind].tend;
-		switch (tab42b4[j]) {
+		switch (secflg[j]) {
 		case 't':
 			if ((unsigned)q->tsize > (unsigned)secorg[j])
 				report_error(1, "-t%c: top address too low", *secnam[j]);
@@ -740,14 +756,14 @@ place_sec()
 		}
 		areas[0].tsize = 0;
 		q->tend = r8 + q->tsize;
-		if (tab42b4[j + 1]) {
-			if (x66b8 == 0 && x66ba == 0)
+		if (secflg[j + 1]) {
+			if (n8rel4 == 0 && n8swap == 0)
 				q->tend = (q->tend + 255) & 0xff00;
 			q->tsize = q->tend - r8;
 		}
 		if (r8 > (unsigned)q->tend)
 			report_error(1, "%s area wrap around", secnam[j]);
-		if (x66b8 == 0) {
+		if (n8rel4 == 0) {
 			for (i = iflag ? 2 : 1; i < j; i++) {
 				if (r8 < (unsigned)areas[i].tend && (unsigned)q->tend > (unsigned)areas[i].tstart)
 					report_error(1, "%s and %s areas overlap", secnam[j], secnam[i]);
@@ -759,14 +775,15 @@ place_sec()
 		btotal = areas[3].tsize - comsize;
 	ttotal = areas[1].tsize;
 	dtotal = areas[2].tsize;
-	v6bf8 = areas[1].tstart;
-	v6bfa = areas[2].tstart;
-	v6bfc = (x6bfe = areas[3].tstart) + comsize;
-	if (tab42b4[0])
-		tab42b4[iflag ? 2 : 1] = tab42b4[0];
+	torigin = areas[1].tstart;
+	dorigin = areas[2].tstart;
+	borigin = (corigin = areas[3].tstart) + comsize;
+	if (secflg[0])
+		secflg[iflag ? 2 : 1] = secflg[0];
 }
 
-/* start_output: open the output and temporary files and write the header (sld start_output; 0x108e..0x120e of /bin/ld) */
+/* start_output: open the output and the temporary files and fill the header of the output (sld start_output, Plexus
+   setupout; 0x108e..0x120e of /bin/ld) */
 start_output()
 {
 	struct objhdr hdr;
@@ -781,28 +798,28 @@ start_output()
 		open_tmp(&routb, 1);
 		open_tmp(&doutb, 1);
 	}
-	filhdr.fmagic = x66b8 || x66ba ? (oflag ? 0xe505 : iflag ? 0xe511 : 0xe507) : (oflag ? 0xe705 : iflag ? 0xe711 : 0xe707);
+	filhdr.fmagic = n8rel4 || n8swap ? (oflag ? 0xe505 : iflag ? 0xe511 : 0xe507) : (oflag ? 0xe705 : iflag ? 0xe711 : 0xe707);
 	filhdr.tsize = ttotal;
 	filhdr.dsize = dtotal;
 	filhdr.bsize = btotal;
 	if (rflag) {
-		filhdr.x1066 = v66c4;
-		filhdr.x106a = v66c8;
+		filhdr.ftsize = fttotal;
+		filhdr.fdsize = fdtotal;
 	}
-	filhdr.ssize = sflag ? 0 : v66ce + symindex * 14;
+	filhdr.ssize = sflag ? 0 : stotal + symindex * 14;
 	if (entrypt) {
 		if (entrypt->stype != '"')
 			report_error(1, "Entry point not in text");
 		else
 			filhdr.entry = entrypt->svalue;
 	} else
-		filhdr.entry = v6bf8;
+		filhdr.entry = torigin;
 	filhdr.fstamp[0] = 0;
 	filhdr.fstamp[1] = 0;
 	filhdr.relflg = rflag ? 0 : 1;
-	if (x66b8)
+	if (n8rel4)
 		filhdr.relflg |= 4;
-	if (x66ba)
+	if (n8swap)
 		filhdr.relflg |= 8;
 	init_entry(&hdr, &seg);
 	if (swapflg) {
@@ -813,7 +830,8 @@ start_output()
 	mput(&toutb, &seg, 0x10);
 }
 
-/* open_tmp: create the temporary file (flag) or the output file and open it for the buffer out (0x120e..0x12a8 of /bin/ld) */
+/* open_tmp: create the temporary file (flag 1) or the output file and open it for the buffer out (sld open_tmp, Plexus
+   tcreat; 0x120e..0x12a8 of /bin/ld) */
 open_tmp(out, flag)
 struct buf *out;
 int flag;
@@ -841,6 +859,8 @@ int flag;
 	out->xnext = out->iobuf;
 }
 
+/* init_entry: fill the header of the output (struct objhdr) and its segment record (struct fseg) from filhdr and the
+   section options (sld init_entry; 0x12a8..0x13ca of /bin/ld) */
 init_entry(hdr, seg)
 struct objhdr *hdr;
 struct fseg *seg;
@@ -857,8 +877,8 @@ struct fseg *seg;
 	hdr->hrelflg = filhdr.relflg;
 	hdr->hsymsz = filhdr.ssize;
 	hdr->hentry = filhdr.entry;
-	if (x66b8 || x66ba)
-		hdr->hy = filhdr.x1066;
+	if (n8rel4 || n8swap)
+		hdr->hy = filhdr.ftsize;
 	else
 		hdr->hy = 0;
 	hdr->hz = 0;
@@ -872,21 +892,22 @@ struct fseg *seg;
 	seg->atr = 7;
 	seg->s_data = filhdr.dsize;
 	seg->s_bss = filhdr.bsize;
-	if (tab42b4[1]) {
+	if (secflg[1]) {
 		seg->atr |= 0x10;
-		seg->s_coff = high_byte(v6bf8);
+		seg->s_coff = high_byte(torigin);
 	}
-	if (tab42b4[2]) {
+	if (secflg[2]) {
 		seg->atr |= 0x20;
-		seg->s_doff = high_byte(v6bfa);
+		seg->s_doff = high_byte(dorigin);
 	}
-	if (tab42b4[3]) {
+	if (secflg[3]) {
 		seg->atr |= 0x40;
-		seg->s_boff = high_byte(x6bfe);
+		seg->s_boff = high_byte(corigin);
 	}
 }
 
-/* load2arg: pass two for one argument (object file or archive member; sld load2arg; 0x13ca..0x1452 of /bin/ld) */
+/* load2arg: pass two for one argument (an object or the archive members of the library list) (sld load2arg, Plexus
+   load2arg; 0x13ca..0x1452 of /bin/ld) */
 load2arg(p)
 char *p;
 {
@@ -929,6 +950,9 @@ test1:
 	close(infil);
 }
 
+/* load2: pass two for one object: its local symbols into the local table, its global symbols checked against the
+   table, then the text and the data with load2td. The putc forms with (char) casts: see warn_sym_redef (sld load2,
+   Plexus load2; 0x1452..0x172e of /bin/ld) */
 load2(a)
 long a;
 {
@@ -943,12 +967,12 @@ long a;
 	register int k;
 
 	readhdr(a);
-	fctrel = v6bf8;
-	fcdrel += v6bfa;
-	fcbrel += v6bfc;
+	fctrel = torigin;
+	fcdrel += dorigin;
+	fcbrel += borigin;
 	t = local;
 	a += (unsigned)((hdrsz + segtsz)) >> 1;
-	dseek(&text, a + filhdr.x1066 + filhdr.x106a, filhdr.ssize);
+	dseek(&text, a + filhdr.ftsize + filhdr.fdsize, filhdr.ssize);
 	k = 0;
 	goto test;
 body:
@@ -997,21 +1021,23 @@ next:
 test:
 	if (text.size > 0)
 		goto body;
-	dseek(&text, a, filhdr.x1066);
-	u1 = half(filhdr.x106a);
-	u2 = half(filhdr.x1066) + a + u1;
-	dseek(&reloc, u2, filhdr.x1066);
+	dseek(&text, a, filhdr.ftsize);
+	u1 = half(filhdr.fdsize);
+	u2 = half(filhdr.ftsize) + a + u1;
+	dseek(&reloc, u2, filhdr.ftsize);
 	load2td(t, fctrel, &toutb, &routb);
-	u1 = half(filhdr.x1066) + a;
-	dseek(&text, u1, filhdr.x106a);
-	u1 = filhdr.x1066 + a + half(filhdr.x106a);
-	dseek(&reloc, u1, filhdr.x106a);
+	u1 = half(filhdr.ftsize) + a;
+	dseek(&text, u1, filhdr.fdsize);
+	u1 = filhdr.ftsize + a + half(filhdr.fdsize);
+	dseek(&reloc, u1, filhdr.fdsize);
 	load2td(t, fcdrel, &tmpoutb, &doutb);
-	v6bf8 += filhdr.tsize;
-	v6bfa += filhdr.dsize;
-	v6bfc += filhdr.bsize;
+	torigin += filhdr.tsize;
+	dorigin += filhdr.dsize;
+	borigin += filhdr.bsize;
 }
 
+/* load2td: relocate the words of the text or data of one object with their relocation words and write them to the
+   output (q) and with -r the relocation to r (sld load2td, Plexus load2td; 0x172e..0x194a of /bin/ld) */
 load2td(p, base, q, r)
 struct local *p;
 int base;
@@ -1052,7 +1078,7 @@ relpart:
 		w13 = swap(w13);
 	}
 	w14 = w13;
-	if (x66ba)
+	if (n8swap)
 		w12 = swap(w12);
 	switch (w13 & 0x0e) {
 	case 2:
@@ -1068,15 +1094,15 @@ relpart:
 	if ((w13 & 8) == 8) {
 		e = (struct symbol *)table_lookup(p, w13);
 		if (e->stype == 0x20)
-			w13 = (w13 & 1) + (index16(e) + v6bf6 << 4) + 8;
+			w13 = (w13 & 1) + (index16(e) + nlocsym << 4) + 8;
 		else {
 			w12 += (int)e->svalue;
 			w13 = (w13 & 1) + ((e->stype - 0x21) * 2);
 		}
 	}
-	if (x66ba)
+	if (n8swap)
 		w12 = swap(w12);
-	if (x66b8 || x66ba)
+	if (n8rel4 || n8swap)
 		switch (w14 & 0xf8) {
 		case 0x10:
 			flag++;
@@ -1113,9 +1139,9 @@ relpart:
 		} else
 			put_int_buf((unsigned char)w12, q);
 	} else {
-		f221e(w12, q);
+		put_word(w12, q);
 		if (rflag)
-			f221e(w13, r);
+			put_word(w13, r);
 	}
 test:
 	if (--text.size > 0)
@@ -1127,7 +1153,8 @@ test:
 	}
 }
 
-/* finish_output: write the remaining parts of the output and patch the header (sld finish_output; 0x194a..0x1a12 of /bin/ld) */
+/* finish_output: pad text and data to the area ends, copy the temporary files into the output, the symbols, then
+   rewrite the header (sld finish_output, Plexus finishout; 0x194a..0x1a12 of /bin/ld) */
 finish_output()
 {
 	int spare1, spare2;
@@ -1135,25 +1162,25 @@ finish_output()
 	register int *p;
 	register int *end;
 
-	p = (int *)v6bf8;
+	p = (int *)torigin;
 	end = (int *)areas[1].tend;
 	goto test1;
 body1:
 	p++;
-	f221e(0, &toutb);
+	put_word(0, &toutb);
 	if (rflag)
-		f221e(0, &routb);
+		put_word(0, &routb);
 test1:
 	if (p < end)
 		goto body1;
-	p = (int *)v6bfa;
+	p = (int *)dorigin;
 	end = (int *)areas[2].tend;
 	goto test2;
 body2:
 	p++;
-	f221e(0, &tmpoutb);
+	put_word(0, &tmpoutb);
 	if (rflag)
-		f221e(0, &doutb);
+		put_word(0, &doutb);
 test2:
 	if (p < end)
 		goto body2;
@@ -1178,6 +1205,7 @@ test2:
 	sig_handler();
 }
 
+/* copy: append the temporary file of the buffer p to the output (sld copy, Plexus copy; 0x1a12..0x1a74 of /bin/ld) */
 copy(p)
 struct buf *p;
 {
@@ -1201,6 +1229,8 @@ test:
 	close(fd);
 }
 
+/* high_byte: the page number of an address that must be a multiple of 256 ("internal error - mkchar" otherwise) (sld
+   high_byte; 0x1a74..0x1a9a of /bin/ld) */
 high_byte(x)
 unsigned x;
 {
@@ -1209,8 +1239,7 @@ unsigned x;
 	return((x >> 8) & 0xff);
 }
 
-
-/* mget: read n bytes of the text stream into the buffer p (0x1a9a..0x1b0a of /bin/ld) */
+/* mget: read n bytes of the text stream into p (sld mget, Plexus mget; 0x1a9a..0x1b0a of /bin/ld) */
 mget(p, n)
 int *p;
 int n;
@@ -1243,7 +1272,7 @@ int n;
 	while (--i);
 }
 
-/* mput: write n bytes (words) of the array a to the output buffer q (0x1b0a..0x1b38 of /bin/ld) */
+/* mput: write n bytes of a to the output buffer q (word by word) (sld mput, Plexus mput; 0x1b0a..0x1b38 of /bin/ld) */
 mput(q, p, n)
 struct buf *q;
 int *p;
@@ -1257,10 +1286,12 @@ int n;
 	r = p;
 	i = n >> 1;
 	do {
-		f221e(*r++, q);
+		put_word(*r++, q);
 	} while (--i);
 }
 
+/* dseek: position the input stream sp at the word v of the file with n bytes to read: find or fill one of the two
+   pages (sld dseek, Plexus dseek; 0x1b38..0x1c5a of /bin/ld) */
 dseek(sp, v, n)
 struct stream *sp;
 long v;
@@ -1302,12 +1333,15 @@ common:
 		obj->size = 0;
 }
 
+/* half: a byte count in words (unsigned) (sld half, Plexus half; 0x1c5a..0x1c6c of /bin/ld) */
 half(x)
 int x;
 {
 	return((x >> 1) & 0x7fff);
 }
 
+/* get: next word of the input stream p; "Premature EOF" when the stream is exhausted (sld get, Plexus get;
+   0x1c6c..0x1ce2 of /bin/ld) */
 get(a)
 struct stream *a;
 {
@@ -1337,6 +1371,9 @@ static char pfx1[] = "/usr";
 char libname[] = "/lib/libxxxxxxxxxxx";
 static char pfx2[] = "/z/bin";
 
+/* getfile: open an input file; -lx searches /lib/libx.a (or .8), /usr/lib, /z/bin/lib; 0 for an object, 1 for an
+   archive, 2 for an archive with a current __.SYMDEF, 3 for an outdated one (sld getfile, Plexus getfile;
+   0x1ce2..0x1e86 of /bin/ld) */
 getfile(name)
 char *name;
 {
@@ -1360,7 +1397,7 @@ char *name;
 			s = "-lc";
 		p = rindex(libname, '/') + 4;
 		strncpy(p, s + 2, &libname[18] - p);
-		strcat(p, v66b4 ? ".a" : ".8");
+		strcat(p, noswap ? ".a" : ".8");
 		infil = open(libname, 0);
 		if (infil != -1)
 			filname = libname;
@@ -1403,7 +1440,8 @@ char *name;
 	return 2;
 }
 
-/* report_error: print the message with the file name and stop when the level is above 1 (0x1e86..0x1f22 of /bin/ld) */
+/* report_error: print a message with the program name and the file (archive member) name; level 2 stops ld, level 1
+   marks an error (sld report_error, Plexus error; 0x1e86..0x1f22 of /bin/ld) */
 report_error(level, msg, a, b, c, d, e)
 int level;
 char *msg;
@@ -1427,7 +1465,8 @@ int e;
 	exstat = level;
 }
 
-/* table_lookup: find an entry of the local symbol table (0x1f22..0x1f64 of /bin/ld) */
+/* table_lookup: the symbol of the local index in the relocation word a, searched in the local table up to end (sld
+   table_lookup, Plexus lookloc; 0x1f22..0x1f64 of /bin/ld) */
 table_lookup(end, a)
 struct local *end;
 int a;
@@ -1449,6 +1488,8 @@ int a;
 	report_error(2, "Local symbol botch");
 }
 
+/* readhdr: read the header of the object at word offset a and set filhdr (sizes, entry, symbols, relocation flag) from
+   its segment records (sld readhdr, Plexus readhdr; 0x1f64..0x21f2 of /bin/ld) */
 readhdr(a)
 long a;
 {
@@ -1506,31 +1547,31 @@ long a;
 		filhdr.ssize = tmp.hsymsz;
 	} else
 		report_error(2, "Bad format");
-	x66b6 = filhdr.fmagic == 0xe711 || filhdr.fmagic == 0xe511 ? 1 : 0;
+	idsep = filhdr.fmagic == 0xe711 || filhdr.fmagic == 0xe511 ? 1 : 0;
 	if (magic == 0xe507 || magic == 0xe511) {
-		if (v66a4)
+		if (arflag)
 			report_error(2, "-r cannot be used with 8-bit files");
 		if (tmp.hrelflg & 4)
-			x66b8++;
+			n8rel4++;
 		else
-			x66ba++;
-		fcdrel = x66b6 ? 0 : -filhdr.tsize;
-		fcbrel = x66b8 ? 0 : fcdrel - filhdr.dsize;
-		filhdr.x1066 = tmp.hy;
-		filhdr.x106a = (int)tmp.hx - tmp.hy;
+			n8swap++;
+		fcdrel = idsep ? 0 : -filhdr.tsize;
+		fcbrel = n8rel4 ? 0 : fcdrel - filhdr.dsize;
+		filhdr.ftsize = tmp.hy;
+		filhdr.fdsize = (int)tmp.hx - tmp.hy;
 	} else {
 		t = (filhdr.tsize + 1) & 0xfffe;
 		filhdr.tsize = t;
-		fcdrel = x66b6 ? 0 : -t;
+		fcdrel = idsep ? 0 : -t;
 		i = (filhdr.dsize + 1) & 0xfffe;
 		fcbrel = fcdrel - i;
 		filhdr.bsize = (filhdr.bsize + 1) & 0xfffe;
-		filhdr.x1066 = filhdr.tsize;
-		filhdr.x106a = filhdr.dsize;
+		filhdr.ftsize = filhdr.tsize;
+		filhdr.fdsize = filhdr.dsize;
 	}
 }
 
-/* str_compare: 1 when the strings are equal, else 0 (sld str_compare without cmpmode; 0x21f2..0x221e of /bin/ld) */
+/* str_compare: 1 when the strings are equal, else 0 (sld str_compare, Plexus eq; 0x21f2..0x221e of /bin/ld) */
 str_compare(p, q)
 char *p, *q;
 {
@@ -1544,7 +1585,9 @@ char *p, *q;
 	}
 }
 
-f221e(x, p)
+/* put_word: put a word into the output buffer p byte by byte, high byte first (the byte order of the output does not
+   depend on the machine) (Plexus putw puts the word whole; 0x221e..0x226e of /bin/ld) */
+put_word(x, p)
 int x;
 register struct buf *p;
 {
@@ -1558,6 +1601,7 @@ register struct buf *p;
 		flush_buffer(p);
 }
 
+/* put_int_buf: put a byte into the output buffer p (sld put_int_buf; 0x226e..0x229c of /bin/ld) */
 put_int_buf(v, p)
 int v;
 register struct buf *p;
@@ -1567,7 +1611,7 @@ register struct buf *p;
 		flush_buffer(p);
 }
 
-/* flush_buffer: write the buffer to its file and reset it (sld flush_buffer; 0x229c..0x22e8 of /bin/ld) */
+/* flush_buffer: write the buffer to its file and reset it (sld flush_buffer, Plexus flush; 0x229c..0x22e8 of /bin/ld) */
 flush_buffer(a)
 register struct buf *a;
 {
@@ -1583,29 +1627,4 @@ register struct buf *a;
 	a->xnext = a->iobuf;
 	a->nleft = 0x100;
 }
-
-/* getfile: open an input file, searching the library directories (sld getfile; 0x1ce2..0x1e86 of /bin/ld; finding:
-   three registers in the original, the count of strncpy and the last branch differ) */
-
-/* load_header: read the header of an object file or archive member; a symbol-bearing object is entered in the list of
-   the library (sld load_header; 0x0714..0x07b2 of /bin/ld) */
-
-/* ranlib_scan: look up the undefined symbols in the ranlib table of an archive and load the members that define them (sld
-   ranlib_scan; finding: the bound test of the table is computed in another register; 0x07b2..0x089a of /bin/ld) */
-
-/* init_entry: fill the header of the output (struct objhdr) and the segment record (struct fseg) from the totals and the
-   flags (sld init_entry; finding: the store of hy goes through the frame copy of hdr; 0x12a8..0x13ca of /bin/ld) */
-
-/* readhdr: read the header of an object (or of the first member of an archive) and set filhdr from its segments (sld readhdr,
-   nonsegmented form; finding: the error blocks are placed inline, the original jumps to them; 0x1f64..0x21f2 of /bin/ld) */
-
-/* load2: pass two for one object: relocate its symbols, load the symbols of the output and the text and data of the object
-   (sld load2; finding: the frame and the tail (the dseek and load2td calls of the text and the data) are approximate; 0x1452..0x172e of /bin/ld) */
-
-/* load2td: relocate the words of the text and the relocation stream of one object and write them to the output (sld load2td;
-   finding: the switch targets are decoded, the loop is in the order of the original but not yet exact; 0x172e..0x1926 of /bin/ld) */
-
-/* place_sec: place the text, data and bss areas of the output (sld place_sec in the nonsegmented form of ld; finding: the
-   kinds and the sizes are equal in the code, the instruction order of the stores differs; 0x0d9c..0x108e of /bin/ld) */
-
 

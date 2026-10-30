@@ -24,9 +24,14 @@ struct page {
 	int nibuf;
 	int buff[256];
 };
-/* tab entry of the object list (t0..t10: the fields are not named yet) */
-struct tent {
-	int t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
+/* tab entry: the state of the load before an object, saved by record and restored by -v (Plexus struct overlay) */
+struct overlay {
+	int argsav;
+	int symsav;
+	long *libsav;
+	char *vname;
+	int ctsav, cdsav, cbsav;
+	int offt, offd, offb, offs;
 };
 /* output or input buffer with the byte count left (sld: struct buf) */
 struct buf {
@@ -54,17 +59,16 @@ extern struct page page[2];
 extern struct pghdr fpage;
 extern int infil;
 extern int ntab;
-extern struct tent tab[16];
+extern struct overlay tab[16];
 extern int symindex;
 extern long *libp;
-extern int ttotal, dtotal, btotal, v66ce;
+extern int ttotal, dtotal, btotal, stotal;
 extern char *ofilnam;
-extern int v007c, v0080;
+extern int nundef;
 extern char tmpname[];
-extern int v669a, v66a4;
+extern int Tflag, arflag;
 extern struct stream text;
 extern struct buf toutb;
-extern unsigned char v67e4[256];
 extern struct archdr archdr;
 extern char *pname;
 extern char *filname;
@@ -98,10 +102,10 @@ int put_name();
 int mput();
 extern int swapflg;
 int longswap();
-/* flags and output buffers of the symbol output (sld: sflag, xflag, soutb); v6bf8 is the word at 0x6bf8 (name open) */
+/* flags and output buffers of the symbol output (sld: sflag, xflag, soutb); torigin: start of the text of the current object (Plexus) */
 extern int sflag, xflag;
 extern struct buf soutb;
-extern int v6bf8, v6bf6;
+extern int torigin, nlocsym;
 int unpack_run();
 int put_sym();
 /* relocation bases of the object: text, data, bss (sld: fctrel, fcdrel, fcbrel) */
@@ -120,10 +124,10 @@ int load2arg();
 extern struct stream reloc;
 extern char libname[];
 extern char libpath[];
-extern int v66b4;
+extern int noswap;
 int getfile();
 char *rindex();
-char *f2b92();
+char *grow_rlbuf();
 /* entry of the ranlib table (sld: rlent, 12 bytes) */
 struct rlent {
 	long roff;
@@ -139,18 +143,18 @@ extern struct rlent *rltab;
 extern int rlcnt;
 int ranlib_scan();
 char *ensure_buf();
-int f2bf6();
-int f2bfc();
+int lock_rlbuf();
+int unlock_rlbuf();
 int chk_ranlib();
 int getfile();
 /* output header of ld (sld: filhdr), 16 bit fields at bss 0x1062: the offsets are those of the code (readhdr, init_entry);
-   x1066 and x106a are words of the same block whose use is open */
+   ftsize and fdsize are the sizes of text and data in the file (8-bit objects: from hy and hx, else tsize and dsize) */
 struct filhdr {
 	unsigned fmagic;
 	unsigned tsize;
-	unsigned x1066;
+	unsigned ftsize;
 	unsigned dsize;
-	unsigned x106a;
+	unsigned fdsize;
 	unsigned bsize;
 	unsigned ssize;
 	unsigned entry;
@@ -182,11 +186,11 @@ struct fseg {
 	char pad1[4];
 };
 extern int hdrsz, segtsz;
-extern int x66b6;
+extern int idsep;
 int swab();
 int swap_quad();
 int readhdr();
-extern int oflag, iflag, v66c4, v66c8;
+extern int oflag, iflag, fttotal, fdtotal;
 extern struct symbol *entrypt;
 int load2td();
 int half();
@@ -197,10 +201,10 @@ int put_sym();
 int dseek();
 struct symbol **lookup_name();
 int swap();
-int f221e();
+int put_word();
 struct areas { char kind; char pad; int tstart; int tsize; int tend; };
 extern struct areas areas[4];
-extern char tab42b4[5];
+extern char secflg[5];
 extern char *secnam[4];
 extern int secorg[4];
 int place_sec();

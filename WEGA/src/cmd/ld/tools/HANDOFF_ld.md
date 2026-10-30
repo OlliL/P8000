@@ -252,29 +252,29 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 
 - Tools: `ldcheck.py` (draft against the original), `accept_ld.py DRAFT ENTRY END NAME` (accepts an exact draft into
   the C file of its module, sets status in findings.json and own_functions.txt; declarations are written once).
-- Done (exact, in the C files): f1c5a (ld.c), f2bf6 and f2bfc (symbols.c; the variable at 067c is v067c, data).
-- Findings (symbols.c): f26ac, f26ca. Instructions equal with the arguments in the order f2360(x, &v107c)
-  and f22e8(x, &v107c); the original frame is 4 bytes, the draft 2 (one unused 2-byte local). Three attempts used.
+- Done (exact, in the C files): half (ld.c), lock_rlbuf and unlock_rlbuf (symbols.c; the variable at 067c is rlbusy, data).
+- Findings (symbols.c): slookup, pslookup. Instructions equal with the arguments in the order pack_name(x, &cursym.sname)
+  and unpack_run(x, &cursym.sname); the original frame is 4 bytes, the draft 2 (one unused 2-byte local). Three attempts used.
   Drafts in /mnt/share/cvs/P8000/tmp/tmp/d5/ (not accepted).
 - ld.c and symbols.c compile alone with the original cc (checked).
 - Next: the remaining functions of ld.c, printname.c and copyname.c, then symbols.c.
 
 ## Step 5: second batch (2026-10-29)
 
-- Done (exact, ld.c): f1a74 (unsigned x; the frame and the branch as in the original).
-- Findings (ld.c): f21f2 (string compare loop, three attempts), f226e (buffer put with register pointer, three
+- Done (exact, ld.c): high_byte (unsigned x; the frame and the branch as in the original).
+- Findings (ld.c): str_compare (string compare loop, three attempts), put_int_buf (buffer put with register pointer, three
   attempts). Drafts in /mnt/share/cvs/P8000/tmp/tmp/d5/ (f21f2_try3.c, f226e_try3.c).
 - accept_ld.py: parameter declarations (K&R) stay in the function now; only the declarations before the function
   header are globals (bug of the first version put `unsigned x;` at the top of ld.c; fixed by hand).
 - Pattern check (2026-10-29): the char parameter is NOT the problem. The old cc uses the argument register directly in
-  the same way as our compiler (test: char c in r6/r7, ldb @r2,rl6). The frame differences in f26ac, f26ca and f226e
-  are unused 2-byte locals (spare). f26ac and f26ca are now exact with `int spare;` (accepted, symbols.c). f226e:
+  the same way as our compiler (test: char c in r6/r7, ldb @r2,rl6). The frame differences in slookup, pslookup and put_int_buf
+  are unused 2-byte locals (spare). slookup and pslookup are now exact with `int spare;` (accepted, symbols.c). put_int_buf:
   with `register struct buf *p` the argument order is right, but the original frame (6 bytes: slot 0 unused, c at 2,
   saved r14 at 4) is one register parameter slot less than ours when p is register: open for the second pass.
 
-## Step 5: f1b0a (2026-10-29)
+## Step 5: mput (2026-10-29)
 
-- Findings (ld.c): loop with djnz (f1b0a). Instructions equal after the parameter list is (q, p, n) and the register
+- Findings (ld.c): loop with djnz (mput). Instructions equal after the parameter list is (q, p, n) and the register
   declarations are `register int *r; register i;`. Four attempts (the limit is three): the frame is 10 bytes against
   14 (two unused words). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f1b0a_try4.c.
 - Observation: the old cc gives the first parameter of the K&R list the last argument register (here n in r5 with the
@@ -282,73 +282,73 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 
 ## Parameter order, second data point (2026-10-29)
 
-- f1f22 (ld.c, finding): with the declared list (x, end) our compile gives end the first and x the last argument
-  register; the original has x in r6 and end in r7. f1b0a showed the same. Two functions now point the same way
+- table_lookup (ld.c, finding): with the declared list (x, end) our compile gives end the first and x the last argument
+  register; the original has x in r6 and end in r7. mput showed the same. Two functions now point the same way
   (the first declared parameter takes the last argument register). Not yet confirmed by a function that is exact: the
-  fix (end, x) for f1f22 is the first thing to try in the second pass.
-- Register declarations: the first declared register variable gets r14, the next r13, then r12 (f1f22: p, e, key).
-- f1f22 exact (ld.c) with the parameter list (end, x) and three unused locals (fifth attempt, with the approval of the
-  owner). This is the second function that confirms the parameter rule (f1b0a has the same order; f1b0a stays a finding
+  fix (end, x) for table_lookup is the first thing to try in the second pass.
+- Register declarations: the first declared register variable gets r14, the next r13, then r12 (table_lookup: p, e, key).
+- table_lookup exact (ld.c) with the parameter list (end, x) and three unused locals (fifth attempt, with the approval of the
+  owner). This is the second function that confirms the parameter rule (mput has the same order; mput stays a finding
   until its frame is found). Both need the rule checked on a third function.
 - accept_ld.py bug (2026-10-29): a multi-line struct definition before the function header was split line by line,
-  which broke ld.c (found by the compile check after f1f22). Fixed: everything before the header is one block; ld.c
+  which broke ld.c (found by the compile check after table_lookup). Fixed: everything before the header is one block; ld.c
   repaired by hand; ld.c compiles alone again. After every accept run `cc -O -c` on the file.
 
 ## Findings resolved with the six-attempt limit (2026-10-29)
 
-- f21f2 exact at attempt 5 (ld.c): for loop, the equal case is the main path.
-- f226e exact at attempt 5 (ld.c): struct with the count field at 2 and the pointer at 4; char c as the second argument.
-- f1b0a exact at attempt 5 (ld.c): parameters (q, p, n), two unused locals.
-- Status now: done 10 (f1c5a, f1a74, f1f22, f21f2, f226e, f1b0a, f2bf6, f2bfc, f26ac, f26ca), open 49, crt0 3.
-- The parameter order (the first declared parameter takes the last argument register) holds for f1b0a and f1f22,
-  both exact now. f226e has (c, p) with c the second argument, the same rule.
-- f229c exact (ld.c, fourth attempt): the buffer flush (write of the used part, reset of pointer and count).
-  One struct buf for ld.c { int _fd; int _cnt; char *_ptr; char _buf[256]; }: f226e (offsets 2 and 4) uses the same
+- str_compare exact at attempt 5 (ld.c): for loop, the equal case is the main path.
+- put_int_buf exact at attempt 5 (ld.c): struct with the count field at 2 and the pointer at 4; char c as the second argument.
+- mput exact at attempt 5 (ld.c): parameters (q, p, n), two unused locals.
+- Status now: done 10 (half, high_byte, table_lookup, str_compare, put_int_buf, mput, lock_rlbuf, unlock_rlbuf, slookup, pslookup), open 49, crt0 3.
+- The parameter order (the first declared parameter takes the last argument register) holds for mput and table_lookup,
+  both exact now. put_int_buf has (c, p) with c the second argument, the same rule.
+- flush_buffer exact (ld.c, fourth attempt): the buffer flush (write of the used part, reset of pointer and count).
+  One struct buf for ld.c { int _fd; int _cnt; char *_ptr; char _buf[256]; }: put_int_buf (offsets 2 and 4) uses the same
   layout. accept_ld.py no longer writes a struct definition whose tag is already in the file (it was written twice).
-- f221e exact at the first attempt (ld.c): two-byte put into the buffer (high byte, low byte), parameter order (x, p).
-- Next candidates (ld.c): f1a9a uses the bss variables 1030, 1034, 1036 (a buffer read, not yet named), f089a (long
-  arithmetic with the error call), f0042 (the entry of ld.c, 90 bytes), f050c (no caller).
-- f1a9a exact at attempt 3 (ld.c): buffer read with refill. The statement order decides the code: `i = n; i >>= 1;`
-  and only then `r = p;` (HOWTO step 7). Globals v1030 (int *), v1034 and v1036 (int) are at the bss addresses 1030,
+- put_word exact at the first attempt (ld.c): two-byte put into the buffer (high byte, low byte), parameter order (x, p).
+- Next candidates (ld.c): mget uses the bss variables 1030, 1034, 1036 (a buffer read, not yet named), add16_checked (long
+  arithmetic with the error call), sig_handler (the entry of ld.c, 90 bytes), record (no caller).
+- mget exact at attempt 3 (ld.c): buffer read with refill. The statement order decides the code: `i = n; i >>= 1;`
+  and only then `r = p;` (HOWTO step 7). Globals text.ptr (int *), text.nibuf and text.size (int) are at the bss addresses 1030,
   1034, 1036 (names are guesses; step 5b checks them with the other variables). Three unused int locals.
-- f0042 exact at the first attempt (ld.c): the exit path of ld (unlink l.out, chmod with ~umask(0) & 0777 when no error,
-  unlink of v007a, _exit(v007c)). Globals: v007a (char *) and v007c, v0080 (int) are in the DATA section (data offsets
-  0x7a, 0x7c, 0x80, not bss); v669a and v66a4 are bss. For step 5b: declared without initial value they would become bss
+- sig_handler exact at the first attempt (ld.c): the exit path of ld (unlink l.out, chmod with ~umask(0) & 0777 when no error,
+  unlink of ofilnam, _exit(delarg)). Globals: ofilnam (char *) and delarg, nundef (int) are in the DATA section (data offsets
+  0x7a, 0x7c, 0x80, not bss); Tflag and arflag are bss. For step 5b: declared without initial value they would become bss
   (common); they must be initialised like the original (their data bytes are at those offsets), check in step 5b.
-- f089a findings (ld.c): checked long sum (error 1 when the sum is 0x10000 or more); three attempts; the difference is
+- add16_checked findings (ld.c): checked long sum (error 1 when the sum is 0x10000 or more); three attempts; the difference is
   two reloads of the parameters from the frame (D3). Draft: /mnt/share/cvs/P8000/tmp/tmp/d5/f089a_try3.c. Its file
   is ld.c, not accepted into the file (finding).
-- f050c exact at attempt 2 (ld.c): appends an entry (22 bytes) to tab at index ntab (bss 0abe, 0ac0). One unused int.
-  v0070 is a data variable (data offset 0x70), for step 5b.
-- Next (not started): f1c6c (118 bytes, ld.c) is a buffered word reader on a struct with a different layout from
-  buf: count at 4 and 6, a pointer to a pointer at 8, refill through f1b38. Decide the input struct from its callers
-  (f1a9a, f1ce2) first. f1a12 (98 bytes) is a file copy with lseek/read/close and the byte put f226e.
+- record exact at attempt 2 (ld.c): appends an entry (22 bytes) to tab at index ntab (bss 0abe, 0ac0). One unused int.
+  libp is a data variable (data offset 0x70), for step 5b.
+- Next (not started): get (118 bytes, ld.c) is a buffered word reader on a struct with a different layout from
+  buf: count at 4 and 6, a pointer to a pointer at 8, refill through dseek. Decide the input struct from its callers
+  (mget, getfile) first. copy (98 bytes) is a file copy with lseek/read/close and the byte put put_int_buf.
 
-## f1c6c: input stream struct (2026-10-29)
+## get: input stream struct (2026-10-29)
 
-- sld `struct buf` (ld.h: fildes, nleft, xnext, iobuf[256]) has the layout of our `struct buf` (f229c, f226e,
-  f221e): offsets 0, 2, 4 and the buffer at 6. Same type, consistent.
-- sld `struct stream` (ld.h: sres, bno, nibuf, ptr, size, pno) does NOT match f1c6c (sres comes first).
+- sld `struct buf` (ld.h: fildes, nleft, xnext, iobuf[256]) has the layout of our `struct buf` (flush_buffer, put_int_buf,
+  put_word): offsets 0, 2, 4 and the buffer at 6. Same type, consistent.
+- sld `struct stream` (ld.h: sres, bno, nibuf, ptr, size, pno) does NOT match get (sres comes first).
 - Plexus cmd/ld/ld.z8000.c has `struct stream { unsigned *ptr; int bno; int nibuf; int size; struct page *pno; }`
-  (private reference, layout only, no code copied): offsets 0 ptr, 2 bno, 4 nibuf, 6 size, 8 pno. This matches f1c6c:
+  (private reference, layout only, no code copied): offsets 0 ptr, 2 bno, 4 nibuf, 6 size, 8 pno. This matches get:
   ptr += 2 (inc @r14,#2), nibuf-- (4), size-- (6), and pno->nuser-- (dec @r2) with pno = &fpage (0x102c) on refill.
-- Proposed struct for f1c6c: struct stream { int *ptr; int bno; int nibuf; int size; struct pghdr *pno; } with sld's
-  struct pghdr { int nuser; int bno; }. The refill call f1b38 has a long argument (rr4 from the byte count shifted by 8):
+- Proposed struct for get: struct stream { int *ptr; int bno; int nibuf; int size; struct pghdr *pno; } with sld's
+  struct pghdr { int nuser; int bno; }. The refill call dseek has a long argument (rr4 from the byte count shifted by 8):
   its prototype is the next question.
 - Naming (2026-10-29, owner): the output buffer is sld's `struct buf` with the member names of sld ld.h (fildes,
   nleft, xnext, iobuf). Types: char * and char iobuf[256] (the code uses byte loads; sld uses int * and int[256]).
-  Checked after the rename: f229c, f226e, f221e still OK.
+  Checked after the rename: flush_buffer, put_int_buf, put_word still OK.
 
-## f1c6c (2026-10-29): open, needs f1b38
+## get (2026-10-29): open, needs dseek
 
 - Struct (sld naming): `struct stream { int *ptr; int bno; int nibuf; int size; struct pghdr *pno; }`, with sld's
   `struct pghdr { int nuser; int bno; }` and `struct pghdr fpage` (bss 0x102c; pno->nuser counts the users).
 - Draft (/mnt/share/cvs/P8000/tmp/tmp/d5/f1c6c_try2.c): with `register struct stream *p` the body is equal except
   the frame (8 against 6: the original keeps the parameter's home slot) and the arguments of the refill call.
-- The refill call `f1b38` has five argument registers: r3 = -1, rr4 = (long)(bno + 1) << 8, r6 not set at the call
-  (stale), r7 = the stream. f1b38 saves r3..r7 with `ldm @r15,r3,#5`. Its prototype is the next step (f1b38 is 290 bytes).
+- The refill call `dseek` has five argument registers: r3 = -1, rr4 = (long)(bno + 1) << 8, r6 not set at the call
+  (stale), r7 = the stream. dseek saves r3..r7 with `ldm @r15,r3,#5`. Its prototype is the next step (dseek is 290 bytes).
 
-## f1b38 (2026-10-29): structure read, no draft yet
+## dseek (2026-10-29): structure read, no draft yet
 
 - Entry: `sub r15,#28; ldm @r15,r3,#5`: five argument words r3, rr4 (long), r6, r7; r7 is the stream (r14 = r7).
   The long rr4 is shifted (sral #8) and kept at frame 14 and 18; the cpl of rr4 against it decides the path.
@@ -357,26 +357,26 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   Error 2 with the message at 0x0506 if the buffer is not in use.
 - Path: lseek (0x48d2) to the position from the long, read 0x200 bytes (0x48f4) into the buffer at offset 6, the count
   is sra #1 (words), the result is stored at buffer+4 (nleft). Then the word store at the stream pointer and the call
-  f1c5a-like helper at 0x1c5a when the third argument is not -1, then the count update subl.
+  half-like helper at 0x1c5a when the third argument is not -1, then the count update subl.
 - The pieces that need names first: the two buffers (sld names: which is toutb, which soutb), the position global at
   0x66be (fd of the input?), the offset 0x0c22 and 0x0e28 (buffer limits).
-- Open: the signature (5 args), the choice of buffer, the call of 0x1c5a (f1c5a, exact: (x >> 1) & 0x7fff).
-- f1b38 = sld `dseek(sp, v, n)` (ld.c): page[0] at 0c20, page[1] at 0e26 (struct page 518 bytes: nuser, bno, nibuf,
+- Open: the signature (5 args), the choice of buffer, the call of 0x1c5a (half, exact: (x >> 1) & 0x7fff).
+- dseek = sld `dseek(sp, v, n)` (ld.c): page[0] at 0c20, page[1] at 0e26 (struct page 518 bytes: nuser, bno, nibuf,
   buff[256]), `No pages` error. Attempt 2 (draft /mnt/share/cvs/P8000/tmp/tmp/d5/f1b38_try2.c): register assignment right
   (obj r14, cur r13: declare obj first). Open: long compare in rr4 (original) against rr2 (ours), frame 24 against 20.
   Status open (attempt 2 of 6).
-- f1b38 accepted as a FINDING (ld.c, 2026-10-29): six attempts; the frame and the register assignment match, the
+- dseek accepted as a FINDING (ld.c, 2026-10-29): six attempts; the frame and the register assignment match, the
   compare of bno with hi in rr4 vs rr2 and two page tests through r2 do not (D3, D16). Draft: d5/f1b38_v3.c. New
   rule (HOWTO step 5, item 3): after six attempts the draft is accepted anyway, its diff goes into findings.json.
 - accept_ld.py: option --finding (accepts a non-matching draft and sets status findings).
-- f1c6c accepted as a FINDING (ld.c): the body matches; the parameter home slot (D4) and the argument registers of the
-  call to f1b38 differ. The call differs because the draft is compiled alone and f1b38 is not known there; the whole-file
-  compile (f1b38 before f1c6c, as in the original) decides it. struct stream and page are in ld.c.
+- get accepted as a FINDING (ld.c): the body matches; the parameter home slot (D4) and the argument registers of the
+  call to dseek differ. The call differs because the draft is compiled alone and dseek is not known there; the whole-file
+  compile (dseek before get, as in the original) decides it. struct stream and page are in ld.c.
 - accept_ld.py (2026-10-29): the globals before a function are taken block by block (blank-line separated), so a
-  declaration after a struct that is already in ld.c is no longer dropped (f1c6c lost `struct pghdr fpage;` that way;
+  declaration after a struct that is already in ld.c is no longer dropped (get lost `struct pghdr fpage;` that way;
   added by hand, ld.c compiles).
 
-## f1a12 (2026-10-29): finding
+## copy (2026-10-29): finding
 
 - Draft d5/f1a12_try3.c (goto loop, two int spares before q). Everything equal except the reload of the spilled p
   before `fd = p->fildes`: original `ld r7,p`, draft `ld r2,p` (D3). Tried variants (struct/int pointer, `(*p).`, extra
@@ -385,53 +385,53 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   final read of exactly 1 byte is not copied.
 - odis.py NAME does not parse own_functions.txt (two spaces); ld is non-segmented, odis decodes with seg=True
   (fails at 1a1a). Use unlink_seg.decode_range(prog, False, lo, hi) for ld until odis.py handles the flag.
-- accept_ld.py skipped the draft's `struct buf` block (already in ld.c), so the new globals of f1a12 landed above it
-  ("unknown size"). Fixed by hand: v66d8 after struct buf, v67e4 is `unsigned char v67e4[256]` (no warning).
+- accept_ld.py skipped the draft's `struct buf` block (already in ld.c), so the new globals of copy landed above it
+  ("unknown size"). Fixed by hand: toutb after struct buf, tmpoutb.iobuf is `unsigned char tmpoutb.iobuf[256]` (no warning).
   ld.c compiles alone without warnings. Known: a global block that comes with a skipped struct must be placed by hand.
 
 ## mget / text stream (2026-10-29)
 
-- f1a9a is `mget(p, n)` of the text stream (sld mget structure). The globals v1030 (ptr), v1034 (nibuf), v1036 (size)
+- mget is `mget(p, n)` of the text stream (sld mget structure). The globals text.ptr (ptr), text.nibuf (nibuf), text.size (size)
   are one `struct stream text` at bss 1030 (struct stream of ld.c: ptr, bno, nibuf, size, pno; bno 1032, pno 1038 unused here).
 - Readable draft (d5/mget_try1.c) is exact on 1a9a..1b0a: the sld if-structure, `*r++ = get(&text)` in the refill loop.
-- Renamed: f1a9a -> mget, f1c6c -> get, f1b38 -> dseek (names of sld). Keys in findings.json updated.
+- Renamed: mget -> mget, get -> get, dseek -> dseek (names of sld). Keys in findings.json updated.
 - Still open: the struct of ld differs from sld's struct stream (sld: sres first; ld: ptr first, as get proves).
 
 ## report_error (2026-10-29)
 
-- f1e86 is sld `report_error(code, msg)`. Renamed in ld.c (all five call sites) and findings.json key. Body not written yet
+- report_error is sld `report_error(code, msg)`. Renamed in ld.c (all five call sites) and findings.json key. Body not written yet
   (status still open; the 156 bytes at 1e86 follow the sld message routine). The call sites keep their messages.
 
 ## half (2026-10-29)
 
-- f1c5a is sld `half(x)` (`(x >> 1) & 0x7fff`). Renamed in ld.c (definition and the call in dseek) and findings.json key.
+- half is sld `half(x)` (`(x >> 1) & 0x7fff`). Renamed in ld.c (definition and the call in dseek) and findings.json key.
 
 ## high_byte (2026-10-29)
 
-- f1a74 is sld high_byte(x): check that x fits in a byte (report_error 2 otherwise), return the high byte. Renamed in ld.c and findings.json.
+- high_byte is sld high_byte(x): check that x fits in a byte (report_error 2 otherwise), return the high byte. Renamed in ld.c and findings.json.
 
 ## table_lookup / local (2026-10-29)
 
-- f1f22 is sld table_lookup(end, a). The table at bss 0x56f2 is `struct local local[1]` (ld.h name), but ld's entries are
+- table_lookup is sld table_lookup(end, a). The table at bss 0x56f2 is `struct local local[1]` (ld.h name), but ld's entries are
   4 bytes (locindex at 0, locsymbol at 2, p++ steps 4), while sld's struct local is 6 bytes (struct symbol pointer).
   So the layout is ld's own; only the name is taken from ld.h. Renamed in ld.c and findings.json; exact on 1f22..1f64.
 
 ## str_compare (2026-10-29)
 
-- f21f2 is sld str_compare without the cmpmode branch (returns 1 when equal, else 0). The shape of sld (do/while with *p++ at the end, if/else) gives other code (D-class of the test order); the body with the test of *q++ and *p++ inside the if is the exact one. Renamed in ld.c and findings.json; exact on 21f2..221e.
+- str_compare is sld str_compare without the cmpmode branch (returns 1 when equal, else 0). The shape of sld (do/while with *p++ at the end, if/else) gives other code (D-class of the test order); the body with the test of *q++ and *p++ inside the if is the exact one. Renamed in ld.c and findings.json; exact on 21f2..221e.
 
 ## Names from sld (2026-10-29)
 
-- f229c -> flush_buffer (sld flush_buffer: write the buffer, reset it), f1a12 -> copy (sld copy(p): copy a file to the output; ld reads 256 bytes, sld 0x200), f0042 -> sig_handler (sld: unlink, chmod, exit). Renamed in ld.c and findings.json; ld.c compiles.
-- Not matched yet: f221e (two-byte put), f050c (table entry), f2bf6/f2bfc (counter), f26ac/f26ca (name print), f2360/f22e8 (copyname.c).
+- flush_buffer -> flush_buffer (sld flush_buffer: write the buffer, reset it), copy -> copy (sld copy(p): copy a file to the output; ld reads 256 bytes, sld 0x200), sig_handler -> sig_handler (sld: unlink, chmod, exit). Renamed in ld.c and findings.json; ld.c compiles.
+- Not matched yet: put_word (two-byte put), record (table entry), lock_rlbuf/unlock_rlbuf (counter), slookup/pslookup (name print), pack_name/unpack_run (copyname.c).
 
 ## report_error (2026-10-29)
 
-- f1e86 is sld report_error (exact, 1e86..1f22, 42 instructions, draft d5/re2.c). The ld version prints with fprintf(stderr, ...) (_fprintf 33b4 in the printf member of libc; stderr = __iob+16 = 0x0908, _iobuf entries 8 bytes). sig_handler at 0042 (confirmed by the call). Variables: pname 0x66d6, filname 0x66c0, archdr 0x1048 (struct archdr, 26 bytes), exstat 0x703e (step 5b). ld.c now has #include <stdio.h> (WEGA stdio.h; stderr macro).
+- report_error is sld report_error (exact, 1e86..1f22, 42 instructions, draft d5/re2.c). The ld version prints with fprintf(stderr, ...) (_fprintf 33b4 in the printf member of libc; stderr = __iob+16 = 0x0908, _iobuf entries 8 bytes). sig_handler at 0042 (confirmed by the call). Variables: pname 0x66d6, filname 0x66c0, archdr 0x1048 (struct archdr, 26 bytes), exstat 0x703e (step 5b). ld.c now has #include <stdio.h> (WEGA stdio.h; stderr macro).
 
 ## ld.h (2026-10-29)
 
-- ld.h in src/cmd/ld (sld style): structs pghdr, stream, page, tent, buf, archdr, local and the extern declarations of the variables.
+- ld.h in src/cmd/ld (sld style): structs pghdr, stream, page, overlay, buf, archdr, local and the extern declarations of the variables.
   ld.c includes stdio.h and ld.h and defines the variables. No prototypes (K&R). symbols.c and the drafts do not include it.
 
 ## Messages and names from sld (2026-10-29)
@@ -439,44 +439,44 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - Placeholder messages "x" replaced by the strings of /bin/ld (found by mapping the string immediates of the code to
   functions; data base = code size 0x4a00): high_byte "internal error - mkchar", table_lookup "Local symbol botch",
   flush_buffer "output error", get "Premature EOF" (string at data 0x58, verified in the call of get).
-- Message to function map (ld binary, sld source line): "area wrap around" f0d9c = place_sec (sld 792); "Entry point not
-  in text" f108e = start_output (921); "cannot create temp" f120e = open_tmp (963, done); "internal error: symbol not found",
-  "Local symbol overflow", "- Multiply defined" f1452 = load2 (1071..1086); "Relocation error" f172e = load2td (1172);
-  "l.out" link f194a = finish_output (1326); "cannot open library/cannot open" f1ce2 = getfile (1564, 1571);
-  "Invalid segment attributes", "Bad format", "-r cannot be used with 8-bit files" f1f64 = readhdr (1697);
-  "- warning: symbol redefined in archive" f2862 = warn_sym_redef (1866).
+- Message to function map (ld binary, sld source line): "area wrap around" place_sec = place_sec (sld 792); "Entry point not
+  in text" start_output = start_output (921); "cannot create temp" open_tmp = open_tmp (963, done); "internal error: symbol not found",
+  "Local symbol overflow", "- Multiply defined" load2 = load2 (1071..1086); "Relocation error" load2td = load2td (1172);
+  "l.out" link finish_output = finish_output (1326); "cannot open library/cannot open" getfile = getfile (1564, 1571);
+  "Invalid segment attributes", "Bad format", "-r cannot be used with 8-bit files" readhdr = readhdr (1697);
+  "- warning: symbol redefined in archive" warn_sym_redef = warn_sym_redef (1866).
 - open_tmp differs from sld in the output case: ld prints "ld: cannot create output" with fprintf(stderr), unlink("l.out"),
-  exit(2) (not report_error). Data: tmpname[] at 0x82 ("/tmp/ldaXXXXX"), ofilnam at 0x7a ("l.out"), v007c and v0080 at 7c/80.
+  exit(2) (not report_error). Data: tmpname[] at 0x82 ("/tmp/ldaXXXXX"), ofilnam at 0x7a ("l.out"), delarg and nundef at 7c/80.
 
 ## put_all (2026-10-29)
 
-- f282e is sld put_all (symbols.c) without the 0x40 bit of sld (ld has no such instruction). Exact (20 instructions, two spare ints). Uses symindex (v44a6, sld name) and toutb (v66d8, sld name): both renamed in ld.c and ld.h. symbols.c includes ld.h; ld.h declares table16_entry and next_entry as functions returning struct symbol pointers.
-- finish_output (f194a, open) calls put_all (19c8), flush_buffer(toutb), close(toutb.fildes), unlink/link of aoutnam, delarg = exstat
+- put_all is sld put_all (symbols.c) without the 0x40 bit of sld (ld has no such instruction). Exact (20 instructions, two spare ints). Uses symindex (symindex, sld name) and toutb (toutb, sld name): both renamed in ld.c and ld.h. symbols.c includes ld.h; ld.h declares table16_entry and next_entry as functions returning struct symbol pointers.
+- finish_output (finish_output, open) calls put_all (19c8), flush_buffer(toutb), close(toutb.fildes), unlink/link of aoutnam, delarg = exstat
   and sig_handler. ld does not call patch_hdr there (sld does): a difference of ld, to note in the quirks table.
 
 ## symbols.c names (2026-10-29)
 
-- f26ac = sld slookup(p) (pack_name, stype 0x20, svalue 0, lookup_name); f26ca = sld pslookup(p) (unpack_run, same tail). Renamed in symbols.c and findings.json; the calls now use pack_name, unpack_run, lookup_name (copyname.c: f2360 = pack_name, f22e8 = unpack_run, f25dc = lookup_name, still open).
-- f2bf6 (v067c++) and f2bfc (v067c = 0): no function of that name in sld. sld has ncopied (copyname.c) incremented in copy_blocks, not a helper. Kept as f-names. v067c is only used in symbols.c.
-- v1076 (svalue), v107a (stype), v107c (sname) are the fields of sld cursym (struct symbol); not yet a struct in ld.h.
+- slookup = sld slookup(p) (pack_name, stype 0x20, svalue 0, lookup_name); pslookup = sld pslookup(p) (unpack_run, same tail). Renamed in symbols.c and findings.json; the calls now use pack_name, unpack_run, lookup_name (copyname.c: pack_name = pack_name, unpack_run = unpack_run, lookup_name = lookup_name, still open).
+- lock_rlbuf (rlbusy++) and unlock_rlbuf (rlbusy = 0): no function of that name in sld. sld has ncopied (copyname.c) incremented in copy_blocks, not a helper. Kept as f-names. rlbusy is only used in symbols.c.
+- cursym.svalue (svalue), cursym.stype (stype), cursym.sname (sname) are the fields of sld cursym (struct symbol); not yet a struct in ld.h.
 
 ## ld.h: struct symbol and cursym (2026-10-29)
 
 - ld.h has struct symbol (svalue 0, stype 4, sxtra 5, sname 6..13, 14 bytes) and extern struct symbol cursym. The layout follows the code of ld (pack_name target at 0x107c); sld has sseg and sname at 8. sxtra is the sld name for byte 5, not seen in use in ld (no instruction touches 0x107b).
-- symbols.c defines cursym and uses its fields (v1076, v107a, v107c are gone). slookup and pslookup still exact (26ac..26e8, 20 instructions).
+- symbols.c defines cursym and uses its fields (cursym.svalue, cursym.stype, cursym.sname are gone). slookup and pslookup still exact (26ac..26e8, 20 instructions).
 
 ## lookup_name (2026-10-29): finding
 
-- f25dc is sld lookup_name (symbols.c). Six attempts (d5/ln1..ln6). Differences: the original keeps start and end in r11 and r10, the drafts keep them in the frame; hash modulus 0x0923 (ld) instead of sld 0x0ffa. Accepted as finding.
+- lookup_name is sld lookup_name (symbols.c). Six attempts (d5/ln1..ln6). Differences: the original keeps start and end in r11 and r10, the drafts keep them in the frame; hash modulus 0x0923 (ld) instead of sld 0x0ffa. Accepted as finding.
 
 ## next_entry (2026-10-29): finding
 
-- f2aa6 is sld next_entry (symbols.c), entries 14 bytes in ld (mult #0e, inc #14). Five attempts; finding: register set (only e in r12, p in r1 without spill) and the bound test (two table words, other order). Draft d5/ne1.c.
+- next_entry is sld next_entry (symbols.c), entries 14 bytes in ld (mult #0e, inc #14). Five attempts; finding: register set (only e in r12, p in r1 without spill) and the bound test (two table words, other order). Draft d5/ne1.c.
 
 ## warn_sym_redef (2026-10-29): finding
 
-- f2862 is sld warn_sym_redef (symbols.c), message to stderr (_iob[2] = 0x908; sld uses stdout). Six attempts (d5/wsr1..wsr6), exact except the sign extension of the stored char (extsb in the original, subb rh2 here: _ptr of the original stdio is char *, WEGA src/head/stdio.h has unsigned char *). Check the stdio header of the original build.
-- put_name is f23e2 (printname.c, open).
+- warn_sym_redef is sld warn_sym_redef (symbols.c), message to stderr (_iob[2] = 0x908; sld uses stdout). Six attempts (d5/wsr1..wsr6), exact except the sign extension of the stored char (extsb in the original, subb rh2 here: _ptr of the original stdio is char *, WEGA src/head/stdio.h has unsigned char *). Check the stdio header of the original build.
+- put_name is put_name (printname.c, open).
 
 ## warn_sym_redef: stdio check (2026-10-29)
 
@@ -484,220 +484,220 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 
 ## mput and put_sym (2026-10-29)
 
-- f1b0a was missing from ld.c (lost in an earlier rewrite; status done in findings.json). Restored as mput(q, p, n) (sld mput; d5/mp2.c exact, 16 instructions) between mget and sig_handler, and renamed in findings.json. ld.h declares mput, swapflg and swap_pair.
-- f27be = put_sym (symbols.c, finding, d5/ps4.c). Original writes the symbol itself (no struct copy, no nwsym).
+- mput was missing from ld.c (lost in an earlier rewrite; status done in findings.json). Restored as mput(q, p, n) (sld mput; d5/mp2.c exact, 16 instructions) between mget and sig_handler, and renamed in findings.json. ld.h declares mput, swapflg and swap_pair.
+- put_sym = put_sym (symbols.c, finding, d5/ps4.c). Original writes the symbol itself (no struct copy, no nwsym).
 
 ## Missing functions restored (2026-10-29)
 
-- Check: every function with status done or findings must be in the C files. f1b0a (done) and f089a (finding) were not in ld.c; f1b0a is restored as mput, f089a from d5/f089a_try3.c (accept --finding). lookup_name and next_entry are present (type prefix in the definition).
+- Check: every function with status done or findings must be in the C files. mput (done) and add16_checked (finding) were not in ld.c; mput is restored as mput, add16_checked from d5/f089a_try3.c (accept --finding). lookup_name and next_entry are present (type prefix in the definition).
 
 ## Review of the sld counterparts (2026-10-29)
 
 - flush_buffer: sld constants and expressions (0x100, char pointer differences), register parameter kept: exact (24 instructions).
-- f089a renamed add16_checked (sld add16_checked), parameters x, y, a; report_error(1, a). The finding is unchanged (D3 reloads).
+- add16_checked renamed add16_checked (sld add16_checked), parameters x, y, a; report_error(1, a). The finding is unchanged (D3 reloads).
 - mget: the sld form (char *p, int stores) is NOT exact (frame 16 with three spares, register order). Kept the exact int form.
-- No sld counterpart: f2bf6, f2bfc (v067c counter), f221e (two-byte put), f050c (tab entry with the tent fields).
+- No sld counterpart: lock_rlbuf, unlock_rlbuf (rlbusy counter), put_word (two-byte put), record (tab entry with the overlay fields).
 - Counterparts with a different body in ld (kept, because they are exact): table_lookup (no printf), warn_sym_redef (char cast), put_all (no 0x40 bit), str_compare (form without cmpmode), slookup/pslookup, put_sym/next_entry/lookup_name (findings).
 
 ## copyname.c (2026-10-29)
 
-- copyname.c created: unpack_run (f22e8, sld unpack_run, exact; 14-byte entries, no cmpmode branch, frame with spares int spare1, spare2 before ch) and pack_name (f2360, sld pack_name, finding: the padding loop branch is inverted in the layout; draft d5/pn3.c, six attempts).
+- copyname.c created: unpack_run (unpack_run, sld unpack_run, exact; 14-byte entries, no cmpmode branch, frame with spares int spare1, spare2 before ch) and pack_name (pack_name, sld pack_name, finding: the padding loop branch is inverted in the layout; draft d5/pn3.c, six attempts).
 
 ## printname.c (2026-10-29)
 
-- printname.c created: put_name (f23e2), sld put_name with stderr (putc macro in the form of warn_sym_redef, fprintf for the dots), frame with spares; exact (65 instructions). pnflag defined here, nlflag in ld.h.
+- printname.c created: put_name, sld put_name with stderr (putc macro in the form of warn_sym_redef, fprintf for the dots), frame with spares; exact (65 instructions). pnflag defined here, nlflag in ld.h.
 
 ## read_entry_hdr (2026-10-29)
 
-- f249a in printname.c (module of the assignment): sld read_entry_hdr, nonsegmented part (14-byte entries). Exact (34 instructions) with frame layout char cnt, two int spares, end. sld has the function in symbols.c; the module assignment (guess in assigned.txt) should be checked by the owner.
+- read_entry_hdr in printname.c (module of the assignment): sld read_entry_hdr, nonsegmented part (14-byte entries). Exact (34 instructions) with frame layout char cnt, two int spares, end. sld has the function in symbols.c; the module assignment (guess in assigned.txt) should be checked by the owner.
 
 ## ldrsym (2026-10-29)
 
-- f2502 is sld ldrsym (symbols.c), exact (50 instructions). The parameter order is (a, x, v, c): the original takes the char c from r3 and the long v from rr4; x is not used in the body (role unknown). Placed in symbols.c between read_entry_hdr and lookup_name (address order).
+- ldrsym is sld ldrsym (symbols.c), exact (50 instructions). The parameter order is (a, x, v, c): the original takes the char c from r3 and the long v from rr4; x is not used in the body (role unknown). Placed in symbols.c between read_entry_hdr and lookup_name (address order).
 
 ## mkfsym (2026-10-29)
 
-- f25a2 is sld mkfsym(p) (symbols.c), exact (18 instructions). Differences to sld: svalue is the word at 0x6bf8 (v6bf8, name open), not 0; no map_sym call. sflag and xflag (0x66a6, 0x669c), soutb (0x6af0) are sld names in ld.h.
+- mkfsym is sld mkfsym(p) (symbols.c), exact (18 instructions). Differences to sld: svalue is the word at 0x6bf8 (torigin, name open), not 0; no map_sym call. sflag and xflag (0x66a6, 0x669c), soutb (0x6af0) are sld names in ld.h.
 
 ## symreloc (2026-10-29)
 
-- f2766 is sld symreloc (symbols.c), exact (29 instructions) in the form with a return in each case and the default as a tail (sr5). The bases v66d0, v66d2, v66d4 are renamed fctrel, fcdrel, fcbrel (sld names, used in f050c and symreloc).
+- symreloc is sld symreloc (symbols.c), exact (29 instructions) in the form with a return in each case and the default as a tail (sr5). The bases fctrel, fcdrel, fcbrel are renamed fctrel, fcdrel, fcbrel (sld names, used in record and symreloc).
 
 ## limit_msg (2026-10-29)
 
-- f2c02 is sld limit_msg (symbols.c), exact (9 instructions). The available count is 0x0923 when symtab is allocated, else 0x0258. sig_handler calls it when v669a is set (the flag name is still open). In sld it is declared but has no caller.
-- Open after this round: f294e (loop over 12-byte entries with pslookup and warn_sym_redef; no clean sld counterpart found), f2b3a and f2b92 (ranlib buffer growth, similar to sld ensure_buf but with other logic). Both not matched.
+- limit_msg is sld limit_msg (symbols.c), exact (9 instructions). The available count is 0x0923 when symtab is allocated, else 0x0258. sig_handler calls it when Tflag is set (the flag name is still open). In sld it is declared but has no caller.
+- Open after this round: chk_ranlib (loop over 12-byte entries with pslookup and warn_sym_redef; no clean sld counterpart found), ensure_buf and grow_rlbuf (ranlib buffer growth, similar to sld ensure_buf but with other logic). Both not matched.
 
 ## enter (2026-10-29): finding
 
-- f26e8 is sld enter (symbols.c), finding: 40 instructions, one store pair differs (register reload of r). Five attempts (d5/en1..en5). Table size 0x0923 and no sseg store.
+- enter is sld enter (symbols.c), finding: 40 instructions, one store pair differs (register reload of r). Five attempts (d5/en1..en5). Table size 0x0923 and no sseg store.
 
 ## index16 (2026-10-29)
 
-- f2b04 is sld index16 (symbols.c), exact (19 instructions, one spare int). ld has two parts: a static table of 0x258 entries at 0x1102 (14 byte entries), then the table at symtab. v069c (word at 0x069c) is the end of the static part, name open. Same as the static table of table16_entry (f29d6, still open).
+- index16 is sld index16 (symbols.c), exact (19 instructions, one spare int). ld has two parts: a static table of 0x258 entries at 0x1102 (14 byte entries), then the table at symtab. nsym (word at 0x069c) is the end of the static part, name open. Same as the static table of table16_entry (table16_entry, still open).
 
 ## load2arg and ld.c order (2026-10-29)
 
-- f13ca is sld load2arg (ld.c), exact (47 instructions): the archive branch calls mkfsym(archdr.aname) before load2(*lp + 13); load2 takes only the long argument here (the second argument of the draft was wrong). libp is the word at 0x0070 (was v0070, now long *libp; the size stays 2 bytes). ld.c functions are now in address order (sig_handler ... flush_buffer; load2arg at 13ca).
+- load2arg is sld load2arg (ld.c), exact (47 instructions): the archive branch calls mkfsym(archdr.aname) before load2(*lp + 13); load2 takes only the long argument here (the second argument of the draft was wrong). libp is the word at 0x0070 (was libp, now long *libp; the size stays 2 bytes). ld.c functions are now in address order (sig_handler ... flush_buffer; load2arg at 13ca).
 
 ## getfile (2026-10-29): finding
 
-- f1ce2 is sld getfile (ld.c), finding (120 instructions, equal count, draft d5/gf4.c). libname is the data string "/lib/libxxxxxxxxxxx" (0x156). Open points: three register variables, strncpy count, last branch, the reloc stream address (0x1042 as pno, step 5b).
+- getfile is sld getfile (ld.c), finding (120 instructions, equal count, draft d5/gf4.c). libname is the data string "/lib/libxxxxxxxxxxx" (0x156). Open points: three register variables, strncpy count, last branch, the reloc stream address (0x1042 as pno, step 5b).
 
-## f2c20 (2026-10-29)
+## grow_heap (2026-10-29)
 
-- f2c20 has no sld counterpart. It calls the entry 0x484a of the shipped brk member twice (grow by x, then query with 0) and returns the old break or -1 when the break moved (unsigned locals a, b, exact). It is the growth helper of table16_entry (f29d6). The name of 0x484a (presumably sbrk) is not verified.
+- grow_heap has no sld counterpart. It calls the entry 0x484a of the shipped brk member twice (grow by x, then query with 0) and returns the old break or -1 when the break moved (unsigned locals a, b, exact). It is the growth helper of table16_entry. The name of 0x484a (presumably sbrk) is not verified.
 
 ## ensure_buf (2026-10-29): finding
 
-- f2b3a is sld ensure_buf (symbols.c), finding after six attempts (d5/eb1..eb6, draft eb4). rlbuf (0x067a) and rlsize (0x0678, one word) are defined in symbols.c. The grow path for a non-empty buffer calls f2b92 (still open, 0x2b92..0x2bf6, with the messages "ranlib table of contents too large" and "table of contents overflow"). The first buffer comes from f2c20.
+- ensure_buf is sld ensure_buf (symbols.c), finding after six attempts (d5/eb1..eb6, draft eb4). rlbuf (0x067a) and rlsize (0x0678, one word) are defined in symbols.c. The grow path for a non-empty buffer calls grow_rlbuf (still open, 0x2b92..0x2bf6, with the messages "ranlib table of contents too large" and "table of contents overflow"). The first buffer comes from grow_heap.
 
-## f2b92 (2026-10-29)
+## grow_rlbuf (2026-10-29)
 
-- f2b92 (no sld name): grow path of ensure_buf, exact (32 instructions, draft d5/gb3.c). If sbrk(0) equals rlbuf + rlsize the buffer grows in place by f2c20(n - rlsize), else rlsize is cleared and ensure_buf starts again. Messages: "ranlib table of contents too large", "table of contents overflow".
+- grow_rlbuf (no sld name): grow path of ensure_buf, exact (32 instructions, draft d5/gb3.c). If sbrk(0) equals rlbuf + rlsize the buffer grows in place by grow_heap(n - rlsize), else rlsize is cleared and ensure_buf starts again. Messages: "ranlib table of contents too large", "table of contents overflow".
 
 ## ensure_buf in sld form (2026-10-29)
 
-- ensure_buf now in the sld form (if (rlsize < n), zero test first, grow by f2b92). 29 of 30 instructions equal; the missing jump to the end after the grow call is the only difference (eb9).
+- ensure_buf now in the sld form (if (rlsize < n), zero test first, grow by grow_rlbuf). 29 of 30 instructions equal; the missing jump to the end after the grow call is the only difference (eb9).
 
-## f057c (2026-10-29)
+## restore (2026-10-29)
 
-- f057c: exact (40 instructions, draft d5/tr2.c). Restores the state of tab entry i (ntab, libp, the bases, the four words of tent) and clears the symbol hash entries back to saved (the tail of sld read_symbols, without sld function). Placed in ld.c in address order (after f050c). Name stays f057c.
+- restore: exact (40 instructions, draft d5/tr2.c). Restores the state of tab entry i (ntab, libp, the bases, the four words of overlay) and clears the symbol hash entries back to saved (the tail of sld read_symbols, without sld function). Placed in ld.c in address order (after record). Name stays restore.
 
 ## chk_ranlib (2026-10-29): finding
 
-- f294e is sld chk_ranlib (symbols.c; ranlib entries of 12 bytes, struct rlent in ld.h). Five attempts (d5/cr2..cr6, draft cr5). The original keeps a register variable (r14) and stores q = p from a reload; the loop and the calls (pslookup, warn_sym_redef) are equal. pslookup now returns struct symbol ** (type only; still exact, 10 instructions).
+- chk_ranlib is sld chk_ranlib (symbols.c; ranlib entries of 12 bytes, struct rlent in ld.h). Five attempts (d5/cr2..cr6, draft cr5). The original keeps a register variable (r14) and stores q = p from a reload; the loop and the calls (pslookup, warn_sym_redef) are equal. pslookup now returns struct symbol ** (type only; still exact, 10 instructions).
 
 ## table16_entry (2026-10-29)
 
-- f29d6 is sld table16_entry, exact (65 instructions, draft d5/t16_1.c, first attempt). ld has a static table of 0x258 entries at 0x1102 (14 bytes) and the table at symtab, allocated on first use: sbrk(0), f2c20(0x5fa6) (or 0x5fa6 - rlsize when the ranlib buffer is in use, then symtab = rlbuf and the buffer is cleared). Three error messages "Symbol table overflow" (different string literals in the original). symtab defined in symbols.c.
+- table16_entry is sld table16_entry, exact (65 instructions, draft d5/t16_1.c, first attempt). ld has a static table of 0x258 entries at 0x1102 (14 bytes) and the table at symtab, allocated on first use: sbrk(0), grow_heap(0x5fa6) (or 0x5fa6 - rlsize when the ranlib buffer is in use, then symtab = rlbuf and the buffer is cleared). Three error messages "Symbol table overflow" (different string literals in the original). symtab defined in symbols.c.
 
 ## finish_output and table16 names (2026-10-29)
 
-- f194a is sld finish_output in ld form (ld.c), exact (64 instructions, draft d5/fo2.c, two spares). Two padding loops (f221e with 0, toutb/soutb if rflag; tmpoutb/doutb if rflag) over the words at 0x6bf8..0x7012 and 0x6bfa..0x701a, then copy(tmpoutb), copy(routb) if rflag, copy(doutb), copy(soutb) if !xflag and put_all if !sflag, flush and close toutb, link of aoutnam if !ofilfnd, delarg = exstat, sig_handler. No patch_hdr. Names: delarg (was v007c, data 0x7c), aoutnam = "a.out". New globals: soutb, tmpoutb, routb, doutb (sld buffer names), rflag, sflag, xflag, ofilfnd (addresses from the code, step 5b); v6bf8, v7012, v6bfa, v701a (open names).
+- finish_output is sld finish_output in ld form (ld.c), exact (64 instructions, draft d5/fo2.c, two spares). Two padding loops (put_word with 0, toutb/soutb if rflag; tmpoutb/doutb if rflag) over the words at 0x6bf8..0x7012 and 0x6bfa..0x701a, then copy(tmpoutb), copy(routb) if rflag, copy(doutb), copy(soutb) if !xflag and put_all if !sflag, flush and close toutb, link of aoutnam if !ofilfnd, delarg = exstat, sig_handler. No patch_hdr. Names: delarg (was delarg, data 0x7c), aoutnam = "a.out". New globals: soutb, tmpoutb, routb, doutb (sld buffer names), rflag, sflag, xflag, ofilfnd (addresses from the code, step 5b); torigin, areas[1].tend, dorigin, areas[2].tend (open names).
 
 ## load_header (2026-10-29)
 
-- f0714 is sld load_header(p) (ld.c), exact (46 instructions, first attempt, d5/lh1.c). ld accepts the magic numbers 0xe707, 0xe711, 0xe507, 0xe511 (no 0xe607/0xe611, nonsegmented). swapflg (0x66b2) is declared in ld.h, not yet defined with an address (ld.c defines it next to rflag).
+- load_header is sld load_header(p) (ld.c), exact (46 instructions, first attempt, d5/lh1.c). ld accepts the magic numbers 0xe707, 0xe711, 0xe507, 0xe511 (no 0xe607/0xe611, nonsegmented). swapflg (0x66b2) is declared in ld.h, not yet defined with an address (ld.c defines it next to rflag).
 
 ## ranlib_scan (2026-10-29): finding
 
-- f07b2 is sld ranlib_scan (ld.c), finding after six attempts (d5/rs3.c). rltab (word at 0x6c00, pointer) and rlcnt (0x6c02) added. The bound test rltab + i < end uses another temporary register (r3 instead of r5).
+- ranlib_scan is sld ranlib_scan (ld.c), finding after six attempts (d5/rs3.c). rltab (word at 0x6c00, pointer) and rlcnt (0x6c02) added. The bound test rltab + i < end uses another temporary register (r3 instead of r5).
 
 ## reg_sect_addr (2026-10-29): finding
 
-- f0370 is sld reg_sect_addr (ld.c), finding after six attempts (d5/rsa4.c): code equal except the frame offset of fmt (6 vs 8) and the saved registers. secspec (0x702c), tab42b4 (0x702e) and secorg (0x7034) are the sld tables, declared in ld.c.
+- reg_sect_addr is sld reg_sect_addr (ld.c), finding after six attempts (d5/rsa4.c): code equal except the frame offset of fmt (6 vs 8) and the saved registers. secspec (0x702c), secflg (0x702e) and secorg (0x7034) are the sld tables, declared in ld.c.
 
 ## load_lib_syms (2026-10-29)
 
-- f0608 is sld load_lib_syms (ld.c), exact (79 instructions, draft d5/lls2.c, one spare int). The counter steps are the calls f2bf6() and f2bfc() of symbols.c (not inline increments). ld.h gets the prototypes ensure_buf, f2bf6, f2bfc, chk_ranlib, getfile.
+- load_lib_syms is sld load_lib_syms (ld.c), exact (79 instructions, draft d5/lls2.c, one spare int). The counter steps are the calls lock_rlbuf() and unlock_rlbuf() of symbols.c (not inline increments). ld.h gets the prototypes ensure_buf, lock_rlbuf, unlock_rlbuf, chk_ranlib, getfile.
 
-## readhdr (f1f64): analysis only (2026-10-29)
+## readhdr: analysis only (2026-10-29)
 
-- f1f64 is sld readhdr(a, b) in the nonsegmented form of ld: magic (E707, E711, E507, E511 accepted, else error "Bad format"), header of 0x18 bytes at a+0x14 (objhdr: hsegsz at +10, hentry at +14, hrelflg at +18), segment records of 16 bytes at frame 0x2c (s_code at +4, s_data at +6), words 0x1062 (fmagic), 0x106c, 0x1064, 0x1068, 0x1070 (entry), 0x1074, 0x106e, 0x66b6, 0x66b8, 0x66ba, 0x66d2, 0x66d4, 0x1066, 0x106a. Error "Invalid segment attributes" (0x54d) and "-r cannot be used with 8-bit files" (0x573). Not yet drafted: the frame (0x52) and the layout of the segment records must be fixed first.
+- readhdr is sld readhdr(a, b) in the nonsegmented form of ld: magic (E707, E711, E507, E511 accepted, else error "Bad format"), header of 0x18 bytes at a+0x14 (objhdr: hsegsz at +10, hentry at +14, hrelflg at +18), segment records of 16 bytes at frame 0x2c (s_code at +4, s_data at +6), words 0x1062 (fmagic), 0x106c, 0x1064, 0x1068, 0x1070 (entry), 0x1074, 0x106e, 0x66b6, 0x66b8, 0x66ba, 0x66d2, 0x66d4, 0x1066, 0x106a. Error "Invalid segment attributes" (0x54d) and "-r cannot be used with 8-bit files" (0x573). Not yet drafted: the frame (0x52) and the layout of the segment records must be fixed first.
 
-## readhdr (f1f64): layout facts (2026-10-29)
+## readhdr: layout facts (2026-10-29)
 
 - int is 2 bytes here, so struct fseg is 16 bytes: segno 0, s_coff 1, s_doff 2, s_boff 3, s_code 4, s_data 6, s_bss 8, atr 10 (the code reads atr of record 1 at 0x46 = rec+0x10+0x0a, rec at frame 0x2c).
 - The loop over the segment records is unrolled for n <= 2 (cp n,1; jle): record 0 always, record 1 only when n > 1. w = atr(rec0) | atr(rec1) is tested with 0xf8 (error Invalid segment attributes).
 - Counters at frame 0x0c, 0x0e, 0x10 count the records by bit 0, 1, 2 of atr (c0, c1, c2); filhdr.tsize and dsize come from s_code and s_data (+1 and & 0xfffe as in sld).
 - Still open: exact C form of the unrolled loop and the frame (0x52). Draft not yet made.
 
-## readhdr (f1f64): filhdr layout (2026-10-29)
+## readhdr: filhdr layout (2026-10-29)
 
-- The words 0x1062..0x1074 are the output header (filhdr) of ld. Uses: 0x1062 fmagic (cmp with E711, E511 in f2104 path); 0x1064 and 0x1068 are read with 16-bit operations (add r2,1064 / 1068 / 106c in place_sec-like code, f1702..171a), so ld uses 16-bit sizes, not the 32-bit longs of sld struct filhdr; 0x106e = ssize (from hsymsz); 0x1070 = entry (low word from hentry at +16); 0x1072/0x1073 cleared (fstamp in sld, 2 bytes); 0x1074 = relflg (hrelflg & 1).
+- The words 0x1062..0x1074 are the output header (filhdr) of ld. Uses: 0x1062 fmagic (cmp with E711, E511 in readhdr at 0x2104); 0x1064 and 0x1068 are read with 16-bit operations (add r2,1064 / 1068 / 106c at the end of load2, 0x1702..0x171a), so ld uses 16-bit sizes, not the 32-bit longs of sld struct filhdr; 0x106e = ssize (from hsymsz); 0x1070 = entry (low word from hentry at +16); 0x1072/0x1073 cleared (fstamp in sld, 2 bytes); 0x1074 = relflg (hrelflg & 1).
 - sld struct filhdr (fmagic, tsize long, dsize long, bsize long, ssize, entry long, fstamp[2], relflg) does not match these offsets. Before readhdr can be drafted, ld needs its own struct filhdr with the offsets above (step 8, structs). Open: whether 0x1064 to 0x106c are 16-bit or 32-bit in ld (16-bit reads seen at 1702..171a and 0x1066/0x106a uses).
 
-## filhdr and f12a8 (2026-10-29)
+## filhdr and init_entry (2026-10-29)
 
-- f12a8 reads the header words: p->hmagic = fmagic (0x1062), hx = tsize (0x1064) + dsize (0x1068) (16 bit, zero extended to long), hbss = 0x106c, hrelflg = 0x1074, hsymsz = 0x106e, hentry = 0x1070 (16 bit), hy = 0x1066 (if the flags 0x66b8/0x66ba allow, else 0), hz = 0. So ld header words are 16 bit; 0x1066 and 0x106a are not part of the 16-bit header sums (they are separate variables).
-- f12a8 is not the plain sld init_entry: after the header it zeroes 16 bytes at p and writes the segment records (fields at +4, +6, +8, +10 with segment numbers 7 and flags from 0x702f, 0x7030, 0x7031 and the names at 0x6bf8, 0x6bfa, 0x6bfe). Its C form needs the record struct first.
+- init_entry reads the header words: p->hmagic = fmagic (0x1062), hx = tsize (0x1064) + dsize (0x1068) (16 bit, zero extended to long), hbss = 0x106c, hrelflg = 0x1074, hsymsz = 0x106e, hentry = 0x1070 (16 bit), hy = 0x1066 (if the flags 0x66b8/0x66ba allow, else 0), hz = 0. So ld header words are 16 bit; 0x1066 and 0x106a are not part of the 16-bit header sums (they are separate variables).
+- init_entry is not the plain sld init_entry: after the header it zeroes 16 bytes at p and writes the segment records (fields at +4, +6, +8, +10 with segment numbers 7 and flags from 0x702f, 0x7030, 0x7031 and the names at 0x6bf8, 0x6bfa, 0x6bfe). Its C form needs the record struct first.
 
 ## struct filhdr of ld (2026-10-29)
 
-- ld.h: struct filhdr with 16 bit fields at bss 0x1062: fmagic 0x1062, tsize 0x1064, x1066 0x1066, dsize 0x1068, x106a 0x106a, bsize 0x106c, ssize 0x106e, entry 0x1070, fstamp[2] 0x1072, relflg 0x1074 (20 bytes). All offsets used in the code (readhdr, init_entry f12a8) fit. x1066 and x106a are the two words between the sums; their use is open. ld.c defines filhdr (the address is set in step 5b).
+- ld.h: struct filhdr with 16 bit fields at bss 0x1062: fmagic 0x1062, tsize 0x1064, ftsize 0x1066, dsize 0x1068, fdsize 0x106a, bsize 0x106c, ssize 0x106e, entry 0x1070, fstamp[2] 0x1072, relflg 0x1074 (20 bytes). All offsets used in the code (readhdr, init_entry init_entry) fit. ftsize and fdsize are the two words between the sums; their use is open. ld.c defines filhdr (the address is set in step 5b).
 
-## init_entry (f12a8, 2026-10-29): finding
+## init_entry (init_entry, 2026-10-29): finding
 
-- f12a8 is the header and segment record fill of ld (sld init_entry form). Five attempts (d5/ie1..ie5, draft ie5.c): equal except one store of hy (the original goes through r7, the draft reloads hdr from the frame). struct objhdr and struct fseg are in ld.h; char x702f, x7030, x7031 (flags), int x66b8, x66ba (hy flags), x6bfe (open names).
+- init_entry is the header and segment record fill of ld (sld init_entry form). Five attempts (d5/ie1..ie5, draft ie5.c): equal except one store of hy (the original goes through r7, the draft reloads hdr from the frame). struct objhdr and struct fseg are in ld.h; char secflg[1], secflg[2], secflg[3] (flags), int n8rel4, n8swap (hy flags), corigin (open names).
 
-## readhdr (f1f64, 2026-10-29): finding
+## readhdr (readhdr, 2026-10-29): finding
 
-- readhdr(a) of ld (nonsegmented form, one argument), finding after six attempts (d5/rh_1..rh_6, insertion from rh_7.c). The header, the segment records (16 bytes, rec[0] and rec[1] only), the counters c0..c2 from the atr bits of rec[1], the rounding to even sizes in the nonsegmented case and the flags x66b6, x66b8, x66ba are equal in the code. Open: the two error blocks (Bad format, Invalid segment attributes) are placed inline; the order of the last stores differs.
+- readhdr(a) of ld (nonsegmented form, one argument), finding after six attempts (d5/rh_1..rh_6, insertion from rh_7.c). The header, the segment records (16 bytes, rec[0] and rec[1] only), the counters c0..c2 from the atr bits of rec[1], the rounding to even sizes in the nonsegmented case and the flags idsep, n8rel4, n8swap are equal in the code. Open: the two error blocks (Bad format, Invalid segment attributes) are placed inline; the order of the last stores differs.
 
-## start_output (f108e, 2026-10-29): exact
+## start_output (start_output, 2026-10-29): exact
 
-- ld start_output (sld form): open_tmp of toutb, tmpoutb, soutb (if !sflag or !xflag), routb and doutb (if rflag), the magic by segmode (x66b8, x66ba) and the options oflag and iflag, sizes from v66c2, v66c6, v66cc, the rflag bases v66c4 and v66c8, ssize = sflag ? 0 : v66ce + symindex*14, the entry from entrypt (or v6bf8), relflg bits 2 and 3, init_entry, optional swab and swap_quad, then mput of the header (0x18) and the segment record (0x10). Exact (119 instructions, draft d5/so3.c). New globals oflag, iflag, v66c4, v66c8, entrypt (names open for the flags).
+- ld start_output (sld form): open_tmp of toutb, tmpoutb, soutb (if !sflag or !xflag), routb and doutb (if rflag), the magic by segmode (n8rel4, n8swap) and the options oflag and iflag, sizes from ttotal, dtotal, btotal, the rflag bases fttotal and fdtotal, ssize = sflag ? 0 : stotal + symindex*14, the entry from entrypt (or torigin), relflg bits 2 and 3, init_entry, optional swab and swap_quad, then mput of the header (0x18) and the segment record (0x10). Exact (119 instructions, draft d5/so3.c). New globals oflag, iflag, fttotal, fdtotal, entrypt (names open for the flags).
 
-## load2 (f1452): structure (2026-10-29), not drafted
+## load2: structure (2026-10-29), not drafted
 
-- ld load2(a) (one long argument, b not used): readhdr(a) (f1f64), then the segment bases fctrel += 0x6bf8, fcdrel += 0x6bfa, fcbrel += 0x6bfc (the text, data and bss of the object, see place_sec). dseek(&text, a2, ssize) with a2 = a + ((hdrsz + segtsz) & ~1) >> 1, then the table loop over the symbols: n = read_entry_hdr() + 1, symreloc() (0x2766), flags Sflag (0x66a0), Xflag (0x669e), sflag (0x66a6), xflag (0x669c), put_sym to soutb for non-symbols, lookup_name for symbols, with the local table at 0x56f2 (struct local, locindex = k) for entries with stype 0x20, the other entries: "- Multiply defined" (0x4c4, level 1, after put_name and a tab, as in the sld source), "internal error: symbol not found" (0x48d), "Local symbol overflow" (0x4ae) when the table is full. At the end load2td for the text (0x172e) and the data (0x172e again, with 0x67de and 0x69ea), then fctrel/fcdrel/fcbrel base increments of the object, not in the sld version.
+- ld load2(a) (one long argument, b not used): readhdr(a) (readhdr), then the segment bases fctrel += 0x6bf8, fcdrel += 0x6bfa, fcbrel += 0x6bfc (the text, data and bss of the object, see place_sec). dseek(&text, a2, ssize) with a2 = a + ((hdrsz + segtsz) & ~1) >> 1, then the table loop over the symbols: n = read_entry_hdr() + 1, symreloc() (0x2766), flags Sflag (0x66a0), Xflag (0x669e), sflag (0x66a6), xflag (0x669c), put_sym to soutb for non-symbols, lookup_name for symbols, with the local table at 0x56f2 (struct local, locindex = k) for entries with stype 0x20, the other entries: "- Multiply defined" (0x4c4, level 1, after put_name and a tab, as in the sld source), "internal error: symbol not found" (0x48d), "Local symbol overflow" (0x4ae) when the table is full. At the end load2td for the text (0x172e) and the data (0x172e again, with 0x67de and 0x69ea), then fctrel/fcdrel/fcbrel base increments of the object, not in the sld version.
 
-## load2 (f1452, 2026-10-29): finding, approximate tail
+## load2 (load2, 2026-10-29): finding, approximate tail
 
-- load2 is in ld.c as a finding after six attempts (d5/l2_1..l2_6, draft l2_6). The loop over the symbols follows the original. The frame is still 2 bytes off, and the tail (dseek on reloc at 0x103a and text, the half() offsets, the increments of v6bf8, v6bfa, v6bfc) is written from the disassembly but not verified exactly; the draft has an artificial line u2 = 0 + u2 that must go when the tail is checked. Not an exact function yet; load2td (f172e) still open.
+- load2 is in ld.c as a finding after six attempts (d5/l2_1..l2_6, draft l2_6). The loop over the symbols follows the original. The frame is still 2 bytes off, and the tail (dseek on reloc at 0x103a and text, the half() offsets, the increments of torigin, dorigin, borigin) is written from the disassembly but not verified exactly; the draft has an artificial line u2 = 0 + u2 that must go when the tail is checked. Not an exact function yet; load2td still open.
 
 ## load2 tail (2026-10-29)
 
-- load2 in ld.c now uses the tail of the original: dseek(&text, a, x1066); u1 = half(x106a); dseek(&reloc, half(x1066)+a+u1, x1066); load2td(t, fctrel, toutb, routb); dseek(&text, half(x1066)+a+u1, x106a); dseek(&reloc, x1066+a+half(x106a), x106a); load2td(t, fcdrel, tmpoutb, doutb); the bases v6bf8, v6bfa, v6bfc grow by tsize, dsize, bsize. The draft (l2_9) is still a finding: frame 2 bytes and register choices.
+- load2 in ld.c now uses the tail of the original: dseek(&text, a, ftsize); u1 = half(fdsize); dseek(&reloc, half(ftsize)+a+u1, ftsize); load2td(t, fctrel, toutb, routb); dseek(&text, half(ftsize)+a+u1, fdsize); dseek(&reloc, ftsize+a+half(fdsize), fdsize); load2td(t, fcdrel, tmpoutb, doutb); the bases torigin, dorigin, borigin grow by tsize, dsize, bsize. The draft (l2_9) is still a finding: frame 2 bytes and register choices.
 
-## load2td (f172e): structure (2026-10-29), not drafted
+## load2td: structure (2026-10-29), not drafted
 
 - Arguments (K&R order, first declared = r7): t (struct local *, frame 6), base (r6, fctrel/fcdrel), q (r5, toutb/tmpoutb), r (r4, routb/doutb).
 - Two streams: text at 0x1030 (nibuf 0x1034, size 0x1036, ptr 0x1030) and reloc at 0x103a (nibuf 0x103e, size 0x1040, ptr 0x103a); the word loop reads one text word w12 and one reloc word w13 per step with the get() fallback (1c6c = get), swap_bytes (0x4786) when swapflg (0x66b2), and a second swap for w12 when 0x66ba is set.
-- Switches: on w13 & 0x0e (cases 2, 4, 6; table at 0x142..0x146 with targets at 0x1820, 0x18a0, 0x1898) and on w13 & 0x30 and w13 & 0x0f (cases 0x10, 0x20, 0x30 and 9, 10, 11). Case 2 adds base (66d0/66d2/66d4 = fctrel, fcdrel, fcbrel) to w12; the symbol cases call lookup of the local table (f1f22 = table_lookup) for the index in w13 >> 4.
-- Output: the words are written to q (and r when rflag 0x66a2) with the 2-byte puts f226e (put_int_buf) and f221e (word), flag is a char at frame 0x11, w11 and w10 are in the frame. Draft not yet written.
+- Switches: on w13 & 0x0e (cases 2, 4, 6; table at 0x142..0x146 with targets at 0x1820, 0x18a0, 0x1898) and on w13 & 0x30 and w13 & 0x0f (cases 0x10, 0x20, 0x30 and 9, 10, 11). Case 2 adds base (66d0/66d2/66d4 = fctrel, fcdrel, fcbrel) to w12; the symbol cases call lookup of the local table (table_lookup = table_lookup) for the index in w13 >> 4.
+- Output: the words are written to q (and r when rflag 0x66a2) with the 2-byte puts put_int_buf and put_word (word), flag is a char at frame 0x11, w11 and w10 are in the frame. Draft not yet written.
 
-## load2td (f172e): switch targets (2026-10-29)
+## load2td: switch targets (2026-10-29)
 
 - Switch on w13 & 0x0e (cpir table 0x12c, jump table 0x13e): 2 -> 0x17f8 (w12 += fctrel 0x66d0), 4 -> 0x181a (w12 += fcdrel 0x66d2), 6 -> 0x1820 (w12 += fcbrel 0x66d4); no match -> 0x1824.
-- Then if (w13 & 8): symbol reloc via table_lookup (f1f22) with t and w13; e->stype 0x20 -> index16 (f2b04) path (0x17fe), else w12 += e+2 (svalue word) with w13 low bits.
-- Switch on w13 & 0xf8 (table 0x132, targets 0x18a0, 0x1898, 0x18a0 for 0x10, 0x20, 0x30): 0x1898 swaps w12 (f4786); 0x18a0 counts flag (incb 0x11) .
+- Then if (w13 & 8): symbol reloc via table_lookup with t and w13; e->stype 0x20 -> index16 path (0x17fe), else w12 += e+2 (svalue word) with w13 low bits.
+- Switch on w13 & 0xf8 (table 0x132, targets 0x18a0, 0x1898, 0x18a0 for 0x10, 0x20, 0x30): 0x1898 swaps w12 (libc swap, 0x4786); 0x18a0 counts flag (incb 0x11) .
 - Switch on w13 & 0x0f (table 0x138, targets 0x18cc, 0x18c4, 0x18cc for 9, 10, 11).
-- Output after each word: put_int_buf (f226e) to q and r; the last step uses word puts f221e with base values (0x17d6..0x1926).
+- Output after each word: put_int_buf to q and r; the last step uses word puts put_word with base values (0x17d6..0x1926).
 
-## load2td (f172e): draft 1 (2026-10-29)
+## load2td: draft 1 (2026-10-29)
 
-- Draft d5/ltd1.c (first attempt): 161 instructions against 168. The body (text word from nibuf, reloc word, swaps, the switch on w13 & 0x0e with fctrel/fcdrel/fcbrel, table_lookup for bit 8, the two switches on w13 & 0xf8 and w13 & 0x0f with flag counting, the output of put_int_buf or word_put) follows the decoded targets. Open: the loop end. The original leaves the loop by the test of text.size (dec, cp, jr gt), and at size 0 it reads one more word with get() and repeats the body; the draft does not. Also word_put is f221e (not yet named in the draft), and the frame has the locals at the wrong offsets.
+- Draft d5/ltd1.c (first attempt): 161 instructions against 168. The body (text word from nibuf, reloc word, swaps, the switch on w13 & 0x0e with fctrel/fcdrel/fcbrel, table_lookup for bit 8, the two switches on w13 & 0xf8 and w13 & 0x0f with flag counting, the output of put_int_buf or word_put) follows the decoded targets. Open: the loop end. The original leaves the loop by the test of text.size (dec, cp, jr gt), and at size 0 it reads one more word with get() and repeats the body; the draft does not. Also word_put is put_word (not yet named in the draft), and the frame has the locals at the wrong offsets.
 
-## load2td (f172e): draft 4 (2026-10-29)
+## load2td: draft 4 (2026-10-29)
 
 - Draft d5/ltd4.c: 163 instructions against 168, frame 0x14 right, flag still at 0x13 (should be 0x11). The loop exit is now the sld-like re-read (text.size++ and get, then the reloc part), as the disassembly shows (1926, 1934, 1754, 1758, 1760). Open: the start of the loop (the original tests text.size first and jumps to the text read at 1744; the draft orders the statements differently) and the flag offset. Not yet exact; four attempts used.
 
-## load2td (f172e, 2026-10-29): finding in ld.c
+## load2td (load2td, 2026-10-29): finding in ld.c
 
-- In ld.c as a finding (draft d5/ltd9.c): frame and main structure equal; 164 against 168 instructions. v6bf6 (index base at 0x6bf6) is a new open global; rflag is the flag at 0x66a2; the table lookup result is cast to struct symbol pointer.
+- In ld.c as a finding (draft d5/ltd9.c): frame and main structure equal; 164 against 168 instructions. nlocsym (index base at 0x6bf6) is a new open global; rflag is the flag at 0x66a2; the table lookup result is cast to struct symbol pointer.
 
-## place_sec (f0d9c): full decode (2026-10-29), no draft yet
+## place_sec: full decode (2026-10-29), no draft yet
 
-- place_sec() of ld has no parameters. areas[4] at 0x7004, 8 bytes each: kind (+0), tstart (+2, the bases v6bf8, v6bfa, v6bfe, v6bfc are areas[1..3].tstart), tsize (+4), tend (+6). Kinds: areas[0].kind = 4, areas[1].kind = iflag(66ae) ? 4 : 0, areas[2].kind = iflag ? 0 : 1, areas[3].kind = x66b8 ? 4 : 2.
-- tsize: areas[1] = ttotal (v66c2), rounded up to 0x100 when !iflag, !x66b8, !x66ba, !rflag; areas[2] = dtotal (v66c6); areas[3] = v66ca + v66cc (bss). areas[0].tsize = (dtotal + v66ca + v66cc + iflag) == 0 ? ttotal : 0 (decoded, looks odd, kept as is).
-- Loop over j = 0..3 (start 1 unless tab42b4[0] is set, then the warning loop over i from 1 or 2 with fprintf and clearing of tab42b4[i]). Cases on tab42b4[j]: t: error "top address of  in segment 0 too low" (level 1, when tsize > secorg[j]), else r8 = (secorg[j] - tsize) & 0xff00 and tsize rounded up; b: r8 = (secorg[j] + 0xff) & 0xff00, warning "bottom address ... relocated" when it differs; then areas[0].tsize = 0 and q->tend = r8 + q->tsize. Overlap test against areas[i] (i < j) with tend and tstart; the message is not in ld at this point.
-- Open: the test on 0x702f + j (tab42b4[j+1] or a different array with stride?), the meaning of 0x66b8, 0x66ba, 0x66a2 in the kinds, and the final stores of 0x6bfc (bss base plus v66ca) and the flag store at the end.
+- place_sec() of ld has no parameters. areas[4] at 0x7004, 8 bytes each: kind (+0), tstart (+2, the bases torigin, dorigin, corigin, borigin are areas[1..3].tstart), tsize (+4), tend (+6). Kinds: areas[0].kind = 4, areas[1].kind = iflag(66ae) ? 4 : 0, areas[2].kind = iflag ? 0 : 1, areas[3].kind = n8rel4 ? 4 : 2.
+- tsize: areas[1] = ttotal, rounded up to 0x100 when !iflag, !n8rel4, !n8swap, !rflag; areas[2] = dtotal; areas[3] = comsize + btotal (bss). areas[0].tsize = (dtotal + comsize + btotal + iflag) == 0 ? ttotal : 0 (decoded, looks odd, kept as is).
+- Loop over j = 0..3 (start 1 unless secflg[0] is set, then the warning loop over i from 1 or 2 with fprintf and clearing of secflg[i]). Cases on secflg[j]: t: error "top address of  in segment 0 too low" (level 1, when tsize > secorg[j]), else r8 = (secorg[j] - tsize) & 0xff00 and tsize rounded up; b: r8 = (secorg[j] + 0xff) & 0xff00, warning "bottom address ... relocated" when it differs; then areas[0].tsize = 0 and q->tend = r8 + q->tsize. Overlap test against areas[i] (i < j) with tend and tstart; the message is not in ld at this point.
+- Open: the test on 0x702f + j (secflg[j+1] or a different array with stride?), the meaning of 0x66b8, 0x66ba, 0x66a2 in the kinds, and the final stores of 0x6bfc (bss base plus comsize) and the flag store at the end.
 
-## place_sec (f0d9c): draft 2 (2026-10-29)
+## place_sec: draft 2 (2026-10-29)
 
 - Draft d5/ps_2.c: 175 instructions against 242. Kind stores in the original order (areas[1], areas[3], areas[2]) are in. Missing: the frame (14 bytes in the original, 8 here: locals for the loops and the message arguments), the loop bodies with the message calls and the overlap check against areas[i], the rounding of tend, and the exact stores at the end (0x6bf8..0x6bfe, 0x66cc). Not yet exact; two attempts.
 
-## place_sec (f0d9c, 2026-10-29): finding in ld.c
+## place_sec (place_sec, 2026-10-29): finding in ld.c
 
-- place_sec in ld.c as a finding after four attempts (d5/ps_4.c): 233 against 242 instructions. All stores, messages and the loops are in; the kind stores and the overlap loop start differ in the order of the immediates. Names: areas[4] (struct areas in ld.h), tab42b4[5], secnam, secorg, ttotal, dtotal, v66ca, v66cc (open), x6bfe (0x6bfe).
+- place_sec in ld.c as a finding after four attempts (d5/ps_4.c): 233 against 242 instructions. All stores, messages and the loops are in; the kind stores and the overlap loop start differ in the order of the immediates. Names: areas[4] (struct areas in ld.h), secflg[5], secnam, secorg, ttotal, dtotal, comsize, btotal (open), corigin (0x6bfe).
 
 ## Four functions as approximations (2026-10-29)
 
-- main (f009c), parse_args (f045e), end_pass1 (f0b6e), read_symbols (f08cc) are in ld.c as findings (approximations after the decision of the owner, option 1). Approximations: main without the option and signal calls; parse_args without the option switch; end_pass1 without the second symbol pass; read_symbols without the case bodies. Each function is marked findings with the note. Not exact. The bss analysis (step 5b) may start with the sources complete; these four must be redone before the final link.
+- main, parse_args, end_pass1, read_symbols are in ld.c as findings (approximations after the decision of the owner, option 1). Approximations: main without the option and signal calls; parse_args without the option switch; end_pass1 without the second symbol pass; read_symbols without the case bodies. Each function is marked findings with the note. Not exact. The bss analysis (step 5b) may start with the sources complete; these four must be redone before the final link.
 - slookup now returns struct symbol ** (type only, still exact).
 - Globals added: liblist, libp, p_etext, p_edata, p_end, dflag, Oflag, comsize.
 
 ## Step 5b (bss), first part (2026-10-29)
 
-- bss_map.txt: 89 globals of ld with their address in /bin/ld (decoded from the code: name, address, size, section). No overlaps. Aliases unified: ttotal (0x66c2), dtotal (0x66c6), btotal (0x66cc), comsize (0x66ca), oflag (0x66a8). tmpoutb.iobuf is the copy buffer at 0x67e4. areas[1].tend (0x7012) and areas[2].tend (0x701a) replace v7012 and v701a.
+- bss_map.txt: 89 globals of ld with their address in /bin/ld (decoded from the code: name, address, size, section). No overlaps. Aliases unified: ttotal (0x66c2), dtotal (0x66c6), btotal (0x66cc), comsize (0x66ca), oflag (0x66a8). tmpoutb.iobuf is the copy buffer at 0x67e4. areas[1].tend (0x7012) and areas[2].tend (0x701a) replace areas[1].tend and areas[2].tend.
 - Open for 5b: the check through the object (order of the first mention and the link with /bin/ld) needs the link of the own code, which does not exist yet. Sizes of lnbuf, symhash, hshtab, liblist, local and tab are approximate.
 
 ## Link attempt of the own code (2026-10-29)
 
 - Scratch link dir /mnt/share/cvs/P8000/tmp/tmp/link: crt0.o (mkcrt0 ld), ld.o, copyname.o, printname.o, symbols.o, the libc part from ld.link (shipped members extracted with the original ar, old members from oldlibc). Link with the original /bin/ld: 5 names still undefined: __exit (referenced by a libc member), _swap_quad (the routine at 0x47d6 of the swap member; the spec calls it _f47d6, no global symbol), __doscan (shipped scanf needs it, our oldlibc doscan defines _doscan), __pfile (data word at 0x705c, no member defines it here), _end (linker symbol, not defined by /bin/ld here).
-- Own names fixed for the link: swap_pair -> longswap (_longswap at 0x47ac), nsym (end of the static table, a pointer, was v069c), lnbuf, hshtab, lastsym, symhash, wflag, nlflag, init_signals added.
+- Own names fixed for the link: swap_pair -> longswap (_longswap at 0x47ac), nsym (end of the static table, a pointer, was nsym), lnbuf, hshtab, lastsym, symhash, wflag, nlflag, init_signals added.
 - Next: decide the naming of the five names (libc side, not our code) and the definition of _end; then the bss addresses of the link output are compared with bss_map.txt.
 
 ## Link of the own code, result (2026-10-29)
@@ -710,17 +710,17 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 
 - Added the SCCS stamp strings of ld.c, copyname.c, printname.c, symbols.c (static char sccsid[]), as in the original (the stamps of crt0 and ld.c match the original bytes 0x00..0x57 now).
 - Data size of the link: 0x09a0 (original 0x0abc). Equal bytes 389 of 2464, 107 runs of difference (d5/dcmp.py).
-- Order found in the original: the string literals of the functions of ld.c come first (Premature EOF at 0x58 from get, __.SYMDEF at 0x5f from getfile), then the initialised globals (libp 0x70 = 0x6c04, secnam[4] 0x72..0x79, ofilnam 0x7a, a word 0x7c = 4, v0080 0x80 = 0, tmpname 0x82 = "/tmp/ldaXXXXX"). So the globals with initial values are declared after getfile in the original source, not at the top of ld.c. Next: move the declarations of these globals behind getfile (and check the value at 0x7c), then the strings of the other functions in the order of the functions.
+- Order found in the original: the string literals of the functions of ld.c come first (Premature EOF at 0x58 from get, __.SYMDEF at 0x5f from getfile), then the initialised globals (libp 0x70 = 0x6c04, secnam[4] 0x72..0x79, ofilnam 0x7a, a word 0x7c = 4, nundef 0x80 = 0, tmpname 0x82 = "/tmp/ldaXXXXX"). So the globals with initial values are declared after getfile in the original source, not at the top of ld.c. Next: move the declarations of these globals behind getfile (and check the value at 0x7c), then the strings of the other functions in the order of the functions.
 
 ## Step 4 (data), second pass (2026-10-29)
 
-- The initialised globals of ld (libp 0x70, secnam 0x72, ofilnam 0x7a, delarg 0x7c, v0080 0x80, tmpname 0x82, aoutnam, libname) come after the literals of get and getfile in the original. Experiment: moving their definitions behind getfile (externs in ld.h) did not improve the match (382 instead of 389 equal bytes), so it is not the only difference. The literal pool of the functions (for example "l.out" and the messages of sig_handler and reg_sect_addr) is in another order than in the original; this has to be reconciled function by function (step 4 item 1). The repository ld.c was not changed by the experiment (it ran in the scratch directory).
+- The initialised globals of ld (libp 0x70, secnam 0x72, ofilnam 0x7a, delarg 0x7c, nundef 0x80, tmpname 0x82, aoutnam, libname) come after the literals of get and getfile in the original. Experiment: moving their definitions behind getfile (externs in ld.h) did not improve the match (382 instead of 389 equal bytes), so it is not the only difference. The literal pool of the functions (for example "l.out" and the messages of sig_handler and reg_sect_addr) is in another order than in the original; this has to be reconciled function by function (step 4 item 1). The repository ld.c was not changed by the experiment (it ran in the scratch directory).
 - Data size of the link is 0x09a0 against 0x0abc; still open.
 
 ## Step 4 (data): the string pool shows what is missing (2026-10-29)
 
 - Aligning the string pools (original 83 strings, ours 65) shows: the messages of the approximated functions are missing (main: "a.out", "l.out", "s.out", "Bad output file", "Bad use or entry", "-v: arg missing"; end_pass1 and place_sec: "text overflow", "data overflow", "bss overflow", "symbol table overflow", "file text overflow", "warning: external data item refers to text symbol"). Their absence explains most of the data difference, so step 4 follows the exact versions of these functions.
-- place_sec message corrected to the original text "-t : top address too low" (the argument is the selector byte *secnam[j]).
+- place_sec message corrected to the original text "-t%c: top address too low" (the argument is the selector byte *secnam[j]).
 
 ## main (2026-10-29): second approximation
 
@@ -731,8 +731,8 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - main (0x009c..0x0370, 724 bytes) is exact: goto structure as in sld main (`test:`/`body:`/`next:`), the option switch
   on `s[j]` with the jump table at data 0x92 (cases N, b, e, l, o, t, u, v, w, x, X, S, r, s, d, i, O, T; default
   "-%c: bad flag"). Case order follows the source: o, e/u, v, l, X, S, r, s (falls into x), d, i, O, T, b/t, w, N.
-  The 'v' case (not in the man page) searches tab[].t3 (the object name) and calls parse_args(i, argv) plus f057c, or
-  f050c(i, *argv). The 'N' case is a switch on s[j] (l sets nlflag, s clears it). Prologue: signal(2,1)/signal(15,1)
+  The 'v' case (not in the man page) searches tab[].vname (the object name) and calls parse_args(i, argv) plus restore, or
+  record(i, *argv). The 'N' case is a switch on s[j] (l sets nlflag, s clears it). Prologue: signal(2,1)/signal(15,1)
   with sig_handler, `s` holds rindex(*argv,'/') (register r12), `*s == 's'` sets swapflg and aoutnam "s.out".
 - The draft in d6/main_b.c (scratch) was checked with ldcheck: only jr/jp widths differed. Cause: the calr forms
   (calls to in-file functions, 7 in main) are sized by the whole file, the draft alone sees them as call. So the
@@ -742,14 +742,14 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   Result: 724 bytes, same instructions (addresses masked, frame offsets equal).
 - The frame needs five unnamed words (spare1..spare5) before found, k, c and sp, as in the original.
 - Changes in ld.c: main replaces the approximation; init_signals removed (its code is in main); tbflag removed (no
-  such variable in the original); v66b0 added (bss 66b0, set to 1 by -v; the bss map entry is added in bss_map.txt).
+  such variable in the original); vflag added (bss 66b0, set to 1 by -v; the bss map entry is added in bss_map.txt).
 - Still approximate: parse_args (045e), read_symbols (08cc), end_pass1 (0b6e). Next: parse_args (ld calls
   end_pass1, start_output, load2arg for the second pass, finish_output), then end_pass1, read_symbols.
 
 ## parse_args exact (2026-10-29)
 
 - parse_args (0x045e..0x050c, 174 bytes) is exact: filname = 0, end_pass1, start_output, av = argv+1, libp = liblist,
-  then the argument loop (printf "%s:\n" with v669a, load2arg for names, the option letters in the table at data 0xf8
+  then the argument loop (printf "%s:\n" with Tflag, load2arg for names, the option letters in the table at data 0xf8
   with the targets at 0x108; b/t skip an attached letter and fall into the e/o/u/v group, N skips one letter, l writes '-'
   before the letter and calls load2arg on the rest). Checked in the whole-file compile (scratch `d7/wcheck.py`, which
   splices a draft into a copy of ld.c and compares the object function with /bin/ld).
@@ -762,16 +762,16 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 
 - end_pass1 (0x0b6e..0x0d9c, 558 bytes) is exact in the whole-file build: the rflag scan, comsize for the common
   symbols (' ' with value, stype becomes '%'), the ldrsym calls, the switch on the symbol type (' ': undefined
-  message "Undefined:" with put_name and a newline; '"', '#', '$', '%': add the bases v6bf8, v6bfa, v6bfc, x6bfe),
-  the tail with sflag/xflag, btotal and v6bf6 = v66ce / 14. New bss variable use: v0080 is cleared after place_sec.
-- Spellings that the original needs: (unsigned) casts on ttotal, dtotal, btotal, comsize, the bases and v66ce (the
+  message "Undefined:" with put_name and a newline; '"', '#', '$', '%': add the bases torigin, dorigin, borigin, corigin),
+  the tail with sflag/xflag, btotal and nlocsym = stotal / 14. New bss variable use: nundef is cleared after place_sec.
+- Spellings that the original needs: (unsigned) casts on ttotal, dtotal, btotal, comsize, the bases and stotal (the
   original zero-extends them); the (char) cast on the newline store (the stdio.h of this tree has unsigned char
   _ptr, the original gives extsb); the ldrsym calls pass three arguments (the x parameter in symbols.c is not passed).
-- Mishap (fixed): the splice for end_pass1 cut from the comment of the old end_pass1 (which stood before f050c) to the
-  real end_pass1, so f050c, f057c, load_lib_syms, load_header, ranlib_scan, add16_checked and read_symbols were lost.
+- Mishap (fixed): the splice for end_pass1 cut from the comment of the old end_pass1 (which stood before record) to the
+  real end_pass1, so record, restore, load_lib_syms, load_header, ranlib_scan, add16_checked and read_symbols were lost.
   Restored from tmp/tmp/link/ld.c (the copy of 16:02, lines 243..433). Rule: check the function list (grep '^[a-z]')
   before and after each splice; a splice must replace exactly one function.
-- Check of all exact functions in the restored build (whole-file, normalized): f050c f057c f221e mget report_error
+- Check of all exact functions in the restored build (whole-file, normalized): record restore put_word mget report_error
   half high_byte table_lookup str_compare put_int_buf flush_buffer sig_handler open_tmp mput load2arg finish_output
   load_header load_lib_syms start_output main parse_args end_pass1: all SAME.
 - Still approximate: read_symbols (08cc..0b6e, 674 bytes; its body is the one restored from the copy, not checked
@@ -816,8 +816,8 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   (`eofmsg[]`, `symdef[]` in ld.c), like libname[]. Data 0x58..0x6f equal the original (14 + 10 bytes); both functions
   use the arrays, and the code of all exact functions is unchanged.
 - The initialised globals are now declared in the original order after them: liblist, libp = liblist, secnam = {"", "text",
-  "data", "bss"}, ofilnam = "l.out", delarg = 4, nlflag = 1, v0080 = 0, tmpname, aoutnam = "a.out". Values from the data:
-  libp 0x70, secnam 0x72..0x79, ofilnam 0x7a, delarg 0x7c, nlflag 0x7e, v0080 0x80, tmpname 0x82, aoutnam 0x90.
+  "data", "bss"}, ofilnam = "l.out", delarg = 4, nlflag = 1, nundef = 0, tmpname, aoutnam = "a.out". Values from the data:
+  libp 0x70, secnam 0x72..0x79, ofilnam 0x7a, delarg 0x7c, nlflag 0x7e, nundef 0x80, tmpname 0x82, aoutnam 0x90.
 - Differences left: (1) the pointers libp and the pointers into bss depend on the bss layout (step 5b): libp is 0x6c04 in
   the original; (2) the literal strings of the initialisers ("text", "data", "bss", "l.out", "a.out", "s.out") are placed
   in the original after the getfile literals ("/usr", libname, "/z/bin", ""), not right after the table; the pool
@@ -833,12 +833,12 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
   filhdr +0x5a4 (20), cursym +0x5b8 (14), then a gap of 0x21da bytes (unknown, 0x1084..0x325e), symhash 0x325e
   (2339 pointers), lastsym 0x44a4, symindex 0x44a6, hshtab 0x44a8 (2341 pointers), local 0x56f2 (local[1000], 4000
   bytes), p_etext 0x6692 ..., soutb 0x6af0 (the five buffers of 262 bytes, 0x66d8..0x6bf6), rltab 0x6c00, liblist 0x6c04
-  (1024 bytes, up to 0x7004), areas 0x7004 (4 x 8), secspec 0x702c, tab42b4 0x702e (5), x702f..x7031, secorg 0x7034
+  (1024 bytes, up to 0x7004), areas 0x7004 (4 x 8), secspec 0x702c, secflg 0x702e (5), secflg[1]..secflg[3], secorg 0x7034
   (4 x 2), exstat 0x703e, libpath 0x7040 (20). End of bss 0x7486 (size 0x69ca).
 - Our link: bss starts at 0x0b96 with libc bss (environ, _v6bf6 ...), then our variables in declaration order, ends
   at 0x3fb0. Our bss is about 0x35b0 bytes shorter: the gap 0x1084..0x325e and the arrays hshtab (4678) and local
   (4000 bytes, ours is local[1]) are missing or differently sized.
-- Misclassified in bss_map: pnflag (0x060c), rlsize, rlbuf, v067c, symtab, v069c lie below the data end (0x0abc), so
+- Misclassified in bss_map: pnflag (0x060c), rlsize, rlbuf, rlbusy, symtab, nsym lie below the data end (0x0abc), so
   they are data (initialised zeros); the original data holds zeros there. Our link puts pnflag etc. in bss.
 - Blockers: (1) the sizes and owners of the gaps 0x0ad6..0x0c20 (330 bytes) and 0x1084..0x325e (8666 bytes) are unknown;
   (2) the libc bss at the start of ours (environ, sibuf, sobuf, rc, pfile) has no counterpart in the original bss, so
@@ -856,9 +856,9 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - ld.c now declares all bss variables in one block after the initialised data, in the address order of the original
   (block starts with `int ntab;`). Our link: all 70 bss entries of bss_map.txt at the same offset from ntab as in the
   original (check script: `tmp/tmp/bss/cmp_bss.py`, relative to ntab).
-- Aliases removed: x702f, x7030, x7031 are tab42b4[1..3] (init_entry tests them as tab42b4[k]).
+- Aliases removed: secflg[1], secflg[2], secflg[3] are secflg[1..3] (init_entry tests them as secflg[k]).
 - Data items (initialised zero in the original, so they are in the data section): pnflag (printname.c, `= 0`), rlsize,
-  rlbuf, v067c, symtab (symbols.c, `= 0`), nsym (ld.c, `= 0`). They are not bss: the data step places them.
+  rlbuf, rlbusy, symtab (symbols.c, `= 0`), nsym (ld.c, `= 0`). They are not bss: the data step places them.
 - Remaining: (1) bss size 27076 against 27082: 6 bytes before rc (orig 0x705a) are not in our link (a libc item,
   probably in the on-board exit.o/doscan.o we add, or in the order of the shipped members); (2) table16_entry and
   index16 use the literal 0x1102: right only when the absolute layout equals the original (after the data step);
@@ -937,7 +937,7 @@ Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md
 - Done now (before: no d_classes were recorded for the ld findings). The pattern check of host/recon/patterns.py was
   run with the ld object of the whole-file build against the original (`tmp/tmp/dclass/classify_ld.py`); symbolic
   address operands are masked. Result: all differing instructions of the findings match a D pattern (0 unexplained),
-  with the exception of f2c20 (wrong range in symbols.o, not a finding). The d_classes of the 20 findings are in
+  with the exception of grow_heap (wrong range in symbols.o, not a finding). The d_classes of the 20 findings are in
   findings.json (mapping: D1 frame, D2 registers, D3 spill/reload, D6 switch, D7 jumps, D8 bytes, D10 shifts/long,
   D12 data addresses, D16 operand form).
 - Caveat: the pattern check accepts many forms, so the labels are a classification, not a proof per instruction.
@@ -995,7 +995,7 @@ Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamp
   (the original doprnt mentions it after printf). Our `int *_pfile;` in symbols.c was removed and `.comm 2, __pfile` added
   as the first line of `src/lib/oldlibc/doprnt/0_6.s` (the text is unchanged, libc_verify 0 differing).
 - Result: rc 0x705a, __pfile 0x705c, __sibuf 0x705e, __sobuf 0x725e, environ 0xabc, bss size 27082 (= original).
-  All bss_map entries equal relative to ntab (the aliases x702f..x7031 are tab42b4 elements).
+  All bss_map entries equal relative to ntab (the aliases secflg[1]..secflg[3] are secflg elements).
 - Data: still 2784 against 2748 (+36, see step 1: the string alignment D12).
 - Recorded in src/TODO.md, row `cmd/ld/`.
 
@@ -1028,8 +1028,8 @@ Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamp
   same (the findings differ in register use, so it stops at the first such difference).
 - Fixed so far (functional): next_entry (invented range check removed), getfile (filname = libname after a successful
   library open; the register variable of the original, the code is still a finding: the frame is 6 bytes smaller).
-- Still wrong: the output of `-o t d.o` is partial (256 bytes) and the program loops in finish_output (`for (p = v6bf8;
-  p < areas[1].tend; p++) f221e(...)`): the area bounds from place_sec (finding, 14 bytes larger) are wrong.
+- Still wrong: the output of `-o t d.o` is partial (256 bytes) and the program loops in finish_output (`for (p = torigin;
+  p < areas[1].tend; p++) put_word(...)`): the area bounds from place_sec (finding, 14 bytes larger) are wrong.
   Next: place_sec, then dseek/load2td/load2 with values, not with instruction order.
 
 ## place_sec (2026-10-29): corrected, next error in the corpus run
@@ -1058,7 +1058,7 @@ Our data 2944 bytes, original 2748 (+196). Module boundaries from the SCCS stamp
 
 - Fixed in this round: place_sec (unsigned compares; the rounding of area 1 applies only with iflag set, the
   original's `jr eq` goes to the unrounded branch when iflag is 0), load2 (the data of an object is read at
-  half(x1066)+a, not + the data half-size), getfile (filname after a library open), next_entry (no range check).
+  half(ftsize)+a, not + the data half-size), getfile (filname after a library open), next_entry (no range check).
   With these, `-o t d.o` gives the same 94 bytes as the original.
 - corpus_ld.py now runs our binary as /bin/ld from an alternative root (ALTROOT, default tmp/tmp/corpus_altroot), so
   argv[0] equals the original's.
@@ -1116,15 +1116,15 @@ New tools (in this directory):
 
 Findings about the earlier state (the user asked to check the "exact" functions and the D classes critically):
 - `ldcheck.norm` (and wholecmp) masks every hex operand of 3+ digits. Under the strict check 6 of the 39 "exact" functions
-  were not exact: f050c (order of the stores t4..t10), finish_output (rflag output of the first loop went to soutb instead
-  of routb: a behaviour error), table16_entry and f2b92 (rlbuf/rlsize declared in the wrong order), start_output and
+  were not exact: record (order of the stores t4..t10), finish_output (rflag output of the first loop went to soutb instead
+  of routb: a behaviour error), table16_entry and grow_rlbuf (rlbuf/rlsize declared in the wrong order), start_output and
   readhdr (false alarms of the first strictcmp version, fixed).
 - Most D labels of the findings were wrong: 12 of the 20 findings are exact now with source changes (step 7 rules:
   register copy of a spilled parameter, chained and embedded assignments, statement order, if/else orientation,
   declaration order and spares, int parameters with unsigned casts). Five of them were behaviour errors of the rebuild:
   next_entry (the mapping into symtab past nsym was missing; the earlier note "no comparison" was wrong), load2td
-  (copy of the relocation word, the first switch only with x66b8 || x66ba, the swap after the symbol branch), place_sec
-  (areas[0] only with tab42b4[0], tsize only with tab42b4[j+1]), dseek (hi without a mask), load2 (Xflag test on d,
+  (copy of the relocation word, the first switch only with n8rel4 || n8swap, the swap after the symbol branch), place_sec
+  (areas[0] only with secflg[0], tsize only with secflg[j+1]), dseek (hi without a mask), load2 (Xflag test on d,
   absolute address 0x6692 replaced by &local[1000]). The pattern check of classify accepts these differences, so its
   labels are not evidence.
 - Remaining 8 findings, classes from reading the strict diffs: ranlib_scan D2, read_symbols D1/D11/D3, place_sec D2,
@@ -1145,3 +1145,22 @@ sld removed (also in gen_makefile.py).
 
 State: 51 of 59 strictly exact, 8 findings; corpus 146 of 146 (also after every batch of this round).
 Scratch: tmp/tmp/try (drafts), checkpoints tmp/tmp/*_checkpoint[1-4].c.
+
+## Names and head comments (2026-10-30)
+
+- Renamed (tools/rename.py, which also changes the tables, findings.json and the .md files): f050c record, f057c restore
+  (Plexus record/restore: save and restore the load state for -v), f221e put_word (a word, high byte first), f2b92
+  grow_rlbuf, f2bf6 lock_rlbuf, f2bfc unlock_rlbuf (the ranlib buffer is in use, rlbusy), f2c20 grow_heap (sbrk).
+- The address ids f<entry> of all named functions in own_functions.txt, assigned.txt, datamap.txt and this file are
+  replaced by the names (only the crt0 entries keep f0000, f0010, f0018).
+- Every function has one head comment directly above it: what it does, the sld/Plexus counterpart, the address range,
+  no finding status (2026-10-30, owner: findings are documented in findings.json only, the code carries no copy of
+  them). The stale comments (old finding remarks of exact functions, the orphan block at the end
+  of ld.c) are gone. Code and data of the build are byte-identical to the corpus-tested binary.
+- A NUL byte in this file (it made grep treat it as binary) is replaced by %c.
+- Renamed afterwards (2026-10-30): struct tent -> struct overlay with the Plexus fields argsav, symsav, libsav (long *),
+  vname (char *), ctsav, cdsav, cbsav, offt, offd, offb, offs; the variables nundef (v0080), arflag (v66a4), Tflag (v669a),
+  vflag (v66b0), noswap (v66b4), stotal (v66ce), nlocsym (v6bf6), torigin/dorigin/borigin/corigin (v6bf8, v6bfa, v6bfc,
+  x6bfe), fttotal/fdtotal (v66c4, v66c8), filhdr.ftsize/fdsize (x1066, x106a), idsep (x66b6), n8rel4/n8swap (x66b8,
+  x66ba; the meaning of bit 2 of hrelflg is a guess), rlbusy (v067c), secflg (tab42b4); the unused declarations v007c
+  and v67e4 are removed. All older address names in this file are replaced by the current names.

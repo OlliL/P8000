@@ -7,10 +7,10 @@ static char sccsid[] = "@[$]symbols.c\t1.8  03/11/83 10:29:38 - 87wega3.2";
 unsigned int rlsize = 0;
 char *rlbuf = 0;
 
-int v067c = 0;
+int rlbusy = 0;	/* the ranlib buffer is in use (lock_rlbuf) */
 
-/* read_entry_hdr: read the entry of a symbol into cursym; a long name takes the continuation entries (sld read_entry_hdr,
-   the nonsegmented part; 0x249a..0x2502 of /bin/ld). Module: printname.c as assigned (sld has it in symbols.c) */
+/* read_entry_hdr: read the next symbol entry of the text stream into cursym (a long name takes its continuation
+   entries); the number of continuation entries (sld read_entry_hdr; 0x249a..0x2502 of /bin/ld) */
 int read_entry_hdr()
 {
 	register int k;
@@ -39,8 +39,9 @@ test:
 	return k;
 }
 
-/* ldrsym: load a symbol of a relocation entry, error for multiply defined (sld ldrsym; 0x2502..0x25a2 of /bin/ld).
-   The parameter x is not used here; the order of the parameters follows the frame of the original */
+/* ldrsym: define the linker symbol p with value v and type c; "Multiply defined" when it is defined already. x is not
+   used and not passed by the callers; the parameter order follows the frame of the original (sld ldrsym, Plexus
+   ldrsym; 0x2502..0x25a2 of /bin/ld) */
 ldrsym(a, x, v, c)
 struct symbol *a;
 int x;
@@ -65,8 +66,8 @@ char c;
 	p->svalue = v;
 }
 
-/* mkfsym: enter the file symbol of an object into the output (sld mkfsym; 0x25a2..0x25dc of /bin/ld). svalue is the word at
-   0x6bf8 here (sld: 0) */
+/* mkfsym: write the file symbol of an object to the symbol output; its value is the text base torigin (sld: 0) (sld
+   mkfsym, Plexus mkfsym; 0x25a2..0x25dc of /bin/ld) */
 mkfsym(p)
 char *p;
 {
@@ -76,12 +77,12 @@ char *p;
 		return;
 	unpack_run(p, cursym.sname);
 	cursym.stype = 0x1f;
-	cursym.svalue = (unsigned)v6bf8;
+	cursym.svalue = (unsigned)torigin;
 	put_sym(&soutb, &cursym);
 }
 
-/* lookup_name: look up a name in the hash table of symbols (0x25dc..0x26ac of /bin/ld, finding: register
-   variables start and end are in the frame here) */
+/* lookup_name: find the hash slot of cursym in the symbol hash table (an empty slot when the name is not there) (sld
+   lookup_name, Plexus lookup; 0x25dc..0x26ac of /bin/ld) */
 struct symbol **lookup_name()
 {
 	register struct symbol **slot;
@@ -134,6 +135,8 @@ l2:
 	return slot;
 }
 
+/* slookup: hash slot of the C string x (the result is the one of lookup_name, there is no return statement) (sld
+   slookup, Plexus slookup; 0x26ac..0x26ca of /bin/ld) */
 struct symbol **slookup(x)
 int x;
 {
@@ -145,6 +148,8 @@ int x;
 	lookup_name();
 }
 
+/* pslookup: hash slot of a name in table form (ranlib entries; the result is the one of lookup_name, there is no
+   return statement) (sld pslookup; 0x26ca..0x26e8 of /bin/ld) */
 struct symbol **pslookup(x)
 int x;
 {
@@ -156,8 +161,8 @@ int x;
 	lookup_name();
 }
 
-/* enter: enter a symbol into the symbol table (sld enter; 0x26e8..0x2766 of /bin/ld; finding: the store *a = r is
-   loaded through r2 in the original; the table size is 0x0923) */
+/* enter: enter cursym into the empty hash slot a: a new entry of the symbol table; 1 when it was entered, 0 when the
+   slot was in use (lastsym is the symbol) (sld enter, Plexus enter; 0x26e8..0x2766 of /bin/ld) */
 enter(a)
 struct symbol **a;
 {
@@ -178,7 +183,8 @@ struct symbol **a;
 	return 0;
 }
 
-/* symreloc: relocate the value of cursym by the text, data or bss relocation of the object (sld symreloc; 0x2766..0x27be of /bin/ld) */
+/* symreloc: relocate the value of cursym by the text, data or bss base of the object (sld symreloc, Plexus symreloc;
+   0x2766..0x27be of /bin/ld) */
 symreloc()
 {
 	switch (cursym.stype) {
@@ -201,7 +207,8 @@ symreloc()
 		cursym.stype = 0x21;
 }
 
-/* put_sym: write a symbol entry (and its continuation entries of a long name) to the output (0x27be..0x282e of /bin/ld; finding) */
+/* put_sym: write the symbol b (and the continuation entries of a long name) to the buffer a; the number of entries
+   (sld put_sym; 0x27be..0x282e of /bin/ld) */
 put_sym(a, b)
 struct buf *a;
 struct symbol *b;
@@ -233,7 +240,7 @@ test:
 	return 1;
 }
 
-/* put_all: write all symbols of the table to the output (0x282e..0x2862 of /bin/ld) */
+/* put_all: write all symbols of the symbol table to the symbol output (sld put_all; 0x282e..0x2862 of /bin/ld) */
 put_all()
 {
 	int spare1, spare2;
@@ -249,8 +256,9 @@ put_all()
 	}
 }
 
-/* warn_sym_redef: warn that a symbol is redefined in an archive (0x2862..0x294e of /bin/ld). The (char) casts give the
-   sign extension of the original, whose stdio had char *_ptr (the header of src/head has unsigned char *) */
+/* warn_sym_redef: warning that a symbol of an archive member is defined already (the archive symbol is ignored). The
+   (char) casts of the putc forms give the sign extension of the original stdio (char *_ptr) (sld warn_sym_redef;
+   0x2862..0x294e of /bin/ld) */
 warn_sym_redef(p, a)
 struct symbol *p;
 struct symbol *a;
@@ -283,8 +291,8 @@ struct symbol *a;
 	report_error(0, "- warning: symbol redefined in archive");
 }
 
-/* chk_ranlib: check an archive member against the ranlib table (sld chk_ranlib; 0x294e..0x29d6 of /bin/ld; finding: the
-   frame is equal, the store q = p is ordered differently) */
+/* chk_ranlib: check the ranlib table of n entries at p against the defined symbols and warn about redefinitions (sld
+   chk_ranlib; 0x294e..0x29d6 of /bin/ld) */
 chk_ranlib(p, n)
 struct rlent *p;
 int n;
@@ -316,9 +324,8 @@ test:
 struct symbol *symtab = 0;
 struct symbol *nsym = sym16 + 600;
 
-/* table16_entry: address of entry x of the symbol table (sld table16_entry; 0x29d6..0x2aa6 of /bin/ld). Entries below 0x258
-   are in the static table at 0x1102 (14 bytes each); the others in symtab, which is allocated on the first use (sbrk, f2c20)
-   or starts at the ranlib buffer (rlbuf) when that is free */
+/* table16_entry: address of entry x of the symbol table: below 600 in the static table sym16, else in symtab, which is
+   taken from the heap or from the free ranlib buffer on the first use (sld table16_entry; 0x29d6..0x2aa6 of /bin/ld) */
 struct symbol *table16_entry(x)
 unsigned x;
 {
@@ -330,14 +337,14 @@ unsigned x;
 	if (x > 0x923)
 		report_error(2, "Symbol table overflow");
 	if (symtab == 0) {
-		if (v067c != 0 || rlsize == 0) {
+		if (rlbusy != 0 || rlsize == 0) {
 			n = sbrk(0);
-			symtab = (struct symbol *)f2c20(0x5fa6);
+			symtab = (struct symbol *)grow_heap(0x5fa6);
 			if ((int)symtab != n)
 				report_error(2, "Symbol table overflow");
 		} else {
 			n = sbrk(0);
-			symtab = (struct symbol *)f2c20(0x5fa6 - rlsize);
+			symtab = (struct symbol *)grow_heap(0x5fa6 - rlsize);
 			if ((int)symtab != n)
 				report_error(2, "Symbol table overflow");
 			symtab = (struct symbol *)rlbuf;
@@ -349,7 +356,8 @@ unsigned x;
 	return symtab + (x - 0x258);
 }
 
-/* next_entry: next entry of the symbol table (a long name occupies several entries) (0x2aa6..0x2b04 of /bin/ld; finding) */
+/* next_entry: the entry after p in the symbol table (a long name takes several entries); past the static table it
+   continues in symtab (sld next_entry; 0x2aa6..0x2b04 of /bin/ld) */
 struct symbol *next_entry(p)
 register struct symbol *p;
 {
@@ -369,8 +377,8 @@ register struct symbol *p;
 	return symtab + (p - nsym);
 }
 
-/* index16: index of an entry of the symbol table (sld index16; 0x2b04..0x2b3a of /bin/ld). ld has a static part of 0x258
-   entries at 0x1102 in front of the table at symtab (14 byte entries); nsym is the end of the static part (name open) */
+/* index16: index of the entry x in the symbol table (the static part has 600 entries) (sld index16; 0x2b04..0x2b3a of
+   /bin/ld) */
 index16(x)
 struct symbol *x;
 {
@@ -381,8 +389,8 @@ struct symbol *x;
 	return ((int)x - (int)symtab) / 14 + 0x258;
 }
 
-/* ensure_buf: make sure the ranlib buffer is large enough (sld ensure_buf; 0x2b3a..0x2b92 of /bin/ld, finding: one jump to the
-   end is missing, the comparison is in the sld form). The grow path of a non-empty buffer is f2b92 (no sld name yet). */
+/* ensure_buf: make the ranlib buffer at least n bytes large (from the heap on the first use, else grow_rlbuf); the
+   buffer (sld ensure_buf; 0x2b3a..0x2b92 of /bin/ld) */
 char *ensure_buf(n)
 unsigned long n;
 {
@@ -390,19 +398,19 @@ unsigned long n;
 		if (rlsize == 0) {
 			if (n > 0xffff)
 				report_error(2, "ranlib table of contents too large");
-			rlbuf = (char *)f2c20((int)n);
+			rlbuf = (char *)grow_heap((int)n);
 			if (rlbuf == (char *)-1)
 				report_error(2, "table of contents overflow");
 			rlsize = n;
 		} else
-			return f2b92(n);
+			return grow_rlbuf(n);
 	}
 	return rlbuf;
 }
 
-/* f2b92: grow the ranlib buffer in place when it is the last block of the heap, else start it again (no sld name;
-   0x2b92..0x2bf6 of /bin/ld) */
-char *f2b92(n)
+/* grow_rlbuf: make the ranlib buffer n bytes large: in place by grow_heap when it is the last block of the heap, else
+   a new buffer through ensure_buf (no sld counterpart, sld uses realloc; 0x2b92..0x2bf6 of /bin/ld) */
+char *grow_rlbuf(n)
 unsigned long n;
 {
 	int k;
@@ -414,33 +422,35 @@ unsigned long n;
 		ensure_buf(n);
 	} else {
 		k = (int)n - (int)rlsize;
-		if (f2c20(k) == -1)
+		if (grow_heap(k) == -1)
 			report_error(2, "table of contents overflow");
 		rlsize = n;
 	}
 	return rlbuf;
 }
 
-f2bf6()
+/* lock_rlbuf: mark the ranlib buffer as in use while a ranlib table is read (load_lib_syms); table16_entry does not
+   take it over for the symbol table then (rlbusy counts) (no sld counterpart; 0x2bf6..0x2bfc of /bin/ld) */
+lock_rlbuf()
 {
-	v067c++;
+	rlbusy++;
 }
 
-f2bfc()
+/* unlock_rlbuf: the ranlib buffer is free again (see lock_rlbuf) (no sld counterpart; 0x2bfc..0x2c02 of /bin/ld) */
+unlock_rlbuf()
 {
-	v067c = 0;
+	rlbusy = 0;
 }
 
-/* limit_msg: print the size usage "n symbols / m available" (sld limit_msg; 0x2c02..0x2c20 of /bin/ld). The available count is
-   0x0923 when the symbol table is allocated, else 0x0258 */
+/* limit_msg: print the number of symbols and the number available (-T) (sld limit_msg; 0x2c02..0x2c20 of /bin/ld) */
 limit_msg()
 {
 	printf("%d symbols / %d available\n", symindex, symtab ? 0x0923 : 0x0258);
 }
 
-/* f2c20: grow the heap by x bytes and return the old break, or -1 when the break moved (no sld counterpart; calls the entry 0x484a of the
-   shipped brk member, presumably sbrk; 0x2c20..0x2c4c of /bin/ld). Used by table16_entry (f29d6) */
-f2c20(x)
+/* grow_heap: grow the heap by x bytes with sbrk; the old break, or -1 when the new break is below it (the request did
+   not fit) (no sld counterpart, sld uses malloc; 0x2c20..0x2c4c of /bin/ld) */
+grow_heap(x)
 int x;
 {
 	unsigned b;

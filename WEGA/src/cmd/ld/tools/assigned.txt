@@ -1,62 +1,62 @@
-0000 f0000    crt0        generated start code
-0010 f0010    crt0        generated start code
-0018 f0018    crt0        generated start code
-0042 f0042    ld.c        vote
-009c f009c    ld.c        vote
-0370 f0370    ld.c        vote
-045e f045e    ld.c        vote
-050c f050c    ld.c        guess
-057c f057c    ld.c        guess
-0608 f0608    ld.c        vote
-0714 f0714    ld.c        guess
-07b2 f07b2    ld.c        guess
-089a f089a    ld.c        guess
-08cc f08cc    ld.c        vote
-0b6e f0b6e    ld.c        vote
-0d9c f0d9c    ld.c        vote
-108e f108e    ld.c        vote
-120e f120e    ld.c        vote
-12a8 f12a8    ld.c        guess
-13ca f13ca    ld.c        guess
-1452 f1452    ld.c        vote
-172e f172e    ld.c        vote
-194a f194a    ld.c        vote
-1a12 f1a12    ld.c        guess
-1a74 f1a74    ld.c        vote
-1a9a f1a9a    ld.c        guess
-1b0a f1b0a    ld.c        guess
-1b38 f1b38    ld.c        vote
-1c5a f1c5a    ld.c        guess
-1c6c f1c6c    ld.c        vote
-1ce2 f1ce2    ld.c        vote
-1e86 f1e86    ld.c        vote
-1f22 f1f22    ld.c        vote
-1f64 f1f64    ld.c        vote
-21f2 f21f2    ld.c        guess
-221e f221e    ld.c        guess
-226e f226e    ld.c        guess
-229c f229c    ld.c        vote
-22e8 f22e8    copyname.c  owner decision
-2360 f2360    copyname.c  owner decision
-23e2 f23e2    printname.c vote
-249a f249a    symbols.c   owner decision (read_entry_hdr, moved from printname.c)
-2502 f2502    symbols.c   vote
-25a2 f25a2    symbols.c   guess
-25dc f25dc    symbols.c   guess
-26ac f26ac    symbols.c   guess
-26ca f26ca    symbols.c   guess
-26e8 f26e8    symbols.c   vote
-2766 f2766    symbols.c   guess
-27be f27be    symbols.c   guess
-282e f282e    symbols.c   guess
-2862 f2862    symbols.c   vote
-294e f294e    symbols.c   guess
-29d6 f29d6    symbols.c   vote
-2aa6 f2aa6    symbols.c   guess
-2b04 f2b04    symbols.c   guess
-2b3a f2b3a    symbols.c   vote
-2b92 f2b92    symbols.c   vote
-2bf6 f2bf6    symbols.c   guess
-2bfc f2bfc    symbols.c   guess
-2c02 f2c02    symbols.c   vote
-2c20 f2c20    symbols.c   guess
+0000 f0000            crt0        generated start code
+0010 f0010            crt0        generated start code
+0018 f0018            crt0        generated start code
+0042 sig_handler      ld.c        vote
+009c main             ld.c        vote
+0370 reg_sect_addr    ld.c        vote
+045e parse_args       ld.c        vote
+050c record           ld.c        guess
+057c restore          ld.c        guess
+0608 load_lib_syms    ld.c        vote
+0714 load_header      ld.c        guess
+07b2 ranlib_scan      ld.c        guess
+089a add16_checked    ld.c        guess
+08cc read_symbols     ld.c        vote
+0b6e end_pass1        ld.c        vote
+0d9c place_sec        ld.c        vote
+108e start_output     ld.c        vote
+120e open_tmp         ld.c        vote
+12a8 init_entry       ld.c        guess
+13ca load2arg         ld.c        guess
+1452 load2            ld.c        vote
+172e load2td          ld.c        vote
+194a finish_output    ld.c        vote
+1a12 copy             ld.c        guess
+1a74 high_byte        ld.c        vote
+1a9a mget             ld.c        guess
+1b0a mput             ld.c        guess
+1b38 dseek            ld.c        vote
+1c5a half             ld.c        guess
+1c6c get              ld.c        vote
+1ce2 getfile          ld.c        vote
+1e86 report_error     ld.c        vote
+1f22 table_lookup     ld.c        vote
+1f64 readhdr          ld.c        vote
+21f2 str_compare      ld.c        guess
+221e put_word         ld.c        guess
+226e put_int_buf      ld.c        guess
+229c flush_buffer     ld.c        vote
+22e8 unpack_run       copyname.c  owner decision
+2360 pack_name        copyname.c  owner decision
+23e2 put_name         printname.c vote
+249a read_entry_hdr   symbols.c   owner decision (read_entry_hdr, moved from printname.c)
+2502 ldrsym           symbols.c   vote
+25a2 mkfsym           symbols.c   guess
+25dc lookup_name      symbols.c   guess
+26ac slookup          symbols.c   guess
+26ca pslookup         symbols.c   guess
+26e8 enter            symbols.c   vote
+2766 symreloc         symbols.c   guess
+27be put_sym          symbols.c   guess
+282e put_all          symbols.c   guess
+2862 warn_sym_redef   symbols.c   vote
+294e chk_ranlib       symbols.c   guess
+29d6 table16_entry    symbols.c   vote
+2aa6 next_entry       symbols.c   guess
+2b04 index16          symbols.c   guess
+2b3a ensure_buf       symbols.c   vote
+2b92 grow_rlbuf       symbols.c   vote
+2bf6 lock_rlbuf       symbols.c   guess
+2bfc unlock_rlbuf     symbols.c   guess
+2c02 limit_msg        symbols.c   vote
+2c20 grow_heap        symbols.c   guess

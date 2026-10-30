@@ -111,6 +111,8 @@ the second pass.
 3. Phase A: at most 6 attempts. Then the draft is accepted anyway into the C file, even if it does not match:
    the diff goes into `findings.json` (`manual_classes`, basis `read`, note, `d_classes`) and the function status
    becomes `findings`; the function is not left out of the file.
+   The source carries no copy of the finding (no status, diff or attempts in comments): findings.json is the only
+   place, so the two cannot drift apart. Comments in the source explain the code (what it does, why a form is used).
 4. Names: from messages, system calls, strings; Plexus/V7 names where it is the same function.
    External names are significant for 7 characters (`check_names.py`).
 
