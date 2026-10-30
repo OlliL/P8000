@@ -6,15 +6,15 @@ Source: `findings.json` (single source of truth). Functions are the program part
 
 ## Summary
 
-**Functions:** 181
+**Functions:** 180
 
 | Pairing | Count |
 |---|---|
-| open | 181 |
+| open | 180 |
 
 | Difference class | Count |
 |---|---|
-| - | 181 |
+| - | 180 |
 
 **Pending findings:** 0
 
@@ -107,12 +107,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | f7a1e | - | 0x7a1e | open | open |  |  |  |
 | f7a9e | - | 0x7a9e | open | open |  |  |  |
 | f7b28 | - | 0x7b28 | open | open |  |  |  |
-| f8100 | - | 0x8100 | open | open |  |  |  |
-| f8510 | - | 0x8510 | open | open |  |  |  |
-| f8aac | - | 0x8aac | open | open |  |  |  |
-| f8ac4 | - | 0x8ac4 | open | open |  |  |  |
-| f8ae0 | - | 0x8ae0 | open | open |  |  |  |
-| f8b1e | - | 0x8b1e | open | open |  |  |  |
 | falloc | - | 0x8c8e | open | open |  |  |  |
 | fincode | - | 0x7614 | open | open |  |  |  |
 | fixclass | - | 0x9372 | open | open |  |  |  |
@@ -126,11 +120,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | getmem | - | 0x8084 | open | open |  |  |  |
 | getstr | - | 0x83e0 | open | open |  |  |  |
 | gotscal | - | 0x890e | open | open |  |  |  |
+| hash | - | 0x8ae0 | open | open |  |  |  |
 | hide | - | 0x985a | open | open |  |  |  |
 | icons | - | 0x4f24 | open | open |  |  |  |
 | ilbrace | - | 0x8a3c | open | open |  |  |  |
 | inforce | - | 0x3870 | open | open |  |  |  |
 | instk | - | 0x821a | open | open |  |  |  |
+| irbrace | - | 0x8aac | open | open |  |  |  |
 | isitfloat | - | 0x7a80 | open | open |  |  |  |
 | ispow2 | - | 0x8014 | open | open |  |  |  |
 | lookup | - | 0x94e8 | open | open |  |  |  |
@@ -166,11 +162,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | putnames | - | 0x9e04 | open | open |  |  |  |
 | putrefs | - | 0x9ea6 | open | open |  |  |  |
 | putrefsyms | - | 0x9c38 | open | open |  |  |  |
+| putstrs | - | 0x8510 | open | open |  |  |  |
 | putsym | - | 0x9c62 | open | open |  |  |  |
 | puttags | - | 0x9e80 | open | open |  |  |  |
 | refid | - | 0x99ca | open | open |  |  |  |
 | regfree | - | 0x94a6 | open | open |  |  |  |
 | resetbc | - | 0x0130 | open | open |  |  |  |
+| resetmem | - | 0x8100 | open | open |  |  |  |
 | rstruct | - | 0x32ca | open | open |  |  |  |
 | savebc | - | 0x00e2 | open | open |  |  |  |
 | scnames | - | 0x1374 | open | open |  |  |  |
@@ -198,6 +196,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | uclass | - | 0x934c | open | open |  |  |  |
 | uerror | - | 0x7b4c | open | open |  |  |  |
 | unhide | - | 0x995c | open | open |  |  |  |
+| upoff | - | 0x8b1e | open | open |  |  |  |
 | vfdalign | - | 0x392c | open | open |  |  |  |
 | vfdzero | - | 0x78cc | open | open |  |  |  |
 | walkf | - | 0x7dae | open | open |  |  |  |

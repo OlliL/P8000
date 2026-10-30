@@ -8,8 +8,6 @@ extern int regvar, lregvar, fregvar;
 extern int commflag;	/* the declaration is a common (nidcl, commdec) */
 
 	/* the .S file (WEGA): a header, the symbols (22 bytes each), the names, the member lists, the references */
-# define HASHSZ 64	/* the hash chains of the symbol table */
-# define NTABSZ 6500	/* the name table */
 extern int symcount;
 extern struct { int h_magic; long h_syms; long h_names; int h_tags; int h_refs; } shdr;
 extern long shdrpos;

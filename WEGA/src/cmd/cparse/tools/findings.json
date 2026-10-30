@@ -1439,7 +1439,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f8100": {
+  "resetmem": {
    "file": "-",
    "pairing": "open",
    "orig": "0x8100",
@@ -1489,7 +1489,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f8510": {
+  "putstrs": {
    "file": "-",
    "pairing": "open",
    "orig": "0x8510",
@@ -1539,27 +1539,17 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f8aac": {
+  "irbrace": {
    "file": "-",
    "pairing": "open",
    "orig": "0x8aac",
    "ours": "-",
    "level": "open",
-   "size_orig": 24,
+   "size_orig": 52,
    "callers_orig": "-",
    "status": "open"
   },
-  "f8ac4": {
-   "file": "-",
-   "pairing": "open",
-   "orig": "0x8ac4",
-   "ours": "-",
-   "level": "open",
-   "size_orig": 28,
-   "callers_orig": "-",
-   "status": "open"
-  },
-  "f8ae0": {
+  "hash": {
    "file": "-",
    "pairing": "open",
    "orig": "0x8ae0",
@@ -1569,7 +1559,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f8b1e": {
+  "upoff": {
    "file": "-",
    "pairing": "open",
    "orig": "0x8b1e",

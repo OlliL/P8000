@@ -1,20 +1,23 @@
 # include "mfile1"
 
-struct instk {
-	int in_sz;   /* size of array element */
+extern int regflag;	/* the flag at 0x1aa0 (char and short register variables get a word on the stack; name is a guess) */
+OFFSZ upoff();
+
+struct instk {	/* WEGA: 22 bytes */
+	OFFSZ in_sz;   /* size of array element */
 	int in_x;    /* current index for structure member in structure initializations */
 	int in_n;    /* number of initializations seen */
 	int in_s;    /* sizoff */
 	int in_d;    /* dimoff */
 	TWORD in_t;    /* type */
-	int in_id;   /* stab index */
+	struct symtab *in_id;   /* the symbol (PCC: stab index) */
 	int in_fl;   /* flag which says if this level is controlled by {} */
 	OFFSZ in_off;  /* offset of the beginning of this level */
 	}
 instack[10],
 *pstk;
 
-int idebug = 0;
+	/* defines used for getting things off of the initialization stack */
 
 int ibseen = 0;  /* the number of } constructions which have been filled */
 
@@ -22,34 +25,48 @@ int iclass;  /* storage class of thing being initialized */
 
 int ilocctr = 0;  /* location counter for current initialization */
 
-/* f8100: not written yet (0x8100..0x8122 of /lib/cparse) */
-f8100()
-{
-}
+	/* the string literals that are kept until the end of the function (putstrs) */
+struct strlist { int s_lab; int s_len; char *s_str; struct strlist *s_next; };
+extern struct strlist *strhead, *strcur;
 
-beginit(curid){
+resetmem( p ) char *p; { /* give the memory of getmem back (name is a guess) */
+	brk( p );
+	memcur = memtop = p;
+	--memtop;
+	}
+
+beginit( curid ) struct symtab *curid; {
 	/* beginning of initilization; set location ctr and set type */
 	register struct symtab *p;
+	OFFSZ sz;
+	int al;
 
-	if( idebug >= 3 ) printf( "beginit(), curid = %d\n", curid );
-
-	p = &stab[curid];
+	p = curid;
 
 	iclass = p->sclass;
-	if( curclass == EXTERN || curclass == FORTRAN ) iclass = EXTERN;
+	if( curclass == EXTERN ) iclass = EXTERN;
 	switch( iclass ){
 
 	case UNAME:
-	case EXTERN:
 		return;
+
+	case EXTERN:
+		f6b9c();
+		return;
+
 	case AUTO:
 	case REGISTER:
 		break;
+
 	case EXTDEF:
 	case STATIC:
 		ilocctr = ISARY(p->stype)?ADATA:DATA;
 		locctr( ilocctr );
-		defalign( talign( p->stype, p->sizoff ) );
+		defalign( al = talign( p->stype, p->sizoff ) );
+		if( (sz = (tsize( p->stype, p->dimoff, p->sizoff ) + 7) / SZCHAR) > 0xfffe )
+			uerror( "size of %s too large", &ntab[p->sname] );
+		else if( f65c4( 1, sz ) ) f64c2( 1 );
+		f6b9c();
 		defnam( p );
 
 		}
@@ -63,13 +80,12 @@ beginit(curid){
 
 	}
 
-instk( id, t, d, s, off ) OFFSZ off; TWORD t; {
+instk( id, t, d, s, off ) struct symtab *id; OFFSZ off; TWORD t; {
 	/* make a new entry on the parameter stack to initialize id */
 
 	register struct symtab *p;
 
 	for(;;){
-		if( idebug ) printf( "instk((%d, %o,%d,%d, %ld\n", id, t, d, s, off );
 
 		/* save information on the stack */
 
@@ -89,8 +105,8 @@ instk( id, t, d, s, off ) OFFSZ off; TWORD t; {
 		if( ISARY(t) ){
 			pstk->in_sz = tsize( DECREF(t), d+1, s );
 			}
-		else if( stab[id].sclass & FIELD ){
-			pstk->in_sz = - ( stab[id].sclass & FLDSIZ );
+		else if( id->sclass & FIELD ){
+			pstk->in_sz = - ( id->sclass & FLDSIZ );
 			}
 		else {
 			pstk->in_sz = 0;
@@ -107,8 +123,8 @@ instk( id, t, d, s, off ) OFFSZ off; TWORD t; {
 			continue;
 			}
 		else if( t == STRTY ){
-			id = dimtab[pstk->in_x];
-			p = &stab[id];
+			id = (struct symtab *) dimtab[pstk->in_x];
+			p = id;
 			if( p->sclass != MOS && !(p->sclass&FIELD) ) cerror( "insane structure member list" );
 			t = p->stype;
 			d = p->dimoff;
@@ -125,6 +141,7 @@ getstr(){ /* decide if the string is external or an initializer, and get the con
 
 	register l, temp;
 	register NODE *p;
+	int oloc;
 
 	if( (iclass==EXTDEF||iclass==STATIC) && (pstk->in_t == CHAR || pstk->in_t == UCHAR) &&
 			pstk!=instack && ISARY( pstk[-1].in_t ) ){
@@ -134,26 +151,27 @@ getstr(){ /* decide if the string is external or an initializer, and get the con
 		inforce( pstk->in_off );
 		/* if the array is inflexible (not top level), pass in the size and
 			be prepared to throw away unwanted initializers */
-		lxstr((pstk-1)!=instack?dimtab[(pstk-1)->in_d]:0);  /* get the contents */
+		lxstr((pstk-1)!=instack?(int)dimtab[(pstk-1)->in_d]:0);  /* get the contents */
 		irbrace();  /* simulate } */
-		return( NIL );
+		return( 0 );
 		}
 	else { /* make a label, and get the contents and stash them away */
 		if( iclass != SNULL ){ /* initializing */
 			/* fill out previous word, to permit pointer */
-			vfdalign( ALPOINT );
+			vfdalign( (OFFSZ)ALPOINT );
 			}
+		oloc = curloc;
 		temp = locctr( blevel==0?ISTRNG:STRNG ); /* set up location counter */
-		deflab( l = getlab() );
+		l = getlab();
 		strflg = 0;
-		lxstr(0); /* get the contents */
-		locctr( blevel==0?ilocctr:temp );
+		f1792( 0, l ); /* get the contents */
+		if( curloc == STRNG && strhead && iclass != STATIC ) putstrs();
+		locctr( oloc );
 		p = buildtree( STRING, NIL, NIL );
 		p->rval = -l;
 		return(p);
 		}
 	}
-
 putbyte( v ){ /* simulate byte v appearing in a list of integer values */
 	register NODE *p;
 	p = bcon(v);
@@ -162,22 +180,44 @@ putbyte( v ){ /* simulate byte v appearing in a list of integer values */
 	gotscal();
 	}
 
-/* f8510: not written yet (0x8510..0x85f0 of /lib/cparse) */
-f8510()
-{
-}
+putstrs(){ /* the string literals of the function into the .D file (name is a guess) */
+	char *s;
+	int i;
+
+	strcur = strhead;
+	do {
+		fprintf( dfile, "L%d:\n", strcur->s_lab );
+		s = strcur->s_str;
+		i = 0;
+		do {
+			if( i%8 == 0 ){
+				if( i ) fprintf( dfile, "\n" );
+				fprintf( dfile, "\t.byte\t" );
+				}
+			else fprintf( dfile, "," );
+			fprintf( dfile, "%%%x", *s & 0377 );
+			++i;
+			} while( *s++ || i < strcur->s_len );
+		fprintf( dfile, "\n" );
+		free( strcur->s_str );
+		free( strcur );
+		} while( strcur = strcur->s_next );
+	fprintf( dfile, "    .even\n" );
+	strcur = 0;
+	strhead = 0;
+	}
 
 endinit(){
 	register TWORD t;
 	register d, s, n, d1;
-
-	if( idebug ) printf( "endinit(), inoff = %d\n", inoff );
+	OFFSZ sz, tsz;
 
 	switch( iclass ){
 
-	case EXTERN:
 	case AUTO:
+	case EXTERN:
 	case REGISTER:
+		if( strhead ) putstrs();
 		return;
 		}
 
@@ -195,29 +235,31 @@ endinit(){
 		n = inoff/pstk->in_sz;  /* real number of initializers */
 		if( d1 >= n ){
 			/* once again, t is an array, so no fields */
-			inforce( tsize( t, d, s ) );
+			inforce( tsz = tsize( t, d, s ) );
 			n = d1;
 			}
 		if( d1!=0 && d1!=n ) uerror( "too many initializers");
-		if( n==0 ) werror( "empty array declaration");
+		if( n==0 ) werror( "empty array declaration - no space reserved");
 		dimtab[d] = n;
 		}
 
 	else if( t == STRTY || t == UNIONTY ){
 		/* clearly not fields either */
-		inforce( tsize( t, d, s ) );
+		inforce( tsz = tsize( t, d, s ) );
 		}
 	else if( n > 1 ) uerror( "bad scalar initialization");
 	/* this will never be called with a field element... */
-	else inforce( tsize(t,d,s) );
+	else inforce( tsz = tsize(t,d,s) );
 
 	paramno = 0;
-	vfdalign( AL_INIT );
+	vfdalign( (OFFSZ)AL_INIT );
 	inoff = 0;
 	iclass = SNULL;
+	if( (sz = (tsize( t, d, s ) + 15) / 16 * 2) > 0xfffe ) uerror( "size too large" );
+	else f65e8( 1, sz );
+	if( strhead ) putstrs();
 
 	}
-
 doinit( p ) register NODE *p; {
 
 	/* take care of generating a value for the initializer p */
@@ -230,14 +272,26 @@ doinit( p ) register NODE *p; {
 	/* note: size of an individual initializer is assumed to fit into an int */
 
 	if( iclass < 0 ) goto leave;
-	if( iclass == EXTERN || iclass == UNAME ){
-		uerror( "cannot initialize extern or union" );
+	switch( iclass ){
+
+	case EXTERN:
+		uerror( "cannot initialize extern" );
 		iclass = -1;
 		goto leave;
-		}
 
-	if( iclass == AUTO || iclass == REGISTER ){
-		/* do the initialization and get out, without regard 
+	case UNAME:
+		uerror( "cannot initialize union" );
+		iclass = -1;
+		goto leave;
+
+	case TYPEDEF:
+		uerror( "cannot initialize typedef" );
+		iclass = -1;
+		goto leave;
+
+	case AUTO:
+	case REGISTER:
+		/* do the initialization and get out, without regard
 		    for filing out the variable with zeros, etc. */
 		bccode();
 		idname = pstk->in_id;
@@ -246,14 +300,12 @@ doinit( p ) register NODE *p; {
 		return;
 		}
 
-	if( p == NIL ) return;  /* for throwing away strings that have been turned into lists */
+	if( p == NIL ) return;  /* throw away strings already made into lists */
 
 	if( ibseen ){
 		uerror( "} expected");
 		goto leave;
 		}
-
-	if( idebug > 1 ) printf( "doinit(%o)\n", p );
 
 	t = pstk->in_t;  /* type required */
 	d = pstk->in_d;
@@ -285,6 +337,9 @@ doinit( p ) register NODE *p; {
 	else if( p->left->op == FCON ){
 		fincode( p->left->dval, sz );
 		}
+	else if( p->left->op == SCONV && p->left->left->op == FCON ){
+		fincode( p->left->left->dval, sz );
+		}
 	else {
 		cinit( optim(p), sz );
 		}
@@ -294,11 +349,10 @@ doinit( p ) register NODE *p; {
 	leave:
 	tfree(p);
 	}
-
 gotscal(){
 	register t, ix;
-	register n, id;
-	struct symtab *p;
+	register n;
+	struct symtab *p, *id;
 	OFFSZ temp;
 
 	for( ; pstk > instack; ) {
@@ -306,16 +360,16 @@ gotscal(){
 		if( pstk->in_fl ) ++ibseen;
 
 		--pstk;
-		
+
 		t = pstk->in_t;
 
 		if( t == STRTY ){
 			ix = ++pstk->in_x;
-			if( (id=dimtab[ix]) < 0 ) continue;
+			if( (id = (struct symtab *) dimtab[ix]) == 0 ) continue;
 
 			/* otherwise, put next element on the stack */
 
-			p = &stab[id];
+			p = id;
 			instk( id, p->stype, p->dimoff, p->sizoff, p->offset+pstk->in_off );
 			return;
 			}
@@ -334,7 +388,6 @@ gotscal(){
 		}
 
 	}
-
 ilbrace(){ /* process an initializer's left brace */
 	register t;
 	struct instk *temp;
@@ -361,53 +414,69 @@ ilbrace(){ /* process an initializer's left brace */
 	pstk = temp;
 	}
 
-/* f8aac: not written yet (0x8aac..0x8ac4 of /lib/cparse) */
-f8aac()
-{
-}
+irbrace(){
+	/* called when a '}' is seen */
 
-/* f8ac4: not written yet (0x8ac4..0x8ae0 of /lib/cparse) */
-f8ac4()
-{
-}
+	if( ibseen ) {
+		--ibseen;
+		return;
+		}
 
-/* f8ae0: not written yet (0x8ae0..0x8b1e of /lib/cparse) */
-f8ae0()
-{
-}
+	for( ; pstk > instack; --pstk ){
+		if( !pstk->in_fl ) continue;
 
-/* f8b1e: not written yet (0x8b1e..0x8b6e of /lib/cparse) */
-f8b1e()
-{
-}
+		/* we have one now */
+
+		pstk->in_fl = 0;  /* cancel { */
+		gotscal();  /* take it away... */
+		return;
+		}
+
+	/* these right braces match ignored left braces: throw out */
+
+	}
+
+hash( s ) char *s; { /* the hash chain of the name s */
+	char *p;
+	int h;
+
+	h = 0;
+	for( p = s; *p; ++p ) h += *p;
+	return( h %= HASHSZ );
+	}
+
+OFFSZ
+upoff( size, alignment, poff ) register OFFSZ size; register alignment; register OFFSZ *poff; {
+	/* update the offset pointed to by poff; return the
+	/* offset of a value of size `size', alignment `alignment',
+	/* given that off is increasing */
+
+	register OFFSZ off;
+
+	off = *poff;
+	SETOFF( off, alignment );
+	*poff = off+size;
+	return( off );
+	}
 
 oalloc( p, poff ) register struct symtab *p; register OFFSZ *poff; {
 	/* allocate p with offset *poff, and update *poff */
-	OFFSZ al, off, tsz;
+	register al;
+	register OFFSZ off, tsz;
 	OFFSZ noff;
 
 	al = talign( p->stype, p->sizoff );
 	noff = off = *poff;
 	tsz = tsize( p->stype, p->dimoff, p->sizoff );
-#ifdef BACKAUTO
-	if( p->sclass == AUTO ){
-		noff = off + tsz;
-		SETOFF( noff, al );
-		off = -noff;
+	if( ( (p->sclass == PARAM || p->sclass == REGISTER) && p->sfldc == 2 &&
+			(p->stype==CHAR||p->stype==UCHAR||p->stype==SHORT||p->stype==USHORT) ) ||
+	    ( (p->sclass == AUTO || p->sclass == PARAM || (regflag && p->sclass == REGISTER)) &&
+			(p->stype==CHAR||p->stype==UCHAR||p->stype==SHORT||p->stype==USHORT) ) ){
+		upoff( (long)SZINT, ALINT, &noff );
+		off = noff - tsz;
 		}
-	else
-#endif
-		if( p->sclass == PARAM && (p->stype==CHAR||p->stype==UCHAR||p->stype==SHORT||
-				p->stype==USHORT) ){
-			off = upoff( (long)SZINT, (long)ALINT, &noff );
-# ifndef RTOLBYTES
-			off = noff - tsz;
-#endif
-			}
-		else
-		{
-		off = upoff( tsz, al, &noff );
-		}
+	else if( p->sclass != REGISTER || p->sfldc == 2 || p->sfldc == 1 ) off = upoff( tsz, al, &noff );
+	else off = 0;
 
 	if( p->sclass != REGISTER ){ /* in case we are allocating stack space for register arguments */
 		if( p->offset == NOOFFSET ) p->offset = off;
@@ -417,4 +486,3 @@ oalloc( p, poff ) register struct symtab *p; register OFFSZ *poff; {
 	*poff = noff;
 	return(0);
 	}
-

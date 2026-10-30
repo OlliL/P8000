@@ -31,9 +31,9 @@ extern char *scnames();
 # define PROG 0
 # define DATA 1
 # define ADATA 2
-# define STRNG 3
-# define ISTRNG 4
-# define STAB 5
+# define STRNG 5	/* WEGA (PCC 3) */
+# define ISTRNG 6	/* WEGA (PCC 4) */
+# define STAB 7	/* (WEGA value open) */
 # define BSS 6
 
 
@@ -133,6 +133,13 @@ extern CONSZ lastcon;
 extern double dcon;
 
 extern char ftitle[];
+# define HASHSZ 64	/* WEGA: the hash chains of the symbol table */
+# define NTABSZ 6500	/* WEGA: the name table */
+extern FILE *outfile;	/* WEGA: the .I file (for codgen) */
+extern FILE *dfile;	/* WEGA: the .D file (data and strings) */
+extern FILE *sfile;	/* WEGA: the .S file (symbols for the debugger) */
+extern char *memtop, *memcur;	/* WEGA: the hunk of getmem */
+extern int curloc;	/* WEGA: the current location counter (locctr) */
 # define STP(x) ((struct symtab *)(x))	/* WEGA: the rval of a NAME node points to its entry */
 extern char ntab[];	/* the names: locals from the bottom (ntabindx), globals from the top (ntab_globals) */
 extern int ntabindx, ntab_globals;

@@ -269,7 +269,7 @@ extern int nerrors;  /* number of errors seen so far */
 
 typedef union ndu NODE;
 typedef unsigned int TWORD;
-extern NODE *NIL;  /* a pointer which will always have 0 in it */
+# define NIL ((NODE *)0)	/* WEGA: a constant (PCC: a pointer variable which is always 0) */
 extern int dope[];  /* a vector containing operator information */
 extern char *opst[];  /* a vector containing names for ops */
 
