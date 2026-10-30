@@ -54,7 +54,7 @@ def main():
         open(sp, 'w').write('\n'.join(spec) + '\n')
         r = subprocess.run([sys.executable, os.path.join(REPO, 'host', 'tools', 'unlink.py'), sp,
                             os.path.join(ROOT, 'lib', 'cparse'), d,
-                            os.path.join(REPO, 'src', 'lib', 'libc', 'crt', 'crt0-codgen.o')], capture_output=True, text=True)
+                            os.path.join(HERE, '..', 'crt0.o')], capture_output=True, text=True)
         sys.stderr.write(r.stdout)
         sys.stderr.write(r.stderr)
         text = open(os.path.join(d, 'cgram1', '0_1.s')).read()

@@ -58,3 +58,19 @@ def CORPUS_OUTPUTS(base):
 # D18: the cc that built /lib/cparse never writes @r15 (506 times %0000(r15), 0 times @r15; ld and codgen use @r15);
 # the comparisons treat the two forms as equal
 D18 = True
+
+
+def model_link(work, objs):
+    """the link of d12model.py: crt0.o (make crt0.o), our modules, the libc part, like `make cparse`"""
+    import os
+    here = os.path.dirname(os.path.abspath(__file__))
+    cp = os.path.normpath(os.path.join(here, '..'))
+    crt = os.path.join(cp, 'crt0.o')
+    hostld = os.path.normpath(os.path.join(cp, '..', '..', '..', 'host', 'ld', 'ld'))
+    return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', crt] + objs + [os.path.join(cp, 'cplibc.o'), '-o', 'cparsem']
+
+
+# the strict comparison runs on the d12model link (our data layout differs from the original only by D12)
+import os as _os  # noqa: E402
+MODEL_OUT = _os.path.join(_os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_cparse', 'cparsem')
+STRICT_INPUT = MODEL_OUT

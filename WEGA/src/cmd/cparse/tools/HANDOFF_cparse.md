@@ -25,7 +25,7 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 ## Facts (step 0)
 
 - Header: code 48896 (0xbf00), data 18584 (0x4898), bss 28804 (0x7084); no symbols.
-- Start code: exactly `src/lib/libc/crt/crt0-codgen.s` (text 0x0000..0x002a, data word 0 at 0x0000; `_environ` is the
+- Start code: exactly the start-up file of codgen (`mkcrt0.sh cparse`, entry `cparse` in crt0.list; same text as `crt0-codgen.s`) (text 0x0000..0x002a, data word 0 at 0x0000; `_environ` is the
   first bss word, 0x4898). The own code starts at 0x002a.
 - SCCS stamps in the data (module order; each stamp is one file): cgram1.y 2.5 (0x0002), xdefs1.c 2.3 (0x1a64), scan1.c 2.4
   (0x1bee), pftn1.c 2.7 (0x2422), trees1.c 2.8 (0x27b0), optim1.c 2.1 (0x2eae) and "optim" 2.5 (0x2ee8), code1.c 2.7
@@ -65,7 +65,7 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 
 ## Step 3: own code as one block (done)
 
-- `make block` / `make checkblock`: crt0-codgen.o + ownraw.o (the own part as raw bytes, made at build time by
+- `make block` / `make checkblock`: crt0.o (mkcrt0.sh cparse) + ownraw.o (the own part as raw bytes, made at build time by
   `tools/rawblock.py`, never in git) + cplibc.o give /lib/cparse (code, data, bss equal; `tools/cmpimage.py`).
 - A symbolic cut of the own part with unlink.py does not work: with separate I and D space and the own data starting
   at 0x0002, small constants are taken as data addresses (`#D0002`) and bss addresses as text addresses.

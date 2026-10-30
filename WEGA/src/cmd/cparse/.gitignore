@@ -2,3 +2,4 @@ ownraw.s
 cparse_block
 *.o
 cparse
+crt0.s

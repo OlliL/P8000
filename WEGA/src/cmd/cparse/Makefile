@@ -3,7 +3,7 @@
 #   make block       step 3 of host/HOWTO_reconstruct.md: the own part of the original as one raw module (made from
 #                    the original by tools/rawblock.py, needs WEGA=root of the original tree), linked with the libc part
 #                    cplibc.s; the result cparse_block must be equal to /lib/cparse (make checkblock)
-#   make             cparse from our sources: crt0-codgen.o, the modules in the order of the original, the libc part
+#   make             cparse from our sources: crt0.o (made by mkcrt0.sh cparse), the modules in the order of the original, the libc part
 #   make clean
 #
 # The parser cgram1.s is cut from the original (tools/cutgram.py) until the grammar is rebuilt; the libc part is one
@@ -21,8 +21,8 @@ HDRS = mfile1 manifest macdefs stdio.h
 
 all: cparse
 
-cparse: $(CRT)/crt0-codgen.o $(OBJS) cplibc.o
-	$(LDBIN) -i -e start $(CRT)/crt0-codgen.o $(OBJS) cplibc.o -o $@
+cparse: crt0.o $(OBJS) cplibc.o
+	$(LDBIN) -i -e start crt0.o $(OBJS) cplibc.o -o $@
 
 $(OBJS): $(HDRS)
 optim1.o: optim
@@ -36,8 +36,8 @@ cgram1.o: cgram1.s
 
 block: cparse_block
 
-cparse_block: $(CRT)/crt0-codgen.o ownraw.o cplibc.o
-	$(LDBIN) -i -e start $(CRT)/crt0-codgen.o ownraw.o cplibc.o -o $@
+cparse_block: crt0.o ownraw.o cplibc.o
+	$(LDBIN) -i -e start crt0.o ownraw.o cplibc.o -o $@
 
 ownraw.s: tools/rawblock.py
 	WEGA=$(WEGA) python3 tools/rawblock.py $@
@@ -48,8 +48,14 @@ ownraw.o: ownraw.s
 cplibc.o: cplibc.s
 	$(CAS) -u -o $@ cplibc.s
 
+crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
+	sh $(CRT)/mkcrt0.sh cparse > $@
+
+crt0.o: crt0.s
+	$(CAS) -u -o $@ crt0.s
+
 checkblock: cparse_block
 	python3 tools/cmpimage.py cparse_block $(WEGA)/lib/cparse
 
 clean:
-	rm -f ownraw.s ownraw.o cplibc.o cparse_block cparse *.o
+	rm -f ownraw.s ownraw.o crt0.s cplibc.o cparse_block cparse *.o

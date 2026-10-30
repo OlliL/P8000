@@ -241,6 +241,7 @@ wtmpfix	COPR. 1981 87wega3.2.	3.1	01/04/83 00:05:05	usr/lib/acct/wtmpfix
 crpost	COPR. 1981 87wega3.2.			usr/lib/cref/crpost
 upost	COPR. 1981 87wega3.2.			usr/lib/cref/upost
 codgen	-			lib/codgen
+cparse	-			lib/cparse
 scodgen	-			lib/scodgen
 # segmented start-up code (scrt0.s.in): name, pad, revision, stamp, path, template, segment of _environ
 sld	......1981 87wega3.2.	3.2	10/27/83 00:05:16	bin/sld	scrt0	2
