@@ -294,6 +294,9 @@ tbytes( t ) TWORD t; { /* the size of a scalar type in bytes, at most 4 */
 	return( 2 );
 	}
 
+	/* mapping relationals when the sides are reversed (optim) */
+short revrel[] ={ EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
+
 dexit( v ){
 	fflush( stdout );
 	exit( v );

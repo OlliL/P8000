@@ -78,9 +78,9 @@
 560e  fortarg  565c     78  -                proven    open
 565c  optim  5cb8   1628  -                proven    open
 5cb8  conval  5f1a    610  -                proven    open
-5f1a  f5f1a  5f90    118  -                proven    open
-5f90  f5f90  60b6    294  -                candidate open
-60b6  f60b6  60d8     34  -                proven    open
+5f1a  treeeq  5f90    118  -                proven    open
+5f90  rmconv  60b6    294  -                candidate open
+60b6  notflt  60d8     34  -                proven    open
 60d8  main  61d0    248  0000             proven    open
 61d0  openfiles  6348    376  60d8             proven    open
 6348  fnfile  63b2    106  -                proven    open

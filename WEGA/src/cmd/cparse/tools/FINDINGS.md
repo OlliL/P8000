@@ -78,9 +78,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | exname | - | 0x7952 | open | open |  |  |  |
 | f0000 | - | 0x0000 | open | open |  |  |  |
 | f3970 | - | 0x3970 | open | open |  |  |  |
-| f5f1a | - | 0x5f1a | open | open |  |  |  |
-| f5f90 | - | 0x5f90 | open | open |  |  |  |
-| f60b6 | - | 0x60b6 | open | open |  |  |  |
 | falloc | - | 0x8c8e | open | open |  |  |  |
 | fhashv | - | 0x6484 | open | open |  |  |  |
 | fincode | - | 0x7614 | open | open |  |  |  |
@@ -135,6 +132,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | nidcl | - | 0x8e4a | open | open |  |  |  |
 | nncon | - | 0x8062 | open | open |  |  |  |
 | noinit | - | 0x7a1a | open | open |  |  |  |
+| notflt | - | 0x60b6 | open | open |  |  |  |
 | notlval | - | 0x4748 | open | open |  |  |  |
 | oalloc | - | 0x8b6e | open | open |  |  |  |
 | oconvert | - | 0x49ca | open | open |  |  |  |
@@ -160,6 +158,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | regfree | - | 0x94a6 | open | open |  |  |  |
 | resetbc | - | 0x0130 | open | open |  |  |  |
 | resetmem | - | 0x8100 | open | open |  |  |  |
+| rmconv | - | 0x5f90 | open | open |  |  |  |
 | rstruct | - | 0x32ca | open | open |  |  |  |
 | savebc | - | 0x00e2 | open | open |  |  |  |
 | savestr | - | 0x1792 | open | open |  |  |  |
@@ -185,6 +184,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | tfree | - | 0x7cfe | open | open |  |  |  |
 | tfree1 | - | 0x7d1a | open | open |  |  |  |
 | tinit | - | 0x7c48 | open | open |  |  |  |
+| treeeq | - | 0x5f1a | open | open |  |  |  |
 | tsize | - | 0x37cc | open | open |  |  |  |
 | twords | - | 0x7e86 | open | open |  |  |  |
 | tymatch | - | 0x4bb4 | open | open |  |  |  |

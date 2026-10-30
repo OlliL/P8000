@@ -6,14 +6,12 @@
 # define LO(p) p->left->op
 # define LV(p) p->left->lval
 
-int oflag = 0;
 
 
-	/* mapping relationals when the sides are reversed */
-short revrel[] ={ EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
+extern short revrel[];
 
 NODE *
-fortarg( p ) NODE *p; {
+fortarg( p ) register NODE *p; {
 	/* fortran function arguments */
 
 	if( p->op == CM ){
@@ -33,12 +31,12 @@ optim(p) register NODE *p; {
 	/* local optimizations, most of which are probably machine independent */
 
 	register o, ty;
-	NODE *sp;
+	register NODE *a, *b;
 	int i;
+	NODE *sp;
 	TWORD t;
 
 	if( (t=BTYPE(p->type))==ENUMTY || t==MOETY ) econvert(p);
-	if( oflag ) return(p);
 	ty = optype( o=p->op);
 	if( ty == LTYPE ) return(p);
 
@@ -57,14 +55,10 @@ optim(p) register NODE *p; {
 		p->right = fortarg( p->right );
 		break;
 
-	case UNARY AND:
-		if( LO(p) != NAME ) cerror( "& error" );
+	case UNARY MUL:
+		if( LO(p) != ICON ) break;
+		LO(p) = NAME;
 
-		if( !andable(p->left) ) return(p);
-
-		LO(p) = ICON;
-
-		setuleft:
 		/* paint over the type of the left hand side with the type of the top */
 		p->left->type = p->type;
 		p->left->cdim = p->cdim;
@@ -72,12 +66,34 @@ optim(p) register NODE *p; {
 		p->op = FREE;
 		return( p->left );
 
-	case UNARY MUL:
-		if( LO(p) != ICON ) break;
-		LO(p) = NAME;
-		goto setuleft;
-
 	case MINUS:
+		/* WEGA: (x+a)-(x+b) is a-b, (x-a)-(x-b) is b-a, x-x is 0 */
+		if( LO(p) == PLUS && RO(p) == PLUS && treeeq( p->left->left, p->right->left ) &&
+				p->left->right->type == p->type && p->right->right->type == p->type ){
+			a = tcopy( p->left->right );
+			b = tcopy( p->right->right );
+			goto rebuild;
+			}
+		while( LO(p) == MINUS && RO(p) == MINUS && treeeq( p->left->left, p->right->left ) &&
+				p->left->right->type == p->type && p->right->right->type == p->type ){
+			b = tcopy( p->left->right );
+			a = tcopy( p->right->right );
+		rebuild:
+			tfree( p->left );
+			tfree( p->right );
+			p->left = a;
+			p->right = b;
+			p = clocal( p );
+			}
+		if( treeeq( p->left, p->right ) && p->type != FLOAT && p->type != DOUBLE ){
+			tfree( p->left );
+			tfree( p->right );
+			p->op = ICON;
+			p->rval = NONAME;
+			p->lval = 0;
+			p = clocal( p );
+			break;
+			}
 		if( !nncon(p->right) ) break;
 		RV(p) = -RV(p);
 		o = p->op = PLUS;
@@ -89,9 +105,11 @@ optim(p) register NODE *p; {
 	case ER:
 		/* commutative ops; for now, just collect constants */
 		/* someday, do it right */
-		if( nncon(p->left) || ( LCON(p) && !RCON(p) ) ) SWAP( p->left, p->right );
+		if( nncon(p->left) || ( LCON(p) && !RCON(p) && !( RO(p) == REG && p->right->rval == 15 ) &&
+				!ISPTR(p->type) ) ) SWAP( p->left, p->right );
+		if( (o == MINUS || o == PLUS) && nncon(p->right) && RV(p) == 0 ) goto zapright;
 		/* make ops tower to the left, not the right */
-		if( RO(p) == o ){
+		if( RO(p) == o && !ISPTR(p->type) && !ISPTR(p->right->left->type) ){
 			NODE *t1, *t2, *t3;
 			t1 = p->left;
 			sp = p->right;
@@ -104,22 +122,19 @@ optim(p) register NODE *p; {
 			p->right = t3;
 			}
 		if(o == PLUS && LO(p) == MINUS && RCON(p) && RCON(p->left) &&
-		  conval(p->right, MINUS, p->left->right)){
+		  conval(p->right, MINUS, p->left->right)) goto zapleft;
+		while( RCON(p) && LO(p)==o && RCON(p->left) && conval( p->right, o, p->left->right ) ){
 			zapleft:
 			RO(p->left) = FREE;
 			LO(p) = FREE;
 			p->left = p->left->left;
-		}
-		if( RCON(p) && LO(p)==o && RCON(p->left) && conval( p->right, o, p->left->right ) ){
-			goto zapleft;
 			}
-		else if( LCON(p) && RCON(p) && conval( p->left, o, p->right ) ){
-			zapright:
+		if( ISPTR(p->type) && LCON(p) && RO(p) == o && RCON(p->right) && conval( p->left, o, p->right->right ) ){
+			p->right->right->op = FREE;
 			RO(p) = FREE;
-			p->left = makety( p->left, p->type, p->cdim, p->csiz );
-			p->op = FREE;
-			return( clocal( p->left ) );
+			p->right = p->right->left;
 			}
+		else if( LCON(p) && RCON(p) && conval( p->left, o, p->right ) ) goto zapright;
 
 		/* change muls to shifts */
 
@@ -127,9 +142,11 @@ optim(p) register NODE *p; {
 			if( i == 0 ){ /* multiplication by 1 */
 				goto zapright;
 				}
-			o = p->op = LS;
+			o = LS;
 			p->right->type = p->right->csiz = INT;
 			RV(p) = i;
+			p->op = FREE;
+			p = buildtree( o, p->left, p->right );
 			}
 
 		/* change +'s of negative consts back to - */
@@ -139,8 +156,36 @@ optim(p) register NODE *p; {
 			}
 		break;
 
+	zapright:
+		RO(p) = FREE;
+		p->left = makety( p->left, p->type, p->cdim, p->csiz );
+		p->op = FREE;
+		return( clocal( p->left ) );
+
 	case DIV:
 		if( nncon( p->right ) && p->right->lval == 1 ) goto zapright;
+	case ASG DIV:
+	case MOD:
+	case ASG MOD:	/* WEGA: unsigned by a power of 2 as a shift or an and */
+		a = p->right;
+		if( ISUNSIGNED(p->type) && nncon(a) && ispow2(a->lval) > 0 ){
+			if( o == MOD || o == ASG MOD ){
+				p->op = (o == ASG MOD) ? ASG AND : AND;
+				a->lval -= 1;
+				a->type = p->type = p->left->type;
+				}
+			else {
+				p->op = (o == ASG DIV) ? ASG RS : RS;
+				a->lval = ispow2( a->lval );
+				if( p->op == RS && p->left->type != p->type )
+					p->left = makety( p->left, p->type, p->cdim, p->csiz );
+				}
+			}
+		break;
+
+	case ASG PLUS:
+	case ASG MINUS:
+		if( nncon(p->right) && RV(p) == 0 ) goto zapright;
 		break;
 
 	case EQ:
@@ -177,15 +222,15 @@ conval( p, o, q ) register NODE *p, *q; {
 	u = ISUNSIGNED(p->type) || ISUNSIGNED(q->type);
 	if( u && (o==LE||o==LT||o==GE||o==GT)) o += (UGE-GE);
 
-	if( p->rval != NONAME && q->rval != NONAME ) return(0);
-	if( q->rval != NONAME && o!=PLUS ) return(0);
-	if( p->rval != NONAME && o!=PLUS && o!=MINUS ) return(0);
+	if( !nncon(p) && !nncon(q) ) return(0);
+	if( !nncon(q) && o!=PLUS ) return(0);
+	if( !nncon(p) && o!=PLUS && o!=MINUS ) return(0);
 
 	switch( o ){
 
 	case PLUS:
 		p->lval += val;
-		if( p->rval == NONAME ){
+		if( nncon(p) ){
 			p->rval = q->rval;
 			p->type = q->type;
 			}
@@ -267,18 +312,55 @@ conval( p, o, q ) register NODE *p, *q; {
 	return(1);
 	}
 
-/* f5f1a: not written yet (0x5f1a..0x5f90 of /lib/cparse) */
-f5f1a()
-{
-}
+treeeq( p, q ) register NODE *p, *q; { /* are the trees p and q equal */
+	register o;
 
-/* f5f90: not written yet (0x5f90..0x60b6 of /lib/cparse) */
-f5f90()
-{
-}
+	if( (o = p->op) != q->op ) return( 0 );
+	switch( optype(o) ){
 
-/* f60b6: not written yet (0x60b6..0x60d8 of /lib/cparse) */
-f60b6()
-{
-}
+	case LTYPE:
+		if( p->lval == q->lval && p->rval == q->rval ) return( 1 );
+		return( 0 );
 
+	case BITYPE:
+		if( !treeeq( p->right, q->right ) ) return( 0 );
+	case UTYPE:
+		return( treeeq( p->left, q->left ) );
+		}
+	}
+
+NODE *
+rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes nothing: c 'r' of the right side, 'l' of the left side, else of p */
+	register NODE *q, *r;
+
+	if( c == 'r' ){
+		q = p->right;
+		if( q->left->type == q->type || ( bsize( q->type ) == bsize( q->left->type ) &&
+				!( notflt( q->type ) ^ notflt( q->left->type ) ) ) ||
+				( q->type == DOUBLE && q->left->type == FLOAT ) ){
+			r = tcopy( q->left );
+			tfree( q );
+			p->right = r;
+			}
+		}
+	else if( c == 'l' ){
+		q = p->left;
+		if( q->left->type == q->type || ( bsize( q->type ) == bsize( q->left->type ) &&
+				!( notflt( q->type ) ^ notflt( q->left->type ) ) ) ||
+				( q->type == DOUBLE && q->left->type == FLOAT ) ){
+			r = tcopy( q->left );
+			tfree( q );
+			p->left = r;
+			}
+		}
+	else if( p->type == UNDEF ){
+		r = tcopy( p->left );
+		tfree( p );
+		p = r;
+		}
+	return( p );
+	}
+
+notflt( t ) register TWORD t; { /* is t not a floating type */
+	return( t == FLOAT || t == DOUBLE ? 0 : 1 );
+	}
