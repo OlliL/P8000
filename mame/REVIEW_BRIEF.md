@@ -24,14 +24,87 @@ All changes were made with the help of Claude Sonnet 5.5, Claude Haiku 5.5 and C
 | C. machine/z80pio | port priority, mode 3 after RETI (optional) | 1 commit |
 | D. machine/z8010 | four corrections (optional) | 1 commit |
 
-B, C and D start from mamedev `master`, not from the driver branch. PR texts (drafts, not
-part of the PRs): [A](https://github.com/OlliL/mame/blob/p8k-clean/PULL_REQUEST_p8k.md),
+B, C and D start from mamedev `master`, not from the driver branch. Which commit of
+`p8k-clean` goes into which PR, and which ones are squashed, is in the
+[branch plan](#branch-plan) below. PR texts (drafts, not part of the PRs): [A](https://github.com/OlliL/mame/blob/p8k-clean/PULL_REQUEST_p8k.md),
 [B](https://github.com/OlliL/mame/blob/p8k-clean/PULL_REQUEST_z8000.md),
 [C](https://github.com/OlliL/mame/blob/p8k-clean/PULL_REQUEST_z80pio.md),
 [D](https://github.com/OlliL/mame/blob/p8k-clean/PULL_REQUEST_z8010.md).
 
 Real-machine tests (photos and listings): [tests/](tests/README.md). Programs are entered
 word by word in the MON16 monitor.
+
+---
+
+## Branch plan
+
+`p8k-clean` is the working branch. Right before submission each PR gets its own branch from the
+current mamedev `master`, built from the commits below. The table lists **every** commit of
+`p8k-clean` after `f26abf2b`, oldest first; a new commit on `p8k-clean` gets its row when it is
+made.
+
+Rules (MAME has no written rule on the size of commits; these follow S-2 and S-3 of the review
+rules and what core developers ask for):
+
+- One PR is about one thing; independent core changes are separate PRs (S-3).
+- Inside a PR, one commit per self-contained change, with a message that explains it without the
+  diff (S-2). Each commit builds on its own.
+- Follow-ups to the same change (review comments, corrections, later measurements) are squashed
+  into it; no "fix" or "review comment" commits in a PR. The message of the target commit is then
+  rewritten so that it describes the combined change.
+- Commits that only touch `PULL_REQUEST_*.md` are dropped. A code commit that also touches a draft
+  loses that hunk.
+
+Actions: **keep** = cherry-pick as it is (it may still get a new message), **squash → X** =
+cherry-pick right after X (in table order) and fold into it, **drop** = not in any PR.
+
+| Commit | Subject | PR | Action |
+|---|---|---|---|
+| `436f255b` | cpu/z8000: Fixed DAB after an addition for bytes 0xFA-0xFF | A | keep; new message for addition and subtraction |
+| `d613b434` | cpu/z8000: PC offset wraps at FFFF without carry into the segment | B | keep; message names the block restart too |
+| `70c2b2c6` | machine/z80pio: Acknowledge only enabled ports, latch a mode 3 match during service | A | keep |
+| `fb7176fb` | machine/z80pio: Port A has priority over port B, drop a mode 3 request after RETI | C | keep |
+| `03dffddf` | machine/z8010: Fixed the set-all-inhibit commands, SAR wrap, command %10 and SWW | D | keep |
+| `9e5d3d17` | machine/z80ctc: Added opt-in set_reload_on_reset() | A | keep |
+| `a54429c4` | machine/z80dma: Added a virtual byte_counter() hook and a derivable ua858d_device | A | keep |
+| `25528403` | hash/p8000_flop.xml: Added the P8000 floppy disk software list | A | keep |
+| `01843ae3` | ddr/p8k.cpp: Emulated the 16 bit board, WEGA boots | A | keep; message checked against the follow-ups |
+| `dc61ba7d` | PR drafts (not part of the pull requests, drop before submitting) | - | drop |
+| `72898eda` | PR draft p8k: where the ROMs come from | - | drop |
+| `eabc0946` | PR draft p8k: name both monitors of p8000_16 | - | drop |
+| `5b8eff36` | PR draft z8010: measured on the real machine | - | drop |
+| `a8cd9d29` | PR draft z8010: SAR wrap measured on the real machine | - | drop |
+| `ec998467` | PR draft z8010: command %10 measured on the real machine | - | drop |
+| `cbecad5a` | PR draft z8000: PC wrap measured on the real machine | - | drop |
+| `9b340f14` | cpu/z8000: block instructions restart without borrowing from the segment | B | squash → `d613b434`, without its `PULL_REQUEST_z8000.md` hunk |
+| `65456041` | PR draft z8000: add manual references for the PC wrap and the block instruction restart | - | drop |
+| `d819729a` | PR draft z8000: block instruction restart confirmed on the real machine | - | drop |
+| `21945c9e` | hash/p8000_flop: titles, part numbers, versions and dates from the disk labels and READMEs | A | squash → `25528403` |
+| `163a16d3` | p8k: register the remaining state for save states | A | squash → `01843ae3` |
+| `8f9fdf0b` | p8k: support save states | A | squash → `01843ae3` |
+| `2e507dc1` | cpu/z8000: use addr_add/addr_sub for the PC fetch and block restart | B | squash → `d613b434` |
+| `84ec61a1` | drafts: z8000 PR text uses addr_add/addr_sub | - | drop |
+| `967f0eca` | p8k: tidy the driver | A | squash → `01843ae3` |
+| `431de339` | PR draft p8k: console terminal, its ROMs and keys | - | drop |
+| `0c82593f` | p8k: fix company string | A | squash → `01843ae3` |
+| `04154ab3` | p8k: pass the address through when no MMU drives the bus | A | squash → `01843ae3` |
+| `91eee0c5` | p8k terminal: caret and apostrophe keys follow the German layout | A | squash → `01843ae3` |
+| `151b55cc` | p8k: A8-A23 keep their last value when no MMU drives the bus | A | squash → `01843ae3` |
+| `dff42e83` | PR draft p8k: all models in the disclosure, bus hold, sa.diags | - | drop |
+| `02f5fb03` | cpu/z8000: DAB after a subtraction judges the upper digit by the original byte | A | squash → `436f255b` |
+
+Resulting branches (names are a proposal):
+
+| Branch | Commits in order |
+|---|---|
+| `p8k-pr-driver` (A) | DAB, z80pio acknowledge/match, z80ctc, z80dma, software list, driver |
+| `p8k-pr-z8000` (B) | PC wrap with block restart |
+| `p8k-pr-z80pio` (C) | port priority, mode 3 after RETI |
+| `p8k-pr-z8010` (D) | Z8010 corrections |
+
+Checked 2026-10-30 on `f26abf2b` in a scratch worktree: B (without the draft hunk), C and D apply
+without conflicts (B then changes only `z8000.cpp` and `z8000ops.hxx`). Not yet built on their own.
+C applies to `master` without A's z80pio commit; if A is merged first, C is rebased on it.
 
 ---
 
@@ -52,8 +125,9 @@ Commit [`d613b434`](https://github.com/OlliL/mame/commit/d613b434) in
   `7F21 D000 8100 0002`); the old core continues in segment 2 (`7F22 D000 8200 0002`).
 - **Block instructions:** the repeating block instructions restart themselves with
   `m_pc -= 4` (32 places in `z8000ops.hxx`). After a wrapped fetch (instruction ending at
-  offset `FFFC`) this borrowed from the segment number. Fixed in commit
-  [`57986a34`](https://github.com/OlliL/mame/commit/57986a34) with `addr_sub(m_pc, 4)`
+  offset `FFFC`) this borrowed from the segment number. Fixed in commits
+  [`9b340f14`](https://github.com/OlliL/mame/commit/9b340f14) and
+  [`2e507dc1`](https://github.com/OlliL/mame/commit/2e507dc1) with `addr_sub(m_pc, 4)`
   (to be squashed into `d613b434`; the fetch uses `addr_add(m_pc, 2)`, as suggested in a review comment). Checked on the emulator with an `ldir`
   at `<<1>>%FFFC` (old: leaves segment 1 after one round; new: copies all words). Measured on the
   real machine too: [test 06](tests/06-z8000-block-instruction-restart/README.md) (`7F21 D050 8200 0002`, words `A001 A002 A003`, equal to the emulator).
@@ -107,20 +181,26 @@ Commit [`03dffddf`](https://github.com/OlliL/mame/commit/03dffddf) in
 
 ### DAB fix (cpu/z8000)
 
-Commit [`436f255b`](https://github.com/OlliL/mame/commit/436f255b),
-`src/devices/cpu/z8000/z8000ops.hxx`, function `ZB0_dddd_0000`.
+Commits [`436f255b`](https://github.com/OlliL/mame/commit/436f255b) (addition) and
+[`02f5fb03`](https://github.com/OlliL/mame/commit/02f5fb03) (subtraction, to be squashed into
+`436f255b`), `src/devices/cpu/z8000/z8000ops.hxx`, function `ZB0_dddd_0000`.
 
-- **Change:** after an addition the upper digit is judged from the original byte
-  (`orig > 0x99`), not from the byte after the low-nibble correction. For `0xFA`-`0xFF` that
-  `+6` overflows the byte and hid the need for the `+0x60` correction. The subtraction path
-  is unchanged.
+- **Change:** the upper digit is judged from the original byte (`orig > 0x99`), not from the
+  byte after the low-nibble correction: `highfix = C || orig > 0x99` for both directions. After
+  an addition the `+6` overflows `0xFA`-`0xFF` and hid the need for the `+0x60`; after a
+  subtraction the `-6` borrows out of `0x00`-`0x05` (H set), which faked an upper digit F, and
+  brings `0x9A`-`0xA5` down to an upper 9, which hid the needed `-0x60`.
 - **Why:** WEGA's C library converts longs to decimal with a BCD loop; `expr 13000 + 3000`
   returned 0 and numbers around 16000...16260 and 100000 were printed wrongly. `sysgen`
   wrote a wrong default boot path because of it.
 - **Documents:** U8000 CPU description, arithmetic instructions, DAB p. 68; Leventhal,
   Z8000 Assembly Language Programming table 3-12; Moore, Z8000 Handbook table 2-8.
-- **Evidence:** all 764 byte/flag combinations the table covers were compared with the code.
-  Combinations outside the table are undefined in all three sources. Flags: Z and S from
+- **Evidence:** all 764 byte/flag combinations the table covers were compared with the code;
+  the subtraction change leaves all of them as they were. Combinations outside the table are
+  undefined in all three sources. For the subtraction cases outside the table, a reviewer
+  compared the core with test cases captured on a real Z8001 (`0x00`-`0x05` with H=1:
+  `0xFA`-`0xFF` C=0; `0x9A`-`0xA5` with H=1 and `0x9A`-`0x9F` with H=0: `0x34`-`0x3F` C=1);
+  with `02f5fb03` all of them match, the addition path matched already. Flags: Z and S from
   the result, C set when the upper correction was applied, P/V untouched.
 - **Please check:** the carry rule, and the cases with H set and a high digit 9.
 
@@ -159,7 +239,8 @@ Commit [`25528403`](https://github.com/OlliL/mame/commit/25528403), `hash/p8000_
 
 ### Driver
 
-Commit [`64462a93`](https://github.com/OlliL/mame/commit/64462a93): `src/mame/ddr/p8k.cpp`
+Commit [`01843ae3`](https://github.com/OlliL/mame/commit/01843ae3) (plus the follow-ups listed in the
+[branch plan](#branch-plan)): `src/mame/ddr/p8k.cpp`
 (about 1800 lines, replaces `skeleton/p8k.cpp`), `p8k_wdc.*` (Winchester controller model),
 `p8k_u130.*` (clock module), `mame.lst`. Modelled on
 `src/devices/bus/zbi/s8k_cpu.cpp` (System 8000 CPU board). Parts that are specific to the

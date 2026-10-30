@@ -187,6 +187,16 @@ byte/flag combinations the table covers were compared with the code: no differen
 are set from the result, P/V is not touched ("CZS---"). Combinations outside the table are
 undefined in all sources.
 
+Subtraction (2026-10-30, commit `02f5fb03`, to be squashed into `436f255b`): a reviewer ran the
+core against test cases captured on a real Z8001. The addition path matched; after a subtraction
+the upper digit was still judged from the byte after the -6. That borrows out of 0x00-0x05 (H
+set, the upper digit then reads F, so a wrong -0x60 was applied) and brings 0x9A-0xA5 down to an
+upper 9 (the needed -0x60 was missing). Silicon: 0x00-0x05 H=1 C=0 -> 0xFA-0xFF C=0; 0x9A-0xA5
+H=1 C=0 and 0x9A-0x9F H=0 C=0 -> 0x34-0x3F C=1. Fix as the reviewer proposed: `highfix = C ||
+orig > 0x99` for both directions. These inputs are outside the table; a script compared old core,
+new core, the 764 table cases (all unchanged) and the 25 reported cases (all match now), and a
+run of `dab rl0` on the emulated U8001 gave the same nine sample results.
+
 ### 4.2 `machine/z80pio`: acknowledge only enabled ports, latch mode 3 match during service (needed) – commit `70c2b2c6`
 
 - `z80daisy_irq_ack()` acknowledges only when `m_ie && m_ip`. `m_ip` can be set while the
@@ -769,7 +779,8 @@ restart with `m_pc -= 4`. An instruction of two words at `seg:FFFC` leaves the P
 `<<1>>%0000`: old core (with the wrap fix only) copies one word, R1=2, then runs away
 (PC=7FE0); with `restart_insn()` all three words are copied, R1=0, R0=1234, PC at
 `<<1>>%0004`. Run with `tools/run_blk.sh <mame binary> <out>` (MON16 reached through `X` and
-NMI, then `blk2.lua` takes over the CPU). Fix: commit `57986a34` on `p8k-clean`.
+NMI, then `blk2.lua` takes over the CPU). Fix: commits `9b340f14` and `2e507dc1` on `p8k-clean`
+(`57986a34` before the history was rewritten).
 
 Test 06 (`tests/06-z8000-block-instruction-restart`) is the same case as a real-machine program like test 05:
 `ldir` at `<<2>>%FFFC`, `sc #%21` at `<<2>>%0000`, marker `sc #%22` at `<<1>>%FFFC`. Emulator: old core
