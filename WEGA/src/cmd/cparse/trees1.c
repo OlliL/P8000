@@ -286,7 +286,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 		switch(o){
 
 		case NAME:
-			sp = &stab[idname];
+			sp = STP(idname);
 			if( sp->stype == UNDEF ){
 				uerror( "%.8s undefined", sp->sname );
 				/* make p look reasonable */
@@ -339,7 +339,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			/* rhs must be a name; check correctness */
 
 			i = r->rval;
-			if( i<0 || ((sp= &stab[i])->sclass != MOS && sp->sclass != MOU && !(sp->sclass&FIELD)) ){
+			if( i<0 || ((sp= STP(i))->sclass != MOS && sp->sclass != MOU && !(sp->sclass&FIELD)) ){
 				uerror( "member of structure or union required" );
 				}
 			else {
@@ -349,7 +349,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 					}
 				else if( (j=l->csiz+1)<0 ) cerror( "undefined structure or union" );
 				else if( !chkstr( i, dimtab[j], DECREF(l->type) ) ){
-					werror( "illegal member use: %.8s", stab[i].sname );
+					werror( "illegal member use: %.8s", STP(i)->sname );
 					}
 				}
 
@@ -462,7 +462,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			p->csiz = l->csiz;
 			if( l->op == UNARY AND && l->left->op == NAME &&
 				l->left->rval >= 0 && l->left->rval != NONAME &&
-				( (i=stab[l->left->rval].sclass) == FORTRAN || i==UFORTRAN ) ){
+				( (i=STP(l->left->rval)->sclass) == FORTRAN || i==UFORTRAN ) ){
 				p->op += (FORTCALL-CALL);
 				}
 			if( p->type == STRTY || p->type == UNIONTY ){
@@ -516,7 +516,7 @@ chkstr( i, j, type ) OFFSZ j; TWORD type; {
 
 	extern int ddebug;
 
-	if( ddebug > 1 ) printf( "chkstr( %.8s(%d), %d )\n", stab[i].sname, i, j );
+	if( ddebug > 1 ) printf( "chkstr( %.8s(%d), %d )\n", STP(i)->sname, i, j );
 	if( (k = j) < 0 ) uerror( "undefined structure or union" );
 	else {
 		for( ; (kk = dimtab[k] ) >= 0; ++k ){
@@ -525,12 +525,12 @@ chkstr( i, j, type ) OFFSZ j; TWORD type; {
 				return(1);
 				}
 			if( kk == i ) return( 1 );
-			switch( stab[kk].stype ){
+			switch( STP(kk)->stype ){
 
 			case STRTY:
 			case UNIONTY:
 				if( type == STRTY ) continue;  /* no recursive looking for strs */
-				if( chkstr( i, dimtab[stab[kk].sizoff+1], stab[kk].stype ) ) return(1);
+				if( chkstr( i, dimtab[STP(kk)->sizoff+1], STP(kk)->stype ) ) return(1);
 				}
 			}
 		}
@@ -614,7 +614,7 @@ stref( p ) register NODE *p; {
 	/* make p->x */
 	/* this is also used to reference automatic variables */
 
-	q = &stab[p->right->rval];
+	q = STP(p->right->rval);
 	p->right->op = FREE;
 	p->op = FREE;
 	p = pconvert( p->left );
@@ -1268,7 +1268,7 @@ prtree(p) register NODE *p; {
 		/* print external name */
 		if( p->rval == NONAME ) printf( "\n" );
 		else if( p->rval >= 0 ){
-			q = &stab[p->rval];
+			q = STP(p->rval);
 			printf(  "%s\n", exname(q->sname) );
 			}
 		else { /* label */

@@ -1,565 +1,437 @@
 # include "mfile1"
 # include <signal.h>
 
-extern int cdebug;
-int eprint();
-int csavlab, enterlab;
-int cretlab;
-int lineswitch;
-int proflag;
+int lflag = 0;	/* -l: write .line directives into the .D file */
+int pflag = 0;	/* -p: profiling, a counter word for each function */
 int strftn = 0;	/* is the current function one which returns a value */
-FILE *tmpfile;
-FILE *outfile = stdout;
+int sectpre = 5;	/* length of the name prefix kept when a section is renamed */
+char sectname[3][24] = { "modul_p", "modul_d", "modul_b" };	/* the names of the sections */
+long sectsize[3] = { 0, 0, 0 };	/* bytes used in each section */
 
-
-int lastloc = PROG;
-
-
-
-
-int crslab = 10;
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-bycode( t, i ){
-	i &= 0xf;
-	if( t < 0 ) {
-		if( i != 0 ) fprintf( outfile, "\n" );
-	} else {
-		if( i == 0 ) fprintf( outfile, "	.byte	" );
-		else fprintf( outfile, "," );
-		fprintf( outfile, "%d", t );
-		if( i == 0xf ) fprintf( outfile, "\n" );
-	}
-}
-
-
-
-
-
-char *tmpname = "/tmp/pcXXXXXX";
+int Fflag;	/* -F: write the names of the source and of each function into a file */
+FILE *Ffile;	/* the file of -F */
+long ftnpos;	/* position of the function head in the .I file (rewritten by ftnend) */
+int fregvar;	/* float registers in use (with regvar given to codgen) */
+int regvar;
+char ifname[50], dfname[50], sfname[50];	/* the names of the output files */
+char *ipath, *dpath, *spath;
+char ibuf[BUFSIZ], dbuf[BUFSIZ], sbuf[BUFSIZ];
+extern int crslab, curloc, ftnno, retlab, regflag;
+extern struct symtab *curftn;
 
 main( argc, argv ) char *argv[]; {
 	int dexit();
-	register int c;
 	register int i;
-	int r;
 
-	for( i=1; i<argc; ++i )
-		if( argv[i][0] == '-' && argv[i][1] == 'X' && argv[i][2] == 'p' ) {
-			proflag = 1;
-			}
-
-	mktemp(tmpname);
 	if(signal( SIGHUP, SIG_IGN) != SIG_IGN) signal(SIGHUP, dexit);
 	if(signal( SIGINT, SIG_IGN) != SIG_IGN) signal(SIGINT, dexit);
 	if(signal( SIGTERM, SIG_IGN) != SIG_IGN) signal(SIGTERM, dexit);
-	tmpfile = fopen( tmpname, "w" );
+	openfiles( argc, argv );
 
-	r = mainp1( argc, argv );
+	for( i=1; i<argc; ++i )
+		if( *argv[i] == '-' ) switch( argv[i][1] ){
 
-	tmpfile = freopen( tmpname, "r", tmpfile );
-	if( tmpfile != NULL )
-		while((c=getc(tmpfile)) != EOF )
-			putchar(c);
-	else cerror( "Lost temp file" );
-	unlink(tmpname);
-	return( r );
+		case 'l':
+			++lflag;
+			break;
+
+		case 'L':
+			ncharsig = 8;
+			break;
+
+		case 'p':
+			++pflag;
+			break;
+
+		case 'O':
+			++regflag;
+			break;
+
+		case 'F':
+			fnfile( argv[++i] );
+			break;
+			}
+
+	i = mainp1();
+
+	fclose( outfile );
+	fclose( sfile );
+	fclose( dfile );
+	--lineno;
+	lineid();
+	return( i );
 	}
 
-/* f61d0: not written yet (0x61d0..0x6348 of /lib/cparse) */
-f61d0()
-{
-}
+openfiles( argc, argv ) char *argv[]; { /* -E base: create base.I, base.D and base.S */
+	register int i, fd;
+	register char *cp;
 
-/* f6348: not written yet (0x6348..0x63b2 of /lib/cparse) */
-f6348()
-{
-}
+	for( i=1; i<argc; ++i ){
+		cp = argv[i];
+		if( *cp == '-' && *++cp == 'E' ){
+			++i;
+			ipath = strcpy( ifname, argv[i] );
+			ipath = strcat( ipath, ".I" );
+			if( (fd = creat( ipath, 0666 )) < 0 ) syserr( ipath );
+			if( (outfile = fdopen( fd, "w" )) == NULL ) syserr( ipath );
+			setbuf( outfile, ibuf );
+			dpath = strcpy( dfname, argv[i] );
+			dpath = strcat( dpath, ".D" );
+			if( (fd = creat( dpath, 0666 )) < 0 ) syserr( dpath );
+			if( (dfile = fdopen( fd, "w" )) == NULL ) syserr( dpath );
+			setbuf( dfile, dbuf );
+			spath = strcpy( sfname, argv[i] );
+			spath = strcat( spath, ".S" );
+			if( (fd = creat( spath, 0666 )) < 0 ) syserr( spath );
+			if( (sfile = fdopen( fd, "w" )) == NULL ) syserr( spath );
+			setbuf( sfile, sbuf );
+			}
+		}
+	}
 
-/* f63b2: not written yet (0x63b2..0x6484 of /lib/cparse) */
-f63b2()
-{
-}
+fnfile( s ) char *s; { /* -F s: the names go to the file s */
+	++Fflag;
+	if( (Ffile = fopen( s, "w" )) == NULL ) syserr( s );
+	if( !ftitle[0] ){
+		if( fprintf( Ffile, "+%s\n", s ) < 0 ) syserr( s );
+		}
+	else if( fprintf( Ffile, "+%s\n", ftitle ) < 0 ) syserr( ftitle );
+	}
 
-/* f6484: not written yet (0x6484..0x64c2 of /lib/cparse) */
-f6484()
-{
-}
+struct fcon {	/* a floating constant of the .D file, with its label */
+	struct fcon *fnext;
+	double fval;
+	int flab;
+	};
+struct fcon *fhash[61] = { 0 };	/* the hash chains */
+struct fcon *fcp = 0;	/* the newest entry */
+int fccnt = 0;	/* entries made (50 of them in each malloc) */
+int fcfail = 0;	/* malloc failed */
+int sectnew = 1;	/* no section has been started yet */
+int nsect = 3;	/* the number of sections */
 
-/* f64c2: not written yet (0x64c2..0x65c4 of /lib/cparse) */
-f64c2()
-{
-}
+fltlab( d ) double d; { /* the label of the floating constant d; crslab if it is new */
+	register struct fcon *p;
+	register h;
 
-/* f65c4: not written yet (0x65c4..0x65e8 of /lib/cparse) */
-f65c4()
-{
-}
+	h = fhashv( &d, 61 );
+	for( p = fhash[h]; p; p = p->fnext ){
+		if( p->fval == d ) return( p->flab );
+		}
+	if( fcfail ) fcp = 0;
+	else if( fccnt++ % 50 ) ++fcp;
+	else fcp = (struct fcon *) malloc( 50*sizeof(struct fcon) );
+	if( fcp == 0 ){
+		if( !fcfail ){
+			werror( "no space for floating constant chain;\t\t\t\t constants duplicated" );
+			fcfail = 1;
+			}
+		}
+	else {
+		fcp->fval = d;
+		fcp->fnext = fhash[h];
+		fcp->flab = crslab;
+		fhash[h] = fcp;
+		}
+	return( crslab );
+	}
 
-/* f65e8: not written yet (0x65e8..0x6620 of /lib/cparse) */
-f65e8()
-{
-}
+fhashv( p, n ) char *p; { /* hash of the double at p */
+	char *q;
+	union { long l; char c[4]; } u;
 
-/* f6620: not written yet (0x6620..0x66c2 of /lib/cparse) */
-f6620()
-{
-}
+	q = p;
+	u.c[0] = 0;
+	u.c[1] = q[3];
+	u.c[2] = q[1];
+	u.c[3] = q[2];
+	return( u.l % n );
+	}
 
-/* f66c2: not written yet (0x66c2..0x6726 of /lib/cparse) */
-f66c2()
-{
-}
+newsect( sec ){ /* start a new section sec (DATA or ADATA) */
+	char *cp, *q;
+	char buf[4];
+	int k, n, len;
 
-/* f6726: not written yet (0x6726..0x6786 of /lib/cparse) */
-f6726()
-{
-}
+	if( sec <= 0 || sec >= 3 ) cerror( "declaring improper section" );
+	if( nsect >= 3 ) uerror( "too many sections" );
+	n = ++nsect;
+	cp = &buf[3];
+	*cp = 0;
+	len = 0;
+	while( n ){
+		*--cp = n%10 + '0';
+		n /= 10;
+		++len;
+		}
+	k = len + sectpre > 21 ? 21 - len : sectpre;
+	q = &sectname[sec][k];
+	while( *cp ) *q++ = *cp++;
+	*q = 0;
+	sectnew = 0;
+	sectsize[sec] = 0;
+	if( sec == DATA ) fprintf( dfile, "\t.data\n" );
+	else fprintf( dfile, "\t.bss\n" );
+	}
 
-/* f6786: not written yet (0x6786..0x6790 of /lib/cparse) */
-f6786()
-{
-}
+sectfull( sec, n ) long n; { /* do n more bytes not fit into the section sec */
+	return( 0xfffeL - sectsize[sec] < n ? 1 : 0 );
+	}
 
-/* f6790: not written yet (0x6790..0x67ec of /lib/cparse) */
-f6790()
-{
-}
+sectadd( sec, n ) long n; { /* n more bytes in the section sec */
+	if( sectfull( sec, n ) ) uerror( "section overflow" );
+	else sectsize[sec] += n;
+	}
 
-/* f67ec: not written yet (0x67ec..0x680a of /lib/cparse) */
-f67ec()
-{
-}
+bstart( off, regs, fregs ) long off; { /* the head of a function body in the .I file */
+	++ftnno;
+	putc( '[', outfile );
+	fprintf( outfile, "%ld\t", off );
+	fprintf( outfile, "%d\t", regs );
+	fprintf( outfile, "%d\t", fregs );
+	putc( '\n', outfile );
+	}
+
+bend(){ /* the end of a function in the .I file */
+	putc( '}', outfile );
+	putc( '\n', outfile );
+	}
+
+defalign(n) { /* cause the alignment to become a multiple of n */
+	register al;
+
+	al = n/SZCHAR;
+	if( curloc != PROG && al > 1 ){
+		if( sectfull( DATA, 1L ) ) newsect( DATA );
+		else if( sectsize[DATA] & 1 ) ++sectsize[DATA];
+		fprintf( dfile, "    .even\n" );
+		}
+	}
+
+getlab(){
+	return( crslab++ );
+	}
+
+locctr( l ) register l; {
+	register temp;
+	/* l is PROG, ADATA, DATA, STRNG, ISTRNG, or STAB */
+
+	if( !sectnew && blevel <= 1 && l != curloc && l == PROG && curloc != ISTRNG && curloc != STRNG )
+		fprintf( dfile, "\t.code\n" );
+	if( l == curloc ) return( l );
+	temp = curloc;
+	curloc = l;
+	return( temp );
+	}
+
+deflab( n ) register n; {
+	fprintf( outfile, "L%d\t\n", n );
+	}
 
 efcode(){
 	/* code for the end of a function */
+	register struct symtab *p;
+	register int i;
+	long size;
 
-	if( strftn ){  /* copy output (in r0) to caller */
-		register struct symtab *p;
-		register int stlab;
-		register int count;
-		int size;
-
-		p = &stab[curftn];
-
-		deflab( retlab );
-
-		stlab = getlab();
-		printf( "	ld	r6,$L%d\n", stlab );
+	deflab( retlab );
+	if( strftn ){  /* a static area for the returned structure */
+		p = curftn;
+		i = getlab();
+		curftn->sfld8 = i;
 		size = tsize( DECREF(p->stype), p->dimoff, p->sizoff ) / SZCHAR;
-		count = size/2;
-		printf( "	ld	r5,$%d\n", count );
-		printf( "	ldir	*r6,*r7,r5\n" );
-		printf( "	ld	r7,$L%d\n", stlab );
-		printf( "	.bss\nL%d:	.=.+%d\n	.text\n", stlab, size );
-		/* turn off strftn flag, so return sequence will be generated */
-		strftn = 0;
+		if( sectfull( ADATA, size ) ) newsect( ADATA );
+		else fprintf( dfile, "\t.bss\n" );
+		sectadd( ADATA, size );
+		fprintf( dfile, "L%d:\t.=.+%ld\n", i, size );
+		fprintf( dfile, "\t.data\n" );
 		}
-/* CCF mods for two pass operation */
-#ifdef ONEPASS
-	p2bend();
-#endif
-#ifndef ONEPASS
-printf("]...\n");
-#endif
+	bend();
+	lineid();
 	}
 
-bfcode( a, n ) OFFSZ a[]; {
+bfcode( a, n ) struct symtab *a[]; {
 	/* code for the beginning of a function; a is an array of
-		indices in stab for the arguments; n is the number */
+		the entries of the arguments; n is the number */
 	register i;
 	register temp;
+	register r;
 	register struct symtab *p;
 	OFFSZ off;
+	int words, flags, lab;
 
+	lineid();
 	locctr( PROG );
-	p = &stab[curftn];
-	defnam( p );
-	printf( "~~%.8s:\n", p->sname );
+	p = curftn;
+	if( Fflag ) fprintf( Ffile, "-%s\n", &ntab[p->sname] );
 	temp = p->stype;
 	temp = DECREF(temp);
 	strftn = (temp==STRTY) || (temp==UNIONTY);
-
-	for(i = 0;i<paramno;i++){
-		p = &stab[paramstk[i]];
-		printf( "\t~%.8s = %ld\n", p->sname, p->offset/SZCHAR );
-	}
-
 	retlab = getlab();
-	/* routine prolog */
-
-	/* adjust stack for autos */
-	/* do adjust at routine exit, depend on optimizer */
-	enterlab = getlab();
-	csavlab = getlab();
-	cretlab = getlab();
-	branch(csavlab);
-	deflab(enterlab);
+	if( pflag ){
+		lab = getlab();
+		fprintf( dfile, "L%d:\n\t.addr\t0\n", lab );
+		curftn->offset = lab;
+		}
+	putc( '{', outfile );
+	fprintf( outfile, "%d\t", curftn->symno );
+	ftnpos = ftell( outfile );
+	fprintf( outfile, "0000\t00000\t0\t\n" );
 
 	off = ARGINIT;
 
 	for( i=0; i<n; ++i ){
-		p = &stab[a[i]];
+		p = a[i];
+		words = (tsize( p->stype, p->dimoff, p->sizoff ) + 15) / 16;
+		flags = p->sfldb;
 		if( p->sclass == REGISTER ){
 			temp = p->offset;  /* save register number */
-			p->sclass = PARAM;  /* forget that it is a register */
-			p->offset = NOOFFSET;
-			oalloc( p, &off );
-			printf( "	ld	r%d,%ld(r14)\n", temp, p->offset/SZCHAR );
-			p->offset = temp;  /* remember register number */
-			p->sclass = REGISTER;   /* remember that it is a register */
+			r = p->stype == DOUBLE ? temp - 16 : temp;
+			if( p->sfldc == 2 ){
+				p->sclass = PARAM;  /* forget that it is a register */
+				p->offset = NOOFFSET;
+				oalloc( p, &off );
+				p->offset = temp;  /* remember register number */
+				p->sclass = REGISTER;   /* remember that it is a register */
+				}
 			}
-		else {
-			if( oalloc( p, &off ) ) cerror( "bad argument" );
-			}
-
+		else if( p->sfldc != 1 && oalloc( p, &off ) ) cerror( "bad argument" );
+		else if( p->sfldc == 1 ) p->sclass = PARAM;
 		}
 	}
 
 bccode(){ /* called just before the first executable statment */
-		/* by now, the automatics and register variables are allocated */
 	SETOFF( autooff, SZINT );
-	/* set aside store area offset */
-/* CCF mods for two pass operation */
-#ifdef ONEPASS
-	p2bbeg( autooff, regvar );
-#endif
-#ifndef ONEPASS
-printf("[%d\t%ld\t%d\t\n",ftnno,autooff,regvar);
-#endif
+	bstart( autooff, regvar, fregvar );
 	}
 
-/* f6ab6: not written yet (0x6ab6..0x6ac4 of /lib/cparse) */
-f6ab6()
-{
-}
+bfend(){ /* "]" into the .I file */
+	fprintf( outfile, "]\n" );
+	}
 
 defnam( p ) register struct symtab *p; {
 	/* define the current location as the name p->sname */
 
-	if( p->sclass == EXTDEF )
-		printf( "	.globl	%.8s\n",  exname(p->sname) );
-	else if( p->slevel <= 1 )
-		printf( "	.globl\n"); /* for the optimizer */
-	if( p->sclass == STATIC && p->slevel>1 ) deflab( (int) p->offset );
-	else printf( "%s:\n", exname( p->sname ) );
-
+	if( p->sclass == STATIC && p->slevel>1 ) fprintf( dfile, "L%d:\n", (int)p->offset );
+	else if( p->sclass == EXTDEF ) fprintf( dfile, "%s::\n", exname( p->sname ) );
+	else fprintf( dfile, "%s:\n", exname( p->sname ) );
 	}
 
-/* f6b2c: not written yet (0x6b2c..0x6b86 of /lib/cparse) */
-f6b2c()
-{
-}
+zecode( n ) long n; {
+	/* n integer words of zeros */
+	OFFSZ temp;
+	register i;
+
+	if( n <= 0 ) return;
+	if( n == 1 ) fprintf( dfile, "\t.word\t0\n" );
+	else fprintf( dfile, "\t.=.+%ld\n", n*2 );
+	temp = n;
+	inoff += temp*SZINT;
+	}
 
 fldal( t ) unsigned t; { /* return the alignment of field of type t */
 	uerror( "illegal field type" );
 	return( ALINT );
 	}
 
-/* f6b9c: not written yet (0x6b9c..0x6bf0 of /lib/cparse) */
-f6b9c()
-{
-}
+lineid(){ /* a .line directive for the current line of a .c file (-l) */
+	register char *cp;
+	int len;
 
-genswitch(p,n) register struct sw *p;{
-	/*	p points to an array of structures, each consisting
-		of a constant value and a label.
-		The first is >=0 if there is a default label;
-		its value is the label number
-		The entries p[1] to p[n] are the nontrivial cases
-		*/
+	if( lflag ){
+		len = strlen( ftitle );
+		cp = &ftitle[len-1];
+		if( *cp == '"' ) --cp;
+		if( *cp-- == 'c' && *cp == '.' ) fprintf( dfile, "\t.line %d %s \n", lineno, ftitle );
+		}
+	}
+
+genswitch(p,n) register struct sw *p; {
+	/*	p[0] holds the switch expression, p[1] the default label (>=0 if there is one),
+		p[2] to p[n+1] are the cases */
 	register i;
 	register CONSZ j, range;
-	register dlab, swlab;
+	register dlab;
+	int swlab;
+	long size;
+	NODE *q;
+	int tlab;
+	NODE *s, *t, *r;
 
-	range = p[n].sval-p[1].sval;
-	dlab = p->slab >= 0 ? p->slab : getlab();
+	range = p[++n].sval-p[2].sval;
+	q = *(NODE **)p;
 
-	if( range>0 && range <= 3*n && n>=4 ){ /* implement a direct switch */
-
-		printf( "	ld	r6,$L%d\n", swlab = getlab() );
-		if (lineswitch) {
-printf( "	ld	r5, 4(r6)" );	/* r5 = default code address */
-printf( "	cp	r7, 2(r6)" );		
-printf( "	jp	gt, *r5" );	/* out of case range on high end */
-printf( "	sub	r7, *r6" );	
-printf( "	jp	lt, *r5" );	/* out of case range on low end */
-printf( "	add	r6, r7" );	
-printf( "	add	r6, r7" );	/* r6 = index into case code addresses */
-printf( "	ld	r5, 6(r6)" );	/* r5 = case code address */
-printf( "	jp	*r5" );		/* jump to case */
-		} else
-		printf( "	jpr	switch1\n" );
-
-		/* output table */
-
-		locctr( ADATA );
-		defalign( ALPOINT );
-		deflab( swlab );
-
-		printf( "	.word	%ld\n", p[1].sval );
-		printf( "	.word	%ld\n", p[n].sval );
-		if( p->slab < 0 )
-			printf( "	.word	L%d\n", dlab );
-		else
-			printf( "	.word	L%d\n", p[0].slab );
-
-		for( i=1,j=p[1].sval; i<=n; ++j ){
-			printf( "	.word	L%d\n", ( j == p[i].sval ) ?
-				p[i++].slab : dlab );
+	if( range>0 && range <= 3*n && n>=5 ){ /* implement a direct switch */
+		dlab = p[1].slab >= 0 ? p[1].slab : getlab();
+		q->lval = -1;
+		r = p[2].sval ? block( MINUS, q, bcon( p[2].sval ), INT, 0, INT ) : q;
+		t = block( DESC, NIL, NIL, 0, 0, 0 );
+		t->lval = range;
+		swlab = getlab();
+		t->rval = swlab;
+		t = block( CM, bcon( -dlab ), t, 0, 0, 0 );
+		ecomp( block( SWTCH, r, t, 0, 0, 0 ) );
+		fprintf( outfile, "C %d\t%d\t", swlab, dlab );
+		locctr( 4 );
+		defalign( ALINT );
+		size = n+n;
+		if( sectfull( DATA, size ) ) newsect( DATA );
+		sectadd( DATA, size );
+		for( i=2, j=p[2].sval; i<=n; ++j ){
+			fprintf( outfile, "%d\t", j==p[i].sval ? p[i++].slab : dlab );
 			}
-
+		fprintf( outfile, "\n" );
 		locctr( PROG );
-
-		if( p->slab< 0 ) deflab( dlab );
-		return;
-
-		}
-
-	/* debugging code */
-
-	if( n >= 4 ) {
-		printf( "	ld	r6,$L%d\n", swlab=getlab() );
-		if (lineswitch) {
-printf( "	ld	r5, *r6" );	/* r5 = number of cases + 1 */
-printf( "	ld	r4, r5" );	/* r4 = number of cases + 1 */
-printf( "	inc	r6, $2" );	/* r6 = ptr to case value list */
-printf( "	cpir	r7, *r6, r5, eq" );	/* look for correct case value */
-printf( "	add	r6, r4" );		
-printf( "	add	r6, r4" );	/* r6 = address of correct code address */
-printf( "	ld	r5, -4(r6)" );	/* r5 = correct case code address */
-printf( "	jp	*r5" );		/* jump to case */
-		} else
-		printf( "	jpr	switch2\n" );
-		locctr( ADATA );
-		defalign( ALPOINT );
-		deflab( swlab );
-		printf( "	.word	%d\n", n+1);
-		for (i=1; i<=n; i++)
-			printf( "	.word	%ld\n", j = p[i].sval );
-		for (i=1; i<=n; i++)
-			printf( "	.word	L%d\n", p[i].slab );
-		printf( "	.word	L%d\n", dlab );
-		locctr( PROG );
-		if( p->slab < 0 ) deflab( dlab );
+		if( p[1].slab < 0 ) deflab( dlab );
 		return;
 		}
 
-	/* simple switch code */
-
-	for( i=1; i<=n; ++i ){
-		/* already in r7 */
-
-		printf( "	cp	r7,$" );
-		printf( CONFMT, p[i].sval );
-		printf( "\n	jpr	eq,L%d\n", p[i].slab );
+	if( n >= 4 ){ /* a search in a table of the values */
+		dlab = p[1].slab >= 0 ? p[1].slab : getlab();
+		tlab = getlab();
+		swlab = getlab();
+		q->lval = -1;
+		s = block( DESC, NIL, NIL, 0, 0, 0 );
+		s->lval = n-1;
+		s->rval = tlab;
+		s = block( SEARCH, q, s, INT, 0, INT );
+		t = block( DESC, NIL, NIL, 0, 0, 0 );
+		t->lval = n-1;
+		t->rval = swlab;
+		r = bcon( -dlab );
+		t = block( CM, r, t, 0, 0, 0 );
+		r = block( SWTCH, s, t, 0, 0, 0 );
+		ecomp( r );
+		locctr( 4 );
+		defalign( ALINT );
+		size = (unsigned)(n*SZLONG/SZCHAR);
+		if( sectfull( DATA, size ) ) newsect( DATA );
+		sectadd( DATA, size );
+		fprintf( dfile, "L%d:\n", tlab );
+		for( i=2; i<=n; ++i ){
+			fprintf( dfile, "\t.word\t" );
+			fprintf( dfile, "%ld", p[i].sval );
+			putc( '\n', dfile );
+			}
+		fprintf( outfile, "C %d\t%d\t", swlab, dlab );
+		defalign( ALINT );
+		for( i=2; i<=n; ++i ) fprintf( outfile, "%d\t", p[i].slab );
+		fprintf( outfile, "\n" );
+		locctr( PROG );
+		if( p[1].slab < 0 ) deflab( dlab );
+		return;
 		}
 
-	if( p->slab>=0 ) branch( p->slab );
+	for( i=2; i<=n; ++i ){ /* a compare for each case */
+		tlab = (int) bcon( p[i].sval );
+		s = bcon( p[i].slab );
+		t = r = talloc();
+		ncopy( r, q );
+		t->lval = n-i;
+		t = block( NE, t, (NODE *) tlab, INT, 0, INT );
+		r = block( CBRANCH, t, s, INT, 0, INT );
+		ecomp( r );
+		}
+	tfree( q );
+	if( p[1].slab >= 0 ) branch( p[1].slab );
 	}
-
-NODE *
-cast( p, t ) register NODE *p; TWORD t; {
-	/* cast node p to type t */
-
-	p = buildtree( CAST, block( NAME, NIL, NIL, t, 0, (int)t ), p );
-	p->left->op = FREE;
-	p->op = FREE;
-	return( p->right );
-	}
-
-NODE *
-clocal(p) NODE *p; {
-
-	/* this is called to do local transformations on
-	   an expression tree preparitory to its being
-	   written out in intermediate code.
-	*/
-
-	/* the major essential job is rewriting the
-	   automatic variables and arguments in terms of
-	   REG and OREG nodes */
-	/* conversion ops which are not necessary are also clobbered here */
-	/* in addition, any special features (such as rewriting
-	   exclusive or) are easily handled here as well */
-
-	register struct symtab *q;
-	register NODE *r;
-	register o;
-	register m, ml;
-
-	switch( o = p->op ){
-
-	case NAME:
-		if( p->rval < 0 ) { /* already processed; ignore... */
-			return(p);
-		}
-		q = &stab[p->rval];
-		switch( q->sclass ){
-
-		case AUTO:
-		case PARAM:
-			/* fake up a structure reference */
-			r = block( REG, NIL, NIL, PTR+STRTY, 0, 0 );
-			r->lval = 0;
-			r->rval = (q->sclass==AUTO?STKREG:ARGREG);
-			p = stref( block( STREF, r, p, 0, 0, 0 ) );
-			break;
-
-		case ULABEL:
-		case LABEL:
-		case STATIC:
-			if( q->slevel == 0 ) break;
-			p->lval = 0;
-			p->rval = -q->offset;
-			break;
-
-		case REGISTER:
-			p->op = REG;
-			p->lval = 0;
-			p->rval = q->offset;
-			break;
-
-		}
-		break;
-	case LT:
-	case LE:
-	case GT:
-	case GE:
-		if( ISPTR( p->left->type ) || ISPTR( p->right->type ) ){
-			p->op += (ULT-LT);
-		}
-		break;
-
-	case PCONV:
-		/* do pointer conversions for char and longs */
-		ml = p->left->type;
-		if( ml == FLOAT )
-			goto pclobber;
-		if( ( ml==CHAR || ml==UCHAR || ml==LONG || ml==ULONG )
-		   && p->left->op != ICON ) break;
-
-pclobber:
-		/* pointers all have the same representation;
-		   the type is inherited */
-		p->left->type = p->type;
-		p->left->cdim = p->cdim;
-		p->left->csiz = p->csiz;
-		p->op = FREE;
-		return( p->left );
-
-	case SCONV:
-		if(cdebug)fwalk(p,eprint,0);
-/*
- *		m = (p->type == FLOAT || p->type == DOUBLE );
- *		ml = (p->left->type == FLOAT || p->left->type == DOUBLE );
- *		if( m != ml ) break;
- */
-
-		/* now, look for conversions downwards */
-
-		m = p->type;
-		ml = p->left->type;
-		if( p->left->op == ICON ){ /* simulate the conversion here */
-			CONSZ val;
-			val = p->left->lval;
-			switch( m ){
-			case CHAR:
-				p->left->lval = (char) val;
-				goto clobber;
-			case UCHAR:
-				p->left->lval = val & 0XFF;
-				goto clobber;
-			case UNSIGNED:
-				p->left->lval = val & 0XFFFFL;
-				break;
-			case INT:
-				p->left->lval = (int)val;
-				break;
-			}
-		} else if ( p->left->op != FCON )  {
-			/* meaningful ones are conversion of int to char,
-			   int to short,
-			   and short to char, and unsigned version of them */
-			if( m==CHAR || m==UCHAR ){
-				if( ml != CHAR && ml != UCHAR ) break;
-			}
-			else if( m==INT || m==UNSIGNED ){
-				if( ml != INT && ml != UNSIGNED ) break;
-			}
-			else if( m==LONG || m==ULONG ) {
-				if( ml != LONG && ml != ULONG ) break;
-			}
-			else if( m==DOUBLE ) {
-				if( ml != DOUBLE ) break;
-			}
-			else if( m==FLOAT ) {
-				if( ml != FLOAT ) break;
-			}
-		}
-
-		/* clobber conversion */
-		p->left->type = m; /* inherit type */
-	clobber:
-		p->op = FREE;
-		return( p->left );  /* conversion gets clobbered */
-
-	case PVCONV:
-	case PMCONV:
-		if( p->right->op != ICON ) cerror( "bad conversion", 0);
-		p->op = FREE;
-		return( buildtree( o==PMCONV?MUL:DIV, p->left, p->right ) );
-
-	case PLUS:
-	case MINUS:
-	case LS:
-	case MUL:
-		/* optimize address calculations with long indexes */
-		if( ISPTR( p->type ) || ISARY( p->type ) ) {
-			if( p->left->type==LONG || p->left->type==ULONG )
-				p->left = cast( p->left, INT );
-			if( p->right->type==LONG || p->right->type==ULONG )
-				p->right = cast( p->right, INT );
-		}
-		break;
-
-	}
-
-	return(p);
-}
-
-cisreg( t ) TWORD t; { /* is an automatic variable of type t OK for a register variable */
-
-	if( t==INT || t==UNSIGNED || ISPTR(t) ) return(1);
-	return(0);
-	}
-
-NODE *
-offcon( off, t, d, s ) OFFSZ off; TWORD t; {
-
-	/* return a node, for structure references, which is suitable for
-	   being added to a pointer of type t, in order to be off bits offset
-	   into a structure */
-
-	register NODE *p;
-
-	/* t, d, and s are the type, dimension offset, and sizeoffset */
-	/* in general they  are necessary for offcon, but not on H'well */
-
-	p = bcon(0);
-	p->lval = off/SZCHAR;
-	return(p);
-
-	}
-

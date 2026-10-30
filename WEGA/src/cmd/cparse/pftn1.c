@@ -68,7 +68,7 @@ defid( q, class )  NODE *q; {
 	idp = q->rval;
 
 	if( idp < 0 ) cerror( "tyreduce" );
-	p = &stab[idp];
+	p = STP(idp);
 
 	if( ddebug ){
 		printf( "defid( %.8s (%d), ", p->sname, idp );
@@ -242,7 +242,7 @@ defid( q, class )  NODE *q; {
 	if( blevel > slev && class != EXTERN && class != FORTRAN &&
 		class != UFORTRAN && !( class == LABEL && slev >= 2 ) ){
 		q->rval = idp = hide( p );
-		p = &stab[idp];
+		p = STP(idp);
 		goto enter;
 		}
 	uerror( "redeclaration of %.8s", p->sname );
@@ -380,7 +380,7 @@ dclargs(){
 	argoff = ARGINIT;
 	for( i=0; i<paramno; ++i ){
 		if( (j = paramstk[i]) < 0 ) continue;
-		p = &stab[j];
+		p = STP(j);
 		if( p->stype == FARG ) {
 			q = block(FREE,NIL,NIL,INT,0,INT);
 			q->rval = j;
@@ -420,7 +420,7 @@ NODE *
 rstruct( idn, soru ){ /* reference to a structure or union, with no definition */
 	register struct symtab *p;
 	register NODE *q;
-	p = &stab[idn];
+	p = STP(idn);
 	switch( p->stype ){
 
 	case UNDEF:
@@ -514,11 +514,11 @@ dclstruct( oparam ){
 		dstash( (OFFSZ) ALSTRUCT );  /* alignment */
 		}
 	else {
-		szindex = stab[i].sizoff;
+		szindex = STP(i)->sizoff;
 		}
 
 	if( ddebug ){
-		printf( "dclstruct( %.8s ), szindex = %d\n", (i>=0)? stab[i].sname : "??", szindex );
+		printf( "dclstruct( %.8s ), szindex = %d\n", (i>=0)? STP(i)->sname : "??", szindex );
 		}
 	temp = (instruct&INSTRUCT)?STRTY:((instruct&INUNION)?UNIONTY:ENUMTY);
 	stwart = instruct = paramstk[ oparam ];
@@ -531,7 +531,7 @@ dclstruct( oparam ){
 	for( i = oparam+4;  i< paramno; ++i ){
 		dstash( (OFFSZ) (j=paramstk[i] ));
 		if( j<0 || j>= SYMTSZ ) cerror( "gummy structure member" );
-		p = &stab[j];
+		p = STP(j);
 		if( temp == ENUMTY ){
 			if( p->offset < low ) low = p->offset;
 			if( p->offset > high ) high = p->offset;
@@ -577,7 +577,7 @@ dclstruct( oparam ){
 		printf( "\tdimtab[%d,%d,%d] = %ld,%ld,%ld\n", szindex,szindex+1,szindex+2,
 				dimtab[szindex],dimtab[szindex+1],dimtab[szindex+2] );
 		for( i = dimtab[szindex+1]; dimtab[i] >= 0; ++i ){
-			printf( "\tmember %.8s(%ld)\n", stab[dimtab[i]].sname, dimtab[i] );
+			printf( "\tmember %.8s(%ld)\n", STP(dimtab[i])->sname, dimtab[i] );
 			}
 		}
 
@@ -597,11 +597,11 @@ yyaccpt(){
 	}
 
 ftnarg( idn ) {
-	if( stab[idn].stype != UNDEF ){
-		idn = hide( &stab[idn]);
+	if( STP(idn)->stype != UNDEF ){
+		idn = hide( STP(idn));
 		}
-	stab[idn].stype = FARG;
-	stab[idn].sclass = PARAM;
+	STP(idn)->stype = FARG;
+	STP(idn)->sclass = PARAM;
 	psave( (OFFSZ) idn );
 	}
 

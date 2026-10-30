@@ -51,7 +51,7 @@ beginit( curid ) struct symtab *curid; {
 		return;
 
 	case EXTERN:
-		f6b9c();
+		lineid();
 		return;
 
 	case AUTO:
@@ -65,8 +65,8 @@ beginit( curid ) struct symtab *curid; {
 		defalign( al = talign( p->stype, p->sizoff ) );
 		if( (sz = (tsize( p->stype, p->dimoff, p->sizoff ) + 7) / SZCHAR) > 0xfffe )
 			uerror( "size of %s too large", &ntab[p->sname] );
-		else if( f65c4( 1, sz ) ) f64c2( 1 );
-		f6b9c();
+		else if( sectfull( 1, sz ) ) newsect( 1 );
+		lineid();
 		defnam( p );
 
 		}
@@ -256,7 +256,7 @@ endinit(){
 	inoff = 0;
 	iclass = SNULL;
 	if( (sz = (tsize( t, d, s ) + 15) / 16 * 2) > 0xfffe ) uerror( "size too large" );
-	else f65e8( 1, sz );
+	else sectadd( 1, sz );
 	if( strhead ) putstrs();
 
 	}

@@ -207,7 +207,6 @@ mainp1( argc, argv ) int argc; char *argv[]; {  /* control multiple files */
 	p2init( argc, argv );
 # endif
 
-	for( i=0; i<SYMTSZ; ++i ) stab[i].stype = TNULL;
 
 	lxinit();
 	tinit();
@@ -563,7 +562,7 @@ yylex(){
 			if( (lxchar=lxres()) > 0 ) return( lxchar ); /* reserved word */
 			if( lxchar== 0 ) continue;
 			id = lookup( yytext, (stwart&(INSTRUCT|INUNION|FUNNYNAME))?SMOS:0 );
-			sp = &stab[id];
+			sp = STP(id);
 			if( sp->sclass == TYPEDEF && !stwart ){
 				stwart = instruct;
 				yylval.nodep = mkty( sp->stype, sp->dimoff, sp->sizoff );

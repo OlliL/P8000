@@ -144,7 +144,7 @@ extern int curloc;	/* WEGA: the current location counter (locctr) */
 extern char ntab[];	/* the names: locals from the bottom (ntabindx), globals from the top (ntab_globals) */
 extern int ntabindx, ntab_globals;
 extern struct symtab *hashtab[];
-extern int curftn;
+extern struct symtab *curftn;
 extern int curclass;
 extern int curdim;
 extern OFFSZ dimtab[];

@@ -829,7 +829,7 @@
    "callers_orig": "0000",
    "status": "open"
   },
-  "f61d0": {
+  "openfiles": {
    "file": "-",
    "pairing": "open",
    "orig": "0x61d0",
@@ -839,7 +839,7 @@
    "callers_orig": "60d8",
    "status": "open"
   },
-  "f6348": {
+  "fnfile": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6348",
@@ -849,7 +849,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f63b2": {
+  "fltlab": {
    "file": "-",
    "pairing": "open",
    "orig": "0x63b2",
@@ -859,7 +859,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f6484": {
+  "fhashv": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6484",
@@ -869,7 +869,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f64c2": {
+  "newsect": {
    "file": "-",
    "pairing": "open",
    "orig": "0x64c2",
@@ -879,7 +879,7 @@
    "callers_orig": "680a",
    "status": "open"
   },
-  "f65c4": {
+  "sectfull": {
    "file": "-",
    "pairing": "open",
    "orig": "0x65c4",
@@ -889,7 +889,7 @@
    "callers_orig": "65e8,680a",
    "status": "open"
   },
-  "f65e8": {
+  "sectadd": {
    "file": "-",
    "pairing": "open",
    "orig": "0x65e8",
@@ -899,7 +899,7 @@
    "callers_orig": "680a",
    "status": "open"
   },
-  "f6620": {
+  "bstart": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6620",
@@ -909,7 +909,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f66c2": {
+  "bend": {
    "file": "-",
    "pairing": "open",
    "orig": "0x66c2",
@@ -919,7 +919,7 @@
    "callers_orig": "680a",
    "status": "open"
   },
-  "f6726": {
+  "defalign": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6726",
@@ -929,7 +929,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f6786": {
+  "getlab": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6786",
@@ -939,7 +939,7 @@
    "callers_orig": "680a",
    "status": "open"
   },
-  "f6790": {
+  "locctr": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6790",
@@ -949,7 +949,7 @@
    "callers_orig": "2c44",
    "status": "open"
   },
-  "f67ec": {
+  "deflab": {
    "file": "-",
    "pairing": "open",
    "orig": "0x67ec",
@@ -989,7 +989,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f6ab6": {
+  "bfend": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6ab6",
@@ -1009,7 +1009,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f6b2c": {
+  "zecode": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6b2c",
@@ -1029,7 +1029,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f6b9c": {
+  "lineid": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6b9c",
@@ -1089,7 +1089,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f7574": {
+  "incode": {
    "file": "-",
    "pairing": "open",
    "orig": "0x7574",
@@ -1109,7 +1109,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f7684": {
+  "cinit": {
    "file": "-",
    "pairing": "open",
    "orig": "0x7684",
@@ -1119,7 +1119,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f777c": {
+  "cprint": {
    "file": "-",
    "pairing": "open",
    "orig": "0x777c",
@@ -1139,7 +1139,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f7952": {
+  "exname": {
    "file": "-",
    "pairing": "open",
    "orig": "0x7952",
@@ -1159,7 +1159,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f7a1a": {
+  "noinit": {
    "file": "-",
    "pairing": "open",
    "orig": "0x7a1a",
@@ -1169,7 +1169,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f7a1e": {
+  "commdec": {
    "file": "-",
    "pairing": "open",
    "orig": "0x7a1e",
@@ -1189,7 +1189,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f7a9e": {
+  "ecode": {
    "file": "-",
    "pairing": "open",
    "orig": "0x7a9e",
@@ -1199,7 +1199,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f7b28": {
+  "syserr": {
    "file": "-",
    "pairing": "open",
    "orig": "0x7b28",
