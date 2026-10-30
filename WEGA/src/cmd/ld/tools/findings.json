@@ -57,8 +57,7 @@
    "level": "exact",
    "size_orig": 112,
    "callers_orig": "-",
-   "status": "done",
-   "note": " | 2026-10-30 strict check: the stores of t7..t10 come before t4..t6 (the masked compare could not see the order)"
+   "status": "done"
   },
   "f057c": {
    "file": "ld.c",
@@ -88,8 +87,7 @@
    "level": "exact",
    "size_orig": 100,
    "callers_orig": "2b3a",
-   "status": "done",
-   "note": " | 2026-10-30 strict check: rlsize is declared before rlbuf (0x678, 0x67a)"
+   "status": "done"
   },
   "f2bf6": {
    "file": "symbols.c",
@@ -143,7 +141,7 @@
    "d_classes": [
     "D2"
    ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py on the d12model link): classes assigned by reading the remaining differences, not by the pattern check"
+   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
   },
   "get": {
    "file": "ld.c",
@@ -153,8 +151,7 @@
    "level": "exact",
    "size_orig": 118,
    "callers_orig": "172e,1a9a,1ce2",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): the parameter is not register; a register copy p = a (step 7 rule) and one spare word (the D4 label was wrong)"
+   "status": "done"
   },
   "report_error": {
    "file": "ld.c",
@@ -234,8 +231,7 @@
    "level": "exact",
    "size_orig": 98,
    "callers_orig": "194a",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): lseek(fd = p->fildes, 0L, 0): assignment in the argument (the D3 label was wrong)"
+   "status": "done"
   },
   "sig_handler": {
    "file": "ld.c",
@@ -295,8 +291,7 @@
    "level": "exact",
    "size_orig": 208,
    "callers_orig": "1452,26ac",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): start and end are register variables (r11, r10; the other three registers of this leaf function are scratch registers), five spare words"
+   "status": "done"
   },
   "next_entry": {
    "file": "symbols.c",
@@ -306,8 +301,7 @@
    "level": "exact",
    "size_orig": 94,
    "callers_orig": "0b6e,282e",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): the original maps an entry past the static table into symtab: if (p < nsym || p > symtab) return p; return symtab + (p - nsym) (the old note \"no comparison\" was wrong); p, b, e register, two spares, while (e > (char *)++p);"
+   "status": "done"
   },
   "warn_sym_redef": {
    "file": "symbols.c",
@@ -337,8 +331,7 @@
    "level": "exact",
    "size_orig": 112,
    "callers_orig": "1452,25a2,282e",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): longswap(p) instead of longswap(b) and the order int spare1; char cnt; int spare2 (the D3 label was wrong)"
+   "status": "done"
   },
   "add16_checked": {
    "file": "ld.c",
@@ -348,8 +341,7 @@
    "level": "exact",
    "size_orig": 50,
    "callers_orig": "0b6e",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): int parameters with (long)(unsigned) casts (the D3 label was wrong)"
+   "status": "done"
   },
   "unpack_run": {
    "file": "copyname.c",
@@ -369,8 +361,7 @@
    "level": "exact",
    "size_orig": 130,
    "callers_orig": "26ac",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): the zero padding is while (cnt-- != 0) *d++ = 0; (the D3 label was wrong)"
+   "status": "done"
   },
   "put_name": {
    "file": "printname.c",
@@ -440,8 +431,7 @@
    "level": "exact",
    "size_orig": 126,
    "callers_orig": "-",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): chained assignment *a = lastsym = r = table16_entry(symindex++) (the D3 label was wrong: a source form)"
+   "status": "done"
   },
   "index16": {
    "file": "symbols.c",
@@ -471,8 +461,7 @@
    "level": "exact",
    "size_orig": 420,
    "callers_orig": "0608,13ca",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): if (infil != -1) filname = libname; else { the /usr and /z/bin search }, three spare words before st"
+   "status": "done"
   },
   "ensure_buf": {
    "file": "symbols.c",
@@ -486,7 +475,7 @@
    "d_classes": [
     "D11"
    ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py on the d12model link): classes assigned by reading the remaining differences, not by the pattern check"
+   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
   },
   "chk_ranlib": {
    "file": "symbols.c",
@@ -500,7 +489,7 @@
    "d_classes": [
     "D3"
    ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py on the d12model link): classes assigned by reading the remaining differences, not by the pattern check"
+   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
   },
   "table16_entry": {
    "file": "symbols.c",
@@ -510,8 +499,7 @@
    "level": "exact",
    "size_orig": 208,
    "callers_orig": "0b6e,282e",
-   "status": "done",
-   "note": " | 2026-10-30 strict check: rlsize is declared before rlbuf (0x678, 0x67a)"
+   "status": "done"
   },
   "finish_output": {
    "file": "ld.c",
@@ -521,8 +509,7 @@
    "level": "exact",
    "size_orig": 200,
    "callers_orig": "045e",
-   "status": "done",
-   "note": " | 2026-10-30 strict check: the rflag output of the first loop goes to routb, not soutb (behaviour fix)"
+   "status": "done"
   },
   "load_header": {
    "file": "ld.c",
@@ -546,7 +533,7 @@
    "d_classes": [
     "D2"
    ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py on the d12model link): classes assigned by reading the remaining differences, not by the pattern check"
+   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
   },
   "reg_sect_addr": {
    "file": "ld.c",
@@ -556,8 +543,7 @@
    "level": "exact",
    "size_orig": 238,
    "callers_orig": "-",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): if (k == 0) return 0; return 1; and fmt declared between the two spares (the D3 label was wrong)"
+   "status": "done"
   },
   "load_lib_syms": {
    "file": "ld.c",
@@ -581,7 +567,7 @@
    "d_classes": [
     "D3"
    ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py on the d12model link): classes assigned by reading the remaining differences, not by the pattern check"
+   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
   },
   "readhdr": {
    "file": "ld.c",
@@ -591,8 +577,7 @@
    "level": "exact",
    "size_orig": 654,
    "callers_orig": "1452",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): the body is the then-branch of if (magic == ...) with else report_error(2, \"Bad format\") (this also gives the string order); x66b6 = cond ? 1 : 0; in the else branch of the 8-bit test the rounded data size is kept in a second register variable and NOT stored back into filhdr.dsize (quirk of the original: x106a gets the unrounded size)"
+   "status": "done"
   },
   "start_output": {
    "file": "ld.c",
@@ -612,8 +597,7 @@
    "level": "exact",
    "size_orig": 732,
    "callers_orig": "13ca",
-   "status": "done",
-   "note": "exact (2026-10-30, strictcmp.py): Xflag test on d (= stype & 0x1f), not on c; signed putc form as in read_symbols; cursym.stype == rec->stype; three spare words; u1 = half(x1066) + a as its own statement; &local[1000] instead of the absolute address 0x6692"
+   "status": "done"
   },
   "load2td": {
    "file": "ld.c",
@@ -627,7 +611,7 @@
    "d_classes": [
     "D15"
    ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py on the d12model link): classes assigned by reading the remaining differences, not by the pattern check"
+   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
   },
   "place_sec": {
    "file": "ld.c",
@@ -641,7 +625,7 @@
    "d_classes": [
     "D2"
    ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py on the d12model link): classes assigned by reading the remaining differences, not by the pattern check"
+   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
   },
   "main": {
    "file": "ld.c",
@@ -651,8 +635,7 @@
    "level": "exact",
    "size_orig": 724,
    "callers_orig": "-",
-   "status": "done",
-   "note": "exact (2026-10-29): the option scan with the goto structure of sld main; the whole ld.c compiles to the same 724 bytes and instructions (addresses masked, frame offsets equal). The draft alone (ldcheck) shows jr/jp widths only, because the calr calls to in-file functions are sized by the whole file (HANDOFF_ld.md)."
+   "status": "done"
   },
   "parse_args": {
    "file": "ld.c",
@@ -662,8 +645,7 @@
    "level": "exact",
    "size_orig": 174,
    "callers_orig": "-",
-   "status": "done",
-   "note": "exact (2026-10-29): the argument pass with the switch on the option letters (table at data 0xf8, b/t fall into e/o/u/v, N, l with the '-' written before the letter). Checked in the whole-file compile of ld.c (174 bytes, same instructions, frame kept); the draft alone would differ in calr sizes."
+   "status": "done"
   },
   "read_symbols": {
    "file": "ld.c",
@@ -674,13 +656,12 @@
    "size_orig": 674,
    "callers_orig": "-",
    "status": "findings",
-   "note": "finding (2026-10-29, seventh attempt, scratch d8/rs_1..rs_3): the logic is in place: readhdr, the section totals (fctrel, fcdrel, fcbrel), the relocation test, dseek with the header words, the symbol loop (Sflag, Xflag, the L names, symreloc, lookup_name, enter, the common symbols with the warning of a text value), the totals with add16_checked and the cleanup through goto. 198 instructions equal in the whole-file build. Not exact: the frame is two bytes larger (0x1c against 0x1a: the locals are at the same offsets from 0x0a, the padding of the original is not reproduced), and the copy of cursym.svalue through a long temporary (ldl rr4) is not in the draft.",
    "d_classes": [
     "D1",
     "D11",
     "D3"
    ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py on the d12model link): classes assigned by reading the remaining differences, not by the pattern check"
+   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
   },
   "end_pass1": {
    "file": "ld.c",
@@ -690,121 +671,60 @@
    "level": "exact",
    "size_orig": 558,
    "callers_orig": "-",
-   "status": "done",
-   "note": "exact (2026-10-29): the rflag scan, the common symbols (comsize), the ldrsym calls, the undefined message (Undefined:, put_name, newline), the switch on the symbol type, the sflag/xflag tail and v6bf6 = v66ce/14. Checked in the whole-file build (558 bytes, same instructions). Two spellings are needed: the unsigned casts (the original zero-extends these values) and the (char) cast on the newline store (the header of this tree has an unsigned char _ptr; the original has extsb). The ldrsym calls pass three arguments; the x parameter of symbols.c is not passed (original behaviour, kept)."
+   "status": "done"
   }
  },
  "findings": [],
  "findings_pending": [],
  "manual_classes": {
-  "f26ac": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29): the frame difference was one unused 2-byte local (spare), as in HOWTO step 7. The earlier char-parameter theory was wrong."
-  },
-  "f26ca": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29): the frame difference was one unused 2-byte local (spare), as in HOWTO step 7. The earlier char-parameter theory was wrong."
-  },
-  "f21f2": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, fifth attempt): for loop, the equal case is the main path (if (*t == *s++) { if (*t++) continue; return(1); } return(0)); parameter list (t, s). The earlier D1/D15 reading was the pointer copy and the branch sense, both resolved by the form."
-  },
-  "f226e": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, fifth attempt): char c (second argument, r7) and register pointer p (r6 -> r14); struct buf { int _x; int _cnt; char *_ptr; } (the displacements of the original: cnt at 2, ptr at 4). The struct member _x is a name guess; the layout is what matters."
-  },
-  "f1b0a": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, fifth attempt): parameter list (q, p, n), register pointer r and counter i (declared in this order), and two unused int locals (spare1, spare2). The parameter order is the same as f1f22 and f1b0a stands for the rule; the register order (r14 then r13) as in f1f22."
-  },
-  "f1f22": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, fourth and fifth attempt): parameter list (end, x) and three unused int locals (spare). The parameter order is the one of f1b0a: the first declared parameter takes the last argument register. Frame 18 bytes as the original."
-  },
-  "f221e": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, first attempt): put of an int into the buffer (high byte, then low byte), parameter order (x, p); x is the first declared parameter (last argument register r7), p the register pointer. Uses the shared struct buf."
-  },
-  "f050c": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, second attempt): append entry to the table tab (22-byte records, index ntab): t0 = x, t1 = v44a6, t2 = v0070 (data), t3 = y, t4..t10 = v66d0, v66d2, v66d4, v66c2, v66c6, v66cc, v66ce. One unused int local. No caller in the table (its callers are through the table or unknown). Globals: ntab (bss 0abe), tab (0ac0), the v-names are guesses; v0070 is in the data (step 5b)."
-  },
-  "mget": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29): sld mget structure with the text stream. Global `struct stream text` at bss 1030 (ptr 1030, bno 1032, nibuf 1034, size 1036, pno 1038; ptr first, as in get). Two unused int locals of the original frame are kept as spare1..spare3 (frame 16). Statement order as in the source: i = n; i >>= 1; r = p. Former name f1a9a. Renamed also: f1c6c -> get (sld get(sp)), f1b38 -> dseek (sld dseek(sp, v, n))."
-  },
   "dseek": {
    "basis": "read",
    "d_classes": [
     "D2"
    ],
-   "note": "findings (2026-10-30): rewritten: hi = v >> 8 (no mask, arithmetic shift as the original), assignment expressions (cur = &page[...])->..., the read block as if-branch with else report_error, (obj->nibuf = cur->nibuf - lo) <= 0 in long arithmetic; remaining: the second bno load goes through r6 in the original and r3 here"
-  },
-  "flush_buffer": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, fourth attempt): struct buf { int _fd; int _cnt; char *_ptr; char _buf[256]; }; the parameter is a register variable (r14), n a register variable (r13), one unused int local. Note: the struct is a guess for the layout (fd, cnt, ptr, buffer of 256 bytes), the code only needs the offsets."
-  },
-  "sig_handler": {
-   "basis": "read",
-   "d_classes": [],
-   "note": "exact (2026-10-29, first attempt): exit path: f2c02() if v669a, unlink(\"l.out\"), chmod(v007a, ~umask(0) & 0x1ff) if no error, unlink(v007a) if v007c, _exit(v007c). Globals: v007a (char *, data 0x7a), v007c and v0080 (int, data 0x7c, 0x80), v669a and v66a4 (int, bss). The names are guesses from the use; step 5b checks the bss ones."
-  },
-  "read_entry_hdr": {
-   "basis": "owner",
-   "d_classes": [],
-   "note": "owner decision: read_entry_hdr is in symbols.c (first function, address 0x249a), not printname.c. Exact before the move (34 instructions). symbols.c is now in address order (read_entry_hdr, lookup_name, slookup, pslookup, put_sym, put_all, warn_sym_redef, next_entry, f2bf6, f2bfc)."
+   "note": "Remaining (4 lines): the second bno load goes through r6 in the original, through r3 in ours. Tried: 6 drafts on 2026-10-29 (d5/f1b38_v1..v4). Fixed on the way (behaviour): hi = v >> 8 without a mask (arithmetic shift as the original); source: the assignment expressions (cur = &page[...])->..., the read block as if-branch with else report_error, (obj->nibuf = cur->nibuf - lo) <= 0 in long arithmetic, the order hi, lo, nw."
   },
   "ensure_buf": {
    "basis": "read",
    "d_classes": [
     "D11"
    ],
-   "note": "findings (2026-10-30): else return f2b92(n); (the original returns the value of f2b92); remaining: our popt copies the return of rlbuf into the first branch"
+   "note": "Remaining (3 lines): our popt copies the return of rlbuf into the end of the first branch, the original jumps to the shared return. Tried: 10 drafts on 2026-10-29 (d5/eb7..eb10, both test orders). Fixed on the way: else return f2b92(n); (the original returns the value of f2b92)."
   },
   "chk_ranlib": {
    "basis": "read",
    "d_classes": [
     "D3"
    ],
-   "note": "findings (2026-10-30): an unused register variable (the original saves r14 without using it, quirk); remaining: the original reloads p from the frame for q = p and copies q2 to r2 for the compare (tried four forms)"
+   "note": "Remaining (12 lines): the original reloads p from the frame for q = p (so the p + n product goes to rr4) and copies q2 to r2 for the stype compare. Tried: 5 drafts on 2026-10-29 (d5/cr2..cr6), on 2026-10-30 q = &p[0], q2 assigned in the if, && instead of the nested if: no change. Kept: an unused register variable (the original saves r14 and never uses it, quirk table)."
   },
   "ranlib_scan": {
    "basis": "read",
    "d_classes": [
     "D2"
    ],
-   "note": "findings (2026-10-30): the address &rltab[i] of the bound test is computed in rr4 by the original and in rr2 by ours; tried: end > rltab + i, &rltab[i] < end, end > &rltab[i] (no change)"
+   "note": "Remaining (8 lines): the address &rltab[i] of the bound test is computed in rr4 by the original, in rr2 by ours (scratch register choice). Tried: 6 forms on 2026-10-29 (d5/rs1..rs7), on 2026-10-30 end > rltab + i, &rltab[i] < end, end > &rltab[i]: no change."
   },
   "init_entry": {
    "basis": "read",
    "d_classes": [
     "D3"
    ],
-   "note": "findings (2026-10-30): the original still knows r3 = hdr after the join of x66b8 || x66ba, ours reloads hdr; tried the ?: form (worse)"
+   "note": "Remaining (6 lines): the original still knows r3 = hdr after the join of x66b8 || x66ba and stores hy through it, ours reloads hdr from the frame. Tried: 6 drafts on 2026-10-29 (d5/ie1..ie5), on 2026-10-30 hy = cond ? x1066 : 0 (worse)."
   },
   "load2td": {
    "basis": "read",
    "d_classes": [
     "D15"
    ],
-   "note": "findings (2026-10-30): rewritten from the original: the copy w14 = w13 right after the swap block, the first switch only with x66b8 || x66ba, if (x66ba) w12 = swap(w12) after the symbol branch, the flag output byte-wise (unsigned char), nibuf < 0 branches first (behaviour fixes); remaining: our popt moves the then-block of if (flag) up, the original keeps it in place (same instructions); ch is a two-byte array in the frame (guess, gives the original offset 0x12)"
+   "note": "Remaining (28 lines, same instructions): our popt moves the then-block of if (flag) up in front of the switches, the original keeps it in place. Guess: ch is a two-byte array in the frame (gives the offset 0x12 of the original). Tried: 9 drafts on 2026-10-29 (d5/ltd1..ltd9), on 2026-10-30 four declaration orders of flag/ch. Fixed on the way (behaviour): the copy w14 = w13 right after the swap block (the two switches test the unchanged word), the first switch only with x66b8 || x66ba, if (x66ba) w12 = swap(w12) after the symbol branch, the flag output byte-wise; source: nibuf < 0 branches first."
   },
   "place_sec": {
    "basis": "read",
    "d_classes": [
     "D2"
    ],
-   "note": "findings (2026-10-30): rewritten from the original: areas[0].kind/tsize inside if (tab42b4[0]), q->tsize = q->tend - r8 inside if (tab42b4[j + 1]), ?: assignments, register order q, r8, j (all behaviour or source fixes); remaining: the original copies r3 to r2 before the and of r8 = (secorg[j] - q->tsize) & 0xff00 (tried r8 &= 0xff00 and casts)"
+   "note": "Remaining (5 lines): in case t the original copies r3 to r2 before the and of r8 = (secorg[j] - q->tsize) & 0xff00. Tried: r8 &= 0xff00 as its own statement, casts (unsigned), (int): no change or worse. Fixed on the way (behaviour): areas[0].kind/tsize only inside if (tab42b4[0]), q->tsize = q->tend - r8 only inside if (tab42b4[j + 1]); source: ?: assignments, register order q, r8, j, the b case as two statements."
   },
   "read_symbols": {
    "basis": "read",
@@ -813,15 +733,7 @@
     "D11",
     "D3"
    ],
-   "note": "findings (2026-10-30): & ~1 removed (the original only halves); the remaining differences: our cc reserves one more save slot (frame 0x1c against 0x1a; with the spare word all local offsets are equal), our popt copies the short return 0 of goto done into the jump site (the original jumps to the end; the loop exit becomes jp instead of jr), and the original has a dead ldl rr4,rr2 in the common-symbol branch"
-  },
-  "end_pass1": {
-   "basis": "read",
-   "d_classes": [
-    "D3",
-    "D16"
-   ],
-   "note": "approximation (step 5 of HOWTO, after six attempts not reached): the function is in the file to allow the bss analysis; the body is not reproduced exactly (see the note of the function)."
+   "note": "Remaining (15 lines): (1) frame 0x1c against 0x1a: our cc reserves one save slot more; with one spare word in front all local offsets are equal (D1); (2) our popt copies the short return 0 of goto done to the jump site, the original jumps to the end, so the loop exit is jp instead of jr (D11); (3) a dead ldl rr4,rr2 of the original in the common-symbol branch (D3). Tried: 7 drafts on 2026-10-29 (d8/rs_1..rs_3); without the spare (all offsets -2), the putc expressions as fputc (no change of the frame). Fixed on the way: & ~1 removed from the halving of hdrsz + segtsz."
   }
  },
  "inventory": {
