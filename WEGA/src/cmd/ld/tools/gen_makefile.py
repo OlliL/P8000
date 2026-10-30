@@ -69,12 +69,6 @@ link: ld
 ld: $(COBJS) $(LINKOBJS)
 	$(LDBIN) -i -e start $(LINKOBJS) -o $@
 
-check: ld
-	cd ../../../host/ld ; LD_NEW=../../src/cmd/sld/ld WEGA=$(CHECKROOT) python3 check.py -S
-
-ld: $(LINKOBJS)
-	$(LDBIN) -i -e start $(LINKOBJS) -o $@
-
 shipped/stamp:
 	-mkdir shipped
 	cd shipped ; $(AR) x $(LIBC) %s ; touch stamp
@@ -113,6 +107,7 @@ crt0.o: crt0.s
 clean:
 	rm -rf shipped
 	rm -f $(LIBCOBJS)
+	rm -f $(COBJS)
 '''
     open(os.path.join(LD, 'Makefile'), 'w').write(mk)
 

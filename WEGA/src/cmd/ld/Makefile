@@ -41,12 +41,6 @@ link: ld
 ld: $(COBJS) $(LINKOBJS)
 	$(LDBIN) -i -e start $(LINKOBJS) -o $@
 
-check: ld
-	cd ../../../host/ld ; LD_NEW=../../src/cmd/sld/ld WEGA=$(CHECKROOT) python3 check.py -S
-
-ld: $(LINKOBJS)
-	$(LDBIN) -i -e start $(LINKOBJS) -o $@
-
 shipped/stamp:
 	-mkdir shipped
 	cd shipped ; $(AR) x $(LIBC) scanf.o ffltioc.o ungetc.o data.o __callex.o cuexit.o decimal.o isatty.o ctype_.o stty.o swab.o tolower.o strncmp.o access.o brk.o chmod.o close.o creat.o fstat.o getpid.o ioctl.o link.o lseek.o open.o read.o signal.o umask.o unlink.o write.o cerror.o ; touch stamp
@@ -152,3 +146,4 @@ check:
 clean:
 	rm -rf shipped
 	rm -f $(LIBCOBJS)
+	rm -f $(COBJS)

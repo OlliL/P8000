@@ -952,8 +952,8 @@ test1:
 load2(a)
 long a;
 {
-	int spare1, spare2;
-	char spare3, spare4, spare5;
+/*	int spare1, spare2;
+	char spare3, spare4, spare5;*/
 	char c;
 	char spare6;
 	char d;
@@ -969,7 +969,7 @@ long a;
 	fcdrel += v6bfa;
 	fcbrel += v6bfc;
 	t = local;
-	a += (unsigned)((hdrsz + segtsz) & ~1) >> 1;
+	a += (unsigned)((hdrsz + segtsz)) >> 1;
 	dseek(&text, a + filhdr.x1066 + filhdr.x106a, filhdr.ssize);
 	k = 0;
 	goto test;
@@ -977,11 +977,13 @@ body:
 	n = read_entry_hdr() + 1;
 	symreloc();
 	c = cursym.stype;
+	d = c & 0x1f;
 	if (Sflag) {
-		d = c & 0x1f;
 		if (d == 1 || d > 4)
 			goto next;
 	}
+	if (Xflag && c == 0x1e)
+		goto next;
 	if ((c & 0x20) == 0) {
 		if (sflag || xflag)
 			goto next;
@@ -1176,9 +1178,10 @@ test2:
 	if (p < end)
 		goto body2;
 	copy(&tmpoutb);
-	if (rflag)
+	if (rflag) {
 		copy(&routb);
-	copy(&doutb);
+		copy(&doutb);
+	}
 	if (!sflag) {
 		if (!xflag)
 			copy(&soutb);
