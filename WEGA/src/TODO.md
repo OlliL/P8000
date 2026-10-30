@@ -59,7 +59,10 @@ e.g. for cgram1.y of cparse; it is not rebuilt).
 
 Order:
 
-1. **cparse in `src/cmd/cparse`** (K&R, WEGA cc), with the procedure of `host/HOWTO_reconstruct.md`. Criterion before the
+1. **cparse in `src/cmd/cparse`** (K&R, WEGA cc), with the procedure of `host/HOWTO_reconstruct.md`. Owner decisions for this work
+   (2026-10-30, details in `cmd/cparse/tools/HANDOFF_cparse.md`): commits allowed (no push); the Plexus PCC sources may be
+   the base of our sources (exception to the CLAUDE.md rule, the owner takes the risk); no fixed attempt limit, a
+   progress criterion instead; the parser may be linked as a cut module if the yacc tables cannot be reproduced. Criterion before the
    old compiler exists: every function strictly exact or a finding with a D class read from the strict diff; data and bss
    equal (under a layout model where the D classes demand it); corpus test: our cparse writes the same .I and .D files
    as `/lib/cparse` for the same input. The findings of cparse are evidence for the old compiler too.
