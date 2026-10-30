@@ -7,6 +7,7 @@
 	.comm	40, _sigtab
 	.psec
 	.code
+__fltuse::
 	sub	r15,#%0096
 	ldm	%008C(r15),r10,#5
 	ldm	%0000(r15),r3,#5

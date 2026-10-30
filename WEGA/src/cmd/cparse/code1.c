@@ -11,6 +11,8 @@ long sectsize[3] = { 0, 0, 0 };	/* bytes used in each section */
 extern int Fflag;
 FILE *Ffile;	/* the file of -F */
 long ftnpos;	/* position of the function head in the .I file (rewritten by ftnend) */
+FILE *outfile, *sfile;	/* the .I and the .S file */
+FILE *dfile;	/* the .D file */
 char ifname[50], dfname[50], sfname[50];	/* the names of the output files */
 char *ipath, *dpath, *spath;
 char ibuf[BUFSIZ], dbuf[BUFSIZ], sbuf[BUFSIZ];

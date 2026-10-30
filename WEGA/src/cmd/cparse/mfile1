@@ -127,6 +127,7 @@ extern int lineno, nerrors;
 typedef union {
 	int intval;
 	NODE * nodep;
+	long yylong;	/* WEGA: YYSTYPE has 4 bytes (yyval, yyv of the parser) */
 	} YYSTYPE;
 extern YYSTYPE yylval;
 

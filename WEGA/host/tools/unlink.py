@@ -30,7 +30,13 @@ SPEC, one line per libc module in link order, fields separated by blanks, # star
                    is a common (bss) that the module defines
 
 Other lines: "noown" (do not take symbol addresses from the relocations of the own objects, for programs
-whose own code differs from the original) and "sym NAME=ADDRESS ..." (global names of the own part).
+whose own code differs from the original), "sym NAME=ADDRESS ..." (global names of the own part), "tsym
+NAME=ADDRESS ..." and the field "text:NAME=ADDRESS" (text names, kept apart from the data names: with separate I and
+D a text and a data address can be equal), "notables" (no search for jump tables in the data: the data stay bytes;
+for a module whose text and data keep their addresses, where small table values look like text addresses), and for
+separate I and D space "immmin HEX" / "idxmin HEX": an immediate (#) or an index base (n(rX)) below HEX
+or at or above 0xFF00 is a constant, never a data address (a module whose data starts at 0, like the
+parser of cparse, has data addresses that look like small constants).
 
 A module is cut out as it is: the assembler cannot relocate relative branches (jr, djnz, calr) or
 jump tables to another object, so everything they connect has to be in one module. Calls and
@@ -91,6 +97,17 @@ def read_spec(path):
         if line[0] == "noown":
             FLAGS["noown"] = True
             continue
+        if line[0] == "notables":
+            FLAGS["notables"] = True
+            continue
+        if line[0] in ("immmin", "idxmin"):
+            FLAGS[line[0]] = int(line[1], 16)
+            continue
+        if line[0] == "tsym":
+            for f in line[1:]:
+                n, ad = f.split("=")
+                FLAGS.setdefault("tsym", {})[n] = int(ad, 16)
+            continue
         if line[0] == "sym":
             for f in line[1:]:
                 n, ad = f.split("=")
@@ -98,11 +115,15 @@ def read_spec(path):
             continue
         name, kind, a, b, data = line[:5]
         m = dict(name=name, kind=kind, start=None if a == "-" else int(a, 16),
-                 end=None if b == "-" else int(b, 16), data=int(data), syms={}, comms={})
+                 end=None if b == "-" else int(b, 16), data=int(data), syms={}, comms={}, tsyms={})
         dstart = None
         for f in line[5:]:
             if f.startswith("dstart="):
                 dstart = int(f[7:], 16)
+                continue
+            if f.startswith("text:"):
+                n, ad = f[5:].split("=")
+                m["tsyms"][n] = int(ad, 16)
                 continue
             if f.startswith("comm:"):
                 n, rest = f[5:].split("=")
@@ -153,6 +174,13 @@ def main():
             m["dstart"] = dcur
             dcur += m["data"]
     names = dict((a, n) for n, a in own.items())
+    # text names given apart (tsym lines, text: fields): needed with separate I and D, where a text and a data
+    # address can be equal
+    tnames = dict((a, n) for n, a in FLAGS.get("tsym", {}).items())
+    for m in mods:
+        for n, a in m["tsyms"].items():
+            tnames[a] = n
+    split = bool(tnames)
     for m in mods:
         for n, a in m["syms"].items():
             names[a] = n
@@ -188,7 +216,7 @@ def main():
 
     tables = {}       # data address -> text address, for the jump tables
     for m in mods:
-        if m["kind"] != "old" or not m["data"]:
+        if m["kind"] != "old" or not m["data"] or FLAGS.get("notables"):
             continue
         k, hi = m["dstart"], m["dstart"] + m["data"]
         while k + 4 <= hi:
@@ -233,18 +261,26 @@ def main():
                 b = re.match(r"\((r\d+)\)", after)
                 if b and b.group(1) == "r15":
                     continue
+                if separate and "idxmin" in FLAGS and (v < FLAGS["idxmin"] or v >= 0xFF00):
+                    continue
+                if separate and "idxmin" in FLAGS:
+                    # separate I and D: an index base always addresses the data space
+                    res.append((h, "data", v))
+                    continue
                 if is_data(v):
                     res.append((h, "data", v))
                 elif v >= 0x100 and v in starts:
                     res.append((h, "text", v))
                 continue
             if imm:
+                if separate and "immmin" in FLAGS and (v < FLAGS["immmin"] or v >= 0xFF00):
+                    continue
                 if separate:
                     # a small constant and a data address look alike: data only when it is a known name
                     # or inside the data of a module
                     if v in names or any(m["data"] and m["dstart"] <= v < m["dstart"] + m["data"] for m in mods) or (bbase <= v < bend and v in names):
                         res.append((h, "data", v))
-                    elif v < tsize and v in names:
+                    elif v < tsize and v in (tnames if split else names):
                         res.append((h, "text", v))
                     continue
                 if dbase <= v < bbase or (bbase <= v < bend and v in names):
@@ -283,7 +319,7 @@ def main():
             continue
         ma, mb = m["start"], m["end"]
         ext, local_labels, body = set(), set(), []
-        exported = {a: n for n, a in m["syms"].items() if ma <= a < mb}
+        exported = {a: n for n, a in m["tsyms"].items()} if split else {a: n for n, a in m["syms"].items() if ma <= a < mb}
         for pc, t in ins:
             if not (ma <= pc < mb):
                 continue
@@ -296,8 +332,8 @@ def main():
                         else:
                             sym = "L%04x" % (v - ma)
                             local_labels.add(v)
-                    elif v in names:
-                        sym = names[v]
+                    elif v in (tnames if split else names):
+                        sym = (tnames if split else names)[v]
                         ext.add(sym)
                     else:
                         problems.append("no name for the text address %04x (%s)" % (v, m["name"]))

@@ -5,18 +5,20 @@ extern FILE *sfile;	/* the .S file: the symbols for the debugger */
 
 	/* counters of the free register variables (names are guesses) */
 extern int regvar, lregvar, fregvar;
-extern int commflag;	/* the declaration is a common (nidcl, commdec) */
 
 	/* the .S file (WEGA): a header, the symbols (22 bytes each), the names, the member lists, the references */
 extern int symcount;
-extern struct { int h_magic; long h_syms; long h_names; int h_tags; int h_refs; } shdr;
-extern long shdrpos;
-extern struct symtab *refsym[];
-extern int nrefsym;
-extern struct { long r_id; char r_flag; } reftab[];
-extern int nrefs;
-extern int taglist[];
-extern int ntaglist;
+int nrefs = 0;	/* entries of reftab */
+int nrefsym = 0;	/* entries of refsym */
+int ntaglist = 0;	/* entries of taglist */
+struct { int h_magic; long h_syms; long h_names; int h_tags; int h_refs; } shdr;
+long shdrpos;
+struct symtab *refsym[551];	/* the referenced symbols of a function */
+struct { long r_id; char r_flag; } reftab[551];	/* the references of a function */
+int taglist[500];	/* the member lists */
+int commflag;	/* the declaration is a common (nidcl, commdec) */
+struct symtab *hashtab[HASHSZ];	/* the hash chains */
+char ntab[NTABSZ];	/* the names */
 
 falloc( p, w, new, pty )  register struct symtab *p; NODE *pty; {
 	/* allocate a field of width w */

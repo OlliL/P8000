@@ -22,156 +22,156 @@ clocal(p) NODE *p; {
 	   written out in intermediate code.
 	*/
 
-	/* the major essential job is rewriting the
-	   automatic variables and arguments in terms of
-	   REG and OREG nodes */
-	/* conversion ops which are not necessary are also clobbered here */
-	/* in addition, any special features (such as rewriting
-	   exclusive or) are easily handled here as well */
+	/* WEGA: labels of statics, float and unsigned compares, conversions that change nothing,
+	   pointer arithmetic with long operands, char operands of divisions and compares */
 
-	register struct symtab *q;
-	register NODE *r;
 	register o;
-	register m, ml;
+	register ml, m;
+	register struct symtab *q;
+	register NODE *r, *l;
+	register x;
+	int i;
+	long val;
 
-	switch( o = p->op ){
+	l = p->left;
+	r = p->right;
+	o = p->op;
+
+	switch( o ){
 
 	case NAME:
-		if( p->rval < 0 ) { /* already processed; ignore... */
-			return(p);
-		}
 		q = STP(p->rval);
-		switch( q->sclass ){
-
-		case AUTO:
-		case PARAM:
-			/* fake up a structure reference */
-			r = block( REG, NIL, NIL, PTR+STRTY, 0, 0 );
-			r->lval = 0;
-			r->rval = (q->sclass==AUTO?STKREG:ARGREG);
-			p = stref( block( STREF, r, p, 0, 0, 0 ) );
-			break;
-
-		case ULABEL:
-		case LABEL:
-		case STATIC:
-			if( q->slevel == 0 ) break;
+		if( (q->sclass == LABEL || q->sclass == ULABEL) && q->slevel ){
+			p->op = LAB;
 			p->lval = 0;
 			p->rval = -q->offset;
-			break;
-
-		case REGISTER:
-			p->op = REG;
-			p->lval = 0;
-			p->rval = q->offset;
-			break;
-
-		}
+			}
 		break;
+
+	case EQ:
+	case NE:
+		if( l->type == DOUBLE || l->type == FLOAT || r->type == DOUBLE || r->type == FLOAT ){
+		flt:
+			p->op += FEQ-EQ;
+			}
+		break;
+
 	case LT:
 	case LE:
 	case GT:
 	case GE:
-		if( ISPTR( p->left->type ) || ISPTR( p->right->type ) ){
-			p->op += (ULT-LT);
-		}
+		if( l->type == DOUBLE || l->type == FLOAT || r->type == DOUBLE || r->type == FLOAT ) goto flt;
+		if( ISPTR(l->type) || ISPTR(r->type) ) p->op += ULE-LE;
 		break;
 
 	case PCONV:
-		/* do pointer conversions for char and longs */
-		ml = p->left->type;
-		if( ml == FLOAT )
-			goto pclobber;
-		if( ( ml==CHAR || ml==UCHAR || ml==LONG || ml==ULONG )
-		   && p->left->op != ICON ) break;
-
-pclobber:
-		/* pointers all have the same representation;
-		   the type is inherited */
-		p->left->type = p->type;
-		p->left->cdim = p->cdim;
-		p->left->csiz = p->csiz;
-		p->op = FREE;
-		return( p->left );
+		m = l->type;
+		if( (m == CHAR || m == UCHAR || m == LONG || m == ULONG) && l->op != ICON ){
+			p->op = o = SCONV;
+			break;
+			}
+		goto paint;
 
 	case SCONV:
-/*
- *		m = (p->type == FLOAT || p->type == DOUBLE );
- *		ml = (p->left->type == FLOAT || p->left->type == DOUBLE );
- *		if( m != ml ) break;
- */
+		ml = p->type == FLOAT || p->type == DOUBLE;
+		m = l->type == FLOAT || l->type == DOUBLE;
+		if( ml ) break;
+		if( m ) break;
+		while( l->op == SCONV && tbytes( l->type ) > tbytes( p->type ) &&
+				l->left->type != DOUBLE && l->left->type != FLOAT ){
+			l->op = FREE;
+			p->left = l = l->left;
+			}
+		ml = p->type;
+		m = l->type;
+		if( l->op == ICON ){ /* fold the conversion into the constant */
+			val = l->lval;
+			switch( ml ){
 
-		/* now, look for conversions downwards */
-
-		m = p->type;
-		ml = p->left->type;
-		if( p->left->op == ICON ){ /* simulate the conversion here */
-			CONSZ val;
-			val = p->left->lval;
-			switch( m ){
 			case CHAR:
-				p->left->lval = (char) val;
-				goto clobber;
-			case UCHAR:
-				p->left->lval = val & 0XFF;
-				goto clobber;
-			case UNSIGNED:
-				p->left->lval = val & 0XFFFFL;
+				l->lval = (char) val;
 				break;
-			case INT:
-				p->left->lval = (int)val;
-				break;
-			}
-		} else if ( p->left->op != FCON )  {
-			/* meaningful ones are conversion of int to char,
-			   int to short,
-			   and short to char, and unsigned version of them */
-			if( m==CHAR || m==UCHAR ){
-				if( ml != CHAR && ml != UCHAR ) break;
-			}
-			else if( m==INT || m==UNSIGNED ){
-				if( ml != INT && ml != UNSIGNED ) break;
-			}
-			else if( m==LONG || m==ULONG ) {
-				if( ml != LONG && ml != ULONG ) break;
-			}
-			else if( m==DOUBLE ) {
-				if( ml != DOUBLE ) break;
-			}
-			else if( m==FLOAT ) {
-				if( ml != FLOAT ) break;
-			}
-		}
 
-		/* clobber conversion */
-		p->left->type = m; /* inherit type */
-	clobber:
+			case SHORT:
+			case INT:
+				l->lval = (int) val;
+				break;
+
+			case UCHAR:
+				l->lval = val & 0377;
+				break;
+
+			case USHORT:
+			case UNSIGNED:
+				l->lval = val & 0177777;
+				break;
+				}
+		settype:
+			l->type = ml;
+			}
+		else if( l->op == MUL && twords( ml ) - twords( m ) == 1 ) goto settype;	/* the product is long */
+		else if( tbytes( ml ) != tbytes( m ) ) break;
+		if( tbytes( ml ) == tbytes( m ) ){
+		paint:
+			l->type = p->type;
+			l->cdim = p->cdim;
+			l->csiz = p->csiz;
+			}
 		p->op = FREE;
-		return( p->left );  /* conversion gets clobbered */
+		return( l );
+
+	case ASSIGN:
+		if( r->op == SCONV ){
+			ml = r->type;
+			m = r->left->type;
+			}
+		break;
 
 	case PVCONV:
+		if( nncon( r ) && (i = ispow2( r->lval )) > 0 ){
+			p->op = FREE;
+			r->lval = i;
+			return( buildtree( RS, l, r ) );
+			}
 	case PMCONV:
-		if( p->right->op != ICON ) cerror( "bad conversion", 0);
+		if( r->op != ICON ) cerror( "bad conversion", 0 );
 		p->op = FREE;
-		return( buildtree( o==PMCONV?MUL:DIV, p->left, p->right ) );
+		return( buildtree( o == PMCONV ? MUL : DIV, l, r ) );
 
 	case PLUS:
 	case MINUS:
-	case LS:
 	case MUL:
-		/* optimize address calculations with long indexes */
-		if( ISPTR( p->type ) || ISARY( p->type ) ) {
-			if( p->left->type==LONG || p->left->type==ULONG )
-				p->left = cast( p->left, INT );
-			if( p->right->type==LONG || p->right->type==ULONG )
-				p->right = cast( p->right, INT );
-		}
+	case LS:	/* WEGA: pointer arithmetic is done in words */
+		if( ISPTR(p->type) || ISARY(p->type) ){
+			if( l->type == LONG || l->type == ULONG ) l = p->left = cast( l, INT );
+			if( r->type == LONG || r->type == ULONG ) r = p->right = cast( r, INT );
+			}
 		break;
 
-	}
+	case DIV:
+	case MOD:	/* WEGA: a char operand is used without its conversion */
+		if( l->op == SCONV && bsize( l->type ) == SZINT && bsize( l->left->type ) == SZCHAR ){
+			l->op = FREE;
+			l = p->left = l->left;
+			}
+		break;
+
+	case UNARY MINUS:
+		if( p->type == UCHAR ) p->type = CHAR;
+		break;
+		}
+
+	/* WEGA: a compare of a char with a constant that fits */
+	if( logop( p->op ) && r->op == ICON && l->op == SCONV && (l->left->type == CHAR || l->left->type == UCHAR) &&
+			r->lval >= -256 && r->lval <= 255 ){
+		l->op = FREE;
+		p->left = l = l->left;
+		r->type = l->type;
+		if( !logop( p->op ) ) p->type = l->type;
+		}
 
 	return(p);
-}
+	}
 cisreg( t ) register TWORD t; { /* is an automatic variable of type t OK for a register variable */
 
 	return( t==INT || t==UNSIGNED || t==LONG || t==ULONG || ISPTR(t) || t==ENUMTY ||
@@ -412,3 +412,4 @@ syserr( s ) char *s; { /* a system call failed: die */
 	perror( s );
 	dexit( 64 );
 	}
+

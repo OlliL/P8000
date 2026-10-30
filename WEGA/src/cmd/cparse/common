@@ -296,6 +296,7 @@ tbytes( t ) TWORD t; { /* the size of a scalar type in bytes, at most 4 */
 
 	/* mapping relationals when the sides are reversed (optim) */
 short revrel[] ={ EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
+char *memtop = 0, *memcur = 0;	/* the hunk of getmem */
 
 dexit( v ){
 	fflush( stdout );
@@ -346,7 +347,6 @@ nncon( p ) register NODE *p; {
 	return( p->op == ICON && p->rval == NONAME );
 	}
 
-static char *memtop, *memcur;
 static int memfirst = 1;
 
 char *
