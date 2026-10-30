@@ -556,12 +556,11 @@ chkpun(p) register NODE *p; {
 	t2 = p->right->type;
 
 	if( t1==ENUMTY || t2==ENUMTY ) { /* check for enumerations */
-		if( logop( p->op ) && p->op != EQ && p->op != NE ) {
-			uerror( "illegal comparison of enums" );
-			return;
+		if( t1==ENUMTY && t2==ENUMTY ){
+			if( p->left->csiz != p->right->csiz )
+				werror( "operands are from different enumerations, operator %s", opst[p->op] );
 			}
-		if( t1==ENUMTY && t2==ENUMTY && p->left->csiz==p->right->csiz ) return;
-		werror( "enumeration type clash, operator %s", opst[p->op] );
+		else if( t1 != INT && t2 != INT ) uerror( "enumeration type clash, operator %s", opst[p->op] );
 		return;
 		}
 
@@ -583,10 +582,12 @@ chkpun(p) register NODE *p; {
 					}
 				return;
 				}
+			/* WEGA: a function returning pointer to float against one returning pointer to double */
+			if( t1 == ((FTN<<TSHIFT)|PTR|FLOAT) && t2 == ((FTN<<TSHIFT)|PTR|DOUBLE) ) return;
 			if( ISARY(t1) || ISPTR(t1) ){
 				if( !ISARY(t2) && !ISPTR(t2) ) break;
 				if( ISARY(t1) && ISARY(t2) && dimtab[d1] != dimtab[d2] ){
-					werror( "illegal array size combination" );
+					werror( "illegal array size combo" );
 					return;
 					}
 				if( ISARY(t1) ) ++d1;
@@ -607,62 +608,57 @@ stref( p ) register NODE *p; {
 	TWORD t;
 	int d, s, dsc;
 	OFFSZ off;
+	NODE *r;
+	int ptr;	/* the left side was a pointer */
 	register struct symtab *q;
 
 	/* make p->x */
 	/* this is also used to reference automatic variables */
+	/* WEGA: the STREF node stays, codgen computes the offset */
 
+	ptr = 1;
 	q = STP(p->right->rval);
-	p->right->op = FREE;
-	p->op = FREE;
-	p = pconvert( p->left );
-
-	/* make p look like ptr to x */
-
-	if( !ISPTR(p->type)){
-		p->type = PTR+UNIONTY;
-		}
-
+	dsc = q->sclass;
 	t = INCREF( q->stype );
 	d = q->dimoff;
 	s = q->sizoff;
 
-	p = makety( p, t, d, s );
+	p = clocal( makety( p, t, d, s ) );
 
-	/* compute the offset to be added */
-
-	off = q->offset;
-	dsc = q->sclass;
-
-	if( dsc & FIELD ){ /* make fields look like ints */
-		off = (off/ALINT)*ALINT;
-		s = INT;
-		}
-	if( off != 0 ) p = clocal( block( PLUS, p, offcon( off, t, d, s ), t, d, s ) );
-
-	p = buildtree( UNARY MUL, p, NIL );
-
-	/* if field, build field info */
-
-	if( dsc & FIELD ){
-		p = block( FLD, p, NIL, q->stype, 0, q->sizoff );
-		p->rval = PKFIELD( dsc&FLDSIZ, q->offset%ALINT );
+	if( !ISPTR(p->type) ) p->type += PTR;
+	if( !ISPTR(p->left->type) ){
+		ptr = 0;
+		p->left->type += PTR;
 		}
 
-	return( clocal(p) );
+	if( dsc & FIELD ){ /* build field info */
+		if( ptr ) p->left = buildtree( UNARY MUL, p->left, NIL );
+		p->op = FLD;
+		p->type = q->stype;
+		p->csiz = q->sizoff;
+		if( p->left->op == UNARY AND && p->left->left->op == NAME ){
+			p->left->op = FREE;
+			p->left = p->left->left;
+			}
+		else if( p->left->op != NAME && !ptr ){
+			r = talloc();
+			ncopy( r, p->left );
+			r->op = UNARY MUL;
+			r->type = p->type;
+			r->left = p->left;
+			p->left = r;
+			}
+		}
+	else p = buildtree( UNARY MUL, p, NIL );
+
+	return( p );
 	}
 
 notlval(p) register NODE *p; {
 
 	/* return 0 if p an lvalue, 1 otherwise */
 
-	again:
-
 	switch( p->op ){
-
-	case FLD:
-		p = p->left;
-		goto again;
 
 	case NAME:
 	case OREG:
@@ -807,8 +803,9 @@ ptmatch(p)  register NODE *p; {
 	/* with MINUS, the sizes must be the same */
 	/* with COLON, the types must be the same */
 
-	TWORD t1, t2, t;
-	int o, d2, d, s2, s;
+	register o, d2, d, s2, s;
+	register TWORD t1;
+	TWORD t2, t;
 
 	o = p->op;
 	t = t1 = p->left->type;
@@ -1050,29 +1047,33 @@ opact( p )  NODE *p; {
 	case CALL :
 	case UNARY CALL:
 	case UNARY MUL:
+	case NOT:
+	case ANDAND:
+	case OROR:
 		{  return( OTHER ); }
 	case UNARY MINUS:
+		if( p->left->type == UCHAR ) return( OTHER );
 		if( mt1 & MDBI ) return( TYPL );
 		break;
+
+	case RET:	/* PCC: FORCE */
+		return( TYPL );
 
 	case COMPL:
 		if( mt1 & MINT ) return( TYPL );
 		break;
 
 	case UNARY AND:
+	case STREF:
 		{  return( NCVT+OTHER ); }
 	case INIT:
 	case CM:
-	case NOT:
 	case CBRANCH:
-	case ANDAND:
-	case OROR:
 		return( 0 );
 
 	case MUL:
 	case DIV:
 		if( mt12 & MDBI ) return( TYMATCH );
-		break;
 
 	case MOD:
 	case AND:
@@ -1101,20 +1102,14 @@ opact( p )  NODE *p; {
 	case QUEST:
 	case COMOP:
 		if( mt2&MENU ) return( TYPR+NCVTR );
-		return( TYPR );
-
-	case STREF:
-		return( NCVT+OTHER );
-
-	case RET:	/* PCC: FORCE */
-		return( TYPL );
+		return( TYPR+NCVTR );
 
 	case COLON:
 		if( mt12 & MENU ) return( NCVT+PUN+PTMATCH );
 		else if( mt12 & MDBI ) return( TYMATCH );
 		else if( mt12 & MPTR ) return( TYPL+PTMATCH+PUN );
-		else if( (mt1&MINT) && (mt2&MPTR) ) return( TYPR+PUN );
-		else if( (mt1&MPTR) && (mt2&MINT) ) return( TYPL+PUN );
+		else if( (mt1&MINT) && (mt2&MPTR) ) return( TYPR+PUN+CVTL );
+		else if( (mt1&MPTR) && (mt2&MINT) ) return( TYPL+PUN+CVTR );
 		else if( mt12 & MSTR ) return( NCVT+TYPL+OTHER );
 		break;
 
@@ -1122,6 +1117,7 @@ opact( p )  NODE *p; {
 	case RETURN:
 		if( mt12 & MSTR ) return( LVAL+NCVT+TYPL+OTHER );
 	case CAST:
+		if( o == CAST && mt1 == MVOID ) return( TYPL+TYMATCH );
 		if( mt12 & MDBI ) return( TYPL+LVAL+TYMATCH );
 		else if( (mt1&MENU)||(mt2&MENU) ) return( LVAL+NCVT+TYPL+PTMATCH+PUN );
 		else if( mt1 & MPTR ) return( LVAL+PTMATCH+PUN );
@@ -1135,10 +1131,10 @@ opact( p )  NODE *p; {
 
 	case ASG MUL:
 	case ASG DIV:
-		if( mt12 & MDBI ) return( LVAL+TYMATCH );
+	case ASG MOD:
+		if( mt12 & MDBI ) return( LVAL+OTHER );
 		break;
 
-	case ASG MOD:
 	case ASG AND:
 	case ASG OR:
 	case ASG ER:
@@ -1150,7 +1146,8 @@ opact( p )  NODE *p; {
 	case INCR:
 	case DECR:
 		if( mt12 & MDBI ) return( TYMATCH+LVAL );
-		else if( (mt1&MPTR) && (mt2&MINT) ) return( TYPL+LVAL+CVTR );
+		else if( (mt1&MPTR) && (mt2&MINT) ) return( TYPL+LVAL+CVTR+OTHER );
+		else if( (mt1&MENU) || (mt2&MENU) ) return( NCVT );
 		break;
 
 	case MINUS:
@@ -1160,9 +1157,15 @@ opact( p )  NODE *p; {
 		if( mt12 & MDBI ) return( TYMATCH );
 		else if( (mt1&MPTR) && (mt2&MINT) ) return( TYPL+CVTR );
 		else if( (mt1&MINT) && (mt2&MPTR) ) return( TYPR+CVTL );
+		break;
+
+	case SUBSR:	/* WEGA */
+		if( mt12 & MDBI ) return( TYMATCH+OTHER );
+		else if( (mt1&MPTR) && (mt2&MINT) ) return( TYPL+CVTR+OTHER );
+		else if( (mt1&MINT) && (mt2&MPTR) ) return( TYPR+CVTL+OTHER );
 
 		}
-	uerror( "operands of %s have incompatible types", opst[o] );
+	uerror( "operands of %s have incompatible types ", opst[o] );
 	return( NCVT );
 	}
 
@@ -1363,6 +1366,8 @@ tempnode( t, flag ) TWORD t; { /* a TEMP node of type t; flag 1: it gets the nex
 		}
 	return( q );
 	}
+
+
 
 
 
