@@ -91,7 +91,7 @@ cherry-pick right after X (in table order) and fold into it, **drop** = not in a
 | `91eee0c5` | p8k terminal: caret and apostrophe keys follow the German layout | A | squash → `01843ae3` |
 | `151b55cc` | p8k: A8-A23 keep their last value when no MMU drives the bus | A | squash → `01843ae3` |
 | `dff42e83` | PR draft p8k: all models in the disclosure, bus hold, sa.diags | - | drop |
-| `02f5fb03` | cpu/z8000: DAB after a subtraction judges the upper digit by the original byte | A | squash → `436f255b` |
+| `f428e910` | cpu/z8000: DAB after a subtraction judges the upper digit by the original byte | A | squash → `436f255b` |
 
 Resulting branches (names are a proposal):
 
@@ -182,7 +182,7 @@ Commit [`03dffddf`](https://github.com/OlliL/mame/commit/03dffddf) in
 ### DAB fix (cpu/z8000)
 
 Commits [`436f255b`](https://github.com/OlliL/mame/commit/436f255b) (addition) and
-[`02f5fb03`](https://github.com/OlliL/mame/commit/02f5fb03) (subtraction, to be squashed into
+[`f428e910`](https://github.com/OlliL/mame/commit/f428e910) (subtraction, to be squashed into
 `436f255b`), `src/devices/cpu/z8000/z8000ops.hxx`, function `ZB0_dddd_0000`.
 
 - **Change:** the upper digit is judged from the original byte (`orig > 0x99`), not from the
@@ -194,13 +194,14 @@ Commits [`436f255b`](https://github.com/OlliL/mame/commit/436f255b) (addition) a
   returned 0 and numbers around 16000...16260 and 100000 were printed wrongly. `sysgen`
   wrote a wrong default boot path because of it.
 - **Documents:** U8000 CPU description, arithmetic instructions, DAB p. 68; Leventhal,
-  Z8000 Assembly Language Programming table 3-12; Moore, Z8000 Handbook table 2-8.
+  Z8000 Assembly Language Programming table 3-12 (p. 3-168); Moore, Z8000 Handbook table 2-8
+  (p. 133).
 - **Evidence:** all 764 byte/flag combinations the table covers were compared with the code;
   the subtraction change leaves all of them as they were. Combinations outside the table are
-  undefined in all three sources. For the subtraction cases outside the table, a reviewer
+  undefined in all three sources. For the subtraction cases outside the table, @tpaxia
   compared the core with test cases captured on a real Z8001 (`0x00`-`0x05` with H=1:
   `0xFA`-`0xFF` C=0; `0x9A`-`0xA5` with H=1 and `0x9A`-`0x9F` with H=0: `0x34`-`0x3F` C=1);
-  with `02f5fb03` all of them match, the addition path matched already. Flags: Z and S from
+  with `f428e910` all of them match, the addition path matched already. Flags: Z and S from
   the result, C set when the upper correction was applied, P/V untouched.
 - **Please check:** the carry rule, and the cases with H set and a high digit 9.
 

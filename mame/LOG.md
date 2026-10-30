@@ -187,12 +187,12 @@ byte/flag combinations the table covers were compared with the code: no differen
 are set from the result, P/V is not touched ("CZS---"). Combinations outside the table are
 undefined in all sources.
 
-Subtraction (2026-10-30, commit `02f5fb03`, to be squashed into `436f255b`): a reviewer ran the
+Subtraction (2026-10-30, commit `f428e910`, to be squashed into `436f255b`): @tpaxia ran the
 core against test cases captured on a real Z8001. The addition path matched; after a subtraction
 the upper digit was still judged from the byte after the -6. That borrows out of 0x00-0x05 (H
 set, the upper digit then reads F, so a wrong -0x60 was applied) and brings 0x9A-0xA5 down to an
 upper 9 (the needed -0x60 was missing). Silicon: 0x00-0x05 H=1 C=0 -> 0xFA-0xFF C=0; 0x9A-0xA5
-H=1 C=0 and 0x9A-0x9F H=0 C=0 -> 0x34-0x3F C=1. Fix as the reviewer proposed: `highfix = C ||
+H=1 C=0 and 0x9A-0x9F H=0 C=0 -> 0x34-0x3F C=1. Fix as @tpaxia proposed: `highfix = C ||
 orig > 0x99` for both directions. These inputs are outside the table; a script compared old core,
 new core, the 764 table cases (all unchanged) and the 25 reported cases (all match now), and a
 run of `dab rl0` on the emulated U8001 gave the same nine sample results.
