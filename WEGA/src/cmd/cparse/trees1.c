@@ -109,11 +109,10 @@ buildtree( o, l, r ) register NODE *l, *r; {
 	register actions;
 	register opty;
 	register struct symtab *sp;
-	register NODE *lr, *ll;
+	NODE *lr, *ll;
 	int i;
-	extern int eprint();
+	TWORD t;
 
-	if( bdebug ) printf( "buildtree( %s, %o, %o )\n", opst[o], l, r );
 	opty = optype(o);
 
 	/* check for constants */
@@ -123,7 +122,6 @@ buildtree( o, l, r ) register NODE *l, *r; {
 		switch( o ){
 
 		case NOT:
-			if( hflag ) werror( "constant argument to NOT" );
 		case UNARY MINUS:
 		case COMPL:
 			if( conval( l, o, l ) ) return(l);
@@ -138,8 +136,8 @@ buildtree( o, l, r ) register NODE *l, *r; {
 		}
 
 	else if( o==QUEST && l->op==ICON ) {
-		l->op = FREE;
 		r->op = FREE;
+		l->op = FREE;
 		if( l->lval ){
 			tfree( r->right );
 			return( r->left );
@@ -171,8 +169,6 @@ buildtree( o, l, r ) register NODE *l, *r; {
 		case CBRANCH:
 
 		ccwarn:
-			if( hflag ) werror( "constant in conditional context" );
-
 		case PLUS:
 		case MINUS:
 		case MUL:
@@ -183,17 +179,6 @@ buildtree( o, l, r ) register NODE *l, *r; {
 		case ER:
 		case LS:
 		case RS:
-			{ register NODE *t = 0;
-			/*
-			 * if either side is of type long then both
-			 * sides should be long
-			 */
-			if( l->type == LONG && r->type != LONG )
-				t = r;
-			if( r->type == LONG && l->type != LONG )
-				t = l;
-			if( t ) t->type = LONG;
-			}
 			if( conval( l, o, r ) ) {
 				r->op = FREE;
 				return(l);
@@ -262,7 +247,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			}
 		}
 
-	if( (actions&PUN) && (o!=CAST||cflag) ){
+	if( (actions&PUN) && o!=CAST ){
 		chkpun(p);
 		}
 
@@ -287,12 +272,12 @@ buildtree( o, l, r ) register NODE *l, *r; {
 		switch(o){
 
 		case NAME:
-			sp = STP(idname);
+			sp = idname;
 			if( sp->stype == UNDEF ){
-				uerror( "%.8s undefined", sp->sname );
+				uerror( "%s undefined", &ntab[sp->sname] );
 				/* make p look reasonable */
 				p->type = p->cdim = p->csiz = INT;
-				p->rval = idname;
+				p->rval = (int) idname;
 				p->lval = 0;
 				defid( p, SNULL );
 				break;
@@ -301,7 +286,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			p->cdim = sp->dimoff;
 			p->csiz = sp->sizoff;
 			p->lval = 0;
-			p->rval = idname;
+			p->rval = (int) idname;
 			/* special case: MOETY is really an ICON... */
 			if( p->type == MOETY ){
 				p->rval = NONAME;
@@ -319,7 +304,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			break;
 
 		case STRING:
-			p->op = NAME;
+			p->op = LAB;
 			p->type = CHAR+ARY;
 			p->lval = 0;
 			p->rval = NOLAB;
@@ -335,22 +320,48 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			p->csiz = DOUBLE;
 			break;
 
+		case ANDAND:
+		case OROR:
+		case NOT:
+			p->type = p->csiz = INT;
+			break;
+
 		case STREF:
 			/* p->x turned into *(p+offset) */
 			/* rhs must be a name; check correctness */
 
-			i = r->rval;
-			if( i<0 || ((sp= STP(i))->sclass != MOS && sp->sclass != MOU && !(sp->sclass&FIELD)) ){
+			sp = STP(i = r->rval);
+			if( sp->sclass != MOS && sp->sclass != MOU && !(sp->sclass&FIELD) ){
 				uerror( "member of structure or union required" );
 				}
-			else {
-				register j;
-				if( l->type != PTR+STRTY && l->type != PTR+UNIONTY ){
-					werror( "struct/union or struct/union pointer required" );
+			else if( (sp->sflags&SMEMB) && (l->type == PTR+STRTY || l->type == PTR+UNIONTY) ){
+				/* WEGA: a member name of several structures: the member of this one */
+				int j, k;
+				char *cp1, *cp2;
+
+				for( j = dimtab[l->csiz+1]; k = dimtab[j]; ++j ){
+					cp1 = &ntab[STP(k)->sname];
+					cp2 = &ntab[sp->sname];
+					if( (STP(k)->sflags&SMEMB) && !strcmp( cp2, cp1 ) ){
+						r->rval = i = k;
+						r->type = STP(k)->stype;
+						p->type = INCREF( STP(k)->stype );
+						if( !STP(k)->slevel ) refid( STP(k) );
+						break;
+						}
 					}
-				else if( (j=l->csiz+1)<0 ) cerror( "undefined structure or union" );
-				else if( !chkstr( i, dimtab[j], DECREF(l->type) ) ){
-					werror( "illegal member use: %.8s", STP(i)->sname );
+				}
+			else if( l->type != PTR+STRTY && l->type != PTR+UNIONTY ){
+				if( STP(i)->sflags&SMEMB ) uerror( "non-unique name demands struct/union or struct/union pointer" );
+				else if( tsize( l->type, l->cdim, l->csiz ) != SZPOINT ) uerror( "illegal type of struct/union pointer" );
+				else werror( "struct/union or struct/union pointer required" );
+				}
+			else {
+				int j;
+
+				if( (j=l->csiz+1)<0 ) cerror( "undefined structure or union" );
+				else if( !chkstr( i, (int)dimtab[j], DECREF(l->type) ) ){
+					werror( "illegal member use: %s", &ntab[STP(i)->sname] );
 					}
 				}
 
@@ -375,6 +386,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 				p->op = l->op = FREE;
 				p = l->left;
 			case NAME:
+			case LAB:
 				p->type = INCREF( l->type );
 				p->cdim = l->cdim;
 				p->csiz = l->csiz;
@@ -404,14 +416,15 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			if(tsize(p->left->type, p->left->cdim, p->left->csiz)
 			   < SZINT) {
 				p->left = makety(p->left, INT, 0, INT );
-				/* find some way to type '<<' as an int */
-				p->type += (INT - CHAR);
+				p->type = ISUNSIGNED(p->left->type) ? UNSIGNED : INT;
 			}
 		case ASG LS:
 		case ASG RS:
 			if(tsize(p->right->type, p->right->cdim, p->right->csiz)
-			   != SZINT)
-				p->right = makety(p->right, INT, 0, INT );
+			   == SZINT) break;
+		case SUBSR:
+		intright:
+			p->right = makety(p->right, INT, 0, INT );
 			break;
 
 		case RETURN:
@@ -423,10 +436,10 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			/* the addresses of left and right */
 
 			{
-				register TWORD t;
-				register d, s;
+				TWORD t;
+				int d, s;
 
-				if( l->csiz != r->csiz ) uerror( "assignment of different structures" );
+				if( l->csiz != r->csiz ) uerror( "assignment of diff structures" );
 
 				r = buildtree( UNARY AND, r, NIL );
 				t = r->type;
@@ -461,11 +474,6 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			p->type = DECREF( p->type );
 			p->cdim = l->cdim;
 			p->csiz = l->csiz;
-			if( l->op == UNARY AND && l->left->op == NAME &&
-				l->left->rval >= 0 && l->left->rval != NONAME &&
-				( (i=STP(l->left->rval)->sclass) == FORTRAN || i==UFORTRAN ) ){
-				p->op += (FORTCALL-CALL);
-				}
 			if( p->type == STRTY || p->type == UNIONTY ){
 				/* function returning structure */
 				/*  make function really return ptr to str., with * */
@@ -477,16 +485,48 @@ buildtree( o, l, r ) register NODE *l, *r; {
 				}
 			break;
 
+		case UNARY MINUS:	/* WEGA: of an unsigned char */
+			p->left = block( SCONV, p->left, NIL, INT, 0, INT );
+			p->type = INT;
+			break;
+
+		case ASG DIV:
+		case ASG MOD:	/* WEGA: a char divided by an int */
+			if( (t = l->type) == CHAR || t == UCHAR ){
+				p->right = makety( p->right, INT, 0, INT );
+				p->type = l->type;
+				p->cdim = l->cdim;
+				p->csiz = l->csiz;
+				}
+			else p = tymatch( p );
+			break;
+
+		case ASG MUL:	/* WEGA: the product of words is long */
+			if( (t = l->type) == CHAR || t == UCHAR || t == INT || t == UNSIGNED ){
+				p->right = makety( p->right, INT, 0, INT );
+				p->type = LONG;
+				p->cdim = 0;
+				p->csiz = LONG;
+				p = makety( p, t, 0, l->csiz );
+				}
+			else p = tymatch( p );
+			break;
+
+		case ASG PLUS:
+		case ASG MINUS:
+		case INCR:
+		case DECR:	/* WEGA: a pointer and a long */
+			if( ISPTR(p->left->type) && (p->right->type == LONG || p->right->type == ULONG) ) goto intright;
+			break;
+
 		default:
-			cerror( "other code %d", o );
+			cerror( "other code %d [%%%0.2x]", o, o );
 			}
 
 		}
 
 	if( actions & CVTO ) p = oconvert(p);
 	p = clocal(p);
-
-	if( bdebug ) fwalk( p, eprint, 0 );
 
 	return(p);
 
@@ -1366,6 +1406,7 @@ tempnode( t, flag ) TWORD t; { /* a TEMP node of type t; flag 1: it gets the nex
 		}
 	return( q );
 	}
+
 
 
 
