@@ -97,3 +97,35 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
   reserves a home slot for register parameters and rounds the frame to 4; the cc of cparse does neither), D2, D3
   (the old cc keeps a spilled parameter in its register across branches), D9 (w>>8 as byte move), D10 (long shift by
   a constant as sdal with a negative count), D11 (shared code between the TNEXT arms in talloc, probably popt).
+
+## State 2026-10-30 (end of the first AFK session)
+
+- Every module has a draft from the WEGA disassembly (xdefs1, scan1, pftn1, trees1, optim1/optim, code1, local1,
+  comm1/common, vinit1, sym1); the parser cgram1 is cut from the original as an assembler module (`tools/cutgram.py`,
+  owner fallback) until the grammar is rebuilt. `make` links crt0.o (`mkcrt0.sh cparse`), the eleven modules and
+  cplibc.o. The parser keeps the original text and data addresses (it is the first module), so its raw table bytes stay
+  valid (unlink.py `notables`).
+- The cut parser declares the whole bss as commons in the order of the original (`BSS` in cutgram.py, found by
+  `tools/bsspair.py`), so the bss of our link has the original layout and size. Data: every module begins with its SCCS
+  stamp; the data of our link is 102 bytes longer than the original (switch tables of the shipped cc, D6, and string
+  layout, D12); `d12model.py` (now usable for cparse) gives 18572 against 18584 bytes.
+- Corpus (`stagecorpus.py ../cparse`): 235 of 255 inputs identical. The 20 others differ only in the .S file, by the
+  heap contents that `putsym` writes for the never set `sfldb` of extern symbols (and, for structures that are never
+  defined, the word behind `dimtab[-1]`); both depend on `_end` (the start of the heap), so they become identical only
+  with the original data size (KNOWLEDGE quirks table).
+- Facts found on the way: YYSTYPE has 4 bytes (yyval 0x62ce, yyv 0x62d4..0x652c, YYMAXDEPTH 150); member names are
+  global in this C (a new union member `lval` broke `NODE.lval`); block clears rval; ARGINIT 16; DSIZE 129;
+  D19 (operand order) in KNOWLEDGE.
+- Function state: modcheck -f -r per module (frame and registers hidden): code1 9/23, scan1 8/14, pftn1 7/21,
+  trees1 14/27, optim1 2/6, local1 3/16 (clocal rebuilt), sym1 16/24, comm1 9, vinit1 1/14 SAME; the other differences
+  read as D1, D2, D3, D6, D7, D10, D14, D15, D19. findings.json has the names but no per-function notes yet.
+
+## Next
+
+1. findings.json per function (strictcmp on the d12model link once the data model matches better; notes and D classes).
+2. Open source questions: defid (member block placed inside the dimension loop in the original), getpreg (the shared
+   `return pregvar--`), genswitch size of the search table (`(unsigned)(n*SZLONG/SZCHAR)` compiles to srl, the original
+   divides), lineid/locctr naming, `f3970` (used by the parser, purpose open), `bssgap1/2` (unreferenced words).
+3. The grammar: derive cgram1.y from the yacc tables of the parser (yyr1, yyr2, yychk, yyact, ...; ~175 productions)
+   and the actions from yyparse, then replace cgram1.s.
+4. Split cplibc.s into the members.

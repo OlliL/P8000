@@ -912,6 +912,12 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/scodgen` | The SEG bar test in `oregput` (the `|` around a stack-segment operand) compares low words: `lval` for the symbol `symtab0`, and `lval + maxoff` (not `frame0`) for `~L1`. | kept: host copy uses the same tests | `host/codgen` (`out3.c`), `src/TODO.md` |
 | popt | `fixldm` looks up the last `#` of an operand with `strrchr` (the original calls 0x548c = strrchr), not the first with `strchr` | kept: `strrchr` (oldlibc 0_1); the difference matters only if `#` occurs twice in an operand | popt-02 in `src/cmd/popt/tools/findings.json`; popt corpus 813 of 816 |
 | popt | `movedat` reads its head node `hd.forw` (`if (hd.forw)`) without setting it when the input has no data section; the original does not clear `hd` (0x2fc8) | kept: no clearing (the original's value comes from the frame); the corpus (272 cases) gives the same output | popt-24 in `src/cmd/popt/tools/findings.json` |
+| `/lib/cparse` (`putsym`) | for a structure that is used but never defined (`struct sgtty *p` when only `sgttyb` exists) the member loop starts at `dimtab[-1]` and writes the `symno` of whatever that word points to into the member list of the .S file | kept (the bss has the original layout) | `src/cmd/cparse/tools/HANDOFF_cparse.md` |
+| `/lib/cparse` (`putsym`, `lookup`) | the register byte `sfldb` of an extern symbol is never set: the .S file gets the old contents of the malloc block (heap contents, depend on `_end` and on earlier `free`s) | kept; identical only with the original data size | `HANDOFF_cparse.md` |
+| `/lib/cparse` (`lookup`) | returns no value when the name is not found and no entry is to be made (`mk == 0`) | kept | `HANDOFF_cparse.md` |
+| `/lib/cparse` (`newsect`) | the section counter starts at 3, so every overflow of a section gives "too many sections"; `defid` prints "ntab_gl obals" | kept | `HANDOFF_cparse.md` |
+| `/lib/cparse` (`convert`) | for CVTL the operands of the node change places (harmless for PLUS, the only user) | kept | `HANDOFF_cparse.md` |
+| `/lib/cparse` (`clocal` ASSIGN, `chkstr`, `treeeq`) | `clocal` loads two types for an ASSIGN of an SCONV and does not use them; `chkstr` compares a symbol pointer with 500 (signed, so it never fires); `treeeq` returns no value for an operator that is not LTYPE, UTYPE or BITYPE | kept | `HANDOFF_cparse.md` |
 
 ## ar (reconstructed, byte-identical)
 
@@ -1847,6 +1853,20 @@ loads the value first (the frame slot as the second operand is what the shipped 
 `and rS,F` (two forms), the same operand form in the other direction (the original loads first). Both sides use the
 same instruction kinds with another operand form. The pattern check accepts `add/sub/and/or/xor rS,F` as D16
 (`patterns.explained`). This is a pattern verdict: the operand form is the same, the reason for the choice is not known.
+
+### D18 Frame operand with offset 0
+
+The cc that built `/lib/cparse` never writes `@r15`: an operand at offset 0 of the frame is `%0000(r15)` (506 times in
+/lib/cparse, 0 times `@r15`; ld and codgen of the shipped tool chain use `@r15`). The two forms have different lengths
+(2 bytes each). The comparisons of cparse treat them as equal (progcfg `D18`).
+
+### D19 Order of evaluation of the operands of a binary operator (cparse)
+
+The old cc evaluates the left operand of `+`, `==`, `>` first when both are calls; the shipped cc evaluates the right one
+first. Measured in cparse (2026-10-30): `argregs` (`argregs(p->left) + argregs(p->right)`: the original counts the left
+arguments first, which changes the result, the stack words of a call), `rmconv` (`bsize(q->left->type) == bsize(q->type)`)
+and `clocal` (`tbytes`). Our sources write the operands the other way round where the original calls the left one first
+(a source change that compiles to the original order with the shipped cc; the old cc will need the natural order).
 
 ## cas: decompilation (src/cmd/cas)
 

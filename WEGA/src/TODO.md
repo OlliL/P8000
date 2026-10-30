@@ -66,6 +66,9 @@ Order:
    old compiler exists: every function strictly exact or a finding with a D class read from the strict diff; data and bss
    equal (under a layout model where the D classes demand it); corpus test: our cparse writes the same .I and .D files
    as `/lib/cparse` for the same input. The findings of cparse are evidence for the old compiler too.
+   State 2026-10-30: all modules drafted, the parser cut as an assembler module (fallback), the whole program links
+   (`make`), bss layout and size as in the original, corpus 235 of 255 identical (the rest: heap contents in the .S
+   file, depend on the data size); next: findings per function, the grammar, the libc split (HANDOFF_cparse.md, "Next").
 2. **Check the findings of the other programs strictly** (sld 32 findings, codgen, cas, ranlib, strip, the oldcc
    modules) before they are used as evidence: strict comparison, the rules of HOWTO step 7.
 3. **Assign every D class to a stage** (cparse, codgen, popt) by experiment: replace one stage of the chain by ours and
