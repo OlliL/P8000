@@ -64,6 +64,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | deflab | - | 0x67ec | open | open |  |  |  |
 | defnam | - | 0x6ac4 | open | open |  |  |  |
 | dexit | - | 0x7f62 | open | open |  |  |  |
+| dimtinit | - | 0x153e | open | open |  |  |  |
 | doinit | - | 0x874a | open | open |  |  |  |
 | dstash | - | 0x00b4 | open | open |  |  |  |
 | ecode | - | 0x7a9e | open | open |  |  |  |
@@ -73,11 +74,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | endinit | - | 0x85f0 | open | open |  |  |  |
 | exname | - | 0x7952 | open | open |  |  |  |
 | f0000 | - | 0x0000 | open | open |  |  |  |
-| f142e | - | 0x142e | open | open |  |  |  |
-| f1434 | - | 0x1434 | open | open |  |  |  |
-| f1514 | - | 0x1514 | open | open |  |  |  |
-| f153e | - | 0x153e | open | open |  |  |  |
-| f1792 | - | 0x1792 | open | open |  |  |  |
 | f2be2 | - | 0x2be2 | open | open |  |  |  |
 | f2c0e | - | 0x2c0e | open | open |  |  |  |
 | f2efc | - | 0x2efc | open | open |  |  |  |
@@ -123,11 +119,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | lineid | - | 0x6b9c | open | open |  |  |  |
 | locctr | - | 0x6790 | open | open |  |  |  |
 | lookup | - | 0x94e8 | open | open |  |  |  |
+| lxclass | - | 0x1434 | open | open |  |  |  |
 | lxcom | - | 0x1a96 | open | open |  |  |  |
 | lxenter | - | 0x146a | open | open |  |  |  |
 | lxinit | - | 0x1494 | open | open |  |  |  |
 | lxmore | - | 0x1710 | open | open |  |  |  |
 | lxres | - | 0x2314 | open | open |  |  |  |
+| lxstart | - | 0x142e | open | open |  |  |  |
 | lxstr | - | 0x1862 | open | open |  |  |  |
 | lxtitle | - | 0x15b0 | open | open |  |  |  |
 | main | - | 0x60d8 | open | open |  |  |  |
@@ -167,9 +165,11 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | resetmem | - | 0x8100 | open | open |  |  |  |
 | rstruct | - | 0x32ca | open | open |  |  |  |
 | savebc | - | 0x00e2 | open | open |  |  |  |
+| savestr | - | 0x1792 | open | open |  |  |  |
 | scnames | - | 0x1374 | open | open |  |  |  |
 | sectadd | - | 0x65e8 | open | open |  |  |  |
 | sectfull | - | 0x65c4 | open | open |  |  |  |
+| sfinit | - | 0x1514 | open | open |  |  |  |
 | sheader | - | 0x9c0c | open | open |  |  |  |
 | sinit | - | 0x9bd4 | open | open |  |  |  |
 | sputc | - | 0x9ece | open | open |  |  |  |

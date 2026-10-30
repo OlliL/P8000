@@ -149,7 +149,7 @@
    "callers_orig": "60d8",
    "status": "open"
   },
-  "f142e": {
+  "lxstart": {
    "file": "-",
    "pairing": "open",
    "orig": "0x142e",
@@ -159,7 +159,7 @@
    "callers_orig": "13b6",
    "status": "open"
   },
-  "f1434": {
+  "lxclass": {
    "file": "-",
    "pairing": "open",
    "orig": "0x1434",
@@ -189,7 +189,7 @@
    "callers_orig": "142e",
    "status": "open"
   },
-  "f1514": {
+  "sfinit": {
    "file": "-",
    "pairing": "open",
    "orig": "0x1514",
@@ -199,7 +199,7 @@
    "callers_orig": "13b6",
    "status": "open"
   },
-  "f153e": {
+  "dimtinit": {
    "file": "-",
    "pairing": "open",
    "orig": "0x153e",
@@ -229,7 +229,7 @@
    "callers_orig": "15b0",
    "status": "open"
   },
-  "f1792": {
+  "savestr": {
    "file": "-",
    "pairing": "open",
    "orig": "0x1792",

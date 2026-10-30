@@ -133,6 +133,14 @@ extern CONSZ lastcon;
 extern double dcon;
 
 extern char ftitle[];
+
+struct strlist {	/* WEGA: a string constant, kept until the data are written (vinit1 putstrs) */
+	int s_lab;	/* its label */
+	int s_len;	/* its bytes */
+	char *s_str;
+	struct strlist *s_next;
+	};
+extern struct strlist *strhead, *strcur;
 # define HASHSZ 64	/* WEGA: the hash chains of the symbol table */
 # define NTABSZ 6500	/* WEGA: the name table */
 extern FILE *outfile;	/* WEGA: the .I file (for codgen) */

@@ -26,8 +26,6 @@ int iclass;  /* storage class of thing being initialized */
 int ilocctr = 0;  /* location counter for current initialization */
 
 	/* the string literals that are kept until the end of the function (putstrs) */
-struct strlist { int s_lab; int s_len; char *s_str; struct strlist *s_next; };
-extern struct strlist *strhead, *strcur;
 
 resetmem( p ) char *p; { /* give the memory of getmem back (name is a guess) */
 	brk( p );
@@ -164,7 +162,7 @@ getstr(){ /* decide if the string is external or an initializer, and get the con
 		temp = locctr( blevel==0?ISTRNG:STRNG ); /* set up location counter */
 		l = getlab();
 		strflg = 0;
-		f1792( 0, l ); /* get the contents */
+		savestr( 0, l ); /* get the contents */
 		if( curloc == STRNG && strhead && iclass != STATIC ) putstrs();
 		locctr( oloc );
 		p = buildtree( STRING, NIL, NIL );

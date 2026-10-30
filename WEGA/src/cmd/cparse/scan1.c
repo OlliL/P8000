@@ -45,7 +45,7 @@
 # define AR_A 6		/* asm */
 
 	/* text buffer */
-# define LXTSZ 100
+# define LXTSZ 125
 char yytext[LXTSZ];
 char * lxgcp;
 
@@ -114,140 +114,59 @@ struct lxdope {
 
 struct lxdope *lxcp[CSSZ+1];
 
+char strbuf[512] = "";	/* the bytes of a string constant (savestr) */
+int strsize = 0;	/* the number of bytes in strbuf */
+
 
 int lxmatch;  /* character to be matched in char or string constant */
 
 
 
 
-struct lxrdope {
-	/* dope for reserved, in alphabetical order */
 
-	char *lxrch;	/* name of reserved word */
-	short lxract;	/* reserved word action */
-	short lxrval;	/* value to be returned */
-	} lxrdope[] = {
+extern char *spath;
 
-	"asm",		AR_A,	0,
-	"auto",		AR_CL,	AUTO,
-	"break",	AR_RW,	BREAK,
-	"char",		AR_TY,	CHAR,
-	"case",		AR_RW,	CASE,
-	"continue",	AR_RW,	CONTINUE,
-	"double",	AR_TY,	DOUBLE,
-	"default",	AR_RW,	DEFAULT,
-	"do",		AR_RW,	DO,
-	"extern",	AR_CL,	EXTERN,
-	"else",		AR_RW,	ELSE,
-	"enum",		AR_E,	ENUM,
-	"for",		AR_RW,	FOR,
-	"float",	AR_TY,	FLOAT,
-	"fortran",	AR_CL,	FORTRAN,
-	"goto",		AR_RW,	GOTO,
-	"if",		AR_RW,	IF,
-	"int",		AR_TY,	INT,
-	"long",		AR_TY,	LONG,
-	"return",	AR_RW,	RETURN,
-	"register",	AR_CL,	REGISTER,
-	"switch",	AR_RW,	SWITCH,
-	"struct",	AR_S,	0,
-	"sizeof",	AR_RW,	SIZEOF,
-	"short",	AR_TY,	SHORT,
-	"static",	AR_CL,	STATIC,
-	"typedef",	AR_CL,	TYPEDEF,
-	"unsigned",	AR_TY,	UNSIGNED,
-	"union",	AR_U,	0,
-	"while",	AR_RW,	WHILE,
-	"",		0,	0,	/* to stop the search */
-	};
+mainp1(){
+	long pos;
 
-	/* ARGSUSED */
-mainp1( argc, argv ) int argc; char *argv[]; {  /* control multiple files */
-
-	register i;
-	register char *cp;
-	extern int idebug, bdebug, tdebug, edebug, ddebug, xdebug, cdebug;
-	extern int wflag;
-
-	for( i=1; i<argc; ++i ){
-		if( *(cp=argv[i]) == '-' && *++cp == 'X' ){
-			while( *++cp ){
-				switch( *cp ){
-
-				case 'd':
-					++ddebug;
-					break;
-				case 'i':
-					++idebug;
-					break;
-				case 'b':
-					++bdebug;
-					break;
-				case 't':
-					++tdebug;
-					break;
-				case 'e':
-					++edebug;
-					break;
-				case 'x':
-					++xdebug;
-					break;
-				case 'c':
-					++cdebug;
-					break;
-				case 'w':
-					++wflag;
-					break;
-					}
-				}
-			}
-		}
-
-# ifdef ONEPASS
-	p2init( argc, argv );
-# endif
-
-
-	lxinit();
+	lxstart();
 	tinit();
 	mkdope();
-
-	lineno = 1;
-
-	/* dimension table initialization */
-
-	dimtab[NULL] = 0;
-	dimtab[CHAR] = SZCHAR;
-	dimtab[INT] = SZINT;
-	dimtab[FLOAT] = SZFLOAT;
-	dimtab[DOUBLE] = SZDOUBLE;
-	dimtab[LONG] = SZLONG;
-	dimtab[SHORT] = SZSHORT;
-	dimtab[UCHAR] = SZCHAR;
-	dimtab[USHORT] = SZSHORT;
-	dimtab[UNSIGNED] = SZINT;
-	dimtab[ULONG] = SZLONG;
-	/* starts past any of the above */
-	curdim = 16;
-	reached = 1;
+	dimtinit();
+	sfinit();
+	lxtitle();
 
 	yyparse();
 	yyaccpt();
 
-	ejobcode( nerrors ? 1 : 0 );
+	/* the first word of the .S file: the position of the names */
+	pos = ftell( sfile );
+	fseek( sfile, 0L, 0 );
+	fwrite( (char *)&pos, 4, 1, sfile );
+	fseek( sfile, 0L, 2 );
+	blevel = -1;
+	sinit();
+	putrefsyms();
+	putnames();
+	puttags();
+	sheader();
 	return(nerrors?1:0);
 
 	}
 
-/* f142e: not written yet (0x142e..0x1434 of /lib/cparse) */
-f142e()
-{
-}
+lxstart(){ /* initialize the lexical analyzer */
+	lxclass();
+	lxinit();
+	}
 
-/* f1434: not written yet (0x1434..0x146a of /lib/cparse) */
-f1434()
-{
-}
+lxclass(){ /* set up character classes */
+	lxenter( "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", LEXLET );
+	lxenter( "0123456789", LEXDIG );
+	lxenter( "0123456789abcdefABCDEF", LEXHEX );
+	lxenter( " \t\r\b\f", LEXWS );
+	lxenter( "01234567", LEXOCT );
+	lxenter( ".", LEXDOT );
+	}
 
 lxenter( s, m ) register char *s; register short m; {
 	/* enter a mask into lxmask */
@@ -261,14 +180,6 @@ lxinit(){
 	register struct lxdope *p;
 	register i;
 	register char *cp;
-	/* set up character classes */
-
-	lxenter( "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", LEXLET );
-	lxenter( "0123456789", LEXDIG );
-	lxenter( "0123456789abcdefABCDEF", LEXHEX );
-	lxenter( " \t\r\b\f", LEXWS );
-	lxenter( "01234567", LEXOCT );
-	lxmask['.'+1] |= LEXDOT;
 
 	/* make lxcp point to appropriate lxdope entry for each character */
 
@@ -293,20 +204,31 @@ lxinit(){
 	cp = "\t\b\r\f";
 	while( *cp ) lxcp[*cp++ + 1] = &lxdope[3];
 
-	/* first line might have title */
-	lxtitle();
-
 	}
 
-/* f1514: not written yet (0x1514..0x153e of /lib/cparse) */
-f1514()
-{
-}
+sfinit(){ /* the first word of the .S file (rewritten by mainp1) */
+	long zero;
 
-/* f153e: not written yet (0x153e..0x15b0 of /lib/cparse) */
-f153e()
-{
-}
+	zero = 0;
+	if( fwrite( (char *)&zero, 4, 1, sfile ) != 1 ) syserr( spath );
+	}
+
+dimtinit(){ /* dimension table initialization */
+
+	dimtab[NULL] = 0;
+	dimtab[CHAR] = SZCHAR;
+	dimtab[INT] = SZINT;
+	dimtab[FLOAT] = SZFLOAT;
+	dimtab[DOUBLE] = SZDOUBLE;
+	dimtab[LONG] = SZLONG;
+	dimtab[SHORT] = SZSHORT;
+	dimtab[UCHAR] = SZCHAR;
+	dimtab[USHORT] = SZSHORT;
+	dimtab[UNSIGNED] = SZINT;
+	dimtab[ULONG] = SZLONG;
+	/* starts past any of the above */
+	curdim = 16;
+	}
 
 lxtitle(){
 	/* called after a newline; set linenumber and file name */
@@ -316,7 +238,7 @@ lxtitle(){
 
 	for(;;){  /* might be several such lines in a row */
 		if( (c=getchar()) != '#' ){
-			if( c != EOF ) ungetc(c,stdin);
+			if( c != EOF && ungetc(c,stdin) == EOF ) syserr( "stdin" );
 			return;
 			}
 
@@ -325,7 +247,7 @@ lxtitle(){
 		for( c=getchar(); isdigit(c); c=getchar() ){
 			val = val*10+ c - '0';
 			}
-		ungetc( c, stdin );
+		if( ungetc( c, stdin ) == EOF ) syserr( "stdin" );
 		lineno = val;
 		lxget( ' ', LEXWS );
 		if( (c=getchar()) != '\n' ){
@@ -342,18 +264,33 @@ lxmore( c, m )  register c, m; {
 
 	*(cp = lxgcp) = c;
 	while( c=getchar(), lxmask[c+1]&m ){
-		if( cp < &yytext[LXTSZ-1] ){
+		if( cp < &yytext[LXTSZ] ){
 			*++cp = c;
 			}
 		}
-	ungetc(c,stdin);
+	if( ungetc(c,stdin) == EOF ) syserr( "stdin" );
 	*(lxgcp = cp+1) = '\0';
 	}
 
-/* f1792: not written yet (0x1792..0x1862 of /lib/cparse) */
-f1792()
-{
-}
+savestr( ct, lab ){ /* a string constant: read it and keep it with its label in the list strhead */
+	char *cp;
+
+	if( !strhead ){
+		if( (strhead = (struct strlist *) malloc( sizeof(struct strlist) )) == 0 ) syserr( "malloc" );
+		strcur = strhead;
+		}
+	else {
+		if( (strcur->s_next = (struct strlist *) malloc( sizeof(struct strlist) )) == 0 ) syserr( "malloc" );
+		strcur = strcur->s_next;
+		}
+	strcur->s_next = 0;
+	strcur->s_lab = lab;
+	lxstr( ct );
+	strcur->s_len = strsize;
+	if( (strcur->s_str = malloc( strcur->s_len )) == 0 ) syserr( "malloc" );
+	strsize = 0;
+	for( cp = strcur->s_str; strsize < strcur->s_len; ++strsize ) *cp++ = strbuf[strsize];
+	}
 
 lxstr(ct){
 	/* match a string or character constant, up to lxmatch */
@@ -381,10 +318,6 @@ lxstr(ct){
 			case '\n':
 				++lineno;
 				continue;
-
-			default:
-				val = c;
-				goto mkcc;
 
 			case 'n':
 				val = '\n';
@@ -426,24 +359,22 @@ lxstr(ct){
 					}
 				else ungetc( c ,stdin);
 
-				goto mkcc1;
+				goto mkcc;
 
 				}
 		default:
 			val =c;
 		mkcc:
-			val = CCTRANS(val);
-		mkcc1:
 			if( lxmatch == '\'' ){
 				val = CHARCAST(val);  /* it is, after all, a "character" constant */
-				makecc( val, i );
+				lastcon = i ? (long)(val<<8) | lastcon : val;
 				}
 			else { /* stash the byte into the string */
 				if( strflg ) {
 					if( ct==0 || i<ct ) putbyte( val );
 					else if( i == ct ) werror( "non-null byte ignored in string initializer" );
 					}
-				else bycode( val, i );
+				else strbuf[i] = val;
 				}
 			++i;
 			continue;
@@ -456,15 +387,15 @@ lxstr(ct){
 		if( strflg ){ /* end the string */
 			if( ct==0 || i<ct ) putbyte( 0 );  /* the null at the end */
 			}
-		else {  /* the initializer gets a null byte */
-			bycode( 0, i++ );
-			bycode( -1, i );
+		else {  /* the string gets a null byte */
+			strbuf[i++] = 0;
+			strsize = i;
 			dimtab[curdim] = i;  /* in case of later sizeof ... */
 			}
 		}
 	else { /* end the character constant */
 		if( i == 0 ) uerror( "empty character constant" );
-		if( i>(SZINT/SZCHAR) || ( (pflag||hflag)&&i>1) )
+		if( i>(SZINT/SZCHAR) )
 			uerror( "too many characters in character constant" );
 		}
 	}
@@ -492,43 +423,6 @@ lxcom(){
 			else ungetc( c ,stdin);
 			continue;
 
-# ifdef LINT
-		case 'V':
-			lxget( c, LEXLET|LEXDIG );
-			{
-				extern int vaflag;
-				int i;
-				i = yytext[7]?yytext[7]-'0':0;
-				yytext[7] = '\0';
-				if( strcmp( yytext, "VARARGS" ) ) continue;
-				vaflag = i;
-				continue;
-				}
-		case 'L':
-			lxget( c, LEXLET );
-			if( strcmp( yytext, "LINTLIBRARY" ) ) continue;
-			{
-				extern int libflag;
-				libflag = 1;
-				}
-			continue;
-
-		case 'A':
-			lxget( c, LEXLET );
-			if( strcmp( yytext, "ARGSUSED" ) ) continue;
-			{
-				extern int argflag, vflag;
-				argflag = 1;
-				vflag = 0;
-				}
-			continue;
-
-		case 'N':
-			lxget( c, LEXLET );
-			if( strcmp( yytext, "NOTREACHED" ) ) continue;
-			reached = 0;
-			continue;
-# endif
 			}
 		}
 	}
@@ -539,21 +433,11 @@ yylex(){
 		register lxchar;
 		register struct lxdope *p;
 		register struct symtab *sp;
-		int id;
 
 		switch( (p=lxcp[(lxchar=getchar())+1])->lxact ){
 
-		onechar:
-			ungetc( lxchar ,stdin);
-
-		case A_1C:
-			/* eat up a single character, and return an opcode */
-
-			yylval.intval = p->lxval;
-			return( p->lxtok );
-
 		case A_ERR:
-			uerror( "illegal character: %03o (octal)", lxchar );
+			uerror( "illegal character: %%%02x (hex)", lxchar );
 			break;
 
 		case A_LET:
@@ -561,15 +445,14 @@ yylex(){
 			lxget( lxchar, LEXLET|LEXDIG );
 			if( (lxchar=lxres()) > 0 ) return( lxchar ); /* reserved word */
 			if( lxchar== 0 ) continue;
-			id = lookup( yytext, (stwart&(INSTRUCT|INUNION|FUNNYNAME))?SMOS:0 );
-			sp = STP(id);
+			sp = lookup( yytext, (stwart&(INSTRUCT|INUNION|FUNNYNAME))?SMOS:0, 1, 0 );
 			if( sp->sclass == TYPEDEF && !stwart ){
 				stwart = instruct;
 				yylval.nodep = mkty( sp->stype, sp->dimoff, sp->sizoff );
 				return( TYPE );
 				}
 			stwart = (stwart&SEENAME) ? instruct : 0;
-			yylval.intval = id;
+			yylval.intval = (int) sp;
 			return( NAME );
 
 		case A_DIG:
@@ -673,7 +556,15 @@ yylex(){
 				goto getfp;
 				}
 			stwart = FUNNYNAME;
-			goto onechar;
+
+		onechar:
+			if( ungetc( lxchar ,stdin) == EOF ) syserr( "stdin" );
+
+		case A_1C:
+			/* eat up a single character, and return an opcode */
+
+			yylval.intval = p->lxval;
+			return( p->lxtok );
 
 		case A_STR:
 			/* string constant */
@@ -695,19 +586,14 @@ yylex(){
 				for( i=0; i<LXTSZ; ++i ){
 					if( ( j = getchar() ) == '`' ) break;
 					if( j == '\n' ){
-						uerror( "newline in BCD constant" );
+						uerror( "newline in BCD const" );
 						break;
 						}
 					yytext[i] = j;
 					}
 				yytext[i] = '\0';
-				if( i>6 ) uerror( "BCD constant exceeds 6 characters" );
-# ifdef gcos
-				else strtob( yytext, &lastcon, i );
-				lastcon >>= 6*(6-i);
-# else
+				if( i>6 ) uerror( "BCD constant exceeds 6 chars" );
 				uerror( "gcos BCD constant illegal" );
-# endif
 				yylval.intval = 0;  /* not long */
 				return( ICON );
 				}
@@ -845,7 +731,7 @@ yylex(){
 			return( ASOP );
 
 		default:
-			cerror( "yylex error, character %03o (octal)", lxchar );
+			cerror( "yylex error, character %%%02x (hex)", lxchar );
 
 			}
 
@@ -855,6 +741,48 @@ yylex(){
 		}
 
 	}
+
+struct lxrdope {
+	/* dope for reserved, in alphabetical order */
+
+	char *lxrch;	/* name of reserved word */
+	short lxract;	/* reserved word action */
+	short lxrval;	/* value to be returned */
+	} lxrdope[] = {
+
+	"",		AR_TY,	0,
+	"auto",		AR_CL,	AUTO,
+	"break",	AR_RW,	BREAK,
+	"char",		AR_TY,	CHAR,
+	"case",		AR_RW,	CASE,
+	"continue",	AR_RW,	CONTINUE,
+	"double",	AR_TY,	DOUBLE,
+	"default",	AR_RW,	DEFAULT,
+	"do",		AR_RW,	DO,
+	"extern",	AR_CL,	EXTERN,
+	"else",		AR_RW,	ELSE,
+	"enum",		AR_E,	ENUM,
+	"for",		AR_RW,	FOR,
+	"float",	AR_TY,	FLOAT,
+	"fortran",	AR_CL,	FORTRAN,
+	"goto",		AR_RW,	GOTO,
+	"if",		AR_RW,	IF,
+	"int",		AR_TY,	INT,
+	"long",		AR_TY,	LONG,
+	"return",	AR_RW,	RETURN,
+	"register",	AR_CL,	REGISTER,
+	"switch",	AR_RW,	SWITCH,
+	"struct",	AR_S,	0,
+	"sizeof",	AR_RW,	SIZEOF,
+	"short",	AR_TY,	SHORT,
+	"static",	AR_CL,	STATIC,
+	"typedef",	AR_CL,	TYPEDEF,
+	"unsigned",	AR_TY,	UNSIGNED,
+	"union",	AR_U,	0,
+	"void",		AR_TY,	UNDEF,
+	"while",	AR_RW,	WHILE,
+	"",		0,	0,	/* to stop the search */
+	};
 
 lxres() {
 	/* check to see of yytext is reserved; if so,
@@ -871,7 +799,7 @@ lxres() {
 	switch( ch ){
 
 	case 'a':
-		c=0; break;
+		c=1; break;
 	case 'b':
 		c=2; break;
 	case 'c':
@@ -896,8 +824,10 @@ lxres() {
 		c=26; break;
 	case 'u':
 		c=27; break;
-	case 'w':
+	case 'v':
 		c=29; break;
+	case 'w':
+		c=30; break;
 
 	default:
 		return( -1 );
@@ -939,34 +869,6 @@ lxres() {
 				stwart = SEENAME;
 				return( yylval.intval = ENUM );
 
-			case AR_A:
-				/* asm */
-				lxget( ' ', LEXWS );
-				if( getchar() != '(' ) goto badasm;
-				lxget( ' ', LEXWS );
-				if( getchar() != '"' ) goto badasm;
-# ifndef ONEPASS
-# ifndef LINT
-				putchar(')');
-# endif
-# endif
-				while( (c=getchar()) != '"' ){
-					if( c=='\n' || c==EOF ) goto badasm;
-# ifndef LINT
-					putchar(c);
-# endif
-					}
-				lxget( ' ', LEXWS );
-				if( getchar() != ')' ) goto badasm;
-# ifndef LINT
-				putchar('\n');
-# endif
-				return( 0 );
-
-			badasm:
-				uerror( "bad asm construction" );
-				return( 0 );
-
 			default:
 				cerror( "bad AR_?? action" );
 				}
@@ -974,4 +876,3 @@ lxres() {
 		}
 	return( -1 );
 	}
-

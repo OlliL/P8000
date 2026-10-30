@@ -8,7 +8,7 @@ int sectpre = 5;	/* length of the name prefix kept when a section is renamed */
 char sectname[3][24] = { "modul_p", "modul_d", "modul_b" };	/* the names of the sections */
 long sectsize[3] = { 0, 0, 0 };	/* bytes used in each section */
 
-int Fflag;	/* -F: write the names of the source and of each function into a file */
+extern int Fflag;
 FILE *Ffile;	/* the file of -F */
 long ftnpos;	/* position of the function head in the .I file (rewritten by ftnend) */
 int fregvar;	/* float registers in use (with regvar given to codgen) */
