@@ -11,8 +11,9 @@ Everything is in the fork https://github.com/OlliL/mame, branch
 subject lines identify the commits afterwards. The machines are the P8000 8 bit board
 (`p8000`) and the 16 bit board (`p8000_16`, Z8001 + three Z8010).
 
-All changes were made with the help of Claude Sonnet 5.5 (Anthropic) and reviewed by
-Oliver Lehmann (@OlliL), who also ran the tests on his real P8000 (16 bit board, 4 MiB RAM).
+All changes were made with the help of Claude Sonnet 5.5, Claude Haiku 5.5 and Claude Opus 5.5
+(Anthropic) and reviewed by Oliver Lehmann (@OlliL), who also ran the tests on his real P8000
+(16 bit board, 4 MiB RAM).
 
 ## Planned pull requests
 
@@ -209,7 +210,8 @@ the default of the `rs232` slot of both machines; `-rs232 terminal` still gives 
   The RESET button of the computer is therefore Ctrl+Pause (`schedule_soft_reset()` from
   `nmi_button`, which polls the Ctrl keys with `input_manager::code_pressed`) and the NMI
   button moved from F12 to Pause. The right shift key sends the left shift code (the
-  firmware knows only that one), Backspace sends BS, the key left of `1` sends DEL.
+  firmware knows only that one), Backspace sends BS, the key left of `1` sends `^` and `#`
+  with shift sends `'` (German layout, as the firmware table has them).
 - **Timing:** the keyboard delivers nothing for 100 ms after reset, because the firmware
   enables its interrupts later and otherwise ignores the host.
 - **Save state:** key queue (ring buffer), refresh memory and all other state are registered.
