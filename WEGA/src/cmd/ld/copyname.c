@@ -1,6 +1,7 @@
 /* unpack_run: copy the name of a symbol into the 14 byte table form, zero padded (sld unpack_run; 0x22e8..0x2360 of /bin/ld) */
 
 static char sccsid[] = "@[$]copyname.c\t1.3  03/11/83 10:28:51 - 87wega3.2";
+int spare05d6 = 0;	/* unused word after the stamp in the data of the original (0x05d6); guess: a variable of copyname.c */
 
 unpack_run(src, dst)
 char *src;
@@ -71,12 +72,8 @@ body2:
 test2:
 		if (cnt > 0)
 			goto body2;
-		goto test;
-body:
-		*d++ = 0;
-test:
-		if (cnt-- != 0)
-			goto body;
+		while (cnt-- != 0)
+			*d++ = 0;
 	}
 }
 

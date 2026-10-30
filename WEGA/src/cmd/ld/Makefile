@@ -16,6 +16,7 @@ LDBIN = /bin/ld
 CAS = cas
 AR = ar
 LIBC = /lib/libc.a
+CFLAGS = -O
 WEGA = ../../../tmp/wega31_root
 
 # shipped members in link order (the members of /lib/libc.a), extracted into shipped/
@@ -31,7 +32,7 @@ LIBCOBJS = shipped/scanf.o $(OLD)/doscan/0_1.o $(OLD)/printf/0_6.o $(OLD)/doprnt
 	shipped/chmod.o shipped/close.o shipped/creat.o shipped/fstat.o shipped/getpid.o shipped/ioctl.o \
 	shipped/link.o shipped/lseek.o shipped/open.o shipped/read.o shipped/signal.o shipped/umask.o \
 	shipped/unlink.o shipped/write.o shipped/cerror.o
-COBJS = copyname.o ld.o printname.o symbols.o
+COBJS = ld.o copyname.o printname.o symbols.o
 LINKOBJS = crt0.o $(COBJS) $(LIBCOBJS)
 
 all: crt0.o $(OLDOBJS)
@@ -48,9 +49,6 @@ shipped/stamp:
 
 copyname.o: copyname.c ld.h
 	$(CC) $(CFLAGS) -c copyname.c
-
-dump.o: dump.c ld.h
-	$(CC) $(CFLAGS) -c dump.c
 
 ld.o: ld.c ld.h
 	$(CC) $(CFLAGS) -c ld.c

@@ -4,11 +4,10 @@ static char sccsid[] = "@[$]symbols.c\t1.8  03/11/83 10:29:38 - 87wega3.2";
 
 #include "ld.h"
 
-char *rlbuf = 0;
 unsigned int rlsize = 0;
+char *rlbuf = 0;
 
 int v067c = 0;
-struct symbol *symtab = 0;
 
 /* read_entry_hdr: read the entry of a symbol into cursym; a long name takes the continuation entries (sld read_entry_hdr,
    the nonsegmented part; 0x249a..0x2502 of /bin/ld). Module: printname.c as assigned (sld has it in symbols.c) */
@@ -40,15 +39,59 @@ test:
 	return k;
 }
 
+/* ldrsym: load a symbol of a relocation entry, error for multiply defined (sld ldrsym; 0x2502..0x25a2 of /bin/ld).
+   The parameter x is not used here; the order of the parameters follows the frame of the original */
+ldrsym(a, x, v, c)
+struct symbol *a;
+int x;
+long v;
+char c;
+{
+	int spare;
+
+	register struct symbol *p;
+
+	p = a;
+	if (!p)
+		return;
+	if (p->stype != 0x20 || p->svalue != 0) {
+		if (put_name(p->sname) < 8)
+			(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 9) : _flsbuf((unsigned)9, stderr));
+		(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 0x20) : _flsbuf((unsigned)0x20, stderr));
+		report_error(1, "-- Multiply defined");
+		return;
+	}
+	p->stype = c;
+	p->svalue = v;
+}
+
+/* mkfsym: enter the file symbol of an object into the output (sld mkfsym; 0x25a2..0x25dc of /bin/ld). svalue is the word at
+   0x6bf8 here (sld: 0) */
+mkfsym(p)
+char *p;
+{
+	if (sflag)
+		return;
+	if (xflag)
+		return;
+	unpack_run(p, cursym.sname);
+	cursym.stype = 0x1f;
+	cursym.svalue = (unsigned)v6bf8;
+	put_sym(&soutb, &cursym);
+}
+
+/* lookup_name: look up a name in the hash table of symbols (0x25dc..0x26ac of /bin/ld, finding: register
+   variables start and end are in the frame here) */
 struct symbol **lookup_name()
 {
 	register struct symbol **slot;
 	register char *cur;
 	register char *rec;
+	register char *start;
+	register char *end;
 	int h;
 	int flag;
-	char *start;
-	char *end;
+	int spare1, spare2, spare3, spare4, spare5;
 
 	h = 0;
 	cur = cursym.sname;
@@ -125,9 +168,7 @@ struct symbol **a;
 		if (symindex >= 0x0923)
 			report_error(2, "Symbol table overflow");
 		symhash[symindex] = a;
-		r = table16_entry(symindex++);
-		lastsym = r;
-		*a = r;
+		*a = lastsym = r = table16_entry(symindex++);
 		symindex = unpack_run(cursym.sname, r->sname) + symindex;
 		r->stype = cursym.stype;
 		r->svalue = cursym.svalue;
@@ -165,14 +206,15 @@ put_sym(a, b)
 struct buf *a;
 struct symbol *b;
 {
-	int spare1, spare2;
+	int spare1;
 	char cnt;
+	int spare2;
 	register struct symbol *p;
 	register int k;
 
 	p = b;
 	if (swapflg)
-		longswap(b);
+		longswap(p);
 	mput(a, p, 14);
 	if (p->sname[0] & 0x80) {
 		cnt = (p->sname[0] & 0x7f) - 8;
@@ -207,50 +249,8 @@ put_all()
 	}
 }
 
-/* ldrsym: load a symbol of a relocation entry, error for multiply defined (sld ldrsym; 0x2502..0x25a2 of /bin/ld).
-   The parameter x is not used here; the order of the parameters follows the frame of the original */
-ldrsym(a, x, v, c)
-struct symbol *a;
-int x;
-long v;
-char c;
-{
-	int spare;
-
-	register struct symbol *p;
-
-	p = a;
-	if (!p)
-		return;
-	if (p->stype != 0x20 || p->svalue != 0) {
-		if (put_name(p->sname) < 8)
-			(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 9) : _flsbuf((unsigned)9, stderr));
-		(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 0x20) : _flsbuf((unsigned)0x20, stderr));
-		report_error(1, "-- Multiply defined");
-		return;
-	}
-	p->stype = c;
-	p->svalue = v;
-}
-
-/* mkfsym: enter the file symbol of an object into the output (sld mkfsym; 0x25a2..0x25dc of /bin/ld). svalue is the word at
-   0x6bf8 here (sld: 0) */
-mkfsym(p)
-char *p;
-{
-	if (sflag)
-		return;
-	if (xflag)
-		return;
-	unpack_run(p, cursym.sname);
-	cursym.stype = 0x1f;
-	cursym.svalue = (unsigned)v6bf8;
-	put_sym(&soutb, &cursym);
-}
-
-/* lookup_name: look up a name in the hash table of symbols (0x25dc..0x26ac of /bin/ld, finding: register
-   variables start and end are in the frame here) */
-
+/* warn_sym_redef: warn that a symbol is redefined in an archive (0x2862..0x294e of /bin/ld). The (char) casts give the
+   sign extension of the original, whose stdio had char *_ptr (the header of src/head has unsigned char *) */
 warn_sym_redef(p, a)
 struct symbol *p;
 struct symbol *a;
@@ -290,7 +290,7 @@ struct rlent *p;
 int n;
 {
 	int spare;
-
+	register int r;
 	struct rlent *e;
 	struct rlent *q;
 	struct symbol *q2;
@@ -302,17 +302,19 @@ body:
 	if (p >= q) {
 		if ((p->rname[0] & 0x80) != 0)
 			q = (struct rlent *)(p->rname + (p->rname[0] & 0x7f));
-		q2 = *pslookup(p->rname);
-		if (q2 != 0) {
+		if ((q2 = *pslookup(p->rname)) != 0)
 			if (q2->stype != 0x20)
 				warn_sym_redef(0, q2);
-		}
 	}
 	p++;
 test:
 	if (p < e)
 		goto body;
 }
+
+/* symtab and nsym follow the jump table of symreloc in the data of the original (0x069a, 0x069c) */
+struct symbol *symtab = 0;
+struct symbol *nsym = sym16 + 600;
 
 /* table16_entry: address of entry x of the symbol table (sld table16_entry; 0x29d6..0x2aa6 of /bin/ld). Entries below 0x258
    are in the static table at 0x1102 (14 bytes each); the others in symtab, which is allocated on the first use (sbrk, f2c20)
@@ -351,22 +353,21 @@ unsigned x;
 struct symbol *next_entry(p)
 register struct symbol *p;
 {
+	int spare1, spare2;
 	register int b;
 	register char *e;
 
 	b = p->sname[0];
 	if (b & 0x80) {
 		e = p->sname + (b & 0x7f);
-		p++;
-		while (e > (char *)p)
-			p++;
+		while (e > (char *)++p)
+			;
 	} else
 		p++;
-	return p;
+	if (p < nsym || p > symtab)
+		return p;
+	return symtab + (p - nsym);
 }
-
-/* warn_sym_redef: warn that a symbol is redefined in an archive (0x2862..0x294e of /bin/ld). The (char) casts give the
-   sign extension of the original, whose stdio had char *_ptr (the header of src/head has unsigned char *) */
 
 /* index16: index of an entry of the symbol table (sld index16; 0x2b04..0x2b3a of /bin/ld). ld has a static part of 0x258
    entries at 0x1102 in front of the table at symtab (14 byte entries); nsym is the end of the static part (name open) */
@@ -394,7 +395,7 @@ unsigned long n;
 				report_error(2, "table of contents overflow");
 			rlsize = n;
 		} else
-			f2b92(n);
+			return f2b92(n);
 	}
 	return rlbuf;
 }

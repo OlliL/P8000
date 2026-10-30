@@ -1103,3 +1103,45 @@ Result after the load2td fix: 133 of 146 identical. The 13 remaining lines are: 
 lines (sizes equal, content differs: a.o b.o c.o, a.o libx.a, -d -r, -S -x -w -r, -r -td/-tb, -r -b/-bd), the
 `-X` lines (-X -o t ... -lc: 6646 against 6898 bytes; -X -r -tb -bt: 1182 against 1294) and the -X -S -r lines.
 So the `-r` path (load2td with rflag, finish_output) and the -X (no local symbols) output are the next items.
+
+## Strict check, steps 4 and 5 again (2026-10-30)
+
+New tools (in this directory):
+- `wholecmp.py [LDBIN] [-v NAME]`: every own function of the linked rebuild against /bin/ld, by name (masked like ldcheck).
+- `d12model.py`: compiles the four modules with `-S`, rewrites each .s into the data layout of the old cc (initialised
+  data and switch tables in source order, all string literals of a file unpadded at the end of its data), assembles,
+  links like the Makefile (`tmp/tmp/d12model/ldm`) and compares the data with the original byte for byte.
+- `strictcmp.py [LDM] [-v NAME]`: strict comparison on the d12model link: only jump/call targets and function
+  addresses are masked; data and bss addresses, constants and frame offsets must be equal.
+
+Findings about the earlier state (the user asked to check the "exact" functions and the D classes critically):
+- `ldcheck.norm` (and wholecmp) masks every hex operand of 3+ digits. Under the strict check 6 of the 39 "exact" functions
+  were not exact: f050c (order of the stores t4..t10), finish_output (rflag output of the first loop went to soutb instead
+  of routb: a behaviour error), table16_entry and f2b92 (rlbuf/rlsize declared in the wrong order), start_output and
+  readhdr (false alarms of the first strictcmp version, fixed).
+- Most D labels of the findings were wrong: 12 of the 20 findings are exact now with source changes (step 7 rules:
+  register copy of a spilled parameter, chained and embedded assignments, statement order, if/else orientation,
+  declaration order and spares, int parameters with unsigned casts). Five of them were behaviour errors of the rebuild:
+  next_entry (the mapping into symtab past nsym was missing; the earlier note "no comparison" was wrong), load2td
+  (copy of the relocation word, the first switch only with x66b8 || x66ba, the swap after the symbol branch), place_sec
+  (areas[0] only with tab42b4[0], tsize only with tab42b4[j+1]), dseek (hi without a mask), load2 (Xflag test on d,
+  absolute address 0x6692 replaced by &local[1000]). The pattern check of classify accepts these differences, so its
+  labels are not evidence.
+- Remaining 8 findings, classes from reading the strict diffs: ranlib_scan D2, read_symbols D1/D11/D3, place_sec D2,
+  init_entry D3, load2td D15, dseek D2, chk_ranlib D3, ensure_buf D11 (details in findings.json, notes of 2026-10-30).
+
+Data (step 4):
+- Measured on the original: the old cc places initialised data and switch tables in source order and all string literals
+  of a file at the end, unpadded. secnam[0] is "?" (data 0x172), not "". "/usr", libname, "/z/bin" are arrays after the
+  last switch of ld.c (declared before getfile). symtab and nsym = sym16 + 600 belong to symbols.c after symreloc
+  (0x069a, 0x069c). copyname.c has an unused word after its stamp (spare05d6, place guessed). In readhdr the else
+  branch of the magic test is report_error("Bad format") after the body (also gives the string order).
+- Result under the model: data 2748 bytes = original, 2694 bytes equal; the other 54 are code addresses in jump tables
+  and libc pointers (the own code is 8 bytes short because of the findings). The real build has 2784 bytes (D12).
+- Function order: ldrsym and mkfsym follow read_entry_hdr in symbols.c (the original code order).
+
+Makefile: link order crt0 ld copyname printname symbols (was copyname first), `CFLAGS = -O`, the leftover dump.o rule of
+sld removed (also in gen_makefile.py).
+
+State: 51 of 59 strictly exact, 8 findings; corpus 146 of 146 (also after every batch of this round).
+Scratch: tmp/tmp/try (drafts), checkpoints tmp/tmp/*_checkpoint[1-4].c.

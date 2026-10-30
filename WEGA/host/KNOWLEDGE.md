@@ -870,6 +870,10 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` (variables) | the bss has unused gaps and variables never referenced (`spare0`, `spare4b8`, `spare4c4`, `spare4d0`, `sparef314`, `unused15d8`, `unused484`, `unused3be`): they are leftovers of removed code and are rebuilt so that all variable addresses stay equal | kept (`src/cmd/sld/copyname.c`) | "sld: the structs" |
 | `/bin/ld` (`main`, 0x009c) | the option `-v name` is not in the man page: it takes an argument; when the name is an object already in the table, the load is rolled back to that entry (`f057c`) after the arguments so far are parsed again, otherwise the name is added as an object (`f050c`); `-l` writes `-` over the character before the `l` while the library is loaded (`load_lib_syms(s + j - 1)`), and `-e` and `-u` take the symbol from the next argument | kept (main is exact in `src/cmd/ld/ld.c`) | HANDOFF_ld.md, "main exact" |
 | `/bin/ld` (`end_pass1`, 0x0b6e) | `ldrsym` is called with three arguments (symbol, long value, character) while its definition in symbols.c has four (x is not passed); the callee reads x from the frame | kept (the caller is exact in `src/cmd/ld/ld.c`) | HANDOFF_ld.md, "end_pass1 exact" |
+| `/bin/ld` (`readhdr`, 0x1f64) | for objects that are not 8-bit (e707/e711) the text size is rounded to even and stored back, the data size is rounded only for the bss offset (`fcbrel`) and not stored back: `filhdr.x106a` gets the unrounded data size | kept (`readhdr` exact in `src/cmd/ld/ld.c`; the earlier rebuild stored the rounded size) | `src/cmd/ld/tools/HANDOFF_ld.md`, "Strict check" |
+| `/bin/ld` (`chk_ranlib`, 0x294e) | a register variable is declared and never used (r14 is saved and restored, nothing else) | kept (`register int r;`) | same |
+| `/bin/ld` (`reg_sect_addr`, 0x0370) | `sscanf(u, "%o%c", &secorg[k])` (and `%d%c`, `%x%c`) passes no pointer for the `%c`; the character after the number is stored through whatever is in the argument slot, and the result is 1 only when nothing follows the number | kept (exact) | same |
+| `/bin/ld` (`copy`, 0x1a12) | the copy loop runs only while `read` returns more than 1 byte, so a last block of exactly one byte is not copied | kept (exact) | same |
 | `/bin/gld` | in the second pass every `l` (and `e`, `o`) in an option argument counts: `-L/usr/lib` is read as `-lib` and fails with "cannot open"; an `o` or `e` skips the next argument | kept | "gld on the host" |
 | `/bin/gld` | a common with a size is not replaced by a text definition; a member found through a table of contents is loaded by name of at most 8 characters only (long names never match) | kept | "gld on the host" |
 | `/bin/gld` | the symbol "rollback" of a rejected archive member leaves a stale pointer when the table was empty: the next rejected member gives "symfree botch" (`gld lib.a` without a first object) | kept | "gld on the host" |
@@ -1711,6 +1715,9 @@ the compiler: the sources of cas are dated up to 07/83 and were compiled by the 
 Frames differ in size (cas `putins`: 12 bytes in the original, 14 in ours; libc `nlist` and `length` 2 bytes
 smaller; ranlib smaller frames; libc `fseek` 14 bytes against 20 in the shipped member) and the slots of the saved
 register variables are numbered differently (`ldm S10(r15),r13` against `S12`). Seen with `cmpmod.py -s`.
+ld `read_symbols` (2026-10-30, `src/cmd/ld/tools/strictcmp.py`): the shipped cc reserves one save slot more than it uses (frame 0x1c,
+r14 at 0x1a, the word at 0x18 unused); the old cc does not (0x1a, r14 at 0x18). With one spare word in front of the locals all
+local offsets of the original are reached; only the frame size and the save slot differ.
 
 ### D2 Scratch registers
 The old compiler uses r0/r1 (`rr0`) as scratch where the shipped one uses r4/r5 (`rr4`): cas modules

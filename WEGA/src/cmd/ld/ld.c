@@ -7,7 +7,7 @@ char eofmsg[] = "Premature EOF";
 char symdef[] = "__.SYMDEF";
 extern long liblist[];
 long *libp = liblist;
-char *secnam[4] = {"", "text", "data", "bss"};
+char *secnam[4] = {"?", "text", "data", "bss"};
 char *ofilnam = "l.out";
 int delarg = 4;
 int nlflag = 1;
@@ -87,14 +87,6 @@ char spare703c[2];
 int exstat;
 char libpath[20];
 char spare7054[6];
-struct symbol *nsym = sym16 + 600;
-
-
-
-
-char libname[] = "/lib/libxxxxxxxxxxx";
-
-
 
 
 sig_handler()
@@ -276,11 +268,11 @@ int reg_sect_addr(s, t)
 char *s;
 char *t;
 {
-	int spare1, spare2;
-
+	int spare1;
+	char *fmt;
+	int spare2;
 	register int k;
 	register char *u;
-	char *fmt;
 
 	secspec++;
 	switch (*(s + 1)) {
@@ -312,9 +304,9 @@ char *t;
 	}
 	if (sscanf(u, fmt, &secorg[k]) != 1)
 		report_error(2, "-%.2s %s: bad address", s, t);
-	if (k != 0)
-		return 1;
-	return 0;
+	if (k == 0)
+		return 0;
+	return 1;
 }
 
 /* parse_args: the argument pass of ld: the output, then every object and library in order (0x045e..0x050c of /bin/ld) */
@@ -381,13 +373,13 @@ int x, y;
 	e->t1 = symindex;
 	e->t2 = (int)libp;
 	e->t3 = y;
-	e->t4 = fctrel;
-	e->t5 = fcdrel;
-	e->t6 = fcbrel;
 	e->t7 = ttotal;
 	e->t8 = dtotal;
 	e->t9 = btotal;
 	e->t10 = v66ce;
+	e->t4 = fctrel;
+	e->t5 = fcdrel;
+	e->t6 = fcbrel;
 }
 /* f057c: restore the state of the object at entry i of tab (the bases, libp and ntab) and clear the symbol hash entries
    of its symbols (sld read_symbols tail for the hash; no sld function; 0x057c..0x0608 of /bin/ld) */
@@ -512,12 +504,12 @@ test:
 }
 
 add16_checked(x, y, a)
-unsigned x, y;
+int x, y;
 char *a;
 {
 	long s;
 
-	s = (long)x + (long)y;
+	s = (long)(unsigned)x + (long)(unsigned)y;
 	if (s >= 0x10000)
 		report_error(1, a);
 	return(s);
@@ -551,7 +543,7 @@ long c;
 		report_error(1, "No relocation bits");
 		goto done;
 	}
-	c = ((unsigned long)(((unsigned)(hdrsz + segtsz) & ~1) >> 1) + filhdr.x1066 + filhdr.x106a) + c;
+	c = ((unsigned long)((unsigned)(hdrsz + segtsz) >> 1) + filhdr.x1066 + filhdr.x106a) + c;
 	dseek(&text, c, filhdr.ssize);
 	while (text.size > 0) {
 		n = read_entry_hdr();
@@ -708,26 +700,16 @@ dolayout:
 
 place_sec()
 {
+	int spare1, spare2, spare3;
 	int i;
-	register int j;
 	register struct areas *q;
 	register unsigned r8;
+	register int j;
 
-	if (iflag)
-		areas[1].kind = 4;
-	else
-		areas[1].kind = 0;
-	if (x66b8)
-		areas[3].kind = 4;
-	else
-		areas[3].kind = 2;
-	if (iflag)
-		areas[2].kind = 0;
-	else
-		areas[2].kind = 1;
-	areas[1].tsize = ttotal;
-	if (iflag && x66b8 == 0 && x66ba == 0 && rflag == 0)
-		areas[1].tsize = (ttotal + 255) & 0xff00;
+	areas[1].kind = iflag ? 4 : 0;
+	areas[3].kind = x66b8 ? 4 : 2;
+	areas[2].kind = iflag ? 0 : 1;
+	areas[1].tsize = iflag && x66b8 == 0 && x66ba == 0 && rflag == 0 ? (ttotal + 255) & 0xff00 : ttotal;
 	areas[2].tsize = dtotal;
 	areas[3].tsize = comsize + btotal;
 	if (tab42b4[0]) {
@@ -737,11 +719,10 @@ place_sec()
 				tab42b4[i] = 0;
 			}
 		}
+		areas[0].kind = 4;
+		areas[0].tsize = dtotal + comsize + btotal + iflag ? 0 : ttotal;
 	}
-	areas[0].kind = 4;
-	areas[0].tsize = (dtotal + comsize + btotal + iflag) == 0 ? ttotal : 0;
-	j = tab42b4[0] ? 0 : 1;
-	for (; j < 4; j++) {
+	for (j = tab42b4[0] ? 0 : 1; j < 4; j++) {
 		q = &areas[j];
 		r8 = areas[q->kind].tend;
 		switch (tab42b4[j]) {
@@ -762,8 +743,8 @@ place_sec()
 		if (tab42b4[j + 1]) {
 			if (x66b8 == 0 && x66ba == 0)
 				q->tend = (q->tend + 255) & 0xff00;
+			q->tsize = q->tend - r8;
 		}
-		q->tsize = q->tend - r8;
 		if (r8 > (unsigned)q->tend)
 			report_error(1, "%s area wrap around", secnam[j]);
 		if (x66b8 == 0) {
@@ -774,14 +755,13 @@ place_sec()
 		}
 		q->tstart = r8;
 	}
-	if (areas[3].tsize != comsize + btotal)
+	if (comsize + btotal != areas[3].tsize)
 		btotal = areas[3].tsize - comsize;
 	ttotal = areas[1].tsize;
 	dtotal = areas[2].tsize;
 	v6bf8 = areas[1].tstart;
 	v6bfa = areas[2].tstart;
-	x6bfe = areas[3].tstart;
-	v6bfc = areas[3].tstart + comsize;
+	v6bfc = (x6bfe = areas[3].tstart) + comsize;
 	if (tab42b4[0])
 		tab42b4[iflag ? 2 : 1] = tab42b4[0];
 }
@@ -952,10 +932,8 @@ test1:
 load2(a)
 long a;
 {
-/*	int spare1, spare2;
-	char spare3, spare4, spare5;*/
+	int spare1, spare2, spare3;
 	char c;
-	char spare6;
 	char d;
 	int n;
 	long u1;
@@ -982,7 +960,7 @@ body:
 		if (d == 1 || d > 4)
 			goto next;
 	}
-	if (Xflag && c == 0x1e)
+	if (Xflag && d == 0x1e)
 		goto next;
 	if ((c & 0x20) == 0) {
 		if (sflag || xflag)
@@ -995,24 +973,24 @@ body:
 	rec = *lookup_name();
 	if (!rec) {
 		if (put_name(cursym.sname) < 8)
-			putc(9, stderr);
-		putc(0x20, stderr);
+			--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = '\t') : _flsbuf(9, stderr);
+		--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = ' ') : _flsbuf(' ', stderr);
 		report_error(2, "internal error: symbol not found");
 	}
 	if (cursym.stype != 0x20)
 		goto other;
-	if (t >= (struct local *)0x6692)
+	if (t >= &local[1000])
 		report_error(2, "Local symbol overflow");
 	t->locindex = k;
 	t->locsymbol = (int)rec;
 	t++;
 	goto next;
 other:
-	if (rec->stype == cursym.stype && cursym.svalue == rec->svalue)
+	if (cursym.stype == rec->stype && cursym.svalue == rec->svalue)
 		goto next;
 	if (put_name(cursym.sname) < 8)
-		putc(9, stderr);
-	putc(0x20, stderr);
+		--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = '\t') : _flsbuf(9, stderr);
+	--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = ' ') : _flsbuf(' ', stderr);
 	report_error(1, "- Multiply defined");
 next:
 	k += n;
@@ -1024,7 +1002,8 @@ test:
 	u2 = half(filhdr.x1066) + a + u1;
 	dseek(&reloc, u2, filhdr.x1066);
 	load2td(t, fctrel, &toutb, &routb);
-	dseek(&text, half(filhdr.x1066) + a, filhdr.x106a);
+	u1 = half(filhdr.x1066) + a;
+	dseek(&text, u1, filhdr.x106a);
 	u1 = filhdr.x1066 + a + half(filhdr.x106a);
 	dseek(&reloc, u1, filhdr.x106a);
 	load2td(t, fcdrel, &tmpoutb, &doutb);
@@ -1039,10 +1018,9 @@ int base;
 struct buf *q;
 struct buf *r;
 {
-	int spare1, spare2;
-	int w10, w11;
+	int spare1, spare2, spare3, spare4;
 	char flag;
-	int spare4;
+	unsigned char ch[2];
 	register int w13;
 	register int w14;
 	register int w12;
@@ -1051,31 +1029,29 @@ struct buf *r;
 	flag = 0;
 	goto test;
 body:
-	if (--text.nibuf >= 0)
-		w12 = *text.ptr++;
-	else {
+	if (--text.nibuf < 0) {
 		text.nibuf++;
 		text.size++;
 		w12 = get(&text);
-	}
+	} else
+		w12 = *text.ptr++;
 relpart:
-	if (--reloc.size > 0) {
-		if (--reloc.nibuf < 0) {
-			reloc.nibuf++;
-			reloc.size++;
-			w13 = get(&reloc);
-		} else
-			w13 = *reloc.ptr++;
-	} else {
+	if (--reloc.size <= 0) {
 		if (reloc.size < 0)
 			report_error(2, "Relocation error");
 		reloc.size++;
 		w13 = get(&reloc);
-	}
+	} else if (--reloc.nibuf < 0) {
+		reloc.nibuf++;
+		reloc.size++;
+		w13 = get(&reloc);
+	} else
+		w13 = *reloc.ptr++;
 	if (swapflg) {
 		w12 = swap(w12);
 		w13 = swap(w13);
 	}
+	w14 = w13;
 	if (x66ba)
 		w12 = swap(w12);
 	switch (w13 & 0x0e) {
@@ -1092,26 +1068,28 @@ relpart:
 	if ((w13 & 8) == 8) {
 		e = (struct symbol *)table_lookup(p, w13);
 		if (e->stype == 0x20)
-			w13 = (index16(e) + v6bf6 << 4) + (w13 & 1) + 8;
+			w13 = (w13 & 1) + (index16(e) + v6bf6 << 4) + 8;
 		else {
 			w12 += (int)e->svalue;
 			w13 = (w13 & 1) + ((e->stype - 0x21) * 2);
 		}
 	}
-	w14 = w13;
-	switch (w13 & 0xf8) {
-	case 0x10:
-		flag++;
-		break;
-	case 0x20:
+	if (x66ba)
 		w12 = swap(w12);
-		flag++;
-		break;
-	case 0x30:
-		flag++;
-		break;
-	}
-	switch (w13 & 0x0f) {
+	if (x66b8 || x66ba)
+		switch (w14 & 0xf8) {
+		case 0x10:
+			flag++;
+			break;
+		case 0x20:
+			w12 = swap(w12);
+			flag++;
+			break;
+		case 0x30:
+			flag++;
+			break;
+		}
+	switch (w14 & 0x0f) {
 	case 9:
 		flag++;
 		break;
@@ -1129,9 +1107,11 @@ relpart:
 	}
 	if (flag) {
 		flag = 0;
-		if (swapflg)
-			w12 = swap(w12);
-		put_int_buf(w12, q);
+		if (swapflg) {
+			ch[0] = swap(w12);
+			put_int_buf(ch[0], q);
+		} else
+			put_int_buf((unsigned char)w12, q);
 	} else {
 		f221e(w12, q);
 		if (rflag)
@@ -1162,7 +1142,7 @@ body1:
 	p++;
 	f221e(0, &toutb);
 	if (rflag)
-		f221e(0, &soutb);
+		f221e(0, &routb);
 test1:
 	if (p < end)
 		goto body1;
@@ -1207,8 +1187,7 @@ struct buf *p;
 	register n;
 
 	flush_buffer(p);
-	fd = p->fildes;
-	lseek(fd, 0L, 0);
+	lseek(fd = p->fildes, 0L, 0);
 	goto test;
 body:
 	q = (unsigned char *)tmpoutb.iobuf;
@@ -1288,36 +1267,30 @@ long v;
 int n;
 {
 	int spare1, spare2;
-	int nw;
 	long hi, lo;
+	int nw;
 	register struct stream *obj;
 	register struct page *cur;
 
-	hi = (v >> 8) & 0xffffff;
+	hi = v >> 8;
 	lo = v & 0xff;
 	obj = sp;
 	obj->pno->nuser -= 1;
-	cur = &page[0];
-	if ((long)cur->bno == hi)
+	if ((cur = &page[0])->bno == hi)
 		goto common;
-	cur = &page[1];
-	if ((long)cur->bno == hi)
+	if ((cur = &page[1])->bno == hi)
 		goto common;
-	if (cur->nuser) {
-		cur = &page[0];
-		if (cur->nuser) {
-			report_error(2, "No pages");
-			goto common;
-		}
-	}
-	if (page[0].nuser == 0 && page[1].nuser == 0 && page[0].bno < page[1].bno)
-		cur = &page[0];
-	cur->bno = hi;
-	lseek(infil, (v & 0xffffff00L) << 1, 0);
-	nw = read(infil, cur->buff, 0x200) >> 1;
-	if (nw < 0)
-		nw = 0;
-	cur->nibuf = nw;
+	if (cur->nuser == 0 || (cur = &page[0])->nuser == 0) {
+		if (page[0].nuser == 0 && page[1].nuser == 0 && page[0].bno < page[1].bno)
+			cur = &page[0];
+		cur->bno = hi;
+		lseek(infil, (v & 0xffffff00L) << 1, 0);
+		nw = read(infil, cur->buff, 0x200) >> 1;
+		if (nw < 0)
+			nw = 0;
+		cur->nibuf = nw;
+	} else
+		report_error(2, "No pages");
 common:
 	cur->nuser += 1;
 	obj->bno = hi;
@@ -1325,8 +1298,7 @@ common:
 	obj->ptr = (int *)((char *)cur->buff + (lo << 1));
 	if (n != -1)
 		obj->size = half(n);
-	obj->nibuf = cur->nibuf - (int)lo;
-	if (obj->nibuf <= 0)
+	if ((obj->nibuf = cur->nibuf - lo) <= 0)
 		obj->size = 0;
 }
 
@@ -1336,11 +1308,13 @@ int x;
 	return((x >> 1) & 0x7fff);
 }
 
-get(p)
-register struct stream *p;
+get(a)
+struct stream *a;
 {
 	int spare;
+	register struct stream *p;
 
+	p = a;
 	if (--p->nibuf < 0) {
 		dseek(p, (long)(p->bno + 1) << 8, -1);
 		--p->nibuf;
@@ -1355,12 +1329,21 @@ register struct stream *p;
 	return(*p->ptr++);
 }
 
+/*
+ * The library prefixes and the library name are arrays between "/usr" and "/z/bin" in the data of the original: after
+ * the jump tables of the file and before its string literals, so they are declared here, after the last switch.
+ */
+static char pfx1[] = "/usr";
+char libname[] = "/lib/libxxxxxxxxxxx";
+static char pfx2[] = "/z/bin";
+
 getfile(name)
 char *name;
 {
 	register char *s;
 	register char *p;
 	register int n;
+	int spare1, spare2, spare3;
 	struct {
 		char pad[0x16];
 		long mtime;
@@ -1376,19 +1359,20 @@ char *name;
 		if (s[2] == 0)
 			s = "-lc";
 		p = rindex(libname, '/') + 4;
-		strncpy(p, s + 2, 0x168 - (int)p);
+		strncpy(p, s + 2, &libname[18] - p);
 		strcat(p, v66b4 ? ".a" : ".8");
 		infil = open(libname, 0);
-		if (infil == -1) {
-			strcpy(libpath, "/usr");
+		if (infil != -1)
+			filname = libname;
+		else {
+			strcpy(libpath, pfx1);
 			strcat(libpath, libname);
 			infil = open(libpath, 0);
 			if (infil == -1) {
-				strcpy(libpath, "/z/bin");
+				strcpy(libpath, pfx2);
 				strcat(libpath, libname);
 			}
-		} else
-			filname = libname;
+		}
 	}
 	if (infil == -1) {
 		infil = open(filname, 0);
@@ -1481,52 +1465,48 @@ long a;
 	mget(&magic, 2);
 	if (swapflg)
 		magic = swap(magic);
-	if (magic == 0xe707 || magic == 0xe711 || magic == 0xe507 || magic == 0xe511)
-		;
-	else
-		report_error(2, "Bad format");
-	hdrsz = 0x18;
-	dseek(&text, a, hdrsz);
-	mget(&tmp, hdrsz);
-	if (swapflg)
-		swab(&tmp, &tmp, hdrsz);
-	segtsz = tmp.hsegsz;
-	n = segtsz / 16;
-	dseek(&text, a + (unsigned)(hdrsz >> 1), segtsz);
-	mget(rec, segtsz);
-	if (swapflg) {
-		swap_quad(&rec[0]);
-		if (n > 1)
-			swap_quad(&rec[1]);
-	}
-	c2 = 0;
-	c1 = 0;
-	c0 = 0;
-	if (n > 1) {
-		w = rec[1].atr;
-		if (w & 1)
-			c0++;
-		if (w & 2)
-			c1++;
-		if (w & 4)
-			c2++;
+	if (magic == 0xe707 || magic == 0xe711 || magic == 0xe507 || magic == 0xe511) {
+		hdrsz = 0x18;
+		dseek(&text, a, hdrsz);
+		mget(&tmp, hdrsz);
+		if (swapflg)
+			swab(&tmp, &tmp, hdrsz);
+		segtsz = tmp.hsegsz;
+		n = segtsz / 16;
+		dseek(&text, a + (unsigned)(hdrsz >> 1), segtsz);
+		mget(rec, segtsz);
+		if (swapflg) {
+			swap_quad(&rec[0]);
+			if (n > 1)
+				swap_quad(&rec[1]);
+		}
+		c2 = 0;
+		c1 = 0;
+		c0 = 0;
+		if (n > 1) {
+			w = rec[1].atr;
+			if (w & 1)
+				c0++;
+			if (w & 2)
+				c1++;
+			if (w & 4)
+				c2++;
+		} else
+			w = 0;
+		filhdr.fmagic = magic & 0xf7ff;
+		filhdr.bsize = rec[c2].s_bss;
+		filhdr.tsize = rec[c0].s_code;
+		filhdr.fstamp[0] = 0;
+		filhdr.dsize = rec[c1].s_data;
+		filhdr.fstamp[1] = 0;
+		if ((rec[0].atr | w) & 0xf8)
+			report_error(2, "Invalid segment attributes");
+		filhdr.entry = tmp.hentry;
+		filhdr.relflg = tmp.hrelflg & 1;
+		filhdr.ssize = tmp.hsymsz;
 	} else
-		w = 0;
-	filhdr.fmagic = magic & 0xf7ff;
-	filhdr.bsize = rec[c2].s_bss;
-	filhdr.tsize = rec[c0].s_code;
-	filhdr.fstamp[0] = 0;
-	filhdr.dsize = rec[c1].s_data;
-	filhdr.fstamp[1] = 0;
-	if ((rec[0].atr | w) & 0xf8)
-		report_error(2, "Invalid segment attributes");
-	filhdr.entry = tmp.hentry;
-	filhdr.relflg = tmp.hrelflg & 1;
-	filhdr.ssize = tmp.hsymsz;
-	if (filhdr.fmagic == 0xe711 || filhdr.fmagic == 0xe511)
-		x66b6 = 1;
-	else
-		x66b6 = 0;
+		report_error(2, "Bad format");
+	x66b6 = filhdr.fmagic == 0xe711 || filhdr.fmagic == 0xe511 ? 1 : 0;
 	if (magic == 0xe507 || magic == 0xe511) {
 		if (v66a4)
 			report_error(2, "-r cannot be used with 8-bit files");
@@ -1542,9 +1522,8 @@ long a;
 		t = (filhdr.tsize + 1) & 0xfffe;
 		filhdr.tsize = t;
 		fcdrel = x66b6 ? 0 : -t;
-		t = (filhdr.dsize + 1) & 0xfffe;
-		fcbrel = fcdrel - t;
-		filhdr.dsize = t;
+		i = (filhdr.dsize + 1) & 0xfffe;
+		fcbrel = fcdrel - i;
 		filhdr.bsize = (filhdr.bsize + 1) & 0xfffe;
 		filhdr.x1066 = filhdr.tsize;
 		filhdr.x106a = filhdr.dsize;
