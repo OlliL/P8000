@@ -179,7 +179,7 @@
    "callers_orig": "1434",
    "status": "open"
   },
-  "f1494": {
+  "lxinit": {
    "file": "-",
    "pairing": "open",
    "orig": "0x1494",
@@ -709,7 +709,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f5222": {
+  "prtdcon": {
    "file": "-",
    "pairing": "open",
    "orig": "0x5222",
@@ -729,7 +729,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f5318": {
+  "prtree": {
    "file": "-",
    "pairing": "open",
    "orig": "0x5318",
@@ -759,7 +759,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f560e": {
+  "fortarg": {
    "file": "-",
    "pairing": "open",
    "orig": "0x560e",
@@ -769,7 +769,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f565c": {
+  "optim": {
    "file": "-",
    "pairing": "open",
    "orig": "0x565c",
@@ -959,7 +959,7 @@
    "callers_orig": "680a",
    "status": "open"
   },
-  "f680a": {
+  "efcode": {
    "file": "-",
    "pairing": "open",
    "orig": "0x680a",
@@ -969,7 +969,7 @@
    "callers_orig": "2c44",
    "status": "open"
   },
-  "f68b0": {
+  "bfcode": {
    "file": "-",
    "pairing": "open",
    "orig": "0x68b0",
@@ -979,7 +979,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f6a78": {
+  "bccode": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6a78",
@@ -999,7 +999,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f6ac4": {
+  "defnam": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6ac4",
@@ -1019,7 +1019,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f6b86": {
+  "fldal": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6b86",
@@ -1039,7 +1039,7 @@
    "callers_orig": "60d8,680a",
    "status": "open"
   },
-  "f6bf0": {
+  "genswitch": {
    "file": "-",
    "pairing": "open",
    "orig": "0x6bf0",
@@ -1069,7 +1069,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f74f2": {
+  "cisreg": {
    "file": "-",
    "pairing": "open",
    "orig": "0x74f2",
@@ -1099,7 +1099,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f7614": {
+  "fincode": {
    "file": "-",
    "pairing": "open",
    "orig": "0x7614",
@@ -1129,7 +1129,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f78cc": {
+  "vfdzero": {
    "file": "-",
    "pairing": "open",
    "orig": "0x78cc",
@@ -1179,7 +1179,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f7a80": {
+  "isitfloat": {
    "file": "-",
    "pairing": "open",
    "orig": "0x7a80",
@@ -1579,7 +1579,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f8b6e": {
+  "oalloc": {
    "file": "-",
    "pairing": "open",
    "orig": "0x8b6e",
@@ -1709,7 +1709,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f995c": {
+  "unhide": {
    "file": "-",
    "pairing": "open",
    "orig": "0x995c",
@@ -1729,7 +1729,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f9ae6": {
+  "clearst": {
    "file": "-",
    "pairing": "open",
    "orig": "0x9ae6",
