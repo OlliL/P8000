@@ -180,14 +180,15 @@ For 0xFA-0xFF that addition overflows and hides the need for the 0x60 correction
 addition the high digit is now judged from the original byte. WEGA's C library converts
 longs to decimal with a BCD loop: before this, `expr 13000 + 3000` returned 0, which made
 `sysgen` write `md(0,0)wega` as default boot path.
-Sources: U8000 CPU description, arithmetic instructions, DAB p. 68 (table of corrections
-00, 06, 60, 66, FA, A0, 9A and resulting carry); Leventhal, Z8000 Assembly Language
+Sources: Zilog Z8000 CPU Technical Manual (January 1983), DAB, p. 6-43 (table of corrections
+00, 06, 60, 66, FA, A0, 9A and resulting carry; earlier cited as "U8000 CPU description, DAB
+p. 68", which could not be found there); Leventhal, Z8000 Assembly Language
 Programming, table 3-12 (p. 3-168); Moore, Z8000 Handbook, table 2-8 (p. 133). All 764
 byte/flag combinations the table covers were compared with the code: no difference. Z and S
 are set from the result, P/V is not touched ("CZS---"). Combinations outside the table are
 undefined in all sources.
 
-Subtraction (2026-10-30, commit `f428e910`, to be squashed into `436f255b`): @tpaxia ran the
+Subtraction (2026-10-30, commit `6f93ea28`, to be squashed into `436f255b`): @tpaxia ran the
 core against test cases captured on a real Z8001. The addition path matched; after a subtraction
 the upper digit was still judged from the byte after the -6. That borrows out of 0x00-0x05 (H
 set, the upper digit then reads F, so a wrong -0x60 was applied) and brings 0x9A-0xA5 down to an
@@ -746,7 +747,9 @@ Documents (official or period):
 - U857D (CTC) and U858D (DMA) technical descriptions, VEB Funkwerk Erfurt
   (`tiffe.de` Bausteinübersicht, files `U857D-CTC.pdf` and `U858D-DMA.pdf`).
 - U8000 CPU technical description: 3.4.2, 5.5.5-5.5.8, 6.6.2, fig. 6.1/6.2 (segment
-  boundaries, offsets, saved program status, program status area), DAB p. 68.
+  boundaries, offsets, saved program status, program status area).
+- Zilog Z8000 CPU Technical Manual (January 1983): 4.3, fig. 4-3 (instruction look-ahead), DAB
+  p. 6-43 (DAB table).
 - Technical description of the U8010 MMU: 3.2.1, 4.1, 5.2 p. 34, 5.4 p. 35 and 37/38,
   6.2.13-6.2.17, 6.2.21, 6.2.22, E.3, table 6.2.
 - Zilog Z8010 MMU data sheet; ZiLOG System 8000 Hardware Reference Manual (table 3-2).

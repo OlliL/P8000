@@ -42,7 +42,7 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 - [ ] Ask the Z8001 specialist: non-segmented `IRET`/`LDPS` clear the PC segment number of a
       Z8001 (`m_pc = POPW(SP)`); is that right? Not part of this change.
 
-- [x] DAB after a subtraction (@tpaxia, test cases captured on a real Z8001): commit `f428e910`,
+- [x] DAB after a subtraction (@tpaxia, test cases captured on a real Z8001): commit `6f93ea28`,
       `highfix = C || orig > 0x99` for both directions; the 764 table cases unchanged, all reported
       silicon cases match (LOG.md 4.1).
 
