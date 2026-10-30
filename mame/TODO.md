@@ -52,6 +52,11 @@ Branches in the fork `OlliL/mame` (never push to `mamedev/mame`):
 - [x] `m_dram8` is a `memory_share_creator<uint8_t>` now.
 - [x] `board16_reset()` no longer resets child devices; `soft_reset_w()` (the only place that needs it) does.
 - [x] Save states: members registered, tested in WEGA, `MACHINE_SUPPORTS_SAVE` set (LOG.md).
+- [x] Address bus with MMU ON and no MMU driving it: bus-hold model (commit `151b55cc`, replaces
+      `04154ab`), test 07 runs 1-8 on the real machine, emulator equal, sa.diags passes (LOG.md 5.5).
+      **At split time:** squash `04154ab` and `151b55cc` into the driver commit.
+- [ ] After the bus-hold change: MON16 hardware test and a WEGA boot to multi-user once more.
+- [ ] Optional: test 07 run 9, a delay loop before the page change, to see whether the held value decays.
 
 ## 3. Data and texts
 

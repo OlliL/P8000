@@ -179,6 +179,13 @@ Z8001/Z8010 side:
   CPU only after the next instruction has started.
 - **Memory:** 1 MiB default, up to 8 MiB; segment 127 is left out like on the real
   16 MiB card.
+- **No MMU driving the bus** (`translate_addr()`): with SCR `ONH` set and the selected MMU in a mode
+  where it does not drive A8-A23 (MSEN = 0), the address is A8-A23 of the last memory-bus cycle
+  plus A0-A7 from the CPU. Measured on the real machine
+  ([test 07](tests/07-p8000-16-fetch-with-mmu-off/README.md), run 8: a fetch at `%9100` read
+  `%9000`); sa.diags `CODE_TRAP` needs it. Commits `04154ab` (pass-through, wrong) and `151b55cc`
+  (this model) are to be squashed into the driver commit. **Less sure:** that the CPU address is
+  held as well while `ONH` is clear, and whether the held value decays over time.
 
 **Known open point in the driver:** the daisy chain device stays outside the anonymous
 namespace (`DEFINE_DEVICE_TYPE_PRIVATE` needs a concrete exposed base class).

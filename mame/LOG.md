@@ -351,6 +351,42 @@ the same frame; with the commit taken out again (old core, rebuilt on 2026-10-16
 `7F22 D000 8200 0002`. So the test tells the two behaviours apart and the real machine
 agrees with the change. Supports commit `d613b434` (U8000 description 3.4.2; Moore p. 19).
 
+### 5.5 Address bus with MMU ON and no MMU driving it (measured 2026-10-26 and 2026-10-30)
+
+`tests/07-p8000-16-fetch-with-mmu-off`. Found through sa.diags: its `CODE_TRAP` (in RAM) switches
+the code MMU off with `soutb CODE_MMU,rh0` (mode %00, MSEN = 0) while SCR `ONH` is still set and
+clears `ONH` with the next instruction. On the real machine this works. In the emulator the
+fetch failed (`translate_addr()` returned false, `ram_r()` gave `NOP`) and the test hung. MON16
+has the same `CODE_TRAP`, but in the on-board EPROM, which is decoded on the CPU bus in front of
+the MMUs, so the monitor self test was never affected.
+
+- Runs 1-3 (2026-10-26): the fetch after the mode write works. First read as "the board passes the
+  address through", commit `04154ab` in the fork.
+- A hobby colleague reported that the variant with a `nop` between `soutb` and `outb` fails and
+  explained the working case with instruction prefetch. Fawcett, Z8000 Design Handbook ch. 5
+  p. 56/57: only the next opcode is prefetched, and not after an instruction that ends with a
+  memory or I/O write; Z8000 CPU Technical Manual 4.3, fig. 4-3 gives no details.
+- Runs 4-7 (2026-10-30): one to three fetches between the mode write and clearing `ONH`, including
+  the reported `nop` variant: all work on the real machine. Prefetch is not the reason.
+- Run 8: the first fetch after the mode write is in the next 256 byte page (`%9100`, last
+  MMU-driven fetch `%90FE`). The CPU executed the word at physical `%9000`. So A8-A23 keep the value
+  of the last MMU-driven memory cycle (MSEN = 0 tri-states the Z8010 outputs, Fawcett ch. 9;
+  sheet 8); A0-A7 come from the CPU. Runs 1-7 could not show this because all their fetches stayed
+  in the held page.
+
+Fork: commit `151b55cc` ("p8k: A8-A23 keep their last value when no MMU drives the bus") replaces
+the pass-through of `04154ab`; both are to be squashed into the driver commit. The driver keeps
+A8-A23 of every memory-bus cycle in `m_bus_a8_a23` (saved). That the CPU address drives the lines
+while `ONH` is clear is an assumption; only the MMU-driven case is measured. Emulator results
+(`tools/run07.lua`): run 7 comes through, run 8 R5 = `0000` R6 = `0001`, control 8K R5 = `0001`
+R6 = `0000`, as the real machine; sa.diags passes (owner, 2026-10-30). Not tested: whether the held
+value decays after a longer time.
+
+Lesson for MON16 test programs: `G` starts with the saved user FCW, `%C000` (segmented) after a
+reset, so a direct address such as `ld %9200,r5` is read as the first word of a long address.
+`BREAK AT` alone does not prove that the program left the board in a sane state, because the
+monitor runs from the on-board memory in front of the MMUs.
+
 ## 6. MMU selection and the break register (NBR)
 
 For a non-segmented user in normal mode the board decides between data MMU and stack MMU by

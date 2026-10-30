@@ -2,9 +2,9 @@
 
 Status: **done on the real machine** (runs 1-3 on 2026-10-26, runs 4-8 on 2026-10-30, MON16 over
 Kermit). Result: with `ONH` set and no MMU driving the bus, address lines A8-A23 keep the value of
-the last memory cycle an MMU drove; A0-A7 come from the CPU as always. The emulator does **not**
-match yet: commit `04154ab` passes the logical address through, which runs 1-7 cannot tell apart
-from the measured behaviour, but run 8 can.
+the last memory cycle an MMU drove; A0-A7 come from the CPU as always. The emulator matches since
+commit `151b55cc` in the fork (the earlier `04154ab` passed the logical address through, which fits
+runs 1-7 but not run 8).
 
 ## What is tested
 
@@ -272,22 +272,34 @@ R8   R9   R10  R11  R12  R13  R14  R15     N4     N5     PS     PO
 
 | Date | Board / monitor | Run | Result | Same as the emulator? |
 |---|---|---|---|---|
-| 2026-10-26 | 16 bit board, MON16 | 1 | `BREAK AT 901C` | only with `04154ab` (before it: NOP, no return) |
-| 2026-10-26 | 16 bit board, MON16 | 2 | `BREAK AT 9028` | only with `04154ab` |
-| 2026-10-26 | 16 bit board, MON16 | 3 | `BREAK AT 902C` | only with `04154ab` |
-| 2026-10-30 | 16 bit board, MON16 | 4-7 | return at the `sc #0` each time | only with `04154ab` |
-| 2026-10-30 | 16 bit board, MON16 | 8 | R5 = `0000`, R6 = `0001` | no: `04154ab` gives R5 = `0001`, R6 = `0000` |
+| 2026-10-26 | 16 bit board, MON16 | 1 | `BREAK AT 901C` | yes (before `04154ab`: NOP, no return) |
+| 2026-10-26 | 16 bit board, MON16 | 2 | `BREAK AT 9028` | yes |
+| 2026-10-26 | 16 bit board, MON16 | 3 | `BREAK AT 902C` | yes |
+| 2026-10-30 | 16 bit board, MON16 | 4-7 | return at the `sc #0` each time | yes (run 7 checked) |
+| 2026-10-30 | 16 bit board, MON16 | 8 | R5 = `0000`, R6 = `0001` | yes (`04154ab` gave R5 = `0001`, R6 = `0000`) |
 | 2026-10-30 | 16 bit board, MON16 | 8K | R5 = `0001`, R6 = `0000` | yes |
 
 ## Emulator
 
 Before `04154ab`, `translate_addr()` in `src/mame/ddr/p8k.cpp` failed the access when no MMU drove
 the bus, so a fetch returned `NOP` and the program never came back (model A). `04154ab` passes the
-logical address through (model B), which fits runs 1-7 but not run 8. The measured behaviour (D)
-needs the driver to remember A8-A23 of the last memory cycle an MMU drove and to use them, with
-A0-A7 from the CPU, while `ONH` is set and no MMU drives the bus.
+logical address through (model B), which fits runs 1-7 but not run 8. Commit `151b55cc` implements
+the measured behaviour (D): the driver keeps A8-A23 of every memory-bus cycle and uses them, with
+A0-A7 from the CPU, while `ONH` is set and no MMU drives the bus. That the CPU address is kept as
+well while `ONH` is clear is an assumption; only the MMU-driven case is measured.
+
+`../../tools/run07.lua` repeats runs 7, 8 and 8K in the emulator (it ends with `jr $` instead of
+`sc #0` and reads R5/R6 directly):
+
+```
+RUN=8|8k|7  mame p8000_16 -rs232 terminal -video none -sound none -nothrottle -autoboot_script run07.lua
+RESULT run=8 R5=0000 R6=0001 PC=9104
+RESULT run=8k R5=0001 R6=0000 PC=9104
+RESULT run=7 R5=0001 R6=8000 PC=9030      (R6 is not set by run 7)
+```
 
 This also explains sa.diags: its `CODE_TRAP` (in RAM) switches the code MMU off with `soutb` and
 clears `ONH` with the next instruction in the same page, so it works on the real machine and
-with `04154ab`, but not without it. MON16's `CODE_TRAP` runs from the on-board EPROM, which does
-not go through the MMUs, so it worked in the emulator from the start.
+with `04154ab` and `151b55cc`, but not before them; with `151b55cc` sa.diags passes in the emulator
+(2026-10-30). MON16's `CODE_TRAP` runs from the on-board EPROM, which does not go through the MMUs,
+so it worked in the emulator from the start.
