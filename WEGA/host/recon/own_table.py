@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+"""own_table.py INVENTORY.json - function table of the own code of a program (configuration: progcfg.py).
+
+Reads the inventory JSON (inventory.py) and writes own_functions.txt in the tools directory: entry, name (f<entry>
+until it is named), end (next start), size, callers, kind, status. Own code = 0 .. progcfg OWN_LIM (the libc follows,
+see host/tools/libcver.py). An existing own_functions.txt is not overwritten.
+"""
+import json
+import os
+import sys
+
+import progcfg
+
+CFG = progcfg.load()
+LIBC = CFG.OWN_LIM
+OUT = os.path.join(CFG.DIR, 'own_functions.txt')
+if os.path.exists(OUT):
+    sys.exit('%s exists: it holds the names and the status, remove it by hand to start again' % OUT)
+src = sys.argv[1]
+d = json.load(open(src))
+starts = sorted(set(int(x, 16) for x in d['proven_starts']) | set(int(x, 16) for x in d['candidate_starts_after_ret_or_jump']))
+own = [s for s in starts if s < LIBC]
+callers = {}
+for f in d['functions']:
+    for c in f['calls']:
+        callers.setdefault(int(c, 16), []).append(int(f['start'], 16))
+proven = set(int(x, 16) for x in d['proven_starts'])
+rows = ['# entry  name  end    size  callers  kind      status',
+        '# name: f<entry> until it is understood (names in the 2nd column); kind: proven (call target) or candidate',
+        '# status: open (no C draft yet)']
+for i, s in enumerate(own):
+    e = own[i + 1] if i + 1 < len(own) else LIBC
+    cl = ','.join('%04x' % c for c in sorted(set(callers.get(s, []))))
+    kind = 'proven' if s in proven else 'candidate'
+    rows.append('%04x  f%04x  %04x  %5d  %-16s %-9s open' % (s, s, e, e - s, cl or '-', kind))
+open(OUT, 'w').write('\n'.join(rows) + '\n')
+print(len(own), 'own functions,', sum(1 for s in own if s in proven), 'proven')

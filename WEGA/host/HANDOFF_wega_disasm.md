@@ -67,11 +67,11 @@ original tools and compares each program).
 ## Next steps, in this order
 
 1. **Complete the tool chain.** `codgen`/`scodgen` (stop line reached) and `popt` (K&R, analysed) are done as far as the
-   old compiler allows; `sld` is reconstructed in `src/cmd/sld` (K&R, 58 of 90 functions exact, data/bss equal, corpus test
-   51 of 51 identical). The procedure for every further binary is `HOWTO_reconstruct.md` (two phases: cheap model, then
-   expensive model once), the shared scripts are in `recon/` (`recon/README.md`). The order of the next binaries
-   (`ld`, `gld`, `cpp`, `cparse`, ...) and the open items are in `../src/TODO.md`, section "Plan after the sld naming".
-   Step 3 starts only after that.
+   old compiler allows; `sld` and `ld` are reconstructed in `src/cmd/sld` and `src/cmd/ld` (K&R; ld 51 of 59 functions
+   strictly exact, corpus 146/146). The procedure for every further binary is `HOWTO_reconstruct.md`, the shared scripts
+   are in `recon/` (`recon/README.md`). Next is `cparse`; gopt, cpp, gld and yacc are deferred (owner decision 2026-10-30).
+   The order and the criteria are in `../src/TODO.md`, section "Plan: towards the old C compiler"; step 3 below is item 4
+   of that plan.
 2. **Bring the source to its natural form.** Revert the compensating changes or justify them. New baseline:
    bytes, functions, D classes.
 3. **Reconstruct the old compiler.** Derive a model of the differences D1 to D16 from the fit functions, check it on a

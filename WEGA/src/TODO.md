@@ -43,26 +43,42 @@ produce the same bytes with the shipped cc.
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | builds under z8k-emu, but all files differ from the originals | `dosopn.c` line 175 (`1.5*first`) needed EPU instructions; z8k-emu now runs them (2026-10-22, `host/z8k-emu/README.md`) and the commands compile. Locally the build fails only on the `/usr/include` make dependencies (outside the guest ROOT). The owner believes they were built with the current cc and libc (no old-libc version needed; belief, not measured). The differences are not analysed yet | analyse **after the host tool chain is complete** (nearest-version method, `cmpins.py`) |
 
-## Plan after the sld naming (2026-10-28; order of work)
+## Plan: towards the old C compiler (2026-10-30, owner decision; replaces "Plan after the sld naming" of 2026-10-28)
 
-State: sld is rebuilt in C (codgen, popt, sld are the three programs done in this style). sld: 58 of 90 functions exact, data/bss equal,
-corpus test `make check` 51 of 51 identical, structs and all names done. Procedure for a new binary: `host/HOWTO_reconstruct.md`
-(rewritten 2026-10-28 with the lessons of sld, split into Phase A for a cheap model and Phase B for an expensive one; one model change
-per binary).
+Goal: rebuild the old C compiler (the revision that built the WEGA binaries, D1 ... D17), so that our sources compile
+byte-identical with it. Programs that the normal build does not need are deferred.
 
-Order (the documentation first, because the knowledge must not get lost):
+Done before this plan: codgen, popt, sld (58 of 90 exact, corpus 51/51), ld (51 of 59 strictly exact, 8 findings with
+D classes read from strict diffs, data equal under the D12 model, corpus 146/146, names and comments done; see
+`cmd/ld/tools/HANDOFF_ld.md`). Lesson of ld: the masked comparison and the pattern check accepted wrong code and wrong
+D labels (12 of 20 findings were source forms); strict comparison (`strictcmp.py`) is the authority.
 
-1. DONE: `host/HOWTO_reconstruct.md` rewritten (lessons, two phases, corpus test, rules of step 7).
-2. PARTLY DONE (2026-10-28): shared toolkit `host/recon/` (README there): `progcfg.py`, `funcs.py`, `patterns.py`, `classify.py`, `findings_md.py`, `odis.py`, `callcmp.py`; codgen, popt and sld use it through `progcfg.py` plus launchers in their `tools/` (the duplicate `popt/tools/sout.py` is removed; `findings_md.py` reproduces the three FINDINGS.md unchanged; sld strict_audit still 58 exact). Still to move when the next binary needs them: `fncheck.py`, `strict_audit.py`, `accept.py`, `accfn.py`, `firstdiff.py`, `rename.py`, `check_names.py`, `sync_findings.py`, `host/ld/check.py` (they read sld files). Note: `classify.py` regenerated two `layout_note` texts in codgen `findings.json` and `INVENTORY.md` changed (generated files were out of date, not caused by the move). Original text of the item, kept for reference: (the sld scripts that lived in the scratchpad are saved in `src/cmd/sld/tools`: `accfn.py` (accept exact functions by name), `callcmp.py` (call-trace comparison of two runs), `uses.py` (uses of a variable per function), `scratch_build.sh`) (find duplicates first, no new scripts for old problems). Measured duplicates: `findings_md.py` in codgen, popt, ld
-   (three copies, 111-120 lines), `funcs.py` / `patterns.py` / `classify.py` identical in size for codgen and popt, `sout.py` in popt/tools equals
-   `host/tools/sout.py` (delete). The sld tools that are general: `fncheck.py` + `strict_audit.py` (compile, normalise, compare), `accept.py`,
-   `rename.py`, `firstdiff.py`, `odis.py`, `check_names.py`, `tryname.py`, `sync_findings.py`, `classify_sld.py` (= the pattern check of
-   `patterns.py`), the call-trace comparison (scratchpad scripts `calls.py`, `cmpcalls.py`: move them), the corpus runner
-   (`host/ld/check.py` with `SLD_NEW`). Program specific: `ldsrc.py`, `order_vars.py`, `var_addr.py`, `gen_makefile.py`, `split_sld.py`,
-   `libc_*`. Steps: (a) move the identical files, (b) one config per program (binary, segmented flag, module ranges, table, flags),
-   (c) make strict_audit/accept/rename read the config, (d) run codgen and popt tools through it once to prove it.
-3. sld, rest of e): DONE 2026-10-28 except the open findings: quirks table (precedence error `!c & 0x20` in warn_sym_redef, put_pad without return, spare variables, names of the old addresses), function head comments (`tools/headcomments.py` + `headcomments.txt`: one line description and address range per function; edit the txt and run again), goto labels renamed (optchar, addhi, setseg, mapsym, pairchk, symdone, extsym, extoff, insmid, newent, dolayout, gotblk), `sld_own.s` and `make linkown` removed (git rm; the cut block is no longer needed, the C build links byte-identical data/bss). Strict audit still 58 exact, check_data 0. REMAINING: the 32 findings (see `src/cmd/sld/tools/FINDINGS.md`: `manual_classes` says what was tried; layout cases lay_out, ins_block, reg_sect_addr, read_words are probably the old compiler's optimizer); the descriptions in `headcomments.txt` were written from the code by reading, not all verified against the callers.
-4. Next binaries (decided 2026-10-28): `/bin/ld` (21732 bytes, SCCS ld.c 1.18, copyname 1.3, printname 1.5, symbols 1.8, crt0 3.2; 39 of 72 strings equal to sld, same module names: the nonsegmented ancestor of sld, so names, structs and member names of `src/cmd/sld` carry over) in `src/cmd/ld`, then `/bin/gld` (27616 bytes, own code base: German messages, `gld.c V1.0 06/22/88 ZFT-KEAW`, only `malloc.c` has an SCCS string; 6 strings in common with sld/ld) in `src/cmd/gld`, then `/lib/cpp` (16522 bytes, 40248 total, nonsegmented), `/lib/cparse` (67520 bytes, 96284 total). Each with the two-phase HOWTO (Phase A cheap model, handoff, Phase B once). `src/cmd/ld` was renamed to `src/cmd/sld` with `git mv` (2026-10-28) because it holds sld; `host/ld` stays (host tools for ld, sld, gld).
+Deferred (not needed for the normal build or the old compiler): `/lib/gopt` (only with -Ol/-Or), `/lib/cpp` (the
+original runs in the emulator; it only produces text), `/bin/gld`, `/usr/bin/yacc` (the original yacc is used as a tool,
+e.g. for cgram1.y of cparse; it is not rebuilt).
+
+Order:
+
+1. **cparse in `src/cmd/cparse`** (K&R, WEGA cc), with the procedure of `host/HOWTO_reconstruct.md`. Criterion before the
+   old compiler exists: every function strictly exact or a finding with a D class read from the strict diff; data and bss
+   equal (under a layout model where the D classes demand it); corpus test: our cparse writes the same .I and .D files
+   as `/lib/cparse` for the same input. The findings of cparse are evidence for the old compiler too.
+2. **Check the findings of the other programs strictly** (sld 32 findings, codgen, cas, ranlib, strip, the oldcc
+   modules) before they are used as evidence: strict comparison, the rules of HOWTO step 7.
+3. **Assign every D class to a stage** (cparse, codgen, popt) by experiment: replace one stage of the chain by ours and
+   observe. Measured already: cparse writes the initialisers and the string literals as cas text into base.D with
+   `.even` behind each string (D12 is a cparse difference; experiment in tmp/tmp/stage).
+4. **Derive the old compiler step by step** with switches in the stages (cparse, codgen, popt), encapsulated by separate
+   cc entry points (for example ccv1 calls `cparse -xyz`, ccv2 `cparse -abc`). Start with strip (one D2 expression, D12),
+   measure on ld (8 findings, strictcmp, d12model, corpus), check on ranlib and the oldcc modules. Fix a time box and an
+   abort criterion before this step starts (HANDOFF_wega_disasm.md, step 3).
+5. **Final test**: cparse (and codgen) compiled with the rebuilt old compiler are byte-identical with the originals. Only
+   then are the host versions (`host/cparse`, ANSI C) written from the proven sources.
+
+Shared toolkit `host/recon/` (README there): `progcfg.py`, `funcs.py`, `patterns.py`, `classify.py`, `findings_md.py`,
+`odis.py`, `callcmp.py`, used by codgen, popt, sld. The tools of ld that are general move there before cparse starts
+(item 1 of this plan): the strict comparison, the whole-program comparison, the data layout model, rename with the
+documents, the corpus runner frame.
 
 ## sld (segmented loader): preparation (started 2026-10-27)
 
