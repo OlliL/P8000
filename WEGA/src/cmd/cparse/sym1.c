@@ -1,13 +1,32 @@
 # include "mfile1"
 
 extern int ddebug;
-struct symtab *relook();
+extern FILE *sfile;	/* the .S file: the symbols for the debugger */
+
+	/* counters of the free register variables (names are guesses) */
+extern int regvar, lregvar, fregvar;
+extern int commflag;	/* the declaration is a common (nidcl, commdec) */
+
+	/* the .S file (WEGA): a header, the symbols (22 bytes each), the names, the member lists, the references */
+# define HASHSZ 64	/* the hash chains of the symbol table */
+# define NTABSZ 6500	/* the name table */
+extern int symcount;
+extern struct { int h_magic; long h_syms; long h_names; int h_tags; int h_refs; } shdr;
+extern long shdrpos;
+extern struct symtab *refsym[];
+extern int nrefsym;
+extern struct { long r_id; char r_flag; } reftab[];
+extern int nrefs;
+extern int taglist[];
+extern int ntaglist;
 
 falloc( p, w, new, pty )  register struct symtab *p; NODE *pty; {
 	/* allocate a field of width w */
 	/* new is 0 if new entry, 1 if redefinition, -1 if alignment */
 
-	register al,sz,type;
+	register al,sz;
+	register TWORD type;
+	int s;
 
 	type = (new<0)? pty->type : p->stype;
 
@@ -15,13 +34,10 @@ falloc( p, w, new, pty )  register struct symtab *p; NODE *pty; {
 	switch( new<0?pty->type:p->stype ){
 
 	case ENUMTY:
-		{
-			int s;
-			s = new<0 ? pty->csiz : p->sizoff;
-			al = dimtab[s+2];
-			sz = dimtab[s];
-			break;
-			}
+		s = new<0 ? pty->csiz : p->sizoff;
+		al = dimtab[s+2];
+		sz = dimtab[s];
+		break;
 
 	case CHAR:
 	case UCHAR:
@@ -31,23 +47,11 @@ falloc( p, w, new, pty )  register struct symtab *p; NODE *pty; {
 
 	case SHORT:
 	case USHORT:
-		al = ALSHORT;
-		sz = SZSHORT;
-		break;
-
 	case INT:
 	case UNSIGNED:
 		al = ALINT;
 		sz = SZINT;
 		break;
-#ifdef LONGFIELDS
-
-	case LONG:
-	case ULONG:
-		al = ALLONG;
-		sz = SZLONG;
-		break;
-#endif
 
 	default:
 		if( new < 0 ) {
@@ -85,14 +89,13 @@ falloc( p, w, new, pty )  register struct symtab *p; NODE *pty; {
 	p->offset = strucoff;
 	strucoff += w;
 	p->stype = type;
-	fldty( p );
 	return(0);
 	}
 
 nidcl( p ) NODE *p; { /* handle unitialized declarations */
 	/* assumed to be not functions */
 	register class;
-	register commflag;  /* flag for labelled common declarations */
+	OFFSZ sz;
 
 	commflag = 0;
 
@@ -106,14 +109,23 @@ nidcl( p ) NODE *p; { /* handle unitialized declarations */
 			}
 		}
 
+	if( ISARY(p->type) && dimtab[p->cdim]==0 && (class==AUTO || class==EXTDEF) )
+		werror( "empty array declaration - no space reserved" );
+
 	defid( p, class );
 
 	if( class==EXTDEF || class==STATIC ){
-		/* simulate initialization by 0 */
-		beginit(p->rval);
+		beginit( p->rval );
 		endinit();
 		}
-	if( commflag ) commdec( p->rval );
+	if( commflag ){
+		commdec( p->rval );
+		commflag = 0;
+		}
+	if( class == AUTO ){
+		if( (sz = tsize( STP(p->rval)->stype, STP(p->rval)->dimoff, STP(p->rval)->sizoff )/SZCHAR) > 0xfffe )
+			uerror( "size too large" );
+		}
 	}
 
 TWORD
@@ -185,9 +197,7 @@ tymerge( typ, idp ) NODE *typ, *idp; {
 	extern int eprint();
 
 	if( typ->op != TYPE ) cerror( "tymerge: arg 1" );
-	if(idp == NIL ) return( NIL );
-
-	if( ddebug > 2 ) fwalk( idp, eprint, 0 );
+	if( idp == 0 ) return( 0 );
 
 	idp->type = typ->type;
 	idp->cdim = curdim;
@@ -232,7 +242,7 @@ tyreduce( p ) register NODE *p; {
 	p->left->type = t;
 	tyreduce( p->left );
 
-	if( o == LB ) dstash( (OFFSZ) temp );
+	if( o == LB ) dstash( (OFFSZ)(unsigned) temp );
 
 	p->rval = p->left->rval;
 	p->type = p->left->type;
@@ -247,7 +257,8 @@ fixtype( p, class ) register NODE *p; {
 	if( (type = p->type) == UNDEF ) return;
 	if( mod2 = (type&TMASK) ){
 		t = DECREF(type);
-		while( mod1=mod2, mod2 = (t&TMASK) ){
+		if( mod2 == FTN && t == FLOAT ) type = (type&~BTMASK) | DOUBLE;	/* WEGA: float functions return double */
+		else while( mod1=mod2, mod2 = (t&TMASK) ){
 			if( mod1 == ARY && mod2 == FTN ){
 				uerror( "array of functions is illegal" );
 				type = 0;
@@ -284,7 +295,6 @@ uclass( class ) register class; {
 	/* give undefined version of class */
 	if( class == SNULL ) return( EXTERN );
 	else if( class == STATIC ) return( USTATIC );
-	else if( class == FORTRAN ) return( UFORTRAN );
 	else return( class );
 	}
 
@@ -306,15 +316,13 @@ fixclass( class, type ) TWORD type; {
 	if( ISFTN( type ) ){
 		switch( class ) {
 		default:
-			uerror( "function has illegal storage class" );
+			uerror( "fcn has illegal storage class - %d", class );
 		case AUTO:
 			class = EXTERN;
 		case EXTERN:
 		case EXTDEF:
-		case FORTRAN:
 		case TYPEDEF:
 		case STATIC:
-		case UFORTRAN:
 		case USTATIC:
 			;
 			}
@@ -341,7 +349,7 @@ fixclass( class, type ) TWORD type; {
 
 	case REGISTER:
 		if( blevel == 0 ) uerror( "illegal register declaration" );
-		else if( regvar >= MINRVAR && cisreg( type ) ) return( class );
+		else if( regfree( type ) && cisreg( type ) ) return( class );
 		if( blevel == 1 ) return( PARAM );
 		else return( AUTO );
 
@@ -355,18 +363,6 @@ fixclass( class, type ) TWORD type; {
 		if( blevel != 1 ) uerror( "illegal class" );
 		return( class );
 
-	case UFORTRAN:
-	case FORTRAN:
-# ifdef NOFORTRAN
-			NOFORTRAN;    /* a condition which can regulate the FORTRAN usage */
-# endif
-		if( !ISFTN(type) ) uerror( "fortran declaration must apply to function" );
-		else {
-			type = DECREF(type);
-			if( ISFTN(type) || ISARY(type) || ISPTR(type) ) {
-				uerror( "fortran function has wrong type" );
-				}
-			}
 	case STNAME:
 	case UNAME:
 	case ENAME:
@@ -384,153 +380,331 @@ fixclass( class, type ) TWORD type; {
 		}
 	}
 
-/* f94a6: not written yet (0x94a6..0x94e8 of /lib/cparse) */
-f94a6()
-{
-}
+regfree( t ) register TWORD t; { /* is a register free for a variable of type t (name is a guess) */
+	switch( t ){
 
-/* f94e8: not written yet (0x94e8..0x96e2 of /lib/cparse) */
-f94e8()
-{
-}
+	default:
+		if( regvar >= 8 ) return( 1 );
+		return( 0 );
 
-/* f96e2: not written yet (0x96e2..0x985a of /lib/cparse) */
-f96e2()
-{
-}
+	case FLOAT:
+	case DOUBLE:
+		if( fregvar >= 20 ) return( 1 );
+		return( 0 );
 
-/* f985a: not written yet (0x985a..0x995c of /lib/cparse) */
-f985a()
-{
-}
+	case LONG:
+	case ULONG:
+		if( lregvar >= 8 ) return( 1 );
+		return( 0 );
+		}
+	}
 
-unhide( p ) register struct symtab *p; {
+struct symtab *
+lookup( name, s, mk, cls ) char *name; {
+	/* look up name: s is the namespace (SMOS, ...), mk != 0 makes an entry when the name is not there,
+	   cls != 0 takes only structure and union tags */
+	register char *t;
+	register char *u;
 	register struct symtab *q;
+	register struct symtab *prev;
+	register struct symtab *next;
+	int i;
+	int n;
+
+	i = 0;
+	for( t = name; *t; ++t, ++i ) if( i >= ncharsig ) break;
+	if( i >= ncharsig ) *t = '\0';
+
+	i = hash( name );
+	q = hashtab[i];
+	prev = 0;
+	for( ; q; prev = q, q = next ){
+		next = (struct symtab *)((int)q->slink ^ (int)prev);
+		t = &ntab[q->sname];
+		u = name;
+		if( cls && q->sclass != STNAME && q->sclass != UNAME ) continue;
+		if( (q->sflags & (SMOS|SHIDDEN)) != s ) continue;
+		if( strcmp( t, u ) ) continue;
+		if( mk && blevel && !q->slevel && q->sclass != PARAM ) refid( q );
+		return( q );
+		}
+	if( !mk ) return;
+
+	if( (q = (struct symtab *) malloc( sizeof(struct symtab) )) == 0 )
+		cerror( "Symbol table out of space" );
+	q->slink = hashtab[i];
+	if( hashtab[i] ) hashtab[i]->slink = (struct symtab *)((int)hashtab[i]->slink ^ (int)q);
+	hashtab[i] = q;
+	q->sflags = s;
+	q->stype = UNDEF;
+	q->sclass = SNULL;
+	q->sfldc = 0;
+	if( blevel ){
+		q->sname = ntabindx;
+		t = &ntab[ntabindx];
+		while( *t++ = *name ){
+			++name;
+			++ntabindx;
+			}
+		++ntabindx;
+		if( ntabindx > ntab_globals ){
+			fprintf( stderr, "ntabindx = %d, ntab_globals = %d\n", ntabindx, ntab_globals );
+			cerror( "name table overflow - 3" );
+			}
+		}
+	else {
+		n = strlen( name ) + 1;
+		ntab_globals -= n;
+		q->sname = ntab_globals;
+		t = &ntab[ntab_globals];
+		if( ntabindx > ntab_globals ){
+			fprintf( stderr, "ntabindx = %d, ntab_globals = %d\n", ntabindx, ntab_globals );
+			cerror( "name table overflow - 4" );
+			}
+		while( *t++ = *name ) ++name;
+		}
+	return( q );
+	}
+
+struct symtab *
+copysym( pp ) struct symtab **pp; { /* a copy of the entry *pp in a new entry, which replaces it (name is a guess) */
+	struct symtab *q;
+	char *t;
+	int n;
+	char *s;
+	register h;
+
+	if( (q = (struct symtab *) malloc( sizeof(struct symtab) )) == 0 )
+		cerror( "Symbol table out of space" );
+	*q = **pp;
+	h = hash( &ntab[q->sname] );
+	q->sflags = SMOS|040;
+	*pp = q;
+	q->slink = hashtab[h];
+	hashtab[h]->slink = (struct symtab *)((int)hashtab[h]->slink ^ (int)q);
+	hashtab[h] = q;
+	q->symno = symcount++;
+	s = &ntab[q->sname];
+	if( blevel ){
+		q->sname = ntabindx;
+		while( ntab[ntabindx++] = *s ) ++s;
+		if( ntabindx > ntab_globals ){
+			fprintf( stderr, "ntabindx = %d, ntab_globals = %d\n", ntabindx, ntab_globals );
+			cerror( "name table overflow - 5" );
+			}
+		}
+	else {
+		n = strlen( s ) + 1;
+		ntab_globals -= n;
+		q->sname = ntab_globals;
+		t = &ntab[ntab_globals];
+		if( ntabindx > ntab_globals ){
+			fprintf( stderr, "ntabindx = %d, ntab_globals = %d\n", ntabindx, ntab_globals );
+			cerror( "name table overflow - 4" );
+			}
+		while( *t++ = *s ) ++s;
+		}
+	return( q );
+	}
+
+struct symtab *
+hide( p ) register struct symtab *p; {
+	register struct symtab *q;
+	int i, h;
+
+	if( (q = (struct symtab *) malloc( sizeof(struct symtab) )) == 0 )
+		cerror( "Symbol table out of space" );
+	*q = *p;
+	i = hash( &ntab[p->sname] );
+	q->slink = hashtab[i];
+	hashtab[i]->slink = (struct symtab *)((int)hashtab[i]->slink ^ (int)q);
+	hashtab[i] = q;
+	q->symno = symcount++;
+	q->sname = ntabindx;
+	for( i=0; ntab[p->sname+i]; ++i ) ntab[ntabindx++] = ntab[p->sname+i];
+	ntab[ntabindx] = '\0';
+	++ntabindx;
+	if( ntabindx > ntab_globals ){
+		fprintf( stderr, "ntabindx = %d, ntab_globals = %d\n", ntabindx, ntab_globals );
+		cerror( "name table overflow - 5" );
+		}
+	p->sflags |= SHIDDEN;
+	q->sflags = (p->sflags&SMOS) | SHIDES;
+	return( idname = q );
+	}
+
+unhide( p, prev ) register struct symtab *p, *prev; {
+	register struct symtab *q, *next;
 	register s, j;
 
 	s = p->sflags & SMOS;
-	q = p;
-
-	for(;;){
-
-		if( q == stab ) q = &stab[SYMTSZ-1];
-		else --q;
-
-		if( q == p ) break;
-
-		if( (q->sflags&SMOS) == s ){
-			for( j =0; j<NCHNAM; ++j ) if( p->sname[j] != q->sname[j] ) break;
-			if( j == NCHNAM ){ /* found the name */
-				q->sflags &= ~SHIDDEN;
-				if( ddebug ) printf( "unhide uncovered %d from %d\n", q-stab,p-stab);
-				return;
-				}
+	q = (struct symtab *)((int)p->slink ^ (int)prev);
+	prev = p;
+	for( ; q; prev = q, q = next ){
+		next = (struct symtab *)((int)q->slink ^ (int)prev);
+		if( (q->sflags&SMOS) == s && !strcmp( &ntab[p->sname], &ntab[q->sname] ) ){
+			q->sflags &= ~SHIDDEN;
+			return;
 			}
-
 		}
 	cerror( "unhide fails" );
 	}
 
-/* f99ca: not written yet (0x99ca..0x9ae6 of /lib/cparse) */
-f99ca()
-{
-}
+refid( p ) struct symtab *p; { /* note that the symbol p is used: it goes into the .S file */
+	int i, j;
 
-clearst( lev ){ /* clear entries of internal scope  from the symbol table */
-	register struct symtab *p, *q, *r;
-	register int temp, rehash;
-
-	temp = lineno;
-	aobeg();
-
-	/* first, find an empty slot to prevent newly hashed entries from
-	   being slopped into... */
-
-	for( q=stab; q< &stab[SYMTSZ]; ++q ){
-		if( q->stype == TNULL )goto search;
+	if( (p->stype&BTMASK) == STRTY && p->sclass != STNAME && (struct symtab *) dimtab[p->sizoff+3] )
+		refid( (struct symtab *) dimtab[p->sizoff+3] );
+	if( !(p->sflags & SREF) ){
+		p->sflags |= SREF;
+		refsym[nrefsym] = p;
+		reftab[nrefs].r_id = nrefsym * 22;
+		++nrefsym;
 		}
-
-	cerror( "symbol table full");
-
-	search:
-	p = q;
-
-	for(;;){
-		if( p->stype == TNULL ) {
-			rehash = 0;
-			goto next;
-			}
-		lineno = p->suse;
-		if( lineno < 0 ) lineno = - lineno;
-		if( p->slevel>lev ){ /* must clobber */
-			if( p->stype == UNDEF || ( p->sclass == ULABEL && lev < 2 ) ){
-				lineno = temp;
-				uerror( "%.8s undefined", p->sname );
-				}
-			else aocode(p);
-			if (ddebug) printf("removing %8s from stab[ %d], flags %o level %d\n",
-				p->sname,p-stab,p->sflags,p->slevel);
-			if( p->sflags & SHIDES ) unhide(p);
-			p->stype = TNULL;
-			rehash = 1;
-			goto next;
-			}
-		if( rehash ){
-			if( (r=relook(p)) != p ){
-				movestab( r, p );
-				p->stype = TNULL;
-				}
-			}
-		next:
-		if( ++p >= &stab[SYMTSZ] ) p = stab;
-		if( p == q ) break;
+	else {
+		for( i=0; i<nrefsym; ++i ) if( refsym[i] == p ) break;
+		if( i == nrefsym ) cerror( "refid: symbol not found" );
+		for( j=0; j<nrefs; ++j ) if( reftab[j].r_id == i * 22 ) return;
+		reftab[nrefs].r_id = i * 22;
 		}
-	lineno = temp;
-	aoend();
+	reftab[nrefs].r_flag = 0;
+	++nrefs;
 	}
 
-/* f9bd4: not written yet (0x9bd4..0x9c0c of /lib/cparse) */
-f9bd4()
-{
-}
+clearst( lev ){ /* clear entries of internal scope  from the symbol table */
+	register struct symtab *p, *prev, *next;
+	register int temp;
+	int i;
 
-/* f9c0c: not written yet (0x9c0c..0x9c38 of /lib/cparse) */
-f9c0c()
-{
-}
+	temp = lineno;
+	for( i=0; i<HASHSZ; ++i ){
+		for( p = hashtab[i], prev = 0; p; prev = p, p = next ){
+			next = (struct symtab *)((int)p->slink ^ (int)prev);
+			lineno = p->suse;
+			if( lineno < 0 ) lineno = - lineno;
+			if( p->slevel>lev ){ /* must clobber */
+				if( p->stype == UNDEF || ( p->sclass == ULABEL && lev < 2 ) ){
+					lineno = temp;
+					uerror( "%s undefined", &ntab[p->sname] );
+					}
+				if( lev >= 0 || (p->sflags & SREF) ) putsym( p );
+				if( p->sflags & SHIDES ) unhide( p, prev );
+				if( next ){
+					next->slink = (struct symtab *)((int)next->slink ^ (int)p);
+					next->slink = (struct symtab *)((int)next->slink ^ (int)prev);
+					}
+				if( prev ){
+					prev->slink = (struct symtab *)((int)prev->slink ^ (int)p);
+					prev->slink = (struct symtab *)((int)prev->slink ^ (int)next);
+					}
+				else hashtab[i] = next;
+				free( p );
+				p = prev;
+				}
+			}
+		}
+	lineno = temp;
+	}
 
-/* f9c38: not written yet (0x9c38..0x9c62 of /lib/cparse) */
-f9c38()
-{
-}
+sinit(){ /* the header of the .S file */
+	shdr.h_magic = 1;
+	shdr.h_syms = 0;
+	shdr.h_names = 0;
+	shdr.h_tags = 0;
+	shdr.h_refs = 0;
+	shdrpos = ftell( sfile );
+	fwrite( &shdr, sizeof(shdr), 1, sfile );
+	}
 
-/* f9c62: not written yet (0x9c62..0x9e04 of /lib/cparse) */
-f9c62()
-{
-}
+sheader(){ /* write the header of the .S file again */
+	fseek( sfile, shdrpos, 0 );
+	fwrite( &shdr, sizeof(shdr), 1, sfile );
+	fseek( sfile, 0L, 2 );
+	}
 
-/* f9e04: not written yet (0x9e04..0x9e80 of /lib/cparse) */
-f9e04()
-{
-}
+putrefsyms(){ /* the symbols that are used */
+	int a, b, i;
 
-/* f9e80: not written yet (0x9e80..0x9ea6 of /lib/cparse) */
-f9e80()
-{
-}
+	shdr.h_magic = 0;
+	for( i=0; i<nrefsym; ++i ) putsym( refsym[i] );
+	}
 
-/* f9ea6: not written yet (0x9ea6..0x9ece of /lib/cparse) */
-f9ea6()
-{
-}
+putsym( p ) register struct symtab *p; { /* a symbol into the .S file */
+	struct {
+		int s_name;
+		TWORD s_type;
+		char s_class;
+		char s_b;
+		int s_8;
+		long s_offset;
+		long s_size;
+		unsigned s_no:12, s_f0:1, s_f1:1, s_f2:1, s_f3:1;	/* s_no in bits 4..15, s_f0 in bit 3 */
+		int s_tag;
+		int s_x;
+		} x;
+	register i;
 
-/* f9ece: not written yet (0x9ece..0x9f04 of /lib/cparse) */
-f9ece()
-{
-}
+	if( (p->stype == EXTERN || p->stype == EXTDEF) && strlen( &ntab[p->sname] ) >= ncharsig )
+		ntab[p->sname+ncharsig-1] = '\0';
+	x.s_name = p->sname;
+	if( p->sname >= ntab_globals ) x.s_name -= ntab_globals;
+	x.s_type = p->stype;
+	x.s_class = p->sclass;
+	x.s_offset = p->offset;
+	x.s_b = p->sfldb;
+	x.s_size = dimtab[p->sizoff];
+	x.s_8 = p->sfld8;
+	x.s_no = p->symno;
+	x.s_f0 = 0;
+	x.s_f1 = 0;
+	x.s_f2 = 0;
+	x.s_f3 = 0;
+	x.s_x = -1;
+	if( (x.s_type&BTMASK) == STRTY && x.s_class != STNAME ){
+		if( (struct symtab *) dimtab[p->sizoff+3] ) x.s_tag = ((struct symtab *) dimtab[p->sizoff+3])->symno;
+		else x.s_tag = -1;
+		}
+	else if( x.s_class == STNAME ){
+		i = dimtab[p->sizoff+1];
+		x.s_tag = ntaglist;
+		for( ; dimtab[i]; ++i ) taglist[ntaglist++] = ((struct symtab *) dimtab[i])->symno;
+		taglist[ntaglist++] = dimtab[i];
+		}
+	else x.s_tag = 0;
+	fwrite( &x, 22, 1, sfile );
+	shdr.h_syms += 22;
+	}
 
-/* f9f04: not written yet (0x9f04..0x9f06 of /lib/cparse) */
-f9f04()
-{
-}
+putnames(){ /* the names into the .S file */
+	int i;
+	long pos, end;
 
+	pos = ftell( sfile );
+	if( blevel < 0 ) for( i=ntab_globals; i<NTABSZ; ++i ) sputc( ntab[i], sfile );
+	else for( i=0; i<ntabindx; ++i ) sputc( ntab[i], sfile );
+	end = ftell( sfile );
+	shdr.h_names = end - pos;
+	}
+
+puttags(){ /* the member lists of the structures into the .S file */
+	int spare;
+
+	fwrite( taglist, 2, ntaglist, sfile );
+	shdr.h_tags = ntaglist * 2;
+	ntaglist = 0;
+	}
+
+putrefs(){ /* the references into the .S file */
+	int spare;
+
+	fwrite( reftab, 6, nrefs, sfile );
+	shdr.h_refs = nrefs * 6;
+	nrefs = 0;
+	}
+
+sputc( c, f ) FILE *f; {
+	return( putc( c, f ) );
+	}
+
+aobeg(){
+	}

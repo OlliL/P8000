@@ -53,17 +53,22 @@ extern char *scnames();
 #	define	AL_INIT ALINT
 # endif
 
-struct symtab {
-	char sname[NCHNAM];
+struct symtab {	/* WEGA: 26 bytes from malloc, in hash chains linked by the xor of the two neighbours */
+	struct symtab *slink;	/* xor of the previous and the next entry of the chain */
+	int sname;	/* offset of the name in ntab */
 	TWORD stype;  /* type word */
 
 	char sclass;  /* storage class */
 	char slevel;  /* scope level */
+	int sfld8;	/* (use open) */
 	char sflags;  /* flags for set, use, hidden, mos, etc. */
+	char sfldb;	/* (use open) */
+	char sfldc;	/* (use open) */
 	OFFSZ offset;  /* offset or value */
 	short dimoff; /* offset into the dimension table */
 	short sizoff; /* offset into the size table */
 	short suse;  /* line number of last use of the variable */
+	short symno;	/* number of the symbol in the .S file */
 	};
 
 
@@ -128,7 +133,10 @@ extern CONSZ lastcon;
 extern double dcon;
 
 extern char ftitle[];
-extern struct symtab stab[];
+# define STP(x) ((struct symtab *)(x))	/* WEGA: the rval of a NAME node points to its entry */
+extern char ntab[];	/* the names: locals from the bottom (ntabindx), globals from the top (ntab_globals) */
+extern int ntabindx, ntab_globals;
+extern struct symtab *hashtab[];
 extern int curftn;
 extern int curclass;
 extern int curdim;
@@ -149,7 +157,8 @@ extern int reached;
 
 /*	tunnel to buildtree for name id's */
 
-extern int idname;
+extern struct symtab *idname;	/* WEGA: a pointer (PCC: an index of stab) */
+extern int ncharsig;	/* significant characters of a name */
 
 extern NODE node[];
 extern NODE *lastfree;

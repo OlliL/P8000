@@ -77,3 +77,23 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 
 - Step 4/5: sources from the Plexus PCC base, module by module; compile with the WEGA cc, link with cplibc.o, strict
   comparison (needs the function names in findings.json, then strictcmp/d12model).
+
+## Step 4/5: sources on the PCC base (2026-10-30, in progress)
+
+- Base: `tools/gen/gen.py` composed every module from the Plexus PCC functions in the order of the original (match by
+  instruction similarity, scratch tmp/tmp/cpmap/match.py); placeholders for the functions without a match. Commits
+  6017ea2 (base), 078e9c7 (comm1).
+- WEGA is a strongly reworked PCC pass 1, measured so far:
+  - operator numbers and dope flags differ (manifest from the indope table of the original; FEQ..FGT, RET, PROC,
+    UPROC 119, SUBSR, TEMP, SWTCH, DESC, SEARCH, TMPS, LAB; BITFLG 0100000; DSIZE 130; NONAME 0);
+  - the symbol table is not PCC's stab[]: entries of 26 bytes from malloc, hash chains linked by XOR of the
+    neighbours (heads in a bss array at 0x9f3e), names in a name table ntab (0x4966) that grows from both ends
+    (ntabindx 0x1b14, ntab_globals 0x1b16, "name table overflow"); a NAME node holds a pointer to its entry in rval;
+  - the init functions of pftn.c are in vinit1.c, the type and symbol functions in sym1.c, local.c functions in code1.c;
+    common has System V additions (where, dexit, ncopy, tcopy) and WEGA ones (bsize, twords, tbytes, argsize, branch,
+    getmem);
+  - the output: .I through the FILE* at 0x91ec (branch writes "B%d"), .D through the FILE* at 0x7c06 (incode, cinit).
+- Compiler differences seen in cparse (classification by reading): D18 new (never @r15, always 0(r15)), D1 (our cc
+  reserves a home slot for register parameters and rounds the frame to 4; the cc of cparse does neither), D2, D3
+  (the old cc keeps a spilled parameter in its register across branches), D9 (w>>8 as byte move), D10 (long shift by
+  a constant as sdal with a negative count), D11 (shared code between the TNEXT arms in talloc, probably popt).

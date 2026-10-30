@@ -68,3 +68,8 @@ def hide_frame(t):
     """frame offsets and the frame size hidden (classification of D1 only)"""
     t = re.sub(r'%[0-9A-Fa-f]{1,4}\(r15\)', 'F(r15)', t)
     return re.sub(r'^((?:dec|inc|sub|add)\tr15,#)\S+$', r'\1N', t)
+
+
+def hide_regs(t):
+    """register names (except r15) hidden (classification of D2 only)"""
+    return re.sub(r'\br([rlhq]?)(1[0-4]|[0-9])\b', r'R\1', t)

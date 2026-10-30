@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """modcheck.py - compile one module of our sources alone and compare each of its functions with the original.
 
-Usage: modcheck.py MODULE[.c] [-v NAME] [-k] [-a] [-f]
+Usage: modcheck.py MODULE[.c] [-v NAME] [-k] [-a] [-f] [-r]
 
   MODULE  a C file of progcfg SRCDIR (or a .y file: progcfg YACC makes the .c, see below); compiled with progcfg CC -O -c
           in the emulator (the .h files and the include files of SRCDIR are copied next to it)
@@ -10,6 +10,8 @@ Usage: modcheck.py MODULE[.c] [-v NAME] [-k] [-a] [-f]
   -k      keep the work directory (RECON_TMP/modcheck_NAME)
   -f      also hide the frame: offsets (r15) and the frame size (dec/inc/sub/add r15); shows whether a function
           differs only in its frame layout (D1); for the classification only, never for "exact"
+  -r      also hide the register names (except r15): shows whether a function differs only in the choice of
+          registers (D2); for the classification only
 
 Every function of the object whose name is in findings.json (functions: name -> orig, size_orig) is compared with its
 range of the original: masked (zcode.norm_masked, addresses hidden) but registers and frame offsets kept. This is the
@@ -57,7 +59,8 @@ def main():
     keep = '-k' in a
     alld = '-a' in a
     frame = '-f' in a
-    a = [x for x in a if x not in ('-k', '-a', '-f')]
+    regs = '-r' in a
+    a = [x for x in a if x not in ('-k', '-a', '-f', '-r')]
     verbose = None
     if '-v' in a:
         i = a.index('-v')
@@ -86,13 +89,16 @@ def main():
         if frame:
             mine = [zcode.hide_frame(t) for t in mine]
             theirs = [zcode.hide_frame(t) for t in theirs]
+        if regs:
+            mine = [zcode.hide_regs(t) for t in mine]
+            theirs = [zcode.hide_regs(t) for t in theirs]
         d = [l for l in difflib.unified_diff(theirs, mine, lineterm='', n=0) if l[:1] in '+-' and l[:3] not in ('---', '+++')]
         same += not d
         diff += bool(d)
         print('%-16s %04x %4d %4d  %s' % (name, lo, hi - lo, e - v, 'SAME' if not d else 'DIFF %d' % len(d)))
         if verbose == name or (alld and d):
             print('\n'.join(difflib.unified_diff(theirs, mine, 'orig', 'ours', lineterm='', n=2)))
-    print('%s: same %d, differ %d (masked%s, module alone)' % (mod, same, diff, ', frame hidden' if frame else ''))
+    print('%s: same %d, differ %d (masked%s%s, module alone)' % (mod, same, diff, ', frame hidden' if frame else '', ', registers hidden' if regs else ''))
     if not keep:
         shutil.rmtree(work)
 
