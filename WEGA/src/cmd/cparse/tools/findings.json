@@ -659,7 +659,7 @@
    "callers_orig": "0000",
    "status": "open"
   },
-  "f4eec": {
+  "lcons": {
    "file": "-",
    "pairing": "open",
    "orig": "0x4eec",
@@ -699,7 +699,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f51d0": {
+  "doszof": {
    "file": "-",
    "pairing": "open",
    "orig": "0x51d0",
@@ -739,7 +739,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f54e2": {
+  "argregs": {
    "file": "-",
    "pairing": "open",
    "orig": "0x54e2",
@@ -749,7 +749,7 @@
    "callers_orig": "-",
    "status": "open"
   },
-  "f55b8": {
+  "tempnode": {
    "file": "-",
    "pairing": "open",
    "orig": "0x55b8",

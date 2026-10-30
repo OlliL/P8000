@@ -29,6 +29,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | adddef | - | 0x01e0 | open | open |  |  |  |
 | aobeg | - | 0x9f04 | open | open |  |  |  |
 | argalloc | - | 0x2db2 | open | open |  |  |  |
+| argregs | - | 0x54e2 | open | open |  |  |  |
 | argsize | - | 0x7eb8 | open | open |  |  |  |
 | bccode | - | 0x6a78 | open | open |  |  |  |
 | bcon | - | 0x4790 | open | open |  |  |  |
@@ -67,6 +68,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | dexit | - | 0x7f62 | open | open |  |  |  |
 | dimtinit | - | 0x153e | open | open |  |  |  |
 | doinit | - | 0x874a | open | open |  |  |  |
+| doszof | - | 0x51d0 | open | open |  |  |  |
 | dstash | - | 0x00b4 | open | open |  |  |  |
 | ecode | - | 0x7a9e | open | open |  |  |  |
 | ecomp | - | 0x52d0 | open | open |  |  |  |
@@ -76,10 +78,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | exname | - | 0x7952 | open | open |  |  |  |
 | f0000 | - | 0x0000 | open | open |  |  |  |
 | f3970 | - | 0x3970 | open | open |  |  |  |
-| f4eec | - | 0x4eec | open | open |  |  |  |
-| f51d0 | - | 0x51d0 | open | open |  |  |  |
-| f54e2 | - | 0x54e2 | open | open |  |  |  |
-| f55b8 | - | 0x55b8 | open | open |  |  |  |
 | f5f1a | - | 0x5f1a | open | open |  |  |  |
 | f5f90 | - | 0x5f90 | open | open |  |  |  |
 | f60b6 | - | 0x60b6 | open | open |  |  |  |
@@ -112,6 +110,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | irbrace | - | 0x8aac | open | open |  |  |  |
 | isitfloat | - | 0x7a80 | open | open |  |  |  |
 | ispow2 | - | 0x8014 | open | open |  |  |  |
+| lcons | - | 0x4eec | open | open |  |  |  |
 | lineid | - | 0x6b9c | open | open |  |  |  |
 | locctr | - | 0x6790 | open | open |  |  |  |
 | lookup | - | 0x94e8 | open | open |  |  |  |
@@ -182,6 +181,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | tbytes | - | 0x7f30 | open | open |  |  |  |
 | tcheck | - | 0x7cc4 | open | open |  |  |  |
 | tcopy | - | 0x7fbc | open | open |  |  |  |
+| tempnode | - | 0x55b8 | open | open |  |  |  |
 | tfree | - | 0x7cfe | open | open |  |  |  |
 | tfree1 | - | 0x7d1a | open | open |  |  |  |
 | tinit | - | 0x7c48 | open | open |  |  |  |

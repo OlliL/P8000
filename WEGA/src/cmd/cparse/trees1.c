@@ -83,6 +83,7 @@ int tdebug = 0;
 # define MPTR 010  /* pointer */
 # define MPTI 020  /* pointer or integer */
 # define MENU 040 /* enumeration variable or member */
+# define MVOID 0 /* WEGA: void */
 
 
 
@@ -508,18 +509,15 @@ strargs( p ) register NODE *p;  { /* rewrite structure flavored arguments */
 	return( p );
 	}
 
-chkstr( i, j, type ) OFFSZ j; TWORD type; {
-	/* is the MOS or MOU at stab[i] OK for strict reference by a ptr */
+chkstr( i, j, type ) TWORD type; {
+	/* is the MOS or MOU i OK for strict reference by a ptr */
 	/* i has been checked to contain a MOS or MOU */
 	/* j is the index in dimtab of the members... */
 	int k, kk;
 
-	extern int ddebug;
-
-	if( ddebug > 1 ) printf( "chkstr( %.8s(%d), %d )\n", STP(i)->sname, i, j );
 	if( (k = j) < 0 ) uerror( "undefined structure or union" );
 	else {
-		for( ; (kk = dimtab[k] ) >= 0; ++k ){
+		for( ; kk = dimtab[k]; ++k ){
 			if( kk >= SYMTSZ ){
 				cerror( "gummy structure" );
 				return(1);
@@ -530,7 +528,7 @@ chkstr( i, j, type ) OFFSZ j; TWORD type; {
 			case STRTY:
 			case UNIONTY:
 				if( type == STRTY ) continue;  /* no recursive looking for strs */
-				if( chkstr( i, dimtab[STP(kk)->sizoff+1], STP(kk)->stype ) ) return(1);
+				if( chkstr( i, (int)dimtab[STP(kk)->sizoff+1], STP(kk)->stype ) ) return(1);
 				}
 			}
 		}
@@ -696,7 +694,7 @@ bpsize(p) register NODE *p; {
 	}
 
 OFFSZ
-psize( p ) NODE *p; {
+psize( p ) register NODE *p; {
 	/* p is a node of type pointer; psize returns the
 	   size of the thing pointed to */
 
@@ -717,15 +715,23 @@ convert( p, f )  register NODE *p; {
 
 	register NODE *q, *r;
 
-	q = (f==CVTL)?p->left:p->right;
-
-	r = block( PMCONV,
-		q, bpsize(f==CVTL?p->right:p->left), INT, 0, INT );
-	r = clocal(r);
-	if( f == CVTL )
-		p->left = r;
-	else
-		p->right = r;
+	if( f == CVTL ){
+		q = p->right;
+		r = p->left;
+		}
+	else {
+		q = p->left;
+		r = p->right;
+		}
+	if( p->op == COLON ){
+		r = makety( r, q->type, 0, q->csiz );
+		if( f == CVTL ) p->left = r;
+		else p->right = r;
+		return( p );
+		}
+	r = optim( clocal( block( PMCONV, r, bpsize(q), INT, 0, INT ) ) );
+	p->left = q;	/* WEGA: for CVTL the operands change places */
+	p->right = r;
 	return(p);
 
 	}
@@ -767,6 +773,7 @@ pconvert( p ) register NODE *p; {
 NODE *
 oconvert(p) register NODE *p; {
 	/* convert the result itself: used for pointer and unsigned */
+	register NODE *q;
 
 	switch(p->op) {
 
@@ -780,8 +787,11 @@ oconvert(p) register NODE *p; {
 		return( p );
 
 	case MINUS:
+		q = p->left;
+		p->left = block( SCONV, q, NIL, INT, 0, INT );
+		p->right = block( SCONV, p->right, NIL, INT, 0, INT );
 		return(  clocal( block( PVCONV,
-			p, bpsize(p->left), INT, 0, INT ) ) );
+			p, bpsize(q), INT, 0, INT ) ) );
 		}
 
 	cerror( "illegal oconvert: %d", p->op );
@@ -861,26 +871,26 @@ NODE *
 tymatch(p)  register NODE *p; {
 
 	/* satisfy the types of various arithmetic binary ops */
-	/* modified to allow operation of type char */
 
 	/* rules are:
 		if assignment, op, type of LHS
 		if any float or doubles, make double
 		if any longs, make long
-		if both chars and LOGFLG or ASGFLG
-			or '&' or '|' or '^' make char
+		WEGA: if a logical op without int operands, make char
 		otherwise, make int
 		if either operand is unsigned, the result is...
 	*/
 
 	register TWORD t1, t2, t, tu;
 	register o, u;
-	register NODE *p1;
+	int cvl;	/* the left operand may be converted */
 
 	o = p->op;
 
 	t1 = p->left->type;
 	t2 = p->right->type;
+	if( (t1==UNDEF || t2==UNDEF) && o!=CAST )
+		uerror( "void type illegal in expression" );
 
 	u = 0;
 	if( ISUNSIGNED(t1) ){
@@ -892,53 +902,23 @@ tymatch(p)  register NODE *p; {
 		t2 = DEUNSIGN(t2);
 		}
 
-	if( ( t1 == SHORT ) && o!= RETURN ) t1 = INT;
-	if( t2 == SHORT ) t2 = INT;
-
 	if( t1==DOUBLE || t1==FLOAT || t2==DOUBLE || t2==FLOAT ) t = DOUBLE;
 	else if( t1==LONG || t2==LONG ) t = LONG;
-	else if( t1 == CHAR && t2 == CHAR ) t = CHAR;
-	else t = INT;
-
-	if( ( t1 == CHAR || t2 == CHAR )
-	   && ( (p1 = p->left)->op == ICON || (p1 = p->right)->op == ICON ) ) {
-		if( u ) {
-			if ( p1->lval >= 0 && p1->lval <= 255 )
-				t = CHAR;
-		} else {
-			if ( p1->lval >= -128 && p1->lval <= 127 )
-				t = CHAR;
-		}
-	}
-
-	if( t == CHAR
-	    && !( logop(o) || o == AND || o == OR || o == ER ) )
-		t = INT;
+	else if( !logop(o) || t1==INT || t2==INT ) t = INT;
+	else t = CHAR;
 
 	if( asgop(o) ){
-		tu = p->left->type;
+		cvl = 0;
 		t = t1;
+		tu = p->left->type;
 		}
 	else {
 		tu = (u && UNSIGNABLE(t))?ENUNSIGN(t):t;
+		cvl = 1;
 		}
 
-	/* because expressions have values that are at least as wide
-	   as INT or UNSIGNED, the only conversions needed
-	   are those involving FLOAT/DOUBLE, and those
-	   from LONG to INT and ULONG to UNSIGNED */
-	/* also now types can be ints */
+	if( t != t1 && cvl ) p->left = makety( p->left, tu, 0, (int)tu );
 
-	if( t != t1 ) p->left = makety( p->left, tu, 0, (int)tu );
-
-	if( ( t == CHAR || t == UCHAR )
-	    && ( o == ASG MUL || o == ASG DIV || o == ASG MOD ) ) {
-		/* kludge since the z8000 has no byte mult or div */
-		/* should be done in pass 2 */
-		/* set up 'tu' and 't2', since asgop, they aren't needed */
-		t2 = INT;
-		tu = ISUNSIGNED(t)? UNSIGNED: INT;
-	}
 	if( t != t2 || o==CAST ) p->right = makety( p->right, tu, 0, (int)tu );
 
 	if( asgop(o) ){
@@ -951,47 +931,53 @@ tymatch(p)  register NODE *p; {
 		p->cdim = 0;
 		p->csiz = t;
 		}
+	else {
+		p->type = p->csiz = tu = INT;
+		p->cdim = 0;
+		}
 
-	if( tdebug ){
-		printf( "tymatch(%o): %o %s %o => %o\n",p,t1,opst[o],t2,tu );
-	}
+	/* WEGA: a product of two words is long */
+	if( (o == MUL || o == ASG MUL) && twords( p->left->type ) == 1 && twords( p->right->type ) == 1 ){
+		p->type = u ? ULONG : LONG;
+		p = makety( p, tu, 0, (int)tu );
+		}
 
 	return(p);
 	}
 
 NODE *
-makety( p, t, d, s ) register NODE *p; TWORD t; {
+makety( p, t, d, s ) register NODE *p; register TWORD t; {
 	/* make p into type t by inserting a conversion */
+	register TWORD pt;
 
-	if( p->type == ENUMTY && p->op == ICON ) econvert(p);
-	if( t == p->type ){
+	pt = p->type;
+	if( p->type == ENUMTY && p->op == ICON ){
+		econvert(p);
+	same:
 		p->cdim = d;
 		p->csiz = s;
 		return( p );
 		}
+	if( t == pt ) goto same;
 
 	if( t & TMASK ){
 		/* non-simple type */
 		return( block( PCONV, p, NIL, t, d, s ) );
 		}
 
-	if( p->op == ICON ){
-		if( t==DOUBLE||t==FLOAT ){
-			p->op = FCON;
-			if( ISUNSIGNED(p->type) ){
-				p->dval = /* (unsigned CONSZ) */ p->lval;
-				}
-			else {
-				p->dval = p->lval;
-				}
-
-			p->type = p->csiz = t;
-			return( clocal(p) );
-			}
+	if( p->op == ICON && ( t==DOUBLE||t==FLOAT ) ){
+		p->op = FCON;
+		p->dval = p->lval;
+		p->type = p->csiz = t;
+		return( clocal(p) );
 		}
 
-	if(tdebug)printf("SCONV\n");
-	return( block( SCONV, p, NIL, t, d, s ) );
+	/* WEGA: between float and the short integer types through long */
+# define SHORTI(x) ((x)==INT||(x)==UNSIGNED||(x)==CHAR||(x)==UCHAR||(x)==SHORT||(x)==USHORT)
+	if( ( (t==DOUBLE||t==FLOAT) && SHORTI(pt) ) || ( (pt==FLOAT||pt==DOUBLE) && SHORTI(t) ) )
+		p = block( SCONV, p, NIL, LONG, d, LONG );
+
+	return( clocal( block( SCONV, p, NIL, t, d, s ) ) );
 
 	}
 
@@ -1010,10 +996,19 @@ block( o, l, r, t, d, s ) register NODE *l, *r; TWORD t; {
 	return(p);
 	}
 
-/* f4eec: not written yet (0x4eec..0x4f24 of /lib/cparse) */
-f4eec()
-{
-}
+CONSZ
+lcons(p) register NODE *p; {
+	/* if p is an integer constant, return its value (long) */
+	CONSZ val;
+
+	if( p->op != ICON ){
+		uerror( "constant expected");
+		val = 1;
+		}
+	else val = p->lval;
+	tfree( p );
+	return(val);
+	}
 
 icons(p) register NODE *p; {
 	/* if p is an integer constant, return its value */
@@ -1175,6 +1170,10 @@ moditype( ty ) TWORD ty; {
 
 	switch( ty ){
 
+	case TVOID:
+	case UNDEF:
+		return( MVOID );
+
 	case ENUMTY:
 	case MOETY:
 		return( MENU );
@@ -1202,28 +1201,48 @@ moditype( ty ) TWORD ty; {
 		}
 	}
 
-/* f51d0: not written yet (0x51d0..0x5222 of /lib/cparse) */
-f51d0()
-{
-}
+int aregs = 0, afregs = 0;	/* the argument registers of a call that are still free (argregs) */
+int afull;	/* the argument registers are used up */
+
+NODE *
+doszof( p )  register NODE *p; {
+	/* do sizeof p */
+	register i;
+
+	/* whatever is the meaning of this if it is a bitfield? */
+	i = tsize( p->type, p->cdim, p->csiz )/SZCHAR;
+
+	tfree(p);
+	if( i == 0 ) werror( "sizeof returns 0" );
+	else if( i < 0 ) werror( "sizeof overflow; may be meaningful if cast unsigned" );
+	return( bcon( i ) );
+	}
 
 prtdcon( p ) register NODE *p; {
-	int i;
+	int lab;
+	long size;
+	long pos;
+	int l;
 
-	if( p->op == FCON ){
-		locctr( DATA );
-		defalign( ALDOUBLE );
-		deflab( i = getlab() );
-		fincode( p->dval, (p->type == DOUBLE) ? SZDOUBLE : SZFLOAT );
-		p->lval = 0;
-		p->rval = -i;
-	/******	p->type = DOUBLE; ******/
-		p->op = NAME;
+	if( p->op == FCON ){ /* a new constant goes to the .D file, an old one is found by its label */
+		pos = 0;
+		if( (lab = fltlab( p->dval )) == crslab ){
+			defalign( ALDOUBLE );
+			size = SZDOUBLE/SZCHAR;
+			if( sectfull( DATA, (long) (SZDOUBLE/SZCHAR) ) ) newsect( DATA );
+			sectadd( DATA, size );
+			l = lab = getlab();
+			fprintf( dfile, "L%d: \n", lab );
+			pos = ftell( dfile );
+			fincode( p->dval, SZDOUBLE );
+			}
+		p->lval = pos;
+		p->rval = -lab;
+		p->type = DOUBLE;
 		}
 	}
 
 ecomp( p ) register NODE *p; {
-	if( edebug ) fwalk( p, eprint, 0 );
 	if( !reached ){
 		werror( "statement not reached" );
 		reached = 1;
@@ -1239,25 +1258,24 @@ prtree(p) register NODE *p; {
 
 	register struct symtab *q;
 	register ty;
-
-# ifdef MYPRTREE
-	MYPRTREE(p);  /* local action can be taken here; then return... */
-#endif
+	register n;
 
 	ty = optype(p->op);
 
-	printf( "%d\t", p->op );
+	fprintf( outfile, "%d\t", p->op );
 
 	if( ty == LTYPE ) {
-		printf( CONFMT, p->lval );
-		printf( "\t" );
+		fprintf( outfile, CONFMT, p->lval );
+		putc( '\t', outfile );
 		}
 	if( ty != BITYPE ) {
-		if( p->op == NAME || p->op == ICON ) printf( "0\t" );
-		else printf( "%d\t", p->rval );
+		if( p->op == ICON ) fprintf( outfile, "0\t" );
+		else if( p->op == NAME ) fprintf( outfile, "%d\t", STP(p->rval)->symno );
+		else fprintf( outfile, "%d\t", p->rval );
 		}
+	if( p->op == TEMP ) fprintf( outfile, "%d\t", p->csiz );
 
-	printf( "%o\t", p->type );
+	fprintf( outfile, "%0.2o\t", p->type );
 
 	/* handle special cases */
 
@@ -1265,32 +1283,31 @@ prtree(p) register NODE *p; {
 
 	case NAME:
 	case ICON:
-		/* print external name */
-		if( p->rval == NONAME ) printf( "\n" );
-		else if( p->rval >= 0 ){
-			q = STP(p->rval);
-			printf(  "%s\n", exname(q->sname) );
-			}
-		else { /* label */
-			printf( LABFMT, -p->rval );
-			printf( "\n" );
-			}
+		putc( '\n', outfile );
 		break;
 
 	case STARG:
 	case STASG:
 	case STCALL:
-	case UNARY STCALL:
+	case USTCALL:
 		/* print out size */
 		/* use lhs size, in order to avoid hassles with the structure `.' operator */
 
-		/* note: p->left not a field... */
-		printf( CONFMT, (CONSZ) tsize( STRTY, p->left->cdim, p->left->csiz ) );
-		printf( "\t%d\t\n", talign( STRTY, p->left->csiz ) );
+		/* note: p->in.left not a field... */
+		fprintf( outfile, CONFMT, tsize( STRTY, p->left->cdim, p->left->csiz ) );
+		fprintf( outfile, "\t%d\t\n", talign( STRTY, p->left->csiz ) );
 		break;
 
 	default:
-		printf(  "\n" );
+		putc( '\n', outfile );
+		}
+
+	if( p->op == STCALL || p->op == CALL ){ /* the stack words of the arguments */
+		aregs = 7;
+		afregs = 19;
+		afull = 0;
+		n = argregs( p->right );
+		if( n > maxoff ) maxoff = n;
 		}
 
 	if( ty != LTYPE ) prtree( p->left );
@@ -1298,13 +1315,59 @@ prtree(p) register NODE *p; {
 
 	}
 
-/* f54e2: not written yet (0x54e2..0x55b8 of /lib/cparse) */
-f54e2()
-{
-}
+argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call (those that are not in registers) */
+	register n;
 
-/* f55b8: not written yet (0x55b8..0x560e of /lib/cparse) */
-f55b8()
-{
-}
+	if( p->op == CM ) return( argregs( p->left ) + argregs( p->right ) );
+	n = argsize( p );
+	if( ( (p->type == FLOAT || p->type == DOUBLE) && afregs < 16 ) || afull ){
+	full:
+		afull = 1;
+		return( n+n );
+		}
+	if( p->type != FLOAT && p->type != DOUBLE && aregs < 2 ) goto full;
+	if( p->type == FLOAT || p->type == DOUBLE ){
+		--afregs;
+		return( 0 );
+		}
+	switch( n ){
+
+	default:
+	nofit:
+		aregs = 1;
+		goto full;
+
+	case 2:
+		if( --aregs & 1 ) --aregs;
+		if( aregs < 2 ) goto nofit;
+	case 1:
+		--aregs;
+		return( 0 );
+
+	case 4:
+		if( aregs != 7 ) goto nofit;
+		aregs -= 4;
+		return( 0 );
+		}
+	}
+
+NODE *
+tempnode( t, flag ) TWORD t; { /* a TEMP node of type t; flag 1: it gets the next place in the frame */
+	NODE *q;
+
+	q = block( TEMP, NIL, NIL, t, 0, INT );
+	q->rval = tmpno++;
+	if( flag == 1 ){
+		q->csiz = tmpoff;
+		tmpoff += twords( t ) * 2;
+		}
+	return( q );
+	}
+
+
+
+
+
+
+
 

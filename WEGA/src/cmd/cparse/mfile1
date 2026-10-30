@@ -167,6 +167,8 @@ extern int lregvar;
 extern int symcount;	/* WEGA: the number of the next symbol of the .S file */
 extern int tmpno, tmpoff;	/* WEGA: the TEMP nodes of a function */
 extern long ftnpos;	/* WEGA: the function head in the .I file */
+extern int crslab;	/* the next label */
+extern long maxoff;	/* WEGA: the most stack words of the arguments of a call in the function (prtree) */
 char getpreg();	/* WEGA: the next register pair for a long register variable */
 extern int brkflag;
 extern char yytext[];

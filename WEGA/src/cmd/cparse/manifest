@@ -127,6 +127,8 @@
 # define STASG 101
 # define STARG 102
 # define STCALL 103
+# define UNARY_STCALL 104
+# define USTCALL 105
 
 /*	some conversion operators */
 # define FLD 109
@@ -172,6 +174,7 @@
 # define UNIONTY 9
 # define ENUMTY 10
 # define MOETY 11
+# define TVOID 040	/* WEGA: void (moditype; value from /lib/cparse) */
 # define UCHAR 12
 # define USHORT 13
 # define UNSIGNED 14
@@ -251,7 +254,7 @@
 /*	table sizes	*/
 
 # define BCSZ 100 /* size of the table to save break and continue labels */
-# define SYMTSZ 600 /* size of the symbol table */
+# define SYMTSZ 500 /* WEGA: only the limit of chkstr */
 # define DIMTABSZ 750 /* size of the dimension/size table */
 # define PARAMSZ 150 /* size of the parameter stack */
 # ifndef FORT
