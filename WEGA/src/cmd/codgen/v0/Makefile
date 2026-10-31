@@ -19,10 +19,11 @@
 #   OLD_D2L   an idle scratch word that only holds a name counts as free when it weighs less (getreg)
 #   OLD_D2N   a name loaded into a word register (a global, or an auto from the frame) is not remembered there
 #   OLD_D6T   a cpir switch: the values in front of the targets (record V), the target loaded from the cpir pointer
+#   OLD_D2T   the register of a TEMP (the value of a switch) counts as free for OLD_D2L between its uses
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W -DOLD_D10 -DOLD_D3P -DOLD_D4O -DOLD_D2C -DOLD_D2F -DOLD_D2L -DOLD_D2N -DOLD_D6T
+SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W -DOLD_D10 -DOLD_D3P -DOLD_D4O -DOLD_D2C -DOLD_D2F -DOLD_D2L -DOLD_D2N -DOLD_D6T -DOLD_D2T
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc

@@ -505,7 +505,12 @@ getreg(cls, reg, flag, sym)
 #endif
 		m = 0;
 		for (t = rsuse; t; t = t->next)
+#ifdef OLD_D2T
+			/* v0: also the register of a TEMP (the value of a switch, needed again only behind a jump) */
+			if (t->cls == 2 && t->busy <= 0 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+#else
 			if (t->cls == 2 && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+#endif
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
 		if (m) {

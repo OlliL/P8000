@@ -204,3 +204,6 @@ TODO.md when this log was started.
 - OLD_D6C (cparse genswitch: the cpir table from 4 cases on): cparse 93, 2343 lines, code 48896 as the original
   (argregs, efcode a little worse: the block order behind the compare chain); corpus 259 of 259 for the first time
   (until now 20 inputs differed in the heap contents of the .S file); bench v0 86, 788 lines.
+- OLD_D2T (the kind 6 register of a switch TEMP is a candidate of OLD_D2L): setreg used r3 in every body because r2
+  held the switch value (`ld r2,r6`) until the compares; the original takes r2. cparse 98, 1732 lines (setreg,
+  chkstr, opact, fwalk, lxcom, lxres exact; openfiles only a mask artifact); corpus 259 of 259; bench v0 95, 557.
