@@ -30,7 +30,7 @@
    "status": "crt0"
   },
   "mkty": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x002a",
    "ours": "002a-004e",
@@ -52,7 +52,7 @@
    }
   },
   "bdty": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x004e",
    "ours": "004e-00b4",
@@ -74,7 +74,7 @@
    }
   },
   "dstash": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x00b4",
    "ours": "00b4-00e2",
@@ -96,7 +96,7 @@
    }
   },
   "savebc": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x00e2",
    "ours": "00e2-0130",
@@ -118,7 +118,7 @@
    }
   },
   "resetbc": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x0130",
    "ours": "0130-0174",
@@ -140,7 +140,7 @@
    }
   },
   "addcase": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x0174",
    "ours": "0174-01e0",
@@ -162,7 +162,7 @@
    }
   },
   "adddef": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x01e0",
    "ours": "01e0-0230",
@@ -184,7 +184,7 @@
    }
   },
   "swstart": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x0230",
    "ours": "0230-0250",
@@ -206,7 +206,7 @@
    }
   },
   "swend": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x0250",
    "ours": "0250-0312",
@@ -228,7 +228,7 @@
    }
   },
   "yyparse": {
-   "file": "cgram1.s",
+   "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x0312",
    "ours": "0312-1374",
@@ -4513,6 +4513,11 @@
    "basis": "reading",
    "d_classes": "D1",
    "note": "Used twice by the parser (yyparse); returns its argument; purpose and name open."
+  },
+  "yyparse": {
+   "basis": "reading",
+   "d_classes": "D1 D2 D3 D6 D11",
+   "note": "cgram1.y is the V7/System III/Plexus grammar with one more nonterminal lcon_e (a long constant expression, lcons) for the three array dimensions: with it every yacc table (yyexca, yyact, yypact, yypgo, yyr1, yyr2, yychk, yydef) equals the original. tools/actcmp.py compares the actions rule by rule: 135 of 178 equal with frame and registers hidden; the rest are shared tails (D11), register and reload differences."
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

@@ -106,10 +106,28 @@ defid( q, class )  NODE *q; {
 	ddef = q->cdim;
 	for( temp=type; temp&TMASK; temp = DECREF(temp) ){
 		if( ISARY(temp) ){
-			if( dimtab[dsym] == 0 ) dimtab[dsym] = dimtab[ddef];
-			else if( dimtab[ddef]!=0 && dimtab[dsym] != dimtab[ddef] ){
-				goto mismatch;
+			if( dimtab[dsym] ){
+				if( dimtab[ddef]!=0 && dimtab[dsym] != dimtab[ddef] ){
+				mismatch:	/* WEGA: this block stands here in the original */
+				/* WEGA: members and structure names have their own name space */
+				if( ( (class==MOU || class==MOS || class&FIELD) && (scl==MOU || scl==MOS || scl&FIELD) ) ||
+						( (class==MOU || class==MOS || class&FIELD) && (scl==UNAME || scl==STNAME) ) ||
+						( (class==UNAME || class==STNAME) && (scl==MOU || scl==MOS || class&FIELD) ) ){
+					p->sflags |= SMEMB;
+					for( cp1 = (char *) &paramstk[paramno-1]; PSYM; cp1 -= sizeof(int) ){
+						if( PSYM->sclass == STNAME || PSYM->sclass == UNAME ) break;
+						if( PSYM->sflags&SMEMB && !strcmp( &ntab[p->sname], &ntab[PSYM->sname] ) ){
+							uerror( "redeclaration1 of: %s", &ntab[p->sname] );
+							break;
+							}
+						}
+					p = copysym( &idp );
+					goto enter;
+					}
+					goto redecl;
+					}
 				}
+			else dimtab[dsym] = dimtab[ddef];
 			++dsym;
 			++ddef;
 			}
@@ -211,23 +229,9 @@ defid( q, class )  NODE *q; {
 		;  /* mismatch.. */
 
 		}
+	goto mismatch;
 
-	mismatch:
-	/* WEGA: members and structure names have their own name space */
-	if( ( (class==MOU || class==MOS || class&FIELD) && (scl==MOU || scl==MOS || scl&FIELD) ) ||
-			( (class==MOU || class==MOS || class&FIELD) && (scl==UNAME || scl==STNAME) ) ||
-			( (class==UNAME || class==STNAME) && (scl==MOU || scl==MOS || class&FIELD) ) ){
-		p->sflags |= SMEMB;
-		for( cp1 = (char *) &paramstk[paramno-1]; PSYM; cp1 -= sizeof(int) ){
-			if( PSYM->sclass == STNAME || PSYM->sclass == UNAME ) break;
-			if( PSYM->sflags&SMEMB && !strcmp( &ntab[p->sname], &ntab[PSYM->sname] ) ){
-				uerror( "redeclaration1 of: %s", &ntab[p->sname] );
-				break;
-				}
-			}
-		p = copysym( &idp );
-		goto enter;
-		}
+	redecl:
 	if( blevel > slev && class != EXTERN && !( class == LABEL && slev >= 2 ) ){
 		q->rval = (int) (idp = hide( p ));
 		p = idp;

@@ -6,7 +6,7 @@
 #   make             cparse from our sources: crt0.o (made by mkcrt0.sh cparse), the modules in the order of the original, the libc part
 #   make clean
 #
-# The parser cgram1.s is cut from the original (tools/cutgram.py) until the grammar is rebuilt; the libc part is one
+# The parser cgram1.y is made into cgram1.c by the original yacc (YACC); the libc part is one
 # cut module (cplibc.s) until it is split into the shipped members and the oldlibc versions (tools/HANDOFF_cparse.md).
 
 CRT = ../../lib/libc/crt
@@ -15,8 +15,9 @@ LDBIN = /bin/ld
 WEGA = ../../../../tmp/wega31_root
 
 CC = cc
+YACC = yacc
 CFLAGS = -O
-OBJS = cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o
+OBJS = bss.o cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o
 HDRS = mfile1 manifest macdefs stdio.h
 
 all: cparse
@@ -31,8 +32,12 @@ comm1.o: common
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
-cgram1.o: cgram1.s
-	$(CAS) -u -o $@ cgram1.s
+bss.o: bss.s
+	$(CAS) -u -o $@ bss.s
+
+cgram1.c: cgram1.y
+	$(YACC) cgram1.y
+	mv y.tab.c cgram1.c
 
 block: cparse_block
 
@@ -58,4 +63,4 @@ checkblock: cparse_block
 	python3 tools/cmpimage.py cparse_block $(WEGA)/lib/cparse
 
 clean:
-	rm -f ownraw.s ownraw.o crt0.s cplibc.o cparse_block cparse *.o
+	rm -f ownraw.s ownraw.o crt0.s cgram1.c cplibc.o cparse_block cparse *.o

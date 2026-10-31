@@ -58,7 +58,7 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 - Provisional solution: the whole libc part 0x9f06..0xbf00 (data 0x41a4..0x4898) is one cut module `../cplibc.s`
   (`cparse_libc.spec`, host/tools/unlink.py) with the entry names from the oldlibc and libc.a objects. unlink.py writes
   the jump tables as labels; the other pointer words of the data (sys_errlist 38 entries, the device error list 8,
-  _iob stdin _ptr/_base -> __sibuf, the initial break -> _end) are made symbolic by host/tools/datafix.py. libc bss:
+  _iob stdin _ptr/_base -> __sibuf, the initial break -> _end, and `_lastbuf` at 0x4400 -> __iob+160, found when the data of our link moved) are made symbolic by host/tools/datafix.py. libc bss:
   __sobuf (512, 0xb4f4), __sibuf (512, 0xb6f4), _sigtab (40, 0xb8f4). Verified: the object has the bytes of the
   original (text 8186, data 1780, 0 differing words outside the relocations).
 - Open: split into the members (shipped members by ar x, oldlibc versions, new versions for the gaps) as in ld.
@@ -129,3 +129,18 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 3. The grammar: derive cgram1.y from the yacc tables of the parser (yyr1, yyr2, yychk, yyact, ...; ~175 productions)
    and the actions from yyparse, then replace cgram1.s.
 4. Split cplibc.s into the members.
+
+## State 2026-10-31
+
+- The grammar is rebuilt: `cgram1.y` = the V7/System III/Plexus grammar plus `lcon_e` (a long constant expression,
+  `lcons`) for the three array dimensions; the original yacc makes every table equal to the original (yyexca at 0x00ce,
+  yyact 0x0122, yypact 0x0a24, yypgo 0x0c8a, yyr1 0x0d02, yyr2 0x0e6c, yychk 0x0fd6, yydef 0x123c). The actions follow
+  yyparse of the original (`tools/actcmp.py`: 135 of 178 actions equal with frame and registers hidden). WEGA changes:
+  no precedence warnings, -F writes the names of called functions, `elist` passes every argument through `f3970`,
+  `term LB e RB` builds SUBSR, switch values go to a TEMP in swtab[swx] (switchpart, adddef, swend use the offsets +1
+  and +2), lregvar and the long autooff are saved per block, `bfend` at the end of a block, "void function %s" prints
+  the name offset (quirk). `cgram1.s` and the cut are gone (tools/cutgram.py stays as the record of the cut).
+- `bss.s` (only `.comm` lines, linked first) fixes the bss in the order of the original.
+- Data model (`d12model.py`, `D6TABLES`): the size and layout of the original; strict comparison on the model: 36 exact,
+  the others classified (findings.json). The `_lastbuf` word of cplibc.s was a number and is now `__iob+160`.
+- Corpus 234 of 255; the rest: the heap-dependent .S fields (quirk table).
