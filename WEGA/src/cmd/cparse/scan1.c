@@ -438,6 +438,15 @@ yylex(){
 
 		switch( (p=lxcp[(lxchar=getchar())+1])->lxact ){
 
+		onechar:
+			if( ungetc( lxchar ,stdin) == EOF ) syserr( "stdin" );
+
+		case A_1C:
+			/* eat up a single character, and return an opcode */
+
+			yylval.intval = p->lxval;
+			return( p->lxtok );
+
 		case A_ERR:
 			uerror( "illegal character: %%%02x (hex)", lxchar );
 			break;
@@ -558,15 +567,7 @@ yylex(){
 				goto getfp;
 				}
 			stwart = FUNNYNAME;
-
-		onechar:
-			if( ungetc( lxchar ,stdin) == EOF ) syserr( "stdin" );
-
-		case A_1C:
-			/* eat up a single character, and return an opcode */
-
-			yylval.intval = p->lxval;
-			return( p->lxtok );
+			goto onechar;
 
 		case A_STR:
 			/* string constant */
@@ -765,8 +766,8 @@ struct lxrdope {
 	"else",		AR_RW,	ELSE,
 	"enum",		AR_E,	ENUM,
 	"for",		AR_RW,	FOR,
+	"fortran",	AR_A,	0,
 	"float",	AR_TY,	FLOAT,
-	"fortran",	AR_CL,	FORTRAN,
 	"goto",		AR_RW,	GOTO,
 	"if",		AR_RW,	IF,
 	"int",		AR_TY,	INT,

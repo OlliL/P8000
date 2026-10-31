@@ -277,6 +277,10 @@ cprint( p ) register NODE *p; { /* print the constant expression p into the .D f
 	if( (o = optype(p->op)) == LTYPE ){
 		switch( p->op ){
 
+		case ICON:
+			fprintf( dfile, "%d", p->lval );
+			break;
+
 		case NAME:
 			q = STP(p->rval);
 			if( q->sclass == STATIC && q->slevel > 0 ) fprintf( dfile, "L%ld", q->offset );
@@ -285,10 +289,6 @@ cprint( p ) register NODE *p; { /* print the constant expression p into the .D f
 				s = exname( q->sname );
 				fprintf( dfile, "%s", s );
 				}
-			break;
-
-		case ICON:
-			fprintf( dfile, "%d", p->lval );
 			break;
 
 		case LAB:

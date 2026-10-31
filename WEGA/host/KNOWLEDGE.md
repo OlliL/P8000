@@ -918,6 +918,7 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/cparse` (`lookup`) | returns no value when the name is not found and no entry is to be made (`mk == 0`) | kept | `HANDOFF_cparse.md` |
 | `/lib/cparse` (`newsect`) | the section counter starts at 3, so every overflow of a section gives "too many sections"; `defid` prints "ntab_gl obals" | kept | `HANDOFF_cparse.md` |
 | `/lib/cparse` (`convert`) | for CVTL the operands of the node change places (harmless for PLUS, the only user) | kept | `HANDOFF_cparse.md` |
+| `/lib/cparse` (`lxrdope`, `lxres`) | the reserved word `fortran` has the action 6, for which `lxres` has no case: a program with the word `fortran` stops with "compiler error: bad AR_?? action" (measured) | kept | `HANDOFF_cparse.md` |
 | `/lib/cparse` (`clocal` ASSIGN, `chkstr`, `treeeq`) | `clocal` loads two types for an ASSIGN of an SCONV and does not use them; `chkstr` compares a symbol pointer with 500 (signed, so it never fires); `treeeq` returns no value for an operator that is not LTYPE, UTYPE or BITYPE | kept | `HANDOFF_cparse.md` |
 
 ## ar (reconstructed, byte-identical)

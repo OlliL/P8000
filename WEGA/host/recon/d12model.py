@@ -34,7 +34,8 @@ CCHOST = os.environ.get('CCHOST', os.path.join(CFG.REPO, 'host', 'cc', 'scc' if 
 def d6tables(lines):
     """D6 (progcfg D6TABLES): the shipped cc writes a cpir switch as a value list and a separate target list, from one case
     on; the old cc writes the values and the targets together and compares one after the other up to 3 cases (no
-    table). The value and target lists are put together at the place of the value list; the lists of a switch with up
+    table). The value and target lists are put together at the place of the target list (the dense tables of the
+    function come first in the original: clocal, defid of cparse); the lists of a switch with up
     to 3 cases go to the end of the text (the model is only compared, never run)."""
     sw = {}
     for i, l in enumerate(lines):
@@ -66,7 +67,9 @@ def d6tables(lines):
             drop.update(range(vi, vj))
             tail += lines[vi:vj] + lines[ti:tj]
         else:
-            put[vj] = lines[ti:tj]
+            drop.difference_update(range(ti, tj))
+            drop.update(range(vi, vj))
+            put[ti] = lines[vi:vj]
     out = []
     for i, l in enumerate(lines):
         if i in put:
