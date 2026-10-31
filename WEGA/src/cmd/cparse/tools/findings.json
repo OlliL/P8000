@@ -6811,7 +6811,7 @@
   "tymatch": {
    "basis": "frame layout",
    "d_classes": "",
-   "note": "Source fix: register NODE *p1 as in Plexus (an eighth register variable: the original gives it an unused frame word)."
+   "note": "Source fix: register o, u declared in front of t1, t2, t, tu (o in r13, u in r12 in the original) and register NODE *p1 as in Plexus (an eighth register variable: an unused frame word)."
   },
   "buildtree": {
    "basis": "frame layout",

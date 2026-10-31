@@ -919,8 +919,8 @@ tymatch(p)  register NODE *p; {
 		if either operand is unsigned, the result is...
 	*/
 
-	register TWORD t1, t2, t, tu;
 	register o, u;
+	register TWORD t1, t2, t, tu;
 	register NODE *p1;
 	int cvl;	/* the left operand may be converted */
 
