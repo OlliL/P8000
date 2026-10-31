@@ -80,11 +80,10 @@ Order:
    `.even` behind each string (D12 is a cparse difference; experiment in tmp/tmp/stage).
 4. **Derive the old compiler step by step** with switches in the passes (cparse, codgen, popt), one version per
    compiler time, each with its driver (ccv1, ccv2, ...). Layout, evidence rules, time box, the versions and the state:
-   `host/OLDCC.md`; the rounds: `host/OLDCC_LOG.md`. State: v1 done as far as the evidence goes (strip and size
-   byte-identical, ld 55 of 59). Next (proposal of 2026-10-31, to be confirmed by the owner): close v1 as a milestone;
-   the test bench separates the differences of changed sources from those of the compiler by itself; a table of all
-   original binaries (crt0 stamp, libc state, classes) to find the compiler times; then the version that built
-   /lib/cparse (v2).
+   `host/OLDCC.md`; the rounds: `host/OLDCC_LOG.md`. State: v1 closed as a milestone (2026-10-31; strip and size
+   byte-identical, ld 55 of 59). Next (owner 2026-10-31): a table of all original binaries (crt0 stamp, libc state,
+   classes) to find the compiler times; then the test bench separates the differences of changed sources from those of
+   the compiler by itself; then the version that built /lib/cparse (v2).
 5. **Final test**: cparse (and codgen) compiled with the rebuilt old compiler are byte-identical with the originals. Only
    then are the host versions (`host/cparse`, ANSI C) written from the proven sources (of the shipped revision).
 

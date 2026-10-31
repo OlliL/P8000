@@ -85,3 +85,5 @@ TODO.md when this log was started.
   a third parameter that is only written is not spilled by the old cc (D4, one witness), `@r15` against `%0000(r15)`
   (D18). Bench 89 of 121.
 - OLDCC.md and this log started (owner decision): the D knowledge moved out of KNOWLEDGE.md and TODO.md.
+- v1 closed as a milestone (owner decision): OLD_D1, OLD_D3, OLD_D12, OLD_D20; strip and size byte-identical, ld 55
+  of 59 (place_sec, chk_ranlib, load2td, read_symbols open), bench 89 of 121. Next: the date table of all originals.

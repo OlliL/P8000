@@ -102,6 +102,10 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 
 ### v1 (01/83 .. 07/83)
 
+Status: closed as a milestone (2026-10-31, owner decision). The switches below are the version; the open ld functions
+are known remainders with one witness each and are taken up again only when a new witness (another program of the
+time, or another version) points to their mechanism.
+
 - Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3` (codgen), `OLD_D20` (popt). The libc of the version Makefiles is
   that of the shipped passes (the libc does not change what the passes write).
 - Byte-identical with v1: `/bin/size`, `/usr/bin/strip`.
@@ -389,8 +393,8 @@ the current case order is the best of seven), `expand` and `freereg` (moved bloc
   of the checked programs only; a full table of all originals (stamp, libc state, classes) is the next step.
 - Which version built /lib/cparse, /lib/codgen, /lib/popt (final test: our passes compiled with the old compiler are
   byte-identical, `src/TODO.md`)? cparse shows D12 but not D1 of v1.
-- v1 in ld: place_sec and chk_ranlib (D2/D3), load2td (code motion), read_symbols (no return temporary, the dead
-  `ldl rr4,rr2`); one witness each, possibly source forms.
+- The remainders of v1 in ld: place_sec and chk_ranlib (D2/D3), load2td (code motion), read_symbols (no return
+  temporary, the dead `ldl rr4,rr2`); one witness each, possibly source forms.
 - D4: the rule of the old spill (rmdir main: a parameter that is only written is not spilled).
 - The classes of cas, codgen, popt, ranlib were read by masked or pattern comparison; they are weak until those
   programs are checked strictly.
