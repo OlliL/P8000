@@ -141,7 +141,7 @@ time, or another version) points to their mechanism.
   codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
   return temporary, leaf functions without a frame) and packed strings (old D12).
 - Switches so far: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`, `OLD_D3P`,
-  `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R` (codgen; the version Makefiles name only `OLD_V0` or `OLD_V0P`, the switches are set in `codgen/oldcc.h`: the native cc takes about 160 characters of -D options); popt without a switch
+  `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K` (codgen; the version Makefiles name only `OLD_V0` or `OLD_V0P`, the switches are set in `codgen/oldcc.h`: the native cc takes about 160 characters of -D options); popt without a switch
   (OLD_D20 is neutral on the bench). Candidates in the sources, not set: `OLD_D2D` (codgen) and `OLD_D1F` (popt), see
   "Leaf functions" below. No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
 - Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
@@ -151,7 +151,7 @@ time, or another version) points to their mechanism.
   differing lines 1624 > 1542; + OLD_D10 and OLD_D2R narrowed to loads through a pointer: 64, 1466 lines; OLD_D1R
   without any return temporary: 64, 1463; + OLD_D3P: 65, 1462; + OLD_D4R: 68, 1437; + OLD_D4O: 69, 1435; the pairs
   rr2 rr0 rr4 rr6 at the start (OLD_D2W): 74, 1405; OLD_D3P under casts: 74, 1395; + OLD_D2C and OLD_D2F: 75, 1325;
-  + OLD_D2L: 84, 1080; + OLD_D2N: 86, 1064; + OLD_D6T: 86, 1004; + OLD_D6C: 86, 788; + OLD_D2T: 95, 557; + OLD_D6R: 98, 539; OLD_D4R on both sides: 99, 531).
+  + OLD_D2L: 84, 1080; + OLD_D2N: 86, 1064; + OLD_D6T: 86, 1004; + OLD_D6C: 86, 788; + OLD_D2T: 95, 557; + OLD_D6R: 98, 539; OLD_D4R on both sides: 99, 531; + OLD_D3K: 107, 495).
 - /lib/cparse as the second test bench (2026-10-31, ccv0, d12model, strictcmp): 44 strictly exact (shipped cc 29);
   cparse built with ccv0 normally passes its corpus like the shipped build (239 of 259 inputs identical, the rest
   differ only in the heap contents of the .S file). The behaviour check is needed: the test benches count equal
@@ -185,12 +185,12 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 108 strictly exact, 1438 differing lines, code and data as long as the original's (48896, 18584
+- State: /lib/cparse 113 strictly exact, 1312 differing lines, code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
   81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines; + OLD_D2Q 2719 lines (88: addcase and ftnend differ only by a mask artifact, a data address equal to a function
-  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438).
+  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438; source fixes hash, hide, lookup 111, 1400; + OLD_D3K 113, 1312).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
@@ -307,6 +307,13 @@ compiler that built the original. Not differences of the compiler (checked):
   the node wants another register (the shipped codgen then loads it from the frame): cparse argdebug `return(x)` as
   `ld r2,r7`; bench 64 > 65. Also under a cast between the word types int, unsigned and pointers (`p = (struct s
   *)idn` takes idn from r7; the shipped codgen needs the same type): cparse rstruct, bench 1405 > 1395 lines.
+- v0 (switch `OLD_D3K` in codgen: main3.c label record, rsfreeall, cbranch, istnode, tshape): a parameter stays
+  known in its register at a label that a jump has already named (comm3.c branch, zzz3.c cbgen keep the set) and
+  behind `&&` and `||`; at a label only a later jump names (the default of a switch, whose dispatch comes behind the
+  bodies) it is forgotten (twords reloads t). Such a register is not a scratch one for the tree (tshape, istnode):
+  an operator copies it first (fixclass `ld r2,r6; and r2,#%0030`; without this `and r6` changed the parameter).
+  ecode `ld r2,r7` before each use. Keeping it at every label: cparse 1400 > 1488 (twords, fwalk lost). cparse
+  1400 > 1312, bench v0 99 > 107.
 - Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after), libc malloc (`mult rr2,r6`).
 
 ### D4 Spill of arguments

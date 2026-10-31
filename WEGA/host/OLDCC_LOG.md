@@ -229,3 +229,12 @@ TODO.md when this log was started.
   frame), hide (one frame word less in the original: the unused `h`), lookup (one word more in the original between
   i and n). An unused local gets its frame place in the old cc too (initpreg with `int i, j;` is exact). talloc has
   one word more in the original although Plexus declares the same two locals: a compiler difference.
+- Source fixes hash, hide, lookup (frame layout): cparse 111, 1400; corpus 259.
+- The largest group (reload instead of copy, 12 hunks in 9 functions, ecode 4): the original copies a parameter
+  from its register (`ld r2,r7`) behind labels and conditional jumps. cparse writes nparm 0 into the function head,
+  so codgen gives back every register at a label. OLD_D3K tries: kept at every label and behind && / ||: 1488 (105;
+  twords, fwalk, instk worse: the default label of a switch); only at labels a jump has named already: 111, 1383
+  (fixclass, vfdzero worse: `and r6,#%0030` in the parameter's register, an ASG AND of order3 because istnode took
+  r6 for a scratch register); the register of a parameter not scratch in tshape: 113, 1344; nor in istnode: 113,
+  1312 (fixclass, ctype, sputc, ecode exact; ilbrace, irbrace only mask artifacts). Corpus 259 of 259; bench v0 107,
+  495.

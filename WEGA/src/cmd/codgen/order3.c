@@ -256,7 +256,12 @@ rallo(p, down)
 		rallo(p->right, down2);
 }
 
+#ifdef OLD_D3K
+/* v0: not the register of a parameter (it is copied before an operator changes it) */
+#define istnode(q)	((q)->op == REG && (rstatus[(q)->rval] & 0x14) && !((q)->sname && (q)->sname->sclass == 9))
+#else
 #define istnode(q)	((q)->op == REG && (rstatus[(q)->rval] & 0x14))
+#endif
 
 int ordflag;		/* 0xa16e: set to 0x14 while offstar orders a register that is not preferred */
 
@@ -795,9 +800,15 @@ argsort()
 	int r;
 	struct node *n;
 
+#ifdef OLD_D19A
+	/* v0: a constant argument counts as needing less than any other one (it is loaded after them) */
+#define ARGSU(q)	((q)->op == ICON ? -1 : (q)->su)
+#else
+#define ARGSU(q)	((q)->su)
+#endif
 	for (ai = argl; ai->node; ai++)
 		for (aj = ai + 1; aj->node; aj++)
-			if (ai->node->su < aj->node->su) {
+			if (ARGSU(ai->node) < ARGSU(aj->node)) {
 				r = aj->reg;
 				n = aj->node;
 				aj->reg = ai->reg;

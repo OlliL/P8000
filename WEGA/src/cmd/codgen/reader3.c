@@ -526,7 +526,11 @@ cbranch(p, true, false)
 			deflab(lab);
 		p->op = FREE;
 #ifndef OLD_D3
+#ifdef OLD_D3K
+		rfreeall(2);	/* v0: a parameter stays known in its register */
+#else
 		rfreeall(1);
+#endif
 #endif
 		return;
 	case OROR:
@@ -537,7 +541,11 @@ cbranch(p, true, false)
 			deflab(lab);
 		p->op = FREE;
 #ifndef OLD_D3
+#ifdef OLD_D3K
+		rfreeall(2);	/* v0: a parameter stays known in its register */
+#else
 		rfreeall(1);
+#endif
 #endif
 		return;
 	case QUEST:

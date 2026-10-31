@@ -11,6 +11,9 @@
 #include "cg.h"
 
 extern int cerror(), uerror();
+#ifdef OLD_D3K
+extern void d3kreset();
+#endif
 extern char *malloc();
 extern long ftell();
 extern long rdin();
@@ -188,6 +191,9 @@ loop:
 		goto eof;
 	switch (c) {
 	case '{':
+#ifdef OLD_D3K
+		d3kreset();
+#endif
 		init();
 		mkhash();
 		nlabsave = rdin(10);
@@ -252,7 +258,11 @@ loop:
 		deflab(lab);
 		nlcheck();
 		if (nparm <= 0)
+#ifdef OLD_D3K
+			rsfreeall(d3knamed(lab) ? 4 : 1);
+#else
 			rsfreeall(1);
+#endif
 		if (rflag)
 			regreset(1);
 		goto loop;

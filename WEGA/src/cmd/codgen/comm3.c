@@ -237,12 +237,48 @@ errexit(n)
 	exit(n);
 }
 
+#ifdef OLD_D3K
+void d3kjump();
+#endif
 void
 branch(n)
 	int n;
 {
+#ifdef OLD_D3K
+	d3kjump(n);
+#endif
 	printf("\tjpr\tL%d\n", n);
 }
+
+#ifdef OLD_D3K
+/* v0: the labels a jump has named already in this function (a parameter stays known in its register there) */
+#define D3KMAX	16384
+static char d3kbits[D3KMAX / 8];
+
+void
+d3kjump(l)
+	register int l;
+{
+	if (l >= 0 && l < D3KMAX)
+		d3kbits[l >> 3] |= 1 << (l & 7);
+}
+
+int
+d3knamed(l)
+	register int l;
+{
+	return l >= 0 && l < D3KMAX && (d3kbits[l >> 3] >> (l & 7) & 1);
+}
+
+void
+d3kreset()
+{
+	register int i;
+
+	for (i = 0; i < D3KMAX / 8; i++)
+		d3kbits[i] = 0;
+}
+#endif
 
 /* *q = *p for a node */
 void

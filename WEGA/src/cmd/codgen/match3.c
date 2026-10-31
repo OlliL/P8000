@@ -56,7 +56,12 @@ tshape(p, shape)
 		return shumul(p->left) & shape;
 	case REG:
 		r = rstatus[p->rval] & RBFLAG ? SBREG : SAREG;
+#ifdef OLD_D3K
+		/* v0: the register of a parameter is not a scratch one for the tree (it is copied first) */
+		if ((rstatus[p->rval] & RTEMPFLAGS) && !(p->sname && p->sname->sclass == 9))
+#else
 		if (rstatus[p->rval] & RTEMPFLAGS)
+#endif
 			r = r == SBREG ? (SBREG | STBREG) : (SAREG | STAREG);
 		return shape & r;
 	case OREG:

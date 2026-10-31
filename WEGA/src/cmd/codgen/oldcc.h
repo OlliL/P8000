@@ -27,4 +27,5 @@
 #define OLD_D6T		/* a cpir switch: the values in front of the targets (record V), the target from the cpir pointer */
 #define OLD_D2T		/* the register of a TEMP (the value of a switch) counts as free for OLD_D2L between its uses */
 #define OLD_D6R		/* the count register of cpir in neither half of rr0 (gswitch) */
+#define OLD_D3K		/* a parameter stays known in its register at a label a jump has named, and behind && and || */
 #endif

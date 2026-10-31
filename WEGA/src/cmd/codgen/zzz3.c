@@ -16,6 +16,9 @@
 
 
 extern int cerror();
+#ifdef OLD_D3K
+extern void d3kjump();
+#endif
 extern struct node *getlr();
 extern struct node *tcopy();
 extern struct rs *rfind();
@@ -637,6 +640,9 @@ cbgen(o, lab, mode)
 	int lab;
 	int mode;
 {
+#ifdef OLD_D3K
+	d3kjump(lab);
+#endif
 	if (o == 0) {
 		printf("\tjpr\tL%d\n", lab);
 		return;
