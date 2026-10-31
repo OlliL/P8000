@@ -111,6 +111,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 	NODE *lr, *ll;
 	int i;
 	TWORD t;
+	int n;
 
 	opty = optype(o);
 
@@ -335,8 +336,9 @@ buildtree( o, l, r ) register NODE *l, *r; {
 				}
 			else if( (sp->sflags&SMEMB) && (l->type == PTR+STRTY || l->type == PTR+UNIONTY) ){
 				/* WEGA: a member name of several structures: the member of this one */
+				char *cp2, *cp1;
+				int m;
 				int j, k;
-				char *cp1, *cp2;
 
 				for( j = dimtab[l->csiz+1]; k = dimtab[j]; ++j ){
 					cp1 = &ntab[STP(k)->sname];
@@ -919,6 +921,7 @@ tymatch(p)  register NODE *p; {
 
 	register TWORD t1, t2, t, tu;
 	register o, u;
+	register NODE *p1;
 	int cvl;	/* the left operand may be converted */
 
 	o = p->op;

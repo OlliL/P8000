@@ -929,7 +929,7 @@ vfdalign( n ) register OFFSZ n; { /* make inoff have the offset the next alignme
    unchanged; the unused register variable and the 4 bytes of frame look like the rest of debug code that was
    left out by the preprocessor in the shipped build */
 argdebug( x ){
-	register a, b;
+	register a;
 
 	a = x;
 	return( x );
