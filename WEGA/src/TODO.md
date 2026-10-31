@@ -91,6 +91,17 @@ Order:
      directory at most descends into the version directories (`SUBDIRS`, `cd v1 ; $(MAKE)`).
    - Built programs are not in git.
    - The host versions (`host/codgen`, `host/popt`, ...) get no switches: they are derived or only equal in function.
+   Evidence rules (owner decision 2026-10-31). The D classes are hard only for ld; in the other programs they are weak
+   and a finding may still be a wrong source form. A switch must not fit the old compiler to wrong sources:
+   - Before the first switch, strip and size are checked strictly like ld (strictcmp, D class read from the strict
+     diff, source form variants); ld, strip and size are the first evidence. Every other program (sld, codgen, cas,
+     ranlib, cparse, ...) is checked strictly the same way before it is used as evidence (item 2, per program).
+   - Regression: every function that is strictly exact today (all programs) stays exact with the switch, since the old
+     compiler built all originals.
+   - Several witnesses: a switch counts only when it explains findings in at least two independent functions,
+     preferably in different programs. A function that fits only through a switch no other function needs is a
+     suspect source form and goes back to the source check.
+   - Findings that no switch explains go back to the source check.
 5. **Final test**: cparse (and codgen) compiled with the rebuilt old compiler are byte-identical with the originals. Only
    then are the host versions (`host/cparse`, ANSI C) written from the proven sources (of the shipped revision).
 
