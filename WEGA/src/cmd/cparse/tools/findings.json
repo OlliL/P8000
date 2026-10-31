@@ -1303,7 +1303,7 @@
     "len_orig": 22
    }
   },
-  "f3970": {
+  "argdebug": {
    "file": "pftn1.c",
    "pairing": "confirmed",
    "orig": "0x3970",
@@ -5167,10 +5167,10 @@
    "d_classes": "D2 D3 D6 D7 D19",
    "note": "Source: tbytes(l->type) > tbytes(p->type) for the call order of the original (D19); the rest are register and layout differences."
   },
-  "f3970": {
+  "argdebug": {
    "basis": "reading",
    "d_classes": "D1",
-   "note": "Used twice by the parser (yyparse); returns its argument; purpose and name open."
+   "note": "Used twice by the parser (elist: every argument of a call); returns its argument. Name and purpose assumed: probably a debug hook whose body was left out by the preprocessor (unused register variable, 4 bytes of frame), like the unused values in bfcode and clocal."
   },
   "yyparse": {
    "basis": "reading",

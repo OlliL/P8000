@@ -125,7 +125,7 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 1. findings.json per function (strictcmp on the d12model link once the data model matches better; notes and D classes).
 2. Open source questions: defid (member block placed inside the dimension loop in the original), getpreg (the shared
    `return pregvar--`), genswitch size of the search table (`(unsigned)(n*SZLONG/SZCHAR)` compiles to srl, the original
-   divides), lineid/locctr naming, `f3970` (used by the parser, purpose open), `bssgap1/2` (unreferenced words).
+   divides), lineid/locctr naming, `argdebug` (used by the parser; name and purpose assumed, probably a debug hook left empty by the preprocessor), `bssgap1/2` (unreferenced words).
 3. The grammar: derive cgram1.y from the yacc tables of the parser (yyr1, yyr2, yychk, yyact, ...; ~175 productions)
    and the actions from yyparse, then replace cgram1.s.
 4. Split cplibc.s into the members.
@@ -136,7 +136,7 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
   `lcons`) for the three array dimensions; the original yacc makes every table equal to the original (yyexca at 0x00ce,
   yyact 0x0122, yypact 0x0a24, yypgo 0x0c8a, yyr1 0x0d02, yyr2 0x0e6c, yychk 0x0fd6, yydef 0x123c). The actions follow
   yyparse of the original (`tools/actcmp.py`: 135 of 178 actions equal with frame and registers hidden). WEGA changes:
-  no precedence warnings, -F writes the names of called functions, `elist` passes every argument through `f3970`,
+  no precedence warnings, -F writes the names of called functions, `elist` passes every argument through `argdebug`,
   `term LB e RB` builds SUBSR, switch values go to a TEMP in swtab[swx] (switchpart, adddef, swend use the offsets +1
   and +2), lregvar and the long autooff are saved per block, `bfend` at the end of a block, "void function %s" prints
   the name offset (quirk). `cgram1.s` and the cut are gone (tools/cutgram.py stays as the record of the cut).
@@ -162,6 +162,6 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 ## Next (2026-10-31)
 
 1. The 25 "other differences": read each against the patterns (new D classes or source forms); the D19 swaps.
-2. f3970 (every call argument passes through it; returns it): name and purpose; bssgap1/2.
+2. argdebug (every call argument passes through it; returns it; name assumed: a debug hook left empty by the preprocessor); bssgap1/2.
 3. The two files bss.s and libcbss.s are layout aids; with the old compiler the order should come from the first
    mentions in cgram1.o (check when the old cc exists).

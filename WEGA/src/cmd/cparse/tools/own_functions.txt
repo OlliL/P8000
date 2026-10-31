@@ -47,7 +47,7 @@
 37cc  tsize  3870    164  680a             proven    open
 3870  inforce  392c    188  -                proven    open
 392c  vfdalign  3970     68  -                proven    open
-3970  f3970  397a     10  -                proven    open
+3970  argdebug  397a     10  -                proven    open
 397a  buildtree  431a   2464  -                proven    open
 431a  strargs  438a    112  -                proven    open
 438a  chkstr  441e    148  -                proven    open

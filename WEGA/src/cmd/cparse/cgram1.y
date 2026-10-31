@@ -651,9 +651,9 @@ lcon_e:		   { $<intval>$=instruct; stwart=instruct=0; } e
 		;
 elist:		   e
 			%prec CM
-			={  $$ = f3970( $1 ); }
+			={  $$ = argdebug( $1 ); }
 		|  elist  CM  e
-			={  $$ = buildtree( $2, $1, f3970( $3 ) ); }
+			={  $$ = buildtree( $2, $1, argdebug( $3 ) ); }
 		;
 
 e:		   e RELOP e

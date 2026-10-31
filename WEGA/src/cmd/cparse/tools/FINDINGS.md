@@ -32,6 +32,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | adddef | 01d6-0226 | 0x01e0 | confirmed |  | D only (pattern-verified) | D1, D10, D11, D13, D2, D3, D7 |  |
 | aobeg | a006-a008 | 0x9f04 | confirmed | strict | D only (pattern-verified) | D11 |  |
 | argalloc | 2e20-2f60 | 0x2db2 | confirmed |  | D only (pattern-verified) | D1, D10, D11, D13, D2, D3, D6, D7, D8, D8/D2 |  |
+| argdebug | 39e0-39fa | 0x3970 | confirmed |  | D only (pattern-verified) | D1 | Used twice by the parser (elist: every argument of a call); returns its argument. Name and purpose assumed: probably a debug hook whose body was left out by the preprocessor (unused register variable, 4 bytes of frame), like the unused values in bfcode and clocal. |
 | argregs | 55a2-5680 | 0x54e2 | confirmed |  | D only (pattern-verified) | D6 D19 | Source: argregs(p->right) + argregs(p->left), so that the shipped cc calls the left one first like the original (D19); with the old cc the natural order argregs(p->left) + argregs(p->right) is expected. |
 | argsize | 7fda-8038 | 0x7eb8 | confirmed |  | D only (pattern-verified) | D1, D10, D11, D2, D3, D7, D8/D2 |  |
 | bccode | 6b8c-6bc6 | 0x6a78 | confirmed |  | D only (pattern-verified) | D10, D11, D13, D7 |  |
@@ -80,7 +81,6 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | endinit | 86f0-8856 | 0x85f0 | confirmed |  | D only (pattern-verified) | D1, D10, D11, D13, D2, D3, D7, D8, D8/D2 |  |
 | exname | 7a70-7aee | 0x7952 | confirmed |  | D only (pattern-verified) | D1, D10, D11, D13, D16, D2, D3, D7, D8 |  |
 | f0000 | - | 0x0000 | open | open |  |  |  |
-| f3970 | 39e0-39fa | 0x3970 | confirmed |  | D only (pattern-verified) | D1 | Used twice by the parser (yyparse); returns its argument; purpose and name open. |
 | falloc | 8da2-8f64 | 0x8c8e | confirmed |  | other differences |  | unexplained instruction forms: multl	rqS,rrS |
 | fhashv | 659e-65d6 | 0x6484 | confirmed |  | D only (pattern-verified) | D1, D10, D11, D2, D3, D8 |  |
 | fincode | 7716-7788 | 0x7614 | confirmed |  | D only (pattern-verified) | D1, D10, D11, D13, D2, D3, D5, D7, D8/D2 |  |
