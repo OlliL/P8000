@@ -7,11 +7,12 @@
 #   make clean
 #
 # Switches (host/OLDCC.md):
-#   (none yet: OLD_D20 is neutral on the test bench of v0p)
+#   OLD_D20C  a block reached only by conditional jumps (and by falling out of one over it) that ends with a jump
+#             goes behind the conditional jump that names it from in front (cjmove, z21.c)
 
 CC = cc
 CFLAGS = -O
-SWITCHES =
+SWITCHES = -DOLD_D20C
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc

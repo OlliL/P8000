@@ -329,3 +329,11 @@ TODO.md when this log was started.
   stays on top; yyparse: `jr eq,A; jr B` stays where the original has `jr ne,B`). With the loop inversion accepting
   a label of the same place (L269/L267/L10037): unchanged. Parked again. The block rules of popt need a tool that
   maps the blocks of the original onto the raw codgen output (the order the old popt chose) before more guesses.
+- Owner question: are the differences gopt (cc -Ol, -Or)? Measured with the shipped cc on the cparse model: -O 29
+  strictly exact, code 49152; -Ol 20, code 56320; -Or 16, code 58112 (ours 139, 48640; the original 48896). gopt makes
+  the code much larger: /lib/cparse was not made with gopt.
+- popt OLD_D20C (from oalloc, raw `[A ... jpr eq,T] L1: [B ... jpr ne,Y] T: [then ... jpr L300] Y:`, original `[A ...
+  jr ne,L1] [then ... jr L300] L1: [B ... jr eq,T] Y:`): first form looped endlessly (the move undid itself);
+  only a block behind p: cparse 477 (oalloc exact, optim 85 > 58; conval +8: a diamond `ldk r2,#1; jr E; Y: ldk
+  r2,#0; E:`, argregs +5); no diamond: 469; no unconditional jump to T (argregs `goto full`): 464, no loss; corpus
+  259; bench v0 318 > 330 (join main): v0p only. blockmap.py helped to see the moves.
