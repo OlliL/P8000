@@ -166,6 +166,8 @@ time, or another version) points to their mechanism.
   original (23 without); the bench: OLD_D1F alone 61/1621 lines, with OLD_D2D 61/1594, both on top of OLD_D2W 62/1561
   (OLD_D2W alone 62/1542): OLD_D2D costs elsewhere (crypt setup, col main, paste main, sdiff main), so both are
   candidates, not set.
+- Open (cparse): the address moved out of the wanted register before a load (chkstr), call arguments loaded from the
+  frame instead of copied from the register (putbyte), double parameters in r4..r7 (fincode, an ABI difference).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).

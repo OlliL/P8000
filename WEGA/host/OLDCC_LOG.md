@@ -140,3 +140,11 @@ TODO.md when this log was started.
   form without clocal made wrong code for g(&x)): cparse 42 (fldal spills its unused parameter in the original),
   bench 65/1468. Removed. The leaf functions of v0 (argdebug: frame 4, no spill; jan1: no frame) are open.
 - Behaviour: cparse built with ccv0 passes its corpus (239 of 259) after each change.
+- Register copies in cparse (ccv0): three causes. chkstr: the address is moved out of r2 before the load because
+  the result is wanted in r2 (`ld r3,r2; ld r2,4(r3)` against `ld r2,4(r2)`; in order3, before allocreg). fincode:
+  v0 passes a double parameter in r4..r7 (spilled with `ldm %0000(r15),r4,#4`), the shipped one in a floating register
+  (an ABI difference of cparse getpreg and codgen; new, no D number yet). putbyte: the argument v of bcon(v) is
+  loaded from its home into r7 by v0 (`ld %0000(r15),r7; ld r7,%0000(r15)`), our codgen copies it (`ld r6,r7; ld
+  r7,r6`, genargs).
+- OLD_D3S tried (popt rmove: keep a load whose slot is in a register, 1: always, 2: only right behind the store of the
+  same register): cparse 43 both (putnames lost, putbyte not fixed: its cause is the argument above); removed.
