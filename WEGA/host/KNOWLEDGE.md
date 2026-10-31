@@ -1761,7 +1761,8 @@ witness any more. ranlib_scan of ld was a source form: written as a `for` loop i
 draft kept r2/r3 taken at the loop head). Tried as a codgen rule: at a label only forget the contents of the registers
 (nullsyms) instead of giving them back (rsfreeall), unless a jump to the label was emitted before: ranlib_scan exact
 with the goto form, but table16_entry and chk_ranlib worse, and the test bench ("Old compiler v1") goes from 69 to 54
-equal functions: refuted. Open D2 in ld: dseek, place_sec, and the copy `ld r2,r3` in front of a use in chk_ranlib.
+equal functions: refuted. dseek was a source form too (one `||`, see D3). Open D2 in ld: place_sec, and the copy
+`ld r2,r3` in front of a use in chk_ranlib.
 
 ### D3 Register contents (redundant reloads, memory operands)
 The old popt does not remove a reload after a store (`ld S0,r7` followed by `ld r7,S0`): 2 times in ifile,
@@ -1773,7 +1774,8 @@ v1 switch `OLD_D3` (codgen, measured on /bin/ld 2026-10-31): at the join label o
 shipped codgen gives the idle registers back (`rfreeall(1)`), so a register that held a variable before the condition is
 loaded again behind it; the old one keeps them (init_entry: `hdr` stays in r3 behind `if (n8rel4 || n8swap)`). With the
 switch init_entry is exact, no other function of ld changes (54 of 59). Test bench (System III sources, "Old compiler
-v1"): 61 of 119 functions equal without the switch, 72 with it. Risk: a register loaded only
+v1"): 61 of 119 functions equal without the switch, 72 with it. Second witness in ld: dseek with its two page tests as
+one `||` (2026-10-31). Risk: a register loaded only
 on one of the two paths keeps its symbol too (not seen; if the old cc had this bug it goes to the quirks table).
 
 ### D4 Spill of arguments

@@ -173,11 +173,14 @@ Order:
      busy rule without effect, place_sec without a source form); the open five (load2td, place_sec, dseek,
      chk_ranlib, read_symbols) have one witness each. Next: restore WEGA's changed versions of bench sources (kept in
      src/cmd, owner 2026-10-31; witness.py takes them first) to get clean witnesses for D2 and the code motion of popt.
-     mv.c done: all 7 functions equal with v1; bench 82 of 120.
+     mv.c done: all 7 functions equal with v1; bench 82 of 120. The rest of the bench is WEGA changes of the
+     sources (extra arguments and calls), no further compiler difference shows there.
+   - dseek exact (2026-10-31): the two page tests as one `||` (no label between them, and OLD_D3 keeps n in r3):
+     a source form, and a second witness of OLD_D3. ld 55 of 59 with v1, corpus 146 of 146.
    - Sources restored for tests are kept in src/cmd (owner, 2026-10-31); the bench itself uses the unchanged System III
      files and keeps nothing.
    - State: ld 54 of 59 strictly exact with v1 (ranlib_scan exact, load2td open again), strip and size byte-identical
-     with v1, corpus 146 of 146; open: load2td (code motion, D15/D20), place_sec, dseek (D2), chk_ranlib (D3, the
+     with v1, corpus 146 of 146; open: load2td (code motion, D15/D20), place_sec (D2), chk_ranlib (D3, the
      parameter p is loaded from the frame for q = p, but its register is used for p + n), read_symbols (D1 frame
      +2: the temporary of a return above the locals, and a dead `ldl rr4,rr2` of the original). About 20 rounds:
      the review point of the time box.

@@ -134,14 +134,10 @@
    "pairing": "confirmed",
    "orig": "0x1b38",
    "ours": "1b38-1c5a",
-   "level": "findings",
+   "level": "exact",
    "size_orig": 290,
    "callers_orig": "13ca,1452,1c6c,1ce2,1f64",
-   "status": "findings",
-   "d_classes": [
-    "D2"
-   ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
+   "status": "done"
   },
   "get": {
    "file": "ld.c",
@@ -673,13 +669,6 @@
  "findings": [],
  "findings_pending": [],
  "manual_classes": {
-  "dseek": {
-   "basis": "read",
-   "d_classes": [
-    "D2"
-   ],
-   "note": "Remaining (4 lines): the second bno load goes through r6 in the original, through r3 in ours. Tried: 6 drafts on 2026-10-29 (d5/f1b38_v1..v4). Fixed on the way (behaviour): hi = v >> 8 without a mask (arithmetic shift as the original); source: the assignment expressions (cur = &page[...])->..., the read block as if-branch with else report_error, (obj->nibuf = cur->nibuf - lo) <= 0 in long arithmetic, the order hi, lo, nw."
-  },
   "ensure_buf": {
    "basis": "read",
    "d_classes": [

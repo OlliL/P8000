@@ -1274,9 +1274,7 @@ int n;
 	lo = v & 0xff;
 	obj = sp;
 	obj->pno->nuser -= 1;
-	if ((cur = &page[0])->bno == hi)
-		goto common;
-	if ((cur = &page[1])->bno == hi)
+	if ((cur = &page[0])->bno == hi || (cur = &page[1])->bno == hi)
 		goto common;
 	if (cur->nuser == 0 || (cur = &page[0])->nuser == 0) {
 		if (page[0].nuser == 0 && page[1].nuser == 0 && page[0].bno < page[1].bno)
