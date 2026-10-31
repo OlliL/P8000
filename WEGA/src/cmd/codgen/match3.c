@@ -172,6 +172,9 @@ extern void rcount();
 extern int ltypeok();
 extern void fixname();		/* 0xa0c6: a NAME that lives in a register becomes REG, an auto becomes OREG */
 extern void oregfix();		/* 0xa12a: a NAME of an auto or a parameter becomes OREG off the frame pointer */
+#ifdef OLD_D2C
+extern void symdrop();
+#endif
 extern void symuse();			/* 0x964c: note that the symbol of an assignment target is used */
 extern int allo();	/* 0x67e8: get the registers the entry needs */
 extern void expand();	/* 0x6444 */
@@ -214,8 +217,18 @@ match(p, cookie)
 	rcount();
 	kind = dope[p->op] & 0xE;
 	if (kind == LTYPE) {
-		if (p->op == NAME)
+		if (p->op == NAME) {
 			fixname(p);
+#ifdef OLD_D2C
+			/* v0: a name (not a parameter) found in a scratch register is that register, which the tree takes over */
+			if (p->op == REG && (cookie & STAREG) && (rstatus[p->rval] & STAREG) && p->type != 5 && p->type != 15 &&
+			    p->sname && p->sname->sclass != 9 &&
+			    (!(p->rall & 0x1000) || (p->rall & ~0x1000) == p->rval)) {
+				symdrop(p->rval);
+				return MDONE;
+			}
+#endif
+		}
 	} else if (kind == UTYPE) {
 		l = p->left;
 		if (l->op == NAME)

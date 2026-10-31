@@ -491,6 +491,33 @@ getreg(cls, reg, flag, sym)
 			continue;
 		goto found;
 	}
+#ifdef OLD_D2L
+	if (cls == 2 && reg == -1) {	/* v0: an idle word that holds a name is free when it weighs less */
+		for (w = rsfree; w && w->cls != 2 && w->cls != 3; w = w->next)
+			;
+#ifdef OLD_D2F
+		if (w && w->cls == 2) {		/* the word getreg would take: the first free word or the first pair */
+			for (t = w; t && t->cls != 3; t = t->next)
+				;
+			if (t && rweight[w->reg] > rweight[t->reg])
+				w = t;
+		}
+#endif
+		m = 0;
+		for (t = rsuse; t; t = t->next)
+			if (t->cls == 2 && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
+				m = t;
+		if (m) {
+			n = m;
+			n->flags &= ~0x8000;
+			n->sym = sym;
+			n->off = sym ? sym->soffset : 0;
+			n->kind = 8;
+			goto found;
+		}
+	}
+#endif
 	prev = n = rsfree;
 	for (; n; prev = n, n = n->next) {	/* a free node of the class */
 		if (cls < n->cls)
@@ -499,6 +526,14 @@ getreg(cls, reg, flag, sym)
 			continue;
 		if (reg != -1 && reg != n->reg)
 			continue;
+#ifdef OLD_D2F
+		if (cls == 2 && reg == -1) {	/* v0: a free word only when it weighs no more than the first free pair */
+			for (w = n; w && w->cls != 3; w = w->next)
+				;
+			if (w && rweight[n->reg] > rweight[w->reg])
+				break;
+		}
+#endif
 		n->flags &= ~0x8000;
 		n->sym = sym;
 		n->off = sym ? sym->soffset : 0;

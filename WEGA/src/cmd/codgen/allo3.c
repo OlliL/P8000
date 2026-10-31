@@ -325,6 +325,10 @@ allocreg(p, cookie)
 		}
 	}
 #endif
+#ifdef OLD_D2C
+	if (r == -1 && p->op == REG)
+		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: the copy of a name in a register holds no name */
+#endif
 	if (r == -1)
 		r = getreg(cls, want, 0x1000, p->sname);
 #else

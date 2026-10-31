@@ -141,7 +141,7 @@ time, or another version) points to their mechanism.
   codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
   return temporary, leaf functions without a frame) and packed strings (old D12).
 - Switches so far: `OLD_D12`, `OLD_D4R` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`, `OLD_D3P`,
-  `OLD_D4O` (codgen); popt without a switch
+  `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L` (codgen); popt without a switch
   (OLD_D20 is neutral on the bench). Candidates in the sources, not set: `OLD_D2D` (codgen) and `OLD_D1F` (popt), see
   "Leaf functions" below. No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
 - Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
@@ -150,7 +150,8 @@ time, or another version) points to their mechanism.
   v0 64 (v1 without OLD_D1: 15; + OLD_D2R: 18; + OLD_D18: 48; + OLD_D1R: 60; without OLD_D3: 61; + OLD_D2W: 62, the
   differing lines 1624 > 1542; + OLD_D10 and OLD_D2R narrowed to loads through a pointer: 64, 1466 lines; OLD_D1R
   without any return temporary: 64, 1463; + OLD_D3P: 65, 1462; + OLD_D4R: 68, 1437; + OLD_D4O: 69, 1435; the pairs
-  rr2 rr0 rr4 rr6 at the start (OLD_D2W): 74, 1405).
+  rr2 rr0 rr4 rr6 at the start (OLD_D2W): 74, 1405; OLD_D3P under casts: 74, 1395; + OLD_D2C and OLD_D2F: 75, 1325;
+  + OLD_D2L: 84, 1080).
 - /lib/cparse as the second test bench (2026-10-31, ccv0, d12model, strictcmp): 44 strictly exact (shipped cc 29);
   cparse built with ccv0 normally passes its corpus like the shipped build (239 of 259 inputs identical, the rest
   differ only in the heap contents of the .S file). The behaviour check is needed: the test benches count equal
@@ -184,8 +185,9 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 81 strictly exact (code 49152 bytes against 48896), corpus 239 of 259 (2026-10-31: 48 with v0 +
-  OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80).
+- State: /lib/cparse 89 strictly exact, 2836 differing lines (code 49152 bytes against 48896), corpus 239 of 259
+  (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
+  81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
@@ -247,6 +249,18 @@ compiler that built the original. Not differences of the compiler (checked):
   r7,r6`); word registers only. The first form (for every node) gave the bench 15 > 18 but wrong code in cparse
   copysym (`*pp = q` stored q into itself, `ldir @r3,@r2,r3`): an operand register that is still needed; narrowed to
   loads, bench 62 > 64 together with OLD_D10, cparse 39 > 43.
+- v0 (switch `OLD_D2C` in codgen, match in match3.c and allocreg in allo3.c): a name found in a scratch register by
+  fixname is that register, the tree takes it over and the register forgets the name (gotscal `inc 4(r2),#1; ld
+  r13,4(r2); ld r2,r13`, the shipped codgen copies first: `ld r3,r2`); not for parameters (sputc, clocal copy `ld
+  r2,r7` before each use), and such a copy holds no name, so the next use copies from the parameter's register again.
+- v0 (switch `OLD_D2F` in codgen, getreg in regallo3.c): a free single word register is taken only when its rweight
+  is not above that of the first free pair, else the pair is split (clocal: the copy goes to r2, not to r6 beside the
+  parameter in r7; the rest r3 of rr2 is taken next). Leaving the rest of a split pair unsorted on the free list
+  instead breaks the merging of pairs (codgen: "reclaim dest reg not free").
+- v0 (switch `OLD_D2L` in codgen, getreg): an idle scratch word that only holds a name counts as free when it weighs
+  less than the register getreg would take; the name is lost then (newsect: `n = ++nsect; cp = &buf[3]` loads into
+  r2 again, the shipped codgen keeps nsect in r2 and takes r3). The name lives on as long as nobody needs the register
+  (gotscal keeps pstk in r2 across statements).
 - Form: another register for a temporary: rr0 where the shipped cc takes rr4 (cas), rr4 against rr2 (ld), a copy to r2
   in front of a use (codgen `expand`, ld place_sec and chk_ranlib); register variables of leaf functions in scratch
   registers (sld).

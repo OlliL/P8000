@@ -168,3 +168,18 @@ TODO.md when this log was started.
   that jump only and no fall-through; for cparse tfree1, which takes p from r7 behind the else label): cparse 77
   (walkf, irbrace, fixtype lost: the restored register is then taken as a temporary), tfree1 not fixed (its jump is
   not printed by cbgen). Removed.
+- Register copies in cparse (ccv0p), the most frequent form `ld R,R` (gotscal `ld r3,r2; inc 4(r3),#1`): orderadd
+  orders the NAME pstk with cookie 6, fixname inside match makes it the REG of the cached register and entry 060 (`ld
+  A1,AL`) copies it; the shipped codgen does the same. OLD_D2C (match: such a REG in a scratch register is the result,
+  its name forgotten): cparse 80 (3222 lines; sputc lost: its parameter in r6 is copied by the original); without
+  parameters: 82 (3284), clocal still off: the copy takes r6 beside the parameter in r7 and holds the name, so the
+  next use copies back into r7 and popt deletes that; the copy without a name (allocreg) gives `ld r6,r7` before each
+  use, the original `ld r2,r7`.
+- OLD_D2F first form (getreg: the rest of a split pair stays where the pair was, not sorted in): codgen fails on
+  most cparse sources ("reclaim dest reg not free": rsreturn merges partners only in the sorted run). Second form
+  (only the choice: a free word only when it weighs no more than the first free pair): cparse 89, 3132 lines; corpus
+  239 of 259; bench v0 75, 1325 lines (D2C and D2F together).
+- OLD_D2L (getreg: an idle scratch word holding only a name is taken when it weighs less than the word getreg would
+  take; newsect `lda r2,9(r15)` right after `ld 12(r15),r2`): cparse 89, 2836 lines (yyparse 86 > 27, copysym 78 > 34,
+  putsym 74 > 34; defid 140 > 180 is a moved block in the diff); corpus 239 of 259; bench v0 84, 1080 lines. The
+  normal objects of codgen unchanged (match3, lcl3, allo3, regallo3 compiled with the shipped cc).

@@ -463,6 +463,22 @@ symuse(s)
 	}
 }
 
+#ifdef OLD_D2C
+/* the register no longer holds its symbol (the tree has taken it over) */
+void
+symdrop(reg)
+	register int reg;
+{
+	register struct rs *n;
+
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == reg) {
+			n->off = 0;
+			n->sym = 0;
+		}
+}
+#endif
+
 /* the register that holds the symbol (and offset), marked busy; -1 if none */
 int
 symreg(s, off)
