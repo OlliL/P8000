@@ -76,8 +76,7 @@ Order:
    `.even` behind each string (D12 is a cparse difference; experiment in tmp/tmp/stage).
 4. **Derive the old compiler step by step** with switches in the stages (cparse, codgen, popt), encapsulated by separate
    cc entry points (for example ccv1, ccv2). Start with strip (one D2 expression, D12),
-   measure on ld (8 findings, strictcmp, d12model, corpus), check on ranlib and the oldcc modules. Fix a time box and an
-   abort criterion before this step starts (HANDOFF_wega_disasm.md, step 3).
+   measure on ld (8 findings, strictcmp, d12model, corpus), check on ranlib and the oldcc modules.
    Layout (owner decision 2026-10-31):
    - The old versions are native WEGA programs only (built with the shipped cc, run in the emulator); no host versions
      and no cross environment of them. The build frame stays in `src/`; `host/oldcc` is not used for it (it keeps only
@@ -102,6 +101,21 @@ Order:
      preferably in different programs. A function that fits only through a switch no other function needs is a
      suspect source form and goes back to the source check.
    - Findings that no switch explains go back to the source check.
+   Time box and abort criterion (owner decision 2026-10-31):
+   - A round is one hypothesis for a switch (one D class, an assumed mechanism), made and measured under the evidence
+     rules. A round is progress when at least two findings in independent functions become strictly exact without a
+     regression, or when it gives a new measured explanation (for example the place of the mechanism in the pass).
+   - A D class is parked after three rounds in a row without progress, and also when its switch would change the normal
+     build (cparse, codgen or popt no longer byte-identical with the shipped programs) or would need a large rebuild of
+     a pass (for example a new table structure in codgen). Parked means: measurements and attempts recorded here, go on
+     with the next class.
+   - The whole work stops (state written to the handoff) when five D classes in a row are parked or no open class is left.
+   - Review by the owner at the first of: milestone (strip, size and ld byte-identical with v1, data with the real
+     layout, not only under the model) or 20 rounds.
+   - Every accepted switch: commit (no push), the tables in `src/TODO.md` and `host/KNOWLEDGE.md` updated, the normal
+     build stays green (shipped cparse and codgen byte-identical, corpus).
+   - Order: the classes already assigned to a pass first (D12 in cparse), then the classes of strip (D2), then the
+     findings of ld.
 5. **Final test**: cparse (and codgen) compiled with the rebuilt old compiler are byte-identical with the originals. Only
    then are the host versions (`host/cparse`, ANSI C) written from the proven sources (of the shipped revision).
 
