@@ -446,8 +446,8 @@ irbrace(){
 	}
 
 hash( s ) char *s; { /* the hash chain of the name s */
-	char *p;
 	int h;
+	char *p;
 
 	h = 0;
 	for( p = s; *p; ++p ) h += *p;

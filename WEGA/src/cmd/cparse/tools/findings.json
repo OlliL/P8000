@@ -6737,6 +6737,26 @@
    "basis": "reading",
    "d_classes": "D1 D2 D3 D6 D11",
    "note": "cgram1.y is the V7/System III/Plexus grammar with one more nonterminal lcon_e (a long constant expression, lcons) for the three array dimensions: with it every yacc table (yyexca, yyact, yypact, yypgo, yyr1, yyr2, yychk, yydef) equals the original. tools/actcmp.py compares the actions rule by rule: 135 of 178 equal with frame and registers hidden; the rest are shared tails (D11), register and reload differences."
+  },
+  "hash": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: the locals are declared h, p (the original has h at the lower frame place, the old cc gives the first declared local the lower place)."
+  },
+  "hide": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: no unused local h (the original frame has i only; an unused local gets a frame place in the old cc too, initpreg)."
+  },
+  "lookup": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: one more unused int between i and n (the original has a frame word there; its name j is a guess)."
+  },
+  "nidcl": {
+   "basis": "constant",
+   "d_classes": "",
+   "note": "Source fix: the empty array warning for AUTO and REGISTER (the original compares with 4); the source had EXTDEF."
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

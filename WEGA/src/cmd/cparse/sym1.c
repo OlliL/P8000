@@ -411,6 +411,7 @@ lookup( name, s, mk, cls ) char *name; {
 	register struct symtab *prev;
 	register struct symtab *next;
 	int i;
+	int j;
 	int n;
 
 	i = 0;
@@ -512,7 +513,7 @@ copysym( pp ) struct symtab **pp; { /* a copy of the entry *pp in a new entry, w
 struct symtab *
 hide( p ) register struct symtab *p; {
 	register struct symtab *q;
-	int i, h;
+	int i;
 
 	if( (q = (struct symtab *) malloc( sizeof(struct symtab) )) == 0 )
 		cerror( "Symbol table out of space" );
