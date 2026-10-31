@@ -548,6 +548,25 @@ getreg(cls, reg, flag, sym)
 		}
 	}
 #endif
+#ifdef OLD_D2P
+	if (cls == 3 && reg == -1) {	/* v0: an idle pair that holds a name is free when it weighs less (OLD_D2L for pairs) */
+		for (w = rsfree; w && w->cls != 3; w = w->next)
+			;
+		m = 0;
+		for (t = rsuse; t; t = t->next)
+			if (t->cls == 3 && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
+				m = t;
+		if (m) {
+			n = m;
+			n->flags &= ~0x8000;
+			n->sym = sym;
+			n->off = sym ? sym->soffset : 0;
+			n->kind = 8;
+			goto found;
+		}
+	}
+#endif
 	prev = n = rsfree;
 	for (; n; prev = n, n = n->next) {	/* a free node of the class */
 		if (cls < n->cls)

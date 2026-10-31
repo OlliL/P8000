@@ -283,3 +283,5 @@ TODO.md when this log was started.
   OLD_D2E for SCONV (the pair of the even operand register): 1118, worse; for MUL and SCONV: 1092; for MUL only
   (OLD_D2M): cparse 128, 961 (adddef exact, swend, genswitch better); corpus 259; bench v0 108, 418. icons and upoff
   are open (icons: the SCONV operand comes from an assignment; upoff: the operand is r1).
+- OLD_D2P (OLD_D2L for pairs): cparse 129, 906 (inforce exact; defid, putsym, dclstruct better; buildtree +2);
+  corpus 259; bench v0 109, 407. upoff still takes rr4 (its rr2 is not an idle pair: open).

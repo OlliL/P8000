@@ -31,6 +31,7 @@
 #define OLD_D3K		/* a parameter stays known in its register at a label a jump has named, and behind && and || */
 #define OLD_D2V		/* OLD_D2R only when no lighter register is free (the address register competes by weight) */
 #define OLD_D2M		/* a word multiplied through a pair: the pair of its even register (allocreg) */
+#define OLD_D2P		/* OLD_D2L for pairs: an idle pair that holds a name is free when it weighs less */
 #endif
 
 /* d2qfree (allo3.c) serves OLD_D2Q and OLD_D2M */
