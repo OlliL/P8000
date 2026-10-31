@@ -93,16 +93,20 @@ first 16 strings that decide (the own modules lie in front of the libc). Reading
 
 | Time (build stamp) | D12 of the data | Programs (examples) | Compiler |
 |---|---|---|---|
-| 1981 .. 1982, no crt0 stamp (sources 07/82 ..) | packed | chmod, dc, m4, eqn, cpp (12/82), ranlib, the plz tools | old; not dated by a stamp; before v1? |
-| 10/82 .. 12/82 (crt0 3.1) | packed | ex, vi, at, dd | old |
+| 1981 .. 1982, no crt0 stamp (sources 07/82 ..) | packed | chmod, dc, m4, eqn, cpp (12/82), ranlib, the plz tools | v0 (D1 tight) |
+| 10/82 .. 11/82 (crt0 3.1) | packed | ex, vi, at | v0 (D1 tight); shut, dd 11/82 .. 12/82 loose |
 | 01/83 .. 05/83 (crt0 3.1) | packed | size, strip, write, ls, sort, passwd, mount, rm, lint1 | v1 |
 | 07/83 (crt0 3.2) | packed | ld, cp/ln/mv, login, get, yacc | v1 (ld, mv checked) |
-| 08/11/83 | packed | csh | old (last packed one) |
-| 08/22/83 and later | padded | sh, rsh 08/22, troffv7, adb 09/83, sld 10/27, ar, make, ps 11/83 | shipped D12 |
-| no stamp, built late | packed | cparse, scparse, codgen, scodgen (sources 10/06/83), popt, spopt, gopt (03/83), cas (07/83) | old D12: the passes were built by an older cparse than they are |
+| 08/11/83 | packed | csh | v1 (last packed one) |
+| 08/22/83 .. 09/01/83 | padded | sh, rsh, kdb, fsdb | D1 slots with the shipped D12: between v1 and shipped |
+| 09/09/83 and later | padded | troffv7, adb 09/83, sld 10/27, ar, make, ps 11/83 | shipped (D1 loose) |
+| no stamp, built late | packed | cparse, scparse, codgen, scodgen (sources 10/06/83), popt, spopt, gopt (03/83), cpp, find 10/83, upkeep 11/83 | v0 (D1 tight): the passes were built by the compiler of 1982 |
 | no stamp, libc 09/83 | padded | cc, scc, tar, format, verify, copydisk, gld, pburn | shipped |
 
-So the D12 behaviour of cparse changed between 08/11/83 (csh) and 08/22/83 (sh). Exceptions to check: nroff 07/08/83
+The second mark is D1, read from the frames of the functions that save register variables (`datemap.py`, column D1):
+"slots" (as many never used frame words as saved registers: v1), "tight" (no unused word: v0), "loose" (the shipped
+cc). So: v0 up to 11/82, v1 from 01/83 (the change in 12/82 .. 01/83, where shut, dd and some acct programs read loose),
+D12 of cparse changed between 08/11/83 (csh) and 08/22/83 (sh), D1 between 09/01/83 (fsdb) and 09/09/83 (troffv7). Exceptions to check: nroff 07/08/83
 padded (its first strings may be the binary hyphenation tables), find 10/25/83, upkeep 11/22/83 and stty 12/21/83
 packed (built by an old compiler late, or few strings), id 05/83 and the getty programs mixed.
 
@@ -131,7 +135,27 @@ time, or another version) points to their mechanism.
 - stdio of the time: `char *_ptr` and the V7 forms of getc/putc (`--_cnt >= 0` first); the stdio.h of the WEGA tree has
   `unsigned char *_ptr` and the other order.
 
-### The compiler of /lib/cparse (later than v1, not built yet)
+### v0 (1982; it also built the compiler passes) — started 2026-10-31
+
+- Time: the programs of 1982 (sources 07/82 .., crt0 3.1 up to 11/82) and, built late, the passes cparse, scparse,
+  codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
+  return temporary, leaf functions without a frame) and packed strings (old D12).
+- Switches so far: `OLD_D12` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R` (codgen); popt without a switch (OLD_D20 is
+  neutral on the bench). No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
+- Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
+  `make -C host oldroot` together with v1.
+- Test bench v0 (`witness.py -t v0`, System III sources of 38 programs of 1982, 153 functions): shipped cc 15, v1 14,
+  v0 61 (v1 without OLD_D1: 15; + OLD_D2R: 18; + OLD_D18: 48; + OLD_D1R: 60; without OLD_D3: 61).
+- /lib/cparse built with ccv0 (d12model, strictcmp): the code is as long as the original's (48896 bytes; shipped cc
+  49152), data equal at the same address 17472 of 18584 bytes (shipped 17170), 38 functions strictly exact (shipped
+  29; gained mkty, mainp1, lxtitle, bcon, openfiles, bstart, bend, fldal, noinit, tcheck, putstrs; lost savebc, psave).
+- Open (bench): register variables of leaf functions in scratch registers without a frame and without a spill of the
+  parameters (cal jan1: `ld r4,r7`, y in r4, d in r5; the shipped codgen puts the first one into r1 and the second into
+  r13); the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
+  `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
+  probably the old cas, which resolves `callr` to a later global function as `call`).
+
+### Seen in /lib/cparse (classes read from the strict diffs, before v0)
 
 Seen in cparse (classes read from the strict diffs, `strictlayers.py`, weak): D12 holds (the data under the D12 model),
 D1 of v1 does not (its register variables have no frame places: OLD_D1 breaks lxinit, moedef, clearst). Also seen: D18
@@ -169,6 +193,8 @@ compiler that built the original. Not differences of the compiler (checked):
   spare words = number of register variables).
 - Evidence: ld (30 functions lose their spares and stay exact), strip (`copy`; byte-identical), the bench (31 > 72),
   /bin/mv (frames 16, 0x12, 10 of main, pname, dname; shipped 12, 12, 8).
+- v0 (switch `OLD_D1R` in codgen, delay() in reader3.c): the temporary of a return value only when a delayed x++ needs
+  it; the bench of v0 goes from 48 to 60 equal functions.
 - Other forms, not reproduced: the temporary of a return value (codgen, reader3.c, above the locals) is in every
   function of ld with a return value except read_symbols; one unexplained frame word in main, parse_args, slookup,
   pslookup, index16 of ld (kept as `int spare`); cparse's compiler makes no frame for leaf functions and no home slots
@@ -176,6 +202,9 @@ compiler that built the original. Not differences of the compiler (checked):
 
 ### D2 Scratch registers
 
+- v0 (switch `OLD_D2R` in codgen, allocreg in allo3.c): the register for a result is the word register of an operand
+  first (freereg), a free one only after it (`ld r7,@r7` where the shipped codgen writes `ld r6,@r7; ld r7,r6`); the
+  bench of v0: 15 > 18 equal functions, 3203 > 2096 differing lines. Word registers only (a long pair must be even).
 - Form: another register for a temporary: rr0 where the shipped cc takes rr4 (cas), rr4 against rr2 (ld), a copy to r2
   in front of a use (codgen `expand`, ld place_sec and chk_ranlib); register variables of leaf functions in scratch
   registers (sld).
@@ -284,7 +313,8 @@ shipped build always uses `calr` inside a file. Pattern from popt (166 against 2
 
 ### D18 Frame operand with offset 0
 
-The cc of /lib/cparse never writes `@r15` (506 times `%0000(r15)`); ld and codgen use `@r15`. v1 writes `%0000(r15)` for
+v0 (switch `OLD_D18` in codgen, the spills and saves of efcode3.c and gen3.c written as `0(fp)`): the bench of v0 goes
+from 18 to 48 equal functions. The cc of /lib/cparse never writes `@r15` (506 times `%0000(r15)`); ld and codgen use `@r15`. v1 writes `%0000(r15)` for
 the home of a parameter where rmdir has `@r15`. The comparisons of cparse treat both as equal (progcfg `D18`).
 
 ### D19 Order of evaluation of the operands of a binary operator (cparse)
@@ -401,11 +431,11 @@ the current case order is the best of seven), `expand` and `freereg` (moved bloc
 
 ## 5 Open questions
 
-- How many compiler versions are there, and when did each change? D12 (cparse) changed between 08/11/83 and
-  08/22/83; when D1 (v1, cparse) and D3, D20 changed is not known: other marks that can be read from a binary without
-  its source would date them (a candidate: frames of leaf functions, D1 of cparse's compiler).
-- The compiler passes are packed (old D12) although their sources are of 10/83: which compiler built them? v1 does not
-  fit cparse (no D1); the "v2" of cparse has old D12 and no OLD_D1.
+- The times of D3 and D20 are not known (no mark read from a binary yet).
+- v0 is not complete: the open forms of its bench (leaf functions, the first register, D6 dispatch, D17 by cas) and the
+  final test (cparse, codgen, popt built with ccv0 byte-identical).
+- The compiler of 08/22/83 .. 09/01/83 (sh: slots with the shipped D12) is not built; it may be v1 with the shipped
+  cparse.
 - Which version built /lib/cparse, /lib/codgen, /lib/popt (final test: our passes compiled with the old compiler are
   byte-identical, `src/TODO.md`)? cparse shows D12 but not D1 of v1.
 - The remainders of v1 in ld: place_sec and chk_ranlib (D2/D3), load2td (code motion), read_symbols (no return

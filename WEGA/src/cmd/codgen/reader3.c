@@ -873,7 +873,9 @@ delay(p)
 		default:
 			ret++;
 			sz = szty(p->type);
+#ifndef OLD_D1R
 			off = freetemp(sz) / 8;
+#endif
 		}
 	}
 	fwalkd(p, mapnm, 0);
@@ -884,6 +886,10 @@ delay(p)
 	ndelay = 0;
 	delay2(p);
 	codgen(p, FOREFF);
+#ifdef OLD_D1R
+	if (ret && ndelay)
+		off = freetemp(sz) / 8;	/* the temporary of a return value only for a delayed x++ */
+#endif
 	if (ret && ndelay) {
 		printf("/* delay */\n");
 		if (sz == 2) {

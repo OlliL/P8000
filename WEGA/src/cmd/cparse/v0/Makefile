@@ -1,0 +1,65 @@
+# cparse v0: pass 1 the old C compiler v0 (1982: tight frames; it also built the passes of the shipped compiler), a native WEGA program.
+# Made from the sources of .. with the switches of this version; the start-up file, the bss layout and the libc
+# part are those of .. (make .. first).
+#
+#   make             v0/cparse
+#   make install PREFIX=dir    dir/lib/v0/cparse (the pass of ../../cc/v0/ccv0)
+#   make clean
+#
+# Switches (host/OLDCC.md):
+#   OLD_D12   the string literals of a file at the end of its data, one pool, aligned only at its start and end
+
+CC = cc
+CFLAGS = -O
+SWITCHES = -DOLD_D12
+PREFIX = /
+LDBIN = /bin/ld
+OLD = ../../../lib/oldlibc
+HDRS = ../mfile1 ../manifest ../macdefs ../stdio.h
+OBJS = ../bss.o cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o
+LIBCOBJS = ../libcbss.o $(OLD)/fltioc/0_1.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/rdwr/0_3.o $(OLD)/fopen/0_1.o $(OLD)/fdopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/ungetc/0_1.o ../shipped/atof.o $(OLD)/ecvt/0_1.o ../shipped/pow10.o $(OLD)/filbuf/0_3.o ../shipped/data.o $(OLD)/setbuf/0_1.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_4.o $(OLD)/findiop/0_2.o ../shipped/__callex.o ../shipped/cuexit.o $(OLD)/perror/0_1.o $(OLD)/cnvt/0_2.o ../shipped/decimal.o $(OLD)/length/0_3.o $(OLD)/malloc/0_3.o $(OLD)/errlst/0_1.o $(OLD)/isatty/0_2.o $(OLD)/stty/0_3.o $(OLD)/strcat/0_2.o $(OLD)/strcmp/0_1.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o ../shipped/ctype_.o ../shipped/brk.o ../shipped/chmod.o ../shipped/close.o ../shipped/creat.o ../shipped/ioctl.o ../shipped/lseek.o ../shipped/open.o ../shipped/read.o ../shipped/signal.o ../shipped/umask.o ../shipped/write.o ../shipped/cerror.o
+
+all: cparse
+
+cparse: ../crt0.o $(OBJS) $(LIBCOBJS)
+	$(LDBIN) -i -e start ../crt0.o $(OBJS) $(LIBCOBJS) -o $@
+
+cgram1.o: ../cgram1.c $(HDRS)
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../cgram1.c
+
+xdefs1.o: ../xdefs1.c $(HDRS)
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../xdefs1.c
+
+scan1.o: ../scan1.c $(HDRS)
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../scan1.c
+
+pftn1.o: ../pftn1.c $(HDRS)
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../pftn1.c
+
+trees1.o: ../trees1.c $(HDRS)
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../trees1.c
+
+optim1.o: ../optim1.c $(HDRS) ../optim
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../optim1.c
+
+code1.o: ../code1.c $(HDRS)
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../code1.c
+
+local1.o: ../local1.c $(HDRS)
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../local1.c
+
+comm1.o: ../comm1.c $(HDRS) ../common
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../comm1.c
+
+vinit1.o: ../vinit1.c $(HDRS)
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../vinit1.c
+
+sym1.o: ../sym1.c $(HDRS)
+	$(CC) $(CFLAGS) $(SWITCHES) -c ../sym1.c
+
+install: cparse
+	-mkdir $(PREFIX)/lib/v0
+	cp cparse $(PREFIX)/lib/v0/cparse
+
+clean:
+	rm -f cparse *.o

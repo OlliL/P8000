@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """witness.py - test bench of an old compiler version: System III sources of WEGA programs built in its time.
 
-Usage: witness.py [-c "EMUARGS"] [-s N] [-v FUNC] [PROG ...]
+Usage: witness.py [-t v1|v0] [-c "EMUARGS"] [-s N] [-v FUNC] [PROG ...]
+  -t SET   the programs of one compiler time: v1 (crt0 stamps 01/83 .. 07/83, default) or v0 (1982, tight frames;
+           host/OLDCC.md section 2)
   -s N     also print the N most frequent differing hunks (registers hidden where only they differ)
   -v FUNC  print the hunks of the function FUNC (prog:func or func)
   -n       use the stdio.h of the WEGA tree (default: the stdio.h of the v1 time, src/cmd/cparse/stdio.h: char *_ptr,
@@ -30,6 +32,15 @@ PROGS=[('bin/chgrp','chgrp.c'),('bin/chown','chown.c'),('bin/mv','mv.c'),('bin/d
  ('bin/tee','tee.c'),('bin/time','time.c'),('bin/touch','touch.c'),('bin/tr','tr.c'),('bin/uname','uname.c'),
  ('bin/write','write.c'),('usr/bin/checkeq','checkeq.c'),('usr/bin/ct','ct.c'),('usr/bin/hyphen','hyphen.c'),
  ('usr/bin/id','id.c'),('usr/bin/logname','logname.c'),('usr/bin/units','units.c'),('usr/bin/xargs','xargs.c')]
+PROGS_V0=[('bin/chmod','chmod.c'),('etc/clri','clri.c'),('etc/cron','cron.c'),('usr/bin/cal','cal.c'),
+ ('usr/bin/cb','cb.c'),('usr/bin/col','col.c'),('usr/bin/deroff','deroff.c'),('usr/lib/calprog','calprog.c'),
+ ('usr/lib/diff3prog','diff3prog.c'),('bin/file','file.c'),('bin/kill','kill.c'),('bin/mkdir','mkdir.c'),
+ ('bin/nohup','nohup.c'),('bin/pwd','pwd.c'),('usr/bin/join','join.c'),('usr/bin/prof','prof.c'),('usr/bin/ptx','ptx.c'),
+ ('usr/bin/split','split.c'),('usr/bin/tty','tty.c'),('usr/bin/wc','wc.c'),('bin/env','env.c'),('bin/sum','sum.c'),
+ ('bin/tail','tail.c'),('usr/bin/banner','banner.c'),('usr/bin/cut','cut.c'),('usr/bin/grpck','grpck.c'),
+ ('usr/bin/mesg','mesg.c'),('usr/bin/pack','pack.c'),('usr/bin/paste','paste.c'),('usr/bin/pcat','pcat.c'),
+ ('usr/bin/pwck','pwck.c'),('usr/bin/sdiff','sdiff.c'),('usr/bin/unpack','unpack.c'),('bin/echo','echo.c'),
+ ('bin/cat','cat.c'),('bin/sleep','sleep.c'),('usr/bin/crypt','crypt.c'),('usr/bin/getopt','getopt.c')]
 def norm(t):
     return re.sub(r'%[0-9A-F]{4}(?!\(r15\))','A',t)
 def code(path):
@@ -43,6 +54,9 @@ def main():
         i=a.index('-v'); vf.add(a[i+1]); del a[i:i+2]
     import collections
     oldhdr='-n' not in a; a=[x for x in a if x!='-n']
+    progs=PROGS
+    if '-t' in a:
+        i=a.index('-t'); progs={'v1':PROGS,'v0':PROGS_V0}[a[i+1]]; del a[i:i+2]
     shapes=collections.Counter(); where=collections.defaultdict(set)
     cc=['-r',OLDROOT,'/bin/ccv1']
     if '-c' in a:
@@ -50,7 +64,7 @@ def main():
     sel=set(a)
     work=os.path.join(os.environ.get('RECON_TMP','/mnt/share/cvs/P8000/tmp/tmp'),'w3'); os.makedirs(work,exist_ok=True)
     tot_same=tot=0; tot_d=0
-    for b,src in PROGS:
+    for b,src in progs:
         name=os.path.basename(b)
         if sel and name not in sel: continue
         mine=os.path.join(HERE,'..','..','src','cmd',src)	# a WEGA version restored in src/cmd comes first

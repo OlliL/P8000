@@ -307,7 +307,13 @@ allocreg(p, cookie)
 		cls = 3;
 	else
 		cls = rclass(p->type, want);
+#ifdef OLD_D2R
+	r = cls == 2 ? freereg(p, want, cookie) : -1;	/* the word register of an operand first */
+	if (r == -1)
+		r = getreg(cls, want, 0x1000, p->sname);
+#else
 	r = getreg(cls, want, 0x1000, p->sname);
+#endif
 	if (r == -1) {
 		r = freereg(p, want, cookie);
 		if (r == -1)

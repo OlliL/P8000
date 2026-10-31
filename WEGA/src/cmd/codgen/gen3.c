@@ -78,7 +78,11 @@ gencall(p, cookie)
 		if (maxoff + f->lval != 0)
 			printf("\tld\tr1,~L1+%ld(fp)\n", f->lval);
 		else
+#ifdef OLD_D18
+			printf("\tld\tr1,0(fp)\n");
+#else
 			printf("\tld\tr1,@fp\n");
+#endif
 		f->rval = 1;
 		f->lval = 0;
 		f->sname = 0;

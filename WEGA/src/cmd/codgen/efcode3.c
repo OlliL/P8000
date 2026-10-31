@@ -97,12 +97,20 @@ regrestore(a, sz, b, w, tot)
 		if (sz != 0)
 			printf("\tldm\t%s,%d(fp),#%d\n", rnames[minreg + 1], (int)sz, a);
 		else
+#ifdef OLD_D18
+			printf("\tldm\t%s,0(fp),#%d\n", rnames[minreg + 1], a);
+#else
 			printf("\tldm\t%s,@fp,#%d\n", rnames[minreg + 1], a);
+#endif
 	} else if (a == 1) {
 		if (sz != 0)
 			printf("\tld\t%s,%d(fp)\n", rnames[minreg + 1], (int)sz);
 		else
+#ifdef OLD_D18
+			printf("\tld\t%s,0(fp)\n", rnames[minreg + 1]);
+#else
 			printf("\tld\t%s,@fp\n", rnames[minreg + 1]);
+#endif
 	}
 #endif
 	if (b >= 1) {
@@ -138,12 +146,20 @@ regsave(a, sz, b, w, tot)
 		if (sz != 0)
 			printf("\tldm\t%d(fp),%s,#%d\n", (int)sz, rnames[minreg + 1], a);
 		else
+#ifdef OLD_D18
+			printf("\tldm\t0(fp),%s,#%d\n", rnames[minreg + 1], a);
+#else
 			printf("\tldm\t@fp,%s,#%d\n", rnames[minreg + 1], a);
+#endif
 	} else if (a == 1) {
 		if (sz != 0)
 			printf("\tld\t%d(fp),%s\n", (int)sz, rnames[minreg + 1]);
 		else
+#ifdef OLD_D18
+			printf("\tld\t0(fp),%s\n", rnames[minreg + 1]);
+#else
 			printf("\tld\t@fp,%s\n", rnames[minreg + 1]);
+#endif
 	}
 #endif
 	if (b >= 1) {
@@ -218,7 +234,11 @@ regargs(tot)
 			if (maxoff + s->soffset != 0)
 				printf("\t%s\t~L1+%ld(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
 			else
+#ifdef OLD_D18
+				printf("\t%s\t0(fp),%s\n", mn, rnames[reg]);
+#else
 				printf("\t%s\t@fp,%s\n", mn, rnames[reg]);
+#endif
 #endif
 		}
 	}
@@ -236,17 +256,29 @@ regargs(tot)
 		if ((long)(unsigned)t + maxoff != 0)
 			printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
 		else
+#ifdef OLD_D18
+			printf("\tld\t0(fp),r%d\n", lo);
+#else
 			printf("\tld\t@fp,r%d\n", lo);
+#endif
 	} else if (!(lo & 1) && hi - lo == 1) {
 		if ((long)(unsigned)t + maxoff != 0)
 			printf("\tldl\t~L1+%u(fp),rr%d\n", t, lo);
 		else
+#ifdef OLD_D18
+			printf("\tldl\t0(fp),rr%d\n", lo);
+#else
 			printf("\tldl\t@fp,rr%d\n", lo);
+#endif
 	} else {
 		if ((long)(unsigned)t + maxoff != 0)
 			printf("\tldm\t~L1+%u(fp),r%d,#%d\n", t, lo, hi - lo + 1);
 		else
+#ifdef OLD_D18
+			printf("\tldm\t0(fp),r%d,#%d\n", lo, hi - lo + 1);
+#else
 			printf("\tldm\t@fp,r%d,#%d\n", lo, hi - lo + 1);
+#endif
 	}
 #endif
 }

@@ -21,9 +21,9 @@
 #                        ld, sld, gld, yacc, ar and strip, then report per program
 #                        whether it is identical to the original
 #                        (report only, does not fail on differences)
-#   make oldroot         build the old compiler v1 (src/cmd/{cparse,codgen,popt,cc}, make old) with the
-#                        original tools and install it into OLDROOT: a WEGA tree of symbolic links to WEGA
-#                        (tools/oldroot.sh) with bin/ccv1 and lib/v1/{cparse,codgen,popt};
+#   make oldroot         build the old compilers v1, v0 (src/cmd/{cparse,codgen,popt,cc}, make old) with the
+#                        original tools and install them into OLDROOT: a WEGA tree of symbolic links to WEGA
+#                        (tools/oldroot.sh) with bin/ccvN and lib/vN/{cparse,codgen,popt};
 #                        then: z8k-emu -r OLDROOT /bin/ccv1 -c -O foo.c
 #
 
@@ -99,7 +99,7 @@ oldroot:
 	sh tools/oldroot.sh $(WEGAABS) $(OLDROOTABS)
 	for p in cparse codgen popt cc; do \
 	  $(MAKE) -C $(SRC)/$$p old $(WTOOLS) LDBIN='$(WEMU) /bin/ld' CRT0=$(WEGAABS)/lib/crt0.o || exit 1; \
-	  $(MAKE) -C $(SRC)/$$p/v1 install PREFIX=$(OLDROOTABS) $(WTOOLS) LDBIN='$(WEMU) /bin/ld' || exit 1; \
+	  for v in v1 v0; do $(MAKE) -C $(SRC)/$$p/$$v install PREFIX=$(OLDROOTABS) $(WTOOLS) LDBIN='$(WEMU) /bin/ld' || exit 1; done; \
 	done
 
 clean:
