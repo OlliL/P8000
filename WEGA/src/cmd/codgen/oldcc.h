@@ -30,4 +30,15 @@
 #define OLD_D6R		/* the count register of cpir in neither half of rr0 (gswitch) */
 #define OLD_D3K		/* a parameter stays known in its register at a label a jump has named, and behind && and || */
 #define OLD_D2V		/* OLD_D2R only when no lighter register is free (the address register competes by weight) */
+#define OLD_D2M		/* a word multiplied through a pair: the pair of its even register (allocreg) */
+#endif
+
+/* d2qfree (allo3.c) serves OLD_D2Q and OLD_D2M */
+#ifdef OLD_D2Q
+#define OLD_D2QF
+#endif
+#ifdef OLD_D2M
+#ifndef OLD_D2QF
+#define OLD_D2QF
+#endif
 #endif

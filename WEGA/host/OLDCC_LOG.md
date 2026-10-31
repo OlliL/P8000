@@ -279,3 +279,7 @@ TODO.md when this log was started.
   the L225 case that falls into the label, as in the original): 993 (cprint, newsect worse); OLD_D11X only when no
   other label stands between the instruction and the target: unchanged 993. The rest of cinit and cprint is the
   order in which codemove and comjump place the blocks. Removed.
+- Group `ld r3,rX; exts rr2` / `mult rr2` (adddef, icons, upoff, falloc: the original takes rr2, ours rr0 or rr4):
+  OLD_D2E for SCONV (the pair of the even operand register): 1118, worse; for MUL and SCONV: 1092; for MUL only
+  (OLD_D2M): cparse 128, 961 (adddef exact, swend, genswitch better); corpus 259; bench v0 108, 418. icons and upoff
+  are open (icons: the SCONV operand comes from an assignment; upoff: the operand is r1).

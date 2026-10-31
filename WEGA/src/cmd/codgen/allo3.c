@@ -282,7 +282,7 @@ found:
 	return getreg(cls, reg, 0x1000, sym);
 }
 
-#ifdef OLD_D2Q
+#ifdef OLD_D2QF
 /* the word register r is busy once and its partner r + 1 is free */
 static int
 d2qfree(r)
@@ -364,6 +364,16 @@ allocreg(p, cookie)
 	if (r == -1 && cls == 3 && want == -1 && (dope[p->op] & 0xE) == BITYPE && p->op != LS && p->op != RS &&
 	    p->op != ASG LS && p->op != ASG RS && p->left->op == REG && szty(p->left->type) == 2)
 		r = freereg(p, want, cookie);	/* v0: a long result into the pair of its left operand */
+#endif
+#ifdef OLD_D2M
+	if (r == -1 && cls == 3 && want == -1 && p->op == MUL && p->left->op == REG &&
+	    szty(p->left->type) == 1 && p->left->rval < 8 && !(p->left->rval & 1) && d2qfree(p->left->rval)) {
+		rfree(p->left->rval, 4);	/* v0: a word multiplied in the pair of its even register */
+		rsreturn(2, p->left->rval);
+		r = getreg(3, p->left->rval, 0, p->sname);
+		if (r == -1)
+			rbusy(p->left->rval, 4, p->left->sname, p->left->lval);
+	}
 #endif
 #ifdef OLD_D2Q
 	if (r == -1 && cls == 3 && (p->op == STAR || p->op == OREG)) {
