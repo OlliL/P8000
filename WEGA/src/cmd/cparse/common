@@ -373,7 +373,8 @@ getmem( n ) register n; { /* n bytes of memory, from a hunk of at least 2000 byt
 		memfirst = 0;
 		memcur = memtop = (char *) sbrk( 0 );
 		}
-	n = (n+1) & ~1;
+	n += 1;
+	n &= ~1;
 	if( memcur + n >= memtop ){
 		if( n > 2000 ) incr = n;
 		else incr = 2000;

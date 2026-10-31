@@ -6827,6 +6827,11 @@
    "basis": "statement order",
    "d_classes": "",
    "note": "Source fix: for( i=0; c>1; ++i ) c >>= 1; (the original shifts before it counts)."
+  },
+  "getmem": {
+   "basis": "statement form",
+   "d_classes": "",
+   "note": "Source fix: n += 1; n &= ~1; (the original rounds n in its register with inc and res)."
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

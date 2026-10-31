@@ -285,3 +285,9 @@ TODO.md when this log was started.
   are open (icons: the SCONV operand comes from an assignment; upoff: the operand is r1).
 - OLD_D2P (OLD_D2L for pairs): cparse 129, 906 (inforce exact; defid, putsym, dclstruct better; buildtree +2);
   corpus 259; bench v0 109, 407. upoff still takes rr4 (its rr2 is not an idle pair: open).
+- Source fix getmem: `n += 1; n &= ~1;` (the original `inc r14,#1; res r14,#0`; `n = (n+1) & ~1` goes through r2):
+  cparse 130.
+- yyparse, instk take rr2 for a long where we took rr0: r2 and r3 were idle words holding names. OLD_D2P extended:
+  two idle words of a pair lighter than the first free pair are given back (they merge): cparse 131, 864 (swend,
+  icons exact; putsym 14 > 46: the merged pair then stays idle and words go to r0, r1); for a word also an idle
+  lighter pair is given back and split: cparse 132, 780, no loss; corpus 259; bench v0 109, 400.

@@ -484,6 +484,9 @@ getreg(cls, reg, flag, sym)
 	struct rs *m;
 	struct rs *t;
 	struct rs *old;
+#ifdef OLD_D2P
+	int k;
+#endif
 
 	switch (cls) {				/* register variables: the register is named */
 	case 5:
@@ -538,6 +541,14 @@ getreg(cls, reg, flag, sym)
 #endif
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
+#ifdef OLD_D2P
+		for (t = rsuse; t; t = t->next)		/* an idle pair lighter than both: given back, it is split */
+			if (t->cls == 3 && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+			    (w == 0 || rweight[t->reg] < rweight[w->reg]) && (m == 0 || rweight[t->reg] < rweight[m->reg])) {
+				rsreturn(3, t->reg);
+				return getreg(cls, reg, flag, sym);
+			}
+#endif
 		if (m) {
 			n = m;
 			n->flags &= ~0x8000;
@@ -552,6 +563,27 @@ getreg(cls, reg, flag, sym)
 	if (cls == 3 && reg == -1) {	/* v0: an idle pair that holds a name is free when it weighs less (OLD_D2L for pairs) */
 		for (w = rsfree; w && w->cls != 3; w = w->next)
 			;
+		for (t = rsuse; t; t = t->next)		/* two idle words of a pair: given back, they merge */
+			if (t->cls == 2 && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+			    (w == 0 || rweight[t->reg] < rweight[w->reg])) {
+				for (m = rsuse; m; m = m->next)
+					if (m->cls == 2 && m->reg == t->reg + 1 && m->busy <= 0 && m->kind != 6)
+						break;
+				if (m == 0) {
+					for (m = rsfree; m; m = m->next)
+						if (m->cls == 2 && m->reg == t->reg + 1)
+							break;
+					if (m == 0)
+						continue;
+					k = t->reg;
+					rsreturn(2, k);
+				} else {
+					k = t->reg;
+					rsreturn(2, k);
+					rsreturn(2, k + 1);
+				}
+				return getreg(cls, reg, flag, sym);
+			}
 		m = 0;
 		for (t = rsuse; t; t = t->next)
 			if (t->cls == 3 && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
