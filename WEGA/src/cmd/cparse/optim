@@ -336,7 +336,7 @@ rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes not
 
 	if( c == 'r' ){
 		q = p->right;
-		if( q->left->type == q->type || ( bsize( q->type ) == bsize( q->left->type ) &&
+		if( q->type == q->left->type || ( bsize( q->type ) == bsize( q->left->type ) &&
 				!( notflt( q->type ) ^ notflt( q->left->type ) ) ) ||
 				( q->type == DOUBLE && q->left->type == FLOAT ) ){
 			r = tcopy( q->left );
@@ -346,7 +346,7 @@ rmconv( p, c ) register NODE *p; char c; { /* drop a conversion that changes not
 		}
 	else if( c == 'l' ){
 		q = p->left;
-		if( q->left->type == q->type || ( bsize( q->type ) == bsize( q->left->type ) &&
+		if( q->type == q->left->type || ( bsize( q->type ) == bsize( q->left->type ) &&
 				!( notflt( q->type ) ^ notflt( q->left->type ) ) ) ||
 				( q->type == DOUBLE && q->left->type == FLOAT ) ){
 			r = tcopy( q->left );

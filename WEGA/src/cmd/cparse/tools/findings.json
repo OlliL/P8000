@@ -6719,9 +6719,9 @@
    "note": "Source fix: n = argregs( p->left ) in front of return( n + argregs( p->right ) ) (the original keeps the first count in r13, no frame temporary). Remaining: popt merges the two add r2,r13 tails (D11) and the block order behind the compare chain."
   },
   "rmconv": {
-   "basis": "reading",
-   "d_classes": "D3 D19",
-   "note": "Source: bsize(q->type) == bsize(q->left->type) and notflt in the same order, for the call order of the original (D19)."
+   "basis": "operand order",
+   "d_classes": "D3",
+   "note": "Source fix: q->type == q->left->type (the original loads q->type and compares it with the member of q->left). Remaining: the original compares c from rl6 behind a label (a char parameter kept in its register), ours reloads it from the frame."
   },
   "clocal": {
    "basis": "reading",
