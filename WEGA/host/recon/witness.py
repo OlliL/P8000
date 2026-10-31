@@ -14,7 +14,8 @@ arguments, e.g. "-r WEGA /bin/cc") and their code is aligned with the original b
 absolute addresses masked, frame offsets kept). Per function: = when every instruction is in an equal block, else the
 number of its lines that are not. WEGA changed some of these sources, so a difference is not a compiler difference by
 itself; the bench is read by comparison: the same sources with and without a switch (more = functions means the switch
-fits more of the old compiler's output). Work directory RECON_TMP/w3. Measurement only; nothing of it goes into git.
+fits more of the old compiler's output). A source restored to the WEGA version in src/cmd (same file name) is used
+instead of the System III file. Work directory RECON_TMP/w3. Measurement only; nothing of it goes into git.
 """
 import sys, os, re, subprocess, difflib, shutil
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -53,7 +54,8 @@ def main():
     for b,src in PROGS:
         name=os.path.basename(b)
         if sel and name not in sel: continue
-        shutil.copy(os.path.join(S3,src),os.path.join(work,src))
+        mine=os.path.join(HERE,'..','..','src','cmd',src)	# a WEGA version restored in src/cmd comes first
+        shutil.copy(mine if os.path.exists(mine) else os.path.join(S3,src),os.path.join(work,src))
         obj=src[:-2]+'.o'
         if os.path.exists(os.path.join(work,obj)): os.remove(os.path.join(work,obj))
         hdr=os.path.join(work,'stdio.h')
