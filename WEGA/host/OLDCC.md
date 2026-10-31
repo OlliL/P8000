@@ -150,7 +150,8 @@ time, or another version) points to their mechanism.
   differing lines 1624 > 1542).
 - /lib/cparse built with ccv0 (d12model, strictcmp): the code is as long as the original's (48896 bytes; shipped cc
   49152), data equal at the same address 17472 of 18584 bytes (shipped 17170), 38 functions strictly exact (shipped
-  29; gained mkty, mainp1, lxtitle, bcon, openfiles, bstart, bend, fldal, noinit, tcheck, putstrs; lost savebc, psave).
+  29; gained mkty, mainp1, lxtitle, bcon, openfiles, bstart, bend, fldal, noinit, tcheck, putstrs; lost savebc, psave). With OLD_D2W: still 38, code 48896, data equal at the same address
+  17411 (code addresses in the data moved).
 - Leaf functions (2026-10-31): the renaming of register variables into free low registers and the removal of the ldm
   is done by popt (`procopt`, z23.c), in the shipped compiler too; codgen writes r14, r13 with their save. In v0 more
   low registers stay free because its codgen takes r0 and rr0 early (`OLD_D2W`) and puts the dividend of an int

@@ -121,3 +121,5 @@ TODO.md when this log was started.
   crypt setup (+29, register shifts and the local address form D5), col main, paste main, sdiff main. Not accepted.
 - OLD_D1F (popt: frame and its stores removed when nothing reads it after the renaming): alone 61/1621, with OLD_D2D
   61/1594. Parked with OLD_D2D.
+- v0 with OLD_D2W rebuilt (make oldroot): bench v0 62/1542; /lib/cparse with ccv0: 38 strictly exact, code 48896
+  (= original), data equal at the same address 17411; ld with ccv1 55; normal objects of codgen and popt unchanged.
