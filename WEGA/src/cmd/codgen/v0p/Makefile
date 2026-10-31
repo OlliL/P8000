@@ -20,12 +20,13 @@
 #   OLD_D2N   a name loaded into a word register (a global, or an auto from the frame) is not remembered there
 #   OLD_D6T   a cpir switch: the values in front of the targets (record V), the target loaded from the cpir pointer
 #   OLD_D2T   the register of a TEMP (the value of a switch) counts as free for OLD_D2L between its uses
-#   OLD_D2Q   a long loaded through a pointer goes into the pair of its even address register (allocreg)
+#   OLD_D2Q   a long loaded through a pointer goes into the pair of its even address register, also when it is wanted
+#   OLD_D2X   a long result of a binary operator (not a shift) into the pair of its left operand first (allocreg)
 #   OLD_D3A   the registers of the parameters are forgotten before the arguments of a call are evaluated (gencall)
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W -DOLD_D10 -DOLD_D3P -DOLD_D4O -DOLD_D2C -DOLD_D2F -DOLD_D2L -DOLD_D2N -DOLD_D6T -DOLD_D2T -DOLD_D2Q -DOLD_D3A
+SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W -DOLD_D10 -DOLD_D3P -DOLD_D4O -DOLD_D2C -DOLD_D2F -DOLD_D2L -DOLD_D2N -DOLD_D6T -DOLD_D2T -DOLD_D2Q -DOLD_D2X -DOLD_D3A
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc

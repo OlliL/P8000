@@ -353,13 +353,19 @@ allocreg(p, cookie)
 	if (r == -1 && p->op == REG)
 		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: the copy of a name in a register holds no name */
 #endif
+#ifdef OLD_D2X
+	if (r == -1 && cls == 3 && want == -1 && (dope[p->op] & 0xE) == BITYPE && p->op != LS && p->op != RS &&
+	    p->op != ASG LS && p->op != ASG RS && p->left->op == REG && szty(p->left->type) == 2)
+		r = freereg(p, want, cookie);	/* v0: a long result into the pair of its left operand */
+#endif
 #ifdef OLD_D2Q
-	if (r == -1 && cls == 3 && want == -1 && (p->op == STAR || p->op == OREG)) {
+	if (r == -1 && cls == 3 && (p->op == STAR || p->op == OREG)) {
 		register struct node *q = getlr(p, 'L');	/* a long through a pointer: the pair of its even register */
 
 		if (q->op == STAR)
 			q = q->left;
-		if ((q->op == OREG || q->op == REG) && q->rval < 8 && !(q->rval & 1) && d2qfree(q->rval)) {
+		if ((q->op == OREG || q->op == REG) && q->rval < 8 && !(q->rval & 1) && (want == -1 || want == q->rval) &&
+		    d2qfree(q->rval)) {
 			rfree(q->rval, 4);
 			rsreturn(2, q->rval);		/* merged with its free partner */
 			r = getreg(3, q->rval, 0, p->sname);
