@@ -150,7 +150,15 @@ Order:
      host/KNOWLEDGE.md "Old compiler v1"): the regression rule is applied per revision (for the owner to confirm).
      Left: one unexplained frame word in main, parse_args, slookup, pslookup, index16 (`int spare` kept); no
      return temporary in read_symbols (one witness, open).
-   - State: ld 54 of 59 strictly exact with v1, strip and size byte-identical with v1; open: ranlib_scan, place_sec, dseek (D2), chk_ranlib (D3, the
+   - Test bench (2026-10-31, `host/recon/witness.py`): the System III sources of 26 WEGA programs of the v1 time
+     (119 functions) against the originals: shipped cc 27 equal, v1 72; without OLD_D1 31, without OLD_D3 61. The
+     second rule of OLD_D20 (load2td) costs 3 functions there and is removed (load2td a finding again); the first rule
+     is neutral on the bench. A D2 rule (registers kept at labels no jump has named yet) costs 15 functions: refuted.
+     ranlib_scan was a source form (exact as a for loop). Evidence of a switch from now on: the bench plus ld/strip/size.
+   - Sources restored for tests are kept in src/cmd (owner, 2026-10-31); the bench itself uses the unchanged System III
+     files and keeps nothing.
+   - State: ld 54 of 59 strictly exact with v1 (ranlib_scan exact, load2td open again), strip and size byte-identical
+     with v1, corpus 146 of 146; open: load2td (code motion, D15/D20), place_sec, dseek (D2), chk_ranlib (D3, the
      parameter p is loaded from the frame for q = p, but its register is used for p + n), read_symbols (D1 frame
      +2: the temporary of a return above the locals, and a dead `ldl rr4,rr2` of the original). About 20 rounds:
      the review point of the time box.

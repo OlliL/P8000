@@ -292,21 +292,15 @@ int n;
 	struct rlent *q;
 	struct symbol *q2;
 
-	q = p;
-	e = p + n;
-	goto test;
-body:
-	if (p >= q) {
-		if ((p->rname[0] & 0x80) != 0)
-			q = (struct rlent *)(p->rname + (p->rname[0] & 0x7f));
-		if ((q2 = *pslookup(p->rname)) != 0)
-			if (q2->stype != 0x20)
-				warn_sym_redef(0, q2);
+	for (q = p, e = p + n; p < e; p++) {
+		if (p >= q) {
+			if ((p->rname[0] & 0x80) != 0)
+				q = (struct rlent *)(p->rname + (p->rname[0] & 0x7f));
+			if ((q2 = *pslookup(p->rname)) != 0)
+				if (q2->stype != 0x20)
+					warn_sym_redef(0, q2);
+		}
 	}
-	p++;
-test:
-	if (p < e)
-		goto body;
 }
 
 /* symtab and nsym follow the jump table of symreloc in the data of the original (0x069a, 0x069c) */

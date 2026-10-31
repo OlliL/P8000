@@ -526,14 +526,10 @@
    "pairing": "confirmed",
    "orig": "0x07b2",
    "ours": "07b2-089a",
-   "level": "findings",
+   "level": "exact",
    "size_orig": 232,
    "callers_orig": "-",
-   "status": "findings",
-   "d_classes": [
-    "D2"
-   ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
+   "status": "done"
   },
   "reg_sect_addr": {
    "file": "ld.c",
@@ -696,14 +692,7 @@
    "d_classes": [
     "D3"
    ],
-   "note": "Remaining (12 lines): the original reloads p from the frame for q = p (so the p + n product goes to rr4) and copies q2 to r2 for the stype compare. Tried: 5 drafts on 2026-10-29 (d5/cr2..cr6), on 2026-10-30 q = &p[0], q2 assigned in the if, && instead of the nested if: no change. Kept: an unused register variable (the original saves r14 and never uses it, quirk table)."
-  },
-  "ranlib_scan": {
-   "basis": "read",
-   "d_classes": [
-    "D2"
-   ],
-   "note": "Remaining (8 lines): the address &rltab[i] of the bound test is computed in rr4 by the original, in rr2 by ours (scratch register choice). Tried: 6 forms on 2026-10-29 (d5/rs1..rs7), on 2026-10-30 end > rltab + i, &rltab[i] < end, end > &rltab[i]: no change."
+   "note": "Remaining (12 lines): the original reloads p from the frame for q = p (so the p + n product goes to rr4) and copies q2 to r2 for the stype compare. Tried: 5 drafts on 2026-10-29 (d5/cr2..cr6), on 2026-10-30 q = &p[0], q2 assigned in the if, && instead of the nested if: no change; 2026-10-31 the loop as for (q = p, e = p + n; p < e; p++) (natural form, kept): no change. Kept: an unused register variable (the original saves r14 and never uses it, quirk table)."
   },
   "init_entry": {
    "basis": "read",
@@ -717,7 +706,7 @@
    "d_classes": [
     "D15"
    ],
-   "note": "Remaining (28 lines, same instructions): our popt moves the then-block of if (flag) up in front of the switches, the original keeps it in place. Guess: ch is a two-byte array in the frame (gives the offset 0x12 of the original). Tried: 9 drafts on 2026-10-29 (d5/ltd1..ltd9), on 2026-10-30 four declaration orders of flag/ch. Fixed on the way (behaviour): the copy w14 = w13 right after the swap block (the two switches test the unchanged word), the first switch only with n8rel4 || n8swap, if (n8swap) w12 = swap(w12) after the symbol branch, the flag output byte-wise; source: nibuf < 0 branches first."
+   "note": "Remaining (28 lines with ccv1, same instructions): our popt moves the then-block of if (flag) up in front of the switches, the original keeps it in place. The loop is the for (;;) of Plexus load2td now (text and relocation pickup as if/else chains), same result as the goto form. Guess: ch is a two-byte array in the frame (gives the offset 0x12 of the original). Tried: 9 drafts on 2026-10-29 (d5/ltd1..ltd9), on 2026-10-30 four declaration orders of flag/ch; 2026-10-31 exact with a popt rule (go on behind a block moved from behind a jump) that the test bench refutes; 7 forms of the flag block (if/else swapped, flag = 0 at the end, the put_int_buf call shared: 10 lines, ?:, continue). Fixed on the way (behaviour): the copy w14 = w13 right after the swap block (the two switches test the unchanged word), the first switch only with n8rel4 || n8swap, if (n8swap) w12 = swap(w12) after the symbol branch, the flag output byte-wise; source: nibuf < 0 branches first."
   },
   "place_sec": {
    "basis": "read",

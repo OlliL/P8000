@@ -842,7 +842,7 @@ register struct node *p;
 	struct node *t, *tl;
 	int n;
 #ifdef OLD_D20
-	struct node *rp, *prev;
+	struct node *rp;
 #endif
 
 	p1 = p;
@@ -855,9 +855,6 @@ register struct node *p;
 		if ((p2 = p2->back) == 0)
 			return p1;
 	if (p2->op == JP || p2->op == RET) {
-#ifdef OLD_D20
-		prev = p2;
-#endif
 		p2 = p2->forw;
 		for (p3 = p1->ref; p3; p3 = p3->forw) {
 #ifdef OLD_D20
@@ -882,10 +879,6 @@ register struct node *p;
 				p2->back = p1->back;
 				p3->forw = p1->forw;
 				decref(p1->ref);
-#ifdef OLD_D20
-				if (prev->op == JP)
-					return p3;	/* a block from behind a jump is looked at in the next pass only */
-#endif
 				return p2;
 			}
 		}

@@ -1741,7 +1741,8 @@ register variables have no frame places), but it is a later build (sources of 10
 the dates of their crt0 stamps), see "Old compiler v1". Left over in ld: one unexplained frame word each in main and
 parse_args (5 spare words for 4 register variables), slookup and pslookup (no return statement, no register variable),
 index16; they stay `int spare`. The temporary of a return value (above the locals) is in every function of ld with a
-return value except read_symbols (one witness, open).
+return value except read_symbols (one witness, open). Test bench (System III sources, "Old compiler v1"): without the
+switch 31 of 119 functions are equal, with it 72.
 
 cparse `getlab`, `noinit` (2026-10-31, measured with `cc -O -S`): the shipped cc reserves at least 2 bytes of frame
 in every function (`dec fp,#~L2` with `~L2 := 2` in `f(){ return(2); }`) and stores the value of a returned `crslab++`
@@ -1755,6 +1756,13 @@ ranlib. Register variables of leaf functions are placed in scratch registers. Er
 of a loop (ranlib, size). In codgen: `expand` (`out3.c`) loads the switch character into `rl2` in the original and
 into `rl3` with a copy to `r2` in the rebuild (scratch register choice).
 
+v1 measurements (2026-10-31): strip is byte-identical with v1 without a D2 switch, so the strip expression above is no D2
+witness any more. ranlib_scan of ld was a source form: written as a `for` loop it is exact with v1 (the goto loop of the
+draft kept r2/r3 taken at the loop head). Tried as a codgen rule: at a label only forget the contents of the registers
+(nullsyms) instead of giving them back (rsfreeall), unless a jump to the label was emitted before: ranlib_scan exact
+with the goto form, but table16_entry and chk_ranlib worse, and the test bench ("Old compiler v1") goes from 69 to 54
+equal functions: refuted. Open D2 in ld: dseek, place_sec, and the copy `ld r2,r3` in front of a use in chk_ranlib.
+
 ### D3 Register contents (redundant reloads, memory operands)
 The old popt does not remove a reload after a store (`ld S0,r7` followed by `ld r7,S0`): 2 times in ifile,
 1 in scanner, 5 in parser, more in the later modules (counted in the binary). The shipped one removes them.
@@ -1764,7 +1772,8 @@ Opposite direction in libc `malloc` (calloc): the old cc knows that a register s
 v1 switch `OLD_D3` (codgen, measured on /bin/ld 2026-10-31): at the join label of `&&` and `||` (cbranch, reader3.c) the
 shipped codgen gives the idle registers back (`rfreeall(1)`), so a register that held a variable before the condition is
 loaded again behind it; the old one keeps them (init_entry: `hdr` stays in r3 behind `if (n8rel4 || n8swap)`). With the
-switch init_entry is exact, no other function of ld changes (54 of 59). One witness only. Risk: a register loaded only
+switch init_entry is exact, no other function of ld changes (54 of 59). Test bench (System III sources, "Old compiler
+v1"): 61 of 119 functions equal without the switch, 72 with it. Risk: a register loaded only
 on one of the two paths keeps its symbol too (not seen; if the old cc had this bug it goes to the quirks table).
 
 ### D4 Spill of arguments
@@ -2412,6 +2421,16 @@ passes cparse, codgen, popt and cas have no stamp, the newest source dates in th
 08/24/83, popt 01/18/83. ld, strip and size fit v1 (OLD_D1 holds in all three); cparse does not (no frame places of
 register variables), so it was built by a later revision. The regression rule of `src/TODO.md` (all exact functions
 stay exact) therefore holds per revision: a program is a witness of v1 only when it was built in its time.
+All programs of src/cmd that the shipped cc rebuilds byte-identically (ar, tar, dump, restor, format, verify, ...) are
+linked with libc members of 09/12/83 or later: built after the change of the compiler.
+
+Test bench of v1 (`host/recon/witness.py`, 2026-10-31): the unchanged single-file System III sources of 26 WEGA programs
+with crt0 stamps 01/83 .. 07/83 (chgrp, chown, mv, date, od, login, ls, nice, passwd, regcmp, rmdir, rm, sort, su, tee,
+time, touch, tr, uname, write, checkeq, hyphen, id, logname, units, xargs; df and ct do not compile), 119 functions,
+aligned with the originals. Equal functions: shipped cc 27, v1 72; v1 without OLD_D1 31, without OLD_D3 61. The bench is
+the main witness of the switches now; WEGA changed some of the sources (mv: mvdir has two more calls, move is split),
+so its differences are read only by comparison. Example: /bin/mv main, pname, dname are equal with v1 (frames 16, 0x12,
+10; the shipped cc 12, 12, 8).
 
 ### D20 Code motion of popt (codemove)
 The shipped popt (`codemove`, z21.c) moves the block behind a jump or return to the site of a jump to it; the end
@@ -2420,10 +2439,10 @@ of the block is the first `jpr` behind its label. Measured on /bin/ld (2026-10-3
 (it had removed that jump already), so short blocks in front of the function exit are not moved (`ensure_buf`, the
 `return 0` of `read_symbols`). With the switch, ld has 52 of 59 functions strictly exact (51 before). Turning off the
 whole code motion is wrong: the old popt also moves the prologue and the switch dispatch to the front.
-Second rule of the switch (`load2td`, one witness only, so weak under the evidence rules of src/TODO.md): after moving a
-block from behind a jump, the old popt goes on behind the moved block, so the jump at its end is looked at in the next
-pass only (the shipped one goes on at the start of the moved block and chains the next move at once). For a block from
-behind a return (the prologue) both go on at its start (str_compare). ld: 53 of 59 strictly exact.
+A second rule (`load2td`, one witness: after moving a block from behind a jump, go on behind the moved block) was in the
+switch from 2026-10-31 and is out again the same day: on the test bench of the v1 time (`host/recon/witness.py`, System
+III sources of 26 WEGA programs from 01/83 .. 07/83) it costs 3 functions (72 of 119 equal without it, 69 with it), the
+first rule changes nothing there. load2td is a finding again (source check).
 
 ### cc, scc rebuilt with the WEGA cc (`src/cmd/cc/cc.c`)
 

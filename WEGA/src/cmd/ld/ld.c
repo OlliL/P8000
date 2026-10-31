@@ -484,26 +484,20 @@ int ranlib_scan()
 
 	sv = libp;
 	end = rltab;
-	i = 0;
-	goto test;
-body:
-	if (rltab + i < end)
-		goto next;
-	if ((rltab[i].rname[0] & 0x80) != 0)
-		end = (struct rlent *)(rltab[i].rname + (rltab[i].rname[0] & 0x7f));
-	t = *pslookup(rltab[i].rname);
-	if (!t)
-		goto next;
-	if (t->stype != 0x20)
-		goto next;
-	if (swapflg)
-		longswap(&rltab[i]);
-	load_header(rltab[i].roff >> 1);
-next:
-	i++;
-test:
-	if ((unsigned)i < (unsigned)rlcnt)
-		goto body;
+	for (i = 0; (unsigned)i < (unsigned)rlcnt; i++) {
+		if (rltab + i < end)
+			continue;
+		if ((rltab[i].rname[0] & 0x80) != 0)
+			end = (struct rlent *)(rltab[i].rname + (rltab[i].rname[0] & 0x7f));
+		t = *pslookup(rltab[i].rname);
+		if (!t)
+			continue;
+		if (t->stype != 0x20)
+			continue;
+		if (swapflg)
+			longswap(&rltab[i]);
+		load_header(rltab[i].roff >> 1);
+	}
 	return sv != libp;
 }
 
@@ -1038,103 +1032,99 @@ struct buf *r;
 	unsigned char ch[2];
 
 	flag = 0;
-	goto test;
-body:
-	if (--text.nibuf < 0) {
-		text.nibuf++;
-		text.size++;
-		w12 = get(&text);
-	} else
-		w12 = *text.ptr++;
-relpart:
-	if (--reloc.size <= 0) {
-		if (reloc.size < 0)
-			report_error(2, "Relocation error");
-		reloc.size++;
-		w13 = get(&reloc);
-	} else if (--reloc.nibuf < 0) {
-		reloc.nibuf++;
-		reloc.size++;
-		w13 = get(&reloc);
-	} else
-		w13 = *reloc.ptr++;
-	if (swapflg) {
-		w12 = swap(w12);
-		w13 = swap(w13);
-	}
-	w14 = w13;
-	if (n8swap)
-		w12 = swap(w12);
-	switch (w13 & 0x0e) {
-	case 2:
-		w12 += fctrel;
-		break;
-	case 4:
-		w12 += fcdrel;
-		break;
-	case 6:
-		w12 += fcbrel;
-		break;
-	}
-	if ((w13 & 8) == 8) {
-		e = (struct symbol *)table_lookup(p, w13);
-		if (e->stype == 0x20)
-			w13 = (w13 & 1) + (index16(e) + nlocsym << 4) + 8;
-		else {
-			w12 += (int)e->svalue;
-			w13 = (w13 & 1) + ((e->stype - 0x21) * 2);
+	for (;;) {
+		if (--text.size <= 0) {
+			if (text.size < 0)
+				break;
+			text.size++;
+			w12 = get(&text);
+		} else if (--text.nibuf < 0) {
+			text.nibuf++;
+			text.size++;
+			w12 = get(&text);
+		} else
+			w12 = *text.ptr++;
+		if (--reloc.size <= 0) {
+			if (reloc.size < 0)
+				report_error(2, "Relocation error");
+			reloc.size++;
+			w13 = get(&reloc);
+		} else if (--reloc.nibuf < 0) {
+			reloc.nibuf++;
+			reloc.size++;
+			w13 = get(&reloc);
+		} else
+			w13 = *reloc.ptr++;
+		if (swapflg) {
+			w12 = swap(w12);
+			w13 = swap(w13);
 		}
-	}
-	if (n8swap)
-		w12 = swap(w12);
-	if (n8rel4 || n8swap)
-		switch (w14 & 0xf8) {
-		case 0x10:
+		w14 = w13;
+		if (n8swap)
+			w12 = swap(w12);
+		switch (w13 & 0x0e) {
+		case 2:
+			w12 += fctrel;
+			break;
+		case 4:
+			w12 += fcdrel;
+			break;
+		case 6:
+			w12 += fcbrel;
+			break;
+		}
+		if ((w13 & 8) == 8) {
+			e = (struct symbol *)table_lookup(p, w13);
+			if (e->stype == 0x20)
+				w13 = (w13 & 1) + (index16(e) + nlocsym << 4) + 8;
+			else {
+				w12 += (int)e->svalue;
+				w13 = (w13 & 1) + ((e->stype - 0x21) * 2);
+			}
+		}
+		if (n8swap)
+			w12 = swap(w12);
+		if (n8rel4 || n8swap)
+			switch (w14 & 0xf8) {
+			case 0x10:
+				flag++;
+				break;
+			case 0x20:
+				w12 = swap(w12);
+				flag++;
+				break;
+			case 0x30:
+				flag++;
+				break;
+			}
+		switch (w14 & 0x0f) {
+		case 9:
 			flag++;
 			break;
-		case 0x20:
+		case 10:
 			w12 = swap(w12);
 			flag++;
 			break;
-		case 0x30:
+		case 11:
 			flag++;
 			break;
 		}
-	switch (w14 & 0x0f) {
-	case 9:
-		flag++;
-		break;
-	case 10:
-		w12 = swap(w12);
-		flag++;
-		break;
-	case 11:
-		flag++;
-		break;
-	}
-	if (swapflg) {
-		w12 = swap(w12);
-		w13 = swap(w13);
-	}
-	if (flag) {
-		flag = 0;
 		if (swapflg) {
-			ch[0] = swap(w12);
-			put_int_buf(ch[0], q);
-		} else
-			put_int_buf((unsigned char)w12, q);
-	} else {
-		put_word(w12, q);
-		if (rflag)
-			put_word(w13, r);
-	}
-test:
-	if (--text.size > 0)
-		goto body;
-	if (text.size >= 0) {
-		text.size++;
-		w12 = get(&text);
-		goto relpart;
+			w12 = swap(w12);
+			w13 = swap(w13);
+		}
+		if (flag) {
+			flag = 0;
+			if (swapflg) {
+				ch[0] = swap(w12);
+				put_int_buf(ch[0], q);
+			} else
+				put_int_buf((unsigned char)w12, q);
+		} else {
+			put_word(w12, q);
+			if (rflag)
+				put_word(w13, r);
+		}
 	}
 }
 

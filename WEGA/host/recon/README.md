@@ -23,6 +23,7 @@ Used by codgen, popt, sld, ld and cparse (see `host/HOWTO_reconstruct.md`). Each
 | `d12model.py` | our modules linked under the data layout of the old cc (strings at the end of each file, unpadded); data compared; the input of strictcmp |
 | `rename.py OLD NEW ...` | rename everywhere: sources, tables, findings.json, the .md files of the tools and of the project |
 | `inventory.py`, `own_table.py` | function starts and call graph of a nonsegmented original, the table own_functions.txt |
+| `witness.py [-c ARGS] [PROG ...]` | test bench of the old compiler v1: the System III sources (SYS3SRC, not in git) of 26 WEGA programs of the v1 time compiled with ccv1 (or another compiler) and aligned with the originals; equal functions per program, compared with and without a switch |
 | `stagecorpus.py OURS` | corpus test of a compiler pass: original and ours on the same inputs, outputs, exit status, messages |
 
 Still in `src/cmd/sld/tools` (sld specific so far, to be moved when the next binary needs them): `fncheck.py`,
