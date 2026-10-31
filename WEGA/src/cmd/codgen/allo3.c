@@ -345,6 +345,10 @@ allocreg(p, cookie)
 		}
 	}
 #endif
+#ifdef OLD_D2N
+	if (r == -1 && cls == 2 && (p->op == NAME || (p->op == OREG && p->rval == 15)))
+		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: a loaded name is not remembered */
+#endif
 #ifdef OLD_D2C
 	if (r == -1 && p->op == REG)
 		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: the copy of a name in a register holds no name */

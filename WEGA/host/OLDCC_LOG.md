@@ -189,3 +189,10 @@ TODO.md when this log was started.
   corpus 239 of 259; bench v0 84, 1080 > 1085 lines: set in v0p only.
 - cparse nidcl: the original compares the class with 4 (REGISTER), our source had EXTDEF (5): a reconstruction error
   in sym1.c, fixed (`int a[];` outside a function warned in ours only); nidcl 7 > 1 lines.
+- OLD_D2N (allocreg: a loaded NAME gets its register without the name): cparse 92, 2669 lines, no function worse;
+  also for autos loaded from the frame (OREG off r15): 93, 2602 (fhashv +1, optim +6); corpus 239 of 259; bench v0
+  86, 1064 lines. Set in v0 and v0p.
+- Still open in cparse (small): talloc has a frame word that nothing uses (6 bytes against our 4; two `?:` of TNEXT);
+  lineid reads the register variable cp through the register of its assignment (`cpb @r2` against `cpb @r14`);
+  psavel stores through a computed address (`add r2,#X; ldl @r2,rr0`); fixclass, tfree1 take a parameter from its
+  register behind a label (`ld r2,r6`), we load it from the frame.

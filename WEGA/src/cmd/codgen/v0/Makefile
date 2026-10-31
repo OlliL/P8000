@@ -17,10 +17,11 @@
 #   OLD_D2C   a name (not a parameter) found in a scratch register is that register, no copy; a copy holds no name
 #   OLD_D2F   a free word register only when it weighs no more than the first free pair (else the pair is split)
 #   OLD_D2L   an idle scratch word that only holds a name counts as free when it weighs less (getreg)
+#   OLD_D2N   a name loaded into a word register (a global, or an auto from the frame) is not remembered there
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W -DOLD_D10 -DOLD_D3P -DOLD_D4O -DOLD_D2C -DOLD_D2F -DOLD_D2L
+SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W -DOLD_D10 -DOLD_D3P -DOLD_D4O -DOLD_D2C -DOLD_D2F -DOLD_D2L -DOLD_D2N
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc
