@@ -184,7 +184,7 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 80 strictly exact (code 49152 bytes against 48896), corpus 239 of 259 (2026-10-31: 48 with v0 +
+- State: /lib/cparse 81 strictly exact (code 49152 bytes against 48896), corpus 239 of 259 (2026-10-31: 48 with v0 +
   OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
@@ -268,7 +268,8 @@ compiler that built the original. Not differences of the compiler (checked):
 - Risk: a register loaded on one path only keeps its symbol too (not seen; would be a quirk of the original).
 - v0 (switch `OLD_D3P` in codgen, regforsym in lcl3.c): a name that lives in a register is taken from it also when
   the node wants another register (the shipped codgen then loads it from the frame): cparse argdebug `return(x)` as
-  `ld r2,r7`; bench 64 > 65.
+  `ld r2,r7`; bench 64 > 65. Also under a cast between the word types int, unsigned and pointers (`p = (struct s
+  *)idn` takes idn from r7; the shipped codgen needs the same type): cparse rstruct, bench 1405 > 1395 lines.
 - Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after), libc malloc (`mult rr2,r6`).
 
 ### D4 Spill of arguments

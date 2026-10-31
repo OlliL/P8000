@@ -162,3 +162,9 @@ TODO.md when this log was started.
 - OLD_D4O (parameter list walked from its end): cparse 76 (lxenter, lxmore, makety, block, unhide), bench 69.
 - The pairs rr2 rr0 rr4 rr6 at the start of a function (rsbuild, under OLD_D2W): cparse 80 (dstash, addcase, chkpun,
   incode), corpus 239, bench 74. ld with ccv1 55; the normal objects of codgen and cparse unchanged.
+- OLD_D3P under casts between word types (regforsym compares the type): cparse rstruct exact (81; scnames looked lost:
+  a mask artifact), bench v0 74/1395, corpus 239.
+- OLD_D3L tried (codgen: the known register contents at a conditional jump restored at its label when the label has
+  that jump only and no fall-through; for cparse tfree1, which takes p from r7 behind the else label): cparse 77
+  (walkf, irbrace, fixtype lost: the restored register is then taken as a temporary), tfree1 not fixed (its jump is
+  not printed by cbgen). Removed.

@@ -486,6 +486,10 @@ symreg(s, off)
 	return -1;
 }
 
+#ifdef OLD_D3P
+#define D3PWORD(t)	((t) == 4 || (t) == 14 || ((t) & 0x30) == 0x10)
+#endif
+
 /* the register that can serve for the symbol; -1 if none */
 int
 regforsym(reg, s, type, off)
@@ -506,14 +510,21 @@ regforsym(reg, s, type, off)
 	}
 	if (s == fpsym1 || s == fpsym2)
 		return symreg(s, off);
+#ifdef OLD_D3P
+	/* v0: also under a cast between int, unsigned and pointers (the word types) */
+	if (type != s->stype && !(D3PWORD(type) && D3PWORD(s->stype)))
+		return -1;
+#else
 	if (type != s->stype)
 		return -1;
+#endif
 #ifndef OLD_D3P
 	if (reg != -1 && reg != s->sbyte5)
 		return -1;	/* (OLD_D3P: the register that holds it also when another one is wanted, a copy follows) */
 #endif
 	return symreg(s, 0L);
 }
+
 
 /* a name that lives in a register becomes REG, otherwise an OREG */
 void
