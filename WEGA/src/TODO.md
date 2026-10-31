@@ -125,6 +125,7 @@ Order:
      gets the frame of the original, 21 other functions lose 2 bytes (the old cc reserves it there). Not accepted.
      Measured: the shipped codgen reserves the temporary of a return at baseoff (above the locals, reader3.c); the
      `spare` variables of the ld sources stand for space of the old frame below the locals.
+   - OLD_D3 (codgen): no rfreeall at the join of && and ||: init_entry exact; 54 of 59. Accepted (one witness).
    - D2 scratch registers (codgen): parked after 5 rounds (no merging in rsreturn: register jam; freed words in
      LIFO order: worse; the parameter count in the .I head: dseek exact, 18 functions worse; the parameter registers
      kept at labels: dseek exact, 14 worse; a label kind for loop heads (cparse) with registers kept at the other

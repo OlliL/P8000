@@ -525,7 +525,9 @@ cbranch(p, true, false)
 		if (false < 0)
 			deflab(lab);
 		p->op = FREE;
+#ifndef OLD_D3
 		rfreeall(1);
+#endif
 		return;
 	case OROR:
 		lab = true < 0 ? getlab() : true;
@@ -534,7 +536,9 @@ cbranch(p, true, false)
 		if (true < 0)
 			deflab(lab);
 		p->op = FREE;
+#ifndef OLD_D3
 		rfreeall(1);
+#endif
 		return;
 	case QUEST:
 		flab = false < 0 ? getlab() : false;

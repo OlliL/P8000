@@ -1746,6 +1746,12 @@ The old popt does not remove a reload after a store (`ld S0,r7` followed by `ld 
 Opposite direction in libc `malloc` (calloc): the old cc knows that a register still holds the value
 (`mult rr2,r6`) where the shipped cc uses a memory operand.
 
+v1 switch `OLD_D3` (codgen, measured on /bin/ld 2026-10-31): at the join label of `&&` and `||` (cbranch, reader3.c) the
+shipped codgen gives the idle registers back (`rfreeall(1)`), so a register that held a variable before the condition is
+loaded again behind it; the old one keeps them (init_entry: `hdr` stays in r3 behind `if (n8rel4 || n8swap)`). With the
+switch init_entry is exact, no other function of ld changes (54 of 59). One witness only. Risk: a register loaded only
+on one of the two paths keeps its symbol too (not seen; if the old cc had this bug it goes to the quirks table).
+
 ### D4 Spill of arguments
 ranlib: no spill of arguments into the frame. libc `swap`: the old cc spills an address-taken argument in
 the `0(r15)` form.

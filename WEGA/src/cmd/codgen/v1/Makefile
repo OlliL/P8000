@@ -6,11 +6,11 @@
 #   make clean
 #
 # Switches (host/KNOWLEDGE.md, "Compiler revisions"):
-#   (none yet)
+#   OLD_D3    the registers keep their contents at the join of && and || (no rfreeall in cbranch)
 
 CC = cc
 CFLAGS = -O
-SWITCHES =
+SWITCHES = -DOLD_D3
 LD = ld
 OLD = ../../../lib/oldlibc
 CRT = ../../../lib/libc/crt
