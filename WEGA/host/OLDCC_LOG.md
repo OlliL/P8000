@@ -313,3 +313,9 @@ TODO.md when this log was started.
   652 > 682 (yylex, gotscal, lxres worse) and newsect unchanged. Removed; newsect open.
 - dclargs computes an address in r2 and loads into the wanted r6, ours computes in r6. OLD_D2S tried (rallo: STAR
   passes no wish to its address): cparse 652 > 998. Removed.
+- Source fix tymatch: register o, u in front of t1, t2, t, tu (o r13, u r12 in the original): exact; cparse 137, 528.
+  The permutation search over the register variables (now up to 7) finds no other function.
+- resetbc and defalign spill a parameter the original does not: the last label of the function (the return label of
+  cparse, named by no jump) makes OLD_D3K forget the parameter, so regargs spills it. twords shows a label of the
+  same kind behind which the original reloads from the frame. Open (a spill rule that knows whether the frame copy
+  is read).
