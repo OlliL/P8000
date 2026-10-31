@@ -295,3 +295,6 @@ TODO.md when this log was started.
   (no wish): cparse 133, 756 (upoff exact, falloc 16 > 4, dclstruct); corpus 259; bench v0 109, 396.
 - yyparse: the original stores the result of talloc() twice (`ld 0x130(r15),r2; ld 0x132(r15),r2`, the second
   never read) in the switch action; open.
+- mkdope computes an index in r0 (cannot index: `add r0,#X; ld r1,r0; ld @r1,r2`), the original in r3: r3 idle with a
+  name had the weight 3 of the free pair rr0. OLD_D2G (equal weight is enough for an idle word): cparse 135, 676;
+  corpus 259; bench v0 112, 368.

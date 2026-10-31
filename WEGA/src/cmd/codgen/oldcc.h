@@ -33,6 +33,7 @@
 #define OLD_D2M		/* a word multiplied through a pair: the pair of its even register (allocreg) */
 #define OLD_D2P		/* OLD_D2L for pairs: an idle pair that holds a name is free when it weighs less */
 #define OLD_D2U		/* the right operand of a long multiplication wants no register (rallo) */
+#define OLD_D2G		/* OLD_D2L: an idle word of the same weight as the free one wins */
 #endif
 
 /* d2qfree (allo3.c) serves OLD_D2Q and OLD_D2M */
