@@ -43,6 +43,8 @@ def main():
 #   make clean
 #   (this file is written by tools/gen_makefile.py; the own code of ld is not in it yet: step 3)
 #
+# make link builds ld; the sources are written for the old compiler v1 (make link CC=ccv1, ../cc/v1: 54 of the
+# 59 own functions strictly exact, data equal, see tools/HANDOFF_ld.md "Old compiler v1").
 # The own code (copyname.c, printname.c, symbols.c, ld.c, crt0 from mkcrt0.sh) comes later. Relocated words of the
 # old modules point to the own code and the data of ld; they are checked when the link exists.
 

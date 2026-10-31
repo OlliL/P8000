@@ -115,15 +115,15 @@ main(argc, argv)
 int argc;
 char **argv;
 {
-	int spare1, spare2, spare3, spare4, spare5;
-	int found;
-	int k;
-	char c;
-	struct symbol **sp;
 	register int i;
 	register int j;
 	register char *s;
 	register char **av;
+	int spare;
+	int found;
+	int k;
+	char c;
+	struct symbol **sp;
 
 	if (signal(2, 1) != 1)
 		signal(2, sig_handler);
@@ -270,10 +270,8 @@ int reg_sect_addr(s, t)
 char *s;
 char *t;
 {
-	int spare1;
-	char *fmt;
-	int spare2;
 	register int k;
+	char *fmt;
 	register char *u;
 
 	secspec++;
@@ -317,11 +315,11 @@ parse_args(argc, argv)
 int argc;
 char **argv;
 {
-	int spare1, spare2, spare3, spare4, spare5;
 	register int k;
 	register int j;
 	register char *a;
 	register char **av;
+	int spare;
 
 	filname = 0;
 	end_pass1();
@@ -371,8 +369,6 @@ record(x, y)
 int x;
 char *y;
 {
-	int spare;
-
 	register struct overlay *e;
 
 	e = &tab[ntab++];
@@ -394,7 +390,6 @@ char *y;
 restore(i)
 int i;
 {
-	int spare1, spare2;
 	register struct overlay *e;
 	register int saved;
 
@@ -422,7 +417,6 @@ int i;
 load_lib_syms(p)
 char *p;
 {
-	int spare;
 	register char *r;
 	long n;
 
@@ -535,7 +529,7 @@ read_symbols(a, c)
 int a;
 long c;
 {
-	int spare;
+	register struct symbol *cur;
 	int saved;
 	int cnt;
 	char ch;
@@ -543,7 +537,6 @@ long c;
 	int k;
 	int n;
 	struct symbol **p;
-	register struct symbol *cur;
 
 	readhdr(c);
 	fctrel = ttotal;
@@ -625,7 +618,6 @@ done:
    0x0b6e..0x0d9c of /bin/ld) */
 end_pass1()
 {
-	int spare1, spare2, spare3;
 	register struct symbol *ep;
 	register struct symbol *end;
 	register int i;
@@ -716,11 +708,10 @@ dolayout:
    bytes, the wrap and overlap checks, then the relocation bases (sld place_sec; 0x0d9c..0x108e of /bin/ld) */
 place_sec()
 {
-	int spare1, spare2, spare3;
-	int i;
 	register struct areas *q;
 	register unsigned r8;
 	register int j;
+	int i;
 
 	areas[1].kind = iflag ? 4 : 0;
 	areas[3].kind = n8rel4 ? 4 : 2;
@@ -836,7 +827,6 @@ open_tmp(out, flag)
 struct buf *out;
 int flag;
 {
-	int spare;
 	register int fd;
 	char *name;
 
@@ -865,8 +855,6 @@ init_entry(hdr, seg)
 struct objhdr *hdr;
 struct fseg *seg;
 {
-	int spare1, spare2;
-
 	register char *q;
 	register int n;
 
@@ -913,7 +901,6 @@ char *p;
 {
 	register char *q;
 	register long *lp;
-	int spare[2];
 
 	q = p;
 	if (getfile(q) == 0) {
@@ -956,15 +943,14 @@ test1:
 load2(a)
 long a;
 {
-	int spare1, spare2, spare3;
+	register struct symbol *rec;
+	register struct local *t;
+	register int k;
 	char c;
 	char d;
 	int n;
 	long u1;
 	long u2;
-	register struct symbol *rec;
-	register struct local *t;
-	register int k;
 
 	readhdr(a);
 	fctrel = torigin;
@@ -1044,13 +1030,12 @@ int base;
 struct buf *q;
 struct buf *r;
 {
-	int spare1, spare2, spare3, spare4;
-	char flag;
-	unsigned char ch[2];
 	register int w13;
 	register int w14;
 	register int w12;
 	register struct symbol *e;
+	char flag;
+	unsigned char ch[2];
 
 	flag = 0;
 	goto test;
@@ -1157,8 +1142,6 @@ test:
    rewrite the header (sld finish_output, Plexus finishout; 0x194a..0x1a12 of /bin/ld) */
 finish_output()
 {
-	int spare1, spare2;
-
 	register int *p;
 	register int *end;
 
@@ -1209,10 +1192,9 @@ test2:
 copy(p)
 struct buf *p;
 {
-	int spare1, spare2;
-	unsigned char *q;
 	register fd;
 	register n;
+	unsigned char *q;
 
 	flush_buffer(p);
 	lseek(fd = p->fildes, 0L, 0);
@@ -1244,8 +1226,6 @@ mget(p, n)
 int *p;
 int n;
 {
-	int spare1, spare2, spare3;
-
 	register int *r;
 	register i;
 	register int *q;
@@ -1278,8 +1258,6 @@ struct buf *q;
 int *p;
 int n;
 {
-	int spare1, spare2;
-
 	register int *r;
 	register i;
 
@@ -1297,11 +1275,10 @@ struct stream *sp;
 long v;
 int n;
 {
-	int spare1, spare2;
-	long hi, lo;
-	int nw;
 	register struct stream *obj;
 	register struct page *cur;
+	long hi, lo;
+	int nw;
 
 	hi = v >> 8;
 	lo = v & 0xff;
@@ -1345,7 +1322,6 @@ int x;
 get(a)
 struct stream *a;
 {
-	int spare;
 	register struct stream *p;
 
 	p = a;
@@ -1380,7 +1356,6 @@ char *name;
 	register char *s;
 	register char *p;
 	register int n;
-	int spare1, spare2, spare3;
 	struct {
 		char pad[0x16];
 		long mtime;
@@ -1471,8 +1446,6 @@ table_lookup(end, a)
 struct local *end;
 int a;
 {
-	int spare1, spare2, spare3;
-
 	register struct local *p;
 	register struct local *e;
 	register k;
@@ -1494,13 +1467,12 @@ readhdr(a)
 long a;
 {
 	int magic;
-	int spare1, spare2, spare3;
-	int c0, c1, c2, w;
-	struct objhdr tmp;
-	struct fseg rec[2];
 	register int t;
 	register int i;
 	register int n;
+	int c0, c1, c2, w;
+	struct objhdr tmp;
+	struct fseg rec[2];
 
 	dseek(&text, a, 2);
 	mget(&magic, 2);
@@ -1615,8 +1587,6 @@ register struct buf *p;
 flush_buffer(a)
 register struct buf *a;
 {
-	int spare1;
-
 	register n;
 
 	n = (char *)a->xnext - (char *)a->iobuf;

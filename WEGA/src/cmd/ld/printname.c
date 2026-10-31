@@ -10,12 +10,10 @@ int pnflag = 0;
 put_name(p)
 char *p;
 {
-	int spare1, spare2;
-	char spare3;
-	char flag;
 	register char *q;
 	register int n;
 	register int k;
+	char flag;
 
 	q = p;
 	flag = 0;

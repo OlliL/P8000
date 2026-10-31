@@ -8,10 +8,9 @@ unpack_run(src, dst)
 char *src;
 char *dst;
 {
+	int n;
 	register char *s;
 	register char *d;
-	int n;
-	int spare1, spare2;
 	char ch;
 
 	n = 0;
@@ -39,8 +38,6 @@ pack_name(src, dst)
 char *src;
 char *dst;
 {
-	int spare1, spare2;
-	char spare3;
 	register char *q;
 	register char *d;
 	register char *s;

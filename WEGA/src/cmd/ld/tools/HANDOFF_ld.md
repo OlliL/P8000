@@ -3,6 +3,15 @@
 Status 2026-10-28. Program: `/bin/ld` (WEGA 3.1, 21732 bytes, nonsegmented E711, stripped, SCCS `ld.c 1.18`).
 Predecessor of `src/cmd/sld`. Not committed. Process: `host/HOWTO_reconstruct.md`, Phase A steps 0 to 6.
 
+## Old compiler v1 (2026-10-31)
+
+ld is built with ccv1 (`src/cmd/cc/v1`, `make -C host oldroot`, then `make link CC="z8k-emu -r <oldroot> /bin/ccv1"`):
+54 of 59 functions strictly exact, data equal (OLD_D12), corpus 146 of 146. The spare locals of the drafts below were
+the frame places of the register variables (OLD_D1, host/KNOWLEDGE.md "D1"): the register declarations now stand at
+their place and the spares are gone, except one word each in main, parse_args, slookup, pslookup and index16. The
+notes below that speak of spares describe the state before. Open: ranlib_scan, place_sec, dseek (D2), chk_ranlib (D3),
+read_symbols (no return temporary, D11, D3).
+
 ## Facts (step 0)
 
 - Header: magic E711, imsize 21692 = code 18944 (0x4a00) + data 2748 (0x0abc), bss 27082 (0x69ca), no symbols.

@@ -733,7 +733,7 @@
     "D11",
     "D3"
    ],
-   "note": "Remaining (15 lines): (1) frame 0x1c against 0x1a: our cc reserves one save slot more; with one spare word in front all local offsets are equal (D1); (2) our popt copies the short return 0 of goto done to the jump site, the original jumps to the end, so the loop exit is jp instead of jr (D11); (3) a dead ldl rr4,rr2 of the original in the common-symbol branch (D3). Tried: 7 drafts on 2026-10-29 (d8/rs_1..rs_3); without the spare (all offsets -2), the putc expressions as fputc (no change of the frame). Fixed on the way: & ~1 removed from the halving of hdrsz + segtsz."
+   "note": "Remaining (11 lines, built with ccv1): (1) frame 0x1c against 0x1a: the temporary of a return value (codgen reserves it above the locals in every function with a return value); the original has it in all other functions of ld with a return value, but not here (with no temporary unless a delayed x++ needs it, read_symbols is right and 21 functions lose 2 bytes); the word in front of the locals is the frame place of the register variable cur (OLD_D1); (2) our popt copies the short return 0 of goto done to the jump site, the original jumps to the end, so the loop exit is jp instead of jr (D11); (3) a dead ldl rr4,rr2 of the original in the common-symbol branch, the store behind it is shared with the end of the loop (D3). Tried: 7 drafts on 2026-10-29 (d8/rs_1..rs_3); without the spare (all offsets -2), the putc expressions as fputc (no change of the frame); 2026-10-31 the return temporary only when a delayed x++ needs it (codgen). Fixed on the way: & ~1 removed from the halving of hdrsz + segtsz."
   }
  },
  "inventory": {

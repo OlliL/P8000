@@ -847,7 +847,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/cas` | does not terminate on a syntax error in the last statement of a file without newline, an unclosed comment or string, and some tokens (`<<`, `^$`, `5\|3`) | not reproduced (stops at end of file) | "cas: decompilation", `cas/README` |
 | `/bin/cas` | a `}` too many uses the memory in front of the block stack | not reproduced (level stays 0) | `cas/README` |
 | `/usr/bin/ranlib` | the old `readsym` linked into it reads the pieces of a long name over the symbol itself: most long names are missing in `__.SYMDEF`, some entries are garbage (238 entries for `libc.a` instead of ~290) | kept | "ranlib, strip, size on the host" |
-| `/usr/bin/strip` | `hflag` is uninitialised without an option; for 8-bit objects with relocation removal the result depends on uninitialised variables; the output file is left open | `hflag` kept in `src/cmd/strip`; host strip refuses 8-bit objects and closes the file | "size and strip", "ranlib, strip, size on the host" |
+| `/usr/bin/strip` | `hflag` is uninitialised without an option; for 8-bit objects with relocation removal the result depends on uninitialised variables (`int c` of `rcopy`: one byte read into it, two bytes written from it; the frame address of `c` is even, measured 2026-10-31 with ccv1); the output file is left open | `hflag` kept in `src/cmd/strip`; host strip refuses 8-bit objects and closes the file | "size and strip", "ranlib, strip, size on the host" |
 | `/bin/cc` | `-o` as last argument leaves `outfile` NULL (reads the byte at address 0); `-l...` is passed to ld with the byte in front overwritten by `-` | kept | "cc (compiler driver, /bin/cc)" |
 | `/lib/popt` | `killreg()` always looks at rr0 (`n % 1`); nodes without operand text read the code at address 0; the "preceded by alnum" test of `procopt` has no effect; the `rN(` recursion passes a character as a pointer | kept, except the `rN(` recursion | `popt/NOTES.md`, "Quirks that are reproduced on purpose" |
 | `/lib/popt`, `/lib/spopt` | `conloc` has 20 bytes and is followed by the counters `ndirect`, `nbrbr`: an operand of 21 or more characters overwrites them (visible in `-d`: "10496 operations made more direct"); spopt's movedat() starts with `clrb @r9` (r9 = what the caller left) | kept (counters), not reproduced (`clrb`) | `popt/NOTES.md`, "spopt" |
@@ -1728,6 +1728,21 @@ ld `read_symbols` (2026-10-30, `src/cmd/ld/tools/strictcmp.py`): the shipped cc 
 r14 at 0x1a, the word at 0x18 unused); the old cc does not (0x1a, r14 at 0x18). With one spare word in front of the locals all
 local offsets of the original are reached; only the frame size and the save slot differ.
 
+v1 switch `OLD_D1` (cparse, measured on /bin/ld, /usr/bin/strip and /bin/size 2026-10-31): the old cparse gives every
+register variable its place in the frame too, at its declaration like an automatic variable of its type (`oalloc`,
+vinit1.c; the shipped one only for char and short register variables under -O). The `spare` locals of the ld sources
+were exactly these places: in nearly every function of ld the number of spare words in front of the locals equals the
+number of register variables. With the switch the register declarations stand at the place of the spare words (their
+order kept) and 30 functions of ld lose their spares and stay exact (ld 54 of 59 as before); two unused locals that were
+spares under another name go too (`n` of warn_sym_redef, `u` of strip main). strip `copy` (`register s, n` in front of
+`buf[512]`) becomes exact, and strip is byte-identical with v1 (with the source fix `int c`). size has no register
+variables and stays identical. Not a counter-witness: /lib/cparse loses lxinit, moedef, clearst with the switch (its
+register variables have no frame places), but it is a later build (sources of 10/83; ld 07/83, strip and size 01/83 by
+the dates of their crt0 stamps), see "Old compiler v1". Left over in ld: one unexplained frame word each in main and
+parse_args (5 spare words for 4 register variables), slookup and pslookup (no return statement, no register variable),
+index16; they stay `int spare`. The temporary of a return value (above the locals) is in every function of ld with a
+return value except read_symbols (one witness, open).
+
 cparse `getlab`, `noinit` (2026-10-31, measured with `cc -O -S`): the shipped cc reserves at least 2 bytes of frame
 in every function (`dec fp,#~L2` with `~L2 := 2` in `f(){ return(2); }`) and stores the value of a returned `crslab++`
 in it; the old cc makes no frame for these leaf functions. The frame comes from codgen (the `~L1`/`~L2` lines).
@@ -2390,6 +2405,13 @@ everything else is the shipped cc. The emulator maps every absolute guest path t
 ccv1 must be below the ROOT; to keep the original tree untouched, `tools/oldroot.sh WEGA DIR` makes a tree of symbolic
 links (bin and lib real directories of links) and `make oldroot` installs ccv1 and lib/v1/{cparse,codgen,popt} into it.
 Guest /tmp is the /tmp of the original tree (a link). cc and scc stay byte-identical (OLD_V1 is not set there).
+
+Which binaries v1 stands for: the start-up file of most programs carries a stamp `crt0.s Rev : 3.x <date>` (made at the
+build, see `src/lib/libc/crt/mkcrt0.sh`): strip 01/24/83, size 01/14/83, ld 07/26/83, sld 10/27/83, ar 11/18/83; the
+passes cparse, codgen, popt and cas have no stamp, the newest source dates in them are cparse 10/06/83, codgen
+08/24/83, popt 01/18/83. ld, strip and size fit v1 (OLD_D1 holds in all three); cparse does not (no frame places of
+register variables), so it was built by a later revision. The regression rule of `src/TODO.md` (all exact functions
+stay exact) therefore holds per revision: a program is a witness of v1 only when it was built in its time.
 
 ### D20 Code motion of popt (codemove)
 The shipped popt (`codemove`, z21.c) moves the block behind a jump or return to the site of a jump to it; the end

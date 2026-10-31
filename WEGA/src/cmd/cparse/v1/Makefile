@@ -8,10 +8,11 @@
 #
 # Switches (host/KNOWLEDGE.md, "Compiler revisions"):
 #   OLD_D12   the string literals of a file at the end of its data, one pool, aligned only at its start and end
+#   OLD_D1    a register variable gets its place in the frame too (at its declaration, like an automatic variable)
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D12
+SWITCHES = -DOLD_D12 -DOLD_D1
 PREFIX = /
 LDBIN = /bin/ld
 OLD = ../../../lib/oldlibc

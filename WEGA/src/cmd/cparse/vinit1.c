@@ -484,8 +484,12 @@ oalloc( p, poff ) register struct symtab *p; register OFFSZ *poff; {
 		upoff( (long)SZINT, ALINT, &noff );
 		off = noff - tsz;
 		}
+#ifdef OLD_D1
+	else off = upoff( tsz, al, &noff ); /* a register variable gets its place on the stack too */
+#else
 	else if( p->sclass != REGISTER || p->sfldc == 2 || p->sfldc == 1 ) off = upoff( tsz, al, &noff );
 	else off = 0;
+#endif
 
 	if( p->sclass != REGISTER ){ /* in case we are allocating stack space for register arguments */
 		if( p->offset == NOOFFSET ) p->offset = off;

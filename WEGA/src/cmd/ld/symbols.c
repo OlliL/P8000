@@ -13,10 +13,9 @@ int rlbusy = 0;	/* the ranlib buffer is in use (lock_rlbuf) */
    entries); the number of continuation entries (sld read_entry_hdr; 0x249a..0x2502 of /bin/ld) */
 int read_entry_hdr()
 {
+	char cnt;
 	register int k;
 	register char *cur;
-	char cnt;
-	int spare2, spare3;
 	char *end;
 
 	k = 0;
@@ -48,8 +47,6 @@ int x;
 long v;
 char c;
 {
-	int spare;
-
 	register struct symbol *p;
 
 	p = a;
@@ -85,14 +82,13 @@ char *p;
    lookup_name, Plexus lookup; 0x25dc..0x26ac of /bin/ld) */
 struct symbol **lookup_name()
 {
+	int h;
+	int flag;
 	register struct symbol **slot;
 	register char *cur;
 	register char *rec;
 	register char *start;
 	register char *end;
-	int h;
-	int flag;
-	int spare1, spare2, spare3, spare4, spare5;
 
 	h = 0;
 	cur = cursym.sname;
@@ -166,7 +162,6 @@ int x;
 enter(a)
 struct symbol **a;
 {
-	int spare;
 	register struct symbol *r;
 
 	if (*a == 0) {
@@ -213,10 +208,8 @@ put_sym(a, b)
 struct buf *a;
 struct symbol *b;
 {
-	int spare1;
-	char cnt;
-	int spare2;
 	register struct symbol *p;
+	char cnt;
 	register int k;
 
 	p = b;
@@ -243,8 +236,6 @@ test:
 /* put_all: write all symbols of the symbol table to the symbol output (sld put_all; 0x282e..0x2862 of /bin/ld) */
 put_all()
 {
-	int spare1, spare2;
-
 	register struct symbol *p;
 	register struct symbol *end;
 
@@ -263,9 +254,8 @@ warn_sym_redef(p, a)
 struct symbol *p;
 struct symbol *a;
 {
-	register char *s;
 	char c;
-	int n;
+	register char *s;
 
 	if (wflag)
 		return;
@@ -297,7 +287,6 @@ chk_ranlib(p, n)
 struct rlent *p;
 int n;
 {
-	int spare;
 	register int r;
 	struct rlent *e;
 	struct rlent *q;
@@ -361,7 +350,6 @@ unsigned x;
 struct symbol *next_entry(p)
 register struct symbol *p;
 {
-	int spare1, spare2;
 	register int b;
 	register char *e;
 

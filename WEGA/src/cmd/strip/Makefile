@@ -7,9 +7,10 @@
 #   make install PREFIX=dir
 #   make clean
 #
-# The result is not byte-identical with the original /usr/bin/strip yet: strip.o of the original was made
-# by an older cc (own code differs in 2 blocks, D2, and the string literals are not padded to even
-# addresses, D12). The libc part is the one of the original (checked with tools/cmpins.py).
+# strip.o of the original was made by the old compiler v1: built with it (make CC=ccv1, ../cc/v1) the
+# result is byte-identical with the original /usr/bin/strip. With the shipped cc the frames of main and
+# copy differ (register variables have no frame place, D1) and the string literals are padded to even
+# addresses (D12). The libc part is the one of the original (checked with tools/cmpins.py).
 CAS = cas
 CC  = cc
 LD  = ld

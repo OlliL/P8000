@@ -21,11 +21,10 @@ main(argc, argv)
 int argc;
 char **argv;
 {
-	register i;
 	char *tname;
 	int status;
 	int hflag;
-	int u;
+	register i;
 
 	if(argc < (*argv[1] == '-' ? 3 : 2)) {
 		fprintf(stderr, "Usage: strip [-h] file-name ... \n");
@@ -179,7 +178,7 @@ FILE *fr, *to;
 long size;
 {
 	long off;
-	char c;
+	int c;
 	unsigned x;
 
 	rf = fopen(name, "r");
