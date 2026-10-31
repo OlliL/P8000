@@ -128,6 +128,10 @@ int lxmatch;  /* character to be matched in char or string constant */
 
 extern char *spath;
 
+#ifdef OLD_D12
+extern long dpos;	/* pftn1.c */
+#endif
+
 mainp1(){
 	long pos;
 
@@ -140,6 +144,15 @@ mainp1(){
 
 	yyparse();
 	yyaccpt();
+#ifdef OLD_D12
+	if( strhead ){ /* the string literals of the file into the last section of the .D file */
+		putstrs();
+		pos = ftell( dfile );
+		fseek( dfile, dpos-9, 0 );
+		fprintf( dfile, "%07.7ld", pos-dpos );
+		fseek( dfile, 0L, 2 );
+		}
+#endif
 
 	/* the first word of the .S file: the position of the names */
 	pos = ftell( sfile );

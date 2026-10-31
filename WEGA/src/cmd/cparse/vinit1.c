@@ -165,7 +165,9 @@ getstr(){ /* decide if the string is external or an initializer, and get the con
 		l = getlab();
 		strflg = 0;
 		savestr( 0, l ); /* get the contents */
+#ifndef OLD_D12
 		if( curloc == STRNG && strhead && iclass != STATIC ) putstrs();
+#endif
 		locctr( oloc );
 		p = buildtree( STRING, NIL, NIL );
 		p->rval = -l;
@@ -184,6 +186,9 @@ putstrs(){ /* the string literals of the function into the .D file (name is a gu
 	char *s;
 	int i;
 
+#ifdef OLD_D12
+	fprintf( dfile, "    .even\n" );
+#endif
 	strcur = strhead;
 	do {
 		fprintf( dfile, "L%d:\n", strcur->s_lab );
@@ -217,7 +222,9 @@ endinit(){
 	case AUTO:
 	case EXTERN:
 	case REGISTER:
+#ifndef OLD_D12
 		if( strhead ) putstrs();
+#endif
 		return;
 		}
 
@@ -257,7 +264,9 @@ endinit(){
 	iclass = SNULL;
 	if( (sz = (tsize( t, d, s ) + 15) / 16 * 2) > 0xfffe ) uerror( "size too large" );
 	else sectadd( 1, sz );
+#ifndef OLD_D12
 	if( strhead ) putstrs();
+#endif
 
 	}
 doinit( p ) register NODE *p; {

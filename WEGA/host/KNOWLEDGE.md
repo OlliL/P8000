@@ -2376,6 +2376,14 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
 - The WEGA source `src/cmd/cc/cc.c` (see below) is the rebuild with the WEGA cc; `host/cc/cc.c` is the
   separate Linux version.
 
+### D20 Code motion of popt (codemove)
+The shipped popt (`codemove`, z21.c) moves the block behind a jump or return to the site of a jump to it; the end
+of the block is the first `jpr` behind its label. Measured on /bin/ld (2026-10-31, `src/cmd/popt/v1`, switch
+`OLD_D20`): when that `jpr` jumps to the label right behind it, the old popt does not take it as the end of the block
+(it had removed that jump already), so short blocks in front of the function exit are not moved (`ensure_buf`, the
+`return 0` of `read_symbols`). With the switch, ld has 52 of 59 functions strictly exact (51 before). Turning off the
+whole code motion is wrong: the old popt also moves the prologue and the switch dispatch to the front.
+
 ### cc, scc rebuilt with the WEGA cc (`src/cmd/cc/cc.c`)
 
 - `src/cmd/cc/cc.c` is one source for both drivers (`scc` = `-DSCC`); `make` in `src/cmd/cc` compiles it

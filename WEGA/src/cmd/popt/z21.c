@@ -841,6 +841,9 @@ register struct node *p;
 	register struct node *p2, *p1, *p3;
 	struct node *t, *tl;
 	int n;
+#ifdef OLD_D20
+	struct node *rp;
+#endif
 
 	p1 = p;
 	if (p1->op != JP)
@@ -854,6 +857,16 @@ register struct node *p;
 	if (p2->op == JP || p2->op == RET) {
 		p2 = p2->forw;
 		for (p3 = p1->ref; p3; p3 = p3->forw) {
+#ifdef OLD_D20
+			/* the old popt has removed a jump to the next label already: the block goes on behind it */
+			if (p3->op == JP && p3->ref) {
+				for (rp = p3->forw; rp && (rp->op == LABEL || rp->op == KCOMMENT); rp = rp->forw)
+					if (rp == p3->ref)
+						break;
+				if (rp == p3->ref)
+					continue;
+			}
+#endif
 			if (p3->op == JP) {
 				if (p1 == p3)
 					return p1;

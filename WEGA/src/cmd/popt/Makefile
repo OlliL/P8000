@@ -4,6 +4,7 @@
 # original) and the members of the shipped libc.a that are identical to the original ones (ar x), like codgen does.
 #
 #   make              popt
+#   make old         the versions of the old compiler in OLDDIRS (v1/Makefile ...)
 #   make clean
 
 CC = cc
@@ -26,7 +27,13 @@ SHIPOBJS = __callex.o data.o brk.o cuexit.o ffltioc.o write.o close.o read.o \
 	lseek.o decimal.o cerror.o open.o creat.o ioctl.o umask.o chmod.o ctype_.o strchr.o strcmp.o
 OBJS = z20.o z21.o z22.o z23.o
 
+# the versions of the old compiler (one directory each, own Makefile; not part of all)
+OLDDIRS = v1
+
 all: popt
+
+old: all
+	for d in $(OLDDIRS); do cd $$d ; $(MAKE) ; cd .. ; done
 
 popt: $(OBJS) $(OLDOBJS) ship
 	$(LD) -X -e start -i crt0.o $(OBJS) $(OLDOBJS) $(SHIPOBJS) -o popt

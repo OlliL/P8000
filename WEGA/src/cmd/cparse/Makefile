@@ -4,6 +4,7 @@
 #                    the original by tools/rawblock.py, needs WEGA=root of the original tree), linked with the libc part
 #                    (LIBCOBJS); the image of cparse_block must be equal to /lib/cparse (make checkblock)
 #   make             cparse from our sources: crt0.o (made by mkcrt0.sh cparse), the modules in the order of the original, the libc part
+#   make old         the versions of the old compiler in OLDDIRS (v1/Makefile ...)
 #   make clean
 #
 # The parser cgram1.y is made into cgram1.c by the original yacc (YACC). bss.s and libcbss.s (only .comm lines) give
@@ -27,7 +28,13 @@ LIBC = /lib/libc.a
 # the versions of src/lib/oldlibc
 LIBCOBJS = libcbss.o $(OLD)/fltioc/0_1.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/rdwr/0_3.o $(OLD)/fopen/0_1.o $(OLD)/fdopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/ungetc/0_1.o shipped/atof.o $(OLD)/ecvt/0_1.o shipped/pow10.o $(OLD)/filbuf/0_3.o shipped/data.o $(OLD)/setbuf/0_1.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_4.o $(OLD)/findiop/0_2.o shipped/__callex.o shipped/cuexit.o $(OLD)/perror/0_1.o $(OLD)/cnvt/0_2.o shipped/decimal.o $(OLD)/length/0_3.o $(OLD)/malloc/0_3.o $(OLD)/errlst/0_1.o $(OLD)/isatty/0_2.o $(OLD)/stty/0_3.o $(OLD)/strcat/0_2.o $(OLD)/strcmp/0_1.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o shipped/ctype_.o shipped/brk.o shipped/chmod.o shipped/close.o shipped/creat.o shipped/ioctl.o shipped/lseek.o shipped/open.o shipped/read.o shipped/signal.o shipped/umask.o shipped/write.o shipped/cerror.o
 
+# the versions of the old compiler (one directory each, own Makefile; not part of all)
+OLDDIRS = v1
+
 all: cparse
+
+old: all
+	for d in $(OLDDIRS); do cd $$d ; $(MAKE) ; cd .. ; done
 
 cparse: crt0.o $(OBJS) $(LIBCOBJS)
 	$(LDBIN) -i -e start crt0.o $(OBJS) $(LIBCOBJS) -o $@
