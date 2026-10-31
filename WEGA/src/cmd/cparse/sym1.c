@@ -111,7 +111,7 @@ nidcl( p ) NODE *p; { /* handle unitialized declarations */
 			}
 		}
 
-	if( ISARY(p->type) && dimtab[p->cdim]==0 && (class==AUTO || class==EXTDEF) )
+	if( ISARY(p->type) && dimtab[p->cdim]==0 && (class==AUTO || class==REGISTER) )
 		werror( "empty array declaration - no space reserved" );
 
 	defid( p, class );

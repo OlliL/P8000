@@ -183,3 +183,9 @@ TODO.md when this log was started.
   take; newsect `lda r2,9(r15)` right after `ld 12(r15),r2`): cparse 89, 2836 lines (yyparse 86 > 27, copysym 78 > 34,
   putsym 74 > 34; defid 140 > 180 is a moved block in the diff); corpus 239 of 259; bench v0 84, 1080 lines. The
   normal objects of codgen unchanged (match3, lcl3, allo3, regallo3 compiled with the shipped cc).
+- OLD_D2Q (allocreg: a long through a pointer into the pair of its even address register; the word is given back
+  with rsreturn first so that it merges with its free partner, rfree alone leaves it on rsuse): cparse 2719 lines
+  (optim 164 > 114, gotscal, instk, doinit; econvert exact; addcase, ftnend look lost: the mask artifact %6554);
+  corpus 239 of 259; bench v0 84, 1080 > 1085 lines: set in v0p only.
+- cparse nidcl: the original compares the class with 4 (REGISTER), our source had EXTDEF (5): a reconstruction error
+  in sym1.c, fixed (`int a[];` outside a function warned in ours only); nidcl 7 > 1 lines.

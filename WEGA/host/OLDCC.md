@@ -183,11 +183,12 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 89 strictly exact, 2836 differing lines (code 49152 bytes against 48896), corpus 239 of 259
+- State: /lib/cparse 88 strictly exact (addcase and ftnend differ only by a mask artifact: a data address equal to a
+  function address of the model), 2717 differing lines (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
-  81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines).
+  81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines; + OLD_D2Q 2719 lines).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
@@ -261,6 +262,9 @@ compiler that built the original. Not differences of the compiler (checked):
   less than the register getreg would take; the name is lost then (newsect: `n = ++nsect; cp = &buf[3]` loads into
   r2 again, the shipped codgen keeps nsect in r2 and takes r3). The name lives on as long as nobody needs the register
   (gotscal keeps pstk in r2 across statements).
+- v0p (switch `OLD_D2Q` in codgen, allocreg): a long loaded through a pointer goes into the pair of its even address
+  register when the odd half is free (`sla r2,#2; ldl rr2,TAB(r2)`, the shipped codgen takes rr0); cparse 2836 > 2719
+  lines, bench v0 1080 > 1085 lines (84 both), so v0p only.
 - Form: another register for a temporary: rr0 where the shipped cc takes rr4 (cas), rr4 against rr2 (ld), a copy to r2
   in front of a use (codgen `expand`, ld place_sec and chk_ranlib); register variables of leaf functions in scratch
   registers (sld).

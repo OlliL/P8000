@@ -279,6 +279,26 @@ found:
 	return getreg(cls, reg, 0x1000, sym);
 }
 
+#ifdef OLD_D2Q
+/* the word register r is busy once and its partner r + 1 is free */
+static int
+d2qfree(r)
+	register int r;
+{
+	register struct rs *n;
+
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == r && n->cls == 2)
+			break;
+	if (n == 0 || n->busy != 1)
+		return 0;
+	for (n = rsfree; n; n = n->next)
+		if (n->reg == r + 1 && n->cls == 2)
+			return 1;
+	return 0;
+}
+#endif
+
 /* a register for the result of p; cookie says what the caller wants */
 int
 allocreg(p, cookie)
@@ -328,6 +348,21 @@ allocreg(p, cookie)
 #ifdef OLD_D2C
 	if (r == -1 && p->op == REG)
 		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: the copy of a name in a register holds no name */
+#endif
+#ifdef OLD_D2Q
+	if (r == -1 && cls == 3 && want == -1 && (p->op == STAR || p->op == OREG)) {
+		register struct node *q = getlr(p, 'L');	/* a long through a pointer: the pair of its even register */
+
+		if (q->op == STAR)
+			q = q->left;
+		if ((q->op == OREG || q->op == REG) && q->rval < 8 && !(q->rval & 1) && d2qfree(q->rval)) {
+			rfree(q->rval, 4);
+			rsreturn(2, q->rval);		/* merged with its free partner */
+			r = getreg(3, q->rval, 0, p->sname);
+			if (r == -1)
+				rbusy(q->rval, 4, q->sname, q->lval);
+		}
+	}
 #endif
 	if (r == -1)
 		r = getreg(cls, want, 0x1000, p->sname);
