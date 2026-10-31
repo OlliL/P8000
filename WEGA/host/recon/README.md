@@ -18,6 +18,7 @@ Used by codgen, popt, sld, ld and cparse (see `host/HOWTO_reconstruct.md`). Each
 | `callcmp.py OLD NEW NM` | call-trace comparison of two emulator traces (corpus test) |
 | `zcode.py` | instruction lists and the two normal forms (masked, strict) of the comparison |
 | `strictcmp.py [-m] [-v NAME]` | every function of our linked program against the original; strict: only code addresses masked (the authority; `-m` is the old masked form) |
+| `strictlayers.py [-w] [-v NAME]` | the strict difference of every function in layers (as it is, frame hidden, frame and registers hidden) and the shapes of the hunks that remain (candidate D classes by form, else "open"); `-w` writes `strict_layers` into findings.json (shown as a column of FINDINGS.md) |
 | `fncheck.py DRAFT LO HI` | a draft compiled alone against a range of the original (masked, a first look) |
 | `d12model.py` | our modules linked under the data layout of the old cc (strings at the end of each file, unpadded); data compared; the input of strictcmp |
 | `rename.py OLD NEW ...` | rename everywhere: sources, tables, findings.json, the .md files of the tools and of the project |

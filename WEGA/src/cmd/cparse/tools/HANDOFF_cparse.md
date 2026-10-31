@@ -159,6 +159,22 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
   patterns.py does not know (multl with memory operands, srl for unsigned DECREF, set for flags, xor in lookup);
   corpus 235 of 255.
 
+## State 2026-10-31 (hardening the classification)
+
+- The pattern check (classify.py, 154 "D only") is weak: `host/recon/strictlayers.py` reads the strict difference in
+  layers: 29 exact, 24 differ only in the frame, 26 only in frame and registers, 38 more only in hunks of a named shape
+  (register copy, reload, spill, frame, long shift, jump distance, dispatch form), 62 have open hunks (findings.json
+  `strict_layers`, column of FINDINGS.md). The named shapes are candidates by form, not a proof of the source.
+- The data of the original (code addresses masked) showed five source errors, fixed: inwd/word/extext are defined
+  behind clocal and cprint (local1.c), notlval takes NAME, STREF, UNARY MUL, FLD, yylex has onechar/A_1C first (PCC
+  order; the string pool), cprint has ICON first, lxrdope has fortran before float with the action 6 (quirk: the
+  original stops with "bad AR_?? action" on the word fortran). Model: cpir value/target lists at the place of the target
+  list. Data equal at the same address 16984 -> 17169 of 18584; the rest (code masked): yyparse and swend jump tables
+  (code addresses below 0x1000, the code differs in size), a double constant of buildtree (the old cc puts it behind
+  the first switch table, the model in front of the function). Corpus 235 of 255, unchanged.
+- Measured with the shipped cc: it reserves at least 2 bytes of frame in every function and stores the value of a
+  returned `x++` there (getlab, noinit have no frame in the original): D1, the frame is made by codgen.
+
 ## Next (2026-10-31)
 
 1. The 25 "other differences": read each against the patterns (new D classes or source forms); the D19 swaps.

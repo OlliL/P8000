@@ -55,6 +55,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 11
+   },
+   "strict_layers": {
+    "strict": 4,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "bdty": {
@@ -85,6 +92,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 32
+   },
+   "strict_layers": {
+    "strict": 14,
+    "frame_hidden": 6,
+    "regs_hidden": 6,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload": 1,
+     "D6 dispatch form": 1
+    }
    }
   },
   "dstash": {
@@ -113,6 +130,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 13
+   },
+   "strict_layers": {
+    "strict": 4,
+    "frame_hidden": 4,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "savebc": {
@@ -140,6 +164,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 22
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "resetbc": {
@@ -168,6 +199,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 21
+   },
+   "strict_layers": {
+    "strict": 26,
+    "frame_hidden": 26,
+    "regs_hidden": 4,
+    "class": "open shapes",
+    "shapes": {
+     "D3 spill": 1,
+     "open": 1
+    }
    }
   },
   "addcase": {
@@ -197,6 +238,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 32
+   },
+   "strict_layers": {
+    "strict": 14,
+    "frame_hidden": 4,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "adddef": {
@@ -226,6 +274,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 25
+   },
+   "strict_layers": {
+    "strict": 12,
+    "frame_hidden": 12,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "swstart": {
@@ -252,6 +307,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 8
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "swend": {
@@ -283,6 +345,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 68
+   },
+   "strict_layers": {
+    "strict": 34,
+    "frame_hidden": 34,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "yyparse": {
@@ -304,6 +373,18 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 1239
+   },
+   "strict_layers": {
+    "strict": 228,
+    "frame_hidden": 228,
+    "regs_hidden": 40,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 16,
+     "open": 5,
+     "D3 spill": 1,
+     "D7 jump distance": 1
+    }
    }
   },
   "scnames": {
@@ -335,6 +416,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 22
+   },
+   "strict_layers": {
+    "strict": 11,
+    "frame_hidden": 3,
+    "regs_hidden": 1,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 1
+    }
    }
   },
   "mainp1": {
@@ -366,6 +456,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 38
+   },
+   "strict_layers": {
+    "strict": 4,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "lxstart": {
@@ -391,6 +488,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 3
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "lxclass": {
@@ -418,6 +522,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 19
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "lxenter": {
@@ -450,6 +561,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 18
+   },
+   "strict_layers": {
+    "strict": 14,
+    "frame_hidden": 10,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "lxinit": {
@@ -483,6 +601,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 49
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "sfinit": {
@@ -514,6 +639,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 14
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "dimtinit": {
@@ -540,6 +672,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 24
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "lxtitle": {
@@ -572,6 +711,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 105
+   },
+   "strict_layers": {
+    "strict": 44,
+    "frame_hidden": 44,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 4
+    }
    }
   },
   "lxmore": {
@@ -604,6 +752,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 42
+   },
+   "strict_layers": {
+    "strict": 23,
+    "frame_hidden": 15,
+    "regs_hidden": 1,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 1
+    }
    }
   },
   "savestr": {
@@ -633,6 +790,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 61
+   },
+   "strict_layers": {
+    "strict": 13,
+    "frame_hidden": 13,
+    "regs_hidden": 5,
+    "class": "open shapes",
+    "shapes": {
+     "open": 2,
+     "D2 register copy": 1
+    }
    }
   },
   "lxstr": {
@@ -654,6 +821,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 183
+   },
+   "strict_layers": {
+    "strict": 97,
+    "frame_hidden": 97,
+    "regs_hidden": 49,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 6,
+     "open": 5,
+     "D6 dispatch form": 1
+    }
    }
   },
   "lxcom": {
@@ -684,6 +862,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 47
+   },
+   "strict_layers": {
+    "strict": 52,
+    "frame_hidden": 52,
+    "regs_hidden": 40,
+    "class": "open shapes",
+    "shapes": {
+     "open": 3,
+     "D2 register copy": 1
+    }
    }
   },
   "yylex": {
@@ -705,6 +893,19 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 597
+   },
+   "strict_layers": {
+    "strict": 445,
+    "frame_hidden": 431,
+    "regs_hidden": 73,
+    "class": "open shapes",
+    "shapes": {
+     "open": 3,
+     "D2 register copy": 19,
+     "D6 dispatch form": 2,
+     "D10 long shift": 2,
+     "D7 jump distance": 1
+    }
    }
   },
   "lxres": {
@@ -737,6 +938,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 100
+   },
+   "strict_layers": {
+    "strict": 27,
+    "frame_hidden": 19,
+    "regs_hidden": 9,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1
+    }
    }
   },
   "defid": {
@@ -758,6 +968,19 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 522
+   },
+   "strict_layers": {
+    "strict": 205,
+    "frame_hidden": 269,
+    "regs_hidden": 55,
+    "class": "open shapes",
+    "shapes": {
+     "open": 10,
+     "D3 spill": 1,
+     "D3 reload": 5,
+     "D7 jump distance": 3,
+     "D6 dispatch form": 1
+    }
    }
   },
   "psave": {
@@ -787,6 +1010,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 13
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "psavel": {
@@ -815,6 +1045,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 16
+   },
+   "strict_layers": {
+    "strict": 5,
+    "frame_hidden": 5,
+    "regs_hidden": 3,
+    "class": "open shapes",
+    "shapes": {
+     "open": 2
+    }
    }
   },
   "ftnend": {
@@ -846,6 +1085,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 94
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "argalloc": {
@@ -878,6 +1124,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 115
+   },
+   "strict_layers": {
+    "strict": 66,
+    "frame_hidden": 66,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 1,
+     "D10 long shift": 1
+    }
    }
   },
   "dclargs": {
@@ -912,6 +1168,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 183
+   },
+   "strict_layers": {
+    "strict": 47,
+    "frame_hidden": 47,
+    "regs_hidden": 13,
+    "class": "open shapes",
+    "shapes": {
+     "open": 2,
+     "D2 register copy": 5
+    }
    }
   },
   "setreg": {
@@ -942,6 +1208,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 47
+   },
+   "strict_layers": {
+    "strict": 54,
+    "frame_hidden": 46,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "initpreg": {
@@ -970,6 +1243,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 9
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "getpreg": {
@@ -1002,6 +1282,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 60
+   },
+   "strict_layers": {
+    "strict": 39,
+    "frame_hidden": 29,
+    "regs_hidden": 9,
+    "class": "open shapes",
+    "shapes": {
+     "open": 2,
+     "D3 spill": 1
+    }
    }
   },
   "rstruct": {
@@ -1034,6 +1324,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 60
+   },
+   "strict_layers": {
+    "strict": 10,
+    "frame_hidden": 2,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "moedef": {
@@ -1065,6 +1364,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 21
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "bstruct": {
@@ -1095,6 +1401,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 61
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "dclstruct": {
@@ -1116,6 +1429,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 199
+   },
+   "strict_layers": {
+    "strict": 70,
+    "frame_hidden": 70,
+    "regs_hidden": 12,
+    "class": "open shapes",
+    "shapes": {
+     "open": 3,
+     "D2 register copy": 2
+    }
    }
   },
   "yyerror": {
@@ -1142,6 +1465,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 6
+   },
+   "strict_layers": {
+    "strict": 2,
+    "frame_hidden": 2,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "yyaccpt": {
@@ -1167,6 +1499,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 2
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "ftnarg": {
@@ -1197,6 +1536,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 16
+   },
+   "strict_layers": {
+    "strict": 6,
+    "frame_hidden": 6,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 2
+    }
    }
   },
   "talign": {
@@ -1230,6 +1578,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 57
+   },
+   "strict_layers": {
+    "strict": 38,
+    "frame_hidden": 30,
+    "regs_hidden": 6,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 2,
+     "D6 dispatch form": 1
+    }
    }
   },
   "tsize": {
@@ -1251,6 +1609,18 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 49
+   },
+   "strict_layers": {
+    "strict": 30,
+    "frame_hidden": 26,
+    "regs_hidden": 12,
+    "class": "named shapes only",
+    "shapes": {
+     "D1 frame": 2,
+     "D2 register copy": 1,
+     "D6 dispatch form": 1,
+     "D10 long shift": 1
+    }
    }
   },
   "inforce": {
@@ -1280,6 +1650,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 55
+   },
+   "strict_layers": {
+    "strict": 13,
+    "frame_hidden": 13,
+    "regs_hidden": 5,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1,
+     "D10 long shift": 1
+    }
    }
   },
   "vfdalign": {
@@ -1301,6 +1681,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 22
+   },
+   "strict_layers": {
+    "strict": 18,
+    "frame_hidden": 4,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D1 frame": 2
+    }
    }
   },
   "argdebug": {
@@ -1326,6 +1715,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 5
+   },
+   "strict_layers": {
+    "strict": 11,
+    "frame_hidden": 7,
+    "regs_hidden": 7,
+    "class": "open shapes",
+    "shapes": {
+     "D3 spill": 1,
+     "D3 reload instead of copy": 1,
+     "open": 1
+    }
    }
   },
   "buildtree": {
@@ -1347,6 +1747,20 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 685
+   },
+   "strict_layers": {
+    "strict": 302,
+    "frame_hidden": 228,
+    "regs_hidden": 100,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 9,
+     "open": 6,
+     "D6 dispatch form": 5,
+     "D7 jump distance": 2,
+     "D3 reload": 3,
+     "D3 reload instead of copy": 2
+    }
    }
   },
   "strargs": {
@@ -1376,6 +1790,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 36
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "chkstr": {
@@ -1406,6 +1827,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 46
+   },
+   "strict_layers": {
+    "strict": 30,
+    "frame_hidden": 26,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 2,
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "chkpun": {
@@ -1427,6 +1858,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 141
+   },
+   "strict_layers": {
+    "strict": 20,
+    "frame_hidden": 12,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "stref": {
@@ -1458,6 +1896,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 104
+   },
+   "strict_layers": {
+    "strict": 64,
+    "frame_hidden": 30,
+    "regs_hidden": 12,
+    "class": "open shapes",
+    "shapes": {
+     "D3 reload instead of copy": 1,
+     "open": 3
+    }
    }
   },
   "notlval": {
@@ -1490,6 +1938,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 24
+   },
+   "strict_layers": {
+    "strict": 24,
+    "frame_hidden": 16,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D6 dispatch form": 1
+    }
    }
   },
   "bcon": {
@@ -1518,6 +1975,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 20
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "bpsize": {
@@ -1546,6 +2010,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 13
+   },
+   "strict_layers": {
+    "strict": 10,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "psize": {
@@ -1567,6 +2038,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 23
+   },
+   "strict_layers": {
+    "strict": 14,
+    "frame_hidden": 6,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "convert": {
@@ -1597,6 +2075,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 46
+   },
+   "strict_layers": {
+    "strict": 14,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "econvert": {
@@ -1628,6 +2113,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 49
+   },
+   "strict_layers": {
+    "strict": 20,
+    "frame_hidden": 12,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "pconvert": {
@@ -1649,6 +2141,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 28
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "oconvert": {
@@ -1680,6 +2179,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 62
+   },
+   "strict_layers": {
+    "strict": 36,
+    "frame_hidden": 24,
+    "regs_hidden": 8,
+    "class": "open shapes",
+    "shapes": {
+     "D6 dispatch form": 1,
+     "D2 register copy": 2,
+     "open": 2
+    }
    }
   },
   "ptmatch": {
@@ -1712,6 +2222,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 91
+   },
+   "strict_layers": {
+    "strict": 46,
+    "frame_hidden": 4,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D6 dispatch form": 1
+    }
    }
   },
   "tymatch": {
@@ -1744,6 +2263,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 156
+   },
+   "strict_layers": {
+    "strict": 138,
+    "frame_hidden": 130,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 2
+    }
    }
   },
   "makety": {
@@ -1775,6 +2303,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 94
+   },
+   "strict_layers": {
+    "strict": 12,
+    "frame_hidden": 6,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D1 frame": 2
+    }
    }
   },
   "block": {
@@ -1803,6 +2340,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 22
+   },
+   "strict_layers": {
+    "strict": 10,
+    "frame_hidden": 2,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "lcons": {
@@ -1833,6 +2377,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 17
+   },
+   "strict_layers": {
+    "strict": 12,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "icons": {
@@ -1863,6 +2414,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 23
+   },
+   "strict_layers": {
+    "strict": 20,
+    "frame_hidden": 6,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "opact": {
@@ -1895,6 +2453,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 204
+   },
+   "strict_layers": {
+    "strict": 37,
+    "frame_hidden": 29,
+    "regs_hidden": 3,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 1,
+     "D2 register copy": 1
+    }
    }
   },
   "moditype": {
@@ -1926,6 +2494,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 23
+   },
+   "strict_layers": {
+    "strict": 12,
+    "frame_hidden": 8,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "doszof": {
@@ -1956,6 +2531,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 26
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "prtdcon": {
@@ -1987,6 +2569,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 48
+   },
+   "strict_layers": {
+    "strict": 38,
+    "frame_hidden": 14,
+    "regs_hidden": 8,
+    "class": "open shapes",
+    "shapes": {
+     "open": 4,
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "ecomp": {
@@ -2016,6 +2608,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 23
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "prtree": {
@@ -2048,6 +2647,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 139
+   },
+   "strict_layers": {
+    "strict": 85,
+    "frame_hidden": 73,
+    "regs_hidden": 23,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 4,
+     "D6 dispatch form": 1,
+     "open": 2
+    }
    }
   },
   "argregs": {
@@ -2078,6 +2688,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 65
+   },
+   "strict_layers": {
+    "strict": 35,
+    "frame_hidden": 27,
+    "regs_hidden": 23,
+    "class": "open shapes",
+    "shapes": {
+     "open": 6
+    }
    }
   },
   "tempnode": {
@@ -2109,6 +2728,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 26
+   },
+   "strict_layers": {
+    "strict": 12,
+    "frame_hidden": 8,
+    "regs_hidden": 8,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1
+    }
    }
   },
   "fortarg": {
@@ -2139,6 +2767,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 28
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "optim": {
@@ -2171,6 +2806,18 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 470
+   },
+   "strict_layers": {
+    "strict": 337,
+    "frame_hidden": 307,
+    "regs_hidden": 193,
+    "class": "open shapes",
+    "shapes": {
+     "D6 dispatch form": 1,
+     "D2 register copy": 11,
+     "open": 7,
+     "D7 jump distance": 2
+    }
    }
   },
   "conval": {
@@ -2192,6 +2839,18 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 191
+   },
+   "strict_layers": {
+    "strict": 115,
+    "frame_hidden": 45,
+    "regs_hidden": 25,
+    "class": "open shapes",
+    "shapes": {
+     "D1 frame": 2,
+     "open": 7,
+     "D6 dispatch form": 1,
+     "D3 reload instead of copy": 2
+    }
    }
   },
   "treeeq": {
@@ -2223,6 +2882,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 42
+   },
+   "strict_layers": {
+    "strict": 45,
+    "frame_hidden": 37,
+    "regs_hidden": 19,
+    "class": "open shapes",
+    "shapes": {
+     "open": 3
+    }
    }
   },
   "rmconv": {
@@ -2253,6 +2921,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 86
+   },
+   "strict_layers": {
+    "strict": 64,
+    "frame_hidden": 24,
+    "regs_hidden": 6,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 4,
+     "open": 1
+    }
    }
   },
   "notflt": {
@@ -2282,6 +2960,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 13
+   },
+   "strict_layers": {
+    "strict": 11,
+    "frame_hidden": 3,
+    "regs_hidden": 3,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1
+    }
    }
   },
   "main": {
@@ -2314,6 +3001,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 84
+   },
+   "strict_layers": {
+    "strict": 36,
+    "frame_hidden": 28,
+    "regs_hidden": 6,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 2,
+     "D6 dispatch form": 1
+    }
    }
   },
   "openfiles": {
@@ -2346,6 +3043,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 115
+   },
+   "strict_layers": {
+    "strict": 15,
+    "frame_hidden": 15,
+    "regs_hidden": 9,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 3,
+     "open": 3
+    }
    }
   },
   "fnfile": {
@@ -2375,6 +3082,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 31
+   },
+   "strict_layers": {
+    "strict": 3,
+    "frame_hidden": 3,
+    "regs_hidden": 3,
+    "class": "open shapes",
+    "shapes": {
+     "D3 reload": 1,
+     "open": 1
+    }
    }
   },
   "fltlab": {
@@ -2407,6 +3124,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 57
+   },
+   "strict_layers": {
+    "strict": 48,
+    "frame_hidden": 40,
+    "regs_hidden": 14,
+    "class": "open shapes",
+    "shapes": {
+     "open": 5
+    }
    }
   },
   "fhashv": {
@@ -2435,6 +3161,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 20
+   },
+   "strict_layers": {
+    "strict": 21,
+    "frame_hidden": 11,
+    "regs_hidden": 3,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 spill": 1
+    }
    }
   },
   "newsect": {
@@ -2467,6 +3202,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 75
+   },
+   "strict_layers": {
+    "strict": 39,
+    "frame_hidden": 37,
+    "regs_hidden": 3,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 1,
+     "open": 2
+    }
    }
   },
   "sectfull": {
@@ -2495,6 +3240,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 13
+   },
+   "strict_layers": {
+    "strict": 15,
+    "frame_hidden": 11,
+    "regs_hidden": 3,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1
+    }
    }
   },
   "sectadd": {
@@ -2524,6 +3278,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 17
+   },
+   "strict_layers": {
+    "strict": 10,
+    "frame_hidden": 10,
+    "regs_hidden": 4,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1
+    }
    }
   },
   "bstart": {
@@ -2554,6 +3317,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 49
+   },
+   "strict_layers": {
+    "strict": 20,
+    "frame_hidden": 20,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "bend": {
@@ -2584,6 +3354,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 33
+   },
+   "strict_layers": {
+    "strict": 20,
+    "frame_hidden": 20,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "defalign": {
@@ -2615,6 +3392,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 32
+   },
+   "strict_layers": {
+    "strict": 23,
+    "frame_hidden": 15,
+    "regs_hidden": 3,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 spill": 1,
+     "D2 register copy": 2
+    }
    }
   },
   "getlab": {
@@ -2639,6 +3426,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 3
+   },
+   "strict_layers": {
+    "strict": 3,
+    "frame_hidden": 3,
+    "regs_hidden": 3,
+    "class": "named shapes only",
+    "shapes": {
+     "D1 frame": 2,
+     "D3 spill": 1
+    }
    }
   },
   "locctr": {
@@ -2667,6 +3464,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 28
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "deflab": {
@@ -2695,6 +3499,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 10
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "efcode": {
@@ -2716,6 +3527,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 51
+   },
+   "strict_layers": {
+    "strict": 28,
+    "frame_hidden": 20,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "bfcode": {
@@ -2737,6 +3555,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 136
+   },
+   "strict_layers": {
+    "strict": 23,
+    "frame_hidden": 23,
+    "regs_hidden": 5,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1,
+     "D2 register copy": 1
+    }
    }
   },
   "bccode": {
@@ -2763,6 +3591,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 17
+   },
+   "strict_layers": {
+    "strict": 3,
+    "frame_hidden": 3,
+    "regs_hidden": 3,
+    "class": "named shapes only",
+    "shapes": {
+     "D10 long shift": 1
+    }
    }
   },
   "bfend": {
@@ -2789,6 +3626,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 4
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "defnam": {
@@ -2818,6 +3662,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 29
+   },
+   "strict_layers": {
+    "strict": 14,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "zecode": {
@@ -2846,6 +3697,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 25
+   },
+   "strict_layers": {
+    "strict": 13,
+    "frame_hidden": 13,
+    "regs_hidden": 11,
+    "class": "open shapes",
+    "shapes": {
+     "D3 reload": 1,
+     "open": 1,
+     "D10 long shift": 1
+    }
    }
   },
   "fldal": {
@@ -2873,6 +3735,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 7
+   },
+   "strict_layers": {
+    "strict": 4,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "lineid": {
@@ -2903,6 +3772,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 27
+   },
+   "strict_layers": {
+    "strict": 2,
+    "frame_hidden": 2,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "genswitch": {
@@ -2935,6 +3811,18 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 362
+   },
+   "strict_layers": {
+    "strict": 256,
+    "frame_hidden": 116,
+    "regs_hidden": 14,
+    "class": "open shapes",
+    "shapes": {
+     "open": 3,
+     "D3 reload": 1,
+     "D2 register copy": 2,
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "cast": {
@@ -2964,6 +3852,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 24
+   },
+   "strict_layers": {
+    "strict": 10,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "clocal": {
@@ -2997,6 +3892,20 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 324
+   },
+   "strict_layers": {
+    "strict": 175,
+    "frame_hidden": 171,
+    "regs_hidden": 63,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 5,
+     "D3 reload instead of copy": 1,
+     "D6 dispatch form": 1,
+     "open": 9,
+     "D3 reload": 1,
+     "D7 jump distance": 2
+    }
    }
   },
   "cisreg": {
@@ -3026,6 +3935,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 28
+   },
+   "strict_layers": {
+    "strict": 17,
+    "frame_hidden": 13,
+    "regs_hidden": 3,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1,
+     "D3 reload": 1
+    }
    }
   },
   "offcon": {
@@ -3054,6 +3973,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 15
+   },
+   "strict_layers": {
+    "strict": 12,
+    "frame_hidden": 4,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D1 frame": 2
+    }
    }
   },
   "incode": {
@@ -3075,6 +4003,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 48
+   },
+   "strict_layers": {
+    "strict": 18,
+    "frame_hidden": 10,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "fincode": {
@@ -3106,6 +4041,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 28
+   },
+   "strict_layers": {
+    "strict": 25,
+    "frame_hidden": 15,
+    "regs_hidden": 7,
+    "class": "open shapes",
+    "shapes": {
+     "open": 2,
+     "D2 register copy": 1
+    }
    }
   },
   "cinit": {
@@ -3138,6 +4083,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 78
+   },
+   "strict_layers": {
+    "strict": 101,
+    "frame_hidden": 93,
+    "regs_hidden": 65,
+    "class": "open shapes",
+    "shapes": {
+     "open": 7
+    }
    }
   },
   "cprint": {
@@ -3170,6 +4124,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 105
+   },
+   "strict_layers": {
+    "strict": 109,
+    "frame_hidden": 95,
+    "regs_hidden": 57,
+    "class": "open shapes",
+    "shapes": {
+     "open": 7,
+     "D2 register copy": 3,
+     "D6 dispatch form": 1
+    }
    }
   },
   "vfdzero": {
@@ -3201,6 +4166,18 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 38
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 8,
+    "regs_hidden": 6,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 1,
+     "open": 1,
+     "D3 reload instead of copy": 1,
+     "D3 reload": 1
+    }
    }
   },
   "exname": {
@@ -3232,6 +4209,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 47
+   },
+   "strict_layers": {
+    "strict": 42,
+    "frame_hidden": 38,
+    "regs_hidden": 8,
+    "class": "open shapes",
+    "shapes": {
+     "open": 3
+    }
    }
   },
   "ctype": {
@@ -3261,6 +4247,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 21
+   },
+   "strict_layers": {
+    "strict": 26,
+    "frame_hidden": 22,
+    "regs_hidden": 2,
+    "class": "open shapes",
+    "shapes": {
+     "open": 2
+    }
    }
   },
   "noinit": {
@@ -3285,6 +4280,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 2
+   },
+   "strict_layers": {
+    "strict": 2,
+    "frame_hidden": 2,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D1 frame": 2
+    }
    }
   },
   "commdec": {
@@ -3314,6 +4318,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 28
+   },
+   "strict_layers": {
+    "strict": 16,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "isitfloat": {
@@ -3341,6 +4352,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 7
+   },
+   "strict_layers": {
+    "strict": 7,
+    "frame_hidden": 3,
+    "regs_hidden": 3,
+    "class": "open shapes",
+    "shapes": {
+     "D3 reload instead of copy": 1,
+     "open": 1
+    }
    }
   },
   "ecode": {
@@ -3371,6 +4392,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 44
+   },
+   "strict_layers": {
+    "strict": 36,
+    "frame_hidden": 36,
+    "regs_hidden": 18,
+    "class": "open shapes",
+    "shapes": {
+     "D3 reload instead of copy": 3,
+     "D2 register copy": 2,
+     "open": 1
+    }
    }
   },
   "syserr": {
@@ -3399,6 +4431,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 11
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "uerror": {
@@ -3427,6 +4466,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 18
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "cerror": {
@@ -3458,6 +4504,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 37
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "werror": {
@@ -3486,6 +4539,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 17
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "tinit": {
@@ -3515,6 +4575,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 11
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "talloc": {
@@ -3543,6 +4610,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 27
+   },
+   "strict_layers": {
+    "strict": 15,
+    "frame_hidden": 15,
+    "regs_hidden": 9,
+    "class": "open shapes",
+    "shapes": {
+     "D3 spill": 2,
+     "open": 2
+    }
    }
   },
   "tcheck": {
@@ -3572,6 +4649,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 19
+   },
+   "strict_layers": {
+    "strict": 3,
+    "frame_hidden": 3,
+    "regs_hidden": 1,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 1
+    }
    }
   },
   "tfree": {
@@ -3601,6 +4687,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 10
+   },
+   "strict_layers": {
+    "strict": 6,
+    "frame_hidden": 6,
+    "regs_hidden": 4,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 2
+    }
    }
   },
   "tfree1": {
@@ -3630,6 +4725,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 11
+   },
+   "strict_layers": {
+    "strict": 2,
+    "frame_hidden": 2,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "fwalk": {
@@ -3661,6 +4765,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 37
+   },
+   "strict_layers": {
+    "strict": 31,
+    "frame_hidden": 9,
+    "regs_hidden": 1,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 1
+    }
    }
   },
   "walkf": {
@@ -3691,6 +4804,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 29
+   },
+   "strict_layers": {
+    "strict": 18,
+    "frame_hidden": 8,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "mkdope": {
@@ -3721,6 +4841,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 18
+   },
+   "strict_layers": {
+    "strict": 6,
+    "frame_hidden": 6,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "bsize": {
@@ -3753,6 +4880,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 28
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "twords": {
@@ -3784,6 +4918,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 19
+   },
+   "strict_layers": {
+    "strict": 16,
+    "frame_hidden": 12,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "argsize": {
@@ -3813,6 +4954,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 28
+   },
+   "strict_layers": {
+    "strict": 16,
+    "frame_hidden": 6,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 2
+    }
    }
   },
   "where": {
@@ -3841,6 +4991,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 9
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "tbytes": {
@@ -3872,6 +5029,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 19
+   },
+   "strict_layers": {
+    "strict": 16,
+    "frame_hidden": 12,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "dexit": {
@@ -3900,6 +5064,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 8
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "branch": {
@@ -3928,6 +5099,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 10
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "ncopy": {
@@ -3956,6 +5134,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 13
+   },
+   "strict_layers": {
+    "strict": 20,
+    "frame_hidden": 16,
+    "regs_hidden": 6,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1,
+     "D3 reload": 1
+    }
    }
   },
   "tcopy": {
@@ -3986,6 +5174,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 30
+   },
+   "strict_layers": {
+    "strict": 19,
+    "frame_hidden": 19,
+    "regs_hidden": 7,
+    "class": "open shapes",
+    "shapes": {
+     "open": 3,
+     "D3 spill": 1,
+     "D2 register copy": 1
+    }
    }
   },
   "ispow2": {
@@ -4016,6 +5215,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 26
+   },
+   "strict_layers": {
+    "strict": 27,
+    "frame_hidden": 19,
+    "regs_hidden": 5,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 1,
+     "open": 2
+    }
    }
   },
   "nncon": {
@@ -4045,6 +5254,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 13
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "getmem": {
@@ -4077,6 +5293,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 38
+   },
+   "strict_layers": {
+    "strict": 21,
+    "frame_hidden": 5,
+    "regs_hidden": 5,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1
+    }
    }
   },
   "resetmem": {
@@ -4104,6 +5329,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 10
+   },
+   "strict_layers": {
+    "strict": 2,
+    "frame_hidden": 2,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "beginit": {
@@ -4137,6 +5371,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 74
+   },
+   "strict_layers": {
+    "strict": 16,
+    "frame_hidden": 8,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 spill": 1,
+     "D2 register copy": 1
+    }
    }
   },
   "instk": {
@@ -4158,6 +5402,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 128
+   },
+   "strict_layers": {
+    "strict": 107,
+    "frame_hidden": 107,
+    "regs_hidden": 17,
+    "class": "open shapes",
+    "shapes": {
+     "open": 8,
+     "D2 register copy": 1,
+     "D3 reload": 1
+    }
    }
   },
   "getstr": {
@@ -4190,6 +5445,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 78
+   },
+   "strict_layers": {
+    "strict": 28,
+    "frame_hidden": 20,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 2
+    }
    }
   },
   "putbyte": {
@@ -4218,6 +5482,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 15
+   },
+   "strict_layers": {
+    "strict": 2,
+    "frame_hidden": 2,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "putstrs": {
@@ -4248,6 +5521,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 64
+   },
+   "strict_layers": {
+    "strict": 13,
+    "frame_hidden": 13,
+    "regs_hidden": 3,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 3
+    }
    }
   },
   "endinit": {
@@ -4279,6 +5561,19 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 110
+   },
+   "strict_layers": {
+    "strict": 66,
+    "frame_hidden": 58,
+    "regs_hidden": 36,
+    "class": "open shapes",
+    "shapes": {
+     "open": 3,
+     "D2 register copy": 3,
+     "D3 spill": 2,
+     "D10 long shift": 1,
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "doinit": {
@@ -4310,6 +5605,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 136
+   },
+   "strict_layers": {
+    "strict": 45,
+    "frame_hidden": 31,
+    "regs_hidden": 7,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 2,
+     "open": 3
+    }
    }
   },
   "gotscal": {
@@ -4331,6 +5636,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 87
+   },
+   "strict_layers": {
+    "strict": 87,
+    "frame_hidden": 87,
+    "regs_hidden": 17,
+    "class": "open shapes",
+    "shapes": {
+     "D2 register copy": 6,
+     "open": 6
+    }
    }
   },
   "ilbrace": {
@@ -4361,6 +5676,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 32
+   },
+   "strict_layers": {
+    "strict": 10,
+    "frame_hidden": 10,
+    "regs_hidden": 2,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1
+    }
    }
   },
   "irbrace": {
@@ -4389,6 +5713,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 8
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "hash": {
@@ -4419,6 +5750,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 20
+   },
+   "strict_layers": {
+    "strict": 26,
+    "frame_hidden": 8,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "upoff": {
@@ -4440,6 +5778,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 31
+   },
+   "strict_layers": {
+    "strict": 20,
+    "frame_hidden": 10,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 2
+    }
    }
   },
   "oalloc": {
@@ -4472,6 +5819,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 81
+   },
+   "strict_layers": {
+    "strict": 50,
+    "frame_hidden": 38,
+    "regs_hidden": 36,
+    "class": "open shapes",
+    "shapes": {
+     "open": 4
+    }
    }
   },
   "falloc": {
@@ -4493,6 +5849,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 145
+   },
+   "strict_layers": {
+    "strict": 62,
+    "frame_hidden": 50,
+    "regs_hidden": 10,
+    "class": "open shapes",
+    "shapes": {
+     "open": 4,
+     "D2 register copy": 1
+    }
    }
   },
   "nidcl": {
@@ -4524,6 +5890,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 81
+   },
+   "strict_layers": {
+    "strict": 35,
+    "frame_hidden": 35,
+    "regs_hidden": 5,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1,
+     "D2 register copy": 3
+    }
    }
   },
   "types": {
@@ -4555,6 +5931,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 81
+   },
+   "strict_layers": {
+    "strict": 34,
+    "frame_hidden": 26,
+    "regs_hidden": 12,
+    "class": "open shapes",
+    "shapes": {
+     "open": 3
+    }
    }
   },
   "tymerge": {
@@ -4576,6 +5961,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 69
+   },
+   "strict_layers": {
+    "strict": 31,
+    "frame_hidden": 23,
+    "regs_hidden": 3,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 1,
+     "D2 register copy": 1
+    }
    }
   },
   "tyreduce": {
@@ -4607,6 +6002,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 47
+   },
+   "strict_layers": {
+    "strict": 18,
+    "frame_hidden": 10,
+    "regs_hidden": 2,
+    "class": "open shapes",
+    "shapes": {
+     "open": 1
+    }
    }
   },
   "fixtype": {
@@ -4628,6 +6032,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 112
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "uclass": {
@@ -4658,6 +6069,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 15
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "fixclass": {
@@ -4690,6 +6108,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 96
+   },
+   "strict_layers": {
+    "strict": 6,
+    "frame_hidden": 2,
+    "regs_hidden": 2,
+    "class": "named shapes only",
+    "shapes": {
+     "D3 reload instead of copy": 1
+    }
    }
   },
   "regfree": {
@@ -4721,6 +6148,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 23
+   },
+   "strict_layers": {
+    "strict": 8,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "frame only",
+    "shapes": {}
    }
   },
   "lookup": {
@@ -4742,6 +6176,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 159
+   },
+   "strict_layers": {
+    "strict": 26,
+    "frame_hidden": 22,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "copysym": {
@@ -4775,6 +6216,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 112
+   },
+   "strict_layers": {
+    "strict": 102,
+    "frame_hidden": 92,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "hide": {
@@ -4796,6 +6244,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 76
+   },
+   "strict_layers": {
+    "strict": 40,
+    "frame_hidden": 18,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "unhide": {
@@ -4817,6 +6272,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 39
+   },
+   "strict_layers": {
+    "strict": 10,
+    "frame_hidden": 2,
+    "regs_hidden": 0,
+    "class": "frame and registers only",
+    "shapes": {}
    }
   },
   "refid": {
@@ -4849,6 +6311,17 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 87
+   },
+   "strict_layers": {
+    "strict": 75,
+    "frame_hidden": 75,
+    "regs_hidden": 5,
+    "class": "named shapes only",
+    "shapes": {
+     "D2 register copy": 1,
+     "D3 reload instead of copy": 1,
+     "D3 reload": 2
+    }
    }
   },
   "clearst": {
@@ -4871,6 +6344,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 83
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "sinit": {
@@ -4898,6 +6378,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 16
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "sheader": {
@@ -4926,6 +6413,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 14
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "putrefsyms": {
@@ -4955,6 +6449,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 14
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "putsym": {
@@ -4989,6 +6490,16 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 115
+   },
+   "strict_layers": {
+    "strict": 122,
+    "frame_hidden": 84,
+    "regs_hidden": 4,
+    "class": "open shapes",
+    "shapes": {
+     "D3 reload instead of copy": 1,
+     "open": 2
+    }
    }
   },
   "putnames": {
@@ -5020,6 +6531,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 35
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "puttags": {
@@ -5049,6 +6567,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 12
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "putrefs": {
@@ -5077,6 +6602,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 12
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   },
   "sputc": {
@@ -5107,6 +6639,15 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 20
+   },
+   "strict_layers": {
+    "strict": 16,
+    "frame_hidden": 12,
+    "regs_hidden": 4,
+    "class": "open shapes",
+    "shapes": {
+     "open": 2
+    }
    }
   },
   "aobeg": {
@@ -5131,6 +6672,13 @@
     "structure_flags": [],
     "len_ours": 0,
     "len_orig": 1
+   },
+   "strict_layers": {
+    "strict": 0,
+    "frame_hidden": 0,
+    "regs_hidden": 0,
+    "class": "exact",
+    "shapes": {}
    }
   }
  },

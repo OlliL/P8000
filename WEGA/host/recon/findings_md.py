@@ -34,8 +34,9 @@ def table(headers, rows):
     return lines
 
 
-def function_rows(functions, manual=None):
+def function_rows(functions, manual=None, layers=False):
     # manual: hand classification (findings.json "manual_classes"); it overrides the pattern audit of classify.py
+    # layers: a column with the class of strictlayers.py (only for programs that have it)
     manual = manual or {}
     rows = []
     for name in sorted(functions):
@@ -49,7 +50,7 @@ def function_rows(functions, manual=None):
             classes = m.get('d_classes')
             note = m.get('note', '')
             cls = {'read': 'read by hand', 'measured': 'identical', 'open': 'open (not classified)'}.get(m.get('basis'), cls)
-        rows.append([
+        row = [
             name,
             v.get('ours', ''),
             v.get('orig', ''),
@@ -58,7 +59,11 @@ def function_rows(functions, manual=None):
             cls,
             classes if classes else '',
             note,
-        ])
+        ]
+        if layers:
+            sl = v.get('strict_layers') or {}
+            row[6:6] = [sl.get('class', '')]
+        rows.append(row)
     return rows
 
 
@@ -98,8 +103,11 @@ def build(data):
            'compared with `/%s`' % CFG.ORIG + '; pending findings are the open items of the analysis.', '']
     out += summary(functions, items) + ['']
     out += ['## Functions', '']
-    out += table(['Function', 'Ours', 'Original', 'Pairing', 'Level', 'Difference class', 'Old-cc classes', 'Note'],
-                 function_rows(functions, manual))
+    layers = any(v.get('strict_layers') for v in functions.values())
+    head = ['Function', 'Ours', 'Original', 'Pairing', 'Level', 'Difference class', 'Old-cc classes', 'Note']
+    if layers:
+        head[6:6] = ['Strict layers']
+    out += table(head, function_rows(functions, manual, layers))
     out += ['', '## Pending findings', '']
     out += table(['ID', 'Kind', 'Function', 'Status', 'Classification', 'Action', 'Result'], pending_rows(items))
     return '\n'.join(out) + '\n'

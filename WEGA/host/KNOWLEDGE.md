@@ -1728,6 +1728,10 @@ ld `read_symbols` (2026-10-30, `src/cmd/ld/tools/strictcmp.py`): the shipped cc 
 r14 at 0x1a, the word at 0x18 unused); the old cc does not (0x1a, r14 at 0x18). With one spare word in front of the locals all
 local offsets of the original are reached; only the frame size and the save slot differ.
 
+cparse `getlab`, `noinit` (2026-10-31, measured with `cc -O -S`): the shipped cc reserves at least 2 bytes of frame
+in every function (`dec fp,#~L2` with `~L2 := 2` in `f(){ return(2); }`) and stores the value of a returned `crslab++`
+in it; the old cc makes no frame for these leaf functions. The frame comes from codgen (the `~L1`/`~L2` lines).
+
 ### D2 Scratch registers
 The old compiler uses r0/r1 (`rr0`) as scratch where the shipped one uses r4/r5 (`rr4`): cas modules
 (`ldl rr0,S4(r15)` against `ldl rr4,S4(r15)`), strip (`head.s_imsize = (long)code + data` is compiled with
