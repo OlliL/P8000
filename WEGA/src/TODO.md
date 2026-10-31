@@ -116,6 +116,23 @@ Order:
      build stays green (shipped cparse and codgen byte-identical, corpus).
    - Order: the classes already assigned to a pass first (D12 in cparse), then the classes of strip (D2), then the
      findings of ld.
+   State of v1 (2026-10-31), measured on ld (strict, `cmd/ld/tools/strictcmp.py` on ld built with the v1 passes and
+   the host ld; the chain: cpp, cparse/v1, codgen/v1, popt/v1, cas):
+   - OLD_D12 (cparse): the data of ld equal to the original (only the code addresses in it differ). Accepted.
+   - OLD_D20 (popt, code motion): ensure_buf, read_symbols (the return part), load2td exact; 53 of 59. Accepted (the
+     second rule has one witness only).
+   - D1 frame (codgen), round 1: no temporary for the value of a return unless a delayed x++ needs it: read_symbols
+     gets the frame of the original, 21 other functions lose 2 bytes (the old cc reserves it there). Not accepted.
+     Measured: the shipped codgen reserves the temporary of a return at baseoff (above the locals, reader3.c); the
+     `spare` variables of the ld sources stand for space of the old frame below the locals.
+   - D2 scratch registers (codgen): parked after 5 rounds (no merging in rsreturn: register jam; freed words in
+     LIFO order: worse; the parameter count in the .I head: dseek exact, 18 functions worse; the parameter registers
+     kept at labels: dseek exact, 14 worse; a label kind for loop heads (cparse) with registers kept at the other
+     labels: 18 worse; parameter registers kept only at labels that are not loop heads, contents forgotten: back to
+     53). Measured mechanism: dseek differs because the shipped codgen frees the registers of the parameters n (r3)
+     and sp (r7) at the label of an if (`rsfreeall(1)` at 'L', main3.c); then rr2 is whole again and r3 comes before
+     r6. The old codgen keeps them taken there, but not at the loop head of mput or str_compare, and reloads a
+     parameter after such a label (mkfsym). Open: the rule that tells these labels apart.
 5. **Final test**: cparse (and codgen) compiled with the rebuilt old compiler are byte-identical with the originals. Only
    then are the host versions (`host/cparse`, ANSI C) written from the proven sources (of the shipped revision).
 

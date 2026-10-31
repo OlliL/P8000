@@ -6,6 +6,7 @@
 #
 #   make              codgen
 #   make scodgen      scodgen
+#   make old         the versions of the old compiler in OLDDIRS (v1/Makefile ...)
 #   make clean
 
 CC = cc
@@ -30,7 +31,13 @@ SRCS = allo3.c local3.c match3.c order3.c out3.c regallo3.c regfile3.c tmp3.c zz
 OBJS = allo3.o local3.o match3.o order3.o out3.o regallo3.o regfile3.o tmp3.o zzz3.o reader3.o gen3.o optim3.o comm3.o rdr3.o main3.o efcode3.o lcl3.o tr3.o regs3.o
 SOBJS = allo3.o local3.o match3.o order3.o out3.o regallo3.o regfile3.o tmp3.o zzz3.o reader3.o gen3.o optim3.o comm3.o rdr3.o main3.o efcode3.o lcl3.o tr3.o regs3.o table3_scodgen.o ops_scodgen.o hop_scodgen.o
 
+# the versions of the old compiler (one directory each, own Makefile; not part of all)
+OLDDIRS = v1
+
 all: codgen scodgen
+
+old: codgen
+	for d in $(OLDDIRS); do cd $$d ; $(MAKE) ; cd .. ; done
 
 codgen: objs $(OLDOBJS) ship $(CRT)/crt0-codgen.o
 	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(OBJS) table3_codgen.o ops_codgen.o hop_codgen.o $(OLDOBJS) $(SHIPOBJS) -o codgen
