@@ -325,3 +325,7 @@ TODO.md when this log was started.
 - popt (owner: work on popt): OLD_D11N tried (no comjump at all): cparse 525 > 1202, code 50176 bytes: the old popt
   has comjump. oconvert as a pure layout case: its return copies were merged because our source ends with
   `return(p);` behind the cerror; the original has no code there. Source fix: oconvert 4 > 2.
+- OLD_D20S again on the current state: 523 > 541 (getpreg exact; gotscal: the loop is not rotated any more, the test
+  stays on top; yyparse: `jr eq,A; jr B` stays where the original has `jr ne,B`). With the loop inversion accepting
+  a label of the same place (L269/L267/L10037): unchanged. Parked again. The block rules of popt need a tool that
+  maps the blocks of the original onto the raw codgen output (the order the old popt chose) before more guesses.
