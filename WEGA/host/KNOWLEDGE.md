@@ -847,6 +847,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/cas` | does not terminate on a syntax error in the last statement of a file without newline, an unclosed comment or string, and some tokens (`<<`, `^$`, `5\|3`) | not reproduced (stops at end of file) | "cas: decompilation", `cas/README` |
 | `/bin/cas` | a `}` too many uses the memory in front of the block stack | not reproduced (level stays 0) | `cas/README` |
 | `/usr/bin/ranlib` | the old `readsym` linked into it reads the pieces of a long name over the symbol itself: most long names are missing in `__.SYMDEF`, some entries are garbage (238 entries for `libc.a` instead of ~290) | kept | "ranlib, strip, size on the host" |
+| `/bin/rm` (`rm -i` without files, `interact`) | the question for a directory is `printf("%s--directory: ")` without its argument: the name printed is whatever r6 holds (the address of the stat buffer) | kept (`src/cmd/rm.c`) | "Old compiler v1" |
 | `/usr/bin/strip` | `hflag` is uninitialised without an option; for 8-bit objects with relocation removal the result depends on uninitialised variables (`int c` of `rcopy`: one byte read into it, two bytes written from it; the frame address of `c` is even, measured 2026-10-31 with ccv1); the output file is left open | `hflag` kept in `src/cmd/strip`; host strip refuses 8-bit objects and closes the file | "size and strip", "ranlib, strip, size on the host" |
 | `/bin/cc` | `-o` as last argument leaves `outfile` NULL (reads the byte at address 0); `-l...` is passed to ld with the byte in front overwritten by `-` | kept | "cc (compiler driver, /bin/cc)" |
 | `/lib/popt` | `killreg()` always looks at rr0 (`n % 1`); nodes without operand text read the code at address 0; the "preceded by alnum" test of `procopt` has no effect; the `rN(` recursion passes a character as a pointer | kept, except the `rN(` recursion | `popt/NOTES.md`, "Quirks that are reproduced on purpose" |
@@ -1779,7 +1780,9 @@ one `||` (2026-10-31). Risk: a register loaded only
 on one of the two paths keeps its symbol too (not seen; if the old cc had this bug it goes to the quirks table).
 
 ### D4 Spill of arguments
-ranlib: no spill of arguments into the frame. libc `swap`: the old cc spills an address-taken argument in
+ranlib: no spill of arguments into the frame. /bin/rmdir main (2026-10-31, with v1): a third parameter that is only
+written (`status = 2` / `status = 0`, then `exit(status)`) is not spilled by the old cc (`ldl %0002(r15),rr6`), v1
+spills it (`ldm @r15,r5,#3`); one witness. libc `swap`: the old cc spills an address-taken argument in
 the `0(r15)` form.
 In `/lib/codgen` (non-segmented cc): a function with register parameters has no home slots for them in the old frame (`dec r15,#4` for two saved registers) and copies `ld r14,r7; ld r13,r6` first parameter first; the shipped cc reserves 4 bytes and copies the last parameter first. Parameters beyond the register variables are spilled by `ldm` of r2-r7 or by single `ld` stores; the shipped cc spills more of them (`getlr`, `member`, `nullsyms`).
 
