@@ -53,8 +53,18 @@ gencall(p, cookie)
 			rfree(f->rval, 0x14);
 		}
 	}
-	if (p->right)
+	if (p->right) {
+#ifdef OLD_D3A
+		{
+			register struct rs *n;	/* v0: a parameter is not taken from its register for an argument */
+
+			for (n = rsuse; n; n = n->next)
+				if (n->cls <= 4 && n->sym && n->sym->sclass == 9)
+					n->sym = 0;
+		}
+#endif
 		genargs(p->right);
+	}
 #ifdef SEG
 	if (indirect) {
 		if (argstop == 0 && argreg >= 3) {

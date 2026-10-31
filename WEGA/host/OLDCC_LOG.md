@@ -148,3 +148,8 @@ TODO.md when this log was started.
   r7,r6`, genargs).
 - OLD_D3S tried (popt rmove: keep a load whose slot is in a register, 1: always, 2: only right behind the store of the
   same register): cparse 43 both (putnames lost, putbyte not fixed: its cause is the argument above); removed.
+- putbyte: OLD_D3N (parminit: a parameter not known in its register at all): cparse 48, bench 65 > 51 (kill main:
+  `cp r7,#2` in the original). OLD_D3A (gencall: before the arguments forget every register content): cparse 46
+  (putrefsyms, putnames lost); only the parameters forgotten: cparse 48 without a loss, corpus 239 of 259, bench 63
+  (cron ex, cal cal lost: the 1982 programs take a parameter from its register for an argument). The passes and the
+  1982 programs differ here.

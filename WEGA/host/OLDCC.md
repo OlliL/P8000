@@ -166,8 +166,13 @@ time, or another version) points to their mechanism.
   original (23 without); the bench: OLD_D1F alone 61/1621 lines, with OLD_D2D 61/1594, both on top of OLD_D2W 62/1561
   (OLD_D2W alone 62/1542): OLD_D2D costs elsewhere (crypt setup, col main, paste main, sdiff main), so both are
   candidates, not set.
-- Open (cparse): the address moved out of the wanted register before a load (chkstr), call arguments loaded from the
-  frame instead of copied from the register (putbyte), double parameters in r4..r7 (fincode, an ABI difference).
+- Open (cparse): the address moved out of the wanted register before a load (chkstr), double parameters in r4..r7
+  (fincode, an ABI difference).
+- The compiler of the passes is not exactly the one of 1982 (2026-10-31): cparse putbyte passes its parameter v
+  (already in r7) to bcon(v) by a load from the frame, the 1982 programs take it from the register (cron ex: s in r7
+  for fputs(s, ...), no load; cal cal: y in r6, `ld r7,r6`). Candidate `OLD_D3A` (codgen gencall: the registers of
+  the parameters forgotten before the arguments are evaluated): cparse 44 > 48 (putbyte, yyerror, sectadd,
+  resetmem), bench v0 65 > 63 (cron ex, cal cal). Not set; which compiler v0 stands for is an owner decision.
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
