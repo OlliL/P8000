@@ -13,7 +13,8 @@ For every function the strict form of strictcmp.py is compared three times: as i
 D2). What differs in the last layer is cut into hunks (difflib, orig => ours); a hunk gets a shape name when it is one
 of the forms below, else it stays "open". This reads the difference in its place in the aligned code, so it is
 stronger than the pattern check of patterns.py (which only asks which kind of instruction differs), but it is still a
-reading by form: a shape name is a candidate class, not a proof that the source is right.
+reading by form: a shape name is a candidate class, not a proof that the source is right. "mask artifact": a
+constant that is a function address in one program only (norm_strict masks it there as CODE); not checked further.
 """
 import collections
 import difflib
@@ -47,6 +48,15 @@ SHAPES = [
         for x, y in zip(a, b))),
     ('D6 dispatch form', lambda a, b: len(a) == 1 and len(b) == 3 and re.match(r'^ld\tR,%[0-9A-F]{4}\(R\)$', a[0]) and
         b[0] == 'add\tR,R' and b[1] == 'neg\tR' and re.match(r'^ld\tR,%[0-9A-F]{4}\(R\)$', b[2])),
+    ('D6 compare chain', lambda a, b: a and all(re.match(r'^(cp\tR,#%[0-9A-F]{4}|jr\teq,CODE|jp\tCODE|jr\tCODE)$', t)
+        for t in a) and any(t.startswith('cpir\t') for t in b)),
+    ('D5 local address', lambda a, b: a == ['add\tR,#%' + a[0][-4:], 'add\tR,r15'] and b == ['lda\tR,F(r15)', 'add\tR,R']),
+    ('mask artifact', lambda a, b: len(a) == len(b) and a != b and all(
+        re.sub(r'#(CODE|%[0-9A-F]{4})\b', '#K', x) == re.sub(r'#(CODE|%[0-9A-F]{4})\b', '#K', y) and 'CODE' in x + y for x, y in zip(a, b))),
+    # candidates without a D number yet (seen in cparse 2026-10-31)
+    ('new: store through computed address', lambda a, b: len(a) == 3 and re.match(r'^(add\tR,#%[0-9A-F]{4}|inc\tR,#\d+)$', a[0])
+        and a[1] == 'ld\tR,R' and re.match(r'^ldl?\t@R,Rr?$', a[2]) and len(b) == 1 and re.match(r'^ldl?\t%[0-9A-F]{4}\(R\),Rr?$', b[0])),
+    ('new: reload of a global', lambda a, b: len(a) == 1 and re.match(r'^ld\tR,%[0-9A-F]{4}$', a[0]) and b in (['ld\tR,R'], [])),
 ]
 
 
