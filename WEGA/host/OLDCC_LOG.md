@@ -298,3 +298,13 @@ TODO.md when this log was started.
 - mkdope computes an index in r0 (cannot index: `add r0,#X; ld r1,r0; ld @r1,r2`), the original in r3: r3 idle with a
   name had the weight 3 of the free pair rr0. OLD_D2G (equal weight is enough for an idle word): cparse 135, 676;
   corpus 259; bench v0 112, 368.
+- psavel and lineid: the original reads a register variable through the scratch register of its assignment
+  (`*(long *)ip = l` as `ldl @r2,rr0`, no `ld r14,r2`). psavel with `ip = &paramstk[paramno]` in the source: 3 > 5
+  (`ld r14,r2; ldl @r14,rr2`). OLD_D3R tried (the scratch register of an assignment to a register variable keeps
+  its name, regforsym takes it): no effect on psavel (the ASSIGN target is no REG at match), argdebug and falloc
+  worse, and copies of a register variable would carry its name too (stale values). Removed with the source change.
+- D5 in cparse (types, dclargs): `t[i]` of a local array is SUBSR(PLUS(REG fp, ICON off), index) in codgen (mapnm has
+  resolved U& already, so fixfld returns early). OLD_D5S (SUBSR: PLUS(PLUS(index, ICON off), REG fp)): first for
+  STREF too, a codgen error in fhashv (`u.l % n`: register jam); SUBSR only and no constant index: cparse 136, 652;
+  corpus 259; bench v0 114, 318. Open: newsect `&sectname[sec][k]` (a global array: the original adds the name last
+  too), dclargs (the address in r2, the load into the wanted r6).
