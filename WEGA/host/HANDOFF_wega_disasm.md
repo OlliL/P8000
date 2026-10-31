@@ -77,7 +77,8 @@ original tools and compares each program).
 3. **Reconstruct the old compiler.** Started 2026-10-31 (time box and rules: `../src/TODO.md`, plan item 4). The
    version v1 is built in `src/cmd/{cparse,codgen,popt}/v1` (own Makefile each, switches OLD_D12, OLD_D20, OLD_D3);
    with it ld is 54 of 59 strictly exact and size is byte-identical with /bin/size. Open: D2 (parked), D3 of
-   chk_ranlib, D1 of read_symbols. Review point of the time box reached (about 20 rounds). There is no cc entry point
-   (ccv1) yet: the tests run the passes one by one (cpp, cparse/v1, codgen/v1, popt/v1, cas).
+   chk_ranlib, D1 of read_symbols. Owner review done (2026-10-31): go on with D2, D3, D1 in codgen. Entry point
+   ccv1 in `src/cmd/cc/v1`; `make oldroot` here installs the v1 programs into a WEGA tree of symbolic links for the
+   emulator (`tools/oldroot.sh`), then `z8k-emu -r <oldroot> /bin/ccv1 ...`.
 
 The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").

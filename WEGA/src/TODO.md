@@ -144,6 +144,15 @@ Order:
      parameter p is loaded from the frame for q = p, but its register is used for p + n), read_symbols (D1 frame
      +2: the temporary of a return above the locals, and a dead `ldl rr4,rr2` of the original). About 20 rounds:
      the review point of the time box.
+   - Owner review (2026-10-31): go on with D2, D3 and D1 in the register allocator of codgen (longer debug analysis);
+     when a D1 switch makes functions with `spare` variables fail, the `spare` variables go (many were invented to
+     fit the frame, i.e. they emulate the old cc by hand).
+   - Entry point ccv1 (`cmd/cc/v1`, cc.c with OLD_V1: runs /lib/v1/cparse, /lib/v1/codgen, /lib/v1/popt; the other
+     passes, crt0.o and libc.a are the shipped ones). `make install PREFIX=dir` in the v1 directories installs bin/ccv1
+     and lib/v1/*. Under the emulator: `make -C host oldroot` builds all v1 programs and installs them into a WEGA tree
+     of symbolic links (`host/tools/oldroot.sh`, default tmp/oldroot, not in git), then
+     `z8k-emu -r <oldroot> /bin/ccv1 -c -O foo.c`. ld built with ccv1 (`make link CC=...ccv1`): 54 of 59, the same
+     result as the passes run one by one.
 5. **Final test**: cparse (and codgen) compiled with the rebuilt old compiler are byte-identical with the originals. Only
    then are the host versions (`host/cparse`, ANSI C) written from the proven sources (of the shipped revision).
 

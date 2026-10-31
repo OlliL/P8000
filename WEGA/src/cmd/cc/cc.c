@@ -57,10 +57,18 @@ static int	intign, quitign, hupign, termign;
 static int	unused1, nfiles;
 char	*fname = "basic";
 char	*cpp		= "/lib/cpp";
+#ifdef OLD_V1
+/* ccv1 (v1/Makefile): the passes of the old compiler v1 are in /lib/v1 */
+char	*cparse		= "/lib/v1/cparse";
+char	*gopt		= "/lib/gopt";
+char	*codgen		= "/lib/v1/codgen";
+char	*popt		= "/lib/v1/popt";
+#else
 char	*cparse		= SEG("/lib/cparse", "/lib/scparse");
 char	*gopt		= "/lib/gopt";
 char	*codgen		= SEG("/lib/codgen", "/lib/scodgen");
 char	*popt		= SEG("/lib/popt", "/lib/spopt");
+#endif
 char	*clist		= "/lib/clist";
 char	*cas		= "/bin/cas";
 char	*ld		= SEG("/bin/ld", "/bin/sld");

@@ -3,6 +3,7 @@
 # .. (make .. first).
 #
 #   make             v1/codgen
+#   make install PREFIX=dir    dir/lib/v1/codgen (the pass of ../../cc/v1/ccv1)
 #   make clean
 #
 # Switches (host/KNOWLEDGE.md, "Compiler revisions"):
@@ -11,6 +12,7 @@
 CC = cc
 CFLAGS = -O
 SWITCHES = -DOLD_D3
+PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc
 CRT = ../../../lib/libc/crt
@@ -88,6 +90,10 @@ ops_codgen.o: ../ops_codgen.c ../cg.h
 
 hop_codgen.o: ../hop_codgen.c ../cg.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../hop_codgen.c
+
+install: codgen
+	-mkdir $(PREFIX)/lib/v1
+	cp codgen $(PREFIX)/lib/v1/codgen
 
 clean:
 	rm -f codgen $(OBJS)

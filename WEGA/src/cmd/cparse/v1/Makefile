@@ -3,6 +3,7 @@
 # part are those of .. (make .. first).
 #
 #   make             v1/cparse
+#   make install PREFIX=dir    dir/lib/v1/cparse (the pass of ../../cc/v1/ccv1)
 #   make clean
 #
 # Switches (host/KNOWLEDGE.md, "Compiler revisions"):
@@ -11,6 +12,7 @@
 CC = cc
 CFLAGS = -O
 SWITCHES = -DOLD_D12
+PREFIX = /
 LDBIN = /bin/ld
 OLD = ../../../lib/oldlibc
 HDRS = ../mfile1 ../manifest ../macdefs ../stdio.h
@@ -54,6 +56,10 @@ vinit1.o: ../vinit1.c $(HDRS)
 
 sym1.o: ../sym1.c $(HDRS)
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../sym1.c
+
+install: cparse
+	-mkdir $(PREFIX)/lib/v1
+	cp cparse $(PREFIX)/lib/v1/cparse
 
 clean:
 	rm -f cparse *.o

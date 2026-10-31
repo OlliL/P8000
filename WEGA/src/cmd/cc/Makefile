@@ -6,6 +6,7 @@
 #
 #   make              build ./cc and ./scc
 #   make install PREFIX=dir
+#   make old          the drivers of the old compiler versions in OLDDIRS (v1/Makefile: ccv1)
 #   make clean
 #
 # The result is byte-identical with the original /bin/cc and /bin/scc (see README).
@@ -33,7 +34,13 @@ OBJS = freopen.o fopen.o $(OLD)/printf/0_4.o \
 	stat.o umask.o unlink.o \
 	wait.o write.o cerror.o
 
+# the versions of the old compiler (one directory each, own Makefile; not part of all)
+OLDDIRS = v1
+
 all: cc scc
+
+old: all
+	for d in $(OLDDIRS); do cd $$d ; $(MAKE) ; cd .. ; done
 
 cc: cc.o $(OBJS)
 	$(LD) -s -e start -o $@ /lib/crt0.o cc.o $(OBJS)
@@ -86,4 +93,4 @@ clean:
 	rm -f cc scc cc.o scc.o scc.c freopen.o fopen.o flsbuf.o endopen.o findiop.o data.o __callex.o cuexit.o abort.o decimal.o ctype_.o isatty.o stty.o strcmp.o access.o brk.o chmod.o close.o creat.o execl.o execv.o fork.o getpid.o ioctl.o lseek.o open.o signal.o stat.o umask.o unlink.o wait.o write.o cerror.o
 	rm -f $(OLD)/printf/0_4.o $(OLD)/doprnt/0_4.o $(OLD)/cnvt/0_1.o $(OLD)/length/0_1.o $(OLD)/malloc/0_4.o $(OLD)/strcat/0_1.o $(OLD)/strcpy/0_1.o $(OLD)/strlen/0_1.o
 
-.PHONY: all install clean
+.PHONY: all old install clean

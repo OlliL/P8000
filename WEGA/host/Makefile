@@ -21,6 +21,10 @@
 #                        ld, sld, gld, yacc, ar and strip, then report per program
 #                        whether it is identical to the original
 #                        (report only, does not fail on differences)
+#   make oldroot         build the old compiler v1 (src/cmd/{cparse,codgen,popt,cc}, make old) with the
+#                        original tools and install it into OLDROOT: a WEGA tree of symbolic links to WEGA
+#                        (tools/oldroot.sh) with bin/ccv1 and lib/v1/{cparse,codgen,popt};
+#                        then: z8k-emu -r OLDROOT /bin/ccv1 -c -O foo.c
 #
 
 # WEGA: the original WEGA 3.1 file tree (ROOT of the emulator); default: the placeholder of CLAUDE.md (tmp/wega31_root, not in git)
@@ -30,6 +34,10 @@ EMU  = $(abspath z8k-emu/z8k-emu)
 ROOT  = $(WEGAABS)
 WEMU  = $(EMU) -r $(ROOT)
 SRC   = ../src/cmd
+
+# the WEGA tree of the old compiler versions (not in git)
+OLDROOT = ../../tmp/oldroot
+OLDROOTABS = $(abspath $(OLDROOT))
 
 # the original tools run under the emulator
 WTOOLS = CC='$(WEMU) /bin/cc' SCC='$(WEMU) /bin/scc' CAS='$(WEMU) /bin/cas' \
@@ -87,6 +95,13 @@ verify-wega:
 	-python3 tools/cmpins.py $(SRC)/strip/strip $(WEGAABS)/usr/bin/strip 0x1fd2 0x1fd2 0x68c
 	-python3 tools/cmpins.py $(SRC)/ranlib/ranlib $(WEGAABS)/usr/bin/ranlib 0x1bce 0x1bd4 0x534 0x53a
 
+oldroot:
+	sh tools/oldroot.sh $(WEGAABS) $(OLDROOTABS)
+	for p in cparse codgen popt cc; do \
+	  $(MAKE) -C $(SRC)/$$p old $(WTOOLS) LDBIN='$(WEMU) /bin/ld' CRT0=$(WEGAABS)/lib/crt0.o || exit 1; \
+	  $(MAKE) -C $(SRC)/$$p/v1 install PREFIX=$(OLDROOTABS) $(WTOOLS) LDBIN='$(WEMU) /bin/ld' || exit 1; \
+	done
+
 clean:
 	$(MAKE) -C cc clean
 	$(MAKE) -C ar clean
@@ -94,4 +109,4 @@ clean:
 	$(MAKE) -C popt clean
 	$(MAKE) -C cas clean
 
-.PHONY: all check verify verify-wega clean cc popt ar binutils cas
+.PHONY: all check verify verify-wega oldroot clean cc popt ar binutils cas

@@ -2382,6 +2382,15 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
 - The WEGA source `src/cmd/cc/cc.c` (see below) is the rebuild with the WEGA cc; `host/cc/cc.c` is the
   separate Linux version.
 
+### Old compiler v1: ccv1 under the emulator (2026-10-31)
+
+ccv1 is ../cc.c compiled with `-DOLD_V1` (`src/cmd/cc/v1`): the paths of cparse, codgen and popt are /lib/v1/...,
+everything else is the shipped cc. The emulator maps every absolute guest path to ROOT plus the path (`hostpath` in
+`z8k-emu/wega.c`; only /dev/* is passed through), relative paths go to the host working directory. So the passes of
+ccv1 must be below the ROOT; to keep the original tree untouched, `tools/oldroot.sh WEGA DIR` makes a tree of symbolic
+links (bin and lib real directories of links) and `make oldroot` installs ccv1 and lib/v1/{cparse,codgen,popt} into it.
+Guest /tmp is the /tmp of the original tree (a link). cc and scc stay byte-identical (OLD_V1 is not set there).
+
 ### D20 Code motion of popt (codemove)
 The shipped popt (`codemove`, z21.c) moves the block behind a jump or return to the site of a jump to it; the end
 of the block is the first `jpr` behind its label. Measured on /bin/ld (2026-10-31, `src/cmd/popt/v1`, switch

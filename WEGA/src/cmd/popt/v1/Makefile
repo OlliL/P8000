@@ -3,6 +3,7 @@
 # .. (make .. first).
 #
 #   make             v1/popt
+#   make install PREFIX=dir    dir/lib/v1/popt (the pass of ../../cc/v1/ccv1)
 #   make clean
 #
 # Switches (host/KNOWLEDGE.md, "Compiler revisions"):
@@ -11,6 +12,7 @@
 CC = cc
 CFLAGS = -O
 SWITCHES = -DOLD_D20
+PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc
 OLDOBJS = $(OLD)/freopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/filbuf/0_3.o \
@@ -39,6 +41,10 @@ z22.o: ../z22.c ../z2.h
 
 z23.o: ../z23.c ../z2.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../z23.c
+
+install: popt
+	-mkdir $(PREFIX)/lib/v1
+	cp popt $(PREFIX)/lib/v1/popt
 
 clean:
 	rm -f popt $(OBJS)
