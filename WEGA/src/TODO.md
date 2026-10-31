@@ -155,6 +155,11 @@ Order:
      second rule of OLD_D20 (load2td) costs 3 functions there and is removed (load2td a finding again); the first rule
      is neutral on the bench. A D2 rule (registers kept at labels no jump has named yet) costs 15 functions: refuted.
      ranlib_scan was a source form (exact as a for loop). Evidence of a switch from now on: the bench plus ld/strip/size.
+     With the stdio.h of the v1 time (src/cmd/cparse/stdio.h, the bench default) 79 of 119 are equal; most of the rest
+     are WEGA changes of the sources (ls, od, date, passwd), so only differences between two runs count.
+   - place_sec (D2): the original copies the difference to r2 before the `and` of `r8 = (secorg[j] - q->tsize) &
+     0xff00` (the `+ 255` case beside it is in place); source forms (operands swapped, `~0xff`, the sum turned round)
+     change nothing: no source form, an allocator rule still open.
    - Sources restored for tests are kept in src/cmd (owner, 2026-10-31); the bench itself uses the unchanged System III
      files and keeps nothing.
    - State: ld 54 of 59 strictly exact with v1 (ranlib_scan exact, load2td open again), strip and size byte-identical

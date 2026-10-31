@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """witness.py - test bench of an old compiler version: System III sources of WEGA programs built in its time.
 
-Usage: witness.py [-c "EMUARGS"] [PROG ...]
+Usage: witness.py [-c "EMUARGS"] [-s N] [-v FUNC] [PROG ...]
+  -s N     also print the N most frequent differing hunks (registers hidden where only they differ)
+  -v FUNC  print the hunks of the function FUNC (prog:func or func)
+  -n       use the stdio.h of the WEGA tree (default: the stdio.h of the v1 time, src/cmd/cparse/stdio.h: char *_ptr,
+           the V7 getc and putc)
 
 The single-file System III sources (SYS3SRC: the directory usr/src/cmd of a System III tree, not in git) of WEGA
 programs whose crt0 stamp is from 01/83 .. 07/83 (the time of the old compiler v1, host/KNOWLEDGE.md "Old compiler
@@ -32,6 +36,14 @@ def code(path):
     o=SOut(open(path,'rb').read()); return o,bytes(o.image)[:o.segs[0]['code']]
 def main():
     a=sys.argv[1:]
+    nshape=0; vf=set()
+    if '-s' in a:
+        i=a.index('-s'); nshape=int(a[i+1]); del a[i:i+2]
+    while '-v' in a:
+        i=a.index('-v'); vf.add(a[i+1]); del a[i:i+2]
+    import collections
+    oldhdr='-n' not in a; a=[x for x in a if x!='-n']
+    shapes=collections.Counter(); where=collections.defaultdict(set)
     cc=['-r',OLDROOT,'/bin/ccv1']
     if '-c' in a:
         i=a.index('-c'); cc=a[i+1].split(); del a[i:i+2]
@@ -44,7 +56,12 @@ def main():
         shutil.copy(os.path.join(S3,src),os.path.join(work,src))
         obj=src[:-2]+'.o'
         if os.path.exists(os.path.join(work,obj)): os.remove(os.path.join(work,obj))
-        r=subprocess.run(['timeout','300',EMU]+cc+['-O','-c',src],cwd=work,capture_output=True,text=True)
+        hdr=os.path.join(work,'stdio.h')
+        if oldhdr:
+            shutil.copy(os.path.join(HERE,'..','..','src','cmd','cparse','stdio.h'),hdr)
+        elif os.path.exists(hdr):
+            os.remove(hdr)
+        r=subprocess.run(['timeout','300',EMU]+cc+['-O']+(['-I.'] if oldhdr else [])+['-c',src],cwd=work,capture_output=True,text=True)
         if not os.path.exists(os.path.join(work,obj)):
             print('%-8s compile failed: %s'%(name,(r.stdout+r.stderr).strip().split('\n')[-1][:80])); continue
         o,c=code(os.path.join(work,obj)); g,gc=code(os.path.join(R,b))
@@ -60,11 +77,27 @@ def main():
         for t,i1,i2,j1,j2 in sm.get_opcodes():
             if t=='equal':
                 for j in range(j1,j2): eq[j]=1
+        ops=sm.get_opcodes()
+        for t,i1,i2,j1,j2 in ops:
+            if t=='equal': continue
+            fn=[n for n,b1,b2 in own if b1<=j1<b2 or (j1==j2 and b1<=j1<=b2)]
+            fn=fn[0][1:] if fn else '?'
+            x=A[i1:i2]; y=B[j1:j2]
+            if len(x)>12 or len(y)>12: k='(long hunk)'
+            else:
+                hx=[zcode.hide_regs(t) for t in x]; hy=[zcode.hide_regs(t) for t in y]
+                k=(' ; '.join(x) or '-')+'  =>  '+(' ; '.join(y) or '-')
+                if hx==hy: k='[regs] '+k
+            shapes[k]+=1; where[k].add(name+':'+fn)
+            if fn in vf or name+':'+fn in vf:
+                print('  %s:%s\n     - %s\n     + %s'%(name,fn,'\n     - '.join(x) or '(none)','\n     + '.join(y) or '(none)'))
         res=[]
         for n,j1,j2 in own:
             d=j2-j1-sum(eq[j1:j2])
             res.append((n,d)); tot+=1; tot_same+=(d==0); tot_d+=d
         print('%-8s %s'%(name,' '.join('%s:%s'%(n[1:],'=' if d==0 else d) for n,d in res)))
     print('functions %d, same %d, differing lines %d'%(tot,tot_same,tot_d))
+    for k,c in shapes.most_common(nshape):
+        print('%3d %3d  %s   [%s]'%(c,len(where[k]),k[:160],' '.join(sorted(where[k])[:4])))
 if __name__ == '__main__':
     main()
