@@ -33,21 +33,27 @@
    "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x002a",
-   "ours": "002a-004e",
-   "level": "strict",
+   "ours": "002a-004c",
    "size_orig": 36,
    "callers_orig": "-",
-   "status": "done",
+   "status": "findings",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 0,
+    "pattern_diff": 11,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7"
+    ],
     "structure_flags": [],
-    "len_ours": 11,
+    "len_ours": 0,
     "len_orig": 11
    }
   },
@@ -55,21 +61,29 @@
    "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x004e",
-   "ours": "004e-00b4",
-   "level": "strict",
+   "ours": "004c-00ac",
    "size_orig": 102,
    "callers_orig": "-",
-   "status": "done",
+   "status": "findings",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 0,
+    "pattern_diff": 32,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7"
+    ],
     "structure_flags": [],
-    "len_ours": 32,
+    "len_ours": 0,
     "len_orig": 32
    }
   },
@@ -77,21 +91,27 @@
    "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x00b4",
-   "ours": "00b4-00e2",
-   "level": "strict",
+   "ours": "00ac-00d8",
    "size_orig": 46,
    "callers_orig": "-",
-   "status": "done",
+   "status": "findings",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 0,
+    "pattern_diff": 13,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
     "structure_flags": [],
-    "len_ours": 13,
+    "len_ours": 0,
     "len_orig": 13
    }
   },
@@ -99,21 +119,26 @@
    "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x00e2",
-   "ours": "00e2-0130",
+   "ours": "00d8-0126",
    "level": "strict",
    "size_orig": 78,
    "callers_orig": "-",
    "status": "done",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 0,
+    "pattern_diff": 22,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
     "structure_flags": [],
-    "len_ours": 22,
+    "len_ours": 0,
     "len_orig": 22
    }
   },
@@ -121,21 +146,27 @@
    "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x0130",
-   "ours": "0130-0174",
-   "level": "strict",
+   "ours": "0126-016a",
    "size_orig": 68,
    "callers_orig": "-",
-   "status": "done",
+   "status": "findings",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 0,
+    "pattern_diff": 21,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D16",
+     "D3",
+     "D8"
+    ],
     "structure_flags": [],
-    "len_ours": 21,
+    "len_ours": 0,
     "len_orig": 21
    }
   },
@@ -143,21 +174,28 @@
    "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x0174",
-   "ours": "0174-01e0",
-   "level": "strict",
+   "ours": "016a-01d6",
    "size_orig": 108,
    "callers_orig": "-",
-   "status": "done",
+   "status": "findings",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 0,
+    "pattern_diff": 32,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
     "structure_flags": [],
-    "len_ours": 32,
+    "len_ours": 0,
     "len_orig": 32
    }
   },
@@ -165,1585 +203,12 @@
    "file": "cgram1.y",
    "pairing": "confirmed",
    "orig": "0x01e0",
-   "ours": "01e0-0230",
-   "level": "strict",
-   "size_orig": 80,
-   "callers_orig": "-",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 25,
-    "len_orig": 25
-   }
-  },
-  "swstart": {
-   "file": "cgram1.y",
-   "pairing": "confirmed",
-   "orig": "0x0230",
-   "ours": "0230-0250",
-   "level": "strict",
-   "size_orig": 32,
-   "callers_orig": "-",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 8,
-    "len_orig": 8
-   }
-  },
-  "swend": {
-   "file": "cgram1.y",
-   "pairing": "confirmed",
-   "orig": "0x0250",
-   "ours": "0250-0312",
-   "level": "strict",
-   "size_orig": 194,
-   "callers_orig": "-",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 68,
-    "len_orig": 68
-   }
-  },
-  "yyparse": {
-   "file": "cgram1.y",
-   "pairing": "confirmed",
-   "orig": "0x0312",
-   "ours": "0312-1374",
-   "level": "strict",
-   "size_orig": 4194,
-   "callers_orig": "13b6",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 1239,
-    "len_orig": 1239
-   }
-  },
-  "scnames": {
-   "file": "xdefs1.c",
-   "pairing": "confirmed",
-   "orig": "0x1374",
-   "ours": "1374-13b8",
-   "level": "open",
-   "size_orig": 66,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 87,
-    "pattern_diff": 5,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 23,
-    "len_orig": 22
-   }
-  },
-  "mainp1": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x13b6",
-   "ours": "13b8-1430",
-   "level": "open",
-   "size_orig": 120,
-   "callers_orig": "60d8",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 38,
-    "len_orig": 38
-   }
-  },
-  "lxstart": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x142e",
-   "ours": "1430-1436",
-   "level": "strict",
-   "size_orig": 6,
-   "callers_orig": "13b6",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 3,
-    "len_orig": 3
-   }
-  },
-  "lxclass": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x1434",
-   "ours": "1436-146c",
-   "level": "strict",
-   "size_orig": 54,
-   "callers_orig": "142e",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 19,
-    "len_orig": 19
-   }
-  },
-  "lxenter": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x146a",
-   "ours": "146c-1496",
-   "level": "open",
-   "size_orig": 42,
-   "callers_orig": "1434",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 89,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 18,
-    "len_orig": 18
-   }
-  },
-  "lxinit": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x1494",
-   "ours": "1496-1516",
-   "level": "strict",
-   "size_orig": 128,
-   "callers_orig": "142e",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 49,
-    "len_orig": 49
-   }
-  },
-  "sfinit": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x1514",
-   "ours": "1516-1540",
-   "level": "strict",
-   "size_orig": 42,
-   "callers_orig": "13b6",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 14,
-    "len_orig": 14
-   }
-  },
-  "dimtinit": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x153e",
-   "ours": "1540-15b2",
-   "level": "strict",
-   "size_orig": 114,
-   "callers_orig": "13b6",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 24,
-    "len_orig": 24
-   }
-  },
-  "lxtitle": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x15b0",
-   "ours": "15b2-1716",
-   "level": "open",
-   "size_orig": 352,
-   "callers_orig": "13b6",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 109,
-    "len_orig": 105
-   }
-  },
-  "lxmore": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x1710",
-   "ours": "1716-179a",
-   "level": "open",
-   "size_orig": 130,
-   "callers_orig": "15b0",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 5,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 43,
-    "len_orig": 42
-   }
-  },
-  "savestr": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x1792",
-   "ours": "179a-1866",
-   "level": "open",
-   "size_orig": 208,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 5,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D13",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 62,
-    "len_orig": 61
-   }
-  },
-  "lxstr": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x1862",
-   "ours": "1866-1aa0",
-   "level": "open",
-   "size_orig": 564,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 86,
-    "pattern_diff": 47,
-    "pattern_unexplained": 4,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: or\trS,A",
-    "structure_flags": [],
-    "len_ours": 188,
-    "len_orig": 183
-   }
-  },
-  "lxcom": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x1a96",
-   "ours": "1aa0-1b3a",
-   "level": "open",
-   "size_orig": 148,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 57,
-    "pattern_diff": 40,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D13",
-     "D2",
-     "D3",
-     "D6",
-     "D7",
-     "D8",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 51,
-    "len_orig": 47
-   }
-  },
-  "yylex": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x1b2a",
-   "ours": "1b3a-234e",
-   "level": "open",
-   "size_orig": 2026,
-   "callers_orig": "0312",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 41,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2",
-     "D5",
-     "D6",
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 622,
-    "len_orig": 597
-   }
-  },
-  "lxres": {
-   "file": "scan1.c",
-   "pairing": "confirmed",
-   "orig": "0x2314",
-   "ours": "234e-249a",
-   "level": "open",
-   "size_orig": 308,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 100,
-    "len_orig": 100
-   }
-  },
-  "defid": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x2448",
-   "ours": "249a-2c38",
-   "level": "open",
-   "size_orig": 1946,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 119,
-    "pattern_unexplained": 2,
-    "reordered_instructions": 4,
-    "reordered_examples": [
-     "ld\trS,#A"
-    ],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: sra\trS,#2",
-    "structure_flags": [],
-    "len_ours": 529,
-    "len_orig": 522
-   }
-  },
-  "psave": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x2be2",
-   "ours": "2c38-2c62",
-   "level": "strict",
-   "size_orig": 44,
-   "callers_orig": "-",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 13,
-    "len_orig": 13
-   }
-  },
-  "psavel": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x2c0e",
-   "ours": "2c62-2c94",
-   "level": "open",
-   "size_orig": 54,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 3,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 15,
-    "len_orig": 16
-   }
-  },
-  "ftnend": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x2c44",
-   "ours": "2c94-2e02",
-   "level": "strict",
-   "size_orig": 366,
-   "callers_orig": "36e6",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 94,
-    "len_orig": 94
-   }
-  },
-  "argalloc": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x2db2",
-   "ours": "2e02-2f42",
-   "level": "open",
-   "size_orig": 330,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13",
-     "D2",
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 113,
-    "len_orig": 115
-   }
-  },
-  "dclargs": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x2efc",
-   "ours": "2f42-3190",
-   "level": "open",
-   "size_orig": 584,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 13,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D13",
-     "D2",
-     "D5",
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 188,
-    "len_orig": 183
-   }
-  },
-  "setreg": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x3144",
-   "ours": "3190-322c",
-   "level": "open",
-   "size_orig": 156,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 47,
-    "len_orig": 47
-   }
-  },
-  "initpreg": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x31e0",
-   "ours": "322c-324c",
-   "level": "strict",
-   "size_orig": 32,
-   "callers_orig": "-",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 9,
-    "len_orig": 9
-   }
-  },
-  "getpreg": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x3200",
-   "ours": "324c-3322",
-   "level": "open",
-   "size_orig": 202,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 87,
-    "pattern_diff": 13,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D13",
-     "D3",
-     "D7",
-     "D8"
-    ],
-    "structure_flags": [],
-    "len_ours": 63,
-    "len_orig": 60
-   }
-  },
-  "rstruct": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x32ca",
-   "ours": "3322-33ce",
-   "level": "open",
-   "size_orig": 172,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 60,
-    "len_orig": 60
-   }
-  },
-  "moedef": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x3376",
-   "ours": "33ce-3408",
-   "level": "strict",
-   "size_orig": 60,
-   "callers_orig": "-",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 21,
-    "len_orig": 21
-   }
-  },
-  "bstruct": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x33b2",
-   "ours": "3408-34d0",
-   "level": "open",
-   "size_orig": 202,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 61,
-    "len_orig": 61
-   }
-  },
-  "dclstruct": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x347c",
-   "ours": "34d0-3720",
-   "level": "open",
-   "size_orig": 600,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 12,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2",
-     "D3",
-     "D5"
-    ],
-    "structure_flags": [],
-    "len_ours": 197,
-    "len_orig": 199
-   }
-  },
-  "yyerror": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x36d4",
-   "ours": "3720-372e",
-   "level": "open",
-   "size_orig": 18,
-   "callers_orig": "0312",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 83,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 6,
-    "len_orig": 6
-   }
-  },
-  "yyaccpt": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x36e6",
-   "ours": "372e-3732",
-   "level": "strict",
-   "size_orig": 4,
-   "callers_orig": "13b6",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 2,
-    "len_orig": 2
-   }
-  },
-  "ftnarg": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x36ea",
-   "ours": "3732-3768",
-   "level": "open",
-   "size_orig": 56,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 16,
-    "len_orig": 16
-   }
-  },
-  "talign": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x3722",
-   "ours": "3768-381a",
-   "level": "open",
-   "size_orig": 170,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 90,
-    "pattern_diff": 8,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 61,
-    "len_orig": 57
-   }
-  },
-  "tsize": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x37cc",
-   "ours": "381a-38c2",
-   "level": "open",
-   "size_orig": 164,
-   "callers_orig": "680a",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 10,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 51,
-    "len_orig": 49
-   }
-  },
-  "inforce": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x3870",
-   "ours": "38c2-397a",
-   "level": "open",
-   "size_orig": 188,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 5,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13"
-    ],
-    "structure_flags": [],
-    "len_ours": 54,
-    "len_orig": 55
-   }
-  },
-  "vfdalign": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x392c",
-   "ours": "397a-39c2",
-   "level": "open",
-   "size_orig": 68,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D13"
-    ],
-    "structure_flags": [],
-    "len_ours": 22,
-    "len_orig": 22
-   }
-  },
-  "f3970": {
-   "file": "pftn1.c",
-   "pairing": "confirmed",
-   "orig": "0x3970",
-   "ours": "39c2-39dc",
-   "level": "open",
-   "size_orig": 10,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 33,
-    "pattern_diff": 7,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 6,
-    "len_orig": 5
-   }
-  },
-  "buildtree": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x397a",
-   "ours": "39dc-4398",
-   "level": "open",
-   "size_orig": 2464,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 99,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D13",
-     "D2",
-     "D3",
-     "D6",
-     "D7",
-     "D8",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 708,
-    "len_orig": 685
-   }
-  },
-  "strargs": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x431a",
-   "ours": "4398-4406",
-   "level": "open",
-   "size_orig": 112,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 36,
-    "len_orig": 36
-   }
-  },
-  "chkstr": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x438a",
-   "ours": "4406-449a",
-   "level": "open",
-   "size_orig": 148,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 90,
-    "pattern_diff": 8,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 48,
-    "len_orig": 46
-   }
-  },
-  "chkpun": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x441e",
-   "ours": "449a-465a",
-   "level": "open",
-   "size_orig": 448,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 99,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 141,
-    "len_orig": 141
-   }
-  },
-  "stref": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x45de",
-   "ours": "465a-47ae",
-   "level": "open",
-   "size_orig": 362,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 12,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D13",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 98,
-    "len_orig": 104
-   }
-  },
-  "notlval": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4748",
-   "ours": "47ae-47fa",
-   "level": "open",
-   "size_orig": 72,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 85,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 26,
-    "len_orig": 24
-   }
-  },
-  "bcon": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4790",
-   "ours": "47fa-482e",
-   "level": "open",
-   "size_orig": 54,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 90,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 20,
-    "len_orig": 20
-   }
-  },
-  "bpsize": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x47c6",
-   "ours": "482e-4856",
-   "level": "open",
-   "size_orig": 40,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 85,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 13,
-    "len_orig": 13
-   }
-  },
-  "psize": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x47ee",
-   "ours": "4856-48a6",
-   "level": "open",
+   "ours": "01d6-0226",
    "size_orig": 80,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 23,
-    "len_orig": 23
-   }
-  },
-  "convert": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x483e",
-   "ours": "48a6-4930",
-   "level": "open",
-   "size_orig": 140,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 46,
-    "len_orig": 46
-   }
-  },
-  "econvert": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x48ca",
-   "ours": "4930-49d6",
-   "level": "open",
-   "size_orig": 166,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 49,
-    "len_orig": 49
-   }
-  },
-  "pconvert": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4970",
-   "ours": "49d6-4a30",
-   "level": "open",
-   "size_orig": 90,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 28,
-    "len_orig": 28
-   }
-  },
-  "oconvert": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x49ca",
-   "ours": "4a30-4af0",
-   "level": "open",
-   "size_orig": 188,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 10,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D13",
-     "D2",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 64,
-    "len_orig": 62
-   }
-  },
-  "ptmatch": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4a86",
-   "ours": "4af0-4c22",
-   "level": "open",
-   "size_orig": 302,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 93,
-    "len_orig": 91
-   }
-  },
-  "tymatch": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4bb4",
-   "ours": "4c22-4de8",
-   "level": "open",
-   "size_orig": 450,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 99,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 158,
-    "len_orig": 156
-   }
-  },
-  "makety": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4d76",
-   "ours": "4de8-4f0e",
-   "level": "open",
-   "size_orig": 292,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D13"
-    ],
-    "structure_flags": [],
-    "len_ours": 94,
-    "len_orig": 94
-   }
-  },
-  "block": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4e9a",
-   "ours": "4f0e-4f5e",
-   "level": "open",
-   "size_orig": 82,
-   "callers_orig": "0000",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 22,
-    "len_orig": 22
-   }
-  },
-  "lcons": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4eec",
-   "ours": "4f5e-4f96",
-   "level": "open",
-   "size_orig": 56,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 17,
-    "len_orig": 17
-   }
-  },
-  "icons": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4f24",
-   "ours": "4f96-4fe0",
-   "level": "open",
-   "size_orig": 74,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 23,
-    "len_orig": 23
-   }
-  },
-  "opact": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x4f6e",
-   "ours": "4fe0-520a",
-   "level": "open",
-   "size_orig": 552,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 7,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 205,
-    "len_orig": 204
-   }
-  },
-  "moditype": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x5196",
-   "ours": "520a-5242",
-   "level": "open",
-   "size_orig": 58,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 23,
-    "len_orig": 23
-   }
-  },
-  "doszof": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x51d0",
-   "ours": "5242-5294",
-   "level": "open",
-   "size_orig": 82,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 26,
-    "len_orig": 26
-   }
-  },
-  "prtdcon": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x5222",
-   "ours": "5294-5344",
-   "level": "open",
-   "size_orig": 174,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 10,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 46,
-    "len_orig": 48
-   }
-  },
-  "ecomp": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x52d0",
-   "ours": "5344-538c",
-   "level": "open",
-   "size_orig": 72,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 23,
-    "len_orig": 23
-   }
-  },
-  "prtree": {
-   "file": "trees1.c",
-   "pairing": "confirmed",
-   "orig": "0x5318",
-   "ours": "538c-5584",
-   "level": "open",
-   "size_orig": 458,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 86,
+    "d_normalised_pct": 0,
     "pattern_diff": 25,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
@@ -1752,108 +217,341 @@
     "d_classes": [
      "D1",
      "D10",
+     "D11",
      "D13",
      "D2",
      "D3",
-     "D6",
-     "D7",
-     "D8"
+     "D7"
     ],
     "structure_flags": [],
-    "len_ours": 158,
-    "len_orig": 139
+    "len_ours": 0,
+    "len_orig": 25
    }
   },
-  "argregs": {
-   "file": "trees1.c",
+  "swstart": {
+   "file": "cgram1.y",
    "pairing": "confirmed",
-   "orig": "0x54e2",
-   "ours": "5584-5662",
-   "level": "open",
-   "size_orig": 214,
+   "orig": "0x0230",
+   "ours": "0226-0246",
+   "level": "strict",
+   "size_orig": 32,
+   "callers_orig": "-",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D11",
+     "D13",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 8
+   }
+  },
+  "swend": {
+   "file": "cgram1.y",
+   "pairing": "confirmed",
+   "orig": "0x0250",
+   "ours": "0246-0308",
+   "size_orig": 194,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 79,
-    "pattern_diff": 27,
+    "d_normalised_pct": 0,
+    "pattern_diff": 68,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
+     "D10",
+     "D11",
      "D13",
-     "D16",
      "D2",
      "D3",
-     "D6",
+     "D5",
      "D7",
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 66,
-    "len_orig": 65
+    "len_ours": 0,
+    "len_orig": 68
    }
   },
-  "tempnode": {
-   "file": "trees1.c",
+  "yyparse": {
+   "file": "cgram1.y",
    "pairing": "confirmed",
-   "orig": "0x55b8",
-   "ours": "5662-56ce",
-   "level": "open",
-   "size_orig": 86,
+   "orig": "0x0312",
+   "ours": "0308-1392",
+   "size_orig": 4194,
+   "callers_orig": "13b6",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 1239,
+    "pattern_unexplained": 9,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: lda\trS,A(rS); set\tA,#0; set\tA,#1; set\tA,#2; set\tA,#3",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 1239
+   }
+  },
+  "scnames": {
+   "file": "xdefs1.c",
+   "pairing": "confirmed",
+   "orig": "0x1374",
+   "ours": "1392-13d6",
+   "size_orig": 66,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 4,
+    "d_normalised_pct": 0,
+    "pattern_diff": 22,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D1"
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 26,
-    "len_orig": 26
+    "len_ours": 0,
+    "len_orig": 22
    }
   },
-  "fortarg": {
-   "file": "optim1.c",
+  "mainp1": {
+   "file": "scan1.c",
    "pairing": "confirmed",
-   "orig": "0x560e",
-   "ours": "56ce-571c",
-   "level": "open",
-   "size_orig": 78,
-   "callers_orig": "-",
+   "orig": "0x13b6",
+   "ours": "13d6-144e",
+   "size_orig": 120,
+   "callers_orig": "60d8",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 4,
+    "d_normalised_pct": 0,
+    "pattern_diff": 38,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D1"
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D7",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 28,
-    "len_orig": 28
+    "len_ours": 0,
+    "len_orig": 38
    }
   },
-  "optim": {
-   "file": "optim1.c",
+  "lxstart": {
+   "file": "scan1.c",
    "pairing": "confirmed",
-   "orig": "0x565c",
-   "ours": "571c-5d98",
-   "level": "open",
-   "size_orig": 1628,
-   "callers_orig": "-",
+   "orig": "0x142e",
+   "ours": "144e-1454",
+   "level": "strict",
+   "size_orig": 6,
+   "callers_orig": "13b6",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D11",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 3
+   }
+  },
+  "lxclass": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x1434",
+   "ours": "1454-148a",
+   "level": "strict",
+   "size_orig": 54,
+   "callers_orig": "142e",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 19,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D11",
+     "D13",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 19
+   }
+  },
+  "lxenter": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x146a",
+   "ours": "148a-14b4",
+   "size_orig": 42,
+   "callers_orig": "1434",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 88,
+    "d_normalised_pct": 0,
+    "pattern_diff": 18,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 18
+   }
+  },
+  "lxinit": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x1494",
+   "ours": "14b4-1534",
+   "level": "strict",
+   "size_orig": 128,
+   "callers_orig": "142e",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 49,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 49
+   }
+  },
+  "sfinit": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x1514",
+   "ours": "1534-155e",
+   "level": "strict",
+   "size_orig": 42,
+   "callers_orig": "13b6",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 14,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D3",
+     "D5",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 14
+   }
+  },
+  "dimtinit": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x153e",
+   "ours": "155e-15d0",
+   "level": "strict",
+   "size_orig": 114,
+   "callers_orig": "13b6",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 24,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D11",
+     "D13"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 24
+   }
+  },
+  "lxtitle": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x15b0",
+   "ours": "15d0-1734",
+   "size_orig": 352,
+   "callers_orig": "13b6",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
     "pattern_diff": 105,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
@@ -1862,6 +560,1116 @@
     "d_classes": [
      "D1",
      "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 105
+   }
+  },
+  "lxmore": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x1710",
+   "ours": "1734-17b8",
+   "size_orig": 130,
+   "callers_orig": "15b0",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 42,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 42
+   }
+  },
+  "savestr": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x1792",
+   "ours": "17b8-1884",
+   "size_orig": 208,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 61,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 61
+   }
+  },
+  "lxstr": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x1862",
+   "ours": "1884-1abe",
+   "size_orig": 564,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 183,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: or\trS,A",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 183
+   }
+  },
+  "lxcom": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x1a96",
+   "ours": "1abe-1b58",
+   "size_orig": 148,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 47,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 47
+   }
+  },
+  "yylex": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x1b2a",
+   "ours": "1b58-236c",
+   "size_orig": 2026,
+   "callers_orig": "0312",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 597,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: multl\trqS,#A000A",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 597
+   }
+  },
+  "lxres": {
+   "file": "scan1.c",
+   "pairing": "confirmed",
+   "orig": "0x2314",
+   "ours": "236c-24b8",
+   "size_orig": 308,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 100,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 100
+   }
+  },
+  "defid": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x2448",
+   "ours": "24b8-2c56",
+   "size_orig": 1946,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 522,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 522
+   }
+  },
+  "psave": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x2be2",
+   "ours": "2c56-2c80",
+   "level": "strict",
+   "size_orig": 44,
+   "callers_orig": "-",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 13,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D6",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 13
+   }
+  },
+  "psavel": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x2c0e",
+   "ours": "2c80-2cb2",
+   "size_orig": 54,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 16,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D6",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 16
+   }
+  },
+  "ftnend": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x2c44",
+   "ours": "2cb2-2e20",
+   "level": "strict",
+   "size_orig": 366,
+   "callers_orig": "36e6",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 94,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 94
+   }
+  },
+  "argalloc": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x2db2",
+   "ours": "2e20-2f60",
+   "size_orig": 330,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 115,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 115
+   }
+  },
+  "dclargs": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x2efc",
+   "ours": "2f60-31ae",
+   "size_orig": 584,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 183,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D16",
+     "D2",
+     "D3",
+     "D5",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 183
+   }
+  },
+  "setreg": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x3144",
+   "ours": "31ae-324a",
+   "size_orig": 156,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 47,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 47
+   }
+  },
+  "initpreg": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x31e0",
+   "ours": "324a-326a",
+   "level": "strict",
+   "size_orig": 32,
+   "callers_orig": "-",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 9,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 9
+   }
+  },
+  "getpreg": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x3200",
+   "ours": "326a-3340",
+   "size_orig": 202,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 60,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 60
+   }
+  },
+  "rstruct": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x32ca",
+   "ours": "3340-33ec",
+   "size_orig": 172,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 60,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 60
+   }
+  },
+  "moedef": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x3376",
+   "ours": "33ec-3426",
+   "level": "strict",
+   "size_orig": 60,
+   "callers_orig": "-",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 21,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 21
+   }
+  },
+  "bstruct": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x33b2",
+   "ours": "3426-34ee",
+   "size_orig": 202,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 61,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 61
+   }
+  },
+  "dclstruct": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x347c",
+   "ours": "34ee-373e",
+   "size_orig": 600,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 199,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: multl\trqS,rrS",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 199
+   }
+  },
+  "yyerror": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x36d4",
+   "ours": "373e-374c",
+   "size_orig": 18,
+   "callers_orig": "0312",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 6
+   }
+  },
+  "yyaccpt": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x36e6",
+   "ours": "374c-3750",
+   "level": "strict",
+   "size_orig": 4,
+   "callers_orig": "13b6",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D11",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 2
+   }
+  },
+  "ftnarg": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x36ea",
+   "ours": "3750-3786",
+   "size_orig": 56,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 16,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 16
+   }
+  },
+  "talign": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x3722",
+   "ours": "3786-3838",
+   "size_orig": 170,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 57,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 57
+   }
+  },
+  "tsize": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x37cc",
+   "ours": "3838-38e0",
+   "size_orig": 164,
+   "callers_orig": "680a",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 49,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: multl\trqS,A(rS); multl\trqS,rrS",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 49
+   }
+  },
+  "inforce": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x3870",
+   "ours": "38e0-3998",
+   "size_orig": 188,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 55,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 55
+   }
+  },
+  "vfdalign": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x392c",
+   "ours": "3998-39e0",
+   "size_orig": 68,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 22,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: multl\trqS,rrS",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 22
+   }
+  },
+  "f3970": {
+   "file": "pftn1.c",
+   "pairing": "confirmed",
+   "orig": "0x3970",
+   "ours": "39e0-39fa",
+   "size_orig": 10,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 5,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 5
+   }
+  },
+  "buildtree": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x397a",
+   "ours": "39fa-43b6",
+   "size_orig": 2464,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 685,
+    "pattern_unexplained": 4,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: srl\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 685
+   }
+  },
+  "strargs": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x431a",
+   "ours": "43b6-4424",
+   "size_orig": 112,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 36,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 36
+   }
+  },
+  "chkstr": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x438a",
+   "ours": "4424-44b8",
+   "size_orig": 148,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 46,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 46
+   }
+  },
+  "chkpun": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x441e",
+   "ours": "44b8-4678",
+   "size_orig": 448,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 141,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 141
+   }
+  },
+  "stref": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x45de",
+   "ours": "4678-47cc",
+   "size_orig": 362,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 104,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 104
+   }
+  },
+  "notlval": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x4748",
+   "ours": "47cc-4818",
+   "size_orig": 72,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 24,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 24
+   }
+  },
+  "bcon": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x4790",
+   "ours": "4818-484c",
+   "size_orig": 54,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 20,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 20
+   }
+  },
+  "bpsize": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x47c6",
+   "ours": "484c-4874",
+   "size_orig": 40,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 13,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 13
+   }
+  },
+  "psize": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x47ee",
+   "ours": "4874-48c4",
+   "size_orig": 80,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 23,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: srl\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 23
+   }
+  },
+  "convert": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x483e",
+   "ours": "48c4-494e",
+   "size_orig": 140,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 46,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 46
+   }
+  },
+  "econvert": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x48ca",
+   "ours": "494e-49f4",
+   "size_orig": 166,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 49,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 49
+   }
+  },
+  "pconvert": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x4970",
+   "ours": "49f4-4a4e",
+   "size_orig": 90,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 28,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: srl\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 28
+   }
+  },
+  "oconvert": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x49ca",
+   "ours": "4a4e-4b0e",
+   "size_orig": 188,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 62,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
      "D13",
      "D2",
      "D3",
@@ -1870,50 +1678,173 @@
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 485,
-    "len_orig": 470
+    "len_ours": 0,
+    "len_orig": 62
    }
   },
-  "conval": {
-   "file": "optim1.c",
+  "ptmatch": {
+   "file": "trees1.c",
    "pairing": "confirmed",
-   "orig": "0x5cb8",
-   "ours": "5d98-6002",
-   "level": "open",
-   "size_orig": 610,
+   "orig": "0x4a86",
+   "ours": "4b0e-4c40",
+   "size_orig": 302,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 19,
+    "d_normalised_pct": 0,
+    "pattern_diff": 91,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
+     "D10",
+     "D11",
      "D13",
      "D2",
      "D3",
      "D6",
+     "D7",
+     "D8",
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 192,
-    "len_orig": 191
+    "len_ours": 0,
+    "len_orig": 91
    }
   },
-  "treeeq": {
-   "file": "optim1.c",
+  "tymatch": {
+   "file": "trees1.c",
    "pairing": "confirmed",
-   "orig": "0x5f1a",
-   "ours": "6002-6078",
-   "level": "open",
-   "size_orig": 118,
+   "orig": "0x4bb4",
+   "ours": "4c40-4e06",
+   "size_orig": 450,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 71,
+    "d_normalised_pct": 0,
+    "pattern_diff": 156,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 156
+   }
+  },
+  "makety": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x4d76",
+   "ours": "4e06-4f2c",
+   "size_orig": 292,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 94,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 94
+   }
+  },
+  "block": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x4e9a",
+   "ours": "4f2c-4f7c",
+   "size_orig": 82,
+   "callers_orig": "0000",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 22,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 22
+   }
+  },
+  "lcons": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x4eec",
+   "ours": "4f7c-4fb4",
+   "size_orig": 56,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 17,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 17
+   }
+  },
+  "icons": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x4f24",
+   "ours": "4fb4-4ffe",
+   "size_orig": 74,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
     "pattern_diff": 23,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
@@ -1922,14 +1853,375 @@
     "d_classes": [
      "D1",
      "D10",
+     "D11",
      "D13",
      "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 23
+   }
+  },
+  "opact": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x4f6e",
+   "ours": "4ffe-5228",
+   "size_orig": 552,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 204,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 204
+   }
+  },
+  "moditype": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x5196",
+   "ours": "5228-5260",
+   "size_orig": 58,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 23,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
      "D6",
      "D7",
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 41,
+    "len_ours": 0,
+    "len_orig": 23
+   }
+  },
+  "doszof": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x51d0",
+   "ours": "5260-52b2",
+   "size_orig": 82,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 26,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 26
+   }
+  },
+  "prtdcon": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x5222",
+   "ours": "52b2-5362",
+   "size_orig": 174,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 48,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 48
+   }
+  },
+  "ecomp": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x52d0",
+   "ours": "5362-53aa",
+   "size_orig": 72,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 23,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 23
+   }
+  },
+  "prtree": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x5318",
+   "ours": "53aa-55a2",
+   "size_orig": 458,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 139,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 139
+   }
+  },
+  "argregs": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x54e2",
+   "ours": "55a2-5680",
+   "size_orig": 214,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 65,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 65
+   }
+  },
+  "tempnode": {
+   "file": "trees1.c",
+   "pairing": "confirmed",
+   "orig": "0x55b8",
+   "ours": "5680-56ec",
+   "size_orig": 86,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 26,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 26
+   }
+  },
+  "fortarg": {
+   "file": "optim1.c",
+   "pairing": "confirmed",
+   "orig": "0x560e",
+   "ours": "56ec-573a",
+   "size_orig": 78,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 28,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 28
+   }
+  },
+  "optim": {
+   "file": "optim1.c",
+   "pairing": "confirmed",
+   "orig": "0x565c",
+   "ours": "573a-5db6",
+   "size_orig": 1628,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 470,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 470
+   }
+  },
+  "conval": {
+   "file": "optim1.c",
+   "pairing": "confirmed",
+   "orig": "0x5cb8",
+   "ours": "5db6-6020",
+   "size_orig": 610,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 191,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: multl\trqS,F",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 191
+   }
+  },
+  "treeeq": {
+   "file": "optim1.c",
+   "pairing": "confirmed",
+   "orig": "0x5f1a",
+   "ours": "6020-6096",
+   "size_orig": 118,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 42,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
     "len_orig": 42
    }
   },
@@ -1937,25 +2229,29 @@
    "file": "optim1.c",
    "pairing": "confirmed",
    "orig": "0x5f90",
-   "ours": "6078-61a6",
-   "level": "open",
+   "ours": "6096-61c4",
    "size_orig": 294,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 10,
+    "d_normalised_pct": 0,
+    "pattern_diff": 86,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
+     "D11",
+     "D16",
      "D2",
-     "D8"
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 90,
+    "len_ours": 0,
     "len_orig": 86
    }
   },
@@ -1963,23 +2259,28 @@
    "file": "optim1.c",
    "pairing": "confirmed",
    "orig": "0x60b6",
-   "ours": "61a6-61d4",
-   "level": "open",
+   "ours": "61c4-61f2",
    "size_orig": 34,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 85,
-    "pattern_diff": 4,
+    "d_normalised_pct": 0,
+    "pattern_diff": 13,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D1"
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 13,
+    "len_ours": 0,
     "len_orig": 13
    }
   },
@@ -1987,26 +2288,31 @@
    "file": "code1.c",
    "pairing": "confirmed",
    "orig": "0x60d8",
-   "ours": "61d4-62d2",
-   "level": "open",
+   "ours": "61f2-62f0",
    "size_orig": 248,
    "callers_orig": "0000",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 10,
+    "d_normalised_pct": 0,
+    "pattern_diff": 84,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
+     "D10",
+     "D11",
+     "D13",
      "D2",
      "D3",
-     "D6"
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 88,
+    "len_ours": 0,
     "len_orig": 84
    }
   },
@@ -2014,23 +2320,31 @@
    "file": "code1.c",
    "pairing": "confirmed",
    "orig": "0x61d0",
-   "ours": "62d2-644e",
-   "level": "open",
+   "ours": "62f0-646c",
    "size_orig": 376,
    "callers_orig": "60d8",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 3,
+    "d_normalised_pct": 0,
+    "pattern_diff": 115,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D2"
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 118,
+    "len_ours": 0,
     "len_orig": 115
    }
   },
@@ -2038,23 +2352,28 @@
    "file": "code1.c",
    "pairing": "confirmed",
    "orig": "0x6348",
-   "ours": "644e-64b2",
-   "level": "open",
+   "ours": "646c-64d0",
    "size_orig": 106,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 1,
+    "d_normalised_pct": 0,
+    "pattern_diff": 31,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
-     "D3"
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 30,
+    "len_ours": 0,
     "len_orig": 31
    }
   },
@@ -2062,25 +2381,31 @@
    "file": "code1.c",
    "pairing": "confirmed",
    "orig": "0x63b2",
-   "ours": "64b2-6580",
-   "level": "open",
+   "ours": "64d0-659e",
    "size_orig": 210,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 8,
+    "d_normalised_pct": 0,
+    "pattern_diff": 57,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
+     "D10",
+     "D11",
      "D13",
-     "D2"
+     "D2",
+     "D3",
+     "D5",
+     "D6",
+     "D7",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 55,
+    "len_ours": 0,
     "len_orig": 57
    }
   },
@@ -2088,24 +2413,27 @@
    "file": "code1.c",
    "pairing": "confirmed",
    "orig": "0x6484",
-   "ours": "6580-65b8",
-   "level": "open",
+   "ours": "659e-65d6",
    "size_orig": 62,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 80,
-    "pattern_diff": 7,
+    "d_normalised_pct": 0,
+    "pattern_diff": 20,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
-     "D3"
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D8"
     ],
     "structure_flags": [],
-    "len_ours": 19,
+    "len_ours": 0,
     "len_orig": 20
    }
   },
@@ -2113,25 +2441,31 @@
    "file": "code1.c",
    "pairing": "confirmed",
    "orig": "0x64c2",
-   "ours": "65b8-66b8",
-   "level": "open",
+   "ours": "65d6-66d6",
    "size_orig": 258,
    "callers_orig": "680a",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 3,
+    "d_normalised_pct": 0,
+    "pattern_diff": 75,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
      "D16",
-     "D2",
-     "D6"
+     "D3",
+     "D5",
+     "D7",
+     "D8",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 76,
+    "len_ours": 0,
     "len_orig": 75
    }
   },
@@ -2139,25 +2473,27 @@
    "file": "code1.c",
    "pairing": "confirmed",
    "orig": "0x65c4",
-   "ours": "66b8-66da",
-   "level": "open",
+   "ours": "66d6-66f8",
    "size_orig": 36,
    "callers_orig": "65e8,680a",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 69,
-    "pattern_diff": 7,
+    "d_normalised_pct": 0,
+    "pattern_diff": 13,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
+     "D10",
+     "D11",
      "D2",
-     "D3"
+     "D3",
+     "D7"
     ],
     "structure_flags": [],
-    "len_ours": 12,
+    "len_ours": 0,
     "len_orig": 13
    }
   },
@@ -2165,25 +2501,28 @@
    "file": "code1.c",
    "pairing": "confirmed",
    "orig": "0x65e8",
-   "ours": "66da-670c",
-   "level": "open",
+   "ours": "66f8-672a",
    "size_orig": 56,
    "callers_orig": "680a",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 4,
+    "d_normalised_pct": 0,
+    "pattern_diff": 17,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
+     "D1",
      "D10",
-     "D2",
-     "D3"
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 17,
+    "len_ours": 0,
     "len_orig": 17
    }
   },
@@ -2191,2179 +2530,13 @@
    "file": "code1.c",
    "pairing": "confirmed",
    "orig": "0x6620",
-   "ours": "670c-67ac",
-   "level": "open",
+   "ours": "672a-67ca",
    "size_orig": 162,
    "callers_orig": "-",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 49,
-    "len_orig": 49
-   }
-  },
-  "bend": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x66c2",
-   "ours": "67ac-6810",
-   "level": "open",
-   "size_orig": 100,
-   "callers_orig": "680a",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 33,
-    "len_orig": 33
-   }
-  },
-  "defalign": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6726",
-   "ours": "6810-6876",
-   "level": "open",
-   "size_orig": 96,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 86,
-    "pattern_diff": 7,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 35,
-    "len_orig": 32
-   }
-  },
-  "getlab": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6786",
-   "ours": "6876-6888",
-   "level": "open",
-   "size_orig": 10,
-   "callers_orig": "680a",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 50,
-    "pattern_diff": 3,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 6,
-    "len_orig": 3
-   }
-  },
-  "locctr": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6790",
-   "ours": "6888-68e4",
-   "level": "open",
-   "size_orig": 92,
-   "callers_orig": "2c44",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 28,
-    "len_orig": 28
-   }
-  },
-  "deflab": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x67ec",
-   "ours": "68e4-6902",
-   "level": "open",
-   "size_orig": 30,
-   "callers_orig": "680a",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 80,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 10,
-    "len_orig": 10
-   }
-  },
-  "efcode": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x680a",
-   "ours": "6902-69a8",
-   "level": "open",
-   "size_orig": 166,
-   "callers_orig": "2c44",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 51,
-    "len_orig": 51
-   }
-  },
-  "bfcode": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x68b0",
-   "ours": "69a8-6b6e",
-   "level": "open",
-   "size_orig": 456,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 99,
-    "pattern_diff": 3,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 135,
-    "len_orig": 136
-   }
-  },
-  "bccode": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6a78",
-   "ours": "6b6e-6ba8",
-   "level": "open",
-   "size_orig": 62,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 88,
-    "pattern_diff": 3,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13"
-    ],
-    "structure_flags": [],
-    "len_ours": 16,
-    "len_orig": 17
-   }
-  },
-  "bfend": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6ab6",
-   "ours": "6ba8-6bb6",
-   "level": "open",
-   "size_orig": 14,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 4,
-    "len_orig": 4
-   }
-  },
-  "defnam": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6ac4",
-   "ours": "6bb6-6c1e",
-   "level": "open",
-   "size_orig": 104,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 29,
-    "len_orig": 29
-   }
-  },
-  "zecode": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6b2c",
-   "ours": "6c1e-6c74",
-   "level": "open",
-   "size_orig": 90,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 80,
-    "pattern_diff": 9,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 24,
-    "len_orig": 25
-   }
-  },
-  "fldal": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6b86",
-   "ours": "6c74-6c88",
-   "level": "open",
-   "size_orig": 22,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 71,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 7,
-    "len_orig": 7
-   }
-  },
-  "lineid": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6b9c",
-   "ours": "6c88-6cdc",
-   "level": "open",
-   "size_orig": 84,
-   "callers_orig": "60d8,680a",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 27,
-    "len_orig": 27
-   }
-  },
-  "genswitch": {
-   "file": "code1.c",
-   "pairing": "confirmed",
-   "orig": "0x6bf0",
-   "ours": "6cdc-7136",
-   "level": "open",
-   "size_orig": 1116,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 12,
-    "pattern_unexplained": 1,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "other differences",
-    "difference_note": "unexplained instruction forms: srl\trS,#3",
-    "structure_flags": [],
-    "len_ours": 360,
-    "len_orig": 362
-   }
-  },
-  "cast": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x704c",
-   "ours": "7136-717c",
-   "level": "open",
-   "size_orig": 72,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 24,
-    "len_orig": 24
-   }
-  },
-  "clocal": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7094",
-   "ours": "717c-75c8",
-   "level": "open",
-   "size_orig": 1118,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 57,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13",
-     "D2",
-     "D3",
-     "D6",
-     "D7",
-     "D8",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 321,
-    "len_orig": 324
-   }
-  },
-  "cisreg": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x74f2",
-   "ours": "75c8-7620",
-   "level": "open",
-   "size_orig": 78,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 84,
-    "pattern_diff": 7,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 31,
-    "len_orig": 28
-   }
-  },
-  "offcon": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7540",
-   "ours": "7620-7658",
-   "level": "open",
-   "size_orig": 52,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 87,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D13"
-    ],
-    "structure_flags": [],
-    "len_ours": 15,
-    "len_orig": 15
-   }
-  },
-  "incode": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7574",
-   "ours": "7658-76f8",
-   "level": "open",
-   "size_orig": 160,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 48,
-    "len_orig": 48
-   }
-  },
-  "fincode": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7614",
-   "ours": "76f8-776a",
-   "level": "open",
-   "size_orig": 112,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 28,
-    "len_orig": 28
-   }
-  },
-  "cinit": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7684",
-   "ours": "776a-786a",
-   "level": "open",
-   "size_orig": 248,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 62,
-    "pattern_diff": 59,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 2,
-    "reordered_examples": [
-     "and\trS,#A"
-    ],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2",
-     "D3",
-     "D6",
-     "D7",
-     "D8",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 81,
-    "len_orig": 78
-   }
-  },
-  "cprint": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x777c",
-   "ours": "786a-79d0",
-   "level": "open",
-   "size_orig": 336,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 70,
-    "pattern_diff": 59,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2",
-     "D3",
-     "D6",
-     "D7",
-     "D8",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 114,
-    "len_orig": 105
-   }
-  },
-  "vfdzero": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x78cc",
-   "ours": "79d0-7a52",
-   "level": "open",
-   "size_orig": 134,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 89,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D16",
-     "D2",
-     "D3",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 36,
-    "len_orig": 38
-   }
-  },
-  "exname": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7952",
-   "ours": "7a52-7ad0",
-   "level": "open",
-   "size_orig": 134,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 85,
-    "pattern_diff": 12,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D13",
-     "D16",
-     "D3",
-     "D8"
-    ],
-    "structure_flags": [],
-    "len_ours": 45,
-    "len_orig": 47
-   }
-  },
-  "ctype": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x79d8",
-   "ours": "7ad0-7b10",
-   "level": "open",
-   "size_orig": 66,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 86,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D8"
-    ],
-    "structure_flags": [],
-    "len_ours": 21,
-    "len_orig": 21
-   }
-  },
-  "noinit": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7a1a",
-   "ours": "7b10-7b18",
-   "level": "open",
-   "size_orig": 4,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 50,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 4,
-    "len_orig": 2
-   }
-  },
-  "commdec": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7a1e",
-   "ours": "7b18-7b7a",
-   "level": "open",
-   "size_orig": 98,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 28,
-    "len_orig": 28
-   }
-  },
-  "isitfloat": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7a80",
-   "ours": "7b7a-7b90",
-   "level": "open",
-   "size_orig": 30,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 57,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 7,
-    "len_orig": 7
-   }
-  },
-  "ecode": {
-   "file": "local1.c",
-   "pairing": "confirmed",
-   "orig": "0x7a9e",
-   "ours": "7b90-7c32",
-   "level": "open",
-   "size_orig": 138,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 84,
-    "pattern_diff": 12,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2",
-     "D3",
-     "D7",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 42,
-    "len_orig": 44
-   }
-  },
-  "syserr": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7b28",
-   "ours": "7c32-7c54",
-   "level": "strict",
-   "size_orig": 36,
-   "callers_orig": "1514,15b0,1710,61d0",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 1,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 10,
-    "len_orig": 11
-   }
-  },
-  "uerror": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7b4c",
-   "ours": "7c54-7c90",
-   "level": "strict",
-   "size_orig": 62,
-   "callers_orig": "36d4,37cc,64c2,65e8",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 18,
-    "len_orig": 18
-   }
-  },
-  "cerror": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7b8a",
-   "ours": "7c90-7d0e",
-   "level": "strict",
-   "size_orig": 128,
-   "callers_orig": "1b2a,2c44,64c2,7b4c,7c70,7cc4",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 37,
-    "len_orig": 37
-   }
-  },
-  "werror": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7c0a",
-   "ours": "7d0e-7d4a",
-   "level": "strict",
-   "size_orig": 62,
-   "callers_orig": "-",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 17,
-    "len_orig": 17
-   }
-  },
-  "tinit": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7c48",
-   "ours": "7d4a-7d72",
-   "level": "strict",
-   "size_orig": 40,
-   "callers_orig": "13b6,7cc4",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 11,
-    "len_orig": 11
-   }
-  },
-  "talloc": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7c70",
-   "ours": "7d72-7dd0",
-   "level": "open",
-   "size_orig": 84,
-   "callers_orig": "4e9a",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 80,
-    "pattern_diff": 9,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D13",
-     "D3",
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 30,
-    "len_orig": 27
-   }
-  },
-  "tcheck": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7cc4",
-   "ours": "7dd0-7e0c",
-   "level": "open",
-   "size_orig": 58,
-   "callers_orig": "2c44",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 1,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 20,
-    "len_orig": 19
-   }
-  },
-  "tfree": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7cfe",
-   "ours": "7e0c-7e26",
-   "level": "open",
-   "size_orig": 28,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 80,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 10,
-    "len_orig": 10
-   }
-  },
-  "tfree1": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7d1a",
-   "ours": "7e26-7e42",
-   "level": "open",
-   "size_orig": 28,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 11,
-    "len_orig": 11
-   }
-  },
-  "fwalk": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7d36",
-   "ours": "7e42-7eba",
-   "level": "open",
-   "size_orig": 120,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 92,
-    "pattern_diff": 5,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 38,
-    "len_orig": 37
-   }
-  },
-  "walkf": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7dae",
-   "ours": "7eba-7f10",
-   "level": "open",
-   "size_orig": 88,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 29,
-    "len_orig": 29
-   }
-  },
-  "mkdope": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7e06",
-   "ours": "7f10-7f40",
-   "level": "open",
-   "size_orig": 52,
-   "callers_orig": "13b6",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 18,
-    "len_orig": 18
-   }
-  },
-  "bsize": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7e3a",
-   "ours": "7f40-7f8c",
-   "level": "open",
-   "size_orig": 76,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 28,
-    "len_orig": 28
-   }
-  },
-  "twords": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7e86",
-   "ours": "7f8c-7fbc",
-   "level": "open",
-   "size_orig": 50,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 89,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 19,
-    "len_orig": 19
-   }
-  },
-  "argsize": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7eb8",
-   "ours": "7fbc-801a",
-   "level": "open",
-   "size_orig": 90,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 87,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 30,
-    "len_orig": 28
-   }
-  },
-  "where": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7f12",
-   "ours": "801a-8036",
-   "level": "strict",
-   "size_orig": 30,
-   "callers_orig": "7b4c,7b8a",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 9,
-    "len_orig": 9
-   }
-  },
-  "tbytes": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7f30",
-   "ours": "8036-8066",
-   "level": "open",
-   "size_orig": 50,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 89,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 19,
-    "len_orig": 19
-   }
-  },
-  "dexit": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7f62",
-   "ours": "8066-807e",
-   "level": "strict",
-   "size_orig": 26,
-   "callers_orig": "7b28,7b8a",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 8,
-    "len_orig": 8
-   }
-  },
-  "branch": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7f7c",
-   "ours": "807e-809c",
-   "level": "open",
-   "size_orig": 30,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 80,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 10,
-    "len_orig": 10
-   }
-  },
-  "ncopy": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7f9a",
-   "ours": "809c-80b2",
-   "level": "open",
-   "size_orig": 34,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 46,
-    "pattern_diff": 10,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 9,
-    "len_orig": 13
-   }
-  },
-  "tcopy": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x7fbc",
-   "ours": "80b2-8104",
-   "level": "open",
-   "size_orig": 88,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 87,
-    "pattern_diff": 7,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 29,
-    "len_orig": 30
-   }
-  },
-  "ispow2": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x8014",
-   "ours": "8104-814e",
-   "level": "open",
-   "size_orig": 78,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 81,
-    "pattern_diff": 9,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D6"
-    ],
-    "structure_flags": [],
-    "len_ours": 25,
-    "len_orig": 26
-   }
-  },
-  "nncon": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x8062",
-   "ours": "814e-8170",
-   "level": "open",
-   "size_orig": 34,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 85,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 13,
-    "len_orig": 13
-   }
-  },
-  "getmem": {
-   "file": "comm1.c",
-   "pairing": "confirmed",
-   "orig": "0x8084",
-   "ours": "8170-81f2",
-   "level": "open",
-   "size_orig": 124,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 87,
-    "pattern_diff": 9,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D5",
-     "D8"
-    ],
-    "structure_flags": [],
-    "len_ours": 39,
-    "len_orig": 38
-   }
-  },
-  "resetmem": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x8100",
-   "ours": "81f2-8210",
-   "level": "open",
-   "size_orig": 34,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 90,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 10,
-    "len_orig": 10
-   }
-  },
-  "beginit": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x8122",
-   "ours": "8210-8308",
-   "level": "open",
-   "size_orig": 248,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 74,
-    "len_orig": 74
-   }
-  },
-  "instk": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x821a",
-   "ours": "8308-84bc",
-   "level": "open",
-   "size_orig": 454,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 17,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 127,
-    "len_orig": 128
-   }
-  },
-  "getstr": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x83e0",
-   "ours": "84bc-85c4",
-   "level": "open",
-   "size_orig": 260,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 80,
-    "len_orig": 78
-   }
-  },
-  "putbyte": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x84e4",
-   "ours": "85c4-85ec",
-   "level": "open",
-   "size_orig": 44,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 93,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 15,
-    "len_orig": 15
-   }
-  },
-  "putstrs": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x8510",
-   "ours": "85ec-86d2",
-   "level": "open",
-   "size_orig": 224,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 3,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 67,
-    "len_orig": 64
-   }
-  },
-  "endinit": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x85f0",
-   "ours": "86d2-8838",
-   "level": "open",
-   "size_orig": 346,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 83,
-    "pattern_diff": 36,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13",
-     "D2",
-     "D3",
-     "D6",
-     "D7",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 112,
-    "len_orig": 110
-   }
-  },
-  "doinit": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x874a",
-   "ours": "8838-89fe",
-   "level": "open",
-   "size_orig": 452,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 7,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 137,
-    "len_orig": 136
-   }
-  },
-  "gotscal": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x890e",
-   "ours": "89fe-8b2a",
-   "level": "open",
-   "size_orig": 302,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 90,
-    "pattern_diff": 15,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D13",
-     "D2",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 90,
-    "len_orig": 87
-   }
-  },
-  "ilbrace": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x8a3c",
-   "ours": "8b2a-8b98",
-   "level": "open",
-   "size_orig": 112,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D13",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 32,
-    "len_orig": 32
-   }
-  },
-  "irbrace": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x8aac",
-   "ours": "8b98-8bcc",
-   "level": "strict",
-   "size_orig": 52,
-   "callers_orig": "-",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 8,
-    "len_orig": 8
-   }
-  },
-  "hash": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x8ae0",
-   "ours": "8bcc-8c08",
-   "level": "open",
-   "size_orig": 62,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 90,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 20,
-    "len_orig": 20
-   }
-  },
-  "upoff": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x8b1e",
-   "ours": "8c08-8c58",
-   "level": "open",
-   "size_orig": 80,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 2,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10"
-    ],
-    "structure_flags": [],
-    "len_ours": 31,
-    "len_orig": 31
-   }
-  },
-  "oalloc": {
-   "file": "vinit1.c",
-   "pairing": "confirmed",
-   "orig": "0x8b6e",
-   "ours": "8c58-8d84",
-   "level": "open",
-   "size_orig": 288,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 80,
-    "pattern_diff": 32,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D13",
-     "D2",
-     "D3",
-     "D5",
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 81,
-    "len_orig": 81
-   }
-  },
-  "falloc": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x8c8e",
-   "ours": "8d84-8f46",
-   "level": "open",
-   "size_orig": 444,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 10,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 2,
-    "reordered_examples": [
-     "ld\trS,F"
-    ],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2",
-     "D3",
-     "D7",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 147,
-    "len_orig": 145
-   }
-  },
-  "nidcl": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x8e4a",
-   "ours": "8f46-905c",
-   "level": "open",
-   "size_orig": 278,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 3,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D10",
-     "D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 82,
-    "len_orig": 81
-   }
-  },
-  "types": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x8f60",
-   "ours": "905c-9168",
-   "level": "open",
-   "size_orig": 270,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D13",
-     "D5"
-    ],
-    "structure_flags": [],
-    "len_ours": 81,
-    "len_orig": 81
-   }
-  },
-  "tymerge": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x906e",
-   "ours": "9168-9252",
-   "level": "open",
-   "size_orig": 232,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 94,
-    "pattern_diff": 7,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 70,
-    "len_orig": 69
-   }
-  },
-  "tyreduce": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9156",
-   "ours": "9252-92e8",
-   "level": "open",
-   "size_orig": 156,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 45,
-    "len_orig": 47
-   }
-  },
-  "fixtype": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x91f2",
-   "ours": "92e8-9440",
-   "level": "open",
-   "size_orig": 346,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 112,
-    "len_orig": 112
-   }
-  },
-  "uclass": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x934c",
-   "ours": "9440-9466",
-   "level": "open",
-   "size_orig": 38,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 87,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 15,
-    "len_orig": 15
-   }
-  },
-  "fixclass": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9372",
-   "ours": "9466-959a",
-   "level": "open",
-   "size_orig": 308,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 96,
-    "len_orig": 96
-   }
-  },
-  "regfree": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x94a6",
-   "ours": "959a-95dc",
-   "level": "open",
-   "size_orig": 66,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 91,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 23,
-    "len_orig": 23
-   }
-  },
-  "lookup": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x94e8",
-   "ours": "95dc-97d4",
-   "level": "open",
-   "size_orig": 506,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 99,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 159,
-    "len_orig": 159
-   }
-  },
-  "copysym": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x96e2",
-   "ours": "97d4-994c",
-   "level": "open",
-   "size_orig": 376,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 97,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 112,
-    "len_orig": 112
-   }
-  },
-  "hide": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x985a",
-   "ours": "994c-9a50",
-   "level": "open",
-   "size_orig": 258,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 96,
-    "pattern_diff": 6,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D7"
-    ],
-    "structure_flags": [],
-    "len_ours": 76,
-    "len_orig": 76
-   }
-  },
-  "unhide": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x995c",
-   "ours": "9a50-9abe",
-   "level": "open",
-   "size_orig": 110,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1"
-    ],
-    "structure_flags": [],
-    "len_ours": 39,
-    "len_orig": 39
-   }
-  },
-  "refid": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x99ca",
-   "ours": "9abe-9bd0",
-   "level": "open",
-   "size_orig": 284,
-   "callers_orig": "-",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 95,
-    "pattern_diff": 5,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 84,
-    "len_orig": 87
-   }
-  },
-  "clearst": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9ae6",
-   "ours": "9bd0-9cbc",
-   "level": "strict",
-   "size_orig": 238,
-   "callers_orig": "-",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 83,
-    "len_orig": 83
-   }
-  },
-  "sinit": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9bd4",
-   "ours": "9cbc-9cf4",
-   "level": "strict",
-   "size_orig": 56,
-   "callers_orig": "13b6",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 16,
-    "len_orig": 16
-   }
-  },
-  "sheader": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9c0c",
-   "ours": "9cf4-9d20",
-   "level": "strict",
-   "size_orig": 44,
-   "callers_orig": "13b6,2c44",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 14,
-    "len_orig": 14
-   }
-  },
-  "putrefsyms": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9c38",
-   "ours": "9d20-9d4a",
-   "level": "strict",
-   "size_orig": 42,
-   "callers_orig": "13b6",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 14,
-    "len_orig": 14
-   }
-  },
-  "putsym": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9c62",
-   "ours": "9d4a-9eea",
-   "level": "open",
-   "size_orig": 418,
-   "callers_orig": "9c38",
-   "status": "findings",
-   "audit": {
-    "d_normalised_pct": 98,
-    "pattern_diff": 4,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D13",
-     "D2",
-     "D3"
-    ],
-    "structure_flags": [],
-    "len_ours": 115,
-    "len_orig": 115
-   }
-  },
-  "putnames": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9e04",
-   "ours": "9eea-9f06",
-   "level": "strict",
-   "size_orig": 124,
-   "callers_orig": "13b6,2c44",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 23,
-    "pattern_diff": 27,
+    "d_normalised_pct": 0,
+    "pattern_diff": 49,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
@@ -4379,65 +2552,1339 @@
      "D8/D2"
     ],
     "structure_flags": [],
-    "len_ours": 8,
-    "len_orig": 35
+    "len_ours": 0,
+    "len_orig": 49
    }
   },
-  "puttags": {
-   "file": "sym1.c",
+  "bend": {
+   "file": "code1.c",
    "pairing": "confirmed",
-   "orig": "0x9e80",
-   "ours": "9f62-9f88",
-   "level": "strict",
-   "size_orig": 38,
-   "callers_orig": "13b6,2c44",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 12,
-    "len_orig": 12
-   }
-  },
-  "putrefs": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9ea6",
-   "ours": "9f88-9fb0",
-   "level": "strict",
-   "size_orig": 40,
-   "callers_orig": "2c44",
-   "status": "done",
-   "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 0,
-    "reordered_examples": [],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
-    "structure_flags": [],
-    "len_ours": 12,
-    "len_orig": 12
-   }
-  },
-  "sputc": {
-   "file": "sym1.c",
-   "pairing": "confirmed",
-   "orig": "0x9ece",
-   "ours": "9fb0-9fe8",
-   "level": "open",
-   "size_orig": 54,
-   "callers_orig": "9e04",
+   "orig": "0x66c2",
+   "ours": "67ca-682e",
+   "size_orig": 100,
+   "callers_orig": "680a",
    "status": "findings",
    "audit": {
-    "d_normalised_pct": 80,
+    "d_normalised_pct": 0,
+    "pattern_diff": 33,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 33
+   }
+  },
+  "defalign": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6726",
+   "ours": "682e-6894",
+   "size_orig": 96,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 32,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 32
+   }
+  },
+  "getlab": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6786",
+   "ours": "6894-68a6",
+   "size_orig": 10,
+   "callers_orig": "680a",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D11",
+     "D13"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 3
+   }
+  },
+  "locctr": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6790",
+   "ours": "68a6-6902",
+   "size_orig": 92,
+   "callers_orig": "2c44",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 28,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 28
+   }
+  },
+  "deflab": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x67ec",
+   "ours": "6902-6920",
+   "size_orig": 30,
+   "callers_orig": "680a",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 10
+   }
+  },
+  "efcode": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x680a",
+   "ours": "6920-69c6",
+   "size_orig": 166,
+   "callers_orig": "2c44",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 51,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: srl\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 51
+   }
+  },
+  "bfcode": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x68b0",
+   "ours": "69c6-6b8c",
+   "size_orig": 456,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 136,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 136
+   }
+  },
+  "bccode": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6a78",
+   "ours": "6b8c-6bc6",
+   "size_orig": 62,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 17,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D11",
+     "D13",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 17
+   }
+  },
+  "bfend": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6ab6",
+   "ours": "6bc6-6bd4",
+   "level": "strict",
+   "size_orig": 14,
+   "callers_orig": "-",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D11",
+     "D13",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 4
+   }
+  },
+  "defnam": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6ac4",
+   "ours": "6bd4-6c3c",
+   "size_orig": 104,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 29,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 29
+   }
+  },
+  "zecode": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6b2c",
+   "ours": "6c3c-6c92",
+   "size_orig": 90,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 25,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 25
+   }
+  },
+  "fldal": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6b86",
+   "ours": "6c92-6ca6",
+   "size_orig": 22,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 7
+   }
+  },
+  "lineid": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6b9c",
+   "ours": "6ca6-6cfa",
+   "size_orig": 84,
+   "callers_orig": "60d8,680a",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 27,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 27
+   }
+  },
+  "genswitch": {
+   "file": "code1.c",
+   "pairing": "confirmed",
+   "orig": "0x6bf0",
+   "ours": "6cfa-7154",
+   "size_orig": 1116,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 362,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 362
+   }
+  },
+  "cast": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x704c",
+   "ours": "7154-719a",
+   "size_orig": 72,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 24,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 24
+   }
+  },
+  "clocal": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7094",
+   "ours": "719a-75e6",
+   "size_orig": 1118,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 324,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D16",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 324
+   }
+  },
+  "cisreg": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x74f2",
+   "ours": "75e6-763e",
+   "size_orig": 78,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 28,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 28
+   }
+  },
+  "offcon": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7540",
+   "ours": "763e-7676",
+   "size_orig": 52,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 15,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 15
+   }
+  },
+  "incode": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7574",
+   "ours": "7676-7716",
+   "size_orig": 160,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 48,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: or\trS,A",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 48
+   }
+  },
+  "fincode": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7614",
+   "ours": "7716-7788",
+   "size_orig": 112,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 28,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 28
+   }
+  },
+  "cinit": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7684",
+   "ours": "7788-7888",
+   "size_orig": 248,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 78,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 78
+   }
+  },
+  "cprint": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x777c",
+   "ours": "7888-79ee",
+   "size_orig": 336,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 105,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 105
+   }
+  },
+  "vfdzero": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x78cc",
+   "ours": "79ee-7a70",
+   "size_orig": 134,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 38,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 38
+   }
+  },
+  "exname": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7952",
+   "ours": "7a70-7aee",
+   "size_orig": 134,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 47,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D16",
+     "D2",
+     "D3",
+     "D7",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 47
+   }
+  },
+  "ctype": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x79d8",
+   "ours": "7aee-7b2e",
+   "size_orig": 66,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 21,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 21
+   }
+  },
+  "noinit": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7a1a",
+   "ours": "7b2e-7b36",
+   "size_orig": 4,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D11"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 2
+   }
+  },
+  "commdec": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7a1e",
+   "ours": "7b36-7b98",
+   "size_orig": 98,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 28,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 28
+   }
+  },
+  "isitfloat": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7a80",
+   "ours": "7b98-7bae",
+   "size_orig": 30,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 7
+   }
+  },
+  "ecode": {
+   "file": "local1.c",
+   "pairing": "confirmed",
+   "orig": "0x7a9e",
+   "ours": "7bae-7c50",
+   "size_orig": 138,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 44,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 44
+   }
+  },
+  "syserr": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7b28",
+   "ours": "7c50-7c72",
+   "level": "strict",
+   "size_orig": 36,
+   "callers_orig": "1514,15b0,1710,61d0",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 11,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 11
+   }
+  },
+  "uerror": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7b4c",
+   "ours": "7c72-7cae",
+   "level": "strict",
+   "size_orig": 62,
+   "callers_orig": "36d4,37cc,64c2,65e8",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 18,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 18
+   }
+  },
+  "cerror": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7b8a",
+   "ours": "7cae-7d2c",
+   "level": "strict",
+   "size_orig": 128,
+   "callers_orig": "1b2a,2c44,64c2,7b4c,7c70,7cc4",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 37,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 37
+   }
+  },
+  "werror": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7c0a",
+   "ours": "7d2c-7d68",
+   "level": "strict",
+   "size_orig": 62,
+   "callers_orig": "-",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 17,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 17
+   }
+  },
+  "tinit": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7c48",
+   "ours": "7d68-7d90",
+   "level": "strict",
+   "size_orig": 40,
+   "callers_orig": "13b6,7cc4",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 11,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 11
+   }
+  },
+  "talloc": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7c70",
+   "ours": "7d90-7dee",
+   "size_orig": 84,
+   "callers_orig": "4e9a",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 27,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 27
+   }
+  },
+  "tcheck": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7cc4",
+   "ours": "7dee-7e2a",
+   "size_orig": 58,
+   "callers_orig": "2c44",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 19,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 19
+   }
+  },
+  "tfree": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7cfe",
+   "ours": "7e2a-7e44",
+   "size_orig": 28,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 10
+   }
+  },
+  "tfree1": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7d1a",
+   "ours": "7e44-7e60",
+   "size_orig": 28,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 11,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 11
+   }
+  },
+  "fwalk": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7d36",
+   "ours": "7e60-7ed8",
+   "size_orig": 120,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 37,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D2",
+     "D3",
+     "D5",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 37
+   }
+  },
+  "walkf": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7dae",
+   "ours": "7ed8-7f2e",
+   "size_orig": 88,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 29,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 29
+   }
+  },
+  "mkdope": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7e06",
+   "ours": "7f2e-7f5e",
+   "size_orig": 52,
+   "callers_orig": "13b6",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 18,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D5",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 18
+   }
+  },
+  "bsize": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7e3a",
+   "ours": "7f5e-7faa",
+   "size_orig": 76,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 28,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 28
+   }
+  },
+  "twords": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7e86",
+   "ours": "7faa-7fda",
+   "size_orig": 50,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 19,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 19
+   }
+  },
+  "argsize": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7eb8",
+   "ours": "7fda-8038",
+   "size_orig": 90,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 28,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 28
+   }
+  },
+  "where": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7f12",
+   "ours": "8038-8054",
+   "level": "strict",
+   "size_orig": 30,
+   "callers_orig": "7b4c,7b8a",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 9,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 9
+   }
+  },
+  "tbytes": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7f30",
+   "ours": "8054-8084",
+   "size_orig": 50,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 19,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 19
+   }
+  },
+  "dexit": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7f62",
+   "ours": "8084-809c",
+   "level": "strict",
+   "size_orig": 26,
+   "callers_orig": "7b28,7b8a",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
     "pattern_diff": 8,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
@@ -4445,11 +3892,1220 @@
     "difference_class": "D only (pattern-verified)",
     "d_classes": [
      "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 8
+   }
+  },
+  "branch": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7f7c",
+   "ours": "809c-80ba",
+   "size_orig": 30,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 10
+   }
+  },
+  "ncopy": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7f9a",
+   "ours": "80ba-80d0",
+   "size_orig": 34,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 13,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
      "D2",
      "D3"
     ],
     "structure_flags": [],
-    "len_ours": 20,
+    "len_ours": 0,
+    "len_orig": 13
+   }
+  },
+  "tcopy": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x7fbc",
+   "ours": "80d0-8122",
+   "size_orig": 88,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 30,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 30
+   }
+  },
+  "ispow2": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x8014",
+   "ours": "8122-816c",
+   "size_orig": 78,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 26,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D6",
+     "D7",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 26
+   }
+  },
+  "nncon": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x8062",
+   "ours": "816c-818e",
+   "size_orig": 34,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 13,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 13
+   }
+  },
+  "getmem": {
+   "file": "comm1.c",
+   "pairing": "confirmed",
+   "orig": "0x8084",
+   "ours": "818e-8210",
+   "size_orig": 124,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 38,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D16",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 38
+   }
+  },
+  "resetmem": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x8100",
+   "ours": "8210-822e",
+   "size_orig": 34,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 10
+   }
+  },
+  "beginit": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x8122",
+   "ours": "822e-8326",
+   "size_orig": 248,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 74,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D16",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 74
+   }
+  },
+  "instk": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x821a",
+   "ours": "8326-84da",
+   "size_orig": 454,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 128,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: srl\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 128
+   }
+  },
+  "getstr": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x83e0",
+   "ours": "84da-85e2",
+   "size_orig": 260,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 78,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 78
+   }
+  },
+  "putbyte": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x84e4",
+   "ours": "85e2-860a",
+   "size_orig": 44,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 15,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D2",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 15
+   }
+  },
+  "putstrs": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x8510",
+   "ours": "860a-86f0",
+   "size_orig": 224,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 64,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 64
+   }
+  },
+  "endinit": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x85f0",
+   "ours": "86f0-8856",
+   "size_orig": 346,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 110,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 110
+   }
+  },
+  "doinit": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x874a",
+   "ours": "8856-8a1c",
+   "size_orig": 452,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 136,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 136
+   }
+  },
+  "gotscal": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x890e",
+   "ours": "8a1c-8b48",
+   "size_orig": 302,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 87,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: multl\trqS,rrS; srl\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 87
+   }
+  },
+  "ilbrace": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x8a3c",
+   "ours": "8b48-8bb6",
+   "size_orig": 112,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 32,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 32
+   }
+  },
+  "irbrace": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x8aac",
+   "ours": "8bb6-8bea",
+   "level": "strict",
+   "size_orig": 52,
+   "callers_orig": "-",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 8
+   }
+  },
+  "hash": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x8ae0",
+   "ours": "8bea-8c26",
+   "size_orig": 62,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 20,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D16",
+     "D3",
+     "D7",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 20
+   }
+  },
+  "upoff": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x8b1e",
+   "ours": "8c26-8c76",
+   "size_orig": 80,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 31,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: multl\trqS,rrS",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 31
+   }
+  },
+  "oalloc": {
+   "file": "vinit1.c",
+   "pairing": "confirmed",
+   "orig": "0x8b6e",
+   "ours": "8c76-8da2",
+   "size_orig": 288,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 81,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 81
+   }
+  },
+  "falloc": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x8c8e",
+   "ours": "8da2-8f64",
+   "size_orig": 444,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 145,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: multl\trqS,rrS",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 145
+   }
+  },
+  "nidcl": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x8e4a",
+   "ours": "8f64-907a",
+   "size_orig": 278,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 81,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 81
+   }
+  },
+  "types": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x8f60",
+   "ours": "907a-9186",
+   "size_orig": 270,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 81,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 81
+   }
+  },
+  "tymerge": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x906e",
+   "ours": "9186-9270",
+   "size_orig": 232,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 69,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: srl\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 69
+   }
+  },
+  "tyreduce": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9156",
+   "ours": "9270-9306",
+   "size_orig": 156,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 47,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 47
+   }
+  },
+  "fixtype": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x91f2",
+   "ours": "9306-945e",
+   "size_orig": 346,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 112,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: srl\trS,#2",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 112
+   }
+  },
+  "uclass": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x934c",
+   "ours": "945e-9484",
+   "size_orig": 38,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 15,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 15
+   }
+  },
+  "fixclass": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9372",
+   "ours": "9484-95b8",
+   "size_orig": 308,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 96,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 96
+   }
+  },
+  "regfree": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x94a6",
+   "ours": "95b8-95fa",
+   "size_orig": 66,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 23,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 23
+   }
+  },
+  "lookup": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x94e8",
+   "ours": "95fa-97f2",
+   "size_orig": 506,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 159,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: xor\trS,rS",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 159
+   }
+  },
+  "copysym": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x96e2",
+   "ours": "97f2-996a",
+   "size_orig": 376,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 112,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D16",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 112
+   }
+  },
+  "hide": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x985a",
+   "ours": "996a-9a6e",
+   "size_orig": 258,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 76,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: xor\trS,rS",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 76
+   }
+  },
+  "unhide": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x995c",
+   "ours": "9a6e-9adc",
+   "size_orig": 110,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 39,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: xor\trS,rS",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 39
+   }
+  },
+  "refid": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x99ca",
+   "ours": "9adc-9bee",
+   "size_orig": 284,
+   "callers_orig": "-",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 87,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 87
+   }
+  },
+  "clearst": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9ae6",
+   "ours": "9bee-9cda",
+   "level": "strict",
+   "size_orig": 238,
+   "callers_orig": "-",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 83,
+    "pattern_unexplained": 5,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: xor\trS,rS",
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 83
+   }
+  },
+  "sinit": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9bd4",
+   "ours": "9cda-9d12",
+   "level": "strict",
+   "size_orig": 56,
+   "callers_orig": "13b6",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 16,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D11",
+     "D13",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 16
+   }
+  },
+  "sheader": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9c0c",
+   "ours": "9d12-9d3e",
+   "level": "strict",
+   "size_orig": 44,
+   "callers_orig": "13b6,2c44",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 14,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D11",
+     "D13",
+     "D2",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 14
+   }
+  },
+  "putrefsyms": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9c38",
+   "ours": "9d3e-9d68",
+   "level": "strict",
+   "size_orig": 42,
+   "callers_orig": "13b6",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 14,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D3",
+     "D6",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 14
+   }
+  },
+  "putsym": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9c62",
+   "ours": "9d68-9f08",
+   "size_orig": 418,
+   "callers_orig": "9c38",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 115,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D16",
+     "D2",
+     "D3",
+     "D5",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 115
+   }
+  },
+  "putnames": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9e04",
+   "ours": "9f08-9f80",
+   "level": "strict",
+   "size_orig": 124,
+   "callers_orig": "13b6,2c44",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 35,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 35
+   }
+  },
+  "puttags": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9e80",
+   "ours": "9f80-9fa6",
+   "level": "strict",
+   "size_orig": 38,
+   "callers_orig": "13b6,2c44",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D6",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 12
+   }
+  },
+  "putrefs": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9ea6",
+   "ours": "9fa6-9fce",
+   "level": "strict",
+   "size_orig": 40,
+   "callers_orig": "2c44",
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
+    "len_orig": 12
+   }
+  },
+  "sputc": {
+   "file": "sym1.c",
+   "pairing": "confirmed",
+   "orig": "0x9ece",
+   "ours": "9fce-a006",
+   "size_orig": 54,
+   "callers_orig": "9e04",
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 0,
+    "pattern_diff": 20,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D11",
+     "D13",
+     "D2",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 0,
     "len_orig": 20
    }
   },
@@ -4457,21 +5113,23 @@
    "file": "sym1.c",
    "pairing": "confirmed",
    "orig": "0x9f04",
-   "ours": "9fe8-9fea",
+   "ours": "a006-a008",
    "level": "strict",
    "size_orig": 2,
    "callers_orig": "-",
    "status": "done",
    "audit": {
-    "d_normalised_pct": 100,
-    "pattern_diff": 0,
+    "d_normalised_pct": 0,
+    "pattern_diff": 1,
     "pattern_unexplained": 0,
     "reordered_instructions": 0,
     "reordered_examples": [],
     "difference_class": "D only (pattern-verified)",
-    "d_classes": [],
+    "d_classes": [
+     "D11"
+    ],
     "structure_flags": [],
-    "len_ours": 1,
+    "len_ours": 0,
     "len_orig": 1
    }
   }

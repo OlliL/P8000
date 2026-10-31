@@ -105,6 +105,7 @@
 %right INCOP SIZEOF
 %left LB LP STROP
 %{
+static char sccsid[] = "@[$]cgram1.y\t2.5  10/06/83 12:58:30 Copr. 1981 87wega3.2.";
 # include "mfile1"
 %}
 
@@ -151,7 +152,7 @@ data_def:
 				autooff = 0;
 				}  function_body
 			={  
-			    if( blevel ) cerror( "function level error" );
+			    if( blevel ) cerror( "fcn level error" );
 			    if( reached ) retstat |= NRETVAL; 
 			    $1->op = FREE;
 			    ftnend();
@@ -281,7 +282,7 @@ declarator:	   fdeclarator
 		|  nfdeclarator
 		|  nfdeclarator COLON con_e
 			%prec CM
-			={  if( !(instruct&INSTRUCT) ) uerror( "field outside of structure" );
+			={  if( !(instruct&INSTRUCT) ) uerror( "field outside struct" );
 			    if( $3<0 || $3 >= FIELD ){
 				uerror( "illegal field size" );
 				$3 = 1;
@@ -291,7 +292,7 @@ declarator:	   fdeclarator
 			    }
 		|  COLON con_e
 			%prec CM
-			={  if( !(instruct&INSTRUCT) ) uerror( "field outside of structure" );
+			={  if( !(instruct&INSTRUCT) ) uerror( "field outside struct" );
 			    falloc( (struct symtab *) 0, $2, -1, $<nodep>0 );  /* alignment or hole */
 			    $$ = NIL;
 			    }
@@ -336,7 +337,7 @@ fdeclarator:	   MUL fdeclarator
 			={ $$ = $2; }
 		|  name_lp  name_list  RP
 			={
-				if( blevel!=0 ) uerror("function declaration in bad context");
+				if( blevel!=0 ) uerror("fcn in bad context");
 				$$ = bdty( UNARY CALL, bdty(NAME,NIL,$1), 0 );
 				stwart = 0;
 				}
@@ -405,7 +406,7 @@ optsemi		:	/* VOID */
 		;
 
 optasgn		:	/* VOID */
-			={  werror( "old-fashioned initialization: use =" ); }
+			={  werror( "old-fashioned initialization" ); }
 		|  ASSIGN
 		;
 

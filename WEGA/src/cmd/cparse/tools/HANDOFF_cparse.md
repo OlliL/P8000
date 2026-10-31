@@ -153,3 +153,15 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 - endopen/0_4.s (used by codgen, scodgen, popt) had the errno address of /lib/codgen written as a number
   (`cp %69C8,#2`); it is `_errno` now. The originals: codgen 0x69c8, scodgen 0x7036, popt 0x0ce8, cparse 0x4894, so
   the number was right only for the original codgen (our codgen link has errno at 0x69a4).
+- cgram1.y has the SCCS stamp and the WEGA message texts ("fcn level error", "field outside struct", ...); the data
+  model has the size of the original again (18584). Strict on the model: 29 exact (the parser functions are no longer
+  "exact by cut"); classify.py: 154 D only (pattern-verified), 25 other differences, mostly instruction forms that
+  patterns.py does not know (multl with memory operands, srl for unsigned DECREF, set for flags, xor in lookup);
+  corpus 235 of 255.
+
+## Next (2026-10-31)
+
+1. The 25 "other differences": read each against the patterns (new D classes or source forms); the D19 swaps.
+2. f3970 (every call argument passes through it; returns it): name and purpose; bssgap1/2.
+3. The two files bss.s and libcbss.s are layout aids; with the old compiler the order should come from the first
+   mentions in cgram1.o (check when the old cc exists).

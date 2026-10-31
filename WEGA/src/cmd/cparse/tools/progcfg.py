@@ -13,7 +13,7 @@ OWN_OBJ = r'^(crt0|cgram1|xdefs1|scan1|pftn1|trees1|optim1|code1|local1|comm1|vi
 CC = '/bin/cc'
 # modules in the order of their SCCS stamps in the data of /lib/cparse (optim and common are files included by
 # optim1.c and comm1.c, guess from PCC; cgram1.y is made into cgram1.c by yacc)
-MODULES = ['cgram1', 'xdefs1', 'scan1', 'pftn1', 'trees1', 'optim1', 'code1', 'local1', 'comm1', 'vinit1', 'sym1']
+MODULES = ['bss', 'cgram1', 'xdefs1', 'scan1', 'pftn1', 'trees1', 'optim1', 'code1', 'local1', 'comm1', 'vinit1', 'sym1']
 TABLES = []
 
 ROOTDIR = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
