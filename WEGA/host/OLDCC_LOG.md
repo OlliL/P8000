@@ -269,3 +269,13 @@ TODO.md when this log was started.
   word at the function level; the STREF block in the order cp2, cp1, a word, j, k), defid (one more word), efcode
   (an unused long; i in front of p): cparse 126, 997; corpus 259. A search over all permutations of the register
   variables found no further swapped declarations.
+- Source fix ispow2: `for( i=0; c>1; ++i ) c >>= 1;` (the original shifts before it counts; Plexus has the other
+  form): ispow2 exact.
+- Order of delayed increments (`*q++ = *cp++`): newsect (autos) increments q first in the original, exname (register
+  variables) p first like ours. OLD_D4L tried (delay2: the left operand first): newsect better, exname worse.
+  Removed; open.
+- D11 in cparse (popt tails), parked after three rounds: OLD_D11B (comjump keeps the later tail): cparse 989 >
+  1812; OLD_D11X (xjump on a jump before the jump to a jump is followed; cinit: the NAME case jumps into the call of
+  the L225 case that falls into the label, as in the original): 993 (cprint, newsect worse); OLD_D11X only when no
+  other label stands between the instruction and the target: unchanged 993. The rest of cinit and cprint is the
+  order in which codemove and comjump place the blocks. Removed.

@@ -6822,6 +6822,11 @@
    "basis": "frame layout",
    "d_classes": "",
    "note": "Source fix: register i declared in front of p (i in r14, p in r13 in the original) and an unused long behind size (4 frame bytes of the original; the name is a guess)."
+  },
+  "ispow2": {
+   "basis": "statement order",
+   "d_classes": "",
+   "note": "Source fix: for( i=0; c>1; ++i ) c >>= 1; (the original shifts before it counts)."
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

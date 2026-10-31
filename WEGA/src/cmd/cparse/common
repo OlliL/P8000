@@ -354,7 +354,7 @@ tcopy( p ) register NODE *p; {
 ispow2( c ) register CONSZ c; {
 	register i;
 	if( c <= 0 || (c&(c-1)) ) return(-1);
-	for( i=0; c>1; c >>= 1) ++i;
+	for( i=0; c>1; ++i ) c >>= 1;
 	return(i);
 	}
 
