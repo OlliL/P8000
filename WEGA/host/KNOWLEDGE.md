@@ -2383,6 +2383,10 @@ of the block is the first `jpr` behind its label. Measured on /bin/ld (2026-10-3
 (it had removed that jump already), so short blocks in front of the function exit are not moved (`ensure_buf`, the
 `return 0` of `read_symbols`). With the switch, ld has 52 of 59 functions strictly exact (51 before). Turning off the
 whole code motion is wrong: the old popt also moves the prologue and the switch dispatch to the front.
+Second rule of the switch (`load2td`, one witness only, so weak under the evidence rules of src/TODO.md): after moving a
+block from behind a jump, the old popt goes on behind the moved block, so the jump at its end is looked at in the next
+pass only (the shipped one goes on at the start of the moved block and chains the next move at once). For a block from
+behind a return (the prologue) both go on at its start (str_compare). ld: 53 of 59 strictly exact.
 
 ### cc, scc rebuilt with the WEGA cc (`src/cmd/cc/cc.c`)
 

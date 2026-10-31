@@ -6,7 +6,7 @@
 #   make clean
 #
 # Switches (host/KNOWLEDGE.md, "Compiler revisions"):
-#   OLD_D20   code motion: a jump to the next label does not end the block that is moved (codemove)
+#   OLD_D20   code motion (codemove): a jump to the next label does not end a block; behind a moved block (from behind a jump) go on after it
 
 CC = cc
 CFLAGS = -O
