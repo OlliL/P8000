@@ -227,6 +227,7 @@ tyreduce( p ) register NODE *p; {
 	/* the type is build top down, the dimensions bottom up */
 	register o, temp;
 	register unsigned t;
+	OFFSZ off;
 
 	o = p->op;
 	p->op = FREE;
@@ -244,7 +245,10 @@ tyreduce( p ) register NODE *p; {
 	p->left->type = t;
 	tyreduce( p->left );
 
-	if( o == LB ) dstash( (OFFSZ)(unsigned) temp );
+	if( o == LB ){
+		off = (unsigned) temp;
+		dstash( off );
+		}
 
 	p->rval = p->left->rval;
 	p->type = p->left->type;

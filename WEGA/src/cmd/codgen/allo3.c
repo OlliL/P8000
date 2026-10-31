@@ -675,7 +675,7 @@ rfreeall(flag)
 		if (n->busy > 0 || n->kind == 6)
 			continue;
 #ifdef OLD_D3K
-		if (flag == 2 && n->sym && n->sym->sclass == 9)
+		if (flag == 2 && n->cls == 2 && n->sym && n->sym->sclass == 9)
 			continue;
 #endif
 		if (n->sym == 0 || flag != 0)

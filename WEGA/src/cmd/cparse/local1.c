@@ -176,7 +176,7 @@ clocal(p) NODE *p; {
 
 	return(p);
 	}
-cisreg( t ) register TWORD t; { /* is an automatic variable of type t OK for a register variable */
+cisreg( t ) TWORD t; { /* is an automatic variable of type t OK for a register variable */
 
 	return( t==INT || t==UNSIGNED || t==LONG || t==ULONG || ISPTR(t) || t==ENUMTY ||
 			t==DOUBLE || t==FLOAT || t==SHORT || t==USHORT );

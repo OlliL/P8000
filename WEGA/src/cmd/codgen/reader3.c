@@ -187,7 +187,11 @@ again:
 		lab2 = getlab();
 		cbgen(0, lab2, 'I');
 		deflab(lab);
+#ifdef OLD_D3K
+		rfreeall(2);	/* v0: a parameter stays known in its register */
+#else
 		rfreeall(1);
+#endif
 		codgen(p2->right, ck);
 		deflab(lab2);
 		p->op = REG;
