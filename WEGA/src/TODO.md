@@ -95,8 +95,9 @@ Order:
    - Before the first switch, strip and size are checked strictly like ld (strictcmp, D class read from the strict
      diff, source form variants); ld, strip and size are the first evidence. Every other program (sld, codgen, cas,
      ranlib, cparse, ...) is checked strictly the same way before it is used as evidence (item 2, per program).
-   - Regression: every function that is strictly exact today (all programs) stays exact with the switch, since the old
-     compiler built all originals.
+   - Regression: every function that is strictly exact today stays exact with the switch, in every program built by
+     the same compiler revision (owner decision 2026-10-31: the rule holds per revision; the revision of a program
+     comes from its build date, the crt0 stamp, host/KNOWLEDGE.md "Old compiler v1").
    - Several witnesses: a switch counts only when it explains findings in at least two independent functions,
      preferably in different programs. A function that fits only through a switch no other function needs is a
      suspect source form and goes back to the source check.
@@ -147,7 +148,7 @@ Order:
      (D1, `register s, n` in front of `buf`), 3 a source error (`int c` in rcopy, even frame address). strip is
      byte-identical with v1, size stays identical. Accepted (witnesses in ld and strip). /lib/cparse loses 3 exact
      functions with it but is a later build (sources of 10/83, ld 07/83, strip and size 01/83 by the crt0 stamps;
-     host/KNOWLEDGE.md "Old compiler v1"): the regression rule is applied per revision (for the owner to confirm).
+     host/KNOWLEDGE.md "Old compiler v1"): the regression rule is applied per revision (confirmed by the owner).
      Left: one unexplained frame word in main, parse_args, slookup, pslookup, index16 (`int spare` kept); no
      return temporary in read_symbols (one witness, open).
    - Test bench (2026-10-31, `host/recon/witness.py`): the System III sources of 26 WEGA programs of the v1 time
