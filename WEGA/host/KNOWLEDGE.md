@@ -143,13 +143,6 @@ The kernel assembler sources (mch.s, event.s, fpe.s, ...) are PLZ/ASM
   /lib/slibc.a`. No global optimizer.
 - PCC derived (System III C): void, enum, struct assignment, unsigned char,
   initialised bit fields. `u8000` predefined as 1.
-- Register allocation of the old cc (segmented, `scc -O`, measured 2026-10-27 with `scc -S` on small test functions that
-  contain a call): the register variables of a function are assigned in declaration order, from r13 downwards. An int or
-  char takes one register; a pointer or long takes the highest free aligned pair (rr10 = r10:r11, rr8 = r8:r9, ...). Measured:
-  `int a, b; char *e` gives a=r13, b=r12, e=rr10; five variables `int a,b,c,d; char *e` give r13, r12, r11, r10 and rr8; `char *e`
-  declared first takes rr12, then r11 and r10. A leaf function (no call) puts them into scratch registers instead (D2).
-  For the reconstruction of a function this means: the declaration order of the register variables is part of the source
-  form (0x27d8 needs w13, w12, w11, e, w10). The front end (cparse) numbers them; codgen takes the number (`sbyte5`).
 - Register variables r8..r14 (nonseg, 7) / r8..r13 (seg, 6); `register
   char` ignored. int/short 16, long 32, pointer 16 (nonseg) / 32 (seg),
   float 32, double 64 (80 bit in registers).
@@ -847,7 +840,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/cas` | does not terminate on a syntax error in the last statement of a file without newline, an unclosed comment or string, and some tokens (`<<`, `^$`, `5\|3`) | not reproduced (stops at end of file) | "cas: decompilation", `cas/README` |
 | `/bin/cas` | a `}` too many uses the memory in front of the block stack | not reproduced (level stays 0) | `cas/README` |
 | `/usr/bin/ranlib` | the old `readsym` linked into it reads the pieces of a long name over the symbol itself: most long names are missing in `__.SYMDEF`, some entries are garbage (238 entries for `libc.a` instead of ~290) | kept | "ranlib, strip, size on the host" |
-| `/bin/rm` (`rm -i` without files, `interact`) | the question for a directory is `printf("%s--directory: ")` without its argument: the name printed is whatever r6 holds (the address of the stat buffer) | kept (`src/cmd/rm.c`) | "Old compiler v1" |
+| `/bin/rm` (`rm -i` without files, `interact`) | the question for a directory is `printf("%s--directory: ")` without its argument: the name printed is whatever r6 holds (the address of the stat buffer) | kept (`src/cmd/rm.c`) | `src/cmd/rm.c` |
 | `/usr/bin/strip` | `hflag` is uninitialised without an option; for 8-bit objects with relocation removal the result depends on uninitialised variables (`int c` of `rcopy`: one byte read into it, two bytes written from it; the frame address of `c` is even, measured 2026-10-31 with ccv1); the output file is left open | `hflag` kept in `src/cmd/strip`; host strip refuses 8-bit objects and closes the file | "size and strip", "ranlib, strip, size on the host" |
 | `/bin/cc` | `-o` as last argument leaves `outfile` NULL (reads the byte at address 0); `-l...` is passed to ld with the byte in front overwritten by `-` | kept | "cc (compiler driver, /bin/cc)" |
 | `/lib/popt` | `killreg()` always looks at rr0 (`n % 1`); nodes without operand text read the code at address 0; the "preceded by alnum" test of `procopt` has no effect; the `rN(` recursion passes a character as a pointer | kept, except the `rN(` recursion | `popt/NOTES.md`, "Quirks that are reproduced on purpose" |
@@ -1412,15 +1405,8 @@ What the data showed:
   compiler: frame 20, temps in r4/r5). So the sources are right, the old
   compiler's code generator/optimizer is the missing piece.
 
-## Compiler lineage and versions (findings from the Plexus sources and size)
+## size and the Plexus a.out (findings from the Plexus sources)
 
-- Plexus `ccom` (one pass PCC, runs now in z8k-emu) is NOT the ancestor of the
-  WEGA code generator: it emits Plexus assembler (`jpr`, `csv2`/`cret2`
-  prologues). Its output cannot be compared with WEGA objects. The WEGA compiler
-  (cparse + codgen, 2 passes) is a different lineage.
-- Plexus `c2` (peephole optimizer, `@(#)c20.c 1.1`, Aug 1982) IS the ancestor
-  of WEGA `popt`. Binaries built with older popt/codgen/cparse revisions show the
-  differences listed in "Compiler revisions" (ranlib, cas, some libc members).
 - `size` (E707, text 5652): own code is only main() at 0x42-0x224 (s.out aware:
   `goodmagic`, `swab`, segment table of 16 byte entries, prints
   `%U + %U + %U = ` and `%U = 0x%lx`), then the old libc (fread at 0x224, fwrite
@@ -1441,19 +1427,15 @@ emits `ld ~L1+12(fp),r7` / `ld r4,~L1+-1275(fp)` with `~L2 := 12`. Verified on r
 WEGA hardware (photos of the terminal, same output, same constant -1275), so this is a
 genuine gopt defect and the emulator reproduces it faithfully. `-Ol` on the hardware gives
 exactly the emulator's output (`ld r1,r7`, `ldk r3,#0`, `ld @fp,r1` ... `~L2 := 10`).
-Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, malloc differences).
+Consequence: not a cause of the length, nlist, swap, malloc differences.
 
-## size and strip (reconstructed, own code identical)
+## size and strip (reconstructed, byte-identical with the old compiler v1)
 
 - `src/cmd/size/size.c` + `crt0-size.s` and `src/cmd/strip/strip.c` + `crt0-strip.s` (both made from
-  `src/lib/libc/crt/crt0.s.in`) rebuild with the ORIGINAL `cc -O`; `make -C host verify-wega` compares the instructions of the own code
-  (`tools/cmpins.py`, from 0x42 up to the first libc member, `fseek` resp. `rdwr`).
-  size: 0 differences. strip: one expression (`head.s_imsize = code + data` as long uses
-  rr4/rr6 in the original, rr2/rr4 in our build; the same kind of expression elsewhere in
-  the file compiles identically, so the original source form is just not found yet).
-- size (`size.c 2.1 01/14/83`): own code identical to the output of the shipped cc. strip (`strip.c 1.2
-  11/19/82`, crt0 3.1 01/24/83): identical except that one expression (D2); the older compiler is clearly
-  visible in ranlib and some libc members (table "Compiler differences" in `src/TODO.md`).
+  `src/lib/libc/crt/crt0.s.in`) are byte-identical with `/bin/size` and `/usr/bin/strip` when built with the old
+  compiler v1 (`make CC=ccv1`, OLDCC.md); `make -C host verify-wega` compares the instructions of the own code built
+  with the shipped `cc -O` (`tools/cmpins.py`, from 0x42 up to the first libc member, `fseek` resp. `rdwr`).
+- size: `size.c 2.1 01/14/83`; strip: `strip.c 1.2 11/19/82`, crt0 3.1 01/24/83.
 - The libc parts inside these binaries are an OLDER libc revision (Jan 1983): `printf`,
   `doprnt`, `fprintf`, `malloc`, `length`, `swap` are not the members of the shipped
   libc.a (those are dated Sep/Nov 1983). The old members can be reconstructed from these
@@ -1478,10 +1460,6 @@ Consequence: see "Compiler revisions" (not a cause of the length, nlist, swap, m
 - `_doprnt` walks the register argument block (r6,r5,r4,r3,r2 stored in that order), switches to the
   stack arguments after 5 words, uses fix() to align longs, supports `- * 0 .` flags, d o u x c s
   D O U X, l-prefix, and e/f/g via an empty stub (no float support in this revision).
-- The old cc differs from the shipped one (D14 and others in "Compiler revisions"). No older compiler
-  binary exists in any archive, so size/strip as whole binaries cannot be reproduced bit-exact by compiling.
-  Their own code (size 0x42..0x224, strip) is identical to the shipped cc output, except the one
-  expression of strip (D2).
 - `src/lib/libc/stdio/doprnt.c` is the Nov-1983 `_doprnt` and now rebuilds byte-identical with the shipped cc -O
   (findings: `static char nullstr[]` declared after `fldone` explains the data order, `_pfile` must be
   declared between `_align` and `_doprnt` for the symbol order, `putc((int)*str++,f)` gives
@@ -1690,225 +1668,6 @@ pointers `seg:off` in nodes and tables; the tables in segments 7-9 become heap a
 intermediate files: the small functions of `ifile` (0x42-0x1d0) write single bytes, words and longs with
 `fwrite`, which is good for the host; whether other places write raw structures is not checked yet).
 
-## Compiler revisions: how the old compiler differs from the shipped one
-
-Not every WEGA binary was rebuilt with each compiler release. Some code may never be reproducible with the compiler we have; then several C compiler versions must be maintained side by side (owner statement, moved here from the former "Ground rules").
-
-Several WEGA programs were built by an older revision of the C compilers: cas by an older scc; ranlib, strip
-and some libc members by an older cc. No old compiler binary exists in any archive (the old libc members and
-the old objects only show its output), so these differences are the base for rebuilding the old compiler at the
-end of the project. Each difference has its own number D1 ... D16; `src/TODO.md` (section "Compiler
-differences") lists which objects show which difference. "old" = the compiler that built the original, "shipped"
-= the scc/cc in `/bin` of the system. Evidence: `cmpmod.py` listings of the cas modules (`-s` shows frames and
-scratch registers), the `oldcc` objects, ranlib, strip.
-
-**Dating.** The shipped popt carries `z20.c 1.3 12/21/82`, `z21.c 1.4 12/21/82`, `z22.c 1.6 01/18/83`,
-`z23.c 1.6 03/25/83`; it descends from the Plexus `c2` (`c20.c 1.1`, Aug 1982). Binaries built earlier than
-those dates (size: crt0 3.1 / size.c 2.1 01/14/83, strip.c 1.2 11/19/82) were produced with older popt revisions
-(z22 <= 1.5, z23 <= 1.5) and codgen/cparse revisions we do not have. The Plexus one-pass `ccom` is not an ancestor
-of the WEGA code generator (it emits Plexus assembler: `jpr`, `csv2`/`cret2`). The date of a source does not date
-the compiler: the sources of cas are dated up to 07/83 and were compiled by the older scc (`scc -O -c`).
-
-**Not differences of the compiler.**
-- Position of the prologue: with `-O` both scc put `dec r15,#n; ldm ...` in front of the body; without `-O` the
-  prologue is behind the body (`jr Lp` at the entry, `Lp: dec r15 ... jr Lb`). The cas parser was compiled
-  without `-O` (`yyparse` starts with `jr 1ff4`), so was `assemble`; the other cas modules with `-O`. `cmpmod.py` converts the
-  behind form to the front form before it compares.
-- The gopt defect of `cc -Or` (`ld ~L1+12(fp),r7` with `~L2 := 12`, verified on real hardware, the emulator
-  reproduces it): the shipped libc cannot have been built with `-Or` for such functions; the 2-byte frame and
-  `ldb`+`testb` differences of length, nlist, swap and malloc are not caused by options or the emulator but by the
-  compiler revision (D1, D3, D4, D8).
-- Older revisions of the libc sources (Jan 1983 `_doprnt`, `readsym` of ranlib, ...) are source differences, see
-  the libc sections.
-
-### D1 Frame size and saved registers
-Frames differ in size (cas `putins`: 12 bytes in the original, 14 in ours; libc `nlist` and `length` 2 bytes
-smaller; ranlib smaller frames; libc `fseek` 14 bytes against 20 in the shipped member) and the slots of the saved
-register variables are numbered differently (`ldm S10(r15),r13` against `S12`). Seen with `cmpmod.py -s`.
-ld `read_symbols` (2026-10-30, `src/cmd/ld/tools/strictcmp.py`): the shipped cc reserves one save slot more than it uses (frame 0x1c,
-r14 at 0x1a, the word at 0x18 unused); the old cc does not (0x1a, r14 at 0x18). With one spare word in front of the locals all
-local offsets of the original are reached; only the frame size and the save slot differ.
-
-v1 switch `OLD_D1` (cparse, measured on /bin/ld, /usr/bin/strip and /bin/size 2026-10-31): the old cparse gives every
-register variable its place in the frame too, at its declaration like an automatic variable of its type (`oalloc`,
-vinit1.c; the shipped one only for char and short register variables under -O). The `spare` locals of the ld sources
-were exactly these places: in nearly every function of ld the number of spare words in front of the locals equals the
-number of register variables. With the switch the register declarations stand at the place of the spare words (their
-order kept) and 30 functions of ld lose their spares and stay exact (ld 54 of 59 as before); two unused locals that were
-spares under another name go too (`n` of warn_sym_redef, `u` of strip main). strip `copy` (`register s, n` in front of
-`buf[512]`) becomes exact, and strip is byte-identical with v1 (with the source fix `int c`). size has no register
-variables and stays identical. Not a counter-witness: /lib/cparse loses lxinit, moedef, clearst with the switch (its
-register variables have no frame places), but it is a later build (sources of 10/83; ld 07/83, strip and size 01/83 by
-the dates of their crt0 stamps), see "Old compiler v1". Left over in ld: one unexplained frame word each in main and
-parse_args (5 spare words for 4 register variables), slookup and pslookup (no return statement, no register variable),
-index16; they stay `int spare`. The temporary of a return value (above the locals) is in every function of ld with a
-return value except read_symbols (one witness, open). Test bench (System III sources, "Old compiler v1"): without the
-switch 31 of 119 functions are equal, with it 72.
-
-cparse `getlab`, `noinit` (2026-10-31, measured with `cc -O -S`): the shipped cc reserves at least 2 bytes of frame
-in every function (`dec fp,#~L2` with `~L2 := 2` in `f(){ return(2); }`) and stores the value of a returned `crslab++`
-in it; the old cc makes no frame for these leaf functions. The frame comes from codgen (the `~L1`/`~L2` lines).
-
-### D2 Scratch registers
-The old compiler uses r0/r1 (`rr0`) as scratch where the shipped one uses r4/r5 (`rr4`): cas modules
-(`ldl rr0,S4(r15)` against `ldl rr4,S4(r15)`), strip (`head.s_imsize = (long)code + data` is compiled with
-rr4/rr6 by the original, rr2/rr4 by ours; the same kind of expression elsewhere in strip.c compiles identically),
-ranlib. Register variables of leaf functions are placed in scratch registers. Error blocks are moved ahead
-of a loop (ranlib, size). In codgen: `expand` (`out3.c`) loads the switch character into `rl2` in the original and
-into `rl3` with a copy to `r2` in the rebuild (scratch register choice).
-
-v1 measurements (2026-10-31): strip is byte-identical with v1 without a D2 switch, so the strip expression above is no D2
-witness any more. ranlib_scan of ld was a source form: written as a `for` loop it is exact with v1 (the goto loop of the
-draft kept r2/r3 taken at the loop head). Tried as a codgen rule: at a label only forget the contents of the registers
-(nullsyms) instead of giving them back (rsfreeall), unless a jump to the label was emitted before: ranlib_scan exact
-with the goto form, but table16_entry and chk_ranlib worse, and the test bench ("Old compiler v1") goes from 69 to 54
-equal functions: refuted. dseek was a source form too (one `||`, see D3). Open D2 in ld: place_sec, and the copy
-`ld r2,r3` in front of a use in chk_ranlib.
-
-### D3 Register contents (redundant reloads, memory operands)
-The old popt does not remove a reload after a store (`ld S0,r7` followed by `ld r7,S0`): 2 times in ifile,
-1 in scanner, 5 in parser, more in the later modules (counted in the binary). The shipped one removes them.
-Opposite direction in libc `malloc` (calloc): the old cc knows that a register still holds the value
-(`mult rr2,r6`) where the shipped cc uses a memory operand.
-
-v1 switch `OLD_D3` (codgen, measured on /bin/ld 2026-10-31): at the join label of `&&` and `||` (cbranch, reader3.c) the
-shipped codgen gives the idle registers back (`rfreeall(1)`), so a register that held a variable before the condition is
-loaded again behind it; the old one keeps them (init_entry: `hdr` stays in r3 behind `if (n8rel4 || n8swap)`). With the
-switch init_entry is exact, no other function of ld changes (54 of 59). Test bench (System III sources, "Old compiler
-v1"): 61 of 119 functions equal without the switch, 72 with it. Second witness in ld: dseek with its two page tests as
-one `||` (2026-10-31). Risk: a register loaded only
-on one of the two paths keeps its symbol too (not seen; if the old cc had this bug it goes to the quirks table).
-
-### D4 Spill of arguments
-ranlib: no spill of arguments into the frame. /bin/rmdir main (2026-10-31, with v1): a third parameter that is only
-written (`status = 2` / `status = 0`, then `exit(status)`) is not spilled by the old cc (`ldl %0002(r15),rr6`), v1
-spills it (`ldm @r15,r5,#3`); one witness. libc `swap`: the old cc spills an address-taken argument in
-the `0(r15)` form.
-In `/lib/codgen` (non-segmented cc): a function with register parameters has no home slots for them in the old frame (`dec r15,#4` for two saved registers) and copies `ld r14,r7; ld r13,r6` first parameter first; the shipped cc reserves 4 bytes and copies the last parameter first. Parameters beyond the register variables are spilled by `ldm` of r2-r7 or by single `ld` stores; the shipped cc spills more of them (`getlr`, `member`, `nullsyms`).
-
-### D5 Constant index into local arrays
-`a[3]` of a local array is addressed directly (`ldb S5(r15),rl2`); the shipped scc computes the address
-(`ldl rr2,#S4; add r3,r15`). Seen in cas `nodes` (`escape`) and the parser.
-
-### D6 switch
-Up to 3 case labels the old scc compares one after the other and puts the dispatch in front of the case
-bodies; the shipped scc uses a table from 1 or 3 cases on (`cpir` over the case values, then a jump table
-behind the bodies: `ld r6,#n; cpir ...; sll r6,#2; neg r6; ldl rr2,L(r6); jp @rr2`). With 4 or more labels the
-old compiler also uses the `cpir` table (parser, nested switches), the values sorted, the bodies in source order.
-In codgen, `tshape` (`match3.c`) shows that the bodies can follow another order: the original has the `FLD` body before the
-`STAR` body; the source was reordered to match. Not checked for the other switches.
-
-In `conval` (`optim3.c`) the bodies of the comparison cases follow another order in the original: LT, LE, GT, GE, the unsigned
-four, then EQ, NE; our source had EQ, NE first. The source order was changed to the original's (no change of meaning: every case ends
-with `break`); differing blocks 17 -> 14, moved instructions 10 -> 0, corpus 101/101 for codgen and scodgen.
-
-### D7 Loop layout
-The old compiler puts the loop test at the bottom (`jr` into the test first); the shipped scc tests at the top.
-Measured (2026-10-28, `scc -O -S`): `while`/`for` loops and `goto` loops with the test at the head are rotated: the entry
-jumps to the test, the test stands at the bottom and branches back to the body (`lp1.c`, `ha.c`, `hb.c`). A far exit
-does not prevent it (`hc.c`). Without `-O` the head stays at the top. Open: the original 0x7C26 keeps its loop head at the
-top, although sld is built with `-O`; the rule that prevents the rotation there is not found.
-In codgen: the `for` loop of `expand` (`out3.c`) and the else branch of `buildstar` (`tr3.c`, placed out of line and
-jumping back to the shared store).
-
-### D8 Conversion and loads of bytes
-Unsigned char argument: old `ldb rh7,#0`, shipped `subb rh7,rh7` (cas `ifile`). Old libc `length`:
-`ldb rl3,@r2` + `testb rl3` where the shipped cc has `testb @r2`. Old libc: char loads as `ldb`/`subb`.
-`extsb` against byte moves in cas `pst`.
-
-### D9 Shift by 8 bits
-`w >> 8` is done with a byte move (`ldb rl7,rh7`) by the old compiler, with `sra r7,#8` by the shipped one
-(cas `ifile`).
-
-### D10 Shift of a long by a constant
-Old: `ld r2,#24; sdal rr4,r2` (also `ldk r0,#0; ld r1,r2; ld r2,#16; sdal rr0,r2` for `(long)w << 16`), shipped: `slal rr4,#24`.
-
-### D11 Tail merging (popt)
-The old popt merges common tails of branches (`call xtol; jp` shared by the number cases of the scanner).
-The shipped popt does not. In codgen: `acon` (`out3.c`): the three `L%d` branches jump to one shared `printf` call
-(`jp` into the call) in the original.
-
-### D12 String literals and data layout
-The old compiler writes all string literals and the jump tables of a module behind its other data
-(switch tables in front of the strings), does not merge equal strings and aligns them differently; the
-shipped one writes the strings of a function in front of the data that follow. The same data, a different
-order: in the parser 42 bytes of difference in size, and the tables of `yyexca` ... start at another
-offset. `cmpdata.py` shows differences for such modules although the contents are equal.
-
-### D13 Pointer constants
-The old compiler keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`, `add r3,idx`), the shipped
-scc clears it (`#%07000030`; `(char *)CONST + n` can even stop with `register jam` when it is assigned to a
-register variable or returned). Seen in cas `ssymtab` (the three tables in segments 7, 8, 9).
-
-### D14 Varargs prologue and post-increment (old libc members inside binaries)
-The old libc members that are linked into size, strip, ranlib and cas (we only have them as machine code inside
-those binaries) were compared function by function with the members of the shipped `libc.a` / `slibc.a` (script
-in the scratchpad, matched by instruction sequence; the old members come from the Jan 1983 libc, so differences of
-the source are possible; only differences that the compiler explains are counted here).
-- Varargs prologue: the printf family (`printf`, `fprintf`, `sprintf`) of size, strip and cas spills the EPU
-  registers inline (`.word %4FFC,%8303,off` ... four before and four after the `ldm`) and stores r6..r2 in addition to the
-  contiguous `ldm`; the shipped members have neither. The printf family of ranlib has the shipped form (no EPU spills).
-- Post-increment: in size the byte of `*fp->_ptr++` is used first and `inc @r13,#1` follows (`fread`, `fwrite`, and the
-  `putc` inside `_doprnt`, whose source differs from the shipped one, so that case is a guess); the shipped cc increments
-  first (`ld r2,@r13; inc @r13,#1; ldb rl3,@r2`). `fread`/`fwrite` of strip, ranlib and cas have the shipped order.
-- Checked and without D14: in cas 35 functions (fseek, fopen, freopen, ungetc, `_filbuf`, `_flsbuf`, fflush, `_cleanup`,
-  fclose, `_endopen`, `_findiop`, exit, perror, `_cnvt`, `_deciml`, `_length`, `_align`, `_atoip`, malloc family, isatty,
-  mktemp, str*, tolower, signal; their differences are D1, D8 (`extsb; and #FF` against `subb rh,rh`) and those of the
-  source), in size/strip/ranlib the same members and `swab`, `goodmagic`, `swap`. Several of them are identical to the
-  shipped member (cas: freopen, fopen, ungetc, `_deciml`, `_length`, strcmp, strcpy, strncpy, strlen, tolower).
-- `_filbuf` of size and ranlib: the conditional value `(flag & _IONBF) ? 1 : BUFSIZ` goes through a stack temporary
-  (`ld @r15,#1` ... `ld r5,@r15`) where the shipped cc uses the register; not counted as D14 (not seen elsewhere, no D number yet).
-
-### D15 Block layout of if/else
-
-Measured (2026-10-28, `scc -O -S` in the emulator, tests in the scratch folder `tmp/layout`): the old compiler keeps the
-source order of the two branches of an `if`/`else`. The `then` branch comes first, whatever its size (`if (a > 4) g = 1; else g = 2;`
-gives `jpr le,ELSE` and the then-code first). Labels reached by `goto` are placed where they stand in the source (`gt1`, `gt2`).
-So an if/else reorder cannot explain a block-order difference: the earlier note (the original puts the `n <= 4` branch
-first, the compiler reorders) is wrong for if/else. The layout entries of `zzzcode` and `clocal` (`layout_classes` in
-findings.json, D15) are kept as recorded and not re-evaluated; their cause is open. Other functions tagged D15 by reading
-(`sld` 0x0f26, 0x1070, 0x1364, 0x11ea, 0x27d8, 0x2f3a, 0x42f8, 0x6c6a) are open to the same check.
-
-### D17 Call form: absolute `call` for global functions (popt)
-
-The original popt calls a global function with the absolute `call` even when the caller is in the same object file;
-a static function is called with the PC-relative `calr`. Our build (shipped cc, same object) always emits `calr` for
-a call inside the file; `call` only appears for targets in another object file, where the linker makes it absolute.
-Evidence (popt, from `tools`: call forms of the 68 confirmed functions against the storage class in our sources):
-- `ilen` (z22, global `dualop` in the same file) calls `dualop` with `call 0x2c72`; `adrlen` (static, same file) with `calr`.
-- Targets global in our source are called with `call` in 166 places of the original, with `calr` in 22; static targets
-  with `calr` in 106 places, with `call` in 59. For 51 of 68 functions the storage class of the original's call pattern
-  agrees with our source; 17 do not (`getnum`, `xjump`, `insertl`, `codemove`, `ilen`, `clearreg`, `savereg`, `setreg`,
-  `dest`, `killreg`, `cleargroup`, `ccinval`, `repladdr`, `redunbr`, `setcon`, `setcc`, `markregs`).
-- The original has exactly four object files with popt code (SCCS ids z20.c, z21.c, z22.c, z23.c in the data), and
-  its functions form three contiguous blocks (z21: `main`..`backjmp`, z22: `rmove`..`natural`, z23: `procopt`..`markregs`),
-  which our file split already has. A different split cannot produce `call` for a same-file global call.
-Status: pattern, not a compiler rule that was tested: the old compiler is not available to compile a test. Not
-reproducible with the shipped cc; the difference counts in `call` against `calr` sites of popt (not byte identity).
-
-### D16 Frame operand in arithmetic
-
-The old compiler loads a frame slot into a register before an arithmetic operation (`ld rS,F; add rS,rS`), or uses the
-slot directly in some places. Seen in codgen `sucomp` (`order3.c`): 55 `add rS,F` forms in our code, where the original
-loads the value first (the frame slot as the second operand is what the shipped compiler produces). In `tshape` (`match3.c`):
-`and rS,F` (two forms), the same operand form in the other direction (the original loads first). Both sides use the
-same instruction kinds with another operand form. The pattern check accepts `add/sub/and/or/xor rS,F` as D16
-(`patterns.explained`). This is a pattern verdict: the operand form is the same, the reason for the choice is not known.
-
-### D18 Frame operand with offset 0
-
-The cc that built `/lib/cparse` never writes `@r15`: an operand at offset 0 of the frame is `%0000(r15)` (506 times in
-/lib/cparse, 0 times `@r15`; ld and codgen of the shipped tool chain use `@r15`). The two forms have different lengths
-(2 bytes each). The comparisons of cparse treat them as equal (progcfg `D18`).
-
-### D19 Order of evaluation of the operands of a binary operator (cparse)
-
-The old cc evaluates the left operand of `+`, `==`, `>` first when both are calls; the shipped cc evaluates the right one
-first. Measured in cparse (2026-10-30): `argregs` (`argregs(p->left) + argregs(p->right)`: the original counts the left
-arguments first, which changes the result, the stack words of a call), `rmconv` (`bsize(q->left->type) == bsize(q->type)`)
-and `clocal` (`tbytes`). Our sources write the operands the other way round where the original calls the left one first
-(a source change that compiles to the original order with the shipped cc; the old cc will need the natural order).
-
 ## cas: decompilation (src/cmd/cas)
 
 Method and tools: `src/cmd/cas/check.sh` (compile a module with the original `scc` under the oracle, compare
@@ -1918,11 +1677,10 @@ aim is the same code and then the same behaviour of the complete program (tested
 below: the code comparison alone is not enough); byte identity is not expected.
 
 **The compiler that built cas.** The binary was built by an older scc with `scc -O -c` (the parser without `-O`);
-its differences from the shipped scc are described in "Compiler revisions" and listed per module in the table
-"Compiler differences" of `src/TODO.md`; see also `src/cmd/cas/README`.
+its differences from the shipped scc are listed per module in OLDCC.md; see also `src/cmd/cas/README`.
 
 **Done: ifile, nodes, instr, scanner, main, done (code).** Every function was compared with `cmpmod.py` and the remaining differences read by
-eye: they are those of the old compiler ("Compiler revisions"; the tool cannot hide them all, so its counts of
+eye: they are those of the old compiler (the tool cannot hide them all, so its counts of
 "differing" functions are not a measure; `nodes` has 6 of 8 and `ifile` 4 of 19 functions identical, the rest
 show only such differences). Data (`cmpdata.py`): the order of strings and jump tables differs (D12).
 
@@ -2031,8 +1789,8 @@ value is in the itable entry (`itabp(s_8)`: `s_0` = `section << 8 | subsection`,
   `putstabn/putstabp/putstabr` (43d4, 4472, 44ee: records 0x2a, 0x2a, 0x2b with the quoted string and the node
   operands in the symbol file).
 - Variables seen: `blklevel` (data 0x54e0, nesting level of `{ }`, max 10), `cursec` 0x6bb2, `cursub` 0x6bb4.
-- Check: every function compared with `cmpmod.py`; the remaining differences are those of the old compiler (the
-  listing is in "Compiler differences" of `src/TODO.md`); the strings are the same set, the data layout differs (D12).
+- Check: every function compared with `cmpmod.py`; the remaining differences are those of the old compiler; the
+  strings are the same set, the data layout differs (D12).
 
 **Done: ssymtab (`ssymtab.c`, 457a-4b3d).** The three tables of the user symbols in the segments 7 (symbols, `struct sym`),
 8 (itable, the values) and 9 (names) grow by `ssgbrk(seg, 0x400)` (`perror("symtab" / "infotab" / "namtab")` and
@@ -2358,7 +2116,7 @@ Status (2026-10-27): NOT byte-identical yet. Measured against the original in z8
 - Corpus (`cmp.sh`, 816 comparisons): 813 identical; the 3 differences are the `-d` K core line (program size), not the output.
 - Function level: 68 of 75 functions are paired with the original; 3 are byte-identical (`dumpnodes`, `clearreg`, `comjump`).
   Remaining text is 608 bytes larger than the original (the 68 functions, sum of the instruction ranges).
-- The differences are classified per function in `src/TODO.md` (D1, D2, D4, D5, D6, D7, D8, D16, D17), and as findings in
+- The differences are classified per function (D1, D2, D4, D5, D6, D7, D8, D16, D17; OLDCC.md), and as findings in
   `src/cmd/popt/tools/findings.json` (popt-01 .. popt-33; open: popt-29 text sum, popt-30 codemove, popt-31 regprefix,
   popt-32 ovlap, popt-33 call forms = D17). `FINDINGS.md` is generated from findings.json.
 - Open items that need the old compiler: D2, D4, D5, D6, D16 per function, and the call form D17.
@@ -2410,44 +2168,6 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
   only print a warning and the compile goes on without that pass.
 - The WEGA source `src/cmd/cc/cc.c` (see below) is the rebuild with the WEGA cc; `host/cc/cc.c` is the
   separate Linux version.
-
-### Old compiler v1: ccv1 under the emulator (2026-10-31)
-
-ccv1 is ../cc.c compiled with `-DOLD_V1` (`src/cmd/cc/v1`): the paths of cparse, codgen and popt are /lib/v1/...,
-everything else is the shipped cc. The emulator maps every absolute guest path to ROOT plus the path (`hostpath` in
-`z8k-emu/wega.c`; only /dev/* is passed through), relative paths go to the host working directory. So the passes of
-ccv1 must be below the ROOT; to keep the original tree untouched, `tools/oldroot.sh WEGA DIR` makes a tree of symbolic
-links (bin and lib real directories of links) and `make oldroot` installs ccv1 and lib/v1/{cparse,codgen,popt} into it.
-Guest /tmp is the /tmp of the original tree (a link). cc and scc stay byte-identical (OLD_V1 is not set there).
-
-Which binaries v1 stands for: the start-up file of most programs carries a stamp `crt0.s Rev : 3.x <date>` (made at the
-build, see `src/lib/libc/crt/mkcrt0.sh`): strip 01/24/83, size 01/14/83, ld 07/26/83, sld 10/27/83, ar 11/18/83; the
-passes cparse, codgen, popt and cas have no stamp, the newest source dates in them are cparse 10/06/83, codgen
-08/24/83, popt 01/18/83. ld, strip and size fit v1 (OLD_D1 holds in all three); cparse does not (no frame places of
-register variables), so it was built by a later revision. The regression rule of `src/TODO.md` (all exact functions
-stay exact) therefore holds per revision: a program is a witness of v1 only when it was built in its time.
-All programs of src/cmd that the shipped cc rebuilds byte-identically (ar, tar, dump, restor, format, verify, ...) are
-linked with libc members of 09/12/83 or later: built after the change of the compiler.
-
-Test bench of v1 (`host/recon/witness.py`, 2026-10-31): the unchanged single-file System III sources of 26 WEGA programs
-with crt0 stamps 01/83 .. 07/83 (chgrp, chown, mv, date, od, login, ls, nice, passwd, regcmp, rmdir, rm, sort, su, tee,
-time, touch, tr, uname, write, checkeq, hyphen, id, logname, units, xargs; df and ct do not compile), 119 functions,
-aligned with the originals. Equal functions: shipped cc 27, v1 72; v1 without OLD_D1 31, without OLD_D3 61. The bench is
-the main witness of the switches now; WEGA changed some of the sources (mv: mvdir has two more calls, move is split),
-so its differences are read only by comparison. Example: /bin/mv main, pname, dname are equal with v1 (frames 16, 0x12,
-10; the shipped cc 12, 12, 8).
-
-### D20 Code motion of popt (codemove)
-The shipped popt (`codemove`, z21.c) moves the block behind a jump or return to the site of a jump to it; the end
-of the block is the first `jpr` behind its label. Measured on /bin/ld (2026-10-31, `src/cmd/popt/v1`, switch
-`OLD_D20`): when that `jpr` jumps to the label right behind it, the old popt does not take it as the end of the block
-(it had removed that jump already), so short blocks in front of the function exit are not moved (`ensure_buf`, the
-`return 0` of `read_symbols`). With the switch, ld has 52 of 59 functions strictly exact (51 before). Turning off the
-whole code motion is wrong: the old popt also moves the prologue and the switch dispatch to the front.
-A second rule (`load2td`, one witness: after moving a block from behind a jump, go on behind the moved block) was in the
-switch from 2026-10-31 and is out again the same day: on the test bench of the v1 time (`host/recon/witness.py`, System
-III sources of 26 WEGA programs from 01/83 .. 07/83) it costs 3 functions (72 of 119 equal without it, 69 with it), the
-first rule changes nothing there. load2td is a finding again (source check).
 
 ### cc, scc rebuilt with the WEGA cc (`src/cmd/cc/cc.c`)
 

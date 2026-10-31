@@ -11,8 +11,8 @@ A tool chain on the Linux host (`WEGA/host/`) that is output-identical to the na
 The original binaries run under the emulator (`host/z8k-emu`, the oracle); they are not part of the tool chain.
 
 Byte identity is the only guarantee of identical behaviour, so it stays the goal (owner decision). Where the
-original was built by an older compiler revision (D1 to D16 in `KNOWLEDGE.md`), byte identity needs that
-compiler, which does not exist any more; this is the open task of step 3 below.
+original was built by an older compiler revision (`OLDCC.md`), byte identity needs that compiler, which does not
+exist any more; this is the open task of step 3 below.
 
 ## Inventory: what belongs to the tool chain
 
@@ -74,11 +74,9 @@ original tools and compares each program).
    of that plan.
 2. **Bring the source to its natural form.** Revert the compensating changes or justify them. New baseline:
    bytes, functions, D classes.
-3. **Reconstruct the old compiler.** Started 2026-10-31 (time box and rules: `../src/TODO.md`, plan item 4). The
-   version v1 is built in `src/cmd/{cparse,codgen,popt}/v1` (own Makefile each, switches OLD_D12, OLD_D20, OLD_D3);
-   with it ld is 54 of 59 strictly exact and size is byte-identical with /bin/size. Open: D2 (parked), D3 of
-   chk_ranlib, D1 of read_symbols. Owner review done (2026-10-31): go on with D2, D3, D1 in codgen. Entry point
-   ccv1 in `src/cmd/cc/v1`; `make oldroot` here installs the v1 programs into a WEGA tree of symbolic links for the
-   emulator (`tools/oldroot.sh`), then `z8k-emu -r <oldroot> /bin/ccv1 ...`.
+3. **Reconstruct the old compiler.** Everything about the old compilers is in `OLDCC.md` (the edited summary: the
+   classes D1 ... D20, the versions, rules, building and running ccv1) and `OLDCC_LOG.md` (the running notes). State
+   2026-10-31: v1 (switches OLD_D1, OLD_D3, OLD_D12, OLD_D20): strip and size byte-identical, ld 55 of 59; next steps
+   in `../src/TODO.md`, plan item 4.
 
 The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").

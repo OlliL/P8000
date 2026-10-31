@@ -17,8 +17,8 @@ variables are kept) and lists every function as identical or differing. `-v` sho
 The binary was built by an OLDER scc than the one in the system (which is why byte identity is not the aim
 here; the aim is the same code, then the same behaviour). The flags were `scc -O -c` (the parser: `scc -c`);
 with `-O` the shipped scc gives the closest result, so the Makefile and check.sh use it. The differences that
-always show up and are not differences of the source are described in host/KNOWLEDGE.md ("Compiler revisions",
-D1 ... D13); the table "Compiler differences" in src/TODO.md says which module shows which. cmpmod.py masks
+always show up and are not differences of the source are the classes D1 ... D13 of host/OLDCC.md, whose table says
+which module shows which. cmpmod.py masks
 frame sizes and scratch registers and converts the prologue behind the body (no `-O`) back to the front form.
 
 The names of functions and variables are ours (the binary is stripped); cas.h declares the node layout.

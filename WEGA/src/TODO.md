@@ -78,125 +78,13 @@ Order:
 3. **Assign every D class to a stage** (cparse, codgen, popt) by experiment: replace one stage of the chain by ours and
    observe. Measured already: cparse writes the initialisers and the string literals as cas text into base.D with
    `.even` behind each string (D12 is a cparse difference; experiment in tmp/tmp/stage).
-4. **Derive the old compiler step by step** with switches in the stages (cparse, codgen, popt), encapsulated by separate
-   cc entry points (for example ccv1, ccv2). Start with strip (one D2 expression, D12),
-   measure on ld (8 findings, strictcmp, d12model, corpus), check on ranlib and the oldcc modules.
-   Layout (owner decision 2026-10-31):
-   - The old versions are native WEGA programs only (built with the shipped cc, run in the emulator); no host versions
-     and no cross environment of them. The build frame stays in `src/`; `host/oldcc` is not used for it (it keeps only
-     the check of the cas sources in `src/lib/libc/oldcc`).
-   - One source per pass (`src/cmd/cparse`, `src/cmd/codgen`, `src/cmd/popt`, likewise `src/cmd/cc` for the entry
-     points); the differences of an old version are compile-time switches (`#ifdef`) in these sources, so the normal
-     build stays byte-identical with the shipped programs.
-   - Every old version of a program has its own subdirectory with its own Makefile, for example `cmd/cparse/v1/Makefile`
-     builds the v1 cparse from the sources of `cmd/cparse`. The Makefile of the version defines everything of it: the
-     switches, the libc (shipped members or `lib/oldlibc` versions), crt0, the install name. The Makefile of the pass
-     directory at most descends into the version directories (`SUBDIRS`, `cd v1 ; $(MAKE)`).
-   - Built programs are not in git.
-   - The host versions (`host/codgen`, `host/popt`, ...) get no switches: they are derived or only equal in function.
-   Evidence rules (owner decision 2026-10-31). The D classes are hard only for ld; in the other programs they are weak
-   and a finding may still be a wrong source form. A switch must not fit the old compiler to wrong sources:
-   - Before the first switch, strip and size are checked strictly like ld (strictcmp, D class read from the strict
-     diff, source form variants); ld, strip and size are the first evidence. Every other program (sld, codgen, cas,
-     ranlib, cparse, ...) is checked strictly the same way before it is used as evidence (item 2, per program).
-   - Regression: every function that is strictly exact today stays exact with the switch, in every program built by
-     the same compiler revision (owner decision 2026-10-31: the rule holds per revision; the revision of a program
-     comes from its build date, the crt0 stamp, host/KNOWLEDGE.md "Old compiler v1").
-   - Several witnesses: a switch counts only when it explains findings in at least two independent functions,
-     preferably in different programs. A function that fits only through a switch no other function needs is a
-     suspect source form and goes back to the source check.
-   - Findings that no switch explains go back to the source check.
-   Time box and abort criterion (owner decision 2026-10-31):
-   - A round is one hypothesis for a switch (one D class, an assumed mechanism), made and measured under the evidence
-     rules. A round is progress when at least two findings in independent functions become strictly exact without a
-     regression, or when it gives a new measured explanation (for example the place of the mechanism in the pass).
-   - A D class is parked after three rounds in a row without progress, and also when its switch would change the normal
-     build (cparse, codgen or popt no longer byte-identical with the shipped programs) or would need a large rebuild of
-     a pass (for example a new table structure in codgen). Parked means: measurements and attempts recorded here, go on
-     with the next class.
-   - The whole work stops (state written to the handoff) when five D classes in a row are parked or no open class is left.
-   - Review by the owner at the first of: milestone (strip, size and ld byte-identical with v1, data with the real
-     layout, not only under the model) or 20 rounds.
-   - Every accepted switch: commit (no push), the tables in `src/TODO.md` and `host/KNOWLEDGE.md` updated, the normal
-     build stays green (shipped cparse and codgen byte-identical, corpus).
-   - Order: the classes already assigned to a pass first (D12 in cparse), then the classes of strip (D2), then the
-     findings of ld.
-   State of v1 (2026-10-31), measured on ld (strict, `cmd/ld/tools/strictcmp.py` on ld built with the v1 passes and
-   the host ld; the chain: cpp, cparse/v1, codgen/v1, popt/v1, cas):
-   - OLD_D12 (cparse): the data of ld equal to the original (only the code addresses in it differ). Accepted.
-   - OLD_D20 (popt, code motion): ensure_buf, read_symbols (the return part), load2td exact; 53 of 59. Accepted (the
-     second rule has one witness only).
-   - D1 frame (codgen), round 1: no temporary for the value of a return unless a delayed x++ needs it: read_symbols
-     gets the frame of the original, 21 other functions lose 2 bytes (the old cc reserves it there). Not accepted.
-     Measured: the shipped codgen reserves the temporary of a return at baseoff (above the locals, reader3.c); the
-     `spare` variables of the ld sources stand for space of the old frame below the locals.
-   - OLD_D3 (codgen): no rfreeall at the join of && and ||: init_entry exact; 54 of 59. Accepted (one witness).
-   - D2 scratch registers (codgen): parked after 5 rounds (no merging in rsreturn: register jam; freed words in
-     LIFO order: worse; the parameter count in the .I head: dseek exact, 18 functions worse; the parameter registers
-     kept at labels: dseek exact, 14 worse; a label kind for loop heads (cparse) with registers kept at the other
-     labels: 18 worse; parameter registers kept only at labels that are not loop heads, contents forgotten: back to
-     53). Measured mechanism: dseek differs because the shipped codgen frees the registers of the parameters n (r3)
-     and sp (r7) at the label of an if (`rsfreeall(1)` at 'L', main3.c); then rr2 is whole again and r3 comes before
-     r6. The old codgen keeps them taken there, but not at the loop head of mput or str_compare, and reloads a
-     parameter after such a label (mkfsym). Open: the rule that tells these labels apart.
-     Rounds 6 and 7 (strip and ranlib_scan suggest that rr2 is not the first free pair behind a statement that used
-     r2): a pair made by merging put behind the other pairs: rr0 comes first, cas stops ("Cannot perform an
-     indirection on r0"); in front of rr0: 45 functions worse. Not accepted.
-   - Further witnesses of the accepted switches: size built with v1 (cparse, codgen, popt) is identical with /bin/size
-     (the 2 bytes of D12 are gone); strip: data identical, the code differs only in the known D2 block (9 bytes). The
-     corpus of ld (`tools/corpus_ld.py`) with the v1 ld: 146 of 146 identical.
-   - OLD_D1 (cparse, 2026-10-31): a register variable gets its frame place too (oalloc). The spare locals of ld were
-     these places (number of spare words = number of register variables in nearly every function); the register
-     declarations now stand at their place, 30 functions lose their spares and stay exact (54 of 59), two hidden spares
-     go too (`n` of warn_sym_redef, `u` of strip main). The 9 bytes of strip were not D2: 6 are the frame of copy
-     (D1, `register s, n` in front of `buf`), 3 a source error (`int c` in rcopy, even frame address). strip is
-     byte-identical with v1, size stays identical. Accepted (witnesses in ld and strip). /lib/cparse loses 3 exact
-     functions with it but is a later build (sources of 10/83, ld 07/83, strip and size 01/83 by the crt0 stamps;
-     host/KNOWLEDGE.md "Old compiler v1"): the regression rule is applied per revision (confirmed by the owner).
-     Left: one unexplained frame word in main, parse_args, slookup, pslookup, index16 (`int spare` kept); no
-     return temporary in read_symbols (one witness, open).
-   - Test bench (2026-10-31, `host/recon/witness.py`): the System III sources of 26 WEGA programs of the v1 time
-     (119 functions) against the originals: shipped cc 27 equal, v1 72; without OLD_D1 31, without OLD_D3 61. The
-     second rule of OLD_D20 (load2td) costs 3 functions there and is removed (load2td a finding again); the first rule
-     is neutral on the bench. A D2 rule (registers kept at labels no jump has named yet) costs 15 functions: refuted.
-     ranlib_scan was a source form (exact as a for loop). Evidence of a switch from now on: the bench plus ld/strip/size.
-     With the stdio.h of the v1 time (src/cmd/cparse/stdio.h, the bench default) 79 of 119 are equal; most of the rest
-     are WEGA changes of the sources (ls, od, date, passwd), so only differences between two runs count.
-   - place_sec (D2): the original copies the difference to r2 before the `and` of `r8 = (secorg[j] - q->tsize) &
-     0xff00` (the `+ 255` case beside it is in place); source forms (operands swapped, `~0xff`, the sum turned round)
-     change nothing: no source form, an allocator rule still open. Measured with a debug codgen (allocreg traced): our
-     codgen allocates one register for the whole `secorg[j] - q->tsize & 0xff00` (sub and and in place); the original
-     takes a new register for the `and`, but not in the `+ 255` case beside it, so the old codgen chose another table
-     entry for this AND (or its popt left a copy that ours never sees). Not found.
-   - chk_ranlib (D3/D2): `q = p` uses r7 in ours without a register allocation (fixname finds p in r7); the original
-     allocates r2 and loads p from the frame, but uses r7 for `p + n` right after; `q2->stype` uses r3 in ours, the
-     original copies q2 to r2 first. Tried 2026-10-31: the && form (under OLD_D3), symreg only on idle registers:
-     no change in ld, none on the bench.
-   - State after the rounds of 2026-10-31 (about 10 more): D2 parked again (label rules refuted by the bench, the
-     busy rule without effect, place_sec without a source form); the open five (load2td, place_sec, dseek,
-     chk_ranlib, read_symbols) have one witness each. Next: restore WEGA's changed versions of bench sources (kept in
-     src/cmd, owner 2026-10-31; witness.py takes them first) to get clean witnesses for D2 and the code motion of popt.
-     mv.c done: all 7 functions equal with v1; bench 82 of 120. rm.c, rmdir.c, write.c done (owner 2026-10-31):
-     bench 89 of 121. The rest of the bench is WEGA changes of the
-     sources (extra arguments and calls), no further compiler difference shows there.
-   - dseek exact (2026-10-31): the two page tests as one `||` (no label between them, and OLD_D3 keeps n in r3):
-     a source form, and a second witness of OLD_D3. ld 55 of 59 with v1, corpus 146 of 146.
-   - Sources restored for tests are kept in src/cmd (owner, 2026-10-31); the bench itself uses the unchanged System III
-     files and keeps nothing.
-   - State: ld 54 of 59 strictly exact with v1 (ranlib_scan exact, load2td open again), strip and size byte-identical
-     with v1, corpus 146 of 146; open: load2td (code motion, D15/D20), place_sec (D2), chk_ranlib (D3, the
-     parameter p is loaded from the frame for q = p, but its register is used for p + n), read_symbols (D1 frame
-     +2: the temporary of a return above the locals, and a dead `ldl rr4,rr2` of the original). About 20 rounds:
-     the review point of the time box.
-   - Owner review (2026-10-31): go on with D2, D3 and D1 in the register allocator of codgen (longer debug analysis);
-     when a D1 switch makes functions with `spare` variables fail, the `spare` variables go (many were invented to
-     fit the frame, i.e. they emulate the old cc by hand).
-   - Entry point ccv1 (`cmd/cc/v1`, cc.c with OLD_V1: runs /lib/v1/cparse, /lib/v1/codgen, /lib/v1/popt; the other
-     passes, crt0.o and libc.a are the shipped ones). `make install PREFIX=dir` in the v1 directories installs bin/ccv1
-     and lib/v1/*. Under the emulator: `make -C host oldroot` builds all v1 programs and installs them into a WEGA tree
-     of symbolic links (`host/tools/oldroot.sh`, default tmp/oldroot, not in git), then
-     `z8k-emu -r <oldroot> /bin/ccv1 -c -O foo.c`. ld built with ccv1 (`make link CC=...ccv1`): 54 of 59, the same
-     result as the passes run one by one.
+4. **Derive the old compiler step by step** with switches in the passes (cparse, codgen, popt), one version per
+   compiler time, each with its driver (ccv1, ccv2, ...). Layout, evidence rules, time box, the versions and the state:
+   `host/OLDCC.md`; the rounds: `host/OLDCC_LOG.md`. State: v1 done as far as the evidence goes (strip and size
+   byte-identical, ld 55 of 59). Next (proposal of 2026-10-31, to be confirmed by the owner): close v1 as a milestone;
+   the test bench separates the differences of changed sources from those of the compiler by itself; a table of all
+   original binaries (crt0 stamp, libc state, classes) to find the compiler times; then the version that built
+   /lib/cparse (v2).
 5. **Final test**: cparse (and codgen) compiled with the rebuilt old compiler are byte-identical with the originals. Only
    then are the host versions (`host/cparse`, ANSI C) written from the proven sources (of the shipped revision).
 
@@ -367,8 +255,8 @@ documents, the corpus runner frame.
   0x410c accepted (D2, D5; same 120 instructions; quirk: the attributes of a name already in the list go to the step
   counter, not the entry index). Next deferred: 0x27d8 (1252 bytes, bit
   stream decoder with two jump tables at 0x0cf6 and 0x0da4): goto skeleton complete (361 instructions, equal), register
-  allocation of the old compiler is now known (declaration order from r13 down, pointer = highest free pair, see KNOWLEDGE
-  'Register allocation'); the registers of 0x27d8 match with the declaration order w13, w12, w11, e, w10. The block order
+  allocation of the old compiler is now known (declaration order from r13 down, pointer = highest free pair, see OLDCC.md
+  'Register allocation of the old scc'); the registers of 0x27d8 match with the declaration order w13, w12, w11, e, w10. The block order
   was searched (scratch f27d8_m.c: 42 differing of 361 instructions, not identical, not accepted. The classifier gives 59 pattern
   differences and 1 unexplained: sra rS,#4, because the if/else form folds the bit-3 ternary of the key). Open: the table path
   placement, the byte move of cursym.sseg, the switch count register. Notes in the scratch folder.
@@ -424,99 +312,11 @@ state the original was linked with; `shipped` = the members of the shipped `/lib
 | pburn | identical (2.1, built with `SCC`/`GLD`, see `host/KNOWLEDGE.md`); `verify-wega` builds it since 2026-10-22 (not run yet) | - | - |
 | cas | rebuilt, see "In progress" | not measured (segmented, slibc.a) | older scc |
 
-## Compiler differences (old compiler)
-
-The numbers D1 ... D19 are the sections of "Compiler revisions" in `host/KNOWLEDGE.md`. `x` = the difference
-was seen in this object; `?` = the construct is in the source but the difference was not separated from the
-others yet; empty = not seen (no proof that it is absent). All cas modules with code are listed (table1,
-table2, pstab and the three table segments are data only). The old libc members that are only inside the binaries (size, strip, ranlib, cas) are listed with
-the marks of D14 only: that is all that was checked for them.
-cparse (2026-10-31, `cmd/cparse/tools/strictlayers.py`): `x` for D1, D2 means the strict difference shrinks when the
-frame or the registers are hidden; D6 and D10 are hunks of exactly the measured forms; D12 is the data model; D19 the
-operand swaps of our sources; `?` for the other classes: hunks of that form, read by shape only (weak, a finding may
-still be a source form).
-
-| Binary | Object | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout | D16 frame operand | D17 call form | D18 0(r15) | D19 operand order |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| cas | ifile.c | x | x | x |  |  | x |  | x | x | x |  | x |  |  |  |  |  |  |  |
-| cas | instr.c | x | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |  |  |  |  |
-| cas | scanner.c | x | x | x |  |  | ? | ? |  |  |  | x | x |  |  |  |  |  |  |  |
-| cas | main.c |  | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |  |  |  |  |
-| cas | nodes.c | x | x |  |  | x | x | ? |  |  |  |  | x |  |  |  |  |  |  |  |
-| cas | parser.y (parser.c) | x | x | x |  | x | x | ? |  |  | x |  | x |  |  |  |  |  |  |  |
-| cas | expr.c | x | x | x |  |  | x |  |  |  | x |  | x |  |  |  |  |  |  |  |
-| cas | p2loop.c |  | x | x |  |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| cas | ofile.c |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |  |  |  |  |
-| cas | gen.c |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |  |  |  |  |
-| cas | assemble.c |  | x | x |  |  | x |  |  |  | x |  | x |  |  |  |  |  |  |  |
-| cas | getops.c |  | x | x |  |  | x |  |  |  |  | x | x |  |  |  |  |  |  |  |
-| cas | error.c |  |  | x |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| cas | listing.c |  |  | x |  |  |  | x | x |  |  |  | x |  |  |  |  |  |  |  |
-| cas | optim.c |  |  | x | x |  | x | x |  |  |  | x | x |  |  |  |  |  |  |  |
-| cas | jpr2.c |  |  | x |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| cas | jpr.c |  |  | x | x |  | x | x | x |  |  |  | x |  |  |  |  |  |  |  |
-| cas | locntr.c | x | x | x | x |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| cas | ssymtab.c |  |  |  |  |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |
-| cas | symbols.c | x | x |  |  |  | x |  | x |  | x | x | x |  |  |  |  |  |  |  |
-| cas | pst.c | x | x |  |  |  |  | ? | x |  |  |  |  |  |  |  |  |  |  |  |
-| cas | subr.c |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |
-| ranlib | ranlib.c, readsym.c | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| strip | strip.c | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| size | size.c |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| libc.a | malloc.o (gen/malloc.c) |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | nlist.o (gen/nlist.c) | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | length.o (gen/length.c) | x |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | swap.o (gen/swap.c) |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| size | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| size | libc: rdwr.o (fread, fwrite) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| size | libc: doprnt.o (_doprnt) |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |  |  |  |  |  |
-| strip | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| cas | libc: printf.o (printf, fprintf, sprintf) |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| codgen, scodgen | main3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | reader3.c |  |  |  | x |  | x | x | ? |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | rdr3.c |  |  | x | x |  | x |  | ? |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | efcode3.c | x |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | local3.c |  | x |  | x |  | ? |  |  |  | x |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | gen3.c |  |  |  | x |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |
-| codgen, scodgen | order3.c |  |  |  | x |  | x |  |  |  |  | x |  |  |  |  | x |  |  |  |
-| codgen, scodgen | match3.c |  |  |  | x |  | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |
-| codgen, scodgen | allo3.c |  | x | x | x |  | x | ? |  |  | x |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | regallo3.c |  |  |  | x |  | x |  |  |  | ? |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | regfile3.c |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | tmp3.c |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | zzz3.c |  |  |  |  |  | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| codgen, scodgen | comm3.c |  |  | x | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | out3.c |  | x |  |  |  | x | x | x |  | x | x |  |  |  |  |  |  |  |  |
-| codgen, scodgen | regs3.c |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | lcl3.c |  | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | tr3.c |  |  |  | x |  |  | x | ? |  |  |  |  |  |  | x |  |  |  |  |
-| codgen, scodgen | optim3.c |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| popt | z21.c (main..backjmp) |  |  |  | x |  | x |  | x |  |  |  |  |  |  |  |  | x |  |  |
-| popt | z22.c (rmove..natural) |  | x |  | x | x | x |  |  |  |  |  |  |  |  |  | x | x |  |  |
-| popt | z23.c (procopt..markregs) |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  | x |  |  |
-| ld | ld.c (read_symbols, place_sec, init_entry, load2td, dseek, ranlib_scan) | x | x | x |  |  |  |  |  |  |  | x | x |  |  | x |  |  |  |  |
-| ld | symbols.c (chk_ranlib, ensure_buf) |  |  | x |  |  |  |  |  |  |  | x | x |  |  |  |  |  |  |  |
-| ld | copyname.c |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| ld | printname.c |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| cparse | cgram1.y | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  | ? |  | ? |  |
-| cparse | xdefs1.c | x | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |
-| cparse | scan1.c | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |
-| cparse | pftn1.c | x | x | ? |  | ? | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |
-| cparse | trees1.c | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  |  | ? | x |
-| cparse | optim1.c, optim | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  |  | ? | x |
-| cparse | code1.c | x | x | ? | ? |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |
-| cparse | local1.c | x | x | ? |  |  | x |  |  |  |  | ? | x |  |  |  |  |  | ? | x |
-| cparse | comm1.c, common | x | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |
-| cparse | vinit1.c | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |
-| cparse | sym1.c | x | x | ? |  | ? |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |
-
-The codgen / scodgen rows are the per-object marks of the D classes of the function findings (`src/cmd/codgen/tools/findings.json`, written by `classify.py`), completed by reading the disassembly where noted. `x` = seen in a function of the object; `?` = construct present, not separated. D12 (data order), D13 and D14 are not checked for codgen. D15 (block layout of if/else) is marked for `zzz3.c` and `tr3.c` only (the two functions `zzzcode` and `clocal`); the other objects are not checked for it. Open for codgen: `clocal` (D15), `zzzcode` (D15, partly), `sucomp` (`add` with a frame operand, D16), `tshape` (value form of the SZERO return; `and` with a frame operand, D16; the case order was checked: the current order is the best of seven; two `and rS,F` forms, see KNOWLEDGE.md); and 2 functions with a moved block that the source does not change (`expand` D7, `freereg` D7 goto placement; findings `expand-layout-01`, `freereg-layout-01`); `conval` was fixed by the case order of the comparisons (`optim3.c`, finding `conval-layout-01`); the 17 other length checks were explained by D patterns, see KNOWLEDGE.md.
-
 ## In progress
 
 - `cmd/cas/` (the cas assembler): all modules are rebuilt from `/bin/cas` (`cmd/cas/MODULES`), `make` links the complete program
   (`sld -i -s -e start -z -Mt4 -Md5 -Mb5`, tables in the segments 7, 8, 9; text 46848 bytes like the original). The original was built by an older
-  scc, so the code differs (see "Compiler differences" above and `cmd/cas/README`); byte identity is not expected. Proof of behaviour: `cmd/cas/test/`
+  scc, so the code differs (`host/OLDCC.md`, `cmd/cas/README`); byte identity is not expected. Proof of behaviour: `cmd/cas/test/`
   (all opcodes in the three address modes, about 346 000 operand patterns, jr/jpr/callr at 23 distances, 228 compiler outputs, 10 option sets): same
   messages and objects as the original. Not the same (undefined behaviour of the original, see KNOWLEDGE.md "Test of the complete cas"): more than one
   semantic error in an expression in one statement, `"\%4"` (one hex digit). The host fork `host/cas` (modern C) exists and is tested against the original with the same scripts (KNOWLEDGE.md "cas on the host").
@@ -756,7 +556,7 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
 - Result: 170 of the 180 members identical, 7 differ, 3 have no C source (the 10 are
   kept as cas sources in `src/lib/libc/oldcc`, see "oldlibc").
 - Same code, different compiler revision (cannot match with the shipped cc): `malloc`,
-  `nlist`, `length`, `swap` (differences D1, D3, D4, D8 in "Compiler revisions"). The shipped
+  `nlist`, `length`, `swap` (differences D1, D3, D4, D8). The shipped
   libc was built with more than one compiler revision.
 - Different source revision (Nov 1983 float versions, files dated Nov 16-17 1983):
   `printf` (printf/fprintf/sprintf with `_pfile`, `_rc`, `_flsbuf`; calls
@@ -942,10 +742,6 @@ The classifier verdict "D only (pattern-verified)" is a pattern verdict, not a p
   68 functions is now 604 bytes larger than the original (1386 at the start of the step). Left: `ovlap` (+194, inline `scan`
   with other frame and order), `procopt` (+108, address form of local arrays: D5), `memreg` (+108), `oplook` (+50), `usesreg`
   (+34, home slots, D4), `equop`/`jumpsw` (D2). Most of what is left is the old compiler (D2, D4, D5, D16).
-- Compiler difference D17 (new, see `host/KNOWLEDGE.md`, "Compiler revisions"): the old cc calls global functions with the
-  absolute `call` even inside one object file, the shipped cc uses `calr` there. Popt: 51 of 68 functions agree between the
-  storage class in our source and the call forms of the original; 17 do not. Not closable by the file split (the original has
-  four object files and our three function groups already match its blocks). Counted as a compiler difference, not as a source fault.
 - Text, round 3 (classification of the remaining size gap): `memreg` (+108 before this round, now 162 instructions against 146,
   58 equal): remaining differences are scratch registers (D2), home slots of register parameters (D4), and the index form of
   `regs[i][j]` (`sla` then `add` with the base, D5/D16, the same as in `procopt`). `procopt`: D5 (address form of local arrays).

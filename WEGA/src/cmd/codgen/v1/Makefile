@@ -6,7 +6,7 @@
 #   make install PREFIX=dir    dir/lib/v1/codgen (the pass of ../../cc/v1/ccv1)
 #   make clean
 #
-# Switches (host/KNOWLEDGE.md, "Compiler revisions"):
+# Switches (host/OLDCC.md):
 #   OLD_D3    the registers keep their contents at the join of && and || (no rfreeall in cbranch)
 
 CC = cc

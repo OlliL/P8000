@@ -11,9 +11,11 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 - Do not commit or push: the owner handles the repository (git add/commit/push, branches). Keep
   `host/KNOWLEDGE.md` and `src/TODO.md` current and say which files changed.
 - Facts only from documents or measurements; mark guesses as guesses.
-- Always keep two tables current while working: "Compiler differences (old compiler)" in `src/TODO.md`
-  (which object shows which difference D1 ... D14) and "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
+- Always keep two tables current while working: "Objects and their differences" in `host/OLDCC.md`
+  (which object shows which difference D1 ... D20) and "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
   (every bug, oddity or dead code found in an original program, with how the rebuild handles it).
+- The old compilers: `host/OLDCC.md` is the edited summary (rewritten, not appended to); running notes, measurements
+  and attempts go as dated entries to `host/OLDCC_LOG.md`. Other documents do not repeat this knowledge.
 - Byte identity with the original has priority over fixing a bug found in the original: rebuild the
   bug first, record it in the quirks table, and fix it only when the owner says so.
 - Originals, binaries and copyrighted material never go into git (unless the owner says so).

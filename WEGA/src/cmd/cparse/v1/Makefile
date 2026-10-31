@@ -6,7 +6,7 @@
 #   make install PREFIX=dir    dir/lib/v1/cparse (the pass of ../../cc/v1/ccv1)
 #   make clean
 #
-# Switches (host/KNOWLEDGE.md, "Compiler revisions"):
+# Switches (host/OLDCC.md):
 #   OLD_D12   the string literals of a file at the end of its data, one pool, aligned only at its start and end
 #   OLD_D1    a register variable gets its place in the frame too (at its declaration, like an automatic variable)
 

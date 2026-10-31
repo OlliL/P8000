@@ -8,8 +8,7 @@ Usage: witness.py [-c "EMUARGS"] [-s N] [-v FUNC] [PROG ...]
            the V7 getc and putc)
 
 The single-file System III sources (SYS3SRC: the directory usr/src/cmd of a System III tree, not in git) of WEGA
-programs whose crt0 stamp is from 01/83 .. 07/83 (the time of the old compiler v1, host/KNOWLEDGE.md "Old compiler
-v1") are compiled with the compiler under test (default: z8k-emu -r OLDROOT /bin/ccv1 -O -c; -c gives other emulator
+programs whose crt0 stamp is from 01/83 .. 07/83 (the time of the old compiler v1, host/OLDCC.md) are compiled with the compiler under test (default: z8k-emu -r OLDROOT /bin/ccv1 -O -c; -c gives other emulator
 arguments, e.g. "-r WEGA /bin/cc") and their code is aligned with the original binary (difflib over the whole own code,
 absolute addresses masked, frame offsets kept). Per function: = when every instruction is in an equal block, else the
 number of its lines that are not. WEGA changed some of these sources, so a difference is not a compiler difference by

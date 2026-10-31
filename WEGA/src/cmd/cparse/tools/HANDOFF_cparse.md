@@ -93,10 +93,6 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
     common has System V additions (where, dexit, ncopy, tcopy) and WEGA ones (bsize, twords, tbytes, argsize, branch,
     getmem);
   - the output: .I through the FILE* at 0x91ec (branch writes "B%d"), .D through the FILE* at 0x7c06 (incode, cinit).
-- Compiler differences seen in cparse (classification by reading): D18 new (never @r15, always 0(r15)), D1 (our cc
-  reserves a home slot for register parameters and rounds the frame to 4; the cc of cparse does neither), D2, D3
-  (the old cc keeps a spilled parameter in its register across branches), D9 (w>>8 as byte move), D10 (long shift by
-  a constant as sdal with a negative count), D11 (shared code between the TNEXT arms in talloc, probably popt).
 
 ## State 2026-10-30 (end of the first AFK session)
 
@@ -114,8 +110,7 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
   defined, the word behind `dimtab[-1]`); both depend on `_end` (the start of the heap), so they become identical only
   with the original data size (KNOWLEDGE quirks table).
 - Facts found on the way: YYSTYPE has 4 bytes (yyval 0x62ce, yyv 0x62d4..0x652c, YYMAXDEPTH 150); member names are
-  global in this C (a new union member `lval` broke `NODE.lval`); block clears rval; ARGINIT 16; DSIZE 129;
-  D19 (operand order) in KNOWLEDGE.
+  global in this C (a new union member `lval` broke `NODE.lval`); block clears rval; ARGINIT 16; DSIZE 129.
 - Function state: modcheck -f -r per module (frame and registers hidden): code1 9/23, scan1 8/14, pftn1 7/21,
   trees1 14/27, optim1 2/6, local1 3/16 (clocal rebuilt), sym1 16/24, comm1 9, vinit1 1/14 SAME; the other differences
   read as D1, D2, D3, D6, D7, D10, D14, D15, D19. findings.json has the names but no per-function notes yet.
@@ -172,8 +167,6 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
   list. Data equal at the same address 16984 -> 17169 of 18584; the rest (code masked): yyparse and swend jump tables
   (code addresses below 0x1000, the code differs in size), a double constant of buildtree (the old cc puts it behind
   the first switch table, the model in front of the function). Corpus 235 of 255, unchanged.
-- Measured with the shipped cc: it reserves at least 2 bytes of frame in every function and stores the value of a
-  returned `x++` there (getlab, noinit have no frame in the original): D1, the frame is made by codgen.
 
 ## Next (2026-10-31)
 

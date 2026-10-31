@@ -8,7 +8,7 @@ Inputs: ORIG.dis, MINE.dis = `sdis.py -l BINARY` listings; MINE.nm = the output 
 The program part of the original ends at 0xbbc4 (the C library follows). Functions are paired by normalised
 instruction text and then through the call graph. Masked: addresses, frame offsets, call targets, condition
 codes, scratch registers, argument spills, switch dispatch, extsb/subb, shifts (the effects of the older cc,
-KNOWLEDGE.md "Compiler revisions"). Used for KNOWLEDGE.md "codgen fidelity".
+OLDCC.md). Used for KNOWLEDGE.md "codgen fidelity".
 """
 import sys
 ORIG,MINE,NM=sys.argv[1:4]; ARGS=sys.argv[4:]

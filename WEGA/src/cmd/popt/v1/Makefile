@@ -6,7 +6,7 @@
 #   make install PREFIX=dir    dir/lib/v1/popt (the pass of ../../cc/v1/ccv1)
 #   make clean
 #
-# Switches (host/KNOWLEDGE.md, "Compiler revisions"):
+# Switches (host/OLDCC.md):
 #   OLD_D20   code motion (codemove): a jump to the next label does not end a block
 
 CC = cc
