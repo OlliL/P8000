@@ -238,3 +238,12 @@ TODO.md when this log was started.
   r6 for a scratch register); the register of a parameter not scratch in tshape: 113, 1344; nor in istnode: 113,
   1312 (fixclass, ctype, sputc, ecode exact; ilbrace, irbrace only mask artifacts). Corpus 259 of 259; bench v0 107,
   495.
+- OLD_D19A tried (argsort: a constant argument sorted behind the others, for oconvert `ld r6,r13; ld r7,#%006E`):
+  cparse 113 > 77 (yylex, yyparse, genswitch much worse). Removed; the argument order of oconvert is open.
+- Parameters copied into register variables (strictlayers, the first copies of all functions): only getpreg differs
+  (r13 < r7, r14 < r6 in the original): a source fix (the parameters declared t, p); getpreg 24 > 8.
+- getpreg's rest: `cp; jpr lt,L386; jpr L375; L386: jpr L363` from codgen; the original popt makes `jr ge,L375`, ours
+  follows the jump to a jump first (L386 > L363), so the turn-round no longer applies and codemove moves the block of
+  L375. OLD_D20S tried (popt iterate: the turn-round in front of the jump to a jump, instead of behind): cparse 1296 >
+  1311 (yyparse: a turn-round now missing); in front and behind: 1298 (getpreg exact; gotscal, yyparse worse: the
+  loop test copied to the top). Parked (neutral); OLD_D20 of v1 in v0p: 1296 > 2049.

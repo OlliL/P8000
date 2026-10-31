@@ -575,7 +575,7 @@ initpreg(){ /* before the parameters of a function */
 	}
 
 char
-getpreg( p, t ) register struct symtab *p; register TWORD t; { /* the register for the parameter p of type t; 15: on the stack */
+getpreg( p, t ) register TWORD t; register struct symtab *p; { /* the register for the parameter p of type t; 15: on the stack */
 	int k;
 
 	if( !pregfull ){

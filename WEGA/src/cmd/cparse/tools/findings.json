@@ -6757,6 +6757,11 @@
    "basis": "constant",
    "d_classes": "",
    "note": "Source fix: the empty array warning for AUTO and REGISTER (the original compares with 4); the source had EXTDEF."
+  },
+  "getpreg": {
+   "basis": "register variables",
+   "d_classes": "D20",
+   "note": "Source fix: the parameters declared t, p (the original has t in r14 and p in r13; the first declared register variable gets r14). Remaining: popt places the gotreg block behind the inverted test (jr lt), the original keeps it in place (jr ge): the old popt turns a conditional jump over a jump round before it follows the jump to a jump; tried as OLD_D20S, neutral (yyparse, gotscal worse)."
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",
