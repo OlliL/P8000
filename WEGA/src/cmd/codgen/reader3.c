@@ -928,6 +928,25 @@ delay(p)
 
 extern void fbegin(), parminit(), fixtemp(), tabclear(), gswitch(), tmpcleanup(), rcount_reset(), tcheck();
 
+#ifdef OLD_D4O
+/* the parameter list from its last element to its first */
+static void
+parmwalk(p)
+	register struct node *p;
+{
+	switch (dope[p->op] & 0xE) {
+	case BITYPE:
+		parmwalk(p->right);
+		parmwalk(p->left);
+		return;
+	case UTYPE:
+		parmwalk(p->left);
+		return;
+	}
+	parminit(p);
+}
+#endif
+
 /* a statement of the intermediate file: a function head, a switch, or an expression tree */
 void
 stmt(p)
@@ -939,7 +958,11 @@ stmt(p)
 	if (p->op == 118) {
 		mapnm(p->left);
 		fbegin(p->left->sname);
+#ifdef OLD_D4O
+		parmwalk(p->right);	/* v0: the parameters in the order of the declaration (the list is reversed) */
+#else
 		fwalkd(p->right, parminit);	/* no third argument: the original passes only two, down is what r5 holds */
+#endif
 		tfree(p);
 		return;
 	}

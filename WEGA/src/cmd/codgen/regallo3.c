@@ -93,6 +93,15 @@ rsbuild()
 	if (rsfree)
 		rsrelease(rsfree);
 	rsfree = n = rspool;
+#ifdef OLD_D2W
+	for (r = 2; r <= 6; n = n->next, r += 2) {	/* the pairs in the order of rweight: rr2 rr0 rr4 rr6 */
+		n->cls = 3;
+		n->reg = r == 4 ? 0 : r == 6 ? 4 : r;
+	}
+	n->cls = 3;
+	n->reg = 6;
+	n = n->next;
+#else
 	for (r = 2; r <= 6; n = n->next, r += 2) {
 		n->cls = 3;
 		n->reg = r;
@@ -100,6 +109,7 @@ rsbuild()
 	n->cls = 3;
 	n->reg = 0;
 	n = n->next;
+#endif
 	for (r = 16; r <= 19; r++, n = n->next) {
 		n->cls = 4;
 		n->reg = r;

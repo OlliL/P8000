@@ -8,10 +8,11 @@
 #
 # Switches (host/OLDCC.md):
 #   OLD_D12   the string literals of a file at the end of its data, one pool, aligned only at its start and end
+#   OLD_D4R   no home in the frame for the register parameters behind the last other parameter (argalloc)
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D12
+SWITCHES = -DOLD_D12 -DOLD_D4R
 PREFIX = /
 LDBIN = /bin/ld
 OLD = ../../../lib/oldlibc

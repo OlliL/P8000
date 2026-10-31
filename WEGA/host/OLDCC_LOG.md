@@ -155,3 +155,10 @@ TODO.md when this log was started.
   1982 programs differ here.
 - Owner decision: two versions. v0p set up (cmd/*/v0p, ccv0p, OLD_V0P in cc.c; codgen v0p = v0 + OLD_D3A); make
   oldroot builds v1, v0, v0p; cc and scc identical.
+- OLD_D4R first form (oalloc: no home for any register parameter in a register): cparse 72 strictly, but the cparse
+  built with it fails on every input ("syntax error" on `int x; main(){ x = 1; }`): block needs the homes of its
+  register parameters between the others. Second form (argalloc: only those behind the last other parameter): cparse
+  71, corpus 239 of 259, bench v0 68.
+- OLD_D4O (parameter list walked from its end): cparse 76 (lxenter, lxmore, makety, block, unhide), bench 69.
+- The pairs rr2 rr0 rr4 rr6 at the start of a function (rsbuild, under OLD_D2W): cparse 80 (dstash, addcase, chkpun,
+  incode), corpus 239, bench 74. ld with ccv1 55; the normal objects of codgen and cparse unchanged.

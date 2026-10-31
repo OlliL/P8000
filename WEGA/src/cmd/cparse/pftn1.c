@@ -417,6 +417,31 @@ argalloc( a, n ) NODE *a[]; { /* the offsets of the arguments a[0] ... a[n-1] th
 	register sz, j;
 
 	j = 0;
+#ifdef OLD_D4R
+	{	/* the old cparse: the register parameters behind the last other one (the first in the list) get no home */
+		int k;
+
+		for( k=0; k<n; ++k ){
+			q = STP(a[k]->rval);
+			if( q->sfldc == 1 && q->stype != DOUBLE && q->sclass != REGISTER ) break;
+			}
+		for( i=n-1; i>=0; --i ){
+			p = STP(a[i]->rval);
+			if( i < k && p->sclass == REGISTER ) continue;
+			if( p->sfldc == 1 && p->stype != DOUBLE ){
+				if( j ){
+					q = STP(a[j]->rval);
+					sz = (tsize( q->stype, q->dimoff, q->sizoff ) + 15) / 16;
+					if( -a[j]->lval + sz != -a[i]->lval )
+						autooff += (-a[i]->lval + a[j]->lval - sz) * SZINT;
+					}
+				j = i;
+				if( oalloc( p, &autooff ) ) cerror( "bad argument" );
+				}
+			}
+		}
+	if( 0 )
+#endif
 	for( i=n-1; i>=0; --i ){
 		p = STP(a[i]->rval);
 		if( p->sfldc == 1 && p->stype != DOUBLE ){

@@ -140,7 +140,8 @@ time, or another version) points to their mechanism.
 - Time: the programs of 1982 (sources 07/82 .., crt0 3.1 up to 11/82) and, built late, the passes cparse, scparse,
   codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
   return temporary, leaf functions without a frame) and packed strings (old D12).
-- Switches so far: `OLD_D12` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`, `OLD_D3P` (codgen); popt without a switch
+- Switches so far: `OLD_D12`, `OLD_D4R` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`, `OLD_D3P`,
+  `OLD_D4O` (codgen); popt without a switch
   (OLD_D20 is neutral on the bench). Candidates in the sources, not set: `OLD_D2D` (codgen) and `OLD_D1F` (popt), see
   "Leaf functions" below. No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
 - Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
@@ -148,7 +149,8 @@ time, or another version) points to their mechanism.
 - Test bench v0 (`witness.py -t v0`, System III sources of 38 programs of 1982, 153 functions): shipped cc 15, v1 14,
   v0 64 (v1 without OLD_D1: 15; + OLD_D2R: 18; + OLD_D18: 48; + OLD_D1R: 60; without OLD_D3: 61; + OLD_D2W: 62, the
   differing lines 1624 > 1542; + OLD_D10 and OLD_D2R narrowed to loads through a pointer: 64, 1466 lines; OLD_D1R
-  without any return temporary: 64, 1463; + OLD_D3P: 65, 1462).
+  without any return temporary: 64, 1463; + OLD_D3P: 65, 1462; + OLD_D4R: 68, 1437; + OLD_D4O: 69, 1435; the pairs
+  rr2 rr0 rr4 rr6 at the start (OLD_D2W): 74, 1405).
 - /lib/cparse as the second test bench (2026-10-31, ccv0, d12model, strictcmp): 44 strictly exact (shipped cc 29);
   cparse built with ccv0 normally passes its corpus like the shipped build (239 of 259 inputs identical, the rest
   differ only in the heap contents of the .S file). The behaviour check is needed: the test benches count equal
@@ -182,7 +184,8 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 48 strictly exact (code 49152 bytes against 48896), corpus 239 of 259.
+- State: /lib/cparse 80 strictly exact (code 49152 bytes against 48896), corpus 239 of 259 (2026-10-31: 48 with v0 +
+  OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
@@ -235,8 +238,9 @@ compiler that built the original. Not differences of the compiler (checked):
 
 ### D2 Scratch registers
 
-- v0 (switch `OLD_D2W` in codgen, rweight in regallo3.c): r0 has the weight 3 instead of 8, so r0 and the pair rr0 come
-  early (the originals of v0: `div rr0` 68 times, `rr2` 135, `rr4` once; v1 and shipped: never rr0); bench 61 > 62,
+- v0 (switch `OLD_D2W` in codgen, rweight and rsbuild in regallo3.c): r0 has the weight 3 instead of 8, and the free
+  list starts with the pairs rr2 rr0 rr4 rr6 (shipped rr2 rr4 rr6 rr0), so r0 and the pair rr0 come
+  early (the start order: cparse 76 > 80, bench 69 > 74) (the originals of v0: `div rr0` 68 times, `rr2` 135, `rr4` once; v1 and shipped: never rr0); bench 61 > 62,
   1624 > 1542 lines. Weight 0 or 1 makes codgen run endlessly (bench timeouts).
 - v0 (switch `OLD_D2R` in codgen, allocreg in allo3.c): a load through a pointer (STAR, OREG) goes into the register of
   its address first (freereg), a free one only after it (`ld r7,@r7` where the shipped codgen writes `ld r6,@r7; ld
@@ -274,7 +278,14 @@ compiler that built the original. Not differences of the compiler (checked):
   %0002(r15),rr6` against v1's `ldm @r15,r5,#3`), codgen (register parameters have no home slots, `ld r14,r7; ld
   r13,r6` first parameter first; the shipped cc spills more: getlr, member, nullsyms), libc swap (an address-taken
   argument spilled in the `0(r15)` form), sld (a long parameter cast to a pointer read from its spill slot).
-- Switch: none yet (the spill decision is in efcode3.c, `regargs`). Refuted for v0: spill only the parameters whose
+- v0 (switch `OLD_D4R` in cparse, argalloc in pftn1.c): the register parameters behind the last other parameter
+  (allocated last, so at the top of the parameter area) get no home in the frame (cparse deflab, branch, locctr ...:
+  frame 2 bytes smaller). A first form without homes for all register parameters (oalloc) gave the same instructions
+  in 24 functions but a cparse that fails on every input (block: the homes between other parameters are needed, the
+  spill `ldm` is contiguous). Bench v0 65 > 68, cparse 48 > 71.
+- v0 (switch `OLD_D4O` in codgen, stmt in reader3.c): the parameter list is walked from its end, so the register
+  parameters are copied in the order of their declaration (`ld r14,r7; ld r13,r6`); cparse 71 > 76, bench 68 > 69.
+- Switch for the spill: none yet (the spill decision is in efcode3.c, `regargs`). Refuted for v0: spill only the parameters whose
   home is used (cparse fldal spills its unused parameter; bench 65/1462 > 65/1468). Open in v0: leaf functions have no
   spill and a smaller frame (cparse argdebug: `dec r15,#4` and no store; cal jan1 no frame at all).
 
