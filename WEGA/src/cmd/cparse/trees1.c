@@ -700,10 +700,10 @@ notlval(p) register NODE *p; {
 	switch( p->op ){
 
 	case NAME:
-	case OREG:
+	case STREF:
 	case UNARY MUL:
+	case FLD:
 		if( ISARY(p->type) || ISFTN(p->type) ) return(1);
-	case REG:
 		return(0);
 
 	default:

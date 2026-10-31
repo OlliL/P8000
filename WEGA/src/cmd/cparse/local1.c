@@ -3,9 +3,6 @@
 static char sccsid[] = "@[$]local1.c\t2.7  08/24/83 14:27:54 Copr. 1981 87wega3.2.";
 
 char *dignames[] = { "0", "1", "2" };	/* a name that starts with one of these gets $ (exname; name is a guess) */
-int inwd = 0;	/* current bit offsed in word */
-int word = 0;	/* word being built from fields */
-char extext[128] = "";	/* the external name made by exname */
 
 NODE *
 cast( p, t ) register NODE *p; TWORD t; {
@@ -197,6 +194,9 @@ offcon( off, t, d, s ) OFFSZ off; TWORD t; register d, s; {
 
 	}
 
+int inwd = 0;	/* current bit offsed in word */
+int word = 0;	/* word being built from fields */
+
 incode( p, sz ) register NODE *p; register sz; {
 
 	/* generate initialization code for assigning a constant c
@@ -335,6 +335,8 @@ vfdzero( n ){ /* define n bits of zeros in a vfd */
 	inwd = 0;
 	word = 0;
 	}
+
+char extext[128] = "";	/* the external name made by exname */
 
 char *
 exname( s ){ /* make a name look like an external name in the local machine */
