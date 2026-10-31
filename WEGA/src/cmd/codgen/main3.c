@@ -38,6 +38,9 @@ long frame0;			/* 0x69ce */
 extern long maxoff, parmax, baseoff, maxtemp, paroff, tmpoff;
 int nlabsave;			/* 0x69e0 */
 int nparm;			/* 0x69d2 */
+#ifdef OLD_D3K
+static int d3kpend;		/* a label waits for its rsfreeall (main) */
+#endif
 #ifdef SEG
 int minreg = 0xD, maxreg = 0x17;	/* 0x958a, ... */
 int regtop = 0xD;		/* 0x958e */
@@ -189,6 +192,13 @@ loop:
 	c = getchar();
 	if (c <= 0)
 		goto eof;
+#ifdef OLD_D3K
+	if (d3kpend) {		/* a label no jump has named: forgotten unless the function ends behind it */
+		if (c != '}')
+			rsfreeall(1);
+		d3kpend = 0;
+	}
+#endif
 	switch (c) {
 	case '{':
 #ifdef OLD_D3K
@@ -259,7 +269,10 @@ loop:
 		nlcheck();
 		if (nparm <= 0)
 #ifdef OLD_D3K
-			rsfreeall(d3knamed(lab) ? 4 : 1);
+			if (d3knamed(lab))
+				rsfreeall(4);
+			else
+				d3kpend = 1;
 #else
 			rsfreeall(1);
 #endif

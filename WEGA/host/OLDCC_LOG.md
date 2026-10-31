@@ -319,3 +319,6 @@ TODO.md when this log was started.
   cparse, named by no jump) makes OLD_D3K forget the parameter, so regargs spills it. twords shows a label of the
   same kind behind which the original reloads from the frame. Open (a spill rule that knows whether the frame copy
   is read).
+- OLD_D3K: the rsfreeall of a label no jump has named waits for the next record and is left out when that is the
+  end of the function: cparse 139, 525 (resetbc exact); corpus 259; bench v0 unchanged (114, 318). defalign still
+  spills (its last label has code behind it).
