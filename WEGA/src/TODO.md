@@ -160,7 +160,18 @@ Order:
      are WEGA changes of the sources (ls, od, date, passwd), so only differences between two runs count.
    - place_sec (D2): the original copies the difference to r2 before the `and` of `r8 = (secorg[j] - q->tsize) &
      0xff00` (the `+ 255` case beside it is in place); source forms (operands swapped, `~0xff`, the sum turned round)
-     change nothing: no source form, an allocator rule still open.
+     change nothing: no source form, an allocator rule still open. Measured with a debug codgen (allocreg traced): our
+     codgen allocates one register for the whole `secorg[j] - q->tsize & 0xff00` (sub and and in place); the original
+     takes a new register for the `and`, but not in the `+ 255` case beside it, so the old codgen chose another table
+     entry for this AND (or its popt left a copy that ours never sees). Not found.
+   - chk_ranlib (D3/D2): `q = p` uses r7 in ours without a register allocation (fixname finds p in r7); the original
+     allocates r2 and loads p from the frame, but uses r7 for `p + n` right after; `q2->stype` uses r3 in ours, the
+     original copies q2 to r2 first. Tried 2026-10-31: the && form (under OLD_D3), symreg only on idle registers:
+     no change in ld, none on the bench.
+   - State after the rounds of 2026-10-31 (about 10 more): D2 parked again (label rules refuted by the bench, the
+     busy rule without effect, place_sec without a source form); the open five (load2td, place_sec, dseek,
+     chk_ranlib, read_symbols) have one witness each. Next idea: restore WEGA's changed versions of bench sources
+     (mv.c first; kept in src/cmd, owner 2026-10-31) to get clean witnesses for D2 and the code motion of popt.
    - Sources restored for tests are kept in src/cmd (owner, 2026-10-31); the bench itself uses the unchanged System III
      files and keeps nothing.
    - State: ld 54 of 59 strictly exact with v1 (ranlib_scan exact, load2td open again), strip and size byte-identical
