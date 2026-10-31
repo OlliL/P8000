@@ -264,3 +264,8 @@ TODO.md when this log was started.
 - The original copies the value of `(sz = X/8) > 0xfffe` into a new pair (nidcl, beginit, endinit; 3 times, never
   for words): OLD_D2A (match: behind a long ASSIGN in a value context getreg + rmove, the copy keeps the name):
   cparse 125, 1087; corpus 259; bench v0 108, 429 unchanged: v0p only.
+- Frame maps (the frame offsets each function uses, original against ours): source fixes tymatch (register p1 as in
+  Plexus: an eighth register variable lands in the frame), argdebug (one register variable), buildtree (one more
+  word at the function level; the STREF block in the order cp2, cp1, a word, j, k), defid (one more word), efcode
+  (an unused long; i in front of p): cparse 126, 997; corpus 259. A search over all permutations of the register
+  variables found no further swapped declarations.

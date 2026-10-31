@@ -62,6 +62,7 @@ defid( q, class )  NODE *q; {
 	int slev, temp;
 	int len;
 	char *cp1, *cp2;	/* cp1 also walks over paramstk */
+	int n;
 # define PSYM (*(struct symtab **)cp1)
 
 	if( q == NIL ) return;  /* an error was detected */

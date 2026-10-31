@@ -231,9 +231,10 @@ deflab( n ) register n; {
 
 efcode(){
 	/* code for the end of a function */
-	register struct symtab *p;
 	register int i;
+	register struct symtab *p;
 	long size;
+	long n;
 
 	deflab( retlab );
 	if( strftn ){  /* a static area for the returned structure */

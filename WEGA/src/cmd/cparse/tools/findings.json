@@ -6701,7 +6701,7 @@
   "defid": {
    "basis": "reading",
    "d_classes": "D15 D2 D3",
-   "note": "Remaining: the original places the member/structure-name block (the WEGA name space check, label mismatch) between the then and the else part of the dimension test inside the loop over the dimensions; our source has it at the PCC place behind the switch (same control flow). Tried: the PCC layout. Open: a source layout that gives the original block order (goto into the loop body like in optim?)."
+   "note": "Remaining: the original places the member/structure-name block (the WEGA name space check, label mismatch) between the then and the else part of the dimension test inside the loop over the dimensions; our source has it at the PCC place behind the switch (same control flow). Tried: the PCC layout. Open: a source layout that gives the original block order (goto into the loop body like in optim?). Source fix: one more unused int behind cp2 (a frame word of the original; the name is a guess)."
   },
   "genswitch": {
    "basis": "reading",
@@ -6817,6 +6817,11 @@
    "basis": "frame layout",
    "d_classes": "",
    "note": "Source fix: one more unused int at the function level, and in the STREF block the locals in the order cp2, cp1, an unused int, j, k (the frame places of the original); the names of the unused ones are guesses."
+  },
+  "efcode": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: register i declared in front of p (i in r14, p in r13 in the original) and an unused long behind size (4 frame bytes of the original; the name is a guess)."
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",
