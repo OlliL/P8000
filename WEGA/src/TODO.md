@@ -75,11 +75,24 @@ Order:
    observe. Measured already: cparse writes the initialisers and the string literals as cas text into base.D with
    `.even` behind each string (D12 is a cparse difference; experiment in tmp/tmp/stage).
 4. **Derive the old compiler step by step** with switches in the stages (cparse, codgen, popt), encapsulated by separate
-   cc entry points (for example ccv1 calls `cparse -xyz`, ccv2 `cparse -abc`). Start with strip (one D2 expression, D12),
+   cc entry points (for example ccv1, ccv2). Start with strip (one D2 expression, D12),
    measure on ld (8 findings, strictcmp, d12model, corpus), check on ranlib and the oldcc modules. Fix a time box and an
    abort criterion before this step starts (HANDOFF_wega_disasm.md, step 3).
+   Layout (owner decision 2026-10-31):
+   - The old versions are native WEGA programs only (built with the shipped cc, run in the emulator); no host versions
+     and no cross environment of them. The build frame stays in `src/`; `host/oldcc` is not used for it (it keeps only
+     the check of the cas sources in `src/lib/libc/oldcc`).
+   - One source per pass (`src/cmd/cparse`, `src/cmd/codgen`, `src/cmd/popt`, likewise `src/cmd/cc` for the entry
+     points); the differences of an old version are compile-time switches (`#ifdef`) in these sources, so the normal
+     build stays byte-identical with the shipped programs.
+   - Every old version of a program has its own subdirectory with its own Makefile, for example `cmd/cparse/v1/Makefile`
+     builds the v1 cparse from the sources of `cmd/cparse`. The Makefile of the version defines everything of it: the
+     switches, the libc (shipped members or `lib/oldlibc` versions), crt0, the install name. The Makefile of the pass
+     directory at most descends into the version directories (`SUBDIRS`, `cd v1 ; $(MAKE)`).
+   - Built programs are not in git.
+   - The host versions (`host/codgen`, `host/popt`, ...) get no switches: they are derived or only equal in function.
 5. **Final test**: cparse (and codgen) compiled with the rebuilt old compiler are byte-identical with the originals. Only
-   then are the host versions (`host/cparse`, ANSI C) written from the proven sources.
+   then are the host versions (`host/cparse`, ANSI C) written from the proven sources (of the shipped revision).
 
 Shared toolkit `host/recon/` (README there): `progcfg.py`, `funcs.py`, `patterns.py`, `classify.py`, `findings_md.py`,
 `odis.py`, `callcmp.py`, used by codgen, popt, sld. The tools of ld that are general move there before cparse starts
