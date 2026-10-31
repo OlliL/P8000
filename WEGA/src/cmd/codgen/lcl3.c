@@ -896,6 +896,9 @@ gswitch(p)
 	register long n;
 	register int dlab;
 	int tab, reg, save, ra, rb, cnt, tlab, t, t2;
+#ifdef OLD_D2T
+	struct rs *tn;
+#endif
 
 	l = p->left;
 	r = p->right;
@@ -951,6 +954,12 @@ gswitch(p)
 		rmove(reg, save, 3);
 		rfree(save, 3);
 	}
+#ifdef OLD_D2T
+	if ((tn = rfind(reg, 2)) != 0)	/* the register of the switch value is in use here (OLD_D2T frees it in between) */
+		tn->busy++;
+	else
+		getreg(2, reg, 0x1000, 0);
+#endif
 	ra = getreg(2, -1, 0x1000, 0);
 	if (ra == reg || ra == 0) {
 		t = ra;
@@ -963,10 +972,15 @@ gswitch(p)
 		rfree(t, 3);
 	}
 	rb = getreg(2, -1, 0x1000, 0);
-	if (rb == reg || rb == 0) {
+#ifdef OLD_D6R
+#define D6RBAD(r)	((r) == reg || (r) <= 1)	/* v0: the count of cpir in neither half of rr0 */
+#else
+#define D6RBAD(r)	((r) == reg || (r) == 0)
+#endif
+	if (D6RBAD(rb)) {
 		t = rb;
 		rb = getreg(2, -1, 0x1000, 0);
-		if (rb == reg || rb == 0) {
+		if (D6RBAD(rb)) {
 			t2 = rb;
 			rb = getreg(2, -1, 0x1000, 0);
 			rfree(t2, 3);

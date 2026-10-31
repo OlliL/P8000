@@ -141,7 +141,7 @@ time, or another version) points to their mechanism.
   codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
   return temporary, leaf functions without a frame) and packed strings (old D12).
 - Switches so far: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`, `OLD_D3P`,
-  `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T` (codgen); popt without a switch
+  `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R` (codgen; the version Makefiles name only `OLD_V0` or `OLD_V0P`, the switches are set in `codgen/oldcc.h`: the native cc takes about 160 characters of -D options); popt without a switch
   (OLD_D20 is neutral on the bench). Candidates in the sources, not set: `OLD_D2D` (codgen) and `OLD_D1F` (popt), see
   "Leaf functions" below. No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
 - Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
@@ -151,7 +151,7 @@ time, or another version) points to their mechanism.
   differing lines 1624 > 1542; + OLD_D10 and OLD_D2R narrowed to loads through a pointer: 64, 1466 lines; OLD_D1R
   without any return temporary: 64, 1463; + OLD_D3P: 65, 1462; + OLD_D4R: 68, 1437; + OLD_D4O: 69, 1435; the pairs
   rr2 rr0 rr4 rr6 at the start (OLD_D2W): 74, 1405; OLD_D3P under casts: 74, 1395; + OLD_D2C and OLD_D2F: 75, 1325;
-  + OLD_D2L: 84, 1080; + OLD_D2N: 86, 1064; + OLD_D6T: 86, 1004; + OLD_D6C: 86, 788; + OLD_D2T: 95, 557).
+  + OLD_D2L: 84, 1080; + OLD_D2N: 86, 1064; + OLD_D6T: 86, 1004; + OLD_D6C: 86, 788; + OLD_D2T: 95, 557; + OLD_D6R: 98, 539; OLD_D4R on both sides: 99, 531).
 - /lib/cparse as the second test bench (2026-10-31, ccv0, d12model, strictcmp): 44 strictly exact (shipped cc 29);
   cparse built with ccv0 normally passes its corpus like the shipped build (239 of 259 inputs identical, the rest
   differ only in the heap contents of the .S file). The behaviour check is needed: the test benches count equal
@@ -185,12 +185,12 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 99 strictly exact, 1668 differing lines, code and data as long as the original's (48896, 18584
+- State: /lib/cparse 108 strictly exact, 1438 differing lines, code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
   81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines; + OLD_D2Q 2719 lines (88: addcase and ftnend differ only by a mask artifact, a data address equal to a function
-  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668).
+  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
@@ -273,6 +273,9 @@ compiler that built the original. Not differences of the compiler (checked):
   bodies take r2 again (setreg, prtree, opact exact); the compares are reached only by the jump from the start, where
   the register still holds the value. Risk: a TEMP needed on a path that runs through such a body would be wrong code
   (not seen; cparse makes TEMPs only for switches). cparse 2343 > 1732 lines, bench v0 86 > 95.
+- v0 (switch `OLD_D6R` in codgen gswitch): the count register of cpir is in neither half of rr0 (`ld r4,#n`, the
+  shipped codgen skips only r0 and takes r1); under OLD_D2T gswitch takes the switch register first, which a body
+  may have given back. cparse 1668 > 1584 lines (8 functions that differed only in this register), bench v0 95 > 98.
 - v0p (switch `OLD_D2Q` in codgen, allocreg): a long loaded through a pointer goes into the pair of its even address
   register when the odd half is free (`sla r2,#2; ldl rr2,TAB(r2)`, the shipped codgen takes rr0), also when that
   pair is the wanted one (cinit: `ldl rr4,14(r4)` for an argument); cparse 2836 > 2719 lines, bench v0 1080 > 1085
@@ -313,9 +316,11 @@ compiler that built the original. Not differences of the compiler (checked):
   %0002(r15),rr6` against v1's `ldm @r15,r5,#3`), codgen (register parameters have no home slots, `ld r14,r7; ld
   r13,r6` first parameter first; the shipped cc spills more: getlr, member, nullsyms), libc swap (an address-taken
   argument spilled in the `0(r15)` form), sld (a long parameter cast to a pointer read from its spill slot).
-- v0 (switch `OLD_D4R` in cparse, argalloc in pftn1.c): the register parameters behind the last other parameter
-  (allocated last, so at the top of the parameter area) get no home in the frame (cparse deflab, branch, locctr ...:
-  frame 2 bytes smaller). A first form without homes for all register parameters (oalloc) gave the same instructions
+- v0 (switch `OLD_D4R` in cparse, argalloc in pftn1.c): the register parameters in front of the first other
+  parameter and behind the last one (so all of them when every parameter is a register one) get no home in the frame
+  (cparse deflab, branch, locctr ...: frame 2 bytes smaller; offcon `register d, s` behind `off, t`); those between
+  other parameters keep theirs (block). The first form had only the side in front (cparse 71; with both sides
+  1584 > 1438 lines, conval, buildtree, offcon). A first form without homes for all register parameters (oalloc) gave the same instructions
   in 24 functions but a cparse that fails on every input (block: the homes between other parameters are needed, the
   spill `ldm` is contiguous). Bench v0 65 > 68, cparse 48 > 71.
 - v0 (switch `OLD_D4O` in codgen, stmt in reader3.c): the parameter list is walked from its end, so the register

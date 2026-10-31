@@ -6,24 +6,11 @@
 #   make install PREFIX=dir    dir/lib/v0/codgen (the pass of ../../cc/v0/ccv0)
 #   make clean
 #
-# Switches (host/OLDCC.md):
-#   OLD_D2R   a load through a pointer (STAR, OREG) into the register of its address first (allocreg)
-#   OLD_D18   the frame operand at offset 0 written as 0(fp), never @fp
-#   OLD_D1R   no temporary for the value of a return (r2 stays taken while a delayed x++ runs)
-#   OLD_D2W   the order of the free registers: r0 early (rweight), the pairs rr2 rr0 rr4 rr6 also at the start (rsbuild)
-#   OLD_D10   a long shifted by a constant through a register (ld A1,#n; sdal), no slal/sral with an immediate
-#   OLD_D3P   a name in a register is taken from it also when another register is wanted (regforsym; a copy follows)
-#   OLD_D4O   the parameters taken in the order of their declaration (the copies of register parameters)
-#   OLD_D2C   a name (not a parameter) found in a scratch register is that register, no copy; a copy holds no name
-#   OLD_D2F   a free word register only when it weighs no more than the first free pair (else the pair is split)
-#   OLD_D2L   an idle scratch word that only holds a name counts as free when it weighs less (getreg)
-#   OLD_D2N   a name loaded into a word register (a global, or an auto from the frame) is not remembered there
-#   OLD_D6T   a cpir switch: the values in front of the targets (record V), the target loaded from the cpir pointer
-#   OLD_D2T   the register of a TEMP (the value of a switch) counts as free for OLD_D2L between its uses
+# Switches: ../oldcc.h (the version name only: the native cc takes about 160 characters of -D options).
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W -DOLD_D10 -DOLD_D3P -DOLD_D4O -DOLD_D2C -DOLD_D2F -DOLD_D2L -DOLD_D2N -DOLD_D6T -DOLD_D2T
+SWITCHES = -DOLD_V0
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc
@@ -37,70 +24,70 @@ all: codgen
 codgen: $(OBJS)
 	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(OBJS) $(OLDOBJS) $(SHIPOBJS) -o codgen
 
-allo3.o: ../allo3.c ../cg.h
+allo3.o: ../allo3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../allo3.c
 
-local3.o: ../local3.c ../cg.h
+local3.o: ../local3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../local3.c
 
-match3.o: ../match3.c ../cg.h
+match3.o: ../match3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../match3.c
 
-order3.o: ../order3.c ../cg.h
+order3.o: ../order3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../order3.c
 
-out3.o: ../out3.c ../cg.h
+out3.o: ../out3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../out3.c
 
-regallo3.o: ../regallo3.c ../cg.h
+regallo3.o: ../regallo3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../regallo3.c
 
-regfile3.o: ../regfile3.c ../cg.h
+regfile3.o: ../regfile3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../regfile3.c
 
-tmp3.o: ../tmp3.c ../cg.h
+tmp3.o: ../tmp3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../tmp3.c
 
-zzz3.o: ../zzz3.c ../cg.h
+zzz3.o: ../zzz3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../zzz3.c
 
-reader3.o: ../reader3.c ../cg.h
+reader3.o: ../reader3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../reader3.c
 
-gen3.o: ../gen3.c ../cg.h
+gen3.o: ../gen3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../gen3.c
 
-optim3.o: ../optim3.c ../cg.h
+optim3.o: ../optim3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../optim3.c
 
-comm3.o: ../comm3.c ../cg.h
+comm3.o: ../comm3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../comm3.c
 
-rdr3.o: ../rdr3.c ../cg.h
+rdr3.o: ../rdr3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../rdr3.c
 
-main3.o: ../main3.c ../cg.h
+main3.o: ../main3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../main3.c
 
-efcode3.o: ../efcode3.c ../cg.h
+efcode3.o: ../efcode3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../efcode3.c
 
-lcl3.o: ../lcl3.c ../cg.h
+lcl3.o: ../lcl3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../lcl3.c
 
-tr3.o: ../tr3.c ../cg.h
+tr3.o: ../tr3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../tr3.c
 
-regs3.o: ../regs3.c ../cg.h
+regs3.o: ../regs3.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../regs3.c
 
-table3_codgen.o: ../table3_codgen.c ../cg.h
+table3_codgen.o: ../table3_codgen.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../table3_codgen.c
 
-ops_codgen.o: ../ops_codgen.c ../cg.h
+ops_codgen.o: ../ops_codgen.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../ops_codgen.c
 
-hop_codgen.o: ../hop_codgen.c ../cg.h
+hop_codgen.o: ../hop_codgen.c ../cg.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../hop_codgen.c
 
 install: codgen

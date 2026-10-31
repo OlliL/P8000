@@ -213,3 +213,19 @@ TODO.md when this log was started.
   (the shift count of OLD_D10 got rr6: `ld r6,#4; sdal rr6,r6`); only `& | ^ + -`: no effect; every binary operator
   except the shifts: cparse 99, 1668 (defalign, ispow2, yylex); code 48640 against 48896; corpus 259 of 259; bench
   v0 557 unchanged: v0p only.
+- Groups of equal effects in the remaining cparse functions (strictlayers): 20 functions differ only in the frame
+  or the registers. 8 of them only in the cpir count register (r4 against r1): OLD_D6R. The first try had no effect:
+  under OLD_D2T the switch register r2 is free again at gswitch (a body gave it back) and getreg offers it first,
+  which costs one of the three tries; gswitch now takes it (getreg(2, reg)) before ra and rb. cparse 107, 1584;
+  corpus 259; bench v0 98, 539.
+- The native cc takes about 160 characters of -D options (17 switches of 9 characters: "Can't create
+  /tmp/cc.-1824/lib/cpp"); codgen v0/v0p name only OLD_V0 / OLD_V0P, codgen/oldcc.h sets the switches. The codgen of
+  v0 and v0p built that way is identical with the one built with the explicit list.
+- offcon (frame 4 bytes larger in ours): argalloc gets the parameters in the order of declaration; OLD_D4R skipped
+  only the register parameters in front of the first other one. Only behind the last one: 1754 (offcon, buildtree,
+  conval better, convert, fwalk, walkf, cast, makety, genswitch worse); both sides: cparse 108, 1438, no loss;
+  corpus 259; bench v0 99, 531.
+- Frame-only differences that look like source errors (not yet changed): hash (h and p in the other order in the
+  frame), hide (one frame word less in the original: the unused `h`), lookup (one word more in the original between
+  i and n). An unused local gets its frame place in the old cc too (initpreg with `int i, j;` is exact). talloc has
+  one word more in the original although Plexus declares the same two locals: a compiler difference.

@@ -8,7 +8,7 @@
 #
 # Switches (host/OLDCC.md):
 #   OLD_D12   the string literals of a file at the end of its data, one pool, aligned only at its start and end
-#   OLD_D4R   no home in the frame for the register parameters behind the last other parameter (argalloc)
+#   OLD_D4R   no home in the frame for the register parameters in front of the first and behind the last other one
 #   OLD_D6T   the values of a cpir switch go to codgen with its targets (record V), written together
 #   OLD_D6C   up to 3 cases compared one after the other, the cpir table from 4 cases on
 

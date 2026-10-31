@@ -418,16 +418,20 @@ argalloc( a, n ) NODE *a[]; { /* the offsets of the arguments a[0] ... a[n-1] th
 
 	j = 0;
 #ifdef OLD_D4R
-	{	/* the old cparse: the register parameters behind the last other one (the first in the list) get no home */
-		int k;
+	{	/* the old cparse: the register parameters in front of the first other one and behind the last get no home */
+		int k, kk;
 
 		for( k=0; k<n; ++k ){
 			q = STP(a[k]->rval);
 			if( q->sfldc == 1 && q->stype != DOUBLE && q->sclass != REGISTER ) break;
 			}
+		for( kk=n-1; kk>=0; --kk ){
+			q = STP(a[kk]->rval);
+			if( q->sfldc == 1 && q->stype != DOUBLE && q->sclass != REGISTER ) break;
+			}
 		for( i=n-1; i>=0; --i ){
 			p = STP(a[i]->rval);
-			if( i < k && p->sclass == REGISTER ) continue;
+			if( (i < k || i > kk) && p->sclass == REGISTER ) continue;
 			if( p->sfldc == 1 && p->stype != DOUBLE ){
 				if( j ){
 					q = STP(a[j]->rval);

@@ -4,6 +4,7 @@
  * in it (SAREG, TBYTE, RLEFT ...). See ../KNOWLEDGE.md, "codgen / scodgen".
  */
 #include <stdio.h>
+#include "oldcc.h"
 
 /* the older stdio.h of the original masks the byte (getc returns 0..255, EOF stays -1) */
 #undef getc
