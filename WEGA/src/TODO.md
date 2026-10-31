@@ -134,6 +134,16 @@ Order:
      and sp (r7) at the label of an if (`rsfreeall(1)` at 'L', main3.c); then rr2 is whole again and r3 comes before
      r6. The old codgen keeps them taken there, but not at the loop head of mput or str_compare, and reloads a
      parameter after such a label (mkfsym). Open: the rule that tells these labels apart.
+     Rounds 6 and 7 (strip and ranlib_scan suggest that rr2 is not the first free pair behind a statement that used
+     r2): a pair made by merging put behind the other pairs: rr0 comes first, cas stops ("Cannot perform an
+     indirection on r0"); in front of rr0: 45 functions worse. Not accepted.
+   - Further witnesses of the accepted switches: size built with v1 (cparse, codgen, popt) is identical with /bin/size
+     (the 2 bytes of D12 are gone); strip: data identical, the code differs only in the known D2 block (9 bytes). The
+     corpus of ld (`tools/corpus_ld.py`) with the v1 ld: 146 of 146 identical.
+   - State: ld 54 of 59 strictly exact with v1; open: ranlib_scan, place_sec, dseek (D2), chk_ranlib (D3, the
+     parameter p is loaded from the frame for q = p, but its register is used for p + n), read_symbols (D1 frame
+     +2: the temporary of a return above the locals, and a dead `ldl rr4,rr2` of the original). About 20 rounds:
+     the review point of the time box.
 5. **Final test**: cparse (and codgen) compiled with the rebuilt old compiler are byte-identical with the originals. Only
    then are the host versions (`host/cparse`, ANSI C) written from the proven sources (of the shipped revision).
 

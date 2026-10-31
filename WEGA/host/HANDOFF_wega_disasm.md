@@ -74,8 +74,10 @@ original tools and compares each program).
    of that plan.
 2. **Bring the source to its natural form.** Revert the compensating changes or justify them. New baseline:
    bytes, functions, D classes.
-3. **Reconstruct the old compiler.** Derive a model of the differences D1 to D16 from the fit functions, check it on a
-   separate validation set. Goal: the original binaries reproduced byte-identical from our sources. Fix a time box
-   and an abort criterion before starting.
+3. **Reconstruct the old compiler.** Started 2026-10-31 (time box and rules: `../src/TODO.md`, plan item 4). The
+   version v1 is built in `src/cmd/{cparse,codgen,popt}/v1` (own Makefile each, switches OLD_D12, OLD_D20, OLD_D3);
+   with it ld is 54 of 59 strictly exact and size is byte-identical with /bin/size. Open: D2 (parked), D3 of
+   chk_ranlib, D1 of read_symbols. Review point of the time box reached (about 20 rounds). There is no cc entry point
+   (ccv1) yet: the tests run the passes one by one (cpp, cparse/v1, codgen/v1, popt/v1, cas).
 
 The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").
