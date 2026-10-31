@@ -283,7 +283,7 @@ argsize( p ) register NODE *p; { /* the size of an argument in words */
 
 	if( p->op == STARG )
 		return( (tsize( STRTY, p->left->cdim, p->left->csiz ) + 7) / SZINT );
-	return( s2 = s1 = twords( p->type == FLOAT ? DOUBLE : p->type ) );
+	return( s1 = s2 = twords( p->type == FLOAT ? DOUBLE : p->type ) );
 	}
 
 where(c){ /* print the location of an error */
