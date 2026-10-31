@@ -204,10 +204,10 @@
     "strict": 26,
     "frame_hidden": 26,
     "regs_hidden": 4,
-    "class": "open shapes",
+    "class": "named shapes only",
     "shapes": {
      "D3 spill": 1,
-     "open": 1
+     "D16 memory operand": 1
     }
    }
   },
@@ -977,10 +977,11 @@
     "regs_hidden": 55,
     "class": "open shapes",
     "shapes": {
-     "open": 9,
+     "D3 register or memory operand": 4,
      "D3 spill": 1,
      "D3 reload": 5,
      "D7 jump distance": 3,
+     "open": 5,
      "D6 dispatch form": 1,
      "D6 compare chain": 1
     }
@@ -1659,9 +1660,9 @@
     "strict": 13,
     "frame_hidden": 13,
     "regs_hidden": 5,
-    "class": "open shapes",
+    "class": "named shapes only",
     "shapes": {
-     "open": 1,
+     "D3 register or memory operand": 1,
      "D10 long shift": 1
     }
    }
@@ -2698,7 +2699,9 @@
     "regs_hidden": 23,
     "class": "open shapes",
     "shapes": {
-     "open": 6
+     "D2/D3 copies, spills, reloads": 1,
+     "D3 register or memory operand": 1,
+     "open": 4
     }
    }
   },
@@ -2849,8 +2852,9 @@
     "class": "open shapes",
     "shapes": {
      "D1 frame": 2,
-     "open": 7,
+     "D3 register or memory operand": 4,
      "D6 dispatch form": 1,
+     "open": 3,
      "D3 reload instead of copy": 2
     }
    }
@@ -3246,9 +3250,9 @@
     "strict": 15,
     "frame_hidden": 11,
     "regs_hidden": 3,
-    "class": "open shapes",
+    "class": "named shapes only",
     "shapes": {
-     "open": 1
+     "D4 spill form": 1
     }
    }
   },
@@ -3284,9 +3288,9 @@
     "strict": 10,
     "frame_hidden": 10,
     "regs_hidden": 4,
-    "class": "open shapes",
+    "class": "named shapes only",
     "shapes": {
-     "open": 1
+     "D2/D3 copies, spills, reloads": 1
     }
    }
   },
@@ -3895,17 +3899,17 @@
     "len_orig": 324
    },
    "strict_layers": {
-    "strict": 175,
-    "frame_hidden": 171,
-    "regs_hidden": 63,
+    "strict": 163,
+    "frame_hidden": 159,
+    "regs_hidden": 27,
     "class": "open shapes",
     "shapes": {
-     "D2 register copy": 5,
+     "D2 register copy": 6,
      "D3 reload instead of copy": 1,
      "D6 dispatch form": 1,
-     "open": 9,
      "D3 reload": 1,
-     "D7 jump distance": 2
+     "D2/D3 copies, spills, reloads": 1,
+     "open": 4
     }
    }
   },
@@ -3941,9 +3945,9 @@
     "strict": 17,
     "frame_hidden": 13,
     "regs_hidden": 3,
-    "class": "open shapes",
+    "class": "named shapes only",
     "shapes": {
-     "open": 1,
+     "D2/D3 copies, spills, reloads": 1,
      "D3 reload": 1
     }
    }
@@ -4174,10 +4178,10 @@
     "strict": 8,
     "frame_hidden": 8,
     "regs_hidden": 6,
-    "class": "open shapes",
+    "class": "named shapes only",
     "shapes": {
      "D2 register copy": 1,
-     "open": 1,
+     "D3 register or memory operand": 1,
      "D3 reload instead of copy": 1,
      "D3 reload": 1
     }
@@ -5141,9 +5145,9 @@
     "strict": 20,
     "frame_hidden": 16,
     "regs_hidden": 6,
-    "class": "open shapes",
+    "class": "named shapes only",
     "shapes": {
-     "open": 1,
+     "D2/D3 copies, spills, reloads": 1,
      "D3 reload": 1
     }
    }
@@ -5863,7 +5867,8 @@
     "regs_hidden": 10,
     "class": "open shapes",
     "shapes": {
-     "open": 4,
+     "D3 register or memory operand": 1,
+     "open": 3,
      "D2 register copy": 1
     }
    }
@@ -6014,9 +6019,9 @@
     "strict": 18,
     "frame_hidden": 10,
     "regs_hidden": 2,
-    "class": "open shapes",
+    "class": "named shapes only",
     "shapes": {
-     "open": 1
+     "D2/D3 copies, spills, reloads": 1
     }
    }
   },
@@ -6653,7 +6658,8 @@
     "regs_hidden": 4,
     "class": "open shapes",
     "shapes": {
-     "open": 2
+     "D2/D3 copies, spills, reloads": 1,
+     "open": 1
     }
    }
   },

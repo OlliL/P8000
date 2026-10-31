@@ -54,7 +54,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | chkpun | 44b8-4678 | 0x441e | confirmed |  | other differences | frame and registers only |  | unexplained instruction forms: sra	rS,#2 |
 | chkstr | 4424-44b8 | 0x438a | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D2, D3, D7, D8/D2 |  |
 | cinit | 7788-7888 | 0x7684 | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| cisreg | 75e6-763e | 0x74f2 | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D2, D7, D8, D8/D2 |  |
+| cisreg | 75e6-763e | 0x74f2 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D2, D7, D8, D8/D2 |  |
 | clearst | 9bee-9cda | 0x9ae6 | confirmed | strict | other differences | exact |  | unexplained instruction forms: xor	rS,rS |
 | clocal | 719a-75e6 | 0x7094 | confirmed |  | D only (pattern-verified) | open shapes | D2 D3 D6 D7 D19 | Source: tbytes(l->type) > tbytes(p->type) for the call order of the original (D19); the rest are register and layout differences. |
 | commdec | 7b36-7b98 | 0x7a1e | confirmed |  | D only (pattern-verified) | frame only | D1, D10, D11, D13, D2, D3, D7 |  |
@@ -104,7 +104,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | icons | 4fb4-4ffe | 0x4f24 | confirmed |  | D only (pattern-verified) | frame and registers only | D1, D10, D11, D13, D2, D3, D7, D8/D2 |  |
 | ilbrace | 8b48-8bb6 | 0x8a3c | confirmed |  | D only (pattern-verified) | named shapes only | D1, D11, D13, D2, D3, D7, D8, D8/D2 |  |
 | incode | 7676-7716 | 0x7574 | confirmed |  | other differences | frame and registers only |  | unexplained instruction forms: or	rS,A |
-| inforce | 38e0-3998 | 0x3870 | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D13, D2, D3, D7 |  |
+| inforce | 38e0-3998 | 0x3870 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D2, D3, D7 |  |
 | initpreg | 324a-326a | 0x31e0 | confirmed | strict | D only (pattern-verified) | exact | D1, D10, D11, D13, D7 |  |
 | instk | 8326-84da | 0x821a | confirmed |  | other differences | open shapes |  | unexplained instruction forms: srl	rS,#2 |
 | irbrace | 8bb6-8bea | 0x8aac | confirmed | strict | D only (pattern-verified) | exact | D11, D13, D3, D7, D8/D2 |  |
@@ -130,7 +130,7 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | mkty | 002a-004c | 0x002a | confirmed |  | D only (pattern-verified) | frame only | D1, D11, D13, D2, D3, D7 |  |
 | moditype | 5228-5260 | 0x5196 | confirmed |  | D only (pattern-verified) | frame and registers only | D1, D10, D11, D13, D2, D3, D6, D7, D8/D2 |  |
 | moedef | 33ec-3426 | 0x3376 | confirmed | strict | D only (pattern-verified) | exact | D1, D10, D11, D13, D2, D3, D7, D8/D2 |  |
-| ncopy | 80ba-80d0 | 0x7f9a | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D13, D2, D3 |  |
+| ncopy | 80ba-80d0 | 0x7f9a | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D2, D3 |  |
 | newsect | 65d6-66d6 | 0x64c2 | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D13, D16, D3, D5, D7, D8, D8/D2 |  |
 | nidcl | 8f64-907a | 0x8e4a | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D13, D2, D3, D7, D8, D8/D2 |  |
 | nncon | 816c-818e | 0x8062 | confirmed |  | D only (pattern-verified) | frame only | D1, D10, D11, D2, D3, D7, D8/D2 |  |
@@ -159,15 +159,15 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | puttags | 9f80-9fa6 | 0x9e80 | confirmed | strict | D only (pattern-verified) | exact | D1, D10, D11, D13, D6, D7 |  |
 | refid | 9adc-9bee | 0x99ca | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D2, D3, D6, D7, D8, D8/D2 |  |
 | regfree | 95b8-95fa | 0x94a6 | confirmed |  | D only (pattern-verified) | frame only | D1, D10, D11, D13, D2, D3, D6, D7, D8/D2 |  |
-| resetbc | 0126-016a | 0x0130 | confirmed |  | D only (pattern-verified) | open shapes | D1, D11, D13, D16, D3, D8 |  |
+| resetbc | 0126-016a | 0x0130 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D11, D13, D16, D3, D8 |  |
 | resetmem | 8210-822e | 0x8100 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D11, D13, D3, D7 |  |
 | rmconv | 6096-61c4 | 0x5f90 | confirmed |  | D only (pattern-verified) | open shapes | D3 D19 | Source: bsize(q->type) == bsize(q->left->type) and notflt in the same order, for the call order of the original (D19). |
 | rstruct | 3340-33ec | 0x32ca | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D2, D3, D6, D7, D8, D8/D2 |  |
 | savebc | 00d8-0126 | 0x00e2 | confirmed | strict | D only (pattern-verified) | exact | D11, D13, D3, D7 |  |
 | savestr | 17b8-1884 | 0x1792 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D3, D7, D8/D2 |  |
 | scnames | 1392-13d6 | 0x1374 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D11, D13, D2, D3, D6, D7, D8, D8/D2 |  |
-| sectadd | 66f8-672a | 0x65e8 | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D13, D3, D7, D8/D2 |  |
-| sectfull | 66d6-66f8 | 0x65c4 | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D2, D3, D7 |  |
+| sectadd | 66f8-672a | 0x65e8 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D3, D7, D8/D2 |  |
+| sectfull | 66d6-66f8 | 0x65c4 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D2, D3, D7 |  |
 | setreg | 31ae-324a | 0x3144 | confirmed |  | D only (pattern-verified) | frame and registers only | D1, D11, D13, D2, D3, D7, D8, D8/D2 |  |
 | sfinit | 1534-155e | 0x1514 | confirmed | strict | D only (pattern-verified) | exact | D1, D10, D11, D13, D3, D5, D7, D8/D2 |  |
 | sheader | 9d12-9d3e | 0x9c0c | confirmed | strict | D only (pattern-verified) | exact | D10, D11, D13, D2, D7 |  |
@@ -193,13 +193,13 @@ Source: `findings.json` (single source of truth). Functions are the program part
 | tymatch | 4c40-4e06 | 0x4bb4 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D2, D3, D5, D6, D7, D8/D2 |  |
 | tymerge | 9186-9270 | 0x906e | confirmed |  | other differences | named shapes only |  | unexplained instruction forms: srl	rS,#2 |
 | types | 907a-9186 | 0x8f60 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D2, D3, D6, D7, D8/D2 |  |
-| tyreduce | 9270-9306 | 0x9156 | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D13, D2, D3, D7, D8, D8/D2 |  |
+| tyreduce | 9270-9306 | 0x9156 | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D2, D3, D7, D8, D8/D2 |  |
 | uclass | 945e-9484 | 0x934c | confirmed |  | D only (pattern-verified) | frame only | D1, D10, D11, D13, D2, D3, D7, D8/D2 |  |
 | uerror | 7c72-7cae | 0x7b4c | confirmed | strict | D only (pattern-verified) | exact | D1, D11, D13, D3, D7 |  |
 | unhide | 9a6e-9adc | 0x995c | confirmed |  | other differences | frame and registers only |  | unexplained instruction forms: xor	rS,rS |
 | upoff | 8c26-8c76 | 0x8b1e | confirmed |  | other differences | named shapes only |  | unexplained instruction forms: multl	rqS,rrS |
 | vfdalign | 3998-39e0 | 0x392c | confirmed |  | other differences | named shapes only |  | unexplained instruction forms: multl	rqS,rrS |
-| vfdzero | 79ee-7a70 | 0x78cc | confirmed |  | D only (pattern-verified) | open shapes | D1, D10, D11, D13, D2, D3, D6, D7, D8/D2 |  |
+| vfdzero | 79ee-7a70 | 0x78cc | confirmed |  | D only (pattern-verified) | named shapes only | D1, D10, D11, D13, D2, D3, D6, D7, D8/D2 |  |
 | walkf | 7ed8-7f2e | 0x7dae | confirmed |  | D only (pattern-verified) | frame and registers only | D1, D11, D2, D3, D6, D7, D8, D8/D2 |  |
 | werror | 7d2c-7d68 | 0x7c0a | confirmed | strict | D only (pattern-verified) | exact | D1, D11, D13, D3, D7 |  |
 | where | 8038-8054 | 0x7f12 | confirmed | strict | D only (pattern-verified) | exact | D1, D11, D13, D3, D7 |  |

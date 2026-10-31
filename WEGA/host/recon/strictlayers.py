@@ -39,6 +39,16 @@ SHAPES = [
         {a[0], b[0]} <= {'ld\tR,R', 'ld\tR,F(r15)', 'ldl\tRr,Rr', 'ldl\tRr,F(r15)'}),
     ('D3 reload', lambda a, b: all(re.match(r'^ldl?\tRr?,F\(r15\)$', t) for t in a + b)),
     ('D3 spill', lambda a, b: all(re.match(r'^ldl?\tF\(r15\),Rr?$', t) for t in a + b)),
+    ('D2/D3 copies, spills, reloads', lambda a, b: all(re.match(r'^ldl?\t(Rr?,Rr?|Rr?,F\(r15\)|F\(r15\),Rr?)$', t)
+        for t in a + b)),
+    ('D4 spill form', lambda a, b: all(re.match(r'^ldl?\t(F\(r15\),Rr?|Rr?,Rr?)$', t) for t in a) and
+        len(b) == 1 and re.match(r'^ldm\tF\(r15\),R,#\d+$', b[0])),
+    ('D16 memory operand', lambda a, b: len(a) == 2 and len(b) == 1 and re.match(r'^ldl?\tRr?,(%[0-9A-F]{4}|F\(r15\))$', a[0])
+        and re.match(r'^(and|or|xor|add|sub|cp)l?\tRr?,Rr?$', a[1]) and b[0] == a[1].split('\t')[0] + '\t' +
+        a[1].split('\t')[1].split(',')[0] + ',' + a[0].split(',')[1]),
+    ('D3 register or memory operand', lambda a, b: len(a) == len(b) == 1 and a[0].split('\t')[0] == b[0].split('\t')[0] and
+        {re.sub(r'F\(r15\)|Rr?', 'X', a[0]), re.sub(r'F\(r15\)|Rr?', 'X', b[0])} == {re.sub(r'F\(r15\)|Rr?', 'X', a[0])} and
+        ('F(r15)' in a[0]) != ('F(r15)' in b[0])),
     ('D1 frame', lambda a, b: all(re.match(r'^(dec|inc|sub|add)\tr15,#N$', t) for t in a + b)),
     ('D10 long shift', lambda a, b: len(a) == 2 and len(b) == 1 and re.match(r'^ld\tR,#%000[0-9A-F]$', a[0]) and
         a[1].startswith('sdal\t') and b[0].startswith('slal\t')),

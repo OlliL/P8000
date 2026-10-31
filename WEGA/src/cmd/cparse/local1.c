@@ -40,10 +40,15 @@ clocal(p) NODE *p; {
 
 	case NAME:
 		q = STP(p->rval);
-		if( (q->sclass == LABEL || q->sclass == ULABEL) && q->slevel ){
-			p->op = LAB;
-			p->lval = 0;
-			p->rval = -q->offset;
+		switch( q->sclass ){
+
+		case LABEL:
+		case ULABEL:
+			if( q->slevel ){
+				p->op = LAB;
+				p->lval = 0;
+				p->rval = -q->offset;
+				}
 			}
 		break;
 
