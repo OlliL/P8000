@@ -21,6 +21,9 @@ extern void rsreturn();
 extern void nxwork();	/* 0x98e4 */
 extern void tmpcleanup();			/* 0x9308 */
 extern void rmove();	/* 0x3cf2 */
+#ifdef OLD_D2V
+extern int d2vfirst();
+#endif
 extern void ncopy();
 extern int rallkind();
 void rfreeall();
@@ -329,6 +332,10 @@ allocreg(p, cookie)
 		cls = rclass(p->type, want);
 #ifdef OLD_D2R
 	r = cls == 2 && (p->op == STAR || p->op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
+#ifdef OLD_D2V
+	if (r != -1 && want == -1 && r < 8 && !d2vfirst(r))
+		r = -1;		/* v0: only when no lighter register is free; r stays busy for the operand */
+#endif
 #ifdef OLD_D2D
 	if (r == -1 && cls == 3 && want == -1 && (p->op == DIV || p->op == MOD || p->op == ASG DIV || p->op == ASG MOD)) {
 		register struct node *l = getlr(p, 'L');	/* a word operand in an odd register: its pair */

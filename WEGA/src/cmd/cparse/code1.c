@@ -137,7 +137,7 @@ fltlab( d ) double d; { /* the label of the floating constant d; crslab if it is
 	return( crslab );
 	}
 
-fhashv( p, n ) char *p; { /* hash of the double at p */
+fhashv( p, n ) char *p; register n; { /* hash of the double at p */
 	char *q;
 	union { long l; char c[4]; } u;
 

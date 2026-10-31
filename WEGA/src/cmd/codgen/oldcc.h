@@ -28,4 +28,5 @@
 #define OLD_D2T		/* the register of a TEMP (the value of a switch) counts as free for OLD_D2L between its uses */
 #define OLD_D6R		/* the count register of cpir in neither half of rr0 (gswitch) */
 #define OLD_D3K		/* a parameter stays known in its register at a label a jump has named, and behind && and || */
+#define OLD_D2V		/* OLD_D2R only when no lighter register is free (the address register competes by weight) */
 #endif

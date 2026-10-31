@@ -441,6 +441,31 @@ fail:
 	return -1;
 }
 
+#ifdef OLD_D2V
+/* v0: the word register reg (that of an address) weighs no more than the one getreg(2, -1) would take */
+int
+d2vfirst(reg)
+	int reg;
+{
+	register struct rs *w, *t;
+	register int k;
+
+	for (w = rsfree; w && w->cls != 2 && w->cls != 3; w = w->next)
+		;
+	if (w && w->cls == 2) {
+		for (t = w; t && t->cls != 3; t = t->next)
+			;
+		if (t && rweight[w->reg] > rweight[t->reg])
+			w = t;
+	}
+	k = w ? rweight[w->reg] : 100;
+	for (t = rsuse; t; t = t->next)
+		if (t->cls == 2 && t->busy <= 0 && t->reg != reg && rweight[t->reg] < k)
+			k = rweight[t->reg];
+	return rweight[reg] <= k;
+}
+#endif
+
 /*
  * Get a register of the class cls for the symbol sym (or a temporary when sym is 0); reg = -1: any.
  * flag 0x1000: if no register is free, take one from the used list (regjam). Returns the register

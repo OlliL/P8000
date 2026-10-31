@@ -247,3 +247,7 @@ TODO.md when this log was started.
   L375. OLD_D20S tried (popt iterate: the turn-round in front of the jump to a jump, instead of behind): cparse 1296 >
   1311 (yyparse: a turn-round now missing); in front and behind: 1298 (getpreg exact; gotscal, yyparse worse: the
   loop test copied to the top). Parked (neutral); OLD_D20 of v1 in v0p: 1296 > 2049.
+- fhashv: the original saves r14 and gives n no home: source `register n;` (frame equal, 18 > 13).
+- main `ld r2,@r3` where OLD_D2R took the address register r3: OLD_D2V (the address register only when it weighs no
+  more than the word getreg would take, free or idle as under OLD_D2L): cparse 116, 1194 (argalloc 76 > 6, main
+  exact); corpus 259; bench v0 108, 429.

@@ -6762,6 +6762,11 @@
    "basis": "register variables",
    "d_classes": "D20",
    "note": "Source fix: the parameters declared t, p (the original has t in r14 and p in r13; the first declared register variable gets r14). Remaining: popt places the gotreg block behind the inverted test (jr lt), the original keeps it in place (jr ge): the old popt turns a conditional jump over a jump round before it follows the jump to a jump; tried as OLD_D20S, neutral (yyparse, gotscal worse)."
+  },
+  "fhashv": {
+   "basis": "frame layout",
+   "d_classes": "D2",
+   "note": "Source fix: register n (the original saves r14 and gives n no home: a register parameter behind the last other one, OLD_D4R). Remaining: the original takes n from r6 and does not restore r14 (popt renames the register variable), the byte loads use rl3 throughout."
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",
