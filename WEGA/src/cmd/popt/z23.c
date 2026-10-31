@@ -13,6 +13,10 @@ static void fixldm();
 static int usesreg();
 static int ovlap();
 static void markregs();
+#ifdef OLD_D1F
+static void stripframe();
+static int fpfirst();
+#endif
 
 
 
@@ -133,7 +137,60 @@ procopt()
 	rename_regs(t, ld1, ld2);
 	fixldm(ld1, r8);
 	fixldm(ld2, r8);
+#ifdef OLD_D1F
+	if (r8 == 0)
+		stripframe();
+#endif
 }
+
+#ifdef OLD_D1F
+/*
+ * The old popt: when no register is saved any more and no instruction reads the frame, the stores into the frame (the
+ * spills of the parameters) and the frame itself (dec/inc fp) go too.
+ */
+static void
+stripframe()
+{
+	register struct node *p;
+	register char *c;
+
+	for (p = &first; p; p = p->forw) {
+		if (p->code == 0 || p->op == LABEL || p->op == COMMENT)
+			continue;
+		for (c = p->code; *c; c++)
+			if (c[0] == 'f' && c[1] == 'p')
+				break;
+		if (*c == 0)
+			continue;
+		if ((p->op == DEC || p->op == INC) && strncmp(p->code, "fp,", 3) == 0)
+			continue;
+		if ((p->op == LD || p->op == LDM) && strncmp(p->code, "fp", 2) != 0 && fpfirst(p->code))
+			continue;
+		return;
+	}
+	for (p = &first; p; p = p->forw) {
+		if (p->code == 0 || p->op == LABEL || p->op == COMMENT)
+			continue;
+		if (((p->op == DEC || p->op == INC) && strncmp(p->code, "fp,", 3) == 0) ||
+		    ((p->op == LD || p->op == LDM) && fpfirst(p->code))) {
+			p->back->forw = p->forw;
+			if (p->forw)
+				p->forw->back = p->back;
+		}
+	}
+}
+
+/* is the first operand of the code a frame operand (n(fp))? */
+static int
+fpfirst(c)
+register char *c;
+{
+	for (; *c && *c != ','; c++)
+		if (c[0] == '(' && c[1] == 'f' && c[2] == 'p')
+			return 1;
+	return 0;
+}
+#endif
 
 /* rename registers in the code between the two ldm's */
 static void

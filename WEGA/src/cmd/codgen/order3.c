@@ -222,6 +222,12 @@ rallo(p, down)
 			down1 = MUSTDO | 6;
 			down2 = MUSTDO | 2;
 		}
+#ifdef OLD_D2D
+		else if (down == NOPREF)
+			down1 = MUSTDO | 1;		/* the odd half of rr0 */
+		else if (!(down & 1) && down < 8)
+			down1 = MUSTDO | (down + 1);	/* the odd half of the pair of the wanted register */
+#endif
 		break;
 	case ANDAND:
 	case OROR:

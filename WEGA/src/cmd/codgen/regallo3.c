@@ -32,7 +32,11 @@ int rsflag2;			/* 0xa7ac: number of entries of rstab2 */
 int rstab2[3];			/* 0xa7ae */
 
 /* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
+#ifdef OLD_D2W
+static int rweight[8] = { 3, 1, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is taken early (pairs rr2, rr0 first) */
+#else
 static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
+#endif
 
 void
 rsinit()

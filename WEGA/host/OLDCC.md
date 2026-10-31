@@ -140,18 +140,27 @@ time, or another version) points to their mechanism.
 - Time: the programs of 1982 (sources 07/82 .., crt0 3.1 up to 11/82) and, built late, the passes cparse, scparse,
   codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
   return temporary, leaf functions without a frame) and packed strings (old D12).
-- Switches so far: `OLD_D12` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R` (codgen); popt without a switch (OLD_D20 is
-  neutral on the bench). No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
+- Switches so far: `OLD_D12` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W` (codgen); popt without a switch
+  (OLD_D20 is neutral on the bench). Candidates in the sources, not set: `OLD_D2D` (codgen) and `OLD_D1F` (popt), see
+  "Leaf functions" below. No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
 - Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
   `make -C host oldroot` together with v1.
 - Test bench v0 (`witness.py -t v0`, System III sources of 38 programs of 1982, 153 functions): shipped cc 15, v1 14,
-  v0 61 (v1 without OLD_D1: 15; + OLD_D2R: 18; + OLD_D18: 48; + OLD_D1R: 60; without OLD_D3: 61).
+  v0 62 (v1 without OLD_D1: 15; + OLD_D2R: 18; + OLD_D18: 48; + OLD_D1R: 60; without OLD_D3: 61; + OLD_D2W: 62, the
+  differing lines 1624 > 1542).
 - /lib/cparse built with ccv0 (d12model, strictcmp): the code is as long as the original's (48896 bytes; shipped cc
   49152), data equal at the same address 17472 of 18584 bytes (shipped 17170), 38 functions strictly exact (shipped
   29; gained mkty, mainp1, lxtitle, bcon, openfiles, bstart, bend, fldal, noinit, tcheck, putstrs; lost savebc, psave).
-- Open (bench): register variables of leaf functions in scratch registers without a frame and without a spill of the
-  parameters (cal jan1: `ld r4,r7`, y in r4, d in r5; the shipped codgen puts the first one into r1 and the second into
-  r13); the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
+- Leaf functions (2026-10-31): the renaming of register variables into free low registers and the removal of the ldm
+  is done by popt (`procopt`, z23.c), in the shipped compiler too; codgen writes r14, r13 with their save. In v0 more
+  low registers stay free because its codgen takes r0 and rr0 early (`OLD_D2W`) and puts the dividend of an int
+  division into the odd half of rr0 (or of the pair of the wanted register) and the division into that pair (`OLD_D2D`,
+  order3.c rallo, allo3.c allocreg); the old popt then also removes the stores into the frame and the frame itself when
+  no register is saved and nothing reads the frame (`OLD_D1F`, procopt). With these cal jan1 is 8 lines from the
+  original (23 without); the bench: OLD_D1F alone 61/1621 lines, with OLD_D2D 61/1594, both on top of OLD_D2W 62/1561
+  (OLD_D2W alone 62/1542): OLD_D2D costs elsewhere (crypt setup, col main, paste main, sdiff main), so both are
+  candidates, not set.
+- Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
 
@@ -202,6 +211,9 @@ compiler that built the original. Not differences of the compiler (checked):
 
 ### D2 Scratch registers
 
+- v0 (switch `OLD_D2W` in codgen, rweight in regallo3.c): r0 has the weight 3 instead of 8, so r0 and the pair rr0 come
+  early (the originals of v0: `div rr0` 68 times, `rr2` 135, `rr4` once; v1 and shipped: never rr0); bench 61 > 62,
+  1624 > 1542 lines. Weight 0 or 1 makes codgen run endlessly (bench timeouts).
 - v0 (switch `OLD_D2R` in codgen, allocreg in allo3.c): the register for a result is the word register of an operand
   first (freereg), a free one only after it (`ld r7,@r7` where the shipped codgen writes `ld r6,@r7; ld r7,r6`); the
   bench of v0: 15 > 18 equal functions, 3203 > 2096 differing lines. Word registers only (a long pair must be even).

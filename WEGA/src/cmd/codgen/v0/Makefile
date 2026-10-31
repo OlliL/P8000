@@ -10,10 +10,11 @@
 #   OLD_D2R   a register for a result: the word register of an operand first (allocreg)
 #   OLD_D18   the frame operand at offset 0 written as 0(fp), never @fp
 #   OLD_D1R   the temporary of a return value only for a delayed x++
+#   OLD_D2W   the order of the free registers: r0 early (rweight), so the pairs rr2 and rr0 come first
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R
+SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc
