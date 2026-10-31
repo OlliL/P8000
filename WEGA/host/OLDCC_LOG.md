@@ -196,3 +196,11 @@ TODO.md when this log was started.
   lineid reads the register variable cp through the register of its assignment (`cpb @r2` against `cpb @r14`);
   psavel stores through a computed address (`add r2,#X; ldl @r2,rr0`); fixclass, tfree1 take a parameter from its
   register behind a label (`ld r2,r6`), we load it from the frame.
+- OLD_D6T (cpir switch: values in front of the targets, the target from the cpir pointer; cparse record V, codgen
+  main3.c and gswitch): first without a record the d12model data broke (+108 bytes: d6tables finds the target list
+  by `ld rX,Lnnn+d(rY)`, which is gone); d12model now also takes the label behind the value list as the target list
+  of a switch up to 3 cases. cparse 2492 lines, data equal at the same address 17275 > 17561; corpus 239 of 259;
+  bench v0 86, 1004 lines. The normal objects of codgen main3, lcl3 and cparse code1 unchanged.
+- OLD_D6C (cparse genswitch: the cpir table from 4 cases on): cparse 93, 2343 lines, code 48896 as the original
+  (argregs, efcode a little worse: the block order behind the compare chain); corpus 259 of 259 for the first time
+  (until now 20 inputs differed in the heap contents of the .S file); bench v0 86, 788 lines.

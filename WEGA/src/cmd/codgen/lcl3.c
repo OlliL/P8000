@@ -977,9 +977,14 @@ gswitch(p)
 	printf("\tld\t%s,#%d\n", rnames[rb], cnt);
 	printf("\tcpir\t%s,@%s,%s,eq\n", rnames[reg], rnames[ra], rnames[rb]);
 	printf("\tjpr\tne,L%d\n", dlab);
+#ifdef OLD_D6T
+	/* v0: the target from the pointer cpir leaves behind the value found (the labels follow the values) */
+	printf("\tld\t%s,%d(%s)\n", rnames[reg], (cnt - 1) * 2, rnames[ra]);
+#else
 	printf("\tsll\t%s,#1\n", rnames[rb]);
 	printf("\tneg\t%s\n", rnames[rb]);
 	printf("\tld\t%s,L%d+%d(%s)\n", rnames[reg], tab, (cnt - 1) * 2, rnames[rb]);
+#endif
 	printf("\tjp\t@%s\n", rnames[reg]);
 	rfree(ra, 3);
 	rfree(rb, 3);

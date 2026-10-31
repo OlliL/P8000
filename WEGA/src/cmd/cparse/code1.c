@@ -387,7 +387,11 @@ genswitch(p,n) register struct sw *p; {
 		return;
 		}
 
+#ifdef OLD_D6C
+	if( n >= 5 ){ /* a search in a table of the values (v0: from 4 cases on, up to 3 compares) */
+#else
 	if( n >= 4 ){ /* a search in a table of the values */
+#endif
 		dlab = p[1].slab >= 0 ? p[1].slab : getlab();
 		tlab = getlab();
 		swlab = getlab();
@@ -408,12 +412,19 @@ genswitch(p,n) register struct sw *p; {
 		size = (unsigned)(n*SZLONG/SZCHAR);
 		if( sectfull( DATA, size ) ) newsect( DATA );
 		sectadd( DATA, size );
+#ifdef OLD_D6T
+		/* v0: the values go to codgen with the targets, which writes the two lists together */
+		fprintf( outfile, "V %d\t%d\t%d\t", swlab, dlab, tlab );
+		for( i=2; i<=n; ++i ) fprintf( outfile, "%ld\t", p[i].sval );
+		fprintf( outfile, "\n" );
+#else
 		fprintf( dfile, "L%d:\n", tlab );
 		for( i=2; i<=n; ++i ){
 			fprintf( dfile, "\t.word\t" );
 			fprintf( dfile, "%ld", p[i].sval );
 			putc( '\n', dfile );
 			}
+#endif
 		fprintf( outfile, "C %d\t%d\t", swlab, dlab );
 		defalign( ALINT );
 		for( i=2; i<=n; ++i ) fprintf( outfile, "%d\t", p[i].slab );

@@ -293,6 +293,27 @@ loop:
 			c = getchar();
 		while (c != '\n');
 		goto loop;
+#ifdef OLD_D6T
+	case 'V':		/* v0: the values of a cpir switch, written right in front of its targets (the C record) */
+		do
+			c = getchar();
+		while (c == ' ');
+		ungetc(c, stdin);
+		rdin(10);
+		rdin(10);
+		lab = rdin(10);
+#ifdef SEG
+		printf("\t.psec data\n");
+#endif
+		printf("\t.data\n");
+		printf("\t.even\n");
+		printf("L%d:\n", lab);
+		for (c = getchar(); c != '\n'; c = getchar()) {
+			ungetc(c, stdin);
+			printf("\t.word\t%ld\n", rdin(10));
+		}
+		goto loop;
+#endif
 	case 'C':
 		do
 			c = getchar();

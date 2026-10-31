@@ -48,6 +48,14 @@ def d6tables(lines, tag='m'):
                     break
             if mv and mn and mt:
                 sw[mv.group(1)] = (mt.group(1), int(mn.group(1)))
+            elif mv and mn and any(re.match(r'^\s*ld\s+r\d+,\d+\(r\d+\)\s*$', lines[k])
+                                   for k in range(i + 1, min(i + 4, len(lines)))):
+                # the old codgen (OLD_D6T): the targets follow the values, addressed from the cpir pointer
+                j = lines.index(mv.group(1) + ':') + 1
+                while j < len(lines) and not re.match(r'^L\d+:\s*$', lines[j]):
+                    j += 1
+                if j < len(lines) and int(mn.group(1)) <= 3:
+                    sw[mv.group(1)] = (lines[j].strip()[:-1], int(mn.group(1)))
     if not sw:
         return lines
 

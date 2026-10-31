@@ -140,8 +140,8 @@ time, or another version) points to their mechanism.
 - Time: the programs of 1982 (sources 07/82 .., crt0 3.1 up to 11/82) and, built late, the passes cparse, scparse,
   codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
   return temporary, leaf functions without a frame) and packed strings (old D12).
-- Switches so far: `OLD_D12`, `OLD_D4R` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`, `OLD_D3P`,
-  `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N` (codgen); popt without a switch
+- Switches so far: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`, `OLD_D3P`,
+  `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T` (codgen); popt without a switch
   (OLD_D20 is neutral on the bench). Candidates in the sources, not set: `OLD_D2D` (codgen) and `OLD_D1F` (popt), see
   "Leaf functions" below. No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
 - Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
@@ -151,7 +151,7 @@ time, or another version) points to their mechanism.
   differing lines 1624 > 1542; + OLD_D10 and OLD_D2R narrowed to loads through a pointer: 64, 1466 lines; OLD_D1R
   without any return temporary: 64, 1463; + OLD_D3P: 65, 1462; + OLD_D4R: 68, 1437; + OLD_D4O: 69, 1435; the pairs
   rr2 rr0 rr4 rr6 at the start (OLD_D2W): 74, 1405; OLD_D3P under casts: 74, 1395; + OLD_D2C and OLD_D2F: 75, 1325;
-  + OLD_D2L: 84, 1080; + OLD_D2N: 86, 1064).
+  + OLD_D2L: 84, 1080; + OLD_D2N: 86, 1064; + OLD_D6T: 86, 1004; + OLD_D6C: 86, 788).
 - /lib/cparse as the second test bench (2026-10-31, ccv0, d12model, strictcmp): 44 strictly exact (shipped cc 29);
   cparse built with ccv0 normally passes its corpus like the shipped build (239 of 259 inputs identical, the rest
   differ only in the heap contents of the .S file). The behaviour check is needed: the test benches count equal
@@ -185,10 +185,12 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D2Q`, `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 93 strictly exact, 2602 differing lines (code 49152 bytes against 48896), corpus 239 of 259
+- State: /lib/cparse 93 strictly exact, 2343 differing lines, code and data as long as the original's (48896, 18584
+  bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
+  OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
   81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines; + OLD_D2Q 2719 lines (88: addcase and ftnend differ only by a mask artifact, a data address equal to a function
-  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines).
+  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
@@ -324,6 +326,15 @@ one uses a `cpir` table from 1 or 3 cases on (values, then a jump table behind t
 one uses the table too, values sorted, bodies in source order. The order of the case bodies follows the source; in
 codgen `tshape` (FLD before STAR) and `conval` (LT, LE, GT, GE, the unsigned four, then EQ, NE) the source order was
 changed to the original's. The d12model of ld and cparse lays the tables out the old way (`D6TABLES`).
+
+- v0 (switch `OLD_D6T` in cparse genswitch and codgen main3.c, lcl3.c gswitch): the value list of a cpir switch
+  stands right in front of its target list, and the target is loaded from the pointer cpir leaves behind (`ld
+  r2,%0024(r3)`, offset (cases - 1) * 2; the shipped codgen: `sll r4,#1; neg r4; ld r2,TAB+off(r4)`). Our cparse
+  passes the values to codgen in a record `V swlab dlab tlab values` in front of the `C` record (a guess: the
+  intermediate form of v0 is not known; the shipped cparse writes the values into the .D file). cparse 2602 > 2492
+  lines, bench v0 1064 > 1004.
+- v0 (switch `OLD_D6C` in cparse genswitch): up to 3 cases compared one after the other, the table from 4 cases on
+  (shipped: from 3). cparse 2492 > 2343 lines, code as long as the original's; bench v0 1004 > 788.
 
 ### D7 Loop layout
 
