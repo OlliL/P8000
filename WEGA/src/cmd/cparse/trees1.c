@@ -29,7 +29,6 @@ static char sccsid[] = "@[$]trees1.c\t2.8  08/24/83 15:07:35 Copr. 1981 87wega3.
 
 	*/
 
-int bdebug = 0;
 
 
 
@@ -46,7 +45,6 @@ int bdebug = 0;
 
 
 
-int tdebug = 0;
 
 
 
@@ -93,7 +91,6 @@ int tdebug = 0;
 
 
 
-int edebug = 0;
 
 # ifdef STDPRTREE
 # ifndef ONEPASS
@@ -1060,7 +1057,7 @@ icons(p) register NODE *p; {
 		}
 	else {
 		val = p->lval;
-		if( val != p->lval ) uerror( "constant too big for cross-compiler" );
+		if( val != p->lval ) uerror( "constant too big for compiler" );
 		}
 	tfree( p );
 	return(val);

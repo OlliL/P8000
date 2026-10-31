@@ -31,6 +31,53 @@ CAS = os.environ.get('CAS', os.path.join(CFG.REPO, 'host', 'cas', 'cas'))
 CCHOST = os.environ.get('CCHOST', os.path.join(CFG.REPO, 'host', 'cc', 'scc' if CFG.SEG else 'cc'))
 
 
+def d6tables(lines):
+    """D6 (progcfg D6TABLES): the shipped cc writes a cpir switch as a value list and a separate target list, from one case
+    on; the old cc writes the values and the targets together and compares one after the other up to 3 cases (no
+    table). The value and target lists are put together at the place of the value list; the lists of a switch with up
+    to 3 cases go to the end of the text (the model is only compared, never run)."""
+    sw = {}
+    for i, l in enumerate(lines):
+        if 'cpir' in l and i >= 2:
+            mv = re.match(r'^\s*ld\s+r\d+,#(L\d+)\s*$', lines[i - 2])
+            mn = re.match(r'^\s*ld\s+r\d+,#(\d+)\s*$', lines[i - 1])
+            for k in range(i + 1, min(i + 6, len(lines))):
+                mt = re.match(r'^\s*ld\s+r\d+,(L\d+)\+\d+\(r\d+\)\s*$', lines[k])
+                if mt:
+                    break
+            if mv and mn and mt:
+                sw[mv.group(1)] = (mt.group(1), int(mn.group(1)))
+    if not sw:
+        return lines
+
+    def block(lab):
+        """the label line index and the lines of its .word list"""
+        i = lines.index(lab + ':')
+        j = i + 1
+        while j < len(lines) and lines[j].strip().startswith('.word'):
+            j += 1
+        return i, j
+    drop, put, tail = set(), {}, []
+    for v, (t, n) in sw.items():
+        vi, vj = block(v)
+        ti, tj = block(t)
+        drop.update(range(ti, tj))
+        if n <= 3:
+            drop.update(range(vi, vj))
+            tail += lines[vi:vj] + lines[ti:tj]
+        else:
+            put[vj] = lines[ti:tj]
+    out = []
+    for i, l in enumerate(lines):
+        if i in put:
+            out += put[i]
+        if i not in drop:
+            out.append(l)
+    if tail:
+        out += ['.code'] + tail
+    return out
+
+
 def rewrite(lines):
     refs = set()
     for l in lines:
@@ -85,6 +132,8 @@ def main():
             continue
         run([CCHOST, '-O', '-S', m + '.c'], work)
         src = open(os.path.join(work, m + '.s')).read().split('\n')
+        if getattr(CFG, 'D6TABLES', False):
+            src = d6tables(src)
         open(os.path.join(work, m + '_old.s'), 'w').write('\n'.join(rewrite(src)) + '\n')
         run([CAS, '-u', '-o', m + '.o', m + '_old.s'], work)
     run(CFG.model_link(work, [m + '.o' for m in CFG.MODULES]), work)

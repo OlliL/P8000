@@ -30,1799 +30,4491 @@
    "status": "crt0"
   },
   "mkty": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x002a",
-   "ours": "-",
-   "level": "open",
+   "ours": "002a-004e",
+   "level": "strict",
    "size_orig": 36,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 11,
+    "len_orig": 11
+   }
   },
   "bdty": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x004e",
-   "ours": "-",
-   "level": "open",
+   "ours": "004e-00b4",
+   "level": "strict",
    "size_orig": 102,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 32,
+    "len_orig": 32
+   }
   },
   "dstash": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x00b4",
-   "ours": "-",
-   "level": "open",
+   "ours": "00b4-00e2",
+   "level": "strict",
    "size_orig": 46,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 13,
+    "len_orig": 13
+   }
   },
   "savebc": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x00e2",
-   "ours": "-",
-   "level": "open",
+   "ours": "00e2-0130",
+   "level": "strict",
    "size_orig": 78,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 22,
+    "len_orig": 22
+   }
   },
   "resetbc": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x0130",
-   "ours": "-",
-   "level": "open",
+   "ours": "0130-0174",
+   "level": "strict",
    "size_orig": 68,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 21,
+    "len_orig": 21
+   }
   },
   "addcase": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x0174",
-   "ours": "-",
-   "level": "open",
+   "ours": "0174-01e0",
+   "level": "strict",
    "size_orig": 108,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 32,
+    "len_orig": 32
+   }
   },
   "adddef": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x01e0",
-   "ours": "-",
-   "level": "open",
+   "ours": "01e0-0230",
+   "level": "strict",
    "size_orig": 80,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 25,
+    "len_orig": 25
+   }
   },
   "swstart": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x0230",
-   "ours": "-",
-   "level": "open",
+   "ours": "0230-0250",
+   "level": "strict",
    "size_orig": 32,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 8,
+    "len_orig": 8
+   }
   },
   "swend": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x0250",
-   "ours": "-",
-   "level": "open",
+   "ours": "0250-0312",
+   "level": "strict",
    "size_orig": 194,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 68,
+    "len_orig": 68
+   }
   },
   "yyparse": {
-   "file": "-",
-   "pairing": "open",
+   "file": "cgram1.s",
+   "pairing": "confirmed",
    "orig": "0x0312",
-   "ours": "-",
-   "level": "open",
+   "ours": "0312-1374",
+   "level": "strict",
    "size_orig": 4194,
    "callers_orig": "13b6",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 1239,
+    "len_orig": 1239
+   }
   },
   "scnames": {
-   "file": "-",
-   "pairing": "open",
+   "file": "xdefs1.c",
+   "pairing": "confirmed",
    "orig": "0x1374",
-   "ours": "-",
+   "ours": "1374-13b8",
    "level": "open",
    "size_orig": 66,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 5,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 23,
+    "len_orig": 22
+   }
   },
   "mainp1": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x13b6",
-   "ours": "-",
+   "ours": "13b8-1430",
    "level": "open",
    "size_orig": 120,
    "callers_orig": "60d8",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 38,
+    "len_orig": 38
+   }
   },
   "lxstart": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x142e",
-   "ours": "-",
-   "level": "open",
+   "ours": "1430-1436",
+   "level": "strict",
    "size_orig": 6,
    "callers_orig": "13b6",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 3,
+    "len_orig": 3
+   }
   },
   "lxclass": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x1434",
-   "ours": "-",
-   "level": "open",
+   "ours": "1436-146c",
+   "level": "strict",
    "size_orig": 54,
    "callers_orig": "142e",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 19,
+    "len_orig": 19
+   }
   },
   "lxenter": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x146a",
-   "ours": "-",
+   "ours": "146c-1496",
    "level": "open",
    "size_orig": 42,
    "callers_orig": "1434",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 89,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 18
+   }
   },
   "lxinit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x1494",
-   "ours": "-",
-   "level": "open",
+   "ours": "1496-1516",
+   "level": "strict",
    "size_orig": 128,
    "callers_orig": "142e",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 49,
+    "len_orig": 49
+   }
   },
   "sfinit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x1514",
-   "ours": "-",
-   "level": "open",
+   "ours": "1516-1540",
+   "level": "strict",
    "size_orig": 42,
    "callers_orig": "13b6",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 14,
+    "len_orig": 14
+   }
   },
   "dimtinit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x153e",
-   "ours": "-",
-   "level": "open",
+   "ours": "1540-15b2",
+   "level": "strict",
    "size_orig": 114,
    "callers_orig": "13b6",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 24,
+    "len_orig": 24
+   }
   },
   "lxtitle": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x15b0",
-   "ours": "-",
+   "ours": "15b2-1716",
    "level": "open",
    "size_orig": 352,
    "callers_orig": "13b6",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 109,
+    "len_orig": 105
+   }
   },
   "lxmore": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x1710",
-   "ours": "-",
+   "ours": "1716-179a",
    "level": "open",
    "size_orig": 130,
    "callers_orig": "15b0",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 5,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 43,
+    "len_orig": 42
+   }
   },
   "savestr": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x1792",
-   "ours": "-",
+   "ours": "179a-1866",
    "level": "open",
    "size_orig": 208,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 5,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 62,
+    "len_orig": 61
+   }
   },
   "lxstr": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x1862",
-   "ours": "-",
+   "ours": "1866-1aa0",
    "level": "open",
    "size_orig": 564,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 86,
+    "pattern_diff": 47,
+    "pattern_unexplained": 4,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: or\trS,A",
+    "structure_flags": [],
+    "len_ours": 188,
+    "len_orig": 183
+   }
   },
   "lxcom": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x1a96",
-   "ours": "-",
+   "ours": "1aa0-1b3a",
    "level": "open",
    "size_orig": 148,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 57,
+    "pattern_diff": 40,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 51,
+    "len_orig": 47
+   }
   },
   "yylex": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x1b2a",
-   "ours": "-",
+   "ours": "1b3a-234e",
    "level": "open",
    "size_orig": 2026,
    "callers_orig": "0312",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 41,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D5",
+     "D6",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 622,
+    "len_orig": 597
+   }
   },
   "lxres": {
-   "file": "-",
-   "pairing": "open",
+   "file": "scan1.c",
+   "pairing": "confirmed",
    "orig": "0x2314",
-   "ours": "-",
+   "ours": "234e-249a",
    "level": "open",
    "size_orig": 308,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 100,
+    "len_orig": 100
+   }
   },
   "defid": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x2448",
-   "ours": "-",
+   "ours": "249a-2c38",
    "level": "open",
    "size_orig": 1946,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 119,
+    "pattern_unexplained": 2,
+    "reordered_instructions": 4,
+    "reordered_examples": [
+     "ld\trS,#A"
+    ],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: sra\trS,#2",
+    "structure_flags": [],
+    "len_ours": 529,
+    "len_orig": 522
+   }
   },
   "psave": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x2be2",
-   "ours": "-",
-   "level": "open",
+   "ours": "2c38-2c62",
+   "level": "strict",
    "size_orig": 44,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 13,
+    "len_orig": 13
+   }
   },
   "psavel": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x2c0e",
-   "ours": "-",
+   "ours": "2c62-2c94",
    "level": "open",
    "size_orig": 54,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 15,
+    "len_orig": 16
+   }
   },
   "ftnend": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x2c44",
-   "ours": "-",
-   "level": "open",
+   "ours": "2c94-2e02",
+   "level": "strict",
    "size_orig": 366,
    "callers_orig": "36e6",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 94,
+    "len_orig": 94
+   }
   },
   "argalloc": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x2db2",
-   "ours": "-",
+   "ours": "2e02-2f42",
    "level": "open",
    "size_orig": 330,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D2",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 113,
+    "len_orig": 115
+   }
   },
   "dclargs": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x2efc",
-   "ours": "-",
+   "ours": "2f42-3190",
    "level": "open",
    "size_orig": 584,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 13,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D2",
+     "D5",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 188,
+    "len_orig": 183
+   }
   },
   "setreg": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x3144",
-   "ours": "-",
+   "ours": "3190-322c",
    "level": "open",
    "size_orig": 156,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 47,
+    "len_orig": 47
+   }
   },
   "initpreg": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x31e0",
-   "ours": "-",
-   "level": "open",
+   "ours": "322c-324c",
+   "level": "strict",
    "size_orig": 32,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 9,
+    "len_orig": 9
+   }
   },
   "getpreg": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x3200",
-   "ours": "-",
+   "ours": "324c-3322",
    "level": "open",
    "size_orig": 202,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 13,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D3",
+     "D7",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 63,
+    "len_orig": 60
+   }
   },
   "rstruct": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x32ca",
-   "ours": "-",
+   "ours": "3322-33ce",
    "level": "open",
    "size_orig": 172,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 60,
+    "len_orig": 60
+   }
   },
   "moedef": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x3376",
-   "ours": "-",
-   "level": "open",
+   "ours": "33ce-3408",
+   "level": "strict",
    "size_orig": 60,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 21,
+    "len_orig": 21
+   }
   },
   "bstruct": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x33b2",
-   "ours": "-",
+   "ours": "3408-34d0",
    "level": "open",
    "size_orig": 202,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 61,
+    "len_orig": 61
+   }
   },
   "dclstruct": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x347c",
-   "ours": "-",
+   "ours": "34d0-3720",
    "level": "open",
    "size_orig": 600,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D5"
+    ],
+    "structure_flags": [],
+    "len_ours": 197,
+    "len_orig": 199
+   }
   },
   "yyerror": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x36d4",
-   "ours": "-",
+   "ours": "3720-372e",
    "level": "open",
    "size_orig": 18,
    "callers_orig": "0312",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 83,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 6,
+    "len_orig": 6
+   }
   },
   "yyaccpt": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x36e6",
-   "ours": "-",
-   "level": "open",
+   "ours": "372e-3732",
+   "level": "strict",
    "size_orig": 4,
    "callers_orig": "13b6",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 2,
+    "len_orig": 2
+   }
   },
   "ftnarg": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x36ea",
-   "ours": "-",
+   "ours": "3732-3768",
    "level": "open",
    "size_orig": 56,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 16,
+    "len_orig": 16
+   }
   },
   "talign": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x3722",
-   "ours": "-",
+   "ours": "3768-381a",
    "level": "open",
    "size_orig": 170,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 90,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 61,
+    "len_orig": 57
+   }
   },
   "tsize": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x37cc",
-   "ours": "-",
+   "ours": "381a-38c2",
    "level": "open",
    "size_orig": 164,
    "callers_orig": "680a",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 51,
+    "len_orig": 49
+   }
   },
   "inforce": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x3870",
-   "ours": "-",
+   "ours": "38c2-397a",
    "level": "open",
    "size_orig": 188,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 5,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13"
+    ],
+    "structure_flags": [],
+    "len_ours": 54,
+    "len_orig": 55
+   }
   },
   "vfdalign": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x392c",
-   "ours": "-",
+   "ours": "397a-39c2",
    "level": "open",
    "size_orig": 68,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13"
+    ],
+    "structure_flags": [],
+    "len_ours": 22,
+    "len_orig": 22
+   }
   },
   "f3970": {
-   "file": "-",
-   "pairing": "open",
+   "file": "pftn1.c",
+   "pairing": "confirmed",
    "orig": "0x3970",
-   "ours": "-",
+   "ours": "39c2-39dc",
    "level": "open",
    "size_orig": 10,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 33,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 6,
+    "len_orig": 5
+   }
   },
   "buildtree": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x397a",
-   "ours": "-",
+   "ours": "39dc-4398",
    "level": "open",
    "size_orig": 2464,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 99,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 708,
+    "len_orig": 685
+   }
   },
   "strargs": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x431a",
-   "ours": "-",
+   "ours": "4398-4406",
    "level": "open",
    "size_orig": 112,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 92,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 36,
+    "len_orig": 36
+   }
   },
   "chkstr": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x438a",
-   "ours": "-",
+   "ours": "4406-449a",
    "level": "open",
    "size_orig": 148,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 90,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 48,
+    "len_orig": 46
+   }
   },
   "chkpun": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x441e",
-   "ours": "-",
+   "ours": "449a-465a",
    "level": "open",
    "size_orig": 448,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 99,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 141,
+    "len_orig": 141
+   }
   },
   "stref": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x45de",
-   "ours": "-",
+   "ours": "465a-47ae",
    "level": "open",
    "size_orig": 362,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 98,
+    "len_orig": 104
+   }
   },
   "notlval": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4748",
-   "ours": "-",
+   "ours": "47ae-47fa",
    "level": "open",
    "size_orig": 72,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 85,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 26,
+    "len_orig": 24
+   }
   },
   "bcon": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4790",
-   "ours": "-",
+   "ours": "47fa-482e",
    "level": "open",
    "size_orig": 54,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 90,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 20,
+    "len_orig": 20
+   }
   },
   "bpsize": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x47c6",
-   "ours": "-",
+   "ours": "482e-4856",
    "level": "open",
    "size_orig": 40,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 85,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 13,
+    "len_orig": 13
+   }
   },
   "psize": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x47ee",
-   "ours": "-",
+   "ours": "4856-48a6",
    "level": "open",
    "size_orig": 80,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 23,
+    "len_orig": 23
+   }
   },
   "convert": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x483e",
-   "ours": "-",
+   "ours": "48a6-4930",
    "level": "open",
    "size_orig": 140,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 46,
+    "len_orig": 46
+   }
   },
   "econvert": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x48ca",
-   "ours": "-",
+   "ours": "4930-49d6",
    "level": "open",
    "size_orig": 166,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 49,
+    "len_orig": 49
+   }
   },
   "pconvert": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4970",
-   "ours": "-",
+   "ours": "49d6-4a30",
    "level": "open",
    "size_orig": 90,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 28,
+    "len_orig": 28
+   }
   },
   "oconvert": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x49ca",
-   "ours": "-",
+   "ours": "4a30-4af0",
    "level": "open",
    "size_orig": 188,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 64,
+    "len_orig": 62
+   }
   },
   "ptmatch": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4a86",
-   "ours": "-",
+   "ours": "4af0-4c22",
    "level": "open",
    "size_orig": 302,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 93,
+    "len_orig": 91
+   }
   },
   "tymatch": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4bb4",
-   "ours": "-",
+   "ours": "4c22-4de8",
    "level": "open",
    "size_orig": 450,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 99,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 158,
+    "len_orig": 156
+   }
   },
   "makety": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4d76",
-   "ours": "-",
+   "ours": "4de8-4f0e",
    "level": "open",
    "size_orig": 292,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13"
+    ],
+    "structure_flags": [],
+    "len_ours": 94,
+    "len_orig": 94
+   }
   },
   "block": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4e9a",
-   "ours": "-",
+   "ours": "4f0e-4f5e",
    "level": "open",
    "size_orig": 82,
    "callers_orig": "0000",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 22,
+    "len_orig": 22
+   }
   },
   "lcons": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4eec",
-   "ours": "-",
+   "ours": "4f5e-4f96",
    "level": "open",
    "size_orig": 56,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 17,
+    "len_orig": 17
+   }
   },
   "icons": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4f24",
-   "ours": "-",
+   "ours": "4f96-4fe0",
    "level": "open",
    "size_orig": 74,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 23,
+    "len_orig": 23
+   }
   },
   "opact": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x4f6e",
-   "ours": "-",
+   "ours": "4fe0-520a",
    "level": "open",
    "size_orig": 552,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 205,
+    "len_orig": 204
+   }
   },
   "moditype": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x5196",
-   "ours": "-",
+   "ours": "520a-5242",
    "level": "open",
    "size_orig": 58,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 23,
+    "len_orig": 23
+   }
   },
   "doszof": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x51d0",
-   "ours": "-",
+   "ours": "5242-5294",
    "level": "open",
    "size_orig": 82,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 92,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 26,
+    "len_orig": 26
+   }
   },
   "prtdcon": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x5222",
-   "ours": "-",
+   "ours": "5294-5344",
    "level": "open",
    "size_orig": 174,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 46,
+    "len_orig": 48
+   }
   },
   "ecomp": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x52d0",
-   "ours": "-",
+   "ours": "5344-538c",
    "level": "open",
    "size_orig": 72,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 23,
+    "len_orig": 23
+   }
   },
   "prtree": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x5318",
-   "ours": "-",
+   "ours": "538c-5584",
    "level": "open",
    "size_orig": 458,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 86,
+    "pattern_diff": 25,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 158,
+    "len_orig": 139
+   }
   },
   "argregs": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x54e2",
-   "ours": "-",
+   "ours": "5584-5662",
    "level": "open",
    "size_orig": 214,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 79,
+    "pattern_diff": 27,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D16",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 66,
+    "len_orig": 65
+   }
   },
   "tempnode": {
-   "file": "-",
-   "pairing": "open",
+   "file": "trees1.c",
+   "pairing": "confirmed",
    "orig": "0x55b8",
-   "ours": "-",
+   "ours": "5662-56ce",
    "level": "open",
    "size_orig": 86,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 92,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 26,
+    "len_orig": 26
+   }
   },
   "fortarg": {
-   "file": "-",
-   "pairing": "open",
+   "file": "optim1.c",
+   "pairing": "confirmed",
    "orig": "0x560e",
-   "ours": "-",
+   "ours": "56ce-571c",
    "level": "open",
    "size_orig": 78,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 28,
+    "len_orig": 28
+   }
   },
   "optim": {
-   "file": "-",
-   "pairing": "open",
+   "file": "optim1.c",
+   "pairing": "confirmed",
    "orig": "0x565c",
-   "ours": "-",
+   "ours": "571c-5d98",
    "level": "open",
    "size_orig": 1628,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 105,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 485,
+    "len_orig": 470
+   }
   },
   "conval": {
-   "file": "-",
-   "pairing": "open",
+   "file": "optim1.c",
+   "pairing": "confirmed",
    "orig": "0x5cb8",
-   "ours": "-",
+   "ours": "5d98-6002",
    "level": "open",
    "size_orig": 610,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 19,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 192,
+    "len_orig": 191
+   }
   },
   "treeeq": {
-   "file": "-",
-   "pairing": "open",
+   "file": "optim1.c",
+   "pairing": "confirmed",
    "orig": "0x5f1a",
-   "ours": "-",
+   "ours": "6002-6078",
    "level": "open",
    "size_orig": 118,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 71,
+    "pattern_diff": 23,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 41,
+    "len_orig": 42
+   }
   },
   "rmconv": {
-   "file": "-",
-   "pairing": "open",
+   "file": "optim1.c",
+   "pairing": "confirmed",
    "orig": "0x5f90",
-   "ours": "-",
+   "ours": "6078-61a6",
    "level": "open",
    "size_orig": 294,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 92,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 90,
+    "len_orig": 86
+   }
   },
   "notflt": {
-   "file": "-",
-   "pairing": "open",
+   "file": "optim1.c",
+   "pairing": "confirmed",
    "orig": "0x60b6",
-   "ours": "-",
+   "ours": "61a6-61d4",
    "level": "open",
    "size_orig": 34,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 85,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 13,
+    "len_orig": 13
+   }
   },
   "main": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x60d8",
-   "ours": "-",
+   "ours": "61d4-62d2",
    "level": "open",
    "size_orig": 248,
    "callers_orig": "0000",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 92,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 88,
+    "len_orig": 84
+   }
   },
   "openfiles": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x61d0",
-   "ours": "-",
+   "ours": "62d2-644e",
    "level": "open",
    "size_orig": 376,
    "callers_orig": "60d8",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 118,
+    "len_orig": 115
+   }
   },
   "fnfile": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6348",
-   "ours": "-",
+   "ours": "644e-64b2",
    "level": "open",
    "size_orig": 106,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 1,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 30,
+    "len_orig": 31
+   }
   },
   "fltlab": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x63b2",
-   "ours": "-",
+   "ours": "64b2-6580",
    "level": "open",
    "size_orig": 210,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 55,
+    "len_orig": 57
+   }
   },
   "fhashv": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6484",
-   "ours": "-",
+   "ours": "6580-65b8",
    "level": "open",
    "size_orig": 62,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 19,
+    "len_orig": 20
+   }
   },
   "newsect": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x64c2",
-   "ours": "-",
+   "ours": "65b8-66b8",
    "level": "open",
    "size_orig": 258,
    "callers_orig": "680a",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D16",
+     "D2",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 76,
+    "len_orig": 75
+   }
   },
   "sectfull": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x65c4",
-   "ours": "-",
+   "ours": "66b8-66da",
    "level": "open",
    "size_orig": 36,
    "callers_orig": "65e8,680a",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 69,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 12,
+    "len_orig": 13
+   }
   },
   "sectadd": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x65e8",
-   "ours": "-",
+   "ours": "66da-670c",
    "level": "open",
    "size_orig": 56,
    "callers_orig": "680a",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 17,
+    "len_orig": 17
+   }
   },
   "bstart": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6620",
-   "ours": "-",
+   "ours": "670c-67ac",
    "level": "open",
    "size_orig": 162,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 49,
+    "len_orig": 49
+   }
   },
   "bend": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x66c2",
-   "ours": "-",
+   "ours": "67ac-6810",
    "level": "open",
    "size_orig": 100,
    "callers_orig": "680a",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 33,
+    "len_orig": 33
+   }
   },
   "defalign": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6726",
-   "ours": "-",
+   "ours": "6810-6876",
    "level": "open",
    "size_orig": 96,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 86,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 35,
+    "len_orig": 32
+   }
   },
   "getlab": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6786",
-   "ours": "-",
+   "ours": "6876-6888",
    "level": "open",
    "size_orig": 10,
    "callers_orig": "680a",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 50,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 6,
+    "len_orig": 3
+   }
   },
   "locctr": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6790",
-   "ours": "-",
+   "ours": "6888-68e4",
    "level": "open",
    "size_orig": 92,
    "callers_orig": "2c44",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 28,
+    "len_orig": 28
+   }
   },
   "deflab": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x67ec",
-   "ours": "-",
+   "ours": "68e4-6902",
    "level": "open",
    "size_orig": 30,
    "callers_orig": "680a",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 10,
+    "len_orig": 10
+   }
   },
   "efcode": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x680a",
-   "ours": "-",
+   "ours": "6902-69a8",
    "level": "open",
    "size_orig": 166,
    "callers_orig": "2c44",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 51,
+    "len_orig": 51
+   }
   },
   "bfcode": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x68b0",
-   "ours": "-",
+   "ours": "69a8-6b6e",
    "level": "open",
    "size_orig": 456,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 99,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 135,
+    "len_orig": 136
+   }
   },
   "bccode": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6a78",
-   "ours": "-",
+   "ours": "6b6e-6ba8",
    "level": "open",
    "size_orig": 62,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 88,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13"
+    ],
+    "structure_flags": [],
+    "len_ours": 16,
+    "len_orig": 17
+   }
   },
   "bfend": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6ab6",
-   "ours": "-",
+   "ours": "6ba8-6bb6",
    "level": "open",
    "size_orig": 14,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 4,
+    "len_orig": 4
+   }
   },
   "defnam": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6ac4",
-   "ours": "-",
+   "ours": "6bb6-6c1e",
    "level": "open",
    "size_orig": 104,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 29,
+    "len_orig": 29
+   }
   },
   "zecode": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6b2c",
-   "ours": "-",
+   "ours": "6c1e-6c74",
    "level": "open",
    "size_orig": 90,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 9,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 24,
+    "len_orig": 25
+   }
   },
   "fldal": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6b86",
-   "ours": "-",
+   "ours": "6c74-6c88",
    "level": "open",
    "size_orig": 22,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 71,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 7,
+    "len_orig": 7
+   }
   },
   "lineid": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6b9c",
-   "ours": "-",
+   "ours": "6c88-6cdc",
    "level": "open",
    "size_orig": 84,
    "callers_orig": "60d8,680a",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 27,
+    "len_orig": 27
+   }
   },
   "genswitch": {
-   "file": "-",
-   "pairing": "open",
+   "file": "code1.c",
+   "pairing": "confirmed",
    "orig": "0x6bf0",
-   "ours": "-",
+   "ours": "6cdc-7136",
    "level": "open",
    "size_orig": 1116,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 12,
+    "pattern_unexplained": 1,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "other differences",
+    "difference_note": "unexplained instruction forms: srl\trS,#3",
+    "structure_flags": [],
+    "len_ours": 360,
+    "len_orig": 362
+   }
   },
   "cast": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x704c",
-   "ours": "-",
+   "ours": "7136-717c",
    "level": "open",
    "size_orig": 72,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 92,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 24,
+    "len_orig": 24
+   }
   },
   "clocal": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7094",
-   "ours": "-",
+   "ours": "717c-75c8",
    "level": "open",
    "size_orig": 1118,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 57,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 321,
+    "len_orig": 324
+   }
   },
   "cisreg": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x74f2",
-   "ours": "-",
+   "ours": "75c8-7620",
    "level": "open",
    "size_orig": 78,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 84,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 31,
+    "len_orig": 28
+   }
   },
   "offcon": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7540",
-   "ours": "-",
+   "ours": "7620-7658",
    "level": "open",
    "size_orig": 52,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13"
+    ],
+    "structure_flags": [],
+    "len_ours": 15,
+    "len_orig": 15
+   }
   },
   "incode": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7574",
-   "ours": "-",
+   "ours": "7658-76f8",
    "level": "open",
    "size_orig": 160,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 48,
+    "len_orig": 48
+   }
   },
   "fincode": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7614",
-   "ours": "-",
+   "ours": "76f8-776a",
    "level": "open",
    "size_orig": 112,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 28,
+    "len_orig": 28
+   }
   },
   "cinit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7684",
-   "ours": "-",
+   "ours": "776a-786a",
    "level": "open",
    "size_orig": 248,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 62,
+    "pattern_diff": 59,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 2,
+    "reordered_examples": [
+     "and\trS,#A"
+    ],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 81,
+    "len_orig": 78
+   }
   },
   "cprint": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x777c",
-   "ours": "-",
+   "ours": "786a-79d0",
    "level": "open",
    "size_orig": 336,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 70,
+    "pattern_diff": 59,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 114,
+    "len_orig": 105
+   }
   },
   "vfdzero": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x78cc",
-   "ours": "-",
+   "ours": "79d0-7a52",
    "level": "open",
    "size_orig": 134,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 89,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D16",
+     "D2",
+     "D3",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 36,
+    "len_orig": 38
+   }
   },
   "exname": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7952",
-   "ours": "-",
+   "ours": "7a52-7ad0",
    "level": "open",
    "size_orig": 134,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 85,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D16",
+     "D3",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 45,
+    "len_orig": 47
+   }
   },
   "ctype": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x79d8",
-   "ours": "-",
+   "ours": "7ad0-7b10",
    "level": "open",
    "size_orig": 66,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 86,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 21,
+    "len_orig": 21
+   }
   },
   "noinit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7a1a",
-   "ours": "-",
+   "ours": "7b10-7b18",
    "level": "open",
    "size_orig": 4,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 50,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 4,
+    "len_orig": 2
+   }
   },
   "commdec": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7a1e",
-   "ours": "-",
+   "ours": "7b18-7b7a",
    "level": "open",
    "size_orig": 98,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 28,
+    "len_orig": 28
+   }
   },
   "isitfloat": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7a80",
-   "ours": "-",
+   "ours": "7b7a-7b90",
    "level": "open",
    "size_orig": 30,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 57,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 7,
+    "len_orig": 7
+   }
   },
   "ecode": {
-   "file": "-",
-   "pairing": "open",
+   "file": "local1.c",
+   "pairing": "confirmed",
    "orig": "0x7a9e",
-   "ours": "-",
+   "ours": "7b90-7c32",
    "level": "open",
    "size_orig": 138,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 84,
+    "pattern_diff": 12,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 42,
+    "len_orig": 44
+   }
   },
   "syserr": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7b28",
-   "ours": "-",
-   "level": "open",
+   "ours": "7c32-7c54",
+   "level": "strict",
    "size_orig": 36,
    "callers_orig": "1514,15b0,1710,61d0",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 1,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 10,
+    "len_orig": 11
+   }
   },
   "uerror": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7b4c",
-   "ours": "-",
-   "level": "open",
+   "ours": "7c54-7c90",
+   "level": "strict",
    "size_orig": 62,
    "callers_orig": "36d4,37cc,64c2,65e8",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 18
+   }
   },
   "cerror": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7b8a",
-   "ours": "-",
-   "level": "open",
+   "ours": "7c90-7d0e",
+   "level": "strict",
    "size_orig": 128,
    "callers_orig": "1b2a,2c44,64c2,7b4c,7c70,7cc4",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 37,
+    "len_orig": 37
+   }
   },
   "werror": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7c0a",
-   "ours": "-",
-   "level": "open",
+   "ours": "7d0e-7d4a",
+   "level": "strict",
    "size_orig": 62,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 17,
+    "len_orig": 17
+   }
   },
   "tinit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7c48",
-   "ours": "-",
-   "level": "open",
+   "ours": "7d4a-7d72",
+   "level": "strict",
    "size_orig": 40,
    "callers_orig": "13b6,7cc4",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 11,
+    "len_orig": 11
+   }
   },
   "talloc": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7c70",
-   "ours": "-",
+   "ours": "7d72-7dd0",
    "level": "open",
    "size_orig": 84,
    "callers_orig": "4e9a",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 9,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D3",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 30,
+    "len_orig": 27
+   }
   },
   "tcheck": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7cc4",
-   "ours": "-",
+   "ours": "7dd0-7e0c",
    "level": "open",
    "size_orig": 58,
    "callers_orig": "2c44",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 1,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 20,
+    "len_orig": 19
+   }
   },
   "tfree": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7cfe",
-   "ours": "-",
+   "ours": "7e0c-7e26",
    "level": "open",
    "size_orig": 28,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 10,
+    "len_orig": 10
+   }
   },
   "tfree1": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7d1a",
-   "ours": "-",
+   "ours": "7e26-7e42",
    "level": "open",
    "size_orig": 28,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 11,
+    "len_orig": 11
+   }
   },
   "fwalk": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7d36",
-   "ours": "-",
+   "ours": "7e42-7eba",
    "level": "open",
    "size_orig": 120,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 92,
+    "pattern_diff": 5,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 38,
+    "len_orig": 37
+   }
   },
   "walkf": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7dae",
-   "ours": "-",
+   "ours": "7eba-7f10",
    "level": "open",
    "size_orig": 88,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 29,
+    "len_orig": 29
+   }
   },
   "mkdope": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7e06",
-   "ours": "-",
+   "ours": "7f10-7f40",
    "level": "open",
    "size_orig": 52,
    "callers_orig": "13b6",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 18,
+    "len_orig": 18
+   }
   },
   "bsize": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7e3a",
-   "ours": "-",
+   "ours": "7f40-7f8c",
    "level": "open",
    "size_orig": 76,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 28,
+    "len_orig": 28
+   }
   },
   "twords": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7e86",
-   "ours": "-",
+   "ours": "7f8c-7fbc",
    "level": "open",
    "size_orig": 50,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 89,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 19,
+    "len_orig": 19
+   }
   },
   "argsize": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7eb8",
-   "ours": "-",
+   "ours": "7fbc-801a",
    "level": "open",
    "size_orig": 90,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 30,
+    "len_orig": 28
+   }
   },
   "where": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7f12",
-   "ours": "-",
-   "level": "open",
+   "ours": "801a-8036",
+   "level": "strict",
    "size_orig": 30,
    "callers_orig": "7b4c,7b8a",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 9,
+    "len_orig": 9
+   }
   },
   "tbytes": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7f30",
-   "ours": "-",
+   "ours": "8036-8066",
    "level": "open",
    "size_orig": 50,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 89,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 19,
+    "len_orig": 19
+   }
   },
   "dexit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7f62",
-   "ours": "-",
-   "level": "open",
+   "ours": "8066-807e",
+   "level": "strict",
    "size_orig": 26,
    "callers_orig": "7b28,7b8a",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 8,
+    "len_orig": 8
+   }
   },
   "branch": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7f7c",
-   "ours": "-",
+   "ours": "807e-809c",
    "level": "open",
    "size_orig": 30,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 10,
+    "len_orig": 10
+   }
   },
   "ncopy": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7f9a",
-   "ours": "-",
+   "ours": "809c-80b2",
    "level": "open",
    "size_orig": 34,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 46,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 9,
+    "len_orig": 13
+   }
   },
   "tcopy": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x7fbc",
-   "ours": "-",
+   "ours": "80b2-8104",
    "level": "open",
    "size_orig": 88,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 29,
+    "len_orig": 30
+   }
   },
   "ispow2": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x8014",
-   "ours": "-",
+   "ours": "8104-814e",
    "level": "open",
    "size_orig": 78,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 81,
+    "pattern_diff": 9,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D6"
+    ],
+    "structure_flags": [],
+    "len_ours": 25,
+    "len_orig": 26
+   }
   },
   "nncon": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x8062",
-   "ours": "-",
+   "ours": "814e-8170",
    "level": "open",
    "size_orig": 34,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 85,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 13,
+    "len_orig": 13
+   }
   },
   "getmem": {
-   "file": "-",
-   "pairing": "open",
+   "file": "comm1.c",
+   "pairing": "confirmed",
    "orig": "0x8084",
-   "ours": "-",
+   "ours": "8170-81f2",
    "level": "open",
    "size_orig": 124,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 9,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D5",
+     "D8"
+    ],
+    "structure_flags": [],
+    "len_ours": 39,
+    "len_orig": 38
+   }
   },
   "resetmem": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x8100",
-   "ours": "-",
+   "ours": "81f2-8210",
    "level": "open",
    "size_orig": 34,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 90,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 10,
+    "len_orig": 10
+   }
   },
   "beginit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x8122",
-   "ours": "-",
+   "ours": "8210-8308",
    "level": "open",
    "size_orig": 248,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 74,
+    "len_orig": 74
+   }
   },
   "instk": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x821a",
-   "ours": "-",
+   "ours": "8308-84bc",
    "level": "open",
    "size_orig": 454,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 17,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 127,
+    "len_orig": 128
+   }
   },
   "getstr": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x83e0",
-   "ours": "-",
+   "ours": "84bc-85c4",
    "level": "open",
    "size_orig": 260,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 80,
+    "len_orig": 78
+   }
   },
   "putbyte": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x84e4",
-   "ours": "-",
+   "ours": "85c4-85ec",
    "level": "open",
    "size_orig": 44,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 93,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 15,
+    "len_orig": 15
+   }
   },
   "putstrs": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x8510",
-   "ours": "-",
+   "ours": "85ec-86d2",
    "level": "open",
    "size_orig": 224,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 67,
+    "len_orig": 64
+   }
   },
   "endinit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x85f0",
-   "ours": "-",
+   "ours": "86d2-8838",
    "level": "open",
    "size_orig": 346,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 83,
+    "pattern_diff": 36,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 112,
+    "len_orig": 110
+   }
   },
   "doinit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x874a",
-   "ours": "-",
+   "ours": "8838-89fe",
    "level": "open",
    "size_orig": 452,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 137,
+    "len_orig": 136
+   }
   },
   "gotscal": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x890e",
-   "ours": "-",
+   "ours": "89fe-8b2a",
    "level": "open",
    "size_orig": 302,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 90,
+    "pattern_diff": 15,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D13",
+     "D2",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 90,
+    "len_orig": 87
+   }
   },
   "ilbrace": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x8a3c",
-   "ours": "-",
+   "ours": "8b2a-8b98",
    "level": "open",
    "size_orig": 112,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 32,
+    "len_orig": 32
+   }
   },
   "irbrace": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x8aac",
-   "ours": "-",
-   "level": "open",
+   "ours": "8b98-8bcc",
+   "level": "strict",
    "size_orig": 52,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 8,
+    "len_orig": 8
+   }
   },
   "hash": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x8ae0",
-   "ours": "-",
+   "ours": "8bcc-8c08",
    "level": "open",
    "size_orig": 62,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 90,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 20,
+    "len_orig": 20
+   }
   },
   "upoff": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x8b1e",
-   "ours": "-",
+   "ours": "8c08-8c58",
    "level": "open",
    "size_orig": 80,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 2,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10"
+    ],
+    "structure_flags": [],
+    "len_ours": 31,
+    "len_orig": 31
+   }
   },
   "oalloc": {
-   "file": "-",
-   "pairing": "open",
+   "file": "vinit1.c",
+   "pairing": "confirmed",
    "orig": "0x8b6e",
-   "ours": "-",
+   "ours": "8c58-8d84",
    "level": "open",
    "size_orig": 288,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 32,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D5",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 81,
+    "len_orig": 81
+   }
   },
   "falloc": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x8c8e",
-   "ours": "-",
+   "ours": "8d84-8f46",
    "level": "open",
    "size_orig": 444,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 10,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 2,
+    "reordered_examples": [
+     "ld\trS,F"
+    ],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3",
+     "D7",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 147,
+    "len_orig": 145
+   }
   },
   "nidcl": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x8e4a",
-   "ours": "-",
+   "ours": "8f46-905c",
    "level": "open",
    "size_orig": 278,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 3,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D10",
+     "D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 82,
+    "len_orig": 81
+   }
   },
   "types": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x8f60",
-   "ours": "-",
+   "ours": "905c-9168",
    "level": "open",
    "size_orig": 270,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D5"
+    ],
+    "structure_flags": [],
+    "len_ours": 81,
+    "len_orig": 81
+   }
   },
   "tymerge": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x906e",
-   "ours": "-",
+   "ours": "9168-9252",
    "level": "open",
    "size_orig": 232,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 94,
+    "pattern_diff": 7,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 70,
+    "len_orig": 69
+   }
   },
   "tyreduce": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9156",
-   "ours": "-",
+   "ours": "9252-92e8",
    "level": "open",
    "size_orig": 156,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 45,
+    "len_orig": 47
+   }
   },
   "fixtype": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x91f2",
-   "ours": "-",
+   "ours": "92e8-9440",
    "level": "open",
    "size_orig": 346,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 112,
+    "len_orig": 112
+   }
   },
   "uclass": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x934c",
-   "ours": "-",
+   "ours": "9440-9466",
    "level": "open",
    "size_orig": 38,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 87,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 15,
+    "len_orig": 15
+   }
   },
   "fixclass": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9372",
-   "ours": "-",
+   "ours": "9466-959a",
    "level": "open",
    "size_orig": 308,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 96,
+    "len_orig": 96
+   }
   },
   "regfree": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x94a6",
-   "ours": "-",
+   "ours": "959a-95dc",
    "level": "open",
    "size_orig": 66,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 91,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 23,
+    "len_orig": 23
+   }
   },
   "lookup": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x94e8",
-   "ours": "-",
+   "ours": "95dc-97d4",
    "level": "open",
    "size_orig": 506,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 99,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 159,
+    "len_orig": 159
+   }
   },
   "copysym": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x96e2",
-   "ours": "-",
+   "ours": "97d4-994c",
    "level": "open",
    "size_orig": 376,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 97,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 112,
+    "len_orig": 112
+   }
   },
   "hide": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x985a",
-   "ours": "-",
+   "ours": "994c-9a50",
    "level": "open",
    "size_orig": 258,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 96,
+    "pattern_diff": 6,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D7"
+    ],
+    "structure_flags": [],
+    "len_ours": 76,
+    "len_orig": 76
+   }
   },
   "unhide": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x995c",
-   "ours": "-",
+   "ours": "9a50-9abe",
    "level": "open",
    "size_orig": 110,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1"
+    ],
+    "structure_flags": [],
+    "len_ours": 39,
+    "len_orig": 39
+   }
   },
   "refid": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x99ca",
-   "ours": "-",
+   "ours": "9abe-9bd0",
    "level": "open",
    "size_orig": 284,
    "callers_orig": "-",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 95,
+    "pattern_diff": 5,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 84,
+    "len_orig": 87
+   }
   },
   "clearst": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9ae6",
-   "ours": "-",
-   "level": "open",
+   "ours": "9bd0-9cbc",
+   "level": "strict",
    "size_orig": 238,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 83,
+    "len_orig": 83
+   }
   },
   "sinit": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9bd4",
-   "ours": "-",
-   "level": "open",
+   "ours": "9cbc-9cf4",
+   "level": "strict",
    "size_orig": 56,
    "callers_orig": "13b6",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 16,
+    "len_orig": 16
+   }
   },
   "sheader": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9c0c",
-   "ours": "-",
-   "level": "open",
+   "ours": "9cf4-9d20",
+   "level": "strict",
    "size_orig": 44,
    "callers_orig": "13b6,2c44",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 14,
+    "len_orig": 14
+   }
   },
   "putrefsyms": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9c38",
-   "ours": "-",
-   "level": "open",
+   "ours": "9d20-9d4a",
+   "level": "strict",
    "size_orig": 42,
    "callers_orig": "13b6",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 14,
+    "len_orig": 14
+   }
   },
   "putsym": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9c62",
-   "ours": "-",
+   "ours": "9d4a-9eea",
    "level": "open",
    "size_orig": 418,
    "callers_orig": "9c38",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 98,
+    "pattern_diff": 4,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D13",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 115,
+    "len_orig": 115
+   }
   },
   "putnames": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9e04",
-   "ours": "-",
-   "level": "open",
+   "ours": "9eea-9f06",
+   "level": "strict",
    "size_orig": 124,
    "callers_orig": "13b6,2c44",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 23,
+    "pattern_diff": 27,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D11",
+     "D13",
+     "D3",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 8,
+    "len_orig": 35
+   }
   },
   "puttags": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9e80",
-   "ours": "-",
-   "level": "open",
+   "ours": "9f62-9f88",
+   "level": "strict",
    "size_orig": 38,
    "callers_orig": "13b6,2c44",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 12,
+    "len_orig": 12
+   }
   },
   "putrefs": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9ea6",
-   "ours": "-",
-   "level": "open",
+   "ours": "9f88-9fb0",
+   "level": "strict",
    "size_orig": 40,
    "callers_orig": "2c44",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 12,
+    "len_orig": 12
+   }
   },
   "sputc": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9ece",
-   "ours": "-",
+   "ours": "9fb0-9fe8",
    "level": "open",
    "size_orig": 54,
    "callers_orig": "9e04",
-   "status": "open"
+   "status": "findings",
+   "audit": {
+    "d_normalised_pct": 80,
+    "pattern_diff": 8,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D2",
+     "D3"
+    ],
+    "structure_flags": [],
+    "len_ours": 20,
+    "len_orig": 20
+   }
   },
   "aobeg": {
-   "file": "-",
-   "pairing": "open",
+   "file": "sym1.c",
+   "pairing": "confirmed",
    "orig": "0x9f04",
-   "ours": "-",
-   "level": "open",
+   "ours": "9fe8-9fea",
+   "level": "strict",
    "size_orig": 2,
    "callers_orig": "-",
-   "status": "open"
+   "status": "done",
+   "audit": {
+    "d_normalised_pct": 100,
+    "pattern_diff": 0,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 0,
+    "reordered_examples": [],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [],
+    "structure_flags": [],
+    "len_ours": 1,
+    "len_orig": 1
+   }
   }
  },
  "findings": [],
  "findings_pending": [],
- "manual_classes": {},
+ "manual_classes": {
+  "defid": {
+   "basis": "reading",
+   "d_classes": "D15 D2 D3",
+   "note": "Remaining: the original places the member/structure-name block (the WEGA name space check, label mismatch) between the then and the else part of the dimension test inside the loop over the dimensions; our source has it at the PCC place behind the switch (same control flow). Tried: the PCC layout. Open: a source layout that gives the original block order (goto into the loop body like in optim?)."
+  },
+  "genswitch": {
+   "basis": "reading",
+   "d_classes": "D1 D2 D3",
+   "note": "Remaining: the size of the search table (n*SZLONG/SZCHAR as an unsigned long): the original divides with div and zero-extends, our cc shifts (srl #3) for (unsigned)(...); a new compiler difference candidate (the old cc does not turn an unsigned division by a power of 2 into a shift). Tried: (unsigned)(n*SZLONG/SZCHAR)."
+  },
+  "lxstr": {
+   "basis": "reading",
+   "d_classes": "D2 D6 D15",
+   "note": "Remaining: the lastcon |= val<<8 arm uses rr0 in the original, rr4 in ours (D2), and it is placed in front of the case bodies in the original (layout); the outer switch is a compare chain (D6)."
+  },
+  "argregs": {
+   "basis": "reading",
+   "d_classes": "D6 D19",
+   "note": "Source: argregs(p->right) + argregs(p->left), so that the shipped cc calls the left one first like the original (D19); with the old cc the natural order argregs(p->left) + argregs(p->right) is expected."
+  },
+  "rmconv": {
+   "basis": "reading",
+   "d_classes": "D3 D19",
+   "note": "Source: bsize(q->type) == bsize(q->left->type) and notflt in the same order, for the call order of the original (D19)."
+  },
+  "clocal": {
+   "basis": "reading",
+   "d_classes": "D2 D3 D6 D7 D19",
+   "note": "Source: tbytes(l->type) > tbytes(p->type) for the call order of the original (D19); the rest are register and layout differences."
+  },
+  "f3970": {
+   "basis": "reading",
+   "d_classes": "D1",
+   "note": "Used twice by the parser (yyparse); returns its argument; purpose and name open."
+  }
+ },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",
  "module_list": [
   "cgram1.y",

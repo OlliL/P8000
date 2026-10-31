@@ -852,7 +852,7 @@ inforce( n ) OFFSZ n; {  /* force inoff to have the value n */
 
 	if( inoff == n ) return;
 	if( inoff > n ) {
-		cerror( "initialization alignment error");
+		cerror( "initialization error");
 		}
 
 	wb = inoff;

@@ -74,3 +74,6 @@ def model_link(work, objs):
 import os as _os  # noqa: E402
 MODEL_OUT = _os.path.join(_os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_cparse', 'cparsem')
 STRICT_INPUT = MODEL_OUT
+
+# D6: the switch tables of the model in the layout of the old cc (host/recon/d12model.py d6tables)
+D6TABLES = True

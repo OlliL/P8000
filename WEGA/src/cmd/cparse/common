@@ -4,10 +4,16 @@ static char sccsid2[] = "@[$]common\t2.5  08/24/83 16:19:58 Copr. 1981 87wega3.2
 # endif
 
 int nerrors = 0;  /* number of errors */
+int cunused[8] = { 0 };	/* 16 bytes of zeros in the data of /lib/cparse (0x357e), not referenced; meaning open */
 
 NODE *lastfree;  /* pointer to last free node; (for allocator) */
 
 	/* VARARGS1 */
+syserr( s ) char *s; { /* a system call failed: die */
+	fprintf( stderr, "system call error: " );
+	perror( s );
+	dexit( 64 );
+	}
 uerror( s, a ) char *s; { /* nonfatal error message */
 	/* the routine where is different for pass 1 and pass 2;
 	/*  it tells where the error took place */
@@ -222,6 +228,11 @@ struct dopest { int dopeop; char opst[8]; int dopeval; } indope[] = {
 -1,	0
 };
 
+char *rnames[] = {	/* the names of the registers (WEGA: in the data, not used by pass 1) */
+	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "fp",
+	"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
+	};
+
 mkdope(){
 	register struct dopest *q;
 
@@ -298,6 +309,7 @@ tbytes( t ) TWORD t; { /* the size of a scalar type in bytes, at most 4 */
 	/* mapping relationals when the sides are reversed (optim) */
 short revrel[] ={ EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
 char *memtop = 0, *memcur = 0;	/* the hunk of getmem */
+int memfirst = 1;	/* getmem has not been called yet */
 
 dexit( v ){
 	fflush( stdout );
@@ -348,7 +360,6 @@ nncon( p ) register NODE *p; {
 	return( p->op == ICON && p->rval == NONAME );
 	}
 
-static int memfirst = 1;
 
 char *
 getmem( n ) register n; { /* n bytes of memory, from a hunk of at least 2000 bytes */

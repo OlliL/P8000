@@ -408,10 +408,3 @@ ecode( p ) NODE *p; {
 	fprintf( outfile, "%d\t%s\n", lineno, ftitle );
 	prtree( p );
 	}
-
-syserr( s ) char *s; { /* a system call failed: die */
-	fprintf( stderr, "system call error: " );
-	perror( s );
-	dexit( 64 );
-	}
-
