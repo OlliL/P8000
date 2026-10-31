@@ -153,3 +153,5 @@ TODO.md when this log was started.
   (putrefsyms, putnames lost); only the parameters forgotten: cparse 48 without a loss, corpus 239 of 259, bench 63
   (cron ex, cal cal lost: the 1982 programs take a parameter from its register for an argument). The passes and the
   1982 programs differ here.
+- Owner decision: two versions. v0p set up (cmd/*/v0p, ccv0p, OLD_V0P in cc.c; codgen v0p = v0 + OLD_D3A); make
+  oldroot builds v1, v0, v0p; cc and scc identical.

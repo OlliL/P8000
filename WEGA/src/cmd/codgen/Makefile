@@ -32,7 +32,7 @@ OBJS = allo3.o local3.o match3.o order3.o out3.o regallo3.o regfile3.o tmp3.o zz
 SOBJS = allo3.o local3.o match3.o order3.o out3.o regallo3.o regfile3.o tmp3.o zzz3.o reader3.o gen3.o optim3.o comm3.o rdr3.o main3.o efcode3.o lcl3.o tr3.o regs3.o table3_scodgen.o ops_scodgen.o hop_scodgen.o
 
 # the versions of the old compiler (one directory each, own Makefile; not part of all)
-OLDDIRS = v1 v0
+OLDDIRS = v1 v0 v0p
 
 all: codgen scodgen
 

@@ -35,7 +35,7 @@ OBJS = freopen.o fopen.o $(OLD)/printf/0_4.o \
 	wait.o write.o cerror.o
 
 # the versions of the old compiler (one directory each, own Makefile; not part of all)
-OLDDIRS = v1 v0
+OLDDIRS = v1 v0 v0p
 
 all: cc scc
 

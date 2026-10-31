@@ -99,7 +99,7 @@ oldroot:
 	sh tools/oldroot.sh $(WEGAABS) $(OLDROOTABS)
 	for p in cparse codgen popt cc; do \
 	  $(MAKE) -C $(SRC)/$$p old $(WTOOLS) LDBIN='$(WEMU) /bin/ld' CRT0=$(WEGAABS)/lib/crt0.o || exit 1; \
-	  for v in v1 v0; do $(MAKE) -C $(SRC)/$$p/$$v install PREFIX=$(OLDROOTABS) $(WTOOLS) LDBIN='$(WEMU) /bin/ld' || exit 1; done; \
+	  for v in v1 v0 v0p; do $(MAKE) -C $(SRC)/$$p/$$v install PREFIX=$(OLDROOTABS) $(WTOOLS) LDBIN='$(WEMU) /bin/ld' || exit 1; done; \
 	done
 
 clean:

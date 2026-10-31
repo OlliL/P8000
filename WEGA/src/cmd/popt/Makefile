@@ -28,7 +28,7 @@ SHIPOBJS = __callex.o data.o brk.o cuexit.o ffltioc.o write.o close.o read.o \
 OBJS = z20.o z21.o z22.o z23.o
 
 # the versions of the old compiler (one directory each, own Makefile; not part of all)
-OLDDIRS = v1 v0
+OLDDIRS = v1 v0 v0p
 
 all: popt
 

@@ -1,4 +1,4 @@
-# codgen v0: the code generator the old C compiler v0 (1982: tight frames; it also built the passes of the shipped compiler), a native WEGA
+# codgen v0: the code generator of the old C compiler v0 (1982: tight frames; it also built the passes of the shipped compiler), a native WEGA
 # program. Made from the sources of .. with the switches of this version; start-up file and libc part are those of
 # .. (make .. first).
 #

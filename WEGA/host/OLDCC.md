@@ -168,11 +168,21 @@ time, or another version) points to their mechanism.
   candidates, not set.
 - Open (cparse): the address moved out of the wanted register before a load (chkstr), double parameters in r4..r7
   (fincode, an ABI difference).
-- The compiler of the passes is not exactly the one of 1982 (2026-10-31): cparse putbyte passes its parameter v
+- The compiler of the passes is not exactly the one of 1982 (2026-10-31), so there are two versions (owner decision
+  2026-10-31): v0 stands for the 1982 programs (test bench v0), v0p for the passes (test bench /lib/cparse), see below: cparse putbyte passes its parameter v
   (already in r7) to bcon(v) by a load from the frame, the 1982 programs take it from the register (cron ex: s in r7
   for fputs(s, ...), no load; cal cal: y in r6, `ld r7,r6`). Candidate `OLD_D3A` (codgen gencall: the registers of
   the parameters forgotten before the arguments are evaluated): cparse 44 > 48 (putbyte, yyerror, sectadd,
-  resetmem), bench v0 65 > 63 (cron ex, cal cal). Not set; which compiler v0 stands for is an owner decision.
+  resetmem), bench v0 65 > 63 (cron ex, cal cal). Set in v0p, not in v0.
+
+### v0p (the compiler of the passes) — started 2026-10-31
+
+- What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
+  programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
+  the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
+- Switches: those of v0 and `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+  (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
+- State: /lib/cparse 48 strictly exact (code 49152 bytes against 48896), corpus 239 of 259.
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
