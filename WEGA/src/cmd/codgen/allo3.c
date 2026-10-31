@@ -308,7 +308,7 @@ allocreg(p, cookie)
 	else
 		cls = rclass(p->type, want);
 #ifdef OLD_D2R
-	r = cls == 2 ? freereg(p, want, cookie) : -1;	/* the word register of an operand first */
+	r = cls == 2 && (p->op == STAR || p->op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
 #ifdef OLD_D2D
 	if (r == -1 && cls == 3 && want == -1 && (p->op == DIV || p->op == MOD || p->op == ASG DIV || p->op == ASG MOD)) {
 		register struct node *l = getlr(p, 'L');	/* a word operand in an odd register: its pair */

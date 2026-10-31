@@ -123,3 +123,13 @@ TODO.md when this log was started.
   61/1594. Parked with OLD_D2D.
 - v0 with OLD_D2W rebuilt (make oldroot): bench v0 62/1542; /lib/cparse with ccv0: 38 strictly exact, code 48896
   (= original), data equal at the same address 17411; ld with ccv1 55; normal objects of codgen and popt unchanged.
+- /lib/cparse as test bench (strictlayers on the ccv0 model): the most frequent forms D3 reload (29 in 18 functions),
+  D2 register copies, D10 (6 functions).
+- OLD_D10 (codgen match: entry 024 not for a long shift): the form of the original (`ld r2,#4; sdal`, right shifts
+  with `neg`); cparse bccode exact; uerror, cerror, werror, syserr, where looked lost: a mask artifact (the address of
+  stderr equals a function address of the model).
+- Wrong code by OLD_D2R found in cparse copysym (`ld @r3,r3` for `*pp = q`, `ldir @r3,@r2,r3`): freereg returns the
+  register of an operand that is still needed. Narrowed to STAR: correct but `ld r3,@r2` (the node is an OREG); STAR
+  and OREG: correct, cparse 43 strictly exact, code 49152; bench v0 64/1466.
+- cparse built with ccv0 (make, not the model): corpus 239 of 259 identical (as the shipped build): the behaviour of
+  v0 codgen holds on cparse.

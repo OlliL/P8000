@@ -266,6 +266,12 @@ select:
 		l = getlr(p, 'L');
 		if (!tshape(l, q->lshape) || !ttype(l->type, q->ltype))
 			continue;
+#ifdef OLD_D10
+		/* the old codgen v0 shifts a long by a constant through a register (ld A1,#n; sdal): no OIZB AL,#n */
+		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (l->type == 5 || l->type == 15) &&
+		    (p->op == LS || p->op == RS || p->op == ASG LS || p->op == ASG RS))
+			continue;
+#endif
 		r = getlr(p, 'R');
 		if (!tshape(r, q->rshape) || !ttype(r->type, q->rtype))
 			continue;

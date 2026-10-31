@@ -7,14 +7,15 @@
 #   make clean
 #
 # Switches (host/OLDCC.md):
-#   OLD_D2R   a register for a result: the word register of an operand first (allocreg)
+#   OLD_D2R   a load through a pointer (STAR, OREG) into the register of its address first (allocreg)
 #   OLD_D18   the frame operand at offset 0 written as 0(fp), never @fp
 #   OLD_D1R   the temporary of a return value only for a delayed x++
 #   OLD_D2W   the order of the free registers: r0 early (rweight), so the pairs rr2 and rr0 come first
+#   OLD_D10   a long shifted by a constant through a register (ld A1,#n; sdal), no slal/sral with an immediate
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W
+SWITCHES = -DOLD_D2R -DOLD_D18 -DOLD_D1R -DOLD_D2W -DOLD_D10
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc

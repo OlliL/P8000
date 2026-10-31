@@ -140,15 +140,19 @@ time, or another version) points to their mechanism.
 - Time: the programs of 1982 (sources 07/82 .., crt0 3.1 up to 11/82) and, built late, the passes cparse, scparse,
   codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
   return temporary, leaf functions without a frame) and packed strings (old D12).
-- Switches so far: `OLD_D12` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W` (codgen); popt without a switch
+- Switches so far: `OLD_D12` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10` (codgen); popt without a switch
   (OLD_D20 is neutral on the bench). Candidates in the sources, not set: `OLD_D2D` (codgen) and `OLD_D1F` (popt), see
   "Leaf functions" below. No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
 - Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
   `make -C host oldroot` together with v1.
 - Test bench v0 (`witness.py -t v0`, System III sources of 38 programs of 1982, 153 functions): shipped cc 15, v1 14,
-  v0 62 (v1 without OLD_D1: 15; + OLD_D2R: 18; + OLD_D18: 48; + OLD_D1R: 60; without OLD_D3: 61; + OLD_D2W: 62, the
-  differing lines 1624 > 1542).
-- /lib/cparse built with ccv0 (d12model, strictcmp): the code is as long as the original's (48896 bytes; shipped cc
+  v0 64 (v1 without OLD_D1: 15; + OLD_D2R: 18; + OLD_D18: 48; + OLD_D1R: 60; without OLD_D3: 61; + OLD_D2W: 62, the
+  differing lines 1624 > 1542; + OLD_D10 and OLD_D2R narrowed to loads through a pointer: 64, 1466 lines).
+- /lib/cparse as the second test bench (2026-10-31, ccv0, d12model, strictcmp): 43 strictly exact (shipped cc 29);
+  cparse built with ccv0 normally passes its corpus like the shipped build (239 of 259 inputs identical, the rest
+  differ only in the heap contents of the .S file). The behaviour check is needed: the test benches count equal
+  instructions only and do not see wrong code (see OLD_D2R).
+- /lib/cparse built with ccv0 before OLD_D10 (d12model, strictcmp): the code is as long as the original's (48896 bytes; shipped cc
   49152), data equal at the same address 17472 of 18584 bytes (shipped 17170), 38 functions strictly exact (shipped
   29; gained mkty, mainp1, lxtitle, bcon, openfiles, bstart, bend, fldal, noinit, tcheck, putstrs; lost savebc, psave). With OLD_D2W: still 38, code 48896, data equal at the same address
   17411 (code addresses in the data moved).
@@ -215,9 +219,11 @@ compiler that built the original. Not differences of the compiler (checked):
 - v0 (switch `OLD_D2W` in codgen, rweight in regallo3.c): r0 has the weight 3 instead of 8, so r0 and the pair rr0 come
   early (the originals of v0: `div rr0` 68 times, `rr2` 135, `rr4` once; v1 and shipped: never rr0); bench 61 > 62,
   1624 > 1542 lines. Weight 0 or 1 makes codgen run endlessly (bench timeouts).
-- v0 (switch `OLD_D2R` in codgen, allocreg in allo3.c): the register for a result is the word register of an operand
-  first (freereg), a free one only after it (`ld r7,@r7` where the shipped codgen writes `ld r6,@r7; ld r7,r6`); the
-  bench of v0: 15 > 18 equal functions, 3203 > 2096 differing lines. Word registers only (a long pair must be even).
+- v0 (switch `OLD_D2R` in codgen, allocreg in allo3.c): a load through a pointer (STAR, OREG) goes into the register of
+  its address first (freereg), a free one only after it (`ld r7,@r7` where the shipped codgen writes `ld r6,@r7; ld
+  r7,r6`); word registers only. The first form (for every node) gave the bench 15 > 18 but wrong code in cparse
+  copysym (`*pp = q` stored q into itself, `ldir @r3,@r2,r3`): an operand register that is still needed; narrowed to
+  loads, bench 62 > 64 together with OLD_D10, cparse 39 > 43.
 - Form: another register for a temporary: rr0 where the shipped cc takes rr4 (cas), rr4 against rr2 (ld), a copy to r2
   in front of a use (codgen `expand`, ld place_sec and chk_ranlib); register variables of leaf functions in scratch
   registers (sld).
@@ -278,7 +284,9 @@ rl3` against `testb @r2`; char loads as `ldb`/`subb` or `extsb; and #FF`.
 
 ### D10 Shift of a long by a constant
 
-Old `ld r2,#24; sdal rr4,r2` (also `(long)w << 16` through rr0), shipped `slal rr4,#24` (cas, cparse).
+Old `ld r2,#24; sdal rr4,r2` (also `(long)w << 16` through rr0; right shifts `ld r0,#3; neg r0; sdll`), shipped `slal
+rr4,#24` (cas, cparse). v0 (switch `OLD_D10` in codgen, match in match3.c): the table entry 024 (`OIZB AL,AR`, the
+immediate shift) is not used for a long, so the entries 025 .. 030 load the count into a register; cparse bccode exact.
 
 ### D11 Tail merging (popt)
 
