@@ -204,8 +204,10 @@ rallo(p, down)
 	case MUL:
 		if (p->left->type == 5 || p->left->type == 15) {
 			down1 = MUSTDO | 6;
+#ifndef OLD_D2U
 			if (p->right->op != REG)
-				down2 = MUSTDO | 4;
+				down2 = MUSTDO | 4;	/* (OLD_D2U: v0 wants no register for the right operand) */
+#endif
 		}
 		break;
 	case ASG MUL:

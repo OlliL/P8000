@@ -291,3 +291,7 @@ TODO.md when this log was started.
   two idle words of a pair lighter than the first free pair are given back (they merge): cparse 131, 864 (swend,
   icons exact; putsym 14 > 46: the merged pair then stays idle and words go to r0, r1); for a word also an idle
   lighter pair is given back and split: cparse 132, 780, no loss; corpus 259; bench v0 109, 400.
+- upoff `multl rq4,rr2` where we took rr4: rallo wants MUSTDO|4 for the right operand of a long MUL. OLD_D2U
+  (no wish): cparse 133, 756 (upoff exact, falloc 16 > 4, dclstruct); corpus 259; bench v0 109, 396.
+- yyparse: the original stores the result of talloc() twice (`ld 0x130(r15),r2; ld 0x132(r15),r2`, the second
+  never read) in the switch action; open.
