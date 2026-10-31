@@ -140,15 +140,16 @@ time, or another version) points to their mechanism.
 - Time: the programs of 1982 (sources 07/82 .., crt0 3.1 up to 11/82) and, built late, the passes cparse, scparse,
   codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
   return temporary, leaf functions without a frame) and packed strings (old D12).
-- Switches so far: `OLD_D12` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10` (codgen); popt without a switch
+- Switches so far: `OLD_D12` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`, `OLD_D3P` (codgen); popt without a switch
   (OLD_D20 is neutral on the bench). Candidates in the sources, not set: `OLD_D2D` (codgen) and `OLD_D1F` (popt), see
   "Leaf functions" below. No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
 - Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
   `make -C host oldroot` together with v1.
 - Test bench v0 (`witness.py -t v0`, System III sources of 38 programs of 1982, 153 functions): shipped cc 15, v1 14,
   v0 64 (v1 without OLD_D1: 15; + OLD_D2R: 18; + OLD_D18: 48; + OLD_D1R: 60; without OLD_D3: 61; + OLD_D2W: 62, the
-  differing lines 1624 > 1542; + OLD_D10 and OLD_D2R narrowed to loads through a pointer: 64, 1466 lines).
-- /lib/cparse as the second test bench (2026-10-31, ccv0, d12model, strictcmp): 43 strictly exact (shipped cc 29);
+  differing lines 1624 > 1542; + OLD_D10 and OLD_D2R narrowed to loads through a pointer: 64, 1466 lines; OLD_D1R
+  without any return temporary: 64, 1463; + OLD_D3P: 65, 1462).
+- /lib/cparse as the second test bench (2026-10-31, ccv0, d12model, strictcmp): 44 strictly exact (shipped cc 29);
   cparse built with ccv0 normally passes its corpus like the shipped build (239 of 259 inputs identical, the rest
   differ only in the heap contents of the .S file). The behaviour check is needed: the test benches count equal
   instructions only and do not see wrong code (see OLD_D2R).
@@ -207,8 +208,9 @@ compiler that built the original. Not differences of the compiler (checked):
   spare words = number of register variables).
 - Evidence: ld (30 functions lose their spares and stay exact), strip (`copy`; byte-identical), the bench (31 > 72),
   /bin/mv (frames 16, 0x12, 10 of main, pname, dname; shipped 12, 12, 8).
-- v0 (switch `OLD_D1R` in codgen, delay() in reader3.c): the temporary of a return value only when a delayed x++ needs
-  it; the bench of v0 goes from 48 to 60 equal functions.
+- v0 (switch `OLD_D1R` in codgen, delay() in reader3.c): no temporary for the value of a return; with a delayed x++ the
+  value stays in r2, which stays taken while the increment runs (`ld r2,_crslab; inc _crslab,#1`: cparse getlab, no
+  frame). The bench of v0 goes from 48 to 60 equal functions (first form: a temporary only for a delayed x++).
 - Other forms, not reproduced: the temporary of a return value (codgen, reader3.c, above the locals) is in every
   function of ld with a return value except read_symbols; one unexplained frame word in main, parse_args, slookup,
   pslookup, index16 of ld (kept as `int spare`); cparse's compiler makes no frame for leaf functions and no home slots
@@ -243,6 +245,9 @@ compiler that built the original. Not differences of the compiler (checked):
   gives the idle registers back (`rfreeall(1)`), the old one keeps them with their contents.
 - Evidence: ld init_entry and dseek, the bench (61 > 72).
 - Risk: a register loaded on one path only keeps its symbol too (not seen; would be a quirk of the original).
+- v0 (switch `OLD_D3P` in codgen, regforsym in lcl3.c): a name that lives in a register is taken from it also when
+  the node wants another register (the shipped codgen then loads it from the frame): cparse argdebug `return(x)` as
+  `ld r2,r7`; bench 64 > 65.
 - Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after), libc malloc (`mult rr2,r6`).
 
 ### D4 Spill of arguments
@@ -252,7 +257,9 @@ compiler that built the original. Not differences of the compiler (checked):
   %0002(r15),rr6` against v1's `ldm @r15,r5,#3`), codgen (register parameters have no home slots, `ld r14,r7; ld
   r13,r6` first parameter first; the shipped cc spills more: getlr, member, nullsyms), libc swap (an address-taken
   argument spilled in the `0(r15)` form), sld (a long parameter cast to a pointer read from its spill slot).
-- Switch: none yet (the spill decision is in efcode3.c, `regargs`).
+- Switch: none yet (the spill decision is in efcode3.c, `regargs`). Refuted for v0: spill only the parameters whose
+  home is used (cparse fldal spills its unused parameter; bench 65/1462 > 65/1468). Open in v0: leaf functions have no
+  spill and a smaller frame (cparse argdebug: `dec r15,#4` and no store; cal jan1 no frame at all).
 
 ### D5 Constant index into local arrays
 

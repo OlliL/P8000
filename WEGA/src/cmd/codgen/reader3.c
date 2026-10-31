@@ -887,8 +887,7 @@ delay(p)
 	delay2(p);
 	codgen(p, FOREFF);
 #ifdef OLD_D1R
-	if (ret && ndelay)
-		off = freetemp(sz) / 8;	/* the temporary of a return value only for a delayed x++ */
+	ret = 0;	/* no temporary for the value of a return: r2 stays taken while the delayed x++ runs */
 #endif
 	if (ret && ndelay) {
 		printf("/* delay */\n");

@@ -508,8 +508,10 @@ regforsym(reg, s, type, off)
 		return symreg(s, off);
 	if (type != s->stype)
 		return -1;
+#ifndef OLD_D3P
 	if (reg != -1 && reg != s->sbyte5)
-		return -1;
+		return -1;	/* (OLD_D3P: the register that holds it also when another one is wanted, a copy follows) */
+#endif
 	return symreg(s, 0L);
 }
 

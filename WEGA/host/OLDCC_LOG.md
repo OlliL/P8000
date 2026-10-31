@@ -133,3 +133,10 @@ TODO.md when this log was started.
   and OREG: correct, cparse 43 strictly exact, code 49152; bench v0 64/1466.
 - cparse built with ccv0 (make, not the model): corpus 239 of 259 identical (as the shipped build): the behaviour of
   v0 codgen holds on cparse.
+- OLD_D1R without any return temporary (no save of r2 around the delayed x++): cparse getlab exact (44), bench 64/1463.
+- OLD_D3P (regforsym: the register of a name also when another one is wanted): cparse argdebug returns x from r7;
+  bench 65/1462; cparse 44.
+- D4 in v0, tried: spill only the parameters whose home is used (marked in oregfix and in clocal for &x; the first
+  form without clocal made wrong code for g(&x)): cparse 42 (fldal spills its unused parameter in the original),
+  bench 65/1468. Removed. The leaf functions of v0 (argdebug: frame 4, no spill; jan1: no frame) are open.
+- Behaviour: cparse built with ccv0 passes its corpus (239 of 259) after each change.
