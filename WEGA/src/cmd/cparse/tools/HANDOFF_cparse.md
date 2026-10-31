@@ -144,3 +144,12 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 - Data model (`d12model.py`, `D6TABLES`): the size and layout of the original; strict comparison on the model: 36 exact,
   the others classified (findings.json). The `_lastbuf` word of cplibc.s was a number and is now `__iob+160`.
 - Corpus 234 of 255; the rest: the heap-dependent .S fields (quirk table).
+
+- Step 2 done: the libc part is split (`tools/cparse_libc_split.spec`, unlink.py; `make checkblock` links the raw own
+  part with the modules and gives the image of /lib/cparse exactly). 19 shipped members (ar x), 19 known oldlibc
+  versions and 8 new ones: fltioc 0_1, fdopen 0_1, ecvt 0_1, perror 0_1, errlst 0_1 (data only, pointers made
+  symbolic with datafix.py), stty 0_3 (stty at 0xbc1c and gtty at 0xbc36), strcmp 0_1, length 0_3 (limit 0x4000);
+  `libcbss.s` orders __sobuf before __sibuf. unlink.py: modules with data only. cplibc.s is gone.
+- endopen/0_4.s (used by codgen, scodgen, popt) had the errno address of /lib/codgen written as a number
+  (`cp %69C8,#2`); it is `_errno` now. The originals: codgen 0x69c8, scodgen 0x7036, popt 0x0ce8, cparse 0x4894, so
+  the number was right only for the original codgen (our codgen link has errno at 0x69a4).

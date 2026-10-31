@@ -318,6 +318,8 @@ def main():
         if m["kind"] != "old":
             continue
         ma, mb = m["start"], m["end"]
+        if ma is None:
+            ma = mb = -1	# a module with data only
         ext, local_labels, body = set(), set(), []
         exported = {a: n for n, a in m["tsyms"].items()} if split else {a: n for n, a in m["syms"].items() if ma <= a < mb}
         for pc, t in ins:

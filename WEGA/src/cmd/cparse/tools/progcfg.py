@@ -67,7 +67,11 @@ def model_link(work, objs):
     cp = os.path.normpath(os.path.join(here, '..'))
     crt = os.path.join(cp, 'crt0.o')
     hostld = os.path.normpath(os.path.join(cp, '..', '..', '..', 'host', 'ld', 'ld'))
-    return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', crt] + objs + [os.path.join(cp, 'cplibc.o'), '-o', 'cparsem']
+    import re
+    mk = open(os.path.join(cp, 'Makefile')).read().replace('\\\n', ' ')
+    libc = re.search(r'^LIBCOBJS = (.*)$', mk, re.M).group(1).split()
+    libc = [os.path.join(cp, o.replace('$(OLD)', os.path.join('..', '..', 'lib', 'oldlibc'))) for o in libc]
+    return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', crt] + objs + libc + ['-o', 'cparsem']
 
 
 # the strict comparison runs on the d12model link (our data layout differs from the original only by D12)

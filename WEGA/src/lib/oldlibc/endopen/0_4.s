@@ -1,4 +1,4 @@
-	.extern	_chmod, _close, _creat, _lseek, _open, _umask
+	.extern	_chmod, _close, _creat, _errno, _lseek, _open, _umask
 	.psec
 	.code
 __endopen::
@@ -63,7 +63,7 @@ Lca74:
 	ld	r12,r2
 	cp	r2,#%0000
 	jr	ge,Lca96
-	cp	%69C8,#%0002
+	cp	_errno,#%0002
 	jr	ne,Lca96
 	ld	r7,%0002(r15)
 	ld	r6,r13
