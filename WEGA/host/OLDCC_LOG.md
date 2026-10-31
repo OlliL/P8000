@@ -308,3 +308,8 @@ TODO.md when this log was started.
   STREF too, a codgen error in fhashv (`u.l % n`: register jam); SUBSR only and no constant index: cparse 136, 652;
   corpus 259; bench v0 114, 318. Open: newsect `&sectname[sec][k]` (a global array: the original adds the name last
   too), dclargs (the address in r2, the load into the wanted r6).
+- OLD_D5S for global arrays tried (the outer SUBSR of `sectname[sec][k]` rotated so that the constant comes last):
+  with a named constant no effect (mapnm clears the sname of an ICON); with every constant not a frame symbol cparse
+  652 > 682 (yylex, gotscal, lxres worse) and newsect unchanged. Removed; newsect open.
+- dclargs computes an address in r2 and loads into the wanted r6, ours computes in r6. OLD_D2S tried (rallo: STAR
+  passes no wish to its address): cparse 652 > 998. Removed.
