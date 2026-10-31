@@ -322,3 +322,6 @@ TODO.md when this log was started.
 - OLD_D3K: the rsfreeall of a label no jump has named waits for the next record and is left out when that is the
   end of the function: cparse 139, 525 (resetbc exact); corpus 259; bench v0 unchanged (114, 318). defalign still
   spills (its last label has code behind it).
+- popt (owner: work on popt): OLD_D11N tried (no comjump at all): cparse 525 > 1202, code 50176 bytes: the old popt
+  has comjump. oconvert as a pure layout case: its return copies were merged because our source ends with
+  `return(p);` behind the cerror; the original has no code there. Source fix: oconvert 4 > 2.

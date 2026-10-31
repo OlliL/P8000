@@ -832,8 +832,6 @@ oconvert(p) register NODE *p; {
 		}
 
 	cerror( "illegal oconvert: %d", p->op );
-
-	return(p);
 	}
 
 NODE *

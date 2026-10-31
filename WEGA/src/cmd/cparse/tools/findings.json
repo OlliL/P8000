@@ -6832,6 +6832,11 @@
    "basis": "statement form",
    "d_classes": "",
    "note": "Source fix: n += 1; n &= ~1; (the original rounds n in its register with inc and res)."
+  },
+  "oconvert": {
+   "basis": "statement form",
+   "d_classes": "D19",
+   "note": "Source fix: no return(p) behind the cerror at the end (the original has no code there; with it popt merges the return copies). Remaining: the order of the arguments r6, r7 of the first block() call."
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",
