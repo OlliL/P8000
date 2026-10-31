@@ -322,7 +322,7 @@ cprint( p ) register NODE *p; { /* print the constant expression p into the .D f
 	cprint( p->right );
 	}
 
-vfdzero( n ){ /* define n bits of zeros in a vfd */
+vfdzero( n ) register n; { /* define n bits of zeros in a vfd */
 
 	if( n <= 0 ) return;
 

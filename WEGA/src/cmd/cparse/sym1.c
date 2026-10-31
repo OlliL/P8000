@@ -28,7 +28,6 @@ falloc( p, w, new, pty )  register struct symtab *p; NODE *pty; {
 
 	register al,sz;
 	register TWORD type;
-	int s;
 
 	type = (new<0)? pty->type : p->stype;
 
@@ -36,10 +35,14 @@ falloc( p, w, new, pty )  register struct symtab *p; NODE *pty; {
 	switch( new<0?pty->type:p->stype ){
 
 	case ENUMTY:
+		{
+		int s;
+
 		s = new<0 ? pty->csiz : p->sizoff;
 		al = dimtab[s+2];
 		sz = dimtab[s];
 		break;
+		}
 
 	case CHAR:
 	case UCHAR:

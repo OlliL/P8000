@@ -322,9 +322,11 @@ branch( n ) register n; { /* a branch record of the intermediate file */
 	fprintf( outfile, "B%d\t\n", n );
 	}
 
-ncopy( q, p ) NODE *p, *q; {
+ncopy( q, p ) register NODE *q, *p; {
 	/* copy the contents of p into q, without any feeling for
 	   the contents */
+	register i;
+
 	*q = *p;
 	}
 
@@ -333,9 +335,10 @@ tcopy( p ) register NODE *p; {
 	/* make a fresh copy of p */
 
 	register NODE *q;
+	register r;
 
-	q = talloc();
-	ncopy( q, p );
+	ncopy( q=talloc(), p );
+	r = p->rval;
 
 	switch( optype(q->op) ){
 

@@ -183,14 +183,14 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D2A` (codgen). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 119 strictly exact, 1161 differing lines, code and data as long as the original's (48896, 18584
+- State: /lib/cparse 125 strictly exact, 1087 differing lines, code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
   81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines; + OLD_D2Q 2719 lines (88: addcase and ftnend differ only by a mask artifact, a data address equal to a function
-  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438; source fixes hash, hide, lookup 111, 1400; + OLD_D3K 113, 1312; source fixes getpreg, fhashv 1282; + OLD_D2V 116, 1194; OLD_D3K at `?:` 117, 1188; source fixes cisreg, tyreduce 119, 1161).
+  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438; source fixes hash, hide, lookup 111, 1400; + OLD_D3K 113, 1312; source fixes getpreg, fhashv 1282; + OLD_D2V 116, 1194; OLD_D3K at `?:` 117, 1188; source fixes cisreg, tyreduce 119, 1161; source fixes vfdzero, tcopy, ncopy, argregs, beginit, endinit, falloc 122, 1094; + OLD_D2A 125, 1087).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
@@ -276,6 +276,9 @@ compiler that built the original. Not differences of the compiler (checked):
 - v0 (switch `OLD_D6R` in codgen gswitch): the count register of cpir is in neither half of rr0 (`ld r4,#n`, the
   shipped codgen skips only r0 and takes r1); under OLD_D2T gswitch takes the switch register first, which a body
   may have given back. cparse 1668 > 1584 lines (8 functions that differed only in this register), bench v0 95 > 98.
+- v0p (switch `OLD_D2A` in codgen, match): the value of a long assignment used in a comparison is copied into a new
+  pair that keeps the name (`ldl 2(r15),rr6; ldl rr2,rr6; cpl rr6,#%FFFE`, later `ldl rr4,rr2`): nidcl, beginit,
+  endinit exact; bench v0 unchanged, so v0p only.
 - v0p (switch `OLD_D2Q` in codgen, allocreg): a long loaded through a pointer goes into the pair of its even address
   register when the odd half is free (`sla r2,#2; ldl rr2,TAB(r2)`, the shipped codgen takes rr0), also when that
   pair is the wanted one (cinit: `ldl rr4,14(r4)` for an argument); cparse 2836 > 2719 lines, bench v0 1080 > 1085

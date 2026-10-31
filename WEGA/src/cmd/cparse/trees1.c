@@ -1361,7 +1361,10 @@ prtree(p) register NODE *p; {
 argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call (those that are not in registers) */
 	register n;
 
-	if( p->op == CM ) return( argregs( p->right ) + argregs( p->left ) );	/* (the left one is counted first) */
+	if( p->op == CM ){
+		n = argregs( p->left );
+		return( n + argregs( p->right ) );
+		}
 	n = argsize( p );
 	if( ( (p->type == FLOAT || p->type == DOUBLE) && afregs < 16 ) || afull ){
 	full:

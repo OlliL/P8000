@@ -184,6 +184,10 @@ extern void symuse();			/* 0x964c: note that the symbol of an assignment target 
 extern int allo();	/* 0x67e8: get the registers the entry needs */
 extern void expand();	/* 0x6444 */
 extern void reclaim();	/* 0x7058 */
+#ifdef OLD_D2A
+extern int getreg();
+extern void rmove(), rfree();
+#endif
 extern int bsize();
 extern struct node resc[];			/* the work registers RESC1 .. RESC3 (0x12 byte nodes at 0x8f24) */
 
@@ -306,8 +310,23 @@ select:
 			return q->rewrite;
 		if (!allo(p, q))
 			continue;
+#ifdef OLD_D2A
+		rv = p->op;
+#endif
 		expand(p, cookie, q->cstring);
 		reclaim(p, q->rewrite, cookie);
+#ifdef OLD_D2A
+		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
+		if (rv == ASSIGN && !(cookie & 01) && p->op == REG && (p->type == 5 || p->type == 15) && p->rval < 8) {
+			register int nr;
+
+			nr = getreg(3, -1, 0x1000, (struct sym *)0);
+			if (nr >= 0 && nr != p->rval) {
+				rmove(nr, p->rval, p->type);
+				rfree(nr, p->type);
+			}
+		}
+#endif
 		return MDONE;
 	}
 }

@@ -9,6 +9,7 @@
 #define OLD_D2Q		/* a long loaded through a pointer into the pair of its even address register, also when wanted */
 #define OLD_D2X		/* a long result of a binary operator (not a shift) into the pair of its left operand first */
 #define OLD_D3A		/* the registers of the parameters forgotten before the arguments of a call (gencall) */
+#define OLD_D2A		/* the value of a long assignment copied into a new pair, which keeps the name (match) */
 #endif
 
 #ifdef OLD_V0

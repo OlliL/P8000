@@ -39,7 +39,6 @@ beginit( curid ) struct symtab *curid; {
 	/* beginning of initilization; set location ctr and set type */
 	register struct symtab *p;
 	OFFSZ sz;
-	int al;
 
 	p = curid;
 
@@ -62,7 +61,7 @@ beginit( curid ) struct symtab *curid; {
 	case STATIC:
 		ilocctr = ISARY(p->stype)?ADATA:DATA;
 		locctr( ilocctr );
-		defalign( al = talign( p->stype, p->sizoff ) );
+		defalign( talign( p->stype, p->sizoff ) );
 		if( (sz = (tsize( p->stype, p->dimoff, p->sizoff ) + 7) / SZCHAR) > 0xfffe )
 			uerror( "size of %s too large", &ntab[p->sname] );
 		else if( sectfull( 1, sz ) ) newsect( 1 );
@@ -215,7 +214,7 @@ putstrs(){ /* the string literals of the function into the .D file (name is a gu
 endinit(){
 	register TWORD t;
 	register d, s, n, d1;
-	OFFSZ sz, tsz;
+	OFFSZ sz;
 
 	switch( iclass ){
 
@@ -242,7 +241,7 @@ endinit(){
 		n = inoff/pstk->in_sz;  /* real number of initializers */
 		if( d1 >= n ){
 			/* once again, t is an array, so no fields */
-			inforce( tsz = tsize( t, d, s ) );
+			inforce( tsize( t, d, s ) );
 			n = d1;
 			}
 		if( d1!=0 && d1!=n ) uerror( "too many initializers");
@@ -252,11 +251,11 @@ endinit(){
 
 	else if( t == STRTY || t == UNIONTY ){
 		/* clearly not fields either */
-		inforce( tsz = tsize( t, d, s ) );
+		inforce( tsize( t, d, s ) );
 		}
 	else if( n > 1 ) uerror( "bad scalar initialization");
 	/* this will never be called with a field element... */
-	else inforce( tsz = tsize(t,d,s) );
+	else inforce( tsize(t,d,s) );
 
 	paramno = 0;
 	vfdalign( (OFFSZ)AL_INIT );

@@ -6714,9 +6714,9 @@
    "note": "Remaining: the lastcon |= val<<8 arm uses rr0 in the original, rr4 in ours (D2), and it is placed in front of the case bodies in the original (layout); the outer switch is a compare chain (D6)."
   },
   "argregs": {
-   "basis": "reading",
-   "d_classes": "D6 D19",
-   "note": "Source: argregs(p->right) + argregs(p->left), so that the shipped cc calls the left one first like the original (D19); with the old cc the natural order argregs(p->left) + argregs(p->right) is expected."
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: n = argregs( p->left ) in front of return( n + argregs( p->right ) ) (the original keeps the first count in r13, no frame temporary). Remaining: popt merges the two add r2,r13 tails (D11) and the block order behind the compare chain."
   },
   "rmconv": {
    "basis": "reading",
@@ -6777,6 +6777,36 @@
    "basis": "frame layout",
    "d_classes": "",
    "note": "Source fix: the dimension goes through a long local (the original stores (unsigned)temp into a 4 byte frame place and passes it from the register of the assignment); the name off is a guess, Plexus passes (OFFSZ)temp directly."
+  },
+  "vfdzero": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: register n (the original saves r14 and gives n no home)."
+  },
+  "tcopy": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: ncopy( q=talloc(), p ) and a register r = p->rval as in Plexus (the original saves r12, r13, r14; r unused afterwards)."
+  },
+  "ncopy": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: register NODE *q, *p and an unused register i (the original saves r12; popt renames q and p into r4 and r5)."
+  },
+  "beginit": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: defalign( talign(...) ) without the local al (the original stores no al)."
+  },
+  "endinit": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: inforce( tsize(...) ) without the local tsz (the original stores no tsz)."
+  },
+  "falloc": {
+   "basis": "frame layout",
+   "d_classes": "",
+   "note": "Source fix: s is a local of the ENUMTY case block (the original reuses its frame place for a codgen temporary)."
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

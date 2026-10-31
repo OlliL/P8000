@@ -257,3 +257,10 @@ TODO.md when this log was started.
   1188; corpus 259; bench v0 108, 429 (unchanged).
 - Source fixes cisreg (t not register: the original saves no r14) and tyreduce (a long local for the dimension:
   `ldk r2,#0; ld r3,r12; ldl 0(r15),rr2; ldl rr6,rr2`): cparse 119, 1161.
+- Prologue differences of all remaining functions (frame size, saved registers): source fixes vfdzero (register n),
+  tcopy (register r as in Plexus), ncopy (register q, p and an unused i), argregs (n = argregs(p->left) first),
+  beginit (no al), endinit (no tsz), falloc (s local to the ENUMTY block: the original reuses its place for a
+  temporary): cparse 122, 1094; corpus 259.
+- The original copies the value of `(sz = X/8) > 0xfffe` into a new pair (nidcl, beginit, endinit; 3 times, never
+  for words): OLD_D2A (match: behind a long ASSIGN in a value context getreg + rmove, the copy keeps the name):
+  cparse 125, 1087; corpus 259; bench v0 108, 429 unchanged: v0p only.
