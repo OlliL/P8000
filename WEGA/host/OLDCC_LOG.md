@@ -511,3 +511,12 @@ TODO.md when this log was started.
   (12 bytes) where the same getchar at the top of yylex has `jr`: probably the old cas.
 - refid, argalloc: the right operand of a long compare (`exts`, a negation) in rr6, ours rr4. A preference rr6 for
   it (rallo): 126 > 170. Removed; open.
+- yylex `jp 0x21AA` (the only short `jp` in the whole original cparse, 12 bytes forward). WEGA Dienstprogramme Band
+  B, 3.4.5 "Pseudobefehle": cas makes a JPR long when its jump optimization ran before the target label was seen; it
+  runs early at a direct assignment of the location counter (`.=.+20`) or at a constant expression with the
+  difference of two relocatable values with an optimizable jump between them. Probed with the shipped /bin/cas
+  (tmp/tmp/castest): `.=.+N` in .code or .data, `.even`, `.word L6-L5` and `ld r2,#L6-L5` (L5, L6 around a jump, the
+  JPR before them still open) between a JPR and its label: always `jr`. The shipped cas does not show the documented
+  early optimization; the old cas that assembled /lib/cparse probably did. Candidate: a v0p cas with the rule of the
+  manual; to be checked: it must make exactly this one jump long in the cparse output (and which construct of the old
+  compiler output triggers it).
