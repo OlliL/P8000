@@ -6726,7 +6726,7 @@
   "clocal": {
    "basis": "reading",
    "d_classes": "D2 D3 D6 D7 D19",
-   "note": "Source: tbytes(l->type) > tbytes(p->type) for the call order of the original (D19); the rest are register and layout differences."
+   "note": "Source: the l->left chains (SCONV loop and DIV/MOD p->left = l = l->left, char compare l = p->left = l->left); p = l; return(p) at the SCONV end, p = buildtree(...); return(p) for PVCONV/PMCONV. Remaining: frame place of a call result (4 vs 8), one block placed by popt."
   },
   "argdebug": {
    "basis": "frame layout",

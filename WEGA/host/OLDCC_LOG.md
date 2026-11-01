@@ -464,3 +464,8 @@ TODO.md when this log was started.
 - dclargs: the address of a local array element for an argument computed in r2, ours in r6 (the wanted register).
   OLD_D5A (no preference for that address): dclargs exact, cparse 205; for every STAR with a wanted register much
   worse; bench v0 282 > 277 (118): in v0.
+- clocal source forms: of the three `l->left` chains, the SCONV loop and the DIV/MOD case `p->left = l = l->left`,
+  the char compare `l = p->left = l->left` (all 8 combinations measured: 27 > 17); the SCONV end `p = l; return( p );`
+  and the PVCONV, PMCONV ends `p = buildtree( ... ); return( p );` (the original stores p and cross-jumps to the
+  common `return(p)`): 10. Left: the frame place of a call result (4 against 8) and one block placed by popt.
+  cparse 160 strict; corpus 259.

@@ -122,7 +122,8 @@ clocal(p) NODE *p; {
 			l->csiz = p->csiz;
 			}
 		p->op = FREE;
-		return( l );
+		p = l;
+		return( p );
 
 	case ASSIGN:
 		if( r->op == SCONV ){
@@ -135,12 +136,14 @@ clocal(p) NODE *p; {
 		if( nncon( r ) && (i = ispow2( r->lval )) > 0 ){
 			p->op = FREE;
 			r->lval = i;
-			return( buildtree( RS, l, r ) );
+			p = buildtree( RS, l, r );
+			return( p );
 			}
 	case PMCONV:
 		if( r->op != ICON ) cerror( "bad conversion", 0 );
 		p->op = FREE;
-		return( buildtree( o == PMCONV ? MUL : DIV, l, r ) );
+		p = buildtree( o == PMCONV ? MUL : DIV, l, r );
+		return( p );
 
 	case PLUS:
 	case MINUS:
@@ -156,7 +159,7 @@ clocal(p) NODE *p; {
 	case MOD:	/* WEGA: a char operand is used without its conversion */
 		if( l->op == SCONV && bsize( l->type ) == SZINT && bsize( l->left->type ) == SZCHAR ){
 			l->op = FREE;
-			l = p->left = l->left;
+			p->left = l = l->left;
 			}
 		break;
 
@@ -169,7 +172,7 @@ clocal(p) NODE *p; {
 	if( logop( p->op ) && r->op == ICON && l->op == SCONV && (l->left->type == CHAR || l->left->type == UCHAR) &&
 			r->lval >= -256 && r->lval <= 255 ){
 		l->op = FREE;
-		p->left = l = l->left;
+		l = p->left = l->left;
 		r->type = l->type;
 		if( !logop( p->op ) ) p->type = l->type;
 		}
