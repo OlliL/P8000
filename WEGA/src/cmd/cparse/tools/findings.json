@@ -6917,6 +6917,11 @@
    "basis": "reading",
    "note": "Exact with v0p. Source: in the PLUS case p->type before p->rval. Old-cc: OLD_D2PT.",
    "d_classes": "D2"
+  },
+  "exname": {
+   "basis": "reading",
+   "note": "Source: *q++ = (...) ? '$' : '_'. Remaining: &ntab[s] adds s from the frame in the original (ours from r7).",
+   "d_classes": "D3"
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

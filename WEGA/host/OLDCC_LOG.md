@@ -452,3 +452,8 @@ TODO.md when this log was started.
 - conval: source order `p->type = q->type; p->rval = q->rval;` (the original stores offset 2 first); the long add
   behind the switch dispatch in rr2: OLD_D2PT (the TEMP registers count for OLD_D2P): conval exact, cparse 212,
   corpus 259, bench v0 unchanged (v0p).
+- defalign: the original does not store the parameter n (used once at the start, then calls). Tried OLD_D3JF (a named
+  label takes the state of its jumps and ignores the fall-through, which would also explain defalign's end label):
+  212 > 300+ (fixclass, tymerge, refid ...). Removed; defalign open.
+- exname: source `*q++ = ( (c = *p) == ... ) ? '$' : '_';` (the original stores the ?: value through rl2): 8 > 3.
+  Left: `p = &ntab[s]` adds the parameter from the frame (`ld r2,#ntab; add r2,0(fp)`), ours `lda r2,ntab(r7)`.

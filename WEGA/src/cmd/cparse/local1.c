@@ -351,8 +351,7 @@ exname( s ){ /* make a name look like an external name in the local machine */
 
 	p = &ntab[s];
 	q = extext;
-	if( (c = *p) == *dignames[0] || *dignames[1] == c || *dignames[2] == c ) *q++ = '$';
-	else *q++ = '_';
+	*q++ = ( (c = *p) == *dignames[0] || *dignames[1] == c || *dignames[2] == c ) ? '$' : '_';
 	for( i=1; *p; ++i ){
 		if( i > ncharsig ) break;
 		*q++ = *p++;
