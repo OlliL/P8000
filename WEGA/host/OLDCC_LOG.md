@@ -653,3 +653,10 @@ TODO.md when this log was started.
   all 173 / 96 lines; without OLD_D20C 172 / 155, D20X 173 / 162, D20S 172 / 104, D20L 173 / 103, D20K 172 / 98.
   popt model (35, 4665): without D20S 4688, without D20K 4718, without D20C, D20X, D20L unchanged (neutral there,
   not contradicted). All five stay. The codgen and cparse switches do not depend on the popt source.
+- findbyte, findword, findlong: `(char)n + '0'` (the original narrows the int before the addition): exact.
+  killreg: `makereg(n % 1, ...)` (the known quirk, now in the source), `char name[6]`. The two `if (n & 1) ... else
+  ...` of the cases TB and TW are cross-jumped into each other in the original; the TW one in the inverted form
+  gives the instructions of the original but popt places the block elsewhere (4676 > 4639 lines): kept the plain
+  form, a placement witness. findcon (`cpb @r2` after `ld r14,r2` where the original tests `@r14`) is already in
+  the codgen output (no popt): codgen v0p; itoa_, reverse (r1 for r3): codgen register choice. Left for codgen.
+  popt model 38 of 70, 4639 lines; popt corpus 816/816.

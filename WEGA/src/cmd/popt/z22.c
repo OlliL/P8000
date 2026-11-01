@@ -1022,11 +1022,11 @@ int n;
 	static char hi[] = "rhx", lo[] = "rlx";
 	int r;
 
-	hi[2] = n + '0';
+	hi[2] = (char)n + '0';
 	r = findreg(0, hi);
 	if (r >= 0)
 		return r;
-	lo[2] = n + '0';
+	lo[2] = (char)n + '0';
 	return findreg(0, lo);
 }
 
@@ -1038,11 +1038,11 @@ int n;
 	int r;
 
 	if (n < 10) {
-		pat[1] = n + '0';
+		pat[1] = (char)n + '0';
 		pat[2] = 0;
 	} else {
 		pat[1] = '1';
-		pat[2] = ((n - 10) & 0xf) + '0';
+		pat[2] = (char)((n - 10) & 0xf) + '0';
 	}
 	r = findreg(TW, pat);
 	if (r >= 0)
@@ -1060,11 +1060,11 @@ int n;
 	int r;
 
 	if (n < 10) {
-		pat[2] = n + '0';
+		pat[2] = (char)n + '0';
 		pat[3] = 0;
 	} else {
 		pat[2] = '1';
-		pat[3] = ((n - 10) & 0xf) + '0';
+		pat[3] = (char)((n - 10) & 0xf) + '0';
 	}
 	r = findreg(TL, pat);
 	if (r >= 0)
@@ -1269,7 +1269,7 @@ int n;
 int type;
 {
 	int r;
-	char name[8];
+	char name[6];
 
 	switch (type) {
 	case TB:
@@ -1314,7 +1314,7 @@ int type;
 		killreg(r, TQ);
 		return;
 	}
-	makereg(n / 1, name, TL);
+	makereg(n % 1, name, TL);
 	r = findslot(name, TL);
 	if (r >= 0) {
 		killreg(r, TL);
