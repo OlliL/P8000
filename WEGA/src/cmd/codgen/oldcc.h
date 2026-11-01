@@ -14,6 +14,7 @@
 #define OLD_D2MO	/* OLD_D2M for an odd left register: the pair below it when its even half is free or idle */
 #define OLD_D2QO	/* OLD_D2Q also when an odd word register is wanted (the low half: an argument) */
 #define OLD_D2O		/* a long loaded through an odd address register into the pair below it (allocreg) */
+#define OLD_D16B	/* an unsigned word in memory with an assignment operator: rewritten as a = a op b (match, order) */
 #define OLD_D16A	/* a frame slot incremented by a constant, value to a temporary: load, increment, store (match) */
 #define OLD_D3N		/* the variable the statement before stored from a register, stored through a pointer: that register */
 #endif

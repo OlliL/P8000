@@ -6897,6 +6897,21 @@
    "basis": "reading",
    "note": "Exact with v0p. Old-cc: OLD_D3J (p from r7 at the else label).",
    "d_classes": "D3"
+  },
+  "stref": {
+   "basis": "reading",
+   "note": "Exact with v0p. Old-cc: OLD_D16B (p->type += PTR rewritten as p->type = p->type + PTR).",
+   "d_classes": "D16"
+  },
+  "dclstruct": {
+   "basis": "reading",
+   "note": "Old-cc: OLD_D2PO, OLD_D2MO (the quotient multiplied in rr2). Exact with v0p.",
+   "d_classes": "D2"
+  },
+  "refid": {
+   "basis": "reading",
+   "note": "Old-cc: OLD_D2PO (nrefsym * 22 in rr2), OLD_D2QO. Remaining: the pair of the extended compare value (orig rr6, ours rr4).",
+   "d_classes": "D2"
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

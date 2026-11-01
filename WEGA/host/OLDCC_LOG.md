@@ -446,3 +446,6 @@ TODO.md when this log was started.
   dclstruct 17 > 5; cparse 234; corpus 259; bench v0 290 > 282: in v0.
 - dclstruct `(sz / al + 1) * al`: the quotient in r3 multiplied in rr2 (ours copied it to r1, rr0). OLD_D2MO (with
   d2ofree): dclstruct exact, cparse 229, corpus 259; bench v0 282 > 291: v0p only.
+- stref `p->type += PTR` (TWORD unsigned): the original loads, increments and stores, through a pointer with the
+  address loaded again for the store: the a = a op b rewrite of order before offstar. OLD_D16B (no entry for an
+  unsigned word in memory, order skips setasop): stref exact, cparse 220, corpus 259, bench v0 unchanged (v0p).
