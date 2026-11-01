@@ -746,3 +746,4 @@ TODO.md when this log was started.
   STREF counterpart of OLD_D5S (OLDCC.md D5, open); with it the register of `t[k++]` (r2 against r7). regof: the
   parameter taken from r7 for the test and reloaded for the call in the original, the other way round in ours (D3).
   popt model 53 of 71 (regof added), 2968 lines; popt corpus 816/816; cparse model 173.
+- D20 switches checked again after procopt: unchanged, all five needed.
