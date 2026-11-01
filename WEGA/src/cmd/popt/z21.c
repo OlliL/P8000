@@ -1067,7 +1067,20 @@ register struct node *p;
 #endif
 			if (p3->op == JP) {
 				if (p1 == p3)
+#ifdef OLD_D20L
+				{
+					/* the old popt: the block reaches the jump itself, and the jump in front of the
+					   head leads into the loop: a loop to invert (optim) */
+					for (t = p1->ref; t && t != p1; t = t->forw)
+						if (t == p2->back->ref) {
+							p2 = p2->back;	/* the node in front of the target again */
+							goto inv;
+						}
 					return p1;
+				}
+#else
+					return p1;
+#endif
 				ncmot++;
 				nchange++;
 				p1->back->forw = p2;
@@ -1083,6 +1096,9 @@ register struct node *p;
 		return p1;
 	}
 	/* loop inversion */
+#ifdef OLD_D20L
+inv:
+#endif
 	p3 = p1;
 	while (p3->forw->op == KCOMMENT)
 		p3 = p3->forw;

@@ -370,3 +370,9 @@ TODO.md when this log was started.
   original keeps both tails. OLD_D11M tried (comjump only for two common instructions): 390 > 660 (bsize, addcase need
   one-instruction merges: a whole block `ld r2,#16; jr`, a partial `call; jr`); two instructions or a whole block on
   one side: 536. Removed; argregs open.
+- optim: the original inverts the goto loop of L141 (its first test behind the back jump); our codemove takes the
+  move branch (the head is behind `jpr L140`), the block reaches the back jump, it gives up. OLD_D20L (then the
+  inversion): first cparse 390 > 394 (optim 58 > 52, fortarg 0 > 10: a while loop whose head follows a return jump);
+  only when the jump in front of the head leads into the loop: 384, but the corpus run hung (wrong code: p2 was one
+  node behind at the goto into the inversion); fixed: cparse 383, corpus 259; bench v0 with OLD_D20L alone 318 > 337:
+  v0p only.
