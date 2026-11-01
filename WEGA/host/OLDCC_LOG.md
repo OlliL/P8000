@@ -575,3 +575,12 @@ TODO.md when this log was started.
   exact. newsect `&sectname[sec][k]`: the original adds k before the array address; cparse optim with the plain PCC
   swap condition: no effect; codgen OLD_D5G (fixfld: SUBSR of PLUS(UAND name, index) with a variable index becomes
   (index + index) + address): exact, 173, 96; corpus 259; bench v0 275 > 303 (v0p).
+- popt placement, round 1 (2026-11-01):
+  defid: the original falls from the dims test into the mismatch block (0x2670) and has a real `jp mismatch` at the
+  end of the class switch (0x2990) with the loop step behind it. The mismatch block in front of redecl (with and
+  without `goto mismatch;` in front of it): 8 > 175, the block stays there: in the raw code the dims test is `jpr
+  eq,L156; jpr L150` and the CJP over the JP is turned round before the JP could move the block. Kept in the loop.
+  optim: the block of `else if( LCON(p) && RCON(p) && conval(...) ) goto zapright` stands in the original behind the
+  end of the PLUS case (`break` = `jp 0x569C`, the return), falling into zapright: the jumping block moved in front of
+  its target; ours moves zapright up to the jump. Same picture as argregs (`L674: ld r2,r13; jpr L676` in front of
+  the dispatch). Trial: no block move for a label with more than one reference: 98 > 1752. Removed.
