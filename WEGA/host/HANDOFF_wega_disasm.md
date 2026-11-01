@@ -252,6 +252,15 @@ OLD_D16A (codgen, match) loads `++n`/`--n` of a frame slot into a register when 
 (`dec n,#1; test n`). Try: no OLD_D16A when the parent is a compare (EQ/NE) with the constant 0; check popt
 codemove, cparse genswitch (`p[++n]`, must stay), the cparse model (173), corpus and the v0 bench.
 
+**Open: the bss order without .s helpers (owner request 2026-11-01).** popt: done (the globals as definitions at
+the end of z2.h in the original order replace bss.s; the bss map is the same symbol by symbol). cparse: libcbss.s
+is replaced by an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
+first, the model link needs its object); bss.s of cparse (76 commons) is still there. To do it the popt way: a
+list of definitions in mfile1 (included by every module, cgram1 is linked first) in the order of bss.s; the types
+must match the declarations (most in mfile1 and the .c files; `instack`/`pstk` need `struct instk` of vinit1.c in
+the header first; `bssgap1`, `bssgap2` are places of unknown variables); then compare the bss map of the model
+(nm, symbol by symbol) and check corpus and model. The cparse corpus has not been run after the libcbss change.
+
 **Tools.**
 
 - `src/cmd/cparse/tools/oldcc.sh`: `build PASS VER [SWITCHES]` (rebuild and install one pass), `model` (the strict
