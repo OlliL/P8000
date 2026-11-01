@@ -804,3 +804,5 @@ TODO.md when this log was started.
   host/popt against /lib/popt on the popt corpus: 816 of 816.
 - rmove, step 9: do_lda tests isreg(RT2) < 0 without r: rmove 523 lines; the rest of the content: jump forms, the jump table addresses, string addresses.
   popt model 56 of 73, lines 848; popt corpus 816/816; cparse model 173.
+- rmove, step 10: the string pool of the original ("#0" of do_clr near the end) puts do_clr behind do_cjp in the source; popt moves its code up: rmove 523 > 453 lines.
+  popt model 56 of 73, lines 778; popt corpus 816/816; cparse model 173.

@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (523 lines, content: jump forms, table and string addresses; under analysis)
+- rmove (453 lines, under analysis)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -213,7 +213,10 @@ Step 8 done: push_end tests `isreg(RT2 + 1)` (not RT1), and the `r12 == 0` arm o
 `p = p->back->back` (host/popt has `p->back->forw`, which differs from the original; the corpus does not show
 it): 33 instructions of content, rmove 526 lines. Step 9 done: do_lda tests `isreg(RT2) < 0` directly (no r):
 rmove 523 lines; what is left of the content is nearly all jump forms (jr/jp, layout), the two jump table
-addresses (data order) and about 20 string addresses. Next, in this order:
+addresses (data order) and about 20 string addresses. Step 10 done: the string pool order of the original
+shows that do_clr stands behind do_cjp in the source (popt moves its code up to where the original has it):
+section order do_ld, do_dec, do_inc, do_and, do_arith, do_push, do_pop, do_srl, do_sra, do_sla, do_tst, do_cp,
+do_cjp, do_clr, do_lda: rmove 453 lines. Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.

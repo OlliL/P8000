@@ -256,31 +256,6 @@ rmove()
 		nchange++;
 		goto next;
 
-	do_clr:
-		singop(p);
-		if (p->op == EXTS && p->subop == SLONG) {
-			t = dest(p);
-			setreg(RT1, t);
-			setreg(RT1, TQ);
-			goto clr_cc;
-		}
-	clr_tail:
-		t = dest(p);
-		setreg(RT1, t);
-	clr_cc:
-		if (p->op != CLR) {
-			setcc(RT1);
-			goto next;
-		}
-		r12 = isreg(RT1);
-		if (r12 < 0) {
-			setcon("#0", RT1);
-			goto next;
-		}
-		t = dest(p);
-		savereg(r12, "#0", t);
-		goto next;
-
 	do_dec:
 		dualop(p);
 		r12 = isreg(RT2);
@@ -597,6 +572,31 @@ rmove()
 			nchange++;
 		}
 		goto cc_clear;
+
+	do_clr:
+		singop(p);
+		if (p->op == EXTS && p->subop == SLONG) {
+			t = dest(p);
+			setreg(RT1, t);
+			setreg(RT1, TQ);
+			goto clr_cc;
+		}
+	clr_tail:
+		t = dest(p);
+		setreg(RT1, t);
+	clr_cc:
+		if (p->op != CLR) {
+			setcc(RT1);
+			goto next;
+		}
+		r12 = isreg(RT1);
+		if (r12 < 0) {
+			setcon("#0", RT1);
+			goto next;
+		}
+		t = dest(p);
+		savereg(r12, "#0", t);
+		goto next;
 
 	do_lda:
 		dualop(p);
