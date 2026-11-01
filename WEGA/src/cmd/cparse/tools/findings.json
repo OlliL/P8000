@@ -6912,6 +6912,11 @@
    "basis": "reading",
    "note": "Old-cc: OLD_D2PO (nrefsym * 22 in rr2), OLD_D2QO. Remaining: the pair of the extended compare value (orig rr6, ours rr4).",
    "d_classes": "D2"
+  },
+  "conval": {
+   "basis": "reading",
+   "note": "Exact with v0p. Source: in the PLUS case p->type before p->rval. Old-cc: OLD_D2PT.",
+   "d_classes": "D2"
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

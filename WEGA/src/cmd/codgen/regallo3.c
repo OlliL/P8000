@@ -37,6 +37,11 @@ static int rweight[8] = { 3, 1, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is 
 #else
 static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
 #endif
+#ifdef OLD_D2PT
+#define D2PK(t)	1		/* v0p: OLD_D2P takes the registers of a TEMP too (the value of a switch) */
+#else
+#define D2PK(t)	((t)->kind != 6)
+#endif
 #ifdef OLD_D3N
 extern int d3nreg, d3rreg;	/* match3.c */
 #endif
@@ -575,10 +580,10 @@ getreg(cls, reg, flag, sym)
 		for (w = rsfree; w && w->cls != 3; w = w->next)
 			;
 		for (t = rsuse; t; t = t->next)		/* two idle words of a pair: given back, they merge */
-			if (t->cls == 2 && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+			if (t->cls == 2 && !(t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) &&
 			    (w == 0 || rweight[t->reg] < rweight[w->reg])) {
 				for (m = rsuse; m; m = m->next)
-					if (m->cls == 2 && m->reg == t->reg + 1 && m->busy <= 0 && m->kind != 6)
+					if (m->cls == 2 && m->reg == t->reg + 1 && m->busy <= 0 && D2PK(m))
 						break;
 				if (m == 0) {
 					for (m = rsfree; m; m = m->next)
@@ -597,7 +602,7 @@ getreg(cls, reg, flag, sym)
 			}
 #ifdef OLD_D2PO
 		for (t = rsuse; t; t = t->next)		/* an idle odd word whose even half is free: given back */
-			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && D2PK(t) &&
 			    (w == 0 || rweight[t->reg - 1] < rweight[w->reg])) {
 				for (m = rsfree; m; m = m->next)
 					if (m->cls == 2 && m->reg == t->reg - 1)
@@ -610,7 +615,7 @@ getreg(cls, reg, flag, sym)
 #endif
 		m = 0;
 		for (t = rsuse; t; t = t->next)
-			if (t->cls == 3 && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
 		if (m) {

@@ -236,8 +236,8 @@ conval( p, o, q ) register NODE *p, *q; {
 	case PLUS:
 		p->lval += val;
 		if( nncon(p) ){
-			p->rval = q->rval;
 			p->type = q->type;
+			p->rval = q->rval;
 			}
 		break;
 	case MINUS:

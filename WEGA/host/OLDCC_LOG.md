@@ -449,3 +449,6 @@ TODO.md when this log was started.
 - stref `p->type += PTR` (TWORD unsigned): the original loads, increments and stores, through a pointer with the
   address loaded again for the store: the a = a op b rewrite of order before offstar. OLD_D16B (no entry for an
   unsigned word in memory, order skips setasop): stref exact, cparse 220, corpus 259, bench v0 unchanged (v0p).
+- conval: source order `p->type = q->type; p->rval = q->rval;` (the original stores offset 2 first); the long add
+  behind the switch dispatch in rr2: OLD_D2PT (the TEMP registers count for OLD_D2P): conval exact, cparse 212,
+  corpus 259, bench v0 unchanged (v0p).
