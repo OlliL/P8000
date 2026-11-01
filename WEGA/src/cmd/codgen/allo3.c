@@ -234,6 +234,11 @@ usable(p, side, r)
 #endif
 }
 
+#ifdef OLD_D2R0
+extern int d2r0reg;
+static int d2r0free();
+#endif
+
 /* a register that the operand of the result can reuse */
 int
 freereg(p, r, cookie)
@@ -277,6 +282,13 @@ freereg(p, r, cookie)
 	}
 	return -1;
 found:
+#ifdef OLD_D2R0
+	/* v0p: an address moved out of r0 (which cannot address): the value goes back to r0 when it is free */
+	if (reg == d2r0reg && rclass(ty, reg) == 2 && d2r0free()) {
+		d2r0reg = -1;
+		return getreg(2, 0, 0x1000, sym);
+	}
+#endif
 	rfree(reg, ty);
 	cls = rclass(ty, reg);
 	return getreg(cls, reg, 0x1000, sym);
@@ -323,6 +335,22 @@ d2ofree(r)
 			rsreturn(2, r - 1);
 			return 1;
 		}
+	return 0;
+}
+#endif
+
+#ifdef OLD_D2R0
+int d2r0reg = -1;		/* the register offstar moved an address from r0 into */
+
+/* r0 is on the free list (alone or in rr0) */
+static int
+d2r0free()
+{
+	register struct rs *n;
+
+	for (n = rsfree; n; n = n->next)
+		if ((n->cls == 2 || n->cls == 3) && n->reg == 0)
+			return 1;
 	return 0;
 }
 #endif

@@ -26,6 +26,9 @@ extern void adrput(), oregfix(), rfreenode(), rfree();
 #ifdef OLD_D3N
 extern int d3nreg, d3nhas(), d3nfree();
 #endif
+#ifdef OLD_D2R0
+extern int d2r0reg;
+#endif
 
 #ifdef SEG
 #define OFFSTARL(l)	offstar(l)
@@ -430,6 +433,9 @@ offstar(p)
 			ordflag = 0x14;
 			order(p, 6);
 			ordflag = save;
+#ifdef OLD_D2R0
+			d2r0reg = p->op == REG ? p->rval : -1;	/* the address moved out of r0 */
+#endif
 		} else
 			order(p, 6);
 	}

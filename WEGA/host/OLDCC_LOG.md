@@ -496,3 +496,9 @@ TODO.md when this log was started.
   the switch register r2 that holds it), so in the first round the then part's jump does not lead to a jump and popt
   moves the dispatch behind the else part; the original moves it to the then part. OLD_D6S (no self assignment):
   falloc exact; cparse 165, 134; corpus 259; bench v0 unchanged (v0p).
+- defid: the loop step `dec 0x16(fp),#2; jp head` of the SMEMB loop stands in the original right behind the `goto
+  mismatch` at the end of the class switch (in front of redecl), ours behind the loop (popt trace: our iterate
+  moves the L159 block behind uerror in round 1, the step stays). The mismatch block in front of redecl in the
+  source: 8 > 175. Open.
+- gotscal `DECREF(pstk->in_t)`: the address pstk+12 computed in r0, moved to r1; the original loads into r0, ours
+  into r1. OLD_D2R0: gotscal exact, cparse 166, 128; corpus 259; bench v0 277 > 278: v0p.
