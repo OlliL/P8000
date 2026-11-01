@@ -471,6 +471,14 @@ select:
 #ifdef OLD_D2A
 		rv = p->op;
 #endif
+#ifdef OLD_D6S
+		/* v0p: an assignment of a register to itself (the value of a switch into its register) prints nothing */
+		if (p->op == ASSIGN && p->left->op == REG && p->right->op == REG && p->left->rval == p->right->rval &&
+		    p->left->type == p->right->type) {
+			reclaim(p, q->rewrite, cookie);
+			return MDONE;
+		}
+#endif
 #ifdef OLD_D22
 		/* v0p: a floating compare with memory without the rounding fld of the left operand */
 		if (q->op == 0x100e && q->lshape == 0x18 && q->rshape == 0x2c0)

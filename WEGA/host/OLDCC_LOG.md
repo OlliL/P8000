@@ -492,3 +492,7 @@ TODO.md when this log was started.
   cross-jumps to L227 first (the then part jumps into the else part's call). OLD_D20K: cinit exact; for every label
   cprint +6, only for a label with one reference: no loss. cparse 163, 144; corpus 259; bench v0 unchanged (v0p).
 - clocal: the switch on ml in the source order CHAR, UCHAR, USHORT/UNSIGNED, SHORT/INT: exact.
+- falloc `switch( new<0?pty->type:p->stype )`: ours printed `L10006: ld r2,r2; jpr L130` (the ?: value assigned to
+  the switch register r2 that holds it), so in the first round the then part's jump does not lead to a jump and popt
+  moves the dispatch behind the else part; the original moves it to the then part. OLD_D6S (no self assignment):
+  falloc exact; cparse 165, 134; corpus 259; bench v0 unchanged (v0p).
