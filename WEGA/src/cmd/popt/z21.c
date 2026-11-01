@@ -113,8 +113,20 @@ char **argv;
 				iterate();
 				clearreg();
 				niter++;
+#ifdef TRACE
+				if (debug) {
+					printf("/*TRACE iterate %d*/\n", niter);
+					dumpnodes();
+				}
+#endif
 			} while (nchange);
 			comjump();
+#ifdef TRACE
+			if (debug) {
+				printf("/*TRACE comjump*/\n");
+				dumpnodes();
+			}
+#endif
 			rmove();
 		} while (nchange || jumpsw());
 		shortjump();
@@ -734,6 +746,11 @@ iterate()
 				}
 			}
 		}
+#endif
+#ifdef OLD_D20K
+		/* the old popt: a jump is cross-jumped to its own label before a jump there is followed */
+		if (p->op == JP && p->ref && p->ref->refc == 1 && nonlab(p->ref)->op == JP)
+			xjump(p);
 #endif
 		if ((p->op == JP || p->op == CJP || p->op == JSW) && p->ref) {
 			rp = nonlab(p->ref);

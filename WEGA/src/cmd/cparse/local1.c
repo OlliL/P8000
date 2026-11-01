@@ -252,6 +252,10 @@ cinit( p, sz ) register NODE *p; register sz; {
 
 	switch( p->left->op ){
 
+	case ICON:
+		incode( p->left, sz );
+		return;
+
 	case NAME:
 		q = STP(p->left->rval);
 		if( q->sclass == STATIC && q->slevel > 0 ) fprintf( dfile, "\t.addr\tL%ld\n", q->offset );
@@ -260,10 +264,6 @@ cinit( p, sz ) register NODE *p; register sz; {
 			fprintf( dfile, "\t.addr\t%s\n", s );
 			}
 		break;
-
-	case ICON:
-		incode( p->left, sz );
-		return;
 
 	case LAB:
 		fprintf( dfile, "\t.addr\tL%d\n", -p->left->rval );

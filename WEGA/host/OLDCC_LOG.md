@@ -485,3 +485,9 @@ TODO.md when this log was started.
 - strictcmp (host/recon): an immediate that is a function address of either binary is now masked on both sides (a
   data address of the original equal to one of our function addresses counted as a difference, and the other way
   round): cparse 158 > 162 strict, 162 > 152 lines.
+- cinit: `case ICON` in front of `case NAME` in the source (the original has the ICON block behind the default part
+  that the dispatch falls into; the compare chain is sorted by value): 8 > 2. popt trace (z21.c `-DTRACE`, `+`
+  flag: the node list after each iterate and comjump): the then part's `callr fprintf; jpr L227` with L227: `jpr
+  L222`: our iterate follows the jump to the jump first, so xjump compares with the tail of L222; the original
+  cross-jumps to L227 first (the then part jumps into the else part's call). OLD_D20K: cinit exact; for every label
+  cprint +6, only for a label with one reference: no loss. cparse 163, 144; corpus 259; bench v0 unchanged (v0p).

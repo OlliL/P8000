@@ -6922,6 +6922,11 @@
    "basis": "reading",
    "note": "Source: *q++ = (...) ? '$' : '_'. Remaining: &ntab[s] adds s from the frame in the original (ours from r7).",
    "d_classes": "D3"
+  },
+  "cinit": {
+   "basis": "reading",
+   "note": "Exact with v0p. Source: case ICON before case NAME. Old-cc: popt OLD_D20K.",
+   "d_classes": "D20"
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",
