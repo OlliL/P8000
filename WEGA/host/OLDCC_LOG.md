@@ -791,3 +791,6 @@ TODO.md when this log was started.
   bytes shorter than the original: tests on MUL (0x17), DIV (0x18), SRA (0x0E) and `cpb @r13,#1/#0x10` exist only
   in the original.
   popt model 56 of 73, 844 lines; popt corpus 816/816; cparse model 173.
+- rmove, step 6: disp tests DIV/MUL twice as the original (setreg choice, then ccloc[0] = 0 or setcc): content 36, rmove 528 lines.
+- rmove, step 7: sh8 begins with `if (p->op == SRA) dualop(p);`: content 35, rmove 530 lines.
+  popt model 56 of 73, 855 lines; popt corpus 816/816; cparse model 173.

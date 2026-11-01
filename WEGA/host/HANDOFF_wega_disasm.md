@@ -134,7 +134,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 56 of 73 functions strictly exact,
-844 differing lines (rmove 519 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+855 differing lines (rmove 530 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (bss.s gives the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (519 lines, 40 instructions of content, under analysis)
+- rmove (530 lines, 35 instructions of content, under analysis)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -205,8 +205,12 @@ with a goto) in the order of the original's code (from the table at 0x6fe): do_l
 do_arith, do_push, do_pop, do_srl, do_sra, do_sla, do_tst, do_cp, do_cjp, do_lda: rmove 549 lines, 48 instructions
 of content. Step 5 done: the `r12 == 0` arm of do_cjp uses p1 (= p->forw, not reassigned there) as the
 original: rmove 519 lines, 40 instructions of content; our rmove is 88 bytes shorter than the original (3184
-against 3272): some code of the original is still missing in ours. Next, in this order:
-1. The missing 88 bytes: `cpb @r14,#0x17` (MUL), `#0x18` (DIV), `#0x0E` (SRA) and `cpb @r13,#1/#0x10` tests are
+against 3272): some code of the original is still missing in ours. Step 6 done: disp tests DIV/MUL twice as the original
+(once for the setreg choice, once for `ccloc[0] = 0` against `setcc(RT2)`): 36 instructions of content, rmove 528
+lines (3204 bytes). Step 7 done: sh8 starts with `if (p->op == SRA) dualop(p);` (the dualop of do_sra
+moved behind the label, as the original): 35 instructions of content, rmove 530 lines (3210 bytes, 62 short).
+Next, in this order:
+1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.
 

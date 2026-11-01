@@ -448,8 +448,9 @@ rmove()
 		goto sh8;
 
 	do_sra:
-		dualop(p);
 	sh8:
+		if (p->op == SRA)
+			dualop(p);
 		if (p->subop != 0)
 			goto disp;
 		if (!equstr(RT1, "#8"))
@@ -664,12 +665,14 @@ rmove()
 				t = dest(p) + 0x10;
 				setreg(RT2, t);
 			}
-			ccloc[0] = 0;
-			goto next;
+		} else {
+			t = dest(p);
+			setreg(RT2, t);
 		}
-		t = dest(p);
-		setreg(RT2, t);
-		setcc(RT2);
+		if (p->op == DIV || p->op == MUL)
+			ccloc[0] = 0;
+		else
+			setcc(RT2);
 		goto next;
 
 	cc_clear:
