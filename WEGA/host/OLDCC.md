@@ -329,6 +329,8 @@ compiler that built the original. Not differences of the compiler (checked):
   has named yet, the parameter registers kept at labels, merged pairs put behind the others, freed words in LIFO
   order, symreg only on idle registers. Two ld findings were source forms (ranlib_scan as a `for` loop, dseek as one
   `||`), strip's expression went with v1 without a D2 switch.
+- Open (popt, v0p model 2026-11-01): itoa_ and reverse take r3 for the address of a byte store where ours takes r1
+  (`ld r3,r0; ldb @r3,rl2`).
 - Open: place_sec (`r8 = (secorg[j] - q->tsize) & 0xff00`: the original takes a new register for the `and`, not in the
   `+ 255` case beside it), chk_ranlib; cas, codgen, ranlib (weak).
 
@@ -377,6 +379,18 @@ compiler that built the original. Not differences of the compiler (checked):
   calls); such a parameter still gets its home in the frame. With two jumps (buildtree, an `&&`) the original
   reloads. cparse 278 > 274, bench v0 292 > 290 (115 > 117).
 - Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after), libc malloc (`mult rr2,r6`).
+- Open (popt, v0p model 2026-11-01), the value of an assignment in the next statement: OLD_D3N is too wide for
+  popt. findcon `p = regs[n]; if (*p == '#')`: the original tests the variable (`cpb @r14`), codgen v0p the register
+  of the assignment (`cpb @r2`, already in the codgen output); repladdr: where the two sprintf arms of one branch meet,
+  the original loads `pfx` from the frame again, ours takes r2 (in the next branch the original takes r2 itself);
+  refcount: the original's `testb @r2` comes only from the assignment inside the expression `(lp = nonlab(p))->op`;
+  setreg: the argument order of `makereg(r & 0xf, name, type)` right after `type = ...` (ours finds type in r2).
+  What separates these cases is open.
+- Open (popt), a parameter kept in its register across a branch: setcon (`natural(loc)` as `ld r7,r6` behind
+  `cpb; jr ne`), equop (`ld r2,r6` for p2): the original takes the argument register, codgen v0p reloads the home
+  (the OLD_D3K/OLD_D3J family; two witnesses).
+- Open (popt), the old popt's knowledge of register contents: dest returns TB as `sub r2,r3` (r2 and r3 hold the
+  same value), ours `sub r2,r2`.
 
 ### D4 Spill of arguments
 
@@ -558,6 +572,12 @@ order).
 - v0p (switch `OLD_D20K` in popt, iterate): a jump to a label referenced once that holds a jump is cross-jumped
   (xjump) to its own label before the jump to the jump is followed: the then part of an if/else jumps into the
   `call` of the else part (cinit). For every such jump: cprint worse. Bench v0 unchanged.
+- Open (popt, v0p model 2026-11-01), placement witnesses not explained by the five switches: xjump (the second
+  backward loop over labels and comments is inverted, its tests in front of the step, entered from the end of the
+  first loop; the source form does not matter), backjmp (the `&& p1->op == LABEL` test of the inner while in front
+  of the loop body), killreg (the two `if (n & 1) ... else ...` of the cases TB and TW cross-jumped into each other),
+  movedat (a compare block of a switch in front of the loop head), dest and setreg (the jump layout of a case and of
+  a loop exit: the original jumps from the end of the scan loop straight to the target of the next test).
 
 ### D21 Unsigned division by a power of two
 
@@ -649,9 +669,9 @@ Column "Ver.": the compiler version (section 2).
 | codgen, scodgen | lcl3.c | open |  | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | codgen, scodgen | tr3.c | open |  |  |  | x |  |  | x | ? |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
 | codgen, scodgen | optim3.c | open |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| popt | z21.c (main..backjmp) | open |  |  |  | x |  | x |  | x |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| popt | z22.c (rmove..natural) | open |  | x |  | x | x | x |  |  |  |  |  |  |  |  |  | x | x |  |  |  |  |  |
-| popt | z23.c (procopt..markregs) | open |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| popt | z21.c (main..backjmp) | v0p |  |  | x | x |  | x |  | x |  |  |  | x |  |  |  |  | x | x |  | x |  |  |
+| popt | z22.c (rmove..natural) | v0p |  | x | x | x | x | x |  |  |  |  |  | x |  |  |  | x | x | x |  | x |  |  |
+| popt | z23.c (procopt..markregs) | v0p |  | x |  | x | x |  |  |  |  |  |  | x |  |  |  |  | x | x |  |  |  |  |
 | ld | ld.c (read_symbols, place_sec, init_entry, load2td, dseek, ranlib_scan) | v1 | x | x | x |  |  |  |  |  |  |  | x | x |  |  | x |  |  |  |  | x |  |  |
 | ld | symbols.c (chk_ranlib, ensure_buf) | v1 |  |  | x |  |  |  |  |  |  |  | x | x |  |  |  |  |  |  |  | x |  |  |
 | ld | copyname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |

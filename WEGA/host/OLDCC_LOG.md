@@ -700,3 +700,17 @@ TODO.md when this log was started.
   the "preceded by alnum" test on `q[-1]` of the search string, as the original: quirk; registers e, q, r11, p, r9;
   `char changed`): exact.
   popt model 51 of 70, 3793 lines; popt corpus 816/816; cparse model 173.
+- D20 switches checked again after rename_regs (the change alters the behaviour): unchanged, all five needed.
+- repladdr (registers rs, d, s, op; the two strcpy inline as copy loops with the pointers set before the RT2 test;
+  `if (f) rd = ...; else rd = -1;`; `(rs = findslot(...)) < 0`, `(op = p->op) == CP`; `copy(1, buf1)` with two
+  arguments: the original does not load r5): 93 > 2 lines. Left: where the two sprintf arms of the rs branch meet,
+  the original loads `pfx` again from the frame (`ld r5,8(fp)`), ours takes r2; in the rd branch the original
+  itself takes r2. `sprintf(..., pfx = regprefix(rs, t), rs)` is worse (12 lines: codgen v0p puts the value of the
+  assignment into a temporary of its own). A witness for the codgen candidate "the value of an assignment kept in
+  r2 for the next statement" together with findcon (the original tests the variable), refcount (only the assignment
+  inside the expression gives the original's `testb @r2`) and setreg (argument order of makereg); open which
+  rule separates the cases (the merge of the two arms in front of the call?).
+- OLDCC.md (owner: every difference old against shipped belongs into section 3, with or without a switch): the
+  open popt observations added to D2 (itoa_, reverse), D3 (the value of an assignment: findcon, repladdr, refcount,
+  setreg; a parameter across a branch: setcon, equop; the old popt's register knowledge: dest) and D20 (xjump,
+  backjmp, killreg, movedat, dest, setreg); section 4: the popt rows now v0p with D3, D12, D18, D20.
