@@ -755,3 +755,4 @@ TODO.md when this log was started.
   Behind ovlap two functions nothing calls (0x42f6: an operand starting with rh; 0x431a: 2 for SLONG, else 1):
   ishigh, nwords (findings.json; quirks table). ovlap, ishigh, nwords exact: popt model 56 of 73, 1621 lines.
   popt corpus 816/816; cparse model 173.
+- D20 switches checked again after ovlap: unchanged, all five needed.

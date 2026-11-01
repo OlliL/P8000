@@ -142,7 +142,7 @@ LIBCOBJS). After every source change: the normal build (shipped cc) against /lib
 with `make -C host/popt corpus CORPUS=$RECON_TMP/popt/corpus`), then `oldcc.sh build popt v0p` and the cparse
 model (must stay 173). When a change alters the behaviour of popt, the five popt switches OLD_D20C/X/S/L/K are
 checked again by dropping each one (owner request: a switch must not hide an error of our popt source; last check
-after procopt: all five still needed). The method that worked: read the original function (`olist.py`-style
+after ovlap: all five still needed). The method that worked: read the original function (`olist.py`-style
 listing, the jump tables in the data give the case order), rewrite the source form (register declaration order
 fixes the registers, also after the leaf renaming of popt; `if (!*p++)` against `*p++ == 0`; a single `return -1`
 at the end; parameters with register copies give the homes of the original; `++p->x` where a statement
