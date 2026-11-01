@@ -376,3 +376,7 @@ TODO.md when this log was started.
   only when the jump in front of the head leads into the loop: 384, but the corpus run hung (wrong code: p2 was one
   node behind at the goto into the inversion); fixed: cparse 383, corpus 259; bench v0 with OLD_D20L alone 318 > 337:
   v0p only.
+- optim, the block of L154 (5 references, all `jpr cc,X; jpr L154`): our codemove moves it to the first of them, the
+  original behind `ldk r13,#8; jp`. OLD_D20J tried (no move to a jump right behind a conditional jump): optim 51 > 30
+  but 383 > 516 (rstruct, yylex, endinit, lxstr, cinit worse); only when another jump to the block is not behind a
+  conditional one: 402 (lxcom worse, optim unchanged). Removed; open.
