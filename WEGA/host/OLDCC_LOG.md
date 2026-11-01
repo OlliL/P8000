@@ -475,3 +475,7 @@ TODO.md when this log was started.
   not sp from r8; then OLD_D3N passes cp2 from r3): 17 > 6. Left: the switch table and the constant 0.0 in the
   other order in the data, and the temporary of `buildtree( COLON, ll, lr )` at 0x12 (ours 0xC; the block offsets
   of the member block do not explain it: moving cp2, cp1, m out of it makes the frame 2 bytes larger).
+- Delayed increments: codgen does the right one of a statement first (delay2). putsym `while( dimtab[i] )
+  taglist[ntaglist++] = ((struct symtab *) dimtab[i++])->symno;` (i first): exact; newsect `for( ; *cp; ++q, ++cp )
+  *q = *cp;` (q first): 4 > 2; left in newsect: `&sectname[sec][k]` adds k before the array address (variants
+  `sectname[sec] + k`, `k + sectname[sec]`, `q += k` do not give it).

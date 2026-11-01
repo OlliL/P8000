@@ -677,7 +677,7 @@ putsym( p ) register struct symtab *p; { /* a symbol into the .S file */
 	else if( x.s_class == STNAME ){
 		i = dimtab[p->sizoff+1];
 		x.s_tag = ntaglist;
-		for( ; dimtab[i]; ++i ) taglist[ntaglist++] = ((struct symtab *) dimtab[i])->symno;
+		while( dimtab[i] ) taglist[ntaglist++] = ((struct symtab *) dimtab[i++])->symno;
 		taglist[ntaglist++] = dimtab[i];
 		}
 	else x.s_tag = 0;

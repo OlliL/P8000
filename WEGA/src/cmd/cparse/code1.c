@@ -167,7 +167,7 @@ newsect( sec ){ /* start a new section sec (DATA or ADATA) */
 		}
 	k = len + sectpre > 21 ? 21 - len : sectpre;
 	q = &sectname[sec][k];
-	while( *cp ) *q++ = *cp++;
+	for( ; *cp; ++q, ++cp ) *q = *cp;
 	*q = 0;
 	sectnew = 0;
 	sectsize[sec] = 0;
