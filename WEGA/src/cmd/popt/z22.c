@@ -672,7 +672,9 @@ rmove()
 
 	do_jp:
 		redunbr(p);
-		goto reset;
+	reset:
+		clearreg();
+		goto next;
 
 	do_call:
 		flag136a = 1;
@@ -684,8 +686,6 @@ rmove()
 		ccloc[0] = 0;
 		goto next;
 
-	reset:
-		clearreg();
 	next:
 		p = p->forw;
 	}

@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (441 lines, 10 instructions of content, under analysis)
+- rmove (435 lines, 10 instructions of content, under analysis)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -226,7 +226,9 @@ passed the other way round (the original gives setcon the earlier literal, ours 
 else { savereg }` is worse: 12), and our rmove has one call more (`ld r7,r14; call`: probably one dualop or
 singop of p too many); the rest are jump forms (layout). Step 13 done: the JP and CALL cases as own sections
 (do_jp, do_call) behind disp inside the main switch, where the original has their code (0x2054, 0x2060): rmove
-441 lines, 10 instructions of content, popt 766. Next, in this order:
+441 lines, 10 instructions of content, popt 766. Step 14 done: `reset:` (clearreg; goto next) between do_jp
+and do_call, as the original's default target 0x205a: rmove 435 lines. Open: `next` (`p = p->forw`) stands near the
+top in the original (0x143e, behind the LD section). Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.
