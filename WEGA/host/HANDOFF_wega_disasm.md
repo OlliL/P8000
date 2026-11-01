@@ -246,6 +246,12 @@ Lessons of the other functions that will apply: the case order from the jump tab
 `++p->x`, `return a || b`, a single return at the end, macros for repeated code (ovlap SCAN: the loop form decides
 whether popt moves the blocks), `while (*a++ == *b++)` against `for (;;) { if (...) break; }`.
 
+**Suggested first compiler refinement (owner request 2026-11-01, not started):** D16A, the simplest one.
+OLD_D16A (codgen, match) loads `++n`/`--n` of a frame slot into a register when its value may go to a temporary
+(INTEMP); popt codemove `if (... || --n == 0)` shows that the old codgen keeps it in memory for a compare with 0
+(`dec n,#1; test n`). Try: no OLD_D16A when the parent is a compare (EQ/NE) with the constant 0; check popt
+codemove, cparse genswitch (`p[++n]`, must stay), the cparse model (173), corpus and the v0 bench.
+
 **Tools.**
 
 - `src/cmd/cparse/tools/oldcc.sh`: `build PASS VER [SWITCHES]` (rebuild and install one pass), `model` (the strict
