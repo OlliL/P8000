@@ -729,3 +729,20 @@ TODO.md when this log was started.
   size / 8`, `atoi(&regs[TL + i][len] + 1)` (gives the original's `add r2,#regs+1`; `[len + 1]`, `[1 + len]`,
   `+ (len + 1)` do not): exact.
   popt model 53 of 70, 3295 lines; popt corpus 816/816; cparse model 173.
+- usesreg: `strcpy(buf, str); str = buf;` (the register parameter str reused for the copy: no `ld r13,r6` at the
+  entry, as the original), the cases in the order of the original's code (CJP/JP, PUSH, LD/POP/LDA, CLR, EXTS, RET,
+  DIV, MUL, default, CALL): 248 > 177 lines. What is left is placement only: the instructions of both sides are the
+  same multiset except jr/jp forms (7 conditional jumps long in ours, short in the original, and one jump more):
+  the block after the switch (the ovlap test reached by the breaks) stands behind MUL in the original, ours moves it
+  up to the first break (PUSH). A D20 witness.
+- procopt: one register r14 for the loop index and the free register (no i), registers r14, p, s, ld1, ld2, r9, r8;
+  `switch (op = p->op)` (the original stores the switch value into the first frame word), `struct rent t[9]` (the
+  frame is 0x88), the cases in the original's order (the dualop group, the markregs group, LDM, CALL),
+  `t[k].len = strlen(sprintf(t[k].s1, "r%d", n))` (the sprintf of the old libc returns the buffer; its value goes
+  through a frame temporary), `sprintf(t[k++].s2, "r%d", r14++)`. Behind procopt a function nothing calls (0x36a6:
+  `isreg(*s == '@' ? s + 1 : s)`, saves r14 without using it): regof (findings.json; quirks table). 308 > 48
+  lines. Left in procopt: the address of `t[k].s1` (a member of an element of a local array of structures) is
+  `k*10 + (t + 2)` then `+ fp` in the original, codgen v0p adds the member to fp (`lda r2,2(fp); add r3,r2`): the
+  STREF counterpart of OLD_D5S (OLDCC.md D5, open); with it the register of `t[k++]` (r2 against r7). regof: the
+  parameter taken from r7 for the test and reloaded for the call in the original, the other way round in ours (D3).
+  popt model 53 of 71 (regof added), 2968 lines; popt corpus 816/816; cparse model 173.

@@ -3066,7 +3066,14 @@
    },
    "review": "reviewed: structure",
    "review_note": "array clearing inline in the original (no clearmem call); call order differs",
-   "size_orig": 762
+   "size_orig": 720
+  },
+  "regof": {
+   "file": "z23.c",
+   "orig": "0x36a6",
+   "size_orig": 42,
+   "pairing": "confirmed",
+   "note": "not called anywhere in the original (dead code behind procopt): isreg of an operand with a leading @ skipped; saves r14 without using it; name guessed (stripped binary); found with the v0p model (the range of procopt ended at 0x36a6)"
   },
   "dumpnodes": {
    "file": "z21.c",

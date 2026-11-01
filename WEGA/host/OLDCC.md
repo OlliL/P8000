@@ -431,6 +431,11 @@ v0p (switch `OLD_D5G` in codgen, fixfld): an element of a global array of arrays
 the address of the array added last (newsect `&sectname[sec][k]`: `mult rr2,#24; add r3,k; add r3,#_sectname`);
 the global counterpart of OLD_D5S. Bench v0 275 > 303: v0p only.
 
+Open (popt, v0p model 2026-11-01): a member of an element of a local array of structures (procopt `t[k].s1`, t a
+frame array, the member at offset 2) is `k*10 + (t+2)` then `+ fp` in the original (`mult rr2,#10; add r3,#0x20;
+add r3,r15`), codgen v0p adds the member to the frame pointer (`add r3,#0x1E; lda r2,2(r15); add r3,r2`): OLD_D5S
+covers SUBSR only, this is its STREF form (six places in procopt).
+
 ### D6 switch
 
 Up to 3 cases the old compiler compares one after the other and puts the dispatch in front of the bodies; the shipped
@@ -583,6 +588,8 @@ order).
   of the loop body), killreg (the two `if (n & 1) ... else ...` of the cases TB and TW cross-jumped into each other),
   movedat (a compare block of a switch in front of the loop head), dest and setreg (the jump layout of a case and of
   a loop exit: the original jumps from the end of the scan loop straight to the target of the next test).
+- Open (popt): usesreg: the code after the switch (the test reached by the breaks) stands behind the MUL case in the
+  original, ours moves it up to the first break; the instructions of both sides are otherwise the same.
 
 ### D21 Unsigned division by a power of two
 

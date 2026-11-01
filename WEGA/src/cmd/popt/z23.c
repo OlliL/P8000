@@ -41,26 +41,24 @@ struct rent {
 void
 procopt()
 {
-	struct node *p, *ld1, *ld2;
+	register int r14;
+	register struct node *p;
+	register char *s;
+	register struct node *ld1, *ld2;
+	register int r9, r8;
+	int op, k, n;
 	char b[15], a[8];
-	struct rent t[16];
-	char *s;
-	register int i;
-	int r8, r9, k, r14, n;
+	struct rent t[9];
 
-	ld1 = ld2 = 0;
+	ld1 = 0;
+	ld2 = 0;
 	a[0] = 1;
-	for (i = 1; i < 8; i++)
-		a[i] = 0;
-	for (i = 0; i < 15; i++)
-		b[i] = 0;
+	for (r14 = 1; r14 < 8; r14++)
+		a[r14] = 0;
+	for (r14 = 0; r14 < 15; r14++)
+		b[r14] = 0;
 	for (p = &first; p; p = p->forw) {
-		switch (p->op) {
-		case JP: case CLR: case COM: case INC: case DEC: case NEG:
-		case TST: case SRA: case SLA: case EXTS: case SOB: case LDA:
-		case 38: case 41: case 43: case SRL: case SLL:
-			markregs(p->code, b, a);
-			break;
+		switch (op = p->op) {
 		case LD: case CP: case ADD: case SUB: case BIT: case AND:
 		case OR: case MUL: case DIV: case SDA: case XOR: case PUSH:
 		case POP: case SET: case RES: case SDL:
@@ -68,17 +66,20 @@ procopt()
 			markregs(RT2, b, a);
 			markregs(RT1, b, a);
 			break;
-		case CALL:
-			fprintf(stderr, "CALL instruction in stripldm()\n");
-			return;
+		case JP: case CLR: case COM: case INC: case DEC: case NEG:
+		case TST: case SRA: case SLA: case EXTS: case SOB: case LDA:
+		case 38: case 41: case 43: case SRL: case SLL:
+			markregs(p->code, b, a);
+			break;
 		case LDM:
 			if (ld1 == 0)
 				ld1 = p;
 			else
 				ld2 = p;
 			break;
-		default:
-			break;
+		case CALL:
+			fprintf(stderr, "CALL instruction in stripldm()\n");
+			return;
 		}
 	}
 	if (ld1 == 0 || ld2 == 0)
@@ -94,8 +95,8 @@ procopt()
 	}
 	r8 = atoi(s);
 	r9 = 0;
-	for (i = 1; i < 8; i++)
-		if (a[i] == 0)
+	for (r14 = 1; r14 < 8; r14++)
+		if (a[r14] == 0)
 			r9++;
 	if (r9 == 0)
 		return;
@@ -111,20 +112,13 @@ procopt()
 		if ((n & 1) && b[n - 1] && n <= 13) {
 			if ((r14 & 1) || r14 + 1 >= 8 || a[r14 + 1])
 				continue;
-			sprintf(t[k].s1, "r%d", n - 1);
-			t[k].len = strlen(t[k].s1);
-			sprintf(t[k].s2, "r%d", r14);
-			k++;
-			r14++;
-			sprintf(t[k].s1, "r%d", n);
-			t[k].len = strlen(t[k].s1);
-			sprintf(t[k].s2, "r%d", r14);
-			k++;
+			t[k].len = strlen(sprintf(t[k].s1, "r%d", n - 1));
+			sprintf(t[k++].s2, "r%d", r14++);
+			t[k].len = strlen(sprintf(t[k].s1, "r%d", n));
+			sprintf(t[k++].s2, "r%d", r14);
 		} else {
-			sprintf(t[k].s1, "r%d", n);
-			t[k].len = strlen(t[k].s1);
-			sprintf(t[k].s2, "r%d", r14);
-			k++;
+			t[k].len = strlen(sprintf(t[k].s1, "r%d", n));
+			sprintf(t[k++].s2, "r%d", r14);
 		}
 	}
 	if (r8 < k) {
@@ -141,6 +135,15 @@ procopt()
 	if (r8 == 0)
 		stripframe();
 #endif
+}
+
+/* the register number of an operand, also behind an indirection */
+regof(s)
+char *s;
+{
+	register char *unused;
+
+	return isreg(*s == '@' ? s + 1 : s);
 }
 
 #ifdef OLD_D1F
@@ -300,35 +303,42 @@ register int reg;
 	register int r10, r9;
 
 	strcpy(buf, str);
+	str = buf;
 	for (p = node->forw; p; p = p->forw) {
 		switch (p->op) {
 		case CJP:
 		case JP:
 			goto out1;
+		case PUSH:
+			if (p->subop != SLONG)
+				break;
+			dualop(p);
+			r10 = isreg(RT1);
+			if (r10 < 0)
+				break;
+			if (reg == r10 + 1)
+				goto out1;
+			break;
 		case LD:
 		case POP:
 		case LDA:
 			dualop(p);
 			if (p->op == POP) {
-				if (ovlap(RT1 + 1, buf)) {
+				if (ovlap(RT1 + 1, str))
 					goto out1;
-				}
-			} else if (ovlap(RT1, buf)) {
+			} else if (ovlap(RT1, str))
 				goto out1;
-			}
-			if (p->subop == SBYTE && reg == isreg(RT1)) {
+			if (p->subop == SBYTE && reg == isreg(RT1))
 				goto out1;
-			}
-			if (equstr(RT2, buf))
+			if (equstr(RT2, str))
 				goto out0;
 			if (p->subop == SLONG) {
 				r10 = isreg(RT2);
 				if (r10 >= 0 && reg == r10 + 1)
 					goto out0;
 			}
-			if (ovlap(RT2, buf)) {
+			if (ovlap(RT2, str))
 				goto out1;
-			}
 			continue;
 		case CLR:
 			r10 = 0;
@@ -337,12 +347,11 @@ register int reg;
 				if (r10 >= 0 && reg == r10 + 1)
 					goto out0;
 			}
-			if (r10 >= 0 && equstr(p->code, buf))
+			if (r10 >= 0 && equstr(p->code, str))
 				goto out0;
 			dualop(p);
-			if (ovlap(RT1, buf)) {
+			if (ovlap(RT1, str))
 				goto out1;
-			}
 			continue;
 		case EXTS:
 			r10 = isreg(p->code);
@@ -350,9 +359,8 @@ register int reg;
 				continue;
 			switch (p->subop) {
 			case 0:
-				if (reg == r10 + 1) {
+				if (reg == r10 + 1)
 					goto out1;
-				}
 				if (r10 != reg)
 					continue;
 				goto out0;
@@ -361,24 +369,30 @@ register int reg;
 					continue;
 				goto out1;
 			case SLONG:
-				if (reg == r10 + 2 || reg == r10 + 3) {
+				if (reg == r10 + 2 || reg == r10 + 3)
 					goto out1;
-				}
 				if (r10 == reg || reg == r10 + 1)
 					goto out0;
 				continue;
 			}
 			continue;
-		case PUSH:
+		case RET:
+#ifdef SPOPT
+			if (reg == 2 || reg == 3 || reg == 12 || reg == 13)
+#else
+			if (reg == 2 || reg == 3 || reg == 14)
+#endif
+				goto out1;
+			goto out0;
+		case DIV:
+			dualop(p);
+			r10 = isreg(RT2);
+			if (r10 >= 0 && reg == r10 + 1)
+				goto out1;
 			if (p->subop != SLONG)
 				break;
-			dualop(p);
-			r10 = isreg(RT1);
-			if (r10 < 0)
-				break;
-			if (reg == r10 + 1) {
+			if (reg == r10 + 2 || reg == r10 + 3)
 				goto out1;
-			}
 			break;
 		case MUL:
 			dualop(p);
@@ -386,48 +400,34 @@ register int reg;
 			if (r10 < 0)
 				break;
 			if (p->subop == 0) {
-				if (ovlap(RT1, buf) || reg == r10 + 1) {
+				if (ovlap(RT1, str) || reg == r10 + 1)
 					goto out1;
-				}
 				if (reg != r10)
 					break;
 				goto out0;
 			}
 			if (p->subop != SLONG)
 				break;
-			if (ovlap(RT1, buf) || reg == r10 + 2 || reg == r10 + 3) {
+			if (ovlap(RT1, str) || reg == r10 + 2 || reg == r10 + 3)
 				goto out1;
-			}
 			if (reg == r10 || reg == r10 + 1)
 				goto out0;
 			break;
-		case DIV:
-			dualop(p);
-			r10 = isreg(RT2);
-			if (r10 >= 0 && reg == r10 + 1) {
-				goto out1;
-			}
-			if (p->subop != SLONG)
-				break;
-			if (reg == r10 + 2 || reg == r10 + 3) {
-				goto out1;
-			}
+		default:
 			break;
 		case CALL:
 			r9 = reg;
 			if (node->subop == SBYTE && reg > 8)
 				r9 = reg - 8;
-			if (r9 >= 2 && r9 <= 7) {
+			if (r9 >= 2 && r9 <= 7)
 				goto out1;
-			}
 #ifdef SPOPT
 			if (reg >= 2) {
 				if (p->code[0] != '@')
 					continue;
 				r10 = isreg(p->code + 1);
-				if (reg == r10) {
+				if (reg == r10)
 					goto out1;
-				}
 				r10 = reg ^ 1;
 				if (r10 == 0)
 					continue;
@@ -443,22 +443,10 @@ register int reg;
 			if (reg != r10)
 				goto out0;
 			goto out1;
-		case RET:
-#ifdef SPOPT
-			if (reg == 2 || reg == 3 || reg == 12 || reg == 13) {
-#else
-			if (reg == 2 || reg == 3 || reg == 14) {
-#endif
-				goto out1;
-			}
-			goto out0;
-		default:
-			break;
 		}
 		/* default: any mention of the register counts as a use */
-		if (ovlap(p->code, buf)) {
+		if (ovlap(p->code, str))
 			goto out1;
-		}
 	}
 out0:
 	dualop(node);
