@@ -773,44 +773,32 @@ int
 ilen(p)
 register struct node *p;
 {
-	int op;
-
-	op = p->op;
-	switch (op) {
-	case CJP:
-	case JP:
-		if (p->code == 0)
-#ifdef SPOPT
-			return 6;
-#else
-			return 4;
-#endif
-		return adrlen(p->code, p->subop);
+	switch (p->op) {
 	case LABEL: case DLABEL: case OBRACE:
 	case CODE: case DATA: case WORD: case EVEN:
 	case LONG: case COMMENT: case CBRACE: case PSEC: case KCOMMENT:
 		return 0;
 	case SRA: case SLA: case SDA: case SRL: case SLL: case SDL:
 		return 4;
+	case BIT: case SET: case RES:
+		dualop(p);
+		if (isreg(RT1) >= 0)
+			return 4;
+		return adrlen(RT2, p->subop);
 	case RET:
 		return 2;
 	case LD:
 		if (p->subop == SLDK)
 			return 2;
 		dualop(p);
-		if (isreg(RT2) < 0) {
-			if (isreg(RT1) >= 0)
-				return adrlen(RT2, p->subop);
-			return adrlen(RT2, p->subop) + (p->subop == SLONG ? 4 : 2);
+		if (isreg(RT2) >= 0) {
+			if (p->subop == SBYTE && RT1[0] == '#')
+				return 2;
+			return adrlen(RT1, p->subop);
 		}
-		if (p->subop == SBYTE && RT1[0] == '#')
-			return 2;
-		return adrlen(RT1, p->subop);
-	case BIT: case SET: case RES:
-		dualop(p);
 		if (isreg(RT1) >= 0)
-			return 4;
-		return adrlen(RT2, p->subop);
+			return adrlen(RT2, p->subop);
+		return adrlen(RT2, p->subop) + (p->subop == SLONG ? 4 : 2);
 	case CP:
 		dualop(p);
 		if (isreg(RT2) >= 0)
@@ -824,6 +812,15 @@ register struct node *p;
 	case INC: case DEC: case POP: case RL: case RR:
 		dualop(p);
 		return adrlen(RT2, p->subop);
+	case CJP:
+	case JP:
+		if (p->code == 0)
+#ifdef SPOPT
+			return 6;
+#else
+			return 4;
+#endif
+		return adrlen(p->code, p->subop);
 	}
 	dualop(p);
 	return adrlen(RT1, p->subop);
@@ -1209,27 +1206,25 @@ mem:
 /* name of register n of the class `type' */
 static void
 makereg(n, buf, type)
-int n;
-char *buf;
-int type;
+register int n;
+register int type;
+register char *buf;
 {
-	register char *p;
-
-	p = buf;
-	*p++ = 'r';
+	*buf++ = 'r';
 	if (type == TB) {
-		*p++ = 'l';
+		*buf++ = 'l';
 		n = n % 8;
 	} else if (type == TL)
-		*p++ = 'r';
+		*buf++ = 'r';
 	else if (type == TQ)
-		*p++ = 'q';
-	if (n >= 10) {
-		*p++ = '1';
-		n = n % 10;
+		*buf++ = 'q';
+	if (n < 10)
+		*buf++ = (char)n + '0';
+	else {
+		*buf++ = '1';
+		*buf++ = (char)(n % 10) + '0';
 	}
-	*p++ = n + '0';
-	*p = 0;
+	*buf = 0;
 }
 
 /* register class of the destination of an instruction */
@@ -1237,25 +1232,29 @@ static int
 dest(p)
 register struct node *p;
 {
-	int sub, op;
+	register int sub;
 
 	sub = p->subop;
-	op = p->op;
-	if (op == EXTS) {
+	switch (p->op) {
+	case EXTS:
 		if (sub == 0)
 			sub = SLONG;
-	} else if (op == LDA)
+		break;
+	case LDA:
 #ifdef SPOPT
 		sub = SLONG;		/* an address is a segmented (long) address */
 #else
 		sub = 0;
 #endif
-	if (sub == 0)
+	}
+	switch (sub) {
+	case 0:
 		return TW;
-	if (sub == SBYTE)
+	case SBYTE:
 		return TB;
-	if (sub == SLONG)
+	case SLONG:
 		return TL;
+	}
 	return TW;
 }
 

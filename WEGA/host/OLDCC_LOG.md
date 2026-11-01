@@ -669,3 +669,12 @@ TODO.md when this log was started.
   setcon (parameters with register copies): left one `ld r7,r6` where codgen v0p reloads the home (the parameter
   register kept across `cpb; jr ne`: codgen D3 family). popt model 41 of 70, 4498 lines; popt corpus 816/816;
   cparse model 173.
+- dest (`register int sub`, two switches: on p->op and on sub): left the jump layout of the EXTS case and a `sub
+  r2,r3` of the original where ours has `sub r2,r2` (popt). makereg (all three parameters register, declared in
+  the order n, type, buf: the declaration order fixes the registers; `if (n < 10) ... else { '1', n % 10 }`), ilen
+  (switch on p->op without a temporary; the case order from the jump table: the 0 group, shifts, BIT/SET/RES, RET,
+  LD, CP, LDM, INC group, CJP/JP; in LD the register branch first), isused (switch on reg[1], case 'r' before 'q',
+  `return a || b ...;`: the value form gives the `ldk r2,#0` of the original), markregs (switch on *p with '@'
+  falling into 'r'; `char flag`; the `rN(` recursion `markregs(p[3], b, a)` with a character as the pointer, as
+  the original: now kept in src/cmd/popt, quirks table): exact. popt model 45 of 70, 4305 lines before markregs.
+  With markregs 45 of 70, 4268 lines; popt corpus 816/816; cparse model 173.

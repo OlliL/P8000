@@ -275,22 +275,15 @@ register struct node *p;
 register char *reg;
 {
 	register int r12;
-	int c;
 
-	r12 = isreg(reg);
-	if (r12 < 0)
+	if ((r12 = isreg(reg)) < 0)
 		return 1;
-	c = reg[1];
-	if (c == 'q') {
-		if (usesreg(p, reg, r12) || usesreg(p, reg, r12 + 1) ||
-		    usesreg(p, reg, r12 + 2) || usesreg(p, reg, r12 + 3))
-			return 1;
-		return 0;
-	}
-	if (c == 'r') {
-		if (usesreg(p, reg, r12))
-			return 1;
-		return usesreg(p, reg, r12 + 1) != 0;
+	switch (reg[1]) {
+	case 'r':
+		return usesreg(p, reg, r12) || usesreg(p, reg, r12 + 1);
+	case 'q':
+		return usesreg(p, reg, r12) || usesreg(p, reg, r12 + 1) ||
+		    usesreg(p, reg, r12 + 2) || usesreg(p, reg, r12 + 3);
 	}
 	return usesreg(p, reg, r12);
 }
@@ -1053,51 +1046,49 @@ register char *a;
 {
 	register char *p;
 	register int n;
-	int flag;
+	char flag;
 
 	flag = 0;
 	p = s;
-	if (*p == '@')
+	switch (*p) {
+	case '@':
 		p++;
-	else if (*p != 'r')
-		goto scanparen;
-	switch (p[1]) {
-	case 'h':
-	case 'l':
-		p++;
-		break;
-	case 'q':
 	case 'r':
-		p++;
-		flag = 1;
-		break;
-	}
-	n = atoi(p + 1);
-	if (n >= 0 && n < 8) {
-		a[n] = 1;
-		if (flag) {
-			a[n + 1] = 1;
-			if (*p == 'q') {
-				a[n + 2] = 1;
-				a[n + 3] = 1;
-			}
+		switch (p[1]) {
+		case 'h':
+		case 'l':
+			p++;
+			break;
+		case 'q':
+		case 'r':
+			p++;
+			flag = 1;
+			break;
 		}
-	} else if (n > 7 && n < 15 && flag) {
-		b[n] = 1;
-		if (*p == 'q')
-			b[n + 2] = 1;
+		n = atoi(p + 1);
+		if (n >= 0 && n < 8) {
+			a[n] = 1;
+			if (flag) {
+				a[n + 1] = 1;
+				if (*p == 'q') {
+					a[n + 2] = 1;
+					a[n + 3] = 1;
+				}
+			}
+		} else if (n > 7 && n < 15 && flag) {
+			b[n] = 1;
+			if (*p == 'q')
+				b[n + 2] = 1;
+		}
+		if (n >= 10)
+			p++;
+		if (p[2] == '(')
+			markregs(p[3], b, a);
+		return;
 	}
-	if (n >= 10)
-		p++;
-	/*
-	 * "rN(" would recurse with the character after the paren used as
-	 * a pointer; this never matters, nothing to do.
-	 */
-	return;
-scanparen:
 	while (*p) {
 		if (*p == '(') {
-			markregs(p + 1, b, a);
+			markregs(++p, b, a);
 			return;
 		}
 		p++;
