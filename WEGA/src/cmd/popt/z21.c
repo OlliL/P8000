@@ -207,53 +207,35 @@ static int
 input()
 {
 	register struct node *p, *lastp;
-	int oper, op, echo;
+	register int oper;
+	char echo;
 
 	echo = 1;
 	lastp = &first;
 	for (;;) {
-		if (echo) {
+		if (echo)
 			for (;;) {
 				oper = getln();
-				op = oper & 0xff;
-				if (op == LABEL) {
+				switch (oper & 0xff) {
+				case LABEL:
 					printf("%s:\n", line);
-				} else if (op == OBRACE) {
+					continue;
+				case EOFOP:
+					echo = 0;
+					goto sw;
+				case OBRACE:
 					echo = 0;
 					printf("%s\n", line);
-					oper = getln();
 					break;
-				} else if (op == EOFOP) {
-					echo = 0;
-					break;
-				} else
+				default:
 					printf("%s\n", line);
+					continue;
+				}
+				break;
 			}
-		} else
-			oper = getln();
-		op = oper & 0xff;
-		switch (op) {
-		case 0:
-			if (*curlp == 0)
-				continue;
-			p = (struct node *)alloc(14);
-			p->op = op;
-			p->code = copy(1, line, 0);
-			p->labno = 0;
-			p->subop = 0;
-			break;
-		case CJP:
-		case JP:
-			p = (struct node *)alloc(14);
-			p->op = op;
-			p->subop = oper >> 8;
-			if (*curlp == 'L' && (p->labno = getnum(curlp + 1)) != 0)
-				p->code = 0;
-			else {
-				p->labno = 0;
-				p->code = copy(1, curlp, 0);
-			}
-			break;
+		oper = getln();
+	sw:
+		switch (oper & 0xff) {
 		case LABEL:
 			p = (struct node *)alloc(14);
 			if (line[0] == 'L') {
@@ -265,7 +247,7 @@ input()
 				p->op = DLABEL;
 				p->subop = 0;
 				p->labno = 0;
-				p->code = copy(1, line, 0);
+				p->code = copy(1, line);
 			}
 			break;
 #ifdef SPOPT
@@ -274,27 +256,42 @@ input()
 		case WORD:
 #endif
 		case ADDR:
-			p = jswcheck();
-			if (p == 0)
-				goto dflt;
+			if ((p = jswcheck()) != 0)
+				break;
+		default:
+			p = (struct node *)alloc(14);
+			p->op = oper & 0xff;
+			p->subop = oper >> 8;
+			p->labno = 0;
+			p->code = copy(1, curlp);
+			break;
+		case CJP:
+		case JP:
+			p = (struct node *)alloc(14);
+			p->op = oper & 0xff;
+			p->subop = oper >> 8;
+			if (*curlp == 'L' && (p->labno = getnum(curlp + 1)) != 0)
+				p->code = 0;
+			else {
+				p->labno = 0;
+				p->code = copy(1, curlp);
+			}
 			break;
 		case COMMENT:
-			continue;
+			oper = getln();
+			goto sw;
+		case 0:
+			if (*curlp == 0) {
+				oper = getln();
+				goto sw;
+			}
 		case CBRACE:
 		case KCOMMENT:
 			p = (struct node *)alloc(14);
-			p->op = op;
-			p->code = copy(1, line, 0);
+			p->op = oper & 0xff;
+			p->code = copy(1, line);
 			p->labno = 0;
 			p->subop = 0;
-			break;
-		default:
-		dflt:
-			p = (struct node *)alloc(14);
-			p->op = op;
-			p->subop = oper >> 8;
-			p->labno = 0;
-			p->code = copy(1, curlp, 0);
 			break;
 		}
 		p->forw = 0;

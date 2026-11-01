@@ -1463,29 +1463,38 @@ repladdr(p, f)
 struct node *p;
 int f;
 {
-	int t, rd, rs, op;
+	register int rs;
+	register char *d, *s;
+	register int op;
+	int rd, t;
 	char *pfx;
 	static char buf1[50], buf2[50];
 
 	t = dest(p);
-	rd = f ? findslot(RT2, t) : -1;
-	rs = findslot(RT1, t);
-	if (rs < 0 && rd < 0)
+	if (f)
+		rd = findslot(RT2, t);
+	else
+		rd = -1;
+	if ((rs = findslot(RT1, t)) < 0 && rd < 0)
 		return;
 	if (p->subop == SBYTE && (rs >= 8 || rd >= 8))
 		return;
+	s = RT1;
+	d = buf1;
 	if (RT2[0]) {
-		buf1[0] = ',';
-		strcpy(buf1 + 1, RT1);
-		strcpy(buf2, RT2);
+		*d++ = ',';
+		while (*d++ = *s++)
+			;
+		for (d = buf2, s = RT2; *d++ = *s++;)
+			;
 	} else {
-		strcpy(buf1, RT1);
+		while (*d++ = *s++)
+			;
 		buf2[0] = 0;
 	}
 	if (rs >= 0) {
 		if (RT2[0]) {
-			op = p->op;
-			if ((op == CP || op == BIT || op == SET || op == RES) &&
+			if (((op = p->op) == CP || op == BIT || op == SET || op == RES) &&
 			    isreg(RT1) < 0)
 				return;
 			pfx = regprefix(rs, t);
@@ -1506,7 +1515,7 @@ int f;
 	if (RT2[0])
 		p->code = copy(2, buf2, buf1);
 	else
-		p->code = copy(1, buf1, 0);
+		p->code = copy(1, buf1);
 }
 
 /*

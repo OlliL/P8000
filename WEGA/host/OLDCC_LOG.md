@@ -714,3 +714,9 @@ TODO.md when this log was started.
   open popt observations added to D2 (itoa_, reverse), D3 (the value of an assignment: findcon, repladdr, refcount,
   setreg; a parameter across a branch: setcon, equop; the old popt's register knowledge: dest) and D20 (xjump,
   backjmp, killreg, movedat, dest, setreg); section 4: the popt rows now v0p with D3, D12, D18, D20.
+- input: `register int oper` without an `op` temporary, `char echo`; the echo loop is a switch on `oper & 0xff`
+  (LABEL, EOFOP before OBRACE, default); the main switch in the order of the original's code (LABEL, WORD/ADDR
+  falling into default, CJP/JP, COMMENT, 0 falling into CBRACE/KCOMMENT); `case COMMENT: oper = getln(); goto sw;`
+  and the same for an empty line: popt cross-jumps the `call getln` into the one in front of the switch, which is
+  where the original jumps (a `continue` goes to the echo test); `copy(1, s)` with two arguments: exact.
+  popt model 52 of 70, 3587 lines; popt corpus 816/816; cparse model 173.
