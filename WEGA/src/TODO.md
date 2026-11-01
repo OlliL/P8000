@@ -378,6 +378,9 @@ The facts of the code generator (module versions, pipeline, function map, regist
 Sources: `src/cmd/codgen` (K&R C for the WEGA cc, the same files build `codgen` and `scodgen` with `-DSEG`; the tables
 `table3_codgen.c` / `table3_scodgen.c` and `ops_*.c` / `hop_*.c` differ). They are built by `src/cmd/Makefile` (subdirectory `codgen`).
 
+- **opclass (fixed 2026-11-01).** `opclass[]` (match3.c) has 26 entries in the original data (`..., 0x200, 0x201, 0x4000, 0xe`);
+  ours had 24, so the 24 table entries of class 0x1018 read the next datum (in the normal build by chance a string with
+  bit 0x4000, so the behaviour was the original's; a new global behind it in an old-compiler build changed the code).
 - **Assembler text.** `codgen` and `scodgen` give the same assembler text and exit status as `/lib/codgen` and `/lib/scodgen` on the
   test corpus: 101 of 101 cases each (`corp4test` with 100 cases plus `corpsr`, and the scodgen counterparts), checked on the final sources.
   The corpus is small and does not contain structure returns (see the `fbegin` note below).

@@ -12,6 +12,8 @@
 #define OLD_D2A		/* the value of a long assignment copied into a new pair, which keeps the name (match) */
 #define OLD_D21	/* an unsigned division or modulo by a power of two stays a division (optim) */
 #define OLD_D2O		/* a long loaded through an odd address register into the pair below it (allocreg) */
+#define OLD_D16A	/* a frame slot incremented by a constant, value to a temporary: load, increment, store (match) */
+#define OLD_D3N		/* the variable the statement before stored from a register, stored through a pointer: that register */
 #endif
 
 #ifdef OLD_V0

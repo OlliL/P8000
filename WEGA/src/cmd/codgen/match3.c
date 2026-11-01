@@ -114,9 +114,26 @@ ttype(t, tword)
  */
 int opclass[] = {
 	0x20, 0x21, 0x40, 0x41, 0x800, 0x801, 0x80, 0x81, 0x4, 0xe, 0x2, 0xe, 0x0, 0x2001, 0x10, 0xe,
-	0x100, 0x101, 0x1000, 0x1001, 0x8000, 0x8001, 0x200, 0x201,
+	0x100, 0x101, 0x1000, 0x1001, 0x8000, 0x8001, 0x200, 0x201, 0x4000, 0xe,
 };
 
+#ifdef OLD_D3N
+int d3nreg = -1;		/* v0p: the register the statement before stored into the word variable d3nsym */
+static struct sym *d3nsym;
+
+/* the word register r is on the free list (alone or as a half of a free pair) */
+static int
+d3nfree(r)
+	register int r;
+{
+	register struct rs *n;
+
+	for (n = rsfree; n; n = n->next)
+		if ((n->cls == 2 && n->reg == r) || (n->cls == 3 && n->reg == (r & ~1)))
+			return 1;
+	return 0;
+}
+#endif
 struct optab *opptr[128];	/* the first table entry that can serve an operator */
 struct optab *rwdefault;	/* the entry with needs == 0x1000 (the default rewrite entry) */
 extern int cerror();
@@ -222,6 +239,12 @@ match(p, cookie)
 	register struct node *l, *r;
 	register int kind, mask;
 	int rv;
+#ifdef OLD_D3N
+	int d3nr;
+	struct sym *d3nset;	/* the word variable this assignment from a register stores into */
+
+	d3nset = 0;
+#endif
 
 	rcount();
 	kind = dope[p->op] & 0xE;
@@ -249,6 +272,12 @@ match(p, cookie)
 		if (l->op == NAME && (dope[p->right->op] & 0xE) == LTYPE) {
 			if (dope[p->op] & 1) {		/* an assignment: the target must stay in memory */
 				symuse(l->sname);
+#ifdef OLD_D3N
+				if (p->op == ASSIGN && p->right->op == REG && p->right->rval < 8 &&
+				    (p->type == 4 || p->type == 14 || (p->type & 0x30) == 0x10) &&
+				    (l->sname->sclass == 1 || l->sname->sclass == 9))
+					d3nset = l->sname;
+#endif
 				oregfix(l);
 			} else
 				fixname(l);
@@ -265,6 +294,19 @@ match(p, cookie)
 			}
 			if ((dope[p->left->op] & 0xE) == LTYPE || p->left->op == FLD)
 				fixname(r);
+#ifdef OLD_D3N
+			else if (p->op == ASSIGN && p->left->op == STAR && d3nreg >= 0 && r->sname == d3nsym &&
+			    r->type == p->type && d3nfree(d3nreg)) {
+				/* v0p: the variable stored by the statement before, stored again through a pointer: from
+				   the register it came from */
+				rv = d3nreg;
+				if (getreg(2, rv, 0, (struct sym *)0) != rv)
+					cerror("d3n");
+				r->op = REG;
+				r->rval = rv;
+				r->lval = 0;
+			}
+#endif
 		}
 	}
 select:
@@ -297,6 +339,20 @@ select:
 		r = getlr(p, 'R');
 		if (!tshape(r, q->rshape) || !ttype(r->type, q->rtype))
 			continue;
+#ifdef OLD_D16A
+		/* v0p: a frame slot incremented by a constant whose value may go to a temporary is loaded, incremented in
+		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */
+		if ((p->op == ASG PLUS || p->op == ASG MINUS) && (cookie & INTEMP) && l->op == OREG && l->rval == 15 &&
+		    r->op == ICON && r->sname == 0) {
+			if (q->rshape == 0x8002)
+				continue;
+			if (q->needs == 1 && q->rewrite == 0x804 && allo(p, q)) {
+				expand(p, cookie, "\tldZB\tA1,AL\n\tZi\tA1,AR\n\tldZB\tAL,A1\n");
+				reclaim(p, q->rewrite, cookie);
+				return MDONE;
+			}
+		}
+#endif
 		if (q->ltype == 0x4000 || q->rtype == 0x4000) {		/* both operands of the same type */
 			if (r->type != l->type)
 				continue;
@@ -314,7 +370,17 @@ select:
 		rv = p->op;
 #endif
 		expand(p, cookie, q->cstring);
+#ifdef OLD_D3N
+		d3nr = p->right->rval;
+#endif
 		reclaim(p, q->rewrite, cookie);
+#ifdef OLD_D3N
+		if (d3nset) {		/* v0p: the register just stored into a word variable */
+			d3nsym = d3nset;
+			d3nreg = d3nr;
+			d3nset = 0;
+		}
+#endif
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
 		if (rv == ASSIGN && !(cookie & 01) && p->op == REG && (p->type == 5 || p->type == 15) && p->rval < 8 &&

@@ -394,3 +394,16 @@ TODO.md when this log was started.
 - genswitch left: `range = p[++n].sval - ...` with n a parameter: the original `ld r2,0(r15); inc r2,#1; ld 0(r15),r2;
   ld r3,r2` (load, increment, store), ours `inc 0(r15),#1; ld r2,0(r15)`; only this site in cparse, the other frame
   increments are `inc F(r15)`. After `swlab = getlab()` the original takes r2 for `t->rval = swlab`, ours reloads.
+- genswitch `range = p[++n].sval`: the cookie of the ASG PLUS under the MUL is 010036 (INTEMP), gotscal `ix =
+  ++p->in_x` 01312, newsect `*--cp` 6. OLD_D16A (memory increment not for INTEMP, frame slot only, the value through
+  A1 with Zi): 336 > 333; without the frame condition 336 > ~1000 (resetbc, lxtitle, yylex ...); with STAREG instead of
+  INTEMP newsect worse.
+- genswitch `t->rval = swlab` right behind `swlab = getlab()`: codgen keeps nothing after the store (rsuse empty).
+  Value first (setasg: order the right NAME before the address): 336 > 424, the original stores address first
+  elsewhere (the search branch of genswitch, psave). Naming the stored register in general: ftnarg, lookup, copysym,
+  defid worse (384). OLD_D3N (only for the store through a pointer of the next statement, no register allocated in
+  between): genswitch exact, 142, 328.
+- Found on the way: `opclass[]` had 24 entries, the original data has 26 (`0x4000, 0xe`); the 0x1018 table entries read
+  behind the array (a global d3nreg placed there broke scnames and trees1). Fixed; the bench v0 stays 318, cparse
+  with v0p unchanged.
+- Corpus 259; bench v0 318 (OLD_D16A and OLD_D3N together 348: v0p only).

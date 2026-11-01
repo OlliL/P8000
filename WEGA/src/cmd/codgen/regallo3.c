@@ -37,6 +37,9 @@ static int rweight[8] = { 3, 1, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is 
 #else
 static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
 #endif
+#ifdef OLD_D3N
+extern int d3nreg;		/* match3.c */
+#endif
 
 void
 rsinit()
@@ -722,6 +725,9 @@ take:
 found:
 	n->busy = 1;
 ret:
+#ifdef OLD_D3N
+	d3nreg = -1;
+#endif
 	return n->reg;
 }
 
@@ -883,6 +889,10 @@ rsfreeall(flag)
 {
 	register struct rs *next;
 	register struct rs *n;
+
+#ifdef OLD_D3N
+	d3nreg = -1;
+#endif
 
 	for (n = rsuse; n; n = next) {
 		next = n->next;
