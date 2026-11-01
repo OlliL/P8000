@@ -605,8 +605,7 @@ rmove()
 		strcpy(b1, RT1);
 		strcpy(b2, RT2);
 		dualop(p1);
-		r = isreg(RT2);
-		if (r < 0) {
+		if (isreg(RT2) < 0) {
 			if (RT2[0] != '@')
 				goto lda_end;
 			if (isreg(RT1) < 0)
