@@ -30,7 +30,6 @@ clocal(p) NODE *p; {
 	register NODE *r, *l;
 	register x;
 	int i;
-	long val;
 
 	l = p->left;
 	r = p->right;
@@ -89,6 +88,8 @@ clocal(p) NODE *p; {
 		ml = p->type;
 		m = l->type;
 		if( l->op == ICON ){ /* fold the conversion into the constant */
+			long val;
+
 			val = l->lval;
 			switch( ml ){
 

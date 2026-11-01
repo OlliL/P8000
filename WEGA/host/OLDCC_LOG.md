@@ -469,3 +469,5 @@ TODO.md when this log was started.
   and the PVCONV, PMCONV ends `p = buildtree( ... ); return( p );` (the original stores p and cross-jumps to the
   common `return(p)`): 10. Left: the frame place of a call result (4 against 8) and one block placed by popt.
   cparse 160 strict; corpus 259.
+- clocal: `long val` declared in the ICON block of the SCONV case (the temporaries of the statements outside it start
+  at 4, the '[' offset of cparse): 10 > 6, only the popt block placement left.
