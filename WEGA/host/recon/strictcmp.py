@@ -11,7 +11,7 @@ Usage: strictcmp.py [-m] [-v NAME] [LINKED]
 
 Functions and their original ranges: findings.json (functions: name -> orig, size_orig; status crt0 is skipped). Our
 function is the symbol _NAME up to the next text symbol. Strict: only the targets of jr/jp/djnz/call/calr and immediates
-that are function addresses are masked (zcode.norm_strict). Prints one line per function and the totals.
+that are function addresses (of either binary) are masked (zcode.norm_strict). Prints one line per function and the totals.
 """
 import difflib
 import json
@@ -51,8 +51,11 @@ def main():
         def n_ours(t): return zcode.norm_masked(t, CFG.D18)
         n_orig = n_ours
     else:
-        def n_ours(t): return zcode.norm_strict(t, ours_fn, d18=CFG.D18)
-        def n_orig(t): return zcode.norm_strict(t, orig_fn, d18=CFG.D18)
+        # an immediate that is a function address of either binary is masked on both sides: a data address of one
+        # side can equal a function address of the other (with the data model at the original's addresses)
+        both_fn = ours_fn | orig_fn
+        def n_ours(t): return zcode.norm_strict(t, both_fn, d18=CFG.D18)
+        def n_orig(t): return zcode.norm_strict(t, both_fn, d18=CFG.D18)
     same = diff = 0
     for name, f in sorted(fn.items(), key=lambda x: int(x[1]['orig'], 16)):
         if f.get('status') == 'crt0':

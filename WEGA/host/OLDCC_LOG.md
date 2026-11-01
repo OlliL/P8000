@@ -482,3 +482,6 @@ TODO.md when this log was started.
 - defid `q->rval = (int) (idp = hide( p ));`: the original reloads idp for the store (`ld r3,4(fp)`); the ASSIGN
   template gives only RRIGHT. OLD_D3V (RLEFT too when a cast painted the assignment): defid 13 > 8 (the rest is the
   popt block of `dec 0x16(fp),#2`); for every word assignment much worse. Corpus 259, bench v0 unchanged (v0p).
+- strictcmp (host/recon): an immediate that is a function address of either binary is now masked on both sides (a
+  data address of the original equal to one of our function addresses counted as a difference, and the other way
+  round): cparse 158 > 162 strict, 162 > 152 lines.
