@@ -769,3 +769,14 @@ TODO.md when this log was started.
   the range test codgen makes itself, the default goes to `reset`): 1111 > 1106. The frame is still 0x3c against
   0x38 (n, t, r).
   popt model 56 of 73, 1431 lines; popt corpus 816/816; cparse model 173.
+- rmove, step 2: no `n`: p1 (r13) also holds `p->back` and the new nodes of the shift cases, as in the original
+  (`ld r13,4(r14)`, `ld r13,r2` behind alloc); where p1 meant `p->forw` behind such an assignment the source now
+  writes `p->forw` (shins `p->forw->back = p1`, the `r12 == 0` arm of do_cjp); every path from an assignment of p1
+  goes to disp, kill_all, cc_clear or next, which do not use p1. `int ty` in front of b1 (frame word 0): the dest
+  value of the LD case (ld_chk) and of do_cjp; in do_cjp the findcon results go into t and r (`r12 = compare(
+  p->subop, r, t)`), no block locals; `copy(1, s)` with two arguments (8 times). The content difference of the
+  instruction multisets 190 > 76 instructions; the strict lines 1106 > 1208 for now (the layout moved with it).
+  Left in the content: our frame 0x3a against 0x38 (one temporary `ld 0x2e(fp),r2` twice), the case order and the
+  order of the tests in the main switch (`cpb @r14,#0x17/#0x18`), the string addresses (`ld r6,#0x08..`: the order
+  of the string literals of z22.c in the pool), a few reloads of p->back (`ld r2,4(r14)`).
+  popt model 56 of 73, 1533 lines (rmove 1208); popt corpus 816/816; cparse model 173.
