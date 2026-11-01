@@ -595,6 +595,19 @@ getreg(cls, reg, flag, sym)
 				}
 				return getreg(cls, reg, flag, sym);
 			}
+#ifdef OLD_D2PO
+		for (t = rsuse; t; t = t->next)		/* an idle odd word whose even half is free: given back */
+			if (t->cls == 2 && (t->reg & 1) && t->reg < 8 && t->busy <= 0 && t->kind != 6 &&
+			    (w == 0 || rweight[t->reg - 1] < rweight[w->reg])) {
+				for (m = rsfree; m; m = m->next)
+					if (m->cls == 2 && m->reg == t->reg - 1)
+						break;
+				if (m == 0)
+					continue;
+				rsreturn(2, t->reg);
+				return getreg(cls, reg, flag, sym);
+			}
+#endif
 		m = 0;
 		for (t = rsuse; t; t = t->next)
 			if (t->cls == 3 && t->busy <= 0 && t->kind != 6 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&

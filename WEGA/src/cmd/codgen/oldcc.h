@@ -40,6 +40,7 @@
 #define OLD_D2U		/* the right operand of a long multiplication wants no register (rallo) */
 #define OLD_D2G		/* OLD_D2L: an idle word of the same weight as the free one wins */
 #define OLD_D5S		/* an element of a local array: (index + offset) + fp, the frame pointer added last (fixfld) */
+#define OLD_D2PO	/* OLD_D2P: an idle odd word whose even half is free is given back for a pair */
 #define OLD_D3J		/* at a label named by jumps only the parameters known at all of them; behind a jump those of its one jump */
 #define OLD_D22		/* a double argument, parameter and result in rq4 (r4..r7); a floating compare without rounding */
 #endif
