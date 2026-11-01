@@ -365,3 +365,8 @@ TODO.md when this log was started.
   jump at La. Only with a forward jump at La or no jump: 404 (gotscal +14: with no jump at La the early turn-round lets
   the same round follow the jump to the loop end, so the inversion misses its test); only with a forward jump at La:
   cparse 141, 390, no loss; corpus 259; bench v0 with OLD_D20S alone 318 > 333: v0p only.
+- argregs (27): traced. comjump merges the one-instruction tails `add r2,r13; jpr L668` of the CM case and of
+  `full:`, then codemove takes the jump into the middle of `full:` for a loop and inverts it, so `full:` moves; the
+  original keeps both tails. OLD_D11M tried (comjump only for two common instructions): 390 > 660 (bsize, addcase need
+  one-instruction merges: a whole block `ld r2,#16; jr`, a partial `call; jr`); two instructions or a whole block on
+  one side: 536. Removed; argregs open.
