@@ -420,3 +420,12 @@ TODO.md when this log was started.
 - Source forms: prtdcon `if( sectfull( DATA, size = SZDOUBLE/SZCHAR ) )` (as in genswitch; the argument with the
   assignment is evaluated first, `ldl rr4,#8; ldl size,rr4; ldl rr4,#8; ldk r7,#1`); fltlab `d == p->fval` (the
   original loads d and compares with the member). cparse 147 strict, 286 lines; corpus 259; bench v0 292.
+- Source forms: yyparse `ncopy( t = talloc(), *(NODE **)swp );` (the original also stores the call result into its
+  temporary 0x132); treeeq `return( p->lval == q->lval && p->rval == q->rval );` (the `ldk r2,#0` of the && value).
+- OLD_D3N for register variables (d3rsub in delay, after mapnm): every assignment from a scratch register first:
+  336 lines > 400+ (bcon, addcase: after a call result the original uses the variable; lxenter, lxstr: after a load or
+  a getchar `?:`); only the value of an operator without a call or `?:`: lineid exact; with psavel in the form `ip =
+  &paramstk[paramno]; *(long *)ip = l;` (the saved, otherwise unused r14 of the original) psavel exact. cparse 151,
+  277; corpus 259.
+- Seen, not done: tfree1, rmconv, zecode take a parameter from its register at an else label whose jump came before a
+  then part with calls (the state of the jump, not of the fall-through).

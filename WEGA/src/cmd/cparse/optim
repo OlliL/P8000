@@ -324,8 +324,7 @@ treeeq( p, q ) register NODE *p, *q; { /* are the trees p and q equal */
 	switch( optype(o) ){
 
 	case LTYPE:
-		if( p->lval == q->lval && p->rval == q->rval ) return( 1 );
-		return( 0 );
+		return( p->lval == q->lval && p->rval == q->rval );
 
 	case BITYPE:
 		if( !treeeq( p->right, q->right ) ) return( 0 );

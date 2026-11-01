@@ -49,6 +49,9 @@ char *cnames[] = {		/* 0x120 */
 int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE, FLT, FLE };	/* 0x274 */
 
 void delay(), order(), cbranch(), store(), constore(), markcall(), stoarg();
+#ifdef OLD_D3N
+extern void d3rsub();
+#endif
 struct node *canon(), *argprep();
 
 /* generate the code for p: stores first, then the tree itself */
@@ -892,6 +895,9 @@ delay(p)
 	}
 	fwalkd(p, mapnm, 0);
 	fwalk(p, mapregs);
+#ifdef OLD_D3N
+	d3rsub(p);
+#endif
 	canon2(p);
 	while (delay1(p))
 		;
@@ -961,6 +967,7 @@ parmwalk(p)
 
 #ifdef OLD_D3N
 extern int d3nstmt;
+extern void d3rsub();
 #endif
 
 /* a statement of the intermediate file: a function head, a switch, or an expression tree */

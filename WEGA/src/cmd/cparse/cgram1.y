@@ -626,8 +626,7 @@ switchpart:	   SWITCH  LP  e  RP
 				}
 			    swx = swp - swtab;
 			    *(NODE **)swp = tempnode( $3->type, 0 );
-			    t = talloc();
-			    ncopy( t, *(NODE **)swp );
+			    ncopy( t = talloc(), *(NODE **)swp );
 			    t->lval = -1;
 			    ecomp( block( ASSIGN, t, $3, $3->type, 0, $3->csiz ) );
 			    ++swp;

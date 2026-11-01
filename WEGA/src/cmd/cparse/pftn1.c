@@ -354,7 +354,8 @@ psavel( l ) long l; { /* a long on the parameter stack (two words) */
 	if( paramno >= PARAMSZ-1 ){
 		cerror( "parameter stack overflow");
 		}
-	*(long *)&paramstk[paramno] = l;
+	ip = &paramstk[paramno];
+	*(long *)ip = l;
 	paramno += 2;
 	}
 

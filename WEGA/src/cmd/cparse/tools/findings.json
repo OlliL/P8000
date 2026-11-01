@@ -6735,8 +6735,8 @@
   },
   "yyparse": {
    "basis": "reading",
-   "d_classes": "D1 D2 D3 D6 D11",
-   "note": "cgram1.y is the V7/System III/Plexus grammar with one more nonterminal lcon_e (a long constant expression, lcons) for the three array dimensions: with it every yacc table (yyexca, yyact, yypact, yypgo, yyr1, yyr2, yychk, yydef) equals the original. tools/actcmp.py compares the actions rule by rule: 135 of 178 equal with frame and registers hidden; the rest are shared tails (D11), register and reload differences."
+   "d_classes": "D1 D2 D3",
+   "note": "Exact with v0p. Source: ncopy( t = talloc(), *(NODE **)swp ) in the switch action (the call result goes to a temporary too)."
   },
   "hash": {
    "basis": "frame layout",
@@ -6862,6 +6862,21 @@
    "basis": "reading",
    "note": "Exact with v0p. Old-cc: OLD_D22 (a computed double argument through f0 into rq4).",
    "d_classes": "D22"
+  },
+  "treeeq": {
+   "basis": "reading",
+   "note": "Exact with v0p. Source: the LTYPE case returns the value of the && expression.",
+   "d_classes": "D2"
+  },
+  "lineid": {
+   "basis": "reading",
+   "note": "Exact with v0p. Old-cc: OLD_D3N (the next use of cp from the register it was computed in).",
+   "d_classes": "D3"
+  },
+  "psavel": {
+   "basis": "reading",
+   "note": "Exact with v0p. Source: ip = &paramstk[paramno]; *(long *)ip = l; (the original saves r14 and leaves it unused: popt removes the dead copy). Old-cc: OLD_D3N.",
+   "d_classes": "D3"
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

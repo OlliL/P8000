@@ -38,7 +38,7 @@ static int rweight[8] = { 3, 1, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is 
 static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
 #endif
 #ifdef OLD_D3N
-extern int d3nreg;		/* match3.c */
+extern int d3nreg, d3rreg;	/* match3.c */
 #endif
 
 void
@@ -729,6 +729,9 @@ ret:
 	if (d3nreg >= 0 && (n->cls == 1 ? (n->reg & 7) == d3nreg : n->cls == 2 ? n->reg == d3nreg :
 	    n->cls == 3 ? n->reg == (d3nreg & ~1) : 0))
 		d3nreg = -1;	/* the register of the last stores is taken */
+	if (d3rreg >= 0 && (n->cls == 1 ? (n->reg & 7) == d3rreg : n->cls == 2 ? n->reg == d3rreg :
+	    n->cls == 3 ? n->reg == (d3rreg & ~1) : 0))
+		d3rreg = -1;
 #endif
 	return n->reg;
 }
@@ -894,6 +897,7 @@ rsfreeall(flag)
 
 #ifdef OLD_D3N
 	d3nreg = -1;
+	d3rreg = -1;
 #endif
 
 	for (n = rsuse; n; n = next) {

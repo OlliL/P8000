@@ -184,12 +184,12 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D2A`, `OLD_D2O`, `OLD_D21`, `OLD_D16A`, `OLD_D3N` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 147 strictly exact, 286 differing lines, code and data as long as the original's (48896, 18584
+- State: /lib/cparse 151 strictly exact, 277 differing lines, code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
   81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines; + OLD_D2Q 2719 lines (88: addcase and ftnend differ only by a mask artifact, a data address equal to a function
-  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438; source fixes hash, hide, lookup 111, 1400; + OLD_D3K 113, 1312; source fixes getpreg, fhashv 1282; + OLD_D2V 116, 1194; OLD_D3K at `?:` 117, 1188; source fixes cisreg, tyreduce 119, 1161; source fixes vfdzero, tcopy, ncopy, argregs, beginit, endinit, falloc 122, 1094; + OLD_D2A 125, 1087; source fixes tymatch, argdebug, buildtree, defid, efcode 126, 997; rmconv, ispow2 127, 987; + OLD_D2M 128, 961; + OLD_D2P 129, 906; getmem source fix 130; OLD_D2P with idle halves and idle pairs 132, 780; + OLD_D2U 133, 756; + OLD_D2G 135, 676; + OLD_D5S 136, 652; tymatch register order 137, 528; OLD_D3K: a label just in front of the function end keeps the parameters 139, 525; oconvert source fix 523; popt OLD_D20C 140, 464; popt OLD_D20X 140, 398; popt OLD_D20S 141, 390; popt OLD_D20L 383; OLD_D2A not for an argument pair, + OLD_D2O, + OLD_D21, code1 source fixes 336; + OLD_D16A 333; + OLD_D3N 142, 328; + OLD_D22 145, 302; OLD_D3N for the arguments of the next statement 296; source forms prtdcon, fltlab 147, 286).
+  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438; source fixes hash, hide, lookup 111, 1400; + OLD_D3K 113, 1312; source fixes getpreg, fhashv 1282; + OLD_D2V 116, 1194; OLD_D3K at `?:` 117, 1188; source fixes cisreg, tyreduce 119, 1161; source fixes vfdzero, tcopy, ncopy, argregs, beginit, endinit, falloc 122, 1094; + OLD_D2A 125, 1087; source fixes tymatch, argdebug, buildtree, defid, efcode 126, 997; rmconv, ispow2 127, 987; + OLD_D2M 128, 961; + OLD_D2P 129, 906; getmem source fix 130; OLD_D2P with idle halves and idle pairs 132, 780; + OLD_D2U 133, 756; + OLD_D2G 135, 676; + OLD_D5S 136, 652; tymatch register order 137, 528; OLD_D3K: a label just in front of the function end keeps the parameters 139, 525; oconvert source fix 523; popt OLD_D20C 140, 464; popt OLD_D20X 140, 398; popt OLD_D20S 141, 390; popt OLD_D20L 383; OLD_D2A not for an argument pair, + OLD_D2O, + OLD_D21, code1 source fixes 336; + OLD_D16A 333; + OLD_D3N 142, 328; + OLD_D22 145, 302; OLD_D3N for the arguments of the next statement 296; source forms prtdcon, fltlab 147, 286; source forms yyparse, treeeq 148; OLD_D3N for register variables, psavel source form 151, 277).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
@@ -342,7 +342,11 @@ compiler that built the original. Not differences of the compiler (checked):
   stored through a pointer or is a whole argument, unless that register was allocated in between (genswitch
   `swlab = getlab(); t->rval = swlab;`: `ld r3,t; ld 12(r3),r2`; prtdcon `fprintf(dfile, ..., lab)`: `ld r5,r2`).
   Two statements later the original reloads (buildtree); as an address or an arithmetic operand it reloads too
-  (ftnarg, lookup; naming the register in general: 336 > 384). Bench v0 318 > 348 with OLD_D16A: v0p only.
+  (ftnarg, lookup; naming the register in general: 336 > 384). A register variable assigned the value of an
+  operator (no load, no call, no `?:`) from a scratch register: its one use in the next statement takes the scratch
+  register when no call comes between and it is not changed (lineid `cp = &ftitle[len-1]; if( *cp == '"' )`:
+  `cpb @r2`; psavel `ip = &paramstk[paramno]; *(long *)ip = l;`: `ldl @r2,rr0`); after a call result (bcon, addcase)
+  or a load (lxenter) the original uses the variable. Bench v0 318 > 348 with OLD_D16A: v0p only.
 - Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after), libc malloc (`mult rr2,r6`).
 
 ### D4 Spill of arguments
