@@ -360,3 +360,8 @@ TODO.md when this log was started.
   5-instruction tail first and inverts then. Early inversion only when the cross-jump takes one instruction at most:
   cparse 140, 398, only defid changed (79 > 13); reach 5..8 the same, 12: fixclass +4, 24: lxmore +14, fixclass +4.
   Corpus 259; bench v0 with OLD_D20X alone 318 > 323 (110): v0p only.
+- OLD_D20S again on top of OLD_D20X: 398 > 416 (getpreg exact; gotscal +14, yyparse +12). yyparse: `cp; jpr ne,L467;
+  jpr L462; L467: jpr L463` with L462, L463 behind (backwards), the original keeps `jr ne; jr`; getpreg has a forward
+  jump at La. Only with a forward jump at La or no jump: 404 (gotscal +14: with no jump at La the early turn-round lets
+  the same round follow the jump to the loop end, so the inversion misses its test); only with a forward jump at La:
+  cparse 141, 390, no loss; corpus 259; bench v0 with OLD_D20S alone 318 > 333: v0p only.
