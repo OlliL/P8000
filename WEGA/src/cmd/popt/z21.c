@@ -1069,9 +1069,9 @@ register struct node *p;
 
 struct node *
 codemove(p)
-register struct node *p;
+struct node *p;
 {
-	register struct node *p2, *p1, *p3;
+	register struct node *p1, *p2, *p3;
 	struct node *t, *tl;
 	int n;
 #ifdef OLD_D20

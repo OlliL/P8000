@@ -720,3 +720,12 @@ TODO.md when this log was started.
   and the same for an empty line: popt cross-jumps the `call getln` into the one in front of the switch, which is
   where the original jumps (a `continue` goes to the echo test); `copy(1, s)` with two arguments: exact.
   popt model 52 of 70, 3587 lines; popt corpus 816/816; cparse model 173.
+- codemove: p a plain parameter with its home, p1, p2, p3 the registers r14, r13, r12 (declared in this order):
+  484 bytes, 1 instruction left: `--n == 0` of a frame slot is `dec n,#1; test n` in the original, codgen v0p
+  (OLD_D16A) loads it into r2 first. `!--n` and `!(n -= 1)` give `dec n,#1` without the test (popt drops it),
+  `(n -= 1) == 0` and `--n <= 0` are worse: the source stays `--n == 0`, a D16A witness (OLDCC.md D16, open).
+- memreg: all variables registers (declared i, len; p; off, roff, n), no `reg` temporary (the index `TL + i` written
+  at each use), `len = off = roff = 0`, the step `len++, p++`, `strncmp(s, regs[..], len)`, `n = size == 0 ? 1 :
+  size / 8`, `atoi(&regs[TL + i][len] + 1)` (gives the original's `add r2,#regs+1`; `[len + 1]`, `[1 + len]`,
+  `+ (len + 1)` do not): exact.
+  popt model 53 of 70, 3295 lines; popt corpus 816/816; cparse model 173.

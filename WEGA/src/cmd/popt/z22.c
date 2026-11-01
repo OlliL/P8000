@@ -1101,13 +1101,12 @@ memreg(s, size)
 register char *s;
 int size;
 {
-	int off, i, reg, len;
-	register int n, roff;
+	register int i, len;
 	register char *p;
+	register int off, roff, n;
 
-	roff = 0;
-	off = 0;
-	for (p = s, len = 0; *p; p++, len++) {
+	len = off = roff = 0;
+	for (p = s; *p; len++, p++) {
 		if (*p == '+' && p[1] != '$') {
 			off = atoi(p + 1);
 			break;
@@ -1115,13 +1114,12 @@ int size;
 	}
 	n = size == 0 ? 1 : size / 8;
 	for (i = 0; i < 15; i++) {
-		reg = TL + i;
-		if (regs[reg][0] == 0)
+		if (regs[TL + i][0] == 0)
 			continue;
-		if (strncmp(regs[reg], s, len) != 0)
+		if (strncmp(s, regs[TL + i], len) != 0)
 			continue;
-		if (regs[reg][len] == '+')
-			roff = atoi(&regs[reg][len + 1]);
+		if (regs[TL + i][len] == '+')
+			roff = atoi(&regs[TL + i][len] + 1);
 		if (off > roff + 3)
 			continue;
 		if (roff >= off + n)
@@ -1129,13 +1127,12 @@ int size;
 		return i + 0x200;
 	}
 	for (i = 0; i < 15; i++) {
-		reg = TW + i;
-		if (regs[reg][0] == 0)
+		if (regs[TW + i][0] == 0)
 			continue;
-		if (strncmp(regs[reg], s, len) != 0)
+		if (strncmp(s, regs[TW + i], len) != 0)
 			continue;
-		if (regs[reg][len] == '+')
-			roff = atoi(&regs[reg][len + 1]);
+		if (regs[TW + i][len] == '+')
+			roff = atoi(&regs[TW + i][len] + 1);
 		if (off > roff + 1)
 			continue;
 		if (roff >= off + n)
@@ -1143,13 +1140,12 @@ int size;
 		return i + 0x100;
 	}
 	for (i = 0; i < 15; i++) {
-		reg = TB + i;
-		if (regs[reg][0] == 0)
+		if (regs[TB + i][0] == 0)
 			continue;
-		if (strncmp(regs[reg], s, len) != 0)
+		if (strncmp(s, regs[TB + i], len) != 0)
 			continue;
-		if (regs[reg][len] == '+')
-			roff = atoi(&regs[reg][len + 1]);
+		if (regs[TB + i][len] == '+')
+			roff = atoi(&regs[TB + i][len] + 1);
 		if (off > roff)
 			continue;
 		if (roff >= off + n)

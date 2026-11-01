@@ -522,6 +522,11 @@ through a pointer) has no table entry; order rewrites it at once as `a = a op b`
 the register and stored, and the address is evaluated twice (stref `p->type += PTR`, `p->left->type += PTR`: `ld
 r2,8(r14); ld r2,2(r2); inc r2,#16; ld r3,8(r14); ld 2(r3),r2`). Bench v0 unchanged: v0p.
 
+Open (popt, v0p model 2026-11-01): codemove `if (... || --n == 0)` (n a frame slot) is `dec n,#1; test n` in the
+original, OLD_D16A makes it `ld r2,n; dec r2,#1; ld n,r2; test r2`: the value of the decrement compared with 0
+stays in memory. `!--n` gives `dec n,#1` without the test (our popt drops the test behind the dec), so the source is
+`--n == 0` and the difference is codgen: a witness against the INTEMP condition of OLD_D16A for a compare.
+
 ### D17 Call form (popt)
 
 The original popt calls a global function of the same file with the absolute `call`, a static one with `calr`; the
