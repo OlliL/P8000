@@ -27,7 +27,7 @@ Source of truth for the state: `../src/TODO.md` (per program) and the check comm
 | `cparse`, `scparse` | `/lib/cparse`, `/lib/scparse` | 67520, 67826 | `src/cmd/cparse` (K&R, from the Plexus PCC base, owner decision) | - | yes | all functions written; corpus 259/259 (behaviour, built with the shipped cc and with ccv0p); byte identity with the old compiler v0p: 173 of 179 functions strictly exact (2026-11-01); scparse not started | `src/cmd/cparse/tools/oldcc.sh model`, `corpus` |
 | `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | 80884, 83554 | `src/cmd/codgen` (K&R, WEGA `cc`; byte identity is the goal, D1 to D16 open) | `host/codgen` (ANSI, gcc `-Wall`; `-DSEG` for scodgen; functional equality) | yes | host: corpus 100/100 identical for codgen and scodgen; large corpus (213 source files of `src/cmd` and `src/lib`) 213/213 for both, 3 files not comparable. WEGA side: corpus 101/101 (behaviour), byte identity open | `host/codgen` (`host_corp.sh`-style test, see `src/TODO.md`); `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
 | `gopt` | `/lib/gopt` (only with `-Ol`/`-Or`) | 147286 | - | - | - | not started | - |
-| `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | 25620, 25880 |- (source in `host/popt`) | `host/popt` | yes (`z20.c` to `z23.c`) | done: 522 corpus runs byte-identical | `make -C host check` (popt) |
+| `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | 25620, 25880 | `src/cmd/popt` (K&R, `z20.c` to `z23.c`, own `bss.s`, `stdio.h`) | `host/popt` | yes | host: 522 corpus runs byte-identical; src/cmd: the normal build gives the output of /lib/popt on the popt corpus (816 of 816 runs); byte identity with the old compiler v0p: 48 of 70 functions strictly exact (2026-11-01) | `make -C host check` (popt); `src/cmd/cparse/tools/oldcc.sh model popt` |
 | `cas` | `/bin/cas` | 89152 | `src/cmd/cas` (`MODULES`) | `host/cas` | yes (decompiled, see `src/cmd/cas/README`) | done in behaviour; code not byte-identical (older scc) | `make -C host check` (cas) |
 | `as` | `/bin/as` (PLZ/ASM) | 74536 | - | - | - | not started | - |
 | `ld` | `/bin/ld` | 21732 | - (source in `host/ld`) | `host/ld/ld` | yes (`ld.c` from the binary) | done: 146 command lines identical | `make -C host check` (ld) |
@@ -65,7 +65,7 @@ original tools and compares each program).
 - **`host/oldcc`** stays: it checks the ten `.s` modules that the old cc produced. Its paths are corrected.
 - **`yacc`:** should it be added to the inventory and to the tool chain?
 
-## Current work (2026-11-01): /lib/cparse byte-identical through the old compiler v0p
+## Current work (2026-11-01): /lib/cparse and /lib/popt byte-identical through the old compiler v0p
 
 **What.** `/lib/cparse` was built by an old revision of the C compiler of which no binary exists. We rebuild that
 compiler as switches `OLD_Dn` in our sources of the passes (cparse, codgen, popt) and compile our cparse sources with
@@ -124,13 +124,60 @@ Order (owner decision 2026-11-01): **popt first, then codgen.** popt is small (z
 and 206 functions of codgen), so the strict comparison for a second program is built there first and then reused;
 it is nearly all switches, loops and gotos (the placement question of point 1), its rmove has the clearest cas
 cluster (point 4), its small leaf functions may answer point 3.
-1. Set up the popt model: progcfg with ORIG_BIN (/lib/popt) and STRICT_INPUT, a link of our objects built with
+1. (done 2026-11-01) Set up the popt model: progcfg with ORIG_BIN (/lib/popt) and STRICT_INPUT, a link of our objects built with
    ccv0p with the original's data layout where D12 demands it, strictcmp (the function map is in
    `src/cmd/popt/tools/findings.json`); a first measurement with the current v0p.
-2. The same loop as for cparse: source forms first, switches with two witnesses; every switch also checked on cparse
+2. (under way, see "State of popt") The same loop as for cparse: source forms first, switches with two witnesses; every switch also checked on cparse
    (`oldcc.sh model`, corpus) and on the v0 bench. The normal builds of popt and codgen stay as they are (they are
    the shipped programs).
 3. Then codgen with the same frame, and back to the open cparse points with the new witnesses.
+
+**State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
+/lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 48 of 70 functions strictly exact,
+4014 differing lines (start of the day: 1 of 68, 6305 lines). Data 3308 = 3308 and bss 3420 = 3420 bytes (bss.s
+gives the original bss order; the libc is linked in the order of the original, Makefile LIBCOBJS); code 22784
+against 22272 bytes. After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
+(`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
+816 of 816; the corpus is RECON_TMP/popt/corpus, made by `host/popt` `make corpus`), then `oldcc.sh build popt v0p` and the cparse model (must stay
+173). When a change alters the behaviour of popt, the five popt switches OLD_D20C/X/S/L/K are checked again by
+dropping each one (owner request: a switch must not hide an error of our popt source; last check: all five still
+needed). The method that worked: read the original function (`olist.py`-style listing, the jump tables in the data
+give the case order), rewrite the source form (register declaration order fixes the registers, also after the leaf
+renaming of popt; `if (!*p++)` against `*p++ == 0`; a single `return -1` at the end; parameters with register
+copies give the homes of the original; function statics in the order of their functions). Original bugs found on
+the way are in the quirks table of KNOWLEDGE.md (natural, adrlen, oplook, equop, fixldm, markregs, two dead debug
+functions). Details: OLDCC_LOG.md 2026-11-01 "popt model".
+
+**Open popt functions** (strict diff lines in brackets; the owner may clean up this list as functions get done):
+
+- equop (2)
+- findcon (2)
+- setcon (2)
+- itoa_ (4)
+- movedat (5)
+- backjmp (7)
+- killreg (7)
+- reverse (8)
+- dest (18)
+- setreg (22)
+- iterate (44)
+- refcount (44)
+- xjump (61)
+- rename_regs (83)
+- repladdr (93)
+- input (115)
+- codemove (136)
+- memreg (162)
+- usesreg (248)
+- procopt (308)
+- rmove (1296)
+- ovlap (1347)
+
+Known causes of the small ones (OLDCC_LOG.md): codgen v0p, not the source: findcon (tests the just computed value
+in r2 instead of the variable), itoa_ and reverse (r1 for r3), setcon and equop (the original keeps a parameter in
+its register across a branch, ours reloads the home: two witnesses), setreg (argument order of makereg); popt block
+placement (the open point 1 of cparse): backjmp, killreg, movedat, dest, setreg. Not yet looked at: iterate,
+refcount, xjump, rename_regs, repladdr, input, codemove, memreg, usesreg, procopt, rmove, ovlap.
 
 **Tools.**
 
@@ -152,6 +199,7 @@ switches, history), section 3 for the class you work on (D2, D3, D6, D16, D20, D
 `host/OLDCC_LOG.md` section "2026-11-01" (every attempt of the last rounds, also the refuted ones: do not repeat
 them); `src/cmd/cparse/tools/HANDOFF_cparse.md` (owner decisions for cparse: commits allowed, no push, Plexus base);
 `src/cmd/cparse/tools/findings.json` key `manual_classes` (the note per function: source fixes, switches, remainder);
+`src/cmd/popt/tools/findings.json` (the popt function map, `v0p_note` per function);
 `host/KNOWLEDGE.md` sections "Bugs and quirks of the originals" and "codgen / scodgen" (register machinery) as
 reference. Working rules of the owner for this task (besides CLAUDE.md): notes on findings only in findings.json (no
 finding status or attempt history in source comments); knowledge about the D classes only in OLDCC.md (rewritten) and
@@ -175,6 +223,6 @@ plan in `../src/TODO.md` ("Plan: towards the old C compiler").
 3. **Reconstruct the old compiler.** Everything about the old compilers is in `OLDCC.md` (the edited summary: the
    classes D1 ... D22, the versions v1, v0, v0p, rules, building and running) and `OLDCC_LOG.md` (the running notes).
    State 2026-11-01: v1 (strip and size byte-identical, ld 55 of 59); v0 (bench 118 of 153); v0p (/lib/cparse 173 of
-   179, the current work above).
+   179, /lib/popt 48 of 70, the current work above).
 
 The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").
