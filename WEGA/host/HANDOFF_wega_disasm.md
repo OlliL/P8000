@@ -198,12 +198,13 @@ nodes; `p->forw` written out where p1 meant it), `int ty` in front of b1 (frame 
 do_cjp in t and r, `copy(1, s)` with two arguments: the instruction multisets now differ in 76 instructions (from
 190); the strict lines rose to 1208 because the layout moved. Measure rmove by the multiset (`python3 tools/msdiff.py rmove
 jumpsw` in src/cmd/popt), not by the line count, until the content is equal.
-Next, in this order:
-1. The frame: ours 0x3a against 0x38; one more temporary in ours (`ld 0x2e(fp),r2`, twice): find the statement.
-2. The main switch: the case order from the table at 0x6fe and the order of the tests (`cpb @r14,#0x17` and
+Step 3 done: `t = strlen(b2);` as its own statement in front of the two strncmp of do_lda (the
+frame is 0x38 now, as the original), do_cjp reads `p->back` every time (no p1 there): 61 instructions of content
+left (`python3 tools/msdiff.py rmove jumpsw`). Next, in this order:
+1. The main switch: the case order from the table at 0x6fe and the order of the tests (`cpb @r14,#0x17` and
    `#0x18` only in the original); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences); a few `ld r2,4(r14)` reloads of p->back in the original.
-3. The long `jp` of the old cas (OLDCC.md, open cparse point 4) is in rmove: one `jp` where `jr` reaches, trigger
+2. The long `jp` of the old cas (OLDCC.md, open cparse point 4) is in rmove: one `jp` where `jr` reaches, trigger
    at a `call`; record it, do not try to build it here.
 Lessons of the other functions that will apply: the case order from the jump table, register declaration order,
 `++p->x`, `return a || b`, a single return at the end, macros for repeated code (ovlap SCAN: the loop form decides

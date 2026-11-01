@@ -574,7 +574,8 @@ rmove()
 				goto lda_end;
 			if (isreg(RT1) < 0)
 				goto lda_end;
-			if (strncmp(RT2 + 1, b2, strlen(b2)) != 0)
+			t = strlen(b2);
+			if (strncmp(RT2 + 1, b2, t) != 0)
 				goto lda_end;
 			if (isused(p1, b2))
 				goto lda_end;
@@ -588,7 +589,8 @@ rmove()
 		if (!equstr(RT1, b2)) {
 			if (RT1[0] != '@')
 				goto del;
-			if (strncmp(RT1 + 1, b2, strlen(b2)) != 0)
+			t = strlen(b2);
+			if (strncmp(RT1 + 1, b2, t) != 0)
 				goto del;
 		}
 		if (RT1[0] == '@')
@@ -607,15 +609,14 @@ rmove()
 		goto next;
 
 	do_cjp:
-		p1 = p->back;
-		if (p1->op != TST && p1->op != CP)
+		if (p->back->op != TST && p->back->op != CP)
 			goto cc_clear;
-		if (p1->op == TST) {
-			singop(p1);
+		if (p->back->op == TST) {
+			singop(p->back);
 			savereg(0x31, "#0", 0);
 		} else
-			dualop(p1);
-		ty = dest(p1);
+			dualop(p->back);
+		ty = dest(p->back);
 		t = findcon(0x30, ty);
 		r = findcon(0x31, ty);
 		r12 = compare(p->subop, r, t);

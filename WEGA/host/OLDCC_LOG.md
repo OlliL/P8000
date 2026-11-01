@@ -780,3 +780,7 @@ TODO.md when this log was started.
   order of the tests in the main switch (`cpb @r14,#0x17/#0x18`), the string addresses (`ld r6,#0x08..`: the order
   of the string literals of z22.c in the pool), a few reloads of p->back (`ld r2,4(r14)`).
   popt model 56 of 73, 1533 lines (rmove 1208); popt corpus 816/816; cparse model 173.
+- rmove, step 3: `t = strlen(b2);` in front of the two strncmp of do_lda (the original stores the length into t
+  and passes r2; the call inside the argument gave codgen v0p a temporary: the frame is 0x38 now), do_cjp reads
+  `p->back` every time instead of holding it in p1: 61 instructions of content left.
+  popt model 56 of 73, ; popt corpus 816/816; cparse model 173.
