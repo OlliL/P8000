@@ -44,7 +44,7 @@ def main():
     gc = bytes(g.image)[:g.segs[0]['code']]
     text = sorted(set(s['value'] for s in o.symbols if s['type'] in TEXT_TYPES and s['value'] < len(oc)))
     ours_fn = set(s['value'] for s in o.symbols if s['type'] == 34)
-    fn = json.load(open(CFG.FINDINGS))['functions']
+    fn = {k: f for k, f in json.load(open(CFG.FINDINGS))['functions'].items() if isinstance(f.get('orig'), str)}
     orig_fn = set(int(f['orig'], 16) for f in fn.values())
     sym = {s['name']: s['value'] for s in o.symbols}
     if masked:

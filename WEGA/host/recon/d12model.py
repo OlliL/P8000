@@ -146,6 +146,10 @@ def main():
         src = open(os.path.join(work, m + '.s')).read().split('\n')
         if getattr(CFG, 'D6TABLES', False):
             src = d6tables(src, m)
+        if getattr(CFG, 'STATICFUNCS', False):
+            # a static function gets a global label, so that strictcmp finds it (the code does not change)
+            src = [re.sub(r'^(_\w+):$', r'\1::', l) if k + 1 < len(src) and src[k + 1].strip() == '{' else l
+                   for k, l in enumerate(src)]
         open(os.path.join(work, m + '_old.s'), 'w').write('\n'.join(rewrite(src)) + '\n')
         run([CAS, '-u', '-o', m + '.o', m + '_old.s'], work)
     run(CFG.model_link(work, [m + '.o' for m in CFG.MODULES]), work)

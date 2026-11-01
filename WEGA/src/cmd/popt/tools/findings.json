@@ -51,7 +51,8 @@
     "len_orig": 195
    },
    "review": "reviewed: structure",
-   "review_note": "loop in main vs separate function 0x0610; sra/srl forms not in the pattern set"
+   "review_note": "loop in main vs separate function 0x0610; sra/srl forms not in the pattern set",
+   "size_orig": 670
   },
   "statline": {
    "file": "z21.c",
@@ -89,7 +90,8 @@
     "len_ours": 17,
     "len_orig": 17
    },
-   "review": "pattern only: not inspected (alignment 71 %)"
+   "review": "pattern only: not inspected (alignment 71 %)",
+   "size_orig": 54
   },
   "input": {
    "file": "z21.c",
@@ -138,7 +140,8 @@
     "len_ours": 130,
     "len_orig": 125
    },
-   "review": "pattern only: alignment 27 %, verdict not supported"
+   "review": "pattern only: alignment 27 %, verdict not supported",
+   "size_orig": 382
   },
   "jswcheck": {
    "file": "z21.c",
@@ -176,7 +179,8 @@
     "len_ours": 30,
     "len_orig": 30
    },
-   "review": "pattern only: not inspected (alignment 58 %)"
+   "review": "pattern only: not inspected (alignment 58 %)",
+   "size_orig": 90
   },
   "getch": {
    "file": "z21.c",
@@ -241,7 +245,8 @@
     "len_ours": 81,
     "len_orig": 81
    },
-   "review": "pattern only: alignment 31 %, verdict not supported"
+   "review": "pattern only: alignment 31 %, verdict not supported",
+   "size_orig": 252
   },
   "getnum": {
    "file": "z21.c",
@@ -280,7 +285,8 @@
     "len_ours": 28,
     "len_orig": 27
    },
-   "review": "pattern only: not inspected (alignment 43 %)"
+   "review": "pattern only: not inspected (alignment 43 %)",
+   "size_orig": 62
   },
   "output": {
    "file": "z21.c",
@@ -329,7 +335,8 @@
     "len_orig": 178
    },
    "review": "reviewed: structure",
-   "review_note": "loop over the node list is a separate function (0x0610) in the original; tail merge of printf (D11)"
+   "review_note": "loop over the node list is a separate function (0x0610) in the original; tail merge of printf (D11)",
+   "size_orig": 682
   },
   "prefix": {
    "file": "z21.c",
@@ -375,7 +382,8 @@
     "len_orig": 47
    },
    "review": "reviewed: D-pattern",
-   "review_note": "same tests and strings; counts of instructions differ (47 against 57), not inspected in detail"
+   "review_note": "same tests and strings; counts of instructions differ (47 against 57), not inspected in detail",
+   "size_orig": 138
   },
   "copy": {
    "file": "z21.c",
@@ -418,7 +426,8 @@
     "len_orig": 52
    },
    "review": "reviewed: structure",
-   "review_note": "length loops inline in the original, strlen in ours"
+   "review_note": "length loops inline in the original, strlen in ours",
+   "size_orig": 136
   },
   "hashname": {
    "file": "z21.c",
@@ -477,7 +486,8 @@
     "len_orig": 35
    },
    "review": "reviewed: structure",
-   "review_note": "hash inline in the original; push form not in the pattern set"
+   "review_note": "hash inline in the original; push form not in the pattern set",
+   "size_orig": 88
   },
   "cclook": {
    "file": "z21.c",
@@ -521,7 +531,8 @@
     "len_ours": 71,
     "len_orig": 67
    },
-   "review": "pattern only: not inspected (alignment 45 %)"
+   "review": "pattern only: not inspected (alignment 45 %)",
+   "size_orig": 190
   },
   "oplook": {
    "file": "z21.c",
@@ -566,7 +577,8 @@
     "len_ours": 146,
     "len_orig": 138
    },
-   "review": "pattern only: not inspected (alignment 57 %)"
+   "review": "pattern only: not inspected (alignment 57 %)",
+   "size_orig": 414
   },
   "refcount": {
    "file": "z21.c",
@@ -610,7 +622,8 @@
     "len_ours": 130,
     "len_orig": 128
    },
-   "review": "pattern only: not inspected (alignment 52 %)"
+   "review": "pattern only: not inspected (alignment 52 %)",
+   "size_orig": 378
   },
   "iterate": {
    "file": "z21.c",
@@ -652,7 +665,8 @@
     "len_orig": 150
    },
    "review": "reviewed: D-pattern",
-   "review_note": "block map complete: same six sections; D2, D3, D1"
+   "review_note": "block map complete: same six sections; D2, D3, D1",
+   "size_orig": 500
   },
   "xjump": {
    "file": "z21.c",
@@ -696,7 +710,8 @@
     "len_ours": 48,
     "len_orig": 43
    },
-   "review": "pattern only: alignment 29 %, verdict not supported"
+   "review": "pattern only: alignment 29 %, verdict not supported",
+   "size_orig": 126
   },
   "insertl": {
    "file": "z21.c",
@@ -735,7 +750,8 @@
     "len_orig": 34
    },
    "review": "reviewed: D-pattern",
-   "review_note": "same callers and field stores; frame reloads (D2, D3)"
+   "review_note": "same callers and field stores; frame reloads (D2, D3)",
+   "size_orig": 118
   },
   "codemove": {
    "file": "z21.c",
@@ -777,7 +793,8 @@
     "len_ours": 143,
     "len_orig": 143
    },
-   "review": "pattern only: alignment 32 %, verdict not supported"
+   "review": "pattern only: alignment 32 %, verdict not supported",
+   "size_orig": 484
   },
   "comjump": {
    "file": "z21.c",
@@ -813,7 +830,8 @@
     "len_ours": 29,
     "len_orig": 29
    },
-   "review": "pattern only: not inspected (alignment 63 %)"
+   "review": "pattern only: not inspected (alignment 63 %)",
+   "size_orig": 86
   },
   "backjmp": {
    "file": "z21.c",
@@ -853,7 +871,8 @@
     "len_ours": 36,
     "len_orig": 38
    },
-   "review": "pattern only: not inspected (alignment 49 %)"
+   "review": "pattern only: not inspected (alignment 49 %)",
+   "size_orig": 122
   },
   "clearmem": {
    "file": "z22.c",
@@ -915,7 +934,8 @@
     "len_orig": 29
    },
    "review": "reviewed: structure",
-   "review_note": "memory from the break pointer (0x163c) in the original, zalloc in ours"
+   "review_note": "memory from the break pointer (0x163c) in the original, zalloc in ours",
+   "size_orig": 94
   },
   "heapreset": {
    "file": "z22.c",
@@ -1021,7 +1041,8 @@
     "len_ours": 15,
     "len_orig": 15
    },
-   "review": "pattern only: not inspected (alignment 62 %)"
+   "review": "pattern only: not inspected (alignment 62 %)",
+   "size_orig": 40
   },
   "decref": {
    "file": "z22.c",
@@ -1059,7 +1080,8 @@
     "len_ours": 16,
     "len_orig": 16
    },
-   "review": "pattern only: not inspected (alignment 74 %)"
+   "review": "pattern only: not inspected (alignment 74 %)",
+   "size_orig": 56
   },
   "equstr": {
    "file": "z22.c",
@@ -1102,7 +1124,8 @@
     "len_ours": 20,
     "len_orig": 17
    },
-   "review": "pattern only: not inspected (alignment 40 %)"
+   "review": "pattern only: not inspected (alignment 40 %)",
+   "size_orig": 34
   },
   "absval": {
    "file": "z22.c",
@@ -1141,7 +1164,8 @@
     "len_ours": 12,
     "len_orig": 9
    },
-   "review": "pattern only: not inspected (alignment 50 %)"
+   "review": "pattern only: not inspected (alignment 50 %)",
+   "size_orig": 20
   },
   "equop": {
    "file": "z22.c",
@@ -1186,7 +1210,8 @@
     "len_ours": 50,
     "len_orig": 42
    },
-   "review": "pattern only: alignment 37 %, verdict not supported"
+   "review": "pattern only: alignment 37 %, verdict not supported",
+   "size_orig": 98
   },
   "clearreg": {
    "file": "z22.c",
@@ -1222,7 +1247,8 @@
     "len_ours": 12,
     "len_orig": 12
    },
-   "review": "pattern only: alignment 33 %, verdict not supported"
+   "review": "pattern only: alignment 33 %, verdict not supported",
+   "size_orig": 34
   },
   "savereg": {
    "file": "z22.c",
@@ -1263,7 +1289,8 @@
     "len_ours": 35,
     "len_orig": 36
    },
-   "review": "pattern only: not inspected (alignment 46 %)"
+   "review": "pattern only: not inspected (alignment 46 %)",
+   "size_orig": 100
   },
   "findreg": {
    "file": "z22.c",
@@ -1303,7 +1330,8 @@
     "len_ours": 32,
     "len_orig": 33
    },
-   "review": "pattern only: not inspected (alignment 48 %)"
+   "review": "pattern only: not inspected (alignment 48 %)",
+   "size_orig": 92
   },
   "findbyte": {
    "file": "z22.c",
@@ -1343,7 +1371,8 @@
     "len_ours": 18,
     "len_orig": 21
    },
-   "review": "pattern only: not inspected (alignment 71 %)"
+   "review": "pattern only: not inspected (alignment 71 %)",
+   "size_orig": 62
   },
   "findword": {
    "file": "z22.c",
@@ -1386,7 +1415,8 @@
     "len_ours": 33,
     "len_orig": 31
    },
-   "review": "pattern only: not inspected (alignment 71 %)"
+   "review": "pattern only: not inspected (alignment 71 %)",
+   "size_orig": 98
   },
   "findlong": {
    "file": "z22.c",
@@ -1427,7 +1457,8 @@
     "len_orig": 35
    },
    "review": "open",
-   "review_note": "pat[0], pat[1] stored at run time in ours; original has no stores (static init not verified); D8, D2"
+   "review_note": "pat[0], pat[1] stored at run time in ours; original has no stores (static init not verified); D8, D2",
+   "size_orig": 108
   },
   "findcopy": {
    "file": "z22.c",
@@ -1470,7 +1501,8 @@
     "len_orig": 24
    },
    "review": "reviewed: D-pattern",
-   "review_note": "same cases and calls; switch lowered differently (D6)"
+   "review_note": "same cases and calls; switch lowered differently (D6)",
+   "size_orig": 76
   },
   "memreg": {
    "file": "z22.c",
@@ -1516,7 +1548,8 @@
     "len_ours": 162,
     "len_orig": 146
    },
-   "review": "pattern only: not inspected (alignment 45 %)"
+   "review": "pattern only: not inspected (alignment 45 %)",
+   "size_orig": 416
   },
   "setreg": {
    "file": "z22.c",
@@ -1560,7 +1593,8 @@
     "len_ours": 75,
     "len_orig": 70
    },
-   "review": "pattern only: not inspected (alignment 59 %)"
+   "review": "pattern only: not inspected (alignment 59 %)",
+   "size_orig": 218
   },
   "makereg": {
    "file": "z22.c",
@@ -1603,7 +1637,8 @@
     "len_ours": 39,
     "len_orig": 41
    },
-   "review": "pattern only: not inspected (alignment 50 %)"
+   "review": "pattern only: not inspected (alignment 50 %)",
+   "size_orig": 108
   },
   "dest": {
    "file": "z22.c",
@@ -1647,7 +1682,8 @@
     "len_ours": 32,
     "len_orig": 33
    },
-   "review": "pattern only: alignment 36 %, verdict not supported"
+   "review": "pattern only: alignment 36 %, verdict not supported",
+   "size_orig": 82
   },
   "killreg": {
    "file": "z22.c",
@@ -1690,7 +1726,8 @@
     "len_ours": 135,
     "len_orig": 136
    },
-   "review": "pattern only: not inspected (alignment 86 %)"
+   "review": "pattern only: not inspected (alignment 86 %)",
+   "size_orig": 464
   },
   "cleargroup": {
    "file": "z22.c",
@@ -1729,7 +1766,8 @@
     "len_ours": 20,
     "len_orig": 20
    },
-   "review": "pattern only: not inspected (alignment 50 %)"
+   "review": "pattern only: not inspected (alignment 50 %)",
+   "size_orig": 52
   },
   "singop": {
    "file": "z22.c",
@@ -1765,7 +1803,8 @@
     "len_ours": 16,
     "len_orig": 16
    },
-   "review": "pattern only: alignment 38 %, verdict not supported"
+   "review": "pattern only: alignment 38 %, verdict not supported",
+   "size_orig": 40
   },
   "dualop": {
    "file": "z22.c",
@@ -1809,7 +1848,8 @@
     "len_ours": 37,
     "len_orig": 43
    },
-   "review": "pattern only: alignment 37 %, verdict not supported"
+   "review": "pattern only: alignment 37 %, verdict not supported",
+   "size_orig": 102
   },
   "findslot": {
    "file": "z22.c",
@@ -1847,7 +1887,8 @@
     "len_ours": 28,
     "len_orig": 28
    },
-   "review": "pattern only: not inspected (alignment 54 %)"
+   "review": "pattern only: not inspected (alignment 54 %)",
+   "size_orig": 74
   },
   "isreg": {
    "file": "z22.c",
@@ -1891,7 +1932,8 @@
     "len_ours": 61,
     "len_orig": 54
    },
-   "review": "pattern only: not inspected (alignment 67 %)"
+   "review": "pattern only: not inspected (alignment 67 %)",
+   "size_orig": 184
   },
   "ccinval": {
    "file": "z22.c",
@@ -1930,7 +1972,8 @@
     "len_orig": 11
    },
    "review": "open",
-   "review_note": "sub r2,r2 (return 0 after clrb) is not clearly D1 to D16; reload D3"
+   "review_note": "sub r2,r2 (return 0 after clrb) is not clearly D1 to D16; reload D3",
+   "size_orig": 30
   },
   "regprefix": {
    "file": "z22.c",
@@ -1971,7 +2014,8 @@
     "len_ours": 17,
     "len_orig": 18
    },
-   "review": "pattern only: alignment 39 %, verdict not supported"
+   "review": "pattern only: alignment 39 %, verdict not supported",
+   "size_orig": 52
   },
   "repladdr": {
    "file": "z22.c",
@@ -2015,7 +2059,8 @@
     "len_ours": 109,
     "len_orig": 130
    },
-   "review": "pattern only: not inspected (alignment 68 %)"
+   "review": "pattern only: not inspected (alignment 68 %)",
+   "size_orig": 412
   },
   "movedat": {
    "file": "z22.c",
@@ -2058,7 +2103,8 @@
     "len_ours": 90,
     "len_orig": 93
    },
-   "review": "pattern only: not inspected (alignment 46 %)"
+   "review": "pattern only: not inspected (alignment 46 %)",
+   "size_orig": 292
   },
   "redunbr": {
    "file": "z22.c",
@@ -2100,7 +2146,8 @@
     "len_ours": 59,
     "len_orig": 57
    },
-   "review": "pattern only: not inspected (alignment 64 %)"
+   "review": "pattern only: not inspected (alignment 64 %)",
+   "size_orig": 170
   },
   "findcon": {
    "file": "z22.c",
@@ -2139,7 +2186,8 @@
     "len_ours": 27,
     "len_orig": 29
    },
-   "review": "pattern only: not inspected (alignment 66 %)"
+   "review": "pattern only: not inspected (alignment 66 %)",
+   "size_orig": 86
   },
   "compare": {
    "file": "z22.c",
@@ -2181,7 +2229,8 @@
     "len_ours": 109,
     "len_orig": 109
    },
-   "review": "pattern only: not inspected (alignment 54 %)"
+   "review": "pattern only: not inspected (alignment 54 %)",
+   "size_orig": 260
   },
   "setcon": {
    "file": "z22.c",
@@ -2221,7 +2270,8 @@
     "len_ours": 33,
     "len_orig": 32
    },
-   "review": "pattern only: alignment 20 %, verdict not supported"
+   "review": "pattern only: alignment 20 %, verdict not supported",
+   "size_orig": 80
   },
   "setcc": {
    "file": "z22.c",
@@ -2261,7 +2311,8 @@
     "len_orig": 20
    },
    "review": "reviewed: structure",
-   "review_note": "strcpy inline in the original"
+   "review_note": "strcpy inline in the original",
+   "size_orig": 52
   },
   "natural": {
    "file": "z22.c",
@@ -2303,7 +2354,8 @@
     "len_ours": 27,
     "len_orig": 26
    },
-   "review": "pattern only: not inspected (alignment 50 %)"
+   "review": "pattern only: not inspected (alignment 50 %)",
+   "size_orig": 64
   },
   "jumpsw": {
    "file": "z22.c",
@@ -2345,7 +2397,8 @@
     "len_orig": 57
    },
    "review": "reviewed: D-pattern",
-   "review_note": "pointers in r13/r14 in the original, frame reloads in ours (D2, D3)"
+   "review_note": "pointers in r13/r14 in the original, frame reloads in ours (D2, D3)",
+   "size_orig": 190
   },
   "shortjump": {
    "file": "z22.c",
@@ -2386,7 +2439,8 @@
     "len_ours": 67,
     "len_orig": 63
    },
-   "review": "pattern only: not inspected (alignment 51 %)"
+   "review": "pattern only: not inspected (alignment 51 %)",
+   "size_orig": 194
   },
   "toofar": {
    "file": "z22.c",
@@ -2426,7 +2480,8 @@
     "len_ours": 24,
     "len_orig": 26
    },
-   "review": "pattern only: not inspected (alignment 65 %)"
+   "review": "pattern only: not inspected (alignment 65 %)",
+   "size_orig": 78
   },
   "ilen": {
    "file": "z22.c",
@@ -2467,7 +2522,8 @@
     "len_orig": 88
    },
    "review": "reviewed: structure",
-   "review_note": "classifier: order of 5 moved instructions (structure flag)"
+   "review_note": "classifier: order of 5 moved instructions (structure flag)",
+   "size_orig": 262
   },
   "adrlen": {
    "file": "z22.c",
@@ -2508,7 +2564,8 @@
     "len_ours": 24,
     "len_orig": 28
    },
-   "review": "pattern only: not inspected (alignment 61 %)"
+   "review": "pattern only: not inspected (alignment 61 %)",
+   "size_orig": 78
   },
   "newcode1": {
    "file": "z22.c",
@@ -2582,7 +2639,8 @@
     "len_ours": 957,
     "len_orig": 949
    },
-   "review": "pattern only: alignment 30 %, verdict not supported"
+   "review": "pattern only: alignment 30 %, verdict not supported",
+   "size_orig": 3272
   },
   "itoa_": {
    "file": "z23.c",
@@ -2621,7 +2679,8 @@
     "len_orig": 27
    },
    "review": "reviewed: structure",
-   "review_note": "reversal is a separate function (0x3b9a, with strlen) in the original; count of calls differs by D11"
+   "review_note": "reversal is a separate function (0x3b9a, with strlen) in the original; count of calls differs by D11",
+   "size_orig": 84
   },
   "scan": {
    "file": "z23.c",
@@ -2700,7 +2759,8 @@
    },
    "review": "reviewed: structure",
    "review_note": "inline scan measured 2026-10-27: original ovlap 0x3c5a..0x432c, 682 instructions (scan bodies included); inline variant (scan loop copied at 19 call sites, return 1 on match) passes corpus 813/816 but is 862 instructions, 80 equal in tryfn; not adopted. Differences: frame 0x1a (ours 0x36), buffer at frame offset 4, original scan compares with cpb rl2,#'r' and jumps back into a shared loop (0x3cea, 0x3cd8), isalnum as table ldb %0BE5(r2) and and #7 (matches the macro)",
-   "orig_end": "0x432c"
+   "orig_end": "0x432c",
+   "size_orig": 1746
   },
   "usesreg": {
    "file": "z23.c",
@@ -2751,7 +2811,8 @@
     "len_orig": 174
    },
    "review": "reviewed: structure",
-   "review_note": "one dualop call more in the original (not located)"
+   "review_note": "one dualop call more in the original (not located)",
+   "size_orig": 714
   },
   "isused": {
    "file": "z23.c",
@@ -2794,7 +2855,8 @@
     "len_ours": 65,
     "len_orig": 63
    },
-   "review": "pattern only: alignment 27 %, verdict not supported"
+   "review": "pattern only: alignment 27 %, verdict not supported",
+   "size_orig": 152
   },
   "markregs": {
    "file": "z23.c",
@@ -2841,7 +2903,8 @@
     "len_orig": 86
    },
    "review": "pattern only: alignment 15 %, verdict not supported",
-   "orig_end": "0x4422"
+   "orig_end": "0x4422",
+   "size_orig": 246
   },
   "rename_regs": {
    "file": "z23.c",
@@ -2887,7 +2950,8 @@
     "len_ours": 87,
     "len_orig": 92
    },
-   "review": "pattern only: alignment 31 %, verdict not supported"
+   "review": "pattern only: alignment 31 %, verdict not supported",
+   "size_orig": 252
   },
   "fixldm": {
    "file": "z23.c",
@@ -2934,7 +2998,8 @@
     "len_ours": 36,
     "len_orig": 97
    },
-   "review": "pattern only: alignment 16 %, verdict not supported"
+   "review": "pattern only: alignment 16 %, verdict not supported",
+   "size_orig": 108
   },
   "procopt": {
    "file": "z23.c",
@@ -2982,7 +3047,8 @@
     "len_orig": 234
    },
    "review": "reviewed: structure",
-   "review_note": "array clearing inline in the original (no clearmem call); call order differs"
+   "review_note": "array clearing inline in the original (no clearmem call); call order differs",
+   "size_orig": 762
   },
   "dumpnodes": {
    "file": "z21.c",
@@ -3016,7 +3082,8 @@
      "orig": "0x244e",
      "similarity_pct": 66.7
     }
-   ]
+   ],
+   "size_orig": 32
   },
   "reverse": {
    "file": "z23.c",
@@ -3061,7 +3128,8 @@
      "orig": "0x255a",
      "similarity_pct": 18.2
     }
-   ]
+   ],
+   "size_orig": 108
   }
  },
  "findings": [],

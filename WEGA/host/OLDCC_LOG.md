@@ -592,3 +592,12 @@ TODO.md when this log was started.
   96 > 427. Removed.
 - Proposal: the passes codgen and popt were built by the same compiler (v0p); compiled from our sources with ccv0p
   and compared with /lib/codgen and /lib/popt they would give many more placement witnesses for popt rules.
+- popt model (step 1 of the plan): src/cmd/popt/tools gets progcfg (MODULES z20..z23, model_link like `make popt`,
+  D18, D6TABLES, STATICFUNCS: the static functions get global labels in the model so that strictcmp finds them),
+  the d12model and strictcmp launchers, `size_orig` for the 68 paired functions (OWN_LIM corrected to 0x4422: z23.c
+  ends with markregs, the libc follows); `oldcc.sh model popt`. First measurement with the current v0p: 1 of 68
+  functions strictly exact, 6305 lines; code 23040 against 22272, data 4076 against 3308, bss 3214 against 3420.
+  Kinds seen first: the data and bss addresses (decref, insertl differ only there: a layout model is needed first),
+  register declarations (equstr: the original has its parameters in registers, absval not), and seven functions of
+  our source without a counterpart in the original (getch, hashname, clearmem, heapreset, allocnode, newcode1, scan:
+  their code is probably inline in the callers).
