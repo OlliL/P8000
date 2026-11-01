@@ -228,7 +228,8 @@ singop of p too many); the rest are jump forms (layout). Step 13 done: the JP an
 (do_jp, do_call) behind disp inside the main switch, where the original has their code (0x2054, 0x2060): rmove
 441 lines, 10 instructions of content, popt 766. Step 14 done: `reset:` (clearreg; goto next) between do_jp
 and do_call, as the original's default target 0x205a: rmove 435 lines. Open: `next` (`p = p->forw`) stands near the
-top in the original (0x143e, behind the LD section). Next, in this order:
+top in the original (0x143e, behind the LD section); writing `next:` behind do_ld in the source gives the same
+code (popt places it), so the source form is not the cause. Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.

@@ -815,3 +815,4 @@ TODO.md when this log was started.
   popt corpus 816/816; cparse model 173.
 - rmove, step 14: reset between do_jp and do_call: rmove 435.
   popt corpus 816/816; cparse model 173.
+- rmove: next: behind do_ld in the source gives the same code (435): not the cause, reverted.
