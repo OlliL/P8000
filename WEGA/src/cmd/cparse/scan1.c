@@ -449,7 +449,7 @@ yylex(){
 		register struct lxdope *p;
 		register struct symtab *sp;
 
-		switch( (p=lxcp[(lxchar=getchar())+1])->lxact ){
+		switch( lxchar=getchar(), (p=lxcp[lxchar+1])->lxact ){
 
 		onechar:
 			if( ungetc( lxchar ,stdin) == EOF ) syserr( "stdin" );
@@ -695,7 +695,7 @@ yylex(){
 				yylval.intval = ASG MINUS;
 
 			warn:
-				if( lxmask[ (lxchar=getchar())+1] & (LEXLET|LEXDIG|LEXDOT) ){
+				if( lxchar=getchar(), lxmask[lxchar+1] & (LEXLET|LEXDIG|LEXDOT) ){
 					werror( "ambiguous assignment: assignment op taken" );
 					}
 				ungetc( lxchar ,stdin);

@@ -457,3 +457,7 @@ TODO.md when this log was started.
   212 > 300+ (fixclass, tymerge, refid ...). Removed; defalign open.
 - exname: source `*q++ = ( (c = *p) == ... ) ? '$' : '_';` (the original stores the ?: value through rl2): 8 > 3.
   Left: `p = &ntab[s]` adds the parameter from the frame (`ld r2,#ntab; add r2,0(fp)`), ours `lda r2,ntab(r7)`.
+- yylex: the comma forms `switch( lxchar=getchar(), (p=lxcp[lxchar+1])->lxact )` and `if( lxchar=getchar(),
+  lxmask[lxchar+1] & ... )` (the original adds 1 to r14, the register variable, as lxstr does after its comma):
+  yylex now as long as the original (2026 bytes), 4 lines left (jp/jr spans); tinit, talloc, tcheck, defid show the
+  data address 0x7C08 (node) masked because one of our functions now starts there: mask artifacts. Corpus 259.
