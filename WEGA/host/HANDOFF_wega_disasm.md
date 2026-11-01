@@ -138,7 +138,8 @@ cluster (point 4), its small leaf functions may answer point 3.
 gives the original bss order; the libc is linked in the order of the original, Makefile LIBCOBJS); code 22784
 against 22272 bytes. After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
-816 of 816; the corpus is RECON_TMP/popt/corpus, made by `host/popt` `make corpus`), then `oldcc.sh build popt v0p` and the cparse model (must stay
+816 of 816; the corpus is RECON_TMP/popt/corpus, which can be made
+with `make -C host/popt corpus CORPUS=$RECON_TMP/popt/corpus`), then `oldcc.sh build popt v0p` and the cparse model (must stay
 173). When a change alters the behaviour of popt, the five popt switches OLD_D20C/X/S/L/K are checked again by
 dropping each one (owner request: a switch must not hide an error of our popt source; last check: all five still
 needed). The method that worked: read the original function (`olist.py`-style listing, the jump tables in the data
