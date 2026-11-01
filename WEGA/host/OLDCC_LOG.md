@@ -429,3 +429,10 @@ TODO.md when this log was started.
   277; corpus 259.
 - Seen, not done: tfree1, rmconv, zecode take a parameter from its register at an else label whose jump came before a
   then part with calls (the state of the jump, not of the fall-through).
+- OLD_D3J: the state of a conditional jump given back at its else label behind a jump: rmconv, tfree1 exact, but
+  dclstruct 17 > 27: the join label behind the else part kept r7 from the fall-through while the then part had
+  called (a wrong-code risk of OLD_D3K too); with the intersection of the states of all jumps at a named label
+  dclstruct is back; buildtree 17 > 25 (an `&&` label with two jumps, the original reloads): the state comes back only
+  for one jump. A restored parameter keeps its frame home (regargs; the flag 0x4000 on the node, cleared in rsbuild).
+  zecode stays open (the long parameter inside an argument, OLD_D3A forgets it). cparse 153, 274; corpus 259; bench
+  v0 290 (117): in v0.

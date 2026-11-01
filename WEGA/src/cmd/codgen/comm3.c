@@ -254,6 +254,20 @@ branch(n)
 /* v0: the labels a jump has named already in this function (a parameter stays known in its register there) */
 #define D3KMAX	16384
 static char d3kbits[D3KMAX / 8];
+#ifdef OLD_D3J
+#define D3JMAX	8
+static struct d3j {
+	int	lab;
+	int	n;
+	int	jumps;
+	int	reg[4], cls[4];
+	struct sym *sym[4];
+} d3jtab[D3JMAX];
+static int d3jfree();
+static void d3jmark();
+void d3jsave();
+extern void rfree(), rsreturn();
+#endif
 
 void
 d3kjump(l)
@@ -261,6 +275,9 @@ d3kjump(l)
 {
 	if (l >= 0 && l < D3KMAX)
 		d3kbits[l >> 3] |= 1 << (l & 7);
+#ifdef OLD_D3J
+	d3jsave(l);
+#endif
 }
 
 int
@@ -277,6 +294,131 @@ d3kreset()
 
 	for (i = 0; i < D3KMAX / 8; i++)
 		d3kbits[i] = 0;
+#ifdef OLD_D3J
+	for (i = 0; i < D3JMAX; i++)
+		d3jtab[i].lab = -1;
+#endif
+}
+#endif
+
+#ifdef OLD_D3J
+/* v0p: the parameters known in registers at a conditional jump; the label gets them back when the code in front of it
+   ends with a jump (its state is that of the jumps to it) */
+void
+d3jsave(lab)
+	int lab;
+{
+	register struct d3j *j;
+	register struct rs *n;
+	register int i, k;
+	struct d3j *f;
+
+	f = 0;
+	for (j = d3jtab; j < &d3jtab[D3JMAX]; j++) {
+		if (j->lab == lab)
+			break;
+		if (j->lab <= 0 && f == 0)
+			f = j;
+	}
+	if (j == &d3jtab[D3JMAX]) {	/* the first jump: the known parameters */
+		if ((j = f) == 0)
+			return;
+		j->lab = lab;
+		j->n = 0;
+		j->jumps = 1;
+		for (n = rsuse; n; n = n->next)
+			if (n->cls <= 3 && n->sym && n->sym->sclass == 9 && j->n < 4) {
+				j->reg[j->n] = n->reg;
+				j->cls[j->n] = n->cls;
+				j->sym[j->n] = n->sym;
+				j->n++;
+			}
+		return;
+	}
+	j->jumps++;
+	for (i = 0; i < j->n; i++) {	/* a later one: those known at both */
+		for (n = rsuse; n; n = n->next)
+			if (n->reg == j->reg[i] && n->cls == j->cls[i] && n->sym == j->sym[i])
+				break;
+		if (n == 0) {
+			for (k = i + 1; k < j->n; k++) {
+				j->reg[k - 1] = j->reg[k];
+				j->cls[k - 1] = j->cls[k];
+				j->sym[k - 1] = j->sym[k];
+			}
+			j->n--;
+			i--;
+		}
+	}
+}
+
+/* the label lab: the parameters known at all the jumps to it (and at the code in front of it unless dead: that ends
+   with a jump) */
+void
+d3jlabel(lab, dead)
+	int lab, dead;
+{
+	register struct d3j *j;
+	register int i, r;
+	register struct rs *n;
+	struct rs *next;
+
+	for (j = d3jtab; j < &d3jtab[D3JMAX]; j++)
+		if (j->lab == lab)
+			break;
+	if (j == &d3jtab[D3JMAX])
+		return;
+	j->lab = -1;
+	for (n = rsuse; n; n = next) {	/* a parameter not known at every jump is forgotten */
+		next = n->next;
+		if (n->cls > 3 || !n->sym || n->sym->sclass != 9 || n->busy > 0)
+			continue;
+		if (!dead) {
+			for (i = 0; i < j->n; i++)
+				if (n->reg == j->reg[i] && n->cls == j->cls[i] && n->sym == j->sym[i])
+					break;
+			if (i < j->n)
+				continue;
+		}
+		rsreturn(n->cls, n->reg);
+	}
+	if (!dead || j->jumps != 1)
+		return;
+	for (i = 0; i < j->n; i++)
+		if (d3jfree(j->cls[i], j->reg[i])) {
+			r = getreg(j->cls[i], j->reg[i], 0, j->sym[i]);
+			if (r == j->reg[i]) {
+				rfree(r, j->cls[i] == 3 ? 5 : j->cls[i] == 1 ? 2 : 4);
+				d3jmark(j->cls[i], r);
+			}
+		}
+}
+
+/* the node of (cls, reg) got its parameter back at a label: it still needs its home in the frame (regargs) */
+static void
+d3jmark(cls, reg)
+	int cls, reg;
+{
+	register struct rs *n;
+
+	for (n = rsuse; n; n = n->next)
+		if (n->cls == cls && n->reg == reg)
+			n->flags |= 0x4000;
+}
+
+/* the register reg of the class cls is on the free list */
+static int
+d3jfree(cls, reg)
+	int cls, reg;
+{
+	register struct rs *n;
+
+	for (n = rsfree; n; n = n->next)
+		if (n->cls == cls && n->reg == reg)
+			return 1;
+		else if (n->cls == cls + 1 && cls <= 2 && n->reg == (cls == 1 ? reg & 7 & ~1 : reg & ~1))
+			return 1;
+	return 0;
 }
 #endif
 

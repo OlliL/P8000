@@ -40,6 +40,10 @@ int nlabsave;			/* 0x69e0 */
 int nparm;			/* 0x69d2 */
 #ifdef OLD_D3K
 static int d3kpend;		/* a label waits for its rsfreeall (main) */
+#ifdef OLD_D3J
+static int d3jdead;		/* the record before was an unconditional jump */
+extern void d3jlabel();
+#endif
 #endif
 #ifdef SEG
 int minreg = 0xD, maxreg = 0x17;	/* 0x958a, ... */
@@ -199,6 +203,10 @@ loop:
 		d3kpend = 0;
 	}
 #endif
+#ifdef OLD_D3J
+	if (d3jdead)
+		d3jdead--;	/* 1: the record before this one was a jump */
+#endif
 	switch (c) {
 	case '{':
 #ifdef OLD_D3K
@@ -269,9 +277,12 @@ loop:
 		nlcheck();
 		if (nparm <= 0)
 #ifdef OLD_D3K
-			if (d3knamed(lab))
+			if (d3knamed(lab)) {
 				rsfreeall(4);
-			else
+#ifdef OLD_D3J
+				d3jlabel(lab, d3jdead);
+#endif
+			} else
 				d3kpend = 1;
 #else
 			rsfreeall(1);
@@ -282,6 +293,9 @@ loop:
 	case 'B':
 		branch(rdin(10));
 		nlcheck();
+#ifdef OLD_D3J
+		d3jdead = 2;	/* (1 at the next record) */
+#endif
 		goto loop;
 	case 'F':
 		fcmd(rdin(10));

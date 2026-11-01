@@ -96,6 +96,10 @@ rsbuild()
 	if (rsfree)
 		rsrelease(rsfree);
 	rsfree = n = rspool;
+#ifdef OLD_D3J
+	for (last = n; last; last = last->next)
+		last->flags &= ~0x4000;
+#endif
 #ifdef OLD_D2W
 	for (r = 2; r <= 6; n = n->next, r += 2) {	/* the pairs in the order of rweight: rr2 rr0 rr4 rr6 */
 		n->cls = 3;

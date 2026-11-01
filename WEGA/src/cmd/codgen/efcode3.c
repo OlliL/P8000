@@ -221,7 +221,11 @@ regargs(tot)
 		}
 #endif
 		n = rfind(reg, cls);
+#ifdef OLD_D3J
+		if (n && n->sym == s && !(n->flags & 0x4000))
+#else
 		if (n && n->sym == s)
+#endif
 			goto fl;
 		if (cls < 4) {
 			if (lo > reg)
