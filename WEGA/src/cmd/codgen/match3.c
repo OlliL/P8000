@@ -387,6 +387,12 @@ match(p, cookie)
 					goto select;
 				}
 			}
+#ifdef OLD_D3AW
+			/* v0p: a parameter added to an address constant is not taken from its register */
+			if (p->op == PLUS && p->left->op == ICON && p->left->sname && r->sname->sclass == 9)
+				oregfix(r);
+			else
+#endif
 			if ((dope[p->left->op] & 0xE) == LTYPE || p->left->op == FLD)
 				fixname(r);
 #ifdef OLD_D3N

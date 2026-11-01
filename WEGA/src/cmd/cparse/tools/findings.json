@@ -6920,7 +6920,7 @@
   },
   "exname": {
    "basis": "reading",
-   "note": "Source: *q++ = (...) ? '$' : '_'. Remaining: &ntab[s] adds s from the frame in the original (ours from r7).",
+   "note": "Exact with v0p. Source: *q++ = (...) ? '$' : '_'. Old-cc: OLD_D3AW (&ntab[s] adds s from the frame).",
    "d_classes": "D3"
   },
   "cinit": {
