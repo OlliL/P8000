@@ -134,7 +134,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 56 of 73 functions strictly exact,
-778 differing lines (rmove 453 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+776 differing lines (rmove 451 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (bss.s gives the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (453 lines, under analysis)
+- rmove (451 lines, 11 instructions of content, under analysis)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -219,7 +219,9 @@ section order do_ld, do_dec, do_inc, do_and, do_arith, do_push, do_pop, do_srl, 
 do_cjp, do_clr, do_lda: rmove 453 lines, 14 instructions of content left (4 of them string addresses, the two
 jump table addresses, the rest jump forms). Step 11 done: in clr_cc the register branch first (`if (r12 >= 0)
 { savereg } setcon`): 13 instructions of content. The strings of z22.c are now in the original's order
-except the cpir table of rmove (data layout). Next, in this order:
+except the cpir table of rmove (data layout). Step 12 done: the main switch encloses all sections and disp
+(its closing brace in front of cc_clear), so its jump table comes behind the cpir table of disp as in the original:
+11 instructions of content, rmove 451 lines, popt 776. Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.

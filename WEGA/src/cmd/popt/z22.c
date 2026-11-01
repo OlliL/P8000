@@ -182,7 +182,6 @@ rmove()
 			goto next;
 		default:
 			goto reset;
-		}
 
 	do_ld:
 		dualop(p);
@@ -673,6 +672,7 @@ rmove()
 		else
 			setcc(RT2);
 		goto next;
+		}
 
 	cc_clear:
 		ccloc[0] = 0;

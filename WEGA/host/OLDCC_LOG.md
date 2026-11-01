@@ -808,3 +808,5 @@ TODO.md when this log was started.
   popt model 56 of 73, lines 778; popt corpus 816/816; cparse model 173.
 - rmove, step 11: clr_cc with the register branch first (if (r12 >= 0) { savereg } setcon): content 13; the z22.c strings are in the original's order except the cpir table of rmove.
   popt model 56 of 73, lines 778; popt corpus 816/816; cparse model 173.
+- rmove, step 12: the main switch encloses the sections and disp (the table order of the original): content 11, rmove 451, popt 776.
+  popt corpus 816/816; cparse model 173.
