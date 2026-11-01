@@ -681,9 +681,10 @@ oplook()
 void
 refcount()
 {
-	register struct node *p, *lp, *tp;
+	register struct node *p, *lp;
 	register struct node **h;
-	int i, n;
+	register struct node *tp;
+	register int n;
 	static struct node *labhash[LABHS];
 
 	for (h = labhash; h < &labhash[LABHS]; h++)
@@ -694,7 +695,7 @@ refcount()
 			p->refc = 0;
 		}
 	for (p = first.forw; p; p = p->forw) {
-		if (p->op == CJP || p->op == JP || p->op == JSW) {
+		if (p->op == JP || p->op == CJP || p->op == JSW) {
 			p->ref = 0;
 			lp = labhash[p->labno % LABHS];
 			if (lp == 0 || p->labno != lp->labno)
@@ -729,8 +730,7 @@ refcount()
 	}
 	for (p = first.forw; p; p = p->forw)
 		if (p->op == LABEL && p->refc == 0) {
-			lp = nonlab(p);
-			if (lp->op == 0 || lp->op == JSW || lp->op == WORD ||
+			if ((lp = nonlab(p))->op == 0 || lp->op == JSW || lp->op == WORD ||
 			    lp->op == LONG)
 				continue;
 			decref(p);
@@ -741,7 +741,6 @@ void
 iterate()
 {
 	register struct node *p, *rp, *p1;
-	struct node *start;
 
 	nchange = 0;
 	for (p = first.forw; p; p = p->forw) {
@@ -781,7 +780,7 @@ iterate()
 				nbrbr++;
 				p->labno = rp->labno;
 				decref(p->ref);
-				rp->ref->refc++;
+				++rp->ref->refc;
 				p->ref = rp->ref;
 				nchange++;
 			}
@@ -808,23 +807,22 @@ iterate()
 			}
 		}
 		if (p->op == JP || p->op == RET) {
-			start = p;
+			rp = p;
 			while (p->forw->op == KCOMMENT)
 				p = p->forw;
 			while (p->forw) {
-				p1 = p->forw;
-				if (p1->op == LABEL || p1->op == DLABEL ||
-				    p1->op == OBRACE || p1->op == CBRACE ||
-				    p1->op == 0 || p1->op == DATA)
+				if (p->forw->op == LABEL || p->forw->op == DLABEL ||
+				    p->forw->op == OBRACE || p->forw->op == CBRACE ||
+				    p->forw->op == 0 || p->forw->op == DATA)
 					break;
 				nchange++;
 				iaftbr++;
-				if (p1->ref)
-					decref(p1->ref);
-				p->forw = p1->forw;
+				if (p->forw->ref)
+					decref(p->forw->ref);
+				p->forw = p->forw->forw;
 				p->forw->back = p;
 			}
-			p = start;
+			p = rp;
 		}
 		if (p->op == JP || p->op == CJP) {
 			for (rp = p->forw; rp; rp = rp->forw) {
@@ -954,7 +952,7 @@ void
 xjump(p1)
 register struct node *p1;
 {
-	struct node *p2, *p3;
+	register struct node *p2, *p3;
 
 	if ((p2 = p1->ref) == 0)
 		return;

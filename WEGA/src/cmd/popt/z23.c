@@ -199,47 +199,44 @@ register struct rent *t;
 struct node *first_ldm;
 struct node *last_ldm;
 {
-	register struct node *p;
 	register struct rent *e;
-	register char *r11, *r12, *r9;
-	char *q;
-	int changed;
+	register char *q, *r11;
+	register struct node *p;
+	register char *r9;
+	char changed;
 
 	for (p = first_ldm->forw; p != last_ldm; p = p->forw) {
 		if (p->op == LABEL || p->op == COMMENT)
 			continue;
 		changed = 0;
-		if (p->code == 0)
-			continue;
 		for (e = t; e->len > 0; e++) {
-			r11 = p->code;
-			while (*r11) {
-				if (strncmp(e->s1, r11, e->len) == 0) {
-					r9 = r11 + 1;
-					if (*r9 == '1' && isdigit((unsigned char)r9[1]))
+			q = e->s1;
+			for (r11 = p->code; *r11; r11++) {
+				if (strncmp(q, r11, e->len) == 0 && !isalnum(q[-1])) {
+					r9 = r11;
+					if (*++r9 == '1' && isdigit(r9[1]))
 						r9++;
 					r9++;
-					for (q = e->s2; *q; )
+					for (q = e->s2; *q;)
 						*r11++ = *q++;
 					while (r11 != r9) {
 						*r11++ = (char)0xff;
 						changed = 1;
 					}
+					q = e->s1;
 					r11--;
 				}
-				r11++;
 			}
 		}
 		if (changed) {
-			r12 = p->code;
-			while (*r12 != (char)0xff)
-				r12++;
-			r11 = r12 + 1;
+			for (q = p->code; *q != (char)0xff; q++)
+				;
+			r11 = q + 1;
 			for (;;) {
 				while (*r11 == (char)0xff)
 					r11++;
-				*r12++ = *r11;
-				if (*r11++ == 0)
+				*q++ = *r11;
+				if (!*r11++)
 					break;
 			}
 		}

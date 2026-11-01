@@ -689,3 +689,14 @@ TODO.md when this log was started.
   argument order of makereg (the value of `type` is still in r2 in ours: codgen). Both loop forms (for/while) give
   the same code.
   popt model 48 of 70, 4014 lines; popt corpus 816/816; cparse model 173.
+- xjump (p2, p3 registers): left the loop inversion of the second backward loop (`p2 = p2->back` over labels and
+  comments: the original has the LABEL/KCOMMENT tests in front of the step, entered from the end of the first loop;
+  do-while and while forms give the same code): a placement witness with backjmp. iterate (no `start`: rp keeps
+  the node; the loop that removes the code behind a jump reads `p->forw` every time; `++rp->ref->refc`),
+  refcount (tp and n registers, declared p, lp, h, tp, n; `JP || CJP || JSW`; `(lp = nonlab(p))->op == 0`: only the
+  assignment inside the expression gives the `testb @r2` of the original, the counterpart of findcon, where the
+  original tests the variable after an own statement and codgen v0p tests r2: probably the old codgen does not
+  reuse the value of an assignment in the next statement, a codgen candidate), rename_regs (no test of p->code;
+  the "preceded by alnum" test on `q[-1]` of the search string, as the original: quirk; registers e, q, r11, p, r9;
+  `char changed`): exact.
+  popt model 51 of 70, 3793 lines; popt corpus 816/816; cparse model 173.
