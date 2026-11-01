@@ -169,7 +169,11 @@ optim(p) register NODE *p; {
 	case MOD:
 	case ASG MOD:	/* WEGA: unsigned by a power of 2 as a shift or an and */
 		a = p->right;
+#ifdef OLD_D21
+		if( 0 ){	/* the old cparse: no shift or and for an unsigned division */
+#else
 		if( ISUNSIGNED(p->type) && nncon(a) && ispow2(a->lval) > 0 ){
+#endif
 			if( o == MOD || o == ASG MOD ){
 				p->op = (o == ASG MOD) ? ASG AND : AND;
 				a->lval -= 1;

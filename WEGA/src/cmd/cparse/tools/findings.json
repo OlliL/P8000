@@ -6705,8 +6705,8 @@
   },
   "genswitch": {
    "basis": "reading",
-   "d_classes": "D1 D2 D3",
-   "note": "Remaining: the size of the search table (n*SZLONG/SZCHAR as an unsigned long): the original divides with div and zero-extends, our cc shifts (srl #3) for (unsigned)(...); a new compiler difference candidate (the old cc does not turn an unsigned division by a power of 2 into a shift). Tried: (unsigned)(n*SZLONG/SZCHAR)."
+   "d_classes": "D1 D2 D3 D21",
+   "note": "Source: r = t = talloc() (store order); size = n+n and the table size assigned inside the sectfull argument. The table size: the original divides (div, zero-extended); OLD_D21 (v0p, cparse optim and codgen optim3.c) keeps the division. Remaining: range = p[++n].sval with n a parameter as load/inc/store (ld r2,0(r15); inc r2,#1; ld 0(r15),r2; ld r3,r2), ours inc 0(r15),#1 and a reload; t->rval = swlab from r2 in the original, ours reloads."
   },
   "lxstr": {
    "basis": "reading",

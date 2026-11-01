@@ -302,6 +302,31 @@ d2qfree(r)
 }
 #endif
 
+#ifdef OLD_D2O
+/* the odd word register r is busy once and its partner r - 1 is free, or idle and then given back */
+static int
+d2ofree(r)
+	register int r;
+{
+	register struct rs *n;
+
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == r && n->cls == 2)
+			break;
+	if (n == 0 || n->busy != 1)
+		return 0;
+	for (n = rsfree; n; n = n->next)
+		if (n->reg == r - 1 && n->cls == 2)
+			return 1;
+	for (n = rsuse; n; n = n->next)
+		if (n->reg == r - 1 && n->cls == 2 && n->busy <= 0 && n->kind != 6) {
+			rsreturn(2, r - 1);
+			return 1;
+		}
+	return 0;
+}
+#endif
+
 /* a register for the result of p; cookie says what the caller wants */
 int
 allocreg(p, cookie)
@@ -389,6 +414,17 @@ allocreg(p, cookie)
 			if (r == -1)
 				rbusy(q->rval, 4, q->sname, q->lval);
 		}
+#ifdef OLD_D2O
+		/* v0p: an odd address register takes its pair too when the even half is free or idle */
+		else if ((q->op == OREG || q->op == REG) && q->rval < 8 && (q->rval & 1) &&
+		    (want == -1 || want == q->rval - 1) && d2ofree(q->rval)) {
+			rfree(q->rval, 4);
+			rsreturn(2, q->rval);
+			r = getreg(3, q->rval - 1, 0, p->sname);
+			if (r == -1)
+				rbusy(q->rval, 4, q->sname, q->lval);
+		}
+#endif
 	}
 #endif
 	if (r == -1)

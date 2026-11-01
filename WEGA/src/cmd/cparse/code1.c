@@ -376,8 +376,7 @@ genswitch(p,n) register struct sw *p; {
 		fprintf( outfile, "C %d\t%d\t", swlab, dlab );
 		locctr( 4 );
 		defalign( ALINT );
-		size = n+n;
-		if( sectfull( DATA, size ) ) newsect( DATA );
+		if( sectfull( DATA, size = n+n ) ) newsect( DATA );
 		sectadd( DATA, size );
 		for( i=2, j=p[2].sval; i<=n; ++j ){
 			fprintf( outfile, "%d\t", j==p[i].sval ? p[i++].slab : dlab );
@@ -410,8 +409,7 @@ genswitch(p,n) register struct sw *p; {
 		ecomp( r );
 		locctr( 4 );
 		defalign( ALINT );
-		size = (unsigned)(n*SZLONG/SZCHAR);
-		if( sectfull( DATA, size ) ) newsect( DATA );
+		if( sectfull( DATA, size = (unsigned)(n*SZLONG/SZCHAR) ) ) newsect( DATA );
 		sectadd( DATA, size );
 #ifdef OLD_D6T
 		/* v0: the values go to codgen with the targets, which writes the two lists together */
@@ -438,7 +436,7 @@ genswitch(p,n) register struct sw *p; {
 	for( i=2; i<=n; ++i ){ /* a compare for each case */
 		tlab = (int) bcon( p[i].sval );
 		s = bcon( p[i].slab );
-		t = r = talloc();
+		r = t = talloc();
 		ncopy( r, q );
 		t->lval = n-i;
 		t = block( NE, t, (NODE *) tlab, INT, 0, INT );

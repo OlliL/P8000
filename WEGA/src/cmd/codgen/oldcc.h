@@ -10,6 +10,8 @@
 #define OLD_D2X		/* a long result of a binary operator (not a shift) into the pair of its left operand first */
 #define OLD_D3A		/* the registers of the parameters forgotten before the arguments of a call (gencall) */
 #define OLD_D2A		/* the value of a long assignment copied into a new pair, which keeps the name (match) */
+#define OLD_D21	/* an unsigned division or modulo by a power of two stays a division (optim) */
+#define OLD_D2O		/* a long loaded through an odd address register into the pair below it (allocreg) */
 #endif
 
 #ifdef OLD_V0

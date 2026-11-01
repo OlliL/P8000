@@ -380,3 +380,17 @@ TODO.md when this log was started.
   original behind `ldk r13,#8; jp`. OLD_D20J tried (no move to a jump right behind a conditional jump): optim 51 > 30
   but 383 > 516 (rstruct, yylex, endinit, lxstr, cinit worse); only when another jump to the block is not behind a
   conditional one: 402 (lxcom worse, optim unchanged). Removed; open.
+
+## 2026-11-01
+
+- genswitch: the size of the search table `(unsigned)(n*SZLONG/SZCHAR)`: the original divides (`div` into a
+  zero-extended pair). OLD_D21 (cparse optim: no shift or and for an unsigned division; codgen optim3.c: no shift for
+  an unsigned DIV/MOD by a power of two): genswitch closer. Bench v0: cparse part neutral, codgen part 318 > 340: v0p
+  only. Source fixes code1.c: `r = t = talloc()` in the order of the stores, `size = n+n` and the table size assigned
+  inside the sectfull argument.
+- OLD_D2A only when the pair is not wanted for an argument (`rall & 0x1000`); OLD_D2O (a long through an odd address
+  register into the pair below it, the even half free or idle given back). Bench v0 with OLD_D2O unchanged: v0p.
+- State: /lib/cparse 141 strict, 336 lines; corpus 259; bench v0 114, 318.
+- genswitch left: `range = p[++n].sval - ...` with n a parameter: the original `ld r2,0(r15); inc r2,#1; ld 0(r15),r2;
+  ld r3,r2` (load, increment, store), ours `inc 0(r15),#1; ld r2,0(r15)`; only this site in cparse, the other frame
+  increments are `inc F(r15)`. After `swlab = getlab()` the original takes r2 for `t->rval = swlab`, ours reloads.

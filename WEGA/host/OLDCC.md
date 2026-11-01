@@ -183,14 +183,14 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D2A` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D2A`, `OLD_D2O`, `OLD_D21` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 141 strictly exact, 383 differing lines, code and data as long as the original's (48896, 18584
+- State: /lib/cparse 141 strictly exact, 336 differing lines, code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
   81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines; + OLD_D2Q 2719 lines (88: addcase and ftnend differ only by a mask artifact, a data address equal to a function
-  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438; source fixes hash, hide, lookup 111, 1400; + OLD_D3K 113, 1312; source fixes getpreg, fhashv 1282; + OLD_D2V 116, 1194; OLD_D3K at `?:` 117, 1188; source fixes cisreg, tyreduce 119, 1161; source fixes vfdzero, tcopy, ncopy, argregs, beginit, endinit, falloc 122, 1094; + OLD_D2A 125, 1087; source fixes tymatch, argdebug, buildtree, defid, efcode 126, 997; rmconv, ispow2 127, 987; + OLD_D2M 128, 961; + OLD_D2P 129, 906; getmem source fix 130; OLD_D2P with idle halves and idle pairs 132, 780; + OLD_D2U 133, 756; + OLD_D2G 135, 676; + OLD_D5S 136, 652; tymatch register order 137, 528; OLD_D3K: a label just in front of the function end keeps the parameters 139, 525; oconvert source fix 523; popt OLD_D20C 140, 464; popt OLD_D20X 140, 398; popt OLD_D20S 141, 390; popt OLD_D20L 383).
+  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438; source fixes hash, hide, lookup 111, 1400; + OLD_D3K 113, 1312; source fixes getpreg, fhashv 1282; + OLD_D2V 116, 1194; OLD_D3K at `?:` 117, 1188; source fixes cisreg, tyreduce 119, 1161; source fixes vfdzero, tcopy, ncopy, argregs, beginit, endinit, falloc 122, 1094; + OLD_D2A 125, 1087; source fixes tymatch, argdebug, buildtree, defid, efcode 126, 997; rmconv, ispow2 127, 987; + OLD_D2M 128, 961; + OLD_D2P 129, 906; getmem source fix 130; OLD_D2P with idle halves and idle pairs 132, 780; + OLD_D2U 133, 756; + OLD_D2G 135, 676; + OLD_D5S 136, 652; tymatch register order 137, 528; OLD_D3K: a label just in front of the function end keeps the parameters 139, 525; oconvert source fix 523; popt OLD_D20C 140, 464; popt OLD_D20X 140, 398; popt OLD_D20S 141, 390; popt OLD_D20L 383; OLD_D2A not for an argument pair, + OLD_D2O, + OLD_D21, code1 source fixes 336).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
   `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
   probably the old cas, which resolves `callr` to a later global function as `call`).
@@ -278,7 +278,9 @@ compiler that built the original. Not differences of the compiler (checked):
   may have given back. cparse 1668 > 1584 lines (8 functions that differed only in this register), bench v0 95 > 98.
 - v0p (switch `OLD_D2A` in codgen, match): the value of a long assignment used in a comparison is copied into a new
   pair that keeps the name (`ldl 2(r15),rr6; ldl rr2,rr6; cpl rr6,#%FFFE`, later `ldl rr4,rr2`): nidcl, beginit,
-  endinit exact; bench v0 unchanged, so v0p only.
+  endinit exact; bench v0 unchanged, so v0p only. Not when the value goes to a register wanted for it (an argument).
+- v0p (switch `OLD_D2O` in codgen, allocreg): a long loaded through an odd address register goes into the pair below it
+  (r-1, r) when the even half is free or idle; bench v0 unchanged, v0p only.
 - v0p (switch `OLD_D2Q` in codgen, allocreg): a long loaded through a pointer goes into the pair of its even address
   register when the odd half is free (`sla r2,#2; ldl rr2,TAB(r2)`, the shipped codgen takes rr0), also when that
   pair is the wanted one (cinit: `ldl rr4,14(r4)` for an argument); cparse 2836 > 2719 lines, bench v0 1080 > 1085
@@ -492,6 +494,13 @@ order).
   finds that it reaches the back jump and gives up, the old one inverts the loop then. Not when the jump in front
   leads elsewhere (fortarg keeps its while test on top). cparse 390 > 383 (optim); bench v0 318 > 337, so v0p only.
 
+### D21 Unsigned division by a power of two
+
+v0p (switch `OLD_D21` in cparse optim and codgen optim3.c): an unsigned division or modulo by a power of two stays a
+`div` (zero-extended into a pair) where the shipped compiler shifts or masks. Evidence: cparse genswitch, the size of
+the search table `(unsigned)(n*SZLONG/SZCHAR)`; neutral for v0 in cparse, the codgen part makes the bench of v0
+worse (318 > 340): v0p only.
+
 ### Register allocation of the old scc (measured 2026-10-27, `scc -S`)
 
 The register variables are assigned in declaration order from r13 downwards; an int or char takes one register, a
@@ -510,80 +519,80 @@ function findings (`src/cmd/codgen/tools/findings.json`, `classify.py`), complet
 for codgen, D15 only for zzz3.c and tr3.c. ld, strip, size: the state with the shipped cc; with v1 see section 2.
 Column "Ver.": the compiler version (section 2).
 
-| Binary | Object | Ver. | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout | D16 frame operand | D17 call form | D18 0(r15) | D19 operand order | D20 code motion |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| cas | ifile.c | old scc | x | x | x |  |  | x |  | x | x | x |  | x |  |  |  |  |  |  |  |  |
-| cas | instr.c | old scc | x | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | scanner.c | old scc | x | x | x |  |  | ? | ? |  |  |  | x | x |  |  |  |  |  |  |  |  |
-| cas | main.c | old scc |  | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | nodes.c | old scc | x | x |  |  | x | x | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | parser.y (parser.c) | old scc | x | x | x |  | x | x | ? |  |  | x |  | x |  |  |  |  |  |  |  |  |
-| cas | expr.c | old scc | x | x | x |  |  | x |  |  |  | x |  | x |  |  |  |  |  |  |  |  |
-| cas | p2loop.c | old scc |  | x | x |  |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | ofile.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | gen.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | assemble.c | old scc |  | x | x |  |  | x |  |  |  | x |  | x |  |  |  |  |  |  |  |  |
-| cas | getops.c | old scc |  | x | x |  |  | x |  |  |  |  | x | x |  |  |  |  |  |  |  |  |
-| cas | error.c | old scc |  |  | x |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | listing.c | old scc |  |  | x |  |  |  | x | x |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | optim.c | old scc |  |  | x | x |  | x | x |  |  |  | x | x |  |  |  |  |  |  |  |  |
-| cas | jpr2.c | old scc |  |  | x |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | jpr.c | old scc |  |  | x | x |  | x | x | x |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | locntr.c | old scc | x | x | x | x |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| cas | ssymtab.c | old scc |  |  |  |  |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |
-| cas | symbols.c | old scc | x | x |  |  |  | x |  | x |  | x | x | x |  |  |  |  |  |  |  |  |
-| cas | pst.c | old scc | x | x |  |  |  |  | ? | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| cas | subr.c | old scc |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| ranlib | ranlib.c, readsym.c | open | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| strip | strip.c | v1 | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| size | size.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| libc.a | malloc.o (gen/malloc.c) | open |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | nlist.o (gen/nlist.c) | open | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | length.o (gen/length.c) | open | x |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| libc.a | swap.o (gen/swap.c) | open |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| size | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
-| size | libc: rdwr.o (fread, fwrite) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
-| size | libc: doprnt.o (_doprnt) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |  |  |  |  |  |  |
-| strip | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
-| cas | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
-| codgen, scodgen | main3.c | open |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | reader3.c | open |  |  |  | x |  | x | x | ? |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | rdr3.c | open |  |  | x | x |  | x |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | efcode3.c | open | x |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | local3.c | open |  | x |  | x |  | ? |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | gen3.c | open |  |  |  | x |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | order3.c | open |  |  |  | x |  | x |  |  |  |  | x |  |  |  |  | x |  |  |  |  |
-| codgen, scodgen | match3.c | open |  |  |  | x |  | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |
-| codgen, scodgen | allo3.c | open |  | x | x | x |  | x | ? |  |  | x |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | regallo3.c | open |  |  |  | x |  | x |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | regfile3.c | open |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | tmp3.c | open |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | zzz3.c | open |  |  |  |  |  | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
-| codgen, scodgen | comm3.c | open |  |  | x | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | out3.c | open |  | x |  |  |  | x | x | x |  | x | x |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | regs3.c | open |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | lcl3.c | open |  | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | tr3.c | open |  |  |  | x |  |  | x | ? |  |  |  |  |  |  | x |  |  |  |  |  |
-| codgen, scodgen | optim3.c | open |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| popt | z21.c (main..backjmp) | open |  |  |  | x |  | x |  | x |  |  |  |  |  |  |  |  | x |  |  |  |
-| popt | z22.c (rmove..natural) | open |  | x |  | x | x | x |  |  |  |  |  |  |  |  |  | x | x |  |  |  |
-| popt | z23.c (procopt..markregs) | open |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |
-| ld | ld.c (read_symbols, place_sec, init_entry, load2td, dseek, ranlib_scan) | v1 | x | x | x |  |  |  |  |  |  |  | x | x |  |  | x |  |  |  |  | x |
-| ld | symbols.c (chk_ranlib, ensure_buf) | v1 |  |  | x |  |  |  |  |  |  |  | x | x |  |  |  |  |  |  |  | x |
-| ld | copyname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| ld | printname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| mv, rm, rmdir, write | mv.c, rm.c, rmdir.c, write.c | v1 | x |  |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |
-| cparse | cgram1.y | cparse | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  | ? |  | ? |  |  |
-| cparse | xdefs1.c | cparse | x | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |  |
-| cparse | scan1.c | cparse | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |
-| cparse | pftn1.c | cparse | x | x | ? |  | ? | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |
-| cparse | trees1.c | cparse | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  |  | ? | x |  |
-| cparse | optim1.c, optim | cparse | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  |  | ? | x |  |
-| cparse | code1.c | cparse | x | x | ? | ? |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |
-| cparse | local1.c | cparse | x | x | ? |  |  | x |  |  |  |  | ? | x |  |  |  |  |  | ? | x |  |
-| cparse | comm1.c, common | cparse | x | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |  |
-| cparse | vinit1.c | cparse | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |
-| cparse | sym1.c | cparse | x | x | ? |  | ? |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |  |
+| Binary | Object | Ver. | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout | D16 frame operand | D17 call form | D18 0(r15) | D19 operand order | D20 code motion | D21 unsigned div |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| cas | ifile.c | old scc | x | x | x |  |  | x |  | x | x | x |  | x |  |  |  |  |  |  |  |  |  |
+| cas | instr.c | old scc | x | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | scanner.c | old scc | x | x | x |  |  | ? | ? |  |  |  | x | x |  |  |  |  |  |  |  |  |  |
+| cas | main.c | old scc |  | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | nodes.c | old scc | x | x |  |  | x | x | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | parser.y (parser.c) | old scc | x | x | x |  | x | x | ? |  |  | x |  | x |  |  |  |  |  |  |  |  |  |
+| cas | expr.c | old scc | x | x | x |  |  | x |  |  |  | x |  | x |  |  |  |  |  |  |  |  |  |
+| cas | p2loop.c | old scc |  | x | x |  |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | ofile.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | gen.c | old scc |  | x | x |  |  | x |  | x |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | assemble.c | old scc |  | x | x |  |  | x |  |  |  | x |  | x |  |  |  |  |  |  |  |  |  |
+| cas | getops.c | old scc |  | x | x |  |  | x |  |  |  |  | x | x |  |  |  |  |  |  |  |  |  |
+| cas | error.c | old scc |  |  | x |  |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | listing.c | old scc |  |  | x |  |  |  | x | x |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | optim.c | old scc |  |  | x | x |  | x | x |  |  |  | x | x |  |  |  |  |  |  |  |  |  |
+| cas | jpr2.c | old scc |  |  | x |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | jpr.c | old scc |  |  | x | x |  | x | x | x |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | locntr.c | old scc | x | x | x | x |  | x |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| cas | ssymtab.c | old scc |  |  |  |  |  | x |  |  |  |  | x | x | x |  |  |  |  |  |  |  |  |
+| cas | symbols.c | old scc | x | x |  |  |  | x |  | x |  | x | x | x |  |  |  |  |  |  |  |  |  |
+| cas | pst.c | old scc | x | x |  |  |  |  | ? | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| cas | subr.c | old scc |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| ranlib | ranlib.c, readsym.c | open | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| strip | strip.c | v1 | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| size | size.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| libc.a | malloc.o (gen/malloc.c) | open |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | nlist.o (gen/nlist.c) | open | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | length.o (gen/length.c) | open | x |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| libc.a | swap.o (gen/swap.c) | open |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| size | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
+| size | libc: rdwr.o (fread, fwrite) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
+| size | libc: doprnt.o (_doprnt) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |
+| strip | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
+| cas | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
+| codgen, scodgen | main3.c | open |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | reader3.c | open |  |  |  | x |  | x | x | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | rdr3.c | open |  |  | x | x |  | x |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | efcode3.c | open | x |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | local3.c | open |  | x |  | x |  | ? |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | gen3.c | open |  |  |  | x |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | order3.c | open |  |  |  | x |  | x |  |  |  |  | x |  |  |  |  | x |  |  |  |  |  |
+| codgen, scodgen | match3.c | open |  |  |  | x |  | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
+| codgen, scodgen | allo3.c | open |  | x | x | x |  | x | ? |  |  | x |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | regallo3.c | open |  |  |  | x |  | x |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | regfile3.c | open |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | tmp3.c | open |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | zzz3.c | open |  |  |  |  |  | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
+| codgen, scodgen | comm3.c | open |  |  | x | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | out3.c | open |  | x |  |  |  | x | x | x |  | x | x |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | regs3.c | open |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | lcl3.c | open |  | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | tr3.c | open |  |  |  | x |  |  | x | ? |  |  |  |  |  |  | x |  |  |  |  |  |  |
+| codgen, scodgen | optim3.c | open |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| popt | z21.c (main..backjmp) | open |  |  |  | x |  | x |  | x |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| popt | z22.c (rmove..natural) | open |  | x |  | x | x | x |  |  |  |  |  |  |  |  |  | x | x |  |  |  |  |
+| popt | z23.c (procopt..markregs) | open |  | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |
+| ld | ld.c (read_symbols, place_sec, init_entry, load2td, dseek, ranlib_scan) | v1 | x | x | x |  |  |  |  |  |  |  | x | x |  |  | x |  |  |  |  | x |  |
+| ld | symbols.c (chk_ranlib, ensure_buf) | v1 |  |  | x |  |  |  |  |  |  |  | x | x |  |  |  |  |  |  |  | x |  |
+| ld | copyname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| ld | printname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |
+| mv, rm, rmdir, write | mv.c, rm.c, rmdir.c, write.c | v1 | x |  |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |
+| cparse | cgram1.y | cparse | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  | ? |  | ? |  |  |  |
+| cparse | xdefs1.c | cparse | x | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |  |  |
+| cparse | scan1.c | cparse | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |  |
+| cparse | pftn1.c | cparse | x | x | ? |  | ? | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |  |
+| cparse | trees1.c | cparse | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  |  | ? | x |  |  |
+| cparse | optim1.c, optim | cparse | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  |  | ? | x |  |  |
+| cparse | code1.c | cparse | x | x | ? | ? |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  | x |
+| cparse | local1.c | cparse | x | x | ? |  |  | x |  |  |  |  | ? | x |  |  |  |  |  | ? | x |  |  |
+| cparse | comm1.c, common | cparse | x | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |  |  |
+| cparse | vinit1.c | cparse | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |  |
+| cparse | sym1.c | cparse | x | x | ? |  | ? |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |  |  |
 
 Open for codgen: `clocal` (D15), `zzzcode` (D15, partly), `sucomp` (D16), `tshape` (value form of the SZERO return, D16;
 the current case order is the best of seven), `expand` and `freereg` (moved blocks, D7; findings `expand-layout-01`,

@@ -317,7 +317,8 @@ select:
 		reclaim(p, q->rewrite, cookie);
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
-		if (rv == ASSIGN && !(cookie & 01) && p->op == REG && (p->type == 5 || p->type == 15) && p->rval < 8) {
+		if (rv == ASSIGN && !(cookie & 01) && p->op == REG && (p->type == 5 || p->type == 15) && p->rval < 8 &&
+		    !(p->rall & 0x1000)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 
 			nr = getreg(3, -1, 0x1000, (struct sym *)0);
