@@ -134,7 +134,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 56 of 73 functions strictly exact,
-855 differing lines (rmove 530 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+778 differing lines (rmove 453 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (bss.s gives the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
@@ -216,7 +216,8 @@ rmove 523 lines; what is left of the content is nearly all jump forms (jr/jp, la
 addresses (data order) and about 20 string addresses. Step 10 done: the string pool order of the original
 shows that do_clr stands behind do_cjp in the source (popt moves its code up to where the original has it):
 section order do_ld, do_dec, do_inc, do_and, do_arith, do_push, do_pop, do_srl, do_sra, do_sla, do_tst, do_cp,
-do_cjp, do_clr, do_lda: rmove 453 lines. Next, in this order:
+do_cjp, do_clr, do_lda: rmove 453 lines, 14 instructions of content left (4 of them string addresses, the two
+jump table addresses, the rest jump forms). Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.
