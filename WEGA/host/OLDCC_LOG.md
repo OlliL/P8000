@@ -520,3 +520,12 @@ TODO.md when this log was started.
   early optimization; the old cas that assembled /lib/cparse probably did. Candidate: a v0p cas with the rule of the
   manual; to be checked: it must make exactly this one jump long in the cparse output (and which construct of the old
   compiler output triggers it).
+- Counter-check with the ZEUS cas (S8000, file date 12/1986, runs under the emulator): the same result as the
+  shipped cas for every probe (`.=.+N` in .code/.data, `.even`, label differences in .word/ld/index, `jpr L+k`,
+  1200 open jumps): always `jr`. Neither assembler shows the early optimization of the manual.
+- But the originals show it: short `jp` in the own code of popt rmove (0x1F16 .. 0x1F5C: every open forward jump
+  `jp ne,0x1FDC`, `jp lt,0x1FF6` long, from 0x1F6E on the forward jumps short again: an early optimization at one
+  point of the text, as the manual describes), of scodgen (0x3666) and of cparse/scparse yylex (0x219E). The libc
+  members have more (hand-written assembler). So the assembler of the old tool chain had the documented behaviour;
+  the trigger in the old compiler output is still to be found (rmove gives the best evidence: the source between the
+  last long and the first short jump).
