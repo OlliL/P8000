@@ -251,6 +251,12 @@ rallo(p, down)
 	case STARG:
 		down1 = NOPREF;
 		break;
+#ifdef OLD_D5A
+	case STAR:
+		if ((p->rall & MUSTDO) && p->left->op == PLUS && p->left->right->op == REG && p->left->right->rval == 15)
+			down1 = NOPREF;	/* v0p: the address of a local array element wanted in a given register goes anywhere */
+		break;
+#endif
 	case RET:
 		if (p->type == 6 || p->type == 7)
 			down1 = MUSTDO | 0x10;

@@ -45,6 +45,7 @@
 #define OLD_D5S		/* an element of a local array: (index + offset) + fp, the frame pointer added last (fixfld) */
 #define OLD_D2PO	/* OLD_D2P: an idle odd word whose even half is free is given back for a pair */
 #define OLD_D3J		/* at a label named by jumps only the parameters known at all of them; behind a jump those of its one jump */
+#define OLD_D5A		/* the address of a local array element whose value goes to a given register: no preference (rallo) */
 #define OLD_D22		/* a double argument, parameter and result in rq4 (r4..r7); a floating compare without rounding */
 #endif
 

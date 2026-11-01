@@ -461,3 +461,6 @@ TODO.md when this log was started.
   lxmask[lxchar+1] & ... )` (the original adds 1 to r14, the register variable, as lxstr does after its comma):
   yylex now as long as the original (2026 bytes), 4 lines left (jp/jr spans); tinit, talloc, tcheck, defid show the
   data address 0x7C08 (node) masked because one of our functions now starts there: mask artifacts. Corpus 259.
+- dclargs: the address of a local array element for an argument computed in r2, ours in r6 (the wanted register).
+  OLD_D5A (no preference for that address): dclargs exact, cparse 205; for every STAR with a wanted register much
+  worse; bench v0 282 > 277 (118): in v0.
