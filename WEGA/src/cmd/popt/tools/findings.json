@@ -336,7 +336,21 @@
    },
    "review": "reviewed: structure",
    "review_note": "loop over the node list is a separate function (0x0610) in the original; tail merge of printf (D11)",
-   "size_orig": 682
+   "size_orig": 574
+  },
+  "dumperr": {
+   "file": "z21.c",
+   "orig": "0x08f8",
+   "size_orig": 50,
+   "pairing": "confirmed",
+   "note": "not called anywhere in the original (dead debug code): stdout on the fd of stderr, dumpnodes, back; name guessed (stripped binary); found with the v0p model (the range of output ended at 0x08f8)"
+  },
+  "outerr": {
+   "file": "z21.c",
+   "orig": "0x092a",
+   "size_orig": 58,
+   "pairing": "confirmed",
+   "note": "not called anywhere in the original (dead debug code): stdout on the fd of stderr, output(n), back; name guessed (stripped binary)"
   },
   "prefix": {
    "file": "z21.c",

@@ -108,7 +108,9 @@ def rewrite(lines):
             while j < len(lines) and lines[j].lstrip().startswith('.byte'):
                 body.append(lines[j])
                 j += 1
-            if body and re.search(r'%0\s*$', body[-1]):
+            # a string literal has several bytes on a .byte line (separated by commas); an initialized char array
+            # has a .byte line per element and stays where it is
+            if body and re.search(r'%0\s*$', body[-1]) and (len(body) == 1 or ',' in body[0]):
                 pool.append(l)
                 pool.extend(body)
                 if j < len(lines) and lines[j].strip() == '.even':

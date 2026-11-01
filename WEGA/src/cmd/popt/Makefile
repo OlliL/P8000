@@ -24,8 +24,15 @@ OLDOBJS = $(OLD)/freopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/fi
 	$(OLD)/atoi/0_1.o $(OLD)/strrchr/0_1.o
 # members of the shipped libc.a that are identical to the original ones
 SHIPOBJS = __callex.o data.o brk.o cuexit.o ffltioc.o write.o close.o read.o \
-	lseek.o decimal.o cerror.o open.o creat.o ioctl.o umask.o chmod.o ctype_.o strchr.o strcmp.o
-OBJS = z20.o z21.o z22.o z23.o
+	lseek.o decimal.o cerror.o open.o creat.o ioctl.o umask.o chmod.o ctype_.o
+# the libc part in the order of the original (the order of its libc.a)
+LIBCOBJS = $(OLD)/freopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o ffltioc.o $(OLD)/filbuf/0_3.o \
+	$(OLD)/setbuf/0_1.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_4.o data.o __callex.o cuexit.o $(OLD)/atoi/0_1.o \
+	$(OLD)/cnvt/0_2.o decimal.o $(OLD)/length/0_2.o $(OLD)/malloc/0_3.o $(OLD)/isatty/0_2.o $(OLD)/stty/0_2.o \
+	ctype_.o $(OLD)/strrchr/0_1.o $(OLD)/strcat/0_2.o $(OLD)/strncmp/0_1.o $(OLD)/strcpy/0_2.o \
+	$(OLD)/strlen/0_2.o brk.o chmod.o close.o creat.o ioctl.o lseek.o open.o read.o umask.o write.o cerror.o
+# bss.s (only .comm lines) gives the bss the order of the original
+OBJS = bss.o z20.o z21.o z22.o z23.o
 
 # the versions of the old compiler (one directory each, own Makefile; not part of all)
 OLDDIRS = v1 v0 v0p
@@ -36,9 +43,12 @@ old: all
 	for d in $(OLDDIRS); do cd $$d ; $(MAKE) ; cd .. ; done
 
 popt: $(OBJS) $(OLDOBJS) ship
-	$(LD) -X -e start -i crt0.o $(OBJS) $(OLDOBJS) $(SHIPOBJS) -o popt
+	$(LD) -X -e start -i crt0.o $(OBJS) $(LIBCOBJS) -o popt
 
-$(OBJS): z2.h
+$(OBJS): z2.h stdio.h
+
+bss.o: bss.s
+	$(CAS) -u -o $@ bss.s
 
 # the start-up file of popt is the shipped /lib/crt0.o (same code: start, 42 bytes)
 ship:

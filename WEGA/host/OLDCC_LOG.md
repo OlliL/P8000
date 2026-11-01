@@ -606,3 +606,35 @@ TODO.md when this log was started.
   data that is bss in the original, or a table of another size), the switch jump tables (.addr lists, D6) and some
   strings at other places. Next: the data and bss layout first (as for cparse: the tables of z20.c against the
   original data, the bss order), then the functions.
+
+## 2026-11-01 popt model: data and bss layout, first functions
+
+- The bss of /lib/popt mapped (bsspair.py, now also for entries without a range): the uninitialized arrays of our
+  source are not all bss in the original. In the data (all three are function statics in the order of their
+  functions): `tmpcc` (cclook) 0x2de, `tmpop` (oplook) 0x2fe, `labhash` (refcount) 0x31e; the buffers of repladdr
+  `buf1`, `buf2` (50 bytes each) 0x808. In the bss as commons: `ophash` 0x159e, `conval`, `ccloc`, `conloc` (20 bytes
+  each), and the stdout buffer of main is `_sobuf` of the libc (no own array). popt/bss.s (only .comm lines, linked
+  first like cparse/bss.s) gives the bss the original order; `heapcur` 0x163c, `heaplim` 0x163e (alloc), main sets
+  them `heapcur = heapbase = heaplim = sbrk(2)`; `debug` is a char (incb); `nrmove` has no counterpart (removed);
+  0x1846 is a word of rmove not in our source (`_bssgap1` in bss.s).
+- `nullcode` (the bytes at address 0 in our data) is not in the original: dualop, ovlap and markregs read through
+  the null pointer. The static patterns of findword and findlong are initialized ("rxx", "rrxx"); regprefix has a
+  static table of four strings and a switch on the type. d12model.py: an initialized char array (one `.byte` line per
+  element) is no string literal and stays in place (cparse model unchanged, 173).
+- output(): the cpir table and the string order give the case order CBRACE, JP, CALL, LABEL, DLABEL, CODE/DATA
+  falling into default, JSW, SOB, EOFOP, KCOMMENT, 0; `sub` is a register; prefix() calls printf with the `?:`
+  string (no `%s`). Behind output two functions nothing calls (0x08f8, 0x092a: stdout on the fd of stderr,
+  dumpnodes or output, back): dumperr, outerr (findings.json; quirks table).
+- stdio.h of the time (as cparse, popt/stdio.h): the old putc (store path first, extsb).
+- The libc part in the order of the original (the libc.a order: freopen printf doprnt ffltioc filbuf setbuf flsbuf
+  endopen data __callex cuexit atoi cnvt decimal length malloc isatty stty ctype_ strrchr strcat strncmp strcpy
+  strlen, the system calls brk .. write, cerror; Makefiles: LIBCOBJS); strchr and strcmp are not in the original
+  (no caller). zalloc (unused) removed, clearmem only for SPOPT.
+- Small functions: the loop step `p += 32, i++` (findreg, findslot); register parameters (getnum `register char
+  *p`, equstr), absval without register.
+- Measurement: data 3308 = 3308, bss 3420 = 3420, code 22784 against 22272; 23 of 70 functions strictly exact
+  (was 1 of 68), 5090 lines (was 6305); with equstr 24. Normal build (shipped cc) against /lib/popt on the popt corpus (272 inputs,
+  without option, -l, -d): 816 of 816. cparse model 173 (unchanged).
+- equstr: `if (!*b++)` gives the `testb @r2` of the original (`*b++ == 0` gives `ldb rl2,@r2; testb rl2`): 24.
+- Seen, open: findcon `cpb @r14` where
+  ours has `cpb @r2` after `ld r14,r2`; itoa_ r3 where ours takes r1.

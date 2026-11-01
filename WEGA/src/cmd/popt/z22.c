@@ -14,33 +14,16 @@
 
 static char sccsid[] = "@[$]z22.c\t1.6  01/18/83 19:21:46 Copr.1981 87wega3.2.";
 
-
-/* zeroed memory from malloc (the WEGA libc has no calloc) */
-char *zalloc(n)
-	int n;
-{
-	char *p;
-	int i;
-
-	p = malloc(n);
-	if (p == 0)
-		return 0;
-	for (i = 0; i < n; i++)
-		p[i] = 0;
-	return p;
-}
-
 #define TB	0x00		/* byte */
 #define TW	0x10		/* word */
 #define TL	0x20		/* long */
 #define TQ	0x22		/* quad (only used for names) */
 
-static char conloc[20];		/* memory location known to hold conval */
-int ndirect;		/* the statistic counters follow conloc in the original */
+char conloc[20];		/* memory location known to hold conval */
+int ndirect;
 int nbrbr;
-static char conval[32];
-static char ccloc[32];		/* operand the condition codes describe */
-static char buf1[64], buf2[64];
+char conval[20];
+char ccloc[20];		/* operand the condition codes describe */
 
 static int findreg();
 static int findbyte();
@@ -75,7 +58,9 @@ void dualop();
 int isreg();
 static void redunbr();
 int equstr();
+#ifdef SPOPT
 int clearmem();
+#endif
 
 /*
  * Like the original: a bump allocator on the break (sbrk).  heapbase is the break at the start (main), heapcur the
@@ -106,12 +91,6 @@ int heapbase, heaplim, heapcur;
 
 
 
-/*
- * A node without operand text makes the original read the code bytes at
- * address 0 of its address space; keep that behaviour (it matters for
- * the length of ".word Lnnn" nodes).
- */
-char nullcode[] = { 0x21, 0xf7, 0x76, 0xf6, 0 };
 
 
 
@@ -229,8 +208,8 @@ rmove()
 			r10 = isreg(RT2);
 			if (r10 & 1) {
 				r10--;
-				makereg(r10, buf1, TL);
-				setreg(buf1, TL);
+				makereg(r10, b1, TL);
+				setreg(b1, TL);
 			} else
 				setreg(RT2, TL);
 		}
@@ -416,8 +395,8 @@ rmove()
 		r10 = isreg(RT2);
 		if (r10 & 1) {
 			r10--;
-			makereg(r10, buf1, TL);
-			setreg(buf1, TL);
+			makereg(r10, b1, TL);
+			setreg(b1, TL);
 		} else
 			setreg(RT2, TL);
 		goto arith1;
@@ -892,7 +871,7 @@ int op;
 
 static int
 absval(n)
-register int n;
+int n;
 {
 	return n < 0 ? -n : n;
 }
@@ -1015,7 +994,7 @@ char *s;
 	register char *p;
 
 	p = regs[base];
-	for (i = 0; i < 15; i++, p += 32) {
+	for (i = 0; i < 15; p += 32, i++) {
 		if (*p && equstr(p, s))
 			return (base == 0 && i > 8) ? i - 8 : i;
 	}
@@ -1039,20 +1018,17 @@ int n;
 
 static int
 findword(n)
-register int n;
+int n;
 {
-	static char pat[4];
+	static char pat[] = "rxx";
 	int r;
 
 	if (n < 10) {
-		pat[0] = 'r';
 		pat[1] = n + '0';
 		pat[2] = 0;
 	} else {
-		pat[0] = 'r';
 		pat[1] = '1';
 		pat[2] = ((n - 10) & 0xf) + '0';
-		pat[3] = 0;
 	}
 	r = findreg(TW, pat);
 	if (r >= 0)
@@ -1066,18 +1042,15 @@ static int
 findlong(n)
 int n;
 {
-	static char pat[5];
+	static char pat[] = "rrxx";
 	int r;
 
-	pat[0] = 'r';
-	pat[1] = 'r';
 	if (n < 10) {
 		pat[2] = n + '0';
 		pat[3] = 0;
 	} else {
 		pat[2] = '1';
 		pat[3] = ((n - 10) & 0xf) + '0';
-		pat[4] = 0;
 	}
 	r = findreg(TL, pat);
 	if (r >= 0)
@@ -1384,7 +1357,7 @@ struct node *p;
 {
 	char *s, *d;
 
-	s = p->code ? p->code : nullcode;
+	s = p->code;
 	d = RT1;
 	while (*s && *s != ',')
 		*d++ = *s++;
@@ -1407,7 +1380,7 @@ register int base;
 	if (*s == 0)
 		return -1;
 	p = regs[base];
-	for (i = 0; i < 15; i++, p += 32)
+	for (i = 0; i < 15; p += 32, i++)
 		if (*p && equstr(p, s))
 			return i;
 	return -1;
@@ -1465,11 +1438,15 @@ regprefix(n, type)
 int n;
 int type;
 {
-	if (type == TB)
-		return n > 8 ? "rh" : "rl";
-	if (type == TL)
-		return "rr";
-	return "r";
+	static char *pfx[] = { "rh", "rl", "rr", "r" };
+
+	switch (type) {
+	case TB:
+		return n > 8 ? pfx[0] : pfx[1];
+	case TL:
+		return pfx[2];
+	}
+	return pfx[3];
 }
 
 /*
@@ -1483,6 +1460,7 @@ int f;
 {
 	int t, rd, rs, op;
 	char *pfx;
+	static char buf1[50], buf2[50];
 
 	t = dest(p);
 	rd = f ? findslot(RT2, t) : -1;
@@ -1793,15 +1771,14 @@ register char *loc;
 
 int
 equstr(a, b)
-char *a;
-char *b;
+register char *a;
+register char *b;
 {
 	for (;;) {
-		if (*a != *b)
+		if (*a++ != *b)
 			return 0;
-		if (*b++ == 0)
+		if (!*b++)
 			return 1;
-		a++;
 	}
 }
 
@@ -1836,6 +1813,7 @@ register char *s;
 	return 1;
 }
 
+#ifdef SPOPT
 /* zero n bytes (the WEGA libc has no memset) */
 clearmem(p, n)
 	char *p;
@@ -1846,3 +1824,4 @@ clearmem(p, n)
 	for (i = 0; i < n; i++)
 		p[i] = 0;
 }
+#endif

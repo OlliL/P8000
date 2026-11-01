@@ -42,7 +42,7 @@ def main():
     votes = collections.defaultdict(collections.Counter)
     for k, (v, name) in enumerate(otext):
         f = fn.get(name)
-        if not f:
+        if not f or not isinstance(f.get('orig'), str) or not f.get('size_orig'):
             continue
         lo = int(f['orig'], 16)
         a = [t for _, t in zcode.insns(gc, lo, lo + f['size_orig'], CFG.SEG)]

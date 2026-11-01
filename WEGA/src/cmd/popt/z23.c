@@ -520,8 +520,6 @@ char *name;
 	register int n;
 	int max, i;
 
-	if (text == 0)
-		text = nullcode;
 	p = name;
 	if (*p++ != 'r')
 		return 0;
@@ -1058,8 +1056,6 @@ register char *a;
 
 	flag = 0;
 	p = s;
-	if (p == 0)
-		p = nullcode;
 	if (*p == '@')
 		p++;
 	else if (*p != 'r')

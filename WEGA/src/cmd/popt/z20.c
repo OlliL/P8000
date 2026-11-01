@@ -5,6 +5,13 @@
 
 static char sccsid[] = "@[$]z20.c\t1.3  12/21/82 17:53:10 Copr.1981 87wega3.2.";
 
+/* condition code -> opposite condition code */
+char revbr[] = { 1, 0, 5, 4, 3, 2, 9, 8, 7, 6, 11, 10, 15, 14, 13, 12 };
+
+int isn = 20000;	/* next generated label number */
+int lastseg = -1;
+FILE *errfp = stderr;	/* name guessed: the original has a word initialized to stderr here that nothing uses */
+
 /*
  * Mnemonic table.  Entry order matters: it determines the hash chains
  * built by opsetup() and the entry that output() picks for a node.
@@ -39,21 +46,16 @@ struct optab optab[] = {
 	{ 0, 0 }
 };
 
-/* condition code -> opposite condition code */
-char revbr[] = { 1, 0, 5, 4, 3, 2, 9, 8, 7, 6, 11, 10, 15, 14, 13, 12 };
-
-int isn = 20000;	/* next generated label number */
-int lastseg = -1;
 
 char line[LSIZE];
 char *curlp;
 struct node first;
 int keepcmt;
 int nchange;
-int debug;
+char debug;
 char flag136a;
 char regs[NREGS][32];
 
 int nrevbr, nskip, nrlab, nxjump, ncomj, ncmot, loopiv, nsob;
 int iaftbr, njp1, redunm, nredunj, nsaddr, nshft, nrtst, nclr;
-int nlda, nrmove, nrename, npushpop, npushdirect;
+int nlda, nrename, npushpop, npushdirect;

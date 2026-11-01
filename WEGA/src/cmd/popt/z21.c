@@ -3,12 +3,11 @@
  */
 #include "z2.h"
 
+extern char _sobuf[];
+
 static char sccsid[] = "@[$]z21.c\t1.4  12/21/82 17:58:05 Copr.1981 87wega3.2.";
 
-static struct optab *ophash[OPHS];
-static struct node *labhash[LABHS];
-static char tmpop[32];
-static char tmpcc[32];
+struct optab *ophash[OPHS];
 
 /* hash of the first three characters, read without a test as the original does (names "{" and "}" are padded with a NUL, see z20.c) */
 #define HASHNAME(s) (((((int)(char)(s)[0] << 3) + 2 * (int)(char)(s)[1] + (int)(char)(s)[2]) & 0x7fff) % OPHS)
@@ -68,7 +67,6 @@ char **argv;
 {
 	register int niter, maxiter, isend;
 	int nflag;
-	static char buf[BUFSIZ];
 
 	if (argc > 1 && argv[1][0] == '+') {
 		argc--;
@@ -98,9 +96,9 @@ char **argv;
 			fprintf(stderr, "C2: can't create %s\n", argv[2]);
 			exit(1);
 		} else
-			setbuf(stdout, buf);
+			setbuf(stdout, _sobuf);
 	}
-	heaplim = heapbase = heapcur = (unsigned short)sbrk(2);
+	heapcur = heapbase = heaplim = (unsigned short)sbrk(2);
 	maxiter = 0;
 	opsetup();
 	do {
@@ -348,14 +346,12 @@ getln()
 }
 
 int
-getnum(ap)
-char *ap;
+getnum(p)
+register char *p;
 {
-	register char *p;
 	register int n;
 	register int c;
 
-	p = ap;
 	n = 0;
 	while ((c = (char)*p++) >= '0' && c <= '9')
 		n = n * 10 + c - '0';
@@ -381,25 +377,23 @@ static void
 prefix(n)
 register struct node *n;
 {
-	char *s;
 	register char *p;
-	register int call;
+	register int op;
 
-	call = n->op == CALL;
+	op = n->op;
 	if (n->code) {
 		if (n->code[0] == '@')
-			s = call ? "\tcall\t" : "\tjp\t";
+			printf(op == CALL ? "\tcall\t" : "\tjp\t");
 		else {
 			for (p = n->code; *p && *p != '('; p++)
 				;
 			if (*p)
-				s = call ? "\tcall\t" : "\tjp\t";
+				printf(op == CALL ? "\tcall\t" : "\tjp\t");
 			else
-				s = call ? "\tcallr\t" : "\tjpr\t";
+				printf(op == CALL ? "\tcallr\t" : "\tjpr\t");
 		}
 	} else
-		s = call ? "\tcallr\t" : "\tjpr\t";
-	printf("%s", s);
+		printf(op == CALL ? "\tcallr\t" : "\tjpr\t");
 }
 
 /*
@@ -410,12 +404,11 @@ output(n)
 register struct node *n;
 {
 	register struct optab *t;
-	int sub;
+	register int sub;
 
 	switch (n->op) {
-	case 0:
-		if (n->code)
-			printf("\t%s\n", n->code);
+	case CBRACE:
+		printf("\t%s\n", n->code);
 		return;
 	case JP:
 		prefix(n);
@@ -424,11 +417,59 @@ register struct node *n;
 		else
 			printf("L%d\n", n->labno);
 		return;
+	case CALL:
+		prefix(n);
+		if (n->code)
+			printf("%s\n", n->code);
+		return;
 	case LABEL:
 		printf("L%d:\n", n->labno);
 		return;
 	case DLABEL:
 		printf("%s:\n", n->code);
+		return;
+#ifdef SPOPT
+	case PSEC:
+		n->subop = 0;		/* movedat() leaves the kind of the section here */
+		lastseg = n->op;
+		goto def;
+#endif
+	case CODE:
+	case DATA:
+		lastseg = n->op;
+	default:
+#ifdef SPOPT
+	def:
+#endif
+		sub = n->subop;
+		if (sub == SBYTE || sub == SLONG || sub == SLDK)
+			n->subop = 0;
+		for (t = optab; t->name; t++) {
+			if ((t->opcode & 0xff) == n->op &&
+			    (t->opcode >> 8) == n->subop) {
+				if (n->op == CJP) {
+					prefix(n);
+					printf("%s", t->name);
+				} else
+					printf("\t%s", t->name);
+				if (sub == SBYTE)
+					putchar('b');
+				else if (sub == SLONG)
+					putchar('l');
+				else if (sub == SLDK)
+					putchar('k');
+				break;
+			}
+		}
+		if (n->op == CJP) {
+			if (n->code)
+				printf(",%s", n->code);
+			else
+				printf(",L%d", n->labno);
+		} else if (n->code)
+			printf("\t%s", n->code);
+		putchar('\n');
+		n->subop = sub;
 		return;
 	case JSW:
 #ifdef SPOPT
@@ -437,16 +478,6 @@ register struct node *n;
 		printf("\t.word\tL%d\n", n->labno);
 #endif
 		return;
-#ifdef SPOPT
-	case PSEC:
-		n->subop = 0;		/* movedat() leaves the kind of the section here */
-		lastseg = n->op;
-		break;
-#endif
-	case CODE:
-	case DATA:
-		lastseg = n->op;
-		break;
 	case SOB:
 		if (n->subop == SBYTE)
 			printf("\tdjnzb");
@@ -457,49 +488,43 @@ register struct node *n;
 			printf(",L%d", n->labno);
 		putchar('\n');
 		return;
-	case CALL:
-		prefix(n);
-		if (n->code)
-			printf("%s\n", n->code);
-		return;
 	case EOFOP:
-		return;
-	case CBRACE:
-		printf("\t%s\n", n->code);
 		return;
 	case KCOMMENT:
 		printf("%s\n", n->code);
 		return;
-	}
-	sub = n->subop;
-	if (sub == SBYTE || sub == SLONG || sub == SLDK)
-		n->subop = 0;
-	for (t = optab; t->name; t++) {
-		if ((t->opcode & 0xff) == n->op &&
-		    (char)(t->opcode >> 8) == n->subop) {
-			if (n->op == CJP) {
-				prefix(n);
-				printf("%s", t->name);
-			} else
-				printf("\t%s", t->name);
-			if (sub == SBYTE)
-				putchar('b');
-			else if (sub == SLONG)
-				putchar('l');
-			else if (sub == SLDK)
-				putchar('k');
-			break;
-		}
-	}
-	if (n->op == CJP) {
+	case 0:
 		if (n->code)
-			printf(",%s", n->code);
-		else
-			printf(",L%d", n->labno);
-	} else if (n->code)
-		printf("\t%s", n->code);
-	putchar('\n');
-	n->subop = sub;
+			printf("\t%s\n", n->code);
+		return;
+	}
+}
+
+/* the node list on stderr */
+dumperr()
+{
+	int fd;
+
+	fd = stdout->_file;
+	fflush(stdout);
+	stdout->_file = stderr->_file;
+	dumpnodes();
+	fflush(stdout);
+	stdout->_file = fd;
+}
+
+/* one node on stderr */
+outerr(n)
+struct node *n;
+{
+	int fd;
+
+	fd = stdout->_file;
+	fflush(stdout);
+	stdout->_file = stderr->_file;
+	output(n);
+	fflush(stdout);
+	stdout->_file = fd;
 }
 
 char *
@@ -562,6 +587,7 @@ int opw;
 	int h, start;
 	struct optab *o;
 	char *a, *b;
+	static char tmpcc[32];
 
 	q = tmpcc;
 	p = curlp;
@@ -599,6 +625,7 @@ oplook()
 	char *name, *tp;
 	int h, start, suffix;
 	struct optab *o;
+	static char tmpop[32];
 
 	if (line[0] == 0) {
 		curlp = line;
@@ -662,6 +689,7 @@ refcount()
 	register struct node *p, *lp, *tp;
 	register struct node **h;
 	int i, n;
+	static struct node *labhash[LABHS];
 
 	for (h = labhash; h < &labhash[LABHS]; h++)
 		*h = 0;

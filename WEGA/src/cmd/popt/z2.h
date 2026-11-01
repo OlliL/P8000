@@ -5,7 +5,7 @@
  * The same sources, compiled with -DSPOPT, are spopt (scc -O): the segmented variant;
  * the places that differ are marked SPOPT.
  */
-#include <stdio.h>
+#include "stdio.h"
 
 /* node types (the "op" byte of a node, also the low byte of an optab word) */
 #define CJP	1	/* jpr cc,Lnnn  (subop = condition) */
@@ -95,7 +95,7 @@ extern char *curlp;
 extern struct node first;
 extern int keepcmt;	/* -l flag: keep the / *~~ lines */
 extern int nchange;
-extern int debug;
+extern char debug;
 extern char flag136a;
 extern char regs[NREGS][32];
 #define RT1 regs[48]
@@ -104,7 +104,7 @@ extern char regs[NREGS][32];
 /* statistics */
 extern int nbrbr, nrevbr, nskip, nrlab, nxjump, ncomj, ncmot, loopiv, nsob;
 extern int iaftbr, njp1, redunm, nredunj, nsaddr, nshft, nrtst, nclr;
-extern int nlda, nrmove, nrename, npushpop, npushdirect, ndirect;
+extern int nlda, nrename, npushpop, npushdirect, ndirect;
 
 /* z21.c */
 int main();
@@ -119,8 +119,6 @@ void iterate();
 char * copy();
 int getnum();
 /* z22.c */
-clearmem();
-char *zalloc();
 char *malloc();
 char *sbrk();
 char *strchr();
@@ -144,5 +142,4 @@ int equstr();
 void movedat();
 /* z23.c */
 void procopt();
-extern char nullcode[];
 int isused();
