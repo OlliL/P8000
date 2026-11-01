@@ -400,7 +400,7 @@ rmove()
 		push_end:
 			dualop(p);
 		}
-		if (isreg(RT1 + 1) < 0)
+		if (isreg(RT2 + 1) < 0)
 			goto disp;
 		goto kill_all;
 
@@ -584,7 +584,7 @@ rmove()
 				p1->back = p->back->back;
 			}
 			decref(p->ref);
-			p = p->back->forw;
+			p = p->back->back;
 			nchange++;
 			goto cc_clear;
 		}

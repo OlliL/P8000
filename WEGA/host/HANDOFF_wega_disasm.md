@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (530 lines, 35 instructions of content, under analysis)
+- rmove (526 lines, 33 instructions of content, under analysis)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -209,7 +209,9 @@ against 3272): some code of the original is still missing in ours. Step 6 done: 
 (once for the setreg choice, once for `ccloc[0] = 0` against `setcc(RT2)`): 36 instructions of content, rmove 528
 lines (3204 bytes). Step 7 done: sh8 starts with `if (p->op == SRA) dualop(p);` (the dualop of do_sra
 moved behind the label, as the original): 35 instructions of content, rmove 530 lines (3210 bytes, 62 short).
-Next, in this order:
+Step 8 done: push_end tests `isreg(RT2 + 1)` (not RT1), and the `r12 == 0` arm of do_cjp goes on with
+`p = p->back->back` (host/popt has `p->back->forw`, which differs from the original; the corpus does not show
+it): 33 instructions of content, rmove 526 lines. Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.
