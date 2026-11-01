@@ -796,3 +796,9 @@ TODO.md when this log was started.
   popt model 56 of 73, 855 lines; popt corpus 816/816; cparse model 173.
 - rmove, step 8: push_end tests isreg(RT2 + 1); do_cjp (r12 == 0) goes on with p = p->back->back as the original (host/popt: p->back->forw, a behaviour difference the corpus does not show): content 33, rmove 526.
   popt model 56 of 73, lines 851; popt corpus 816/816; cparse model 173.
+- host/popt synchronized with the behaviour of the original found in src/cmd/popt (owner request; only the normal
+  popt, no old-cc switches): natural tests the NUL (the `)` branch never applies), push_end tests `isreg(RT2 + 1)`,
+  do_cjp goes on with `p = p->back->back`. Not taken over (undefined in the original, host/ may keep its tests):
+  the null pointer reads (nullcode, oplook, equop, rename_regs, fixldm), the `rN(` recursion of markregs, the endless
+  blank loop of adrlen, the 20-byte conval/ccloc. The other source forms of src/cmd/popt do not change behaviour.
+  host/popt against /lib/popt on the popt corpus: 816 of 816.

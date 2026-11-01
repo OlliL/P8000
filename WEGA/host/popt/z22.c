@@ -953,12 +953,12 @@ natural(char *s)
 
 	if (*s == '@')
 		return 0;
-	for (p = s; *p; p++)
+	for (p = s; *p++;)
 		;
-	if (p[-1] == ')') {
-		if (p[-2] != 'p')
+	if (*--p == ')') {
+		if (p[-1] != 'p')
 			return 0;
-		if (p[-3] != 'f')
+		if (p[-2] != 'f')
 			return 0;
 	}
 	return 1;
@@ -1564,7 +1564,7 @@ rmove(void)
 		push_end:
 			dualop(p);
 		}
-		if (isreg(RT1 + 1) < 0)
+		if (isreg(RT2 + 1) < 0)
 			goto disp;
 		goto kill_all;
 
@@ -1667,7 +1667,7 @@ rmove(void)
 				p1->back = p->back->back;
 			}
 			decref(p->ref);
-			p = p->back->forw;
+			p = p->back->back;
 			nchange++;
 			goto cc_clear;
 		}
