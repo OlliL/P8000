@@ -302,7 +302,7 @@ d2qfree(r)
 }
 #endif
 
-#ifdef OLD_D2O
+#if defined(OLD_D2O) || defined(OLD_D2MO)
 /* the odd word register r is busy once and its partner r - 1 is free, or idle and then given back */
 static int
 d2ofree(r)
@@ -399,6 +399,17 @@ allocreg(p, cookie)
 		if (r == -1)
 			rbusy(p->left->rval, 4, p->left->sname, p->left->lval);
 	}
+#ifdef OLD_D2MO
+	/* an odd one in the pair below it when the even half is free or idle */
+	if (r == -1 && cls == 3 && want == -1 && p->op == MUL && p->left->op == REG &&
+	    szty(p->left->type) == 1 && p->left->rval < 8 && (p->left->rval & 1) && d2ofree(p->left->rval)) {
+		rfree(p->left->rval, 4);
+		rsreturn(2, p->left->rval);
+		r = getreg(3, p->left->rval - 1, 0, p->sname);
+		if (r == -1)
+			rbusy(p->left->rval, 4, p->left->sname, p->left->lval);
+	}
+#endif
 #endif
 #ifdef OLD_D2Q
 	if (r == -1 && cls == 3 && (p->op == STAR || p->op == OREG)) {

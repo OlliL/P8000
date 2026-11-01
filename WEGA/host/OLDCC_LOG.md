@@ -444,3 +444,5 @@ TODO.md when this log was started.
 - refid `reftab[nrefs].r_id = nrefsym * 22`: the original multiplies in rr2, ours in rr0: r3 idle with the parameter p
   of the statement before, r2 free. OLD_D2PO (the odd idle half given back so that the pair merges): refid 20 > 6,
   dclstruct 17 > 5; cparse 234; corpus 259; bench v0 290 > 282: in v0.
+- dclstruct `(sz / al + 1) * al`: the quotient in r3 multiplied in rr2 (ours copied it to r1, rr0). OLD_D2MO (with
+  d2ofree): dclstruct exact, cparse 229, corpus 259; bench v0 282 > 291: v0p only.
