@@ -695,7 +695,7 @@ yylex(){
 				yylval.intval = ASG MINUS;
 
 			warn:
-				if( lxchar=getchar(), lxmask[lxchar+1] & (LEXLET|LEXDIG|LEXDOT) ){
+				if( lxmask[ (lxchar=getchar())+1] & (LEXLET|LEXDIG|LEXDOT) ){
 					werror( "ambiguous assignment: assignment op taken" );
 					}
 				ungetc( lxchar ,stdin);
