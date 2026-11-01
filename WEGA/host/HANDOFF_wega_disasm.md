@@ -134,7 +134,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 56 of 73 functions strictly exact,
-1436 differing lines (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+1431 differing lines (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (bss.s gives the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (1111, under analysis)
+- rmove (1106, under analysis)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -192,12 +192,14 @@ src/cmd/popt). The jump tables of rmove are in the data at 0x6e6 (the values 10,
 with their targets) and 0x6fe (the main switch on p->op, 52 entries, index op-1). Found so far (OLDCC_LOG.md
 2026-11-01, "rmove, analysis started"): only about 190 of 645 instructions differ in content, the rest is layout;
 the content comes from the variables. Done: r12, r11, r10 register variables, `char b1[20], b2[20]`, the unused
-`s` removed, the write-only global `rmnode` (0x1846) set at the top of the loop. Next, in this order:
+`s` removed, the write-only global `rmnode` (0x1846) set at the top of the loop, no `op` (the switch is on p->op,
+its default goes to `reset`; the explicit range test of our source is the one codgen makes): 1106 lines. Next,
+in this order:
 1. The frame of the original is 0x38: word 0 (a second dest value), b1 at 2, b2 at 0x16, word 0x2a (t), word 0x2c;
-   our source still has `n`, `t`, `r`, `op` in the frame. The original has no `op` variable (the switch is on
-   p->op; replace `op` by `p->op` only where p->op is not changed in between) and probably no `n` (p1 is reused
-   for `p->back`, `ld r13,4(r14)`); the words 0x2a and 0x2c hold int values and pointers (findcon results): int
-   locals used for both.
+   ours is 0x3c with `n`, `t`, `r` in the frame (n is used 40 times). Probably no `n` in the original (p1 is
+   reused for `p->back`, `ld r13,4(r14)`); the words 0x2a and 0x2c hold int values and pointers (findcon
+   results): int locals used for both. The data address of the main jump table differs (0x6fe against our 0x6e6):
+   in the original the cpir table of rmove comes first (D6 table order of d12model, a layout question).
 2. Then the case order of the main switch from the table at 0x6fe and the block layout (compare the instruction
    multisets after each step: `strictcmp -v` output, lines starting with - and +).
 3. The long `jp` of the old cas (OLDCC.md, open cparse point 4) is in rmove: one `jp` where `jr` reaches, trigger

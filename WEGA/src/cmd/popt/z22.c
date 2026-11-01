@@ -133,17 +133,14 @@ rmove()
 	register int r12, r11, r10;
 	struct node *n;
 	char b1[20], b2[20];
-	int t, r, op;
+	int t, r;
 
 	flag136a = 0;
 	p = first.forw;
 	while (p) {
 		rmnode = p;
 		p1 = p->forw;
-		op = p->op;
-		if ((unsigned)(op - 1) > 0x33)
-			goto reset;
-		switch (op) {
+		switch (p->op) {
 		case CJP:
 			goto do_cjp;
 		case JP:

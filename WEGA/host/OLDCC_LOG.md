@@ -765,3 +765,7 @@ TODO.md when this log was started.
   rmove sets to p at the top of the loop and nothing reads (rmnode; bss.s). Step 1 (r12, r11, r10 registers, b1,
   b2 [20], no s, rmnode): 1296 > 1111 lines.
   popt model 56 of 73, 1436 lines; popt corpus 816/816; cparse model 173.
+- rmove: no `op` (the original switches on p->op; the explicit `(unsigned)(op - 1) > 0x33` test of our source is
+  the range test codgen makes itself, the default goes to `reset`): 1111 > 1106. The frame is still 0x3c against
+  0x38 (n, t, r).
+  popt model 56 of 73, 1431 lines; popt corpus 816/816; cparse model 173.
