@@ -509,3 +509,5 @@ TODO.md when this log was started.
 - yylex: the second getchar (`lxmask[ (lxchar=getchar())+1]`) is the assignment form after all (the original
   `inc r2,#1`), only the switch head is the comma form: 4 > 2. Left: `jp 21AA` over `ld r7,#_iob; call _filbuf`
   (12 bytes) where the same getchar at the top of yylex has `jr`: probably the old cas.
+- refid, argalloc: the right operand of a long compare (`exts`, a negation) in rr6, ours rr4. A preference rr6 for
+  it (rallo): 126 > 170. Removed; open.
