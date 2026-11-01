@@ -352,3 +352,11 @@ TODO.md when this log was started.
   defid unchanged. Removed. Under OLD_D20X the losers are tails of the `?:` of TNEXT (talloc: the original stores in
   each arm) and the `call; ld r2,2(r15); jr` tail of fixclass placed at the other occurrence: the cross-jump and
   comjump decisions depend on the order too.
+- Owner question (2026-11-01): were defid or lxmore changed in the source to explain the order? defid in the PCC form
+  (goto mismatch in the loop, the WEGA block behind the switch): 79 > 122, so our placement stays. But the test
+  distance gave the rule: defid has its test 4 nodes from the head, lxmore 19. OLD_D20X with a short reach for the
+  early inversion only (12 nodes): 430 (lxmore exact again; lxtitle, fixclass, talloc worse); 6 or 8: 426 (lxtitle
+  +22, talloc +6). lxtitle traced: its inner for loop has getchar in init and step, the original cross-jumps that
+  5-instruction tail first and inverts then. Early inversion only when the cross-jump takes one instruction at most:
+  cparse 140, 398, only defid changed (79 > 13); reach 5..8 the same, 12: fixclass +4, 24: lxmore +14, fixclass +4.
+  Corpus 259; bench v0 with OLD_D20X alone 318 > 323 (110): v0p only.

@@ -9,10 +9,12 @@
 # Switches (host/OLDCC.md):
 #   OLD_D20C  a block reached only by conditional jumps (and by falling out of one over it) that ends with a jump
 #             goes behind the conditional jump that names it from in front (cjmove, z21.c)
+#   OLD_D20X  the loop inversion of a back jump before its cross-jump when the test is near the head and the
+#             cross-jump would take one instruction at most (d20xinv, z21.c)
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D20C
+SWITCHES = -DOLD_D20C -DOLD_D20X
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc
