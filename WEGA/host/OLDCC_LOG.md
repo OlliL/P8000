@@ -502,3 +502,7 @@ TODO.md when this log was started.
   source: 8 > 175. Open.
 - gotscal `DECREF(pstk->in_t)`: the address pstk+12 computed in r0, moved to r1; the original loads into r0, ours
   into r1. OLD_D2R0: gotscal exact, cparse 166, 128; corpus 259; bench v0 277 > 278: v0p.
+- argregs: the original keeps the `switch( n )` dispatch with its `ld r2,r13` at the end (reached by `jr ne`), ours
+  moves it up to `L674: ld r2,r13; jpr L676`. Tried: popt OLD_D20M (a short block only jumps reach moves in front of
+  its target instead of the target up): 128 > 900+; codgen OLD_D6V (the TEMP assignment of the switch value
+  deferred to the SWTCH, the value computed at the dispatch): 128 > 900+. Both removed; open.
