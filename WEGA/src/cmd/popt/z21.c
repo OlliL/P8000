@@ -1098,6 +1098,38 @@ register struct node *p;
 #else
 					return p1;
 #endif
+#ifdef TRACE
+				if (debug) {
+					register struct node *q;
+					int tn, jn, jc, jl, pre, tc;
+
+					tn = tc = 0;
+					for (q = p2; q && q != p3->forw; q = q->forw) {
+						if (q->op != LABEL && q->op != KCOMMENT)
+							tn++;
+						if (q->op == CJP)
+							tc++;
+					}
+					jn = jc = jl = pre = 0;
+					for (q = p1->back; q && q->op != LABEL; q = q->back) {
+						if (q->op == KCOMMENT)
+							continue;
+						jn++;
+						if (q->op == CJP)
+							jc++;
+						if (q->op == JP || q->op == RET || q->op == JSW)
+							break;
+					}
+					if (q && q->op == LABEL) {
+						jl = q->refc;
+						while (q->back && (q->back->op == LABEL || q->back->op == KCOMMENT))
+							q = q->back;
+						pre = q->back && (q->back->op == JP || q->back->op == RET);
+					}
+					printf("/*CM L%d refc %d tlen %d tcjp %d tend %d jlen %d jcjp %d jlabrefc %d jpre %d*/\n", p1->labno,
+					    p1->ref->refc, tn, tc, p3->ref == 0 ? -1 : p3->labno, jn, jc, jl, pre);
+				}
+#endif
 				ncmot++;
 				nchange++;
 				p1->back->forw = p2;

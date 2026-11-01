@@ -584,3 +584,11 @@ TODO.md when this log was started.
   end of the PLUS case (`break` = `jp 0x569C`, the return), falling into zapright: the jumping block moved in front of
   its target; ours moves zapright up to the jump. Same picture as argregs (`L674: ld r2,r13; jpr L676` in front of
   the dispatch). Trial: no block move for a label with more than one reference: 98 > 1752. Removed.
+- popt placement, round 2: the TRACE build of popt (z21.c) now also prints every block move of codemove with its
+  features (`/*CM Lx refc tlen tcjp tend jlen jcjp jlabrefc jpre*/`). Over all cparse modules: 283 block moves; the
+  wrong ones (argregs L676, optim L154/L162, defid) have the same features as correct ones in exact functions
+  (chkstr L325, clocal L128: a one- or two-instruction block reached only by jumps, a target with CJPs that ends with
+  a direct jump). No separating feature in the node list. OLD_D6V again, only for a switch on a plain variable:
+  96 > 427. Removed.
+- Proposal: the passes codgen and popt were built by the same compiler (v0p); compiled from our sources with ccv0p
+  and compared with /lib/codgen and /lib/popt they would give many more placement witnesses for popt rules.
