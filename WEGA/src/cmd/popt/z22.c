@@ -690,28 +690,25 @@ jumpsw()
 {
 	register struct node *p, *p1;
 	register int n;
-	int count, d1, d2, subop;
-	struct node *t;
-	int tl;
+	register struct node *t;
+	int count, d1;
 
-	count = 0;
 	n = 0;
+	count = 0;
 	for (p = first.forw; p; p = p->forw)
 		p->refc = ++n;
 	for (p = first.forw; p; p = p1) {
 		p1 = p->forw;
 		if (p->op == CJP && p1->op == JP && p->ref && p1->ref) {
 			d1 = absval(p1->refc - p1->ref->refc);
-			d2 = absval(p->refc - p->ref->refc);
-			if (d2 > d1 && p->ref != p1->ref) {
-				subop = p->subop;
-				p->subop = revbr[subop];
+			if (absval(p->refc - p->ref->refc) > d1 && p->ref != p1->ref) {
+				p->subop = revbr[p->subop];
 				t = p1->ref;
 				p1->ref = p->ref;
 				p->ref = t;
-				tl = p1->labno;
+				n = p1->labno;
 				p1->labno = p->labno;
-				p->labno = tl;
+				p->labno = n;
 				nrevbr++;
 				count++;
 			}
@@ -1600,8 +1597,9 @@ movedat()
 #else
 
 	struct node hd;
-	register struct node *r1, *r4, *r6, *r7;
-	int cur;
+	register struct node *r1, *r4;
+	register int cur;
+	register struct node *r6, *r7;
 
 	if (first.forw == 0)
 		return;
@@ -1632,8 +1630,13 @@ movedat()
 	}
 	cur = -1;
 	for (r1 = first.forw; r1; r1 = r1->forw) {
-		if (r1->op != CODE && r1->op != DATA)
+		switch (r1->op) {
+		case CODE:
+		case DATA:
+			break;
+		default:
 			continue;
+		}
 		r4 = r1->forw;
 		if (r4) {
 			if (r4->op == PSEC)
@@ -1664,12 +1667,13 @@ redunbr(p)
 register struct node *p;
 {
 	register struct node *t;
-	char *a, *b;
-	int ty, r;
+	register char *a;
+	char *b;
+	int ty;
 
-	if (p->ref == 0)
+	if ((t = p->ref) == 0)
 		return;
-	t = nonlab(p->ref);
+	t = nonlab(t);
 	if (t->op == TST) {
 		singop(t);
 		savereg(0x31, "#0", 0);
@@ -1683,15 +1687,14 @@ register struct node *p;
 	a = findcon(0x30, ty);
 	b = findcon(0x31, ty);
 	t = t->forw;
-	r = compare(t->subop, b, a);
-	if (r <= 0)
+	if (compare(t->subop, b, a) <= 0)
 		return;
 	nredunj++;
 	nchange++;
 	decref(p->ref);
 	p->ref = t->ref;
 	p->labno = t->labno;
-	p->ref->refc++;
+	++p->ref->refc;
 }
 
 /* known value of the operand held in regs[n] */
@@ -1766,19 +1769,17 @@ char *b;
 
 static void
 setcon(val, loc)
-register char *val;
-register char *loc;
+char *val;
+char *loc;
 {
-	register char *s, *d;
+	register char *l, *v, *d;
 
-	if (*val == '#' && natural(loc)) {
-		s = loc;
-		d = conloc;
-		while ((*d++ = *s++))
+	l = loc;
+	v = val;
+	if (*v == '#' && natural(loc)) {
+		for (d = conloc; *d++ = *l++;)
 			;
-		s = val;
-		d = conval;
-		while ((*d++ = *s++))
+		for (d = conval; *d++ = *v++;)
 			;
 	}
 }

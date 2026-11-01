@@ -660,3 +660,12 @@ TODO.md when this log was started.
   form, a placement witness. findcon (`cpb @r2` after `ld r14,r2` where the original tests `@r14`) is already in
   the codgen output (no popt): codgen v0p; itoa_, reverse (r1 for r3): codgen register choice. Left for codgen.
   popt model 38 of 70, 4639 lines; popt corpus 816/816.
+- jumpsw (n reused for the label swap, t a register, no d2/subop temporaries), redunbr (`if ((t = p->ref) == 0)`,
+  compare tested directly, `++p->ref->refc`: the statement `p->ref->refc++` gives with codgen v0p a dead
+  `ld r2,6(r14); inc r2,#12` in front), fixldm (a switch: case 0 without the test of p->forw, quirk; case 1
+  `*strrchr(...) = 0`; default `sprintf(++q, ...)`): exact. movedat: `cur` a register declared between the node
+  pointers (the leaf renaming of popt follows the declaration order), the second loop dispatches with a switch on
+  r1->op; left: the `cp r2,#0x1c` block stands in front of the loop head in the original (placement witness).
+  setcon (parameters with register copies): left one `ld r7,r6` where codgen v0p reloads the home (the parameter
+  register kept across `cpb; jr ne`: codgen D3 family). popt model 41 of 70, 4498 lines; popt corpus 816/816;
+  cparse model 173.

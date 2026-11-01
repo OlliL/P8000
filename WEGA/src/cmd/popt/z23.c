@@ -252,19 +252,20 @@ fixldm(p, n)
 register struct node *p;
 register int n;
 {
-	char *q;
+	register char *q;
 
-	if (n == 0) {
+	switch (n) {
+	case 0:
 		p->back->forw = p->forw;
-		if (p->forw)
-			p->forw->back = p->back;
-	} else if (n == 1) {
+		p->forw->back = p->back;
+		break;
+	case 1:
 		p->op = LD;
-		q = strrchr(p->code, ',');
-		*q = 0;
-	} else {
+		*strrchr(p->code, ',') = 0;
+		break;
+	default:
 		q = strrchr(p->code, '#');
-		sprintf(q + 1, "%d", n);
+		sprintf(++q, "%d", n);
 	}
 }
 
