@@ -120,12 +120,17 @@ the open cparse points (and every switch must keep cparse as it is):
   v0p: the .D order, the frame offsets of blocks); likely few.
 - yylex (point 4): popt rmove already shows the cas effect; more clusters in codgen/popt give more trigger points
   for a model of the old cas (each needs an exact .s around it).
-Steps: (1) set up the strict comparison for codgen and popt like cparse (progcfg with ORIG_BIN and STRICT_INPUT, a
-link of our objects built with ccv0p with the original's data layout where D12 demands it, strictcmp; the
-findings.json of `src/cmd/codgen/tools` and `src/cmd/popt/tools` have the function map); (2) a first measurement
-with the current v0p; (3) then the same loop as for cparse: source forms first, switches with two witnesses, every
-switch checked on cparse (`oldcc.sh model`, corpus) and the v0 bench. The normal builds of codgen and popt stay as
-they are (they are the shipped programs).
+Order (owner decision 2026-11-01): **popt first, then codgen.** popt is small (z20.c .. z23.c, 25 KB against 80 KB
+and 206 functions of codgen), so the strict comparison for a second program is built there first and then reused;
+it is nearly all switches, loops and gotos (the placement question of point 1), its rmove has the clearest cas
+cluster (point 4), its small leaf functions may answer point 3.
+1. Set up the popt model: progcfg with ORIG_BIN (/lib/popt) and STRICT_INPUT, a link of our objects built with
+   ccv0p with the original's data layout where D12 demands it, strictcmp (the function map is in
+   `src/cmd/popt/tools/findings.json`); a first measurement with the current v0p.
+2. The same loop as for cparse: source forms first, switches with two witnesses; every switch also checked on cparse
+   (`oldcc.sh model`, corpus) and on the v0 bench. The normal builds of popt and codgen stay as they are (they are
+   the shipped programs).
+3. Then codgen with the same frame, and back to the open cparse points with the new witnesses.
 
 **Tools.**
 
