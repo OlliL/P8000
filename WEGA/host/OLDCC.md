@@ -1,12 +1,12 @@
 # The old C compilers of WEGA
 
 This is the edited summary of everything known about the C compiler revisions that built the WEGA binaries: the
-differences D1 ... D20 between them and the shipped compiler, which object shows which, and the old compiler
+differences D1 ... D22 between them and the shipped compiler, which object shows which, and the old compiler
 versions we rebuild (v1, ...). It is rewritten when the knowledge changes, never appended to. The running notes,
 measurements and attempts go to `OLDCC_LOG.md` (dated entries, append only); the evidence per function is in the
 findings.json of each program (`src/cmd/*/tools/findings.json`). Owner decisions are marked with their date.
 
-Contents: 1 Terms and rules, 2 Compiler versions, 3 The differences D1 ... D20, 4 Objects and their differences,
+Contents: 1 Terms and rules, 2 Compiler versions, 3 The differences D1 ... D22, 4 Objects and their differences,
 5 Open questions.
 
 ## 1 Terms and rules

@@ -174,3 +174,9 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 2. argdebug (every call argument passes through it; returns it; name assumed: a debug hook left empty by the preprocessor); bssgap1/2.
 3. The two files bss.s and libcbss.s are layout aids; with the old compiler the order should come from the first
    mentions in cgram1.o (check when the old cc exists).
+
+## State 2026-11-01
+
+The work on cparse is now the work on the old compiler v0p that built it: 166 of 179 functions strictly exact with
+ccv0p, corpus 259/259. The current state, the open groups and the tools (`oldcc.sh`, `olist.py`, the popt trace) are in
+`host/HANDOFF_wega_disasm.md`, section "Current work"; the attempts in `host/OLDCC_LOG.md`.
