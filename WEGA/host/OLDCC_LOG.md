@@ -553,3 +553,6 @@ TODO.md when this log was started.
   triggers, ZEUS cas, binary counts, capacity on the real input, itable steps): yylex 0x219E stays as an explained
   remainder (the early jump optimization of an older cas, described in the manual, evidence in four programs, trigger
   unknown).
+- defalign: `defalign(n) register n; { n /= SZCHAR; ...` (the original has no frame place for n: a register parameter
+  gets no home under OLD_D4R, popt drops the dead copy `ld r14,r7`); the form with `register al` gives 9, without
+  register 7. Exact: cparse 167, 117.

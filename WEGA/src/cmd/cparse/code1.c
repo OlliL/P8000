@@ -198,11 +198,10 @@ bend(){ /* the end of a function in the .I file */
 	putc( '\n', outfile );
 	}
 
-defalign(n) { /* cause the alignment to become a multiple of n */
-	register al;
+defalign(n) register n; { /* cause the alignment to become a multiple of n */
 
-	al = n/SZCHAR;
-	if( curloc != PROG && al > 1 ){
+	n /= SZCHAR;
+	if( curloc != PROG && n > 1 ){
 		if( sectfull( DATA, 1L ) ) newsect( DATA );
 		else if( sectsize[DATA] & 1 ) ++sectsize[DATA];
 		fprintf( dfile, "    .even\n" );
