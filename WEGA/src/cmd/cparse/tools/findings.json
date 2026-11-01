@@ -6816,7 +6816,7 @@
   "buildtree": {
    "basis": "frame layout",
    "d_classes": "",
-   "note": "Source fix: one more unused int at the function level, and in the STREF block the locals in the order cp2, cp1, an unused int, j, k (the frame places of the original); the names of the unused ones are guesses."
+   "note": "Source fix: one more unused int at the function level, and in the STREF block the locals in the order cp2, cp1, an unused int, j, k (the frame places of the original); the names of the unused ones are guesses. Source: cp2 = &ntab[STP(i)->sname] in the member block. Remaining: data order of a switch table and 0.0, the temporary of the COLON build at 0x12."
   },
   "efcode": {
    "basis": "frame layout",

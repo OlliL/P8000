@@ -471,3 +471,7 @@ TODO.md when this log was started.
   cparse 160 strict; corpus 259.
 - clocal: `long val` declared in the ICON block of the SCONV case (the temporaries of the statements outside it start
   at 4, the '[' offset of cparse): 10 > 6, only the popt block placement left.
+- buildtree, the WEGA member block of STREF: `cp2 = &ntab[STP(i)->sname];` (the original reads i from the frame,
+  not sp from r8; then OLD_D3N passes cp2 from r3): 17 > 6. Left: the switch table and the constant 0.0 in the
+  other order in the data, and the temporary of `buildtree( COLON, ll, lr )` at 0x12 (ours 0xC; the block offsets
+  of the member block do not explain it: moving cp2, cp1, m out of it makes the frame 2 bytes larger).

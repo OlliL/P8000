@@ -342,7 +342,7 @@ buildtree( o, l, r ) register NODE *l, *r; {
 
 				for( j = dimtab[l->csiz+1]; k = dimtab[j]; ++j ){
 					cp1 = &ntab[STP(k)->sname];
-					cp2 = &ntab[sp->sname];
+					cp2 = &ntab[STP(i)->sname];
 					if( (STP(k)->sflags&SMEMB) && !strcmp( cp2, cp1 ) ){
 						r->rval = i = k;
 						r->type = STP(k)->stype;
