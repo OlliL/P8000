@@ -678,3 +678,14 @@ TODO.md when this log was started.
   falling into 'r'; `char flag`; the `rN(` recursion `markregs(p[3], b, a)` with a character as the pointer, as
   the original: now kept in src/cmd/popt, quirks table): exact. popt model 45 of 70, 4305 lines before markregs.
   With markregs 45 of 70, 4268 lines; popt corpus 816/816; cparse model 173.
+- equop (no test of p1, p2: quirk; p1 a register copy; one `return 0` at the end, the loop leaves with break: the
+  other `return 0` are cross-jumped to it): left `ld r2,r6` where codgen v0p reloads the home of p2 (the second
+  witness after setcon: the parameter register kept across a branch). isreg (one `return -1` at the end, the
+  `return n` in front of it; `isalnum(p[2])` without unsigned), compare (a and b themselves as register parameters,
+  one accumulator moved into vb, `va *= 10; va += *b++ - '0';`), dualop (the copies inline, not strcpy; a register
+  copy of p; declared s, d, then p, then q): exact. setreg (s scanned in place, a register copy s0 for memreg,
+  `type` reused for the type of the memory register, `char name[6]`): left the block placement of the findcopy
+  loop and of the scan loop (the original jumps from the loop end straight to `mem`, ours tests `*s` again) and the
+  argument order of makereg (the value of `type` is still in r2 in ours: codgen). Both loop forms (for/while) give
+  the same code.
+  popt model 48 of 70, 4014 lines; popt corpus 816/816; cparse model 173.

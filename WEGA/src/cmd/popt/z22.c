@@ -887,30 +887,28 @@ int n;
 }
 
 int
-equop(p1, p2)
-struct node *p1;
+equop(ap1, p2)
+struct node *ap1;
 struct node *p2;
 {
 	register char *a, *b;
+	register struct node *p1;
 
-	if (p1 == 0 || p2 == 0)
-		return 0;
-	if (p2->op != p1->op || p2->subop != p1->subop)
-		return 0;
-	if (p1->op > 0 && p1->op < 7)
+	p1 = ap1;
+	if (p2->op != p1->op || p2->subop != p1->subop || p1->op > 0 && p1->op < 7)
 		return 0;
 	a = p1->code;
 	b = p2->code;
-	if (a == 0)
-		return b == 0;
-	if (b == 0)
-		return 0;
-	for (;;) {
-		if (*b++ != *a)
-			return 0;
-		if (*a++ == 0)
-			return 1;
-	}
+	if (a == 0 && b == 0)
+		return 1;
+	if (a && b)
+		for (;;) {
+			if (*b++ != *a)
+				break;
+			if (*a++ == 0)
+				return 1;
+		}
+	return 0;
 }
 
 void
@@ -1167,40 +1165,37 @@ setreg(s, type)
 register char *s;
 int type;
 {
-	int r, r2, t;
-	char *p;
-	char name[8];
+	register int c, r;
+	register char *s0;
+	char name[6];
 
+	s0 = s;
 	ccinval(s);
-	r = isreg(s);
-	if (r >= 0) {
+	if ((r = isreg(s)) >= 0) {
 		killreg(r, type);
 		for (;;) {
-			r2 = findcopy(s, type);
-			if (r2 < 0)
+			if ((c = findcopy(s, type)) < 0)
 				break;
 			if (type == TW || type == TB)
-				killreg(r2, TW);
+				killreg(c, TW);
 			else if (type == TL || type == TQ)
-				killreg(r2, TL);
+				killreg(c, TL);
 		}
 	}
-	for (p = s; *p; p++)
-		if (*p == '(' || *p == '@')
-			break;
-	if (*p) {
-		if (p[1] == 'f' && p[2] == 'p')
+	while (*s && *s != '(' && *s != '@')
+		s++;
+	if (*s) {
+		if (s[1] == 'f' && s[2] == 'p')
 			goto mem;
 		cleargroup(NREGS, 1);
 		return;
 	}
 mem:
-	r = memreg(s, type);
-	if (r < 0)
+	if ((r = memreg(s0, type)) < 0)
 		return;
-	t = (r & 0x0ff0) >> 4;
-	makereg(r & 0xf, name, t);
-	setreg(name, t);
+	type = (r & 0x0ff0) >> 4;
+	makereg(r & 0xf, name, type);
+	setreg(name, type);
 }
 
 /* name of register n of the class `type' */
@@ -1362,20 +1357,26 @@ struct node *p;
  * operand), RT2 = destination (first operand when there are two).
  */
 void
-dualop(p)
-struct node *p;
+dualop(ap)
+struct node *ap;
 {
-	char *s, *d;
+	register char *s, *d;
+	register struct node *p;
+	register char *q;
 
+	p = ap;
 	s = p->code;
 	d = RT1;
 	while (*s && *s != ',')
 		*d++ = *s++;
+	*d++ = 0;
+	d = RT2;
 	*d = 0;
-	RT2[0] = 0;
 	if (*s++ == ',') {
-		strcpy(RT2, RT1);
-		strcpy(RT1, s);
+		for (q = RT1; *d++ = *q++;)
+			;
+		for (d = RT1; *d++ = *s++;)
+			;
 	}
 }
 
@@ -1401,9 +1402,9 @@ int
 isreg(s)
 register char *s;
 {
-	int hi, n;
-	char *p;
-	int c;
+	register char *p;
+	register int n;
+	int hi;
 
 	hi = -1;
 	p = s;
@@ -1414,22 +1415,16 @@ register char *s;
 			hi = 1;
 		p++;
 	}
-	n = atoi(p + 1);
-	if (n < 0 || n >= 15)
+	if ((n = atoi(p + 1)) < 0 || n >= 15)
 		return -1;
 	if (n < 10) {
-		if (isalnum((unsigned char)p[2]))
-			return -1;
-		if (p[2] == '(')
+		if (isalnum(p[2]) || p[2] == '(')
 			return -1;
 		if (hi == 1)
 			return n + 8;
 		return n;
 	}
-	c = (unsigned char)p[3];
-	if (isalnum(c))
-		return -1;
-	if (c != '(')
+	if (!isalnum(p[3]) && p[3] != '(')
 		return n;
 	return -1;
 }
@@ -1723,32 +1718,34 @@ int t;
 static int
 compare(cc, a, b)
 int cc;
-char *a;
-char *b;
+register char *a;
+register char *b;
 {
-	register char *p, *q;
 	register int va, vb;
 
-	p = a;
-	q = b;
-	if (*p++ != '#')
+	if (*a++ != '#')
 		return -1;
-	if (*q++ != '#')
+	if (*b++ != '#')
 		return -1;
-	vb = 0;
-	while ((char)*q >= '0' && (char)*q <= '9')
-		vb = vb * 10 + *q++ - '0';
 	va = 0;
-	while ((char)*p >= '0' && (char)*p <= '9')
-		va = va * 10 + *p++ - '0';
-	if (*p == '+')
-		p++;
-	if (*q == '+')
-		q++;
+	while (*b >= '0' && *b <= '9') {
+		va *= 10;
+		va += *b++ - '0';
+	}
+	vb = va;
+	va = 0;
+	while (*a >= '0' && *a <= '9') {
+		va *= 10;
+		va += *a++ - '0';
+	}
+	if (*a == '+')
+		a++;
+	if (*b == '+')
+		b++;
 	for (;;) {
-		if (*p++ != *q)
+		if (*a++ != *b)
 			return -1;
-		if (*q++ == 0)
+		if (!*b++)
 			break;
 	}
 	switch (cc) {
