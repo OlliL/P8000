@@ -811,3 +811,5 @@ TODO.md when this log was started.
 - rmove, step 12: the main switch encloses the sections and disp (the table order of the original): content 11, rmove 451, popt 776.
   popt corpus 816/816; cparse model 173.
 - rmove: tried clr_cc as if (r12 < 0) setcon else { savereg }: content 12 against 11, reverted. Left: the two "#0" of clr_cc in the other order, one call (ld r7,r14) more in ours.
+- rmove, step 13: JP and CALL as sections do_jp, do_call behind disp (the original's code places): rmove 441, content 10, popt 766.
+  popt corpus 816/816; cparse model 173.

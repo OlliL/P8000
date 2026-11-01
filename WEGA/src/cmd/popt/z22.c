@@ -144,8 +144,7 @@ rmove()
 		case CJP:
 			goto do_cjp;
 		case JP:
-			redunbr(p);
-			goto reset;
+			goto do_jp;
 		case LD:
 			goto do_ld;
 		case CLR: case COM: case NEG: case EXTS:
@@ -169,9 +168,7 @@ rmove()
 		case AND: case OR:
 			goto do_and;
 		case CALL:
-			flag136a = 1;
-			cleargroup(0x32, 0);
-			goto reset;
+			goto do_call;
 		case PUSH:
 			goto do_push;
 		case POP:
@@ -672,6 +669,15 @@ rmove()
 		else
 			setcc(RT2);
 		goto next;
+
+	do_jp:
+		redunbr(p);
+		goto reset;
+
+	do_call:
+		flag136a = 1;
+		cleargroup(0x32, 0);
+		goto reset;
 		}
 
 	cc_clear:
