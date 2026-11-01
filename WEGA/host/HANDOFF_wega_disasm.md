@@ -134,7 +134,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 56 of 73 functions strictly exact,
-1621 differing lines (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+1436 differing lines (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (bss.s gives the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
@@ -149,7 +149,7 @@ at the end; parameters with register copies give the homes of the original; `++p
 `p->x++` leaves dead code with codgen v0p; function statics in the order of their functions); when the rest looks
 like layout, compare the instruction multisets of both sides (usesreg: equal but for jr/jp). Original bugs found
 on the way are in the quirks table of KNOWLEDGE.md (natural, adrlen, oplook, equop, fixldm, markregs,
-rename_regs, five dead functions: dumperr, outerr, regof, ishigh, nwords). Every difference of the compiler found on the way goes
+rename_regs, five dead functions: dumperr, outerr, regof, ishigh, nwords; the write-only global rmnode). Every difference of the compiler found on the way goes
 at once into OLDCC.md section 3 as "Open" under its class (owner rule), with or without a switch. Details:
 OLDCC_LOG.md 2026-11-01 "popt model".
 
@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (1296)
+- rmove (1111, under analysis)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -184,19 +184,27 @@ for the codgen work and the placement question:
 - codgen, D5 (the member of an element of a local array of structures, the STREF form of OLD_D5S): procopt.
 - popt, D20 (block placement, loop inversion): backjmp, killreg, movedat, xjump, dest, setreg, usesreg (dest also
   the old popt's register knowledge, `sub r2,r3`).
-- Not yet looked at: rmove (also holds the cas cluster of the open cparse point 4).
+- Under analysis: rmove (see "Now: rmove" below; it also holds the cas cluster of the open cparse point 4).
 
-**Next: rmove** (z22.c, original 0x13b6, 3272 bytes; the only function with a large remainder). How to start:
-`python3 tools/strictcmp.py -v rmove` and the original listing (`python3 tools/olist.py rmove`, in src/cmd/popt); the jump tables of rmove are in the data at 0x6e6
-(the values 10, 11, 14, 15, 45, 46 of a cpir switch with their targets) and 0x6fe (the main switch on p->op, 52
-entries, index op-1); the bss word 0x1846 is a global of rmove that our source does not have (`_bssgap1` in bss.s
-holds its place: rename it when found). First compare the instruction multisets of both sides (as for usesreg)
-to see how much is source and how much layout. Known in rmove: the long `jp` cluster of the old cas (OLDCC.md,
-the open cparse point 4: one `jp` where `jr` reaches, trigger at a `call`); the makereg calls of the SLDK and AND
-cases write into a local buffer of rmove (`lda r6,2(fp)`, our b1) and not into a static. Lessons of the other
-functions that will apply: the case order from the jump table, register declaration order, `++p->x`,
-`return a || b`, a single return at the end, macros for repeated code (ovlap SCAN: the loop form decides whether
-popt moves the blocks).
+**Now: rmove, under analysis** (z22.c, original 0x13b6, 3272 bytes; the only function with a large remainder,
+1111 lines on 2026-11-01). Listing: `python3 tools/olist.py rmove`, diff: `python3 tools/strictcmp.py -v rmove` (in
+src/cmd/popt). The jump tables of rmove are in the data at 0x6e6 (the values 10, 11, 14, 15, 45, 46 of a cpir switch
+with their targets) and 0x6fe (the main switch on p->op, 52 entries, index op-1). Found so far (OLDCC_LOG.md
+2026-11-01, "rmove, analysis started"): only about 190 of 645 instructions differ in content, the rest is layout;
+the content comes from the variables. Done: r12, r11, r10 register variables, `char b1[20], b2[20]`, the unused
+`s` removed, the write-only global `rmnode` (0x1846) set at the top of the loop. Next, in this order:
+1. The frame of the original is 0x38: word 0 (a second dest value), b1 at 2, b2 at 0x16, word 0x2a (t), word 0x2c;
+   our source still has `n`, `t`, `r`, `op` in the frame. The original has no `op` variable (the switch is on
+   p->op; replace `op` by `p->op` only where p->op is not changed in between) and probably no `n` (p1 is reused
+   for `p->back`, `ld r13,4(r14)`); the words 0x2a and 0x2c hold int values and pointers (findcon results): int
+   locals used for both.
+2. Then the case order of the main switch from the table at 0x6fe and the block layout (compare the instruction
+   multisets after each step: `strictcmp -v` output, lines starting with - and +).
+3. The long `jp` of the old cas (OLDCC.md, open cparse point 4) is in rmove: one `jp` where `jr` reaches, trigger
+   at a `call`; record it, do not try to build it here.
+Lessons of the other functions that will apply: the case order from the jump table, register declaration order,
+`++p->x`, `return a || b`, a single return at the end, macros for repeated code (ovlap SCAN: the loop form decides
+whether popt moves the blocks), `while (*a++ == *b++)` against `for (;;) { if (...) break; }`.
 
 **Tools.**
 

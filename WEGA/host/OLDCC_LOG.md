@@ -756,3 +756,12 @@ TODO.md when this log was started.
   ishigh, nwords (findings.json; quirks table). ovlap, ishigh, nwords exact: popt model 56 of 73, 1621 lines.
   popt corpus 816/816; cparse model 173.
 - D20 switches checked again after ovlap: unchanged, all five needed.
+- rmove, analysis started: the instruction multisets of both sides differ in about 190 instructions of 645 on each
+  side; the rest of the 1296 lines is layout. The content differences come from the variables: the original has
+  five register variables (r14 p, r13 p1, r12, r11, r10: `ldm r10,#5`) and a frame of 0x38: word 0 (a second type
+  from dest), b1 at 2 and b2 at 0x16 (20 bytes each), word 0x2a (t: dest values, also a findcon pointer), word 0x2c
+  (isreg and findcon values: int locals that also hold pointers). No `op` (the switch is on p->op, the tests read
+  @r14), probably no `n` (`ld r13,4(r14)`: p1 also holds the node in front). The bss word 0x1846 is a global that
+  rmove sets to p at the top of the loop and nothing reads (rmnode; bss.s). Step 1 (r12, r11, r10 registers, b1,
+  b2 [20], no s, rmnode): 1296 > 1111 lines.
+  popt model 56 of 73, 1436 lines; popt corpus 816/816; cparse model 173.

@@ -39,4 +39,4 @@
 	.comm	2, _nrtst
 	.comm	2, _keepcmt
 	.comm	512, __sobuf
-	.comm	2, _bssgap1
+	.comm	2, _rmnode

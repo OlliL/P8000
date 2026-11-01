@@ -119,6 +119,8 @@ int isused();
 
 
 
+struct node *rmnode;		/* the node rmove works on */
+
 /*
  * rmove: walk the code of the function and keep track of what the
  * registers contain; remove redundant loads, merge instructions into
@@ -127,14 +129,16 @@ int isused();
 void
 rmove()
 {
-	register struct node *p, *p1, *n;
-	int t, r11, r12, r10, r, op;
-	char b1[24], b2[24];
-	char *s;
+	register struct node *p, *p1;
+	register int r12, r11, r10;
+	struct node *n;
+	char b1[20], b2[20];
+	int t, r, op;
 
 	flag136a = 0;
 	p = first.forw;
 	while (p) {
+		rmnode = p;
 		p1 = p->forw;
 		op = p->op;
 		if ((unsigned)(op - 1) > 0x33)
