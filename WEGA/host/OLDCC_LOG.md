@@ -556,3 +556,10 @@ TODO.md when this log was started.
 - defalign: `defalign(n) register n; { n /= SZCHAR; ...` (the original has no frame place for n: a register parameter
   gets no home under OLD_D4R, popt drops the dead copy `ld r14,r7`); the form with `register al` gives 9, without
   register 7. Exact: cparse 167, 117.
+- The third pair: in the whole original cparse a long result needs a new pair while rr0 and rr2 are taken only in
+  refid (`exts rr6`) and argalloc (`subl rr6,rr6`), both rr6; ours rr4. A preference rr6 for the right operand of a
+  long compare (rallo): passed on to the operand, 117 > 157. The free list in the order rr2 rr0 rr6 rr4: refid and
+  argalloc exact, but words split from it change (the cpir count r6 instead of r4: bdty, talign ...), 189. OLD_D2W6:
+  only a pair request takes rr6 before rr4: 169 strict, 105 lines; corpus 259; bench v0 277 > 275 (v0).
+- Note: make's built-in rule `.l -> .c` regenerates scan1.c with flex when a file scan1.l lies in src/cmd/cparse
+  (it happened with a scratch listing); keep no .l files there.

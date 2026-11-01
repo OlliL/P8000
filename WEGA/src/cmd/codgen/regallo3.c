@@ -644,6 +644,18 @@ getreg(cls, reg, flag, sym)
 				break;
 		}
 #endif
+#ifdef OLD_D2W6
+		if (cls == 3 && reg == -1 && n->reg == 4) {	/* v0p: a pair asked for: rr6 before rr4 */
+			for (m = n; m && m->cls == 3; prev = m, m = m->next)
+				if (m->reg == 6)
+					break;
+			if (m && m->cls == 3 && m->reg == 6)
+				n = m;
+			else
+				for (prev = rsfree; prev != n && prev->next != n; prev = prev->next)
+					;
+		}
+#endif
 		n->flags &= ~0x8000;
 		n->sym = sym;
 		n->off = sym ? sym->soffset : 0;
