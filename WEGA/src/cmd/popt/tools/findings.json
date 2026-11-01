@@ -2778,7 +2778,21 @@
    "review": "reviewed: structure",
    "review_note": "inline scan measured 2026-10-27: original ovlap 0x3c5a..0x432c, 682 instructions (scan bodies included); inline variant (scan loop copied at 19 call sites, return 1 on match) passes corpus 813/816 but is 862 instructions, 80 equal in tryfn; not adopted. Differences: frame 0x1a (ours 0x36), buffer at frame offset 4, original scan compares with cpb rl2,#'r' and jumps back into a shared loop (0x3cea, 0x3cd8), isalnum as table ldb %0BE5(r2) and and #7 (matches the macro)",
    "orig_end": "0x432c",
-   "size_orig": 1746
+   "size_orig": 1692
+  },
+  "ishigh": {
+   "file": "z23.c",
+   "orig": "0x42f6",
+   "size_orig": 36,
+   "pairing": "confirmed",
+   "note": "not called anywhere in the original (dead code behind ovlap): 1 for an operand that starts with rh; name guessed (stripped binary)"
+  },
+  "nwords": {
+   "file": "z23.c",
+   "orig": "0x431a",
+   "size_orig": 18,
+   "pairing": "confirmed",
+   "note": "not called anywhere in the original (dead code behind ovlap): 2 for SLONG, else 1; name guessed (stripped binary)"
   },
   "usesreg": {
    "file": "z23.c",

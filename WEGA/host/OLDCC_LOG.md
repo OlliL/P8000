@@ -747,3 +747,11 @@ TODO.md when this log was started.
   parameter taken from r7 for the test and reloaded for the call in the original, the other way round in ours (D3).
   popt model 53 of 71 (regof added), 2968 lines; popt corpus 816/816; cparse model 173.
 - D20 switches checked again after procopt: unchanged, all five needed.
+- ovlap: the register search written once as a macro SCAN() (19 uses): `st = text; while (*st) { if (*st++ != 'r')
+  continue; sq = b1; while (*sq++ == *st++) { if (*sq) continue; if (*st == 0) return 1; if (isalnum(*st))
+  continue; return 1; } }`; the inner loop as `while (*sq++ == *st++)` (the form `for (;;) { if (*sq++ != *st++)
+  break; ...}` makes popt move the blocks: 1043 lines against 21); register pointers b1 = b + 1, b2 = b + 2 (r12,
+  r11), `char b[8]`, `name` itself advanced (no p), registers st, sq, b1, b2, n, i; isalnum without unsigned.
+  Behind ovlap two functions nothing calls (0x42f6: an operand starting with rh; 0x431a: 2 for SLONG, else 1):
+  ishigh, nwords (findings.json; quirks table). ovlap, ishigh, nwords exact: popt model 56 of 73, 1621 lines.
+  popt corpus 816/816; cparse model 173.

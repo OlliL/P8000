@@ -488,535 +488,130 @@ char *buf;
 	reverse(buf);
 }
 
+/* look for the register name in b1 (behind its 'r') in text: return 1 from ovlap when found */
+#define SCAN() \
+	st = text; \
+	while (*st) { \
+		if (*st++ != 'r') \
+			continue; \
+		sq = b1; \
+		while (*sq++ == *st++) { \
+			if (*sq) \
+				continue; \
+			if (*st == 0) \
+				return 1; \
+			if (isalnum(*st)) \
+				continue; \
+			return 1; \
+		} \
+	}
+
 /* does the operand text mention a register overlapping register `name'? */
 static int
 ovlap(text, name)
 char *text;
 char *name;
 {
-	char b[40];
-	register char *p;
-	register int n;
-	int max, i;
+	register char *st, *sq, *b1, *b2;
+	register int n, i;
+	char b[8];
+	int max;
 
-	p = name;
-	if (*p++ != 'r')
+	b1 = b + 1;
+	b2 = b + 2;
+	if (*name++ != 'r')
 		return 0;
 	b[0] = 'r';
 	max = 15;
-	switch (*p) {
+	switch (*name) {
 	case 'h':
 	case 'l':
 		max = 7;
-		p++;
+		name++;
 		/* FALLTHROUGH */
 	default:
-	word:
-		n = atoi(p);
+		n = atoi(name);
 		if (n < 0 || n > max)
 			return 0;
-		strcpy(b + 1, p);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		b[1] = 'h';
-		strcpy(b + 2, p);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		b[1] = 'l';
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		b[1] = 'r';
+		strcpy(b1, name);
+		SCAN();
+		*b1 = 'h';
+		strcpy(b2, name);
+		SCAN();
+		*b1 = 'l';
+		SCAN();
+		*b1 = 'r';
 		if (n % 2)
-			itoa_(n - 1, b + 2);
+			itoa_(n - 1, b2);
 		else
-			strcpy(b + 2, p);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		b[1] = 'q';
-		itoa_(n - n % 4, b + 2);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
+			strcpy(b2, name);
+		SCAN();
+		*b1 = 'q';
+		itoa_(n - n % 4, b2);
+		SCAN();
 		return 0;
 	case 'r':
-		p++;
-		n = atoi(p);
+		name++;
+		n = atoi(name);
 		if (n < 0 || n > max)
 			return 0;
-		b[1] = 'r';
-		strcpy(b + 2, p);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		strcpy(b + 1, p);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		itoa_(n + 1, b + 1);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		b[1] = 'h';
-		strcpy(b + 2, p);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		b[1] = 'l';
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		itoa_(n + 1, b + 2);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		b[1] = 'h';
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		b[1] = 'q';
-		itoa_(n - n % 4, b + 2);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
+		*b1 = 'r';
+		strcpy(b2, name);
+		SCAN();
+		strcpy(b1, name);
+		SCAN();
+		itoa_(n + 1, b1);
+		SCAN();
+		*b1 = 'h';
+		strcpy(b2, name);
+		SCAN();
+		*b1 = 'l';
+		SCAN();
+		itoa_(n + 1, b2);
+		SCAN();
+		*b1 = 'h';
+		SCAN();
+		*b1 = 'q';
+		itoa_(n - n % 4, b2);
+		SCAN();
 		return 0;
 	case 'q':
-		p++;
-		n = atoi(p);
+		name++;
+		n = atoi(name);
 		if (n < 0 || n > max)
 			return 0;
-		b[1] = 'q';
-		strcpy(b + 2, p);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		b[1] = 'r';
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-		itoa_(n + 2, b + 2);
-		{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
+		*b1 = 'q';
+		strcpy(b2, name);
+		SCAN();
+		*b1 = 'r';
+		SCAN();
+		itoa_(n + 2, b2);
+		SCAN();
 		for (i = n; i < n + 4; i++) {
-			itoa_(i, b + 1);
-			{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-			b[1] = 'h';
-			itoa_(i, b + 2);
-			{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
-			b[1] = 'l';
-			{
-		register char *st, *sq;
-		register int sa, sb;
-
-		st = text;
-		while (*st) {
-			if (*st++ != 'r')
-				continue;
-			sq = b + 1;
-			for (;;) {
-				sa = *sq++;
-				sb = *st++;
-				if (sa != sb)
-					break;
-				if (*sq)
-					continue;
-				if (*st == 0)
-					return 1;
-				if (isalnum((unsigned char)*st))
-					continue;
-				return 1;
-			}
-		}
-	}
+			itoa_(i, b1);
+			SCAN();
+			*b1 = 'h';
+			itoa_(i, b2);
+			SCAN();
+			*b1 = 'l';
+			SCAN();
 		}
 		return 0;
 	}
+}
+
+/* is the operand a high byte register? */
+ishigh(s)
+register char *s;
+{
+	return *s == 'r' && s[1] == 'h';
+}
+
+/* the words of an operand of size type */
+nwords(type)
+int type;
+{
+	return type == SLONG ? 2 : 1;
 }
 
 /*
