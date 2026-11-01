@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (410 lines, 8 instructions of content, under analysis)
+- rmove (410 lines; content equal but for jump forms and two string addresses: layout, D20)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -232,7 +232,10 @@ top in the original (0x143e, behind the LD section); writing `next:` behind do_l
 code (popt places it), so the source form is not the cause. Step 15 done: the LD case that becomes a CLR goes
 `goto do_clr` (the original falls into do_clr, whose first statement is the singop; ours had its own singop
 and `goto clr_tail`): the call counts per callee are now equal (a check: count call/calr per target on both
-sides); rmove 410 lines, 8 instructions of content, popt 735. Next, in this order:
+sides); rmove 410 lines, 8 instructions of content, popt 735. What is left in rmove is layout only: jump forms
+(jr/jp) and the two "#0" of clr_cc (with the setcon branch first in the text, before step 11, the strings were in
+the original's order but the jumps worse: one source form cannot give both under our popt, so it is a placement
+question, D20). The source work on rmove is done for now. Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.

@@ -818,3 +818,4 @@ TODO.md when this log was started.
 - rmove: next: behind do_ld in the source gives the same code (435): not the cause, reverted.
 - rmove, step 15: the LD case that becomes CLR goes to do_clr (one singop less, as the original): rmove 410, content 8, popt 735.
   popt corpus 816/816; cparse model 173.
+- rmove: what is left is layout (jump forms, the two "#0" of clr_cc whose order depends on the branch order); the source work on rmove is done for now.
