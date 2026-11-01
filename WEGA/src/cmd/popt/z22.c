@@ -590,12 +590,12 @@ rmove()
 			goto next;
 		}
 		r12 = isreg(RT1);
-		if (r12 < 0) {
-			setcon("#0", RT1);
+		if (r12 >= 0) {
+			t = dest(p);
+			savereg(r12, "#0", t);
 			goto next;
 		}
-		t = dest(p);
-		savereg(r12, "#0", t);
+		setcon("#0", RT1);
 		goto next;
 
 	do_lda:

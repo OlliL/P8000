@@ -806,3 +806,5 @@ TODO.md when this log was started.
   popt model 56 of 73, lines 848; popt corpus 816/816; cparse model 173.
 - rmove, step 10: the string pool of the original ("#0" of do_clr near the end) puts do_clr behind do_cjp in the source; popt moves its code up: rmove 523 > 453 lines.
   popt model 56 of 73, lines 778; popt corpus 816/816; cparse model 173.
+- rmove, step 11: clr_cc with the register branch first (if (r12 >= 0) { savereg } setcon): content 13; the z22.c strings are in the original's order except the cpir table of rmove.
+  popt model 56 of 73, lines 778; popt corpus 816/816; cparse model 173.

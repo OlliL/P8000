@@ -217,7 +217,9 @@ addresses (data order) and about 20 string addresses. Step 10 done: the string p
 shows that do_clr stands behind do_cjp in the source (popt moves its code up to where the original has it):
 section order do_ld, do_dec, do_inc, do_and, do_arith, do_push, do_pop, do_srl, do_sra, do_sla, do_tst, do_cp,
 do_cjp, do_clr, do_lda: rmove 453 lines, 14 instructions of content left (4 of them string addresses, the two
-jump table addresses, the rest jump forms). Next, in this order:
+jump table addresses, the rest jump forms). Step 11 done: in clr_cc the register branch first (`if (r12 >= 0)
+{ savereg } setcon`): 13 instructions of content. The strings of z22.c are now in the original's order
+except the cpir table of rmove (data layout). Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.
