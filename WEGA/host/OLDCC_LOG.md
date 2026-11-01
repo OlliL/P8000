@@ -816,3 +816,5 @@ TODO.md when this log was started.
 - rmove, step 14: reset between do_jp and do_call: rmove 435.
   popt corpus 816/816; cparse model 173.
 - rmove: next: behind do_ld in the source gives the same code (435): not the cause, reverted.
+- rmove, step 15: the LD case that becomes CLR goes to do_clr (one singop less, as the original): rmove 410, content 8, popt 735.
+  popt corpus 816/816; cparse model 173.

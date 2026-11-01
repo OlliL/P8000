@@ -197,8 +197,7 @@ rmove()
 			}
 			p->op = CLR;
 			strcpy(p->code, RT2);
-			singop(p);
-			goto clr_tail;
+			goto do_clr;
 		}
 		if (p->subop == SLDK) {
 			dualop(p);

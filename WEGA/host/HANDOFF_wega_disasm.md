@@ -134,7 +134,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 56 of 73 functions strictly exact,
-766 differing lines (rmove 441 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+735 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (bss.s gives the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (435 lines, 10 instructions of content, under analysis)
+- rmove (410 lines, 8 instructions of content, under analysis)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -229,7 +229,10 @@ singop of p too many); the rest are jump forms (layout). Step 13 done: the JP an
 441 lines, 10 instructions of content, popt 766. Step 14 done: `reset:` (clearreg; goto next) between do_jp
 and do_call, as the original's default target 0x205a: rmove 435 lines. Open: `next` (`p = p->forw`) stands near the
 top in the original (0x143e, behind the LD section); writing `next:` behind do_ld in the source gives the same
-code (popt places it), so the source form is not the cause. Next, in this order:
+code (popt places it), so the source form is not the cause. Step 15 done: the LD case that becomes a CLR goes
+`goto do_clr` (the original falls into do_clr, whose first statement is the singop; ours had its own singop
+and `goto clr_tail`): the call counts per callee are now equal (a check: count call/calr per target on both
+sides); rmove 410 lines, 8 instructions of content, popt 735. Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.
