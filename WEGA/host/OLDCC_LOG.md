@@ -347,3 +347,8 @@ TODO.md when this log was started.
   lxtitle 0 > 22, fixclass, talloc worse: 464 > 444 (137 exact); only for a jump with no label in front: unchanged.
   OLD_D20N tried (a longer reach for the test: 29 nodes: 552; counting instructions only, 26: 574, 24: 584).
   Removed; the rule that tells defid from lxmore is open.
+- popt xjump turns the instruction in front of the jump into the new jump and leaves the old jump dead behind it;
+  iterate then calls codemove with the dead jump. OLD_D20Y tried (codemove with the new jump): cparse 464 > 494,
+  defid unchanged. Removed. Under OLD_D20X the losers are tails of the `?:` of TNEXT (talloc: the original stores in
+  each arm) and the `call; ld r2,2(r15); jr` tail of fixclass placed at the other occurrence: the cross-jump and
+  comjump decisions depend on the order too.
