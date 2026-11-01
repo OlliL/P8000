@@ -182,7 +182,7 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D21`, `OLD_D16A`, `OLD_D16B`, `OLD_D3N` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D21`, `OLD_D16A`, `OLD_D16B`, `OLD_D3N`, `OLD_D3V` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
 - State: /lib/cparse 157 strictly exact, 205 differing lines (about 12 of them mask artifacts: a data address equal to a function address of one side), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
@@ -346,6 +346,9 @@ compiler that built the original. Not differences of the compiler (checked):
   an operator copies it first (fixclass `ld r2,r6; and r2,#%0030`; without this `and r6` changed the parameter).
   ecode `ld r2,r7` before each use. Keeping it at every label: cparse 1400 > 1488 (twords, fwalk lost). cparse
   1400 > 1312, bench v0 99 > 107.
+- v0p (switch `OLD_D3V` in codgen, reclaim): the value of a word assignment to memory whose type a cast has painted
+  (`q->rval = (int) (idp = hide( p ))`, defid) may be that memory (RLEFT): the store through the pointer reloads idp.
+  For every assignment: 163 > 230. Bench v0 unchanged.
 - v0p (switch `OLD_D3N` in codgen: match, argplace, getreg, stmt): the register a statement stored into word
   variables (autos or parameters, also `l = lab = getlab()`) is taken for them in the next statement when one is
   stored through a pointer or is a whole argument, unless that register was allocated in between (genswitch

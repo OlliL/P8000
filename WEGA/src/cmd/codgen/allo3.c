@@ -633,6 +633,12 @@ reclaim(p, rewrite, cookie)
 		p->rval = 0;
 		goto done;
 	}
+#ifdef OLD_D3V
+	/* v0p: the value of an assignment to a word in memory may be that memory */
+	if (o == ASSIGN && rewrite == RRIGHT && (p->left->op == OREG || p->left->op == NAME) && szty(p->type) == 1 &&
+	    p->type != p->left->type)
+		rewrite = RLEFT | RRIGHT;	/* (a cast has painted the assignment) */
+#endif
 	ap = a;
 	if (rewrite & RLEFT)
 		*ap++ = getlr(p, 'L');
