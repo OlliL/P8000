@@ -73,27 +73,59 @@ it; the goal is a byte-identical `/lib/cparse` (owner: "oberste Direktive"). The
 **v0p** (v0, the compiler of the 1982 programs, plus switches only the passes show). Driver `ccv0p`, passes in
 `src/cmd/{cparse,codgen,popt}/v0p`, installed into the oldroot tree (`make -C host oldroot`).
 
-**State.** 166 of 179 functions strictly exact, 126 differing lines; data and bss as in the original under the D12
-model; code 48640 against 48896 bytes. cparse built with ccv0p passes its corpus (259/259). The bench of v0 (System
-III programs of 1982 with ccv0): 118 of 153 functions, 277 lines. The per-function list: `oldcc.sh model; oldcc.sh
-lines`. Open, in three groups:
+**State (2026-11-01, end of the session).** 173 of 179 functions strictly exact, 96 differing lines; data and bss as
+in the original under the D12 model; code 48640 against 48896 bytes. cparse built with ccv0p passes its corpus
+(259/259). The bench of v0 (System III programs of 1982 with ccv0): 118 of 153 functions, 275 lines. The
+per-function list: `oldcc.sh model; oldcc.sh lines`.
 
-1. **codgen remnants, about 30 lines:** defalign 9 (the original does not store the parameter n in the frame),
-   refid 6 and argalloc 6 (the right operand of a long compare in rr6, ours rr4), buildtree 6 (the data order of a
-   switch table and the constant 0.0; the temporary of `buildtree( COLON, ll, lr )` at 0x12), exname 3 (`&ntab[s]`
-   adds s from the frame), zecode 2 (a long parameter from rr6 inside an argument), oconvert 2 (argument order),
-   newsect 2 (`&sectname[sec][k]` adds k before the array). Plan: collect every occurrence of a pattern in the
-   original listings (cparse and the bench programs) before writing a rule; the failed attempts so far were rules made
-   from one case (see the log).
-2. **popt block placement, about 86 lines:** optim 51 (the block of `else if( LCON(p) && RCON(p) && conval(...) )`
-   stands behind the MINUS case), argregs 27 (the switch dispatch with `ld r2,r13` stays at the end), defid 8 (the
-   loop step `dec 0x16(fp),#2` stands in front of redecl). Lesson of cinit, clocal, falloc: such placements were source
-   orders (case order, statement order) or a detail of the codgen output (`ld r2,r2`), not popt rules. Plan: first a
-   script that tries the case and block orders of the source, then the popt trace (below) against the original order;
-   a new popt rule only after that, checked on all functions and the bench.
-3. **Probably outside the compiler, about 4 lines:** yylex `jp` where the same getchar elsewhere has `jr` (the old
-   cas?), argdebug (popt renames a single saved register variable into r1), the data order in buildtree. To be
-   discussed with the owner (an older cas, or record as an explained remainder).
+**Open in /lib/cparse, and why** (details and every refuted attempt in `OLDCC_LOG.md`, 2026-11-01; do not repeat
+them without new evidence):
+
+1. **popt block placement, 86 lines: optim 51, argregs 27, defid 8.**
+   - optim: the block of `else if( LCON(p) && RCON(p) && conval( p->left, o, p->right ) ) goto zapright;` stands in
+     the original behind the end of the PLUS case (`break` = `jp 0x569C`, the return) and falls into zapright; ours
+     moves the zapright block up to the jump. argregs: the same picture: `L674: ld r2,r13; jpr L676` goes in front of
+     the switch dispatch at the end (the original keeps the dispatch there), ours moves the dispatch up. So the old
+     popt sometimes moves the jumping block in front of its target instead of the target up to the jump.
+   - defid: the loop step `dec 0x16(fp),#2; jp head` of the SMEMB loop stands in the original right behind the
+     `jp mismatch` at the end of the class switch (in front of redecl); ours keeps it behind the loop body. The source
+     order with the mismatch block in front of redecl does not work (the CJP over the JP is turned round first).
+   - Why open: the popt trace with block-move features (283 moves over all modules) shows no feature that separates
+     the wrong moves from correct ones in exact functions; every rule tried (no move for multiply named labels, the
+     jumping block in front of the target, the switch value at the dispatch) costs hundreds of lines elsewhere.
+     cparse alone has too few witnesses.
+2. **buildtree, 6 lines.** 4 lines: the double constant 0.0 (`r->dval == 0`) lies in the data behind the first switch
+   table (0x2846), ours in front (0x27EA): the order in which cparse writes the .D file (constant at the statement,
+   table at the end of the switch). 2 lines: the temporary of `buildtree( COLON, ll, lr )` is at 0x12 in the
+   original, ours 0xC; it fits a cparse that does not give back all the frame space of the member block (cp2, cp1, m)
+   at its end; moving these variables out of the block makes the frame 2 bytes larger. One witness each: not built.
+3. **argdebug, 2 lines.** The original renames the unused register variable `a` (r14) into r1 and drops its save
+   (`ld r1,r7`); our popt renames only registers saved with ldm pairs (procopt), and its rmove removes the restore
+   first. A popt rule with a single witness: not built.
+4. **yylex, 2 lines (one instruction).** `jp 0x21AA` where `jr` reaches: the early jump optimization of an older cas
+   (Band B 3.4.5: open forward jumps become long when the optimization runs before their label). Evidence in four
+   originals (cparse/scparse yylex, popt rmove, deroff, scodgen): one trigger point per cluster, always at a `call`.
+   The shipped cas and the ZEUS cas (12/1986) do not show it; no table model fitted on the cparse input reproduces
+   it without false long jumps. Parked as an explained remainder (time box).
+
+**Plan (owner decision 2026-11-01): codgen and popt next.** `/lib/codgen` and `/lib/popt` were built by the same
+compiler v0p (OLDCC.md, "v0p"). Make our sources of codgen and popt compiled with ccv0p byte-identical with them,
+with the same method as cparse; the hope is that their many more functions give the witnesses that are missing for
+the open cparse points (and every switch must keep cparse as it is):
+- popt placement (point 1): codgen and popt have many switches and gotos; the placement rules of the old popt can be
+  checked on them before cparse is touched.
+- argdebug (point 3): leaf functions with one register variable in codgen/popt would show whether the old popt renames
+  a single saved register.
+- buildtree (point 2): only if codgen/popt have double constants and blocks with own variables (cparse behaviour of
+  v0p: the .D order, the frame offsets of blocks); likely few.
+- yylex (point 4): popt rmove already shows the cas effect; more clusters in codgen/popt give more trigger points
+  for a model of the old cas (each needs an exact .s around it).
+Steps: (1) set up the strict comparison for codgen and popt like cparse (progcfg with ORIG_BIN and STRICT_INPUT, a
+link of our objects built with ccv0p with the original's data layout where D12 demands it, strictcmp; the
+findings.json of `src/cmd/codgen/tools` and `src/cmd/popt/tools` have the function map); (2) a first measurement
+with the current v0p; (3) then the same loop as for cparse: source forms first, switches with two witnesses, every
+switch checked on cparse (`oldcc.sh model`, corpus) and the v0 bench. The normal builds of codgen and popt stay as
+they are (they are the shipped programs).
 
 **Tools.**
 
@@ -122,9 +154,8 @@ OLDCC_LOG.md (dated, appended), other documents do not repeat it; commits allowe
 the docs after each accepted step (English, never push); originals and build products never in git; conversation with
 the owner in German.
 
-**After cparse:** the same for the other passes that v0p built (codgen, popt: their originals are the shipped
-`/lib/codgen`, `/lib/popt`), then the remaining items of the plan in `../src/TODO.md` ("Plan: towards the old C
-compiler").
+**After codgen and popt:** back to the open cparse points with the new witnesses, then the remaining items of the
+plan in `../src/TODO.md` ("Plan: towards the old C compiler").
 
 ## Next steps, in this order
 
@@ -138,7 +169,7 @@ compiler").
    bytes, functions, D classes.
 3. **Reconstruct the old compiler.** Everything about the old compilers is in `OLDCC.md` (the edited summary: the
    classes D1 ... D22, the versions v1, v0, v0p, rules, building and running) and `OLDCC_LOG.md` (the running notes).
-   State 2026-11-01: v1 (strip and size byte-identical, ld 55 of 59); v0 (bench 118 of 153); v0p (/lib/cparse 166 of
+   State 2026-11-01: v1 (strip and size byte-identical, ld 55 of 59); v0 (bench 118 of 153); v0p (/lib/cparse 173 of
    179, the current work above).
 
 The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").
