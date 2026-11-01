@@ -337,3 +337,13 @@ TODO.md when this log was started.
   only a block behind p: cparse 477 (oalloc exact, optim 85 > 58; conval +8: a diamond `ldk r2,#1; jr E; Y: ldk
   r2,#0; E:`, argregs +5); no diamond: 469; no unconditional jump to T (argregs `goto full`): 464, no loss; corpus
   259; bench v0 318 > 330 (join main): v0p only. blockmap.py helped to see the moves.
+- popt, the dimension loop of defid (79 lines): traced with stderr prints in codemove/xjump. Ours (shipped order of
+  iterate: xjump, then codemove): the back jump `jpr L153` is cross-jumped onto the store `ld temp,r2` of the
+  initialisation (L20000), the loop is inverted, the test block then moved up to the entry, and the second
+  inversion fails (its test is 28 nodes from L20000, the search goes 24). The original inverts the loop first and then
+  cross-jumps the entry onto the store at the bottom (`ld r2,6(r15); jp 27A6`). lxmore has the same pattern, but there
+  the shipped order (xjump, inversion, move up, second inversion) gives the original exactly.
+  OLD_D20X tried (codemove before xjump for a jump whose target is not behind a jump): defid 79 > 13, lxmore 0 > 14,
+  lxtitle 0 > 22, fixclass, talloc worse: 464 > 444 (137 exact); only for a jump with no label in front: unchanged.
+  OLD_D20N tried (a longer reach for the test: 29 nodes: 552; counting instructions only, 26: 574, 24: 584).
+  Removed; the rule that tells defid from lxmore is open.
