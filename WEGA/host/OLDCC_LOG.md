@@ -601,3 +601,8 @@ TODO.md when this log was started.
   register declarations (equstr: the original has its parameters in registers, absval not), and seven functions of
   our source without a counterpart in the original (getch, hashname, clearmem, heapreset, allocnode, newcode1, scan:
   their code is probably inline in the callers).
+- popt model, the data (3308 against 4076 bytes), aligned byte by byte: at 0x39 the model has a 256-byte table more
+  (the z20.c tables in another form or order), at 0x3c9 739 zero bytes more (an array initialized to zero in our
+  data that is bss in the original, or a table of another size), the switch jump tables (.addr lists, D6) and some
+  strings at other places. Next: the data and bss layout first (as for cparse: the tables of z20.c against the
+  original data, the bss order), then the functions.
