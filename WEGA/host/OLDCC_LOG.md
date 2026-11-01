@@ -529,3 +529,15 @@ TODO.md when this log was started.
   members have more (hand-written assembler). So the assembler of the old tool chain had the documented behaviour;
   the trigger in the old compiler output is still to be found (rmove gives the best evidence: the source between the
   last long and the first short jump).
+- The trigger of the long short jumps, from the originals (constraints: every long short-range jump spans the trigger,
+  no short one does): one trigger point per cluster, always at a `call`: popt rmove 0x1F68 (`call equstr`), cparse
+  yylex 0x21A6 (`call _filbuf`), deroff 0x184E (`call skeqn`, a backward call; it explains both clusters of deroff,
+  0x17C6..0x17D8 and 0x1834..0x184A), scodgen between 0x3666 and 0x3676 (two calls). The shipped cas (jpr.c, optim.c)
+  keeps every undecided jpr/callr as a 14-byte itable entry and optimizes at the end of pass 1; an old cas with a
+  smaller table would optimize when it is full (the manual's "optimization before the target was found").
+  Undecided entries counted from the binary at the triggers: popt 249, cparse 255, deroff 508 (about 2 x 254). A
+  simulation over all modules of popt and cparse with a capacity of 80 .. 520 and five ways of counting (calls
+  all/forward/unknown/external/none) predicts no fit without false long jumps: the entry count of the old .s cannot
+  be read from the binary exactly (or the rule is another one). Open; the call at every trigger and the "all pending
+  jumps at once" pattern speak against a compiler rule (jumps to the same target are long before the point and short
+  behind it, deroff 0x1834 `jp 0x1858` and 0x1852 `jr 0x1858`).
