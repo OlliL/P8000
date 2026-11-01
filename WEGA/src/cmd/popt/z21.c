@@ -533,13 +533,14 @@ int na;
 char *a;
 char *b;
 {
-	register char *p, *np, *onp;
-	int n;
+	register char *p, *np;
+	register int n;
+	char *onp;
 
-	if (*a == 0)
-		return 0;
-	n = 0;
 	p = a;
+	n = 0;
+	if (*p == 0)
+		return 0;
 	do
 		n++;
 	while (*p++);
@@ -552,8 +553,9 @@ char *b;
 	for (p = a; (*np++ = *p++) != 0;)
 		;
 	if (na > 1) {
+		p = b;
 		np--;
-		for (p = b; (*np++ = *p++) != 0;)
+		while ((*np++ = *p++) != 0)
 			;
 	}
 	return onp;
@@ -563,15 +565,15 @@ void
 opsetup()
 {
 	register struct optab *o;
-	int h;
+	register struct optab **h;
+	register char *s;
 
-	for (o = optab; o->name; o++) {
-		h = HASHNAME(o->name);
-		while (ophash[h]) {
-			if (++h >= OPHS)
-				h = 0;
-		}
-		ophash[h] = o;
+	for (o = optab; (s = o->name) != 0; o++) {
+		h = &ophash[HASHNAME(s)];
+		while (*h++)
+			if (h >= &ophash[OPHS])
+				h = ophash;
+		*--h = o;
 	}
 }
 
@@ -584,9 +586,7 @@ cclook(opw)
 int opw;
 {
 	register char *p, *q;
-	int h, start;
-	struct optab *o;
-	char *a, *b;
+	struct optab **h, *o;
 	static char tmpcc[32];
 
 	q = tmpcc;
@@ -597,18 +597,16 @@ int opw;
 	if (*p != ',')
 		return opw;
 	curlp = p + 1;
-	h = start = HASHNAME(tmpcc);
-	while ((o = ophash[h]) != 0) {
-		a = o->name;
-		b = tmpcc;
-		while (*a == *b) {
-			if (*b == 0)
+	h = &ophash[HASHNAME(tmpcc)];
+	while ((o = *h) != 0) {
+		q = o->name;
+		p = tmpcc;
+		while (*q++ == *p)
+			if (*p++ == 0)
 				return o->opcode;
-			a++;
-			b++;
-		}
-		if (++h >= OPHS)
-			h = 0;
+		h++;
+		if (h >= &ophash[OPHS])
+			h = ophash;
 	}
 	return opw;
 }
@@ -621,10 +619,10 @@ int opw;
 int
 oplook()
 {
-	register char *np, *lp;
-	char *name, *tp;
-	int h, start, suffix;
-	struct optab *o;
+	register struct optab *o;
+	register char *lp, *np;
+	struct optab **h, **start;
+	int op, suffix;
 	static char tmpop[32];
 
 	if (line[0] == 0) {
@@ -644,35 +642,32 @@ oplook()
 			return KCOMMENT;
 		return COMMENT;
 	}
-	h = start = HASHNAME(tmpop);
+	h = &ophash[HASHNAME(tmpop)];
+	start = h;
 	suffix = np[-2] == 'b' || np[-2] == 'l';
 	for (;;) {
-		o = ophash[h];
-		if (o) {
-			name = o->name;
-			tp = tmpop;
-			while (*name == *tp) {
-				if (*tp == 0) {
-					/* exact match */
-					if ((o->opcode & 0xff) == JP)
-						return cclook(o->opcode);
-					if (o->opcode == JPX)
-						return JP;
-					return o->opcode;
-				}
-				name++;
-				tp++;
+		o = *h;
+		np = o->name;
+		lp = tmpop;
+		while (*np++ == *lp)
+			if (*lp++ == 0) {
+				/* exact match */
+				if (((op = o->opcode) & 0xff) == JP)
+					return cclook(op);
+				if (op == JPX)
+					return JP;
+				return op;
 			}
-			if (*tp == 'l' && tp[1] == 0 && *name == 0)
-				return o->opcode + 0x1100;
-			if (*tp == 'b' && tp[1] == 0 && *name == 0)
-				return o->opcode + 0x1000;
-		}
-		if (++h >= OPHS)
-			h = 0;
+		if (*lp == 'l' && lp[1] == 0 && np[-1] == 0)
+			return o->opcode + 0x1100;
+		if (*lp++ == 'b' && *lp++ == 0 && *--np == 0)
+			return o->opcode + 0x1000;
+		h++;
+		if (h >= &ophash[OPHS])
+			h = ophash;
 		if (h == start)
 			break;
-		if (!suffix && ophash[h] == 0)
+		if (!suffix && *h == 0)
 			break;
 	}
 	curlp = line;
@@ -1236,28 +1231,29 @@ comjump()
 }
 
 static void
-backjmp(p1, p2)
-register struct node *p1;
-register struct node *p2;
+backjmp(ap1, ap2)
+struct node *ap1;
+struct node *ap2;
 {
-	register struct node *p3;
+	register struct node *p1, *p2, *p3;
 
+	p1 = ap1;
+	p2 = ap2;
 	for (;;) {
 		while ((p1 = p1->back) && p1->op == LABEL)
 			;
 		p2 = p2->back;
-		if (equop(p1, p2)) {
-			p3 = insertl(p1);
-			p2->back->forw = p2->forw;
-			p2->forw->back = p2->back;
-			p2 = p2->forw;
-			decref(p2->ref);
-			p2->labno = p3->labno;
-			p2->ref = p3;
-			nchange++;
-			ncomj++;
-		} else
+		if (!equop(p1, p2))
 			return;
+		p3 = insertl(p1);
+		p2->back->forw = p2->forw;
+		p2->forw->back = p2->back;
+		p2 = p2->forw;
+		decref(p2->ref);
+		p2->labno = p3->labno;
+		p2->ref = p3;
+		nchange++;
+		ncomj++;
 	}
 }
 

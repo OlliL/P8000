@@ -1516,7 +1516,8 @@
    },
    "review": "reviewed: D-pattern",
    "review_note": "same cases and calls; switch lowered differently (D6)",
-   "size_orig": 76
+   "size_orig": 76,
+   "v0p_note": "v0p model exact with an unused local word behind r (frame 8; guess) and case TQ: r += 2 falling into case TL"
   },
   "memreg": {
    "file": "z22.c",
@@ -2369,7 +2370,8 @@
     "len_orig": 26
    },
    "review": "pattern only: not inspected (alignment 50 %)",
-   "size_orig": 64
+   "size_orig": 64,
+   "v0p_note": "v0p model exact: while (*s++); s--; the trailing ) test looks at the NUL (quirks table)"
   },
   "jumpsw": {
    "file": "z22.c",
@@ -2495,7 +2497,8 @@
     "len_orig": 26
    },
    "review": "pattern only: not inspected (alignment 65 %)",
-   "size_orig": 78
+   "size_orig": 78,
+   "v0p_note": "v0p model exact with n = ilen(q); sum += n (the original keeps the call value in a frame word); whether this is the source or a rule of the old compiler is open"
   },
   "ilen": {
    "file": "z22.c",
@@ -2579,7 +2582,8 @@
     "len_orig": 28
    },
    "review": "pattern only: not inspected (alignment 61 %)",
-   "size_orig": 78
+   "size_orig": 78,
+   "v0p_note": "v0p model exact with an unused local word between the parameter homes and the saved r14 (the frame of the original is 8; the local is a guess) and the blank loop that increments s while testing p (quirks table)"
   },
   "newcode1": {
    "file": "z22.c",

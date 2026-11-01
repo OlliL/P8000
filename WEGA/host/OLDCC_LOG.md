@@ -638,3 +638,18 @@ TODO.md when this log was started.
 - equstr: `if (!*b++)` gives the `testb @r2` of the original (`*b++ == 0` gives `ldb rl2,@r2; testb rl2`): 24.
 - Seen, open: findcon `cpb @r14` where
   ours has `cpb @r2` after `ld r14,r2`; itoa_ r3 where ours takes r1.
+- Further source forms (popt model 24 > 35 of 70, 4665 lines): natural `while (*s++); s--;` (the trailing `)` test
+  reads the NUL: quirk), adrlen (a register copy p; the blank loop increments s: quirk; an unused frame word),
+  findcopy (case TQ `r += 2` falling into TL; an unused frame word), setcc and savereg (the parameter itself as the
+  register, `(*d++ = *s) == 0`), toofar (`n = ilen(q); sum += n;`, `if (sum < 256) return 0;`: whether the frame word
+  of the call value is the source or a rule of the old compiler is open), shortjump (`register char *s`), copy,
+  backjmp (non-register parameters with register copies: the homes and r12..r14 of the original), opsetup, cclook
+  and oplook (pointer walk over ophash, `h++` as its own statement; oplook reads `o->name` without testing o: quirk;
+  `h = ...; start = h;`).
+- backjmp, open: the `&& p1->op == LABEL` test of the inner while stands in the original in front of the loop
+  body (a popt placement, as the open cparse points).
+- Are switches obsolete after the popt source fixes? (Owner's question: some D switch may hide an error of our popt
+  source.) Normal popt against /lib/popt on the corpus 816 of 816. cparse model with v0p popt without one switch:
+  all 173 / 96 lines; without OLD_D20C 172 / 155, D20X 173 / 162, D20S 172 / 104, D20L 173 / 103, D20K 172 / 98.
+  popt model (35, 4665): without D20S 4688, without D20K 4718, without D20C, D20X, D20L unchanged (neutral there,
+  not contradicted). All five stay. The codgen and cparse switches do not depend on the popt source.

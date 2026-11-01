@@ -725,7 +725,7 @@ void
 shortjump()
 {
 	register struct node *p, *p1, *q;
-	char *s;
+	register char *s;
 
 	for (p = &first; (p1 = p->forw) != 0; p = p1) {
 		dualop(p);
@@ -757,17 +757,18 @@ toofar(p)
 struct node *p;
 {
 	register struct node *q;
-	int sum;
+	int sum, n;
 
 	sum = 0;
 	for (q = p->ref; q; q = q->forw) {
 		if (q == p)
 			break;
-		sum += ilen(q);
+		n = ilen(q);
+		sum += n;
 	}
-	if (sum >= 256)
-		return 1;
-	return 0;
+	if (sum < 256)
+		return 0;
+	return 1;
 }
 
 /* size in bytes of the instruction in node p */
@@ -833,16 +834,35 @@ register struct node *p;
 
 static int
 adrlen(s, op)
+#ifdef SPOPT
 register char *s;
+#else
+char *s;
+#endif
 int op;
 {
+#ifndef SPOPT
+	register char *p = s;
+	int unused;
+
+	if (*p == 0)
+		return 2;
+	if (isreg(p) >= 0)
+		return 2;
+	while (*p == ' ')
+		s++;
+	if (*p == '@')
+		return 2;
+	if (*p == '#' && op == SLONG)
+		return 6;
+	return 4;
+#else
 	if (*s == 0)
 		return 2;
 	if (isreg(s) >= 0)
 		return 2;
 	if (*s == '@')
 		return 2;
-#ifdef SPOPT
 	if (*s == '#')
 		return op == SLONG ? 6 : 4;
 	{
@@ -862,10 +882,6 @@ int op;
 		}
 	}
 	return 6;
-#else
-	if (*s == '#' && op == SLONG)
-		return 6;
-	return 4;
 #endif
 }
 
@@ -965,20 +981,18 @@ int a;
 register char *s;
 int b;
 {
-	register char *p, *d0, *d;
+	register char *d, *d0;
 
 	d0 = d = regs[a + b];
 	ccinval(s);
-	p = s;
 	for (;;) {
-		*d++ = *p;
-		if (*p == 0)
+		if ((*d++ = *s) == 0)
 			break;
-		if ((*p == '@' || *p == '(') && p[1] == 'r') {
+		if ((*s == '@' || *s == '(') && s[1] == 'r') {
 			*d0 = 0;
 			return;
 		}
-		if (*p++ == ',')
+		if (*s++ == ',')
 			break;
 	}
 	*--d = 0;
@@ -1033,9 +1047,9 @@ int n;
 	r = findreg(TW, pat);
 	if (r >= 0)
 		return r;
-	if (n >= 8)
-		return -1;
-	return findbyte(n);
+	if (n < 8)
+		return findbyte(n);
+	return -1;
 }
 
 static int
@@ -1067,7 +1081,7 @@ findcopy(s, type)
 char *s;
 int type;
 {
-	int r;
+	int r, unused;
 
 	r = isreg(s);
 	if (r < 0)
@@ -1076,10 +1090,10 @@ int type;
 	case TB:
 	case TW:
 		return findword(r);
+	case TQ:
+		r += 2;
 	case TL:
 		return findlong(r);
-	case TQ:
-		return findlong(r + 2);
 	}
 	return -1;
 }
@@ -1784,14 +1798,14 @@ register char *b;
 
 static void
 setcc(s)
-char *s;
+register char *s;
 {
-	register char *p, *q;
+	register char *q;
 
 	if (!natural(s))
 		ccloc[0] = 0;
 	else
-		for (p = s, q = ccloc; (*q++ = *p++) != 0;)
+		for (q = ccloc; *q++ = *s++;)
 			;
 }
 
@@ -1802,9 +1816,10 @@ register char *s;
 {
 	if (*s == '@')
 		return 0;
-	for (; *s; s++)
+	while (*s++)
 		;
-	if (*--s == ')') {
+	s--;
+	if (*s == ')') {
 		if (*--s != 'p')
 			return 0;
 		if (*--s != 'f')
