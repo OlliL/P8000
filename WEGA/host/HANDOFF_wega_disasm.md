@@ -221,7 +221,10 @@ jump table addresses, the rest jump forms). Step 11 done: in clr_cc the register
 { savereg } setcon`): 13 instructions of content. The strings of z22.c are now in the original's order
 except the cpir table of rmove (data layout). Step 12 done: the main switch encloses all sections and disp
 (its closing brace in front of cc_clear), so its jump table comes behind the cpir table of disp as in the original:
-11 instructions of content, rmove 451 lines, popt 776. Next, in this order:
+11 instructions of content, rmove 451 lines, popt 776. Left in the content: the two "#0" of clr_cc are
+passed the other way round (the original gives setcon the earlier literal, ours savereg; `if (r12 < 0) setcon
+else { savereg }` is worse: 12), and our rmove has one call more (`ld r7,r14; call`: probably one dualop or
+singop of p too many); the rest are jump forms (layout). Next, in this order:
 1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
    only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
    `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.
