@@ -22,6 +22,9 @@ extern long freetemp();
 extern long maxoff;		/* 0x8fcc: the size of the automatic variables, ~L1 */
 extern long tmpoff;		/* 0x69d4 */
 extern int dope[];
+#ifdef OLD_D22
+extern char *rnames[];
+#endif
 extern struct node *canon();
 
 /* generate a call: the function address (an expression) is made addressable, the arguments are placed, then the call itself */
@@ -111,7 +114,16 @@ gencall(p, cookie)
 		printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", save);
 	return r != MDONE;
 #else
+#ifdef OLD_D22
+	/* v0p: a double result comes back in rq4 */
+	if (match(p, 0x16) != MDONE)
+		return 1;
+	if ((p->type == 6 || p->type == 7) && p->op == REG)
+		printf("\tfldd\t%s,r4\n", rnames[p->rval]);
+	return 0;
+#else
 	return match(p, 0x16) != MDONE;
+#endif
 #endif
 }
 

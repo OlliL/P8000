@@ -407,3 +407,16 @@ TODO.md when this log was started.
   behind the array (a global d3nreg placed there broke scnames and trees1). Fixed; the bench v0 stays 318, cparse
   with v0p unchanged.
 - Corpus 259; bench v0 318 (OLD_D16A and OLD_D3N together 348: v0p only).
+- Doubles: the original passes a double argument in rq4 (doinit `fldd r4,f0` behind the EPU load, prtdcon `ldm
+  r4,8(r14),#4`, then the int argument in r3), fincode and fltlab store their double parameter with `ldm 0(fp),r4,#4`,
+  isitfloat takes the result of atof with `fldd f0,r4`; ours used f3 for all. OLD_D22 (cparse getpreg, argregs;
+  codgen argscan, argplace, regargs, lcl3, gencall): 328 > 316; the double compare template 052 without its `fld dbl`
+  rounding (fltlab, buildtree): 302; doinit: a STAR operand through the EPU, only a NAME or OREG by ldm. Corpus 259
+  (the shipped atof of the cparse link returns in rq4 too). Bench v0 318 > 292: OLD_D22 in v0.
+- OLD_D3N widened: all word variables stored from the same register in one statement (`l = lab = getlab()`), used as a
+  whole argument too (argplace), only in the next statement (counter in stmt; buildtree has two statements between
+  the store and the argument and reloads), getreg forgets it only when it takes that register: prtdcon `ld r5,r2`,
+  296.
+- Source forms: prtdcon `if( sectfull( DATA, size = SZDOUBLE/SZCHAR ) )` (as in genswitch; the argument with the
+  assignment is evaluated first, `ldl rr4,#8; ldl size,rr4; ldl rr4,#8; ldk r7,#1`); fltlab `d == p->fval` (the
+  original loads d and compares with the member). cparse 147 strict, 286 lines; corpus 259; bench v0 292.

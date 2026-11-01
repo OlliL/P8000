@@ -118,11 +118,29 @@ int opclass[] = {
 };
 
 #ifdef OLD_D3N
-int d3nreg = -1;		/* v0p: the register the statement before stored into the word variable d3nsym */
-static struct sym *d3nsym;
+int d3nreg = -1;		/* v0p: the register the last stores took their value from (-1: none) */
+static struct sym *d3nsyms[4];	/* the word variables stored from it */
+static int nd3n;
+int d3nstmt;			/* the number of the statement (stmt) */
+static int d3ngen;		/* the statement of those stores */
+
+/* the variable s was stored from the register d3nreg, which still holds it */
+int
+d3nhas(s)
+	register struct sym *s;
+{
+	register int i;
+
+	if (d3nreg < 0 || d3nstmt != d3ngen + 1)	/* only in the next statement */
+		return 0;
+	for (i = 0; i < nd3n; i++)
+		if (d3nsyms[i] == s)
+			return 1;
+	return 0;
+}
 
 /* the word register r is on the free list (alone or as a half of a free pair) */
-static int
+int
 d3nfree(r)
 	register int r;
 {
@@ -295,10 +313,10 @@ match(p, cookie)
 			if ((dope[p->left->op] & 0xE) == LTYPE || p->left->op == FLD)
 				fixname(r);
 #ifdef OLD_D3N
-			else if (p->op == ASSIGN && p->left->op == STAR && d3nreg >= 0 && r->sname == d3nsym &&
+			else if (p->op == ASSIGN && p->left->op == STAR && d3nhas(r->sname) &&
 			    r->type == p->type && d3nfree(d3nreg)) {
-				/* v0p: the variable stored by the statement before, stored again through a pointer: from
-				   the register it came from */
+				/* v0p: a variable just stored, stored again through a pointer: from the register it came
+				   from */
 				rv = d3nreg;
 				if (getreg(2, rv, 0, (struct sym *)0) != rv)
 					cerror("d3n");
@@ -369,6 +387,12 @@ select:
 #ifdef OLD_D2A
 		rv = p->op;
 #endif
+#ifdef OLD_D22
+		/* v0p: a floating compare with memory without the rounding fld of the left operand */
+		if (q->op == 0x100e && q->lshape == 0x18 && q->rshape == 0x2c0)
+			expand(p, cookie, "\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI");
+		else
+#endif
 		expand(p, cookie, q->cstring);
 #ifdef OLD_D3N
 		d3nr = p->right->rval;
@@ -376,7 +400,11 @@ select:
 		reclaim(p, q->rewrite, cookie);
 #ifdef OLD_D3N
 		if (d3nset) {		/* v0p: the register just stored into a word variable */
-			d3nsym = d3nset;
+			if (d3nreg != d3nr || d3ngen != d3nstmt)
+				nd3n = 0;
+			d3ngen = d3nstmt;
+			if (nd3n < 4)
+				d3nsyms[nd3n++] = d3nset;
 			d3nreg = d3nr;
 			d3nset = 0;
 		}

@@ -1272,8 +1272,7 @@ prtdcon( p ) register NODE *p; {
 		pos = 0;
 		if( (lab = fltlab( p->dval )) == crslab ){
 			defalign( ALDOUBLE );
-			size = SZDOUBLE/SZCHAR;
-			if( sectfull( DATA, (long) (SZDOUBLE/SZCHAR) ) ) newsect( DATA );
+			if( sectfull( DATA, size = SZDOUBLE/SZCHAR ) ) newsect( DATA );
 			sectadd( DATA, size );
 			l = lab = getlab();
 			fprintf( dfile, "L%d: \n", lab );
@@ -1367,6 +1366,14 @@ argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call
 		return( n + argregs( p->right ) );
 		}
 	n = argsize( p );
+#ifdef OLD_D22
+	if( afull || aregs < 2 ){	/* the old compiler: a double argument in rq4 when it is the first one */
+	full:
+		afull = 1;
+		return( n+n );
+		}
+	switch( n ){
+#else
 	if( ( (p->type == FLOAT || p->type == DOUBLE) && afregs < 16 ) || afull ){
 	full:
 		afull = 1;
@@ -1378,6 +1385,7 @@ argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call
 		return( 0 );
 		}
 	switch( n ){
+#endif
 
 	default:
 	nofit:

@@ -20,6 +20,12 @@ extern struct node *canon();		/* 0x1884 */
 extern int allo(), argsize();
 extern void tfree(), reclaim();
 extern struct node resc[];
+#ifdef OLD_D22
+extern void adrput(), oregfix(), rfreenode(), rfree();
+#endif
+#ifdef OLD_D3N
+extern int d3nreg, d3nhas(), d3nfree();
+#endif
 
 #ifdef SEG
 #define OFFSTARL(l)	offstar(l)
@@ -723,7 +729,11 @@ argscan(p)
 		rest = argscan(p->left);
 		if (argstop)
 			return rest;
+#ifdef OLD_D22
+		if (0) {	/* v0p: a double argument goes by its size (rq4 when it is the first one) */
+#else
 		if (p->right->type == 6 || p->right->type == 7) {
+#endif
 			if (argfreg >= 0x10) {
 				rest = p;
 				p->op = FREE;
@@ -746,7 +756,11 @@ argscan(p)
 			q = p->right;
 		}
 	}
+#ifdef OLD_D22
+	if (0) {
+#else
 	if (q->type == 6 || q->type == 7) {
+#endif
 		if (argfreg < 0x10) {
 			argstop = 1;
 			return q;
@@ -875,6 +889,30 @@ argstrip(p, rest)
 	order(p, 0x2000);
 }
 
+#ifdef OLD_D22
+/* v0p: a double argument into the CPU registers reg .. reg+3: from memory with ldm, else through the EPU */
+static void
+d22arg(q, reg)
+	register struct node *q;
+	int reg;
+{
+	if (q->op == NAME)
+		oregfix(q);
+	if (q->op == NAME || q->op == OREG) {
+		printf("\tldm\tr%d,", reg);
+		adrput(q);
+		printf(",#4\n");
+		rfreenode(q);
+	} else {
+		order(q, 0x10);
+		printf("\tfldd\tr%d,%s\n", reg, rnames[q->rval]);
+		rfree(q->rval, q->type);
+	}
+	getreg(3, reg, 0, (struct sym *)0);
+	getreg(3, reg + 2, 0, (struct sym *)0);
+}
+#endif
+
 /* evaluate the arguments that go to registers; the ones that need much come first */
 static void
 argplace()
@@ -900,6 +938,13 @@ argplace()
 			nargs++;
 			continue;
 		}
+#ifdef OLD_D22
+		if ((q->type == 7 || q->type == 6) && argl[nargs].reg < 8) {
+			nleft -= 4;
+			nargs++;
+			continue;
+		}
+#endif
 		if (q->type == 7 || q->type == 6) {
 			fleft--;
 			nargs++;
@@ -916,7 +961,26 @@ argplace()
 	nargs = 0;
 	while ((q = argl[nargs].node) != 0) {
 		reg = argl[nargs].reg;
+#ifdef OLD_D22
+		if ((q->type == 6 || q->type == 7) && reg < 8) {
+			d22arg(q, reg);
+			tfree(q);
+			nargs++;
+			continue;
+		}
+#endif
 		q->rall = reg | 0x1000;
+#ifdef OLD_D3N
+		/* v0p: a word variable just stored from a register: the argument is taken from that register */
+		if (q->op == NAME && d3nhas(q->sname) && szty(q->type) == 1 && d3nfree(d3nreg)) {
+			k = d3nreg;
+			if (getreg(2, k, 0, (struct sym *)0) != k)
+				cerror("d3n arg");
+			q->op = REG;
+			q->rval = k;
+			q->lval = 0;
+		}
+#endif
 		if (q->type == 6 || q->type == 7)
 			order(q, 0x10);
 		else

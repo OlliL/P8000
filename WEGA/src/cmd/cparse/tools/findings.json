@@ -6837,6 +6837,31 @@
    "basis": "statement form",
    "d_classes": "D19",
    "note": "Source fix: no return(p) behind the cerror at the end (the original has no code there; with it popt merges the return copies). Remaining: the order of the arguments r6, r7 of the first block() call."
+  },
+  "prtdcon": {
+   "basis": "reading",
+   "note": "Exact with v0p. Source: sectfull( DATA, size = SZDOUBLE/SZCHAR ) (the assignment inside the argument). Old-cc: OLD_D22 (the double argument in rq4 by ldm), OLD_D3N (lab from r2 for fprintf).",
+   "d_classes": "D2 D3 D22"
+  },
+  "fltlab": {
+   "basis": "reading",
+   "note": "Exact with v0p. Source: d == p->fval (the original loads d). Old-cc: OLD_D22 (the double parameter in rq4, the compare without the rounding fld).",
+   "d_classes": "D22"
+  },
+  "fincode": {
+   "basis": "reading",
+   "note": "Exact with v0p. Old-cc: OLD_D22 (the double parameter in rq4, sz in r3).",
+   "d_classes": "D22"
+  },
+  "isitfloat": {
+   "basis": "reading",
+   "note": "Exact with v0p. Old-cc: OLD_D22 (the result of atof from rq4: fldd f0,r4).",
+   "d_classes": "D22"
+  },
+  "doinit": {
+   "basis": "reading",
+   "note": "Exact with v0p. Old-cc: OLD_D22 (a computed double argument through f0 into rq4).",
+   "d_classes": "D22"
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

@@ -959,6 +959,10 @@ parmwalk(p)
 }
 #endif
 
+#ifdef OLD_D3N
+extern int d3nstmt;
+#endif
+
 /* a statement of the intermediate file: a function head, a switch, or an expression tree */
 void
 stmt(p)
@@ -966,6 +970,9 @@ stmt(p)
 {
 	int tag;
 
+#ifdef OLD_D3N
+	d3nstmt++;
+#endif
 	nrecur = 0;
 	if (p->op == 118) {
 		mapnm(p->left);

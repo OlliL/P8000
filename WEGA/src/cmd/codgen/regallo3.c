@@ -726,7 +726,9 @@ found:
 	n->busy = 1;
 ret:
 #ifdef OLD_D3N
-	d3nreg = -1;
+	if (d3nreg >= 0 && (n->cls == 1 ? (n->reg & 7) == d3nreg : n->cls == 2 ? n->reg == d3nreg :
+	    n->cls == 3 ? n->reg == (d3nreg & ~1) : 0))
+		d3nreg = -1;	/* the register of the last stores is taken */
 #endif
 	return n->reg;
 }

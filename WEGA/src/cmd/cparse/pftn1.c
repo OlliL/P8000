@@ -600,7 +600,15 @@ getpreg( p, t ) register TWORD t; register struct symtab *p; { /* the register f
 			return( pregvar-- );
 
 		case DOUBLE:
+#ifdef OLD_D22
+			/* the old compiler: a double parameter in rq4 when it is the first one */
+			if( pregvar == 7 ){
+				pregvar -= 3;
+				goto gotreg;
+				}
+#else
 			if( pfregvar >= 16 ) return( pfregvar-- );
+#endif
 			break;
 
 		case LONG:

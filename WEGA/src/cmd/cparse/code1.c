@@ -117,7 +117,7 @@ fltlab( d ) double d; { /* the label of the floating constant d; crslab if it is
 
 	h = fhashv( &d, 61 );
 	for( p = fhash[h]; p; p = p->fnext ){
-		if( p->fval == d ) return( p->flab );
+		if( d == p->fval ) return( p->flab );
 		}
 	if( fcfail ) fcp = 0;
 	else if( fccnt++ % 50 ) ++fcp;

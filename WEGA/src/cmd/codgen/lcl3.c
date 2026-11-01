@@ -123,6 +123,18 @@ parminit(p)
 	} else
 		t2 = p->type;
 	cls = rclass(t2, r);
+#ifdef OLD_D22
+	if (s->sclass == 9 && p->lval < 0 && (t2 == 6 || t2 == 7) && r < 8) {	/* v0p: a double parameter in rq4 */
+		if (nparmtab > 9)
+			cerror("rinit: formal paramter array overflow");
+		parmtab[nparmtab].reg = s->sbyte5;
+		parmtab[nparmtab].sym = s;
+		nparmtab++;
+		parmtab[nparmtab].sym = 0;
+		s->sflags &= ~8;
+		return;
+	}
+#endif
 	if ((s->sclass == 9 && p->lval < 0) || s->sclass == 4) {
 		for (q = rsuse; q; q = q->next)
 			if (q->reg == r) {

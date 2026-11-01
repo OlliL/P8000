@@ -209,6 +209,17 @@ regargs(tot)
 		s = parmtab[i].sym;
 		reg = parmtab[i].reg;
 		cls = rclass(s->stype, reg);
+#ifdef OLD_D22
+		if ((s->stype == 6 || s->stype == 7) && reg < 8) {	/* v0p: a double parameter in rq4 */
+			if (lo > reg)
+				lo = reg;
+			if (hi < reg + 3)
+				hi = reg + 3;
+			if ((unsigned long)(s->soffset / 8) < (unsigned long)(unsigned)t)
+				t = (int)(s->soffset / 8);
+			continue;
+		}
+#endif
 		n = rfind(reg, cls);
 		if (n && n->sym == s)
 			goto fl;
