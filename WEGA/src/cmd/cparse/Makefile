@@ -7,7 +7,7 @@
 #   make old         the versions of the old compiler in OLDDIRS (v1/Makefile ...)
 #   make clean
 #
-# The parser cgram1.y is made into cgram1.c by the original yacc (YACC). bss.s and libcbss.s (only .comm lines) give
+# The parser cgram1.y is made into cgram1.c by the original yacc (YACC). bss.s (only .comm lines) and the old data member of oldlibc give
 # the bss the order of the original. The libc part: shipped members of /lib/libc.a (ar x into shipped/) and versions of
 # src/lib/oldlibc, in the link order of /lib/cparse (tools/cparse_libc_split.spec, HANDOFF_cparse.md step 2).
 
@@ -26,7 +26,7 @@ AR = ar
 LIBC = /lib/libc.a
 # the libc part of /lib/cparse in its link order (tools/cparse_libc_split.spec): shipped members of /lib/libc.a and
 # the versions of src/lib/oldlibc
-LIBCOBJS = libcbss.o $(OLD)/fltioc/0_1.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/rdwr/0_3.o $(OLD)/fopen/0_1.o $(OLD)/fdopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/ungetc/0_1.o shipped/atof.o $(OLD)/ecvt/0_1.o shipped/pow10.o $(OLD)/filbuf/0_3.o shipped/data.o $(OLD)/setbuf/0_1.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_4.o $(OLD)/findiop/0_2.o shipped/__callex.o shipped/cuexit.o $(OLD)/perror/0_1.o $(OLD)/cnvt/0_2.o shipped/decimal.o $(OLD)/length/0_3.o $(OLD)/malloc/0_3.o $(OLD)/errlst/0_1.o $(OLD)/isatty/0_2.o $(OLD)/stty/0_3.o $(OLD)/strcat/0_2.o $(OLD)/strcmp/0_1.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o shipped/ctype_.o shipped/brk.o shipped/chmod.o shipped/close.o shipped/creat.o shipped/ioctl.o shipped/lseek.o shipped/open.o shipped/read.o shipped/signal.o shipped/umask.o shipped/write.o shipped/cerror.o
+LIBCOBJS = $(OLD)/fltioc/0_1.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/rdwr/0_3.o $(OLD)/fopen/0_1.o $(OLD)/fdopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/ungetc/0_1.o shipped/atof.o $(OLD)/ecvt/0_1.o shipped/pow10.o $(OLD)/filbuf/0_3.o $(OLD)/data/0_1.o $(OLD)/setbuf/0_1.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_4.o $(OLD)/findiop/0_2.o shipped/__callex.o shipped/cuexit.o $(OLD)/perror/0_1.o $(OLD)/cnvt/0_2.o shipped/decimal.o $(OLD)/length/0_3.o $(OLD)/malloc/0_3.o $(OLD)/errlst/0_1.o $(OLD)/isatty/0_2.o $(OLD)/stty/0_3.o $(OLD)/strcat/0_2.o $(OLD)/strcmp/0_1.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o shipped/ctype_.o shipped/brk.o shipped/chmod.o shipped/close.o shipped/creat.o shipped/ioctl.o shipped/lseek.o shipped/open.o shipped/read.o shipped/signal.o shipped/umask.o shipped/write.o shipped/cerror.o
 
 # the versions of the old compiler (one directory each, own Makefile; not part of all)
 OLDDIRS = v1 v0 v0p
@@ -49,8 +49,8 @@ comm1.o: common
 bss.o: bss.s
 	$(CAS) -u -o $@ bss.s
 
-libcbss.o: libcbss.s
-	$(CAS) -u -o $@ libcbss.s
+$(OLD)/data/0_1.o: $(OLD)/data/0_1.c
+	cd $(OLD)/data ; $(CC) -c -O 0_1.c
 
 cgram1.c: cgram1.y
 	$(YACC) cgram1.y
