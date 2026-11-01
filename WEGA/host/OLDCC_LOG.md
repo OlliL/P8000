@@ -436,3 +436,8 @@ TODO.md when this log was started.
   for one jump. A restored parameter keeps its frame home (regargs; the flag 0x4000 on the node, cleared in rsbuild).
   zecode stays open (the long parameter inside an argument, OLD_D3A forgets it). cparse 153, 274; corpus 259; bench
   v0 290 (117): in v0.
+- instk: `t==STRTY ? (int)dimtab[s+1] : 0` (the original clears only r3 in the else arm: the conversion is in the
+  then arm). getstr: the long through the pointer wanted for r7 (want 7 for a pair): OLD_D2QO takes the pair of the
+  address register (rr2) anyway: getstr exact, refid 24 > 20. talloc: an unused third local (`NODE *p, *q, *r;`, the
+  frame word at 4); a return temporary for `return(x = y)` refuted (hide, argsize have none). cparse 156, 260; corpus
+  259.

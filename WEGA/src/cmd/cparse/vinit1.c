@@ -97,7 +97,7 @@ instk( id, t, d, s, off ) struct symtab *id; OFFSZ off; TWORD t; {
 		pstk->in_d =  d ;
 		pstk->in_s =  s ;
 		pstk->in_n = 0;  /* number seen */
-		pstk->in_x =  t==STRTY ?dimtab[s+1] : 0 ;
+		pstk->in_x =  t==STRTY ? (int)dimtab[s+1] : 0 ;
 		pstk->in_off =  off;   /* offset at the beginning of this element */
 		/* if t is an array, DECREF(t) can't be a field */
 		/* INS_sz has size of array elements, and -size for fields */

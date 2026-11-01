@@ -406,8 +406,14 @@ allocreg(p, cookie)
 
 		if (q->op == STAR)
 			q = q->left;
+#ifdef OLD_D2QO
+		/* v0p: also when an odd word register is wanted (the low half of the value, an argument) */
+		if ((q->op == OREG || q->op == REG) && q->rval < 8 && !(q->rval & 1) &&
+		    (want == -1 || want == q->rval || (want >= 0 && want < 8 && (want & 1))) && d2qfree(q->rval)) {
+#else
 		if ((q->op == OREG || q->op == REG) && q->rval < 8 && !(q->rval & 1) && (want == -1 || want == q->rval) &&
 		    d2qfree(q->rval)) {
+#endif
 			rfree(q->rval, 4);
 			rsreturn(2, q->rval);		/* merged with its free partner */
 			r = getreg(3, q->rval, 0, p->sname);

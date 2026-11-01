@@ -6720,8 +6720,8 @@
   },
   "rmconv": {
    "basis": "operand order",
-   "d_classes": "D3",
-   "note": "Source fix: q->type == q->left->type (the original loads q->type and compares it with the member of q->left). Remaining: the original compares c from rl6 behind a label (a char parameter kept in its register), ours reloads it from the frame."
+   "d_classes": "D3 D19",
+   "note": "Exact with v0p. Old-cc: OLD_D3J (c from rl6 at the else label)."
   },
   "clocal": {
    "basis": "reading",
@@ -6876,6 +6876,26 @@
   "psavel": {
    "basis": "reading",
    "note": "Exact with v0p. Source: ip = &paramstk[paramno]; *(long *)ip = l; (the original saves r14 and leaves it unused: popt removes the dead copy). Old-cc: OLD_D3N.",
+   "d_classes": "D3"
+  },
+  "instk": {
+   "basis": "reading",
+   "note": "Exact with v0p. Source: t==STRTY ? (int)dimtab[s+1] : 0.",
+   "d_classes": "D2"
+  },
+  "getstr": {
+   "basis": "reading",
+   "note": "Exact with v0p. Old-cc: OLD_D2QO (the long through its pointer into the pair of the address register, wanted r7).",
+   "d_classes": "D2"
+  },
+  "talloc": {
+   "basis": "reading",
+   "note": "Exact with v0p. Source: an unused third local NODE *r (the frame word at 4 of the original).",
+   "d_classes": "D1"
+  },
+  "tfree1": {
+   "basis": "reading",
+   "note": "Exact with v0p. Old-cc: OLD_D3J (p from r7 at the else label).",
    "d_classes": "D3"
   }
  },

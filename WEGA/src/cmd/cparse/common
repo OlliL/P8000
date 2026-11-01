@@ -60,7 +60,7 @@ tinit(){ /* initialize expression tree search */
 
 NODE *
 talloc(){
-	NODE *p, *q;
+	NODE *p, *q, *r;
 
 	q = lastfree;
 	for( p = TNEXT(q); p!=q; p= TNEXT(p))
