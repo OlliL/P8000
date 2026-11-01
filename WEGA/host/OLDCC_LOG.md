@@ -570,3 +570,8 @@ TODO.md when this log was started.
 - exname `p = &ntab[s]`: the original adds the parameter s from the frame to the address constant; OLD_D3AW in match
   (a parameter right of PLUS with a named ICON is not taken from its register): exact, no other change; 171, 100;
   corpus 259.
+- oconvert: `p->left = block( SCONV, q = p->left, NIL, INT, 0, INT );` (the original loads `ld r6,r13` before the
+  constant for r7; the only such order in cparse, 25 the other way: the assignment in the argument goes first):
+  exact. newsect `&sectname[sec][k]`: the original adds k before the array address; cparse optim with the plain PCC
+  swap condition: no effect; codgen OLD_D5G (fixfld: SUBSR of PLUS(UAND name, index) with a variable index becomes
+  (index + index) + address): exact, 173, 96; corpus 259; bench v0 275 > 303 (v0p).

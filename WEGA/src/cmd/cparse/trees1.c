@@ -824,8 +824,7 @@ oconvert(p) register NODE *p; {
 		return( p );
 
 	case MINUS:
-		q = p->left;
-		p->left = block( SCONV, q, NIL, INT, 0, INT );
+		p->left = block( SCONV, q = p->left, NIL, INT, 0, INT );
 		p->right = block( SCONV, p->right, NIL, INT, 0, INT );
 		return(  clocal( block( PVCONV,
 			p, bpsize(q), INT, 0, INT ) ) );

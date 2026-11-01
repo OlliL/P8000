@@ -370,7 +370,7 @@ fixfld(p)
 {
 	register struct node *m, *a;
 	register int ismember;
-#ifdef OLD_D5S
+#if defined(OLD_D5S) || defined(OLD_D5G)
 	int subsr = p->op == 120;
 #endif
 
@@ -386,6 +386,18 @@ fixfld(p)
 #ifdef OLD_D5S
 	/* v0: an element of a local array is (index + offset) + fp, the frame pointer added last */
 	if (subsr && a->op == PLUS && a->left->op == REG && a->left->rval == 15 && a->right->op == ICON &&
+	    p->right->op != ICON) {
+		m = a->left;
+		a->left = p->right;
+		a->type = p->right->type;
+		p->left = a;
+		p->right = m;
+		return;
+	}
+#endif
+#ifdef OLD_D5G
+	/* v0p: an element of a global array of arrays is (index + index) + address, the address added last */
+	if (subsr && a->op == PLUS && (a->left->op == UAND || (a->left->op == ICON && a->left->sname)) &&
 	    p->right->op != ICON) {
 		m = a->left;
 		a->left = p->right;

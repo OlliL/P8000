@@ -6836,7 +6836,7 @@
   "oconvert": {
    "basis": "statement form",
    "d_classes": "D19",
-   "note": "Source fix: no return(p) behind the cerror at the end (the original has no code there; with it popt merges the return copies). Remaining: the order of the arguments r6, r7 of the first block() call."
+   "note": "Exact with v0p. Source: block( SCONV, q = p->left, NIL, INT, 0, INT ) (the assignment in the argument is evaluated first)."
   },
   "prtdcon": {
    "basis": "reading",
@@ -6942,6 +6942,11 @@
    "basis": "reading",
    "note": "Exact with v0p. Old-cc: OLD_D3J (n known in rr6 at the else label), OLD_D3AW (n*2 as an argument from rr6).",
    "d_classes": "D3"
+  },
+  "newsect": {
+   "basis": "reading",
+   "note": "Exact with v0p. Source: for( ; *cp; ++q, ++cp ) *q = *cp. Old-cc: OLD_D5G (&sectname[sec][k] with the address added last).",
+   "d_classes": "D5"
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",
