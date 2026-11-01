@@ -143,3 +143,47 @@ void movedat();
 /* z23.c */
 void procopt();
 int isused();
+
+/*
+ * The globals in the order of their places in the bss of the original: every module includes this list, the
+ * first one linked gives the commons their order.
+ */
+int nchange;
+int nrename;
+int npushpop;
+char conval[20];
+char debug;
+int nshft;
+int ncmot;
+char ccloc[20];
+int nredunj;
+int nsaddr;
+int njp1;
+char regs[NREGS][32];
+int nrlab;
+char flag136a;
+char conloc[20];
+int ndirect;
+int nbrbr;
+int heapbase;
+int ncomj;
+char line[LSIZE];
+int nskip;
+int nrevbr;
+struct node first;
+int nxjump;
+int npushdirect;
+struct optab *ophash[OPHS];
+int nlda;
+int redunm;
+int nclr;
+int nsob;
+int iaftbr;
+int loopiv;
+int heapcur;
+int heaplim;
+char *curlp;
+int nrtst;
+int keepcmt;
+char _sobuf[512];
+struct node *rmnode;

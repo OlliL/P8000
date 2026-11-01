@@ -9,7 +9,7 @@ OWN_OBJ = r'^(crt0|bss|z20|z21|z22|z23|crt0-popt)'
 
 # the model of the old compiler v0p (host/OLDCC.md): the sources compiled with ccv0p (CCHOST), the data in the layout
 # of the old cc (d12model.py), linked like `make popt`; strictcmp compares it with /lib/popt
-MODULES = ['bss', 'z20', 'z21', 'z22', 'z23']
+MODULES = ['z20', 'z21', 'z22', 'z23']
 TABLES = []
 D18 = True          # the old cc writes 0(fp) for @fp (v0, OLD_D18)
 D6TABLES = True     # the switch tables in the layout of the old cc (d12model.py d6tables)

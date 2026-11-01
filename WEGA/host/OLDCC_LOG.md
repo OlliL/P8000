@@ -820,3 +820,4 @@ TODO.md when this log was started.
   popt corpus 816/816; cparse model 173.
 - rmove: what is left is layout (jump forms, the two "#0" of clr_cc whose order depends on the branch order); the source work on rmove is done for now.
 - cparse: libcbss.s replaced by an old data member (src/lib/oldlibc/data/0_1.c: _sobuf declared before _sibuf): the shipped data.o defines both commons and is their first mention in the link; with the old order the bss of the model is as before (__sobuf 0xb4f4, __sibuf 0xb6f4), cparse model 173.
+- popt: bss.s replaced by a list of the globals as definitions at the end of z2.h in the original bss order (every module includes it; z20.o, linked first, gives the order): the bss map of the model is the same symbol by symbol; popt model 56, cparse 173.

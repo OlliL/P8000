@@ -31,8 +31,7 @@ LIBCOBJS = $(OLD)/freopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o ffltioc.
 	$(OLD)/cnvt/0_2.o decimal.o $(OLD)/length/0_2.o $(OLD)/malloc/0_3.o $(OLD)/isatty/0_2.o $(OLD)/stty/0_2.o \
 	ctype_.o $(OLD)/strrchr/0_1.o $(OLD)/strcat/0_2.o $(OLD)/strncmp/0_1.o $(OLD)/strcpy/0_2.o \
 	$(OLD)/strlen/0_2.o brk.o chmod.o close.o creat.o ioctl.o lseek.o open.o read.o umask.o write.o cerror.o
-# bss.s (only .comm lines) gives the bss the order of the original
-OBJS = bss.o z20.o z21.o z22.o z23.o
+OBJS = z20.o z21.o z22.o z23.o
 
 # the versions of the old compiler (one directory each, own Makefile; not part of all)
 OLDDIRS = v1 v0 v0p
@@ -47,8 +46,6 @@ popt: $(OBJS) $(OLDOBJS) ship
 
 $(OBJS): z2.h stdio.h
 
-bss.o: bss.s
-	$(CAS) -u -o $@ bss.s
 
 # the start-up file of popt is the shipped /lib/crt0.o (same code: start, 42 bytes)
 ship:
