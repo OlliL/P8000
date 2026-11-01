@@ -541,3 +541,15 @@ TODO.md when this log was started.
   be read from the binary exactly (or the rule is another one). Open; the call at every trigger and the "all pending
   jumps at once" pattern speak against a compiler rule (jumps to the same target are long before the point and short
   behind it, deroff 0x1834 `jp 0x1858` and 0x1852 `jr 0x1858`).
+- The long short jumps, simulated on the real cas input (the `_old.s` modules of the d12model, the instructions
+  aligned with the assembled objects for exact addresses; the decision rule of jprange in the shipped jpr.c):
+  1. a table of undecided entries that is optimized when full: capacity 255 hits the yylex jump but also predicts two
+     long jumps in trees1 (short in the original); with the gray zone of jprange (a known target whose distance can
+     still flip) no capacity hits it;
+  2. the itable segment (14 bytes per undecided jpr, 6 or 12 per symbol) optimized instead of grown at each 0x400,
+     0x800, 0x1000 or 0x2000 step, cumulative or reset: at best 39 false long jumps.
+  Refuted as far as the cparse input can tell. The trigger lies at a `call` in all four originals (cparse, popt,
+  deroff, scodgen), always with only one `call` in the deroff window. Parked under the time box (rounds: manual
+  triggers, ZEUS cas, binary counts, capacity on the real input, itable steps): yylex 0x219E stays as an explained
+  remainder (the early jump optimization of an older cas, described in the manual, evidence in four programs, trigger
+  unknown).
