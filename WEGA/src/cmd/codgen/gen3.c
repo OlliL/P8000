@@ -61,9 +61,11 @@ gencall(p, cookie)
 		{
 			register struct rs *n;	/* v0: a parameter is not taken from its register for an argument */
 
+#ifndef OLD_D3AW
 			for (n = rsuse; n; n = n->next)
 				if (n->cls <= 4 && n->sym && n->sym->sclass == 9)
 					n->sym = 0;
+#endif
 		}
 #endif
 		genargs(p->right);

@@ -9,6 +9,7 @@
 #define OLD_D2Q		/* a long loaded through a pointer into the pair of its even address register, also when wanted */
 #define OLD_D2X		/* a long result of a binary operator (not a shift) into the pair of its left operand first */
 #define OLD_D3A		/* the registers of the parameters forgotten before the arguments of a call (gencall) */
+#define OLD_D3AW	/* OLD_D3A only for a parameter that is a whole argument or an address in it (argplace) */
 #define OLD_D2A		/* the value of a long assignment copied into a new pair, which keeps the name (match) */
 #define OLD_D21	/* an unsigned division or modulo by a power of two stays a division (optim) */
 #define OLD_D2PT	/* OLD_D2P takes the registers of a TEMP (the value of a switch) too */

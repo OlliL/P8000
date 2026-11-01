@@ -6937,6 +6937,11 @@
    "basis": "reading",
    "note": "Exact with v0p. Old-cc: OLD_D2W6 (the third pair is rr6).",
    "d_classes": "D2"
+  },
+  "zecode": {
+   "basis": "reading",
+   "note": "Exact with v0p. Old-cc: OLD_D3J (n known in rr6 at the else label), OLD_D3AW (n*2 as an argument from rr6).",
+   "d_classes": "D3"
   }
  },
  "inventory": "host/recon/inventory.py (tmp/tmp/cparse_inv.json): 230 proven starts, 29 candidates, 0 decode failures",

@@ -901,6 +901,36 @@ argstrip(p, rest)
 	order(p, 0x2000);
 }
 
+#ifdef OLD_D3AW
+/* forget the registers of the parameters in p that are the whole tree (top) or under an indirection */
+static void
+d3aw(p, top)
+	register struct node *p;
+	int top;
+{
+	register struct rs *n;
+	register int k;
+
+	if (p->op == NAME && p->sname && p->sname->sclass == 9) {
+		if (top)
+			for (n = rsuse; n; n = n->next)
+				if (n->cls <= 4 && n->sym == p->sname)
+					n->sym = 0;
+		return;
+	}
+	k = dope[p->op] & 0xE;
+	if (k == LTYPE)
+		return;
+	if (p->op == STAR)
+		top = 1;		/* below an indirection: an address */
+	else if (p->op != PLUS && p->op != MINUS)
+		top = 0;		/* below an operator: a computed value */
+	d3aw(p->left, top);
+	if (k == BITYPE)
+		d3aw(p->right, top);
+}
+#endif
+
 #ifdef OLD_D22
 /* v0p: a double argument into the CPU registers reg .. reg+3: from memory with ldm, else through the EPU */
 static void
@@ -982,6 +1012,11 @@ argplace()
 		}
 #endif
 		q->rall = reg | 0x1000;
+#ifdef OLD_D3AW
+		/* v0p: a parameter that is a whole argument or is used as an address in it is not taken from its
+		   register (OLD_D3A only there; in a computed value it is) */
+		d3aw(q, 1);
+#endif
 #ifdef OLD_D3N
 		/* v0p: a word variable just stored from a register: the argument is taken from that register */
 		if (q->op == NAME && d3nhas(q->sname) && szty(q->type) == 1 && d3nfree(d3nreg)) {

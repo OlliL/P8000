@@ -563,3 +563,7 @@ TODO.md when this log was started.
   only a pair request takes rr6 before rr4: 169 strict, 105 lines; corpus 259; bench v0 277 > 275 (v0).
 - Note: make's built-in rule `.l -> .c` regenerates scan1.c with flex when a file scan1.l lies in src/cmd/cparse
   (it happened with a scratch listing); keep no .l files there.
+- zecode `fprintf( dfile, "...", n*2 )`: the original takes the long parameter n from rr6 (known at the else label,
+  OLD_D3J); OLD_D3A forgot it before the arguments. OLD_D3AW (forget only a parameter that is the whole argument):
+  zecode exact, refid +2 (`refid( (struct symtab *) dimtab[p->sizoff+3] )` reloads p, used as an address); forget
+  also below an indirection: 170 strict, 103 lines; corpus 259.
