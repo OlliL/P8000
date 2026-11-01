@@ -784,3 +784,10 @@ TODO.md when this log was started.
   and passes r2; the call inside the argument gave codgen v0p a temporary: the frame is 0x38 now), do_cjp reads
   `p->back` every time instead of holding it in p1: 61 instructions of content left.
   popt model 56 of 73, ; popt corpus 816/816; cparse model 173.
+- rmove, step 4: the sections behind the dispatch in the order of the original's code (the targets of the table at
+  0x6fe sorted: ld, clr, dec, inc, and, arith, push, pop, srl, sra, sla, tst, cp, cjp, lda; every section ends with
+  a goto, so the order is free in the source): rmove 1190 > 549 lines, content 61 > 48 instructions; popt 874.
+- rmove, step 5: the `r12 == 0` arm of do_cjp keeps p1 (= p->forw there): 549 > 519 lines, content 40. Ours is 88
+  bytes shorter than the original: tests on MUL (0x17), DIV (0x18), SRA (0x0E) and `cpb @r13,#1/#0x10` exist only
+  in the original.
+  popt model 56 of 73, 844 lines; popt corpus 816/816; cparse model 173.

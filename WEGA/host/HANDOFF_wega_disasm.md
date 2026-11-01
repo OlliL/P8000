@@ -134,7 +134,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 56 of 73 functions strictly exact,
-1533 differing lines (rmove 1208 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+844 differing lines (rmove 519 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (bss.s gives the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
@@ -171,7 +171,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - setreg (22)
 - procopt (48)
 - usesreg (177)
-- rmove (1208 lines, 76 instructions of content, under analysis)
+- rmove (519 lines, 40 instructions of content, under analysis)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -200,10 +200,16 @@ do_cjp in t and r, `copy(1, s)` with two arguments: the instruction multisets no
 jumpsw` in src/cmd/popt), not by the line count, until the content is equal.
 Step 3 done: `t = strlen(b2);` as its own statement in front of the two strncmp of do_lda (the
 frame is 0x38 now, as the original), do_cjp reads `p->back` every time (no p1 there): 61 instructions of content
-left (`python3 tools/msdiff.py rmove jumpsw`). Next, in this order:
-1. The main switch: the case order from the table at 0x6fe and the order of the tests (`cpb @r14,#0x17` and
-   `#0x18` only in the original); then the string literals of z22.c in the order of the original's pool (the
-   `ld r6,#0x08..` differences); a few `ld r2,4(r14)` reloads of p->back in the original.
+left (`python3 tools/msdiff.py rmove jumpsw`). Step 4 done: the sections behind the dispatch (each ends
+with a goto) in the order of the original's code (from the table at 0x6fe): do_ld, do_clr, do_dec, do_inc, do_and,
+do_arith, do_push, do_pop, do_srl, do_sra, do_sla, do_tst, do_cp, do_cjp, do_lda: rmove 549 lines, 48 instructions
+of content. Step 5 done: the `r12 == 0` arm of do_cjp uses p1 (= p->forw, not reassigned there) as the
+original: rmove 519 lines, 40 instructions of content; our rmove is 88 bytes shorter than the original (3184
+against 3272): some code of the original is still missing in ours. Next, in this order:
+1. The missing 88 bytes: `cpb @r14,#0x17` (MUL), `#0x18` (DIV), `#0x0E` (SRA) and `cpb @r13,#1/#0x10` tests are
+   only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
+   `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.
+
 2. The long `jp` of the old cas (OLDCC.md, open cparse point 4) is in rmove: one `jp` where `jr` reaches, trigger
    at a `call`; record it, do not try to build it here.
 Lessons of the other functions that will apply: the case order from the jump table, register declaration order,
