@@ -491,3 +491,4 @@ TODO.md when this log was started.
   L222`: our iterate follows the jump to the jump first, so xjump compares with the tail of L222; the original
   cross-jumps to L227 first (the then part jumps into the else part's call). OLD_D20K: cinit exact; for every label
   cprint +6, only for a label with one reference: no loss. cparse 163, 144; corpus 259; bench v0 unchanged (v0p).
+- clocal: the switch on ml in the source order CHAR, UCHAR, USHORT/UNSIGNED, SHORT/INT: exact.

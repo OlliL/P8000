@@ -97,11 +97,6 @@ clocal(p) NODE *p; {
 				l->lval = (char) val;
 				break;
 
-			case SHORT:
-			case INT:
-				l->lval = (int) val;
-				break;
-
 			case UCHAR:
 				l->lval = val & 0377;
 				break;
@@ -109,6 +104,11 @@ clocal(p) NODE *p; {
 			case USHORT:
 			case UNSIGNED:
 				l->lval = val & 0177777;
+				break;
+
+			case SHORT:
+			case INT:
+				l->lval = (int) val;
 				break;
 				}
 		settype:

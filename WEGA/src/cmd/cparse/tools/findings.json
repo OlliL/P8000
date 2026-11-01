@@ -6726,7 +6726,7 @@
   "clocal": {
    "basis": "reading",
    "d_classes": "D2 D3 D6 D7 D19",
-   "note": "Source: the l->left chains (SCONV loop and DIV/MOD p->left = l = l->left, char compare l = p->left = l->left); p = l; return(p) at the SCONV end, p = buildtree(...); return(p) for PVCONV/PMCONV. long val declared in the ICON block. Remaining: one block placed by popt."
+   "note": "Source: the l->left chains (SCONV loop and DIV/MOD p->left = l = l->left, char compare l = p->left = l->left); p = l; return(p) at the SCONV end, p = buildtree(...); return(p) for PVCONV/PMCONV. long val declared in the ICON block. The switch on ml in the order CHAR, UCHAR, USHORT/UNSIGNED, SHORT/INT. Exact with v0p."
   },
   "argdebug": {
    "basis": "frame layout",
