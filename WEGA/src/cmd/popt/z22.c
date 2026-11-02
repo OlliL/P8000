@@ -185,8 +185,14 @@ rmove()
 		t = dest(p);
 		r12 = findslot(RT1, t);
 		if (r12 >= 0 && r12 == isreg(RT2) && p1->op != CJP &&
-		    p1->op != EXTS)
-			goto del;
+		    p1->op != EXTS) {
+		del:
+			p1->back = p->back;
+			p->back->forw = p1;
+			redunm++;
+			nchange++;
+			goto next;
+		}
 		if (equstr(RT1, RT2))
 			goto del;
 		if (equstr(RT1, "#0") && p->subop != SLDK) {
@@ -244,13 +250,6 @@ rmove()
 		ccinval(RT1);
 		goto next;
 
-	del:
-		p->back->forw = p1;
-		p1->back = p->back;
-		redunm++;
-		nchange++;
-		goto next;
-
 	do_dec:
 		dualop(p);
 		r12 = isreg(RT2);
@@ -265,8 +264,11 @@ rmove()
 #else
 		if (RT2[0] == '@' && r12 == isreg(RT2 + 1)) {
 #endif
-			if (RT1[0] == '#' && p1->subop == SLONG)
-				goto redual;
+			if (RT1[0] == '#' && p1->subop == SLONG) {
+			redual:
+				dualop(p);
+				goto disp;
+			}
 			p->back->forw = p1;
 			p1->back = p->back;
 			p = p1;
@@ -307,10 +309,7 @@ rmove()
 			npushpop++;
 			nchange++;
 		}
-		/* falls through */
-	redual:
-		dualop(p);
-		goto disp;
+		goto redual;
 
 	do_and:
 		dualop(p);
@@ -346,6 +345,36 @@ rmove()
 		p1->back = p->back;
 		goto next;
 
+	disp:
+		/* common tail for instructions that change a register */
+		switch (p->op) {
+		case INC: case DEC: case SRA: case SLA: case SRL: case SLL:
+			if (equstr(RT2, conloc))
+				conloc[0] = 0;
+			break;
+		default:
+			repladdr(p, 0);
+		}
+		ccinval(RT1);
+		if (p->op == DIV || p->op == MUL) {
+			if (p->subop == SLONG) {
+				t = dest(p);
+				setreg(RT2, t);
+				setreg(RT2, TQ);
+			} else {
+				t = dest(p) + 0x10;
+				setreg(RT2, t);
+			}
+		} else {
+			t = dest(p);
+			setreg(RT2, t);
+		}
+		if (p->op == DIV || p->op == MUL)
+			ccloc[0] = 0;
+		else
+			setcc(RT2);
+		goto next;
+
 	do_push:
 		p1 = p->back;
 		dualop(p);
@@ -370,9 +399,11 @@ rmove()
 		push_end:
 			dualop(p);
 		}
-		if (isreg(RT2 + 1) < 0)
-			goto disp;
-		goto kill_all;
+		if (isreg(RT2 + 1) >= 0) {
+		kill_all:
+			cleargroup(0x32, 1);
+		}
+		goto disp;
 
 	do_pop:
 		dualop(p);
@@ -398,9 +429,6 @@ rmove()
 		if (isreg(RT1 + 1) >= 0)
 			goto kill_all;
 		goto disp;
-	kill_all:
-		cleargroup(0x32, 1);
-		goto disp;
 
 	do_srl:
 		dualop(p);
@@ -413,7 +441,15 @@ rmove()
 			p1->op = RR;
 			strcat(RT2, ",#1");
 			p1->code = copy(1, RT2);
-			goto shins;
+		shins:
+			p1->subop = p->subop;
+			p->forw->back = p1;
+			p1->forw = p->forw;
+			p->forw = p1;
+			p1->back = p;
+			nshft++;
+			nchange++;
+			goto redual;
 		}
 		goto sh8;
 
@@ -442,15 +478,7 @@ rmove()
 		p->subop = SBYTE;
 		p->code = copy(1, "rlX,rhX");
 		sprintf(p->code, "rl%d,rh%d", r12, r12);
-	shins:
-		p1->subop = p->subop;
-		p->forw->back = p1;
-		p1->forw = p->forw;
-		p->forw = p1;
-		p1->back = p;
-		nshft++;
-		nchange++;
-		goto redual;
+		goto shins;
 
 	do_sla:
 		dualop(p);
@@ -483,6 +511,31 @@ rmove()
 		p1->code = copy(1, "rlxx");
 		sprintf(p1->code, "rl%d", r12);
 		goto shins;
+
+	do_clr:
+		singop(p);
+		if (p->op == EXTS && p->subop == SLONG) {
+			t = dest(p);
+			setreg(RT1, t);
+			setreg(RT1, TQ);
+			goto clr_cc;
+		}
+	clr_tail:
+		t = dest(p);
+		setreg(RT1, t);
+	clr_cc:
+		if (p->op == CLR) {
+			r12 = isreg(RT1);
+			if (r12 >= 0) {
+				t = dest(p);
+				savereg(r12, "#0", t);
+				goto next;
+			}
+			setcon("#0", RT1);
+			goto next;
+		}
+		setcc(RT1);
+		goto next;
 
 	do_tst:
 		singop(p);
@@ -555,8 +608,7 @@ rmove()
 			}
 			decref(p->ref);
 			p = p->back->back;
-			nchange++;
-			goto cc_clear;
+			goto cjp_chg;
 		}
 		if (r12 > 0) {
 			p->op = JP;
@@ -564,34 +616,10 @@ rmove()
 			p->back->back->forw = p;
 			p->back = p->back->back;
 			p = p->back;
+		cjp_chg:
 			nchange++;
 		}
 		goto cc_clear;
-
-	do_clr:
-		singop(p);
-		if (p->op == EXTS && p->subop == SLONG) {
-			t = dest(p);
-			setreg(RT1, t);
-			setreg(RT1, TQ);
-			goto clr_cc;
-		}
-	clr_tail:
-		t = dest(p);
-		setreg(RT1, t);
-	clr_cc:
-		if (p->op != CLR) {
-			setcc(RT1);
-			goto next;
-		}
-		r12 = isreg(RT1);
-		if (r12 >= 0) {
-			t = dest(p);
-			savereg(r12, "#0", t);
-			goto next;
-		}
-		setcon("#0", RT1);
-		goto next;
 
 	do_lda:
 		dualop(p);
@@ -600,21 +628,8 @@ rmove()
 		strcpy(b1, RT1);
 		strcpy(b2, RT2);
 		dualop(p1);
-		if (isreg(RT2) < 0) {
-			if (RT2[0] != '@')
-				goto lda_end;
-			if (isreg(RT1) < 0)
-				goto lda_end;
-			t = strlen(b2);
-			if (strncmp(RT2 + 1, b2, t) != 0)
-				goto lda_end;
-			if (isused(p1, b2))
-				goto lda_end;
-			p->op = LD;
-			strcat(b1, ",");
-			p->code = copy(2, b1, RT1);
-			goto lda_done;
-		}
+		if (isreg(RT2) < 0)
+			goto lda_mem;
 		if (isused(p1, b2))
 			goto lda_end;
 		if (!equstr(RT1, b2)) {
@@ -638,36 +653,20 @@ rmove()
 		t = dest(p);
 		setreg(RT2, t);
 		goto next;
-
-	disp:
-		/* common tail for instructions that change a register */
-		switch (p->op) {
-		case INC: case DEC: case SRA: case SLA: case SRL: case SLL:
-			if (equstr(RT2, conloc))
-				conloc[0] = 0;
-			break;
-		default:
-			repladdr(p, 0);
-		}
-		ccinval(RT1);
-		if (p->op == DIV || p->op == MUL) {
-			if (p->subop == SLONG) {
-				t = dest(p);
-				setreg(RT2, t);
-				setreg(RT2, TQ);
-			} else {
-				t = dest(p) + 0x10;
-				setreg(RT2, t);
-			}
-		} else {
-			t = dest(p);
-			setreg(RT2, t);
-		}
-		if (p->op == DIV || p->op == MUL)
-			ccloc[0] = 0;
-		else
-			setcc(RT2);
-		goto next;
+	lda_mem:
+		if (RT2[0] != '@')
+			goto lda_end;
+		if (isreg(RT1) < 0)
+			goto lda_end;
+		t = strlen(b2);
+		if (strncmp(RT2 + 1, b2, t) != 0)
+			goto lda_end;
+		if (isused(p1, b2))
+			goto lda_end;
+		p->op = LD;
+		strcat(b1, ",");
+		p->code = copy(2, b1, RT1);
+		goto lda_done;
 
 	do_jp:
 		redunbr(p);

@@ -194,7 +194,7 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20L`, `OLD_D20K`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 175 strictly exact, 27 differing lines, /lib/popt 71 of 73, 427 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
+- State: /lib/cparse 175 strictly exact, 27 differing lines, /lib/popt 71 of 73, 26 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
@@ -538,6 +538,9 @@ r2,8(r14); ld r2,2(r2); inc r2,#16; ld r3,8(r14); ld 2(r3),r2`). Bench v0 unchan
 
 ### D17 Call form (popt)
 
+Measured 2026-11-02: strictcmp treats `call` and `calr` as equal. popt rmove has 167 `call` and 3 `calr` in the original, 132 and 38 in ours (70 bytes), most of its gap in size; so "strictly exact" does not yet mean byte-identical here.
+
+
 The original popt calls a global function of the same file with the absolute `call`, a static one with `calr`; the
 shipped build always uses `calr` inside a file. Pattern from popt (166 against 22 sites), not tested with a compiler.
 
@@ -598,7 +601,8 @@ order).
   inside, longer than the target): cparse about 1200 to 1400 lines, popt about 1250 to 1300. No move behind a jump to itself (cparse 471), no move behind a conditional jump over a jump (cparse 166).
 - Candidate, not set (one witness): the load of a switch value in front of a dispatch behind a jump (`Lx: ld r2,r13; jpr D`, argregs): argregs 17 > 14, nothing else changes.
 - Removed (2026-11-02): OLD_D20S. getpreg `if( pregvar < 2 ) break; goto gotreg;` is exact without it, and it turned the POP arm of usesreg the wrong way (usesreg 35 > 6).
-- Open (popt): rmove.
+- rmove was source forms too (420 > 19 lines): `del`, `redual`, `kill_all`, `shins`, the CLR arm and `next`-like tails inside the `if` that falls into them, disp behind do_arith, do_clr behind do_sla, lda_mem behind lda_end.
+- Open (popt): rmove 19 lines: 8 are the long `jp` of the old cas (the known cluster); 11 the TST arm of do_cp (`ld r7,r14; sub r6,r6; jr` behind `jr eq; jr` in the original, ours at cp_end; a goto form gives 34).
 
 ### D21 (removed 2026-11-02: not a difference of the compiler)
 

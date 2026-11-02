@@ -111,7 +111,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 71 of 73 functions strictly exact,
-427 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+26 differing lines (rmove 19, setreg 7) (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (the definitions at the end of z2.h give the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools and `CRT0=<WEGA_ROOT>/lib/crt0.o` (the `ship` target copies it with the host's cp): 272 inputs times no option, -l, -d;
@@ -133,7 +133,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 **Open popt functions** (strict diff lines in brackets; the owner may clean up this list as functions get done):
 
 - setreg (7, the arguments of makereg, codgen D3)
-- rmove (410 lines; content equal but for jump forms and two string addresses: layout, D20)
+- rmove (19 lines: the long `jp` of the old cas, the TST arm of do_cp)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
@@ -142,65 +142,8 @@ for the codgen work and the placement question:
 - popt, D20 (block placement): rmove.
 - Under analysis: rmove (see "Now: rmove" below; it also holds the cas cluster of the open cparse point 4).
 
-**Now: rmove, under analysis** (z22.c, original 0x13b6, 3272 bytes; the only function with a large remainder,
-1111 lines on 2026-11-01). Listing: `python3 tools/olist.py rmove`, diff: `python3 tools/strictcmp.py -v rmove` (in
-src/cmd/popt). The jump tables of rmove are in the data at 0x6e6 (the values 10, 11, 14, 15, 45, 46 of a cpir switch
-with their targets) and 0x6fe (the main switch on p->op, 52 entries, index op-1). Found so far (OLDCC_LOG.md
-2026-11-01, "rmove, analysis started"): only about 190 of 645 instructions differ in content, the rest is layout;
-the content comes from the variables. Done: r12, r11, r10 register variables, `char b1[20], b2[20]`, the unused
-`s` removed, the write-only global `rmnode` (0x1846) set at the top of the loop, no `op` (the switch is on p->op,
-its default goes to `reset`; the explicit range test of our source is the one codgen makes): 1106 lines. Step 2 done: no `n` (p1 also holds p->back and the new
-nodes; `p->forw` written out where p1 meant it), `int ty` in front of b1 (frame word 0), the findcon values of
-do_cjp in t and r, `copy(1, s)` with two arguments: the instruction multisets now differ in 76 instructions (from
-190); the strict lines rose to 1208 because the layout moved. Measure rmove by the multiset (`python3 tools/msdiff.py rmove
-jumpsw` in src/cmd/popt), not by the line count, until the content is equal.
-Step 3 done: `t = strlen(b2);` as its own statement in front of the two strncmp of do_lda (the
-frame is 0x38 now, as the original), do_cjp reads `p->back` every time (no p1 there): 61 instructions of content
-left (`python3 tools/msdiff.py rmove jumpsw`). Step 4 done: the sections behind the dispatch (each ends
-with a goto) in the order of the original's code (from the table at 0x6fe): do_ld, do_clr, do_dec, do_inc, do_and,
-do_arith, do_push, do_pop, do_srl, do_sra, do_sla, do_tst, do_cp, do_cjp, do_lda: rmove 549 lines, 48 instructions
-of content. Step 5 done: the `r12 == 0` arm of do_cjp uses p1 (= p->forw, not reassigned there) as the
-original: rmove 519 lines, 40 instructions of content; our rmove is 88 bytes shorter than the original (3184
-against 3272): some code of the original is still missing in ours. Step 6 done: disp tests DIV/MUL twice as the original
-(once for the setreg choice, once for `ccloc[0] = 0` against `setcc(RT2)`): 36 instructions of content, rmove 528
-lines (3204 bytes). Step 7 done: sh8 starts with `if (p->op == SRA) dualop(p);` (the dualop of do_sra
-moved behind the label, as the original): 35 instructions of content, rmove 530 lines (3210 bytes, 62 short).
-Step 8 done: push_end tests `isreg(RT2 + 1)` (not RT1), and the `r12 == 0` arm of do_cjp goes on with
-`p = p->back->back` (host/popt has `p->back->forw`, which differs from the original; the corpus does not show
-it): 33 instructions of content, rmove 526 lines. Step 9 done: do_lda tests `isreg(RT2) < 0` directly (no r):
-rmove 523 lines; what is left of the content is nearly all jump forms (jr/jp, layout), the two jump table
-addresses (data order) and about 20 string addresses. Step 10 done: the string pool order of the original
-shows that do_clr stands behind do_cjp in the source (popt moves its code up to where the original has it):
-section order do_ld, do_dec, do_inc, do_and, do_arith, do_push, do_pop, do_srl, do_sra, do_sla, do_tst, do_cp,
-do_cjp, do_clr, do_lda: rmove 453 lines, 14 instructions of content left (4 of them string addresses, the two
-jump table addresses, the rest jump forms). Step 11 done: in clr_cc the register branch first (`if (r12 >= 0)
-{ savereg } setcon`): 13 instructions of content. The strings of z22.c are now in the original's order
-except the cpir table of rmove (data layout). Step 12 done: the main switch encloses all sections and disp
-(its closing brace in front of cc_clear), so its jump table comes behind the cpir table of disp as in the original:
-11 instructions of content, rmove 451 lines, popt 776. Left in the content: the two "#0" of clr_cc are
-passed the other way round (the original gives setcon the earlier literal, ours savereg; `if (r12 < 0) setcon
-else { savereg }` is worse: 12), and our rmove has one call more (`ld r7,r14; call`: probably one dualop or
-singop of p too many); the rest are jump forms (layout). Step 13 done: the JP and CALL cases as own sections
-(do_jp, do_call) behind disp inside the main switch, where the original has their code (0x2054, 0x2060): rmove
-441 lines, 10 instructions of content, popt 766. Step 14 done: `reset:` (clearreg; goto next) between do_jp
-and do_call, as the original's default target 0x205a: rmove 435 lines. Open: `next` (`p = p->forw`) stands near the
-top in the original (0x143e, behind the LD section); writing `next:` behind do_ld in the source gives the same
-code (popt places it), so the source form is not the cause. Step 15 done: the LD case that becomes a CLR goes
-`goto do_clr` (the original falls into do_clr, whose first statement is the singop; ours had its own singop
-and `goto clr_tail`): the call counts per callee are now equal (a check: count call/calr per target on both
-sides); rmove 410 lines, 8 instructions of content, popt 735. What is left in rmove is layout only: jump forms
-(jr/jp) and the two "#0" of clr_cc (with the setcon branch first in the text, before step 11, the strings were in
-the original's order but the jumps worse: one source form cannot give both under our popt, so it is a placement
-question, D20). The source work on rmove is done for now. Next, in this order:
-1. The missing 62 bytes: the `cpb @r13,#1/#0x10` tests are
-   only in the original (msdiff); then the string literals of z22.c in the order of the original's pool (the
-   `ld r6,#0x08..` differences, about 20); a `ld r14,4(r2)` and `ld r3,4(r2)` of the original.
-
-2. The long `jp` of the old cas (OLDCC.md, open cparse point 4) is in rmove: one `jp` where `jr` reaches, trigger
-   at a `call`; record it, do not try to build it here.
-Lessons of the other functions that will apply: the case order from the jump table, register declaration order,
-`++p->x`, `return a || b`, a single return at the end, macros for repeated code (ovlap SCAN: the loop form decides
-whether popt moves the blocks), `while (*a++ == *b++)` against `for (;;) { if (...) break; }`.
+**rmove (done 2026-11-02, 19 lines left, see OLDCC.md D20).** The earlier steps are in `OLDCC_LOG.md` 2026-11-01. Lessons: the case order from the jump table, register declaration order,
+`++p->x`, `return a || b`, macros for repeated code, and above all the node in front of a target: `if (c) { L: ... }` keeps a block in place, `goto L` lets codemove take it.
 
 **First compiler refinement done (2026-11-02):** D16A, not for the operand of a compare; codemove exact (OLDCC.md D16).
 
@@ -209,9 +152,9 @@ definitions at the end of z2.h. cparse: the globals as definitions at the end of
 the order) and an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
 first, the model link needs its object). bss.s and libcbss.s are gone in both.
 
-**Next: rmove with the same lens (source forms decide where a block stands, OLDCC.md D20).** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
-). State: cparse 175/27, popt 71/427. The model
-reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt), not equal sizes; the cause is not checked.
+**Next: the call forms and long jumps of the old cas (D17, cparse point 4); rmove source work done.** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
+). State: cparse 175/27, popt 71/26. The model
+reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt). A part of the cause is measured: strictcmp treats `call` and `calr` as equal, the originals have `call` where ours has `calr` (rmove 35 times, OLDCC.md D17), so a strict match is not yet a byte match.
 
 **Tools.**
 
