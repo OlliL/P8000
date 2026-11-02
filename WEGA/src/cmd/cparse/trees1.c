@@ -1366,12 +1366,11 @@ argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call
 		}
 	n = argsize( p );
 #ifdef OLD_D22
-	if( afull || aregs < 2 ){	/* the old compiler: a double argument in rq4 when it is the first one */
+	if( afull || aregs < 2 ){	/* the old compiler: a double argument in rq4 when it fits */
 	full:
 		afull = 1;
 		return( n*2 );
 		}
-	switch( n ){
 #else
 	if( ( (p->type == FLOAT || p->type == DOUBLE) && afregs < 16 ) || afull ){
 	full:
@@ -1381,28 +1380,37 @@ argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call
 	if( p->type != FLOAT && p->type != DOUBLE && aregs < 2 ) goto full;
 	if( p->type == FLOAT || p->type == DOUBLE ){
 		--afregs;
-		return( 0 );
+		goto ret0;
 		}
-	switch( n ){
 #endif
+	goto sw;
 
-	default:
-	nofit:
-		aregs = 1;
-		goto full;
+nofit:
+	aregs = 1;
+	goto full;
+
+two:
+	if( --aregs & 1 ) --aregs;
+	if( aregs < 2 ) goto nofit;
+one:
+	--aregs;
+ret0:
+	return( 0 );
+
+sw:
+	switch( n ){
+
+	case 1:
+		goto one;
 
 	case 2:
-		if( --aregs & 1 ) --aregs;
-		if( aregs < 2 ) goto nofit;
-	case 1:
-		--aregs;
-		return( 0 );
-
-	case 4:
-		if( aregs != 7 ) goto nofit;
-		aregs -= 4;
-		return( 0 );
+		goto two;
 		}
+	if( n == 4 && aregs == 7 ){
+		aregs -= 4;
+		goto ret0;
+		}
+	goto nofit;
 	}
 
 NODE *

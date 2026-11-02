@@ -1571,6 +1571,7 @@
    "size_orig": 416
   },
   "setreg": {
+   "v0p_note": "v0p model exact: c = r & 0xf; makereg(c, name, type); the scan loop with its consequences inside while (*s)",
    "file": "z22.c",
    "pairing": "confirmed",
    "ours": "0x29b8-0x2aa6",
@@ -2619,7 +2620,7 @@
    "rating": "removed: the original has no such function (popt-23); the callers call alloc / copy directly"
   },
   "rmove": {
-   "v0p_note": "v0p model 19 lines: section order and if-blocks as in OLDCC.md D20; the remainder is the long jp of the old cas and the TST arm of do_cp. strictcmp masks call against calr, 35 places here",
+   "v0p_note": "v0p model 8 lines: section order and if-blocks as in OLDCC.md D20; the remainder is the long jp of the old cas. The TST arm inside the block behind goto cp_chk is an odd form. strictcmp masks call against calr, 35 places here",
    "file": "z22.c",
    "pairing": "confirmed",
    "ours": "0x1416-0x20f2",

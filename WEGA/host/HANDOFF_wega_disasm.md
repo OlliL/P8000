@@ -73,16 +73,14 @@ it; the goal is a byte-identical `/lib/cparse` (owner: "oberste Direktive"). The
 **v0p** (v0, the compiler of the 1982 programs, plus switches only the passes show). Driver `ccv0p`, passes in
 `src/cmd/{cparse,codgen,popt}/v0p`, installed into the oldroot tree (`make -C host oldroot`).
 
-**State (2026-11-02).** 175 of 179 functions strictly exact, 27 differing lines; data and bss as in the original under the D12 model; code 48640 against
+**State (2026-11-02).** 177 of 179 functions strictly exact, 8 differing lines; data and bss as in the original under the D12 model; code 48640 against
 48896 bytes. cparse built with ccv0p passes its corpus (260/260). The bench of v0: 118 of 153 functions, 275 lines. The per-function list: `oldcc.sh model; oldcc.sh lines`.
 
 **Open in /lib/cparse, and why** (details and every refuted attempt in `OLDCC_LOG.md`; do not repeat them without new evidence):
 
-1. **argregs, 17 lines.** `n*2` for `n+n` (the first `add r2,r13` stays apart: rmove writes the other). Left: the dispatch at the end, the case 4 behind it, the `return 0` of the float arm.
-2. **buildtree, 6 lines.** 4 lines: the double constant 0.0 (`r->dval == 0`) lies in the data behind the first switch table, ours in front. 2 lines: the temporary of
+1. **buildtree, 6 lines.** 4 lines: the double constant 0.0 (`r->dval == 0`) lies in the data behind the first switch table, ours in front. 2 lines: the temporary of
    `buildtree( COLON, ll, lr )` is at 0x12 in the original, ours 0xC. One witness each: not built.
-3. **argdebug, 2 lines.** The original renames the unused register variable `a` (r14) into r1 and drops its save (`ld r1,r7`). One witness: not built.
-4. **yylex, 2 lines (one instruction).** `jp 0x21AA` where `jr` reaches: the early jump optimization of an older cas (Band B 3.4.5), parked as an explained remainder (time box;
+2. **yylex, 2 lines (one instruction).** `jp 0x21AA` where `jr` reaches: the early jump optimization of an older cas (Band B 3.4.5), parked as an explained remainder (time box;
    evidence in four originals: cparse/scparse yylex, popt rmove, deroff, scodgen).
 
 **Plan (owner decision 2026-11-01): codgen and popt next.** `/lib/codgen` and `/lib/popt` were built by the same
@@ -110,8 +108,8 @@ cluster (point 4), its small leaf functions may answer point 3.
 3. Then codgen with the same frame, and back to the open cparse points with the new witnesses.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
-/lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 71 of 73 functions strictly exact,
-26 differing lines (rmove 19, setreg 7) (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+/lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 72 of 73 functions strictly exact,
+8 differing lines (rmove, the long `jp` of the old cas) (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (the definitions at the end of z2.h give the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools and `CRT0=<WEGA_ROOT>/lib/crt0.o` (the `ship` target copies it with the host's cp): 272 inputs times no option, -l, -d;
@@ -132,13 +130,11 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 
 **Open popt functions** (strict diff lines in brackets; the owner may clean up this list as functions get done):
 
-- setreg (7, the arguments of makereg, codgen D3)
-- rmove (19 lines: the long `jp` of the old cas, the TST arm of do_cp)
+- rmove (8 lines: the long `jp` of the old cas)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
 
-- codgen, D3 (setreg: the computed first argument of makereg through r2; one witness).
 - popt, D20 (block placement): rmove.
 - Under analysis: rmove (see "Now: rmove" below; it also holds the cas cluster of the open cparse point 4).
 
@@ -152,8 +148,10 @@ definitions at the end of z2.h. cparse: the globals as definitions at the end of
 the order) and an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
 first, the model link needs its object). bss.s and libcbss.s are gone in both.
 
+**Owner, before codgen starts (2026-11-02): talk with the owner about the content of findings.json and the FINDINGS.md made from it; adjustments are needed. Do not start codgen before that, remind the owner.**
+
 **Now: the old cas (owner 2026-11-02, no time box: the call forms D17 and the long jumps have one cause). State in `OLDCC_LOG.md`, last entry: the model is proven: one early optimization at given points gives strictcmp -c = strict (cparse 176, 25 lines; popt 71, 18 lines; `castrig/hostcas.patch`, `triggers.txt`). The rule for the points is open (entries there: 179 to 273, no table offset common); a stoff 0xC00 class was an artefact of the bss list in mfile1, so measure cparse on an input without that list. Tools `host/recon/castrig/`. Goal: a rule, then a v0p cas.** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
-). State: cparse 175/27, popt 71/26. The model
+). State: cparse 177/8, popt 72/8. The model
 reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt). A part of the cause is measured: strictcmp treats `call` and `calr` as equal, the originals have `call` where ours has `calr` (OLDCC.md D17), so a strict match is not yet a byte match. `strictcmp -c` counts them: cparse 168 of 179, 79 lines; popt 61 of 73, 172 lines.
 
 **Tools.**
@@ -204,6 +202,6 @@ plan in `../src/TODO.md` ("Plan: towards the old C compiler").
 3. **Reconstruct the old compiler.** Everything about the old compilers is in `OLDCC.md` (the edited summary: the
    classes D1 ... D22, the versions v1, v0, v0p, rules, building and running) and `OLDCC_LOG.md` (the running notes).
    State 2026-11-01: v1 (strip and size byte-identical, ld 55 of 59); v0 (bench 118 of 153); v0p (/lib/cparse 173 of
-   179, /lib/popt 71 of 73, the current work above).
+   179, /lib/popt 72 of 73, the current work above).
 
 The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").

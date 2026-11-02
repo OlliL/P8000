@@ -944,10 +944,9 @@ vfdalign( n ) register OFFSZ n; { /* make inoff have the offset the next alignme
 /* name and purpose assumed: every argument of a call passes through it (cgram1.y, elist) and it returns it
    unchanged; the unused register variable and the 4 bytes of frame look like the rest of debug code that was
    left out by the preprocessor in the shipped build */
-argdebug( x ){
+argdebug( x ) register x; {
 	register a;
 
-	a = x;
 	return( x );
 	}
 

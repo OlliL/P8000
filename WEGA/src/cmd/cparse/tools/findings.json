@@ -6717,7 +6717,7 @@
   "argregs": {
    "basis": "frame layout",
    "d_classes": "",
-   "note": "Source fix: n = argregs( p->left ) in front of return( n + argregs( p->right ) ) (the original keeps the first count in r13, no frame temporary). Source: return( n*2 ) (rmove writes the add r2,r13 only after comjump, so the tails stay apart). Remaining: the dispatch at the end, the case 4 behind it, the return 0 of the float arm."
+   "note": "Exact with v0p. Source: n = argregs( p->left ) in front of return( n + argregs( p->right ) ); return( n*2 ); the bodies in front of the dispatch with goto sw, a switch of two cases and the case of 4 as an if behind it. An odd form, recorded under the evidence rules of OLDCC.md."
   },
   "rmconv": {
    "basis": "operand order",
@@ -6732,7 +6732,7 @@
   "argdebug": {
    "basis": "frame layout",
    "d_classes": "",
-   "note": "Source fix: only register a (the original saves one register variable). Remaining: popt renames a into r1 and drops its save."
+   "note": "Exact with v0p. Source: argdebug( x ) register x; { register a; return( x ); } (ldm of two registers, procopt renames x into r1)."
   },
   "yyparse": {
    "basis": "reading",

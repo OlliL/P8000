@@ -557,8 +557,12 @@ rmove()
 		ccinval(RT1);
 		ccinval(RT2);
 		if (p->op == CP) {
-			if (equstr(RT2, "#0"))
+			if (equstr(RT2, "#0")) {
 				goto cp_chk;
+			cp_tst:
+				repladdr(p, 0);
+				goto cc_clear;
+			}
 			if (equstr(RT1, "#0")) {
 				strcpy(RT1, RT2);
 				goto cp_chk;
@@ -579,12 +583,12 @@ rmove()
 		}
 	cp_end:
 		if (p->op == TST)
-			repladdr(p, 0);
-		else {
-			dualop(p);
-			repladdr(p, 1);
-		}
-		goto cc_clear;
+			goto cp_tst;
+		dualop(p);
+		repladdr(p, 1);
+	cc_clear:
+		ccloc[0] = 0;
+		goto next;
 
 	do_cjp:
 		if (p->back->op != TST && p->back->op != CP)
@@ -679,10 +683,6 @@ rmove()
 		cleargroup(0x32, 0);
 		goto reset;
 		}
-
-	cc_clear:
-		ccloc[0] = 0;
-		goto next;
 
 	next:
 		p = p->forw;
@@ -1195,7 +1195,8 @@ int type;
 	if ((r = memreg(s0, type)) < 0)
 		return;
 	type = (r & 0x0ff0) >> 4;
-	makereg(r & 0xf, name, type);
+	c = r & 0xf;
+	makereg(c, name, type);
 	setreg(name, type);
 }
 
