@@ -6,7 +6,7 @@ specific binary go to `KNOWLEDGE.md`, open items and status to `src/TODO.md`, pe
 `findings.json` of that program. Keep this file as the procedure only.
 
 Ground rules: byte identity with the original is the goal. Bugs of the original are rebuilt and
-recorded, not fixed. Originals and copyrighted text never go into git. Plexus and V7 sources are read
+recorded, not fixed. Originals and copyrighted text never go into git. Plexus and V7 sources are read (exception: the PCC passes, CLAUDE.md)
 for ideas and names only. Repo text is English, no umlauts in added text. Makefiles must also work with
 the WEGA native `make` (`=` not `?=`, `cd dir ; $(MAKE)`, no pattern rules). The owner commits; the
 assistant never commits or pushes. No new status files: the state lives in `own_functions.txt`
@@ -122,7 +122,7 @@ the second pass.
    becomes `findings`; the function is not left out of the file.
    The source carries no copy of the finding (no status, diff or attempts in comments): findings.json is the only
    place, so the two cannot drift apart. Comments in the source explain the code (what it does, why a form is used).
-4. Names: from messages, system calls, strings; Plexus/V7 names where it is the same function.
+4. Names: from messages, system calls, strings; Plexus/V7 names where it is the same function. For the PCC passes the PCC source of the Plexus tree is the model, also 1:1 (`CLAUDE.md`, Rules).
    External names are significant for 7 characters (`check_names.py`).
 
 ## Step 6: corpus test: original program against the rebuilt program [A, run always]

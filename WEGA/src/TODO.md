@@ -47,6 +47,14 @@ produce the same bytes with the shipped cc.
 | `cmd/getud.c`, `cmd/putud.c` | getud, putud | own code identical, file differs | unstripped binary, temporary cc filename differs cause PID changes every run | none yet |
 | `cmd/doscopy/*.c` (8 commands) | doscat ... dosformat | builds under z8k-emu, but all files differ from the originals | `dosopn.c` line 175 (`1.5*first`) needed EPU instructions; z8k-emu now runs them (2026-10-22, `host/z8k-emu/README.md`) and the commands compile. Locally the build fails only on the `/usr/include` make dependencies (outside the guest ROOT). The owner believes they were built with the current cc and libc (no old-libc version needed; belief, not measured). The differences are not analysed yet | analyse **after the host tool chain is complete** (nearest-version method, `cmpins.py`) |
 
+## Plan: the PCC passes in the form of PCC (owner decision 2026-11-02)
+
+Goal: `src/cmd/cparse` and `src/cmd/codgen` differ from the PCC of the Plexus tree (`cmd/cc/pcc.d`, `pcc.d/mip`, `z8000/pcc`) only where WEGA differs. Byte identity comes first: a change that moves bytes goes only together with what restores them; a rename must leave the model unchanged.
+Measured 2026-11-02, lines without comments and blanks that also stand in the PCC file: cparse pftn1 410 of 757, trees1 740 of 1064; codgen reader3 338 of 1453, order3 63 of 1058, allo3 63 of 695, match3 39 of 470. Function names: cparse 131 of 180, codgen 84 of 209 occur in PCC.
+1. Open functions take their PCC form when they are worked on (codgen step 5).
+2. After the bytes, one pass per module without byte change: names (functions, `NODE` and its members, `in.op`, `tn.rval`), macros (`optype`, `asgop`, `logop`, `FORCC`, `MUSTDO`, `NOPREF`, `INTEMP`) instead of numbers, PCC's file names where the stamps allow (`common`, `optim`, `rdr`), comments. Check: the model and the corpus stay as they are. `scparse`, `scodgen` go with it.
+3. What is left different from PCC is WEGA's: a list per pass (`tools/FINDINGS.md` or a section of its own).
+
 ## Plan: towards the old C compiler (2026-10-30, owner decision; replaces "Plan after the sld naming" of 2026-10-28)
 
 Goal: rebuild the old C compiler (the revision that built the WEGA binaries, D1 ... D17), so that our sources compile
