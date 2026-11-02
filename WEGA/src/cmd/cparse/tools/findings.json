@@ -6875,7 +6875,7 @@
   },
   "psavel": {
    "basis": "reading",
-   "note": "Exact with v0p. Source: *(long *)(ip = &paramstk[paramno]) = l; (the original saves r14 and leaves it unused: popt removes the dead copy).",
+   "note": "Exact with v0p. Source: *(long *)(ip = &paramstk[paramno]) = l; (the original saves r14 and leaves it unused: popt removes the dead copy). An odd form (ip is not used again), recorded under the evidence rules of OLDCC.md: the bytes fit, a plainer form or a switch stays possible.",
    "d_classes": "D3"
   },
   "instk": {
