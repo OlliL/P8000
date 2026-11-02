@@ -1274,7 +1274,7 @@ prtdcon( p ) register NODE *p; {
 			if( sectfull( DATA, size = SZDOUBLE/SZCHAR ) ) newsect( DATA );
 			sectadd( DATA, size );
 			l = lab = getlab();
-			fprintf( dfile, "L%d: \n", lab );
+			fprintf( dfile, "L%d: \n", l );
 			pos = ftell( dfile );
 			fincode( p->dval, SZDOUBLE );
 			}

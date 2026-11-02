@@ -25,7 +25,6 @@
 #define OLD_D5T		/* a member of an element of a local array: its offset beside that of the array (mapregs, rallo) */
 #define OLD_D3JM	/* OLD_D3J: at a label behind a jump named by several jumps the parameters known at the jumps and in front of it */
 #define OLD_D2RA	/* an address r0 + rN moved out of r0 goes to rN when that is free (match, offstar) */
-#define OLD_D3N		/* the variable the statement before stored from a register, stored through a pointer: that register */
 #endif
 
 #ifdef OLD_V0

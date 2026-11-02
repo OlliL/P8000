@@ -341,8 +341,7 @@ lineid(){ /* a .line directive for the current line of a .c file (-l) */
 
 	if( lflag ){
 		len = strlen( ftitle );
-		cp = &ftitle[len-1];
-		if( *cp == '"' ) --cp;
+		if( *(cp = &ftitle[len-1]) == '"' ) --cp;
 		if( *cp-- == 'c' && *cp == '.' ) fprintf( dfile, "\t.line %d %s \n", lineno, ftitle );
 		}
 	}
@@ -368,8 +367,7 @@ genswitch(p,n) register struct sw *p; {
 		r = p[2].sval ? block( MINUS, q, bcon( p[2].sval ), INT, 0, INT ) : q;
 		t = block( DESC, NIL, NIL, 0, 0, 0 );
 		t->lval = range;
-		swlab = getlab();
-		t->rval = swlab;
+		t->rval = swlab = getlab();
 		t = block( CM, bcon( -dlab ), t, 0, 0, 0 );
 		ecomp( block( SWTCH, r, t, 0, 0, 0 ) );
 		fprintf( outfile, "C %d\t%d\t", swlab, dlab );

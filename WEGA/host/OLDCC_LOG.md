@@ -851,3 +851,10 @@ TODO.md when this log was started.
   bottom-up, the inner ICON carries the frame symbol. OLD_D5T (the member added to that ICON, no preference for the
   address wanted in a register, as OLD_D5A): procopt 48 > 12 > 0; popt 63, 661; cparse 173, 96; corpus 260. In v0 the bench is
   unchanged (118, 275): v0p.
+- D3, the value of an assignment. Without the argument part of OLD_D3N repladdr is exact: rmove replaces the load of a frame slot
+  stored last, comjump (before rmove) merges the two arms and the label clears that. prtdcon loses it (`l = lab = getlab()`:
+  lab is not the slot stored last): source `fprintf(dfile, ..., l)`, exact. Without d3rsub findcon is exact, lineid and
+  psavel lost: `if( *(cp = &ftitle[len-1]) == '"' )` and `*(long *)(ip = &paramstk[paramno]) = l;` exact (the forms `(paramstk +
+  paramno)`, casts: `ldl %9524(r2)`, no). Without the pointer store part genswitch lost: `t->rval = swlab = getlab();`
+  exact. OLD_D3N removed from codgen (204 lines). popt 65, 657; cparse 173, 96. Not explained by source forms yet: setreg
+  (the first argument of makereg through r2): tried nothing further, one witness.

@@ -124,118 +124,6 @@ int opclass[] = {
 	0x100, 0x101, 0x1000, 0x1001, 0x8000, 0x8001, 0x200, 0x201, 0x4000, 0xe,
 };
 
-#ifdef OLD_D3N
-extern void rfree();
-extern int szty(), d3nfree();
-int d3nreg = -1;		/* v0p: the register the last stores took their value from (-1: none) */
-static struct sym *d3nsyms[4];	/* the word variables stored from it */
-static int nd3n;
-int d3nstmt;			/* the number of the statement (stmt) */
-static int d3ngen;		/* the statement of those stores */
-
-static int d3rvar = -1;		/* a register variable the statement d3rgen assigned from the scratch register d3rreg */
-int d3rreg = -1;		/* (-1: that register has been taken since) */
-static int d3rgen;
-static int d3rcnt;
-static struct node *d3rnode;
-static int d3rnext;		/* the statement that assigns a register variable the value of an operator */
-
-static int
-d3rwalk(p)
-	register struct node *p;
-{
-	register int k;
-
-	if (p->op == REG && p->rval == d3rvar) {
-		d3rcnt++;
-		d3rnode = p;
-	}
-	k = dope[p->op];
-	if (k & 0x400)
-		return 1;	/* a call */
-	if (((k & 1) || p->op == INCR || p->op == DECR) && p->left->op == REG && p->left->rval == d3rvar)
-		return 1;	/* it is changed */
-	if ((k & 0xE) == BITYPE && d3rwalk(p->right))
-		return 1;
-	if ((k & 0xE) != LTYPE && d3rwalk(p->left))
-		return 1;
-	return 0;
-}
-
-/* the tree p contains a call */
-static int
-d3rcall(p)
-	register struct node *p;
-{
-	register int k;
-
-	k = dope[p->op];
-	if (k & 0x400)
-		return 1;
-	if ((k & 0xE) == BITYPE && d3rcall(p->right))
-		return 1;
-	return (k & 0xE) != LTYPE && d3rcall(p->left);
-}
-
-/* v0p: the one use of a register variable in the statement after the one that assigned it from a scratch register
-   takes the scratch register (no call in between, the variable not changed before) */
-void
-d3rsub(p)
-	struct node *p;
-{
-	register int v;
-
-	v = d3rvar;
-	d3rvar = -1;
-	/* this statement: a register variable assigned the value of an operator (not a load, not a call) */
-	d3rnext = p->op == ASSIGN && p->left->op == REG && p->left->rval >= 8 && p->left->rval < 15 &&
-	    (dope[p->right->op] & 0xE) == BITYPE && !(dope[p->right->op] & 1) && p->right->op != QUEST &&
-	    p->right->op != ANDAND && p->right->op != OROR && !d3rcall(p->right) ? d3nstmt : 0;
-	if (v < 0 || d3rreg < 0 || d3rgen != d3nstmt - 1)
-		return;
-	d3rvar = v;
-	d3rcnt = 0;
-	d3rnode = 0;
-	if (d3rwalk(p) || d3rcnt != 1 || !d3nfree(d3rreg)) {
-		d3rvar = -1;
-		return;
-	}
-	d3rvar = -1;
-	rfree(v, d3rnode->type);
-	v = d3rreg;
-	if (getreg(2, v, 0, (struct sym *)0) != v)
-		cerror("d3r");
-	d3rnode->rval = v;
-}
-
-/* the variable s was stored from the register d3nreg, which still holds it */
-int
-d3nhas(s)
-	register struct sym *s;
-{
-	register int i;
-
-	if (d3nreg < 0 || d3nstmt != d3ngen + 1)	/* only in the next statement */
-		return 0;
-	for (i = 0; i < nd3n; i++)
-		if (d3nsyms[i] == s)
-			return 1;
-	return 0;
-}
-
-/* the word register r is on the free list (alone or as a half of a free pair) */
-int
-d3nfree(r)
-	register int r;
-{
-	register struct rs *n;
-
-	for (n = rsfree; n; n = n->next)
-		if ((n->cls == 2 && n->reg == r) || (n->cls == 3 && n->reg == (r & ~1)))
-			return 1;
-	return 0;
-}
-#endif
 struct optab *opptr[128];	/* the first table entry that can serve an operator */
 struct optab *rwdefault;	/* the entry with needs == 0x1000 (the default rewrite entry) */
 extern int cerror();
@@ -341,12 +229,6 @@ match(p, cookie)
 	register struct node *l, *r;
 	register int kind, mask;
 	int rv;
-#ifdef OLD_D3N
-	int d3nr, d3rv;
-	struct sym *d3nset;	/* the word variable this assignment from a register stores into */
-
-	d3nset = 0;
-#endif
 
 	rcount();
 	kind = dope[p->op] & 0xE;
@@ -374,12 +256,6 @@ match(p, cookie)
 		if (l->op == NAME && (dope[p->right->op] & 0xE) == LTYPE) {
 			if (dope[p->op] & 1) {		/* an assignment: the target must stay in memory */
 				symuse(l->sname);
-#ifdef OLD_D3N
-				if (p->op == ASSIGN && p->right->op == REG && p->right->rval < 8 &&
-				    (p->type == 4 || p->type == 14 || (p->type & 0x30) == 0x10) &&
-				    (l->sname->sclass == 1 || l->sname->sclass == 9))
-					d3nset = l->sname;
-#endif
 				oregfix(l);
 			} else
 				fixname(l);
@@ -402,19 +278,6 @@ match(p, cookie)
 #endif
 			if ((dope[p->left->op] & 0xE) == LTYPE || p->left->op == FLD)
 				fixname(r);
-#ifdef OLD_D3N
-			else if (p->op == ASSIGN && p->left->op == STAR && d3nhas(r->sname) &&
-			    r->type == p->type && d3nfree(d3nreg)) {
-				/* v0p: a variable just stored, stored again through a pointer: from the register it came
-				   from */
-				rv = d3nreg;
-				if (getreg(2, rv, 0, (struct sym *)0) != rv)
-					cerror("d3n");
-				r->op = REG;
-				r->rval = rv;
-				r->lval = 0;
-			}
-#endif
 		}
 	}
 select:
@@ -505,31 +368,7 @@ select:
 		else
 #endif
 		expand(p, cookie, q->cstring);
-#ifdef OLD_D3N
-		d3nr = p->right->rval;
-		if (d3rnext == d3nstmt && p->op == ASSIGN && l->op == REG && l->rval >= 8 && l->rval < 15 && r->op == REG &&
-		    r->rval < 8 && szty(p->type) == 1)
-			d3rv = l->rval;
-		else
-			d3rv = -1;
-#endif
 		reclaim(p, q->rewrite, cookie);
-#ifdef OLD_D3N
-		if (d3rv >= 0) {	/* v0p: a register variable just assigned from a scratch register */
-			d3rvar = d3rv;
-			d3rreg = d3nr;
-			d3rgen = d3nstmt;
-		}
-		if (d3nset) {		/* v0p: the register just stored into a word variable */
-			if (d3nreg != d3nr || d3ngen != d3nstmt)
-				nd3n = 0;
-			d3ngen = d3nstmt;
-			if (nd3n < 4)
-				d3nsyms[nd3n++] = d3nset;
-			d3nreg = d3nr;
-			d3nset = 0;
-		}
-#endif
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
 		if (rv == ASSIGN && !(cookie & 01) && p->op == REG && (p->type == 5 || p->type == 15) && p->rval < 8 &&

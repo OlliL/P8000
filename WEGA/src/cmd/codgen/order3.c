@@ -23,9 +23,6 @@ extern struct node resc[];
 #ifdef OLD_D22
 extern void adrput(), oregfix(), rfreenode(), rfree();
 #endif
-#ifdef OLD_D3N
-extern int d3nreg, d3nhas(), d3nfree();
-#endif
 #ifdef OLD_D2R0
 extern int d2r0reg;
 #endif
@@ -1052,17 +1049,6 @@ argplace()
 		d3awlo = reg;
 		d3awhi = reg + szty(q->type) - 1;
 		d3aw(q, 1);
-#endif
-#ifdef OLD_D3N
-		/* v0p: a word variable just stored from a register: the argument is taken from that register */
-		if (q->op == NAME && d3nhas(q->sname) && szty(q->type) == 1 && d3nfree(d3nreg)) {
-			k = d3nreg;
-			if (getreg(2, k, 0, (struct sym *)0) != k)
-				cerror("d3n arg");
-			q->op = REG;
-			q->rval = k;
-			q->lval = 0;
-		}
 #endif
 		if (q->type == 6 || q->type == 7)
 			order(q, 0x10);

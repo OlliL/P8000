@@ -6706,7 +6706,7 @@
   "genswitch": {
    "basis": "reading",
    "d_classes": "D1 D2 D3 D16 D21",
-   "note": "Exact with v0p. Source: r = t = talloc() (store order); size = n+n and the table size assigned inside the sectfull argument. Old-cc: OLD_D21 (the table size divided, not shifted), OLD_D16A (p[++n]: load, inc, store), OLD_D3N (t->rval = swlab from the register of the store before)."
+   "note": "Exact with v0p. Source: r = t = talloc() (store order); size = n+n and the table size assigned inside the sectfull argument. Old-cc: OLD_D21 (the table size divided, not shifted), OLD_D16A (p[++n]: load, inc, store), source t->rval = swlab = getlab()."
   },
   "lxstr": {
    "basis": "reading",
@@ -6840,7 +6840,7 @@
   },
   "prtdcon": {
    "basis": "reading",
-   "note": "Exact with v0p. Source: sectfull( DATA, size = SZDOUBLE/SZCHAR ) (the assignment inside the argument). Old-cc: OLD_D22 (the double argument in rq4 by ldm), OLD_D3N (lab from r2 for fprintf).",
+   "note": "Exact with v0p. Source: sectfull( DATA, size = SZDOUBLE/SZCHAR ) (the assignment inside the argument). Old-cc: OLD_D22 (the double argument in rq4 by ldm) ; source fprintf( dfile, ..., l ) (rmove takes r2 for the slot stored last).",
    "d_classes": "D2 D3 D22"
   },
   "fltlab": {
@@ -6870,12 +6870,12 @@
   },
   "lineid": {
    "basis": "reading",
-   "note": "Exact with v0p. Old-cc: OLD_D3N (the next use of cp from the register it was computed in).",
+   "note": "Exact with v0p. Source: if( *(cp = &ftitle[len-1]) == '\"' ).",
    "d_classes": "D3"
   },
   "psavel": {
    "basis": "reading",
-   "note": "Exact with v0p. Source: ip = &paramstk[paramno]; *(long *)ip = l; (the original saves r14 and leaves it unused: popt removes the dead copy). Old-cc: OLD_D3N.",
+   "note": "Exact with v0p. Source: *(long *)(ip = &paramstk[paramno]) = l; (the original saves r14 and leaves it unused: popt removes the dead copy).",
    "d_classes": "D3"
   },
   "instk": {
