@@ -863,3 +863,7 @@ TODO.md when this log was started.
   model makes the data layout itself, strictcmp treats @r15 and 0(r15) as equal), OLD_D3V, popt OLD_D20L, OLD_D20X (+5, +7, +66 in functions that differ anyway). One exact function: 16 switches.
   OLD_D16A has genswitch alone (codemove was the limit of the rule, not a witness). genswitch alone holds OLD_D16A, codgen and cparse OLD_D21,
   OLD_D2O: a candidate for source forms (guess). Only gain in the table: popt killreg is exact without popt OLD_D20K (cinit lost, +61 lines).
+- genswitch, the three switches only it holds. OLD_D21 (both passes): the `div` is signed (`exts rr2`; the entry of 2026-11-01 calling it
+  zero-extended was wrong), `size = n*SZLONG/SZCHAR` without the cast is exact: both switches removed. OLD_D16A: `n = n + 1;` and `n = 1 + n;`
+  (also inside the index) give `lda r2,1(r6)`; `n += 1;`, `n++;`, `(p+(++n))->sval`, `p[n += 1]` give `inc` in memory: no form found, and `p[++n]` is the
+  plain form: stays. OLD_D2O: without it `ldl rr0,@r3`; a register choice, the odd counterpart of OLD_D2Q; no source form tried: stays.

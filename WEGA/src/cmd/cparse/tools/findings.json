@@ -6706,7 +6706,7 @@
   "genswitch": {
    "basis": "reading",
    "d_classes": "D1 D2 D3 D16 D21",
-   "note": "Exact with v0p. Source: r = t = talloc() (store order); size = n+n and the table size assigned inside the sectfull argument. Old-cc: OLD_D21 (the table size divided, not shifted), OLD_D16A (p[++n]: load, inc, store), source t->rval = swlab = getlab()."
+   "note": "Exact with v0p. Source: r = t = talloc() (store order); size = n+n and the table size assigned inside the sectfull argument. Source: size = n*SZLONG/SZCHAR without a cast. Old-cc: OLD_D16A (p[++n]: load, inc, store), source t->rval = swlab = getlab()."
   },
   "lxstr": {
    "basis": "reading",

@@ -375,9 +375,6 @@ optim(p)
 		r = p->right;
 		if (p->type < 12 || p->type > 15)
 			break;
-#ifdef OLD_D21
-		break;		/* the old codgen: an unsigned division stays a division (genswitch: exts; div rr2,#8) */
-#endif
 		if (!nncon(r))
 			break;
 		if (ispow2(r->lval) <= 0)

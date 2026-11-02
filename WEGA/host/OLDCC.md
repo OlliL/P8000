@@ -192,7 +192,7 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D21`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
 - State: /lib/cparse 173 strictly exact, 96 differing lines, /lib/popt 65 of 73, 657 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
@@ -597,12 +597,10 @@ order).
 - Open (popt): usesreg: the code after the switch (the test reached by the breaks) stands behind the MUL case in the
   original, ours moves it up to the first break; the instructions of both sides are otherwise the same.
 
-### D21 Unsigned division by a power of two
+### D21 (removed 2026-11-02: not a difference of the compiler)
 
-v0p (switch `OLD_D21` in cparse optim and codgen optim3.c): an unsigned division or modulo by a power of two stays a
-`div` (zero-extended into a pair) where the shipped compiler shifts or masks. Evidence: cparse genswitch, the size of
-the search table `(unsigned)(n*SZLONG/SZCHAR)`; neutral for v0 in cparse, the codgen part makes the bench of v0
-worse (318 > 340): v0p only.
+cparse genswitch `size = n*SZLONG/SZCHAR` without a cast gives the `exts; div; ldk r4,#0` of the original with the shipped
+optimizer rules; the cast `(unsigned)` of our earlier source made the switches OLD_D21 (cparse, codgen) necessary.
 
 ### D22 Doubles in rq4
 

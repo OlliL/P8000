@@ -178,7 +178,7 @@ def run(names):
     stamp = commit()
     btxt = ', '.join('%s %d differing functions, %d lines' % (p, len(base[p]), sum(base[p].values())) for p in PROGS)
     print('baseline', btxt, flush=True)
-    rows = {} if not names else read_rows()
+    rows = {} if not names else {k: v for k, v in read_rows().items() if k in sw}
     for i, name in enumerate(todo):
         t = time.time()
         pas = sw[name]

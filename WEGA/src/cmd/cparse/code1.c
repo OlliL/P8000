@@ -406,7 +406,7 @@ genswitch(p,n) register struct sw *p; {
 		ecomp( r );
 		locctr( 4 );
 		defalign( ALINT );
-		if( sectfull( DATA, size = (unsigned)(n*SZLONG/SZCHAR) ) ) newsect( DATA );
+		if( sectfull( DATA, size = n*SZLONG/SZCHAR ) ) newsect( DATA );
 		sectadd( DATA, size );
 #ifdef OLD_D6T
 		/* v0: the values go to codgen with the targets, which writes the two lists together */
