@@ -119,6 +119,9 @@ mkhash()
 	symtab[2].nameoff = 9;
 }
 
+#ifdef OLD_D12K
+static int d12kcopy();
+#endif
 /* copy a section of the data file to the output */
 int
 rddata()
@@ -130,6 +133,9 @@ rddata()
 	n = rdin2(10, dfile);
 	if (getc(dfile) != '\n')
 		cerror("data file format error\n");
+#ifdef OLD_D12K
+	return d12kcopy(n);
+#endif
 	while (n > 0) {
 		if (n <= 0x200) {
 			chunk = (int)n;
@@ -147,6 +153,88 @@ rddata()
 	}
 	return 1;
 }
+
+#ifdef OLD_D12K
+/* v0p: a double constant is written at its statement, not with the data at the head of the function: the blocks
+   "Ln: " and four words of the data wait in d12ktab for d12kout */
+#define D12KMAX	16
+static struct { int lab; char text[120]; } d12ktab[D12KMAX];
+
+static int
+d12kcopy(n)
+	long n;
+{
+	static char line[300];
+	register int i, c;
+	int k, lab;
+	char *q;
+
+	while (n > 0) {
+		i = 0;
+		while (n > 0) {
+			c = getc(dfile);
+			if (c == EOF)
+				return 0;
+			n--;
+			if (i < 298)
+				line[i++] = c;
+			if (c == '\n')
+				break;
+		}
+		line[i] = 0;
+		if (line[0] == 'L' && i > 3 && line[i - 3] == ':' && line[i - 2] == ' ' && line[i - 1] == '\n') {
+			lab = 0;
+			for (q = line + 1; *q >= '0' && *q <= '9'; q++)
+				lab = lab * 10 + *q - '0';
+			for (k = 0; k < D12KMAX && d12ktab[k].lab; k++)
+				;
+			if (k < D12KMAX) {
+				d12ktab[k].lab = lab;
+				q = d12ktab[k].text;
+				sprintf(q, "%s", line);
+				q += strlen(q);
+				for (i = 0; i < 4 && n > 0; i++) {
+					for (;;) {
+						c = getc(dfile);
+						if (c == EOF)
+							return 0;
+						n--;
+						*q++ = c;
+						if (c == '\n' || n <= 0)
+							break;
+					}
+				}
+				*q = 0;
+				continue;
+			}
+		}
+		if (fwrite(line, 1, strlen(line), stdout) != strlen(line))
+			return 0;
+	}
+	return 1;
+}
+
+/* the constant with the label lab (0: all that wait) goes out now */
+void
+d12kout(lab)
+	register int lab;
+{
+	register int k;
+
+	for (k = 0; k < D12KMAX; k++)
+		if (d12ktab[k].lab && (lab == 0 || d12ktab[k].lab == lab)) {
+#ifdef SEG
+			printf("\t.psec data\n");
+#endif
+			printf("\t.data\n\t.even\n%s", d12ktab[k].text);
+#ifdef SEG
+			printf("\t.psec\n");
+#endif
+			printf("\t.code\n");
+			d12ktab[k].lab = 0;
+		}
+}
+#endif
 
 /* n symbols of 22 bytes into tab; kind is added to the name offsets */
 void
@@ -494,6 +582,9 @@ eread()
 	if (p->op == LAB)
 		p->op = NAME;
 	if (p->op == FCON) {
+#ifdef OLD_D12K
+		d12kout(-p->rval);
+#endif
 		p->op = NAME;
 		p->lval = 0;
 	}

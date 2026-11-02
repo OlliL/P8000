@@ -6817,7 +6817,7 @@
   "buildtree": {
    "basis": "frame layout",
    "d_classes": "",
-   "note": "Source fix: one more unused int at the function level, and in the STREF block the locals in the order cp2, cp1, an unused int, j, k (the frame places of the original); the names of the unused ones are guesses. Source: cp2 = &ntab[STP(i)->sname] in the member block. Source: case QUEST: { int a1, a2, a3; ... } gives the temporary at 0x12 (an odd form, the three words unused, names guessed). Remaining: 0.0 behind the first table: the old compiler writes it at the statement, see OLDCC.md D12."
+   "note": "Source fix: one more unused int at the function level, and in the STREF block the locals in the order cp2, cp1, an unused int, j, k (the frame places of the original); the names of the unused ones are guesses. Source: cp2 = &ntab[STP(i)->sname] in the member block. Source: case QUEST: { int a1, a2, a3; ... } gives the temporary at 0x12 (an odd form, the three words unused, names guessed). Old-cc: OLD_D12K (the 0.0 at the statement, behind the first table)."
   },
   "efcode": {
    "basis": "frame layout",

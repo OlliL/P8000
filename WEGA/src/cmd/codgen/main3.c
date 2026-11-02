@@ -231,6 +231,9 @@ loop:
 		if (maxoff % 16)
 			maxoff = (maxoff / 16 + 1) << 4;
 		efcode();
+#ifdef OLD_D12K
+		d12kout(0);
+#endif
 		nlcheck();
 		allocinit(symtab0);
 		goto loop;
