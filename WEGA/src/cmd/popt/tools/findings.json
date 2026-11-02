@@ -1183,6 +1183,7 @@
    "size_orig": 20
   },
   "equop": {
+   "v0p_note": "v0p model exact with OLD_D3JM: p2 stays known in r6 at the else label with two jumps",
    "file": "z22.c",
    "pairing": "confirmed",
    "ours": "0x2432-0x24b0",
@@ -2249,6 +2250,7 @@
    "size_orig": 260
   },
   "setcon": {
+   "v0p_note": "v0p model exact with OLD_D3AW only for the wanted register: natural(loc) as ld r7,r6",
    "file": "z22.c",
    "pairing": "confirmed",
    "ours": "0x342c-0x347c",
@@ -3084,6 +3086,7 @@
    "size_orig": 720
   },
   "regof": {
+   "v0p_note": "v0p model exact with OLD_D3AW not in the condition of a ?: in an argument",
    "file": "z23.c",
    "orig": "0x36a6",
    "size_orig": 42,

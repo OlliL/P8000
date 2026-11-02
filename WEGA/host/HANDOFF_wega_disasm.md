@@ -133,8 +133,8 @@ cluster (point 4), its small leaf functions may answer point 3.
 3. Then codgen with the same frame, and back to the open cparse points with the new witnesses.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
-/lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 57 of 73 functions strictly exact,
-729 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+/lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 60 of 73 functions strictly exact,
+721 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (the definitions at the end of z2.h give the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools and `CRT0=<WEGA_ROOT>/lib/crt0.o` (the `ship` target copies it with the host's cp): 272 inputs times no option, -l, -d;
@@ -155,12 +155,9 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 
 **Open popt functions** (strict diff lines in brackets; the owner may clean up this list as functions get done):
 
-- equop (2)
 - findcon (2)
 - repladdr (2)
-- setcon (2)
 - itoa_ (4)
-- regof (4)
 - movedat (5)
 - backjmp (7)
 - killreg (7)
@@ -177,7 +174,6 @@ for the codgen work and the placement question:
 
 - codgen, D3 (the value of an assignment in the next statement): findcon, repladdr, setreg (also refcount, exact
   with the assignment inside the expression).
-- codgen, D3 (a parameter kept in its register across a branch): setcon, equop, regof.
 - codgen, D2 (scratch register r1 against r3): itoa_, reverse.
 - codgen, D5 (the member of an element of a local array of structures, the STREF form of OLD_D5S): procopt.
 - popt, D20 (block placement, loop inversion): backjmp, killreg, movedat, xjump, dest, setreg, usesreg (dest also
@@ -251,8 +247,8 @@ definitions at the end of z2.h. cparse: the globals as definitions at the end of
 the order) and an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
 first, the model link needs its object). bss.s and libcbss.s are gone in both.
 
-**Next: the other codgen cases** (owner 2026-11-02: D16A first, done; proposed order D3 parameter
-across a branch, D2 r1/r3, D5S as STREF, D3 value of an assignment). State: cparse 173/96, popt 57/729. The model
+**Next: the other codgen cases** (owner 2026-11-02: D16A and D3 parameter across a branch done; proposed order
+D2 r1/r3, D5S as STREF, D3 value of an assignment). State: cparse 173/96, popt 60/721. The model
 reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt), not equal sizes; the cause is not checked.
 
 **Tools.**
@@ -299,6 +295,6 @@ plan in `../src/TODO.md` ("Plan: towards the old C compiler").
 3. **Reconstruct the old compiler.** Everything about the old compilers is in `OLDCC.md` (the edited summary: the
    classes D1 ... D22, the versions v1, v0, v0p, rules, building and running) and `OLDCC_LOG.md` (the running notes).
    State 2026-11-01: v1 (strip and size byte-identical, ld 55 of 59); v0 (bench 118 of 153); v0p (/lib/cparse 173 of
-   179, /lib/popt 57 of 73, the current work above).
+   179, /lib/popt 60 of 73, the current work above).
 
 The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").

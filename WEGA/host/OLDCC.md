@@ -182,9 +182,9 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D21`, `OLD_D16A`, `OLD_D16B`, `OLD_D3N`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D21`, `OLD_D16A`, `OLD_D16B`, `OLD_D3N`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 173 strictly exact, 96 differing lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
+- State: /lib/cparse 173 strictly exact, 96 differing lines, /lib/popt 60 of 73, 721 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
@@ -362,6 +362,10 @@ compiler that built the original. Not differences of the compiler (checked):
   for an argument that is the parameter itself or uses it as an address (below an indirection, through + and -);
   in a computed value the register serves (zecode `n*2` from rr6; refid `dimtab[p->sizoff+3]` reloads p). The
   same for a parameter added to an address constant (match: exname `&ntab[s]` as `ld r2,#ntab; add r2,0(fp)`).
+  Only when the parameter lies in the register the argument is wanted in: putbyte `bcon(v)` (v in r7, wanted r7)
+  reloads, popt setcon `natural(loc)` (loc in r6, wanted r7) is `ld r7,r6`. Not in the condition of a `?:`; its arms
+  do not take a parameter from the wanted register: popt regof `isreg(*s == '@' ? s + 1 : s)` is `ld r2,r7; cpb
+  @r2,...; ld r7,0(fp); inc r7,#1`. cparse has no site that separates this from the wider rule (unchanged).
 - v0p (switch `OLD_D3N` in codgen: match, argplace, getreg, stmt): the register a statement stored into word
   variables (autos or parameters, also `l = lab = getlab()`) is taken for them in the next statement when one is
   stored through a pointer or is a whole argument, unless that register was allocated in between (genswitch
@@ -378,6 +382,10 @@ compiler that built the original. Not differences of the compiler (checked):
   known at that jump come back (tfree1 `ld r2,r7`, rmconv `cpb rl6,#'l'` at the else label behind a then part with
   calls); such a parameter still gets its home in the frame. With two jumps (buildtree, an `&&`) the original
   reloads. cparse 278 > 274, bench v0 292 > 290 (115 > 117).
+- v0p (switch `OLD_D3JM` in codgen, d3jlabel): at a label behind a jump named by several jumps the parameters known at
+  all the jumps and still known in front of the label stay (popt equop: `ld r2,r6` at the else label of `A || B || C
+  && D` behind a short then part; buildtree reloads because its then part has calls). Without the condition on the
+  code in front (the state of the jumps comes back): buildtree 6 > 14. Bench v0 unchanged.
 - Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after), libc malloc (`mult rr2,r6`).
 - Open (popt, v0p model 2026-11-01), the value of an assignment in the next statement: OLD_D3N is too wide for
   popt. findcon `p = regs[n]; if (*p == '#')`: the original tests the variable (`cpb @r14`), codgen v0p the register
@@ -386,9 +394,6 @@ compiler that built the original. Not differences of the compiler (checked):
   refcount: the original's `testb @r2` comes only from the assignment inside the expression `(lp = nonlab(p))->op`;
   setreg: the argument order of `makereg(r & 0xf, name, type)` right after `type = ...` (ours finds type in r2).
   What separates these cases is open.
-- Open (popt), a parameter kept in its register across a branch: setcon (`natural(loc)` as `ld r7,r6` behind
-  `cpb; jr ne`), equop (`ld r2,r6` for p2): the original takes the argument register, codgen v0p reloads the home
-  (the OLD_D3K/OLD_D3J family; two witnesses).
 - Open (popt), the old popt's knowledge of register contents: dest returns TB as `sub r2,r3` (r2 and r3 hold the
   same value), ours `sub r2,r2`.
 

@@ -910,7 +910,10 @@ argstrip(p, rest)
 }
 
 #ifdef OLD_D3AW
-/* forget the registers of the parameters in p that are the whole tree (top) or under an indirection */
+/* forget the registers of the parameters in p that are the whole tree (top) or under an indirection, when they lie in
+   the registers lo .. hi the argument is wanted in */
+static int d3awlo, d3awhi;
+
 static void
 d3aw(p, top)
 	register struct node *p;
@@ -922,12 +925,13 @@ d3aw(p, top)
 	if (p->op == NAME && p->sname && p->sname->sclass == 9) {
 		if (top)
 			for (n = rsuse; n; n = n->next)
-				if (n->cls <= 4 && n->sym == p->sname)
+				if (n->cls <= 4 && n->sym == p->sname && n->reg <= d3awhi &&
+				    n->reg + (n->cls == 3) >= d3awlo)
 					n->sym = 0;
 		return;
 	}
 	k = dope[p->op] & 0xE;
-	if (k == LTYPE)
+	if (k == LTYPE || p->op == QUEST)
 		return;
 	if (p->op == STAR)
 		top = 1;		/* below an indirection: an address */
@@ -1023,6 +1027,8 @@ argplace()
 #ifdef OLD_D3AW
 		/* v0p: a parameter that is a whole argument or is used as an address in it is not taken from its
 		   register (OLD_D3A only there; in a computed value it is) */
+		d3awlo = reg;
+		d3awhi = reg + szty(q->type) - 1;
 		d3aw(q, 1);
 #endif
 #ifdef OLD_D3N

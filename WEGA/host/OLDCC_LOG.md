@@ -836,3 +836,10 @@ TODO.md when this log was started.
   genswitch and one `inc r2,#7` of gopt (0x7f52, its source is not known). The many `inc/dec F; cp F` there may be separate
   statements, so they are no evidence. Rule "only ASG PLUS" would fit the two witnesses as well. Normal and v0 objects of
   match3 and order3 unchanged.
+- D3, a parameter across a branch (popt setcon, equop, regof): three mechanisms, not one.
+  setcon: OLD_D3AW forgets a parameter only in the register the argument is wanted in: 57 > 58, 729 > 727; cparse
+  unchanged. equop: its else label has two jumps; the state of the jumps given back there (the attempt of 2026-11-01)
+  makes equop exact but buildtree 6 > 14 (its then part has calls); keeping what is known at the jumps and still known in
+  front of the label: equop exact, buildtree 6: 59, 725. In v0 bench unchanged (118, 275), so its own switch OLD_D3JM in
+  v0p. regof: no forgetting below a `?:` in an argument, the arms do not take the parameter from the wanted register
+  (reader3, QUEST): 60, 721. cparse model 173, 96 throughout.

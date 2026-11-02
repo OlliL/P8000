@@ -182,6 +182,16 @@ again:
 	case QUEST:
 		lab = getlab();
 		cbranch(p1, -1, lab);
+#ifdef OLD_D3AW
+		/* v0p: the value goes to a register that holds a parameter: the parameter is not taken from it in the arms */
+		if (p->rall & MUSTDO) {
+			register struct rs *n;
+
+			for (n = rsuse; n; n = n->next)
+				if (n->cls <= 4 && n->sym && n->sym->sclass == 9 && n->reg == (p->rall & 0xff))
+					n->sym = 0;
+		}
+#endif
 		p2->left->rall = p->rall;
 		ck = p2->type == 6 || p2->type == 7 ? 0x10 : 4;
 		codgen(p2->left, ck);
