@@ -38,8 +38,9 @@ optim(p)
 	register struct node *p;
 {
 	register int o, ty;
-	register struct node *sp, *t1;
-	struct node *t2, *t3, *r;
+	register struct node *a, *b;
+	int x;
+	struct node *sp;
 	int i;
 
 	o = p->op;
@@ -81,19 +82,19 @@ optim(p)
 	case MINUS:
 		if (p->left->op == PLUS && p->right->op == PLUS && treeeq(p->left->left, p->right->left) &&
 		    p->left->right->type == p->type && p->right->right->type == p->type) {
-			t1 = tcopy(p->left->right);
-			t2 = tcopy(p->right->right);
+			a = tcopy(p->left->right);
+			b = tcopy(p->right->right);
 			goto joined;
 		}
 		if (p->left->op == MINUS && p->right->op == MINUS && treeeq(p->left->left, p->right->left) &&
 		    p->left->right->type == p->type && p->right->right->type == p->type) {
-			t2 = tcopy(p->left->right);
-			t1 = tcopy(p->right->right);
+			b = tcopy(p->left->right);
+			a = tcopy(p->right->right);
 		joined:
 			tfree(p->left);
 			tfree(p->right);
-			p->left = t1;
-			p->right = t2;
+			p->left = a;
+			p->right = b;
 		}
 		if (treeeq(p->left, p->right) && p->type != 6 && p->type != 7) {
 			tfree(p->left);
@@ -123,6 +124,8 @@ optim(p)
 		if ((o == MINUS || o == PLUS) && nncon(p->right) && p->right->lval == 0)
 			goto zapright;
 		if (p->right->op == o && (p->type & 0x30) != 0x10 && (p->right->left->type & 0x30) != 0x10) {
+			struct node *t1, *t2, *t3;
+
 			t1 = p->left;
 			sp = p->right;
 			t2 = sp->left;
@@ -166,21 +169,21 @@ optim(p)
 	case ASG DIV:
 	case MOD:
 	case ASG MOD:
-		r = p->right;
-		if (p->type < 12 || p->type > 15)
+		a = p->right;
+		if (!((unsigned)p->type <= 15 && (unsigned)p->type >= 12))
 			break;
-		if (!nncon(r))
+		if (!nncon(a))
 			break;
-		if (ispow2(r->lval) <= 0)
+		if (ispow2(a->lval) <= 0)
 			break;
 		if (o == MOD || o == ASG MOD) {
 			p->op = o == ASG MOD ? ASG AND : AND;
-			r->lval -= 1;
-			r->type = p->left->type;
-			p->right->type = r->type;
+			a->lval -= 1;
+			a->type = p->left->type;
+			p->right->type = a->type;
 		} else {
 			p->op = o == ASG DIV ? ASG RS : RS;
-			r->lval = ispow2(r->lval);
+			a->lval = ispow2(a->lval);
 		}
 		break;
 	case EQ:

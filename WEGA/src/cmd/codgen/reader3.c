@@ -138,6 +138,7 @@ extern void store();
 extern struct node *stotree;
 extern long stpos;
 extern void sucomp();
+extern struct sym *symtab;
 extern struct sym *symtab0;
 extern int szty();
 extern void tabclear();
@@ -317,226 +318,215 @@ init()
 
 int
 mainp2(argc, argv)
-	register int argc;
-	register char **argv;
+	int argc;
+	char *argv[];
 {
-	register int i, c;
-	register int n, lab, k;
-	long l1;
-	int a, b;
+	register int files;
+	register int temp;
+	register int c;
+	register char *cp;
+	register struct node *p;
+	register int a, b;
+	int x, y;
+	int n;
+	char ch;
 
-	i = options(argc, argv);
+	files = options(argc, argv);
 	tinit();
-	if (i)
-		goto scan;
-	goto loop;
-scan:
-	while (i < argc) {
-		if (*argv[i] != '-')
-			break;
-		i++;
+reread:
+	if (files) {
+		while (files < argc && argv[files][0] == '-')
+			++files;
+		if (files > argc)
+			return nerrors;
+		freopen(argv[files], "r", stdin);
 	}
-	if (i > argc)
-		goto end;
-	freopen(argv[i], "r", stdin);
-loop:
-	c = getchar();
-	if (c <= 0)
-		goto eof;
+	while ((c = getchar()) > 0) {
 #ifdef OLD_D3K
-	if (d3kpend) {		/* a label no jump has named: forgotten unless the function ends behind it */
-		if (c != '}')
-			rsfreeall(1);
-		d3kpend = 0;
-	}
+		if (d3kpend) {		/* a label no jump has named: forgotten unless the function ends behind it */
+			if (c != '}')
+				rsfreeall(1);
+			d3kpend = 0;
+		}
 #endif
 #ifdef OLD_D3J
-	if (d3jdead)
-		d3jdead--;	/* 1: the record before this one was a jump */
+		if (d3jdead)
+			d3jdead--;	/* 1: the record before this one was a jump */
 #endif
-	switch (c) {
-	case '{':
+		switch (c) {
+		case '{':
 #ifdef OLD_D3K
-		d3kreset();
+			d3kreset();
 #endif
-		init();
-		mkhash();
-		nlabsave = rdin(10);
-		frame0 = rdin(10);
-		maxoff = rdin(10) << 3;
-		maxoff += frame0 << 3;
-		nparm = rdin(10);
-		nlcheck();
-		if (!rddata())
-			cerror("error in reading data file");
-		if (!rdsym())
-			cerror("error in reading symbol table file");
-		goto loop;
-	case '}':
-		if (parmax % 16)
-			parmax = (parmax / 16 + 1) << 4;
-		if (maxoff % 16)
-			maxoff = (maxoff / 16 + 1) << 4;
-		efcode();
+			init();
+			mkhash();
+			nlabsave = rdin(10);
+			frame0 = rdin(10);
+			maxoff = rdin(10) << 3;
+			maxoff += frame0 << 3;
+			nparm = rdin(10);
+			nlcheck();
+			if (!rddata())
+				cerror("error in reading data file");
+			if (!rdsym())
+				cerror("error in reading symbol table file");
+			continue;
+		case '}':
+			if (parmax % 16)
+				parmax = (parmax / 16 + 1) << 4;
+			if (maxoff % 16)
+				maxoff = (maxoff / 16 + 1) << 4;
+			efcode();
 #ifdef OLD_D12K
-		d12kout(0);
+			d12kout(0);
 #endif
-		nlcheck();
-		allocinit(symtab0);
-		goto loop;
-	case ']':
-		nlcheck();
-		goto loop;
-	case '[':
-		baseoff = rdin(10);
-		regE = rdin(10);
-		regF = rdin(10);
-		if (rflag) {
-			regE = 0xE;
-			regF = 0x17;
-		}
-		nlcheck();
-		if (baseoff > parmax)
-			parmax = baseoff;
-		if (minreg > regE)
-			minreg = regE;
-		if (maxreg > regF)
-			maxreg = regF;
-		goto loop;
-	case '.':
-		ifline = rdin(10);
-		{
-			register char *cp;
-
-			cp = ifname;
-			do {
-				c = getchar();
-				*cp++ = c;
-			} while (c != '\n');
-			cp[-1] = 0;
-		}
-		if (lflag)
-			lineout(ifline, ifname);
-		paroff = baseoff;
-		tmpoff = 0;
-		stmt(eread());
-		goto loop;
-	case 'L':
-		lab = rdin(10);
-		deflab(lab);
-		nlcheck();
-		if (nparm <= 0)
+			nlcheck();
+			allocinit(symtab);
+			continue;
+		case '[':
+			baseoff = rdin(10);
+			regE = rdin(10);
+			regF = rdin(10);
+			if (rflag) {
+				regE = 0xE;
+				regF = 0x17;
+			}
+			nlcheck();
+			if (baseoff > parmax)
+				parmax = baseoff;
+			if (minreg > regE)
+				minreg = regE;
+			if (maxreg > regF)
+				maxreg = regF;
+			continue;
+		case '.':
+			/* compile code for an expression */
+			ifline = rdin(10);
+			for (cp = ifname; (*cp = getchar()) != '\n'; ++cp)
+				;
+			*cp = '\0';
+			if (lflag)
+				lineout(ifline, ifname);
+			paroff = baseoff;
+			tmpoff = 0;
+			p = eread();
+			stmt(p);
+			continue;
+		case 'L':
+			temp = rdin(10);
+			deflab(temp);
+			nlcheck();
+			if (nparm <= 0)
 #ifdef OLD_D3K
-			if (d3knamed(lab)) {
-				rsfreeall(4);
+				if (d3knamed(temp)) {
+					rsfreeall(4);
 #ifdef OLD_D3J
-				d3jlabel(lab, d3jdead);
+					d3jlabel(temp, d3jdead);
 #endif
-			} else
-				d3kpend = 1;
+				} else
+					d3kpend = 1;
 #else
-			rsfreeall(1);
+				rsfreeall(1);
 #endif
-		if (rflag)
-			regreset(1);
-		goto loop;
-	case 'B':
-		branch(rdin(10));
-		nlcheck();
+			if (rflag)
+				regreset(1);
+			continue;
+		case 'B':
+			temp = rdin(10);
+			branch(temp);
+			nlcheck();
 #ifdef OLD_D3J
-		d3jdead = 2;	/* (1 at the next record) */
+			d3jdead = 2;	/* (1 at the next record) */
 #endif
-		goto loop;
-	case 'F':
-		fcmd(rdin(10));
-		nlcheck();
-		goto loop;
-	case 'R':
-		a = rdin(10);
-		b = rdin(10);
-		if (b > 0)
-			rcmd(a, b, 0);
-		else
-			rcmd(a, b, (int)rdin(10));
-		nlcheck();
-		goto loop;
-	case 'S':
-		scmd(rdin(10));
-		nlcheck();
-		goto loop;
-	case 'T':
-		tcmd(rdin(10));
-		nlcheck();
-		goto loop;
-	case '/':
-		putchar(c);
-		do {
-			c = getchar();
-			putchar(c);
-		} while (c != '\n');
-		goto loop;
-	case '#':
-		do
-			c = getchar();
-		while (c != '\n');
-		goto loop;
+			continue;
+		case 'F':
+			fcmd(rdin(10));
+			nlcheck();
+			continue;
+		case ']':
+			nlcheck();
+			continue;
+		case 'R':
+			a = rdin(10);
+			b = rdin(10);
+			if (b > 0)
+				rcmd(a, b, 0);
+			else
+				rcmd(a, b, (int)rdin(10));
+			nlcheck();
+			continue;
+		case 'S':
+			scmd((int)rdin(10));
+			nlcheck();
+			continue;
+		case 'T':
+			tcmd((int)rdin(10));
+			nlcheck();
+			continue;
+		case '#':
+			while ((ch = getchar()) != '\n')
+				;
+			continue;
 #ifdef OLD_D6T
-	case 'V':		/* v0: the values of a cpir switch, written right in front of its targets (the C record) */
-		do
-			c = getchar();
-		while (c == ' ');
-		ungetc(c, stdin);
-		rdin(10);
-		rdin(10);
-		lab = rdin(10);
-#ifdef SEG
-		printf("\t.psec data\n");
-#endif
-		printf("\t.data\n");
-		printf("\t.even\n");
-		printf("L%d:\n", lab);
-		for (c = getchar(); c != '\n'; c = getchar()) {
-			ungetc(c, stdin);
-			printf("\t.word\t%ld\n", rdin(10));
-		}
-		goto loop;
-#endif
-	case 'C':
-		do
-			c = getchar();
-		while (c == ' ');
-		ungetc(c, stdin);
-		n = rdin(10);
-#ifdef SEG
-		printf("\t.psec data\n");
-#endif
-		printf("\t.data\n");
-		printf("\t.even\n");
-		printf("L%d:\n", n);
-		rdin(10);
-		for (c = getchar(); c != '\n'; c = getchar()) {
-			ungetc(c, stdin);
+		case 'V':		/* v0: the values of a cpir switch, written right in front of its targets (the guess of OLDCC.md) */
+			while ((ch = getchar()) == ' ')
+				;
+			ungetc(ch, stdin);
+			rdin(10);
+			rdin(10);
 			n = rdin(10);
-			printf("\t.addr\tL%d\n", n);
-		}
 #ifdef SEG
-		printf("\t.psec\n\t.code\n");
-#else
-		printf("\t.code\n");
+			printf("\t.psec data\n");
 #endif
-		goto loop;
-	default:
-		cerror("intermediate file format error");
+			printf("\t.data\n");
+			printf("\t.even\n");
+			printf("L%d:\n", n);
+			while ((ch = getchar()) != '\n') {
+				ungetc(ch, stdin);
+				printf("\t.word\t%ld\n", rdin(10));
+			}
+			continue;
+#endif
+		case 'C':
+			while ((ch = getchar()) == ' ')
+				;
+			ungetc(ch, stdin);
+			n = rdin(10);
+#ifdef SEG
+			printf("\t.psec data\n");
+#endif
+			printf("\t.data\n");
+			printf("\t.even\n");
+			printf("L%d:\n", n);
+			rdin(10);
+			while ((ch = getchar()) != '\n') {
+				ungetc(ch, stdin);
+				n = rdin(10);
+				printf("\t.addr\tL%d\n", n);
+			}
+#ifdef SEG
+			printf("\t.psec\n\t.code\n");
+#else
+			printf("\t.code\n");
+#endif
+			continue;
+		case '/':
+			putchar(c);
+			while (putchar(getchar()) != '\n')
+				;
+			continue;
+		default:
+			cerror("intermediate file format error");
+		}
 	}
-eof:
-	while ((c = getc(dfile)) != -1) {
-		ungetc(c, dfile);
+	/* EOF */
+	while ((ch = getc(dfile)) != -1) {
+		ungetc(ch, dfile);
 		rddata();
 	}
-	if (i)
-		goto scan;
+	if (files)
+		goto reread;
 	endrun();
-end:
 	return nerrors;
 }
 

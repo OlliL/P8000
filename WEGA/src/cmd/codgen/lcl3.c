@@ -233,13 +233,12 @@ chk()
 /* the node p after the conversions: names to addresses of their class, conversions of constants */
 struct node *
 clocal(p)
-	register struct node *p;
+	struct node *p;
 {
-	register struct node *l, *r;
+	register int o, pf, lf;
 	register struct sym *s;
-	register struct node *fp, *n, *q;
-	long val;
-	int o, pf, lf, pt, lt, t, ob;
+	register struct node *r, *l, *q;
+	int x;
 
 	l = p->left;
 	r = p->right;
@@ -248,11 +247,10 @@ clocal(p)
 		s = p->sname;
 		switch (s->sclass) {
 		case 9:
-			fp = makeblock(REG, 0, 0, 0x18);
-			fp->lval = s->soffset / 8;
-			fp->rval = 15;
-			n = makeblock(STREF, fp, p, 0);
-			p = member(n);
+			r = makeblock(REG, 0, 0, 0x18);
+			r->lval = s->soffset / 8;
+			r->rval = 15;
+			p = member(makeblock(STREF, r, p, 0));
 			q = p->left;
 			if (q->op == PLUS) {
 				if (q->right->op == ICON) {
@@ -265,11 +263,10 @@ clocal(p)
 			}
 			break;
 		case 1:
-			fp = makeblock(REG, 0, 0, 0x18);
-			fp->lval = s->soffset / 8;
-			fp->rval = 15;
-			n = makeblock(STREF, fp, p, 0);
-			p = member(n);
+			r = makeblock(REG, 0, 0, 0x18);
+			r->lval = s->soffset / 8;
+			r->rval = 15;
+			p = member(makeblock(STREF, r, p, 0));
 			q = p->left;
 			if (q->op == PLUS) {
 				if (q->right->op == ICON)
@@ -280,9 +277,9 @@ clocal(p)
 		case 3:
 		case 6:
 			if ((s->sflags >> 2 & 1) == 1)
-				return p;
+				return;
 			p->lval = 0;
-			p->rval = -(int)s->soffset;
+			p->rval = -s->soffset;
 			break;
 		case 4:
 			p->op = REG;
@@ -299,31 +296,33 @@ clocal(p)
 		pf = p->type == 6 || p->type == 7;
 		lf = l->type == 6 || l->type == 7;
 		if (pf || lf)
-			goto done;
+			break;
 		while (l->op == SCONV) {
 			if (tbytes(l->type) <= tbytes(p->type))
 				break;
 			if (l->left->type == 7 || l->left->type == 6)
 				break;
 			l->op = FREE;
-			l = l->left;
-			p->left = l;
+			p->left = l = l->left;
 		}
-		pt = p->type;
-		lt = l->type;
+		pf = p->type;
+		lf = l->type;
+		{
+		long val;
+
 		if (l->op == ICON) {
 			val = l->lval;
 #ifdef SEG
-			if (pt == 4 && (lt & 0x30) == 0x10) {
+			if (pf == 4 && (lf & 0x30) == 0x10) {
 				l->lval = (long)(int)val;
 				goto done;
 			}
-			if (pt == 14 && (lt & 0x30) == 0x10) {
+			if (pf == 14 && (lf & 0x30) == 0x10) {
 				l->lval = val & 0xFFFFL;
 				goto done;
 			}
 #endif
-			switch (pt) {
+			switch (pf) {
 			case 2:
 				l->lval = (long)(char)val;
 				break;
@@ -337,44 +336,40 @@ clocal(p)
 				l->lval = val & 0xFFFFL;
 				break;
 			}
-			l->type = pt;
-		} else {
-			if (l->op == MUL) {
-				if (szty(pt) - szty(lt) != 1)
-					if (tbytes(lt) != tbytes(pt))
-						goto done;
-			} else if (tbytes(lt) != tbytes(pt))
-				goto done;
-			l->type = pt;
-		}
-		if (tbytes(pt) != tbytes(lt)) {
+			l->type = pf;
+		} else if (l->op == MUL && szty(pf) - szty(lf) == 1)
+			l->type = pf;
+		else if (tbytes(pf) != tbytes(lf))
+			break;
+		if (tbytes(pf) == tbytes(lf)) {
 #ifdef SEG
-			goto done;
+			if ((pf & 0x30) == 0x10)
+				break;
+#endif
+			l->type = p->type;
+			l->rval = p->rval;
+			l->lval = p->lval;
+			l->sname = p->sname;
+		} else {
+#ifdef SEG
+			break;
 #else
 			p->op = FREE;
-			return l;
 #endif
 		}
-#ifdef SEG
-		if ((pt & 0x30) == 0x10)
-			goto done;
-#endif
-		l->type = p->type;
-		l->rval = p->rval;
-		l->lval = p->lval;
-		l->sname = p->sname;
-		return l;
+		p = l;
+		goto ret;
+		}
 	}
+#ifdef SEG
 done:
-	l = p->left;
-	r = p->right;
+#endif
 	if ((dope[p->op] & 0x10) && r->op == ICON && l->op == SCONV &&
 	    (l->left->type == 2 || l->left->type == 12) && r->lval >= -256 && r->lval <= 255) {
 		l->op = FREE;
-		p->left = l->left;
-		l = p->left;
-		r->type = l->type;
-		p->type = l->type;
+		l = p->left = l->left;
+		p->type = r->type = l->type;
 	}
+ret:
 	return p;
 }
