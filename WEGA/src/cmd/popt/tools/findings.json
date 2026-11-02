@@ -683,6 +683,7 @@
    "size_orig": 500
   },
   "xjump": {
+   "v0p_note": "v0p model exact with OLD_D20B: both loops while (p = p->back) if (...) break;",
    "file": "z21.c",
    "pairing": "confirmed",
    "ours": "0x1024-0x10ba",
@@ -849,6 +850,7 @@
    "size_orig": 86
   },
   "backjmp": {
+   "v0p_note": "v0p model exact with OLD_D20B: while (p1 = p1->back) if (p1->op != LABEL) break;",
    "file": "z21.c",
    "pairing": "confirmed",
    "ours": "0x1364-0x13d8",

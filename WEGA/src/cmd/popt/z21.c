@@ -31,6 +31,9 @@ void xjump();
 #ifdef OLD_D20K
 static int d20kcall();
 #endif
+#ifdef OLD_D20B
+static int d20bover();
+#endif
 struct node * insertl();
 struct node * codemove();
 #ifdef OLD_D20C
@@ -776,7 +779,11 @@ iterate()
 #endif
 		if ((p->op == JP || p->op == CJP || p->op == JSW) && p->ref) {
 			rp = nonlab(p->ref);
-			if (rp->op == JP && rp->labno && p->labno != rp->labno) {
+			if (rp->op == JP && rp->labno && p->labno != rp->labno
+#ifdef OLD_D20B
+			    && !(p->op == CJP && d20bover(rp) && d20xinv(rp))
+#endif
+			) {
 				nbrbr++;
 				p->labno = rp->labno;
 				decref(p->ref);
@@ -948,6 +955,31 @@ register struct node *p;
 }
 #endif
 
+#ifdef OLD_D20B
+/* `if (c) break;` as the end of a loop: in front of the label of the jump p stands a jump to the label behind p
+   (`jpr L2; L1: jpr head; L2:`), and the first test of the loop asks for equality */
+static int
+d20bover(p)
+register struct node *p;
+{
+	register struct node *j, *x;
+
+	for (j = p->back; j && (j->op == LABEL || j->op == KCOMMENT); j = j->back)
+		;
+	if (j == 0 || j->op != JP || j == p)
+		return 0;
+	for (x = p->forw; x && (x->op == LABEL || x->op == KCOMMENT); x = x->forw)
+		if (x == j->ref)
+			break;
+	if (x == 0 || x != j->ref)
+		return 0;
+	/* the first test of the loop asks for equality (a pointer that ends the loop) */
+	for (x = p->ref; x && x != p && x->op != CJP; x = x->forw)
+		;
+	return x && x->op == CJP && x->subop == 0;
+}
+#endif
+
 #ifdef OLD_D20K
 /* the instruction in front of the jump p is a call */
 static int
@@ -970,12 +1002,12 @@ register struct node *p1;
 	if ((p2 = p1->ref) == 0)
 		return;
 	for (;;) {
-		do
-			p1 = p1->back;
-		while (p1 && (p1->op == LABEL || p1->op == KCOMMENT));
-		do
-			p2 = p2->back;
-		while (p2 && (p2->op == LABEL || p2->op == KCOMMENT));
+		while (p1 = p1->back)
+			if (p1->op != LABEL && p1->op != KCOMMENT)
+				break;
+		while (p2 = p2->back)
+			if (p2->op != LABEL && p2->op != KCOMMENT)
+				break;
 		if (!equop(p1, p2) || p1 == p2)
 			return;
 		p3 = insertl(p2);
@@ -1251,8 +1283,9 @@ struct node *ap2;
 	p1 = ap1;
 	p2 = ap2;
 	for (;;) {
-		while ((p1 = p1->back) && p1->op == LABEL)
-			;
+		while (p1 = p1->back)
+			if (p1->op != LABEL)
+				break;
 		p2 = p2->back;
 		if (!equop(p1, p2))
 			return;

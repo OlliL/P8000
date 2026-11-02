@@ -871,3 +871,8 @@ TODO.md when this log was started.
   L519`; the original keeps the tail in the then part (comjump), cinit the call in the else part (xjump to the own label). About 90 sites of the rule in
   popt and cparse. Tried: only when xjump to the final target would not merge: no effect (in front of L519 stands the dispatch); only when one instruction would
   merge: killreg exact, rmove 472; only behind a call: killreg, cinit exact, rmove 410: taken. popt 66, 650; cparse 173, 96. Why a call: not known.
+- D20, backjmp and xjump. The original reads as `while (p = p->back) { if (op != LABEL ...) break; }`: tests in front of the step. That source alone changes
+  nothing (raw `L: step; test; jpr eq,OUT; T; jpr eq,Lc; jpr OUT; Lc: jpr L; OUT:`; iterate follows the jump to Lc first, the back jump dies and no inversion runs).
+  OLD_D20B (a conditional jump onto an invertible back jump is not followed): both exact, but ovlap 922, yyparse 11. Only for the shape `jpr OUT; Lc: jpr L; OUT:`: ovlap
+  exact. Only when the first test of the loop is eq: yyparse exact. popt 68, 632; cparse 173, 96; corpus 816. The first loop of xjump takes the same form, exact (it stays
+  not inverted: its head is behind a jump), so both loops are written alike. Not tried: a source form without a switch beyond do-while, while (a && b), while-break.
