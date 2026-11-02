@@ -182,9 +182,9 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D21`, `OLD_D16A`, `OLD_D16B`, `OLD_D3N`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D21`, `OLD_D16A`, `OLD_D16B`, `OLD_D3N`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 173 strictly exact, 96 differing lines, /lib/popt 60 of 73, 721 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
+- State: /lib/cparse 173 strictly exact, 96 differing lines, /lib/popt 62 of 73, 709 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
@@ -329,8 +329,9 @@ compiler that built the original. Not differences of the compiler (checked):
   has named yet, the parameter registers kept at labels, merged pairs put behind the others, freed words in LIFO
   order, symreg only on idle registers. Two ld findings were source forms (ranlib_scan as a `for` loop, dseek as one
   `||`), strip's expression went with v1 without a D2 switch.
-- Open (popt, v0p model 2026-11-01): itoa_ and reverse take r3 for the address of a byte store where ours takes r1
-  (`ld r3,r0; ldb @r3,rl2`).
+- v0p (switch `OLD_D2RA` in codgen, match and offstar): an address `r0 + rN` moved out of r0 goes to rN when that is free
+  again (popt itoa_ `add r0,r3; ld r3,r0; ldb @r3,rl2`, reverse `add r0,r2; ld r2,r0`); an address made by a constant
+  keeps the lightest register (cparse `add r0,#dimtab; ld r1,r0`, gotscal, codgen). Bench v0 not touched.
 - Open: place_sec (`r8 = (secorg[j] - q->tsize) & 0xff00`: the original takes a new register for the `and`, not in the
   `+ 255` case beside it), chk_ranlib; cas, codgen, ranlib (weak).
 

@@ -2664,6 +2664,7 @@
    "size_orig": 3272
   },
   "itoa_": {
+   "v0p_note": "v0p model exact with OLD_D2RA: add r0,r3; ld r3,r0",
    "file": "z23.c",
    "pairing": "confirmed",
    "ours": "0x3e12-0x3e62",
@@ -3129,6 +3130,7 @@
    "size_orig": 32
   },
   "reverse": {
+   "v0p_note": "v0p model exact with OLD_D2RA: add r0,r2; ld r2,r0; source for (j = 0, i = strlen(s) - 1; ...)",
    "file": "z23.c",
    "pairing": "confirmed",
    "ours": "0x3db0-0x3e12",

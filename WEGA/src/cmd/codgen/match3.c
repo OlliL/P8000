@@ -12,6 +12,10 @@
 #ifdef OLD_D16A
 extern struct node *d16acmp;
 #endif
+#ifdef OLD_D2RA
+struct node *d2ranode;	/* the last r0 + rN and its rN (offstar) */
+int d2rareg;
+#endif
 extern int rstatus[];
 
 int fldsz, fldoff, fldshf;	/* the field that tshape found (size, offset, shift) */
@@ -477,6 +481,12 @@ select:
 			return q->rewrite;
 		if (!allo(p, q))
 			continue;
+#ifdef OLD_D2RA
+		if (p->op == PLUS && l->op == REG && l->rval == 0 && r->op == REG && szty(p->type) == 1) {
+			d2ranode = p;
+			d2rareg = r->rval;
+		}
+#endif
 #ifdef OLD_D2A
 		rv = p->op;
 #endif

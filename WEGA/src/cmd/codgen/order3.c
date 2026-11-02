@@ -29,6 +29,10 @@ extern int d3nreg, d3nhas(), d3nfree();
 #ifdef OLD_D2R0
 extern int d2r0reg;
 #endif
+#ifdef OLD_D2RA
+extern struct node *d2ranode;
+extern int d2rareg;
+#endif
 
 #ifdef SEG
 #define OFFSTARL(l)	offstar(l)
@@ -431,6 +435,18 @@ offstar(p)
 		if (p->op == REG && p->rval == 0) {
 			save = ordflag;
 			ordflag = 0x14;
+#ifdef OLD_D2RA
+			/* v0p: an address r0 + rN moves to rN when that is free again */
+			if (p == d2ranode) {
+				register struct rs *n;
+
+				for (n = rsfree; n; n = n->next)
+					if ((n->cls == 2 && n->reg == d2rareg) || (n->cls == 3 && n->reg == (d2rareg & ~1))) {
+						p->rall = d2rareg | MUSTDO;
+						break;
+					}
+			}
+#endif
 			order(p, 6);
 			ordflag = save;
 #ifdef OLD_D2R0

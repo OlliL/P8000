@@ -22,6 +22,12 @@ extern int cerror(), uerror();
 extern int match(), tshape(), allo(), szty(), notoff();
 extern int getlab(), deflab();
 extern int nextcook(), lastchance();
+#ifdef OLD_D2R0
+extern int d2r0reg;
+#endif
+#ifdef OLD_D2RA
+extern struct node *d2ranode;
+#endif
 extern void cbgen(), rallo(), offstar(), reclaim(), tfree(), fwalk(), fwalkd(), rfree(), rfreenode(), rfreeall(), ncopy();
 extern int setstr(), setasop(), setasg(), setbin(), gencall(), genscall();
 extern int mkadrs(), stoasg();
@@ -996,6 +1002,12 @@ stmt(p)
 	d3nstmt++;
 #endif
 	nrecur = 0;
+#ifdef OLD_D2R0
+	d2r0reg = -1;		/* it holds only inside a statement */
+#endif
+#ifdef OLD_D2RA
+	d2ranode = 0;
+#endif
 	if (p->op == 118) {
 		mapnm(p->left);
 		fbegin(p->left->sname);

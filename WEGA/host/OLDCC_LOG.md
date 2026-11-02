@@ -843,3 +843,7 @@ TODO.md when this log was started.
   front of the label: equop exact, buildtree 6: 59, 725. In v0 bench unchanged (118, 275), so its own switch OLD_D3JM in
   v0p. regof: no forgetting below a `?:` in an argument, the arms do not take the parameter from the wanted register
   (reader3, QUEST): 60, 721. cparse model 173, 96 throughout.
+- D2 r1/r3 (popt itoa_, reverse). reverse source: `for (j = 0, i = strlen(s) - 1; ...)` (the original clears j first): 8 > 6
+  lines. All moves out of r0 in the originals of popt, cparse and codgen: r1 behind an inc, sla or add of a constant, and
+  only itoa_ and reverse with `add r0,rN`, both `ld rN,r0`. OLD_D2RA: both exact. First measure 61 with ovlap 4 worse:
+  d2r0reg stayed set after its statement (until now r1, which never matched; now r3); reset in stmt: 62, 709. cparse 173, 96.

@@ -463,8 +463,7 @@ char *s;
 {
 	int t, j, i;
 
-	i = strlen(s) - 1;
-	for (j = 0; j < i; j++, i--) {
+	for (j = 0, i = strlen(s) - 1; j < i; j++, i--) {
 		t = s[j];
 		s[j] = s[i];
 		s[i] = t;
