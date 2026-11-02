@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "7d1edc62",
+ "measured_at": "b496c97e",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -23,7 +23,8 @@
    "orig": "0x023c",
    "size_orig": 1310,
    "status": "open",
-   "lines": 388
+   "note": "Left: the place of the getchar blocks (popt). Words x, y of the frame not used.",
+   "lines": 36
   },
   "stmt": {
    "file": "reader3.c",
@@ -338,8 +339,9 @@
    "file": "local3.c",
    "orig": "0x2edc",
    "size_orig": 3606,
-   "status": "open",
-   "lines": 588
+   "status": "masked",
+   "note": "Odd form: if (u == 3 || u == 13) ; in ZT, for a cp of the original without a jump behind it; a register holds a type there (u).",
+   "lines": 2
   },
   "rmove": {
    "file": "local3.c",
@@ -1281,9 +1283,9 @@
    "file": "lcl3.c",
    "orig": "0xab48",
    "size_orig": 902,
-   "note": "Odd form: case 9 and case 1 written out, an empty case 18; the switch tables of the original say so.",
+   "note": "Odd form: case 9 and case 1 written out, an empty case 18, return; without a value in case 3, 6 (quirk table). Left: place of two blocks (popt).",
    "status": "open",
-   "lines": 284
+   "lines": 12
   },
   "makeblock": {
    "file": "tr3.c",
@@ -1322,7 +1324,8 @@
    "orig": "0xb178",
    "size_orig": 1532,
    "status": "open",
-   "lines": 199
+   "note": "Left: the place of whole blocks of the commutative case (popt).",
+   "lines": 77
   },
   "conval": {
    "file": "optim3.c",

@@ -612,14 +612,13 @@ zzzcode(p, c)
 	register struct node *p;
 	char c;
 {
+	register int n;
+	register struct node *z;
+	register struct node *l;
 	register struct node *q, *r;
-	register int m;
-	register struct node *l, *tmp, *rg;
-	struct rs *rp, *rn2;
-	register int n, k;
-	int cls, rn;
-	register unsigned t;
-	char *name;
+	register struct node *u;
+	int x;
+	struct rs *rp;
 
 	switch (c) {
 	case '<':
@@ -664,20 +663,17 @@ zzzcode(p, c)
 		return;
 	case '2':
 		/* log2 of the constant */
-		m = ispow2(p->right->lval);
-		printf("%d", m);
+		printf("%d", ispow2(p->right->lval));
 		return;
 	case '~':
-		m = ispow2(~p->right->lval);
-		printf("%d", m);
+		printf("%d", ispow2(~p->right->lval));
 		return;
 	case 'i':
 		/* inc/dec/add/sub or the mnemonic of the operator, with the type suffix */
-		q = r = getlr(p, 'R');
-		if (!tshape(q, SCON))
+		if (!tshape(z = getlr(p, 'R'), SCON))
 			cerror("bad Zi");
-		if (plainicon(q))
-			q->lval = geninc(p->op, q->lval);
+		if (plainicon(z))
+			z->lval = geninc(p->op, z->lval);
 		else
 			hopcode(p);
 		psuffix(p);
@@ -695,7 +691,10 @@ zzzcode(p, c)
 		return;
 	case 'c':
 		/* float <-> double: the operand has to be in a B register */
-		p->type = p->type == 6 ? 7 : 6;
+		if (p->type == 6)
+			p->type = 7;
+		else
+			p->type = 6;
 		if (!tshape(p->left, STBREG))
 			order(p->left, STBREG);
 		return;
@@ -724,8 +723,7 @@ zzzcode(p, c)
 			return;
 		}
 		expand(p, FOREFF, "\tldk\tA1,#1\n");
-		n = getlab();
-		cbgen(0, n, 'I');
+		cbgen(0, n = getlab(), 'I');
 		deflab(p->label);
 		expand(p, FOREFF, "\tldk\tA1,#0\n");
 		deflab(n);
@@ -742,8 +740,7 @@ zzzcode(p, c)
 	case 'r':
 		/* the upper half of a long operand */
 		upperlval = 1;
-		l = getlr(p, c);
-		adrput(l);
+		adrput(getlr(p, c));
 		upperlval = 0;
 		return;
 	case 'Q':
@@ -755,13 +752,18 @@ zzzcode(p, c)
 	case '0':
 		/* give the registers back that were moved around a call (nxwork 33 and 34) */
 		while (nsave) {
+			int m, k;
+
 			nsave--;
-			n = savecls[nsave] == 3 ? 5 : 4;
+			x = savecls[nsave] == 3 ? 5 : 4;
 			m = rmode;
 			k = rlmode;
-			rmode = n == 5;
+			if (x == 5)
+				rmode = 1;
+			else
+				rmode = 0;
 			rlmode = 0;
-			rmove(saveorig[nsave], savereg[nsave], n);
+			rmove(saveorig[nsave], savereg[nsave], x);
 			rp = rfind(saveorig[nsave], savecls[nsave]);
 			if (!rp)
 				cerror("zzzcode : can't find %d on rslist\n", saveorig[nsave]);
@@ -819,7 +821,7 @@ zzzcode(p, c)
 				else
 					printf("\tinc\t%s,#1\n", rnames[q->rval + 1]);
 #else
-				p->left->left->lval++;
+				p->left->left->lval += 1;
 #endif
 			}
 			if (p->right->lval & 0xFFFF)
@@ -843,12 +845,11 @@ zzzcode(p, c)
 		return;
 	case 'L':
 		/* the address of the left operand into the register A1 */
-		q = getlr(p, 'L');
-		if (q->op == NAME) {
+		if ((u = getlr(p, 'L'))->op == NAME) {
 			expand(p, FOREFF, "\tldZB\tA1,#AL\n");
 			return;
 		}
-		if (q->rval >= 0x100 || q->lval != 0 || q->sname != 0 || (q->op == OREG && q->stsize < 0)) {
+		if (u->rval >= 0x100 || u->lval != 0 || u->sname != 0 || (u->op == OREG && u->stsize < 0)) {
 #ifdef SEG
 			expand(p, FOREFF, "\tlda\tVA1X,AL\n");
 			expand(p, FOREFF, "\tand\tA1,#%7f00\n");
@@ -859,125 +860,141 @@ zzzcode(p, c)
 		}
 		expand(p, FOREFF, "\tldZB\tA1");
 #ifdef SEG
-		printf(",r%s\n", rnames[q->rval]);
+		printf(",r%s\n", rnames[u->rval]);
 #else
-		printf(",%s\n", rnames[q->rval]);
+		printf(",%s\n", rnames[u->rval]);
 #endif
 		return;
 	case 'M':
 		/* load the operand into U1 and extend it */
-		q = p->left;
-		t = q->type;
+		{
+		int t;
+
+		u = p->left;
+		t = u->type;
 		if (t == 12)
 			expand(p, FOREFF, "\tldk\tU1,#0\n");
-		if (q->op != REG || getlr(p, '1')->rval + 1 != q->rval)
-			expand(q, FOREFF, "\tldZB\tU1,AL\n");
+		if (u->op != REG || getlr(p, '1')->rval + 1 != u->rval)
+			expand(u, FOREFF, "\tldZB\tU1,AL\n");
 		if (t == 2)
 			expand(p, FOREFF, "\textsb\tU1\n");
 		if (!(dope[p->op] & DIVFLAG))
 			return;
-		if (t >= 12 && t <= 15)
+		if ((unsigned)t <= 15 && (unsigned)t >= 12)
 			expand(p, FOREFF, "\tldk\tA1,#0\n");
 		else
 			expand(p, FOREFF, "\texts\tVA1\n");
 		return;
+		}
 	case 'S':
 	case 's':
 		/* the structure assignment: a word, a long or a block move */
+		{
+		struct node *r2;
+		int n2;
+		char *name;
+		int rn;
+		struct node *rg, *tmp;
+		struct rs *rp2;
+		int y;
+		int k2;
+		int cls;
+
 		if (p->op != STASG)
 			cerror("zzzcode: bad ZS");
-		q = p->left;
-		r = p->right;
-		n = p->stsize;
+		u = p->left;
+		r2 = p->right;
+		n2 = p->stsize;
 		rg = getlr(p, '1');
 		rn = rg->rval;
 		name = rnames[rn];
-		k = szty(rg->type) == 2 ? 5 : 4;
+		k2 = szty(rg->type) == 2 ? 5 : 4;
 		cls = rclass(rg->type, -1);
-		rp = rfind(rn, cls);
-		rp->busy = 1;
-		tmp = 0;
-		if (n <= 4) {
-			if (r->op == ICON) {
-				tmp = tcopy(r);
-				r->op = NAME;
-				r->type = DECREF(r->type);
-			} else if (!tshape(r, STAREG | SAREG))
-				order(r, STAREG | SAREG);
-			if (r->op == REG) {
-				if (notoff(r->type, r->rval))
-					order(r, STAREG);
-				tmp = tcopy(r);
-				r->op = OREG;
-				r->sname = 0;
-				r->stsize = 0;
+		rp2 = rfind(rn, cls);
+		rp2->busy = 1;
+		if (n2 <= 4) {
+			tmp = 0;
+			if (r2->op == ICON) {
+				tmp = tcopy(r2);
+				r2->op = NAME;
+				r2->type = DECREF(r2->type);
+			} else if (!tshape(r2, STAREG | SAREG))
+				order(r2, STAREG | SAREG);
+			if (r2->op == REG) {
+				if (notoff(r2->type, r2->rval))
+					order(r2, STAREG);
+				tmp = tcopy(r2);
+				r2->op = OREG;
+				r2->sname = 0;
+				r2->stsize = 0;
 			}
 			printf("\tld");
-			if (n == 4) {
+			if (n2 == 4) {
 				printf("l\tr%s,", name);
 				rmode++;
 			} else
 				printf("\t%s,", name);
 			expand(p, FOREFF, "AR\n\tld");
-			if (n == 4) {
+			if (n2 == 4) {
 				putchar('l');
 				rmode++;
 			}
 			expand(p, FOREFF, "\tAL,");
-			printf(n != 4 ? "%s\n" : "r%s\n", name);
-			rfree(rn, k);
+			printf(n2 != 4 ? "%s\n" : "r%s\n", name);
+			rfree(rn, k2);
 			if (tmp) {
-				fwalk(r, rfreenode);
-				tfree(r);
+				fwalk(r2, rfreenode);
+				tfree(r2);
 				p->right = tmp;
 			}
 		} else {
-			if (!tshape(r, STAREG))
-				order(r, STAREG);
-			if (notoff(r->type, r->rval))
-				order(r, STAREG);
-			if (q->op == OREG && q->lval == 0 && q->sname == 0 && q->rval < 0x100) {
-				tmp = tcopy(q);
-				q->op = REG;
-				if ((q->type & 0x30) != 0x10)
-					q->type = INCREF(q->type);
+			tmp = 0;
+			if (!tshape(r2, STAREG))
+				order(r2, STAREG);
+			if (notoff(r2->type, r2->rval))
+				order(r2, STAREG);
+			if (u->op == OREG && u->lval == 0 && u->sname == 0 && u->rval < 0x100) {
+				tmp = tcopy(u);
+				u->op = REG;
+				if ((u->type & 0x30) != 0x10)
+					u->type = INCREF(u->type);
 			}
-			if (!tshape(q, STAREG)) {
+			if (!tshape(u, STAREG)) {
 				if (!tmp)
-					tmp = tcopy(q);
-				order(q, STAREG);
+					tmp = tcopy(u);
+				order(u, STAREG);
 			}
-			if (notoff(q->type, q->rval))
-				order(q, STAREG);
-			n >>= 1;
-			if (n < 16)
-				printf("\tldk\t%s,#%d\n", name, n);
+			if (notoff(u->type, u->rval))
+				order(u, STAREG);
+			n2 >>= 1;
+			if (n2 < 16)
+				printf("\tldk\t%s,#%d\n", name, n2);
 			else
-				printf("\tld\t%s,#%d\n", name, n);
+				printf("\tld\t%s,#%d\n", name, n2);
 #ifdef SEG
 			expand(p, FOREFF, "\tldir\t@rAL,@rAR,");
 #else
 			expand(p, FOREFF, "\tldir\t@AL,@AR,");
 #endif
 			printf("%s\n", name);
-			rfree(rn, k);
+			rfree(rn, k2);
 			if (c == 's') {
-				if (!tmp || ((tmp->op == REG || tmp->op == OREG) && tmp->rval == q->rval))
+				if (!tmp || (tmp && (tmp->op == REG || tmp->op == OREG) && tmp->rval == u->rval))
 #ifdef SEG
-					printf("\tsub\t%s,#%d\n", rnames[q->rval + 1], n * 2);
+					printf("\tsub\t%s,#%d\n", rnames[u->rval + 1], n2 * 2);
 #else
-					printf("\tsub\t%s,#%d\n", rnames[q->rval], n * 2);
+					printf("\tsub\t%s,#%d\n", rnames[u->rval], n2 * 2);
 #endif
 			} else
 #ifdef SEG
-				printf("\tsub\t%s,#%d\n", rnames[r->rval + 1], n * 2);
+				printf("\tsub\t%s,#%d\n", rnames[r2->rval + 1], n2 * 2);
 #else
-				printf("\tsub\t%s,#%d\n", rnames[r->rval], n * 2);
+				printf("\tsub\t%s,#%d\n", rnames[r2->rval], n2 * 2);
 #endif
 			if (tmp) {
 				if (c == 's') {
-					fwalk(q, rfreenode);
-					tfree(q);
+					fwalk(u, rfreenode);
+					tfree(u);
 					p->left = tmp;
 				} else {
 					fwalk(tmp, rfreenode);
@@ -988,62 +1005,67 @@ zzzcode(p, c)
 		if (c == 's')
 			p->type = p->left->type;
 		return;
+		}
 	case 'A':
 		/* an argument that is a structure: up to 4 bytes through a register, else ldm */
+		{
+		int n3, m3, k3;
+
 		if (p->op != STARG)
 			cerror("zzzcode: bad ZA");
-		q = p->left;
-		n = p->stsize;
-		if (n <= 0 || n > 0x6b5d)
-			cerror("structure size out of range: %ld", (long)n);
-		if (n <= 4) {
-			if (q->op == ICON)
-				q->op = NAME;
-			if (!tshape(q, SNAME | STAREG | SAREG))
-				order(q, SNAME | STAREG | SAREG);
-			if (q->op == REG) {
-				if (notoff(q->type, q->rval))
-					order(q, STAREG);
-				q->op = OREG;
-				q->sname = 0;
-				q->stsize = 0;
+		u = p->left;
+		n3 = p->stsize;
+		if (n3 <= 0 || n3 > 0x6b5d)
+			cerror("structure size out of range: %ld", (long)n3);
+		if (n3 <= 4) {
+			if (u->op == ICON)
+				u->op = NAME;
+			if (!tshape(u, SNAME | STAREG | SAREG))
+				order(u, SNAME | STAREG | SAREG);
+			if (u->op == REG) {
+				if (notoff(u->type, u->rval))
+					order(u, STAREG);
+				u->op = OREG;
+				u->sname = 0;
+				u->stsize = 0;
 			}
 			printf("\tld");
-			if (n == 4) {
+			if (n3 == 4) {
 				printf("l\tr");
 				rmode++;
 			} else
 				putchar('\t');
-			m = p->rall & 0xEFFF;
-			printf("%s,", rnames[m]);
+			m3 = p->rall & 0xEFFF;
+			printf("%s,", rnames[m3]);
 			expand(p, FOREFF, "AL\n");
-			k = getreg(n == 4 ? 3 : 2, m, 0x1000, p->sname);
-			if (m == k) {
-				rbusy(m, n == 4 ? 5 : 4, p->sname, p->lval);
+			k3 = getreg(n3 == 4 ? 3 : 2, m3, 0x1000, p->sname);
+			if (m3 == k3) {
+				rbusy(m3, n3 == 4 ? 5 : 4, p->sname, p->lval);
 				return;
 			}
-			rfree(k, n == 4 ? 5 : 4);
-			rsreturn(n == 4 ? 3 : 2, k);
+			rfree(k3, n3 == 4 ? 5 : 4);
+			rsreturn(n3 == 4 ? 3 : 2, k3);
 			return;
 		}
-		if (!tshape(q, STAREG))
-			order(q, STAREG);
-		if (notoff(q->type, q->rval))
-			order(q, STAREG);
-		n >>= 1;
+		if (!tshape(u, STAREG))
+			order(u, STAREG);
+		if (notoff(u->type, u->rval))
+			order(u, STAREG);
+		n3 >>= 1;
 		printf("\tldm\t%s,", rnames[p->rall & 0xEFFF]);
 #ifdef SEG
 		expand(p, FOREFF, "@VAL");
 #else
 		expand(p, FOREFF, "@AL");
 #endif
-		printf(",#%d\n", n);
+		printf(",#%d\n", n3);
 		return;
+		}
 	case 'T':
 		/* the second word of a long operand, for the conversion to a shorter type */
-		m = p->type;
+		u = (struct node *)p->type;
 		p = p->left;
-		k = p->type;
+		n = p->type;
 		switch (p->op) {
 		case NAME:
 		case OREG:
@@ -1054,20 +1076,26 @@ zzzcode(p, c)
 			}
 #endif
 			if (p->sname->sclass == 3 && p->op == NAME && !(p->sname->sflags >> 2 & 1) && p->rval >= 0) {
-				if (szty(k) == 2) {
-					if (m == 2 || m == 12)
+				if (szty(n) == 2) {
+					if ((int)u == 2 || (int)u == 12)
 						p->rval += 3;
-					else
+					else {
+						if ((int)u == 3 || (int)u == 13)
+							;
 						p->rval += 2;
+					}
 				} else
 					p->rval += 1;
 				return;
 			}
-			if (szty(k) == 2) {
-				if (m == 2 || m == 12)
+			if (szty(n) == 2) {
+				if ((int)u == 2 || (int)u == 12)
 					p->lval += 3;
-				else
+				else {
+					if ((int)u == 3 || (int)u == 13)
+						;
 					p->lval += 2;
+				}
 			} else
 				p->lval += 1;
 			return;
@@ -1075,12 +1103,12 @@ zzzcode(p, c)
 #ifdef SEG
 		longreg:
 #endif
-			if (szty(k) != 2)
+			if (szty(n) != 2)
 				return;
 			rfree(p->rval, p->type);
 			rfreeall(0);
 			p->rval++;
-			p->type = m;
+			p->type = (int)u;
 			if (p->rval <= 7 && getreg(2, p->rval, 0x1000, 0) != p->rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
@@ -1090,17 +1118,21 @@ zzzcode(p, c)
 		}
 	case 'P':
 		/* the argument registers r4 .. r7 on the use list are free again after a call */
-		for (rp = rsuse; rp; rp = rn2) {
-			rn2 = rp->next;
-			switch (rp->reg) {
+		{
+		struct rs *a, *b;
+
+		for (a = rsuse; a; a = b) {
+			b = a->next;
+			switch (a->reg) {
 			case 4:
 			case 5:
 			case 6:
 			case 7:
-				rsreturn(9, rp->reg);
+				rsreturn(9, a->reg);
 			}
 		}
 		return;
+		}
 	default:
 		cerror("illegal zzzcode: %c", c);
 	}
