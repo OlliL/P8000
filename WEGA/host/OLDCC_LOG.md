@@ -896,3 +896,76 @@ TODO.md when this log was started.
 - buildtree 6 left: `ld r3,#%27EA` and the 0.0 at 0x2846 (the order of the double constant and the table in the data), the temporary at 0x12. Tried: j, k in their own block (no effect), cp2, cp1, m in the block of the switch (temp 0x12, but the frame and all other temporaries wrong, 26 lines). Not explained.
 - buildtree, two attempts. The temporary at 0x12: `case QUEST: { int a1, a2, a3; ... }`: exact for these 2 lines, the temporary starts behind the declarations of the last block, as in clocal (the three words are unused in the source: an odd form; the names are guesses). The 0.0 behind the first table: a trial in a scratch d12model (no compiler change), the block of the constant moved behind the value and target lists of the switch of line 155: the other 4 lines go, buildtree exact, cparse 178 of 179, data equal 17855 > 17890. So the old compiler writes a double constant at its statement, where our cparse writes it into the .D file that codgen reads at the head of the function; only trees1 has a double constant and a cpir table, one witness: not built, owner to decide.
 - OLD_D12K (owner decision, one witness): codgen copies the .D data at the head of a function without the blocks `Ln: ` and four words, and writes such a block when eread meets its FCON (d12kout; the rest at the end of the function). buildtree exact, cparse 178, 2 lines; data equal 17855 > 17890; corpus 260; with the switch in v0 bench unchanged (118, 275): v0p. Normal and v0 objects of rdr3, main3 unchanged.
+- findings.json of cparse and popt on the base of ccv0p (owner 2026-11-02): status measured, notes only for open differences, odd forms, guessed names, dead code. The notes on source forms and switches that left the files, as they stood (the older fields, audit, candidates, review, D classes against the shipped compiler, are in the git history):
+  cparse optim: Exact with v0p. Source: zapright: inside else if( ... ){ }, no goto from there (the node in front of the label is then no jump, so popt leaves the block where the original has it).
+  cparse defid: Exact with v0p. Source: the step of the SMEMB loop as goto mstep; with mstep: cp1 -= sizeof(int); goto mtest; behind the goto mismatch. An odd form, recorded under the evidence rules of OLDCC.md: the bytes fit, a plainer form or a rule stays possible. Source fix: one more unused int behind cp2 (a frame word of the original; the name is a guess).
+  cparse genswitch: Exact with v0p. Source: r = t = talloc() (store order); size = n+n and the table size assigned inside the sectfull argument. Source: size = n*SZLONG/SZCHAR without a cast. Old-cc: OLD_D16A (p[++n]: load, inc, store), source t->rval = swlab = getlab().
+  cparse lxstr: Remaining: the lastcon |= val<<8 arm uses rr0 in the original, rr4 in ours (D2), and it is placed in front of the case bodies in the original (layout); the outer switch is a compare chain (D6).
+  cparse argregs: Exact with v0p. Source: n = argregs( p->left ) in front of return( n + argregs( p->right ) ); return( n*2 ); the bodies in front of the dispatch with goto sw, a switch of two cases and the case of 4 as an if behind it. An odd form, recorded under the evidence rules of OLDCC.md.
+  cparse rmconv: Exact with v0p. Old-cc: OLD_D3J (c from rl6 at the else label).
+  cparse clocal: Source: the l->left chains (SCONV loop and DIV/MOD p->left = l = l->left, char compare l = p->left = l->left); p = l; return(p) at the SCONV end, p = buildtree(...); return(p) for PVCONV/PMCONV. long val declared in the ICON block. The switch on ml in the order CHAR, UCHAR, USHORT/UNSIGNED, SHORT/INT. Exact with v0p.
+  cparse argdebug: Exact with v0p. Source: argdebug( x ) register x; { register a; return( x ); } (ldm of two registers, procopt renames x into r1).
+  cparse yyparse: Exact with v0p. Source: ncopy( t = talloc(), *(NODE **)swp ) in the switch action (the call result goes to a temporary too).
+  cparse hash: Source fix: the locals are declared h, p (the original has h at the lower frame place, the old cc gives the first declared local the lower place).
+  cparse hide: Source fix: no unused local h (the original frame has i only; an unused local gets a frame place in the old cc too, initpreg).
+  cparse lookup: Source fix: one more unused int between i and n (the original has a frame word there; its name j is a guess).
+  cparse nidcl: Source fix: the empty array warning for AUTO and REGISTER (the original compares with 4); the source had EXTDEF.
+  cparse getpreg: Source fix: the parameters declared t, p (the original has t in r14 and p in r13; the first declared register variable gets r14). Source: if( pregvar < 2 ) break; goto gotreg; (exact without OLD_D20S, removed).
+  cparse fhashv: Source fix: register n (the original saves r14 and gives n no home: a register parameter behind the last other one, OLD_D4R). Remaining: the original takes n from r6 and does not restore r14 (popt renames the register variable), the byte loads use rl3 throughout.
+  cparse cisreg: Source fix: t is not a register parameter (the original uses r7 and saves no r14).
+  cparse tyreduce: Source fix: the dimension goes through a long local (the original stores (unsigned)temp into a 4 byte frame place and passes it from the register of the assignment); the name off is a guess, Plexus passes (OFFSZ)temp directly.
+  cparse vfdzero: Source fix: register n (the original saves r14 and gives n no home).
+  cparse tcopy: Source fix: ncopy( q=talloc(), p ) and a register r = p->rval as in Plexus (the original saves r12, r13, r14; r unused afterwards).
+  cparse ncopy: Source fix: register NODE *q, *p and an unused register i (the original saves r12; popt renames q and p into r4 and r5).
+  cparse beginit: Source fix: defalign( talign(...) ) without the local al (the original stores no al).
+  cparse endinit: Source fix: inforce( tsize(...) ) without the local tsz (the original stores no tsz).
+  cparse falloc: Source fix: s is a local of the ENUMTY case block (the original reuses its frame place for a codgen temporary).
+  cparse tymatch: Source fix: register o, u declared in front of t1, t2, t, tu (o in r13, u in r12 in the original) and register NODE *p1 as in Plexus (an eighth register variable: an unused frame word).
+  cparse buildtree: Source fix: one more unused int at the function level, and in the STREF block the locals in the order cp2, cp1, an unused int, j, k (the frame places of the original); the names of the unused ones are guesses. Source: cp2 = &ntab[STP(i)->sname] in the member block. Source: case QUEST: { int a1, a2, a3; ... } gives the temporary at 0x12 (an odd form, the three words unused, names guessed). Old-cc: OLD_D12K (the 0.0 at the statement, behind the first table).
+  cparse efcode: Source fix: register i declared in front of p (i in r14, p in r13 in the original) and an unused long behind size (4 frame bytes of the original; the name is a guess).
+  cparse ispow2: Source fix: for( i=0; c>1; ++i ) c >>= 1; (the original shifts before it counts).
+  cparse getmem: Source fix: n += 1; n &= ~1; (the original rounds n in its register with inc and res).
+  cparse oconvert: Exact with v0p. Source: block( SCONV, q = p->left, NIL, INT, 0, INT ) (the assignment in the argument is evaluated first).
+  cparse prtdcon: Exact with v0p. Source: sectfull( DATA, size = SZDOUBLE/SZCHAR ) (the assignment inside the argument). Old-cc: OLD_D22 (the double argument in rq4 by ldm) ; source fprintf( dfile, ..., l ) (rmove takes r2 for the slot stored last).
+  cparse fltlab: Exact with v0p. Source: d == p->fval (the original loads d). Old-cc: OLD_D22 (the double parameter in rq4, the compare without the rounding fld).
+  cparse fincode: Exact with v0p. Old-cc: OLD_D22 (the double parameter in rq4, sz in r3).
+  cparse isitfloat: Exact with v0p. Old-cc: OLD_D22 (the result of atof from rq4: fldd f0,r4).
+  cparse doinit: Exact with v0p. Old-cc: OLD_D22 (a computed double argument through f0 into rq4).
+  cparse treeeq: Exact with v0p. Source: the LTYPE case returns the value of the && expression.
+  cparse lineid: Exact with v0p. Source: if( *(cp = &ftitle[len-1]) == '"' ).
+  cparse psavel: Exact with v0p. Source: *(long *)(ip = &paramstk[paramno]) = l; (the original saves r14 and leaves it unused: popt removes the dead copy). An odd form (ip is not used again), recorded under the evidence rules of OLDCC.md: the bytes fit, a plainer form or a switch stays possible.
+  cparse instk: Exact with v0p. Source: t==STRTY ? (int)dimtab[s+1] : 0.
+  cparse getstr: Exact with v0p. Old-cc: OLD_D2QO (the long through its pointer into the pair of the address register, wanted r7).
+  cparse talloc: Exact with v0p. Source: an unused third local NODE *r (the frame word at 4 of the original).
+  cparse tfree1: Exact with v0p. Old-cc: OLD_D3J (p from r7 at the else label).
+  cparse stref: Exact with v0p. Old-cc: OLD_D16B (p->type += PTR rewritten as p->type = p->type + PTR).
+  cparse dclstruct: Old-cc: OLD_D2PO, OLD_D2MO (the quotient multiplied in rr2). Exact with v0p.
+  cparse refid: Exact with v0p. Old-cc: OLD_D2W6 (the third pair is rr6). OLD_D2PO, OLD_D2QO.
+  cparse conval: Exact with v0p. Source: in the PLUS case p->type before p->rval. Old-cc: OLD_D2PT.
+  cparse exname: Exact with v0p. Source: *q++ = (...) ? '$' : '_'. Old-cc: OLD_D3AW (&ntab[s] adds s from the frame).
+  cparse cinit: Exact with v0p. Source: case ICON before case NAME. Old-cc: popt OLD_D20K.
+  cparse defalign: Exact with v0p. Source: register n, n /= SZCHAR (no extra variable; a register parameter gets no home, OLD_D4R).
+  cparse argalloc: Exact with v0p. Old-cc: OLD_D2W6 (the third pair is rr6).
+  cparse zecode: Exact with v0p. Old-cc: OLD_D3J (n known in rr6 at the else label), OLD_D3AW (n*2 as an argument from rr6).
+  cparse newsect: Exact with v0p. Source: for( ; *cp; ++q, ++cp ) *q = *cp. Old-cc: OLD_D5G (&sectname[sec][k] with the address added last).
+  popt xjump: v0p model exact with OLD_D20B: both loops while (p = p->back) if (...) break;
+  popt codemove: v0p model exact with OLD_D16A not for a compare: --n == 0 stays dec n,#1; test n; p a plain parameter, p1, p2, p3 registers r14, r13, r12
+  popt backjmp: v0p model exact with OLD_D20B: while (p1 = p1->back) if (p1->op != LABEL) break;
+  popt equop: v0p model exact with OLD_D3JM: p2 stays known in r6 at the else label with two jumps
+  popt findcopy: v0p model exact with an unused local word behind r (frame 8; guess) and case TQ: r += 2 falling into case TL
+  popt setreg: v0p model exact: c = r & 0xf; makereg(c, name, type); the scan loop with its consequences inside while (*s)
+  popt dest: v0p model exact: else if (sub == 0) sub = 0 (dead second test of the original), second switch in the order SBYTE, 0, SLONG
+  popt killreg: v0p model exact with OLD_D20K only behind a call: the two if (n & 1) arms merge as the original
+  popt repladdr: v0p model exact: rmove takes r2 for the slot pfx only behind no merge of the arms
+  popt movedat: v0p model exact: the body of the second loop inside switch (r1->op)
+  popt findcon: v0p model exact: p = regs[n]; as a separate statement tests the variable
+  popt setcon: v0p model exact with OLD_D3AW only for the wanted register: natural(loc) as ld r7,r6
+  popt natural: v0p model exact: while (*s++); s--; the trailing ) test looks at the NUL (quirks table)
+  popt toofar: v0p model exact with n = ilen(q); sum += n (the original keeps the call value in a frame word); whether this is the source or a rule of the old compiler is open
+  popt adrlen: v0p model exact with an unused local word between the parameter homes and the saved r14 (the frame of the original is 8; the local is a guess) and the blank loop that increments s while testing p (quirks table)
+  popt rmove: v0p model 8 lines: section order and if-blocks as in OLDCC.md D20; the remainder is the long jp of the old cas. The TST arm inside the block behind goto cp_chk is an odd form. strictcmp masks call against calr, 35 places here
+  popt itoa_: v0p model exact with OLD_D2RA: add r0,r3; ld r3,r0
+  popt usesreg: v0p model exact: default as dflt: inside if (reg != r10 && reg != r10 + 1) of MUL, out1 and out0 inside if blocks of the LD and EXTS cases, EXTS cases 0, SLONG, SBYTE. dflt: inside the if is a less usual form
+  popt procopt: v0p model exact with OLD_D5T: t[k].s1 as k*10 + (t + 2) + fp
+  popt regof: v0p model exact with OLD_D3AW not in the condition of a ?: in an argument
+  popt reverse: v0p model exact with OLD_D2RA: add r0,r2; ld r2,r0; source for (j = 0, i = strlen(s) - 1; ...)

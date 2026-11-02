@@ -103,7 +103,10 @@ def main():
     for p, n in sorted(total.items()):
         print('%5d  %s' % (n, p))
     if not dry:
-        subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'findings_md.py')],
+        if 'compiler' in json.load(open(CFG.FINDINGS)):
+            pass	# (new form: FINDINGS.md is written by oldcc.sh findings)
+        else:
+            subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'findings_md.py')],
                        cwd=HERE, check=True, stdout=subprocess.DEVNULL, env=dict(os.environ, RECON_PROG=HERE))
 
 

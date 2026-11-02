@@ -146,7 +146,7 @@ definitions at the end of z2.h. cparse: the globals as definitions at the end of
 the order) and an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
 first, the model link needs its object). bss.s and libcbss.s are gone in both.
 
-**Owner, before codgen starts (2026-11-02): findings.json and FINDINGS.md of cparse and popt go on the base of ccv0p; the proposal is with the owner (head with compiler and commit, per function file, orig, size_orig, a measured status, a note only for open differences and odd forms; first sort the old notes into OLDCC_LOG.md, the quirks table or the function). Do not start codgen before that.**
+**findings (done 2026-11-02, owner):** findings.json and FINDINGS.md of cparse and popt are on the base of ccv0p (`oldcc.sh findings PROG` after a model). When codgen starts: convert its findings.json in the same way, add it to PROGS in `host/recon/switchmatrix.py`; then classify.py, patterns.py, strictlayers.py and the old findings_md.py can go, if ld and sld do not need them (HOWTO_reconstruct.md, "Since 2026-11-02").
 
 **Now: the old cas (owner 2026-11-02, no time box: the call forms D17 and the long jumps have one cause). State in `OLDCC_LOG.md`, last entry: the model is proven: one early optimization at given points gives strictcmp -c = strict (cparse 176, 25 lines; popt 71, 18 lines; `castrig/hostcas.patch`, `triggers.txt`). The rule for the points is open (entries there: 179 to 273, no table offset common); a stoff 0xC00 class was an artefact of the bss list in mfile1, so measure cparse on an input without that list. Tools `host/recon/castrig/`. Goal: a rule, then a v0p cas.** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
 ). State: cparse 178/2, popt 72/8. The model
@@ -175,8 +175,7 @@ reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt). A part
 switches, history), section 3 for the class you work on (D2, D3, D6, D16, D20, D22 are the busy ones);
 `host/OLDCC_LOG.md` section "2026-11-01" (every attempt of the last rounds, also the refuted ones: do not repeat
 them); `src/cmd/cparse/tools/HANDOFF_cparse.md` (owner decisions for cparse: commits allowed, no push, Plexus base);
-`src/cmd/cparse/tools/findings.json` key `manual_classes` (the note per function: source fixes, switches, remainder);
-`src/cmd/popt/tools/findings.json` (the popt function map, `v0p_note` per function);
+`src/cmd/cparse/tools/FINDINGS.md` and `src/cmd/popt/tools/FINDINGS.md` (open functions and notes);
 `host/KNOWLEDGE.md` sections "Bugs and quirks of the originals" and "codgen / scodgen" (register machinery) as
 reference. Working rules of the owner for this task (besides CLAUDE.md): notes on findings only in findings.json (no
 finding status or attempt history in source comments); knowledge about the D classes only in OLDCC.md (rewritten) and

@@ -11,6 +11,7 @@
 #                                        (must stay 259 of 259: catches wrong code); restores the normal build
 #   oldcc.sh bench                       the bench of v0 (System III programs of 1982, ccv0)
 #   oldcc.sh lines [PROG]                the differing functions of the last model run and the sum of their lines
+#   oldcc.sh findings [PROG]             findings.json (status from the last model) and FINDINGS.md of PROG
 #   oldcc.sh matrix [SWITCH ...]         each switch of v0p taken out alone, all programs measured: host/OLDCC_SWITCHES.md
 #   oldcc.sh matrix check                no measurement: switches and programs of the sources against that table
 #
@@ -73,6 +74,9 @@ corpus)
 	rm -f $O; make cparse CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LDBIN="$W /bin/ld" \
 		YACC="$W /usr/bin/yacc" > /dev/null 2>&1
 	;;
+findings)
+	exec python3 $REPO/host/recon/findings.py ${2:-cparse}
+	;;
 matrix)
 	shift
 	if [ "$1" = check ]; then
@@ -85,7 +89,7 @@ bench)
 		python3 host/recon/witness.py -t v0 -c "-r $OLDROOT /bin/ccv0" 2>&1 | tail -1
 	;;
 *)
-	sed -n '2,21p' $0
+	sed -n '2,22p' $0
 	exit 1
 	;;
 esac

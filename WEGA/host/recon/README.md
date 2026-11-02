@@ -13,6 +13,7 @@ Used by codgen, popt, sld, ld and cparse (see `host/HOWTO_reconstruct.md`). Each
 | `funcs.py` | disassembly, strict instruction form, comparison, function candidates |
 | `patterns.py` | check of the D patterns (compiler differences) of a differing function |
 | `classify.py` | difference class of every function, written to `findings.json` |
+| `findings.py PROG` | new form of `findings.json` (HOWTO, "Since 2026-11-02"): status from strictcmp, writes `FINDINGS.md`; through `oldcc.sh findings PROG` |
 | `findings_md.py` | `findings.json` to `FINDINGS.md` (generated, never edited by hand) |
 | `odis.py NAME` / `odis.py LO HI` | disassemble the original code of a function |
 | `callcmp.py OLD NEW NM` | call-trace comparison of two emulator traces (corpus test) |

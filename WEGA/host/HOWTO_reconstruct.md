@@ -12,6 +12,15 @@ the WEGA native `make` (`=` not `?=`, `cd dir ; $(MAKE)`, no pattern rules). The
 assistant never commits or pushes. No new status files: the state lives in `own_functions.txt`
 (status column) and `findings.json` (`manual_classes` = hand notes, shown in `FINDINGS.md`).
 
+## Since 2026-11-02: against an old compiler from the start (owner)
+
+Old compilers exist now. A new binary is built from the start with the old compiler version that fits it best, and sources still measured
+against the shipped compiler are only worked on together with an old version; the steps below that speak of the shipped compiler are history.
+`findings.json` always states the compiler it refers to: `compiler`, `measured_at`, per function `file`, `orig`, `size_orig`, a measured `status` and
+a `note` by hand only for an open difference, an odd source form, a guessed name, dead code (`oldcc.sh findings PROG`, which also writes `FINDINGS.md`).
+Which function needs which switch: `OLDCC_SWITCHES.md`. When a program starts: add it to PROGS in `recon/switchmatrix.py` and rewrite its `findings.json`
+in this form for its compiler. classify.py, patterns.py, strictlayers.py and the old findings_md.py belong to the old way; they stay for codgen, ld and sld until those are converted.
+
 ## Two phases, one model change per binary
 
 The work is split so that a cheap model does the mechanical part and an expensive model is needed only
