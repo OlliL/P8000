@@ -859,7 +859,7 @@ TODO.md when this log was started.
   exact. OLD_D3N removed from codgen (204 lines). popt 65, 657; cparse 173, 96. Not explained by source forms yet: setreg
   (the first argument of makereg through r2): tried nothing further, one witness.
 - First full `oldcc.sh matrix` (56 switches, host/OLDCC_SWITCHES.md, commit cef592e). Not separable alone: OLD_D22, OLD_D3A, OLD_D3K,
-  OLD_D6T (they need their partners: the cparse half, OLD_D3AW, OLD_D3J). No exact function lost: OLD_D18 and cparse OLD_D12 (+0, the
-  model makes them itself), OLD_D3V, popt OLD_D20L, OLD_D20X (+5, +7, +66 in functions that differ anyway). One exact function: 16 switches.
+  OLD_D6T (they need their partners: the cparse half, OLD_D3AW, OLD_D3J). No exact function lost: OLD_D18 and cparse OLD_D12 (+0: the
+  model makes the data layout itself, strictcmp treats @r15 and 0(r15) as equal), OLD_D3V, popt OLD_D20L, OLD_D20X (+5, +7, +66 in functions that differ anyway). One exact function: 16 switches.
   OLD_D16A has genswitch alone (codemove was the limit of the rule, not a witness). genswitch alone holds OLD_D16A, codgen and cparse OLD_D21,
   OLD_D2O: a candidate for source forms (guess). Only gain in the table: popt killreg is exact without popt OLD_D20K (cinit lost, +61 lines).

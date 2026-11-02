@@ -151,7 +151,7 @@ def write(rows, base, stamp):
         f.write('Lost: exact with all switches, not without this one. Gained: exact only without it. Lines: differing lines '
                 'without the switch minus those with all switches, over all programs. A pass name in front of a switch: not '
                 'codgen. `no build`, `no model`: the switch cannot be taken out alone. Only code is compared; what the model makes '
-                'itself (d12model: data layout, D18) shows nothing here. Zero lost does not mean unused: the lines may be in '
+                'itself (d12model: data layout) or the comparison treats as equal (progcfg D18) shows nothing here. Zero lost does not mean unused: the lines may be in '
                 'functions that differ anyway.\n\n')
         f.write('| Switch | Lost | Gained | Lines | Measured |\n|---|---|---|---|---|\n')
         for k in sorted(rows):
