@@ -162,7 +162,7 @@ int
 rdsym()
 {
 	nglob = 0;
-	fseek(stfile, stpos, 0);
+	fseek(stfile, stpos, 0L);
 	stflag = getw(stfile);
 	if (stflag <= 0)
 		return 0;
@@ -304,8 +304,10 @@ readtab(buf, n)
 	char *buf;
 	long n;
 {
+	int x, got;
+
 	if (n > 0)
-		if (fread(buf, 1, (int)n, stfile) != n)
+		if ((got = fread(buf, 1, (int)n, stfile)) != n)
 			printf("readnt: error in reading ascii table from symbol file\n");
 }
 
@@ -452,7 +454,7 @@ void
 mapsym(p)
 	struct node *p;
 {
-	int i;
+	register int i;
 
 	if (p->rval) {
 		i = tagfind(p->rval);
@@ -554,7 +556,7 @@ mapnm(p)
 void
 mkhash()
 {
-	symtab = symtab0 = (struct sym *)alloc(0x42);
+	symtab0 = symtab = (struct sym *)alloc(0x42);
 	fpsym1 = (struct sym *)((char *)symtab + 0x16);
 	fpsym2 = (struct sym *)((char *)symtab + 0x2C);
 	symtab->nameoff = 0;

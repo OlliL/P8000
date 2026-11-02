@@ -109,7 +109,7 @@ static void argplace();
 /* an assignment under an indirection: nothing to store, the check only */
 int
 stoasg(p, o)
-	struct node *p;
+	register struct node *p;
 	int o;
 {
 	return ltypeok(p->left->op, p->left);
@@ -158,7 +158,7 @@ notoff(t, r, off)
 	long off;
 {
 	if (r >= 0x100)
-		return (char)(r >> 8) - 1 == 0;
+		return (r >> 8) - 1 == 0;
 	return r == 0;
 }
 
@@ -566,15 +566,7 @@ niceuty(p)
 {
 	register int t;
 
-	if (p->op == STAR) {
-		t = p->type;
-		if (t == 2 || t == 12 || t == 6 || t == 7)
-			return 0;
-		if (shumul(p->left) == 0x800)
-			return 0;
-		return 1;
-	}
-	return 0;
+	return p->op == STAR && (t = p->type) != 2 && t != 12 && t != 6 && t != 7 && shumul(p->left) != 0x800;
 }
 
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */

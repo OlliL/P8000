@@ -139,6 +139,7 @@ member(p)
 	register int spare;		/* unused: the original keeps a register here */
 	register int sz, cl;		/* set from the symbol and not used afterwards */
 	register struct sym *m;
+	long o;
 	struct node *off, *n;
 
 	m = p->right->sname;
@@ -146,13 +147,14 @@ member(p)
 	p->right->op = FREE;
 	p->op = FREE;
 	p = p->left;
-	nt = INCREF(m->stype);
-	p->type = nt;
+	nt = p->type = INCREF(m->stype);
 	sz = (int)m->ssize;
-	off = bcon(m->soffset);
+	o = m->soffset;
+	off = bcon(o);
 	n = makeblock(PLUS, p, off, nt);
 	p = clocal(n);
 	if ((p->type & 0x30) != 0x10)
 		p->type = p->type + 16;
-	return buildstar(STAR, p, 0);
+	p = buildstar(STAR, p, 0);
+	return p;
 }

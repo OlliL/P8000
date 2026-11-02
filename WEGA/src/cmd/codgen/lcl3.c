@@ -224,9 +224,9 @@ chk(p)
 #else
 /* a debugging hook that does nothing */
 static void
-chk(p)
-	struct node *p;
+chk()
 {
+	register int spare;
 }
 #endif
 

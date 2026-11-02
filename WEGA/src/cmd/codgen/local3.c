@@ -156,7 +156,7 @@ static void prolog();
 /* the type suffix of the type of the node */
 void
 psuffix(p)
-	struct node *p;
+	register struct node *p;
 {
 	tsuffix(p->type);
 }
@@ -314,8 +314,9 @@ regrestore(a, sz, b, w, tot)
 	}
 #endif
 	if (b >= 1) {
+		k = maxreg;
 		off = (int)w;
-		for (k = maxreg; k < 0x17; k++, off += 8)
+		for (; k < 0x17; k++, off += 8)
 #ifdef SEG
 			printf("\tfldd\t%s,_stkseg+%d(fp)\n", rnames[k + 1], off);
 #else
@@ -327,7 +328,7 @@ regrestore(a, sz, b, w, tot)
 /* ~L2 grows or shrinks the frame pointer */
 static void
 fpinc(tot)
-	unsigned tot;
+	register unsigned tot;
 {
 	if (tot) {
 		if (tot <= 0x10)
@@ -356,7 +357,7 @@ prolog(a, sz, b, w, tot)
 
 static void
 fpdec(tot)
-	unsigned tot;
+	register unsigned tot;
 {
 	if (tot) {
 		if (tot <= 0x10)
@@ -405,8 +406,9 @@ regsave(a, sz, b, w, tot)
 	}
 #endif
 	if (b >= 1) {
+		k = maxreg;
 		off = (int)w;
-		for (k = maxreg; k < 0x17; k++, off += 8)
+		for (; k < 0x17; k++, off += 8)
 #ifdef SEG
 			printf("\tfldd\t_stkseg+%d(fp),%s\n", off, rnames[k + 1]);
 #else
@@ -536,7 +538,7 @@ hopcode(p)
 	register struct hoptab *q;
 	register int t = p->type;
 
-	q = (t == 6 || t == 7) ? fhoptab : ihoptab;
+	q = (t == 7 || t == 6) ? fhoptab : ihoptab;
 	for (; q->op >= 0; q++)
 		if (q->op == o && ttype(t, q->tword)) {
 			printf("%s", q->str);
@@ -1121,20 +1123,20 @@ rmove(to, from, type)
 
 	for (t = rsuse; t; t = t->next)
 		if (t->reg == to)
-			break;
-	if (t == 0)
-		for (t = rsfree; t; t = t->next)
-			if (t->reg == to)
-				break;
+			goto tfound;
+	for (t = rsfree; t; t = t->next)
+		if (t->reg == to)
+			goto tfound;
+tfound:
 	if (t == 0)
 		cerror("rmove: destination reg not found");
 	for (f = rsuse; f; f = f->next)
 		if (f->reg == from)
-			break;
-	if (f == 0)
-		for (f = rsfree; f; f = f->next)
-			if (f->reg == from)
-				break;
+			goto ffound;
+	for (f = rsfree; f; f = f->next)
+		if (f->reg == from)
+			goto ffound;
+ffound:
 	if (f == 0) {
 		t->sym = 0;
 		t->off = 0;
@@ -1165,19 +1167,18 @@ ltypeok(op, p)
 	register int op;
 	register struct node *p;
 {
-	if (op == NAME || op == REG || op == ICON || op == OREG)
-		return 1;
-	if (op == STAR && p != 0 && shumul(p->left))
-		return 1;
-	return 0;
+	return op == NAME || op == REG || op == ICON || op == OREG || (op == STAR && p != 0 && shumul(p->left));
 }
 
 /* the operator is a leaf that can be addressed: NAME, REG, ICON, OREG */
 int
 ltypeop(p)
-	struct node *p;
+	register struct node *p;
 {
-	return p->op == NAME || p->op == REG || p->op == ICON || p->op == OREG;
+	register int o;
+
+	o = p->op;
+	return o == NAME || o == REG || o == ICON || o == OREG;
 }
 
 /* STAR over p: a register variable or a constant (operand that needs no register) */
@@ -1195,7 +1196,7 @@ shtemp(p)
 /* does an increment of incr bytes on a pointer of type t step by the size of the object it points to? */
 int
 shincr(t, incr)
-	int t;
+	register int t;
 	register long incr;
 {
 	if ((t & 0x30) != 0x10)
@@ -1658,8 +1659,8 @@ nextcook(p, cookie)
 /* the last chance: a name or an OREG may go to a register by the rewrite tables */
 int
 lastchance(p, cookie)
-	struct node *p;
-	int cookie;
+	register struct node *p;
+	register int cookie;
 {
 	if (cookie == 0x2000 && (p->op == OREG || p->op == NAME))
 		return 1;
@@ -1673,17 +1674,20 @@ icright(p)
 {
 	register struct node *t;
 
-	if (p->op == AND && p->left->op == ICON) {
-		t = p->left;
-		p->left = p->right;
-		p->right = t;
+	switch (p->op) {
+	case AND:
+		if (p->left->op == ICON) {
+			t = p->left;
+			p->left = p->right;
+			p->right = t;
+		}
 	}
 }
 
 /* canon, then the constants of the ANDs to the right */
 void
 canon2(p)
-	struct node *p;
+	register struct node *p;
 {
 	fwalk(canon(p), icright);
 }

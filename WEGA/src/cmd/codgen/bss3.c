@@ -5,7 +5,6 @@
 #include "cg2.h"
 
 /* the common data, in the order of the original */
-int unused1;
 long frame0;
 int nparm;
 long tmpoff;	/* the next free temporary (bits) */
@@ -19,6 +18,7 @@ long paroff;	/* next free place for the parameters of a call (bits) */
 int regG;
 int regA;
 FILE *stfile;	/* the symbol table file */
+int unused1;
 int regC;
 char *opst[129];
 int minreg;

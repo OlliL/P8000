@@ -3,14 +3,8 @@
  * WEGA C compiler. Constants and layouts are read from the original binary; names follow the strings
  * in it (SAREG, TBYTE, RLEFT ...). See ../KNOWLEDGE.md, "codgen / scodgen".
  */
-#include <stdio.h>
+#include "stdio.h"
 #include "oldcc.h"
-
-/* the older stdio.h of the original masks the byte (getc returns 0..255, EOF stays -1) */
-#undef getc
-#undef getchar
-#define getc(p)		(--(p)->_cnt >= 0 ? (int)*(p)->_ptr++ & 0377 : _filbuf(p))
-#define getchar()	getc(stdin)
 
 /* operators (the dope table in ops_*.c has the flags: arity in bits 1-3) */
 #define NAME	2

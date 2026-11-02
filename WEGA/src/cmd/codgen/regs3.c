@@ -790,7 +790,7 @@ regforsym(reg, s, type, off)
 	if (reg != -1 && reg != s->sbyte5)
 		return -1;	/* (OLD_D3P: the register that holds it also when another one is wanted, a copy follows) */
 #endif
-	return symreg(s, 0L);
+	return symreg(s, 0L, type);
 }
 
 /* a name that lives in a register becomes REG, otherwise an OREG */

@@ -281,6 +281,8 @@ options(argc, argv)
 void
 init()
 {
+	register int spare;
+
 	regD = 1;
 	fregs = 8;
 	ffregs = 4;
@@ -617,6 +619,7 @@ delay(p)
 {
 	register int i, ret, sz;
 	long off;
+	int x;
 
 	sz = ret = 0;
 	ndelay = 0;
@@ -664,8 +667,9 @@ delay(p)
 			rfree(2, 4);
 		}
 	}
-	for (i = 0; i < ndelay; i++)
-		codgen(deltrees[i], FOREFF);
+	if (ndelay > 0)
+		for (i = 0; i < ndelay; i++)
+			codgen(deltrees[i], FOREFF);
 	if (ret && ndelay) {
 		printf("/* delay */\n");
 		if (sz == 2)
@@ -716,9 +720,11 @@ static void
 delstrip(p)
 	register struct node *p;
 {
+	register int o;
 	register struct node *q;
 
-	if (p->op == INCR || p->op == DECR) {
+	o = p->op;
+	if (o == INCR || o == DECR) {
 		p->right->op = FREE;
 		q = p->left;
 		*p = *p->left;
@@ -1404,7 +1410,7 @@ ffld(p, down, down1, down2)
 	p->right->rval = 0;
 	p->right->sname = 0;
 	p->right->lval <<= s;
-	p->right->lval--;
+	p->right->lval -= 1;
 	if (o != 0) {
 		shp = talloc();
 		shp->op = RS;
@@ -1489,7 +1495,7 @@ oreg2(p)
 /* put p in canonical form: fields, OREG nodes, register need */
 struct node *
 canon(p)
-	struct node *p;
+	register struct node *p;
 {
 	fwalkd(p, ffld, 0);
 	fwalk(p, oreg2);
@@ -1505,25 +1511,25 @@ argprep(p, cookie)
 	register int cookie;
 {
 	register struct node *copy;
-	struct node *n;
 	struct optab fake;
+	struct node *n;
 
-	if (p->op != STARG || cookie != INTEMP_)
-		return p;
-	copy = tcopy(p->left);
-	fwalk(p->left, rfreenode);
-	tfree(p->left);
-	n = talloc();
-	p->left = n;
-	ncopy(n, p);
-	p->left->op = STASG;
-	p->left->type = INCREF(p->left->type);
-	p->left->right = copy;
-	fake.nx = 0x20;
-	fake.needs = 0x100;
-	if (!allo(p, &fake))
-		cerror("bad STASG allocation");
-	resc[0].type = DECREF(p->left->type);
-	p->left->left = tcopy(&resc[0]);
-	return p->left;
+	if (p->op == STARG && cookie == INTEMP_) {
+		copy = tcopy(p->left);
+		fwalk(p->left, rfreenode);
+		tfree(p->left);
+		n = p->left = talloc();
+		ncopy(n, p);
+		p->left->op = STASG;
+		p->left->type = INCREF(p->left->type);
+		p->left->right = copy;
+		fake.nx = 0x20;
+		fake.needs = 0x100;
+		if (!allo(p, &fake))
+			cerror("bad STASG allocation");
+		resc[0].type = DECREF(p->left->type);
+		p->left->left = tcopy(&resc[0]);
+		return p->left;
+	}
+	return p;
 }

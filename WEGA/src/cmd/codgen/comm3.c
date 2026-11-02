@@ -100,9 +100,7 @@ int unused8[9] = { 0 };
 #define NERRMAX	30
 
 
-static char *curbrk, *endbrk;	/* 0x4060, 0x405e */
 
-static int firstalloc = 1;	/* 0x4062 */
 
 static void prline();
 static void free1();
@@ -136,13 +134,13 @@ cerror(s, a, b, c)
 	char *s;
 {
 	prline('c');
-	if (nerrors && nerrors <= NERRMAX) {
+	if (nerrors && nerrors <= NERRMAX)
 		fprintf(stderr, "cannot recover from earlier errors\n");
-		errexit(0x40);
+	else {
+		fprintf(stderr, "compiler error: ");
+		fprintf(stderr, s, a, b, c);
+		putc('\n', stderr);
 	}
-	fprintf(stderr, "compiler error: ");
-	fprintf(stderr, s, a, b, c);
-	putc('\n', stderr);
 	errexit(0x40);
 }
 
@@ -172,16 +170,16 @@ struct node *
 talloc()
 {
 	struct node *p, *start;
+	int x;
 
 	start = lastfree;
-	p = start != &node[NTREE - 1] ? start + 1 : node;
+	p = start == &node[NTREE - 1] ? node : start + 1;
 	while (p != start) {
 		if (p->op == FREE) {
 			p->sname = 0;
-			lastfree = p;
-			return p;
+			return lastfree = p;
 		}
-		p = p != &node[NTREE - 1] ? p + 1 : node;
+		p = p == &node[NTREE - 1] ? node : p + 1;
 	}
 	cerror("out of tree space; simplify expression");
 }
@@ -226,22 +224,19 @@ fwalkd(p, f, down)
 {
 	int down1, down2;
 
-	for (;;) {
-		down1 = 0;
-		down2 = 0;
-		(*f)(p, down, &down1, &down2);
-		switch (dope[p->op] & 0xE) {
-		case UTYPE:
-			p = p->left;
-			down = down1;
-			continue;
-		case BITYPE:
-			fwalkd(p->left, f, down1);
-			p = p->right;
-			down = down2;
-			continue;
-		}
-		return;
+again:
+	down1 = down2 = 0;
+	(*f)(p, down, &down1, &down2);
+	switch (dope[p->op] & 0xE) {
+	case BITYPE:
+		fwalkd(p->left, f, down1);
+		p = p->right;
+		down = down2;
+		goto again;
+	case UTYPE:
+		p = p->left;
+		down = down1;
+		goto again;
 	}
 }
 
@@ -283,7 +278,7 @@ char *rnames[] = {
 
 int
 bsize(t)
-	int t;
+	register int t;
 {
 	switch (t) {
 	case 2: case 12: return 8;			/* CHAR UCHAR */
@@ -298,7 +293,6 @@ bsize(t)
 		return 16;				/* a pointer */
 #endif
 	cerror("illegal bsize type: %%%0.2x\n", t);
-	return t;
 }
 
 /* size of a type in words: long, float and unsigned long 2, double 4, everything else 1 */
@@ -325,13 +319,13 @@ int
 argsize(p)
 	register struct node *p;
 {
-	int t;
+	int t, u;
 
 	if (p->op == STARG)
 		return (unsigned)p->stsize >> 1;
 	if (p->op == NAME && p->type == 8)
 		return p->sname->ssize / 16;
-	t = szty(p->type == 6 ? 7 : p->type);
+	t = u = szty(p->type == 6 ? 7 : p->type);
 	return t;
 }
 
@@ -349,15 +343,15 @@ tbytes(t)
 	int t;
 {
 	switch (t) {
+	case 5:
+	case 15:
+		return 4;
 	case 2:
 	case 12:
 		return 1;
 	case 3:
 	case 13:
 		return 2;
-	case 5:
-	case 15:
-		return 4;
 	}
 	if ((t & 0x30) == 0x10)
 #ifdef SEG
@@ -388,7 +382,7 @@ errexit(n)
 
 void
 branch(n)
-	int n;
+	register int n;
 {
 #ifdef OLD_D3K
 	d3kjump(n);
@@ -575,8 +569,10 @@ d3jfree(cls, reg)
 /* *q = *p for a node */
 void
 ncopy(q, p)
-	struct node *q, *p;
+	register struct node *q, *p;
 {
+	register int i;
+
 	*q = *p;
 }
 
@@ -587,11 +583,11 @@ struct node *
 tcopy(p)
 	register struct node *p;
 {
-	register struct node *q = talloc();
-	register int r = p->rval;
-	int kind;
+	register struct node *q;
+	register int r;
 
-	ncopy(q, p);
+	ncopy(q = talloc(), p);
+	r = p->rval;
 	if (p->op == REG)
 		rbusy(r, p->type, p->sname, p->lval);
 	else if (p->op == OREG) {
@@ -599,16 +595,17 @@ tcopy(p)
 			rbusy((r & 0xFF) - 1, 0x14, p->sname, p->lval);
 			if (r & 0xFF)
 				rbusy((r >> 8) - 1, 4, p->sname, p->lval);
-		} else if (p->lval != 0 || p->sname != 0 || p->stsize < 0)
+		} else if (p->lval != 0 || p->sname != 0 || (p->op == OREG ? p->stsize < 0 : 0))
 			rbusy(r, 4, p->sname, p->lval);
 		else
 			rbusy(r, 0x14, p->sname, p->lval);
 	}
-	kind = dope[q->op] & 0xE;
-	if (kind == BITYPE)
+	switch (dope[q->op] & 0xE) {
+	case BITYPE:
 		q->right = tcopy(p->right);
-	if (kind != LTYPE)
+	case UTYPE:
 		q->left = tcopy(p->left);
+	}
 	return q;
 }
 
@@ -617,22 +614,26 @@ int
 ispow2(c)
 	register long c;
 {
-	int n;
+	register int n;
 
 	if (c <= 0 || (c & (c - 1)))
 		return -1;
-	for (n = 0; c > 1; c >>= 1)
-		n++;
+	for (n = 0; c > 1; c >>= 1, n++)
+		;
 	return n;
 }
 
 /* is p->lval an operand that a one word instruction takes: an unnamed constant */
 int
 plainicon(p)
-	struct node *p;
+	register struct node *p;
 {
 	return p->op == ICON && p->sname == 0 && p->rval >= 0;
 }
+
+int revrel[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
+static char *endbrk, *curbrk;	/* 0x4060, 0x405e */
+static int firstalloc = 1;	/* 0x4062 */
 
 /* memory from the system in steps of at most 2000 bytes, never freed */
 char *
@@ -667,8 +668,7 @@ allocinit(base)
 	char *base;
 {
 	brk(base);
-	endbrk = curbrk = base;
+	curbrk = endbrk = base;
 	endbrk--;
 }
 
-int revrel[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };

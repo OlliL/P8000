@@ -351,10 +351,11 @@ treeeq(p, q)
 		if (o == NAME)
 			return p->sname == q->sname && p->lval == q->lval;
 		return p->lval == q->lval && p->rval == q->rval;
+	case BITYPE:
+		if (!treeeq(p->right, q->right))
+			return 0;
 	case UTYPE:
 		return treeeq(p->left, q->left);
-	case BITYPE:
-		return treeeq(p->right, q->right) && treeeq(p->left, q->left);
 	}
 }
 
@@ -418,7 +419,7 @@ convelim(p, c)
 /* the type is not a float */
 static int
 isint(t)
-	int t;
+	register int t;
 {
 	return t == 6 || t == 7 ? 0 : 1;
 }

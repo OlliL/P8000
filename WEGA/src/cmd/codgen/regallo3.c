@@ -1102,7 +1102,7 @@ rsrelease(l)
 
 	if (l == 0)
 		cerror("freelist: null list");
-	for (last = n = l; n; last = n, n = n->next)
+	for (n = last = l; n; last = n, n = n->next)
 		;
 	last->next = rspool;
 	rspool = l;
