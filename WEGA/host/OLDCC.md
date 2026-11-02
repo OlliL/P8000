@@ -64,6 +64,11 @@ experiment: one pass of the chain replaced by its version, the rest shipped.
   so a difference on the bench is not a compiler difference by itself.
 - Every accepted switch: commit (no push), this document and the table of section 4 updated, the normal build stays
   byte-identical (shipped cparse, codgen, popt), the corpora green.
+- Which functions need which switch: `host/OLDCC_SWITCHES.md`, generated (owner decision 2026-11-02), never edited by hand.
+  `oldcc.sh matrix SWITCH` for a new or changed switch, `oldcc.sh matrix` (all, unattended) when a program joins or before
+  switches are cleaned up, `oldcc.sh matrix check` (no measurement, seconds) in every check round and before a commit that
+  touches a switch: it names switches and programs missing from the table and how many files of the passes changed since
+  the measurement.
 
 ### Time box (owner decision 2026-10-31)
 

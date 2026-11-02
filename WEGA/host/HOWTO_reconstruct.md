@@ -206,4 +206,6 @@ Do not write a new script for something that exists in the toolkit; extend the t
 - [ ] Corpus test runs (block passes), then the C build passes
 - [ ] Handoff note written, model change (once)
 - [ ] Second pass with the rules of step 7; structs; names; quirks table
+- [ ] Built by an old compiler version: model in `oldcc.sh`, the program in PROGS (or NOTPROGS with the reason) of
+      `host/recon/switchmatrix.py`, `oldcc.sh matrix check` clean, then a full `oldcc.sh matrix` (`host/OLDCC.md`, "Evidence rules")
 - [ ] Link byte identical, split done, scratch removed

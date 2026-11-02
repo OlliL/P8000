@@ -249,6 +249,9 @@ reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt), not eq
   comparison of /lib/cparse built with ccv0p), `lines`, `corpus`, `bench`. Acceptance: model better, corpus 259/259,
   bench not worse for a v0 switch; neutral on the bench means v0p. Then the normal-object check: the changed source
   compiled with the shipped cc must give the same object as before (the normal build stays the shipped one).
+- `oldcc.sh matrix [SWITCH ...]`, `oldcc.sh matrix check`: every switch of v0p taken out alone, the result in the generated
+  `host/OLDCC_SWITCHES.md`; check in every check round (OLDCC.md, "Evidence rules"). The programs are PROGS in
+  `host/recon/switchmatrix.py`.
 - `src/cmd/cparse/tools/olist.py NAME`: the original instructions of a function. `python3 tools/strictcmp.py -v NAME`:
   the strict diff of one function (run in src/cmd/cparse after `oldcc.sh model`).
 - popt trace: build `src/cmd/popt/v0p` with `-DTRACE` in addition to its switches (`oldcc.sh build popt v0p "<the

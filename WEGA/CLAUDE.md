@@ -14,6 +14,8 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 - Always keep two tables current while working: "Objects and their differences" in `host/OLDCC.md`
   (which object shows which difference D1 ... D20) and "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
   (every bug, oddity or dead code found in an original program, with how the rebuild handles it).
+- New or changed switch of an old compiler, or a new program with a model: run `oldcc.sh matrix check`
+  (`src/cmd/cparse/tools/`) and follow what it says; `host/OLDCC_SWITCHES.md` is generated, see `host/OLDCC.md`, "Evidence rules".
 - The old compilers: `host/OLDCC.md` is the edited summary (rewritten, not appended to); running notes, measurements
   and attempts go as dated entries to `host/OLDCC_LOG.md`. Other documents do not repeat this knowledge.
 - Byte identity with the original has priority over fixing a bug found in the original: rebuild the

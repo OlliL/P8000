@@ -11,6 +11,8 @@
 #                                        (must stay 259 of 259: catches wrong code); restores the normal build
 #   oldcc.sh bench                       the bench of v0 (System III programs of 1982, ccv0)
 #   oldcc.sh lines [PROG]                the differing functions of the last model run and the sum of their lines
+#   oldcc.sh matrix [SWITCH ...]         each switch of v0p taken out alone, all programs measured: host/OLDCC_SWITCHES.md
+#   oldcc.sh matrix check                no measurement: switches and programs of the sources against that table
 #
 # Environment (defaults as in host/recon/progcfg.py): WEGA_ROOT (the WEGA 3.1 tree), OLDROOT (the tree with
 # bin/ccv0, ccv0p and lib/v0, lib/v0p; made by `make -C host oldroot`), RECON_TMP (scratch), SYS3SRC (usr/src/cmd of
@@ -71,12 +73,19 @@ corpus)
 	rm -f $O; make cparse CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LDBIN="$W /bin/ld" \
 		YACC="$W /usr/bin/yacc" > /dev/null 2>&1
 	;;
+matrix)
+	shift
+	if [ "$1" = check ]; then
+		exec python3 $REPO/host/recon/switchmatrix.py check
+	fi
+	exec python3 $REPO/host/recon/switchmatrix.py run "$@"
+	;;
 bench)
 	cd $REPO && SYS3SRC=$SYS3SRC WEGA=$WEGA_ROOT OLDROOT=$OLDROOT timeout 1500 \
 		python3 host/recon/witness.py -t v0 -c "-r $OLDROOT /bin/ccv0" 2>&1 | tail -1
 	;;
 *)
-	sed -n '2,19p' $0
+	sed -n '2,21p' $0
 	exit 1
 	;;
 esac
