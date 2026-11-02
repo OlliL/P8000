@@ -5,7 +5,7 @@ A program (codgen, popt, sld, ...) keeps a file `progcfg.py` in its tools direct
   NAME        program name, e.g. 'codgen'
   ORIG        path of the original below the WEGA root, e.g. 'lib/codgen'
   OWN_LIM     end of the program part of the original (the C library follows), as an address
-  LIBC_FROM   same, used by patterns.py (usually == OWN_LIM)
+  LIBC_FROM   same, used by patterns.py of sld (usually == OWN_LIM)
   OWN_OBJ     regular expression of the object names that belong to the program (for the link map of our build)
   ORIG_BIN    original binary below the WEGA root if it differs from ORIG (sld: 'bin/sld')
   ORIG_LIM    upper address limit for disassembling the original (default OWN_LIM; 0x10000 for stripped files)

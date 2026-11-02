@@ -9,7 +9,7 @@ whole word in:
   - the tables: own_functions.txt and progcfg TABLES (files of the tools directory)
   - findings.json (keys of functions and manual_classes, and the text of the notes)
   - every .md of the tools directory, progcfg DOCS, src/TODO.md, host/KNOWLEDGE.md, host/HANDOFF_wega_disasm.md
-then FINDINGS.md is generated again (findings_md.py). A text in KNOWLEDGE.md that belongs to another program with the
+then FINDINGS.md is generated again (ld, sld: their findings_md.py; the new form: oldcc.sh findings). A text in KNOWLEDGE.md that belongs to another program with the
 same identifier is changed too: check the diff of the documents (-n first).
 
 Unlike src/cmd/sld/tools/rename.py the documents are changed too. Prose like "NEW (OLD)" or "OLD (NEW)", which the
@@ -106,8 +106,8 @@ def main():
         if 'compiler' in json.load(open(CFG.FINDINGS)):
             pass	# (new form: FINDINGS.md is written by oldcc.sh findings)
         else:
-            subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'findings_md.py')],
-                       cwd=HERE, check=True, stdout=subprocess.DEVNULL, env=dict(os.environ, RECON_PROG=HERE))
+            subprocess.run([sys.executable, os.path.join(HERE, 'findings_md.py')], cwd=HERE, check=True,
+                           stdout=subprocess.DEVNULL)
 
 
 if __name__ == '__main__':

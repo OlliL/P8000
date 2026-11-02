@@ -15,7 +15,14 @@ import re
 import subprocess
 import sys
 
-import progcfg  # noqa: E402
+_H = os.path.dirname(os.path.abspath(__file__))
+os.environ.setdefault('RECON_PROG', os.path.join(_H, '..', '..', 'popt', 'tools'))
+_R = os.path.join(_H, '..', '..', '..', '..', 'host', 'recon')
+sys.path.insert(0, _R)
+import progcfg  # noqa: E402  (of host/recon; the file of this name here is the configuration)
+sys.path.remove(_R)
+sys.path.append(_R)
+sys.path.insert(0, _H)
 CFG = progcfg.load()
 HERE = os.path.dirname(os.path.abspath(__file__))
 TOOLS = progcfg.TOOLS

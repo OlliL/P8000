@@ -19,7 +19,7 @@ against the shipped compiler are only worked on together with an old version; th
 `findings.json` always states the compiler it refers to: `compiler`, `measured_at`, per function `file`, `orig`, `size_orig`, a measured `status` and
 a `note` by hand only for an open difference, an odd source form, a guessed name, dead code (`oldcc.sh findings PROG`, which also writes `FINDINGS.md`).
 Which function needs which switch: `OLDCC_SWITCHES.md`. When a program starts: add it to PROGS in `recon/switchmatrix.py` and rewrite its `findings.json`
-in this form for its compiler. classify.py, patterns.py, strictlayers.py and the old findings_md.py belong to the old way; they stay for ld and sld until those are converted.
+in this form for its compiler. classify.py, patterns.py, funcs.py and the old findings_md.py belong to the old way; they live in `src/cmd/sld/tools` and `src/cmd/ld/tools` and go when those programs are converted.
 
 ## Two phases, one model change per binary
 
@@ -192,11 +192,9 @@ registers, `and #0xFFFE` becomes `res`, jump forms). Document them in the D tabl
 One toolkit for all programs, see `host/recon/README.md`. A program keeps in its `tools/` directory only
 `progcfg.py` (name, original, program range, object-name pattern), launchers with the old script names and
 what is specific to it. For a new binary: copy `progcfg.py` from `src/cmd/popt/tools` (stripped, nonsegmented)
-or `codgen/tools` (with symbols) and the launchers (`classify.py`, `findings_md.py`, `odis.py`, `callcmp.py`,
-`funcs.py`, `patterns.py`), then use:
+or `codgen/tools` (with symbols) and the launchers (`odis.py`, `callcmp.py`, `d12model.py`, `strictcmp.py`, `olist.py`), then use:
 
-- `odis.py NAME` (step 5), `callcmp.py` (step 6), `classify.py` / `patterns.py` (D classes), `findings_md.py`
-  (the report, step 5/8).
+- `odis.py NAME` (step 5), `callcmp.py` (step 6), `oldcc.sh findings PROG` (the report, step 5/8).
 - Still sld specific in `src/cmd/sld/tools` (copy and adapt for the next binary, move into `host/recon/` then):
   `fncheck.py` + `strict_audit.py` (step 5), `accept.py` / `accfn.py`, `firstdiff.py`, `rename.py` (step 8),
   `check_names.py`, `sync_findings.py`, `host/ld/check.py` (step 6).

@@ -1007,3 +1007,5 @@ Step 2 of the codgen work: modules, data and bss of the original.
 
 Step 3 of the codgen work: `findings.json` in the new form (the old one is in git before this commit; the old hints go along as notes at the functions), codgen in PROGS of the matrix. `OLD_D6D` stays with one witness (owner decision).
 classify.py, patterns.py, funcs.py stay in `host/recon`: sld `classify_sld.py` imports them; strictlayers.py and findings_md.py stay for ld and sld. They can go when those two have their old compiler.
+
+The tools of the old way moved out of `host/recon`: `classify.py`, `patterns.py`, `funcs.py` to `src/cmd/sld/tools`, `findings_md.py` as a script of its own to `src/cmd/ld/tools` and `src/cmd/sld/tools`; `strictlayers.py` gone (no findings.json has its data). Their `FINDINGS.md` come out unchanged. `classify_sld.py` could not start since the launchers of popt went (690b4816) and runs again; against the audit in sld's `findings.json` it differs in 4 functions (`end_pass1`, `lay_out`, `resv_seg`, `ldrsym`), with the configuration of popt and of sld alike; cause not looked at, `findings.json` left as it is.

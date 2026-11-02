@@ -22,8 +22,9 @@ import sys
 import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-POPT = os.path.join(HERE, '..', '..', 'popt', 'tools')
-sys.path.insert(0, POPT)
+# the patterns were measured with the configuration of popt (nonsegmented forms); it stays so
+os.environ['RECON_PROG'] = os.path.join(HERE, '..', '..', 'popt', 'tools')
+sys.path.insert(0, HERE)
 import classify as PC  # noqa: E402
 import funcs as F  # noqa: E402
 import patterns as P  # noqa: E402

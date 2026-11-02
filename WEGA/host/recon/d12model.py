@@ -85,7 +85,7 @@ def d6tables(lines, tag='m'):
         if i not in drop:
             out.append(l)
     if tail:
-        # a global label of its own, so that strictcmp/strictlayers do not count the lists to the last function
+        # a global label of its own, so that strictcmp does not count the lists to the last function
         out += ['.code', '_d6tail_%s::' % tag] + tail
     return out
 
