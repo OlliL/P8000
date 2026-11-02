@@ -178,4 +178,4 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 
 The work on cparse is now the work on the old compiler v0p that built it: 173 of 179 functions strictly exact with
 ccv0p, corpus 259/259 (2026-11-01, end of the session); the open points and the plan (codgen and popt next) are there too. The current state, the open groups and the tools (`oldcc.sh`, `olist.py`, the popt trace) are in
-`host/HANDOFF_wega_disasm.md`, section "Current work"; the attempts in `host/OLDCC_LOG.md`.
+`host/HANDOFF_wega_disasm.md`, the git history of that file (the section is gone); the attempts in `host/OLDCC_LOG.md`.

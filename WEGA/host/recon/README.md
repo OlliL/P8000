@@ -26,6 +26,7 @@ Used by codgen, popt, sld, ld and cparse (see `host/HOWTO_reconstruct.md`). Each
 | `inventory.py`, `own_table.py` | function starts and call graph of a nonsegmented original, the table own_functions.txt |
 | `datemap.py [-m] [WEGA]` | the build dates of all original programs (crt0 stamp, own SCCS ids, libc marks, D12 read from the data), the input of `host/OLDCC_DATES.md` |
 | `witness.py [-c ARGS] [PROG ...]` | test bench of the old compiler v1: the System III sources (SYS3SRC, not in git) of 26 WEGA programs of the v1 time compiled with ccv1 (or another compiler) and aligned with the originals; equal functions per program, compared with and without a switch |
+| `castrig/` | the early jump optimization of the old cas: trigger points from an original (`windows.py`), table offsets and fits (`offsets.py`, `fit.py`, `reset.py`, `memsum.py`), test cas (`hostcas.patch`, `triggers.txt`) |
 | `stagecorpus.py OURS` | corpus test of a compiler pass: original and ours on the same inputs, outputs, exit status, messages |
 
 Still in `src/cmd/sld/tools` (sld specific so far, to be moved when the next binary needs them): `fncheck.py`,
@@ -38,3 +39,5 @@ Test (2026-10-28): `findings_md.py` reproduces the three `FINDINGS.md` files unc
 Moved from `src/cmd/ld/tools` (2026-10-30): strictcmp (with wholecmp as `-m`), fncheck (ldcheck), d12model, rename,
 inventory, own_table; ld keeps launchers with the old names, and its results are unchanged (d12model 2694 equal data
 bytes, strictcmp 51 exact / 8, inventory identical). The progcfg settings they read are listed in `progcfg.py`.
+
+Popt trace: build `src/cmd/popt/v0p` with `-DTRACE` in addition to its switches, run it under the emulator as `popt + in.s out.s` on the codgen output of one function (`ccv0p -S` without -O, cut to the function): out.s holds the node list after every iterate and comjump round and every block move (`/*CM ...*/`).
