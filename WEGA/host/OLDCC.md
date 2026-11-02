@@ -543,6 +543,8 @@ r2,8(r14); ld r2,2(r2); inc r2,#16; ld r3,8(r14); ld 2(r3),r2`). Bench v0 unchan
 The original has `call` where the shipped chain has `calr`, for calls in reach of `calr`. `strictcmp` hides this; `strictcmp -c` shows it (cparse 175 > 168 functions, 27 > 79 lines; popt 71 > 61, 26 > 172; `-a`, which also takes D18 out, changes nothing more).
 Not the storage class of the callee, as an older pattern from popt said: one callee has both forms in one file (dest 5 and 3, dualop 13 and 1, isreg 11 and 2). In rmove every call in reach is long up to 0x1f68 and short behind it, the point where its long `jp` end too. This is the early jump optimization of the old cas (cparse point 4), measured: a test cas that runs it at the points read from the originals gives `strictcmp -c` = strict in both programs and the long `jp` of yylex and rmove too (`host/recon/castrig/`). What triggers it is not known.
 
+The rule for the points where the old cas optimizes early is not known. The best candidate from cparse and popt, a sum of table bytes (`castrig/memsum.py`), failed its independent test on codgen (`castrig/codgen_test.py`): worse than no trigger at all.
+
 ### D18 Frame operand with offset 0
 
 v0 (switch `OLD_D18` in codgen, the spills and saves of efcode3.c and gen3.c written as `0(fp)`): the bench of v0 goes
