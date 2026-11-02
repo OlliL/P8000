@@ -109,17 +109,22 @@ char *ocnames[] = {
 int
 tshape(p, shape)
 	register struct node *p;
-	register int shape;
+	int shape;
 {
 	register int o = p->op;
-	int r;
+	register int r;
 
 	if (shape == SANY)
 		return 1;
 	if (shape & SPECIAL) {
-		if (shape == SZERO)	/* the constant 0 without a name */
-			return o == ICON && p->sname == 0 && p->rval >= 0 && p->lval == 0;
-		return special(p, shape);
+		switch (shape) {
+		case SZERO:		/* the constant 0 without a name */
+			if (o != ICON || p->sname != 0 || p->rval < 0)
+				return 0;
+			return p->lval == 0;
+		default:
+			return special(p, shape);
+		}
 	}
 	if ((shape & INTEMP) && shtemp(p))
 		return 1;
@@ -133,12 +138,13 @@ tshape(p, shape)
 	case FLD:
 		if (!(shape & SFLD) || !ltypeop(p->left))
 			return 0;
-		fldsz = p->rval & 0x3F;
-		fldoff = p->rval >> 6;
-		fldshf = 16 - fldsz - (p->rval >> 6);
+		o = p->rval;
+		fldsz = o & 0x3F;
+		fldoff = o >> 6;
+		fldshf = 16 - fldsz - (o >> 6);
 		return 1;
-	case STAR:
-		return shumul(p->left) & shape;
+	case CCODES:
+		return shape & SCC;
 	case REG:
 		r = rstatus[p->rval] & RBFLAG ? SBREG : SAREG;
 #ifdef OLD_D3K
@@ -151,8 +157,8 @@ tshape(p, shape)
 		return shape & r;
 	case OREG:
 		return shape & SOREG;
-	case CCODES:
-		return shape & SCC;
+	case STAR:
+		return shumul(p->left) & shape;
 	}
 	return 0;
 }

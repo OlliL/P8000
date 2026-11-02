@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "cfb3e9ec",
+ "measured_at": "a479a836",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -514,9 +514,9 @@
    "file": "order3.c",
    "orig": "0x49f0",
    "size_orig": 2000,
-   "note": "Old hint, measured against the shipped cc, may be stale: Source change in order3.c: the locals of sucomp (o, arity, nr, nf, sul, sur, fl, fr, t, l, r) are register variables, as in other functions of the module. Memory loads 226 -> 54, unexplained add forms 91 -> 55, alignment 36 -> 46 %, length 756 -> 731 (original",
+   "note": "Left: blocks popt merges and moves at the store of fl and the test of fl; written after the macro form max, min; not explained yet.",
    "status": "open",
-   "lines": 1187
+   "lines": 32
   },
   "mkrall": {
    "file": "order3.c",
@@ -637,8 +637,7 @@
    "orig": "0x5e92",
    "size_orig": 356,
    "note": "Old hint, measured against the shipped cc, may be stale: Case order: FLD case placed before STAR in match3.c (the original's bodies are in this order: call order special, shtemp, ltypeop, shumul now equal). Alignment 56 -> 74 %, pattern diff 102 -> 60. Corpus 101/101 equal. Open: the last operand of the SZERO return",
-   "status": "open",
-   "lines": 70
+   "status": "exact"
   },
   "ttype": {
    "file": "match3.c",
@@ -1198,6 +1197,7 @@
    "orig": "0x9fdc",
    "size_orig": 94,
    "status": "open",
+   "note": "Odd form: if (s == 0) ; in front of the label, for the lone cp r1,#0 of the original; still open.",
    "lines": 4
   },
   "regforsym": {
@@ -1329,8 +1329,7 @@
    "file": "optim3.c",
    "orig": "0xb774",
    "size_orig": 630,
-   "status": "open",
-   "lines": 72
+   "status": "exact"
   },
   "treeeq": {
    "file": "optim3.c",

@@ -81,9 +81,9 @@ int fltused = 0;
 
 #define OFFSTARA(l)	offstar((l)->left)
 
-#define MAX(a, b)	((a) < (b) ? (b) : (a))
+#define max(a, b)	((a) > (b) ? (a) : (b))
 
-#define MIN(a, b)	((a) > (b) ? (b) : (a))
+#define min(a, b)	((a) < (b) ? (a) : (b))
 
 #define NOPREF	0x2000
 
@@ -164,105 +164,100 @@ notoff(t, r, off)
 
 void
 sucomp(p)
-	struct node *p;
+	register struct node *p;
 {
-	register int o, arity, nr, sul, sur, fr;
-	int nf, fl, t;
-	register struct node *l, *r;
+	register int o, ty, sul, sur, nr;
+	int fl, fr, nf, t;
 
 	o = p->op;
-	arity = dope[o] & 0xE;
-	t = p->type;
-	if (t == 6 || t == 7) {
+	ty = dope[o] & 0xE;
+	if ((t = p->type) == 6 || t == 7) {
 		nf = 1;
 		nr = 0;
 	} else {
 		nf = 0;
-		nr = szty(t) > (dope[o] & 0x800 ? 2 : 1) ? szty(t) : (dope[o] & 0x800 ? 2 : 1);
+		nr = max(szty(t), dope[p->op] & 0x800 ? 2 : 1);
 	}
 	if (dope[o] & 0x400) {			/* a call takes all registers */
 		p->su = fregs;
 		p->fsu = ffregs;
 		return;
 	}
-	l = p->left;
-	if (arity == 2) {			/* a leaf */
+	switch (ty) {
+	case LTYPE:
 		p->su = 0;
 		p->fsu = 0;
 		return;
-	}
-	if (arity == 4) {			/* unary */
-		if (o == STARG && (unsigned)p->stsize > 4) {
-			p->su = l->su > fregs - 3 ? l->su : fregs - 3;
-			p->fsu = l->fsu;
+	case UTYPE:
+		if (p->op == STARG && (unsigned)p->stsize > 4) {
+			p->su = max(p->left->su, fregs - 3);
+			p->fsu = p->left->fsu;
 			return;
 		}
-		p->su = nr >= l->su ? nr : l->su;
-		p->fsu = l->fsu <= nf ? nf : l->fsu;
+		p->su = max(p->left->su, nr);
 #ifdef SEG
 		if (o == STAR && p->su <= 2)	/* an indirection through a long pointer needs a register pair */
 			p->su = 2;
 #endif
+		p->fsu = max(p->left->fsu, nf);
 		return;
-	}
-	if (arity != 8)
-		return;
-	r = (struct node *)p->right;
-	sul = l->su;
-	fl = l->fsu;
-	sur = r->su;
-	fr = r->fsu;
-	if (o == 0x17 || o == 0x18) {		/* && and || */
-		p->su = MAX(nr, MAX(sul, sur));
-		p->fsu = MAX(nf, MAX(fl, fr));
-		return;
-	}
-	if (dope[o] & 1) {			/* assignments */
-		if (sur == 0) {
-			if (sul == 0)
-				p->su = nr;
+	case BITYPE:
+		sul = p->left->su;
+		fl = p->left->fsu;
+		sur = p->right->su;
+		fr = p->right->fsu;
+		if (o == 0x17 || o == 0x18) {		/* && and || */
+			p->su = max(max(sul, sur), nr);
+			p->fsu = max(max(fl, fr), nf);
+			return;
+		}
+		if (dope[o] & 1) {			/* assignments */
+			if (sur == 0) {
+				if (sul == 0)
+					p->su = nr;
+				else
+					p->su = max(sul, nr);
+			} else if (sul <= sur && sul + nr > fregs)
+				p->su = fregs + nr;
+			else if (sul == 0)
+				p->su = max(sur, nr + nr);
 			else
-				p->su = MAX(nr, sul);
-		} else if (sul <= sur && sul + nr > fregs)
-			p->su = fregs + nr;
-		else if (sul == 0)
-			p->su = MAX(sur, nr + nr);
-		else
-			p->su = MAX(sur, MAX(sul, nr + nr + 1));
-		if (fr == 0) {
-			if (fl == 0)
-				p->fsu = nf;
+				p->su = max(sur, max(sul, 1 + nr + nr));
+			if (fr == 0) {
+				if (fl == 0)
+					p->fsu = nf;
+				else
+					p->fsu = max(fl, nf);
+			} else if (fl <= fr && fl + nf > ffregs)
+				p->fsu = ffregs + nf;
+			else if (fl == 0)
+				p->fsu = max(fr, nf + nf);
 			else
-				p->fsu = MAX(fl, nf);
-		} else if (fl <= fr && fl + nf > ffregs)
-			p->fsu = ffregs + nf;
-		else if (fl == 0)
-			p->fsu = MAX(fr, nf + nf);
+				p->fsu = max(fr, max(fl, 1 + nf + nf));
+			return;
+		}
+		if ((dope[p->op] & 0x800) && (p->left->type == 5 || p->left->type == 15)) {	/* long * / % */
+			p->su = max(fregs - 1, min(max(sul, nr + sur), max(nr + sul, sur)));
+			if (sur == sul)
+				p->fsu = max(ffregs - 1, min(max(fl, nf + fr), max(nf + fl, fr)));
+			else
+				p->fsu = max(fl, fr);
+			return;
+		}
+		if ((dope[p->op] & 0x800) && (dope[p->left->op] & 0xE) == 2 && nr > szty(p->left->type)) {
+			p->su = max(nr, max(sul, sur));
+			if (sur == sul)
+				p->fsu = max(nf, max(fl, fr));
+			else
+				p->fsu = max(fl, fr);
+			return;
+		}
+		p->su = max(nr + nr, min(max(sul, nr + sur), max(sur, nr + sul)));
+		if (sur == sul)
+			p->fsu = max(nf + nf, min(max(fl, nf + fr), max(fr, nf + fl)));
 		else
-			p->fsu = MAX(fr, MAX(fl, nf + nf + 1));
-		return;
+			p->fsu = max(nf + nf, max(max(fl, nf + fr), max(fr, nf + fl)));
 	}
-	if ((dope[o] & 0x800) && (l->type == 5 || l->type == 15)) {	/* long * / % */
-		p->su = MAX(fregs - 1, MIN(MAX(sul, nr + sur), MAX(sur, nr + sul)));
-		if (sur != sul)
-			p->fsu = MAX(fl, fr);
-		else
-			p->fsu = MAX(ffregs - 1, MIN(MAX(fl, nf + fr), MAX(fr, nf + fl)));
-		return;
-	}
-	if ((dope[o] & 0x800) && (dope[l->op] & 0xE) == 2 && nr > szty(l->type)) {
-		p->su = MAX(nr, MAX(sul, sur));
-		if (sur != sul)
-			p->fsu = MAX(fl, fr);
-		else
-			p->fsu = MAX(nf, MAX(fl, fr));
-		return;
-	}
-	p->su = MAX(nr + nr, MIN(MAX(sul, nr + sur), MAX(sur, nr + sul)));
-	if (sur != sul)
-		p->fsu = MAX(nf + nf, MAX(MAX(fl, nf + fr), MAX(fr, nf + fl)));
-	else
-		p->fsu = MAX(nf + nf, MIN(MAX(fl, nf + fr), MAX(fr, nf + fl)));
 }
 
 /* make sure the use of p gets done with register r: simulates offstar */

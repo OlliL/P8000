@@ -219,12 +219,12 @@ conval(p, o, q)
 	int o;
 	register struct node *q;
 {
-	long val;
-	int unsgn;
 	int sh;
+	int unsgn;
+	long val;
 
 	val = q->lval;
-	unsgn = (p->type >= 12 && p->type <= 15) || (q->type >= 12 && q->type <= 15);
+	unsgn = ((unsigned)p->type <= 15 && (unsigned)p->type >= 12) || ((unsigned)q->type <= 15 && (unsigned)q->type >= 12);
 	if (unsgn && (o == LE || o == LT || o == GE || o == GT))
 		o += 4;
 	if (!nncon(p) && !nncon(q))
@@ -284,11 +284,11 @@ conval(p, o, q)
 		p->lval ^= val;
 		break;
 	case LS:
-		sh = q->lval;
+		sh = val;
 		p->lval <<= sh;
 		break;
 	case RS:
-		sh = q->lval;
+		sh = val;
 		p->lval >>= sh;
 		break;
 	case UMINUS:
