@@ -137,7 +137,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 729 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (the definitions at the end of z2.h give the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
-(`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
+(`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools and `CRT0=<WEGA_ROOT>/lib/crt0.o` (the `ship` target copies it with the host's cp): 272 inputs times no option, -l, -d;
 816 of 816; the corpus is RECON_TMP/popt/corpus, which can be made
 with `make -C host/popt corpus CORPUS=$RECON_TMP/popt/corpus`), then `oldcc.sh build popt v0p` and the cparse
 model (must stay 173). When a change alters the behaviour of popt, the five popt switches OLD_D20C/X/S/L/K are
