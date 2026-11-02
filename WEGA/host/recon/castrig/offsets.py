@@ -7,7 +7,7 @@ import os,sys,re,json,subprocess
 sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/tools'); sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/recon')
 from sout import SOut
 import zcode
-W='/mnt/share/cvs/P8000/WEGA/src/cmd/'; R='/mnt/share/cvs/P8000/tmp/wega31_root/lib/'; T='/mnt/share/cvs/P8000/tmp/tmp/d12model_%s/'
+W='/mnt/share/cvs/P8000/WEGA/src/cmd/'; R='/mnt/share/cvs/P8000/tmp/wega31_root/lib/'; T=os.environ.get('CAST','/mnt/share/cvs/P8000/tmp/tmp/d12model_%s/')
 REG=re.compile(r'^(r[lh]?\d+|rr\d+|rq\d+|f\d+|fp|sp|eq|ne|lt|le|gt|ge|c|nc|ugt|uge|ult|ule|z|nz|mi|pl|ov|nov)$')
 def jumps(gc,lo,hi):
     r=[]

@@ -152,7 +152,7 @@ definitions at the end of z2.h. cparse: the globals as definitions at the end of
 the order) and an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
 first, the model link needs its object). bss.s and libcbss.s are gone in both.
 
-**Now: the old cas (owner 2026-11-02, no time box: the call forms D17 and the long jumps have one cause). State in `OLDCC_LOG.md`, last entry: trigger points per module, two classes (stoff 0xC00, 255 undecided entries), open z22 second point and code1. Tools `host/recon/castrig/`. Goal: a rule, then a v0p cas.** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
+**Now: the old cas (owner 2026-11-02, no time box: the call forms D17 and the long jumps have one cause). State in `OLDCC_LOG.md`, last entry: trigger points per module; 255 undecided entries explain three, the others (entries 158 to 205) are open; a stoff 0xC00 class was an artefact of the bss list in mfile1. Measure cparse on an input without that list. Tools `host/recon/castrig/`. Goal: a rule, then a v0p cas.** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
 ). State: cparse 175/27, popt 71/26. The model
 reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt). A part of the cause is measured: strictcmp treats `call` and `calr` as equal, the originals have `call` where ours has `calr` (OLDCC.md D17), so a strict match is not yet a byte match. `strictcmp -c` counts them: cparse 168 of 179, 79 lines; popt 61 of 73, 172 lines.
 
