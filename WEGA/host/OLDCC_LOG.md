@@ -867,3 +867,7 @@ TODO.md when this log was started.
   zero-extended was wrong), `size = n*SZLONG/SZCHAR` without the cast is exact: both switches removed. OLD_D16A: `n = n + 1;` and `n = 1 + n;`
   (also inside the index) give `lda r2,1(r6)`; `n += 1;`, `n++;`, `(p+(++n))->sval`, `p[n += 1]` give `inc` in memory: no form found, and `p[++n]` is the
   plain form: stays. OLD_D2O: without it `ldl rr0,@r3`; a register choice, the odd counterpart of OLD_D2Q; no source form tried: stays.
+- D20, killreg against OLD_D20K. Without the switch killreg is exact, cinit lost, rmove 410 > 476. Raw code: the case arms end `sla; clrb; jpr L524`, `L524: jpr
+  L519`; the original keeps the tail in the then part (comjump), cinit the call in the else part (xjump to the own label). About 90 sites of the rule in
+  popt and cparse. Tried: only when xjump to the final target would not merge: no effect (in front of L519 stands the dispatch); only when one instruction would
+  merge: killreg exact, rmove 472; only behind a call: killreg, cinit exact, rmove 410: taken. popt 66, 650; cparse 173, 96. Why a call: not known.

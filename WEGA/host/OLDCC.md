@@ -194,7 +194,7 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 173 strictly exact, 96 differing lines, /lib/popt 65 of 73, 657 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
+- State: /lib/cparse 173 strictly exact, 96 differing lines, /lib/popt 66 of 73, 650 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
@@ -585,14 +585,14 @@ order).
   finds that it reaches the back jump and gives up, the old one inverts the loop then. Not when the jump in front
   leads elsewhere (fortarg keeps its while test on top). cparse 390 > 383 (optim); bench v0 318 > 337, so v0p only.
 
-- v0p (switch `OLD_D20K` in popt, iterate): a jump to a label referenced once that holds a jump is cross-jumped
-  (xjump) to its own label before the jump to the jump is followed: the then part of an if/else jumps into the
-  `call` of the else part (cinit). For every such jump: cprint worse. Bench v0 unchanged.
+- v0p (switch `OLD_D20K` in popt, iterate): a jump behind a `call` to a label referenced once that holds a jump is
+  cross-jumped (xjump) to its own label before the jump to the jump is followed: the then part of an if/else jumps into the
+  `call` of the else part (cinit, rmove). Behind other instructions not: killreg keeps the shared `sla; clrb` in the then
+  part (comjump merges it there). Why a call is not known. For every such jump: cprint worse. Bench v0 unchanged.
 - Open (popt, v0p model 2026-11-01), placement witnesses not explained by the five switches: xjump (the second
   backward loop over labels and comments is inverted, its tests in front of the step, entered from the end of the
   first loop; the source form does not matter), backjmp (the `&& p1->op == LABEL` test of the inner while in front
-  of the loop body), killreg (the two `if (n & 1) ... else ...` of the cases TB and TW cross-jumped into each other),
-  movedat (a compare block of a switch in front of the loop head), dest and setreg (the jump layout of a case and of
+  of the loop body), movedat (a compare block of a switch in front of the loop head), dest and setreg (the jump layout of a case and of
   a loop exit: the original jumps from the end of the scan loop straight to the target of the next test).
 - Open (popt): usesreg: the code after the switch (the test reached by the breaks) stands behind the MUL case in the
   original, ours moves it up to the first break; the instructions of both sides are otherwise the same.

@@ -1703,6 +1703,7 @@
    "size_orig": 82
   },
   "killreg": {
+   "v0p_note": "v0p model exact with OLD_D20K only behind a call: the two if (n & 1) arms merge as the original",
    "file": "z22.c",
    "pairing": "confirmed",
    "ours": "0x2b84-0x2d4e",
