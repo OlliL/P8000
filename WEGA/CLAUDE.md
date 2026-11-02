@@ -8,7 +8,8 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 ## Rules
 
 - Conversation in German, short messages. Git content (files, commits) in English.
-- Do not commit or push: the owner handles the repository (git add/commit/push, branches). Keep
+- Commits are allowed in the directories of the passes and the docs after each accepted step (owner decision
+  2026-11-02). Never push; branches and everything else in the repository stay with the owner. Keep
   `host/KNOWLEDGE.md` and `src/TODO.md` current and say which files changed.
 - Facts only from documents or measurements; mark guesses as guesses.
 - Always keep two tables current while working: "Objects and their differences" in `host/OLDCC.md`
