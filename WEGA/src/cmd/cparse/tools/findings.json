@@ -6698,10 +6698,11 @@
  "findings": [],
  "findings_pending": [],
  "manual_classes": {
+  "optim": {"basis": "reading", "d_classes": "", "note": "Exact with v0p. Source: zapright: inside else if( ... ){ }, no goto from there (the node in front of the label is then no jump, so popt leaves the block where the original has it)."},
   "defid": {
    "basis": "reading",
    "d_classes": "D15 D2 D3",
-   "note": "Remaining: the original places the member/structure-name block (the WEGA name space check, label mismatch) between the then and the else part of the dimension test inside the loop over the dimensions; our source has it at the PCC place behind the switch (same control flow). Tried: the PCC layout. Open: a source layout that gives the original block order (goto into the loop body like in optim?). Source fix: one more unused int behind cp2 (a frame word of the original; the name is a guess)."
+   "note": "Exact with v0p. Source: the step of the SMEMB loop as goto mstep; with mstep: cp1 -= sizeof(int); goto mtest; behind the goto mismatch. An odd form, recorded under the evidence rules of OLDCC.md: the bytes fit, a plainer form or a rule stays possible. Source fix: one more unused int behind cp2 (a frame word of the original; the name is a guess)."
   },
   "genswitch": {
    "basis": "reading",
@@ -6716,7 +6717,7 @@
   "argregs": {
    "basis": "frame layout",
    "d_classes": "",
-   "note": "Source fix: n = argregs( p->left ) in front of return( n + argregs( p->right ) ) (the original keeps the first count in r13, no frame temporary). Remaining: popt merges the two add r2,r13 tails (D11) and the block order behind the compare chain."
+   "note": "Source fix: n = argregs( p->left ) in front of return( n + argregs( p->right ) ) (the original keeps the first count in r13, no frame temporary). Source: return( n*2 ) (rmove writes the add r2,r13 only after comjump, so the tails stay apart). Remaining: the dispatch at the end, the case 4 behind it, the return 0 of the float arm."
   },
   "rmconv": {
    "basis": "operand order",

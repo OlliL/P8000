@@ -311,14 +311,14 @@ register int reg;
 			goto out1;
 		case PUSH:
 			if (p->subop != SLONG)
-				break;
+				goto dflt;
 			dualop(p);
 			r10 = isreg(RT1);
 			if (r10 < 0)
-				break;
+				goto dflt;
 			if (reg == r10 + 1)
 				goto out1;
-			break;
+			goto dflt;
 		case LD:
 		case POP:
 		case LDA:
@@ -337,8 +337,11 @@ register int reg;
 				if (r10 >= 0 && reg == r10 + 1)
 					goto out0;
 			}
-			if (ovlap(RT2, str))
-				goto out1;
+			if (ovlap(RT2, str)) {
+			out1:
+				dualop(node);
+				return 1;
+			}
 			continue;
 		case CLR:
 			r10 = 0;
@@ -361,9 +364,12 @@ register int reg;
 			case 0:
 				if (reg == r10 + 1)
 					goto out1;
-				if (r10 != reg)
-					continue;
-				goto out0;
+				if (r10 == reg) {
+				out0:
+					dualop(node);
+					return 0;
+				}
+				continue;
 			case SBYTE:
 				if (r10 != reg)
 					continue;
@@ -390,31 +396,35 @@ register int reg;
 			if (r10 >= 0 && reg == r10 + 1)
 				goto out1;
 			if (p->subop != SLONG)
-				break;
+				goto dflt;
 			if (reg == r10 + 2 || reg == r10 + 3)
 				goto out1;
-			break;
+			goto dflt;
 		case MUL:
 			dualop(p);
 			r10 = isreg(RT2);
 			if (r10 < 0)
-				break;
+				goto dflt;
 			if (p->subop == 0) {
 				if (ovlap(RT1, str) || reg == r10 + 1)
 					goto out1;
 				if (reg != r10)
-					break;
+					goto dflt;
 				goto out0;
 			}
 			if (p->subop != SLONG)
-				break;
+				goto dflt;
 			if (ovlap(RT1, str) || reg == r10 + 2 || reg == r10 + 3)
 				goto out1;
-			if (reg == r10 || reg == r10 + 1)
-				goto out0;
-			break;
+			if (reg != r10 && reg != r10 + 1) {
+			dflt:
+				if (ovlap(p->code, str))
+					goto out1;
+				continue;
+			}
+			goto out0;
 		default:
-			break;
+			goto dflt;
 		case CALL:
 			r9 = reg;
 			if (node->subop == SBYTE && reg > 8)
@@ -444,16 +454,8 @@ register int reg;
 				goto out0;
 			goto out1;
 		}
-		/* default: any mention of the register counts as a use */
-		if (ovlap(p->code, str))
-			goto out1;
 	}
-out0:
-	dualop(node);
-	return 0;
-out1:
-	dualop(node);
-	return 1;
+	goto out0;
 }
 
 /* reverse the string s in place */

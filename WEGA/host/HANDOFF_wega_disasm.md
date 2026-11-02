@@ -73,40 +73,17 @@ it; the goal is a byte-identical `/lib/cparse` (owner: "oberste Direktive"). The
 **v0p** (v0, the compiler of the 1982 programs, plus switches only the passes show). Driver `ccv0p`, passes in
 `src/cmd/{cparse,codgen,popt}/v0p`, installed into the oldroot tree (`make -C host oldroot`).
 
-**State (2026-11-01, end of the session).** 173 of 179 functions strictly exact, 96 differing lines; data and bss as
-in the original under the D12 model; code 48640 against 48896 bytes. cparse built with ccv0p passes its corpus
-(259/259). The bench of v0 (System III programs of 1982 with ccv0): 118 of 153 functions, 275 lines. The
-per-function list: `oldcc.sh model; oldcc.sh lines`.
+**State (2026-11-02).** 175 of 179 functions strictly exact, 27 differing lines; data and bss as in the original under the D12 model; code 48640 against
+48896 bytes. cparse built with ccv0p passes its corpus (260/260). The bench of v0: 118 of 153 functions, 275 lines. The per-function list: `oldcc.sh model; oldcc.sh lines`.
 
-**Open in /lib/cparse, and why** (details and every refuted attempt in `OLDCC_LOG.md`, 2026-11-01; do not repeat
-them without new evidence):
+**Open in /lib/cparse, and why** (details and every refuted attempt in `OLDCC_LOG.md`; do not repeat them without new evidence):
 
-1. **popt block placement, 86 lines: optim 51, argregs 27, defid 8.**
-   - optim: the block of `else if( LCON(p) && RCON(p) && conval( p->left, o, p->right ) ) goto zapright;` stands in
-     the original behind the end of the PLUS case (`break` = `jp 0x569C`, the return) and falls into zapright; ours
-     moves the zapright block up to the jump. argregs: the same picture: `L674: ld r2,r13; jpr L676` goes in front of
-     the switch dispatch at the end (the original keeps the dispatch there), ours moves the dispatch up. So the old
-     popt sometimes moves the jumping block in front of its target instead of the target up to the jump.
-   - defid: the loop step `dec 0x16(fp),#2; jp head` of the SMEMB loop stands in the original right behind the
-     `jp mismatch` at the end of the class switch (in front of redecl); ours keeps it behind the loop body. The source
-     order with the mismatch block in front of redecl does not work (the CJP over the JP is turned round first).
-   - Why open: the popt trace with block-move features (283 moves over all modules) shows no feature that separates
-     the wrong moves from correct ones in exact functions; every rule tried (no move for multiply named labels, the
-     jumping block in front of the target, the switch value at the dispatch) costs hundreds of lines elsewhere.
-     cparse alone has too few witnesses.
-2. **buildtree, 6 lines.** 4 lines: the double constant 0.0 (`r->dval == 0`) lies in the data behind the first switch
-   table (0x2846), ours in front (0x27EA): the order in which cparse writes the .D file (constant at the statement,
-   table at the end of the switch). 2 lines: the temporary of `buildtree( COLON, ll, lr )` is at 0x12 in the
-   original, ours 0xC; it fits a cparse that does not give back all the frame space of the member block (cp2, cp1, m)
-   at its end; moving these variables out of the block makes the frame 2 bytes larger. One witness each: not built.
-3. **argdebug, 2 lines.** The original renames the unused register variable `a` (r14) into r1 and drops its save
-   (`ld r1,r7`); our popt renames only registers saved with ldm pairs (procopt), and its rmove removes the restore
-   first. A popt rule with a single witness: not built.
-4. **yylex, 2 lines (one instruction).** `jp 0x21AA` where `jr` reaches: the early jump optimization of an older cas
-   (Band B 3.4.5: open forward jumps become long when the optimization runs before their label). Evidence in four
-   originals (cparse/scparse yylex, popt rmove, deroff, scodgen): one trigger point per cluster, always at a `call`.
-   The shipped cas and the ZEUS cas (12/1986) do not show it; no table model fitted on the cparse input reproduces
-   it without false long jumps. Parked as an explained remainder (time box).
+1. **argregs, 17 lines.** `n*2` for `n+n` (the first `add r2,r13` stays apart: rmove writes the other). Left: the dispatch at the end, the case 4 behind it, the `return 0` of the float arm.
+2. **buildtree, 6 lines.** 4 lines: the double constant 0.0 (`r->dval == 0`) lies in the data behind the first switch table, ours in front. 2 lines: the temporary of
+   `buildtree( COLON, ll, lr )` is at 0x12 in the original, ours 0xC. One witness each: not built.
+3. **argdebug, 2 lines.** The original renames the unused register variable `a` (r14) into r1 and drops its save (`ld r1,r7`). One witness: not built.
+4. **yylex, 2 lines (one instruction).** `jp 0x21AA` where `jr` reaches: the early jump optimization of an older cas (Band B 3.4.5), parked as an explained remainder (time box;
+   evidence in four originals: cparse/scparse yylex, popt rmove, deroff, scodgen).
 
 **Plan (owner decision 2026-11-01): codgen and popt next.** `/lib/codgen` and `/lib/popt` were built by the same
 compiler v0p (OLDCC.md, "v0p"). Make our sources of codgen and popt compiled with ccv0p byte-identical with them,
@@ -134,7 +111,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 70 of 73 functions strictly exact,
-594 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+452 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (the definitions at the end of z2.h give the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools and `CRT0=<WEGA_ROOT>/lib/crt0.o` (the `ship` target copies it with the host's cp): 272 inputs times no option, -l, -d;
@@ -156,7 +133,7 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 **Open popt functions** (strict diff lines in brackets; the owner may clean up this list as functions get done):
 
 - setreg (7, the arguments of makereg, codgen D3)
-- usesreg (177)
+- usesreg (35)
 - rmove (410 lines; content equal but for jump forms and two string addresses: layout, D20)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
@@ -233,8 +210,8 @@ definitions at the end of z2.h. cparse: the globals as definitions at the end of
 the order) and an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
 first, the model link needs its object). bss.s and libcbss.s are gone in both.
 
-**Next: D20 (owner 2026-11-02), killreg (OLD_D20K only behind a call), backjmp and xjump (OLD_D20B and source form) done; movedat, dest, the scan loop of setreg turned out source forms; next usesreg (refuted rules in OLDCC.md) and rmove.** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
-). State: cparse 173/96, popt 70/594. The model
+**Next: rmove with the same lens (source forms decide where a block stands, OLDCC.md D20); then whether OLD_D20C, X, S, L, K, B still have witnesses (matrix).** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
+). State: cparse 175/27, popt 70/452. The model
 reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt), not equal sizes; the cause is not checked.
 
 **Tools.**

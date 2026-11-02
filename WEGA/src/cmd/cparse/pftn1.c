@@ -115,12 +115,15 @@ defid( q, class )  NODE *q; {
 						( (class==MOU || class==MOS || class&FIELD) && (scl==UNAME || scl==STNAME) ) ||
 						( (class==UNAME || class==STNAME) && (scl==MOU || scl==MOS || class&FIELD) ) ){
 					p->sflags |= SMEMB;
-					for( cp1 = (char *) &paramstk[paramno-1]; PSYM; cp1 -= sizeof(int) ){
+					cp1 = (char *) &paramstk[paramno-1];
+					mtest:
+					while( PSYM ){
 						if( PSYM->sclass == STNAME || PSYM->sclass == UNAME ) break;
 						if( PSYM->sflags&SMEMB && !strcmp( &ntab[p->sname], &ntab[PSYM->sname] ) ){
 							uerror( "redeclaration1 of: %s", &ntab[p->sname] );
 							break;
 							}
+						goto mstep;
 						}
 					p = copysym( &idp );
 					goto enter;
@@ -231,6 +234,10 @@ defid( q, class )  NODE *q; {
 
 		}
 	goto mismatch;
+
+	mstep:
+	cp1 -= sizeof(int);
+	goto mtest;
 
 	redecl:
 	if( blevel > slev && class != EXTERN && !( class == LABEL && slev >= 2 ) ){

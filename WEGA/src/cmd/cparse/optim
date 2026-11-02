@@ -135,7 +135,13 @@ optim(p) register NODE *p; {
 			RO(p) = FREE;
 			p->right = p->right->left;
 			}
-		else if( LCON(p) && RCON(p) && conval( p->left, o, p->right ) ) goto zapright;
+		else if( LCON(p) && RCON(p) && conval( p->left, o, p->right ) ){
+		zapright:
+			RO(p) = FREE;
+			p->left = makety( p->left, p->type, p->cdim, p->csiz );
+			p->op = FREE;
+			return( clocal( p->left ) );
+			}
 
 		/* change muls to shifts */
 
@@ -156,12 +162,6 @@ optim(p) register NODE *p; {
 			o = p->op = MINUS;
 			}
 		break;
-
-	zapright:
-		RO(p) = FREE;
-		p->left = makety( p->left, p->type, p->cdim, p->csiz );
-		p->op = FREE;
-		return( clocal( p->left ) );
 
 	case DIV:
 		if( nncon( p->right ) && p->right->lval == 1 ) goto zapright;

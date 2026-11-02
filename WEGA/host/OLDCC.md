@@ -194,7 +194,7 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 173 strictly exact, 96 differing lines, /lib/popt 70 of 73, 594 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
+- State: /lib/cparse 175 strictly exact, 27 differing lines, /lib/popt 70 of 73, 452 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
@@ -595,10 +595,13 @@ order).
 - Not placement rules of popt: movedat (the whole body inside `switch (r1->op) { case CODE: case DATA: ... }`), dest (`case SBYTE` in
   front of `case 0`; the `sub r2,r3` of the original follows, the copy knowledge of rmove is lost only behind a label), the scan loop of setreg
   (the test on `(` and `@` with its consequences inside `while (*s)`). All three were source forms.
-- Open (popt): usesreg: the default block stands behind the MUL case in front of CALL in the original (`jp ugt` of the dispatch goes there), ours moves it up
-  to the first jump to it; our code is 14 bytes longer. A `default:` with `goto dflt` and MUL falling into it does not help: in the raw code `|| goto out0` leaves
-  `jpr out0` in front of the block, so codemove takes it. Refuted: no move when the target is behind a jump to itself (OLD_D20 for the head: cparse 96 > 471, popt 594 > 695);
-  no move when it is behind a conditional jump over a jump (usesreg 177 > 128, but cparse 96 > 166).
+- Not placement rules either: optim (`zapright:` inside `else if( ... ){ }`, no `goto zapright`), defid (the loop step behind `goto mismatch`; an odd form,
+  see findings.json), most of usesreg (`if (a != x && a != y) { dflt: ... continue; } goto out0;`, `if (...) { out1: ...; return 1; }`). What decides is
+  whether the node in front of a target is a jump: `if (c) goto L; L:` leaves `jpr L2; L:` and codemove takes the block, `if (!c) { L: ... }` does not.
+- Refuted (2026-11-02): a block reached only by conditional jumps moves in front of its target instead of the target up (OLD_D20M again, all lengths, with a branch
+  inside, longer than the target): cparse about 1200 to 1400 lines, popt about 1250 to 1300. No move behind a jump to itself (cparse 471), no move behind a conditional jump over a jump (cparse 166).
+- Candidate, not set (one witness): the load of a switch value in front of a dispatch behind a jump (`Lx: ld r2,r13; jpr D`, argregs): argregs 17 > 14, nothing else changes.
+- Open (popt): rmove; usesreg 35 lines (the POP arm is turned round by OLD_D20S where the original keeps `jr eq,J; jr out1`, the dispatch of the EXTS switch).
 
 ### D21 (removed 2026-11-02: not a difference of the compiler)
 

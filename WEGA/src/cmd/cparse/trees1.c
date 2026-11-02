@@ -1369,14 +1369,14 @@ argregs( p ) register NODE *p; { /* the stack words of the arguments p of a call
 	if( afull || aregs < 2 ){	/* the old compiler: a double argument in rq4 when it is the first one */
 	full:
 		afull = 1;
-		return( n+n );
+		return( n*2 );
 		}
 	switch( n ){
 #else
 	if( ( (p->type == FLOAT || p->type == DOUBLE) && afregs < 16 ) || afull ){
 	full:
 		afull = 1;
-		return( n+n );
+		return( n*2 );
 		}
 	if( p->type != FLOAT && p->type != DOUBLE && aregs < 2 ) goto full;
 	if( p->type == FLOAT || p->type == DOUBLE ){
