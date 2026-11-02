@@ -1691,7 +1691,8 @@ void
 canon2(p)
 	register struct node *p;
 {
-	fwalk(canon(p), icright);
+	p = canon(p);
+	fwalk(p, icright);
 }
 
 /* the SPECIAL shapes: small constants and powers of two */

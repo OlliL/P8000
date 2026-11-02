@@ -841,50 +841,54 @@ order(p, cook)
 {
 	register int o, ty, m;
 	register int cookie;
-	int lab, lab2, ck;
-	struct node *p1, *p2, *q;
+	int m1;
+	struct node *p1, *p2;
 
 again:
 	cookie = cook;
 	rcount();
-	p = canon(argprep(p, cookie));
+	p = argprep(p, cookie);
+	p = canon(p);
 	rallo(p, p->rall);
 	o = p->op;
 	ty = dope[o] & 0xE;
-	m = p->op;
-	switch (m) {
-	case QUEST:
-	case ANDAND:
-	case OROR:
-	case COMOP:
-	case CALL:
-	case UCALL:
-	case FCALL:
-	case UFCALL:
-	case NOT:
-	case STCALL:
-	case USTCALL:
-	case RET:
-	case CBRANCH:
-		break;
+	switch (m = p->op) {
 	case MUL:
 	case ASG MUL:
 		if (p->right->op == OREG && p->left->op == REG)
 			p->right->rall = NOPREF;
 	default:
 		for (;;) {
-			m = match(p, cookie);
-			if (m == MDONE)
+			if ((m = match(p, cookie)) == MDONE)
 				goto cleanup;
-			if (m != NOMATCH)
+			else if (m == NOMATCH) {
+				if (!(cookie = nextcook(p, cookie)))
+					goto nomat;
+				continue;
+			} else
 				break;
-			if (!(cookie = nextcook(p, cookie)))
-				goto nomat;
 		}
 		break;
+	case COMOP:
+	case CBRANCH:
+	case QUEST:
+	case ANDAND:
+	case OROR:
+	case NOT:
+	case UCALL:
+	case CALL:
+	case USTCALL:
+	case STCALL:
+	case UFCALL:
+	case FCALL:
+	case RET:
+		;
 	}
 	p1 = p->left;
-	p2 = ty == BITYPE ? p->right : 0;
+	if (ty == BITYPE)
+		p2 = p->right;
+	else
+		p2 = 0;
 	switch (m) {
 	default:
 	nomat:
@@ -900,7 +904,8 @@ again:
 		cook = 4;
 		goto again;
 	case CBRANCH:
-		cbranch(p1, -1, (int)p2->lval);
+		o = p2->lval;
+		cbranch(p1, -1, o);
 		p2->op = FREE;
 		p->op = FREE;
 		return;
@@ -912,10 +917,9 @@ again:
 		p2->op = FREE;
 		goto cleanup;
 	case QUEST:
-		lab = getlab();
-		cbranch(p1, -1, lab);
+		cbranch(p1, -1, m = getlab());
 #ifdef OLD_D3AW
-		/* v0p: the value goes to a register that holds a parameter: the parameter is not taken from it in the arms */
+		/* v0p: the value goes to a register that holds a parameter: the parameter is forgotten */
 		if (p->rall & MUSTDO) {
 			register struct rs *n;
 
@@ -925,20 +929,24 @@ again:
 		}
 #endif
 		p2->left->rall = p->rall;
-		ck = p2->type == 6 || p2->type == 7 ? 0x10 : 4;
-		codgen(p2->left, ck);
+		if (p2->type == 7 || p2->type == 6)
+			codgen(p2->left, 0x10);
+		else
+			codgen(p2->left, 4);
 		p2->right->rall = p2->left->rval | MUSTDO;
 		reclaim(p2->left, 0, 0);
-		lab2 = getlab();
-		cbgen(0, lab2, 'I');
-		deflab(lab);
+		cbgen(0, m1 = getlab(), 'I');
+		deflab(m);
 #ifdef OLD_D3K
 		rfreeall(2);	/* v0: a parameter stays known in its register */
 #else
 		rfreeall(1);
 #endif
-		codgen(p2->right, ck);
-		deflab(lab2);
+		if (p2->type == 7 || p2->type == 6)
+			codgen(p2->right, 0x10);
+		else
+			codgen(p2->right, 4);
+		deflab(m1);
 		p->op = REG;
 		p->lval = 0;
 		p->rval = p2->right->rval;
@@ -949,10 +957,9 @@ again:
 	case ANDAND:
 	case OROR:
 	case NOT:
-		lab = getlab();
-		cbranch(p, -1, lab);
+		cbranch(p, -1, m = getlab());
 		p->op = CCODES;
-		p->label = lab;
+		p->label = m;
 		order(p, 4);
 		goto cleanup;
 	case FLD:
@@ -961,7 +968,11 @@ again:
 			goto again;
 		}
 	case UMINUS:
-		order(p1, p1->type == 6 || p1->type == 7 ? 0x10 : 2);
+		if (p1->type == 6 || p1->type == 7) {
+			order(p1, 0x10);
+			goto again;
+		}
+		order(p1, 2);
 		goto again;
 	case NAME:
 		if (o == REG)
@@ -1029,14 +1040,20 @@ again:
 #endif
 		if (setasop(p))
 			goto again;
-		q = tcopy(p);
+		p2 = tcopy(p);
 		p->op = ASSIGN;
 		reclaim(p->right, 0, 0);
-		p->right = q;
+		p->right = p2;
 		p = canon(p);
 		rallo(p, p->rall);
-		order(q->left, q->type == 7 || q->type == 6 ? 0x10 : 4);
-		order(q, q->type == 7 || q->type == 6 ? 0x10 : 4);
+		if (p->type == 7 || p->type == 6)
+			order(p2->left, 0x10);
+		else
+			order(p2->left, 4);
+		if (p->type == 7 || p->type == 6)
+			order(p2, 0x10);
+		else
+			order(p2, 4);
 		goto again;
 	case ASSIGN:
 		if (setasg(p))
@@ -1071,7 +1088,7 @@ cleanup:
 		return;
 	if (tshape(p, cook))
 		return;
-	if (match(p, cook) == MDONE)
+	if ((m = match(p, cook)) == MDONE)
 		return;
 	if (lastchance(p, cook))
 		goto again;
@@ -1225,12 +1242,10 @@ int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE,
 void
 cbranch(p, true, false)
 	register struct node *p;
-	register int true, false;
+	int true, false;
 {
 	register int o;
-	register int lab;
-	int flab, tlab, t;
-	struct node *c;
+	register int lab, flab, tlab;
 
 	lab = -1;
 	switch (o = p->op) {
@@ -1255,8 +1270,7 @@ cbranch(p, true, false)
 			true = false;
 			false = -1;
 		}
-		c = p->right;
-		if (c->op == ICON && c->lval == 0 && c->sname == 0) {
+		if (p->right->op == ICON && p->right->lval == 0 && p->right->sname == 0) {
 			switch (o) {
 			case UGT:
 			case ULE:
@@ -1319,11 +1333,15 @@ cbranch(p, true, false)
 #endif
 #endif
 		return;
+	case COMOP:
+		codgen(p->left, FOREFF);
+		p->op = FREE;
+		cbranch(p->right, true, false);
+		return;
 	case QUEST:
 		flab = false < 0 ? getlab() : false;
 		tlab = true < 0 ? getlab() : true;
-		lab = getlab();
-		cbranch(p->left, -1, lab);
+		cbranch(p->left, -1, lab = getlab());
 		cbranch(p->right->left, tlab, flab);
 		deflab(lab);
 		cbranch(p->right->right, true, false);
@@ -1334,48 +1352,46 @@ cbranch(p, true, false)
 		p->right->op = FREE;
 		p->op = FREE;
 		return;
-	case ASSIGN:
-		/* x = constant: the truth value is known */
-		if (p->right->op == ICON) {
-			c = tcopy(p->right);
-			order(p, FOREFF);
-			goto icon;
-		}
-		break;
-	case COMOP:
-		codgen(p->left, FOREFF);
-		p->op = FREE;
-		cbranch(p->right, true, false);
-		return;
 	case NOT:
 		cbranch(p->left, false, true);
 		p->op = FREE;
 		return;
+	case ASSIGN:
+		/* x = constant: the truth value is known */
+		if (p->right->op == ICON) {
+			struct node *c;
+
+			c = tcopy(p->right);
+			order(p, FOREFF);
+			p = c;
 	case ICON:
-		c = p;
-	icon:
-		if (c->lval != 0 || c->sname != 0) {
+			if (p->lval != 0 || p->sname != 0) {
+				if (true >= 0)
+					cbgen(0, true, 'I');
+			} else if (false >= 0)
+				cbgen(0, false, 'I');
+			p->op = FREE;
+			return;
+		}
+	default: {
+		int t;
+
+		t = p->type;
+		codgen(p, FORCC);
+		if (t == 6 || t == 7) {
 			if (true >= 0)
-				cbgen(0, true, 'I');
-		} else if (false >= 0)
-			cbgen(0, false, 'I');
-		c->op = FREE;
-		return;
+				cbgen(FNE, true, 'I');
+			if (false >= 0)
+				cbgen(true >= 0 ? 0 : FEQ, false, 'I');
+		} else {
+			if (true >= 0)
+				cbgen(NE, true, 'I');
+			if (false >= 0)
+				cbgen(true >= 0 ? 0 : EQ, false, 'I');
+		}
+		reclaim(p, 0, 0);
 	}
-	t = p->type;
-	codgen(p, FORCC);
-	if (t == 6 || t == 7) {
-		if (true >= 0)
-			cbgen(FNE, true, 'I');
-		if (false >= 0)
-			cbgen(true >= 0 ? 0 : FEQ, false, 'I');
-	} else {
-		if (true >= 0)
-			cbgen(NE, true, 'I');
-		if (false >= 0)
-			cbgen(true >= 0 ? 0 : EQ, false, 'I');
 	}
-	reclaim(p, 0, 0);
 }
 
 void

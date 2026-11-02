@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "a479a836",
+ "measured_at": "7d1edc62",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -73,8 +73,8 @@
    "file": "reader3.c",
    "orig": "0x0ba2",
    "size_orig": 1250,
-   "status": "open",
-   "lines": 182
+   "status": "masked",
+   "lines": 6
   },
   "store": {
    "file": "reader3.c",
@@ -105,7 +105,8 @@
    "orig": "0x12bc",
    "size_orig": 766,
    "status": "open",
-   "lines": 297
+   "note": "Left: the place of the block of NOT and of the else of ICON (popt).",
+   "lines": 24
   },
   "rcount": {
    "file": "reader3.c",
@@ -468,8 +469,7 @@
    "file": "local3.c",
    "orig": "0x46fe",
    "size_orig": 28,
-   "status": "open",
-   "lines": 9
+   "status": "exact"
   },
   "special": {
    "file": "local3.c",
@@ -656,15 +656,14 @@
    "orig": "0x6196",
    "size_orig": 686,
    "status": "open",
-   "lines": 239
+   "note": "Left: the place of the blocks of the switch on the type and of the selection of q (popt). Odd form: int x = 0, y unused (frame words of the original).",
+   "lines": 57
   },
   "expand": {
    "file": "match3.c",
    "orig": "0x6444",
    "size_orig": 498,
-   "note": "Old hint, measured against the shipped cc, may be stale: D7 (loop test at the bottom in the original: entry jp 661A into the test; ours tests at the top) and D2 (the switch character is loaded into rl2 in the original, into rl3 and copied to r2 in ours). Same length 169 / 169; the moved blocks follow from the loop l Old hint, measured against the shipped cc, may be stale: Round of review: every differing instruction matches a D pattern (unexplained 0). The moved chunk is the for loop in expand (D7, see KNOWLEDGE.md D7). Not changed in the source.",
-   "status": "open",
-   "lines": 241
+   "status": "exact"
   },
   "getlr": {
    "file": "match3.c",

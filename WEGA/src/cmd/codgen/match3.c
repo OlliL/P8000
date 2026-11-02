@@ -246,61 +246,66 @@ match(p, cookie)
 	register int cookie;
 {
 	register struct optab *q;
-	register struct node *l, *r;
-	register int kind, mask;
-	int rv;
+	register struct node *r, *l;
+	register int spare;
+	int x = 0;
+	int t;
+	int y;
 
 	rcount();
-	kind = dope[p->op] & 0xE;
-	if (kind == LTYPE) {
-		if (p->op == NAME) {
-			fixname(p);
-#ifdef OLD_D2C
-			/* v0: a name (not a parameter) found in a scratch register is that register, which the tree takes over */
-			if (p->op == REG && (cookie & STAREG) && (rstatus[p->rval] & STAREG) && p->type != 5 && p->type != 15 &&
-			    p->sname && p->sname->sclass != 9 &&
-			    (!(p->rall & 0x1000) || (p->rall & ~0x1000) == p->rval)) {
-				symdrop(p->rval);
-				return MDONE;
+	switch (dope[p->op] & 0xE) {
+	case BITYPE:
+		if (p->left->op == NAME && (dope[p->right->op] & 0xE) == LTYPE) {
+			if (!(dope[p->op] & 1))
+				fixname(p->left);
+			else {		/* an assignment: the target must stay in memory */
+				t = (int)p->left;
+				symuse(((struct node *)t)->sname);
+				oregfix((struct node *)t);
 			}
-#endif
 		}
-	} else if (kind == UTYPE) {
-		l = p->left;
-		if (l->op == NAME)
-			fixname(l);
-		else if (l->op == SCONV && l->left->op == NAME)
-			fixname(l->left);
-	} else if (kind == BITYPE) {
-		l = p->left;
-		if (l->op == NAME && (dope[p->right->op] & 0xE) == LTYPE) {
-			if (dope[p->op] & 1) {		/* an assignment: the target must stay in memory */
-				symuse(l->sname);
-				oregfix(l);
-			} else
-				fixname(l);
-		}
-		r = p->right;
-		if (r->op == NAME) {
+		if (p->right->op == NAME) {
 			if ((p->type == 5 || p->type == 15) && ((dope[p->op] & 0x800) || (dope[p->op] & 0x80))) {
-				rv = r->rval;
+				register int rv;
+
+				rv = p->right->rval;
 				/* mult and div use r4..r7: a right operand in r6 (or r4 for div) goes to memory */
 				if (rv == 6 || ((dope[p->op] & 0x80) && rv == 4)) {
-					oregfix(r);
-					goto select;
+					oregfix(p->right);
+					break;
 				}
 			}
 #ifdef OLD_D3AW
 			/* v0p: a parameter added to an address constant is not taken from its register */
-			if (p->op == PLUS && p->left->op == ICON && p->left->sname && r->sname->sclass == 9)
-				oregfix(r);
+			if (p->op == PLUS && p->left->op == ICON && p->left->sname && p->right->sname->sclass == 9)
+				oregfix(p->right);
 			else
 #endif
 			if ((dope[p->left->op] & 0xE) == LTYPE || p->left->op == FLD)
-				fixname(r);
+				fixname(p->right);
 		}
+		break;
+	case LTYPE:
+		if (p->op == NAME) {
+			fixname(p);
+#ifdef OLD_D2C
+				/* v0: a name (not a parameter) found in a scratch register is that register, which the tree takes over */
+				if (p->op == REG && (cookie & STAREG) && (rstatus[p->rval] & STAREG) && p->type != 5 && p->type != 15 &&
+				    p->sname && p->sname->sclass != 9 &&
+				    (!(p->rall & 0x1000) || (p->rall & ~0x1000) == p->rval)) {
+					symdrop(p->rval);
+					return MDONE;
+				}
+#endif
+		}
+		break;
+	case UTYPE:
+		if (p->left->op == NAME)
+			fixname(p->left);
+		else if (p->left->op == SCONV && p->left->left->op == NAME)
+			fixname(p->left->left);
+		break;
 	}
-select:
 #ifdef OLD_D16B
 	/* v0p: an unsigned word in memory changed by an assignment operator: no entry, the tree is rewritten as
 	   a = a op b (order) */
@@ -308,34 +313,40 @@ select:
 	    p->left->op == STAR) && p->left->type == 14)
 		return NOMATCH;
 #endif
-	q = cookie == FORREW ? rwdefault : opptr[p->op];
-	for (;; q++) {
-		if (q->op == FREE)
-			return NOMATCH;
+	if (cookie == FORREW)
+		q = rwdefault;
+	else
+		q = opptr[p->op];
+	for (; q->op != FREE; ++q) {
 		if (q->op < 0x1000) {
 			if (q->op != p->op)
 				continue;
 		} else {
-			mask = opclass[q->op - 0x1000];
-			if (mask & 0x4000) {
-				if (!ltypeok(p->op, p))
+			register int opmtemp;
+
+			if ((opmtemp = opclass[q->op - 0x1000]) & 0x4000) {
+				if (p->op != NAME && p->op != ICON && p->op != OREG && !ltypeok(p->op, p))
 					continue;
-			} else if (mask != ((mask | 1) & dope[p->op]))
+			} else if ((dope[p->op] & (opmtemp | 1)) != opmtemp)
 				continue;
 		}
 		if (!(q->visit & cookie))
 			continue;
-		l = getlr(p, 'L');
-		if (!tshape(l, q->lshape) || !ttype(l->type, q->ltype))
+		l = r = getlr(p, 'L');
+		if (!tshape(r, q->lshape))
+			continue;
+		if (!ttype(r->type, q->ltype))
 			continue;
 #ifdef OLD_D10
 		/* the old codgen v0 shifts a long by a constant through a register (ld A1,#n; sdal): no OIZB AL,#n */
-		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (l->type == 5 || l->type == 15) &&
+		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (r->type == 5 || l->type == 15) &&
 		    (p->op == LS || p->op == RS || p->op == ASG LS || p->op == ASG RS))
 			continue;
 #endif
 		r = getlr(p, 'R');
-		if (!tshape(r, q->rshape) || !ttype(r->type, q->rtype))
+		if (!tshape(r, q->rshape))
+			continue;
+		if (!ttype(r->type, q->rtype))
 			continue;
 #ifdef OLD_D16A
 		/* v0p: a frame slot incremented by a constant whose value may go to a temporary is loaded, incremented in
@@ -355,7 +366,8 @@ select:
 			if (r->type != l->type)
 				continue;
 		} else if (q->ltype == 0x8000 || q->rtype == 0x8000) {	/* of the same size */
-			if (bsize(l->type) != bsize(r->type))
+			t = bsize(l->type);
+			if (bsize(r->type) != t)
 				continue;
 		}
 		if ((p->type == 6 || p->type == 7) && q->ltype == 0x8000 && q->rtype == 0x8000)
@@ -371,7 +383,7 @@ select:
 		}
 #endif
 #ifdef OLD_D2A
-		rv = p->op;
+		t = p->op;
 #endif
 #ifdef OLD_D6S
 		/* v0p: an assignment of a register to itself (the value of a switch into its register) prints nothing */
@@ -391,7 +403,7 @@ select:
 		reclaim(p, q->rewrite, cookie);
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
-		if (rv == ASSIGN && !(cookie & 01) && p->op == REG && (p->type == 5 || p->type == 15) && p->rval < 8 &&
+		if (t == ASSIGN && !(cookie & 01) && p->op == REG && (p->type == 5 || p->type == 15) && p->rval < 8 &&
 		    !(p->rall & 0x1000)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 
@@ -404,6 +416,7 @@ select:
 #endif
 		return MDONE;
 	}
+	return NOMATCH;
 }
 
 /* expand the template cp for the tree p */
@@ -415,78 +428,29 @@ expand(p, cookie, cp)
 	register int cookie;
 	register char *cp;
 {
-	register long m;
+	/* generate code by interpreting table entry */
+	register long val;
 	register struct node *r;
 	register struct rs *n;
-	int k;
 
 	tflag = 0;
-	for (; *cp; cp++) {
+	for (; *cp; ++cp) {
 		switch (*cp) {
-		case 'A':
+		default:
+			putchar(*cp);
+			continue;	/* this is the usual case... */
+		case 'A':		/* address of */
 			adrput(getlr(p, *++cp));
-			break;
-		case 'B':
+			continue;
+		case 'B':		/* byte offset in word */
+			val = getlr(p, *++cp)->lval;
+			val = val & 1;
+			printf("%ld", val);
+			continue;
+		case 'C':		/* for constant value only */
+			/* the result register of a call holds the value of the right operand: note it */
 			r = getlr(p, *++cp);
-			printf("%ld", r->lval & 1);
-			break;
-		case 'F':			/* the line is only for a result that is used */
-			if (cookie & SANY)
-				while (*++cp != '\n')
-					;
-			break;
-		case 'H':
-			printf("%d", fldshf);
-			break;
-		case 'I':
-			insput(getlr(p, *++cp));
-			break;
-		case 'L':
-			printf("%d", p->label);
-			break;
-		case 'M': case 'N':
-			m = ((1L << fldsz) - 1) << fldshf;
-			prlong(*cp == 'M' ? m : ~m);
-			break;
-		case 'O':
-			hopcode(p);
-			cp++;
-			break;
-		case 'S':
-			printf("%d", fldsz);
-			break;
-		case 'T':
-			tflag = 1;
-			break;
-		case 'U':
-			upput(getlr(p, *++cp));
-			break;
-		case 'V':
-			rmode++;
-			break;
-		case 'W':
-			rlmode++;
-			break;
-		case 'X':
-			rlmode = rmode = 0;
-			break;
-		case 'Y':
-			r = getlr(p, 'R');
-			if (r->op == FLD)
-				r = r->left;
-			if (r->op == ICON)
-				acon(r);
-			else
-				adrput(getlr(p, 'R'));
-			break;
-		case 'Z':
-			zzzcode(p, *++cp);
-			break;
-		case 'C':
-			/* the result register of a call holds the value of the right operand: note it for the register file */
-			r = getlr(p, *++cp);
-			k = rclass(p->type, resc[0].rval);
-			n = rfind(resc[0].rval, k);
+			n = rfind(resc[0].rval, rclass(p->type, resc[0].rval));
 			if (p->op == UCALL)
 				n->sym = 0;
 			else {
@@ -495,12 +459,69 @@ expand(p, cookie, cp)
 				n->flags |= 0x8000;
 			}
 			conput(r);
-			break;
-		default:
-			putchar(*cp);
+			continue;
+		case 'F':		/* this line deleted if FOREFF is active */
+			if (cookie & SANY)
+				while (*++cp != '\n')
+					;
+			continue;
+		case 'H':		/* field shift */
+			printf("%d", fldshf);
+			continue;
+		case 'I':		/* in instruction */
+			insput(getlr(p, *++cp));
+			continue;
+		case 'L':		/* output special label field */
+			printf("%d", p->label);
+			continue;
+		case 'M':		/* field mask */
+		case 'N':		/* complement of field mask */
+			val = 1;
+			val <<= fldsz;
+			--val;
+			val <<= fldshf;
+			prlong(*cp == 'M' ? val : ~val);
+			continue;
+		case 'O':		/* opcode string */
+			hopcode(p);
+			cp++;
+			continue;
+		case 'S':		/* field size */
+			printf("%d", fldsz);
+			continue;
+		case 'T':		/* rewrite register type is suppressed */
+			tflag = 1;
+			continue;
+		case 'U':		/* for upper half of address, only */
+			upput(getlr(p, *++cp));
+			continue;
+		case 'V':
+			rmode++;
+			continue;
+		case 'W':
+			rlmode++;
+			continue;
+		case 'X':
+			rlmode = 0;
+			rmode = 0;
+			continue;
+		case 'Y':
+			r = getlr(p, 'R');
+			if (r->op == FLD)
+				r = r->left;
+			if (r->op == ICON)
+				acon(r);
+			else
+				adrput(getlr(p, 'R'));
+			continue;
+		case 'Z':		/* special machine dependent operations */
+			zzzcode(p, *++cp);
+			continue;
 		}
 	}
-	nosuffix = rlmode = rmode = 0;
+	nosuffix = 0;
+	rlmode = 0;
+	rmode = 0;
 }
 
 /* ---- match() ----------------------------------------------------------------------------------------- */
