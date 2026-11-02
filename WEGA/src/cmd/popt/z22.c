@@ -1184,15 +1184,15 @@ int type;
 				killreg(c, TL);
 		}
 	}
-	while (*s && *s != '(' && *s != '@')
+	while (*s) {
+		if (*s == '(' || *s == '@') {
+			if (s[1] == 'f' && s[2] == 'p')
+				break;
+			cleargroup(NREGS, 1);
+			return;
+		}
 		s++;
-	if (*s) {
-		if (s[1] == 'f' && s[2] == 'p')
-			goto mem;
-		cleargroup(NREGS, 1);
-		return;
 	}
-mem:
 	if ((r = memreg(s0, type)) < 0)
 		return;
 	type = (r & 0x0ff0) >> 4;
@@ -1236,6 +1236,8 @@ register struct node *p;
 	case EXTS:
 		if (sub == 0)
 			sub = SLONG;
+		else if (sub == 0)
+			sub = 0;
 		break;
 	case LDA:
 #ifdef SPOPT
@@ -1245,10 +1247,10 @@ register struct node *p;
 #endif
 	}
 	switch (sub) {
-	case 0:
-		return TW;
 	case SBYTE:
 		return TB;
+	case 0:
+		return TW;
 	case SLONG:
 		return TL;
 	}
@@ -1638,27 +1640,24 @@ movedat()
 		switch (r1->op) {
 		case CODE:
 		case DATA:
-			break;
-		default:
-			continue;
+			r4 = r1->forw;
+			if (r4) {
+				if (r4->op == PSEC)
+					r4 = r4->forw;
+				if (r4->op == CODE || r4->op == DATA)
+					r1->op = r4->op;
+			}
+			if (cur == r1->op) {
+				if (r1->forw->op == PSEC)
+					r4 = r1->forw->forw;
+				else
+					r4 = r1->forw;
+				r1->back->forw = r4;
+				r4->back = r1->back;
+				r1 = r1->back;
+			} else
+				cur = r1->op;
 		}
-		r4 = r1->forw;
-		if (r4) {
-			if (r4->op == PSEC)
-				r4 = r4->forw;
-			if (r4->op == CODE || r4->op == DATA)
-				r1->op = r4->op;
-		}
-		if (cur == r1->op) {
-			if (r1->forw->op == PSEC)
-				r4 = r1->forw->forw;
-			else
-				r4 = r1->forw;
-			r1->back->forw = r4;
-			r4->back = r1->back;
-			r1 = r1->back;
-		} else
-			cur = r1->op;
 	}
 #endif
 }

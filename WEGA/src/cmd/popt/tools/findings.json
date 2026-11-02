@@ -1660,6 +1660,7 @@
    "size_orig": 108
   },
   "dest": {
+   "v0p_note": "v0p model exact: else if (sub == 0) sub = 0 (dead second test of the original), second switch in the order SBYTE, 0, SLONG",
    "file": "z22.c",
    "pairing": "confirmed",
    "ours": "0x2b1e-0x2b84",
@@ -2084,6 +2085,7 @@
    "size_orig": 412
   },
   "movedat": {
+   "v0p_note": "v0p model exact: the body of the second loop inside switch (r1->op)",
    "file": "z22.c",
    "pairing": "confirmed",
    "ours": "0x30fc-0x3220",
