@@ -1004,3 +1004,6 @@ Step 2 of the codgen work: modules, data and bss of the original.
 - New switch `OLD_D6D` (v0p, cparse): no jump table at exactly 3 values per case. One witness (`zzzcode`, cases 1, 2, 8, 16); cparse and popt do not change.
 - State: code 54016 against 53760 (the rounding of ld to 256), data 27084 and bss 17522 as in the original, 59 of 209 strict, 9803 lines, masked 76 of 209. cparse 178 and popt 72 unchanged with ccv0p built from the new sources; cparse corpus 253/253 (7 source files less
   in the corpus than before); bench 118/153, 275. `oldcc.sh matrix` is due: step 3 takes codgen into the table.
+
+Step 3 of the codgen work: `findings.json` in the new form (the old one is in git before this commit; the old hints go along as notes at the functions), codgen in PROGS of the matrix. `OLD_D6D` stays with one witness (owner decision).
+classify.py, patterns.py, funcs.py stay in `host/recon`: sld `classify_sld.py` imports them; strictlayers.py and findings_md.py stay for ld and sld. They can go when those two have their old compiler.

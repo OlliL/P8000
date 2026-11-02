@@ -1,29 +1,14 @@
 # codgen analysis tools
 
-Not part of the codgen build. The single source of truth for the analysis is `findings.json`.
+Not part of the codgen build. The state of the functions is in `findings.json`, the report in `FINDINGS.md` (generated).
 
-Run from `src/cmd/codgen`:
+Run through `src/cmd/cparse/tools/oldcc.sh`: `model codgen`, `lines codgen`, `findings codgen`.
 
-    make -C tools pipeline WEGA=$WEGA CC="<compiler command>"   # all steps, builds ./codgen first
-    make -C tools check WEGA=$WEGA CORPUS=<corpus dir>      # codgen against the original on a corpus
+In `src/cmd/codgen`:
 
-Or step by step (the same commands as the Makefile runs):
+- `python3 tools/strictcmp.py [-c|-a|-m] [-v NAME]`: the functions of the model against /lib/codgen.
+- `python3 tools/olist.py NAME`: the instructions of a function of the original.
+- `python3 tools/d12model.py`: builds the model and shows the data differences.
+- `tools/corpus.sh SRCDIR OUTDIR`, `tools/check.sh CORPUSDIR`: the corpus of the passes, made with the original tools, and codgen (`PROG=scodgen`: scodgen) of the normal build against the original.
 
-    O=$WEGA/lib/codgen                                  # the original, /lib/codgen of WEGA
-    python3 tools/locate.py  --mine ./codgen --check    # reproduction test: our functions found by name
-    python3 tools/confirm.py --mine ./codgen --orig $O  # checks the stored pairings, writes ours/pairing/level
-    python3 tools/patterns.py --mine ./codgen --orig $O # which instructions differ, D patterns (D1-D14 by form), length and order warnings
-    python3 tools/classify.py --mine ./codgen --orig $O # writes the difference class per function
-    python3 tools/inventory.py                          # writes INVENTORY.md
-
-Files:
-- `funcs.py`      library: disassembly, function extents, strict-1 comparison, original candidates
-- `locate.py`     finds our functions by name in a built binary (object markers, source order)
-- `confirm.py`    checks the pairings in findings.json (no discovery; decisions are stored there)
-- `patterns.py`   pattern check of the D classes (instruction forms that still differ) and the structure check
-  (`structure_flags`: order of moved chunks by more than 5 %; the length is reported, not a warning); also used by classify.py
-- `Makefile`      the pipeline and the corpus check (the codgen Makefile contains only the build)
-- `classify.py`   writes the difference classes (alignment, overrides in findings.json)
-- `inventory.py`  writes INVENTORY.md from findings.json
-- `findings.json` decisions, reviews, classes, findings (the one source)
-- `check.sh`, `corpus.sh`  test of codgen against the original (corpus built with the WEGA tools)
+Build `ccv0p` from these sources only when the normal build passes the corpus: this source is also the measuring tool (`host/OLDCC_LOG.md`, 2026-11-02).

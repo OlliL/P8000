@@ -24,9 +24,9 @@ OUT = os.path.join(REPO, 'host', 'OLDCC_SWITCHES.md')
 VER = 'v0p'
 PASSES = ['codgen', 'cparse', 'popt']
 # the programs measured for this version; add a new program here when it has a model (HOWTO_reconstruct.md, checklist)
-PROGS = ['cparse', 'popt']
+PROGS = ['cparse', 'popt', 'codgen']
 # programs with a tools/progcfg.py that are not measured, and why
-NOTPROGS = {'codgen': 'v0p, no model yet', 'ld': 'v1', 'sld': 'no old compiler work yet'}
+NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet'}
 ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
 OLDROOT = os.environ.get('OLDROOT', '/mnt/share/cvs/P8000/tmp/oldroot')
 TMP = os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp')
