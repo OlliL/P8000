@@ -454,6 +454,9 @@ changed to the original's. The d12model of ld and cparse lays the tables out the
   passes the values to codgen in a record `V swlab dlab tlab values` in front of the `C` record (a guess: the
   intermediate form of v0 is not known; the shipped cparse writes the values into the .D file). cparse 2602 > 2492
   lines, bench v0 1064 > 1004.
+- v0p (switch `OLD_D6D` in cparse genswitch, one witness): no jump table at exactly 3 values per case: `range < 3*n` against `range <= 3*n` of the
+  shipped one. /lib/codgen `zzzcode`, switch of `fldsz` with the cases 1, 2, 8, 16 (a `cpir` list in the original); no other function of cparse and popt has this
+  range.
 - v0 (switch `OLD_D6C` in cparse genswitch): up to 3 cases compared one after the other, the table from 4 cases on
   (shipped: from 3). cparse 2492 > 2343 lines, code as long as the original's; bench v0 1004 > 788.
 

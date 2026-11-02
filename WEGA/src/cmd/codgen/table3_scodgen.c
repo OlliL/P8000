@@ -1,6 +1,9 @@
 /* scodgen: 174 entries, found at data offset 0x42e2 */
 #include "cg.h"
 
+static char sccsid[] = "@[$]table3.c\t2.2  10/06/83 10:57:21 Copr. 1981 87wega3.2.";
+static char tabsccs[] = "@[$]table3.szcc.c\t2.4  10/06/83 11:03:17 Copr. 1981 87wega3.2.";
+
 struct optab table[] = {
 	{ 0x3a, 0x7, 0x6, 0x448, 0x8000, 0x1000, 0x0, 0x1, 0x2, "/* 000 */\n\tsubl\tVAL,AL\n" },	/* 0 */
 	{ 0x3a, 0x7, 0x2c0, 0x448, 0x8000, 0x1000, 0x1, 0x2, 0x2, "/* 001 */\n\tsubl\tVA1,A1\n\tldl\tAL,A1\n" },	/* 1 */
@@ -177,4 +180,3 @@ struct optab table[] = {
 	{ 0x100c, 0x4000, 0x1, 0x1000, 0x1, 0x1000, 0x1000, 0x0, 0x8, "" },	/* 172 */
 	{ 0x64, 0x64, 0x64, 0x64, 0x64, 0x64, 0x64, 0x0, 0x64, "/*hi mom*/\n" },	/* 173 */
 };
-int ntable = 174;

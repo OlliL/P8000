@@ -125,7 +125,10 @@ def rewrite(lines):
 
 
 def run(cmd, cwd):
-    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    try:
+        r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=120)
+    except subprocess.TimeoutExpired:
+        sys.exit('%s: no result after 120 s' % ' '.join(cmd))
     if r.returncode:
         sys.exit('%s: %s%s' % (' '.join(cmd), r.stdout, r.stderr))
 

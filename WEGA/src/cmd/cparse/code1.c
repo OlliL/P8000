@@ -361,7 +361,11 @@ genswitch(p,n) register struct sw *p; {
 	range = p[++n].sval-p[2].sval;
 	q = *(NODE **)p;
 
+#ifdef OLD_D6D
+	if( range>0 && range < 3*n && n>=5 ){ /* implement a direct switch (v0: not at 3 values per case) */
+#else
 	if( range>0 && range <= 3*n && n>=5 ){ /* implement a direct switch */
+#endif
 		dlab = p[1].slab >= 0 ? p[1].slab : getlab();
 		q->lval = -1;
 		r = p[2].sval ? block( MINUS, q, bcon( p[2].sval ), INT, 0, INT ) : q;

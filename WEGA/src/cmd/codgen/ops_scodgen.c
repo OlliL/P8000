@@ -1,6 +1,4 @@
 /* scodgen: 89 operators (op, name, dope flags) */
-#include "cg.h"
-
 struct indope indope[] = {
 	{ 2, "NAME", 0x2 },
 	{ 3, "STRING", 0x2 },

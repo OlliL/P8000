@@ -527,12 +527,12 @@ Status of codgen and scodgen (done parts, open differences, test runs): `src/TOD
 
 ### Function map of `/lib/codgen` (addresses of the original)
 
-Module map by the version strings in the data (code order): reader3.c (0x2a main part, 0x0838 delay, 0x0aaa codgen, 0x0ba2 order,
-store ... 0x18be), rdr3.c and rdr (the readers of the intermediate files, 0x19ac .. 0x2780), local3.c (0x2780 .. 0x4804, with `zzzcode`,
-`cbgen`, `gencall` 0x4534, `nextcook` 0x4674, `lastchance` 0x46ae), order3.c (0x49c0 .. 0x5c7a), match3.c, allo3.c, regallo3.c, comm3.c and
-`common` (0x8570 .. 0x8c72: `uerror`, `cerror` (stops with status 0x40), `werror`, the tree pool of 500 nodes of 0x12 bytes at 0x69e2,
-`fwalkd` 0x8774, `fwalk` 0x87ec, `alloc` 0x8b6e), wrt3.c (0x8c74 ..), regs3.c, lcl3.c (0x9116 ..), tr3.c (0xa1b8 ..), optim3.c (0xb0a0 ..),
-then the C library from 0xbbc4.
+Module map by the version strings in the data, the string pools and the `calr`s (a `calr` never crosses a module: all 303 of the
+program stay inside these ranges): `reader3.c` 0x2a (`options` .. `argprep`), `rdr3.c` with `rdr` 0x19ac, `local3.c` 0x2780 (`psuffix` ..
+`mycanon`, the forwarder `main` 0x4868), `order3.c` 0x487e (`stoasg` ..), `match3.c` 0x5e92, `allo3.c` 0x66bc, `regallo3.c` 0x73f0, `comm3.c` with
+`common` 0x854c, `table3.c` with `table3.nzcc.c` (no code), `wrt3.c` 0x8c0c, `regs3.c` 0x910e, `lcl3.c` 0xa7e0 (`gswitch`, `chk`, `clocal`), `tr3.c`
+0xaece, `optim3.c` with `optim` 0xb178, then the C library from 0xbbc4 in the order of libc.a. Our source has these modules since 2026-11-02;
+which of `wrt3`/`regs3` holds the functions without strings near the border is free, the bytes do not depend on it.
 
 Operator numbers: `CM` (comma of the arguments) is 56, `COMOP` 59, `QUEST` 21, `UCALL` 72, `FCALL` 73, `UFCALL` 75, `INIT` 116;
 `ULE .. UGT` are 86-89 and `FEQ .. FGT` 90-95.
@@ -904,6 +904,9 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/codgen`, `/lib/scodgen` | `rsreturn`: after the partner loop a branch `if (b == a)` (0x80d4) that is never taken: the first node has the class of the loop, so the loop either returns or moves on | kept (dead code) | "codgen fidelity" |
 | `/lib/codgen`, `/lib/scodgen` | `rsreturn`: the weight table `rweight` is indexed by the register number itself (no `& 7`, 0x8002 `add r2,r2`) | kept: `rweight[reg]` | "codgen fidelity" |
 | `/lib/codgen`, `/lib/scodgen` | `reclaim` copies `p->op` into `want` before it frees the registers and uses `want` for the `lval` of a CCODES result; it builds the list of candidates with a pointer (`*ap++`) into a local array of 6 | kept | "codgen fidelity" |
+| `/lib/codgen` | The result depends on the order of the data: built with another bss order, codgen gave wrong `ldm` lines on 2 and a compiler loop on 1 of 269 files, scodgen failed on 5 files more than with the original's order (measured 2026-11-02, cause not looked at; a guess: `saveorig`, `savecls`, `savereg` have 2 entries in the original, `nsave` can reach more). | sizes and order of the common data as in the original (`bss3.c`) | `OLDCC_LOG.md` 2026-11-02 |
+| `/lib/codgen` | Dead code and data: `rwprint` 0x6fca with its names, `syserror` 0x854c (fprintf, `perror`, `errexit`), which pull `perror` and `errlst` into the program, the tables `tnames` 0x5e2 and `ocnames` 0x3564 of debug names, and words that nothing reads (`unused1` ... in the sources; names are ours). `eread` writes a flag at 0x24b0 behind a test that is never true (`dope & 0xE` against 0x73), read by nobody. | kept | `OLDCC_LOG.md` 2026-11-02 |
+| `/lib/codgen` | `ifname` holds 16 bytes in the data, directly in front of the version string `common`: a longer file name of a `#line` overwrites that string (harmless). | kept | `OLDCC_LOG.md` 2026-11-02 |
 | `/lib/codgen`, `/lib/scodgen` | The rewrite of a field access or an address of a static (`mapregs` in `lcl3.c`, the `STREF` and `UAND` cases) copies only some fields of the replacement node (`op`, `type`, `sname`, `lval`, `rval`). The original's `lval` and `rval` overlay `left` and `right`, so the operands come along by accident. | kept in the original; the host copy copies the whole node | `host/codgen`, `src/TODO.md` (codgen host version) |
 | `/lib/scodgen` | The SEG bar test in `oregput` (the `|` around a stack-segment operand) compares low words: `lval` for the symbol `symtab0`, and `lval + maxoff` (not `frame0`) for `~L1`. | kept: host copy uses the same tests | `host/codgen` (`out3.c`), `src/TODO.md` |
 | popt | `fixldm` looks up the last `#` of an operand with `strrchr` (the original calls 0x548c = strrchr), not the first with `strchr` | kept: `strrchr` (oldlibc 0_1); the difference matters only if `#` occurs twice in an operand | popt-02 in `src/cmd/popt/tools/findings.json`; popt corpus 813 of 816 |

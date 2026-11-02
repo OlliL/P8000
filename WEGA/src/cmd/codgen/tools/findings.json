@@ -81,7 +81,7 @@
    },
    "orig_note": "not located yet",
    "size_orig": 60,
-   "file": "allo3.c"
+   "file": "regs3.c"
   },
   "rbusy": {
    "ours": "0x00b4-0x018a",
@@ -352,7 +352,7 @@
     "len_orig": 72
    },
    "size_orig": 210,
-   "file": "allo3.c"
+   "file": "comm3.c"
   },
   "reclaim": {
    "ours": "0x0a18-0x0dc8",
@@ -409,7 +409,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 80,
-   "file": "allo3.c"
+   "file": "regs3.c"
   },
   "rcount": {
    "ours": "0x0e1a-0x0e30",
@@ -432,7 +432,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 22,
-   "file": "local3.c"
+   "file": "reader3.c"
   },
   "rcount_reset": {
    "ours": "0x0e30-0x0e32",
@@ -455,7 +455,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 2,
-   "file": "local3.c"
+   "file": "regallo3.c"
   },
   "ltypeop": {
    "ours": "0x0e32-0x0e5e",
@@ -512,7 +512,7 @@
    },
    "orig_note": "verified: old cc (clr/ZERO, inc form)",
    "size_orig": 78,
-   "file": "local3.c"
+   "file": "comm3.c"
   },
   "bsize": {
    "ours": "0x0eae-0x0efc",
@@ -541,7 +541,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 76,
-   "file": "local3.c"
+   "file": "comm3.c"
   },
   "szty": {
    "ours": "0x0efc-0x0f2c",
@@ -568,7 +568,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 50,
-   "file": "local3.c"
+   "file": "comm3.c"
   },
   "plainicon": {
    "ours": "0x0f2c-0x0f56",
@@ -595,7 +595,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 42,
-   "file": "local3.c"
+   "file": "comm3.c"
   },
   "special": {
    "ours": "0x0f56-0x1034",
@@ -794,7 +794,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 92,
-   "file": "local3.c"
+   "file": "comm3.c"
   },
   "tshape": {
    "ours": "0x1366-0x14ba",
@@ -1505,7 +1505,7 @@
     "len_orig": 124
    },
    "size_orig": 418,
-   "file": "out3.c"
+   "file": "local3.c"
   },
   "oregput": {
    "ours": "0x302e-0x3068",
@@ -1530,7 +1530,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 58,
-   "file": "out3.c"
+   "file": "local3.c"
   },
   "conput": {
    "ours": "0x3068-0x3154",
@@ -1560,7 +1560,7 @@
     "len_orig": 57
    },
    "size_orig": 174,
-   "file": "out3.c"
+   "file": "local3.c"
   },
   "insput": {
    "ours": "0x3154-0x3164",
@@ -1583,7 +1583,7 @@
    },
    "orig_note": "called by expand (case I); the original spills its argument and calls cerror(\"insput\")",
    "size_orig": 18,
-   "file": "out3.c"
+   "file": "local3.c"
   },
   "upput": {
    "ours": "0x3164-0x3260",
@@ -1614,7 +1614,7 @@
    },
    "orig_note": "verified: call target masked (printf wrapper)",
    "size_orig": 252,
-   "file": "out3.c"
+   "file": "local3.c"
   },
   "adrput": {
    "ours": "0x3260-0x340c",
@@ -1647,7 +1647,7 @@
     "len_orig": 138
    },
    "size_orig": 430,
-   "file": "out3.c"
+   "file": "local3.c"
   },
   "hopcode": {
    "ours": "0x340c-0x3478",
@@ -1672,7 +1672,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 108,
-   "file": "out3.c"
+   "file": "local3.c"
   },
   "prlong": {
    "ours": "0x3478-0x348c",
@@ -1695,7 +1695,7 @@
    },
    "orig_note": "out3.c, the printf(\"%ld\") of the M and N templates; the original calls it as a function",
    "size_orig": 22,
-   "file": "out3.c"
+   "file": "local3.c"
   },
   "expand": {
    "ours": "0x348c-0x3680",
@@ -1722,7 +1722,7 @@
     "len_orig": 169
    },
    "size_orig": 498,
-   "file": "out3.c"
+   "file": "match3.c"
   },
   "tsuffix": {
    "ours": "0x3680-0x3766",
@@ -1751,7 +1751,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 234,
-   "file": "out3.c"
+   "file": "local3.c"
   },
   "rsinit": {
    "ours": "0x3766-0x37b4",
@@ -2289,7 +2289,7 @@
     "len_orig": 54
    },
    "size_orig": 170,
-   "file": "regfile3.c"
+   "file": "regs3.c"
   },
   "rnnullp": {
    "ours": "0x4c32-0x4c7e",
@@ -2315,7 +2315,7 @@
    },
    "orig_note": "identical up to the ret (regfile3.c rnnullp)",
    "size_orig": 74,
-   "file": "regfile3.c"
+   "file": "regs3.c"
   },
   "rnnullcall": {
    "ours": "0x4c7e-0x4ca4",
@@ -2338,7 +2338,7 @@
    },
    "orig_note": "identical up to the ret (regfile3.c rnnullcall)",
    "size_orig": 38,
-   "file": "regfile3.c"
+   "file": "regs3.c"
   },
   "rnnullall": {
    "ours": "0x4ca4-0x4cce",
@@ -2361,7 +2361,7 @@
    },
    "orig_note": "identical up to the ret after register int i (regfile3.c)",
    "size_orig": 46,
-   "file": "regfile3.c"
+   "file": "regs3.c"
   },
   "rnnulll": {
    "ours": "0x4cce-0x4cf0",
@@ -2386,7 +2386,7 @@
    },
    "orig_note": "identical up to the ret (regfile3.c rnnulll)",
    "size_orig": 34,
-   "file": "regfile3.c"
+   "file": "regs3.c"
   },
   "rnnullw": {
    "ours": "0x4cf0-0x4cfc",
@@ -2411,7 +2411,7 @@
    },
    "orig_note": "identical up to the ret (regfile3.c rnnullw)",
    "size_orig": 18,
-   "file": "regfile3.c"
+   "file": "regs3.c"
   },
   "rnnull": {
    "ours": "0x4cfc-0x4d4e",
@@ -2437,7 +2437,7 @@
     "len_orig": 22
    },
    "size_orig": 70,
-   "file": "regfile3.c"
+   "file": "regs3.c"
   },
   "nxwork": {
    "ours": "0x4d4e-0x547c",
@@ -2468,7 +2468,7 @@
    },
    "orig_note": "D6 table starts at 0 (old cc)",
    "size_orig": 1784,
-   "file": "regfile3.c"
+   "file": "regs3.c"
   },
   "tmpcleanup": {
    "ours": "0x547c-0x557e",
@@ -2500,7 +2500,7 @@
     "len_orig": 70
    },
    "size_orig": 236,
-   "file": "tmp3.c"
+   "file": "regs3.c"
   },
   "tmpdump": {
    "ours": "0x557e-0x55d2",
@@ -2525,7 +2525,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 86,
-   "file": "tmp3.c"
+   "file": "regs3.c"
   },
   "psuffix": {
    "ours": "0x55d2-0x55e4",
@@ -2551,7 +2551,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 22,
-   "file": "zzz3.c"
+   "file": "local3.c"
   },
   "geninc": {
    "ours": "0x55e4-0x567c",
@@ -2579,7 +2579,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 144,
-   "file": "zzz3.c"
+   "file": "local3.c"
   },
   "zzzcode": {
    "ours": "0x567c-0x63fa",
@@ -2606,7 +2606,7 @@
    },
    "orig_note": "d=37 after char c and register locals: switch dispatch (D6), D3, D7; the old name table was data",
    "size_orig": 3606,
-   "file": "zzz3.c"
+   "file": "local3.c"
   },
   "cbgen": {
    "ours": "0x63fa-0x6464",
@@ -2636,7 +2636,7 @@
    },
    "orig_note": "auto-paired orig 0x460e is indope; wrong pairing, removed",
    "size_orig": 102,
-   "file": "zzz3.c"
+   "file": "local3.c"
   },
   "codgen": {
    "ours": "0x6464-0x64ae",
@@ -3127,7 +3127,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 218,
-   "file": "gen3.c"
+   "file": "local3.c"
   },
   "genscall": {
    "ours": "0x774c-0x775a",
@@ -3154,7 +3154,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 20,
-   "file": "gen3.c"
+   "file": "local3.c"
   },
   "nextcook": {
    "ours": "0x775a-0x7794",
@@ -3179,7 +3179,7 @@
    },
    "orig_note": "identical",
    "size_orig": 58,
-   "file": "gen3.c"
+   "file": "local3.c"
   },
   "lastchance": {
    "ours": "0x7794-0x77b8",
@@ -3206,7 +3206,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 34,
-   "file": "gen3.c"
+   "file": "local3.c"
   },
   "icright": {
    "ours": "0x77b8-0x77e0",
@@ -3234,7 +3234,7 @@
    },
    "orig_note": "D3",
    "size_orig": 46,
-   "file": "gen3.c"
+   "file": "local3.c"
   },
   "canon2": {
    "ours": "0x77e0-0x77fc",
@@ -3261,7 +3261,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 28,
-   "file": "gen3.c"
+   "file": "local3.c"
   },
   "mycanon": {
    "ours": "0x77fc-0x7860",
@@ -3286,7 +3286,7 @@
    },
    "orig_note": "identical (switch with break cases)",
    "size_orig": 100,
-   "file": "gen3.c"
+   "file": "local3.c"
   },
   "stoasg": {
    "ours": "0x7860-0x787e",
@@ -3313,7 +3313,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 34,
-   "file": "gen3.c"
+   "file": "order3.c"
   },
   "mkadrs": {
    "ours": "0x787e-0x79a2",
@@ -3341,7 +3341,7 @@
    },
    "orig_note": "D3 scratch registers",
    "size_orig": 288,
-   "file": "gen3.c"
+   "file": "order3.c"
   },
   "isint": {
    "ours": "0x79a2-0x79bc",
@@ -4455,7 +4455,7 @@
     "len_orig": 121
    },
    "size_orig": 372,
-   "file": "main3.c"
+   "file": "reader3.c"
   },
   "init": {
    "ours": "0x9708-0x979a",
@@ -4481,43 +4481,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 158,
-   "file": "main3.c"
-  },
-  "main": {
-   "ours": "0x979a-0x9c96",
-   "table_orig": "0x023c",
-   "orig": "0x023c",
-   "pairing": "confirmed",
-   "pairing_evidence": "review: name from KNOWLEDGE (main 0x023c); the same strings (error in reading data file, .even, .addr); length 386 / 390",
-   "level": "differs",
-   "audit": {
-    "d_normalised_pct": 69,
-    "pattern_diff": 234,
-    "pattern_unexplained": 0,
-    "reordered_instructions": 4,
-    "reordered_examples": [
-     "ld\trS,rS",
-     "ld\trS,rS"
-    ],
-    "difference_class": "D only (pattern-verified)",
-    "d_classes": [
-     "D1",
-     "D10",
-     "D13",
-     "D2",
-     "D3",
-     "D6",
-     "D7",
-     "D8",
-     "D8/D2"
-    ],
-    "structure_flags": [],
-    "len_ours": 386,
-    "len_orig": 390
-   },
-   "orig_note": "not compared yet",
-   "size_orig": 1310,
-   "file": "main3.c"
+   "file": "reader3.c"
   },
   "lineout": {
    "ours": "0x9c96-0x9cae",
@@ -4540,7 +4504,7 @@
    },
    "orig_note": "efcode3.c: printf(\"\\t.line\\t%d\\t%s\\t\\n\", ...); called from main (case .) with ifline and ifname",
    "size_orig": 26,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "funcend": {
    "ours": "0x9cae-0x9d0a",
@@ -4565,7 +4529,7 @@
    },
    "orig_note": "identical up to the ret",
    "size_orig": 92,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "fpinc": {
    "ours": "0x9d0a-0x9d2a",
@@ -4591,7 +4555,7 @@
     "len_orig": 14
    },
    "size_orig": 40,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "fpdec": {
    "ours": "0x9d2a-0x9d4a",
@@ -4617,7 +4581,7 @@
     "len_orig": 14
    },
    "size_orig": 40,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "regrestore": {
    "ours": "0x9d4a-0x9e12",
@@ -4643,7 +4607,7 @@
     "len_orig": 64
    },
    "size_orig": 196,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "regsave": {
    "ours": "0x9e12-0x9edc",
@@ -4669,7 +4633,7 @@
     "len_orig": 65
    },
    "size_orig": 198,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "epilog": {
    "ours": "0x9edc-0x9f2e",
@@ -4695,7 +4659,7 @@
     "len_orig": 26
    },
    "size_orig": 78,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "regargs": {
    "ours": "0x9f2e-0xa106",
@@ -4722,7 +4686,7 @@
     "len_orig": 147
    },
    "size_orig": 466,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "prolog": {
    "ours": "0xa106-0xa160",
@@ -4748,7 +4712,7 @@
     "len_orig": 29
    },
    "size_orig": 86,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "efcode": {
    "ours": "0xa160-0xa216",
@@ -4777,7 +4741,7 @@
    },
    "orig_note": "NOT verified: saved register set and an addl difference: check",
    "size_orig": 154,
-   "file": "efcode3.c"
+   "file": "local3.c"
   },
   "hdrout": {
    "ours": "0xa216-0xa228",
@@ -4800,7 +4764,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 18,
-   "file": "lcl3.c"
+   "file": "wrt3.c"
   },
   "endline": {
    "ours": "0xa228-0xa276",
@@ -4823,7 +4787,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 82,
-   "file": "lcl3.c"
+   "file": "wrt3.c"
   },
   "endrun": {
    "ours": "0xa276-0xa27a",
@@ -4846,7 +4810,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 4,
-   "file": "lcl3.c"
+   "file": "wrt3.c"
   },
   "parminit": {
    "ours": "0xa27a-0xa546",
@@ -4880,7 +4844,7 @@
     "len_orig": 229
    },
    "size_orig": 778,
-   "file": "lcl3.c"
+   "file": "wrt3.c"
   },
   "structretcode": {
    "ours": "0xa546-0xa5a2",
@@ -4903,7 +4867,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 92,
-   "file": "lcl3.c"
+   "file": "wrt3.c"
   },
   "fbegin": {
    "ours": "0xa5a2-0xa6d6",
@@ -4932,7 +4896,7 @@
    },
    "orig_note": "structsz /16 (fixed); D1",
    "size_orig": 308,
-   "file": "lcl3.c"
+   "file": "wrt3.c"
   },
   "regtabinit": {
    "ours": "0xa6d6-0xa6de",
@@ -4955,7 +4919,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 8,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "tabfind": {
    "ours": "0xa6de-0xa718",
@@ -4980,7 +4944,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 60,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "tabclear": {
    "ours": "0xa718-0xa750",
@@ -5006,7 +4970,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 60,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "fixtemp": {
    "ours": "0xa750-0xa8ca",
@@ -5036,7 +5000,7 @@
    },
    "orig_note": "D3, D6",
    "size_orig": 378,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "fixfld": {
    "ours": "0xa8ca-0xa988",
@@ -5064,7 +5028,7 @@
     "len_orig": 60
    },
    "size_orig": 200,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "mapregs": {
    "ours": "0xa988-0xaa88",
@@ -5096,7 +5060,7 @@
    },
    "orig_note": "D3, D6 partly; if chain now",
    "size_orig": 314,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "symuse": {
    "ours": "0xaa88-0xaad2",
@@ -5121,7 +5085,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 74,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "symreg": {
    "ours": "0xaad2-0xab2a",
@@ -5152,7 +5116,7 @@
    },
    "orig_note": "D2: a leaf function; the original saves three registers (r10-r12), the shipped cc keeps n in a scratch register",
    "size_orig": 94,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "regforsym": {
    "ours": "0xab2a-0xabb6",
@@ -5179,7 +5143,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 140,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "fixname": {
    "ours": "0xabb6-0xac1c",
@@ -5205,7 +5169,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 100,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "oregfix": {
    "ours": "0xac1c-0xacd2",
@@ -5231,7 +5195,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 144,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "findtemp": {
    "ours": "0xacd2-0xad04",
@@ -5256,7 +5220,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 52,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "fcmd": {
    "ours": "0xad04-0xad98",
@@ -5282,7 +5246,7 @@
    },
    "orig_note": "identical after spare register and removed s = 0",
    "size_orig": 152,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "regreset": {
    "ours": "0xad98-0xae38",
@@ -5305,7 +5269,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 162,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "rcmd": {
    "ours": "0xae38-0xafe6",
@@ -5336,7 +5300,7 @@
     "len_orig": 133
    },
    "size_orig": 438,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "memname": {
    "ours": "0xafe6-0xb05c",
@@ -5364,7 +5328,7 @@
    },
    "orig_note": "auto, verified: identical",
    "size_orig": 120,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "scmd": {
    "ours": "0xb05c-0xb192",
@@ -5396,7 +5360,7 @@
     "len_orig": 100
    },
    "size_orig": 308,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "tcmd": {
    "ours": "0xb192-0xb2aa",
@@ -5428,7 +5392,7 @@
     "len_orig": 109
    },
    "size_orig": 342,
-   "file": "lcl3.c"
+   "file": "regs3.c"
   },
   "gswitch": {
    "ours": "0xb32a-0xb652",
@@ -5531,7 +5495,7 @@
     "len_orig": 4
    },
    "size_orig": 10,
-   "file": "tr3.c"
+   "file": "lcl3.c"
   },
   "clocal": {
    "ours": "0xb6ec-0xb9f2",
@@ -5561,7 +5525,7 @@
     "layout_note": "D15 block order (cause not measured; if/else order ruled out, see host/KNOWLEDGE.md D15): 80 instructions at another place. Branch swap in the source rejected (clocal-size-01)."
    },
    "size_orig": 902,
-   "file": "tr3.c"
+   "file": "lcl3.c"
   },
   "member": {
    "ours": "0xb9f2-0xba8c",
@@ -5644,6 +5608,57 @@
    },
    "size_orig": 188,
    "file": "tr3.c"
+  },
+  "mainp2": {
+   "ours": "0x979a-0x9c96",
+   "table_orig": "0x023c",
+   "orig": "0x023c",
+   "pairing": "confirmed",
+   "pairing_evidence": "review: name from KNOWLEDGE (main 0x023c); the same strings (error in reading data file, .even, .addr); length 386 / 390",
+   "level": "differs",
+   "audit": {
+    "d_normalised_pct": 69,
+    "pattern_diff": 234,
+    "pattern_unexplained": 0,
+    "reordered_instructions": 4,
+    "reordered_examples": [
+     "ld\trS,rS",
+     "ld\trS,rS"
+    ],
+    "difference_class": "D only (pattern-verified)",
+    "d_classes": [
+     "D1",
+     "D10",
+     "D13",
+     "D2",
+     "D3",
+     "D6",
+     "D7",
+     "D8",
+     "D8/D2"
+    ],
+    "structure_flags": [],
+    "len_ours": 386,
+    "len_orig": 390
+   },
+   "orig_note": "not compared yet",
+   "size_orig": 1310,
+   "file": "reader3.c"
+  },
+  "main": {
+   "orig": "0x4868",
+   "size_orig": 22,
+   "file": "local3.c"
+  },
+  "rwprint": {
+   "orig": "0x6fca",
+   "size_orig": 142,
+   "file": "allo3.c"
+  },
+  "syserror": {
+   "orig": "0x854c",
+   "size_orig": 36,
+   "file": "comm3.c"
   }
  },
  "findings": [],

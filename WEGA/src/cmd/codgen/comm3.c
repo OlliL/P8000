@@ -1,41 +1,122 @@
 /*
- * comm3.c - messages, the tree pool, the tree walkers, a few small helpers (codgen / scodgen)
- *
- * Reconstructed from /lib/codgen: uerror() 0x8570, cerror() 0x85ae, werror() 0x862e, tinit() 0x866c, talloc() 0x869c,
- * tcheck() 0x86fa, tfree() 0x873c, fwalkd() 0x8774, fwalk() 0x87ec, dopeinit() 0x8844, tbytes() 0x8970, rallkind() 0x89a2,
- * errexit() 0x89ce, branch() 0x89e8, ncopy() 0x8a02, alloc() 0x8b6e, allocinit() 0x8bea, prline() 0x8952.
- * Names are guesses. The nodes come from a pool of 500 nodes of 0x12 bytes.
+ * comm3.c - errors, the tree pool, tree walks, small helpers, memory
  */
 #include "cg.h"
+#include "cg2.h"
 
-#define NTREE	500
+extern char *alloc();
+extern void allocinit();
+extern int argsize();
+extern void branch();
+extern int bsize();
+extern int cerror();
+extern void d3jlabel();
+extern void d3jsave();
+extern void d3kjump();
+extern int d3knamed();
+extern void d3kreset();
+extern int dope[];
+extern void dopeinit();
+extern void errexit();
+extern void fwalk();
+extern void fwalkd();
+extern int getreg();
+extern int ifline;
+extern char ifname[];
+extern struct indope indope[];
+extern int ispow2();
+extern struct node *lastfree;
+extern void ncopy();
+extern int nerrors;
+extern struct node node[];
+extern char *opst[];
+extern int plainicon();
+extern int rallkind();
+extern void rbusy();
+extern int revrel[];
+extern void rfree();
+extern char *rnames[];
+extern struct rs *rsfree;
+extern void rsreturn();
+extern struct rs *rsuse;
+extern char *sbrk();
+extern void syserror();
+extern int szty();
+extern struct node *talloc();
+extern int tbytes();
+extern void tcheck();
+extern struct node *tcopy();
+extern void tfree();
+extern void tinit();
+extern void uerror();
+extern void werror();
+static char sccsid[] = "@[$]comm3.c\t2.1  11/15/82 12:48:27 Copr. 1981 87wega3.2.";
+char unused6[16] = { 0 };
+char ifname[16] = { 0 };
+static char commsccs[] = "@[$]common\t2.5  08/24/83 16:19:58 Copr. 1981 87wega3.2.";
+int nerrors = 0;
+int unused8[9] = { 0 };
+#ifdef SEG
+#include "ops_scodgen.c"
+#else
+#include "ops_codgen.c"
+#endif
+
+
+#define MAXRCOUNT 5000
+
+#define RLEFT	01
+
+#define RRIGHT	02
+
+#define RESC1	04
+
+#define RESC2	010
+
+#define RESC3	020
+
+#define RESCC	04000
+
+#define RESC	02000		/* rewrite & 0x400: the second register of a long result */
+
+#define RNULL	0
+
+#define RNOP	010000
+
+#define FOREFF	01
+
+/* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
+#ifdef SEG
+#define PTRWORDS	2
+#else
+#define PTRWORDS	1
+#endif
+
+#define TEMPWORDS(p, nfield) \
+	((p->op == STCALL || p->op == STARG || p->op == USTCALL || p->op == STASG) ? ((unsigned)((p->stsize << 3) + 15)) >> 4 : \
+	 (p->type == 5 || p->type == 15) ? 2 : (p->type & 0x30) == 0x10 ? PTRWORDS : \
+	 p->type == 7 ? 4 : p->type == 6 ? 2 : (nfield))
+
 #define NERRMAX	30
 
-extern int cerror();
-extern void fwalk(), errexit();
-extern char *sbrk();
-extern int dope[];
-extern char *opst[];
-extern struct indope indope[];	/* 0x3b92: op, dope flags, name; ends with op -1 */
-char ifname[72];		/* 0x3b36: the file name of the intermediate file line */
-int dope[128];			/* 0x8d0a */
-char *opst[128];		/* 0x8e1a */
-extern int ifline;		/* 0x8fc8 */
-int nerrors;			/* 0x3b7e */
-struct node node[NTREE];	/* 0x69e2 */
-struct node *lastfree = node;	/* 0xa7b4 */
+
 static char *curbrk, *endbrk;	/* 0x4060, 0x405e */
+
 static int firstalloc = 1;	/* 0x4062 */
 
-/* the file and line of the intermediate file in front of an error message */
-static void
-prline(c)
-	int c;
-{
-	fprintf(stderr, "%s:%d: ", ifname, ifline);
-}
+static void prline();
+static void free1();
 
 /* an error in the source program */
+void
+syserror(s)
+	char *s;
+{
+	fprintf(stderr, "system call error: ");
+	perror(s);
+	errexit(0x40);
+}
+
 void
 uerror(s, a)
 	char *s;
@@ -118,6 +199,14 @@ tcheck()
 	tinit();
 }
 
+void
+tfree(p)
+	struct node *p;
+{
+	if (p->op != FREE)
+		fwalk(p, free1);
+}
+
 static void
 free1(p)
 	struct node *p;
@@ -126,14 +215,6 @@ free1(p)
 		cerror("freeing blank tree!");
 	else
 		p->op = FREE;
-}
-
-void
-tfree(p)
-	struct node *p;
-{
-	if (p->op != FREE)
-		fwalk(p, free1);
 }
 
 /* walk the tree before the operands, with the value passed down: f(p, down, &down1, &down2) */
@@ -194,6 +275,74 @@ dopeinit()
 	}
 }
 
+/* size of a type in bits (pointers 16, segmented 32); SHORT and USHORT do not occur (cparse maps them to int) */
+char *rnames[] = {
+	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "fp",
+	"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
+};
+
+int
+bsize(t)
+	int t;
+{
+	switch (t) {
+	case 2: case 12: return 8;			/* CHAR UCHAR */
+	case 4: case 14: return 16;			/* INT UNSIGNED */
+	case 5: case 6: case 15: return 32;		/* LONG FLOAT ULONG */
+	case 7: return 64;				/* DOUBLE */
+	}
+	if ((t & 0x30) == 0x10)
+#ifdef SEG
+		return 32;				/* a pointer */
+#else
+		return 16;				/* a pointer */
+#endif
+	cerror("illegal bsize type: %%%0.2x\n", t);
+	return t;
+}
+
+/* size of a type in words: long, float and unsigned long 2, double 4, everything else 1 */
+int
+szty(t)
+	int t;
+{
+	switch (t) {
+	case 4: return 1;
+	case 5: case 6: case 15: return 2;
+	case 7: return 4;
+	}
+	if ((t & 0x30) == 0x10)
+#ifdef SEG
+		return 2;
+#else
+		return 1;		/* no effect: the original has the test in both versions */
+#endif
+	return 1;
+}
+
+/* size of an argument in words (0x88f6): a structure argument by its size, a float counts as a double */
+int
+argsize(p)
+	register struct node *p;
+{
+	int t;
+
+	if (p->op == STARG)
+		return (unsigned)p->stsize >> 1;
+	if (p->op == NAME && p->type == 8)
+		return p->sname->ssize / 16;
+	t = szty(p->type == 6 ? 7 : p->type);
+	return t;
+}
+
+/* the file and line of the intermediate file in front of an error message */
+static void
+prline(c)
+	int c;
+{
+	fprintf(stderr, "%s:%d: ", ifname, ifline);
+}
+
 /* the size in bytes of a type: 1, 2 or 4 */
 int
 tbytes(t)
@@ -237,9 +386,6 @@ errexit(n)
 	exit(n);
 }
 
-#ifdef OLD_D3K
-void d3kjump();
-#endif
 void
 branch(n)
 	int n;
@@ -434,6 +580,60 @@ ncopy(q, p)
 	*q = *p;
 }
 
+/* ---- trees (the pool and the walkers are in comm3.c) ---- */
+
+/* a copy of the tree; the registers it uses count as busy once more */
+struct node *
+tcopy(p)
+	register struct node *p;
+{
+	register struct node *q = talloc();
+	register int r = p->rval;
+	int kind;
+
+	ncopy(q, p);
+	if (p->op == REG)
+		rbusy(r, p->type, p->sname, p->lval);
+	else if (p->op == OREG) {
+		if (r >= 0x100) {
+			rbusy((r & 0xFF) - 1, 0x14, p->sname, p->lval);
+			if (r & 0xFF)
+				rbusy((r >> 8) - 1, 4, p->sname, p->lval);
+		} else if (p->lval != 0 || p->sname != 0 || p->stsize < 0)
+			rbusy(r, 4, p->sname, p->lval);
+		else
+			rbusy(r, 0x14, p->sname, p->lval);
+	}
+	kind = dope[q->op] & 0xE;
+	if (kind == BITYPE)
+		q->right = tcopy(p->right);
+	if (kind != LTYPE)
+		q->left = tcopy(p->left);
+	return q;
+}
+
+/* log2 of a power of two, else -1 */
+int
+ispow2(c)
+	register long c;
+{
+	int n;
+
+	if (c <= 0 || (c & (c - 1)))
+		return -1;
+	for (n = 0; c > 1; c >>= 1)
+		n++;
+	return n;
+}
+
+/* is p->lval an operand that a one word instruction takes: an unnamed constant */
+int
+plainicon(p)
+	struct node *p;
+{
+	return p->op == ICON && p->sname == 0 && p->rval >= 0;
+}
+
 /* memory from the system in steps of at most 2000 bytes, never freed */
 char *
 alloc(n)
@@ -470,3 +670,5 @@ allocinit(base)
 	endbrk = curbrk = base;
 	endbrk--;
 }
+
+int revrel[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };

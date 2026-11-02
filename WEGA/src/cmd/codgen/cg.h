@@ -183,7 +183,6 @@ struct optab {
 	char	*cstring;
 };
 extern struct optab table[];
-extern int ntable;
 
 struct indope { int op; char name[8]; int flags; };	/* 12 bytes like the original */
 extern struct indope indope[];

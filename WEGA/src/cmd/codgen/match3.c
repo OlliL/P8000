@@ -1,31 +1,109 @@
 /*
- * match3.c - shapes, types and the operator index of the table (codgen / scodgen)
- *
- * Reconstructed from the functions at 0x5e92 (tshape), 0x5ff6 (ttype) and 0x60e2 (setrew) of /lib/codgen.
- * Work in progress: match() and the rest of the module follow, see ../KNOWLEDGE.md.
+ * match3.c - the template matcher
  */
 #include "cg.h"
+#include "cg2.h"
+
+extern void acon();
+extern void adrput();
+extern int allo();
+extern int bsize();
+extern int cerror();
+extern void conput();
+extern struct node *d16acmp;
+extern struct node *d2ranode;
+extern int d2rareg;
+extern int dope[];
+extern void expand();
+extern void fixname();
+extern int fldoff;
+extern int fldshf;
+extern int fldsz;
+extern struct sym *fpsym1;
+extern struct node *getlr();
+extern int getreg();
+extern void hopcode();
+extern void insput();
+extern int ltypeok();
+extern int ltypeop();
+extern int match();
+extern struct node node[];
+extern int nosuffix;
+extern int opclass[];
+extern struct optab *opptr[];
+extern void oregfix();
+extern void prlong();
+extern int rclass();
+extern void rcount();
+extern void reclaim();
+extern struct node resc[];
+extern struct rs *rfind();
+extern void rfree();
+extern int rlmode;
+extern int rmode;
+extern void rmove();
+extern int rstatus[];
+extern struct optab *rwdefault;
+extern void setrew();
+extern int shtemp();
+extern int shumul();
+extern int special();
+extern void symdrop();
+extern void symuse();
+extern int szty();
+extern int tflag;
+extern int tshape();
+extern int ttype();
+extern void upput();
+extern void zzzcode();
+static char sccsid[] = "@[$]match3.c\t2.4  08/24/83 13:18:24 Copr. 1981 87wega3.2.";
+int opclass[] = {
+	0x20, 0x21, 0x40, 0x41, 0x800, 0x801, 0x80, 0x81, 0x4, 0xe, 0x2, 0xe, 0x0, 0x2001, 0x10, 0xe,
+	0x100, 0x101, 0x1000, 0x1001, 0x8000, 0x8001, 0x200, 0x201, 0x4000, 0xe,
+};
+char *ocnames[] = {
+	"OPSIMP",
+	"ASG OPSIMP",
+	"OPCOMM",
+	"ASG OPCOMM",
+	"OPMUL",
+	"ASG OPMUL",
+	"OPDIV",
+	"ASG OPDIV",
+	"OPUNARY",
+	"ASG OPUNARY",
+	"OPLEAF",
+	"ASG OPLEAF",
+	"OPANY",
+	"ASG OPANY",
+	"OPLOG",
+	"ASG OPLOG",
+	"OPLONG",
+	"ASG OPLONG",
+	"OPSHFT",
+	"ASG OPSHFT",
+	"OPBIT",
+	"ASG OPBIT",
+	"OPFLOAT",
+	"ASG OPFLOAT",
+	"OPLTYPE",
+	"ASG OPLTYPE",
+};
 
 /* register data (regs3): flag bits of a register, by register number */
 #define RBFLAG	0x0008		/* a register of the B class (long registers) */
+
 #define RTEMPFLAGS 0x0014	/* the register is a scratch (STAREG or STBREG) register */
-#ifdef OLD_D16A
-extern struct node *d16acmp;
-#endif
-#ifdef OLD_D2RA
-struct node *d2ranode;	/* the last r0 + rN and its rN (offstar) */
-int d2rareg;
-#endif
-extern int rstatus[];
 
-int fldsz, fldoff, fldshf;	/* the field that tshape found (size, offset, shift) */
+#define NOMATCH	0x1000
 
-/* local3.c helpers used here */
-extern int special();	/* SPECIAL | n shapes of the machine */
-extern int shltype();	/* a leaf, or a star over something addressable */
-extern int shtemp();		/* the operand lives in a register variable or is a constant */
-extern int shumul();		/* STARNM / STARREG / SOREG shapes that p fits */
-extern int ltypeop();		/* the operator of p is NAME, REG, ICON or OREG */
+#define MDONE	0x1001
+
+#define FORREW	0x4000
+
+#define SCONV	110
+
+#define REWRITE	0x1000		/* in q->needs: the entry only rewrites the tree, q->rewrite is the answer */
 
 /* does the node p fit the shape? */
 int
@@ -119,15 +197,6 @@ ttype(t, tword)
  * The operator classes of the table: an entry whose op is 0x1000 + k stands for every operator whose dope flags
  * match opclass[k] (OPSIMP, ASG OPSIMP, OPCOMM, ... in pairs). Data at 0x3530 of /lib/codgen.
  */
-int opclass[] = {
-	0x20, 0x21, 0x40, 0x41, 0x800, 0x801, 0x80, 0x81, 0x4, 0xe, 0x2, 0xe, 0x0, 0x2001, 0x10, 0xe,
-	0x100, 0x101, 0x1000, 0x1001, 0x8000, 0x8001, 0x200, 0x201, 0x4000, 0xe,
-};
-
-struct optab *opptr[128];	/* the first table entry that can serve an operator */
-struct optab *rwdefault;	/* the entry with needs == 0x1000 (the default rewrite entry) */
-extern int cerror();
-extern int ltypeok();	/* local3.c 0x3e1c */
 
 /* build opptr[] */
 void
@@ -170,50 +239,6 @@ setrew()
 			}
 		}
 	}
-}
-
-/* ---- match() ----------------------------------------------------------------------------------------- */
-
-#define NOMATCH	0x1000
-#define MDONE	0x1001
-#define FORREW	0x4000
-#define SCONV	110
-#define REWRITE	0x1000		/* in q->needs: the entry only rewrites the tree, q->rewrite is the answer */
-
-extern void rcount();
-extern int ltypeok();
-extern void fixname();		/* 0xa0c6: a NAME that lives in a register becomes REG, an auto becomes OREG */
-extern void oregfix();		/* 0xa12a: a NAME of an auto or a parameter becomes OREG off the frame pointer */
-#ifdef OLD_D2C
-extern void symdrop();
-#endif
-extern void symuse();			/* 0x964c: note that the symbol of an assignment target is used */
-extern int allo();	/* 0x67e8: get the registers the entry needs */
-extern void expand();	/* 0x6444 */
-extern void reclaim();	/* 0x7058 */
-#ifdef OLD_D2A
-extern int getreg();
-extern void rmove(), rfree();
-#endif
-extern int bsize();
-extern struct node resc[];			/* the work registers RESC1 .. RESC3 (0x12 byte nodes at 0x8f24) */
-
-/* the node an operand letter of a template stands for */
-struct node *
-getlr(p, c)
-	struct node *p;
-	char c;
-{
-	switch (c) {
-	case '1': case '2': case '3':
-		return &resc[c - '1'];
-	case 'L': case 'l':
-		return (dope[p->op] & 0xE) == LTYPE ? p : p->left;
-	case 'R': case 'r':
-		return (dope[p->op] & 0xE) == BITYPE ? p->right : p;
-	}
-	cerror("bad getlr: %c", c);
-	return 0;
 }
 
 /*
@@ -384,4 +409,121 @@ select:
 #endif
 		return MDONE;
 	}
+}
+
+/* expand the template cp for the tree p */
+int tflag = 0;
+
+void
+expand(p, cookie, cp)
+	register struct node *p;
+	register int cookie;
+	register char *cp;
+{
+	register long m;
+	register struct node *r;
+	register struct rs *n;
+	int k;
+
+	tflag = 0;
+	for (; *cp; cp++) {
+		switch (*cp) {
+		case 'A':
+			adrput(getlr(p, *++cp));
+			break;
+		case 'B':
+			r = getlr(p, *++cp);
+			printf("%ld", r->lval & 1);
+			break;
+		case 'F':			/* the line is only for a result that is used */
+			if (cookie & SANY)
+				while (*++cp != '\n')
+					;
+			break;
+		case 'H':
+			printf("%d", fldshf);
+			break;
+		case 'I':
+			insput(getlr(p, *++cp));
+			break;
+		case 'L':
+			printf("%d", p->label);
+			break;
+		case 'M': case 'N':
+			m = ((1L << fldsz) - 1) << fldshf;
+			prlong(*cp == 'M' ? m : ~m);
+			break;
+		case 'O':
+			hopcode(p);
+			cp++;
+			break;
+		case 'S':
+			printf("%d", fldsz);
+			break;
+		case 'T':
+			tflag = 1;
+			break;
+		case 'U':
+			upput(getlr(p, *++cp));
+			break;
+		case 'V':
+			rmode++;
+			break;
+		case 'W':
+			rlmode++;
+			break;
+		case 'X':
+			rlmode = rmode = 0;
+			break;
+		case 'Y':
+			r = getlr(p, 'R');
+			if (r->op == FLD)
+				r = r->left;
+			if (r->op == ICON)
+				acon(r);
+			else
+				adrput(getlr(p, 'R'));
+			break;
+		case 'Z':
+			zzzcode(p, *++cp);
+			break;
+		case 'C':
+			/* the result register of a call holds the value of the right operand: note it for the register file */
+			r = getlr(p, *++cp);
+			k = rclass(p->type, resc[0].rval);
+			n = rfind(resc[0].rval, k);
+			if (p->op == UCALL)
+				n->sym = 0;
+			else {
+				n->off = r->lval;
+				n->sym = fpsym1;
+				n->flags |= 0x8000;
+			}
+			conput(r);
+			break;
+		default:
+			putchar(*cp);
+		}
+	}
+	nosuffix = rlmode = rmode = 0;
+}
+
+/* ---- match() ----------------------------------------------------------------------------------------- */
+
+/* the node an operand letter of a template stands for */
+struct node *
+getlr(p, c)
+	struct node *p;
+	char c;
+{
+	switch (c) {
+	case '1': case '2': case '3':
+		return &resc[c - '1'];
+	case 'L': case 'l':
+		return (dope[p->op] & 0xE) == LTYPE ? p : p->left;
+	case 'R': case 'r':
+		return (dope[p->op] & 0xE) == BITYPE ? p->right : p;
+	}
+	cerror("bad getlr: %c", c);
+	return 0;
 }

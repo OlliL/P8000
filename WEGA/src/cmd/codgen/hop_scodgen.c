@@ -1,6 +1,4 @@
 /* scodgen: hoptab, floating and integer */
-struct hoptab { int op; char *str; int tword; };
-
 struct hoptab fhoptab[] = {
 	{ 7, "fadd", 0x30 },
 	{ 9, "fsub", 0x30 },

@@ -1,47 +1,73 @@
 /*
- * regallo3.c - the register status lists (codgen / scodgen)
- *
- * Reconstructed from /lib/codgen: rsinit 0x740c, rsbuild 0x7458, newnode 0x75e0, rsinsert 0x7650, roverlap 0x7790,
- * regjam 0x7916, getreg 0x7c10, rsreturn 0x7f50, nullsyms 0x811e, rsrelease 0x847a. rsfreeall 0x815e,
- * rspush 0x81c4, rsmerge 0x81fe, rsmatch 0x83ec, rsrelall 0x84b6, rsrestart 0x8502, rsdump 0x750c (debug).
- * rspush, rsmatch, rsrelall, rsrestart and rsdump are never called in codgen.
- *
- * The registers are kept on two lists of 14 byte nodes: rsfree (the free registers, ordered by class) and rsuse
- * (the ones that are in use). A register class is: 1 byte register, 2 word register, 3 long register, 4 float
- * register, 6 word register for variables (r14), 7 long register for variables, 8 float register for variables;
- * the node of a long register is split into two word nodes when one of its halves is wanted, and merged again
- * when both are free.
+ * regallo3.c - the register lists
  */
 #include "cg.h"
+#include "cg2.h"
 
+extern char ascii[];
 extern int cerror();
-extern int roverlap();
+extern int d2vfirst();
+extern struct sym *fpsym1;
+extern struct sym *fpsym2;
 extern int getreg();
+extern struct rs *newnode();
+extern void nullsyms();
+extern int pairmate();
+extern struct rs pool[];
+extern void rcount_reset();
+extern int regjam();
+extern int roverlap();
+extern void rsbuild();
+extern int rsdepth;
+extern void rsdump();
+extern struct rs *rsexcl;
+extern int rsflag1;
+extern int rsflag2;
+extern struct rs *rsfree;
+extern void rsfreeall();
+extern void rsinit();
+extern void rsinsert();
+extern int rsmatch();
+extern void rsmerge();
+extern struct rs *rspool;
+extern void rspush();
+extern void rsrelall();
+extern void rsrelease();
+extern void rsrestart();
 extern void rsreturn();
-
-
-#define NPOOL	87
-static struct rs pool[NPOOL];
-struct rs *rsexcl;		/* 0xa79a: nodes taken away from rsuse by rsmerge */
-struct rs *rsfree, *rsuse, *rspool;	/* 0xa154, 0xa166, 0xa79c */
-int rsdepth;			/* 0xa7aa: saved lists */
-struct { struct rs *list; int mark; } rsstk[3];	/* the saved lists and their marks, interleaved */
-int rsflag1;			/* 0xa2d6: number of entries of rstab1 */
-int rstab1[3];			/* 0xa2d0 */
-int rsflag2;			/* 0xa7ac: number of entries of rstab2 */
-int rstab2[3];			/* 0xa7ae */
-
-/* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
+extern struct { struct rs *list; int mark; } rsstk[];
+extern int rstab1[];
+extern int rstab2[];
+extern struct rs *rsuse;
+static char sccsid[] = "@[$]regallo3.c\t2.5  08/24/83 13:36:00 Copr. 1981 87wega3.2.";
+static char rcname[][8] = {
+	"TBYTE", "TWORD", "TLONG", "TFLOAT", "GBYTE", "GWORD", "GLONG", "GFLOAT", "RANY", "NULL"
+};
 #ifdef OLD_D2W
 static int rweight[8] = { 3, 1, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is taken early (pairs rr2, rr0 first) */
 #else
 static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
 #endif
+
+#define MAXRCOUNT 5000
+
+
+
+/* the order of the word registers when a node is put on the free list: r1 .. r7, then r0 */
+
 #ifdef OLD_D2PT
 #define D2PK(t)	1		/* v0p: OLD_D2P takes the registers of a TEMP too (the value of a switch) */
 #else
 #define D2PK(t)	((t)->kind != 6)
 #endif
+
+/* the other register of a pair */
+int
+pairmate(r)
+	int r;
+{
+	return r & 1 ? r - 1 : r + 1;
+}
 
 void
 rsinit()
@@ -68,22 +94,6 @@ rsinit()
 	last->next = 0;
 	rsuse = 0;
 	rsfree = 0;
-}
-
-/* give the nodes of a list back to the pool */
-void
-rsrelease(l)
-	register struct rs *l;
-{
-	register struct rs *n;
-	register struct rs *last;
-
-	if (l == 0)
-		cerror("freelist: null list");
-	for (last = n = l; n; last = n, n = n->next)
-		;
-	last->next = rspool;
-	rspool = l;
 }
 
 /* the free list at the start of a function: rr2 rr4 rr6 rr0, f0-f3, r14, rr8 rr10 rr12, f4-f7 */
@@ -140,6 +150,30 @@ rsbuild()
 	}
 	last->next = 0;
 	rspool = n;
+}
+
+/* debug: print a list of register nodes */
+
+void
+rsdump(l)
+	register struct rs *l;
+{
+	register struct rs *n;
+
+	printf("//\n//   Reg No.\tType\tSymbol\tusecount\toffset\taddr\tdtype\n");
+	for (n = l; n; n = n->next) {
+		printf("//\t%d", n->reg);
+		printf("\t%s", rcname[n->cls - 1]);
+		printf("\t%s", ascii + n->sym->nameoff);
+		printf("\t%d", n->busy);
+		printf("\t\t%ld", n->off);
+		printf("\t%d", n->flags >> 15 & 1);
+		if (n->kind == 8)
+			printf("\tDNULL");
+		else if (n->kind == 6)
+			printf("\tDETMP");
+		putchar('\n');
+	}
 }
 
 /*
@@ -244,6 +278,12 @@ rsinsert(n, mode)
 	}
 }
 
+void
+rcount_reset()
+{
+	/* the original has this empty function at 0x778e and nobody calls it; stmt() clears nrecur */
+}
+
 /* does register reg of class cls overlap the register of the node n? */
 int
 roverlap(cls, reg, n)
@@ -328,9 +368,6 @@ roverlap(cls, reg, n)
 		cerror("roverlap: illegal base type");
 	}
 }
-
-extern int getreg();
-void rsreturn();
 
 /*
  * Force a register for a variable out of a larger node: look at the used list for a free
@@ -872,41 +909,6 @@ nullsyms(mode)
 	}
 }
 
-/* the other register of a pair */
-int
-pairmate(r)
-	int r;
-{
-	return r & 1 ? r - 1 : r + 1;
-}
-
-/* debug: print a list of register nodes */
-static char rcname[][8] = {
-	"TBYTE", "TWORD", "TLONG", "TFLOAT", "GBYTE", "GWORD", "GLONG", "GFLOAT", "RANY", "NULL"
-};
-
-void
-rsdump(l)
-	register struct rs *l;
-{
-	register struct rs *n;
-
-	printf("//\n//   Reg No.\tType\tSymbol\tusecount\toffset\taddr\tdtype\n");
-	for (n = l; n; n = n->next) {
-		printf("//\t%d", n->reg);
-		printf("\t%s", rcname[n->cls - 1]);
-		printf("\t%s", ascii + n->sym->nameoff);
-		printf("\t%d", n->busy);
-		printf("\t\t%ld", n->off);
-		printf("\t%d", n->flags >> 15 & 1);
-		if (n->kind == 8)
-			printf("\tDNULL");
-		else if (n->kind == 6)
-			printf("\tDETMP");
-		putchar('\n');
-	}
-}
-
 /*
  * Free the nodes of rsuse that flag selects: 1 the variables of the classes up to 4 that are not
  * register variables (kind 6), 2 the nodes of the classes above 4, 3 all of them.
@@ -1088,6 +1090,22 @@ rsmatch()
 			if (rsstk[j].mark == rstab1[i - 1])
 				rsmerge(&rsstk[j].list);
 	return 1;
+}
+
+/* give the nodes of a list back to the pool */
+void
+rsrelease(l)
+	register struct rs *l;
+{
+	register struct rs *n;
+	register struct rs *last;
+
+	if (l == 0)
+		cerror("freelist: null list");
+	for (last = n = l; n; last = n, n = n->next)
+		;
+	last->next = rspool;
+	rspool = l;
 }
 
 /* give back the saved lists named in rstab2 (the loop runs only for a negative count: dead code); never called */

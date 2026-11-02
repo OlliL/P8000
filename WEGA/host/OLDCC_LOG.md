@@ -988,3 +988,19 @@ Step 1 of the codgen work: `oldcc.sh model codgen` (launchers, `progcfg.py`, `si
   104/104; scodgen 104/104 and 159/165. The 6 cases give the same result before this step (base built from the previous commit), so they are older than
   the step: `codgen_optim3`, `cparse_optim1` stop with `reclaim dest reg not free` (`p->lval *= val`, a long in memory); `doscopy_1.3_dosdir` and
   `pburn_{2.1,2.3,2.6}_pb.cmdline` give other text.
+
+Step 2 of the codgen work: modules, data and bss of the original.
+- Sources in the original's 13 modules with code plus `table3` (`KNOWLEDGE.md`, module map), functions in the original's order. `hop_*.c`, `ops_*.c` are included where the
+  tables stand (`local3.c`, `comm3.c`). The common data in the original's order and sizes in `bss3.c`, linked first; declarations per module (a `cg.h` with all of them runs the v0p passes
+  out of space: `cparse` on `table3_codgen.c` "malloc: Error 0", under the old root it hangs; `codgen` on `local3.c` "Symbol table out of space"). d12model has a time limit of 120 s per step now.
+- A check of the move: with the shipped cc all 233 functions of the old and new files give the same assembler text. The corpus still got worse (3 of 269 codgen files, 11 scodgen) until the
+  bss was the original's: the program depends on its layout. Back at 269/269 and 263/269 (the same 6) afterwards.
+- A wrong order makes the measuring tool wrong too: `lib/v0p/codgen` built from the intermediate state wrote bad code (`fldd` with a word register, cas stops). Rule for the work: build ccv0p from the
+  sources only when the normal build passes the corpus; the model numbers measured with that build are void.
+- Size of arrays found: `numtab[1001]`, `tagtab[550]`, `fname[100]`, `saveorig`, `savecls`, `savereg[2]`, `resc[3]`, `parmtab[11]`, `argl[11]`, `dope`, `opst`, `opptr[129]`, `ifname[16]`, `mem[550]`. `buf` of `rddata` and `readnums` are autos.
+- Tables placed by the data: `revrel` (common), `rev` (local3), `rwtab` behind `zzzcode`, `fldd` and `flds` named arrays, `rnames` in comm3, `rhnames`, `rlnames`, `rstatus` in local3, `opclass`, `ocnames` in match3.
+- Source forms that the data showed: `main` is the forwarder 0x4868 of `mainp2`, `rwprint`, `syserror` added; `clocal` a switch on `p->op` with `case 9` and `case 1` written out, `case 18`; `nxwork` has a `case 0`; `cbranch` the inner switch of 16 relations;
+  branches `n <= 4` first in ZS and ZA of `zzzcode` (the block order that was D15 there), `tot <= 0x10` first in `fpinc`, `fpdec`; `printf("r")` in `conput`.
+- New switch `OLD_D6D` (v0p, cparse): no jump table at exactly 3 values per case. One witness (`zzzcode`, cases 1, 2, 8, 16); cparse and popt do not change.
+- State: code 54016 against 53760 (the rounding of ld to 256), data 27084 and bss 17522 as in the original, 59 of 209 strict, 9803 lines, masked 76 of 209. cparse 178 and popt 72 unchanged with ccv0p built from the new sources; cparse corpus 253/253 (7 source files less
+  in the corpus than before); bench 118/153, 275. `oldcc.sh matrix` is due: step 3 takes codgen into the table.

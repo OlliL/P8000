@@ -10,6 +10,7 @@ that follows the version string "table3.nzcc.c" (codgen) or "table3.szcc.c" (sco
 cstring points to the template text. Entries are printed with their numbers so that the
 comments /* nnn */ of the templates can be found again.
 """
+import re
 import struct
 import sys
 
@@ -60,12 +61,15 @@ def main(path):
             break
     print("/* %s: %d entries, found at data offset 0x%x */" % (path.split("/")[-1], len(ents), start))
     print("#include \"cg.h\"\n")
+    stamps = re.findall(rb"@\[\$\]table3[^\0]*", d)
+    for name, st in zip(("sccsid", "tabsccs"), stamps):
+        print("static char %s[] = \"%s\";" % (name, st.decode().replace("\t", "\\t")))
+    print()
     print("struct optab table[] = {")
     for n, w in enumerate(ents):
         e = d.index(b"\0", w[9])
         print("\t{ %s, %s },\t/* %d */" % (", ".join("0x%x" % x for x in w[:9]), cstr(d[w[9]:e]), n))
     print("};")
-    print("int ntable = %d;" % len(ents))
 
 
 def ops(path):
@@ -83,7 +87,6 @@ def ops(path):
         ents.append((op, name, flags))
         i += 12
     print("/* %s: %d operators (op, name, dope flags) */" % (path.split("/")[-1], len(ents)))
-    print("#include \"cg.h\"\n")
     print("struct indope indope[] = {")
     for op, name, flags in ents:
         print("\t{ %d, %s, 0x%x }," % (op, cstr(name), flags))
@@ -120,7 +123,6 @@ def hop(path):
             ents.append((op, d[sp:d.index(b"\0", sp)], tw))
         tabs.append(ents)
     print("/* %s: hoptab, floating and integer */" % path.split("/")[-1])
-    print("struct hoptab { int op; char *str; int tword; };\n")
     for name, ents in zip(("fhoptab", "ihoptab"), tabs):
         print("struct hoptab %s[] = {" % name)
         for op, st, tw in ents:

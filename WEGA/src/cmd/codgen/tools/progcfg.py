@@ -4,15 +4,12 @@ import os
 NAME = 'codgen'
 ORIG = 'lib/codgen'
 OWN_LIM = 0xbbc4   # the program part of the original ends here (the C library follows)
-OWN_OBJ = (r'^(crt0|allo3|local3|match3|order3|out3|regallo3|regfile3|tmp3|zzz3|reader3|gen3|optim3|'
-           r'comm3|rdr3|main3|efcode3|lcl3|tr3|regs3|table3_c|ops_codg|hop_codg)')
+OWN_OBJ = (r'^(crt0|bss3|reader3|rdr3|local3|order3|match3|allo3|regallo3|comm3|table3_c|wrt3|regs3|lcl3|tr3|optim3)')
 ORIG_LIM = 0x10000  # the original is stripped
 
 # the model of the old compiler v0p (host/OLDCC.md): the sources compiled with ccv0p (CCHOST), the data in the layout
 # of the old cc (d12model.py), linked like `make codgen`; strictcmp compares it with /lib/codgen
-MODULES = ['allo3', 'local3', 'match3', 'order3', 'out3', 'regallo3', 'regfile3', 'tmp3', 'zzz3', 'reader3', 'gen3',
-           'optim3', 'comm3', 'rdr3', 'main3', 'efcode3', 'lcl3', 'tr3', 'regs3',
-           'table3_codgen', 'ops_codgen', 'hop_codgen']
+MODULES = ['bss3', 'reader3', 'rdr3', 'local3', 'order3', 'match3', 'allo3', 'regallo3', 'comm3', 'table3_codgen', 'wrt3', 'regs3', 'lcl3', 'tr3', 'optim3']
 TABLES = []
 D18 = True          # the old cc writes 0(fp) for @fp (v0, OLD_D18)
 D6TABLES = True     # the switch tables in the layout of the old cc (d12model.py d6tables)

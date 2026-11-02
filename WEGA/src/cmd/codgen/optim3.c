@@ -1,242 +1,36 @@
 /*
- * optim3.c - local optimizations of the trees (codgen / scodgen)
- *
- * Reconstructed from /lib/codgen: optim() 0xb178, conval() 0xb774, treeeq() 0xb9ea, convelim() 0xba7c, isint() 0xbba2.
- * The classic PCC optim(): constants are collected, operand order is made canonical, redundant conversions are removed.
- * Names are guesses.
+ * optim3.c - the tree optimizer
  */
 #include "cg.h"
+#include "cg2.h"
+
+extern int bsize();
+extern int cerror();
+extern int conval();
+extern struct node *convelim();
+extern int dope[];
+extern int ispow2();
+extern void ncopy();
+extern struct node node[];
+extern struct node *optim();
+extern int plainicon();
+extern int revrel[];
+extern struct node *tcopy();
+extern void tfree();
+extern int treeeq();
+extern void uerror();
+static char sccsid[] = "@[$]optim3.c\t2.4  03/04/83 15:46:52 Copr. 1981 87wega3.2.";
+static char optsccs[] = "@[$]optim\t2.5  10/06/83 10:17:28 Copr. 1981 87wega3.2.";
 
 #define SCONV	110
+
 #define NONAME	0
 
-extern int cerror(), uerror();
-extern int bsize(), ispow2_();
-extern int ispow2();
-extern int plainicon();
-extern void tfree(), ncopy();
-extern struct node *tcopy();
-extern int dope[];
-
-static int rev[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
 
 /* is p a constant without a name */
 #define nncon(p)	plainicon(p)
 
-struct node *optim();
-int conval(), treeeq();
-struct node *convelim();
-
-/* the type is not a float */
-static int
-isint(t)
-	int t;
-{
-	return t == 6 || t == 7 ? 0 : 1;
-}
-
-/* remove a conversion that changes nothing: c is 'r' (right operand), 'l' (left operand) or 'p' (the node itself) */
-struct node *
-convelim(p, c)
-	register struct node *p;
-	int c;
-{
-	register struct node *q, *n;
-	int s;
-
-	if (c == 'r') {
-		q = p->right;
-		if (q->type != q->left->type) {
-			s = bsize(q->left->type);
-			if (s == bsize(q->type)) {
-				if (isint(q->left->type) ^ isint(q->type))
-					goto test;
-			} else
-				goto test;
-		}
-	remove:
-		n = tcopy(q->left);
-		tfree(q);
-		p->right = n;
-		return p;
-	test:
-		if (q->type == 7 && q->left->type == 6)
-			goto remove;
-		return p;
-	}
-	if (c == 'l') {
-		q = p->left;
-		if (q->type != q->left->type) {
-			s = bsize(q->left->type);
-			if (s == bsize(q->type)) {
-				if (isint(q->left->type) ^ isint(q->type))
-					goto ltest;
-			} else
-				goto ltest;
-		}
-	lremove:
-		n = tcopy(q->left);
-		tfree(q);
-		p->left = n;
-		return p;
-	ltest:
-		if (q->type == 7 && q->left->type == 6)
-			goto lremove;
-		return p;
-	}
-	if (p->type == 0) {
-		n = tcopy(p->left);
-		tfree(p);
-		p = n;
-	}
-	return p;
-}
-
-/* are the two trees the same */
-int
-treeeq(p, q)
-	register struct node *p, *q;
-{
-	register int o;
-
-	o = p->op;
-	if (o != q->op)
-		return 0;
-	switch (dope[o] & 0xE) {
-	case LTYPE:
-		if (o == NAME)
-			return p->sname == q->sname && p->lval == q->lval;
-		return p->lval == q->lval && p->rval == q->rval;
-	case UTYPE:
-		return treeeq(p->left, q->left);
-	case BITYPE:
-		return treeeq(p->right, q->right) && treeeq(p->left, q->left);
-	}
-}
-
-/* fold the constant q into p by the operator o; 0 if that is not possible */
-int
-conval(p, o, q)
-	register struct node *p;
-	int o;
-	register struct node *q;
-{
-	long val;
-	int unsgn;
-	int sh;
-
-	val = q->lval;
-	unsgn = (p->type >= 12 && p->type <= 15) || (q->type >= 12 && q->type <= 15);
-	if (unsgn && (o == LE || o == LT || o == GE || o == GT))
-		o += 4;
-	if (!nncon(p) && !nncon(q))
-		return 0;
-	if (!nncon(q) && o != PLUS)
-		return 0;
-	if (!nncon(p) && o != PLUS && o != MINUS)
-		return 0;
-	switch (o) {
-	case PLUS:
-#ifdef SEG
-		if ((p->type & 0x30) == 0x10) {
-			p->lval = ((val & 0x7F00FFFFL) + p->lval) & 0x7F00FFFFL;
-			return 1;
-		}
-#endif
-		p->lval += val;
-		if (nncon(p)) {
-			p->type = q->type;
-			p->rval = q->rval;
-			p->sname = q->sname ? q->sname : p->sname;
-		}
-		break;
-	case MINUS:
-#ifdef SEG
-		if ((p->type & 0x30) == 0x10) {		/* the difference of pointer constants keeps only its low byte */
-			p->lval = (p->lval - val) & 0xFFL;
-			break;
-		}
-#endif
-		p->lval -= val;
-		break;
-	case MUL:
-		p->lval *= val;
-		break;
-	case DIV:
-		if (val == 0) {
-			uerror("division by 0");
-			return 1;
-		}
-		p->lval /= val;
-		break;
-	case MOD:
-		if (val == 0) {
-			uerror("division by 0");
-			return 1;
-		}
-		p->lval %= val;
-		break;
-	case AND:
-		p->lval &= val;
-		break;
-	case OR:
-		p->lval |= val;
-		break;
-	case ER:
-		p->lval ^= val;
-		break;
-	case LS:
-		sh = q->lval;
-		p->lval <<= sh;
-		break;
-	case RS:
-		sh = q->lval;
-		p->lval >>= sh;
-		break;
-	case UMINUS:
-		p->lval = -p->lval;
-		break;
-	case COMPL:
-		p->lval = ~p->lval;
-		break;
-	case NOT:
-		p->lval = !p->lval;
-		break;
-	case LT:
-		p->lval = p->lval < val;
-		break;
-	case LE:
-		p->lval = p->lval <= val;
-		break;
-	case GT:
-		p->lval = p->lval > val;
-		break;
-	case GE:
-		p->lval = p->lval >= val;
-		break;
-	case ULE:
-		p->lval = p->lval - val <= 0;
-		break;
-	case ULT:
-		p->lval = p->lval - val < 0;
-		break;
-	case UGE:
-		p->lval = p->lval - val >= 0;
-		break;
-	case UGT:
-		p->lval = p->lval - val > 0;
-		break;
-	case EQ:
-		p->lval = p->lval == val;
-		break;
-	case NE:
-		p->lval = p->lval != val;
-		break;
-	default:
-		return 0;
-	}
-	return 1;
-}
+static int isint();
 
 /* local optimizations: collect constants, constants to the right, towers of operators to the left */
 struct node *
@@ -404,7 +198,7 @@ optim(p)
 		sp = p->left;
 		p->left = p->right;
 		p->right = sp;
-		p->op = rev[p->op - EQ];
+		p->op = revrel[p->op - EQ];
 		if (p->right->op != ICON)
 			break;
 		if (!conval(p->left, p->op, p->right))
@@ -416,4 +210,215 @@ optim(p)
 		break;
 	}
 	return p;
+}
+
+/* fold the constant q into p by the operator o; 0 if that is not possible */
+int
+conval(p, o, q)
+	register struct node *p;
+	int o;
+	register struct node *q;
+{
+	long val;
+	int unsgn;
+	int sh;
+
+	val = q->lval;
+	unsgn = (p->type >= 12 && p->type <= 15) || (q->type >= 12 && q->type <= 15);
+	if (unsgn && (o == LE || o == LT || o == GE || o == GT))
+		o += 4;
+	if (!nncon(p) && !nncon(q))
+		return 0;
+	if (!nncon(q) && o != PLUS)
+		return 0;
+	if (!nncon(p) && o != PLUS && o != MINUS)
+		return 0;
+	switch (o) {
+	case PLUS:
+#ifdef SEG
+		if ((p->type & 0x30) == 0x10) {
+			p->lval = ((val & 0x7F00FFFFL) + p->lval) & 0x7F00FFFFL;
+			return 1;
+		}
+#endif
+		p->lval += val;
+		if (nncon(p)) {
+			p->type = q->type;
+			p->rval = q->rval;
+			p->sname = q->sname ? q->sname : p->sname;
+		}
+		break;
+	case MINUS:
+#ifdef SEG
+		if ((p->type & 0x30) == 0x10) {		/* the difference of pointer constants keeps only its low byte */
+			p->lval = (p->lval - val) & 0xFFL;
+			break;
+		}
+#endif
+		p->lval -= val;
+		break;
+	case MUL:
+		p->lval *= val;
+		break;
+	case DIV:
+		if (val == 0) {
+			uerror("division by 0");
+			return 1;
+		}
+		p->lval /= val;
+		break;
+	case MOD:
+		if (val == 0) {
+			uerror("division by 0");
+			return 1;
+		}
+		p->lval %= val;
+		break;
+	case AND:
+		p->lval &= val;
+		break;
+	case OR:
+		p->lval |= val;
+		break;
+	case ER:
+		p->lval ^= val;
+		break;
+	case LS:
+		sh = q->lval;
+		p->lval <<= sh;
+		break;
+	case RS:
+		sh = q->lval;
+		p->lval >>= sh;
+		break;
+	case UMINUS:
+		p->lval = -p->lval;
+		break;
+	case COMPL:
+		p->lval = ~p->lval;
+		break;
+	case NOT:
+		p->lval = !p->lval;
+		break;
+	case LT:
+		p->lval = p->lval < val;
+		break;
+	case LE:
+		p->lval = p->lval <= val;
+		break;
+	case GT:
+		p->lval = p->lval > val;
+		break;
+	case GE:
+		p->lval = p->lval >= val;
+		break;
+	case ULE:
+		p->lval = p->lval - val <= 0;
+		break;
+	case ULT:
+		p->lval = p->lval - val < 0;
+		break;
+	case UGE:
+		p->lval = p->lval - val >= 0;
+		break;
+	case UGT:
+		p->lval = p->lval - val > 0;
+		break;
+	case EQ:
+		p->lval = p->lval == val;
+		break;
+	case NE:
+		p->lval = p->lval != val;
+		break;
+	default:
+		return 0;
+	}
+	return 1;
+}
+
+/* are the two trees the same */
+int
+treeeq(p, q)
+	register struct node *p, *q;
+{
+	register int o;
+
+	o = p->op;
+	if (o != q->op)
+		return 0;
+	switch (dope[o] & 0xE) {
+	case LTYPE:
+		if (o == NAME)
+			return p->sname == q->sname && p->lval == q->lval;
+		return p->lval == q->lval && p->rval == q->rval;
+	case UTYPE:
+		return treeeq(p->left, q->left);
+	case BITYPE:
+		return treeeq(p->right, q->right) && treeeq(p->left, q->left);
+	}
+}
+
+/* remove a conversion that changes nothing: c is 'r' (right operand), 'l' (left operand) or 'p' (the node itself) */
+struct node *
+convelim(p, c)
+	register struct node *p;
+	int c;
+{
+	register struct node *q, *n;
+	int s;
+
+	if (c == 'r') {
+		q = p->right;
+		if (q->type != q->left->type) {
+			s = bsize(q->left->type);
+			if (s == bsize(q->type)) {
+				if (isint(q->left->type) ^ isint(q->type))
+					goto test;
+			} else
+				goto test;
+		}
+	remove:
+		n = tcopy(q->left);
+		tfree(q);
+		p->right = n;
+		return p;
+	test:
+		if (q->type == 7 && q->left->type == 6)
+			goto remove;
+		return p;
+	}
+	if (c == 'l') {
+		q = p->left;
+		if (q->type != q->left->type) {
+			s = bsize(q->left->type);
+			if (s == bsize(q->type)) {
+				if (isint(q->left->type) ^ isint(q->type))
+					goto ltest;
+			} else
+				goto ltest;
+		}
+	lremove:
+		n = tcopy(q->left);
+		tfree(q);
+		p->left = n;
+		return p;
+	ltest:
+		if (q->type == 7 && q->left->type == 6)
+			goto lremove;
+		return p;
+	}
+	if (p->type == 0) {
+		n = tcopy(p->left);
+		tfree(p);
+		p = n;
+	}
+	return p;
+}
+
+/* the type is not a float */
+static int
+isint(t)
+	int t;
+{
+	return t == 6 || t == 7 ? 0 : 1;
 }

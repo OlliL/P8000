@@ -384,6 +384,7 @@ Sources: `src/cmd/codgen` (K&R C for the WEGA cc, the same files build `codgen` 
 - **Assembler text.** `codgen` and `scodgen` give the same assembler text and exit status as `/lib/codgen` and `/lib/scodgen` on the
   test corpus: 101 of 101 cases each (`corp4test` with 100 cases plus `corpsr`, and the scodgen counterparts), checked on the final sources.
   Larger corpus (2026-11-02, all of `src/cmd` and `src/lib`, `tools/corpus.sh`, `check.sh`): codgen 269/269; scodgen 263/269. Open in scodgen, older than this count: `codgen_optim3`, `cparse_optim1` (stop with `reclaim dest reg not free`), `doscopy_1.3_dosdir`, `pburn_{2.1,2.3,2.6}_pb.cmdline` (other text).
+  The files of `src/cmd/codgen` follow the modules of the original since 2026-11-02 (`bss3.c` holds the common data); older notes name `main3.c`, `efcode3.c`, `gen3.c`, `out3.c`, `zzz3.c`, `tmp3.c`, `regfile3.c`, which went into `reader3.c`, `local3.c`, `order3.c`, `match3.c`, `regs3.c`.
   The corpus is small and does not contain structure returns (see the `fbegin` note below).
 - **scodgen.** `locate.py --seg` finds all objects of `scodgen` (18 objects, 211 functions, no problems). Its functions are the
   209 names of `codgen` plus `newlreg` (`lcl3.c`) and `mkoreg` (`order3.c`), which exist only under `SEG`. The corpus check

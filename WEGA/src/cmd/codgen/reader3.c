@@ -1,61 +1,774 @@
 /*
- * reader3.c - the driver of the code generation: order of the trees, stores, conditional branches (codgen / scodgen)
- *
- * Reconstructed from /lib/codgen: codgen() 0x0aaa, prcook() 0x0af6, order() 0x0ba2, store() 0x1084, constore() 0x11da,
- * markcall() 0x1212, stoarg() 0x126a, cbranch() 0x12bc, ffld() 0x15d0, oreg2() 0x175e, canon() 0x1884, argprep() 0x18be.
- * The structure follows the classic PCC reader, with two register counts per node (su, fsu). Names are guesses.
+ * reader3.c - the program and the driver of the code generation: options, commands of the intermediate file, order of the trees, stores, conditional branches
  */
 #include "cg.h"
+#include "cg2.h"
+
+extern int allo();
+extern void allocinit();
+extern struct node *argprep();
+extern long baseoff;
+extern void branch();
+extern int callflag;
+extern struct node *canon();
+extern void canon2();
+extern void cbgen();
+extern void cbranch();
+extern int cerror();
+extern char *cnames[];
+extern void codgen();
+extern void constore();
+extern void d12kout();
+extern int d2r0reg;
+extern struct node *d2ranode;
+extern void d3jlabel();
+extern int d3knamed();
+extern void d3kreset();
+extern void deflab();
+extern void delay();
+extern struct node *deltrees[];
+extern FILE *dfile;
+extern int dope[];
+extern void dopeinit();
+extern void efcode();
+extern int eflag;
+extern void endrun();
+extern struct node *eread();
+extern void fbegin();
+extern void fcmd();
+extern void ffld();
+extern int ffregs;
+extern void fixtemp();
+extern long frame0;
+extern long freetemp();
+extern int fregs;
+extern long ftell();
+extern void fwalk();
+extern void fwalkd();
+extern int gencall();
+extern int genscall();
+extern int getlab();
+extern void gswitch();
+extern void hdrout();
+extern int ifline;
+extern char ifname[];
+extern void init();
+extern int lastchance();
+extern int lflag;
+extern void lineout();
+extern int lmulflag;
+extern int mainp2();
+extern char *malloc();
+extern void mapnm();
+extern void mapregs();
+extern void markcall();
+extern int match();
+extern long maxoff;
+extern int maxreg;
+extern long maxtemp;
+extern int minreg;
+extern void mkadrs();
+extern void mkhash();
+extern void mycanon();
+extern void ncopy();
+extern int ndelay;
+extern int negrel[];
+extern int nerrors;
+extern int nextcook();
+extern int nlabsave;
+extern void nlcheck();
+extern struct node node[];
+extern int notoff();
+extern int nparm;
+extern int nparmtab;
+extern int nrecur;
+extern void offstar();
+extern int oflag;
+extern char *opst[];
+extern struct node *optim();
+extern int options();
+extern void order();
+extern void oreg2();
+extern long parmax;
+extern void parminit();
+extern struct { struct sym *sym; int reg; } parmtab[];
+extern long paroff;
+extern int pflag;
+extern void prcook();
+extern void rallo();
+extern void rcmd();
+extern void rcount();
+extern int rddata();
+extern long rdin();
+extern int rdsym();
+extern void reclaim();
+extern int regA;
+extern int regB;
+extern int regC;
+extern int regD;
+extern int regE;
+extern int regF;
+extern int regG;
+extern int regmask;
+extern void regreset();
+extern void regtabinit();
+extern int regtop;
+extern struct node resc[];
+extern int rflag;
+extern void rfree();
+extern void rfreeall();
+extern void rfreenode();
+extern void rsbuild();
+extern void rsfreeall();
+extern void rsinit();
+extern struct rs *rsuse;
+extern void scmd();
+extern int setasg();
+extern int setasop();
+extern int setbin();
+extern void setrew();
+extern int setstr();
+extern FILE *stfile;
+extern long stg;
+extern void stmt();
+extern void stoarg();
+extern int stoasg();
+extern int stocook;
+extern void store();
+extern struct node *stotree;
+extern long stpos;
+extern void sucomp();
+extern struct sym *symtab0;
+extern int szty();
+extern void tabclear();
+extern struct node *talloc();
+extern void tcheck();
+extern void tcmd();
+extern struct node *tcopy();
+extern void tfree();
+extern void tinit();
+extern void tmpcleanup();
+extern long tmpoff;
+extern int tshape();
+extern void uerror();
+static char sccsid[] = "@[$]reader3.c\t2.5  08/24/83 13:32:32 Copr. 1981 87wega3.2.";
+int lmulflag = 0;
+int pflag = 0;
+int rflag = 0;
+int eflag = 0;
+int unused4[3] = { 0 };
+int oflag = 0;
+int unused5 = 0;
+long baseoff = 0;
+long maxtemp = 0;
+
+#ifdef OLD_D3K
+static int d3kpend;		/* a label waits for its rsfreeall (main) */
+#ifdef OLD_D3J
+static int d3jdead;		/* the record before was an unconditional jump */
+extern void d3jlabel();
+#endif
+#endif
+
 
 #define FOREFF	01
+
 #define FORCC	040
+
 #define INTEMP_	0x1000
+
 #define MUSTDO	0x1000
+
 #define NOMATCH	0x1000
+
 #define MDONE	0x1001
+
 #define FORREW	0x4000
+
 #define FREE_	100
+
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
+
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
-extern int cerror(), uerror();
-extern int match(), tshape(), allo(), szty(), notoff();
-extern int getlab(), deflab();
-extern int nextcook(), lastchance();
-#ifdef OLD_D2R0
-extern int d2r0reg;
-#endif
-#ifdef OLD_D2RA
-extern struct node *d2ranode;
-#endif
-extern void cbgen(), rallo(), offstar(), reclaim(), tfree(), fwalk(), fwalkd(), rfree(), rfreenode(), rfreeall(), ncopy();
-extern int setstr(), setasop(), setasg(), setbin(), gencall(), genscall();
-extern int mkadrs(), stoasg();
-extern void mycanon();
-extern struct node *talloc(), *tcopy(), *optim();
-extern void genargs();
-extern void sucomp();
-extern void rcount();
-extern int nrecur;
-extern char *opst[];
-extern int dope[];
-extern int fregs, ffregs;
-extern struct node resc[];
-int lmuldiv;		/* 0x3e: the second long multiplication or division in an expression forces a store */
-struct node *stotree;	/* 0x8f92: the subtree that has to be stored first */
-int stocook;		/* 0x8fc6 */
-int callflag;		/* 0x8f5a */
-
-char *cnames[] = {		/* 0x120 */
-	"SANY", "SAREG", "STAREG", "SBREG", "STBREG", "SCC", "SNAME", "SCON", "SFLD", "SOREG", "STARNM", "STARREG",
-	"INTEMP", "FORARG", "SWADD", 0
-};
 
 /* the relation that is true when the one in the index is false */
-int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE, FLT, FLE };	/* 0x274 */
 
-void delay(), order(), cbranch(), store(), constore(), markcall(), stoarg();
-struct node *canon(), *argprep();
+#define MAXRCOUNT 5000
+
+static void delstrip();
+static void delay2();
+static int delay1();
+static void parmwalk();
+
+/* the options: the number of the first argument that is no option, or 0 */
+int
+options(argc, argv)
+	int argc;
+	char **argv;
+{
+	register int i, err;
+	register char *cp;
+	char buf[50];
+
+	err = 0;
+	for (i = 1; i < argc; i++) {
+		cp = argv[i];
+		if (*cp != '-') {
+			err = 1;
+			continue;
+		}
+		while (*++cp) {
+			switch (*cp) {
+			case 'E':
+				i++;
+				strcpy(buf, argv[i]);
+				strcat(buf, ".S");
+				stfile = fopen(buf, "r");
+				if (!stfile)
+					printf("// error in opening symbol table file %s\n", argv[i - 1]);
+				fread(&stg, 4, 1, stfile);
+				stpos = ftell(stfile);
+				strcpy(buf, argv[i]);
+				strcat(buf, ".D");
+				dfile = fopen(buf, "r");
+				if (!dfile) {
+					printf("// error in opening data file %s\n", argv[i - 1]);
+					break;
+				}
+				setbuf(dfile, malloc(0x200));
+				break;
+			case 'M':
+				i++;
+				break;
+			case 'O':
+				oflag++;
+				break;
+			case 'R':
+				rflag++;
+				break;
+			case 'e':
+				eflag++;
+				break;
+			case 'l':
+				lflag++;
+				break;
+			case 'p':
+				pflag++;
+				break;
+			case 'a':
+			case 'f':
+			case 'o':
+			case 'r':
+			case 's':
+			case 't':
+			case 'u':
+			case 'x':
+			case 'y':
+				break;
+			default:
+				uerror("bad option: %c", *cp);
+			}
+		}
+	}
+	hdrout();
+	dopeinit();
+	setrew();
+	return err;
+}
+
+/* the state of the run */
+void
+init()
+{
+	regD = 1;
+	fregs = 8;
+	ffregs = 4;
+	regG = 0;
+	regA = 7;
+	regB = 0x10;
+	regC = 0x13;
+	frame0 = 0;
+	maxoff = 0;
+	maxtemp = 0;
+	parmax = 0;
+#ifdef SEG
+	minreg = 0xD;
+#else
+	minreg = 0xE;
+#endif
+	maxreg = 0x17;
+#ifdef SEG
+	regtop = 0xD;
+#else
+	regtop = 0xE;
+#endif
+	regmask = (regtop - 1) & ~1;
+	regreset(0);
+	nparmtab = 0;
+	parmtab[nparmtab].sym = 0;
+	parmtab[nparmtab].reg = -1;
+	regtabinit();
+	rsinit();
+	rsbuild();
+}
+
+int
+mainp2(argc, argv)
+	register int argc;
+	register char **argv;
+{
+	register int i, c;
+	register int n, lab, k;
+	long l1;
+	int a, b;
+
+	i = options(argc, argv);
+	tinit();
+	if (i)
+		goto scan;
+	goto loop;
+scan:
+	while (i < argc) {
+		if (*argv[i] != '-')
+			break;
+		i++;
+	}
+	if (i > argc)
+		goto end;
+	freopen(argv[i], "r", stdin);
+loop:
+	c = getchar();
+	if (c <= 0)
+		goto eof;
+#ifdef OLD_D3K
+	if (d3kpend) {		/* a label no jump has named: forgotten unless the function ends behind it */
+		if (c != '}')
+			rsfreeall(1);
+		d3kpend = 0;
+	}
+#endif
+#ifdef OLD_D3J
+	if (d3jdead)
+		d3jdead--;	/* 1: the record before this one was a jump */
+#endif
+	switch (c) {
+	case '{':
+#ifdef OLD_D3K
+		d3kreset();
+#endif
+		init();
+		mkhash();
+		nlabsave = rdin(10);
+		frame0 = rdin(10);
+		maxoff = rdin(10) << 3;
+		maxoff += frame0 << 3;
+		nparm = rdin(10);
+		nlcheck();
+		if (!rddata())
+			cerror("error in reading data file");
+		if (!rdsym())
+			cerror("error in reading symbol table file");
+		goto loop;
+	case '}':
+		if (parmax % 16)
+			parmax = (parmax / 16 + 1) << 4;
+		if (maxoff % 16)
+			maxoff = (maxoff / 16 + 1) << 4;
+		efcode();
+#ifdef OLD_D12K
+		d12kout(0);
+#endif
+		nlcheck();
+		allocinit(symtab0);
+		goto loop;
+	case ']':
+		nlcheck();
+		goto loop;
+	case '[':
+		baseoff = rdin(10);
+		regE = rdin(10);
+		regF = rdin(10);
+		if (rflag) {
+			regE = 0xE;
+			regF = 0x17;
+		}
+		nlcheck();
+		if (baseoff > parmax)
+			parmax = baseoff;
+		if (minreg > regE)
+			minreg = regE;
+		if (maxreg > regF)
+			maxreg = regF;
+		goto loop;
+	case '.':
+		ifline = rdin(10);
+		{
+			register char *cp;
+
+			cp = ifname;
+			do {
+				c = getchar();
+				*cp++ = c;
+			} while (c != '\n');
+			cp[-1] = 0;
+		}
+		if (lflag)
+			lineout(ifline, ifname);
+		paroff = baseoff;
+		tmpoff = 0;
+		stmt(eread());
+		goto loop;
+	case 'L':
+		lab = rdin(10);
+		deflab(lab);
+		nlcheck();
+		if (nparm <= 0)
+#ifdef OLD_D3K
+			if (d3knamed(lab)) {
+				rsfreeall(4);
+#ifdef OLD_D3J
+				d3jlabel(lab, d3jdead);
+#endif
+			} else
+				d3kpend = 1;
+#else
+			rsfreeall(1);
+#endif
+		if (rflag)
+			regreset(1);
+		goto loop;
+	case 'B':
+		branch(rdin(10));
+		nlcheck();
+#ifdef OLD_D3J
+		d3jdead = 2;	/* (1 at the next record) */
+#endif
+		goto loop;
+	case 'F':
+		fcmd(rdin(10));
+		nlcheck();
+		goto loop;
+	case 'R':
+		a = rdin(10);
+		b = rdin(10);
+		if (b > 0)
+			rcmd(a, b, 0);
+		else
+			rcmd(a, b, (int)rdin(10));
+		nlcheck();
+		goto loop;
+	case 'S':
+		scmd(rdin(10));
+		nlcheck();
+		goto loop;
+	case 'T':
+		tcmd(rdin(10));
+		nlcheck();
+		goto loop;
+	case '/':
+		putchar(c);
+		do {
+			c = getchar();
+			putchar(c);
+		} while (c != '\n');
+		goto loop;
+	case '#':
+		do
+			c = getchar();
+		while (c != '\n');
+		goto loop;
+#ifdef OLD_D6T
+	case 'V':		/* v0: the values of a cpir switch, written right in front of its targets (the C record) */
+		do
+			c = getchar();
+		while (c == ' ');
+		ungetc(c, stdin);
+		rdin(10);
+		rdin(10);
+		lab = rdin(10);
+#ifdef SEG
+		printf("\t.psec data\n");
+#endif
+		printf("\t.data\n");
+		printf("\t.even\n");
+		printf("L%d:\n", lab);
+		for (c = getchar(); c != '\n'; c = getchar()) {
+			ungetc(c, stdin);
+			printf("\t.word\t%ld\n", rdin(10));
+		}
+		goto loop;
+#endif
+	case 'C':
+		do
+			c = getchar();
+		while (c == ' ');
+		ungetc(c, stdin);
+		n = rdin(10);
+#ifdef SEG
+		printf("\t.psec data\n");
+#endif
+		printf("\t.data\n");
+		printf("\t.even\n");
+		printf("L%d:\n", n);
+		rdin(10);
+		for (c = getchar(); c != '\n'; c = getchar()) {
+			ungetc(c, stdin);
+			n = rdin(10);
+			printf("\t.addr\tL%d\n", n);
+		}
+#ifdef SEG
+		printf("\t.psec\n\t.code\n");
+#else
+		printf("\t.code\n");
+#endif
+		goto loop;
+	default:
+		cerror("intermediate file format error");
+	}
+eof:
+	while ((c = getc(dfile)) != -1) {
+		ungetc(c, dfile);
+		rddata();
+	}
+	if (i)
+		goto scan;
+	endrun();
+end:
+	return nerrors;
+}
+
+#ifdef OLD_D4O
+/* the parameter list from its last element to its first */
+static void
+parmwalk(p)
+	register struct node *p;
+{
+	switch (dope[p->op] & 0xE) {
+	case BITYPE:
+		parmwalk(p->right);
+		parmwalk(p->left);
+		return;
+	case UTYPE:
+		parmwalk(p->left);
+		return;
+	}
+	parminit(p);
+}
+#endif
+
+/* a statement of the intermediate file: a function head, a switch, or an expression tree */
+void
+stmt(p)
+	register struct node *p;
+{
+	int tag;
+
+	nrecur = 0;
+#ifdef OLD_D2R0
+	d2r0reg = -1;		/* it holds only inside a statement */
+#endif
+#ifdef OLD_D2RA
+	d2ranode = 0;
+#endif
+	if (p->op == 118) {
+		mapnm(p->left);
+		fbegin(p->left->sname);
+#ifdef OLD_D4O
+		parmwalk(p->right);	/* v0: the parameters in the order of the declaration (the list is reversed) */
+#else
+		fwalkd(p->right, parminit);	/* no third argument: the original passes only two, down is what r5 holds */
+#endif
+		tfree(p);
+		return;
+	}
+	if (p->op == 119) {
+		mapnm(p->left);
+		fbegin(p->left->sname);
+		tfree(p);
+		return;
+	}
+	if (p->op == 122) {
+		if (p->left->op == TEMP) {
+			tag = p->left->rval;
+			fixtemp(p->left);
+			if (p->left->op == REG)
+				tabclear(tag);
+		} else {
+			tag = p->left->left->rval;
+			fixtemp(p->left->left);
+			if (p->left->left->op == REG)
+				tabclear(tag);
+		}
+		gswitch(p);
+		tmpcleanup();
+		tfree(p);
+		return;
+	}
+	delay(p);
+	reclaim(p, 0, 0);
+	tcheck();
+}
+
+/* a statement tree */
+void
+delay(p)
+	register struct node *p;
+{
+	register int i, ret, sz;
+	long off;
+
+	sz = ret = 0;
+	ndelay = 0;
+	if (p->op == RET) {
+		switch (p->type) {
+		case 6:
+		case 7:
+		case 8:
+		case 9:
+			break;
+		default:
+			ret++;
+			sz = szty(p->type);
+#ifndef OLD_D1R
+			off = freetemp(sz) / 8;
+#endif
+		}
+	}
+	fwalkd(p, mapnm, 0);
+	fwalk(p, mapregs);
+	canon2(p);
+	while (delay1(p))
+		;
+	ndelay = 0;
+	delay2(p);
+	codgen(p, FOREFF);
+#ifdef OLD_D1R
+	ret = 0;	/* no temporary for the value of a return: r2 stays taken while the delayed x++ runs */
+#endif
+	if (ret && ndelay) {
+		printf("/* delay */\n");
+		if (sz == 2) {
+#ifdef SEG
+			printf("\tldl\t_stkseg+~L1+%ld(fp),rr2\n", off);
+#else
+			printf("\tldl\t~L1+%ld(fp),rr2\n", off);
+#endif
+			rfree(2, 5);
+		} else {
+#ifdef SEG
+			printf("\tld\t_stkseg+~L1+%ld(fp),r2\n", off);
+#else
+			printf("\tld\t~L1+%ld(fp),r2\n", off);
+#endif
+			rfree(2, 4);
+		}
+	}
+	for (i = 0; i < ndelay; i++)
+		codgen(deltrees[i], FOREFF);
+	if (ret && ndelay) {
+		printf("/* delay */\n");
+		if (sz == 2)
+#ifdef SEG
+			printf("\tldl\trr2,_stkseg+~L1+%ld(fp)\n", off);
+#else
+			printf("\tldl\trr2,~L1+%ld(fp)\n", off);
+#endif
+		else
+#ifdef SEG
+			printf("\tld\tr2,_stkseg+~L1+%ld(fp)\n", off);
+#else
+			printf("\tld\tr2,~L1+%ld(fp)\n", off);
+#endif
+	}
+}
+
+/* look for a COMOP that can be done first: 1 if a rewrite happened */
+static int
+delay1(p)
+	register struct node *p;
+{
+	register int o, ty;
+	register struct node *q;
+
+	o = p->op;
+	ty = dope[o] & 0xE;
+	if (ty == LTYPE)
+		return 0;
+	if (ty == UTYPE)
+		return delay1(p->left);
+	switch (o) {
+	case QUEST:
+	case ANDAND:
+	case OROR:
+		return delay1(p->left);
+	case COMOP:
+		delay(p->left);
+		q = p->right;
+		ncopy(p, p->right);
+		q->op = FREE;
+		return 1;
+	}
+	return delay1(p->left) || delay1(p->right);
+}
+
+static void
+delstrip(p)
+	register struct node *p;
+{
+	register struct node *q;
+
+	if (p->op == INCR || p->op == DECR) {
+		p->right->op = FREE;
+		q = p->left;
+		*p = *p->left;
+		q->op = FREE;
+	}
+}
+
+static void
+delay2(p)
+	register struct node *p;
+{
+	register int o, ty;
+	register struct node *q;
+
+	o = p->op;
+	switch (o) {
+	case QUEST:
+	case ANDAND:
+	case OROR:
+	case COMOP:
+	case CALL:
+	case UCALL:
+	case FCALL:
+	case UFCALL:
+	case NOT:
+	case STCALL:
+	case USTCALL:
+		return;
+	case INCR:
+	case DECR:
+		if (ndelay < NDELAY) {
+			q = tcopy(p);
+			fwalk(q->left, delstrip);
+			fwalk(q->right, delstrip);
+			deltrees[ndelay++] = q;
+			q = p->left;
+			p->right->op = FREE;
+			ncopy(p, q);
+			q->op = FREE;
+		}
+		break;
+	case CBRANCH:
+		return;
+	}
+	ty = dope[p->op] & 0xE;
+	if (ty == BITYPE)
+		delay2(p->right);
+	if (ty != LTYPE)
+		delay2(p->left);
+}
 
 /* generate the code for p: stores first, then the tree itself */
 void
@@ -67,7 +780,7 @@ codgen(p, cookie)
 		p = canon(optim(p));
 		stotree = 0;
 		store(p);
-		lmuldiv = 0;
+		lmulflag = 0;
 		if (stotree == 0)
 			break;
 		order(stotree, stocook);
@@ -76,6 +789,11 @@ codgen(p, cookie)
 }
 
 /* print a cookie (debug) */
+char *cnames[] = {		/* 0x120 */
+	"SANY", "SAREG", "STAREG", "SBREG", "STBREG", "SCC", "SNAME", "SCON", "SFLD", "SOREG", "STARNM", "STARREG",
+	"INTEMP", "FORARG", "SWADD", 0
+};
+
 void
 prcook(cookie)
 	register int cookie;
@@ -407,7 +1125,7 @@ store(p)
 	case ASG MOD:
 		/* the long ones are calls of a library function */
 		if (p->left->type == 5 || p->left->type == 15)
-			if (lmuldiv++) {
+			if (lmulflag++) {
 				stotree = p;
 				stocook = INTEMP_;
 			}
@@ -493,6 +1211,8 @@ stoarg(p, calltype)
 }
 
 /* evaluate p for the truth value and jump to true or false; a label < 0 means to fall through */
+int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE, FLT, FLE };	/* 0x274 */
+
 void
 cbranch(p, true, false)
 	register struct node *p;
@@ -528,13 +1248,30 @@ cbranch(p, true, false)
 		}
 		c = p->right;
 		if (c->op == ICON && c->lval == 0 && c->sname == 0) {
-			if (o == ULT || o == UGE) {
-				if (o == UGE)
-					cbgen(0, true, 'I');
+			switch (o) {
+			case UGT:
+			case ULE:
+				o = p->op = o == UGT ? NE : EQ;
+				break;
+			case EQ:
+			case NE:
+			case LE:
+			case LT:
+			case GE:
+			case GT:
+			case 90:
+			case 91:
+			case 92:
+			case 93:
+			case 94:
+			case 95:
+				break;
+			case UGE:
+				cbgen(0, true, 'I');
+			case ULT:
+			default:
 				goto uncond;
 			}
-			if (o == UGT || o == ULE)
-				o = p->op = o == UGT ? NE : EQ;
 		}
 		p->label = true;
 		codgen(p, FORCC);
@@ -630,6 +1367,13 @@ cbranch(p, true, false)
 			cbgen(true >= 0 ? 0 : EQ, false, 'I');
 	}
 	reclaim(p, 0, 0);
+}
+
+void
+rcount()
+{
+	if (++nrecur > MAXRCOUNT)
+		cerror("expression causes compiler loop: try simplifying");
 }
 
 /* the fields that are not on the left of an assignment become mask and shift */
@@ -782,254 +1526,4 @@ argprep(p, cookie)
 	resc[0].type = DECREF(p->left->type);
 	p->left->left = tcopy(&resc[0]);
 	return p->left;
-}
-
-/*
- * The "delayed" evaluation of a statement tree (reader3.c, 0x0838 .. 0x0aa8): comma operators are done first, then
- * the tree without the ++ and -- (up to 20 of them), then the increments. A returned value of a RET is kept in a
- * temporary while the increments run.
- */
-#define NDELAY	20
-
-extern long freetemp();
-extern void walkd();
-extern int tbytes();
-extern void canon2();
-extern void mapnm(), mapregs();	/* 0x20c0: map the symbols of a tree, 0x9512 */
-int ndelay;			/* 0x69de */
-struct node *deltrees[NDELAY];	/* 0x8f9a */
-
-static void
-delstrip(p)
-	register struct node *p;
-{
-	register struct node *q;
-
-	if (p->op == INCR || p->op == DECR) {
-		p->right->op = FREE;
-		q = p->left;
-		*p = *p->left;
-		q->op = FREE;
-	}
-}
-
-static void
-delay2(p)
-	register struct node *p;
-{
-	register int o, ty;
-	register struct node *q;
-
-	o = p->op;
-	switch (o) {
-	case QUEST:
-	case ANDAND:
-	case OROR:
-	case COMOP:
-	case CALL:
-	case UCALL:
-	case FCALL:
-	case UFCALL:
-	case NOT:
-	case STCALL:
-	case USTCALL:
-		return;
-	case INCR:
-	case DECR:
-		if (ndelay < NDELAY) {
-			q = tcopy(p);
-			fwalk(q->left, delstrip);
-			fwalk(q->right, delstrip);
-			deltrees[ndelay++] = q;
-			q = p->left;
-			p->right->op = FREE;
-			ncopy(p, q);
-			q->op = FREE;
-		}
-		break;
-	case CBRANCH:
-		return;
-	}
-	ty = dope[p->op] & 0xE;
-	if (ty == BITYPE)
-		delay2(p->right);
-	if (ty != LTYPE)
-		delay2(p->left);
-}
-
-/* look for a COMOP that can be done first: 1 if a rewrite happened */
-static int
-delay1(p)
-	register struct node *p;
-{
-	register int o, ty;
-	register struct node *q;
-
-	o = p->op;
-	ty = dope[o] & 0xE;
-	if (ty == LTYPE)
-		return 0;
-	if (ty == UTYPE)
-		return delay1(p->left);
-	switch (o) {
-	case QUEST:
-	case ANDAND:
-	case OROR:
-		return delay1(p->left);
-	case COMOP:
-		delay(p->left);
-		q = p->right;
-		ncopy(p, p->right);
-		q->op = FREE;
-		return 1;
-	}
-	return delay1(p->left) || delay1(p->right);
-}
-
-/* a statement tree */
-void
-delay(p)
-	register struct node *p;
-{
-	register int i, ret, sz;
-	long off;
-
-	sz = ret = 0;
-	ndelay = 0;
-	if (p->op == RET) {
-		switch (p->type) {
-		case 6:
-		case 7:
-		case 8:
-		case 9:
-			break;
-		default:
-			ret++;
-			sz = szty(p->type);
-#ifndef OLD_D1R
-			off = freetemp(sz) / 8;
-#endif
-		}
-	}
-	fwalkd(p, mapnm, 0);
-	fwalk(p, mapregs);
-	canon2(p);
-	while (delay1(p))
-		;
-	ndelay = 0;
-	delay2(p);
-	codgen(p, FOREFF);
-#ifdef OLD_D1R
-	ret = 0;	/* no temporary for the value of a return: r2 stays taken while the delayed x++ runs */
-#endif
-	if (ret && ndelay) {
-		printf("/* delay */\n");
-		if (sz == 2) {
-#ifdef SEG
-			printf("\tldl\t_stkseg+~L1+%ld(fp),rr2\n", off);
-#else
-			printf("\tldl\t~L1+%ld(fp),rr2\n", off);
-#endif
-			rfree(2, 5);
-		} else {
-#ifdef SEG
-			printf("\tld\t_stkseg+~L1+%ld(fp),r2\n", off);
-#else
-			printf("\tld\t~L1+%ld(fp),r2\n", off);
-#endif
-			rfree(2, 4);
-		}
-	}
-	for (i = 0; i < ndelay; i++)
-		codgen(deltrees[i], FOREFF);
-	if (ret && ndelay) {
-		printf("/* delay */\n");
-		if (sz == 2)
-#ifdef SEG
-			printf("\tldl\trr2,_stkseg+~L1+%ld(fp)\n", off);
-#else
-			printf("\tldl\trr2,~L1+%ld(fp)\n", off);
-#endif
-		else
-#ifdef SEG
-			printf("\tld\tr2,_stkseg+~L1+%ld(fp)\n", off);
-#else
-			printf("\tld\tr2,~L1+%ld(fp)\n", off);
-#endif
-	}
-}
-
-extern void fbegin(), parminit(), fixtemp(), tabclear(), gswitch(), tmpcleanup(), rcount_reset(), tcheck();
-
-#ifdef OLD_D4O
-/* the parameter list from its last element to its first */
-static void
-parmwalk(p)
-	register struct node *p;
-{
-	switch (dope[p->op] & 0xE) {
-	case BITYPE:
-		parmwalk(p->right);
-		parmwalk(p->left);
-		return;
-	case UTYPE:
-		parmwalk(p->left);
-		return;
-	}
-	parminit(p);
-}
-#endif
-
-
-/* a statement of the intermediate file: a function head, a switch, or an expression tree */
-void
-stmt(p)
-	register struct node *p;
-{
-	int tag;
-
-	nrecur = 0;
-#ifdef OLD_D2R0
-	d2r0reg = -1;		/* it holds only inside a statement */
-#endif
-#ifdef OLD_D2RA
-	d2ranode = 0;
-#endif
-	if (p->op == 118) {
-		mapnm(p->left);
-		fbegin(p->left->sname);
-#ifdef OLD_D4O
-		parmwalk(p->right);	/* v0: the parameters in the order of the declaration (the list is reversed) */
-#else
-		fwalkd(p->right, parminit);	/* no third argument: the original passes only two, down is what r5 holds */
-#endif
-		tfree(p);
-		return;
-	}
-	if (p->op == 119) {
-		mapnm(p->left);
-		fbegin(p->left->sname);
-		tfree(p);
-		return;
-	}
-	if (p->op == 122) {
-		if (p->left->op == TEMP) {
-			tag = p->left->rval;
-			fixtemp(p->left);
-			if (p->left->op == REG)
-				tabclear(tag);
-		} else {
-			tag = p->left->left->rval;
-			fixtemp(p->left->left);
-			if (p->left->left->op == REG)
-				tabclear(tag);
-		}
-		gswitch(p);
-		tmpcleanup();
-		tfree(p);
-		return;
-	}
-	delay(p);
-	reclaim(p, 0, 0);
-	tcheck();
 }

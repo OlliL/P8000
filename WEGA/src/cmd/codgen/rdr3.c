@@ -1,133 +1,136 @@
 /*
  * rdr3.c - the readers: numbers and trees of the intermediate file, the symbol table file and the data file
- *
- * Reconstructed from /lib/codgen: rddata() 0x19ac, rdsym() 0x1a86, readsyms() 0x1b64, readtab() 0x1c30, readnums() 0x1c6c,
- * readmems() 0x1d0e, sortsyms() 0x1ec2, bsearch() 0x1f82, mapn() 0x2038, mapsym() 0x206a, mapnm() 0x20c0, nlcheck() 0x244a,
- * eread() 0x2480, rdin() 0x269a, rdin2() 0x26ae, mkhash() 0x2406. Names are guesses.
- * The symbol table file (base.S) is described in ../KNOWLEDGE.md; the symbols of all its sections are kept in one table
- * and found by the tag in the node (rval of a NAME) through the sorted list tagtab[].
  */
 #include "cg.h"
+#include "cg2.h"
 
-#define MAXASCII	0x1194
+extern char *alloc();
+extern char ascii[];
+extern struct node *bcon();
+extern struct node *buildstar();
+extern int cerror();
+extern struct node *clocal();
+extern void d12kout();
+extern FILE *dfile;
+extern int dope[];
+extern int eflag;
+extern struct node *eread();
+extern int firstsect;
+extern void fixfld();
+extern void fixtemp();
+extern struct sym *fpsym1;
+extern struct sym *fpsym2;
+extern long ftell();
+extern long gasciibytes;
+extern int getreg();
+extern int gnumbytes;
+extern int gnumcount;
+extern long gsymbytes;
+extern struct node *makeblock();
+extern struct sym *mapn();
+extern void mapnm();
+extern void mapsym();
+extern void mkhash();
+extern long nasciibytes;
+extern int nglob;
+extern void nlcheck();
+extern int nmembytes;
+extern int nmems;
+extern int nnumbytes;
+extern int nnums;
+extern struct node node[];
+extern long nsymbytes;
+extern int nsyms;
+extern int numtab[];
+extern int rclass();
+extern int rddata();
+extern long rdin();
+extern long rdin2();
+extern int rdsym();
+extern void readmems();
+extern void readnums();
+extern void readsyms();
+extern void readtab();
+extern struct rv regvar[];
+extern int rflag;
+extern void sortsyms();
+extern FILE *stfile;
+extern int stflag;
+extern long stg;
+extern long stpos;
+extern long symbase;
+extern struct sym *symtab;
+extern struct sym *symtab0;
+extern int tagfind();
+extern struct { int tag; struct sym *sym; } tagtab[];
+extern struct node *talloc();
+extern char *tnames[];
+static char sccsid[] = "@[$]rdr3.c\t2.1  11/15/82 12:49:01 Copr. 1981 87wega3.2.";
+static char rdrsccs[] = "@[$]rdr\t2.5  08/24/83 16:48:00 Copr. 1981 87wega3.2.";
+char *tnames[] = {
+	"UNDEF",
+	"FARG",
+	"CHAR",
+	"SHORT",
+	"INT",
+	"LONG",
+	"FLOAT",
+	"DOUBLE",
+	"STRTY",
+	"UNIONTY",
+	"ENUMTY",
+	"MOETY",
+	"UCHAR",
+	"USHORT",
+	"UNSIGNED",
+	"ULONG",
+	"undef",
+	"PTR",
+	"FTN",
+	"ARY",
+	"undef",
+	"AUTO",
+	"EXTERN",
+	"STATIC",
+	"REGISTER",
+	"EXTDEF",
+	"LABEL",
+	"undef",
+	"MOS",
+	"PARAM",
+	"STNAME",
+	"MOU",
+	"UNAME",
+	"TYPEDEF",
+	"unused",
+	"ENAME",
+	"MOE",
+	"unused",
+	"USTATIC",
+};
+char ascii[MAXASCII] = "NULL\0~L1\0~L2";		/* 0x630: the ascii table; "NULL", "~L1", "~L2" come first */
+int stflag = 2;
+long stpos = 0;
+int firstsect = 1;
+
+
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
 
-extern int cerror();
-extern char *alloc();
-extern long ftell();
-extern char *malloc();
-extern struct node *talloc();
-extern struct node *makeblock(), *clocal(), *buildstar(), *bcon();
-extern int rclass(), getreg(), rtmapfix();
-extern void fixtemp(), fixfld();
-void sortsyms();
 
-FILE *stfile;			/* 0x8e14: the symbol table file */
-FILE *dfile;			/* 0x69dc: the data file */
-long stg;			/* 0x8f94: the offset of the global section in the symbol table file */
-long stpos;			/* 0x17c6 */
-long symbase;			/* 0x8fde: the start of the symbols of the global section */
-int stflag = 2;			/* 0x17c4 */
-int firstsect = 1;		/* 0x17ca */
-int nglob;			/* 0xa0d4: the entries of tagtab */
-long nsymbytes;			/* 0xa0dc */
-long gsymbytes, gasciibytes;	/* 0xa0d6, 0xa0ce: the global section */
-int gnumbytes;			/* 0x9834 */
-int gnumcount;			/* 0x9060: only written */
-long nasciibytes;		/* 0x8fd4 */
-int nnumbytes;			/* 0xa0e0 */
-int nmembytes;			/* 0xa0da */
-int nsyms;			/* 0x8fe6: the symbols read so far */
-int nnums;			/* 0x8fe4 */
-int nmems;			/* 0x8fe2 */
-struct sym *symtab;		/* 0x8fd2 */
-struct sym *symtab0;		/* 0x8fd8 */
-struct sym *fpsym1, *fpsym2;	/* 0x8fda, 0x8fdc */
-char ascii[MAXASCII] = "NULL\0~L1\0~L2";		/* 0x630: the ascii table; "NULL", "~L1", "~L2" come first */
-int numtab[2000];		/* 0x9062: the number table, a word and a -1 per entry */
-struct { int tag; struct sym *sym; } tagtab[500];	/* 0x9836 */
-extern int rflag, eflag;		/* 0x42, 0x44 */
-struct rv { struct sym *sym; int rtag; int rreg; int rtype; int rcls; };
-extern struct rv regvar[];
-extern void fixmap();	/* 0x8fe8: the register variables */
-int ifline;			/* 0x8fc8 */
 
-/* one number from the intermediate file or the data file; the input is f */
-long
-rdin2(base, f)
-	register int base;
-	register FILE *f;
-{
-	register int sign, c;
-	long val;
-
-	sign = 1;
-	val = 0;
-	while ((c = getc(f)) > 0) {
-		if (c == '-') {
-			if (val != 0)
-				cerror("illegal -");
-			sign = -sign;
-			continue;
-		}
-		if (c == '\t')
-			break;
-		if (c >= '0') {
-			if (c > '9')
-				goto bad;
-			val *= base;
-			if (sign > 0)
-				val += c - '0';
-			else
-				val -= c - '0';
-			continue;
-		}
-	bad:
-		fflush(stderr);
-		cerror("illegal character `%x' in input file", c);
-		break;
-	}
-	if (c <= 0)
-		cerror("unexpected EOF");
-	return val;
-}
-
-long
-rdin(base)
-	int base;
-{
-	return rdin2(base, stdin);
-}
-
-/* the end of a line of the intermediate file */
-void
-nlcheck()
-{
-	if (getchar() != '\n')
-		cerror("intermediate file format error");
-}
-
-/* the two pseudo symbols ~L1 and ~L2 of the frame */
-void
-mkhash()
-{
-	symtab = symtab0 = (struct sym *)alloc(0x42);
-	fpsym1 = (struct sym *)((char *)symtab + 0x16);
-	fpsym2 = (struct sym *)((char *)symtab + 0x2C);
-	symtab->nameoff = 0;
-	symtab[1].nameoff = 5;
-	symtab[2].nameoff = 9;
-}
 
 #ifdef OLD_D12K
 static int d12kcopy();
 #endif
+
+static int d12kcopy();
+
 /* copy a section of the data file to the output */
 int
 rddata()
 {
-	static char buf[512];
 	long n;
+	char buf[512];
 	int chunk, got;
 
 	n = rdin2(10, dfile);
@@ -151,6 +154,35 @@ rddata()
 		if (got != chunk)
 			return 0;
 	}
+	return 1;
+}
+
+/* the symbol table file: the local section, then the member table of the global one */
+int
+rdsym()
+{
+	nglob = 0;
+	fseek(stfile, stpos, 0);
+	stflag = getw(stfile);
+	if (stflag <= 0)
+		return 0;
+	fread(&nsymbytes, 4, 1, stfile);
+	fread(&nasciibytes, 4, 1, stfile);
+	fread(&nnumbytes, 2, 1, stfile);
+	fread(&nmembytes, 2, 1, stfile);
+	nsyms = nsymbytes / 22;
+	readsyms(nsyms, (struct sym *)((char *)symtab + 0x42), 0x15);
+	nsyms += 3;
+	if (nasciibytes + 0x15 > MAXASCII)
+		cerror("local ascii table overflow\n");
+	readtab(ascii + 0x15, nasciibytes);
+	nnums = nnumbytes / 2;
+	readnums(nnums);
+	if (stflag) {
+		nmems = nmembytes / 6;
+		readmems(nmems);
+	}
+	sortsyms();
 	return 1;
 }
 
@@ -282,9 +314,9 @@ void
 readnums(n)
 	int n;
 {
-	static int buf[500];
 	int *src, *dst;
 	int base, k;
+	int buf[500];
 
 	if (n <= 0)
 		return;
@@ -307,7 +339,7 @@ void
 readmems(n)
 	int n;
 {
-	static struct { long off; int x; } mem[500];
+	static struct { long off; int x; } mem[550];
 	struct { long off; int x; } *cur, *first;
 	long base;
 	struct sym *dp;
@@ -352,35 +384,6 @@ readmems(n)
 		rem -= cnt;
 	}
 	nsyms = dest;
-}
-
-/* the symbol table file: the local section, then the member table of the global one */
-int
-rdsym()
-{
-	nglob = 0;
-	fseek(stfile, stpos, 0);
-	stflag = getw(stfile);
-	if (stflag <= 0)
-		return 0;
-	fread(&nsymbytes, 4, 1, stfile);
-	fread(&nasciibytes, 4, 1, stfile);
-	fread(&nnumbytes, 2, 1, stfile);
-	fread(&nmembytes, 2, 1, stfile);
-	nsyms = nsymbytes / 22;
-	readsyms(nsyms, (struct sym *)((char *)symtab + 0x42), 0x15);
-	nsyms += 3;
-	if (nasciibytes + 0x15 > MAXASCII)
-		cerror("local ascii table overflow\n");
-	readtab(ascii + 0x15, nasciibytes);
-	nnums = nnumbytes / 2;
-	readnums(nnums);
-	if (stflag) {
-		nmems = nmembytes / 6;
-		readmems(nmems);
-	}
-	sortsyms();
-	return 1;
 }
 
 /* sort the tags */
@@ -547,7 +550,29 @@ mapnm(p)
 	m->op = FREE;
 }
 
+/* the two pseudo symbols ~L1 and ~L2 of the frame */
+void
+mkhash()
+{
+	symtab = symtab0 = (struct sym *)alloc(0x42);
+	fpsym1 = (struct sym *)((char *)symtab + 0x16);
+	fpsym2 = (struct sym *)((char *)symtab + 0x2C);
+	symtab->nameoff = 0;
+	symtab[1].nameoff = 5;
+	symtab[2].nameoff = 9;
+}
+
+/* the end of a line of the intermediate file */
+void
+nlcheck()
+{
+	if (getchar() != '\n')
+		cerror("intermediate file format error");
+}
+
 /* a tree of the intermediate file */
+int erflag = 0;
+
 struct node *
 eread()
 {
@@ -602,4 +627,51 @@ eread()
 	if (ty == BITYPE || p->op == FLD)
 		p->right = eread();
 	return p;
+}
+
+long
+rdin(base)
+	int base;
+{
+	return rdin2(base, stdin);
+}
+
+/* one number from the intermediate file or the data file; the input is f */
+long
+rdin2(base, f)
+	register int base;
+	register FILE *f;
+{
+	register int sign, c;
+	long val;
+
+	sign = 1;
+	val = 0;
+	while ((c = getc(f)) > 0) {
+		if (c == '-') {
+			if (val != 0)
+				cerror("illegal -");
+			sign = -sign;
+			continue;
+		}
+		if (c == '\t')
+			break;
+		if (c >= '0') {
+			if (c > '9')
+				goto bad;
+			val *= base;
+			if (sign > 0)
+				val += c - '0';
+			else
+				val -= c - '0';
+			continue;
+		}
+	bad:
+		fflush(stderr);
+		cerror("illegal character `%x' in input file", c);
+		break;
+	}
+	if (c <= 0)
+		cerror("unexpected EOF");
+	return val;
 }

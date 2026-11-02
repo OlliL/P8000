@@ -1,45 +1,154 @@
 /*
- * order3.c - the order of evaluation (codgen / scodgen)
- *
- * Reconstructed from /lib/codgen, the range 0x49c0 .. 0x5c7a: sucomp 0x49f0 (the register need of a subtree).
- * A node has two numbers: su, the word registers its evaluation needs, and fsu, the float registers (bytes 6 and 7).
+ * order3.c - the order of evaluation: Sethi-Ullman numbers, rewrites, arguments
  */
 #include "cg.h"
+#include "cg2.h"
 
-extern int dope[];
-extern int szty();
-extern void rallo();
-extern int shumul();
+extern void adrput();
+extern int allo();
+extern int argfreg;
+extern struct arg argl[];
+extern int argreg;
+extern int argsize();
+extern int argstop;
+extern struct node *canon();
 extern int cerror();
-extern int order();		/* 0x0ba2 */
-extern int rstatus[];
-extern char *opst[];
-extern char *rnames[];
-extern struct node *talloc(), *tcopy();
-extern struct node *canon();		/* 0x1884 */
-extern int allo(), argsize();
-extern void tfree(), reclaim();
-extern struct node resc[];
-#ifdef OLD_D22
-extern void adrput(), oregfix(), rfreenode(), rfree();
-#endif
-#ifdef OLD_D2R0
+extern int crslab;
+extern struct node *d16acmp;
 extern int d2r0reg;
-#endif
-#ifdef OLD_D2RA
 extern struct node *d2ranode;
 extern int d2rareg;
-#endif
+extern void deflab();
+extern int dope[];
+extern int ffregs;
+extern int fltused;
+extern struct sym *fpsym1;
+extern struct sym *fpsym2;
+extern int fregs;
+extern void genargs();
+extern int getlab();
+extern int getreg();
+extern int ltypeok();
+extern void mkadrs();
+extern int mkoreg();
+extern void mkrall();
+extern int nargs;
+extern int niceuty();
+extern struct node node[];
+extern int notoff();
+extern void offstar();
+extern char *opst[];
+extern void order();
+extern int ordflag;
+extern void oreg2();
+extern void oregfix();
+extern void rallo();
+extern void reclaim();
+extern struct node resc[];
+extern void rfree();
+extern void rfreenode();
+extern char *rnames[];
+extern struct rs *rsfree;
+extern int rstatus[];
+extern struct rs *rsuse;
+extern int setasg();
+extern int setasop();
+extern int setbin();
+extern int setstr();
+extern int shumul();
+extern int stoasg();
+extern int stocook;
+extern struct node *stotree;
+extern void sucomp();
+extern struct sym *symtab0;
+extern int szty();
+extern struct node *tcopy();
+extern void tfree();
+static char sccsid[] = "@[$]order3.c\t2.4  08/24/83 13:27:43 Copr. 1981 87wega3.2.";
+int fltused = 0;
+
+#define FORREW	0x4000
+
+#define MDONE	0x1001
+
+#define FREE_	100
 
 #ifdef SEG
 #define OFFSTARL(l)	offstar(l)
 #else
 #define OFFSTARL(l)	offstar((l)->left)
 #endif
+
 #define OFFSTARA(l)	offstar((l)->left)
 
 #define MAX(a, b)	((a) < (b) ? (b) : (a))
+
 #define MIN(a, b)	((a) > (b) ? (b) : (a))
+
+#define NOPREF	0x2000
+
+#define MUSTDO	0x1000
+
+#ifdef OLD_D3K
+/* v0: not the register of a parameter (it is copied before an operator changes it) */
+#define istnode(q)	((q)->op == REG && (rstatus[(q)->rval] & 0x14) && !((q)->sname && (q)->sname->sclass == 9))
+#else
+#define istnode(q)	((q)->op == REG && (rstatus[(q)->rval] & 0x14))
+#endif
+
+static int orderadd();
+static int lmuldiv();
+static struct node *argscan();
+static void argsort();
+static void fixstarg();
+static void argstrip();
+static void d3aw();
+static void d22arg();
+static void argplace();
+
+/* an assignment under an indirection: nothing to store, the check only */
+int
+stoasg(p, o)
+	struct node *p;
+	int o;
+{
+	return ltypeok(p->left->op, p->left);
+}
+
+/* store the subtree of p with the larger register need: stotree and stocook for codgen */
+void
+mkadrs(p)
+	register struct node *p;
+{
+	register int o;
+
+	o = p->op;
+	if (dope[o] & 1) {
+		if (p->left->su > p->right->su ||
+		    (p->left->su == p->right->su && p->left->fsu >= p->right->fsu)) {
+			if (p->left->op == STAR) {
+				if (p->left->su > 0 || p->left->fsu > 0)
+					stotree = p->left->left;
+				else if (p->right->su > 0 || p->right->fsu > 0)
+					stotree = p->right;
+				else {
+					cerror("store finds both sides trivial");
+					return;
+				}
+			} else if (p->left->op == FLD && p->left->left->op == STAR)
+				stotree = p->left->left->left;
+			else
+				stotree = p->left;
+		} else
+			stotree = p->right;
+	} else {
+		if (p->left->su > p->right->su || (p->left->su == p->right->su && p->left->fsu > p->right->fsu))
+			stotree = p->left;
+		else
+			stotree = p->right;
+	}
+	stocook = 0x1000;
+}
 
 /* 0x49c0: is the register (rval of a REG node) unusable as the base of an address: r0, or class 1 in the high byte */
 int
@@ -52,9 +161,6 @@ notoff(t, r, off)
 		return (char)(r >> 8) - 1 == 0;
 	return r == 0;
 }
-
-int fregs;		/* 0x8f8a, set to 8 by the start of the program */
-int ffregs;		/* 0x8f88, set to 4 */
 
 void
 sucomp(p)
@@ -158,11 +264,6 @@ sucomp(p)
 	else
 		p->fsu = MAX(nf + nf, MIN(MAX(fl, nf + fr), MAX(fr, nf + fl)));
 }
-
-#define NOPREF	0x2000
-#define MUSTDO	0x1000
-
-int fltused;		/* 0x33d4: floating point is used, the output gets .extern __fltuse */
 
 /* make sure the use of p gets done with register r: simulates offstar */
 void
@@ -279,15 +380,6 @@ rallo(p, down)
 	if (ty == 8)
 		rallo(p->right, down2);
 }
-
-#ifdef OLD_D3K
-/* v0: not the register of a parameter (it is copied before an operator changes it) */
-#define istnode(q)	((q)->op == REG && (rstatus[(q)->rval] & 0x14) && !((q)->sname && (q)->sname->sclass == 9))
-#else
-#define istnode(q)	((q)->op == REG && (rstatus[(q)->rval] & 0x14))
-#endif
-
-int ordflag;		/* 0xa16e: set to 0x14 while offstar orders a register that is not preferred */
 
 /* order the operands of an address sum that are not yet addressable; returns the number of orders done */
 static int
@@ -485,10 +577,6 @@ niceuty(p)
 	return 0;
 }
 
-#ifdef OLD_D16A
-struct node *d16acmp;	/* the left operand of the last compare set up: its increment stays in memory (match) */
-#endif
-
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */
 int
 setbin(p)
@@ -580,6 +668,45 @@ setstr(p)
 		if (p->op != STAR)
 			cerror("bad setstr");
 		order(p->left, 4);
+		return 1;
+	}
+	return 0;
+}
+
+/* setup for the assignment operator */
+int
+setasg(p)
+	register struct node *p;
+{
+	register struct node *l, *r;
+
+	l = p->left;
+	r = p->right;
+	if (l->su > r->su && l->op == STAR) {
+		OFFSTARA(l);
+		return 1;
+	}
+	if (r->su != 0 && r->op != REG) {
+		if (r->op == STAR)
+			OFFSTARL(r);
+		else
+			order(r, 0x2ca);
+		return 1;
+	}
+	if (r->op != REG && (p->type == 6 || p->type == 7)) {
+		order(p->right, 0x18);
+		return 1;
+	}
+	if (l->op == STAR) {
+		OFFSTARA(l);
+		return 1;
+	}
+	if (l->op == FLD && l->left->op == STAR) {
+		OFFSTARA(l->left);
+		return 1;
+	}
+	if (r->op != REG) {
+		order(r, 10);
 		return 1;
 	}
 	return 0;
@@ -687,45 +814,6 @@ rew:
 	return 1;
 }
 
-/* setup for the assignment operator */
-int
-setasg(p)
-	register struct node *p;
-{
-	register struct node *l, *r;
-
-	l = p->left;
-	r = p->right;
-	if (l->su > r->su && l->op == STAR) {
-		OFFSTARA(l);
-		return 1;
-	}
-	if (r->su != 0 && r->op != REG) {
-		if (r->op == STAR)
-			OFFSTARL(r);
-		else
-			order(r, 0x2ca);
-		return 1;
-	}
-	if (r->op != REG && (p->type == 6 || p->type == 7)) {
-		order(p->right, 0x18);
-		return 1;
-	}
-	if (l->op == STAR) {
-		OFFSTARA(l);
-		return 1;
-	}
-	if (l->op == FLD && l->left->op == STAR) {
-		OFFSTARA(l->left);
-		return 1;
-	}
-	if (r->op != REG) {
-		order(r, 10);
-		return 1;
-	}
-	return 0;
-}
-
 int crslab = 10000;	/* 0x3426 */
 
 int
@@ -741,19 +829,23 @@ deflab(l)
 	printf("L%d:\n", l);
 }
 
-/*
- * The arguments of a call: the first ones go to registers. genargs walks the comma tree (argscan) and
- * collects the arguments that get a register in argl (register and node, ended by a node 0), argstrip removes
- * them from the tree, argsort puts the ones that need most registers first and argplace evaluates them.
- */
-int nargs;		/* 0xa16a */
-int argreg;		/* 0xa16c: the next word register for an argument, counts down from 7 */
-int argfreg;		/* 0xa19e: the next float register, counts down from 0x13 */
-int argstop;		/* 0xa156: the rest of the arguments go to the stack */
-struct arg {
-	int	reg;
-	struct node *node;
-} argl[8];		/* 0xa1a0 */
+void
+genargs(p)
+	register struct node *p;
+{
+	register struct node *rest;
+
+	nargs = 0;
+	argl[nargs].node = 0;
+	argreg = 7;
+	argfreg = 0x13;
+	argstop = 0;
+	rest = argscan(p);
+	if (p != rest || (p == rest && argstop == 1))
+		argstrip(p, rest);
+	argsort();
+	argplace();
+}
 
 static struct node *
 argscan(p)
@@ -1061,22 +1153,4 @@ argplace()
 		tfree(q);
 		nargs++;
 	}
-}
-
-void
-genargs(p)
-	register struct node *p;
-{
-	register struct node *rest;
-
-	nargs = 0;
-	argl[nargs].node = 0;
-	argreg = 7;
-	argfreg = 0x13;
-	argstop = 0;
-	rest = argscan(p);
-	if (p != rest || (p == rest && argstop == 1))
-		argstrip(p, rest);
-	argsort();
-	argplace();
 }
