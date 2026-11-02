@@ -25,8 +25,8 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 - Originals, binaries and copyrighted material never go into git (unless the owner says so).
   Plexus sources are private reference only; our code is reconstructed from the WEGA binaries
   and is not a copy of them.
-  Exception (owner decision 2026-11-02): the PCC passes of the compiler (`cparse`, `scparse`, `codgen`, `scodgen`). Their source
-  follows the PCC in the Plexus tree as closely as the bytes of the WEGA original allow: names, macros, comments, order, whole
+  Exception (owner decision 2026-11-02): the passes of the compiler (`cparse`, `scparse`, `codgen`, `scodgen`, `popt`, `spopt`, `cpp`). Their source
+  follows the compiler in the Plexus tree (`cmd/cc`: PCC, `c2`, `cpp`) as closely as the bytes of the WEGA original allow: names, macros, comments, order, whole
   functions where they fit. PCC is a widely spread compiler of its day; what could be the same should be the same, so that a
   comparison with a real PCC shows what WEGA added. Byte identity stays first. All other Plexus sources stay reference only.
 - V7 layout in `src/cmd`. Makefiles must also work with WEGA's native `make`:

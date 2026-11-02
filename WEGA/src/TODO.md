@@ -54,6 +54,7 @@ Measured 2026-11-02, lines without comments and blanks that also stand in the PC
 1. Open functions take their PCC form when they are worked on (codgen step 5).
 2. After the bytes, one pass per module without byte change: names (functions, `NODE` and its members, `in.op`, `tn.rval`), macros (`optype`, `asgop`, `logop`, `FORCC`, `MUSTDO`, `NOPREF`, `INTEMP`) instead of numbers, PCC's file names where the stamps allow (`common`, `optim`, `rdr`), comments. Check: the model and the corpus stay as they are. `scparse`, `scodgen` go with it.
 3. What is left different from PCC is WEGA's: a list per pass (`tools/FINDINGS.md` or a section of its own).
+The same for `popt`, `spopt` (model `cmd/cc/c2.d`, `z8000/c2`) and `cpp` (model `cmd/cc/cpp.d`, `z8000/cpp`, not started).
 
 ## Plan: towards the old C compiler (2026-10-30, owner decision; replaces "Plan after the sld naming" of 2026-10-28)
 
