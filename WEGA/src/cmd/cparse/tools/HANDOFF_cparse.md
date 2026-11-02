@@ -135,7 +135,7 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
   `term LB e RB` builds SUBSR, switch values go to a TEMP in swtab[swx] (switchpart, adddef, swend use the offsets +1
   and +2), lregvar and the long autooff are saved per block, `bfend` at the end of a block, "void function %s" prints
   the name offset (quirk). `cgram1.s` and the cut are gone (tools/cutgram.py stays as the record of the cut).
-- `bss.s` (only `.comm` lines, linked first) fixes the bss in the order of the original.
+- The definitions at the end of `mfile1` fix the bss in the order of the original (cgram1.o is linked first; until 2026-11-02 `bss.s`).
 - Data model (`d12model.py`, `D6TABLES`): the size and layout of the original; strict comparison on the model: 36 exact,
   the others classified (findings.json). The `_lastbuf` word of cplibc.s was a number and is now `__iob+160`.
 - Corpus 234 of 255; the rest: the heap-dependent .S fields (quirk table).
@@ -144,7 +144,7 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
   part with the modules and gives the image of /lib/cparse exactly). 19 shipped members (ar x), 19 known oldlibc
   versions and 8 new ones: fltioc 0_1, fdopen 0_1, ecvt 0_1, perror 0_1, errlst 0_1 (data only, pointers made
   symbolic with datafix.py), stty 0_3 (stty at 0xbc1c and gtty at 0xbc36), strcmp 0_1, length 0_3 (limit 0x4000);
-  `libcbss.s` orders __sobuf before __sibuf. unlink.py: modules with data only. cplibc.s is gone.
+  the old data member (oldlibc data/0_1.c) orders __sobuf before __sibuf (until 2026-11-01 `libcbss.s`). unlink.py: modules with data only. cplibc.s is gone.
 - endopen/0_4.s (used by codgen, scodgen, popt) had the errno address of /lib/codgen written as a number
   (`cp %69C8,#2`); it is `_errno` now. The originals: codgen 0x69c8, scodgen 0x7036, popt 0x0ce8, cparse 0x4894, so
   the number was right only for the original codgen (our codgen link has errno at 0x69a4).
@@ -172,8 +172,7 @@ Tools: `host/recon/` through the launchers of this directory (configuration `pro
 
 1. The 25 "other differences": read each against the patterns (new D classes or source forms); the D19 swaps.
 2. argdebug (every call argument passes through it; returns it; name assumed: a debug hook left empty by the preprocessor); bssgap1/2.
-3. The two files bss.s and libcbss.s are layout aids; with the old compiler the order should come from the first
-   mentions in cgram1.o (check when the old cc exists).
+3. (done 2026-11-02) The order comes from the first mentions in cgram1.o, not from bss.s and libcbss.s.
 
 ## State 2026-11-01
 

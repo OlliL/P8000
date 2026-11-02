@@ -5,17 +5,7 @@ static char sccsid[] = "@[$]vinit1.c\t2.3  10/06/83 13:13:44 Copr. 1981 87wega3.
 extern int regflag;	/* the flag at 0x1aa0 (char and short register variables get a word on the stack; name is a guess) */
 OFFSZ upoff();
 
-struct instk {	/* WEGA: 22 bytes */
-	OFFSZ in_sz;   /* size of array element */
-	int in_x;    /* current index for structure member in structure initializations */
-	int in_n;    /* number of initializations seen */
-	int in_s;    /* sizoff */
-	int in_d;    /* dimoff */
-	TWORD in_t;    /* type */
-	struct symtab *in_id;   /* the symbol (PCC: stab index) */
-	int in_fl;   /* flag which says if this level is controlled by {} */
-	OFFSZ in_off;  /* offset of the beginning of this level */
-	}
+struct instk
 instack[10],
 *pstk;
 

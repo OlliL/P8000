@@ -821,3 +821,11 @@ TODO.md when this log was started.
 - rmove: what is left is layout (jump forms, the two "#0" of clr_cc whose order depends on the branch order); the source work on rmove is done for now.
 - cparse: libcbss.s replaced by an old data member (src/lib/oldlibc/data/0_1.c: _sobuf declared before _sibuf): the shipped data.o defines both commons and is their first mention in the link; with the old order the bss of the model is as before (__sobuf 0xb4f4, __sibuf 0xb6f4), cparse model 173.
 - popt: bss.s replaced by a list of the globals as definitions at the end of z2.h in the original bss order (every module includes it; z20.o, linked first, gives the order): the bss map of the model is the same symbol by symbol; popt model 56, cparse 173.
+
+## 2026-11-02
+
+- cparse: bss.s replaced by a list of the globals as definitions at the end of mfile1 in the original bss order (cgram1.o,
+  linked first, gives the order); `struct instk`, `shdr`, `ref` moved to mfile1. `yytext` is 125 bytes as in scan1.c (bss.s
+  said 126, the place up to the next symbol: ld rounds, the addresses are the same). Against HEAD with bss.s: normal, v0,
+  v0p, v1 and the model have the same code, data, relocation and bss sizes, every symbol the same value (only the file
+  symbol bss.o is gone). Model 173, 96 lines; corpus 260 of 260 (one input more than the 259 of before).

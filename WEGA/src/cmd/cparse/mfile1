@@ -272,3 +272,92 @@ char *exname(), *exdcon();
 # define CHARCAST(x) (char)(x)
 # endif
 
+struct instk {	/* WEGA: 22 bytes */
+	OFFSZ in_sz;   /* size of array element */
+	int in_x;    /* current index for structure member in structure initializations */
+	int in_n;    /* number of initializations seen */
+	int in_s;    /* sizoff */
+	int in_d;    /* dimoff */
+	TWORD in_t;    /* type */
+	struct symtab *in_id;   /* the symbol (PCC: stab index) */
+	int in_fl;   /* flag which says if this level is controlled by {} */
+	OFFSZ in_off;  /* offset of the beginning of this level */
+	};
+struct shdr { int h_magic; long h_syms; long h_names; int h_tags; int h_refs; };
+struct ref { long r_id; char r_flag; };
+
+/* the globals in the order of their places in the bss of /lib/cparse: every module includes this list, the first
+ * one linked (cgram1) gives the commons their order */
+struct symtab *curftn;
+int asavbc[100];
+int instruct;
+char ntab[6500];
+int bssgap1;
+int brklab;
+YYSTYPE yyval;
+int stwart;
+YYSTYPE yyv[150];
+int contlab;
+int paramno;
+FILE *Ffile;
+int flostat;
+CONSZ lastcon;
+int curdim;
+struct symtab *idname;
+OFFSZ strucoff;
+double dcon;
+int blevel;
+int regvar;
+int curclass;
+int retstat;
+YYSTYPE yylval;
+struct sw swtab[300];
+struct sw *swp;
+int swx;
+OFFSZ autooff;
+int lregvar;
+OFFSZ dimtab[1000];
+FILE *dfile;
+NODE node[350];
+char *dpath;
+FILE *sfile;
+FILE *outfile;
+int minrvar;
+long ftnpos;
+char dfname[50];
+int fminrvar;
+OFFSZ inoff;
+char ifname[50];
+char *ipath;
+int fregvar;
+char sfname[50];
+char *spath;
+int strflg;
+long maxoff;
+short lxmask[129];
+int lxmatch;
+char yytext[125];
+char *lxgcp;
+struct lxdope *lxcp[129];
+int pregvar;
+int paramstk[150];
+long dpos;
+int pfregvar;
+int dope[129];
+int afull;
+char *opst[129];
+char dbuf[512];
+char ibuf[512];
+char sbuf[512];
+NODE *lastfree;
+struct instk instack[10];
+int iclass;
+struct instk *pstk;
+struct symtab *hashtab[64];
+int bssgap2;
+long shdrpos;
+struct ref reftab[551];
+int commflag;
+struct shdr shdr;
+struct symtab *refsym[551];
+int taglist[500];

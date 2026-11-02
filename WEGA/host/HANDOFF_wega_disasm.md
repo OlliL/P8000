@@ -27,7 +27,7 @@ Source of truth for the state: `../src/TODO.md` (per program) and the check comm
 | `cparse`, `scparse` | `/lib/cparse`, `/lib/scparse` | 67520, 67826 | `src/cmd/cparse` (K&R, from the Plexus PCC base, owner decision) | - | yes | all functions written; corpus 259/259 (behaviour, built with the shipped cc and with ccv0p); byte identity with the old compiler v0p: 173 of 179 functions strictly exact (2026-11-01); scparse not started | `src/cmd/cparse/tools/oldcc.sh model`, `corpus` |
 | `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | 80884, 83554 | `src/cmd/codgen` (K&R, WEGA `cc`; byte identity is the goal, D1 to D16 open) | `host/codgen` (ANSI, gcc `-Wall`; `-DSEG` for scodgen; functional equality) | yes | host: corpus 100/100 identical for codgen and scodgen; large corpus (213 source files of `src/cmd` and `src/lib`) 213/213 for both, 3 files not comparable. WEGA side: corpus 101/101 (behaviour), byte identity open | `host/codgen` (`host_corp.sh`-style test, see `src/TODO.md`); `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
 | `gopt` | `/lib/gopt` (only with `-Ol`/`-Or`) | 147286 | - | - | - | not started | - |
-| `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | 25620, 25880 | `src/cmd/popt` (K&R, `z20.c` to `z23.c`, own `bss.s`, `stdio.h`) | `host/popt` | yes | host: 522 corpus runs byte-identical; src/cmd: the normal build gives the output of /lib/popt on the popt corpus (816 of 816 runs); byte identity with the old compiler v0p: 56 of 73 functions strictly exact, code, data and bss of the original's size (2026-11-01) | `make -C host check` (popt); `src/cmd/cparse/tools/oldcc.sh model popt` |
+| `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | 25620, 25880 | `src/cmd/popt` (K&R, `z20.c` to `z23.c`, `stdio.h`; the bss order from the definitions at the end of `z2.h`) | `host/popt` | yes | host: 522 corpus runs byte-identical; src/cmd: the normal build gives the output of /lib/popt on the popt corpus (816 of 816 runs); byte identity with the old compiler v0p: 56 of 73 functions strictly exact, code, data and bss of the original's size (2026-11-01) | `make -C host check` (popt); `src/cmd/cparse/tools/oldcc.sh model popt` |
 | `cas` | `/bin/cas` | 89152 | `src/cmd/cas` (`MODULES`) | `host/cas` | yes (decompiled, see `src/cmd/cas/README`) | done in behaviour; code not byte-identical (older scc) | `make -C host check` (cas) |
 | `as` | `/bin/as` (PLZ/ASM) | 74536 | - | - | - | not started | - |
 | `ld` | `/bin/ld` | 21732 | - (source in `host/ld`) | `host/ld/ld` | yes (`ld.c` from the binary) | done: 146 command lines identical | `make -C host check` (ld) |
@@ -135,7 +135,7 @@ cluster (point 4), its small leaf functions may answer point 3.
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
 /lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 56 of 73 functions strictly exact,
 735 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
-3420 bytes (bss.s gives the original bss order; the libc is linked in the order of the original, Makefile
+3420 bytes (the definitions at the end of z2.h give the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
 816 of 816; the corpus is RECON_TMP/popt/corpus, which can be made
@@ -252,14 +252,14 @@ OLD_D16A (codgen, match) loads `++n`/`--n` of a frame slot into a register when 
 (`dec n,#1; test n`). Try: no OLD_D16A when the parent is a compare (EQ/NE) with the constant 0; check popt
 codemove, cparse genswitch (`p[++n]`, must stay), the cparse model (173), corpus and the v0 bench.
 
-**Open: the bss order without .s helpers (owner request 2026-11-01).** popt: done (the globals as definitions at
-the end of z2.h in the original order replace bss.s; the bss map is the same symbol by symbol). cparse: libcbss.s
-is replaced by an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
-first, the model link needs its object); bss.s of cparse (76 commons) is still there. To do it the popt way: a
-list of definitions in mfile1 (included by every module, cgram1 is linked first) in the order of bss.s; the types
-must match the declarations (most in mfile1 and the .c files; `instack`/`pstk` need `struct instk` of vinit1.c in
-the header first; `bssgap1`, `bssgap2` are places of unknown variables); then compare the bss map of the model
-(nm, symbol by symbol) and check corpus and model. The cparse corpus has not been run after the libcbss change.
+**Done: the bss order without .s helpers (owner request 2026-11-01, finished 2026-11-02).** popt: the globals as
+definitions at the end of z2.h. cparse: the globals as definitions at the end of mfile1 (cgram1, linked first, gives
+the order) and an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
+first, the model link needs its object). bss.s and libcbss.s are gone in both.
+
+**Next: D16A, then the other codgen cases** (owner 2026-11-02: start with D16A; proposed order D16A, D3 parameter
+across a branch, D2 r1/r3, D5S as STREF, D3 value of an assignment). Baseline: cparse 173/96, popt 56/735. The model
+reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt), not equal sizes; the cause is not checked.
 
 **Tools.**
 

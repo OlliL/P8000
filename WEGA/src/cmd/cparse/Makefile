@@ -7,8 +7,8 @@
 #   make old         the versions of the old compiler in OLDDIRS (v1/Makefile ...)
 #   make clean
 #
-# The parser cgram1.y is made into cgram1.c by the original yacc (YACC). bss.s (only .comm lines) and the old data member of oldlibc give
-# the bss the order of the original. The libc part: shipped members of /lib/libc.a (ar x into shipped/) and versions of
+# The parser cgram1.y is made into cgram1.c by the original yacc (YACC). The definitions at the end of mfile1 (cgram1.o
+# is linked first) and the old data member of oldlibc give the bss the order of the original. The libc part: shipped members of /lib/libc.a (ar x into shipped/) and versions of
 # src/lib/oldlibc, in the link order of /lib/cparse (tools/cparse_libc_split.spec, HANDOFF_cparse.md step 2).
 
 CRT = ../../lib/libc/crt
@@ -19,7 +19,7 @@ WEGA = ../../../../tmp/wega31_root
 CC = cc
 YACC = yacc
 CFLAGS = -O
-OBJS = bss.o cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o
+OBJS = cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o
 HDRS = mfile1 manifest macdefs stdio.h
 OLD = ../../lib/oldlibc
 AR = ar
@@ -45,9 +45,6 @@ comm1.o: common
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
-
-bss.o: bss.s
-	$(CAS) -u -o $@ bss.s
 
 $(OLD)/data/0_1.o: $(OLD)/data/0_1.c
 	cd $(OLD)/data ; $(CC) -c -O 0_1.c
