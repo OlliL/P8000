@@ -52,12 +52,13 @@ def norm_masked(t, d18=False):
     return re.sub(r'^calr\t', 'call\t', t)
 
 
-def norm_strict(t, codeaddr, low=0x42, d18=False):
+def norm_strict(t, codeaddr, low=0x42, d18=False, callform=False):
     """codeaddr: set of function addresses of the binary the line comes from; values below low (crt0 entries, small
     constants) are never taken as code addresses. d18: @r15 counts as %0000(r15) (see at0)"""
     if d18:
         t = at0(t)
-    t = re.sub(r'^calr\t', 'call\t', t)
+    if not callform:
+        t = re.sub(r'^calr\t', 'call\t', t)
     if JUMP.match(t):
         return re.sub(r'%[0-9A-Fa-f]{3,8}\b', 'CODE', t)
     return re.sub(r'#%([0-9A-Fa-f]{3,4})\b',

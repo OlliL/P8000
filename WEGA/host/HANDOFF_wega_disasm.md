@@ -154,7 +154,7 @@ first, the model link needs its object). bss.s and libcbss.s are gone in both.
 
 **Next: the call forms and long jumps of the old cas (D17, cparse point 4); rmove source work done.** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
 ). State: cparse 175/27, popt 71/26. The model
-reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt). A part of the cause is measured: strictcmp treats `call` and `calr` as equal, the originals have `call` where ours has `calr` (rmove 35 times, OLDCC.md D17), so a strict match is not yet a byte match.
+reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt). A part of the cause is measured: strictcmp treats `call` and `calr` as equal, the originals have `call` where ours has `calr` (OLDCC.md D17), so a strict match is not yet a byte match. `strictcmp -c` counts them: cparse 168 of 179, 79 lines; popt 61 of 73, 172 lines.
 
 **Tools.**
 
@@ -165,6 +165,7 @@ reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt). A part
 - `oldcc.sh matrix [SWITCH ...]`, `oldcc.sh matrix check`: every switch of v0p taken out alone, the result in the generated
   `host/OLDCC_SWITCHES.md`; check in every check round (OLDCC.md, "Evidence rules"). The programs are PROGS in
   `host/recon/switchmatrix.py`.
+- `strictcmp.py -c` (call and calr differ), `-a` (also @r15 and 0(r15)): the distance to the bytes.
 - `src/cmd/cparse/tools/olist.py NAME`: the original instructions of a function. `python3 tools/strictcmp.py -v NAME`:
   the strict diff of one function (run in src/cmd/cparse after `oldcc.sh model`).
 - popt trace: build `src/cmd/popt/v0p` with `-DTRACE` in addition to its switches (`oldcc.sh build popt v0p "<the

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """strictcmp.py - compare every function of our linked program with the original (configuration: progcfg.py).
 
-Usage: strictcmp.py [-m] [-v NAME] [LINKED]
+Usage: strictcmp.py [-m] [-c] [-a] [-v NAME] [LINKED]
 
   LINKED   our linked program with symbols (default progcfg STRICT_INPUT). For a strict comparison its data and bss layout
            must equal the original (for a program whose strings are laid out differently by our cc: the d12model link).
   -m       masked comparison (every hex operand of 3+ digits masked, the form of the old ldcheck/wholecmp); it hides
            wrong constants and wrong data addresses and is only a first look
+  -c       call and calr count as different (without it they are equal: the strict comparison hides D17)
+  -a       as -c, and @r15 and %0000(r15) count as different too (without progcfg D18): as near to the bytes as the
+           comparison goes while the code addresses still differ
   -v NAME  print the diff of NAME (original | ours)
 
 Functions and their original ranges: findings.json (functions: name -> orig, size_orig; status crt0 is skipped). Our
@@ -31,7 +34,9 @@ TEXT_TYPES = (31, 34)   # file names and global text symbols in our s.out
 def main():
     a = sys.argv[1:]
     masked = '-m' in a
-    a = [x for x in a if x != '-m']
+    callform = '-c' in a or '-a' in a
+    d18 = CFG.D18 and '-a' not in a
+    a = [x for x in a if x not in ('-m', '-c', '-a')]
     verbose = None
     if '-v' in a:
         i = a.index('-v')
@@ -54,8 +59,8 @@ def main():
         # an immediate that is a function address of either binary is masked on both sides: a data address of one
         # side can equal a function address of the other (with the data model at the original's addresses)
         both_fn = ours_fn | orig_fn
-        def n_ours(t): return zcode.norm_strict(t, both_fn, d18=CFG.D18)
-        def n_orig(t): return zcode.norm_strict(t, both_fn, d18=CFG.D18)
+        def n_ours(t): return zcode.norm_strict(t, both_fn, d18=d18, callform=callform)
+        def n_orig(t): return zcode.norm_strict(t, both_fn, d18=d18, callform=callform)
     same = diff = 0
     for name, f in sorted(fn.items(), key=lambda x: int(x[1]['orig'], 16)):
         if f.get('status') == 'crt0':
@@ -76,7 +81,8 @@ def main():
         print('%-16s %04x %4d %4d  %-10s %s' % (name, lo, hi - lo, e - s, f.get('status'), 'SAME' if not d else 'DIFF %d' % len(d)))
         if verbose == name:
             print('\n'.join(difflib.unified_diff(theirs, mine, 'orig', 'ours', lineterm='', n=2)))
-    print('same %d, differ %d (%s)' % (same, diff, 'masked' if masked else 'strict'))
+    print('same %d, differ %d (%s)' % (same, diff, 'masked' if masked else
+                                       'all forms' if '-a' in sys.argv else 'call forms' if callform else 'strict'))
 
 
 if __name__ == '__main__':
