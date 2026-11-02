@@ -215,7 +215,7 @@ regargs(tot)
 				lo = reg;
 			if (hi < reg + 3)
 				hi = reg + 3;
-			if ((unsigned long)(s->soffset / 8) < (unsigned long)(unsigned)t)
+			if (s->soffset / 8 < (unsigned long)(unsigned)t)
 				t = (int)(s->soffset / 8);
 			continue;
 		}
@@ -233,7 +233,7 @@ regargs(tot)
 			k = cls == 3 ? 1 : 0;
 			if (hi < reg + k)
 				hi = reg + k;
-			if ((unsigned long)(s->soffset / 8) < (unsigned long)(unsigned)t) {
+			if (s->soffset / 8 < (unsigned long)(unsigned)t) {
 				t = (int)(s->soffset / 8);
 				if (t & 1)
 					t--;

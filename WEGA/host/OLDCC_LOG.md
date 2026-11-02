@@ -969,3 +969,22 @@ TODO.md when this log was started.
   popt procopt: v0p model exact with OLD_D5T: t[k].s1 as k*10 + (t + 2) + fp
   popt regof: v0p model exact with OLD_D3AW not in the condition of a ?: in an argument
   popt reverse: v0p model exact with OLD_D2RA: add r0,r2; ld r2,r0; source for (j = 0, i = strlen(s) - 1; ...)
+
+## 2026-11-02: /lib/codgen, the first model of v0p
+
+Step 1 of the codgen work: `oldcc.sh model codgen` (launchers, `progcfg.py`, `size_orig` and `file` in the old `findings.json`).
+- First number, before data and bss: 17 of 206 strict, 12664 lines; masked (`-m`) 74 of 206. Data 27692 against 27084, bss 18114 against
+  17522, code 53760 of both (own part 0x5a short: 0xbb6a against 0xbbc4, the functions `0x4868`, `0x6fca`, `0x854c` are missing).
+- The libc part is now the original's as far as the masked comparison goes: order of libc.a (`LIBCOBJS` in the Makefile), with `perror` 0_1
+  and `errlst` 0_1 (called only by the dead function 0x854c), `malloc` 0_3 (with `realloc`), `stty` 0_3 (`stty` and `gtty`).
+- `ccv0p` stops with `register jam` on `(unsigned long)(s->soffset / 8) < (unsigned long)(unsigned)t` in `regargs`; the shipped compiler does not.
+  Reduced: `(unsigned long)(a / 8) < b`, a cast of a long quotient on the left. Without the left cast (the comparison stays unsigned) it compiles and
+  the code has the form of the original's (`divl`, `ldk r2,#0`, `ld r3,r11`, `cpl`, `jr nc`). The cast went away from the source. Why v0p jams
+  is not looked at: a guess is that the cast keeps the pair of the quotient busy.
+- The original's modules by their SCCS stamps in the data: reader3, rdr3, local3, order3, match3, allo3, regallo3, comm3, table3 and table3.nzcc,
+  wrt3, regs3, lcl3, tr3, optim3. Our source has 22 files with another split (main3, efcode3, gen3, out3, zzz3, tmp3, regfile3 ... do not
+  exist in the stamps) and 206 functions whose code order is not ours.
+- Corpus of the normal build (`tools/corpus.sh`, `check.sh`, all of `src/cmd` and `src/lib`, new and larger than the 101 cases of before): codgen 165/165 and
+  104/104; scodgen 104/104 and 159/165. The 6 cases give the same result before this step (base built from the previous commit), so they are older than
+  the step: `codgen_optim3`, `cparse_optim1` stop with `reclaim dest reg not free` (`p->lval *= val`, a long in memory); `doscopy_1.3_dosdir` and
+  `pburn_{2.1,2.3,2.6}_pb.cmdline` give other text.

@@ -14,7 +14,7 @@ endopen    0_1   size
 endopen    0_2   strip
 endopen    0_3   ranlib
 endopen    0_4   codgen cparse popt scodgen
-errlst     0_1   cparse
+errlst     0_1   codgen cparse
 fdopen     0_1   cparse
 filbuf     0_1   size
 filbuf     0_2   strip
@@ -40,12 +40,12 @@ length     0_2   codgen popt ranlib scodgen
 length     0_3   cparse
 malloc     0_1   size
 malloc     0_2   strip
-malloc     0_3   cparse popt ranlib
+malloc     0_3   codgen cparse popt ranlib
 malloc     0_4   cc scc
-malloc     0_5   codgen scodgen
+malloc     0_5   scodgen
 mktemp     0_1   strip
 open       0_1   ranlib
-perror     0_1   cparse
+perror     0_1   codgen cparse
 printf     0_1   size
 printf     0_2   strip
 printf     0_3   ranlib
@@ -70,8 +70,8 @@ strncpy    0_1   ranlib
 strncpy    0_2   ld
 strrchr    0_1   popt
 stty       0_1   ranlib
-stty       0_2   codgen popt scodgen
-stty       0_3   cparse
+stty       0_2   popt scodgen
+stty       0_3   codgen cparse
 swab       0_1   ranlib
 swap       0_1   ld size strip
 swap       0_2   ranlib
