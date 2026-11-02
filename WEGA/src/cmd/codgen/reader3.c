@@ -807,14 +807,19 @@ prcook(cookie)
 	register int i, flag;
 
 	if (cookie & 0x8000) {
-		if (cookie == 0x8000)
+		switch (cookie) {
+		case 0x8000:
 			printf("SZERO");
-		else if (cookie == 0x8002)
+			break;
+		case 0x8002:
 			printf("SSCON");
-		else if (cookie == 0x8004)
+			break;
+		case 0x8004:
 			printf("SICON");
-		else
+			break;
+		default:
 			printf("SPECIAL+%%%0.2x", cookie & 0x7FFF);
+		}
 		return;
 	}
 	flag = 0;
@@ -1171,8 +1176,6 @@ void
 markcall(p)
 	register struct node *p;
 {
-	int ty;
-
 again:
 	switch (p->op) {
 	case CALL:
@@ -1184,14 +1187,14 @@ again:
 		callflag++;
 		return;
 	}
-	ty = dope[p->op] & 0xE;
-	if (ty == LTYPE)
-		return;
-	if (ty == BITYPE)
+	switch (dope[p->op] & 0xE) {
+	case BITYPE:
 		markcall(p->right);
-	if (ty == UTYPE || ty == BITYPE) {
+	case UTYPE:
 		p = p->left;
 		goto again;
+	case LTYPE:
+		return;
 	}
 }
 

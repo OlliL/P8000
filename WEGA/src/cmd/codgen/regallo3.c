@@ -43,11 +43,6 @@ static char sccsid[] = "@[$]regallo3.c\t2.5  08/24/83 13:36:00 Copr. 1981 87wega
 static char rcname[][8] = {
 	"TBYTE", "TWORD", "TLONG", "TFLOAT", "GBYTE", "GWORD", "GLONG", "GFLOAT", "RANY", "NULL"
 };
-#ifdef OLD_D2W
-static int rweight[8] = { 3, 1, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is taken early (pairs rr2, rr0 first) */
-#else
-static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
-#endif
 
 #define MAXRCOUNT 5000
 
@@ -64,9 +59,13 @@ static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
 /* the other register of a pair */
 int
 pairmate(r)
-	int r;
+	register int r;
 {
-	return r & 1 ? r - 1 : r + 1;
+	if (r & 1)
+		r--;
+	else
+		r++;
+	return r;
 }
 
 void
@@ -79,9 +78,8 @@ rsinit()
 	rsflag1 = 0;
 	rsflag2 = 0;
 	rsdepth = 0;
-	n = &pool[0];
-	rspool = n;
-	nx = n + 1;
+	rspool = nx = n = &pool[0];
+	nx++;
 	while (n < &pool[NPOOL]) {
 		n->next = nx;
 		nx++;
@@ -107,7 +105,7 @@ rsbuild()
 
 	if (rsfree)
 		rsrelease(rsfree);
-	rsfree = n = rspool;
+	n = rsfree = rspool;
 #ifdef OLD_D3J
 	for (last = n; last; last = last->next)
 		last->flags &= ~0x4000;
@@ -129,10 +127,9 @@ rsbuild()
 	n->reg = 0;
 	n = n->next;
 #endif
-	for (r = 16; r <= 19; r++, n = n->next) {
+	for (r = 16; r <= 19; r++, last = n, n = n->next) {
 		n->cls = 4;
 		n->reg = r;
-		last = n;
 	}
 #ifndef SEG
 	n->cls = 6;
@@ -143,10 +140,9 @@ rsbuild()
 		n->cls = 7;
 		n->reg = r;
 	}
-	for (r = 20; r <= 23; r++, n = n->next) {
+	for (r = 20; r <= 23; r++, last = n, n = n->next) {
 		n->cls = 8;
 		n->reg = r;
-		last = n;
 	}
 	last->next = 0;
 	rspool = n;
@@ -192,19 +188,28 @@ newnode(n, k)
 	m = rspool;
 	rspool = m->next;
 	switch (n->cls) {
-	case 2: case 6:
-		n->reg = n->reg * 2;			/* word register r: bytes 2r and 2r+1 */
-		/* FALLTHROUGH */
-	case 3: case 7:
+	case 3:
+	case 7:
+	split:
 		m->reg = n->reg;
 		n->reg++;
-		m->cls = k;
-		n->cls = k;
+		n->cls = m->cls = k;
 		return m;
+	case 2:
+	case 6:
+		n->reg = n->reg * 2;			/* word register r: bytes 2r and 2r+1 */
+		goto split;
+	default:
+		cerror("splitreg: illegal type");
 	}
-	cerror("splitreg: illegal type");
 	return m;
 }
+
+#ifdef OLD_D2W
+static int rweight[8] = { 3, 1, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is taken early (pairs rr2, rr0 first) */
+#else
+static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
+#endif
 
 /*
  * Put the node n at its place in the free list again. mode 1: the node was just freed or changed, its
@@ -899,13 +904,17 @@ void
 nullsyms(mode)
 	int mode;
 {
-	struct rs *n;
+	register struct rs *n;
 
 	for (n = rsuse; n; n = n->next) {
-		if (mode != 1)
+		switch (mode) {
+		case 1:
+			if (n->cls <= 4)
+				n->sym = 0;
+			break;
+		default:
 			cerror("nullist: illegal case");
-		if (n->cls <= 4)
-			n->sym = 0;
+		}
 	}
 }
 
@@ -921,7 +930,7 @@ rsfreeall(flag)
 	register struct rs *n;
 
 
-	for (n = rsuse; n; n = next) {
+	for (next = n = rsuse; n; n = next) {
 		next = n->next;
 		switch (flag) {
 		case 1:
@@ -956,6 +965,8 @@ void
 rspush(mark)
 	int mark;
 {
+	register int spare;
+
 	if (rsdepth < 3) {
 		rsstk[rsdepth].list = rsuse;
 		rsstk[rsdepth].mark = mark;

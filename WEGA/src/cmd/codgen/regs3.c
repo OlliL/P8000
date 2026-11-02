@@ -466,10 +466,10 @@ symuse(s)
 /* idle registers go back to the free list (flag 0: only the ones that hold no symbol) */
 void
 rfreeall(flag)
-	register int flag;
+	int flag;
 {
 	register struct rs *n;
-	struct rs *next;
+	register struct rs *next;
 
 	for (n = rsuse; n; n = next) {
 		next = n->next;
@@ -504,7 +504,6 @@ rnassign(p1, p2)
 	register struct node *p1, *p2;
 {
 	register struct rs *a, *b;
-	long l;
 
 	if (p1->op != REG)
 		return;
@@ -524,16 +523,15 @@ rnassign(p1, p2)
 		b = rfind(p2->rval, rclass(p2->type, p2->rval));
 		if (b) {
 			a->sym = b->sym;
-			l = b->off;
+			a->off = b->off;
 		} else {
 			a->sym = 0;
-			l = 0;
+			a->off = 0;
 		}
 	} else {
 		a->sym = p2->sname;
-		l = p2->lval;
+		a->off = p2->lval;
 	}
-	a->off = l;
 	a->flags &= ~0x8000;
 	a->busy = 0;
 }
@@ -599,7 +597,7 @@ static void
 rnnull(reg, type)
 	int reg, type;
 {
-	struct rs *n;
+	register struct rs *n;
 
 	n = rfind(reg, rclass(type, reg));
 	if (n) {
@@ -833,9 +831,9 @@ void
 fcmd(n)
 	int n;
 {
-	register struct sym *s;
 	register int i;
 	register int spare;	/* unused: the original reserves this register */
+	register struct sym *s;
 
 	if (n > 0) {
 		s = mapn(n);
@@ -1068,6 +1066,8 @@ memname(s, off)
 	register struct sym *s;
 	long off;
 {
+	int x;
+
 	if (s && (s->sflags >> 2 & 1))
 		printf("_%s", ascii + s->nameoff);
 	else if (s && s->sclass == 3) {

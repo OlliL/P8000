@@ -649,7 +649,7 @@ setbin(p)
 /* structure assignment */
 int
 setstr(p)
-	struct node *p;
+	register struct node *p;
 {
 	if (p->right->op != REG) {
 		order(p->right, 4);
@@ -707,11 +707,15 @@ setasg(p)
 /* ASG MUL, ASG DIV, ASG MOD on a long */
 static int
 lmuldiv(p)
-	struct node *p;
+	register struct node *p;
 {
-	if (p->op == ASG MUL || p->op == ASG DIV || p->op == ASG MOD)
+	switch (p->op) {
+	case ASG MUL:
+	case ASG DIV:
+	case ASG MOD:
 		if (p->left->type == 5 || p->left->type == 15)
 			return 1;
+	}
 	return 0;
 }
 
@@ -936,8 +940,8 @@ static void
 argsort()
 {
 	register struct arg *ai, *aj;
-	int r;
-	struct node *n;
+	register int r;
+	register struct node *n;
 
 #ifdef OLD_D19A
 	/* v0: a constant argument counts as needing less than any other one (it is loaded after them) */
@@ -960,7 +964,7 @@ argsort()
 /* a structure argument: allocate its place on the stack as for a structure assignment */
 static void
 fixstarg(p)
-	struct node *p;
+	register struct node *p;
 {
 	struct optab q;
 

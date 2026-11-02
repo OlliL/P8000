@@ -1167,7 +1167,9 @@ ltypeok(op, p)
 	register int op;
 	register struct node *p;
 {
-	return op == NAME || op == REG || op == ICON || op == OREG || (op == STAR && p != 0 && shumul(p->left));
+	if (op == NAME || op == REG || op == ICON || op == OREG)
+		return 1;
+	return op == STAR && p != 0 && shumul(p->left);
 }
 
 /* the operator is a leaf that can be addressed: NAME, REG, ICON, OREG */
@@ -1412,7 +1414,7 @@ adrput(p)
 #ifdef SEG
 				printf("r%s(%s)", rnames[(r >> 8) - 1], rnames[(r & 0xFF) - 1]);
 #else
-				printf("r%s(%s)", rnames[(r & 0xFF) - 1], rnames[(r >> 8) - 1]);
+				printf("r%s(%s)", rnames[(r >> 8) - 1], rnames[(r & 0xFF) - 1]);
 #endif
 			else {
 				printf("r%s(#", rnames[(r >> 8) - 1]);

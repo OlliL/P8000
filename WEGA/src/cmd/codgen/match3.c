@@ -180,15 +180,15 @@ ttype(t, tword)
 	switch (t) {
 	case 2:  return tword & TCHAR;
 	case 3:  return tword & TSHORT;
+	case 8: case 9: return tword & TSTRUCT;
 	case 4:  return tword & TINT;
+	case 14: return tword & TUNSIGNED;
+	case 13: return tword & TUSHORT;
+	case 12: return tword & TUCHAR;
+	case 15: return tword & TULONG;
 	case 5:  return tword & TLONG;
 	case 6:  return tword & TFLOAT;
 	case 7:  return tword & TDOUBLE;
-	case 8: case 9: return tword & TSTRUCT;
-	case 12: return tword & TUCHAR;
-	case 13: return tword & TUSHORT;
-	case 14: return tword & TUNSIGNED;
-	case 15: return tword & TULONG;
 	}
 	return 0;			/* ENUMTY, MOETY, FARG */
 }
@@ -208,37 +208,26 @@ setrew()
 	for (q = table; q->op != FREE; q++)
 		if (q->needs == 0x1000) {
 			rwdefault = q;
-			break;
+			goto more;
 		}
-	if (q->op == FREE)
-		cerror("bad setrew");
-	for (op = 0; op < 129; op++) {
-		if (dope[op] == 0)
-			continue;
-		for (q = table;; q++) {
-			if (q->op == FREE) {
-				opptr[op] = q;
-				break;
-			}
-			if (q->op < 0x1000) {
-				if (q->op == op) {
-					opptr[op] = q;
+	cerror("bad setrew");
+more:
+	for (op = 0; op < 129; op++)
+		if (dope[op]) {
+			for (q = table; q->op != FREE; q++) {
+				if (q->op < 0x1000) {
+					if (q->op == op)
+						break;
+				} else if ((mask = opclass[q->op - 0x1000]) & 0x4000) {
+					if (op == NAME || op == ICON || op == OREG)
+						break;
+					else if (ltypeok(op, (struct node *)0))
+						break;
+				} else if ((dope[op] & (mask | 1)) == mask)
 					break;
-				}
-				continue;
 			}
-			mask = opclass[q->op - 0x1000];
-			if (mask & 0x4000) {
-				if (op == NAME || op == ICON || op == OREG || ltypeok(op, (struct node *)0)) {
-					opptr[op] = q;
-					break;
-				}
-			} else if (mask == ((mask | 1) & dope[op])) {
-				opptr[op] = q;
-				break;
-			}
+			opptr[op] = q;
 		}
-	}
 }
 
 /*
@@ -513,7 +502,7 @@ expand(p, cookie, cp)
 /* the node an operand letter of a template stands for */
 struct node *
 getlr(p, c)
-	struct node *p;
+	register struct node *p;
 	char c;
 {
 	switch (c) {
@@ -525,5 +514,4 @@ getlr(p, c)
 		return (dope[p->op] & 0xE) == BITYPE ? p->right : p;
 	}
 	cerror("bad getlr: %c", c);
-	return 0;
 }

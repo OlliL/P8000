@@ -232,7 +232,7 @@ allo(p, q)
 /* k words of temporary space in the frame */
 long
 freetemp(k)
-	register int k;
+	int k;
 {
 	register long t = paroff;
 
@@ -251,15 +251,28 @@ rclass(type, reg)
 	int type;
 	int reg;
 {
-	if (type == 6 || type == 7)
-		return reg > 0x13 ? 8 : 4;
+	register int c;
+
+	if (type != 6 && type != 7) {
 #ifdef SEG
-	if (szty(type) == 2 || type == 8 || type == 9)
+		if (szty(type) == 2 || type == 8 || type == 9)
 #else
-	if (szty(type) == 2)
+		if (szty(type) == 2)
 #endif
-		return reg > 7 ? 7 : 3;
-	return reg > 7 ? 6 : 2;
+		{
+			if (reg > 7)
+				c = 7;
+			else
+				c = 3;
+		} else if (reg > 7)
+			c = 6;
+		else
+			c = 2;
+	} else if (reg > 0x13)
+		c = 8;
+	else
+		c = 4;
+	return c;
 }
 
 #ifdef OLD_D2QF
@@ -342,10 +355,10 @@ allocreg(p, cookie)
 	else if (p->sname == fpsym2)
 		fpsym2->soffset = p->lval;
 #ifdef SEG
-	if (((cookie & 0xF) != 0 && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
+	if (((cookie & 0xF) && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
 	    p->type == 8 || p->type == 9 || (dope[p->op] & 0x80))
 #else
-	if (((cookie & 0xF) != 0 && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
+	if (((cookie & 0xF) && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
 	    (dope[p->op] & 0x80))
 #endif
 		cls = 3;
@@ -517,9 +530,10 @@ usable(p, side, r)
 	int side;
 	int r;
 {
-	register struct node *q = getlr(p, side);
+	register struct node *q;
 	register int rv;
 
+	q = getlr(p, side);
 	if (q->op == STAR)
 		q = q->left;
 	rv = q->rval;
@@ -541,11 +555,12 @@ usable(p, side, r)
 #else
 	if (q->op == OREG)
 		return rv == r;
-	if (q->op != REG)
-		return 0;
-	if (rv == r && (r != 0 || (q->type & 0x30) != 0x10))
-		return 1;
-	return szty(q->type) == 2 && rv + 1 == r;
+	if (q->op == REG) {
+		if (rv == r && (r != 0 || (q->type & 0x30) != 0x10))
+			return 1;
+		return szty(q->type) == 2 && rv + 1 == r;
+	}
+	return 0;
 #endif
 }
 

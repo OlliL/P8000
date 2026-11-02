@@ -233,6 +233,7 @@ fbegin(s)
 	register int t;
 	register int spare2;
 	register char *cp, *np;
+	char b[8];
 
 	endline();
 	cp = fname;
@@ -250,7 +251,8 @@ fbegin(s)
 	if (s->sclass == 5)
 		printf(":");
 	printf("\n\t{\n\n");
-	t = DECREF(s->stype);
+	t = s->stype;
+	t = DECREF(t);
 	structret = t == 8 || t == 9;
 	if (structret) {
 		structlab = s->sx6;
