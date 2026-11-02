@@ -3,7 +3,7 @@
 cparse, and tests of thresholds. HC is a scratch copy of host/cas with this line at the top of jpr() in jpr.c, itoff and ntoff not static in ssymtab.c:
   fprintf(stderr, "J %d %u %u %u %d %d %u\\n", tok, itoff, stoff, ntoff, lcaux[cursec][cursub].la_0, cursec, (unsigned)lctab[cursec][cursub]);
 Needs the _old.s modules of oldcc.sh model."""
-import os,sys,re,json
+import os,sys,re,json,subprocess
 sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/tools'); sys.path.insert(0,'/mnt/share/cvs/P8000/WEGA/host/recon')
 from sout import SOut
 import zcode
@@ -15,7 +15,6 @@ def jumps(gc,lo,hi):
         m=re.match(r'(call|calr|jp|jr)\t(?:[a-z]+,)?%([0-9A-F]+)$',x)
         if m: r.append((a,m[1],int(m[2],16)))
     return r
-exec(open('sim.py').read().split("run('popt'")[0])
 HC=os.environ['HC']
 def load(prog,mod,fl):
     F=json.load(open(W+prog+'/tools/findings.json'))['functions']
