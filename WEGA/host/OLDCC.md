@@ -64,6 +64,11 @@ experiment: one pass of the chain replaced by its version, the rest shipped.
   so a difference on the bench is not a compiler difference by itself.
 - Every accepted switch: commit (no push), this document and the table of section 4 updated, the normal build stays
   byte-identical (shipped cparse, codgen, popt), the corpora green.
+- Source form first (owner decision 2026-11-02): when a function differs, or contradicts an existing switch, first look for a
+  source form; a new switch or a further condition on a switch comes after that, and the forms tried go to `OLDCC_LOG.md`.
+  People wrote this source: the odder a form looks (nobody would probably have written it so), the less likely it is the
+  right one, even when the bytes fit. This weighs evidence, it does not forbid: what was really written is not known. An
+  odd form that fits is recorded as such in findings.json, and a plainer form or a switch stays possible.
 - Which functions need which switch: `host/OLDCC_SWITCHES.md`, generated (owner decision 2026-11-02), never edited by hand.
   `oldcc.sh matrix SWITCH` for a new or changed switch, `oldcc.sh matrix` (all, unattended) when a program joins or before
   switches are cleaned up, `oldcc.sh matrix check` (no measurement, seconds) in every check round and before a commit that
