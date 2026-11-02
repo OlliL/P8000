@@ -258,6 +258,12 @@ rallo(p, down)
 	case STARG:
 		down1 = NOPREF;
 		break;
+#ifdef OLD_D5T
+	case PLUS:
+		if ((p->rall & MUSTDO) && p->right->op == REG && p->right->rval == 15 && p->left->op == PLUS)
+			down1 = NOPREF;	/* an element of a local array as an address: as OLD_D5A */
+		break;
+#endif
 #ifdef OLD_D5A
 	case STAR:
 		if ((p->rall & MUSTDO) && p->left->op == PLUS && p->left->right->op == REG && p->left->right->rval == 15)

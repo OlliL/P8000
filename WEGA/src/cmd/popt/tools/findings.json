@@ -3038,6 +3038,7 @@
    "size_orig": 108
   },
   "procopt": {
+   "v0p_note": "v0p model exact with OLD_D5T: t[k].s1 as k*10 + (t + 2) + fp",
    "file": "z23.c",
    "pairing": "confirmed",
    "ours": "0x3552-0x38b8",

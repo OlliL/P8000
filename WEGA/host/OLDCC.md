@@ -182,9 +182,9 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D21`, `OLD_D16A`, `OLD_D16B`, `OLD_D3N`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D21`, `OLD_D16A`, `OLD_D16B`, `OLD_D3N`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D21` (cparse), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 173 strictly exact, 96 differing lines, /lib/popt 62 of 73, 709 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
+- State: /lib/cparse 173 strictly exact, 96 differing lines, /lib/popt 63 of 73, 661 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
@@ -437,10 +437,10 @@ v0p (switch `OLD_D5G` in codgen, fixfld): an element of a global array of arrays
 the address of the array added last (newsect `&sectname[sec][k]`: `mult rr2,#24; add r3,k; add r3,#_sectname`);
 the global counterpart of OLD_D5S. Bench v0 275 > 303: v0p only.
 
-Open (popt, v0p model 2026-11-01): a member of an element of a local array of structures (procopt `t[k].s1`, t a
-frame array, the member at offset 2) is `k*10 + (t+2)` then `+ fp` in the original (`mult rr2,#10; add r3,#0x20;
-add r3,r15`), codgen v0p adds the member to the frame pointer (`add r3,#0x1E; lda r2,2(r15); add r3,r2`): OLD_D5S
-covers SUBSR only, this is its STREF form (six places in procopt).
+v0p (switch `OLD_D5T` in codgen, mapregs and rallo): the STREF form of OLD_D5S: a member of an element of a local array
+of structures is `(index + offset + member) + fp` (popt procopt `t[k].s1`: `mult rr2,#10; add r3,#0x20; add r3,r15`, the
+shipped order gives `add r3,#0x1E; lda r2,2(fp); add r3,r2`); as an address wanted in a given register it gets no
+preference, as OLD_D5A (`t[k++].s2`: `ld r2,k`). Six places, one function; bench v0 unchanged.
 
 ### D6 switch
 

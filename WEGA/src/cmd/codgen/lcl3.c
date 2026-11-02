@@ -447,6 +447,20 @@ mapregs(p)
 			r->sname = 0;
 			r->type = 4;
 		}
+#ifdef OLD_D5T
+		/* an element of a local array (OLD_D5S), its member: the member goes to the offset, fp stays last */
+		m = p->left;
+		if (m->op == PLUS && m->right->op == REG && m->right->rval == 15 && m->left->op == PLUS &&
+		    m->left->right->op == ICON && r->op == ICON && r->sname == 0) {
+			m->left->right->lval += r->lval;
+			r->op = FREE;
+			p->op = PLUS;
+			p->left = m->left;
+			p->right = m->right;
+			m->op = FREE;
+			return;
+		}
+#endif
 		n = foldadd(p);
 		if (n == p)
 			return;

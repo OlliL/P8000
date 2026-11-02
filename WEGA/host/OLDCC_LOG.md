@@ -847,3 +847,7 @@ TODO.md when this log was started.
   lines. All moves out of r0 in the originals of popt, cparse and codgen: r1 behind an inc, sla or add of a constant, and
   only itoa_ and reverse with `add r0,rN`, both `ld rN,r0`. OLD_D2RA: both exact. First measure 61 with ovlap 4 worse:
   d2r0reg stayed set after its statement (until now r1, which never matched; now r3); reset in stmt: 62, 709. cparse 173, 96.
+- D5 STREF (popt procopt). A tree dump in mapregs: STREF(PLUS(PLUS(index, ICON ~L1+off), REG fp), member); the walk is
+  bottom-up, the inner ICON carries the frame symbol. OLD_D5T (the member added to that ICON, no preference for the
+  address wanted in a register, as OLD_D5A): procopt 48 > 12 > 0; popt 63, 661; cparse 173, 96; corpus 260. In v0 the bench is
+  unchanged (118, 275): v0p.
