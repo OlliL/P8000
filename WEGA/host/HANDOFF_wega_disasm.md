@@ -73,13 +73,12 @@ it; the goal is a byte-identical `/lib/cparse` (owner: "oberste Direktive"). The
 **v0p** (v0, the compiler of the 1982 programs, plus switches only the passes show). Driver `ccv0p`, passes in
 `src/cmd/{cparse,codgen,popt}/v0p`, installed into the oldroot tree (`make -C host oldroot`).
 
-**State (2026-11-02).** 177 of 179 functions strictly exact, 8 differing lines; data and bss as in the original under the D12 model; code 48640 against
+**State (2026-11-02).** 177 of 179 functions strictly exact, 6 differing lines; data and bss as in the original under the D12 model; code 48640 against
 48896 bytes. cparse built with ccv0p passes its corpus (260/260). The bench of v0: 118 of 153 functions, 275 lines. The per-function list: `oldcc.sh model; oldcc.sh lines`.
 
 **Open in /lib/cparse, and why** (details and every refuted attempt in `OLDCC_LOG.md`; do not repeat them without new evidence):
 
-1. **buildtree, 6 lines.** 4 lines: the double constant 0.0 (`r->dval == 0`) lies in the data behind the first switch table, ours in front. 2 lines: the temporary of
-   `buildtree( COLON, ll, lr )` is at 0x12 in the original, ours 0xC. One witness each: not built.
+1. **buildtree, 4 lines.** The double constant 0.0 lies in the data behind the first switch table (0x2846), ours in front: the old compiler writes it at its statement. Measured by a trial in the model: with it buildtree is exact (OLDCC_LOG.md). One witness: not built.
 2. **yylex, 2 lines (one instruction).** `jp 0x21AA` where `jr` reaches: the early jump optimization of an older cas (Band B 3.4.5), parked as an explained remainder (time box;
    evidence in four originals: cparse/scparse yylex, popt rmove, deroff, scodgen).
 
@@ -151,7 +150,7 @@ first, the model link needs its object). bss.s and libcbss.s are gone in both.
 **Owner, before codgen starts (2026-11-02): talk with the owner about the content of findings.json and the FINDINGS.md made from it; adjustments are needed. Do not start codgen before that, remind the owner.**
 
 **Now: the old cas (owner 2026-11-02, no time box: the call forms D17 and the long jumps have one cause). State in `OLDCC_LOG.md`, last entry: the model is proven: one early optimization at given points gives strictcmp -c = strict (cparse 176, 25 lines; popt 71, 18 lines; `castrig/hostcas.patch`, `triggers.txt`). The rule for the points is open (entries there: 179 to 273, no table offset common); a stoff 0xC00 class was an artefact of the bss list in mfile1, so measure cparse on an input without that list. Tools `host/recon/castrig/`. Goal: a rule, then a v0p cas.** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
-). State: cparse 177/8, popt 72/8. The model
+). State: cparse 177/6, popt 72/8. The model
 reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt). A part of the cause is measured: strictcmp treats `call` and `calr` as equal, the originals have `call` where ours has `calr` (OLDCC.md D17), so a strict match is not yet a byte match. `strictcmp -c` counts them: cparse 168 of 179, 79 lines; popt 61 of 73, 172 lines.
 
 **Tools.**

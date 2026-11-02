@@ -194,7 +194,7 @@ time, or another version) points to their mechanism.
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
 - Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20L`, `OLD_D20K`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 177 strictly exact, 8 differing lines, /lib/popt 72 of 73, 8 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
+- State: /lib/cparse 177 strictly exact, 6 differing lines, /lib/popt 72 of 73, 8 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
@@ -496,6 +496,7 @@ end of the loop). Not reproduced.
 - Mechanism (v1, switch `OLD_D12` in cparse, putstrs at the end of the file into the last section of the .D file).
 - Evidence: the data of ld, size, strip, mv, rm, write, rmdir equal; the d12model of cparse (`host/recon/d12model.py`)
   gives its data.
+- Open (one witness, cparse buildtree, a trial in the model only): the old compiler writes a double constant into the data at its statement, not into the .D file read at the head of the function: then it lies behind the table of an earlier switch of the function.
 
 ### D13 Pointer constants (scc)
 

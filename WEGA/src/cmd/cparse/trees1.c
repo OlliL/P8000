@@ -399,12 +399,15 @@ buildtree( o, l, r ) register NODE *l, *r; {
 				p = buildtree( COMOP, l->left, lr );
 				break;
 
-			case QUEST:
+			case QUEST: {
+				int a1, a2, a3;
+
 				lr = buildtree( UNARY AND, l->right->right, NIL );
 				ll = buildtree( UNARY AND, l->right->left, NIL );
 				p->op = l->op = l->right->op = FREE;
 				p = buildtree( QUEST, l->left, buildtree( COLON, ll, lr ) );
 				break;
+				}
 
 			default:
 				uerror( "unacceptable operand of &" );
