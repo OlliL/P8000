@@ -88,7 +88,7 @@ def main():
     j = json.load(open(FINDINGS))
     n0 = 0
     for old, new in pairs:
-        for sect in ('functions', 'manual_classes'):
+        for sect in [x for x in ('functions', 'manual_classes') if x in d]:
             if old in j[sect]:
                 j[sect] = {(new if k == old else k): v for k, v in j[sect].items()}
                 n0 += 1
