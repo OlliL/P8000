@@ -829,3 +829,10 @@ TODO.md when this log was started.
   said 126, the place up to the next symbol: ld rounds, the addresses are the same). Against HEAD with bss.s: normal, v0,
   v0p, v1 and the model have the same code, data, relocation and bss sizes, every symbol the same value (only the file
   symbol bss.o is gone). Model 173, 96 lines; corpus 260 of 260 (one input more than the 259 of before).
+- OLD_D16A not for the left operand of a compare (d16acmp, set in setbin): popt codemove exact, popt model 56 > 57, 735 >
+  729; cparse 173, 96 (genswitch stays). Instrumented: the rule fires only in cparse genswitch (op ASG PLUS) and popt
+  codemove (op ASG MINUS) in all of cparse and popt, none in our codgen sources, cookie 010036 both. In the originals of
+  cparse, scparse, popt, spopt, codgen, scodgen, gopt and cpp the load form `ld r,F; inc/dec r,#n; ld F,r` is only
+  genswitch and one `inc r2,#7` of gopt (0x7f52, its source is not known). The many `inc/dec F; cp F` there may be separate
+  statements, so they are no evidence. Rule "only ASG PLUS" would fit the two witnesses as well. Normal and v0 objects of
+  match3 and order3 unchanged.

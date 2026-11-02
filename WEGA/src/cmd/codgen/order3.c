@@ -466,6 +466,10 @@ niceuty(p)
 	return 0;
 }
 
+#ifdef OLD_D16A
+struct node *d16acmp;	/* the left operand of the last compare set up: its increment stays in memory (match) */
+#endif
+
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */
 int
 setbin(p)
@@ -475,6 +479,10 @@ setbin(p)
 
 	r = p->right;
 	l = p->left;
+#ifdef OLD_D16A
+	if (p->op >= EQ && p->op <= UGT)
+		d16acmp = l;
+#endif
 	if (r->su == 0 && r->fsu == 0) {
 		if (dope[p->op] & 0x10) {
 			if (l->op == STAR && shumul(l->left) != 0x800)

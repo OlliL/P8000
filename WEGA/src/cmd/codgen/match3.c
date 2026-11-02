@@ -9,6 +9,9 @@
 /* register data (regs3): flag bits of a register, by register number */
 #define RBFLAG	0x0008		/* a register of the B class (long registers) */
 #define RTEMPFLAGS 0x0014	/* the register is a scratch (STAREG or STBREG) register */
+#ifdef OLD_D16A
+extern struct node *d16acmp;
+#endif
 extern int rstatus[];
 
 int fldsz, fldoff, fldshf;	/* the field that tshape found (size, offset, shift) */
@@ -451,7 +454,7 @@ select:
 		/* v0p: a frame slot incremented by a constant whose value may go to a temporary is loaded, incremented in
 		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */
 		if ((p->op == ASG PLUS || p->op == ASG MINUS) && (cookie & INTEMP) && l->op == OREG && l->rval == 15 &&
-		    r->op == ICON && r->sname == 0) {
+		    r->op == ICON && r->sname == 0 && p != d16acmp) {
 			if (q->rshape == 0x8002)
 				continue;
 			if (q->needs == 1 && q->rewrite == 0x804 && allo(p, q)) {

@@ -18,7 +18,7 @@
 #define OLD_D2QO	/* OLD_D2Q also when an odd word register is wanted (the low half: an argument) */
 #define OLD_D2O		/* a long loaded through an odd address register into the pair below it (allocreg) */
 #define OLD_D16B	/* an unsigned word in memory with an assignment operator: rewritten as a = a op b (match, order) */
-#define OLD_D16A	/* a frame slot incremented by a constant, value to a temporary: load, increment, store (match) */
+#define OLD_D16A	/* a frame slot incremented by a constant, value to a temporary, not for a compare: load, increment, store (match, setbin) */
 #define OLD_D2R0	/* a load through an address moved out of r0 goes back into r0 (freereg) */
 #define OLD_D6S		/* an assignment of a register to itself prints nothing (match) */
 #define OLD_D3V		/* the value of a word assignment painted by a cast may be the memory it stored (reclaim) */

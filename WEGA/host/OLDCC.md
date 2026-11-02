@@ -520,17 +520,15 @@ The old compiler loads a frame slot into a register before an operation where th
 v0p (switch `OLD_D16A` in codgen, match): `++n` of a frame slot whose value may go to a temporary (cookie with
 INTEMP: the left operand of `*`) is `ld A1,n; inc A1,#1; ld n,A1`, not `inc n,#1` (cparse genswitch `p[++n]`); with the
 value wanted in a register for an address (`*--cp`, newsect) or stored (`ix = ++p->x`, gotscal) it stays in memory.
-Without the INTEMP condition: 336 > 1000 and more; v0p only (bench v0 with OLD_D3N 318 > 348).
+Without the INTEMP condition: 336 > 1000 and more; v0p only (bench v0 with OLD_D3N 318 > 348). Not for the left
+operand of a compare (setbin): popt codemove `--n == 0` stays `dec n,#1; test n`. These two are the only sites in
+cparse and popt, with the same cookie 010036, so they do not separate "not under a compare" from "only `++`, not `--`";
+the first form is taken because a compare can read memory and the multiplication cannot (a guess about the mechanism).
 
 v0p (switch `OLD_D16B` in codgen, match and order): an assignment operator on an unsigned word in memory (OREG or
 through a pointer) has no table entry; order rewrites it at once as `a = a op b`, so the value is loaded, changed in
 the register and stored, and the address is evaluated twice (stref `p->type += PTR`, `p->left->type += PTR`: `ld
 r2,8(r14); ld r2,2(r2); inc r2,#16; ld r3,8(r14); ld 2(r3),r2`). Bench v0 unchanged: v0p.
-
-Open (popt, v0p model 2026-11-01): codemove `if (... || --n == 0)` (n a frame slot) is `dec n,#1; test n` in the
-original, OLD_D16A makes it `ld r2,n; dec r2,#1; ld n,r2; test r2`: the value of the decrement compared with 0
-stays in memory. `!--n` gives `dec n,#1` without the test (our popt drops the test behind the dec), so the source is
-`--n == 0` and the difference is codgen: a witness against the INTEMP condition of OLD_D16A for a compare.
 
 ### D17 Call form (popt)
 

@@ -768,6 +768,7 @@
    "size_orig": 118
   },
   "codemove": {
+   "v0p_note": "v0p model exact with OLD_D16A not for a compare: --n == 0 stays dec n,#1; test n; p a plain parameter, p1, p2, p3 registers r14, r13, r12",
    "file": "z21.c",
    "pairing": "confirmed",
    "ours": "0x1130-0x1312",

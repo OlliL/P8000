@@ -133,8 +133,8 @@ cluster (point 4), its small leaf functions may answer point 3.
 3. Then codgen with the same frame, and back to the open cparse points with the new witnesses.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
-/lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 56 of 73 functions strictly exact,
-735 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+/lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 57 of 73 functions strictly exact,
+729 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (the definitions at the end of z2.h give the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools: 272 inputs times no option, -l, -d;
@@ -162,7 +162,6 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 - itoa_ (4)
 - regof (4)
 - movedat (5)
-- codemove (6)
 - backjmp (7)
 - killreg (7)
 - reverse (8)
@@ -180,7 +179,6 @@ for the codgen work and the placement question:
   with the assignment inside the expression).
 - codgen, D3 (a parameter kept in its register across a branch): setcon, equop, regof.
 - codgen, D2 (scratch register r1 against r3): itoa_, reverse.
-- codgen, D16 (`--n == 0` of a frame slot stays in memory in the original, OLD_D16A loads it): codemove.
 - codgen, D5 (the member of an element of a local array of structures, the STREF form of OLD_D5S): procopt.
 - popt, D20 (block placement, loop inversion): backjmp, killreg, movedat, xjump, dest, setreg, usesreg (dest also
   the old popt's register knowledge, `sub r2,r3`).
@@ -246,19 +244,15 @@ Lessons of the other functions that will apply: the case order from the jump tab
 `++p->x`, `return a || b`, a single return at the end, macros for repeated code (ovlap SCAN: the loop form decides
 whether popt moves the blocks), `while (*a++ == *b++)` against `for (;;) { if (...) break; }`.
 
-**Suggested first compiler refinement (owner request 2026-11-01, not started):** D16A, the simplest one.
-OLD_D16A (codgen, match) loads `++n`/`--n` of a frame slot into a register when its value may go to a temporary
-(INTEMP); popt codemove `if (... || --n == 0)` shows that the old codgen keeps it in memory for a compare with 0
-(`dec n,#1; test n`). Try: no OLD_D16A when the parent is a compare (EQ/NE) with the constant 0; check popt
-codemove, cparse genswitch (`p[++n]`, must stay), the cparse model (173), corpus and the v0 bench.
+**First compiler refinement done (2026-11-02):** D16A, not for the operand of a compare; codemove exact (OLDCC.md D16).
 
 **Done: the bss order without .s helpers (owner request 2026-11-01, finished 2026-11-02).** popt: the globals as
 definitions at the end of z2.h. cparse: the globals as definitions at the end of mfile1 (cgram1, linked first, gives
 the order) and an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
 first, the model link needs its object). bss.s and libcbss.s are gone in both.
 
-**Next: D16A, then the other codgen cases** (owner 2026-11-02: start with D16A; proposed order D16A, D3 parameter
-across a branch, D2 r1/r3, D5S as STREF, D3 value of an assignment). Baseline: cparse 173/96, popt 56/735. The model
+**Next: the other codgen cases** (owner 2026-11-02: D16A first, done; proposed order D3 parameter
+across a branch, D2 r1/r3, D5S as STREF, D3 value of an assignment). State: cparse 173/96, popt 57/729. The model
 reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt), not equal sizes; the cause is not checked.
 
 **Tools.**
@@ -305,6 +299,6 @@ plan in `../src/TODO.md` ("Plan: towards the old C compiler").
 3. **Reconstruct the old compiler.** Everything about the old compilers is in `OLDCC.md` (the edited summary: the
    classes D1 ... D22, the versions v1, v0, v0p, rules, building and running) and `OLDCC_LOG.md` (the running notes).
    State 2026-11-01: v1 (strip and size byte-identical, ld 55 of 59); v0 (bench 118 of 153); v0p (/lib/cparse 173 of
-   179, /lib/popt 56 of 73, the current work above).
+   179, /lib/popt 57 of 73, the current work above).
 
 The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").
