@@ -315,7 +315,7 @@ void
 fixfld(p)
 	register struct node *p;
 {
-	register struct node *m, *a;
+	register struct node *a, *m;
 	register int ismember;
 #if defined(OLD_D5S) || defined(OLD_D5G)
 	int subsr = p->op == 120;
@@ -356,19 +356,18 @@ fixfld(p)
 #endif
 	if (p->op != FLD && a->op != UAND)
 		return;
-	if (m->op != NAME || m->rval < 0 || (m->sname->sflags >> 2 & 1))
+	if (m->op != NAME || m->rval < 0 || (m->sname->sflags >> 2 & 1) != 0)
 		return;
 	m = clocal(m);
 	if (m->op != STAR)
 		return;
-	if (ismember)
-		p->left = m;
-	else {
+	if (!ismember) {
 		m->op = FREE;
 		a->op = FREE;
 		p->type = INCREF(DECREF((unsigned)m->type));
 		p->left = m->left;
-	}
+	} else
+		p->left = m;
 }
 
 /* a callback of the walk before the code is generated: members and addresses of names */
@@ -735,9 +734,10 @@ symdrop(reg)
 
 /* the register that holds the symbol (and offset), marked busy; -1 if none */
 int
-symreg(s, off)
+symreg(s, off, type)
 	register struct sym *s;
 	long off;
+	register int type;
 {
 	register struct rs *n;
 	register struct sym *f1, *f2;
@@ -746,12 +746,17 @@ symreg(s, off)
 	f2 = fpsym2;
 	for (n = rsuse; n; n = n->next) {
 		if (s == f1 || s == f2) {
-			if (n->off != off)
-				continue;
-		} else if (s != n->sym)
+			if (n->off == off)
+				goto found;
 			continue;
-		n->busy = 1;
-		return n->reg;
+		}
+		if (s == n->sym) {
+			if (s == 0)
+				;
+		found:
+			n->busy = 1;
+			return n->reg;
+		}
 	}
 	return -1;
 }
@@ -811,8 +816,10 @@ fixname(p)
 /* a NAME of an automatic variable or a parameter becomes an OREG off the frame pointer */
 void
 oregfix(p)
-	struct node *p;
+	register struct node *p;
 {
+	register int spare;
+
 	if ((p->sname->sflags >> 2 & 1) == 1)
 		return;
 	if (p->op == NAME && p->sname->sclass == 3)

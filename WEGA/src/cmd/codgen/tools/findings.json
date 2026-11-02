@@ -3,28 +3,27 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "fc01a77",
+ "measured_at": "cfb3e9ec",
  "functions": {
   "options": {
    "file": "reader3.c",
    "orig": "0x002a",
    "size_orig": 372,
    "status": "open",
-   "lines": 82
+   "lines": 72
   },
   "init": {
    "file": "reader3.c",
    "orig": "0x019e",
    "size_orig": 158,
-   "status": "open",
-   "lines": 12
+   "status": "exact"
   },
   "mainp2": {
    "file": "reader3.c",
    "orig": "0x023c",
    "size_orig": 1310,
    "status": "open",
-   "lines": 465
+   "lines": 388
   },
   "stmt": {
    "file": "reader3.c",
@@ -36,29 +35,26 @@
    "file": "reader3.c",
    "orig": "0x0838",
    "size_orig": 278,
-   "status": "open",
-   "lines": 20
+   "status": "masked",
+   "lines": 6
   },
   "delay1": {
    "file": "reader3.c",
    "orig": "0x094e",
    "size_orig": 132,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "delstrip": {
    "file": "reader3.c",
    "orig": "0x09d2",
    "size_orig": 56,
-   "status": "open",
-   "lines": 13
+   "status": "exact"
   },
   "delay2": {
    "file": "reader3.c",
    "orig": "0x0a0a",
    "size_orig": 160,
-   "status": "open",
-   "lines": 8
+   "status": "exact"
   },
   "codgen": {
    "file": "reader3.c",
@@ -71,22 +67,20 @@
    "file": "reader3.c",
    "orig": "0x0af6",
    "size_orig": 172,
-   "status": "open",
-   "lines": 37
+   "status": "exact"
   },
   "order": {
    "file": "reader3.c",
    "orig": "0x0ba2",
    "size_orig": 1250,
    "status": "open",
-   "lines": 184
+   "lines": 182
   },
   "store": {
    "file": "reader3.c",
    "orig": "0x1084",
    "size_orig": 342,
-   "status": "open",
-   "lines": 6
+   "status": "exact"
   },
   "constore": {
    "file": "reader3.c",
@@ -98,8 +92,7 @@
    "file": "reader3.c",
    "orig": "0x1212",
    "size_orig": 88,
-   "status": "open",
-   "lines": 32
+   "status": "exact"
   },
   "stoarg": {
    "file": "reader3.c",
@@ -124,8 +117,7 @@
    "file": "reader3.c",
    "orig": "0x15d0",
    "size_orig": 398,
-   "status": "open",
-   "lines": 5
+   "status": "exact"
   },
   "oreg2": {
    "file": "reader3.c",
@@ -138,57 +130,54 @@
    "file": "reader3.c",
    "orig": "0x1884",
    "size_orig": 58,
-   "status": "open",
-   "lines": 13
+   "status": "exact"
   },
   "argprep": {
    "file": "reader3.c",
    "orig": "0x18be",
    "size_orig": 238,
-   "status": "open",
-   "lines": 16
+   "status": "exact"
   },
   "rddata": {
    "file": "rdr3.c",
    "orig": "0x19ac",
    "size_orig": 218,
    "status": "open",
-   "lines": 51
+   "lines": 39
   },
   "rdsym": {
    "file": "rdr3.c",
    "orig": "0x1a86",
    "size_orig": 222,
-   "status": "open",
-   "lines": 14
+   "status": "exact"
   },
   "readsyms": {
    "file": "rdr3.c",
    "orig": "0x1b64",
    "size_orig": 204,
    "status": "open",
-   "lines": 48
+   "lines": 46
   },
   "readtab": {
    "file": "rdr3.c",
    "orig": "0x1c30",
    "size_orig": 60,
    "status": "open",
-   "lines": 9
+   "lines": 2
   },
   "readnums": {
    "file": "rdr3.c",
    "orig": "0x1c6c",
    "size_orig": 162,
    "status": "open",
-   "lines": 39
+   "lines": 37
   },
   "readmems": {
    "file": "rdr3.c",
    "orig": "0x1d0e",
    "size_orig": 436,
    "status": "open",
-   "lines": 58
+   "lines": 42
   },
   "sortsyms": {
    "file": "rdr3.c",
@@ -213,8 +202,7 @@
    "file": "rdr3.c",
    "orig": "0x206a",
    "size_orig": 86,
-   "status": "open",
-   "lines": 6
+   "status": "exact"
   },
   "mapnm": {
    "file": "rdr3.c",
@@ -228,15 +216,13 @@
    "file": "rdr3.c",
    "orig": "0x2406",
    "size_orig": 68,
-   "status": "open",
-   "lines": 3
+   "status": "exact"
   },
   "nlcheck": {
    "file": "rdr3.c",
    "orig": "0x244a",
    "size_orig": 54,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "eread": {
    "file": "rdr3.c",
@@ -244,7 +230,7 @@
    "size_orig": 538,
    "note": "The write of erflag (0x24b0) behind the test dope & 0xE == 0x73 is missing in the source: the test is never true.",
    "status": "open",
-   "lines": 88
+   "lines": 60
   },
   "rdin": {
    "file": "rdr3.c",
@@ -256,22 +242,20 @@
    "file": "rdr3.c",
    "orig": "0x26ae",
    "size_orig": 210,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "psuffix": {
    "file": "local3.c",
    "orig": "0x2780",
    "size_orig": 22,
-   "status": "open",
-   "lines": 7
+   "status": "exact"
   },
   "tsuffix": {
    "file": "local3.c",
    "orig": "0x2796",
    "size_orig": 234,
    "status": "open",
-   "lines": 82
+   "lines": 62
   },
   "lineout": {
    "file": "local3.c",
@@ -303,15 +287,13 @@
    "file": "local3.c",
    "orig": "0x29de",
    "size_orig": 196,
-   "status": "open",
-   "lines": 14
+   "status": "exact"
   },
   "fpinc": {
    "file": "local3.c",
    "orig": "0x2aa2",
    "size_orig": 40,
-   "status": "open",
-   "lines": 4
+   "status": "exact"
   },
   "prolog": {
    "file": "local3.c",
@@ -323,29 +305,26 @@
    "file": "local3.c",
    "orig": "0x2b20",
    "size_orig": 40,
-   "status": "open",
-   "lines": 4
+   "status": "exact"
   },
   "regsave": {
    "file": "local3.c",
    "orig": "0x2b48",
    "size_orig": 198,
-   "status": "open",
-   "lines": 14
+   "status": "exact"
   },
   "regargs": {
    "file": "local3.c",
    "orig": "0x2c0e",
    "size_orig": 466,
    "status": "open",
-   "lines": 38
+   "lines": 34
   },
   "hopcode": {
    "file": "local3.c",
    "orig": "0x2de0",
    "size_orig": 108,
-   "status": "open",
-   "lines": 4
+   "status": "exact"
   },
   "geninc": {
    "file": "local3.c",
@@ -359,28 +338,27 @@
    "orig": "0x2edc",
    "size_orig": 3606,
    "status": "open",
-   "lines": 700
+   "lines": 588
   },
   "rmove": {
    "file": "local3.c",
    "orig": "0x3cf2",
    "size_orig": 298,
    "status": "open",
-   "lines": 16
+   "lines": 4
   },
   "ltypeok": {
    "file": "local3.c",
    "orig": "0x3e1c",
    "size_orig": 74,
-   "status": "open",
+   "status": "masked",
    "lines": 2
   },
   "ltypeop": {
    "file": "local3.c",
    "orig": "0x3e66",
    "size_orig": 40,
-   "status": "open",
-   "lines": 18
+   "status": "exact"
   },
   "shtemp": {
    "file": "local3.c",
@@ -393,8 +371,7 @@
    "file": "local3.c",
    "orig": "0x3ed6",
    "size_orig": 120,
-   "status": "open",
-   "lines": 18
+   "status": "exact"
   },
   "shumul": {
    "file": "local3.c",
@@ -413,7 +390,7 @@
    "orig": "0x3fda",
    "size_orig": 174,
    "status": "open",
-   "lines": 39
+   "lines": 35
   },
   "insput": {
    "file": "local3.c",
@@ -425,22 +402,21 @@
    "file": "local3.c",
    "orig": "0x409a",
    "size_orig": 58,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "upput": {
    "file": "local3.c",
    "orig": "0x40d4",
    "size_orig": 252,
    "status": "open",
-   "lines": 17
+   "lines": 13
   },
   "adrput": {
    "file": "local3.c",
    "orig": "0x41d0",
    "size_orig": 430,
    "status": "open",
-   "lines": 74
+   "lines": 18
   },
   "acon": {
    "file": "local3.c",
@@ -448,7 +424,7 @@
    "size_orig": 418,
    "note": "Old hint, measured against the shipped cc, may be stale: D11 (old popt tail merging): the original shares the call of printf (jp 44D6 / jr 44D6) between the three L%d branches; the shipped popt does not merge tails. Source unchanged. Pattern check: 0 unexplained instruction forms.",
    "status": "open",
-   "lines": 134
+   "lines": 110
   },
   "genscall": {
    "file": "local3.c",
@@ -461,7 +437,7 @@
    "orig": "0x4534",
    "size_orig": 218,
    "status": "open",
-   "lines": 11
+   "lines": 9
   },
   "cbgen": {
    "file": "local3.c",
@@ -474,22 +450,19 @@
    "file": "local3.c",
    "orig": "0x4674",
    "size_orig": 58,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "lastchance": {
    "file": "local3.c",
    "orig": "0x46ae",
    "size_orig": 34,
-   "status": "open",
-   "lines": 8
+   "status": "exact"
   },
   "icright": {
    "file": "local3.c",
    "orig": "0x46d0",
    "size_orig": 46,
-   "status": "open",
-   "lines": 7
+   "status": "exact"
   },
   "canon2": {
    "file": "local3.c",
@@ -522,22 +495,20 @@
    "file": "order3.c",
    "orig": "0x487e",
    "size_orig": 34,
-   "status": "open",
-   "lines": 11
+   "status": "exact"
   },
   "mkadrs": {
    "file": "order3.c",
    "orig": "0x48a0",
    "size_orig": 288,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "notoff": {
    "file": "order3.c",
    "orig": "0x49c0",
    "size_orig": 48,
    "status": "open",
-   "lines": 11
+   "lines": 10
   },
   "sucomp": {
    "file": "order3.c",
@@ -545,7 +516,7 @@
    "size_orig": 2000,
    "note": "Old hint, measured against the shipped cc, may be stale: Source change in order3.c: the locals of sucomp (o, arity, nr, nf, sul, sur, fl, fr, t, l, r) are register variables, as in other functions of the module. Memory loads 226 -> 54, unexplained add forms 91 -> 55, alignment 36 -> 46 %, length 756 -> 731 (original",
    "status": "open",
-   "lines": 1219
+   "lines": 1187
   },
   "mkrall": {
    "file": "order3.c",
@@ -558,7 +529,7 @@
    "orig": "0x5222",
    "size_orig": 278,
    "status": "open",
-   "lines": 12
+   "lines": 10
   },
   "orderadd": {
    "file": "order3.c",
@@ -576,22 +547,20 @@
    "file": "order3.c",
    "orig": "0x547a",
    "size_orig": 74,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "setbin": {
    "file": "order3.c",
    "orig": "0x54c4",
    "size_orig": 436,
    "status": "open",
-   "lines": 48
+   "lines": 44
   },
   "setstr": {
    "file": "order3.c",
    "orig": "0x5678",
    "size_orig": 78,
-   "status": "open",
-   "lines": 24
+   "status": "exact"
   },
   "setasg": {
    "file": "order3.c",
@@ -604,7 +573,7 @@
    "orig": "0x576e",
    "size_orig": 66,
    "status": "open",
-   "lines": 20
+   "lines": 6
   },
   "setasop": {
    "file": "order3.c",
@@ -642,29 +611,26 @@
    "file": "order3.c",
    "orig": "0x5bcc",
    "size_orig": 80,
-   "status": "open",
-   "lines": 12
+   "status": "exact"
   },
   "fixstarg": {
    "file": "order3.c",
    "orig": "0x5c1c",
    "size_orig": 94,
-   "status": "open",
-   "lines": 28
+   "status": "exact"
   },
   "argstrip": {
    "file": "order3.c",
    "orig": "0x5c7a",
    "size_orig": 178,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "argplace": {
    "file": "order3.c",
    "orig": "0x5d2c",
    "size_orig": 358,
    "status": "open",
-   "lines": 59
+   "lines": 57
   },
   "tshape": {
    "file": "match3.c",
@@ -678,22 +644,20 @@
    "file": "match3.c",
    "orig": "0x5ff6",
    "size_orig": 236,
-   "status": "open",
-   "lines": 30
+   "status": "exact"
   },
   "setrew": {
    "file": "match3.c",
    "orig": "0x60e2",
    "size_orig": 180,
-   "status": "open",
-   "lines": 26
+   "status": "exact"
   },
   "match": {
    "file": "match3.c",
    "orig": "0x6196",
    "size_orig": 686,
    "status": "open",
-   "lines": 245
+   "lines": 239
   },
   "expand": {
    "file": "match3.c",
@@ -707,8 +671,7 @@
    "file": "match3.c",
    "orig": "0x6636",
    "size_orig": 134,
-   "status": "open",
-   "lines": 24
+   "status": "exact"
   },
   "rbusy": {
    "file": "allo3.c",
@@ -721,35 +684,34 @@
    "orig": "0x6792",
    "size_orig": 86,
    "status": "open",
-   "lines": 13
+   "lines": 9
   },
   "allo": {
    "file": "allo3.c",
    "orig": "0x67e8",
    "size_orig": 958,
    "status": "open",
-   "lines": 37
+   "lines": 35
   },
   "freetemp": {
    "file": "allo3.c",
    "orig": "0x6ba6",
    "size_orig": 78,
-   "status": "open",
-   "lines": 21
+   "status": "exact"
   },
   "rclass": {
    "file": "allo3.c",
    "orig": "0x6bf4",
    "size_orig": 90,
    "status": "open",
-   "lines": 29
+   "lines": 2
   },
   "allocreg": {
    "file": "allo3.c",
    "orig": "0x6c4e",
    "size_orig": 268,
    "status": "open",
-   "lines": 15
+   "lines": 10
   },
   "freereg": {
    "file": "allo3.c",
@@ -764,7 +726,7 @@
    "orig": "0x6e78",
    "size_orig": 130,
    "status": "open",
-   "lines": 25
+   "lines": 19
   },
   "rfreenode": {
    "file": "allo3.c",
@@ -784,7 +746,7 @@
    "size_orig": 142,
    "note": "Dead code: no caller; name guessed; written from the disassembly, PCC form.",
    "status": "open",
-   "lines": 14
+   "lines": 2
   },
   "reclaim": {
    "file": "allo3.c",
@@ -797,36 +759,32 @@
    "file": "regallo3.c",
    "orig": "0x73f0",
    "size_orig": 28,
-   "status": "open",
-   "lines": 9
+   "status": "exact"
   },
   "rsinit": {
    "file": "regallo3.c",
    "orig": "0x740c",
    "size_orig": 76,
-   "status": "open",
-   "lines": 14
+   "status": "exact"
   },
   "rsbuild": {
    "file": "regallo3.c",
    "orig": "0x7458",
    "size_orig": 180,
-   "status": "open",
-   "lines": 9
+   "status": "exact"
   },
   "rsdump": {
    "file": "regallo3.c",
    "orig": "0x750c",
    "size_orig": 212,
-   "status": "open",
-   "lines": 12
+   "status": "exact"
   },
   "newnode": {
    "file": "regallo3.c",
    "orig": "0x75e0",
    "size_orig": 112,
    "status": "open",
-   "lines": 20
+   "lines": 17
   },
   "rsinsert": {
    "file": "regallo3.c",
@@ -873,22 +831,20 @@
    "file": "regallo3.c",
    "orig": "0x811e",
    "size_orig": 64,
-   "status": "open",
-   "lines": 22
+   "status": "exact"
   },
   "rsfreeall": {
    "file": "regallo3.c",
    "orig": "0x815e",
    "size_orig": 102,
    "status": "open",
-   "lines": 9
+   "lines": 8
   },
   "rspush": {
    "file": "regallo3.c",
    "orig": "0x81c4",
    "size_orig": 58,
-   "status": "open",
-   "lines": 6
+   "status": "exact"
   },
   "rsmerge": {
    "file": "regallo3.c",
@@ -909,8 +865,7 @@
    "file": "regallo3.c",
    "orig": "0x847a",
    "size_orig": 60,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "rsrelall": {
    "file": "regallo3.c",
@@ -941,8 +896,7 @@
    "file": "comm3.c",
    "orig": "0x85ae",
    "size_orig": 128,
-   "status": "open",
-   "lines": 15
+   "status": "exact"
   },
   "werror": {
    "file": "comm3.c",
@@ -954,22 +908,19 @@
    "file": "comm3.c",
    "orig": "0x866c",
    "size_orig": 48,
-   "status": "open",
-   "lines": 6
+   "status": "exact"
   },
   "talloc": {
    "file": "comm3.c",
    "orig": "0x869c",
    "size_orig": 94,
-   "status": "open",
-   "lines": 18
+   "status": "exact"
   },
   "tcheck": {
    "file": "comm3.c",
    "orig": "0x86fa",
    "size_orig": 66,
-   "status": "open",
-   "lines": 4
+   "status": "exact"
   },
   "tfree": {
    "file": "comm3.c",
@@ -987,43 +938,37 @@
    "file": "comm3.c",
    "orig": "0x8774",
    "size_orig": 120,
-   "status": "open",
-   "lines": 27
+   "status": "exact"
   },
   "fwalk": {
    "file": "comm3.c",
    "orig": "0x87ec",
    "size_orig": 88,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "dopeinit": {
    "file": "comm3.c",
    "orig": "0x8844",
    "size_orig": 52,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "bsize": {
    "file": "comm3.c",
    "orig": "0x8878",
    "size_orig": 76,
-   "status": "open",
-   "lines": 11
+   "status": "exact"
   },
   "szty": {
    "file": "comm3.c",
    "orig": "0x88c4",
    "size_orig": 50,
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "argsize": {
    "file": "comm3.c",
    "orig": "0x88f6",
    "size_orig": 92,
-   "status": "open",
-   "lines": 9
+   "status": "exact"
   },
   "prline": {
    "file": "comm3.c",
@@ -1035,8 +980,7 @@
    "file": "comm3.c",
    "orig": "0x8970",
    "size_orig": 50,
-   "status": "open",
-   "lines": 6
+   "status": "exact"
   },
   "rallkind": {
    "file": "comm3.c",
@@ -1054,50 +998,44 @@
    "file": "comm3.c",
    "orig": "0x89e8",
    "size_orig": 26,
-   "status": "open",
-   "lines": 6
+   "status": "exact"
   },
   "ncopy": {
    "file": "comm3.c",
    "orig": "0x8a02",
    "size_orig": 34,
-   "status": "open",
-   "lines": 19
+   "status": "exact"
   },
   "tcopy": {
    "file": "comm3.c",
    "orig": "0x8a24",
    "size_orig": 210,
    "status": "open",
-   "lines": 25
+   "lines": 14
   },
   "ispow2": {
    "file": "comm3.c",
    "orig": "0x8af6",
    "size_orig": 78,
-   "status": "open",
-   "lines": 14
+   "status": "exact"
   },
   "plainicon": {
    "file": "comm3.c",
    "orig": "0x8b44",
    "size_orig": 42,
-   "status": "open",
-   "lines": 12
+   "status": "exact"
   },
   "alloc": {
    "file": "comm3.c",
    "orig": "0x8b6e",
    "size_orig": 124,
-   "status": "open",
-   "lines": 20
+   "status": "exact"
   },
   "allocinit": {
    "file": "comm3.c",
    "orig": "0x8bea",
    "size_orig": 34,
-   "status": "open",
-   "lines": 6
+   "status": "exact"
   },
   "hdrout": {
    "file": "wrt3.c",
@@ -1123,21 +1061,19 @@
    "orig": "0x8c74",
    "size_orig": 778,
    "status": "open",
-   "lines": 329
+   "lines": 295
   },
   "structretcode": {
    "file": "wrt3.c",
    "orig": "0x8f7e",
    "size_orig": 92,
-   "status": "open",
-   "lines": 4
+   "status": "exact"
   },
   "fbegin": {
    "file": "wrt3.c",
    "orig": "0x8fda",
    "size_orig": 308,
-   "status": "open",
-   "lines": 14
+   "status": "exact"
   },
   "regtabinit": {
    "file": "regs3.c",
@@ -1162,7 +1098,7 @@
    "orig": "0x918e",
    "size_orig": 378,
    "status": "open",
-   "lines": 37
+   "lines": 35
   },
   "tmpcleanup": {
    "file": "regs3.c",
@@ -1181,8 +1117,7 @@
    "file": "regs3.c",
    "orig": "0x944a",
    "size_orig": 200,
-   "status": "open",
-   "lines": 37
+   "status": "exact"
   },
   "mapregs": {
    "file": "regs3.c",
@@ -1201,8 +1136,7 @@
    "file": "regs3.c",
    "orig": "0x9696",
    "size_orig": 80,
-   "status": "open",
-   "lines": 23
+   "status": "exact"
   },
   "rfind": {
    "file": "regs3.c",
@@ -1214,8 +1148,7 @@
    "file": "regs3.c",
    "orig": "0x9722",
    "size_orig": 170,
-   "status": "open",
-   "lines": 13
+   "status": "exact"
   },
   "rnnullp": {
    "file": "regs3.c",
@@ -1251,8 +1184,7 @@
    "file": "regs3.c",
    "orig": "0x989e",
    "size_orig": 70,
-   "status": "open",
-   "lines": 22
+   "status": "exact"
   },
   "nxwork": {
    "file": "regs3.c",
@@ -1266,14 +1198,13 @@
    "orig": "0x9fdc",
    "size_orig": 94,
    "status": "open",
-   "lines": 39
+   "lines": 4
   },
   "regforsym": {
    "file": "regs3.c",
    "orig": "0xa03a",
    "size_orig": 140,
-   "status": "open",
-   "lines": 1
+   "status": "exact"
   },
   "fixname": {
    "file": "regs3.c",
@@ -1285,15 +1216,14 @@
    "file": "regs3.c",
    "orig": "0xa12a",
    "size_orig": 144,
-   "status": "open",
-   "lines": 48
+   "status": "exact"
   },
   "fcmd": {
    "file": "regs3.c",
    "orig": "0xa1ba",
    "size_orig": 152,
    "status": "open",
-   "lines": 27
+   "lines": 5
   },
   "regreset": {
    "file": "regs3.c",
@@ -1321,14 +1251,13 @@
    "size_orig": 342,
    "note": "Old hint, measured against the shipped cc, may be stale: D6 and D14: the switch is a cpir table in ours and a compare chain in the original (D6); the call sites of the varargs printf wrapper differ in the frame setup (cgprintf with its five arguments, D14). The calls memname and getreg are the same blocks, shifted. ",
    "status": "open",
-   "lines": 109
+   "lines": 69
   },
   "memname": {
    "file": "regs3.c",
    "orig": "0xa734",
    "size_orig": 120,
-   "status": "open",
-   "lines": 20
+   "status": "exact"
   },
   "findtemp": {
    "file": "regs3.c",
@@ -1341,14 +1270,13 @@
    "orig": "0xa7e0",
    "size_orig": 862,
    "status": "open",
-   "lines": 439
+   "lines": 403
   },
   "chk": {
    "file": "lcl3.c",
    "orig": "0xab3e",
    "size_orig": 10,
-   "status": "open",
-   "lines": 1
+   "status": "exact"
   },
   "clocal": {
    "file": "lcl3.c",
@@ -1356,14 +1284,13 @@
    "size_orig": 902,
    "note": "Odd form: case 9 and case 1 written out, an empty case 18; the switch tables of the original say so.",
    "status": "open",
-   "lines": 288
+   "lines": 284
   },
   "makeblock": {
    "file": "tr3.c",
    "orig": "0xaece",
    "size_orig": 70,
-   "status": "open",
-   "lines": 42
+   "status": "exact"
   },
   "foldadd": {
    "file": "tr3.c",
@@ -1377,7 +1304,7 @@
    "size_orig": 188,
    "note": "Old hint, measured against the shipped cc, may be stale: Both branches reach the same store block; the original places the UAND branch after the store and jumps back, ours falls through into it. Same instructions, only the layout. Swap of the two tests tried earlier: 59 -> 62 % only. Source unchanged; the shift is f",
    "status": "open",
-   "lines": 36
+   "lines": 1
   },
   "bcon": {
    "file": "tr3.c",
@@ -1389,15 +1316,14 @@
    "file": "tr3.c",
    "orig": "0xb0d4",
    "size_orig": 164,
-   "status": "open",
-   "lines": 19
+   "status": "exact"
   },
   "optim": {
    "file": "optim3.c",
    "orig": "0xb178",
    "size_orig": 1532,
    "status": "open",
-   "lines": 209
+   "lines": 199
   },
   "conval": {
    "file": "optim3.c",
@@ -1410,22 +1336,20 @@
    "file": "optim3.c",
    "orig": "0xb9ea",
    "size_orig": 146,
-   "status": "open",
-   "lines": 8
+   "status": "exact"
   },
   "convelim": {
    "file": "optim3.c",
    "orig": "0xba7c",
    "size_orig": 294,
    "status": "open",
-   "lines": 38
+   "lines": 2
   },
   "isint": {
    "file": "optim3.c",
    "orig": "0xbba2",
    "size_orig": 34,
-   "status": "open",
-   "lines": 3
+   "status": "exact"
   }
  }
 }

@@ -25,11 +25,11 @@ static char sccsid[] = "@[$]tr3.c\t2.3  08/24/83 13:57:35 Copr. 1981 87wega3.2."
 /* a new node */
 struct node *
 makeblock(op, l, r, type)
-	register int op;
+	int op;
 	register struct node *l, *r;
 	int type;
 {
-	struct node *n;
+	register struct node *n;
 
 	n = talloc();
 	n->op = op;
@@ -93,7 +93,8 @@ buildstar(op, l, r)
 	register int spare1, spare2, spare3, spare4;	/* unused: the original reserves these registers */
 
 	n = makeblock(op, l, r, 4);
-	if (n->op == STAR) {
+	switch (n->op) {
+	case STAR:
 		if (l->op == UAND) {
 			l->op = FREE;
 			n->op = FREE;
@@ -105,16 +106,22 @@ buildstar(op, l, r)
 		n->su = l->su;
 		n->fsu = l->fsu;
 		n->rall = l->rall;
-	} else if (n->op == UAND && l->op == STAR) {
-		l->op = FREE;
-		n->op = FREE;
-		n = l->left;
-		n->type = INCREF(l->type);
-		n->su = l->su;
-		n->fsu = l->fsu;
-		n->rall = l->rall;
+		break;
+	case UAND:
+		if (l->op == STAR) {
+			l->op = FREE;
+			n->op = FREE;
+			n = l->left;
+			n->type = INCREF(l->type);
+			n->su = l->su;
+			n->fsu = l->fsu;
+			n->rall = l->rall;
+		}
+		break;
+	default:
+		n = clocal(n);
 	}
-	return clocal(n);
+	return n;
 }
 
 /* an integer constant of the given number of bits, as bytes */

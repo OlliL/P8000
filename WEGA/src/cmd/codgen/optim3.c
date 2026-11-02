@@ -363,7 +363,7 @@ treeeq(p, q)
 struct node *
 convelim(p, c)
 	register struct node *p;
-	int c;
+	char c;
 {
 	register struct node *q, *n;
 	int s;
@@ -372,40 +372,36 @@ convelim(p, c)
 		q = p->right;
 		if (q->type != q->left->type) {
 			s = bsize(q->left->type);
-			if (s == bsize(q->type)) {
-				if (isint(q->left->type) ^ isint(q->type))
-					goto test;
-			} else
+			if (s != bsize(q->type))
 				goto test;
+			if (!(isint(q->type) ^ isint(q->left->type)))
+				goto remove;
+		test:
+			if (q->type != 7 || q->left->type != 6)
+				return p;
 		}
 	remove:
 		n = tcopy(q->left);
 		tfree(q);
 		p->right = n;
 		return p;
-	test:
-		if (q->type == 7 && q->left->type == 6)
-			goto remove;
-		return p;
 	}
 	if (c == 'l') {
 		q = p->left;
 		if (q->type != q->left->type) {
 			s = bsize(q->left->type);
-			if (s == bsize(q->type)) {
-				if (isint(q->left->type) ^ isint(q->type))
-					goto ltest;
-			} else
+			if (s != bsize(q->type))
 				goto ltest;
+			if (!(isint(q->type) ^ isint(q->left->type)))
+				goto lremove;
+		ltest:
+			if (q->type != 7 || q->left->type != 6)
+				return p;
 		}
 	lremove:
 		n = tcopy(q->left);
 		tfree(q);
 		p->left = n;
-		return p;
-	ltest:
-		if (q->type == 7 && q->left->type == 6)
-			goto lremove;
 		return p;
 	}
 	if (p->type == 0) {
