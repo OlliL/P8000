@@ -10,6 +10,62 @@ extern int regvar, lregvar, fregvar;
 
 	/* the .S file (WEGA): a header, the symbols (22 bytes each), the names, the member lists, the references */
 extern int symcount;
+extern int regflag;
+
+hash( s ) char *s; { /* the hash chain of the name s */
+	int h;
+	char *p;
+
+	h = 0;
+	for( p = s; *p; ++p ) h += *p;
+	return( h %= HASHSZ );
+	}
+
+OFFSZ
+upoff( size, alignment, poff ) register OFFSZ size; register alignment; register OFFSZ *poff; {
+	/* update the offset pointed to by poff; return the
+	/* offset of a value of size `size', alignment `alignment',
+	/* given that off is increasing */
+
+	register OFFSZ off;
+
+	off = *poff;
+	SETOFF( off, alignment );
+	*poff = off+size;
+	return( off );
+	}
+
+oalloc( p, poff ) register struct symtab *p; register OFFSZ *poff; {
+	/* allocate p with offset *poff, and update *poff */
+	register al;
+	register OFFSZ off, tsz;
+	OFFSZ noff;
+
+	al = talign( p->stype, p->sizoff );
+	noff = off = *poff;
+	tsz = tsize( p->stype, p->dimoff, p->sizoff );
+	if( ( (p->sclass == PARAM || p->sclass == REGISTER) && p->sfldc == 2 &&
+			(p->stype==CHAR||p->stype==UCHAR||p->stype==SHORT||p->stype==USHORT) ) ||
+	    ( (p->sclass == AUTO || p->sclass == PARAM || (regflag && p->sclass == REGISTER)) &&
+			(p->stype==CHAR||p->stype==UCHAR||p->stype==SHORT||p->stype==USHORT) ) ){
+		upoff( (long)SZINT, ALINT, &noff );
+		off = noff - tsz;
+		}
+#ifdef OLD_D1
+	else off = upoff( tsz, al, &noff ); /* a register variable gets its place on the stack too */
+#else
+	else if( p->sclass != REGISTER || p->sfldc == 2 || p->sfldc == 1 ) off = upoff( tsz, al, &noff );
+	else off = 0;
+#endif
+
+	if( p->sclass != REGISTER ){ /* in case we are allocating stack space for register arguments */
+		if( p->offset == NOOFFSET ) p->offset = off;
+		else if( off != p->offset ) return(1);
+		}
+
+	*poff = noff;
+	return(0);
+	}
 int nrefs = 0;	/* entries of reftab */
 int nrefsym = 0;	/* entries of refsym */
 int ntaglist = 0;	/* entries of taglist */

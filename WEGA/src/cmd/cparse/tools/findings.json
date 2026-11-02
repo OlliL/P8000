@@ -5734,7 +5734,7 @@
    }
   },
   "hash": {
-   "file": "vinit1.c",
+   "file": "sym1.c",
    "pairing": "confirmed",
    "orig": "0x8ae0",
    "ours": "8bea-8c26",
@@ -5771,7 +5771,7 @@
    }
   },
   "upoff": {
-   "file": "vinit1.c",
+   "file": "sym1.c",
    "pairing": "confirmed",
    "orig": "0x8b1e",
    "ours": "8c26-8c76",
@@ -5801,7 +5801,7 @@
    }
   },
   "oalloc": {
-   "file": "vinit1.c",
+   "file": "sym1.c",
    "pairing": "confirmed",
    "orig": "0x8b6e",
    "ours": "8c76-8da2",
