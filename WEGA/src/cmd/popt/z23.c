@@ -370,16 +370,16 @@ register int reg;
 					return 0;
 				}
 				continue;
-			case SBYTE:
-				if (r10 != reg)
-					continue;
-				goto out1;
 			case SLONG:
 				if (reg == r10 + 2 || reg == r10 + 3)
 					goto out1;
 				if (r10 == reg || reg == r10 + 1)
 					goto out0;
 				continue;
+			case SBYTE:
+				if (r10 != reg)
+					continue;
+				goto out1;
 			}
 			continue;
 		case RET:

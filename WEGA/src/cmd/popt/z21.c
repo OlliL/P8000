@@ -39,9 +39,6 @@ struct node * codemove();
 #ifdef OLD_D20C
 static void cjmove();
 #endif
-#ifdef OLD_D20S
-static int d20sfwd();
-#endif
 void comjump();
 
 
@@ -747,31 +744,6 @@ iterate()
 
 	nchange = 0;
 	for (p = first.forw; p; p = p->forw) {
-#ifdef OLD_D20S
-		/* the old popt: a conditional jump over a jump is turned round before jumps to jumps are followed, when
-		   its label holds a jump forwards (getpreg; yyparse keeps `jr ne,back; jr back`) */
-		if (p->op == CJP) {
-			p1 = p->forw;
-			while (p1->op == KCOMMENT)
-				p1 = p1->forw;
-			if (p1->op == JP) {
-				rp = p->ref;
-				do
-					rp = rp->back;
-				while (rp->op == LABEL || rp->op == KCOMMENT);
-				if (rp == p1 && d20sfwd(p->ref)) {
-					decref(p->ref);
-					p->ref = p1->ref;
-					p->labno = p1->labno;
-					p1->forw->back = p;
-					p->forw = p1->forw;
-					p->subop = revbr[(int)p->subop];
-					nchange++;
-					nskip++;
-				}
-			}
-		}
-#endif
 #ifdef OLD_D20K
 		/* the old popt: a jump is cross-jumped to its own label before a jump there is followed */
 		if (p->op == JP && p->ref && p->ref->refc == 1 && nonlab(p->ref)->op == JP && d20kcall(p))
@@ -1050,22 +1022,6 @@ register struct node *oldp;
 	return lp;
 }
 
-#ifdef OLD_D20S
-/* the first instruction at the label l is a jump forwards */
-static int
-d20sfwd(l)
-register struct node *l;
-{
-	register struct node *q;
-
-	if ((l = nonlab(l)) == 0 || l->op != JP || l->ref == 0)
-		return 0;
-	for (q = l->forw; q; q = q->forw)
-		if (q == l->ref)
-			return 1;
-	return 0;
-}
-#endif
 
 #ifdef OLD_D20X
 /*

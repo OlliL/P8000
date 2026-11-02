@@ -628,8 +628,8 @@ getpreg( p, t ) register TWORD t; register struct symtab *p; { /* the register f
 		case UCHAR:
 		case UNSIGNED:
 		intreg:
-			if( pregvar >= 2 ) goto gotreg;
-			break;
+			if( pregvar < 2 ) break;
+			goto gotreg;
 			}
 		pregfull = 1;
 		}

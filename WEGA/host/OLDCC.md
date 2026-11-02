@@ -192,9 +192,9 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3A`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20S`, `OLD_D20L`, `OLD_D20K`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20L`, `OLD_D20K`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 175 strictly exact, 27 differing lines, /lib/popt 70 of 73, 452 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
+- State: /lib/cparse 175 strictly exact, 27 differing lines, /lib/popt 71 of 73, 427 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
   OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
   (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
@@ -369,7 +369,7 @@ compiler that built the original. Not differences of the compiler (checked):
 - v0p (switch `OLD_D3V` in codgen, reclaim): the value of a word assignment to memory whose type a cast has painted
   (`q->rval = (int) (idp = hide( p ))`, defid) may be that memory (RLEFT): the store through the pointer reloads idp.
   For every assignment: 163 > 230. Bench v0 unchanged.
-- v0p (switch `OLD_D3AW` in codgen, argplace instead of gencall): OLD_D3A forgets the register of a parameter only
+- v0p (switch `OLD_D3AW` in codgen, argplace; it replaced OLD_D3A, removed 2026-11-02): the register of a parameter is forgotten only
   for an argument that is the parameter itself or uses it as an address (below an indirection, through + and -);
   in a computed value the register serves (zecode `n*2` from rr6; refid `dimtab[p->sizoff+3]` reloads p). The
   same for a parameter added to an address constant (match: exname `&ntab[s]` as `ld r2,#ntab; add r2,0(fp)`).
@@ -574,10 +574,6 @@ order).
   (getchar in lxtitle, the `?:` of talloc) or the test is further away (lxmore, 19 nodes) the order of the shipped
   popt stays: cross-jump, inversion, move up, second inversion. A reach of 5 to 8 nodes fits, 12 breaks fixclass, 24
   lxmore. cparse 464 > 398 (defid 79 > 13); bench v0 318 > 323, so v0p only.
-- v0p (switch `OLD_D20S` in popt, iterate and d20sfwd in z21.c): `cp; jpr cc,La; jpr Lb; La: jpr Lc` with Lc
-  forwards is turned round (`jpr !cc,Lb`) before the jump to a jump is followed (getpreg `jr ge,gotreg`). Not when
-  La holds a backward jump (yyparse keeps `jr ne,L; jr L2`) or no jump (gotscal: the jump would be followed in the
-  same round and the loop inversion would miss its test). cparse 398 > 390; bench v0 318 > 333, so v0p only.
 - v0p (switch `OLD_D20L` in popt, codemove in z21.c): the head of a loop stands behind a jump that leads into the
   loop (optim: `jpr L140; L141: test ...; L140: ...; jpr L141`); the shipped codemove wants to move the head block,
   finds that it reaches the back jump and gives up, the old one inverts the loop then. Not when the jump in front
@@ -601,7 +597,8 @@ order).
 - Refuted (2026-11-02): a block reached only by conditional jumps moves in front of its target instead of the target up (OLD_D20M again, all lengths, with a branch
   inside, longer than the target): cparse about 1200 to 1400 lines, popt about 1250 to 1300. No move behind a jump to itself (cparse 471), no move behind a conditional jump over a jump (cparse 166).
 - Candidate, not set (one witness): the load of a switch value in front of a dispatch behind a jump (`Lx: ld r2,r13; jpr D`, argregs): argregs 17 > 14, nothing else changes.
-- Open (popt): rmove; usesreg 35 lines (the POP arm is turned round by OLD_D20S where the original keeps `jr eq,J; jr out1`, the dispatch of the EXTS switch).
+- Removed (2026-11-02): OLD_D20S. getpreg `if( pregvar < 2 ) break; goto gotreg;` is exact without it, and it turned the POP arm of usesreg the wrong way (usesreg 35 > 6).
+- Open (popt): rmove.
 
 ### D21 (removed 2026-11-02: not a difference of the compiler)
 

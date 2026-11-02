@@ -1045,7 +1045,7 @@ argplace()
 		q->rall = reg | 0x1000;
 #ifdef OLD_D3AW
 		/* v0p: a parameter that is a whole argument or is used as an address in it is not taken from its
-		   register (OLD_D3A only there; in a computed value it is) */
+		   register (only there; in a computed value it is) */
 		d3awlo = reg;
 		d3awhi = reg + szty(q->type) - 1;
 		d3aw(q, 1);

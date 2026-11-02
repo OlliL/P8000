@@ -6762,7 +6762,7 @@
   "getpreg": {
    "basis": "register variables",
    "d_classes": "D20",
-   "note": "Source fix: the parameters declared t, p (the original has t in r14 and p in r13; the first declared register variable gets r14). Remaining: popt places the gotreg block behind the inverted test (jr lt), the original keeps it in place (jr ge): the old popt turns a conditional jump over a jump round before it follows the jump to a jump; tried as OLD_D20S, neutral (yyparse, gotscal worse)."
+   "note": "Source fix: the parameters declared t, p (the original has t in r14 and p in r13; the first declared register variable gets r14). Source: if( pregvar < 2 ) break; goto gotreg; (exact without OLD_D20S, removed)."
   },
   "fhashv": {
    "basis": "frame layout",

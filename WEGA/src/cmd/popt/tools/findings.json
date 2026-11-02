@@ -2806,6 +2806,7 @@
    "note": "not called anywhere in the original (dead code behind ovlap): 2 for SLONG, else 1; name guessed (stripped binary)"
   },
   "usesreg": {
+   "v0p_note": "v0p model exact: default as dflt: inside if (reg != r10 && reg != r10 + 1) of MUL, out1 and out0 inside if blocks of the LD and EXTS cases, EXTS cases 0, SLONG, SBYTE. dflt: inside the if is a less usual form",
    "file": "z23.c",
    "pairing": "confirmed",
    "ours": "0x3ac4-0x3db0",

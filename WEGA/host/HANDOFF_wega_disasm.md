@@ -110,14 +110,14 @@ cluster (point 4), its small leaf functions may answer point 3.
 3. Then codgen with the same frame, and back to the open cparse points with the new witnesses.
 
 **State of popt (step 1 done, step 2 under way, 2026-11-01).** Our popt sources compiled with ccv0p against
-/lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 70 of 73 functions strictly exact,
-452 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
+/lib/popt (`oldcc.sh model popt; oldcc.sh lines popt`, run in src/cmd/popt): 71 of 73 functions strictly exact,
+427 differing lines (rmove 410 of them, see "Now: rmove") (start of the day: 1 of 68, 6305 lines). Code 22272 = 22272, data 3308 = 3308 and bss 3420 =
 3420 bytes (the definitions at the end of z2.h give the original bss order; the libc is linked in the order of the original, Makefile
 LIBCOBJS). After every source change: the normal build (shipped cc) against /lib/popt on the popt corpus
 (`src/cmd/popt/tools/corpus.sh` after `make popt` with the WEGA tools and `CRT0=<WEGA_ROOT>/lib/crt0.o` (the `ship` target copies it with the host's cp): 272 inputs times no option, -l, -d;
 816 of 816; the corpus is RECON_TMP/popt/corpus, which can be made
 with `make -C host/popt corpus CORPUS=$RECON_TMP/popt/corpus`), then `oldcc.sh build popt v0p` and the cparse
-model (must stay 173). When a change alters the behaviour of popt, the popt switches OLD_D20C/X/S/L/K/B are
+model (must stay 173). When a change alters the behaviour of popt, the popt switches OLD_D20C/X/L/K/B are
 checked again by dropping each one (owner request: a switch must not hide an error of our popt source; last check
 after ovlap: all five still needed). The method that worked: read the original function (`olist.py`-style
 listing, the jump tables in the data give the case order), rewrite the source form (register declaration order
@@ -133,14 +133,13 @@ OLDCC_LOG.md 2026-11-01 "popt model".
 **Open popt functions** (strict diff lines in brackets; the owner may clean up this list as functions get done):
 
 - setreg (7, the arguments of makereg, codgen D3)
-- usesreg (35)
 - rmove (410 lines; content equal but for jump forms and two string addresses: layout, D20)
 
 Known causes (OLDCC.md section 3, "Open (popt, v0p model)"); none of them is a source error any more, they wait
 for the codgen work and the placement question:
 
 - codgen, D3 (setreg: the computed first argument of makereg through r2; one witness).
-- popt, D20 (block placement): usesreg, rmove.
+- popt, D20 (block placement): rmove.
 - Under analysis: rmove (see "Now: rmove" below; it also holds the cas cluster of the open cparse point 4).
 
 **Now: rmove, under analysis** (z22.c, original 0x13b6, 3272 bytes; the only function with a large remainder,
@@ -210,8 +209,8 @@ definitions at the end of z2.h. cparse: the globals as definitions at the end of
 the order) and an old data member (src/lib/oldlibc/data/0_1.c, _sobuf before _sibuf; run `make` in src/cmd/cparse
 first, the model link needs its object). bss.s and libcbss.s are gone in both.
 
-**Next: rmove with the same lens (source forms decide where a block stands, OLDCC.md D20); then whether OLD_D20C, X, S, L, K, B still have witnesses (matrix).** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
-). State: cparse 175/27, popt 70/452. The model
+**Next: rmove with the same lens (source forms decide where a block stands, OLDCC.md D20).** The codgen list is done (2026-11-02: D16A, D3 parameter across a branch, D2 r1/r3, D5 STREF; OLD_D3N removed, source forms and popt.
+). State: cparse 175/27, popt 71/427. The model
 reports code 48640 against 48896 (cparse) and 22016 against 22272 (popt), not equal sizes; the cause is not checked.
 
 **Tools.**
@@ -261,6 +260,6 @@ plan in `../src/TODO.md` ("Plan: towards the old C compiler").
 3. **Reconstruct the old compiler.** Everything about the old compilers is in `OLDCC.md` (the edited summary: the
    classes D1 ... D22, the versions v1, v0, v0p, rules, building and running) and `OLDCC_LOG.md` (the running notes).
    State 2026-11-01: v1 (strip and size byte-identical, ld 55 of 59); v0 (bench 118 of 153); v0p (/lib/cparse 173 of
-   179, /lib/popt 70 of 73, the current work above).
+   179, /lib/popt 71 of 73, the current work above).
 
 The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").
