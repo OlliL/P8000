@@ -75,6 +75,9 @@ experiment: one pass of the chain replaced by its version, the rest shipped.
   touches a switch: it names switches and programs missing from the table and how many files of the passes changed since
   the measurement.
 
+
+How to test a change of a pass without touching the tree: copy `src/cmd/PASS` to a scratch tree (`WEGA/src/cmd/PASS`, with `WEGA/src/lib` and `WEGA/host` as links), change it there, `make` in `PASS/v0p` with the shipped tools (codgen: `SWITCHES=-DOLD_V0P`), copy `tmp/oldroot` and put the pass into its `lib/v0p`, then `RECON_TMP=scratch CCHOST=wrapper python3 tools/d12model.py -q` and `RECON_TMP=scratch python3 tools/strictcmp.py` in each program, where the wrapper runs `z8k-emu -r copy /bin/ccv0p "$@"`. Compare the lists per function with `RECON_TMP/oldcc_model_PROG.txt`. Removing a switch: delete its `#define` in the copy of `codgen/oldcc.h`. The trace of popt: `OLDCC_LOG.md`, match, 2026-11-03.
+
 ### Time box (owner decision 2026-10-31)
 
 - A round is one hypothesis for a switch (one D class, one assumed mechanism), made and measured under the evidence
@@ -552,6 +555,8 @@ The old cc evaluates the left operand of `+`, `==`, `>` first when both are call
 order).
 
 ### D20 Code motion of popt
+
+For v0p no old popt is needed: all three models built with the original /lib/popt as the pass of ccv0p are byte-identical to those with our popt v0p (`cmp`, 2026-11-03). /lib/cparse and /lib/codgen as passes give far fewer functions (19, 30 of 179 for cparse), they are not the passes of v0p. Statements about "the old popt" below and elsewhere in this file come from v0 and v1 or are older than this measurement.
 
 - Form: blocks behind a jump or return moved to the site of a jump to them (`codemove`, z21.c) in other places.
 - Mechanism (v1, switch `OLD_D20` in popt): a `jpr` to the label right behind it does not end the block to be moved

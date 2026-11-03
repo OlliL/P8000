@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "0f38b1b7",
+ "measured_at": "9b82f2fb",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -123,7 +123,8 @@
    "file": "reader3.c",
    "orig": "0x175e",
    "size_orig": 294,
-   "status": "exact"
+   "status": "exact",
+   "note": "One unused register variable. if (ql->rval < 0) { ... } else stw = 0, the short case last."
   },
   "canon": {
    "file": "reader3.c",
@@ -183,7 +184,7 @@
    "orig": "0x1ec2",
    "size_orig": 192,
    "status": "open",
-   "note": "Left: after the ld r0 of the first assignment the original takes r2 and r3 again, ours r1 and r2: register choice of the compiler, as mapnm; step 6.",
+   "note": "Left: after the ld r0 of the first assignment the original takes r2 and r3 again, ours the free word r1 and r2: register choice of the compiler. Tried: giving back the idle mate of the first free word: exact, costs 17 functions; a value loaded through an index register not remembered: nothing; the swap in comma expressions: nothing. In other functions r2 comes again behind ld r0 when the next load is a plain name, here the next tree is a shift.",
    "lines": 26
   },
   "tagfind": {
@@ -208,7 +209,7 @@
    "file": "rdr3.c",
    "orig": "0x20c0",
    "size_orig": 838,
-   "note": "Left: the result of the regvar load: original r3, ours r1 (ld r3,%8FE8(r1)); neither operand order gives it. Register choice of the compiler, step 6.",
+   "note": "Left: the result of the regvar load: original ld r3,%8FE8(r1), ours r1. Tried: both operand orders; r1 not reused by OLD_D2R when no register is wanted: nothing, so r1 comes from elsewhere (not read).",
    "status": "open",
    "lines": 4
   },
@@ -253,7 +254,8 @@
    "file": "local3.c",
    "orig": "0x2796",
    "size_orig": 234,
-   "status": "exact"
+   "status": "exact",
+   "note": "t is a register variable; the bodies in the order s, d, l, b, popt merges the putchar code."
   },
   "lineout": {
    "file": "local3.c",
@@ -271,7 +273,7 @@
    "file": "local3.c",
    "orig": "0x28f6",
    "size_orig": 154,
-   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them. Left: the original computes parmax + maxoff in rr2 and moves it to rr6, ours in rr6 (step 6).",
+   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table). Left: the original computes parmax + maxoff in rr2 and moves it to rr6, ours in rr6. Tried: a cast: nothing; no preference for the left operand of a long sum under MUSTDO: exact, readmems +15 (fseek(stfile, stg + 2, 0) wants it there); separated only by rr6 against rr4, one witness, not adopted.",
    "status": "open",
    "lines": 5
   },
@@ -408,7 +410,7 @@
    "orig": "0x40d4",
    "size_orig": 252,
    "status": "open",
-   "note": "Odd form: if (rlmode) { printf; return; } leaves lval as it is (it is unchanged in that case). Left: place of the then part of putchar (4 lines).",
+   "note": "Odd form: if (rlmode) { printf; return; } leaves lval as it is (it is unchanged in that case); goto ac into the ICON case. Left: the place of the then part of putchar (4 lines).",
    "lines": 4
   },
   "adrput": {
@@ -421,7 +423,7 @@
    "file": "local3.c",
    "orig": "0x437e",
    "size_orig": 418,
-   "note": "Left: one jr at the limit of its range: 254 bytes to the target, the original keeps jr, /bin/cas takes jp (2 bytes). Guess: the old cas decides this limit differently (not tested).",
+   "note": "Left: one jr at the limit of its range: 254 bytes to the target, the original keeps jr, /bin/cas takes jp (2 bytes in size). Guess: the old cas decides this limit differently (not tested); the same family as the long jp in cparse yylex, popt rmove (OLDCC.md D17).",
    "status": "open",
    "lines": 2
   },
@@ -474,7 +476,7 @@
    "orig": "0x471a",
    "size_orig": 234,
    "status": "open",
-   "note": "Left: sub r2,#%8001 at the head of the switch, ours add r2,#%7FFF: literal, long and unsigned case constants do not change it (step 6).",
+   "note": "Left: sub r2,#%8001 at the head of the switch, ours add r2,#%7FFF: literal, long and unsigned case constants do not change it. A question of the compiler; not read in cparse genswitch or optim.",
    "lines": 2
   },
   "mycanon": {
@@ -507,14 +509,14 @@
    "orig": "0x49c0",
    "size_orig": 48,
    "status": "open",
-   "note": "Left: the original saves only off (ldl 2(r15),rr4) and r in r14 in a larger frame, ours all parameters: no form found.",
+   "note": "Left: the original saves only off (ldl 2(r15),rr4) and r in r14 in a frame of 12, t is not stored at all; ours stores all parameters. Tried: register int t (worse: 13 lines, r1 and r3 by procopt). The rule that leaves a parameter unstored is not known; the call passes a fourth argument cp.",
    "lines": 10
   },
   "sucomp": {
    "file": "order3.c",
    "orig": "0x49f0",
    "size_orig": 2000,
-   "note": "Left: the order of the fsu assignments: in the original the case fl == 0 stands in front of its test, its end is shared with ffregs + nf. A conditional expression gives the sharing, goto gives the order, neither both. Bytes of popt traced, the rule that moves the block not found.",
+   "note": "Left: the order of the fsu assignments: in the original the case fl == 0 stands in front of its test, its end is shared with ffregs + nf. Tried: a conditional expression gives the sharing and 34 lines, goto gives the order and 26, fl != 0 first the sharing and 44; none both. Popt traced, the moves are not explained. Also max(fl, fr) in the original with the other jump sense, and the merge of ld r2,0(r15); jp into the first copy.",
    "status": "open",
    "lines": 32
   },
@@ -554,7 +556,7 @@
    "orig": "0x54c4",
    "size_orig": 436,
    "status": "open",
-   "note": "Odd form: the physical order of the original by goto: the code for a nice left operand inside the first if, the test behind the last statement; the first if tests p->right, not r. Left: which copy of the tail of order(l, 0x101e) and order(l, 0x14) stays; a common return label makes it worse.",
+   "note": "Odd form: the physical order of the original by goto: the code for a nice left operand inside the first if, the test behind the last statement; the first if tests p->right, not r. Left: which copy of the tail of order(l, 0x101e) and order(l, 0x14) stays (8 lines); a common return label moves more blocks (37 lines).",
    "lines": 8
   },
   "setstr": {
@@ -630,13 +632,14 @@
    "file": "order3.c",
    "orig": "0x5d2c",
    "size_orig": 358,
-   "status": "exact"
+   "status": "exact",
+   "note": "cnt is reached by ++cnt[x]: the postfix form computes the address twice. for loops with nargs++ as their step."
   },
   "tshape": {
    "file": "match3.c",
    "orig": "0x5e92",
    "size_orig": 356,
-   "note": "Old hint, measured against the shipped cc, may be stale: Case order: FLD case placed before STAR in match3.c (the original's bodies are in this order: call order special, shtemp, ltypeop, shumul now equal). Alignment 56 -> 74 %, pattern diff 102 -> 60. Corpus 101/101 equal. Open: the last operand of the SZERO return",
+   "note": "Case FLD stands before STAR in the source, the order of the bodies in the original.",
    "status": "exact"
   },
   "ttype": {
@@ -681,7 +684,7 @@
    "orig": "0x6792",
    "size_orig": 86,
    "status": "open",
-   "note": "Left: (int)tmpoff / 8: original ld r6,%69D6; ld r3,r6; div rr2, ours through r7 and rr6; register choice, step 6.",
+   "note": "Left: (int)tmpoff / 8 as an argument: original ld r6,%69D6; ld r3,r6; exts rr2; div rr2; ld r6,r3, ours from r1 through r7 and rr6. Register choice; the original loads the wanted register first and divides in a fresh pair. Not tried.",
    "lines": 9
   },
   "allo": {
@@ -702,7 +705,7 @@
    "orig": "0x6bf4",
    "size_orig": 90,
    "status": "open",
-   "note": "Left: cp r6,#%0013 at a label with two jumps: restoring there fixes it but costs cparse buildtree 8 lines, also when only idle parameters are restored.",
+   "note": "Left: cp r6,#%0013 at a label with two jumps, r6 not tested. Tried: restoring parameters at several jumps: exact, costs cparse buildtree 8 lines, also when only parameters idle at all jumps are restored.",
    "lines": 2
   },
   "allocreg": {
@@ -710,7 +713,7 @@
    "orig": "0x6c4e",
    "size_orig": 268,
    "status": "open",
-   "note": "Odd form: the value in front of its test, by goto. Left: which copy of ld r14,r2 stays (4 lines).",
+   "note": "Odd form: the value in front of its test, by goto. Left: which copy of ld r14,r2 stays (4 lines). With a backward label the parameter is forgotten when jump records are cleared at unnamed labels (rsinsert attempt), so the goto form may not be the original one.",
    "lines": 4
   },
   "freereg": {
@@ -788,7 +791,7 @@
    "file": "regallo3.c",
    "orig": "0x7650",
    "size_orig": 318,
-   "note": "Left: cp 0(r15),#2 behind the first test. Clearing the record of a jump at a loop head fixes it (one witness, not adopted).",
+   "note": "Left: cp 0(r15),#2 behind the first test of mode, in the arm behind a while. Tried: clearing the jump records at a loop head: exact, allocreg 4 > 7 by the backward label of its goto form, no other change; one witness, not adopted.",
    "status": "open",
    "lines": 2
   },
@@ -836,7 +839,7 @@
    "orig": "0x815e",
    "size_orig": 102,
    "status": "open",
-   "note": "Left: the test of case 1 stands with the body, the rest of the chain in front of the loop body (8 lines): no form found.",
+   "note": "Left: the test of case 1 stands with the body, the rest of the compare chain in front of the loop body (8 lines): no form found, not traced.",
    "lines": 8
   },
   "rspush": {
@@ -849,7 +852,7 @@
    "file": "regallo3.c",
    "orig": "0x81fe",
    "size_orig": 494,
-   "note": "Old hint, measured against the shipped cc, may be stale: D3 and D8: 59 differing blocks, mostly spill and reload of the register variables (D3); byte compares of the char variables gone1, gone2, drop1, drop2 are written as load and compare in ours, as a memory compare in the original (D8). Size difference 225 / 159 ",
+   "note": "The chars gone1, gone2, drop1, drop2 on the frame; while loops, a for gives another target for continue; q = rsexcl = p->next in a chain.",
    "status": "exact"
   },
   "rsmatch": {
@@ -1009,7 +1012,7 @@
    "orig": "0x8a24",
    "size_orig": 210,
    "status": "open",
-   "note": "Left: which copy of the tail of rbusy stays (11 lines).",
+   "note": "Left: which copy of the tail of rbusy stays (11 lines): the original keeps ldk r6,#4; jr in the first rbusy and the two later calls joined; not traced. break at the end of the last case puts return q in front of the bodies, as the original.",
    "lines": 11
   },
   "ispow2": {
@@ -1052,8 +1055,8 @@
    "file": "wrt3.c",
    "orig": "0x8c22",
    "size_orig": 82,
-   "status": "open",
-   "lines": 2
+   "status": "exact",
+   "note": "The pointer assigned inside the first test: if (*(cp = &ifname[n - 1]) == '\"')."
   },
   "parminit": {
    "file": "wrt3.c",
@@ -1103,7 +1106,8 @@
    "file": "regs3.c",
    "orig": "0x9308",
    "size_orig": 236,
-   "status": "exact"
+   "status": "exact",
+   "note": "The loop test and the end of the table in one for condition; the inner for tests off < 0 with the body inside."
   },
   "tmpdump": {
    "file": "regs3.c",
@@ -1278,7 +1282,7 @@
    "file": "lcl3.c",
    "orig": "0xab48",
    "size_orig": 902,
-   "note": "Odd form: case 9 and case 1 written out, an empty case 18, return; without a value in case 3, 6 (quirk table). Left: place of two blocks (popt).",
+   "note": "Odd form: case 9 and case 1 written out, an empty case 18, return; without a value in case 3, 6 (quirk table). Left: the place of two blocks and which copy of a tail stays (12 lines); not traced yet.",
    "status": "open",
    "lines": 12
   },
@@ -1298,7 +1302,7 @@
    "file": "tr3.c",
    "orig": "0xafe4",
    "size_orig": 188,
-   "note": "Left: the default jumps to a return n elsewhere, ours keeps ld r2,r12 (1 line); the return in the last case makes it worse.",
+   "note": "Left: the default jumps to a return n elsewhere, ours keeps ld r2,r12 (1 line). Tried: return n in the last case: about 21 lines worse.",
    "status": "open",
    "lines": 1
   },
@@ -1338,7 +1342,7 @@
    "orig": "0xba7c",
    "size_orig": 294,
    "status": "open",
-   "note": "Left: cpb rl6,#%6C behind the first test; a free pair counted for a byte does not fix it.",
+   "note": "Left: cpb rl6,#%6C behind the first test of the char c. Tried: a free pair counted for a byte in d3jfree: nothing. Not the same as cparse rmconv, which is exact with this load.",
    "lines": 2
   },
   "isint": {

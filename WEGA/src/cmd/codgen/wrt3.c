@@ -77,8 +77,7 @@ endline()
 
 	if (lflag) {
 		n = strlen(ifname);
-		cp = &ifname[n - 1];
-		if (*cp == '"')
+		if (*(cp = &ifname[n - 1]) == '"')
 			cp--;
 		if (*cp-- == 'c' && *cp == '.')
 			printf("\t.line\t%d\t%s\t\n", ifline, ifname);
