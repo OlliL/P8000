@@ -83,8 +83,6 @@ int unused8[9] = { 0 };
 
 #define RNOP	010000
 
-#define FOREFF	01
-
 /* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
 #ifdef SEG
 #define PTRWORDS	2
@@ -227,7 +225,7 @@ fwalkd(p, f, down)
 again:
 	down1 = down2 = 0;
 	(*f)(p, down, &down1, &down2);
-	switch (dope[p->op] & 0xE) {
+	switch optype(p->op) {
 	case BITYPE:
 		fwalkd(p->left, f, down1);
 		p = p->right;
@@ -250,7 +248,7 @@ fwalk(p, f)
 
 	if (p == 0)
 		return;
-	kind = dope[p->op] & 0xE;
+	kind = optype(p->op);
 	if (kind != LTYPE)
 		fwalk(p->left, f);
 	if (kind == BITYPE)
@@ -600,7 +598,7 @@ tcopy(p)
 		else
 			rbusy(r, 0x14, p->sname, p->lval);
 	}
-	switch (dope[q->op] & 0xE) {
+	switch optype(q->op) {
 	case BITYPE:
 		q->right = tcopy(p->right);
 	case UTYPE:

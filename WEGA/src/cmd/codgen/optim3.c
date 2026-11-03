@@ -44,23 +44,23 @@ optim(p)
 	int i;
 
 	o = p->op;
-	ty = dope[o] & 0xE;
+	ty = optype(o);
 	if (ty == LTYPE)
 		return p;
 	if (ty == BITYPE && p->right->op == SCONV) {
 		p = convelim(p, 'r');
 		o = p->op;
-		ty = dope[o] & 0xE;
+		ty = optype(o);
 	}
 	if (p->left->op == SCONV) {
 		p = convelim(p, 'l');
 		o = p->op;
-		ty = dope[o] & 0xE;
+		ty = optype(o);
 	}
 	if (p->op == SCONV) {
 		p = convelim(p, 'p');
 		o = p->op;
-		ty = dope[o] & 0xE;
+		ty = optype(o);
 	}
 	if (ty == BITYPE)
 		p->right = optim(p->right);
@@ -357,7 +357,7 @@ treeeq(p, q)
 	o = p->op;
 	if (o != q->op)
 		return 0;
-	switch (dope[o] & 0xE) {
+	switch optype(o) {
 	case LTYPE:
 		if (o == NAME)
 			return p->sname == q->sname && p->lval == q->lval;

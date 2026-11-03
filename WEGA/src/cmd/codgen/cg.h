@@ -71,6 +71,22 @@
 #define TEMP	121
 #define LAB	127
 
+#define TYFLG	016
+#define ASGFLG	01
+#define LOGFLG	020
+#define DIVFLG	0200
+#define CALLFLG	02000
+#define MULFLG	04000
+#define optype(o)	(dope[o] & TYFLG)
+#define asgop(o)	(dope[o] & ASGFLG)
+#define logop(o)	(dope[o] & LOGFLG)
+#define callop(o)	(dope[o] & CALLFLG)
+#define FOREFF	01
+#define INAREG	02
+#define INTAREG	04
+#define INBREG	010
+#define INTBREG	020
+#define FORCC	040
 #define LTYPE	2		/* arity bits of the dope flags */
 #define UTYPE	4
 #define BITYPE	8
@@ -110,7 +126,8 @@
 #define TANY	0010000
 #define TSTRUCT	0020000
 
-#define NOPREF	0x2000
+#define MUSTDO	010000
+#define NOPREF	020000
 
 struct node {
 	int	op;

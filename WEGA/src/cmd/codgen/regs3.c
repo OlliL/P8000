@@ -78,8 +78,6 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 
 #define RNOP	010000
 
-#define FOREFF	01
-
 /* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
 #ifdef SEG
 #define PTRWORDS	2
@@ -800,7 +798,7 @@ fixname(p)
 {
 	register int r;
 
-	r = (p->rall & 0x1000) ? p->rall & ~0x1000 : -1;
+	r = (p->rall & MUSTDO) ? p->rall & ~MUSTDO : -1;
 	r = regforsym(r, p->sname, p->type, p->sname->soffset / 8);
 	if (r >= 0) {
 		p->op = REG;

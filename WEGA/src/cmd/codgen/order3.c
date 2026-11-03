@@ -85,10 +85,6 @@ int fltused = 0;
 
 #define min(a, b)	((a) < (b) ? (a) : (b))
 
-#define NOPREF	0x2000
-
-#define MUSTDO	0x1000
-
 #ifdef OLD_D3K
 /* v0: not the register of a parameter (it is copied before an operator changes it) */
 #define istnode(q)	((q)->op == REG && (rstatus[(q)->rval] & 0x14) && !((q)->sname && (q)->sname->sclass == 9))
@@ -123,7 +119,7 @@ mkadrs(p)
 	register int o;
 
 	o = p->op;
-	if (dope[o] & 1) {
+	if asgop(o) {
 		if (p->left->su > p->right->su ||
 		    (p->left->su == p->right->su && p->left->fsu >= p->right->fsu)) {
 			if (p->left->op == STAR) {
@@ -170,15 +166,15 @@ sucomp(p)
 	int fl, fr, nf, t;
 
 	o = p->op;
-	ty = dope[o] & 0xE;
+	ty = optype(o);
 	if ((t = p->type) == 6 || t == 7) {
 		nf = 1;
 		nr = 0;
 	} else {
 		nf = 0;
-		nr = max(szty(t), dope[p->op] & 0x800 ? 2 : 1);
+		nr = max(szty(t), dope[p->op] & MULFLG ? 2 : 1);
 	}
-	if (dope[o] & 0x400) {			/* a call takes all registers */
+	if callop(o) {			/* a call takes all registers */
 		p->su = fregs;
 		p->fsu = ffregs;
 		return;
@@ -211,7 +207,7 @@ sucomp(p)
 			p->fsu = max(max(fl, fr), nf);
 			return;
 		}
-		if (dope[o] & 1) {			/* assignments */
+		if asgop(o) {			/* assignments */
 			if (sur == 0) {
 				if (sul == 0)
 					p->su = nr;
@@ -236,7 +232,7 @@ sucomp(p)
 				p->fsu = max(fr, max(fl, 1 + nf + nf));
 			return;
 		}
-		if ((dope[p->op] & 0x800) && (p->left->type == 5 || p->left->type == 15)) {	/* long * / % */
+		if ((dope[p->op] & MULFLG) && (p->left->type == 5 || p->left->type == 15)) {	/* long * / % */
 			p->su = max(fregs - 1, min(max(sul, nr + sur), max(nr + sul, sur)));
 			if (sur == sul)
 				p->fsu = max(ffregs - 1, min(max(fl, nf + fr), max(nf + fl, fr)));
@@ -244,7 +240,7 @@ sucomp(p)
 				p->fsu = max(fl, fr);
 			return;
 		}
-		if ((dope[p->op] & 0x800) && (dope[p->left->op] & 0xE) == 2 && nr > szty(p->left->type)) {
+		if ((dope[p->op] & MULFLG) && optype(p->left->op) == 2 && nr > szty(p->left->type)) {
 			p->su = max(nr, max(sul, sur));
 			if (sur == sul)
 				p->fsu = max(nf, max(fl, fr));
@@ -301,7 +297,7 @@ rallo(p, down)
 	down &= ~MUSTDO;
 	down1 = down;
 	o = p->op;
-	ty = dope[o] & 0xE;
+	ty = optype(o);
 	switch (o) {
 	case ASSIGN:
 		down1 = NOPREF;
@@ -387,7 +383,7 @@ orderadd(p)
 	if (p->op == PLUS || p->op == MINUS) {
 		if (p->left->op == CALL || p->left->op == 72) {
 			if (p->right->op == CALL || p->right->op == 72) {
-				order(p->right, 0x1000);
+				order(p->right, INTEMP);
 				n++;
 				order(p->left, 6);
 				n++;
@@ -493,7 +489,7 @@ offstar(p)
 				return;
 		}
 		if (p->rall & MUSTDO) {
-			if ((dope[p->op] & 0xE) != LTYPE) {
+			if (optype(p->op) != LTYPE) {
 				orderadd(l);
 				order(l, 6);
 			}
@@ -578,21 +574,21 @@ setbin(p)
 		d16acmp = l;
 #endif
 	if (p->right->su == 0 && p->right->fsu == 0) {
-		if (!(dope[p->op] & 0x10))
+		if (!logop(p->op))
 			goto tail;
 		if (l->op == STAR && shumul(l->left) != 0x800)
 			OFFSTARL(l);
 		else
-			order(l, 0x101e);
+			order(l, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
 		return 1;
 	nice:
 		if (niceuty(l))
 			goto off;
 	ord:
-		order(l, 0x14);
+		order(l, INTAREG|INTBREG);
 		return 1;
 	}
-	if (dope[p->op] & 0x10) {
+	if logop(p->op) {
 		if (r->su > l->su || (r->su == l->su && r->fsu >= l->fsu)) {
 			if (niceuty(r)) {
 				OFFSTARA(r);
@@ -600,7 +596,7 @@ setbin(p)
 			}
 			if (r->su > l->su || (r->su == l->su && r->fsu > l->fsu)) {
 				if (!istnode(r)) {
-					order(r, 0x101e);
+					order(r, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
 					return 1;
 				}
 			}
@@ -610,7 +606,7 @@ setbin(p)
 			return 1;
 		}
 		if (!istnode(l)) {
-			order(l, 0x101e);
+			order(l, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
 			return 1;
 		}
 		if (niceuty(r)) {
@@ -618,7 +614,7 @@ setbin(p)
 			return 1;
 		}
 		if (!istnode(r)) {
-			order(r, 0x101e);
+			order(r, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
 			return 1;
 		}
 		cerror("setbin can't deal with %s", opst[p->op]);
@@ -628,7 +624,7 @@ setbin(p)
 			OFFSTARA(r);
 			return 1;
 		}
-		order(r, 0x101e);
+		order(r, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
 		return 1;
 	}
 	if (istnode(l))
@@ -775,8 +771,8 @@ rew:
 		q->left = q->left->left;
 		p = canon(p);
 		rallo(p, p->rall);
-		order(c->left, 0x14);
-		order(c, 0x14);
+		order(c->left, INTAREG|INTBREG);
+		order(c, INTAREG|INTBREG);
 		return 1;
 	}
 	if (p->op == ASG MOD || p->op == ASG DIV) {
@@ -784,7 +780,7 @@ rew:
 #ifdef SEG
 			if (sul) {
 				p->right->rall = 0x2000;
-				order(p->right, 0x1000);
+				order(p->right, INTEMP);
 				return 1;
 			}
 #endif
@@ -1036,7 +1032,7 @@ d3aw(p, top)
 					n->sym = 0;
 		return;
 	}
-	k = dope[p->op] & 0xE;
+	k = optype(p->op);
 	if (k == LTYPE || p->op == QUEST)
 		return;
 	if (p->op == STAR)
@@ -1093,7 +1089,7 @@ argplace()
 	fleft = 4;
 	for (; (q = argl[nargs].node) != 0; nargs++) {
 		if (nleft < q->su || fleft < q->fsu || (regs < 1 && q->su > 1)) {
-			order(q, 0x1000);
+			order(q, INTEMP);
 			continue;
 		}
 #ifdef OLD_D22
@@ -1122,7 +1118,7 @@ argplace()
 			continue;
 		}
 #endif
-		q->rall = reg | 0x1000;
+		q->rall = reg | MUSTDO;
 #ifdef OLD_D3AW
 		/* v0p: a parameter that is a whole argument or is used as an address in it is not taken from its
 		   register (only there; in a computed value it is) */

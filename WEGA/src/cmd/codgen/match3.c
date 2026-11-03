@@ -253,10 +253,10 @@ match(p, cookie)
 	int y;
 
 	rcount();
-	switch (dope[p->op] & 0xE) {
+	switch optype(p->op) {
 	case BITYPE:
-		if (p->left->op == NAME && (dope[p->right->op] & 0xE) == LTYPE) {
-			if (dope[p->op] & 1)
+		if (p->left->op == NAME && optype(p->right->op) == LTYPE) {
+			if asgop(p->op)
 				goto asg;
 			fixname(p->left);
 		}
@@ -279,7 +279,7 @@ match(p, cookie)
 		/* v0: a name (not a parameter) found in a scratch register is that register, which then loses the name */
 		if (p->op == REG && (cookie & STAREG) && (rstatus[p->rval] & STAREG) && p->type != 5 && p->type != 15 &&
 		    p->sname && p->sname->sclass != 9 &&
-		    (!(p->rall & 0x1000) || (p->rall & ~0x1000) == p->rval)) {
+		    (!(p->rall & MUSTDO) || (p->rall & ~MUSTDO) == p->rval)) {
 			symdrop(p->rval);
 			return MDONE;
 		}
@@ -297,12 +297,12 @@ match(p, cookie)
 		oregfix((struct node *)t);
 	rgt:
 		if (p->right->op == NAME) {
-			if ((p->type == 5 || p->type == 15) && ((dope[p->op] & 0x800) || (dope[p->op] & 0x80))) {
+			if ((p->type == 5 || p->type == 15) && ((dope[p->op] & MULFLG) || (dope[p->op] & DIVFLG))) {
 				register int rv;
 
 				rv = p->right->rval;
 				/* mult and div use r4..r7: a right operand in r6 (or r4 for div) goes to memory */
-				if (rv == 6 || ((dope[p->op] & 0x80) && rv == 4)) {
+				if (rv == 6 || ((dope[p->op] & DIVFLG) && rv == 4)) {
 					oregfix(p->right);
 					goto cont;
 				}
@@ -313,7 +313,7 @@ match(p, cookie)
 				oregfix(p->right);
 			else
 #endif
-			if ((dope[p->left->op] & 0xE) == LTYPE || p->left->op == FLD)
+			if (optype(p->left->op) == LTYPE || p->left->op == FLD)
 				fixname(p->right);
 		}
 		goto cont;
@@ -420,7 +420,7 @@ cand:
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
 		if (t == ASSIGN && !(cookie & 01) && p->op == REG && (p->type == 5 || p->type == 15) && p->rval < 8 &&
-		    !(p->rall & 0x1000)) {	/* (not when the value goes to a register wanted for it: an argument) */
+		    !(p->rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 
 			nr = getreg(3, -1, 0x1000, (struct sym *)0);
@@ -555,9 +555,9 @@ getlr(p, c)
 	case '1': case '2': case '3':
 		return &resc[c - '1'];
 	case 'L': case 'l':
-		return (dope[p->op] & 0xE) == LTYPE ? p : p->left;
+		return optype(p->op) == LTYPE ? p : p->left;
 	case 'R': case 'r':
-		return (dope[p->op] & 0xE) == BITYPE ? p->right : p;
+		return optype(p->op) == BITYPE ? p->right : p;
 	}
 	cerror("bad getlr: %c", c);
 }

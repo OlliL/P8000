@@ -127,8 +127,6 @@ int rmode = 0;
 int rlmode = 0;
 int nosuffix = 0;
 
-#define FOREFF	01
-
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
 
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
@@ -1560,7 +1558,7 @@ gencall(p, cookie)
 	if (fop != ICON) {
 		if (p->right) {
 			indirect = 1;
-			order(f, 0x1000);
+			order(f, INTEMP);
 		} else if (fop != REG || f->rval == 0) {
 			order(f, 6);
 			if (f->rval == 0)
@@ -1688,7 +1686,7 @@ nextcook(p, cookie)
 		return 0;
 	if (!(cookie & 0x14))
 		return 0x14;
-	if (!(cookie & 0x1000) && (dope[p->op] & 1))
+	if (!(cookie & 0x1000) && asgop(p->op))
 		return 0x101E;
 	return FORREW;
 }

@@ -367,7 +367,7 @@ clocal(p)
 #ifdef SEG
 done:
 #endif
-	if ((dope[p->op] & 0x10) && r->op == ICON && l->op == SCONV &&
+	if (logop(p->op) && r->op == ICON && l->op == SCONV &&
 	    (l->left->type == 2 || l->left->type == 12) && r->lval >= -256 && r->lval <= 255) {
 		l->op = FREE;
 		l = p->left = l->left;

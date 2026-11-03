@@ -587,7 +587,7 @@ eread()
 	p = talloc();
 	p->rall = 0;
 	p->op = op;
-	op = dope[op] & 0xE;
+	op = optype(op);
 	if (op == 0x73)
 		erflag = 1;
 	if (op == LTYPE)

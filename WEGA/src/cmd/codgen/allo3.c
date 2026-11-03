@@ -69,8 +69,6 @@ static char sccsid[] = "@[$]allo3.c\t2.4  08/24/83 11:29:34 Copr. 1981 87wega3.2
 
 #define RNOP	010000
 
-#define FOREFF	01
-
 #ifdef OLD_D2R0
 extern int d2r0reg;
 static int d2r0free();
@@ -173,7 +171,7 @@ allo(p, q)
 	k0 = k;
 	while (b & 3) {				/* the registers stay busy only for the code of the entry */
 		if (((b & 0xF) && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
-		    (dope[p->op] & 0x80))
+		    (dope[p->op] & DIVFLG))
 			cls = 3;
 		else
 			cls = rclass(p->type, resc[k0].rval);
@@ -345,15 +343,15 @@ allocreg(p, cookie)
 {
 	register int want, r, cls;
 
-	if (!(dope[p->op] & 0x400))
+	if (!callop(p->op))
 		goto tst;
 	want = rallkind(p);
 	goto got;
 val:
-	want = p->rall & ~0x1000;
+	want = p->rall & ~MUSTDO;
 	goto got;
 tst:
-	if ((p->rall & 0x1000) || !(p->rall & 0x2000))
+	if ((p->rall & MUSTDO) || !(p->rall & NOPREF))
 		goto val;
 	want = -1;
 got:
@@ -363,10 +361,10 @@ got:
 		fpsym2->soffset = p->lval;
 #ifdef SEG
 	if (((cookie & 0xF) && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
-	    p->type == 8 || p->type == 9 || (dope[p->op] & 0x80))
+	    p->type == 8 || p->type == 9 || (dope[p->op] & DIVFLG))
 #else
 	if (((cookie & 0xF) && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
-	    (dope[p->op] & 0x80))
+	    (dope[p->op] & DIVFLG))
 #endif
 		cls = 3;
 	else
@@ -402,7 +400,7 @@ got:
 		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: the copy of a name in a register holds no name */
 #endif
 #ifdef OLD_D2X
-	if (r == -1 && cls == 3 && want == -1 && (dope[p->op] & 0xE) == BITYPE && p->op != LS && p->op != RS &&
+	if (r == -1 && cls == 3 && want == -1 && optype(p->op) == BITYPE && p->op != LS && p->op != RS &&
 	    p->op != ASG LS && p->op != ASG RS && p->left->op == REG && szty(p->left->type) == 2)
 		r = freereg(p, want, cookie);	/* v0: a long result into the pair of its left operand */
 #endif
@@ -745,8 +743,8 @@ isreg:
 	if (rewrite & RESC) {			/* the second register of a long result */
 		want = p->rval;
 		want++;
-		if (!(p->rall & 0x1000))
-			p->rall = (p->rall & 0x2000) | want;
+		if (!(p->rall & MUSTDO))
+			p->rall = (p->rall & NOPREF) | want;
 		rfree(p->rval, p->type);
 		if (getreg(2, want, 0x1000, p->sname) != want)
 			cerror("reclaim: cannot find register free");
@@ -756,22 +754,22 @@ isreg:
 		else if (p->type == 15)
 			;
 		p->type = 14;		/* sic: also after the LONG case (the original jumps to this store) */
-		if (p->rall & 0x1000)
-			want = p->rall & ~0x1000;
+		if (p->rall & MUSTDO)
+			want = p->rall & ~MUSTDO;
 	} else if (o == 0x3E || o == 0x3F) {	/* a long result of a shift or divide goes to rr4 */
 		if (p->type == 5 || p->type == 15) {
 			rfree(p->rval, p->type);
 			if (getreg(3, 4, 0x1000, p->sname) != 4)
 				cerror("reclaim: cannot find register free");
 			p->rval = 4;
-			if (!(p->rall & 0x1000))
-				p->rall = (p->rall & 0x2000) | 4;
+			if (!(p->rall & MUSTDO))
+				p->rall = (p->rall & NOPREF) | 4;
 		}
 	}
-	if (!(p->rall & 0x1000))
+	if (!(p->rall & MUSTDO))
 		goto done;
 	if (!(rewrite & RESC)) {
-		want = p->rall & ~0x1000;
+		want = p->rall & ~MUSTDO;
 		if (want & 0x2000)
 			goto done;
 	}

@@ -172,13 +172,7 @@ extern void d3jlabel();
 #endif
 
 
-#define FOREFF	01
-
-#define FORCC	040
-
 #define INTEMP_	0x1000
-
-#define MUSTDO	0x1000
 
 #define NOMATCH	0x1000
 
@@ -537,7 +531,7 @@ static void
 parmwalk(p)
 	register struct node *p;
 {
-	switch (dope[p->op] & 0xE) {
+	switch optype(p->op) {
 	case BITYPE:
 		parmwalk(p->right);
 		parmwalk(p->left);
@@ -687,7 +681,7 @@ delay1(p)
 	register struct node *q;
 
 	o = p->op;
-	ty = dope[o] & 0xE;
+	ty = optype(o);
 	if (ty == LTYPE)
 		return 0;
 	if (ty == UTYPE)
@@ -760,7 +754,7 @@ delay2(p)
 	case CBRANCH:
 		return;
 	}
-	ty = dope[p->op] & 0xE;
+	ty = optype(p->op);
 	if (ty == BITYPE)
 		delay2(p->right);
 	if (ty != LTYPE)
@@ -842,7 +836,7 @@ again:
 	p = canon(p);
 	rallo(p, p->rall);
 	o = p->op;
-	ty = dope[o] & 0xE;
+	ty = optype(o);
 	switch (m = p->op) {
 	case MUL:
 	case ASG MUL:
@@ -1089,7 +1083,7 @@ store(p)
 	register int o, ty;
 
 	o = p->op;
-	ty = dope[o] & 0xE;
+	ty = optype(o);
 	if (ty == LTYPE)
 		return;
 	switch (o) {
@@ -1099,7 +1093,7 @@ store(p)
 		callflag++;
 		break;
 	case STAR:
-		if (dope[p->left->op] & 1)
+		if asgop(p->left->op)
 			stoasg(p->left, STAR);
 		break;
 	case CALL:
@@ -1149,7 +1143,7 @@ store(p)
 		store(p->left);
 		return;
 	}
-	if (dope[p->right->op] & 1)
+	if asgop(p->right->op)
 		stoasg(p->right, o);
 	if (p->su > fregs || p->fsu > ffregs)
 		mkadrs(p);
@@ -1190,7 +1184,7 @@ again:
 		callflag++;
 		return;
 	}
-	switch (dope[p->op] & 0xE) {
+	switch optype(p->op) {
 	case BITYPE:
 		markcall(p->right);
 	case UTYPE:
@@ -1403,7 +1397,7 @@ ffld(p, down, down1, down2)
 	register struct node *shp;
 	register int s, o, v, ty;
 
-	*down1 = dope[p->op] & 1;
+	*down1 = asgop(p->op);
 	*down2 = 0;
 	if (down || p->op != FLD)
 		return;
