@@ -86,7 +86,7 @@ optim(p)
 			b = tcopy(p->right->right);
 			goto joined;
 		}
-		if (p->left->op == MINUS && p->right->op == MINUS && treeeq(p->left->left, p->right->left) &&
+		while (p->left->op == MINUS && p->right->op == MINUS && treeeq(p->left->left, p->right->left) &&
 		    p->left->right->type == p->type && p->right->right->type == p->type) {
 			b = tcopy(p->left->right);
 			a = tcopy(p->right->right);
@@ -138,33 +138,32 @@ optim(p)
 		if (o == PLUS && p->left->op == MINUS && p->right->op == ICON && p->left->right->op == ICON &&
 		    conval(p->right, MINUS, p->left->right))
 			goto zapleft;
-		if (p->right->op == ICON && p->left->op == o && p->left->right->op == ICON &&
+		while (p->right->op == ICON && p->left->op == o && p->left->right->op == ICON &&
 		    conval(p->right, o, p->left->right)) {
 		zapleft:
 			p->left->right->op = FREE;
 			p->left->op = FREE;
 			p->left = p->left->left;
-		} else if ((p->type & 0x30) == 0x10 && p->left->op == ICON && p->right->op == o &&
+		}
+		if ((p->type & 0x30) == 0x10 && p->left->op == ICON && p->right->op == o &&
 		    p->right->right->op == ICON && conval(p->left, o, p->right->right)) {
 			p->right->right->op = FREE;
 			p->right->op = FREE;
 			p->right = p->right->left;
-		} else if (p->left->op == ICON && p->right->op == ICON && conval(p->left, o, p->right)) {
+		neg:
+			if (o == PLUS && nncon(p->right) && p->right->lval < 0) {
+				p->right->lval = -p->right->lval;
+				p->op = MINUS;
+				o = MINUS;
+			}
+			break;
+		}
+		if (p->left->op == ICON && p->right->op == ICON && conval(p->left, o, p->right)) {
 		zapright:
 			p->right->op = FREE;
 			goto setuleft;
 		}
-		if (o == PLUS && nncon(p->right) && p->right->lval < 0) {
-			p->right->lval = -p->right->lval;
-			p->op = MINUS;
-			o = MINUS;
-		}
-		break;
-	case ASG PLUS:
-	case ASG MINUS:
-		if (nncon(p->right) && p->right->lval == 0)
-			goto zapright;
-		break;
+		goto neg;
 	case DIV:
 	case ASG DIV:
 	case MOD:
@@ -179,12 +178,16 @@ optim(p)
 		if (o == MOD || o == ASG MOD) {
 			p->op = o == ASG MOD ? ASG AND : AND;
 			a->lval -= 1;
-			a->type = p->left->type;
-			p->right->type = a->type;
+			a->type = p->type = p->left->type;
 		} else {
 			p->op = o == ASG DIV ? ASG RS : RS;
 			a->lval = ispow2(a->lval);
 		}
+		break;
+	case ASG PLUS:
+	case ASG MINUS:
+		if (nncon(p->right) && p->right->lval == 0)
+			goto zapright;
 		break;
 	case EQ:
 	case NE:
@@ -208,7 +211,7 @@ optim(p)
 			break;
 		sp = p->left;
 		tfree(p->right);
-		ncopy(p, sp);
+		*p = *sp;
 		tfree(sp);
 		break;
 	}

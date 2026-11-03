@@ -207,8 +207,7 @@ newnode(n, k)
 		return m;
 	case 2:
 	case 6:
-		n->reg = n->reg * 2;			/* word register r: bytes 2r and 2r+1 */
-		m->reg = n->reg;
+		m->reg = n->reg = n->reg * 2;		/* word register r: bytes 2r and 2r+1 */
 		n->reg++;
 		n->cls = m->cls = k;
 		goto rt;

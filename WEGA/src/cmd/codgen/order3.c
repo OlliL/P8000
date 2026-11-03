@@ -923,7 +923,9 @@ sw:
 	case 2:
 		goto c2;
 	default:
-		goto def;
+		argstop = 1;
+		argreg = 1;
+		goto retp;
 	}
 }
 

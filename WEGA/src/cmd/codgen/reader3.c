@@ -341,7 +341,7 @@ reread:
 			return nerrors;
 		freopen(argv[files], "r", stdin);
 	}
-	while ((c = getchar()) > 0) {
+	for (; (c = getchar()) > 0; ) {
 #ifdef OLD_D3K
 		if (d3kpend) {		/* a label no jump has named: forgotten unless the function ends behind it */
 			if (c != '}')
@@ -489,7 +489,7 @@ reread:
 #endif
 		case 'C':
 			while ((ch = getchar()) == ' ')
-				;
+				continue;
 			ungetc(ch, stdin);
 			n = rdin(10);
 #ifdef SEG

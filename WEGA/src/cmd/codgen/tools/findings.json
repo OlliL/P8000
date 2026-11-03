@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "cf2d6322",
+ "measured_at": "0be98369",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -22,9 +22,8 @@
    "file": "reader3.c",
    "orig": "0x023c",
    "size_orig": 1310,
-   "status": "open",
-   "note": "Left: the place of the getchar blocks (popt). Words x, y of the frame not used.",
-   "lines": 36
+   "status": "exact",
+   "note": "The main loop is a for without init and step, the blank skipping of case C a while with continue: both decide what popt moves (OLDCC_LOG 2026-11-03)."
   },
   "stmt": {
    "file": "reader3.c",
@@ -515,7 +514,7 @@
    "file": "order3.c",
    "orig": "0x49f0",
    "size_orig": 2000,
-   "note": "Left: blocks popt merges and moves at the store of fl and the test of fl; written after the macro form max, min; not explained yet.",
+   "note": "Left: the order of the fsu assignments: in the original the case fl == 0 stands in front of its test, its end is shared with ffregs + nf. A conditional expression gives the sharing, goto gives the order, neither both. Bytes of popt traced, the rule that moves the block not found.",
    "status": "open",
    "lines": 32
   },
@@ -605,9 +604,8 @@
    "file": "order3.c",
    "orig": "0x5a4c",
    "size_orig": 384,
-   "status": "open",
-   "note": "Odd form: the switch with only case 4 in place, cases 1 and 2 and default in front of it by goto; --argreg & 1. Left: the default block moves behind the last jump (codemove of the jump in default).",
-   "lines": 7
+   "status": "exact",
+   "note": "Odd form: the switch with only case 4 in place, cases 1 and 2 and default in front of it by goto; --argreg & 1; default has its own copy that popt merges."
   },
   "argsort": {
    "file": "order3.c",
@@ -782,9 +780,8 @@
    "file": "regallo3.c",
    "orig": "0x75e0",
    "size_orig": 112,
-   "status": "open",
-   "note": "Left: popt keeps the tail of the last case; case 2 and 6 come first. Tried: break, return, goto to a common return.",
-   "lines": 9
+   "status": "exact",
+   "note": "m->reg = n->reg = n->reg * 2 in case 2 and 6: the tail is merged behind the first load, as in the original."
   },
   "rsinsert": {
    "file": "regallo3.c",
@@ -1321,9 +1318,8 @@
    "file": "optim3.c",
    "orig": "0xb178",
    "size_orig": 1532,
-   "status": "open",
-   "note": "Left: the place of whole blocks of the commutative case (popt).",
-   "lines": 77
+   "status": "exact",
+   "note": "Odd forms give the bytes in a natural way: two while loops with a goto into their bodies (MINUS and the constant folding), so that the joined and folded trees are tested again; a->type = p->type = p->left->type; *p = *sp in the relations."
   },
   "conval": {
    "file": "optim3.c",
