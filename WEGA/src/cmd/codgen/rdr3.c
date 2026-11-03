@@ -275,25 +275,24 @@ readsyms(n, tab, kind)
 	struct sym *tab;
 	int kind;
 {
-	register struct sym *q;
-	register int k;
+	int k, unused, x;
+	struct sym *q;
 
-	if (n <= 0)
-		return;
-	alloc(n * 22);
-	if (fread(tab, 22, n, stfile) != n)
-		printf("readst: error in reading symbol table file stfile\n");
-	k = n;
-	for (q = tab; k > 0; k--, q = (struct sym *)((char *)q + 22)) {
-		tagtab[nglob].tag = (q->sflags >> 4) & 0xFFF;
-		tagtab[nglob].sym = q;
-		nglob++;
-		q->nameoff += kind;
-		if (kind == 0x15)
-			q->sflags &= ~4;
-		else {
-			q->sflags |= 4;
-			q->sx14 = 0;
+	if (n > 0) {
+		alloc(n * 22);
+		if ((x = fread(tab, 22, n, stfile)) != n)
+			printf("readst: error in reading symbol table file stfile\n");
+		for (k = n, q = tab; k > 0; k--, q = q + 1) {
+			tagtab[nglob].tag = (q->sflags >> 4) & 0xFFF;
+			tagtab[nglob].sym = q;
+			nglob++;
+			q->nameoff += kind;
+			if (kind == 0x15)
+				q->sflags &= ~4;
+			else {
+				q->sflags |= 4;
+				q->sx14 = 0;
+			}
 		}
 	}
 }
@@ -343,9 +342,9 @@ readmems(n)
 {
 	static struct { long off; int x; } mem[550];
 	struct { long off; int x; } *cur, *first;
-	long base;
 	struct sym *dp;
-	int rem, dest, cnt, k;
+	long base;
+	int k, rem, dest, cnt;
 
 	if (n <= 0)
 		return;

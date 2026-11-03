@@ -577,20 +577,19 @@ setbin(p)
 	if (p->op >= EQ && p->op <= UGT)
 		d16acmp = l;
 #endif
-	if (r->su == 0 && r->fsu == 0) {
-		if (dope[p->op] & 0x10) {
-			if (l->op == STAR && shumul(l->left) != 0x800)
-				OFFSTARL(l);
-			else
-				order(l, 0x101e);
-			return 1;
-		}
-		if (istnode(l))
-			return 0;
-		if (niceuty(l))
-			offstar(l);
+	if (p->right->su == 0 && p->right->fsu == 0) {
+		if (!(dope[p->op] & 0x10))
+			goto tail;
+		if (l->op == STAR && shumul(l->left) != 0x800)
+			OFFSTARL(l);
 		else
-			order(l, 0x14);
+			order(l, 0x101e);
+		return 1;
+	nice:
+		if (niceuty(l))
+			goto off;
+	ord:
+		order(l, 0x14);
 		return 1;
 	}
 	if (dope[p->op] & 0x10) {
@@ -633,12 +632,17 @@ setbin(p)
 		return 1;
 	}
 	if (istnode(l))
-		return 0;
-	if (niceuty(l))
-		offstar(l);
-	else
-		order(l, 0x14);
+		goto r0;
+	if (!niceuty(l))
+		goto ord;
+off:
+	offstar(l);
 	return 1;
+tail:
+	if (!istnode(l))
+		goto nice;
+r0:
+	return 0;
 }
 
 /* structure assignment */

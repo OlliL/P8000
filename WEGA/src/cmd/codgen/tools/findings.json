@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "fd044f72",
+ "measured_at": "4d265cb7",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -155,7 +155,8 @@
    "orig": "0x1b64",
    "size_orig": 204,
    "status": "open",
-   "lines": 46
+   "note": "Left: ld r3,4(r15) for n behind the first test, ours r7 (the parameter just tested, as scmd; step 6). One unused word in the frame.",
+   "lines": 2
   },
   "readtab": {
    "file": "rdr3.c",
@@ -176,7 +177,8 @@
    "orig": "0x1d0e",
    "size_orig": 436,
    "status": "open",
-   "lines": 42
+   "note": "Left: cp 0(r15),#0 as the first test, ours r7: the original does not know n in r7 here, unlike readsyms; not explained (step 6).",
+   "lines": 2
   },
   "sortsyms": {
    "file": "rdr3.c",
@@ -551,7 +553,8 @@
    "orig": "0x54c4",
    "size_orig": 436,
    "status": "open",
-   "lines": 44
+   "note": "Odd form: the physical order of the original by goto: the code for a nice left operand inside the first if, the test behind the last statement; the first if tests p->right, not r. Left: which copy of the tail of order(l, 0x101e) and order(l, 0x14) stays; a common return label makes it worse.",
+   "lines": 8
   },
   "setstr": {
    "file": "order3.c",
