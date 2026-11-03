@@ -166,6 +166,7 @@ long maxtemp = 0;
 #ifdef OLD_D3K
 static int d3kpend;		/* a label waits for its rsfreeall (main) */
 #ifdef OLD_D3J
+extern void d3jclear();
 static int d3jdead;		/* the record before was an unconditional jump */
 extern void d3jlabel();
 #endif
@@ -418,8 +419,12 @@ reread:
 #ifdef OLD_D3J
 					d3jlabel(temp, d3jdead);
 #endif
-				} else
+				} else {
+#ifdef OLD_D3J
+					d3jclear();	/* a label no jump has named: a loop head */
+#endif
 					d3kpend = 1;
+				}
 #else
 				rsfreeall(1);
 #endif

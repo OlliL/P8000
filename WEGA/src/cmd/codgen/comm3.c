@@ -440,6 +440,16 @@ d3kreset()
 #endif
 
 #ifdef OLD_D3J
+/* v0p: all jump records are forgotten */
+void
+d3jclear()
+{
+	register int i;
+
+	for (i = 0; i < D3JMAX; i++)
+		d3jtab[i].lab = -1;
+}
+
 /* v0p: the parameters known in registers at a conditional jump; the label gets them back when the code in front of it
    ends with a jump (its state is that of the jumps to it) */
 void

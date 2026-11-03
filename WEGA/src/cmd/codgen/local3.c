@@ -496,41 +496,34 @@ regargs(tot)
 	else
 		printf("\tldm\t|_stkseg+~L1+%u|(fp),r%d,#%d\n", t, lo, hi - lo + 1);
 #else
-	if (hi != lo)
-		goto tst;
-	if ((long)(unsigned)t + maxoff)
-		printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
-	else
+	if (hi == lo) {
+		if ((long)(unsigned)t + maxoff)
+			printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
+		else
 #ifdef OLD_D18
-		printf("\tld\t0(fp),r%d\n", lo);
+			printf("\tld\t0(fp),r%d\n", lo);
 #else
-		printf("\tld\t@fp,r%d\n", lo);
+			printf("\tld\t@fp,r%d\n", lo);
 #endif
-	return;
-lng:
-	if (hi - lo != 1)
-		goto ldm;
-	if ((long)(unsigned)t + maxoff)
-		printf("\tldl\t~L1+%u(fp),rr%d\n", t, lo);
-	else
+	} else if (!(lo & 1) && hi - lo == 1) {
+		if ((long)(unsigned)t + maxoff)
+			printf("\tldl\t~L1+%u(fp),rr%d\n", t, lo);
+		else
 #ifdef OLD_D18
-		printf("\tldl\t0(fp),rr%d\n", lo);
+			printf("\tldl\t0(fp),rr%d\n", lo);
 #else
-		printf("\tldl\t@fp,rr%d\n", lo);
+			printf("\tldl\t@fp,rr%d\n", lo);
 #endif
-	return;
-tst:
-	if (!(lo & 1))
-		goto lng;
-ldm:
-	if ((long)(unsigned)t + maxoff)
-		printf("\tldm\t~L1+%u(fp),r%d,#%d\n", t, lo, hi - lo + 1);
-	else
+	} else {
+		if ((long)(unsigned)t + maxoff)
+			printf("\tldm\t~L1+%u(fp),r%d,#%d\n", t, lo, hi - lo + 1);
+		else
 #ifdef OLD_D18
-		printf("\tldm\t0(fp),r%d,#%d\n", lo, hi - lo + 1);
+			printf("\tldm\t0(fp),r%d,#%d\n", lo, hi - lo + 1);
 #else
-		printf("\tldm\t@fp,r%d,#%d\n", lo, hi - lo + 1);
+			printf("\tldm\t@fp,r%d,#%d\n", lo, hi - lo + 1);
 #endif
+	}
 #endif
 }
 

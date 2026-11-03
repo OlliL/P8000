@@ -571,19 +571,21 @@ setbin(p)
 		d16acmp = l;
 #endif
 	if (p->right->su == 0 && p->right->fsu == 0) {
-		if (!logop(p->op))
-			goto tail;
-		if (l->op == STAR && shumul(l->left) != 0x800)
-			OFFSTARL(l);
-		else
-			order(l, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
-		return 1;
-	nice:
-		if (niceuty(l))
-			goto off;
-	ord:
-		order(l, INTAREG|INTBREG);
-		return 1;
+		if logop(p->op) {
+			if (l->op == STAR && shumul(l->left) != 0x800)
+				OFFSTARL(l);
+			else
+				order(l, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
+			return 1;
+		}
+		if (!istnode(l)) {
+			if (niceuty(l))
+				offstar(l);
+			else
+				order(l, INTAREG|INTBREG);
+			return 1;
+		}
+		return 0;
 	}
 	if logop(p->op) {
 		if (r->su > l->su || (r->su == l->su && r->fsu >= l->fsu)) {
@@ -624,17 +626,13 @@ setbin(p)
 		order(r, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
 		return 1;
 	}
-	if (istnode(l))
-		goto r0;
-	if (!niceuty(l))
-		goto ord;
-off:
-	offstar(l);
-	return 1;
-tail:
-	if (!istnode(l))
-		goto nice;
-r0:
+	if (!istnode(l)) {
+		if (niceuty(l))
+			offstar(l);
+		else
+			order(l, INTAREG|INTBREG);
+		return 1;
+	}
 	return 0;
 }
 
