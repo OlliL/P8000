@@ -12,7 +12,7 @@
 #   oldcc.sh bench                       the bench of v0 (System III programs of 1982, ccv0)
 #   oldcc.sh lines [PROG]                the differing functions of the last model run and the sum of their lines
 #   oldcc.sh findings [PROG]             findings.json (status from the last model) and FINDINGS.md of PROG
-#   oldcc.sh matrix [SWITCH ...]         each switch of v0p taken out alone, all programs measured: host/OLDCC_SWITCHES.md
+#   oldcc.sh matrix [-j N] [SWITCH ...]  each switch of v0p taken out alone, N at a time, all programs measured: host/OLDCC_SWITCHES.md
 #   oldcc.sh matrix check                no measurement: switches and programs of the sources against that table
 #
 # Environment (defaults as in host/recon/progcfg.py): WEGA_ROOT (the WEGA 3.1 tree), OLDROOT (the tree with
