@@ -99,8 +99,9 @@ char *ptrtab;
 #define bob(a) (pbeg>=(a))
 
 char buffer[8+BUFSIZ+BUFSIZ+8];
+char _sobuf[BUFSIZ];
 
-# define SBSIZE 24000
+# define SBSIZE 16000
 char	sbf[SBSIZE];
 char	*savch	= sbf;
 
@@ -140,6 +141,8 @@ struct symtab *stsym();
 STATIC	int	fin	= STDIN;
 STATIC	FILE	*fout	= stdout;
 STATIC	int	nd	= 1;
+STATIC	int	bflag	= 0;	/* WEGA: the lines in the form of LINE */
+STATIC	int	exfail2	= 0;
 STATIC	int	pflag;	/* don't put out lines "# 12 foo.c" */
 STATIC	int	passcom;	/* don't delete comments */
 STATIC	int rflag;	/* allow macro recursion */
@@ -189,7 +192,9 @@ STATIC	int	trulvl;
 STATIC	int	flslvl;
 
 sayline() {
-	if (pflag==0) fprintf(fout, LINEFORM, lineno[ifno], fnames[ifno]);
+	if (pflag==0)
+		if (bflag==0) fprintf(fout, LINEFORM, lineno[ifno], fnames[ifno]);
+		else fprintf(fout, "\tLINE %d \"%s\"\n", lineno[ifno], fnames[ifno]);
 }
 
 /* data structure guide
@@ -337,7 +342,6 @@ char *
 cotoken(p) register char *p; {
 	register int c,i; char quoc;
 	static int state = BEG;
-	static int speakup = 0;
 
 	if (state!=BEG) goto prevlf;
 for (;;) {
@@ -419,21 +423,9 @@ again:
 			else ++p;	/* it was a different quote character */
 		}
 	} break;
-	case WARN: {
-		int i;
-		dump();
-		for (i=sizeof(int)/sizeof(char); --i>=0; ) {
-			if (eob(p)) p=refill(p);
-			speakup|=(*p++&0xFF)<<(i*8);
-		}
-		inp=outp=p;
-	} break;
 	case '\n': {
 		++lineno[ifno]; if (isslo) {state=LF; return(p);}
 prevlf:
-		if (speakup) {
-			inp=p; dump(); lineno[ifno]=speakup+1; sayline(); speakup=0;
-		}
 		state=BEG;
 		for (;;) {
 			if (*p++=='#') return(p);
@@ -757,7 +749,8 @@ for (;;) {
 #endif
 	} else if (np==lneloc) {/* line */
 		if (flslvl==0 && pflag==0) {
-			outp=inp=p; *--outp='#'; while (*inp!='\n') p=cotoken(p);
+			inp=p; outp=p-7; strncpy(outp,"/* line",7); while (*inp!='\n') p=cotoken(p);
+			dump(); outp-=3; strncpy(outp," */",3);
 			continue;
 		}
 	} else if (*++inp=='\n') outp=inp;	/* allows blank line after # */
@@ -997,7 +990,7 @@ main(argc,argv)
 # endif
 		while (c= *p++) (fastab+COFF)[c] |= QB;
 	p="*\n"; while (c= *p++) (fastab+COFF)[c] |= CB;
-	(fastab+COFF)[warnc] |= WB|SB;
+	(fastab+COFF)[warnc] |= WB;
 	(fastab+COFF)['\0'] |= CB|QB|SB|WB;
 	for (i=ALFSIZ; --i>=0; ) slotab[i]=fastab[i]|SB;
 	p=" \t\013\f\r";	/* note no \n;	\v not legal for vertical tab? */
@@ -1008,7 +1001,7 @@ main(argc,argv)
 #endif
 
 # if unix
-	fnames[ifno=0] = ""; dirnams[0]=dirs[0]=".";
+	fnames[ifno=0] = "";
 # endif
 # if ibm
 	fnames[ifno=0] = "";
@@ -1033,6 +1026,7 @@ main(argc,argv)
 				case 'P': pflag++;
 				case 'E': continue;
 				case 'R': ++rflag; continue;
+				case 'B': ++bflag; continue;
 				case 'C': passcom++; continue;
 				case 'D':
 					if (predef>prespc+NPREDEF) {
@@ -1072,7 +1066,7 @@ main(argc,argv)
 	[i don't see what the problem is.  jfr]
 */
 				} else if (fout==stdout) {
-					static char _sobuf[BUFSIZ];
+
 					if (NULL==(fout=fopen(argv[i], "w"))) {
 						pperror("Can't create %s", argv[i]); exit(8);
 					} else {fclose(stdout); setbuf(fout,_sobuf);}

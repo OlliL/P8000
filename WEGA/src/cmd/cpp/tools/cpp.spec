@@ -2,6 +2,8 @@
 # model). /lib/cpp is a combined program (code and data at 0x3308); dstart is the address.
 noown
 immmin 3308
+# The link uses the known versions: cpp.link is edited behind unlink.py where it only wrote other labels (printf, setbuf,
+# isatty, strcat, strcpy, flsbuf) or took the number 0x4000 of length for an address.
 # NAME     KIND    START END  DATA  SYMBOLS
 fopen      old     2272 2292  0     _fopen=2272
 printf     old     2292 23a2  0     _printf=2292 _fprintf=22e2 _sprintf=2332
@@ -9,7 +11,7 @@ doprnt     old     23a2 29b8  80 dstart=3f5e __align=23a2 __doprnt=23fa
 ffltioc    shipped 29b8 29c0  0
 setbuf     old     29c0 2a14  0     _setbuf=29c0
 data       shipped -    -     162 dstart=3fae
-flsbuf     old     2a14 2bf2  0     __flsbuf=2a14 _fflush=2af6 __cleanup=2b54 _fclose=2b74 comm:__sobuf=55ae:512
+flsbuf     old     2a14 2bf2  0     __flsbuf=2a14 _fflush=2af6 __cleanup=2b54 _fclose=2b74
 endopen    old     2bf2 2d3a  0     __endopen=2bf2
 findiop    old     2d3a 2d68  0     __findiop=2d3a
 __callex   shipped 2d68 2d6e  0

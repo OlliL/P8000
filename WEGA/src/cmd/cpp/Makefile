@@ -22,11 +22,11 @@ CFLAGS = -O
 SHIPPED = ffltioc.o data.o __callex.o cuexit.o decimal.o brk.o close.o creat.o ioctl.o lseek.o read.o write.o cerror.o
 
 # link order of the libc part of /lib/cpp
-LIBCOBJS = $(OLD)/fopen/0_1.o $(OLD)/printf/0_7.o $(OLD)/doprnt/0_7.o shipped/ffltioc.o \
-	$(OLD)/setbuf/0_2.o shipped/data.o $(OLD)/flsbuf/0_3.o $(OLD)/endopen/0_3.o $(OLD)/findiop/0_2.o \
-	shipped/__callex.o shipped/cuexit.o $(OLD)/cnvt/0_2.o shipped/decimal.o $(OLD)/length/0_4.o \
-	$(OLD)/malloc/0_3.o $(OLD)/isatty/0_3.o $(OLD)/stty/0_3.o $(OLD)/strcat/0_3.o $(OLD)/strcmp/0_1.o \
-	$(OLD)/strcpy/0_3.o $(OLD)/strncpy/0_1.o shipped/brk.o shipped/close.o shipped/creat.o \
+LIBCOBJS = $(OLD)/fopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_7.o shipped/ffltioc.o \
+	$(OLD)/setbuf/0_1.o shipped/data.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_3.o $(OLD)/findiop/0_2.o \
+	shipped/__callex.o shipped/cuexit.o $(OLD)/cnvt/0_2.o shipped/decimal.o $(OLD)/length/0_3.o \
+	$(OLD)/malloc/0_3.o $(OLD)/isatty/0_2.o $(OLD)/stty/0_3.o $(OLD)/strcat/0_2.o $(OLD)/strcmp/0_1.o \
+	$(OLD)/strcpy/0_2.o $(OLD)/strncpy/0_1.o shipped/brk.o shipped/close.o shipped/creat.o \
 	shipped/ioctl.o shipped/lseek.o $(OLD)/open/0_1.o shipped/read.o shipped/write.o shipped/cerror.o
 COBJS = cpp.o cpy.o
 LINKOBJS = crt0.o $(COBJS) $(LIBCOBJS)
@@ -73,17 +73,17 @@ shipped/cerror.o: shipped/stamp
 $(OLD)/fopen/0_1.o: $(OLD)/fopen/0_1.s
 	$(CAS) -u -o $@ $(OLD)/fopen/0_1.s
 
-$(OLD)/printf/0_7.o: $(OLD)/printf/0_7.s
-	$(CAS) -u -o $@ $(OLD)/printf/0_7.s
+$(OLD)/printf/0_5.o: $(OLD)/printf/0_5.s
+	$(CAS) -u -o $@ $(OLD)/printf/0_5.s
 
 $(OLD)/doprnt/0_7.o: $(OLD)/doprnt/0_7.s
 	$(CAS) -u -o $@ $(OLD)/doprnt/0_7.s
 
-$(OLD)/setbuf/0_2.o: $(OLD)/setbuf/0_2.s
-	$(CAS) -u -o $@ $(OLD)/setbuf/0_2.s
+$(OLD)/setbuf/0_1.o: $(OLD)/setbuf/0_1.s
+	$(CAS) -u -o $@ $(OLD)/setbuf/0_1.s
 
-$(OLD)/flsbuf/0_3.o: $(OLD)/flsbuf/0_3.s
-	$(CAS) -u -o $@ $(OLD)/flsbuf/0_3.s
+$(OLD)/flsbuf/0_2.o: $(OLD)/flsbuf/0_2.s
+	$(CAS) -u -o $@ $(OLD)/flsbuf/0_2.s
 
 $(OLD)/endopen/0_3.o: $(OLD)/endopen/0_3.s
 	$(CAS) -u -o $@ $(OLD)/endopen/0_3.s
@@ -94,26 +94,26 @@ $(OLD)/findiop/0_2.o: $(OLD)/findiop/0_2.s
 $(OLD)/cnvt/0_2.o: $(OLD)/cnvt/0_2.s
 	$(CAS) -u -o $@ $(OLD)/cnvt/0_2.s
 
-$(OLD)/length/0_4.o: $(OLD)/length/0_4.s
-	$(CAS) -u -o $@ $(OLD)/length/0_4.s
+$(OLD)/length/0_3.o: $(OLD)/length/0_3.s
+	$(CAS) -u -o $@ $(OLD)/length/0_3.s
 
 $(OLD)/malloc/0_3.o: $(OLD)/malloc/0_3.s
 	$(CAS) -u -o $@ $(OLD)/malloc/0_3.s
 
-$(OLD)/isatty/0_3.o: $(OLD)/isatty/0_3.s
-	$(CAS) -u -o $@ $(OLD)/isatty/0_3.s
+$(OLD)/isatty/0_2.o: $(OLD)/isatty/0_2.s
+	$(CAS) -u -o $@ $(OLD)/isatty/0_2.s
 
 $(OLD)/stty/0_3.o: $(OLD)/stty/0_3.s
 	$(CAS) -u -o $@ $(OLD)/stty/0_3.s
 
-$(OLD)/strcat/0_3.o: $(OLD)/strcat/0_3.s
-	$(CAS) -u -o $@ $(OLD)/strcat/0_3.s
+$(OLD)/strcat/0_2.o: $(OLD)/strcat/0_2.s
+	$(CAS) -u -o $@ $(OLD)/strcat/0_2.s
 
 $(OLD)/strcmp/0_1.o: $(OLD)/strcmp/0_1.s
 	$(CAS) -u -o $@ $(OLD)/strcmp/0_1.s
 
-$(OLD)/strcpy/0_3.o: $(OLD)/strcpy/0_3.s
-	$(CAS) -u -o $@ $(OLD)/strcpy/0_3.s
+$(OLD)/strcpy/0_2.o: $(OLD)/strcpy/0_2.s
+	$(CAS) -u -o $@ $(OLD)/strcpy/0_2.s
 
 $(OLD)/strncpy/0_1.o: $(OLD)/strncpy/0_1.s
 	$(CAS) -u -o $@ $(OLD)/strncpy/0_1.s

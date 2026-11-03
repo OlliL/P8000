@@ -23,8 +23,7 @@ filbuf     0_3   cparse popt ranlib
 findiop    0_1   size strip
 findiop    0_2   cparse cpp ranlib
 flsbuf     0_1   size strip
-flsbuf     0_2   cparse popt ranlib
-flsbuf     0_3   cpp
+flsbuf     0_2   cparse popt ranlib cpp
 fltioc     0_1   cparse
 fopen      0_1   cparse cpp ranlib
 freopen    0_1   codgen popt scodgen
@@ -36,12 +35,10 @@ getw       0_1   codgen scodgen
 goodmagic  0_1   size strip
 goodmagic  0_2   ranlib
 isatty     0_1   ranlib
-isatty     0_2   codgen cparse popt scodgen
-isatty     0_3   cpp
+isatty     0_2   codgen cparse popt scodgen cpp
 length     0_1   cc scc size strip
 length     0_2   codgen popt ranlib scodgen
-length     0_3   cparse
-length     0_4   cpp
+length     0_3   cparse cpp
 malloc     0_1   size
 malloc     0_2   strip
 malloc     0_3   codgen cparse cpp popt ranlib
@@ -54,23 +51,19 @@ printf     0_1   size
 printf     0_2   strip
 printf     0_3   ranlib
 printf     0_4   cc scc
-printf     0_5   codgen cparse popt scodgen
+printf     0_5   codgen cparse popt scodgen cpp
 printf     0_6   ld
-printf     0_7   cpp
 rdwr       0_1   size
 rdwr       0_2   strip
 rdwr       0_3   codgen cparse ranlib scodgen
 readsym    0_1   ranlib
 rindex     0_1   ld
-setbuf     0_1   codgen cparse popt scodgen
-setbuf     0_2   cpp
+setbuf     0_1   codgen cparse popt scodgen cpp
 strcat     0_1   cc scc
-strcat     0_2   codgen cparse popt scodgen
-strcat     0_3   cpp
+strcat     0_2   codgen cparse popt scodgen cpp
 strcmp     0_1   cparse cpp
 strcpy     0_1   cc scc strip
-strcpy     0_2   codgen cparse popt scodgen
-strcpy     0_3   cpp
+strcpy     0_2   codgen cparse popt scodgen cpp
 strlen     0_1   cc scc
 strlen     0_2   codgen cparse popt scodgen
 strncmp    0_1   popt ranlib

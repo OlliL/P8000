@@ -1,6 +1,4 @@
-/*	Plexus - Sys3 - August 1982	*/
-
-static char yylex_c[] = "@(#)yylex.c	1.2";
+static char sccsid_yy[] = "@[$]yylex.c\t1.1  10/13/82 19:13:59 Copr.1981 87wega3.2.";
 
 #define isid(a)  ((fastab+COFF)[a]&IB)
 #define IB 1
