@@ -3,7 +3,7 @@
  "compiler": "ccv0p",
  "binary": "/lib/cparse",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "341f98de",
+ "measured_at": "c80a217c",
  "functions": {
   "f0000": {
    "file": "-",
@@ -168,7 +168,7 @@
    "orig": "0x2448",
    "size_orig": 1946,
    "status": "exact",
-   "note": "Odd form: the step of the SMEMB loop as goto mstep; with mstep: cp1 -= sizeof(int); goto mtest; behind the goto mismatch. One unused int behind cp2; its name is a guess."
+   "note": "Odd form: the step of the SMEMB loop as goto mstep; with mstep: cp1 -= sizeof(int); goto mtest; behind the goto mismatch. One unused int behind cp2; its name is a guess. The dimension loop is a goto loop: the entry's store cross-jumps to the store of the step (OLD_D20X removed)."
   },
   "psave": {
    "file": "pftn1.c",

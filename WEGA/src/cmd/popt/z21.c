@@ -28,9 +28,6 @@ int oplook();
 void refcount();
 void iterate();
 void xjump();
-#ifdef OLD_D20B
-static int d20bover();
-#endif
 struct node * insertl();
 struct node * codemove();
 void comjump();
@@ -741,9 +738,6 @@ iterate()
 		if ((p->op == JP || p->op == CJP || p->op == JSW) && p->ref) {
 			rp = nonlab(p->ref);
 			if (rp->op == JP && rp->labno && p->labno != rp->labno
-#ifdef OLD_D20B
-			    && !(p->op == CJP && d20bover(rp) && d20xinv(rp))
-#endif
 			) {
 				nbrbr++;
 				p->labno = rp->labno;
@@ -808,49 +802,13 @@ iterate()
 			}
 		}
 		if (p->op == JP) {
-#ifdef OLD_D20X
-			/* the old popt: a loop inversion (the target is not behind a jump) before the cross-jump */
-			if (d20xinv(p)) {
-				p = codemove(p);
-				if (p->op == JP)
-					xjump(p);
-			} else {
-				xjump(p);
-				p = codemove(p);
-			}
-#else
 			xjump(p);
 			p = codemove(p);
-#endif
 		}
 	}
 }
 
 
-#ifdef OLD_D20B
-/* `if (c) break;` as the end of a loop: in front of the label of the jump p stands a jump to the label behind p
-   (`jpr L2; L1: jpr head; L2:`), and the first test of the loop asks for equality */
-static int
-d20bover(p)
-register struct node *p;
-{
-	register struct node *j, *x;
-
-	for (j = p->back; j && (j->op == LABEL || j->op == KCOMMENT); j = j->back)
-		;
-	if (j == 0 || j->op != JP || j == p)
-		return 0;
-	for (x = p->forw; x && (x->op == LABEL || x->op == KCOMMENT); x = x->forw)
-		if (x == j->ref)
-			break;
-	if (x == 0 || x != j->ref)
-		return 0;
-	/* the first test of the loop asks for equality (a pointer that ends the loop) */
-	for (x = p->ref; x && x != p && x->op != CJP; x = x->forw)
-		;
-	return x && x->op == CJP && x->subop == 0;
-}
-#endif
 
 
 void
@@ -865,9 +823,11 @@ register struct node *p1;
 		while (p1 = p1->back)
 			if (p1->op != LABEL && p1->op != KCOMMENT)
 				break;
-		while (p2 = p2->back)
-			if (p2->op != LABEL && p2->op != KCOMMENT)
-				break;
+		while (p2 = p2->back) {
+			if (p2->op == LABEL || p2->op == KCOMMENT)
+				continue;
+			break;
+		}
 		if (!equop(p1, p2) || p1 == p2)
 			return;
 		p3 = insertl(p2);
@@ -911,53 +871,6 @@ register struct node *oldp;
 }
 
 
-#ifdef OLD_D20X
-/*
- * The old popt inverts the loop of the back jump p before the cross-jump when its target is not behind a jump or
- * return, its test comes within 5 nodes of its head, and the cross-jump would take one instruction at most (defid:
- * the store of temp; the getchar of the init and the step of a for loop are cross-jumped first: lxtitle, lxmore).
- */
-static int
-d20xinv(p)
-register struct node *p;
-{
-	register struct node *p2;
-	register struct node *x;
-	register int n;
-
-	if (p->op != JP || (p2 = p->ref) == 0)
-		return 0;
-	while (p2->op == LABEL || p2->op == KCOMMENT)
-		if ((p2 = p2->back) == 0)
-			return 0;
-	if (p2->op == JP || p2->op == RET)
-		return 0;
-	/* and the test of the loop comes within a short reach of its head (5 nodes) */
-	for (x = p->forw; x && x->op == KCOMMENT; x = x->forw)
-		;
-	if (x == 0 || x->op != LABEL)
-		return 0;
-	for (p2 = p->ref, n = 6; p2 && p2 != p && --n > 0; p2 = p2->forw)
-		if (p2->op == CJP && p2->labno == x->labno)
-			break;
-	if (p2 == 0 || p2 == p || n <= 0)
-		return 0;
-	/* and the cross-jump at p would take one instruction at most */
-	x = p;
-	p2 = p->ref;
-	for (n = 0; n < 2; n++) {
-		do
-			x = x->back;
-		while (x && (x->op == LABEL || x->op == KCOMMENT));
-		do
-			p2 = p2->back;
-		while (p2 && (p2->op == LABEL || p2->op == KCOMMENT));
-		if (x == 0 || p2 == 0 || x == p2 || !equop(x, p2))
-			break;
-	}
-	return n <= 1;
-}
-#endif
 
 struct node *
 codemove(p)
@@ -1111,9 +1024,11 @@ struct node *ap2;
 	p1 = ap1;
 	p2 = ap2;
 	for (;;) {
-		while (p1 = p1->back)
-			if (p1->op != LABEL)
-				break;
+		while (p1 = p1->back) {
+			if (p1->op == LABEL)
+				continue;
+			break;
+		}
 		p2 = p2->back;
 		if (!equop(p1, p2))
 			return;

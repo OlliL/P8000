@@ -3,7 +3,7 @@
  "compiler": "ccv0p",
  "binary": "/lib/popt",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "341f98de",
+ "measured_at": "c80a217c",
  "functions": {
   "main": {
    "file": "z21.c",
@@ -110,7 +110,8 @@
    "file": "z21.c",
    "orig": "0x100e",
    "size_orig": 126,
-   "status": "exact"
+   "status": "exact",
+   "note": "The search loop as while (p = p->back) { if (c) continue; break; }: the continue keeps the back jump, so the loop is inverted (OLD_D20B removed)."
   },
   "insertl": {
    "file": "z21.c",
@@ -134,7 +135,8 @@
    "file": "z21.c",
    "orig": "0x133c",
    "size_orig": 122,
-   "status": "exact"
+   "status": "exact",
+   "note": "The search loop as while (p = p->back) { if (c) continue; break; }: the continue keeps the back jump, so the loop is inverted (OLD_D20B removed)."
   },
   "alloc": {
    "file": "z22.c",

@@ -6,13 +6,11 @@
 #   make install PREFIX=dir    dir/lib/v0p/popt (the pass of ../../cc/v0p/ccv0p)
 #   make clean
 #
-# Switches (host/OLDCC.md):
-#   OLD_D20X  the loop inversion of a back jump before its cross-jump when the test is near the head and the
-#             cross-jump would take one instruction at most (d20xinv, z21.c)
+# No switches: the source of .. as it is (host/OLDCC.md, D20).
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D20X -DOLD_D20B
+SWITCHES =
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc

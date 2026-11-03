@@ -192,7 +192,7 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20X`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen) (codgen; popt has no switch of its own since 2026-11-03). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
 - State: /lib/cparse 178 strictly exact, 2 differing lines, /lib/popt 72 of 73, 8 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
@@ -566,21 +566,10 @@ order).
   wrong (the old popt moves the prologue and the switch dispatch too).
 - Refuted: going on behind a block moved from behind a jump (ld load2td exact, bench 72 > 69).
 - Removed (2026-11-03): OLD_D20C. Both witnesses were source forms. oalloc: not one `if ((A) || (B))`, but `if (A) { both: ... } else if (B) goto both;`, the block stands behind the first test, which is what the switch produced. optim: `if (...) { zapleft: ... } if (...) goto zapleft;` instead of a `while` with a goto into its body. Both read as plainly as the forms they replace; two independent functions, so unlike OLD_D20L the rule of the switch had two witnesses, and both fell.
-- v0p (switch `OLD_D20X` in popt, iterate and d20xinv in z21.c): at a back jump the loop inversion comes before the
-  cross-jump when the target is not behind a jump, the test of the loop comes within 5 nodes of its head and the
-  cross-jump would take one instruction at most (defid: only the store `ld temp,r2` of init and step is equal; the
-  original inverts and then lets the entry jump onto the store at the bottom). When init and step share a longer tail
-  (getchar in lxtitle, the `?:` of talloc) or the test is further away (lxmore, 19 nodes) the order of the shipped
-  popt stays: cross-jump, inversion, move up, second inversion. A reach of 5 to 8 nodes fits, 12 breaks fixclass, 24
-  lxmore. cparse 464 > 398 (defid 79 > 13); bench v0 318 > 323, so v0p only.
 - Removed (2026-11-03): OLD_D20L. One witness, the same text in cparse and codgen (optim, case MINUS). A goto loop with the test inside the `if` gives the bytes without it (`goto minus1; minus2: if (...) { ...; minus1: if (LO(p) == MINUS) goto minus2; }`): the jump to minus1 stands behind code that falls through, so codemove takes the loop inversion. The `while` with the `goto` into its body read better; which of the two the authors wrote is not known.
 
 - Removed (2026-11-03): OLD_D20K. Both witnesses were source forms: cinit (`inoff += sz; return;` in case NAME instead of `break`) and rmove (do_and falls into do_arith, no `goto arith1`). What decides: the then part of an if/else jumps into the `call` of the else part when the label behind the else part holds no jump (`xjump`); behind a `break` or `goto` the jump is followed first. Without the switch codgen geninc and adrput are exact.
-- v0p (switch `OLD_D20B` in popt, iterate; d20bover, d20xinv in z21.c): a conditional jump onto a back jump is not followed when that
-  back jump ends `while (p = p->back) { if (c) break; }` (`jpr OUT; Lc: jpr head; OUT:`), can be inverted (OLD_D20X) and the first test
-  of the loop asks for equality: the loop is inverted first, its tests in front of the step (popt backjmp, xjump). yyparse has
-  the same shape with `*(yyxi += 2) >= 0` and is not inverted; the equality test is the only separator found, why is not known
-  (a guess that fits two witnesses and one limit). Needs the source form above: with `do ... while` or `while (a && b)` it does not fire.
+- Removed (2026-11-03): OLD_D20X and OLD_D20B. Source forms: popt xjump and backjmp `while (p = p->back) { if (c) continue; break; }`: the `continue` leaves the back jump alive, and the shipped code motion inverts the loop; cparse defid the dimension loop as `temp = type; goto dimtest; dimloop: ...; temp = DECREF(temp); dimtest: if( temp&TMASK ) goto dimloop;`: the entry's store cross-jumps to the store of the step. So popt v0p needs no switch at all (see the end of OLDCC_LOG.md, 2026-11-03).
 - Not placement rules of popt: movedat (the whole body inside `switch (r1->op) { case CODE: case DATA: ... }`), dest (`case SBYTE` in
   front of `case 0`; the `sub r2,r3` of the original follows, the copy knowledge of rmove is lost only behind a label), the scan loop of setreg
   (the test on `(` and `@` with its consequences inside `while (*s)`). All three were source forms.

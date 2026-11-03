@@ -105,7 +105,10 @@ defid( q, class )  NODE *q; {
 	/* test (and possibly adjust) dimensions */
 	dsym = p->dimoff;
 	ddef = q->cdim;
-	for( temp=type; temp&TMASK; temp = DECREF(temp) ){
+	temp = type;
+	goto dimtest;
+dimloop:
+	{
 		if( ISARY(temp) ){
 			if( dimtab[dsym] ){
 				if( dimtab[ddef]!=0 && dimtab[dsym] != dimtab[ddef] ){
@@ -136,6 +139,9 @@ defid( q, class )  NODE *q; {
 			++ddef;
 			}
 		}
+	temp = DECREF(temp);
+dimtest:
+	if( temp&TMASK ) goto dimloop;
 
 	/* check that redeclarations are to the same structure */
 	if( (temp==STRTY||temp==UNIONTY||temp==ENUMTY) && p->sizoff != q->csiz &&
