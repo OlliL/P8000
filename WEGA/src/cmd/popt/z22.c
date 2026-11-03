@@ -49,7 +49,7 @@ static int natural();
 static int adrlen();
 static int toofar();
 int ilen();
-static int absval();
+static int abs();
 void decref();
 char * alloc();
 void clearreg();
@@ -703,8 +703,8 @@ jumpsw()
 	for (p = first.forw; p; p = p1) {
 		p1 = p->forw;
 		if (p->op == CJP && p1->op == JP && p->ref && p1->ref) {
-			d1 = absval(p1->refc - p1->ref->refc);
-			if (absval(p->refc - p->ref->refc) > d1 && p->ref != p1->ref) {
+			d1 = abs(p1->refc - p1->ref->refc);
+			if (abs(p->refc - p->ref->refc) > d1 && p->ref != p1->ref) {
 				p->subop = revbr[p->subop];
 				t = p1->ref;
 				p1->ref = p->ref;
@@ -883,7 +883,7 @@ int op;
 }
 
 static int
-absval(n)
+abs(n)
 int n;
 {
 	return n < 0 ? -n : n;

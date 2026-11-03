@@ -12,7 +12,7 @@ struct optab *ophash[OPHS];
 /* hash of the first three characters, read without a test as the original does (names "{" and "}" are padded with a NUL, see z20.c) */
 #define HASHNAME(s) (((((int)(char)(s)[0] << 3) + 2 * (int)(char)(s)[1] + (int)(char)(s)[2]) & 0x7fff) % OPHS)
 
-static int getln();
+static int getline();
 static int input();
 static void output();
 static void prefix();
@@ -209,7 +209,7 @@ input()
 	for (;;) {
 		if (echo)
 			for (;;) {
-				oper = getln();
+				oper = getline();
 				switch (oper & 0xff) {
 				case LABEL:
 					printf("%s:\n", line);
@@ -227,7 +227,7 @@ input()
 				}
 				break;
 			}
-		oper = getln();
+		oper = getline();
 	sw:
 		switch (oper & 0xff) {
 		case LABEL:
@@ -272,11 +272,11 @@ input()
 			}
 			break;
 		case COMMENT:
-			oper = getln();
+			oper = getline();
 			goto sw;
 		case 0:
 			if (*curlp == 0) {
-				oper = getln();
+				oper = getline();
 				goto sw;
 			}
 		case CBRACE:
@@ -301,7 +301,7 @@ input()
 }
 
 static int
-getln()
+getline()
 {
 	register char *lp;
 	register int c;

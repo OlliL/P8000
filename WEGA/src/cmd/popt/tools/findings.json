@@ -3,7 +3,7 @@
  "compiler": "ccv0p",
  "binary": "/lib/popt",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "11a3f8b3",
+ "measured_at": "a1b725ff",
  "functions": {
   "main": {
    "file": "z21.c",
@@ -31,7 +31,7 @@
    "size_orig": 90,
    "status": "exact"
   },
-  "getln": {
+  "getline": {
    "file": "z21.c",
    "orig": "0x04d6",
    "size_orig": 252,
@@ -162,7 +162,7 @@
    "size_orig": 34,
    "status": "exact"
   },
-  "absval": {
+  "abs": {
    "file": "z22.c",
    "orig": "0x23a0",
    "size_orig": 20,
