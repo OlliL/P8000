@@ -56,6 +56,16 @@ static char rcname[][8] = {
 #define D2PK(t)	((t)->kind != 6)
 #endif
 
+#ifdef OLD_D2L
+#define D2VARS
+#endif
+#ifdef OLD_D2P
+#define D2VARS
+#endif
+#ifdef OLD_D2W6
+#define D2VARS
+#endif
+
 /* the other register of a pair */
 int
 pairmate(r)
@@ -218,11 +228,11 @@ static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
  */
 void
 rsinsert(n, mode)
-	struct rs *n;
+	register struct rs *n;
 	int mode;
 {
-	struct rs *a, *b, *p, *prev;
-	int key;
+	register struct rs *a, *b, *prev, *p;
+	register int key;
 
 	if (mode == 1) {
 		a = n == rsfree ? n->next : rsfree;
@@ -380,39 +390,45 @@ roverlap(cls, reg, n)
  */
 int
 regjam(cls, reg, flag, sym)
-	int cls;
-	int reg;
-	int flag;
-	struct sym *sym;
+	register int cls;
+	register int reg;
+	register int flag;
+	register struct sym *sym;
 {
-	struct rs *n, *m, *w;
-	int found = 0;
+	register struct rs *n;
+	register struct rs *prev;
 
-	for (n = rsuse; n; n = n->next) {
-		if (n->cls != cls)
-			continue;
-		if (reg != -1 && n->reg != reg)
-			continue;
-		if (n->busy > 0) {
-			if (reg == n->reg)
+	for (prev = n = rsuse; n; prev = n, n = n->next) {
+		if (cls == n->cls) {
+			if ((reg == -1 || reg == n->reg) && n->busy <= 0) {
+				n->sym = sym;
+				n->off = sym ? sym->soffset : 0;
+				n->flags &= ~0x8000;
+				n->kind = 8;
+				n->busy = 1;
+				return n->reg;
+			}
+			if (reg == n->reg && n->busy > 0)
 				goto fail;
-			continue;
 		}
-		n->sym = sym;
-		n->off = sym ? sym->soffset : 0;
-		n->flags &= ~0x8000;
-		n->kind = 8;
-		n->busy = 1;
-		return n->reg;
 	}
 	if (cls == 1 || cls == 2 || cls == 6) {
-		for (n = rsuse; n; n = n->next) {
+		struct rs *w;
+
+		for (prev = n = rsuse; n; prev = n, n = n->next) {
 			if (!(n->cls <= 3 || (n->cls == 7 && cls == 6)) || n->busy > 0)
 				continue;
 			switch (cls) {
 			case 1:
-				if (reg != -1 && (n->cls == 3 || n->cls == 2) && !roverlap(1, reg, n))
-					continue;
+				if (reg != -1) {
+					if (n->cls == 3) {
+						if (!roverlap(1, reg, n))
+							continue;
+					} else if (n->cls == 2) {
+						if (!roverlap(1, reg))
+							continue;
+					}
+				}
 				if (n->cls == 3) {
 					w = newnode(n, 2);
 					if (reg != -1 && reg / 2 == n->reg) {
@@ -422,44 +438,44 @@ regjam(cls, reg, flag, sym)
 					w->next = rsfree;
 					rsfree = w;
 					rsinsert(w, 1);
-				} else if (n->cls != 2) {
+				} else if (n->cls != 2)
 					cerror("regjam: illegal type");
-				}
-				m = newnode(n, 1);
-				if (reg == m->reg) {
+				w = newnode(n, 1);
+				if (reg == w->reg) {
 					n->reg--;
-					m->reg++;
+					w->reg++;
+				}
+				break;
+			default:
+				cerror("regjam: illegal type");
+				goto take;
+			case 6:
+				if (n->cls != 7)
+					continue;
+				if (reg != -1 && !roverlap(cls, reg, n))
+					continue;
+				w = newnode(n, 6);
+				if (reg != -1 && reg == w->reg) {
+					n->reg--;
+					w->reg++;
 				}
 				break;
 			case 2:
 				if (n->cls != 3)
 					continue;
-				if (reg != -1 && !roverlap(2, reg, n))
+				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
-				m = newnode(n, 2);
-				if (reg == m->reg) {
+				w = newnode(n, 2);
+				if (reg != -1 && reg == w->reg) {
 					n->reg--;
-					m->reg++;
+					w->reg++;
 				}
 				break;
-			case 6:
-				if (n->cls != 7)
-					continue;
-				if (reg != -1 && !roverlap(6, reg, n))
-					continue;
-				m = newnode(n, 6);
-				if (reg == m->reg) {
-					n->reg--;
-					m->reg++;
-				}
-				break;
-			default:
-				cerror("regjam: illegal type");
-				continue;
 			}
-			m->next = rsfree;
-			rsfree = m;
-			rsinsert(m, 1);
+			w->next = rsfree;
+			rsfree = w;
+			rsinsert(w, 1);
+		take:
 			n->busy = 1;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
@@ -470,18 +486,20 @@ regjam(cls, reg, flag, sym)
 	}
 	if (cls == 3 || cls == 7) {
 		/* free the smaller registers that lie inside the wanted long register */
-		for (n = rsuse; n; n = w) {
-			w = n->next;
+		int found, t;
+
+		found = 0;
+		for (prev = n = rsuse; n; n = prev) {
+			prev = n->next;
 			if (n->busy > 0)
 				continue;
-			if (cls == 3 && n->cls != 1 && n->cls != 2)
-				continue;
-			if (cls == 7 && n->cls != 5 && n->cls != 6)
-				continue;
-			if (reg != -1 && !roverlap(cls, reg, n))
-				continue;
-			found = 1;
-			rsreturn(n->cls, n->reg);
+			if ((cls == 3 && ((t = n->cls) == 1 || t == 2)) ||
+			    (cls == 7 && ((t = n->cls) == 5 || t == 6))) {
+				if (reg != -1 && !roverlap(cls, reg, n))
+					continue;
+				found = 1;
+				rsreturn(n->cls, n->reg);
+			}
 		}
 		if (found)
 			return getreg(cls, reg, 0x1000, sym);
@@ -532,9 +550,10 @@ getreg(cls, reg, flag, sym)
 	register struct rs *n;
 	register struct rs *prev;
 	struct rs *w;
+#ifdef D2VARS
 	struct rs *m;
 	struct rs *t;
-	struct rs *old;
+#endif
 #ifdef OLD_D2P
 	int k;
 #endif
@@ -556,7 +575,10 @@ getreg(cls, reg, flag, sym)
 				n->sym = sym;
 				n->off = sym ? sym->soffset : 0;
 				n->kind = 8;
-				goto found;
+found:
+				n->busy = 1;
+ret:
+				return n->reg;
 			}
 			cerror("bad getreg for register variable");
 		}
@@ -699,34 +721,33 @@ getreg(cls, reg, flag, sym)
 		n->sym = sym;
 		n->off = sym ? sym->soffset : 0;
 		n->kind = 8;
-		old = rsuse;		/* take the free node n out of rsfree and put it on the front of rsuse */
+		w = rsuse;		/* take the free node n out of rsfree and put it on the front of rsuse */
 		rsuse = n;
 		if (prev == n)
 			rsfree = n->next;
 		else
 			prev->next = n->next;
-		n->next = old;
+		rsuse->next = w;
 		goto found;
 	}
 	if (cls == 1 || cls == 2 || cls == 6) {	/* split a larger node */
-		prev = n = rsfree;
-		while (n) {
-			if (!(n->cls <= 3 || (n->cls == 7 && cls == 6))) {
-				prev = n;
-				n = n->next;
+		for (prev = n = rsfree; n; prev = n, n = n->next) {
+			if (!(n->cls <= 3 || (n->cls == 7 && cls == 6)))
 				continue;
-			}
 			switch (cls) {
+			default:
+				cerror("getreg: illegal type default case");
+				goto take;
 			case 1:
-				if (reg != -1 && n->cls == 3 && !roverlap(1, reg, n)) {
-					prev = n;
-					n = n->next;
-					continue;
-				}
-				if (reg != -1 && n->cls == 2 && !roverlap(1, reg, n)) {
-					prev = n;
-					n = n->next;
-					continue;
+				if (reg != -1) {
+					if (n->cls == 3) {
+						if (!roverlap(1, reg, n))
+							continue;
+					} else if (n->cls == 2) {
+						if (!roverlap(1, reg, n))
+							continue;
+					} else
+						continue;
 				}
 				if (n->cls == 3) {
 					w = newnode(n, 2);
@@ -741,64 +762,43 @@ getreg(cls, reg, flag, sym)
 						prev->next = w;
 					rsinsert(n, 1);
 					n = w;
-				} else if (n->cls != 2) {
-					prev = n;
-					n = n->next;
+				} else if (n->cls != 2)
 					continue;
-				}
-				m = newnode(n, 1);
-				if (reg != -1 && reg != m->reg) {
-					n->reg--;
-					m->reg++;
-				}
-				break;
-			case 2:
-				if (n->cls != 3 || (reg != -1 && !roverlap(cls, reg, n))) {
-					prev = n;
-					n = n->next;
-					continue;
-				}
-				m = newnode(n, 2);
-				if (reg != -1 && reg != m->reg) {
-					n->reg--;
-					m->reg++;
-				}
+				w = newnode(n, 1);
 				break;
 			case 6:
-				if (n->cls != 7 || (reg != -1 && !roverlap(cls, reg, n))) {
-					prev = n;
-					n = n->next;
+				if (n->cls != 7)
 					continue;
-				}
-				m = newnode(n, 6);
-				if (reg != -1 && reg != m->reg) {
-					n->reg--;
-					m->reg++;
-				}
+				if (reg != -1 && !roverlap(cls, reg, n))
+					continue;
+				w = newnode(n, 6);
 				break;
-			default:
-				cerror("getreg: illegal type default case");
-				goto take;
+			case 2:
+				if (n->cls != 3)
+					continue;
+				if (reg != -1 && !roverlap(cls, reg, n))
+					continue;
+				w = newnode(n, 2);
+				break;
+			}
+			if (reg != -1 && reg != w->reg) {
+				n->reg--;
+				w->reg++;
 			}
 			rsinsert(n, 1);
-			t = m;
+			n = w;
 take:
-			t->flags &= ~0x8000;
-			t->sym = sym;
-			t->off = sym ? sym->soffset : 0;
-			t->kind = 8;
+			n->flags &= ~0x8000;
+			n->sym = sym;
+			n->off = sym ? sym->soffset : 0;
+			n->kind = 8;
 			w = rsuse;
-			rsuse = t;
-			t->next = w;
-			n = t;
+			rsuse = n;
+			rsuse->next = w;
 			goto found;
 		}
 	}
 	return flag == 0x1000 ? regjam(cls, reg, flag, sym) : -1;
-found:
-	n->busy = 1;
-ret:
-	return n->reg;
 }
 
 /*
@@ -980,7 +980,7 @@ void
 rsmerge(hp)
 	struct rs **hp;
 {
-	struct rs *n, *prev, *p, *q;
+	register struct rs *q, *p, *prev, *n;
 	char gone1, gone2, drop1, drop2;
 
 	if (rsuse == 0) {
@@ -988,20 +988,18 @@ rsmerge(hp)
 		rsexcl = 0;
 		return;
 	}
-	gone2 = gone1 = 0;
-	n = prev = *hp;
-	while (n) {
-		drop2 = drop1 = 0;
+	gone1 = gone2 = 0;
+	for (prev = n = *hp; n; ) {
+		drop1 = drop2 = 0;
 		q = p = rsexcl;
 		while (p) {
 			if (roverlap(p->cls, p->reg, n)) {
 				gone1 = 1;
 				if (p->cls < n->cls) {
 					drop1 = 0;
-					if (q == p) {
-						rsexcl = p->next;
-						q = rsexcl;
-					} else
+					if (q == p)
+						q = rsexcl = p->next;
+					else
 						q->next = p->next;
 					p->next = rspool;
 					rspool = p;
@@ -1019,24 +1017,22 @@ rsmerge(hp)
 			while (p) {
 				if (roverlap(p->cls, p->reg, n)) {
 					gone2 = 1;
-					if (p->cls >= n->cls) {
-						drop2 = 1;
-						if (q == p) {
-							rsuse = p->next;
-							q = rsuse;
-						} else
-							q->next = p->next;
-						p->next = rsexcl;
-						rsexcl = p;
-					} else {
+					if (p->cls < n->cls) {
 						drop2 = 0;
-						if (q == p) {
-							rsuse = p->next;
-							q = rsuse;
-						} else
+						if (q == p)
+							q = rsuse = p->next;
+						else
 							q->next = p->next;
 						p->next = rspool;
 						rspool = p;
+					} else {
+						drop2 = 1;
+						if (q == p)
+							q = rsuse = p->next;
+						else
+							q->next = p->next;
+						p->next = rsexcl;
+						rsexcl = p;
 					}
 					p = q;
 					if (q == rsuse)
@@ -1047,28 +1043,25 @@ rsmerge(hp)
 			}
 		}
 		if (gone2 || gone1) {
-			if (drop1 || drop2) {
-				if (prev == n) {
-					*hp = prev->next;
-					prev = *hp;
-				} else
-					prev->next = n->next;
-				n->next = rspool;
-				rspool = n;
-			} else {
-				if (prev == n) {
-					*hp = prev->next;
-					prev = *hp;
-				} else
+			if (!drop1 && !drop2) {
+				if (prev == n)
+					prev = *hp = prev->next;
+				else
 					prev->next = n->next;
 				n->next = rsexcl;
 				rsexcl = n;
+			} else {
+				if (prev == n)
+					prev = *hp = prev->next;
+				else
+					prev->next = n->next;
+				n->next = rspool;
+				rspool = n;
 			}
 		} else {
-			if (prev == n) {
-				*hp = prev->next;
-				prev = *hp;
-			} else
+			if (prev == n)
+				prev = *hp = prev->next;
+			else
 				prev->next = n->next;
 			n->next = rsuse;
 			rsuse = n;

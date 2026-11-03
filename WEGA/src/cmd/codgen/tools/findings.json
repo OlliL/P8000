@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "6bfbbe83",
+ "measured_at": "4a54ee15",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -771,7 +771,8 @@
    "file": "regallo3.c",
    "orig": "0x7458",
    "size_orig": 180,
-   "status": "exact"
+   "status": "masked",
+   "lines": 2
   },
   "rsdump": {
    "file": "regallo3.c",
@@ -790,9 +791,9 @@
    "file": "regallo3.c",
    "orig": "0x7650",
    "size_orig": 318,
-   "note": "Old hint, measured against the shipped cc, may be stale: D8 and D3 mostly (byte compares of char locals, reloads); one block of the original (a table lookup followed by the byte test) is missing at that place in ours, the order of the tests differs (D6 / D7 candidate). Class: D-classes, to verify; one block to check",
+   "note": "Left: cp 0(r15),#2 against r6 behind the first test (OLD_D3J, step 6).",
    "status": "open",
-   "lines": 220
+   "lines": 2
   },
   "rcount_reset": {
    "file": "regallo3.c",
@@ -811,14 +812,16 @@
    "orig": "0x7916",
    "size_orig": 762,
    "status": "open",
-   "lines": 458
+   "note": "Odd form: roverlap(1, reg) without a third argument (quirk table); the default of the switch stands behind case 1 (order of the two equal strings). Left: block order of popt.",
+   "lines": 148
   },
   "getreg": {
    "file": "regallo3.c",
    "orig": "0x7c10",
    "size_orig": 832,
    "status": "open",
-   "lines": 262
+   "note": "Left: block order of popt (OLDCC_LOG 2026-11-03); the content agrees.",
+   "lines": 170
   },
   "rsreturn": {
    "file": "regallo3.c",
@@ -851,8 +854,7 @@
    "orig": "0x81fe",
    "size_orig": 494,
    "note": "Old hint, measured against the shipped cc, may be stale: D3 and D8: 59 differing blocks, mostly spill and reload of the register variables (D3); byte compares of the char variables gone1, gone2, drop1, drop2 are written as load and compare in ours, as a memory compare in the original (D8). Size difference 225 / 159 ",
-   "status": "open",
-   "lines": 329
+   "status": "exact"
   },
   "rsmatch": {
    "file": "regallo3.c",
