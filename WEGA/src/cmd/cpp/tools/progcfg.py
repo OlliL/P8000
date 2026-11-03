@@ -14,13 +14,15 @@ STATICFUNCS = True
 
 
 def model_link(work, objs):
-    """the link of d12model.py: start-up file, our modules, the libc part"""
+    """the link of d12model.py: crt0.o (make crt0.o), our modules, the libc part of the Makefile"""
+    import re
     here = os.path.dirname(os.path.abspath(__file__))
     src = os.path.normpath(os.path.join(here, '..'))
     hostld = os.path.normpath(os.path.join(src, '..', '..', '..', 'host', 'ld', 'ld'))
-    root = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
-    return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', os.path.join(root, 'lib', 'crt0.o')] + objs + \
-        [os.path.join(root, 'lib', 'libc.a'), '-o', 'cppm']
+    mk = open(os.path.join(src, 'Makefile')).read().replace('\\\n', ' ')
+    libc = re.search(r'^LIBCOBJS = (.*)$', mk, re.M).group(1).split()
+    libc = [os.path.join(src, o.replace('$(OLD)', os.path.join('..', '..', 'lib', 'oldlibc'))) for o in libc]
+    return [os.environ.get('LDBIN', hostld), '-e', 'start', os.path.join(src, 'crt0.o')] + objs + libc + ['-o', 'cppm']
 
 
 MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_cpp', 'cppm')

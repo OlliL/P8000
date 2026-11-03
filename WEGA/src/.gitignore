@@ -47,3 +47,7 @@
 /cmd/popt/spopt
 /cmd/popt/seg/
 /cmd/cpp/cpy.c
+/cmd/cpp/cpp
+/cmd/cpp/crt0.s
+/cmd/cpp/shipped/
+/cmd/cpp/*.o
