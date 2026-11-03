@@ -33,9 +33,6 @@ static int d20bover();
 #endif
 struct node * insertl();
 struct node * codemove();
-#ifdef OLD_D20C
-static void cjmove();
-#endif
 void comjump();
 
 
@@ -826,98 +823,9 @@ iterate()
 			p = codemove(p);
 #endif
 		}
-#ifdef OLD_D20C
-		if (p->op == CJP)
-			cjmove(p);
-#endif
 	}
 }
 
-#ifdef OLD_D20C
-/* is l one of the labels of the run that starts at f */
-static int
-d20cin(f, l)
-register struct node *f, *l;
-{
-	for (; f && (f->op == LABEL || f->op == KCOMMENT); f = f->forw)
-		if (f == l)
-			return 1;
-	return 0;
-}
-
-/*
- * The old popt: a block T that a conditional jump p names, that ends with a jump and that the program reaches
- * otherwise only by falling out of a conditional jump c2 over it (c2 names the label right behind T), goes behind p,
- * when a label follows p: p and c2 are turned round (p falls into T, c2 jumps to T and falls behind it).
- */
-static void
-cjmove(p)
-register struct node *p;
-{
-	register struct node *t0, *t1, *te, *c2, *x, *y;
-
-	if ((t1 = p->ref) == 0)
-		return;
-	for (x = p->forw; x && x != t1; x = x->forw)	/* only a block behind p moves up */
-		;
-	if (x == 0)
-		return;
-	for (t0 = t1; t0->back && (t0->back->op == LABEL || t0->back->op == KCOMMENT); t0 = t0->back)
-		;
-	c2 = t0->back;
-	if (c2 == 0 || c2->op != CJP || c2 == p || c2->ref == 0)
-		return;
-	for (te = t0; te && (te->op == LABEL || te->op == KCOMMENT); te = te->forw)
-		if (te == p)
-			return;
-	for (; te && te->op != JP; te = te->forw)
-		if (te == p || te->op == LABEL || te->op == CJP || te->op == JSW)
-			return;			/* a label or a branch inside the block, or p in it */
-	if (te == 0 || te->ref == 0)
-		return;
-	for (y = te->forw; y && (y->op == LABEL || y->op == KCOMMENT); y = y->forw)
-		if (y == c2->ref)
-			break;
-	if (y != c2->ref)
-		return;
-	for (x = p->forw; x && x->op == KCOMMENT; x = x->forw)
-		;
-	if (x == 0 || x->op != LABEL)
-		return;
-	/* no jump (only conditional ones) leads to T */
-	for (y = first.forw; y; y = y->forw)
-		if (y->op == JP && y->ref && d20cin(t0, y->ref))
-			return;
-	y = c2->ref;
-	/* not the then part of a diamond: T jumps right behind the block at y */
-	for (y = nonlab(y); y && y->op != LABEL && y->op != JP && y->op != CJP && y->op != RET; y = y->forw)
-		;
-	for (; y && (y->op == LABEL || y->op == KCOMMENT); y = y->forw)
-		if (y == te->ref)
-			return;
-	/* take the block t0 .. te out and put it behind p */
-	c2->forw = te->forw;
-	te->forw->back = c2;
-	te->forw = p->forw;
-	p->forw->back = te;
-	p->forw = t0;
-	t0->back = p;
-	/* p falls into T now and jumps to x; c2 jumps to T and falls into y */
-	p->subop = revbr[(int)p->subop];
-	t1->refc++;
-	y = c2->ref;
-	c2->ref = t1;
-	c2->labno = t1->labno;
-	c2->subop = revbr[(int)c2->subop];
-	decref(y);
-	t1->refc--;
-	p->ref = x;
-	p->labno = x->labno;
-	x->refc++;
-	nchange++;
-	ncmot++;
-}
-#endif
 
 #ifdef OLD_D20B
 /* `if (c) break;` as the end of a loop: in front of the label of the jump p stands a jump to the label behind p

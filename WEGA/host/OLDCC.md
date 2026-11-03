@@ -192,7 +192,7 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20X`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
 - State: /lib/cparse 178 strictly exact, 2 differing lines, /lib/popt 72 of 73, 8 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
@@ -565,12 +565,7 @@ order).
 - Evidence: ld ensure_buf, the `return 0` of read_symbols; neutral on the bench. Turning off the whole code motion is
   wrong (the old popt moves the prologue and the switch dispatch too).
 - Refuted: going on behind a block moved from behind a jump (ld load2td exact, bench 72 > 69).
-- v0p (switch `OLD_D20C` in popt, cjmove in z21.c): a block T that a conditional jump p in front of it names, that
-  ends with a jump, contains no label and no branch, is named by no unconditional jump, and is otherwise reached only
-  by falling out of a conditional jump c2 over it, goes behind p when a label follows p; p and c2 are turned round.
-  Not for the then part of a diamond (T jumping right behind the block that c2 names). oalloc exact (the then part of
-  `if( (A||B) && C || ... )` behind the first test group), optim 85 > 58; cparse 523 > 464; bench v0 318 > 330 (join
-  main), so v0p only.
+- Removed (2026-11-03): OLD_D20C. Both witnesses were source forms. oalloc: not one `if ((A) || (B))`, but `if (A) { both: ... } else if (B) goto both;`, the block stands behind the first test, which is what the switch produced. optim: `if (...) { zapleft: ... } if (...) goto zapleft;` instead of a `while` with a goto into its body. Both read as plainly as the forms they replace; two independent functions, so unlike OLD_D20L the rule of the switch had two witnesses, and both fell.
 - v0p (switch `OLD_D20X` in popt, iterate and d20xinv in z21.c): at a back jump the loop inversion comes before the
   cross-jump when the target is not behind a jump, the test of the loop comes within 5 nodes of its head and the
   cross-jump would take one instruction at most (defid: only the store `ld temp,r2` of init and step is equal; the

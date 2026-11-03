@@ -141,15 +141,15 @@ optim(p)
 			p->right = t3;
 		}
 		if (o == PLUS && p->left->op == MINUS && p->right->op == ICON && p->left->right->op == ICON &&
-		    conval(p->right, MINUS, p->left->right))
-			goto zapleft;
-		while (p->right->op == ICON && p->left->op == o && p->left->right->op == ICON &&
-		    conval(p->right, o, p->left->right)) {
+		    conval(p->right, MINUS, p->left->right)) {
 		zapleft:
 			p->left->right->op = FREE;
 			p->left->op = FREE;
 			p->left = p->left->left;
 		}
+		if (p->right->op == ICON && p->left->op == o && p->left->right->op == ICON &&
+		    conval(p->right, o, p->left->right))
+			goto zapleft;
 		if ((p->type & 0x30) == 0x10 && p->left->op == ICON && p->right->op == o &&
 		    p->right->right->op == ICON && conval(p->left, o, p->right->right)) {
 			p->right->right->op = FREE;

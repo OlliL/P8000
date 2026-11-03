@@ -127,13 +127,13 @@ optim(p) register NODE *p; {
 			p->right = t3;
 			}
 		if(o == PLUS && LO(p) == MINUS && RCON(p) && RCON(p->left) &&
-		  conval(p->right, MINUS, p->left->right)) goto zapleft;
-		while( RCON(p) && LO(p)==o && RCON(p->left) && conval( p->right, o, p->left->right ) ){
+		  conval(p->right, MINUS, p->left->right)){
 			zapleft:
 			RO(p->left) = FREE;
 			LO(p) = FREE;
 			p->left = p->left->left;
 			}
+		if( RCON(p) && LO(p)==o && RCON(p->left) && conval( p->right, o, p->left->right ) ) goto zapleft;
 		if( ISPTR(p->type) && LCON(p) && RO(p) == o && RCON(p->right) && conval( p->left, o, p->right->right ) ){
 			p->right->right->op = FREE;
 			RO(p) = FREE;

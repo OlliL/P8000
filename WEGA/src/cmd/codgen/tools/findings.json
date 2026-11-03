@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "0a06f957",
+ "measured_at": "341f98de",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -1314,7 +1314,7 @@
    "orig": "0xb178",
    "size_orig": 1532,
    "status": "exact",
-   "note": "Odd form: the MINUS loop as a goto loop with its test inside the if (no switch of popt needed, OLD_D20L removed); the constant folding a while with a goto into its body; the joined and folded trees are tested again."
+   "note": "Odd forms: the MINUS loop as a goto loop with its test inside the if; if (...) { zapleft: ... } if (...) goto zapleft; the joined and folded trees are tested again. OLD_D20L and OLD_D20C removed."
   },
   "conval": {
    "file": "optim3.c",

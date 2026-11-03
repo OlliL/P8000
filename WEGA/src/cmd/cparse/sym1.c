@@ -44,13 +44,14 @@ oalloc( p, poff ) register struct symtab *p; register OFFSZ *poff; {
 	al = talign( p->stype, p->sizoff );
 	noff = off = *poff;
 	tsz = tsize( p->stype, p->dimoff, p->sizoff );
-	if( ( (p->sclass == PARAM || p->sclass == REGISTER) && p->sfldc == 2 &&
-			(p->stype==CHAR||p->stype==UCHAR||p->stype==SHORT||p->stype==USHORT) ) ||
-	    ( (p->sclass == AUTO || p->sclass == PARAM || (regflag && p->sclass == REGISTER)) &&
-			(p->stype==CHAR||p->stype==UCHAR||p->stype==SHORT||p->stype==USHORT) ) ){
+	if( (p->sclass == PARAM || p->sclass == REGISTER) && p->sfldc == 2 &&
+			(p->stype==CHAR||p->stype==UCHAR||p->stype==SHORT||p->stype==USHORT) ){
+	both:
 		upoff( (long)SZINT, ALINT, &noff );
 		off = noff - tsz;
 		}
+	else if( (p->sclass == AUTO || p->sclass == PARAM || (regflag && p->sclass == REGISTER)) &&
+			(p->stype==CHAR||p->stype==UCHAR||p->stype==SHORT||p->stype==USHORT) ) goto both;
 #ifdef OLD_D1
 	else off = upoff( tsz, al, &noff ); /* a register variable gets its place on the stack too */
 #else

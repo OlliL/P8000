@@ -3,7 +3,7 @@
  "compiler": "ccv0p",
  "binary": "/lib/cparse",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "0a06f957",
+ "measured_at": "341f98de",
  "functions": {
   "f0000": {
    "file": "-",
@@ -956,7 +956,8 @@
    "file": "sym1.c",
    "orig": "0x8b6e",
    "size_orig": 288,
-   "status": "exact"
+   "status": "exact",
+   "note": "Odd form: if (A) { both: ... } else if (B) goto both; the block behind the first test (OLD_D20C removed)."
   },
   "falloc": {
    "file": "sym1.c",
