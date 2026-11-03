@@ -36,57 +36,93 @@ static char sccsid[] = "@[$]lcl3.c\t2.4  10/06/83 10:39:09 Copr. 1981 87wega3.2.
 #define SCONV	110
 
 
-#ifdef SEG
-static int newreg();
-static int newlreg();
-#endif
 static void chk();
 
-#ifdef SEG
-/* a free register other than avoid and r0 */
-static int
-newreg(avoid)
-	int avoid;
-{
-	int r, t, t2;
-
-	r = getreg(2, -1, 0x1000, 0);
-	if (r == avoid || r == 0) {
-		t = r;
-		r = getreg(2, -1, 0x1000, 0);
-		if (r == avoid || r == 0) {
-			t2 = r;
-			r = getreg(2, -1, 0x1000, 0);
-			rfree(t2, 3);
-		}
-		rfree(t, 3);
-	}
-	return r;
-}
-
-/* a free long register that does not overlap avoid, not rr0 */
-static int
-newlreg(avoid)
-	int avoid;
-{
-	int r, t, t2;
-
-	r = getreg(3, -1, 0x1000, 0);
-	if (r == avoid || (avoid ^ 1) == r || r == 0) {
-		t = r;
-		r = getreg(3, -1, 0x1000, 0);
-		if (r == avoid || (avoid ^ 1) == r || r == 0) {
-			t2 = r;
-			r = getreg(3, -1, 0x1000, 0);
-			rfree(t2, 5);
-		}
-		rfree(t, 5);
-	}
-	return r;
-}
-#endif
-
 /* the code for a switch: a jump table, or a search with cpir */
+#ifdef SEG
+void
+gswitch(p)
+	register NODE *p;
+{
+	register NODE *x, *y;
+	register long n;
+	register int dlab, tab;
+	NODE *r, *l;
+	int reg, a6, save, t2, ac, tlab, rb, ra, t, cnt;
+
+	l = p->left;
+	r = p->right;
+	n = r->right->lval;
+	tab = r->right->rval;
+	dlab = -r->left->lval;
+	reg = (l->op == REG ? l : l->left)->rval;
+	if (l->op != 124) {
+		mapnm(l->left);
+		delay(l);
+		reclaim(l, 0, 0);
+		printf("\tcp\t%s,#%ld\n", rnames[reg], n);
+		printf("\tjpr\tugt,L%d\n", dlab);
+		if (reg == 0) {
+			save = reg;
+			reg = getreg(2, -1, 0x1000, 0);
+			rmove(reg, save, 3);
+			rfree(save, 3);
+		}
+		a6 = getreg(3, -1, 0x1000, 0);
+		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
+			save = a6;
+			a6 = getreg(3, -1, 0x1000, 0);
+			if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
+				t2 = a6;
+				a6 = getreg(3, -1, 0x1000, 0);
+				rfree(t2, 5);
+			}
+			rfree(save, 5);
+		}
+		printf("\trl\t%s,#2\n", rnames[reg]);
+		printf("\tldl\tr%s,L%d(%s)\n", rnames[a6], tab, rnames[reg]);
+		printf("\tjp\t@r%s\n", rnames[a6]);
+		return;
+	}
+	if (l->op == 124) {
+		cnt = (int)l->right->lval;
+		tlab = l->right->rval;
+		a6 = getreg(3, -1, 0x1000, 0);
+		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
+			t = a6;
+			a6 = getreg(3, -1, 0x1000, 0);
+			if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
+				t2 = a6;
+				a6 = getreg(3, -1, 0x1000, 0);
+				rfree(t2, 5);
+			}
+			rfree(t, 5);
+		}
+		rb = getreg(2, -1, 0x1000, 0);
+		if (reg == rb || rb == 0) {
+			t = rb;
+			rb = getreg(2, -1, 0x1000, 0);
+			if (reg == rb || rb == 0) {
+				t2 = rb;
+				rb = getreg(2, -1, 0x1000, 0);
+				rfree(t2, 3);
+			}
+			rfree(t, 3);
+		}
+		printf("\tldl\tr%s,#L%d\n", rnames[a6], tlab);
+		printf("\tld\t%s,#%d\n", rnames[rb], cnt);
+		printf("\tcpir\t%s,@r%s,%s,eq\n", rnames[reg], rnames[a6], rnames[rb]);
+		printf("\tjpr\tne,L%d\n", dlab);
+		printf("\tsll\t%s,#2\n", rnames[rb]);
+		printf("\tneg\t%s\n", rnames[rb]);
+		printf("\tldl\tr%s,L%d+%d(%s)\n", rnames[a6], tab, (cnt - 1) << 2, rnames[rb]);
+		printf("\tjp\t@r%s\n", rnames[a6]);
+		rfree(a6, 5);
+		rfree(rb, 3);
+		rfree(reg, 3);
+	}
+}
+#else
 void
 gswitch(p)
 	register NODE *p;
@@ -118,36 +154,14 @@ gswitch(p)
 			rmove(reg, save, 3);
 			rfree(save, 3);
 		}
-#ifdef SEG
-		ra = newlreg(reg);
-		printf("\trl\t%s,#2\n", rnames[reg]);
-		printf("\tldl\tr%s,L%d(%s)\n", rnames[ra], tab, rnames[reg]);
-		printf("\tjp\t@r%s\n", rnames[ra]);
-#else
 		printf("\trl\t%s,#1\n", rnames[reg]);
 		printf("\tld\t%s,L%d(%s)\n", rnames[reg], tab, rnames[reg]);
 		printf("\tjp\t@%s\n", rnames[reg]);
-#endif
 		return;
 	}
 	if (l->op == 124) {
 	cnt = (int)l->right->lval;
 	tlab = l->right->rval;
-#ifdef SEG
-	ra = newlreg(reg);
-	rb = newreg(reg);
-	printf("\tldl\tr%s,#L%d\n", rnames[ra], tlab);
-	printf("\tld\t%s,#%d\n", rnames[rb], cnt);
-	printf("\tcpir\t%s,@r%s,%s,eq\n", rnames[reg], rnames[ra], rnames[rb]);
-	printf("\tjpr\tne,L%d\n", dlab);
-	printf("\tsll\t%s,#2\n", rnames[rb]);
-	printf("\tneg\t%s\n", rnames[rb]);
-	printf("\tldl\tr%s,L%d+%d(%s)\n", rnames[ra], tab, (cnt - 1) << 2, rnames[rb]);
-	printf("\tjp\t@r%s\n", rnames[ra]);
-	rfree(ra, 5);
-	rfree(rb, 3);
-	rfree(reg, 3);
-#else
 	if (reg == 0) {
 		t = reg;
 		reg = getreg(2, -1, 0x1000, 0);
@@ -203,9 +217,9 @@ gswitch(p)
 	rfree(ra, 3);
 	rfree(rb, 3);
 	rfree(reg, 3);
-#endif
 	}
 }
+#endif
 
 #ifdef SEG
 /* PLUS(frame register, offset): the offset goes first and takes the pointer type, the register becomes an int */
@@ -213,12 +227,11 @@ static void
 chk(p)
 	register NODE *p;
 {
-	register NODE *r, *c;
+	register NODE *r;
 
 	r = p->left;
-	c = p->right;
-	c->type = r->type;
-	p->left = c;
+	p->right->type = r->type;
+	p->left = p->right;
 	if (r->op != REG)
 		cerror("badly formed offset");
 	p->right = r;
@@ -344,11 +357,11 @@ clocal(p)
 			l->type = pf;
 		else if (tbytes(pf) != tbytes(lf))
 			break;
-		if (tbytes(pf) == tbytes(lf)) {
 #ifdef SEG
-			if ((pf & 0x30) == 0x10)
-				break;
+		else if ((pf & 0x30) == 0x10)
+			break;
 #endif
+		if (tbytes(pf) == tbytes(lf)) {
 			l->type = p->type;
 			l->rval = p->rval;
 			l->lval = p->lval;
@@ -356,13 +369,9 @@ clocal(p)
 			p = l;
 			goto ret;
 		}
-#ifdef SEG
-		break;
-#else
 		p->op = FREE;
 		p = l;
 		goto ret;
-#endif
 		}
 	}
 #ifdef SEG

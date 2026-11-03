@@ -174,9 +174,6 @@ tsuffix(t)
 		break;
 	case 5:
 	case 15:
-#ifdef SEG
-	lng:
-#endif
 		putchar('l');
 		rmode++;
 		break;
@@ -192,9 +189,10 @@ tsuffix(t)
 		break;
 	default:
 #ifdef SEG
-		if ((t & 0x30) == 0x10)
-			goto lng;
-		cerror("zzzcode - bad type");
+		if ((t & 0x30) != 0x10)
+			cerror("zzzcode - bad type");
+		putchar('l');
+		rmode++;
 #else
 		if ((t & 0x30) != 0x10)
 			cerror("zzzcode - bad type");
@@ -786,16 +784,19 @@ zzzcode(p, c)
 		return;
 	case 'u':
 #ifdef SEG
-		q = p->left;
-		if (q->op == OREG && q->lval == 0 && q->sname == 0 && q->stsize >= 0) {
-			printf("\tinc\t%s,#2\n", rnames[q->rval + 1]);
-			expand(p, FOREFF, "\tZtZi\tAL,AR\n");
-			printf("\tdec\t%s,#2\n", rnames[q->rval + 1]);
+		u = p->left;
+		if (u->op != OREG || u->lval != 0 || u->sname != 0 || (u->op == OREG && u->stsize < 0)) {
+			expand(p, FOREFF, "\tZtZi\tUL,AR\n");
 			return;
 		}
-#endif
+		printf("\tinc\t%s,#2\n", rnames[u->rval + 1]);
+		expand(p, FOREFF, "\tZtZi\tAL,AR\n");
+		printf("\tdec\t%s,#2\n", rnames[u->rval + 1]);
+		return;
+#else
 		expand(p, FOREFF, "\tZtZi\tUL,AR\n");
 		return;
+#endif
 	case 'K':
 		/* store into a field: bit instructions, a byte, a word or the general mask and shift */
 		switch (fldsz) {
@@ -819,11 +820,10 @@ zzzcode(p, c)
 				break;
 			if (fldoff) {
 #ifdef SEG
-				q = p->left->left;
-				if (q->lval != 0)
-					q->lval++;
+				if (p->left->left->lval != 0)
+					p->left->left->lval += 1;
 				else
-					printf("\tinc\t%s,#1\n", rnames[q->rval + 1]);
+					printf("\tinc\t%s,#1\n", rnames[p->left->left->rval + 1]);
 #else
 				p->left->left->lval += 1;
 #endif
@@ -1074,11 +1074,45 @@ zzzcode(p, c)
 		case NAME:
 		case OREG:
 #ifdef SEG
-			if (p->rval != 15) {
-				order(p, 6);
-				goto longreg;
+			if (p->rval == 15)
+				goto frame;
+			order(p, 6);
+		case REG:
+			if (szty(n) != 2)
+				return;
+			rfree(p->rval, p->type);
+			rfreeall(0);
+			p->rval++;
+			p->type = (int)u;
+			if (p->rval <= 7 && getreg(2, p->rval, 0x1000, 0) != p->rval)
+				cerror("zzzcode: case 'T'  reg not found");
+			return;
+		frame:
+			if (p->sname->sclass == 3 && p->op == NAME && !(p->sname->sflags >> 2 & 1) && p->rval >= 0) {
+				if (szty(n) == 2) {
+					if ((int)u == 2 || (int)u == 12)
+						p->rval += 3;
+					else {
+						if ((int)u == 3 || (int)u == 13)
+							;
+						p->rval += 2;
+					}
+				} else
+					p->rval += 1;
+				return;
 			}
-#endif
+			if (szty(n) == 2) {
+				if ((int)u == 2 || (int)u == 12)
+					p->lval += 3;
+				else {
+					if ((int)u == 3 || (int)u == 13)
+						;
+					p->lval += 2;
+				}
+			} else
+				p->lval += 1;
+			return;
+#else
 			if (p->sname->sclass == 3 && p->op == NAME && !(p->sname->sflags >> 2 & 1) && p->rval >= 0) {
 				if (szty(n) == 2) {
 					if ((int)u == 2 || (int)u == 12)
@@ -1104,9 +1138,6 @@ zzzcode(p, c)
 				p->lval += 1;
 			return;
 		case REG:
-#ifdef SEG
-		longreg:
-#endif
 			if (szty(n) != 2)
 				return;
 			rfree(p->rval, p->type);
@@ -1116,6 +1147,7 @@ zzzcode(p, c)
 			if (p->rval <= 7 && getreg(2, p->rval, 0x1000, 0) != p->rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
+#endif
 		default:
 			cerror("Illegal ZT type conversion");
 			return;

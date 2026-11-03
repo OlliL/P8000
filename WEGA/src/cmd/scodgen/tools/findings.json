@@ -3,1122 +3,1347 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/scodgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "109c9f07",
+ "measured_at": "82c8f109",
  "functions": {
   "p2init": {
    "file": "reader3.c",
    "orig": "0x002a",
    "size_orig": 372,
-   "note": "Odd form: two register variables without use; strcpy and strcat through a local x, setbuf through a local b (frame words)."
+   "note": "Odd form: two register variables without use; strcpy and strcat through a local x, setbuf through a local b (frame words).",
+   "status": "exact"
   },
   "init": {
    "file": "reader3.c",
    "orig": "0x019e",
-   "size_orig": 158
+   "size_orig": 158,
+   "status": "exact"
   },
   "mainp2": {
    "file": "reader3.c",
    "orig": "0x023c",
    "size_orig": 1318,
-   "note": "The main loop is a for without init and step, the blank skipping of case C a while with continue: both decide what popt moves (OLDCC_LOG 2026-11-03)."
+   "note": "The main loop is a for without init and step, the blank skipping of case C a while with continue: both decide what popt moves (OLDCC_LOG 2026-11-03).",
+   "status": "exact"
   },
   "p2compile": {
    "file": "reader3.c",
    "orig": "0x0762",
-   "size_orig": 222
+   "size_orig": 222,
+   "status": "exact"
   },
   "delay": {
    "file": "reader3.c",
    "orig": "0x0840",
-   "size_orig": 278
+   "size_orig": 278,
+   "status": "masked",
+   "lines": 6
   },
   "delay1": {
    "file": "reader3.c",
    "orig": "0x0956",
-   "size_orig": 132
+   "size_orig": 132,
+   "status": "exact"
   },
   "delstrip": {
    "file": "reader3.c",
    "orig": "0x09da",
-   "size_orig": 56
+   "size_orig": 56,
+   "status": "exact"
   },
   "delay2": {
    "file": "reader3.c",
    "orig": "0x0a12",
-   "size_orig": 160
+   "size_orig": 160,
+   "status": "exact"
   },
   "codgen": {
    "file": "reader3.c",
    "orig": "0x0ab2",
-   "size_orig": 76
+   "size_orig": 76,
+   "status": "masked",
+   "lines": 2
   },
   "prcook": {
    "file": "reader3.c",
    "orig": "0x0afe",
-   "size_orig": 172
+   "size_orig": 172,
+   "status": "exact"
   },
   "order": {
    "file": "reader3.c",
    "orig": "0x0baa",
-   "size_orig": 1262
+   "size_orig": 1262,
+   "status": "masked",
+   "lines": 6
   },
   "store": {
    "file": "reader3.c",
    "orig": "0x1098",
-   "size_orig": 342
+   "size_orig": 342,
+   "status": "exact"
   },
   "constore": {
    "file": "reader3.c",
    "orig": "0x11ee",
-   "size_orig": 56
+   "size_orig": 56,
+   "status": "exact"
   },
   "markcall": {
    "file": "reader3.c",
    "orig": "0x1226",
-   "size_orig": 88
+   "size_orig": 88,
+   "status": "exact"
   },
   "stoarg": {
    "file": "reader3.c",
    "orig": "0x127e",
-   "size_orig": 82
+   "size_orig": 82,
+   "status": "exact"
   },
   "cbranch": {
    "file": "reader3.c",
    "orig": "0x12d0",
    "size_orig": 766,
-   "note": "Odd form: the false case of the constant and the assignment in front of the test that reaches them, by goto; the switch cases of the constant reach the free at their end."
+   "note": "Odd form: the false case of the constant and the assignment in front of the test that reaches them, by goto; the switch cases of the constant reach the free at their end.",
+   "status": "exact"
   },
   "rcount": {
    "file": "reader3.c",
    "orig": "0x15ce",
-   "size_orig": 22
+   "size_orig": 22,
+   "status": "exact"
   },
   "ffld": {
    "file": "reader3.c",
    "orig": "0x15e4",
-   "size_orig": 398
+   "size_orig": 398,
+   "status": "exact"
   },
   "oreg2": {
    "file": "reader3.c",
    "orig": "0x1772",
    "size_orig": 224,
-   "note": "One unused register variable. if (ql->rval < 0) { ... } else stw = 0, the short case last."
+   "note": "One unused register variable. if (ql->rval < 0) { ... } else stw = 0, the short case last.",
+   "status": "exact"
   },
   "canon": {
    "file": "reader3.c",
    "orig": "0x1852",
-   "size_orig": 58
+   "size_orig": 58,
+   "status": "exact"
   },
   "argprep": {
    "file": "reader3.c",
    "orig": "0x188c",
-   "size_orig": 238
+   "size_orig": 238,
+   "status": "exact"
   },
   "rddata": {
    "file": "rdr3.c",
    "orig": "0x197a",
    "size_orig": 218,
-   "note": "Odd form: ok is set and never read; if/else for constants written to the frame."
+   "note": "Odd form: ok is set and never read; if/else for constants written to the frame.",
+   "status": "exact"
   },
   "rdsym": {
    "file": "rdr3.c",
    "orig": "0x1a54",
-   "size_orig": 222
+   "size_orig": 222,
+   "status": "exact"
   },
   "readsyms": {
    "file": "rdr3.c",
    "orig": "0x1b32",
    "size_orig": 204,
-   "note": "One unused word in the frame."
+   "note": "One unused word in the frame.",
+   "status": "exact"
   },
   "readtab": {
    "file": "rdr3.c",
    "orig": "0x1bfe",
    "size_orig": 60,
-   "note": "Left: ld r5,2(r15) for (int)n behind the test of n, ours from r5 (step 6)."
+   "note": "Left: ld r5,2(r15) for (int)n behind the test of n, ours from r5 (step 6).",
+   "status": "exact"
   },
   "readnums": {
    "file": "rdr3.c",
    "orig": "0x1c3a",
    "size_orig": 162,
-   "note": "Odd form: the address of the table by (char *)numtab + (base << 2), the table is a table of pairs."
+   "note": "Odd form: the address of the table by (char *)numtab + (base << 2), the table is a table of pairs.",
+   "status": "exact"
   },
   "readmems": {
    "file": "rdr3.c",
    "orig": "0x1cdc",
    "size_orig": 436,
-   "note": "Odd form: an unreferenced label in front of the first test: the old compiler forgets the parameter at a label no jump has named, which gives the test in the frame. What the authors wrote there is not known."
+   "note": "Odd form: an unreferenced label in front of the first test: the old compiler forgets the parameter at a label no jump has named, which gives the test in the frame. What the authors wrote there is not known.",
+   "status": "exact"
   },
   "sortsyms": {
    "file": "rdr3.c",
    "orig": "0x1e90",
    "size_orig": 192,
-   "note": "Exact with rweight { 3, 4, 2, 3, ... } of v0 and OLD_D2G: an idle r0 does not win a tie of weight."
+   "note": "Exact with rweight { 3, 4, 2, 3, ... } of v0 and OLD_D2G: an idle r0 does not win a tie of weight.",
+   "status": "exact"
   },
   "tagfind": {
    "file": "rdr3.c",
    "orig": "0x1f50",
-   "size_orig": 182
+   "size_orig": 182,
+   "status": "exact"
   },
   "mapn": {
    "file": "rdr3.c",
    "orig": "0x2006",
-   "size_orig": 50
+   "size_orig": 50,
+   "status": "exact"
   },
   "mapsym": {
    "file": "rdr3.c",
    "orig": "0x2038",
-   "size_orig": 86
+   "size_orig": 86,
+   "status": "exact"
   },
   "mapnm": {
    "file": "rdr3.c",
    "orig": "0x208e",
    "size_orig": 838,
-   "note": "Exact with rweight { 3, 4, 2, 3, ... } of v0."
+   "note": "Exact with rweight { 3, 4, 2, 3, ... } of v0.",
+   "status": "exact"
   },
   "mkhash": {
    "file": "rdr3.c",
    "orig": "0x23d4",
-   "size_orig": 68
+   "size_orig": 68,
+   "status": "exact"
   },
   "nlcheck": {
    "file": "rdr3.c",
    "orig": "0x2418",
-   "size_orig": 54
+   "size_orig": 54,
+   "status": "exact"
   },
   "eread": {
    "file": "rdr3.c",
    "orig": "0x244e",
    "size_orig": 538,
-   "note": "Odd form: op is reused for its type class; if (op == 0x73) erflag = 1 can never hold (quirk table); three unused register variables."
+   "note": "Odd form: op is reused for its type class; if (op == 0x73) erflag = 1 can never hold (quirk table); three unused register variables.",
+   "status": "exact"
   },
   "rdin": {
    "file": "rdr3.c",
    "orig": "0x2668",
-   "size_orig": 20
+   "size_orig": 20,
+   "status": "exact"
   },
   "rdin2": {
    "file": "rdr3.c",
    "orig": "0x267c",
-   "size_orig": 210
+   "size_orig": 210,
+   "status": "exact"
   },
   "psuffix": {
    "file": "local3.c",
    "orig": "0x274e",
-   "size_orig": 22
+   "size_orig": 22,
+   "status": "exact"
   },
   "tsuffix": {
    "file": "local3.c",
    "orig": "0x2764",
    "size_orig": 244,
-   "note": "t is a register variable; the bodies in the order s, d, l, b, popt merges the putchar code."
+   "note": "t is a register variable; the bodies in the order s, d, l, b, popt merges the putchar code.",
+   "status": "exact"
   },
   "lineout": {
    "file": "local3.c",
    "orig": "0x2858",
-   "size_orig": 26
+   "size_orig": 26,
+   "status": "exact"
   },
   "eobl2": {
    "file": "local3.c",
    "orig": "0x2872",
-   "size_orig": 100
+   "size_orig": 100,
+   "status": "exact"
   },
   "efcode": {
    "file": "local3.c",
    "orig": "0x28d6",
    "size_orig": 154,
-   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table). Left: the original computes parmax + maxoff in rr2 and moves it to rr6, ours in rr6. Tried: no preference for the left operand of a long sum wanted in rr6 (rallo, case PLUS): exact, nothing else moves in the three models, bench unchanged; one witness, not adopted. Wanted in any register: readmems +15. Decided 2026-11-03: open, the rule is not adopted; the condition on rr6 has no reason behind it. Compiled alone the shipped cc, ccv0 and ccv0p all give ldl rr6, so it is not the context of efcode."
+   "note": "As in codgen; see its findings.json. ",
+   "status": "open",
+   "lines": 5
   },
   "epilog": {
    "file": "local3.c",
    "orig": "0x2970",
-   "size_orig": 78
+   "size_orig": 78,
+   "status": "exact"
   },
   "regrestore": {
    "file": "local3.c",
    "orig": "0x29be",
-   "size_orig": 150
+   "size_orig": 150,
+   "status": "exact"
   },
   "fpinc": {
    "file": "local3.c",
    "orig": "0x2a54",
-   "size_orig": 40
+   "size_orig": 40,
+   "status": "exact"
   },
   "prolog": {
    "file": "local3.c",
    "orig": "0x2a7c",
-   "size_orig": 86
+   "size_orig": 86,
+   "status": "exact"
   },
   "fpdec": {
    "file": "local3.c",
    "orig": "0x2ad2",
-   "size_orig": 40
+   "size_orig": 40,
+   "status": "exact"
   },
   "regsave": {
    "file": "local3.c",
    "orig": "0x2afa",
    "size_orig": 152,
-   "note": "if (tot) around the integer registers only; the float registers are saved also when tot is 0."
+   "note": "if (tot) around the integer registers only; the float registers are saved also when tot is 0.",
+   "status": "exact"
   },
   "regargs": {
    "file": "local3.c",
    "orig": "0x2b92",
    "size_orig": 376,
-   "note": "Form: if / else if / else as in the SEG branch, no goto. One unused frame word."
+   "note": "Form: if / else if / else as in the SEG branch, no goto. One unused frame word.",
+   "status": "exact"
   },
   "hopcode": {
    "file": "local3.c",
    "orig": "0x2d0a",
-   "size_orig": 108
+   "size_orig": 108,
+   "status": "exact"
   },
   "geninc": {
    "file": "local3.c",
    "orig": "0x2d76",
-   "size_orig": 144
+   "size_orig": 144,
+   "status": "exact"
   },
   "zzzcode": {
    "file": "local3.c",
    "orig": "0x2e06",
    "size_orig": 3784,
-   "note": "Odd form: if (u == 3 || u == 13) ; in ZT, for a cp of the original without a jump behind it; a register holds a type there (u)."
+   "note": "Left: one jp where ours has jr, the old cas, D17. Case T: the frame block behind REG; case u: the unaddressable form first.",
+   "status": "open",
+   "lines": 2
   },
   "rmove": {
    "file": "local3.c",
    "orig": "0x3cce",
    "size_orig": 298,
-   "note": "The two searches end in the cerror, found jumps past it; no second test of t and f."
+   "note": "The two searches end in the cerror, found jumps past it; no second test of t and f.",
+   "status": "exact"
   },
   "shltype": {
    "file": "local3.c",
    "orig": "0x3df8",
-   "size_orig": 74
+   "size_orig": 74,
+   "status": "masked",
+   "lines": 2
   },
   "ltypeop": {
    "file": "local3.c",
    "orig": "0x3e42",
-   "size_orig": 40
+   "size_orig": 40,
+   "status": "exact"
   },
   "shtemp": {
    "file": "local3.c",
    "orig": "0x3e6a",
    "size_orig": 72,
-   "note": "One conditional expression with two logical arms."
+   "note": "One conditional expression with two logical arms.",
+   "status": "exact"
   },
   "shincr": {
    "file": "local3.c",
    "orig": "0x3eb2",
-   "size_orig": 120
+   "size_orig": 120,
+   "status": "exact"
   },
   "shumul": {
    "file": "local3.c",
    "orig": "0x3f2a",
-   "size_orig": 118
+   "size_orig": 118,
+   "status": "exact"
   },
   "prlong": {
    "file": "local3.c",
    "orig": "0x3fa0",
-   "size_orig": 22
+   "size_orig": 22,
+   "status": "exact"
   },
   "conput": {
    "file": "local3.c",
    "orig": "0x3fb6",
    "size_orig": 174,
-   "note": "bad oreg goes to the end, it is the first arm of an else if."
+   "note": "bad oreg goes to the end, it is the first arm of an else if.",
+   "status": "exact"
   },
   "insput": {
    "file": "local3.c",
    "orig": "0x4064",
-   "size_orig": 18
+   "size_orig": 18,
+   "status": "exact"
   },
   "oregput": {
    "file": "local3.c",
    "orig": "0x4076",
-   "size_orig": 196
+   "size_orig": 196,
+   "status": "exact"
   },
   "upput": {
    "file": "local3.c",
    "orig": "0x413a",
    "size_orig": 320,
-   "note": "Form: the ICON case ends with goto ac, the label stands behind a break inside the switch (at any such place)."
+   "note": "Form: the ICON case ends with goto ac, the label stands behind a break inside the switch (at any such place).",
+   "status": "exact"
   },
   "adrput": {
    "file": "local3.c",
    "orig": "0x427a",
-   "size_orig": 430
+   "size_orig": 430,
+   "status": "exact"
   },
   "acon": {
    "file": "local3.c",
    "orig": "0x4428",
    "size_orig": 432,
-   "note": "Left: one jr at the limit of its range (the diff is only jr against jp): the old cas, D17."
+   "note": "Left: one jr at the limit of its range (the diff is only jr against jp): the old cas, D17.",
+   "status": "exact"
   },
   "genscall": {
    "file": "local3.c",
    "orig": "0x45d8",
-   "size_orig": 20
+   "size_orig": 20,
+   "status": "exact"
   },
   "gencall": {
    "file": "local3.c",
    "orig": "0x45ec",
    "size_orig": 296,
-   "note": "Odd form: long save in the frame also without SEG, unused there."
+   "note": "Odd form: long save in the frame also without SEG, unused there.",
+   "status": "exact"
   },
   "cbgen": {
    "file": "local3.c",
    "orig": "0x4714",
    "size_orig": 102,
-   "note": "Odd form: two unused register variables behind the parameters."
+   "note": "Odd form: two unused register variables behind the parameters.",
+   "status": "exact"
   },
   "nextcook": {
    "file": "local3.c",
    "orig": "0x477a",
-   "size_orig": 58
+   "size_orig": 58,
+   "status": "exact"
   },
   "lastchance": {
    "file": "local3.c",
    "orig": "0x47b4",
-   "size_orig": 34
+   "size_orig": 34,
+   "status": "exact"
   },
   "icright": {
    "file": "local3.c",
    "orig": "0x47d6",
-   "size_orig": 46
+   "size_orig": 46,
+   "status": "exact"
   },
   "canon2": {
    "file": "local3.c",
    "orig": "0x4804",
-   "size_orig": 28
+   "size_orig": 28,
+   "status": "exact"
   },
   "special": {
    "file": "local3.c",
    "orig": "0x4820",
    "size_orig": 234,
-   "note": "Exact with cparse OLD_D6D: the base of a direct switch stays a long (bcon cuts it to int otherwise), sub r2,#32769. One witness, on the owner's word."
+   "note": "Exact with cparse OLD_D6D: the base of a direct switch stays a long (bcon cuts it to int otherwise), sub r2,#32769. One witness, on the owner's word.",
+   "status": "exact"
   },
   "mycanon": {
    "file": "local3.c",
    "orig": "0x490a",
-   "size_orig": 100
+   "size_orig": 100,
+   "status": "exact"
   },
   "main": {
    "file": "local3.c",
    "orig": "0x496e",
    "size_orig": 22,
-   "note": "The forwarder of mainp2 at 0x4868: PCC form, called by the start code."
+   "note": "The forwarder of mainp2 at 0x4868: PCC form, called by the start code.",
+   "status": "exact"
   },
   "stoasg": {
    "file": "order3.c",
    "orig": "0x4984",
-   "size_orig": 34
+   "size_orig": 34,
+   "status": "exact"
   },
   "mkadrs": {
    "file": "order3.c",
    "orig": "0x49a6",
-   "size_orig": 288
+   "size_orig": 288,
+   "status": "exact"
   },
   "notoff": {
    "file": "order3.c",
    "orig": "0x4ac6",
    "size_orig": 48,
-   "note": "Form: four parameters as in the PCC, cp unused. The original stores only off: OLD_D3J gives only a long parameter its home after it came back at a label (d3jmark); one witness, taken on the owner's word."
+   "note": "Form: four parameters as in the PCC, cp unused. The original stores only off: OLD_D3J gives only a long parameter its home after it came back at a label (d3jmark); one witness, taken on the owner's word.",
+   "status": "exact"
   },
   "sucomp": {
    "file": "order3.c",
    "orig": "0x4af6",
    "size_orig": 2040,
-   "note": "Forms: p->fsu = fl == 0 ? ... : ... and sur == sul ? ... : ... as conditional expressions give the place of the test (the comjump of the first pass, before rmove). Left (12 lines): which copy of ld r2,fl; jp stays; the original keeps the first, in max(fl, nf), which needs a label in front of it before rmove. Tried: fl > nf as if / else with stores, also max(fl, fr), if (sur != sul), p->fsu = max(fl, fr) with a second assignment, conditional forms at the other fsu assignments: 14 to 25 lines. Also tried: fl ? max(fl, nf) : nf and if (fl), fl == 0 ? nf : fl > nf ? fl : nf, max(fl, nf) alone, fl ? ... : ... and max(fr, fl == 0 ? ... : ...) at the next assignment: 15 to 32 lines. Decided 2026-11-03: open, search stopped; the owner's status names these lines."
+   "note": "As in codgen; see its findings.json. One word of a test under STAR with max.",
+   "status": "open",
+   "lines": 12
   },
   "mkrall": {
    "file": "order3.c",
    "orig": "0x52ee",
-   "size_orig": 98
+   "size_orig": 98,
+   "status": "exact"
   },
   "rallo": {
    "file": "order3.c",
    "orig": "0x5350",
-   "size_orig": 572,
-   "note": "RET tests the types the other way round."
+   "size_orig": 278,
+   "note": "RET tests the types the other way round.",
+   "status": "exact"
+  },
+  "mkoreg": {
+   "file": null,
+   "orig": "0x5466",
+   "size_orig": 294,
+   "note": "Only in scodgen, in front of orderadd.",
+   "status": "exact"
   },
   "orderadd": {
    "file": "order3.c",
    "orig": "0x558c",
-   "size_orig": 202
+   "size_orig": 194,
+   "status": "exact"
   },
   "offstar": {
    "file": "order3.c",
-   "orig": "0x5656",
-   "size_orig": 162
+   "orig": "0x564e",
+   "size_orig": 170,
+   "status": "exact"
   },
   "niceuty": {
    "file": "order3.c",
    "orig": "0x56f8",
-   "size_orig": 74
+   "size_orig": 74,
+   "status": "exact"
   },
   "setbin": {
    "file": "order3.c",
    "orig": "0x5742",
    "size_orig": 430,
-   "note": "Form: no goto; the test of istnode(l) with niceuty, offstar and order written out in the first if and at the end. popt moves the blocks."
+   "note": "Form: no goto; the test of istnode(l) with niceuty, offstar and order written out in the first if and at the end. popt moves the blocks.",
+   "status": "exact"
   },
   "setstr": {
    "file": "order3.c",
    "orig": "0x58f0",
-   "size_orig": 78
+   "size_orig": 78,
+   "status": "exact"
   },
   "setasg": {
    "file": "order3.c",
    "orig": "0x593e",
-   "size_orig": 166
+   "size_orig": 166,
+   "status": "exact"
   },
   "lmuldiv": {
    "file": "order3.c",
    "orig": "0x59e4",
    "size_orig": 66,
-   "note": "default: return 0 inside the switch."
+   "note": "default: return 0 inside the switch.",
+   "status": "exact"
   },
   "setasop": {
    "file": "order3.c",
    "orig": "0x5a26",
-   "size_orig": 562
+   "size_orig": 562,
+   "status": "exact"
   },
   "getlab": {
    "file": "order3.c",
    "orig": "0x5c58",
-   "size_orig": 10
+   "size_orig": 10,
+   "status": "exact"
   },
   "deflab": {
    "file": "order3.c",
    "orig": "0x5c62",
-   "size_orig": 22
+   "size_orig": 22,
+   "status": "exact"
   },
   "genargs": {
    "file": "order3.c",
    "orig": "0x5c78",
-   "size_orig": 84
+   "size_orig": 84,
+   "status": "exact"
   },
   "argscan": {
    "file": "order3.c",
    "orig": "0x5ccc",
    "size_orig": 384,
-   "note": "Odd form: the switch with only case 4 in place, cases 1 and 2 and default in front of it by goto; --argreg & 1; default has its own copy that popt merges."
+   "note": "Odd form: the switch with only case 4 in place, cases 1 and 2 and default in front of it by goto; --argreg & 1; default has its own copy that popt merges.",
+   "status": "exact"
   },
   "argsort": {
    "file": "order3.c",
    "orig": "0x5e4c",
-   "size_orig": 80
+   "size_orig": 80,
+   "status": "exact"
   },
   "fixstarg": {
    "file": "order3.c",
    "orig": "0x5e9c",
-   "size_orig": 94
+   "size_orig": 94,
+   "status": "exact"
   },
   "argstrip": {
    "file": "order3.c",
    "orig": "0x5efa",
-   "size_orig": 178
+   "size_orig": 178,
+   "status": "exact"
   },
   "argplace": {
    "file": "order3.c",
    "orig": "0x5fac",
    "size_orig": 358,
-   "note": "cnt is reached by ++cnt[x]: the postfix form computes the address twice. for loops with nargs++ as their step."
+   "note": "cnt is reached by ++cnt[x]: the postfix form computes the address twice. for loops with nargs++ as their step.",
+   "status": "exact"
   },
   "tshape": {
    "file": "match3.c",
    "orig": "0x6112",
    "size_orig": 356,
-   "note": "Case FLD stands before STAR in the source, the order of the bodies in the original."
+   "note": "Case FLD stands before STAR in the source, the order of the bodies in the original.",
+   "status": "exact"
   },
   "ttype": {
    "file": "match3.c",
    "orig": "0x6276",
-   "size_orig": 236
+   "size_orig": 236,
+   "status": "exact"
   },
   "setrew": {
    "file": "match3.c",
    "orig": "0x6362",
-   "size_orig": 180
+   "size_orig": 180,
+   "status": "exact"
   },
   "match": {
    "file": "match3.c",
    "orig": "0x6416",
    "size_orig": 686,
-   "note": "Odd form: the switch tail and the search loop in the physical order of the original, by goto; the candidate code stands inside the last test of the operator class, so that no jump stands in front of its label. Found with a trace of popt (OLDCC_LOG 2026-11-03)."
+   "note": "Odd form: the switch tail and the search loop in the physical order of the original, by goto; the candidate code stands inside the last test of the operator class, so that no jump stands in front of its label. Found with a trace of popt (OLDCC_LOG 2026-11-03).",
+   "status": "exact"
   },
   "expand": {
    "file": "match3.c",
    "orig": "0x66c4",
-   "size_orig": 498
+   "size_orig": 498,
+   "status": "exact"
   },
   "getlr": {
    "file": "match3.c",
    "orig": "0x68b6",
-   "size_orig": 134
+   "size_orig": 134,
+   "status": "exact"
   },
   "rbusy": {
    "file": "allo3.c",
    "orig": "0x693c",
-   "size_orig": 214
+   "size_orig": 214,
+   "status": "exact"
   },
   "freeparm": {
    "file": "allo3.c",
    "orig": "0x6a12",
    "size_orig": 86,
-   "note": "Exact with OLD_D3L: a word cast of a global long is not taken from the register that holds the long. One witness, on the owner's word."
+   "note": "Exact with OLD_D3L: a word cast of a global long is not taken from the register that holds the long. One witness, on the owner's word.",
+   "status": "exact"
   },
   "allo": {
    "file": "allo3.c",
    "orig": "0x6a68",
    "size_orig": 954,
-   "note": "The words of a temporary for parameters: a float takes 4 (PARMWORDS), of a temporary 2 (TEMPWORDS)."
+   "note": "The words of a temporary for parameters: a float takes 4 (PARMWORDS), of a temporary 2 (TEMPWORDS).",
+   "status": "exact"
   },
   "freetemp": {
    "file": "allo3.c",
    "orig": "0x6e22",
-   "size_orig": 78
+   "size_orig": 78,
+   "status": "exact"
   },
   "rclass": {
    "file": "allo3.c",
    "orig": "0x6e70",
    "size_orig": 106,
-   "note": "Exact: OLD_D3J restores parameters also at a label with several jumps."
+   "note": "Exact: OLD_D3J restores parameters also at a label with several jumps.",
+   "status": "exact"
   },
   "allocreg": {
    "file": "allo3.c",
    "orig": "0x6eda",
    "size_orig": 284,
-   "note": "Form: if / else if / else, no goto."
+   "note": "Form: if / else if / else, no goto.",
+   "status": "exact"
   },
   "freereg": {
    "file": "allo3.c",
    "orig": "0x6ff6",
    "size_orig": 286,
-   "note": "Odd form: the found code inside the first loop, the second loop tests at the top with a return inside."
+   "note": "Odd form: the found code inside the first loop, the second loop tests at the top with a return inside.",
+   "status": "exact"
   },
   "usable": {
    "file": "allo3.c",
    "orig": "0x7114",
    "size_orig": 198,
-   "note": "p is overwritten with the result of getlr; popt removes the store of the parameter."
+   "note": "Left: add r2,#0 behind the first (rv >> 8): the source form of the zero is not known; cast and folded forms give nothing.",
+   "status": "open",
+   "lines": 1
   },
   "recl2": {
    "file": "allo3.c",
    "orig": "0x71da",
-   "size_orig": 124
+   "size_orig": 124,
+   "status": "exact"
   },
   "rfree": {
    "file": "allo3.c",
    "orig": "0x7256",
-   "size_orig": 90
+   "size_orig": 90,
+   "status": "exact"
   },
   "rwprint": {
    "file": "allo3.c",
    "orig": "0x72b0",
    "size_orig": 142,
-   "note": "Odd form: an unreferenced label in front of the first test, as readmems."
+   "note": "Odd form: an unreferenced label in front of the first test, as readmems.",
+   "status": "exact"
   },
   "reclaim": {
    "file": "allo3.c",
    "orig": "0x733e",
    "size_orig": 920,
-   "note": "Odd form: done in front of the code for a register result, reached by goto from behind it."
+   "note": "Odd form: done in front of the code for a register result, reached by goto from behind it.",
+   "status": "exact"
   },
   "pairmate": {
    "file": "regallo3.c",
    "orig": "0x76d6",
-   "size_orig": 28
+   "size_orig": 28,
+   "status": "exact"
   },
   "rsinit": {
    "file": "regallo3.c",
    "orig": "0x76f2",
-   "size_orig": 76
+   "size_orig": 76,
+   "status": "exact"
   },
   "rsbuild": {
    "file": "regallo3.c",
    "orig": "0x773e",
-   "size_orig": 166
+   "size_orig": 166,
+   "status": "masked",
+   "lines": 2
   },
   "rsdump": {
    "file": "regallo3.c",
    "orig": "0x77e4",
-   "size_orig": 212
+   "size_orig": 212,
+   "status": "exact"
   },
   "newnode": {
    "file": "regallo3.c",
    "orig": "0x78b8",
    "size_orig": 112,
-   "note": "m->reg = n->reg = n->reg * 2 in case 2 and 6: the tail is merged behind the first load, as in the original."
+   "note": "m->reg = n->reg = n->reg * 2 in case 2 and 6: the tail is merged behind the first load, as in the original.",
+   "status": "exact"
   },
   "rsinsert": {
    "file": "regallo3.c",
    "orig": "0x7928",
    "size_orig": 318,
-   "note": "Exact with OLD_D3J forgetting all jump records at a label no jump has named (d3jclear in the record L); one witness, taken on the owner's word. No else return: with another mode a and b are not set (quirk table)."
+   "note": "Exact with OLD_D3J forgetting all jump records at a label no jump has named (d3jclear in the record L); one witness, taken on the owner's word. No else return: with another mode a and b are not set (quirk table).",
+   "status": "exact"
   },
   "rcount_reset": {
    "file": "regallo3.c",
    "orig": "0x7a66",
-   "size_orig": 2
+   "size_orig": 2,
+   "status": "exact"
   },
   "roverlap": {
    "file": "regallo3.c",
    "orig": "0x7a68",
-   "size_orig": 390
+   "size_orig": 390,
+   "status": "exact"
   },
   "regjam": {
    "file": "regallo3.c",
    "orig": "0x7bee",
    "size_orig": 762,
-   "note": "Odd form: the split loop stands inside the first loop and is reached by goto from behind it; the code that links the new node stands in the last case and case 1 and 6 reach it by goto; roverlap(1, reg) without a third argument (quirk table)."
+   "note": "Odd form: the split loop stands inside the first loop and is reached by goto from behind it; the code that links the new node stands in the last case and case 1 and 6 reach it by goto; roverlap(1, reg) without a third argument (quirk table).",
+   "status": "exact"
   },
   "getreg": {
    "file": "regallo3.c",
    "orig": "0x7ee8",
    "size_orig": 832,
-   "note": "Odd form: as regjam the split loop inside the free list loop, reached by goto; the found and return code inside the loop of the register variables, in front of its test. The source form is what gives the bytes, not proved to be what the authors wrote."
+   "note": "Odd form: as regjam the split loop inside the free list loop, reached by goto; the found and return code inside the loop of the register variables, in front of its test. The source form is what gives the bytes, not proved to be what the authors wrote.",
+   "status": "exact"
   },
   "rsreturn": {
    "file": "regallo3.c",
    "orig": "0x8228",
    "size_orig": 462,
-   "note": "Odd form: if (rspool) n->next = rspool; n->next is 0 from before. The whole rest of the function stands inside the search loop."
+   "note": "Odd form: if (rspool) n->next = rspool; n->next is 0 from before. The whole rest of the function stands inside the search loop.",
+   "status": "exact"
   },
   "nullsyms": {
    "file": "regallo3.c",
    "orig": "0x83f6",
-   "size_orig": 64
+   "size_orig": 64,
+   "status": "exact"
   },
   "rsfreeall": {
    "file": "regallo3.c",
    "orig": "0x8436",
    "size_orig": 102,
-   "note": "Form: case 1 ends with goto ret into case 3, case 2 falls through, no default."
+   "note": "Form: case 1 ends with goto ret into case 3, case 2 falls through, no default.",
+   "status": "exact"
   },
   "rspush": {
    "file": "regallo3.c",
    "orig": "0x849c",
-   "size_orig": 58
+   "size_orig": 58,
+   "status": "exact"
   },
   "rsmerge": {
    "file": "regallo3.c",
    "orig": "0x84d6",
    "size_orig": 494,
-   "note": "The chars gone1, gone2, drop1, drop2 on the frame; while loops, a for gives another target for continue; q = rsexcl = p->next in a chain."
+   "note": "The chars gone1, gone2, drop1, drop2 on the frame; while loops, a for gives another target for continue; q = rsexcl = p->next in a chain.",
+   "status": "exact"
   },
   "rsmatch": {
    "file": "regallo3.c",
    "orig": "0x86c4",
    "size_orig": 142,
-   "note": "Odd form: the step of the first search in front of its loop, by goto."
+   "note": "Odd form: the step of the first search in front of its loop, by goto.",
+   "status": "exact"
   },
   "rsrelease": {
    "file": "regallo3.c",
    "orig": "0x8752",
-   "size_orig": 60
+   "size_orig": 60,
+   "status": "exact"
   },
   "rsrelall": {
    "file": "regallo3.c",
    "orig": "0x878e",
-   "size_orig": 76
+   "size_orig": 76,
+   "status": "exact"
   },
   "rsrestart": {
    "file": "regallo3.c",
    "orig": "0x87da",
-   "size_orig": 74
+   "size_orig": 74,
+   "status": "exact"
   },
   "syserror": {
    "file": "comm3.c",
    "orig": "0x8824",
    "size_orig": 36,
-   "note": "Dead code: no caller; name guessed; pulls perror and errlst into the program."
+   "note": "Dead code: no caller; name guessed; pulls perror and errlst into the program.",
+   "status": "exact"
   },
   "uerror": {
    "file": "comm3.c",
    "orig": "0x8848",
-   "size_orig": 62
+   "size_orig": 62,
+   "status": "exact"
   },
   "cerror": {
    "file": "comm3.c",
    "orig": "0x8886",
-   "size_orig": 128
+   "size_orig": 128,
+   "status": "exact"
   },
   "werror": {
    "file": "comm3.c",
    "orig": "0x8906",
-   "size_orig": 62
+   "size_orig": 62,
+   "status": "exact"
   },
   "tinit": {
    "file": "comm3.c",
    "orig": "0x8944",
-   "size_orig": 48
+   "size_orig": 48,
+   "status": "exact"
   },
   "talloc": {
    "file": "comm3.c",
    "orig": "0x8974",
-   "size_orig": 94
+   "size_orig": 94,
+   "status": "exact"
   },
   "tcheck": {
    "file": "comm3.c",
    "orig": "0x89d2",
-   "size_orig": 66
+   "size_orig": 66,
+   "status": "exact"
   },
   "tfree": {
    "file": "comm3.c",
    "orig": "0x8a14",
-   "size_orig": 28
+   "size_orig": 28,
+   "status": "exact"
   },
   "tfree1": {
    "file": "comm3.c",
    "orig": "0x8a30",
-   "size_orig": 28
+   "size_orig": 28,
+   "status": "exact"
   },
   "fwalk": {
    "file": "comm3.c",
    "orig": "0x8a4c",
-   "size_orig": 120
+   "size_orig": 120,
+   "status": "exact"
   },
   "walkf": {
    "file": "comm3.c",
    "orig": "0x8ac4",
-   "size_orig": 88
+   "size_orig": 88,
+   "status": "exact"
   },
   "mkdope": {
    "file": "comm3.c",
    "orig": "0x8b1c",
-   "size_orig": 52
+   "size_orig": 52,
+   "status": "exact"
   },
   "bsize": {
    "file": "comm3.c",
    "orig": "0x8b50",
-   "size_orig": 76
+   "size_orig": 76,
+   "status": "exact"
   },
   "szty": {
    "file": "comm3.c",
    "orig": "0x8b9c",
-   "size_orig": 52
+   "size_orig": 52,
+   "status": "exact"
   },
   "argsize": {
    "file": "comm3.c",
    "orig": "0x8bd0",
-   "size_orig": 92
+   "size_orig": 92,
+   "status": "exact"
   },
   "prline": {
    "file": "comm3.c",
    "orig": "0x8c2c",
-   "size_orig": 30
+   "size_orig": 30,
+   "status": "exact"
   },
   "tbytes": {
    "file": "comm3.c",
    "orig": "0x8c4a",
-   "size_orig": 52
+   "size_orig": 52,
+   "status": "exact"
   },
   "callreg": {
    "file": "comm3.c",
    "orig": "0x8c7e",
-   "size_orig": 44
+   "size_orig": 44,
+   "status": "exact"
   },
   "dexit": {
    "file": "comm3.c",
    "orig": "0x8caa",
-   "size_orig": 26
+   "size_orig": 26,
+   "status": "exact"
   },
   "branch": {
    "file": "comm3.c",
    "orig": "0x8cc4",
-   "size_orig": 26
+   "size_orig": 26,
+   "status": "exact"
   },
   "ncopy": {
    "file": "comm3.c",
    "orig": "0x8cde",
-   "size_orig": 34
+   "size_orig": 34,
+   "status": "exact"
   },
   "tcopy": {
    "file": "comm3.c",
    "orig": "0x8d00",
    "size_orig": 210,
-   "note": "Quirk: the second rbusy has two arguments (quirk table)."
+   "note": "Quirk: the second rbusy has two arguments (quirk table).",
+   "status": "exact"
   },
   "ispow2": {
    "file": "comm3.c",
    "orig": "0x8dd2",
-   "size_orig": 78
+   "size_orig": 78,
+   "status": "exact"
   },
   "plainicon": {
    "file": "comm3.c",
    "orig": "0x8e20",
-   "size_orig": 42
+   "size_orig": 42,
+   "status": "exact"
   },
   "alloc": {
    "file": "comm3.c",
    "orig": "0x8e4a",
-   "size_orig": 124
+   "size_orig": 124,
+   "status": "exact"
   },
   "allocinit": {
    "file": "comm3.c",
    "orig": "0x8ec6",
-   "size_orig": 34
+   "size_orig": 34,
+   "status": "exact"
   },
   "hdrout": {
    "file": "wrt3.c",
    "orig": "0x8ee8",
-   "size_orig": 26
+   "size_orig": 26,
+   "status": "exact"
   },
   "endrun": {
    "file": "wrt3.c",
    "orig": "0x8f02",
-   "size_orig": 4
+   "size_orig": 4,
+   "status": "exact"
   },
   "endline": {
    "file": "wrt3.c",
    "orig": "0x8f06",
    "size_orig": 82,
-   "note": "The pointer assigned inside the first test: if (*(cp = &ifname[n - 1]) == '\"')."
+   "note": "The pointer assigned inside the first test: if (*(cp = &ifname[n - 1]) == '\"').",
+   "status": "exact"
   },
   "parminit": {
    "file": "wrt3.c",
    "orig": "0x8f58",
    "size_orig": 778,
-   "note": "Odd form: one register variable for the type and then for the register number of the symbol; the index of rnames is long (-p->lval)."
+   "note": "Odd form: one register variable for the type and then for the register number of the symbol; the index of rnames is long (-p->lval).",
+   "status": "exact"
   },
   "structretcode": {
    "file": "wrt3.c",
    "orig": "0x9262",
-   "size_orig": 92
+   "size_orig": 92,
+   "status": "exact"
   },
   "fbegin": {
    "file": "wrt3.c",
    "orig": "0x92be",
-   "size_orig": 324
+   "size_orig": 324,
+   "status": "exact"
   },
   "regtabinit": {
    "file": "regs3.c",
    "orig": "0x9402",
-   "size_orig": 8
+   "size_orig": 8,
+   "status": "exact"
   },
   "tabfind": {
    "file": "regs3.c",
    "orig": "0x940a",
-   "size_orig": 60
+   "size_orig": 60,
+   "status": "exact"
   },
   "tabclear": {
    "file": "regs3.c",
    "orig": "0x9446",
-   "size_orig": 60
+   "size_orig": 60,
+   "status": "exact"
   },
   "fixtemp": {
    "file": "regs3.c",
    "orig": "0x9482",
    "size_orig": 382,
-   "note": "tmptab[i].reg = j = getreg(...); i used for the temporary number first."
+   "note": "tmptab[i].reg = j = getreg(...); i used for the temporary number first.",
+   "status": "exact"
   },
   "tmpcleanup": {
    "file": "regs3.c",
    "orig": "0x9600",
    "size_orig": 236,
-   "note": "The loop test and the end of the table in one for condition; the inner for tests off < 0 with the body inside."
+   "note": "The loop test and the end of the table in one for condition; the inner for tests off < 0 with the body inside.",
+   "status": "exact"
   },
   "tmpdump": {
    "file": "regs3.c",
    "orig": "0x96ec",
-   "size_orig": 86
+   "size_orig": 86,
+   "status": "exact"
   },
   "fixfld": {
    "file": "regs3.c",
    "orig": "0x9742",
-   "size_orig": 200
+   "size_orig": 200,
+   "status": "exact"
   },
   "mapregs": {
    "file": "regs3.c",
    "orig": "0x980a",
    "size_orig": 314,
-   "note": "Odd form: (sflags >> 2 & 1) == 0 written with the comparison: without it the compiler takes bit, the original has and and test."
+   "note": "Odd form: (sflags >> 2 & 1) == 0 written with the comparison: without it the compiler takes bit, the original has and and test.",
+   "status": "exact"
   },
   "symuse": {
    "file": "regs3.c",
    "orig": "0x9944",
-   "size_orig": 74
+   "size_orig": 74,
+   "status": "exact"
   },
   "rfreeall": {
    "file": "regs3.c",
    "orig": "0x998e",
-   "size_orig": 80
+   "size_orig": 80,
+   "status": "exact"
   },
   "rfind": {
    "file": "regs3.c",
    "orig": "0x99de",
-   "size_orig": 60
+   "size_orig": 60,
+   "status": "exact"
   },
   "rnassign": {
    "file": "regs3.c",
    "orig": "0x9a1a",
-   "size_orig": 170
+   "size_orig": 170,
+   "status": "exact"
   },
   "rnnullp": {
    "file": "regs3.c",
    "orig": "0x9ac4",
-   "size_orig": 74
+   "size_orig": 74,
+   "status": "exact"
   },
   "rnnullcall": {
    "file": "regs3.c",
    "orig": "0x9b0e",
-   "size_orig": 38
+   "size_orig": 38,
+   "status": "exact"
   },
   "rnnullall": {
    "file": "regs3.c",
    "orig": "0x9b34",
-   "size_orig": 46
+   "size_orig": 46,
+   "status": "exact"
   },
   "rnnulll": {
    "file": "regs3.c",
    "orig": "0x9b62",
-   "size_orig": 34
+   "size_orig": 34,
+   "status": "exact"
   },
   "rnnullw": {
    "file": "regs3.c",
    "orig": "0x9b84",
-   "size_orig": 18
+   "size_orig": 18,
+   "status": "exact"
   },
   "rnnull": {
    "file": "regs3.c",
    "orig": "0x9b96",
-   "size_orig": 70
+   "size_orig": 70,
+   "status": "exact"
   },
   "nxwork": {
    "file": "regs3.c",
    "orig": "0x9bdc",
    "size_orig": 1784,
-   "note": "Odd form: the holes of the table as explicit empty cases, default only for values out of range (the table sends holes to the end, the range check to cerror)."
+   "note": "Odd form: the holes of the table as explicit empty cases, default only for values out of range (the table sends holes to the end, the range check to cerror).",
+   "status": "exact"
   },
   "symreg": {
    "file": "regs3.c",
    "orig": "0xa2d4",
    "size_orig": 94,
-   "note": "Odd form: if (s == 0) ; for the lone cp r1,#0, the found code in front of its test, by goto."
+   "note": "Odd form: if (s == 0) ; for the lone cp r1,#0, the found code in front of its test, by goto.",
+   "status": "exact"
   },
   "regforsym": {
    "file": "regs3.c",
    "orig": "0xa332",
    "size_orig": 140,
-   "note": "symreg with its third argument also for the frame pointer symbols."
+   "note": "symreg with its third argument also for the frame pointer symbols.",
+   "status": "exact"
   },
   "fixname": {
    "file": "regs3.c",
    "orig": "0xa3be",
-   "size_orig": 100
+   "size_orig": 100,
+   "status": "exact"
   },
   "oregfix": {
    "file": "regs3.c",
    "orig": "0xa422",
-   "size_orig": 144
+   "size_orig": 144,
+   "status": "exact"
   },
   "fcmd": {
    "file": "regs3.c",
    "orig": "0xa4b2",
    "size_orig": 152,
-   "note": "As scmd."
+   "note": "As scmd.",
+   "status": "exact"
   },
   "regreset": {
    "file": "regs3.c",
    "orig": "0xa54a",
-   "size_orig": 162
+   "size_orig": 162,
+   "status": "exact"
   },
   "rcmd": {
    "file": "regs3.c",
    "orig": "0xa5ec",
-   "size_orig": 438
+   "size_orig": 438,
+   "status": "exact"
   },
   "scmd": {
    "file": "regs3.c",
    "orig": "0xa7a2",
    "size_orig": 322,
-   "note": "The argument -n is taken from the frame (OLD_D3AW)."
+   "note": "The argument -n is taken from the frame (OLD_D3AW).",
+   "status": "exact"
   },
   "tcmd": {
    "file": "regs3.c",
    "orig": "0xa8e4",
    "size_orig": 356,
-   "note": "As scmd."
+   "note": "As scmd.",
+   "status": "exact"
   },
   "memname": {
    "file": "regs3.c",
    "orig": "0xaa48",
-   "size_orig": 128
+   "size_orig": 128,
+   "status": "exact"
   },
   "findtemp": {
    "file": "regs3.c",
    "orig": "0xaac8",
-   "size_orig": 52
+   "size_orig": 52,
+   "status": "exact"
   },
   "gswitch": {
    "file": "lcl3.c",
    "orig": "0xaafc",
-   "size_orig": 582,
-   "note": "Odd form: two register variables and two stack words without any use (the original saves and skips them); the two paths as if (op != 124) { ... return; } and a second if (op == 124), the original tests twice."
+   "size_orig": 978,
+   "note": "Own function under SEG, with the wanted pair chosen in place; the helper functions of before are gone.",
+   "status": "exact"
   },
   "chk": {
    "file": "lcl3.c",
-   "orig": "0xad42",
-   "size_orig": 464
+   "orig": "0xaece",
+   "size_orig": 68,
+   "status": "exact"
   },
   "clocal": {
    "file": "lcl3.c",
    "orig": "0xaf12",
    "size_orig": 982,
-   "note": "Odd form: case 9 and case 1 written out, an empty case 18, return; without a value in case 3, 6 (quirk table). Form: the cases of pf in the order 2, 12, 14, 4; p = l; goto ret in both arms."
+   "note": "Odd form: case 9 and case 1 written out, an empty case 18, return; without a value in case 3, 6 (quirk table). Form: the cases of pf in the order 2, 12, 14, 4; p = l; goto ret in both arms.",
+   "status": "exact"
   },
   "makeblock": {
    "file": "tr3.c",
    "orig": "0xb2e8",
-   "size_orig": 70
+   "size_orig": 70,
+   "status": "exact"
   },
   "foldadd": {
    "file": "tr3.c",
    "orig": "0xb32e",
-   "size_orig": 208
+   "size_orig": 208,
+   "status": "exact"
   },
   "buildstar": {
    "file": "tr3.c",
    "orig": "0xb3fe",
    "size_orig": 188,
-   "note": "clocal after the switch, also for STAR and UAND; no default."
+   "note": "clocal after the switch, also for STAR and UAND; no default.",
+   "status": "exact"
   },
   "bcon": {
    "file": "tr3.c",
    "orig": "0xb4ba",
-   "size_orig": 52
+   "size_orig": 52,
+   "status": "exact"
   },
   "member": {
    "file": "tr3.c",
    "orig": "0xb4ee",
-   "size_orig": 164
+   "size_orig": 164,
+   "status": "exact"
   },
   "optim": {
    "file": "optim3.c",
    "orig": "0xb592",
    "size_orig": 1532,
-   "note": "Odd forms: the MINUS loop as a goto loop with its test inside the if; if (...) { zapleft: ... } if (...) goto zapleft; the joined and folded trees are tested again. OLD_D20L and OLD_D20C removed."
+   "note": "Odd forms: the MINUS loop as a goto loop with its test inside the if; if (...) { zapleft: ... } if (...) goto zapleft; the joined and folded trees are tested again. OLD_D20L and OLD_D20C removed.",
+   "status": "exact"
   },
   "conval": {
    "file": "optim3.c",
    "orig": "0xbb8e",
    "size_orig": 698,
-   "note": "The body of ULT stands in front of ULE."
+   "note": "The body of ULT stands in front of ULE.",
+   "status": "exact"
   },
   "treeeq": {
    "file": "optim3.c",
    "orig": "0xbe48",
-   "size_orig": 146
+   "size_orig": 146,
+   "status": "exact"
   },
   "convelim": {
    "file": "optim3.c",
    "orig": "0xbeda",
    "size_orig": 294,
-   "note": "Exact: OLD_D3J, the record ] between a jump and a label does not count."
+   "note": "Exact: OLD_D3J, the record ] between a jump and a label does not count.",
+   "status": "exact"
   },
   "isint": {
    "file": "optim3.c",
    "orig": "0xc000",
-   "size_orig": 34
+   "size_orig": 34,
+   "status": "exact"
   }
  }
 }

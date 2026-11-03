@@ -189,11 +189,11 @@ sucomp(p)
 			return;
 		}
 		p->su = max(p->left->su, nr);
-#ifdef SEG
-		if (o == STAR && p->su <= 2)	/* an indirection through a long pointer needs a register pair */
-			p->su = 2;
-#endif
 		p->fsu = max(p->left->fsu, nf);
+#ifdef SEG
+		if (p->op == STAR)		/* an indirection through a long pointer needs a register pair */
+			p->su = max(p->su, 2);
+#endif
 		return;
 	case BITYPE:
 		sul = p->left->su;
@@ -366,6 +366,64 @@ rallo(p, down)
 		rallo(p->right, down2);
 }
 
+#ifdef SEG
+/* an indirection through a register plus a constant or a register plus a register becomes an OREG
+   (rval: ((base + 1) << 8) | (index + 1)); 1 when it did */
+int
+mkoreg(p)
+	register NODE *p;
+{
+	register NODE *l, *r;
+	register struct sym *sym;
+	register int rv;
+	NODE *q;
+	long off;
+
+	if (p->op != STAR)
+		return 0;
+	q = p->left;
+	l = q->left;
+	r = q->right;
+	if ((q->op == PLUS || q->op == MINUS) && r->op == ICON && l->op == REG && p->type != 6 && p->type != 7) {
+		off = r->lval;
+		rv = (l->rval + 1) << 8;
+		sym = r->sname;
+		if (q->op == MINUS) {
+			if (sym->nameoff)
+				return 0;
+			off = -off;
+		}
+		goto set;
+	}
+	if (q->op == PLUS && r->op == REG && l->op == REG && p->type != 6 && p->type != 7) {
+		if (r->rval == 0)
+			return 0;
+		rv = ((l->rval + 1) << 8) | (r->rval + 1);
+		off = 0;
+		sym = r->sname;
+		goto set;
+	}
+	oreg2(p);
+	if (p->op != OREG)
+		return 0;
+	return 1;
+set:
+	if ((rv >> 8) - 1 == 0)
+		return 0;
+	p->op = OREG;
+	p->rval = rv;
+	p->lval = off;
+	p->stsize = 0;
+	if (sym == symtab0 || sym == fpsym1 || sym == fpsym2)
+		p->sname = sym;
+	else
+		p->sname = 0;
+	tfree(q);
+	return 1;
+
+}
+#endif
+
 /* order the operands of an address sum that are not yet addressable; returns the number of orders done */
 static int
 orderadd(p)
@@ -407,73 +465,23 @@ orderadd(p)
 extern struct sym *symtab0;
 extern void oreg2();
 
-/* an indirection through a register plus a constant or a register plus a register becomes an OREG
-   (rval: ((base + 1) << 8) | (index + 1)); 1 when it did */
-int
-mkoreg(p)
-	register NODE *p;
-{
-	register NODE *q, *l, *r;
-	int rv;
-	long off;
-	struct sym *sym;
-
-	if (p->op != STAR)
-		return 0;
-	q = p->left;
-	l = q->left;
-	r = q->right;
-	if (q->op == PLUS || q->op == MINUS) {
-		if (r->op == ICON && l->op == REG && p->type != 6 && p->type != 7) {
-			off = r->lval;
-			rv = (l->rval + 1) << 8;
-			sym = r->sname;
-			if (q->op == MINUS) {
-				if (sym ? sym->nameoff : 0)
-					return 0;
-				off = -off;
-			}
-			goto set;
-		}
-	}
-	if (q->op == PLUS && r->op == REG && l->op == REG && p->type != 6 && p->type != 7) {
-		if (r->rval == 0)
-			return 0;
-		rv = ((l->rval + 1) << 8) | (r->rval + 1);
-		off = 0;
-		sym = r->sname;
-		goto set;
-	}
-	oreg2(p);
-	return p->op == OREG;
-set:
-	if ((rv >> 8) == 1)
-		return 0;
-	p->op = OREG;
-	p->rval = rv;
-	p->lval = off;
-	p->stsize = 0;
-	if (sym == symtab0 || sym == fpsym1 || sym == fpsym2)
-		p->sname = sym;
-	else
-		p->sname = 0;
-	tfree(q);
-	return 1;
-}
-
 /* handle indirections: get the address of *p into a register; p is the STAR itself or its operand */
 void
 offstar(p)
 	register NODE *p;
 {
 	register NODE *l;
+	register int spare;
 
 	if (p->op == STAR) {
 		l = p->left;
 		if (l->op == PLUS || l->op == MINUS) {
 			orderadd(l);
 			if (mkoreg(p)) {
-				order(p, p->type == 6 || p->type == 7 ? 0x18 : 6);
+				if (p->type == 6 || p->type == 7)
+					order(p, 0x18);
+				else
+					order(p, 6);
 				return;
 			}
 		}
@@ -487,7 +495,10 @@ offstar(p)
 				orderadd(l);
 				order(l, 6);
 			}
-			order(p, p->type == 6 || p->type == 7 ? 0x18 : 6);
+			if (p->type == 6 || p->type == 7)
+				order(p, 0x18);
+			else
+				order(p, 6);
 			return;
 		}
 		p = l;

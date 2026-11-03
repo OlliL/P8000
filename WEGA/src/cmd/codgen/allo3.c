@@ -516,26 +516,12 @@ usable(p, side, r)
 	rv = p->rval;
 #ifdef SEG
 	if (p->op == OREG) {
-		if (rv >= 0x100) {
-			if ((rv >> 8) - 1 == r || (rv >> 8) - 1 + 1 == r || (rv & 0xFF) - 1 == r)
-				return 1;
-			return 0;
-		}
-		if (rv == r)
-			return 1;
-		if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
-			return 0;
-		if (rv + 1 == r)
-			return 1;
-		return 0;
+		if (rv >= 0x100)
+			return (rv >> 8) - 1 == r || (rv >> 8) - 1 + 1 == r || (rv & 0xFF) - 1 == r;
+		return rv == r || (p->lval == 0 && p->sname == 0 && !(p->op == OREG && p->stsize < 0) && rv + 1 == r);
 	}
-	if (p->op == REG) {
-		if (rv == r)
-			return 1;
-		if (szty(p->type) == 2 && rv + 1 == r)
-			return 1;
-		return 0;
-	}
+	if (p->op == REG)
+		return rv == r || (szty(p->type) == 2 && rv + 1 == r);
 	return 0;
 #else
 	if (p->op == OREG)
