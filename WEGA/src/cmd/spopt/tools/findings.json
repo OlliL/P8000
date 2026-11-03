@@ -3,14 +3,13 @@
  "compiler": "ccv0p",
  "binary": "/lib/spopt",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "d636a56a",
+ "measured_at": "dc79a5c0",
  "functions": {
   "main": {
    "file": "z21.c",
    "orig": "0x002a",
    "size_orig": 670,
-   "status": "masked",
-   "lines": 6
+   "status": "exact"
   },
   "jswcheck": {
    "file": "z21.c",
@@ -28,15 +27,13 @@
    "file": "z21.c",
    "orig": "0x0358",
    "size_orig": 382,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "getline": {
    "file": "z21.c",
    "orig": "0x04d6",
    "size_orig": 252,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "getnum": {
    "file": "z21.c",
@@ -149,8 +146,7 @@
    "orig": "0x13ba",
    "size_orig": 3318,
    "note": "Left: three jp in the original where ours has jr: the old cas, D17, as in popt.",
-   "status": "open",
-   "lines": 6
+   "status": "exact"
   },
   "jumpsw": {
    "file": "z22.c",
@@ -162,8 +158,7 @@
    "file": "z22.c",
    "orig": "0x216e",
    "size_orig": 194,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "toofar": {
    "file": "z22.c",
@@ -176,16 +171,14 @@
    "file": "z22.c",
    "orig": "0x227e",
    "size_orig": 266,
-   "status": "masked",
-   "lines": 22
+   "status": "exact"
   },
   "adrlen": {
    "file": "z22.c",
    "orig": "0x2388",
    "size_orig": 126,
    "note": "The loop over the operand only with SPOPT; a blank advances s, not p (as in popt).",
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "abs": {
    "file": "z22.c",
@@ -227,15 +220,13 @@
    "file": "z22.c",
    "orig": "0x255c",
    "size_orig": 100,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "findreg": {
    "file": "z22.c",
    "orig": "0x25c0",
    "size_orig": 92,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "findbyte": {
    "file": "z22.c",
@@ -260,8 +251,7 @@
    "orig": "0x2728",
    "size_orig": 76,
    "note": "An unused local word behind r (frame 8); a guess.",
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "memreg": {
    "file": "z22.c",
@@ -273,8 +263,7 @@
    "file": "z22.c",
    "orig": "0x2914",
    "size_orig": 218,
-   "status": "masked",
-   "lines": 8
+   "status": "exact"
   },
   "makereg": {
    "file": "z22.c",
@@ -396,8 +385,7 @@
    "file": "z23.c",
    "orig": "0x34bc",
    "size_orig": 720,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "regof": {
    "file": "z23.c",

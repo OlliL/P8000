@@ -25,8 +25,7 @@
    "file": "cpp.c",
    "orig": "0x02b4",
    "size_orig": 1332,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "skipbl": {
    "file": "cpp.c",
@@ -38,15 +37,13 @@
    "file": "cpp.c",
    "orig": "0x0818",
    "size_orig": 308,
-   "status": "masked",
-   "lines": 6
+   "status": "exact"
   },
   "doincl": {
    "file": "cpp.c",
    "orig": "0x094c",
    "size_orig": 550,
-   "status": "masked",
-   "lines": 10
+   "status": "exact"
   },
   "equfrm": {
    "file": "cpp.c",
@@ -58,15 +55,13 @@
    "file": "cpp.c",
    "orig": "0x0bae",
    "size_orig": 1002,
-   "status": "masked",
-   "lines": 12
+   "status": "exact"
   },
   "control": {
    "file": "cpp.c",
    "orig": "0x0f98",
    "size_orig": 574,
-   "status": "masked",
-   "lines": 10
+   "status": "exact"
   },
   "stsym": {
    "file": "cpp.c",
@@ -167,5 +162,5 @@
    "status": "exact"
   }
  },
- "measured_at": "fdd1b6bf"
+ "measured_at": "dc79a5c0"
 }

@@ -38,8 +38,8 @@ goodmagic  0_2   ranlib
 isatty     0_1   ranlib
 isatty     0_2   codgen cparse popt scodgen cpp
 length     0_1   cc scc size strip
-length     0_2   codgen popt ranlib scodgen
-length     0_3   cparse cpp
+length     0_2   codgen ranlib scodgen
+length     0_3   cparse cpp popt spopt
 malloc     0_1   size
 malloc     0_2   strip
 malloc     0_3   codgen cparse cpp popt ranlib
@@ -72,8 +72,8 @@ strncpy    0_1   cpp ranlib
 strncpy    0_2   ld
 strrchr    0_1   popt
 stty       0_1   ranlib
-stty       0_2   popt scodgen
-stty       0_3   codgen cparse cpp
+stty       0_2   scodgen
+stty       0_3   codgen cparse cpp popt spopt
 swab       0_1   ranlib
 swap       0_1   ld size strip
 swap       0_2   ranlib

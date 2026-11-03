@@ -3,7 +3,7 @@
  "compiler": "ccv0p",
  "binary": "/lib/scparse",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "acdd1d43",
+ "measured_at": "dc79a5c0",
  "functions": {
   "mkty": {
    "file": "cgram1.y",
@@ -148,8 +148,7 @@
    "orig": "0x1b2a",
    "size_orig": 2026,
    "note": "The long jp of the old cas (OLDCC.md D17): gone with a test cas.",
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "lxres": {
    "file": "scan1.c",
@@ -187,15 +186,13 @@
    "file": "pftn1.c",
    "orig": "0x2db2",
    "size_orig": 330,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "dclargs": {
    "file": "pftn1.c",
    "orig": "0x2efc",
    "size_orig": 584,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "setreg": {
    "file": "pftn1.c",
@@ -293,15 +290,13 @@
    "orig": "0x3984",
    "size_orig": 2450,
    "note": "Odd form: case QUEST: { int a1, a2, a3; ... } gives the temporary at 0x12. Unused words at the function level and in the STREF block; these names are guesses.",
-   "status": "masked",
-   "lines": 32
+   "status": "exact"
   },
   "strargs": {
    "file": "trees1.c",
    "orig": "0x4316",
    "size_orig": 112,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "chkstr": {
    "file": "trees1.c",
@@ -1014,8 +1009,7 @@
    "orig": "0x9638",
    "size_orig": 506,
    "note": "One unused int between i and n (a frame word of the original); the name j is a guess.",
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "copysym": {
    "file": "sym1.c",
@@ -1075,8 +1069,7 @@
    "file": "sym1.c",
    "orig": "0x9f54",
    "size_orig": 124,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "puttags": {
    "file": "sym1.c",

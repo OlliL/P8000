@@ -3,14 +3,13 @@
  "compiler": "ccv0p",
  "binary": "/lib/popt",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "5c2b1160",
+ "measured_at": "dc79a5c0",
  "functions": {
   "main": {
    "file": "z21.c",
    "orig": "0x002a",
    "size_orig": 670,
-   "status": "masked",
-   "lines": 6
+   "status": "exact"
   },
   "statline": {
    "file": "z21.c",
@@ -22,8 +21,7 @@
    "file": "z21.c",
    "orig": "0x0358",
    "size_orig": 382,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "jswcheck": {
    "file": "z21.c",
@@ -35,8 +33,7 @@
    "file": "z21.c",
    "orig": "0x04d6",
    "size_orig": 252,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "getnum": {
    "file": "z21.c",
@@ -184,15 +181,13 @@
    "file": "z22.c",
    "orig": "0x24f6",
    "size_orig": 100,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "findreg": {
    "file": "z22.c",
    "orig": "0x255a",
    "size_orig": 92,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "findbyte": {
    "file": "z22.c",
@@ -216,9 +211,8 @@
    "file": "z22.c",
    "orig": "0x26c2",
    "size_orig": 76,
-   "status": "masked",
-   "note": "An unused local word behind r (frame 8); a guess.",
-   "lines": 2
+   "status": "exact",
+   "note": "An unused local word behind r (frame 8); a guess."
   },
   "memreg": {
    "file": "z22.c",
@@ -230,8 +224,7 @@
    "file": "z22.c",
    "orig": "0x28ae",
    "size_orig": 218,
-   "status": "masked",
-   "lines": 8
+   "status": "exact"
   },
   "makereg": {
    "file": "z22.c",
@@ -352,8 +345,7 @@
    "file": "z22.c",
    "orig": "0x213c",
    "size_orig": 194,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "toofar": {
    "file": "z22.c",
@@ -366,24 +358,21 @@
    "file": "z22.c",
    "orig": "0x224c",
    "size_orig": 262,
-   "status": "masked",
-   "lines": 22
+   "status": "exact"
   },
   "adrlen": {
    "file": "z22.c",
    "orig": "0x2352",
    "size_orig": 78,
-   "status": "masked",
-   "note": "An unused local word (the frame of the original is 8); a guess.",
-   "lines": 2
+   "status": "exact",
+   "note": "An unused local word (the frame of the original is 8); a guess."
   },
   "rmove": {
    "file": "z22.c",
    "orig": "0x13b6",
    "size_orig": 3272,
-   "status": "open",
-   "note": "The long jp of the old cas (OLDCC.md D17): gone with a test cas. Odd form: the TST arm inside the block behind goto cp_chk.",
-   "lines": 8
+   "status": "exact",
+   "note": "The long jp of the old cas (OLDCC.md D17): gone with a test cas. Odd form: the TST arm inside the block behind goto cp_chk."
   },
   "itoa_": {
    "file": "z23.c",
@@ -446,8 +435,7 @@
    "file": "z23.c",
    "orig": "0x33d6",
    "size_orig": 720,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "regof": {
    "file": "z23.c",

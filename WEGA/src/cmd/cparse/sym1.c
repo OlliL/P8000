@@ -774,10 +774,3 @@ putrefs(){ /* the references into the .S file */
 	shdr.h_refs = nrefs * 6;
 	nrefs = 0;
 	}
-
-sputc( c, f ) FILE *f; {
-	return( putc( c, f ) );
-	}
-
-aobeg(){
-	}

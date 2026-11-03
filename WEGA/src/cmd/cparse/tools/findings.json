@@ -3,7 +3,7 @@
  "compiler": "ccv0p",
  "binary": "/lib/cparse",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "5c2b1160",
+ "measured_at": "dc79a5c0",
  "functions": {
   "f0000": {
    "file": "-",
@@ -153,9 +153,8 @@
    "file": "scan1.c",
    "orig": "0x1b2a",
    "size_orig": 2026,
-   "status": "open",
-   "note": "The long jp of the old cas (OLDCC.md D17): gone with a test cas.",
-   "lines": 2
+   "status": "exact",
+   "note": "The long jp of the old cas (OLDCC.md D17): gone with a test cas."
   },
   "lxres": {
    "file": "scan1.c",
@@ -193,15 +192,13 @@
    "file": "pftn1.c",
    "orig": "0x2db2",
    "size_orig": 330,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "dclargs": {
    "file": "pftn1.c",
    "orig": "0x2efc",
    "size_orig": 584,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "setreg": {
    "file": "pftn1.c",
@@ -298,16 +295,14 @@
    "file": "trees1.c",
    "orig": "0x397a",
    "size_orig": 2464,
-   "status": "masked",
-   "note": "Odd form: case QUEST: { int a1, a2, a3; ... } gives the temporary at 0x12. Unused words at the function level and in the STREF block; these names are guesses.",
-   "lines": 32
+   "status": "exact",
+   "note": "Odd form: case QUEST: { int a1, a2, a3; ... } gives the temporary at 0x12. Unused words at the function level and in the STREF block; these names are guesses."
   },
   "strargs": {
    "file": "trees1.c",
    "orig": "0x431a",
    "size_orig": 112,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "chkstr": {
    "file": "trees1.c",
@@ -1019,9 +1014,8 @@
    "file": "sym1.c",
    "orig": "0x94e8",
    "size_orig": 506,
-   "status": "masked",
-   "note": "One unused int between i and n (a frame word of the original); the name j is a guess.",
-   "lines": 2
+   "status": "exact",
+   "note": "One unused int between i and n (a frame word of the original); the name j is a guess."
   },
   "copysym": {
    "file": "sym1.c",
@@ -1081,8 +1075,7 @@
    "file": "sym1.c",
    "orig": "0x9e04",
    "size_orig": 124,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "puttags": {
    "file": "sym1.c",
@@ -1097,13 +1090,14 @@
    "status": "exact"
   },
   "sputc": {
-   "file": "sym1.c",
+   "file": "sym2.c",
    "orig": "0x9ece",
    "size_orig": 54,
-   "status": "exact"
+   "status": "exact",
+   "note": "Own module (the name sym2.c is a guess): putnames reaches sputc by long calls in reach, and calr cannot leave its module. Nothing else in the original tells where the file begins."
   },
   "aobeg": {
-   "file": "sym1.c",
+   "file": "sym2.c",
    "orig": "0x9f04",
    "size_orig": 2,
    "status": "exact"

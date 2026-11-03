@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/scodgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "82c8f109",
+ "measured_at": "dc79a5c0",
  "functions": {
   "p2init": {
    "file": "reader3.c",
@@ -35,8 +35,7 @@
    "file": "reader3.c",
    "orig": "0x0840",
    "size_orig": 278,
-   "status": "masked",
-   "lines": 6
+   "status": "exact"
   },
   "delay1": {
    "file": "reader3.c",
@@ -60,8 +59,7 @@
    "file": "reader3.c",
    "orig": "0x0ab2",
    "size_orig": 76,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "prcook": {
    "file": "reader3.c",
@@ -73,8 +71,7 @@
    "file": "reader3.c",
    "orig": "0x0baa",
    "size_orig": 1262,
-   "status": "masked",
-   "lines": 6
+   "status": "exact"
   },
   "store": {
    "file": "reader3.c",
@@ -336,8 +333,7 @@
    "orig": "0x2e06",
    "size_orig": 3784,
    "note": "Left: one jp where ours has jr, the old cas, D17. Case T: the frame block behind REG; case u: the unaddressable form first.",
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "rmove": {
    "file": "local3.c",
@@ -350,8 +346,7 @@
    "file": "local3.c",
    "orig": "0x3df8",
    "size_orig": 74,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "ltypeop": {
    "file": "local3.c",
@@ -769,8 +764,7 @@
    "file": "regallo3.c",
    "orig": "0x773e",
    "size_orig": 166,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "rsdump": {
    "file": "regallo3.c",

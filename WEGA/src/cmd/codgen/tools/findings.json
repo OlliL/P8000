@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "109c9f07",
+ "measured_at": "dc79a5c0",
  "functions": {
   "p2init": {
    "file": "reader3.c",
@@ -35,8 +35,7 @@
    "file": "reader3.c",
    "orig": "0x0838",
    "size_orig": 278,
-   "status": "masked",
-   "lines": 6
+   "status": "exact"
   },
   "delay1": {
    "file": "reader3.c",
@@ -60,8 +59,7 @@
    "file": "reader3.c",
    "orig": "0x0aaa",
    "size_orig": 76,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "prcook": {
    "file": "reader3.c",
@@ -73,8 +71,7 @@
    "file": "reader3.c",
    "orig": "0x0ba2",
    "size_orig": 1250,
-   "status": "masked",
-   "lines": 6
+   "status": "exact"
   },
   "store": {
    "file": "reader3.c",
@@ -335,9 +332,8 @@
    "file": "local3.c",
    "orig": "0x2edc",
    "size_orig": 3606,
-   "status": "masked",
-   "note": "Odd form: if (u == 3 || u == 13) ; in ZT, for a cp of the original without a jump behind it; a register holds a type there (u).",
-   "lines": 4
+   "status": "exact",
+   "note": "Odd form: if (u == 3 || u == 13) ; in ZT, for a cp of the original without a jump behind it; a register holds a type there (u)."
   },
   "rmove": {
    "file": "local3.c",
@@ -350,8 +346,7 @@
    "file": "local3.c",
    "orig": "0x3e1c",
    "size_orig": 74,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "ltypeop": {
    "file": "local3.c",
@@ -594,8 +589,7 @@
    "file": "order3.c",
    "orig": "0x59f4",
    "size_orig": 88,
-   "status": "masked",
-   "lines": 4
+   "status": "exact"
   },
   "argscan": {
    "file": "order3.c",
