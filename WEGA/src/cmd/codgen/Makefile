@@ -106,7 +106,7 @@ comm3.o: ops_codgen.c
 scodgen: $(SRCS) table3_scodgen.c cg.h cg2.h $(OLDOBJS) $(LIBCONLY) ship $(CRT)/crt0-codgen.o
 	-mkdir seg
 	for f in $(SRCS) table3_scodgen.c ; do ( cd seg ; $(CC) $(CFLAGS) -DSEG -c ../$$f ) || exit 1 ; done
-	cd seg ; $(LD) -X -e start -i ../$(CRT)/crt0-codgen.o $(SOBJS) ../$(OLD)/printf/0_5.o ../$(OLD)/doprnt/0_5.o ../$(OLD)/flsbuf/0_2.o ../$(OLD)/filbuf/0_3.o ../$(OLD)/rdwr/0_3.o ../$(OLD)/fseek/0_2.o ../$(OLD)/ftell/0_2.o ../$(OLD)/cnvt/0_2.o ../$(OLD)/length/0_2.o ../$(OLD)/strcat/0_2.o ../$(OLD)/strcpy/0_2.o ../$(OLD)/strlen/0_2.o ../$(OLD)/fopen/0_1.o ../$(OLD)/findiop/0_2.o ../$(OLD)/endopen/0_4.o ../$(OLD)/ungetc/0_1.o ../$(OLD)/malloc/0_5.o ../$(OLD)/setbuf/0_1.o ../$(OLD)/getw/0_1.o ../__callex.o ../data.o ../brk.o ../cuexit.o ../ffltioc.o ../write.o ../close.o ../read.o ../lseek.o ../decimal.o ../cerror.o ../open.o ../creat.o ../$(OLD)/stty/0_2.o ../ioctl.o ../$(OLD)/isatty/0_2.o ../$(OLD)/freopen/0_1.o ../umask.o ../chmod.o ../$(OLD)/perror/0_1.o ../$(OLD)/errlst/0_1.o -o ../scodgen
+	cd seg ; $(LD) -X -e start -i ../$(CRT)/crt0-codgen.o $(SOBJS) $(LIBCOBJS:%=../%) -o ../scodgen
 
 $(OLD)/printf/0_5.o: $(OLD)/printf/0_5.s
 	$(CAS) -u -o $@ $(OLD)/printf/0_5.s

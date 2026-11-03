@@ -117,7 +117,11 @@ jdeps()
 				q = jlist;
 				j = 0;
 				while (q != p) {
+#ifdef OLD_CAS
+					if ((unsigned long)v > (unsigned long)(unsigned)q->j_2) {	/* not a jpr at the label itself */
+#else
 					if ((unsigned long)v >= (unsigned long)(unsigned)q->j_2) {
+#endif
 						r = newrec();
 						r->jr_0 = i;
 						r->jr_2 = jtab[j].jr_2;
