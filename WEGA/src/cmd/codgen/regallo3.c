@@ -203,6 +203,7 @@ newnode(n, k)
 		m->reg = n->reg;
 		n->reg++;
 		n->cls = m->cls = k;
+	rt:
 		return m;
 	case 2:
 	case 6:
@@ -210,10 +211,10 @@ newnode(n, k)
 		m->reg = n->reg;
 		n->reg++;
 		n->cls = m->cls = k;
-		return m;
+		goto rt;
 	default:
 		cerror("splitreg: illegal type");
-		return m;
+		goto rt;
 	}
 }
 

@@ -847,8 +847,10 @@ argscan(p)
 	rest = p;
 	if (p->op == CM) {
 		rest = argscan(p->left);
-		if (argstop)
+		if (argstop) {
+		ret:
 			return rest;
+		}
 #ifdef OLD_D22
 		if (0) {	/* v0p: a double argument goes by its size (rq4 when it is the first one) */
 #else
@@ -856,13 +858,13 @@ argscan(p)
 #endif
 			if (argfreg < 0x10) {
 				if (argstop)
-					return rest;
+					goto ret;
 				argstop = 1;
 				return p->right;
 			}
 		} else if (argreg < 2) {
 			if (argstop)
-				return rest;
+				goto ret;
 			argstop = 1;
 			return p->right;
 		}
@@ -875,50 +877,53 @@ argscan(p)
 #else
 	if (p->type == 6 || p->type == 7) {
 #endif
-		if (argfreg < 0x10) {
-			argstop = 1;
-			return p;
-		}
+		if (argfreg < 0x10)
+			goto stop;
 		argl[nargs].reg = argfreg;
 		argl[nargs].node = p;
 		nargs++;
 		argl[nargs].node = 0;
 		argfreg--;
-		return rest;
-	}
+		goto ret;
+	} else
+		goto sw;
+def:
+	argstop = 1;
+	argreg = 1;
+retp:
+	return p;
+c2:
+	if (--argreg & 1)
+		argreg--;
+	if (argreg < 2)
+		goto def;
+c1:
+	argl[nargs].reg = argreg;
+	argl[nargs].node = p;
+	nargs++;
+	argl[nargs].node = 0;
+	argreg--;
+	goto ret;
+stop:
+	argstop = 1;
+	goto retp;
+sw:
 	switch (argsize(p)) {
-	default:
-		argstop = 1;
-		argreg = 1;
-		return p;
-	case 2:
-		argreg--;
-		if (argreg & 1)
-			argreg--;
-		if (argreg < 2) {
-			argstop = 1;
-			argreg = 1;
-			return p;
-		}
-	case 1:
-		argl[nargs].reg = argreg;
-		argl[nargs].node = p;
-		nargs++;
-		argl[nargs].node = 0;
-		argreg--;
-		return rest;
 	case 4:
-		if (argreg != 7) {
-			argstop = 1;
-			argreg = 1;
-			return p;
-		}
+		if (argreg != 7)
+			goto def;
 		argl[nargs].reg = argreg - 3;
 		argl[nargs].node = p;
 		nargs++;
 		argl[nargs].node = 0;
 		argreg -= 4;
-		return rest;
+		goto ret;
+	case 1:
+		goto c1;
+	case 2:
+		goto c2;
+	default:
+		goto def;
 	}
 }
 

@@ -1346,23 +1346,29 @@ cbranch(p, true, false)
 		cbranch(p->left, false, true);
 		p->op = FREE;
 		return;
-	case ASSIGN:
-		/* x = constant: the truth value is known */
-		if (p->right->op == ICON) {
-			struct node *c;
+	isfalse:
+		if (false >= 0)
+			cbgen(0, false, 'I');
+		goto done;
+	asgn: {
+		struct node *c;
 
-			c = tcopy(p->right);
-			order(p, FOREFF);
-			p = c;
+		c = tcopy(p->right);
+		order(p, FOREFF);
+		p = c;
+	}
 	case ICON:
-			if (p->lval != 0 || p->sname != 0) {
-				if (true >= 0)
-					cbgen(0, true, 'I');
-			} else if (false >= 0)
-				cbgen(0, false, 'I');
-			p->op = FREE;
-			return;
-		}
+		/* x = constant: the truth value is known */
+		if (p->lval == 0 && p->sname == 0)
+			goto isfalse;
+		if (true >= 0)
+			cbgen(0, true, 'I');
+	done:
+		p->op = FREE;
+		return;
+	case ASSIGN:
+		if (p->right->op == ICON)
+			goto asgn;
 	default: {
 		int t;
 

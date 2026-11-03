@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "206150ec",
+ "measured_at": "4019eff2",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -105,9 +105,8 @@
    "file": "reader3.c",
    "orig": "0x12bc",
    "size_orig": 766,
-   "status": "open",
-   "note": "Left: the place of the block of NOT and of the else of ICON (popt).",
-   "lines": 24
+   "status": "exact",
+   "note": "Odd form: the false case of the constant and the assignment in front of the test that reaches them, by goto; the switch cases of the constant reach the free at their end."
   },
   "rcount": {
    "file": "reader3.c",
@@ -607,8 +606,8 @@
    "orig": "0x5a4c",
    "size_orig": 384,
    "status": "open",
-   "note": "Left: block order of popt; the else-switch form with the trailing argstop = 1 was tried and comes out worse.",
-   "lines": 43
+   "note": "Odd form: the switch with only case 4 in place, cases 1 and 2 and default in front of it by goto; --argreg & 1. Left: the default block moves behind the last jump (codemove of the jump in default).",
+   "lines": 7
   },
   "argsort": {
    "file": "order3.c",
@@ -659,8 +658,8 @@
    "orig": "0x6196",
    "size_orig": 686,
    "status": "open",
-   "note": "Left: the place of the blocks of the switch on the type and of the selection of q (popt). Odd form: int x = 0, y unused (frame words of the original).",
-   "lines": 57
+   "note": "Odd form: the switch tail and the search loop written in the physical order of the original, by goto; the switch part agrees. Left: the search loop is moved by popt (a loop inversion, not traced).",
+   "lines": 40
   },
   "expand": {
    "file": "match3.c",
@@ -785,8 +784,8 @@
    "orig": "0x75e0",
    "size_orig": 112,
    "status": "open",
-   "note": "Left: cross-jump direction of popt: the original keeps the tail of the first case, ours that of the last; break and return forms tried.",
-   "lines": 12
+   "note": "Left: popt keeps the tail of the last case; case 2 and 6 come first. Tried: break, return, goto to a common return.",
+   "lines": 9
   },
   "rsinsert": {
    "file": "regallo3.c",

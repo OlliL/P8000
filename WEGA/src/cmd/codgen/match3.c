@@ -256,14 +256,53 @@ match(p, cookie)
 	switch (dope[p->op] & 0xE) {
 	case BITYPE:
 		if (p->left->op == NAME && (dope[p->right->op] & 0xE) == LTYPE) {
-			if (!(dope[p->op] & 1))
-				fixname(p->left);
-			else {		/* an assignment: the target must stay in memory */
-				t = (int)p->left;
-				symuse(((struct node *)t)->sname);
-				oregfix((struct node *)t);
-			}
+			if (dope[p->op] & 1)
+				goto asg;
+			fixname(p->left);
 		}
+		goto rgt;
+	elsq:
+		q = opptr[p->op];
+		goto top;
+	fxl:
+		fixname(p->left);
+	cont:
+#ifdef OLD_D16B
+			/* v0p: an unsigned word in memory changed by an assignment operator: no entry, the tree is rewritten as
+		   a = a op b (order) */
+		if ((p->op == ASG PLUS || p->op == ASG MINUS) && cookie != FORREW && (p->left->op == OREG ||
+		    p->left->op == STAR) && p->left->type == 14)
+			return NOMATCH;
+#endif
+		if (cookie != FORREW)
+			goto elsq;
+		q = rwdefault;
+		goto top;
+	case LTYPE:
+		if (p->op != NAME)
+			goto cont;
+		fixname(p);
+#ifdef OLD_D2C
+		/* v0: a name (not a parameter) found in a scratch register is that register, which then loses the name */
+		if (p->op == REG && (cookie & STAREG) && (rstatus[p->rval] & STAREG) && p->type != 5 && p->type != 15 &&
+		    p->sname && p->sname->sclass != 9 &&
+		    (!(p->rall & 0x1000) || (p->rall & ~0x1000) == p->rval)) {
+			symdrop(p->rval);
+			return MDONE;
+		}
+#endif
+		goto cont;
+	case UTYPE:
+		if (p->left->op == NAME)
+			goto fxl;
+		if (p->left->op == SCONV && p->left->left->op == NAME)
+			fixname(p->left->left);
+		goto cont;
+	asg:		/* an assignment: the target must stay in memory */
+		t = (int)p->left;
+		symuse(((struct node *)t)->sname);
+		oregfix((struct node *)t);
+	rgt:
 		if (p->right->op == NAME) {
 			if ((p->type == 5 || p->type == 15) && ((dope[p->op] & 0x800) || (dope[p->op] & 0x80))) {
 				register int rv;
@@ -272,7 +311,7 @@ match(p, cookie)
 				/* mult and div use r4..r7: a right operand in r6 (or r4 for div) goes to memory */
 				if (rv == 6 || ((dope[p->op] & 0x80) && rv == 4)) {
 					oregfix(p->right);
-					break;
+					goto cont;
 				}
 			}
 #ifdef OLD_D3AW
@@ -284,77 +323,63 @@ match(p, cookie)
 			if ((dope[p->left->op] & 0xE) == LTYPE || p->left->op == FLD)
 				fixname(p->right);
 		}
-		break;
-	case LTYPE:
-		if (p->op == NAME) {
-			fixname(p);
-#ifdef OLD_D2C
-				/* v0: a name (not a parameter) found in a scratch register is that register, which the tree takes over */
-				if (p->op == REG && (cookie & STAREG) && (rstatus[p->rval] & STAREG) && p->type != 5 && p->type != 15 &&
-				    p->sname && p->sname->sclass != 9 &&
-				    (!(p->rall & 0x1000) || (p->rall & ~0x1000) == p->rval)) {
-					symdrop(p->rval);
-					return MDONE;
-				}
-#endif
-		}
-		break;
-	case UTYPE:
-		if (p->left->op == NAME)
-			fixname(p->left);
-		else if (p->left->op == SCONV && p->left->left->op == NAME)
-			fixname(p->left->left);
-		break;
+		goto cont;
 	}
-#ifdef OLD_D16B
-	/* v0p: an unsigned word in memory changed by an assignment operator: no entry, the tree is rewritten as
-	   a = a op b (order) */
-	if ((p->op == ASG PLUS || p->op == ASG MINUS) && cookie != FORREW && (p->left->op == OREG ||
-	    p->left->op == STAR) && p->left->type == 14)
-		return NOMATCH;
-#endif
-	if (cookie == FORREW)
-		q = rwdefault;
-	else
-		q = opptr[p->op];
-	for (; q->op != FREE; ++q) {
-		if (q->op < 0x1000) {
-			if (q->op != p->op)
-				continue;
-		} else {
-			register int opmtemp;
+	goto cont;
+aa:
+	if (q->op == p->op)
+		goto cand;
+	goto next;
+zz:
+	if (p->op == NAME)
+		goto cand;
+	if (p->op == ICON)
+		goto cand;
+	if (p->op == OREG)
+		goto cand;
+	if (ltypeok(p->op, p))
+		goto cand;
+next:
+	++q;
+top:
+	if (q->op == FREE)
+		goto nom;
+	if (q->op < 0x1000)
+		goto aa;
+	{
+		register int opmtemp;
 
-			if ((opmtemp = opclass[q->op - 0x1000]) & 0x4000) {
-				if (p->op != NAME && p->op != ICON && p->op != OREG && !ltypeok(p->op, p))
-					continue;
-			} else if ((dope[p->op] & (opmtemp | 1)) != opmtemp)
-				continue;
-		}
+		if ((opmtemp = opclass[q->op - 0x1000]) & 0x4000)
+			goto zz;
+		if ((dope[p->op] & (opmtemp | 1)) != opmtemp)
+			goto next;
+	}
+cand:
 		if (!(q->visit & cookie))
-			continue;
+			goto next;
 		l = r = getlr(p, 'L');
 		if (!tshape(r, q->lshape))
-			continue;
+			goto next;
 		if (!ttype(r->type, q->ltype))
-			continue;
+			goto next;
 #ifdef OLD_D10
 		/* the old codgen v0 shifts a long by a constant through a register (ld A1,#n; sdal): no OIZB AL,#n */
 		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (r->type == 5 || l->type == 15) &&
 		    (p->op == LS || p->op == RS || p->op == ASG LS || p->op == ASG RS))
-			continue;
+			goto next;
 #endif
 		r = getlr(p, 'R');
 		if (!tshape(r, q->rshape))
-			continue;
+			goto next;
 		if (!ttype(r->type, q->rtype))
-			continue;
+			goto next;
 #ifdef OLD_D16A
 		/* v0p: a frame slot incremented by a constant whose value may go to a temporary is loaded, incremented in
 		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */
 		if ((p->op == ASG PLUS || p->op == ASG MINUS) && (cookie & INTEMP) && l->op == OREG && l->rval == 15 &&
 		    r->op == ICON && r->sname == 0 && p != d16acmp) {
 			if (q->rshape == 0x8002)
-				continue;
+				goto next;
 			if (q->needs == 1 && q->rewrite == 0x804 && allo(p, q)) {
 				expand(p, cookie, "\tldZB\tA1,AL\n\tZi\tA1,AR\n\tldZB\tAL,A1\n");
 				reclaim(p, q->rewrite, cookie);
@@ -364,18 +389,18 @@ match(p, cookie)
 #endif
 		if (q->ltype == 0x4000 || q->rtype == 0x4000) {		/* both operands of the same type */
 			if (r->type != l->type)
-				continue;
+				goto next;
 		} else if (q->ltype == 0x8000 || q->rtype == 0x8000) {	/* of the same size */
 			t = bsize(l->type);
 			if (bsize(r->type) != t)
-				continue;
+				goto next;
 		}
 		if ((p->type == 6 || p->type == 7) && q->ltype == 0x8000 && q->rtype == 0x8000)
-			continue;
+			goto next;
 		if (q->needs & REWRITE)
 			return q->rewrite;
 		if (!allo(p, q))
-			continue;
+			goto next;
 #ifdef OLD_D2RA
 		if (p->op == PLUS && l->op == REG && l->rval == 0 && r->op == REG && szty(p->type) == 1) {
 			d2ranode = p;
@@ -415,7 +440,7 @@ match(p, cookie)
 		}
 #endif
 		return MDONE;
-	}
+nom:
 	return NOMATCH;
 }
 
