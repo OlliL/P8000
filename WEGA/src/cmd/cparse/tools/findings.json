@@ -3,7 +3,7 @@
  "compiler": "ccv0p",
  "binary": "/lib/cparse",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "0447f855",
+ "measured_at": "0a06f957",
  "functions": {
   "f0000": {
    "file": "-",
@@ -471,7 +471,8 @@
    "file": "optim1.c",
    "orig": "0x565c",
    "size_orig": 1628,
-   "status": "exact"
+   "status": "exact",
+   "note": "Odd form: the MINUS loop as a goto loop with its test inside the if (no switch of popt needed, OLD_D20L removed); the constant folding a while with a goto into its body; the joined and folded trees are tested again."
   },
   "conval": {
    "file": "optim1.c",

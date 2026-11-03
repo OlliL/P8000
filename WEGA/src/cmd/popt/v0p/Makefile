@@ -11,12 +11,10 @@
 #             goes behind the conditional jump that names it from in front (cjmove, z21.c)
 #   OLD_D20X  the loop inversion of a back jump before its cross-jump when the test is near the head and the
 #             cross-jump would take one instruction at most (d20xinv, z21.c)
-#   OLD_D20L  a loop whose head stands behind a jump into the loop is inverted, also when the head block reaches
-#             the back jump (codemove, z21.c)
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D20C -DOLD_D20X -DOLD_D20L -DOLD_D20B
+SWITCHES = -DOLD_D20C -DOLD_D20X -DOLD_D20B
 PREFIX = /
 LD = ld
 OLD = ../../../lib/oldlibc

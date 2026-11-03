@@ -86,7 +86,9 @@ optim(p)
 			b = tcopy(p->right->right);
 			goto joined;
 		}
-		while (p->left->op == MINUS && p->right->op == MINUS && treeeq(p->left->left, p->right->left) &&
+		goto minus1;
+	minus2:
+		if (p->right->op == MINUS && treeeq(p->left->left, p->right->left) &&
 		    p->left->right->type == p->type && p->right->right->type == p->type) {
 			b = tcopy(p->left->right);
 			a = tcopy(p->right->right);
@@ -95,6 +97,9 @@ optim(p)
 			tfree(p->right);
 			p->left = a;
 			p->right = b;
+		minus1:
+			if (p->left->op == MINUS)
+				goto minus2;
 		}
 		if (treeeq(p->left, p->right) && p->type != 6 && p->type != 7) {
 			tfree(p->left);

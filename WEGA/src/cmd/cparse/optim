@@ -75,7 +75,9 @@ optim(p) register NODE *p; {
 			b = tcopy( p->right->right );
 			goto rebuild;
 			}
-		while( LO(p) == MINUS && RO(p) == MINUS && treeeq( p->left->left, p->right->left ) &&
+		goto minus1;
+	minus2:
+		if( RO(p) == MINUS && treeeq( p->left->left, p->right->left ) &&
 				p->left->right->type == p->type && p->right->right->type == p->type ){
 			b = tcopy( p->left->right );
 			a = tcopy( p->right->right );
@@ -85,6 +87,8 @@ optim(p) register NODE *p; {
 			p->left = a;
 			p->right = b;
 			p = clocal( p );
+		minus1:
+			if( LO(p) == MINUS ) goto minus2;
 			}
 		if( treeeq( p->left, p->right ) && p->type != FLOAT && p->type != DOUBLE ){
 			tfree( p->left );
