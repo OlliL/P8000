@@ -14,7 +14,6 @@ extern int argstop;
 extern NODE *canon();
 extern int cerror();
 extern int crslab;
-extern NODE *d16acmp, *d16acmr;
 extern void deflab();
 extern int dope[];
 extern int ffregs;
@@ -559,12 +558,6 @@ setbin(p)
 
 	r = p->right;
 	l = p->left;
-#ifdef OLD_D16A
-	if (p->op >= EQ && p->op <= UGT) {
-		d16acmp = l;
-		d16acmr = r;
-	}
-#endif
 	if (p->right->su == 0 && p->right->fsu == 0) {
 		if logop(p->op) {
 			if (l->op == STAR && shumul(l->left) != 0x800)

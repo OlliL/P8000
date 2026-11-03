@@ -529,17 +529,19 @@ The old compiler loads a frame slot into a register before an operation where th
 v0p (switch `OLD_D16A` in codgen, match): `++n` of a frame slot whose value may go to a temporary (cookie with
 INTEMP: the left operand of `*`) is `ld A1,n; inc A1,#1; ld n,A1`, not `inc n,#1` (cparse genswitch `p[++n]`); with the
 value wanted in a register for an address (`*--cp`, newsect) or stored (`ix = ++p->x`, gotscal) it stays in memory.
-Without the INTEMP condition: 336 > 1000 and more; v0p only (bench v0 318 > 348 at that time). Not for an
-operand of a compare (setbin), on either side: popt codemove `--n == 0` stays `dec n,#1; test n`, cpp dodef `--qf>=formal`
-(`lda r2,formal; dec qf,#2; cp r2,qf`, 2026-11-03; the compare is turned round, so the increment is the right operand).
-cpp separates "not under a compare" from "only `++`, not `--`": `--qf` with the operand under a compare stays in memory,
-and without the exception it would be loaded. That a compare can read memory and the multiplication cannot is a guess about the mechanism.
+Without the INTEMP condition: 336 > 1000 and more; v0p only (bench v0 318 > 348 at that time). Only for `++`, as far as measured (2026-11-03):
+`--` of a frame slot stays in memory under a compare, on either side: popt codemove `--n == 0` (`dec n,#1; test n`), cpp dodef
+`--qf>=formal` (`lda r2,formal; dec qf,#2; cp r2,qf`). Two rules fit all seven programs equally, "only `++`" and "not an operand
+of a compare": every `--` seen is under a compare and the only `++` is not. The first is taken because it needs no state; a `++` of
+a frame slot under a compare, or a `--` with the same cookie outside one, would separate them. One witness in fact (genswitch and its copy in scparse).
 
 Removed (2026-11-03): OLD_D16B. One witness, a source form: stref `p->type = p->type + PTR`, `p->left->type = p->left->type + PTR` instead of `+=`.
 ### D17 Call form (popt)
 
 The original has `call` where the shipped chain has `calr`, for calls in reach of `calr`. `strictcmp` hides this; `strictcmp -c` shows it (cparse 175 > 168 functions, 27 > 79 lines; popt 71 > 61, 26 > 172; `-a`, which also takes D18 out, changes nothing more).
 Not the storage class of the callee, as an older pattern from popt said: one callee has both forms in one file (dest 5 and 3, dualop 13 and 1, isreg 11 and 2). In rmove every call in reach is long up to 0x1f68 and short behind it, the point where its long `jp` end too. This is the early jump optimization of the old cas (cparse point 4), measured: a test cas that runs it at the points read from the originals gives `strictcmp -c` = strict in both programs and the long `jp` of yylex and rmove too (`host/recon/castrig/`). What triggers it is not known.
+
+cpp (2026-11-03): the test cas with one point between `control` and `pperror` (`castrig/triggers.txt`) gives, linked and stripped, a file byte-identical with /lib/cpp. Without it the only difference in the file are 20 `call` against `calr` and what follows from these 40 bytes; no `jp` differs. A split of `cpp.c` into two files is excluded: 17 `calr` cross every possible boundary, and no call between known modules is `calr`.
 
 The rule for the points where the old cas optimizes early is not known. The best candidate from cparse and popt, a sum of table bytes (`castrig/memsum.py`), failed its independent test on codgen (`castrig/codgen_test.py`): worse than no trigger at all.
 

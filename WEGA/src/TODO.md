@@ -55,7 +55,7 @@ Measured 2026-11-02, lines without comments and blanks that also stand in the PC
 2. After the bytes, one pass per module without byte change: names (functions, `NODE` and its members as in `pcc.d/mip`: `p->op`, `p->rval`; `in.op`, `tn.rval` is the form of `z8000/pcc` only, cparse follows mip too), macros (`optype`, `asgop`, `logop`, `FORCC`, `MUSTDO`, `NOPREF`, `INTEMP`) instead of numbers, PCC's file names where the stamps allow (`common`, `optim`, `rdr`), comments. Check: the model and the corpus stay as they are. `scparse`, `scodgen` go with it.
    Done for codgen (2026-11-03): the macros (`optype` ... `MUSTDO`, cookies), `NODE` as `union ndu`, the names of functions that do the same; the list of what stays WEGA's is `codgen/tools/PCC.md`. cparse was in this form already, its list is `cparse/tools/PCC.md`. popt: only `getline`, `abs` renamed, list `popt/tools/PCC.md`. To do: scparse, spopt, cpp when they are worked on.
 3. What is left different from PCC is WEGA's: a list per pass (`tools/FINDINGS.md` or a section of its own).
-The same for `popt`, `spopt` (model `cmd/cc/c2.d`, `z8000/c2`) and `cpp` (model `cmd/cc/cpp.d`, `z8000/cpp`, not started).
+The same for `popt`, `spopt` (model `cmd/cc/c2.d`, `z8000/c2`). `cpp` follows the System III source (owner decision 2026-11-03), done: byte-identical with the test cas.
 
 ## Plan: towards the old C compiler (2026-10-30, owner decision; replaces "Plan after the sld naming" of 2026-10-28)
 
