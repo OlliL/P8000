@@ -532,7 +532,7 @@ value wanted in a register for an address (`*--cp`, newsect) or stored (`ix = ++
 Without the INTEMP condition: 336 > 1000 and more; v0p only (bench v0 318 > 348 at that time). Only for `++`, as far as measured (2026-11-03):
 `--` of a frame slot stays in memory under a compare, on either side: popt codemove `--n == 0` (`dec n,#1; test n`), cpp dodef
 `--qf>=formal` (`lda r2,formal; dec qf,#2; cp r2,qf`). Two rules fit all seven programs equally, "only `++`" and "not an operand
-of a compare": every `--` seen is under a compare and the only `++` is not. The first is taken because it needs no state; a `++` of
+of a compare": every `--` with this cookie is under a compare and the only `++` is not. The first is taken because it needs no state; a `++` of
 a frame slot under a compare, or a `--` with the same cookie outside one, would separate them. One witness in fact (genswitch and its copy in scparse).
 
 Removed (2026-11-03): OLD_D16B. One witness, a source form: stref `p->type = p->type + PTR`, `p->left->type = p->left->type + PTR` instead of `+=`.
