@@ -263,7 +263,8 @@ cinit( p, sz ) register NODE *p; register sz; {
 			s = exname( q->sname );
 			fprintf( dfile, "\t.addr\t%s\n", s );
 			}
-		break;
+		inoff += sz;
+		return;
 
 	case LAB:
 		fprintf( dfile, "\t.addr\tL%d\n", -p->left->rval );

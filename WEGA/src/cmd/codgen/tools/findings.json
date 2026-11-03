@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "4f2234d4",
+ "measured_at": "0447f855",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -328,8 +328,7 @@
    "file": "local3.c",
    "orig": "0x2e4c",
    "size_orig": 144,
-   "status": "open",
-   "lines": 14
+   "status": "exact"
   },
   "zzzcode": {
    "file": "local3.c",
@@ -414,8 +413,7 @@
    "file": "local3.c",
    "orig": "0x41d0",
    "size_orig": 430,
-   "status": "open",
-   "lines": 18
+   "status": "exact"
   },
   "acon": {
    "file": "local3.c",

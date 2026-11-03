@@ -192,7 +192,7 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20L`, `OLD_D20K`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen), `OLD_D20C`, `OLD_D20X`, `OLD_D20L`, `OLD_D20B` (popt). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
 - State: /lib/cparse 178 strictly exact, 2 differing lines, /lib/popt 72 of 73, 8 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
@@ -583,10 +583,7 @@ order).
   finds that it reaches the back jump and gives up, the old one inverts the loop then. Not when the jump in front
   leads elsewhere (fortarg keeps its while test on top). cparse 390 > 383 (optim); bench v0 318 > 337, so v0p only.
 
-- v0p (switch `OLD_D20K` in popt, iterate): a jump behind a `call` to a label referenced once that holds a jump is
-  cross-jumped (xjump) to its own label before the jump to the jump is followed: the then part of an if/else jumps into the
-  `call` of the else part (cinit, rmove). Behind other instructions not: killreg keeps the shared `sla; clrb` in the then
-  part (comjump merges it there). Why a call is not known. For every such jump: cprint worse. Bench v0 unchanged.
+- Removed (2026-11-03): OLD_D20K. Both witnesses were source forms: cinit (`inoff += sz; return;` in case NAME instead of `break`) and rmove (do_and falls into do_arith, no `goto arith1`). What decides: the then part of an if/else jumps into the `call` of the else part when the label behind the else part holds no jump (`xjump`); behind a `break` or `goto` the jump is followed first. Without the switch codgen geninc and adrput are exact.
 - v0p (switch `OLD_D20B` in popt, iterate; d20bover, d20xinv in z21.c): a conditional jump onto a back jump is not followed when that
   back jump ends `while (p = p->back) { if (c) break; }` (`jpr OUT; Lc: jpr head; OUT:`), can be inverted (OLD_D20X) and the first test
   of the loop asks for equality: the loop is inverted first, its tests in front of the step (popt backjmp, xjump). yyparse has

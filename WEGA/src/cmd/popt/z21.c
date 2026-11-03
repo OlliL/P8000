@@ -28,9 +28,6 @@ int oplook();
 void refcount();
 void iterate();
 void xjump();
-#ifdef OLD_D20K
-static int d20kcall();
-#endif
 #ifdef OLD_D20B
 static int d20bover();
 #endif
@@ -744,11 +741,6 @@ iterate()
 
 	nchange = 0;
 	for (p = first.forw; p; p = p->forw) {
-#ifdef OLD_D20K
-		/* the old popt: a jump is cross-jumped to its own label before a jump there is followed */
-		if (p->op == JP && p->ref && p->ref->refc == 1 && nonlab(p->ref)->op == JP && d20kcall(p))
-			xjump(p);
-#endif
 		if ((p->op == JP || p->op == CJP || p->op == JSW) && p->ref) {
 			rp = nonlab(p->ref);
 			if (rp->op == JP && rp->labno && p->labno != rp->labno
@@ -952,18 +944,6 @@ register struct node *p;
 }
 #endif
 
-#ifdef OLD_D20K
-/* the instruction in front of the jump p is a call */
-static int
-d20kcall(p)
-register struct node *p;
-{
-	do
-		p = p->back;
-	while (p && (p->op == LABEL || p->op == KCOMMENT));
-	return p && p->op == CALL;
-}
-#endif
 
 void
 xjump(p1)

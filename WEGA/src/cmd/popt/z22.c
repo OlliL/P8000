@@ -320,10 +320,8 @@ rmove()
 			setreg(b1, TL);
 		} else
 			setreg(RT2, TL);
-		goto arith1;
 
 	do_arith:
-	arith1:
 		dualop(p);
 		if (p->op == AND && equstr(RT1, "#0") && p->subop == 0) {
 			p->op = LD;
