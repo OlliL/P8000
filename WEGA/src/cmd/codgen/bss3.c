@@ -53,7 +53,11 @@ long symbase;	/* the start of the symbols of the global section */
 int nmems;
 int nnums;
 int nsyms;	/* the symbols read so far */
+#ifdef SEG
+struct rv regvar[11];
+#else
 struct rv regvar[12];	/* symbol, tag of the symbol or of the temporary, register, type, saved class */
+#endif
 int gnumcount;	/* only written */
 int numtab[1001];	/* the number table, a word and a -1 per entry */
 int gnumbytes;
@@ -68,6 +72,28 @@ int nnumbytes;
 int entlab;
 char fname[100];
 int upperlval;	/* print the high word of a long constant */
+#ifdef SEG
+int jlab;
+int saveorig[2];	/* the register that was saved */
+int cbflag;
+struct rs *rsfree;
+int argreg;	/* the next word register for an argument, counts down from 7 */
+int fldsz;
+int argstop;	/* the rest of the arguments go to the stack */
+int structret;	/* the function returns a structure */
+int savecls[2];	/* its class */
+int savereg[2];	/* where it went */
+int fldoff;
+struct rs *rsuse;
+int nsave;	/* registers saved by the cases 33 and 34 */
+int fldshf;	/* the field that tshape found (size, offset, shift) */
+int nargs;
+int argfreg;	/* the next float register, counts down from 0x13 */
+struct arg argl[11];
+struct optab *rwdefault;	/* the entry with needs == 0x1000 (the default rewrite entry) */
+struct optab *opptr[129];	/* the first table entry that can serve an operator */
+int unused3[24];
+#else
 int nsave;	/* registers saved by the cases 33 and 34 */
 int jlab;
 int saveorig[2];	/* the register that was saved */
@@ -89,6 +115,7 @@ int argfreg;	/* the next float register, counts down from 0x13 */
 struct arg argl[11];
 struct optab *rwdefault;	/* the entry with needs == 0x1000 (the default rewrite entry) */
 struct optab *opptr[129];	/* the first table entry that can serve an operator */
+#endif
 int rstab1[3];
 int rsflag1;	/* number of entries of rstab1 */
 struct rs pool[NPOOL];

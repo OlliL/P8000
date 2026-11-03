@@ -1,9 +1,9 @@
 {
  "schema": "functions: name -> file, orig, size_orig, status (exact, masked, open; written by host/recon/findings.py), lines, note (by hand: an open difference, an odd form, a guessed name, dead code). Which switch a function needs: host/OLDCC_SWITCHES.md.",
  "compiler": "ccv0p",
- "binary": "/lib/spopt",
+ "binary": "/lib/scparse",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "93f3301a",
+ "measured_at": "acdd1d43",
  "functions": {
   "mkty": {
    "file": "cgram1.y",

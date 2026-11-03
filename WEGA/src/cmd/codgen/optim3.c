@@ -261,9 +261,9 @@ conval(p, o, q)
 		break;
 	case MINUS:
 #ifdef SEG
-		if ((p->type & 0x30) == 0x10) {		/* the difference of pointer constants keeps only its low byte */
+		if ((p->type & 0x30) == 0x10) {		/* the difference of pointer constants: its offset */
 			p->lval = (p->lval - val) & 0xFFL;
-			break;
+			return 1;
 		}
 #endif
 		p->lval -= val;

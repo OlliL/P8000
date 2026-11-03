@@ -865,7 +865,7 @@ regreset(flag)
 #ifdef SEG
 	for (i = 0; i < 11; i++) {
 #else
-	for (i = 0; i < 12; i++) {
+	for (i = 0; i < NREGVAR; i++) {
 #endif
 		s = regvar[i].sym;
 		if (flag && s)
@@ -1091,7 +1091,7 @@ findtemp(tag)
 {
 	register int i;
 
-	for (i = 0; i < 12; i++)
+	for (i = 0; i < NREGVAR; i++)
 		if (regvar[i].rtag == tag)
 			return i;
 	return -1;

@@ -382,7 +382,11 @@ reread:
 			regE = rdin(10);
 			regF = rdin(10);
 			if (rflag) {
+#ifdef SEG
+				regE = 0xD;
+#else
 				regE = 0xE;
+#endif
 				regF = 0x17;
 			}
 			nlcheck();
@@ -1471,9 +1475,17 @@ oreg2(p)
 			cp = qr->sname;
 		} else
 #endif
+#ifdef SEG
+		if (ql->op == ICON && qr->op == REG) {
+#else
 		if (q->op == PLUS && ql->op == ICON && qr->op == REG) {
+#endif
 			if (ql->rval < 0) {
+#ifdef SEG
+				if (ql->sname->sclass == 3 && !(ql->sname->sflags >> 2 & 1))
+#else
 				if (ql->sname && ql->sname->sclass == 3 && !(ql->sname->sflags >> 2 & 1))
+#endif
 					stw = -ql->sname->soffset;
 				else
 					stw = ql->rval;

@@ -1,0 +1,1124 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (exact, masked, open; written by host/recon/findings.py), lines, note (by hand: an open difference, an odd source form, a guessed name, dead code). The names of the functions are guesses from PCC and the strings unless the note says more. Which switch a function needs: host/OLDCC_SWITCHES.md.",
+ "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
+ "binary": "/lib/scodgen",
+ "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
+ "measured_at": "109c9f07",
+ "functions": {
+  "p2init": {
+   "file": "reader3.c",
+   "orig": "0x002a",
+   "size_orig": 372,
+   "note": "Odd form: two register variables without use; strcpy and strcat through a local x, setbuf through a local b (frame words)."
+  },
+  "init": {
+   "file": "reader3.c",
+   "orig": "0x019e",
+   "size_orig": 158
+  },
+  "mainp2": {
+   "file": "reader3.c",
+   "orig": "0x023c",
+   "size_orig": 1318,
+   "note": "The main loop is a for without init and step, the blank skipping of case C a while with continue: both decide what popt moves (OLDCC_LOG 2026-11-03)."
+  },
+  "p2compile": {
+   "file": "reader3.c",
+   "orig": "0x0762",
+   "size_orig": 222
+  },
+  "delay": {
+   "file": "reader3.c",
+   "orig": "0x0840",
+   "size_orig": 278
+  },
+  "delay1": {
+   "file": "reader3.c",
+   "orig": "0x0956",
+   "size_orig": 132
+  },
+  "delstrip": {
+   "file": "reader3.c",
+   "orig": "0x09da",
+   "size_orig": 56
+  },
+  "delay2": {
+   "file": "reader3.c",
+   "orig": "0x0a12",
+   "size_orig": 160
+  },
+  "codgen": {
+   "file": "reader3.c",
+   "orig": "0x0ab2",
+   "size_orig": 76
+  },
+  "prcook": {
+   "file": "reader3.c",
+   "orig": "0x0afe",
+   "size_orig": 172
+  },
+  "order": {
+   "file": "reader3.c",
+   "orig": "0x0baa",
+   "size_orig": 1262
+  },
+  "store": {
+   "file": "reader3.c",
+   "orig": "0x1098",
+   "size_orig": 342
+  },
+  "constore": {
+   "file": "reader3.c",
+   "orig": "0x11ee",
+   "size_orig": 56
+  },
+  "markcall": {
+   "file": "reader3.c",
+   "orig": "0x1226",
+   "size_orig": 88
+  },
+  "stoarg": {
+   "file": "reader3.c",
+   "orig": "0x127e",
+   "size_orig": 82
+  },
+  "cbranch": {
+   "file": "reader3.c",
+   "orig": "0x12d0",
+   "size_orig": 766,
+   "note": "Odd form: the false case of the constant and the assignment in front of the test that reaches them, by goto; the switch cases of the constant reach the free at their end."
+  },
+  "rcount": {
+   "file": "reader3.c",
+   "orig": "0x15ce",
+   "size_orig": 22
+  },
+  "ffld": {
+   "file": "reader3.c",
+   "orig": "0x15e4",
+   "size_orig": 398
+  },
+  "oreg2": {
+   "file": "reader3.c",
+   "orig": "0x1772",
+   "size_orig": 224,
+   "note": "One unused register variable. if (ql->rval < 0) { ... } else stw = 0, the short case last."
+  },
+  "canon": {
+   "file": "reader3.c",
+   "orig": "0x1852",
+   "size_orig": 58
+  },
+  "argprep": {
+   "file": "reader3.c",
+   "orig": "0x188c",
+   "size_orig": 238
+  },
+  "rddata": {
+   "file": "rdr3.c",
+   "orig": "0x197a",
+   "size_orig": 218,
+   "note": "Odd form: ok is set and never read; if/else for constants written to the frame."
+  },
+  "rdsym": {
+   "file": "rdr3.c",
+   "orig": "0x1a54",
+   "size_orig": 222
+  },
+  "readsyms": {
+   "file": "rdr3.c",
+   "orig": "0x1b32",
+   "size_orig": 204,
+   "note": "One unused word in the frame."
+  },
+  "readtab": {
+   "file": "rdr3.c",
+   "orig": "0x1bfe",
+   "size_orig": 60,
+   "note": "Left: ld r5,2(r15) for (int)n behind the test of n, ours from r5 (step 6)."
+  },
+  "readnums": {
+   "file": "rdr3.c",
+   "orig": "0x1c3a",
+   "size_orig": 162,
+   "note": "Odd form: the address of the table by (char *)numtab + (base << 2), the table is a table of pairs."
+  },
+  "readmems": {
+   "file": "rdr3.c",
+   "orig": "0x1cdc",
+   "size_orig": 436,
+   "note": "Odd form: an unreferenced label in front of the first test: the old compiler forgets the parameter at a label no jump has named, which gives the test in the frame. What the authors wrote there is not known."
+  },
+  "sortsyms": {
+   "file": "rdr3.c",
+   "orig": "0x1e90",
+   "size_orig": 192,
+   "note": "Exact with rweight { 3, 4, 2, 3, ... } of v0 and OLD_D2G: an idle r0 does not win a tie of weight."
+  },
+  "tagfind": {
+   "file": "rdr3.c",
+   "orig": "0x1f50",
+   "size_orig": 182
+  },
+  "mapn": {
+   "file": "rdr3.c",
+   "orig": "0x2006",
+   "size_orig": 50
+  },
+  "mapsym": {
+   "file": "rdr3.c",
+   "orig": "0x2038",
+   "size_orig": 86
+  },
+  "mapnm": {
+   "file": "rdr3.c",
+   "orig": "0x208e",
+   "size_orig": 838,
+   "note": "Exact with rweight { 3, 4, 2, 3, ... } of v0."
+  },
+  "mkhash": {
+   "file": "rdr3.c",
+   "orig": "0x23d4",
+   "size_orig": 68
+  },
+  "nlcheck": {
+   "file": "rdr3.c",
+   "orig": "0x2418",
+   "size_orig": 54
+  },
+  "eread": {
+   "file": "rdr3.c",
+   "orig": "0x244e",
+   "size_orig": 538,
+   "note": "Odd form: op is reused for its type class; if (op == 0x73) erflag = 1 can never hold (quirk table); three unused register variables."
+  },
+  "rdin": {
+   "file": "rdr3.c",
+   "orig": "0x2668",
+   "size_orig": 20
+  },
+  "rdin2": {
+   "file": "rdr3.c",
+   "orig": "0x267c",
+   "size_orig": 210
+  },
+  "psuffix": {
+   "file": "local3.c",
+   "orig": "0x274e",
+   "size_orig": 22
+  },
+  "tsuffix": {
+   "file": "local3.c",
+   "orig": "0x2764",
+   "size_orig": 244,
+   "note": "t is a register variable; the bodies in the order s, d, l, b, popt merges the putchar code."
+  },
+  "lineout": {
+   "file": "local3.c",
+   "orig": "0x2858",
+   "size_orig": 26
+  },
+  "eobl2": {
+   "file": "local3.c",
+   "orig": "0x2872",
+   "size_orig": 100
+  },
+  "efcode": {
+   "file": "local3.c",
+   "orig": "0x28d6",
+   "size_orig": 154,
+   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table). Left: the original computes parmax + maxoff in rr2 and moves it to rr6, ours in rr6. Tried: no preference for the left operand of a long sum wanted in rr6 (rallo, case PLUS): exact, nothing else moves in the three models, bench unchanged; one witness, not adopted. Wanted in any register: readmems +15. Decided 2026-11-03: open, the rule is not adopted; the condition on rr6 has no reason behind it. Compiled alone the shipped cc, ccv0 and ccv0p all give ldl rr6, so it is not the context of efcode."
+  },
+  "epilog": {
+   "file": "local3.c",
+   "orig": "0x2970",
+   "size_orig": 78
+  },
+  "regrestore": {
+   "file": "local3.c",
+   "orig": "0x29be",
+   "size_orig": 150
+  },
+  "fpinc": {
+   "file": "local3.c",
+   "orig": "0x2a54",
+   "size_orig": 40
+  },
+  "prolog": {
+   "file": "local3.c",
+   "orig": "0x2a7c",
+   "size_orig": 86
+  },
+  "fpdec": {
+   "file": "local3.c",
+   "orig": "0x2ad2",
+   "size_orig": 40
+  },
+  "regsave": {
+   "file": "local3.c",
+   "orig": "0x2afa",
+   "size_orig": 152,
+   "note": "if (tot) around the integer registers only; the float registers are saved also when tot is 0."
+  },
+  "regargs": {
+   "file": "local3.c",
+   "orig": "0x2b92",
+   "size_orig": 376,
+   "note": "Form: if / else if / else as in the SEG branch, no goto. One unused frame word."
+  },
+  "hopcode": {
+   "file": "local3.c",
+   "orig": "0x2d0a",
+   "size_orig": 108
+  },
+  "geninc": {
+   "file": "local3.c",
+   "orig": "0x2d76",
+   "size_orig": 144
+  },
+  "zzzcode": {
+   "file": "local3.c",
+   "orig": "0x2e06",
+   "size_orig": 3784,
+   "note": "Odd form: if (u == 3 || u == 13) ; in ZT, for a cp of the original without a jump behind it; a register holds a type there (u)."
+  },
+  "rmove": {
+   "file": "local3.c",
+   "orig": "0x3cce",
+   "size_orig": 298,
+   "note": "The two searches end in the cerror, found jumps past it; no second test of t and f."
+  },
+  "shltype": {
+   "file": "local3.c",
+   "orig": "0x3df8",
+   "size_orig": 74
+  },
+  "ltypeop": {
+   "file": "local3.c",
+   "orig": "0x3e42",
+   "size_orig": 40
+  },
+  "shtemp": {
+   "file": "local3.c",
+   "orig": "0x3e6a",
+   "size_orig": 72,
+   "note": "One conditional expression with two logical arms."
+  },
+  "shincr": {
+   "file": "local3.c",
+   "orig": "0x3eb2",
+   "size_orig": 120
+  },
+  "shumul": {
+   "file": "local3.c",
+   "orig": "0x3f2a",
+   "size_orig": 118
+  },
+  "prlong": {
+   "file": "local3.c",
+   "orig": "0x3fa0",
+   "size_orig": 22
+  },
+  "conput": {
+   "file": "local3.c",
+   "orig": "0x3fb6",
+   "size_orig": 174,
+   "note": "bad oreg goes to the end, it is the first arm of an else if."
+  },
+  "insput": {
+   "file": "local3.c",
+   "orig": "0x4064",
+   "size_orig": 18
+  },
+  "oregput": {
+   "file": "local3.c",
+   "orig": "0x4076",
+   "size_orig": 196
+  },
+  "upput": {
+   "file": "local3.c",
+   "orig": "0x413a",
+   "size_orig": 320,
+   "note": "Form: the ICON case ends with goto ac, the label stands behind a break inside the switch (at any such place)."
+  },
+  "adrput": {
+   "file": "local3.c",
+   "orig": "0x427a",
+   "size_orig": 430
+  },
+  "acon": {
+   "file": "local3.c",
+   "orig": "0x4428",
+   "size_orig": 432,
+   "note": "Left: one jr at the limit of its range (the diff is only jr against jp): the old cas, D17."
+  },
+  "genscall": {
+   "file": "local3.c",
+   "orig": "0x45d8",
+   "size_orig": 20
+  },
+  "gencall": {
+   "file": "local3.c",
+   "orig": "0x45ec",
+   "size_orig": 296,
+   "note": "Odd form: long save in the frame also without SEG, unused there."
+  },
+  "cbgen": {
+   "file": "local3.c",
+   "orig": "0x4714",
+   "size_orig": 102,
+   "note": "Odd form: two unused register variables behind the parameters."
+  },
+  "nextcook": {
+   "file": "local3.c",
+   "orig": "0x477a",
+   "size_orig": 58
+  },
+  "lastchance": {
+   "file": "local3.c",
+   "orig": "0x47b4",
+   "size_orig": 34
+  },
+  "icright": {
+   "file": "local3.c",
+   "orig": "0x47d6",
+   "size_orig": 46
+  },
+  "canon2": {
+   "file": "local3.c",
+   "orig": "0x4804",
+   "size_orig": 28
+  },
+  "special": {
+   "file": "local3.c",
+   "orig": "0x4820",
+   "size_orig": 234,
+   "note": "Exact with cparse OLD_D6D: the base of a direct switch stays a long (bcon cuts it to int otherwise), sub r2,#32769. One witness, on the owner's word."
+  },
+  "mycanon": {
+   "file": "local3.c",
+   "orig": "0x490a",
+   "size_orig": 100
+  },
+  "main": {
+   "file": "local3.c",
+   "orig": "0x496e",
+   "size_orig": 22,
+   "note": "The forwarder of mainp2 at 0x4868: PCC form, called by the start code."
+  },
+  "stoasg": {
+   "file": "order3.c",
+   "orig": "0x4984",
+   "size_orig": 34
+  },
+  "mkadrs": {
+   "file": "order3.c",
+   "orig": "0x49a6",
+   "size_orig": 288
+  },
+  "notoff": {
+   "file": "order3.c",
+   "orig": "0x4ac6",
+   "size_orig": 48,
+   "note": "Form: four parameters as in the PCC, cp unused. The original stores only off: OLD_D3J gives only a long parameter its home after it came back at a label (d3jmark); one witness, taken on the owner's word."
+  },
+  "sucomp": {
+   "file": "order3.c",
+   "orig": "0x4af6",
+   "size_orig": 2040,
+   "note": "Forms: p->fsu = fl == 0 ? ... : ... and sur == sul ? ... : ... as conditional expressions give the place of the test (the comjump of the first pass, before rmove). Left (12 lines): which copy of ld r2,fl; jp stays; the original keeps the first, in max(fl, nf), which needs a label in front of it before rmove. Tried: fl > nf as if / else with stores, also max(fl, fr), if (sur != sul), p->fsu = max(fl, fr) with a second assignment, conditional forms at the other fsu assignments: 14 to 25 lines. Also tried: fl ? max(fl, nf) : nf and if (fl), fl == 0 ? nf : fl > nf ? fl : nf, max(fl, nf) alone, fl ? ... : ... and max(fr, fl == 0 ? ... : ...) at the next assignment: 15 to 32 lines. Decided 2026-11-03: open, search stopped; the owner's status names these lines."
+  },
+  "mkrall": {
+   "file": "order3.c",
+   "orig": "0x52ee",
+   "size_orig": 98
+  },
+  "rallo": {
+   "file": "order3.c",
+   "orig": "0x5350",
+   "size_orig": 572,
+   "note": "RET tests the types the other way round."
+  },
+  "orderadd": {
+   "file": "order3.c",
+   "orig": "0x558c",
+   "size_orig": 202
+  },
+  "offstar": {
+   "file": "order3.c",
+   "orig": "0x5656",
+   "size_orig": 162
+  },
+  "niceuty": {
+   "file": "order3.c",
+   "orig": "0x56f8",
+   "size_orig": 74
+  },
+  "setbin": {
+   "file": "order3.c",
+   "orig": "0x5742",
+   "size_orig": 430,
+   "note": "Form: no goto; the test of istnode(l) with niceuty, offstar and order written out in the first if and at the end. popt moves the blocks."
+  },
+  "setstr": {
+   "file": "order3.c",
+   "orig": "0x58f0",
+   "size_orig": 78
+  },
+  "setasg": {
+   "file": "order3.c",
+   "orig": "0x593e",
+   "size_orig": 166
+  },
+  "lmuldiv": {
+   "file": "order3.c",
+   "orig": "0x59e4",
+   "size_orig": 66,
+   "note": "default: return 0 inside the switch."
+  },
+  "setasop": {
+   "file": "order3.c",
+   "orig": "0x5a26",
+   "size_orig": 562
+  },
+  "getlab": {
+   "file": "order3.c",
+   "orig": "0x5c58",
+   "size_orig": 10
+  },
+  "deflab": {
+   "file": "order3.c",
+   "orig": "0x5c62",
+   "size_orig": 22
+  },
+  "genargs": {
+   "file": "order3.c",
+   "orig": "0x5c78",
+   "size_orig": 84
+  },
+  "argscan": {
+   "file": "order3.c",
+   "orig": "0x5ccc",
+   "size_orig": 384,
+   "note": "Odd form: the switch with only case 4 in place, cases 1 and 2 and default in front of it by goto; --argreg & 1; default has its own copy that popt merges."
+  },
+  "argsort": {
+   "file": "order3.c",
+   "orig": "0x5e4c",
+   "size_orig": 80
+  },
+  "fixstarg": {
+   "file": "order3.c",
+   "orig": "0x5e9c",
+   "size_orig": 94
+  },
+  "argstrip": {
+   "file": "order3.c",
+   "orig": "0x5efa",
+   "size_orig": 178
+  },
+  "argplace": {
+   "file": "order3.c",
+   "orig": "0x5fac",
+   "size_orig": 358,
+   "note": "cnt is reached by ++cnt[x]: the postfix form computes the address twice. for loops with nargs++ as their step."
+  },
+  "tshape": {
+   "file": "match3.c",
+   "orig": "0x6112",
+   "size_orig": 356,
+   "note": "Case FLD stands before STAR in the source, the order of the bodies in the original."
+  },
+  "ttype": {
+   "file": "match3.c",
+   "orig": "0x6276",
+   "size_orig": 236
+  },
+  "setrew": {
+   "file": "match3.c",
+   "orig": "0x6362",
+   "size_orig": 180
+  },
+  "match": {
+   "file": "match3.c",
+   "orig": "0x6416",
+   "size_orig": 686,
+   "note": "Odd form: the switch tail and the search loop in the physical order of the original, by goto; the candidate code stands inside the last test of the operator class, so that no jump stands in front of its label. Found with a trace of popt (OLDCC_LOG 2026-11-03)."
+  },
+  "expand": {
+   "file": "match3.c",
+   "orig": "0x66c4",
+   "size_orig": 498
+  },
+  "getlr": {
+   "file": "match3.c",
+   "orig": "0x68b6",
+   "size_orig": 134
+  },
+  "rbusy": {
+   "file": "allo3.c",
+   "orig": "0x693c",
+   "size_orig": 214
+  },
+  "freeparm": {
+   "file": "allo3.c",
+   "orig": "0x6a12",
+   "size_orig": 86,
+   "note": "Exact with OLD_D3L: a word cast of a global long is not taken from the register that holds the long. One witness, on the owner's word."
+  },
+  "allo": {
+   "file": "allo3.c",
+   "orig": "0x6a68",
+   "size_orig": 954,
+   "note": "The words of a temporary for parameters: a float takes 4 (PARMWORDS), of a temporary 2 (TEMPWORDS)."
+  },
+  "freetemp": {
+   "file": "allo3.c",
+   "orig": "0x6e22",
+   "size_orig": 78
+  },
+  "rclass": {
+   "file": "allo3.c",
+   "orig": "0x6e70",
+   "size_orig": 106,
+   "note": "Exact: OLD_D3J restores parameters also at a label with several jumps."
+  },
+  "allocreg": {
+   "file": "allo3.c",
+   "orig": "0x6eda",
+   "size_orig": 284,
+   "note": "Form: if / else if / else, no goto."
+  },
+  "freereg": {
+   "file": "allo3.c",
+   "orig": "0x6ff6",
+   "size_orig": 286,
+   "note": "Odd form: the found code inside the first loop, the second loop tests at the top with a return inside."
+  },
+  "usable": {
+   "file": "allo3.c",
+   "orig": "0x7114",
+   "size_orig": 198,
+   "note": "p is overwritten with the result of getlr; popt removes the store of the parameter."
+  },
+  "recl2": {
+   "file": "allo3.c",
+   "orig": "0x71da",
+   "size_orig": 124
+  },
+  "rfree": {
+   "file": "allo3.c",
+   "orig": "0x7256",
+   "size_orig": 90
+  },
+  "rwprint": {
+   "file": "allo3.c",
+   "orig": "0x72b0",
+   "size_orig": 142,
+   "note": "Odd form: an unreferenced label in front of the first test, as readmems."
+  },
+  "reclaim": {
+   "file": "allo3.c",
+   "orig": "0x733e",
+   "size_orig": 920,
+   "note": "Odd form: done in front of the code for a register result, reached by goto from behind it."
+  },
+  "pairmate": {
+   "file": "regallo3.c",
+   "orig": "0x76d6",
+   "size_orig": 28
+  },
+  "rsinit": {
+   "file": "regallo3.c",
+   "orig": "0x76f2",
+   "size_orig": 76
+  },
+  "rsbuild": {
+   "file": "regallo3.c",
+   "orig": "0x773e",
+   "size_orig": 166
+  },
+  "rsdump": {
+   "file": "regallo3.c",
+   "orig": "0x77e4",
+   "size_orig": 212
+  },
+  "newnode": {
+   "file": "regallo3.c",
+   "orig": "0x78b8",
+   "size_orig": 112,
+   "note": "m->reg = n->reg = n->reg * 2 in case 2 and 6: the tail is merged behind the first load, as in the original."
+  },
+  "rsinsert": {
+   "file": "regallo3.c",
+   "orig": "0x7928",
+   "size_orig": 318,
+   "note": "Exact with OLD_D3J forgetting all jump records at a label no jump has named (d3jclear in the record L); one witness, taken on the owner's word. No else return: with another mode a and b are not set (quirk table)."
+  },
+  "rcount_reset": {
+   "file": "regallo3.c",
+   "orig": "0x7a66",
+   "size_orig": 2
+  },
+  "roverlap": {
+   "file": "regallo3.c",
+   "orig": "0x7a68",
+   "size_orig": 390
+  },
+  "regjam": {
+   "file": "regallo3.c",
+   "orig": "0x7bee",
+   "size_orig": 762,
+   "note": "Odd form: the split loop stands inside the first loop and is reached by goto from behind it; the code that links the new node stands in the last case and case 1 and 6 reach it by goto; roverlap(1, reg) without a third argument (quirk table)."
+  },
+  "getreg": {
+   "file": "regallo3.c",
+   "orig": "0x7ee8",
+   "size_orig": 832,
+   "note": "Odd form: as regjam the split loop inside the free list loop, reached by goto; the found and return code inside the loop of the register variables, in front of its test. The source form is what gives the bytes, not proved to be what the authors wrote."
+  },
+  "rsreturn": {
+   "file": "regallo3.c",
+   "orig": "0x8228",
+   "size_orig": 462,
+   "note": "Odd form: if (rspool) n->next = rspool; n->next is 0 from before. The whole rest of the function stands inside the search loop."
+  },
+  "nullsyms": {
+   "file": "regallo3.c",
+   "orig": "0x83f6",
+   "size_orig": 64
+  },
+  "rsfreeall": {
+   "file": "regallo3.c",
+   "orig": "0x8436",
+   "size_orig": 102,
+   "note": "Form: case 1 ends with goto ret into case 3, case 2 falls through, no default."
+  },
+  "rspush": {
+   "file": "regallo3.c",
+   "orig": "0x849c",
+   "size_orig": 58
+  },
+  "rsmerge": {
+   "file": "regallo3.c",
+   "orig": "0x84d6",
+   "size_orig": 494,
+   "note": "The chars gone1, gone2, drop1, drop2 on the frame; while loops, a for gives another target for continue; q = rsexcl = p->next in a chain."
+  },
+  "rsmatch": {
+   "file": "regallo3.c",
+   "orig": "0x86c4",
+   "size_orig": 142,
+   "note": "Odd form: the step of the first search in front of its loop, by goto."
+  },
+  "rsrelease": {
+   "file": "regallo3.c",
+   "orig": "0x8752",
+   "size_orig": 60
+  },
+  "rsrelall": {
+   "file": "regallo3.c",
+   "orig": "0x878e",
+   "size_orig": 76
+  },
+  "rsrestart": {
+   "file": "regallo3.c",
+   "orig": "0x87da",
+   "size_orig": 74
+  },
+  "syserror": {
+   "file": "comm3.c",
+   "orig": "0x8824",
+   "size_orig": 36,
+   "note": "Dead code: no caller; name guessed; pulls perror and errlst into the program."
+  },
+  "uerror": {
+   "file": "comm3.c",
+   "orig": "0x8848",
+   "size_orig": 62
+  },
+  "cerror": {
+   "file": "comm3.c",
+   "orig": "0x8886",
+   "size_orig": 128
+  },
+  "werror": {
+   "file": "comm3.c",
+   "orig": "0x8906",
+   "size_orig": 62
+  },
+  "tinit": {
+   "file": "comm3.c",
+   "orig": "0x8944",
+   "size_orig": 48
+  },
+  "talloc": {
+   "file": "comm3.c",
+   "orig": "0x8974",
+   "size_orig": 94
+  },
+  "tcheck": {
+   "file": "comm3.c",
+   "orig": "0x89d2",
+   "size_orig": 66
+  },
+  "tfree": {
+   "file": "comm3.c",
+   "orig": "0x8a14",
+   "size_orig": 28
+  },
+  "tfree1": {
+   "file": "comm3.c",
+   "orig": "0x8a30",
+   "size_orig": 28
+  },
+  "fwalk": {
+   "file": "comm3.c",
+   "orig": "0x8a4c",
+   "size_orig": 120
+  },
+  "walkf": {
+   "file": "comm3.c",
+   "orig": "0x8ac4",
+   "size_orig": 88
+  },
+  "mkdope": {
+   "file": "comm3.c",
+   "orig": "0x8b1c",
+   "size_orig": 52
+  },
+  "bsize": {
+   "file": "comm3.c",
+   "orig": "0x8b50",
+   "size_orig": 76
+  },
+  "szty": {
+   "file": "comm3.c",
+   "orig": "0x8b9c",
+   "size_orig": 52
+  },
+  "argsize": {
+   "file": "comm3.c",
+   "orig": "0x8bd0",
+   "size_orig": 92
+  },
+  "prline": {
+   "file": "comm3.c",
+   "orig": "0x8c2c",
+   "size_orig": 30
+  },
+  "tbytes": {
+   "file": "comm3.c",
+   "orig": "0x8c4a",
+   "size_orig": 52
+  },
+  "callreg": {
+   "file": "comm3.c",
+   "orig": "0x8c7e",
+   "size_orig": 44
+  },
+  "dexit": {
+   "file": "comm3.c",
+   "orig": "0x8caa",
+   "size_orig": 26
+  },
+  "branch": {
+   "file": "comm3.c",
+   "orig": "0x8cc4",
+   "size_orig": 26
+  },
+  "ncopy": {
+   "file": "comm3.c",
+   "orig": "0x8cde",
+   "size_orig": 34
+  },
+  "tcopy": {
+   "file": "comm3.c",
+   "orig": "0x8d00",
+   "size_orig": 210,
+   "note": "Quirk: the second rbusy has two arguments (quirk table)."
+  },
+  "ispow2": {
+   "file": "comm3.c",
+   "orig": "0x8dd2",
+   "size_orig": 78
+  },
+  "plainicon": {
+   "file": "comm3.c",
+   "orig": "0x8e20",
+   "size_orig": 42
+  },
+  "alloc": {
+   "file": "comm3.c",
+   "orig": "0x8e4a",
+   "size_orig": 124
+  },
+  "allocinit": {
+   "file": "comm3.c",
+   "orig": "0x8ec6",
+   "size_orig": 34
+  },
+  "hdrout": {
+   "file": "wrt3.c",
+   "orig": "0x8ee8",
+   "size_orig": 26
+  },
+  "endrun": {
+   "file": "wrt3.c",
+   "orig": "0x8f02",
+   "size_orig": 4
+  },
+  "endline": {
+   "file": "wrt3.c",
+   "orig": "0x8f06",
+   "size_orig": 82,
+   "note": "The pointer assigned inside the first test: if (*(cp = &ifname[n - 1]) == '\"')."
+  },
+  "parminit": {
+   "file": "wrt3.c",
+   "orig": "0x8f58",
+   "size_orig": 778,
+   "note": "Odd form: one register variable for the type and then for the register number of the symbol; the index of rnames is long (-p->lval)."
+  },
+  "structretcode": {
+   "file": "wrt3.c",
+   "orig": "0x9262",
+   "size_orig": 92
+  },
+  "fbegin": {
+   "file": "wrt3.c",
+   "orig": "0x92be",
+   "size_orig": 324
+  },
+  "regtabinit": {
+   "file": "regs3.c",
+   "orig": "0x9402",
+   "size_orig": 8
+  },
+  "tabfind": {
+   "file": "regs3.c",
+   "orig": "0x940a",
+   "size_orig": 60
+  },
+  "tabclear": {
+   "file": "regs3.c",
+   "orig": "0x9446",
+   "size_orig": 60
+  },
+  "fixtemp": {
+   "file": "regs3.c",
+   "orig": "0x9482",
+   "size_orig": 382,
+   "note": "tmptab[i].reg = j = getreg(...); i used for the temporary number first."
+  },
+  "tmpcleanup": {
+   "file": "regs3.c",
+   "orig": "0x9600",
+   "size_orig": 236,
+   "note": "The loop test and the end of the table in one for condition; the inner for tests off < 0 with the body inside."
+  },
+  "tmpdump": {
+   "file": "regs3.c",
+   "orig": "0x96ec",
+   "size_orig": 86
+  },
+  "fixfld": {
+   "file": "regs3.c",
+   "orig": "0x9742",
+   "size_orig": 200
+  },
+  "mapregs": {
+   "file": "regs3.c",
+   "orig": "0x980a",
+   "size_orig": 314,
+   "note": "Odd form: (sflags >> 2 & 1) == 0 written with the comparison: without it the compiler takes bit, the original has and and test."
+  },
+  "symuse": {
+   "file": "regs3.c",
+   "orig": "0x9944",
+   "size_orig": 74
+  },
+  "rfreeall": {
+   "file": "regs3.c",
+   "orig": "0x998e",
+   "size_orig": 80
+  },
+  "rfind": {
+   "file": "regs3.c",
+   "orig": "0x99de",
+   "size_orig": 60
+  },
+  "rnassign": {
+   "file": "regs3.c",
+   "orig": "0x9a1a",
+   "size_orig": 170
+  },
+  "rnnullp": {
+   "file": "regs3.c",
+   "orig": "0x9ac4",
+   "size_orig": 74
+  },
+  "rnnullcall": {
+   "file": "regs3.c",
+   "orig": "0x9b0e",
+   "size_orig": 38
+  },
+  "rnnullall": {
+   "file": "regs3.c",
+   "orig": "0x9b34",
+   "size_orig": 46
+  },
+  "rnnulll": {
+   "file": "regs3.c",
+   "orig": "0x9b62",
+   "size_orig": 34
+  },
+  "rnnullw": {
+   "file": "regs3.c",
+   "orig": "0x9b84",
+   "size_orig": 18
+  },
+  "rnnull": {
+   "file": "regs3.c",
+   "orig": "0x9b96",
+   "size_orig": 70
+  },
+  "nxwork": {
+   "file": "regs3.c",
+   "orig": "0x9bdc",
+   "size_orig": 1784,
+   "note": "Odd form: the holes of the table as explicit empty cases, default only for values out of range (the table sends holes to the end, the range check to cerror)."
+  },
+  "symreg": {
+   "file": "regs3.c",
+   "orig": "0xa2d4",
+   "size_orig": 94,
+   "note": "Odd form: if (s == 0) ; for the lone cp r1,#0, the found code in front of its test, by goto."
+  },
+  "regforsym": {
+   "file": "regs3.c",
+   "orig": "0xa332",
+   "size_orig": 140,
+   "note": "symreg with its third argument also for the frame pointer symbols."
+  },
+  "fixname": {
+   "file": "regs3.c",
+   "orig": "0xa3be",
+   "size_orig": 100
+  },
+  "oregfix": {
+   "file": "regs3.c",
+   "orig": "0xa422",
+   "size_orig": 144
+  },
+  "fcmd": {
+   "file": "regs3.c",
+   "orig": "0xa4b2",
+   "size_orig": 152,
+   "note": "As scmd."
+  },
+  "regreset": {
+   "file": "regs3.c",
+   "orig": "0xa54a",
+   "size_orig": 162
+  },
+  "rcmd": {
+   "file": "regs3.c",
+   "orig": "0xa5ec",
+   "size_orig": 438
+  },
+  "scmd": {
+   "file": "regs3.c",
+   "orig": "0xa7a2",
+   "size_orig": 322,
+   "note": "The argument -n is taken from the frame (OLD_D3AW)."
+  },
+  "tcmd": {
+   "file": "regs3.c",
+   "orig": "0xa8e4",
+   "size_orig": 356,
+   "note": "As scmd."
+  },
+  "memname": {
+   "file": "regs3.c",
+   "orig": "0xaa48",
+   "size_orig": 128
+  },
+  "findtemp": {
+   "file": "regs3.c",
+   "orig": "0xaac8",
+   "size_orig": 52
+  },
+  "gswitch": {
+   "file": "lcl3.c",
+   "orig": "0xaafc",
+   "size_orig": 582,
+   "note": "Odd form: two register variables and two stack words without any use (the original saves and skips them); the two paths as if (op != 124) { ... return; } and a second if (op == 124), the original tests twice."
+  },
+  "chk": {
+   "file": "lcl3.c",
+   "orig": "0xad42",
+   "size_orig": 464
+  },
+  "clocal": {
+   "file": "lcl3.c",
+   "orig": "0xaf12",
+   "size_orig": 982,
+   "note": "Odd form: case 9 and case 1 written out, an empty case 18, return; without a value in case 3, 6 (quirk table). Form: the cases of pf in the order 2, 12, 14, 4; p = l; goto ret in both arms."
+  },
+  "makeblock": {
+   "file": "tr3.c",
+   "orig": "0xb2e8",
+   "size_orig": 70
+  },
+  "foldadd": {
+   "file": "tr3.c",
+   "orig": "0xb32e",
+   "size_orig": 208
+  },
+  "buildstar": {
+   "file": "tr3.c",
+   "orig": "0xb3fe",
+   "size_orig": 188,
+   "note": "clocal after the switch, also for STAR and UAND; no default."
+  },
+  "bcon": {
+   "file": "tr3.c",
+   "orig": "0xb4ba",
+   "size_orig": 52
+  },
+  "member": {
+   "file": "tr3.c",
+   "orig": "0xb4ee",
+   "size_orig": 164
+  },
+  "optim": {
+   "file": "optim3.c",
+   "orig": "0xb592",
+   "size_orig": 1532,
+   "note": "Odd forms: the MINUS loop as a goto loop with its test inside the if; if (...) { zapleft: ... } if (...) goto zapleft; the joined and folded trees are tested again. OLD_D20L and OLD_D20C removed."
+  },
+  "conval": {
+   "file": "optim3.c",
+   "orig": "0xbb8e",
+   "size_orig": 698,
+   "note": "The body of ULT stands in front of ULE."
+  },
+  "treeeq": {
+   "file": "optim3.c",
+   "orig": "0xbe48",
+   "size_orig": 146
+  },
+  "convelim": {
+   "file": "optim3.c",
+   "orig": "0xbeda",
+   "size_orig": 294,
+   "note": "Exact: OLD_D3J, the record ] between a jump and a label does not count."
+  },
+  "isint": {
+   "file": "optim3.c",
+   "orig": "0xc000",
+   "size_orig": 34
+  }
+ }
+}

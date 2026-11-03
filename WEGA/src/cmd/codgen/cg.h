@@ -107,6 +107,11 @@
 #define INTEMP	0010000
 #define FORARG	0020000
 #define SWADD	0040000
+#ifdef SEG
+#define NREGVAR	11	/* entries of regvar */
+#else
+#define NREGVAR	12
+#endif
 #define SPECIAL	0100000
 #define SZERO	SPECIAL
 

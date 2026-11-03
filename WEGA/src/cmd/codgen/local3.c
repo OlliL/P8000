@@ -174,6 +174,9 @@ tsuffix(t)
 		break;
 	case 5:
 	case 15:
+#ifdef SEG
+	lng:
+#endif
 		putchar('l');
 		rmode++;
 		break;
@@ -189,11 +192,9 @@ tsuffix(t)
 		break;
 	default:
 #ifdef SEG
-		if ((t & 0x30) == 0x10) {
-			putchar('l');
-			rmode++;
-		} else
-			cerror("zzzcode - bad type");
+		if ((t & 0x30) == 0x10)
+			goto lng;
+		cerror("zzzcode - bad type");
 #else
 		if ((t & 0x30) != 0x10)
 			cerror("zzzcode - bad type");
@@ -1236,7 +1237,11 @@ shincr(t, incr)
 		return 0;
 	t = ((unsigned)t >> 2 & ~0xF) | (t & 0xF);
 	if ((t & 0x30) == 0x10)
+#ifdef SEG
+		return incr == 4;		/* a pointer to a pointer */
+#else
 		return incr == 2;		/* a pointer to a pointer (16 bit) */
+#endif
 	switch (t) {
 	case 2: case 12: return incr == 1;
 	case 3: case 4: case 13: case 14: return incr == 2;
@@ -1350,6 +1355,9 @@ upput(p)
 	register NODE *p;
 {
 	register long save;
+#ifdef SEG
+	register int spare;
+#endif
 	register int r;
 
 	if (p->op == FLD)
@@ -1386,7 +1394,7 @@ upput(p)
 		} else {
 			p->lval = 2;
 			r = p->rval;
-			p->rval = (r + 1) << 8;
+			p->rval = (p->rval + 1) << 8;
 			adrput(p);
 			p->rval = r;
 		}

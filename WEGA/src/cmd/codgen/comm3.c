@@ -270,7 +270,11 @@ mkdope()
 
 /* size of a type in bits (pointers 16, segmented 32); SHORT and USHORT do not occur (cparse maps them to int) */
 char *rnames[] = {
+#ifdef SEG
+	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "sp", "fp",
+#else
 	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "fp",
+#endif
 	"f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
 };
 

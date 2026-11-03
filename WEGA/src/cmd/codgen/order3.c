@@ -776,10 +776,8 @@ rew:
 		}
 	}
 	if (sul > sur && p->left->op == STAR) {
-#ifndef SEG
 		if (lmuldiv(p))
 			p->left->left->rall = 0x1002;
-#endif
 		OFFSTARA(p->left);
 		return 1;
 	}
