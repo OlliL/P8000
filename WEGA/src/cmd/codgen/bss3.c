@@ -106,7 +106,3 @@ struct tmpent tmptab[80];
 #ifdef OLD_D16A
 NODE *d16acmp;	/* the left operand of the last compare set up: its increment stays in memory (match) */
 #endif
-#ifdef OLD_D2RA
-NODE *d2ranode;	/* the last r0 + rN and its rN (offstar) */
-int d2rareg;
-#endif

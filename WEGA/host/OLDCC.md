@@ -195,7 +195,7 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA`, `OLD_D3L` (codgen; popt has no switch of its own since 2026-11-03). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L` (codgen; popt has no switch of its own since 2026-11-03). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
 - State: /lib/cparse 178 strictly exact, 2 differing lines, /lib/popt 72 of 73, 8 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
@@ -298,7 +298,7 @@ compiler that built the original. Not differences of the compiler (checked):
 - v0 (switch `OLD_D2PO` in codgen, getreg): OLD_D2P for an odd word: an idle odd word (a parameter or name in r3)
   whose even half is free is given back when a pair is wanted and the even half weighs less than the first free
   pair (refid `nrefsym * 22` in rr2, dclstruct). cparse 260 > 234, bench v0 290 > 282.
-- v0p (switch `OLD_D2R0` in codgen, offstar and freereg): an address computed in r0 is moved to another register
+- Removed 2026-11-03, no effect left in the models or the bench. v0p (switch `OLD_D2R0` in codgen, offstar and freereg): an address computed in r0 is moved to another register
   for the indirection; the value loaded through it goes back into r0 when r0 is free (gotscal `inc r0,#12; ld r1,r0;
   ld r0,@r1`). Bench v0 277 > 278: v0p only.
 - v0p (switch `OLD_D2PT` in codgen, getreg): OLD_D2P also takes the idle registers of a TEMP (the value of a switch,
@@ -342,7 +342,7 @@ compiler that built the original. Not differences of the compiler (checked):
   has named yet, the parameter registers kept at labels, merged pairs put behind the others, freed words in LIFO
   order, symreg only on idle registers. Two ld findings were source forms (ranlib_scan as a `for` loop, dseek as one
   `||`), strip's expression went with v1 without a D2 switch.
-- v0p (switch `OLD_D2RA` in codgen, match and offstar): an address `r0 + rN` moved out of r0 goes to rN when that is free
+- Removed 2026-11-03, no effect left in the models or the bench. v0p (switch `OLD_D2RA` in codgen, match and offstar): an address `r0 + rN` moved out of r0 goes to rN when that is free
   again (popt itoa_ `add r0,r3; ld r3,r0; ldb @r3,rl2`, reverse `add r0,r2; ld r2,r0`); an address made by a constant
   keeps the lightest register (cparse `add r0,#dimtab; ld r1,r0`, gotscal, codgen). Bench v0 not touched.
 - Open: place_sec (`r8 = (secorg[j] - q->tsize) & 0xff00`: the original takes a new register for the `and`, not in the
@@ -391,7 +391,7 @@ compiler that built the original. Not differences of the compiler (checked):
   known at the jumps come back (tfree1 `ld r2,r7`, rmconv `cpb rl6,#'l'` at the else label behind a then part with
   calls); of those only a long parameter still gets its home in the frame (notoff; word parameters needed none in the three models; one witness, on the owner's word). At a label no jump has named (a loop head) all jump records are forgotten (d3jclear; rsinsert; one witness, on the owner's word). With two jumps (buildtree, an `&&`) the original
   reloads. cparse 278 > 274, bench v0 292 > 290 (115 > 117).
-- v0p (switch `OLD_D3JM` in codgen, d3jlabel): at a label behind a jump named by several jumps the parameters known at
+- Removed 2026-11-03, no effect left in the models or the bench. v0p (switch `OLD_D3JM` in codgen, d3jlabel): at a label behind a jump named by several jumps the parameters known at
   all the jumps and still known in front of the label stay (popt equop: `ld r2,r6` at the else label of `A || B || C
   && D` behind a short then part; buildtree reloads because its then part has calls). Without the condition on the
   code in front (the state of the jumps comes back): buildtree 6 > 14. Bench v0 unchanged.

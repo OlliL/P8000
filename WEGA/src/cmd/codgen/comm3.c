@@ -521,11 +521,7 @@ d3jlabel(lab, dead)
 		next = n->next;
 		if (n->cls > 3 || !n->sym || n->sym->sclass != 9 || n->busy > 0)
 			continue;
-#ifdef OLD_D3JM
-		if (!dead || j->jumps != 1) {
-#else
 		if (!dead) {
-#endif
 			for (i = 0; i < j->n; i++)
 				if (n->reg == j->reg[i] && n->cls == j->cls[i] && n->sym == j->sym[i])
 					break;

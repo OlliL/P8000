@@ -8,7 +8,6 @@ extern int allo();
 extern int allocreg();
 extern long baseoff;
 extern int cerror();
-extern int d2r0reg;
 extern int d2vfirst();
 extern int dope[];
 extern struct sym *fpsym1;
@@ -69,10 +68,6 @@ static char sccsid[] = "@[$]allo3.c\t2.4  08/24/83 11:29:34 Copr. 1981 87wega3.2
 
 #define RNOP	010000
 
-#ifdef OLD_D2R0
-extern int d2r0reg;
-static int d2r0free();
-#endif
 
 /* number of words a temporary for the result of p needs (a macro in the original: it is expanded twice in allo) */
 #ifdef SEG
@@ -92,7 +87,6 @@ static int d2r0free();
 
 static int d2qfree();
 static int d2ofree();
-static int d2r0free();
 
 /* count the register of an operand as busy; sym and lval are only passed on */
 void
@@ -323,21 +317,6 @@ d2ofree(r)
 }
 #endif
 
-#ifdef OLD_D2R0
-int d2r0reg = -1;		/* the register offstar moved an address from r0 into */
-
-/* r0 is on the free list (alone or in rr0) */
-static int
-d2r0free()
-{
-	register struct rs *n;
-
-	for (n = rsfree; n; n = n->next)
-		if ((n->cls == 2 || n->cls == 3) && n->reg == 0)
-			return 1;
-	return 0;
-}
-#endif
 
 /* a register for the result of p; cookie says what the caller wants */
 int
@@ -499,13 +478,6 @@ freereg(p, r, cookie)
 			for (reg = 0; reg <= 7; reg++)
 				if (usable(p, side, reg) > 0) {
 				found:
-#ifdef OLD_D2R0
-					/* v0p: an address moved out of r0 (which cannot address): the value goes back to r0 when it is free */
-					if (reg == d2r0reg && rclass(ty, reg) == 2 && d2r0free()) {
-						d2r0reg = -1;
-						return getreg(2, 0, 0x1000, sym);
-					}
-#endif
 					rfree(reg, ty);
 					cls = rclass(ty, reg);
 					return getreg(cls, reg, 0x1000, sym);

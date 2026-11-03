@@ -16,13 +16,10 @@
 #define OLD_D2QO	/* OLD_D2Q also when an odd word register is wanted (the low half: an argument) */
 #define OLD_D2O		/* a long loaded through an odd address register into the pair below it (allocreg) */
 #define OLD_D16A	/* a frame slot incremented by a constant, value to a temporary, not for a compare: load, increment, store (match, setbin) */
-#define OLD_D2R0	/* a load through an address moved out of r0 goes back into r0 (freereg) */
 #define OLD_D6S		/* an assignment of a register to itself prints nothing (match) */
 #define OLD_D5T		/* a member of an element of a local array: its offset beside that of the array (mapregs, rallo) */
 #define OLD_D12K	/* a double constant goes into the data at its statement (rddata, d12kout) */
 #define OLD_D3L		/* a word cast of a global long is not taken from the register that holds the long */
-#define OLD_D3JM	/* OLD_D3J: at a label behind a jump named by several jumps the parameters known at the jumps and in front of it */
-#define OLD_D2RA	/* an address r0 + rN moved out of r0 goes to rN when that is free (match, offstar) */
 #endif
 
 #ifdef OLD_V0

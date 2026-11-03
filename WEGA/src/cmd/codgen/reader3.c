@@ -19,8 +19,6 @@ extern char *cnames[];
 extern void codgen();
 extern void constore();
 extern void d12kout();
-extern int d2r0reg;
-extern NODE *d2ranode;
 extern void d3jlabel();
 extern int d3knamed();
 extern void d3kreset();
@@ -557,12 +555,6 @@ p2compile(p)
 	int tag;
 
 	nrecur = 0;
-#ifdef OLD_D2R0
-	d2r0reg = -1;		/* it holds only inside a statement */
-#endif
-#ifdef OLD_D2RA
-	d2ranode = 0;
-#endif
 	if (p->op == 118) {
 		mapnm(p->left);
 		fbegin(p->left->sname);

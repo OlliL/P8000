@@ -15,9 +15,6 @@ extern NODE *canon();
 extern int cerror();
 extern int crslab;
 extern NODE *d16acmp;
-extern int d2r0reg;
-extern NODE *d2ranode;
-extern int d2rareg;
 extern void deflab();
 extern int dope[];
 extern int ffregs;
@@ -518,23 +515,8 @@ offstar(p)
 		if (p->op == REG && p->rval == 0) {
 			save = ordflag;
 			ordflag = 0x14;
-#ifdef OLD_D2RA
-			/* v0p: an address r0 + rN moves to rN when that is free again */
-			if (p == d2ranode) {
-				register struct rs *n;
-
-				for (n = rsfree; n; n = n->next)
-					if ((n->cls == 2 && n->reg == d2rareg) || (n->cls == 3 && n->reg == (d2rareg & ~1))) {
-						p->rall = d2rareg | MUSTDO;
-						break;
-					}
-			}
-#endif
 			order(p, 6);
 			ordflag = save;
-#ifdef OLD_D2R0
-			d2r0reg = p->op == REG ? p->rval : -1;	/* the address moved out of r0 */
-#endif
 		} else
 			order(p, 6);
 	}

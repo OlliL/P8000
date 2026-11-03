@@ -11,8 +11,6 @@ extern int bsize();
 extern int cerror();
 extern void conput();
 extern NODE *d16acmp;
-extern NODE *d2ranode;
-extern int d2rareg;
 extern int dope[];
 extern void expand();
 extern void fixname();
@@ -398,12 +396,6 @@ cand:
 			return q->rewrite;
 		if (!allo(p, q))
 			goto next;
-#ifdef OLD_D2RA
-		if (p->op == PLUS && l->op == REG && l->rval == 0 && r->op == REG && szty(p->type) == 1) {
-			d2ranode = p;
-			d2rareg = r->rval;
-		}
-#endif
 #ifdef OLD_D2A
 		t = p->op;
 #endif
