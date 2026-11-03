@@ -42,7 +42,7 @@ experiment: one pass of the chain replaced by its version, the rest shipped.
   `codgen/v1`, `popt/v1`, the driver `cc/v1`). The version Makefile defines the switches, the libc, crt0 and the install
   name; the pass Makefile only descends into it (`make old`). Built programs are not in git.
 - Driver: `cc.c` with `OLD_V1` runs `/lib/v1/cparse`, `/lib/v1/codgen`, `/lib/v1/popt`; cpp, gopt, cas, ld, crt0.o and
-  libc.a are the shipped ones. `make install PREFIX=dir` in the version directories installs `bin/ccv1` and `lib/v1/*`.
+  libc.a are the shipped ones (v0 and v0p: cas is `/lib/old/cas`, D17). `make install PREFIX=dir` in the version directories installs `bin/ccv1` and `lib/v1/*`.
 - Emulator: z8k-emu maps every absolute guest path below its ROOT (relative paths go to the host working directory).
   `make -C host oldroot` builds all v1 programs and installs them into a tree of symbolic links to the WEGA tree
   (`host/tools/oldroot.sh`, default `tmp/oldroot`, bin and lib real directories, guest /tmp shared), so the original tree
@@ -204,8 +204,7 @@ time, or another version) points to their mechanism.
   81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines; + OLD_D2Q 2719 lines (88: addcase and ftnend differ only by a mask artifact, a data address equal to a function
   address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438; source fixes hash, hide, lookup 111, 1400; + OLD_D3K 113, 1312; source fixes getpreg, fhashv 1282; + OLD_D2V 116, 1194; OLD_D3K at `?:` 117, 1188; source fixes cisreg, tyreduce 119, 1161; source fixes vfdzero, tcopy, ncopy, argregs, beginit, endinit, falloc 122, 1094; + OLD_D2A 125, 1087; source fixes tymatch, argdebug, buildtree, defid, efcode 126, 997; rmconv, ispow2 127, 987; + OLD_D2M 128, 961; + OLD_D2P 129, 906; getmem source fix 130; OLD_D2P with idle halves and idle pairs 132, 780; + OLD_D2U 133, 756; + OLD_D2G 135, 676; + OLD_D5S 136, 652; tymatch register order 137, 528; OLD_D3K: a label just in front of the function end keeps the parameters 139, 525; oconvert source fix 523; popt OLD_D20C 140, 464; popt OLD_D20X 140, 398; popt OLD_D20S 141, 390; popt OLD_D20L 383; OLD_D2A not for an argument pair, + OLD_D2O, + OLD_D21, code1 source fixes 336; + OLD_D16A 333; + OLD_D3N 142, 328; + OLD_D22 145, 302; OLD_D3N for the arguments of the next statement 296; source forms prtdcon, fltlab 147, 286; source forms yyparse, treeeq 148; OLD_D3N for register variables, psavel source form 151, 278; + OLD_D3J 153, 274; instk, talloc source forms, + OLD_D2QO 156, 260; + OLD_D2PO 234; + OLD_D2MO 157, 229; + OLD_D16B 158, 220; conval source order, + OLD_D2PT 159, 210; exname, yylex source forms 215 (yylex as long as the original, new mask artifacts); + OLD_D5A 157, 205; clocal, buildtree, putsym, newsect source forms 159; + OLD_D3V 158, 162; without the mask artifacts 162, 152; cinit case order, popt OLD_D20K 163, 144; clocal case order 164; + OLD_D6S 165, 134; + OLD_D2R0 166, 128; yylex 126; defalign source form 167, 117; + OLD_D2W6 169, 105; + OLD_D3AW 170, 103; OLD_D3AW for an address constant plus a parameter 171, 100; oconvert source form 172, 98; + OLD_D5G 173, 96).
 - Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
-  `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file (D17:
-  probably the old cas, which resolves `callr` to a later global function as `call`).
+  `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file: the old cas (D17).
 
 ### Seen in /lib/cparse (classes read from the strict diffs, before v0)
 
@@ -536,14 +535,19 @@ of a compare": every `--` with this cookie is under a compare and the only `++` 
 a frame slot under a compare, or a `--` with the same cookie outside one, would separate them. One witness in fact (genswitch and its copy in scparse).
 
 Removed (2026-11-03): OLD_D16B. One witness, a source form: stref `p->type = p->type + PTR`, `p->left->type = p->left->type + PTR` instead of `+=`.
-### D17 Call form (popt)
+### D17 Call form: the old cas
 
-The original has `call` where the shipped chain has `calr`, for calls in reach of `calr`. `strictcmp` hides this; `strictcmp -c` shows it (cparse 175 > 168 functions, 27 > 79 lines; popt 71 > 61, 26 > 172; `-a`, which also takes D18 out, changes nothing more).
-Not the storage class of the callee, as an older pattern from popt said: one callee has both forms in one file (dest 5 and 3, dualop 13 and 1, isreg 11 and 2). In rmove every call in reach is long up to 0x1f68 and short behind it, the point where its long `jp` end too. This is the early jump optimization of the old cas (cparse point 4), measured: a test cas that runs it at the points read from the originals gives `strictcmp -c` = strict in both programs and the long `jp` of yylex and rmove too (`host/recon/castrig/`). What triggers it is not known.
+The original has `call` and `jp` where the shipped chain has `calr` and `jr`, for targets in reach. It is not the compiler: `callr` and `jpr` are decided by cas. The old cas ran its jump optimization (`optim`) several times in the first pass; a forward jump to a label not defined yet becomes long at such a point (manual: ZEUS Languages Programming Tools 3.2 and Band B, 3.4.5: "If jump optimization is performed before the target label for a particular jump is found, the jump is made long"). Measured (`host/recon/castrig/`, `OLDCC_LOG.md`), built with `-DOLD_CAS` (`host/cas/casold`, `src/cmd/cas/old`, `/lib/old/cas` of ccv0 and ccv0p):
 
-cpp (2026-11-03): the test cas with one point between `control` and `pperror` (`castrig/triggers.txt`) gives, linked and stripped, a file byte-identical with /lib/cpp. Without it the only difference in the file are 20 `call` against `calr` and what follows from these 40 bytes; no `jp` differs. A split of `cpp.c` into two files is excluded: 17 `calr` cross every possible boundary, and no call between known modules is `calr`.
+- At an opening `{` with 176 to 179 undecided entries or more (`OLD_ENTBLK` 178; nothing separates the four values, K 175 and 180 give errors). The label of the function in front of the `{` is known then: at the `}` 7 calls to the next function are wrong.
+- When an entry would be made behind 255 entries (`OLD_ENTMAX`; 254 and 256 give errors): only in functions too long for the first rule, yylex, rmove.
+- A forward jump does not count a jpr that stands at its label (`>`, the shipped cas has `>=`): acon, one place.
 
-The rule for the points where the old cas optimizes early is not known. The best candidate from cparse and popt, a sum of table bytes (`castrig/memsum.py`), failed its independent test on codgen (`castrig/codgen_test.py`): worse than no trigger at all.
+The rule was found on cparse and popt and holds on codgen and cpp without any change: fixed on cparse and popt, K 174..179; on codgen and cpp no site wrong at K 177..179. dc of 07/82, from the System III source and not exact: 45 wrong forms without the rule, 5 with it.
+
+Why a limit at 176..179 and why at a `{` is not known. The two conditions of the manual (`.=` and a difference of labels with a jump between them) are not modelled: the shipped cas and the ZEUS cas do not have them, `.=` stands in the data section in all inputs and no difference occurs, so no point depends on them.
+
+A `call` also comes from a callee in another module; `calr` cannot leave a module. That placed sputc and aobeg of cparse in a module of their own (sym2.c, the name is a guess), and hash, upoff, oalloc in sym1.c. A split of `cpp.c` is excluded: calr of subst and main cross every possible boundary.
 
 ### D18 Frame operand with offset 0
 
@@ -583,7 +587,7 @@ For v0p no old popt is needed: all three models built with the original /lib/pop
 - Candidate, not set (one witness): the load of a switch value in front of a dispatch behind a jump (`Lx: ld r2,r13; jpr D`, argregs): argregs 17 > 14, nothing else changes.
 - Removed (2026-11-02): OLD_D20S. getpreg `if( pregvar < 2 ) break; goto gotreg;` is exact without it, and it turned the POP arm of usesreg the wrong way (usesreg 35 > 6).
 - rmove was source forms too (420 > 19 lines): `del`, `redual`, `kill_all`, `shins`, the CLR arm and `next`-like tails inside the `if` that falls into them, disp behind do_arith, do_clr behind do_sla, lda_mem behind lda_end.
-- Left in popt: rmove 8 lines, the long `jp` of the old cas (D17).
+- popt: exact with the old cas (D17).
 
 ### D21 (removed 2026-11-02: not a difference of the compiler)
 
@@ -700,8 +704,8 @@ the current case order is the best of seven), `expand` and `freereg` (moved bloc
 ## 5 Open questions
 
 - The times of D3 and D20 are not known (no mark read from a binary yet).
-- v0 is not complete: the open forms of its bench (leaf functions, the first register, D6 dispatch, D17 by cas) and the
-  final test (cparse, codgen, popt built with ccv0 byte-identical).
+- v0 is not complete: the open forms of its bench (leaf functions, the first register, D6 dispatch).
+- Whole files with ccv0p and strip (2026-11-03): cpp, cparse, scparse, popt, spopt byte-identical with the originals. codgen and scodgen: efcode and sucomp, scodgen also usable (source forms, `tools/FINDINGS.md`).
 - The compiler of 08/22/83 .. 09/01/83 (sh: slots with the shipped D12) is not built; it may be v1 with the shipped
   cparse.
 - Which version built /lib/cparse, /lib/codgen, /lib/popt (final test: our passes compiled with the old compiler are

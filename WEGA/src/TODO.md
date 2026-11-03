@@ -59,6 +59,8 @@ The same for `popt`, `spopt` (model `cmd/cc/c2.d`, `z8000/c2`). `cpp` follows th
 
 ## Plan: towards the old C compiler (2026-10-30, owner decision; replaces "Plan after the sld naming" of 2026-10-28)
 
+State 2026-11-03: the old cas is found (`host/OLDCC.md`, D17). With ccv0p and strip cpp, cparse, scparse, popt and spopt are byte-identical with the originals; codgen and scodgen differ only by efcode and sucomp (scodgen also usable). Next: these three, then ld and sld.
+
 Goal: rebuild the old C compiler (the revision that built the WEGA binaries, D1 ... D17), so that our sources compile
 byte-identical with it. Programs that the normal build does not need are deferred.
 

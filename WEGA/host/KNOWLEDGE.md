@@ -454,7 +454,7 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   stack segment, so the values may differ at link time: guess, not checked).
 - Call form (checked with `src/cmd/sld/tools/fncheck.py`): scc emits `calr` for a callee defined in the same object within
   reach, `call` for an undefined callee or one out of reach (the original calls 0x3408 from 0x71c0 with `call`, the distance
-  is above the calr range). The form of the final sld is therefore decided by the whole-file compile (D17).
+  is above the calr range). The form of the final sld is therefore decided by the whole-file compile.
 - Segment operands in the object are `<<0>>` (not linked); the stack is `<<127>>` after the link. Compare without segments.
 - Stream layout of the input side (read from 0x7808 and 0x30a4, not yet confirmed by a draft): a long pointer to the next
   character at offset 0 (advanced by its low word at offset 2), a word count of the characters left at offset 4; count
@@ -831,6 +831,8 @@ means it does something fixed instead (only possible where the original's result
 
 | Program | Bug or quirk | Rebuild | Details |
 |---------|--------------|---------|---------|
+| `/bin/cas` (`jdeps`) | for a forward jump a jpr that stands exactly at the label counts as growth of the distance (`>=`), so a jump at distance 256 whose target is a long jpr becomes long; the old cas has `>` | kept (`host/cas`), `OLD_CAS` for the old one | `OLDCC.md`, D17 |
+| `/bin/cas` against its manual | manual 3.4.5 says `.=` and a difference of labels force jump optimization before the end of pass 1; the shipped cas does neither (nor does the ZEUS cas): an old text | kept | `OLDCC.md`, D17 |
 | kernel `fpe.s` (`mulno`) | a mantissa product below 2 is normalised with bit 55 instead of bit 63 and an unshifted guard byte: wrong last bit in about 1 of 5 extended `fmul` results | kept (z8k-emu) | "EPU (floating point)", `z8k-emu/README.md` |
 | `/lib/gopt` (`cc -Or`) | register pointer parameters get a wrong frame offset (`ld r4,~L1+-1275(fp)`); same output on the real hardware | kept (emulated binary) | "gopt (-Or) output with register pointer parameters" |
 | `/bin/cas` | after more than one semantic error in a statement, `error()` returns a long whose low word is a leftover of `r3`, the parser uses it as a pointer | not reproduced (`errnode`) | "cas: decompilation", "cas on the host", `cas/README` |
@@ -2141,7 +2143,7 @@ Status (2026-10-27): NOT byte-identical yet. Measured against the original in z8
 - The differences are classified per function (D1, D2, D4, D5, D6, D7, D8, D16, D17; OLDCC.md), and as findings in
   `src/cmd/popt/tools/findings.json` (popt-01 .. popt-33; open: popt-29 text sum, popt-30 codemove, popt-31 regprefix,
   popt-32 ovlap, popt-33 call forms = D17). `FINDINGS.md` is generated from findings.json.
-- Open items that need the old compiler: D2, D4, D5, D6, D16 per function, and the call form D17.
+- Open items that need the old compiler: D2, D4, D5, D6, D16 per function. The call form D17 is the old cas (OLDCC.md): popt is byte-identical with it.
 Reproduced quirks: singop reads address 0 when a node has no operand text; conloc is 20 bytes and overwritten into the
 counters ndirect, nbrbr; movedat clears nothing; fixldm uses strrchr. See the table "Bugs and quirks of the originals".
 
