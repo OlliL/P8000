@@ -6,24 +6,24 @@
 
 extern char ascii[];
 extern int cerror();
-extern struct node *clocal();
+extern NODE *clocal();
 extern void fcmd();
 extern int findtemp();
 extern void fixfld();
 extern void fixname();
 extern void fixtemp();
-extern struct node *foldadd();
+extern NODE *foldadd();
 extern struct sym *fpsym1;
 extern struct sym *fpsym2;
 extern long frame0;
-extern struct node *getlr();
+extern NODE *getlr();
 extern int getreg();
 extern struct sym *mapn();
 extern void mapregs();
 extern int maxreg;
 extern void memname();
 extern int minreg;
-extern struct node node[];
+extern NODE node[];
 extern int nsave;
 extern void nxwork();
 extern char *opst[];
@@ -206,7 +206,7 @@ tabclear(key)
 /* a TEMP node becomes a register or an OREG on the frame */
 void
 fixtemp(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int i;
 	register struct rs *n;
@@ -308,9 +308,9 @@ tmpdump()
 /* a field: the address of the member is added to the address of the structure */
 void
 fixfld(p)
-	register struct node *p;
+	register NODE *p;
 {
-	register struct node *a, *m;
+	register NODE *a, *m;
 	register int ismember;
 #if defined(OLD_D5S) || defined(OLD_D5G)
 	int subsr = p->op == 120;
@@ -368,9 +368,9 @@ fixfld(p)
 /* a callback of the walk before the code is generated: members and addresses of names */
 void
 mapregs(p)
-	register struct node *p;
+	register NODE *p;
 {
-	register struct node *n, *m, *r;
+	register NODE *n, *m, *r;
 
 	switch (p->op) {
 	case 120:
@@ -490,7 +490,7 @@ rfind(reg, cls)
 /* p1 now holds what p2 holds: copy the symbol and offset in the register file */
 static void
 rnassign(p1, p2)
-	register struct node *p1, *p2;
+	register NODE *p1, *p2;
 {
 	register struct rs *a, *b;
 
@@ -528,7 +528,7 @@ rnassign(p1, p2)
 /* the register of the REG node p no longer holds anything known */
 static void
 rnnullp(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register struct rs *n;
 
@@ -600,7 +600,7 @@ rnnull(reg, type)
 
 void
 nxwork(p, nx)
-	register struct node *p;
+	register NODE *p;
 	register int nx;
 {
 	register struct rs *n;
@@ -794,7 +794,7 @@ regforsym(reg, s, type, off)
 /* a name that lives in a register becomes REG, otherwise an OREG */
 void
 fixname(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int r;
 
@@ -811,7 +811,7 @@ fixname(p)
 /* a NAME of an automatic variable or a parameter becomes an OREG off the frame pointer */
 void
 oregfix(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int spare;
 

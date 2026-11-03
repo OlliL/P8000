@@ -4,15 +4,15 @@
 #include "cg.h"
 #include "cg2.h"
 
-extern struct node *bcon();
-extern struct node *buildstar();
+extern NODE *bcon();
+extern NODE *buildstar();
 extern int cerror();
-extern struct node *clocal();
-extern struct node *foldadd();
-extern struct node *makeblock();
-extern struct node *member();
-extern struct node node[];
-extern struct node *talloc();
+extern NODE *clocal();
+extern NODE *foldadd();
+extern NODE *makeblock();
+extern NODE *member();
+extern NODE node[];
+extern NODE *talloc();
 extern void uerror();
 static char sccsid[] = "@[$]tr3.c\t2.3  08/24/83 13:57:35 Copr. 1981 87wega3.2.";
 
@@ -23,13 +23,13 @@ static char sccsid[] = "@[$]tr3.c\t2.3  08/24/83 13:57:35 Copr. 1981 87wega3.2."
 #define DECREF(t)	((((unsigned)(t) >> 2) & ~0xF) | ((t) & 0xF))
 
 /* a new node */
-struct node *
+NODE *
 makeblock(op, l, r, type)
 	int op;
-	register struct node *l, *r;
+	register NODE *l, *r;
 	int type;
 {
-	register struct node *n;
+	register NODE *n;
 
 	n = talloc();
 	n->op = op;
@@ -43,11 +43,11 @@ makeblock(op, l, r, type)
 }
 
 /* a constant added to or subtracted from an address that has one already: folded */
-struct node *
+NODE *
 foldadd(p)
-	register struct node *p;
+	register NODE *p;
 {
-	register struct node *l, *r, *q;
+	register NODE *l, *r, *q;
 	register int lo;
 	int x;
 
@@ -84,12 +84,12 @@ foldadd(p)
 }
 
 /* a unary tree of the operator op over l (and r): * and & cancel each other, the type is the one below or above */
-struct node *
+NODE *
 buildstar(op, l, r)
 	int op;
-	register struct node *l, *r;
+	register NODE *l, *r;
 {
-	register struct node *n;
+	register NODE *n;
 	register int spare1, spare2, spare3, spare4;	/* unused: the original reserves these registers */
 
 	n = makeblock(op, l, r, 4);
@@ -125,11 +125,11 @@ buildstar(op, l, r)
 }
 
 /* an integer constant of the given number of bits, as bytes */
-struct node *
+NODE *
 bcon(bits)
 	long bits;
 {
-	register struct node *n;
+	register NODE *n;
 
 	n = makeblock(ICON, 0, 0, 4);
 	n->sname = 0;
@@ -138,16 +138,16 @@ bcon(bits)
 }
 
 /* the address of a structure member: the base pointer plus the offset of the member, then the indirection */
-struct node *
+NODE *
 member(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int nt;
 	register int spare;		/* unused: the original keeps a register here */
 	register int sz, cl;		/* set from the symbol and not used afterwards */
 	register struct sym *m;
 	long o;
-	struct node *off, *n;
+	NODE *off, *n;
 
 	m = p->right->sname;
 	cl = m->sclass;

@@ -12,7 +12,7 @@ long parmax;
 FILE *dfile;	/* the data file */
 int ndelay;
 int nlabsave;
-struct node node[NTREE];
+NODE node[NTREE];
 int dope[129];
 long paroff;	/* next free place for the parameters of a call (bits) */
 int regG;
@@ -25,7 +25,7 @@ int minreg;
 int regB;
 int regtop;
 int lflag;
-struct node resc[3];	/* the work registers RESC1 .. RESC3 (0x8f24); the contents stay from call to call; a 4th entry because allo reads one past the last */
+NODE resc[3];	/* the work registers RESC1 .. RESC3 (0x8f24); the contents stay from call to call; a 4th entry because allo reads one past the last */
 int callflag;
 struct { struct sym *sym; int reg; } parmtab[11];
 int ffregs;	/* set to 4 */
@@ -33,10 +33,10 @@ int fregs;	/* set to 8 by the start of the program */
 int regD;	/* (7), 0x8f1e (0x10), 0x8e18 (0x13), 0x8f8c (1) */
 int regF;
 int maxreg;
-struct node *stotree;	/* the subtree that has to be stored first */
+NODE *stotree;	/* the subtree that has to be stored first */
 long stg;	/* the offset of the global section in the symbol table file */
 int nparmtab;
-struct node *deltrees[NDELAY];
+NODE *deltrees[NDELAY];
 int regmask;
 int regE;
 int stocook;
@@ -98,15 +98,15 @@ struct { struct rs *list; int mark; } rsstk[3];	/* the saved lists and their mar
 int rsdepth;	/* saved lists */
 int rsflag2;	/* number of entries of rstab2 */
 int rstab2[3];
-struct node *lastfree;
+NODE *lastfree;
 int mcountlab;
 int structlab;
 long structsz;
 struct tmpent tmptab[80];
 #ifdef OLD_D16A
-struct node *d16acmp;	/* the left operand of the last compare set up: its increment stays in memory (match) */
+NODE *d16acmp;	/* the left operand of the last compare set up: its increment stays in memory (match) */
 #endif
 #ifdef OLD_D2RA
-struct node *d2ranode;	/* the last r0 + rN and its rN (offstar) */
+NODE *d2ranode;	/* the last r0 + rN and its rN (offstar) */
 int d2rareg;
 #endif

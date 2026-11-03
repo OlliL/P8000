@@ -25,10 +25,10 @@ extern int ifline;
 extern char ifname[];
 extern struct indope indope[];
 extern int ispow2();
-extern struct node *lastfree;
+extern NODE *lastfree;
 extern void ncopy();
 extern int nerrors;
-extern struct node node[];
+extern NODE node[];
 extern char *opst[];
 extern int plainicon();
 extern int rallkind();
@@ -42,10 +42,10 @@ extern struct rs *rsuse;
 extern char *sbrk();
 extern void syserror();
 extern int szty();
-extern struct node *talloc();
+extern NODE *talloc();
 extern int tbytes();
 extern void tcheck();
-extern struct node *tcopy();
+extern NODE *tcopy();
 extern void tfree();
 extern void tinit();
 extern void uerror();
@@ -156,7 +156,7 @@ werror(s, a, b)
 void
 tinit()
 {
-	struct node *p;
+	NODE *p;
 
 	for (p = node; p <= &node[NTREE - 1]; p++)
 		p->op = FREE;
@@ -164,10 +164,10 @@ tinit()
 }
 
 /* a free node from the pool, searching on from the last one */
-struct node *
+NODE *
 talloc()
 {
-	struct node *p, *start;
+	NODE *p, *start;
 	int x;
 
 	start = lastfree;
@@ -186,7 +186,7 @@ talloc()
 void
 tcheck()
 {
-	struct node *p;
+	NODE *p;
 
 	if (!nerrors)
 		for (p = node; p <= &node[NTREE - 1]; p++)
@@ -197,7 +197,7 @@ tcheck()
 
 void
 tfree(p)
-	struct node *p;
+	NODE *p;
 {
 	if (p->op != FREE)
 		fwalk(p, free1);
@@ -205,7 +205,7 @@ tfree(p)
 
 static void
 free1(p)
-	struct node *p;
+	NODE *p;
 {
 	if (p == 0)
 		cerror("freeing blank tree!");
@@ -216,7 +216,7 @@ free1(p)
 /* walk the tree before the operands, with the value passed down: f(p, down, &down1, &down2) */
 void
 fwalkd(p, f, down)
-	register struct node *p;
+	register NODE *p;
 	int (*f)();
 	int down;
 {
@@ -241,7 +241,7 @@ again:
 /* walk the tree after the operands */
 void
 fwalk(p, f)
-	register struct node *p;
+	register NODE *p;
 	int (*f)();
 {
 	register int kind;
@@ -315,7 +315,7 @@ szty(t)
 /* size of an argument in words (0x88f6): a structure argument by its size, a float counts as a double */
 int
 argsize(p)
-	register struct node *p;
+	register NODE *p;
 {
 	int t, u;
 
@@ -363,7 +363,7 @@ tbytes(t)
 /* the cookie that serves the type: B registers for floats, A registers otherwise */
 int
 rallkind(p)
-	register struct node *p;
+	register NODE *p;
 {
 	if (p && (p->type == 7 || p->type == 6))
 		return 0x10;
@@ -567,7 +567,7 @@ d3jfree(cls, reg)
 /* *q = *p for a node */
 void
 ncopy(q, p)
-	register struct node *q, *p;
+	register NODE *q, *p;
 {
 	register int i;
 
@@ -577,11 +577,11 @@ ncopy(q, p)
 /* ---- trees (the pool and the walkers are in comm3.c) ---- */
 
 /* a copy of the tree; the registers it uses count as busy once more */
-struct node *
+NODE *
 tcopy(p)
-	register struct node *p;
+	register NODE *p;
 {
-	register struct node *q;
+	register NODE *q;
 	register int r;
 
 	ncopy(q = talloc(), p);
@@ -625,7 +625,7 @@ ispow2(c)
 /* is p->lval an operand that a one word instruction takes: an unnamed constant */
 int
 plainicon(p)
-	register struct node *p;
+	register NODE *p;
 {
 	return p->op == ICON && p->sname == 0 && p->rval >= 0;
 }

@@ -10,8 +10,8 @@ extern int allo();
 extern int bsize();
 extern int cerror();
 extern void conput();
-extern struct node *d16acmp;
-extern struct node *d2ranode;
+extern NODE *d16acmp;
+extern NODE *d2ranode;
 extern int d2rareg;
 extern int dope[];
 extern void expand();
@@ -20,14 +20,14 @@ extern int fldoff;
 extern int fldshf;
 extern int fldsz;
 extern struct sym *fpsym1;
-extern struct node *getlr();
+extern NODE *getlr();
 extern int getreg();
 extern void hopcode();
 extern void insput();
 extern int ltypeok();
 extern int ltypeop();
 extern int match();
-extern struct node node[];
+extern NODE node[];
 extern int nosuffix;
 extern int opclass[];
 extern struct optab *opptr[];
@@ -36,7 +36,7 @@ extern void prlong();
 extern int rclass();
 extern void rcount();
 extern void reclaim();
-extern struct node resc[];
+extern NODE resc[];
 extern struct rs *rfind();
 extern void rfree();
 extern int rlmode;
@@ -108,7 +108,7 @@ char *ocnames[] = {
 /* does the node p fit the shape? */
 int
 tshape(p, shape)
-	register struct node *p;
+	register NODE *p;
 	int shape;
 {
 	register int o = p->op;
@@ -227,7 +227,7 @@ more:
 				} else if ((mask = opclass[q->op - 0x1000]) & 0x4000) {
 					if (op == NAME || op == ICON || op == OREG)
 						break;
-					else if (ltypeok(op, (struct node *)0))
+					else if (ltypeok(op, (NODE *)0))
 						break;
 				} else if ((dope[op] & (mask | 1)) == mask)
 					break;
@@ -242,11 +242,11 @@ more:
  */
 int
 match(p, cookie)
-	register struct node *p;
+	register NODE *p;
 	register int cookie;
 {
 	register struct optab *q;
-	register struct node *r, *l;
+	register NODE *r, *l;
 	register int spare;
 	int x = 0;
 	int t;
@@ -293,8 +293,8 @@ match(p, cookie)
 		goto cont;
 	asg:		/* an assignment: the target must stay in memory */
 		t = (int)p->left;
-		symuse(((struct node *)t)->sname);
-		oregfix((struct node *)t);
+		symuse(((NODE *)t)->sname);
+		oregfix((NODE *)t);
 	rgt:
 		if (p->right->op == NAME) {
 			if ((p->type == 5 || p->type == 15) && ((dope[p->op] & MULFLG) || (dope[p->op] & DIVFLG))) {
@@ -443,13 +443,13 @@ int tflag = 0;
 
 void
 expand(p, cookie, cp)
-	register struct node *p;
+	register NODE *p;
 	register int cookie;
 	register char *cp;
 {
 	/* generate code by interpreting table entry */
 	register long val;
-	register struct node *r;
+	register NODE *r;
 	register struct rs *n;
 
 	tflag = 0;
@@ -546,9 +546,9 @@ expand(p, cookie, cp)
 /* ---- match() ----------------------------------------------------------------------------------------- */
 
 /* the node an operand letter of a template stands for */
-struct node *
+NODE *
 getlr(p, c)
-	register struct node *p;
+	register NODE *p;
 	char c;
 {
 	switch (c) {

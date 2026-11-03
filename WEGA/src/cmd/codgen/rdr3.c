@@ -6,15 +6,15 @@
 
 extern char *alloc();
 extern char ascii[];
-extern struct node *bcon();
-extern struct node *buildstar();
+extern NODE *bcon();
+extern NODE *buildstar();
 extern int cerror();
-extern struct node *clocal();
+extern NODE *clocal();
 extern void d12kout();
 extern FILE *dfile;
 extern int dope[];
 extern int eflag;
-extern struct node *eread();
+extern NODE *eread();
 extern int firstsect;
 extern void fixfld();
 extern void fixtemp();
@@ -26,7 +26,7 @@ extern int getreg();
 extern int gnumbytes;
 extern int gnumcount;
 extern long gsymbytes;
-extern struct node *makeblock();
+extern NODE *makeblock();
 extern struct sym *mapn();
 extern void mapnm();
 extern void mapsym();
@@ -38,7 +38,7 @@ extern int nmembytes;
 extern int nmems;
 extern int nnumbytes;
 extern int nnums;
-extern struct node node[];
+extern NODE node[];
 extern long nsymbytes;
 extern int nsyms;
 extern int numtab[];
@@ -63,7 +63,7 @@ extern struct sym *symtab;
 extern struct sym *symtab0;
 extern int tagfind();
 extern struct { int tag; struct sym *sym; } tagtab[];
-extern struct node *talloc();
+extern NODE *talloc();
 extern char *tnames[];
 static char sccsid[] = "@[$]rdr3.c\t2.1  11/15/82 12:49:01 Copr. 1981 87wega3.2.";
 static char rdrsccs[] = "@[$]rdr\t2.5  08/24/83 16:48:00 Copr. 1981 87wega3.2.";
@@ -459,7 +459,7 @@ mapn(tag)
 /* the symbol of a node from its tag */
 void
 mapsym(p)
-	struct node *p;
+	NODE *p;
 {
 	register int i;
 
@@ -475,10 +475,10 @@ mapsym(p)
 /* a leaf of the tree from the file: symbols, register variables and fields */
 void
 mapnm(p)
-	struct node *p;
+	NODE *p;
 {
 	int n, t, ot;
-	struct node *m;
+	NODE *m;
 	long ofs;
 
 	if (eflag > 1)
@@ -569,10 +569,10 @@ nlcheck()
 /* a tree of the intermediate file */
 int erflag = 0;
 
-struct node *
+NODE *
 eread()
 {
-	register struct node *p;
+	register NODE *p;
 	register int op;
 	register int spare1, spare2, spare3;	/* unused: the original reserves these registers */
 	char c;
@@ -609,7 +609,7 @@ eread()
 	p->rall = NOPREF;
 	if (p->op == STASG || p->op == STARG || p->op == STCALL || p->op == USTCALL) {
 		p->stsize = (rdin(10) + 7) / 8;
-		p->nla.nu.hi = rdin(10) / 8;
+		p->hi = rdin(10) / 8;
 		if (getchar() != '\n')
 			cerror("illegal \n");
 	} else

@@ -129,28 +129,41 @@
 #define MUSTDO	010000
 #define NOPREF	020000
 
-struct node {
-	int	op;
-	int	rall;		/* register preference, NOPREF when none */
-	int	type;
-	char	su;		/* 6: registers the subtree needs (word registers) */
-	char	fsu;		/* 7: float registers the subtree needs */
-	struct sym *sname;	/* 8: symbol of a NAME or ICON; non-zero: the constant has a name; the label of a CBRANCH (label) */
-	int	stsize;		/* 0xA: STASG size, TEMP number */
-	union {
-		long	lvv;			/* 0xC: the value of a leaf */
-		struct { int hi; struct node *lp; } nu;	/* 0xC, 0xE: the left subtree overlays the low word of lval */
-	} nla;
-	union {
-		int	rvv;		/* 0x10: the register, the tag */
-		struct node *rpp;	/* 0x10: the right subtree */
-	} nrb;
+typedef union ndu NODE;
+
+union ndu {
+	struct {
+		int	op;
+		int	rall;		/* register preference, NOPREF when none */
+		int	type;
+		char	su;		/* 6: registers the subtree needs (word registers) */
+		char	fsu;		/* 7: float registers the subtree needs */
+		struct sym *sname;	/* 8: symbol of a NAME or ICON; non-zero: the constant has a name; the label of a compare */
+		int	stsize;		/* 0xA: STASG size, TEMP number */
+		int	hi;		/* 0xC: the high word of lval; STASG alignment */
+		NODE	*left;		/* 0xE: overlays the low word of lval */
+		NODE	*right;		/* 0x10: overlays rval */
+	};				/* interior node */
+	struct {
+		int	op;
+		int	rall;
+		int	type;
+		char	su;
+		char	fsu;
+		struct sym *sname;
+		int	stsize;
+		long	lval;		/* 0xC: the value of a leaf */
+		int	rval;		/* 0x10: the register, the tag */
+	};				/* terminal node */
+	struct {
+		int	op;
+		int	rall;
+		int	type;
+		char	su;
+		char	fsu;
+		int	label;		/* 8: for use with branching */
+	};				/* branch node */
 };
-#define lval	nla.lvv
-#define left	nla.nu.lp
-#define rval	nrb.rvv
-#define right	nrb.rpp
-#define label	sname
 
 /* a symbol of the symbol table file (22 bytes there), see ../KNOWLEDGE.md */
 struct sym {

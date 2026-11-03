@@ -6,11 +6,11 @@
 
 extern int allo();
 extern void allocinit();
-extern struct node *argprep();
+extern NODE *argprep();
 extern long baseoff;
 extern void branch();
 extern int callflag;
-extern struct node *canon();
+extern NODE *canon();
 extern void canon2();
 extern void cbgen();
 extern void cbranch();
@@ -20,20 +20,20 @@ extern void codgen();
 extern void constore();
 extern void d12kout();
 extern int d2r0reg;
-extern struct node *d2ranode;
+extern NODE *d2ranode;
 extern void d3jlabel();
 extern int d3knamed();
 extern void d3kreset();
 extern void deflab();
 extern void delay();
-extern struct node *deltrees[];
+extern NODE *deltrees[];
 extern FILE *dfile;
 extern int dope[];
 extern void dopeinit();
 extern void efcode();
 extern int eflag;
 extern void endrun();
-extern struct node *eread();
+extern NODE *eread();
 extern void fbegin();
 extern void fcmd();
 extern void ffld();
@@ -77,7 +77,7 @@ extern int nerrors;
 extern int nextcook();
 extern int nlabsave;
 extern void nlcheck();
-extern struct node node[];
+extern NODE node[];
 extern int notoff();
 extern int nparm;
 extern int nparmtab;
@@ -85,7 +85,7 @@ extern int nrecur;
 extern void offstar();
 extern int oflag;
 extern char *opst[];
-extern struct node *optim();
+extern NODE *optim();
 extern int options();
 extern void order();
 extern void oreg2();
@@ -113,7 +113,7 @@ extern int regmask;
 extern void regreset();
 extern void regtabinit();
 extern int regtop;
-extern struct node resc[];
+extern NODE resc[];
 extern int rflag;
 extern void rfree();
 extern void rfreeall();
@@ -135,17 +135,17 @@ extern void stoarg();
 extern int stoasg();
 extern int stocook;
 extern void store();
-extern struct node *stotree;
+extern NODE *stotree;
 extern long stpos;
 extern void sucomp();
 extern struct sym *symtab;
 extern struct sym *symtab0;
 extern int szty();
 extern void tabclear();
-extern struct node *talloc();
+extern NODE *talloc();
 extern void tcheck();
 extern void tcmd();
-extern struct node *tcopy();
+extern NODE *tcopy();
 extern void tfree();
 extern void tinit();
 extern void tmpcleanup();
@@ -320,7 +320,7 @@ mainp2(argc, argv)
 	register int temp;
 	register int c;
 	register char *cp;
-	register struct node *p;
+	register NODE *p;
 	register int a, b;
 	int x, y;
 	int n;
@@ -529,7 +529,7 @@ reread:
 /* the parameter list from its last element to its first */
 static void
 parmwalk(p)
-	register struct node *p;
+	register NODE *p;
 {
 	switch optype(p->op) {
 	case BITYPE:
@@ -547,7 +547,7 @@ parmwalk(p)
 /* a statement of the intermediate file: a function head, a switch, or an expression tree */
 void
 stmt(p)
-	register struct node *p;
+	register NODE *p;
 {
 	int tag;
 
@@ -600,7 +600,7 @@ stmt(p)
 /* a statement tree */
 void
 delay(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int i, ret, sz;
 	long off;
@@ -675,10 +675,10 @@ delay(p)
 /* look for a COMOP that can be done first: 1 if a rewrite happened */
 static int
 delay1(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int o, ty;
-	register struct node *q;
+	register NODE *q;
 
 	o = p->op;
 	ty = optype(o);
@@ -703,10 +703,10 @@ delay1(p)
 
 static void
 delstrip(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int o;
-	register struct node *q;
+	register NODE *q;
 
 	o = p->op;
 	if (o == INCR || o == DECR) {
@@ -719,10 +719,10 @@ delstrip(p)
 
 static void
 delay2(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int o, ty;
-	register struct node *q;
+	register NODE *q;
 
 	o = p->op;
 	switch (o) {
@@ -764,7 +764,7 @@ delay2(p)
 /* generate the code for p: stores first, then the tree itself */
 void
 codgen(p, cookie)
-	register struct node *p;
+	register NODE *p;
 	register int cookie;
 {
 	for (;;) {
@@ -821,13 +821,13 @@ prcook(cookie)
 /* generate code for p; cook says in which form the result is wanted */
 void
 order(p, cook)
-	register struct node *p;
+	register NODE *p;
 	register int cook;
 {
 	register int o, ty, m;
 	register int cookie;
 	int m1;
-	struct node *p1, *p2;
+	NODE *p1, *p2;
 
 again:
 	cookie = cook;
@@ -1078,7 +1078,7 @@ cleanup:
 /* find the subtree of p that has to be stored: the result is stotree / stocook */
 void
 store(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int o, ty;
 
@@ -1154,7 +1154,7 @@ store(p)
 /* store conditional expressions: not inside a conditional context */
 void
 constore(p)
-	register struct node *p;
+	register NODE *p;
 {
 	switch (p->op) {
 	case QUEST:
@@ -1171,7 +1171,7 @@ constore(p)
 /* count the calls below p */
 void
 markcall(p)
-	register struct node *p;
+	register NODE *p;
 {
 again:
 	switch (p->op) {
@@ -1198,7 +1198,7 @@ again:
 /* store the arguments of a call */
 void
 stoarg(p, calltype)
-	register struct node *p;
+	register NODE *p;
 	int calltype;
 {
 	if (p->op == CM) {
@@ -1221,7 +1221,7 @@ int negrel[] = { NE, EQ, GT, GE, LT, LE, UGT, UGE, ULT, ULE, FNE, FEQ, FGT, FGE,
 
 void
 cbranch(p, true, false)
-	register struct node *p;
+	register NODE *p;
 	int true, false;
 {
 	register int o;
@@ -1341,7 +1341,7 @@ cbranch(p, true, false)
 			cbgen(0, false, 'I');
 		goto done;
 	asgn: {
-		struct node *c;
+		NODE *c;
 
 		c = tcopy(p->right);
 		order(p, FOREFF);
@@ -1390,11 +1390,11 @@ rcount()
 /* the fields that are not on the left of an assignment become mask and shift */
 void
 ffld(p, down, down1, down2)
-	struct node *p;
+	NODE *p;
 	int down;
 	int *down1, *down2;
 {
-	register struct node *shp;
+	register NODE *shp;
 	register int s, o, v, ty;
 
 	*down1 = asgop(p->op);
@@ -1436,13 +1436,13 @@ ffld(p, down, down1, down2)
 /* an indirection of a register plus a constant becomes an OREG */
 void
 oreg2(p)
-	register struct node *p;
+	register NODE *p;
 {
-	register struct node *q;
+	register NODE *q;
 	register int spare1;		/* unused: the original reserves this register */
 	register int r;
 	register struct sym *cp;
-	register struct node *ql, *qr;
+	register NODE *ql, *qr;
 	long temp;
 	int stw;
 
@@ -1499,9 +1499,9 @@ oreg2(p)
 }
 
 /* put p in canonical form: fields, OREG nodes, register need */
-struct node *
+NODE *
 canon(p)
-	register struct node *p;
+	register NODE *p;
 {
 	fwalkd(p, ffld, 0);
 	fwalk(p, oreg2);
@@ -1511,14 +1511,14 @@ canon(p)
 }
 
 /* a structure argument is stored through a temporary: STARG becomes an STASG to the stack */
-struct node *
+NODE *
 argprep(p, cookie)
-	register struct node *p;
+	register NODE *p;
 	register int cookie;
 {
-	register struct node *copy;
+	register NODE *copy;
 	struct optab fake;
-	struct node *n;
+	NODE *n;
 
 	if (p->op == STARG && cookie == INTEMP_) {
 		copy = tcopy(p->left);

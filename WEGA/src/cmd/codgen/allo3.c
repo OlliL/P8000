@@ -17,11 +17,11 @@ extern long freeparm();
 extern int freereg();
 extern long freetemp();
 extern void fwalk();
-extern struct node *getlr();
+extern NODE *getlr();
 extern int getreg();
 extern long maxoff;
 extern long maxtemp;
-extern struct node node[];
+extern NODE node[];
 extern void nxwork();
 extern long parmax;
 extern long paroff;
@@ -29,7 +29,7 @@ extern int rallkind();
 extern void rbusy();
 extern int rclass();
 extern void reclaim();
-extern struct node resc[];
+extern NODE resc[];
 extern struct rs *rfind();
 extern void rfree();
 extern void rfreeall();
@@ -42,7 +42,7 @@ extern void rwprint();
 extern int rwtab[][2];
 extern struct sym *symtab0;
 extern int szty();
-extern struct node *tcopy();
+extern NODE *tcopy();
 extern int tflag;
 extern void tfree();
 extern void tmpcleanup();
@@ -146,7 +146,7 @@ freeparm(k)
  */
 int
 allo(p, q)
-	struct node *p;
+	NODE *p;
 	struct optab *q;
 {
 	register int need, k, k0;
@@ -338,7 +338,7 @@ d2r0free()
 /* a register for the result of p; cookie says what the caller wants */
 int
 allocreg(p, cookie)
-	struct node *p;
+	NODE *p;
 	int cookie;
 {
 	register int want, r, cls;
@@ -377,7 +377,7 @@ got:
 #endif
 #ifdef OLD_D2D
 	if (r == -1 && cls == 3 && want == -1 && (p->op == DIV || p->op == MOD || p->op == ASG DIV || p->op == ASG MOD)) {
-		register struct node *l = getlr(p, 'L');	/* a word operand in an odd register: its pair */
+		register NODE *l = getlr(p, 'L');	/* a word operand in an odd register: its pair */
 
 		if (l->op == REG && (l->rval & 1) && l->rval < 8 && szty(l->type) == 1) {
 			rfree(l->rval, l->type);
@@ -427,7 +427,7 @@ got:
 #endif
 #ifdef OLD_D2Q
 	if (r == -1 && cls == 3 && (p->op == STAR || p->op == OREG)) {
-		register struct node *q = getlr(p, 'L');	/* a long through a pointer: the pair of its even register */
+		register NODE *q = getlr(p, 'L');	/* a long through a pointer: the pair of its even register */
 
 		if (q->op == STAR)
 			q = q->left;
@@ -474,13 +474,13 @@ got:
 /* a register that the operand of the result can reuse */
 int
 freereg(p, r, cookie)
-	struct node *p;
+	NODE *p;
 	int r;
 	int cookie;
 {
-	register struct node *q;
+	register NODE *q;
 	register int ty;
-	register struct node *spare;
+	register NODE *spare;
 	register int reg;
 	register struct sym *sym;
 	char side;
@@ -534,7 +534,7 @@ freereg(p, r, cookie)
 /* does the operand on side of p already live in register r (or is its long register r - 1)? */
 int
 usable(p, side, r)
-	register struct node *p;
+	register NODE *p;
 	int side;
 	int r;
 {
@@ -571,7 +571,7 @@ usable(p, side, r)
 /* free the registers an operand node holds */
 void
 rfreenode(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int r = p->rval;
 
@@ -659,16 +659,16 @@ top:
 
 void
 reclaim(p, rewrite, cookie)
-	struct node *p;
+	NODE *p;
 	int rewrite;
 	int cookie;
 {
 	register int want;
-	register struct node *c;
-	register struct node **ap;
+	register NODE *c;
+	register NODE **ap;
 	register int o;
 	register int *rw;
-	struct node *a[5];
+	NODE *a[5];
 
 	o = p->op;
 	if (rewrite == RNOP)

@@ -15,4 +15,4 @@ struct tmpent {
 	int flags;		/* +4: bit 15: the register still holds the value */
 	int	reg;		/* +6: the register */
 };
-struct arg { int reg; struct node *node; };
+struct arg { int reg; NODE *node; };

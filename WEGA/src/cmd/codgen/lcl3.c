@@ -5,17 +5,17 @@
 #include "cg2.h"
 
 extern int cerror();
-extern struct node *clocal();
+extern NODE *clocal();
 extern void delay();
 extern int dope[];
 extern struct sym *fpsym1;
 extern struct sym *fpsym2;
 extern int getreg();
 extern void gswitch();
-extern struct node *makeblock();
+extern NODE *makeblock();
 extern void mapnm();
-extern struct node *member();
-extern struct node node[];
+extern NODE *member();
+extern NODE node[];
 extern void reclaim();
 extern struct rs *rfind();
 extern void rfree();
@@ -89,12 +89,12 @@ newlreg(avoid)
 /* the code for a switch: a jump table, or a search with cpir */
 void
 gswitch(p)
-	register struct node *p;
+	register NODE *p;
 {
-	register struct node *x, *y;
+	register NODE *x, *y;
 	register long n;
 	register int dlab, tab;
-	struct node *r, *l;
+	NODE *r, *l;
 	int reg, a6, save, t2, ac, tlab, rb, ra, t, cnt;
 #ifdef OLD_D2T
 	struct rs *tn;
@@ -211,9 +211,9 @@ gswitch(p)
 /* PLUS(frame register, offset): the offset goes first and takes the pointer type, the register becomes an int */
 static void
 chk(p)
-	register struct node *p;
+	register NODE *p;
 {
-	register struct node *r, *c;
+	register NODE *r, *c;
 
 	r = p->left;
 	c = p->right;
@@ -234,13 +234,13 @@ chk()
 #endif
 
 /* the node p after the conversions: names to addresses of their class, conversions of constants */
-struct node *
+NODE *
 clocal(p)
-	struct node *p;
+	NODE *p;
 {
 	register int o, pf, lf;
 	register struct sym *s;
-	register struct node *r, *l, *q;
+	register NODE *r, *l, *q;
 	int x;
 
 	l = p->left;

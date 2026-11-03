@@ -21,7 +21,7 @@ extern int jlab;
 extern int lflag;
 extern void mapsym();
 extern int mcountlab;
-extern struct node node[];
+extern NODE node[];
 extern int nparmtab;
 extern void parminit();
 extern struct { struct sym *sym; int reg; } parmtab[];
@@ -87,7 +87,7 @@ endline()
 /* a formal parameter of the function: into its register, or noted for the entry code */
 void
 parminit(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int n, r, cls, t2, sz;
 	register struct rs *q;

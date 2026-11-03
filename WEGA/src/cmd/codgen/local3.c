@@ -10,7 +10,7 @@ extern int argreg;
 extern int argstop;
 extern char ascii[];
 extern void branch();
-extern struct node *canon();
+extern NODE *canon();
 extern void canon2();
 extern int cbflag;
 extern void cbgen();
@@ -40,7 +40,7 @@ extern int gencall();
 extern long geninc();
 extern int genscall();
 extern int getlab();
-extern struct node *getlr();
+extern NODE *getlr();
 extern int getreg();
 extern void hopcode();
 extern void icright();
@@ -60,7 +60,7 @@ extern int minreg;
 extern void mycanon();
 extern int negrel[];
 extern int nextcook();
-extern struct node node[];
+extern NODE node[];
 extern int nosuffix;
 extern int notoff();
 extern int nparmtab;
@@ -104,7 +104,7 @@ extern int structret;
 extern void structretcode();
 extern struct sym *symtab0;
 extern int szty();
-extern struct node *tcopy();
+extern NODE *tcopy();
 extern void tfree();
 extern long tmpoff;
 extern int tshape();
@@ -154,7 +154,7 @@ static void prolog();
 /* the type suffix of the type of the node */
 void
 psuffix(p)
-	register struct node *p;
+	register NODE *p;
 {
 	tsuffix(p->type);
 }
@@ -542,7 +542,7 @@ ldm:
 
 void
 hopcode(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int o = p->op;
 	register struct hoptab *q;
@@ -619,14 +619,14 @@ static char *tcctab[] = {
 
 void
 zzzcode(p, c)
-	register struct node *p;
+	register NODE *p;
 	char c;
 {
 	register int n;
-	register struct node *z;
-	register struct node *l;
-	register struct node *q, *r;
-	register struct node *u;
+	register NODE *z;
+	register NODE *l;
+	register NODE *q, *r;
+	register NODE *u;
 	int x;
 	struct rs *rp;
 
@@ -900,11 +900,11 @@ zzzcode(p, c)
 	case 's':
 		/* the structure assignment: a word, a long or a block move */
 		{
-		struct node *r2;
+		NODE *r2;
 		int n2;
 		char *name;
 		int rn;
-		struct node *rg, *tmp;
+		NODE *rg, *tmp;
 		struct rs *rp2;
 		int y;
 		int k2;
@@ -1073,7 +1073,7 @@ zzzcode(p, c)
 		}
 	case 'T':
 		/* the second word of a long operand, for the conversion to a shorter type */
-		u = (struct node *)p->type;
+		u = (NODE *)p->type;
 		p = p->left;
 		n = p->type;
 		switch (p->op) {
@@ -1205,7 +1205,7 @@ copied:
 int
 ltypeok(op, p)
 	register int op;
-	register struct node *p;
+	register NODE *p;
 {
 	if (op == NAME || op == REG || op == ICON || op == OREG)
 		return 1;
@@ -1215,7 +1215,7 @@ ltypeok(op, p)
 /* the operator is a leaf that can be addressed: NAME, REG, ICON, OREG */
 int
 ltypeop(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int o;
 
@@ -1226,7 +1226,7 @@ ltypeop(p)
 /* STAR over p: a register variable or a constant (operand that needs no register) */
 int
 shtemp(p)
-	register struct node *p;
+	register NODE *p;
 {
 	if (p->op == STAR)
 		p = p->left;
@@ -1256,7 +1256,7 @@ shincr(t, incr)
 /* STAR over p: which address shapes does it fit? STARNM for a name, STARREG for a post increment through a register */
 int
 shumul(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int o = p->op;
 
@@ -1279,7 +1279,7 @@ prlong(v)
 /* a constant or a register as an operand part */
 void
 conput(p)
-	register struct node *p;
+	register NODE *p;
 {
 	switch (p->op) {
 	case ICON:
@@ -1313,7 +1313,7 @@ conput(p)
 
 void
 insput(p)
-	struct node *p;
+	NODE *p;
 {
 	cerror("insput");
 }
@@ -1321,7 +1321,7 @@ insput(p)
 /* offset(register) of an OREG */
 void
 oregput(p)
-	register struct node *p;
+	register NODE *p;
 {
 	int bar = 0;		/* only the segmented version uses it */
 
@@ -1354,7 +1354,7 @@ oregput(p)
 /* the second word of an operand */
 void
 upput(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register long save;
 	register int r;
@@ -1413,7 +1413,7 @@ upput(p)
 /* an operand */
 void
 adrput(p)
-	register struct node *p;
+	register NODE *p;
 {
 	long save;
 	register int r;
@@ -1476,7 +1476,7 @@ adrput(p)
 /* a name or constant: label, name, +offset */
 void
 acon(p)
-	register struct node *p;
+	register NODE *p;
 {
 #ifdef SEG
 	struct sym *s;
@@ -1531,7 +1531,7 @@ acon(p)
 
 int
 genscall(p, cookie)
-	struct node *p;
+	NODE *p;
 	int cookie;
 {
 	return gencall(p, cookie);
@@ -1540,10 +1540,10 @@ genscall(p, cookie)
 /* generate a call: the function address (an expression) is made addressable, the arguments are placed, then the call itself */
 int
 gencall(p, cookie)
-	register struct node *p;
+	register NODE *p;
 	int cookie;
 {
-	register struct node *f;
+	register NODE *f;
 	register int fop;
 	register int indirect;
 #ifdef SEG
@@ -1679,7 +1679,7 @@ cbgen(o, lab, mode)
 /* the next cookie to try when no table entry matched */
 int
 nextcook(p, cookie)
-	register struct node *p;
+	register NODE *p;
 	register int cookie;
 {
 	if (cookie == FORREW)
@@ -1694,7 +1694,7 @@ nextcook(p, cookie)
 /* the last chance: a name or an OREG may go to a register by the rewrite tables */
 int
 lastchance(p, cookie)
-	register struct node *p;
+	register NODE *p;
 	register int cookie;
 {
 	if (cookie == 0x2000 && (p->op == OREG || p->op == NAME))
@@ -1705,9 +1705,9 @@ lastchance(p, cookie)
 /* a constant operand of an AND goes to the right */
 void
 icright(p)
-	register struct node *p;
+	register NODE *p;
 {
-	register struct node *t;
+	register NODE *t;
 
 	switch (p->op) {
 	case AND:
@@ -1722,7 +1722,7 @@ icright(p)
 /* canon, then the constants of the ANDs to the right */
 void
 canon2(p)
-	register struct node *p;
+	register NODE *p;
 {
 	p = canon(p);
 	fwalk(p, icright);
@@ -1731,7 +1731,7 @@ canon2(p)
 /* the SPECIAL shapes: small constants and powers of two */
 int
 special(p, shape)
-	register struct node *p;
+	register NODE *p;
 	int shape;
 {
 	if (p->op != ICON)
@@ -1772,9 +1772,9 @@ static int rev[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };
 
 void
 mycanon(p)
-	register struct node *p;
+	register NODE *p;
 {
-	register struct node *t;
+	register NODE *t;
 
 	switch (p->op) {
 	case EQ: case NE: case GE: case GT: case LE: case LT: case UGE: case UGT: case ULE: case ULT:

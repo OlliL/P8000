@@ -7,15 +7,15 @@
 extern int bsize();
 extern int cerror();
 extern int conval();
-extern struct node *convelim();
+extern NODE *convelim();
 extern int dope[];
 extern int ispow2();
 extern void ncopy();
-extern struct node node[];
-extern struct node *optim();
+extern NODE node[];
+extern NODE *optim();
 extern int plainicon();
 extern int revrel[];
-extern struct node *tcopy();
+extern NODE *tcopy();
 extern void tfree();
 extern int treeeq();
 extern void uerror();
@@ -33,14 +33,14 @@ static char optsccs[] = "@[$]optim\t2.5  10/06/83 10:17:28 Copr. 1981 87wega3.2.
 static int isint();
 
 /* local optimizations: collect constants, constants to the right, towers of operators to the left */
-struct node *
+NODE *
 optim(p)
-	register struct node *p;
+	register NODE *p;
 {
 	register int o, ty;
-	register struct node *a, *b;
+	register NODE *a, *b;
 	int x;
-	struct node *sp;
+	NODE *sp;
 	int i;
 
 	o = p->op;
@@ -129,7 +129,7 @@ optim(p)
 		if ((o == MINUS || o == PLUS) && nncon(p->right) && p->right->lval == 0)
 			goto zapright;
 		if (p->right->op == o && (p->type & 0x30) != 0x10 && (p->right->left->type & 0x30) != 0x10) {
-			struct node *t1, *t2, *t3;
+			NODE *t1, *t2, *t3;
 
 			t1 = p->left;
 			sp = p->right;
@@ -226,9 +226,9 @@ optim(p)
 /* fold the constant q into p by the operator o; 0 if that is not possible */
 int
 conval(p, o, q)
-	register struct node *p;
+	register NODE *p;
 	int o;
-	register struct node *q;
+	register NODE *q;
 {
 	int sh;
 	int unsgn;
@@ -350,7 +350,7 @@ conval(p, o, q)
 /* are the two trees the same */
 int
 treeeq(p, q)
-	register struct node *p, *q;
+	register NODE *p, *q;
 {
 	register int o;
 
@@ -371,12 +371,12 @@ treeeq(p, q)
 }
 
 /* remove a conversion that changes nothing: c is 'r' (right operand), 'l' (left operand) or 'p' (the node itself) */
-struct node *
+NODE *
 convelim(p, c)
-	register struct node *p;
+	register NODE *p;
 	char c;
 {
-	register struct node *q, *n;
+	register NODE *q, *n;
 	int s;
 
 	if (c == 'r') {
