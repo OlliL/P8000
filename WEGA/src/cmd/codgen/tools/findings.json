@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "151ffe62",
+ "measured_at": "4893bf9f",
  "functions": {
   "p2init": {
    "file": "reader3.c",
@@ -271,7 +271,7 @@
    "file": "local3.c",
    "orig": "0x28f6",
    "size_orig": 154,
-   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table). Left: the original computes parmax + maxoff in rr2 and moves it to rr6, ours in rr6. Tried: no preference for the left operand of a long sum wanted in rr6 (rallo, case PLUS): exact, nothing else moves in the three models, bench unchanged; one witness, not adopted. Wanted in any register: readmems +15.",
+   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table). Left: the original computes parmax + maxoff in rr2 and moves it to rr6, ours in rr6. Tried: no preference for the left operand of a long sum wanted in rr6 (rallo, case PLUS): exact, nothing else moves in the three models, bench unchanged; one witness, not adopted. Wanted in any register: readmems +15. Decided 2026-11-03: open, the rule is not adopted; the condition on rr6 has no reason behind it. Compiled alone the shipped cc, ccv0 and ccv0p all give ldl rr6, so it is not the context of efcode.",
    "status": "open",
    "lines": 5
   },
@@ -420,7 +420,7 @@
    "file": "local3.c",
    "orig": "0x437e",
    "size_orig": 418,
-   "note": "Left: one jr at the limit of its range: 254 bytes to the target, the original keeps jr, /bin/cas takes jp (2 bytes in size). Guess: the old cas decides this limit differently (not tested); the same family as the long jp in cparse yylex, popt rmove (OLDCC.md D17).",
+   "note": "Left: one jr at the limit of its range (the diff is only jr against jp): the old cas, D17.",
    "status": "open",
    "lines": 2
   },
@@ -472,9 +472,8 @@
    "file": "local3.c",
    "orig": "0x471a",
    "size_orig": 234,
-   "status": "open",
-   "note": "Left: sub r2,#%8001 at the head of the switch, ours add r2,#%7FFF. The shipped cc gives add too, for any negative base of a direct switch. Tried: unsigned and long declarations, cast of the switch value, octal, hex and long case labels, shape - SPECIAL: nothing. A question of the compiler, not found yet.",
-   "lines": 2
+   "status": "exact",
+   "note": "Exact with cparse OLD_D6D: the base of a direct switch stays a long (bcon cuts it to int otherwise), sub r2,#32769. One witness, on the owner's word."
   },
   "mycanon": {
    "file": "local3.c",
@@ -512,7 +511,7 @@
    "file": "order3.c",
    "orig": "0x49f0",
    "size_orig": 2000,
-   "note": "Forms: p->fsu = fl == 0 ? ... : ... and sur == sul ? ... : ... as conditional expressions give the place of the test (the comjump of the first pass, before rmove). Left (12 lines): which copy of ld r2,fl; jp stays; the original keeps the first, in max(fl, nf), which needs a label in front of it before rmove. Tried: fl > nf as if / else with stores, also max(fl, fr), if (sur != sul), p->fsu = max(fl, fr) with a second assignment, conditional forms at the other fsu assignments: 14 to 25 lines.",
+   "note": "Forms: p->fsu = fl == 0 ? ... : ... and sur == sul ? ... : ... as conditional expressions give the place of the test (the comjump of the first pass, before rmove). Left (12 lines): which copy of ld r2,fl; jp stays; the original keeps the first, in max(fl, nf), which needs a label in front of it before rmove. Tried: fl > nf as if / else with stores, also max(fl, fr), if (sur != sul), p->fsu = max(fl, fr) with a second assignment, conditional forms at the other fsu assignments: 14 to 25 lines. Also tried: fl ? max(fl, nf) : nf and if (fl), fl == 0 ? nf : fl > nf ? fl : nf, max(fl, nf) alone, fl ? ... : ... and max(fr, fl == 0 ? ... : ...) at the next assignment: 15 to 32 lines. Decided 2026-11-03: open, search stopped; the owner's status names these lines.",
    "status": "open",
    "lines": 12
   },
@@ -678,9 +677,8 @@
    "file": "allo3.c",
    "orig": "0x6792",
    "size_orig": 86,
-   "status": "open",
-   "note": "Left: (int)tmpoff / 8 as an argument: the original loads the wanted r6 first and divides in a fresh pair rr2, ours loads the odd half of rr6 by the division itself. Tried in the source: casts through long, unsigned, char *, short, tmpoff + 0: nothing. Removing the branch of OLD_D2D: not set, nothing.",
-   "lines": 9
+   "status": "exact",
+   "note": "Exact with OLD_D3L: a word cast of a global long is not taken from the register that holds the long. One witness, on the owner's word."
   },
   "allo": {
    "file": "allo3.c",

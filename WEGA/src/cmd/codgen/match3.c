@@ -286,6 +286,12 @@ match(p, cookie)
 #endif
 		goto cont;
 	case UTYPE:
+#ifdef OLD_D3L
+		/* v0: a word cast of a global long is not taken from the register that holds the long */
+		if (p->op == 110 && p->left->op == NAME && (p->left->type == 5 || p->left->type == 15) && p->type != 5 && p->type != 15 &&
+		    p->left->sname->sclass != 9 && p->left->sname->sclass != 1 && p->left->sname->sclass != 4)
+			goto cont;
+#endif
 		if (p->left->op == NAME)
 			goto fxl;
 		if (p->left->op == SCONV && p->left->left->op == NAME)

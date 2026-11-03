@@ -368,7 +368,16 @@ genswitch(p,n) register struct sw *p; {
 #endif
 		dlab = p[1].slab >= 0 ? p[1].slab : getlab();
 		q->lval = -1;
+#ifdef OLD_D6D
+		if( p[2].sval ){
+			t = bcon( 0 );
+			t->lval = p[2].sval;
+			r = block( MINUS, q, t, INT, 0, INT );
+			}
+		else r = q;
+#else
 		r = p[2].sval ? block( MINUS, q, bcon( p[2].sval ), INT, 0, INT ) : q;
+#endif
 		t = block( DESC, NIL, NIL, 0, 0, 0 );
 		t->lval = range;
 		t->rval = swlab = getlab();
