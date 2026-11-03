@@ -846,6 +846,7 @@ slookup(p1,p2,enterf) register char *p1,*p2; int enterf;{
 	         c2= *p2; *p2='\0';	/* mark end of token */
 	if ((p2-p1)>8) p3=p1+8; else p3=p2;
 			 c3= *p3; *p3='\0';	/* truncate to 8 chars or less */
+top:
 	if (enterf) p1=copy(p1);
 	np=lookup(p1,enterf); *p3=c3; *p2=c2;
 	if (np->value!=0 && flslvl==0) newp=subst(p2,np);
@@ -860,6 +861,7 @@ subst(p,sp) register char *p; struct symtab *sp; {
 	char *actual[MAXFRM]; /* actual[n] is text of nth actual */
 	char acttxt[BUFSIZ]; /* space for actuals */
 
+top:
 	if (0==(vp=sp->value)) return(p);
 	if ((p-macforw)<=macdam) {
 		if (++maclvl>symsiz && !rflag) {
