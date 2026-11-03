@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "8778df3d",
+ "measured_at": "ba806ed8",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -210,9 +210,9 @@
    "file": "rdr3.c",
    "orig": "0x20c0",
    "size_orig": 838,
-   "note": "Old hint, measured against the shipped cc, may be stale: reclassified: after removing the known D-classes (frame and spill offsets, registers, shift forms, data addresses) mapnm aligns to 87 %. The remaining differences are D-classes too, not a source difference found so far (13 % open).",
+   "note": "Left: the result of the regvar load: original r3, ours r1 (ld r3,%8FE8(r1)); neither operand order gives it. Register choice of the compiler, step 6.",
    "status": "open",
-   "lines": 131
+   "lines": 4
   },
   "mkhash": {
    "file": "rdr3.c",
@@ -425,9 +425,9 @@
    "file": "local3.c",
    "orig": "0x437e",
    "size_orig": 418,
-   "note": "Old hint, measured against the shipped cc, may be stale: D11 (old popt tail merging): the original shares the call of printf (jp 44D6 / jr 44D6) between the three L%d branches; the shipped popt does not merge tails. Source unchanged. Pattern check: 0 unexplained instruction forms.",
+   "note": "Left: one jr at the limit of its range: 254 bytes to the target, the original keeps jr, /bin/cas takes jp (2 bytes). Guess: the old cas decides this limit differently (not tested).",
    "status": "open",
-   "lines": 110
+   "lines": 2
   },
   "genscall": {
    "file": "local3.c",
@@ -607,7 +607,8 @@
    "orig": "0x5a4c",
    "size_orig": 384,
    "status": "open",
-   "lines": 111
+   "note": "Left: block order of popt; the else-switch form with the trailing argstop = 1 was tried and comes out worse.",
+   "lines": 43
   },
   "argsort": {
    "file": "order3.c",
@@ -785,7 +786,8 @@
    "orig": "0x75e0",
    "size_orig": 112,
    "status": "open",
-   "lines": 17
+   "note": "Left: cross-jump direction of popt: the original keeps the tail of the first case, ours that of the last; break and return forms tried.",
+   "lines": 12
   },
   "rsinsert": {
    "file": "regallo3.c",
@@ -827,8 +829,8 @@
    "file": "regallo3.c",
    "orig": "0x7f50",
    "size_orig": 462,
-   "status": "open",
-   "lines": 79
+   "status": "exact",
+   "note": "Odd form: if (rspool) n->next = rspool; n->next is 0 from before. The whole rest of the function stands inside the search loop."
   },
   "nullsyms": {
    "file": "regallo3.c",
@@ -1125,8 +1127,8 @@
    "file": "regs3.c",
    "orig": "0x9512",
    "size_orig": 314,
-   "status": "open",
-   "lines": 114
+   "status": "exact",
+   "note": "Odd form: (sflags >> 2 & 1) == 0 written with the comparison: without it the compiler takes bit, the original has and and test."
   },
   "symuse": {
    "file": "regs3.c",
@@ -1238,8 +1240,7 @@
    "file": "regs3.c",
    "orig": "0xa2f4",
    "size_orig": 438,
-   "status": "open",
-   "lines": 150
+   "status": "exact"
   },
   "scmd": {
    "file": "regs3.c",

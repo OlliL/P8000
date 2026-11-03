@@ -374,70 +374,65 @@ void
 mapregs(p)
 	register struct node *p;
 {
-	register struct node *m, *n, *r;
+	register struct node *n, *m, *r;
 
-	if (p->op == 120) {
+	switch (p->op) {
+	case 120:
 		fixfld(p);
-		return;
-	}
-	if (p->op == STREF) {
+		break;
+	case STREF:
 		fixfld(p);
-		r = p->right;
+		n = p->right;
 		if (p->left->op == UAND)
 			p->left->type = p->type;
-		if (r->op == NAME && (r->sname->sclass == 8 || r->sname->sclass == 11)) {
-			r->op = ICON;
-			r->lval = r->sname->soffset / 8;
-			r->rval = 0;
-			r->sname = 0;
-			r->type = 4;
+		if (n->op == NAME && (n->sname->sclass == 8 || n->sname->sclass == 11)) {
+			n->op = ICON;
+			n->lval = n->sname->soffset / 8;
+			n->rval = 0;
+			n->sname = 0;
+			n->type = 4;
 		}
 #ifdef OLD_D5T
 		/* an element of a local array (OLD_D5S), its member: the member goes to the offset, fp stays last */
-		m = p->left;
-		if (m->op == PLUS && m->right->op == REG && m->right->rval == 15 && m->left->op == PLUS &&
-		    m->left->right->op == ICON && r->op == ICON && r->sname == 0) {
-			m->left->right->lval += r->lval;
-			r->op = FREE;
+		r = p->left;
+		if (r->op == PLUS && r->right->op == REG && r->right->rval == 15 && r->left->op == PLUS &&
+		    r->left->right->op == ICON && n->op == ICON && n->sname == 0) {
+			r->left->right->lval += n->lval;
+			n->op = FREE;
 			p->op = PLUS;
-			p->left = m->left;
-			p->right = m->right;
-			m->op = FREE;
-			return;
+			p->left = r->left;
+			p->right = r->right;
+			r->op = FREE;
+			break;
 		}
 #endif
 		n = foldadd(p);
-		if (n == p)
-			return;
-		p->type = n->type;
-		p->op = n->op;
-		p->sname = n->sname;
-		p->lval = n->lval;
-		p->rval = n->rval;
-		n->op = FREE;
-		return;
-	}
-	if (p->op == UAND) {
+		if (n != p) {
+			p->type = n->type;
+			p->op = n->op;
+			p->sname = n->sname;
+			p->lval = n->lval;
+			p->rval = n->rval;
+			n->op = FREE;
+		}
+		break;
+	case UAND:
 		m = p->left;
-		if (m->op != NAME)
-			return;
-		if (m->sname->sflags >> 2 & 1)
-			return;
-		if (m->rval < 0)
-			return;
-		m = clocal(m);
-		if (m->op != STAR)
-			return;
-		m->op = FREE;
-		p->op = FREE;
-		n = m->left;
-		p->type = n->type;
-		p->op = n->op;
-		p->sname = n->sname;
-		p->lval = n->lval;
-		p->rval = n->rval;
-		n->op = FREE;
-		return;
+		if (m->op == NAME && (m->sname->sflags >> 2 & 1) == 0 && m->rval >= 0) {
+			m = clocal(m);
+			if (m->op == STAR) {
+				m->op = FREE;
+				p->op = FREE;
+				r = m->left;
+				p->type = r->type;
+				p->op = r->op;
+				p->sname = r->sname;
+				p->lval = r->lval;
+				p->rval = r->rval;
+				r->op = FREE;
+			}
+		}
+		break;
 	}
 }
 
@@ -896,12 +891,12 @@ regreset(flag)
 /* command R: a variable (b > 0: by its tag, else a temporary) is placed in register a */
 void
 rcmd(a, b, type)
-	register int a, b, type;
+	int a, b, type;
 {
+	register int i, r, got, tag, cls;
 	register struct sym *s;
 	register struct sym *old;
-	register int tag, i;
-	int r, cls, got, saved;
+	int saved;
 	struct rs *n;
 
 	if (b > 0) {
@@ -921,8 +916,7 @@ rcmd(a, b, type)
 		old = regvar[i].sym;
 		regvar[i].sym = s;
 		regvar[i].rtag = tag;
-		r = a + 19;
-		regvar[i].rreg = r;
+		regvar[i].rreg = r = a + 19;
 		regvar[i].rtype = type;
 		saved = regvar[i].rcls;
 		regvar[i].rcls = s->sclass;
@@ -931,15 +925,13 @@ rcmd(a, b, type)
 		if (r - 1 < maxreg)
 			maxreg = r - 1;
 	} else {
-		i = a;
-		old = regvar[i].sym;
-		regvar[i].sym = s;
-		regvar[i].rtag = tag;
-		r = a + 7;
-		regvar[i].rreg = r;
-		regvar[i].rtype = type;
-		saved = regvar[i].rcls;
-		regvar[i].rcls = s->sclass;
+		old = regvar[a].sym;
+		regvar[a].sym = s;
+		regvar[a].rtag = tag;
+		regvar[a].rreg = r = a + 7;
+		regvar[a].rtype = type;
+		saved = regvar[a].rcls;
+		regvar[a].rcls = s->sclass;
 		if (b > 0)
 			s->sbyte5 = r;
 		if (r - 1 < minreg)

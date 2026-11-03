@@ -470,20 +470,18 @@ void
 mapnm(p)
 	struct node *p;
 {
-	struct sym *s;
-	struct node *m, *nb;
-	int n, t, rg, nt, ot;
+	int n, t, ot;
+	struct node *m;
 	long ofs;
 
 	if (eflag > 1)
 		printf("mapnm, p->op=%d, p->rval=%d\n", p->op, p->rval);
 	if (p->op == NAME && p->rval >= 0) {
 		mapsym(p);
-		s = p->sname;
-		if (s->sclass == 4) {
+		if (p->sname->sclass == 4) {
 			if (rflag) {
-				n = s->sbyte5;
-				t = s->stype;
+				n = p->sname->sbyte5;
+				t = p->sname->stype;
 #ifdef SEG
 				if (t == 6 || t == 7)
 					n -= 13;
@@ -494,62 +492,51 @@ mapnm(p)
 				else
 					n -= 7;
 			}
-			if (rflag && regvar[n].sym != p->sname) {
-				s->sclass = regvar[n].rcls;
-				goto done;
+			if (rflag && regvar[n].sym != p->sname)
+				p->sname->sclass = regvar[n].rcls;
+			else {
+				n = p->sname->sbyte5;
+				if (!rflag)
+					n = getreg(rclass(p->type, n), n, 0x1000, p->sname);
+				p->op = REG;
+				p->rval = n;
+				p->lval = 0;
 			}
-			n = s->sbyte5;
-			if (!rflag) {
-				rg = rclass(p->type, n);
-				n = getreg(rg, n, 0x1000, p->sname);
-			}
-			p->op = REG;
-			p->rval = n;
-			p->lval = 0;
 		}
-	done:
 		if (eflag > 1)
 			printf("mapnm, p->sname = %d, p->global=%d\n", p->sname, p->sname->sflags >> 2 & 1);
 		return;
 	}
 	if (p->op == ICON) {
-		if (p->sname != fpsym1 && p->sname != fpsym2)
-			p->sname = 0;
-		return;
-	}
-	if (p->op == TEMP) {
+		if (p->sname == fpsym1 || p->sname == fpsym2)
+			return;
+	} else if (p->op == TEMP) {
 		fixtemp(p);
 		return;
-	}
-	if (p->op != FLD) {
-		p->sname = 0;
+	} else if (p->op == FLD) {
+		m = p->right;
+		mapsym(m);
+		mapnm(p->left);
+		ot = p->left->type;
+		fixfld(p);
+		ofs = m->sname->soffset / 16 * 2;
+		p->rval = m->sname->soffset % 16 << 6 | m->sname->sclass & 0x3F;
+		if (p->left->op == NAME)
+			p->left->lval += ofs;
+		else if (ofs != 0) {
+			t = INCREF(m->sname->stype);
+			p->left->type = t;
+			if ((ot & 0x30) != 0x10 && p->left->op == STAR) {
+				p->left->op = FREE;
+				p->left = clocal(makeblock(PLUS, p->left->left, bcon(ofs << 3), t));
+			} else
+				p->left = clocal(makeblock(PLUS, p->left, bcon(ofs << 3), t));
+			p->left = buildstar(STAR, p->left, 0);
+		}
+		m->op = FREE;
 		return;
 	}
-	m = p->right;
-	mapsym(m);
-	mapnm(p->left);
-	t = p->left->type;
-	fixfld(p);
-	s = m->sname;
-	ofs = s->soffset / 16 * 2;
-	p->rval = (int)(s->soffset % 16 << 6) | (s->sclass & 0x3F);
-	if (p->left->op == NAME)
-		p->left->lval += ofs;
-	else if (ofs != 0) {
-		nt = INCREF(s->stype);
-		p->left->type = nt;
-		if ((t & 0x30) != 0x10 && p->left->op == STAR) {
-			p->left->op = FREE;
-			nb = bcon(ofs << 3);
-			n = (int)p->left->left;
-		} else {
-			nb = bcon(ofs << 3);
-			n = (int)p->left;
-		}
-		p->left = clocal(makeblock(PLUS, n, nb, nt));
-		p->left = buildstar(STAR, p->left, 0);
-	}
-	m->op = FREE;
+	p->sname = 0;
 }
 
 /* the two pseudo symbols ~L1 and ~L2 of the frame */

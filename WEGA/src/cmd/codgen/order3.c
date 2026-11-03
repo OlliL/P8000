@@ -842,10 +842,8 @@ static struct node *
 argscan(p)
 	register struct node *p;
 {
-	register struct node *q, *rest;
-	int sz;
+	register struct node *rest, *q;
 
-	q = p;
 	rest = p;
 	if (p->op == CM) {
 		rest = argscan(p->left);
@@ -856,78 +854,72 @@ argscan(p)
 #else
 		if (p->right->type == 6 || p->right->type == 7) {
 #endif
-			if (argfreg >= 0x10) {
-				rest = p;
-				p->op = FREE;
-				q = p->right;
-			} else {
+			if (argfreg < 0x10) {
 				if (argstop)
 					return rest;
 				argstop = 1;
 				return p->right;
 			}
-		} else {
-			if (argreg < 2) {
-				if (argstop)
-					return rest;
-				argstop = 1;
-				return p->right;
-			}
-			rest = p;
-			p->op = FREE;
-			q = p->right;
+		} else if (argreg < 2) {
+			if (argstop)
+				return rest;
+			argstop = 1;
+			return p->right;
 		}
+		rest = p;
+		p->op = FREE;
+		p = p->right;
 	}
 #ifdef OLD_D22
 	if (0) {
 #else
-	if (q->type == 6 || q->type == 7) {
+	if (p->type == 6 || p->type == 7) {
 #endif
 		if (argfreg < 0x10) {
 			argstop = 1;
-			return q;
+			return p;
 		}
 		argl[nargs].reg = argfreg;
-		argl[nargs].node = q;
+		argl[nargs].node = p;
 		nargs++;
 		argl[nargs].node = 0;
 		argfreg--;
 		return rest;
 	}
-	sz = argsize(q);
-	if (sz == 1) {
-push:
-		argl[nargs].reg = argreg;
-		argl[nargs].node = q;
-		nargs++;
-		argl[nargs].node = 0;
-		argreg--;
-		return rest;
-	}
-	if (sz == 2) {
+	switch (argsize(p)) {
+	default:
+		argstop = 1;
+		argreg = 1;
+		return p;
+	case 2:
 		argreg--;
 		if (argreg & 1)
 			argreg--;
 		if (argreg < 2) {
 			argstop = 1;
 			argreg = 1;
-			return q;
+			return p;
 		}
-		goto push;
-	}
-	if (sz == 4) {
-		if (argreg == 7) {
-			argl[nargs].reg = argreg - 3;
-			argl[nargs].node = q;
-			nargs++;
-			argl[nargs].node = 0;
-			argreg -= 4;
-			return rest;
+	case 1:
+		argl[nargs].reg = argreg;
+		argl[nargs].node = p;
+		nargs++;
+		argl[nargs].node = 0;
+		argreg--;
+		return rest;
+	case 4:
+		if (argreg != 7) {
+			argstop = 1;
+			argreg = 1;
+			return p;
 		}
+		argl[nargs].reg = argreg - 3;
+		argl[nargs].node = p;
+		nargs++;
+		argl[nargs].node = 0;
+		argreg -= 4;
+		return rest;
 	}
-	argstop = 1;
-	argreg = 1;
-	return q;
 }
 
 /* the largest need first */

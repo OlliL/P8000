@@ -196,11 +196,10 @@ newnode(n, k)
 	if (rspool == 0)
 		cerror("splitreg: no nodes left on elist");
 	m = rspool;
-	rspool = m->next;
+	rspool = rspool->next;
 	switch (n->cls) {
 	case 3:
 	case 7:
-	split:
 		m->reg = n->reg;
 		n->reg++;
 		n->cls = m->cls = k;
@@ -208,11 +207,14 @@ newnode(n, k)
 	case 2:
 	case 6:
 		n->reg = n->reg * 2;			/* word register r: bytes 2r and 2r+1 */
-		goto split;
+		m->reg = n->reg;
+		n->reg++;
+		n->cls = m->cls = k;
+		return m;
 	default:
 		cerror("splitreg: illegal type");
+		return m;
 	}
-	return m;
 }
 
 #ifdef OLD_D2W
@@ -826,84 +828,82 @@ rsreturn(cls, reg)
 	struct rs *itprev;
 	int key;
 
-	if (rsuse == 0)
+	if ((n = rsuse) == 0)
 		cerror("deletereg allocated register status list empty");
-	prev = n = rsuse;
-	for (; n; prev = n, n = n->next)
-		if ((n->cls == cls || cls == 9) && n->reg == reg)
-			break;
-	if (n == 0)
-		return;
-	cls = n->cls;
-	if (prev == n)
-		rsuse = n->next;
-	else
-		prev->next = n->next;
-	n->next = 0;
-	a = rsfree;
-	if (a == 0) {
-		rsfree = n;
-		return;
-	}
-	b = a;
-	while (a && cls > a->cls) {
-		b = a;
-		a = a->next;
-	}
-	if (a == 0) {
-		b->next = n;
-		return;
-	}
-	if (cls == a->cls && (cls == 1 || cls == 2 || cls == 6)) {
-		partner = reg ^ 1;
-		b = a;
-		while (b->cls == cls) {
-			if (b->reg == partner) {
-				b->reg = partner & ~1;
-				if (cls == 1) {
-					b->cls = 2;
-					b->reg = b->reg / 2;
-				} else if (cls == 2)
-					b->cls = 3;
-				else if (cls == 6)
-					b->cls = 7;
-				else
-					cerror("deletereg: illegal type");
-				n->next = rspool;
-				rspool = n;
-				rsinsert(b, 2);
-				return;
-			}
-			itprev = b;
-			b = b->next;
-		}
-		if (b == a) {
-			if (a == rsfree) {
-				n->next = a;
+	for (prev = n; n; prev = n, n = n->next) {
+		if ((cls == n->cls || cls == 9) && reg == n->reg) {
+			cls = n->cls;
+			if (prev == n)
+				rsuse = prev->next;
+			else
+				prev->next = n->next;
+			n->next = 0;
+			a = rsfree;
+			if (a == 0) {
 				rsfree = n;
 				return;
 			}
-			n->next = a->next;
-			a->next = n;
+			for (b = a; a && cls > a->cls; ) {
+				b = a;
+				a = a->next;
+			}
+			if (a == 0) {
+				b->next = n;
+				return;
+			}
+			if (cls != a->cls || (cls != 1 && cls != 2 && cls != 6)) {
+				key = rweight[reg];
+				if (cls == 3)
+					while (a && cls == a->cls && key > rweight[a->reg]) {
+						b = a;
+						a = a->next;
+					}
+				if (b == a) {
+					n->next = b;
+					rsfree = n;
+					return;
+				}
+				b->next = n;
+				n->next = a;
+				return;
+			}
+			partner = reg ^ 1;
+			for (b = a; cls == b->cls; ) {
+				if (partner == b->reg) {
+					b->reg = partner & ~1;
+					if (cls == 1) {
+						b->cls = 2;
+						b->reg = b->reg / 2;
+					} else if (cls == 2)
+						b->cls = 3;
+					else if (cls == 6)
+						b->cls = 7;
+					else
+						cerror("deletereg: illegal type");
+					if (rspool)
+						n->next = rspool;
+					rspool = n;
+					rsinsert(b, 2);
+					return;
+				}
+				itprev = b;
+				b = b->next;
+			}
+			if (b == a) {
+				if (a == rsfree) {
+					n->next = a;
+					rsfree = n;
+					return;
+				}
+				n->next = a->next;
+				a->next = n;
+				return;
+			}
+			n->next = b;
+			itprev->next = n;
+			rsinsert(n, 1);
 			return;
 		}
-		n->next = b;
-		itprev->next = n;
-		rsinsert(n, 1);
-		return;
-	}
-	key = rweight[reg];
-	if (cls == 3)
-		while (a && cls == a->cls && key > rweight[a->reg]) {
-			b = a;
-			a = a->next;
-		}
-	if (b == a) {
-		n->next = a;
-		rsfree = n;
-	} else {
-		b->next = n;
-		n->next = a;
 	}
 }
 

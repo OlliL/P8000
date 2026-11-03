@@ -1470,47 +1470,32 @@ adrput(p)
 /* a name or constant: label, name, +offset */
 void
 acon(p)
-	struct node *p;
+	register struct node *p;
 {
-	struct sym *s;
-	char c0;
-
-	if (p->op == ICON && p->rval < 0) {
-		printf("L%d", -p->rval);
-		goto off;
-	}
-	if (p->op == OREG && p->stsize < 0) {
-		printf("L%d", -p->stsize);
-		goto off;
-	}
-	if (p->op == NAME && p->rval < 0) {
-		printf("L%d", -p->rval);
-		goto off;
-	}
-	if (p->sname == 0) {
-		printf("%ld", p->lval);
-		return;
-	}
-	s = p->sname;
-	c0 = ascii[s->nameoff];
 #ifdef SEG
-	if (s == symtab0 || c0 == '~') {		/* an address in the stack segment: _stkseg+~L1+offset */
-		printf("_stkseg");
-		if (c0 == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c0)
-			printf("+%s", ascii + s->nameoff);
-		goto off;
-	}
-	if (p->op == NAME && s->sclass == 3 && !(s->sflags >> 2 & 1)) {	/* a local static: its label */
-		putchar('L');
-		printf("%ld", s->soffset);
-		p->lval = p->rval;
-	} else {
-		putchar('_');
-		printf("%s", ascii + s->nameoff);
-	}
-#else
-	if (c0 != '~') {
-		if (p->op == NAME && s->sclass == 3 && !(s->sflags >> 2 & 1)) {	/* a local static: its label */
+	struct sym *s;
+#endif
+	char c;
+
+	if (p->op == ICON && p->rval < 0)
+		printf("L%d", -p->rval);
+	else if (p->op == OREG && p->stsize < 0)
+		printf("L%d", -p->stsize);
+	else if (p->op == NAME && p->rval < 0)
+		printf("L%d", -p->rval);
+	else {
+		if (p->sname == 0) {
+			printf("%ld", p->lval);
+			return;
+		}
+#ifdef SEG
+		s = p->sname;
+		c = ascii[s->nameoff];
+		if (s == symtab0 || c == '~') {		/* an address in the stack segment: _stkseg+~L1+offset */
+			printf("_stkseg");
+			if (c == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
+				printf("+%s", ascii + s->nameoff);
+		} else if (p->op == NAME && s->sclass == 3 && !(s->sflags >> 2 & 1)) {	/* a local static: its label */
 			putchar('L');
 			printf("%ld", s->soffset);
 			p->lval = p->rval;
@@ -1518,12 +1503,20 @@ acon(p)
 			putchar('_');
 			printf("%s", ascii + s->nameoff);
 		}
-	} else if (ascii[fpsym1->nameoff] == c0 || ascii[fpsym2->nameoff] == c0)
-		printf("%s", ascii + s->nameoff);		/* ~L1, ~L2 */
-	else
-		goto off;
+#else
+		if (p->sname && ascii[p->sname->nameoff] != '~') {
+			if (p->op == NAME && p->sname->sclass == 3 && !(p->sname->sflags >> 2 & 1)) {	/* a local static: its label */
+				putchar('L');
+				printf("%ld", p->sname->soffset);
+				p->lval = p->rval;
+			} else {
+				putchar('_');
+				printf("%s", ascii + p->sname->nameoff);
+			}
+		} else if ((c = ascii[p->sname->nameoff]) == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
+			printf("%s", ascii + p->sname->nameoff);		/* ~L1, ~L2 */
 #endif
-off:
+	}
 	if (p->lval) {
 		putchar('+');
 		printf("%ld", p->lval);
