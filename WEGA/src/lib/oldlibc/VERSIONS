@@ -72,8 +72,7 @@ strncpy    0_1   cpp ranlib
 strncpy    0_2   ld
 strrchr    0_1   popt
 stty       0_1   ranlib
-stty       0_2   scodgen
-stty       0_3   codgen cparse cpp popt spopt
+stty       0_3   codgen cparse cpp popt scodgen spopt
 swab       0_1   ranlib
 swap       0_1   ld size strip
 swap       0_2   ranlib

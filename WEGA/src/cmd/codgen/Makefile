@@ -24,7 +24,7 @@ OLDOBJS = $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/flsbuf/0_2.o $(OLD)/fil
 	$(OLD)/rdwr/0_3.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/cnvt/0_2.o $(OLD)/length/0_2.o \
 	$(OLD)/strcat/0_2.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o $(OLD)/fopen/0_1.o \
 	$(OLD)/findiop/0_2.o $(OLD)/endopen/0_4.o $(OLD)/ungetc/0_1.o $(OLD)/malloc/0_5.o \
-	$(OLD)/setbuf/0_1.o $(OLD)/getw/0_1.o $(OLD)/isatty/0_2.o $(OLD)/freopen/0_1.o $(OLD)/stty/0_2.o
+	$(OLD)/setbuf/0_1.o $(OLD)/getw/0_1.o $(OLD)/isatty/0_2.o $(OLD)/freopen/0_1.o $(OLD)/stty/0_3.o
 SHIPOBJS = __callex.o data.o brk.o cuexit.o ffltioc.o write.o close.o read.o \
 	lseek.o decimal.o cerror.o open.o creat.o ioctl.o umask.o chmod.o
 # The order of the libc part of /lib/codgen (the order of libc.a); perror and errlst are not called by the live code
@@ -190,8 +190,6 @@ $(OLD)/isatty/0_2.o: $(OLD)/isatty/0_2.s
 $(OLD)/freopen/0_1.o: $(OLD)/freopen/0_1.s
 	$(CAS) -u -o $@ $(OLD)/freopen/0_1.s
 
-$(OLD)/stty/0_2.o: $(OLD)/stty/0_2.s
-	$(CAS) -u -o $@ $(OLD)/stty/0_2.s
 
 $(OLD)/getw/0_1.o: $(OLD)/getw/0_1.s
 	$(CAS) -u -o $@ $(OLD)/getw/0_1.s
