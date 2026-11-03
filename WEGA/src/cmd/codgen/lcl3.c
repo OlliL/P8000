@@ -36,10 +36,13 @@ static char sccsid[] = "@[$]lcl3.c\t2.4  10/06/83 10:39:09 Copr. 1981 87wega3.2.
 #define SCONV	110
 
 
+#ifdef SEG
 static int newreg();
 static int newlreg();
+#endif
 static void chk();
 
+#ifdef SEG
 /* a free register other than avoid and r0 */
 static int
 newreg(avoid)
@@ -61,7 +64,6 @@ newreg(avoid)
 	return r;
 }
 
-#ifdef SEG
 /* a free long register that does not overlap avoid, not rr0 */
 static int
 newlreg(avoid)
@@ -89,11 +91,11 @@ void
 gswitch(p)
 	register struct node *p;
 {
-	register struct node *l, *r;
-	register struct node *x;
+	register struct node *x, *y;
 	register long n;
-	register int dlab;
-	int tab, reg, save, ra, rb, cnt, tlab, t, t2;
+	register int dlab, tab;
+	struct node *r, *l;
+	int reg, a6, save, t2, ac, tlab, rb, ra, t, cnt;
 #ifdef OLD_D2T
 	struct rs *tn;
 #endif
@@ -103,8 +105,7 @@ gswitch(p)
 	n = r->right->lval;
 	tab = r->right->rval;
 	dlab = -r->left->lval;
-	x = l->op == REG ? l : l->left;
-	reg = x->rval;
+	reg = (l->op == REG ? l : l->left)->rval;
 	if (l->op != 124) {
 		mapnm(l->left);
 		delay(l);
@@ -129,6 +130,7 @@ gswitch(p)
 #endif
 		return;
 	}
+	if (l->op == 124) {
 	cnt = (int)l->right->lval;
 	tlab = l->right->rval;
 #ifdef SEG
@@ -147,10 +149,10 @@ gswitch(p)
 	rfree(reg, 3);
 #else
 	if (reg == 0) {
-		save = reg;
+		t = reg;
 		reg = getreg(2, -1, 0x1000, 0);
-		rmove(reg, save, 3);
-		rfree(save, 3);
+		rmove(reg, t, 3);
+		rfree(t, 3);
 	}
 #ifdef OLD_D2T
 	if ((tn = rfind(reg, 2)) != 0)	/* the register of the switch value is in use here (OLD_D2T frees it in between) */
@@ -159,10 +161,10 @@ gswitch(p)
 		getreg(2, reg, 0x1000, 0);
 #endif
 	ra = getreg(2, -1, 0x1000, 0);
-	if (ra == reg || ra == 0) {
+	if (reg == ra || ra == 0) {
 		t = ra;
 		ra = getreg(2, -1, 0x1000, 0);
-		if (ra == reg || ra == 0) {
+		if (reg == ra || ra == 0) {
 			t2 = ra;
 			ra = getreg(2, -1, 0x1000, 0);
 			rfree(t2, 3);
@@ -171,9 +173,9 @@ gswitch(p)
 	}
 	rb = getreg(2, -1, 0x1000, 0);
 #ifdef OLD_D6R
-#define D6RBAD(r)	((r) == reg || (r) <= 1)	/* v0: the count of cpir in neither half of rr0 */
+#define D6RBAD(r)	(reg == (r) || (r) <= 1)	/* v0: the count of cpir in neither half of rr0 */
 #else
-#define D6RBAD(r)	((r) == reg || (r) == 0)
+#define D6RBAD(r)	(reg == (r) || (r) == 0)
 #endif
 	if (D6RBAD(rb)) {
 		t = rb;
@@ -202,6 +204,7 @@ gswitch(p)
 	rfree(rb, 3);
 	rfree(reg, 3);
 #endif
+	}
 }
 
 #ifdef SEG

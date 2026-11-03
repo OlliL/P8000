@@ -90,10 +90,9 @@ void
 parminit(p)
 	register struct node *p;
 {
-	register struct sym *s;
-	register int sz, n, t, r, t2;
-	int cls;
-	struct rs *q;
+	register int n, r, cls, t2, sz;
+	register struct rs *q;
+	struct sym *s;
 
 	if (p->op != NAME)
 		return;
@@ -101,12 +100,12 @@ parminit(p)
 	sz = argsize(p);
 	s = p->sname;
 	n = s->sbyte5;
-	t = s->stype;
+	r = s->stype;
 #ifdef SEG
-	if (t == 6 || t == 7)
+	if (r == 6 || r == 7)
 		n -= 6;
 #else
-	if (t == 6 || t == 7)
+	if (r == 6 || r == 7)
 		n -= 5;
 #endif
 	else
@@ -114,7 +113,7 @@ parminit(p)
 	if (rflag && s->sclass == 4 && regvar[n].sym != s)
 		s->sclass = 9;
 	if (p->lval < 0 && s->sclass != 4 && s->sclass != 8)
-		s->sbyte5 = -(int)p->lval;
+		s->sbyte5 = -p->lval;
 	r = s->sbyte5;
 	if (p->type == 8 || p->type == 9) {
 		if (sz == 1)
@@ -159,17 +158,17 @@ parminit(p)
 					printf("\tldl\tr");
 				printf("%s,", rnames[r]);
 			}
-			if (p->lval >= 0)
+			if (p->lval < 0) {
+				if (sz == 2)
+					putchar('r');
+				printf("%s\n", rnames[-p->lval]);
+				return;
+			}
 #ifdef SEG
 				printf("_stkseg+~L2+%ld(fp)\n", p->lval);
 #else
 				printf("~L2+%ld(fp)\n", p->lval);
 #endif
-			else {
-				if (sz == 2)
-					putchar('r');
-				printf("%s\n", rnames[-(int)p->lval]);
-			}
 			return;
 		}
 		if (s->stype == 8) {

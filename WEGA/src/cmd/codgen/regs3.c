@@ -148,8 +148,7 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 		} \
 	} \
 	rmode = m; \
-	rlmode = l; \
-	rnnullcall()
+	rlmode = l
 
 #define INCREF(t)	((((t) & ~0xF) << 2) | 0x10 | ((t) & 0xF))
 
@@ -613,34 +612,37 @@ nxwork(p, nx)
 	register struct node *p;
 	register int nx;
 {
-	register struct node *a, *b;
 	register struct rs *n;
-	register int r;
-	int m, l;
+	register int r, m, l;
 
 	switch (nx) {
 	case 0:
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	case 11:
+	case 12:
+	case 13:
+	case 16:
+	case 17:
+	case 23:
 		break;
 	case 8:
 	case 9:
-		a = getlr(p, 'R');
-		b = getlr(p, 'L');
-		rnassign(b, a);
+		rnassign(getlr(p, 'L'), getlr(p, 'R'));
 		break;
 	case 10:
-		a = getlr(p, '1');
-		b = getlr(p, 'R');
-		rnassign(b, a);
+		rnassign(getlr(p, 'R'), getlr(p, '1'));
 		break;
 	case 14:
-		a = getlr(p, 'R');
-		b = getlr(p, '1');
-		rnassign(b, a);
+		rnassign(getlr(p, '1'), getlr(p, 'R'));
 		break;
 	case 15:
-		a = getlr(p, 'L');
-		b = getlr(p, '1');
-		rnassign(b, a);
+		rnassign(getlr(p, '1'), getlr(p, 'L'));
 		break;
 	case 18:
 		rnnullw(getlr(p, '1')->rval);
@@ -692,15 +694,14 @@ nxwork(p, nx)
 		break;
 	case 33:
 		nsave = 0;
-		if (usable(p, 'R', 4)) {
-			rnnullcall();
-			break;
+		if (!usable(p, 'R', 4)) {
+			m = rmode;
+			l = rlmode;
+			rmode = 0;
+			rlmode = 0;
+			SAVEREGS;
 		}
-		m = rmode;
-		l = rlmode;
-		rmode = 0;
-		rlmode = 0;
-		SAVEREGS;
+		rnnullcall();
 		break;
 	case 34:
 		m = rmode;
@@ -709,10 +710,10 @@ nxwork(p, nx)
 		rlmode = 0;
 		nsave = 0;
 		SAVEREGS;
+		rnnullcall();
 		break;
 	default:
-		if (nx > 0x22)
-			cerror("regfile: illegal register update case\n");
+		cerror("regfile: illegal register update case\n");
 	}
 }
 

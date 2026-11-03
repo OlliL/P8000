@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "b496c97e",
+ "measured_at": "6bfbbe83",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -1060,8 +1060,8 @@
    "file": "wrt3.c",
    "orig": "0x8c74",
    "size_orig": 778,
-   "status": "open",
-   "lines": 295
+   "status": "exact",
+   "note": "Odd form: one register variable for the type and then for the register number of the symbol; the index of rnames is long (-p->lval)."
   },
   "structretcode": {
    "file": "wrt3.c",
@@ -1190,8 +1190,8 @@
    "file": "regs3.c",
    "orig": "0x98e4",
    "size_orig": 1784,
-   "status": "open",
-   "lines": 255
+   "status": "exact",
+   "note": "Odd form: the holes of the table as explicit empty cases, default only for values out of range (the table sends holes to the end, the range check to cerror)."
   },
   "symreg": {
    "file": "regs3.c",
@@ -1270,8 +1270,8 @@
    "file": "lcl3.c",
    "orig": "0xa7e0",
    "size_orig": 862,
-   "status": "open",
-   "lines": 403
+   "status": "exact",
+   "note": "Odd form: two register variables and two stack words without any use (the original saves and skips them); the two paths as if (op != 124) { ... return; } and a second if (op == 124), the original tests twice."
   },
   "chk": {
    "file": "lcl3.c",
