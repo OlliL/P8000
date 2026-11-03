@@ -4,6 +4,7 @@
 # original) and the members of the shipped libc.a that are identical to the original ones (ar x), like codgen does.
 #
 #   make              popt
+#   make spopt        spopt
 #   make old         the versions of the old compiler in OLDDIRS (v1/Makefile ...)
 #   make clean
 
@@ -43,6 +44,11 @@ old: all
 
 popt: $(OBJS) $(OLDOBJS) ship
 	$(LD) -X -e start -i crt0.o $(OBJS) $(LIBCOBJS) -o popt
+# spopt (the optimizer of scc): the same sources with -DSPOPT, the objects in seg
+spopt: z20.c z21.c z22.c z23.c z2.h stdio.h $(OLDOBJS) ship
+	-mkdir seg
+	for f in z20 z21 z22 z23 ; do ( cd seg ; $(CC) $(CFLAGS) -DSPOPT -c ../$$f.c ) || exit 1 ; done
+	$(LD) -X -e start -i crt0.o seg/z20.o seg/z21.o seg/z22.o seg/z23.o $(LIBCOBJS) -o spopt
 
 $(OBJS): z2.h stdio.h
 
@@ -107,4 +113,4 @@ $(OLD)/strrchr/0_1.o: $(OLD)/strrchr/0_1.s
 	$(CAS) -u -o $@ $(OLD)/strrchr/0_1.s
 
 clean:
-	-rm -f $(OBJS) $(OLDOBJS) $(SHIPOBJS) crt0.o popt
+	-rm -f $(OBJS) $(OLDOBJS) $(SHIPOBJS) crt0.o popt spopt seg/*.o

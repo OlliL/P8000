@@ -58,9 +58,6 @@ void dualop();
 int isreg();
 static void redunbr();
 int equstr();
-#ifdef SPOPT
-int clearmem();
-#endif
 
 /*
  * Like the original: a bump allocator on the break (sbrk).  heapbase is the break at the start (main), heapcur the
@@ -817,13 +814,15 @@ register struct node *p;
 		return adrlen(RT2, p->subop);
 	case CJP:
 	case JP:
-		if (p->code == 0)
 #ifdef SPOPT
-			return 6;
+		if (p->code)
+			return adrlen(p->code, p->subop);
+		return 6;
 #else
+		if (p->code == 0)
 			return 4;
-#endif
 		return adrlen(p->code, p->subop);
+#endif
 	}
 	dualop(p);
 	return adrlen(RT1, p->subop);
@@ -831,16 +830,11 @@ register struct node *p;
 
 static int
 adrlen(s, op)
-#ifdef SPOPT
-register char *s;
-#else
 char *s;
-#endif
 int op;
 {
-#ifndef SPOPT
 	register char *p = s;
-	int unused;
+	int r;
 
 	if (*p == 0)
 		return 2;
@@ -850,35 +844,29 @@ int op;
 		s++;
 	if (*p == '@')
 		return 2;
-	if (*p == '#' && op == SLONG)
-		return 6;
-	return 4;
-#else
-	if (*s == 0)
-		return 2;
-	if (isreg(s) >= 0)
-		return 2;
-	if (*s == '@')
-		return 2;
-	if (*s == '#')
-		return op == SLONG ? 6 : 4;
-	{
-		char *s0 = s;
-
-		for (; *s; s++) {
-			if (*s == '|')
+#ifdef SPOPT
+	if (*p == '#') {
+		if (op == SLONG)
+			return 6;
+		return 4;
+	}
+	for (; *p; p++) {
+		if (*p == '|')
+			return 4;
+		if (*p == '(') {	/* x(rrN): a register in the index part is a short address */
+			*p = 0;
+			r = isreg(s);
+			*p = '(';
+			if (r >= 0)
 				return 4;
-			if (*s == '(') {	/* x(rrN): a register in the index part is a short address */
-				int r;
-
-				*s = 0;
-				r = isreg(s0);
-				*s = '(';
-				return r >= 0 ? 4 : 6;
-			}
+			return 6;
 		}
 	}
 	return 6;
+#else
+	if (*p == '#' && op == SLONG)
+		return 6;
+	return 4;
 #endif
 }
 
@@ -1533,25 +1521,25 @@ movedat()
 	 * gets the kind of the following directive in its subop. Every data section moves in front
 	 * of the code; then a section header that repeats the previous one is dropped.
 	 */
-	struct node hd, *r10, *r11, *r13, *r14;
-	char *prev = "";	/* the original clears the byte at the address held in a register */
-	int cur;
+	register struct node *r14, *r13;
+	register int cur;
+	register struct node *r11, *r10;
+	register char *prev;
+	struct node hd;
 
+	*prev = 0;		/* sic: prev is not set, and hd.forw is not cleared (quirk table) */
 	if (first.forw == 0)
 		return;
-	clearmem(&hd, sizeof hd);
 	r10 = &hd;
 	for (r14 = first.forw; r14; r14 = r14->forw) {
-		if (r14->op == PSEC && r14->forw &&
-		    (r14->forw->op == CODE || r14->forw->op == DATA))
+		if (r14->op == PSEC && (r14->forw->op == CODE || r14->forw->op == DATA))
 			r14->subop = r14->forw->op;
 		if (r14->subop != DATA)
 			continue;
 		for (r13 = r14->forw; r13; r13 = r13->forw) {
 			if (r13->op == CODE)
 				break;
-			if (r13->op == PSEC && r13->forw &&
-			    (r13->forw->op == CODE || r13->forw->op == DATA))
+			if (r13->op == PSEC && (r13->forw->op == CODE || r13->forw->op == DATA))
 				r13->subop = r13->forw->op;
 		}
 		if (r13 == 0)
@@ -1573,30 +1561,32 @@ movedat()
 	}
 	cur = -1;
 	for (r14 = first.forw; r14; r14 = r14->forw) {
-		if (r14->subop != CODE && r14->subop != DATA)
-			continue;
-		r13 = r14->forw;
-		if (r13) {
-			if (r13->op == r14->subop)
-				r13 = r13->forw;
-			if (r13 && r13->forw && r13->forw->op == r13->subop &&
-			    (r13->subop == CODE || r13->subop == DATA)) {
+		switch (r14->subop) {
+		case CODE:
+		case DATA:
+			r13 = r14->forw;
+			if (r13) {
+				if (r13->op == r14->subop)
+					r13 = r13->forw;
+				if (r13->forw->op == r13->subop &&
+				    (r13->subop == CODE || r13->subop == DATA)) {
+					r14->back->forw = r13;
+					r13->back = r14->back;
+					r14 = r13;
+				}
+			}
+			if (r14->subop == cur && equstr(prev, r14->code)) {
+				if (r14->forw->op == r14->subop)
+					r13 = r14->forw->forw;
+				else
+					r13 = r14->forw;
 				r14->back->forw = r13;
 				r13->back = r14->back;
-				r14 = r13;
+				r14 = r14->back;
+			} else {
+				prev = r14->code;
+				cur = r14->subop;
 			}
-		}
-		if (r14->subop == cur && equstr(prev, r14->code)) {
-			if (r14->forw->op == r14->subop)
-				r13 = r14->forw->forw;
-			else
-				r13 = r14->forw;
-			r14->back->forw = r13;
-			r13->back = r14->back;
-			r14 = r14->back;
-		} else {
-			prev = r14->code;
-			cur = r14->subop;
 		}
 	}
 #else
@@ -1833,15 +1823,3 @@ register char *s;
 	return 1;
 }
 
-#ifdef SPOPT
-/* zero n bytes (the WEGA libc has no memset) */
-clearmem(p, n)
-	char *p;
-	int n;
-{
-	int i;
-
-	for (i = 0; i < n; i++)
-		p[i] = 0;
-}
-#endif

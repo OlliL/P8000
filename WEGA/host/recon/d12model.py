@@ -147,7 +147,7 @@ def main():
             # an assembler module (cut from the original): its data layout is the original's already
             run([CAS, '-u', '-o', m + '.o', m + '.s'], work)
             continue
-        run([CCHOST, '-O', '-S', m + '.c'], work)
+        run([CCHOST, '-O', '-S'] + list(getattr(CFG, 'CCFLAGS', [])) + [m + '.c'], work)
         src = open(os.path.join(work, m + '.s')).read().split('\n')
         if getattr(CFG, 'D6TABLES', False):
             src = d6tables(src, m)

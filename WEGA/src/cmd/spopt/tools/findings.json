@@ -1,0 +1,473 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (exact, masked, open; written by host/recon/findings.py), lines, note (by hand: an open difference, an odd form, a guessed name, dead code). Which switch a function needs: host/OLDCC_SWITCHES.md.",
+ "compiler": "ccv0p",
+ "binary": "/lib/spopt",
+ "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
+ "measured_at": "d636a56a",
+ "functions": {
+  "main": {
+   "file": "z21.c",
+   "orig": "0x002a",
+   "size_orig": 670,
+   "status": "masked",
+   "lines": 6
+  },
+  "jswcheck": {
+   "file": "z21.c",
+   "orig": "0x02c8",
+   "size_orig": 90,
+   "status": "exact"
+  },
+  "statline": {
+   "file": "z21.c",
+   "orig": "0x0322",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "input": {
+   "file": "z21.c",
+   "orig": "0x0358",
+   "size_orig": 382,
+   "status": "masked",
+   "lines": 4
+  },
+  "getline": {
+   "file": "z21.c",
+   "orig": "0x04d6",
+   "size_orig": 252,
+   "status": "masked",
+   "lines": 2
+  },
+  "getnum": {
+   "file": "z21.c",
+   "orig": "0x05d2",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "dumpnodes": {
+   "file": "z21.c",
+   "orig": "0x0610",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "prefix": {
+   "file": "z21.c",
+   "orig": "0x0630",
+   "size_orig": 138,
+   "status": "exact"
+  },
+  "output": {
+   "file": "z21.c",
+   "orig": "0x06ba",
+   "size_orig": 578,
+   "status": "exact"
+  },
+  "dumperr": {
+   "file": "z21.c",
+   "orig": "0x08fc",
+   "size_orig": 50,
+   "note": "Dead code: not called in the original; name guessed.",
+   "status": "exact"
+  },
+  "outerr": {
+   "file": "z21.c",
+   "orig": "0x092e",
+   "size_orig": 58,
+   "note": "Dead code: not called in the original; name guessed.",
+   "status": "exact"
+  },
+  "copy": {
+   "file": "z21.c",
+   "orig": "0x0968",
+   "size_orig": 136,
+   "status": "exact"
+  },
+  "opsetup": {
+   "file": "z21.c",
+   "orig": "0x09f0",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "cclook": {
+   "file": "z21.c",
+   "orig": "0x0a48",
+   "size_orig": 190,
+   "status": "exact"
+  },
+  "oplook": {
+   "file": "z21.c",
+   "orig": "0x0b06",
+   "size_orig": 414,
+   "status": "exact"
+  },
+  "refcount": {
+   "file": "z21.c",
+   "orig": "0x0ca4",
+   "size_orig": 378,
+   "status": "exact"
+  },
+  "iterate": {
+   "file": "z21.c",
+   "orig": "0x0e1e",
+   "size_orig": 500,
+   "status": "exact"
+  },
+  "xjump": {
+   "file": "z21.c",
+   "orig": "0x1012",
+   "size_orig": 126,
+   "note": "The search loop as while (p = p->back) { if (c) continue; break; }: the continue keeps the back jump, so the loop is inverted (OLD_D20B removed).",
+   "status": "exact"
+  },
+  "insertl": {
+   "file": "z21.c",
+   "orig": "0x1090",
+   "size_orig": 118,
+   "status": "exact"
+  },
+  "codemove": {
+   "file": "z21.c",
+   "orig": "0x1106",
+   "size_orig": 484,
+   "status": "exact"
+  },
+  "comjump": {
+   "file": "z21.c",
+   "orig": "0x12ea",
+   "size_orig": 86,
+   "status": "exact"
+  },
+  "backjmp": {
+   "file": "z21.c",
+   "orig": "0x1340",
+   "size_orig": 122,
+   "note": "The search loop as while (p = p->back) { if (c) continue; break; }: the continue keeps the back jump, so the loop is inverted (OLD_D20B removed).",
+   "status": "exact"
+  },
+  "rmove": {
+   "file": "z22.c",
+   "orig": "0x13ba",
+   "size_orig": 3318,
+   "note": "Left: three jp in the original where ours has jr: the old cas, D17, as in popt.",
+   "status": "open",
+   "lines": 6
+  },
+  "jumpsw": {
+   "file": "z22.c",
+   "orig": "0x20b0",
+   "size_orig": 190,
+   "status": "exact"
+  },
+  "shortjump": {
+   "file": "z22.c",
+   "orig": "0x216e",
+   "size_orig": 194,
+   "status": "masked",
+   "lines": 4
+  },
+  "toofar": {
+   "file": "z22.c",
+   "orig": "0x2230",
+   "size_orig": 78,
+   "note": "n = ilen(q); sum += n: whether the frame word of the call value is the source or a rule of the old compiler is open.",
+   "status": "exact"
+  },
+  "ilen": {
+   "file": "z22.c",
+   "orig": "0x227e",
+   "size_orig": 266,
+   "status": "masked",
+   "lines": 22
+  },
+  "adrlen": {
+   "file": "z22.c",
+   "orig": "0x2388",
+   "size_orig": 126,
+   "note": "The loop over the operand only with SPOPT; a blank advances s, not p (as in popt).",
+   "status": "masked",
+   "lines": 4
+  },
+  "abs": {
+   "file": "z22.c",
+   "orig": "0x2406",
+   "size_orig": 20,
+   "status": "exact"
+  },
+  "equop": {
+   "file": "z22.c",
+   "orig": "0x241a",
+   "size_orig": 98,
+   "status": "exact"
+  },
+  "decref": {
+   "file": "z22.c",
+   "orig": "0x247c",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "nonlab": {
+   "file": "z22.c",
+   "orig": "0x24b4",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "alloc": {
+   "file": "z22.c",
+   "orig": "0x24dc",
+   "size_orig": 94,
+   "status": "exact"
+  },
+  "clearreg": {
+   "file": "z22.c",
+   "orig": "0x253a",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "savereg": {
+   "file": "z22.c",
+   "orig": "0x255c",
+   "size_orig": 100,
+   "status": "masked",
+   "lines": 2
+  },
+  "findreg": {
+   "file": "z22.c",
+   "orig": "0x25c0",
+   "size_orig": 92,
+   "status": "masked",
+   "lines": 2
+  },
+  "findbyte": {
+   "file": "z22.c",
+   "orig": "0x261c",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "findword": {
+   "file": "z22.c",
+   "orig": "0x265a",
+   "size_orig": 98,
+   "status": "exact"
+  },
+  "findlong": {
+   "file": "z22.c",
+   "orig": "0x26bc",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "findcopy": {
+   "file": "z22.c",
+   "orig": "0x2728",
+   "size_orig": 76,
+   "note": "An unused local word behind r (frame 8); a guess.",
+   "status": "masked",
+   "lines": 2
+  },
+  "memreg": {
+   "file": "z22.c",
+   "orig": "0x2774",
+   "size_orig": 416,
+   "status": "exact"
+  },
+  "setreg": {
+   "file": "z22.c",
+   "orig": "0x2914",
+   "size_orig": 218,
+   "status": "masked",
+   "lines": 8
+  },
+  "makereg": {
+   "file": "z22.c",
+   "orig": "0x29ee",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "dest": {
+   "file": "z22.c",
+   "orig": "0x2a5a",
+   "size_orig": 80,
+   "note": "Dead code of the original: the second test sub == 0 in the EXTS case (quirks table).",
+   "status": "exact"
+  },
+  "killreg": {
+   "file": "z22.c",
+   "orig": "0x2aaa",
+   "size_orig": 464,
+   "status": "exact"
+  },
+  "cleargroup": {
+   "file": "z22.c",
+   "orig": "0x2c7a",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "singop": {
+   "file": "z22.c",
+   "orig": "0x2cae",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "dualop": {
+   "file": "z22.c",
+   "orig": "0x2cd6",
+   "size_orig": 102,
+   "status": "exact"
+  },
+  "findslot": {
+   "file": "z22.c",
+   "orig": "0x2d3c",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "isreg": {
+   "file": "z22.c",
+   "orig": "0x2d86",
+   "size_orig": 184,
+   "status": "exact"
+  },
+  "ccinval": {
+   "file": "z22.c",
+   "orig": "0x2e3e",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "regprefix": {
+   "file": "z22.c",
+   "orig": "0x2e5c",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "repladdr": {
+   "file": "z22.c",
+   "orig": "0x2e90",
+   "size_orig": 412,
+   "status": "exact"
+  },
+  "movedat": {
+   "file": "z22.c",
+   "orig": "0x302c",
+   "size_orig": 422,
+   "note": "Quirk: *prev = 0 through a pointer not set and hd not cleared (quirk table). The subops by a switch.",
+   "status": "exact"
+  },
+  "redunbr": {
+   "file": "z22.c",
+   "orig": "0x31d2",
+   "size_orig": 170,
+   "status": "exact"
+  },
+  "findcon": {
+   "file": "z22.c",
+   "orig": "0x327c",
+   "size_orig": 86,
+   "status": "exact"
+  },
+  "compare": {
+   "file": "z22.c",
+   "orig": "0x32d2",
+   "size_orig": 260,
+   "status": "exact"
+  },
+  "setcon": {
+   "file": "z22.c",
+   "orig": "0x33d6",
+   "size_orig": 80,
+   "status": "exact"
+  },
+  "equstr": {
+   "file": "z22.c",
+   "orig": "0x3426",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "setcc": {
+   "file": "z22.c",
+   "orig": "0x3448",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "natural": {
+   "file": "z22.c",
+   "orig": "0x347c",
+   "size_orig": 64,
+   "status": "exact"
+  },
+  "procopt": {
+   "file": "z23.c",
+   "orig": "0x34bc",
+   "size_orig": 720,
+   "status": "masked",
+   "lines": 4
+  },
+  "regof": {
+   "file": "z23.c",
+   "orig": "0x378c",
+   "size_orig": 42,
+   "note": "Dead code behind procopt, the source form is inferred; name guessed. Saves r14 without using it.",
+   "status": "exact"
+  },
+  "rename_regs": {
+   "file": "z23.c",
+   "orig": "0x37b6",
+   "size_orig": 252,
+   "status": "exact"
+  },
+  "fixldm": {
+   "file": "z23.c",
+   "orig": "0x38b2",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "isused": {
+   "file": "z23.c",
+   "orig": "0x391e",
+   "size_orig": 152,
+   "status": "exact"
+  },
+  "usesreg": {
+   "file": "z23.c",
+   "orig": "0x39b6",
+   "size_orig": 766,
+   "note": "CALL with SPOPT: reg < 2 first, the test of @ in both arms.",
+   "status": "exact"
+  },
+  "reverse": {
+   "file": "z23.c",
+   "orig": "0x3cb4",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "itoa_": {
+   "file": "z23.c",
+   "orig": "0x3d20",
+   "size_orig": 84,
+   "status": "exact"
+  },
+  "ovlap": {
+   "file": "z23.c",
+   "orig": "0x3d74",
+   "size_orig": 1692,
+   "status": "exact"
+  },
+  "ishigh": {
+   "file": "z23.c",
+   "orig": "0x4410",
+   "size_orig": 36,
+   "note": "Dead code behind ovlap; name guessed.",
+   "status": "exact"
+  },
+  "nwords": {
+   "file": "z23.c",
+   "orig": "0x4434",
+   "size_orig": 18,
+   "note": "Dead code behind ovlap; name guessed.",
+   "status": "exact"
+  },
+  "markregs": {
+   "file": "z23.c",
+   "orig": "0x4446",
+   "size_orig": 246,
+   "status": "exact"
+  }
+ }
+}

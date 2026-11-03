@@ -47,7 +47,11 @@ procopt()
 	register struct node *ld1, *ld2;
 	register int r9, r8;
 	int op, k, n;
+#ifdef SPOPT
+	char b[14], a[8];
+#else
 	char b[15], a[8];
+#endif
 	struct rent t[9];
 
 	ld1 = 0;
@@ -55,7 +59,11 @@ procopt()
 	a[0] = 1;
 	for (r14 = 1; r14 < 8; r14++)
 		a[r14] = 0;
+#ifdef SPOPT
+	for (r14 = 0; r14 < 14; r14++)
+#else
 	for (r14 = 0; r14 < 15; r14++)
+#endif
 		b[r14] = 0;
 	for (p = &first; p; p = p->forw) {
 		switch (op = p->op) {
@@ -432,27 +440,33 @@ register int reg;
 			if (r9 >= 2 && r9 <= 7)
 				goto out1;
 #ifdef SPOPT
-			if (reg >= 2) {
+			if (reg < 2) {
 				if (p->code[0] != '@')
-					continue;
+					goto out0;
 				r10 = isreg(p->code + 1);
-				if (reg == r10)
-					goto out1;
-				r10 = reg ^ 1;
-				if (r10 == 0)
-					continue;
+				if (reg != r10)
+					goto out0;
 				goto out1;
 			}
+			if (p->code[0] != '@')
+				continue;
+			r10 = isreg(p->code + 1);
+			if (reg == r10)
+				goto out1;
+			r10 = reg ^ 1;
+			if (r10 == 0)
+				continue;
+			goto out1;
 #else
 			if (reg >= 2)
 				continue;
-#endif
 			if (p->code[0] != '@')
 				goto out0;
 			r10 = isreg(p->code + 1);
 			if (reg != r10)
 				goto out0;
 			goto out1;
+#endif
 		}
 	}
 	goto out0;
