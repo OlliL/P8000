@@ -234,6 +234,12 @@ conval( p, o, q ) register NODE *p, *q; {
 	switch( o ){
 
 	case PLUS:
+#ifdef SEG
+		if( ISPTR(p->type) ){
+			p->lval = ((val & 0x7f00ffffL) + p->lval) & 0x7f00ffffL;
+			break;
+			}
+#endif
 		p->lval += val;
 		if( nncon(p) ){
 			p->type = q->type;
@@ -241,7 +247,12 @@ conval( p, o, q ) register NODE *p, *q; {
 			}
 		break;
 	case MINUS:
+#ifdef SEG
+		if( ISPTR(p->type) ) p->lval = (p->lval - val) & 0xffL;
+		else p->lval -= val;
+#else
 		p->lval -= val;
+#endif
 		break;
 	case MUL:
 		p->lval *= val;

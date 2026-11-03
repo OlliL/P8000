@@ -1,6 +1,10 @@
 # define makecc(val,i)  lastcon = i ? (lastcon<<8)|(val&0xff) : val  
 
+# ifdef SEG
+# define  ARGINIT 32	/* WEGA (dclargs, bfcode) */
+# else
 # define  ARGINIT 16	/* WEGA (dclargs, bfcode) */
+# endif
 # define  AUTOINIT 96 
 # define  SZCHAR 8
 # define  SZINT 16
@@ -8,7 +12,11 @@
 # define  SZDOUBLE 64
 # define  SZLONG 32
 # define  SZSHORT 16
+# ifdef SEG
+# define SZPOINT 32
+# else
 # define SZPOINT 16
+# endif
 # define ALCHAR 8
 # define ALINT 16
 # define ALFLOAT 16
@@ -42,7 +50,11 @@
 
 /*	maximum and minimum register variables */
 
+# ifdef SEG
+# define MAXRVAR 13	/* WEGA: ftnend */
+# else
 # define MAXRVAR 14	/* WEGA: ftnend */
+# endif
 # define MAXFRVAR 23	/* WEGA: the float registers */
 # define MAXLRVAR 12	/* WEGA: the register pairs */
 # define MINRVAR 8

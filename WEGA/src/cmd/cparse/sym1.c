@@ -450,6 +450,9 @@ regfree( t ) register TWORD t; { /* is a register free for a variable of type t 
 	switch( t ){
 
 	default:
+#ifdef SEG
+		if( ISPTR(t) ) goto lng;
+#endif
 		if( regvar >= 8 ) return( 1 );
 		return( 0 );
 
@@ -460,6 +463,9 @@ regfree( t ) register TWORD t; { /* is a register free for a variable of type t 
 
 	case LONG:
 	case ULONG:
+#ifdef SEG
+	lng:
+#endif
 		if( lregvar >= 8 ) return( 1 );
 		return( 0 );
 		}

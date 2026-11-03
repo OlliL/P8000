@@ -39,6 +39,12 @@ old: all
 cparse: crt0.o $(OBJS) $(LIBCOBJS)
 	$(LDBIN) -i -e start crt0.o $(OBJS) $(LIBCOBJS) -o $@
 
+# scparse (the first pass of scc): the same sources with -DSEG, the objects in seg
+scparse: crt0.o cgram1.c $(HDRS) $(LIBCOBJS)
+	-mkdir seg
+	for f in $(OBJS:.o=) ; do ( cd seg ; $(CC) $(CFLAGS) -DSEG -c ../$$f.c ) || exit 1 ; done
+	cd seg ; $(LDBIN) -i -e start ../crt0.o $(OBJS) $(LIBCOBJS:%=../%) -o ../scparse
+
 $(OBJS): $(HDRS)
 optim1.o: optim
 comm1.o: common
@@ -176,5 +182,5 @@ checkblock: cparse_block
 	python3 tools/cmpimage.py cparse_block $(WEGA)/lib/cparse
 
 clean:
-	rm -f ownraw.s ownraw.o crt0.s cgram1.c cparse_block cparse *.o
+	rm -f ownraw.s ownraw.o crt0.s cgram1.c cparse_block cparse scparse *.o seg/*.o
 	rm -rf shipped

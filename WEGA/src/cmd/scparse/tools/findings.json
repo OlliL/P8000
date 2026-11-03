@@ -1,0 +1,1106 @@
+{
+ "schema": "functions: name -> file, orig, size_orig, status (exact, masked, open; written by host/recon/findings.py), lines, note (by hand: an open difference, an odd form, a guessed name, dead code). Which switch a function needs: host/OLDCC_SWITCHES.md.",
+ "compiler": "ccv0p",
+ "binary": "/lib/spopt",
+ "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
+ "measured_at": "93f3301a",
+ "functions": {
+  "mkty": {
+   "file": "cgram1.y",
+   "orig": "0x002a",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "bdty": {
+   "file": "cgram1.y",
+   "orig": "0x004e",
+   "size_orig": 102,
+   "status": "exact"
+  },
+  "dstash": {
+   "file": "cgram1.y",
+   "orig": "0x00b4",
+   "size_orig": 46,
+   "status": "exact"
+  },
+  "savebc": {
+   "file": "cgram1.y",
+   "orig": "0x00e2",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "resetbc": {
+   "file": "cgram1.y",
+   "orig": "0x0130",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "addcase": {
+   "file": "cgram1.y",
+   "orig": "0x0174",
+   "size_orig": 108,
+   "status": "exact"
+  },
+  "adddef": {
+   "file": "cgram1.y",
+   "orig": "0x01e0",
+   "size_orig": 80,
+   "status": "exact"
+  },
+  "swstart": {
+   "file": "cgram1.y",
+   "orig": "0x0230",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "swend": {
+   "file": "cgram1.y",
+   "orig": "0x0250",
+   "size_orig": 194,
+   "status": "exact"
+  },
+  "yyparse": {
+   "file": "cgram1.y",
+   "orig": "0x0312",
+   "size_orig": 4194,
+   "status": "exact"
+  },
+  "scnames": {
+   "file": "xdefs1.c",
+   "orig": "0x1374",
+   "size_orig": 66,
+   "status": "exact"
+  },
+  "mainp1": {
+   "file": "scan1.c",
+   "orig": "0x13b6",
+   "size_orig": 120,
+   "status": "exact"
+  },
+  "lxstart": {
+   "file": "scan1.c",
+   "orig": "0x142e",
+   "size_orig": 6,
+   "status": "exact"
+  },
+  "lxclass": {
+   "file": "scan1.c",
+   "orig": "0x1434",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "lxenter": {
+   "file": "scan1.c",
+   "orig": "0x146a",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "lxinit": {
+   "file": "scan1.c",
+   "orig": "0x1494",
+   "size_orig": 128,
+   "status": "exact"
+  },
+  "sfinit": {
+   "file": "scan1.c",
+   "orig": "0x1514",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "dimtinit": {
+   "file": "scan1.c",
+   "orig": "0x153e",
+   "size_orig": 114,
+   "status": "exact"
+  },
+  "lxtitle": {
+   "file": "scan1.c",
+   "orig": "0x15b0",
+   "size_orig": 352,
+   "status": "exact"
+  },
+  "lxmore": {
+   "file": "scan1.c",
+   "orig": "0x1710",
+   "size_orig": 130,
+   "status": "exact"
+  },
+  "savestr": {
+   "file": "scan1.c",
+   "orig": "0x1792",
+   "size_orig": 208,
+   "status": "exact"
+  },
+  "lxstr": {
+   "file": "scan1.c",
+   "orig": "0x1862",
+   "size_orig": 564,
+   "status": "exact"
+  },
+  "lxcom": {
+   "file": "scan1.c",
+   "orig": "0x1a96",
+   "size_orig": 148,
+   "status": "exact"
+  },
+  "yylex": {
+   "file": "scan1.c",
+   "orig": "0x1b2a",
+   "size_orig": 2026,
+   "note": "The long jp of the old cas (OLDCC.md D17): gone with a test cas.",
+   "status": "open",
+   "lines": 2
+  },
+  "lxres": {
+   "file": "scan1.c",
+   "orig": "0x2314",
+   "size_orig": 308,
+   "status": "exact"
+  },
+  "defid": {
+   "file": "pftn1.c",
+   "orig": "0x2448",
+   "size_orig": 1946,
+   "note": "Odd form: the step of the SMEMB loop as goto mstep; with mstep: cp1 -= sizeof(int); goto mtest; behind the goto mismatch. One unused int behind cp2; its name is a guess. The dimension loop is a goto loop: the entry's store cross-jumps to the store of the step (OLD_D20X removed).",
+   "status": "exact"
+  },
+  "psave": {
+   "file": "pftn1.c",
+   "orig": "0x2be2",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "psavel": {
+   "file": "pftn1.c",
+   "orig": "0x2c0e",
+   "size_orig": 54,
+   "note": "Odd form: *(long *)(ip = &paramstk[paramno]) = l; ip is not used again (the original saves r14 and leaves it unused).",
+   "status": "exact"
+  },
+  "ftnend": {
+   "file": "pftn1.c",
+   "orig": "0x2c44",
+   "size_orig": 366,
+   "status": "exact"
+  },
+  "argalloc": {
+   "file": "pftn1.c",
+   "orig": "0x2db2",
+   "size_orig": 330,
+   "status": "masked",
+   "lines": 2
+  },
+  "dclargs": {
+   "file": "pftn1.c",
+   "orig": "0x2efc",
+   "size_orig": 584,
+   "status": "masked",
+   "lines": 4
+  },
+  "setreg": {
+   "file": "pftn1.c",
+   "orig": "0x3144",
+   "size_orig": 166,
+   "status": "exact"
+  },
+  "initpreg": {
+   "file": "pftn1.c",
+   "orig": "0x31ea",
+   "size_orig": 32,
+   "status": "exact"
+  },
+  "getpreg": {
+   "file": "pftn1.c",
+   "orig": "0x320a",
+   "size_orig": 202,
+   "status": "exact"
+  },
+  "rstruct": {
+   "file": "pftn1.c",
+   "orig": "0x32d4",
+   "size_orig": 172,
+   "status": "exact"
+  },
+  "moedef": {
+   "file": "pftn1.c",
+   "orig": "0x3380",
+   "size_orig": 60,
+   "status": "exact"
+  },
+  "bstruct": {
+   "file": "pftn1.c",
+   "orig": "0x33bc",
+   "size_orig": 202,
+   "status": "exact"
+  },
+  "dclstruct": {
+   "file": "pftn1.c",
+   "orig": "0x3486",
+   "size_orig": 600,
+   "status": "exact"
+  },
+  "yyerror": {
+   "file": "pftn1.c",
+   "orig": "0x36de",
+   "size_orig": 18,
+   "status": "exact"
+  },
+  "yyaccpt": {
+   "file": "pftn1.c",
+   "orig": "0x36f0",
+   "size_orig": 4,
+   "status": "exact"
+  },
+  "ftnarg": {
+   "file": "pftn1.c",
+   "orig": "0x36f4",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "talign": {
+   "file": "pftn1.c",
+   "orig": "0x372c",
+   "size_orig": 170,
+   "status": "exact"
+  },
+  "tsize": {
+   "file": "pftn1.c",
+   "orig": "0x37d6",
+   "size_orig": 164,
+   "status": "exact"
+  },
+  "inforce": {
+   "file": "pftn1.c",
+   "orig": "0x387a",
+   "size_orig": 188,
+   "status": "exact"
+  },
+  "vfdalign": {
+   "file": "pftn1.c",
+   "orig": "0x3936",
+   "size_orig": 68,
+   "status": "exact"
+  },
+  "argdebug": {
+   "file": "pftn1.c",
+   "orig": "0x397a",
+   "size_orig": 10,
+   "note": "Name and purpose assumed (every argument of a call passes through it). The unused register a is a guess.",
+   "status": "exact"
+  },
+  "buildtree": {
+   "file": "trees1.c",
+   "orig": "0x3984",
+   "size_orig": 2450,
+   "note": "Odd form: case QUEST: { int a1, a2, a3; ... } gives the temporary at 0x12. Unused words at the function level and in the STREF block; these names are guesses.",
+   "status": "masked",
+   "lines": 32
+  },
+  "strargs": {
+   "file": "trees1.c",
+   "orig": "0x4316",
+   "size_orig": 112,
+   "status": "masked",
+   "lines": 2
+  },
+  "chkstr": {
+   "file": "trees1.c",
+   "orig": "0x4386",
+   "size_orig": 148,
+   "status": "exact"
+  },
+  "chkpun": {
+   "file": "trees1.c",
+   "orig": "0x441a",
+   "size_orig": 470,
+   "status": "exact"
+  },
+  "stref": {
+   "file": "trees1.c",
+   "orig": "0x45f0",
+   "size_orig": 362,
+   "status": "exact"
+  },
+  "notlval": {
+   "file": "trees1.c",
+   "orig": "0x475a",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "bcon": {
+   "file": "trees1.c",
+   "orig": "0x47a2",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "bpsize": {
+   "file": "trees1.c",
+   "orig": "0x47d8",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "psize": {
+   "file": "trees1.c",
+   "orig": "0x4800",
+   "size_orig": 80,
+   "status": "exact"
+  },
+  "convert": {
+   "file": "trees1.c",
+   "orig": "0x4850",
+   "size_orig": 140,
+   "status": "exact"
+  },
+  "econvert": {
+   "file": "trees1.c",
+   "orig": "0x48dc",
+   "size_orig": 166,
+   "status": "exact"
+  },
+  "pconvert": {
+   "file": "trees1.c",
+   "orig": "0x4982",
+   "size_orig": 90,
+   "status": "exact"
+  },
+  "oconvert": {
+   "file": "trees1.c",
+   "orig": "0x49dc",
+   "size_orig": 188,
+   "status": "exact"
+  },
+  "ptmatch": {
+   "file": "trees1.c",
+   "orig": "0x4a98",
+   "size_orig": 302,
+   "status": "exact"
+  },
+  "tymatch": {
+   "file": "trees1.c",
+   "orig": "0x4bc6",
+   "size_orig": 450,
+   "note": "An eighth register variable p1 as in Plexus: an unused frame word.",
+   "status": "exact"
+  },
+  "makety": {
+   "file": "trees1.c",
+   "orig": "0x4d88",
+   "size_orig": 292,
+   "status": "exact"
+  },
+  "block": {
+   "file": "trees1.c",
+   "orig": "0x4eac",
+   "size_orig": 82,
+   "status": "exact"
+  },
+  "lcons": {
+   "file": "trees1.c",
+   "orig": "0x4efe",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "icons": {
+   "file": "trees1.c",
+   "orig": "0x4f36",
+   "size_orig": 74,
+   "status": "exact"
+  },
+  "opact": {
+   "file": "trees1.c",
+   "orig": "0x4f80",
+   "size_orig": 552,
+   "note": "PLUS falls through into SUBSR, no break.",
+   "status": "exact"
+  },
+  "moditype": {
+   "file": "trees1.c",
+   "orig": "0x51a8",
+   "size_orig": 58,
+   "status": "exact"
+  },
+  "doszof": {
+   "file": "trees1.c",
+   "orig": "0x51e2",
+   "size_orig": 82,
+   "status": "exact"
+  },
+  "prtdcon": {
+   "file": "trees1.c",
+   "orig": "0x5234",
+   "size_orig": 174,
+   "status": "exact"
+  },
+  "ecomp": {
+   "file": "trees1.c",
+   "orig": "0x52e2",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "prtree": {
+   "file": "trees1.c",
+   "orig": "0x532a",
+   "size_orig": 458,
+   "status": "exact"
+  },
+  "argregs": {
+   "file": "trees1.c",
+   "orig": "0x54f4",
+   "size_orig": 214,
+   "note": "Odd form: the bodies in front of the dispatch with goto sw, a switch of two cases, the case of 4 as an if behind it.",
+   "status": "exact"
+  },
+  "tempnode": {
+   "file": "trees1.c",
+   "orig": "0x55ca",
+   "size_orig": 86,
+   "status": "exact"
+  },
+  "fortarg": {
+   "file": "optim1.c",
+   "orig": "0x5620",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "optim": {
+   "file": "optim1.c",
+   "orig": "0x566e",
+   "size_orig": 1628,
+   "note": "Odd form: the MINUS loop as a goto loop with its test inside the if (no switch of popt needed, OLD_D20L removed); the constant folding a while with a goto into its body; the joined and folded trees are tested again.",
+   "status": "exact"
+  },
+  "conval": {
+   "file": "optim1.c",
+   "orig": "0x5cca",
+   "size_orig": 672,
+   "status": "exact"
+  },
+  "treeeq": {
+   "file": "optim1.c",
+   "orig": "0x5f6a",
+   "size_orig": 118,
+   "status": "exact"
+  },
+  "rmconv": {
+   "file": "optim1.c",
+   "orig": "0x5fe0",
+   "size_orig": 294,
+   "status": "exact"
+  },
+  "notflt": {
+   "file": "optim1.c",
+   "orig": "0x6106",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "main": {
+   "file": "code1.c",
+   "orig": "0x6128",
+   "size_orig": 248,
+   "status": "exact"
+  },
+  "openfiles": {
+   "file": "code1.c",
+   "orig": "0x6220",
+   "size_orig": 376,
+   "status": "exact"
+  },
+  "fnfile": {
+   "file": "code1.c",
+   "orig": "0x6398",
+   "size_orig": 106,
+   "status": "exact"
+  },
+  "fltlab": {
+   "file": "code1.c",
+   "orig": "0x6402",
+   "size_orig": 210,
+   "status": "exact"
+  },
+  "fhashv": {
+   "file": "code1.c",
+   "orig": "0x64d4",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "newsect": {
+   "file": "code1.c",
+   "orig": "0x6512",
+   "size_orig": 284,
+   "status": "exact"
+  },
+  "sectfull": {
+   "file": "code1.c",
+   "orig": "0x662e",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "sectadd": {
+   "file": "code1.c",
+   "orig": "0x6652",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "bstart": {
+   "file": "code1.c",
+   "orig": "0x668a",
+   "size_orig": 162,
+   "status": "exact"
+  },
+  "bend": {
+   "file": "code1.c",
+   "orig": "0x672c",
+   "size_orig": 100,
+   "status": "exact"
+  },
+  "defalign": {
+   "file": "code1.c",
+   "orig": "0x6790",
+   "size_orig": 96,
+   "status": "exact"
+  },
+  "getlab": {
+   "file": "code1.c",
+   "orig": "0x67f0",
+   "size_orig": 10,
+   "status": "exact"
+  },
+  "locctr": {
+   "file": "code1.c",
+   "orig": "0x67fa",
+   "size_orig": 104,
+   "status": "exact"
+  },
+  "deflab": {
+   "file": "code1.c",
+   "orig": "0x6862",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "efcode": {
+   "file": "code1.c",
+   "orig": "0x6880",
+   "size_orig": 182,
+   "note": "An unused long behind size (4 frame bytes of the original); the name is a guess.",
+   "status": "exact"
+  },
+  "bfcode": {
+   "file": "code1.c",
+   "orig": "0x6936",
+   "size_orig": 456,
+   "status": "exact"
+  },
+  "bccode": {
+   "file": "code1.c",
+   "orig": "0x6afe",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "bfend": {
+   "file": "code1.c",
+   "orig": "0x6b3c",
+   "size_orig": 14,
+   "status": "exact"
+  },
+  "defnam": {
+   "file": "code1.c",
+   "orig": "0x6b4a",
+   "size_orig": 104,
+   "status": "exact"
+  },
+  "zecode": {
+   "file": "code1.c",
+   "orig": "0x6bb2",
+   "size_orig": 90,
+   "status": "exact"
+  },
+  "fldal": {
+   "file": "code1.c",
+   "orig": "0x6c0c",
+   "size_orig": 22,
+   "status": "exact"
+  },
+  "lineid": {
+   "file": "code1.c",
+   "orig": "0x6c22",
+   "size_orig": 84,
+   "status": "exact"
+  },
+  "genswitch": {
+   "file": "code1.c",
+   "orig": "0x6c76",
+   "size_orig": 1118,
+   "status": "exact"
+  },
+  "cast": {
+   "file": "local1.c",
+   "orig": "0x70d4",
+   "size_orig": 72,
+   "status": "exact"
+  },
+  "clocal": {
+   "file": "local1.c",
+   "orig": "0x711c",
+   "size_orig": 1270,
+   "status": "exact"
+  },
+  "cisreg": {
+   "file": "local1.c",
+   "orig": "0x7612",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "offcon": {
+   "file": "local1.c",
+   "orig": "0x7660",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "incode": {
+   "file": "local1.c",
+   "orig": "0x7694",
+   "size_orig": 160,
+   "status": "exact"
+  },
+  "fincode": {
+   "file": "local1.c",
+   "orig": "0x7734",
+   "size_orig": 112,
+   "status": "exact"
+  },
+  "cinit": {
+   "file": "local1.c",
+   "orig": "0x77a4",
+   "size_orig": 248,
+   "status": "exact"
+  },
+  "cprint": {
+   "file": "local1.c",
+   "orig": "0x789c",
+   "size_orig": 336,
+   "status": "exact"
+  },
+  "vfdzero": {
+   "file": "local1.c",
+   "orig": "0x79ec",
+   "size_orig": 134,
+   "status": "exact"
+  },
+  "exname": {
+   "file": "local1.c",
+   "orig": "0x7a72",
+   "size_orig": 134,
+   "status": "exact"
+  },
+  "ctype": {
+   "file": "local1.c",
+   "orig": "0x7af8",
+   "size_orig": 66,
+   "status": "exact"
+  },
+  "noinit": {
+   "file": "local1.c",
+   "orig": "0x7b3a",
+   "size_orig": 4,
+   "status": "exact"
+  },
+  "commdec": {
+   "file": "local1.c",
+   "orig": "0x7b3e",
+   "size_orig": 98,
+   "status": "exact"
+  },
+  "isitfloat": {
+   "file": "local1.c",
+   "orig": "0x7ba0",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "ecode": {
+   "file": "local1.c",
+   "orig": "0x7bbe",
+   "size_orig": 138,
+   "status": "exact"
+  },
+  "syserr": {
+   "file": "comm1.c",
+   "orig": "0x7c48",
+   "size_orig": 36,
+   "status": "exact"
+  },
+  "uerror": {
+   "file": "comm1.c",
+   "orig": "0x7c6c",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "cerror": {
+   "file": "comm1.c",
+   "orig": "0x7caa",
+   "size_orig": 128,
+   "status": "exact"
+  },
+  "werror": {
+   "file": "comm1.c",
+   "orig": "0x7d2a",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "tinit": {
+   "file": "comm1.c",
+   "orig": "0x7d68",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "talloc": {
+   "file": "comm1.c",
+   "orig": "0x7d90",
+   "size_orig": 84,
+   "note": "An unused third local NODE *r (the frame word at 4 of the original).",
+   "status": "exact"
+  },
+  "tcheck": {
+   "file": "comm1.c",
+   "orig": "0x7de4",
+   "size_orig": 58,
+   "status": "exact"
+  },
+  "tfree": {
+   "file": "comm1.c",
+   "orig": "0x7e1e",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "tfree1": {
+   "file": "comm1.c",
+   "orig": "0x7e3a",
+   "size_orig": 28,
+   "status": "exact"
+  },
+  "fwalk": {
+   "file": "comm1.c",
+   "orig": "0x7e56",
+   "size_orig": 120,
+   "status": "exact"
+  },
+  "walkf": {
+   "file": "comm1.c",
+   "orig": "0x7ece",
+   "size_orig": 88,
+   "status": "exact"
+  },
+  "mkdope": {
+   "file": "comm1.c",
+   "orig": "0x7f26",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "bsize": {
+   "file": "comm1.c",
+   "orig": "0x7f5a",
+   "size_orig": 76,
+   "status": "exact"
+  },
+  "twords": {
+   "file": "comm1.c",
+   "orig": "0x7fa6",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "argsize": {
+   "file": "comm1.c",
+   "orig": "0x7fda",
+   "size_orig": 90,
+   "status": "exact"
+  },
+  "where": {
+   "file": "comm1.c",
+   "orig": "0x8034",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "tbytes": {
+   "file": "comm1.c",
+   "orig": "0x8052",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "dexit": {
+   "file": "comm1.c",
+   "orig": "0x8086",
+   "size_orig": 26,
+   "status": "exact"
+  },
+  "branch": {
+   "file": "comm1.c",
+   "orig": "0x80a0",
+   "size_orig": 30,
+   "status": "exact"
+  },
+  "ncopy": {
+   "file": "comm1.c",
+   "orig": "0x80be",
+   "size_orig": 34,
+   "note": "An unused register i (the original saves r12).",
+   "status": "exact"
+  },
+  "tcopy": {
+   "file": "comm1.c",
+   "orig": "0x80e0",
+   "size_orig": 88,
+   "note": "A register r = p->rval as in Plexus, unused afterwards (the original saves r12, r13, r14).",
+   "status": "exact"
+  },
+  "ispow2": {
+   "file": "comm1.c",
+   "orig": "0x8138",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "nncon": {
+   "file": "comm1.c",
+   "orig": "0x8186",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "getmem": {
+   "file": "comm1.c",
+   "orig": "0x81a8",
+   "size_orig": 124,
+   "status": "exact"
+  },
+  "resetmem": {
+   "file": "vinit1.c",
+   "orig": "0x8224",
+   "size_orig": 34,
+   "status": "exact"
+  },
+  "beginit": {
+   "file": "vinit1.c",
+   "orig": "0x8246",
+   "size_orig": 248,
+   "status": "exact"
+  },
+  "instk": {
+   "file": "vinit1.c",
+   "orig": "0x833e",
+   "size_orig": 454,
+   "status": "exact"
+  },
+  "getstr": {
+   "file": "vinit1.c",
+   "orig": "0x8504",
+   "size_orig": 260,
+   "status": "exact"
+  },
+  "putbyte": {
+   "file": "vinit1.c",
+   "orig": "0x8608",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "putstrs": {
+   "file": "vinit1.c",
+   "orig": "0x8634",
+   "size_orig": 224,
+   "status": "exact"
+  },
+  "endinit": {
+   "file": "vinit1.c",
+   "orig": "0x8714",
+   "size_orig": 378,
+   "status": "exact"
+  },
+  "doinit": {
+   "file": "vinit1.c",
+   "orig": "0x888e",
+   "size_orig": 452,
+   "status": "exact"
+  },
+  "gotscal": {
+   "file": "vinit1.c",
+   "orig": "0x8a52",
+   "size_orig": 302,
+   "status": "exact"
+  },
+  "ilbrace": {
+   "file": "vinit1.c",
+   "orig": "0x8b80",
+   "size_orig": 112,
+   "status": "exact"
+  },
+  "irbrace": {
+   "file": "vinit1.c",
+   "orig": "0x8bf0",
+   "size_orig": 52,
+   "status": "exact"
+  },
+  "hash": {
+   "file": "sym1.c",
+   "orig": "0x8c24",
+   "size_orig": 62,
+   "status": "exact"
+  },
+  "upoff": {
+   "file": "sym1.c",
+   "orig": "0x8c62",
+   "size_orig": 80,
+   "status": "exact"
+  },
+  "oalloc": {
+   "file": "sym1.c",
+   "orig": "0x8cb2",
+   "size_orig": 288,
+   "note": "Odd form: if (A) { both: ... } else if (B) goto both; the block behind the first test (OLD_D20C removed).",
+   "status": "exact"
+  },
+  "falloc": {
+   "file": "sym1.c",
+   "orig": "0x8dd2",
+   "size_orig": 444,
+   "status": "exact"
+  },
+  "nidcl": {
+   "file": "sym1.c",
+   "orig": "0x8f8e",
+   "size_orig": 278,
+   "status": "exact"
+  },
+  "types": {
+   "file": "sym1.c",
+   "orig": "0x90a4",
+   "size_orig": 270,
+   "status": "exact"
+  },
+  "tymerge": {
+   "file": "sym1.c",
+   "orig": "0x91b2",
+   "size_orig": 232,
+   "status": "exact"
+  },
+  "tyreduce": {
+   "file": "sym1.c",
+   "orig": "0x929a",
+   "size_orig": 156,
+   "note": "The dimension through a long local (4 frame bytes of the original); the name off is a guess.",
+   "status": "exact"
+  },
+  "fixtype": {
+   "file": "sym1.c",
+   "orig": "0x9336",
+   "size_orig": 346,
+   "status": "exact"
+  },
+  "uclass": {
+   "file": "sym1.c",
+   "orig": "0x9490",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "fixclass": {
+   "file": "sym1.c",
+   "orig": "0x94b6",
+   "size_orig": 308,
+   "status": "exact"
+  },
+  "regfree": {
+   "file": "sym1.c",
+   "orig": "0x95ea",
+   "size_orig": 78,
+   "status": "exact"
+  },
+  "lookup": {
+   "file": "sym1.c",
+   "orig": "0x9638",
+   "size_orig": 506,
+   "note": "One unused int between i and n (a frame word of the original); the name j is a guess.",
+   "status": "masked",
+   "lines": 2
+  },
+  "copysym": {
+   "file": "sym1.c",
+   "orig": "0x9832",
+   "size_orig": 376,
+   "status": "exact"
+  },
+  "hide": {
+   "file": "sym1.c",
+   "orig": "0x99aa",
+   "size_orig": 258,
+   "status": "exact"
+  },
+  "unhide": {
+   "file": "sym1.c",
+   "orig": "0x9aac",
+   "size_orig": 110,
+   "status": "exact"
+  },
+  "refid": {
+   "file": "sym1.c",
+   "orig": "0x9b1a",
+   "size_orig": 284,
+   "status": "exact"
+  },
+  "clearst": {
+   "file": "sym1.c",
+   "orig": "0x9c36",
+   "size_orig": 238,
+   "status": "exact"
+  },
+  "sinit": {
+   "file": "sym1.c",
+   "orig": "0x9d24",
+   "size_orig": 56,
+   "status": "exact"
+  },
+  "sheader": {
+   "file": "sym1.c",
+   "orig": "0x9d5c",
+   "size_orig": 44,
+   "status": "exact"
+  },
+  "putrefsyms": {
+   "file": "sym1.c",
+   "orig": "0x9d88",
+   "size_orig": 42,
+   "status": "exact"
+  },
+  "putsym": {
+   "file": "sym1.c",
+   "orig": "0x9db2",
+   "size_orig": 418,
+   "status": "exact"
+  },
+  "putnames": {
+   "file": "sym1.c",
+   "orig": "0x9f54",
+   "size_orig": 124,
+   "status": "masked",
+   "lines": 4
+  },
+  "puttags": {
+   "file": "sym1.c",
+   "orig": "0x9fd0",
+   "size_orig": 38,
+   "status": "exact"
+  },
+  "putrefs": {
+   "file": "sym1.c",
+   "orig": "0x9ff6",
+   "size_orig": 40,
+   "status": "exact"
+  },
+  "sputc": {
+   "file": "sym1.c",
+   "orig": "0xa01e",
+   "size_orig": 54,
+   "status": "exact"
+  },
+  "aobeg": {
+   "file": "sym1.c",
+   "orig": "0xa054",
+   "size_orig": 2,
+   "status": "exact"
+  }
+ }
+}

@@ -155,7 +155,11 @@ newsect( sec ){ /* start a new section sec (DATA or ADATA) */
 	int k, n, len;
 
 	if( sec <= 0 || sec >= 3 ) cerror( "declaring improper section" );
+#ifdef SEG
+	if( nsect >= 127 ) uerror( "too many sections" );
+#else
 	if( nsect >= 3 ) uerror( "too many sections" );
+#endif
 	n = ++nsect;
 	cp = &buf[3];
 	*cp = 0;
@@ -171,6 +175,9 @@ newsect( sec ){ /* start a new section sec (DATA or ADATA) */
 	*q = 0;
 	sectnew = 0;
 	sectsize[sec] = 0;
+#ifdef SEG
+	fprintf( dfile, "\t.psec %s\n", sectname[sec] );
+#endif
 	if( sec == DATA ) fprintf( dfile, "\t.data\n" );
 	else fprintf( dfile, "\t.bss\n" );
 	}
@@ -217,7 +224,14 @@ locctr( l ) register l; {
 	/* l is PROG, ADATA, DATA, STRNG, ISTRNG, or STAB */
 
 	if( !sectnew && blevel <= 1 && l != curloc && l == PROG && curloc != ISTRNG && curloc != STRNG )
+#ifdef SEG
+		{
+		fprintf( dfile, "\t.psec\n" );
 		fprintf( dfile, "\t.code\n" );
+		}
+#else
+		fprintf( dfile, "\t.code\n" );
+#endif
 	if( l == curloc ) return( l );
 	temp = curloc;
 	curloc = l;
@@ -242,7 +256,12 @@ efcode(){
 		curftn->sfld8 = i;
 		size = tsize( DECREF(p->stype), p->dimoff, p->sizoff ) / SZCHAR;
 		if( sectfull( ADATA, size ) ) newsect( ADATA );
-		else fprintf( dfile, "\t.bss\n" );
+		else {
+#ifdef SEG
+			fprintf( dfile, "\t.psec %s\n", sectname[ADATA] );
+#endif
+			fprintf( dfile, "\t.bss\n" );
+			}
 		sectadd( ADATA, size );
 		fprintf( dfile, "L%d:\t.=.+%ld\n", i, size );
 		fprintf( dfile, "\t.data\n" );
@@ -386,7 +405,11 @@ genswitch(p,n) register struct sw *p; {
 		fprintf( outfile, "C %d\t%d\t", swlab, dlab );
 		locctr( 4 );
 		defalign( ALINT );
+#ifdef SEG
+		if( sectfull( DATA, size = n*4 ) ) newsect( DATA );
+#else
 		if( sectfull( DATA, size = n+n ) ) newsect( DATA );
+#endif
 		sectadd( DATA, size );
 		for( i=2, j=p[2].sval; i<=n; ++j ){
 			fprintf( outfile, "%d\t", j==p[i].sval ? p[i++].slab : dlab );
@@ -419,7 +442,11 @@ genswitch(p,n) register struct sw *p; {
 		ecomp( r );
 		locctr( 4 );
 		defalign( ALINT );
+#ifdef SEG
+		if( sectfull( DATA, size = n*(SZPOINT+SZINT)/SZCHAR ) ) newsect( DATA );
+#else
 		if( sectfull( DATA, size = n*SZLONG/SZCHAR ) ) newsect( DATA );
+#endif
 		sectadd( DATA, size );
 #ifdef OLD_D6T
 		/* v0: the values go to codgen with the targets, which writes the two lists together */

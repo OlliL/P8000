@@ -42,5 +42,7 @@
 /cmd/standalone/sa.diags/p8000/sa.diags
 /cmd/standalone/sa.diags/p8000c/sa.diags
 /cmd/popt/popt
+/cmd/cparse/scparse
+/cmd/cparse/seg/
 /cmd/popt/spopt
 /cmd/popt/seg/

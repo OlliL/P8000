@@ -69,11 +69,26 @@ clocal(p) NODE *p; {
 
 	case PCONV:
 		m = l->type;
+#ifdef SEG
+		if( (m == CHAR || m == UCHAR || m == INT || m == UNSIGNED || m == SHORT || m == USHORT) && l->op != ICON ){
+			p->op = o = SCONV;
+			break;
+			}
+		if( l->op == ICON ) l->lval &= 0x7f00ffffL;
+	paint:
+		l->type = p->type;
+		l->cdim = p->cdim;
+		l->csiz = p->csiz;
+		p->op = FREE;
+		p = l;
+		return( p );
+#else
 		if( (m == CHAR || m == UCHAR || m == LONG || m == ULONG) && l->op != ICON ){
 			p->op = o = SCONV;
 			break;
 			}
 		goto paint;
+#endif
 
 	case SCONV:
 		ml = p->type == FLOAT || p->type == DOUBLE;
@@ -91,6 +106,24 @@ clocal(p) NODE *p; {
 			long val;
 
 			val = l->lval;
+#ifdef SEG
+			if( ml == INT && ISPTR(m) ){
+				l->lval = (int) val;
+				break;
+				}
+			if( ml == UNSIGNED && ISPTR(m) ){
+				l->lval = val & 0177777;
+				break;
+				}
+			if( ml == SHORT && ISPTR(m) ){
+				l->lval = (int) val;
+				break;
+				}
+			if( ml == USHORT && ISPTR(m) ){
+				l->lval = val & 0177777;
+				break;
+				}
+#endif
 			switch( ml ){
 
 			case CHAR:
@@ -116,12 +149,19 @@ clocal(p) NODE *p; {
 			}
 		else if( l->op == MUL && twords( ml ) - twords( m ) == 1 ) goto settype;	/* the product is long */
 		else if( tbytes( ml ) != tbytes( m ) ) break;
+#ifdef SEG
+		else if( ISPTR(ml) ) break;
+#endif
+#ifdef SEG
+		if( tbytes( ml ) == tbytes( m ) ) goto paint;
+#else
 		if( tbytes( ml ) == tbytes( m ) ){
 		paint:
 			l->type = p->type;
 			l->cdim = p->cdim;
 			l->csiz = p->csiz;
 			}
+#endif
 		p->op = FREE;
 		p = l;
 		return( p );

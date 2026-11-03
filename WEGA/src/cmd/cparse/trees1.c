@@ -329,6 +329,9 @@ buildtree( o, l, r ) register NODE *l, *r; {
 		case STREF:
 			/* p->x turned into *(p+offset) */
 			/* rhs must be a name; check correctness */
+#ifdef SEG
+			p->type = INCREF( p->right->type );
+#endif
 
 			sp = STP(i = r->rval);
 			if( sp->sclass != MOS && sp->sclass != MOU && !(sp->sclass&FIELD) ){
@@ -516,12 +519,14 @@ buildtree( o, l, r ) register NODE *l, *r; {
 			else p = tymatch( p );
 			break;
 
+#ifndef SEG
 		case ASG PLUS:
 		case ASG MINUS:
 		case INCR:
 		case DECR:	/* WEGA: a pointer and a long */
 			if( ISPTR(p->left->type) && (p->right->type == LONG || p->right->type == ULONG) ) goto intright;
 			break;
+#endif
 
 		default:
 			cerror( "other code %d [%%%0.2x]", o, o );
@@ -615,6 +620,9 @@ chkpun(p) register NODE *p; {
 		if( q->op != ICON || q->lval != 0 ){
 			werror( "illegal combination of pointer and integer");
 			}
+#ifdef SEG
+		if( q->op == ICON ) q->lval &= 0x7f00ffffL;
+#endif
 		}
 	else {
 		d1 = p->left->cdim;
@@ -1189,7 +1197,11 @@ opact( p )  NODE *p; {
 	case INCR:
 	case DECR:
 		if( mt12 & MDBI ) return( TYMATCH+LVAL );
+#ifdef SEG
+		else if( (mt1&MPTR) && (mt2&MINT) ) return( TYPL+LVAL+CVTR );
+#else
 		else if( (mt1&MPTR) && (mt2&MINT) ) return( TYPL+LVAL+CVTR+OTHER );
+#endif
 		else if( (mt1&MENU) || (mt2&MENU) ) return( NCVT );
 		break;
 

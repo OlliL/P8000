@@ -13,8 +13,10 @@ The pass is described by progcfg (functions of the program's progcfg.py):
                                    the base name, or None when the source cannot be prepared (the case is skipped)
   CORPUS_RUN(binary, base, work)   (argv, stdin file or None) of the pass on that input (binary: guest path of the pass)
   CORPUS_OUTPUTS(base)             the files the pass writes (compared byte for byte)
+JOBS sources at a time (default: all cores but one), below STAGE_TMP (default /tmp/wega_stage, a local disk).
 The exit status and the messages (stdout, stderr) are compared too. Result: one line per differing case and the totals.
 """
+import concurrent.futures
 import os
 import shutil
 import subprocess
@@ -23,7 +25,7 @@ import sys
 import progcfg
 
 CFG = progcfg.load()
-WORK = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'corpus_' + CFG.NAME)
+WORK = os.path.join(os.environ.get('STAGE_TMP', '/tmp/wega_stage'), 'corpus_' + CFG.NAME)
 
 
 def run_pass(binary, base, work):
@@ -56,16 +58,15 @@ def main():
         srcs = srcs[:n]
     shutil.rmtree(WORK, ignore_errors=True)
     os.makedirs(WORK)
-    total = same = skipped = 0
-    for k, src in enumerate(srcs):
+
+    def case(k, src):
+        """(skipped, differences) of one source, in a directory of its own"""
         work = os.path.join(WORK, '%04d' % k)
         os.makedirs(work)
         base = CFG.CORPUS_PREPARE(src, work)
         if base is None:
-            skipped += 1
             shutil.rmtree(work)
-            continue
-        total += 1
+            return True, []
         shutil.copy(ours, os.path.join(work, 'pass_new'))
         r1 = run_pass('/' + CFG.ORIG_BIN, base, work)
         r2 = run_pass('pass_new', base, work)
@@ -77,13 +78,24 @@ def main():
         for f in r1[2]:
             if r1[2][f] != r2[2][f]:
                 diffs.append('%s %s/%s' % (f, None if r1[2][f] is None else len(r1[2][f]), None if r2[2][f] is None else len(r2[2][f])))
-        if diffs:
-            print('DIFF %s: %s' % (src, ', '.join(diffs)), flush=True)
-            if not keep:
-                shutil.rmtree(work)
-        else:
-            same += 1
+        if not (diffs and keep):
             shutil.rmtree(work)
+        return False, diffs
+
+    total = same = skipped = 0
+    jobs = int(os.environ.get('JOBS') or max(1, (os.cpu_count() or 2) - 1))
+    with concurrent.futures.ThreadPoolExecutor(jobs) as ex:
+        futs = [ex.submit(case, k, src) for k, src in enumerate(srcs)]
+        for src, f in zip(srcs, futs):
+            skip, diffs = f.result()
+            if skip:
+                skipped += 1
+                continue
+            total += 1
+            if diffs:
+                print('DIFF %s: %s' % (src, ', '.join(diffs)), flush=True)
+            else:
+                same += 1
     print('%s: %d of %d inputs identical (%d sources skipped)' % (CFG.NAME, same, total, skipped))
 
 

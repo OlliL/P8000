@@ -252,6 +252,9 @@ endinit(){
 	inoff = 0;
 	iclass = SNULL;
 	if( (sz = (tsize( t, d, s ) + 15) / 16 * 2) > 0xfffe ) uerror( "size too large" );
+#ifdef SEG
+	else if( sectfull( 1, sz ) ) uerror( "section overflow, first dim size = %d", (int)dimtab[d] );
+#endif
 	else sectadd( 1, sz );
 #ifndef OLD_D12
 	if( strhead ) putstrs();

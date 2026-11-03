@@ -559,6 +559,26 @@ dclargs(){
 	}
 
 setreg( p, t ) register struct symtab *p; register TWORD t; { /* a register for the register variable p of type t */
+#ifdef SEG
+	switch( t ){
+
+	default:
+		if( ISPTR(t) ) goto lng;
+		p->sfldb = regvar--;
+		if( minrvar > regvar ) minrvar = regvar;
+		if( regvar == lregvar ) lregvar -= 2;
+		else regvar = lregvar+1;
+		break;
+
+	case LONG:
+	case ULONG:
+	lng:
+		p->sfldb = lregvar;
+		if( lregvar-1 < minrvar ) minrvar = lregvar-1;
+		if( lregvar+1 == regvar ) regvar -= 2;
+		lregvar -= 2;
+		}
+#else
 	switch( t ){
 
 	default:
@@ -575,6 +595,7 @@ setreg( p, t ) register struct symtab *p; register TWORD t; { /* a register for 
 		if( lregvar+1 == regvar ) regvar -= 2;
 		lregvar -= 2;
 		}
+#endif
 	if( p->slevel != 1 ) oalloc( p, &autooff );
 	}
 
@@ -597,7 +618,11 @@ getpreg( p, t ) register TWORD t; register struct symtab *p; { /* the register f
 		switch( t ){
 
 		default:
+#ifdef SEG
+			if( ISPTR(t) ) goto longreg;
+#else
 			if( ISPTR(t) ) goto intreg;
+#endif
 			cerror( "bad param in getpreg" );
 		case STRTY:
 		case UNIONTY:
