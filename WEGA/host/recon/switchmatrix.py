@@ -31,7 +31,7 @@ PASSES = ['codgen', 'cparse', 'popt']
 # the programs measured for this version; add a new program here when it has a model (HOWTO_reconstruct.md, checklist)
 PROGS = ['cparse', 'popt', 'codgen', 'spopt', 'scparse', 'scodgen']
 # programs with a tools/progcfg.py that are not measured, and why
-NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet'}
+NOTPROGS = {'ld': 'v1', 'sld': 'no old compiler work yet', 'cpp': 'in work'}
 ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
 OLDROOT = os.environ.get('OLDROOT', '/mnt/share/cvs/P8000/tmp/oldroot')
 # the work directories: on a local disk, a network share makes the many small files of the builds slow
