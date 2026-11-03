@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "c0e677ee",
+ "measured_at": "9a0a348a",
  "functions": {
   "p2init": {
    "file": "reader3.c",
@@ -710,9 +710,8 @@
    "file": "allo3.c",
    "orig": "0x6c4e",
    "size_orig": 268,
-   "status": "open",
-   "note": "Odd form: the value in front of its test, by goto. Left: which copy of ld r14,r2 stays (4 lines). With a backward label the parameter is forgotten when jump records are cleared at unnamed labels (rsinsert attempt), so the goto form may not be the original one.",
-   "lines": 4
+   "status": "exact",
+   "note": "Form: if / else if / else, no goto."
   },
   "freereg": {
    "file": "allo3.c",
@@ -789,7 +788,7 @@
    "file": "regallo3.c",
    "orig": "0x7650",
    "size_orig": 318,
-   "note": "Left: cp 0(r15),#2 behind the first test of mode, in the arm behind a while. Tried: clearing the jump records at a loop head: exact, allocreg 4 > 7 by the backward label of its goto form, no other change; one witness, not adopted.",
+   "note": "Left: cp 0(r15),#2 behind the first test of mode, in the arm behind a while. Tried: forgetting all jump records of OLD_D3J at a label no jump has named (a loop head): exact, nothing else moves in the three models, bench 118, 275 with v0 rebuilt; one witness, not adopted.",
    "status": "open",
    "lines": 2
   },
@@ -1278,9 +1277,8 @@
    "file": "lcl3.c",
    "orig": "0xab48",
    "size_orig": 902,
-   "note": "Odd form: case 9 and case 1 written out, an empty case 18, return; without a value in case 3, 6 (quirk table). Left: the place of two blocks and which copy of a tail stays (12 lines); not traced yet.",
-   "status": "open",
-   "lines": 12
+   "note": "Odd form: case 9 and case 1 written out, an empty case 18, return; without a value in case 3, 6 (quirk table). Form: the cases of pf in the order 2, 12, 14, 4; p = l; goto ret in both arms.",
+   "status": "exact"
   },
   "makeblock": {
    "file": "tr3.c",

@@ -329,14 +329,14 @@ clocal(p)
 			case 2:
 				l->lval = (long)(char)val;
 				break;
-			case 4:
-				l->lval = (long)(int)val;
-				break;
 			case 12:
 				l->lval = val & 0xFF;
 				break;
 			case 14:
 				l->lval = val & 0xFFFFL;
+				break;
+			case 4:
+				l->lval = (long)(int)val;
 				break;
 			}
 			l->type = pf;
@@ -353,15 +353,16 @@ clocal(p)
 			l->rval = p->rval;
 			l->lval = p->lval;
 			l->sname = p->sname;
-		} else {
-#ifdef SEG
-			break;
-#else
-			p->op = FREE;
-#endif
+			p = l;
+			goto ret;
 		}
+#ifdef SEG
+		break;
+#else
+		p->op = FREE;
 		p = l;
 		goto ret;
+#endif
 		}
 	}
 #ifdef SEG

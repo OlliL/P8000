@@ -343,18 +343,12 @@ allocreg(p, cookie)
 {
 	register int want, r, cls;
 
-	if (!callop(p->op))
-		goto tst;
-	want = callreg(p);
-	goto got;
-val:
-	want = p->rall & ~MUSTDO;
-	goto got;
-tst:
-	if ((p->rall & MUSTDO) || !(p->rall & NOPREF))
-		goto val;
-	want = -1;
-got:
+	if callop(p->op)
+		want = callreg(p);
+	else if ((p->rall & MUSTDO) || !(p->rall & NOPREF))
+		want = p->rall & ~MUSTDO;
+	else
+		want = -1;
 	if (p->sname == fpsym1)
 		fpsym1->soffset = p->lval;
 	else if (p->sname == fpsym2)
