@@ -531,7 +531,8 @@ d3jlabel(lab, dead)
 			r = getreg(j->cls[i], j->reg[i], 0, j->sym[i]);
 			if (r == j->reg[i]) {
 				rfree(r, j->cls[i] == 3 ? 5 : j->cls[i] == 1 ? 2 : 4);
-				d3jmark(j->cls[i], r);
+				if (j->cls[i] == 3)
+					d3jmark(j->cls[i], r);
 			}
 		}
 }
@@ -592,7 +593,7 @@ tcopy(p)
 		if (r >= 0x100) {
 			rbusy((r & 0xFF) - 1, 0x14, p->sname, p->lval);
 			if (r & 0xFF)
-				rbusy((r >> 8) - 1, 4, p->sname, p->lval);
+				rbusy((r >> 8) - 1, 4);
 		} else if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
 			rbusy(r, 4, p->sname, p->lval);
 		else

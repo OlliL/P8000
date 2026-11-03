@@ -148,10 +148,11 @@ mkadrs(p)
 
 /* 0x49c0: is the register (rval of a REG node) unusable as the base of an address: r0, or class 1 in the high byte */
 int
-notoff(t, r, off)
+notoff(t, r, off, cp)
 	int t;
 	register int r;
 	long off;
+	char *cp;
 {
 	if (r >= 0x100)
 		return (r >> 8) - 1 == 0;
@@ -224,12 +225,11 @@ sucomp(p)
 					p->fsu = nf;
 				else
 					p->fsu = max(fl, nf);
-			} else if (fl <= fr && fl + nf > ffregs)
+			}
+			else if (fl <= fr && fl + nf > ffregs)
 				p->fsu = ffregs + nf;
-			else if (fl == 0)
-				p->fsu = max(fr, nf + nf);
 			else
-				p->fsu = max(fr, max(fl, 1 + nf + nf));
+				p->fsu = fl == 0 ? max(fr, nf + nf) : max(fr, max(fl, 1 + nf + nf));
 			return;
 		}
 		if ((dope[p->op] & MULFLG) && (p->left->type == 5 || p->left->type == 15)) {	/* long * / % */
@@ -242,10 +242,7 @@ sucomp(p)
 		}
 		if ((dope[p->op] & MULFLG) && optype(p->left->op) == 2 && nr > szty(p->left->type)) {
 			p->su = max(nr, max(sul, sur));
-			if (sur == sul)
-				p->fsu = max(nf, max(fl, fr));
-			else
-				p->fsu = max(fl, fr);
+			p->fsu = sur == sul ? max(nf, max(fl, fr)) : max(fl, fr);
 			return;
 		}
 		p->su = max(nr + nr, min(max(sul, nr + sur), max(sur, nr + sul)));

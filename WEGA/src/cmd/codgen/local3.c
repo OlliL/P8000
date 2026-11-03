@@ -1375,9 +1375,7 @@ upput(p)
 	case ICON:
 		p->lval &= 0xFFFF;
 		putchar('#');
-	ac:
-		acon(p);
-		break;
+		goto ac;
 	case REG:
 		if (rlmode) {
 			printf("%s", rlnames[p->rval + 1]);
@@ -1406,6 +1404,9 @@ upput(p)
 		break;
 	default:
 		cerror("illegal upper address");
+		break;
+	ac:
+		acon(p);
 	}
 	p->lval = save;
 }

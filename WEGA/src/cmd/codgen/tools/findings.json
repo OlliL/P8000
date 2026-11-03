@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "061c7bcc",
+ "measured_at": "c0e677ee",
  "functions": {
   "p2init": {
    "file": "reader3.c",
@@ -409,9 +409,8 @@
    "file": "local3.c",
    "orig": "0x40d4",
    "size_orig": 252,
-   "status": "open",
-   "note": "Odd form: if (rlmode) { printf; return; } leaves lval as it is (it is unchanged in that case); goto ac into the ICON case. Left: the place of the then part of putchar (4 lines).",
-   "lines": 4
+   "status": "exact",
+   "note": "Form: the ICON case ends with goto ac, the label stands behind a break inside the switch (at any such place)."
   },
   "adrput": {
    "file": "local3.c",
@@ -508,17 +507,16 @@
    "file": "order3.c",
    "orig": "0x49c0",
    "size_orig": 48,
-   "status": "open",
-   "note": "Left: the original saves only off (ldl 2(r15),rr4) and r in r14 in a frame of 12, t is not stored at all; ours stores all parameters. Tried: register int t (worse: 13 lines, r1 and r3 by procopt). The rule that leaves a parameter unstored is not known; the call passes a fourth argument cp.",
-   "lines": 10
+   "status": "exact",
+   "note": "Form: four parameters as in the PCC, cp unused. The original stores only off: OLD_D3J gives only a long parameter its home after it came back at a label."
   },
   "sucomp": {
    "file": "order3.c",
    "orig": "0x49f0",
    "size_orig": 2000,
-   "note": "Left: the order of the fsu assignments: in the original the case fl == 0 stands in front of its test, its end is shared with ffregs + nf. Tried: a conditional expression gives the sharing and 34 lines, goto gives the order and 26, fl != 0 first the sharing and 44; none both. Popt traced, the moves are not explained. Also max(fl, fr) in the original with the other jump sense, and the merge of ld r2,0(r15); jp into the first copy.",
+   "note": "Odd form none: `p->fsu = fl == 0 ? ... : ...` and `sur == sul ? ... : ...` as conditional expressions give the place of the test (the comjump of the first pass, before rmove). Left (12 lines): which copy of ld r2,fl; jp stays; the original keeps the first, in max(fl, nf), which needs a label in front of it before rmove. Tried: conditional forms at the other fsu assignments: no gain.",
    "status": "open",
-   "lines": 32
+   "lines": 12
   },
   "mkrall": {
    "file": "order3.c",
@@ -838,9 +836,8 @@
    "file": "regallo3.c",
    "orig": "0x815e",
    "size_orig": 102,
-   "status": "open",
-   "note": "Left: the test of case 1 stands with the body, the rest of the compare chain in front of the loop body (8 lines): no form found, not traced.",
-   "lines": 8
+   "status": "exact",
+   "note": "Form: case 1 ends with goto ret into case 3, case 2 falls through, no default."
   },
   "rspush": {
    "file": "regallo3.c",
@@ -1011,9 +1008,8 @@
    "file": "comm3.c",
    "orig": "0x8a24",
    "size_orig": 210,
-   "status": "open",
-   "note": "Left: which copy of the tail of rbusy stays (11 lines): the original keeps ldk r6,#4; jr in the first rbusy and the two later calls joined; not traced. break at the end of the last case puts return q in front of the bodies, as the original.",
-   "lines": 11
+   "status": "exact",
+   "note": "Quirk: the second rbusy has two arguments (quirk table)."
   },
   "ispow2": {
    "file": "comm3.c",

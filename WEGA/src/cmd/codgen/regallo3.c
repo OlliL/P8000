@@ -953,25 +953,22 @@ rsfreeall(flag)
 				continue;
 			if (n->kind == 6)
 				continue;
-			break;
+			goto ret;
 #ifdef OLD_D3K
 		case 4:			/* v0, at a label: as 1, but a parameter stays known in its register */
 			if (n->cls > 4 || n->kind == 6)
 				continue;
 			if (n->busy <= 0 && n->sym && n->sym->sclass == 9)
 				continue;
-			break;
+			goto ret;
 #endif
 		case 2:
 			if (n->cls <= 4)
 				continue;
-			break;
 		case 3:
-			break;
-		default:
-			continue;
+ret:
+			rsreturn(n->cls, n->reg);
 		}
-		rsreturn(n->cls, n->reg);
 	}
 }
 

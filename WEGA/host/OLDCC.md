@@ -389,7 +389,7 @@ compiler that built the original. Not differences of the compiler (checked):
   a label that jumps have named, only the parameters known at all those jumps stay known (OLD_D3K kept the state of
   the fall-through); when the record in front of the label is a jump and one jump names the label, the parameters
   known at that jump come back (tfree1 `ld r2,r7`, rmconv `cpb rl6,#'l'` at the else label behind a then part with
-  calls); such a parameter still gets its home in the frame. With two jumps (buildtree, an `&&`) the original
+  calls); of those only a long parameter still gets its home in the frame (notoff; word parameters needed none in the three models). With two jumps (buildtree, an `&&`) the original
   reloads. cparse 278 > 274, bench v0 292 > 290 (115 > 117).
 - v0p (switch `OLD_D3JM` in codgen, d3jlabel): at a label behind a jump named by several jumps the parameters known at
   all the jumps and still known in front of the label stay (popt equop: `ld r2,r6` at the else label of `A || B || C
