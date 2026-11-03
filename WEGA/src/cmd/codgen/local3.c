@@ -1328,7 +1328,7 @@ oregput(p)
 #ifdef SEG
 	if (p->rval == 15) {
 		if ((p->sname == symtab0 && (unsigned)(int)p->lval <= 0xFF) ||
-		    (p->sname == fpsym1 && (unsigned)(int)(p->lval + frame0) <= 0xFF)) {
+		    (p->sname == fpsym1 && (unsigned)(int)(p->lval + maxoff) <= 0xFF)) {
 			bar++;
 			putchar('|');
 		}

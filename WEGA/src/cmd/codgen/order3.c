@@ -734,16 +734,26 @@ leftadr:
 			goto rew;
 		if (p->left->op == STAR) {
 			if (lmuldiv(p)) {
+#ifdef SEG
+				p->left->left->rall = 0x1002;
+				p->left->left->left->rall = 0x1002;
+#else
 				p->left->left->rall = 0x1001;
 				p->left->left->left->rall = 0x1001;
+#endif
 			}
 			OFFSTARA(p->left);
 			return 1;
 		}
 		if (p->left->op == FLD && p->left->left->op == STAR) {
 			if (lmuldiv(p)) {
+#ifdef SEG
+				p->left->left->left->rall = 0x1002;
+				p->left->left->left->left->rall = 0x1002;
+#else
 				p->left->left->left->rall = 0x1001;
 				p->left->left->left->left->rall = 0x1001;
+#endif
 			}
 			OFFSTARA(p->left->left);
 			return 1;
