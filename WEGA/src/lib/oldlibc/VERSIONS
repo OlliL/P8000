@@ -22,6 +22,7 @@ filbuf     0_2   strip
 filbuf     0_3   cparse popt ranlib
 findiop    0_1   size strip
 findiop    0_2   cparse cpp ranlib
+ffltioc    0_1   cpp
 flsbuf     0_1   size strip
 flsbuf     0_2   cparse popt ranlib cpp
 fltioc     0_1   cparse

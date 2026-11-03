@@ -4,11 +4,12 @@ noown
 immmin 3308
 # The link uses the known versions: cpp.link is edited behind unlink.py where it only wrote other labels (printf, setbuf,
 # isatty, strcat, strcpy, flsbuf) or took the number 0x4000 of length for an address.
+# ffltioc has four stubs here, the shipped member three; __fegcvt is what doprnt calls, the other names are guesses.
 # NAME     KIND    START END  DATA  SYMBOLS
 fopen      old     2272 2292  0     _fopen=2272
 printf     old     2292 23a2  0     _printf=2292 _fprintf=22e2 _sprintf=2332
-doprnt     old     23a2 29b8  80 dstart=3f5e __align=23a2 __doprnt=23fa
-ffltioc    shipped 29b8 29c0  0
+doprnt     old     23a2 29b8  80 dstart=3f5e __align=23a2 __doprnt=23fa __atoip=2942
+ffltioc    old     29b8 29c0  0     __fltuse=29b8 __ffltx=29ba __fegcvt=29bc __inflt=29be
 setbuf     old     29c0 2a14  0     _setbuf=29c0
 data       shipped -    -     162 dstart=3fae
 flsbuf     old     2a14 2bf2  0     __flsbuf=2a14 _fflush=2af6 __cleanup=2b54 _fclose=2b74

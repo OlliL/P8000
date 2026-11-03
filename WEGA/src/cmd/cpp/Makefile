@@ -19,10 +19,10 @@ LIBC = /lib/libc.a
 CFLAGS = -O
 
 # shipped members in link order (the members of /lib/libc.a), extracted into shipped/
-SHIPPED = ffltioc.o data.o __callex.o cuexit.o decimal.o brk.o close.o creat.o ioctl.o lseek.o read.o write.o cerror.o
+SHIPPED = data.o __callex.o cuexit.o decimal.o brk.o close.o creat.o ioctl.o lseek.o read.o write.o cerror.o
 
 # link order of the libc part of /lib/cpp
-LIBCOBJS = $(OLD)/fopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_7.o shipped/ffltioc.o \
+LIBCOBJS = $(OLD)/fopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_7.o $(OLD)/ffltioc/0_1.o \
 	$(OLD)/setbuf/0_1.o shipped/data.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_3.o $(OLD)/findiop/0_2.o \
 	shipped/__callex.o shipped/cuexit.o $(OLD)/cnvt/0_2.o shipped/decimal.o $(OLD)/length/0_3.o \
 	$(OLD)/malloc/0_3.o $(OLD)/isatty/0_2.o $(OLD)/stty/0_3.o $(OLD)/strcat/0_2.o $(OLD)/strcmp/0_1.o \
@@ -38,7 +38,7 @@ cpp: $(LINKOBJS)
 
 shipped/stamp:
 	-mkdir shipped
-	cd shipped ; $(AR) x $(LIBC) ffltioc.o data.o __callex.o cuexit.o decimal.o brk.o close.o creat.o ioctl.o lseek.o read.o write.o cerror.o ; touch stamp
+	cd shipped ; $(AR) x $(LIBC) data.o __callex.o cuexit.o decimal.o brk.o close.o creat.o ioctl.o lseek.o read.o write.o cerror.o ; touch stamp
 
 cpp.o: cpp.c
 	$(CC) $(CFLAGS) -c cpp.c
@@ -58,7 +58,6 @@ crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
 crt0.o: crt0.s
 	$(CAS) -u -o $@ crt0.s
 
-shipped/ffltioc.o: shipped/stamp
 shipped/data.o: shipped/stamp
 shipped/__callex.o: shipped/stamp
 shipped/cuexit.o: shipped/stamp
@@ -80,6 +79,9 @@ $(OLD)/printf/0_5.o: $(OLD)/printf/0_5.s
 
 $(OLD)/doprnt/0_7.o: $(OLD)/doprnt/0_7.s
 	$(CAS) -u -o $@ $(OLD)/doprnt/0_7.s
+
+$(OLD)/ffltioc/0_1.o: $(OLD)/ffltioc/0_1.s
+	$(CAS) -u -o $@ $(OLD)/ffltioc/0_1.s
 
 $(OLD)/setbuf/0_1.o: $(OLD)/setbuf/0_1.s
 	$(CAS) -u -o $@ $(OLD)/setbuf/0_1.s

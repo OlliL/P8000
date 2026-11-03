@@ -2,7 +2,7 @@
 old fopen 0_1
 old printf 0_5
 old doprnt 0_7
-shipped ffltioc
+old ffltioc 0_1
 old setbuf 0_1
 shipped data
 old flsbuf 0_2

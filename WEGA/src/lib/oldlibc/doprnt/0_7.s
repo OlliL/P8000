@@ -1,4 +1,4 @@
-	.extern	__cnvt, __flsbuf, __inflt, __length
+	.extern	__cnvt, __fegcvt, __flsbuf, __length
 	.psec
 	.code
 __align::
@@ -124,7 +124,7 @@ L0130:
 	ld	r6,r12
 	dec	r14,#1
 	ld	r7,r14
-	calr	L05a0
+	calr	__atoip
 	ld	r11,r2
 	add	r14,r2
 	sub	r12,r2
@@ -154,7 +154,7 @@ L0182:
 	lda	r5,%000E(r15)
 	ld	r6,r12
 	ld	r7,r14
-	calr	L05a0
+	calr	__atoip
 	ld	r11,r2
 L018e:
 	sub	r12,r11
@@ -409,7 +409,7 @@ L0456:
 	.word	%0F34,%8003
 	.word	%8F00,%8403
 	ld	r3,%000E(r15)
-	call	__inflt
+	call	__fegcvt
 	ld	%0016(r15),r2
 	inc	%000A(r15),#8
 	inc	%0004(r15),#5
@@ -523,7 +523,7 @@ L0594:
 	ldm	r11,%0060(r15),#4
 	add	r15,#%0068
 	ret
-L05a0:
+__atoip::
 	dec	r15,#14
 	ldm	%0000(r15),r5,#2
 	ld	r1,r7
