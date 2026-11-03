@@ -668,7 +668,7 @@ dodef(p) char *p; {/* process '#define' */
 		if (*pin=='\n') break;
 		if (params) {/* mark the appearance of formals in the definiton */
 			if ((toktyp+COFF)[*pin]==IDENT) {
-				for (qf=pf; formal<=(--qf, qf); ) {
+				for (qf=pf; --qf>=formal; ) {
 					if (equfrm(*qf,pin,p)) {
 						*psav++=qf-formal+1; *psav++=WARN; pin=p; break;
 					}
@@ -682,7 +682,7 @@ dodef(p) char *p; {/* process '#define' */
 				for (*psav++= *pin++; pin<p && *pin!=quoc; ) {
 					while (pin<p && !isid(*pin)) *psav++= *pin++;
 					cf=pin; while (cf<p && isid(*cf)) ++cf;
-					for (qf=pf; formal<=(--qf, qf); ) {
+					for (qf=pf; --qf>=formal; ) {
 						if (equfrm(*qf,pin,cf)) {
 							*psav++=qf-formal+1; *psav++=WARN; pin=cf; break;
 						}

@@ -10,7 +10,7 @@ extern int allo();
 extern int bsize();
 extern int cerror();
 extern void conput();
-extern NODE *d16acmp;
+extern NODE *d16acmp, *d16acmr;
 extern int dope[];
 extern void expand();
 extern void fixname();
@@ -372,7 +372,7 @@ cand:
 		/* v0p: a frame slot incremented by a constant whose value may go to a temporary is loaded, incremented in
 		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */
 		if ((p->op == ASG PLUS || p->op == ASG MINUS) && (cookie & INTEMP) && l->op == OREG && l->rval == 15 &&
-		    r->op == ICON && r->sname == 0 && p != d16acmp) {
+		    r->op == ICON && r->sname == 0 && p != d16acmp && p != d16acmr) {
 			if (q->rshape == 0x8002)
 				goto next;
 			if (q->needs == 1 && q->rewrite == 0x804 && allo(p, q)) {

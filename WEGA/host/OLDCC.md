@@ -529,10 +529,11 @@ The old compiler loads a frame slot into a register before an operation where th
 v0p (switch `OLD_D16A` in codgen, match): `++n` of a frame slot whose value may go to a temporary (cookie with
 INTEMP: the left operand of `*`) is `ld A1,n; inc A1,#1; ld n,A1`, not `inc n,#1` (cparse genswitch `p[++n]`); with the
 value wanted in a register for an address (`*--cp`, newsect) or stored (`ix = ++p->x`, gotscal) it stays in memory.
-Without the INTEMP condition: 336 > 1000 and more; v0p only (bench v0 318 > 348 at that time). Not for the left
-operand of a compare (setbin): popt codemove `--n == 0` stays `dec n,#1; test n`. These two are the only sites in
-cparse and popt, with the same cookie 010036, so they do not separate "not under a compare" from "only `++`, not `--`";
-the first form is taken because a compare can read memory and the multiplication cannot (a guess about the mechanism).
+Without the INTEMP condition: 336 > 1000 and more; v0p only (bench v0 318 > 348 at that time). Not for an
+operand of a compare (setbin), on either side: popt codemove `--n == 0` stays `dec n,#1; test n`, cpp dodef `--qf>=formal`
+(`lda r2,formal; dec qf,#2; cp r2,qf`, 2026-11-03; the compare is turned round, so the increment is the right operand).
+cpp separates "not under a compare" from "only `++`, not `--`": `--qf` with the operand under a compare stays in memory,
+and without the exception it would be loaded. That a compare can read memory and the multiplication cannot is a guess about the mechanism.
 
 Removed (2026-11-03): OLD_D16B. One witness, a source form: stref `p->type = p->type + PTR`, `p->left->type = p->left->type + PTR` instead of `+=`.
 ### D17 Call form (popt)

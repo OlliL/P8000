@@ -58,8 +58,8 @@
    "file": "cpp.c",
    "orig": "0x0bae",
    "size_orig": 1002,
-   "status": "open",
-   "lines": 4
+   "status": "masked",
+   "lines": 12
   },
   "control": {
    "file": "cpp.c",
@@ -108,12 +108,14 @@
    "file": "cpp.c",
    "orig": "0x140c",
    "size_orig": 134,
+   "note": "Odd form: an unreferenced label top: in front of if (enterf), as in subst.",
    "status": "exact"
   },
   "subst": {
    "file": "cpp.c",
    "orig": "0x1492",
    "size_orig": 640,
+   "note": "Odd form: an unreferenced label top: in front of the first use of sp. A label no jump has named forgets the parameters (OLD_D3K), as in readmems of codgen. A guess at the source, the label makes the bytes.",
    "status": "exact"
   },
   "trmdir": {
@@ -165,5 +167,5 @@
    "status": "exact"
   }
  },
- "measured_at": "54fb0ca2"
+ "measured_at": "fdd1b6bf"
 }

@@ -131,5 +131,5 @@ int structlab;
 long structsz;
 struct tmpent tmptab[80];
 #ifdef OLD_D16A
-NODE *d16acmp;	/* the left operand of the last compare set up: its increment stays in memory (match) */
+NODE *d16acmp, *d16acmr;	/* the operands of the last compare set up: their increment stays in memory (match) */
 #endif
