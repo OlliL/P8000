@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "ba806ed8",
+ "measured_at": "206150ec",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -772,8 +772,7 @@
    "file": "regallo3.c",
    "orig": "0x7458",
    "size_orig": 180,
-   "status": "masked",
-   "lines": 2
+   "status": "exact"
   },
   "rsdump": {
    "file": "regallo3.c",
@@ -813,17 +812,15 @@
    "file": "regallo3.c",
    "orig": "0x7916",
    "size_orig": 762,
-   "status": "open",
-   "note": "Odd form: roverlap(1, reg) without a third argument (quirk table); the default of the switch stands behind case 1 (order of the two equal strings). Left: block order of popt.",
-   "lines": 148
+   "status": "exact",
+   "note": "Odd form: the split loop stands inside the first loop and is reached by goto from behind it; the code that links the new node stands in the last case and case 1 and 6 reach it by goto; roverlap(1, reg) without a third argument (quirk table)."
   },
   "getreg": {
    "file": "regallo3.c",
    "orig": "0x7c10",
    "size_orig": 832,
-   "status": "open",
-   "note": "Left: block order of popt (OLDCC_LOG 2026-11-03); the content agrees.",
-   "lines": 186
+   "status": "exact",
+   "note": "Odd form: as regjam the split loop inside the free list loop, reached by goto; the found and return code inside the loop of the register variables, in front of its test. The source form is what gives the bytes, not proved to be what the authors wrote."
   },
   "rsreturn": {
    "file": "regallo3.c",

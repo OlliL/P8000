@@ -408,13 +408,10 @@ regjam(cls, reg, flag, sym)
 				n->flags &= ~0x8000;
 				n->kind = 8;
 				n->busy = 1;
-				return n->reg;
+				goto ret;
 			}
-			if (reg == n->reg && n->busy > 0)
-				goto fail;
-		}
-	}
-	if (cls == 1 || cls == 2 || cls == 6) {
+			goto chk;
+		split: {
 		struct rs *w;
 
 		for (prev = n = rsuse; n; prev = n, n = n->next) {
@@ -443,25 +440,18 @@ regjam(cls, reg, flag, sym)
 				} else if (n->cls != 2)
 					cerror("regjam: illegal type");
 				w = newnode(n, 1);
-				if (reg == w->reg) {
-					n->reg--;
-					w->reg++;
-				}
-				break;
-			default:
-				cerror("regjam: illegal type");
-				goto take;
+				if (reg == w->reg)
+					goto swap;
+				goto link;
 			case 6:
 				if (n->cls != 7)
 					continue;
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
 				w = newnode(n, 6);
-				if (reg != -1 && reg == w->reg) {
-					n->reg--;
-					w->reg++;
-				}
-				break;
+				if (reg != -1 && reg == w->reg)
+					goto swap;
+				goto link;
 			case 2:
 				if (n->cls != 3)
 					continue;
@@ -469,23 +459,37 @@ regjam(cls, reg, flag, sym)
 					continue;
 				w = newnode(n, 2);
 				if (reg != -1 && reg == w->reg) {
+				swap:
 					n->reg--;
 					w->reg++;
 				}
+			link:
+				w->next = rsfree;
+				rsfree = w;
+				rsinsert(w, 1);
+				break;
+			default:
+				cerror("regjam: illegal type");
 				break;
 			}
-			w->next = rsfree;
-			rsfree = w;
-			rsinsert(w, 1);
-		take:
 			n->busy = 1;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
 			n->flags &= ~0x8000;
 			n->kind = 8;
+		ret:
 			return n->reg;
 		}
+			}
+			goto more;
+		chk:
+			if (reg == n->reg && n->busy > 0)
+				goto fail;
+		}
 	}
+	if (cls == 1 || cls == 2 || cls == 6)
+		goto split;
+more:
 	if (cls == 3 || cls == 7) {
 		/* free the smaller registers that lie inside the wanted long register */
 		int found, t;
@@ -572,16 +576,19 @@ getreg(cls, reg, flag, sym)
 				n->busy++;
 				goto ret;
 			}
-			if (n->busy <= 0) {
-				n->flags &= ~0x8000;
-				n->sym = sym;
-				n->off = sym ? sym->soffset : 0;
-				n->kind = 8;
-found:
-				n->busy = 1;
-ret:
-				return n->reg;
-			}
+			goto chk;
+		blk:
+			n->flags &= ~0x8000;
+			n->sym = sym;
+			n->off = sym ? sym->soffset : 0;
+			n->kind = 8;
+		found:
+			n->busy = 1;
+		ret:
+			return n->reg;
+		chk:
+			if (n->busy <= 0)
+				goto blk;
 			cerror("bad getreg for register variable");
 		}
 	}
@@ -729,17 +736,12 @@ ret:
 			rsfree = n->next;
 		else
 			prev->next = n->next;
-		rsuse->next = w;
-		goto found;
-	}
-	if (cls == 1 || cls == 2 || cls == 6) {	/* split a larger node */
+		goto nxt;
+	split:					/* split a larger node */
 		for (prev = n = rsfree; n; prev = n, n = n->next) {
 			if (!(n->cls <= 3 || (n->cls == 7 && cls == 6)))
 				continue;
 			switch (cls) {
-			default:
-				cerror("getreg: illegal type default case");
-				goto take;
 			case 1:
 				if (reg != -1) {
 					if (n->cls == 3) {
@@ -767,22 +769,18 @@ ret:
 				} else if (n->cls != 2)
 					continue;
 				w = newnode(n, 1);
-				if (reg != -1 && reg != w->reg) {
-					n->reg--;
-					w->reg++;
-				}
-				break;
+				if (reg != -1 && reg != w->reg)
+					goto swap;
+				goto link;
 			case 6:
 				if (n->cls != 7)
 					continue;
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
 				w = newnode(n, 6);
-				if (reg != -1 && reg != w->reg) {
-					n->reg--;
-					w->reg++;
-				}
-				break;
+				if (reg != -1 && reg != w->reg)
+					goto swap;
+				goto link;
 			case 2:
 				if (n->cls != 3)
 					continue;
@@ -790,24 +788,33 @@ ret:
 					continue;
 				w = newnode(n, 2);
 				if (reg != -1 && reg != w->reg) {
+				swap:
 					n->reg--;
 					w->reg++;
 				}
+			link:
+				rsinsert(n, 1);
+				n = w;
+				break;
+			default:
+				cerror("getreg: illegal type default case");
 				break;
 			}
-			rsinsert(n, 1);
-			n = w;
-take:
 			n->flags &= ~0x8000;
 			n->sym = sym;
 			n->off = sym ? sym->soffset : 0;
 			n->kind = 8;
 			w = rsuse;
 			rsuse = n;
+		nxt:
 			rsuse->next = w;
 			goto found;
 		}
+		goto fail;
 	}
+	if (cls == 1 || cls == 2 || cls == 6)
+		goto split;
+fail:
 	return flag == 0x1000 ? regjam(cls, reg, flag, sym) : -1;
 }
 
