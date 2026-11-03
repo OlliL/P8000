@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "4893bf9f",
+ "measured_at": "5c2b1160",
  "functions": {
   "p2init": {
    "file": "reader3.c",
