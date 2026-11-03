@@ -933,6 +933,7 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/cparse` (`lxrdope`, `lxres`) | the reserved word `fortran` has the action 6, for which `lxres` has no case: a program with the word `fortran` stops with "compiler error: bad AR_?? action" (measured) | kept | `HANDOFF_cparse.md` |
 | `/lib/cparse` (`clocal` ASSIGN, `chkstr`, `treeeq`) | `clocal` loads two types for an ASSIGN of an SCONV and does not use them; `chkstr` compares a symbol pointer with 500 (signed, so it never fires); `treeeq` returns no value for an operator that is not LTYPE, UTYPE or BITYPE | kept | `HANDOFF_cparse.md` |
 | codgen | `regjam`, case 1: the call `roverlap(1, reg)` for a word node has no third argument, `roverlap` takes whatever is in r5 as the node (the call for a long node passes `n`) | Kept (byte identity) | `src/cmd/codgen/regallo3.c`; found in the original at 0x79fa, no `ld r5,r10` there |
+| codgen | `eread`: `op = dope[op] & 0xE; if (op == 0x73) erflag = 1;` the masked value can never be 0x73, the flag is written nowhere else and never read | Kept (byte identity) | `src/cmd/codgen/rdr3.c`; original at 0x2592 |
 
 ## ar (reconstructed, byte-identical)
 

@@ -1074,9 +1074,8 @@ argplace()
 {
 	register struct node *q;
 	register int nleft, fleft, regs, i;
-	int cnt[4];
-	int k;
 	int reg;
+	int cnt[4];
 
 	regs = 3;
 	for (i = 1; i < 4; i++)
@@ -1087,40 +1086,34 @@ argplace()
 		return;
 	nleft = 8;
 	fleft = 4;
-	while ((q = argl[nargs].node) != 0) {
+	for (; (q = argl[nargs].node) != 0; nargs++) {
 		if (nleft < q->su || fleft < q->fsu || (regs < 1 && q->su > 1)) {
 			order(q, 0x1000);
-			nargs++;
 			continue;
 		}
 #ifdef OLD_D22
 		if ((q->type == 7 || q->type == 6) && argl[nargs].reg < 8) {
 			nleft -= 4;
-			nargs++;
 			continue;
 		}
 #endif
 		if (q->type == 7 || q->type == 6) {
 			fleft--;
-			nargs++;
 			continue;
 		}
 		nleft -= argsize(q);
 		regs = 3;
-		cnt[argl[nargs].reg / 2]++;
+		++cnt[argl[nargs].reg / 2];
 		for (i = 1; i < 4; i++)
 			if (cnt[i])
 				regs--;
-		nargs++;
 	}
-	nargs = 0;
-	while ((q = argl[nargs].node) != 0) {
+	for (nargs = 0; (q = argl[nargs].node) != 0; nargs++) {
 		reg = argl[nargs].reg;
 #ifdef OLD_D22
 		if ((q->type == 6 || q->type == 7) && reg < 8) {
 			d22arg(q, reg);
 			tfree(q);
-			nargs++;
 			continue;
 		}
 #endif
@@ -1141,6 +1134,5 @@ argplace()
 		else if (q->type == 12)
 			printf("\tldb\trh%d,#0\n", reg);
 		tfree(q);
-		nargs++;
 	}
 }

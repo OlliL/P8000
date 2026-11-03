@@ -208,69 +208,70 @@ options(argc, argv)
 	int argc;
 	char **argv;
 {
-	register int i, err;
+	register int i;
 	register char *cp;
+	register int err, r11, r10;
 	char buf[50];
+	char *x, *b;
 
 	err = 0;
 	for (i = 1; i < argc; i++) {
 		cp = argv[i];
-		if (*cp != '-') {
-			err = 1;
-			continue;
-		}
-		while (*++cp) {
-			switch (*cp) {
-			case 'E':
-				i++;
-				strcpy(buf, argv[i]);
-				strcat(buf, ".S");
-				stfile = fopen(buf, "r");
-				if (!stfile)
-					printf("// error in opening symbol table file %s\n", argv[i - 1]);
-				fread(&stg, 4, 1, stfile);
-				stpos = ftell(stfile);
-				strcpy(buf, argv[i]);
-				strcat(buf, ".D");
-				dfile = fopen(buf, "r");
-				if (!dfile) {
-					printf("// error in opening data file %s\n", argv[i - 1]);
+		if (*cp == '-') {
+			while (*++cp) {
+				switch (*cp) {
+				case 'l':
+					lflag++;
 					break;
+				case 'e':
+					eflag++;
+					break;
+				case 'O':
+					oflag++;
+					break;
+				case 'M':
+					i++;
+					break;
+				case 'E':
+					x = strcpy(buf, argv[++i]);
+					x = strcat(x, ".S");
+					stfile = fopen(x, "r");
+					if (!stfile)
+						printf("// error in opening symbol table file %s\n", argv[i - 1]);
+					fread(&stg, 4, 1, stfile);
+					stpos = ftell(stfile);
+					x = strcpy(buf, argv[i]);
+					x = strcat(x, ".D");
+					dfile = fopen(x, "r");
+					if (!dfile)
+						printf("// error in opening data file %s\n", argv[i - 1]);
+					else {
+						b = malloc(0x200);
+						setbuf(dfile, b);
+					}
+					break;
+				case 'p':
+					pflag++;
+					break;
+				case 'R':
+					rflag++;
+					break;
+				case 'a':
+				case 'f':
+				case 'o':
+				case 'r':
+				case 's':
+				case 't':
+				case 'u':
+				case 'x':
+				case 'y':
+					break;
+				default:
+					uerror("bad option: %c", *cp);
 				}
-				setbuf(dfile, malloc(0x200));
-				break;
-			case 'M':
-				i++;
-				break;
-			case 'O':
-				oflag++;
-				break;
-			case 'R':
-				rflag++;
-				break;
-			case 'e':
-				eflag++;
-				break;
-			case 'l':
-				lflag++;
-				break;
-			case 'p':
-				pflag++;
-				break;
-			case 'a':
-			case 'f':
-			case 'o':
-			case 'r':
-			case 's':
-			case 't':
-			case 'u':
-			case 'x':
-			case 'y':
-				break;
-			default:
-				uerror("bad option: %c", *cp);
 			}
-		}
+		} else
+			err = 1;
 	}
 	hdrout();
 	dopeinit();
@@ -1450,9 +1451,9 @@ oreg2(p)
 {
 	register struct node *q;
 	register int spare1;		/* unused: the original reserves this register */
-	register struct node *ql, *qr;
 	register int r;
 	register struct sym *cp;
+	register struct node *ql, *qr;
 	long temp;
 	int stw;
 
@@ -1485,12 +1486,13 @@ oreg2(p)
 		} else
 #endif
 		if (q->op == PLUS && ql->op == ICON && qr->op == REG) {
-			if (ql->rval >= 0)
+			if (ql->rval < 0) {
+				if (ql->sname && ql->sname->sclass == 3 && !(ql->sname->sflags >> 2 & 1))
+					stw = -ql->sname->soffset;
+				else
+					stw = ql->rval;
+			} else
 				stw = 0;
-			else if (ql->sname && ql->sname->sclass == 3 && !(ql->sname->sflags >> 2 & 1))
-				stw = -ql->sname->soffset;
-			else
-				stw = ql->rval;
 			temp = ql->lval;
 			r = qr->rval;
 			cp = ql->sname;

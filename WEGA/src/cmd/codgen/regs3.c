@@ -265,12 +265,11 @@ fixtemp(p)
 void
 tmpcleanup()
 {
-	int i, j;
+	register int i;
+	int j;
 	struct rs *n;
 
-	for (i = 0; i <= 0x4f; i++) {
-		if (tmptab[i].off < 0)
-			break;
+	for (i = 0; i <= 0x4f && tmptab[i].off >= 0; i++) {
 		if (tmptab[i].done)
 			continue;
 		if ((tmptab[i].flags >> 15 & 1) == 1) {
@@ -281,17 +280,17 @@ tmpcleanup()
 			}
 		}
 		for (j = i + 1; j <= 0x4f; j++) {
-			if (tmptab[j].off >= 0)
-				continue;
-			if (i + 1 == j) {
-				tmptab[i].off = -1;
-				return;
+			if (tmptab[j].off < 0) {
+				if (i + 1 == j) {
+					tmptab[i].off = -1;
+					return;
+				}
+				j--;
+				tmptab[i] = tmptab[j];
+				tmptab[j].off = -1;
+				i--;
+				break;
 			}
-			j--;
-			tmptab[i] = tmptab[j];
-			tmptab[j].off = -1;
-			i--;
-			break;
 		}
 	}
 }
@@ -952,12 +951,12 @@ rcmd(a, b, type)
 /* command S: a register variable or a temporary is stored in its memory place */
 void
 scmd(n)
-	register int n;
+	int n;
 {
 	register struct sym *s;
 	register long off;
-	register int t, reg;
-	int i, j, tmp;
+	register int j, t, reg;
+	int tmp, i;
 
 	if (n > 0) {
 		s = mapn(n);
@@ -1011,12 +1010,11 @@ scmd(n)
 /* command T: a register variable or a temporary is loaded from its memory place */
 void
 tcmd(n)
-	register int n;
+	int n;
 {
 	register struct sym *s;
 	register long off;
-	register int t, reg;
-	int j;
+	register int t, j, reg;
 
 	if (n > 0) {
 		s = mapn(n);
@@ -1043,21 +1041,27 @@ tcmd(n)
 	case 5:
 		printf("\tldl\t");
 		printf("rr%d,", reg);
+		memname(s, off);
+		putchar('\n');
 		break;
 	case 6:
 		printf("\tflds\t");
 		printf("f%d,", reg - 16);
+		memname(s, off);
+		putchar('\n');
 		break;
 	case 7:
 		printf("\tfldd\t");
 		printf("f%d,", reg - 16);
+		memname(s, off);
+		putchar('\n');
 		break;
 	default:
 		printf("\tld\t");
 		printf("r%d,", reg);
+		memname(s, off);
+		putchar('\n');
 	}
-	memname(s, off);
-	putchar('\n');
 }
 
 /* the operand of a store or load of a register variable: a name or an address on the frame */

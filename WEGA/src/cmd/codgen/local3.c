@@ -163,11 +163,22 @@ psuffix(p)
 
 void
 tsuffix(t)
-	int t;
+	register int t;
 {
 	if (nosuffix)
 		return;
 	switch (t) {
+	case 6:
+		putchar('s');
+		break;
+	case 7:
+		putchar('d');
+		break;
+	case 5:
+	case 15:
+		putchar('l');
+		rmode++;
+		break;
 	case 2:
 	case 12:
 		putchar('b');
@@ -177,17 +188,6 @@ tsuffix(t)
 	case 4:
 	case 13:
 	case 14:
-		break;
-	case 5:
-	case 15:
-		putchar('l');
-		rmode++;
-		break;
-	case 6:
-		putchar('s');
-		break;
-	case 7:
-		putchar('d');
 		break;
 	default:
 #ifdef SEG

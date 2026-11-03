@@ -392,7 +392,7 @@ readmems(n)
 void
 sortsyms()
 {
-	register int i, j;
+	int i, j;
 	int t;
 	struct sym *s;
 
@@ -401,7 +401,8 @@ sortsyms()
 			if (tagtab[i].tag < tagtab[j].tag) {
 				t = tagtab[j].tag;
 				s = tagtab[j].sym;
-				tagtab[j] = tagtab[i];
+				tagtab[j].tag = tagtab[i].tag;
+				tagtab[j].sym = tagtab[i].sym;
 				tagtab[i].tag = t;
 				tagtab[i].sym = s;
 			}
@@ -567,29 +568,25 @@ eread()
 {
 	register struct node *p;
 	register int op;
-	register int spare1, spare2;	/* unused: the original reserves these registers */
-	register int ty;
+	register int spare1, spare2, spare3;	/* unused: the original reserves these registers */
 	char c;
 
-	for (;;) {
-		c = getchar();
-		if (c != '/')
-			break;
+	for (; (c = getchar()) == '/'; ) {
 		putchar(c);
-		do {
-			c = getchar();
-			putchar(c);
-		} while (c != '\n');
+		while (putchar(getchar()) != '\n')
+			;
 	}
 	ungetc(c, stdin);
 	op = rdin(10);
 	p = talloc();
 	p->rall = 0;
 	p->op = op;
-	ty = dope[op] & 0xE;
-	if (ty == LTYPE)
+	op = dope[op] & 0xE;
+	if (op == 0x73)
+		erflag = 1;
+	if (op == LTYPE)
 		p->lval = rdin(10);
-	if (ty != BITYPE && p->op != FLD)
+	if (op != BITYPE && p->op != FLD)
 		p->rval = rdin(10);
 	if (p->op == TEMP)
 		p->stsize = rdin(10);
@@ -606,14 +603,14 @@ eread()
 	p->rall = NOPREF;
 	if (p->op == STASG || p->op == STARG || p->op == STCALL || p->op == USTCALL) {
 		p->stsize = (rdin(10) + 7) / 8;
-		p->lval = (long)((int)(rdin(10) / 8)) << 16;
+		p->nla.nu.hi = rdin(10) / 8;
 		if (getchar() != '\n')
 			cerror("illegal \n");
 	} else
 		nlcheck();
-	if (ty != LTYPE)
+	if (op != LTYPE)
 		p->left = eread();
-	if (ty == BITYPE || p->op == FLD)
+	if (op == BITYPE || p->op == FLD)
 		p->right = eread();
 	return p;
 }

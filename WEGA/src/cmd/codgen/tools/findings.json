@@ -3,14 +3,14 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "0be98369",
+ "measured_at": "4f2234d4",
  "functions": {
   "options": {
    "file": "reader3.c",
    "orig": "0x002a",
    "size_orig": 372,
-   "status": "open",
-   "lines": 72
+   "status": "exact",
+   "note": "Odd form: two register variables without use; strcpy and strcat through a local x, setbuf through a local b (frame words)."
   },
   "init": {
    "file": "reader3.c",
@@ -123,8 +123,7 @@
    "file": "reader3.c",
    "orig": "0x175e",
    "size_orig": 294,
-   "status": "open",
-   "lines": 54
+   "status": "exact"
   },
   "canon": {
    "file": "reader3.c",
@@ -184,7 +183,8 @@
    "orig": "0x1ec2",
    "size_orig": 192,
    "status": "open",
-   "lines": 56
+   "note": "Left: after the ld r0 of the first assignment the original takes r2 and r3 again, ours r1 and r2: register choice of the compiler, as mapnm; step 6.",
+   "lines": 26
   },
   "tagfind": {
    "file": "rdr3.c",
@@ -228,9 +228,8 @@
    "file": "rdr3.c",
    "orig": "0x2480",
    "size_orig": 538,
-   "note": "The write of erflag (0x24b0) behind the test dope & 0xE == 0x73 is missing in the source: the test is never true.",
-   "status": "open",
-   "lines": 60
+   "note": "Odd form: op is reused for its type class; if (op == 0x73) erflag = 1 can never hold (quirk table); three unused register variables.",
+   "status": "exact"
   },
   "rdin": {
    "file": "rdr3.c",
@@ -254,8 +253,7 @@
    "file": "local3.c",
    "orig": "0x2796",
    "size_orig": 234,
-   "status": "open",
-   "lines": 62
+   "status": "exact"
   },
   "lineout": {
    "file": "local3.c",
@@ -629,8 +627,7 @@
    "file": "order3.c",
    "orig": "0x5d2c",
    "size_orig": 358,
-   "status": "open",
-   "lines": 57
+   "status": "exact"
   },
   "tshape": {
    "file": "match3.c",
@@ -787,7 +784,7 @@
    "file": "regallo3.c",
    "orig": "0x7650",
    "size_orig": 318,
-   "note": "Left: cp 0(r15),#2 against r6 behind the first test (OLD_D3J, step 6).",
+   "note": "Left: cp 0(r15),#2 against r6 behind the first test (OLD_D3J, as scmd, tcmd; step 6).",
    "status": "open",
    "lines": 2
   },
@@ -1100,8 +1097,7 @@
    "file": "regs3.c",
    "orig": "0x9308",
    "size_orig": 236,
-   "status": "open",
-   "lines": 52
+   "status": "exact"
   },
   "tmpdump": {
    "file": "regs3.c",
@@ -1239,15 +1235,16 @@
    "orig": "0xa4aa",
    "size_orig": 308,
    "status": "open",
-   "lines": 71
+   "note": "Left: ld r7,0(r15) behind the first test, ours keeps n in r7 by OLD_D3J (as rsinsert, tcmd; step 6).",
+   "lines": 5
   },
   "tcmd": {
    "file": "regs3.c",
    "orig": "0xa5de",
    "size_orig": 342,
-   "note": "Old hint, measured against the shipped cc, may be stale: D6 and D14: the switch is a cpir table in ours and a compare chain in the original (D6); the call sites of the varargs printf wrapper differ in the frame setup (cgprintf with its five arguments, D14). The calls memname and getreg are the same blocks, shifted. ",
+   "note": "Left: as scmd. Each case has its own memname and putchar, popt merges them.",
    "status": "open",
-   "lines": 69
+   "lines": 5
   },
   "memname": {
    "file": "regs3.c",
