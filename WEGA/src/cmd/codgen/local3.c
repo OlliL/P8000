@@ -1171,25 +1171,23 @@ rmove(to, from, type)
 	for (t = rsfree; t; t = t->next)
 		if (t->reg == to)
 			goto tfound;
+	cerror("rmove: destination reg not found");
 tfound:
-	if (t == 0)
-		cerror("rmove: destination reg not found");
 	for (f = rsuse; f; f = f->next)
 		if (f->reg == from)
 			goto ffound;
 	for (f = rsfree; f; f = f->next)
 		if (f->reg == from)
 			goto ffound;
+	t->sym = 0;
+	t->off = 0;
+	t->kind = 8;
+	goto copied;
 ffound:
-	if (f == 0) {
-		t->sym = 0;
-		t->off = 0;
-		t->kind = 8;
-	} else {
-		t->sym = f->sym;
-		t->off = f->off;
-		t->kind = f->kind;
-	}
+	t->sym = f->sym;
+	t->off = f->off;
+	t->kind = f->kind;
+copied:
 	if (type == 6 || type == 7)
 		printf("/* rmove */\n\tfld");
 	else

@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "b013574d",
+ "measured_at": "d9747a66",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -163,6 +163,7 @@
    "orig": "0x1c30",
    "size_orig": 60,
    "status": "open",
+   "note": "Left: ld r5,2(r15) for (int)n behind the test of n, ours from r5 (step 6).",
    "lines": 2
   },
   "readnums": {
@@ -345,8 +346,8 @@
    "file": "local3.c",
    "orig": "0x3cf2",
    "size_orig": 298,
-   "status": "open",
-   "lines": 4
+   "status": "exact",
+   "note": "The two searches end in the cerror, found jumps past it; no second test of t and f."
   },
   "ltypeok": {
    "file": "local3.c",
@@ -575,8 +576,8 @@
    "file": "order3.c",
    "orig": "0x576e",
    "size_orig": 66,
-   "status": "open",
-   "lines": 6
+   "status": "exact",
+   "note": "default: return 0 inside the switch."
   },
   "setasop": {
    "file": "order3.c",
@@ -744,7 +745,7 @@
    "file": "allo3.c",
    "orig": "0x6fca",
    "size_orig": 142,
-   "note": "Dead code: no caller; name guessed; written from the disassembly, PCC form.",
+   "note": "Left: test 0(r15) as the first test, ours r7: as readmems, the only other function so far with this; both have a static local in front (not tested as the cause).",
    "status": "open",
    "lines": 2
   },
@@ -838,6 +839,7 @@
    "orig": "0x815e",
    "size_orig": 102,
    "status": "open",
+   "note": "Left: the test of case 1 stands with the body, the rest of the chain in front of the loop body (8 lines): no form found.",
    "lines": 8
   },
   "rspush": {
@@ -857,8 +859,8 @@
    "file": "regallo3.c",
    "orig": "0x83ec",
    "size_orig": 142,
-   "status": "open",
-   "lines": 4
+   "status": "exact",
+   "note": "Odd form: the step of the first search in front of its loop, by goto."
   },
   "rsrelease": {
    "file": "regallo3.c",
@@ -1196,9 +1198,8 @@
    "file": "regs3.c",
    "orig": "0x9fdc",
    "size_orig": 94,
-   "status": "open",
-   "note": "Odd form: if (s == 0) ; in front of the label, for the lone cp r1,#0 of the original; still open.",
-   "lines": 4
+   "status": "exact",
+   "note": "Odd form: if (s == 0) ; for the lone cp r1,#0, the found code in front of its test, by goto."
   },
   "regforsym": {
    "file": "regs3.c",
@@ -1302,7 +1303,7 @@
    "file": "tr3.c",
    "orig": "0xafe4",
    "size_orig": 188,
-   "note": "Old hint, measured against the shipped cc, may be stale: Both branches reach the same store block; the original places the UAND branch after the store and jumps back, ours falls through into it. Same instructions, only the layout. Swap of the two tests tried earlier: 59 -> 62 % only. Source unchanged; the shift is f",
+   "note": "Left: the default jumps to a return n elsewhere, ours keeps ld r2,r12 (1 line); the return in the last case makes it worse.",
    "status": "open",
    "lines": 1
   },

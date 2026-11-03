@@ -1094,15 +1094,20 @@ rsmatch()
 	register int i;
 	register int j;
 
-	if (rsflag2 <= 0)
-		return 0;
+	if (rsflag2 > 0)
+		goto st;
+	return 0;
+nx:
+	j++;
+	goto tst;
+st:
 	for (i = rsflag2; i > 0; i--) {
-		for (j = 0; ; j++) {
-			if (j >= rsdepth)
-				return 0;
-			if (rsstk[j].mark == rstab1[i - 1])
-				break;
-		}
+		j = 0;
+	tst:
+		if (j >= rsdepth)
+			return 0;
+		if (rsstk[j].mark != rstab1[i - 1])
+			goto nx;
 	}
 	for (i = rsflag2; i > 0; i--)
 		for (j = 0; j < rsdepth; j++)

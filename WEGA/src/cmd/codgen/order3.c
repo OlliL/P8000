@@ -714,8 +714,9 @@ lmuldiv(p)
 	case ASG MOD:
 		if (p->left->type == 5 || p->left->type == 15)
 			return 1;
+	default:
+		return 0;
 	}
-	return 0;
 }
 
 /* setup for the assignment operators (=ops) */

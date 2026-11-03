@@ -744,13 +744,16 @@ symreg(s, off, type)
 				goto found;
 			continue;
 		}
-		if (s == n->sym) {
-			if (s == 0)
-				;
-		found:
-			n->busy = 1;
-			return n->reg;
-		}
+		goto chk;
+	hit:
+		if (s == 0)
+			;
+	found:
+		n->busy = 1;
+		return n->reg;
+	chk:
+		if (s == n->sym)
+			goto hit;
 	}
 	return -1;
 }
