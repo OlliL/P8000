@@ -345,12 +345,18 @@ allocreg(p, cookie)
 {
 	register int want, r, cls;
 
-	if (dope[p->op] & 0x400)
-		want = rallkind(p);
-	else if (!(p->rall & 0x1000) && (p->rall & 0x2000))
-		want = -1;
-	else
-		want = p->rall & ~0x1000;
+	if (!(dope[p->op] & 0x400))
+		goto tst;
+	want = rallkind(p);
+	goto got;
+val:
+	want = p->rall & ~0x1000;
+	goto got;
+tst:
+	if ((p->rall & 0x1000) || !(p->rall & 0x2000))
+		goto val;
+	want = -1;
+got:
 	if (p->sname == fpsym1)
 		fpsym1->soffset = p->lval;
 	else if (p->sname == fpsym2)
@@ -530,40 +536,36 @@ freereg(p, r, cookie)
 /* does the operand on side of p already live in register r (or is its long register r - 1)? */
 int
 usable(p, side, r)
-	struct node *p;
+	register struct node *p;
 	int side;
 	int r;
 {
-	register struct node *q;
 	register int rv;
 
-	q = getlr(p, side);
-	if (q->op == STAR)
-		q = q->left;
-	rv = q->rval;
+	p = getlr(p, side);
+	if (p->op == STAR)
+		p = p->left;
+	rv = p->rval;
 #ifdef SEG
-	if (q->op == OREG) {
+	if (p->op == OREG) {
 		if (rv >= 0x100)
 			return (rv >> 8) - 1 == r || (rv >> 8) + 0 == r || (rv & 0xFF) - 1 == r;
 		if (rv == r)
 			return 1;
-		if (q->lval != 0 || q->sname != 0 || (q->op == OREG && q->stsize < 0))
+		if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
 			return 0;
 		return rv + 1 == r;
 	}
-	if (q->op != REG)
+	if (p->op != REG)
 		return 0;
 	if (rv == r)
 		return 1;
-	return szty(q->type) == 2 && rv + 1 == r;
+	return szty(p->type) == 2 && rv + 1 == r;
 #else
-	if (q->op == OREG)
+	if (p->op == OREG)
 		return rv == r;
-	if (q->op == REG) {
-		if (rv == r && (r != 0 || (q->type & 0x30) != 0x10))
-			return 1;
-		return szty(q->type) == 2 && rv + 1 == r;
-	}
+	if (p->op == REG)
+		return (rv == r && (r != 0 || (p->type & 0x30) != 0x10)) || (szty(p->type) == 2 && rv + 1 == r);
 	return 0;
 #endif
 }

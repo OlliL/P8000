@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "d75b813e",
+ "measured_at": "b013574d",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -365,8 +365,8 @@
    "file": "local3.c",
    "orig": "0x3e8e",
    "size_orig": 72,
-   "status": "open",
-   "lines": 31
+   "status": "exact",
+   "note": "One conditional expression with two logical arms."
   },
   "shincr": {
    "file": "local3.c",
@@ -410,7 +410,8 @@
    "orig": "0x40d4",
    "size_orig": 252,
    "status": "open",
-   "lines": 13
+   "note": "Odd form: if (rlmode) { printf; return; } leaves lval as it is (it is unchanged in that case). Left: place of the then part of putchar (4 lines).",
+   "lines": 4
   },
   "adrput": {
    "file": "local3.c",
@@ -436,15 +437,15 @@
    "file": "local3.c",
    "orig": "0x4534",
    "size_orig": 218,
-   "status": "open",
-   "lines": 9
+   "status": "exact",
+   "note": "Odd form: long save in the frame also without SEG, unused there."
   },
   "cbgen": {
    "file": "local3.c",
    "orig": "0x460e",
    "size_orig": 102,
-   "status": "open",
-   "lines": 28
+   "status": "exact",
+   "note": "Odd form: two unused register variables behind the parameters."
   },
   "nextcook": {
    "file": "local3.c",
@@ -508,6 +509,7 @@
    "orig": "0x49c0",
    "size_orig": 48,
    "status": "open",
+   "note": "Left: the original saves only off (ldl 2(r15),rr4) and r in r14 in a larger frame, ours all parameters: no form found.",
    "lines": 10
   },
   "sucomp": {
@@ -528,8 +530,8 @@
    "file": "order3.c",
    "orig": "0x5222",
    "size_orig": 278,
-   "status": "open",
-   "lines": 10
+   "status": "exact",
+   "note": "RET tests the types the other way round."
   },
   "orderadd": {
    "file": "order3.c",
@@ -681,6 +683,7 @@
    "orig": "0x6792",
    "size_orig": 86,
    "status": "open",
+   "note": "Left: (int)tmpoff / 8: original ld r6,%69D6; ld r3,r6; div rr2, ours through r7 and rr6; register choice, step 6.",
    "lines": 9
   },
   "allo": {
@@ -708,7 +711,8 @@
    "orig": "0x6c4e",
    "size_orig": 268,
    "status": "open",
-   "lines": 10
+   "note": "Odd form: the value in front of its test, by goto. Left: which copy of ld r14,r2 stays (4 lines).",
+   "lines": 4
   },
   "freereg": {
    "file": "allo3.c",
@@ -721,8 +725,8 @@
    "file": "allo3.c",
    "orig": "0x6e78",
    "size_orig": 130,
-   "status": "open",
-   "lines": 19
+   "status": "exact",
+   "note": "p is overwritten with the result of getlr; popt removes the store of the parameter."
   },
   "rfreenode": {
    "file": "allo3.c",
@@ -1006,7 +1010,8 @@
    "orig": "0x8a24",
    "size_orig": 210,
    "status": "open",
-   "lines": 14
+   "note": "Left: which copy of the tail of rbusy stays (11 lines).",
+   "lines": 11
   },
   "ispow2": {
    "file": "comm3.c",

@@ -1230,13 +1230,11 @@ ltypeop(p)
 /* STAR over p: a register variable or a constant (operand that needs no register) */
 int
 shtemp(p)
-	struct node *p;
+	register struct node *p;
 {
 	if (p->op == STAR)
 		p = p->left;
-	if (p->op == REG || p->op == OREG)
-		return (rstatus[p->rval] & 0x14) == 0;
-	return p->op == NAME || p->op == ICON;
+	return (p->op == REG || p->op == OREG) ? !(rstatus[p->rval] & 0x14) : (p->op == NAME || p->op == ICON);
 }
 
 /* does an increment of incr bytes on a pointer of type t step by the size of the object it points to? */
@@ -1372,24 +1370,24 @@ upput(p)
 	case NAME:
 		p->lval += 2;
 		if (p->rval < 0)
-			acon(p);
-		else {
-			r = p->rval;
-			p->rval += 2;
-			acon(p);
-			p->rval = r;
-		}
+			goto ac;
+		r = p->rval;
+		p->rval += 2;
+		acon(p);
+		p->rval = r;
 		break;
 	case ICON:
 		p->lval &= 0xFFFF;
 		putchar('#');
+	ac:
 		acon(p);
 		break;
 	case REG:
-		if (rlmode)
+		if (rlmode) {
 			printf("%s", rlnames[p->rval + 1]);
-		else
-			printf("%s", rnames[p->rval + 1]);
+			return;
+		}
+		printf("%s", rnames[p->rval + 1]);
 		break;
 	case OREG:
 		if (p->rval >= 0x100)
@@ -1554,8 +1552,8 @@ gencall(p, cookie)
 	register int indirect;
 #ifdef SEG
 	int r;
-	long save;
 #endif
+	long save;
 
 	f = p->left;
 	fop = f->op;
@@ -1595,7 +1593,7 @@ gencall(p, cookie)
 	}
 #else
 	if (indirect) {
-		if (maxoff + f->lval != 0)
+		if (maxoff + f->lval)
 			printf("\tld\tr1,~L1+%ld(fp)\n", f->lval);
 		else
 #ifdef OLD_D18
@@ -1659,10 +1657,12 @@ static char *jprtab[] = {
 /* a jump to the label lab when the relation o holds (o 0: always); mode 'F': the operands are exchanged */
 void
 cbgen(o, lab, mode)
-	int o;
-	int lab;
-	int mode;
+	register int o;
+	register int lab;
+	register int mode;
 {
+	register int spare1, spare2;
+
 #ifdef OLD_D3K
 	d3kjump(lab);
 #endif

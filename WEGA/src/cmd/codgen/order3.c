@@ -307,6 +307,20 @@ rallo(p, down)
 		down1 = NOPREF;
 		down2 = down;
 		break;
+	case ANDAND:
+	case OROR:
+	case CALL:
+	case NOT:
+	case EQ:
+	case NE:
+	case LE:
+	case LT:
+	case GE:
+	case GT:
+	case STASG:
+	case STARG:
+		down1 = NOPREF;
+		break;
 	case MUL:
 		if (p->left->type == 5 || p->left->type == 15) {
 			down1 = MUSTDO | 6;
@@ -337,20 +351,6 @@ rallo(p, down)
 			down1 = MUSTDO | (down + 1);	/* the odd half of the pair of the wanted register */
 #endif
 		break;
-	case ANDAND:
-	case OROR:
-	case CALL:
-	case NOT:
-	case EQ:
-	case NE:
-	case LE:
-	case LT:
-	case GE:
-	case GT:
-	case STASG:
-	case STARG:
-		down1 = NOPREF;
-		break;
 #ifdef OLD_D5T
 	case PLUS:
 		if ((p->rall & MUSTDO) && p->right->op == REG && p->right->rval == 15 && p->left->op == PLUS)
@@ -364,10 +364,10 @@ rallo(p, down)
 		break;
 #endif
 	case RET:
-		if (p->type == 6 || p->type == 7)
-			down1 = MUSTDO | 0x10;
-		else
+		if (p->type != 6 && p->type != 7)
 			down1 = MUSTDO | 2;
+		else
+			down1 = MUSTDO | 0x10;
 		break;
 	}
 	if (ty != 2)

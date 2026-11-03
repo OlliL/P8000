@@ -595,7 +595,7 @@ tcopy(p)
 			rbusy((r & 0xFF) - 1, 0x14, p->sname, p->lval);
 			if (r & 0xFF)
 				rbusy((r >> 8) - 1, 4, p->sname, p->lval);
-		} else if (p->lval != 0 || p->sname != 0 || (p->op == OREG ? p->stsize < 0 : 0))
+		} else if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
 			rbusy(r, 4, p->sname, p->lval);
 		else
 			rbusy(r, 0x14, p->sname, p->lval);
@@ -605,6 +605,7 @@ tcopy(p)
 		q->right = tcopy(p->right);
 	case UTYPE:
 		q->left = tcopy(p->left);
+		break;
 	}
 	return q;
 }
