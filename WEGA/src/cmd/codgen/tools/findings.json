@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "4a54ee15",
+ "measured_at": "8778df3d",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -821,7 +821,7 @@
    "size_orig": 832,
    "status": "open",
    "note": "Left: block order of popt (OLDCC_LOG 2026-11-03); the content agrees.",
-   "lines": 170
+   "lines": 186
   },
   "rsreturn": {
    "file": "regallo3.c",

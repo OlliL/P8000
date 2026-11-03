@@ -765,6 +765,10 @@ ret:
 				} else if (n->cls != 2)
 					continue;
 				w = newnode(n, 1);
+				if (reg != -1 && reg != w->reg) {
+					n->reg--;
+					w->reg++;
+				}
 				break;
 			case 6:
 				if (n->cls != 7)
@@ -772,6 +776,10 @@ ret:
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
 				w = newnode(n, 6);
+				if (reg != -1 && reg != w->reg) {
+					n->reg--;
+					w->reg++;
+				}
 				break;
 			case 2:
 				if (n->cls != 3)
@@ -779,11 +787,11 @@ ret:
 				if (reg != -1 && !roverlap(cls, reg, n))
 					continue;
 				w = newnode(n, 2);
+				if (reg != -1 && reg != w->reg) {
+					n->reg--;
+					w->reg++;
+				}
 				break;
-			}
-			if (reg != -1 && reg != w->reg) {
-				n->reg--;
-				w->reg++;
 			}
 			rsinsert(n, 1);
 			n = w;
