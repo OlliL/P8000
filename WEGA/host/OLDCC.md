@@ -543,7 +543,7 @@ The original has `call` and `jp` where the shipped chain has `calr` and `jr`, fo
 - When an entry would be made behind 255 entries (`OLD_ENTMAX`; 254 and 256 give errors): only in functions too long for the first rule, yylex, rmove.
 - A forward jump does not count a jpr that stands at its label (`>`, the shipped cas has `>=`): acon, one place.
 
-The rule was found on cparse and popt and holds on codgen and cpp without any change: fixed on cparse and popt, K 174..179; on codgen and cpp no site wrong at K 177..179. dc of 07/82, from the System III source and not exact: 45 wrong forms without the rule, 5 with it.
+The rule was found on cparse and popt and holds on codgen and cpp without any change: fixed on cparse and popt, K 174..179; on codgen and cpp no site wrong at K 177..179. dc of 07/82, from the System III source and not exact, split into two files in front of add0 as the rule asks (WEGA has dc1.c, dc2.c): 1 wrong form of 1448 aligned jumps and calls; 45 without the rule in one file.
 
 Why a limit at 176..179 and why at a `{` is not known. The two conditions of the manual (`.=` and a difference of labels with a jump between them) are not modelled: the shipped cas and the ZEUS cas do not have them, `.=` stands in the data section in all inputs and no difference occurs, so no point depends on them.
 
