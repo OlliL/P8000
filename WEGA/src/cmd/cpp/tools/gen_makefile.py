@@ -33,8 +33,8 @@ def main():
     libc = []
     for k, n, v in rows:
         libc.append('shipped/%s.o' % n if k == 'shipped' else '$(OLD)/%s/%s.o' % (n, v))
-    mk = '''# cpp: the C preprocessor of WEGA (/lib/cpp, SCCS cpp.c 1.5, cpy.y 1.2, yylex.c 1.1), reconstructed after the cpp of cmd/cc
-# in the Plexus tree. /lib/cpp is a combined program (code and data together, no -i).
+    mk = '''# cpp: the C preprocessor of WEGA (/lib/cpp, SCCS cpp.c 1.5, cpy.y 1.2, yylex.c 1.1), reconstructed after the cpp of
+# System III (cmd/cc/vax/cpp). /lib/cpp is a combined program (code and data together, no -i).
 #
 #   make             cpp: crt0, the own code, the libc part: the shipped members (ar x from /lib/libc.a) and the old modules
 #                    (cas -u of ../../lib/oldlibc), in the link order of /lib/cpp (tools/cpp.link, tools/cpp.spec)

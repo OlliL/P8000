@@ -1,4 +1,3 @@
-
 %term number stop DEFINED
 %term EQ NE LE GE LS RS
 %term ANDAND OROR
@@ -80,4 +79,3 @@ term:
 %%
 static char Sccsid[] = "@[$]cpy.y\t1.2  10/13/82 18:47:37 Copr.1981 87wega3.2.";
 # include "yylex.c"
-

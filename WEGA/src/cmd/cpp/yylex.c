@@ -1,9 +1,7 @@
 static char sccsid_yy[] = "@[$]yylex.c\t1.1  10/13/82 19:13:59 Copr.1981 87wega3.2.";
-
 #define isid(a)  ((fastab+COFF)[a]&IB)
 #define IB 1
 /*	#if '\377' < 0		it would be nice if this worked properly!!!!! */
-
 #if pdp11 | vax | z8000
 #define COFF 128
 #else

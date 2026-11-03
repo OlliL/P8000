@@ -1,178 +1,137 @@
 {
- "schema": "functions: name -> file, orig, size_orig, status (exact, masked, open; written by host/recon/findings.py), lines, note (by hand: an open difference, an odd form, a guessed name, dead code). Which switch a function needs: host/OLDCC_SWITCHES.md.",
+ "schema": "functions: name -> file, orig, size_orig, status (exact, masked, open; written by host/recon/findings.py), lines, note (by hand).",
  "compiler": "ccv0p",
  "binary": "/lib/cpp",
  "functions": {
   "sayline": {
    "file": "cpp.c",
    "orig": "0x002a",
-   "size_orig": 76,
-   "note": "WEGA: option -B writes the second form \\tLINE.",
-   "status": "exact"
+   "size_orig": 76
   },
   "dump": {
    "file": "cpp.c",
    "orig": "0x0076",
-   "size_orig": 94,
-   "note": "Form: if (putc(*p1,f) != *p1); p1++; the original compares the value of putc and ignores the result.",
-   "status": "exact"
+   "size_orig": 94
   },
   "refill": {
    "file": "cpp.c",
    "orig": "0x00d4",
-   "size_orig": 480,
-   "status": "exact"
+   "size_orig": 480
   },
   "cotoken": {
    "file": "cpp.c",
    "orig": "0x02b4",
-   "size_orig": 1332,
-   "status": "masked",
-   "lines": 2
+   "size_orig": 1332
   },
   "skipbl": {
    "file": "cpp.c",
    "orig": "0x07e8",
-   "size_orig": 48,
-   "status": "exact"
+   "size_orig": 48
   },
   "unfill": {
    "file": "cpp.c",
    "orig": "0x0818",
-   "size_orig": 308,
-   "status": "masked",
-   "lines": 6
+   "size_orig": 308
   },
   "doincl": {
    "file": "cpp.c",
    "orig": "0x094c",
-   "size_orig": 550,
-   "status": "masked",
-   "lines": 10
+   "size_orig": 550
   },
   "equfrm": {
    "file": "cpp.c",
    "orig": "0x0b72",
-   "size_orig": 60,
-   "status": "exact"
+   "size_orig": 60
   },
   "dodef": {
    "file": "cpp.c",
    "orig": "0x0bae",
-   "size_orig": 1002,
-   "note": "Left: the order of lda and dec in formal<=(--qf, qf); the original has the address of formal first (4 lines). The comma form is the nearest found; --qf>=formal, formal<= --qf and qf -= 1 give 10.",
-   "status": "open",
-   "lines": 4
+   "size_orig": 1002
   },
   "control": {
    "file": "cpp.c",
    "orig": "0x0f98",
-   "size_orig": 574,
-   "note": "WEGA: a line directive becomes a comment.",
-   "status": "masked",
-   "lines": 10
+   "size_orig": 574
   },
   "stsym": {
    "file": "cpp.c",
    "orig": "0x11d6",
-   "size_orig": 138,
-   "status": "exact"
+   "size_orig": 138
   },
   "ppsym": {
    "file": "cpp.c",
    "orig": "0x1260",
-   "size_orig": 52,
-   "status": "exact"
+   "size_orig": 52
   },
   "pperror": {
    "file": "cpp.c",
    "orig": "0x1294",
-   "size_orig": 106,
-   "status": "exact"
+   "size_orig": 106
   },
   "yyerror": {
    "file": "cpy.c",
    "orig": "0x12fe",
-   "size_orig": 26,
-   "status": "exact"
+   "size_orig": 26
   },
   "ppwarn": {
    "file": "cpp.c",
    "orig": "0x1318",
-   "size_orig": 42,
-   "status": "exact"
+   "size_orig": 42
   },
   "lookup": {
    "file": "cpp.c",
    "orig": "0x1342",
-   "size_orig": 202,
-   "status": "exact"
+   "size_orig": 202
   },
   "slookup": {
    "file": "cpp.c",
    "orig": "0x140c",
-   "size_orig": 134,
-   "note": "Left: test 0(r15), ours test r5: the parameter is known in its register in ours at the second if.",
-   "status": "open",
-   "lines": 2
+   "size_orig": 134
   },
   "subst": {
    "file": "cpp.c",
    "orig": "0x1492",
-   "size_orig": 640,
-   "note": "Left: ld r2,0(r15), ours ld r2,r6, twice. No form found; the original reads the parameter from the frame from the first use.",
-   "status": "open",
-   "lines": 4
+   "size_orig": 640
   },
   "trmdir": {
    "file": "cpp.c",
    "orig": "0x1712",
-   "size_orig": 48,
-   "status": "exact"
+   "size_orig": 48
   },
   "copy": {
    "file": "cpp.c",
    "orig": "0x1742",
-   "size_orig": 34,
-   "status": "exact"
+   "size_orig": 34
   },
   "strdex": {
    "file": "cpp.c",
    "orig": "0x1764",
-   "size_orig": 42,
-   "status": "exact"
+   "size_orig": 42
   },
   "yywrap": {
    "file": "cpp.c",
    "orig": "0x178e",
-   "size_orig": 4,
-   "status": "exact"
+   "size_orig": 4
   },
   "main": {
    "file": "cpp.c",
    "orig": "0x1792",
-   "size_orig": 1180,
-   "status": "exact"
+   "size_orig": 1180
   },
   "yylex": {
    "file": "cpy.c",
    "orig": "0x1c2e",
-   "size_orig": 556,
-   "status": "exact"
+   "size_orig": 556
   },
   "tobinary": {
    "file": "cpy.c",
    "orig": "0x1e5a",
-   "size_orig": 184,
-   "status": "exact"
+   "size_orig": 184
   },
   "yyparse": {
    "file": "cpy.c",
    "orig": "0x1f12",
-   "size_orig": 864,
-   "status": "exact"
+   "size_orig": 864
   }
- },
- "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "66262fd1"
+ }
 }

@@ -21,7 +21,7 @@ static char sccsid[] = "@[$]cpp.c\t1.5  12/10/82 10:36:07 Copr.1981 87wega3.2.";
 
 /* some code depends on whether characters are sign or zero extended */
 /*	#if '\377' < 0		not used here, old cpp doesn't understand */
-#if pdp11 | vax | z8000 | m68
+#if pdp11 | vax | z8000
 #define COFF 128
 #else
 #define COFF 0
@@ -1143,14 +1143,8 @@ main(argc,argv)
 # if RES
 	varloc=stsym ("RES");
 # endif
-# if plexus
-	varloc=stsym ("plexus");
-# endif
 # if z8000
 	varloc=stsym ("z8000");
-# endif
-# if m68
-	varloc=stsym ("m68");
 # endif
 	ulnloc=stsym ("__LINE__");
 	uflloc=stsym ("__FILE__");
