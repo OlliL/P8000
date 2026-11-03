@@ -86,7 +86,12 @@ char	*popt		= SEG("/lib/popt", "/lib/spopt");
 #endif
 #endif
 char	*clist		= "/lib/clist";
+#if defined(OLD_V0) || defined(OLD_V0P)
+/* v0 and v0p: the assembler with the early jump optimization (../cas/old) */
+char	*cas		= "/lib/old/cas";
+#else
 char	*cas		= "/bin/cas";
+#endif
 char	*ld		= SEG("/bin/ld", "/bin/sld");
 char	*fpf		= "/z/bin/lib/fpf";
 char	*fpe		= SEG("/z/bin/lib/fpe.o", "/z/bin/lib/sfpe.o");

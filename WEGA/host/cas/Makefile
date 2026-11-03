@@ -18,13 +18,25 @@ OBJS = main.o error.o ifile.o getops.o instr.o scanner.o nodes.o parser.o pst.o 
 	ssymtab.o table1.o table2.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o pstab.o \
 	jpr.o jpr2.o optim.o listing.o
 
-all: cas
+all: cas casold
 
 cas: $(OBJS)
 	$(HOSTCC) $(CFLAGS) -o $@ $(OBJS)
 
 %.o: %.c cas.h
 	$(HOSTCC) $(CFLAGS) -c -o $@ $<
+
+# parser.c is kept in the repository (mkparser.sh): no rule of make may overwrite it with bison
+%.c: %.y
+
+# casold: the early jump optimization of the old cas (../OLDCC.md, D17)
+OLDOBJS = $(filter-out jpr.o ssymtab.o optim.o,$(OBJS)) jpr_old.o ssymtab_old.o optim_old.o
+
+casold: $(OLDOBJS)
+	$(HOSTCC) $(CFLAGS) -o $@ $(OLDOBJS)
+
+%_old.o: %.c cas.h
+	$(HOSTCC) $(CFLAGS) -DOLD_CAS -c -o $@ $<
 
 parser:
 	WEGA=$(abspath $(WEGA)) EMU=$(EMU) sh mkparser.sh

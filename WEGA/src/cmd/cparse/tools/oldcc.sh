@@ -54,7 +54,8 @@ model)
 	printf '#!/bin/sh\nexec %s -r %s /bin/ccv0p "$@"\n' $EMU $OLDROOT > $RECON_TMP/ccv0pw
 	chmod +x $RECON_TMP/ccv0pw
 	cd $REPO/src/cmd/$prog || exit 1
-	CCHOST=$RECON_TMP/ccv0pw python3 tools/d12model.py -q 2>&1 | tail -2
+	make -s -C $REPO/host/cas casold
+	CAS=${CAS:-$REPO/host/cas/casold} CCHOST=$RECON_TMP/ccv0pw python3 tools/d12model.py -q 2>&1 | tail -2
 	python3 tools/strictcmp.py > $RECON_TMP/oldcc_model_$prog.txt 2>&1
 	[ "$prog" = cparse ] && cp $RECON_TMP/oldcc_model_$prog.txt $RECON_TMP/oldcc_model.txt
 	tail -1 $RECON_TMP/oldcc_model_$prog.txt

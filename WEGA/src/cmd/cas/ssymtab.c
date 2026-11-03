@@ -223,6 +223,10 @@ unsigned char mode;
 /* { */
 blkopen()
 {
+#ifdef OLD_CAS
+	if (lcaux[cursec][cursub].la_0 >= OLD_ENTBLK)
+		earlyopt();
+#endif
 	if (blklevel == 10)
 		error(2, "Nesting too deep\n");
 	else

@@ -139,3 +139,8 @@ struct jent {				/* an undecided jpr in the itable (jpr.c, jpr2.c): 14 bytes */
 extern struct pbucket pbuckets[];
 extern struct irow itab1[];
 extern struct pst pst[];
+
+#ifdef OLD_CAS
+#define OLD_ENTBLK	178	/* 176 ... 179 fit the originals */
+#define OLD_ENTMAX	255
+#endif

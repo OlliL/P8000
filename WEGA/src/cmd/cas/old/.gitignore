@@ -1,0 +1,5 @@
+*.o
+*.c
+*.h
+parser.y
+cas

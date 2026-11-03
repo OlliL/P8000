@@ -299,3 +299,28 @@ jsymadj(int sub, int sec)
 			i += 10;
 	}
 }
+
+#ifdef OLD_CAS
+/*
+ * The old cas (host/OLDCC.md, D17) makes the jpr of a location counter decide before the end of the first pass:
+ * at a { with OLD_ENTBLK entries or more, and when an entry would be the one behind OLD_ENTMAX. A jump to a
+ * label not defined yet becomes long; the labels count their entries from zero again.
+ */
+void
+earlyopt(void)
+{
+	unsigned k;
+	struct sym *sp;
+
+	optim(cursub, cursec);
+	for (k = 2; k < stoff; ) {
+		sp = stabp(k);
+		if (sp->s_type == 1 && (sp->s_7 & 1) == 1)
+			sp->s_0 = 0;
+		if ((sp->s_7 & 6) == 6 || (sp->s_7 & 8) == 8)
+			k += 16;
+		else
+			k += 10;
+	}
+}
+#endif

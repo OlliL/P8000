@@ -101,6 +101,7 @@ oldroot:
 	  $(MAKE) -C $(SRC)/$$p old $(WTOOLS) LDBIN='$(WEMU) /bin/ld' CRT0=$(WEGAABS)/lib/crt0.o || exit 1; \
 	  for v in v1 v0 v0p; do $(MAKE) -C $(SRC)/$$p/$$v install PREFIX=$(OLDROOTABS) $(WTOOLS) LDBIN='$(WEMU) /bin/ld' || exit 1; done; \
 	done
+	$(MAKE) -C $(SRC)/cas/old install PREFIX=$(OLDROOTABS) $(WTOOLS)
 
 clean:
 	$(MAKE) -C cc clean

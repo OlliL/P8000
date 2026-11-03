@@ -86,6 +86,10 @@ long off;
 {
 	register struct jent *p;
 
+#ifdef OLD_CAS
+	if (lcaux[cursec][cursub].la_0 >= OLD_ENTMAX)
+		earlyopt();
+#endif
 	p = (struct jent *)italloc(14);
 	p->j_0 = (cursec << 8) & cursub;
 	p->j_2 = (int)lctab[cursec][cursub];

@@ -113,6 +113,12 @@ struct lcaux {				/* a pair per location counter (jpr.c, optim.c) */
 	int16_t	la_1;
 };
 
+#ifdef OLD_CAS
+#define OLD_ENTBLK	178	/* 176 ... 179 fit the originals */
+#define OLD_ENTMAX	255
+void earlyopt(void);
+#endif
+
 /* the value of the last token is yylval (YYSTYPE, the %union of parser.y: y.tab.h) */
 
 /* nodes.c */
