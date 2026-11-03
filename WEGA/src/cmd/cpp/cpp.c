@@ -18,10 +18,6 @@ static char sccsid[] = "@[$]cpp.c\t1.5  12/10/82 10:36:07 Copr.1981 87wega3.2.";
 #define BUFSIZ 512
 #endif
 
-char *pbeg,*pbuf,*pend;
-char *outp,*inp;
-char *newp;
-char cinit;
 
 /* some code depends on whether characters are sign or zero extended */
 /*	#if '\377' < 0		not used here, old cpp doesn't understand */
@@ -36,8 +32,6 @@ char cinit;
 # else
 #define ALFSIZ 256	/* alphabet size */
 # endif
-char macbit[ALFSIZ+11];
-char toktyp[ALFSIZ];
 #define BLANK 1
 #define IDENT 2
 #define NUMBR 3
@@ -84,9 +78,6 @@ char t21[ALFSIZ],t22[ALFSIZ],t23[ALFSIZ+8];
 #define CB 8
 #define QB 16
 #define WB 32
-char fastab[ALFSIZ];
-char slotab[ALFSIZ];
-char *ptrtab;
 #define isslo (ptrtab==(slotab+COFF))
 #define isid(a)  ((fastab+COFF)[a]&IB)
 #define isspc(a) (ptrtab[a]&SB)
@@ -98,14 +89,12 @@ char *ptrtab;
 #define eob(a) ((a)>=pend)
 #define bob(a) (pbeg>=(a))
 
-char buffer[8+BUFSIZ+BUFSIZ+8];
-char _sobuf[BUFSIZ];
 
 # define SBSIZE 16000
-char	sbf[SBSIZE];
+extern char sbf[];
 char	*savch	= sbf;
 
-# define DROP '\376' /* special character not legal ASCII or EBCDIC */
+# define DROP 0376 /* special character not legal ASCII or EBCDIC */
 # define WARN DROP
 # define SAME 0
 # define MAXINC 10
@@ -114,49 +103,29 @@ char	*savch	= sbf;
 
 static char warnc = WARN;
 
-int mactop,fretop;
-char *instack[MAXFRE],*bufstack[MAXFRE],*endbuf[MAXFRE];
 
-int plvl;	/* parenthesis level during scan for macro actuals */
-int maclin;	/* line number of macro call requiring actuals */
-char *macfil;	/* file name of macro call requiring actuals */
-char *macnam;	/* name of macro requiring actuals */
-int maclvl;	/* # calls since last decrease in nesting level */
-char *macforw;	/* pointer which must be exceeded to decrease nesting level */
-int macdam;	/* offset to macforw due to buffer shifting */
 
 #if tgp
 int tgpscan;	/* flag for dump(); */
 #endif
 
-STATIC	int	inctop[MAXINC];
-STATIC	char	*fnames[MAXINC];
-STATIC	char	*dirnams[MAXINC];	/* actual directory of #include files */
-STATIC	int	fins[MAXINC];
-STATIC	int	lineno[MAXINC];
 
-STATIC	char	*dirs[10];	/* -I and <> directories */
 char *strdex(), *copy(), *subst(), *trmdir();
 struct symtab *stsym();
 STATIC	int	fin	= STDIN;
 STATIC	FILE	*fout	= stdout;
 STATIC	int	nd	= 1;
+STATIC	int	sayflag	= 0;	/* WEGA: an escaped newline in a quotation: sayline at the next line */
 STATIC	int	bflag	= 0;	/* WEGA: the lines in the form of LINE */
-STATIC	int	exfail2	= 0;
-STATIC	int	pflag;	/* don't put out lines "# 12 foo.c" */
-STATIC	int	passcom;	/* don't delete comments */
-STATIC	int rflag;	/* allow macro recursion */
-STATIC	int	ifno;
 # define NPREDEF 20
-STATIC	char *prespc[NPREDEF];
+extern char *prespc[];
 STATIC	char **predef = prespc;
-STATIC	char *punspc[NPREDEF];
+extern char *punspc[];
 STATIC	char **prund = punspc;
-STATIC	int	exfail;
 struct symtab {
 	char	*name;
 	char	*value;
-} *lastsym, *lookup(), *slookup();
+} *lookup(), *slookup();
 
 # if gcos
 #include <unixio.h>
@@ -173,23 +142,59 @@ static jmp_buf env;
 # define LINEFORM	"# %d \"%s\"\n"
 # define ERRFORM	"*%c*   \"%s\", line "
 # endif
-STATIC	struct symtab stab[symsiz];
 
-STATIC	struct symtab *defloc;
-STATIC	struct symtab *udfloc;
-STATIC	struct symtab *incloc;
-STATIC	struct symtab *ifloc;
-STATIC	struct symtab *elsloc;
-STATIC	struct symtab *eifloc;
-STATIC	struct symtab *ifdloc;
-STATIC	struct symtab *ifnloc;
-STATIC	struct symtab *ysysloc;
-STATIC	struct symtab *varloc;
-STATIC	struct symtab *lneloc;
-STATIC	struct symtab *ulnloc;
-STATIC	struct symtab *uflloc;
-STATIC	int	trulvl;
-STATIC	int	flslvl;
+
+/* the common data, in the order of the original */
+struct symtab *defloc, *eifloc;
+int passcom;	/* don't delete comments */
+struct symtab *varloc;
+char *prespc[NPREDEF];
+char *newp, *pbuf;
+struct symtab stab[symsiz];
+char *outp;
+char *endbuf[MAXFRE];
+int exfail;
+int maclvl;	/* # calls since last decrease in nesting level */
+char cinit;
+char *pbeg;
+char toktyp[ALFSIZ];
+int ifno;
+struct symtab *ifdloc;
+char *dirnams[MAXINC];	/* actual directory of #include files */
+struct symtab *incloc, *ifnloc, *uflloc;
+int macdam;	/* offset to macforw due to buffer shifting */
+int plvl;	/* parenthesis level during scan for macro actuals */
+struct symtab *lneloc;
+int maclin;	/* line number of macro call requiring actuals */
+char buffer[8+BUFSIZ+BUFSIZ+8];
+int rflag;	/* allow macro recursion */
+int fins[MAXINC];
+int pflag;	/* don't put out lines "# 12 foo.c" */
+int trulvl;
+char _sobuf[BUFSIZ];
+char *dirs[10];	/* -I and <> directories */
+char *macforw;	/* pointer which must be exceeded to decrease nesting level */
+char *fnames[MAXINC];
+char *bufstack[MAXFRE], *instack[MAXFRE];
+char *pend;
+struct symtab *ysysloc;
+char *inp;
+char sbf[SBSIZE];
+char macbit[ALFSIZ+11];
+char *macfil;	/* file name of macro call requiring actuals */
+int mactop;
+char slotab[ALFSIZ];
+char *ptrtab;
+char *macnam;	/* name of macro requiring actuals */
+struct symtab *udfloc, *elsloc, *ulnloc;
+char *punspc[NPREDEF];
+int lineno[MAXINC];
+struct symtab *lastsym;
+char fastab[ALFSIZ];
+int inctop[MAXINC];
+int fretop;
+struct symtab *ifloc;
+int flslvl;
 
 sayline() {
 	if (pflag==0)
@@ -288,7 +293,7 @@ dump() {
 	}
 }
 # endif
-	while (p1<inp) putc(*p1++,f);
+	while (p1<inp) { if (putc(*p1,f) != *p1); p1++; }
 	outp=p1;
 }
 
@@ -416,7 +421,7 @@ again:
 			if (p[-1]==quoc) break;
 			if (p[-1]=='\n') {--p; break;} /* bare \n terminates quotation */
 			if (p[-1]=='\\') for (;;) {
-				if (*p++=='\n') {++lineno[ifno]; break;} /* escaped \n ignored */
+				if (*p++=='\n') {++lineno[ifno]; sayflag=1; break;} /* escaped \n ignored */
 				if (eob(--p)) p=refill(p);
 				else {++p; break;}
 			} else if (eob(--p)) p=refill(p);
@@ -427,6 +432,7 @@ again:
 		++lineno[ifno]; if (isslo) {state=LF; return(p);}
 prevlf:
 		state=BEG;
+		if (sayflag) {inp=p; dump(); sayline(); sayflag=0;}
 		for (;;) {
 			if (*p++=='#') return(p);
 			if (eob(inp= --p)) p=refill(p);
@@ -540,7 +546,6 @@ doincl(p) register char *p; {
 	p=skipbl(p); cp=filname;
 	if (*inp++=='<') {/* special <> syntax */
 		inctype=1;
-		++flslvl;	/* prevent macro expansion */
 		for (;;) {
 			outp=inp=p; p=cotoken(p);
 			if (*inp=='\n') {--p; *cp='\0'; break;}
@@ -550,7 +555,6 @@ doincl(p) register char *p; {
 # endif
 			while (inp<p) *cp++= *inp++;
 		}
-		--flslvl;	/* reenable macro expansion */
 	} else if (inp[-1]=='"') {/* regular "" syntax */
 		inctype=0;
 # ifdef gimpel
@@ -664,7 +668,7 @@ dodef(p) char *p; {/* process '#define' */
 		if (*pin=='\n') break;
 		if (params) {/* mark the appearance of formals in the definiton */
 			if ((toktyp+COFF)[*pin]==IDENT) {
-				for (qf=pf; --qf>=formal; ) {
+				for (qf=pf; formal<=(--qf, qf); ) {
 					if (equfrm(*qf,pin,p)) {
 						*psav++=qf-formal+1; *psav++=WARN; pin=p; break;
 					}
@@ -678,7 +682,7 @@ dodef(p) char *p; {/* process '#define' */
 				for (*psav++= *pin++; pin<p && *pin!=quoc; ) {
 					while (pin<p && !isid(*pin)) *psav++= *pin++;
 					cf=pin; while (cf<p && isid(*cf)) ++cf;
-					for (qf=pf; --qf>=formal; ) {
+					for (qf=pf; formal<=(--qf, qf); ) {
 						if (equfrm(*qf,pin,cf)) {
 							*psav++=qf-formal+1; *psav++=WARN; pin=cf; break;
 						}
@@ -687,7 +691,10 @@ dodef(p) char *p; {/* process '#define' */
 				}
 			}
 		}
-		while (pin<p) *psav++= *pin++;
+		while (pin<p) {
+			if (pin+1<p && *pin=='\\' && pin[1]=='\n') pin=pin+2;	/* ignore escaped lf */
+			*psav++= *pin++;
+		}
 	}
 	*psav++=params; *psav++='\0';
 	if ((cf=oldval)!=NULL) {/* redefinition */
@@ -749,7 +756,7 @@ for (;;) {
 #endif
 	} else if (np==lneloc) {/* line */
 		if (flslvl==0 && pflag==0) {
-			inp=p; outp=p-7; strncpy(outp,"/* line",7); while (*inp!='\n') p=cotoken(p);
+			inp=p; outp=p-7; strncpy(outp,"/* line",7); dump(); while (*inp!='\n') p=cotoken(p);
 			dump(); outp-=3; strncpy(outp," */",3);
 			continue;
 		}
@@ -829,7 +836,7 @@ char *namep;
 			if (around) {pperror("too many defines", 0); exit(exfail);}
 			else {++around; sp = &stab[symsiz-1];}
 	}
-	if (enterf==1) sp->name=namep;
+	if (enterf>0) sp->name=namep;
 	return(lastsym=sp);
 }
 
@@ -839,7 +846,7 @@ slookup(p1,p2,enterf) register char *p1,*p2; int enterf;{
 	         c2= *p2; *p2='\0';	/* mark end of token */
 	if ((p2-p1)>8) p3=p1+8; else p3=p2;
 			 c3= *p3; *p3='\0';	/* truncate to 8 chars or less */
-	if (enterf==1) p1=copy(p1);
+	if (enterf) p1=copy(p1);
 	np=lookup(p1,enterf); *p3=c3; *p2=c2;
 	if (np->value!=0 && flslvl==0) newp=subst(p2,np);
 	else newp=0;
@@ -875,9 +882,9 @@ subst(p,sp) register char *p; struct symtab *sp; {
 		if (params==0xFF) params=1;	/* #define foo() ... */
 		sloscan(); ++flslvl; /* no expansion during search for actuals */
 		plvl= -1;
-		maclin=lineno[ifno]; macfil=fnames[ifno];
 		do p=skipbl(p); while (*inp=='\n');	/* skip \n too */
 		if (*inp=='(') {
+			maclin=lineno[ifno]; macfil=fnames[ifno];
 			for (plvl=1; plvl!=0; ) {
 				*ca++='\0';
 				for (;;) {
@@ -892,15 +899,6 @@ subst(p,sp) register char *p; struct symtab *sp; {
 				if (pa>= &actual[MAXFRM]) ppwarn(match,sp->name);
 				else *pa++=ca;
 			}
-		}
-		if (maclin!=lineno[ifno]) {/* embedded linefeeds in macro call */
-			int i,j=lineno[ifno];
-			for (i=sizeof(int)/sizeof(char); --i>=0; ) {
-				if (bob(p)) {outp=inp=p; p=unfill(p);}
-				*--p=j; j>>=8;
-			}
-			if (bob(p)) {outp=inp=p; p=unfill(p);}
-			*--p= warnc;
 		}
 		if (params!=0) ppwarn(match,sp->name);
 		while (--params>=0) *pa++=""+1;	/* null string for missing actuals */
@@ -947,7 +945,7 @@ copy(s) register char *s; {
 
 char *
 strdex(s,c) char *s,c; {
-	while (*s) if (*s++==c) return(--s);
+	while (*s) if (*s++==c) {--s; return(s);}
 	return(0);
 }
 

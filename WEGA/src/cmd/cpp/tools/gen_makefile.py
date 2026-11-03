@@ -78,7 +78,9 @@ cpy.o: cpy.c yylex.c
 
 cpy.c: cpy.y
 	$(YACC) cpy.y
-	mv y.tab.c cpy.c
+	sed -e 's/^YYSTYPE yylval, yyval;/extern YYSTYPE yylval; YYSTYPE yyval;/' -e 's/^\\(YYSTYPE yyv\\[.*\\)$$/\\1\\
+YYSTYPE yylval;/' y.tab.c > cpy.c
+	rm -f y.tab.c
 
 crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
 	sh $(CRT)/mkcrt0.sh cpp > $@

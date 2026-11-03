@@ -87,6 +87,17 @@ def main():
         def n_orig(t): return zcode.norm_strict(t, both_fn, d18=d18, callform=callform)
     orig_names = {int(f['orig'], 16): k for k, f in fn.items()}
     ours_names = {x['value']: x['name'][1:] for x in o.symbols if x['type'] == 34 and x['name'][1:] in fn}
+    if getattr(CFG, 'COMBINED', False):
+        # a combined program: the data follows the code, so a call that the old cas wrote long (D17) moves all data
+        # addresses. The data addresses of the model are compared as if its code had the size of the original's.
+        delta = g.segs[0]['code'] - o.segs[0]['code']
+        lim = o.segs[0]['code']
+        top = lim + o.segs[0]['data'] + o.segs[0]['bss']
+        plain = n_ours
+
+        def n_ours(t):
+            return plain(re.sub(r'%([0-9A-F]{4})\b', lambda m: '%%%04X' % (int(m.group(1), 16) + delta)
+                                if lim <= int(m.group(1), 16) < top else m.group(0), t))
     same = diff = 0
     for name, f in sorted(fn.items(), key=lambda x: int(x[1]['orig'], 16)):
         if f.get('status') == 'crt0':
