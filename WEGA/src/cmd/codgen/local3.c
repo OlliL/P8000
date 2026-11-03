@@ -238,12 +238,13 @@ funcend(a, b)
 void
 efcode()
 {
-	long sz, w;
-	int a, b, tot;
+	register int a, b, tot;
+	register long sz;
+	long w;
 
 	sz = (parmax + maxoff) / 8;
 	if (sz % 2)
-		sz = (sz / 2 + 1) * 2;
+		sz = (sz / 2 + 1) << 1;
 #ifdef SEG
 	a = 13 - minreg;
 #else
@@ -253,7 +254,7 @@ efcode()
 	w = a * 2 + sz;
 	tot = b * 8 + w;
 	epilog(a, sz, b, w, tot);
-	prolog(a, sz, tot, w, tot);
+	prolog(a, sz, tot);
 }
 
 /* the exit of the function: the label, the registers back, ret */
@@ -1723,11 +1724,9 @@ canon2(p)
 /* the SPECIAL shapes: small constants and powers of two */
 int
 special(p, shape)
-	struct node *p;
+	register struct node *p;
 	int shape;
 {
-	long v;
-
 	if (p->op != ICON)
 		return 0;
 	if (p->sname) {
@@ -1737,22 +1736,27 @@ special(p, shape)
 	}
 	if (p->rval < 0)
 		return 0;
-	v = p->lval;
 	switch (shape) {
-	case SPECIAL + 1: return v >= 0 && v <= 15;
-	case SPECIAL + 2: return v >= -16 && v <= 16;
-	case SPECIAL + 3: return v >= -256 && v <= 255;
+	case SPECIAL + 1:
+		return p->lval >= 0 && p->lval <= 15;
+	case SPECIAL + 2:
+		return p->lval >= -16 && p->lval <= 16;
+	case SPECIAL + 3:
+		return p->lval >= -256 && p->lval <= 255;
 	case SPECIAL + 5:
 		if (!plainicon(p))
 			return 0;
 		/* FALLTHROUGH */
-	case SPECIAL + 4: return v >= -32768 && v <= 32767;
-	case SPECIAL + 6: return ispow2(v) >= 0;
-	case SPECIAL + 7: return ispow2(~v) >= 0;
-	case SPECIAL + 8: return 0;
+	case SPECIAL + 4:
+		return p->lval >= -32768 && p->lval <= 32767;
+	case SPECIAL + 6:
+		return ispow2(p->lval) >= 0;
+	case SPECIAL + 7:
+		return ispow2(~p->lval) >= 0;
+	case SPECIAL + 8:
+		return 0;
 	}
 	cerror("bad special shape: SPECIAL | %%%0.2x", shape - SPECIAL);
-	return 0;
 }
 
 

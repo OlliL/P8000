@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "620899d9",
+ "measured_at": "fd044f72",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -271,9 +271,9 @@
    "file": "local3.c",
    "orig": "0x28f6",
    "size_orig": 154,
-   "note": "Old hint, measured against the shipped cc, may be stale: the same divisions (divl by 8 and by 2) in both; the multiplication by 2 is sdal with a register count in the original and slal #1 in ours (long shift form, D10); register and spill differ (D2, D4).",
+   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them. Left: the original computes parmax + maxoff in rr2 and moves it to rr6, ours in rr6 (step 6).",
    "status": "open",
-   "lines": 50
+   "lines": 5
   },
   "epilog": {
    "file": "local3.c",
@@ -472,7 +472,8 @@
    "orig": "0x471a",
    "size_orig": 234,
    "status": "open",
-   "lines": 46
+   "note": "Left: sub r2,#%8001 at the head of the switch, ours add r2,#%7FFF: literal, long and unsigned case constants do not change it (step 6).",
+   "lines": 2
   },
   "mycanon": {
    "file": "local3.c",
@@ -709,9 +710,8 @@
    "file": "allo3.c",
    "orig": "0x6d5a",
    "size_orig": 286,
-   "note": "Old hint, measured against the shipped cc, may be stale: Round of review: unexplained 0. Original: loop body of the first for loop, then the found block (rfree, rclass, getreg), then the second cookie test; ours: found block at the end of the function. Not changed in the source.",
-   "status": "open",
-   "lines": 89
+   "note": "Odd form: the found code inside the first loop, the second loop tests at the top with a return inside.",
+   "status": "exact"
   },
   "usable": {
    "file": "allo3.c",

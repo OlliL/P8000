@@ -491,34 +491,37 @@ freereg(p, r, cookie)
 	spare = q->right;
 	ty = p->type;
 	sym = p->sname;
-	if (r != -1) {
-		if (usable(p, side, r) <= 0)
-			return -1;
-		rfree(r, ty);
-		cls = rclass(ty, r);
-		return getreg(cls, r, 0x1000, sym);
-	}
-	if (cookie & 04 | 010) {
-		for (reg = 0; reg <= 7; reg++)
-			if (usable(p, side, reg) > 0)
-				goto found;
-	} else if (cookie & 0100 | 0200) {
-		for (reg = 0x10; reg <= 0x13; reg++)
-			if (usable(p, side, reg) > 0)
-				goto found;
-	}
-	return -1;
-found:
+	if (r == -1) {
+		if (cookie & 04 | 010) {
+			for (reg = 0; reg <= 7; reg++)
+				if (usable(p, side, reg) > 0) {
+				found:
 #ifdef OLD_D2R0
-	/* v0p: an address moved out of r0 (which cannot address): the value goes back to r0 when it is free */
-	if (reg == d2r0reg && rclass(ty, reg) == 2 && d2r0free()) {
-		d2r0reg = -1;
-		return getreg(2, 0, 0x1000, sym);
-	}
+					/* v0p: an address moved out of r0 (which cannot address): the value goes back to r0 when it is free */
+					if (reg == d2r0reg && rclass(ty, reg) == 2 && d2r0free()) {
+						d2r0reg = -1;
+						return getreg(2, 0, 0x1000, sym);
+					}
 #endif
-	rfree(reg, ty);
-	cls = rclass(ty, reg);
-	return getreg(cls, reg, 0x1000, sym);
+					rfree(reg, ty);
+					cls = rclass(ty, reg);
+					return getreg(cls, reg, 0x1000, sym);
+				}
+		} else if (cookie & 0100 | 0200) {
+			for (reg = 0x10; ; reg++) {
+				if (reg > 0x13)
+					return -1;
+				if (usable(p, side, reg) > 0)
+					goto found;
+			}
+		}
+		return -1;
+	}
+	if (usable(p, side, r) <= 0)
+		return -1;
+	rfree(r, ty);
+	cls = rclass(ty, r);
+	return getreg(cls, r, 0x1000, sym);
 }
 
 /* ---- getting registers ------------------------------------------------------------------------------- */
