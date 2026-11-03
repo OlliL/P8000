@@ -24,7 +24,7 @@ extern NODE *getlr();
 extern int getreg();
 extern void hopcode();
 extern void insput();
-extern int ltypeok();
+extern int shltype();
 extern int ltypeop();
 extern int match();
 extern NODE node[];
@@ -227,7 +227,7 @@ more:
 				} else if ((mask = opclass[q->op - 0x1000]) & 0x4000) {
 					if (op == NAME || op == ICON || op == OREG)
 						break;
-					else if (ltypeok(op, (NODE *)0))
+					else if (shltype(op, (NODE *)0))
 						break;
 				} else if ((dope[op] & (mask | 1)) == mask)
 					break;
@@ -330,7 +330,7 @@ zz:
 		goto cand;
 	if (p->op == OREG)
 		goto cand;
-	if (ltypeok(p->op, p))
+	if (shltype(p->op, p))
 		goto cand;
 next:
 	++q;

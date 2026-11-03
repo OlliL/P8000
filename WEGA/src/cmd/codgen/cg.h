@@ -208,6 +208,6 @@ struct optab {
 };
 extern struct optab table[];
 
-struct indope { int op; char name[8]; int flags; };	/* 12 bytes like the original */
-extern struct indope indope[];
+struct dopest { int dopeop; char opst[8]; int dopeval; };	/* 12 bytes like the original */
+extern struct dopest indope[];
 extern int dope[];		/* dope flags by operator, filled from indope[] */

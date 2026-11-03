@@ -3,9 +3,9 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "9b82f2fb",
+ "measured_at": "061c7bcc",
  "functions": {
-  "options": {
+  "p2init": {
    "file": "reader3.c",
    "orig": "0x002a",
    "size_orig": 372,
@@ -25,7 +25,7 @@
    "status": "exact",
    "note": "The main loop is a for without init and step, the blank skipping of case C a while with continue: both decide what popt moves (OLDCC_LOG 2026-11-03)."
   },
-  "stmt": {
+  "p2compile": {
    "file": "reader3.c",
    "orig": "0x075a",
    "size_orig": 222,
@@ -263,7 +263,7 @@
    "size_orig": 26,
    "status": "exact"
   },
-  "funcend": {
+  "eobl2": {
    "file": "local3.c",
    "orig": "0x289a",
    "size_orig": 92,
@@ -348,7 +348,7 @@
    "status": "exact",
    "note": "The two searches end in the cerror, found jumps past it; no second test of t and f."
   },
-  "ltypeok": {
+  "shltype": {
    "file": "local3.c",
    "orig": "0x3e1c",
    "size_orig": 74,
@@ -730,7 +730,7 @@
    "status": "exact",
    "note": "p is overwritten with the result of getlr; popt removes the store of the parameter."
   },
-  "rfreenode": {
+  "recl2": {
    "file": "allo3.c",
    "orig": "0x6efa",
    "size_orig": 124,
@@ -929,25 +929,25 @@
    "size_orig": 28,
    "status": "exact"
   },
-  "free1": {
+  "tfree1": {
    "file": "comm3.c",
    "orig": "0x8758",
    "size_orig": 28,
    "status": "exact"
   },
-  "fwalkd": {
+  "fwalk": {
    "file": "comm3.c",
    "orig": "0x8774",
    "size_orig": 120,
    "status": "exact"
   },
-  "fwalk": {
+  "walkf": {
    "file": "comm3.c",
    "orig": "0x87ec",
    "size_orig": 88,
    "status": "exact"
   },
-  "dopeinit": {
+  "mkdope": {
    "file": "comm3.c",
    "orig": "0x8844",
    "size_orig": 52,
@@ -983,13 +983,13 @@
    "size_orig": 50,
    "status": "exact"
   },
-  "rallkind": {
+  "callreg": {
    "file": "comm3.c",
    "orig": "0x89a2",
    "size_orig": 44,
    "status": "exact"
   },
-  "errexit": {
+  "dexit": {
    "file": "comm3.c",
    "orig": "0x89ce",
    "size_orig": 26,

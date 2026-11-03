@@ -33,8 +33,8 @@ extern struct sym *fpsym1;
 extern struct sym *fpsym2;
 extern long frame0;
 extern long freetemp();
-extern void funcend();
-extern void fwalk();
+extern void eobl2();
+extern void walkf();
 extern void genargs();
 extern int gencall();
 extern long geninc();
@@ -50,7 +50,7 @@ extern int ispow2();
 extern int jlab;
 extern int lastchance();
 extern void lineout();
-extern int ltypeok();
+extern int shltype();
 extern int ltypeop();
 extern int mainp2();
 extern int match();
@@ -80,7 +80,7 @@ extern int revrel[];
 extern struct rs *rfind();
 extern void rfree();
 extern void rfreeall();
-extern void rfreenode();
+extern void recl2();
 extern char *rhnames[];
 extern int rlmode;
 extern char *rlnames[];
@@ -214,7 +214,7 @@ lineout(line, file)
 
 /* the end of the text of a function */
 void
-funcend(a, b)
+eobl2(a, b)
 	register int a, b;
 {
 	printf("\n");
@@ -351,7 +351,7 @@ prolog(a, sz, b, w, tot)
 	regsave(a, sz, b, w, tot);
 	regargs(tot);
 	branch(jlab);
-	funcend((int)(maxoff / 8), tot);
+	eobl2((int)(maxoff / 8), tot);
 }
 
 static void
@@ -953,7 +953,7 @@ zzzcode(p, c)
 			printf(n2 != 4 ? "%s\n" : "r%s\n", name);
 			rfree(rn, k2);
 			if (tmp) {
-				fwalk(r2, rfreenode);
+				walkf(r2, recl2);
 				tfree(r2);
 				p->right = tmp;
 			}
@@ -1003,11 +1003,11 @@ zzzcode(p, c)
 #endif
 			if (tmp) {
 				if (c == 's') {
-					fwalk(u, rfreenode);
+					walkf(u, recl2);
 					tfree(u);
 					p->left = tmp;
 				} else {
-					fwalk(tmp, rfreenode);
+					walkf(tmp, recl2);
 					tfree(tmp);
 				}
 			}
@@ -1203,7 +1203,7 @@ copied:
 
 /* an operator that is a leaf, or (with p) a STAR over a leaf that shumul accepts */
 int
-ltypeok(op, p)
+shltype(op, p)
 	register int op;
 	register NODE *p;
 {
@@ -1725,7 +1725,7 @@ canon2(p)
 	register NODE *p;
 {
 	p = canon(p);
-	fwalk(p, icright);
+	walkf(p, icright);
 }
 
 /* the SPECIAL shapes: small constants and powers of two */

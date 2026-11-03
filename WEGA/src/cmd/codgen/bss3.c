@@ -43,7 +43,7 @@ int stocook;
 int ifline;
 int retlab;
 long maxoff;	/* the largest frame offset so far */
-int nrecur;	/* cleared by stmt() itself */
+int nrecur;	/* cleared by p2compile() itself */
 struct sym *symtab;
 long nasciibytes;
 struct sym *symtab0;

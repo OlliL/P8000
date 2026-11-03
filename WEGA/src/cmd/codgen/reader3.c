@@ -1,5 +1,5 @@
 /*
- * reader3.c - the program and the driver of the code generation: options, commands of the intermediate file, order of the trees, stores, conditional branches
+ * reader3.c - the program and the driver of the code generation: p2init, commands of the intermediate file, order of the trees, stores, conditional branches
  */
 #include "cg.h"
 #include "cg2.h"
@@ -29,7 +29,7 @@ extern void delay();
 extern NODE *deltrees[];
 extern FILE *dfile;
 extern int dope[];
-extern void dopeinit();
+extern void mkdope();
 extern void efcode();
 extern int eflag;
 extern void endrun();
@@ -43,8 +43,8 @@ extern long frame0;
 extern long freetemp();
 extern int fregs;
 extern long ftell();
+extern void walkf();
 extern void fwalk();
-extern void fwalkd();
 extern int gencall();
 extern int genscall();
 extern int getlab();
@@ -86,7 +86,7 @@ extern void offstar();
 extern int oflag;
 extern char *opst[];
 extern NODE *optim();
-extern int options();
+extern int p2init();
 extern void order();
 extern void oreg2();
 extern long parmax;
@@ -117,7 +117,7 @@ extern NODE resc[];
 extern int rflag;
 extern void rfree();
 extern void rfreeall();
-extern void rfreenode();
+extern void recl2();
 extern void rsbuild();
 extern void rsfreeall();
 extern void rsinit();
@@ -130,7 +130,7 @@ extern void setrew();
 extern int setstr();
 extern FILE *stfile;
 extern long stg;
-extern void stmt();
+extern void p2compile();
 extern void stoarg();
 extern int stoasg();
 extern int stocook;
@@ -196,9 +196,9 @@ static void delay2();
 static int delay1();
 static void parmwalk();
 
-/* the options: the number of the first argument that is no option, or 0 */
+/* the p2init: the number of the first argument that is no option, or 0 */
 int
-options(argc, argv)
+p2init(argc, argv)
 	int argc;
 	char **argv;
 {
@@ -268,7 +268,7 @@ options(argc, argv)
 			err = 1;
 	}
 	hdrout();
-	dopeinit();
+	mkdope();
 	setrew();
 	return err;
 }
@@ -326,7 +326,7 @@ mainp2(argc, argv)
 	int n;
 	char ch;
 
-	files = options(argc, argv);
+	files = p2init(argc, argv);
 	tinit();
 reread:
 	if (files) {
@@ -405,7 +405,7 @@ reread:
 			paroff = baseoff;
 			tmpoff = 0;
 			p = eread();
-			stmt(p);
+			p2compile(p);
 			continue;
 		case 'L':
 			temp = rdin(10);
@@ -546,7 +546,7 @@ parmwalk(p)
 
 /* a statement of the intermediate file: a function head, a switch, or an expression tree */
 void
-stmt(p)
+p2compile(p)
 	register NODE *p;
 {
 	int tag;
@@ -564,7 +564,7 @@ stmt(p)
 #ifdef OLD_D4O
 		parmwalk(p->right);	/* v0: the parameters in the order of the declaration (the list is reversed) */
 #else
-		fwalkd(p->right, parminit);	/* no third argument: the original passes only two, down is what r5 holds */
+		fwalk(p->right, parminit);	/* no third argument: the original passes only two, down is what r5 holds */
 #endif
 		tfree(p);
 		return;
@@ -623,8 +623,8 @@ delay(p)
 #endif
 		}
 	}
-	fwalkd(p, mapnm, 0);
-	fwalk(p, mapregs);
+	fwalk(p, mapnm, 0);
+	walkf(p, mapregs);
 	canon2(p);
 	while (delay1(p))
 		;
@@ -742,8 +742,8 @@ delay2(p)
 	case DECR:
 		if (ndelay < NDELAY) {
 			q = tcopy(p);
-			fwalk(q->left, delstrip);
-			fwalk(q->right, delstrip);
+			walkf(q->left, delstrip);
+			walkf(q->right, delstrip);
 			deltrees[ndelay++] = q;
 			q = p->left;
 			p->right->op = FREE;
@@ -1503,10 +1503,10 @@ NODE *
 canon(p)
 	register NODE *p;
 {
-	fwalkd(p, ffld, 0);
-	fwalk(p, oreg2);
-	fwalk(p, mycanon);
-	fwalk(p, sucomp);
+	fwalk(p, ffld, 0);
+	walkf(p, oreg2);
+	walkf(p, mycanon);
+	walkf(p, sucomp);
 	return p;
 }
 
@@ -1522,7 +1522,7 @@ argprep(p, cookie)
 
 	if (p->op == STARG && cookie == INTEMP_) {
 		copy = tcopy(p->left);
-		fwalk(p->left, rfreenode);
+		walkf(p->left, recl2);
 		tfree(p->left);
 		n = p->left = talloc();
 		ncopy(n, p);

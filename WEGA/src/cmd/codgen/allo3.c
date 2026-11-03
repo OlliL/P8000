@@ -16,7 +16,7 @@ extern struct sym *fpsym2;
 extern long freeparm();
 extern int freereg();
 extern long freetemp();
-extern void fwalk();
+extern void walkf();
 extern NODE *getlr();
 extern int getreg();
 extern long maxoff;
@@ -25,7 +25,7 @@ extern NODE node[];
 extern void nxwork();
 extern long parmax;
 extern long paroff;
-extern int rallkind();
+extern int callreg();
 extern void rbusy();
 extern int rclass();
 extern void reclaim();
@@ -33,7 +33,7 @@ extern NODE resc[];
 extern struct rs *rfind();
 extern void rfree();
 extern void rfreeall();
-extern void rfreenode();
+extern void recl2();
 extern void rmove();
 extern struct rs *rsfree;
 extern void rsreturn();
@@ -345,7 +345,7 @@ allocreg(p, cookie)
 
 	if (!callop(p->op))
 		goto tst;
-	want = rallkind(p);
+	want = callreg(p);
 	goto got;
 val:
 	want = p->rall & ~MUSTDO;
@@ -570,7 +570,7 @@ usable(p, side, r)
 
 /* free the registers an operand node holds */
 void
-rfreenode(p)
+recl2(p)
 	register NODE *p;
 {
 	register int r = p->rval;
@@ -676,7 +676,7 @@ reclaim(p, rewrite, cookie)
 	if (o == FREE && rewrite == RNULL)
 		goto done;
 	want = o;
-	fwalk(p, rfreenode);
+	walkf(p, recl2);
 	if (rewrite == 0 || (cookie & FOREFF)) {
 		tfree(p);
 		goto done;

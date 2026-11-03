@@ -298,7 +298,7 @@ rsinsert(n, mode)
 void
 rcount_reset()
 {
-	/* the original has this empty function at 0x778e and nobody calls it; stmt() clears nrecur */
+	/* the original has this empty function at 0x778e and nobody calls it; p2compile() clears nrecur */
 }
 
 /* does register reg of class cls overlap the register of the node n? */

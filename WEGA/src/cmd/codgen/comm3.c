@@ -16,14 +16,14 @@ extern void d3kjump();
 extern int d3knamed();
 extern void d3kreset();
 extern int dope[];
-extern void dopeinit();
-extern void errexit();
+extern void mkdope();
+extern void dexit();
+extern void walkf();
 extern void fwalk();
-extern void fwalkd();
 extern int getreg();
 extern int ifline;
 extern char ifname[];
-extern struct indope indope[];
+extern struct dopest indope[];
 extern int ispow2();
 extern NODE *lastfree;
 extern void ncopy();
@@ -31,7 +31,7 @@ extern int nerrors;
 extern NODE node[];
 extern char *opst[];
 extern int plainicon();
-extern int rallkind();
+extern int callreg();
 extern void rbusy();
 extern int revrel[];
 extern void rfree();
@@ -101,7 +101,7 @@ int unused8[9] = { 0 };
 
 
 static void prline();
-static void free1();
+static void tfree1();
 
 /* an error in the source program */
 void
@@ -110,7 +110,7 @@ syserror(s)
 {
 	fprintf(stderr, "system call error: ");
 	perror(s);
-	errexit(0x40);
+	dexit(0x40);
 }
 
 void
@@ -139,7 +139,7 @@ cerror(s, a, b, c)
 		fprintf(stderr, s, a, b, c);
 		putc('\n', stderr);
 	}
-	errexit(0x40);
+	dexit(0x40);
 }
 
 void
@@ -200,11 +200,11 @@ tfree(p)
 	NODE *p;
 {
 	if (p->op != FREE)
-		fwalk(p, free1);
+		walkf(p, tfree1);
 }
 
 static void
-free1(p)
+tfree1(p)
 	NODE *p;
 {
 	if (p == 0)
@@ -215,7 +215,7 @@ free1(p)
 
 /* walk the tree before the operands, with the value passed down: f(p, down, &down1, &down2) */
 void
-fwalkd(p, f, down)
+fwalk(p, f, down)
 	register NODE *p;
 	int (*f)();
 	int down;
@@ -227,7 +227,7 @@ again:
 	(*f)(p, down, &down1, &down2);
 	switch optype(p->op) {
 	case BITYPE:
-		fwalkd(p->left, f, down1);
+		fwalk(p->left, f, down1);
 		p = p->right;
 		down = down2;
 		goto again;
@@ -240,7 +240,7 @@ again:
 
 /* walk the tree after the operands */
 void
-fwalk(p, f)
+walkf(p, f)
 	register NODE *p;
 	int (*f)();
 {
@@ -250,21 +250,21 @@ fwalk(p, f)
 		return;
 	kind = optype(p->op);
 	if (kind != LTYPE)
-		fwalk(p->left, f);
+		walkf(p->left, f);
 	if (kind == BITYPE)
-		fwalk(p->right, f);
+		walkf(p->right, f);
 	(*f)(p);
 }
 
 /* dope[] and opst[] from the table of the operators */
 void
-dopeinit()
+mkdope()
 {
-	register struct indope *q;
+	register struct dopest *q;
 
-	for (q = indope; q->op >= 0; q++) {
-		dope[q->op] = q->flags;
-		opst[q->op] = q->name;
+	for (q = indope; q->dopeop >= 0; q++) {
+		dope[q->dopeop] = q->dopeval;
+		opst[q->dopeop] = q->opst;
 	}
 }
 
@@ -362,7 +362,7 @@ tbytes(t)
 
 /* the cookie that serves the type: B registers for floats, A registers otherwise */
 int
-rallkind(p)
+callreg(p)
 	register NODE *p;
 {
 	if (p && (p->type == 7 || p->type == 6))
@@ -371,7 +371,7 @@ rallkind(p)
 }
 
 void
-errexit(n)
+dexit(n)
 	int n;
 {
 	fflush(stdout);

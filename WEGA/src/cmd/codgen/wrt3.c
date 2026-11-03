@@ -26,7 +26,7 @@ extern int nparmtab;
 extern void parminit();
 extern struct { struct sym *sym; int reg; } parmtab[];
 extern int pflag;
-extern int rallkind();
+extern int callreg();
 extern int rclass();
 extern struct rv regvar[];
 extern int retlab;
@@ -211,13 +211,13 @@ structretcode()
 #ifdef SEG
 		printf("\tldl\trr4,#L%d\n", structlab);
 		printf("\tld\tr1,#%ld\n", structsz);
-		printf("\tldir\t@rr4,@r%s,r1\n", rnames[rallkind(0)]);
-		printf("\tldl\tr%s,#L%d\n", rnames[rallkind(0)], structlab);
+		printf("\tldir\t@rr4,@r%s,r1\n", rnames[callreg(0)]);
+		printf("\tldl\tr%s,#L%d\n", rnames[callreg(0)], structlab);
 #else
 		printf("\tld\tr4,#L%d\n", structlab);
 		printf("\tld\tr1,#%ld\n", structsz);
-		printf("\tldir\t@r4,@%s,r1\n", rnames[rallkind(0)]);
-		printf("\tld\t%s,#L%d\n", rnames[rallkind(0)], structlab);
+		printf("\tldir\t@r4,@%s,r1\n", rnames[callreg(0)]);
+		printf("\tld\t%s,#L%d\n", rnames[callreg(0)], structlab);
 #endif
 	}
 }

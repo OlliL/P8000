@@ -28,7 +28,7 @@ extern int fregs;
 extern void genargs();
 extern int getlab();
 extern int getreg();
-extern int ltypeok();
+extern int shltype();
 extern void mkadrs();
 extern int mkoreg();
 extern void mkrall();
@@ -46,7 +46,7 @@ extern void rallo();
 extern void reclaim();
 extern NODE resc[];
 extern void rfree();
-extern void rfreenode();
+extern void recl2();
 extern char *rnames[];
 extern struct rs *rsfree;
 extern int rstatus[];
@@ -108,7 +108,7 @@ stoasg(p, o)
 	register NODE *p;
 	int o;
 {
-	return ltypeok(p->left->op, p->left);
+	return shltype(p->left->op, p->left);
 }
 
 /* store the subtree of p with the larger register need: stotree and stocook for codgen */
@@ -1058,7 +1058,7 @@ d22arg(q, reg)
 		printf("\tldm\tr%d,", reg);
 		adrput(q);
 		printf(",#4\n");
-		rfreenode(q);
+		recl2(q);
 	} else {
 		order(q, 0x10);
 		printf("\tfldd\tr%d,%s\n", reg, rnames[q->rval]);
