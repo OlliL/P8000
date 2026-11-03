@@ -152,12 +152,13 @@ allo(p, q)
 	struct optab *q;
 {
 	register int need, k, k0;
-	register int n;
+	register int spare;
 	register int b;
 	register struct rs *s;
 	int cls;
 
-	b = need = q->needs;
+	need = q->needs;
+	b = need;
 	k = 0;
 
 	while (need & 3) {			/* A registers */
@@ -171,7 +172,7 @@ allo(p, q)
 	}
 	k0 = k;
 	while (b & 3) {				/* the registers stay busy only for the code of the entry */
-		if (((b & 0xF) != 0 && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
+		if (((b & 0xF) && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
 		    (dope[p->op] & 0x80))
 			cls = 3;
 		else
@@ -205,7 +206,7 @@ allo(p, q)
 		resc[k].stsize = 0;
 		resc[k].lval = freetemp(TEMPWORDS(p, (need & 0x300) / 0x100));
 		resc[k].sname = fpsym1;
-		resc[k].lval >>= 3;
+		resc[k].lval = resc[k].lval >> 3;
 		k++;
 	}
 	if (need & 0xC00) {			/* a temporary for parameters */
@@ -214,7 +215,7 @@ allo(p, q)
 		resc[k].rval = 15;
 		resc[k].stsize = 0;
 		resc[k].lval = freeparm(TEMPWORDS(p, (need & 0xC00) / 0x400));
-		resc[k].lval >>= 3;
+		resc[k].lval = resc[k].lval >> 3;
 #ifdef SEG
 		resc[k].sname = symtab0;
 #else
@@ -222,8 +223,8 @@ allo(p, q)
 #endif
 		k++;
 	}
-	for (n = 0; n < k; n++)
-		if (resc[n].rval < 0)
+	for (k0 = 0; k0 < k; k0++)
+		if (resc[k0].rval < 0)
 			return 0;
 	nxwork(p, q->nx);
 	return 1;
@@ -666,7 +667,7 @@ reclaim(p, rewrite, cookie)
 	register struct node **ap;
 	register int o;
 	register int *rw;
-	struct node *a[6];
+	struct node *a[5];
 
 	o = p->op;
 	if (rewrite == RNOP)
@@ -680,12 +681,9 @@ reclaim(p, rewrite, cookie)
 		goto done;
 	}
 	if ((cookie & 0x20) && (rewrite & RESCC)) {	/* the condition codes */
-		long *lp;
-
 		tfree(p);
 		p->op = CCODES;
-		lp = &p->lval;
-		*lp = want;
+		p->lval = want;
 		p->rval = 0;
 		goto done;
 	}
@@ -726,11 +724,15 @@ found:
 	c->op = FREE;
 	switch (p->op) {
 	case REG:
-		break;
+		goto isreg;
 	case OREG:
-	default:
-		goto done;
+		break;
 	}
+done:
+	tmpcleanup();
+	rfreeall(0);
+	return;
+isreg:
 	if (!tflag) {
 		if (p->type == 3)
 			p->type = 4;
@@ -738,7 +740,8 @@ found:
 			p->type = 14;
 	}
 	if (rewrite & RESC) {			/* the second register of a long result */
-		want = p->rval + 1;
+		want = p->rval;
+		want++;
 		if (!(p->rall & 0x1000))
 			p->rall = (p->rall & 0x2000) | want;
 		rfree(p->rval, p->type);
@@ -776,7 +779,5 @@ found:
 		cerror("reclaim dest reg not free");
 	rmove(want, p->rval, p->type);
 	p->rval = want;
-done:
-	tmpcleanup();
-	rfreeall(0);
+	goto done;
 }

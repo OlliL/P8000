@@ -130,8 +130,8 @@ int
 rddata()
 {
 	long n;
+	int got, chunk, ok;
 	char buf[512];
-	int chunk, got;
 
 	n = rdin2(10, dfile);
 	if (getc(dfile) != '\n')
@@ -139,13 +139,17 @@ rddata()
 #ifdef OLD_D12K
 	return d12kcopy(n);
 #endif
-	while (n > 0) {
-		if (n <= 0x200) {
+	if (n > 0)
+		ok = 1;
+	else
+		ok = 0;
+	for (; n > 0; ) {
+		if (n > 0x200) {
+			chunk = 0x200;
+			n = n - 0x200;
+		} else {
 			chunk = (int)n;
 			n = 0;
-		} else {
-			chunk = 0x200;
-			n -= 0x200;
 		}
 		got = fread(buf, 1, chunk, dfile);
 		if (got != chunk)
@@ -315,23 +319,25 @@ void
 readnums(n)
 	int n;
 {
-	int *src, *dst;
-	int base, k;
 	int buf[500];
+	int k, base;
+	int *dst, *src;
 
 	if (n <= 0)
 		return;
 	if (n > 500)
 		cerror(" member table overflow");
-	base = firstsect ? 0 : nsyms;
+	if (!firstsect)
+		base = nsyms;
+	else
+		base = 0;
 	if (fread(buf, 2, n, stfile) != n)
 		printf("readmt: error in reading number table from file stfile\n");
 	src = buf;
-	dst = &numtab[base * 2];
-	for (k = n; k > 0; k--) {
-		dst[0] = *src++;
+	dst = (int *)((char *)numtab + (base << 2));
+	for (k = n; k > 0; k--, src++, dst += 2) {
+		*dst = *src;
 		dst[1] = -1;
-		dst += 2;
 	}
 }
 

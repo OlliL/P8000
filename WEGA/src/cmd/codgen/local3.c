@@ -424,10 +424,9 @@ regargs(tot)
 	register int tot;
 {
 	register int lo, hi, t;
-	int i, reg, cls, k;
+	int i, unused, cls, reg;
 	struct sym *s;
 	struct rs *n;
-	char *mn;
 
 	lo = 7;
 	hi = 2;
@@ -449,15 +448,18 @@ regargs(tot)
 #endif
 		n = rfind(reg, cls);
 #ifdef OLD_D3J
-		if (n && n->sym == s && !(n->flags & 0x4000))
+		if ((!n || n->sym != s || (n->flags & 0x4000)) && cls < 4) {
 #else
-		if (n && n->sym == s)
+		if ((!n || n->sym != s) && cls < 4) {
 #endif
-			goto fl;
-		if (cls < 4) {
+			int k;
+
 			if (lo > reg)
 				lo = reg;
-			k = cls == 3 ? 1 : 0;
+			if (cls == 3)
+				k = 1;
+			else
+				k = 0;
 			if (hi < reg + k)
 				hi = reg + k;
 			if (s->soffset / 8 < (unsigned long)(unsigned)t) {
@@ -465,15 +467,17 @@ regargs(tot)
 				if (t & 1)
 					t--;
 			}
-			continue;
-		}
-	fl:
-		if (cls == 4) {
-			mn = s->stype == 6 ? flds : fldd;
+		} else if (cls == 4) {
+			char *mn;
+
+			if (s->stype == 6)
+				mn = flds;
+			else
+				mn = fldd;
 #ifdef SEG
 			printf("\t%s\t|_stkseg+~L1+%ld|(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
 #else
-			if (maxoff + s->soffset != 0)
+			if (maxoff + s->soffset)
 				printf("\t%s\t~L1+%ld(fp),%s\n", mn, s->soffset / 8, rnames[reg]);
 			else
 #ifdef OLD_D18
@@ -494,34 +498,41 @@ regargs(tot)
 	else
 		printf("\tldm\t|_stkseg+~L1+%u|(fp),r%d,#%d\n", t, lo, hi - lo + 1);
 #else
-	if (hi == lo) {
-		if ((long)(unsigned)t + maxoff != 0)
-			printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
-		else
+	if (hi != lo)
+		goto tst;
+	if ((long)(unsigned)t + maxoff)
+		printf("\tld\t~L1+%u(fp),r%d\n", t, lo);
+	else
 #ifdef OLD_D18
-			printf("\tld\t0(fp),r%d\n", lo);
+		printf("\tld\t0(fp),r%d\n", lo);
 #else
-			printf("\tld\t@fp,r%d\n", lo);
+		printf("\tld\t@fp,r%d\n", lo);
 #endif
-	} else if (!(lo & 1) && hi - lo == 1) {
-		if ((long)(unsigned)t + maxoff != 0)
-			printf("\tldl\t~L1+%u(fp),rr%d\n", t, lo);
-		else
+	return;
+lng:
+	if (hi - lo != 1)
+		goto ldm;
+	if ((long)(unsigned)t + maxoff)
+		printf("\tldl\t~L1+%u(fp),rr%d\n", t, lo);
+	else
 #ifdef OLD_D18
-			printf("\tldl\t0(fp),rr%d\n", lo);
+		printf("\tldl\t0(fp),rr%d\n", lo);
 #else
-			printf("\tldl\t@fp,rr%d\n", lo);
+		printf("\tldl\t@fp,rr%d\n", lo);
 #endif
-	} else {
-		if ((long)(unsigned)t + maxoff != 0)
-			printf("\tldm\t~L1+%u(fp),r%d,#%d\n", t, lo, hi - lo + 1);
-		else
+	return;
+tst:
+	if (!(lo & 1))
+		goto lng;
+ldm:
+	if ((long)(unsigned)t + maxoff)
+		printf("\tldm\t~L1+%u(fp),r%d,#%d\n", t, lo, hi - lo + 1);
+	else
 #ifdef OLD_D18
-			printf("\tldm\t0(fp),r%d,#%d\n", lo, hi - lo + 1);
+		printf("\tldm\t0(fp),r%d,#%d\n", lo, hi - lo + 1);
 #else
-			printf("\tldm\t@fp,r%d,#%d\n", lo, hi - lo + 1);
+		printf("\tldm\t@fp,r%d,#%d\n", lo, hi - lo + 1);
 #endif
-	}
 #endif
 }
 
@@ -1274,7 +1285,7 @@ prlong(v)
 /* a constant or a register as an operand part */
 void
 conput(p)
-	struct node *p;
+	register struct node *p;
 {
 	switch (p->op) {
 	case ICON:
@@ -1292,7 +1303,7 @@ conput(p)
 	case OREG:
 		if (p->lval >= 0x100)
 			cerror("bad oreg in conput");
-		if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
+		else if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
 			oregput(p);
 		else
 #ifdef SEG

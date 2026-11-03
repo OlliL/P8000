@@ -211,11 +211,11 @@ fixtemp(p)
 	register struct node *p;
 {
 	register int i;
-	register int j, cls, reg;
-	struct rs *n;
+	register struct rs *n;
+	register int cls, j;
 
 	if (rflag) {
-		if (p->rval >= 0 && (j = findtemp(p->rval)) >= 0) {
+		if ((i = p->rval) >= 0 && (j = findtemp(i)) >= 0) {
 			p->op = REG;
 			p->lval = 0;
 			p->rval = regvar[j].rreg;
@@ -230,10 +230,9 @@ fixtemp(p)
 		if (p->lval == -1) {
 			tmptab[i].flags |= 0x8000;
 			cls = rclass(p->type, -1);
-			reg = getreg(cls, -1, 0x1000, 0);
-			tmptab[i].reg = reg;
+			tmptab[i].reg = j = getreg(cls, -1, 0x1000, 0);
 			tmptab[i].cls = cls;
-			n = rfind(reg, cls);
+			n = rfind(j, cls);
 			n->kind = 6;
 			n->busy = 0;
 		} else {
@@ -244,7 +243,7 @@ fixtemp(p)
 			tmptab[i + 1].off = -1;
 	}
 	tmptab[i].done = p->lval;
-	if (tmptab[i].flags >> 15 & 1) {
+	if ((tmptab[i].flags >> 15 & 1) == 1) {
 		p->op = REG;
 		p->lval = 0;
 		p->rval = tmptab[i].reg;

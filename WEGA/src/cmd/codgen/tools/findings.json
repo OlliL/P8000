@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "4d265cb7",
+ "measured_at": "d75b813e",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -141,8 +141,8 @@
    "file": "rdr3.c",
    "orig": "0x19ac",
    "size_orig": 218,
-   "status": "open",
-   "lines": 39
+   "status": "exact",
+   "note": "Odd form: ok is set and never read; if/else for constants written to the frame."
   },
   "rdsym": {
    "file": "rdr3.c",
@@ -169,8 +169,8 @@
    "file": "rdr3.c",
    "orig": "0x1c6c",
    "size_orig": 162,
-   "status": "open",
-   "lines": 37
+   "status": "exact",
+   "note": "Odd form: the address of the table by (char *)numtab + (base << 2), the table is a table of pairs."
   },
   "readmems": {
    "file": "rdr3.c",
@@ -318,7 +318,8 @@
    "orig": "0x2c0e",
    "size_orig": 466,
    "status": "open",
-   "lines": 34
+   "note": "Odd form: the branches of the register load in physical order by goto. Left: which of two tails of printf stays (2 lines). One unused frame word.",
+   "lines": 2
   },
   "hopcode": {
    "file": "local3.c",
@@ -338,7 +339,7 @@
    "size_orig": 3606,
    "status": "masked",
    "note": "Odd form: if (u == 3 || u == 13) ; in ZT, for a cp of the original without a jump behind it; a register holds a type there (u).",
-   "lines": 2
+   "lines": 4
   },
   "rmove": {
    "file": "local3.c",
@@ -389,8 +390,8 @@
    "file": "local3.c",
    "orig": "0x3fda",
    "size_orig": 174,
-   "status": "open",
-   "lines": 35
+   "status": "exact",
+   "note": "bad oreg goes to the end, it is the first arm of an else if."
   },
   "insput": {
    "file": "local3.c",
@@ -686,8 +687,8 @@
    "file": "allo3.c",
    "orig": "0x67e8",
    "size_orig": 958,
-   "status": "open",
-   "lines": 35
+   "status": "exact",
+   "note": "Register n of an older reading was k0; one unused register variable; lval = lval >> 3."
   },
   "freetemp": {
    "file": "allo3.c",
@@ -747,8 +748,8 @@
    "file": "allo3.c",
    "orig": "0x7058",
    "size_orig": 920,
-   "status": "open",
-   "lines": 36
+   "status": "exact",
+   "note": "Odd form: done in front of the code for a register result, reached by goto from behind it."
   },
   "pairmate": {
    "file": "regallo3.c",
@@ -1091,8 +1092,8 @@
    "file": "regs3.c",
    "orig": "0x918e",
    "size_orig": 378,
-   "status": "open",
-   "lines": 35
+   "status": "exact",
+   "note": "tmptab[i].reg = j = getreg(...); i used for the temporary number first."
   },
   "tmpcleanup": {
    "file": "regs3.c",
