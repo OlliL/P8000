@@ -46,3 +46,4 @@
 /cmd/cparse/seg/
 /cmd/popt/spopt
 /cmd/popt/seg/
+/cmd/cpp/cpy.c
