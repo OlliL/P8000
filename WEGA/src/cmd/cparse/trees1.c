@@ -669,10 +669,10 @@ stref( p ) register NODE *p; {
 
 	p = clocal( makety( p, t, d, s ) );
 
-	if( !ISPTR(p->type) ) p->type += PTR;
+	if( !ISPTR(p->type) ) p->type = p->type + PTR;
 	if( !ISPTR(p->left->type) ){
 		ptr = 0;
-		p->left->type += PTR;
+		p->left->type = p->left->type + PTR;
 		}
 
 	if( dsc & FIELD ){ /* build field info */

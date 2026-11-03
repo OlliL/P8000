@@ -3,7 +3,7 @@
  "compiler": "ccv0p",
  "binary": "/lib/popt",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "c80a217c",
+ "measured_at": "620899d9",
  "functions": {
   "main": {
    "file": "z21.c",

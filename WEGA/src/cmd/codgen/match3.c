@@ -267,13 +267,6 @@ match(p, cookie)
 	fxl:
 		fixname(p->left);
 	cont:
-#ifdef OLD_D16B
-			/* v0p: an unsigned word in memory changed by an assignment operator: no entry, the tree is rewritten as
-		   a = a op b (order) */
-		if ((p->op == ASG PLUS || p->op == ASG MINUS) && cookie != FORREW && (p->left->op == OREG ||
-		    p->left->op == STAR) && p->left->type == 14)
-			return NOMATCH;
-#endif
 		if (cookie != FORREW)
 			goto elsq;
 		q = rwdefault;

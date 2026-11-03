@@ -1024,11 +1024,6 @@ again:
 			goto again;
 		goto nomat;
 	case ASG PLUS:
-#ifdef OLD_D16B
-		/* v0p: an unsigned word in memory: a = a op b at once (the address is evaluated twice) */
-		if (!((p->op == ASG PLUS || p->op == ASG MINUS) && (p->left->op == OREG || p->left->op == STAR) &&
-		    p->left->type == 14))
-#endif
 		if (setasop(p))
 			goto again;
 		p2 = tcopy(p);

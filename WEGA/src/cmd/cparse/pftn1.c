@@ -247,7 +247,7 @@ dimtest:
 
 	redecl:
 	if( blevel > slev && class != EXTERN && !( class == LABEL && slev >= 2 ) ){
-		q->rval = (int) (idp = hide( p ));
+		idp = hide( p ); q->rval = (int) idp;
 		p = idp;
 		goto enter;
 		}

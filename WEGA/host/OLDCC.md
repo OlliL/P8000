@@ -192,7 +192,7 @@ time, or another version) points to their mechanism.
 - What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
   programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
   the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D16B`, `OLD_D3V`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen) (codgen; popt has no switch of its own since 2026-11-03). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D3JM`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D2R0`, `OLD_D2RA` (codgen; popt has no switch of its own since 2026-11-03). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
   (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
 - State: /lib/cparse 178 strictly exact, 2 differing lines, /lib/popt 72 of 73, 8 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
   bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
@@ -366,9 +366,7 @@ compiler that built the original. Not differences of the compiler (checked):
   an operator copies it first (fixclass `ld r2,r6; and r2,#%0030`; without this `and r6` changed the parameter).
   ecode `ld r2,r7` before each use. Keeping it at every label: cparse 1400 > 1488 (twords, fwalk lost). cparse
   1400 > 1312, bench v0 99 > 107.
-- v0p (switch `OLD_D3V` in codgen, reclaim): the value of a word assignment to memory whose type a cast has painted
-  (`q->rval = (int) (idp = hide( p ))`, defid) may be that memory (RLEFT): the store through the pointer reloads idp.
-  For every assignment: 163 > 230. Bench v0 unchanged.
+- Removed (2026-11-03): OLD_D3V. One witness, a source form: defid `idp = hide( p ); q->rval = (int) idp;`.
 - v0p (switch `OLD_D3AW` in codgen, argplace; it replaced OLD_D3A, removed 2026-11-02): the register of a parameter is forgotten only
   for an argument that is the parameter itself or uses it as an address (below an indirection, through + and -);
   in a computed value the register serves (zecode `n*2` from rr6; refid `dimtab[p->sizoff+3]` reloads p). The
@@ -533,11 +531,7 @@ operand of a compare (setbin): popt codemove `--n == 0` stays `dec n,#1; test n`
 cparse and popt, with the same cookie 010036, so they do not separate "not under a compare" from "only `++`, not `--`";
 the first form is taken because a compare can read memory and the multiplication cannot (a guess about the mechanism).
 
-v0p (switch `OLD_D16B` in codgen, match and order): an assignment operator on an unsigned word in memory (OREG or
-through a pointer) has no table entry; order rewrites it at once as `a = a op b`, so the value is loaded, changed in
-the register and stored, and the address is evaluated twice (stref `p->type += PTR`, `p->left->type += PTR`: `ld
-r2,8(r14); ld r2,2(r2); inc r2,#16; ld r3,8(r14); ld 2(r3),r2`). Bench v0 unchanged: v0p.
-
+Removed (2026-11-03): OLD_D16B. One witness, a source form: stref `p->type = p->type + PTR`, `p->left->type = p->left->type + PTR` instead of `+=`.
 ### D17 Call form (popt)
 
 The original has `call` where the shipped chain has `calr`, for calls in reach of `calr`. `strictcmp` hides this; `strictcmp -c` shows it (cparse 175 > 168 functions, 27 > 79 lines; popt 71 > 61, 26 > 172; `-a`, which also takes D18 out, changes nothing more).
