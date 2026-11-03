@@ -1200,7 +1200,6 @@ opact( p )  NODE *p; {
 		if( mt12 & MDBI ) return( TYMATCH );
 		else if( (mt1&MPTR) && (mt2&MINT) ) return( TYPL+CVTR );
 		else if( (mt1&MINT) && (mt2&MPTR) ) return( TYPR+CVTL );
-		break;
 
 	case SUBSR:	/* WEGA */
 		if( mt12 & MDBI ) return( TYMATCH+OTHER );

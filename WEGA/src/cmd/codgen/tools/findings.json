@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "cbca48db",
+ "measured_at": "e9473aca",
  "functions": {
   "p2init": {
    "file": "reader3.c",
@@ -311,7 +311,8 @@
    "file": "local3.c",
    "orig": "0x2b48",
    "size_orig": 198,
-   "status": "exact"
+   "status": "exact",
+   "note": "if (tot) around the integer registers only; the float registers are saved also when tot is 0."
   },
   "regargs": {
    "file": "local3.c",
@@ -688,7 +689,7 @@
    "orig": "0x67e8",
    "size_orig": 958,
    "status": "exact",
-   "note": "Register n of an older reading was k0; one unused register variable; lval = lval >> 3."
+   "note": "The words of a temporary for parameters: a float takes 4 (PARMWORDS), of a temporary 2 (TEMPWORDS)."
   },
   "freetemp": {
    "file": "allo3.c",
@@ -700,9 +701,8 @@
    "file": "allo3.c",
    "orig": "0x6bf4",
    "size_orig": 90,
-   "status": "open",
-   "note": "Left: cp r6,#%0013 at a label with two jumps, r6 not tested. Tried: restoring parameters at several jumps: exact, costs cparse buildtree 8 lines, also when only parameters idle at all jumps are restored.",
-   "lines": 2
+   "status": "exact",
+   "note": "Exact: OLD_D3J restores parameters also at a label with several jumps."
   },
   "allocreg": {
    "file": "allo3.c",
@@ -786,7 +786,7 @@
    "file": "regallo3.c",
    "orig": "0x7650",
    "size_orig": 318,
-   "note": "Exact with OLD_D3J forgetting all jump records at a label no jump has named (d3jclear in the record L); one witness, taken on the owner's word.",
+   "note": "Exact with OLD_D3J forgetting all jump records at a label no jump has named (d3jclear in the record L); one witness, taken on the owner's word. No else return: with another mode a and b are not set (quirk table).",
    "status": "exact"
   },
   "rcount_reset": {
@@ -1198,7 +1198,8 @@
    "file": "regs3.c",
    "orig": "0xa03a",
    "size_orig": 140,
-   "status": "exact"
+   "status": "exact",
+   "note": "symreg with its third argument also for the frame pointer symbols."
   },
   "fixname": {
    "file": "regs3.c",
@@ -1293,9 +1294,8 @@
    "file": "tr3.c",
    "orig": "0xafe4",
    "size_orig": 188,
-   "note": "Left: the default jumps to a return n elsewhere, ours keeps ld r2,r12 (1 line). Tried: return n in the last case: about 21 lines worse.",
-   "status": "open",
-   "lines": 1
+   "note": "clocal after the switch, also for STAR and UAND; no default.",
+   "status": "exact"
   },
   "bcon": {
    "file": "tr3.c",
@@ -1320,7 +1320,8 @@
    "file": "optim3.c",
    "orig": "0xb774",
    "size_orig": 630,
-   "status": "exact"
+   "status": "exact",
+   "note": "The body of ULT stands in front of ULE."
   },
   "treeeq": {
    "file": "optim3.c",
@@ -1332,9 +1333,8 @@
    "file": "optim3.c",
    "orig": "0xba7c",
    "size_orig": 294,
-   "status": "open",
-   "note": "Left: cpb rl6,#%6C behind the first test of the char c. Tried: a free pair counted for a byte in d3jfree: nothing. Not the same as cparse rmconv, which is exact with this load.",
-   "lines": 2
+   "status": "exact",
+   "note": "Exact: OLD_D3J, the record ] between a jump and a label does not count."
   },
   "isint": {
    "file": "optim3.c",

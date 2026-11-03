@@ -534,7 +534,7 @@ d3jlabel(lab, dead)
 		}
 		rsreturn(n->cls, n->reg);
 	}
-	if (!dead || j->jumps != 1)
+	if (!dead)
 		return;
 	for (i = 0; i < j->n; i++)
 		if (d3jfree(j->cls[i], j->reg[i])) {

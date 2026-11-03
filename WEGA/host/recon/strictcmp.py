@@ -13,12 +13,13 @@ Usage: strictcmp.py [-m] [-c] [-a] [-v NAME] [LINKED]
   -v NAME  print the diff of NAME (original | ours)
 
 Functions and their original ranges: findings.json (functions: name -> orig, size_orig; status crt0 is skipped). Our
-function is the symbol _NAME up to the next text symbol. Strict: only the targets of jr/jp/djnz/call/calr and immediates
+function is the symbol _NAME up to the next text symbol. Strict: the jumps of functions with the same lines must go to the same instruction or known function; only the targets of jr/jp/djnz/call/calr and immediates
 that are function addresses (of either binary) are masked (zcode.norm_strict). Prints one line per function and the totals.
 """
 import difflib
 import json
 import os
+import re
 import sys
 
 import progcfg
@@ -28,7 +29,30 @@ CFG = progcfg.load()
 sys.path.insert(0, progcfg.TOOLS)
 from sout import SOut  # noqa: E402
 
+JUMPCALL = re.compile(r'^(jr|jp|djnz|dbjnz|call|calr)\b')
+TARGET = re.compile(r'%([0-9A-Fa-f]{3,8})\b')
 TEXT_TYPES = (31, 34)   # file names and global text symbols in our s.out
+
+
+def wrong_targets(gc, lo, hi, oc, s, e, orig_names, ours_names):
+    """The norm masks the targets of jumps and calls: of two functions with the same lines, the jumps that go to another
+    instruction of the function or to another known function (lines of the diff, one per jump)."""
+    a = list(zcode.insns(gc, lo, hi, CFG.SEG))
+    b = list(zcode.insns(oc, s, e, CFG.SEG))
+    ia = {x: i for i, (x, _) in enumerate(a)}
+    ib = {x: i for i, (x, _) in enumerate(b)}
+    d = []
+    for (xa, ta), (xb, tb) in zip(a, b):
+        ma = TARGET.search(ta) if JUMPCALL.match(ta) else None
+        mb = TARGET.search(tb) if JUMPCALL.match(tb) else None
+        if not ma or not mb:
+            continue
+        va, vb = int(ma.group(1), 16), int(mb.group(1), 16)
+        ra = ('in', ia.get(va, va - lo)) if lo <= va < hi else ('fn', orig_names.get(va))
+        rb = ('in', ib.get(vb, vb - s)) if s <= vb < e else ('fn', ours_names.get(vb))
+        if ra != rb:
+            d.append('target %x: %s %s' % (xa, ra, rb))
+    return d
 
 
 def main():
@@ -61,6 +85,8 @@ def main():
         both_fn = ours_fn | orig_fn
         def n_ours(t): return zcode.norm_strict(t, both_fn, d18=d18, callform=callform)
         def n_orig(t): return zcode.norm_strict(t, both_fn, d18=d18, callform=callform)
+    orig_names = {int(f['orig'], 16): k for k, f in fn.items()}
+    ours_names = {x['value']: x['name'][1:] for x in o.symbols if x['type'] == 34 and x['name'][1:] in fn}
     same = diff = 0
     for name, f in sorted(fn.items(), key=lambda x: int(x[1]['orig'], 16)):
         if f.get('status') == 'crt0':
@@ -76,6 +102,8 @@ def main():
         mine = [n_ours(t) for _, t in zcode.insns(oc, s, e, CFG.SEG)]
         theirs = [n_orig(t) for _, t in zcode.insns(gc, lo, hi, CFG.SEG)]
         d = [l for l in difflib.unified_diff(theirs, mine, lineterm='', n=0) if l[:1] in '+-' and l[:3] not in ('---', '+++')]
+        if not d and not masked:
+            d = wrong_targets(gc, lo, hi, oc, s, e, orig_names, ours_names)
         same += not d
         diff += bool(d)
         print('%-16s %04x %4d %4d  %-10s %s' % (name, lo, hi - lo, e - s, f.get('status'), 'SAME' if not d else 'DIFF %d' % len(d)))

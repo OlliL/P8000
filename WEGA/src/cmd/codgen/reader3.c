@@ -346,7 +346,7 @@ reread:
 		}
 #endif
 #ifdef OLD_D3J
-		if (d3jdead)
+		if (d3jdead && c != ']')
 			d3jdead--;	/* 1: the record before this one was a jump */
 #endif
 		switch (c) {

@@ -376,8 +376,7 @@ regsave(a, sz, b, w, tot)
 {
 	int k, off;
 
-	if (!tot)
-		return;
+	if (tot) {
 #ifdef SEG
 	if (a > 1)
 		printf("\tldm\t_stkseg+%d(fp),%s,#%d\n", (int)sz, rnames[minreg + 1], a);
@@ -404,6 +403,7 @@ regsave(a, sz, b, w, tot)
 #endif
 	}
 #endif
+	}
 	if (b >= 1) {
 		k = maxreg;
 		off = (int)w;

@@ -775,7 +775,7 @@ regforsym(reg, s, type, off)
 		return -1;
 	}
 	if (s == fpsym1 || s == fpsym2)
-		return symreg(s, off);
+		return symreg(s, off, type);
 #ifdef OLD_D3P
 	/* v0: also under a cast between int, unsigned and pointers (the word types) */
 	if (type != s->stype && !(D3PWORD(type) && D3PWORD(s->stype)))

@@ -85,6 +85,10 @@ static int d2r0free();
 	((p->op == STCALL || p->op == STARG || p->op == USTCALL || p->op == STASG) ? ((unsigned)((p->stsize << 3) + 15)) >> 4 : \
 	 (p->type == 5 || p->type == 15) ? 2 : (p->type & 0x30) == 0x10 ? PTRWORDS : \
 	 p->type == 7 ? 4 : p->type == 6 ? 2 : (nfield))
+#define PARMWORDS(p, nfield) \
+	((p->op == STCALL || p->op == STARG || p->op == USTCALL || p->op == STASG) ? ((unsigned)((p->stsize << 3) + 15)) >> 4 : \
+	 (p->type == 5 || p->type == 15) ? 2 : (p->type & 0x30) == 0x10 ? PTRWORDS : \
+	 p->type == 7 ? 4 : p->type == 6 ? 4 : (nfield))
 
 static int d2qfree();
 static int d2ofree();
@@ -212,7 +216,7 @@ allo(p, q)
 		resc[k].type = p->type;
 		resc[k].rval = 15;
 		resc[k].stsize = 0;
-		resc[k].lval = freeparm(TEMPWORDS(p, (need & 0xC00) / 0x400));
+		resc[k].lval = freeparm(PARMWORDS(p, (need & 0xC00) / 0x400));
 		resc[k].lval = resc[k].lval >> 3;
 #ifdef SEG
 		resc[k].sname = symtab0;

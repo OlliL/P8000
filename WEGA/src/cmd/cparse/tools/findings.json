@@ -3,7 +3,7 @@
  "compiler": "ccv0p",
  "binary": "/lib/cparse",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "11a3f8b3",
+ "measured_at": "e9473aca",
  "functions": {
   "f0000": {
    "file": "-",
@@ -416,7 +416,8 @@
    "file": "trees1.c",
    "orig": "0x4f6e",
    "size_orig": 552,
-   "status": "exact"
+   "status": "exact",
+   "note": "PLUS falls through into SUBSR, no break."
   },
   "moditype": {
    "file": "trees1.c",

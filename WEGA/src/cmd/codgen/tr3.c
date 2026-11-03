@@ -118,9 +118,8 @@ buildstar(op, l, r)
 			n->rall = l->rall;
 		}
 		break;
-	default:
-		n = clocal(n);
 	}
+	n = clocal(n);
 	return n;
 }
 

@@ -272,8 +272,7 @@ rsinsert(n, mode)
 				a = a->next;
 			}
 		}
-	} else
-		return;
+	}
 	if (b == n)
 		return;
 	/* take n out of the list and put it between b and a */

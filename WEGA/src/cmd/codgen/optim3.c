@@ -323,11 +323,11 @@ conval(p, o, q)
 	case GE:
 		p->lval = p->lval >= val;
 		break;
-	case ULE:
-		p->lval = p->lval - val <= 0;
-		break;
 	case ULT:
 		p->lval = p->lval - val < 0;
+		break;
+	case ULE:
+		p->lval = p->lval - val <= 0;
 		break;
 	case UGE:
 		p->lval = p->lval - val >= 0;
