@@ -1041,8 +1041,8 @@ d3aw(p, top)
 		return;
 	if (p->op == STAR)
 		top = 1;		/* below an indirection: an address */
-	else if (p->op != PLUS && p->op != MINUS)
-		top = 0;		/* below an operator: a computed value */
+	else if (p->op != PLUS && p->op != MINUS && p->op != UMINUS && p->op != MUL && p->op != 110 /* SCONV */)
+		top = 0;		/* below another operator: a computed value */
 	d3aw(p->left, top);
 	if (k == BITYPE)
 		d3aw(p->right, top);

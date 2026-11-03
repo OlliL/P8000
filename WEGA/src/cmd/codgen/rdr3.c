@@ -352,6 +352,7 @@ readmems(n)
 	long base;
 	int k, rem, dest, cnt;
 
+top:
 	if (n <= 0)
 		return;
 	fread(mem, 6, n, stfile);

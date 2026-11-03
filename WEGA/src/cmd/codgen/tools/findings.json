@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "d9747a66",
+ "measured_at": "0f38b1b7",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -154,17 +154,15 @@
    "file": "rdr3.c",
    "orig": "0x1b64",
    "size_orig": 204,
-   "status": "open",
-   "note": "Left: ld r3,4(r15) for n behind the first test, ours r7 (the parameter just tested, as scmd; step 6). One unused word in the frame.",
-   "lines": 2
+   "status": "exact",
+   "note": "One unused word in the frame."
   },
   "readtab": {
    "file": "rdr3.c",
    "orig": "0x1c30",
    "size_orig": 60,
-   "status": "open",
-   "note": "Left: ld r5,2(r15) for (int)n behind the test of n, ours from r5 (step 6).",
-   "lines": 2
+   "status": "exact",
+   "note": "Left: ld r5,2(r15) for (int)n behind the test of n, ours from r5 (step 6)."
   },
   "readnums": {
    "file": "rdr3.c",
@@ -177,9 +175,8 @@
    "file": "rdr3.c",
    "orig": "0x1d0e",
    "size_orig": 436,
-   "status": "open",
-   "note": "Left: cp 0(r15),#0 as the first test, ours r7: the original does not know n in r7 here, unlike readsyms; not explained (step 6).",
-   "lines": 2
+   "status": "exact",
+   "note": "Odd form: an unreferenced label in front of the first test: the old compiler forgets the parameter at a label no jump has named, which gives the test in the frame. What the authors wrote there is not known."
   },
   "sortsyms": {
    "file": "rdr3.c",
@@ -705,6 +702,7 @@
    "orig": "0x6bf4",
    "size_orig": 90,
    "status": "open",
+   "note": "Left: cp r6,#%0013 at a label with two jumps: restoring there fixes it but costs cparse buildtree 8 lines, also when only idle parameters are restored.",
    "lines": 2
   },
   "allocreg": {
@@ -745,9 +743,8 @@
    "file": "allo3.c",
    "orig": "0x6fca",
    "size_orig": 142,
-   "note": "Left: test 0(r15) as the first test, ours r7: as readmems, the only other function so far with this; both have a static local in front (not tested as the cause).",
-   "status": "open",
-   "lines": 2
+   "note": "Odd form: an unreferenced label in front of the first test, as readmems.",
+   "status": "exact"
   },
   "reclaim": {
    "file": "allo3.c",
@@ -791,7 +788,7 @@
    "file": "regallo3.c",
    "orig": "0x7650",
    "size_orig": 318,
-   "note": "Left: cp 0(r15),#2 against r6 behind the first test (OLD_D3J, as scmd, tcmd; step 6).",
+   "note": "Left: cp 0(r15),#2 behind the first test. Clearing the record of a jump at a loop head fixes it (one witness, not adopted).",
    "status": "open",
    "lines": 2
   },
@@ -1223,8 +1220,8 @@
    "file": "regs3.c",
    "orig": "0xa1ba",
    "size_orig": 152,
-   "status": "open",
-   "lines": 5
+   "status": "exact",
+   "note": "As scmd."
   },
   "regreset": {
    "file": "regs3.c",
@@ -1242,17 +1239,15 @@
    "file": "regs3.c",
    "orig": "0xa4aa",
    "size_orig": 308,
-   "status": "open",
-   "note": "Left: ld r7,0(r15) behind the first test, ours keeps n in r7 by OLD_D3J (as rsinsert, tcmd; step 6).",
-   "lines": 5
+   "status": "exact",
+   "note": "The argument -n is taken from the frame (OLD_D3AW)."
   },
   "tcmd": {
    "file": "regs3.c",
    "orig": "0xa5de",
    "size_orig": 342,
-   "note": "Left: as scmd. Each case has its own memname and putchar, popt merges them.",
-   "status": "open",
-   "lines": 5
+   "note": "As scmd.",
+   "status": "exact"
   },
   "memname": {
    "file": "regs3.c",
@@ -1343,6 +1338,7 @@
    "orig": "0xba7c",
    "size_orig": 294,
    "status": "open",
+   "note": "Left: cpb rl6,#%6C behind the first test; a free pair counted for a byte does not fix it.",
    "lines": 2
   },
   "isint": {

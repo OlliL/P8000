@@ -639,6 +639,7 @@ rwprint(rw)
 		0,
 	};
 
+top:
 	if (rw == 0) {
 		printf("RNULL");
 		return;

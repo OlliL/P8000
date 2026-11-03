@@ -368,7 +368,7 @@ compiler that built the original. Not differences of the compiler (checked):
   1400 > 1312, bench v0 99 > 107.
 - Removed (2026-11-03): OLD_D3V. One witness, a source form: defid `idp = hide( p ); q->rval = (int) idp;`.
 - v0p (switch `OLD_D3AW` in codgen, argplace; it replaced OLD_D3A, removed 2026-11-02): the register of a parameter is forgotten only
-  for an argument that is the parameter itself or uses it as an address (below an indirection, through + and -);
+  for an argument that is the parameter itself, uses it as an address (below an indirection) or goes through +, -, unary -, * or a cast (scmd, tcmd, fcmd `findtemp(-n)`, readsyms `alloc(n * 22)`, readtab `(int)n`);
   in a computed value the register serves (zecode `n*2` from rr6; refid `dimtab[p->sizoff+3]` reloads p). The
   same for a parameter added to an address constant (match: exname `&ntab[s]` as `ld r2,#ntab; add r2,0(fp)`).
   Only when the parameter lies in the register the argument is wanted in: putbyte `bcon(v)` (v in r7, wanted r7)
