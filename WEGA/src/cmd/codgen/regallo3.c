@@ -218,7 +218,7 @@ newnode(n, k)
 }
 
 #ifdef OLD_D2W
-static int rweight[8] = { 3, 1, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is taken early (pairs rr2, rr0 first) */
+static int rweight[8] = { 3, 4, 2, 3, 4, 5, 6, 7 };	/* the old codgen v0: r0 is taken early (pairs rr2, rr0 first) */
 #else
 static int rweight[8] = { 8, 1, 2, 3, 4, 5, 6, 7 };
 #endif
@@ -617,7 +617,7 @@ getreg(cls, reg, flag, sym)
 #ifdef OLD_D2T
 			/* v0: also the register of a TEMP (the value of a switch, needed again only behind a jump) */
 #ifdef OLD_D2G
-			if (t->cls == 2 && t->busy <= 0 && (w == 0 || rweight[t->reg] <= rweight[w->reg]) &&	/* v0: an equal weight is enough */
+			if (t->cls == 2 && t->busy <= 0 && (w == 0 || rweight[t->reg] < rweight[w->reg] || (rweight[t->reg] == rweight[w->reg] && t->reg != 0)) &&
 #else
 			if (t->cls == 2 && t->busy <= 0 && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
 #endif
