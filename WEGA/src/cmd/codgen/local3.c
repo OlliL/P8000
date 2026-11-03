@@ -1355,10 +1355,10 @@ upput(p)
 	register NODE *p;
 {
 	register long save;
-#ifdef SEG
-	register int spare;
-#endif
 	register int r;
+#ifdef SEG
+	register int r2;
+#endif
 
 	if (p->op == FLD)
 		p = p->left;
@@ -1393,10 +1393,10 @@ upput(p)
 			oregput(p);
 		} else {
 			p->lval = 2;
-			r = p->rval;
+			r2 = p->rval;
 			p->rval = (p->rval + 1) << 8;
 			adrput(p);
-			p->rval = r;
+			p->rval = r2;
 		}
 #else
 		p->lval += 2;
@@ -1480,9 +1480,6 @@ void
 acon(p)
 	register NODE *p;
 {
-#ifdef SEG
-	struct sym *s;
-#endif
 	char c;
 
 	if (p->op == ICON && p->rval < 0)
@@ -1497,19 +1494,19 @@ acon(p)
 			return;
 		}
 #ifdef SEG
-		s = p->sname;
-		c = ascii[s->nameoff];
-		if (s == symtab0 || c == '~') {		/* an address in the stack segment: _stkseg+~L1+offset */
+		if (p->sname != symtab0 && ascii[p->sname->nameoff] != '~') {
+			if (p->op == NAME && p->sname->sclass == 3 && !(p->sname->sflags >> 2 & 1)) {
+				putchar('L');
+				printf("%ld", p->sname->soffset);
+				p->lval = p->rval;
+			} else {
+				putchar('_');
+				printf("%s", ascii + p->sname->nameoff);
+			}
+		} else {		/* an address in the stack segment: _stkseg+~L1+offset */
 			printf("_stkseg");
-			if (c == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
-				printf("+%s", ascii + s->nameoff);
-		} else if (p->op == NAME && s->sclass == 3 && !(s->sflags >> 2 & 1)) {	/* a local static: its label */
-			putchar('L');
-			printf("%ld", s->soffset);
-			p->lval = p->rval;
-		} else {
-			putchar('_');
-			printf("%s", ascii + s->nameoff);
+			if ((c = ascii[p->sname->nameoff]) == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
+				printf("+%s", ascii + p->sname->nameoff);
 		}
 #else
 		if (p->sname && ascii[p->sname->nameoff] != '~') {
@@ -1548,9 +1545,6 @@ gencall(p, cookie)
 	register NODE *f;
 	register int fop;
 	register int indirect;
-#ifdef SEG
-	int r;
-#endif
 	long save;
 
 	f = p->left;
@@ -1612,10 +1606,10 @@ gencall(p, cookie)
 	rsfreeall(1);
 	tmpoff = 0;
 #ifdef SEG
-	r = match(p, 0x16);
+	fop = match(p, 0x16);
 	if (indirect)
 		printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", save);
-	return r != MDONE;
+	return fop != MDONE;
 #else
 #ifdef OLD_D22
 	/* v0p: a double result comes back in rq4 */
