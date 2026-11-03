@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "4019eff2",
+ "measured_at": "cf2d6322",
  "functions": {
   "options": {
    "file": "reader3.c",
@@ -657,9 +657,8 @@
    "file": "match3.c",
    "orig": "0x6196",
    "size_orig": 686,
-   "status": "open",
-   "note": "Odd form: the switch tail and the search loop written in the physical order of the original, by goto; the switch part agrees. Left: the search loop is moved by popt (a loop inversion, not traced).",
-   "lines": 40
+   "status": "exact",
+   "note": "Odd form: the switch tail and the search loop in the physical order of the original, by goto; the candidate code stands inside the last test of the operator class, so that no jump stands in front of its label. Found with a trace of popt (OLDCC_LOG 2026-11-03)."
   },
   "expand": {
    "file": "match3.c",

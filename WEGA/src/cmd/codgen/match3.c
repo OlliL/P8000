@@ -351,9 +351,7 @@ top:
 
 		if ((opmtemp = opclass[q->op - 0x1000]) & 0x4000)
 			goto zz;
-		if ((dope[p->op] & (opmtemp | 1)) != opmtemp)
-			goto next;
-	}
+		if ((dope[p->op] & (opmtemp | 1)) == opmtemp) {
 cand:
 		if (!(q->visit & cookie))
 			goto next;
@@ -440,6 +438,9 @@ cand:
 		}
 #endif
 		return MDONE;
+		}
+		goto next;
+	}
 nom:
 	return NOMATCH;
 }
