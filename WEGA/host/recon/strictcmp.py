@@ -80,7 +80,7 @@ def main():
         diff += bool(d)
         print('%-16s %04x %4d %4d  %-10s %s' % (name, lo, hi - lo, e - s, f.get('status'), 'SAME' if not d else 'DIFF %d' % len(d)))
         if verbose == name:
-            print('\n'.join(difflib.unified_diff(theirs, mine, 'orig', 'ours', lineterm='', n=2)))
+            print('\n'.join(difflib.unified_diff(theirs, mine, 'orig', 'ours', lineterm='', n=int(os.environ.get('STRICT_CTX', '2')))))
     print('same %d, differ %d (%s)' % (same, diff, 'masked' if masked else
                                        'all forms' if '-a' in sys.argv else 'call forms' if callform else 'strict'))
 

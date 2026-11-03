@@ -76,7 +76,7 @@ experiment: one pass of the chain replaced by its version, the rest shipped.
   the measurement.
 
 
-How to test a change of a pass without touching the tree: copy `src/cmd/PASS` to a scratch tree (`WEGA/src/cmd/PASS`, with `WEGA/src/lib` and `WEGA/host` as links), change it there, `make` in `PASS/v0p` with the shipped tools (codgen: `SWITCHES=-DOLD_V0P`), copy `tmp/oldroot` and put the pass into its `lib/v0p`, then `RECON_TMP=scratch CCHOST=wrapper python3 tools/d12model.py -q` and `RECON_TMP=scratch python3 tools/strictcmp.py` in each program, where the wrapper runs `z8k-emu -r copy /bin/ccv0p "$@"`. Compare the lists per function with `RECON_TMP/oldcc_model_PROG.txt`. Removing a switch: delete its `#define` in the copy of `codgen/oldcc.h`. The trace of popt: `OLDCC_LOG.md`, match, 2026-11-03.
+How to test a change of a pass without touching the tree: `host/recon/oldvar.sh NAME PATCH.py [PASS]` (run `oldcc.sh model PROG` first). Removing a switch: a patch that deletes its `#define` from `oldcc.h`. What popt does with a function: `host/recon/poptrace.sh PROG FUNC`. `STRICT_CTX=12 python3 tools/strictcmp.py -v FUNC`: a difference with more context.
 
 ### Time box (owner decision 2026-10-31)
 
