@@ -32,8 +32,7 @@ split, link) read `host/HOWTO_reconstruct.md` first. This file holds the facts.
   `Makefile` targets: `make -C WEGA/host check` (cc, ar, binutils, cas, popt,
   libc, oldcc). `make -C WEGA/host verify-wega` builds `src/cmd` with the
   original tools (`CC SCC CAS AS LD SLD GLD YACC AR STRIP`) and compares per
-  program (`cas` differs by design, see "cas: decompilation"). The
-  status of the programs against the originals is kept in `WEGA/src/TODO.md`.
+  program (`cas` differs by design, see "cas: decompilation").
 - `WEGA/contrib/...` third-party and own extras, unchanged.
 
 Living document. Goal: rebuild the WEGA tool chain (cc, scc, cas, as, ld, sld,
@@ -61,7 +60,7 @@ Local copies used in the work:
   big-endian binary cpio (uuencoded). Not a stock install, but all tool
   chain files are present. tar and cpio agree byte for byte on every tool
   chain file; only runtime files (utmp, wtmp, logs, core) differ. This tree
-  is the reference for every "identical" in `src/TODO.md`: the version
+  is the reference for every "identical": the version
   subdirectories under `src/cmd` build exactly the versions found here (the
   owner calls them the versions shipped with WEGA 3.1; the SCCS ids in the
   binaries end in `87wega3.2`; the suffix is a literal string in the binaries, not an
@@ -729,8 +728,7 @@ Results (all byte-identical to the objects shipped with WEGA, see
 - ar, size run correctly; nothing in the tool chain needed more than the
   system calls listed below.
 - The whole `src/cmd` builds under the oracle (`CC SCC CAS AS LD SLD GLD YACC AR STRIP`
-  all run as `z8k-emu -r ROOT <tool>`); the per-program results are in
-  `src/TODO.md`. The segmented chain `scc` -> `gld` (E607/E611, `gld` called by hand) reproduces
+  all run as `z8k-emu -r ROOT <tool>`). The segmented chain `scc` -> `gld` (E607/E611, `gld` called by hand) reproduces
   `pburn` 2.1 byte for byte. `make` itself runs on the host, not in the
   emulator.
 - Paths: absolute guest paths are looked up below ROOT, relative ones refer
@@ -1442,7 +1440,33 @@ What the data showed:
 
 ## libc check against the original library
 
-Status of the libc check: `src/TODO.md`, section "libc check". The facts about the original library (versions, start-up files) stay here.
+`libc/check.sh WEGA_ROOT LIBC_SRC ORIG_MEMBERS [member ...]` rebuilds each
+member of `WEGA/src/lib/libc` with the original tools and compares it byte for byte
+with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` without a
+`module` header with `cas`, `.c` with `/bin/cc` (-O, "", -Or, -Ol).
+
+- `/bin/as` is the PLZ/ASM assembler (not `cas`). It execs the overlay `/lib/as2`
+  (magic E705), so the emulator implements overlay exec (I-space replaced, data,
+  stack and registers kept). `-f` allows the EPU (floating point) mnemonics
+  (`fldctl`, `flds`, `fmul`, `fldd`, ...); without it they give ERROR 91.
+  Module names matter: they appear as `<module>_p`/`<module>_d` symbols
+  (abort.s is module `abort_s`).
+- Result: 170 of the 180 members identical, 7 differ, 3 have no C source (the 10 are
+  kept as cas sources in `src/lib/libc/oldcc`, see "oldlibc").
+- Same code, different compiler revision (cannot match with the shipped cc): `malloc`,
+  `nlist`, `length`, `swap` (differences D1, D3, D4, D8). The shipped
+  libc was built with more than one compiler revision.
+- Different source revision (Nov 1983 float versions, files dated Nov 16-17 1983):
+  `printf` (printf/fprintf/sprintf with `_pfile`, `_rc`, `_flsbuf`; calls
+  `_doprnt(fmt, args, argend, flag, file)`), `scanf`, `doscan` (calls `_inflt`).
+  Together with `cnvt`, `fltioc` and `symscan` (no C source yet) they form the
+  floating-point stdio cluster that remains to be reconstructed as C (`doprnt` and
+  `ecvt` rebuild byte-identical now, see below).
+- Findings while fixing sources: getpass uses `struct termio` (`c_lflag`, ioctl 0x5401/0x5404/0x5403);
+  execvp is the 4.3BSD one with `index`, a `/bin/csh` fallback (`whichshell`) and `-` as
+  path separator in `execat`; malloc is a variant that extends the top free block when the
+  break is contiguous (`maxbytes` 0xFFF8, `maxblocks` 64 as data); nlist/readsym use the
+  s.out long-name encoding (`readby`, `(len+13)/14` entries).
 
 ### gopt (-Or) output with register pointer parameters: real behaviour, not an emulator bug
 
@@ -2242,3 +2266,135 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
 - The WEGA `int` is 16 bit and `long` 32 bit; on the Linux host `int` is 32 bit and `long` 64 bit. Any value that is read from a
   file or printed with a format must keep the WEGA width (see `host/codgen` for the places already handled).
 
+## Layout of src and the build
+
+`cmd/chkdiff`, `cmd/uuclear` and `cmd/whodo` are text scripts; they were
+compared using `cmp` and are identical.
+
+- `popt` and the Linux versions of the tools (`host/cc` with `cc.conf`, `host/ar`, `host/binutils`, `host/cas`, `host/ld`) are Linux-side tools and live in `host/`; the WEGA source of `cc` and `scc` is `cmd/cc/cc.c`.
+
+- The single-file commands are flat in `cmd/` (V7 layout): `ar`, `dump`,
+  `dumpdir`, `getud`, `putud`, `restor`, `sync`, `tar`. `size`, `strip`,
+  `ranlib` and `cc` have their own subdirectory, because they are linked from
+  their own libc part (`lib/oldlibc`); `cas` has several files.
+- For some commands several versions exist. For those, subdirectories were
+  created, one per version (even if it is a single C source). The `Makefile`
+  in the subdirectory builds the version shipped with WEGA 3.1; the others
+  are not built. This applies to `pburn` (2.1; others 1.4/2.3/2.6),
+  `copydisk`, `format` and `verify` (1.5; 1.6 alternative).
+- `BOOT0`, `doscopy`, `standalone` have their own template Makefiles and are
+  built by `make` in `cmd/` (`SUBDIRS`; `doscopy` by a separate line before
+  them); `cas` too (it needs `SCC`, `SLD` and `YACC`).
+  `standalone/sa.diags` is separate and built as well, but only the p8000
+  version shipped with WEGA 3.1 (`p8000c` is for the P8000 compact, a newer
+  hardware, not relevant here); its
+  Makefile needs `ASFLAGS=-u` (the original `as` needs `-u` for external
+  symbols like `_printf`).
+- `cmd/doscopy/mk` is a one-line helper (`make doscat ...`) that duplicates
+  the `all` target; not used.
+- `lib/libc` has no Makefile of its own yet.
+
+## The host tool chain: what is native
+
+- Host tool chain (compile without z8k-emu): native on the host are the `cc`/`scc` drivers, `popt`, `cas`, `ar`, `ranlib`, `strip`, `size` and
+  since 2026-10-22 `ld` (`host/ld`, nonsegmented, same files as `/bin/ld` on 146 command lines; no 8 bit objects, no `-T`/`-v`) and `sld`
+  (`host/ld/sld.c`, same files as `/bin/sld` on 91 command lines; not implemented: `-f`, `-A`, `-b`, `-t`, `-M` with `:t`/`:b`/`+files+`, `-M` changing
+  between large files, several overflowing start segments in combined mode, see KNOWLEDGE.md). `gld` (`host/ld/gld.c`, same files and messages as `/bin/gld`; not reproduced: the original's undefined output when no object is loaded, its memory limit ("out of memory(load2td)" with sections of about 50000 bytes) and hangs with sections near 64K). Still only the
+  original binaries under the emulator: `cpp`, `cparse`/`scparse`, `gopt`, `as`. `spopt` is done (`host/popt`, `make spopt`). `host/ld/ld.c` is written from the binary and measurements, not transcribed function by function.
+
+### codgen host version (`host/codgen`, ANSI C, separate source)
+
+Working copy of `src/cmd/codgen` for the host, made with `host/tools/kr_code_transform.py` (run on the copy only; the script overwrites its input).
+Rule: no sharing with `src/cmd/codgen`; each file is checked with `gcc -Wall`.
+
+- `main3.c`: done at syntax level (`gcc -Wall -std=gnu99 -fsyntax-only` clean). ANSI heads for `options`, `init`, `main`; unused variables removed; `malloc`, `strcpy`, `strcat` from the standard headers.
+- `rdr3.c`: done at syntax level, also clean with `-Wold-style-definition`. The binary symbol table file is no longer copied into C structs (the host `struct sym` has another size):
+  `get_sym` decodes the 22-byte records field by field; `rd16be` and `rd32be` read the big-endian words and longs (`rd32be` moved from `main3.c`);
+  the number and member tables are decoded the same way; all byte offsets (`+ 0x16`, `* 22`, `+ 0x42`) became element indices (`symtab + 1`, `symtab + dest`, `symtab + 3`).
+  `eread` keeps the 16-bit truncation of the original (macro `S16` in `cg.h`). A pointer that was passed through an `int` is kept as a pointer (`mapnm`).
+  The debug print of a pointer uses `%p`.
+- `cg.h`: the stdio macros of the original (`getc` on `_cnt`/`_ptr`) are replaced by the standard `getc`; declarations of `rd16be`, `rd32be`, `S16`.
+- `regallo3.c`: done at syntax level (also clean with `-Wold-style-definition`). Findings:
+  - `rsmerge(hp)` took `struct rs *hp` but dereferences it as a pointer to the list head (`*hp`); the original loads the word at `hp` (`ld r3,@r2`),
+    so the parameter is `struct rs **hp` (the only caller passes `&rsstk[j].list`). The WEGA `cc` accepted the mistake silently.
+  - `rweight[8]` is indexed with `reg` (a `char` 0..15 in the struct) for the classes 2 and 3 only; the index range for those classes is not checked yet.
+  - The unused third register pointer in `rsbuild` and the unused `last` in `rsrestart` are removed (no effect on the behaviour; only the register use of the original is not reproduced).
+  - Register numbers used as array indices are cast to `unsigned char` (the `char` fields hold 0..15).
+- `comm3.c`: done at syntax level. Findings:
+  - `alloc` and `allocinit` no longer use `sbrk`/`brk`: on the host `malloc` (used in `main3.c`) keeps its heap on the same break, so the
+    original scheme would corrupt it. One static arena of 4 MB replaces it; `alloc` keeps the order of the reservations (symbol tables must be contiguous),
+    `allocinit(base)` resets the pointer. Behaviour change: out of space is reported at 4 MB instead of at the system limit.
+  - `cerror`, `uerror` and `werror` are variadic (`...`, `vfprintf`); their prototypes are in `cg.h`; the K&R `extern` declarations in all files were removed.
+    `uerror` returns `int` (as the other declarations say); the original returned nothing.
+  - The wasted-space message prints the node address as `%lx` of an `unsigned long` (the address itself is different on the host).
+- `lcl3.c`: done at syntax level (also clean with `-Wold-style-definition`). The copy loop of `fbegin` tests the copied byte explicitly (same meaning);
+  `findtemp` gets a forward declaration (it is used before its definition); two unused register variables of `fbegin` and one of `regtabinit`-era code removed.
+- `reader3.c`: done at syntax level (also clean with `-Wold-style-definition`). Findings:
+  - `label` was a macro for `sname` (the same word of the node). On the host `sname` is a pointer, the label an `int`; `cg.h` now puts both in one union
+    (`nsn.sy` as `sname`, `nsn.lb` as `label`), so the overlap of the original is kept.
+  - The cookie names are printed with `printf("%s", ...)` (no format from data); the hex width of the SPECIAL and cookie messages stays `%02x`.
+  - `oreg2`: unused register variable removed; `ffld` converted to ANSI.
+- `allo3.c`: done at syntax level (also clean with `-Wold-style-definition`). The `calloc` declaration (not used) is removed; `fwalk` and `tfree` are declared;
+  the mask tests `cookie & 04 | 0100` get explicit parentheses (the same meaning, `&` binds tighter than `|`); unused variables removed (`prev`, `spare`, `q`);
+  `getlr` is still called in `freereg` for its effect (it can stop the run on a bad cookie).
+- `tr3.c`: done at syntax level (also clean with `-Wold-style-definition`). Unused variables removed (`ob`, `t`, `spare`, `spare1` to `spare4`, `sz`, `cl`).
+  The assignments of `sz` (`(int)m->ssize`) and `cl` (`m->sclass`) in `member` had no further use; `makeblock` and `buildstar` converted to ANSI.
+- The remaining files of the host copy (`order3`, `out3`, `zzz3`, `optim3`): done at syntax level and the K&R heads converted (all files are clean with `gcc -Wall` and `-DSEG`, with and without `-Wold-style-definition`). Next: the four small ones (`order3`, `out3`, `zzz3`, `optim3`), then the 16-bit width audit (`int` fields and comparisons, `printf` formats with negative values).
+- Acceptance: the host `codgen` must produce the same text as `/lib/codgen` (emulator) on the corpus. Not yet possible: the program does not link yet.
+
+#### codgen host version: first run against the original (corpus, not finished)
+
+Status: the host `codgen` (`host/codgen`, non-SEG) links and runs. Test: `host_corp.sh` (scratch), 100 cases of the codgen corpus,
+output compared with `/lib/codgen` under the emulator: 69 identical, 25 crash (SIGSEGV), 6 stop in `cerror` (exit 64), 0 other differences.
+
+Bugs found by the run and fixed (host copy only):
+- `setbuf(dfile, malloc(0x200))`: glibc `setbuf` writes a `BUFSIZ` buffer (8192 bytes); now `setvbuf(..., _IOFBF, 0x200)`.
+- `opclass[]` had 24 entries, the table uses `op = 0x1000 + k` up to k = 24; the original array has k = 24 -> `0x4000` and k = 25 -> `0xe` (read from the binary at 0x3530).
+- `dope[]` and `opptr[]` had 128 entries; `setrew` runs to `op 128`; both arrays now have 129 entries (the entry is 0).
+
+Node overlay (decided: option A, separate fields): `lval`/`left`, `sname`/`label` and `rval`/`right` are separate fields in the host copy (`cg.h`).
+The corpus result did not change (70/100); the crashes are not caused by the overlay (see below).
+
+#### codgen host version: corpus status (current)
+
+`codgen` (non-SEG): 100 of 100 corpus cases identical to `/lib/codgen` (`host_corp.sh`, scratch). Last step: in `lcl3.c` the rewrite
+of `STREF` and `UAND` nodes (`mapregs`) copied only some fields of the replacement node; the original's overlaid `lval`/`rval` carry the
+operands `left`/`right` along by accident. The host copy now copies the whole node (`ncopy`). That removed all 20 failures.
+
+Corrections of earlier notes in this file:
+- `INCR`/`DECR` (`78`/`79`) are binary nodes (dope flags `0x9`): the step is the right subtree, not `rval`. The earlier "INCR is the cause"
+  was wrong; the cause was the incomplete copy above. The INCR rewrite in `reader3.c` is the original's and is not changed.
+
+`scodgen` (`-DSEG`): 100 of 100 corpus cases identical to `/lib/scodgen` (`host_scorp.sh`, scratch). An earlier run showed
+46 of 100 (15 crashes); that was an error of the test script, which copied the codgen corpus data (`.D`, `.S`) for the scodgen cases.
+With the corrected script both host versions are complete for the corpus.
+
+#### Large corpus: source files of `src/cmd` and `src/lib` (scratch, `big_corp.sh`, `big_scorp.sh`)
+
+Each file: `cpp` and `cparse` (or `scparse`) of the original make the intermediate files; the original and the host code generator run on them.
+- `codgen`: 213 of 213 comparable files identical to `/lib/codgen`, after two host corrections found by this run:
+  `zzzcode` tested `sname->sclass` before `op == NAME` (an `OREG` has no symbol); `fixname` returns for a `NAME` without symbol (a label;
+  the original reads memory there; the five `doscopy` cases match the original with this rule). 3 files are not comparable: `cas/scanner.c`
+  needs the yacc output `y.tab.h` (not in the tree); `doscopy/dosdir.c` and `dosfat.c` fail in the original `cparse` itself.
+- `scodgen` (`-DSEG`): 209 of 213 identical; 4 text differences (`doscopy/1.3/dosdir.c`, `pburn/2.1|2.3|2.6/pb.cmdline.c`): the host prints
+  a `|` around `_stkseg+~L1` operands (`oregput`, the SEG branch with `bar`), the original does not. Cause not found. The union of `sname` and
+  `label` was tried (no change); the cause is not the field split.
+
+#### scodgen SEG: the `|` difference (resolved)
+
+Cause: the bar test in `oregput` (SEG). The original's code (`scodgen` at 0x4076) tests the low words only: for `sname == symtab0` the
+low word of `lval`; for `sname == fpsym1` the low word of `lval + X`, where X is the global at 0x963A. The dump of that global at the
+calls in question shows `maxoff` (288 = 36 * 8), not `frame0` (36). The host used `frame0` and the full value.
+Fix (host copy): `(lval & 0xFFFF) <= 0xFF` for `symtab0`, `((lval + maxoff) & 0xFFFF) <= 0xFF` for `fpsym1`.
+Result: `scodgen` 100 of 100 corpus cases identical; large corpus 213 of 213 comparable files identical (3 not comparable, see above).
+The method: the scratch emulator was patched to dump memory at the n-th hit of an address (`Z8K_MEM_NTH`); the host debug copy printed the
+values at the same calls.
+
+## sld: how far the reconstruction is
+
+State per function: `src/cmd/sld/tools/FINDINGS.md`, `own_functions.txt`. What holds for the program:
+
+- `/bin/sld` is segmented (E611): code 38912 bytes in segment 0, data 7090, bss 31054 + 63488; stripped. Modules from the SCCS strings of the data, in link order: scrt0.s, copyname.c 3.1, dump.c 3.1, ext.c 3.3, ld.c 3.8, ldm.c 3.10, printname.c, swap.c, symbols.c, malloc.c. The sources are `src/cmd/sld/{copyname,dump,ext,ld,ldm,printname,swap,symbols}.c` and `ld.h`; `host/ld/sld.c` is a guide for names only.
+- Own code to 0x71ca, then libc: putchar, scanf, doscan are shipped members of `/lib/slibc.a`; printf and doprnt (0x79ca..0x8682) are another revision and stay cas sources in `src/lib/oldslibc`. `unlink_seg.py` cuts segmented modules (`unlink.py` handles nonsegmented ones only).
+- The layout equals the original, every variable at its address: the commons are allocated in the order of the first mention in the objects in link order, so all are defined in copyname.c in the order of the original; cmdargv has 2000 pointers; unused gaps are spare variables; bE466, bE467 are the two bytes of one struct; the prefixes "", "/usr", "/z/bin" of getfile are static arrays in front of the function; data.o links behind filbuf.o, ctype_.o behind malloc.o.
+- Tools: `fncheck.py` (strict, frame offsets), `accept.py`, `rename.py`, `strict_audit.py`, `check_names.py`, `tryname.py`, `odis.py`, `check_data.py`. The compiler keeps 8 characters of a function name.

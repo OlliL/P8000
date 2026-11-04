@@ -17,7 +17,7 @@ original was built by an older compiler revision (`OLDCC.md`), byte identity nee
 
 ## Inventory: what belongs to the tool chain
 
-Source of truth for the state: `../src/TODO.md` (per program) and the check commands in the last column.
+The state: the check commands in the last column; the plan: `../src/TODO.md`.
 "Source from binary" = our source was written from the original binary, not from a source tree.
 
 | Tool | Original (WEGA 3.1 tree) | Original filesize | WEGA source (`src/`) | Host version (`host/`) | Source from binary | State | Check |
@@ -25,7 +25,7 @@ Source of truth for the state: `../src/TODO.md` (per program) and the check comm
 | `cc`, `scc` (driver) | `/bin/cc`, `/bin/scc` | 14208, 14246 | `src/cmd/cc/cc.c` | `host/cc` | no (WEGA source) | done: 74 command lines identical; `cc` and `scc` byte-identical | `make -C host check` (cc) |
 | `cpp` | `/lib/cpp` | 16522 | `src/cmd/cpp` (System III source, owner decision) | - | no | byte-identical with ccv0p | `tools/FINDINGS.md` |
 | `cparse`, `scparse` | `/lib/cparse`, `/lib/scparse` | 67520, 67826 | `src/cmd/cparse` (K&R, from the Plexus PCC base, owner decision) | - | yes | byte-identical with ccv0p | `src/cmd/cparse/tools/oldcc.sh model`, `corpus` |
-| `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | 80884, 83554 | `src/cmd/codgen` (K&R) | `host/codgen` (ANSI, gcc `-Wall`; `-DSEG` for scodgen; functional equality) | yes | byte-identical with ccv0p | `host/codgen` (`host_corp.sh`-style test, see `src/TODO.md`); `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
+| `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | 80884, 83554 | `src/cmd/codgen` (K&R) | `host/codgen` (ANSI, gcc `-Wall`; `-DSEG` for scodgen; functional equality) | yes | byte-identical with ccv0p | `host/codgen` (`host_corp.sh`-style test); `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
 | `gopt` | `/lib/gopt` (only with `-Ol`/`-Or`) | 147286 | - | - | - | not started | - |
 | `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | 25620, 25880 | `src/cmd/popt` (K&R, `z20.c` to `z23.c`, `stdio.h`; the bss order from the definitions at the end of `z2.h`) | `host/popt` | yes | byte-identical with ccv0p | `make -C host check` (popt); `src/cmd/cparse/tools/oldcc.sh model popt` |
 | `cas` | `/bin/cas` | 89152 | `src/cmd/cas` (`MODULES`) | `host/cas` | yes (decompiled, see `src/cmd/cas/README`) | done in behaviour; code not byte-identical (older scc) | `make -C host check` (cas) |
@@ -34,7 +34,7 @@ Source of truth for the state: `../src/TODO.md` (per program) and the check comm
 | `sld` | `/bin/sld` | 46074 | - (source in `host/ld`) | `host/ld/sld` | yes | done: 91 command lines identical | `make -C host check` (ld) |
 | `gld` | `/bin/gld` | 27616 | - (source in `host/ld`) | `host/ld/gld` | yes | done on the check lines | `make -C host check` (ld) |
 | `ar` | `/bin/ar` | 12396 | `src/cmd/ar.c` | `host/ar/ar` | to be checked | done on the host (archives identical) | `make -C host check` (ar) |
-| `ranlib`, `strip`, `size` | `/usr/bin/ranlib`, `/usr/bin/strip`, `/bin/size` | 7732, 9072, 7732, | `src/cmd/ranlib`, `strip`, `size` | `host/binutils` | to be checked | done on the host; the `src/cmd` versions still differ (`src/TODO.md`) | `make -C host check` (binutils) |
+| `ranlib`, `strip`, `size` | `/usr/bin/ranlib`, `/usr/bin/strip`, `/bin/size` | 7732, 9072, 7732, | `src/cmd/ranlib`, `strip`, `size` | `host/binutils` | to be checked | done on the host; the `src/cmd` versions still differ | `make -C host check` (binutils) |
 | `libc`, `slibc` | `/lib/libc.a`, `/lib/slibc.a` | 90484, 110938 | `src/lib/libc` (170 modules in C), `src/lib/libc/oldcc` (10 modules as `.s`), `src/lib/oldlibc` (versions) | `host/libc` | partly | 170 of 180 from C; 7 differ (4 older cc, 3 other revision); 3 without C | `make -C host check` (libc), `make -C host/oldcc verify` |
 | `crt0` (start-up files) | `/lib/crt0.o` and others | 226 |  `src/lib/libc/crt` (`crt0.list`, `mkcrt0.sh`) | - | to be checked | generated; start code checked against the original | `src/lib/libc/crt` |
 | `yacc` | `/usr/bin/yacc` (used by `verify-wega`) | 37224 |  - | - | - | not inventoried | open |
@@ -64,4 +64,4 @@ original tools and compares each program).
 
 ## Next steps
 
-The order and the state are in `../src/TODO.md`, "State and next steps". What is known about the old compilers: `OLDCC.md`; the procedure: `HOWTO_reconstruct.md`.
+The order is in `../src/TODO.md`. What is known about the old compilers: `OLDCC.md`; the procedure: `HOWTO_reconstruct.md`.

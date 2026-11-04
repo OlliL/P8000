@@ -2,7 +2,7 @@
 
 This is the procedure for every original binary (program or library). It was developed on `codgen`,
 `popt` and `sld` (2026-10; `sld` is the most complete: structs, names, corpus test). Facts about a
-specific binary go to `KNOWLEDGE.md`, open items and status to `src/TODO.md`, per-function findings to
+specific binary go to `KNOWLEDGE.md`, open items to `src/TODO.md` only as steps of its plan, per-function findings to
 `findings.json` of that program. Keep this file as the procedure only.
 
 Ground rules: byte identity with the original is the goal. Bugs of the original are rebuilt and
@@ -166,7 +166,7 @@ functions"):
   several "register differences" disappeared (`list_move_after`, `start_output`, `readhdr`).
 
 Remaining differences are the old compiler's own (the optimizer moves non-register locals into scratch
-registers, `and #0xFFFE` becomes `res`, jump forms). Document them in the D table in `src/TODO.md`.
+registers, `and #0xFFFE` becomes `res`, jump forms). Document them in `OLDCC.md`.
 
 ## Step 8: structs, names, quirks [B]
 

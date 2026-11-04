@@ -1,7 +1,7 @@
 # Handoff: /lib/cparse
 
 Started 2026-10-30. Program: `/lib/cparse` (WEGA 3.1, pass 1 of cc, PCC front end; E711, nonsegmented, stripped).
-Procedure: `host/HOWTO_reconstruct.md`; plan and criteria: `src/TODO.md`, "Plan: towards the old C compiler".
+Procedure: `host/HOWTO_reconstruct.md`; plan: `src/TODO.md`.
 Tools: `host/recon/` through the launchers of this directory (configuration `progcfg.py`).
 
 ## Owner decisions for cparse (2026-10-30)

@@ -3,14 +3,14 @@
 Project: rebuild the WEGA (Z8000/P8000) tool chain and system sources, output-identical to the
 originals. Branch `toolchain` of github.com/OlliL/P8000. Project dir `WEGA/` (`src/`, `host/`, `contrib/`).
 Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md` (facts) and
-`src/TODO.md` (open differences).
+`src/TODO.md` (the plan).
 
 ## Rules
 
 - Conversation in German, short messages. Git content (files, commits) in English.
 - Commits are allowed in the directories of the passes and the docs after each accepted step (owner decision
-  2026-11-02). Never push; branches and everything else in the repository stay with the owner. Keep
-  `host/KNOWLEDGE.md` and `src/TODO.md` current and say which files changed.
+  2026-11-02). Never push; branches and everything else in the repository stay with the owner. `src/TODO.md` holds only the
+  plan; keep `host/KNOWLEDGE.md` current and say which files changed.
 - Facts only from documents or measurements; mark guesses as guesses.
 - Always keep two tables current while working: "Objects and their differences" in `host/OLDCC.md`
   (which object shows which difference D1 ... D23) and "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
@@ -25,10 +25,9 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 - Originals, binaries and copyrighted material never go into git (unless the owner says so).
   Plexus sources are private reference only; our code is reconstructed from the WEGA binaries
   and is not a copy of them.
-  Exception (owner decision 2026-11-02): the passes of the compiler (`cparse`, `scparse`, `codgen`, `scodgen`, `popt`, `spopt`, `cpp`). Their source
-  follows the compiler in the Plexus tree (`cmd/cc`: PCC, `c2`, `cpp`) as closely as the bytes of the WEGA original allow: names, macros, comments, order, whole
-  functions where they fit. PCC is a widely spread compiler of its day; what could be the same should be the same, so that a
-  comparison with a real PCC shows what WEGA added. Byte identity stays first. All other Plexus sources stay reference only.
+  Source base (owner decisions 2026-11-03, 2026-11-04): the clean System III sources (`SYSIII/sys3`) are primary and may be copied into `src/`: names, macros,
+  comments, order, whole functions, as far as the bytes of the WEGA original allow. Decide per program. For what is specific to the Z8000 the Plexus sources are the
+  model of the compiler passes; Plexus is always secondary. Byte identity stays first. All other Plexus sources stay reference only.
 - V7 layout in `src/cmd`. Makefiles must also work with WEGA's native `make`:
   use `=` not `?=`, `cd dir ; $(MAKE)`.
 
