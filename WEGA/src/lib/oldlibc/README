@@ -1,53 +1,15 @@
-oldlibc - modules of the libc versions that the original programs were linked with
-===================================================================================
+oldlibc - the libraries of the time of the old programs
+=======================================================
 
-The shipped library (/lib/libc.a, sources in ../libc) is not the only libc inside the original programs.
-Programs carry the members they were linked with, and some of them come from other revisions. This
-directory holds only libc modules that are not the shipped ones:
+The shipped library (/lib/libc.a, sources in ../libc) is not the only libc inside the original programs: each was linked from a
+libc of its time. `make` builds them as `../libc-vN.a`; the Makefile names per library its members in the order of the original
+programs, and for each module how it is made:
 
-    <module>/0_<n>.s     version n of the libc module (named like the member of libc.a: printf, doprnt, ...)
-    VERSIONS             which program contains which version of a module
-    CATALOG.md           which libc members each program contains and how they differ (made by
-                         host/tools/libcver.py --catalog)
+    <module>/0_<n>.c     a source for this version; the Makefile also uses sources of ../libc with another compiler
+    <module>/<module>.c  a System III source (a module without its own 0_n.c)
+    <module>/0_<n>.s     assembler (cas syntax), where a compiler we do not have made the module, or it was assembler in the original;
+                         a 0_<n>.c beside it is a draft
 
-A module is made from C where a source and a compiler give its bytes: `SOURCES` lists them (module, version, source, compiler,
-headers; `host/tools/mkoldlibc.py` compiles them, `libctable.py` measures all sources and compilers, `libcfit.py` tries one source).
-The other modules are assembler (cas syntax) cut out of the original programs by `host/tools/unlink.py`. The .s of a module in
-SOURCES stays until the Makefiles of the programs no longer name it. The version numbers are invented (0_1, 0_2, ...) until we know
-the real ones; the same text gets the same number.
-
-Members of the shipped libc.a that an older cc built are NOT here: they are in `../libc/oldcc/<function>/<version>.s`.
-
-How a program uses them: the program has its own directory in `../../cmd` (size, strip, ranlib, cc) with a
-list of its libc modules in link order (`<program>.spec` input and `<program>.link` result of unlink.py). Its
-Makefile assembles the old modules from here, extracts the modules that are identical with the shipped ones
-from `/lib/libc.a` (`ar x`) and links them behind the own objects. No libc is linked. The first program is
-`../../cmd/size` (13 old modules: rdwr printf doprnt ffltioc filbuf flsbuf endopen findiop cnvt length malloc
-goodmagic swap, and 19 shipped members), `../../cmd/strip` (16 old modules and 24 shipped members),
-`../../cmd/ranlib` (24 old modules and 19 shipped members) and `../../cmd/cc` (cc and scc: 9 old modules and 33 shipped
-members; these two files are byte-identical with the originals). Modules with the same text in several programs are one
-version (for example cnvt, ffltioc, length in cc, scc, size and strip; strcpy in cc, scc and strip); see VERSIONS.
-
-How the modules are cut:
- * a module is a stretch of text that no relative branch (jr, djnz, calr) and no jump table crosses; the
-   assembler cannot relocate those. The boundaries and names come from a spec written by hand (call graph,
-   sizes of the shipped members, symbol table of libc.a).
- * calls between modules, data and bss addresses are symbols; local labels count from the start of the module
-   (`L0042`, `D0010`); jump tables are `.addr` of local labels. Pointers in other data are still numbers.
- * the data belongs to the modules in link order.
-
-Versions found so far (CATALOG.md): the programs ar, getud, putud, tar, dump, dumpdir, restor, copydisk, format,
-verify, sync use the shipped libc; cc and scc have one libc part of their own, size, strip and ranlib one each
-(strip shares six modules with size). Open: how many libc source revisions and how many older compilers are behind
-that. Not covered: the segmented programs (cas, sld, ...), they link slibc.a.
-
-Regenerate the catalogue (file tree of the original system in WEGA):
-
-    WEGA=<tree> python3 host/tools/libcver.py --catalog bin/ar bin/cc bin/scc bin/size usr/bin/strip \
-        usr/bin/ranlib bin/getud bin/putud bin/tar etc/dump etc/dumpdir etc/restor bin/copydisk \
-        bin/format bin/verify bin/sync > src/lib/oldlibc/CATALOG.md
-
-Cut a program (here size, from src/cmd/size after `make` built its crt0-size.o and size.o):
-
-    WEGA=<tree> python3 host/tools/unlink.py src/cmd/size/size.spec <tree>/bin/size src/lib/oldlibc \
-        src/lib/libc/crt/crt0-size.o src/cmd/size/size.o > src/cmd/size/size.link
+The version numbers are invented (0_1, 0_2, ...); the same bytes have the same number. Which is open and why: ../../TODO.md, step 2.
+A program finds its library with host/tools/whichlibc.py. host/tools/libctable.py measures which source and compiler give which of the
+.s, host/tools/libcfit.py tries one source. How a library was found: the members of programs whose versions and order do not conflict.

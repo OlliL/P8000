@@ -61,16 +61,13 @@ D18 = True
 
 
 def model_link(work, objs):
-    """the link of d12model.py: crt0.o (make crt0.o), our modules, the libc part, like `make cparse`"""
+    """the link of d12model.py: crt0.o (make crt0.o), our modules, the libc of the program, like `make cparse`"""
     import os
     here = os.path.dirname(os.path.abspath(__file__))
     cp = os.path.normpath(os.path.join(here, '..'))
     crt = os.path.join(cp, 'crt0.o')
     hostld = os.path.normpath(os.path.join(cp, '..', '..', '..', 'host', 'ld', 'ld'))
-    import re
-    mk = open(os.path.join(cp, 'Makefile')).read().replace('\\\n', ' ')
-    libc = re.search(r'^LIBCOBJS = (.*)$', mk, re.M).group(1).split()
-    libc = [os.path.join(cp, o.replace('$(OLD)', os.path.join('..', '..', 'lib', 'oldlibc'))) for o in libc]
+    libc = [os.path.join(cp, '..', '..', 'lib', 'libc-v7.a')]
     return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', crt] + objs + libc + ['-o', 'cparsem']
 
 

@@ -3,31 +3,32 @@
 The plan and nothing else. What is known goes to `host/KNOWLEDGE.md`, the old compilers to `host/OLDCC.md`, the state per function to
 `tools/FINDINGS.md` of a program. A finished step leaves this file. No new programs before step 9 (owner 2026-11-04).
 
-What is byte-identical is checked by `make -C host checkall` (13 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program.
+What is byte-identical is checked by `make -C host checkall` (13 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
+
+## Where we stopped (2026-11-04)
+
+Done: real libraries. `src/lib/libc-v1.a` .. `libc-v9.a` (`lib/oldlibc/Makefile`) from C where a compiler gives the bytes, every program links `LIBC`, no more single objects. `/lib/libc.a` rebuilt from source, all members compared. Next: finish step 2 with the compilers it needs, then step 4 and 5.
+
+To look at: codgen, scodgen and spopt built with the shipped cc and shipped libc plus the old sprintf differ from the originals on the corpora (47, 46, 79 cases; 0 with `libc-v5.a`, 2 for spopt, the `NK core` line), and stage 1 is built that way. The final programs are identical, so it does no harm so far; which module causes it is not known.
+
+Fact to keep in mind: the old compilers of stage 1 use shipped `libc.a` plus only `sprintf` of the old printf, because `popt` (`z23.c`) uses the value of sprintf, the buffer; the shipped one returns a count, and popt then silently loses its register substitution.
 
 ## 2. `lib/libc` and `oldlibc` from C, what is left
 
-`/lib/libc.a`: 175 of 179 members from source. `oldlibc`: 58 of 84 modules from C (`oldlibc/SOURCES`). Each of these waits for a compiler we do not have yet; plain forms were tried:
+`/lib/libc.a`: 175 of 179 members from source. `oldlibc`: 59 of 84 modules from C. The other `.s` wait for a compiler we do not have yet; plain forms were tried (`host/tools/libcfit.py`, `libctable.py`):
 
 - `libc/oldcc`: `malloc` 3_3 (`mult rr2,r6` in calloc), `swap` (`0(r15)` where the shipped cc writes `@r15`, a reload), `symscan` (r3, r4 where the shipped cc takes r2, r3), `nlist` (frame 2 bytes less).
-- The libc part of size, oldest: `doprnt` 0_1, `printf` 0_1, `malloc` 0_1, `filbuf` 0_1, `rdwr` 0_1, `endopen` 0_1: the value of `?:` goes through a slot of the frame.
-- The libc part of ranlib, dc: `isatty` 0_1, `stty` 0_1, `readsym` 0_1, `system` 0_1, `printf` 0_3, `ftell` 0_1, `swap` 0_2, `doprnt` 0_3: no `ld r2,r7` or reload where v0 has one, as in dc itself. Taking out one switch of v0 at a time does not explain it; without `OLD_D3J` dc comes nearer (71 to 58 differing instructions).
-- The libc part of the passes: `malloc` 0_3, 0_5 (a parameter reloaded at a label, the order of `q+temp-1`), `cnvt` 0_2 (a long parameter reloaded), `doprnt` 0_5, 0_7, `fseek` 0_2, `fltioc` 0_1 (parameters of a double spilled by two instructions).
+- Libc of size, the oldest (libc-v3): `doprnt` 0_1, `printf` 0_1, `malloc` 0_1, `filbuf` 0_1, `rdwr` 0_1, `endopen` 0_1: the value of `?:` goes through a slot of the frame. Sources for `printf`, `doprnt` of the family exist (`0_2.c`).
+- Libc of ranlib and dc (libc-v1): `isatty` 0_1, `stty` 0_1, `readsym` 0_1, `system` 0_1, `printf` 0_3, `ftell` 0_1, `swap` 0_2, `doprnt` 0_3: no `ld r2,r7` or reload where v0 has one, as in dc itself (guess: one cause). Taking out one switch of v0 at a time does not explain it; without `OLD_D3J` dc comes nearer (71 to 58 differing instructions). So this goes together with `dc` in step 5.
+- Libc of the passes (v5, v7, v2): `malloc` 0_3, 0_5 (a parameter reloaded at a label, the order of `q+temp-1`), `cnvt` 0_2 (a long parameter reloaded), `doprnt` 0_5, 0_7 (near: `_align` spills r5, `ap = argp` reloads, a switch of 4 cases over a range of 14 as `cpir`, the order of a double argument), `fseek` 0_2, `fltioc` 0_1 (parameters of a double spilled by two instructions). `doprnt/0_5.c` is the draft, not used yet.
 - Others: `perror` 0_2 (r6 against r2), `swap` 0_1, `malloc` 0_4 (not tried: an older form of the source of the shipped one).
 - Assembler in the original, these stay `.s`: `open` 0_1, `ecvt` 0_1.
 
 `stdio/getgr*.c` are older copies of `gen/getgr*.c`: decide and remove.
 
-## 3. Real libraries and `make` under `WEGA/src`
-
-- `libc-vXXX.a` from the versions in `oldlibc` and the members of the current libc; a list of modules per version. Nothing built goes into git. The .s of a module in `oldlibc/SOURCES` goes when no Makefile names it (`mkoldlibc.py`, called by `checkall`).
-- `make` under `WEGA/src` builds everything in the right order and version (owner 2026-11-04): the old compilers including cas with the shipped tools and the shipped libc; then the libraries with them; then the old compilers once more in the right order, now with the right libc; then `cmd/`.
-- The Makefiles of the programs become small: the real compiler at `CC =`, their libc, few targets. No `.s` and `ar x` rules any more.
-- From an archive ld only pulls what is referenced; codgen holds perror and errlst though its live code does not call them: find the reference (no ld links an unreferenced object). A real `libc-vXXX.a` is the goal. Only if a program was never linked from a library: `libc-vXXX/` as a directory with C sources, `.s` where needed and objects, the link takes the objects from there.
-
 ## 4. Clean up `tools/`
 
-The programs that are identical keep the corpus and the comparison. `gen_makefile.py`, the cutting of libc objects and the like go; also `castrig/hostcas.patch`, `triggers.txt` and the unused directories of `lib/oldslibc`.
+Gone: the cutting of objects, `.link`, `.spec`, `gen_makefile.py` of cpp and ld. Still to look at: `ld/tools` and `sld/tools` (the rest of what worked with cut modules; `sld/tools/gen_makefile.py`, `lib/oldslibc` and `unlink_seg.py` belong to the segmented programs, `slibc.a` was not looked at yet: probably the same way), `castrig/hostcas.patch`, `triggers.txt`, `HANDOFF_ld.md`, `HANDOFF_cparse.md`. `host/libc/check.sh`, `host/oldcc`: now doubled by `checkall`.
 
 ## 5. The open programs in `cmd/` byte-identical
 
@@ -39,7 +40,7 @@ In this order; every change of a compiler goes through `checkall`.
 - `ranlib`: own code differs (v-version to be found); `readsym` is an old libc module.
 - `doscopy` (8 commands): differences not analysed; built with the current cc and libc, the owner believes. The build stops on the `/usr/include` dependencies outside the guest ROOT. The owner began this on the branch `doscopy`: inspect it first for changes to take over.
 - `pburn`: same size, built with the shipped cc; differences not analysed.
-- `ld`: 55 of 59 with v1 (open: place_sec, chk_ranlib, load2td, read_symbols). Decide the source base first.
+- `ld`: 55 of 59 with v1 (open: place_sec, chk_ranlib, load2td, read_symbols), library `libc-v9.a`. Decide the source base first.
 - `sld`: 58 of 90 functions, corpus 51 of 51. Decide the source base first.
 
 ## 6. System III form for all existing programs

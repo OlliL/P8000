@@ -1532,6 +1532,27 @@ listing in git.
 
 Covered (4, all verify, directory `src/lib/libc/oldcc/`, version 3_3 for malloc (SCCS id malloc.c 3.3), 0_1 for the others (no id, invented)): malloc, nlist, swap, symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`.
 
+### The libraries of the old programs (2026-11-04)
+
+Programs were linked from real libraries: with `ar` archives of the members, `ld` gives the original bytes (`make` in `src/`, `checkall`). Programs whose module versions and order do not conflict share a library. `src/lib/oldlibc/Makefile` builds them:
+
+| Library | Programs |
+|---|---|
+| libc-v1 | dc, ranlib (07/82) |
+| libc-v2 | cpp (12/82) |
+| libc-v3 | size (01/83) |
+| libc-v4 | strip (01/83) |
+| libc-v5 | codgen, scodgen, popt, spopt |
+| libc-v6 | rm, mv, cp, ln (05/83 .. 07/83) |
+| libc-v7 | cparse, scparse (10/83) |
+| libc-v8 | cc, scc |
+| libc-v9 | ld (07/83); its order conflicts with v6, its versions do not |
+
+The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. Not looked at: `slibc.a` and the segmented programs.
+A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.
+
+`popt` (`z23.c`) uses the value of `sprintf`, the buffer: `strlen(sprintf(t[k].s1, "r%d", n))`. The `sprintf` of the shipped libc returns a count; popt then silently loses its register substitution (r1 becomes r14 without being saved) and the code it makes is wrong. So stage 1 links the old `printf` in front of the shipped libc.
+
 ### libc versions (measured with `tools/libcver.py`)
 
 A program carries the libc members it was linked with. `libcver.py` decodes the text of a program, normalises

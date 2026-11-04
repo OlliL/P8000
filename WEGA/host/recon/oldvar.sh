@@ -32,7 +32,7 @@ fi
 cd v0p || exit 1
 rm -f *.o $pass
 [ "$pass" = codgen ] && sw=SWITCHES=-DOLD_V0P || sw=
-make CC="$Z /bin/cc" CAS="$Z /bin/cas" AR="$Z /bin/ar" LD="$Z /bin/ld" LDBIN="$Z /bin/ld" $sw > $W/build.log 2>&1
+make CC="$Z /bin/cc" CAS="$Z /bin/cas" AR="$Z /bin/ar" LD="$Z /bin/ld" $sw > $W/build.log 2>&1
 [ -f $pass ] || { echo "$name: build failed"; tail -3 $W/build.log; exit 1; }
 
 cp -a $OLDROOT $W/root

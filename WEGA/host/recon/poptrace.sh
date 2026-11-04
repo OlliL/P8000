@@ -26,9 +26,9 @@ if [ ! -f $W/popt ]; then
 	ln -s $REPO/host $W/b/WEGA/host
 	cd $W/b/WEGA/src/cmd/popt/v0p || exit 1
 	rm -f z2*.o popt
-	# OLD lies outside the root of the emulator: a relative copy inside the working directory
-	cp -a $REPO/src/lib/oldlibc ../oldlibc
-	make -o ../crt0.o popt OLD=../oldlibc CC="$Z /bin/cc" LD="$Z /bin/ld" SWITCHES=-DTRACE > $W/build.log 2>&1
+	# the library lies outside the root of the emulator: a relative copy inside the working directory
+	cp $REPO/src/lib/libc-v5.a ../l.a
+	make popt LIBC=../l.a CC="$Z /bin/cc" LD="$Z /bin/ld" SWITCHES=-DTRACE > $W/build.log 2>&1
 	[ -f popt ] || { tail -3 $W/build.log; exit 1; }
 	cp popt $W/popt
 fi

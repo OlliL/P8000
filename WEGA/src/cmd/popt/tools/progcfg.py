@@ -16,15 +16,12 @@ D6TABLES = True     # the switch tables in the layout of the old cc (d12model.py
 
 
 def model_link(work, objs):
-    """the link of d12model.py: crt0.o, our modules, the libc part of the Makefile (LIBCOBJS)"""
-    import re
+    """the link of d12model.py: crt0.o, our modules, the libc of the program"""
     here = os.path.dirname(os.path.abspath(__file__))
     src = os.path.normpath(os.path.join(here, '..'))
     hostld = os.path.normpath(os.path.join(src, '..', '..', '..', 'host', 'ld', 'ld'))
-    mk = open(os.path.join(src, 'Makefile')).read().replace('\\\n', ' ')
-    libc = re.search(r'^LIBCOBJS = (.*)$', mk, re.M).group(1).split()
-    libc = [os.path.join(src, o.replace('$(OLD)', os.path.join('..', '..', 'lib', 'oldlibc'))) for o in libc]
-    return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', os.path.join(src, 'crt0.o')] + objs + libc + \
+    libc = [os.path.join(src, '..', '..', 'lib', 'libc-v5.a')]
+    return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', os.path.join(os.environ.get('WEGA', '/mnt/share/cvs/P8000/tmp/wega31_root'), 'lib', 'crt0.o')] + objs + libc + \
         ['-o', 'poptm']
 
 

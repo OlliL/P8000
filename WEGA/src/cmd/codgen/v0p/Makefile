@@ -1,6 +1,5 @@
 # codgen v0p: the code generator of the old C compiler v0p (the compiler of the passes cparse, codgen, popt: v0 of 1982 with the differences of the passes), a native WEGA
-# program. Made from the sources of .. with the switches of this version; start-up file and libc part are those of
-# .. (make .. first).
+# program. Made from the sources of .. with the switches of this version; the start-up file is that of .. (make .. oldprep first).
 #
 #   make             v0p/codgen
 #   make install PREFIX=dir    dir/lib/v0p/codgen (the pass of ../../cc/v0p/ccv0p)
@@ -13,16 +12,14 @@ CFLAGS = -O
 SWITCHES = -DOLD_V0P
 PREFIX = /
 LD = ld
-OLD = ../../../lib/oldlibc
+LIBC = ../../../lib/libc-v5.a
 CRT = ../../../lib/libc/crt
-OLDOBJS = $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/flsbuf/0_2.o $(OLD)/filbuf/0_3.o $(OLD)/rdwr/0_3.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/cnvt/0_2.o $(OLD)/length/0_3.o $(OLD)/strcat/0_2.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o $(OLD)/fopen/0_1.o $(OLD)/findiop/0_2.o $(OLD)/endopen/0_4.o $(OLD)/ungetc/0_1.o $(OLD)/malloc/0_5.o $(OLD)/setbuf/0_1.o $(OLD)/getw/0_1.o $(OLD)/isatty/0_2.o $(OLD)/freopen/0_1.o $(OLD)/stty/0_3.o $(OLD)/perror/0_1.o $(OLD)/errlst/0_1.o
-SHIPOBJS = ../__callex.o ../data.o ../brk.o ../cuexit.o ../ffltioc.o ../write.o ../close.o ../read.o ../lseek.o ../decimal.o ../cerror.o ../open.o ../creat.o ../ioctl.o ../umask.o ../chmod.o
 OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o wrt3.o regs3.o lcl3.o tr3.o optim3.o table3_codgen.o
 
 all: codgen
 
 codgen: $(OBJS)
-	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(OBJS) $(OLDOBJS) $(SHIPOBJS) -o codgen
+	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(OBJS) $(LIBC) -o codgen
 
 allo3.o: ../allo3.c ../cg.h ../cg2.h ../oldcc.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../allo3.c

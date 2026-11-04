@@ -41,10 +41,10 @@ build)
 		[ "$ver" = v0p ] && sw=-DOLD_V0P || sw=-DOLD_V0
 	fi
 	if [ -n "$sw" ]; then
-		make CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" LDBIN="$W /bin/ld" SWITCHES="$sw" \
+		make CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" LD="$W /bin/ld" SWITCHES="$sw" \
 			> $RECON_TMP/oldcc_build.log 2>&1
 	else
-		make CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" LDBIN="$W /bin/ld" \
+		make CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" LD="$W /bin/ld" \
 			> $RECON_TMP/oldcc_build.log 2>&1
 	fi || { tail -5 $RECON_TMP/oldcc_build.log; exit 1; }
 	mkdir -p $OLDROOT/lib/$ver && cp $pass $OLDROOT/lib/$ver/$pass
@@ -68,11 +68,11 @@ corpus)
 	cd $REPO/src/cmd/cparse || exit 1
 	O="cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o cparse"
 	E="timeout 300 $EMU -r $OLDROOT"
-	rm -f $O; make cparse CC="$E /bin/ccv0p" CAS="$W /bin/cas" AR="$W /bin/ar" LDBIN="$W /bin/ld" \
+	rm -f $O; make cparse CC="$E /bin/ccv0p" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" \
 		YACC="$W /usr/bin/yacc" > $RECON_TMP/oldcc_corpus_build.log 2>&1
 	cp cparse $RECON_TMP/cparse_v0p
 	timeout 1500 python3 tools/stagecorpus.py $RECON_TMP/cparse_v0p 2>&1 | tail -1
-	rm -f $O; make cparse CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LDBIN="$W /bin/ld" \
+	rm -f $O; make cparse CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" \
 		YACC="$W /usr/bin/yacc" > /dev/null 2>&1
 	;;
 findings)

@@ -10,15 +10,11 @@ TABLES = ['assigned.txt', 'datamap.txt', 'names.txt', 'bss_map.txt']
 
 
 def model_link(work, objs):
-    """the link of d12model.py: crt0, our modules, the libc part of the Makefile (LIBCOBJS), like `make ld`"""
+    """the link of d12model.py: crt0, our modules, the libc of the program, like `make ld`"""
     import os
-    import re
     here = os.path.dirname(os.path.abspath(__file__))
     ld = os.path.normpath(os.path.join(here, '..'))
-    mk = open(os.path.join(ld, 'Makefile')).read().replace('\\\n', ' ')
-    libc = re.search(r'^LIBCOBJS = (.*)$', mk, re.M).group(1).split()
-    libc = [o.replace('$(OLD)', os.path.join(ld, '..', '..', 'lib', 'oldlibc')) for o in libc]
-    libc = [o if o.startswith('/') else os.path.join(ld, o) for o in libc]
+    libc = [os.path.join(ld, '..', '..', 'lib', 'libc-v9.a')]
     hostld = os.path.normpath(os.path.join(ld, '..', '..', '..', 'host', 'ld', 'ld'))
     return [os.environ.get('LDBIN', hostld), '-i', '-e', 'start', os.path.join(ld, 'crt0.o')] + objs + libc + ['-o', 'ldm']
 

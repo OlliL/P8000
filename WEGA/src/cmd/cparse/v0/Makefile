@@ -16,16 +16,15 @@ CC = cc
 CFLAGS = -O
 SWITCHES = -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22
 PREFIX = /
-LDBIN = /bin/ld
-OLD = ../../../lib/oldlibc
+LD = ld
+LIBC = ../../../lib/libc-v7.a
 HDRS = ../mfile1 ../manifest ../macdefs ../stdio.h
 OBJS = cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o sym2.o
-LIBCOBJS = $(OLD)/fltioc/0_1.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/rdwr/0_3.o $(OLD)/fopen/0_1.o $(OLD)/fdopen/0_1.o $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/ungetc/0_1.o ../shipped/atof.o $(OLD)/ecvt/0_1.o ../shipped/pow10.o $(OLD)/filbuf/0_3.o $(OLD)/data/0_1.o $(OLD)/setbuf/0_1.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_4.o $(OLD)/findiop/0_2.o ../shipped/__callex.o ../shipped/cuexit.o $(OLD)/perror/0_1.o $(OLD)/cnvt/0_2.o ../shipped/decimal.o $(OLD)/length/0_3.o $(OLD)/malloc/0_3.o $(OLD)/errlst/0_1.o $(OLD)/isatty/0_2.o $(OLD)/stty/0_3.o $(OLD)/strcat/0_2.o $(OLD)/strcmp/0_1.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o ../shipped/ctype_.o ../shipped/brk.o ../shipped/chmod.o ../shipped/close.o ../shipped/creat.o ../shipped/ioctl.o ../shipped/lseek.o ../shipped/open.o ../shipped/read.o ../shipped/signal.o ../shipped/umask.o ../shipped/write.o ../shipped/cerror.o
 
 all: cparse
 
-cparse: ../crt0.o $(OBJS) $(LIBCOBJS)
-	$(LDBIN) -i -e start ../crt0.o $(OBJS) $(LIBCOBJS) -o $@
+cparse: ../crt0.o $(OBJS)
+	$(LD) -i -e start ../crt0.o $(OBJS) $(LIBC) -o $@
 
 cgram1.o: ../cgram1.c $(HDRS)
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../cgram1.c

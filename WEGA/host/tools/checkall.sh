@@ -3,14 +3,13 @@
 #
 # Works on copies of the files known to git (also changed and new ones, not the built ones) below CHECK_TMP, so that it
 # proves the repository alone is enough and leaves the working tree alone:
-#   1. the old compilers from the sources, with the shipped tools (make -C host oldroot), into a tree of their own;
-#   2. in a fresh copy every program of TABLE with its compiler, stripped, compared with cmp;
-#   3. src/cmd with the shipped tools (make -C host verify-wega): SHIPPED must be identical, the rest is listed as open;
-#   4. the corpora of the passes against the originals: cpp, cparse, scparse as built in 2 (their output depends on their
-#      data layout), codgen, scodgen, popt, spopt in the normal build of 1, whose source also is the old compiler;
-#   5. make -C host check: the host tools and the libc members; a member that differs must be in src/lib/libc/oldcc.
+#   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/;
+#   2. every member of lib/libc/libc.a, and every program of TABLE, stripped, against the original with cmp;
+#   3. the corpora of the passes against the originals: cpp, cparse, scparse as built in 1 (their output depends on their
+#      data layout), codgen, scodgen, popt, spopt in a normal build with the shipped cc, whose source also is the old compiler;
+#   4. make -C host check: the host tools.
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
-# A program joins by a line in TABLE or SHIPPED.
+# A program joins by a line in TABLE.
 #
 # Environment: WEGA (the WEGA 3.1 tree), CHECK_TMP (default /tmp/wega_check, a local disk),
 # CORPUS_TMP (where the corpora are kept, default the scratch of oldcc.sh).
@@ -22,33 +21,53 @@ WEGA=`cd $WEGA && pwd`
 T=${CHECK_TMP:-/tmp/wega_check}
 CORPUS_TMP=${CORPUS_TMP:-$REPO/../tmp/tmp}
 EMU=$REPO/host/z8k-emu/z8k-emu
-W="$EMU -r $WEGA"
 OLD=$T/oldroot
 FAIL=0
 BUILDONLY=0
 [ "$1" = -b ] && BUILDONLY=1
 
-# program dir, make target, compiler, original(s): the first is compared, the others must be links to the same bytes
+# built file below src/cmd, compiler, original(s): the first is compared, the others must have the same bytes
 TABLE='
-cpp	cpp	ccv0p	lib/cpp
-cparse	cparse	ccv0p	lib/cparse
-cparse	scparse	ccv0p	lib/scparse
-codgen	codgen	ccv0p	lib/codgen
-codgen	scodgen	ccv0p	lib/scodgen
-popt	popt	ccv0p	lib/popt
-popt	spopt	ccv0p	lib/spopt
-size	size	ccv1	bin/size
-strip	strip	ccv1	usr/bin/strip
-mv	mv	ccv1	bin/mv bin/cp bin/ln
-rm	rm	ccv1	bin/rm
+cpp/cpp	ccv0p	lib/cpp
+cparse/cparse	ccv0p	lib/cparse
+cparse/scparse	ccv0p	lib/scparse
+codgen/codgen	ccv0p	lib/codgen
+codgen/scodgen	ccv0p	lib/scodgen
+popt/popt	ccv0p	lib/popt
+popt/spopt	ccv0p	lib/spopt
+size/size	ccv1	bin/size
+strip/strip	ccv1	usr/bin/strip
+mv/mv	ccv1	bin/mv bin/cp bin/ln
+rm/rm	ccv1	bin/rm
+ar	cc	bin/ar
+cc/cc	cc	bin/cc
+cc/scc	cc	bin/scc
+getud	cc	bin/getud
+putud	cc	bin/putud
+copydisk/1.5/copydisk	cc	bin/copydisk
+dump	cc	etc/dump
+dumpdir	cc	etc/dumpdir
+format/1.5/format	cc	bin/format
+restor	cc	etc/restor
+sync	cc	bin/sync
+tar	cc	bin/tar
+verify/1.5/verify	cc	bin/verify
+BOOT0/pb.image	cc	pb.image
+standalone/sa.cat	cc	sa.cat
+standalone/sa.format	cc	sa.format
+standalone/sa.verify	cc	sa.verify
+standalone/sa.mkfs	cc	sa.mkfs
+standalone/sa.install	cc	sa.install
+standalone/sa.timer	cc	sa.timer
+standalone/sa.shipdisk	cc	sa.shipdisk
+chkdiff	script	bin/chkdiff
+uuclear	script	bin/uuclear
+whodo	script	bin/whodo
 '
+# not byte-identical yet: reported, not counted
+OPEN='dc/dc:bin/dc ranlib/ranlib:usr/bin/ranlib pburn/2.1/pburn:bin/pburn cas/cas:bin/cas'
 
-# with the shipped cc; verify-wega compares them
-SHIPPED='ar cc/cc cc/scc getud putud copydisk/1.5/copydisk dump dumpdir format/1.5/format restor sync tar verify/1.5/verify
-BOOT0/pb.image standalone/sa.cat standalone/sa.format standalone/sa.verify standalone/sa.mkfs standalone/sa.install
-standalone/sa.timer standalone/sa.shipdisk'
-
-# the files known to git, in DIR/WEGA; the emulator and the host tools are not rebuilt here
+# the files known to git, in DIR/WEGA; the emulator is not rebuilt here
 copytree() {
 	rm -rf $1
 	mkdir -p $1/WEGA
@@ -56,7 +75,6 @@ copytree() {
 	mkdir -p $1/WEGA/host/z8k-emu
 	cp $EMU $1/WEGA/host/z8k-emu/z8k-emu
 }
-
 
 result() {
 	if [ "$2" = ok ]; then
@@ -67,67 +85,74 @@ result() {
 	fi
 }
 
+finish() {
+	[ $FAIL = 0 ] && echo ALL OK || echo FAILED
+	exit $FAIL
+}
+
 mkdir -p $T
 
-# 1. the old compilers
-copytree $T/chain
-rm -rf $OLD
-if make -C $T/chain/WEGA/host oldroot WEGA=$WEGA OLDROOT=$OLD > $T/oldroot.log 2>&1; then
-	result 'old compilers' ok 'v1 v0 v0p built'
+# 1. everything from the sources
+copytree $T/tree
+rm -rf $OLD $T/bin
+sh $HERE/oldroot.sh $WEGA $OLD
+sh $HERE/wbin.sh $T/bin $WEGA $OLD $EMU
+if (cd $T/tree/WEGA/src && PATH=$T/bin:$PATH make all PREFIX=$OLD) > $T/make.log 2>&1; then
+	result 'make in src' ok 'stage1 lib stage2 cmds'
 else
-	result 'old compilers' fail "see $T/oldroot.log"
-	exit 1
+	result 'make in src' fail "see $T/make.log"
+	finish
 fi
+S=$T/tree/WEGA/src/cmd
 
-# 2. the programs
-copytree $T/prog
-S=$T/prog/WEGA/src/cmd
-# the modules of oldlibc that come from C: the objects are newer than their .s, make takes them
-if ! WEGA=$WEGA OLDROOT=$OLD python3 $HERE/mkoldlibc.py $T/prog/WEGA/src/lib > $T/mkoldlibc.log 2>&1; then
-	result 'oldlibc from C' fail "see $T/mkoldlibc.log"
-fi
-echo "$TABLE" | while read dir target cc origs; do
-	[ -n "$dir" ] || continue
+# 2. the bytes
+L=$T/tree/WEGA/src/lib/libc
+rm -rf $T/orig
+mkdir -p $T/orig
+(cd $T/orig && $EMU -r $WEGA /bin/ar x /lib/libc.a)
+same=0
+for f in `cd $T/orig && ls`; do
+	if cmp -s $T/orig/$f $L/obj/$f; then same=`expr $same + 1`; else result "libc $f" fail "differs or missing: $L/obj/$f"; fi
+done
+result 'libc.a members' ok "$same identical, from source"
+echo "$TABLE" | while IFS='	' read file cc origs; do
+	[ -n "$file" ] || continue
 	set -- $origs
 	first=$1
-	log=$T/$target.log
-	if ! (cd $S/$dir && make $target CC="$EMU -r $OLD /bin/$cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" \
-		LDBIN="$W /bin/ld" YACC="$W /usr/bin/yacc" CRT0=$WEGA/lib/crt0.o) > $log 2>&1; then
-		echo "$target	FAILBUILD	$log"
+	n=`basename $file`
+	if [ ! -f $S/$file ]; then
+		echo "$file	FAIL	not built"
 		continue
 	fi
-	cp $S/$dir/$target $T/$target.stripped
-	(cd $T && $W /usr/bin/strip $target.stripped) >> $log 2>&1
-	if cmp -s $T/$target.stripped $WEGA/$first; then
+	rm -f $T/$n.stripped
+	cp $S/$file $T/$n.stripped
+	case $cc in ccv*) (cd $T && $EMU -r $WEGA /usr/bin/strip $n.stripped) > /dev/null 2>&1 ;; esac
+	if cmp -s $T/$n.stripped $WEGA/$first; then
 		msg="identical, $cc"
 		shift
 		for o in "$@"; do
-			cmp -s $T/$target.stripped $WEGA/$o && msg="$msg, $o" || msg="$msg, DIFFERS FROM $o"
+			cmp -s $T/$n.stripped $WEGA/$o && msg="$msg, $o" || msg="$msg, DIFFERS FROM $o"
 		done
-		echo "$target	ok	$msg"
+		echo "$file	ok	$msg"
 	else
-		echo "$target	FAILCMP	$cc: python3 host/tools/bincmp.py $WEGA/$first $T/$target.stripped"
+		echo "$file	FAIL	$cc: python3 host/tools/bincmp.py $WEGA/$first $T/$n.stripped"
 	fi
 done > $T/programs.txt
 while IFS='	' read name state msg; do
 	if [ "$state" = ok ]; then result "$name" ok "$msg"; else result "$name" fail "$msg"; fi
 done < $T/programs.txt
-
-[ $BUILDONLY = 1 ] && { [ $FAIL = 0 ] && echo ALL OK || echo FAILED; exit $FAIL; }
-
-# 3. src/cmd with the shipped tools
-copytree $T/cmd
-WEGA=$WEGA OLDROOT=$OLD python3 $HERE/mkoldlibc.py $T/cmd/WEGA/src/lib >> $T/mkoldlibc.log 2>&1
-make -C $T/cmd/WEGA/host verify-wega WEGA=$WEGA > $T/verify.log 2>&1
-for p in $SHIPPED; do
-	if grep -q "^$p: identical" $T/verify.log; then result "$p" ok 'identical, shipped cc'; else result "$p" fail "see $T/verify.log"; fi
+o=
+for p in $OPEN; do
+	f=${p%%:*}
+	cp $S/$f $T/open.stripped 2>/dev/null && (cd $T && $EMU -r $WEGA /usr/bin/strip open.stripped) > /dev/null 2>&1
+	cmp -s $T/open.stripped $WEGA/${p#*:} && result "$f" fail 'identical now: enter it in TABLE'
+	o="$o $f"
 done
-for f in chkdiff uuclear whodo; do
-	cmp -s $T/cmd/WEGA/src/cmd/$f $WEGA/bin/$f && result "$f" ok 'identical, a script' || result "$f" fail ''
-done
-echo 'open, not counted:' `grep -E ': (differs|not built)' $T/verify.log | sed 's/:.*//'`
+echo "open, not counted:$o, doscopy"
 
-# 4. the corpora; NAME EXPECTED-DIFFERENCES LOG
+[ $BUILDONLY = 1 ] && finish
+
+# 3. the corpora; NAME EXPECTED-DIFFERENCES LOG
 corpus() {
 	bad=`sed -n 's/.*bad=\([0-9]*\)$/\1/p' $3 | tail -1`
 	good=`sed -n 's/^ok=\([0-9]*\) .*/\1/p' $3 | tail -1`
@@ -140,13 +165,16 @@ corpus() {
 	if [ "$bad" = "$2" ]; then result "corpus $1" ok "$good same, $bad different (expected $2)"
 	else result "corpus $1" fail "$good same, $bad different (expected $2), see $3"; fi
 }
-C=$T/chain/WEGA/src/cmd
-(cd $C/codgen && make scodgen CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" > $T/scodgen_normal.log 2>&1)
-(cd $C/popt && make spopt CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" CRT0=$WEGA/lib/crt0.o > $T/spopt_normal.log 2>&1)
 for p in cpp cparse scparse; do
 	(cd $S/$p/tools && WEGA_ROOT=$WEGA python3 stagecorpus.py $T/$p.stripped) > $T/corpus_$p.log 2>&1
 	corpus $p 0 $T/corpus_$p.log
 done
+# the normal build: the shipped cc, the libc of the passes
+copytree $T/normal
+C=$T/normal/WEGA/src/cmd
+cp $T/tree/WEGA/src/lib/libc-v5.a $T/normal/WEGA/src/lib/
+(cd $C/codgen && PATH=$T/bin:$PATH make codgen scodgen CC=cc) > $T/normal.log 2>&1
+(cd $C/popt && PATH=$T/bin:$PATH make popt spopt CC=cc) >> $T/normal.log 2>&1
 for p in codgen scodgen; do
 	l=$T/corpus_$p.log; : > $l
 	for sub in cmd lib; do
@@ -163,16 +191,11 @@ corpus popt 0 $T/corpus_popt.log
 (cd $S/spopt/tools && WEGA_ROOT=$WEGA RECON_TMP=$CORPUS_TMP sh corpus.sh $C/popt/spopt) > $T/corpus_spopt.log 2>&1
 corpus spopt 2 $T/corpus_spopt.log
 
-# 5. the host tools and the libc members
-if CORPUS=$CORPUS_TMP/popt/corpus make -C $T/chain/WEGA/host check WEGA=$WEGA > $T/hostcheck.log 2>&1; then
+# 4. the host tools
+if CORPUS=$CORPUS_TMP/popt/corpus make -C $T/tree/WEGA/host check WEGA=$WEGA > $T/hostcheck.log 2>&1; then
 	result 'host tools' ok 'cc ar binutils cas ld popt'
 else
 	result 'host tools' fail "see $T/hostcheck.log"
 fi
-for m in `sed -n 's/^DIFF \([^ ]*\) .*/\1/p; s/^MISSING \([^ ]*\)$/\1/p' $T/hostcheck.log`; do
-	grep -q "^ok  *$m (0_1.s\|^ok  *$m (3_3.s" $T/hostcheck.log || result "libc $m" fail 'neither C nor oldcc'
-done
-result 'libc' ok "`grep -cE '^(DIFF|MISSING) ' $T/hostcheck.log` members only from oldcc, all others from source"
 
-[ $FAIL = 0 ] && echo ALL OK || echo FAILED
-exit $FAIL
+finish
