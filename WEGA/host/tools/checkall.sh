@@ -82,6 +82,10 @@ fi
 # 2. the programs
 copytree $T/prog
 S=$T/prog/WEGA/src/cmd
+# the modules of oldlibc that come from C: the objects are newer than their .s, make takes them
+if ! WEGA=$WEGA OLDROOT=$OLD python3 $HERE/mkoldlibc.py $T/prog/WEGA/src/lib > $T/mkoldlibc.log 2>&1; then
+	result 'oldlibc from C' fail "see $T/mkoldlibc.log"
+fi
 echo "$TABLE" | while read dir target cc origs; do
 	[ -n "$dir" ] || continue
 	set -- $origs
@@ -113,6 +117,7 @@ done < $T/programs.txt
 
 # 3. src/cmd with the shipped tools
 copytree $T/cmd
+WEGA=$WEGA OLDROOT=$OLD python3 $HERE/mkoldlibc.py $T/cmd/WEGA/src/lib >> $T/mkoldlibc.log 2>&1
 make -C $T/cmd/WEGA/host verify-wega WEGA=$WEGA > $T/verify.log 2>&1
 for p in $SHIPPED; do
 	if grep -q "^$p: identical" $T/verify.log; then result "$p" ok 'identical, shipped cc'; else result "$p" fail "see $T/verify.log"; fi

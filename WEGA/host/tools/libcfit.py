@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""libcfit.py [-v] SOURCE.c MODULE...: try one C source against modules of oldlibc or oldcc, with every compiler.
+"""libcfit.py [-v] [-c COMPILER] SOURCE.c MODULE...: try one C source against modules of oldlibc or oldcc, with every compiler.
 
 MODULE is NAME/VERSION of src/lib/oldlibc, or oldcc:NAME/VERSION of src/lib/libc/oldcc, or shipped:NAME. Prints per module the
 best compiler and headers: instructions that differ (addresses masked), then bytes of code and data that differ; EXACT
@@ -59,6 +59,10 @@ def main():
     a = sys.argv[1:]
     v = '-v' in a
     a = [x for x in a if x != '-v']
+    if '-c' in a:
+        i = a.index('-c')
+        L.COMPILERS = [c for c in L.COMPILERS if c[0] == a[i + 1]]
+        del a[i:i + 2]
     L.targets()
     objs = compile_all(a[0])
     for m in a[1:]:

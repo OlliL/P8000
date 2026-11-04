@@ -922,6 +922,8 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/popt` (`equop`, z22.c) | no test of the node pointers: backjmp calls `equop(p1, p2)` also when its `p1 = p1->back` loop ran off the list (p1 = 0), and equop then reads op and subop at address 0 | kept in src/cmd/popt (the corpus decides); our earlier source tested both pointers | `host/OLDCC_LOG.md` 2026-11-01 |
 | `/lib/popt` (`rename_regs`, z23.c) | scans `p->code` of every node between the two ldm without testing it: a node without operand text reads the string at address 0; the "preceded by alnum" test looks at `q[-1]` of the search string (the low byte of the entry length) instead of the operand (the same quirk as in the procopt row) | kept in src/cmd/popt since 2026-11-01 | `host/OLDCC_LOG.md` 2026-11-01 |
 | `/lib/popt` (`fixldm`, z23.c) | the removal of an `ldm` node (`n == 0`) unlinks it with `p->forw->back = p->back` without testing `p->forw`: an ldm as the last node would write at address 4 (does not occur: the list ends with the function's closing nodes) | kept in src/cmd/popt | `host/OLDCC_LOG.md` 2026-11-01 |
+| libc `symscan` | long names: the loop `while (*q++ && *p++ && *p)` compares no characters, so a name of the same length matches | kept: the member stays as `.s` (`src/lib/libc/oldcc/symscan`), the same loop in the C form tried | measured 2026-11-04 |
+| libc `_doprnt` 0_2 (strip) | `if (c < 'a') { ... }` takes width and precision for any character below 'a', and `break` when the format ends leaves the whole output loop | kept in `src/lib/oldlibc/doprnt/0_2.c` | measured 2026-11-04 |
 | `/lib/popt` (`rmove`, z22.c) | when a conditional jump is decided at compile time (do_cjp, `r12 == 0`) the scan goes on with `p = p->back->back`; the push test behind push_end looks at `RT2 + 1` | kept in src/cmd/popt; host/popt had `p->back->forw` and `RT1 + 1` until 2026-11-01, now as the original (the popt corpus showed neither) | `host/OLDCC_LOG.md` 2026-11-01 |
 | `/lib/popt` (`adrlen`, z22.c) | the loop over leading blanks tests the copy in a register but increments the parameter (`while (*p == ' ') s++;`): an operand that starts with a blank loops for ever | kept in src/cmd/popt (cc writes no such operand) | `host/OLDCC_LOG.md` 2026-11-01 |
 | popt (src/cmd/popt) | a node without operand text: the original reads through the null pointer (`p->code` is 0) in dualop, ovlap and markregs | src/cmd/popt: the same null pointer read (until 2026-11-01 a copy of the bytes, `nullcode`, still used by host/popt); popt corpus 816 of 816 | `host/OLDCC_LOG.md` 2026-11-01 |
@@ -1451,17 +1453,20 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   (`fldctl`, `flds`, `fmul`, `fldd`, ...); without it they give ERROR 91.
   Module names matter: they appear as `<module>_p`/`<module>_d` symbols
   (abort.s is module `abort_s`).
-- Result: 169 of the 179 members identical, 7 differ, 3 have no C source (the 10 are
-  kept as cas sources in `src/lib/libc/oldcc`, see "oldlibc"). `/lib/libc.a` holds 179 objects and `Library.SC`.
-- Same code, different compiler revision (cannot match with the shipped cc): `malloc`,
-  `nlist`, `length`, `swap` (differences D1, D3, D4, D8). The shipped
-  libc was built with more than one compiler revision.
-- Different source revision (Nov 1983 float versions, files dated Nov 16-17 1983):
-  `printf` (printf/fprintf/sprintf with `_pfile`, `_rc`, `_flsbuf`; calls
-  `_doprnt(fmt, args, argend, flag, file)`), `scanf`, `doscan` (calls `_inflt`).
-  Together with `cnvt`, `fltioc` and `symscan` (no C source yet) they form the
-  floating-point stdio cluster that remains to be reconstructed as C (`doprnt` and
-  `ecvt` rebuild byte-identical now, see below).
+- Result: 174 of the 179 members identical (`/lib/libc.a` holds 179 objects and `Library.SC`); the 5 others are kept as cas sources in
+  `src/lib/libc/oldcc`, see "oldlibc":
+  - `malloc`: one instruction, `mult rr2,r6` against `mult rr2,0(r15)`. `swap`: `0(r15)` against `@r15`, a register known in the shipped cc.
+    `symscan`: `ld r3,..; lda r4,..` where the shipped cc takes r2, r3. `nlist`: only the frame, 2 bytes less. These look like a
+    compiler between ccv1 and the shipped cc; the frame of `swap` and `nlist` not understood. `fltioc`: not tried yet, no C source.
+- `printf` needs the stdio.h of `src/cmd/cparse` with the shipped cc: `char *_ptr`, so `extsb` behind putc. check.sh tries it.
+- Source forms that gave these members (2026-11-04):
+  - Arguments come in registers: printf and scanf copy them into a local array `regs[5]` and hand it over beside the address of the first
+    argument on the stack; `_doprnt(fmt, regs, &args, flag, file)`, `_doscan(iop, fmt, regs, &args)`. With doubles also the four
+    floating registers into `double fregs[4]`, and `_doprnt(fmt, regs, fregs, &args, flag, file)`. A global `rc` (not `_rc`) takes the result.
+  - The place of a `register` declaration in the list of locals moves the others: a `register` variable has a slot in the frame in the
+    old compilers (doprnt 0_6: `int fpn; int *ap, *sap;` first, then `register c, fmtlen, len;`).
+  - Spare locals that fit only the frame of the original, no other reason known: `long l` in `sprintf`, `int unused` in `_instr`, `long l` in
+    `_getccl`. The original may have had a `register` there; odd forms until then.
 - Findings while fixing sources: getpass uses `struct termio` (`c_lflag`, ioctl 0x5401/0x5404/0x5403);
   execvp is the 4.3BSD one with `index`, a `/bin/csh` fallback (`whichshell`) and `-` as
   path separator in `execat`; malloc is a variant that extends the top free block when the
@@ -1523,8 +1528,7 @@ original member (`make -C oldcc verify`). They are generated from the original o
 of the rebuilt object differs). Sources that the shipped cc reproduces byte for byte get NO `.s`
 listing in git.
 
-Covered (10, all verify, directory `src/lib/libc/oldcc/`, version 3_3 for malloc (SCCS id malloc.c 3.3), 0_1 for the others (no id, invented)): cnvt, doscan, fltioc, length, malloc, nlist,
-printf, scanf, swap, symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`.
+Covered (5, all verify, directory `src/lib/libc/oldcc/`, version 3_3 for malloc (SCCS id malloc.c 3.3), 0_1 for the others (no id, invented)): fltioc, malloc, nlist, swap, symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`.
 
 ### libc versions (measured with `tools/libcver.py`)
 

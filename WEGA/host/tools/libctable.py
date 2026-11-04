@@ -127,6 +127,7 @@ def main():
         for top in (os.path.join(REPO, 'src/lib/libc'), SYS3 + '/pdp11', SYS3 + '/vax'):
             for d in ('gen', 'stdio', 'sys'):
                 srcs += sorted(glob.glob(os.path.join(top, d, '*.c')))
+        srcs += sorted(glob.glob(os.path.join(REPO, 'src/lib/oldlibc/*/*.c')))
     T, shipped = targets()
     jobs = int(os.environ.get('JOBS') or max(1, (os.cpu_count() or 2) - 1))
     with concurrent.futures.ThreadPoolExecutor(jobs) as ex:

@@ -10,9 +10,11 @@ directory holds only libc modules that are not the shipped ones:
     CATALOG.md           which libc members each program contains and how they differ (made by
                          host/tools/libcver.py --catalog)
 
-The sources are assembler (cas syntax) cut out of the original programs by `host/tools/unlink.py`; there is no
-C source and none is planned. The version numbers are invented (0_1, 0_2, ...) until we know the real ones;
-the same text gets the same number.
+A module is made from C where a source and a compiler give its bytes: `SOURCES` lists them (module, version, source, compiler,
+headers; `host/tools/mkoldlibc.py` compiles them, `libctable.py` measures all sources and compilers, `libcfit.py` tries one source).
+The other modules are assembler (cas syntax) cut out of the original programs by `host/tools/unlink.py`. The .s of a module in
+SOURCES stays until the Makefiles of the programs no longer name it. The version numbers are invented (0_1, 0_2, ...) until we know
+the real ones; the same text gets the same number.
 
 Members of the shipped libc.a that an older cc built are NOT here: they are in `../libc/oldcc/<function>/<version>.s`.
 

@@ -5,16 +5,18 @@ The plan and nothing else. What is known goes to `host/KNOWLEDGE.md`, the old co
 
 What is byte-identical is checked by `make -C host checkall` (13 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program.
 
-## 2. `lib/libc` from C and byte-identical
+## 2. `lib/libc` from C, what is left
 
-A table per C source: which compiler (shipped, ccv1, ccv0, ccv0p) gives which object. An `.s` in `oldlibc` or `libc/oldcc` that can be made from C goes. `stdio/getgr*.c` are older copies of `gen/getgr*.c`: decide and remove. No `#ifdef` in the libc; what cannot be made stays `.s`.
+`/lib/libc.a`: 174 of 179 members from source; open `fltioc` (no C yet), `malloc`, `nlist`, `swap`, `symscan` (`KNOWLEDGE.md`, libc check). `oldlibc`: 54 of 84 modules from C (`oldlibc/SOURCES`); to do `fltioc`, `malloc` (5 versions), `ecvt`, `endopen`, `rdwr`, `filbuf`, `fseek`, `perror`, `errlst`. `stdio/getgr*.c` are older copies of `gen/getgr*.c`: decide and remove.
+
+Waits for a compiler change (step 5): the modules of ranlib and dc (`isatty`, `stty`, `readsym`, `system`, `ftell`, `printf` 0_3, `swap` 0_2, `doprnt` 0_3): the original has no `ld r2,r7` or reload where v0 has one, as in dc itself (guess: one cause, not measured). `doprnt` 0_5, 0_7: `_align` spills r5, `ap = argp` reloads, a switch of 4 cases over a range of 14 as `cpir`, the order of a double argument.
 
 ## 3. Real libraries and `make` under `WEGA/src`
 
-- `libc-vXXX.a` from the versions in `oldlibc` and the members of the current libc; a list of modules per version. Nothing built goes into git.
-- `make` under `WEGA/src` builds everything in the right order and version: the old compilers (shipped cc, shipped libc), then `lib/`, then `cmd/`.
+- `libc-vXXX.a` from the versions in `oldlibc` and the members of the current libc; a list of modules per version. Nothing built goes into git. The .s of a module in `oldlibc/SOURCES` goes when no Makefile names it (`mkoldlibc.py`, called by `checkall`).
+- `make` under `WEGA/src` builds everything in the right order and version (owner 2026-11-04): the old compilers including cas with the shipped tools and the shipped libc; then the libraries with them; then the old compilers once more in the right order, now with the right libc; then `cmd/`.
 - The Makefiles of the programs become small: the real compiler at `CC =`, their libc, few targets. No `.s` and `ar x` rules any more.
-- Watch: from an archive ld only pulls what is referenced; codgen holds perror and errlst though its live code does not call them.
+- From an archive ld only pulls what is referenced; codgen holds perror and errlst though its live code does not call them: find the reference (no ld links an unreferenced object). A real `libc-vXXX.a` is the goal. Only if a program was never linked from a library: `libc-vXXX/` as a directory with C sources, `.s` where needed and objects, the link takes the objects from there.
 
 ## 4. Clean up `tools/`
 
