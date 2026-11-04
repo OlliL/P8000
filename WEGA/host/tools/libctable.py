@@ -49,7 +49,7 @@ def parts(path):
 def names(path):
     """the external names of an object: what it defines and what it needs. __fltuse: cc names it in every object that uses
     double; a module cut from a program cannot show it"""
-    return frozenset(x['name'] for x in SOut(open(path, 'rb').read()).symbols if x['type'] in (32, 34) and x['name'] != '__fltuse')
+    return frozenset(x['name'] for x in SOut(open(path, 'rb').read()).symbols if x['type'] in (32, 34, 35) and x['name'] != '__fltuse')
 
 
 def key(code):

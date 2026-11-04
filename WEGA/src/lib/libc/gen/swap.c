@@ -5,8 +5,8 @@
 swap(x)
 int x;
 {
-	register char *p;
 	int tmp;
+	register char *p;
 
 	p = (char *)&tmp;
 	*p = ((char *)&x)[1];

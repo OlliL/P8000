@@ -18,8 +18,10 @@ OLDROOT = os.environ.get('OLDROOT', os.path.normpath(os.path.join(REPO, '..', 't
 EMU = os.path.join(REPO, 'host', 'z8k-emu', 'z8k-emu')
 ORDER = {'ccv0p': 0, 'ccv1': 1, 'ccv0': 2, 'cc': 3}
 # the cut module names _main where the original compares with 0x2a: the address of main in cc, not a name of the module
-# system 0_2: the cut module has no names for csystem and _system, its code and data are those of the source
-MANUAL = [('doprnt', '0_4', 'oldlibc/doprnt/0_4.c', 'cc', 'guest'), ('system', '0_2', 'libc/stdio/system.c', 'ccv1', 'guest')]
+# system 0_2, malloc 0_2: the cut module has no names for csystem, _system, realloc; code and data are those of the source
+MANUAL = [('doprnt', '0_4', 'oldlibc/doprnt/0_4.c', 'cc', 'guest'), ('system', '0_2', 'libc/stdio/system.c', 'ccv1', 'guest'),
+          ('malloc', '0_2', 'oldlibc/malloc/malloc.c', 'ccv1', 'guest'),
+          ('errlst', '0_1', 'oldlibc/errlst/0_1.c', 'ccv0p', 'guest'), ('errlst', '0_2', 'oldlibc/errlst/0_2.c', 'ccv1', 'guest')]
 
 
 def write(tsv, lib):

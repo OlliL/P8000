@@ -5,11 +5,18 @@ The plan and nothing else. What is known goes to `host/KNOWLEDGE.md`, the old co
 
 What is byte-identical is checked by `make -C host checkall` (13 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program.
 
-## 2. `lib/libc` from C, what is left
+## 2. `lib/libc` and `oldlibc` from C, what is left
 
-`/lib/libc.a`: 174 of 179 members from source; open `fltioc` (no C yet), `malloc`, `nlist`, `swap`, `symscan` (`KNOWLEDGE.md`, libc check). `oldlibc`: 54 of 84 modules from C (`oldlibc/SOURCES`); to do `fltioc`, `malloc` (5 versions), `ecvt`, `endopen`, `rdwr`, `filbuf`, `fseek`, `perror`, `errlst`. `stdio/getgr*.c` are older copies of `gen/getgr*.c`: decide and remove.
+`/lib/libc.a`: 175 of 179 members from source. `oldlibc`: 58 of 84 modules from C (`oldlibc/SOURCES`). Each of these waits for a compiler we do not have yet; plain forms were tried:
 
-Waits for a compiler change (step 5): the modules of ranlib and dc (`isatty`, `stty`, `readsym`, `system`, `ftell`, `printf` 0_3, `swap` 0_2, `doprnt` 0_3): the original has no `ld r2,r7` or reload where v0 has one, as in dc itself (guess: one cause, not measured). `doprnt` 0_5, 0_7: `_align` spills r5, `ap = argp` reloads, a switch of 4 cases over a range of 14 as `cpir`, the order of a double argument.
+- `libc/oldcc`: `malloc` 3_3 (`mult rr2,r6` in calloc), `swap` (`0(r15)` where the shipped cc writes `@r15`, a reload), `symscan` (r3, r4 where the shipped cc takes r2, r3), `nlist` (frame 2 bytes less).
+- The libc part of size, oldest: `doprnt` 0_1, `printf` 0_1, `malloc` 0_1, `filbuf` 0_1, `rdwr` 0_1, `endopen` 0_1: the value of `?:` goes through a slot of the frame.
+- The libc part of ranlib, dc: `isatty` 0_1, `stty` 0_1, `readsym` 0_1, `system` 0_1, `printf` 0_3, `ftell` 0_1, `swap` 0_2, `doprnt` 0_3: no `ld r2,r7` or reload where v0 has one, as in dc itself. Taking out one switch of v0 at a time does not explain it; without `OLD_D3J` dc comes nearer (71 to 58 differing instructions).
+- The libc part of the passes: `malloc` 0_3, 0_5 (a parameter reloaded at a label, the order of `q+temp-1`), `cnvt` 0_2 (a long parameter reloaded), `doprnt` 0_5, 0_7, `fseek` 0_2, `fltioc` 0_1 (parameters of a double spilled by two instructions).
+- Others: `perror` 0_2 (r6 against r2), `swap` 0_1, `malloc` 0_4 (not tried: an older form of the source of the shipped one).
+- Assembler in the original, these stay `.s`: `open` 0_1, `ecvt` 0_1.
+
+`stdio/getgr*.c` are older copies of `gen/getgr*.c`: decide and remove.
 
 ## 3. Real libraries and `make` under `WEGA/src`
 

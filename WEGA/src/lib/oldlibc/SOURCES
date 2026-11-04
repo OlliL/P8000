@@ -6,7 +6,10 @@ doprnt     0_4  oldlibc/doprnt/0_4.c         cc     guest
 doprnt     0_6  oldlibc/doprnt/0_6.c         ccv1   guest
 doscan     0_1  oldlibc/doscan/0_1.c         ccv1   cparse
 endopen    0_2  libc/stdio/endopen.c         ccv1   guest
+endopen    0_3  oldlibc/endopen/0_3.c        ccv0p  guest
 endopen    0_4  libc/stdio/endopen.c         ccv0p  guest
+errlst     0_1  oldlibc/errlst/0_1.c         ccv0p  guest
+errlst     0_2  oldlibc/errlst/0_2.c         ccv1   guest
 fdopen     0_1  libc/stdio/fdopen.c          ccv0p  guest
 ffltioc    0_1  oldlibc/ffltioc/0_1.c        ccv0p  guest
 filbuf     0_2  libc/stdio/filbuf.c          ccv1   cparse
@@ -27,6 +30,7 @@ isatty     0_2  libc/gen/isatty.c            ccv0p  guest
 length     0_1  libc/gen/length.c            ccv1   guest
 length     0_2  oldlibc/length/0_2.c         ccv0p  guest
 length     0_3  libc/gen/length.c            ccv0p  guest
+malloc     0_2  oldlibc/malloc/malloc.c      ccv1   guest
 mktemp     0_1  libc/gen/mktemp.c            ccv1   guest
 perror     0_1  libc/gen/perror.c            ccv0p  guest
 printf     0_2  oldlibc/printf/0_2.c         ccv1   cparse

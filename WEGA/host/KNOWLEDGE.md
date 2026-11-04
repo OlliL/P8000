@@ -1453,11 +1453,11 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   (`fldctl`, `flds`, `fmul`, `fldd`, ...); without it they give ERROR 91.
   Module names matter: they appear as `<module>_p`/`<module>_d` symbols
   (abort.s is module `abort_s`).
-- Result: 174 of the 179 members identical (`/lib/libc.a` holds 179 objects and `Library.SC`); the 5 others are kept as cas sources in
+- Result: 175 of the 179 members identical (`/lib/libc.a` holds 179 objects and `Library.SC`); the 4 others are kept as cas sources in
   `src/lib/libc/oldcc`, see "oldlibc":
   - `malloc`: one instruction, `mult rr2,r6` against `mult rr2,0(r15)`. `swap`: `0(r15)` against `@r15`, a register known in the shipped cc.
     `symscan`: `ld r3,..; lda r4,..` where the shipped cc takes r2, r3. `nlist`: only the frame, 2 bytes less. These look like a
-    compiler between ccv1 and the shipped cc; the frame of `swap` and `nlist` not understood. `fltioc`: not tried yet, no C source.
+    compiler between ccv1 and the shipped cc (a guess); the frame of `nlist` not understood.
 - `printf` needs the stdio.h of `src/cmd/cparse` with the shipped cc: `char *_ptr`, so `extsb` behind putc. check.sh tries it.
 - Source forms that gave these members (2026-11-04):
   - Arguments come in registers: printf and scanf copy them into a local array `regs[5]` and hand it over beside the address of the first
@@ -1467,6 +1467,8 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
     old compilers (doprnt 0_6: `int fpn; int *ap, *sap;` first, then `register c, fmtlen, len;`).
   - Spare locals that fit only the frame of the original, no other reason known: `long l` in `sprintf`, `int unused` in `_instr`, `long l` in
     `_getccl`. The original may have had a `register` there; odd forms until then.
+  - `fltioc` (`stdio/fltioc.c`): the digit copying of `_fegcvt` is written with `goto` into the `if` chain: the plain forms all gave another block order in popt; odd form.
+  - `endopen` 0_3: `mode[0] = 'a'` for `rw` and `wr` (the shipped one has `'r'`).
 - Findings while fixing sources: getpass uses `struct termio` (`c_lflag`, ioctl 0x5401/0x5404/0x5403);
   execvp is the 4.3BSD one with `index`, a `/bin/csh` fallback (`whichshell`) and `-` as
   path separator in `execat`; malloc is a variant that extends the top free block when the
@@ -1528,7 +1530,7 @@ original member (`make -C oldcc verify`). They are generated from the original o
 of the rebuilt object differs). Sources that the shipped cc reproduces byte for byte get NO `.s`
 listing in git.
 
-Covered (5, all verify, directory `src/lib/libc/oldcc/`, version 3_3 for malloc (SCCS id malloc.c 3.3), 0_1 for the others (no id, invented)): fltioc, malloc, nlist, swap, symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`.
+Covered (4, all verify, directory `src/lib/libc/oldcc/`, version 3_3 for malloc (SCCS id malloc.c 3.3), 0_1 for the others (no id, invented)): malloc, nlist, swap, symscan. `ecvt` is PLZ/ASM (`as -f`), built from `src/lib/libc/gen/ecvt.s`.
 
 ### libc versions (measured with `tools/libcver.py`)
 
