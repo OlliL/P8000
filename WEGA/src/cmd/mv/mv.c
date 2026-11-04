@@ -24,10 +24,10 @@ char	*dname();
 char	*strrchr();
 extern	errno;
 
-struct	stat s1, s2;
 
 char	*cmd;
 char	errbuf[128];		/* the message for perror */
+struct	stat s1, s2;
 int	f_flag = 0;
 
 main(argc, argv)

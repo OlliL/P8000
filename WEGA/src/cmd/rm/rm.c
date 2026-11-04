@@ -16,7 +16,7 @@ static char sccsid[] = "@[$]rm.c\t1.8  05/19/83 11:33:28 - 87wega3.2";
 
 char	*myname = "rm: cannot remove";	/* name guessed */
 int	errcode;
-char	errbuf[100];		/* the message for perror (size guessed) */
+char	errbuf[50];		/* the message for perror (size guessed) */
 
 main(argc, argv)
 char *argv[];

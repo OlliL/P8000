@@ -1,0 +1,4 @@
+*.o
+crt0.s
+shipped
+mv

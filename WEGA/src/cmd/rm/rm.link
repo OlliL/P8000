@@ -1,0 +1,40 @@
+old system 0_2
+old printf 0_6
+old doprnt 0_6
+shipped ffltioc
+old gets 0_1
+old filbuf 0_2
+old flsbuf 0_1
+shipped data
+shipped __callex
+shipped cuexit
+old perror 0_2
+shipped sleep
+old cnvt 0_1
+shipped decimal
+old length 0_1
+old malloc 0_2
+old errlst 0_2
+shipped isatty
+shipped stty
+shipped strcmp
+old strcpy 0_1
+old strncpy 0_2
+old strlen 0_1
+shipped access
+shipped alarm
+shipped brk
+shipped close
+shipped execl
+shipped exit
+shipped fork
+shipped ioctl
+shipped open
+shipped pause
+shipped read
+shipped signal
+shipped stat
+shipped unlink
+shipped wait
+shipped write
+shipped cerror

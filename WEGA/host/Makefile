@@ -47,7 +47,7 @@ WTOOLS = CC='$(WEMU) /bin/cc' SCC='$(WEMU) /bin/scc' CAS='$(WEMU) /bin/cas' \
 
 # program (in ../src/cmd) : original (in the WEGA tree); commands with several
 # versions are built in the subdirectory of the version shipped with WEGA 3.1
-WEGA_PROGS = ar:bin/ar cc/cc:bin/cc cc/scc:bin/scc ranlib/ranlib:usr/bin/ranlib size/size:bin/size strip/strip:usr/bin/strip \
+WEGA_PROGS = mv/mv:bin/mv rm/rm:bin/rm ar:bin/ar cc/cc:bin/cc cc/scc:bin/scc ranlib/ranlib:usr/bin/ranlib size/size:bin/size strip/strip:usr/bin/strip \
 	getud:bin/getud putud:bin/putud copydisk/1.5/copydisk:bin/copydisk dump:etc/dump \
 	dumpdir:etc/dumpdir format/1.5/format:bin/format restor:etc/restor sync:bin/sync \
 	tar:bin/tar verify/1.5/verify:bin/verify cas/cas:bin/cas \

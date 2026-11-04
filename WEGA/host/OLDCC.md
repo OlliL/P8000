@@ -9,7 +9,7 @@ found, attempts, refuted ideas and removed switches are in `OLDCC_LOG.md`; which
 ## State
 
 With `make PROG CC=ccv0p` and strip these are byte-identical with the originals: cpp, cparse, scparse, codgen, scodgen,
-popt, spopt. With v1: size, strip. v1 and v0 are not complete (section 5).
+popt, spopt. With v1: size, strip, mv (also cp, ln), rm. v1 and v0 are not complete (section 5).
 
 ## 1 Terms and building
 
@@ -81,10 +81,9 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 ### v1 (01/83 .. 07/83)
 
 - Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3` (codgen), `OLD_D20` (popt).
-- Byte-identical: `/bin/size`, `/usr/bin/strip`.
+- Byte-identical: `/bin/size`, `/usr/bin/strip`, `/bin/mv` (also cp, ln), `/bin/rm`.
 - ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146; open: place_sec, chk_ranlib, load2td, read_symbols.
-- Function-equal, addresses masked, frame offsets compared, not linked yet: mv (all 7), rm (all 6), write (all 5), rmdir
-  (rmdir; main differs by D4 and D18).
+- Own code equal, the libc part not linked yet: write (all 5 functions). rmdir: its main differs by D4 and D18.
 - Test bench (System III sources of 26 programs from 01/83 .. 07/83): 89 of 121 functions equal, the shipped cc 27.
 - stdio of the time: `char *_ptr` and the V7 forms of getc/putc (`--_cnt >= 0` first); the stdio.h of the WEGA tree has
   `unsigned char *_ptr` and the other order.
