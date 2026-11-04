@@ -303,7 +303,7 @@ szty(t)
 	int t;
 {
 	switch (t) {
-	case 4: return 1;
+	case 4: case 10: case 14: return 1;
 	case 5: case 6: case 15: return 2;
 	case 7: return 4;
 	}

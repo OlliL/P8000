@@ -21,7 +21,7 @@ OLD = ../../lib/oldlibc
 # (VERSIONS in oldlibc, the same cut as KNOWLEDGE.md describes) and members of the shipped libc.a that are
 # identical to the original ones (ar x), like ranlib does. The start-up file is made by mkcrt0.sh codgen.
 OLDOBJS = $(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o $(OLD)/flsbuf/0_2.o $(OLD)/filbuf/0_3.o \
-	$(OLD)/rdwr/0_3.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/cnvt/0_2.o $(OLD)/length/0_2.o \
+	$(OLD)/rdwr/0_3.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/cnvt/0_2.o $(OLD)/length/0_3.o \
 	$(OLD)/strcat/0_2.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o $(OLD)/fopen/0_1.o \
 	$(OLD)/findiop/0_2.o $(OLD)/endopen/0_4.o $(OLD)/ungetc/0_1.o $(OLD)/malloc/0_5.o \
 	$(OLD)/setbuf/0_1.o $(OLD)/getw/0_1.o $(OLD)/isatty/0_2.o $(OLD)/freopen/0_1.o $(OLD)/stty/0_3.o
@@ -32,13 +32,13 @@ SHIPOBJS = __callex.o data.o brk.o cuexit.o ffltioc.o write.o close.o read.o \
 LIBCOBJS = $(OLD)/freopen/0_1.o $(OLD)/fseek/0_2.o $(OLD)/ftell/0_2.o $(OLD)/rdwr/0_3.o $(OLD)/fopen/0_1.o \
 	$(OLD)/printf/0_5.o $(OLD)/doprnt/0_5.o ffltioc.o $(OLD)/getw/0_1.o $(OLD)/ungetc/0_1.o $(OLD)/filbuf/0_3.o \
 	$(OLD)/setbuf/0_1.o $(OLD)/flsbuf/0_2.o $(OLD)/endopen/0_4.o $(OLD)/findiop/0_2.o data.o __callex.o cuexit.o \
-	$(OLD)/perror/0_1.o $(OLD)/cnvt/0_2.o decimal.o $(OLD)/length/0_2.o $(OLD)/malloc/0_3.o $(OLD)/errlst/0_1.o $(OLD)/isatty/0_2.o \
+	$(OLD)/perror/0_1.o $(OLD)/cnvt/0_2.o decimal.o $(OLD)/length/0_3.o $(OLD)/malloc/0_3.o $(OLD)/errlst/0_1.o $(OLD)/isatty/0_2.o \
 	$(OLD)/stty/0_3.o $(OLD)/strcat/0_2.o $(OLD)/strcpy/0_2.o $(OLD)/strlen/0_2.o brk.o chmod.o close.o \
 	creat.o ioctl.o lseek.o open.o read.o umask.o write.o cerror.o
 LIBCONLY = $(OLD)/malloc/0_3.o $(OLD)/perror/0_1.o $(OLD)/errlst/0_1.o $(OLD)/stty/0_3.o
 SRCS = bss3.c reader3.c rdr3.c local3.c order3.c match3.c allo3.c regallo3.c comm3.c wrt3.c regs3.c lcl3.c tr3.c optim3.c
-OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
-SOBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o wrt3.o regs3.o lcl3.o tr3.o optim3.o table3_scodgen.o
+OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3_codgen.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
+SOBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o table3_scodgen.o wrt3.o regs3.o lcl3.o tr3.o optim3.o
 
 # the versions of the old compiler (one directory each, own Makefile; not part of all)
 OLDDIRS = v1 v0 v0p
@@ -49,9 +49,9 @@ old: codgen
 	for d in $(OLDDIRS); do cd $$d ; $(MAKE) ; cd .. ; done
 
 codgen: objs $(OLDOBJS) $(LIBCONLY) ship $(CRT)/crt0-codgen.o
-	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(OBJS) table3_codgen.o $(LIBCOBJS) -o codgen
+	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(OBJS) $(LIBCOBJS) -o codgen
 
-objs: $(OBJS) table3_codgen.o
+objs: $(OBJS)
 
 $(OBJS) table3_codgen.o: cg.h cg2.h
 
@@ -142,8 +142,8 @@ $(OLD)/ftell/0_2.o: $(OLD)/ftell/0_2.s
 $(OLD)/cnvt/0_2.o: $(OLD)/cnvt/0_2.s
 	$(CAS) -u -o $@ $(OLD)/cnvt/0_2.s
 
-$(OLD)/length/0_2.o: $(OLD)/length/0_2.s
-	$(CAS) -u -o $@ $(OLD)/length/0_2.s
+$(OLD)/length/0_3.o: $(OLD)/length/0_3.s
+	$(CAS) -u -o $@ $(OLD)/length/0_3.s
 
 $(OLD)/strcat/0_2.o: $(OLD)/strcat/0_2.s
 	$(CAS) -u -o $@ $(OLD)/strcat/0_2.s

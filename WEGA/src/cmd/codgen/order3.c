@@ -224,28 +224,32 @@ sucomp(p)
 			}
 			else if (fl <= fr && fl + nf > ffregs)
 				p->fsu = ffregs + nf;
+			else if (fl == 0)
+				p->fsu = max(fr, nf + nf);
 			else
-				p->fsu = fl == 0 ? max(fr, nf + nf) : max(fr, max(fl, 1 + nf + nf));
-			return;
+				p->fsu = max(fr, max(fl, 1 + nf + nf));
 		}
-		if ((dope[p->op] & MULFLG) && (p->left->type == 5 || p->left->type == 15)) {	/* long * / % */
+		else if ((dope[p->op] & MULFLG) && (p->left->type == 5 || p->left->type == 15)) {	/* long * / % */
 			p->su = max(fregs - 1, min(max(sul, nr + sur), max(nr + sul, sur)));
 			if (sur == sul)
 				p->fsu = max(ffregs - 1, min(max(fl, nf + fr), max(nf + fl, fr)));
 			else
 				p->fsu = max(fl, fr);
-			return;
 		}
-		if ((dope[p->op] & MULFLG) && optype(p->left->op) == 2 && nr > szty(p->left->type)) {
+		else if ((dope[p->op] & MULFLG) && optype(p->left->op) == 2 && nr > szty(p->left->type)) {
 			p->su = max(nr, max(sul, sur));
-			p->fsu = sur == sul ? max(nf, max(fl, fr)) : max(fl, fr);
-			return;
+			if (sur == sul)
+				p->fsu = max(nf, max(fl, fr));
+			else
+				p->fsu = max(fl, fr);
 		}
+		else {
 		p->su = max(nr + nr, min(max(sul, nr + sur), max(sur, nr + sul)));
 		if (sur == sul)
 			p->fsu = max(nf + nf, min(max(fl, nf + fr), max(fr, nf + fl)));
 		else
 			p->fsu = max(nf + nf, max(max(fl, nf + fr), max(fr, nf + fl)));
+		}
 	}
 }
 

@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/codgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "dc79a5c0",
+ "measured_at": "4a78a352",
  "functions": {
   "p2init": {
    "file": "reader3.c",
@@ -269,8 +269,7 @@
    "orig": "0x28f6",
    "size_orig": 154,
    "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table).",
-   "status": "open",
-   "lines": 5
+   "status": "exact"
   },
   "epilog": {
    "file": "local3.c",
@@ -415,9 +414,7 @@
    "file": "local3.c",
    "orig": "0x437e",
    "size_orig": 418,
-   "note": "Left: one jr at the limit of its range (the diff is only jr against jp): the old cas, D17.",
-   "status": "open",
-   "lines": 2
+   "status": "exact"
   },
   "genscall": {
    "file": "local3.c",
@@ -506,9 +503,8 @@
    "file": "order3.c",
    "orig": "0x49f0",
    "size_orig": 2000,
-   "note": "Forms: p->fsu = fl == 0 ? ... : ... and sur == sul ? ... : ... as conditional expressions give the place of the test (the comjump of the first pass, before rmove). Left (12 lines): which copy of ld r2,fl; jp stays; the original keeps the first, in max(fl, nf), which needs a label in front of it before rmove. Tried: fl > nf as if / else with stores, also max(fl, fr), if (sur != sul), p->fsu = max(fl, fr) with a second assignment, conditional forms at the other fsu assignments: 14 to 25 lines. Also tried: fl ? max(fl, nf) : nf and if (fl), fl == 0 ? nf : fl > nf ? fl : nf, max(fl, nf) alone, fl ? ... : ... and max(fr, fl == 0 ? ... : ...) at the next assignment: 15 to 32 lines. Decided 2026-11-03: open, search stopped; the owner's status names these lines.",
-   "status": "open",
-   "lines": 12
+   "status": "exact",
+   "note": "Form found by search over the combinations: plain if / else everywhere and an else chain in place of the returns in the BITYPE case; a conditional expression or a return changes which copy of ld r2,fl stays (xjump and comjump of popt)."
   },
   "mkrall": {
    "file": "order3.c",

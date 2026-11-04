@@ -3,7 +3,7 @@
  "compiler": "ccv0p (assumption: the same compiler as cparse and popt; not proved for codgen)",
  "binary": "/lib/scodgen",
  "comparison": "strictcmp on the d12model link (oldcc.sh model); -c for call against calr",
- "measured_at": "dc79a5c0",
+ "measured_at": "4a78a352",
  "functions": {
   "p2init": {
    "file": "reader3.c",
@@ -269,8 +269,7 @@
    "orig": "0x28d6",
    "size_orig": 154,
    "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table).",
-   "status": "open",
-   "lines": 5
+   "status": "exact"
   },
   "epilog": {
    "file": "local3.c",
@@ -415,7 +414,6 @@
    "file": "local3.c",
    "orig": "0x4428",
    "size_orig": 432,
-   "note": "Left: one jr at the limit of its range (the diff is only jr against jp): the old cas, D17.",
    "status": "exact"
   },
   "genscall": {
@@ -505,9 +503,8 @@
    "file": "order3.c",
    "orig": "0x4af6",
    "size_orig": 2040,
-   "note": "As in codgen; see its findings.json. One word of a test under STAR with max.",
-   "status": "open",
-   "lines": 12
+   "status": "exact",
+   "note": "Form found by search over the combinations: plain if / else everywhere and an else chain in place of the returns in the BITYPE case; a conditional expression or a return changes which copy of ld r2,fl stays (xjump and comjump of popt)."
   },
   "mkrall": {
    "file": "order3.c",
@@ -719,8 +716,7 @@
    "orig": "0x7114",
    "size_orig": 198,
    "note": "(rv >> 8) - 1 + 1 keeps add r2,#0: cparse folds it to x + 0 and the optim of codgen v0p does not take a zero away (OLD_D6Z).",
-   "status": "open",
-   "lines": 1
+   "status": "exact"
   },
   "recl2": {
    "file": "allo3.c",
