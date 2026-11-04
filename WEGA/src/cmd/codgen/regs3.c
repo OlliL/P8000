@@ -10,6 +10,7 @@ extern NODE *clocal();
 extern void fcmd();
 extern int findtemp();
 extern void fixfld();
+extern void ncopy();
 extern void fixname();
 extern void fixtemp();
 extern NODE *foldadd();
@@ -365,6 +366,28 @@ fixfld(p)
 		p->left = m;
 }
 
+#ifdef OLD_D6Z
+/* a member or an index 0 adds nothing: p + 0 is p */
+static int
+d6zdrop(p)
+	register NODE *p;
+{
+	register NODE *r, *n;
+	int t;
+
+	n = p->right;
+	if ((p->op != PLUS && p->op != STREF) || n->op != ICON || n->sname != 0 || n->lval != 0)
+		return 0;
+	t = p->type;
+	r = p->left;
+	n->op = FREE;
+	ncopy(p, r);
+	p->type = t;
+	r->op = FREE;
+	return 1;
+}
+
+#endif
 /* a callback of the walk before the code is generated: members and addresses of names */
 void
 mapregs(p)
@@ -375,6 +398,9 @@ mapregs(p)
 	switch (p->op) {
 	case 120:
 		fixfld(p);
+#ifdef OLD_D6Z
+		d6zdrop(p);
+#endif
 		break;
 	case STREF:
 		fixfld(p);
@@ -401,6 +427,10 @@ mapregs(p)
 			r->op = FREE;
 			break;
 		}
+#endif
+#ifdef OLD_D6Z
+		if (d6zdrop(p))
+			break;
 #endif
 		n = foldadd(p);
 		if (n != p) {

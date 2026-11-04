@@ -268,7 +268,7 @@
    "file": "local3.c",
    "orig": "0x28f6",
    "size_orig": 154,
-   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table). Left: the original computes parmax + maxoff in rr2 and moves it to rr6, ours in rr6. Tried: no preference for the left operand of a long sum wanted in rr6 (rallo, case PLUS): exact, nothing else moves in the three models, bench unchanged; one witness, not adopted. Wanted in any register: readmems +15. Decided 2026-11-03: open, the rule is not adopted; the condition on rr6 has no reason behind it. Compiled alone the shipped cc, ccv0 and ccv0p all give ldl rr6, so it is not the context of efcode.",
+   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table).",
    "status": "open",
    "lines": 5
   },
@@ -713,7 +713,7 @@
    "orig": "0x6e78",
    "size_orig": 130,
    "status": "exact",
-   "note": "p is overwritten with the result of getlr; popt removes the store of the parameter."
+   "note": "(rv >> 8) - 1 + 1 keeps add r2,#0: cparse folds it to x + 0 and the optim of codgen v0p does not take a zero away (OLD_D6Z)."
   },
   "recl2": {
    "file": "allo3.c",

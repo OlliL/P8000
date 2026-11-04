@@ -126,8 +126,10 @@ optim(p)
 			p->left = p->right;
 			p->right = sp;
 		}
+#ifndef OLD_D6Z
 		if ((o == MINUS || o == PLUS) && nncon(p->right) && p->right->lval == 0)
 			goto zapright;
+#endif
 		if (p->right->op == o && (p->type & 0x30) != 0x10 && (p->right->left->type & 0x30) != 0x10) {
 			NODE *t1, *t2, *t3;
 

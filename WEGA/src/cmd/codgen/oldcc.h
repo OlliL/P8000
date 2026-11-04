@@ -6,6 +6,7 @@
 #ifdef OLD_V0P
 /* v0p, the compiler of the passes: v0 and */
 #define OLD_V0
+#define OLD_D6Z		/* a zero addend stays: x + 0 (optim) */
 #define OLD_D2Q		/* a long loaded through a pointer into the pair of its even address register, also when wanted */
 #define OLD_D2X		/* a long result of a binary operator (not a shift) into the pair of its left operand first */
 #define OLD_D5G		/* an element of a global array of arrays: (index + index) + address (fixfld) */

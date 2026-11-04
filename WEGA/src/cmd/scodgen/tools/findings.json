@@ -268,7 +268,7 @@
    "file": "local3.c",
    "orig": "0x28d6",
    "size_orig": 154,
-   "note": "As in codgen; see its findings.json. ",
+   "note": "Odd form: prolog gets three of its five arguments; it finds w and tot on the stack where epilog's call left them (quirk table).",
    "status": "open",
    "lines": 5
   },
@@ -718,7 +718,7 @@
    "file": "allo3.c",
    "orig": "0x7114",
    "size_orig": 198,
-   "note": "Left: add r2,#0 behind the first (rv >> 8): the source form of the zero is not known; cast and folded forms give nothing.",
+   "note": "(rv >> 8) - 1 + 1 keeps add r2,#0: cparse folds it to x + 0 and the optim of codgen v0p does not take a zero away (OLD_D6Z).",
    "status": "open",
    "lines": 1
   },

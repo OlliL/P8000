@@ -239,7 +239,8 @@ efcode()
 	register long sz;
 	long w;
 
-	sz = (parmax + maxoff) / 8;
+	sz = parmax + maxoff;
+	sz /= 8;
 	if (sz % 2)
 		sz = (sz / 2 + 1) << 1;
 #ifdef SEG
