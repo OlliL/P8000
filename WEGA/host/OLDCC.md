@@ -1,93 +1,46 @@
 # The old C compilers of WEGA
 
-This is the edited summary of everything known about the C compiler revisions that built the WEGA binaries: the
-differences D1 ... D22 between them and the shipped compiler, which object shows which, and the old compiler
-versions we rebuild (v1, ...). It is rewritten when the knowledge changes, never appended to. The running notes,
-measurements and attempts go to `OLDCC_LOG.md` (dated entries, append only); the evidence per function is in the
-findings.json of each program (`src/cmd/*/tools/findings.json`). Owner decisions are marked with their date.
+What is known now about the C compiler revisions that built the WEGA binaries: the versions we rebuild, how they differ
+from the shipped compiler, and which object shows which difference. This file holds current facts only. How they were
+found, attempts, refuted ideas and removed switches are in `OLDCC_LOG.md`; which function needs which switch is in
+`OLDCC_SWITCHES.md` (generated); the evidence per function is in the findings.json of each program
+(`src/cmd/*/tools/findings.json`). The rules for this work are in `HOWTO_reconstruct.md`, "Evidence rules".
 
-Contents: 1 Terms and rules, 2 Compiler versions, 3 The differences D1 ... D22, 4 Objects and their differences,
-5 Open questions.
+## State
 
-## 1 Terms and rules
+With `make PROG CC=ccv0p` and strip these are byte-identical with the originals: cpp, cparse, scparse, codgen, scodgen,
+popt, spopt. With v1: size, strip. v1 and v0 are not complete (section 5).
 
-### Terms
+## 1 Terms and building
 
 - **shipped**: the compiler of the WEGA 3.1 tree (`/bin/cc`, `/bin/scc` and their passes `/lib/cparse`, `/lib/codgen`,
   `/lib/popt`, `/lib/scparse`, `/lib/scodgen`, `/lib/spopt`). Our normal build uses it.
 - **old**: a revision of the compiler that built an original binary and of which no binary exists. Its output is only
   known from the binaries it made.
-- **Dn**: one difference between the output of an old compiler and that of the shipped one (section 3). A D class is
-  a description of the output first; its mechanism in a pass is known only when a switch reproduces it.
-- **switch** `OLD_Dn`: a compile-time switch in the sources of a pass (`src/cmd/cparse`, `codgen`, `popt`) that turns the
-  shipped behaviour into the old one. The normal build sets none, so it stays byte-identical with the shipped passes.
+- **Dn**: one difference between the output of an old compiler and that of the shipped one (section 3).
+- **switch** `OLD_Dn`: a compile-time switch in the sources of a pass that turns the shipped behaviour into the old one.
+  The normal build sets none, so it stays byte-identical with the shipped passes.
 - **version** vN: a set of switches that together give one old compiler (section 2), built in `src/cmd/<pass>/vN` and
   run through the driver `ccvN`.
 - **witness**: a function whose original code a switch makes equal. **Test bench**: `host/recon/witness.py`, the
-  System III sources of WEGA programs of one compiler time, compiled with a version and aligned with the originals.
-
-### Pipeline and where a difference comes from
+  System III sources of WEGA programs of one compiler time, compiled with a version and aligned with the originals. WEGA
+  changed many of these sources, so a difference on the bench is not a compiler difference by itself.
 
 `cc` runs cpp > cparse > [gopt] > codgen > popt > cas > ld (`scc`: scparse, scodgen, spopt, sld). cparse writes the
 intermediate tree (`.I`) and the data as cas text (`.D`); codgen chooses registers, frame and instructions; popt is the
-peephole optimizer (descends from the Plexus `c2`, `c20.c 1.1`, Aug 1982). The Plexus one-pass `ccom` is not an ancestor
-of the WEGA code generator (it emits Plexus assembler: `jpr`, `csv2`/`cret2`). A D class is assigned to a pass by
-experiment: one pass of the chain replaced by its version, the rest shipped.
+peephole optimizer (descends from the Plexus `c2`); cas decides the jump forms.
 
-### Building and running an old version (owner decision 2026-10-31)
-
-- The old versions are native WEGA programs only (built with the shipped cc, run in the emulator); no host versions and
-  no cross environment of them. The host versions (`host/codgen`, `host/popt`, ...) get no switches.
-- One source per pass; every old version has its own directory with its own Makefile (`src/cmd/cparse/v1/Makefile`,
-  `codgen/v1`, `popt/v1`, the driver `cc/v1`). The version Makefile defines the switches, the libc, crt0 and the install
-  name; the pass Makefile only descends into it (`make old`). Built programs are not in git.
-- Driver: `cc.c` with `OLD_V1` runs `/lib/v1/cparse`, `/lib/v1/codgen`, `/lib/v1/popt`; cpp, gopt, cas, ld, crt0.o and
-  libc.a are the shipped ones (v0 and v0p: cas is `/lib/old/cas`, D17). `make install PREFIX=dir` in the version directories installs `bin/ccv1` and `lib/v1/*`.
-- Emulator: z8k-emu maps every absolute guest path below its ROOT (relative paths go to the host working directory).
-  `make -C host oldroot` builds all v1 programs and installs them into a tree of symbolic links to the WEGA tree
-  (`host/tools/oldroot.sh`, default `tmp/oldroot`, bin and lib real directories, guest /tmp shared), so the original tree
-  stays untouched. Then `z8k-emu -r <oldroot> /bin/ccv1 -c -O foo.c`.
-
-### Evidence rules (owner decisions 2026-10-31)
-
-- The D classes are hard only where a program was checked strictly (`strictcmp.py`: only code addresses masked); a
-  class read from a masked or pattern comparison is weak and may hide a wrong source form. ld, strip and size were
-  checked strictly before the first switch; every other program is checked the same way before it counts.
-- A switch counts only when it explains findings in at least two independent functions, preferably in different
-  programs. A function that fits only through a switch no other function needs is a suspect source form and goes back
-  to the source check; so do findings that no switch explains. (Lesson of ld: ranlib_scan, dseek and load2td looked like
-  compiler differences and were source forms.)
-- Regression: every function that is strictly exact stays exact with the switch, in every program built by the same
-  compiler version. The version of a program comes from its build date (section 2); a program of another time is no
-  counter-witness (owner decision 2026-10-31).
-- The test bench is read only by comparison (with and without a switch): WEGA changed many of the System III sources,
-  so a difference on the bench is not a compiler difference by itself.
-- Every accepted switch: commit (no push), this document and the table of section 4 updated, the normal build stays
-  byte-identical (shipped cparse, codgen, popt), the corpora green.
-- Source form first (owner decision 2026-11-02): when a function differs, or contradicts an existing switch, first look for a
-  source form; a new switch or a further condition on a switch comes after that, and the forms tried go to `OLDCC_LOG.md`.
-  People wrote this source: the odder a form looks (nobody would probably have written it so), the less likely it is the
-  right one, even when the bytes fit. This weighs evidence, it does not forbid: what was really written is not known. An
-  odd form that fits is recorded as such in findings.json, and a plainer form or a switch stays possible.
-- Which functions need which switch: `host/OLDCC_SWITCHES.md`, generated (owner decision 2026-11-02), never edited by hand.
-  `oldcc.sh matrix SWITCH` for a new or changed switch, `oldcc.sh matrix` (all, unattended) when a program joins or before
-  switches are cleaned up, `oldcc.sh matrix check` (no measurement, seconds) in every check round and before a commit that
-  touches a switch: it names switches and programs missing from the table and how many files of the passes changed since
-  the measurement.
-
-
-How to test a change of a pass without touching the tree: `host/recon/oldvar.sh NAME PATCH.py [PASS]` (run `oldcc.sh model PROG` first). Removing a switch: a patch that deletes its `#define` from `oldcc.h`. What popt does with a function: `host/recon/poptrace.sh PROG FUNC`. `STRICT_CTX=12 python3 tools/strictcmp.py -v FUNC`: a difference with more context.
-
-### Time box (owner decision 2026-10-31)
-
-- A round is one hypothesis for a switch (one D class, one assumed mechanism), made and measured under the evidence
-  rules. Progress: two findings in independent functions become exact without a regression, or a new measured
-  explanation (for example the place of the mechanism in a pass).
-- A D class is parked after three rounds in a row without progress, and also when its switch would change the normal
-  build or need a large rebuild of a pass (for example a new table structure in codgen). Parked: measurements and attempts
-  in `OLDCC_LOG.md`, go on with the next class.
-- The whole work stops (state to the handoff) when five classes in a row are parked or no open class is left.
-- Review by the owner at the first milestone or after 20 rounds.
+- The old versions are native WEGA programs only (built with the shipped cc, run in the emulator). The host versions
+  (`host/codgen`, `host/popt`, ...) get no switches, except `host/cas/casold`, used by the models.
+- One source per pass; every old version has its own directory and Makefile (`src/cmd/cparse/v1/Makefile`, `codgen/v1`,
+  `popt/v1`, the driver `cc/v1`; v0, v0p the same). The cas of v0 and v0p is `src/cmd/cas/old`. Built programs are not in git.
+- The driver `cc.c` with `OLD_V1`, `OLD_V0`, `OLD_V0P` runs `/lib/vN/cparse`, `codgen`, `popt`. v0 and v0p run `/lib/old/cas`;
+  v1 runs `/bin/cas`. cpp, gopt, ld, crt0.o and libc.a are the shipped ones.
+- `make -C host oldroot` builds all of them and installs them into a tree of symbolic links to the WEGA tree
+  (`host/tools/oldroot.sh`, default `tmp/oldroot`, bin and lib real directories, guest /tmp shared). Then
+  `z8k-emu -r <oldroot> /bin/ccv0p -c -O foo.c`.
+- The switches of codgen are set in `codgen/oldcc.h`, the version Makefile names only `OLD_V0` or `OLD_V0P`: the native
+  cc takes about 160 characters of -D options.
 
 ## 2 Compiler versions
 
@@ -95,14 +48,14 @@ How to test a change of a pass without touching the tree: `host/recon/oldvar.sh 
 
 Most programs carry the stamp of their start-up file, `@[$]crt0.s Rev : 3.x <date>`, made at the build
 (`src/lib/libc/crt/mkcrt0.sh`, `crt0.list`); the libc members linked into a program date it too. The passes cparse,
-codgen, popt and cas have no stamp; their newest source dates are cparse 10/06/83, codgen 08/24/83, popt 01/18/83
-(z20.c 1.3 12/21/82, z21.c 1.4 12/21/82, z22.c 1.6, z23.c 1.6 03/25/83), cas 07/83. The date of a source does not date the
-compiler that built it.
+codgen, popt and cas have no stamp; their newest source dates are cparse 10/06/83, codgen 08/24/83, popt 03/25/83,
+cas 07/83. The date of a source does not date the compiler that built it.
 
-The full list of the 373 programs of the tree is `OLDCC_DATES.md` (generated by `host/recon/datemap.py`): crt0
-stamp, own SCCS ids, libc marks and the D12 measure. D12 can be read from the data of a binary without its source: the
-old cparse packs the string literals, the shipped one pads every odd one to an even address. The measure takes the
-first 16 strings that decide (the own modules lie in front of the libc). Reading (2026-10-31):
+`OLDCC_DATES.md` (generated by `host/recon/datemap.py`) lists the 373 programs of the tree: crt0 stamp, own SCCS ids,
+libc marks, D12 and D1. Two marks can be read from a binary without its source. D12: the old cparse packs the string
+literals, the shipped one pads every odd one to an even address. D1, read from the frames of the functions that save
+register variables: "slots" (as many never used frame words as saved registers: v1), "tight" (no unused word: v0),
+"loose" (shipped).
 
 | Time (build stamp) | D12 of the data | Programs (examples) | Compiler |
 |---|---|---|---|
@@ -113,15 +66,11 @@ first 16 strings that decide (the own modules lie in front of the libc). Reading
 | 08/11/83 | packed | csh | v1 (last packed one) |
 | 08/22/83 .. 09/01/83 | padded | sh, rsh, kdb, fsdb | D1 slots with the shipped D12: between v1 and shipped |
 | 09/09/83 and later | padded | troffv7, adb 09/83, sld 10/27, ar, make, ps 11/83 | shipped (D1 loose) |
-| no stamp, built late | packed | cparse, scparse, codgen, scodgen (sources 10/06/83), popt, spopt, gopt (03/83), cpp, find 10/83, upkeep 11/83 | v0 (D1 tight): the passes were built by the compiler of 1982 |
+| no stamp, built late | packed | cparse, scparse, codgen, scodgen (sources 10/06/83), popt, spopt, gopt (03/83), cpp, find 10/83, upkeep 11/83 | v0p for the passes and cpp |
 | no stamp, libc 09/83 | padded | cc, scc, tar, format, verify, copydisk, gld, pburn | shipped |
 
-The second mark is D1, read from the frames of the functions that save register variables (`datemap.py`, column D1):
-"slots" (as many never used frame words as saved registers: v1), "tight" (no unused word: v0), "loose" (the shipped
-cc). So: v0 up to 11/82, v1 from 01/83 (the change in 12/82 .. 01/83, where shut, dd and some acct programs read loose),
-D12 of cparse changed between 08/11/83 (csh) and 08/22/83 (sh), D1 between 09/01/83 (fsdb) and 09/09/83 (troffv7). Exceptions to check: nroff 07/08/83
-padded (its first strings may be the binary hyphenation tables), find 10/25/83, upkeep 11/22/83 and stty 12/21/83
-packed (built by an old compiler late, or few strings), id 05/83 and the getty programs mixed.
+To check: nroff 07/08/83 padded (its first strings may be the binary hyphenation tables), find 10/25/83, upkeep 11/22/83
+and stty 12/21/83 packed (built by an old compiler late, or few strings), id 05/83 and the getty programs mixed.
 
 ### shipped
 
@@ -131,498 +80,289 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 
 ### v1 (01/83 .. 07/83)
 
-Status: closed as a milestone (2026-10-31, owner decision). The switches below are the version; the open ld functions
-are known remainders with one witness each and are taken up again only when a new witness (another program of the
-time, or another version) points to their mechanism.
-
-- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3` (codgen), `OLD_D20` (popt). The libc of the version Makefiles is
-  that of the shipped passes (the libc does not change what the passes write).
-- Byte-identical with v1: `/bin/size`, `/usr/bin/strip`.
-- ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146 (open: place_sec, chk_ranlib, load2td,
-  read_symbols; section 5).
-- Function-equal with v1 (addresses masked, frame offsets compared; not linked yet): mv (`src/cmd/mv.c`, all 7), rm (all
-  6), write (all 5), rmdir (rmdir; main differs by D4 and D18).
-- Test bench (`witness.py`, System III sources of 26 programs from 01/83 .. 07/83, the stdio.h of the time from
-  `src/cmd/cparse/stdio.h`): 89 of 121 functions equal (the shipped cc: 27). The rest are WEGA changes of the sources.
-- Without a switch on the bench: without OLD_D1 31 of 119 equal, without OLD_D3 61 (both with 72).
+- Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3` (codgen), `OLD_D20` (popt).
+- Byte-identical: `/bin/size`, `/usr/bin/strip`.
+- ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146; open: place_sec, chk_ranlib, load2td, read_symbols.
+- Function-equal, addresses masked, frame offsets compared, not linked yet: mv (all 7), rm (all 6), write (all 5), rmdir
+  (rmdir; main differs by D4 and D18).
+- Test bench (System III sources of 26 programs from 01/83 .. 07/83): 89 of 121 functions equal, the shipped cc 27.
 - stdio of the time: `char *_ptr` and the V7 forms of getc/putc (`--_cnt >= 0` first); the stdio.h of the WEGA tree has
   `unsigned char *_ptr` and the other order.
 
-### v0 (1982; it also built the compiler passes) — started 2026-10-31
+### v0 (1982)
 
-- Time: the programs of 1982 (sources 07/82 .., crt0 3.1 up to 11/82) and, built late, the passes cparse, scparse,
-  codgen, scodgen, popt, spopt, gopt, cpp and find, upkeep. Marks: tight frames (D1 "tight": no unused frame word, no
-  return temporary, leaf functions without a frame) and packed strings (old D12).
-- Switches so far: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D22` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`, `OLD_D3P`,
-  `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D22`, `OLD_D3J`, `OLD_D2PO`, `OLD_D5A`, `OLD_D2W6` (codgen; the version Makefiles name only `OLD_V0` or `OLD_V0P`, the switches are set in `codgen/oldcc.h`: the native cc takes about 160 characters of -D options); popt without a switch
-  (OLD_D20 is neutral on the bench). Candidates in the sources, not set: `OLD_D2D` (codgen) and `OLD_D1F` (popt), see
-  "Leaf functions" below. No OLD_D1 (no frame places of register variables), no OLD_D3 (with it the bench gets worse).
-- Directories `src/cmd/{cparse,codgen,popt,cc}/v0`, driver ccv0 (`cc.c` with `OLD_V0`, passes in /lib/v0), installed by
-  `make -C host oldroot` together with v1.
-- Test bench v0 (`witness.py -t v0`, System III sources of 38 programs of 1982, 153 functions): shipped cc 15, v1 14,
-  v0 64 (v1 without OLD_D1: 15; + OLD_D2R: 18; + OLD_D18: 48; + OLD_D1R: 60; without OLD_D3: 61; + OLD_D2W: 62, the
-  differing lines 1624 > 1542; + OLD_D10 and OLD_D2R narrowed to loads through a pointer: 64, 1466 lines; OLD_D1R
-  without any return temporary: 64, 1463; + OLD_D3P: 65, 1462; + OLD_D4R: 68, 1437; + OLD_D4O: 69, 1435; the pairs
-  rr2 rr0 rr4 rr6 at the start (OLD_D2W): 74, 1405; OLD_D3P under casts: 74, 1395; + OLD_D2C and OLD_D2F: 75, 1325;
-  + OLD_D2L: 84, 1080; + OLD_D2N: 86, 1064; + OLD_D6T: 86, 1004; + OLD_D6C: 86, 788; + OLD_D2T: 95, 557; + OLD_D6R: 98, 539; OLD_D4R on both sides: 99, 531; + OLD_D3K: 107, 495; + OLD_D2V: 108, 429; + OLD_D2M: 108, 418; + OLD_D2P: 109, 407; OLD_D2P with idle halves and idle pairs for words: 109, 400; + OLD_D2U: 109, 396; + OLD_D2G: 112, 368; + OLD_D5S: 114, 318; + OLD_D22: 115, 292; + OLD_D3J: 117, 290; + OLD_D2PO: 117, 282; + OLD_D5A: 118, 277; + OLD_D2W6: 118, 275).
-- /lib/cparse as the second test bench (2026-10-31, ccv0, d12model, strictcmp): 44 strictly exact (shipped cc 29);
-  cparse built with ccv0 normally passes its corpus like the shipped build (239 of 259 inputs identical, the rest
-  differ only in the heap contents of the .S file). The behaviour check is needed: the test benches count equal
-  instructions only and do not see wrong code (see OLD_D2R).
-- /lib/cparse built with ccv0 before OLD_D10 (d12model, strictcmp): the code is as long as the original's (48896 bytes; shipped cc
-  49152), data equal at the same address 17472 of 18584 bytes (shipped 17170), 38 functions strictly exact (shipped
-  29; gained mkty, mainp1, lxtitle, bcon, openfiles, bstart, bend, fldal, noinit, tcheck, putstrs; lost savebc, psave). With OLD_D2W: still 38, code 48896, data equal at the same address
-  17411 (code addresses in the data moved).
-- Leaf functions (2026-10-31): the renaming of register variables into free low registers and the removal of the ldm
-  is done by popt (`procopt`, z23.c), in the shipped compiler too; codgen writes r14, r13 with their save. In v0 more
-  low registers stay free because its codgen takes r0 and rr0 early (`OLD_D2W`) and puts the dividend of an int
-  division into the odd half of rr0 (or of the pair of the wanted register) and the division into that pair (`OLD_D2D`,
-  order3.c rallo, allo3.c allocreg); the old popt then also removes the stores into the frame and the frame itself when
-  no register is saved and nothing reads the frame (`OLD_D1F`, procopt). With these cal jan1 is 8 lines from the
-  original (23 without); the bench: OLD_D1F alone 61/1621 lines, with OLD_D2D 61/1594, both on top of OLD_D2W 62/1561
-  (OLD_D2W alone 62/1542): OLD_D2D costs elsewhere (crypt setup, col main, paste main, sdiff main), so both are
-  candidates, not set.
-- Open (cparse): the address moved out of the wanted register before a load (chkstr).
-- The compiler of the passes is not exactly the one of 1982 (2026-10-31), so there are two versions (owner decision
-  2026-10-31): v0 stands for the 1982 programs (test bench v0), v0p for the passes (test bench /lib/cparse), see below: cparse putbyte passes its parameter v
-  (already in r7) to bcon(v) by a load from the frame, the 1982 programs take it from the register (cron ex: s in r7
-  for fputs(s, ...), no load; cal cal: y in r6, `ld r7,r6`). Candidate `OLD_D3A` (codgen gencall: the registers of
-  the parameters forgotten before the arguments are evaluated): cparse 44 > 48 (putbyte, yyerror, sectadd,
-  resetmem), bench v0 65 > 63 (cron ex, cal cal). Set in v0p, not in v0.
+- Programs: those of 1982 (sources 07/82 .., crt0 3.1 up to 11/82). Marks: tight frames (no unused frame word, no return
+  temporary, leaf functions without a frame) and packed strings.
+- Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D22` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
+  `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`,
+  `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D22`, `OLD_D3J`, `OLD_D2PO`, `OLD_D5A`, `OLD_D2W6` (codgen); none in popt. Not `OLD_D1`,
+  not `OLD_D3`. cas: the old one (D17).
+- Test bench (System III sources of 38 programs of 1982): 125 of 153 functions equal, 219 differing lines.
+- Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
+  the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
+  renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).
 
-### v0p (the compiler of the passes) — started 2026-10-31
+### v0p (the compiler of the passes)
 
-- What it is: v0 with the differences that only the passes show (owner decision 2026-10-31: two versions, v0 for the
-  programs of 1982, v0p for cparse, codgen, popt). Test bench: /lib/cparse built with ccv0p (d12model, strictcmp) and
-  the behaviour of cparse built with ccv0p (its corpus); the bench of v0 only as a check.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`, `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L` (codgen; popt has no switch of its own since 2026-11-03). Directories `src/cmd/{cparse,codgen,popt,cc}/v0p`, driver ccv0p
-  (`cc.c` with `OLD_V0P`, passes in /lib/v0p), installed by `make -C host oldroot`.
-- State: /lib/cparse 178 strictly exact, 2 differing lines, /lib/popt 72 of 73, 8 lines (strictcmp masks an immediate that is a function address of either binary since 2026-11-01), code and data as long as the original's (48896, 18584
-  bytes; data equal at the same address 17670); cparse built with ccv0p passes its whole corpus (259 of 259, since
-  OLD_D6C: the heap contents of the .S file are now the original's too) (code 49152 bytes against 48896), corpus 239 of 259
-  (2026-10-31: 48 with v0 + OLD_D3A; + OLD_D4R 71; + OLD_D4O 76; + the pair order of OLD_D2W 80; OLD_D3P under casts
-  81; + OLD_D2C 82; + OLD_D2F 89, 3132 lines; + OLD_D2L 89, 2836 lines; + OLD_D2Q 2719 lines (88: addcase and ftnend differ only by a mask artifact, a data address equal to a function
-  address of the model); nidcl source fix 2717; + OLD_D2N 93, 2602 lines; + OLD_D6T 2492; + OLD_D6C 2343; + OLD_D2T 98, 1732; OLD_D2Q also for a wanted pair 1707; + OLD_D2X 99, 1668; + OLD_D6R 107, 1584; OLD_D4R on both sides 108, 1438; source fixes hash, hide, lookup 111, 1400; + OLD_D3K 113, 1312; source fixes getpreg, fhashv 1282; + OLD_D2V 116, 1194; OLD_D3K at `?:` 117, 1188; source fixes cisreg, tyreduce 119, 1161; source fixes vfdzero, tcopy, ncopy, argregs, beginit, endinit, falloc 122, 1094; + OLD_D2A 125, 1087; source fixes tymatch, argdebug, buildtree, defid, efcode 126, 997; rmconv, ispow2 127, 987; + OLD_D2M 128, 961; + OLD_D2P 129, 906; getmem source fix 130; OLD_D2P with idle halves and idle pairs 132, 780; + OLD_D2U 133, 756; + OLD_D2G 135, 676; + OLD_D5S 136, 652; tymatch register order 137, 528; OLD_D3K: a label just in front of the function end keeps the parameters 139, 525; oconvert source fix 523; popt OLD_D20C 140, 464; popt OLD_D20X 140, 398; popt OLD_D20S 141, 390; popt OLD_D20L 383; OLD_D2A not for an argument pair, + OLD_D2O, + OLD_D21, code1 source fixes 336; + OLD_D16A 333; + OLD_D3N 142, 328; + OLD_D22 145, 302; OLD_D3N for the arguments of the next statement 296; source forms prtdcon, fltlab 147, 286; source forms yyparse, treeeq 148; OLD_D3N for register variables, psavel source form 151, 278; + OLD_D3J 153, 274; instk, talloc source forms, + OLD_D2QO 156, 260; + OLD_D2PO 234; + OLD_D2MO 157, 229; + OLD_D16B 158, 220; conval source order, + OLD_D2PT 159, 210; exname, yylex source forms 215 (yylex as long as the original, new mask artifacts); + OLD_D5A 157, 205; clocal, buildtree, putsym, newsect source forms 159; + OLD_D3V 158, 162; without the mask artifacts 162, 152; cinit case order, popt OLD_D20K 163, 144; clocal case order 164; + OLD_D6S 165, 134; + OLD_D2R0 166, 128; yylex 126; defalign source form 167, 117; + OLD_D2W6 169, 105; + OLD_D3AW 170, 103; OLD_D3AW for an address constant plus a parameter 171, 100; oconvert source form 172, 98; + OLD_D5G 173, 96).
-- Open (bench): the first register of a statement r2 where ours takes r3 (the getc macro on a global stream); the switch dispatch
-  `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)` (D6); `call` for global functions of the same file: the old cas (D17).
+- v0 with the differences that only the passes show. It built cparse, scparse, codgen, scodgen, popt, spopt and cpp: all
+  seven are byte-identical, all their functions strictly exact.
+- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
+  `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen) and `OLD_D6D` (cparse). popt needs no switch.
+- The corpus of cparse and scparse holds only with the ccv0p build: the heap contents of the .S file follow the data layout of the pass.
 
-### Seen in /lib/cparse (classes read from the strict diffs, before v0)
+### The old scc of cas, the old cc of ranlib
 
-Seen in cparse (classes read from the strict diffs, `strictlayers.py`, weak): D12 holds (the data under the D12 model),
-D1 of v1 does not (its register variables have no frame places: OLD_D1 breaks lxinit, moedef, clearst). Also seen: D18
-(never `@r15`), D1 in other forms (the shipped cc reserves a home slot for register parameters and rounds the frame to
-4, the cc of cparse does neither; no frame for leaf functions like getlab, noinit), D2, D3 (a spilled parameter kept in
-its register across branches), D6, D9, D10, D11 (shared code between the TNEXT arms of talloc), D19.
-
-### The old scc of cas, the old cc of ranlib, codgen, popt
-
-Their differences are in the table of section 4. cas was built by an older scc (D5, D13 are only seen there); the cas
-parser and `assemble` without `-O`, the other modules with `-O`. They are not assigned to a version yet.
+cas was built by an older scc (D5 and D13 are only seen there); its parser and `assemble` without `-O`, the other modules
+with `-O`. Neither compiler is assigned to a version.
 
 ### The old libc members inside size, strip, ranlib, cas
 
-The Jan 1983 libc that is linked into these binaries (only as machine code there) shows D14 and differs from the shipped
-members by its source and by the compiler (D1, D8). Its members are kept as cas sources in `src/lib/oldlibc`.
+The Jan 1983 libc linked into these binaries shows D14 and differs from the shipped members by its source and by the
+compiler (D1, D8). Its members are kept as cas sources in `src/lib/oldlibc`.
 
-## 3 The differences D1 ... D22
+## 3 The differences
 
-Each class: the form in the code, the pass, the mechanism as far as measured, the switch, the evidence. "old" = the
-compiler that built the original. Not differences of the compiler (checked):
-
-- Position of the prologue: with `-O` both compilers put `dec r15,#n; ldm ...` in front of the body; without `-O` the
-  prologue is behind it (`jr Lp` at the entry). `cmpmod.py` converts the behind form before it compares.
-- The gopt defect of `cc -Or` (frame offset of register pointer parameters, also on the real machine): no libc function
-  was built with `-Or`.
-- Older revisions of the libc sources (Jan 1983 `_doprnt`, `readsym` of ranlib): source differences.
+Each class: the form in the code, the pass, the mechanism, the switch, the witnesses. D21 is not used.
 
 ### D1 Frame size and frame places
 
-- Form: frames of another size, saved registers at other offsets (`ldm S10(r15),r13` against `S12`).
-- Mechanism (v1, switch `OLD_D1` in cparse, `oalloc` in vinit1.c): the old cparse gives every register variable its
-  place in the frame too, at its declaration, like an automatic variable of its type; the shipped one only char and
-  short register variables under -O. The `spare` locals of the early ld drafts were exactly these places (number of
-  spare words = number of register variables).
-- Evidence: ld (30 functions lose their spares and stay exact), strip (`copy`; byte-identical), the bench (31 > 72),
-  /bin/mv (frames 16, 0x12, 10 of main, pname, dname; shipped 12, 12, 8).
-- v0 (switch `OLD_D1R` in codgen, delay() in reader3.c): no temporary for the value of a return; with a delayed x++ the
-  value stays in r2, which stays taken while the increment runs (`ld r2,_crslab; inc _crslab,#1`: cparse getlab, no
-  frame). The bench of v0 goes from 48 to 60 equal functions (first form: a temporary only for a delayed x++).
-- Other forms, not reproduced: the temporary of a return value (codgen, reader3.c, above the locals) is in every
-  function of ld with a return value except read_symbols; one unexplained frame word in main, parse_args, slookup,
-  pslookup, index16 of ld (kept as `int spare`); cparse's compiler makes no frame for leaf functions and no home slots
-  for register parameters; cas `putins` 12 bytes against 14, libc nlist and length 2 bytes smaller, fseek 14 against 20.
+- v1 (`OLD_D1`, cparse, `oalloc`): every register variable gets a place in the frame too, at its declaration, like an
+  automatic variable of its type; the shipped one only char and short register variables under -O. ld, strip `copy`, mv.
+- v0 (`OLD_D1R`, codgen, `delay`): no temporary for the value of a return; with a delayed x++ the value stays in r2, which
+  stays taken while the increment runs (`ld r2,_crslab; inc _crslab,#1`: cparse getlab).
+- v0: no frame for leaf functions, no home slots for register parameters.
+- Not reproduced: one unexplained frame word in main, parse_args, slookup, pslookup, index16 of ld (kept as `int spare`);
+  cas `putins` 12 bytes against 14, libc nlist and length 2 bytes smaller, fseek 14 against 20.
 
 ### D2 Scratch registers
 
-- v0 (switch `OLD_D2W` in codgen, rweight and rsbuild in regallo3.c): r0 has the weight 3 instead of 8, and the free
-  list starts with the pairs rr2 rr0 rr4 rr6 (shipped rr2 rr4 rr6 rr0), so r0 and the pair rr0 come
-  early (the start order: cparse 76 > 80, bench 69 > 74) (the originals of v0: `div rr0` 68 times, `rr2` 135, `rr4` once; v1 and shipped: never rr0); bench 61 > 62,
-  1624 > 1542 lines. Weight 0 or 1 makes codgen run endlessly (bench timeouts).
-- v0 (switch `OLD_D2R` in codgen, allocreg in allo3.c): a load through a pointer (STAR, OREG) goes into the register of
-  its address first (freereg), a free one only after it (`ld r7,@r7` where the shipped codgen writes `ld r6,@r7; ld
-  r7,r6`); word registers only. The first form (for every node) gave the bench 15 > 18 but wrong code in cparse
-  copysym (`*pp = q` stored q into itself, `ldir @r3,@r2,r3`): an operand register that is still needed; narrowed to
-  loads, bench 62 > 64 together with OLD_D10, cparse 39 > 43.
-- v0 (switch `OLD_D2C` in codgen, match in match3.c and allocreg in allo3.c): a name found in a scratch register by
-  fixname is that register, the tree takes it over and the register forgets the name (gotscal `inc 4(r2),#1; ld
-  r13,4(r2); ld r2,r13`, the shipped codgen copies first: `ld r3,r2`); not for parameters (sputc, clocal copy `ld
-  r2,r7` before each use), and such a copy holds no name, so the next use copies from the parameter's register again.
-- v0 (switch `OLD_D2F` in codgen, getreg in regallo3.c): a free single word register is taken only when its rweight
-  is not above that of the first free pair, else the pair is split (clocal: the copy goes to r2, not to r6 beside the
-  parameter in r7; the rest r3 of rr2 is taken next). Leaving the rest of a split pair unsorted on the free list
-  instead breaks the merging of pairs (codgen: "reclaim dest reg not free").
-- v0 (switch `OLD_D2L` in codgen, getreg): an idle scratch word that only holds a name counts as free when it weighs
-  less than the register getreg would take; the name is lost then (newsect: `n = ++nsect; cp = &buf[3]` loads into
-  r2 again, the shipped codgen keeps nsect in r2 and takes r3). The name lives on as long as nobody needs the register
-  (gotscal keeps pstk in r2 across statements).
-- v0 (switch `OLD_D2N` in codgen, allocreg): a name loaded into a word register (a global, or an auto from the
-  frame) is not remembered there; only the register of an assignment keeps the name. ilbrace reloads `ld r2,_pstk`
-  in front of `test 6(r2)` after `test 16(r2)`, while gotscal uses r2 after `ld _pstk,r2` for two statements.
-  cparse 2717 > 2602 lines (tymerge exact, savestr exact), bench v0 84 > 86.
-- v0 (switch `OLD_D2T` in codgen, getreg under OLD_D2L): the register of a TEMP (cparse: only the value of a
-  switch, held from the start of the switch to the compares behind the bodies) counts as free while idle, so the
-  bodies take r2 again (setreg, prtree, opact exact); the compares are reached only by the jump from the start, where
-  the register still holds the value. Risk: a TEMP needed on a path that runs through such a body would be wrong code
-  (not seen; cparse makes TEMPs only for switches). cparse 2343 > 1732 lines, bench v0 86 > 95.
-- v0 (switch `OLD_D6R` in codgen gswitch): the count register of cpir is in neither half of rr0 (`ld r4,#n`, the
-  shipped codgen skips only r0 and takes r1); under OLD_D2T gswitch takes the switch register first, which a body
-  may have given back. cparse 1668 > 1584 lines (8 functions that differed only in this register), bench v0 95 > 98.
-- v0p (switch `OLD_D2A` in codgen, match): the value of a long assignment used in a comparison is copied into a new
-  pair that keeps the name (`ldl 2(r15),rr6; ldl rr2,rr6; cpl rr6,#%FFFE`, later `ldl rr4,rr2`): nidcl, beginit,
-  endinit exact; bench v0 unchanged, so v0p only. Not when the value goes to a register wanted for it (an argument).
-- v0 (switch `OLD_D2W6` in codgen, getreg): when a pair is asked for and rr2 and rr0 are taken, rr6 comes before rr4
-  (refid `exts rr6`, argalloc `subl rr6,rr6`: the only two places in cparse where a third pair is needed; all others
-  agree). Changing the order of the free list itself (also for words split from it) moves the cpir count register
-  from r4 to r6 (bdty, talign): only the pair request. cparse 117 > 105, bench v0 277 > 275.
-- v0 (switch `OLD_D2PO` in codgen, getreg): OLD_D2P for an odd word: an idle odd word (a parameter or name in r3)
-  whose even half is free is given back when a pair is wanted and the even half weighs less than the first free
-  pair (refid `nrefsym * 22` in rr2, dclstruct). cparse 260 > 234, bench v0 290 > 282.
-- Removed 2026-11-03, no effect left in the models or the bench. v0p (switch `OLD_D2R0` in codgen, offstar and freereg): an address computed in r0 is moved to another register
-  for the indirection; the value loaded through it goes back into r0 when r0 is free (gotscal `inc r0,#12; ld r1,r0;
-  ld r0,@r1`). Bench v0 277 > 278: v0p only.
-- v0p (switch `OLD_D2PT` in codgen, getreg): OLD_D2P also takes the idle registers of a TEMP (the value of a switch,
-  as OLD_D2T does for words): conval `ldl rr2,8(r14); addl rr2,6(fp)` right behind the dispatch. Bench v0 unchanged.
-- v0p (switch `OLD_D2MO` in codgen, allocreg): OLD_D2M for an odd left register (the quotient in r3): the pair below
-  it when the even half is free or idle (dclstruct `mult rr2,r11`); bench v0 282 > 291: v0p only.
-- v0p (switch `OLD_D2QO` in codgen, allocreg): OLD_D2Q also when an odd word register is wanted for the value (its
-  low half as an argument: getstr `ldl rr2,dimtab(r2); ld r7,r3`); refid closer.
-- v0p (switch `OLD_D2O` in codgen, allocreg): a long loaded through an odd address register goes into the pair below it
-  (r-1, r) when the even half is free or idle; bench v0 unchanged, v0p only.
-- v0p (switch `OLD_D2Q` in codgen, allocreg): a long loaded through a pointer goes into the pair of its even address
-  register when the odd half is free (`sla r2,#2; ldl rr2,TAB(r2)`, the shipped codgen takes rr0), also when that
-  pair is the wanted one (cinit: `ldl rr4,14(r4)` for an argument); cparse 2836 > 2719 lines, bench v0 1080 > 1085
-  lines (84 both), so v0p only.
-- v0p (switch `OLD_D2X` in codgen, allocreg): a long result of a binary operator goes into the pair of its left
-  operand first (freereg; defalign `ldk r2,#0; and r3,#1` in rr2, the shipped codgen copies into rr0 and back). Not
-  for shifts: their count register would get the operand's pair (`ld r6,#4; sdal rr6,r6`, wrong code in bccode).
-  cparse 1707 > 1668, bench v0 unchanged (557), so v0p only.
-- v0 (switch `OLD_D2V` in codgen, allocreg under OLD_D2R; d2vfirst in regallo3.c): the register of the address
-  is taken for a load through a pointer only when it weighs no more than the register getreg would take (main
-  `argv[i]`: `ld r2,@r3`; argalloc). cparse 1282 > 1194, bench v0 107 > 108.
-- v0 (switch `OLD_D2M` in codgen, allocreg): a word multiplied through a pair (`mult rr2,#6`) uses the pair of its
-  even register when the odd half is free (adddef `ld r3,r2; mult rr2,#%0006`, the shipped codgen takes rr0). The
-  same for a word made long (SCONV) makes cparse worse (instk, lxstr, dclstruct). cparse 987 > 961, bench v0 429 >
-  418.
-- v0 (switch `OLD_D2P` in codgen, getreg): OLD_D2L for pairs, an idle pair that holds a name counts as free when it
-  weighs less than the first free pair (inforce exact); two idle words of a pair are given back and merge (yyparse,
-  instk: `ldl rr2,X` where we took rr0); for a word an idle lighter pair is given back and split (putsym). cparse
-  961 > 780, bench v0 418 > 400.
-- v0 (switch `OLD_D2U` in codgen, rallo in order3.c): the right operand of a long multiplication wants no register
-  (the shipped codgen wants rr4 for it when it is not a register): upoff `ld r3,r1; exts rr2; multl rq4,rr2`.
-  cparse 780 > 756, bench v0 400 > 396.
-- v0 (switch `OLD_D2G` in codgen, getreg under OLD_D2L): an idle word of the same weight as the register getreg
-  would take wins (mkdope: r3 against the split rr0, whose r0 cannot index: `ld r3,@r14; add r3,r3; ld
-  %975A(r3),r2`). cparse 756 > 676 (copysym, fhashv, mkdope exact), bench v0 396 > 368 (112 functions).
-- Form: another register for a temporary: rr0 where the shipped cc takes rr4 (cas), rr4 against rr2 (ld), a copy to r2
-  in front of a use (codgen `expand`, ld place_sec and chk_ranlib); register variables of leaf functions in scratch
-  registers (sld).
-- Mechanism: in the register allocator of codgen (rsuse/rsfree lists, rsfreeall at labels); not found.
-- Refuted (ld and bench): registers kept at labels with their contents forgotten (bench 69 > 54), only at labels no jump
-  has named yet, the parameter registers kept at labels, merged pairs put behind the others, freed words in LIFO
-  order, symreg only on idle registers. Two ld findings were source forms (ranlib_scan as a `for` loop, dseek as one
-  `||`), strip's expression went with v1 without a D2 switch.
-- Removed 2026-11-03, no effect left in the models or the bench. v0p (switch `OLD_D2RA` in codgen, match and offstar): an address `r0 + rN` moved out of r0 goes to rN when that is free
-  again (popt itoa_ `add r0,r3; ld r3,r0; ldb @r3,rl2`, reverse `add r0,r2; ld r2,r0`); an address made by a constant
-  keeps the lightest register (cparse `add r0,#dimtab; ld r1,r0`, gotscal, codgen). Bench v0 not touched.
-- Open: place_sec (`r8 = (secorg[j] - q->tsize) & 0xff00`: the original takes a new register for the `and`, not in the
-  `+ 255` case beside it), chk_ranlib; cas, codgen, ranlib (weak).
+All in codgen.
+
+Free registers and pairs:
+
+- v0 `OLD_D2W` (rweight, rsbuild): r0 has the weight 3 instead of 8 and the free list starts with the pairs rr2 rr0 rr4 rr6
+  (shipped rr2 rr4 rr6 rr0), so r0 and rr0 come early. Weight 0 or 1 makes codgen run endlessly.
+- v0 `OLD_D2F` (getreg): a free word register is taken only when its weight is not above that of the first free pair, else
+  the pair is split (clocal: the copy goes to r2, not to r6 beside the parameter in r7).
+- v0 `OLD_D2L` (getreg): an idle scratch word that only holds a name counts as free when it weighs less than the register
+  getreg would take; the name is lost then (newsect `n = ++nsect; cp = &buf[3]` loads into r2 again). The name lives on as
+  long as nobody needs the register.
+- v0 `OLD_D2G` (under OLD_D2L): an idle word of the same weight as that register wins (mkdope: r3 against the split rr0).
+- v0 `OLD_D2T` (under OLD_D2L): the register of a TEMP (the value of a switch, held from its start to the compares behind
+  the bodies) counts as free while idle, so the bodies take r2 again (setreg, prtree, opact).
+- v0 `OLD_D2P`: OLD_D2L for pairs, an idle pair that holds a name counts as free when it weighs less than the first free
+  pair; two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split.
+- v0 `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
+  than the first free pair (refid, dclstruct).
+- v0 `OLD_D2W6`: when a pair is asked for and rr2 and rr0 are taken, rr6 comes before rr4 (refid, argalloc); only the pair
+  request, not the free list.
+- v0p `OLD_D2PT`: OLD_D2P also takes the idle registers of a TEMP (conval).
+
+Where a value goes:
+
+- v0 `OLD_D2R` (allocreg): a load through a pointer goes into the register of its address first (`ld r7,@r7`), word
+  registers only. `OLD_D2V`: only when that register weighs no more than the one getreg would take (main `argv[i]`, argalloc).
+- v0 `OLD_D2C` (match, allocreg): a name found in a scratch register by fixname is that register, the tree takes it over and
+  the register forgets the name (gotscal); not for parameters, and such a copy holds no name.
+- v0 `OLD_D2N` (allocreg): a name loaded into a word register is not remembered there; only the register of an assignment
+  keeps the name (ilbrace reloads `_pstk`, gotscal uses r2 for two statements).
+- v0 `OLD_D2M` (allocreg): a word multiplied through a pair uses the pair of its even register when the odd half is free
+  (adddef `ld r3,r2; mult rr2,#%0006`). v0p `OLD_D2MO`: for an odd left register the pair below it when the even half is
+  free or idle (dclstruct).
+- v0 `OLD_D2U` (rallo): the right operand of a long multiplication wants no register (upoff).
+- v0 `OLD_D6R` (gswitch): the count register of cpir is in neither half of rr0.
+- v0p `OLD_D2A` (match): the value of a long assignment used in a comparison is copied into a new pair that keeps the name
+  (nidcl, beginit, endinit); not when the value goes to a register wanted for it.
+- v0p `OLD_D2Q` (allocreg): a long loaded through a pointer goes into the pair of its even address register when the odd half
+  is free, also when that pair is the wanted one. `OLD_D2QO`: also when an odd word register is wanted for the value
+  (getstr). `OLD_D2O`: a long loaded through an odd address register goes into the pair below it when the even half is
+  free or idle.
+- v0p `OLD_D2X` (allocreg): a long result of a binary operator goes into the pair of its left operand first (defalign); not
+  for shifts, whose count register would get the operand's pair.
+
+Open: ld place_sec (`r8 = (secorg[j] - q->tsize) & 0xff00`: a new register for the `and`), chk_ranlib; register variables of
+leaf functions in scratch registers (sld); rr0 where the shipped cc takes rr4 (cas).
 
 ### D3 Register contents
 
-- Form: the old compiler knows that a register still holds a value (no reload), or loads where the shipped one uses the
-  register; the old popt keeps a reload after a store (cas: `ld S0,r7` followed by `ld r7,S0`).
-- Mechanism (v1, switch `OLD_D3` in codgen, cbranch in reader3.c): at the join label of `&&` and `||` the shipped codgen
-  gives the idle registers back (`rfreeall(1)`), the old one keeps them with their contents.
-- Evidence: ld init_entry and dseek, the bench (61 > 72).
-- Risk: a register loaded on one path only keeps its symbol too: OLD_D3J now intersects the states of the jumps.
-- v0 (switch `OLD_D3P` in codgen, regforsym in lcl3.c): a name that lives in a register is taken from it also when
-  the node wants another register (the shipped codgen then loads it from the frame): cparse argdebug `return(x)` as
-  `ld r2,r7`; bench 64 > 65. Also under a cast between the word types int, unsigned and pointers (`p = (struct s
-  *)idn` takes idn from r7; the shipped codgen needs the same type): cparse rstruct, bench 1405 > 1395 lines.
-- v0 (switch `OLD_D3K` in codgen: main3.c label record, rsfreeall, cbranch, istnode, tshape): a parameter stays
-  known in its register at a label that a jump has already named (comm3.c branch, zzz3.c cbgen keep the set) and
-  behind `&&`, `||` and the `?:` of codgen (there word registers only: sectfull spills its long parameter, not
-  the word one; zecode keeps a long parameter at labels); at a label only a later jump names (the default of a switch, whose dispatch comes behind the
-  bodies) it is forgotten (twords reloads t), unless the function ends right behind that label (the return label:
-  resetbc spills no parameter). Such a register is not a scratch one for the tree (tshape, istnode):
-  an operator copies it first (fixclass `ld r2,r6; and r2,#%0030`; without this `and r6` changed the parameter).
-  ecode `ld r2,r7` before each use. Keeping it at every label: cparse 1400 > 1488 (twords, fwalk lost). cparse
-  1400 > 1312, bench v0 99 > 107.
-- Removed (2026-11-03): OLD_D3V. One witness, a source form: defid `idp = hide( p ); q->rval = (int) idp;`.
-- v0p (switch `OLD_D3AW` in codgen, argplace; it replaced OLD_D3A, removed 2026-11-02): the register of a parameter is forgotten only
-  for an argument that is the parameter itself, uses it as an address (below an indirection) or goes through +, -, unary -, * or a cast (scmd, tcmd, fcmd `findtemp(-n)`, readsyms `alloc(n * 22)`, readtab `(int)n`);
-  in a computed value the register serves (zecode `n*2` from rr6; refid `dimtab[p->sizoff+3]` reloads p). The
-  same for a parameter added to an address constant (match: exname `&ntab[s]` as `ld r2,#ntab; add r2,0(fp)`).
-  Only when the parameter lies in the register the argument is wanted in: putbyte `bcon(v)` (v in r7, wanted r7)
-  reloads, popt setcon `natural(loc)` (loc in r6, wanted r7) is `ld r7,r6`. Not in the condition of a `?:`; its arms
-  do not take a parameter from the wanted register: popt regof `isreg(*s == '@' ? s + 1 : s)` is `ld r2,r7; cpb
-  @r2,...; ld r7,0(fp); inc r7,#1`. cparse has no site that separates this from the wider rule (unchanged).
-- Not a difference of the compiler (OLD_D3N, removed 2026-11-02): "the value of an assignment taken from its register in
-  the next statement" was source forms and the frame slot knowledge of popt. `fprintf(..., l)` behind `l = lab = getlab()`
-  takes r2 because rmove replaces the load of the slot stored last (prtdcon); where comjump merged two arms first, rmove
-  no longer knows the slot and the load stays (repladdr `ld r5,8(fp)` at the merge, `ld r5,r2` in the next branch). The
-  value in r2 inside one expression: `t->rval = swlab = getlab()` (genswitch), `*(cp = &ftitle[len-1])` (lineid),
-  `*(long *)(ip = &paramstk[paramno]) = l` (psavel), `(lp = nonlab(p))->op` (refcount); a separate statement tests the
-  variable (findcon).
-- v0 (switch `OLD_D3J` in codgen: comm3.c d3kjump, d3jsave, d3jlabel; main3.c label record; efcode3.c regargs): at
-  a label that jumps have named, only the parameters known at all those jumps stay known (OLD_D3K kept the state of
-  the fall-through); when the record in front of the label is a jump (the record ] does not count), the parameters
-  known at the jumps come back (tfree1 `ld r2,r7`, rmconv `cpb rl6,#'l'` at the else label behind a then part with
-  calls); of those only a long parameter still gets its home in the frame (notoff; word parameters needed none in the three models; one witness, on the owner's word). At a label no jump has named (a loop head) all jump records are forgotten (d3jclear; rsinsert; one witness, on the owner's word). With two jumps (buildtree, an `&&`) the original
-  reloads. cparse 278 > 274, bench v0 292 > 290 (115 > 117).
-- Removed 2026-11-03, no effect left in the models or the bench. v0p (switch `OLD_D3JM` in codgen, d3jlabel): at a label behind a jump named by several jumps the parameters known at
-  all the jumps and still known in front of the label stay (popt equop: `ld r2,r6` at the else label of `A || B || C
-  && D` behind a short then part; buildtree reloads because its then part has calls). Without the condition on the
-  code in front (the state of the jumps comes back): buildtree 6 > 14. Bench v0 unchanged.
-- Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after), libc malloc (`mult rr2,r6`).
+All in codgen.
+
+- v1 `OLD_D3` (cbranch): at the join label of `&&` and `||` the shipped codgen gives the idle registers back, the old one keeps
+  them with their contents. ld init_entry, dseek.
+- v0 `OLD_D3P` (regforsym): a name that lives in a register is taken from it also when the node wants another register, also
+  under a cast between int, unsigned and pointers (argdebug, rstruct).
+- v0 `OLD_D3K`: a parameter stays known in its register at a label a jump has already named and behind `&&`, `||` and the `?:` of
+  codgen (there word registers only); at a label only a later jump names, or none, it is forgotten (twords), unless the
+  function ends right behind that label. Such a register is not a scratch one for the tree (tshape, istnode): an operator
+  copies it first (fixclass).
+- v0 `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
+  front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
+  those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
+  records are forgotten. With two jumps (buildtree, an `&&`) the original reloads.
+- v0p `OLD_D3AW` (argplace): the register of a parameter is forgotten only for an argument that is the parameter itself, uses it
+  as an address or goes through +, -, unary -, * or a cast (scmd, readsyms, readtab), or a parameter added to an address constant
+  (exname), and only when it lies in the register the argument is wanted in: putbyte `bcon(v)` reloads, popt setcon
+  `natural(loc)` is `ld r7,r6`. Not in the condition of a `?:`; its arms do not take a parameter from the wanted register (regof).
+- v0p `OLD_D3L`: a word cast of a global long is not taken from the register that holds the long (freeparm).
+
+Popt, not a difference of the compiler: `rmove` replaces the load of the slot stored last, so `fprintf(..., l)` behind
+`l = lab = getlab()` takes r2 (prtdcon); where comjump merged two arms first, rmove no longer knows the slot and the load stays.
+
+Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after), libc malloc (`mult rr2,r6`); cas: `ld S0,r7`
+followed by `ld r7,S0`.
 
 ### D4 Spill of arguments
 
-- Form: fewer parameters spilled into their home slots; another order of the copies of register parameters.
-- Evidence (weak): ranlib (no spill), rmdir main (a third parameter that is only written is not spilled: `ldl
-  %0002(r15),rr6` against v1's `ldm @r15,r5,#3`), codgen (register parameters have no home slots, `ld r14,r7; ld
-  r13,r6` first parameter first; the shipped cc spills more: getlr, member, nullsyms), libc swap (an address-taken
-  argument spilled in the `0(r15)` form), sld (a long parameter cast to a pointer read from its spill slot).
-- v0 (switch `OLD_D4R` in cparse, argalloc in pftn1.c): the register parameters in front of the first other
-  parameter and behind the last one (so all of them when every parameter is a register one) get no home in the frame
-  (cparse deflab, branch, locctr ...: frame 2 bytes smaller; offcon `register d, s` behind `off, t`); those between
-  other parameters keep theirs (block). The first form had only the side in front (cparse 71; with both sides
-  1584 > 1438 lines, conval, buildtree, offcon). A first form without homes for all register parameters (oalloc) gave the same instructions
-  in 24 functions but a cparse that fails on every input (block: the homes between other parameters are needed, the
-  spill `ldm` is contiguous). Bench v0 65 > 68, cparse 48 > 71.
-- v0 (switch `OLD_D4O` in codgen, stmt in reader3.c): the parameter list is walked from its end, so the register
-  parameters are copied in the order of their declaration (`ld r14,r7; ld r13,r6`); cparse 71 > 76, bench 68 > 69.
-- Switch for the spill: none yet (the spill decision is in efcode3.c, `regargs`). Refuted for v0: spill only the parameters whose
-  home is used (cparse fldal spills its unused parameter; bench 65/1462 > 65/1468). Open in v0: leaf functions have no
-  spill and a smaller frame (cparse argdebug: `dec r15,#4` and no store; cal jan1 no frame at all).
+- v0 `OLD_D4R` (cparse, argalloc): the register parameters in front of the first other parameter and behind the last one get no
+  home in the frame; those between other parameters keep theirs (block: the spill `ldm` is contiguous).
+- v0 `OLD_D4O` (codgen, stmt): the parameter list is walked from its end, so the register parameters are copied in the order of
+  their declaration (`ld r14,r7; ld r13,r6`).
+- Open: the rule of the spill itself (rmdir main: a parameter that is only written is not spilled; ranlib no spill; libc swap;
+  sld: a long parameter cast to a pointer read from its spill slot).
 
-### D5 Constant index into local arrays
+### D5 Index into local arrays
 
-`a[3]` of a local array addressed directly (`ldb S5(r15),rl2`); the shipped scc computes the address (`ldl rr2,#S4;
-add r3,r15`). cas `nodes` (`escape`), the parser; popt (weak).
+All in codgen, fixfld, mapregs, rallo.
 
-- v0 (switch `OLD_D5S` in codgen, fixfld in lcl3.c): an element of a local array with a variable index is (index +
-  offset) + fp, the frame pointer added last (`add r2,#%0006; add r2,r15; ld r2,@r2`); the shipped codgen takes the
-  address of the array first (`lda r3,6(r15); add r3,r2`). Only for SUBSR (fixfld serves STREF too) and not for a
-  constant index. cparse types exact (676 > 652), bench v0 368 > 318.
-
-v0 (switch `OLD_D5A` in codgen, rallo): the address of an element of a local array (`(index + off) + fp`, OLD_D5S)
-whose value goes to a given register (an argument) gets no register preference: dclargs `ld r2,r14; add r2,r14; add
-r2,#0; add r2,r15; ld r6,@r2`. For every STAR with a wanted register: 205 > 400 (yyparse, buildtree, optim); only for
-the local array: dclargs exact; bench v0 282 > 277.
-
-v0p (switch `OLD_D5G` in codgen, fixfld): an element of a global array of arrays is `(index + index) + address`,
-the address of the array added last (newsect `&sectname[sec][k]`: `mult rr2,#24; add r3,k; add r3,#_sectname`);
-the global counterpart of OLD_D5S. Bench v0 275 > 303: v0p only.
-
-v0p (switch `OLD_D5T` in codgen, mapregs and rallo): the STREF form of OLD_D5S: a member of an element of a local array
-of structures is `(index + offset + member) + fp` (popt procopt `t[k].s1`: `mult rr2,#10; add r3,#0x20; add r3,r15`, the
-shipped order gives `add r3,#0x1E; lda r2,2(fp); add r3,r2`); as an address wanted in a given register it gets no
-preference, as OLD_D5A (`t[k++].s2`: `ld r2,k`). Six places, one function; bench v0 unchanged.
+- Old scc: `a[3]` of a local array addressed directly (`ldb S5(r15),rl2`), the shipped scc computes the address. cas.
+- v0 `OLD_D5S`: an element of a local array with a variable index is (index + offset) + fp, the frame pointer added last (`add
+  r2,#%0006; add r2,r15; ld r2,@r2`); not for a constant index.
+- v0 `OLD_D5A`: the address of such an element whose value goes to a given register gets no register preference (dclargs).
+- v0p `OLD_D5G`: an element of a global array of arrays is `(index + index) + address`, the address added last (newsect).
+- v0p `OLD_D5T`: the STREF form of OLD_D5S: a member of an element of a local array of structures is `(index + offset + member) +
+  fp`; as an address wanted in a given register it gets no preference (popt procopt).
 
 ### D6 switch
 
-Up to 3 cases the old compiler compares one after the other and puts the dispatch in front of the bodies; the shipped
-one uses a `cpir` table from 1 or 3 cases on (values, then a jump table behind the bodies). With 4 or more cases the old
-one uses the table too, values sorted, bodies in source order. The order of the case bodies follows the source; in
-codgen `tshape` (FLD before STAR) and `conval` (LT, LE, GT, GE, the unsigned four, then EQ, NE) the source order was
-changed to the original's. The d12model of ld and cparse lays the tables out the old way (`D6TABLES`).
+Up to 3 cases compared one after the other, the dispatch in front of the bodies; with 4 or more a `cpir` table, values sorted,
+bodies in source order. The shipped compiler uses `cpir` from 1 or 3 cases on, values, then a jump table behind the bodies.
 
-- v0 (switch `OLD_D6T` in cparse genswitch and codgen main3.c, lcl3.c gswitch): the value list of a cpir switch
-  stands right in front of its target list, and the target is loaded from the pointer cpir leaves behind (`ld
-  r2,%0024(r3)`, offset (cases - 1) * 2; the shipped codgen: `sll r4,#1; neg r4; ld r2,TAB+off(r4)`). Our cparse
-  passes the values to codgen in a record `V swlab dlab tlab values` in front of the `C` record (a guess: the
-  intermediate form of v0 is not known; the shipped cparse writes the values into the .D file). cparse 2602 > 2492
-  lines, bench v0 1064 > 1004.
-- v0p (switch `OLD_D6D` in cparse genswitch, one witness, owner decision): no jump table at exactly 3 values per case: `range < 3*n` against `range <= 3*n` of the
-  shipped one. /lib/codgen `zzzcode`, switch of `fldsz` with the cases 1, 2, 8, 16 (a `cpir` list in the original); no other function of cparse and popt has this
-  range.
-- v0 (switch `OLD_D6C` in cparse genswitch): up to 3 cases compared one after the other, the table from 4 cases on
-  (shipped: from 3). cparse 2492 > 2343 lines, code as long as the original's; bench v0 1004 > 788.
-
-v0p (switch `OLD_D6S` in codgen, match): the value of a switch assigned to its register when it is already there
-prints no `ld r2,r2`; with it popt sees the jump to a jump at once and moves the dispatch to the then part of a `?:`
-switch value (falloc). Bench v0 unchanged.
+- v0 `OLD_D6C` (cparse genswitch): up to 3 cases compared, the table from 4 cases on.
+- v0 `OLD_D6T` (cparse genswitch, codgen gswitch): the value list stands right in front of its target list, and the target is
+  loaded from the pointer cpir leaves behind (`ld r2,%0024(r3)`). Our cparse passes the values to codgen in a record `V swlab dlab
+  tlab values` in front of the `C` record; this intermediate form is a guess.
+- v0p `OLD_D6D` (cparse genswitch): no jump table at exactly 3 values per case, `range < 3*n` against `<=` (zzzcode, switch of
+  `fldsz`). One witness.
+- v0p `OLD_D6S` (codgen, match): the value of a switch assigned to its register when it is already there prints no `ld r2,r2`
+  (falloc).
 
 ### D7 Loop layout
 
-Measured with `scc -O -S`: `while`/`for` loops and goto loops with the test at the head are rotated (the entry jumps to
-the test at the bottom); without `-O` the head stays on top. Open: sld 0x7C26 keeps its head on top. codgen `expand`,
-`buildstar`. The ld drafts emulated bottom tests with gotos; with v1 the natural loops are right (ranlib_scan, load2td).
+`while`/`for` loops and goto loops with the test at the head are rotated under `-O` (the entry jumps to the test at the bottom);
+without `-O` the head stays on top. Open: sld 0x7C26 keeps its head on top.
 
 ### D8 Conversion and loads of bytes
 
-Unsigned char argument: old `ldb rh7,#0`, shipped `subb rh7,rh7` (cas ifile); old libc length `ldb rl3,@r2` + `testb
-rl3` against `testb @r2`; char loads as `ldb`/`subb` or `extsb; and #FF`.
+Unsigned char argument: old `ldb rh7,#0`, shipped `subb rh7,rh7` (cas ifile); old libc length `ldb rl3,@r2` + `testb rl3` against
+`testb @r2`; char loads as `ldb`/`subb` or `extsb; and #FF`.
 
 ### D9 Shift by 8 bits
 
-`w >> 8` as a byte move (`ldb rl7,rh7`) instead of `sra r7,#8` (cas ifile, cparse).
+`w >> 8` as a byte move (`ldb rl7,rh7`) instead of `sra r7,#8`.
 
 ### D10 Shift of a long by a constant
 
-Old `ld r2,#24; sdal rr4,r2` (also `(long)w << 16` through rr0; right shifts `ld r0,#3; neg r0; sdll`), shipped `slal
-rr4,#24` (cas, cparse). v0 (switch `OLD_D10` in codgen, match in match3.c): the table entry 024 (`OIZB AL,AR`, the
-immediate shift) is not used for a long, so the entries 025 .. 030 load the count into a register; cparse bccode exact.
+v0 `OLD_D10` (codgen, match): `ld r2,#24; sdal rr4,r2`, shipped `slal rr4,#24`. The table entry 024 (the immediate shift) is not used
+for a long, so the entries 025 .. 030 load the count into a register.
 
-### D11 Tail merging (popt)
+### D11 Tail merging
 
-The old popt merges common tails of branches (`call xtol; jp` shared by the number cases of the cas scanner; codgen
-`acon`: three branches into one `printf` call; ld read_symbols: the store behind a dead `ldl rr4,rr2` shared with the
-end of the loop). Not reproduced.
+Not reproduced in v1: ld read_symbols (the store behind a dead `ldl rr4,rr2` shared with the end of the loop); the cas scanner
+(`call xtol; jp` shared by the number cases).
 
 ### D12 String literals and data layout
 
-- Form: the old compiler writes the initialised data and the switch tables in source order and all string literals of
-  a file behind them as one pool, aligned only at its start and end, equal strings not merged; the shipped one writes the
-  strings of a function in front of it, each padded to an even address.
-- Mechanism (v1, switch `OLD_D12` in cparse, putstrs at the end of the file into the last section of the .D file).
-- Evidence: the data of ld, size, strip, mv, rm, write, rmdir equal; the d12model of cparse (`host/recon/d12model.py`)
-  gives its data.
-- v0p (switch `OLD_D12K` in codgen, rddata and eread; owner decision 2026-11-02 with one witness, cparse buildtree): a double constant goes into the data at its statement, not with the .D data at the head of the function: it lies behind the table of an earlier switch. Bench v0 unchanged, so v0p. codgen will show in `OLDCC_SWITCHES.md` whether it gains or loses.
+- v1, v0 `OLD_D12` (cparse, putstrs): the initialised data and the switch tables in source order, all string literals of a file
+  behind them as one pool, aligned only at its start and end, equal strings not merged. The shipped one writes the strings of a
+  function in front of it, each padded to an even address.
+- v0p `OLD_D12K` (codgen, rddata, eread): a double constant goes into the data at its statement, not with the .D data at the head of
+  the function (buildtree). One witness.
 
-### D13 Pointer constants (scc)
+### D13 Pointer constants (old scc)
 
-The old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`), the shipped one clears it (and can stop
-with `register jam` for `(char *)CONST + n` into a register variable). cas `ssymtab`.
+The old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`), the shipped one clears it. cas `ssymtab`.
 
 ### D14 Varargs prologue and post-increment (old libc members)
 
-The printf family of size, strip and cas spills the EPU registers inline (`.word %4FFC,%8303,off`) and stores r6..r2
-besides the `ldm`; ranlib's has the shipped form. In size `*fp->_ptr++` uses the byte before the `inc` (fread, fwrite,
-the putc in `_doprnt`). Checked without D14: 35 functions of cas and the members of size, strip, ranlib. `_filbuf` of
-size and ranlib: the conditional value goes through a stack temporary (no class yet).
+The printf family of size, strip and cas spills the EPU registers inline (`.word %4FFC,%8303,off`) and stores r6..r2 besides the
+`ldm`; ranlib's has the shipped form. In size `*fp->_ptr++` uses the byte before the `inc`. `_filbuf` of size and ranlib: the
+conditional value goes through a stack temporary.
 
 ### D15 Block layout of if/else
 
-Measured: the old compiler keeps the source order of then and else and places goto labels where they stand. So a
-reordered if/else cannot explain a block-order difference. The D15 entries of codgen (`zzzcode`, `clocal`), sld and ld
-load2td are block-order differences whose cause is open (load2td: popt moves the then block of `if (flag)` in front of
-the switches; a popt rule that did it is refuted by the bench, see D20).
+The old compiler keeps the source order of then and else and places goto labels where they stand. Open block-order differences: sld,
+ld load2td (popt moves the then block of `if (flag)` in front of the switches).
 
 ### D16 Frame operand in arithmetic
 
-The old compiler loads a frame slot into a register before an operation where the shipped one uses it as operand
-(`add rS,F`), or the other way round. codgen `sucomp`, `tshape`; ld dseek before it was solved. Pattern verdict only.
+v0p `OLD_D16A` (codgen, match): `++n` of a frame slot whose value may go to a temporary (cookie with INTEMP: the left operand of `*`)
+is `ld A1,n; inc A1,#1; ld n,A1`, not `inc n,#1` (genswitch `p[++n]`); with the value wanted in a register for an address or stored
+it stays in memory. `--` of a frame slot stays in memory under a compare (popt codemove, cpp dodef). "Only `++`" and "not an operand
+of a compare" fit all programs equally; a `++` of a frame slot under a compare or a `--` with this cookie outside one would separate
+them. One witness.
 
-v0p (switch `OLD_D16A` in codgen, match): `++n` of a frame slot whose value may go to a temporary (cookie with
-INTEMP: the left operand of `*`) is `ld A1,n; inc A1,#1; ld n,A1`, not `inc n,#1` (cparse genswitch `p[++n]`); with the
-value wanted in a register for an address (`*--cp`, newsect) or stored (`ix = ++p->x`, gotscal) it stays in memory.
-Without the INTEMP condition: 336 > 1000 and more; v0p only (bench v0 318 > 348 at that time). Only for `++`, as far as measured (2026-11-03):
-`--` of a frame slot stays in memory under a compare, on either side: popt codemove `--n == 0` (`dec n,#1; test n`), cpp dodef
-`--qf>=formal` (`lda r2,formal; dec qf,#2; cp r2,qf`). Two rules fit all seven programs equally, "only `++`" and "not an operand
-of a compare": every `--` with this cookie is under a compare and the only `++` is not. The first is taken because it needs no state; a `++` of
-a frame slot under a compare, or a `--` with the same cookie outside one, would separate them. One witness in fact (genswitch and its copy in scparse).
+### D17 Jump and call form: the old cas
 
-Removed (2026-11-03): OLD_D16B. One witness, a source form: stref `p->type = p->type + PTR`, `p->left->type = p->left->type + PTR` instead of `+=`.
-### D17 Call form: the old cas
+`callr` and `jpr` are decided by cas. The old cas runs its jump optimization (`optim`) also during the first pass, and a forward jump
+to a label not defined yet becomes long there. Built with `-DOLD_CAS` (`host/cas/casold`, `src/cmd/cas/old`, `/lib/old/cas`).
 
-The original has `call` and `jp` where the shipped chain has `calr` and `jr`, for targets in reach. It is not the compiler: `callr` and `jpr` are decided by cas. The old cas ran its jump optimization (`optim`) several times in the first pass; a forward jump to a label not defined yet becomes long at such a point (manual: ZEUS Languages Programming Tools 3.2 and Band B, 3.4.5: "If jump optimization is performed before the target label for a particular jump is found, the jump is made long"). Measured (`host/recon/castrig/`, `OLDCC_LOG.md`), built with `-DOLD_CAS` (`host/cas/casold`, `src/cmd/cas/old`, `/lib/old/cas` of ccv0 and ccv0p):
+- At an opening `{` with 176 to 179 undecided entries or more (`OLD_ENTBLK` 178; nothing separates the four values). The label of the
+  function in front of the `{` is known then.
+- When an entry would be made behind 255 entries (`OLD_ENTMAX`): functions too long for the first rule, yylex, rmove.
+- A forward jump does not count a jpr that stands at its label (`>`, the shipped cas has `>=`): acon. One witness.
 
-- At an opening `{` with 176 to 179 undecided entries or more (`OLD_ENTBLK` 178; nothing separates the four values, K 175 and 180 give errors). The label of the function in front of the `{` is known then: at the `}` 7 calls to the next function are wrong.
-- When an entry would be made behind 255 entries (`OLD_ENTMAX`; 254 and 256 give errors): only in functions too long for the first rule, yylex, rmove.
-- A forward jump does not count a jpr that stands at its label (`>`, the shipped cas has `>=`): acon, one place.
+Why these limits is not known. Also dc of 07/82 follows the rule: from the System III source, split in front of add0 as WEGA has dc1.c
+and dc2.c, 1 wrong form of 1448 aligned jumps and calls. The manual (ZEUS Languages Programming Tools 3.2 and Band B, 3.4.5) names two
+more conditions, `.=` and a difference of labels with a jump between them; no input has a case that depends on them, so they are not
+built. The shipped cas and the ZEUS cas do not have them.
 
-The rule was found on cparse and popt and holds on codgen and cpp without any change: fixed on cparse and popt, K 174..179; on codgen and cpp no site wrong at K 177..179. dc of 07/82, from the System III source and not exact, split into two files in front of add0 as the rule asks (WEGA has dc1.c, dc2.c): 1 wrong form of 1448 aligned jumps and calls; 45 without the rule in one file.
-
-Why a limit at 176..179 and why at a `{` is not known. The two conditions of the manual (`.=` and a difference of labels with a jump between them) are not modelled: the shipped cas and the ZEUS cas do not have them, `.=` stands in the data section in all inputs and no difference occurs, so no point depends on them.
-
-A `call` also comes from a callee in another module; `calr` cannot leave a module. That placed sputc and aobeg of cparse in a module of their own (sym2.c, the name is a guess), and hash, upoff, oalloc in sym1.c. A split of `cpp.c` is excluded: calr of subst and main cross every possible boundary.
+A `call` also comes from a callee in another module, because `calr` cannot leave a module. So sputc and aobeg of cparse are a module of
+their own (sym2.c, the name is a guess), and hash, upoff, oalloc belong to sym1.c.
 
 ### D18 Frame operand with offset 0
 
-v0 (switch `OLD_D18` in codgen, the spills and saves of efcode3.c and gen3.c written as `0(fp)`): the bench of v0 goes
-from 18 to 48 equal functions. The cc of /lib/cparse never writes `@r15` (506 times `%0000(r15)`); ld and codgen use `@r15`. v1 writes `%0000(r15)` for
-the home of a parameter where rmdir has `@r15`. The comparisons of cparse treat both as equal (progcfg `D18`).
+v0 `OLD_D18` (codgen): the spills and saves are written `0(fp)`, never `@r15`. ld and codgen as originals built by other versions use `@r15`; v1
+writes `%0000(r15)` for the home of a parameter where rmdir has `@r15`.
 
-### D19 Order of evaluation of the operands of a binary operator (cparse)
+### D19 Order of evaluation of the operands of a binary operator
 
-The old cc evaluates the left operand of `+`, `==`, `>` first when both are calls; the shipped cc the right one. cparse
-`argregs`, `rmconv`, `clocal`: our sources write the operands the other way round (the old cc will need the natural
-order).
+The old cc evaluates the left operand of `+`, `==`, `>` first when both are calls; the shipped cc the right one. Our sources of cparse
+write these operands in the order that gives the bytes (`argregs`, `rmconv`, `clocal`).
 
 ### D20 Code motion of popt
 
-For v0p no old popt is needed: all three models built with the original /lib/popt as the pass of ccv0p are byte-identical to those with our popt v0p (`cmp`, 2026-11-03). /lib/cparse and /lib/codgen as passes give far fewer functions (19, 30 of 179 for cparse), they are not the passes of v0p. Statements about "the old popt" below and elsewhere in this file come from v0 and v1 or are older than this measurement.
-
-- Form: blocks behind a jump or return moved to the site of a jump to them (`codemove`, z21.c) in other places.
-- Mechanism (v1, switch `OLD_D20` in popt): a `jpr` to the label right behind it does not end the block to be moved
-  (the old popt had removed that jump already), so short blocks in front of the function exit stay.
-- Evidence: ld ensure_buf, the `return 0` of read_symbols; neutral on the bench. Turning off the whole code motion is
-  wrong (the old popt moves the prologue and the switch dispatch too).
-- Refuted: going on behind a block moved from behind a jump (ld load2td exact, bench 72 > 69).
-- Removed (2026-11-03): OLD_D20C. Both witnesses were source forms. oalloc: not one `if ((A) || (B))`, but `if (A) { both: ... } else if (B) goto both;`, the block stands behind the first test, which is what the switch produced. optim: `if (...) { zapleft: ... } if (...) goto zapleft;` instead of a `while` with a goto into its body. Both read as plainly as the forms they replace; two independent functions, so unlike OLD_D20L the rule of the switch had two witnesses, and both fell.
-- Removed (2026-11-03): OLD_D20L. One witness, the same text in cparse and codgen (optim, case MINUS). A goto loop with the test inside the `if` gives the bytes without it (`goto minus1; minus2: if (...) { ...; minus1: if (LO(p) == MINUS) goto minus2; }`): the jump to minus1 stands behind code that falls through, so codemove takes the loop inversion. The `while` with the `goto` into its body read better; which of the two the authors wrote is not known.
-
-- Removed (2026-11-03): OLD_D20K. Both witnesses were source forms: cinit (`inoff += sz; return;` in case NAME instead of `break`) and rmove (do_and falls into do_arith, no `goto arith1`). What decides: the then part of an if/else jumps into the `call` of the else part when the label behind the else part holds no jump (`xjump`); behind a `break` or `goto` the jump is followed first. Without the switch codgen geninc and adrput are exact.
-- Removed (2026-11-03): OLD_D20X and OLD_D20B. Source forms: popt xjump and backjmp `while (p = p->back) { if (c) continue; break; }`: the `continue` leaves the back jump alive, and the shipped code motion inverts the loop; cparse defid the dimension loop as `temp = type; goto dimtest; dimloop: ...; temp = DECREF(temp); dimtest: if( temp&TMASK ) goto dimloop;`: the entry's store cross-jumps to the store of the step. So popt v0p needs no switch at all (see the end of OLDCC_LOG.md, 2026-11-03).
-- Not placement rules of popt: movedat (the whole body inside `switch (r1->op) { case CODE: case DATA: ... }`), dest (`case SBYTE` in
-  front of `case 0`; the `sub r2,r3` of the original follows, the copy knowledge of rmove is lost only behind a label), the scan loop of setreg
-  (the test on `(` and `@` with its consequences inside `while (*s)`). All three were source forms.
-- Not placement rules either: optim (`zapright:` inside `else if( ... ){ }`, no `goto zapright`), defid (the loop step behind `goto mismatch`; an odd form,
-  see findings.json), most of usesreg (`if (a != x && a != y) { dflt: ... continue; } goto out0;`, `if (...) { out1: ...; return 1; }`). What decides is
-  whether the node in front of a target is a jump: `if (c) goto L; L:` leaves `jpr L2; L:` and codemove takes the block, `if (!c) { L: ... }` does not.
-- Refuted (2026-11-02): a block reached only by conditional jumps moves in front of its target instead of the target up (OLD_D20M again, all lengths, with a branch
-  inside, longer than the target): cparse about 1200 to 1400 lines, popt about 1250 to 1300. No move behind a jump to itself (cparse 471), no move behind a conditional jump over a jump (cparse 166).
-- Candidate, not set (one witness): the load of a switch value in front of a dispatch behind a jump (`Lx: ld r2,r13; jpr D`, argregs): argregs 17 > 14, nothing else changes.
-- Removed (2026-11-02): OLD_D20S. getpreg `if( pregvar < 2 ) break; goto gotreg;` is exact without it, and it turned the POP arm of usesreg the wrong way (usesreg 35 > 6).
-- rmove was source forms too (420 > 19 lines): `del`, `redual`, `kill_all`, `shins`, the CLR arm and `next`-like tails inside the `if` that falls into them, disp behind do_arith, do_clr behind do_sla, lda_mem behind lda_end.
-- popt: exact with the old cas (D17).
-
-### D21 (removed 2026-11-02: not a difference of the compiler)
-
-cparse genswitch `size = n*SZLONG/SZCHAR` without a cast gives the `exts; div; ldk r4,#0` of the original with the shipped
-optimizer rules; the cast `(unsigned)` of our earlier source made the switches OLD_D21 (cparse, codgen) necessary.
+- v0p: no old popt. The models built with the original /lib/popt as the pass of ccv0p are byte-identical to those with our popt.
+- v1 `OLD_D20` (popt): a `jpr` to the label right behind it does not end a block to be moved, so short blocks in front of the function
+  exit stay (ld ensure_buf, read_symbols).
+- How popt places a block, and so what the source must look like: `codemove` moves a block behind a jump to the site of a jump to it. What
+  decides is whether the node in front of a target is a jump: `if (c) goto L; L:` leaves `jpr L2; L:` and codemove takes the block,
+  `if (!c) { L: ... }` does not. `xjump` in iterate looks one hop along a chain of jumps, and `comjump` runs before `rmove`: how many jumps
+  stand behind a statement decides which copy of a tail stays (sucomp). `poptrace.sh` shows the passes for one function.
 
 ### D22 Doubles in rq4
 
-v0 (switch `OLD_D22` in cparse getpreg and argregs, codgen argscan, argplace, regargs, lcl3.c, gencall, match): a
-double argument goes by its size, into rq4 (r4..r7) when it is the first one (from memory `ldm r4,ADDR,#4`, a
-computed value `fldd r4,f0`); the next word argument then takes r3. A double parameter arrives in rq4 and is stored
-with the word parameters (`ldm 0(fp),r4,#4`); a double result comes back in rq4 (`fldd f0,r4` behind the call). The
-shipped compiler uses the EPU registers (f3 down) for both. Also: a floating compare with memory has no rounding
-`fld dbl` of the left operand (template 052). Evidence: cparse fincode, prtdcon, doinit, isitfloat, fltlab, buildtree;
-cparse 302 lines from 328; bench v0 318 > 292, so v0 (and v0p). The shipped atof of /lib/cparse returns in rq4 as well.
+v0 `OLD_D22` (cparse getpreg, argregs; codgen argscan, argplace, regargs, gencall, match): a double argument goes by its size, into rq4 (r4..r7)
+when it is the first one; the next word argument then takes r3. A double parameter arrives in rq4 and is stored with the word parameters; a
+double result comes back in rq4. The shipped compiler uses the EPU registers (f3 down). A floating compare with memory has no rounding `fld dbl`
+of the left operand. The shipped atof of /lib/cparse returns in rq4 as well.
 
-### Register allocation of the old scc (measured 2026-10-27, `scc -S`)
+### D23 Zero addend
 
-The register variables are assigned in declaration order from r13 downwards; an int or char takes one register, a
-pointer or long the highest free aligned pair; a `register` parameter comes first. A leaf function puts them into
-scratch registers (D2). The declaration order is part of the source form. (Nonsegmented cc: from r14 downwards.)
+v0p `OLD_D23` (codgen, optim, mapregs): the optim of codgen does not take a zero addend away, so `(rv >> 8) - 1 + 1`, which cparse folds to
+`x + 0` in its last step, stays `add r2,#0` (scodgen usable); a member at offset 0 and an index 0 add nothing at once. One witness.
+
+### Register allocation of the old scc
+
+The register variables are assigned in declaration order from r13 downwards; an int or char takes one register, a pointer or long the highest
+free aligned pair; a `register` parameter comes first. A leaf function puts them into scratch registers. (Nonsegmented cc: from r14 downwards.)
 
 ## 4 Objects and their differences
 
-`x` = the difference was seen in this object; `?` = the construct is in the source but the difference was not separated
-from the others yet; empty = not seen (no proof that it is absent). All cas modules with code are listed (table1, table2,
-pstab and the three table segments are data only). The old libc members inside size, strip, ranlib, cas are listed with
-D14 only: that is all that was checked for them. cparse (`strictlayers.py`): `x` for D1, D2 means the strict difference
-shrinks when the frame or the registers are hidden; D6 and D10 hunks of exactly the measured forms; D12 the data model;
-D19 the operand swaps; `?` for the other classes: hunks of that form (weak). The codgen rows are the marks of the
-function findings (`src/cmd/codgen/tools/findings.json`, `classify.py`), completed by reading; D12, D13, D14 not checked
-for codgen, D15 only for zzz3.c and tr3.c. ld, strip, size: the state with the shipped cc; with v1 see section 2.
-Column "Ver.": the compiler version (section 2).
+`x` = the difference was seen in this object; `?` = the construct is in the source but the difference was not separated; empty = not seen (no proof
+that it is absent). The old libc members inside size, strip, ranlib, cas are listed with D14 only. cparse, codgen, popt, cpp were built exactly by v0p;
+their marks in the older columns are from comparisons with the shipped compiler. Column "Ver.": the compiler version (section 2).
 
-| Binary | Object | Ver. | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout | D16 frame operand | D17 call form | D18 0(r15) | D19 operand order | D20 code motion | D21 unsigned div | D22 double rq4 |
+| Binary | Object | Ver. | D1 frame | D2 scratch regs | D3 reloads | D4 arg spill | D5 const index | D6 switch | D7 loops | D8 bytes | D9 >>8 | D10 long shift | D11 tail merge | D12 data order | D13 pointer const | D14 varargs, post-incr | D15 if/else layout | D16 frame operand | D17 call form | D18 0(r15) | D19 operand order | D20 code motion | D22 double rq4 | D23 zero addend |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | cas | ifile.c | old scc | x | x | x |  |  | x |  | x | x | x |  | x |  |  |  |  |  |  |  |  |  |  |
 | cas | instr.c | old scc | x | x |  |  |  | ? | ? |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
@@ -658,25 +398,7 @@ Column "Ver.": the compiler version (section 2).
 | size | libc: doprnt.o (_doprnt) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |
 | strip | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
 | cas | libc: printf.o (printf, fprintf, sprintf) | old libc |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |
-| codgen, scodgen | main3.c | open |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | reader3.c | open |  |  |  | x |  | x | x | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | rdr3.c | open |  |  | x | x |  | x |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | efcode3.c | open | x |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | local3.c | open |  | x |  | x |  | ? |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | gen3.c | open |  |  |  | x |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | order3.c | open |  |  |  | x |  | x |  |  |  |  | x |  |  |  |  | x |  |  |  |  |  |  |
-| codgen, scodgen | match3.c | open |  |  |  | x |  | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |
-| codgen, scodgen | allo3.c | open |  | x | x | x |  | x | ? |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | regallo3.c | open |  |  |  | x |  | x |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | regfile3.c | open |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | tmp3.c | open |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | zzz3.c | open |  |  |  |  |  | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| codgen, scodgen | comm3.c | open |  |  | x | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | out3.c | open |  | x |  |  |  | x | x | x |  | x | x |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | regs3.c | open |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | lcl3.c | open |  | x |  | x |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| codgen, scodgen | tr3.c | open |  |  |  | x |  |  | x | ? |  |  |  |  |  |  | x |  |  |  |  |  |  |  |
-| codgen, scodgen | optim3.c | open |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| codgen, scodgen | all modules | v0p | x | x | x | x |  | x | x | x |  | x | x |  |  |  | x | x | x |  |  |  |  | x |
 | popt | z21.c (main..backjmp) | v0p |  |  | x | x |  | x |  | x |  |  |  | x |  |  |  |  | x | x |  | x |  |  |
 | popt | z22.c (rmove..natural) | v0p |  | x | x | x | x | x |  |  |  |  |  | x |  |  |  | x | x | x |  | x |  |  |
 | popt | z23.c (procopt..markregs) | v0p |  | x |  | x | x |  |  |  |  |  |  | x |  |  |  |  | x | x |  |  |  |  |
@@ -685,33 +407,27 @@ Column "Ver.": the compiler version (section 2).
 | ld | copyname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
 | ld | printname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
 | mv, rm, rmdir, write | mv.c, rm.c, rmdir.c, write.c | v1 | x |  |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  | x |  |  |  |  |
-| cparse | cgram1.y | cparse | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  | ? |  | ? |  |  |  |  |
-| cparse | xdefs1.c | cparse | x | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |  |  |  |
-| cparse | scan1.c | cparse | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |  |  |
-| cparse | pftn1.c | cparse | x | x | ? |  | ? | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |  |  |
-| cparse | trees1.c | cparse | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  |  | ? | x |  |  | x |
-| cparse | optim1.c, optim | cparse | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  |  | ? | x |  |  |  |
-| cparse | code1.c | cparse | x | x | ? | ? |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  | x | x |
-| cparse | local1.c | cparse | x | x | ? |  |  | x |  |  |  |  | ? | x |  |  |  |  |  | ? | x |  |  | x |
-| cparse | comm1.c, common | cparse | x | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |  |  |  |
-| cparse | vinit1.c | cparse | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  |  | ? |  |  |  | x |
-| cparse | sym1.c | cparse | x | x | ? |  | ? |  |  |  |  |  |  | x |  |  |  |  |  | ? |  |  |  |  |
-
-Open for codgen: `clocal` (D15), `zzzcode` (D15, partly), `sucomp` (D16), `tshape` (value form of the SZERO return, D16;
-the current case order is the best of seven), `expand` and `freereg` (moved blocks, D7; findings `expand-layout-01`,
-`freereg-layout-01`); `conval` was fixed by the case order (finding `conval-layout-01`).
+| cparse | cgram1.y | v0p | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  | ? | x | ? |  |  |  |  |
+| cparse | xdefs1.c | v0p | x | x |  |  |  |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |
+| cparse | scan1.c | v0p | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  |  |  |
+| cparse | pftn1.c | v0p | x | x | ? |  | ? | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  |  |  |
+| cparse | trees1.c | v0p | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  | x | ? | x |  | x |  |
+| cparse | optim1.c, optim | v0p | x | x | ? |  |  | x |  |  |  |  |  | x |  |  |  |  | x | ? | x |  |  |  |
+| cparse | code1.c | v0p | x | x | ? | ? |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  | x |  |
+| cparse | local1.c | v0p | x | x | ? |  |  | x |  |  |  |  | ? | x |  |  |  |  | x | ? | x |  | x |  |
+| cparse | comm1.c, common | v0p | x | x | ? |  |  |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |
+| cparse | vinit1.c | v0p | x | x | ? |  |  | x |  |  |  | x |  | x |  |  |  |  | x | ? |  |  | x |  |
+| cparse | sym1.c | v0p | x | x | ? |  | ? |  |  |  |  |  |  | x |  |  |  |  | x | ? |  |  |  |  |
+| cpp | cpp.c, cpy.y, yylex.c | v0p |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |
 
 ## 5 Open questions
 
-- The times of D3 and D20 are not known (no mark read from a binary yet).
-- v0 is not complete: the open forms of its bench (leaf functions, the first register, D6 dispatch).
-- Whole files with ccv0p and strip (2026-11-03): cpp, cparse, scparse, popt, spopt byte-identical with the originals. codgen and scodgen: efcode and sucomp, scodgen also usable (source forms, `tools/FINDINGS.md`).
-- The compiler of 08/22/83 .. 09/01/83 (sh: slots with the shipped D12) is not built; it may be v1 with the shipped
-  cparse.
-- Which version built /lib/cparse, /lib/codgen, /lib/popt (final test: our passes compiled with the old compiler are
-  byte-identical, `src/TODO.md`)? cparse shows D12 but not D1 of v1.
-- The remainders of v1 in ld: place_sec and chk_ranlib (D2/D3), load2td (code motion), read_symbols (no return
-  temporary, the dead `ldl rr4,rr2`); one witness each, possibly source forms.
-- D4: the rule of the old spill (rmdir main: a parameter that is only written is not spilled).
-- The classes of cas, codgen, popt, ranlib were read by masked or pattern comparison; they are weak until those
-  programs are checked strictly.
+- v1: ld place_sec and chk_ranlib (D2, D3), load2td (code motion), read_symbols (no return temporary, the dead `ldl rr4,rr2`); one witness each.
+- v0: the open forms of its bench (section 2).
+- Whether the programs of v1 had the old cas. The dates known: `optim.c` of the shipped cas 05/02/83, `ssymtab.c` 05/06/83, ld built 07/26/83.
+- Why the old cas optimizes at 176 to 179 entries, and why at a `{`.
+- The compiler of 08/22/83 .. 09/01/83 (sh: slots with the shipped D12) is not built; it may be v1 with the shipped cparse.
+- The times of D3 and D20 (no mark read from a binary yet).
+- The rule of the spill of arguments (D4).
+- The classes of cas and ranlib were read by masked or pattern comparison; they are weak until those programs are checked strictly.
+- Switches with one witness (a function and its segmented copy): `OLD_D12K`, `OLD_D16A`, `OLD_D2MO`, `OLD_D3L`, `OLD_D5A`, `OLD_D5T`, `OLD_D6D`, `OLD_D6S`, `OLD_D23`.

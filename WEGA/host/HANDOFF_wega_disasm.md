@@ -1,6 +1,6 @@
 # Handoff: WEGA build chain back to C
 
-Status 2026-11-02. Entry point. Read `../CLAUDE.md` first (rules, how to build, where to look things up), then this
+Status 2026-11-04. Entry point. Read `../CLAUDE.md` first (rules, how to build, where to look things up), then this
 file: the inventory and the decisions of the whole project. The state of a program is in its `tools/FINDINGS.md`, that of the
 old compilers in `OLDCC.md`, `OLDCC_SWITCHES.md` and the end of `OLDCC_LOG.md`. A section on the current work is written here only when a
 handoff is due.
@@ -13,8 +13,7 @@ A tool chain on the Linux host (`WEGA/host/`) that is output-identical to the na
 The original binaries run under the emulator (`host/z8k-emu`, the oracle); they are not part of the tool chain.
 
 Byte identity is the only guarantee of identical behaviour, so it stays the goal (owner decision). Where the
-original was built by an older compiler revision (`OLDCC.md`), byte identity needs that compiler, which does not
-exist any more; this is the open task of step 3 below.
+original was built by an older compiler revision (`OLDCC.md`), byte identity needs that compiler, which we rebuild.
 
 ## Inventory: what belongs to the tool chain
 
@@ -24,11 +23,11 @@ Source of truth for the state: `../src/TODO.md` (per program) and the check comm
 | Tool | Original (WEGA 3.1 tree) | Original filesize | WEGA source (`src/`) | Host version (`host/`) | Source from binary | State | Check |
 |---|---|---|---|---|---|---|---|
 | `cc`, `scc` (driver) | `/bin/cc`, `/bin/scc` | 14208, 14246 | `src/cmd/cc/cc.c` | `host/cc` | no (WEGA source) | done: 74 command lines identical; `cc` and `scc` byte-identical | `make -C host check` (cc) |
-| `cpp` | `/lib/cpp` | 16522 | - | - | - | not started | - |
-| `cparse`, `scparse` | `/lib/cparse`, `/lib/scparse` | 67520, 67826 | `src/cmd/cparse` (K&R, from the Plexus PCC base, owner decision) | - | yes | all functions written; corpus 259/259 (behaviour, built with the shipped cc and with ccv0p); byte identity with the old compiler v0p: 173 of 179 functions strictly exact (2026-11-01); scparse not started | `src/cmd/cparse/tools/oldcc.sh model`, `corpus` |
-| `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | 80884, 83554 | `src/cmd/codgen` (K&R, WEGA `cc`; byte identity is the goal, D1 to D16 open) | `host/codgen` (ANSI, gcc `-Wall`; `-DSEG` for scodgen; functional equality) | yes | host: corpus 100/100 identical for codgen and scodgen; large corpus (213 source files of `src/cmd` and `src/lib`) 213/213 for both, 3 files not comparable. WEGA side: corpus 101/101 (behaviour), byte identity open | `host/codgen` (`host_corp.sh`-style test, see `src/TODO.md`); `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
+| `cpp` | `/lib/cpp` | 16522 | `src/cmd/cpp` (System III source, owner decision) | - | no | byte-identical with ccv0p | `tools/FINDINGS.md` |
+| `cparse`, `scparse` | `/lib/cparse`, `/lib/scparse` | 67520, 67826 | `src/cmd/cparse` (K&R, from the Plexus PCC base, owner decision) | - | yes | byte-identical with ccv0p | `src/cmd/cparse/tools/oldcc.sh model`, `corpus` |
+| `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | 80884, 83554 | `src/cmd/codgen` (K&R) | `host/codgen` (ANSI, gcc `-Wall`; `-DSEG` for scodgen; functional equality) | yes | byte-identical with ccv0p | `host/codgen` (`host_corp.sh`-style test, see `src/TODO.md`); `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
 | `gopt` | `/lib/gopt` (only with `-Ol`/`-Or`) | 147286 | - | - | - | not started | - |
-| `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | 25620, 25880 | `src/cmd/popt` (K&R, `z20.c` to `z23.c`, `stdio.h`; the bss order from the definitions at the end of `z2.h`) | `host/popt` | yes | host: 522 corpus runs byte-identical; src/cmd: the normal build gives the output of /lib/popt on the popt corpus (816 of 816 runs); byte identity with the old compiler v0p: 56 of 73 functions strictly exact, code, data and bss of the original's size (2026-11-01) | `make -C host check` (popt); `src/cmd/cparse/tools/oldcc.sh model popt` |
+| `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | 25620, 25880 | `src/cmd/popt` (K&R, `z20.c` to `z23.c`, `stdio.h`; the bss order from the definitions at the end of `z2.h`) | `host/popt` | yes | byte-identical with ccv0p | `make -C host check` (popt); `src/cmd/cparse/tools/oldcc.sh model popt` |
 | `cas` | `/bin/cas` | 89152 | `src/cmd/cas` (`MODULES`) | `host/cas` | yes (decompiled, see `src/cmd/cas/README`) | done in behaviour; code not byte-identical (older scc) | `make -C host check` (cas) |
 | `as` | `/bin/as` (PLZ/ASM) | 74536 | - | - | - | not started | - |
 | `ld` | `/bin/ld` | 21732 | - (source in `host/ld`) | `host/ld/ld` | yes (`ld.c` from the binary) | done: 146 command lines identical | `make -C host check` (ld) |
@@ -60,25 +59,9 @@ original tools and compares each program).
 
 ## Decisions open for the owner
 
-- **Compensating source changes.** Some changes adapt the source to the old compiler instead of correcting it:
-  `conval` (case order), `sucomp` (storage classes), `zzzcode` (if/else swap, commit `cc1df27`), `tshape` (case order),
-  `clocal` (casts). They are behaviour-neutral but not justified for the source. Keep or revert? This is decided in step 2 below.
 - **`host/oldcc`** stays: it checks the ten `.s` modules that the old cc produced. Its paths are corrected.
 - **`yacc`:** should it be added to the inventory and to the tool chain?
 
-## Next steps, in this order
+## Next steps
 
-1. **Complete the tool chain.** `codgen`/`scodgen` (stop line reached) and `popt` (K&R, analysed) are done as far as the
-   old compiler allows; `sld` and `ld` are reconstructed in `src/cmd/sld` and `src/cmd/ld` (K&R; ld 51 of 59 functions
-   strictly exact, corpus 146/146). The procedure for every further binary is `HOWTO_reconstruct.md`, the shared scripts
-   are in `recon/` (`recon/README.md`). `cparse` is written; gopt, cpp, gld and yacc are deferred (owner decision 2026-10-30).
-   The order and the criteria are in `../src/TODO.md`, section "Plan: towards the old C compiler"; step 3 below is item 4
-   of that plan.
-2. **Bring the source to its natural form.** Revert the compensating changes or justify them. New baseline:
-   bytes, functions, D classes.
-3. **Reconstruct the old compiler.** Everything about the old compilers is in `OLDCC.md` (the edited summary: the
-   classes D1 ... D22, the versions v1, v0, v0p, rules, building and running) and `OLDCC_LOG.md` (the running notes).
-   State 2026-11-02: v1 (strip and size byte-identical, ld 55 of 59); v0 (bench 118 of 153); v0p (/lib/cparse 178 of
-   179, /lib/popt 72 of 73).
-
-The stop line for the search for source forms is in `../src/TODO.md` ("codgen / scodgen: status").
+The order and the state are in `../src/TODO.md`, "State and next steps". What is known about the old compilers: `OLDCC.md`; the procedure: `HOWTO_reconstruct.md`.

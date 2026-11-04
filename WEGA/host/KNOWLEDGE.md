@@ -502,7 +502,7 @@ the Plexus `pcc` (it prints `csv2`/`cret2`); the Plexus sources only help to rea
 
 ### Status (current)
 
-Status of codgen and scodgen (done parts, open differences, test runs): `src/TODO.md`, section "codgen / scodgen: status".
+Status of codgen and scodgen: `src/cmd/codgen/tools/FINDINGS.md`; both are byte-identical with v0p (`OLDCC.md`).
 
 ### codgen fidelity: method and reading rules
 - **Limit of "D only (pattern-verified)"**: `patterns.py` checks the kind of each differing instruction, every extra or missing

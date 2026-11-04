@@ -216,3 +216,33 @@ Do not write a new script for something that exists in the toolkit; extend the t
 - [ ] Built by an old compiler version: model in `oldcc.sh`, the program in PROGS (or NOTPROGS with the reason) of
       `host/recon/switchmatrix.py`, `oldcc.sh matrix check` clean, then a full `oldcc.sh matrix` (`host/OLDCC.md`, "Evidence rules")
 - [ ] Link byte identical, split done, scratch removed
+
+## Evidence rules for the old compilers (owner decisions 2026-10-31, 2026-11-02)
+
+- The D classes are hard only where a program was checked strictly (`strictcmp.py`: only code addresses masked); a
+  class read from a masked or pattern comparison is weak and may hide a wrong source form. ld, strip and size were
+  checked strictly before the first switch; every other program is checked the same way before it counts.
+- A switch counts only when it explains findings in at least two independent functions, preferably in different
+  programs. A function that fits only through a switch no other function needs is a suspect source form and goes back
+  to the source check; so do findings that no switch explains. (Lesson of ld: ranlib_scan, dseek and load2td looked like
+  compiler differences and were source forms.)
+- Regression: every function that is strictly exact stays exact with the switch, in every program built by the same
+  compiler version. The version of a program comes from its build date (section 2); a program of another time is no
+  counter-witness (owner decision 2026-10-31).
+- The test bench is read only by comparison (with and without a switch): WEGA changed many of the System III sources,
+  so a difference on the bench is not a compiler difference by itself.
+- Every accepted switch: commit (no push), this document and the table of section 4 updated, the normal build stays
+  byte-identical (shipped cparse, codgen, popt), the corpora green.
+- Source form first (owner decision 2026-11-02): when a function differs, or contradicts an existing switch, first look for a
+  source form; a new switch or a further condition on a switch comes after that, and the forms tried go to `OLDCC_LOG.md`.
+  People wrote this source: the odder a form looks (nobody would probably have written it so), the less likely it is the
+  right one, even when the bytes fit. This weighs evidence, it does not forbid: what was really written is not known. An
+  odd form that fits is recorded as such in findings.json, and a plainer form or a switch stays possible.
+- Which functions need which switch: `host/OLDCC_SWITCHES.md`, generated (owner decision 2026-11-02), never edited by hand.
+  `oldcc.sh matrix SWITCH` for a new or changed switch, `oldcc.sh matrix` (all, unattended) when a program joins or before
+  switches are cleaned up, `oldcc.sh matrix check` (no measurement, seconds) in every check round and before a commit that
+  touches a switch: it names switches and programs missing from the table and how many files of the passes changed since
+  the measurement.
+
+
+How to test a change of a pass without touching the tree: `host/recon/oldvar.sh NAME PATCH.py [PASS]` (run `oldcc.sh model PROG` first). Removing a switch: a patch that deletes its `#define` from `oldcc.h`. What popt does with a function: `host/recon/poptrace.sh PROG FUNC`. `STRICT_CTX=12 python3 tools/strictcmp.py -v FUNC`: a difference with more context.

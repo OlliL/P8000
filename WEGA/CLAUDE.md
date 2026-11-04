@@ -13,12 +13,12 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
   `host/KNOWLEDGE.md` and `src/TODO.md` current and say which files changed.
 - Facts only from documents or measurements; mark guesses as guesses.
 - Always keep two tables current while working: "Objects and their differences" in `host/OLDCC.md`
-  (which object shows which difference D1 ... D20) and "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
+  (which object shows which difference D1 ... D23) and "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
   (every bug, oddity or dead code found in an original program, with how the rebuild handles it).
 - New or changed switch of an old compiler, or a new program with a model: run `oldcc.sh matrix check`
-  (`src/cmd/cparse/tools/`) and follow what it says; `host/OLDCC_SWITCHES.md` is generated, see `host/OLDCC.md`, "Evidence rules".
-- The old compilers: `host/OLDCC.md` is the edited summary (rewritten, not appended to); running notes, measurements
-  and attempts go as dated entries to `host/OLDCC_LOG.md`. Other documents do not repeat this knowledge.
+  (`src/cmd/cparse/tools/`) and follow what it says; `host/OLDCC_SWITCHES.md` is generated, see `host/HOWTO_reconstruct.md`, "Evidence rules".
+- The old compilers: `host/OLDCC.md` holds only what is currently fact (rewritten, not appended to; no removed switches, refuted ideas or
+  counts on the way); running notes, measurements, attempts and what went away go as dated entries to `host/OLDCC_LOG.md`. Other documents do not repeat this knowledge.
 - Notes on findings only in the program's `findings.json`, not in source comments.
 - Byte identity with the original has priority over fixing a bug found in the original: rebuild the
   bug first, record it in the quirks table, and fix it only when the owner says so.
