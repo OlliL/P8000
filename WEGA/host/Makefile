@@ -16,11 +16,13 @@
 # here they are built with the original WEGA tools (under z8k-emu) and
 # compared with the originals:
 #
+#   make checkall        everything that is byte-identical, each program with its compiler, on a copy of the
+#                        files in git, and the corpora (tools/checkall.sh): the check to run before a commit
 #   make verify          all checks below
 #   make verify-wega     build ../src/cmd with the original cc, scc, cas, as,
 #                        ld, sld, gld, yacc, ar and strip, then report per program
 #                        whether it is identical to the original
-#                        (report only, does not fail on differences)
+#                        (report only; programs of an old compiler are in checkall)
 #   make oldroot         build the old compilers v1, v0 (src/cmd/{cparse,codgen,popt,cc}, make old) with the
 #                        original tools and install them into OLDROOT: a WEGA tree of symbolic links to WEGA
 #                        (tools/oldroot.sh) with bin/ccvN and lib/vN/{cparse,codgen,popt};
@@ -47,7 +49,7 @@ WTOOLS = CC='$(WEMU) /bin/cc' SCC='$(WEMU) /bin/scc' CAS='$(WEMU) /bin/cas' \
 
 # program (in ../src/cmd) : original (in the WEGA tree); commands with several
 # versions are built in the subdirectory of the version shipped with WEGA 3.1
-WEGA_PROGS = mv/mv:bin/mv rm/rm:bin/rm dc/dc:bin/dc ar:bin/ar cc/cc:bin/cc cc/scc:bin/scc ranlib/ranlib:usr/bin/ranlib size/size:bin/size strip/strip:usr/bin/strip \
+WEGA_PROGS = dc/dc:bin/dc ar:bin/ar cc/cc:bin/cc cc/scc:bin/scc ranlib/ranlib:usr/bin/ranlib \
 	getud:bin/getud putud:bin/putud copydisk/1.5/copydisk:bin/copydisk dump:etc/dump \
 	dumpdir:etc/dumpdir format/1.5/format:bin/format restor:etc/restor sync:bin/sync \
 	tar:bin/tar verify/1.5/verify:bin/verify cas/cas:bin/cas \
@@ -79,6 +81,9 @@ check:
 
 verify: all check verify-wega
 
+checkall:
+	WEGA=$(WEGAABS) sh tools/checkall.sh
+
 verify-wega:
 	$(MAKE) -C $(SRC) clean >/dev/null
 	-$(MAKE) -C $(SRC) all $(WTOOLS)
@@ -88,11 +93,7 @@ verify-wega:
 	  elif cmp -s $$f $$o; then echo "$$p: identical"; \
 	  else echo "$$p: differs ($$(stat -c%s $$f) vs $$(stat -c%s $$o) bytes)"; fi; \
 	done
-	-python3 tools/cmpins.py $(SRC)/size/size $(WEGAABS)/bin/size 0x224 0x224
-	-python3 tools/cmpins.py $(SRC)/strip/strip $(WEGAABS)/usr/bin/strip 0x68c 0x68c
-	@echo 'size, strip, ranlib (not identical yet): the libc part linked from the old libc modules:'
-	-python3 tools/cmpins.py $(SRC)/size/size $(WEGAABS)/bin/size 0x1614 0x1614 0x224
-	-python3 tools/cmpins.py $(SRC)/strip/strip $(WEGAABS)/usr/bin/strip 0x1fd2 0x1fd2 0x68c
+	@echo 'ranlib (not identical yet): the libc part linked from the old libc modules:'
 	-python3 tools/cmpins.py $(SRC)/ranlib/ranlib $(WEGAABS)/usr/bin/ranlib 0x1bce 0x1bd4 0x534 0x53a
 
 oldroot:
@@ -110,4 +111,4 @@ clean:
 	$(MAKE) -C popt clean
 	$(MAKE) -C cas clean
 
-.PHONY: all check verify verify-wega oldroot clean cc popt ar binutils cas
+.PHONY: all check checkall verify verify-wega oldroot clean cc popt ar binutils cas

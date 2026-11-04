@@ -10,7 +10,7 @@
 HOSTCC ?= cc
 CFLAGS ?= -O2 -g -Wall -Wno-unused -Wno-format-truncation
 WEGA ?= ../../../../wega/arc/cpio
-CORPUS ?= $(abspath ../../../../wega/work/popt-corpus)
+CORPUS ?= $(abspath ../../../tmp/tmp/popt/corpus)
 SRC = .
 
 all: popt spopt

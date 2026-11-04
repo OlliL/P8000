@@ -1451,8 +1451,8 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   (`fldctl`, `flds`, `fmul`, `fldd`, ...); without it they give ERROR 91.
   Module names matter: they appear as `<module>_p`/`<module>_d` symbols
   (abort.s is module `abort_s`).
-- Result: 170 of the 180 members identical, 7 differ, 3 have no C source (the 10 are
-  kept as cas sources in `src/lib/libc/oldcc`, see "oldlibc").
+- Result: 169 of the 179 members identical, 7 differ, 3 have no C source (the 10 are
+  kept as cas sources in `src/lib/libc/oldcc`, see "oldlibc"). `/lib/libc.a` holds 179 objects and `Library.SC`.
 - Same code, different compiler revision (cannot match with the shipped cc): `malloc`,
   `nlist`, `length`, `swap` (differences D1, D3, D4, D8). The shipped
   libc was built with more than one compiler revision.

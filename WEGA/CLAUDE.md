@@ -53,6 +53,7 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
     make -C WEGA/host/z8k-emu            # builds z8k-emu
     make -C WEGA/host check WEGA=<WEGA_ROOT>   # cc, popt, libc, oldcc checks
     make -C WEGA/host verify-wega WEGA=<WEGA_ROOT>   # build src/cmd with the original tools, compare
+    make -C WEGA/host checkall WEGA=<WEGA_ROOT>   # everything byte-identical, each with its compiler, on a copy of the git files; corpora; check (13 min)
 
 ## Compile with the original tools (z8k-emu)
 

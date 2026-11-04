@@ -16,7 +16,7 @@ WORK=$(mktemp -d); trap 'rm -rf "$WORK"' EXIT
 for obj in $(cd "$ORIG" && ls *.o); do
 	m=${obj%.o}
 	if [ $# -gt 0 ]; then case " $* " in *" $m "*) ;; *) continue;; esac; fi
-	f=$(cd "$SRC" && find . \( -name "$m.c" -o -name "$m.s" \) -print | head -1)
+	f=$(cd "$SRC" && find . \( -name "$m.c" -o -name "$m.s" \) -print | sort | head -1)
 	if [ -z "$f" ]; then echo "MISSING $m"; continue; fi
 	f="$SRC/$f"; srcname=$(basename "$f")
 	d="$WORK/$m"; mkdir -p "$d"; cp "$(dirname "$f")"/* "$d"/ 2>/dev/null

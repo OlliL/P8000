@@ -41,7 +41,7 @@ The state: the check commands in the last column; the plan: `../src/TODO.md`.
 
 Not a tool of the chain but the oracle: `host/z8k-emu` (runs the original binaries). Analysis tools: `host/tools`.
 
-Overall checks: `make -C host check` (all tools except `codgen`), `make -C host verify-wega` (builds `src/cmd` with the
+Overall checks: `make -C host checkall` (everything byte-identical, the corpora and the following), `make -C host check` (all tools except `codgen`), `make -C host verify-wega` (builds `src/cmd` with the
 original tools and compares each program).
 
 ## Decided: equality criteria per code base

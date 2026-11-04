@@ -3,15 +3,11 @@
 The plan and nothing else. What is known goes to `host/KNOWLEDGE.md`, the old compilers to `host/OLDCC.md`, the state per function to
 `tools/FINDINGS.md` of a program. A finished step leaves this file. No new programs before step 9 (owner 2026-11-04).
 
-Byte-identical with the originals so far, by `make` with the old compiler and strip: cpp, cparse, scparse, codgen, scodgen, popt, spopt (ccv0p); size, strip, mv (cp, ln), rm (ccv1).
-
-## 1. One check for everything
-
-One command rebuilds the chain and everything that is byte-identical, each with its compiler, compares with `cmp` and runs the corpora. `make check` once more as the baseline (last run 2026-10-21). `verify-wega` builds with the shipped cc and so reports false differences today.
+What is byte-identical is checked by `make -C host checkall` (13 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program.
 
 ## 2. `lib/libc` from C and byte-identical
 
-A table per C source: which compiler (shipped, ccv1, ccv0, ccv0p) gives which object. An `.s` in `oldlibc` or `libc/oldcc` that can be made from C goes. No `#ifdef` in the libc; what cannot be made stays `.s`.
+A table per C source: which compiler (shipped, ccv1, ccv0, ccv0p) gives which object. An `.s` in `oldlibc` or `libc/oldcc` that can be made from C goes. `stdio/getgr*.c` are older copies of `gen/getgr*.c`: decide and remove. No `#ifdef` in the libc; what cannot be made stays `.s`.
 
 ## 3. Real libraries and `make` under `WEGA/src`
 
@@ -26,20 +22,20 @@ The programs that are identical keep the corpus and the comparison. `gen_makefil
 
 ## 5. The open programs in `cmd/` byte-identical
 
-In this order; every change of a compiler goes through the check of step 1.
+In this order; every change of a compiler goes through `checkall`.
 
 - `write`: own code exact with v1, libc part open.
 - `rmdir`: main differs (D4, D18), libc part open.
 - `dc`: 28 places in the own code with ccv0, libc part fits.
 - `ranlib`: own code differs (v-version to be found); `readsym` is an old libc module.
 - `doscopy` (8 commands): differences not analysed; built with the current cc and libc, the owner believes. The build stops on the `/usr/include` dependencies outside the guest ROOT. The owner began this on the branch `doscopy`: inspect it first for changes to take over.
-- `copydisk`, `format`, `verify`, `pburn`: not measured since 2026-10-22.
+- `pburn`: same size, built with the shipped cc; differences not analysed.
 - `ld`: 55 of 59 with v1 (open: place_sec, chk_ranlib, load2td, read_symbols). Decide the source base first.
 - `sld`: 58 of 90 functions, corpus 51 of 51. Decide the source base first.
 
 ## 6. System III form for all existing programs
 
-The source follows the System III sources as far as the bytes allow: names, macros, comments, order. System III is primary; for what is specific to the Z8000 the Plexus sources are the model (owner 2026-11-04). Bytes stay equal, checked by step 1. First find out what System III holds for cparse, codgen and popt. Lists of what is WEGA's: `tools/PCC.md` of codgen, cparse, popt, to be redone against System III. Also the odd forms in findings.json (the `top:` labels of cpp).
+The source follows the System III sources as far as the bytes allow: names, macros, comments, order. System III is primary; for what is specific to the Z8000 the Plexus sources are the model (owner 2026-11-04). Bytes stay equal, checked by `checkall`. First find out what System III holds for cparse, codgen and popt. Lists of what is WEGA's: `tools/PCC.md` of codgen, cparse, popt, to be redone against System III. Also the odd forms in findings.json (the `top:` labels of cpp).
 
 ## 7. Host tool chain
 
