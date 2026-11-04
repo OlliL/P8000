@@ -7,7 +7,7 @@ register char *str;
 
 	i=0;
 	do {
-		if(!*str++)
+		if(*str++ == 0)
 			break;
 		i++;
 	} while (i<=16384);

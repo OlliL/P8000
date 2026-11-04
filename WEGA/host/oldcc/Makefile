@@ -15,7 +15,7 @@ LIBS = ../../../tmp/oldcc-libs
 EMU  = $(abspath ../z8k-emu/z8k-emu)
 RUN  = $(EMU) -r $(abspath $(WEGA))
 SRC  = ../../src/lib/libc/oldcc
-MEMBERS = cnvt doscan fltioc length malloc nlist printf scanf swap symscan
+MEMBERS = fltioc malloc nlist swap symscan
 
 libs:
 	mkdir -p $(LIBS)/libc

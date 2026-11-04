@@ -25,17 +25,19 @@ char	_sctab[128] = {
 	0,0,0,0,0,0,0,0,
 };
 
-_doscan(iop, fmt, argp)
+_doscan(iop, fmt, argp, stackp)
 FILE *iop;
 register char *fmt;
 register int **argp;
+int **stackp;
 {
 	register int ch;
 	int nmatch, len, ch1;
-	int **ptr, fileended, size;
+	int **ptr, fileended, size, nreg;
 
 	nmatch = 0;
 	fileended = 0;
+	nreg = 0;
 	for (;;) switch (ch = *fmt++) {
 	case '\0': 
 		return (nmatch);
@@ -43,9 +45,11 @@ register int **argp;
 		if ((ch = *fmt++) == '%')
 			goto def;
 		ptr = 0;
-		if (ch != '*')
+		if (ch != '*') {
 			ptr = argp++;
-		else
+			if (++nreg == 5)
+				argp = stackp;
+		} else
 			ch = *fmt++;
 		len = 0;
 		size = REGULAR;
@@ -100,42 +104,35 @@ _innum(ptr, type, len, size, iop, eofptr)
 int **ptr, *eofptr;
 struct _iobuf *iop;
 {
-	extern double atof();
-	register char *np;
-	char numbuf[64];
 	register c, base;
-	int expseen, scale, negflg, c1, ndigit;
+	int negflg, c1, ndigit;
 	long lcval;
 
+	ndigit = 0;
 	if (type=='c' || type=='s' || type=='[')
 		return(_instr(ptr? *(char **)ptr: (char *)NULL, type, len, iop, eofptr));
-	lcval = 0;
-	ndigit = 0;
-	scale = INT;
 	if (type=='e'||type=='f')
-		scale = FLOAT;
+		return(_inflt(ptr, len, size, iop, eofptr));
+	lcval = 0;
 	base = 10;
 	if (type=='o')
 		base = 8;
 	else if (type=='x')
 		base = 16;
-	np = numbuf;
-	expseen = 0;
 	negflg = 0;
 	while ((c = getc(iop))==' ' || c=='\t' || c=='\n');
 	if (c=='-') {
 		negflg++;
-		*np++ = c;
 		c = getc(iop);
 		len--;
 	} else if (c=='+') {
 		len--;
 		c = getc(iop);
 	}
-	for ( ; --len>=0; *np++ = c, c = getc(iop)) {
+	for ( ; --len>=0; c = getc(iop)) {
 		if (isdigit(c)
 		 || base==16 && ('a'<=c && c<='f' || 'A'<=c && c<='F')) {
-			ndigit++;
+			ndigit = 1;
 			if (base==8)
 				lcval <<=3;
 			else if (base==10)
@@ -152,19 +149,6 @@ struct _iobuf *iop;
 			lcval += c;
 			c = c1;
 			continue;
-		} else if (c=='.') {
-			if (base!=10 || scale==INT)
-				break;
-			ndigit++;
-			continue;
-		} else if ((c=='e'||c=='E') && expseen==0) {
-			if (base!=10 || scale==INT || ndigit==0)
-				break;
-			expseen++;
-			*np++ = c;
-			c = getc(iop);
-			if (c!='+'&&c!='-'&&('0'>c||c>'9'))
-				break;
 		} else
 			break;
 	}
@@ -175,33 +159,25 @@ struct _iobuf *iop;
 		*eofptr = 0;
 	} else
 		*eofptr = 1;
-	if (ptr==NULL || np==numbuf)
+	if (ptr==NULL)
 		return(0);
-	*np++ = 0;
-	switch((scale<<4) | size) {
+	switch(size) {
 
-	case (FLOAT<<4) | SHORT:
-	case (FLOAT<<4) | REGULAR:
-		**(float **)ptr = atof(numbuf);
-		break;
-
-	case (FLOAT<<4) | LONG:
-		**(double **)ptr = atof(numbuf);
-		break;
-
-	case (INT<<4) | SHORT:
+	case SHORT:
 		**(short **)ptr = lcval;
 		break;
 
-	case (INT<<4) | REGULAR:
+	case REGULAR:
 		**(int **)ptr = lcval;
 		break;
 
-	case (INT<<4) | LONG:
+	case LONG:
 		**(long **)ptr = lcval;
 		break;
 	}
-	return(1);
+	if (ndigit)
+		return(1);
+	return(0);
 }
 
 _instr(ptr, type, len, iop, eofptr)
@@ -211,7 +187,7 @@ int *eofptr;
 {
 	register ch;
 	register char *optr;
-	int ignstp;
+	int unused, ignstp;
 
 	*eofptr = 0;
 	optr = ptr;
@@ -254,6 +230,7 @@ _getccl(s)
 register char *s;
 {
 	register c, t;
+	long l;
 
 	t = 0;
 	if (*s == '^') {

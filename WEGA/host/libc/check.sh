@@ -34,7 +34,13 @@ for obj in $(cd "$ORIG" && ls *.o); do
 	*.c) for fl in "-O" "" "-Or" "-Ol"; do
 		( cd "$d" && rm -f "$obj" && "$EMU" -r "$ROOT" /bin/cc $fl -c "$srcname" >log 2>&1 )
 		cmp -s "$d/$obj" "$ORIG/$obj" && { res="ok  cc $fl"; break; }
-	     done ;;
+	     done
+	     # some members were made with the stdio.h of an earlier time (src/cmd/cparse/stdio.h)
+	     if [ "$res" = DIFF ]; then
+		cp "$SRC/../../cmd/cparse/stdio.h" "$d/"
+		( cd "$d" && rm -f "$obj" && "$EMU" -r "$ROOT" /bin/cc -O -I. -c "$srcname" >log 2>&1 )
+		cmp -s "$d/$obj" "$ORIG/$obj" && res="ok  cc -O, old stdio.h"
+	     fi ;;
 	esac
 	echo "$res $m ($srcname)"
 done
