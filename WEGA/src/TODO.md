@@ -32,8 +32,7 @@ In this order; every change of a compiler goes through the check of step 1.
 - `rmdir`: main differs (D4, D18), libc part open.
 - `dc`: 28 places in the own code with ccv0, libc part fits.
 - `ranlib`: own code differs (v-version to be found); `readsym` is an old libc module.
-- `getud`, `putud`: own code identical; unstripped, the PID of the temporary name of cc is in the symbol table.
-- `doscopy` (8 commands): differences not analysed; built with the current cc and libc, the owner believes. The build stops on the `/usr/include` dependencies outside the guest ROOT.
+- `doscopy` (8 commands): differences not analysed; built with the current cc and libc, the owner believes. The build stops on the `/usr/include` dependencies outside the guest ROOT. The owner began this on the branch `doscopy`: inspect it first for changes to take over.
 - `copydisk`, `format`, `verify`, `pburn`: not measured since 2026-10-22.
 - `ld`: 55 of 59 with v1 (open: place_sec, chk_ranlib, load2td, read_symbols). Decide the source base first.
 - `sld`: 58 of 90 functions, corpus 51 of 51. Decide the source base first.

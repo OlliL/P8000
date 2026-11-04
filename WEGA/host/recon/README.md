@@ -9,7 +9,7 @@ Used by codgen, popt, sld, ld and cparse (see `host/HOWTO_reconstruct.md`). The 
 | Script | Purpose |
 |---|---|
 | `progcfg.py` | loads the program configuration |
-| `findings.py PROG` | new form of `findings.json` (HOWTO, "Since 2026-11-02"): status from strictcmp, writes `FINDINGS.md`; through `oldcc.sh findings PROG` |
+| `findings.py PROG` | `findings.json`: `compiler`, `measured_at`, per function `file`, `orig`, `size_orig`, `status` from strictcmp, `note` by hand, writes `FINDINGS.md`; through `oldcc.sh findings PROG` |
 | `odis.py NAME` / `odis.py LO HI` | disassemble the original code of a function |
 | `callcmp.py OLD NEW NM` | call-trace comparison of two emulator traces (corpus test) |
 | `zcode.py` | instruction lists and the two normal forms (masked, strict) of the comparison |

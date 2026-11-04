@@ -2271,6 +2271,8 @@ C program; `make -C WEGA/host/cc` builds it for Linux with the host compiler.
 `cmd/chkdiff`, `cmd/uuclear` and `cmd/whodo` are text scripts; they were
 compared using `cmp` and are identical.
 
+`getud` and `putud` are unstripped: the symbol table holds the name of a temporary file of cc with its PID. With that PID replaced in the binary (`dd`, the shipped value) both are byte-identical (owner).
+
 - `popt` and the Linux versions of the tools (`host/cc` with `cc.conf`, `host/ar`, `host/binutils`, `host/cas`, `host/ld`) are Linux-side tools and live in `host/`; the WEGA source of `cc` and `scc` is `cmd/cc/cc.c`.
 
 - The single-file commands are flat in `cmd/` (V7 layout): `ar`, `dump`,

@@ -1,248 +1,52 @@
-# HOWTO: reconstructing a binary of the WEGA system
+# HOWTO: reconstructing a WEGA binary
 
-This is the procedure for every original binary (program or library). It was developed on `codgen`,
-`popt` and `sld` (2026-10; `sld` is the most complete: structs, names, corpus test). Facts about a
-specific binary go to `KNOWLEDGE.md`, open items to `src/TODO.md` only as steps of its plan, per-function findings to
-`findings.json` of that program. Keep this file as the procedure only.
+Goal: `make` and strip give the original, `cmp` is the only proof. Bugs of the original are rebuilt and listed in `KNOWLEDGE.md`, "Bugs and quirks". Rules of the project: `../CLAUDE.md`. The plan: `../src/TODO.md`.
 
-Ground rules: byte identity with the original is the goal. Bugs of the original are rebuilt and
-recorded, not fixed. Originals and copyrighted text never go into git. Plexus and V7 sources are read (exception: the PCC passes, CLAUDE.md)
-for ideas and names only. Repo text is English, no umlauts in added text. Makefiles must also work with
-the WEGA native `make` (`=` not `?=`, `cd dir ; $(MAKE)`, no pattern rules). The owner commits; the
-assistant never commits or pushes. No new status files: the state lives in `own_functions.txt`
-(status column) and `findings.json` (`manual_classes` = hand notes, shown in `FINDINGS.md`).
+Two models, one handoff per program. Phase A is cheap and mechanical: a tool answers yes or no. Phase B needs understanding.
 
-## Since 2026-11-02: against an old compiler from the start (owner)
+## Phase A (cheap model)
 
-Old compilers exist now. A new binary is built from the start with the old compiler version that fits it best, and sources still measured
-against the shipped compiler are only worked on together with an old version; the steps below that speak of the shipped compiler are history.
-`findings.json` always states the compiler it refers to: `compiler`, `measured_at`, per function `file`, `orig`, `size_orig`, a measured `status` and
-a `note` by hand only for an open difference, an odd source form, a guessed name, dead code (`oldcc.sh findings PROG`, which also writes `FINDINGS.md`).
-Which function needs which switch: `OLDCC_SWITCHES.md`. When a program starts: add it to PROGS in `recon/switchmatrix.py` and rewrite its `findings.json`
-in this form for its compiler. classify.py, patterns.py, funcs.py and the old findings_md.py belong to the old way; they live in `src/cmd/sld/tools` and `src/cmd/ld/tools` and go when those programs are converted.
+Never in phase A: change a compiler pass or a switch, change cas, edit a shipped header, write odd forms to force bytes, spend more than 6 attempts on one function. When stuck: note it and go on. A function left open is a normal result.
 
-## Two phases, one model change per binary
+1. **Date it.** `OLDCC_DATES.md` gives the time, the time gives the compiler (`OLDCC.md`, section 2): ccv1 01/83 .. 07/83, ccv0 1982, shipped cc from 09/83.
+2. **Source.** Look in `/mnt/users/olivleh1/BACKUPs/Operating_Systems/SYSIII/sys3/usr/src/cmd`. If it is there, copy it to `src/cmd/NAME/` unchanged and start from it. The SCCS strings of the binary (`strings | grep '@\[\$\]'`) name the files, their order and dates; several strings mean several files. Without a source: step 7 first.
+3. **Build the own code**, with the stdio.h of the time for ccv0 and ccv1 (`-I../cparse`):
+   `E="z8k-emu -r $OLDROOT"; $E /bin/ccv1 -O -I../cparse -c x.c`. ccv0 and ccv0p need `make -C host oldroot` once.
+4. **Libc part.** `host/tools/fitlibc.py ORIG OWNEND` (OWNEND = crt0 size + own code size, hex) walks behind the own code and names the module at each place. `shipped fakcu` beside a gap is a false fit, a stray `ret`. A gap is a module no known version fits: compare with the version it resembles, make it from that by hand if only the frame differs, else cut it (`mkspec.py`, `unlink.py` on a scratch copy of `oldlibc`, and take over only the new file). Never keep two versions with the same bytes. Data-only modules are not seen: `data` goes in front of `__callex`, `errlst` behind `malloc`. Write `NAME.link`, then `linkmk.py DIR NAME COMPILER SOURCES...` writes the Makefile. `crt0.list` must have the program.
+5. **Compare:** `host/tools/bincmp.py ORIG NEW -v`. Work in this order; each one moves the rest.
+   - Data size, then data bytes: strings stand in the order of the statements of each function; equal strings are not merged.
+   - Bss: commons are allocated in the order of first mention in link order. Reorder the declarations; array sizes are address distances (`-v` shows new -> original).
+   - Code: the blocks of `bincmp.py`.
+6. **Functions.** Per block at most 6 attempts with the forms below. Then record it in `findings.json` (per function a `note`, only for an open difference, an odd form, a guessed name, dead code) and go on. Only for a function that is not found yet: `odis.py NAME` shows the original.
+7. **No source.** Inventory (`recon/inventory.py`, `own_table.py`), one C file per module, K&R, a draft per function from `odis.py`, compared by `fncheck.py DRAFT LO HI`. Names from messages, system calls, strings. The source carries no status; findings go to `findings.json` only.
+8. **Corpus.** The bytes do not prove a draft while it is open. Run the original and ours under the emulator on the same inputs and compare outputs, messages, exit codes (`recon/stagecorpus.py`, `host/ld/check.py`). Run it after each batch.
+9. **Handoff or done.** `IDENTICAL`: enter the program in the check of step 1 of the plan and report. Otherwise write `tools/HANDOFF.md`, as short as possible: compiler, the output of `bincmp.py`, per open function what was tried. Commit.
 
-The work is split so that a cheap model does the mechanical part and an expensive model is needed only
-once. Do not change back and forth.
+### Forms that often decide (in this order)
 
-**Phase A (cheap model): everything where a tool answers yes or no.** Steps 0 to 3, the first pass of
-step 4 (the data layout), the first pass of step 5 (draft, compile, compare; at most 6 attempts per function,
-then mark it and go on), the layout of bss (step 5b), the split into modules, the link and the corpus harness. Phase A ends with a handoff
-note (`HANDOFF_<binary>.md` in the tool directory, deleted when the binary is finished) that contains:
-the function table with status, the list of functions with the first differing instructions (`firstdiff`
-output), what was tried, and the open questions. Phase A is done when:
+More, found on sld: `KNOWLEDGE.md`, "what fixed the findings functions".
 
-- function table complete, every function has a C draft and status `done` or `findings` (with the diff);
-- data of the rebuilt program has the size and the bytes of the original, bss has the size and the variable addresses
-  of the original (step 5b, after the first pass of step 5);
-- the program is split into the modules of the original, each compiled alone, and the link works;
-- the corpus test (step 6) exists and runs; the own-code block (step 3) passes it, which proves the harness.
+- The compiler or the stdio.h of the wrong time. Try the neighbour version before anything else.
+- Wrong types, wrong parameter order, wrong declaration order: most "register differences" are these. Register variables go from r14 (scc r13) downwards in declaration order; a pointer in scc takes a pair. A parameter not spilled is `register`. `ldm` counts the registers.
+- Statement forms: `x = a + b; x /= 8;` against `x = (a + b) / 8`; `if`/`else` against `?:`; `return` against an else chain; `switch` with the real case values, also explicit cases that do what the default does (a jump table shows them); case order is code order.
+- Plain forms first. `goto`, unused labels and spare locals only when nothing plain fits; mark them in `findings.json` as odd forms.
+- `call` where `calr` reaches: the callee is in another file, or the old cas decided it long (`OLDCC.md`, D17). A backward `call` in reach always means another file.
 
-**Phase B (expensive model): everything that needs understanding.** Hard functions of the second pass,
-semantic errors found by the corpus test, structs, names, the quirks table, the documentation. Phase B
-uses the rules of step 7 first; most "register" differences are wrong types, parameter order or
-declaration order, not compiler differences.
+## Phase B (better model)
 
-## Step 0: inputs [A]
+For what is left: finding the source form of a hard function, and changing the compiler.
 
-- The original binary in the WEGA 3.1 root (`/mnt/share/cvs/P8000/tmp/wega31_root`), run by the
-  emulator `host/z8k-emu/z8k-emu -r <root>`. The emulator sees only files below the working directory.
-- The header and layout: `host/KNOWLEDGE.md` (s.out format, segmented E611 or nonsegmented).
-- Analysis tools in `host/tools/`: `sout.py` (s.out parser), `z8k.py` (decoder, use the segmented
-  flag for E611 programs), `cmpins.py`, `unlink.py` / `unlink_seg.py` (cut of programs, verified by
-  assembling with `cas -u`), `sdis.py`.
-- Look for strings first: usage and error messages, SCCS what-strings (`@(#)` / `@[$]`), debug dump
-  strings. They give the module list and order, names of functions, variables and struct members
-  (sld: `dump.c` strings gave all member names of the segment tables).
+- Source form first. A new switch comes only when no form fits; forms tried go to `OLDCC_LOG.md`.
+- How popt treats a function: `recon/poptrace.sh PROG FUNC`, or popt built with `-DTRACE`. Which copy of a tail stays depends on the order iterate, comjump, rmove (`OLDCC.md`, D20). When the mechanism is clear but the form is not, try the combinations by script instead of by hand.
+- A change of a pass, measured in a copy: `recon/oldvar.sh NAME PATCH.py [PASS]`. Removing a switch: a patch deleting its `#define`.
+- Compiler changes are in `src/cmd/{cparse,codgen,popt,cas}` behind a switch, set in the version (`codgen/oldcc.h`, `vN/Makefile`). The normal build stays identical.
+- Function-level check for a program with a model: `tools/strictcmp.py` (`-c` also compares call forms, `STRICT_CTX=12 ... -v FUNC` shows context). Copy `progcfg.py` and the launchers from `src/cmd/cpp/tools` or `popt/tools`; add the program to PROGS of `recon/switchmatrix.py`.
+- Structs and names when the bytes stand: `rename.py`; sizes from address distances, names from debug strings, then System III, then Plexus for Z8000 parts. The exact count must not drop.
 
-## Step 1: function starts [A]
+## Evidence rules for the old compilers
 
-1. Inventory (`inventory.py`): recursive descent from the entry, proven starts, candidates after `ret`
-   or jumps. Entry set = call targets in the code range plus proven starts; every entry is an
-   instruction boundary; each function ends with `ret`, an unconditional jump or a trap.
-2. Do not split at jump targets. Mark large functions as a guess when they may hold jump-only entries.
-3. Write the table (`own_functions.txt`: entry, name, end, size, callers, kind, last instruction, status).
-   Status: `open`, `done`, `findings:<D classes>`.
-4. Decode data references with the segmented flag of the file (the non-segmented decoder gives wrong
-   operand kinds).
-
-## Step 2: libc and shipped members [A]
-
-1. Identify the linked library members against `/lib/libc.a`, `/lib/slibc.a` and the old libc
-   (`libc_funcs.py`, weak fingerprint, check by hand). Compare code with the relocations masked;
-   check the DATA of each member too (sld: the data of printf/doprnt differed and had to be written out).
-2. Members that match byte for byte are taken from the library with `ar x` (not cut, not copied).
-3. Other library code is cut as assembler (`unlink.py` / `unlink_seg.py`), kept only if verify gives 0
-   differing words. Code addresses in jump tables and data references must be symbolic (labels), not
-   absolute numbers, or the module breaks when the layout moves.
-4. The link order of the members is the order in the original; a data-only member (`data.o`,
-   `ctype_.o`) goes where its data lies in the original data (measure it).
-
-## Step 3: own code as one block [A]
-
-Cut the own code range as one module (`unlink_seg.py`), verify 0 differing words. This block is the
-reference for the link and the first corpus run (the link of it must reproduce the original).
-
-## Step 4: data before the functions [A]
-
-Do this before the long function work: the strings and initialized data must be at the addresses of the
-original, or every instruction that refers to them differs. The bss is not here: its addresses come from
-the variables the functions use, so it is done in step 5b.
-
-1. Data order = order of the SCCS strings and the initialized variables per module; strings are in the
-   order of the source statements of each function (the old cc does not merge equal strings; a string
-   used in a different order than the original means a different statement order or a static array in
-   front of the function).
-2. Test: size of data equal, then the bytes of the data equal the original at the same addresses.
-
-## Step 5b: bss, after the first pass of step 5 [A]
-
-The variables are known only when the functions are written, so this comes after the first pass of step 5
-(all functions drafted, compiled and compared, the function table has status `done` or `findings`), and before
-the second pass.
-
-1. Bss: the old linker allocates commons in the order of the FIRST MENTION in the objects in link
-   order; the group of the second segment comes first. Put all common definitions into the first
-   object in the address order of the original (`order_vars.py`), unused gaps become spare variables,
-   array sizes are the address distances. Check every variable address against the original
-   (`var_addr.py` finds them by instruction voting).
-2. Test: size of bss equal, then all variable addresses equal. Afterwards the functions that use a
-   variable are compared again (their addresses moved in the first pass).
-
-## Step 5: functions in C [A first pass, B second pass]
-
-1. One C file per module of the original from the start (the old compiler loses function names in big
-   files); each file is compiled alone with the original `scc -O` in the emulator.
-2. For each function: write K&R C (no prototypes), compile, compare with `strict_audit.py` (frame
-   offsets are compared; addresses are masked). Exact: `accept.py` (status `done`). Otherwise
-   `firstdiff.py NAME` shows the first differing places with context, `odis.py NAME` the original.
-3. Phase A: at most 6 attempts. Then the draft is accepted anyway into the C file, even if it does not match:
-   the diff goes into `findings.json` (`manual_classes`, basis `read`, note, `d_classes`) and the function status
-   becomes `findings`; the function is not left out of the file.
-   The source carries no copy of the finding (no status, diff or attempts in comments): findings.json is the only
-   place, so the two cannot drift apart. Comments in the source explain the code (what it does, why a form is used).
-4. Names: from messages, system calls, strings; Plexus/V7 names where it is the same function. For the PCC passes the PCC source of the Plexus tree is the model, also 1:1 (`CLAUDE.md`, Rules).
-   External names are significant for 7 characters (`check_names.py`).
-
-## Step 6: corpus test: original program against the rebuilt program [A, run always]
-
-The strict audit says "exact" for code that is wrong when an immediate and a memory operand, a cast or
-a mask differ. Build the program, run it and the original on the same command lines under the
-emulator and compare output files, messages and exit codes (sld: `make check`,
-`host/ld/check.py -S` with `SLD_NEW`). Run it after every batch of edits. If it fails:
-
-- find the first function that behaves differently with the call trace: `z8k-emu -t`, take the `call`
-  / `calr` lines (the next trace line is the callee), map the addresses to names (`nm` of the new
-  program, `own_functions.txt` and `libc_names.txt` for the original) and compare the sequences with
-  their arguments; then compare the flow inside that function.
-- the usual causes: a literal that is a variable, unscaled pointer arithmetic, a wrong width or sign
-  of a cast (zero extension), a swapped argument.
-
-## Step 7: rules for the functions that do not match [B]
-
-Found on sld; each one fixed several functions (details in `KNOWLEDGE.md`, "what fixed the findings
-functions"):
-
-- Read the original with `odis.py`. The first argument is in rr6, the second in rr4, a word argument
-  after them. Wrong parameter order or type shows as different spill offsets. Check the callers.
-- Register variables are given from r13 downwards in declaration order; a pointer takes two. A
-  parameter that is not spilled is `register`. `ldm` shows how many registers are used. A copy
-  `ldl rrN,rr6` of a spilled parameter is `register char *p; p = a;`. A register that is incremented
-  is the pointer, not a counter.
-- Unused locals reproduce a bigger frame (`spare`); the order of declaration gives the frame offsets.
-- Loops: our compiler writes `while` with the test on top; a loop with the test at the bottom is
-  written with `goto test; body: ...; test: if (c) goto body;`.
-- Stack arrays accessed with constant offsets are structs. A stack record that is built and written is a
-  struct. `(char *)&h.f - (char *)&h` gives a field offset.
-- Expression forms: `switch (x)` with the real case values, not `switch (x - c)`; `!= 0` gives
-  `and; test`; `x = n; x >>= 1;`; pre/post-decrement tests; `?:` as call argument; `(unsigned)` for
-  zero extension; assignment inside the test avoids a copy.
-- The order of the cases is the order in the code; shared tails are the optimizer (popt tail merge).
-- The call for the "not an option" case sits at the end of the loop body in front of the increment.
-- Blocks the original moves (error blocks behind an earlier `break`, else arms behind later
-  statements) cannot be reproduced when the string pool order contradicts it; record them.
-- Types of struct fields and pointers matter more than any trick: after the structs were introduced
-  several "register differences" disappeared (`list_move_after`, `start_output`, `readhdr`).
-
-Remaining differences are the old compiler's own (the optimizer moves non-register locals into scratch
-registers, `and #0xFFFE` becomes `res`, jump forms). Document them in `OLDCC.md`.
-
-## Step 8: structs, names, quirks [B]
-
-1. Structs: sizes of arrays (address distances) and offset patterns give the structs; names from the
-   debug strings, then Plexus/V7, then own. Members of different structs may share name, offset and
-   type. After each struct the exact count must not drop and the corpus test must pass.
-2. Names: functions first (`rename.py`), then variables (`rename.py` also updates the address tables).
-   A variable must not take the name of an external symbol the compiler generates (`_stkseg`).
-3. Bugs and oddities of the original: table "Bugs and quirks of the originals" in `KNOWLEDGE.md`, with
-   how the rebuild handles them. Source errors of the original that are rebuilt (for example the
-   precedence error `!c & 0x20`) belong there too.
-
-## Step 9: split, link, finish [A prepares, B finishes]
-
-1. Module order from the SCCS strings; code boundaries settled before the split.
-2. Makefile (`gen_makefile.py`): one target per source, the link with the original linker of the chain,
-   `make check` for the corpus test. The final test is byte identity with the original.
-3. Delete scratch files, the work file and the cut block when they are no longer needed; `.gitignore`
-   for build output.
-
-## Shared tools (`host/recon/`)
-
-One toolkit for all programs, see `host/recon/README.md`. A program keeps in its `tools/` directory only
-`progcfg.py` (name, original, program range, object-name pattern), launchers with the old script names and
-what is specific to it. For a new binary: copy `progcfg.py` from `src/cmd/popt/tools` (stripped, nonsegmented)
-or `codgen/tools` (with symbols) and the launchers (`odis.py`, `callcmp.py`, `d12model.py`, `strictcmp.py`, `olist.py`), then use:
-
-- `odis.py NAME` (step 5), `callcmp.py` (step 6), `oldcc.sh findings PROG` (the report, step 5/8).
-- Still sld specific in `src/cmd/sld/tools` (copy and adapt for the next binary, move into `host/recon/` then):
-  `fncheck.py` + `strict_audit.py` (step 5), `accept.py` / `accfn.py`, `firstdiff.py`, `rename.py` (step 8),
-  `check_names.py`, `sync_findings.py`, `host/ld/check.py` (step 6).
-
-Do not write a new script for something that exists in the toolkit; extend the toolkit.
-
-## Checklist for a new binary
-
-- [ ] Strings: modules, order, names, dump strings
-- [ ] Inventory and function table with status column
-- [ ] Libc and shipped members identified (code AND data); cut modules verified; Makefile tested
-- [ ] Own code cut as one verified block
-- [ ] Data: size and bytes equal (step 4)
-- [ ] Bss: size and every variable address equal (step 5b)
-- [ ] One C file per module, functions compared, `findings.json` notes
-- [ ] Corpus test runs (block passes), then the C build passes
-- [ ] Handoff note written, model change (once)
-- [ ] Second pass with the rules of step 7; structs; names; quirks table
-- [ ] Built by an old compiler version: model in `oldcc.sh`, the program in PROGS (or NOTPROGS with the reason) of
-      `host/recon/switchmatrix.py`, `oldcc.sh matrix check` clean, then a full `oldcc.sh matrix` (`host/OLDCC.md`, "Evidence rules")
-- [ ] Link byte identical, split done, scratch removed
-
-## Evidence rules for the old compilers (owner decisions 2026-10-31, 2026-11-02)
-
-- The D classes are hard only where a program was checked strictly (`strictcmp.py`: only code addresses masked); a
-  class read from a masked or pattern comparison is weak and may hide a wrong source form. ld, strip and size were
-  checked strictly before the first switch; every other program is checked the same way before it counts.
-- A switch counts only when it explains findings in at least two independent functions, preferably in different
-  programs. A function that fits only through a switch no other function needs is a suspect source form and goes back
-  to the source check; so do findings that no switch explains. (Lesson of ld: ranlib_scan, dseek and load2td looked like
-  compiler differences and were source forms.)
-- Regression: every function that is strictly exact stays exact with the switch, in every program built by the same
-  compiler version. The version of a program comes from its build date (section 2); a program of another time is no
-  counter-witness (owner decision 2026-10-31).
-- The test bench is read only by comparison (with and without a switch): WEGA changed many of the System III sources,
-  so a difference on the bench is not a compiler difference by itself.
-- Every accepted switch: commit (no push), this document and the table of section 4 updated, the normal build stays
-  byte-identical (shipped cparse, codgen, popt), the corpora green.
-- Source form first (owner decision 2026-11-02): when a function differs, or contradicts an existing switch, first look for a
-  source form; a new switch or a further condition on a switch comes after that, and the forms tried go to `OLDCC_LOG.md`.
-  People wrote this source: the odder a form looks (nobody would probably have written it so), the less likely it is the
-  right one, even when the bytes fit. This weighs evidence, it does not forbid: what was really written is not known. An
-  odd form that fits is recorded as such in findings.json, and a plainer form or a switch stays possible.
-- Which functions need which switch: `host/OLDCC_SWITCHES.md`, generated (owner decision 2026-11-02), never edited by hand.
-  `oldcc.sh matrix SWITCH` for a new or changed switch, `oldcc.sh matrix` (all, unattended) when a program joins or before
-  switches are cleaned up, `oldcc.sh matrix check` (no measurement, seconds) in every check round and before a commit that
-  touches a switch: it names switches and programs missing from the table and how many files of the passes changed since
-  the measurement.
-
-
-How to test a change of a pass without touching the tree: `host/recon/oldvar.sh NAME PATCH.py [PASS]` (run `oldcc.sh model PROG` first). Removing a switch: a patch that deletes its `#define` from `oldcc.h`. What popt does with a function: `host/recon/poptrace.sh PROG FUNC`. `STRICT_CTX=12 python3 tools/strictcmp.py -v FUNC`: a difference with more context.
+- A switch needs two independent functions, preferably in different programs. A function and its segmented copy are one. A function that fits only through a switch nothing else needs is a suspect source form. Exceptions only by the owner; they are listed in `OLDCC.md`, section 5.
+- No regression: every exact function stays exact in every program of the same compiler version. A program of another time is no counter-witness.
+- The odder a form, the less likely it was written, even when the bytes fit. An odd form that fits is recorded in `findings.json`; a plainer form or a switch stays possible.
+- The test bench (`recon/witness.py`) is read only by comparison with and without a switch: WEGA changed many System III sources.
+- After a switch: `oldcc.sh matrix SWITCH` (all switches when a program joins), `oldcc.sh matrix check` before the commit, the check of step 1 of the plan, `OLDCC.md` updated. `OLDCC_SWITCHES.md` is generated.
