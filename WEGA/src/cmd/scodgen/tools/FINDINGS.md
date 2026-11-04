@@ -60,7 +60,7 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | rclass | 0x6e70 | Exact: OLD_D3J restores parameters also at a label with several jumps. |
 | allocreg | 0x6eda | Form: if / else if / else, no goto. |
 | freereg | 0x6ff6 | Odd form: the found code inside the first loop, the second loop tests at the top with a return inside. |
-| usable | 0x7114 | (rv >> 8) - 1 + 1 keeps add r2,#0: cparse folds it to x + 0 and the optim of codgen v0p does not take a zero away (OLD_D6Z). |
+| usable | 0x7114 | (rv >> 8) - 1 + 1 keeps add r2,#0: cparse folds it to x + 0 and the optim of codgen v0p does not take a zero away (OLD_D23). |
 | rwprint | 0x72b0 | Odd form: an unreferenced label in front of the first test, as readmems. |
 | reclaim | 0x733e | Odd form: done in front of the code for a register result, reached by goto from behind it. |
 | newnode | 0x78b8 | m->reg = n->reg = n->reg * 2 in case 2 and 6: the tail is merged behind the first load, as in the original. |

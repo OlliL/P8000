@@ -97,6 +97,7 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
   `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D22`, `OLD_D3J`, `OLD_D2PO`, `OLD_D5A`, `OLD_D2W6` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
 - Test bench (System III sources of 38 programs of 1982): 125 of 153 functions equal, 219 differing lines.
+- dc: own code 28 places from the original (`src/cmd/dc`), the libc part fits.
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
   renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).

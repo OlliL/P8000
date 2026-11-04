@@ -715,7 +715,7 @@
    "file": "allo3.c",
    "orig": "0x7114",
    "size_orig": 198,
-   "note": "(rv >> 8) - 1 + 1 keeps add r2,#0: cparse folds it to x + 0 and the optim of codgen v0p does not take a zero away (OLD_D6Z).",
+   "note": "(rv >> 8) - 1 + 1 keeps add r2,#0: cparse folds it to x + 0 and the optim of codgen v0p does not take a zero away (OLD_D23).",
    "status": "exact"
   },
   "recl2": {

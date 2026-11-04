@@ -709,7 +709,7 @@
    "orig": "0x6e78",
    "size_orig": 130,
    "status": "exact",
-   "note": "(rv >> 8) - 1 + 1 keeps add r2,#0: cparse folds it to x + 0 and the optim of codgen v0p does not take a zero away (OLD_D6Z)."
+   "note": "(rv >> 8) - 1 + 1 keeps add r2,#0: cparse folds it to x + 0 and the optim of codgen v0p does not take a zero away (OLD_D23)."
   },
   "recl2": {
    "file": "allo3.c",

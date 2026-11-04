@@ -126,7 +126,7 @@ optim(p)
 			p->left = p->right;
 			p->right = sp;
 		}
-#ifndef OLD_D6Z
+#ifndef OLD_D23
 		if ((o == MINUS || o == PLUS) && nncon(p->right) && p->right->lval == 0)
 			goto zapright;
 #endif

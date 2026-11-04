@@ -366,10 +366,10 @@ fixfld(p)
 		p->left = m;
 }
 
-#ifdef OLD_D6Z
+#ifdef OLD_D23
 /* a member or an index 0 adds nothing: p + 0 is p */
 static int
-d6zdrop(p)
+d23drop(p)
 	register NODE *p;
 {
 	register NODE *r, *n;
@@ -398,8 +398,8 @@ mapregs(p)
 	switch (p->op) {
 	case 120:
 		fixfld(p);
-#ifdef OLD_D6Z
-		d6zdrop(p);
+#ifdef OLD_D23
+		d23drop(p);
 #endif
 		break;
 	case STREF:
@@ -428,8 +428,8 @@ mapregs(p)
 			break;
 		}
 #endif
-#ifdef OLD_D6Z
-		if (d6zdrop(p))
+#ifdef OLD_D23
+		if (d23drop(p))
 			break;
 #endif
 		n = foldadd(p);

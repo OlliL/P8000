@@ -1169,3 +1169,5 @@ The counts of the versions on the way:
   early (the start order: cparse 76 > 80, bench 69 > 74) (the originals of v0: `div rr0` 68 times, `rr2` 135, `rr4` once; v1 and shipped: never rr0); bench 61 > 62,
 
 mv and rm byte-identical (2026-11-04). Own code exact with ccv1 and the stdio.h of the time (`-I../cparse`); mv.c declares cmd and errbuf in front of s1, s2 (the bss order), errbuf of rm has 50 bytes. libc part from known modules (`host/tools/fitlibc.py`); new versions: perror 0_2, errlst 0_2 (35 messages, without Deadlock and the two segment ones), strrchr 0_2, system 0_2, gets 0_1. The data-only modules (data, errlst) stand where codgen has them.
+- OLD_D6Z of the entries above is now OLD_D23, the zero addend has its own class.
+- dc connected (2026-11-04): src/cmd/dc, System III dc.c split in front of add0, ccv0 and casold. Libc part complete from known modules (fopen 0_1, printf 0_3, doprnt 0_3 ...), data and bss of equal size, code 6 bytes longer, 28 places in the own code, ratio 0.994; mostly the choice of registers of copies (`ld r2,r3; ld r13,2(r2)` against `ld r13,2(r3)`). ccv0p is not nearer.
