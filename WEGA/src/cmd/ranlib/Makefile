@@ -1,4 +1,4 @@
-# ranlib: not yet byte-identical, see src/TODO.md.
+# ranlib: byte-identical with /usr/bin/ranlib (ccv0).
 #
 #   make              build ./ranlib
 #   make install PREFIX=dir
@@ -7,7 +7,7 @@
 CC = ccv0
 CAS = cas
 LD = ld
-CFLAGS = -O
+CFLAGS = -O -I../cparse
 PREFIX = /
 LIBC = ../../lib/libc-v1.a
 CRT = ../../lib/libc/crt

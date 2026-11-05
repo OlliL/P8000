@@ -32,7 +32,6 @@ Gone: the cutting of objects, `.link`, `.spec`, `gen_makefile.py` of cpp and ld.
 
 In this order; every change of a compiler goes through `checkall`.
 
-- `ranlib`: own code differs (v-version to be found); `readsym` is an old libc module.
 - `doscopy` (8 commands): differences not analysed; built with the current cc and libc, the owner believes. The build stops on the `/usr/include` dependencies outside the guest ROOT. The owner began this on the branch `doscopy`: inspect it first for changes to take over.
 - `pburn`: same size, built with the shipped cc; differences not analysed.
 - `ld`: 55 of 59 with v1 (open: place_sec, chk_ranlib, load2td, read_symbols), library `libc-v9.a`. Decide the source base first.

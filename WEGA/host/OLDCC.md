@@ -9,7 +9,7 @@ found, attempts, refuted ideas and removed switches are in `OLDCC_LOG.md`; which
 ## State
 
 With `make PROG CC=ccv0p` and strip these are byte-identical with the originals: cpp, cparse, scparse, codgen, scodgen,
-popt, spopt. With v1: size, strip, mv (also cp, ln), rm. With v1r: write, rmdir. With v0: dc. v1q builds libc modules of its time. v1 and v0 are not complete (section 5).
+popt, spopt. With v1: size, strip, mv (also cp, ln), rm. With v1r: write, rmdir. With v0: dc, ranlib. v1q builds libc modules of its time. v1 and v0 are not complete (section 5).
 
 ## 1 Terms and building
 
@@ -113,7 +113,7 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   not `OLD_D3`. cas: the old one (D17).
 - Byte-identical modules of libc-v1.a from C: isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
 - Test bench (System III sources of 38 programs of 1982): 125 of 153 functions equal, 219 differing lines.
-- Byte-identical: `/bin/dc`.
+- Byte-identical: `/bin/dc`, `/usr/bin/ranlib`.
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
   renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).
@@ -126,10 +126,10 @@ One switch apart each. v1r: no temporary for a return, `?:` through a temporary.
   `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen). popt needs no switch.
 - The corpus of cparse and scparse holds only with the ccv0p build: the heap contents of the .S file follow the data layout of the pass.
 
-### The old scc of cas, the old cc of ranlib
+### The old scc of cas
 
 cas was built by an older scc (D5 and D13 are only seen there); its parser and `assemble` without `-O`, the other modules
-with `-O`. Neither compiler is assigned to a version.
+with `-O`. It is not assigned to a version.
 
 ### The old libc members inside size, strip, ranlib, cas
 
@@ -213,7 +213,7 @@ All in codgen.
   copies it first (fixclass).
 - v0 (not v0p, `OLD_D3KC` sets the v0p side): a parameter wanted in its own register (also as the address of a load into it) is taken as it is, no copy (`ld r7,4(r7)`,
   `isatty`: no `ld r2,r7`); otherwise it is copied first (`ld r2,r7; ld r13,2(r2)`); a name in a scratch register is taken only when no lighter one is free (`ld r2,r3; ld r13,2(r2)`, dc 3 places); `&&` and `||` keep long parameters too (fseek); an idle pair
-  that holds a parameter is not taken for a new pair; a parameter whose address is taken is forgotten, so it gets its home (swap); a parameter a statement assigns to is forgotten at the start of the statement (scalint `p = removc(p,n)`).
+  that holds a parameter is not taken for a new pair; a parameter whose address is taken is forgotten, so it gets its home (swap); a parameter a statement assigns to is forgotten at the start of the statement (scalint `p = removc(p,n)`); behind a conditional jump the idle registers go back, the known parameters stay.
 - v0p `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
   front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
   those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
@@ -236,7 +236,7 @@ followed by `ld r7,S0`.
   home in the frame; those between other parameters keep theirs (block: the spill `ldm` is contiguous).
 - v0 `OLD_D4O` (codgen, stmt): the parameter list is walked from its end, so the register parameters are copied in the order of
   their declaration (`ld r14,r7; ld r13,r6`).
-- Open: the rule of the spill itself (rmdir main: a parameter that is only written is not spilled; ranlib no spill; libc swap: the home of `x`, whose address is taken, written as `0(r15)`, of `l` as `@r15`;
+- Open: the rule of the spill itself (libc swap: the home of `x`, whose address is taken, written as `0(r15)`, of `l` as `@r15`;
   sld: a long parameter cast to a pointer read from its spill slot).
 
 ### D5 Index into local arrays
@@ -246,6 +246,7 @@ All in codgen, fixfld, mapregs, rallo.
 - Old scc: `a[3]` of a local array addressed directly (`ldb S5(r15),rl2`), the shipped scc computes the address. cas.
 - v0 `OLD_D5S`: an element of a local array with a variable index is (index + offset) + fp, the frame pointer added last (`add
   r2,#%0006; add r2,r15; ld r2,@r2`); not for a constant index.
+- v0 (with `OLD_D5S`, not v0p): an element of a member array is base + (index + offset) (`s->name[i]`: `ld r2,i; inc r2,#6; ld r3,s; add r3,r2`); of a global array of structures (index*size + member + index) + address (`tab[t].n[i]`). ranlib.
 - v0 `OLD_D5A`: the address of such an element whose value goes to a given register gets no register preference (dclargs).
 - v0p `OLD_D5G`: an element of a global array of arrays is `(index + index) + address`, the address added last (newsect).
 - v0p `OLD_D5T`: the STREF form of OLD_D5S: a member of an element of a local array of structures is `(index + offset + member) +
@@ -409,7 +410,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | cas | symbols.c | old scc | x | x |  |  |  | x |  | x |  | x | x | x |  |  |  |  |  |  |  |  |  |  |
 | cas | pst.c | old scc | x | x |  |  |  |  | ? | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | cas | subr.c | old scc |  |  |  |  |  |  | ? |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| ranlib | ranlib.c, readsym.c | open | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
+| ranlib | ranlib.c | v0 | x | x |  | x |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
 | strip | strip.c | v1 | x |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
 | size | size.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
 | libc.a | malloc.o (gen/malloc.c) | open |  |  | x |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |

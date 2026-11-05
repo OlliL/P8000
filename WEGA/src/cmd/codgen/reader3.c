@@ -913,6 +913,9 @@ again:
 		cbranch(p1, -1, o);
 		p2->op = FREE;
 		p->op = FREE;
+#if defined(OLD_D3K) && !defined(OLD_D3KC)
+		rsfreeall(4);	/* v0: the idle registers go back behind the jump, the known parameters stay */
+#endif
 		return;
 	case COMOP:
 		codgen(p1, FOREFF);

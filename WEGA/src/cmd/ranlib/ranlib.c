@@ -9,35 +9,35 @@ static char sccsid[] = "@[$]ranlib.c\t1.1  07/24/82 02:49:23 - 87wega3.2";
 #include <ar.h>
 #include <s.out.h>
 
-struct	ar_hdr	archdr;
-struct	s_exec	exp;
-long	arsize;
-FILE	*fi, *fo;
-int	new, longnm;
-long	off, oldoff, offdelta;
 #define	TABSZ	700
+FILE	*fo;
+int	longnm, new;
+FILE	*fi;
 struct	tab {
 	long	cloc;
 	char	cname[8];
 } tab[TABSZ];
+int	swap_flg;
+struct	ar_hdr	archdr;
+long	off, offdelta;
+char	*av0;
+char	firstname[18];
+long	oldoff;
+struct	s_exec	exp;
 int	tnum;
 char	tempnm[] = "__.SYMDEF";
-char	firstname[18];
-char	*av0;
-extern	int swap_flg;
 
 char	*trim();
 long	ftell();
 int	longswap();
 
 char *
-trim(s)
-char *s;
+trim(p1)
+register char *p1;
 {
-	register char *p1, *p2;
+	register char *p2;
 
-	p1 = s;
-	p2 = s;
+	p2 = p1;
 	while(*p2) {
 		if(*p2++ == '/')
 			if(*p2)
@@ -83,7 +83,7 @@ char **argv;
 			if(swap_flg)
 				swab((char *)&exp, (char *)&exp, sizeof(struct s_exec));
 			o = exp.s_imsize;
-			if(!(exp.s_flag & SF_STRIP))
+			if((exp.s_flag & SF_STRIP) == 0)
 				o *= 2;
 			o += exp.s_segt;
 			fseek(fi, o, 1);
@@ -95,8 +95,8 @@ char **argv;
 			while(--n >= 0) {
 				longnm = readsym(&sym, fi);
 				n -= longnm;
-				if(sym.sn_type & N_EXT)
-					if(sym.sn_type & N_TYPE)
+				if((sym.sn_type & N_EXT) != 0)
+					if((sym.sn_type & N_TYPE) != 0)
 						stash(&sym);
 			}
 		} while(nextel(fi));
@@ -132,7 +132,7 @@ FILE *af;
 	r = fread((char *)&archdr, 1, sizeof(archdr), af);
 	if(r <= 0)
 		return(0);
-	if(archdr.ar_size & 1)
+	if((archdr.ar_size & 1) != 0)
 		archdr.ar_size++;
 	off = ftell(af) + archdr.ar_size;
 	return(1);
@@ -156,8 +156,7 @@ struct s_nlist *s;
 	tab[tnum].cloc = oldoff;
 	tnum++;
 	if(longnm) {
-		n -= SHORTNAME;
-		tnum += (n + 11) / 12;
+		tnum += ((n = n - SHORTNAME) + 11) / 12;
 	}
 }
 
@@ -179,10 +178,9 @@ fnew()
 		tab[i].cloc += offdelta;
 		if(swap_flg)
 			longswap(&tab[i]);
-		if(tab[i].cname[0] & 0x80) {
+		if((tab[i].cname[0] & 0x80) != 0) {
 			n = tab[i].cname[0] & 0x7F;
-			n -= SHORTNAME;
-			i += (n + 11) / 12;
+			i += ((n = n - SHORTNAME) + 11) / 12;
 		}
 	}
 	return(new);
@@ -191,8 +189,9 @@ fnew()
 fixdate(s)
 char *s;
 {
-	register fd;
 	long date;
+	int fd;
+	long time();
 
 	fd = open(s, 1);
 	if(fd < 0) {
