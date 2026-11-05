@@ -166,8 +166,9 @@ doscan/0_1.o: doscan/0_1.c
 ecvt/0_1.o: ecvt/0_1.s
 	cd ecvt ; $(CAS) -u -o 0_1.o 0_1.s
 
-endopen/0_1.o: endopen/0_1.s
-	cd endopen ; $(CAS) -u -o 0_1.o 0_1.s
+endopen/0_1.o: endopen/0_5.c
+	-@mkdir endopen/0_1.d 2>/dev/null
+	cd endopen/0_1.d ; $(CCV1Q) -O -I../../../../cmd/cparse -c ../0_5.c ; mv 0_5.o ../0_1.o
 
 endopen/0_2.o: ../libc/stdio/endopen.c
 	cd endopen ; $(CCV1) -O -I../../libc/stdio -c ../../libc/stdio/endopen.c ; mv endopen.o 0_2.o
