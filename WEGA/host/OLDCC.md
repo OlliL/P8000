@@ -90,7 +90,7 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 
 ### v1q (before v1)
 
-- v1 with `OLD_D14Q` (codgen); cparse and popt are those of v1. Driver `ccv1q`, runs `/lib/v1/cparse`, `/lib/v1q/codgen`, `/lib/v1/popt`.
+- v1 with `OLD_D14Q` and `OLD_D1S` (codgen: no temporary for a return of a constant or a call: fopen, isatty, stty in write and rmdir); cparse and popt are those of v1. Driver `ccv1q`, runs `/lib/v1/cparse`, `/lib/v1q/codgen`, `/lib/v1/popt`.
 - Byte-identical modules of libc-v3.a (the libc in size) from C: filbuf 0_1, rdwr 0_1, malloc 0_1, printf 0_1.
 
 ### v0 (1982)

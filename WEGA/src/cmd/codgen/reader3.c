@@ -629,6 +629,10 @@ delay(p)
 			ret++;
 			sz = szty(p->type);
 #ifndef OLD_D1R
+#ifdef OLD_D1S
+			/* no temporary for a return of a constant or of a call: nothing can be delayed behind them */
+			if (p->left->op != ICON && p->left->op != CALL && p->left->op != UCALL)
+#endif
 			off = freetemp(sz) / 8;
 #endif
 		}
