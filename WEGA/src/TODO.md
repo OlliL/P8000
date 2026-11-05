@@ -24,7 +24,7 @@ Gone: the cutting of objects, `.link`, `.spec`, `gen_makefile.py` of cpp and ld.
 
 In this order; every change of a compiler goes through `checkall`.
 
-- `ld`: with v1 and `libc-v9.a` sizes equal, 5 places open: read_symbols (0xa14, the tail `ldl rr4,rr2`), place_sec (0xf64, `ld r2,r3; and r2,#%FF00; ld r13,r2`; nine forms of the expression tried, `OLDCC_LOG.md`), load2td (0x18ea, block order), chk_ranlib (0x29b0, `ld r2,r3; cpb 4(r2),#%20`), the end of the code. Source base (owner 2026-11-05): System III `ld`, Plexus secondary; byte identity first.
+- `ld`: with v1 and `libc-v9.a` sizes equal, 4 places open: place_sec (0xf64, `ld r2,r3; and r2,#%FF00; ld r13,r2`; nine forms of the expression tried, `OLDCC_LOG.md`), load2td (0x18ea, block order), chk_ranlib (0x29b0, `ld r2,r3; cpb 4(r2),#%20`), the end of the code. Source base (owner 2026-11-05): System III `ld`, Plexus secondary; byte identity first.
 - `sld`: 58 of 90 functions, corpus 51 of 51. Source base (owner 2026-11-05): as close to `ld` as the segmentation allows.
 
 ## 6. System III form for all existing programs
