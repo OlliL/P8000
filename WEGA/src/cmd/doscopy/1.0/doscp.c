@@ -169,7 +169,7 @@ char **argv;
 			continue;
 		}
 		if (*dpath == '\0') {
-			fprintf(stderr, "%s: keine DCP-Datei\n", arg0);
+			fprintf(stderr, "%s: kein DCP Pfad\n", arg0);
 			status = 2;
 			continue;
 		}
@@ -180,7 +180,7 @@ char **argv;
 		}
 		res = dosopn(dpath, &dos, &dstat);
 		if(!res) {
-			fprintf(stderr, "%s: %s nicht gefunden\n", arg0, upath);
+			fprintf(stderr, "%s: %s nicht gefunden\n", arg0, dpath);
 			status = 2;
 			continue;
 		}
@@ -203,11 +203,11 @@ char **argv;
 		}
 		switch (dosout(&dstat, fd, &dos, conv)) {
 		case -1:
-			fprintf(stderr,"%s: %s Schreibfehler\n",arg0, t);
+			fprintf(stderr,"%s: %s Lesefehler\n",arg0,upath);
 			status = 2;
 			break;
 		case -2:
-			fprintf(stderr,"%s: %s Lesefehler\n",arg0, t);
+			fprintf(stderr,"%s: %s Schreibfehler\n",arg0,t);
 			status = 2;
 			break;
 		}
@@ -236,11 +236,11 @@ char **argv;
 			status = 2;
 			break;
 		case -1:
-			fprintf(stderr,"%s: %s Schreibfehler\n",arg0, *argv);
+			fprintf(stderr,"%s: Lesefehler in %s\n",arg0, *argv);
 			status = 2;
 			break;
 		case -2:
-			fprintf(stderr,"%s: %s Lesefehler\n",arg0, upath);
+			fprintf(stderr,"%s: Schreibfehler in %s\n",arg0, upath);
 			status = 2;
 			break;
 		case -3:

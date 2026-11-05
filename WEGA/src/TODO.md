@@ -24,7 +24,6 @@ Gone: the cutting of objects, `.link`, `.spec`, `gen_makefile.py` of cpp and ld.
 
 In this order; every change of a compiler goes through `checkall`.
 
-- `doscopy` (`cmd/doscopy/1.0`, shipped cc): dosformat, dosrm, dosls, dosrmdir, dosdir identical. doscat: 2 blocks (order of the `--i` block in dosout, CR branch). doscp, dosmkdir: `dosin.c` to be rewritten from the original (buffer on the stack, no malloc; no fatfree of this form).
 - `pburn`: same size, built with the shipped cc; differences not analysed.
 - `ld`: 55 of 59 with v1 (open: place_sec, chk_ranlib, load2td, read_symbols), library `libc-v9.a`. Decide the source base first.
 - `sld`: 58 of 90 functions, corpus 51 of 51. Decide the source base first.

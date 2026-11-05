@@ -52,14 +52,21 @@ int conv;
 	if ((len = read(dp->fd,buf,len)) <= 0)
 		return(-1);
 	if (conv) { /* CR LF -> LF */
-		for (i=0, j=0; i<len && buf[i] != 0x1a; i++, j++) {
+		for (i=0, j=0; ; i++, j++) {
+			if (i >= len || buf[i] == 0x1a)
+				break;	/* Dateiende */
 			if (buf[i] == 0x0d) {
-				if (i != len-1) {
-					if (buf[++i] != 0x0a)
-						--i;
+				if (i == len-1) {
+					buf[i] = ' ';
+					continue;
+				}
+				if (buf[++i] == 0x0a) {
+					buf[j] = buf[i];
+					continue;
 				}
 				else {
-					buf[i] = ' ';
+					--i;
+					buf[j] = buf[i];
 					continue;
 				}
 			}
