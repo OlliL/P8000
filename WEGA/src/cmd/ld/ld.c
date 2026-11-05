@@ -1099,13 +1099,9 @@ struct buf *r;
 				break;
 			}
 		switch (w14 & 0x0f) {
-		case 9:
-			flag++;
-			break;
 		case 10:
 			w12 = swap(w12);
-			flag++;
-			break;
+		case 9:
 		case 11:
 			flag++;
 			break;
