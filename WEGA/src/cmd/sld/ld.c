@@ -593,26 +593,20 @@ int ranlib_scan()
 
 	sv = libp;
 	end = rltab;
-	i = 0;
-	goto test;
-body:
-	if (rltab + i < end)
-		goto next;
-	if ((rltab[i].rname[0] & 0x80) != 0)
-		end = (struct rlent *)(rltab[i].rname + (rltab[i].rname[0] & 0x7f));
-	t = *pslookup(rltab[i].rname);
-	if (!t)
-		goto next;
-	if (t->stype != 0x20)
-		goto next;
-	if (swapflg)
-		swap_pair(&rltab[i]);
-	load_header(rltab[i].roff >> 1);
-next:
-	i++;
-test:
-	if ((unsigned)i < (unsigned)rlcnt)
-		goto body;
+	for (i = 0; (unsigned)i < (unsigned)rlcnt; i++) {
+		if (rltab + i < end)
+			continue;
+		if ((rltab[i].rname[0] & 0x80) != 0)
+			end = (struct rlent *)(rltab[i].rname + (rltab[i].rname[0] & 0x7f));
+		t = *pslookup(rltab[i].rname);
+		if (!t)
+			continue;
+		if (t->stype != 0x20)
+			continue;
+		if (swapflg)
+			swap_pair(&rltab[i]);
+		load_header(rltab[i].roff >> 1);
+	}
 	return sv != libp;
 }
 
