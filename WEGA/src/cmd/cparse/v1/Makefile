@@ -18,11 +18,17 @@ LD = ld
 LIBC = ../../../lib/libc-v7.a
 HDRS = ../mfile1 ../manifest ../macdefs ../stdio.h
 OBJS = cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o sym2.o
+SOBJS = seg/cgram1.o seg/xdefs1.o seg/scan1.o seg/pftn1.o seg/trees1.o seg/optim1.o seg/code1.o seg/local1.o seg/comm1.o seg/vinit1.o seg/sym1.o seg/sym2.o
 
 all: cparse
 
 cparse: ../crt0.o $(OBJS)
 	$(LD) -i -e start ../crt0.o $(OBJS) $(LIBC) -o $@
+
+scparse: ../crt0.o
+	-mkdir seg
+	for f in cgram1 xdefs1 scan1 pftn1 trees1 optim1 code1 local1 comm1 vinit1 sym1 sym2 ; do ( cd seg ; $(CC) $(CFLAGS) $(SWITCHES) -DSEG -c ../../$$f.c ) || exit 1 ; done
+	$(LD) -i -e start ../crt0.o $(SOBJS) $(LIBC) -o $@
 
 cgram1.o: ../cgram1.c $(HDRS)
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../cgram1.c
@@ -59,9 +65,11 @@ sym1.o: ../sym1.c $(HDRS)
 sym2.o: ../sym2.c $(HDRS)
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../sym2.c
 
-install: cparse
+install: cparse scparse
 	-mkdir $(PREFIX)/lib/v1
 	cp cparse $(PREFIX)/lib/v1/cparse
+	cp scparse $(PREFIX)/lib/v1/scparse
 
 clean:
-	rm -f cparse *.o
+	rm -f cparse *.o scparse
+	rm -rf seg

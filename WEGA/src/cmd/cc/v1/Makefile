@@ -13,7 +13,7 @@ SWITCHES = -DOLD_V1
 LD = ld
 PREFIX = /
 LIBC = ../../../lib/libc-v8.a
-all: ccv1
+all: ccv1 sccv1
 
 ccv1: cc.o
 	$(LD) -s -e start -o $@ /lib/crt0.o cc.o $(LIBC)
@@ -21,8 +21,17 @@ ccv1: cc.o
 cc.o: ../cc.c
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../cc.c
 
-install: ccv1
+sccv1: scc.o
+	$(LD) -s -e start -o $@ /lib/crt0.o scc.o $(LIBC)
+
+scc.o: ../cc.c
+	cp ../cc.c ../scc.c
+	$(CC) $(CFLAGS) $(SWITCHES) -DSCC -c ../scc.c
+	rm -f ../scc.c
+
+install: ccv1 sccv1
 	cp ccv1 $(PREFIX)/bin/ccv1
+	cp sccv1 $(PREFIX)/bin/sccv1
 
 clean:
-	rm -f ccv1 cc.o
+	rm -f ccv1 cc.o sccv1 scc.o

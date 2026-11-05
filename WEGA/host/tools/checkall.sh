@@ -5,7 +5,7 @@
 # proves the repository alone is enough and leaves the working tree alone:
 #   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/;
 #   2. every member of lib/libc/libc.a, and every program of TABLE, stripped, against the original with cmp;
-#   3. the corpora of the passes against the originals: cpp, cparse, scparse as built in 1 (their output depends on their
+#   3. the corpora of the passes against the originals: cpp, cparse, scparse, ld as built in 1 (their output depends on their
 #      data layout), codgen, scodgen, popt, spopt in a normal build with the shipped cc, whose source also is the old compiler;
 #   4. make -C host check: the host tools.
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
@@ -46,6 +46,7 @@ ranlib/ranlib	ccv0	usr/bin/ranlib
 ar	cc	bin/ar
 cc/cc	cc	bin/cc
 cc/scc	cc	bin/scc
+ld/ld	ccv1	bin/ld
 getud	cc	bin/getud
 putud	cc	bin/putud
 copydisk/1.5/copydisk	cc	bin/copydisk
@@ -179,7 +180,7 @@ corpus() {
 	if [ "$bad" = "$2" ]; then result "corpus $1" ok "$good same, $bad different (expected $2)"
 	else result "corpus $1" fail "$good same, $bad different (expected $2), see $3"; fi
 }
-for p in cpp cparse scparse; do
+for p in cpp cparse scparse ld; do
 	(cd $S/$p/tools && WEGA_ROOT=$WEGA python3 stagecorpus.py $T/$p.stripped) > $T/corpus_$p.log 2>&1
 	corpus $p 0 $T/corpus_$p.log
 done

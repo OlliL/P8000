@@ -3,3 +3,5 @@
 /tmp/*
 /.mcp.json
 **/__pycache__
+**/*.o
+**/a.out

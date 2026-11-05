@@ -15,13 +15,13 @@ SWITCHES = -DOLD_D3 -DOLD_D14Q
 PREFIX = /
 LD = ld
 LIBC = ../../../lib/libc-v5.a
-CRT = ../../../lib/libc/crt
+CRT = ../
 OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o comm3.o wrt3.o regs3.o lcl3.o tr3.o optim3.o table3_codgen.o
 
 all: codgen
 
 codgen: $(OBJS)
-	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(OBJS) $(LIBC) -o codgen
+	$(LD) -X -e start -i $(CRT)/crt0.o $(OBJS) $(LIBC) -o codgen
 
 allo3.o: ../allo3.c ../cg.h ../cg2.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../allo3.c

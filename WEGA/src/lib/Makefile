@@ -6,9 +6,11 @@
 all:
 	cd libc ; $(MAKE)
 	cd oldlibc ; $(MAKE)
+	cd oldslibc ; $(MAKE)
 
 clean:
 	cd libc ; $(MAKE) clean
 	cd oldlibc ; $(MAKE) clean
+	cd oldslibc ; $(MAKE) clean
 
 .PHONY: all clean

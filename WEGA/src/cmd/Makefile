@@ -23,12 +23,11 @@ PROGS = ar
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o
-SUBDIRS=	BOOT0 pburn standalone verify copydisk format size strip ranlib cc cas cpp cparse codgen popt mv rm dc write rmdir
+SUBDIRS=	doscopy BOOT0 pburn standalone verify copydisk format size strip ranlib cc cas cpp cparse codgen popt mv rm dc write rmdir ld sld
 
 all: $(PROGS) $(FILES) subdirs
 
 subdirs:
-	-cd doscopy ; $(MAKE) all ; cd ..
 	for d in $(SUBDIRS); do cd $$d ; $(MAKE) all ; cd .. ; done
 
 getud: getud.c
@@ -88,11 +87,11 @@ sync: $(CRT)/crt0-sync.o sync.o
 install: $(PROGS) $(FILES)
 	for file in ar chkdiff getud putud tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
 	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; done
-	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
+	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
 
 clean:
 	rm -f $(PROGS) $(FILES) $(CLEANFILES)
 	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-sync.o $(CRT)/crt0-ar.s $(CRT)/crt0-sync.s
-	for d in $(SUBDIRS) doscopy; do cd $$d ; $(MAKE) clean ; cd .. ; done
+	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) clean ; cd .. ; done
 
 .PHONY: all subdirs clean install

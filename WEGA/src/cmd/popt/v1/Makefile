@@ -16,10 +16,15 @@ LD = ld
 LIBC = ../../../lib/libc-v5.a
 OBJS = z20.o z21.o z22.o z23.o
 
-all: popt
+all: popt spopt
 
 popt: $(OBJS)
 	$(LD) -X -e start -i /lib/crt0.o $(OBJS) $(LIBC) -o popt
+
+spopt:
+	-mkdir seg
+	for f in z20 z21 z22 z23 ; do ( cd seg ; $(CC) $(CFLAGS) $(SWITCHES) -DSPOPT -c ../../$$f.c ) || exit 1 ; done
+	$(LD) -X -e start -i /lib/crt0.o seg/z20.o seg/z21.o seg/z22.o seg/z23.o $(LIBC) -o spopt
 
 z20.o: ../z20.c ../z2.h ../stdio.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../z20.c
@@ -33,9 +38,11 @@ z22.o: ../z22.c ../z2.h ../stdio.h
 z23.o: ../z23.c ../z2.h ../stdio.h
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../z23.c
 
-install: popt
+install: popt spopt
 	-mkdir $(PREFIX)/lib/v1
 	cp popt $(PREFIX)/lib/v1/popt
+	cp spopt $(PREFIX)/lib/v1/spopt
 
 clean:
-	rm -f popt $(OBJS)
+	rm -f popt spopt $(OBJS)
+	rm -rf seg

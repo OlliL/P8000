@@ -1,7 +1,5 @@
-ownraw.s
-cparse_block
-*.o
-cparse
+seg
 crt0.s
 cgram1.c
-shipped
+**/cparse
+**/scparse

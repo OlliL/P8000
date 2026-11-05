@@ -31,6 +31,8 @@ spopt: z20.c z21.c z22.c z23.c z2.h stdio.h
 $(OBJS): z2.h stdio.h
 
 clean:
-	-rm -f $(OBJS) popt spopt seg/*.o
+	-rm -f $(OBJS) popt spopt
+	rm -rf seg
+	for d in $(OLDDIRS); do cd $$d ; $(MAKE) clean ; cd .. ; done
 
 .PHONY: all old clean

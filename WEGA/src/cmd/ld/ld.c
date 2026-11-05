@@ -530,7 +530,6 @@ long c;
 	char type;
 	int k;
 	int n;
-	struct symbol **p;
 
 	readhdr(c);
 	fctrel = ttotal;
@@ -560,8 +559,7 @@ long c;
 			continue;
 		}
 		symreloc();
-		p = lookup_name();
-		if (enter(p))
+		if (enter(lookup_name()))
 			continue;
 		cur = lastsym;
 		if (cur->stype != ' ') {
@@ -731,7 +729,8 @@ place_sec()
 		case 't':
 			if ((unsigned)q->tsize > (unsigned)secorg[j])
 				report_error(1, "-t%c: top address too low", *secnam[j]);
-			r8 = (secorg[j] - q->tsize) & 0xff00;
+			r8 = secorg[j] - q->tsize;
+			r8 = r8 & 0xff00;
 			q->tsize = (q->tsize + 255) & 0xff00;
 			break;
 		case 'b':
@@ -1413,11 +1412,12 @@ int e;
 {
 	if (!exstat)
 		fprintf(stderr, "%s: ", pname);
-	if (filname)
+	if (filname) {
 		fprintf(stderr, "%s", filname);
-	if (archdr.aname[0])
-		fprintf(stderr, "(%.14s)", archdr.aname);
-	fprintf(stderr, ": ");
+		if (archdr.aname[0])
+			fprintf(stderr, "(%.14s)", archdr.aname);
+		fprintf(stderr, ": ");
+	}
 	fprintf(stderr, msg, a, b, c, d, e);
 	fprintf(stderr, "\n");
 	if (level > 1)

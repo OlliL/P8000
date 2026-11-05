@@ -4,6 +4,7 @@
 #   make check WEGA=dir  compare the modules with the original (see check.sh, MODULES)
 #   make install PREFIX=dir
 #   make clean
+#   make oldcas          build oldcas
 #
 # The modules are linked in the order of MODULES. As in /bin/cas, text goes to segment 4, data
 # and bss to segment 5 and the three tables of the symbol table (stable, itable, ntable) to
@@ -18,8 +19,12 @@ SCRT0 = /lib/scrt0.o
 SLIBC = /lib/slibc.a
 PREFIX = /
 OBJS = ifile.o instr.o scanner.o main.o done.o nodes.o parser.o pst.o subr.o symbols.o ssymtab.o table1.o table2.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o getops.o error.o pstab.o jpr.o jpr2.o optim.o listing.o
+OLDDIRS = old
 
 all: cas
+
+oldcas:
+	for d in $(OLDDIRS); do cd $$d ; $(MAKE) ; cd .. ; done
 
 cas: $(OBJS) stable.o itable.o ntable.o
 	$(SLD) $(SLDFLAGS) $(SCRT0) $(OBJS) -Md7 stable.o -Md8 itable.o -Md9 ntable.o -Md5 $(SLIBC) -o cas
@@ -51,5 +56,6 @@ install: cas
 
 clean:
 	rm -f *.o cas parser.c y.tab.c y.tab.h
+	for d in $(OLDDIRS); do cd $$d ; $(MAKE) clean ; cd .. ; done
 
 .PHONY: all check install clean

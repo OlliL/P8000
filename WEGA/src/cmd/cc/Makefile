@@ -11,7 +11,7 @@ CFLAGS = -O
 PREFIX = /
 LIBC = ../../lib/libc-v8.a
 CRT0 = /lib/crt0.o
-OLDDIRS = v1 v0 v0p
+OLDDIRS = v1 v0 v0p v1q v1r
 
 all: cc scc
 

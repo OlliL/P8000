@@ -1,4 +1,2 @@
-*.o
 crt0.s
-shipped
 dc

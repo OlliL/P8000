@@ -640,7 +640,6 @@ long c;
 	long u1;
 	struct symbol **p2;
 	long u2;
-	struct symbol **slot;
 
 	readhdr(c, 1);
 	cnt = 0;
@@ -666,8 +665,7 @@ long c;
 			k += n + 1;
 			continue;
 		}
-		slot = lookup_name();
-		if (enter(slot)) {
+		if (enter(lookup_name())) {
 			cur = lastsym;
 			if (cur->stype == ' ')
 				continue;
@@ -679,9 +677,9 @@ long c;
 				continue;
 			}
 			if (cursym.stype == ' ') {
-				if (cursym.svalue <= cur->svalue)
-					continue;
-				goto lstore;
+				if (cursym.svalue > cur->svalue)
+					cur->svalue = cursym.svalue;
+				continue;
 			}
 			if (cur->svalue != 0 && cursym.stype == '"')
 				continue;
@@ -694,7 +692,6 @@ long c;
 		*(int *)&cur->svalue = 0;
 		symreloc();
 		cur->stype = cursym.stype;
-lstore:
 		cur->svalue = cursym.svalue;
 	}
 	if (a == 0 || cnt != 0) {
@@ -704,8 +701,10 @@ lstore:
 	while (symindex > saved) {
 		symindex--;
 		p2 = symhash[symindex];
-		if (p2)
+		if (p2 != 0) {
+		known:
 			*p2 = 0;
+		}
 	}
 	nblk = fblk;
 	return 0;
@@ -770,7 +769,8 @@ int k;
 				report_error(1, "top address of %s in segment %d too low", secnam[j], k);
 			if ((r8 = secorg[k][j] & 0xff00) != secorg[k][j])
 				printf("%s: warning, top address of %s in segment %d relocated to 0x%x\n", pname, secnam[j], k, r8);
-			r8 = (r8 - q->tsize) & 0xff00;
+			r8 = r8 - q->tsize;
+			r8 = r8 & 0xff00;
 			q->tsize = (q->tsize + 255) & 0xff00;
 			break;
 		case 'b':
@@ -1599,11 +1599,12 @@ int e;
 {
 	if (!exstat)
 		printf("%s: ", pname);
-	if (filname)
+	if (filname) {
 		printf("%s", filname);
-	if (archdr.aname[0])
-		printf("(%.14s)", archdr.aname);
-	printf(": ");
+		if (archdr.aname[0])
+			printf("(%.14s)", archdr.aname);
+		printf(": ");
+	}
 	printf(msg, a, b, c, d, e);
 	printf("\n");
 	if (level > 1)

@@ -54,6 +54,8 @@ crt0.o: crt0.s
 	$(CAS) -u -o $@ crt0.s
 
 clean:
-	rm -f crt0.s cgram1.c cparse scparse *.o seg/*.o
+	rm -f crt0.s cgram1.c cparse scparse *.o
+	rm -rf seg
+	for d in $(OLDDIRS); do cd $$d ; $(MAKE) clean ; cd .. ; done
 
 .PHONY: all oldprep old clean

@@ -583,5 +583,6 @@ obj/cerror.o: crt/cerror.s
 
 clean:
 	rm -rf obj libc.a
+	cd crt ; $(MAKE) clean
 
 .PHONY: all clean

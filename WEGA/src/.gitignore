@@ -1,13 +1,8 @@
 # objects and programs built next to the sources (see Makefiles)
-*.o
 /cmd/ar
 /cmd/ranlib/ranlib
 /cmd/size/size
 /cmd/strip/strip
-/cmd/cc/cc
-/cmd/cc/scc
-/cmd/codgen/codgen
-/cmd/codgen/scodgen
 /cmd/copydisk/*/copydisk
 /cmd/dump
 /cmd/dumpdir
@@ -41,13 +36,7 @@
 /cmd/standalone/sa.shipdisk
 /cmd/standalone/sa.diags/p8000/sa.diags
 /cmd/standalone/sa.diags/p8000c/sa.diags
-/cmd/popt/popt
-/cmd/cparse/scparse
-/cmd/cparse/seg/
-/cmd/popt/spopt
-/cmd/popt/seg/
 /cmd/cpp/cpy.c
 /cmd/cpp/cpp
 /cmd/cpp/crt0.s
 /cmd/cpp/shipped/
-/cmd/cpp/*.o

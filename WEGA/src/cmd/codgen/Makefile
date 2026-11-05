@@ -19,17 +19,17 @@ OBJS = bss3.o reader3.o rdr3.o local3.o order3.o match3.o allo3.o regallo3.o com
 SOBJS = seg/bss3.o seg/reader3.o seg/rdr3.o seg/local3.o seg/order3.o seg/match3.o seg/allo3.o seg/regallo3.o seg/comm3.o seg/table3_scodgen.o seg/wrt3.o seg/regs3.o seg/lcl3.o seg/tr3.o seg/optim3.o
 
 # the versions of the old compiler (one directory each, own Makefile; not part of all)
-OLDDIRS = v1 v0 v0p
+OLDDIRS = v1 v0 v0p v1q v1r
 
 all: codgen scodgen
 
-oldprep: $(CRT)/crt0-codgen.o
+oldprep: crt0.o
 
 old: oldprep
 	for d in $(OLDDIRS); do cd $$d ; $(MAKE) ; cd .. ; done
 
-codgen: $(OBJS) $(CRT)/crt0-codgen.o
-	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(OBJS) $(LIBC) -o codgen
+codgen: $(OBJS) crt0.o
+	$(LD) -X -e start -i crt0.o $(OBJS) $(LIBC) -o codgen
 
 $(OBJS) table3_codgen.o: cg.h cg2.h
 
@@ -37,19 +37,20 @@ local3.o: hop_codgen.c
 
 comm3.o: ops_codgen.c
 
-scodgen: $(SRCS) table3_scodgen.c cg.h cg2.h $(CRT)/crt0-codgen.o
+scodgen: $(SRCS) table3_scodgen.c cg.h cg2.h crt0.o
 	-mkdir seg
 	for f in $(SRCS) table3_scodgen.c ; do ( cd seg ; $(CC) $(CFLAGS) -DSEG -c ../$$f ) || exit 1 ; done
-	$(LD) -X -e start -i $(CRT)/crt0-codgen.o $(SOBJS) $(LIBC) -o scodgen
+	$(LD) -X -e start -i crt0.o $(SOBJS) $(LIBC) -o scodgen
 
-$(CRT)/crt0-codgen.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
 	sh $(CRT)/mkcrt0.sh codgen > $@
 
-$(CRT)/crt0-codgen.o: $(CRT)/crt0-codgen.s
-	$(CAS) -u -o $@ $(CRT)/crt0-codgen.s
+crt0.o: crt0.s
+	$(CAS) -u -o $@ crt0.s
 
 clean:
-	rm -f *.o codgen scodgen
+	rm -f $(OBJS) codgen scodgen crt0.s crt0.o
 	rm -rf seg
+	for d in $(OLDDIRS); do cd $$d ; $(MAKE) clean ; cd .. ; done
 
 .PHONY: all oldprep old clean

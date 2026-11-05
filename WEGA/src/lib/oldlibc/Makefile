@@ -116,7 +116,7 @@ LIBv8 = ../libc/obj/freopen.o ../libc/obj/fopen.o printf/0_4.o doprnt/0_4.o ../l
 	sh mklib.sh $@ $(AR) $(LIBv8)
 
 LIBv9 = ../libc/obj/scanf.o doscan/0_1.o printf/0_6.o doprnt/0_6.o ../libc/obj/ffltioc.o ../libc/obj/ungetc.o \
-	 filbuf/0_2.o ../libc/obj/data.o flsbuf/0_1.o ../libc/obj/__callex.o ../libc/obj/cuexit.o cnvt/0_1.o \
+	 filbuf/0_2.o data/0_1.o flsbuf/0_1.o ../libc/obj/__callex.o ../libc/obj/cuexit.o cnvt/0_1.o \
 	 ../libc/obj/decimal.o length/0_1.o malloc/0_2.o ../libc/obj/isatty.o mktemp/0_1.o ../libc/obj/ctype_.o \
 	 ../libc/obj/stty.o ../libc/obj/swab.o rindex/0_1.o ../libc/obj/tolower.o strcat/0_1.o \
 	 ../libc/obj/strncmp.o strcpy/0_1.o strncpy/0_2.o swap/0_1.o ../libc/obj/access.o ../libc/obj/brk.o \
@@ -488,8 +488,8 @@ strrchr/0_3.o: ../libc/gen/strrchr.c
 	-@mkdir strrchr 2>/dev/null
 	cd strrchr ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/strrchr.c ; mv strrchr.o 0_3.o
 
-flsbuf/0_3.o: flsbuf/0_3.c
-	cd flsbuf ; $(CCV1R) -O -I../../../cmd/cparse -c 0_3.c
+flsbuf/0_3.o: flsbuf/flsbuf.c
+	cd flsbuf ; $(CCV1R) -O -I../../../cmd/cparse -c flsbuf.c ; mv flsbuf.o 0_3.o
 
 endopen/0_5.o: endopen/0_5.c
 	cd endopen ; $(CCV1R) -O -I../../../cmd/cparse -c 0_5.c

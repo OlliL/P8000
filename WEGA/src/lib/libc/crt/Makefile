@@ -5,4 +5,4 @@ OBJ=	cerror.o mcount.o
 all: $(OBJ)
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJ) *.o crt0-size.s crt0-strip.s

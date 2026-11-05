@@ -1,7 +1,6 @@
 # ld: the nonsegmented loader of WEGA (/bin/ld, E711, SCCS ld.c 1.18), reconstructed from /bin/ld.
 #
-#   make link        ld, linked with libc-v9.a; not yet byte-identical (55 of the 59 own functions strictly exact with ccv1, data equal,
-#                    see tools/HANDOFF_ld.md)
+#   make link        ld, linked with libc-v9.a
 #   make clean
 
 CC = ccv1
@@ -38,7 +37,6 @@ crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
 
 crt0.o: crt0.s
 	$(CAS) -u -o $@ crt0.s
-	
 
 clean:
 	rm -f *.o crt0.s ld

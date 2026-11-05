@@ -8,7 +8,7 @@ for t in cc scc cas as ld sld gld ar strip yacc; do
 	printf '#!/bin/sh\nexec %s -r %s %s "$@"\n' $emu $wega $g > $d/$t
 	chmod +x $d/$t
 done
-for t in ccv1 ccv1q ccv1r ccv0 ccv0p; do
+for t in sccv1 ccv1 ccv1q ccv1r ccv0 ccv0p; do
 	printf '#!/bin/sh\nexec %s -r %s /bin/%s "$@"\n' $emu $old $t > $d/$t
 	chmod +x $d/$t
 done

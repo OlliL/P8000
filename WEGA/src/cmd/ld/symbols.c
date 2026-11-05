@@ -403,7 +403,7 @@ unsigned long n;
 		report_error(2, "ranlib table of contents too large");
 	if ((char *)sbrk(0) != rlbuf + rlsize) {
 		rlsize = 0;
-		ensure_buf(n);
+		return ensure_buf(n);
 	} else {
 		k = (int)n - (int)rlsize;
 		if (grow_heap(k) == -1)
