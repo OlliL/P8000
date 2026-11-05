@@ -657,7 +657,7 @@ long c;
 		report_error(1, "No relocation bits");
 		return 0;
 	}
-	c = (long)(unsigned)(((hdrsz + segtsz) & 0xfffe) >> 1) + filhdr.tsize + filhdr.dsize + c;
+	c = (long)((unsigned)(hdrsz + segtsz) / 2) + filhdr.tsize + filhdr.dsize + c;
 	dseek(&text, c, filhdr.ssize);
 	while (text.size > 0) {
 		n = read_entry_hdr();
@@ -878,7 +878,7 @@ int kind;
 		dsplseg->atr |= 2;
 		p->s_data = 0;
 		p->atr &= ~2;
-		p->s_coff = 0;
+		p->s_doff = 0;
 	} else {
 		bsplseg = table32_entry(np2seg++);
 		bsplseg->segno = 0xff;
@@ -1046,7 +1046,7 @@ char *b;
 	readhdr(a, 2);
 	mkfsym(b);
 	t = local;
-	a += (unsigned)((hdrsz + segtsz) & ~1) >> 1;
+	a += (unsigned)(hdrsz + segtsz) / 2;
 	dseek(&text, a + filhdr.tsize + filhdr.dsize, filhdr.ssize);
 	k = 0;
 	while (text.size > 0) {
@@ -1672,7 +1672,7 @@ int b;
 		swab(&tmp, &tmp, hdrsz);
 	segtsz = tmp.hsegsz;
 	n = segtsz / 16;
-	dseek(&text, a + ((unsigned)(hdrsz & ~1) >> 1), segtsz);
+	dseek(&text, a + (unsigned)hdrsz / 2, segtsz);
 	mget(rec, segtsz);
 	if (swapflg) {
 		for (p = rec; p < rec + n; p++)
@@ -1800,13 +1800,12 @@ register struct buf *p;
 }
 
 /* flush_buffer: write an output buffer to its file (0x3ac6..0x3b1e of /bin/sld) */
-flush_buffer(a)
-struct buf *a;
+flush_buffer(p)
+register struct buf *p;
 {
-	register struct buf *p;
 	register int n;
+	int spare;
 
-	p = a;
 	n = (char *)p->xnext - (char *)p->iobuf;
 	if (n > 0) {
 		if (write(p->fildes, p->iobuf, n) != n)
@@ -1817,12 +1816,15 @@ struct buf *a;
 }
 
 /* swab12: swap the bytes of 12 words (never called) (0x3b1e..0x3b58 of /bin/sld) */
-swab12(p)
-register char *p;
+swab12(a)
+char *a;
 {
 	register int k;
 	register int t;
+	register char *p;
+	char spare[6];
 
+	p = a;
 	k = 12;
 	do {
 		t = p[0];
