@@ -87,7 +87,7 @@ struct fsym *q;
 {
 	q->fvalue = (int)p->svalue;
 	q->ftype = p->stype;
-	trunc_name(p->sname, q);
+	trunc_name(p->sname, (char *)q);
 }
 
 /* ldrsym: load a symbol of a relocation entry, error for multiply defined (0x68a2..0x6a08 of /bin/sld) */
