@@ -176,21 +176,15 @@ int x;
 	i = mlhead;
 	prev = 0;
 	cmpmode = 1;
-	k = 0;
-	goto cond;
-body:
-	r = str_compare(y, mlist[i].mname);
-	if (r < 0)
-		goto nxt;
-	if (r == 0)
-		goto attr;
-	prev = i;
-	i = mlist[i].mnext;
-nxt:
-	k++;
-cond:
-	if (k < mlcnt)
-		goto body;
+	for (k = 0; k < mlcnt; k++) {
+		r = str_compare(y, mlist[i].mname);
+		if (r < 0)
+			continue;
+		if (r == 0)
+			goto attr;
+		prev = i;
+		i = mlist[i].mnext;
+	}
 	if (i != mlhead || k != 0)
 		goto insmid;
 	mlist[mlcnt].mnext = mlhead;
