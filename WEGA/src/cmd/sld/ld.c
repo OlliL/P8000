@@ -612,13 +612,13 @@ int ranlib_scan()
 
 /* add16_checked: sum of two unsigned values; error (level 1) when it exceeds 16 bits (0x1664..0x1696 of /bin/sld) */
 int add16_checked(x, y, a)
-unsigned x;
-unsigned y;
+int x;
+int y;
 long a;
 {
 	long s;
 
-	s = (long)x + y;
+	s = (long)(unsigned)x + (unsigned)y;
 	if (s >= 0x10000)
 		report_error(1);
 	return s;
@@ -1769,17 +1769,16 @@ int str_compare(p, q)
 char *p;
 char *q;
 {
-	do {
-		if (*p == *q)
-			q++;
-		else {
-			if (cmpmode)
-				return *p - *q;
+	while (*p == *q) {
+		q++;
+		if (*p++ == 0) {
+			if (!cmpmode)
+				return 1;
 			return 0;
 		}
-	} while (*p++);
-	if (!cmpmode)
-		return 1;
+	}
+	if (cmpmode)
+		return *p - *q;
 	return 0;
 }
 
