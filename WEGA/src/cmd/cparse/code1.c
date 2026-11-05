@@ -381,7 +381,7 @@ genswitch(p,n) register struct sw *p; {
 	q = *(NODE **)p;
 
 #ifdef OLD_D6D
-	if( range>0 && range < 3*n && n>=5 ){ /* implement a direct switch (v0: not at 3 values per case) */
+	if( range>0 && range <= 3*(n-1) && n>=5 ){ /* implement a direct switch (v0: 3 values per case, n counts one too many) */
 #else
 	if( range>0 && range <= 3*n && n>=5 ){ /* implement a direct switch */
 #endif

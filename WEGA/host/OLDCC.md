@@ -97,7 +97,7 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 
 - Programs: those of 1982 (sources 07/82 .., crt0 3.1 up to 11/82). Marks: tight frames (no unused frame word, no return
   temporary, leaf functions without a frame) and packed strings.
-- Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D22` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
+- Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D6D`, `OLD_D22` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
   `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2MO`,
   `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
@@ -113,7 +113,7 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 - v0 with the differences that only the passes show. It built cparse, scparse, codgen, scodgen, popt, spopt and cpp: all
   seven are byte-identical, all their functions strictly exact.
 - Switches: those of v0 and `OLD_D3KC`, `OLD_D3J`, `OLD_D2PO`, `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
-  `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen) and `OLD_D6D` (cparse). popt needs no switch.
+  `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen). popt needs no switch.
 - The corpus of cparse and scparse holds only with the ccv0p build: the heap contents of the .S file follow the data layout of the pass.
 
 ### The old scc of cas, the old cc of ranlib
@@ -250,8 +250,8 @@ bodies in source order. The shipped compiler uses `cpir` from 1 or 3 cases on, v
 - v0 `OLD_D6T` (cparse genswitch, codgen gswitch): the value list stands right in front of its target list, and the target is
   loaded from the pointer cpir leaves behind (`ld r2,%0024(r3)`). Our cparse passes the values to codgen in a record `V swlab dlab
   tlab values` in front of the `C` record; this intermediate form is a guess.
-- v0p `OLD_D6D` (cparse genswitch): no jump table at exactly 3 values per case, `range < 3*n` against `<=` (zzzcode, switch of
-  `fldsz`). One witness.
+- v0, v0p `OLD_D6D` (cparse genswitch): the limit of the jump table is 3 values per case, `range <= 3*(n-1)` where `n` counts one more than the cases; the shipped one `range <= 3*n` (zzzcode, switch of
+  `fldsz`; doprnt 0_5: 4 cases over a range of 14 by cpir).
 - v0p `OLD_D6S` (codgen, match): the value of a switch assigned to its register when it is already there prints no `ld r2,r2`
   (falloc).
 

@@ -8,7 +8,7 @@
 #define OLD_V0
 #define OLD_D2PO	/* OLD_D2P: an idle odd word whose even half is free is given back for a pair */
 #define OLD_D3J		/* at a label named by jumps only the parameters known at all of them; behind a jump those of its one jump */
-#define OLD_D3KC	/* a parameter is copied also when it is wanted in its register (v0: taken as it is); && and || keep only word parameters */
+#define OLD_D3KC	/* a parameter is copied also when wanted in its register (v0: taken as it is); && and || keep only word parameters */
 #define OLD_D23		/* a zero addend stays: x + 0 (optim) */
 #define OLD_D2Q		/* a long loaded through a pointer into the pair of its even address register, also when wanted */
 #define OLD_D2X		/* a long result of a binary operator (not a shift) into the pair of its left operand first */

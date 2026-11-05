@@ -3,11 +3,11 @@
 The plan and nothing else. What is known goes to `host/KNOWLEDGE.md`, the old compilers to `host/OLDCC.md`, the state per function to
 `tools/FINDINGS.md` of a program. A finished step leaves this file. No new programs before step 9 (owner 2026-11-04).
 
-What is byte-identical is checked by `make -C host checkall` (13 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
+What is byte-identical is checked by `make -C host checkall` (14 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
 
 ## Where we stopped (2026-11-04)
 
-Done: real libraries. `src/lib/libc-v1.a` .. `libc-v9.a` (`lib/oldlibc/Makefile`) from C where a compiler gives the bytes, every program links `LIBC`, no more single objects. `/lib/libc.a` rebuilt from source, all members compared. Next: finish step 2 with the compilers it needs, then step 4 and 5.
+Done: real libraries; v0 corrected against libc-v1 and dc, new compiler v1q (2026-11-05). `src/lib/libc-v1.a` .. `libc-v9.a` (`lib/oldlibc/Makefile`) from C where a compiler gives the bytes, every program links `LIBC`, no more single objects. `/lib/libc.a` rebuilt from source, all members compared. Next: finish step 2 with the compilers it needs, then step 4 and 5.
 
 To look at: codgen, scodgen and spopt built with the shipped cc and shipped libc plus the old sprintf differ from the originals on the corpora (47, 46, 79 cases; 0 with `libc-v5.a`, 2 for spopt, the `NK core` line), and stage 1 is built that way. The final programs are identical, so it does no harm so far; which module causes it is not known.
 
@@ -20,7 +20,7 @@ Fact to keep in mind: the old compilers of stage 1 use shipped `libc.a` plus onl
 - `libc/oldcc`, a compiler between v1 and shipped: `malloc` 3_3 (`mult rr2,r6` in calloc), `swap` (`ld 0(r15),r7` where the shipped cc writes `@r15`; longswap has the source form now), `symscan` (r3, r4 where the shipped cc takes r2, r3), `nlist` (frame 2 bytes less). One witness each.
 - With v1q (size): `doprnt` 0_1, `endopen` 0_1 (the value of an `&&` through the temporary).
 - With v0: `fseek` 0_2 (one statement: the registers at the label of an else, `OLD_D3J` fits it and not dc), `doprnt` 0_3.
-- Libc of the passes: `malloc` 0_3, `cnvt` 0_2, `doprnt` 0_5, 0_7 (`_align` spills r5, `ap = argp` reloads, the limit of the jump table, the order of a double argument), `fltioc` 0_1.
+- Libc of the passes: `malloc` 0_3 (a parameter reloaded at a label, the order of `q+temp-1`), `cnvt` 0_2 (`-val` of a long parameter from memory, one witness), `doprnt` 0_5, 0_7 (`_align` spills r5, `ap = argp` reloads, the order of a double argument), `fltioc` 0_1.
 - Others: `swap` 0_1, `malloc` 0_4.
 - Assembler in the original, these stay `.s`: `open` 0_1, `ecvt` 0_1.
 
