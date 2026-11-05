@@ -25,6 +25,9 @@ stage1:
 	for p in cparse codgen popt cc ; do for v in $(VERSIONS) ; do \
 		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) LIBC='../../../$(OLDPRINTF) /lib/libc.a' ) || exit 1 ; \
 	done ; done
+	for p in codgen cc ; do \
+		( cd cmd/$$p/v1q ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) LIBC='../../../$(OLDPRINTF) /lib/libc.a' ) || exit 1 ; \
+	done
 
 lib:
 	cd lib ; $(MAKE)
@@ -33,6 +36,9 @@ stage2:
 	for p in cparse codgen popt cc ; do for v in $(VERSIONS) ; do \
 		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) ) || exit 1 ; \
 	done ; done
+	for p in codgen cc ; do \
+		( cd cmd/$$p/v1q ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) ) || exit 1 ; \
+	done
 
 cmds:
 	cd cmd ; $(MAKE) all

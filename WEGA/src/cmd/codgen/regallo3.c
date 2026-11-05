@@ -684,7 +684,11 @@ getreg(cls, reg, flag, sym)
 #endif
 		m = 0;
 		for (t = rsuse; t; t = t->next)
+#ifdef OLD_D3KC
 			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+#else
+			if (t->cls == 3 && t->busy <= 0 && D2PK(t) && !(t->sym && t->sym->sclass == 9) && (w == 0 || rweight[t->reg] < rweight[w->reg]) &&
+#endif
 			    (m == 0 || rweight[t->reg] < rweight[m->reg]))
 				m = t;
 		if (m) {

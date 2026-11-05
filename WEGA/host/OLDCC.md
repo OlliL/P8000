@@ -9,7 +9,7 @@ found, attempts, refuted ideas and removed switches are in `OLDCC_LOG.md`; which
 ## State
 
 With `make PROG CC=ccv0p` and strip these are byte-identical with the originals: cpp, cparse, scparse, codgen, scodgen,
-popt, spopt. With v1: size, strip, mv (also cp, ln), rm. v1 and v0 are not complete (section 5).
+popt, spopt. With v1: size, strip, mv (also cp, ln), rm. v1q and v0 build libc modules of their time; dc with v0 differs in 2 places. v1 and v0 are not complete (section 5).
 
 ## 1 Terms and building
 
@@ -88,16 +88,22 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 - stdio of the time: `char *_ptr` and the V7 forms of getc/putc (`--_cnt >= 0` first); the stdio.h of the WEGA tree has
   `unsigned char *_ptr` and the other order.
 
+### v1q (before v1)
+
+- v1 with `OLD_D14Q` (codgen); cparse and popt are those of v1. Driver `ccv1q`, runs `/lib/v1/cparse`, `/lib/v1q/codgen`, `/lib/v1/popt`.
+- Byte-identical modules of libc-v3.a (the libc in size) from C: filbuf 0_1, rdwr 0_1, malloc 0_1, printf 0_1.
+
 ### v0 (1982)
 
 - Programs: those of 1982 (sources 07/82 .., crt0 3.1 up to 11/82). Marks: tight frames (no unused frame word, no return
   temporary, leaf functions without a frame) and packed strings.
 - Switches: `OLD_D12`, `OLD_D4R`, `OLD_D6T`, `OLD_D6C`, `OLD_D22` (cparse); `OLD_D2R`, `OLD_D18`, `OLD_D1R`, `OLD_D2W`, `OLD_D10`,
-  `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`,
-  `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D22`, `OLD_D3J`, `OLD_D2PO`, `OLD_D5A`, `OLD_D2W6` (codgen); none in popt. Not `OLD_D1`,
+  `OLD_D3P`, `OLD_D4O`, `OLD_D2C`, `OLD_D2F`, `OLD_D2L`, `OLD_D2N`, `OLD_D6T`, `OLD_D2T`, `OLD_D6R`, `OLD_D3K`, `OLD_D2V`, `OLD_D2M`, `OLD_D2MO`,
+  `OLD_D2P`, `OLD_D2U`, `OLD_D2G`, `OLD_D5S`, `OLD_D22`, `OLD_D5A`, `OLD_D2W6` (codgen); none in popt. Not `OLD_D1`,
   not `OLD_D3`. cas: the old one (D17).
+- Byte-identical modules of libc-v1.a from C: isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
 - Test bench (System III sources of 38 programs of 1982): 125 of 153 functions equal, 219 differing lines.
-- dc: own code 28 places from the original (`src/cmd/dc`), the libc part fits.
+- dc: 2 places from the original (`src/cmd/dc`): scalint reloads a parameter (`ld r7,0(r15)` in front of `removc`), one `call` for `calr`; the libc part fits.
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
   renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).
@@ -106,7 +112,7 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 
 - v0 with the differences that only the passes show. It built cparse, scparse, codgen, scodgen, popt, spopt and cpp: all
   seven are byte-identical, all their functions strictly exact.
-- Switches: those of v0 and `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
+- Switches: those of v0 and `OLD_D3KC`, `OLD_D3J`, `OLD_D2PO`, `OLD_D2Q`, `OLD_D2X`, `OLD_D3AW`, `OLD_D12K`, `OLD_D5G`, `OLD_D5T`, `OLD_D2A`, `OLD_D2O`, `OLD_D2QO`, `OLD_D2MO`,
   `OLD_D2PT`, `OLD_D16A`, `OLD_D6S`, `OLD_D3L`, `OLD_D23` (codgen) and `OLD_D6D` (cparse). popt needs no switch.
 - The corpus of cparse and scparse holds only with the ccv0p build: the heap contents of the .S file follow the data layout of the pass.
 
@@ -152,7 +158,7 @@ Free registers and pairs:
   the bodies) counts as free while idle, so the bodies take r2 again (setreg, prtree, opact).
 - v0 `OLD_D2P`: OLD_D2L for pairs, an idle pair that holds a name counts as free when it weighs less than the first free
   pair; two idle words of a pair are given back and merge; for a word an idle lighter pair is given back and split.
-- v0 `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
+- v0p `OLD_D2PO`: an idle odd word whose even half is free is given back when a pair is wanted and the even half weighs less
   than the first free pair (refid, dclstruct).
 - v0 `OLD_D2W6`: when a pair is asked for and rr2 and rr0 are taken, rr6 comes before rr4 (refid, argalloc); only the pair
   request, not the free list.
@@ -167,8 +173,8 @@ Where a value goes:
 - v0 `OLD_D2N` (allocreg): a name loaded into a word register is not remembered there; only the register of an assignment
   keeps the name (ilbrace reloads `_pstk`, gotscal uses r2 for two statements).
 - v0 `OLD_D2M` (allocreg): a word multiplied through a pair uses the pair of its even register when the odd half is free
-  (adddef `ld r3,r2; mult rr2,#%0006`). v0p `OLD_D2MO`: for an odd left register the pair below it when the even half is
-  free or idle (dclstruct).
+  (adddef `ld r3,r2; mult rr2,#%0006`). `OLD_D2MO`: for an odd left register the pair below it when the even half is
+  free or idle (dclstruct, dc `mult rr2,%5F24`).
 - v0 `OLD_D2U` (rallo): the right operand of a long multiplication wants no register (upoff).
 - v0 `OLD_D6R` (gswitch): the count register of cpir is in neither half of rr0.
 - v0p `OLD_D2A` (match): the value of a long assignment used in a comparison is copied into a new pair that keeps the name
@@ -195,7 +201,10 @@ All in codgen.
   codgen (there word registers only); at a label only a later jump names, or none, it is forgotten (twords), unless the
   function ends right behind that label. Such a register is not a scratch one for the tree (tshape, istnode): an operator
   copies it first (fixclass).
-- v0 `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
+- v0 (not v0p, `OLD_D3KC` sets the v0p side): a parameter wanted in its own register (also as the address of a load into it) is taken as it is, no copy (`ld r7,4(r7)`,
+  `isatty`: no `ld r2,r7`); otherwise it is copied first (`ld r2,r7; ld r13,2(r2)`); a name in a scratch register is taken only when no lighter one is free (`ld r2,r3; ld r13,2(r2)`, dc 3 places); `&&` and `||` keep long parameters too (fseek); an idle pair
+  that holds a parameter is not taken for a new pair; a parameter whose address is taken is forgotten, so it gets its home (swap).
+- v0p `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
   front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
   those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
   records are forgotten. With two jumps (buildtree, an `&&`) the original reloads.
@@ -208,7 +217,7 @@ All in codgen.
 Popt, not a difference of the compiler: `rmove` replaces the load of the slot stored last, so `fprintf(..., l)` behind
 `l = lab = getlab()` takes r2 (prtdcon); where comjump merged two arms first, rmove no longer knows the slot and the load stays.
 
-Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after), libc malloc (`mult rr2,r6`); cas: `ld S0,r7`
+Open: ld chk_ranlib (`q = p` loads p from the frame, `p + n` uses r7 right after: guess, a parameter of another type, see longswap in OLDCC_LOG.md), libc malloc (`mult rr2,r6`); cas: `ld S0,r7`
 followed by `ld r7,S0`.
 
 ### D4 Spill of arguments
@@ -217,7 +226,7 @@ followed by `ld r7,S0`.
   home in the frame; those between other parameters keep theirs (block: the spill `ldm` is contiguous).
 - v0 `OLD_D4O` (codgen, stmt): the parameter list is walked from its end, so the register parameters are copied in the order of
   their declaration (`ld r14,r7; ld r13,r6`).
-- Open: the rule of the spill itself (rmdir main: a parameter that is only written is not spilled; ranlib no spill; libc swap;
+- Open: the rule of the spill itself (rmdir main: a parameter that is only written is not spilled; ranlib no spill; libc swap: the home of `x`, whose address is taken, written as `0(r15)`, of `l` as `@r15`;
   sld: a long parameter cast to a pointer read from its spill slot).
 
 ### D5 Index into local arrays
@@ -283,6 +292,10 @@ Not reproduced in v1: ld read_symbols (the store behind a dead `ldl rr4,rr2` sha
 The old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`), the shipped one clears it. cas `ssymtab`.
 
 ### D14 Varargs prologue and post-increment (old libc members)
+
+`OLD_D14Q` (v1q; codgen store, the QUEST of order, freeparm, delay): the value of a `?:` of an integer type always goes through a temporary of the parameter area, at the start of the frame (`@r15`, the
+autos behind it; `ld @r15,#1; jr; ld @r15,#%0200; ...; ld r5,@r15`). Each arm is assigned to it, the delayed `x++` of the arm follows that store (`ld @r15,r3; inc @r13,#1`, not in front of the arm). The temporaries of one function are not
+used again: the offset goes up over the statements (endopen 0_1: `@r15`, 2, 4). Witnesses: filbuf, rdwr, malloc, printf of size.
 
 The printf family of size, strip and cas spills the EPU registers inline (`.word %4FFC,%8303,off`) and stores r6..r2 besides the
 `ldm`; ranlib's has the shipped form. In size `*fp->_ptr++` uses the byte before the `inc`. `_filbuf` of size and ranlib: the

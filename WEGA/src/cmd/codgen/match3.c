@@ -13,6 +13,7 @@ extern void conput();
 extern int dope[];
 extern void expand();
 extern void fixname();
+extern int d2vfirst();
 extern int fldoff;
 extern int fldshf;
 extern int fldsz;
@@ -146,7 +147,11 @@ tshape(p, shape)
 		r = rstatus[p->rval] & RBFLAG ? SBREG : SAREG;
 #ifdef OLD_D3K
 		/* v0: the register of a parameter is not a scratch one for the tree (it is copied first) */
+#ifdef OLD_D3KC
 		if ((rstatus[p->rval] & RTEMPFLAGS) && !(p->sname && p->sname->sclass == 9))
+#else
+		if ((rstatus[p->rval] & RTEMPFLAGS) && !(p->sname && p->sname->sclass == 9 && (p->rall & ~MUSTDO) != p->rval))
+#endif
 #else
 		if (rstatus[p->rval] & RTEMPFLAGS)
 #endif
@@ -275,7 +280,11 @@ match(p, cookie)
 #ifdef OLD_D2C
 		/* v0: a name (not a parameter) found in a scratch register is that register, which then loses the name */
 		if (p->op == REG && (cookie & STAREG) && (rstatus[p->rval] & STAREG) && p->type != 5 && p->type != 15 &&
+#ifdef OLD_D3KC
 		    p->sname && p->sname->sclass != 9 &&
+#else
+		    p->sname && (p->sname->sclass != 9 ? (p->rall & MUSTDO) || d2vfirst(p->rval) : (p->rall & ~MUSTDO) == p->rval) &&
+#endif
 		    (!(p->rall & MUSTDO) || (p->rall & ~MUSTDO) == p->rval)) {
 			symdrop(p->rval);
 			return MDONE;

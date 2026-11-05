@@ -263,6 +263,18 @@ clocal(p)
 		s = p->sname;
 		switch (s->sclass) {
 		case 9:
+#ifdef OLD_D3K
+#ifndef OLD_D3KC
+			/* v0: a parameter whose address is taken is not known in its register: it needs its home */
+			{
+				register struct rs *n;
+
+				for (n = rsuse; n; n = n->next)
+					if (n->sym == s)
+						n->sym = 0;
+			}
+#endif
+#endif
 			r = makeblock(REG, 0, 0, 0x18);
 			r->lval = s->soffset / 8;
 			r->rval = 15;

@@ -15,16 +15,14 @@ Fact to keep in mind: the old compilers of stage 1 use shipped `libc.a` plus onl
 
 ## 2. `lib/libc` and `oldlibc` from C, what is left
 
-`/lib/libc.a`: 175 of 179 members from source. `oldlibc`: 59 of 84 modules from C. The other `.s` wait for a compiler we do not have yet; plain forms were tried (`host/tools/libcfit.py`, `libctable.py`):
+`/lib/libc.a`: 175 of 179 members from source. `oldlibc`: 71 of 84 modules from C. The other `.s` wait for a compiler or a source form (`host/tools/libcfit.py`, `libctable.py`; what was tried: `host/OLDCC_LOG.md`):
 
-- `libc/oldcc`: `malloc` 3_3 (`mult rr2,r6` in calloc), `swap` (`0(r15)` where the shipped cc writes `@r15`, a reload), `symscan` (r3, r4 where the shipped cc takes r2, r3), `nlist` (frame 2 bytes less).
-- Libc of size, the oldest (libc-v3): `doprnt` 0_1, `printf` 0_1, `malloc` 0_1, `filbuf` 0_1, `rdwr` 0_1, `endopen` 0_1: the value of `?:` goes through a slot of the frame. Sources for `printf`, `doprnt` of the family exist (`0_2.c`).
-- Libc of ranlib and dc (libc-v1): `isatty` 0_1, `stty` 0_1, `readsym` 0_1, `system` 0_1, `printf` 0_3, `ftell` 0_1, `swap` 0_2, `doprnt` 0_3: no `ld r2,r7` or reload where v0 has one, as in dc itself (guess: one cause). Taking out one switch of v0 at a time does not explain it; without `OLD_D3J` dc comes nearer (71 to 58 differing instructions). So this goes together with `dc` in step 5.
-- Libc of the passes (v5, v7, v2): `malloc` 0_3, 0_5 (a parameter reloaded at a label, the order of `q+temp-1`), `cnvt` 0_2 (a long parameter reloaded), `doprnt` 0_5, 0_7 (near: `_align` spills r5, `ap = argp` reloads, a switch of 4 cases over a range of 14 as `cpir`, the order of a double argument), `fseek` 0_2, `fltioc` 0_1 (parameters of a double spilled by two instructions). `doprnt/0_5.c` is the draft, not used yet.
-- Others: `perror` 0_2 (r6 against r2), `swap` 0_1, `malloc` 0_4 (not tried: an older form of the source of the shipped one).
+- `libc/oldcc`, a compiler between v1 and shipped: `malloc` 3_3 (`mult rr2,r6` in calloc), `swap` (`ld 0(r15),r7` where the shipped cc writes `@r15`; longswap has the source form now), `symscan` (r3, r4 where the shipped cc takes r2, r3), `nlist` (frame 2 bytes less). One witness each.
+- With v1q (size): `doprnt` 0_1, `endopen` 0_1 (the value of an `&&` through the temporary).
+- With v0: `fseek` 0_2 (one statement: the registers at the label of an else, `OLD_D3J` fits it and not dc), `doprnt` 0_3.
+- Libc of the passes: `malloc` 0_3, `cnvt` 0_2, `doprnt` 0_5, 0_7 (`_align` spills r5, `ap = argp` reloads, the limit of the jump table, the order of a double argument), `fltioc` 0_1.
+- Others: `swap` 0_1, `malloc` 0_4.
 - Assembler in the original, these stay `.s`: `open` 0_1, `ecvt` 0_1.
-
-`stdio/getgr*.c` are older copies of `gen/getgr*.c`: decide and remove.
 
 ## 4. Clean up `tools/`
 
@@ -36,7 +34,7 @@ In this order; every change of a compiler goes through `checkall`.
 
 - `write`: own code exact with v1, libc part open.
 - `rmdir`: main differs (D4, D18), libc part open.
-- `dc`: 28 places in the own code with ccv0, libc part fits.
+- `dc`: 2 places in the own code with ccv0 (scalint reloads a parameter, one `call`), libc part fits.
 - `ranlib`: own code differs (v-version to be found); `readsym` is an old libc module.
 - `doscopy` (8 commands): differences not analysed; built with the current cc and libc, the owner believes. The build stops on the `/usr/include` dependencies outside the guest ROOT. The owner began this on the branch `doscopy`: inspect it first for changes to take over.
 - `pburn`: same size, built with the shipped cc; differences not analysed.

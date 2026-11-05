@@ -6,6 +6,9 @@
 #ifdef OLD_V0P
 /* v0p, the compiler of the passes: v0 and */
 #define OLD_V0
+#define OLD_D2PO	/* OLD_D2P: an idle odd word whose even half is free is given back for a pair */
+#define OLD_D3J		/* at a label named by jumps only the parameters known at all of them; behind a jump those of its one jump */
+#define OLD_D3KC	/* a parameter is copied also when it is wanted in its register (v0: taken as it is); && and || keep only word parameters */
 #define OLD_D23		/* a zero addend stays: x + 0 (optim) */
 #define OLD_D2Q		/* a long loaded through a pointer into the pair of its even address register, also when wanted */
 #define OLD_D2X		/* a long result of a binary operator (not a shift) into the pair of its left operand first */
@@ -13,7 +16,6 @@
 #define OLD_D3AW	/* OLD_D3A only for a parameter that is a whole argument or an address in it (argplace) */
 #define OLD_D2A		/* the value of a long assignment copied into a new pair, which keeps the name (match) */
 #define OLD_D2PT	/* OLD_D2P takes the registers of a TEMP (the value of a switch) too */
-#define OLD_D2MO	/* OLD_D2M for an odd left register: the pair below it when its even half is free or idle */
 #define OLD_D2QO	/* OLD_D2Q also when an odd word register is wanted (the low half: an argument) */
 #define OLD_D2O		/* a long loaded through an odd address register into the pair below it (allocreg) */
 #define OLD_D16A	/* ++ of a frame slot by a constant, value to a temporary: load, increment, store (match) */
@@ -25,6 +27,7 @@
 
 #ifdef OLD_V0
 /* v0, the programs of 1982 */
+#define OLD_D2MO	/* OLD_D2M for an odd left register: the pair below it when its even half is free or idle */
 #define OLD_D2R		/* a load through a pointer (STAR, OREG) into the register of its address first (allocreg) */
 #define OLD_D18		/* the frame operand at offset 0 written as 0(fp), never @fp */
 #define OLD_D1R		/* no temporary for the value of a return (r2 stays taken while a delayed x++ runs) */
@@ -46,8 +49,6 @@
 #define OLD_D2U		/* the right operand of a long multiplication wants no register (rallo) */
 #define OLD_D2G		/* OLD_D2L: an idle word of the same weight as the free one wins */
 #define OLD_D5S		/* an element of a local array: (index + offset) + fp, the frame pointer added last (fixfld) */
-#define OLD_D2PO	/* OLD_D2P: an idle odd word whose even half is free is given back for a pair */
-#define OLD_D3J		/* at a label named by jumps only the parameters known at all of them; behind a jump those of its one jump */
 #define OLD_D2W6	/* a pair asked for when rr2 and rr0 are taken: rr6 before rr4 (getreg) */
 #define OLD_D5A		/* the address of a local array element whose value goes to a given register: no preference (rallo) */
 #define OLD_D22		/* a double argument, parameter and result in rq4 (r4..r7); a floating compare without rounding */

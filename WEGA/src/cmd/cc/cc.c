@@ -71,6 +71,13 @@ char	*gopt		= "/lib/gopt";
 char	*codgen		= "/lib/v0/codgen";
 char	*popt		= "/lib/v0/popt";
 #else
+#ifdef OLD_V1Q
+/* ccv1q (v1q/Makefile): v1 with its own code generator */
+char	*cparse		= "/lib/v1/cparse";
+char	*gopt		= "/lib/gopt";
+char	*codgen		= "/lib/v1q/codgen";
+char	*popt		= "/lib/v1/popt";
+#else
 #ifdef OLD_V1
 /* ccv1 (v1/Makefile): the passes of the old compiler v1 are in /lib/v1 */
 char	*cparse		= "/lib/v1/cparse";
@@ -82,6 +89,7 @@ char	*cparse		= SEG("/lib/cparse", "/lib/scparse");
 char	*gopt		= "/lib/gopt";
 char	*codgen		= SEG("/lib/codgen", "/lib/scodgen");
 char	*popt		= SEG("/lib/popt", "/lib/spopt");
+#endif
 #endif
 #endif
 #endif

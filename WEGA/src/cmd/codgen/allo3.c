@@ -132,6 +132,10 @@ freeparm(k)
 	register long t = tmpoff;
 
 	tmpoff += k << 4;
+#ifdef OLD_D14Q
+	if (tmpoff > maxoff)
+		maxoff = tmpoff;
+#endif
 	if (tmpoff > maxoff)
 		cerror("paroff exceeds parmax, %d, %ld", (int)tmpoff / 8, maxoff / 8);
 	return t;

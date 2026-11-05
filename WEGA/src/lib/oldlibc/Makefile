@@ -20,6 +20,7 @@
 
 CC = cc
 CCV1 = ccv1
+CCV1Q = ccv1q
 CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
@@ -188,13 +189,16 @@ fdopen/0_1.o: ../libc/stdio/fdopen.c
 ffltioc/0_1.o: ffltioc/0_1.c
 	cd ffltioc ; $(CCV0P) -O -c 0_1.c
 
-filbuf/0_1.o: filbuf/0_1.s
-	cd filbuf ; $(CAS) -u -o 0_1.o 0_1.s
+filbuf/0_1.o: ../libc/stdio/filbuf.c
+	-@mkdir filbuf 2>/dev/null
+	cd filbuf ; $(CCV1Q) -O -I../../../cmd/cparse -I../../libc/stdio -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_1.o
 
 filbuf/0_2.o: ../libc/stdio/filbuf.c
+	-@mkdir filbuf 2>/dev/null
 	cd filbuf ; $(CCV1) -O -I../../../cmd/cparse -I../../libc/stdio -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_2.o
 
 filbuf/0_3.o: ../libc/stdio/filbuf.c
+	-@mkdir filbuf 2>/dev/null
 	cd filbuf ; $(CCV0P) -O -I../../../cmd/cparse -I../../libc/stdio -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_3.o
 
 findiop/0_1.o: ../libc/stdio/findiop.c
@@ -228,10 +232,12 @@ fseek/0_1.o: ../libc/stdio/fseek.c
 fseek/0_2.o: fseek/0_2.s
 	cd fseek ; $(CAS) -u -o 0_2.o 0_2.s
 
-ftell/0_1.o: ftell/0_1.s
-	cd ftell ; $(CAS) -u -o 0_1.o 0_1.s
+ftell/0_1.o: ../libc/stdio/ftell.c
+	-@mkdir ftell 2>/dev/null
+	cd ftell ; $(CCV0) -O -I../../libc/stdio -c ../../libc/stdio/ftell.c ; mv ftell.o 0_1.o
 
 ftell/0_2.o: ../libc/stdio/ftell.c
+	-@mkdir ftell 2>/dev/null
 	cd ftell ; $(CCV0P) -O -I../../libc/stdio -c ../../libc/stdio/ftell.c ; mv ftell.o 0_2.o
 
 gets/0_1.o: ../libc/stdio/gets.c
@@ -250,10 +256,12 @@ goodmagic/0_2.o: ../libc/gen/goodmagic.c
 	-@mkdir goodmagic 2>/dev/null
 	cd goodmagic ; $(CCV0P) -O -I../../libc/gen -c ../../libc/gen/goodmagic.c ; mv goodmagic.o 0_2.o
 
-isatty/0_1.o: isatty/0_1.s
-	cd isatty ; $(CAS) -u -o 0_1.o 0_1.s
+isatty/0_1.o: ../libc/gen/isatty.c
+	-@mkdir isatty 2>/dev/null
+	cd isatty ; $(CCV0) -O -I../../libc/gen -c ../../libc/gen/isatty.c ; mv isatty.o 0_1.o
 
 isatty/0_2.o: ../libc/gen/isatty.c
+	-@mkdir isatty 2>/dev/null
 	cd isatty ; $(CCV0P) -O -I../../libc/gen -c ../../libc/gen/isatty.c ; mv isatty.o 0_2.o
 
 length/0_1.o: ../libc/gen/length.c
@@ -265,8 +273,9 @@ length/0_2.o: length/0_2.c
 length/0_3.o: ../libc/gen/length.c
 	cd length ; $(CCV0P) -O -I../../libc/gen -c ../../libc/gen/length.c ; mv length.o 0_3.o
 
-malloc/0_1.o: malloc/0_1.s
-	cd malloc ; $(CAS) -u -o 0_1.o 0_1.s
+malloc/0_1.o: malloc/malloc.c
+	-@mkdir malloc/0_1.d 2>/dev/null
+	cd malloc/0_1.d ; $(CCV1Q) -O -c ../malloc.c ; mv malloc.o ../0_1.o
 
 malloc/0_2.o: malloc/malloc.c
 	cd malloc ; $(CCV1) -O -c malloc.c ; mv malloc.o 0_2.o
@@ -287,17 +296,19 @@ open/0_1.o: open/0_1.s
 perror/0_1.o: ../libc/gen/perror.c
 	cd perror ; $(CCV0P) -O -I../../libc/gen -c ../../libc/gen/perror.c ; mv perror.o 0_1.o
 
-perror/0_2.o: perror/0_2.s
-	cd perror ; $(CAS) -u -o 0_2.o 0_2.s
+perror/0_2.o: perror/0_2.c
+	cd perror ; $(CCV1) -O -c 0_2.c
 
-printf/0_1.o: printf/0_1.s
-	cd printf ; $(CAS) -u -o 0_1.o 0_1.s
+printf/0_1.o: printf/0_2.c
+	-@mkdir printf/0_1.d 2>/dev/null
+	cd printf/0_1.d ; $(CCV1Q) -O -I../../../../cmd/cparse -c ../0_2.c ; mv 0_2.o ../0_1.o
 
 printf/0_2.o: printf/0_2.c
 	cd printf ; $(CCV1) -O -I../../../cmd/cparse -c 0_2.c
 
-printf/0_3.o: printf/0_3.s
-	cd printf ; $(CAS) -u -o 0_3.o 0_3.s
+printf/0_3.o: printf/0_5.c
+	-@mkdir printf/0_3.d 2>/dev/null
+	cd printf/0_3.d ; $(CCV0) -O -I../../../../cmd/cparse -c ../0_5.c ; mv 0_5.o ../0_3.o
 
 printf/0_4.o: printf/0_4.c
 	cd printf ; $(CCV1) -O -c 0_4.c
@@ -308,17 +319,20 @@ printf/0_5.o: printf/0_5.c
 printf/0_6.o: printf/0_4.c
 	cd printf ; $(CCV1) -O -I../../../cmd/cparse -c 0_4.c ; mv 0_4.o 0_6.o
 
-rdwr/0_1.o: rdwr/0_1.s
-	cd rdwr ; $(CAS) -u -o 0_1.o 0_1.s
+rdwr/0_1.o: ../libc/stdio/rdwr.c
+	-@mkdir rdwr 2>/dev/null
+	cd rdwr ; $(CCV1Q) -O -I../../../cmd/cparse -I../../libc/stdio -c ../../libc/stdio/rdwr.c ; mv rdwr.o 0_1.o
 
 rdwr/0_2.o: ../libc/stdio/rdwr.c
+	-@mkdir rdwr 2>/dev/null
 	cd rdwr ; $(CCV1) -O -I../../../cmd/cparse -I../../libc/stdio -c ../../libc/stdio/rdwr.c ; mv rdwr.o 0_2.o
 
 rdwr/0_3.o: ../libc/stdio/rdwr.c
+	-@mkdir rdwr 2>/dev/null
 	cd rdwr ; $(CCV0P) -O -I../../../cmd/cparse -I../../libc/stdio -c ../../libc/stdio/rdwr.c ; mv rdwr.o 0_3.o
 
-readsym/0_1.o: readsym/0_1.s
-	cd readsym ; $(CAS) -u -o 0_1.o 0_1.s
+readsym/0_1.o: readsym/0_1.c
+	cd readsym ; $(CCV0) -O -c 0_1.c
 
 rindex/0_1.o: ../libc/gen/rindex.c
 	-@mkdir rindex 2>/dev/null
@@ -376,10 +390,12 @@ strrchr/0_2.o: ../libc/gen/strrchr.c
 	-@mkdir strrchr 2>/dev/null
 	cd strrchr ; $(CCV1) -O -I../../libc/gen -c ../../libc/gen/strrchr.c ; mv strrchr.o 0_2.o
 
-stty/0_1.o: stty/0_1.s
-	cd stty ; $(CAS) -u -o 0_1.o 0_1.s
+stty/0_1.o: ../libc/gen/stty.c
+	-@mkdir stty 2>/dev/null
+	cd stty ; $(CCV0) -O -I../../libc/gen -c ../../libc/gen/stty.c ; mv stty.o 0_1.o
 
 stty/0_3.o: ../libc/gen/stty.c
+	-@mkdir stty 2>/dev/null
 	cd stty ; $(CCV0P) -O -I../../libc/gen -c ../../libc/gen/stty.c ; mv stty.o 0_3.o
 
 swab/0_1.o: ../libc/gen/swab.c
@@ -389,11 +405,11 @@ swab/0_1.o: ../libc/gen/swab.c
 swap/0_1.o: swap/0_1.s
 	cd swap ; $(CAS) -u -o 0_1.o 0_1.s
 
-swap/0_2.o: swap/0_2.s
-	cd swap ; $(CAS) -u -o 0_2.o 0_2.s
+swap/0_2.o: ../libc/gen/swap.c
+	cd swap ; $(CCV0) -O -I../../libc/gen -c ../../libc/gen/swap.c ; mv swap.o 0_2.o
 
-system/0_1.o: system/0_1.s
-	cd system ; $(CAS) -u -o 0_1.o 0_1.s
+system/0_1.o: system/0_1.c
+	cd system ; $(CCV0) -O -c 0_1.c
 
 system/0_2.o: ../libc/stdio/system.c
 	cd system ; $(CCV1) -O -I../../libc/stdio -c ../../libc/stdio/system.c ; mv system.o 0_2.o

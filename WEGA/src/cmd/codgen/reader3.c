@@ -39,6 +39,7 @@ extern int ffregs;
 extern void fixtemp();
 extern long frame0;
 extern long freetemp();
+extern long freeparm();
 extern int fregs;
 extern long ftell();
 extern void walkf();
@@ -161,6 +162,9 @@ int unused5 = 0;
 long baseoff = 0;
 long maxtemp = 0;
 
+#ifdef OLD_D14Q
+static void d14qarm();
+#endif
 #ifdef OLD_D3K
 static int d3kpend;		/* a label waits for its rsfreeall (main) */
 #ifdef OLD_D3J
@@ -349,6 +353,9 @@ reread:
 #endif
 		switch (c) {
 		case '{':
+#ifdef OLD_D14Q
+			tmpoff = 0;
+#endif
 #ifdef OLD_D3K
 			d3kreset();
 #endif
@@ -406,7 +413,9 @@ reread:
 			if (lflag)
 				lineout(ifline, ifname);
 			paroff = baseoff;
+#ifndef OLD_D14Q
 			tmpoff = 0;
+#endif
 			p = eread();
 			p2compile(p);
 			continue;
@@ -904,6 +913,25 @@ again:
 		goto cleanup;
 	case QUEST:
 		cbranch(p1, -1, m = getlab());
+#ifdef OLD_D14Q
+		if (cookie == INTEMP_ && p->type != 6 && p->type != 7) {
+			long t = freeparm(szty(p->type)) / 8;
+
+			d14qarm(p2->left, t, p->type);
+			cbgen(0, m1 = getlab(), 'I');
+			deflab(m);
+			rfreeall(1);
+			d14qarm(p2->right, t, p->type);
+			deflab(m1);
+			p->op = OREG;
+			p->rval = 15;
+			p->lval = t;
+			p->sname = 0;
+			p->stsize = 0;
+			p2->op = FREE;
+			goto cleanup;
+		}
+#endif
 #ifdef OLD_D3AW
 		/* v0p: the value goes to a register that holds a parameter: the parameter is forgotten */
 		if (p->rall & MUSTDO) {
@@ -1120,6 +1148,12 @@ store(p)
 			stotree = p;
 			stocook = INTEMP_;
 		}
+#ifdef OLD_D14Q
+		if (o == QUEST && p->type != 6 && p->type != 7) {	/* the value of a ?: goes through a temporary */
+			stotree = p;
+			stocook = INTEMP_;
+		}
+#endif
 		constore(p->left);
 		return;
 	case NOT:
@@ -1152,6 +1186,44 @@ store(p)
 	store(p->left);
 }
 
+#ifdef OLD_D14Q
+/* an arm of a ?: is assigned to the temporary at offset t */
+static void
+d14qarm(q, t, ty)
+	NODE *q;
+	long t;
+	int ty;
+{
+	register NODE *n, *a;
+	int i, i0;
+
+	n = talloc();
+	n->op = OREG;
+	n->type = ty;
+	n->rval = 15;
+	n->lval = t;
+	n->sname = 0;
+	n->stsize = 0;
+	n->su = 0;
+	n->fsu = 0;
+	n->rall = NOPREF;
+	a = talloc();
+	a->op = ASSIGN;
+	a->type = ty;
+	a->left = n;
+	a->right = q;
+	a->rall = NOPREF;
+	sucomp(a);
+	i0 = ndelay;
+	delay2(a);
+	codgen(a, FOREFF);
+	reclaim(a, 0, FOREFF);
+	for (i = i0; i < ndelay; i++)
+		codgen(deltrees[i], FOREFF);
+	ndelay = i0;
+}
+
+#endif
 /* store conditional expressions: not inside a conditional context */
 void
 constore(p)
