@@ -289,15 +289,15 @@ int n;
 {
 	register int r;
 	struct rlent *e;
-	struct rlent *q;
-	struct symbol *q2;
+	char *q;
+	char *q2;
 
-	for (q = p, e = p + n; p < e; p++) {
-		if (p >= q) {
+	for (q = (char *)p, e = p + n; p < e; p++) {
+		if ((char *)p >= q) {
 			if ((p->rname[0] & 0x80) != 0)
-				q = (struct rlent *)(p->rname + (p->rname[0] & 0x7f));
-			if ((q2 = *pslookup(p->rname)) != 0)
-				if (q2->stype != 0x20)
+				q = p->rname + (p->rname[0] & 0x7f);
+			if ((q2 = (char *)*pslookup(p->rname)) != 0)
+				if (((struct symbol *)q2)->stype != 0x20)
 					warn_sym_redef(0, q2);
 		}
 	}
