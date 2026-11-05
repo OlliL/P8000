@@ -163,36 +163,20 @@ char *dst;
 	q = src;
 	d = dst;
 	cnt = 0;
-	goto test0;
-body0:
-	cnt++;
-test0:
-	if (*s++)
-		goto body0;
+	while (*s++)
+		cnt++;
 	if (cnt <= 8)
 		unpack_run(q, d);
 	else {
 		*d++ = cnt | 0x80;
 		s--;
-		goto test1;
-body1:
-		*d++ = *q++;
-test1:
-		if (q < s)
-			goto body1;
+		while (q < s)
+			*d++ = *q++;
 		cnt -= 8;
-		goto test2;
-body2:
-		cnt -= 16;
-test2:
-		if (cnt > 0)
-			goto body2;
-		goto test;
-body:
-		*d++ = 0;
-test:
-		if (cnt-- != 0)
-			goto body;
+		while (cnt > 0)
+			cnt -= 16;
+		while (cnt-- != 0)
+			*d++ = 0;
 	}
 }
 
@@ -205,13 +189,12 @@ char *dst;
 
 	s = src;
 	if (*src & 0x80) {
-		s++;
-		if ((*src & 0x7f) > 8) {
+		if ((*s++ & 0x7f) > 8) {
 			s--;
 			put_name(s);
 			report_error(1, "-- symbol name truncated\n");
 			s++;
 		}
 	}
-	return unpack_run(s, dst);
+	unpack_run(s, dst);
 }
