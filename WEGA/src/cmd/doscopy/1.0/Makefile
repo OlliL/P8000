@@ -56,20 +56,20 @@ install: $(PROGS)
 clean:
 	rm -f $(PROGS) $(OBJECTS)
 
-dosdev.o:  dosdev.c
-dosplit.o: dosplit.c $I/stdio.h $I/ctype.h
-dosopn.o:  dosopn.c
-dosdel.o:  dosdel.c
-dosfat.o:  dosfat.c
-dosin.o:   dosin.c $I/time.h $I/sys/types.h $I/sys/stat.h
-dosout.o:  dosout.c
-doscat.o:  doscat.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosrm.o:   dosrm.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-doscp.o:   doscp.c $I/stdio.h $I/ctype.h $I/sys/types.h $I/sys/stat.h
-dosdir.o:  dosdir.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosls.o:   dosls.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosmkdir.o: dosmkdir.c $I/time.h $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosrmdir.o: dosrmdir.c $I/stdio.h $I/sys/types.h $I/sys/stat.h
-dosformat.o: dosformat.c $I/stdio.h $I/sys/types.h $I/sys/stat.h $I/fcntl.h
+dosdev.o:  dosdev.c dos.h
+dosplit.o: dosplit.c dos.h
+dosopn.o:  dosopn.c dos.h
+dosdel.o:  dosdel.c dos.h
+dosfat.o:  dosfat.c dos.h
+dosin.o:   dosin.c dos.h
+dosout.o:  dosout.c dos.h
+doscat.o:  doscat.c dos.h
+dosrm.o:   dosrm.c dos.h
+doscp.o:   doscp.c dos.h
+dosdir.o:  dosdir.c dos.h
+dosls.o:   dosls.c dos.h
+dosmkdir.o: dosmkdir.c dos.h
+dosrmdir.o: dosrmdir.c dos.h
+dosformat.o: dosformat.c dos.h
 
 .PHONY: all install clean

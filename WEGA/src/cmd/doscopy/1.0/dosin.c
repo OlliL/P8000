@@ -31,11 +31,11 @@
  */
 dosin(in, fn, dp, conv)
 char *in, *fn;
-register struct dosdisc *dp;
+struct dosdisc *dp;
 int conv;
 {
- register clustsiz = dp->clustsiz;
- register i, j, res;
+ int clustsiz = dp->clustsiz;
+ int i, j, res;
  int infd, len, nl, mode, z;
  long adr, depos;
  int free, follow; 
@@ -274,11 +274,11 @@ lf:
  * Liefert -2 bei Schreibfehler.
  */
 putde(stp, dp)
-register struct dostat *stp;
-register struct dosdisc *dp;
+struct dostat *stp;
+struct dosdisc *dp;
 {
- register i;
- register unsigned tv;
+ int i;
+ unsigned tv;
  unsigned char buf[32];
 
  for (i = 0; i < 11; i++)

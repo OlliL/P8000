@@ -66,7 +66,7 @@ original tools and compares each program).
 
 The plan is `../src/TODO.md`; the current work is its step 5, the open programs in `cmd/`, in its order. Pause after each finished program; the owner decides on the next.
 
-Identical since 2026-11-05: dc and ranlib (v0), write and rmdir (v1r). Next: `doscopy` (inspect the owner's branch `doscopy` first), `pburn`, then `ld` and `sld` (decide the source base first). Open in step 2: 13 `.s` in `oldlibc`, 2 of them real assembler, and 4 objects of `libc/oldcc`.
+Identical since 2026-11-05: dc and ranlib (v0), write and rmdir (v1r). Doscopy 1.0 (`1.3` is ignored) in work: state in TODO; the branch `doscopy` is fully in `1.0`. Then `pburn`, then `ld` and `sld` (decide the source base first). Open in step 2: 13 `.s` in `oldlibc`, 2 of them real assembler, and 4 objects of `libc/oldcc`.
 
 Which compiler to take: the rule in `HOWTO_reconstruct.md`, "Evidence rules": the date first, measure the neighbours, sharpen an existing version before a new one. The time line is in `OLDCC.md`. Do not invent versions.
 

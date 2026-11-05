@@ -21,10 +21,10 @@
 #include "dos.h"
 
 main(argc,argv)
-register char **argv;
+char **argv;
 {
- register char *arg0 = argv[0];
- register int status = 0,res;
+ char *arg0 = argv[0];
+ int status = 0,res;
  int z=1,i,j;
  unsigned char upath[LMAX],dpath[LMAX];
  struct dosdisc dos;
@@ -105,7 +105,7 @@ register char **argv;
 }
 
 pls(pstat)
-register struct dostat *pstat;
+struct dostat *pstat;
 {
  if (pstat->mode == _SDIR)
 	printf("d");
@@ -115,7 +115,7 @@ register struct dostat *pstat;
  	printf("r--r--r-");
  else
  	printf("rw-rw-rw");
- printf("- 1 dpath        ");
+ printf("- 1 dcp        ");
  printf("%6ld ",pstat->dim);
  printf("%2d %2d %2d:%2d ",pstat->date.month,pstat->date.day,pstat->time.hour,pstat->time.min);
  printf("%8.8s %3.3s\n",pstat->name, &pstat->name[8]);

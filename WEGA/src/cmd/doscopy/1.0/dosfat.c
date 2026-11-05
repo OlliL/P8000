@@ -28,13 +28,13 @@ register struct dosdisc *dp;
  register unsigned nclust;
  unsigned char n[3];
 
- nclust = dp->nclust;
  if (fp == 0)
  	fp = fdopen(dp->fd, "r");
 
  if (dp->fatlen == 12) {
+	nclust = ((dp->maindir - dp->fat1) / dp->fatnum - 3) / 3;
 	fseek(fp, dp->fat1+freeadr+3, 0);
-	while (nclust -= 2) {
+	while (nclust--) {
 		if (fread(n, sizeof(*n),3,fp) != 3)
 			return (-1);
 
@@ -50,6 +50,7 @@ register struct dosdisc *dp;
 	}
  }
  else {
+	nclust = ((dp->maindir - dp->fat1) / dp->fatnum - 4) / 2;
 	fseek(fp, dp->fat1+freeadr+2, 0);
 	while (nclust--) {
 		if (fread(n,sizeof(*n),2,fp) != 2)

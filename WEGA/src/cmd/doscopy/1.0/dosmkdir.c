@@ -22,10 +22,10 @@
 #include "dos.h"
 
 main(argc,argv)
-register char **argv;
+char **argv;
 {
- register char *arg0 = argv[0];
- register int status = 0,res;
+ char *arg0 = argv[0];
+ int status = 0,res;
  char upath[LMAX],dpath[LMAX];
  struct dosdisc dos;
  struct dostat dstat;
@@ -84,8 +84,8 @@ register char **argv;
  *	  -2 bei Schreibfehler
  */
 msubdir(subdir,dp)
-register char *subdir;
-register struct dosdisc *dp;
+char *subdir;
+struct dosdisc *dp;
 {
  struct dostat fnrec,dirrec,pkt,dpkt;
  int res,z=1,i,j,io=1;
@@ -95,7 +95,7 @@ register struct dosdisc *dp;
  unsigned dnum,nxt,dosnxt(),dpktfirst;
  unsigned char c,buf[512];
  struct tm *sttime,*localtime();
- register int free;
+ int free;
  int dmax,dcnt=0;
 
  if ((res=dosopn(subdir,dp,&fnrec)) < 0)
@@ -279,10 +279,10 @@ register struct dosdisc *dp;
 
 
 putdir(stp,dp)
-register struct dostat *stp;
-register struct dosdisc *dp;
+struct dostat *stp;
+struct dosdisc *dp;
 {
- register int res,i;
+ int res,i;
  unsigned char attrib=0x10,*h,buf[32];
  unsigned tv;
 

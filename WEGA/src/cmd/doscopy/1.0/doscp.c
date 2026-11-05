@@ -169,7 +169,7 @@ char **argv;
 			continue;
 		}
 		if (*dpath == '\0') {
-			fprintf(stderr, "%s: Keine DCP-Datei\n", arg0);
+			fprintf(stderr, "%s: keine DCP-Datei\n", arg0);
 			status = 2;
 			continue;
 		}

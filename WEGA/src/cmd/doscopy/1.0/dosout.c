@@ -23,59 +23,62 @@
 dosout(file,out,dp,conv)
 struct dostat *file;
 int out;
-register struct dosdisc *dp;
+struct dosdisc *dp;
 int conv;
 {
- register clustsiz = dp->clustsiz;
- register i, j, len;
- long adr, z;
- unsigned next = file->first;
- char last = 0;
- char *buf, *outbuf, *malloc();
+ long z;
+ int len;
+ unsigned i, j;
+ long adr, n;
+ unsigned next;
+ static char buf[1024] = {0};
 
- outbuf = malloc(clustsiz+1);
- buf = &outbuf[1];
- adr = DOSADR(next,clustsiz) + dp->data;
- lseek(dp->fd,adr,0);
  z = 0;
+ n = dp->clustsiz;
+ next = file->first;
+ adr = DOSADR(next,dp->clustsiz) + dp->data;
+ lseek(dp->fd,adr,0);
 
  while (next) {
- 	len = clustsiz;
-	if ((long)len > file->dim - z)
+	len = dp->clustsiz;
+	if (len > 1024)
+		len = 1024;
+	if (file->dim - z < (long)len)
 		len = file->dim - z;
+	if (n - z < (long)len)
+		len = n - z;
 	if (len == 0)
 		break;
-
-	if (read(dp->fd,buf,clustsiz) != clustsiz)
+	if ((len = read(dp->fd,buf,len)) <= 0)
 		return(-1);
-	
 	if (conv) { /* CR LF -> LF */
-		for (i=0, j=0; i<len; i++) {
-			if (last && buf[i] != 0x0a)
-				outbuf[j++] = last;
-			last = 0;
-			if (buf[i] == 0x1a)
-				break;	/* Dateiende */
+		for (i=0, j=0; i<len && buf[i] != 0x1a; i++, j++) {
 			if (buf[i] == 0x0d) {
-				last++;
-				continue;
+				if (i != len-1) {
+					if (buf[++i] != 0x0a)
+						--i;
+				}
+				else {
+					buf[i] = ' ';
+					continue;
+				}
 			}
-			outbuf[j++] = buf[i];
+			buf[j] = buf[i];
 		}
-		if (write(out, outbuf, j) != j)
-			return(-2);
 	}
-	else { /* Binary-Copy */
-		if (write(out, buf, len) != len)
-			return(-2);
-	}
+	else
+		j = len;
+	if (write(out,buf,j) != j)
+		return(-2);
 	z += len;
 	if (z >= file->dim)
 		break;
-
-	next = dosnxt(dp->fd,next,dp->fat1,dp->fatlen);
-	adr = DOSADR(next,clustsiz) + dp->data;
-	lseek(dp->fd,adr,0);
+	if (z >= n) {
+		next = dosnxt(dp->fd,next,dp->fat1,dp->fatlen);
+		adr = DOSADR(next,dp->clustsiz) + dp->data;
+		lseek(dp->fd,adr,0);
+		n += dp->clustsiz;
+	}
  }
  return(1);
 }

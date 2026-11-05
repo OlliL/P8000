@@ -22,15 +22,15 @@
  *	      schreibgeschuetzt ist.
  */
 dosdel(fn,dp)
-register char *fn;
-register struct dosdisc *dp;
+char *fn;
+struct dosdisc *dp;
 {
- register struct dostat fnrec, dirrec;
+ int res;
+ struct dostat fnrec, dirrec;
  long adr;
  unsigned char delsign=0xe5;
  char s[LMAX],*file,*strrchr();
  unsigned dnum,nxt,dosnxt();
- int res;
 
  strcpy(s,fn);
  fn = s;
@@ -81,20 +81,33 @@ register struct dosdisc *dp;
  * frei. Liefert -1 bei Lese- und -2 bei Schreibfehler.
  */
 fatdel(stp,dp)
-register struct dostat *stp;
-register struct dosdisc *dp;
+struct dostat *stp;
+struct dosdisc *dp;
 {
- register int res;
- register unsigned first, next;
+ int res;
+ unsigned next, prev, cur;
 
- next = stp->first;
- while (next) {
-	first = next;
-	next = dosnxt(dp->fd,first,dp->fat1,dp->fatlen);
-	if ((res=fatput(first,0x0000,dp)) < 0)
-		return(res);
+ for (cur = 0; dosnxt(dp->fd,stp->first,dp->fat1,dp->fatlen); cur = 0) {
+	next = stp->first;
+	while (next) {
+		prev = cur;
+		cur = next;
+		next = dosnxt(dp->fd,next,dp->fat1,dp->fatlen);
+	}
+	if (prev == 0) {
+		if ((res=fatput(cur,0x0000,dp)) < 0)
+			return(res);
+		if ((res=fatput(stp->first,0xffff,dp)) < 0)
+			return(res);
+	}
+	else {
+		if ((res=fatput(prev,0xffff,dp)) < 0)
+			return(res);
+		if ((res=fatput(cur,0x0000,dp)) < 0)
+			return(res);
+	}
  }
- return(1);
+ return(fatput(stp->first,0x0000,dp));
 }
 
 /* fatput
@@ -104,10 +117,10 @@ register struct dosdisc *dp;
  * und -2 bei Schreibfehler.
  */
 fatput(ent,val,dp)
-register unsigned ent,val;
-register struct dosdisc *dp;
+unsigned ent,val;
+struct dosdisc *dp;
 {
- register long fat=dp->fat1;
+ long fat=dp->fat1;
  unsigned char b[2];
  int n;
 

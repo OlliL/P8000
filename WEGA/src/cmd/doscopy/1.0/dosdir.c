@@ -21,10 +21,10 @@
 #include "dos.h"
 
 main(argc,argv)
-register char **argv;
+char **argv;
 {
- register char *arg0 = argv[0];
- register int status = 0,res;
+ char *arg0 = argv[0];
+ int status = 0,res;
  int z=1,i,j,dcnt;
  unsigned char upath[LMAX],dpath[LMAX];
  char label[12];
@@ -135,7 +135,7 @@ char *lw,*dpath, *label;
 
 
 pdir(pstat)
-register struct dostat *pstat;
+struct dostat *pstat;
 {
  if (pstat->mode == _SDIR) {
 	printf("%8.8s%3.3s ",pstat->name, &pstat->name[8]);
@@ -159,32 +159,36 @@ register struct dosdisc *dp;
 {
  register FILE *fp;
  register nclust, used=0;
- unsigned char n[3];
  long free;
+ unsigned char n[3];
 
  fp = fdopen(dp->fd, "r");
- nclust = dp->nclust;
 
  if (dp->fatlen == 12) {
+	nclust = ((dp->maindir - dp->fat1) / dp->fatnum - 3) / 3;
 	fseek(fp,dp->fat1+3,0);
-	while ((nclust -=2) > 0) {
+	while (nclust--) {
 		if (fread(n, sizeof(*n),3,fp) != 3)
 			return;
-		if (n[0] || (n[1]&0x0f))
+		if ((n[1]&0x0f)*256+n[0])
 			used++;
-		if ((n[1]&0xf0) || n[2])
+		if (n[2]*16+((unsigned)n[1]>>4))
 			used++;
 	}
  }
  else {
+	nclust = ((dp->maindir - dp->fat1) / dp->fatnum - 4) / 2;
 	fseek(fp,dp->fat1+4,0);
 	while (nclust--) {
 		if (fread(n, sizeof(*n),2,fp) != 2)
 			return;
-		if (n[0] || n[1])
+		if (n[1]*256+n[0] != 0)
 			used++;
 	}
  }
- free = (long)(dp->nclust-used) * dp->clustsiz;
- printf("       %d Datei(en)    %ld Bytes frei\n",dcnt, free);
+ free = ((unsigned long)dp->vol << 9) - ((unsigned long)dp->clustsiz * used + dp->data);
+ if (free < 0)
+	printf("       %d Datei(en)    ??? Bytes frei\n",dcnt);
+ else
+	printf("       %d Datei(en)    %ld Bytes frei\n",dcnt, free);
 }

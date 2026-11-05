@@ -27,7 +27,6 @@ struct dosdisc *dp;
  int i, bps, fat=0;
  unsigned long off=0;
  unsigned char b[17];	/* Boot-Record-Informationen */
- unsigned nclust;	/* Anzahl der Cluster */
 
  if ((dp->fd=open(fn,mode)) < 0)
 	return(-1);
@@ -60,18 +59,17 @@ struct dosdisc *dp;
  lseek(dp->fd,off+11,0);
  if (read(dp->fd,b,17) != 17)
 	return(-1);
- bps = b[1]*256+b[0];
- dp->fat1 = (b[4]*256+b[3])*bps + off;
+ dp->fat1 = (b[4]*256+b[3])*(b[1]*256+b[0]) + off;
  dp->fatnum = b[5];
- dp->maindir = off + ((b[4]*256+b[3]) + (b[12]*256+b[11]) * dp->fatnum) * bps;
+ dp->maindir = ((b[4]*256+b[3]) + (b[12]*256+b[11]) * dp->fatnum) * (b[1]*256+b[0]) + off;
  dp->dirnum = b[7]*256+b[6];
  dp->data = dp->maindir+(dp->dirnum * 32);
- dp->clustsiz = b[2] * bps;
+ dp->clustsiz = b[2] * (b[1]*256+b[0]);
  dp->vol = b[9]*256 + b[8];
- 	nclust = ((long)dp->vol*bps - dp->data + off) / dp->clustsiz;
+ bps = b[1]*256+b[0];
 
  if (fat == 0) {
-	if (nclust > 4095)
+	if (dp->vol - dp->data / bps / b[2] > 4095)
 		fat = 16;
 	else
 		fat = 12;

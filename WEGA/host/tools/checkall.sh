@@ -56,6 +56,11 @@ restor	cc	etc/restor
 sync	cc	bin/sync
 tar	cc	bin/tar
 verify/1.5/verify	cc	bin/verify
+doscopy/1.0/dosformat	cc	usr/bin/dosformat
+doscopy/1.0/dosrm	cc	usr/bin/dosrm
+doscopy/1.0/dosls	cc	usr/bin/dosls
+doscopy/1.0/dosrmdir	cc	usr/bin/dosrmdir
+doscopy/1.0/dosdir	cc	usr/bin/dosdir
 BOOT0/pb.image	cc	pb.image
 standalone/sa.cat	cc	sa.cat
 standalone/sa.format	cc	sa.format
@@ -69,7 +74,7 @@ uuclear	script	bin/uuclear
 whodo	script	bin/whodo
 '
 # not byte-identical yet: reported, not counted
-OPEN='pburn/2.1/pburn:bin/pburn cas/cas:bin/cas'
+OPEN='pburn/2.1/pburn:bin/pburn cas/cas:bin/cas doscopy/1.0/doscat:usr/bin/doscat doscopy/1.0/doscp:usr/bin/doscp doscopy/1.0/dosmkdir:usr/bin/dosmkdir'
 
 # the files known to git, in DIR/WEGA; the emulator is not rebuilt here
 copytree() {
@@ -153,7 +158,7 @@ for p in $OPEN; do
 	cmp -s $T/open.stripped $WEGA/${p#*:} && result "$f" fail 'identical now: enter it in TABLE'
 	o="$o $f"
 done
-echo "open, not counted:$o, doscopy"
+echo "open, not counted:$o"
 
 [ $BUILDONLY = 1 ] && finish
 

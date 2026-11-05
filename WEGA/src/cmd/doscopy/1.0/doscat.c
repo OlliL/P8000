@@ -21,11 +21,11 @@
 #include "dos.h"
 
 main(argc,argv)
-register char **argv;
+char **argv;
 {
- register char *arg0 = argv[0];
+ char *arg0 = argv[0];
  int conv = 1;		/* Newlinekonvertierung */
- register int status = 0,res;
+ int status = 0,res;
  char upath[LMAX],dpath[LMAX];
  struct dosdisc dos;
  struct dostat dstat;

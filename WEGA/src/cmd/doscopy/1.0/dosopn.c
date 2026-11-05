@@ -20,9 +20,9 @@
  * Liefert -1 bei Fehler und 0 wenn nicht gefunden
  */
 dosopn(path,dp,stp)
-register char *path;
-register struct dosdisc *dp;
-register struct dostat *stp;
+char *path;
+struct dosdisc *dp;
+struct dostat *stp;
 {
  char s[LMAX],*p;
  long dadr;
@@ -65,10 +65,10 @@ register struct dostat *stp;
  */
 dosrde(fd,fn,dnum,adr,stp)
 int fd;
-register char *fn;	/* Name des zu suchenden DCP-Files */
+char *fn;	/* Name des zu suchenden DCP-Files */
 int dnum;		/* max. moegliche Anzahl von Verzeichniseintraegn */
-register long adr;	/* Startadresse des Verzeichnisses */
-register struct dostat *stp;
+long adr;	/* Startadresse des Verzeichnisses */
+struct dostat *stp;
 {
  int res;
  char *strchr(),*ext, c='\0';
@@ -90,8 +90,8 @@ register struct dostat *stp;
 }
 
 ncmp(a,b,n)
-register char *a,*b;
-register int n;
+char *a,*b;
+int n;
 {
  while (n--) {
 	if (*b == 0x20 && (*a == '\0' || *a == '.'))
@@ -112,12 +112,12 @@ register int n;
  * mehr im Verzeichnis stehen und -1 bei Lesefehler.
  */
 getde(fd,stat_buf)
-register int fd;
-register struct dostat *stat_buf;
+int fd;
+struct dostat *stat_buf;
 {
- register int i;
- register unsigned date,time;
  unsigned char dirbuf[32];
+ int i;
+ unsigned date,time;
 
  if (read(fd,dirbuf,32)!=32)
 	return(-1);
@@ -163,12 +163,12 @@ register struct dostat *stat_buf;
  * liefert 0 bei Dateiende
  */
 unsigned dosnxt(fd,first,fat,fatlen)
-register int fd;
-register unsigned first;
-register unsigned long fat;
-register int fatlen;
+int fd;
+unsigned first;
+unsigned long fat;
+int fatlen;
 {
- register unsigned nxt;
+ unsigned nxt;
  unsigned char b[2];
 
  if (fatlen == 12) {
