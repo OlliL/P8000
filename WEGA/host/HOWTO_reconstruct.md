@@ -8,7 +8,7 @@ Two models, one handoff per program. Phase A is cheap and mechanical: a tool ans
 
 Never in phase A: change a compiler pass or a switch, change cas, edit a shipped header, write odd forms to force bytes, spend more than 6 attempts on one function. When stuck: note it and go on. A function left open is a normal result.
 
-1. **Date it.** `OLDCC_DATES.md` gives the time, the time gives the compiler (`OLDCC.md`, section 2): ccv1 01/83 .. 07/83, ccv0 1982, shipped cc from 09/83.
+1. **Date it.** `OLDCC_DATES.md` gives the time, the time gives the compiler (`OLDCC.md`, section 2): ccv0 1982, ccv1r 01/05/83, ccv1 01/83 .. 07/83, shipped cc from 09/83. Measure the neighbours too ("Evidence rules").
 2. **Source.** Look in `/mnt/users/olivleh1/BACKUPs/Operating_Systems/SYSIII/sys3/usr/src/cmd`. If it is there, copy it to `src/cmd/NAME/` unchanged and start from it. The SCCS strings of the binary (`strings | grep '@\[\$\]'`) name the files, their order and dates; several strings mean several files. Without a source: step 7 first.
 3. **Build the own code**, with the stdio.h of the time for ccv0 and ccv1 (`-I../cparse`):
    `E="z8k-emu -r $OLDROOT"; $E /bin/ccv1 -O -I../cparse -c x.c`. ccv0 and ccv0p need `make -C host oldroot` once.
@@ -45,6 +45,7 @@ For what is left: finding the source form of a hard function, and changing the c
 
 ## Evidence rules for the old compilers
 
+- Which compiler (owner 2026-11-05): 1. the date of the program (`OLDCC_DATES.md`) names the candidate, the version whose time it lies in (`OLDCC.md`, section 2). 2. Always measure the neighbouring versions too. 3. A new rule goes into the existing version first; `checkall` shows whether its programs stay identical. 4. A new version only when two programs or modules provably contradict each other; it must fit the time line and differ from its neighbour by as few switches as possible. 5. Time and witnesses of each version stand in `OLDCC.md`.
 - A switch needs two independent functions, preferably in different programs. A function and its segmented copy are one. A function that fits only through a switch nothing else needs is a suspect source form. Exceptions only by the owner; they are listed in `OLDCC.md`, section 5.
 - No regression: every exact function stays exact in every program of the same compiler version. A program of another time is no counter-witness.
 - The odder a form, the less likely it was written, even when the bytes fit. An odd form that fits is recorded in `findings.json`; a plainer form or a switch stays possible.

@@ -61,7 +61,9 @@ register variables: "slots" (as many never used frame words as saved registers: 
 |---|---|---|---|
 | 1981 .. 1982, no crt0 stamp (sources 07/82 ..) | packed | chmod, dc, m4, eqn, cpp (12/82), ranlib, the plz tools | v0 (D1 tight) |
 | 10/82 .. 11/82 (crt0 3.1) | packed | ex, vi, at | v0 (D1 tight); shut, dd 11/82 .. 12/82 loose |
-| 01/83 .. 05/83 (crt0 3.1) | packed | size, strip, write, ls, sort, passwd, mount, rm, lint1 | v1 |
+| 01/05/83 (crt0 3.1) | packed | write, rmdir | v1r (write fits v1q and v1 too, rmdir does not fit v1) |
+| 01/14/83 (crt0 3.1) | packed | size | v1, v1q and v1r all fit its own code; its libc: v1q |
+| 01/24/83 .. 05/83 (crt0 3.1) | packed | strip, ls, sort, passwd, mount, rm, lint1 | v1 (strip, rm measured: v1q, v1r do not fit) |
 | 07/83 (crt0 3.2) | packed | ld, cp/ln/mv, login, get, yacc | v1 (ld, mv checked) |
 | 08/11/83 | packed | csh | v1 (last packed one) |
 | 08/22/83 .. 09/01/83 | padded | sh, rsh, kdb, fsdb | D1 slots with the shipped D12: between v1 and shipped |
@@ -92,6 +94,10 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 
 - v1 with `OLD_D14Q` (codgen); cparse and popt are those of v1. Driver `ccv1q`, runs `/lib/v1/cparse`, `/lib/v1q/codgen`, `/lib/v1/popt`.
 - Byte-identical modules of libc-v3.a (the libc in size) from C: filbuf 0_1, rdwr 0_1, malloc 0_1, printf 0_1.
+
+### The time line v1r, v1q, v1
+
+One switch apart each. v1r: no temporary for a return, `?:` through a temporary. v1q: with that return temporary. v1: `?:` without a temporary (changed after 01/05/83, by 01/24/83). The place of v1q between them is a guess: only libc modules witness it, of unknown build time. Not checked: whether v1r needs the cparse of v1 (`OLD_D1`).
 
 ### v1r (01/83)
 
