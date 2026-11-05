@@ -570,12 +570,13 @@ long c;
 			continue;
 		}
 		if (cursym.stype == ' ') {
-			if (cursym.svalue <= cur->svalue)
-				continue;
-			cur->svalue = cursym.svalue;
+			if (cursym.svalue > cur->svalue)
+				cur->svalue = cursym.svalue;
 			continue;
 		}
-		if (cur->svalue != 0 && cursym.stype == '"' && !a) {
+		if (cur->svalue != 0 && cursym.stype == '"') {
+			if (a)
+				continue;
 			if (put_name(cursym.sname) < 8)
 				--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = '\t') : _flsbuf(9, stderr);
 			--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = ' ') : _flsbuf(' ', stderr);
