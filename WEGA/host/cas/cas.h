@@ -114,7 +114,7 @@ struct lcaux {				/* a pair per location counter (jpr.c, optim.c) */
 };
 
 #ifdef OLD_CAS
-#define OLD_ENTBLK	178	/* 176 ... 179 fit the originals */
+#define OLD_ENTBLK	176	/* dc: the { of getwd, 176 entries (putwd gets long) */
 #define OLD_ENTMAX	255
 void earlyopt(void);
 #endif

@@ -634,6 +634,16 @@ delay(p)
 		}
 	}
 	fwalk(p, mapnm, 0);
+#if defined(OLD_D3K) && !defined(OLD_D3KC)
+	/* v0: a parameter the statement assigns to is not known in its register from its start on */
+	if (p->op == ASSIGN && p->left->op == NAME && p->left->sname && p->left->sname->sclass == 9) {
+		register struct rs *n;
+
+		for (n = rsuse; n; n = n->next)
+			if (n->sym == p->left->sname)
+				n->sym = 0;
+	}
+#endif
 	walkf(p, mapregs);
 	canon2(p);
 	while (delay1(p))

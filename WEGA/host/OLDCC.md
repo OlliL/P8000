@@ -9,7 +9,7 @@ found, attempts, refuted ideas and removed switches are in `OLDCC_LOG.md`; which
 ## State
 
 With `make PROG CC=ccv0p` and strip these are byte-identical with the originals: cpp, cparse, scparse, codgen, scodgen,
-popt, spopt. With v1: size, strip, mv (also cp, ln), rm. v1q and v0 build libc modules of their time; dc with v0 differs in 2 places. v1 and v0 are not complete (section 5).
+popt, spopt. With v1: size, strip, mv (also cp, ln), rm. With v0: dc. v1q builds libc modules of its time. v1 and v0 are not complete (section 5).
 
 ## 1 Terms and building
 
@@ -103,7 +103,7 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
   not `OLD_D3`. cas: the old one (D17).
 - Byte-identical modules of libc-v1.a from C: isatty 0_1, stty 0_1, ftell 0_1, readsym 0_1, system 0_1, swap 0_2, printf 0_3.
 - Test bench (System III sources of 38 programs of 1982): 125 of 153 functions equal, 219 differing lines.
-- dc: 2 places from the original (`src/cmd/dc`): scalint reloads a parameter (`ld r7,0(r15)` in front of `removc`), one `call` for `calr`; the libc part fits.
+- Byte-identical: `/bin/dc`.
 - Open forms of the bench: the first register of a statement r2 where ours takes r3 (the getc macro on a global stream);
   the switch dispatch `ld r2,TAB(r3)` against `add r4,r4; neg r4; ld r2,TAB(r4)`; leaf functions without a frame (the
   renaming of register variables into low registers is done by popt `procopt`, in the shipped compiler too).
@@ -203,7 +203,7 @@ All in codgen.
   copies it first (fixclass).
 - v0 (not v0p, `OLD_D3KC` sets the v0p side): a parameter wanted in its own register (also as the address of a load into it) is taken as it is, no copy (`ld r7,4(r7)`,
   `isatty`: no `ld r2,r7`); otherwise it is copied first (`ld r2,r7; ld r13,2(r2)`); a name in a scratch register is taken only when no lighter one is free (`ld r2,r3; ld r13,2(r2)`, dc 3 places); `&&` and `||` keep long parameters too (fseek); an idle pair
-  that holds a parameter is not taken for a new pair; a parameter whose address is taken is forgotten, so it gets its home (swap).
+  that holds a parameter is not taken for a new pair; a parameter whose address is taken is forgotten, so it gets its home (swap); a parameter a statement assigns to is forgotten at the start of the statement (scalint `p = removc(p,n)`).
 - v0p `OLD_D3J`: at a label that jumps have named, only the parameters known at all those jumps stay known; when the record in
   front of the label is a jump (the record `]` does not count), the parameters known at the jumps come back (tfree1, rmconv); of
   those only a long parameter still gets its home in the frame (notoff). At a label no jump has named (a loop head) all jump
@@ -319,13 +319,13 @@ them. One witness.
 `callr` and `jpr` are decided by cas. The old cas runs its jump optimization (`optim`) also during the first pass, and a forward jump
 to a label not defined yet becomes long there. Built with `-DOLD_CAS` (`host/cas/casold`, `src/cmd/cas/old`, `/lib/old/cas`).
 
-- At an opening `{` with 176 to 179 undecided entries or more (`OLD_ENTBLK` 178; nothing separates the four values). The label of the
+- At an opening `{` with 176 undecided entries or more (`OLD_ENTBLK`; dc: the `{` of getwd has exactly 176, so its call of putwd stays long). The label of the
   function in front of the `{` is known then.
 - When an entry would be made behind 255 entries (`OLD_ENTMAX`): functions too long for the first rule, yylex, rmove.
 - A forward jump does not count a jpr that stands at its label (`>`, the shipped cas has `>=`): acon. One witness.
 
 Why these limits is not known. Also dc of 07/82 follows the rule: from the System III source, split in front of add0 as WEGA has dc1.c
-and dc2.c, 1 wrong form of 1448 aligned jumps and calls. The manual (ZEUS Languages Programming Tools 3.2 and Band B, 3.4.5) names two
+and dc2.c, all forms right. The manual (ZEUS Languages Programming Tools 3.2 and Band B, 3.4.5) names two
 more conditions, `.=` and a difference of labels with a jump between them; no input has a case that depends on them, so they are not
 built. The shipped cas and the ZEUS cas do not have them.
 

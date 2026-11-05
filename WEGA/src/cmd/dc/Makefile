@@ -1,4 +1,4 @@
-# dc: not yet byte-identical, see src/TODO.md.
+# dc: byte-identical with /bin/dc (ccv0).
 #
 #   make              build ./dc
 #   make install PREFIX=dir

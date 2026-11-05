@@ -39,6 +39,7 @@ size/size	ccv1	bin/size
 strip/strip	ccv1	usr/bin/strip
 mv/mv	ccv1	bin/mv bin/cp bin/ln
 rm/rm	ccv1	bin/rm
+dc/dc	ccv0	bin/dc
 ar	cc	bin/ar
 cc/cc	cc	bin/cc
 cc/scc	cc	bin/scc
@@ -65,7 +66,7 @@ uuclear	script	bin/uuclear
 whodo	script	bin/whodo
 '
 # not byte-identical yet: reported, not counted
-OPEN='dc/dc:bin/dc ranlib/ranlib:usr/bin/ranlib pburn/2.1/pburn:bin/pburn cas/cas:bin/cas'
+OPEN='ranlib/ranlib:usr/bin/ranlib pburn/2.1/pburn:bin/pburn cas/cas:bin/cas'
 
 # the files known to git, in DIR/WEGA; the emulator is not rebuilt here
 copytree() {

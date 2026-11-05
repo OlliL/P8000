@@ -34,7 +34,6 @@ In this order; every change of a compiler goes through `checkall`.
 
 - `write`: own code exact with v1, libc part open.
 - `rmdir`: main differs (D4, D18), libc part open.
-- `dc`: 2 places in the own code with ccv0 (scalint reloads a parameter, one `call`), libc part fits.
 - `ranlib`: own code differs (v-version to be found); `readsym` is an old libc module.
 - `doscopy` (8 commands): differences not analysed; built with the current cc and libc, the owner believes. The build stops on the `/usr/include` dependencies outside the guest ROOT. The owner began this on the branch `doscopy`: inspect it first for changes to take over.
 - `pburn`: same size, built with the shipped cc; differences not analysed.
