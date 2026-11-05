@@ -96,7 +96,6 @@ struct symbol *a;
 char c;
 {
 	register struct symbol *p;
-	struct p2seg *q;
 
 	p = a;
 	if (!p)
@@ -112,29 +111,26 @@ char c;
 	p->svalue = 0;
 	p->sseg = 0;
 	if (c == 0x22) {
-		q = (struct p2seg *)lastt;
-		if (!q)
+		if (!lastt)
 			return;
-		p->svalue = ((long)(q->segno) << 24) + (unsigned)q->s_code;
-		p->sseg = q->segidx;
+		p->svalue = (unsigned)lastt->s_code + ((long)(lastt->segno) << 24);
+		p->sseg = lastt->segidx;
 		return;
 	}
 	if (c == 0x23) {
-		q = (struct p2seg *)lastd;
-		if (!q)
+		if (!lastd)
 			return;
-		p->svalue = (unsigned)(q->s_code + q->s_data);
-		p->svalue = p->svalue + ((long)(q->segno) << 24);
-		p->sseg = q->segidx;
+		p->svalue = (unsigned)(lastd->s_code + lastd->s_data);
+		p->svalue = ((long)(lastd->segno) << 24) + p->svalue;
+		p->sseg = lastd->segidx;
 		return;
 	}
 	if (c == 0x24) {
-		q = (struct p2seg *)lastb;
-		if (!q)
+		if (!lastb)
 			return;
-		p->svalue = (unsigned)(q->s_code + q->s_data + q->s_bss);
-		p->svalue = p->svalue + ((long)(q->segno) << 24);
-		p->sseg = q->segidx;
+		p->svalue = (unsigned)(lastb->s_code + lastb->s_data + lastb->s_bss);
+		p->svalue = ((long)(lastb->segno) << 24) + p->svalue;
+		p->sseg = lastb->segidx;
 		return;
 	}
 	if (c != 0x21)
@@ -144,7 +140,7 @@ char c;
 		p->sseg = maxseg;
 	else
 		p->sseg = stksegn;
-	p->svalue = p->svalue + ((long)p->sseg << 24);
+	p->svalue = ((long)p->sseg << 24) + p->svalue;
 }
 
 /* mkfsym: make the file symbol of a symbol (0x6a08..0x6a58 of /bin/sld) */
