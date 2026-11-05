@@ -247,9 +247,7 @@ struct symbol **a;
 		if (symindex >= 0x0ffa)
 			report_error(2, "Symbol table overflow");
 		symhash[symindex] = a;
-		r = table16_entry(symindex++);
-		lastsym = r;
-		*a = r;
+		*a = lastsym = r = table16_entry(symindex++);
 		symindex = unpack_run(cursym.sname, r->sname) + symindex;
 		r->stype = cursym.stype;
 		r->svalue = cursym.svalue;
