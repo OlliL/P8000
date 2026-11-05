@@ -188,7 +188,7 @@ char **argv;
 
 	fflag = 0;
 	goto test;
-loop:
+	do {
 	if (**argv == '-')
 	switch ((*argv)[1]) {
 	case 'f':
@@ -308,18 +308,19 @@ skip2:
 		}
 		goto next;
 	}
+	goto next;
+again:
+	savev++;
+	argv = savev;
+	argc = --savec;
+	goto test;
 next:
 	argc--;
 	argv++;
-test:
-	if (argc > 0)
-		goto loop;
-	if (incmd--) {
-		savev++;
-		argv = savev;
-		argc = --savec;
-		goto test;
-	}
+test:	;
+	} while (argc > 0);
+	if (incmd--)
+		goto again;
 }
 
 /* read_words: read a command file (-f) and split it into the words of the argument list (0x0f26..0x1070 of /bin/sld) */
@@ -340,31 +341,29 @@ char *name;
 		report_error(2, "Unable to open command file");
 	inword = 0;
 	idx = 0;
-	goto rd;
-body:
+	while (n = read(fd, &c, 1) != 0) {
 	if (n == -1)
 		report_error(2, "Bad command file read");
-	if (!(ctab[c] & 8)) {
+	if (ctab[c] & 8) {
+		if (!inword) {
+			inword++;
+			*p = 0;
+			p++;
+			if (p > libname)
+				report_error(2, "Too many command file arguments");
+			idx++;
+			if (idx > 2000)
+				report_error(2, "Command file arguments too long");
+			cmdargv[idx] = p;
+		}
+	} else {
 		inword = 0;
 		*p = c;
 		p++;
 		if (p > libname)
 			report_error(2, "Command file arguments too long");
-	} else if (!inword) {
-		inword++;
-		*p = 0;
-		p++;
-		if (p > libname)
-			report_error(2, "Too many command file arguments");
-		idx++;
-		if (idx > 2000)
-			report_error(2, "Command file arguments too long");
-		cmdargv[idx] = p;
 	}
-rd:
-	n = read(fd, &c, 1) != 0;
-	if (n)
-		goto body;
+	}
 	cmdav = cmdargv;
 	cmdac = idx;
 	close(fd);
