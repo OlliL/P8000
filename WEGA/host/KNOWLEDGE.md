@@ -923,6 +923,7 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/popt` (`rename_regs`, z23.c) | scans `p->code` of every node between the two ldm without testing it: a node without operand text reads the string at address 0; the "preceded by alnum" test looks at `q[-1]` of the search string (the low byte of the entry length) instead of the operand (the same quirk as in the procopt row) | kept in src/cmd/popt since 2026-11-01 | `host/OLDCC_LOG.md` 2026-11-01 |
 | `/lib/popt` (`fixldm`, z23.c) | the removal of an `ldm` node (`n == 0`) unlinks it with `p->forw->back = p->back` without testing `p->forw`: an ldm as the last node would write at address 4 (does not occur: the list ends with the function's closing nodes) | kept in src/cmd/popt | `host/OLDCC_LOG.md` 2026-11-01 |
 | libc `symscan` | long names: the loop `while (*q++ && *p++ && *p)` compares no characters, so a name of the same length matches | kept: the member stays as `.s` (`src/lib/libc/oldcc/symscan`), the same loop in the C form tried | measured 2026-11-04 |
+| /lib/libc.a, the archive | the padding byte behind the odd last member `Library.SC` is `i` (0x69), not 0; the member headers hold the dates and owners of the original build, which `ar` cannot reproduce | kept: `src/lib/libc/arhdr.s` holds the headers and that byte, `mkar.sh` joins them with the members (`dd`, `cat`, `expr`, also on WEGA) | `cmp` of the whole file in `checkall`, 2026-11-05 |
 | libc `_doprnt` 0_2 (strip) | `if (c < 'a') { ... }` takes width and precision for any character below 'a', and `break` when the format ends leaves the whole output loop | kept in `src/lib/oldlibc/doprnt/0_2.c` | measured 2026-11-04 |
 | `/lib/popt` (`rmove`, z22.c) | when a conditional jump is decided at compile time (do_cjp, `r12 == 0`) the scan goes on with `p = p->back->back`; the push test behind push_end looks at `RT2 + 1` | kept in src/cmd/popt; host/popt had `p->back->forw` and `RT1 + 1` until 2026-11-01, now as the original (the popt corpus showed neither) | `host/OLDCC_LOG.md` 2026-11-01 |
 | `/lib/popt` (`adrlen`, z22.c) | the loop over leading blanks tests the copy in a register but increments the parameter (`while (*p == ' ') s++;`): an operand that starts with a blank loops for ever | kept in src/cmd/popt (cc writes no such operand) | `host/OLDCC_LOG.md` 2026-11-01 |
@@ -1453,7 +1454,7 @@ with the original member: `.s` with `/bin/as` (PLZ/ASM; `-u`, `-f` tried), `.s` 
   (`fldctl`, `flds`, `fmul`, `fldd`, ...); without it they give ERROR 91.
   Module names matter: they appear as `<module>_p`/`<module>_d` symbols
   (abort.s is module `abort_s`).
-- Result: 175 of the 179 members identical (`/lib/libc.a` holds 179 objects and `Library.SC`); the 4 others are kept as cas sources in
+- The archive as a whole is byte-identical too (2026-11-05, `arhdr.s`, `mkar.sh`). Result: 175 of the 179 members identical (`/lib/libc.a` holds 179 objects and `Library.SC`); the 4 others are kept as cas sources in
   `src/lib/libc/oldcc`, see "oldlibc":
   - `malloc`: one instruction, `mult rr2,r6` against `mult rr2,0(r15)`. `swap`: `0(r15)` against `@r15`, a register known in the shipped cc.
     `symscan`: `ld r3,..; lda r4,..` where the shipped cc takes r2, r3. `nlist`: only the frame, 2 bytes less. These look like a

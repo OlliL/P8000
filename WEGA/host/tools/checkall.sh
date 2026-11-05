@@ -115,6 +115,7 @@ for f in `cd $T/orig && ls`; do
 	if cmp -s $T/orig/$f $L/obj/$f; then same=`expr $same + 1`; else result "libc $f" fail "differs or missing: $L/obj/$f"; fi
 done
 result 'libc.a members' ok "$same identical, from source"
+if cmp -s $L/libc.a $WEGA/lib/libc.a; then result 'libc.a' ok 'identical, the whole file'; else result 'libc.a' fail "cmp $L/libc.a $WEGA/lib/libc.a"; fi
 echo "$TABLE" | while IFS='	' read file cc origs; do
 	[ -n "$file" ] || continue
 	set -- $origs
