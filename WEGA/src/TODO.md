@@ -3,15 +3,7 @@
 The plan and nothing else. What is known goes to `host/KNOWLEDGE.md`, the old compilers to `host/OLDCC.md`, the state per function to
 `tools/FINDINGS.md` of a program. A finished step leaves this file. No new programs before step 9 (owner 2026-11-04).
 
-What is byte-identical is checked by `make -C host checkall` (14 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
-
-## Where we stopped (2026-11-04)
-
-Done: real libraries; v0 corrected against libc-v1 and dc, new compiler v1q (2026-11-05). `src/lib/libc-v1.a` .. `libc-v9.a` (`lib/oldlibc/Makefile`) from C where a compiler gives the bytes, every program links `LIBC`, no more single objects. `/lib/libc.a` rebuilt from source, all members compared. Next: finish step 2 with the compilers it needs, then step 4 and 5.
-
-To look at: codgen, scodgen and spopt built with the shipped cc and shipped libc plus the old sprintf differ from the originals on the corpora (47, 46, 79 cases; 0 with `libc-v5.a`, 2 for spopt, the `NK core` line), and stage 1 is built that way. The final programs are identical, so it does no harm so far; which module causes it is not known.
-
-Fact to keep in mind: the old compilers of stage 1 use shipped `libc.a` plus only `sprintf` of the old printf, because `popt` (`z23.c`) uses the value of sprintf, the buffer; the shipped one returns a count, and popt then silently loses its register substitution.
+What is byte-identical is checked by `make -C host checkall` (14 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program. Current work: step 5. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
 
 ## 2. `lib/libc` and `oldlibc` from C, what is left
 
@@ -46,6 +38,8 @@ The source follows the System III sources as far as the bytes allow: names, macr
 Take over the changes of the sources where they change behaviour. Make the missing programs from `cmd`: cpp, cparse, scparse. Checked by the corpora against the originals.
 
 ## 8. Clean up
+
+To look at: codgen, scodgen and spopt built with the shipped cc and shipped libc plus the old sprintf (stage 1) differ from the originals on the corpora (47, 46, 79 cases; with `libc-v5.a` 0, spopt 2, the `NK core` line). The final programs are identical; which module causes it is not known.
 
 Switches not in any version (`OLD_D1F`, `OLD_D2D`, `OLD_D3A`, `OLD_D19A`); switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
 

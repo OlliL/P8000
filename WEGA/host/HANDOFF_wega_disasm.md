@@ -1,6 +1,6 @@
 # Handoff: WEGA build chain back to C
 
-Status 2026-11-04. Entry point. Read `../CLAUDE.md` first (rules, how to build, where to look things up), then this
+Status 2026-11-05. Entry point. Read `../CLAUDE.md` first (rules, how to build, where to look things up), then this
 file: the inventory and the decisions of the whole project. The state of a program is in its `tools/FINDINGS.md`, that of the
 old compilers in `OLDCC.md`, `OLDCC_SWITCHES.md` and the end of `OLDCC_LOG.md`. A section on the current work is written here only when a
 handoff is due.
@@ -34,8 +34,8 @@ The state: the check commands in the last column; the plan: `../src/TODO.md`.
 | `sld` | `/bin/sld` | 46074 | - (source in `host/ld`) | `host/ld/sld` | yes | done: 91 command lines identical | `make -C host check` (ld) |
 | `gld` | `/bin/gld` | 27616 | - (source in `host/ld`) | `host/ld/gld` | yes | done on the check lines | `make -C host check` (ld) |
 | `ar` | `/bin/ar` | 12396 | `src/cmd/ar.c` | `host/ar/ar` | to be checked | done on the host (archives identical) | `make -C host check` (ar) |
-| `ranlib`, `strip`, `size` | `/usr/bin/ranlib`, `/usr/bin/strip`, `/bin/size` | 7732, 9072, 7732, | `src/cmd/ranlib`, `strip`, `size` | `host/binutils` | to be checked | done on the host; the `src/cmd` versions still differ | `make -C host check` (binutils) |
-| `libc`, `slibc` | `/lib/libc.a`, `/lib/slibc.a` | 90484, 110938 | `src/lib/libc` (170 modules in C), `src/lib/libc/oldcc` (10 modules as `.s`), `src/lib/oldlibc` (versions) | `host/libc` | partly | 170 of 180 from C; 7 differ (4 older cc, 3 other revision); 3 without C | `make -C host check` (libc), `make -C host/oldcc verify` |
+| `ranlib`, `strip`, `size` | `/usr/bin/ranlib`, `/usr/bin/strip`, `/bin/size` | 7732, 9072, 7732, | `src/cmd/ranlib`, `strip`, `size` | `host/binutils` | to be checked | done on the host; the `src/cmd` versions byte-identical (`checkall`) | `make -C host check` (binutils) |
+| `libc`, `slibc` | `/lib/libc.a`, `/lib/slibc.a` | 90484, 110938 | `src/lib/libc` (`libc.a` byte-identical as a whole file; 175 of 179 objects from source), `src/lib/libc/oldcc` (4 objects as `.s`), `src/lib/oldlibc` (versions) | `host/libc` | partly | 175 of 179 objects from C; 4 by a compiler between v1 and shipped (`.s`) | `make -C host check` (libc), `make -C host/oldcc verify` |
 | `crt0` (start-up files) | `/lib/crt0.o` and others | 226 |  `src/lib/libc/crt` (`crt0.list`, `mkcrt0.sh`) | - | to be checked | generated; start code checked against the original | `src/lib/libc/crt` |
 | `yacc` | `/usr/bin/yacc` (used by `verify-wega`) | 37224 |  - | - | - | not inventoried | open |
 
@@ -59,9 +59,15 @@ original tools and compares each program).
 
 ## Decisions open for the owner
 
-- **`host/oldcc`** stays: it checks the ten `.s` modules that the old cc produced. Its paths are corrected.
+- **`host/oldcc`** stays: it checks the four `.s` objects that the old cc produced. Its paths are corrected.
 - **`yacc`:** should it be added to the inventory and to the tool chain?
 
 ## Next steps
 
-The order is in `../src/TODO.md`. What is known about the old compilers: `OLDCC.md`; the procedure: `HOWTO_reconstruct.md`.
+The plan is `../src/TODO.md`; the current work is its step 5, the open programs in `cmd/`, in its order. Pause after each finished program; the owner decides on the next.
+
+Identical since 2026-11-05: dc and ranlib (v0), write and rmdir (v1r). Next: `doscopy` (inspect the owner's branch `doscopy` first), `pburn`, then `ld` and `sld` (decide the source base first). Open in step 2: 13 `.s` in `oldlibc`, 2 of them real assembler, and 4 objects of `libc/oldcc`.
+
+Which compiler to take: the rule in `HOWTO_reconstruct.md`, "Evidence rules": the date first, measure the neighbours, sharpen an existing version before a new one. The time line is in `OLDCC.md`. Do not invent versions.
+
+`make -C host checkall` (14 minutes) was last run in full before dc; since then only `checkall -b`. Run it in full before the next commit that touches a pass. `oldcc.sh matrix check` reports the table of switches as older than the passes: measure again (step 8 at the latest).
