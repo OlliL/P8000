@@ -70,4 +70,4 @@ Identical since 2026-11-05: dc and ranlib (v0), write and rmdir (v1r). Next: `do
 
 Which compiler to take: the rule in `HOWTO_reconstruct.md`, "Evidence rules": the date first, measure the neighbours, sharpen an existing version before a new one. The time line is in `OLDCC.md`. Do not invent versions.
 
-`make -C host checkall` (14 minutes) was last run in full before dc; since then only `checkall -b`. Run it in full before the next commit that touches a pass. `oldcc.sh matrix check` reports the table of switches as older than the passes: measure again (step 8 at the latest).
+`make -C host checkall` (14 minutes): last full run `ALL OK` at f4d1be0d (2026-11-05), with all corpora. Seen once: the build stopped with `cannot unlink /tmp/cc.-5.s` and passed unchanged on the next run; guess: the emulator gives the host pid to the guest, negative as 16 bits. Not fixed. `oldcc.sh matrix check` reports the table of switches as older than the passes: measure again (step 8 at the latest).
