@@ -402,18 +402,19 @@ struct rlent *p;
 int n;
 {
 	struct rlent *e;
-	struct rlent *q;
+	char *q;
 	struct symbol *q2;
 
-	q = p;
+	q = (char *)p;
 	e = p + n;
 	goto test;
 body:
-	if (p >= q) {
+	if ((char *)p >= q) {
 		if ((p->rname[0] & 0x80) != 0)
-			q = (struct rlent *)(p->rname + (p->rname[0] & 0x7f));
+			q = p->rname + (p->rname[0] & 0x7f);
 		q2 = *pslookup(p->rname);
 		if (q2 != 0) {
+		known:
 			if (q2->stype != 0x20)
 				warn_sym_redef(0, q2);
 		}
