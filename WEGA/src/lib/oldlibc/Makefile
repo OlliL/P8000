@@ -14,6 +14,7 @@
 #   libc-v7.a  cparse, scparse (10/83)
 #   libc-v8.a  cc, scc
 #   libc-v9.a  ld (07/83)
+#   libc-v10.a write, rmdir (01/83)
 #
 #   make        (needs ../libc made, and ccv1, ccv0, ccv0p)
 #   make clean
@@ -21,12 +22,13 @@
 CC = cc
 CCV1 = ccv1
 CCV1Q = ccv1q
+CCV1R = ccv1r
 CCV0 = ccv0
 CCV0P = ccv0p
 CAS = cas
 AR = ar
 
-LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a
+LIBS = ../libc-v1.a ../libc-v2.a ../libc-v3.a ../libc-v4.a ../libc-v5.a ../libc-v6.a ../libc-v7.a ../libc-v8.a ../libc-v9.a ../libc-v10.a
 
 all: $(LIBS)
 
@@ -417,6 +419,90 @@ system/0_2.o: ../libc/stdio/system.c
 ungetc/0_1.o: ../libc/stdio/ungetc.c
 	-@mkdir ungetc 2>/dev/null
 	cd ungetc ; $(CCV0P) -O -I../../libc/stdio -c ../../libc/stdio/ungetc.c ; mv ungetc.o 0_1.o
+
+LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/obj/ffltioc.o filbuf/0_4.o flsbuf/0_3.o endopen/0_5.o \
+	 findiop/0_3.o ../libc/obj/data.o ../libc/obj/__callex.o ../libc/obj/cuexit.o ttyname/0_1.o cnvt/0_3.o \
+	 ../libc/obj/decimal.o length/0_4.o malloc/0_6.o isatty/0_3.o stty/0_4.o strcat/0_3.o strcmp/0_2.o \
+	 strcpy/0_3.o strlen/0_3.o strrchr/0_3.o ../libc/obj/access.o ../libc/obj/alarm.o ../libc/obj/brk.o \
+	 ../libc/obj/chmod.o ../libc/obj/close.o ../libc/obj/creat.o ../libc/obj/execl.o ../libc/obj/fork.o \
+	 ../libc/obj/fstat.o ../libc/obj/ioctl.o ../libc/obj/lseek.o ../libc/obj/open.o ../libc/obj/read.o \
+	 ../libc/obj/signal.o ../libc/obj/stat.o ../libc/obj/umask.o ../libc/obj/unlink.o ../libc/obj/wait.o \
+	 ../libc/obj/write.o ../libc/obj/cerror.o
+../libc-v10.a: $(LIBv10)
+	sh mklib.sh $@ $(AR) $(LIBv10)
+
+rdwr/0_4.o: ../libc/stdio/rdwr.c
+	-@mkdir rdwr 2>/dev/null
+	cd rdwr ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/stdio/rdwr.c ; mv rdwr.o 0_4.o
+
+fopen/0_2.o: ../libc/stdio/fopen.c
+	-@mkdir fopen 2>/dev/null
+	cd fopen ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/stdio/fopen.c ; mv fopen.o 0_2.o
+
+filbuf/0_4.o: ../libc/stdio/filbuf.c
+	-@mkdir filbuf 2>/dev/null
+	cd filbuf ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/stdio/filbuf.c ; mv filbuf.o 0_4.o
+
+findiop/0_3.o: ../libc/stdio/findiop.c
+	-@mkdir findiop 2>/dev/null
+	cd findiop ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/stdio/findiop.c ; mv findiop.o 0_3.o
+
+ttyname/0_1.o: ../libc/gen/ttyname.c
+	-@mkdir ttyname 2>/dev/null
+	cd ttyname ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/ttyname.c ; mv ttyname.o 0_1.o
+
+cnvt/0_3.o: ../libc/gen/cnvt.c
+	-@mkdir cnvt 2>/dev/null
+	cd cnvt ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/cnvt.c ; mv cnvt.o 0_3.o
+
+length/0_4.o: ../libc/gen/length.c
+	-@mkdir length 2>/dev/null
+	cd length ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/length.c ; mv length.o 0_4.o
+
+isatty/0_3.o: ../libc/gen/isatty.c
+	-@mkdir isatty 2>/dev/null
+	cd isatty ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/isatty.c ; mv isatty.o 0_3.o
+
+stty/0_4.o: ../libc/gen/stty.c
+	-@mkdir stty 2>/dev/null
+	cd stty ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/stty.c ; mv stty.o 0_4.o
+
+strcat/0_3.o: ../libc/gen/strcat.c
+	-@mkdir strcat 2>/dev/null
+	cd strcat ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/strcat.c ; mv strcat.o 0_3.o
+
+strcmp/0_2.o: ../libc/gen/strcmp.c
+	-@mkdir strcmp 2>/dev/null
+	cd strcmp ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/strcmp.c ; mv strcmp.o 0_2.o
+
+strcpy/0_3.o: ../libc/gen/strcpy.c
+	-@mkdir strcpy 2>/dev/null
+	cd strcpy ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/strcpy.c ; mv strcpy.o 0_3.o
+
+strlen/0_3.o: ../libc/gen/strlen.c
+	-@mkdir strlen 2>/dev/null
+	cd strlen ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/strlen.c ; mv strlen.o 0_3.o
+
+strrchr/0_3.o: ../libc/gen/strrchr.c
+	-@mkdir strrchr 2>/dev/null
+	cd strrchr ; $(CCV1R) -O -I../../../cmd/cparse -c ../../libc/gen/strrchr.c ; mv strrchr.o 0_3.o
+
+flsbuf/0_3.o: flsbuf/0_3.c
+	cd flsbuf ; $(CCV1R) -O -I../../../cmd/cparse -c 0_3.c
+
+endopen/0_5.o: endopen/0_5.c
+	cd endopen ; $(CCV1R) -O -I../../../cmd/cparse -c 0_5.c
+
+printf/0_7.o: printf/0_2.c
+	-@mkdir printf/0_7.d 2>/dev/null
+	cd printf/0_7.d ; $(CCV1R) -O -I../../../../cmd/cparse -c ../0_2.c ; mv 0_2.o ../0_7.o
+
+malloc/0_6.o: malloc/malloc.c
+	-@mkdir malloc/0_6.d 2>/dev/null
+	cd malloc/0_6.d ; $(CCV1R) -O -c ../malloc.c ; mv malloc.o ../0_6.o
+
+doprnt/0_8.o: doprnt/0_8.s
+	cd doprnt ; $(CAS) -u -o 0_8.o 0_8.s
 
 clean:
 	rm -f */0_*.o */*.o $(LIBS)

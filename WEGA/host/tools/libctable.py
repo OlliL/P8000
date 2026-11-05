@@ -32,7 +32,7 @@ OLDROOT = os.environ.get('OLDROOT', os.path.normpath(os.path.join(REPO, '..', 't
 SYS3 = os.environ.get('SYS3LIBC', '/mnt/users/olivleh1/BACKUPs/Operating_Systems/SYSIII/sys3/usr/src/lib/libc')
 TMP = os.environ.get('LIBC_TMP', '/tmp/wega_libc')
 EMU = os.path.join(REPO, 'host', 'z8k-emu', 'z8k-emu')
-COMPILERS = [('cc', WEGA, '/bin/cc'), ('ccv1', OLDROOT, '/bin/ccv1'), ('ccv1q', OLDROOT, '/bin/ccv1q'), ('ccv0', OLDROOT, '/bin/ccv0'), ('ccv0p', OLDROOT, '/bin/ccv0p')]
+COMPILERS = [('cc', WEGA, '/bin/cc'), ('ccv1', OLDROOT, '/bin/ccv1'), ('ccv1q', OLDROOT, '/bin/ccv1q'), ('ccv1r', OLDROOT, '/bin/ccv1r'), ('ccv0', OLDROOT, '/bin/ccv0'), ('ccv0p', OLDROOT, '/bin/ccv0p')]
 
 
 def norm(t):

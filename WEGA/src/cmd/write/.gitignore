@@ -1,0 +1,3 @@
+write
+crt0.s
+*.o

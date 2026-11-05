@@ -14,10 +14,9 @@ char	*strrchr();
 char	*strcat();
 char	*strcpy();
 
-main(argc,argv,status)		/* status: the frame word below argv, a third parameter (guess) */
+main(argc,argv)
 int argc;
 char **argv;
-int status;
 {
 
 	if(argc < 2) {
@@ -26,11 +25,7 @@ int status;
 	}
 	while(--argc)
 		rmdir(*++argv);
-	if(Errors)
-		status = 2;
-	else
-		status = 0;
-	exit(status);
+	exit(Errors? 2: 0);
 }
 
 rmdir(d)

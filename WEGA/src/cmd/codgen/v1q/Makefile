@@ -8,11 +8,10 @@
 # Switches (host/OLDCC.md):
 #   OLD_D3    the registers keep their contents at the join of && and || (no rfreeall in cbranch)
 #   OLD_D14Q  the value of a ?: goes through a temporary of the parameter area
-#   OLD_D1S   no temporary for a return of a constant or a call
 
 CC = cc
 CFLAGS = -O
-SWITCHES = -DOLD_D3 -DOLD_D14Q -DOLD_D1S
+SWITCHES = -DOLD_D3 -DOLD_D14Q
 PREFIX = /
 LD = ld
 LIBC = ../../../lib/libc-v5.a

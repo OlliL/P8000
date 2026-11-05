@@ -1,0 +1,3 @@
+rmdir
+crt0.s
+*.o

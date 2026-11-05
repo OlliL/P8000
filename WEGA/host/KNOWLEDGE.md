@@ -1548,6 +1548,7 @@ Programs were linked from real libraries: with `ar` archives of the members, `ld
 | libc-v7 | cparse, scparse (10/83) |
 | libc-v8 | cc, scc |
 | libc-v9 | ld (07/83); its order conflicts with v6, its versions do not |
+| libc-v10 | write, rmdir (01/83) |
 
 The numbers are ours. cparse differs from codgen and popt in the order (`ctype_`) and the `data` module; ld from mv and rm in `data` against `flsbuf`. `perror` and `errlst` are in codgen because `cerror` in `comm3.c` calls `perror`. Not looked at: `slibc.a` and the segmented programs.
 A real library also answers a question of the order: `ld` takes members in archive order, so the original order of the members is a list the original library had.

@@ -1637,7 +1637,9 @@ gencall(p, cookie)
 	}
 	p->op = UCALL;
 	rsfreeall(1);
+#ifndef OLD_D14Q
 	tmpoff = 0;
+#endif
 #ifdef SEG
 	fop = match(p, 0x16);
 	if (indirect)

@@ -39,6 +39,8 @@ size/size	ccv1	bin/size
 strip/strip	ccv1	usr/bin/strip
 mv/mv	ccv1	bin/mv bin/cp bin/ln
 rm/rm	ccv1	bin/rm
+write/write	ccv1r	bin/write
+rmdir/rmdir	ccv1r	bin/rmdir
 dc/dc	ccv0	bin/dc
 ar	cc	bin/ar
 cc/cc	cc	bin/cc

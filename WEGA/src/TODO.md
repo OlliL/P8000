@@ -21,7 +21,7 @@ Fact to keep in mind: the old compilers of stage 1 use shipped `libc.a` plus onl
 - With v1q (size): `doprnt` 0_1, `endopen` 0_1 (the value of an `&&` through the temporary).
 - With v0: `fseek` 0_2 (one statement: the registers at the label of an else, `OLD_D3J` fits it and not dc), `doprnt` 0_3.
 - Libc of the passes: `malloc` 0_3 (a parameter reloaded at a label, the order of `q+temp-1`), `cnvt` 0_2 (`-val` of a long parameter from memory, one witness), `doprnt` 0_5, 0_7 (`_align` spills r5, `ap = argp` reloads, the order of a double argument), `fltioc` 0_1.
-- Others: `swap` 0_1, `malloc` 0_4.
+- Others: `swap` 0_1, `malloc` 0_4, `doprnt` 0_8 (0_1 with a smaller frame in `_strout`, libc-v10).
 - Assembler in the original, these stay `.s`: `open` 0_1, `ecvt` 0_1.
 
 ## 4. Clean up `tools/`
@@ -32,7 +32,6 @@ Gone: the cutting of objects, `.link`, `.spec`, `gen_makefile.py` of cpp and ld.
 
 In this order; every change of a compiler goes through `checkall`.
 
-- `write`, `rmdir`: libc of the family of libc-v3 (new library needed). With v1q: fopen, isatty, stty, ttyname fit. Open: filbuf, flsbuf (near), endopen 0_1, length, strcat, strcpy; rmdir main (D4, D18). `host/OLDCC_LOG.md`.
 - `ranlib`: own code differs (v-version to be found); `readsym` is an old libc module.
 - `doscopy` (8 commands): differences not analysed; built with the current cc and libc, the owner believes. The build stops on the `/usr/include` dependencies outside the guest ROOT. The owner began this on the branch `doscopy`: inspect it first for changes to take over.
 - `pburn`: same size, built with the shipped cc; differences not analysed.

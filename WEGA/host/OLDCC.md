@@ -9,7 +9,7 @@ found, attempts, refuted ideas and removed switches are in `OLDCC_LOG.md`; which
 ## State
 
 With `make PROG CC=ccv0p` and strip these are byte-identical with the originals: cpp, cparse, scparse, codgen, scodgen,
-popt, spopt. With v1: size, strip, mv (also cp, ln), rm. With v0: dc. v1q builds libc modules of its time. v1 and v0 are not complete (section 5).
+popt, spopt. With v1: size, strip, mv (also cp, ln), rm. With v1r: write, rmdir. With v0: dc. v1q builds libc modules of its time. v1 and v0 are not complete (section 5).
 
 ## 1 Terms and building
 
@@ -90,8 +90,12 @@ the doscopy programs, the standalone programs (`make -C host verify-wega`). All 
 
 ### v1q (before v1)
 
-- v1 with `OLD_D14Q` and `OLD_D1S` (codgen: no temporary for a return of a constant or a call: fopen, isatty, stty in write and rmdir); cparse and popt are those of v1. Driver `ccv1q`, runs `/lib/v1/cparse`, `/lib/v1q/codgen`, `/lib/v1/popt`.
+- v1 with `OLD_D14Q` (codgen); cparse and popt are those of v1. Driver `ccv1q`, runs `/lib/v1/cparse`, `/lib/v1q/codgen`, `/lib/v1/popt`.
 - Byte-identical modules of libc-v3.a (the libc in size) from C: filbuf 0_1, rdwr 0_1, malloc 0_1, printf 0_1.
+
+### v1r (01/83)
+
+- v1q with `OLD_D1R` (no temporary for the value of a return). Driver `ccv1r`, its own codgen. Byte-identical: `/bin/write`, `/bin/rmdir`, with `libc-v10.a`.
 
 ### v0 (1982)
 
@@ -295,7 +299,7 @@ The old scc keeps bit 31 of a segmented address constant (`ldl rr2,#%87000030`),
 
 `OLD_D14Q` (v1q; codgen store, the QUEST of order, freeparm, delay): the value of a `?:` of an integer type always goes through a temporary of the parameter area, at the start of the frame (`@r15`, the
 autos behind it; `ld @r15,#1; jr; ld @r15,#%0200; ...; ld r5,@r15`). Each arm is assigned to it, the delayed `x++` of the arm follows that store (`ld @r15,r3; inc @r13,#1`, not in front of the arm). The temporaries of one function are not
-used again: the offset goes up over the statements (endopen 0_1: `@r15`, 2, 4). Witnesses: filbuf, rdwr, malloc, printf of size.
+used again: the offset goes up over the statements and calls (endopen: `@r15`, 2, 4). An `&&` on the left of a `||` also goes into such a temporary (endopen, with `(char)` operands). Witnesses: filbuf, rdwr, malloc, printf of size.
 
 The printf family of size, strip and cas spills the EPU registers inline (`.word %4FFC,%8303,off`) and stores r6..r2 besides the
 `ldm`; ranlib's has the shipped form. In size `*fp->_ptr++` uses the byte before the `inc`. `_filbuf` of size and ranlib: the

@@ -23,7 +23,7 @@ PROGS = ar
 
 FILES=		getud putud dump dumpdir restor sync tar
 CLEANFILES=	sync.o ar.o  getud.o  putud.o
-SUBDIRS=	BOOT0 pburn standalone verify copydisk format size strip ranlib cc cas cpp cparse codgen popt mv rm dc
+SUBDIRS=	BOOT0 pburn standalone verify copydisk format size strip ranlib cc cas cpp cparse codgen popt mv rm dc write rmdir
 
 all: $(PROGS) $(FILES) subdirs
 

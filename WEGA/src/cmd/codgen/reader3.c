@@ -629,10 +629,6 @@ delay(p)
 			ret++;
 			sz = szty(p->type);
 #ifndef OLD_D1R
-#ifdef OLD_D1S
-			/* no temporary for a return of a constant or of a call: nothing can be delayed behind them */
-			if (p->left->op != ICON && p->left->op != CALL && p->left->op != UCALL)
-#endif
 			off = freetemp(sz) / 8;
 #endif
 		}
@@ -982,9 +978,35 @@ again:
 		tfree(p2->right);
 		p2->op = FREE;
 		goto cleanup;
+#ifdef OLD_D14Q
+	case ANDAND:
+		if (cookie == INTEMP_) {
+			long t = freeparm(1) / 8;
+
+			d14qarm(p1, t, 4);
+			if (t)
+				printf("\ttest\t%ld(fp)\n", t);
+			else
+				printf("\ttest\t@fp\n");
+			printf("\tjpr\teq,L%d\n", m = getlab());
+			d14qarm(p2, t, 4);
+			deflab(m);
+			rfreeall(1);
+			p->op = OREG;
+			p->rval = 15;
+			p->lval = t;
+			p->sname = 0;
+			p->stsize = 0;
+			p->type = 4;
+			goto cleanup;
+		}
+	case OROR:
+	case NOT:
+#else
 	case ANDAND:
 	case OROR:
 	case NOT:
+#endif
 		cbranch(p, -1, m = getlab());
 		p->op = CCODES;
 		p->label = m;
@@ -1225,6 +1247,14 @@ d14qarm(q, t, ty)
 	a->op = ASSIGN;
 	a->type = ty;
 	a->left = n;
+	if (q->type == 2 && ty == 4) {		/* a char value of an arm */
+		a->right = q;
+		q = talloc();
+		q->op = 110;		/* SCONV */
+		q->type = 4;
+		q->left = a->right;
+		q->rall = NOPREF;
+	}
 	a->right = q;
 	a->rall = NOPREF;
 	sucomp(a);
@@ -1248,6 +1278,13 @@ constore(p)
 	case ANDAND:
 	case OROR:
 		markcall(p->right);
+#ifdef OLD_D14Q
+		/* an && on the left of a || is evaluated into a temporary */
+		if (p->op == OROR && p->left->op == ANDAND) {
+			stotree = p->left;
+			stocook = INTEMP_;
+		}
+#endif
 	case NOT:
 		constore(p->left);
 		return;
