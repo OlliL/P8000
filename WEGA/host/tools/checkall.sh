@@ -64,6 +64,7 @@ doscopy/1.0/dosdir	cc	usr/bin/dosdir
 doscopy/1.0/dosmkdir	cc	usr/bin/dosmkdir
 doscopy/1.0/doscat	cc	usr/bin/doscat
 doscopy/1.0/doscp	cc	usr/bin/doscp
+pburn/2.1/pburn	cc	bin/pburn
 BOOT0/pb.image	cc	pb.image
 standalone/sa.cat	cc	sa.cat
 standalone/sa.format	cc	sa.format
@@ -77,7 +78,7 @@ uuclear	script	bin/uuclear
 whodo	script	bin/whodo
 '
 # not byte-identical yet: reported, not counted
-OPEN='pburn/2.1/pburn:bin/pburn cas/cas:bin/cas'
+OPEN='cas/cas:bin/cas'
 
 # the files known to git, in DIR/WEGA; the emulator is not rebuilt here
 copytree() {

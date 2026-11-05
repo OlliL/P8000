@@ -240,13 +240,13 @@ long c;
 
 	if (answer=='m')		{modprom(); continue;}
 	if (answer=='l')		{listprom(); mofy=true; continue;}
-	if (answer=='r') 		{if (answer1==' ') continue;} 
+	if (answer=='r') 		{if (answer1==' ') {answer1=answer; continue;}} 
     do{
 	errflag=false;
 	printf ("%s",cte);
 	switch (answer) {
-		case 'y':	printf ("%s",rtc); answer1=answer; break;
-		case 'v':	printf ("%s",rtv); answer1=answer; break;
+		case 'y':	printf ("%s",rtc); break;
+		case 'v':	printf ("%s",rtv); break;
 		case 'r':	if (answer1=='y')		printf ("%s",rtc);
 					else if (answer1=='v')	printf ("%s",rtv);
 				break;
@@ -260,6 +260,7 @@ long c;
 		else if (answer=='v')	{verifyprom(); mofy=false;}
 		else if (answer=='r')	{if (answer1=='y')		copyprom();
 						else if (answer1=='v')	verifyprom();}
+	answer1=answer;
       }while (errflag==true);
     }while (errflag==false);
 }
