@@ -37,8 +37,6 @@ scparse: crt0.o cgram1.c $(HDRS) $(LIBC)
 	$(LD) -i -e start crt0.o $(SOBJS) $(LIBC) -o $@
 
 $(OBJS): $(HDRS)
-optim1.o: optim
-comm1.o: common
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<

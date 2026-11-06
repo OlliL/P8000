@@ -2,3 +2,7 @@ parser.c
 y.tab.c
 y.tab.h
 cas
+old/*.c
+old/*.o
+old/cas
+old/parser.y
