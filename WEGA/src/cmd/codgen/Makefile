@@ -10,6 +10,7 @@ CC = ccv0p
 CAS = cas
 LD = ld
 CFLAGS = -O
+PREFIX = /
 LIBC = ../../../../lib/libc-v5.a
 CRT = ../../lib/libc/crt
 
@@ -36,7 +37,7 @@ build/nonsegv1r/codgen: crt0.o
 	cd build/nonsegv1r && make -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q -DOLD_D1R"
 
 build/seg/scodgen: crt0.o
-	cd build/seg   && make -f ../../Makefile scodgen CC="cc" CFLAGS="$(CFLAGS) -DSEG"
+	cd build/seg   && make -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
 build/segv1/scodgen: crt0.o
 	cd build/segv1 && make -f ../../Makefile scodgen CC="cc" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3"
 
@@ -53,12 +54,12 @@ clean:
 
 install: $(ALL_TARGETS)
 	cp build/nonseg/codgen $(PREFIX)/lib/codgen
-	cp build/seg/scodgen $(PREFIX)/lib/scodgen
+	cp build/seg/scodgen   $(PREFIX)/lib/scodgen
 
 oldinstall: $(OLD_TARGETS)
 	for v in v0 v0p v1 v1q v1r; do \
-		[ -d $(PREFIX)/lib/$$v ] || mkdir $(PREFIX)/lib/$$v; \
-		cp build/nonseg$$v/codgen $(PREFIX)/lib/$$v/codgen; \
+		[ -d $(PREFIX)/lib/$$v ] || mkdir $(PREFIX)/lib/$$v ; \
+		cp build/nonseg$$v/codgen $(PREFIX)/lib/$$v/codgen ; \
 	done
 	cp build/segv1/scodgen $(PREFIX)/lib/v1/scodgen
 
@@ -69,7 +70,7 @@ crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
 	sh $(CRT)/mkcrt0.sh codgen > $@
 
 crt0.o: crt0.s
-	$(CAS) -u -o $@ crt0.s
+	$(CAS) -u crt0.s
 
 
 ##################
@@ -77,47 +78,46 @@ crt0.o: crt0.s
 ##################
 
 codgen: $(NONSEG_OBJS) ../../crt0.o table3_codgen.o
-	$(LD) -X -e start -i ../../crt0.o $(NONSEG_OBJS) $(LIBC) -o codgen
+	$(LD) -X -e start -i -o $@ ../../crt0.o $(NONSEG_OBJS) $(LIBC)
 
 scodgen: $(SEG_OBJS) ../../crt0.o table3_scodgen.o
-	$(LD) -X -e start -i ../../crt0.o $(SEG_OBJS) $(LIBC) -o scodgen
-
+	$(LD) -X -e start -i -o $@ ../../crt0.o $(SEG_OBJS)    $(LIBC)
 
 ###################
-# private targets
+# obj targets
 ###################
 
 bss3.o: ../../bss3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../bss3.c
+	$(CC) $(CFLAGS) -c ../../bss3.c
 reader3.o: ../../reader3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../reader3.c
+	$(CC) $(CFLAGS) -c ../../reader3.c
 rdr3.o: ../../rdr3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../rdr3.c
+	$(CC) $(CFLAGS) -c ../../rdr3.c
 local3.o: ../../local3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../local3.c
+	$(CC) $(CFLAGS) -c ../../local3.c
 order3.o: ../../order3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../order3.c
+	$(CC) $(CFLAGS) -c ../../order3.c
 match3.o: ../../match3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../match3.c
+	$(CC) $(CFLAGS) -c ../../match3.c
 allo3.o: ../../allo3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../allo3.c
+	$(CC) $(CFLAGS) -c ../../allo3.c
 regallo3.o: ../../regallo3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../regallo3.c
+	$(CC) $(CFLAGS) -c ../../regallo3.c
 comm3.o: ../../comm3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../comm3.c
+	$(CC) $(CFLAGS) -c ../../comm3.c
 wrt3.o: ../../wrt3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../wrt3.c
+	$(CC) $(CFLAGS) -c ../../wrt3.c
 regs3.o: ../../regs3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../regs3.c
+	$(CC) $(CFLAGS) -c ../../regs3.c
 lcl3.o: ../../lcl3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../lcl3.c
+	$(CC) $(CFLAGS) -c ../../lcl3.c
 tr3.o: ../../tr3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../tr3.c
+	$(CC) $(CFLAGS) -c ../../tr3.c
 optim3.o: ../../optim3.c
-	$(CC) $(CFLAGS) -c -o $@ ../../optim3.c
+	$(CC) $(CFLAGS) -c ../../optim3.c
 table3_codgen.o: ../../table3_codgen.c
-	$(CC) $(CFLAGS) -c -o $@ ../../table3_codgen.c
+	$(CC) $(CFLAGS) -c ../../table3_codgen.c
 table3_scodgen.o: ../../table3_scodgen.c
-	$(CC) $(CFLAGS) -c -o $@ ../../table3_scodgen.c
+	$(CC) $(CFLAGS) -c ../../table3_scodgen.c
 
 .PHONY: all oldprep old clean

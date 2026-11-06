@@ -1,4 +1,4 @@
-# cparse v0p: pass 1 the old C compiler v0p (the compiler of the passes cparse, codgen, popt: v0 of 1982 with the differences of the passes), a native WEGA program.
+e# cparse v0p: pass 1 the old C compiler v0p (the compiler of the passes cparse, codgen, popt: v0 of 1982 with the differences of the passes), a native WEGA program.
 # Made from the sources of .. with the switches of this version; the start-up file, the bss layout and the libc
 # part are those of .. (make .. first).
 #

@@ -20,12 +20,11 @@ all: stage1 lib stage2 cmds
 stage1:
 	cd lib/oldlibc/printf ; cp 0_5.c s1.c ; $(CC) -O -c s1.c ; rm -f s1.c
 	cd cmd/cas/old ; $(MAKE) install PREFIX=$(PREFIX)
+	cd cmd/codgen ; $(MAKE) oldinstall PREFIX=$(PREFIX)
+	cd cmd/cc     ; $(MAKE) oldinstall PREFIX=$(PREFIX)
+
 	cd cmd/cparse ; $(MAKE) oldprep
-	cd cmd/codgen ; $(MAKE) oldprep
-	for p in cparse codgen popt cc ; do for v in $(VERSIONS) ; do \
-		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) LIBC='../../../$(OLDPRINTF) /lib/libc.a' ) || exit 1 ; \
-	done ; done
-	for p in codgen cc ; do for v in v1q v1r ; do \
+	for p in cparse popt  ; do for v in $(VERSIONS) ; do \
 		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) LIBC='../../../$(OLDPRINTF) /lib/libc.a' ) || exit 1 ; \
 	done ; done
 
@@ -33,10 +32,10 @@ lib:
 	cd lib ; $(MAKE)
 
 stage2:
-	for p in cparse codgen popt cc ; do for v in $(VERSIONS) ; do \
-		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) ) || exit 1 ; \
-	done ; done
-	for p in codgen cc ; do for v in v1q v1r ; do \
+	cd cmd/codgen ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
+	cd cmd/cc     ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
+
+	for p in cparse popt  do for v in $(VERSIONS) ; do \
 		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) ) || exit 1 ; \
 	done ; done
 
