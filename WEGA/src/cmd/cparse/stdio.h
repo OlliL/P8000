@@ -2,6 +2,7 @@
    (--_cnt >= 0 first). The stdio.h of the WEGA 3.1 tree has unsigned char *_ptr and the other order; the code of
    /lib/cparse shows the old forms (putc: extsb of the stored byte, the store path first). */
 
+#define	_PTRCHAR	/* _ptr is char *, for sources that are also compiled with this header (libc/stdio/filbuf.c) */
 #define	BUFSIZ	512
 #define	_NFILE	20
 #ifndef FILE

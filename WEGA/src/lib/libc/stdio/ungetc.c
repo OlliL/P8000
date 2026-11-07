@@ -7,8 +7,8 @@ register FILE *iop;
 {
 	if (c == EOF)
 		return(-1);
-	if ((iop->_flag&_IOREAD)==0 || iop->_ptr <= iop->_base)
-		if (iop->_ptr == iop->_base && iop->_cnt==0)
+	if ((iop->_flag&_IOREAD)==0 || (char *)iop->_ptr <= iop->_base)
+		if ((char *)iop->_ptr == iop->_base && iop->_cnt==0)
 			*iop->_ptr++;
 		else
 			return(-1);

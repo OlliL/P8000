@@ -37,7 +37,7 @@ char *fmt;
 	int regs[5];
 
 	_strbuf._flag = _IOREAD|_IOSTRG;
-	_strbuf._ptr = _strbuf._base = str;
+	_strbuf._ptr = (unsigned char *)(_strbuf._base = str);
 	_strbuf._cnt = 0;
 	while (*str++)
 		_strbuf._cnt++;

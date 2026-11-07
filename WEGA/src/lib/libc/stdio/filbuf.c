@@ -29,7 +29,11 @@ tryagain:
 		}
 		iop->_flag |= _IOMYBUF;
 	}
+#ifdef _PTRCHAR
 	iop->_ptr = iop->_base;
+#else
+	iop->_ptr = (unsigned char *)iop->_base;
+#endif
 	iop->_cnt = read(fileno(iop), iop->_ptr, iop->_flag&_IONBF?1:BUFSIZ);
 	if (--iop->_cnt < 0) {
 		if (iop->_cnt == -1) {

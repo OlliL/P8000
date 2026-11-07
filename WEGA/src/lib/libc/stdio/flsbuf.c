@@ -33,7 +33,7 @@ tryagain:
 					goto tryagain;
 				}
 				iop->_base = _sobuf;
-				iop->_ptr = _sobuf;
+				iop->_ptr = (unsigned char *)_sobuf;
 				goto tryagain;
 			}
 			if ((iop->_base = base = malloc(BUFSIZ)) == NULL) {
@@ -42,13 +42,13 @@ tryagain:
 			}
 			iop->_flag |= _IOMYBUF;
 			rn = n = 0;
-		} else if((rn = n = iop->_ptr - base) > 0) {
-			iop->_ptr = base;
+		} else if((rn = n = (char *)iop->_ptr - base) > 0) {
+			iop->_ptr = (unsigned char *)base;
 			n = write(fileno(iop), base, n);
 		}
 		iop->_cnt = BUFSIZ - 1;
 		*base++ = c;
-		iop->_ptr = base;
+		iop->_ptr = (unsigned char *)base;
 	}
 	if (rn != n) {
 		iop->_flag |= _IOERR;
@@ -65,8 +65,8 @@ fflush(iop)
 	register n;
 
 	if ((iop->_flag & (_IONBF|_IOWRT)) == _IOWRT
-	 && (base = iop->_base) != NULL && (n = iop->_ptr - base) > 0) {
-		iop->_ptr = base;
+	 && (base = iop->_base) != NULL && (n = (char *)iop->_ptr - base) > 0) {
+		iop->_ptr = (unsigned char *)base;
 		iop->_cnt = BUFSIZ;
 		if (write(fileno(iop), base, n) != n) {
 			iop->_flag |= _IOERR;

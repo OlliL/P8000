@@ -25,14 +25,14 @@ fseek(iop, offset, ptrname)
 			else
 				offset -= c;
 			if (!(iop->_flag&_IORW) && c > 0 && p <= c
-			    && p >= iop->_base - iop->_ptr){
+			    && p >= iop->_base - (char *)iop->_ptr){
 				iop->_ptr += (int) p;
 				iop->_cnt -= (int) p;
 				return(0);
 			}
 		}
 		if (iop->_flag & _IORW) {
-			iop->_ptr = iop->_base;
+			iop->_ptr = (unsigned char *)iop->_base;
 			iop->_flag &= ~_IOREAD;
 		}
 		p = lseek(fileno(iop), offset, ptrname);
@@ -42,7 +42,7 @@ fseek(iop, offset, ptrname)
 		if (iop->_flag & _IORW) {
 			iop->_cnt = 0;
 			iop->_flag &= ~_IOWRT;
-			iop->_ptr = iop->_base;
+			iop->_ptr = (unsigned char *)iop->_base;
 		}
 		p = lseek(fileno(iop), offset, ptrname);
 	}

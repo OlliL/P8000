@@ -22,7 +22,7 @@ FILE *iop;
 	else if(iop->_flag&(_IOWRT|_IORW)) {
 		adjust = 0;
 		if (iop->_flag&_IOWRT && iop->_base && (iop->_flag&_IONBF)==0)
-			adjust = iop->_ptr - iop->_base;
+			adjust = (char *)iop->_ptr - iop->_base;
 	} else
 		return(-1);
 	tres = lseek(fileno(iop), 0L, 1);

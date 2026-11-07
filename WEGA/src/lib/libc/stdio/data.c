@@ -5,7 +5,7 @@ char	_sibuf[BUFSIZ];
 char	_sobuf[BUFSIZ];
 
 struct	_iobuf	_iob[_NFILE] = {
-	{ _sibuf, 0, _sibuf, _IOREAD, 0},
+	{ (unsigned char *)_sibuf, 0, _sibuf, _IOREAD, 0},
 	{ NULL, 0, NULL, _IOWRT, 1},
 	{NULL, 0, NULL, _IOWRT+_IONBF, 2},
 };
