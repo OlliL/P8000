@@ -3,7 +3,7 @@
 The plan and nothing else. What is known goes to `host/KNOWLEDGE.md`, the old compilers to `host/OLDCC.md`, the state per function to
 `tools/FINDINGS.md` of a program. A finished step leaves this file. No new programs before step 9 (owner 2026-11-04).
 
-What is byte-identical is checked by `make -C host checkall` (14 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program. Current work: step 5. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
+What is byte-identical is checked by `make -C host checkall` (14 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program. Step 5 (the open programs in `cmd/`) is done; the owner decides on the next. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
 
 ## 2. `lib/libc` and `oldlibc` from C, what is left
 
@@ -19,13 +19,6 @@ What is byte-identical is checked by `make -C host checkall` (14 minutes): the l
 ## 4. Clean up `tools/`
 
 Gone: the cutting of objects, `.link`, `.spec`, `gen_makefile.py` of cpp and ld. Still to look at: `ld/tools` and `sld/tools` (the rest of what worked with cut modules; `sld/tools/gen_makefile.py`, `lib/oldslibc` and `unlink_seg.py` belong to the segmented programs, `slibc.a` was not looked at yet: probably the same way), `castrig/hostcas.patch`, `triggers.txt`, `HANDOFF_ld.md`, `HANDOFF_cparse.md`. `host/libc/check.sh`, `host/oldcc`: now doubled by `checkall`.
-
-## 5. The open programs in `cmd/` byte-identical
-
-In this order; every change of a compiler goes through `checkall`.
-
-- `ld`: with v1 and `libc-v9.a` sizes equal, 3 places open: place_sec (0xf64, `ld r2,r3; and r2,#%FF00; ld r13,r2`; nine forms of the expression tried, `OLDCC_LOG.md`), chk_ranlib (0x29b0, `ld r2,r3; cpb 4(r2),#%20`), the end of the code. Source base (owner 2026-11-05): `cmd/ld/ld.vax.c` of the Plexus tree (the same as the System III release) and `cmd/ld/ld.z8000.c` (Plexus' Z8000 changes); byte identity first.
-- `sld`: shipped scc, `slibc-v9.a`; 3 functions differ (`tools/linkcmp.py`): parse_args, start_output, ins_block (notes in findings.json); corpus 91 of 91 (2026-11-07). Source base (owner 2026-11-05): as close to `ld` as the segmentation allows.
 
 ## 6. System III form for all existing programs
 

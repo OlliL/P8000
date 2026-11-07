@@ -47,6 +47,7 @@ dc/dc	ccv0	bin/dc
 ranlib/ranlib	ccv0	usr/bin/ranlib
 ar	cc	bin/ar
 ld/ld	ccv1	bin/ld
+sld/sld	scc	bin/sld
 getud	cc	bin/getud
 putud	cc	bin/putud
 copydisk/1.5/copydisk	cc	bin/copydisk
@@ -141,7 +142,7 @@ echo "$TABLE" | while IFS='	' read file cc origs; do
 	fi
 	rm -f $T/$n.stripped
 	cp $S/$file $T/$n.stripped
-	case $cc in ccv*) (cd $T && $EMU -r $WEGA /usr/bin/strip $n.stripped) > /dev/null 2>&1 ;; esac
+	case $cc in ccv*|scc) (cd $T && $EMU -r $WEGA /usr/bin/strip $n.stripped) > /dev/null 2>&1 ;; esac
 	if cmp -s $T/$n.stripped $WEGA/$first; then
 		msg="identical, $cc"
 		shift

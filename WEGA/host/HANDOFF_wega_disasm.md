@@ -31,7 +31,7 @@ The state: the check commands in the last column; the plan: `../src/TODO.md`.
 | `cas` | `/bin/cas` | 89152 | `src/cmd/cas` (`MODULES`) | `host/cas` | yes (decompiled, see `src/cmd/cas/README`) | done in behaviour; code not byte-identical (older scc) | `make -C host check` (cas) |
 | `as` | `/bin/as` (PLZ/ASM) | 74536 | - | - | - | not started | - |
 | `ld` | `/bin/ld` | 21732 | - (source in `host/ld`) | `host/ld/ld` | yes (`ld.c` from the binary) | done: 146 command lines identical | `make -C host check` (ld) |
-| `sld` | `/bin/sld` | 46074 | - (source in `host/ld`) | `host/ld/sld` | yes | done: 91 command lines identical | `make -C host check` (ld) |
+| `sld` | `/bin/sld` | 46074 | `src/cmd/sld` (shipped scc, `lib/slibc-v9.a`) | `host/ld/sld` | yes | `src/cmd/sld` byte-identical (2026-11-07); host: 91 command lines identical | `make -C host checkall`, `make -C host check` (ld) |
 | `gld` | `/bin/gld` | 27616 | - (source in `host/ld`) | `host/ld/gld` | yes | done on the check lines | `make -C host check` (ld) |
 | `ar` | `/bin/ar` | 12396 | `src/cmd/ar.c` | `host/ar/ar` | to be checked | done on the host (archives identical) | `make -C host check` (ar) |
 | `ranlib`, `strip`, `size` | `/usr/bin/ranlib`, `/usr/bin/strip`, `/bin/size` | 7732, 9072, 7732, | `src/cmd/ranlib`, `strip`, `size` | `host/binutils` | to be checked | done on the host; the `src/cmd` versions byte-identical (`checkall`) | `make -C host check` (binutils) |
@@ -64,9 +64,9 @@ original tools and compares each program).
 
 ## Next steps
 
-The plan is `../src/TODO.md`; the current work is its step 5, the open programs in `cmd/`, in its order. Pause after each finished program; the owner decides on the next.
+The plan is `../src/TODO.md`; its step 5 (the open programs in `cmd/`) is done (2026-11-07), the owner decides on the next step. Pause after each finished program.
 
-Identical since 2026-11-05: dc and ranlib (v0), write and rmdir (v1r). All 8 commands of doscopy 1.0 (`1.3` is ignored) and pburn 2.1 identical (shipped scc). Next, source base as the owner decided in `../src/TODO.md`: then `ld` and `sld` (decide the source base first). Open in step 2: 13 `.s` in `oldlibc`, 2 of them real assembler, and 4 objects of `libc/oldcc`.
+Identical since 2026-11-05: dc and ranlib (v0), write and rmdir (v1r); ld (v1) and sld (shipped scc) since 2026-11-07. All 8 commands of doscopy 1.0 (`1.3` is ignored) and pburn 2.1 identical (shipped scc). Step 5 of `../src/TODO.md` is done with them. Open in step 2: 13 `.s` in `oldlibc`, 2 of them real assembler, and 4 objects of `libc/oldcc`.
 
 Which compiler to take: the rule in `HOWTO_reconstruct.md`, "Evidence rules": the date first, measure the neighbours, sharpen an existing version before a new one. The time line is in `OLDCC.md`. Do not invent versions.
 

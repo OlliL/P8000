@@ -853,6 +853,8 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` | `_edata` and `_end` are 0 when the last chain segment is an overflow segment that also holds earlier areas | kept | "sld on the host" |
 | `/bin/sld` | more than one start segment overflowing in combined mode (`-i`/`-Ms` with large sections): the output gets segment 0xFF and `_end` = 0 | not reproduced | "sld on the host" |
 | `/bin/sld` | `-Ms n` without a reference to `_stkseg`: the warning `sld: warning: _stkseg undefined` goes to stdout, not stderr, and the status is 1 although the file is written | kept | "sld on the host" |
+| `/bin/sld` | parse_args: an unreachable call in the option switch (behind `case 'R': goto next;`): codgen frees all registers at it, so the switch register r2 is free again in the bodies placed behind the switch; popt drops the call | kept (src/cmd/sld, findings.json) | sld findings |
+| `/bin/sld` | scan_m_opt `-M`: the leaf name after `strrchr(p, '/')` is taken without the slash (`q++`) | kept | sld findings |
 | `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
 | `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
 | `/bin/sld` (libc `_atoip`, 0x85f8, number parser of doprnt) | with a leading `-` the digit loop counts the original length (one character more than the rest after the sign), the return value uses the shortened count | kept (old `doprnt` in `src/lib/oldslibc`) | `src/lib/oldslibc/README` |
@@ -1167,7 +1169,7 @@ borig, ctrel, cdrel, cbrel, ncoff, ndoff, nboff, ncode, ndata, nbss, xtnext, dat
 | areas | 8 | areas of a section in place_sec (kind, tstart, tsize, tend) | areas[5] |
 
 The special symbols p_etext (_etext), p_edata (_edata), p_end (_end), p_stkseg (_stkseg), entrypt (entry) and lastsym (last symbol entered) are `struct symbol *`.
-The hash table hshtab holds 4092 `struct symbol *`, symhash the slots of the entries in use. The 4 bytes in front of `page` (bE000) and the bytes
+The hash table hshtab holds 4092 `struct symbol *`, symhash the slots of the entries in use. The 6 bytes in front of `page` are the commons `_rc` (printf) and `__pfile` (doprnt) of the libc; the bytes
 of the old `spare` variables are not explained.
 
 ### sld: names of the functions (2026-10-28)

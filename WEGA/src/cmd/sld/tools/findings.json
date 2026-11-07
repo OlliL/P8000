@@ -621,7 +621,7 @@
     "len_ours": 112,
     "len_orig": 112
    },
-   "note": "2026-11-07, shipped scc: open. The original has the form of ld (for (j = 1; a[j] != 0; j++) switch, if (a[j + 1]) j++). With it and with the goto skeleton: in the cases b/t and l the original takes r2 (free), we r3/r4 (r2 holds the switch value). Tried: the loop form of main, (int) and c = a[j] as switch value, a[j] for a[j] != 0, != 0 in the if."
+   "note": "2026-11-07: exact. Odd forms: only case f has its body in the switch; the other cases jump to blocks behind it (bt/consume, nn, ll, mm), so the switch register r2 (a TEMP, held from the evaluation to the dispatch) is free there; the dispatch takes r6 for the cpir count only when the TEMP died before it: an unreachable load2arg(a) behind case R (dead code, the call frees every register in codgen, popt drops it). Measured: every case order with the bodies in the switch, M or l in front, goto blocks in all orders (best 10 to 14 lines without the dead call)."
   },
   "lookup_name": {
    "file": "symbols.c",

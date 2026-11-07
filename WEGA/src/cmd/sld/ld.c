@@ -442,88 +442,91 @@ char **argv;
 	fblk = 0;
 	libp = (long *)liblist;
 	k = 1;
-	goto test;
-body:
-	a = *av++;
-	if (*a != '-')
-		goto lib;
-	j = 1;
-scan:
-	if (!a[j])
-		goto next;
-	switch (a[j]) {
-	case 'f':
-		saved_k = k;
-		k = -1;
-		saved_av = av;
-		base = argv;
-		saved_argc = argc;
-		argv = cmdav;
-		argc = cmdac;
-		av = argv;
-		flag = 1;
-		goto next;
-	case 'b':
-	case 't':
-		if (!a[j + 1])
-			goto consume;
-		j++;
-	case 'A':
-	case 'e':
-	case 'o':
-	case 'u':
-	case 'v':
-consume:
-		k++;
-		av++;
-	default:
-dflt:
-		j++;
-		goto scan;
-	case 'N':
-		j++;
-		goto dflt;
-	case 'l':
-		j--;
-		a[j] = '-';
-		load2arg(a + j);
-		goto next;
-	case 'M':
-		p = strchr(a, ':');
-		if (p && !p[2]) {
-			k++;
-			av++;
-		}
-		if (**av != '+')
-			goto next;
-		do {
-			k++;
-			av++;
-		} while (**av != '+');
-		k++;
-		av++;
-		goto next;
-	case 'R':
-		goto next;
-	}
-lib:
-	load2arg(a);
+	for (;;) {
+		while (k < argc) {
+			a = *av++;
+			if (*a == '-') {
+				for (j = 1; a[j] != 0; j++) {
+					switch (a[j]) {
+					case 'f':
+						saved_k = k;
+						k = -1;
+						saved_av = av;
+						base = argv;
+						saved_argc = argc;
+						argv = cmdav;
+						argc = cmdac;
+						av = argv;
+						flag = 1;
+						goto next;
+					case 'b':
+					case 't':
+						goto bt;
+					case 'A':
+					case 'e':
+					case 'o':
+					case 'u':
+					case 'v':
+						goto consume;
+					case 'N':
+						goto nn;
+					case 'l':
+						goto ll;
+					case 'M':
+						goto mm;
+					case 'R':
+						goto next;
+						load2arg(a);
+					}
+					continue;
+				bt:
+					if (a[j + 1])
+						j++;
+				consume:
+					k++;
+					av++;
+					continue;
+				nn:
+					j++;
+					continue;
+				ll:
+					j--;
+					a[j] = '-';
+					load2arg(a + j);
+					goto next;
+				mm:
+					p = strchr(a, ':');
+					if (p && !p[2]) {
+						k++;
+						av++;
+					}
+					if (**av != '+')
+						goto next;
+					do {
+						k++;
+						av++;
+					} while (**av != '+');
+					k++;
+					av++;
+					goto next;
+				}
+			} else
+				load2arg(a);
 next:
-	k++;
-test:
-	if (k < argc)
-		goto body;
-	if (flag) {
+			k++;
+		}
+		if (flag == 0)
+			break;
 		k = saved_k + 2;
 		saved_av++;
 		av = saved_av;
 		argv = base;
 		argc = saved_argc;
 		flag = 0;
-		goto test;
 	}
 	finish_output();
 }
+
 
 /* load_lib_syms: load an archive: only the members that define an undefined symbol (ranlib table) (0x1364..0x14a4 of /bin/sld) */
 int load_lib_syms(p)
