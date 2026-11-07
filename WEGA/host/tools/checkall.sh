@@ -201,10 +201,11 @@ for p in codgen scodgen; do
 	corpus $p 0 $l.sum
 done
 (cd $C/popt && WEGA_ROOT=$WEGA RECON_TMP=$T CORPUS=$CORPUS_TMP/popt/corpus sh tools/corpus.sh $C/popt/build/nonseg/popt) > $T/corpus_popt.log 2>&1
-corpus popt 0 $T/corpus_popt.log
-# spopt: 2 differ only in the line "NK core" of -d: the place of the heap in the normal build (OLDCC_LOG.md)
+# popt, spopt: the runs that differ, differ only in the line "NK core" of -d: the place of the heap in the normal build (OLDCC_LOG.md);
+# the corpora of 2026-11-07 (popt 312 inputs, scodgen 282): popt 2, spopt 6
+corpus popt 2 $T/corpus_popt.log
 (cd $S/spopt/tools && WEGA_ROOT=$WEGA RECON_TMP=$CORPUS_TMP sh corpus.sh $C/popt/build/seg/spopt) > $T/corpus_spopt.log 2>&1
-corpus spopt 2 $T/corpus_spopt.log
+corpus spopt 6 $T/corpus_spopt.log
 
 # 4. the host tools
 if CORPUS=$CORPUS_TMP/popt/corpus make -C $T/tree/WEGA/host check WEGA=$WEGA > $T/hostcheck.log 2>&1; then
