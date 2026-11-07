@@ -988,7 +988,7 @@
     "len_ours": 322,
     "len_orig": 310
    },
-   "note": "2026-11-07, shipped scc: open. The cases 3 and 4 of the first switch stand behind the dispatch of the second switch in the original (moved by codemove of spopt), here in place; the second switch has another case order. Not yet tried: a trace of spopt (poptrace.sh is for popt v0p)."
+   "note": "2026-11-07, shipped scc: open, 10 lines. if (size <= ...) { switch } instead of continue, and case 4: goto gotblk (the code of the original is there once) brought it from 94 to 10. Open: in case 3 the then part datptr = val; return s stands in front of the test in the original (behind the tail of case 2). Tried: every case order of both switches, != with the rest in the then part, else."
   },
   "lay_out": {
    "file": "ldm.c",

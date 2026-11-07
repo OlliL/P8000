@@ -812,52 +812,45 @@ int idx;
 				}
 				break;
 			}
-			if (size > 0xfffe - (s->s_code + s->s_data + s->s_bss))
-				continue;
-			switch (kind) {
-			case 4:
-				if (reslist[idx].bssptr == -1) {
-					reslist[idx].bssptr = val;
+			if (size <= 0xfffe - (s->s_code + s->s_data + s->s_bss)) {
+				switch (kind) {
+				case 2:
+					blk = prev;
+					while ((b = get_block(blk))->ncode == s) {
+						if (b->xtnext == -1)
+							break;
+						prev = blk;
+						blk = (get_block(blk))->xtnext;
+					}
+					if ((get_block(blk))->ncode == s)
+						prev = blk;
+					tmp = (b = get_block(prev))->xtnext;
+					b->xtnext = val;
+					(get_block(val))->xtnext = tmp;
+					return s;
+				case 4:
+					goto gotblk;
+				case 3:
+					if (reslist[idx].datptr == -1) {
+						reslist[idx].datptr = val;
+						return s;
+					}
+					blk = prev;
+					while ((b = get_block(blk))->ndata == s) {
+						if (b->datnext == -1)
+							break;
+						prev = blk;
+						blk = (get_block(blk))->datnext;
+					}
+					if ((get_block(blk))->ndata == s)
+						prev = blk;
+					tmp = (b = get_block(prev))->datnext;
+					b->datnext = val;
+					(get_block(val))->datnext = tmp;
 					return s;
 				}
-				tmp = (b = get_block(prev))->bssnext;
-				b->bssnext = val;
-				(get_block(val))->bssnext = tmp;
-				return s;
-			case 2:
-				blk = prev;
-				while ((b = get_block(blk))->ncode == s) {
-					if (b->xtnext == -1)
-						break;
-					prev = blk;
-					blk = (get_block(blk))->xtnext;
-				}
-				if ((get_block(blk))->ncode == s)
-					prev = blk;
-				tmp = (b = get_block(prev))->xtnext;
-				b->xtnext = val;
-				(get_block(val))->xtnext = tmp;
-				return s;
-			case 3:
-				if (reslist[idx].datptr == -1) {
-					reslist[idx].datptr = val;
-					return s;
-				}
-				blk = prev;
-				while ((b = get_block(blk))->ndata == s) {
-					if (b->datnext == -1)
-						break;
-					prev = blk;
-					blk = (get_block(blk))->datnext;
-				}
-				if ((get_block(blk))->ndata == s)
-					prev = blk;
-				tmp = (b = get_block(prev))->datnext;
-				b->datnext = val;
-				(get_block(val))->datnext = tmp;
 				return s;
 			}
-			return s;
 		}
 	}
 	if (kind == 4) {
@@ -914,6 +907,7 @@ gotblk:
 	(get_block(val))->bssnext = tmp;
 	return s;
 }
+
 
 /* alloc_segment: allocate the next free segment number (0x5eec..0x60f0 of /bin/sld) */
 int alloc_segment(rec, pidx, a, b, q)
