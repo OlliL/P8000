@@ -86,7 +86,7 @@ the doscopy programs, the standalone programs (`make -C host checkall`). All of 
 
 - Switches: `OLD_D1` and `OLD_D12` (cparse), `OLD_D3` (codgen), `OLD_D20` (popt).
 - Byte-identical: `/bin/size`, `/usr/bin/strip`, `/bin/mv` (also cp, ln), `/bin/rm`.
-- ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146; open: place_sec, chk_ranlib, load2td, read_symbols.
+- ld: 55 of 59 functions strictly exact, data equal, corpus 146 of 146; open: place_sec, chk_ranlib, load2td, load1.
 - Own code equal, the libc part not linked yet: write (all 5 functions). rmdir: its main differs by D4 and D18.
 - Test bench (System III sources of 26 programs from 01/83 .. 07/83): 89 of 121 functions equal, the shipped cc 27.
 - stdio of the time: `char *_ptr` and the V7 forms of getc/putc (`--_cnt >= 0` first); the stdio.h of the WEGA tree has
@@ -149,7 +149,7 @@ Each class: the form in the code, the pass, the mechanism, the switch, the witne
 - v0 (`OLD_D1R`, codgen, `delay`): no temporary for the value of a return; with a delayed x++ the value stays in r2, which
   stays taken while the increment runs (`ld r2,_crslab; inc _crslab,#1`: cparse getlab).
 - v0: no frame for leaf functions, no home slots for register parameters.
-- Not reproduced: one unexplained frame word in main, parse_args, slookup, pslookup, index16 of ld (kept as `int spare`);
+- Not reproduced: one unexplained frame word in main, endload, slookup, pslookup, index16 of ld (kept as `int spare`);
   cas `putins` 12 bytes against 14, libc nlist and length 2 bytes smaller, fseek 14 against 20.
 
 ### D2 Scratch registers
@@ -289,7 +289,7 @@ for a long, so the entries 025 .. 030 load the count into a register.
 
 ### D11 Tail merging
 
-Not reproduced in v1: ld read_symbols (the store behind a dead `ldl rr4,rr2` shared with the end of the loop); the cas scanner
+Not reproduced in v1: ld load1 (the store behind a dead `ldl rr4,rr2` shared with the end of the loop); the cas scanner
 (`call xtol; jp` shared by the number cases).
 
 ### D12 String literals and data layout
@@ -359,7 +359,7 @@ write these operands in the order that gives the bytes (`argregs`, `rmconv`, `cl
 
 - v0p: no old popt. The models built with the original /lib/popt as the pass of ccv0p are byte-identical to those with our popt.
 - v1 `OLD_D20` (popt): a `jpr` to the label right behind it does not end a block to be moved, so short blocks in front of the function
-  exit stay (ld ensure_buf, read_symbols).
+  exit stay (ld ensure_buf, load1).
 - How popt places a block, and so what the source must look like: `codemove` moves a block behind a jump to the site of a jump to it. What
   decides is whether the node in front of a target is a jump: `if (c) goto L; L:` leaves `jpr L2; L:` and codemove takes the block,
   `if (!c) { L: ... }` does not. `xjump` in iterate looks one hop along a chain of jumps, and `comjump` runs before `rmove`: how many jumps
@@ -428,7 +428,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 | popt | z21.c (main..backjmp) | v0p |  |  | x | x |  | x |  | x |  |  |  | x |  |  |  |  | x | x |  | x |  |  |
 | popt | z22.c (rmove..natural) | v0p |  | x | x | x | x | x |  |  |  |  |  | x |  |  |  | x | x | x |  | x |  |  |
 | popt | z23.c (procopt..markregs) | v0p |  | x |  | x | x |  |  |  |  |  |  | x |  |  |  |  | x | x |  |  |  |  |
-| ld | ld.c (read_symbols, place_sec, init_entry, load2td, dseek, ranlib_scan) | v1 | x | x | x |  |  |  |  |  |  |  | x | x |  |  | x |  |  |  |  | x |  |  |
+| ld | ld.c (load1, place_sec, init_entry, load2td, dseek, ranlib_scan) | v1 | x | x | x |  |  |  |  |  |  |  | x | x |  |  | x |  |  |  |  | x |  |  |
 | ld | symbols.c (chk_ranlib, ensure_buf) | v1 |  |  | x |  |  |  |  |  |  |  | x | x |  |  |  |  |  |  |  | x |  |  |
 | ld | copyname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
 | ld | printname.c | v1 |  |  |  |  |  |  |  |  |  |  |  | x |  |  |  |  |  |  |  |  |  |  |
@@ -448,7 +448,7 @@ their marks in the older columns are from comparisons with the shipped compiler.
 
 ## 5 Open questions
 
-- v1: ld place_sec and chk_ranlib (D2, D3), load2td (code motion), read_symbols (no return temporary, the dead `ldl rr4,rr2`); one witness each.
+- v1: ld place_sec and chk_ranlib (D2, D3), load2td (code motion), load1 (no return temporary, the dead `ldl rr4,rr2`); one witness each.
 - v0: the open forms of its bench (section 2).
 - Whether the programs of v1 had the old cas. The dates known: `optim.c` of the shipped cas 05/02/83, `ssymtab.c` 05/06/83, ld built 07/26/83.
 - Why the old cas optimizes at 176 to 179 entries, and why at a `{`.

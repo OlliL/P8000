@@ -463,7 +463,7 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   pointer to one of two buffers (0x0004 and 0x020a, a counter word at offset 0 and the block number at offset 2). It seeks
   to block (v >> 8) * 512 on the file `infil`, reads 512 bytes into the buffer at +6, stores the word count (bytes / 2) at +4,
   and sets the pointer at offset 6 of the object to buffer + 6 + 2 * low byte of v.
-  The write buffer of 0x3ac6 (flush_buffer) has another layout (word at offset 2, pointer at offset 4, end at offset 6).
+  The write buffer of 0x3ac6 (flush) has another layout (word at offset 2, pointer at offset 4, end at offset 6).
 - Word buffer object used by 0x30a4 (callers 0x2820, 0x287c, 0x2ef0, 0x3384 pass the address: base 0x0414, and 0x0424 at
   the second use): word count at +4 (0x0418, decremented by 0x30a4 and by 0x2e76), long pointer at +6 (0x041a, copied from by
   0x2e76), second word count at +10 (0x041e), and the counter at base-4 (0x0410) incremented on the refill path. The value
@@ -479,10 +479,10 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   passes a pointer to them to 0x7c26 (the formatting core, deferred). Inferred from the call sites, not from its body.
 - Error function 0x3408 (own code): the callers seen set `r7` (the level) and `rr4` (the message) and nothing else (not checked for all call sites); the printf
   arguments that 0x3408 passes on are therefore whatever the caller left in `r2`, `r3`, `r5`, the stack (a quirk to check).
-  Layout read from the code (2026-10-27, `report_error` in `sld.c`): level `r7`, message `rr4`, two words `r2`, `r3`, three stack
+  Layout read from the code (2026-10-27, `error` in `sld.c`): level `r7`, message `rr4`, two words `r2`, `r3`, three stack
   words after the frame; it prints the program name (`pname`), the file name (`pE4C0`) and the text `archdr` through the message
   printer 0x79ca, the message with the words (`r5` = the word from `r3`, `r4` = from `r2`, `r3` and `r2` from the stack, one more on
-  the stack), a closing line, then calls `sig_handler` for level above 1 and stores the level in `exstat`.
+  the stack), a closing line, then calls `delexit` for level above 1 and stores the level in `errlev`.
 - 0x85f8 (last own function) has no `ret`: it falls into the shipped ffltioc, whose first word 9e08 is a `ret`.
 - libc part 0x8680..0x9800: 14 modules cut and verified (`src/lib/oldslibc`, README there); shipped members of `/lib/slibc.a`
   ffltioc, getpid, umask are identical to the original code.
@@ -852,7 +852,7 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` | `_edata` and `_end` are 0 when the last chain segment is an overflow segment that also holds earlier areas | kept | "sld on the host" |
 | `/bin/sld` | more than one start segment overflowing in combined mode (`-i`/`-Ms` with large sections): the output gets segment 0xFF and `_end` = 0 | not reproduced | "sld on the host" |
 | `/bin/sld` | `-Ms n` without a reference to `_stkseg`: the warning `sld: warning: _stkseg undefined` goes to stdout, not stderr, and the status is 1 although the file is written | kept | "sld on the host" |
-| `/bin/sld` | parse_args: an unreachable call in the option switch (behind `case 'R': goto next;`): codgen frees all registers at it, so the switch register r2 is free again in the bodies placed behind the switch; popt drops the call | kept (src/cmd/sld, findings.json) | sld findings |
+| `/bin/sld` | endload: an unreachable call in the option switch (behind `case 'R': goto next;`): codgen frees all registers at it, so the switch register r2 is free again in the bodies placed behind the switch; popt drops the call | kept (src/cmd/sld, findings.json) | sld findings |
 | `/bin/sld` | scan_m_opt `-M`: the leaf name after `strrchr(p, '/')` is taken without the slash (`q++`) | kept | sld findings |
 | `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
 | `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
@@ -865,9 +865,9 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` (`warn_sym_redef`, 0x3b58) | the test of the symbol type is `!c & 0x20` (the source meant `!(c & 0x20)`): `!c` is 0 or 1, so the test is `(!c) & 0x20` = always 0 and only `c == 0x20` can return | kept (the same expression in `src/cmd/sld/ld.c`) | `src/cmd/sld/tools/findings.json` |
 | `/bin/sld` (`put_pad`, 0x64d0) | the function ends without a `return` in the loop path (the value that comes back is not defined); the callers ignore it | kept (`int put_pad` without a final `return`) | `src/cmd/sld/ldm.c` |
 | `/bin/sld` (variables) | the bss has unused gaps and variables never referenced (`spare0`, `spare4b8`, `spare4c4`, `spare4d0`, `sparef314`, `unused15d8`, `unused484`, `unused3be`): they are leftovers of removed code and are rebuilt so that all variable addresses stay equal | kept (`src/cmd/sld/copyname.c`) | "sld: the structs" |
-| `/bin/ld` (`main`, 0x009c) | the option `-v name` is not in the man page: it takes an argument; when the name is an object already in the table, the load is rolled back to that entry (`restore`) after the arguments so far are parsed again, otherwise the name is added as an object (`record`); `-l` writes `-` over the character before the `l` while the library is loaded (`load_lib_syms(s + j - 1)`), and `-e` and `-u` take the symbol from the next argument | kept (main is exact in `src/cmd/ld/ld.c`) | HANDOFF_ld.md, "main exact" |
-| `/bin/ld` (`end_pass1`, 0x0b6e) | `ldrsym` is called with three arguments (symbol, long value, character) while its definition in symbols.c has four (x is not passed); the callee reads x from the frame | kept (the caller is exact in `src/cmd/ld/ld.c`) | HANDOFF_ld.md, "end_pass1 exact" |
-| `/bin/ld` (`readhdr`, 0x1f64) | for objects that are not 8-bit (e707/e711) the text size is rounded to even and stored back, the data size is rounded only for the bss offset (`fcbrel`) and not stored back: `filhdr.fdsize` gets the unrounded data size | kept (`readhdr` exact in `src/cmd/ld/ld.c`; the earlier rebuild stored the rounded size) | `src/cmd/ld/tools/HANDOFF_ld.md`, "Strict check" |
+| `/bin/ld` (`main`, 0x009c) | the option `-v name` is not in the man page: it takes an argument; when the name is an object already in the table, the load is rolled back to that entry (`restore`) after the arguments so far are parsed again, otherwise the name is added as an object (`record`); `-l` writes `-` over the character before the `l` while the library is loaded (`load1arg(s + j - 1)`), and `-e` and `-u` take the symbol from the next argument | kept (main is exact in `src/cmd/ld/ld.c`) | `src/cmd/ld/tools/findings.json` |
+| `/bin/ld` (`middle`, 0x0b6e) | `ldrsym` is called with three arguments (symbol, long value, character) while its definition in symbols.c has four (x is not passed); the callee reads x from the frame | kept (the caller is exact in `src/cmd/ld/ld.c`) | `src/cmd/ld/tools/findings.json` |
+| `/bin/ld` (`readhdr`, 0x1f64) | for objects that are not 8-bit (e707/e711) the text size is rounded to even and stored back, the data size is rounded only for the bss offset (`cbrel`) and not stored back: `filhdr.fdsize` gets the unrounded data size | kept (`readhdr` exact in `src/cmd/ld/ld.c`; the earlier rebuild stored the rounded size) | `src/cmd/ld/tools/findings.json` |
 | `/bin/ld` (`chk_ranlib`, 0x294e) | a register variable is declared and never used (r14 is saved and restored, nothing else) | kept (`register int r;`) | same |
 | `/bin/ld` (`slookup` 0x26ac, `pslookup` 0x26ca) | no return statement: the callers use the value that lookup_name left in r2 | kept (exact) | `src/cmd/ld/symbols.c` |
 | `/bin/ld` (`reg_sect_addr`, 0x0370) | `sscanf(u, "%o%c", &secorg[k])` (and `%d%c`, `%x%c`) passes no pointer for the `%c`; the character after the number is stored through whatever is in the argument slot, and the result is 1 only when nothing follows the number | kept (exact) | same |
@@ -931,14 +931,14 @@ means it does something fixed instead (only possible where the original's result
 | `/lib/popt` (`rmove`, z22.c) | when a conditional jump is decided at compile time (do_cjp, `r12 == 0`) the scan goes on with `p = p->back->back`; the push test behind push_end looks at `RT2 + 1` | kept in src/cmd/popt; host/popt had `p->back->forw` and `RT1 + 1` until 2026-11-01, now as the original (the popt corpus showed neither) | `host/OLDCC_LOG.md` 2026-11-01 |
 | `/lib/popt` (`adrlen`, z22.c) | the loop over leading blanks tests the copy in a register but increments the parameter (`while (*p == ' ') s++;`): an operand that starts with a blank loops for ever | kept in src/cmd/popt (cc writes no such operand) | `host/OLDCC_LOG.md` 2026-11-01 |
 | popt (src/cmd/popt) | a node without operand text: the original reads through the null pointer (`p->code` is 0) in dualop, ovlap and markregs | src/cmd/popt: the same null pointer read (until 2026-11-01 a copy of the bytes, `nullcode`, still used by host/popt); popt corpus 816 of 816 | `host/OLDCC_LOG.md` 2026-11-01 |
-| `/lib/cparse` (`putsym`) | for a structure that is used but never defined (`struct sgtty *p` when only `sgttyb` exists) the member loop starts at `dimtab[-1]` and writes the `symno` of whatever that word points to into the member list of the .S file | kept (the bss has the original layout) | `src/cmd/cparse/tools/HANDOFF_cparse.md` |
-| src/lib/oldlibc `endopen/0_4.s` (our cut, not an original) | the errno address of /lib/codgen was written as a number (0x69C8); scodgen, popt and cparse have errno elsewhere | fixed 2026-10-31: `_errno` | `src/cmd/cparse/tools/HANDOFF_cparse.md` |
+| `/lib/cparse` (`putsym`) | for a structure that is used but never defined (`struct sgtty *p` when only `sgttyb` exists) the member loop starts at `dimtab[-1]` and writes the `symno` of whatever that word points to into the member list of the .S file | kept (the bss has the original layout) | `src/cmd/cparse/tools/findings.json` |
+| src/lib/oldlibc `endopen/0_4.s` (our cut, not an original) | the errno address of /lib/codgen was written as a number (0x69C8); scodgen, popt and cparse have errno elsewhere | fixed 2026-10-31: `_errno` | `src/cmd/cparse/tools/findings.json` |
 | `/lib/cparse` (`putsym`, `lookup`) | the register byte `sfldb` (+5 of a symbol in the .S file) is set only for register variables and fields: for every other symbol the .S file gets the old contents of the malloc block (heap contents, depend on `_end` and on earlier `free`s) | kept; identical only with the original data size; the corpus masks the byte (`cparse/tools/progcfg.py`, CORPUS_NORMALIZE) | cparse sources |
-| `/lib/cparse` (`lookup`) | returns no value when the name is not found and no entry is to be made (`mk == 0`) | kept | `HANDOFF_cparse.md` |
-| `/lib/cparse` (`newsect`) | the section counter starts at 3, so every overflow of a section gives "too many sections"; `defid` prints "ntab_gl obals" | kept | `HANDOFF_cparse.md` |
-| `/lib/cparse` (`convert`) | for CVTL the operands of the node change places (harmless for PLUS, the only user) | kept | `HANDOFF_cparse.md` |
-| `/lib/cparse` (`lxrdope`, `lxres`) | the reserved word `fortran` has the action 6, for which `lxres` has no case: a program with the word `fortran` stops with "compiler error: bad AR_?? action" (measured) | kept | `HANDOFF_cparse.md` |
-| `/lib/cparse` (`clocal` ASSIGN, `chkstr`, `treeeq`) | `clocal` loads two types for an ASSIGN of an SCONV and does not use them; `chkstr` compares a symbol pointer with 500 (signed, so it never fires); `treeeq` returns no value for an operator that is not LTYPE, UTYPE or BITYPE | kept | `HANDOFF_cparse.md` |
+| `/lib/cparse` (`lookup`) | returns no value when the name is not found and no entry is to be made (`mk == 0`) | kept | `src/cmd/cparse/tools/findings.json` |
+| `/lib/cparse` (`newsect`) | the section counter starts at 3, so every overflow of a section gives "too many sections"; `defid` prints "ntab_gl obals" | kept | `src/cmd/cparse/tools/findings.json` |
+| `/lib/cparse` (`convert`) | for CVTL the operands of the node change places (harmless for PLUS, the only user) | kept | `src/cmd/cparse/tools/findings.json` |
+| `/lib/cparse` (`lxrdope`, `lxres`) | the reserved word `fortran` has the action 6, for which `lxres` has no case: a program with the word `fortran` stops with "compiler error: bad AR_?? action" (measured) | kept | `src/cmd/cparse/tools/findings.json` |
+| `/lib/cparse` (`clocal` ASSIGN, `chkstr`, `treeeq`) | `clocal` loads two types for an ASSIGN of an SCONV and does not use them; `chkstr` compares a symbol pointer with 500 (signed, so it never fires); `treeeq` returns no value for an operator that is not LTYPE, UTYPE or BITYPE | kept | `src/cmd/cparse/tools/findings.json` |
 | codgen | `regjam`, case 1: the call `roverlap(1, reg)` for a word node has no third argument, `roverlap` takes whatever is in r5 as the node (the call for a long node passes `n`) | Kept (byte identity) | `src/cmd/codgen/regallo3.c`; found in the original at 0x79fa, no `ld r5,r10` there |
 | codgen | `eread`: `op = dope[op] & 0xE; if (op == 0x73) erflag = 1;` the masked value can never be 0x73, the flag is written nowhere else and never read | Kept (byte identity) | `src/cmd/codgen/rdr3.c`; original at 0x2592 |
 | codgen | `efcode` calls `prolog(a, sz, tot)` with three of five arguments, the third in the place of `b`; `prolog` takes `w` and `tot` from the stack words the call of `epilog` just before left there | Kept (byte identity) | `src/cmd/codgen/local3.c`; original at 0x297c |
@@ -1075,22 +1075,22 @@ Rules found while bringing the "findings" functions of sld to the exact code (st
 reading the original code with `tools/odis.py NAME`:
 
 - **Argument registers.** The first argument is in rr6 (|4| in the spill), the second in rr4 (|0|), a word argument after them in r5/r3. A
-  wrong parameter order or type (`long` for `int`) shows as spilled offsets that differ (cvt_fsym, table_lookup, seg_pad, str_compare, mput).
+  wrong parameter order or type (`long` for `int`) shows as spilled offsets that differ (cvt_fsym, lookloc, seg_pad, eq, mput).
   The callers show the order (mput(stream, data, n); warn_sym_redef(p, a) with p null-checked).
 - **Register variables.** The old compiler gives register variables from r13 downwards in the order of declaration, the pair of a pointer
   takes two registers, a `register` parameter comes first (rr12). `ldm` saves exactly the used ones. A copy `ldl rr12,rr6` of a spilled
   parameter means a local `register char *p; p = a;`; no spill of an argument means the parameter itself is `register`
   (put_int_buf, next_entry). A register that is incremented (`inc r13,#1` on a pointer in rr12) is the pointer, not a counter
-  (warn_sym_redef, trunc_name). Unused local arrays give the frame bytes that the original has more (load2, load2arg, table_lookup: `spare`).
+  (warn_sym_redef, trunc_name). Unused local arrays give the frame bytes that the original has more (load2, load2arg, lookloc: `spare`).
 - **Loops.** The original loop of `while`/`for` tests at the bottom (`jr test; body; test: ...; jr cc,body`). Our compiler writes
   `while` with the test on top (`jr ncc,end; body; jr top`), which is also what some original loops have (next_entry:
   `p += 16; while (e > p) p += 16;`). Bottom tests are written with goto (`goto test; body: ...; test: if (c) goto body;`)
-  (get_block, chk_ranlib, pack_name, unpack_run, load2arg).
+  (get_block, chk_ranlib, cp8c, unpack_run, load2arg).
 - **Expressions.** `switch (ep[4])` with the case values 0x20.. instead of `switch (ep[4] - 0x20)` gives `ld r2,r3; sub r2,#0x20`
-  (end_pass1). `if ((p[4] & 0x80) != 0)` gives `and; test`, `if (p[4] & 0x80)` gives `bit` (chk_ranlib). `if ((ch = *s) & 0x80)` avoids a copy
+  (middle). `if ((p[4] & 0x80) != 0)` gives `and; test`, `if (p[4] & 0x80)` gives `bit` (chk_ranlib). `if ((ch = *s) & 0x80)` avoids a copy
   (unpack_run). `x = n; x >>= 1;` gives `ld r9,r5; sra r9,#1` (mget). `return *(*(int **)(q + 6))++;` keeps the old value in a local (get);
   `if (--*(int *)(q + 4) < 0)` is the pre-decrement test (get). `!c & 0x20` (precedence bug of the original) gives `ldk 1/0; bit` (warn_sym_redef).
-  `flag ? "a" : "b"` as argument gives one call (open_tmp). A function without a `return` at the end leaves r2 as it is (put_pad).
+  `flag ? "a" : "b"` as argument gives one call (tcreat). A function without a `return` at the end leaves r2 as it is (put_pad).
   `reslist[x].d` (8-byte rows) instead of `*(int *)(tabF338 + x * 8)` (alloc_resv, resv_seg). The offset of a field in a stack struct is
   `(char *)&h.f - (char *)&h` (patch_hdr); a 14-byte record built on the stack is a struct (put_sym).
 - **Stack records.** A stack array accessed with constant offsets in the original (`|C|(r15)`) is a struct of words/bytes in the source,
@@ -1107,21 +1107,21 @@ reading the original code with `tools/odis.py NAME`:
   (all three bodies end in the shared `ld |4|,r2`, `jr 0x5a96`). Our compiler writes the arms and bodies in source order, so 66
   (lay_out) and 82 (ins_block) instructions stay different; case permutations in the source did not help (94 -> 82). Not solved.
 - **Call with a register copy.** `r = p; ... getfile(r)` (the copy, not the parameter) gives the call without the extra `ldl rr4,rr6`
-  (load_lib_syms, load2arg). `for (n = 1; load_header(n); n = ((archdr.asize + 27) >> 1) + n) ;` per case reproduces the shared `n =` head of the
-  loop (load_lib_syms). The 24-byte header in readhdr is a struct (mixed int/long fields), its record buffer 8198 bytes; `secflg[g][k]`-style
+  (load1arg, load2arg). `for (n = 1; load_header(n); n = ((archdr.asize + 27) >> 1) + n) ;` per case reproduces the shared `n =` head of the
+  loop (load1arg). The 24-byte header in readhdr is a struct (mixed int/long fields), its record buffer 8198 bytes; `secflg[g][k]`-style
   indexing with a variable row is `(tab42b4 + g * 5)[k]`.
-- **Cold blocks and the library call (main, parse_args).** The original puts the call for a non-option argument (`load_lib_syms(s)`,
+- **Cold blocks and the library call (main, endload).** The original puts the call for a non-option argument (`load1arg(s)`,
   `load2arg(a)`) at the end of the loop body in front of the increment (`if (s[0] != '-') goto lib; ... lib: call; next: i++`), not in an
   `if` block at the top; with that the loop head and the dispatch lie right behind the entry jump. The case bodies of a switch with shared tails
-  lie in the order of the code of the original (parse_args: f, b/t falling into the shared `k++; av++`, `default: j++; goto scan`, N, l, M, R);
+  lie in the order of the code of the original (endload: f, b/t falling into the shared `k++; av++`, `default: j++; goto scan`, N, l, M, R);
   the jump table sends several characters to one body. `saved_av++; av = saved_av;` is the `inc |10|,#4` of the restore.
-- **Moved error blocks (scan_m_opt).** popt moves an error block (call of report_error) into the gap behind an earlier `break` and shares the common
-  tail with the other error calls (`ldl rr2,s; call report_error`); a goto stub in the source reproduces the code (49 -> 7 differences)
+- **Moved error blocks (scan_m_opt).** popt moves an error block (call of error) into the gap behind an earlier `break` and shares the common
+  tail with the other error calls (`ldl rr2,s; call error`); a goto stub in the source reproduces the code (49 -> 7 differences)
   but puts the string into the pool in the wrong place, so it is not used.
 - **Case order.** The cases of a switch lie in the code in the order of the source (resv_seg: 'r', 's', 'M').
 - Remaining differences are the old compiler's own: the optimizer moves non-register locals into scratch registers (split_seg: `e` stays in
   rr2 in the original; ours keeps it on the stack), `and r2,#0xFFFE` becomes `res r2,#0` in the original (load2), `jr cc,a; jr b` is
-  merged by ours (pack_name).
+  merged by ours (cp8c).
 
 ### sld: corpus test of the rebuilt sld
 
@@ -1224,7 +1224,7 @@ The addresses of the original are in `tools/var_addr.txt`. Names follow Plexus/V
 | bE480 | dcum |
 | g0486 | libp |
 | bE048A | aoutnam |
-| p0494 | ofilnam |
+| p0494 | ofilename |
 | g049e | tfname |
 | ptrs04ac | secnam |
 | g04ce | symdef |
@@ -1249,9 +1249,9 @@ The addresses of the original are in `tools/var_addr.txt`. Names follow Plexus/V
 | pE3C0E | lastb |
 | b3C12 | p2tail |
 | bF32E | p2head |
-| bE3C16 | ttotal |
-| bE3C1A | dtotal |
-| b3C1E | btotal |
+| bE3C16 | tsize |
+| bE3C1A | dsize |
+| b3C1E | bsize |
 | tab3c22 | mlist |
 | bE3E7A | ncopied |
 | bE3E7C | dseg |
@@ -1269,7 +1269,7 @@ The addresses of the original are in `tools/var_addr.txt`. Names follow Plexus/V
 | bE434 | segtsz |
 | bE436 | hdrsz |
 | bE4A36 | curarg |
-| bE4A3A | exstat |
+| bE4A3A | errlev |
 | bE4A3C | cmdfile |
 | g4a40 | cmdav |
 | bE4A44 | cmdac |
@@ -1339,7 +1339,7 @@ area starts with the SCCS strings of the files in link order: copyname.c 0x2c, d
 printname.c 0x14fe, swap.c 0x156c, symbols.c 0x159a; the code of the files is in the same order and the assignment is monotonic
 (no file after a later one). Code ranges (function boundaries; the cuts at the first function of the next file):
 copyname 0x56..0x1d2, dump 0x1d2..0x6c6, ext 0x6c6..0x78c, ld 0x78c..0x3c16, ldm 0x3c16..0x6522, printname 0x6522..0x65c6,
-swap 0x65c6..0x6684, symbols 0x6684..0x71ca. `unpack_run` and `pack_name` (0x56..0x178) use no string and lie before the first
+swap 0x65c6..0x6684, symbols 0x6684..0x71ca. `unpack_run` and `cp8c` (0x56..0x178) use no string and lie before the first
 copyname string function: copyname by order. References to variables are no witness (a file uses the variables of the others).
 
 From 0x71ca on there is no own code: the objects are members of slibc.a, in the order the original linker took them:
@@ -1366,7 +1366,7 @@ Findings from the order of the strings (`fill_strings.py` prints them):
 - Some strings are global initialized arrays, not literals: "/tmp/ldaXXXXX" (0x49e, tmpname), "Premature EOF" (0x4d8), "__.SYMDEF"
   (0x4ce), the empty string (0xe38, used three times), they lie at the start of the data of ld.c, before the strings of the
   functions. The functions refer to them by name.
-- `next_entry` and `index16` have one error string in the original, two literals in our source (the original calls `report_error`
+- `next_entry` and `index16` have one error string in the original, two literals in our source (the original calls `error`
   from one place); the texts are equal for now.
 - The literals of `scan_options`, `reg_sect_addr`, `scan_m_opt` are in another order in the original source than in ours (e.g. the symbol
   table size handler comes before the pass 1 segment table handler in the original): the order of the statements in our source differs;
@@ -1383,8 +1383,8 @@ against the original range; relocated words, jump tables and pointers into segme
 dump.c, ext.c, ldm.c, printname.c, swap.c and symbols.c equals the original byte for byte; ld.c to 0x0e38 (getfile).
 What the data showed:
 - The initialized variables of a file come first (after the SCCS string) in the order of their definition, then the strings of the
-  functions, and variables can sit between functions (`char tmpname[] = "l.out"` at 0x66c, before sig_handler). A pointer
-  initialized with a string is followed by the string (`char *aoutnam = "a.out"` 0x48a, `char *ofilnam = "l.out"` 0x494), an array of
+  functions, and variables can sit between functions (`char tmpname[] = "l.out"` at 0x66c, before delexit). A pointer
+  initialized with a string is followed by the string (`char *aoutnam = "a.out"` 0x48a, `char *ofilename = "l.out"` 0x494), an array of
   pointers by its strings (`secnam` = "all", "text", "data", "bss"); a `long *` can be initialized with the address of a bss array
   (`long *libp = (long *)liblist`, a cursor: the code does `*libp++ = -1`). Variables initialized with 0 are data, not bss.
 - Names that were one name in our sources for two variables (bE47A: an int counter at data 0x47a in ld.c/ldm.c, a buffer at bss2 0x47a in

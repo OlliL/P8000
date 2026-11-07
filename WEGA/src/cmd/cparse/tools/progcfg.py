@@ -7,7 +7,7 @@ import os
 
 NAME = 'cparse'
 ORIG = 'lib/cparse'
-OWN_LIM = 0x9f06    # the own code ends here; the libc part follows (HANDOFF_cparse.md, step 2)
+OWN_LIM = 0x9f06    # the own code ends here; the libc part follows
 ORIG_LIM = 0x10000  # the original is stripped
 OWN_OBJ = r'^(crt0|cgram1|xdefs1|scan1|pftn1|trees1|optim1|code1|local1|comm1|vinit1|sym1|sym2)'
 CC = '/bin/cc'

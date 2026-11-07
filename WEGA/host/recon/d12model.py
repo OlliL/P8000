@@ -4,7 +4,7 @@
 Usage: d12model.py [-q]      (-q: only the summary lines)
 
 The shipped cc (cparse) puts the string literals of a function in front of the function and pads each one to an even
-address. The old cc (measured on /bin/ld, src/cmd/ld/tools/HANDOFF_ld.md) puts initialised data and switch tables in
+address. The old cc (measured on /bin/ld) puts initialised data and switch tables in
 source order and all string literals of a file at the end of the file's data, unpadded (the pool starts and ends even).
 
 The modules progcfg MODULES (in SRCDIR; the include files without extension, like mfile1, are copied too; a module
