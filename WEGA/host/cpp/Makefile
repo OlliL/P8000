@@ -21,7 +21,7 @@ cpp: cpp.c cpy.c yylex.c
 	$(HOSTCC) $(CFLAGS) -I. -o $@ cpp.c cpy.c
 
 check: cpp
-	WEGA_ROOT=$(abspath $(WEGA)) CORPUS_HOST=1 CORPUS_BIN=$(abspath cpp) sh ../tools/corpus.sh cpp
+	WEGA_ROOT=$(abspath $(WEGA)) sh ../tools/corpus.sh --host cpp cpp
 
 clean:
 	rm -f cpp cpy.c
