@@ -476,7 +476,8 @@
     "structure_flags": [],
     "len_ours": 18,
     "len_orig": 19
-   }
+   },
+   "note": "2026-11-07: odd form: char spare[8] (the frame of the original has 8 bytes more than the locals need)."
   },
   "pack_entry": {
    "file": "symbols.c",
@@ -724,7 +725,8 @@
     "structure_flags": [],
     "len_ours": 160,
     "len_orig": 160
-   }
+   },
+   "note": "2026-11-07, shipped scc: open. The entry from torig: the original does ld r5,r2; ldk r4,#0, we do ldk r4,#0 first. Tried: (long)(unsigned), (unsigned long), unsigned torig in p2seg, | instead of +, operands swapped."
   },
   "main": {
    "file": "ld.c",
@@ -744,7 +746,8 @@
     "structure_flags": [],
     "len_ours": 182,
     "len_orig": 182
-   }
+   },
+   "note": "2026-11-07, shipped scc: open. if ((pname = rindex(...)) == 0) fits the start. Then filname = 0 after the label body: the original takes rr4 (the codgen keeps rr2 = curarg), we take rr2: a goto label clears the register knowledge, a loop label does not (guess, read_symbols shows the same). The goto skeleton was fitted to sccv1."
   },
   "scan_options": {
    "file": "ld.c",
@@ -1277,7 +1280,8 @@
     "structure_flags": [],
     "len_ours": 103,
     "len_orig": 105
-   }
+   },
+   "note": "2026-11-07, shipped scc: open. if ((long)(cur = &page[0])->bno == hi) gives the copy of cur the original has, but the registers differ (orig rr4, r2, rr0) and the No pages block stands at the end in the original."
   },
   "half": {
    "file": "ld.c",
@@ -1785,7 +1789,8 @@
     "structure_flags": [],
     "len_ours": 17,
     "len_orig": 29
-   }
+   },
+   "note": "2026-11-07, shipped scc: open. The default branch loads stype into rl2 in the original (rl3 here), and the ret stays after the default (here after case 2). Tried: != 0, break/return in the default, return in the cases, no case 0x20, (int) switch, default first, case 0x20 last."
   },
   "put_sym": {
    "file": "symbols.c",
