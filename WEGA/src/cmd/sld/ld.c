@@ -915,7 +915,7 @@ int start_output()
 	} else {
 		for (p = p2head; p; p = p->nxt) {
 			if (p->s_code) {
-				filhdr.entry = (long)(unsigned)p->torig + ((long)p->segno << 24);
+				filhdr.entry = ((unsigned)p->torig & 0xffffL) + ((long)p->segno << 24);
 				break;
 			}
 		}
