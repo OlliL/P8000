@@ -83,7 +83,7 @@ struct node {
 };
 
 struct optab {
-	char *name;
+	char *opstring;
 	int opcode;
 };
 

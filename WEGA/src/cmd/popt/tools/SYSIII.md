@@ -1,20 +1,20 @@
-# popt against c2 of the Plexus tree
+# popt against System III and Plexus
 
-What in `src/cmd/popt` differs from `cmd/cc/z8000/c2` (`c20.c` ... `c23.c`, `c2.h`). `cmd/cc/c2.d` is close to it: only `z22.c` against `c22.c` differs by a few lines. Measured 2026-11-03. popt and c2 share their plan (`iterate`, `xjump`, `codemove`, `comjump`, `rmove`, `movedat`) and `struct node`; the module names z20 ... z23 come from the original.
+What in `src/cmd/popt` differs from the object code improver of System III (`cmd/cc/pdp11/c20.c c21.c c2.h`; the PDP-11 `c2`, the VAX one in `cmd/cc/vax/c2` is less close) and from the Z8000 `c2` of Plexus (`cmd/cc/c2.d`: `c20.c` ... `c23.c`, `c2.h`; `cmd/cc/z8000/c2` is close to it). System III has no counterpart of `z22.c` and `z23.c`. Measured 2026-11-07. popt and c2 share their plan (`iterate`, `xjump`, `codemove`, `comjump`, `rmove`, `movedat`), `struct node` and `struct optab` (`opstring`); the module names z20 ... z23 come from the original.
 
 ## Lines
 
-Lines without comments and blanks that also stand in the c2 file.
+Lines without comments and blanks that also stand in the file.
 
-| File | c2 file | Equal | Of |
-|---|---|---:|---:|
-| z20.c | c20.c | 3 | 43 |
-| z21.c | c21.c | 173 | 900 |
-| z22.c | c22.c | 341 | 1573 |
-| z23.c | c23.c | 132 | 571 |
-| z2.h | c2.h | 43 | 101 |
+| File | System III file | Equal | Plexus file | Equal | Of |
+|---|---|---:|---|---:|---:|
+| z20.c | pdp11/c20.c | 3 | c2.d/c20.c | 4 | 44 |
+| z21.c | pdp11/c21.c | 229 | c2.d/c21.c | 180 | 933 |
+| z22.c | — | — | c2.d/c22.c | 349 | 1610 |
+| z23.c | — | — | c2.d/c23.c | 135 | 621 |
+| z2.h | pdp11/c2.h | 41 | c2.d/c2.h | 42 | 163 |
 
-44 of the 73 function names are those of c2.
+40 of the 75 function names are those of System III.
 
 ## WEGA's own
 
@@ -24,7 +24,7 @@ Lines without comments and blanks that also stand in the c2 file.
 - Diagnostics: z21.c `statline jswcheck dumperr outerr prefix dumpnodes`.
 - c2 functions without a counterpart: `ccstrlook check checkreg chgcc clrop2 dest1 equsubstr findrand isanyreg isindex isoffreg isreg14 isstarreg lostcc needcc newreg printanode printnodes shortval source streval trunc typeit usecc`.
 
-## Forms that follow the bytes, not the c2 text
+## Forms that follow the bytes, not the System III text
 
 - `xjump`, `backjmp`: `while (p = p->back) { if (c) continue; break; }`.
 - `rmove`: `do_and` falls into `do_arith`; the arms of the big switch as labels inside the `if` that falls into them (`OLDCC.md`, D20).

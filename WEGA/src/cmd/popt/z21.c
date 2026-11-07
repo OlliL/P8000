@@ -435,14 +435,14 @@ register struct node *n;
 		sub = n->subop;
 		if (sub == SBYTE || sub == SLONG || sub == SLDK)
 			n->subop = 0;
-		for (t = optab; t->name; t++) {
+		for (t = optab; t->opstring; t++) {
 			if ((t->opcode & 0xff) == n->op &&
 			    (t->opcode >> 8) == n->subop) {
 				if (n->op == CJP) {
 					prefix(n);
-					printf("%s", t->name);
+					printf("%s", t->opstring);
 				} else
-					printf("\t%s", t->name);
+					printf("\t%s", t->opstring);
 				if (sub == SBYTE)
 					putchar('b');
 				else if (sub == SLONG)
@@ -559,7 +559,7 @@ opsetup()
 	register struct optab **h;
 	register char *s;
 
-	for (o = optab; (s = o->name) != 0; o++) {
+	for (o = optab; (s = o->opstring) != 0; o++) {
 		h = &ophash[HASHNAME(s)];
 		while (*h++)
 			if (h >= &ophash[OPHS])
@@ -590,7 +590,7 @@ int opw;
 	curlp = p + 1;
 	h = &ophash[HASHNAME(tmpcc)];
 	while ((o = *h) != 0) {
-		q = o->name;
+		q = o->opstring;
 		p = tmpcc;
 		while (*q++ == *p)
 			if (*p++ == 0)
@@ -638,7 +638,7 @@ oplook()
 	suffix = np[-2] == 'b' || np[-2] == 'l';
 	for (;;) {
 		o = *h;
-		np = o->name;
+		np = o->opstring;
 		lp = tmpop;
 		while (*np++ == *lp)
 			if (*lp++ == 0) {
