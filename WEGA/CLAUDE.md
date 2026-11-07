@@ -24,6 +24,17 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 - V7 layout in `src/cmd`. Makefiles must also work with WEGA's native `make`:
   use `=` not `?=`, `cd dir ; $(MAKE)`.
 
+## Working economically (tokens)
+
+- Answers short: result, changed files, open points; no recap of what the owner already knows, no repeated tables or file
+  contents, no lists of options that will not be taken.
+- Read only what is needed: `grep`, `head`, `sed -n`, line ranges; never whole large files or logs (`tail`, `grep` on them).
+  Do not read a file again after editing it.
+- Tool output small: filter with `grep`/`tail`, `| head`, `-q`; long runs (checkall, corpora) in the background with the
+  result line only, no polling.
+- Independent calls in one step; no subagents unless the owner asks.
+- Ask only when a decision is really the owner's; otherwise decide, say it in one line and go on.
+
 ## Local directories
 
 | Path                                             | Content                                              | Use                                                 |
