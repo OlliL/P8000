@@ -7,7 +7,7 @@
 #                        (WEGA=<file tree of the original system>)
 
 HOSTCC = cc
-CFLAGS = -O2 -Wall -Wno-unused-result
+CFLAGS = -O2 -Wall -Wextra
 WEGA = ../../../tmp/wega31_root
 EMU  = $(abspath ../z8k-emu/z8k-emu)
 LIB  = ../tools/lib
