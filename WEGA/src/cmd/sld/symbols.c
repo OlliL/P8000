@@ -265,60 +265,47 @@ map_sym()
 	register struct p1seg *p;
 	int i;
 
-	i = fblk + cursym.sseg;
-	p = get_block(i);
+	p = get_block(i = fblk + cursym.sseg);
 	w = (char *)&cursym.svalue;
 	switch (cursym.stype) {
 	case 2:
 	case 0x22:
-		goto h2;
+	text:
+		*(int *)w = p->ncode->segno << 8;
+		w += 2;
+		*(int *)w = p->ctrel + p->ncoff + p->ncode->torig + *(int *)w;
+		cursym.sseg = p->ncode->segidx;
+		return;
 	case 3:
 	case 0x23:
-		goto h3;
+		*(int *)w = p->ndata->segno << 8;
+		w += 2;
+		*(int *)w = p->cdrel + p->ndoff + p->ndata->dorig + *(int *)w;
+		cursym.sseg = p->ndata->segidx;
+		return;
 	case 4:
 	case 0x24:
-		goto h4;
+		*(int *)w = p->nbss->segno << 8;
+		w += 2;
+		*(int *)w = p->cbrel + p->nboff + p->nbss->borig + *(int *)w;
+		cursym.sseg = p->nbss->segidx;
+		return;
 	case 0x1f:
-		goto loop;
+		for (; i < nblk; i++) {
+			p = get_block(i);
+			if (p->s_code)
+				goto text;
+		}
+		cursym.sseg = 0;
+		cursym.svalue = 0;
+		return;
 	case 0x20:
-		goto end;
-	default:
-		if (cursym.stype & 0x20)
-			cursym.stype = 0x21;
-		goto end;
+		return;
 	}
-loop:
-	if (i >= nblk)
-		goto clear;
-	p = get_block(i);
-	if (p->s_code)
-		goto h2;
-	i++;
-	goto loop;
-clear:
-	cursym.sseg = 0;
-	cursym.svalue = 0;
-	goto end;
-h2:
-	*(int *)w = p->ncode->segno << 8;
-	w += 2;
-	*(int *)w = p->ctrel + p->ncoff + p->ncode->torig + *(int *)w;
-	cursym.sseg = p->ncode->segidx;
-	goto end;
-h3:
-	*(int *)w = p->ndata->segno << 8;
-	w += 2;
-	*(int *)w = p->cdrel + p->ndoff + p->ndata->dorig + *(int *)w;
-	cursym.sseg = p->ndata->segidx;
-	goto end;
-h4:
-	*(int *)w = p->nbss->segno << 8;
-	w += 2;
-	*(int *)w = p->cbrel + p->nboff + p->nbss->borig + *(int *)w;
-	cursym.sseg = p->nbss->segidx;
-end:
-	;
+	if (cursym.stype & 0x20)
+		cursym.stype = 0x21;
 }
+
 
 /* symreloc: relocate the value of cursym by the text, data or bss relocation of the object (0x6da8..0x6e1a of /bin/sld) */
 symreloc()
