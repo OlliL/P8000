@@ -32,7 +32,7 @@ build/nonseg/cparse: crt0.o
 build/nonsegv0/cparse: crt0.o
 	cd build/nonsegv0  && make -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
 build/nonsegv0p/cparse: crt0.o
-	cd build/nonsegv0p && make -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6DP"
+	cd build/nonsegv0p && make -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
 build/nonsegv1/cparse: crt0.o
 	cd build/nonsegv1  && make -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D1"
 

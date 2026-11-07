@@ -190,16 +190,15 @@ C=$T/normal/WEGA/src/cmd
 cp $T/tree/WEGA/src/lib/libc-v5.a $T/normal/WEGA/src/lib/
 (cd $C/codgen && PATH=$T/bin:$PATH make all CC=cc) > $T/normal.log 2>&1
 (cd $C/popt && PATH=$T/bin:$PATH make all CC=cc) >> $T/normal.log 2>&1
-for p in build/nonseg/codgen build/seg/scodgen; do
-  base=`basename $p`
-	l=$T/corpus_$base.log; : > $l
+for p in codgen scodgen; do
+	l=$T/corpus_$p.log; : > $l
 	for sub in cmd lib; do
 		(cd $C/codgen && PROG=$p WEGA=$WEGA sh tools/check.sh $CORPUS_TMP/cg_corpus_$p/$sub) >> $l 2>&1
 	done
 	g=`sed -n 's/^ok=\([0-9]*\) .*/\1/p' $l | paste -sd+ | bc`
 	b=`sed -n 's/.*bad=\([0-9]*\)$/\1/p' $l | paste -sd+ | bc`
 	echo "ok=$g bad=$b" > $l.sum
-	corpus $base 0 $l.sum
+	corpus $p 0 $l.sum
 done
 (cd $C/popt && WEGA_ROOT=$WEGA RECON_TMP=$T CORPUS=$CORPUS_TMP/popt/corpus sh tools/corpus.sh $C/popt/build/nonseg/popt) > $T/corpus_popt.log 2>&1
 corpus popt 0 $T/corpus_popt.log
