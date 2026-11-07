@@ -49,11 +49,15 @@ def switches():
         for s in re.findall(r'^#define (OLD_D\w+)', m.group(1), re.M):
             sw[s] = 'codgen'
     for p in ('cparse', 'popt'):
-        mk = open(os.path.join(REPO, 'src', 'cmd', p, VER, 'Makefile')).read()
-        m = re.search(r'^SWITCHES = (.*)$', mk, re.M)
-        for s in re.findall(r'-D(OLD_\w+)', m.group(1) if m else ''):
+        m = vline(open(os.path.join(REPO, 'src', 'cmd', p, 'Makefile')).read(), p)
+        for s in re.findall(r'-D(OLD_\w+)', m.group(2) if m else ''):
             sw[p + ':' + s] = p
     return sw
+
+
+def vline(mk, pas):
+    """the rule of the version in the Makefile of a pass: group 2 holds its CFLAGS (the switches)"""
+    return re.search(r'^(build/nonseg%s/%s:.*\n\tcd .*CFLAGS="\$\(CFLAGS\))([^"]*)"' % (VER, pas), mk, re.M)
 
 
 def commit():
@@ -71,23 +75,25 @@ def build(work, name, pas):
         assert new != txt, name
         open(p, 'w').write(new)
     else:
-        p = os.path.join(src, VER, 'Makefile')
+        p = os.path.join(src, 'Makefile')
         txt = open(p + '.all').read()
-        new = re.sub(r'(^SWITCHES = .*?) ?-D%s\b' % plain, r'\1', txt, count=1, flags=re.M)
+        m = vline(txt, pas)
+        new = txt[:m.start(2)] + re.sub(r' ?-D%s\b' % plain, '', m.group(2), count=1) + txt[m.end(2):]
         assert new != txt, name
         open(p, 'w').write(new)
     return make(work, pas)
 
 
 def make(work, pas):
-    d = os.path.join(work, 'src', 'cmd', pas, VER)
+    """the pass of the version, built by its Makefile with the tools of WEGA (wbin of the work copy)"""
+    src = os.path.join(work, 'src', 'cmd', pas)
+    d = os.path.join(src, 'build', 'nonseg' + VER)
     for f in os.listdir(d):
         if f.endswith('.o') or f == pas:
             os.remove(os.path.join(d, f))
-    w = EMU + ' -r ' + ROOT
-    cmd = ['make', 'CC=' + w + ' /bin/cc', 'CAS=' + w + ' /bin/cas', 'AR=' + w + ' /bin/ar', 'LD=' + w + ' /bin/ld',
-           'LDBIN=' + w + ' /bin/ld']
-    r = subprocess.run(cmd, cwd=d, capture_output=True, text=True, timeout=TIMEOUT)
+    env = dict(os.environ, PATH=os.path.join(work, 'wbin') + ':' + os.environ['PATH'])
+    r = subprocess.run(['make', 'build/nonseg%s/%s' % (VER, pas)], cwd=src, env=env, capture_output=True, text=True,
+                       timeout=TIMEOUT)
     if r.returncode or not os.path.exists(os.path.join(d, pas)):
         return (r.stdout + r.stderr)[-300:]
     shutil.copy(os.path.join(d, pas), os.path.join(work, 'root', 'lib', VER, pas))
@@ -126,7 +132,9 @@ def setup():
     subprocess.run(['cp', '-a', OLDROOT, os.path.join(work, 'root')], check=True)
     for p in PASSES:
         subprocess.run(['cp', '-a', os.path.join(REPO, 'src', 'cmd', p), os.path.join(work, 'src', 'cmd', p)], check=True)
-    for f in ('codgen/oldcc.h', 'cparse/%s/Makefile' % VER, 'popt/%s/Makefile' % VER):
+    subprocess.run(['sh', os.path.join(REPO, 'host', 'tools', 'wbin.sh'), os.path.join(work, 'wbin'), ROOT,
+                    os.path.join(work, 'root'), EMU], check=True)
+    for f in ('codgen/oldcc.h', 'cparse/Makefile', 'popt/Makefile'):
         p = os.path.join(work, 'src', 'cmd', f)
         shutil.copy(p, p + '.all')
     return work
@@ -134,7 +142,7 @@ def setup():
 
 def restore(work, pas):
     src = os.path.join(work, 'src', 'cmd', pas)
-    f = 'oldcc.h' if pas == 'codgen' else os.path.join(VER, 'Makefile')
+    f = 'oldcc.h' if pas == 'codgen' else 'Makefile'
     shutil.copy(os.path.join(src, f + '.all'), os.path.join(src, f))
     shutil.copy(os.path.join(work, 'base', pas), os.path.join(work, 'root', 'lib', VER, pas))
 
@@ -213,7 +221,7 @@ def run(args):
         e = make(work, p)
         if e:
             sys.exit('baseline build of %s failed: %s' % (p, e))
-        shutil.copy(os.path.join(work, 'src', 'cmd', p, VER, p), os.path.join(work, 'base', p))
+        shutil.copy(os.path.join(work, 'src', 'cmd', p, 'build', 'nonseg' + VER, p), os.path.join(work, 'base', p))
     base = {p: measure(work, p) for p in PROGS}
     if None in base.values():
         sys.exit('baseline model failed')
