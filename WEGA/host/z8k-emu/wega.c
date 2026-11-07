@@ -420,8 +420,18 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 9:		/* link */
 		p = a_ptr(&a); p2 = a_ptr(&a);
 		gstr(c, p, gp, sizeof gp); gstr(c, p2, gp2, sizeof gp2);
-		{ const char *h1 = hostpath(gp, hb, sizeof hb), *h2 = hostpath(gp2, hb2, sizeof hb2);
-		  return sc_res(c, link(h1, h2)); }
+		{
+			const char *h1 = hostpath(gp, hb, sizeof hb), *h2 = hostpath(gp2, hb2, sizeof hb2);
+			int r = link(h1, h2);
+			if (r < 0 && errno == EEXIST) {
+				struct stat s1, s2;
+				/* Linux mkdir has already created the WEGA mkdir "."/".." links. */
+				if (stat(h1, &s1) == 0 && stat(h2, &s2) == 0 &&
+				    S_ISDIR(s1.st_mode) && s1.st_dev == s2.st_dev && s1.st_ino == s2.st_ino)
+					return sc_ok(c, 0);
+			}
+			return sc_res(c, r);
+		}
 	case 10:	/* unlink */
 		p = a_ptr(&a); gstr(c, p, gp, sizeof gp);
 		return sc_res(c, unlink(hostpath(gp, hb, sizeof hb)));
@@ -437,6 +447,12 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		p = a_ptr(&a); gstr(c, p, gp, sizeof gp);
 		return sc_res(c, chdir(hostpath(gp, hb, sizeof hb)));
 	case 13: return sc_long(c, time(NULL));
+	case 14:	/* mknod (mkdir uses this for directories) */
+		p = a_ptr(&a); i = a_int(&a); j = a_int(&a); gstr(c, p, gp, sizeof gp);
+		hp = hostpath(gp, hb, sizeof hb);
+		return sc_res(c, (i & S_IFMT) == S_IFDIR
+			? mkdir(hp, i & 07777)
+			: mknod(hp, i, j));
 	case 15:	/* chmod */
 		p = a_ptr(&a); i = a_int(&a); gstr(c, p, gp, sizeof gp);
 		return sc_res(c, chmod(hostpath(gp, hb, sizeof hb), i & 07777));

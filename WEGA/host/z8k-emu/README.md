@@ -119,7 +119,8 @@ inf+inf and sqrt(inf) are invalid and give NaN), no traps.
 (16-bit value: one register, 32-bit value: two, pointer: one or two in
 segmented mode); results are returned in r4 (r5), carry set and errno in r4 on
 error. Implemented: exit, fork, read, write, open, close, wait, creat, link,
-unlink, exec, exece, chdir, time, chmod, chown (no-op), break, ssgbrk, stat,
+unlink, exec, exece, chdir, time, mknod (directories via host `mkdir`),
+chmod, chown (no-op), break, ssgbrk, stat,
 fstat, fcntl, lseek, getpid, getuid/getgid, alarm, pause, utime, access, nice
 (no-op), sync, kill, dup/dup2, pipe, times, signal (SIG_DFL/SIG_IGN only),
 ioctl (always ENOTTY), umask. Anything else prints
