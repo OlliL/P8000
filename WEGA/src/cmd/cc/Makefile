@@ -40,14 +40,12 @@ build/segv1/scc:
 	cd build/segv1 && make -f ../../Makefile scc CC="cc" CFLAGS="$(CFLAGS) -DSCC -DOLD_V1"
 
 clean:
-	rm -f build/nonseg/*
-	rm -f build/nonsegv0/*
-	rm -f build/nonsegv0p/*
-	rm -f build/nonsegv1/*
-	rm -f build/nonsegv1q/*
-	rm -f build/nonsegv1r/*
-	rm -f build/seg/*
-	rm -f build/segv1/*
+	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
+		dir=`dirname $$d`;\
+		FILES="$$dir/cc $$dir/scc";\
+		for f in $(NONSEG_OBJS) $(SEG_OBJS); do FILES="$$FILES $$dir/$$f"; done;\
+		rm -f $$FILES;\
+	done
 
 install: $(ALL_TARGETS)
 	cp build/nonseg/cc $(PREFIX)/bin/cc
@@ -76,4 +74,4 @@ scc: $(SEG_OBJS)
 cc.o: ../../cc.c
 	$(CC) $(CFLAGS) -c ../../cc.c
 
-.PHONY: all old install clean
+.PHONY: all install clean old oldinstall

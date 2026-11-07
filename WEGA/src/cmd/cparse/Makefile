@@ -14,18 +14,6 @@ CAS = cas
 LD = ld
 YACC = yacc
 CFLAGS = -O
-CRT = ../../lib/libc/crt
-LIBC = ../../lib/libc-v7.a
-OBJS = cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o sym2.o
-SOBJS = seg/cgram1.o seg/xdefs1.o seg/scan1.o seg/pftn1.o seg/trees1.o seg/optim1.o seg/code1.o seg/local1.o seg/comm1.o seg/vinit1.o seg/sym1.o seg/sym2.o
-HDRS = mfile1 manifest macdefs stdio.h
-OLDDIRS = v1 v0 v0p
-
-CC = ccv0p
-CAS = cas
-LD = ld
-YACC = yacc
-CFLAGS = -O
 PREFIX = /
 LIBC = ../../../../lib/libc-v7.a
 CRT = ../../lib/libc/crt
@@ -54,12 +42,12 @@ build/segv1/scparse: crt0.o
 	cd build/segv1 && make -f ../../Makefile scparse CC="cc" CFLAGS="$(CFLAGS) -DSEG -DOLD_D12 -DOLD_D1"
 
 clean:
-	rm -f build/nonseg/*
-	rm -f build/nonsegv0/*
-	rm -f build/nonsegv0p/*
-	rm -f build/nonsegv1/*
-	rm -f build/seg/*
-	rm -f build/segv1/*
+	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
+		dir=`dirname $$d`;\
+		FILES="$$dir/cparse $$dir/scparse $$dir/cgram1.c";\
+		for f in $(NONSEG_OBJS) $(SEG_OBJS); do FILES="$$FILES $$dir/$$f"; done;\
+		rm -f $$FILES;\
+	done
 	rm -f crt0.o crt0.s
 
 install: $(ALL_TARGETS)
@@ -80,7 +68,7 @@ crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
 	sh $(CRT)/mkcrt0.sh cparse > $@
 
 crt0.o: crt0.s
-	$(CAS) -u crt0.s
+	$(CAS) -u -o $@ $<
 
 ##################
 # bin targets
@@ -96,8 +84,11 @@ scparse: $(SEG_OBJS) ../../crt0.o
 # obj targets
 ###################
 
-cgram1.o: ../../cgram1.c
-	$(CC) $(CFLAGS) -c ../../cgram1.c
+cgram1.c: ../../cgram1.y
+	$(YACC) ../../cgram1.y
+	mv y.tab.c cgram1.c
+cgram1.o: cgram1.c
+	$(CC) $(CFLAGS) -I../../ -c cgram1.c
 xdefs1.o: ../../xdefs1.c
 	$(CC) $(CFLAGS) -c ../../xdefs1.c
 scan1.o: ../../scan1.c
@@ -121,4 +112,4 @@ sym1.o: ../../sym1.c
 sym2.o: ../../sym2.c
 	$(CC) $(CFLAGS) -c ../../sym2.c
 
-.PHONY: all clean old oldinstall
+.PHONY: all install clean old oldinstall

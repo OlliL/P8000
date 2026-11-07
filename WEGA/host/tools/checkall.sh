@@ -29,12 +29,14 @@ BUILDONLY=0
 # built file below src/cmd, compiler, original(s): the first is compared, the others must have the same bytes
 TABLE='
 cpp/cpp	ccv0p	lib/cpp
-cparse/cparse	ccv0p	lib/cparse
-cparse/scparse	ccv0p	lib/scparse
-codgen/codgen	ccv0p	lib/codgen
-codgen/scodgen	ccv0p	lib/scodgen
-popt/popt	ccv0p	lib/popt
-popt/spopt	ccv0p	lib/spopt
+cparse/build/nonseg/cparse	ccv0p	lib/cparse
+cparse/build/seg/scparse	ccv0p	lib/scparse
+codgen/build/nonseg/codgen	ccv0p	lib/codgen
+codgen/build/seg/scodgen	ccv0p	lib/scodgen
+popt/build/nonseg/popt	ccv0p	lib/popt
+popt/build/seg/spopt	ccv0p	lib/spopt
+cc/build/nonseg/cc	cc	bin/cc
+cc/build/seg/scc	cc	bin/scc
 size/size	ccv1	bin/size
 strip/strip	ccv1	usr/bin/strip
 mv/mv	ccv1	bin/mv bin/cp bin/ln
@@ -44,8 +46,6 @@ rmdir/rmdir	ccv1r	bin/rmdir
 dc/dc	ccv0	bin/dc
 ranlib/ranlib	ccv0	usr/bin/ranlib
 ar	cc	bin/ar
-cc/cc	cc	bin/cc
-cc/scc	cc	bin/scc
 ld/ld	ccv1	bin/ld
 getud	cc	bin/getud
 putud	cc	bin/putud
@@ -188,9 +188,9 @@ done
 copytree $T/normal
 C=$T/normal/WEGA/src/cmd
 cp $T/tree/WEGA/src/lib/libc-v5.a $T/normal/WEGA/src/lib/
-(cd $C/codgen && PATH=$T/bin:$PATH make codgen scodgen CC=cc) > $T/normal.log 2>&1
-(cd $C/popt && PATH=$T/bin:$PATH make popt spopt CC=cc) >> $T/normal.log 2>&1
-for p in codgen scodgen; do
+(cd $C/codgen && PATH=$T/bin:$PATH make all CC=cc) > $T/normal.log 2>&1
+(cd $C/popt && PATH=$T/bin:$PATH make all CC=cc) >> $T/normal.log 2>&1
+for p in build/nonseg/codgen build/seg/scodgen; do
 	l=$T/corpus_$p.log; : > $l
 	for sub in cmd lib; do
 		(cd $C/codgen && PROG=$p WEGA=$WEGA sh tools/check.sh $CORPUS_TMP/cg_corpus_$p/$sub) >> $l 2>&1
@@ -198,12 +198,12 @@ for p in codgen scodgen; do
 	g=`sed -n 's/^ok=\([0-9]*\) .*/\1/p' $l | paste -sd+ | bc`
 	b=`sed -n 's/.*bad=\([0-9]*\)$/\1/p' $l | paste -sd+ | bc`
 	echo "ok=$g bad=$b" > $l.sum
-	corpus $p 0 $l.sum
+	corpus `basename $p` 0 $l.sum
 done
-(cd $C/popt && WEGA_ROOT=$WEGA RECON_TMP=$T CORPUS=$CORPUS_TMP/popt/corpus sh tools/corpus.sh $C/popt/popt) > $T/corpus_popt.log 2>&1
+(cd $C/popt && WEGA_ROOT=$WEGA RECON_TMP=$T CORPUS=$CORPUS_TMP/popt/corpus sh tools/corpus.sh $C/popt/build/nonseg/popt) > $T/corpus_popt.log 2>&1
 corpus popt 0 $T/corpus_popt.log
 # spopt: 2 differ only in the line "NK core" of -d: the place of the heap in the normal build (OLDCC_LOG.md)
-(cd $S/spopt/tools && WEGA_ROOT=$WEGA RECON_TMP=$CORPUS_TMP sh corpus.sh $C/popt/spopt) > $T/corpus_spopt.log 2>&1
+(cd $S/spopt/tools && WEGA_ROOT=$WEGA RECON_TMP=$CORPUS_TMP sh corpus.sh $C/popt/build/seg/spopt) > $T/corpus_spopt.log 2>&1
 corpus spopt 2 $T/corpus_spopt.log
 
 # 4. the host tools

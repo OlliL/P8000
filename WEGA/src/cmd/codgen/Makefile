@@ -42,14 +42,12 @@ build/segv1/scodgen: crt0.o
 	cd build/segv1 && make -f ../../Makefile scodgen CC="cc" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3"
 
 clean:
-	rm -f build/nonseg/*
-	rm -f build/nonsegv0/*
-	rm -f build/nonsegv0p/*
-	rm -f build/nonsegv1/*
-	rm -f build/nonsegv1q/*
-	rm -f build/nonsegv1r/*
-	rm -f build/seg/*
-	rm -f build/segv1/*
+	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
+		dir=`dirname $$d`;\
+		FILES="$$dir/codgen $$dir/scodgen";\
+		for f in $(NONSEG_OBJS) $(SEG_OBJS); do FILES="$$FILES $$dir/$$f"; done;\
+		rm -f $$FILES;\
+	done
 	rm -f crt0.o crt0.s
 
 install: $(ALL_TARGETS)
@@ -70,8 +68,7 @@ crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
 	sh $(CRT)/mkcrt0.sh codgen > $@
 
 crt0.o: crt0.s
-	$(CAS) -u crt0.s
-
+	$(CAS) -u -o $@ $<
 
 ##################
 # bin targets
@@ -120,4 +117,4 @@ table3_codgen.o: ../../table3_codgen.c
 table3_scodgen.o: ../../table3_scodgen.c
 	$(CC) $(CFLAGS) -c ../../table3_scodgen.c
 
-.PHONY: all oldprep old clean
+.PHONY: all install clean old oldinstall
