@@ -327,21 +327,20 @@ symreloc()
 	case 2:
 	case 0x22:
 		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fctrel);
-		break;
+		return;
 	case 3:
 	case 0x23:
 		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcdrel);
-		break;
+		return;
 	case 4:
 	case 0x24:
 		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcbrel);
-		break;
+		return;
 	case 0x20:
-		break;
-	default:
-		if (cursym.stype & 0x20)
-			cursym.stype = 0x21;
+		return;
 	}
+	if (cursym.stype & 0x20)
+		cursym.stype = 0x21;
 }
 
 /* put_sym: write one symbol to the symbol output (0x6e1a..0x6efe of /bin/sld) */

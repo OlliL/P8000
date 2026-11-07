@@ -42,8 +42,7 @@ char **argv;
 	init_signals();
 	if (argc == 1)
 		exit(4);
-	pname = rindex(*argv, '/');
-	if (pname == 0)
+	if ((pname = rindex(*argv, '/')) == 0)
 		pname = *argv;
 	else
 		pname++;
@@ -59,99 +58,97 @@ char **argv;
 	incmd = 0;
 	i = 1;
 	curarg = argv + 1;
-	goto test;
-body:
-	filname = 0;
-	s = *curarg++;
-	if (s[0] != '-')
-		goto lib;
-	j = 1;
-optchar:
-	if (s[j] == 0)
-		goto next;
-	switch (s[j]) {
-	case 'f':
-		savei = i;
-		i = -1;
-		savep = curarg;
-		savev = argv;
-		savec = argc;
-		argv = cmdav;
-		argc = cmdac;
-		curarg = argv;
-		incmd++;
-		break;
-	case 'A':
-		j++;
-	case 'e':
-	case 'o':
-	case 'u':
-		i++;
-		curarg++;
-		j++;
-		goto optchar;
-	case 'l':
-		load_lib_syms(s + (j - 1));
-		break;
-	case 'b':
-	case 't':
-		if (mcnt)
-			report_error(2, "Cannot use -t or -b options with -M");
-		tbflag = 1;
-		i++;
-		if (i >= argc)
-			report_error(2, "-%c: arg missing", s[j]);
-		if (reg_sect_addr(s + j, *curarg))
-			j++;
-		curarg++;
-		j++;
-		goto optchar;
-	case 'M':
-		if (tbflag)
-			report_error(2, "Cannot use -t or -b options with -M");
-		mcnt++;
-		scan_m_opt(s + j, &i, argc);
-		break;
-	default:
-		report_error(2, "-%c: bad flag", s[j]);
-		break;
-	case 'N':
-	case 'O':
-	case 'R':
-	case 'S':
-	case 'T':
-	case 'X':
-	case 'd':
-	case 'i':
-	case 'r':
-	case 's':
-	case 'w':
-	case 'x':
-	case 'z':
-		break;
-	}
-	goto next;
-lib:
-	load_lib_syms(s);
+	for (;;) {
+		while (i < argc) {
+			filname = 0;
+			s = *curarg++;
+			if (s[0] != '-')
+				goto lib;
+			j = 1;
+		optchar:
+			if (s[j] == 0)
+				goto next;
+			switch (s[j]) {
+			case 'f':
+				savei = i;
+				i = -1;
+				savep = curarg;
+				savev = argv;
+				savec = argc;
+				argv = cmdav;
+				argc = cmdac;
+				curarg = argv;
+				incmd++;
+				break;
+			case 'A':
+				j++;
+			case 'e':
+			case 'o':
+			case 'u':
+				i++;
+				curarg++;
+				j++;
+				goto optchar;
+			case 'l':
+				load_lib_syms(s + (j - 1));
+				break;
+			case 'b':
+			case 't':
+				if (mcnt)
+					report_error(2, "Cannot use -t or -b options with -M");
+				tbflag = 1;
+				i++;
+				if (i >= argc)
+					report_error(2, "-%c: arg missing", s[j]);
+				if (reg_sect_addr(s + j, *curarg))
+					j++;
+				curarg++;
+				j++;
+				goto optchar;
+			case 'M':
+				if (tbflag)
+					report_error(2, "Cannot use -t or -b options with -M");
+				mcnt++;
+				scan_m_opt(s + j, &i, argc);
+				break;
+			default:
+				report_error(2, "-%c: bad flag", s[j]);
+				break;
+			case 'N':
+			case 'O':
+			case 'R':
+			case 'S':
+			case 'T':
+			case 'X':
+			case 'd':
+			case 'i':
+			case 'r':
+			case 's':
+			case 'w':
+			case 'x':
+			case 'z':
+				break;
+			}
+			goto next;
+		lib:
+			load_lib_syms(s);
 next:
-	i++;
-	goto test;
-restore:
-	i = savei + 2;
-	savep++;
-	curarg = savep;
-	argv = savev;
-	argc = savec;
-	incmd = 0;
-test:
-	if (i < argc)
-		goto body;
-	if (incmd)
-		goto restore;
+			i++;
+		}
+		if (incmd == 0)
+			break;
+		i = savei + 2;
+		savep++;
+		curarg = savep;
+		argv = savev;
+		argc = savec;
+		incmd = 0;
+	}
 	if (rflag && secspec)
 		printf("%s: warning, -r option overrides -t, -b\n", pname);
 	parse_args(argc, argv);
 }
+
 
 char tmpname[] = "l.out";
 
@@ -1437,27 +1434,19 @@ int n;
 	lo = v & 0xff;
 	obj = sp;
 	obj->pno->nuser -= 1;
-	cur = &page[0];
-	if ((long)cur->bno == hi)
+	if ((cur = &page[0])->bno == hi || (cur = &page[1])->bno == hi)
 		goto common;
-	cur = &page[1];
-	if ((long)cur->bno == hi)
-		goto common;
-	if (cur->nuser) {
-		cur = &page[0];
-		if (cur->nuser) {
-			report_error(2, "No pages");
-			goto common;
-		}
-	}
-	if (page[0].nuser == 0 && page[1].nuser == 0 && page[0].bno < page[1].bno)
-		cur = &page[0];
-	cur->bno = hi;
-	lseek(infil, (v & 0xffffff00L) << 1, 0);
-	nw = read(infil, cur->buff, 0x200) >> 1;
-	if (nw < 0)
-		nw = 0;
-	cur->nibuf = nw;
+	if (cur->nuser == 0 || (cur = &page[0])->nuser == 0) {
+		if (page[0].nuser == 0 && page[1].nuser == 0 && page[0].bno < page[1].bno)
+			cur = &page[0];
+		cur->bno = hi;
+		lseek(infil, (v & 0xffffff00L) << 1, 0);
+		nw = read(infil, cur->buff, 0x200) >> 1;
+		if (nw < 0)
+			nw = 0;
+		cur->nibuf = nw;
+	} else
+		report_error(2, "No pages");
 common:
 	cur->nuser += 1;
 	obj->bno = hi;
@@ -1465,10 +1454,10 @@ common:
 	obj->ptr = (int *)((char *)cur->buff + (lo << 1));
 	if (n != -1)
 		obj->size = half(n);
-	obj->nibuf = cur->nibuf - (int)lo;
-	if (obj->nibuf <= 0)
+	if ((obj->nibuf = cur->nibuf - (int)lo) <= 0)
 		obj->size = 0;
 }
+
 
 /* half: x / 2 as an unsigned word (0x3090..0x30a4 of /bin/sld) */
 half(x)
