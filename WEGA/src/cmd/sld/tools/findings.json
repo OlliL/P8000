@@ -580,7 +580,8 @@
     ],
     "len_ours": 85,
     "len_orig": 85
-   }
+   },
+   "note": "2026-11-07: the two messages of the word loop were swapped in our source (the order of the strings in the data shows it): p > libname gives \"Command file arguments too long\", idx > 2000 \"Too many command file arguments\"."
   },
   "report_error": {
    "file": "ld.c",

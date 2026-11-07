@@ -347,10 +347,10 @@ char *name;
 			*p = 0;
 			p++;
 			if (p > libname)
-				report_error(2, "Too many command file arguments");
+				report_error(2, "Command file arguments too long");
 			idx++;
 			if (idx > 2000)
-				report_error(2, "Command file arguments too long");
+				report_error(2, "Too many command file arguments");
 			cmdargv[idx] = p;
 		}
 	} else {
