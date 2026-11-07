@@ -41,7 +41,7 @@ pftn1.o: ../pftn1.c $(HDRS)
 trees1.o: ../trees1.c $(HDRS)
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../trees1.c
 
-optim1.o: ../optim1.c $(HDRS) ../optim
+optim1.o: ../optim1.c $(HDRS)
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../optim1.c
 
 code1.o: ../code1.c $(HDRS)
@@ -50,7 +50,7 @@ code1.o: ../code1.c $(HDRS)
 local1.o: ../local1.c $(HDRS)
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../local1.c
 
-comm1.o: ../comm1.c $(HDRS) ../common
+comm1.o: ../comm1.c $(HDRS)
 	$(CC) $(CFLAGS) $(SWITCHES) -c ../comm1.c
 
 vinit1.o: ../vinit1.c $(HDRS)
