@@ -1,5 +1,5 @@
 # cparse, scparse: pass 1 of cc and scc (PCC front end) of WEGA, reconstructed from /lib/cparse. scparse is the same source with -DSEG,
-# the objects in seg. With strip byte-identical.
+# the objects in seg. Byte-identical as installed (stripped).
 #
 #   make             build/nonseg/cparse, build/seg/scparse
 #   make old         the passes of the old compilers in build/nonsegVER, build/segv1 (the switches: in the rules)
@@ -14,6 +14,7 @@ LD = ld
 YACC = yacc
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 LIBC = ../../../../lib/libc-v7.a
 CRT = ../../lib/libc/crt
 
@@ -51,7 +52,9 @@ clean:
 
 install: $(ALL_TARGETS)
 	cp build/nonseg/cparse $(PREFIX)/lib/cparse
+	$(STRIP) $(PREFIX)/lib/cparse
 	cp build/seg/scparse   $(PREFIX)/lib/scparse
+	$(STRIP) $(PREFIX)/lib/scparse
 
 oldinstall: $(OLD_TARGETS)
 	for v in v0 v0p v1 ; do \

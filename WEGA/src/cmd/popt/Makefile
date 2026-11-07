@@ -10,6 +10,7 @@ CC = ccv0p
 LD = ld
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 LIBC = ../../../../lib/libc-v5.a
 CRT0 = /lib/crt0.o
 
@@ -47,7 +48,9 @@ clean:
 
 install: $(ALL_TARGETS)
 	cp build/nonseg/popt $(PREFIX)/lib/popt
+	$(STRIP) $(PREFIX)/lib/popt
 	cp build/seg/spopt   $(PREFIX)/lib/spopt
+	$(STRIP) $(PREFIX)/lib/spopt
 
 oldinstall: $(OLD_TARGETS)
 	for v in v0 v0p v1 ; do \

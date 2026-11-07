@@ -3,11 +3,24 @@
 # of make: the Makefiles of src use the plain names (cc, ld, cas, ccv0p, ...). ccvN run in OLDROOT, the others in WEGA.
 d=$1; wega=$2; old=$3; emu=$4
 mkdir -p $d
-for t in cc scc cas as ld sld gld ar strip yacc; do
-	case $t in yacc|strip) g=/usr/bin/$t ;; *) g=/bin/$t ;; esac
+for t in cc scc cas as ld sld gld ar yacc; do
+	case $t in yacc) g=/usr/bin/$t ;; *) g=/bin/$t ;; esac
 	printf '#!/bin/sh\nexec %s -r %s %s "$@"\n' $emu $wega $g > $d/$t
 	chmod +x $d/$t
 done
+# strip [-h] FILE ...: each file by its name in its own directory (the guest sees only WEGA and the working directory;
+# make install strips below PREFIX)
+{
+	echo '#!/bin/sh'
+	echo 'o='
+	echo 'for a; do'
+	echo '	case $a in'
+	echo '	-*) o="$o $a" ;;'
+	echo "	*) (cd \`dirname \$a\` && $emu -r $wega /usr/bin/strip \$o \`basename \$a\`) || exit 1 ;;"
+	echo '	esac'
+	echo 'done'
+} > $d/strip
+chmod +x $d/strip
 for t in sccv1 ccv1 ccv1q ccv1r ccv0 ccv0p; do
 	printf '#!/bin/sh\nexec %s -r %s /bin/%s "$@"\n' $emu $old $t > $d/$t
 	chmod +x $d/$t

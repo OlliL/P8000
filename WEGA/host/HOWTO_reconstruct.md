@@ -20,7 +20,7 @@ Never in phase A: change a compiler pass or a switch, change cas, edit a shipped
 6. **Functions.** Per block at most 6 attempts with the forms below. Then record it in `findings.json` (per function a `note`, only for an open difference, an odd form, a guessed name, dead code) and go on. Only for a function that is not found yet: `odis.py NAME` shows the original.
 7. **No source.** Inventory (`recon/inventory.py`, `own_table.py`), one C file per module, K&R, a draft per function from `odis.py`, compared by `fncheck.py DRAFT LO HI`. Names from messages, system calls, strings. The source carries no status; findings go to `findings.json` only.
 8. **Corpus.** The bytes do not prove a draft while it is open. Run the original and ours under the emulator on the same inputs and compare outputs, messages, exit codes (`recon/stagecorpus.py`, `host/ld/check.py`). Run it after each batch.
-9. **Handoff or done.** `IDENTICAL`: enter the program in the table of `tools/checkall.sh` and report. Otherwise write `tools/HANDOFF.md`, as short as possible: compiler, the output of `bincmp.py`, per open function what was tried. Commit.
+9. **Handoff or done.** `IDENTICAL`: give the program an install target (stripped when the original is) that `make install` of `src/cmd` reaches, so `checkall` compares it, and report. Otherwise write `tools/HANDOFF.md`, as short as possible: compiler, the output of `bincmp.py`, per open function what was tried. Commit.
 
 ### Forms that often decide (in this order)
 

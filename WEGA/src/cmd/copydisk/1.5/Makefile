@@ -8,16 +8,18 @@
 CC = cc
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 
 all: copydisk
 
 copydisk.o: copydisk.c
 
 copydisk: copydisk.o
-	$(CC) $(CFLAGS) copydisk.o -s -o $@
+	$(CC) $(CFLAGS) copydisk.o -o $@
 
 install: copydisk
 	cp copydisk $(PREFIX)/bin/copydisk
+	$(STRIP) $(PREFIX)/bin/copydisk
 
 clean:
 	rm -f copydisk copydisk.o

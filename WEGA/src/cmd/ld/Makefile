@@ -11,6 +11,7 @@ CAS = cas
 LIBC = ../../lib/libc-v9.a
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 
 COBJS = ld.o copyname.o printname.o symbols.o
 LINKOBJS = crt0.o $(COBJS)
@@ -42,6 +43,7 @@ crt0.o: crt0.s
 
 install: ld
 	cp ld $(PREFIX)/bin/ld
+	$(STRIP) $(PREFIX)/bin/ld
 
 clean:
 	rm -f *.o crt0.s ld

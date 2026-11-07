@@ -97,10 +97,10 @@ verify-wega: wbin
 	-python3 tools/cmpins.py $(SRC)/ranlib/ranlib $(WEGAABS)/usr/bin/ranlib 0x1bce 0x1bd4 0x534 0x53a
 
 oldroot: wbin
-	$(WPATH) $(MAKE) -C ../src stage1 lib stage2 PREFIX=$(OLDROOTABS)
+	$(WPATH) $(MAKE) -C ../src stage1 lib stage2 OLDROOT=$(OLDROOTABS)
 
 src: wbin
-	$(WPATH) $(MAKE) -C ../src all PREFIX=$(OLDROOTABS)
+	$(WPATH) $(MAKE) -C ../src all OLDROOT=$(OLDROOTABS)
 
 clean:
 	$(MAKE) -C cc clean

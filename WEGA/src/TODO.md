@@ -3,7 +3,7 @@
 The plan and nothing else. What is known goes to `host/KNOWLEDGE.md`, the old compilers to `host/OLDCC.md`, the state per function to
 `tools/FINDINGS.md` of a program. A finished step leaves this file. No new programs before step 9 (owner 2026-11-04).
 
-What is byte-identical is checked by `make -C host checkall` (14 minutes): the list of programs is in `host/tools/checkall.sh`. Run it after every change of a compiler and before a commit of a source of a program. Step 5 (the open programs in `cmd/`) is done; the owner decides on the next. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
+What is byte-identical is checked by `make -C host checkall` (16 minutes): every file that `make install` in `src/` puts below an empty root is compared with the WEGA tree; a program joins by its install target (stripped by `install` when the original is). Run it after every change of a compiler and before a commit of a source of a program. Step 5 (the open programs in `cmd/`) is done; the owner decides on the next. Everything builds with `make` under `src/`: old compilers with the shipped tools and libc, `lib/`, old compilers again with the libc of their time, `cmd/` (7 minutes; `make -C host src` on Linux, `host/tools/wbin.sh` puts the tools under the emulator in the PATH).
 
 ## 2. `lib/libc` and `oldlibc` from C, what is left
 
@@ -15,16 +15,6 @@ What is byte-identical is checked by `make -C host checkall` (14 minutes): the l
 - Libc of the passes: `malloc` 0_3 (a parameter reloaded at a label, the order of `q+temp-1`), `cnvt` 0_2 (`-val` of a long parameter from memory, one witness), `doprnt` 0_5, 0_7 (`_align` spills r5, `ap = argp` reloads, the order of a double argument), `fltioc` 0_1.
 - Others: `swap` 0_1, `malloc` 0_4, `doprnt` 0_8 (0_1 with a smaller frame in `_strout`, libc-v10).
 - Assembler in the original, these stay `.s`: `open` 0_1, `ecvt` 0_1.
-
-## 4. Install root, stripping, cas
-
-- Install root: `make install PREFIX=DIR` in `src/` puts every program and library of `cmd/` and `lib/` below DIR, at the
-  place of the original. `checkall` compares every file below DIR with the file of the same name in the WEGA tree; the
-  TABLE goes away. What is not identical yet (cas) is listed there as open.
-- Stripping: what the original has stripped is stripped by the link (`ld -s`) or by `install`, the same way for all
-  programs; `checkall` strips nothing itself.
-- cas: `tools/` in the layout of the other programs, a first `findings.json` with the differences left, a corpus (the
-  `.s` of the C sources of `cmd/` and `lib/`, assembled by the original and by ours).
 
 ## 6. System III form for all existing programs
 

@@ -1,5 +1,5 @@
 # cpp: the C preprocessor of WEGA (/lib/cpp, SCCS cpp.c 1.5, cpy.y 1.2, yylex.c 1.1), reconstructed after the cpp of
-# System III (cmd/cc/vax/cpp). /lib/cpp is a combined program (code and data together, no -i). With strip byte-identical.
+# System III (cmd/cc/vax/cpp). /lib/cpp is a combined program (code and data together, no -i). Byte-identical as installed (stripped).
 #
 #   make             cpp
 #   make install PREFIX=dir
@@ -11,6 +11,7 @@ LD = ld
 YACC = yacc
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 CRT = ../../lib/libc/crt
 LIBC = ../../lib/libc-v2.a
 COBJS = cpp.o cpy.o
@@ -40,6 +41,7 @@ crt0.o: crt0.s
 
 install: cpp
 	cp cpp $(PREFIX)/lib/cpp
+	$(STRIP) $(PREFIX)/lib/cpp
 
 clean:
 	rm -f crt0.s cpy.c cpp *.o

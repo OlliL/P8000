@@ -9,6 +9,7 @@ CC = cc
 LD = ld
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 LIBC = ../../../../lib/libc-v8.a
 CRT0 = /lib/crt0.o
 
@@ -49,7 +50,9 @@ clean:
 
 install: $(ALL_TARGETS)
 	cp build/nonseg/cc $(PREFIX)/bin/cc
+	$(STRIP) $(PREFIX)/bin/cc
 	cp build/seg/scc   $(PREFIX)/bin/scc
+	$(STRIP) $(PREFIX)/bin/scc
 
 oldinstall: $(OLD_TARGETS)
 	for v in v0 v0p v1 v1q v1r; do \
@@ -62,10 +65,10 @@ oldinstall: $(OLD_TARGETS)
 ##################
 
 cc: $(NONSEG_OBJS)
-	$(LD) -s -e start -o $@ $(CRT0) $(NONSEG_OBJS) $(LIBC)
+	$(LD) -e start -o $@ $(CRT0) $(NONSEG_OBJS) $(LIBC)
 
 scc: $(SEG_OBJS)
-	$(LD) -s -e start -o $@ $(CRT0) $(SEG_OBJS)    $(LIBC)
+	$(LD) -e start -o $@ $(CRT0) $(SEG_OBJS)    $(LIBC)
 
 ###################
 # obj targets

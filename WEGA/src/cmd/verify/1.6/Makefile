@@ -8,16 +8,18 @@
 CC = cc
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 
 all: verify
 
 verify.o: verify.c
 
 verify: verify.o
-	$(CC) $(CFLAGS) verify.o -s -o $@
+	$(CC) $(CFLAGS) verify.o -o $@
 
 install: verify
 	cp verify $(PREFIX)/bin/verify
+	$(STRIP) $(PREFIX)/bin/verify
 
 clean:
 	rm -f verify verify.o

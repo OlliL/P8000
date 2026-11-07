@@ -1,41 +1,47 @@
 # WEGA src: the libraries and the commands, each with the compiler and the libc of its time.
 #
 #   make                  everything, in this order:
-#   make stage1           the old compilers including their cas, with the shipped tools and the shipped /lib/libc.a; installed below PREFIX.
+#   make stage1           the old compilers including their cas, with the shipped tools and the shipped /lib/libc.a; installed below OLDROOT.
 #                         Only sprintf comes from the old printf: popt uses the value of sprintf, the buffer; the shipped one returns a count.
 #   make lib              lib/libc/libc.a and lib/libc-vN.a, with the shipped tools and the old compilers
-#   make stage2           the old compilers once more, now with the libc of their time; installed below PREFIX
+#   make stage2           the old compilers once more, now with the libc of their time; installed below OLDROOT
 #   make cmds             cmd/
+#   make install          the shipped programs and libc.a of cmd/ and lib/, stripped as the originals, below PREFIX
 #   make clean
 #
-# PREFIX: where the old compilers go (bin/ccvN, lib/vN/, lib/old/cas).
+# OLDROOT: where the old compilers go (bin/ccvN, lib/vN/, lib/old/cas). PREFIX: the root of make install.
 
 CC = cc
 PREFIX = /
+OLDROOT = /
 OLDPRINTF = lib/oldlibc/printf/s1.o
 
 all: stage1 lib stage2 cmds
 
 stage1: clean
 	cd lib/oldlibc/printf ; cp 0_5.c s1.c ; $(CC) -O -c s1.c ; rm -f s1.c
-	cd cmd/cas    ; $(MAKE) oldinstall PREFIX=$(PREFIX)
+	cd cmd/cas    ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 
-	cd cmd/cparse ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
-	cd cmd/codgen ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
-	cd cmd/popt   ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
-	cd cmd/cc     ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/cparse ; $(MAKE) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/codgen ; $(MAKE) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/popt   ; $(MAKE) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/cc     ; $(MAKE) oldinstall PREFIX=$(OLDROOT) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
 
 lib: FORCE
 	cd lib ; $(MAKE)
 
 stage2:
-	cd cmd/cparse ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
-	cd cmd/codgen ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
-	cd cmd/popt   ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
-	cd cmd/cc     ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
+	cd cmd/cparse ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
+	cd cmd/codgen ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
+	cd cmd/popt   ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
+	cd cmd/cc     ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(OLDROOT)
 
 cmds:
 	cd cmd ; $(MAKE) all
+
+install:
+	cd lib ; $(MAKE) install PREFIX=$(PREFIX)
+	cd cmd ; $(MAKE) install PREFIX=$(PREFIX)
 
 clean:
 	cd lib ; $(MAKE) clean
@@ -43,4 +49,4 @@ clean:
 
 FORCE:
 
-.PHONY: all stage1 lib stage2 cmds clean
+.PHONY: all stage1 lib stage2 cmds install clean

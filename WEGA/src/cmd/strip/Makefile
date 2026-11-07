@@ -9,13 +9,14 @@ CAS = cas
 LD = ld
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 LIBC = ../../lib/libc-v4.a
 CRT = ../../lib/libc/crt
 
 all: strip
 
 strip: crt0.o strip.o $(LIBC)
-	$(LD) -s -e start -o $@ crt0.o strip.o $(LIBC)
+	$(LD) -e start -o $@ crt0.o strip.o $(LIBC)
 
 crt0.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh strip > $@
@@ -27,7 +28,8 @@ strip.o: strip.c
 	$(CC) $(CFLAGS) -c strip.c
 
 install: strip
-	cp strip $(PREFIX)/bin/strip
+	cp strip $(PREFIX)/usr/bin/strip
+	$(STRIP) $(PREFIX)/usr/bin/strip
 
 clean:
 	rm -f *.o crt0.s strip

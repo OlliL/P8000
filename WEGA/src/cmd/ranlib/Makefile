@@ -9,13 +9,14 @@ CAS = cas
 LD = ld
 CFLAGS = -O -I../cparse
 PREFIX = /
+STRIP = strip
 LIBC = ../../lib/libc-v1.a
 CRT = ../../lib/libc/crt
 
 all: ranlib
 
 ranlib: crt0.o ranlib.o $(LIBC)
-	$(LD) -s -e start -o $@ crt0.o ranlib.o $(LIBC)
+	$(LD) -e start -o $@ crt0.o ranlib.o $(LIBC)
 
 crt0.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh ranlib > $@
@@ -27,7 +28,8 @@ ranlib.o: ranlib.c
 	$(CC) $(CFLAGS) -c ranlib.c
 
 install: ranlib
-	cp ranlib $(PREFIX)/bin/ranlib
+	cp ranlib $(PREFIX)/usr/bin/ranlib
+	$(STRIP) $(PREFIX)/usr/bin/ranlib
 
 clean:
 	rm -f *.o crt0.s ranlib

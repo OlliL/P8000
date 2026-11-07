@@ -11,6 +11,7 @@ CAS = cas
 LIBC = ../../lib/slibc-v9.a
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 
 COBJS = copyname.o dump.o ext.o ld.o ldm.o printname.o swap.o symbols.o
 LINKOBJS = scrt0.o $(COBJS)
@@ -24,6 +25,7 @@ sld: $(LINKOBJS) $(LIBC)
 
 install: sld
 	cp sld $(PREFIX)/bin/sld
+	$(STRIP) $(PREFIX)/bin/sld
 
 copyname.o: copyname.c ld.h
 	$(SCC) $(CFLAGS) -c copyname.c

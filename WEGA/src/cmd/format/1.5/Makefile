@@ -8,16 +8,18 @@
 CC = cc
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 
 all: format
 
 format.o: format.c
 
 format: format.o
-	$(CC) $(CFLAGS) format.o -s -o $@
+	$(CC) $(CFLAGS) format.o -o $@
 
 install: format
 	cp format $(PREFIX)/bin/format
+	$(STRIP) $(PREFIX)/bin/format
 
 clean:
 	rm -f format format.o

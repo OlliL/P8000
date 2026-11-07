@@ -12,6 +12,7 @@ CAS = cas
 LD = ld
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 LIBC = ../../../../lib/libc-v5.a
 CRT = ../../lib/libc/crt
 
@@ -53,7 +54,9 @@ clean:
 
 install: $(ALL_TARGETS)
 	cp build/nonseg/codgen $(PREFIX)/lib/codgen
+	$(STRIP) $(PREFIX)/lib/codgen
 	cp build/seg/scodgen   $(PREFIX)/lib/scodgen
+	$(STRIP) $(PREFIX)/lib/scodgen
 
 oldinstall: $(OLD_TARGETS)
 	for v in v0 v0p v1 v1q v1r; do \

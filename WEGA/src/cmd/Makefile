@@ -15,6 +15,7 @@ LD  = ld
 STRIP = strip
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 LIBC = /lib/libc.a
 CRT = ../lib/libc/crt
 
@@ -50,22 +51,22 @@ putud: putud.c
 	@rm putud2
 
 dump: dump.c
-	$(CC) $(CFLAGS) -s -o $@ dump.c
+	$(CC) $(CFLAGS) -o $@ dump.c
 
 dumpdir: dumpdir.c
-	$(CC) $(CFLAGS) -s -o $@ dumpdir.c
+	$(CC) $(CFLAGS) -o $@ dumpdir.c
 
 restor: restor.c
-	$(CC) $(CFLAGS) -s -o $@ restor.c
+	$(CC) $(CFLAGS) -o $@ restor.c
 
 tar: tar.c
-	$(CC) $(CFLAGS) -s -o $@ tar.c
+	$(CC) $(CFLAGS) -o $@ tar.c
 
 ar.o: ar.c
 	$(CC) $(CFLAGS) -c ar.c
 
 ar: ar.o crt0-ar.o
-	$(LD) -s -e start -o $@ crt0-ar.o ar.o $(LIBC)
+	$(LD) -e start -o $@ crt0-ar.o ar.o $(LIBC)
 
 crt0-ar.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh ar > $@
@@ -81,11 +82,12 @@ crt0-sync.o: crt0-sync.s
 
 sync.o: sync.c
 sync: crt0-sync.o sync.o
-	$(LD) -s -o $@ -e start crt0-sync.o sync.o -lc
+	$(LD) -o $@ -e start crt0-sync.o sync.o -lc
 
 install: $(PROGS) $(FILES)
 	for file in ar chkdiff getud putud tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
-	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; done
+	for file in ar tar sync ; do $(STRIP) $(PREFIX)/bin/$$file ; done
+	for file in dump dumpdir restor ; do cp $$file $(PREFIX)/etc/$$file ; $(STRIP) $(PREFIX)/etc/$$file ; done
 	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) install PREFIX=$(PREFIX) ; cd .. ; done
 
 clean:

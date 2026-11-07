@@ -9,13 +9,14 @@ CAS = cas
 LD = ld
 CFLAGS = -O -I../cparse
 PREFIX = /
+STRIP = strip
 LIBC = ../../lib/libc-v10.a
 CRT = ../../lib/libc/crt
 
 all: rmdir
 
 rmdir: crt0.o rmdir.o $(LIBC)
-	$(LD) -s -e start -o $@ crt0.o rmdir.o $(LIBC)
+	$(LD) -e start -o $@ crt0.o rmdir.o $(LIBC)
 
 crt0.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh rmdir > $@
@@ -28,6 +29,7 @@ rmdir.o: rmdir.c
 
 install: rmdir
 	cp rmdir $(PREFIX)/bin/rmdir
+	$(STRIP) $(PREFIX)/bin/rmdir
 
 clean:
 	rm -f *.o crt0.s rmdir

@@ -13,8 +13,10 @@ CFLAGS = -O
 LD = ld
 AR = ar
 PREFIX = /
+STRIP = strip
 
 FILES = sa.cat sa.format sa.verify sa.mkfs sa.install sa.timer sa.shipdisk
+STRIPPED = sa.cat sa.mkfs sa.install sa.timer
 BMISC_C = ../../uts/conf/bmisc.c
 
 SUBDIRS=	sa.diags
@@ -42,13 +44,13 @@ sa.mkfs.o: sa.mkfs.c
 	$(CC) $(CFLAGS) -c $<
 
 sa.mkfs: sa.mkfs.o libb.a
-	$(LD) -s -o $@ sa.mkfs.o libb.a
+	$(LD) -o $@ sa.mkfs.o libb.a
 
 sa.cat.o: sa.cat.c
 	$(CC) $(CFLAGS) -c $<
 
 sa.cat: sa.cat.o libb.a
-	$(LD) -s -o $@ sa.cat.o libb.a
+	$(LD) -o $@ sa.cat.o libb.a
 
 sa.inout.o: sa.inout.s
 	$(AS) -o $@ $<
@@ -57,13 +59,13 @@ sa.timer.o: sa.timer.c
 	$(CC) $(CFLAGS) -c $<
 
 sa.timer: sa.timer.o sa.function.o sa.inout.o bmisc.o
-	$(LD) -s -o $@ sa.timer.o sa.function.o sa.inout.o bmisc.o
+	$(LD) -o $@ sa.timer.o sa.function.o sa.inout.o bmisc.o
 
 sa.install.o: sa.install.c
 	$(CC) $(CFLAGS) -c $<
 
 sa.install: sa.install.o libb.a
-	$(LD) -s -o $@ sa.install.o libb.a
+	$(LD) -o $@ sa.install.o libb.a
 
 ft41.o: sa.format.c
 	cp sa.format.c ft41.c
@@ -87,7 +89,9 @@ sa.shipdisk: sd41.o wdc.o libb.a
 	$(LD) -o $@ sd41.o wdc.o libb.a
 
 install: $(FILES)
-	for p in $(FILES); do cp $$p $(PREFIX)/$$p; chmod 400 $(PREFIX)/$$p; done
+	for p in $(FILES); do cp $$p $(PREFIX)/$$p; done
+	for p in $(STRIPPED); do $(STRIP) $(PREFIX)/$$p; done
+	for p in $(FILES); do chmod 400 $(PREFIX)/$$p; done
 
 clean:
 	rm -f $(FILES) sd41.c ft41.c vf41.c libb.a bmisc.o  ft41.o  sa.cat.o  sa.function.o  sa.inout.o  sa.install.o  sa.mkfs.o  sa.timer.o  sd41.o  vf41.o  wdc.o

@@ -2068,8 +2068,8 @@ the source lines up to n, `lstrest` the rest of the file at the end. `listhead` 
 copies stdin to the temporary file with `fread`/`fwrite` (main). The variable at 0x95d4 that it clears and tests is `errno` (libc).
 Check: 10 functions, `copyfile`, `listhead`, `lstw`, `lstend` identical, the rest differs by D3, D7, D8 and the inline `getc`/`putc` layout; the strings are the same set.
 
-**Link of the complete cas.** `make` in `src/cmd/cas` links with `sld -i -s -e start -z -Mt4 -Md5 -Mb5 /lib/scrt0.o <modules in the order of MODULES> -Md7 stable.o
--Md8 itable.o -Md9 ntable.o -Md5 /lib/slibc.a -o cas`. Measured: the text is 46848 bytes like the original; `-z` gives the header flags 0x21 (STRIP, 7FSTK: stack in
+**Link of the complete cas.** `make` in `src/cmd/cas` links with `sld -i -e start -z -Mt4 -Md5 -Mb5 /lib/scrt0.o <modules in the order of MODULES> -Md7 stable.o
+-Md8 itable.o -Md9 ntable.o -Md5 /lib/slibc.a -o cas` (the original was linked with `-s`; `make install` strips). Measured: the text is 46848 bytes like the original; `-z` gives the header flags 0x21 (STRIP, 7FSTK: stack in
 segment 127, no stack segment in the table); without `-Mb5` the bss goes to segment 1, without the second `-Md5` the data of `slibc.a` go to segment 9. The three
 table modules (`stable.c`, `itable.c`, `ntable.c`, sccsid ids from the binary) consist of the id and `char x[1024] = {0}`: id (48 bytes with padding) + 1024 =
 1072 bytes, 1280 with the click, as in the original (`ssymtab.c` starts at 0x30 and grows the segment by 1024 bytes). The bss variables that no module defined

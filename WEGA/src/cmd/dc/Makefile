@@ -9,13 +9,14 @@ CAS = cas
 LD = ld
 CFLAGS = -O -I../cparse
 PREFIX = /
+STRIP = strip
 LIBC = ../../lib/libc-v1.a
 CRT = ../../lib/libc/crt
 
 all: dc
 
 dc: crt0.o dc1.o dc2.o $(LIBC)
-	$(LD) -s -e start -o $@ crt0.o dc1.o dc2.o $(LIBC)
+	$(LD) -e start -o $@ crt0.o dc1.o dc2.o $(LIBC)
 
 crt0.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh dc > $@
@@ -33,6 +34,7 @@ dc1.o dc2.o: dc.h
 
 install: dc
 	cp dc $(PREFIX)/bin/dc
+	$(STRIP) $(PREFIX)/bin/dc
 
 clean:
 	rm -f *.o crt0.s dc

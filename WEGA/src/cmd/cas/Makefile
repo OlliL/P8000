@@ -14,10 +14,11 @@ SCC = scc
 SCCFLAGS = -O
 YACC = yacc
 SLD = sld
-SLDFLAGS = -i -s -e start -z -Mt4 -Md5 -Mb5
+SLDFLAGS = -i -e start -z -Mt4 -Md5 -Mb5
 SCRT0 = /lib/scrt0.o
 SLIBC = /lib/slibc.a
 PREFIX = /
+STRIP = strip
 ALL_OBJS = ifile.o instr.o scanner.o main.o done.o nodes.o parser.o pst.o subr.o symbols.o ssymtab.o table1.o table2.o locntr.o expr.o p2loop.o ofile.o gen.o assemble.o getops.o error.o pstab.o jpr.o jpr2.o optim.o listing.o
 
 all: build/cas
@@ -32,6 +33,7 @@ old/cas: FORCE
 
 install: build/cas
 	cp build/cas $(PREFIX)/bin/cas
+	$(STRIP) $(PREFIX)/bin/cas
 
 oldinstall: old/cas
 	[ -d $(PREFIX)/lib/old ] ||  mkdir $(PREFIX)/lib/old

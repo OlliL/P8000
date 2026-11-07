@@ -9,13 +9,14 @@ CAS = cas
 LD = ld
 CFLAGS = -O
 PREFIX = /
+STRIP = strip
 LIBC = ../../lib/libc-v3.a
 CRT = ../../lib/libc/crt
 
 all: size
 
 size: crt0.o size.o $(LIBC)
-	$(LD) -s -e start -o $@ crt0.o size.o $(LIBC)
+	$(LD) -e start -o $@ crt0.o size.o $(LIBC)
 
 crt0.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh size > $@
@@ -28,6 +29,7 @@ size.o: size.c
 
 install: size
 	cp size $(PREFIX)/bin/size
+	$(STRIP) $(PREFIX)/bin/size
 
 clean:
 	rm -f *.o crt0.s size

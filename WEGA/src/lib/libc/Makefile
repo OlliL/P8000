@@ -2,12 +2,14 @@
 # The members of oldcc/ were made by an older cc that we do not have yet.
 #
 #   make        libc.a and obj/*.o, the members for ../oldlibc
+#   make install PREFIX=dir   dir/lib/libc.a
 #   make clean
 
 CC = cc
 CAS = cas
 AS = as
 AR = ar
+PREFIX = /
 
 OBJS = obj/getgrgid.o obj/getgrnam.o obj/getgrent.o obj/cuserid.o obj/getpass.o obj/getpwnam.o obj/getpwuid.o \
 	 obj/putpwent.o obj/getpwent.o obj/ctermid.o obj/getopt.o obj/fgetc.o obj/fputc.o obj/getchar.o \
@@ -581,8 +583,11 @@ obj/write.o: sys/write.s
 obj/cerror.o: crt/cerror.s
 	cd crt ; $(AS) -o ../obj/cerror.o cerror.s
 
+install: all
+	cp libc.a $(PREFIX)/lib/libc.a
+
 clean:
 	rm -rf obj libc.a
 	cd crt ; $(MAKE) clean
 
-.PHONY: all clean
+.PHONY: all install clean
