@@ -2,21 +2,23 @@
 """linkcmp.py [-v NAME]: every function of our linked sld (../sld, with symbols) against /bin/sld, instruction by instruction.
 
 Both are disassembled by host/tools/sdis.py; the original's functions are the ranges of own_functions.txt, ours run from
-_NAME to the next text symbol. Masked: addresses of segments other than 127 (the frame), labels and symbols; frame offsets
-and registers count. Prints the differing functions; -v NAME the diff of NAME (orig | ours)."""
+_NAME to the next text symbol. Masked: addresses of segments other than 127 (the frame) and symbols; a jump target inside
+the function counts as its distance from the start of the function, one outside it is masked. Frame offsets and
+registers count. Prints the differing functions; -v NAME the diff of NAME (orig | ours)."""
 import re, sys, difflib, os, subprocess
 D = os.path.dirname(os.path.abspath(__file__))
 OWN = os.path.join(D, 'own_functions.txt')
 SDIS = os.path.join(D, '..', '..', '..', '..', 'host', 'tools', 'sdis.py')
 WEGA = os.environ.get('WEGA_ROOT', os.environ.get('WEGA', '/mnt/share/cvs/P8000/tmp/wega31_root'))
 
+
 def rows(fn):
     r = []
     text = subprocess.run(['python3', SDIS, '-l', fn], capture_output=True, text=True).stdout
-    for l in text.splitlines(True):
+    for l in text.splitlines():
         if '// segment table entry' in l and 'text' not in l:
             break
-        m = re.match(r'^([0-9a-f]{4}) [0-9a-f ]+\t(.*)$', l.rstrip('\n'))
+        m = re.match(r'^([0-9a-f]{4}) [0-9a-f ]+\t(.*)$', l)
         if m:
             r.append((int(m.group(1), 16), m.group(2).split('//')[0].strip()))
         m2 = re.match(r'^(_\w+)::', l)
@@ -24,20 +26,31 @@ def rows(fn):
             r.append((None, m2.group(1)))
     return r
 
-def norm(i):
+
+def norm(i, lo, hi):
+    def code(m):
+        t = int(m.group(1), 16)
+        return 'L+%x' % (t - lo) if lo <= t < hi else 'A'
+    i = re.sub(r"\|?<<0>>%([0-9A-F]+)\|?", code, i)
     i = re.sub(r"\|?<<(?!127>>)\d+>>%[0-9A-F]+\|?", "A", i)
-    i = re.sub(r'L\dt_[0-9a-f]+', 'L', i)
+
+    def lab(m):
+        t = int(m.group(1), 16)
+        return 'L+%x' % (t - lo) if lo <= t < hi else 'L'
+    i = re.sub(r'L\dt_([0-9a-f]+)', lab, i)
     i = re.sub(r'_\w+', 'L', i)
     return re.sub(r'\s+', ' ', i)
+
 
 new, orig = rows(os.path.join(D, '..', 'sld')), rows(os.path.join(WEGA, 'bin', 'sld'))
 funcs = {}
 cur = None
 for a, i in new:
     if a is None:
-        cur = i[1:]; funcs[cur] = []
+        cur = i[1:]
+        funcs[cur] = []
     elif cur:
-        funcs[cur].append(i)
+        funcs[cur].append((a, i))
 ofun = []
 for l in open(OWN):
     if l.startswith('#') or not l.strip():
@@ -48,12 +61,13 @@ oi = [(a, i) for a, i in orig if a is not None]
 verbose = sys.argv[2] if len(sys.argv) > 2 and sys.argv[1] == '-v' else None
 bad = 0
 for name, lo, hi in ofun:
-    o = [norm(i) for a, i in oi if lo <= a < hi]
-    if name not in funcs:
+    o = [norm(i, lo, hi) for a, i in oi if lo <= a < hi]
+    if name not in funcs or not funcs[name]:
         continue
-    n = [norm(i) for i in funcs[name]][:len(o) + 40]
-    # cut ours at the length of the original's last ret position
-    n = n[:len(o)] if len(n) >= len(o) else n
+    nlo = funcs[name][0][0]
+    nf = funcs[name][:len(o)]
+    nhi = nlo + (hi - lo)
+    n = [norm(i, nlo, nhi) for a, i in nf]
     if o == n:
         continue
     sm = difflib.SequenceMatcher(None, o, n, autojunk=False)

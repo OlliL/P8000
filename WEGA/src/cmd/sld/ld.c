@@ -748,16 +748,16 @@ int k;
 				secflg[k][i] = 0;
 			}
 		}
+		areas[0].kind = 4;
+		areas[1].kind = 0;
+		areas[2].kind = 1;
+		areas[0].tsize = a + b + c;
+		placekd = 1;
+		if (c)
+			placekd = 3;
+		else if (b)
+			placekd = 2;
 	}
-	areas[0].kind = 4;
-	areas[1].kind = 0;
-	areas[2].kind = 1;
-	areas[0].tsize = a + b + c;
-	placekd = 1;
-	if (c)
-		placekd = 3;
-	else if (b)
-		placekd = 2;
 	j = secflg[k][0] ? 0 : 1;
 	for (; j < 4; j++) {
 		q = &areas[j];
@@ -1270,7 +1270,6 @@ extsym:
 		w10 = swap_bytes(w10);
 	put_int_buf(w10, q);
 	save = e;
-	w11 = w13;
 	flag = 1;
 	goto top;
 	case 0:

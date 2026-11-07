@@ -964,7 +964,8 @@
     "structure_flags": [],
     "len_ours": 468,
     "len_orig": 468
-   }
+   },
+   "note": "2026-11-07: exact. The settings of areas[0..2].kind, areas[0].tsize and placekd stand inside if (secflg[k][0]) (the jr eq of the original goes behind them); our earlier source had them behind the block (fncheck masks jump targets, linkcmp now compares them)."
   },
   "ins_block": {
    "file": "ldm.c",
@@ -1426,7 +1427,8 @@
     "structure_flags": [],
     "len_ours": 361,
     "len_orig": 361
-   }
+   },
+   "note": "2026-11-07: exact. The external case 1 has no w11 = w13 (the jump of the original goes behind it)."
   },
   "patch_hdr": {
    "file": "ld.c",
