@@ -10,7 +10,7 @@ LDBIN = sld
 CAS = cas
 LIBC = ../../lib/slibc-v9.a
 CFLAGS = -O
-CHECKROOT = ../../tmp/wega31_root
+CHECKROOT = ../../../tmp/wega31_root
 
 COBJS = copyname.o dump.o ext.o ld.o ldm.o printname.o swap.o symbols.o
 LINKOBJS = scrt0.o $(COBJS)
