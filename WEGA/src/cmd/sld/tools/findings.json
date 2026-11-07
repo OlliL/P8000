@@ -1010,7 +1010,8 @@
     "structure_flags": [],
     "len_ours": 1072,
     "len_orig": 1073
-   }
+   },
+   "note": "2026-11-07: odd form: if (reslist[k].res > 500) if (reslist[k].res != 2000) {...} (nested, no else; && clears the register knowledge of codgen, the original keeps r2, r3). As chk_ranlib of ld."
   },
   "dmp_p1": {
    "file": "dump.c",

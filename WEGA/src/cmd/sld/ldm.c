@@ -519,27 +519,28 @@ int lay_out()
 	cnt = 0;
 	k = 0;
 	while (k <= max) {
-		if (reslist[k].res > 500 && reslist[k].res != 2000) {
-			alloc_resv(l1, &cnt, k, &delta);
-			cnt--;
-			if (!(reslist[k].txtptr == -1 && reslist[k].datptr == -1 && reslist[k].bssptr == -1)) {
-				for (j = 0; j < 128; j++) {
-					if (reslist[j].txtptr == -1 && reslist[j].datptr == -1 && reslist[j].bssptr == -1 && reslist[j].res == -1) {
-						report_error(0, "warning: image in seg %d has been moved to seg %d because of -R; origins are reset", k, j);
-						reslist[j].txtptr = reslist[k].txtptr;
-						reslist[j].datptr = reslist[k].datptr;
-						reslist[j].bssptr = reslist[k].bssptr;
-						reslist[j].res = 500;
-						reslist[k].txtptr = -1;
-						reslist[k].datptr = -1;
-						reslist[k].bssptr = -1;
-						if (j > maxseg)
-							maxseg = j;
-						break;
+		if (reslist[k].res > 500)
+			if (reslist[k].res != 2000) {
+				alloc_resv(l1, &cnt, k, &delta);
+				cnt--;
+				if (!(reslist[k].txtptr == -1 && reslist[k].datptr == -1 && reslist[k].bssptr == -1)) {
+					for (j = 0; j < 128; j++) {
+						if (reslist[j].txtptr == -1 && reslist[j].datptr == -1 && reslist[j].bssptr == -1 && reslist[j].res == -1) {
+							report_error(0, "warning: image in seg %d has been moved to seg %d because of -R; origins are reset", k, j);
+							reslist[j].txtptr = reslist[k].txtptr;
+							reslist[j].datptr = reslist[k].datptr;
+							reslist[j].bssptr = reslist[k].bssptr;
+							reslist[j].res = 500;
+							reslist[k].txtptr = -1;
+							reslist[k].datptr = -1;
+							reslist[k].bssptr = -1;
+							if (j > maxseg)
+								maxseg = j;
+							break;
+						}
 					}
 				}
 			}
-		}
 		k++;
 		cnt++;
 	}
@@ -555,20 +556,14 @@ int lay_out()
 			cnt++;
 			continue;
 		}
-		i = reslist[k].txtptr;
-		if (i != -1)
+		if ((i = reslist[k].txtptr) != -1)
 			l1 = (get_block(i))->ncode;
-		else {
-			i = reslist[k].datptr;
-			if (i != -1)
-				l1 = (get_block(i))->ndata;
-			else {
-				i = reslist[k].bssptr;
-				if (i == -1)
-					continue;
-				l1 = (get_block(i))->nbss;
-			}
-		}
+		else if ((i = reslist[k].datptr) != -1)
+			l1 = (get_block(i))->ndata;
+		else if ((i = reslist[k].bssptr) != -1)
+			l1 = (get_block(i))->nbss;
+		else
+			continue;
 		dsplf = 0;
 		bsplf = 0;
 		place_sec(l1, cnt);
@@ -653,37 +648,31 @@ int lay_out()
 			l1->s_data += delta;
 			if (l1->segno == stksegn)
 				l1->atr |= 8;
-			goto ltd;
-lhd:
-			if (secflg[k][2])
-				report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[2]);
-			l1 = (get_block(i))->ndata;
-			l1->dorig = 0;
-			place_sec(l1, cnt);
-			lastd = (char *)l1;
-			q = i;
-			delta = alloc_segment(l1, &cnt, 1, 'd', &q);
-			cur->datnext = -1;
-			if (placekd == 2) {
-				dtotal += delta;
-				l1->s_data += delta;
-			} else {
-				reslist[q].bssptr = reslist[k].bssptr;
-				reslist[k].bssptr = -1;
-				btotal += delta;
-				l1->s_bss += delta;
+			while ((i = (cur = get_block(i))->datnext) > -1) {
+				blk = get_block(i);
+				if (l2 != blk->ndata) {
+					if (secflg[k][2])
+						report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[2]);
+					l1 = (get_block(i))->ndata;
+					l1->dorig = 0;
+					place_sec(l1, cnt);
+					lastd = (char *)l1;
+					q = i;
+					delta = alloc_segment(l1, &cnt, 1, 'd', &q);
+					cur->datnext = -1;
+					if (placekd == 2) {
+						dtotal += delta;
+						l1->s_data += delta;
+					} else {
+						reslist[q].bssptr = reslist[k].bssptr;
+						reslist[k].bssptr = -1;
+						btotal += delta;
+						l1->s_bss += delta;
+					}
+					l2 = l1;
+				} else
+					blk->ndata = l1;
 			}
-			l2 = l1;
-			goto ltd;
-lbd:
-			blk = get_block(i);
-			if (l2 != blk->ndata)
-				goto lhd;
-			blk->ndata = l1;
-ltd:
-			i = (cur = get_block(i))->datnext;
-			if (i > -1)
-				goto lbd;
 		}
 		if (reslist[k].bssptr > -1 && reslist[k].bssptr < 0x4b0) {
 			i = reslist[k].bssptr;
@@ -715,31 +704,25 @@ ltd:
 			l1->s_bss += delta;
 			if (l1->segno == stksegn)
 				l1->atr |= 8;
-			goto ltb;
-lhb:
-			if (secflg[k][3])
-				report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[3]);
-			l1 = (get_block(i))->nbss;
-			l1->borig = l1->dorig + l1->s_data;
-			lastb = (char *)l1;
-			if (*(char *)l1 == -1) {
-				q = i;
-				delta = alloc_segment(l1, &cnt, 1, 'b', &q);
-				cur->bssnext = -1;
-				btotal += delta;
-				l1->s_bss += delta;
+			while ((i = (cur = get_block(i))->bssnext) > -1) {
+				blk = get_block(i);
+				if (l2 != blk->nbss) {
+					if (secflg[k][3])
+						report_error(2, "overflow in offset segment %d, %s section\n", cnt - 1, secnam[3]);
+					l1 = (get_block(i))->nbss;
+					l1->borig = l1->dorig + l1->s_data;
+					lastb = (char *)l1;
+					if (*(char *)l1 == -1) {
+						q = i;
+						delta = alloc_segment(l1, &cnt, 1, 'b', &q);
+						cur->bssnext = -1;
+						btotal += delta;
+						l1->s_bss += delta;
+					}
+					l2 = l1;
+				} else
+					blk->nbss = l1;
 			}
-			l2 = l1;
-			goto ltb;
-lbb:
-			blk = get_block(i);
-			if (l2 != blk->nbss)
-				goto lhb;
-			blk->nbss = l1;
-ltb:
-			i = (cur = get_block(i))->bssnext;
-			if (i > -1)
-				goto lbb;
 		}
 		if (reslist[k].bssptr > 0x4af)
 			reslist[k].bssptr = -1;
@@ -764,11 +747,13 @@ ltb:
 					swapped = 1;
 					list_move_after(p, e);
 				}
-				e = (p = e)->nxt;
+				p = e;
+				e = e->nxt;
 			} while (p != p2tail);
 		} while (swapped);
 	}
 }
+
 
 /* ins_block: insert a block into the segment list (0x5a2c..0x5eec of /bin/sld) */
 struct p2seg *ins_block(kind, size, blk, val, idx)
