@@ -2,37 +2,80 @@
 # seg. Byte-identical with the originals.
 #
 #   make              popt
-#   make spopt
 #   make old          the versions of the old compiler in OLDDIRS (v1/Makefile ...)
 #   make clean
 
 CC = ccv0p
 LD = ld
 CFLAGS = -O
-LIBC = ../../lib/libc-v5.a
-# the start-up file of popt is the shipped one (same code: start, 42 bytes)
+PREFIX = /
+LIBC = ../../../../lib/libc-v5.a
 CRT0 = /lib/crt0.o
-OBJS = z20.o z21.o z22.o z23.o
-OLDDIRS = v1 v0 v0p
 
-all: popt spopt
+NONSEG_OBJS = z20.o z21.o z22.o z23.o
+SEG_OBJS = $(NONSEG_OBJS)
+ALL_TARGETS = build/nonseg/popt build/seg/spopt
+OLD_TARGETS = build/nonsegv0/popt build/nonsegv0p/popt build/nonsegv1/popt build/segv1/spopt
 
-old:
-	for d in $(OLDDIRS); do cd $$d ; $(MAKE) ; cd .. ; done
+all: $(ALL_TARGETS)
 
-popt: $(OBJS)
-	$(LD) -X -e start -i $(CRT0) $(OBJS) $(LIBC) -o popt
+old: $(OLD_TARGETS)
 
-spopt: z20.c z21.c z22.c z23.c z2.h stdio.h
-	-mkdir seg
-	for f in z20 z21 z22 z23 ; do ( cd seg ; $(CC) $(CFLAGS) -DSPOPT -c ../$$f.c ) || exit 1 ; done
-	$(LD) -X -e start -i $(CRT0) seg/z20.o seg/z21.o seg/z22.o seg/z23.o $(LIBC) -o spopt
+build/nonseg/popt:
+	cd build/nonseg    && make -f ../../Makefile popt
+build/nonsegv0/popt:
+	cd build/nonsegv0  && make -f ../../Makefile popt CC="cc" CFLAGS="$(CFLAGS)"
+build/nonsegv0p/popt:
+	cd build/nonsegv0p && make -f ../../Makefile popt CC="cc" CFLAGS="$(CFLAGS)"
+build/nonsegv1/popt:
+	cd build/nonsegv1  && make -f ../../Makefile popt CC="cc" CFLAGS="$(CFLAGS) -DOLD_D20"
 
-$(OBJS): z2.h stdio.h
+build/seg/spopt:
+	cd build/seg   && make -f ../../Makefile spopt CFLAGS="$(CFLAGS) -DSPOPT"
+build/segv1/spopt:
+	cd build/segv1 && make -f ../../Makefile spopt CC="cc" CFLAGS="$(CFLAGS) -DSPOPT -DOLD_D20"
 
 clean:
-	-rm -f $(OBJS) popt spopt
-	rm -rf seg
-	for d in $(OLDDIRS); do cd $$d ; $(MAKE) clean ; cd .. ; done
+	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
+		dir=`dirname $$d`;\
+		FILES="$$dir/popt $$dir/spopt";\
+		for f in $(NONSEG_OBJS) $(SEG_OBJS); do FILES="$$FILES $$dir/$$f"; done;\
+		rm -f $$FILES;\
+	done
+	rm -f crt0.o crt0.s
 
-.PHONY: all old clean
+install: $(ALL_TARGETS)
+	cp build/nonseg/popt $(PREFIX)/lib/popt
+	cp build/seg/spopt   $(PREFIX)/lib/spopt
+
+oldinstall: $(OLD_TARGETS)
+	for v in v0 v0p v1 ; do \
+		[ -d $(PREFIX)/lib/$$v ] || mkdir $(PREFIX)/lib/$$v ; \
+		cp build/nonseg$$v/popt $(PREFIX)/lib/$$v/popt ; \
+	done
+	cp build/segv1/spopt $(PREFIX)/lib/v1/spopt
+
+##################
+# bin targets
+##################
+
+popt: $(NONSEG_OBJS)
+	$(LD) -X -e start -i -o $@ $(CRT0) $(NONSEG_OBJS) $(LIBC)
+
+spopt: $(SEG_OBJS)
+	$(LD) -X -e start -i -o $@ $(CRT0) $(SEG_OBJS)    $(LIBC)
+
+###################
+# obj targets
+###################
+
+z20.o: ../../z20.c
+	$(CC) $(CFLAGS) -c ../../z20.c
+z21.o: ../../z21.c
+	$(CC) $(CFLAGS) -c ../../z21.c
+z22.o: ../../z22.c
+	$(CC) $(CFLAGS) -c ../../z22.c
+z23.o: ../../z23.c
+	$(CC) $(CFLAGS) -c ../../z23.c
+
+.PHONY: all install clean old oldinstall

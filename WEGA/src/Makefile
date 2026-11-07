@@ -17,28 +17,23 @@ OLDPRINTF = lib/oldlibc/printf/s1.o
 
 all: stage1 lib stage2 cmds
 
-stage1:
+stage1: clean
 	cd lib/oldlibc/printf ; cp 0_5.c s1.c ; $(CC) -O -c s1.c ; rm -f s1.c
 	cd cmd/cas/old ; $(MAKE) install PREFIX=$(PREFIX)
-	cd cmd/cparse ; $(MAKE) oldprep
-	cd cmd/codgen ; $(MAKE) oldprep
-	for p in cparse codgen popt cc ; do for v in $(VERSIONS) ; do \
-		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) LIBC='../../../$(OLDPRINTF) /lib/libc.a' ) || exit 1 ; \
-	done ; done
-	for p in codgen cc ; do for v in v1q v1r ; do \
-		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) LIBC='../../../$(OLDPRINTF) /lib/libc.a' ) || exit 1 ; \
-	done ; done
+
+	cd cmd/cparse ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/codgen ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/popt   ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
+	cd cmd/cc     ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
 
 lib:
 	cd lib ; $(MAKE)
 
 stage2:
-	for p in cparse codgen popt cc ; do for v in $(VERSIONS) ; do \
-		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) ) || exit 1 ; \
-	done ; done
-	for p in codgen cc ; do for v in v1q v1r ; do \
-		( cd cmd/$$p/$$v ; $(MAKE) clean ; $(MAKE) install PREFIX=$(PREFIX) ) || exit 1 ; \
-	done ; done
+	cd cmd/cparse ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
+	cd cmd/codgen ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
+	cd cmd/popt   ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
+	cd cmd/cc     ; $(MAKE) clean ; $(MAKE) oldinstall PREFIX=$(PREFIX)
 
 cmds:
 	cd cmd ; $(MAKE) all

@@ -4,5 +4,6 @@ y.tab.h
 cas
 old/*.c
 old/*.o
+old/*.h
 old/cas
 old/parser.y
