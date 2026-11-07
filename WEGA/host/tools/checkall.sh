@@ -186,11 +186,13 @@ cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
 	cd $C/popt && make all CC=cc
 	cd $C/ld && make ld CC=cc
 	cd $C/sld && make sld SCC=scc
+	cd $C/cas && make all SCC=scc
 ) > $T/shipped.log 2>&1
 # the corpora run side by side, each in a work directory of its own
 CS=$T/shipped/WEGA/host/tools/corpus.sh
 CORP='cpp:cpp/cpp cparse:cparse/build/nonseg/cparse scparse:cparse/build/seg/scparse codgen:codgen/build/nonseg/codgen
-	scodgen:codgen/build/seg/scodgen popt:popt/build/nonseg/popt spopt:popt/build/seg/spopt ld:ld/ld sld:sld/sld'
+	scodgen:codgen/build/seg/scodgen popt:popt/build/nonseg/popt spopt:popt/build/seg/spopt ld:ld/ld sld:sld/sld
+	cas:cas/build/cas'
 for p in $CORP; do
 	n=${p%%:*}
 	CORPUS_BIN=$C/${p#*:} STAGE_TMP=$T/stage_$n JOBS=2 WEGA_ROOT=$WEGA sh $CS $n > $T/corpus_$n.log 2>&1 &

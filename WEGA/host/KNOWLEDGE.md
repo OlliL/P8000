@@ -832,12 +832,12 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/cas` against its manual | manual 3.4.5 says `.=` and a difference of labels force jump optimization before the end of pass 1; the shipped cas does neither (nor does the ZEUS cas): an old text | kept | `OLDCC.md`, D17 |
 | kernel `fpe.s` (`mulno`) | a mantissa product below 2 is normalised with bit 55 instead of bit 63 and an unshifted guard byte: wrong last bit in about 1 of 5 extended `fmul` results | kept (z8k-emu) | "EPU (floating point)", `z8k-emu/README.md` |
 | `/lib/gopt` (`cc -Or`) | register pointer parameters get a wrong frame offset (`ld r4,~L1+-1275(fp)`); same output on the real hardware | kept (emulated binary) | "gopt (-Or) output with register pointer parameters" |
-| `/bin/cas` | after more than one semantic error in a statement, `error()` returns a long whose low word is a leftover of `r3`, the parser uses it as a pointer | not reproduced (`errnode`) | "cas: decompilation", "cas on the host", `cas/README` |
-| `/bin/cas` | value of a rule after a syntax error is a stack leftover | not reproduced (`synnode`) | "cas on the host", `cas/README` |
-| `/bin/cas` | `jpr cc` without an address, `^O n` with `-^`: assembles leftover register contents | not reproduced | "cas on the host", `cas/README` |
-| `/bin/cas` | an unclosed string, `.byte ""`, `"\%4"`: the scanner runs past the end, `Out of nodes`; the pool is not emptied, so the next statement fails too | messages kept | "cas: decompilation", "cas on the host", `cas/README` |
-| `/bin/cas` | does not terminate on a syntax error in the last statement of a file without newline, an unclosed comment or string, and some tokens (`<<`, `^$`, `5\|3`) | not reproduced (stops at end of file) | "cas: decompilation", `cas/README` |
-| `/bin/cas` | a `}` too many uses the memory in front of the block stack | not reproduced (level stays 0) | `cas/README` |
+| `/bin/cas` | after more than one semantic error in a statement, `error()` returns a long whose low word is a leftover of `r3`, the parser uses it as a pointer | not reproduced (`errnode`) | "cas: decompilation", "cas on the host" |
+| `/bin/cas` | value of a rule after a syntax error is a stack leftover | not reproduced (`synnode`) | "cas on the host" |
+| `/bin/cas` | `jpr cc` without an address, `^O n` with `-^`: assembles leftover register contents | not reproduced | "cas on the host" |
+| `/bin/cas` | an unclosed string, `.byte ""`, `"\%4"`: the scanner runs past the end, `Out of nodes`; the pool is not emptied, so the next statement fails too | messages kept | "cas: decompilation", "cas on the host" |
+| `/bin/cas` | does not terminate on a syntax error in the last statement of a file without newline, an unclosed comment or string, and some tokens (`<<`, `^$`, `5\|3`) | not reproduced (stops at end of file) | "cas: decompilation", "cas on the host" |
+| `/bin/cas` | a `}` too many uses the memory in front of the block stack | not reproduced (level stays 0) | "cas on the host" |
 | `/usr/bin/ranlib` | the old `readsym` linked into it reads the pieces of a long name over the symbol itself: most long names are missing in `__.SYMDEF`, some entries are garbage (238 entries for `libc.a` instead of ~290) | kept | "ranlib, strip, size on the host" |
 | `/bin/rm` (`rm -i` without files, `interact`) | the question for a directory is `printf("%s--directory: ")` without its argument: the name printed is whatever r6 holds (the address of the stat buffer) | kept (`src/cmd/rm.c`) | `src/cmd/rm.c` |
 | `/usr/bin/strip` | `hflag` is uninitialised without an option; for 8-bit objects with relocation removal the result depends on uninitialised variables (`int c` of `rcopy`: one byte read into it, two bytes written from it; the frame address of `c` is even, measured 2026-10-31 with ccv1); the output file is left open | `hflag` kept in `src/cmd/strip`; host strip refuses 8-bit objects and closes the file | "size and strip", "ranlib, strip, size on the host" |
@@ -1757,12 +1757,22 @@ intermediate files: the small functions of `ifile` (0x42-0x1d0) write single byt
 
 Method and tools: `src/cmd/cas/tools/check.sh` (compile a module with the original `scc` under the oracle, compare
 with the range of `/bin/cas` by `tools/cmpmod.py`), `MODULES` (ranges and state), `ADDRESSES` (names against
-addresses), `README` (the differences between the old and the shipped scc). The work goes in link order; the
+addresses), `DATA` (data ranges), `findings.json`/`FINDINGS.md` (the state per function, `host/recon/findings.py cas`), the corpus
+(`host/tools/corpus.sh cas`: the `cc -S -O` and `scc -S -O` output of every C source, assembled by both). The work goes in link order; the
 aim is the same code and then the same behaviour of the complete program (tested against the original, see "Test of the complete cas"
 below: the code comparison alone is not enough); byte identity is not expected.
 
 **The compiler that built cas.** The binary was built by an older scc with `scc -O -c` (the parser without `-O`);
-its differences from the shipped scc are listed per module in OLDCC.md; see also `src/cmd/cas/README`.
+its differences from the shipped scc are listed per module in OLDCC.md. `check.sh` compiles with the shipped `scc -O` (closest),
+`parser.c` and `assemble.c` without `-O` (prologues behind the bodies, as in the binary; `cmpmod.py` converts the prologue behind the body back
+to the front form and pairs the functions of assemble shifted by the prologue fragments). The names of functions and variables are ours (the
+binary is stripped); `cas.h` declares the node layout. `parser.c` is made by the original `yacc -d parser.y` (`y.tab.c` renamed; `y.tab.h`
+gives scanner.c its `YYSTYPE`); its data: the tables and strings are the same, but the shipped scc places the strings of a function in front
+of the data that follow, the old one at the end of the module, so `cmpdata` reports differences.
+
+`check.sh` does NOT prove the behaviour: it did not show a swapped pair of case labels, undeclared functions that return a long or a pointer
+(the result cut to an int), a long argument passed as an int, or a forgotten assignment. These were found by running the program against the
+original ("Test of the complete cas"); check.sh helps to find the place when a test fails.
 
 **Done: ifile, nodes, instr, scanner, main, done (code).** Every function was compared with `cmpmod.py` and the remaining differences read by
 eye: they are those of the old compiler (the tool cannot hide them all, so its counts of
@@ -2107,7 +2117,10 @@ Findings of this work:
 - **Value of a rule after a syntax error.** The original goes on with the stack leftovers; in practice a symbol that was assigned such a value stays undefined (e.g. `x:= ^o .data` and `x` in the next line is still a new name). `host/cas` gives these rules a node of the invalid type 6 (`synnode`); a constant 0 defined `x` and changed the next syntax error. Strings: a NUL inside a string is a character, the scanner passes the length (`toklen`).
 - **Pool of nodes.** The original goes on counting `nalloc` behind `NNODES = 100`; after "Out of nodes" the pool stays full and the next statement fails too. A
   syntax error before the first token of a line (`line: error`) allocates no node, the pool is not emptied by it.
-- **`opoff` of a constant** in `src/cmd/cas/expr.c` had a cast `(unsigned char)` that the binary does not have in effect (see `src/cmd/cas/README`): fixed there.
+- **`opoff` of a constant** in `src/cmd/cas/expr.c` had a cast `(unsigned char)` that the binary does not have in effect : fixed there. In the binary the value of `^O n` is `n`
+  (`.word ^O %12345` gives %12345 and `Value too large`): the original passes the argument `(unsigned char)` of a long as a word in `r6` and does not set
+  `r4:r5`, from which `mknode1` takes its long `val` (K&R call without a prototype); `r4:r5` happen to hold the number just read, except under `-^`
+  (`^O 5` gives %9028). `opoff` therefore calls `mknode1(3, np->n_u.l)`; the shipped scc compiled the cast to another garbage value.
 - Shifts: the count is the low byte of the right operand as a signed number, a negative count shifts the other way, 32 or more gives 0 (or the sign for a left shift of a
   negative number); `x/0` is `x` (unsigned division by the library routine). Measured in the original.
 - Not reproduced, undefined in the original: the values after an error message in the same statement, `jpr cc` without address, `^O n` with the option `-^`, a string

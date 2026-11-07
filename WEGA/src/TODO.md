@@ -16,11 +16,15 @@ What is byte-identical is checked by `make -C host checkall` (14 minutes): the l
 - Others: `swap` 0_1, `malloc` 0_4, `doprnt` 0_8 (0_1 with a smaller frame in `_strout`, libc-v10).
 - Assembler in the original, these stay `.s`: `open` 0_1, `ecvt` 0_1.
 
-## 4. Clean up the host side
+## 4. Install root, stripping, cas
 
-The `tools/` directories of the programs have their final layout (`host/recon/README.md`). Still to look at outside them:
-`host/recon/castrig` (`hostcas.patch`, `triggers.txt`), `host/libc/check.sh` and `host/oldcc` (now doubled by `checkall`),
-the reconstruction scripts of `host/recon` that only served the cutting of objects.
+- Install root: `make install PREFIX=DIR` in `src/` puts every program and library of `cmd/` and `lib/` below DIR, at the
+  place of the original. `checkall` compares every file below DIR with the file of the same name in the WEGA tree; the
+  TABLE goes away. What is not identical yet (cas) is listed there as open.
+- Stripping: what the original has stripped is stripped by the link (`ld -s`) or by `install`, the same way for all
+  programs; `checkall` strips nothing itself.
+- cas: `tools/` in the layout of the other programs, a first `findings.json` with the differences left, a corpus (the
+  `.s` of the C sources of `cmd/` and `lib/`, assembled by the original and by ours).
 
 ## 6. System III form for all existing programs
 
@@ -35,6 +39,9 @@ Take over the changes of the sources where they change behaviour. Make the missi
 To look at: codgen, scodgen and spopt built with the shipped cc and shipped libc plus the old sprintf (stage 1) differ from the originals on the corpora (47, 46, 79 cases; with `libc-v5.a` 0, spopt 2, the `NK core` line). The final programs are identical; which module causes it is not known.
 
 Switches not in any version (`OLD_D1F`, `OLD_D2D`, `OLD_D3A`, `OLD_D19A`); switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
+
+Host side: `host/recon/castrig` (`hostcas.patch`, `triggers.txt`), `host/libc/check.sh` and `host/oldcc` (now doubled by
+`checkall`), the reconstruction scripts of `host/recon` that only served the cutting of objects.
 
 ## 8a. Sources without the old libc
 

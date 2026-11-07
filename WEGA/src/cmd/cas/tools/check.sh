@@ -30,6 +30,6 @@ for m in $mods; do
 	*) python3 "$TOOLS/tools/cmpmod.py" $m.o "$R/bin/cas" $1 $2 $V | tail -n +2;;
 	esac
 	set -- $(awk -v m="$m" '$1 == m {print $2, $3}' "$HERE/DATA")
-	python3 "$TOOLS/tools/cmpdata.py" $m.o "$R/bin/cas" $1 $2
+	[ $# = 2 ] && python3 "$TOOLS/tools/cmpdata.py" $m.o "$R/bin/cas" $1 $2
 done
 exit $rc

@@ -5,7 +5,7 @@ build, old and tools directories). The input of a pass is made from a source by 
   prepare_cpp(src, work)            the source and the headers of its directory; returns the source's name (cpp)
   prepare_i(src, work)              t.i, the original /lib/cpp on it (cparse, scparse); returns 't'
   prepare_ids(src, work, cc)        x.I, x.D, x.S, kept by the original `cc -S -:d` (codgen: /bin/cc, scodgen: /bin/scc)
-  prepare_s(src, work, cc)          in.s, the original `cc -S` without -O: the input of popt (spopt: /bin/scc)
+  prepare_s(src, work, cc[, opts])  in.s, the original `cc -S` (without -O: the input of popt, spopt: /bin/scc; cas: -O)
 Each returns None when the original cannot make the input; the case is skipped then.
 """
 import os
@@ -82,11 +82,11 @@ def prepare_ids(src, work, cc):
     return 'x'
 
 
-def prepare_s(src, work, cc):
+def prepare_s(src, work, cc, opts=()):
     copy_dir(src, work)
     b = os.path.basename(src)[:-2]
     try:
-        r = run([cc, '-S', '-I.', b + '.c'], work, 60)
+        r = run([cc, '-S'] + list(opts) + ['-I.', b + '.c'], work, 60)
     except subprocess.TimeoutExpired:
         return None
     if r.returncode != 0 or not os.path.exists(os.path.join(work, b + '.s')):
