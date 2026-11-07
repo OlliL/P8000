@@ -594,8 +594,8 @@ rmove()
 		} else
 			dualop(p->back);
 		ty = dest(p->back);
-		t = findcon(0x30, ty);
-		r = findcon(0x31, ty);
+		t = (int) findcon(0x30, ty);
+		r = (int) findcon(0x31, ty);
 		r12 = compare(p->subop, r, t);
 		if (r12 == 0) {
 			if (p1->op == CJP || p1->op == EXTS) {
