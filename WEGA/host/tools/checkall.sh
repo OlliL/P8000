@@ -137,7 +137,7 @@ done
 # the corpus of the host popt, made fresh by the original cc
 make -C $T/tree/WEGA/host/popt corpus WEGA=$WEGA CORPUS=$T/popt_corpus > $T/hostcheck.log 2>&1
 if CORPUS=$T/popt_corpus make -C $T/tree/WEGA/host check WEGA=$WEGA >> $T/hostcheck.log 2>&1; then
-	result 'host tools' ok 'cc ar binutils cas ld popt'
+	result 'host tools' ok 'cc ar binutils cas ld popt cpp'
 else
 	result 'host tools' fail "see $T/hostcheck.log"
 fi

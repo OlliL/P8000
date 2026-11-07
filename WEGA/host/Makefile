@@ -37,9 +37,9 @@ OLDROOTABS = $(abspath $(OLDROOT))
 WBIN = $(abspath ../../tmp/wbin)
 WPATH = PATH=$(WBIN):$$PATH
 
-all: cc popt ar binutils cas ld
+all: cc popt ar binutils cas ld cpp
 
-cc popt ar binutils cas ld:
+cc popt ar binutils cas ld cpp:
 	$(MAKE) -C $@ all
 
 check:
@@ -49,6 +49,7 @@ check:
 	$(MAKE) -C cas check WEGA=$(WEGAABS)
 	$(MAKE) -C ld check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C popt check WEGA=$(WEGAABS)
+	$(MAKE) -C cpp check WEGA=$(WEGAABS)
 	$(MAKE) -C libc check WEGA=$(WEGAABS) EMU=$(EMU)
 	$(MAKE) -C oldcc verify WEGA=$(WEGAABS) EMU=$(EMU)
 
@@ -71,5 +72,6 @@ clean:
 	$(MAKE) -C binutils clean
 	$(MAKE) -C popt clean
 	$(MAKE) -C cas clean
+	$(MAKE) -C cpp clean
 
-.PHONY: all check checkall wbin oldroot src clean cc popt ar binutils cas
+.PHONY: all check checkall wbin oldroot src clean cc popt ar binutils cas ld cpp

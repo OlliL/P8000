@@ -36,12 +36,20 @@ WORK = os.path.join(os.environ.get('STAGE_TMP', '/tmp/wega_stage'), 'corpus_' + 
 VARIANTS = getattr(CFG, 'CORPUS_VARIANTS', [None])
 IGNORE = re.compile(CFG.CORPUS_IGNORE) if getattr(CFG, 'CORPUS_IGNORE', None) else None
 NORMALIZE = getattr(CFG, 'CORPUS_NORMALIZE', None)
+HOST = bool(os.environ.get('CORPUS_HOST'))	# CORPUS_BIN is a host (Linux) program, not a WEGA binary
 
 
 def run_pass(binary, base, work, variant):
     argv, stdin = CFG.CORPUS_RUN(binary, base, work) if variant is None else CFG.CORPUS_RUN(binary, base, work, variant)
     fin = open(os.path.join(work, stdin), 'rb') if stdin else subprocess.DEVNULL
-    r = subprocess.run([CFG.EMU, '-r', CFG.ROOT] + argv, cwd=work, stdin=fin, capture_output=True, timeout=600)
+    if HOST and binary == 'pass_new':
+        # a host build (CORPUS_HOST=1): runs natively; the environment from CORPUS_HOST_ENV(root) of progcfg.py
+        env = dict(os.environ)
+        env.update(getattr(CFG, 'CORPUS_HOST_ENV', lambda root: {})(CFG.ROOT))
+        r = subprocess.run([os.path.join(work, 'pass_new')] + argv[1:], cwd=work, stdin=fin, capture_output=True,
+                           timeout=600, env=env)
+    else:
+        r = subprocess.run([CFG.EMU, '-r', CFG.ROOT] + argv, cwd=work, stdin=fin, capture_output=True, timeout=600)
     outs = {}
     for f in CFG.CORPUS_OUTPUTS(base):
         p = os.path.join(work, f)
@@ -51,6 +59,8 @@ def run_pass(binary, base, work, variant):
         if os.path.exists(p):
             os.remove(p)
     msg = r.stdout + r.stderr
+    if NORMALIZE:
+        msg = NORMALIZE('messages', msg)
     if IGNORE:
         msg = IGNORE.sub(b'', msg)
     return r.returncode, msg, outs
