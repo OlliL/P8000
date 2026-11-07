@@ -619,7 +619,8 @@
     "structure_flags": [],
     "len_ours": 112,
     "len_orig": 112
-   }
+   },
+   "note": "2026-11-07, shipped scc: open. The original has the form of ld (for (j = 1; a[j] != 0; j++) switch, if (a[j + 1]) j++). With it and with the goto skeleton: in the cases b/t and l the original takes r2 (free), we r3/r4 (r2 holds the switch value). Tried: the loop form of main, (int) and c = a[j] as switch value, a[j] for a[j] != 0, != 0 in the if."
   },
   "lookup_name": {
    "file": "symbols.c",
@@ -916,7 +917,8 @@
     "structure_flags": [],
     "len_ours": 343,
     "len_orig": 340
-   }
+   },
+   "note": "2026-11-07, shipped scc: open. Code order of the cases a, t, d, b (the cpir table is sorted). The report of section already specified stands behind case a in the original (codemove); case a of the second switch reloads dseg (dseg = bseg = ... keeps it in r3 here); one frame word less in the original (cnt at 0x24, here 0x26). Tried: the order of the cases, if with != && !=, dseg = bseg, if/else for bseg, without cnt, digs[3]."
   },
   "make_blk": {
    "file": "ld.c",
@@ -985,7 +987,8 @@
     "structure_flags": [],
     "len_ours": 322,
     "len_orig": 310
-   }
+   },
+   "note": "2026-11-07, shipped scc: open. The cases 3 and 4 of the first switch stand behind the dispatch of the second switch in the original (moved by codemove of spopt), here in place; the second switch has another case order. Not yet tried: a trace of spopt (poptrace.sh is for popt v0p)."
   },
   "lay_out": {
    "file": "ldm.c",
