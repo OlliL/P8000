@@ -918,7 +918,7 @@
     "len_ours": 343,
     "len_orig": 340
    },
-   "note": "2026-11-07, shipped scc: open. Code order of the cases a, t, d, b (the cpir table is sorted). The report of section already specified stands behind case a in the original (codemove); case a of the second switch reloads dseg (dseg = bseg = ... keeps it in r3 here); one frame word less in the original (cnt at 0x24, here 0x26). Tried: the order of the cases, if with != && !=, dseg = bseg, if/else for bseg, without cnt, digs[3]."
+   "note": "2026-11-07: exact. The word at 0x24 is the offset of q (0x22..0x25): the original does q++; p = q after strrchr (the leaf name without the slash); our earlier source had a spare cnt++ there and kept the slash (not caught by the corpus: no -M list with paths)."
   },
   "make_blk": {
    "file": "ld.c",

@@ -23,7 +23,6 @@ int argc;
 	int v;
 	int w;
 	char *q;
-	int cnt;
 
 	if (s[1] <= '9' && s[1] >= '0') {
 		type = 'a';
@@ -66,14 +65,14 @@ int argc;
 		case 'a':
 			w = 0;
 			break;
-		case 'b':
-			w = 3;
+		case 't':
+			w = 1;
 			break;
 		case 'd':
 			w = 2;
 			break;
-		case 't':
-			w = 1;
+		case 'b':
+			w = 3;
 			break;
 		default:
 			report_error(2, "-%s: invalid section selector (must be t, d or b)", s);
@@ -81,8 +80,10 @@ int argc;
 		if (s[k] == 't' || s[k] == 'b') {
 			if (secflg[v][w] != 0)
 				report_error(2, "-%s: section already specified", s);
-			secflg[v][w] = s[k];
-			k++;
+			else {
+				secflg[v][w] = s[k];
+				k++;
+			}
 		} else
 			report_error(2, "-%s: invalid location selector (must be t or b)", s);
 		if (s[k] == 0) {
@@ -118,7 +119,7 @@ int argc;
 				break;
 			q = strrchr(p, '/');
 			if (q) {
-				cnt++;
+				q++;
 				p = q;
 			}
 			mlist_add(type, p, v);
@@ -142,9 +143,10 @@ int argc;
 			bseg = v;
 			break;
 		case 'a':
-			w = iflag ? v + 1 : v;
-			bseg = w;
-			dseg = w;
+			if (iflag)
+				dseg = bseg = v + 1;
+			else
+				dseg = bseg = v;
 			tseg = v;
 			if (dseg > maxseg)
 				maxseg = dseg;
@@ -159,6 +161,7 @@ int argc;
 		}
 	}
 }
+
 
 /* mlist_add: add an entry to the -M list, in order (0x410c..0x42f8 of /bin/sld) */
 int mlist_add(c, y, x)
