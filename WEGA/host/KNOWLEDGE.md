@@ -1443,7 +1443,7 @@ What the data showed:
 - `size` (E707, text 5652): own code is only main() at 0x42-0x224 (s.out aware:
   `goodmagic`, `swab`, segment table of 16 byte entries, prints
   `%U + %U + %U = ` and `%U = 0x%lx`), then the old libc (fread at 0x224, fwrite
-  at 0x2a0, ...). Reconstructed in `src/cmd/size/size.c`; the own code is identical,
+  at 0x2a0, ...). Reconstructed in `src/cmd/size.c`; the own code is identical,
   see "size and strip".
 - z8k-emu now also runs Plexus a.out (0407/0410/0411) with the Plexus system
   call ABI (`sc INDIR; .word blk`, first argument in r0 for some calls). In 0410
@@ -1495,7 +1495,7 @@ Consequence: not a cause of the length, nlist, swap, malloc differences.
 
 ## size and strip (reconstructed, byte-identical with the old compiler v1)
 
-- `src/cmd/size/size.c` + `crt0-size.s` and `src/cmd/strip/strip.c` + `crt0-strip.s` (both made from
+- `src/cmd/size.c` + `crt0-size.s` and `src/cmd/strip.c` + `crt0-strip.s` (both made from
   `src/lib/libc/crt/crt0.s.in`) are byte-identical with `/bin/size` and `/usr/bin/strip` when built with the old
   compiler v1 (`make CC=ccv1`, OLDCC.md; `checkall`).
 - size: `size.c 2.1 01/14/83`; strip: `strip.c 1.2 11/19/82`, crt0 3.1 01/24/83.
@@ -1604,15 +1604,15 @@ Results (nonsegmented programs of `src/cmd`):
   symbol tables; the names and addresses of the symbols that the own objects use are found from their relocations. The module
   boundaries and names come from a spec written by hand (`src/cmd/size/size.spec`): entry points from the call graph, the
   sizes of the shipped members (text and data, `tools/libcver.py`, the symbol table of `libc.a`), the layout of the data in link
-  order. For size (`src/cmd/size`): 13 old modules + 19 shipped members, no libc.a is linked; with the size.o of the older cc the file is
+  order. For size (`src/cmd/size.c`): 13 old modules + 19 shipped members, no libc.a is linked; with the size.o of the older cc the file is
   byte-identical with `/bin/size` (6210 bytes), with the current cc it is 6212 bytes (checked: same output on several files). Findings on the way: size's libc is the shipped libc in older revisions
   (flsbuf.o holds `_flsbuf _fflush __cleanup _fclose`, rdwr.o `_fread _fwrite`, printf.o `_printf _fprintf _sprintf`, doprnt.o
   `__align __doprnt __atoip`, as in the shipped library); `__sobuf` is allocated before `__sibuf` in size, strip, ranlib and cc (cc: `_rc` before `__pfile`, the order of the `.comm` lines in the module matters); malloc's data is 12 bytes
-  (62 in the shipped one). strip (`src/cmd/strip`): 16 old modules + 24 shipped members; the
+  (62 in the shipped one). strip (`src/cmd/strip.c`): 16 old modules + 24 shipped members; the
   libc part is instruction-identical (`cmpins` 0 blocks), the file is 6 bytes longer than the original (data of strip.o, D12) and
   its own code has the 2 known blocks (D2). Six old modules (cnvt, ffltioc, findiop, flsbuf, goodmagic, length) are the same text
   in size and strip (cnvt, ffltioc and length also in cc and scc, ffltioc also in ranlib, strcpy in cc, scc and strip). In strip the data of the libc modules is: doprnt 124, filbuf 20, endopen 12, `data` 162, cnvt 12, malloc 12,
-  mktemp 2, goodmagic 20, brk 2, cerror 4. ranlib (`src/cmd/ranlib`): 24 old modules + 19 shipped members; the libc part is instruction-identical
+  mktemp 2, goodmagic 20, brk 2, cerror 4. ranlib (`src/cmd/ranlib.c`): 24 old modules + 19 shipped members; the libc part is instruction-identical
   (1999 instructions, 5786 bytes), the own code is not (ranlib.o: 6 bytes less text, 6 bytes more data, 4 bytes more bss), so the
   spec has the symbol addresses (`noown`). The old `readsym` is now an assembler module like the others; the start-up code has
   no stamp. The data of the libc modules is: system 30, doprnt 80, filbuf 20, `data` 162, malloc 12, goodmagic 20, brk 2, fork 2,
@@ -2174,11 +2174,11 @@ compares output, exit code and every file afterwards: all identical.
   of the name text: most long names are missing in the table and some enter it with garbage
   (entries with an empty name). The table of `libc.a` has 238 entries, not the ~290 a correct
   ranlib would write. That is the behaviour of the WEGA binary, not a bug of ours; the host ranlib
-  and `src/cmd/ranlib/ranlib.c` keep it (identical `__.SYMDEF`). The tables are not cleared between two
+  and `src/cmd/ranlib.c` keep it (identical `__.SYMDEF`). The tables are not cleared between two
   archives of one call.
-- `src/cmd/ranlib/ranlib.c` now follows the binary: the earlier version had the `ar rl` arguments swapped
+- `src/cmd/ranlib.c` now follows the binary: the earlier version had the `ar rl` arguments swapped
   and passed `&exp` to `goodmagic`; the old readsym is linked as the module `src/lib/oldlibc/readsym/0_1.s`
-  by `src/cmd/ranlib/Makefile` (`src/cmd/ranlib/readsym.c` is its C form, not built). Built with the WEGA cc the program behaves exactly like the original (same
+  by `src/cmd/Makefile` (`src/cmd/ranlib/readsym.c` is its C form, not built). Built with the WEGA cc the program behaves exactly like the original (same
   `__.SYMDEF` for libc.a, slibc.a, libcurses.a); the code is not byte identical because the original
   was compiled by an older cc (own code and readsym differ in register use, frame and spills).
 
