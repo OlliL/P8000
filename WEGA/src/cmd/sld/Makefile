@@ -1,27 +1,29 @@
 # ld: the segmented loader of WEGA (sld), reconstructed from /bin/sld.
 #
 #   make link        sld, linked with slibc-v9.a
+#   make check       the test objects of host/ld/test linked by sld and by the original under z8k-emu, compared (host/ld/check.py -S)
 #   make clean
 
-SCC= sccv1
+SCC = scc
 CRT = ../../lib/libc/crt
 LDBIN = sld
 CAS = cas
 LIBC = ../../lib/slibc-v9.a
 CFLAGS = -O
+CHECKROOT = ../../tmp/wega31_root
 
 COBJS = copyname.o dump.o ext.o ld.o ldm.o printname.o swap.o symbols.o
 LINKOBJS = scrt0.o $(COBJS)
 
-all: $(COBJS) scrt0.o $(OLDOBJS) sld
+all: sld
 
 link: sld
 
-sld: $(COBJS) $(LINKOBJS)
+sld: $(LINKOBJS) $(LIBC)
 	$(LDBIN) -i -z -e start $(LINKOBJS) $(LIBC) -o $@
 
-check: sld.new
-	cd ../../../host/ld ; SLD_NEW=../../src/cmd/sld/sld.new WEGA=$(CHECKROOT) python3 check.py -S
+check: sld
+	cd ../../../host/ld ; SLD_NEW=../../src/cmd/sld/sld WEGA=$(CHECKROOT) python3 check.py -S
 
 copyname.o: copyname.c ld.h
 	$(SCC) $(CFLAGS) -c copyname.c

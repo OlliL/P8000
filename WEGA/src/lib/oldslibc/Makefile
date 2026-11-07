@@ -19,9 +19,9 @@ all: $(LIBS)
 
 
 LIBv9 = tmp/putchar.o tmp/scanf.o tmp/doscan.o printf/0_1.o \
-        	doprnt/0_1.o tmp/ffltioc.o tmp/ungetc.o tmp/filbuf.o tmp/data.o tmp/flsbuf.o \
+        	doprnt/0_1.o tmp/ffltioc.o tmp/ungetc.o tmp/filbuf.o tmp/flsbuf.o tmp/data.o \
         	tmp/__callex.o tmp/cuexit.o tmp/atoi.o tmp/cnvt.o tmp/decimal.o tmp/length.o \
-        	tmp/malloc.o tmp/ctype_.o tmp/isatty.o tmp/mktemp.o tmp/stty.o tmp/strchr.o \
+        	tmp/malloc.o tmp/isatty.o tmp/mktemp.o tmp/ctype_.o tmp/stty.o tmp/strchr.o \
         	tmp/strrchr.o tmp/swab.o tmp/rindex.o tmp/strcat.o tmp/strncmp.o tmp/strcpy.o \
         	tmp/swap.o tmp/access.o tmp/tolower.o tmp/chmod.o tmp/close.o tmp/creat.o \
         	tmp/fstat.o tmp/getpid.o tmp/ioctl.o tmp/link.o tmp/lseek.o tmp/mkseg.o tmp/open.o \

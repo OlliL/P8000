@@ -700,11 +700,9 @@ long c;
 	}
 	while (symindex > saved) {
 		symindex--;
-		p2 = symhash[symindex];
-		if (p2 != 0) {
-		known:
-			*p2 = 0;
-		}
+		if ((p2 = symhash[symindex]) == 0)
+			continue;
+		*p2 = 0;
 	}
 	nblk = fblk;
 	return 0;
@@ -769,8 +767,7 @@ int k;
 				report_error(1, "top address of %s in segment %d too low", secnam[j], k);
 			if ((r8 = secorg[k][j] & 0xff00) != secorg[k][j])
 				printf("%s: warning, top address of %s in segment %d relocated to 0x%x\n", pname, secnam[j], k, r8);
-			r8 = r8 - q->tsize;
-			r8 = r8 & 0xff00;
+			r8 = (r8 - q->tsize) & 0xff00;
 			q->tsize = (q->tsize + 255) & 0xff00;
 			break;
 		case 'b':
@@ -1004,8 +1001,7 @@ test0:
 			if (*--q == 0x2f)
 				break;
 		}
-		q++;
-		load2(0L, q);
+		load2(0L, ++q);
 	} else {
 		lp = libp;
 		goto test1;
@@ -1815,7 +1811,7 @@ char *a;
 	register int k;
 	register int t;
 	register char *p;
-	char spare[6];
+	char spare[8];
 
 	p = a;
 	k = 12;

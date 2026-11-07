@@ -56,7 +56,7 @@ def compile_all(flags='-O', asm=False, texts=None):
         base = os.path.basename(p)
         if not base.endswith('.c'):
             continue
-        r = subprocess.run([F.EMU, '-r', F.WEGA, '/bin/scc'] + flags.split() + ['-S' if asm else '-c', base], cwd=tmp,
+        r = subprocess.run([F.EMU, '-r', F.SCCROOT, F.SCCBIN] + flags.split() + ['-S' if asm else '-c', base], cwd=tmp,
                            capture_output=True, text=True, timeout=900)
         out = os.path.join(tmp, base[:-2] + ('.s' if asm else '.o'))
         if r.returncode != 0 or not os.path.exists(out):

@@ -1,6 +1,8 @@
 	.seg
+	.comm	2, _rc
 	.extern	__iob
 	.extern	_stkseg
+	.extern	__pfile
 	.extern	__doprnt
 	.extern	__flsbuf
 	.code
@@ -21,7 +23,7 @@ _printf::
 	.word	%4FFC,%8103,%7F4E	// EPU
 	.word	%4FFC,%8003,%7F56	// EPU
 	ldl	rr0,#__iob+12
-	ldl	<<1>>%90E4,rr0
+	ldl	__pfile,rr0
 	ldl	rr0,#%7F000064
 	add	r1,r15
 	ldl	|_stkseg+0|(r15),rr0
@@ -34,7 +36,7 @@ _printf::
 	ldl	rr2,#%7F00003E
 	add	r3,r15
 	call	__doprnt
-	ld	<<1>>%90E2,r2
+	ld	_rc,r2
 	add	r15,#%0060
 	ret
 _fprintf::
@@ -50,7 +52,7 @@ _fprintf::
 	.word	%4FFC,%8203,%7F42	// EPU
 	.word	%4FFC,%8103,%7F4A	// EPU
 	.word	%4FFC,%8003,%7F52	// EPU
-	ldl	<<1>>%90E4,rr6
+	ldl	__pfile,rr6
 	ldl	rr0,#%7F000060
 	add	r1,r15
 	ldl	|_stkseg+0|(r15),rr0
@@ -63,7 +65,7 @@ _fprintf::
 	add	r3,r15
 	ldl	rr6,|_stkseg+14|(r15)
 	call	__doprnt
-	ld	<<1>>%90E2,r2
+	ld	_rc,r2
 	add	r15,#%005C
 	ret
 _sprintf::
@@ -85,7 +87,7 @@ _sprintf::
 	.word	%4FFC,%8003,%7F5E	// EPU
 	ldl	rr0,#%7F000036
 	add	r1,r15
-	ldl	<<1>>%90E4,rr0
+	ldl	__pfile,rr0
 	ldl	rr0,#%7F00006C
 	add	r1,r15
 	ldl	|_stkseg+0|(r15),rr0
@@ -100,7 +102,7 @@ _sprintf::
 	add	r3,r15
 	ldl	rr6,|_stkseg+14|(r15)
 	call	__doprnt
-	ld	<<1>>%90E2,r2
+	ld	_rc,r2
 	dec	|_stkseg+58|(r15),#1
 	cp	|_stkseg+58|(r15),#%0000
 	jr	ge,L7ba2
@@ -116,6 +118,6 @@ L7ba2:
 	subb	rl2,rl2
 	subb	rh2,rh2
 L7bb0:
-	ld	r2,<<1>>%90E2
+	ld	r2,_rc
 	add	r15,#%0068
 	ret

@@ -116,7 +116,6 @@ char cmdbuf[10000];
 char libname[30];
 char libpath[40];
 long rlbuf;
-long bE000;
 
 /* unpack_run: copy the name field of a symbol (8 or 14 bytes, or the long form with length byte 0x80|n) zero padded; returns the number of extra 16 byte entries (0x0056..0x00ee of /bin/sld) */
 int unpack_run(src, dst)

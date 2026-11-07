@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""fncheck.py - compile a C source with the original scc (emulator) and compare its code with /bin/sld.
+"""fncheck.py - compile a C source with the original scc (emulator; SCCROOT, SCCBIN) and compare its code with /bin/sld.
 
 Usage: fncheck.py SOURCE.c LO HI [ORIGINAL]
 
@@ -25,6 +25,9 @@ from sout import SOut  # noqa: E402
 
 EMU = '/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu'
 WEGA = '/mnt/share/cvs/P8000/tmp/wega31_root'
+# the compiler of sld: the shipped scc; SCCROOT=<oldroot> SCCBIN=/bin/sccv1 for the old one
+SCCROOT = os.environ.get('SCCROOT', WEGA)
+SCCBIN = os.environ.get('SCCBIN', '/bin/scc')
 ORIG = os.path.join(WEGA, 'bin', 'sld')
 
 
@@ -117,10 +120,10 @@ def compile_obj(src):
     tmp = tempfile.mkdtemp(prefix='fncheck', dir='/mnt/share/cvs/P8000/tmp/tmp')
     base = os.path.splitext(os.path.basename(src))[0]
     alias_copy(src, os.path.join(tmp, base + '.c'))
-    hdr = os.path.join(HERE, '..', 'ld.h')
+    hdr = os.environ.get('LDH', os.path.join(HERE, '..', 'ld.h'))  # LDH: a trial ld.h
     if os.path.exists(hdr):
         alias_copy(hdr, os.path.join(tmp, 'ld.h'))
-    r = subprocess.run([EMU, '-r', WEGA, '/bin/scc'] + os.environ.get('SCCFLAGS', '-O').split() + ['-c', base + '.c'], cwd=tmp,
+    r = subprocess.run([EMU, '-r', SCCROOT, SCCBIN] + os.environ.get('SCCFLAGS', '-O').split() + ['-c', base + '.c'], cwd=tmp,
                        capture_output=True, text=True, timeout=600)
     if r.returncode != 0 or not os.path.exists(os.path.join(tmp, base + '.o')):
         return None, (r.stdout + r.stderr).strip()

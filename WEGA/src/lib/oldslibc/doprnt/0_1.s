@@ -1,4 +1,5 @@
 	.seg
+	.comm	4, __pfile
 	.extern	_stkseg
 	.extern	__length
 	.extern	__flsbuf
@@ -880,7 +881,7 @@ L85c0:
 	inc	|_stkseg+126|(r15),#1
 	jr	L8572
 L85c6:
-	ldl	rr2,<<1>>%90E4
+	ldl	rr2,__pfile
 	testl	rr2
 	jr	eq,L85e6
 	ldl	rr4,rr2
