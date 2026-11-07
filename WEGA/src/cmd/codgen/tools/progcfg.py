@@ -22,7 +22,7 @@ def model_link(work, objs):
     src = os.path.normpath(os.path.join(here, '..'))
     hostld = os.path.normpath(os.path.join(src, '..', '..', '..', 'host', 'ld', 'ld'))
     libc = [os.path.join(src, '..', '..', 'lib', 'libc-v5.a')]
-    crt = os.path.join(src, '..', '..', 'lib', 'libc', 'crt', 'crt0-codgen.o')
+    crt = os.path.join(src, 'crt0.o')  # make crt0.o
     return [os.environ.get('LDBIN', hostld), '-X', '-e', 'start', '-i', crt] + objs + libc + ['-o', 'codgenm']
 
 

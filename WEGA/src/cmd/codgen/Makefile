@@ -3,7 +3,8 @@
 # Both are non-segmented programs
 #
 #   make              codgen scodgen
-#   make old          the versions of the old compilers
+#   make old          the passes of the old compilers in build/nonsegVER, build/segv1 (switches: host/OLDCC.md)
+#   make install PREFIX=dir, make oldinstall PREFIX=dir (dir/lib/VER/)
 #   make clean
 
 CC = ccv0p
@@ -23,23 +24,23 @@ all: $(ALL_TARGETS)
 
 old: $(OLD_TARGETS)
 
-build/nonseg/codgen: crt0.o
-	cd build/nonseg    && make -f ../../Makefile codgen
-build/nonsegv0/codgen: crt0.o
-	cd build/nonsegv0  && make -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0"
-build/nonsegv0p/codgen: crt0.o
-	cd build/nonsegv0p && make -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0P"
-build/nonsegv1/codgen: crt0.o
-	cd build/nonsegv1  && make -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3"
-build/nonsegv1q/codgen: crt0.o
-	cd build/nonsegv1q && make -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
-build/nonsegv1r/codgen: crt0.o
-	cd build/nonsegv1r && make -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q -DOLD_D1R"
+build/nonseg/codgen: crt0.o FORCE
+	cd build/nonseg ; $(MAKE) -f ../../Makefile codgen
+build/nonsegv0/codgen: crt0.o FORCE
+	cd build/nonsegv0 ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0"
+build/nonsegv0p/codgen: crt0.o FORCE
+	cd build/nonsegv0p ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0P"
+build/nonsegv1/codgen: crt0.o FORCE
+	cd build/nonsegv1 ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3"
+build/nonsegv1q/codgen: crt0.o FORCE
+	cd build/nonsegv1q ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
+build/nonsegv1r/codgen: crt0.o FORCE
+	cd build/nonsegv1r ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q -DOLD_D1R"
 
-build/seg/scodgen: crt0.o
-	cd build/seg   && make -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
-build/segv1/scodgen: crt0.o
-	cd build/segv1 && make -f ../../Makefile scodgen CC="cc" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3"
+build/seg/scodgen: crt0.o FORCE
+	cd build/seg ; $(MAKE) -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
+build/segv1/scodgen: crt0.o FORCE
+	cd build/segv1 ; $(MAKE) -f ../../Makefile scodgen CC="cc" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
@@ -84,6 +85,10 @@ scodgen: $(SEG_OBJS) ../../crt0.o table3_scodgen.o
 # obj targets
 ###################
 
+$(NONSEG_OBJS) $(SEG_OBJS): ../../cg.h ../../cg2.h
+local3.o: ../../hop_codgen.c ../../hop_scodgen.c
+comm3.o: ../../ops_codgen.c ../../ops_scodgen.c
+
 bss3.o: ../../bss3.c
 	$(CC) $(CFLAGS) -c ../../bss3.c
 reader3.o: ../../reader3.c
@@ -116,5 +121,7 @@ table3_codgen.o: ../../table3_codgen.c
 	$(CC) $(CFLAGS) -c ../../table3_codgen.c
 table3_scodgen.o: ../../table3_scodgen.c
 	$(CC) $(CFLAGS) -c ../../table3_scodgen.c
+
+FORCE:
 
 .PHONY: all install clean old oldinstall

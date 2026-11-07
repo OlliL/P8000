@@ -1,10 +1,9 @@
 # cparse, scparse: pass 1 of cc and scc (PCC front end) of WEGA, reconstructed from /lib/cparse. scparse is the same source with -DSEG,
 # the objects in seg. With strip byte-identical.
 #
-#   make	     cparse
-#   make scparse
-#   make oldprep     what the versions of the old compiler need of this directory (crt0.o, cgram1.c)
-#   make old	 the versions of the old compiler in OLDDIRS (v1/Makefile ...)
+#   make             build/nonseg/cparse, build/seg/scparse
+#   make old         the passes of the old compilers in build/nonsegVER, build/segv1 (switches: host/OLDCC.md)
+#   make install PREFIX=dir, make oldinstall PREFIX=dir (dir/lib/VER/)
 #   make clean
 #
 # The parser cgram1.y is made into cgram1.c by yacc.
@@ -27,19 +26,19 @@ all: $(ALL_TARGETS)
 
 old: $(OLD_TARGETS)
 
-build/nonseg/cparse: crt0.o
-	cd build/nonseg    && make -f ../../Makefile cparse
-build/nonsegv0/cparse: crt0.o
-	cd build/nonsegv0  && make -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
-build/nonsegv0p/cparse: crt0.o
-	cd build/nonsegv0p && make -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
-build/nonsegv1/cparse: crt0.o
-	cd build/nonsegv1  && make -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D1"
+build/nonseg/cparse: crt0.o FORCE
+	cd build/nonseg ; $(MAKE) -f ../../Makefile cparse
+build/nonsegv0/cparse: crt0.o FORCE
+	cd build/nonsegv0 ; $(MAKE) -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
+build/nonsegv0p/cparse: crt0.o FORCE
+	cd build/nonsegv0p ; $(MAKE) -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D4R -DOLD_D6T -DOLD_D6C -DOLD_D22 -DOLD_D6D"
+build/nonsegv1/cparse: crt0.o FORCE
+	cd build/nonsegv1 ; $(MAKE) -f ../../Makefile cparse CC="cc" CFLAGS="$(CFLAGS) -DOLD_D12 -DOLD_D1"
 
-build/seg/scparse: crt0.o
-	cd build/seg   && make -f ../../Makefile scparse CFLAGS="$(CFLAGS) -DSEG"
-build/segv1/scparse: crt0.o
-	cd build/segv1 && make -f ../../Makefile scparse CC="cc" CFLAGS="$(CFLAGS) -DSEG -DOLD_D12 -DOLD_D1"
+build/seg/scparse: crt0.o FORCE
+	cd build/seg ; $(MAKE) -f ../../Makefile scparse CFLAGS="$(CFLAGS) -DSEG"
+build/segv1/scparse: crt0.o FORCE
+	cd build/segv1 ; $(MAKE) -f ../../Makefile scparse CC="cc" CFLAGS="$(CFLAGS) -DSEG -DOLD_D12 -DOLD_D1"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
@@ -84,6 +83,8 @@ scparse: $(SEG_OBJS) ../../crt0.o
 # obj targets
 ###################
 
+$(NONSEG_OBJS): ../../mfile1 ../../manifest ../../macdefs ../../stdio.h
+
 cgram1.c: ../../cgram1.y
 	$(YACC) ../../cgram1.y
 	mv y.tab.c cgram1.c
@@ -111,5 +112,7 @@ sym1.o: ../../sym1.c
 	$(CC) $(CFLAGS) -c ../../sym1.c
 sym2.o: ../../sym2.c
 	$(CC) $(CFLAGS) -c ../../sym2.c
+
+FORCE:
 
 .PHONY: all install clean old oldinstall

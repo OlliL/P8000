@@ -1,14 +1,14 @@
 #!/bin/sh
 # oldcc.sh: the measuring loop of the old compiler work on /lib/cparse (host/OLDCC.md, "v0p").
 #
-#   oldcc.sh build PASS VER [SWITCHES]   rebuild pass PASS (cparse, codgen, popt) of version VER (v0, v0p) with
-#                                        SWITCHES (default: those of its Makefile; codgen: -DOLD_V0 or -DOLD_V0P, the
-#                                        switches themselves are in codgen/oldcc.h) and install it into OLDROOT/lib/VER
+#   oldcc.sh build PASS VER [SWITCHES]   rebuild pass PASS (cparse, codgen, popt) of version VER (v0, v0p, v1, ...) in
+#                                        build/nonsegVER with SWITCHES (default: those of its Makefile; codgen: -DOLD_V0 or
+#                                        -DOLD_V0P select oldcc.h) and install it into OLDROOT/lib/VER
 #   oldcc.sh model [PROG]                PROG (cparse, default, or popt) built with ccv0p (d12model) and compared
 #                                        strictly with the original (strictcmp); prints the totals, keeps the
 #                                        per-function list in RECON_TMP/oldcc_model_PROG.txt
-#   oldcc.sh corpus                      cparse built with ccv0p from our sources, its corpus against /lib/cparse
-#                                        (must stay 259 of 259: catches wrong code); restores the normal build
+#   oldcc.sh corpus                      cparse built with ccv0p from our sources (build/nonseg), its corpus against /lib/cparse
+#                                        (must stay 259 of 259: catches wrong code)
 #   oldcc.sh bench                       the bench of v0 (System III programs of 1982, ccv0)
 #   oldcc.sh lines [PROG]                the differing functions of the last model run and the sum of their lines
 #   oldcc.sh findings [PROG]             findings.json (status from the last model) and FINDINGS.md of PROG
@@ -35,19 +35,18 @@ mkdir -p $RECON_TMP
 case "$1" in
 build)
 	pass=$2 ver=$3 sw=$4
-	cd $REPO/src/cmd/$pass/$ver || exit 1
-	rm -f *.o $pass
-	if [ "$pass" = codgen ] && [ -z "$sw" ]; then
-		[ "$ver" = v0p ] && sw=-DOLD_V0P || sw=-DOLD_V0
-	fi
+	sh $REPO/host/tools/wbin.sh $RECON_TMP/wbin $WEGA_ROOT $OLDROOT $EMU
+	cd $REPO/src/cmd/$pass || exit 1
+	d=build/nonseg$ver
+	rm -f $d/*.o $d/$pass
 	if [ -n "$sw" ]; then
-		make CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" LD="$W /bin/ld" SWITCHES="$sw" \
-			> $RECON_TMP/oldcc_build.log 2>&1
+		{ [ "$pass" = popt ] || PATH=$RECON_TMP/wbin:$PATH make crt0.o; } &&
+		(cd $d && PATH=$RECON_TMP/wbin:$PATH make -f ../../Makefile $pass CC=cc CFLAGS="-O $sw")
 	else
-		make CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" LD="$W /bin/ld" \
-			> $RECON_TMP/oldcc_build.log 2>&1
-	fi || { tail -5 $RECON_TMP/oldcc_build.log; exit 1; }
-	mkdir -p $OLDROOT/lib/$ver && cp $pass $OLDROOT/lib/$ver/$pass
+		PATH=$RECON_TMP/wbin:$PATH make $d/$pass
+	fi > $RECON_TMP/oldcc_build.log 2>&1 || { tail -5 $RECON_TMP/oldcc_build.log; exit 1; }
+	[ -f $d/$pass ] || { tail -5 $RECON_TMP/oldcc_build.log; exit 1; }
+	mkdir -p $OLDROOT/lib/$ver && cp $d/$pass $OLDROOT/lib/$ver/$pass
 	;;
 model)
 	prog=${2:-cparse}
@@ -65,15 +64,12 @@ lines)
 	awk '$(NF-1)=="DIFF" {s += $NF; printf "%s %s; ", $1, $NF} END {print ""; print "lines", s}' $RECON_TMP/oldcc_model_$prog.txt
 	;;
 corpus)
+	sh $REPO/host/tools/wbin.sh $RECON_TMP/wbin $WEGA_ROOT $OLDROOT $EMU
 	cd $REPO/src/cmd/cparse || exit 1
-	O="cgram1.o xdefs1.o scan1.o pftn1.o trees1.o optim1.o code1.o local1.o comm1.o vinit1.o sym1.o cparse"
-	E="timeout 300 $EMU -r $OLDROOT"
-	rm -f $O; make cparse CC="$E /bin/ccv0p" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" \
-		YACC="$W /usr/bin/yacc" > $RECON_TMP/oldcc_corpus_build.log 2>&1
-	cp cparse $RECON_TMP/cparse_v0p
+	rm -f build/nonseg/*.o build/nonseg/cparse
+	PATH=$RECON_TMP/wbin:$PATH make build/nonseg/cparse > $RECON_TMP/oldcc_corpus_build.log 2>&1
+	cp build/nonseg/cparse $RECON_TMP/cparse_v0p
 	timeout 1500 python3 tools/stagecorpus.py $RECON_TMP/cparse_v0p 2>&1 | tail -1
-	rm -f $O; make cparse CC="$W /bin/cc" CAS="$W /bin/cas" AR="$W /bin/ar" LD="$W /bin/ld" \
-		YACC="$W /usr/bin/yacc" > /dev/null 2>&1
 	;;
 findings)
 	exec python3 $REPO/host/recon/findings.py ${2:-cparse}

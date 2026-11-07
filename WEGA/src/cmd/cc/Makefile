@@ -1,8 +1,8 @@
 # cc and scc, the drivers. cc.c is the source of both: scc is cc.c compiled with -DSCC.
 #
-#   make              build ./cc and ./scc
-#   make old          the drivers of the old compiler versions in OLDDIRS (v1/Makefile: ccv1)
-#   make install PREFIX=dir
+#   make              build/nonseg/cc, build/seg/scc
+#   make old          the drivers of the old compilers in build/nonsegVER, build/segv1 (sccv1)
+#   make install PREFIX=dir, make oldinstall PREFIX=dir (dir/bin/ccVER, sccv1)
 #   make clean
 
 CC = cc
@@ -21,23 +21,23 @@ all: $(ALL_TARGETS)
 
 old: $(OLD_TARGETS)
 
-build/nonseg/cc:
-	cd build/nonseg    && make -f ../../Makefile cc
-build/nonsegv0/cc:
-	cd build/nonsegv0  && make -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0"
-build/nonsegv0p/cc:
-	cd build/nonsegv0p && make -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0P"
-build/nonsegv1/cc:
-	cd build/nonsegv1  && make -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V1"
-build/nonsegv1q/cc:
-	cd build/nonsegv1q && make -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V1Q"
-build/nonsegv1r/cc:
-	cd build/nonsegv1r && make -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V1R"
+build/nonseg/cc: FORCE
+	cd build/nonseg ; $(MAKE) -f ../../Makefile cc
+build/nonsegv0/cc: FORCE
+	cd build/nonsegv0 ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0"
+build/nonsegv0p/cc: FORCE
+	cd build/nonsegv0p ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0P"
+build/nonsegv1/cc: FORCE
+	cd build/nonsegv1 ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V1"
+build/nonsegv1q/cc: FORCE
+	cd build/nonsegv1q ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V1Q"
+build/nonsegv1r/cc: FORCE
+	cd build/nonsegv1r ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V1R"
 
-build/seg/scc:
-	cd build/seg   && make -f ../../Makefile scc CFLAGS="$(CFLAGS) -DSCC"
-build/segv1/scc:
-	cd build/segv1 && make -f ../../Makefile scc CC="cc" CFLAGS="$(CFLAGS) -DSCC -DOLD_V1"
+build/seg/scc: FORCE
+	cd build/seg ; $(MAKE) -f ../../Makefile scc CFLAGS="$(CFLAGS) -DSCC"
+build/segv1/scc: FORCE
+	cd build/segv1 ; $(MAKE) -f ../../Makefile scc CC="cc" CFLAGS="$(CFLAGS) -DSCC -DOLD_V1"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
@@ -73,5 +73,7 @@ scc: $(SEG_OBJS)
 
 cc.o: ../../cc.c
 	$(CC) $(CFLAGS) -c ../../cc.c
+
+FORCE:
 
 .PHONY: all install clean old oldinstall

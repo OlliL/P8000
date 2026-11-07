@@ -45,7 +45,7 @@ WPATH = PATH=$(WBIN):$$PATH
 
 # program (in ../src/cmd) : original (in the WEGA tree); commands with several
 # versions are built in the subdirectory of the version shipped with WEGA 3.1
-WEGA_PROGS = dc/dc:bin/dc ar:bin/ar cc/cc:bin/cc cc/scc:bin/scc ranlib/ranlib:usr/bin/ranlib \
+WEGA_PROGS = dc/dc:bin/dc ar:bin/ar cc/build/nonseg/cc:bin/cc cc/build/seg/scc:bin/scc ranlib/ranlib:usr/bin/ranlib \
 	getud:bin/getud putud:bin/putud copydisk/1.5/copydisk:bin/copydisk dump:etc/dump \
 	dumpdir:etc/dumpdir format/1.5/format:bin/format restor:etc/restor sync:bin/sync \
 	tar:bin/tar verify/1.5/verify:bin/verify cas/cas:bin/cas \

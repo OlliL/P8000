@@ -32,9 +32,11 @@ peephole optimizer (descends from the Plexus `c2`); cas decides the jump forms.
 
 - The old versions are native WEGA programs only (built with the shipped cc, run in the emulator). The host versions
   (`host/codgen`, `host/popt`, ...) get no switches, except `host/cas/casold`, used by the models.
-- One source per pass; every old version has its own directory and Makefile (`src/cmd/cparse/v1/Makefile`, `codgen/v1`,
-  `popt/v1`, the driver `cc/v1`; v0, v0p the same). The cas of v0 and v0p is `src/cmd/cas/old`. Built programs are not in git.
-- The driver `cc.c` with `OLD_V1`, `OLD_V0`, `OLD_V0P` runs `/lib/vN/cparse`, `codgen`, `popt`. v0 and v0p run `/lib/old/cas`;
+- One source and one Makefile per pass; every old version is a target of it, built in its own directory with its switches
+  (`src/cmd/cparse/build/nonsegv1`, `codgen/build/nonsegv1q`, ..., the segmented v1 passes in `build/segv1`; `make old`,
+  `make oldinstall`). The cas of v0 and v0p is `src/cmd/cas/old`. Built programs are not in git.
+- The driver `cc.c` with `OLD_V1`, `OLD_V0`, `OLD_V0P` runs `/lib/vN/cparse`, `codgen`, `popt`. `sccv1` (`-DSCC -DOLD_V1`) runs `/lib/v1/scparse`,
+  `scodgen`, `spopt`, built with the switches of v1. v0 and v0p run `/lib/old/cas`;
   v1 runs `/bin/cas`. cpp, gopt, ld, crt0.o and libc.a are the shipped ones.
 - `make -C host oldroot` builds all of them and installs them into a tree of symbolic links to the WEGA tree
   (`host/tools/oldroot.sh`, default `tmp/oldroot`, bin and lib real directories, guest /tmp shared). Then

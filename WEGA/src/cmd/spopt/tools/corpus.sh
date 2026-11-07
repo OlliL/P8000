@@ -1,5 +1,5 @@
 #!/bin/sh
-# corpus.sh [SPOPT]: our native spopt (default ../../popt/spopt, the normal build) against the original /lib/spopt, both
+# corpus.sh [SPOPT]: our native spopt (default ../../popt/build/seg/spopt, the normal build) against the original /lib/spopt, both
 # run in z8k-emu, on the output of scodgen of its corpus (*.out.s, codgen/tools/corpus.sh with PROG=scodgen), without
 # option, with -l and with -d (output and statistics). JOBS inputs at a time (default: all cores but one), each in a
 # directory of its own below TMPDIR (default /tmp).
@@ -18,7 +18,7 @@ if [ "$1" = -one ]; then		# -one MYSPOPT INPUT, one directory, a line per run
 	cd /; rm -rf $d
 	exit 0
 fi
-P=${1:-$HERE/../../popt/spopt}
+P=${1:-$HERE/../../popt/build/seg/spopt}
 C=${CORPUS:-${RECON_TMP:-/mnt/share/cvs/P8000/tmp/tmp}/cg_corpus_scodgen}
 T=`mktemp -p ${TMPDIR:-/tmp}`; M=`mktemp -p ${TMPDIR:-/tmp}`; cp $P $M
 find $C -name '*.out.s' | sort | xargs -P ${JOBS:-`expr \`nproc\` - 1`} -n 1 sh $HERE/corpus.sh -one $M > $T

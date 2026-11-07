@@ -33,4 +33,4 @@ Moved from `src/cmd/ld/tools` (2026-10-30): strictcmp (with wholecmp as `-m`), f
 inventory, own_table; ld keeps launchers with the old names, and its results are unchanged (d12model 2694 equal data
 bytes, strictcmp 51 exact / 8, inventory identical). The progcfg settings they read are listed in `progcfg.py`.
 
-Popt trace: build `src/cmd/popt/v0p` with `-DTRACE` in addition to its switches, run it under the emulator as `popt + in.s out.s` on the codgen output of one function (`ccv0p -S` without -O, cut to the function): out.s holds the node list after every iterate and comjump round and every block move (`/*CM ...*/`).
+Popt trace: build popt v0p (`src/cmd/popt/build/nonsegv0p`) with `-DTRACE` in addition to its switches, run it under the emulator as `popt + in.s out.s` on the codgen output of one function (`ccv0p -S` without -O, cut to the function): out.s holds the node list after every iterate and comjump round and every block move (`/*CM ...*/`).
