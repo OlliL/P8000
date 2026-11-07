@@ -2,7 +2,6 @@
  * z23.c - popt, part 3: register liveness (isused) and the
  * "stripldm" pass (procopt), decompiled from the WEGA /lib/popt.
  */
-#include <stdio.h>
 #include <ctype.h>
 #include "z2.h"
 
