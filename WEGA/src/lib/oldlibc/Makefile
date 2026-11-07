@@ -139,51 +139,51 @@ LIBv10 = rdwr/0_4.o fopen/0_2.o printf/0_7.o doprnt/0_8.o ../libc/obj/ffltioc.o 
 
 # the modules: each directory makes its objects with its own Makefile
 objs:
-	-@mkdir atoi 2>/dev/null ; cd atoi ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir cnvt 2>/dev/null ; cd cnvt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir data 2>/dev/null ; cd data ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir doprnt 2>/dev/null ; cd doprnt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir doscan 2>/dev/null ; cd doscan ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir ecvt 2>/dev/null ; cd ecvt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir endopen 2>/dev/null ; cd endopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir errlst 2>/dev/null ; cd errlst ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir fdopen 2>/dev/null ; cd fdopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir ffltioc 2>/dev/null ; cd ffltioc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir filbuf 2>/dev/null ; cd filbuf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir findiop 2>/dev/null ; cd findiop ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir flsbuf 2>/dev/null ; cd flsbuf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir fltioc 2>/dev/null ; cd fltioc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir fopen 2>/dev/null ; cd fopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir freopen 2>/dev/null ; cd freopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir fseek 2>/dev/null ; cd fseek ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir ftell 2>/dev/null ; cd ftell ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir gets 2>/dev/null ; cd gets ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir getw 2>/dev/null ; cd getw ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir goodmagic 2>/dev/null ; cd goodmagic ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir isatty 2>/dev/null ; cd isatty ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir length 2>/dev/null ; cd length ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir malloc 2>/dev/null ; cd malloc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir mktemp 2>/dev/null ; cd mktemp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir open 2>/dev/null ; cd open ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir perror 2>/dev/null ; cd perror ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir printf 2>/dev/null ; cd printf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir rdwr 2>/dev/null ; cd rdwr ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir readsym 2>/dev/null ; cd readsym ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir rindex 2>/dev/null ; cd rindex ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir setbuf 2>/dev/null ; cd setbuf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir strcat 2>/dev/null ; cd strcat ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir strcmp 2>/dev/null ; cd strcmp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir strcpy 2>/dev/null ; cd strcpy ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir strlen 2>/dev/null ; cd strlen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir strncmp 2>/dev/null ; cd strncmp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir strncpy 2>/dev/null ; cd strncpy ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir strrchr 2>/dev/null ; cd strrchr ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir stty 2>/dev/null ; cd stty ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir swab 2>/dev/null ; cd swab ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir swap 2>/dev/null ; cd swap ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir system 2>/dev/null ; cd system ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir ungetc 2>/dev/null ; cd ungetc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
-	-@mkdir ttyname 2>/dev/null ; cd ttyname ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd atoi ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd cnvt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd data ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd doprnt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd doscan ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd ecvt ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd endopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd errlst ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd fdopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd ffltioc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd filbuf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd findiop ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd flsbuf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd fltioc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd fopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd freopen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd fseek ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd ftell ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd gets ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd getw ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd goodmagic ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd isatty ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd length ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd malloc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd mktemp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd open ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd perror ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd printf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd rdwr ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd readsym ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd rindex ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd setbuf ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd strcat ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd strcmp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd strcpy ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd strlen ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd strncmp ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd strncpy ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd strrchr ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd stty ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd swab ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd swap ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd system ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd ungetc ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
+	cd ttyname ; $(MAKE) CC='$(CC)' CCV1='$(CCV1)' CCV1Q='$(CCV1Q)' CCV1R='$(CCV1R)' CCV0='$(CCV0)' CCV0P='$(CCV0P)' CAS='$(CAS)' objs
 
 clean:
 	rm -f */0_*.o */*.o $(LIBS)
