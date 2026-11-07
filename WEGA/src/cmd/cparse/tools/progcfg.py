@@ -20,32 +20,18 @@ ROOTDIR = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/c
 REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
 
 
+CORPUS_BINARY = 'build/nonseg/cparse'
+
+
 def CORPUS_SOURCES():
-    """every C source of src/cmd and src/lib (the corpus of codgen), sorted"""
-    out = []
-    for top in ('src/cmd', 'src/lib'):
-        for d, _, fs in os.walk(os.path.join(REPO, top)):
-            if '/tools' in d or d.endswith('/shipped'):
-                continue
-            out += [os.path.join(d, f) for f in fs if f.endswith('.c')]
-    return sorted(out)
+    import corpusc
+    return corpusc.c_sources()
 
 
 def CORPUS_PREPARE(src, work):
-    """the original cpp makes the input of cparse (t.i) in work; the directory of the source is the include path"""
-    import shutil
-    import subprocess
-    emu = os.environ.get('EMU', os.path.join(REPO, 'host', 'z8k-emu', 'z8k-emu'))
-    d = os.path.dirname(src)
-    for f in os.listdir(d):
-        p = os.path.join(d, f)
-        if os.path.isfile(p) and (f.endswith('.h') or f == os.path.basename(src)):
-            shutil.copy(p, work)
-    r = subprocess.run([emu, '-r', ROOTDIR, '/lib/cpp', '-I.', os.path.basename(src), 't.i'], cwd=work,
-                       capture_output=True, timeout=120)
-    if r.returncode != 0 or not os.path.exists(os.path.join(work, 't.i')):
-        return None
-    return 't'
+    """the original cpp makes the input of cparse (t.i)"""
+    import corpusc
+    return corpusc.prepare_i(src, work)
 
 
 def CORPUS_RUN(binary, base, work):

@@ -3,7 +3,7 @@ the short form: the original cas and the cas under test must give the same messa
 usage: WEGA=<tree> rel.py <cas under test>"""
 import subprocess, sys, os, tempfile, shutil
 HERE = os.path.dirname(os.path.abspath(__file__))
-HOST = os.path.join(HERE, '..', '..', '..', '..', 'host')
+HOST = os.path.join(HERE, '..', '..', '..', '..', '..', 'host')
 ROOT = os.environ.get('WEGA')                 # file tree of the original system
 if not ROOT:
     raise SystemExit('set WEGA=<file tree of the original system>')

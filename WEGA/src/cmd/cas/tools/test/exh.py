@@ -9,7 +9,7 @@ not accepted by the original cas (a difference of syntax, not of the assembler).
 import subprocess, sys, re, collections, os, tempfile, shutil
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
-HOST = os.path.join(HERE, '..', '..', '..', '..', 'host')
+HOST = os.path.join(HERE, '..', '..', '..', '..', '..', 'host')
 ROOT = os.environ.get('WEGA')                 # file tree of the original system
 if not ROOT:
     raise SystemExit('set WEGA=<file tree of the original system>')
@@ -49,7 +49,7 @@ P4 = ['r5','@r5','eq','#3']
 
 def genfuzz(mode):
     import itertools, re as _re
-    rows = _re.findall(r'\{ (\d+), (\d+), (\d+), [^,]+, "([^"]+)" \}', open(os.path.join(HERE, '..', 'pstdata.h')).read())
+    rows = _re.findall(r'\{ (\d+), (\d+), (\d+), [^,]+, "([^"]+)" \}', open(os.path.join(HERE, '..', '..', 'pstdata.h')).read())
     skip = {51, 52, 53, 54, 55, 58, 59, 60, 61}
     names = [(n, int(t)) for t, b, k, n in rows if not n.startswith('.') and int(t) not in skip]
     out = []

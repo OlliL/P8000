@@ -7,14 +7,14 @@
 # with the range from DATA. Static functions are made global for the comparison
 # (-Dstatic=), so that each function is listed.
 HERE=$(cd "$(dirname "$0")" && pwd)
-TOOLS=$HERE/../../../host
+TOOLS=$HERE/../../../../host
 V=
 [ "$1" = "-v" ] && { V=-v; shift; }
 case "$1" in WEGA=*) R=${1#WEGA=}; shift;; esac
 : "${R:?set WEGA=<file tree>}"
 EMU=${EMU:-$TOOLS/z8k-emu/z8k-emu}
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
-cp "$HERE"/*.c "$HERE"/*.h "$HERE"/*.y "$T"/
+cp "$HERE"/../*.c "$HERE"/../*.h "$HERE"/../*.y "$T"/
 cd "$T" || exit 1
 "$EMU" -r "$R" /usr/bin/yacc -d parser.y >/dev/null && mv y.tab.c parser.c || exit 1
 mods=${*:-$(awk '$1 !~ /^#/ && $4 == "done" || $4 == "done:" {print $1}' "$HERE/MODULES")}

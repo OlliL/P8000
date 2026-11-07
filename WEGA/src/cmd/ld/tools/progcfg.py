@@ -15,8 +15,9 @@ ORIG_LIM = 0x10000  # the original is stripped
 OWN_OBJ = r'^(crt0|copyname|printname|symbols|ld)'
 CC = '/bin/cc'
 MODULES = ['ld', 'copyname', 'printname', 'symbols']   # link order of the own modules
-TABLES = ['assigned.txt', 'datamap.txt', 'names.txt', 'bss_map.txt']
+TABLES = []
 
+CORPUS_BINARY = 'ld'
 REPO_ = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', '..'))
 CORPUS_FIXTURES = None
 CORPUS_LOCK = threading.Lock()

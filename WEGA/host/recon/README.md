@@ -1,10 +1,15 @@
 # host/recon: shared tools for reconstructing a binary
 
-Used by codgen, popt, sld, ld and cparse (see `host/HOWTO_reconstruct.md`). The tools of the old way (D classes against the shipped cc) are not here: sld and ld keep what they still use in their `tools/` (`classify.py`, `patterns.py`, `funcs.py`, `findings_md.py`) until they get their old compiler; then they go. Each program keeps in its `tools/` directory:
+Used by the programs of `src/cmd` with a `tools/` directory. The layout of such a directory is the same for all of them:
 
-- `progcfg.py`: the configuration (NAME, ORIG, OWN_LIM, OWN_OBJ, ORIG_LIM, ORIG_BIN, see `host/recon/progcfg.py`);
-- launchers with the old script names, which set `RECON_PROG` and run the script from here.
-- the program-specific files (function table `own_functions.txt`, `findings.json`, locate/pair/confirm, ...).
+- `progcfg.py`: the configuration (NAME, ORIG, OWN_LIM, ... see `progcfg.py` here) and the corpus (CORPUS_*);
+- `findings.json`: per function file, orig, size_orig, status, and a note only for an odd source form, a guessed name,
+  dead code; `FINDINGS.md` is generated from it (`findings.py NAME`);
+- `SYSIII.md` (where it exists): what the source has that System III has not, what is WEGA's.
+
+Nothing in `tools/` runs: the scripts are here and take the program by name (`RECON_PROG=NAME`, a name or a
+directory); `host/tools/corpus.sh NAME` runs the corpus of a program, `oldcc.sh` the work on the old compilers. No
+Makefile of `src` refers to `tools/` or `host/`, so `src` can go to a WEGA system without them.
 
 | Script | Purpose |
 |---|---|
@@ -23,14 +28,8 @@ Used by codgen, popt, sld, ld and cparse (see `host/HOWTO_reconstruct.md`). The 
 | `castrig/` | the early jump optimization of the old cas: trigger points from an original (`windows.py`), table offsets and fits (`offsets.py`, `fit.py`, `reset.py`, `memsum.py`), test cas (`hostcas.patch`, `triggers.txt`) |
 | `oldvar.sh NAME PATCH.py [PASS]` | a change of a pass of ccv0p measured in a copy: the three models with it, the functions that changed against the last `oldcc.sh model` |
 | `poptrace.sh PROG FUNC` | what popt does with one function: the nodes after each iteration, the blocks moved by codemove |
-| `stagecorpus.py OURS` | corpus test of a compiler pass: original and ours on the same inputs, outputs, exit status, messages |
-
-Still in `src/cmd/sld/tools` (sld specific so far, to be moved when the next binary needs them): `fncheck.py`,
-`strict_audit.py`, `accept.py`, `accfn.py`, `rename.py`, `firstdiff.py`, `sync_findings.py`, `check_names.py`,
-`classify_sld.py`, the corpus runner `host/ld/check.py`.
-
-Moved from `src/cmd/ld/tools` (2026-10-30): strictcmp (with wholecmp as `-m`), fncheck (ldcheck), d12model, rename,
-inventory, own_table; ld keeps launchers with the old names, and its results are unchanged (d12model 2694 equal data
-bytes, strictcmp 51 exact / 8, inventory identical). The progcfg settings they read are listed in `progcfg.py`.
+| `stagecorpus.py` | corpus test of a program (through `host/tools/corpus.sh NAME`): original and ours on the same inputs, made fresh by `corpusc.py` from the C sources (or the command lines of `host/ld/check.py` for ld, sld); outputs, exit status, messages |
+| `corpusc.py` | the inputs of the corpus of the compiler passes: the C sources and what the original earlier passes make of them |
+| `oldcc.sh` | the work on the old compilers: model, lines, findings, matrix, bench |
 
 Popt trace: build popt v0p (`src/cmd/popt/build/nonsegv0p`) with `-DTRACE` in addition to its switches, run it under the emulator as `popt + in.s out.s` on the codgen output of one function (`ccv0p -S` without -O, cut to the function): out.s holds the node list after every iterate and comjump round and every block move (`/*CM ...*/`).

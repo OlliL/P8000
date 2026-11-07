@@ -44,8 +44,8 @@ for prog in cparse popt codgen; do
 	(
 		cd $REPO/src/cmd/$prog
 		mkdir -p $W/$prog
-		RECON_TMP=$W/$prog CCHOST=$W/cc python3 tools/d12model.py -q > $W/$prog/model.txt 2>&1
-		RECON_TMP=$W/$prog python3 tools/strictcmp.py > $W/$prog/strict.txt 2>&1
+		RECON_PROG=$prog RECON_TMP=$W/$prog CCHOST=$W/cc python3 $REPO/host/recon/d12model.py -q > $W/$prog/model.txt 2>&1
+		RECON_PROG=$prog RECON_TMP=$W/$prog python3 $REPO/host/recon/strictcmp.py > $W/$prog/strict.txt 2>&1
 	) &
 done
 wait

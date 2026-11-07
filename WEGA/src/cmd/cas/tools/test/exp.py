@@ -4,7 +4,7 @@ by the cas under test; the messages, the return code and the object must be equa
 usage: WEGA=<tree> exp.py <cas under test> [seed] [number of statements]"""
 import subprocess, sys, os, re, random, tempfile, shutil
 HERE = os.path.dirname(os.path.abspath(__file__))
-HOST = os.path.join(HERE, '..', '..', '..', '..', 'host')
+HOST = os.path.join(HERE, '..', '..', '..', '..', '..', 'host')
 ROOT = os.environ.get('WEGA')
 if not ROOT:
     raise SystemExit('set WEGA=<file tree of the original system>')

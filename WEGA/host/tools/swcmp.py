@@ -4,7 +4,7 @@ For every switch that is compiled to a jump table (cpir list + table, or a range
 -> body is taken, and the body (calls and constants up to the first unconditional branch) is compared.
 usage: swcmp.py ORIG NEW ADDRESSES
 ORIG, NEW  the original program and the rebuilt one, linked WITHOUT -s (the function names of NEW come from its symbol table)
-ADDRESSES  src/cmd/cas/ADDRESSES (the names of the functions of ORIG)
+ADDRESSES  src/cmd/cas/tools/ADDRESSES (the names of the functions of ORIG)
 Simplified: a case body ends at the first unconditional branch (one jump is followed when no call was seen), so shared
 tails of the other code generator give many false reports (about 150 for cas); read the list, do not trust the count.
 Chains of compares (up to 3 cases in the old scc) are included."""

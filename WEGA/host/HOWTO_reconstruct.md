@@ -39,8 +39,8 @@ For what is left: finding the source form of a hard function, and changing the c
 - Source form first. A new switch comes only when no form fits; forms tried go to `OLDCC_LOG.md`.
 - How popt treats a function: `recon/poptrace.sh PROG FUNC`, or popt built with `-DTRACE`. Which copy of a tail stays depends on the order iterate, comjump, rmove (`OLDCC.md`, D20). When the mechanism is clear but the form is not, try the combinations by script instead of by hand.
 - A change of a pass, measured in a copy: `recon/oldvar.sh NAME PATCH.py [PASS]`. Removing a switch: a patch deleting its `#define`.
-- Compiler changes are in `src/cmd/{cparse,codgen,popt,cas}` behind a switch, set in the version (`codgen/oldcc.h`, `vN/Makefile`). The normal build stays identical.
-- Function-level check for a program with a model: `tools/strictcmp.py` (`-c` also compares call forms, `STRICT_CTX=12 ... -v FUNC` shows context). Copy `progcfg.py` and the launchers from `src/cmd/cpp/tools` or `popt/tools`; add the program to PROGS of `recon/switchmatrix.py`.
+- Compiler changes are in `src/cmd/{cparse,codgen,popt,cas}` behind a switch, set in the version (`codgen/oldcc.h`, the `build/nonsegVER` rules of the pass Makefile). The normal build stays identical.
+- Function-level check for a program with a model: `RECON_PROG=NAME python3 host/recon/strictcmp.py` (`-c` also compares call forms, `STRICT_CTX=12 ... -v FUNC` shows context). A new program gets a `tools/progcfg.py` like `src/cmd/cpp/tools` or `popt/tools`; add it to PROGS of `recon/switchmatrix.py`.
 - Structs and names when the bytes stand: `rename.py`; sizes from address distances, names from debug strings, then System III, then Plexus for Z8000 parts. The exact count must not drop.
 
 ## Evidence rules for the old compilers

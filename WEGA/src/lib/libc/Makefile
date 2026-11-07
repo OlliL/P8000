@@ -1,4 +1,4 @@
-# libc: /lib/libc.a from its sources, with the shipped tools, the whole file byte-identical (headers: arhdr.s, mkar.sh). Each object is identical with the member of the original (host/libc/check.sh).
+# libc: /lib/libc.a from its sources, with the shipped tools, the whole file byte-identical (headers: arhdr.s, mkar.sh). Each object is identical with the member of the original.
 # The members of oldcc/ were made by an older cc that we do not have yet.
 #
 #   make        libc.a and obj/*.o, the members for ../oldlibc

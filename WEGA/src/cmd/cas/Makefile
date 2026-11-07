@@ -1,10 +1,9 @@
 # cas: the cas assembler (U8000 assembler), reconstructed from the binary /bin/cas.
 #
 #   make		 build/cas
-#   make check WEGA=dir  compare the modules with the original (see check.sh, MODULES)
 #   make install PREFIX=dir
 #   make clean
-#   make oldcas	  old/cas: the cas of the old compilers v0 and v0p, -DOLD_CAS (host/OLDCC.md, D17)
+#   make oldcas	  old/cas: the cas of the old compilers v0 and v0p, -DOLD_CAS (the early jump optimization)
 #   make oldinstall PREFIX=dir  dir/lib/old/cas
 #
 # The modules are linked in the order of MODULES. As in /bin/cas, text goes to segment 4, data
@@ -128,9 +127,6 @@ optim.o: ../optim.c
 listing.o: ../listing.c
 	$(SCC) $(SCCFLAGS) -c ../listing.c
 
-check:
-	sh check.sh WEGA=$(WEGA)
-
 FORCE:
 
-.PHONY: all oldcas check install oldinstall clean
+.PHONY: all oldcas install oldinstall clean

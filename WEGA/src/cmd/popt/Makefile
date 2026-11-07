@@ -2,7 +2,7 @@
 # seg. Byte-identical with the originals.
 #
 #   make              build/nonseg/popt, build/seg/spopt
-#   make old          the passes of the old compilers in build/nonsegVER, build/segv1 (switches: host/OLDCC.md)
+#   make old          the passes of the old compilers in build/nonsegVER, build/segv1 (the switches: in the rules)
 #   make install PREFIX=dir, make oldinstall PREFIX=dir (dir/lib/VER/)
 #   make clean
 

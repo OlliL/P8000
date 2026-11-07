@@ -2,6 +2,7 @@
 # System III (cmd/cc/vax/cpp). /lib/cpp is a combined program (code and data together, no -i). With strip byte-identical.
 #
 #   make             cpp
+#   make install PREFIX=dir
 #   make clean
 
 CC = ccv0p
@@ -9,6 +10,7 @@ CAS = cas
 LD = ld
 YACC = yacc
 CFLAGS = -O
+PREFIX = /
 CRT = ../../lib/libc/crt
 LIBC = ../../lib/libc-v2.a
 COBJS = cpp.o cpy.o
@@ -36,7 +38,10 @@ crt0.s: $(CRT)/mkcrt0.sh $(CRT)/crt0.s.in $(CRT)/crt0.list
 crt0.o: crt0.s
 	$(CAS) -u -o $@ crt0.s
 
+install: cpp
+	cp cpp $(PREFIX)/lib/cpp
+
 clean:
 	rm -f crt0.s cpy.c cpp *.o
 
-.PHONY: all clean
+.PHONY: all install clean

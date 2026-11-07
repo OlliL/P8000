@@ -1,754 +1,393 @@
 {
- "metric": "ld: function identification and comparison with /bin/ld (nonsegmented, E711, stripped)",
- "metric_def": "instruction comparison with tools/ldcheck.py (cc -O object of the draft against the original code range); own code 0x0042..0x2c4c; crt0 0x0000..0x0042 is generated (mkcrt0.sh)",
- "schema": "functions: name -> file (our source), ours (range of the draft), orig (start in /bin/ld), pairing (open|confirmed), level (open|exact|findings), status (open|done|findings:<classes>); findings: list of findings with id, status, functions, orig, ours, summary, done, decide; findings_pending: items without a D class; manual_classes: hand notes per function (basis read|open, note); d_classes: differences of the old compiler (D1..)",
- "status_values": [
-  "open",
-  "done",
-  "findings",
-  "deferred"
- ],
- "binary": "/mnt/share/cvs/P8000/tmp/wega31_root/bin/ld",
- "binary_facts": {
-  "magic": "E711 (nonsegmented, I and D separate: data addresses from 0, bss after the data)",
-  "code": 18944,
-  "data": 2748,
-  "bss": 27082,
-  "stripped": true,
-  "strings": "SCCS: crt0.s 3.2 (generated), ld.c 1.18, copyname.c 1.3, printname.c 1.5, symbols.c 1.8",
-  "libc": "libc part 0x2c4c..0x49bc (shipped members and oldlibc versions, tools/ld.spec)"
- },
+ "schema": "functions: name -> file, orig, size_orig, status (exact: the program is byte-identical, checked by host/tools/checkall.sh), note (by hand: an odd source form, a guessed name, dead code).",
+ "compiler": "ccv1",
+ "binary": "/bin/ld",
  "functions": {
   "f0000": {
    "file": "crt0",
-   "pairing": "open",
    "orig": "0x0000",
-   "ours": "-",
-   "level": "generated",
    "size_orig": 16,
-   "callers_orig": "-",
    "status": "crt0"
   },
   "f0010": {
    "file": "crt0",
-   "pairing": "open",
    "orig": "0x0010",
-   "ours": "-",
-   "level": "generated",
    "size_orig": 8,
-   "callers_orig": "-",
    "status": "crt0"
   },
   "f0018": {
    "file": "crt0",
-   "pairing": "open",
    "orig": "0x0018",
-   "ours": "-",
-   "level": "generated",
    "size_orig": 42,
-   "callers_orig": "-",
    "status": "crt0"
   },
   "record": {
    "file": "ld.c",
-   "pairing": "open",
    "orig": "0x050c",
-   "ours": "050c-057c",
-   "level": "exact",
    "size_orig": 112,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   },
   "restore": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x057c",
-   "ours": "057c-0608",
-   "level": "exact",
    "size_orig": 140,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   },
   "put_word": {
    "file": "ld.c",
-   "pairing": "open",
    "orig": "0x221e",
-   "ours": "221e-226e",
-   "level": "exact",
    "size_orig": 80,
-   "callers_orig": "172e,194a,1b0a",
-   "status": "done"
+   "status": "exact"
   },
   "grow_rlbuf": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2b92",
-   "ours": "2b92-2bf6",
-   "level": "exact",
    "size_orig": 100,
-   "callers_orig": "2b3a",
-   "status": "done"
+   "status": "exact"
   },
   "lock_rlbuf": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2bf6",
-   "ours": "2bf6-2bfc",
-   "level": "exact",
    "size_orig": 6,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   },
   "unlock_rlbuf": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2bfc",
-   "ours": "2bfc-2c02",
-   "level": "exact",
    "size_orig": 6,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   },
   "grow_heap": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2c20",
-   "ours": "2c20-2c4c",
-   "level": "exact",
    "size_orig": 44,
-   "callers_orig": "29d6",
-   "status": "done"
+   "status": "exact"
   },
   "mget": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1a9a",
-   "ours": "1a9a-1b0a",
-   "level": "exact",
    "size_orig": 112,
-   "callers_orig": "13ca,1ce2,1f64,249a",
-   "status": "done"
+   "status": "exact"
   },
   "dseek": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1b38",
-   "ours": "1b38-1c5a",
-   "level": "exact",
    "size_orig": 290,
-   "callers_orig": "13ca,1452,1c6c,1ce2,1f64",
-   "status": "done"
+   "status": "exact"
   },
   "get": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1c6c",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 118,
-   "callers_orig": "172e,1a9a,1ce2",
-   "status": "done"
+   "status": "exact"
   },
   "report_error": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1e86",
-   "ours": "1e86-1f22",
-   "level": "exact",
    "size_orig": 156,
-   "callers_orig": "009c,089a,0d9c,108e,120e,1452,172e,1a74,1b38,1c6c,1ce2,1f22,1f64,229c,23e2,2502,29d6",
-   "status": "done"
+   "status": "exact"
   },
   "half": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1c5a",
-   "ours": "1c5a-1c6c",
-   "level": "exact",
    "size_orig": 18,
-   "callers_orig": "1452,1b38",
-   "status": "done"
+   "status": "exact"
   },
   "high_byte": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1a74",
-   "ours": "1a74-1a9a",
-   "level": "exact",
    "size_orig": 38,
-   "callers_orig": "12a8",
-   "status": "done"
+   "status": "exact"
   },
   "table_lookup": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1f22",
-   "ours": "1f22-1f64",
-   "level": "exact",
    "size_orig": 66,
-   "callers_orig": "172e",
-   "status": "done"
+   "status": "exact"
   },
   "str_compare": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x21f2",
-   "ours": "21f2-221e",
-   "level": "exact",
    "size_orig": 44,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   },
   "put_int_buf": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x226e",
-   "ours": "226e-229c",
-   "level": "exact",
    "size_orig": 46,
-   "callers_orig": "172e,1a12",
-   "status": "done"
+   "status": "exact"
   },
   "flush_buffer": {
    "file": "ld.c",
-   "pairing": "open",
    "orig": "0x229c",
-   "ours": "229c-22e8",
-   "level": "exact",
    "size_orig": 76,
-   "callers_orig": "194a,1a12,221e,226e",
-   "status": "done"
+   "status": "exact"
   },
   "copy": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1a12",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 98,
-   "callers_orig": "194a",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
   "sig_handler": {
    "file": "ld.c",
-   "pairing": "open",
    "orig": "0x0042",
-   "ours": "0042-009c",
-   "level": "exact",
    "size_orig": 90,
-   "callers_orig": "194a,1e86",
-   "status": "done"
+   "status": "exact"
   },
   "open_tmp": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x120e",
-   "ours": "120e-12a8",
-   "level": "exact",
    "size_orig": 154,
-   "callers_orig": "",
-   "status": "done"
+   "status": "exact"
   },
   "put_all": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x282e",
-   "ours": "282e-2862",
-   "level": "exact",
    "size_orig": 52,
-   "callers_orig": "19c8",
-   "status": "done"
+   "status": "exact"
   },
   "slookup": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x26ac",
-   "ours": "26ac-26ca",
-   "level": "exact",
    "size_orig": 30,
-   "callers_orig": "0b6e",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: unused local spare for the frame of the original."
   },
   "pslookup": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x26ca",
-   "ours": "26ca-26e8",
-   "level": "exact",
    "size_orig": 30,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: unused local spare for the frame of the original."
   },
   "lookup_name": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x25dc",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 208,
-   "callers_orig": "1452,26ac",
-   "status": "done"
+   "status": "exact"
   },
   "next_entry": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2aa6",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 94,
-   "callers_orig": "0b6e,282e",
-   "status": "done"
+   "status": "exact"
   },
   "warn_sym_redef": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2862",
-   "ours": "2862-294e",
-   "level": "exact",
    "size_orig": 236,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   },
   "mput": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1b0a",
-   "ours": "1b0a-1b38",
-   "level": "exact",
    "size_orig": 46,
-   "callers_orig": "108e,27be",
-   "status": "done"
+   "status": "exact"
   },
   "put_sym": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x27be",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 112,
-   "callers_orig": "1452,25a2,282e",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
   "add16_checked": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x089a",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 50,
-   "callers_orig": "0b6e",
-   "status": "done"
+   "status": "exact"
   },
   "unpack_run": {
    "file": "copyname.c",
-   "pairing": "confirmed",
    "orig": "0x22e8",
-   "ours": "22e8-2360",
-   "level": "exact",
    "size_orig": 120,
-   "callers_orig": "2360,25a2",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
   "pack_name": {
    "file": "copyname.c",
-   "pairing": "confirmed",
    "orig": "0x2360",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 130,
-   "callers_orig": "26ac",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: loops as goto skeletons (body0, test0, body1, test1, body2, test2) instead of for/while."
   },
   "put_name": {
    "file": "printname.c",
-   "pairing": "confirmed",
    "orig": "0x23e2",
-   "ours": "23e2-249a",
-   "level": "exact",
    "size_orig": 184,
-   "callers_orig": "1452,2502",
-   "status": "done"
+   "status": "exact"
   },
   "read_entry_hdr": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x249a",
-   "ours": "249a-2502",
-   "level": "exact",
    "size_orig": 104,
-   "callers_orig": "1452",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
   "ldrsym": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2502",
-   "ours": "2502-25a2",
-   "level": "exact",
    "size_orig": 160,
-   "callers_orig": "0b6e",
-   "status": "done"
+   "status": "exact"
   },
   "mkfsym": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x25a2",
-   "ours": "25a2-25dc",
-   "level": "exact",
    "size_orig": 58,
-   "callers_orig": "13ca",
-   "status": "done"
+   "status": "exact"
   },
   "symreloc": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2766",
-   "ours": "2766-27be",
-   "level": "exact",
    "size_orig": 88,
-   "callers_orig": "1452",
-   "status": "done"
+   "status": "exact"
   },
   "limit_msg": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2c02",
-   "ours": "2c02-2c20",
-   "level": "exact",
    "size_orig": 30,
-   "callers_orig": "0042",
-   "status": "done"
+   "status": "exact"
   },
   "enter": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x26e8",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 126,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   },
   "index16": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2b04",
-   "ours": "2b04-2b3a",
-   "level": "exact",
    "size_orig": 54,
-   "callers_orig": "172e",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: unused local spare for the frame of the original."
   },
   "load2arg": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x13ca",
-   "ours": "13ca-1452",
-   "level": "exact",
    "size_orig": 136,
-   "callers_orig": "045e",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: loops as goto skeletons (body0, test0, body1, test1) instead of for/while."
   },
   "getfile": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1ce2",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 420,
-   "callers_orig": "0608,13ca",
-   "status": "done"
+   "status": "exact"
   },
   "ensure_buf": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x2b3a",
-   "ours": "2b3a-2b92",
-   "level": "findings",
    "size_orig": 88,
-   "callers_orig": "172e",
-   "status": "findings",
-   "d_classes": [
-    "D11"
-   ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
+   "status": "exact"
   },
   "chk_ranlib": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x294e",
-   "ours": "294e-29d6",
-   "level": "findings",
    "size_orig": 136,
-   "callers_orig": "-",
-   "status": "findings",
-   "d_classes": [
-    "D3"
-   ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
+   "status": "exact",
+   "note": "Odd form: the label known that no goto names and the register variable r without use: they give the registers of the original (r3 for q2, r14 saved but unused)."
   },
   "table16_entry": {
    "file": "symbols.c",
-   "pairing": "confirmed",
    "orig": "0x29d6",
-   "ours": "29d6-2aa6",
-   "level": "exact",
    "size_orig": 208,
-   "callers_orig": "0b6e,282e",
-   "status": "done"
+   "status": "exact"
   },
   "finish_output": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x194a",
-   "ours": "194a-1a12",
-   "level": "exact",
    "size_orig": 200,
-   "callers_orig": "045e",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: loops as goto skeletons (body1, test1, body2, test2) instead of for/while."
   },
   "load_header": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x0714",
-   "ours": "0714-07b2",
-   "level": "exact",
    "size_orig": 158,
-   "callers_orig": "0000,13ca",
-   "status": "done"
+   "status": "exact"
   },
   "ranlib_scan": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x07b2",
-   "ours": "07b2-089a",
-   "level": "exact",
    "size_orig": 232,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   },
   "reg_sect_addr": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x0370",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 238,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   },
   "load_lib_syms": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x0608",
-   "ours": "0608-0714",
-   "level": "exact",
    "size_orig": 268,
-   "callers_orig": "009c",
-   "status": "done"
+   "status": "exact"
   },
   "init_entry": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x12a8",
-   "ours": "12a8-13ca",
-   "level": "findings",
    "size_orig": 290,
-   "callers_orig": "108e",
-   "status": "findings",
-   "d_classes": [
-    "D3"
-   ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
+   "status": "exact"
   },
   "readhdr": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1f64",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 654,
-   "callers_orig": "1452",
-   "status": "done"
+   "status": "exact"
   },
   "start_output": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x108e",
-   "ours": "108e-120e",
-   "level": "exact",
    "size_orig": 384,
-   "callers_orig": "045e",
-   "status": "done"
+   "status": "exact"
   },
   "load2": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x1452",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 732,
-   "callers_orig": "13ca",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
   "load2td": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x172e",
-   "ours": "172e-1926",
-   "level": "findings",
    "size_orig": 540,
-   "callers_orig": "1452",
-   "status": "findings",
-   "d_classes": [
-    "D15"
-   ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
+   "status": "exact"
   },
   "place_sec": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x0d9c",
-   "ours": "0d9c-108e",
-   "level": "findings",
    "size_orig": 754,
-   "callers_orig": "0b6e",
-   "status": "findings",
-   "d_classes": [
-    "D2"
-   ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
+   "status": "exact"
   },
   "main": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x009c",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 724,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: unused local spare for the frame of the original; loops as goto skeletons (body, test) instead of for/while."
   },
   "parse_args": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x45e",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 174,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact",
+   "note": "Odd form: unused local spare for the frame of the original."
   },
   "read_symbols": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0x8cc",
-   "ours": "finding",
-   "level": "findings",
    "size_orig": 674,
-   "callers_orig": "-",
-   "status": "findings",
-   "d_classes": [
-    "D1",
-    "D11",
-    "D3"
-   ],
-   "d_check": "strict check 2026-10-30 (strictcmp.py): classes from reading the remaining differences"
+   "status": "exact"
   },
   "end_pass1": {
    "file": "ld.c",
-   "pairing": "confirmed",
    "orig": "0xb6e",
-   "ours": "exact",
-   "level": "exact",
    "size_orig": 558,
-   "callers_orig": "-",
-   "status": "done"
+   "status": "exact"
   }
- },
- "findings": [],
- "findings_pending": [],
- "manual_classes": {
-  "ensure_buf": {
-   "basis": "read",
-   "d_classes": [
-    "D11"
-   ],
-   "note": "Remaining (3 lines): our popt copies the return of rlbuf into the end of the first branch, the original jumps to the shared return. Tried: 10 drafts on 2026-10-29 (d5/eb7..eb10, both test orders). Fixed on the way: else return grow_rlbuf(n); (the original returns the value of grow_rlbuf)."
-  },
-  "chk_ranlib": {
-   "basis": "read",
-   "d_classes": [
-    "D3"
-   ],
-   "note": "Remaining (12 lines): the original reloads p from the frame for q = p (so the p + n product goes to rr4) and copies q2 to r2 for the stype compare. Tried: 5 drafts on 2026-10-29 (d5/cr2..cr6), on 2026-10-30 q = &p[0], q2 assigned in the if, && instead of the nested if: no change; 2026-10-31 the loop as for (q = p, e = p + n; p < e; p++) (natural form, kept): no change. Kept: an unused register variable (the original saves r14 and never uses it, quirk table)."
-  },
-  "init_entry": {
-   "basis": "read",
-   "d_classes": [
-    "D3"
-   ],
-   "note": "Remaining (6 lines): the original still knows r3 = hdr after the join of n8rel4 || n8swap and stores hy through it, ours reloads hdr from the frame. Tried: 6 drafts on 2026-10-29 (d5/ie1..ie5), on 2026-10-30 hy = cond ? ftsize : 0 (worse)."
-  },
-  "load2td": {
-   "basis": "read",
-   "d_classes": [
-    "D15"
-   ],
-   "note": "Remaining (28 lines with ccv1, same instructions): our popt moves the then-block of if (flag) up in front of the switches, the original keeps it in place. The loop is the for (;;) of Plexus load2td now (text and relocation pickup as if/else chains), same result as the goto form. Guess: ch is a two-byte array in the frame (gives the offset 0x12 of the original). Tried: 9 drafts on 2026-10-29 (d5/ltd1..ltd9), on 2026-10-30 four declaration orders of flag/ch; 2026-10-31 exact with a popt rule (go on behind a block moved from behind a jump) that the test bench refutes; 7 forms of the flag block (if/else swapped, flag = 0 at the end, the put_int_buf call shared: 10 lines, ?:, continue). Fixed on the way (behaviour): the copy w14 = w13 right after the swap block (the two switches test the unchanged word), the first switch only with n8rel4 || n8swap, if (n8swap) w12 = swap(w12) after the symbol branch, the flag output byte-wise; source: nibuf < 0 branches first."
-  },
-  "place_sec": {
-   "basis": "read",
-   "d_classes": [
-    "D2"
-   ],
-   "note": "Remaining (5 lines): in case t the original copies r3 to r2 before the and of r8 = (secorg[j] - q->tsize) & 0xff00. Tried: r8 &= 0xff00 as its own statement, casts (unsigned), (int): no change or worse. Fixed on the way (behaviour): areas[0].kind/tsize only inside if (secflg[0]), q->tsize = q->tend - r8 only inside if (secflg[j + 1]); source: ?: assignments, register order q, r8, j, the b case as two statements."
-  },
-  "read_symbols": {
-   "basis": "read",
-   "d_classes": [
-    "D1",
-    "D11",
-    "D3"
-   ],
-   "note": "Remaining (11 lines, built with ccv1): (1) frame 0x1c against 0x1a: the temporary of a return value (codgen reserves it above the locals in every function with a return value); the original has it in all other functions of ld with a return value, but not here (with no temporary unless a delayed x++ needs it, read_symbols is right and 21 functions lose 2 bytes); the word in front of the locals is the frame place of the register variable cur (OLD_D1); (2) our popt copies the short return 0 of goto done to the jump site, the original jumps to the end, so the loop exit is jp instead of jr (D11); (3) a dead ldl rr4,rr2 of the original in the common-symbol branch, the store behind it is shared with the end of the loop (D3). Tried: 7 drafts on 2026-10-29 (d8/rs_1..rs_3); without the spare (all offsets -2), the putc expressions as fputc (no change of the frame); 2026-10-31 the return temporary only when a delayed x++ needs it (codgen). Fixed on the way: & ~1 removed from the halving of hdrsz + segtsz."
-  }
- },
- "inventory": {
-  "source": "tools/inventory.py (nonsegmented copy of the sld inventory); tools/own_table.py"
- },
- "module_list": [
-  "ld.c",
-  "copyname.c",
-  "printname.c",
-  "symbols.c"
- ],
- "module_ranges": [
-  [
-   "0x0042",
-   "0x22e8",
-   "ld.c"
-  ],
-  [
-   "0x22e8",
-   "0x23e2",
-   "copyname.c"
-  ],
-  [
-   "0x23e2",
-   "0x2502",
-   "printname.c"
-  ],
-  [
-   "0x2502",
-   "0x2c4c",
-   "symbols.c"
-  ]
- ],
- "data_ranges": {
-  "ld.c": "0x002a..0x05a4",
-  "copyname.c": "0x05a4..0x05d8",
-  "printname.c": "0x05d8..0x0646",
-  "symbols.c": "0x0646..0x07c8"
  }
 }

@@ -24,8 +24,8 @@ Used by strictcmp, fncheck, inventory, own_table, d12model, rename (defaults in 
   STRICT_INPUT  default input of strictcmp.py (LINKED; MODEL_OUT when our data layout differs only by D12)
   TABLES, DOCS  extra text files for rename.py (beside the sources, findings.json and the .md files of the tools)
 
-The directory is taken from the environment variable RECON_PROG (set by the launchers in the program's
-tools directory); if it is not set, the current directory is used.
+The directory is taken from the environment variable RECON_PROG: a program name (its src/cmd/NAME/tools) or a
+directory; if it is not set, the current directory is used.
 """
 import importlib.util
 import os
@@ -35,7 +35,11 @@ TOOLS = os.path.join(HERE, '..', 'tools')
 
 
 def prog_dir():
-    return os.path.abspath(os.environ.get('RECON_PROG') or os.getcwd())
+    """the tools directory of the program: RECON_PROG (a directory, or a program name: src/cmd/NAME/tools), else the cwd"""
+    p = os.environ.get('RECON_PROG') or os.getcwd()
+    if '/' not in p:
+        p = os.path.join(HERE, '..', '..', 'src', 'cmd', p, 'tools')
+    return os.path.abspath(p)
 
 
 def load():

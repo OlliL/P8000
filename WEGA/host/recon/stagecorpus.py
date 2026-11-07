@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
-"""stagecorpus.py - corpus test of one pass of the compiler: the original and our binary on the same inputs.
+"""stagecorpus.py - corpus test of a program: the original and our binary on the same inputs.
 
-Usage: stagecorpus.py OURS [-k] [-n N] [-f FILTER] [SRC ...]
+Usage: RECON_PROG=NAME stagecorpus.py [-k] [-n N] [-f FILTER]     (normally through host/tools/corpus.sh NAME)
 
-  OURS      our binary of the pass (a z8k program, run under z8k-emu)
-  SRC       C sources (default: progcfg CORPUS_SOURCES(), e.g. every .c of src/cmd and src/lib)
-  -n N      only the first N sources;  -f FILTER  only sources whose path contains FILTER
+  -n N      only the first N inputs;  -f FILTER  only inputs whose name contains FILTER
   -k        keep the work directories of the differing cases (below WORK)
 
-The pass is described by progcfg (functions of the program's progcfg.py):
-  CORPUS_PREPARE(src, work)        writes the input of the pass into work (with the original earlier passes), returns
-                                   the base name, or None when the source cannot be prepared (the case is skipped)
-  CORPUS_RUN(binary, base, work)   (argv, stdin file or None) of the pass on that input (binary: guest path of the pass)
-  CORPUS_OUTPUTS(base)             the files the pass writes (compared byte for byte)
-JOBS sources at a time (default: all cores but one), below STAGE_TMP (default /tmp/wega_stage, a local disk).
-The exit status and the messages (stdout, stderr) are compared too. Result: one line per differing case and the totals.
+The program is described by the functions and values of its progcfg.py (src/cmd/NAME/tools):
+  CORPUS_BINARY                    our binary, relative to SRCDIR (environment CORPUS_BIN: another file instead)
+  CORPUS_SOURCES()                 the inputs (e.g. every .c of src/cmd and src/lib, or command lines)
+  CORPUS_PREPARE(src, work)        writes the input into work (made with the original earlier passes), returns the base
+                                   name, or None when the source cannot be prepared (the case is skipped)
+  CORPUS_RUN(binary, base, work[, variant])  (argv, stdin file or None) of one run (binary: guest path)
+  CORPUS_OUTPUTS(base)             the files a run writes (compared byte for byte)
+  CORPUS_VARIANTS                  optional: a list of variants (e.g. options), each input is run once per variant
+  CORPUS_IGNORE                    optional: a regular expression (bytes) of message text that may differ
+JOBS inputs at a time (default: all cores but one), below STAGE_TMP (default /tmp/wega_stage, a local disk).
+The exit status and the messages (stdout, stderr) are compared too. Result: one line per differing case and the totals;
+exit status 1 when a case differs.
 """
 import concurrent.futures
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -28,8 +32,12 @@ CFG = progcfg.load()
 WORK = os.path.join(os.environ.get('STAGE_TMP', '/tmp/wega_stage'), 'corpus_' + CFG.NAME)
 
 
-def run_pass(binary, base, work):
-    argv, stdin = CFG.CORPUS_RUN(binary, base, work)
+VARIANTS = getattr(CFG, 'CORPUS_VARIANTS', [None])
+IGNORE = re.compile(CFG.CORPUS_IGNORE) if getattr(CFG, 'CORPUS_IGNORE', None) else None
+
+
+def run_pass(binary, base, work, variant):
+    argv, stdin = CFG.CORPUS_RUN(binary, base, work) if variant is None else CFG.CORPUS_RUN(binary, base, work, variant)
     fin = open(os.path.join(work, stdin), 'rb') if stdin else subprocess.DEVNULL
     r = subprocess.run([CFG.EMU, '-r', CFG.ROOT] + argv, cwd=work, stdin=fin, capture_output=True, timeout=600)
     outs = {}
@@ -38,7 +46,10 @@ def run_pass(binary, base, work):
         outs[f] = open(p, 'rb').read() if os.path.exists(p) else None
         if os.path.exists(p):
             os.remove(p)
-    return r.returncode, r.stdout + r.stderr, outs
+    msg = r.stdout + r.stderr
+    if IGNORE:
+        msg = IGNORE.sub(b'', msg)
+    return r.returncode, msg, outs
 
 
 def main():
@@ -50,8 +61,10 @@ def main():
         i = a.index('-n'); n = int(a[i + 1]); del a[i:i + 2]
     if '-f' in a:
         i = a.index('-f'); flt = a[i + 1]; del a[i:i + 2]
-    ours = os.path.abspath(a[0])
-    srcs = a[1:] or CFG.CORPUS_SOURCES()
+    ours = os.environ.get('CORPUS_BIN') or os.path.join(CFG.SRCDIR, CFG.CORPUS_BINARY)
+    if not os.path.exists(ours):
+        sys.exit('%s: %s not built' % (CFG.NAME, ours))
+    srcs = CFG.CORPUS_SOURCES()
     if flt:
         srcs = [s for s in srcs if flt in s]
     if n:
@@ -67,17 +80,20 @@ def main():
         if base is None:
             shutil.rmtree(work)
             return True, []
-        shutil.copy(ours, os.path.join(work, 'pass_new'))
-        r1 = run_pass('/' + CFG.ORIG_BIN, base, work)
-        r2 = run_pass('pass_new', base, work)
         diffs = []
-        if r1[0] != r2[0]:
-            diffs.append('rc %d/%d' % (r1[0], r2[0]))
-        if r1[1] != r2[1]:
-            diffs.append('messages')
-        for f in r1[2]:
-            if r1[2][f] != r2[2][f]:
-                diffs.append('%s %s/%s' % (f, None if r1[2][f] is None else len(r1[2][f]), None if r2[2][f] is None else len(r2[2][f])))
+        for v in VARIANTS:
+            shutil.copy(ours, os.path.join(work, 'pass_new'))
+            r1 = run_pass('/' + CFG.ORIG_BIN, base, work, v)
+            r2 = run_pass('pass_new', base, work, v)
+            tag = '' if v is None else '[%s] ' % ' '.join(v)
+            if r1[0] != r2[0]:
+                diffs.append('%src %d/%d' % (tag, r1[0], r2[0]))
+            if r1[1] != r2[1]:
+                diffs.append(tag + 'messages')
+            for f in r1[2]:
+                if r1[2][f] != r2[2][f]:
+                    diffs.append('%s%s %s/%s' % (tag, f, None if r1[2][f] is None else len(r1[2][f]),
+                                                 None if r2[2][f] is None else len(r2[2][f])))
         if not (diffs and keep):
             shutil.rmtree(work)
         return False, diffs
@@ -97,7 +113,8 @@ def main():
             else:
                 same += 1
     print('%s: %d of %d inputs identical (%d sources skipped)' % (CFG.NAME, same, total, skipped))
+    return 1 if same != total else 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

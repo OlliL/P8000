@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """switchmatrix.py - the switches of an old compiler version and the functions that need them (host/OLDCC_SWITCHES.md).
 
-Usage (through src/cmd/cparse/tools/oldcc.sh):
+Usage (through host/recon/oldcc.sh):
   switchmatrix.py run [-j N] [SWITCH ...]
                                      build the passes in a scratch copy, once without each switch (default: all, else only the
                                      named rows are replaced), measure every program of PROGS, write the table. N switches at
@@ -24,7 +24,7 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, '..', '..'))
-OLDCC = os.path.join(REPO, 'src', 'cmd', 'cparse', 'tools', 'oldcc.sh')
+OLDCC = os.path.join(HERE, 'oldcc.sh')
 OUT = os.path.join(REPO, 'host', 'OLDCC_SWITCHES.md')
 VER = 'v0p'
 PASSES = ['codgen', 'cparse', 'popt']

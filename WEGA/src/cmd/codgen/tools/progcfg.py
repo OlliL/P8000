@@ -28,3 +28,25 @@ def model_link(work, objs):
 
 MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_codgen', 'codgenm')
 STRICT_INPUT = MODEL_OUT
+
+
+# the corpus: every C source; the input (.I .D .S) from the original /bin/cc -S -:d, compared: the assembler text (stdout)
+CORPUS_BINARY = 'build/nonseg/codgen'
+
+
+def CORPUS_SOURCES():
+    import corpusc
+    return corpusc.c_sources()
+
+
+def CORPUS_PREPARE(src, work):
+    import corpusc
+    return corpusc.prepare_ids(src, work, '/bin/cc')
+
+
+def CORPUS_RUN(binary, base, work):
+    return [binary, '-E', base], base + '.I'
+
+
+def CORPUS_OUTPUTS(base):
+    return []

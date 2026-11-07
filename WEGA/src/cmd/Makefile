@@ -4,7 +4,6 @@
 # ranlib, cc, cas, codgen). Start-up variants of the commands live in ../lib/libc/crt (crt0.s.in + crt0.list,
 # made into crt0-<command>.s by mkcrt0.sh).
 # cc/cc.c is the source of both drivers, cc and scc (scc is cc.c compiled with -DSCC).
-# The Linux versions of the cc driver (with cc.conf) and of popt live in ../../host.
 #
 #   make                       build everything (with the WEGA cc/scc/cas/as/ld/sld/gld/yacc)
 #   make install PREFIX=dir    install below dir (default /)

@@ -581,9 +581,8 @@ string `table3.nzcc.c` (codgen: 150 entries, sentinel "/*NULL*/") or `table3.szc
 text of a template begins with its number as a comment (`/* 000 */` ...), which shows in the output. `host/tools/codgentab.py <original>`
 writes the table as C source (`table3_codgen.c`, `table3_scodgen.c`).
 
-**Test harness.** `src/cmd/codgen/tools/corpus.sh SRC OUT` (PROG=scodgen for scc) runs the original `cc -S -:d` over the C sources and keeps
-`<id>.I .D .S` and the reference output; `check.sh CORPUSDIR` compares `./codgen -E x <x.I` (or `./scodgen`) with the original on that corpus
-(assembler text and exit status).
+**Test harness.** `host/tools/corpus.sh codgen` (and `scodgen`): for every C source the original `cc -S -:d` (`scc`) keeps
+`x.I .D .S`; `codgen -E x <x.I` of ours and of the original are compared (assembler text, messages and exit status).
 
 ### codgen / scodgen: register machinery (function map of `/lib/codgen`)
 
@@ -1124,20 +1123,25 @@ reading the original code with `tools/odis.py NAME`:
   rr2 in the original; ours keeps it on the stack), `and r2,#0xFFFE` becomes `res r2,#0` in the original (load2), `jr cc,a; jr b` is
   merged by ours (pack_name).
 
-### sld: corpus test of the rebuilt sld (2026-10-28)
+### sld: corpus test of the rebuilt sld
 
-`make check` in `src/cmd/sld` (`host/ld/check.py -S` with `SLD_NEW=sld.new`) links the test objects of `host/ld/test` (51 command lines: options,
-areas, `-r` chains, the objects big1..big8 with many segments, the kernel link of `make.wega`) with the rebuilt `sld.new` and with the original
-`/bin/sld` under z8k-emu and compares the output file, stdout/stderr and the exit status: 51 of 51 identical (2026-10-28). The test found four
-errors of the reconstruction that `strict_audit.py` does not show because it only compares instruction forms and masks addresses:
+`host/tools/corpus.sh sld` links the test objects of `host/ld/test` with the rebuilt sld and with the original `/bin/sld`
+under z8k-emu (the segmented command lines of `host/ld/check.py`: options, areas, `-r` chains, the objects big1..big8 with
+many segments, the kernel link of `make.wega`, random lines) and compares the output file, stdout/stderr and the exit
+status: 91 of 91 identical (2026-11-07). Errors of the reconstruction found on the way, which a comparison of instruction
+forms with masked addresses does not show:
 (1) `dseek`: `*(int **)(obj + 6) = cur->buf + (lo << 1)` scaled the offset (pointer arithmetic on `int *`): "Invalid segment attributes";
 (2) `map_sym`: `i = fblk + 0x0470` is the VARIABLE `cursym.sseg` (`add r7,<<2>>%0470`, memory operand), not the constant: "Multiply defined" for every symbol;
 (3) `dseek`: `lseek(fd, (v & 0xff00) << 1, 0)` cleared the high word of the long, the original masks only the low word (`v & 0xffffff00L`);
-(4) `ldrsym`: the values of `_etext/_edata/_end` are `(unsigned)` sums (zero extension), an `int` sum gave 0xffff in the segment word.
-Method to find such errors: run both programs with `z8k-emu -t`, extract the calls (opcode `call`/`calr`, the next trace line is the callee), map the
-addresses to function names (`nm` of sld.new, `own_functions.txt` and `libc_names.txt` for the original) and compare the sequences with their
-arguments; the first divergence names the function, then compare the registers/flow inside. A memory operand `ADDR` against an immediate
-`#ADDR` in `strict_audit.py` output is a real difference of the source, not a register choice.
+(4) `ldrsym`: the values of `_etext/_edata/_end` are `(unsigned)` sums (zero extension), an `int` sum gave 0xffff in the segment word
+(2026-10-28); found at byte identity (2026-11-07), by jump targets and the order of the strings:
+(5) `place_sec`: the settings of `areas[0..2].kind`, `areas[0].tsize` and `placekd` belong inside `if (secflg[k][0])`;
+(6) `load2td`: the external case 1 has no `w11 = w13`;
+(7) `read_words`: `p > libname` gives "Command file arguments too long", `idx > 2000` "Too many command file arguments" (they were swapped);
+(8) `scan_m_opt`: after `strrchr(p, '/')` the original takes the leaf name without the slash (`q++; p = q`), the source had a spare `cnt++`.
+Method for such errors: run both programs with `z8k-emu -t`, extract the calls (opcode `call`/`calr`, the next trace line is the
+callee), map the addresses to function names and compare the sequences with their arguments; the first divergence names the
+function. A memory operand `ADDR` against an immediate `#ADDR` is a real difference of the source, not a register choice.
 
 ### sld: the structs (2026-10-28)
 
@@ -1630,7 +1634,7 @@ Plexus is read only where a place in the binary is unclear.
 
 **File.** E611 (segmented, separate I&D), `-e` entry `04000000`, flags STRIP|7FSTK. Segments: 4 code
 (46848 bytes), 5 data (38360) + bss (12328), 7, 8, 9 each 1280 bytes data. Code from `scrt0` (0x0..0x41), the
-modules of cas (`src/cmd/cas/MODULES`), then the libc members (from 0x9694, about 8.3 KB: stdio, `_doprnt`, `sys_errlist`, syscall stubs).
+modules of cas (`src/cmd/cas/tools/MODULES`), then the libc members (from 0x9694, about 8.3 KB: stdio, `_doprnt`, `sys_errlist`, syscall stubs).
 Segment 5 holds the data of all modules in link order (each begins with its SCCS id); segments 7, 8, 9 are
 the three symbol tables `stable.c`, `itable.c`, `ntable.c`: each starts with its SCCS id and has the table
 area at offset 0x30. `ssymtab.c` allocates from them like a bump allocator and grows the segment by 1024
@@ -1751,7 +1755,7 @@ intermediate files: the small functions of `ifile` (0x42-0x1d0) write single byt
 
 ## cas: decompilation (src/cmd/cas)
 
-Method and tools: `src/cmd/cas/check.sh` (compile a module with the original `scc` under the oracle, compare
+Method and tools: `src/cmd/cas/tools/check.sh` (compile a module with the original `scc` under the oracle, compare
 with the range of `/bin/cas` by `tools/cmpmod.py`), `MODULES` (ranges and state), `ADDRESSES` (names against
 addresses), `README` (the differences between the old and the shipped scc). The work goes in link order; the
 aim is the same code and then the same behaviour of the complete program (tested against the original, see "Test of the complete cas"
@@ -1840,7 +1844,7 @@ first appearance. yacc reports 3 shift/reduce conflicts (as for the original gra
   indirect `@r`, 0x61 `expr(r)`, 0x62 immediate `#expr`, 0x63 `r(#expr)`, 0x64 `r(r)`; register nodes
   `mknode2(tok, mknode1(1, regnumber), 0)`; the kind byte at offset 6 of a name node (0 extern/common, 2 `::=`, 3 `::`, 4 `:=`, 5 `:`)
   is set before `defsym` (0x3d90) or the label list.
-- Functions of other modules that the actions call (first called by address, now named, see `src/cmd/cas/ADDRESSES`):
+- Functions of other modules that the actions call (first called by address, now named, see `src/cmd/cas/tools/ADDRESSES`):
   `even` / `odd` (4cda, 4dc4), `setsub` (4bb0), `blkopen` / `blkclose` (4a0e, 4a30: `{` / `}`), `jpr` (84fc, jpr / callr), `exprtype`
   (4ecc), the operators of `expr.c` (`opshort opseg opoff opadd opsub opshl opshr opand opor opxor opmul opdiv opneg opplus`), `dotval`
   (4df6, the value of `.`).
@@ -2063,7 +2067,7 @@ yet: `lctab[256][3]` (long, 9634) and `lcaux[256][3]` (struct of two ints, ac26)
 data 38906 / bss 12294 against 38360 / 12328 of the original: the shipped scc lays out strings and alignment differently (D12), no difference in contents.
 
 **Test of the complete cas.** Method: the original `/bin/cas` (z8k-emu) and the rebuilt one assemble the same source, messages (stderr, return code) and object must be equal;
-scripts in `src/cmd/cas/test/` (README there). Used: (1) every opcode that `tools/z8k.py` decodes (37308 nonsegmented, 30444 short segmented, 30388 long segmented), written as
+scripts in `src/cmd/cas/tools/test/` (README there). Used: (1) every opcode that `tools/z8k.py` decodes (37308 nonsegmented, 30444 short segmented, 30388 long segmented), written as
 source; lines that the original refuses are removed and both runs are compared; (2) about 346 000 operand patterns for the mnemonics that z8k.py does not decode (EPU,
 block and flag instructions), nonsegmented and segmented; (3) jr, djnz, dbjnz, calr, ldr/ldar, jpr, callr at 23 distances (0 ... 3000 words) and chains of up to 80
 jpr at the limit of the short form (jpr.c, jpr2.c, optim.c); (4) 228 assembler files made by `cc -S` and `scc -S` from src/cmd and src/lib/libc; (5) the options -l -d -r -t -i -m -v -^
@@ -2087,7 +2091,7 @@ of a file and on some tokens (`<<`, `^$`, `5|3`); the test `exp.py` therefore le
 
 `host/cas` is the cas assembler for Linux: the decompilation of `src/cmd/cas` moved to a 32/64 bit host and to ANSI C (see `host/cas/README` for what changed: 16 bit
 types where the width shows, nodes and symbol tables without pointers in longs, big endian binary files, `mkstemp`). Same options, messages, return codes, objects and
-listings as `/bin/cas`. Checks: `make -C host/cas check WEGA=...` (`check.sh`) runs the scripts of `src/cmd/cas/test/` with `NATIVE=1` (the program under test runs on the
+listings as `/bin/cas`. Checks: `make -C host/cas check WEGA=...` (`check.sh`) runs the scripts of `src/cmd/cas/tools/test/` with `NATIVE=1` (the program under test runs on the
 host, the original under z8k-emu).
 
 Results: `rel.py` 48 files, no difference; `exh.py` ns/ss/sl (all opcodes of the three address modes) no difference; `fz`/`fzs` (about 346 000 operand patterns)
@@ -2427,7 +2431,7 @@ values at the same calls.
 
 ## sld: how far the reconstruction is
 
-State per function: `src/cmd/sld/tools/FINDINGS.md`, `own_functions.txt`. What holds for the program:
+Byte-identical since 2026-11-07 (`src/cmd/sld/tools/FINDINGS.md`: the odd source forms). What holds for the program:
 
 - `/bin/sld` is segmented (E611): code 38912 bytes in segment 0, data 7090, bss 31054 + 63488; stripped. Modules from the SCCS strings of the data, in link order: scrt0.s, copyname.c 3.1, dump.c 3.1, ext.c 3.3, ld.c 3.8, ldm.c 3.10, printname.c, swap.c, symbols.c, malloc.c. The sources are `src/cmd/sld/{copyname,dump,ext,ld,ldm,printname,swap,symbols}.c` and `ld.h`; `host/ld/sld.c` is a guide for names only.
 - Own code to 0x71ca, then libc: putchar, scanf, doscan are shipped members of `/lib/slibc.a`; printf and doprnt (0x79ca..0x8682) are another revision and stay cas sources in `src/lib/oldslibc`. `unlink_seg.py` cuts segmented modules (`unlink.py` handles nonsegmented ones only).

@@ -16,13 +16,15 @@ What is byte-identical is checked by `make -C host checkall` (14 minutes): the l
 - Others: `swap` 0_1, `malloc` 0_4, `doprnt` 0_8 (0_1 with a smaller frame in `_strout`, libc-v10).
 - Assembler in the original, these stay `.s`: `open` 0_1, `ecvt` 0_1.
 
-## 4. Clean up `tools/`
+## 4. Clean up the host side
 
-Gone: the cutting of objects, `.link`, `.spec`, `gen_makefile.py` of cpp and ld. Still to look at: `ld/tools` and `sld/tools` (the rest of what worked with cut modules; `sld/tools/gen_makefile.py`, `lib/oldslibc` and `unlink_seg.py` belong to the segmented programs, `slibc.a` was not looked at yet: probably the same way), `castrig/hostcas.patch`, `triggers.txt`, `HANDOFF_ld.md`, `HANDOFF_cparse.md`. `host/libc/check.sh`, `host/oldcc`: now doubled by `checkall`.
+The `tools/` directories of the programs have their final layout (`host/recon/README.md`). Still to look at outside them:
+`host/recon/castrig` (`hostcas.patch`, `triggers.txt`), `host/libc/check.sh` and `host/oldcc` (now doubled by `checkall`),
+the reconstruction scripts of `host/recon` that only served the cutting of objects.
 
 ## 6. System III form for all existing programs
 
-The source follows the System III sources as far as the bytes allow: names, macros, comments, order. System III is primary; for what is specific to the Z8000 the Plexus sources are the model (owner 2026-11-04). Bytes stay equal, checked by `checkall`. First find out what System III holds for cparse, codgen and popt. Lists of what is WEGA's: `tools/PCC.md` of codgen, cparse, popt, to be redone against System III. Also the odd forms in findings.json (the `top:` labels of cpp).
+The source follows the System III sources as far as the bytes allow: names, macros, comments, order. System III is primary; for what is specific to the Z8000 the Plexus sources are the model (owner 2026-11-04). Bytes stay equal, checked by `checkall`. First find out what System III holds for cparse, codgen and popt. Lists of what is WEGA's: `tools/SYSIII.md` of codgen, cparse, popt (still against the PCC of Plexus), to be redone against System III; every program gets one. Also the odd forms in findings.json (the `top:` labels of cpp).
 
 ## 7. Host tool chain
 

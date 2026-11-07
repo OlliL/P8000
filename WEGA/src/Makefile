@@ -1,4 +1,4 @@
-# WEGA src: the libraries and the commands, each with the compiler and the libc of its time (host/OLDCC.md).
+# WEGA src: the libraries and the commands, each with the compiler and the libc of its time.
 #
 #   make                  everything, in this order:
 #   make stage1           the old compilers including their cas, with the shipped tools and the shipped /lib/libc.a; installed below PREFIX.
@@ -8,7 +8,7 @@
 #   make cmds             cmd/
 #   make clean
 #
-# PREFIX: where the old compilers go (bin/ccvN, lib/vN/, lib/old/cas). Under Linux all tools come through host/tools/wbin.sh, see host/Makefile.
+# PREFIX: where the old compilers go (bin/ccvN, lib/vN/, lib/old/cas).
 
 CC = cc
 PREFIX = /

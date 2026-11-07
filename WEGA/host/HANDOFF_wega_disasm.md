@@ -24,10 +24,10 @@ The state: the check commands in the last column; the plan: `../src/TODO.md`.
 |---|---|---|---|---|---|---|---|
 | `cc`, `scc` (driver) | `/bin/cc`, `/bin/scc` | 14208, 14246 | `src/cmd/cc/cc.c` | `host/cc` | no (WEGA source) | done: 74 command lines identical; `cc` and `scc` byte-identical | `make -C host check` (cc) |
 | `cpp` | `/lib/cpp` | 16522 | `src/cmd/cpp` (System III source, owner decision) | - | no | byte-identical with ccv0p | `tools/FINDINGS.md` |
-| `cparse`, `scparse` | `/lib/cparse`, `/lib/scparse` | 67520, 67826 | `src/cmd/cparse` (K&R, from the Plexus PCC base, owner decision) | - | yes | byte-identical with ccv0p | `src/cmd/cparse/tools/oldcc.sh model`, `corpus` |
-| `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | 80884, 83554 | `src/cmd/codgen` (K&R) | `host/codgen` (ANSI, gcc `-Wall`; `-DSEG` for scodgen; functional equality) | yes | byte-identical with ccv0p | `host/codgen` (`host_corp.sh`-style test); `src/cmd/codgen/tools/check.sh`, `corpus.sh` |
+| `cparse`, `scparse` | `/lib/cparse`, `/lib/scparse` | 67520, 67826 | `src/cmd/cparse` (K&R, from the Plexus PCC base, owner decision) | - | yes | byte-identical with ccv0p | `host/tools/corpus.sh cparse scparse`, `host/recon/oldcc.sh model cparse` |
+| `codgen`, `scodgen` | `/lib/codgen`, `/lib/scodgen` | 80884, 83554 | `src/cmd/codgen` (K&R) | `host/codgen` (ANSI, gcc `-Wall`; `-DSEG` for scodgen; functional equality) | yes | byte-identical with ccv0p | `host/tools/corpus.sh codgen scodgen` |
 | `gopt` | `/lib/gopt` (only with `-Ol`/`-Or`) | 147286 | - | - | - | not started | - |
-| `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | 25620, 25880 | `src/cmd/popt` (K&R, `z20.c` to `z23.c`, `stdio.h`; the bss order from the definitions at the end of `z2.h`) | `host/popt` | yes | byte-identical with ccv0p | `make -C host check` (popt); `src/cmd/cparse/tools/oldcc.sh model popt` |
+| `popt`, `spopt` | `/lib/popt`, `/lib/spopt` | 25620, 25880 | `src/cmd/popt` (K&R, `z20.c` to `z23.c`, `stdio.h`; the bss order from the definitions at the end of `z2.h`) | `host/popt` | yes | byte-identical with ccv0p | `make -C host check` (popt); `host/tools/corpus.sh popt spopt` |
 | `cas` | `/bin/cas` | 89152 | `src/cmd/cas` (`MODULES`) | `host/cas` | yes (decompiled, see `src/cmd/cas/README`) | done in behaviour; code not byte-identical (older scc) | `make -C host check` (cas) |
 | `as` | `/bin/as` (PLZ/ASM) | 74536 | - | - | - | not started | - |
 | `ld` | `/bin/ld` | 21732 | - (source in `host/ld`) | `host/ld/ld` | yes (`ld.c` from the binary) | done: 146 command lines identical | `make -C host check` (ld) |

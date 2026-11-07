@@ -4,7 +4,7 @@ test run in clean directories; the messages, the return code and every file that
 usage: WEGA=<tree> opts.py <cas under test> file.s ...   (the options come from the list OPTS below)"""
 import subprocess, sys, os, tempfile, shutil
 HERE = os.path.dirname(os.path.abspath(__file__))
-HOST = os.path.join(HERE, '..', '..', '..', '..', 'host')
+HOST = os.path.join(HERE, '..', '..', '..', '..', '..', 'host')
 ROOT = os.environ.get('WEGA')
 if not ROOT:
     raise SystemExit('set WEGA=<file tree of the original system>')

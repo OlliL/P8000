@@ -28,3 +28,28 @@ def model_link(work, objs):
 MODEL_OUT = os.path.join(os.environ.get('RECON_TMP', '/mnt/share/cvs/P8000/tmp/tmp'), 'd12model_popt', 'poptm')
 STRICT_INPUT = MODEL_OUT
 STATICFUNCS = True  # the static functions get global labels in the model (d12model.py), so that strictcmp finds them
+
+
+# the corpus: every C source; the input from the original /bin/cc -S (no -O), each run without option, with -l and -d.
+# The line "NK core" of -d may differ: the place of the heap of a build with another libc (OLDCC_LOG.md)
+CORPUS_BINARY = 'build/nonseg/popt'
+CORPUS_VARIANTS = [[], ['-l'], ['-d']]
+CORPUS_IGNORE = rb'\d+K core'
+
+
+def CORPUS_SOURCES():
+    import corpusc
+    return corpusc.c_sources()
+
+
+def CORPUS_PREPARE(src, work):
+    import corpusc
+    return corpusc.prepare_s(src, work, '/bin/cc')
+
+
+def CORPUS_RUN(binary, base, work, variant):
+    return [binary] + variant + [base + '.s', 'out.s'], None
+
+
+def CORPUS_OUTPUTS(base):
+    return ['out.s']

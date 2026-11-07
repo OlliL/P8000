@@ -3,7 +3,7 @@
 # Both are non-segmented programs
 #
 #   make              codgen scodgen
-#   make old          the passes of the old compilers in build/nonsegVER, build/segv1 (switches: host/OLDCC.md)
+#   make old          the passes of the old compilers in build/nonsegVER, build/segv1 (the switches: in the rules)
 #   make install PREFIX=dir, make oldinstall PREFIX=dir (dir/lib/VER/)
 #   make clean
 
