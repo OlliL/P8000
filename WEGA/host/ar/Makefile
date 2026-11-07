@@ -1,13 +1,13 @@
 # ar: the WEGA archive maintainer built for Linux (a cross tool: it behaves like
 # /bin/ar of WEGA and writes the same archives). Source: ar.c, derived from
-# WEGA/src/cmd/ar.c.
+# WEGA/src/cmd/ar.c (port rules: ../HANDOFF_wega_disasm.md).
 #
 #   make                 build ./ar
 #   make check           compare with the original /bin/ar under z8k-emu
 #                        (WEGA=<file tree of the original system>)
 
 HOSTCC = cc
-CFLAGS = -O2 -Wall
+CFLAGS = -O2 -Wall -Wextra
 WEGA = ../../../tmp/wega31_root
 EMU  = $(abspath ../z8k-emu/z8k-emu)
 

@@ -63,6 +63,10 @@ Rules (extend while porting):
 
 - Rule: prototypes for every function and every function used before its definition; old style definitions are converted (`host/tools/kr_code_transform.py` does the plain cases, the rest by hand); functions without a type are `int`; `main` returns `int`. Implicit `int` that holds a pointer (a function that returns a pointer, not declared) must be declared with its real type: on the host this is the usual silent crash. Find: `-Wimplicit-function-declaration`, `-Wint-conversion`.
 - Rule: system headers instead of own declarations: `<stdio.h> <stdlib.h> <string.h> <unistd.h> <fcntl.h> <sys/stat.h>`; the own `stdio.h` of the programs (cparse, cpp, popt) is not used on the host. Names that clash with the host libc (`index`, `rindex`, `swab`, `getline`, `abs`...) are renamed with a prefix, in the program only.
+- Rule: `register i;` (implicit `int`) becomes `int i;`, other `register` is dropped; `static` for every function and variable that is not used by another file; an own name that is a C library or `<unistd.h>` name (`select`) gets a trailing underscore (`select_`). Find: compile errors "undeclared", `-Wshadow`/link errors.
+- Rule: a parameter that the body does not use (signal handlers) gets `(void)sig;` as first statement; an intentional `switch` fall through gets the comment `/* fall through */`; a string that only exists for `what(1)` (`sccsid`) gets `__attribute__((unused))`. Why: `-Wextra`. Find: `-Wunused-parameter`, `-Wimplicit-fallthrough`, `-Wunused-variable`.
+- Rule: `mktemp` and `creat`+`open` for a temporary file become `mkstemp` (template with six `X`, a writable array, not a string literal); the name is not visible to the user. Find: `mktemp`.
+- Rule: a `time_t` or `st_size` stored in a 32 bit field gets an explicit `(int32_t)`; `ctime` of a WEGA time uses `wega_ctime` (`host/tools/lib/wctime.c`, TZ as on WEGA, default EST5EDT). Find: `ctime`, `localtime`, `time_t`.
 - Rule: `register`, `extern` without a type, `char *` returned from `malloc` without a cast: remove or cast as the compiler demands; do not change logic to quiet a warning.
 
 *Behaviour that the host libc does differently*
@@ -83,7 +87,9 @@ Rules (extend while porting):
 - Rule: every host program has a `Makefile` (`make`, `make check WEGA=...`, `make clean`), is listed in `host/Makefile` (`all`, `check`) and in `host/tools/checkall.sh`; objects and binaries of the build are not in git.
 - Rule: host programs read their settings (`cc.conf`, `ld.conf`) as before; a program does not contain the path of the owner's machine.
 
-Open: the rules above are the state before the first port; they are confirmed or corrected with the pilot (`ar`) and extended with every failure.
+- Rule: a program with its **own `stdio.h`** (cpp, cparse, popt: `char *_ptr`, V7 forms of `getc`/`putc`, the macros `getc`, `putc`, `_filbuf`, `_flsbuf`) works only with that header on the Z8000. The host version uses the system `<stdio.h>`: the program must not use the macros of the own header or members of `FILE` (`_cnt`, `_ptr`, `_base`, `_flag`, `_file`); every use of those becomes `getc`/`putc`/`fgetc`/`fputc`/`ungetc` of the system, and anything that peeks into `FILE` (counting characters, testing EOF by `_flag`) is replaced by `feof`/`ferror`/counters of the program. Also `EOF` handling: the system `getc` returns `int` -1, the own `getc` returned the byte masked with `0377`; `char c = getc(f)` and comparisons with `EOF` are checked. Why: the system header is mandatory on the host. Find: `grep -n '_ptr\|_cnt\|_base\|_flag\|_filbuf\|_flsbuf\|stdio.h'` in the source; the own `stdio.h` is not copied to `host/`.
+
+State: `ar` is the pilot (`host/ar`, checked: 79 commands for five time zones, `tv` of libc.a and slibc.a identical; `-Wall -Wextra` clean; the check also run with `-fsanitize=undefined,address -ftrapv` without a finding); the rules above are confirmed by it except those for the compiler passes, which are still the state before the first port. Extend with every failure.
 
 ## Next steps
 

@@ -1,17 +1,17 @@
 /*
- * ar - archive and library maintainer, host version of the WEGA /bin/ar
+ * ar - archive and library maintainer (WEGA, System III derived)
  *
- * Derived from WEGA/src/cmd/ar.c (reconstructed from the original binary,
- * ar.c 2.2 11/18/83): same commands, options, messages, exit codes and
- * archives.  Changes against that source, all for the host:
- *   - the archive header is packed and unpacked by hand (26 bytes, big endian,
- *     as on the Z8000) instead of reading and writing a struct;
- *   - the integer widths of the Z8000 are kept where they are visible: dates and
- *     sizes are 32 bit, uid and gid a signed char, the mode 16 bit;
- *   - temporary files are made with mkstemp (the old mktemp is not safe and
- *     needs six X on Linux); the names are not visible to the user;
- *   - ANSI prototypes.
- * Archive format: ar(5), WEGA/src/head/ar.h.
+ * Reconstructed from the original WEGA binary (/bin/ar, ar.c 2.2 11/18/83).
+ * The object code produced by the original cc from this file must match
+ * the original binary byte for byte, so statement structure, declaration
+ * order and register usage follow the original.
+ */
+/*
+ * Host version (Linux, gcc): made from WEGA/src/cmd/ar.c by the port rules in
+ * host/HANDOFF_wega_disasm.md; same commands, options, messages, exit codes and archives.
+ * Differences to the WEGA source: the header of the archive is packed by hand, big endian
+ * (struct ar_hdr with the Z8000 widths), temporary files by mkstemp, ctime of the WEGA
+ * libc (wctime.c), ANSI prototypes.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,9 +19,9 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <signal.h>
 #include "wctime.h"
 
 #define	ARMAG0	0xFF			/* ARMAG 0177545 as two bytes, big endian */
@@ -33,23 +33,22 @@
 #define	OODD	4
 #define	HEAD	8
 
-/* struct ar_hdr of ar.h with the widths of the Z8000 */
-struct	arhdr {
+static	char	sccsid[] __attribute__((unused)) = "@[$]ar.c\t2.2  11/18/83 12:48:00 - 87wega3.2";
+
+struct	stat	stbuf;
+struct	ar_hdr {			/* struct ar_hdr of ar.h with the widths of the Z8000 */
 	char		ar_name[14];
 	int32_t		ar_date;
 	signed char	ar_uid;
 	signed char	ar_gid;
 	int16_t		ar_mode;
 	int32_t		ar_size;
-};
-
-struct	stat	stbuf;
-struct	arhdr	arbuf;
+} arbuf;
 
 char	*man	= "mrxtdpq";
 char	*opt	= "cuvnbail";
 int	signum[] = {SIGHUP, SIGINT, SIGQUIT, 0};
-char	tmp0[]	= "/tmp/vXXXXXX";
+char	tmp0[]	= "/tmp/vXXXXXX";		/* mkstemp wants six X */
 char	tmp1[]	= "/tmp/v1XXXXXX";
 char	tmp2[]	= "/tmp/v2XXXXXX";
 
@@ -78,13 +77,14 @@ static void	tcmd(void), qcmd(void);
 static void	setcom(void (*fun)(void)), init(void), usage(void), noar(void);
 static void	sigdone(int), done(int), cleanup(void), install(void), movefil(int);
 static void	copyfil(int, int, int), phserr(void), mesg(int), longt(void);
-static void	pmode(void), wrerr(void), bamatch(void);
+static void	pmode(void), wrerr(void), bamatch(void), select_(int *);
 static int	getaf(void), getdir(void), match(void), notfound(void), morefil(void);
 static int	stats(void);
 static void	getqf(void);
 static char	*trim(char *);
 static char	*xmktemp(char *, int *);
 
+/* the header on disk: 14 bytes name, date 4, uid, gid, mode 2, size 4, big endian */
 static void
 put32(unsigned char *p, int32_t v)
 {
@@ -139,15 +139,15 @@ main(int argc, char **argv)
 	int i;
 	char *cp;
 
-	for (i = 0; signum[i]; i++)
-		if (signal(signum[i], SIG_IGN) != SIG_IGN)
+	for(i=0; signum[i]; i++)
+		if(signal(signum[i], SIG_IGN) != SIG_IGN)
 			signal(signum[i], sigdone);
 	av0 = trim(argv[0]);
-	if (argc < 3)
+	if(argc < 3)
 		usage();
 	cp = argv[1];
-	for (cp = argv[1]; *cp; cp++)
-	switch (*cp) {
+	for(cp = argv[1]; *cp; cp++)
+	switch(*cp) {
 	case 'a':
 	case 'b':
 	case 'c':
@@ -191,27 +191,27 @@ main(int argc, char **argv)
 		fprintf(stderr, "%s: bad option `%c'\n", av0, *cp);
 		done(1);
 	}
-	if (flg['l'-'a']) {
+	if(flg['l'-'a']) {
 		/* local temporary files in the current directory */
 		memcpy(tmp0, "vXXXXXX\0\0\0\0", 12);
 		memcpy(tmp1, "v1XXXXXX\0\0\0", 12);
 		memcpy(tmp2, "v2XXXXXX\0\0\0", 12);
 	}
-	if (flg['i'-'a'])
+	if(flg['i'-'a'])
 		flg['b'-'a']++;
-	if (flg['a'-'a'] || flg['b'-'a']) {
+	if(flg['a'-'a'] || flg['b'-'a']) {
 		bastate = 1;
 		ponam = trim(argv[2]);
 		argv++;
 		argc--;
-		if (argc < 3)
+		if(argc < 3)
 			usage();
 	}
 	arnam = argv[2];
 	namv = argv+3;
 	namc = argc-3;
-	if (comfun == 0) {
-		if (flg['u'-'a'] == 0) {
+	if(comfun == 0) {
+		if(flg['u'-'a'] == 0) {
 			fprintf(stderr, "%s: one of [%s] must be specified\n", av0, man);
 			done(1);
 		}
@@ -219,13 +219,13 @@ main(int argc, char **argv)
 	}
 	(*comfun)();
 	done(notfound());
-	return 0;
 }
 
 static void
 setcom(void (*fun)(void))
 {
-	if (comfun != 0) {
+
+	if(comfun != 0) {
 		fprintf(stderr, "%s: only one of [%s] allowed\n", av0, man);
 		done(1);
 	}
@@ -239,17 +239,17 @@ rcmd(void)
 
 	init();
 	getaf();
-	while (!getdir()) {
+	while(!getdir()) {
 		bamatch();
-		if (namc == 0 || match()) {
+		if(namc == 0 || match()) {
 			f = stats();
-			if (f < 0) {
-				if (namc)
+			if(f < 0) {
+				if(namc)
 					fprintf(stderr, "%s: cannot open %s\n", av0, file);
 				goto cp;
 			}
-			if (flg['u'-'a'])
-				if ((int32_t)stbuf.st_mtime <= arbuf.ar_date) {
+			if(flg['u'-'a'])
+				if((int32_t)stbuf.st_mtime <= arbuf.ar_date) {
 					close(f);
 					goto cp;
 				}
@@ -268,11 +268,12 @@ rcmd(void)
 static void
 dcmd(void)
 {
+
 	init();
-	if (getaf())
+	if(getaf())
 		noar();
-	while (!getdir()) {
-		if (match()) {
+	while(!getdir()) {
+		if(match()) {
 			mesg('d');
 			copyfil(af, -1, IODD+SKIP);
 			continue;
@@ -288,12 +289,12 @@ xcmd(void)
 {
 	int f;
 
-	if (getaf())
+	if(getaf())
 		noar();
-	while (!getdir()) {
-		if (namc == 0 || match()) {
-			f = creat(file, (arbuf.ar_mode & 0777));
-			if (f < 0) {
+	while(!getdir()) {
+		if(namc == 0 || match()) {
+			f = creat(file, arbuf.ar_mode & 0777);
+			if(f < 0) {
 				fprintf(stderr, "%s: %s cannot create\n", av0, file);
 				goto sk;
 			}
@@ -313,11 +314,12 @@ xcmd(void)
 static void
 pcmd(void)
 {
-	if (getaf())
+
+	if(getaf())
 		noar();
-	while (!getdir()) {
-		if (namc == 0 || match()) {
-			if (flg['v'-'a']) {
+	while(!getdir()) {
+		if(namc == 0 || match()) {
+			if(flg['v'-'a']) {
 				printf("\n<%s>\n\n", file);
 				fflush(stdout);
 			}
@@ -331,17 +333,18 @@ pcmd(void)
 static void
 mcmd(void)
 {
+
 	init();
-	if (getaf())
+	if(getaf())
 		noar();
 	tf2nam = xmktemp(tmp2, &tf2);
-	if (tf2 < 0) {
+	if(tf2 < 0) {
 		fprintf(stderr, "%s: cannot create third temp\n", av0);
 		done(1);
 	}
-	while (!getdir()) {
+	while(!getdir()) {
 		bamatch();
-		if (match()) {
+		if(match()) {
 			mesg('m');
 			copyfil(af, tf2, IODD+OODD+HEAD);
 			continue;
@@ -355,11 +358,12 @@ mcmd(void)
 static void
 tcmd(void)
 {
-	if (getaf())
+
+	if(getaf())
 		noar();
-	while (!getdir()) {
-		if (namc == 0 || match()) {
-			if (flg['v'-'a'])
+	while(!getdir()) {
+		if(namc == 0 || match()) {
+			if(flg['v'-'a'])
 				longt();
 			printf("%s\n", trim(file));
 		}
@@ -372,22 +376,22 @@ qcmd(void)
 {
 	int i, f;
 
-	if (flg['a'-'a'] || flg['b'-'a']) {
+	if(flg['a'-'a'] || flg['b'-'a']) {
 		fprintf(stderr, "%s: abi not allowed with q\n", av0);
 		done(1);
 	}
 	getqf();
-	for (i = 0; signum[i]; i++)
+	for(i=0; signum[i]; i++)
 		signal(signum[i], SIG_IGN);
 	lseek(qf, 0l, 2);
-	for (i = 0; i < namc; i++) {
+	for(i=0; i<namc; i++) {
 		file = namv[i];
-		if (file == 0)
+		if(file == 0)
 			continue;
 		namv[i] = 0;
 		mesg('q');
 		f = stats();
-		if (f < 0) {
+		if(f < 0) {
 			fprintf(stderr, "%s: %s cannot open\n", av0, file);
 			continue;
 		}
@@ -411,7 +415,7 @@ init(void)
 	static unsigned char mbuf[2] = { ARMAG0, ARMAG1 };
 
 	tfnam = xmktemp(tmp0, &tf);
-	if (tf < 0) {
+	if(tf < 0) {
 		fprintf(stderr, "%s: cannot create temp file\n", av0);
 		done(1);
 	}
@@ -425,13 +429,13 @@ getaf(void)
 	unsigned char mbuf[2];
 
 	af = open(arnam, 0);
-	if (af < 0)
-		return 1;
+	if(af < 0)
+		return(1);
 	if (read(af, mbuf, 2) != 2 || mbuf[0] != ARMAG0 || mbuf[1] != ARMAG1) {
 		fprintf(stderr, "%s: %s not in archive format\n", av0, arnam);
 		done(1);
 	}
-	return 0;
+	return(0);
 }
 
 static void
@@ -440,7 +444,7 @@ getqf(void)
 	unsigned char mbuf[2];
 
 	if ((qf = open(arnam, 2)) < 0) {
-		if (!flg['c'-'a'])
+		if(!flg['c'-'a'])
 			fprintf(stderr, "%s: creating %s\n", av0, arnam);
 		close(creat(arnam, 0666));
 		if ((qf = open(arnam, 2)) < 0) {
@@ -475,17 +479,18 @@ noar(void)
 static void
 sigdone(int sig)
 {
+	(void)sig;
 	done(100);
 }
 
 static void
 done(int c)
 {
-	if (tfnam)
+	if(tfnam)
 		unlink(tfnam);
-	if (tf1nam)
+	if(tf1nam)
 		unlink(tf1nam);
-	if (tf2nam)
+	if(tf2nam)
 		unlink(tf2nam);
 	exit(c);
 }
@@ -496,12 +501,12 @@ notfound(void)
 	int i, n;
 
 	n = 0;
-	for (i = 0; i < namc; i++)
-		if (namv[i]) {
+	for(i=0; i<namc; i++)
+		if(namv[i]) {
 			fprintf(stderr, "%s: %s not found\n", av0, namv[i]);
 			n++;
 		}
-	return n;
+	return(n);
 }
 
 static int
@@ -510,10 +515,10 @@ morefil(void)
 	int i, n;
 
 	n = 0;
-	for (i = 0; i < namc; i++)
-		if (namv[i])
+	for(i=0; i<namc; i++)
+		if(namv[i])
 			n++;
-	return n;
+	return(n);
 }
 
 static void
@@ -521,14 +526,14 @@ cleanup(void)
 {
 	int i, f;
 
-	for (i = 0; i < namc; i++) {
+	for(i=0; i<namc; i++) {
 		file = namv[i];
-		if (file == 0)
+		if(file == 0)
 			continue;
 		namv[i] = 0;
 		mesg('a');
 		f = stats();
-		if (f < 0) {
+		if(f < 0) {
 			fprintf(stderr, "%s: %s cannot open\n", av0, file);
 			continue;
 		}
@@ -542,33 +547,33 @@ install(void)
 {
 	int i;
 
-	for (i = 0; signum[i]; i++)
+	for(i=0; signum[i]; i++)
 		signal(signum[i], SIG_IGN);
-	if (af < 0)
-		if (!flg['c'-'a'])
+	if(af < 0)
+		if(!flg['c'-'a'])
 			fprintf(stderr, "%s: creating %s\n", av0, arnam);
 	close(af);
 	af = creat(arnam, 0666);
-	if (af < 0) {
+	if(af < 0) {
 		fprintf(stderr, "%s: cannot create %s\n", av0, arnam);
 		done(1);
 	}
-	if (tfnam) {
+	if(tfnam) {
 		lseek(tf, 0l, 0);
-		while ((i = read(tf, buf, 512)) > 0)
-			if (write(af, buf, i) != i)
+		while((i = read(tf, buf, 512)) > 0)
+			if(write(af, buf, i) != i)
 				wrerr();
 	}
-	if (tf2nam) {
+	if(tf2nam) {
 		lseek(tf2, 0l, 0);
-		while ((i = read(tf2, buf, 512)) > 0)
-			if (write(af, buf, i) != i)
+		while((i = read(tf2, buf, 512)) > 0)
+			if(write(af, buf, i) != i)
 				wrerr();
 	}
-	if (tf1nam) {
+	if(tf1nam) {
 		lseek(tf1, 0l, 0);
-		while ((i = read(tf1, buf, 512)) > 0)
-			if (write(af, buf, i) != i)
+		while((i = read(tf1, buf, 512)) > 0)
+			if(write(af, buf, i) != i)
 				wrerr();
 	}
 }
@@ -580,11 +585,11 @@ movefil(int f)
 	int i;
 
 	cp = trim(file);
-	for (i = 0; i < 13; i++) {
-		if ((arbuf.ar_name[i] = *cp) != 0)
+	for(i=0; i<13; i++) {
+		if((arbuf.ar_name[i] = *cp) != 0)
 			cp++;
 	}
-	if (i == 13)
+	if(i == 13)
 		arbuf.ar_name[i] = 0;
 	arbuf.ar_size = (int32_t)stbuf.st_size;
 	arbuf.ar_date = (int32_t)stbuf.st_mtime;
@@ -601,13 +606,13 @@ stats(void)
 	int f;
 
 	f = open(file, 0);
-	if (f < 0)
-		return f;
-	if (fstat(f, &stbuf) < 0) {
+	if(f < 0)
+		return(f);
+	if(fstat(f, &stbuf) < 0) {
 		close(f);
-		return -1;
+		return(-1);
 	}
-	return f;
+	return(f);
 }
 
 static void
@@ -616,29 +621,29 @@ copyfil(int fi, int fo, int flag)
 	int i, o;
 	int pe;
 
-	if (flag & HEAD)
+	if(flag & HEAD)
 		if (!puthdr(fo))
 			wrerr();
 	pe = 0;
-	while (arbuf.ar_size > 0) {
+	while(arbuf.ar_size > 0) {
 		i = o = 512;
-		if (arbuf.ar_size < i) {
+		if(arbuf.ar_size < i) {
 			i = o = arbuf.ar_size;
-			if (i & 1) {
-				if (flag & IODD)
+			if(i & 1) {
+				if(flag & IODD)
 					i++;
-				if (flag & OODD)
+				if(flag & OODD)
 					o++;
 			}
 		}
-		if (read(fi, buf, i) != i)
+		if(read(fi, buf, i) != i)
 			pe++;
-		if ((flag & SKIP) == 0)
-			if (write(fo, buf, o) != o)
+		if((flag & SKIP) == 0)
+			if(write(fo, buf, o) != o)
 				wrerr();
 		arbuf.ar_size -= 512;
 	}
-	if (pe)
+	if(pe)
 		phserr();
 }
 
@@ -647,18 +652,18 @@ getdir(void)
 {
 	int i;
 
-	if (!gethdr(af)) {
-		if (tf1nam) {
+	if(!gethdr(af)) {
+		if(tf1nam) {
 			i = tf;
 			tf = tf1;
 			tf1 = i;
 		}
-		return 1;
+		return(1);
 	}
-	for (i = 0; i < 14; i++)
+	for(i=0; i<14; i++)
 		name[i] = arbuf.ar_name[i];
 	file = name;
-	return 0;
+	return(0);
 }
 
 static int
@@ -666,16 +671,16 @@ match(void)
 {
 	int i;
 
-	for (i = 0; i < namc; i++) {
-		if (namv[i] == 0)
+	for(i=0; i<namc; i++) {
+		if(namv[i] == 0)
 			continue;
-		if (strcmp(trim(namv[i]), file) == 0) {
+		if(strcmp(trim(namv[i]), file) == 0) {
 			file = namv[i];
 			namv[i] = 0;
-			return 1;
+			return(1);
 		}
 	}
-	return 0;
+	return(0);
 }
 
 static void
@@ -683,19 +688,20 @@ bamatch(void)
 {
 	int f;
 
-	switch (bastate) {
+	switch(bastate) {
 
 	case 1:
-		if (strcmp(file, ponam) != 0)
+		if(strcmp(file, ponam) != 0)
 			return;
 		bastate = 2;
-		if (flg['a'-'a'])
+		if(flg['a'-'a'])
 			return;
+		/* fall through */
 
 	case 2:
 		bastate = 0;
 		tf1nam = xmktemp(tmp1, &f);
-		if (f < 0) {
+		if(f < 0) {
 			fprintf(stderr, "%s: cannot create second temp\n", av0);
 			return;
 		}
@@ -707,14 +713,16 @@ bamatch(void)
 static void
 phserr(void)
 {
+
 	fprintf(stderr, "%s: phase error on %s\n", av0, file);
 }
 
 static void
 mesg(int c)
 {
-	if (flg['v'-'a'])
-		if (c != 'c' || flg['v'-'a'] > 1)
+
+	if(flg['v'-'a'])
+		if(c != 'c' || flg['v'-'a'] > 1)
 			printf("%c - %s\n", c, file);
 }
 
@@ -723,18 +731,18 @@ trim(char *s)
 {
 	char *p1, *p2;
 
-	for (p1 = s; *p1; p1++)
+	for(p1 = s; *p1; p1++)
 		;
-	while (p1 > s) {
-		if (*--p1 != '/')
+	while(p1 > s) {
+		if(*--p1 != '/')
 			break;
 		*p1 = 0;
 	}
 	p2 = s;
-	for (p1 = s; *p1; p1++)
-		if (*p1 == '/')
+	for(p1 = s; *p1; p1++)
+		if(*p1 == '/')
 			p2 = p1+1;
-	return p2;
+	return(p2);
 }
 
 static void
@@ -745,7 +753,7 @@ longt(void)
 	pmode();
 	printf("%3d/%1d", arbuf.ar_uid, arbuf.ar_gid);
 	printf("%7ld", (long)arbuf.ar_size);
-	cp = wega_ctime(arbuf.ar_date);	/* WEGA ctime: TZ as there, default EST5EDT */
+	cp = wega_ctime(arbuf.ar_date);	/* ctime of the WEGA libc: TZ as there, default EST5EDT */
 	printf(" %-12.12s %-4.4s ", cp+4, cp+20);
 }
 
@@ -775,24 +783,24 @@ static int	m9[] = { 2, STXT, 't', XOTH, 'x', '-' };
 static int	*m[] = { m1, m2, m3, m4, m5, m6, m7, m8, m9};
 
 static void
+pmode(void)
+{
+	int **mp;
+
+	for(mp = &m[0]; mp < &m[9];)
+		select_(*mp++);
+}
+
+static void
 select_(int *pairp)
 {
 	int n, *ap;
 
 	ap = pairp;
 	n = *ap++;
-	while (--n >= 0 && (*ap++ & arbuf.ar_mode) == 0)
+	while(--n>=0 && (*ap++ & arbuf.ar_mode)==0)
 		ap++;
 	putchar(*ap);
-}
-
-static void
-pmode(void)
-{
-	int **mp;
-
-	for (mp = &m[0]; mp < &m[9];)
-		select_(*mp++);
 }
 
 static void
