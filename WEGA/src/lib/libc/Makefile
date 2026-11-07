@@ -1,8 +1,8 @@
 # libc: /lib/libc.a from its sources, with the shipped tools, the whole file byte-identical (headers: arhdr.s, mkar.sh). Each object is identical with the member of the original.
 # The members of oldcc/ were made by an older cc that we do not have yet.
 #
-#   make        libc.a and obj/*.o, the members for ../oldlibc
-#   make install PREFIX=dir   dir/lib/libc.a
+#   make        libc.a and obj/*.o, the members for ../oldlibc; csu/crt0.o (/lib/crt0.o)
+#   make install PREFIX=dir   dir/lib/libc.a, dir/lib/crt0.o
 #   make clean
 
 CC = cc
@@ -35,7 +35,10 @@ OBJS = obj/getgrgid.o obj/getgrnam.o obj/getgrent.o obj/cuserid.o obj/getpass.o 
 	 obj/time.o obj/times.o obj/umask.o obj/umount.o obj/uname.o obj/ulimit.o obj/unlink.o obj/unlk.o \
 	 obj/ustat.o obj/utime.o obj/wait.o obj/write.o obj/cerror.o
 
-all: obj libc.a
+all: obj libc.a csu/crt0.o
+
+csu/crt0.o: csu/crt0.s
+	cd csu ; $(AS) -o crt0.o crt0.s
 
 obj:
 	-mkdir obj
@@ -585,9 +588,10 @@ obj/cerror.o: crt/cerror.s
 
 install: all
 	cp libc.a $(PREFIX)/lib/libc.a
+	cp csu/crt0.o $(PREFIX)/lib/crt0.o
 
 clean:
-	rm -rf obj libc.a
+	rm -rf obj libc.a csu/crt0.o
 	cd crt ; $(MAKE) clean
 
 .PHONY: all install clean

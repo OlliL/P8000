@@ -22,7 +22,7 @@ import sys, os, re, subprocess, difflib, shutil
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'tools')); sys.path.insert(0, HERE)
 from sout import SOut; import zcode
-S3 = os.environ.get('SYS3SRC') or sys.exit('witness.py: set SYS3SRC to usr/src/cmd of a System III tree')
+S3 = os.environ.get('SYS3SRC') or '/mnt/share/cvs/P8000/tmp/sys3/usr/src/cmd'
 R = os.path.abspath(os.environ.get('WEGA', os.path.join(HERE, '..', '..', '..', 'tmp', 'wega31_root')))
 OLDROOT = os.path.abspath(os.environ.get('OLDROOT', os.path.join(HERE, '..', '..', '..', 'tmp', 'oldroot')))
 EMU = os.path.join(HERE, '..', 'z8k-emu', 'z8k-emu')

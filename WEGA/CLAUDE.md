@@ -8,25 +8,25 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 ## Rules
 
 - Conversation in German, short messages. Git content (files, commits) in English.
-- Commits are allowed, but pushes are not. Only allowed branch is `toolchain` Never push; branches and everything else in the repository stay with the owner.
+- Commits are allowed, but pushes are not. Only allowed branch to work on is `toolchain`.
 - `src/TODO.md` holds only the plan; keep `host/KNOWLEDGE.md` current and say which files changed.
 - Facts only from documents or measurements; mark guesses as guesses.
-- Always keep current: "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
+- Always keep two tables current while working: "Objects and their differences" in `host/OLDCC.md`
+  (which object shows which difference D1 ... D23) and "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
   (every bug, oddity or dead code found in an original program, with how the rebuild handles it).
-
 - When working on the compiler: New or changed switch of an old compiler, or a new program with a model: run `host/recon/oldcc.sh matrix check`
   and follow what it says; `host/OLDCC_SWITCHES.md` is generated, see `host/HOWTO_reconstruct.md`, "Evidence rules".
 - The old compilers: `host/OLDCC.md` holds only what is currently fact (rewritten, not appended to; no removed switches, refuted ideas or
   counts on the way); running notes, measurements, attempts and what went away go as dated entries to `host/OLDCC_LOG.md`. Other documents do not repeat this knowledge.
 - Notes on findings only in the program's `findings.json`.
 - Byte identity with the original has priority over fixing a bug found in the original: rebuild the bug first, record it in the quirks table, and fix it only when the owner says so.
-- SYSIII sources (tmp/sys3) can and should be the base for reconstructing the WEGA sources. They are allowed to be copied from. Plexus sources (tmp/plexus) are private reference only.
+- SYSIII sources (tmp/sys3) can and should be the base for reconstructing the WEGA sources. They are allowed to be copied from. The Plexus sources can be consulted for Z8000 specific stuff.
 - V7 layout in `src/cmd`. Makefiles must also work with WEGA's native `make`:
   use `=` not `?=`, `cd dir ; $(MAKE)`.
 
-## Local directories (placeholders, the owner fills in the real paths)
+## Local directories
 
-| Placeholder                                      | Content                                              | Use                                                 |
+| Path                                             | Content                                              | Use                                                 |
 | ------------------------------------------------ | ---------------------------------------------------- | --------------------------------------------------- |
 | `/mnt/share/cvs/P8000/tmp/wega31_root`           | extracted WEGA 3.1 file tree (`bin/ etc/ lib/ usr/`) | ROOT for `z8k-emu -r`; originals to compare against |
 | `/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu` | z8k Emulator (oracle)                                | run original WEGA binaries                          |
@@ -45,18 +45,19 @@ Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do no
 ## Build the emulator and check
 
     make -C WEGA/host/z8k-emu            # builds z8k-emu
-    make -C WEGA/host check WEGA=<WEGA_ROOT>   # cc, popt, libc, oldcc checks
-    make -C WEGA/host verify-wega WEGA=<WEGA_ROOT>   # build src/cmd with the original tools, compare
-    make -C WEGA/host checkall WEGA=<WEGA_ROOT>   # everything byte-identical, each with its compiler, on a copy of the git files; corpora; check (13 min)
+    make -C WEGA/host check WEGA=<WEGA_ROOT>      # the host tools: cc, ar, binutils, cas, ld, popt, libc, oldcc
+    make -C WEGA/host checkall WEGA=<WEGA_ROOT>   # on a copy of the git files: make in src, make install into an empty root,
+                                                  # every file there against WEGA; the corpora; check (16 min)
+    host/tools/corpus.sh [PROG ...]               # the corpus of a program (src/cmd/PROG/tools/progcfg.py)
 
 ## Compile with the original tools (z8k-emu)
 
-    z8k-emu [-r ROOT] [-t] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
+    z8k-emu [-r ROOT] [-t|-T] [-v] [-e NAME=VALUE] PROGRAM [ARG...]
 
 - `ROOT` = `<WEGA_ROOT>`. Absolute guest paths are looked up below ROOT (guest `/tmp` = `ROOT/tmp`);
   relative paths refer to the host working directory. A file outside ROOT and the working
   directory is invisible to the guest: copy test input below the working directory.
-- Debug: `Z8K_EXEC_TRACE=1`, `Z8K_SC_TRACE=FILE`, `-t`.
+- Debug: `Z8K_EXEC_TRACE=1`, `Z8K_SC_TRACE=FILE`, `-t` (`-T`: also the floating point emulator); `host/z8k-emu/README.md`.
 
 Examples (run in the directory of the source, `E="z8k-emu -r <WEGA_ROOT>"`):
 
@@ -71,7 +72,8 @@ Examples (run in the directory of the source, `E="z8k-emu -r <WEGA_ROOT>"`):
     $E /usr/bin/pcat /usr/man/man1/gld.1    # read a man page
 
 Whole tree: `make -C WEGA/host src`: `make` in `src/` with the tools under the emulator in the PATH (`host/tools/wbin.sh`); the Makefiles
-use the plain names. Make itself runs on the host, not in the emulator.
+use the plain names. Make itself runs on the host, not in the emulator. The old compilers go to `OLDROOT` (`make -C WEGA/host oldroot`,
+then `z8k-emu -r <OLDROOT> /bin/ccv1 ...`); `make install PREFIX=DIR` in `src/` installs the shipped programs and libraries, stripped as the originals.
 
 Limits: EPU (floating point) instructions run through a C port of the kernel's `fpe.s`
 (`host/z8k-emu/README.md`); a floating point trap (SIGFPE) stops the emulator. Guest signal
@@ -87,9 +89,10 @@ handlers do not run.
 
 ## Where to look things up
 
-- Tool facts, formats, syscall ABI, results: `host/KNOWLEDGE.md`.
-- CPU instruction tables, segmented addressing: `<CPU_DOCS>`.
-- Man pages of the tools: `<WEGA_MAN>` (via `pcat`).
-- System behaviour, kernel interfaces: `<KERNEL_OBJECTS>`, `src/uts`, `src/head/sys`.
-- Ideas only: `<PLEXUS_SRC>` (the PCC passes: the model for our source, see Rules). Original binaries: `<WEGA_ROOT>`; floppies: `<WEGA31_DISKS>`.
-- Real machine behaviour: `<MAME_REPO>`, `mame/LOG.md` in the repo.
+- Tool facts, formats, syscall ABI, results: `host/KNOWLEDGE.md`; the old compilers: `host/OLDCC.md`; how a program is reconstructed: `host/HOWTO_reconstruct.md`.
+- CPU instruction tables, segmented addressing: `tmp/cpu_docs`.
+- Man pages of the tools: `tmp/wega31_root/usr/man` (via `pcat`).
+- System behaviour, kernel interfaces: `tmp/wega31_kernel`, `src/uts`, `src/head/sys`.
+- Sources to start from: `tmp/sys3` (System III); for what is specific to the Z8000: `tmp/plexus` (see Rules). Original binaries: `tmp/wega31_root`;
+  floppies: `tmp/wega31_disks`.
+- Real machine behaviour: `/mnt/share/git/mame/`, `mame/LOG.md` in the repository (beside `WEGA/`).

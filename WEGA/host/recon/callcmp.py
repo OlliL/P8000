@@ -2,9 +2,10 @@
 """callcmp.py OLD_TRACE NEW_TRACE NEW_NM - find the first function whose calls differ between the original and the rebuilt program.
 
 Traces: `z8k-emu -t PROGRAM ARGS > file` (one line per instruction: `00:PC WORD r0-7 ... sp ...`). NEW_NM: `nm` of the new program
-(lines `ADDR T _name`). The original is mapped by own_functions.txt and libc_names.txt. A call is the opcode `call` (5fxx) or `calr` (Dxxx);
+(lines `ADDR T _name`). The original is mapped by findings.json (orig of each function). A call is the opcode `call` (5fxx) or `calr` (Dxxx);
 the next trace line is the callee. Prints the first divergence of the (name, arguments) sequence with context, then compare the flow
 inside that function. Used for the corpus test (sld) (KNOWLEDGE.md, "corpus test")."""
+import json
 import os
 import re
 import sys
@@ -24,16 +25,7 @@ def names_new(nm):
 
 
 def names_old():
-    d = {}
-    for l in open(os.path.join(CFG.DIR, 'own_functions.txt')):
-        p = l.split()
-        if len(p) > 2 and not l.startswith('#'):
-            d[int(p[0], 16)] = p[1]
-    for l in open(os.path.join(CFG.DIR, 'libc_names.txt')):
-        p = l.split()
-        if len(p) >= 2 and re.match(r'^[0-9a-fA-F]+$', p[0]):
-            d[int(p[0], 16)] = p[1].lstrip('_')
-    return d
+    return {int(f['orig'], 16): k for k, f in json.load(open(CFG.FINDINGS))['functions'].items()}
 
 
 def calls(fn, names):
@@ -55,7 +47,7 @@ def calls(fn, names):
 
 def main():
     old, new, nm = sys.argv[1:4]
-    own = {l.split()[1] for l in open(os.path.join(CFG.DIR, 'own_functions.txt')) if len(l.split()) > 2 and not l.startswith('#')}
+    own = set(json.load(open(CFG.FINDINGS))['functions'])
     a = [c for c in calls(old, names_old()) if c[0] in own and c[0] != 'main']
     b = [c for c in calls(new, names_new(nm)) if c[0] in own and c[0] != 'main']
     print(len(a), len(b))

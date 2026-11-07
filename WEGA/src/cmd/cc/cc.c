@@ -22,11 +22,6 @@
  *  - several functions and variables are never used (closeout, nonempty, cantopen,
  *    any, fatal1, cbuf, xflags, ...); they are kept because they are part of the
  *    binary. error1/error2 and fatal1/fatal2 are two identical pairs of functions.
- *
- * The libc part of the original binaries (printf, fprintf, sprintf, _doprnt, malloc
- * and the string functions) comes from an older libc with floating point support
- * that is not available here, so a rebuilt cc is 112 bytes longer; everything that
- * comes from this file is identical (see host/Makefile, target verify-wega).
  */
 #include <stdio.h>
 #include <ctype.h>

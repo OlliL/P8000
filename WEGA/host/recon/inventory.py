@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """inventory.py [BINARY] - function starts and call graph of an original program (configuration: progcfg.py).
 
-BINARY defaults to progcfg ORIG_BIN below the WEGA root. Nonsegmented programs only (progcfg SEG False): the start is
-0; segmented programs keep their own inventory (src/cmd/sld/tools/inventory.py).
+BINARY defaults to progcfg ORIG_BIN below the WEGA root. Nonsegmented programs start at 0; segmented ones (progcfg SEG)
+at the target of the `jr` at 0 (scrt0 jumps over its text), only segment 0 is followed.
 
-Recursive descent over the code segment (the only segment) from the entry points: the start code (the `jr` at 0 jumps
+Recursive descent over the code segment from the entry points: the start code (the `jr` at 0 jumps
 over the copyright string), every branch target and every call target. A function starts at its entry point
 (`call` target, `calr` target, or the start address). The end of a function is the end of the last block that is
 reached from its start without entering another function (estimate: the start of the next function).
-Output: JSON on stdout (functions, call edges, data ranges), used by the ld findings.
+Output: JSON on stdout (functions, call edges, data ranges), the input of own_table.py.
 """
 import json
 import os
@@ -50,16 +50,19 @@ def inv_unconditional(ins):
 
 
 def main():
-    if CFG.SEG:
-        sys.exit('inventory.py: nonsegmented programs only (see the docstring)')
     path = sys.argv[1] if len(sys.argv) > 1 else DEFAULT
     s = SOut(open(path, 'rb').read())
     codesz = s.segs[0]['code']
     code = s.image[0:codesz]
     buf = z8k.Buf(code)
-    funcs = {}           # start -> set of called starts (the only segment only)
+    funcs = {}           # start -> set of called starts (segment 0 only)
     fails = []
-    work = [0]           # the start code (nonsegmented: entry 0)
+    entry = 0
+    if CFG.SEG:
+        ins = z8k.decode(buf, 0, 0)
+        if ins is not None and ins.mn == 'jr':
+            entry = target_of(ins, 0)[1]
+    work = [entry]       # the start code
     funcs_seen = set()
     while work:
         start = work.pop()
@@ -93,7 +96,7 @@ def main():
     calltargets = set()
     for a, v in funcs.items():
         calltargets |= v
-    pc = 0
+    pc = entry
     cand = []
     prev_end = True
     while pc < codesz:
@@ -111,7 +114,7 @@ def main():
         lin.append(pc)
         pc = ins.end
     cand = [c for c in cand if c not in calltargets]
-    proven_all = sorted(calltargets | {0})
+    proven_all = sorted(calltargets | {entry})
     undecodable = 0
     out = {'binary': path, 'codesz': codesz, 'proven_starts': ['0x%04x' % a for a in proven_all],
            'candidate_starts_after_ret_or_jump': ['0x%04x' % a for a in cand],

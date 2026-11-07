@@ -79,7 +79,7 @@ and stty 12/21/83 packed (built by an old compiler late, or few strings), id 05/
 ### shipped
 
 Builds byte-identically: cc, scc, ar, tar, dump, dumpdir, restor, sync, getud, putud, format, verify, copydisk, pburn,
-the doscopy programs, the standalone programs (`make -C host verify-wega`). All of them are linked with libc members of
+the doscopy programs, the standalone programs (`make -C host checkall`). All of them are linked with libc members of
 09/12/83 or later.
 
 ### v1 (01/83 .. 07/83)

@@ -6,7 +6,7 @@ Usage: rename.py OLD NEW [OLD NEW ...] [-n]      (-n: dry run, print the counts 
 OLD is a function (key of findings.json or its address id f<entry>) or any other identifier of the sources. Replaced as a
 whole word in:
   - the sources: SRCDIR/*.c, SRCDIR/*.h (SRCDIR/*.y too)
-  - the tables: own_functions.txt and progcfg TABLES (files of the tools directory)
+  - the tables: progcfg TABLES (files of the tools directory)
   - findings.json (keys of functions and manual_classes, and the text of the notes)
   - every .md of the tools directory, progcfg DOCS, src/TODO.md, host/KNOWLEDGE.md, host/HANDOFF_wega_disasm.md
 then FINDINGS.md is generated again (ld, sld: their findings_md.py; the new form: oldcc.sh findings). A text in KNOWLEDGE.md that belongs to another program with the
@@ -30,7 +30,7 @@ HERE = CFG.DIR
 LD = CFG.SRCDIR
 WEGA = CFG.REPO
 SOURCES = [os.path.join(LD, f) for f in sorted(os.listdir(LD)) if f.endswith(('.c', '.h', '.y'))]
-TABLES = [os.path.join(HERE, f) for f in ['own_functions.txt'] + list(CFG.TABLES)]
+TABLES = [os.path.join(HERE, f) for f in list(CFG.TABLES)]
 DOCS = [os.path.join(HERE, f) for f in sorted(os.listdir(HERE)) if f.endswith('.md') and f != 'FINDINGS.md']
 DOCS += [os.path.join(HERE, f) for f in CFG.DOCS]
 DOCS += [os.path.join(WEGA, 'src', 'TODO.md'), os.path.join(WEGA, 'host', 'KNOWLEDGE.md'),

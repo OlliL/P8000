@@ -24,7 +24,7 @@ REPO=`cd $HERE/../.. && pwd`
 WEGA_ROOT=${WEGA_ROOT:-${WEGA:-/mnt/share/cvs/P8000/tmp/wega31_root}}
 OLDROOT=${OLDROOT:-/mnt/share/cvs/P8000/tmp/oldroot}
 RECON_TMP=${RECON_TMP:-/mnt/share/cvs/P8000/tmp/tmp}
-SYS3SRC=${SYS3SRC:-/mnt/users/olivleh1/BACKUPs/Operating_Systems/SYSIII/sys3/usr/src/cmd}
+SYS3SRC=${SYS3SRC:-/mnt/share/cvs/P8000/tmp/sys3/usr/src/cmd}
 EMU=$REPO/host/z8k-emu/z8k-emu
 W="$EMU -r $WEGA_ROOT"
 export RECON_TMP WEGA_ROOT

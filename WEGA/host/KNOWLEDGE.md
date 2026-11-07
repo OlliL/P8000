@@ -30,9 +30,9 @@ split, link) read `host/HOWTO_reconstruct.md` first. This file holds the facts.
   (`binutils`): their source is in the same directory, they behave like the
   WEGA originals and replace the emulator calls later. Check scripts and
   `Makefile` targets: `make -C WEGA/host check` (cc, ar, binutils, cas, popt,
-  libc, oldcc). `make -C WEGA/host verify-wega` builds `src/cmd` with the
-  original tools (`CC SCC CAS AS LD SLD GLD YACC AR STRIP`) and compares per
-  program (`cas` differs by design, see "cas: decompilation").
+  libc, oldcc). `make -C WEGA/host checkall` builds `src` with the original
+  tools under the emulator (`host/tools/wbin.sh`), installs it into an empty root
+  and compares every file with the original (`cas` differs, see "cas: decompilation").
 - `WEGA/contrib/...` third-party and own extras, unchanged.
 
 Living document. Goal: rebuild the WEGA tool chain (cc, scc, cas, as, ld, sld,
@@ -440,7 +440,7 @@ is not looked at), `-M` (prints the file names and, with a tab, the loaded membe
   which module owns the code: a global of one module is used by code of another. The SCCS modules of the data (scrt0.s,
   copyname.c, dump.c, ext.c, ld.c, ldm.c, printname.c, swap.c, symbols.c, malloc.c) have no code boundaries yet.
   Correction: an earlier reading "only three direct data addresses" came from decoding with the non-segmented flag.
-- Function boundaries of the own code (`src/cmd/sld/tools/own_functions.txt`): 94 functions, entries = call targets and proven
+- Function boundaries of the own code (`src/cmd/sld/tools/findings.json`): 94 functions, entries = call targets and proven
 - Start-up code of the segmented programs (2026-10-27, measured): the 62 bytes at 0x18..0x55 of `/bin/sld` are the same code as
   the start of `/bin/ps`, `/bin/pstat` and `/usr/bin/yacc` (stamp `@[$]scrt0.s`, revision 3.2). They differ only in the segment of
   `_environ` (sld and yacc: segment 2, byte 0x82; ps and pstat: segment 0, byte 0x80) and in the relocated words. The code takes
@@ -857,12 +857,12 @@ means it does something fixed instead (only possible where the original's result
 | `/bin/sld` | without input files `-o t` writes a 131096-byte file (uninitialised tables) | not reproduced | "sld on the host" |
 | `/bin/sld` | a `-M` that changes between files with large sections gives an extra 256 bytes of padding in some cases, cause not yet understood | not reproduced | "sld on the host", `src/TODO.md` |
 | `/bin/sld` (libc `_atoip`, 0x85f8, number parser of doprnt) | with a leading `-` the digit loop counts the original length (one character more than the rest after the sign), the return value uses the shortened count | kept (old `doprnt` in `src/lib/oldslibc`) | `src/lib/oldslibc/README` |
-| `/bin/sld` (`mlist_add`, 0x410c, insert into the name table) | when the name is already in the list (compare result 0) the attribute words are written at the step counter (0x0e of the frame), not at the index of the entry found (0x0a); with a new name both are the same | kept (`mlist_add` in `src/cmd/sld/ldm.c`) | `src/cmd/sld/tools/own_functions.txt` |
-| `/bin/sld` (`read_words`, 0x0f26) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/sld/ld.c`) | `src/cmd/sld/tools/own_functions.txt` |
-| `/bin/sld` (`alloc_resv`, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `src/cmd/sld/tools/own_functions.txt` |
-| `/bin/sld` (`lookup_name`, 0x6a58) | two counters (`0x06`, `0x0a` of the frame) are incremented on the name flag and never read: write-only locals of the compiler output | kept (spare locals in `lookup_name`) | `src/cmd/sld/tools/own_functions.txt` |
-| `/bin/sld` (`pack_entry` 0x6866, `walk_entries` 0x01d2, `swab12` 0x3b1e; libc `scanf` 0x7212, `fscanf` 0x724e, one more) | six functions without any caller and without an address reference in the program (dead code); 0x7212 and 0x724e are the library members `scanf`/`fscanf` | rebuilt (kept, as in the original) | `src/cmd/sld/tools/own_functions.txt` |
-| `/bin/sld` (`warn_sym_redef`, 0x3b58) | the test of the symbol type is `!c & 0x20` (the source meant `!(c & 0x20)`): `!c` is 0 or 1, so the test is `(!c) & 0x20` = always 0 and only `c == 0x20` can return | kept (the same expression in `src/cmd/sld/ld.c`) | `src/cmd/sld/tools/own_functions.txt` |
+| `/bin/sld` (`mlist_add`, 0x410c, insert into the name table) | when the name is already in the list (compare result 0) the attribute words are written at the step counter (0x0e of the frame), not at the index of the entry found (0x0a); with a new name both are the same | kept (`mlist_add` in `src/cmd/sld/ldm.c`) | `src/cmd/sld/tools/findings.json` |
+| `/bin/sld` (`read_words`, 0x0f26) | the test of the read result for -1 is dead: the result is first turned into a flag (`!= 0`) and the flag is tested against -1, so a read error is never reported and the -1 byte goes through as data | kept (`read_words` in `src/cmd/sld/ld.c`) | `src/cmd/sld/tools/findings.json` |
+| `/bin/sld` (`alloc_resv`, 0x4968) | in the second branch the original increments r3 (`inc r3,#10`), the value is overwritten before any use: dead code of the compiler output | kept (not a source form found) | `src/cmd/sld/tools/findings.json` |
+| `/bin/sld` (`lookup_name`, 0x6a58) | two counters (`0x06`, `0x0a` of the frame) are incremented on the name flag and never read: write-only locals of the compiler output | kept (spare locals in `lookup_name`) | `src/cmd/sld/tools/findings.json` |
+| `/bin/sld` (`pack_entry` 0x6866, `walk_entries` 0x01d2, `swab12` 0x3b1e; libc `scanf` 0x7212, `fscanf` 0x724e, one more) | six functions without any caller and without an address reference in the program (dead code); 0x7212 and 0x724e are the library members `scanf`/`fscanf` | rebuilt (kept, as in the original) | `src/cmd/sld/tools/findings.json` |
+| `/bin/sld` (`warn_sym_redef`, 0x3b58) | the test of the symbol type is `!c & 0x20` (the source meant `!(c & 0x20)`): `!c` is 0 or 1, so the test is `(!c) & 0x20` = always 0 and only `c == 0x20` can return | kept (the same expression in `src/cmd/sld/ld.c`) | `src/cmd/sld/tools/findings.json` |
 | `/bin/sld` (`put_pad`, 0x64d0) | the function ends without a `return` in the loop path (the value that comes back is not defined); the callers ignore it | kept (`int put_pad` without a final `return`) | `src/cmd/sld/ldm.c` |
 | `/bin/sld` (variables) | the bss has unused gaps and variables never referenced (`spare0`, `spare4b8`, `spare4c4`, `spare4d0`, `sparef314`, `unused15d8`, `unused484`, `unused3be`): they are leftovers of removed code and are rebuilt so that all variable addresses stay equal | kept (`src/cmd/sld/copyname.c`) | "sld: the structs" |
 | `/bin/ld` (`main`, 0x009c) | the option `-v name` is not in the man page: it takes an argument; when the name is an object already in the table, the load is rolled back to that entry (`restore`) after the arguments so far are parsed again, otherwise the name is added as an object (`record`); `-l` writes `-` over the character before the `l` while the library is loaded (`load_lib_syms(s + j - 1)`), and `-e` and `-u` take the symbol from the next argument | kept (main is exact in `src/cmd/ld/ld.c`) | HANDOFF_ld.md, "main exact" |
@@ -945,7 +945,7 @@ means it does something fixed instead (only possible where the original's result
 
 ## ar (reconstructed, byte-identical)
 
-`src/cmd/ar.c` + `src/lib/libc/crt/crt0-ar.s` (made from `crt0.s.in`) rebuild `/bin/ar` byte for byte (`make -C WEGA/host verify-wega`).
+`src/cmd/ar.c` + `src/lib/libc/crt/crt0-ar.s` (made from `crt0.s.in`) rebuild `/bin/ar` byte for byte (`make -C WEGA/host checkall`).
 
 - Source is the System III/V7 ar, version string `@[$]ar.c 2.2 11/18/83 - 87wega3.2`;
   WEGA additions: `-l` (local temp files `vXXXXX`), `av0 = trim(argv[0])` in all
@@ -1497,8 +1497,7 @@ Consequence: not a cause of the length, nlist, swap, malloc differences.
 
 - `src/cmd/size/size.c` + `crt0-size.s` and `src/cmd/strip/strip.c` + `crt0-strip.s` (both made from
   `src/lib/libc/crt/crt0.s.in`) are byte-identical with `/bin/size` and `/usr/bin/strip` when built with the old
-  compiler v1 (`make CC=ccv1`, OLDCC.md); `make -C host verify-wega` compares the instructions of the own code built
-  with the shipped `cc -O` (`tools/cmpins.py`, from 0x42 up to the first libc member, `fseek` resp. `rdwr`).
+  compiler v1 (`make CC=ccv1`, OLDCC.md; `checkall`).
 - size: `size.c 2.1 01/14/83`; strip: `strip.c 1.2 11/19/82`, crt0 3.1 01/24/83.
 - The libc parts inside these binaries are an OLDER libc revision (Jan 1983): `printf`,
   `doprnt`, `fprintf`, `malloc`, `length`, `swap` are not the members of the shipped
