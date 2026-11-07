@@ -43,5 +43,5 @@ char *str, *fmt;
 	regs[3] = a4;
 	_doprnt(fmt, regs, &args, 1, &_strbuf);
 	putc('\0', &_strbuf);
-	return(str);
+	return((int)str);
 }

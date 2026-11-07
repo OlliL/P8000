@@ -1,4 +1,9 @@
 #include <stdio.h>
+#ifdef _PTRCHAR
+#define UCP(p)	(p)
+#else
+#define UCP(p)	((unsigned char *)(p))
+#endif
 extern FILE *_pfile;
 int rc;
 printf(fmt, a1, a2, a3, a4, a5, d1, d2, d3, d4, args)
@@ -52,7 +57,7 @@ double d1, d2, d3, d4;
 	double fregs[4];
 
 	_strbuf._flag = _IOWRT+_IOSTRG;
-	_strbuf._ptr = str;
+	_strbuf._ptr = UCP(str);
 	_strbuf._cnt = 32767;
 	regs[0] = a1;
 	regs[1] = a2;

@@ -61,5 +61,5 @@ double d1, d2, d3, d4;
 	fregs[3] = d4;
 	 _doprnt(fmt, regs, fregs, &args, 1, &_strbuf);
 	putc('\0', &_strbuf);
-	return(str);
+	return((int)str);
 }

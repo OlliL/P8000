@@ -238,7 +238,7 @@ FILE *file;
 				count++;
 			}
 			str = buf;
-			len = _cnvt(p, base, val.l) + n;
+			len = (int) _cnvt(p, base, val.l) + n;
 			break;
 		case 's':
 			fill = ' ';
