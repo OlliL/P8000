@@ -184,141 +184,141 @@ char **argv;
 	char **p;
 
 	fflag = 0;
-	goto test;
-	do {
-	if (**argv == '-')
-	switch ((*argv)[1]) {
-	case 'f':
-		if (fflag)
-			report_error(2, "Duplicate -f flags");
-		if (argc <= 1)
-			report_error(2, "Bad command file");
-		argv++;
-		cmdfile = (char **)*argv;
-		argc--;
-		savev = argv;
-		savec = argc;
-		read_words(cmdfile);
-		argv = cmdav - 1;
-		argc = cmdac + 1;
-		fflag++;
-		incmd++;
-		goto next;
-	case 'X':
-		Xflag++;
-		goto next;
-	case 'S':
-		Sflag++;
-		goto next;
-	case 'R':
-		if (sscanf(*argv, "-R%d", &v0a) < 1)
-			report_error(2, "invalid syntax for R option");
-		nrflag++;
-		resv_seg(v0a, 'r');
-		goto next;
-	case 'r':
-		rflag++;
-		arflag++;
-		goto next;
-	case 's':
-		sflag++;
-	case 'x':
-		xflag++;
-		goto next;
-	case 'e':
-	case 'u':
-		if (argc <= 1)
-			report_error(2, "Bad 'use' or 'entry'");
-		p = (char **)slookup(argv[1]);
-		enter(p);
-		if ((*argv)[1] == 'e')
-			entrypt = (long)lastsym;
-		goto skip2;
-	case 'd':
-		dflag++;
-		goto next;
-	case 'i':
-		iflag++;
-		bseg = 1;
-		dseg = 1;
-		if (maxseg == 0)
-			maxseg++;
-		goto next;
-	case 'O':
-		Oflag++;
-		goto next;
-	case 'o':
-		if (argc <= 1)
-			report_error(2, "Bad output file");
-		argv++;
-		ofilnam = *argv;
-		if (access(ofilnam, 0) == 0) {
-			if (access(ofilnam, 2) != 0)
-				report_error(2, "%s is write protected", ofilnam);
-		}
-		argc--;
-		ofilfnd++;
-		goto next;
-	case 'A':
-		if (argc <= 1)
-			report_error(2, "Need size specification");
-		switch ((*argv)[2]) {
-		case 's':
-			if (sscanf(argv[1], "%d", &v08) != 1)
-				report_error(2, "Unable to convert symbol table size specification");
-			if ((long)(unsigned)v08 + 2 << 4 > 0xfff8L)
-				report_error(2, "Symbol table size specification is too big");
-			nsym = v08;
-			resize_symtab(v08);
-			goto skip2;
-		case 'p':
-			if (sscanf(argv[1], "%d", &v08) != 1)
-				report_error(2, "Unable to convert pass 1 segment table size specification");
-			if ((long)(unsigned)v08 + 2 << 2 > 0xfff8L)
-				report_error(2, "Pass 1 segment table size specification is too big");
-			maxblk = v08;
-			goto skip2;
-		default:
-			report_error(2, "Invalid character after -A");
-		}
-skip2:
-		argc--;
-		argv++;
-		goto next;
-	case 'w':
-		wflag++;
-		goto next;
-	case 'z':
-		resv_seg(0x7f, 's');
-		zflag = 1;
-		goto next;
-	case 'N':
-		switch ((*argv)[2]) {
-		case 'l':
-			nlflag = 1;
-			break;
-		case 's':
-			nlflag = 0;
-			break;
-		default:
-			report_error(2, "-N%c :bad argument (l or s)", (*argv)[2]);
-		}
-		goto next;
-	}
-	goto next;
-again:
-	savev++;
-	argv = savev;
-	argc = --savec;
-	goto test;
-next:
 	argc--;
 	argv++;
-test:	;
-	} while (argc > 0);
-	if (incmd--)
-		goto again;
+	for (;;) {
+		while (argc > 0) {
+			if (**argv == '-')
+			switch ((*argv)[1]) {
+	case 'f':
+				if (fflag)
+					report_error(2, "Duplicate -f flags");
+				if (argc <= 1)
+					report_error(2, "Bad command file");
+				argv++;
+				cmdfile = (char **)*argv;
+				argc--;
+				savev = argv;
+				savec = argc;
+				read_words(cmdfile);
+				argv = cmdav - 1;
+				argc = cmdac + 1;
+				fflag++;
+				incmd++;
+				goto next;
+	case 'X':
+				Xflag++;
+				goto next;
+	case 'S':
+				Sflag++;
+				goto next;
+	case 'R':
+				if (sscanf(*argv, "-R%d", &v0a) < 1)
+					report_error(2, "invalid syntax for R option");
+				nrflag++;
+				resv_seg(v0a, 'r');
+				goto next;
+	case 'r':
+				rflag++;
+				arflag++;
+				goto next;
+	case 's':
+				sflag++;
+	case 'x':
+				xflag++;
+				goto next;
+	case 'e':
+	case 'u':
+				if (argc <= 1)
+					report_error(2, "Bad 'use' or 'entry'");
+				p = (char **)slookup(argv[1]);
+				enter(p);
+				if ((*argv)[1] == 'e')
+					entrypt = (long)lastsym;
+				goto skip2;
+	case 'd':
+				dflag++;
+				goto next;
+	case 'i':
+				iflag++;
+				bseg = 1;
+				dseg = 1;
+				if (maxseg == 0)
+					maxseg++;
+				goto next;
+	case 'O':
+				Oflag++;
+				goto next;
+	case 'o':
+				if (argc <= 1)
+					report_error(2, "Bad output file");
+				argv++;
+				ofilnam = *argv;
+				if (access(ofilnam, 0) == 0) {
+					if (access(ofilnam, 2) != 0)
+						report_error(2, "%s is write protected", ofilnam);
+				}
+				argc--;
+				ofilfnd++;
+				goto next;
+	case 'A':
+				if (argc <= 1)
+					report_error(2, "Need size specification");
+				switch ((*argv)[2]) {
+		case 's':
+					if (sscanf(argv[1], "%d", &v08) != 1)
+						report_error(2, "Unable to convert symbol table size specification");
+					if ((long)(unsigned)v08 + 2 << 4 > 0xfff8L)
+						report_error(2, "Symbol table size specification is too big");
+					nsym = v08;
+					resize_symtab(v08);
+					goto skip2;
+		case 'p':
+					if (sscanf(argv[1], "%d", &v08) != 1)
+						report_error(2, "Unable to convert pass 1 segment table size specification");
+					if ((long)(unsigned)v08 + 2 << 2 > 0xfff8L)
+						report_error(2, "Pass 1 segment table size specification is too big");
+					maxblk = v08;
+					goto skip2;
+		default:
+					report_error(2, "Invalid character after -A");
+				}
+skip2:
+				argc--;
+				argv++;
+				goto next;
+	case 'w':
+				wflag++;
+				goto next;
+	case 'z':
+				resv_seg(0x7f, 's');
+				zflag = 1;
+				goto next;
+	case 'N':
+				switch ((*argv)[2]) {
+		case 'l':
+					nlflag = 1;
+					break;
+		case 's':
+					nlflag = 0;
+					break;
+		default:
+					report_error(2, "-N%c :bad argument (l or s)", (*argv)[2]);
+				}
+				goto next;
+			}
+next:
+			argc--;
+			argv++;
+		}
+		if (incmd-- == 0)
+			break;
+		savev++;
+		argv = savev;
+		argc = --savec;
+	}
 }
+
 
 /* read_words: read a command file (-f) and split it into the words of the argument list (0x0f26..0x1070 of /bin/sld) */
 int read_words(name)
@@ -395,9 +395,10 @@ char *t;
 		report_error(2, "-%.2s: invalid selector (must be t, d or b)", s);
 	}
 	u = t;
-	g = 0;
 	if (iflag && (k == 2 || k == 3))
 		g = 1;
+	else
+		g = 0;
 	if ((tab42b4 + g * 5)[k])
 		report_error(2, "-%.2s: -%c%c already specified", s, (tab42b4 + g * 5)[k], s[1]);
 	(tab42b4 + g * 5)[k] = *s;
@@ -410,8 +411,11 @@ char *t;
 	}
 	if (sscanf(u, fmt, &secorg[g][k]) != 1)
 		report_error(2, "-%.2s %s: bad address", s, t);
-	return k != 0;
+	if (k == 0)
+		return 0;
+	return 1;
 }
+
 
 /* parse_args: second pass over the arguments: load every object and library in order (0x11ea..0x1364 of /bin/sld) */
 int parse_args(argc, argv)
