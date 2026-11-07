@@ -12,7 +12,6 @@
 
 CC = cc
 PREFIX = /
-VERSIONS = v1 v0 v0p
 OLDPRINTF = lib/oldlibc/printf/s1.o
 
 all: stage1 lib stage2 cmds
