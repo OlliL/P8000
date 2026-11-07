@@ -125,7 +125,10 @@ fstat, fcntl, lseek, getpid, getuid/getgid, alarm, pause, utime, access, nice
 (no-op), sync, kill, dup/dup2, pipe, times, signal (SIG_DFL/SIG_IGN only),
 ioctl (always ENOTTY), umask. Anything else prints
 `unimplemented system call N` and fails with EINVAL.
-Details: `../KNOWLEDGE.md`, section "Oracle: z8k-emu".
+Directory reads are translated to WEGA's fixed-size `struct direct` records,
+and directory `lseek` positions are logical byte offsets in those records;
+unlinking a directory uses the host `rmdir`. Details: `../KNOWLEDGE.md`,
+section "Oracle: z8k-emu".
 
 ## Limitations
 

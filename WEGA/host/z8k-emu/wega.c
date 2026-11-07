@@ -18,6 +18,8 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <limits.h>
 #include <sys/stat.h>
 #include <sys/times.h>
 #include <sys/wait.h>
@@ -36,6 +38,16 @@ static int plexus;			/* current program uses the Plexus system call ABI */
 static uint8_t  segused[128];		/* segment exists (program image or mkseg) */
 static uint32_t segsz[128];		/* current size in bytes of each program segment (segmented mode) */
 static int mainseg;			/* the segment break() reports (last non-stack data segment) */
+static unsigned brkend;			/* nonsegmented: the end of the data set by break() */
+
+/* an open directory: its WEGA image (16-byte struct direct records) and the read position in it */
+typedef struct Dir {
+	int fd;
+	uint8_t *buf;
+	long len, pos;
+	struct Dir *next;
+} Dir;
+static Dir *dirs;
 
 /* ---------------------------------------------------------------- memory */
 
@@ -272,10 +284,67 @@ static int sc_long(Z8K *c, uint32_t v) { c->r[4] = v >> 16; c->r[5] = v; c->fl &
 static int sc_err(Z8K *c, int e) { c->r[4] = e; c->r[5] = 0; c->fl |= F_C; return 0; }
 static int sc_res(Z8K *c, long v) { return v < 0 ? sc_err(c, errno) : sc_ok(c, v); }
 
+/* a host inode as the 16 bits of WEGA; never 0, which marks a free directory slot */
+static unsigned ino16(ino_t ino)
+{
+	unsigned i = (unsigned)(ino & 0xFFFF);
+	return i ? i : 0xFFFF;
+}
+
+static Dir *dirof(int fd)
+{
+	Dir *d;
+	for (d = dirs; d && d->fd != fd; d = d->next)
+		;
+	return d;
+}
+
+/* fd was opened on path: when it is a directory, build its WEGA image, "." and ".." first */
+static void dirload(int fd, const char *path)
+{
+	struct stat st;
+	struct dirent *de;
+	DIR *dp;
+	Dir *d;
+	const char *name;
+	char sub[PATH_MAX];
+	int k;
+
+	if (fstat(fd, &st) < 0 || !S_ISDIR(st.st_mode) || !(dp = opendir(path)))
+		return;
+	if (!(d = calloc(1, sizeof *d))) {
+		closedir(dp);
+		return;
+	}
+	for (k = 0; ; k++) {
+		if (k < 2) {
+			name = k ? ".." : ".";
+			snprintf(sub, sizeof sub, "%s/%s", path, name);
+			if (stat(sub, &st) < 0) continue;
+		} else {
+			if (!(de = readdir(dp))) break;
+			name = de->d_name;
+			if (!strcmp(name, ".") || !strcmp(name, "..")) continue;
+			st.st_ino = de->d_ino;
+		}
+		if (!(d->buf = realloc(d->buf, d->len + 16)))
+			break;
+		memset(d->buf + d->len, 0, 16);
+		d->buf[d->len] = ino16(st.st_ino) >> 8;
+		d->buf[d->len + 1] = ino16(st.st_ino);
+		memcpy(d->buf + d->len + 2, name, strnlen(name, 14));
+		d->len += 16;
+	}
+	closedir(dp);
+	d->fd = fd;
+	d->next = dirs;
+	dirs = d;
+}
+
 static void put_stat(Z8K *c, Ad a, const struct stat *st)
 {
 	gputw(c, a, st->st_dev); a.off += 2;
-	gputw(c, a, st->st_ino); a.off += 2;
+	gputw(c, a, ino16(st->st_ino)); a.off += 2;
 	gputw(c, a, st->st_mode); a.off += 2;
 	gputw(c, a, st->st_nlink); a.off += 2;
 	gputw(c, a, st->st_uid); a.off += 2;
@@ -377,6 +446,7 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	const char *hp;
 	Ad p, p2;
 	int i, j, k;
+	Dir *d;
 	static unsigned char buf[65536];
 
 	switch (n) {
@@ -392,7 +462,13 @@ static int sys_call_impl(Z8K *c, unsigned n)
 	case 3:		/* read */
 		i = a_int(&a); p = a_ptr(&a); j = a_int(&a);
 		if (j > (int)sizeof buf) j = sizeof buf;
-		k = read(i, buf, j);
+		if ((d = dirof(i)) != NULL) {	/* a directory: from its WEGA image */
+			k = d->len - d->pos < j ? d->len - d->pos : j;
+			if (k < 0) k = 0;
+			memcpy(buf, d->buf + d->pos, k);
+			d->pos += k;
+		} else
+			k = read(i, buf, j);
 		if (k < 0) return sc_err(c, errno);
 		gwrite(c, p, buf, k);
 		return sc_ok(c, k);
@@ -406,13 +482,27 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		p = a_ptr(&a); i = a_int(&a);
 		gstr(c, p, gp, sizeof gp);
 		hp = hostpath(gp, hb, sizeof hb);
-		return sc_res(c, open(hp, i & 3));
+		k = open(hp, i & 3);
+		if (k < 0) return sc_err(c, errno);
+		dirload(k, hp);
+		return sc_ok(c, k);
 	case 8:		/* creat */
 		p = a_ptr(&a); i = a_int(&a);
 		gstr(c, p, gp, sizeof gp);
 		hp = hostpath(gp, hb, sizeof hb);
 		return sc_res(c, open(hp, O_WRONLY | O_CREAT | O_TRUNC, i & 07777));
-	case 6: i = a_int(&a); return sc_res(c, close(i));
+	case 6: {	/* close */
+		Dir **dp;
+		i = a_int(&a);
+		for (dp = &dirs; *dp; dp = &(*dp)->next)
+			if ((*dp)->fd == i) {
+				d = *dp;
+				*dp = d->next;
+				free(d->buf);
+				free(d);
+				break;
+			}
+		return sc_res(c, close(i)); }
 	case 7: {	/* wait */
 		int st; pid_t pid = wait(&st);
 		if (pid < 0) return sc_err(c, errno);
@@ -434,7 +524,19 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		}
 	case 10:	/* unlink */
 		p = a_ptr(&a); gstr(c, p, gp, sizeof gp);
-		return sc_res(c, unlink(hostpath(gp, hb, sizeof hb)));
+		hp = hostpath(gp, hb, sizeof hb);
+		{
+			struct stat st;
+			const char *base = strrchr(hp, '/');
+			base = base ? base + 1 : hp;
+			if (lstat(hp, &st) == 0 && S_ISDIR(st.st_mode)) {
+				/* WEGA rmdir unlinks dir/.. and dir/. first; the host removes them with the directory */
+				if (!strcmp(base, ".") || !strcmp(base, ".."))
+					return sc_ok(c, 0);
+				return sc_res(c, rmdir(hp));
+			}
+			return sc_res(c, unlink(hp));
+		}
 	case 11: {	/* exec */
 		Ad pa, pv;
 		pa = a_ptr(&a); pv = a_ptr(&a);
@@ -472,7 +574,9 @@ static int sys_call_impl(Z8K *c, unsigned n)
 			}
 		}
 		i = a_int(&a);
-		if (i != 0 && (uint16_t)i >= c->r[15]) return sc_err(c, ENOMEM);
+		/* as the kernel: the data must end below the 256-byte click the stack occupies */
+		if (i != 0 && (uint16_t)i > (c->r[15] & 0xFF00)) return sc_err(c, ENOMEM);
+		if (i != 0) brkend = (uint16_t)i;
 		return sc_ok(c, 0);
 	case 18:	/* stat */
 		{ struct stat st; p = a_ptr(&a); p2 = a_ptr(&a);
@@ -485,7 +589,12 @@ static int sys_call_impl(Z8K *c, unsigned n)
 		  put_stat(c, p, &st); return sc_ok(c, 0); }
 	case 19: {	/* lseek */
 		int fd = a_int(&a); int32_t off = a_long(&a); int wh = a_int(&a);
-		off_t r = lseek(fd, off, wh);
+		off_t r;
+		if ((d = dirof(fd)) != NULL) {	/* a directory: the position in its WEGA image */
+			r = (wh == 0 ? 0 : wh == 1 ? d->pos : d->len) + off;
+			if (r < 0) { errno = EINVAL; r = -1; } else d->pos = r;
+		} else
+			r = lseek(fd, off, wh);
 		if (r < 0) return sc_err(c, errno);
 		return sc_long(c, r); }
 	case 38: {	/* fcntl */
@@ -674,6 +783,10 @@ int main(int argc, char **argv)
 	free(x.file);
 	for (;;) {
 		int r = z8k_step(c);
+		if (brkend && !c->segmode && c->r[15] < brkend) {	/* the stack grew into the data */
+			fprintf(stderr, "Memory fault\n");
+			return 128 + SIGSEGV;
+		}
 		if (r) { z8k_dump(c, stderr); return 255; }
 		if (c->halted) return 0;
 	}
