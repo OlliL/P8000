@@ -818,11 +818,12 @@ int idx;
 					return s;
 				case 4:
 					goto gotblk;
+				setdat:
+					reslist[idx].datptr = val;
+					return s;
 				case 3:
-					if (reslist[idx].datptr == -1) {
-						reslist[idx].datptr = val;
-						return s;
-					}
+					if (reslist[idx].datptr == -1)
+						goto setdat;
 					blk = prev;
 					while ((b = get_block(blk))->ndata == s) {
 						if (b->datnext == -1)
@@ -895,6 +896,7 @@ gotblk:
 	(get_block(val))->bssnext = tmp;
 	return s;
 }
+
 
 
 /* alloc_segment: allocate the next free segment number (0x5eec..0x60f0 of /bin/sld) */

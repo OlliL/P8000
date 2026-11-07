@@ -727,7 +727,7 @@
     "len_ours": 160,
     "len_orig": 160
    },
-   "note": "2026-11-07, shipped scc: open. The entry from torig: the original does ld r5,r2; ldk r4,#0, we do ldk r4,#0 first. Tried: (long)(unsigned), (unsigned long), unsigned torig in p2seg, | instead of +, operands swapped."
+   "note": "2026-11-07: exact with ((unsigned)p->torig & 0xffffL): spopt turns and r4,#0 into ldk r4,#0 and drops the first ldk of the conversion, which gives ld r5,r2; ldk r4,#0."
   },
   "main": {
    "file": "ld.c",
@@ -988,7 +988,7 @@
     "len_ours": 322,
     "len_orig": 310
    },
-   "note": "2026-11-07, shipped scc: open, 10 lines. if (size <= ...) { switch } instead of continue, and case 4: goto gotblk (the code of the original is there once) brought it from 94 to 10. Open: in case 3 the then part datptr = val; return s stands in front of the test in the original (behind the tail of case 2). Tried: every case order of both switches, != with the rest in the then part, else."
+   "note": "2026-11-07: exact. Odd forms: if (size <= ...) { switch } instead of continue; case 4: goto gotblk (the code is there once); the then part of case 3 is a label setdat in front of case 3 (behind case 2) reached by goto: its code stands in front of the test in the original."
   },
   "lay_out": {
    "file": "ldm.c",
