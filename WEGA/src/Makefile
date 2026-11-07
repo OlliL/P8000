@@ -16,16 +16,16 @@ OLDPRINTF = lib/oldlibc/printf/s1.o
 
 all: stage1 lib stage2 cmds
 
-stage1: clean
+stage1: # clean
 	cd lib/oldlibc/printf ; cp 0_5.c s1.c ; $(CC) -O -c s1.c ; rm -f s1.c
-	cd cmd/cas/old ; $(MAKE) install PREFIX=$(PREFIX)
+	cd cmd/cas    ; $(MAKE) oldinstall PREFIX=$(PREFIX)
 
 	cd cmd/cparse ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
 	cd cmd/codgen ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
 	cd cmd/popt   ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
 	cd cmd/cc     ; $(MAKE) oldinstall PREFIX=$(PREFIX) LIBC='../../../../$(OLDPRINTF) /lib/libc.a'
 
-lib:
+lib: FORCE
 	cd lib ; $(MAKE)
 
 stage2:
@@ -40,5 +40,7 @@ cmds:
 clean:
 	cd lib ; $(MAKE) clean
 	cd cmd ; $(MAKE) clean
+
+FORCE:
 
 .PHONY: all stage1 lib stage2 cmds clean

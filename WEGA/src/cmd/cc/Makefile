@@ -22,22 +22,22 @@ all: $(ALL_TARGETS)
 old: $(OLD_TARGETS)
 
 build/nonseg/cc: FORCE
-	cd build/nonseg ; $(MAKE) -f ../../Makefile cc
+	cd build/nonseg    ; $(MAKE) -f ../../Makefile cc
 build/nonsegv0/cc: FORCE
-	cd build/nonsegv0 ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0"
+	cd build/nonsegv0  ; $(MAKE) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V0"
 build/nonsegv0p/cc: FORCE
-	cd build/nonsegv0p ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0P"
+	cd build/nonsegv0p ; $(MAKE) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V0P"
 build/nonsegv1/cc: FORCE
-	cd build/nonsegv1 ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V1"
+	cd build/nonsegv1  ; $(MAKE) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V1"
 build/nonsegv1q/cc: FORCE
-	cd build/nonsegv1q ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V1Q"
+	cd build/nonsegv1q ; $(MAKE) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V1Q"
 build/nonsegv1r/cc: FORCE
-	cd build/nonsegv1r ; $(MAKE) -f ../../Makefile cc CC="cc" CFLAGS="$(CFLAGS) -DOLD_V1R"
+	cd build/nonsegv1r ; $(MAKE) -f ../../Makefile cc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V1R"
 
 build/seg/scc: FORCE
-	cd build/seg ; $(MAKE) -f ../../Makefile scc CFLAGS="$(CFLAGS) -DSCC"
+	cd build/seg   ; $(MAKE) -f ../../Makefile scc CFLAGS="$(CFLAGS) -DSCC"
 build/segv1/scc: FORCE
-	cd build/segv1 ; $(MAKE) -f ../../Makefile scc CC="cc" CFLAGS="$(CFLAGS) -DSCC -DOLD_V1"
+	cd build/segv1 ; $(MAKE) -f ../../Makefile scc CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSCC -DOLD_V1"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\

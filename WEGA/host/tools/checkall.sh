@@ -79,7 +79,7 @@ uuclear	script	bin/uuclear
 whodo	script	bin/whodo
 '
 # not byte-identical yet: reported, not counted
-OPEN='cas/cas:bin/cas'
+OPEN='cas/build/cas:bin/cas'
 
 # the files known to git, in DIR/WEGA; the emulator is not rebuilt here
 copytree() {

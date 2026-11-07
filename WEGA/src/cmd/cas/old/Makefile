@@ -15,7 +15,7 @@ PREFIX = /
 all: cas
 
 cas: ../jpr.c ../optim.c ../ssymtab.c ../cas.h
-	cp ../*.c ../*.h ../parser.y .
+	cp ../assemble.c ../cas.h ../done.c ../error.c ../expr.c ../gen.c ../getops.c ../ifile.c ../instr.c ../itable.c ../jpr2.c ../jpr.c ../listing.c ../locntr.c ../main.c ../nodes.c ../ntable.c ../ofile.c ../optim.c ../p2loop.c ../pstab.c ../pst.c ../pstdata.h ../scanner.c ../ssymtab.c ../stable.c ../subr.c ../symbols.c ../table1.c ../table2.c ../parser.y .
 	$(MAKE) -f ../Makefile cas SCC='$(SCC)' SCCFLAGS='-O -c -DOLD_CAS' YACC='$(YACC)' SLD='$(SLD)' SCRT0='$(SCRT0)' SLIBC='$(SLIBC)'
 
 install: cas

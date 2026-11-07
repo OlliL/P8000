@@ -65,24 +65,24 @@ tar: tar.c
 ar.o: ar.c
 	$(CC) $(CFLAGS) -c ar.c
 
-ar: ar.o $(CRT)/crt0-ar.o
-	$(LD) -s -e start -o $@ $(CRT)/crt0-ar.o ar.o $(LIBC)
+ar: ar.o crt0-ar.o
+	$(LD) -s -e start -o $@ crt0-ar.o ar.o $(LIBC)
 
-$(CRT)/crt0-ar.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+crt0-ar.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh ar > $@
 
-$(CRT)/crt0-ar.o: $(CRT)/crt0-ar.s
-	$(CAS) -u -o $@ $(CRT)/crt0-ar.s
+crt0-ar.o: crt0-ar.s
+	$(CAS) -u -o $@ crt0-ar.s
 
-$(CRT)/crt0-sync.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
+crt0-sync.s: $(CRT)/crt0.s.in $(CRT)/crt0.list $(CRT)/mkcrt0.sh
 	sh $(CRT)/mkcrt0.sh sync > $@
 
-$(CRT)/crt0-sync.o: $(CRT)/crt0-sync.s
-	$(CAS) -u -o $@ $(CRT)/crt0-sync.s
+crt0-sync.o: crt0-sync.s
+	$(CAS) -u -o $@ crt0-sync.s
 
 sync.o: sync.c
-sync: $(CRT)/crt0-sync.o sync.o
-	$(LD) -s -o $@ -e start $(CRT)/crt0-sync.o sync.o -lc
+sync: crt0-sync.o sync.o
+	$(LD) -s -o $@ -e start crt0-sync.o sync.o -lc
 
 install: $(PROGS) $(FILES)
 	for file in ar chkdiff getud putud tar uuclear whodo sync ; do cp $$file $(PREFIX)/bin/$$file ; done
@@ -91,7 +91,7 @@ install: $(PROGS) $(FILES)
 
 clean:
 	rm -f $(PROGS) $(FILES) $(CLEANFILES)
-	rm -f $(CRT)/crt0-ar.o $(CRT)/crt0-sync.o $(CRT)/crt0-ar.s $(CRT)/crt0-sync.s
+	rm -f crt0-ar.o crt0-sync.o crt0-ar.s crt0-sync.s
 	for d in $(SUBDIRS) ; do cd $$d ; $(MAKE) clean ; cd .. ; done
 
 .PHONY: all subdirs clean install

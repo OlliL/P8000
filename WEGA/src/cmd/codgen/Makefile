@@ -25,22 +25,22 @@ all: $(ALL_TARGETS)
 old: $(OLD_TARGETS)
 
 build/nonseg/codgen: crt0.o FORCE
-	cd build/nonseg ; $(MAKE) -f ../../Makefile codgen
+	cd build/nonseg    ; $(MAKE) -f ../../Makefile codgen
 build/nonsegv0/codgen: crt0.o FORCE
-	cd build/nonsegv0 ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0"
+	cd build/nonsegv0  ; $(MAKE) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V0"
 build/nonsegv0p/codgen: crt0.o FORCE
-	cd build/nonsegv0p ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_V0P"
+	cd build/nonsegv0p ; $(MAKE) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_V0P"
 build/nonsegv1/codgen: crt0.o FORCE
-	cd build/nonsegv1 ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3"
+	cd build/nonsegv1  ; $(MAKE) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3"
 build/nonsegv1q/codgen: crt0.o FORCE
-	cd build/nonsegv1q ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
+	cd build/nonsegv1q ; $(MAKE) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q"
 build/nonsegv1r/codgen: crt0.o FORCE
-	cd build/nonsegv1r ; $(MAKE) -f ../../Makefile codgen CC="cc" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q -DOLD_D1R"
+	cd build/nonsegv1r ; $(MAKE) -f ../../Makefile codgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DOLD_D3 -DOLD_D14Q -DOLD_D1R"
 
 build/seg/scodgen: crt0.o FORCE
-	cd build/seg ; $(MAKE) -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
+	cd build/seg   ; $(MAKE) -f ../../Makefile scodgen CFLAGS="$(CFLAGS) -DSEG"
 build/segv1/scodgen: crt0.o FORCE
-	cd build/segv1 ; $(MAKE) -f ../../Makefile scodgen CC="cc" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3"
+	cd build/segv1 ; $(MAKE) -f ../../Makefile scodgen CC="cc" LIBC="$(LIBC)" CFLAGS="$(CFLAGS) -DSEG -DOLD_D3"
 
 clean:
 	for d in $(ALL_TARGETS) $(OLD_TARGETS) ; do\
