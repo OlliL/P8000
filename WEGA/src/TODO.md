@@ -25,7 +25,7 @@ Gone: the cutting of objects, `.link`, `.spec`, `gen_makefile.py` of cpp and ld.
 In this order; every change of a compiler goes through `checkall`.
 
 - `ld`: with v1 and `libc-v9.a` sizes equal, 3 places open: place_sec (0xf64, `ld r2,r3; and r2,#%FF00; ld r13,r2`; nine forms of the expression tried, `OLDCC_LOG.md`), chk_ranlib (0x29b0, `ld r2,r3; cpb 4(r2),#%20`), the end of the code. Source base (owner 2026-11-05): `cmd/ld/ld.vax.c` of the Plexus tree (the same as the System III release) and `cmd/ld/ld.z8000.c` (Plexus' Z8000 changes); byte identity first.
-- `sld`: 17 functions differ (list: compare with `sdis.py`), the corpus not run again since 2026-11-05. Source base (owner 2026-11-05): as close to `ld` as the segmentation allows.
+- `sld`: shipped scc, `slibc-v9.a`; 3 functions differ (`tools/linkcmp.py`): parse_args, start_output, ins_block (notes in findings.json); corpus 91 of 91 (2026-11-07). Source base (owner 2026-11-05): as close to `ld` as the segmentation allows.
 
 ## 6. System III form for all existing programs
 
