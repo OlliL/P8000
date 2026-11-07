@@ -8,43 +8,37 @@ Read `host/HANDOFF_wega_disasm.md` (state, next steps), then `host/KNOWLEDGE.md`
 ## Rules
 
 - Conversation in German, short messages. Git content (files, commits) in English.
-- Commits are allowed in the directories of the passes and the docs after each accepted step (owner decision
-  2026-11-02). Never push; branches and everything else in the repository stay with the owner. `src/TODO.md` holds only the
-  plan; keep `host/KNOWLEDGE.md` current and say which files changed.
+- Commits are allowed, but pushes are not. Only allowed branch is `toolchain` Never push; branches and everything else in the repository stay with the owner.
+- `src/TODO.md` holds only the plan; keep `host/KNOWLEDGE.md` current and say which files changed.
 - Facts only from documents or measurements; mark guesses as guesses.
-- Always keep two tables current while working: "Objects and their differences" in `host/OLDCC.md`
-  (which object shows which difference D1 ... D23) and "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
+- Always keep current: "Bugs and quirks of the originals" in `host/KNOWLEDGE.md`
   (every bug, oddity or dead code found in an original program, with how the rebuild handles it).
-- New or changed switch of an old compiler, or a new program with a model: run `host/recon/oldcc.sh matrix check`
+
+- When working on the compiler: New or changed switch of an old compiler, or a new program with a model: run `host/recon/oldcc.sh matrix check`
   and follow what it says; `host/OLDCC_SWITCHES.md` is generated, see `host/HOWTO_reconstruct.md`, "Evidence rules".
 - The old compilers: `host/OLDCC.md` holds only what is currently fact (rewritten, not appended to; no removed switches, refuted ideas or
   counts on the way); running notes, measurements, attempts and what went away go as dated entries to `host/OLDCC_LOG.md`. Other documents do not repeat this knowledge.
-- Notes on findings only in the program's `findings.json`, not in source comments.
-- Byte identity with the original has priority over fixing a bug found in the original: rebuild the
-  bug first, record it in the quirks table, and fix it only when the owner says so.
-- Originals, binaries and copyrighted material never go into git (unless the owner says so).
-  Plexus sources are private reference only; our code is reconstructed from the WEGA binaries
-  and is not a copy of them.
-  Source base (owner decisions 2026-11-03, 2026-11-04): the clean System III sources (`SYSIII/sys3`) are primary and may be copied into `src/`: names, macros,
-  comments, order, whole functions, as far as the bytes of the WEGA original allow. Decide per program. For what is specific to the Z8000 the Plexus sources are the
-  model of the compiler passes; Plexus is always secondary. Byte identity stays first. All other Plexus sources stay reference only.
+- Notes on findings only in the program's `findings.json`.
+- Byte identity with the original has priority over fixing a bug found in the original: rebuild the bug first, record it in the quirks table, and fix it only when the owner says so.
+- SYSIII sources (tmp/sys3) can and should be the base for reconstructing the WEGA sources. They are allowed to be copied from. Plexus sources (tmp/plexus) are private reference only.
 - V7 layout in `src/cmd`. Makefiles must also work with WEGA's native `make`:
   use `=` not `?=`, `cd dir ; $(MAKE)`.
 
 ## Local directories (placeholders, the owner fills in the real paths)
 
-| Placeholder | Content | Use |
-|---|---|---|
-| `/mnt/share/cvs/P8000/tmp/wega31_root` | extracted WEGA 3.1 file tree (`bin/ etc/ lib/ usr/`) | ROOT for `z8k-emu -r`; originals to compare against |
-| `/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu` | z8k Emulator (oracle) | run original WEGA binaries |
-| `/mnt/share/cvs/P8000/tmp/wega31_root/usr/man` | man pages | read with `pcat` under the emulator |
-| `/mnt/share/cvs/P8000/tmp/wega31_books` | WEGA manuals and handbooks (scans, OCR text) | lookup |
-| `/mnt/share/cvs/P8000/tmp/cpu_docs` | Z8000/Z8001/Z8002 CPU manuals (PDF + OCR text) | instruction sets, formats |
-| `/mnt/share/cvs/P8000/tmp/wega31_kernel` | original kernel objects / libraries | compare, disassemble |
-| `/mnt/share/cvs/P8000/tmp/plexus` | Plexus sources, private reference only | read for ideas, never copy |
-| `/mnt/share/cvs/P8000/tmp/wega31_disks` | WEGA 3.1 floppy images and raw conversions | extract originals |
-| `/mnt/share/git/mame/` | MAME fork with P8000 machines (`p8000`, `p8000_16`) | real-system tests, boot WEGA |
-| `/mnt/share/cvs/P8000/tmp/tmp` | temp directory | intermediate files, build logs |
+| Placeholder                                      | Content                                              | Use                                                 |
+| ------------------------------------------------ | ---------------------------------------------------- | --------------------------------------------------- |
+| `/mnt/share/cvs/P8000/tmp/wega31_root`           | extracted WEGA 3.1 file tree (`bin/ etc/ lib/ usr/`) | ROOT for `z8k-emu -r`; originals to compare against |
+| `/mnt/share/cvs/P8000/WEGA/host/z8k-emu/z8k-emu` | z8k Emulator (oracle)                                | run original WEGA binaries                          |
+| `/mnt/share/cvs/P8000/tmp/wega31_root/usr/man`   | man pages                                            | read with `pcat` under the emulator                 |
+| `/mnt/share/cvs/P8000/tmp/wega31_books`          | WEGA manuals and handbooks (scans, OCR text)         | lookup                                              |
+| `/mnt/share/cvs/P8000/tmp/cpu_docs`              | Z8000/Z8001/Z8002 CPU manuals (PDF + OCR text)       | instruction sets, formats                           |
+| `/mnt/share/cvs/P8000/tmp/wega31_kernel`         | original kernel objects / libraries                  | compare, disassemble                                |
+| `/mnt/share/cvs/P8000/tmp/plexus`                | Plexus sources, private reference only               | read for ideas, never copy                          |
+| `/mnt/share/cvs/P8000/tmp/sys3`                  | SYS III sources                                      | use as a starting point for source reconstruction   |
+| `/mnt/share/cvs/P8000/tmp/wega31_disks`          | WEGA 3.1 floppy images and raw conversions           | extract originals                                   |
+| `/mnt/share/git/mame/`                           | MAME fork with P8000 machines (`p8000`, `p8000_16`)  | real-system tests, boot WEGA                        |
+| `/mnt/share/cvs/P8000/tmp/tmp`                   | temp directory                                       | intermediate files, build logs                      |
 
 Paths on the owner's machine are in his scripts (`src/make_cmd_linux.sh`); do not copy them into documents.
 
