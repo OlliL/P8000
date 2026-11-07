@@ -37,6 +37,16 @@ Not a tool of the chain but the oracle: `host/z8k-emu` (runs the original binari
 - `src/cmd` (K&R C, WEGA `cc`): byte identity with the original is the top priority. Original defects are rebuilt first and recorded in the quirks table in `KNOWLEDGE.md`; a fix needs the owner's decision. Second priority to keep the sources as equal to its SYSIII counterparts as possible (Copy&Paste is allowed).
 - `host/` (ANSI C, gcc): functional equality only. Fixing defects of the original is allowed where the original's result is undefined or wrong; the fix is documented in the quirks table and in `src/TODO.md`. Functional equality with the original is the top goal here and has to be assured by corpus runs.
 
+## Check of a host program: one mechanism, the corpus
+
+Decided (owner, 2026-11-08): every host program is checked by the corpus runner (`host/tools/corpus.sh`, `host/recon/stagecorpus.py`), not by an own `check.sh`. The original (under `z8k-emu`) and the host program get the same cases; compared are the output files, the messages, the exit status.
+
+- Config: `progcfg.py` of the program: `src/cmd/NAME/tools/progcfg.py` where the program has a directory in `src/cmd`; for a single-file program (ar, ranlib, strip, size) `host/NAME/progcfg.py`. It also serves the check of the WEGA build of the sources (`checkall`).
+- Call: `make check` of the host directory runs `sh ../tools/corpus.sh --host BINARY PROG` (PROG: the program name, or the absolute directory of its `progcfg.py`). `--host` runs the host program natively; without it the program is a WEGA binary under the emulator.
+- Two shapes of a case: a *run* (an input file, `CORPUS_PREPARE`, `CORPUS_RUN`, `CORPUS_OUTPUTS`; cpp, cparse, codgen, popt, cas, ld) and a *script* (`CORPUS_SCRIPT`: a shell script with many commands and `PROG` as the program, for tools that are driven by commands: ar; its output, exit status and the files left behind are compared; variants are environments such as `TZ`). `CORPUS_VARIANTS` runs every case once per variant.
+- A host build writes host paths (the include directory) or program names: `CORPUS_HOST_ENV`, `CORPUS_NORMALIZE`, and in script mode the program is run under its own name (`.prog/NAME`).
+- Converting a `check.sh` or `check.py`: the new cases must find everything the old script finds. Prove it with deliberately broken builds (change an output format, a comparison, a constant in the host source, run the old and the new check): the new check finds at least the same ones; then remove the old script. Done for `ar` (the new one finds all the old script finds and three more). Still to convert: `host/binutils/check.sh`, `host/cc/check.sh`, `host/cas/check.sh`, `host/popt/check.sh`, `host/ld/check.py`, `host/libc/check.sh`.
+
 ## Port rules: `src/cmd/X` to `host/X`
 
 How a host version is made from the exact WEGA source (TODO.md item 7). Goal: whoever repeats the port reaches the state of `host/` without trial and error. The list holds rules, not code lines; **every time a check or corpus fails and the cause is a difference between Z8000/K&R and host/ANSI, the rule that would have prevented it is added here (what to replace, what to look out for, how it shows, how to find it).** A rule has: *Rule*, *Why*, *Find*.

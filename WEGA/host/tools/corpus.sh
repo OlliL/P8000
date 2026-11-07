@@ -3,6 +3,7 @@
 # (host/recon/stagecorpus.py with src/cmd/PROG/tools/progcfg.py). Without PROG: every program whose progcfg.py has a corpus.
 # Our binary is the one built in the source directory (CORPUS_BINARY of progcfg.py; CORPUS_BIN=file tests another).
 # Environment: WEGA_ROOT (the WEGA 3.1 tree, default as in host/recon/progcfg.py), JOBS, STAGE_TMP.
+# PROG may also be a directory with a progcfg.py (programs that have no src/cmd/PROG: host/ar).
 # --host BINARY: BINARY is a host (Linux) build of PROG, run natively against the original (host/PROG); needs one PROG.
 # Exit status 1 when a program differs.
 HERE=`cd \`dirname $0\` && pwd`

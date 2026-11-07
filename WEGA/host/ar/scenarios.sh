@@ -1,5 +1,7 @@
-# scenarios for check.sh; run with sh in an empty directory, AR is the ar to test.
-# Every command's output, exit code and the archives are logged by check.sh.
+# the case "scenario" of progcfg.py (host/recon/stagecorpus.py, script mode): run with sh in an empty directory, PROG is the ar to test.
+# The output of every command, its exit code and the files afterwards are compared with the original.
+umask 022
+AR=$PROG
 run() { echo "\$ ar $*"; $AR "$@"; echo "exit=$?"; }
 fix() { touch -d '2019-05-05 05:05:05 UTC' "$@" 2>/dev/null; }   # extracted files get the time of the extraction
 show() { for f in "$@"; do [ -f "$f" ] && { echo "[$f] $(wc -c < $f) $(cksum < $f)"; }; done; }

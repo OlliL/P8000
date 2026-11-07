@@ -49,12 +49,12 @@ def load():
     spec.loader.exec_module(m)
     m.DIR = d
     if not hasattr(m, 'ORIG_LIM'):
-        m.ORIG_LIM = m.OWN_LIM
+        m.ORIG_LIM = getattr(m, 'OWN_LIM', 0)
     if not hasattr(m, 'ORIG_BIN'):
         m.ORIG_BIN = m.ORIG
     m.ROOT = os.environ.get('WEGA_ROOT') or os.environ.get('WEGA') or '/mnt/share/cvs/P8000/tmp/wega31_root'
     if not hasattr(m, 'LIBC_FROM'):
-        m.LIBC_FROM = m.OWN_LIM
+        m.LIBC_FROM = getattr(m, 'OWN_LIM', 0)
     defaults = {'SEG': False, 'CC': '/bin/cc', 'SRCDIR': os.path.normpath(os.path.join(d, '..')),
                 'MODULES': [], 'TABLES': [], 'DOCS': [], 'D18': False}
     for k, v in defaults.items():
