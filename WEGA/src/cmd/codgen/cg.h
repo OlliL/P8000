@@ -148,7 +148,7 @@ union ndu {
 		int	hi;		/* 0xC: the high word of lval; STASG alignment */
 		NODE	*left;		/* 0xE: overlays the low word of lval */
 		NODE	*right;		/* 0x10: overlays rval */
-	};				/* interior node */
+	}in;				/* interior node */
 	struct {
 		int	op;
 		int	rall;
@@ -159,7 +159,7 @@ union ndu {
 		int	stsize;
 		long	lval;		/* 0xC: the value of a leaf */
 		int	rval;		/* 0x10: the register, the tag */
-	};				/* terminal node */
+	}tn;				/* terminal node */
 	struct {
 		int	op;
 		int	rall;
@@ -167,7 +167,17 @@ union ndu {
 		char	su;
 		char	fsu;
 		int	label;		/* 8: for use with branching */
-	};				/* branch node */
+	}bn;				/* branch node */
+	struct {
+		int	op;
+		int	rall;
+		int	type;
+		char	su;
+		char	fsu;
+		struct sym *sname;
+		int	stsize;		/* sizes of structure objects */
+		int	stalign;	/* alignment of structure objects */
+	}stn;				/* structure node */
 };
 
 /* a symbol of the symbol table file (22 bytes there), see ../KNOWLEDGE.md */

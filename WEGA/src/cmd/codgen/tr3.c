@@ -32,13 +32,13 @@ makeblock(op, l, r, type)
 	register NODE *n;
 
 	n = talloc();
-	n->op = op;
-	n->left = l;
-	n->right = r;
-	n->type = type;
-	n->su = 0;
-	n->fsu = 0;
-	n->rall = 0;
+	n->in.op = op;
+	n->in.left = l;
+	n->in.right = r;
+	n->in.type = type;
+	n->in.su = 0;
+	n->in.fsu = 0;
+	n->in.rall = 0;
 	return n;
 }
 
@@ -51,33 +51,33 @@ foldadd(p)
 	register int lo;
 	int x;
 
-	l = p->left;
-	r = p->right;
-	lo = l->op;
-	q = lo == PLUS || lo == MINUS ? l->left : l;
-	if (q->op == ICON && r->op == ICON) {
-		x = (int)q->lval;
-		switch (p->op) {
+	l = p->in.left;
+	r = p->in.right;
+	lo = l->in.op;
+	q = lo == PLUS || lo == MINUS ? l->in.left : l;
+	if (q->in.op == ICON && r->in.op == ICON) {
+		x = (int)q->tn.lval;
+		switch (p->in.op) {
 		case PLUS:
-			x += (int)r->lval;
+			x += (int)r->tn.lval;
 			break;
 		case MINUS:
-			x -= (int)r->lval;
+			x -= (int)r->tn.lval;
 			break;
 		default:
 			cerror("bad op in convert");
 		}
-		q->lval = (long)x;
-		p->op = FREE;
-		r->op = FREE;
-		l->type = p->type;
+		q->tn.lval = (long)x;
+		p->in.op = FREE;
+		r->in.op = FREE;
+		l->in.type = p->in.type;
 		return l;
 	}
 	if (lo == PLUS || lo == MINUS) {
 		if (lo == MINUS)
-			p->op = p->op == MINUS ? PLUS : MINUS;
-		l->right = buildstar(p->op, l->right, r);
-		p->op = FREE;
+			p->in.op = p->in.op == MINUS ? PLUS : MINUS;
+		l->in.right = buildstar(p->in.op, l->in.right, r);
+		p->in.op = FREE;
 		p = l;
 	}
 	return p;
@@ -93,29 +93,29 @@ buildstar(op, l, r)
 	register int spare1, spare2, spare3, spare4;	/* unused: the original reserves these registers */
 
 	n = makeblock(op, l, r, 4);
-	switch (n->op) {
+	switch (n->in.op) {
 	case STAR:
-		if (l->op == UAND) {
-			l->op = FREE;
-			n->op = FREE;
-			n = l->left;
+		if (l->in.op == UAND) {
+			l->in.op = FREE;
+			n->in.op = FREE;
+			n = l->in.left;
 		}
-		if ((l->type & 0x30) != 0x10)
+		if ((l->in.type & 0x30) != 0x10)
 			uerror("illegal indirection");
-		n->type = DECREF(l->type);
-		n->su = l->su;
-		n->fsu = l->fsu;
-		n->rall = l->rall;
+		n->in.type = DECREF(l->in.type);
+		n->in.su = l->in.su;
+		n->in.fsu = l->in.fsu;
+		n->in.rall = l->in.rall;
 		break;
 	case UAND:
-		if (l->op == STAR) {
-			l->op = FREE;
-			n->op = FREE;
-			n = l->left;
-			n->type = INCREF(l->type);
-			n->su = l->su;
-			n->fsu = l->fsu;
-			n->rall = l->rall;
+		if (l->in.op == STAR) {
+			l->in.op = FREE;
+			n->in.op = FREE;
+			n = l->in.left;
+			n->in.type = INCREF(l->in.type);
+			n->in.su = l->in.su;
+			n->in.fsu = l->in.fsu;
+			n->in.rall = l->in.rall;
 		}
 		break;
 	}
@@ -131,8 +131,8 @@ bcon(bits)
 	register NODE *n;
 
 	n = makeblock(ICON, 0, 0, 4);
-	n->sname = 0;
-	n->lval = bits / 8;
+	n->in.sname = 0;
+	n->tn.lval = bits / 8;
 	return n;
 }
 
@@ -148,19 +148,19 @@ member(p)
 	long o;
 	NODE *off, *n;
 
-	m = p->right->sname;
+	m = p->in.right->in.sname;
 	cl = m->sclass;
-	p->right->op = FREE;
-	p->op = FREE;
-	p = p->left;
-	nt = p->type = INCREF(m->stype);
+	p->in.right->in.op = FREE;
+	p->in.op = FREE;
+	p = p->in.left;
+	nt = p->in.type = INCREF(m->stype);
 	sz = (int)m->ssize;
 	o = m->soffset;
 	off = bcon(o);
 	n = makeblock(PLUS, p, off, nt);
 	p = clocal(n);
-	if ((p->type & 0x30) != 0x10)
-		p->type = p->type + 16;
+	if ((p->in.type & 0x30) != 0x10)
+		p->in.type = p->in.type + 16;
 	p = buildstar(STAR, p, 0);
 	return p;
 }

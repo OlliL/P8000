@@ -77,13 +77,13 @@ static char sccsid[] = "@[$]allo3.c\t2.4  08/24/83 11:29:34 Copr. 1981 87wega3.2
 #endif
 
 #define TEMPWORDS(p, nfield) \
-	((p->op == STCALL || p->op == STARG || p->op == USTCALL || p->op == STASG) ? ((unsigned)((p->stsize << 3) + 15)) >> 4 : \
-	 (p->type == 5 || p->type == 15) ? 2 : (p->type & 0x30) == 0x10 ? PTRWORDS : \
-	 p->type == 7 ? 4 : p->type == 6 ? 2 : (nfield))
+	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
+	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
+	 p->in.type == 7 ? 4 : p->in.type == 6 ? 2 : (nfield))
 #define PARMWORDS(p, nfield) \
-	((p->op == STCALL || p->op == STARG || p->op == USTCALL || p->op == STASG) ? ((unsigned)((p->stsize << 3) + 15)) >> 4 : \
-	 (p->type == 5 || p->type == 15) ? 2 : (p->type & 0x30) == 0x10 ? PTRWORDS : \
-	 p->type == 7 ? 4 : p->type == 6 ? 4 : (nfield))
+	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
+	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
+	 p->in.type == 7 ? 4 : p->in.type == 6 ? 4 : (nfield))
 
 static int d2qfree();
 static int d2ofree();
@@ -162,69 +162,69 @@ allo(p, q)
 	k = 0;
 
 	while (need & 3) {			/* A registers */
-		resc[k].op = REG;
-		resc[k].type = p->type;
-		resc[k].rval = allocreg(p, need & 0xF);
-		resc[k].lval = 0;
-		resc[k].sname = 0;
+		resc[k].in.op = REG;
+		resc[k].in.type = p->in.type;
+		resc[k].tn.rval = allocreg(p, need & 0xF);
+		resc[k].tn.lval = 0;
+		resc[k].in.sname = 0;
 		need--;
 		k++;
 	}
 	k0 = k;
 	while (b & 3) {				/* the registers stay busy only for the code of the entry */
-		if (((b & 0xF) && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
-		    (dope[p->op] & DIVFLG))
+		if (((b & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
+		    (dope[p->in.op] & DIVFLG))
 			cls = 3;
 		else
-			cls = rclass(p->type, resc[k0].rval);
+			cls = rclass(p->in.type, resc[k0].tn.rval);
 		b--;
 		k0--;
-		s = rfind(resc[k0].rval, cls);
+		s = rfind(resc[k0].tn.rval, cls);
 		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
 	}
 	while (need & 0x30) {			/* B registers */
-		resc[k].op = REG;
-		resc[k].type = p->type;
-		resc[k].rval = allocreg(p, need & 0xF0);
-		resc[k].lval = 0;
-		resc[k].sname = 0;
+		resc[k].in.op = REG;
+		resc[k].in.type = p->in.type;
+		resc[k].tn.rval = allocreg(p, need & 0xF0);
+		resc[k].tn.lval = 0;
+		resc[k].in.sname = 0;
 		need -= 16;
 		k++;
 	}
 	k0 = k;
 	while (b & 0x30) {
-		cls = rclass(p->type, resc[k0].rval);
+		cls = rclass(p->in.type, resc[k0].tn.rval);
 		b -= 16;
 		k0--;
-		s = rfind(resc[k0].rval, cls);
+		s = rfind(resc[k0].tn.rval, cls);
 		s->busy = 0;		/* no test: the original writes through a null pointer when the register is not found */
 	}
 	if (need & 0x300) {			/* a temporary in the frame */
-		resc[k].op = OREG;
-		resc[k].type = p->type;
-		resc[k].rval = 15;
-		resc[k].stsize = 0;
-		resc[k].lval = freetemp(TEMPWORDS(p, (need & 0x300) / 0x100));
-		resc[k].sname = fpsym1;
-		resc[k].lval = resc[k].lval >> 3;
+		resc[k].in.op = OREG;
+		resc[k].in.type = p->in.type;
+		resc[k].tn.rval = 15;
+		resc[k].stn.stsize = 0;
+		resc[k].tn.lval = freetemp(TEMPWORDS(p, (need & 0x300) / 0x100));
+		resc[k].in.sname = fpsym1;
+		resc[k].tn.lval = resc[k].tn.lval >> 3;
 		k++;
 	}
 	if (need & 0xC00) {			/* a temporary for parameters */
-		resc[k].op = OREG;
-		resc[k].type = p->type;
-		resc[k].rval = 15;
-		resc[k].stsize = 0;
-		resc[k].lval = freeparm(PARMWORDS(p, (need & 0xC00) / 0x400));
-		resc[k].lval = resc[k].lval >> 3;
+		resc[k].in.op = OREG;
+		resc[k].in.type = p->in.type;
+		resc[k].tn.rval = 15;
+		resc[k].stn.stsize = 0;
+		resc[k].tn.lval = freeparm(PARMWORDS(p, (need & 0xC00) / 0x400));
+		resc[k].tn.lval = resc[k].tn.lval >> 3;
 #ifdef SEG
-		resc[k].sname = symtab0;
+		resc[k].in.sname = symtab0;
 #else
-		resc[k].sname = 0;
+		resc[k].in.sname = 0;
 #endif
 		k++;
 	}
 	for (k0 = 0; k0 < k; k0++)
-		if (resc[k0].rval < 0)
+		if (resc[k0].tn.rval < 0)
 			return 0;
 	nxwork(p, q->nx);
 	return 1;
@@ -330,119 +330,119 @@ allocreg(p, cookie)
 {
 	register int want, r, cls;
 
-	if callop(p->op)
+	if callop(p->in.op)
 		want = callreg(p);
-	else if ((p->rall & MUSTDO) || !(p->rall & NOPREF))
-		want = p->rall & ~MUSTDO;
+	else if ((p->in.rall & MUSTDO) || !(p->in.rall & NOPREF))
+		want = p->in.rall & ~MUSTDO;
 	else
 		want = -1;
-	if (p->sname == fpsym1)
-		fpsym1->soffset = p->lval;
-	else if (p->sname == fpsym2)
-		fpsym2->soffset = p->lval;
+	if (p->in.sname == fpsym1)
+		fpsym1->soffset = p->tn.lval;
+	else if (p->in.sname == fpsym2)
+		fpsym2->soffset = p->tn.lval;
 #ifdef SEG
-	if (((cookie & 0xF) && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
-	    p->type == 8 || p->type == 9 || (dope[p->op] & DIVFLG))
+	if (((cookie & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
+	    p->in.type == 8 || p->in.type == 9 || (dope[p->in.op] & DIVFLG))
 #else
-	if (((cookie & 0xF) && szty(p->type) == 2) || (p->op == STASG && p->stsize == 4) ||
-	    (dope[p->op] & DIVFLG))
+	if (((cookie & 0xF) && szty(p->in.type) == 2) || (p->in.op == STASG && p->stn.stsize == 4) ||
+	    (dope[p->in.op] & DIVFLG))
 #endif
 		cls = 3;
 	else
-		cls = rclass(p->type, want);
+		cls = rclass(p->in.type, want);
 #ifdef OLD_D2R
-	r = cls == 2 && (p->op == STAR || p->op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
+	r = cls == 2 && (p->in.op == STAR || p->in.op == OREG) ? freereg(p, want, cookie) : -1;	/* a load through a pointer: its register */
 #ifdef OLD_D2V
 	if (r != -1 && want == -1 && r < 8 && !d2vfirst(r))
 		r = -1;		/* v0: only when no lighter register is free; r stays busy for the operand */
 #endif
 #ifdef OLD_D2D
-	if (r == -1 && cls == 3 && want == -1 && (p->op == DIV || p->op == MOD || p->op == ASG DIV || p->op == ASG MOD)) {
+	if (r == -1 && cls == 3 && want == -1 && (p->in.op == DIV || p->in.op == MOD || p->in.op == ASG DIV || p->in.op == ASG MOD)) {
 		register NODE *l = getlr(p, 'L');	/* a word operand in an odd register: its pair */
 
-		if (l->op == REG && (l->rval & 1) && l->rval < 8 && szty(l->type) == 1) {
-			rfree(l->rval, l->type);
-			r = getreg(3, l->rval - 1, 0x1000, p->sname);
-			if (r != l->rval - 1) {
+		if (l->in.op == REG && (l->tn.rval & 1) && l->tn.rval < 8 && szty(l->in.type) == 1) {
+			rfree(l->tn.rval, l->in.type);
+			r = getreg(3, l->tn.rval - 1, 0x1000, p->in.sname);
+			if (r != l->tn.rval - 1) {
 				if (r != -1)
-					rfree(r, p->type);
+					rfree(r, p->in.type);
 				r = -1;
-				getreg(2, l->rval, 0x1000, l->sname);
+				getreg(2, l->tn.rval, 0x1000, l->in.sname);
 			}
 		}
 	}
 #endif
 #ifdef OLD_D2N
-	if (r == -1 && cls == 2 && (p->op == NAME || (p->op == OREG && p->rval == 15)))
+	if (r == -1 && cls == 2 && (p->in.op == NAME || (p->in.op == OREG && p->tn.rval == 15)))
 		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: a loaded name is not remembered */
 #endif
 #ifdef OLD_D2C
-	if (r == -1 && p->op == REG)
+	if (r == -1 && p->in.op == REG)
 		r = getreg(cls, want, 0x1000, (struct sym *)0);	/* v0: the copy of a name in a register holds no name */
 #endif
 #ifdef OLD_D2X
-	if (r == -1 && cls == 3 && want == -1 && optype(p->op) == BITYPE && p->op != LS && p->op != RS &&
-	    p->op != ASG LS && p->op != ASG RS && p->left->op == REG && szty(p->left->type) == 2)
+	if (r == -1 && cls == 3 && want == -1 && optype(p->in.op) == BITYPE && p->in.op != LS && p->in.op != RS &&
+	    p->in.op != ASG LS && p->in.op != ASG RS && p->in.left->in.op == REG && szty(p->in.left->in.type) == 2)
 		r = freereg(p, want, cookie);	/* v0: a long result into the pair of its left operand */
 #endif
 #ifdef OLD_D2M
-	if (r == -1 && cls == 3 && want == -1 && p->op == MUL && p->left->op == REG &&
-	    szty(p->left->type) == 1 && p->left->rval < 8 && !(p->left->rval & 1) && d2qfree(p->left->rval)) {
-		rfree(p->left->rval, 4);	/* v0: a word multiplied in the pair of its even register */
-		rsreturn(2, p->left->rval);
-		r = getreg(3, p->left->rval, 0, p->sname);
+	if (r == -1 && cls == 3 && want == -1 && p->in.op == MUL && p->in.left->in.op == REG &&
+	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < 8 && !(p->in.left->tn.rval & 1) && d2qfree(p->in.left->tn.rval)) {
+		rfree(p->in.left->tn.rval, 4);	/* v0: a word multiplied in the pair of its even register */
+		rsreturn(2, p->in.left->tn.rval);
+		r = getreg(3, p->in.left->tn.rval, 0, p->in.sname);
 		if (r == -1)
-			rbusy(p->left->rval, 4, p->left->sname, p->left->lval);
+			rbusy(p->in.left->tn.rval, 4, p->in.left->in.sname, p->in.left->tn.lval);
 	}
 #ifdef OLD_D2MO
 	/* an odd one in the pair below it when the even half is free or idle */
-	if (r == -1 && cls == 3 && want == -1 && p->op == MUL && p->left->op == REG &&
-	    szty(p->left->type) == 1 && p->left->rval < 8 && (p->left->rval & 1) && d2ofree(p->left->rval)) {
-		rfree(p->left->rval, 4);
-		rsreturn(2, p->left->rval);
-		r = getreg(3, p->left->rval - 1, 0, p->sname);
+	if (r == -1 && cls == 3 && want == -1 && p->in.op == MUL && p->in.left->in.op == REG &&
+	    szty(p->in.left->in.type) == 1 && p->in.left->tn.rval < 8 && (p->in.left->tn.rval & 1) && d2ofree(p->in.left->tn.rval)) {
+		rfree(p->in.left->tn.rval, 4);
+		rsreturn(2, p->in.left->tn.rval);
+		r = getreg(3, p->in.left->tn.rval - 1, 0, p->in.sname);
 		if (r == -1)
-			rbusy(p->left->rval, 4, p->left->sname, p->left->lval);
+			rbusy(p->in.left->tn.rval, 4, p->in.left->in.sname, p->in.left->tn.lval);
 	}
 #endif
 #endif
 #ifdef OLD_D2Q
-	if (r == -1 && cls == 3 && (p->op == STAR || p->op == OREG)) {
+	if (r == -1 && cls == 3 && (p->in.op == STAR || p->in.op == OREG)) {
 		register NODE *q = getlr(p, 'L');	/* a long through a pointer: the pair of its even register */
 
-		if (q->op == STAR)
-			q = q->left;
+		if (q->in.op == STAR)
+			q = q->in.left;
 #ifdef OLD_D2QO
 		/* v0p: also when an odd word register is wanted (the low half of the value, an argument) */
-		if ((q->op == OREG || q->op == REG) && q->rval < 8 && !(q->rval & 1) &&
-		    (want == -1 || want == q->rval || (want >= 0 && want < 8 && (want & 1))) && d2qfree(q->rval)) {
+		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && !(q->tn.rval & 1) &&
+		    (want == -1 || want == q->tn.rval || (want >= 0 && want < 8 && (want & 1))) && d2qfree(q->tn.rval)) {
 #else
-		if ((q->op == OREG || q->op == REG) && q->rval < 8 && !(q->rval & 1) && (want == -1 || want == q->rval) &&
-		    d2qfree(q->rval)) {
+		if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && !(q->tn.rval & 1) && (want == -1 || want == q->tn.rval) &&
+		    d2qfree(q->tn.rval)) {
 #endif
-			rfree(q->rval, 4);
-			rsreturn(2, q->rval);		/* merged with its free partner */
-			r = getreg(3, q->rval, 0, p->sname);
+			rfree(q->tn.rval, 4);
+			rsreturn(2, q->tn.rval);		/* merged with its free partner */
+			r = getreg(3, q->tn.rval, 0, p->in.sname);
 			if (r == -1)
-				rbusy(q->rval, 4, q->sname, q->lval);
+				rbusy(q->tn.rval, 4, q->in.sname, q->tn.lval);
 		}
 #ifdef OLD_D2O
 		/* v0p: an odd address register takes its pair too when the even half is free or idle */
-		else if ((q->op == OREG || q->op == REG) && q->rval < 8 && (q->rval & 1) &&
-		    (want == -1 || want == q->rval - 1) && d2ofree(q->rval)) {
-			rfree(q->rval, 4);
-			rsreturn(2, q->rval);
-			r = getreg(3, q->rval - 1, 0, p->sname);
+		else if ((q->in.op == OREG || q->in.op == REG) && q->tn.rval < 8 && (q->tn.rval & 1) &&
+		    (want == -1 || want == q->tn.rval - 1) && d2ofree(q->tn.rval)) {
+			rfree(q->tn.rval, 4);
+			rsreturn(2, q->tn.rval);
+			r = getreg(3, q->tn.rval - 1, 0, p->in.sname);
 			if (r == -1)
-				rbusy(q->rval, 4, q->sname, q->lval);
+				rbusy(q->tn.rval, 4, q->in.sname, q->tn.lval);
 		}
 #endif
 	}
 #endif
 	if (r == -1)
-		r = getreg(cls, want, 0x1000, p->sname);
+		r = getreg(cls, want, 0x1000, p->in.sname);
 #else
-	r = getreg(cls, want, 0x1000, p->sname);
+	r = getreg(cls, want, 0x1000, p->in.sname);
 #endif
 	if (r == -1) {
 		r = freereg(p, want, cookie);
@@ -474,9 +474,9 @@ freereg(p, r, cookie)
 	else
 		return -1;
 	q = getlr(p, side);
-	spare = q->right;
-	ty = p->type;
-	sym = p->sname;
+	spare = q->in.right;
+	ty = p->in.type;
+	sym = p->in.sname;
 	if (r == -1) {
 		if (cookie & 04 | 010) {
 			for (reg = 0; reg <= 7; reg++)
@@ -515,23 +515,23 @@ usable(p, side, r)
 	register int rv;
 
 	p = getlr(p, side);
-	if (p->op == STAR)
-		p = p->left;
-	rv = p->rval;
+	if (p->in.op == STAR)
+		p = p->in.left;
+	rv = p->tn.rval;
 #ifdef SEG
-	if (p->op == OREG) {
+	if (p->in.op == OREG) {
 		if (rv >= 0x100)
 			return (rv >> 8) - 1 == r || (rv >> 8) - 1 + 1 == r || (rv & 0xFF) - 1 == r;
-		return rv == r || (p->lval == 0 && p->sname == 0 && !(p->op == OREG && p->stsize < 0) && rv + 1 == r);
+		return rv == r || (p->tn.lval == 0 && p->in.sname == 0 && !(p->in.op == OREG && p->stn.stsize < 0) && rv + 1 == r);
 	}
-	if (p->op == REG)
-		return rv == r || (szty(p->type) == 2 && rv + 1 == r);
+	if (p->in.op == REG)
+		return rv == r || (szty(p->in.type) == 2 && rv + 1 == r);
 	return 0;
 #else
-	if (p->op == OREG)
+	if (p->in.op == OREG)
 		return rv == r;
-	if (p->op == REG)
-		return (rv == r && (r != 0 || (p->type & 0x30) != 0x10)) || (szty(p->type) == 2 && rv + 1 == r);
+	if (p->in.op == REG)
+		return (rv == r && (r != 0 || (p->in.type & 0x30) != 0x10)) || (szty(p->in.type) == 2 && rv + 1 == r);
 	return 0;
 #endif
 }
@@ -541,13 +541,13 @@ void
 recl2(p)
 	register NODE *p;
 {
-	register int r = p->rval;
+	register int r = p->tn.rval;
 
-	if (p->op == REG) {
-		rfree(r, p->type);
+	if (p->in.op == REG) {
+		rfree(r, p->in.type);
 		return;
 	}
-	if (p->op != OREG)
+	if (p->in.op != OREG)
 		return;
 	if (r >= 0x100) {			/* base and index register */
 		rfree((r >> 8) - 1, 0x14);
@@ -555,7 +555,7 @@ recl2(p)
 			rfree((r & 0xFF) - 1, 4);
 		return;
 	}
-	if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
+	if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))
 		rfree(r, 4);
 	else
 		rfree(r, 0x14);
@@ -638,7 +638,7 @@ reclaim(p, rewrite, cookie)
 	register int *rw;
 	NODE *a[5];
 
-	o = p->op;
+	o = p->in.op;
 	if (rewrite == RNOP)
 		goto done;
 	if (o == FREE && rewrite == RNULL)
@@ -651,9 +651,9 @@ reclaim(p, rewrite, cookie)
 	}
 	if ((cookie & 0x20) && (rewrite & RESCC)) {	/* the condition codes */
 		tfree(p);
-		p->op = CCODES;
-		p->lval = want;
-		p->rval = 0;
+		p->in.op = CCODES;
+		p->tn.lval = want;
+		p->tn.rval = 0;
 		goto done;
 	}
 	ap = a;
@@ -680,18 +680,18 @@ reclaim(p, rewrite, cookie)
 	cerror("cannot reclaim");
 found:
 	if (o == STARG)
-		p = p->left;
-	c->type = p->type;
+		p = p->in.left;
+	c->in.type = p->in.type;
 	c = tcopy(c);
 	tfree(p);
-	p->op = c->op;
-	p->lval = c->lval;
-	p->rval = c->rval;
-	p->sname = c->sname;
-	if (c->op == OREG)
-		p->stsize = c->stsize;
-	c->op = FREE;
-	switch (p->op) {
+	p->in.op = c->in.op;
+	p->tn.lval = c->tn.lval;
+	p->tn.rval = c->tn.rval;
+	p->in.sname = c->in.sname;
+	if (c->in.op == OREG)
+		p->stn.stsize = c->stn.stsize;
+	c->in.op = FREE;
+	switch (p->in.op) {
 	case REG:
 		goto isreg;
 	case OREG:
@@ -703,50 +703,50 @@ done:
 	return;
 isreg:
 	if (!tflag) {
-		if (p->type == 3)
-			p->type = 4;
-		else if (p->type == 13)
-			p->type = 14;
+		if (p->in.type == 3)
+			p->in.type = 4;
+		else if (p->in.type == 13)
+			p->in.type = 14;
 	}
 	if (rewrite & RESC) {			/* the second register of a long result */
-		want = p->rval;
+		want = p->tn.rval;
 		want++;
-		if (!(p->rall & MUSTDO))
-			p->rall = (p->rall & NOPREF) | want;
-		rfree(p->rval, p->type);
-		if (getreg(2, want, 0x1000, p->sname) != want)
+		if (!(p->in.rall & MUSTDO))
+			p->in.rall = (p->in.rall & NOPREF) | want;
+		rfree(p->tn.rval, p->in.type);
+		if (getreg(2, want, 0x1000, p->in.sname) != want)
 			cerror("reclaim: cannot find register free");
-		p->rval = want;
-		if (p->type == 5)
-			p->type = 4;
-		else if (p->type == 15)
+		p->tn.rval = want;
+		if (p->in.type == 5)
+			p->in.type = 4;
+		else if (p->in.type == 15)
 			;
-		p->type = 14;		/* sic: also after the LONG case (the original jumps to this store) */
-		if (p->rall & MUSTDO)
-			want = p->rall & ~MUSTDO;
+		p->in.type = 14;		/* sic: also after the LONG case (the original jumps to this store) */
+		if (p->in.rall & MUSTDO)
+			want = p->in.rall & ~MUSTDO;
 	} else if (o == 0x3E || o == 0x3F) {	/* a long result of a shift or divide goes to rr4 */
-		if (p->type == 5 || p->type == 15) {
-			rfree(p->rval, p->type);
-			if (getreg(3, 4, 0x1000, p->sname) != 4)
+		if (p->in.type == 5 || p->in.type == 15) {
+			rfree(p->tn.rval, p->in.type);
+			if (getreg(3, 4, 0x1000, p->in.sname) != 4)
 				cerror("reclaim: cannot find register free");
-			p->rval = 4;
-			if (!(p->rall & MUSTDO))
-				p->rall = (p->rall & NOPREF) | 4;
+			p->tn.rval = 4;
+			if (!(p->in.rall & MUSTDO))
+				p->in.rall = (p->in.rall & NOPREF) | 4;
 		}
 	}
-	if (!(p->rall & MUSTDO))
+	if (!(p->in.rall & MUSTDO))
 		goto done;
 	if (!(rewrite & RESC)) {
-		want = p->rall & ~MUSTDO;
+		want = p->in.rall & ~MUSTDO;
 		if (want & 0x2000)
 			goto done;
 	}
-	if (want == p->rval)
+	if (want == p->tn.rval)
 		goto done;
-	rfree(p->rval, p->type);
-	if (getreg(rclass(p->type, want), want, 0x1000, p->sname) != want)
+	rfree(p->tn.rval, p->in.type);
+	if (getreg(rclass(p->in.type, want), want, 0x1000, p->in.sname) != want)
 		cerror("reclaim dest reg not free");
-	rmove(want, p->rval, p->type);
-	p->rval = want;
+	rmove(want, p->tn.rval, p->in.type);
+	p->tn.rval = want;
 	goto done;
 }

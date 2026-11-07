@@ -91,9 +91,9 @@ int unused8[9] = { 0 };
 #endif
 
 #define TEMPWORDS(p, nfield) \
-	((p->op == STCALL || p->op == STARG || p->op == USTCALL || p->op == STASG) ? ((unsigned)((p->stsize << 3) + 15)) >> 4 : \
-	 (p->type == 5 || p->type == 15) ? 2 : (p->type & 0x30) == 0x10 ? PTRWORDS : \
-	 p->type == 7 ? 4 : p->type == 6 ? 2 : (nfield))
+	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
+	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
+	 p->in.type == 7 ? 4 : p->in.type == 6 ? 2 : (nfield))
 
 #define NERRMAX	30
 
@@ -159,7 +159,7 @@ tinit()
 	NODE *p;
 
 	for (p = node; p <= &node[NTREE - 1]; p++)
-		p->op = FREE;
+		p->in.op = FREE;
 	lastfree = node;
 }
 
@@ -173,8 +173,8 @@ talloc()
 	start = lastfree;
 	p = start == &node[NTREE - 1] ? node : start + 1;
 	while (p != start) {
-		if (p->op == FREE) {
-			p->sname = 0;
+		if (p->in.op == FREE) {
+			p->in.sname = 0;
 			return lastfree = p;
 		}
 		p = p == &node[NTREE - 1] ? node : p + 1;
@@ -190,8 +190,8 @@ tcheck()
 
 	if (!nerrors)
 		for (p = node; p <= &node[NTREE - 1]; p++)
-			if (p->op != FREE)
-				cerror("wasted space: %%%x(%d)", p, p->op);
+			if (p->in.op != FREE)
+				cerror("wasted space: %%%x(%d)", p, p->in.op);
 	tinit();
 }
 
@@ -199,7 +199,7 @@ void
 tfree(p)
 	NODE *p;
 {
-	if (p->op != FREE)
+	if (p->in.op != FREE)
 		walkf(p, tfree1);
 }
 
@@ -210,7 +210,7 @@ tfree1(p)
 	if (p == 0)
 		cerror("freeing blank tree!");
 	else
-		p->op = FREE;
+		p->in.op = FREE;
 }
 
 /* walk the tree before the operands, with the value passed down: f(p, down, &down1, &down2) */
@@ -225,14 +225,14 @@ fwalk(p, f, down)
 again:
 	down1 = down2 = 0;
 	(*f)(p, down, &down1, &down2);
-	switch optype(p->op) {
+	switch optype(p->in.op) {
 	case BITYPE:
-		fwalk(p->left, f, down1);
-		p = p->right;
+		fwalk(p->in.left, f, down1);
+		p = p->in.right;
 		down = down2;
 		goto again;
 	case UTYPE:
-		p = p->left;
+		p = p->in.left;
 		down = down1;
 		goto again;
 	}
@@ -248,11 +248,11 @@ walkf(p, f)
 
 	if (p == 0)
 		return;
-	kind = optype(p->op);
+	kind = optype(p->in.op);
 	if (kind != LTYPE)
-		walkf(p->left, f);
+		walkf(p->in.left, f);
 	if (kind == BITYPE)
-		walkf(p->right, f);
+		walkf(p->in.right, f);
 	(*f)(p);
 }
 
@@ -323,11 +323,11 @@ argsize(p)
 {
 	int t, u;
 
-	if (p->op == STARG)
-		return (unsigned)p->stsize >> 1;
-	if (p->op == NAME && p->type == 8)
-		return p->sname->ssize / 16;
-	t = u = szty(p->type == 6 ? 7 : p->type);
+	if (p->in.op == STARG)
+		return (unsigned)p->stn.stsize >> 1;
+	if (p->in.op == NAME && p->in.type == 8)
+		return p->in.sname->ssize / 16;
+	t = u = szty(p->in.type == 6 ? 7 : p->in.type);
 	return t;
 }
 
@@ -369,7 +369,7 @@ int
 callreg(p)
 	register NODE *p;
 {
-	if (p && (p->type == 7 || p->type == 6))
+	if (p && (p->in.type == 7 || p->in.type == 6))
 		return 0x10;
 	return 2;
 }
@@ -596,24 +596,24 @@ tcopy(p)
 	register int r;
 
 	ncopy(q = talloc(), p);
-	r = p->rval;
-	if (p->op == REG)
-		rbusy(r, p->type, p->sname, p->lval);
-	else if (p->op == OREG) {
+	r = p->tn.rval;
+	if (p->in.op == REG)
+		rbusy(r, p->in.type, p->in.sname, p->tn.lval);
+	else if (p->in.op == OREG) {
 		if (r >= 0x100) {
-			rbusy((r & 0xFF) - 1, 0x14, p->sname, p->lval);
+			rbusy((r & 0xFF) - 1, 0x14, p->in.sname, p->tn.lval);
 			if (r & 0xFF)
 				rbusy((r >> 8) - 1, 4);
-		} else if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
-			rbusy(r, 4, p->sname, p->lval);
+		} else if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))
+			rbusy(r, 4, p->in.sname, p->tn.lval);
 		else
-			rbusy(r, 0x14, p->sname, p->lval);
+			rbusy(r, 0x14, p->in.sname, p->tn.lval);
 	}
-	switch optype(q->op) {
+	switch optype(q->in.op) {
 	case BITYPE:
-		q->right = tcopy(p->right);
+		q->in.right = tcopy(p->in.right);
 	case UTYPE:
-		q->left = tcopy(p->left);
+		q->in.left = tcopy(p->in.left);
 		break;
 	}
 	return q;
@@ -633,12 +633,12 @@ ispow2(c)
 	return n;
 }
 
-/* is p->lval an operand that a one word instruction takes: an unnamed constant */
+/* is p->tn.lval an operand that a one word instruction takes: an unnamed constant */
 int
 plainicon(p)
 	register NODE *p;
 {
-	return p->op == ICON && p->sname == 0 && p->rval >= 0;
+	return p->in.op == ICON && p->in.sname == 0 && p->tn.rval >= 0;
 }
 
 int revrel[] = { EQ, NE, GE, GT, LE, LT, UGE, UGT, ULE, ULT };

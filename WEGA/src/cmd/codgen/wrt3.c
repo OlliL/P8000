@@ -93,11 +93,11 @@ parminit(p)
 	register struct rs *q;
 	struct sym *s;
 
-	if (p->op != NAME)
+	if (p->in.op != NAME)
 		return;
 	mapsym(p);
 	sz = argsize(p);
-	s = p->sname;
+	s = p->in.sname;
 	n = s->sbyte5;
 	r = s->stype;
 #ifdef SEG
@@ -111,21 +111,21 @@ parminit(p)
 		n -= 7;
 	if (rflag && s->sclass == 4 && regvar[n].sym != s)
 		s->sclass = 9;
-	if (p->lval < 0 && s->sclass != 4 && s->sclass != 8)
-		s->sbyte5 = -p->lval;
+	if (p->tn.lval < 0 && s->sclass != 4 && s->sclass != 8)
+		s->sbyte5 = -p->tn.lval;
 	r = s->sbyte5;
-	if (p->type == 8 || p->type == 9) {
+	if (p->in.type == 8 || p->in.type == 9) {
 		if (sz == 1)
 			t2 = 4;
 		else if (sz == 2)
 			t2 = 5;
 		else
-			t2 = p->type;
+			t2 = p->in.type;
 	} else
-		t2 = p->type;
+		t2 = p->in.type;
 	cls = rclass(t2, r);
 #ifdef OLD_D22
-	if (s->sclass == 9 && p->lval < 0 && (t2 == 6 || t2 == 7) && r < 8) {	/* v0p: a double parameter in rq4 */
+	if (s->sclass == 9 && p->tn.lval < 0 && (t2 == 6 || t2 == 7) && r < 8) {	/* v0p: a double parameter in rq4 */
 		if (nparmtab > 9)
 			cerror("rinit: formal paramter array overflow");
 		parmtab[nparmtab].reg = s->sbyte5;
@@ -136,7 +136,7 @@ parminit(p)
 		return;
 	}
 #endif
-	if ((s->sclass == 9 && p->lval < 0) || s->sclass == 4) {
+	if ((s->sclass == 9 && p->tn.lval < 0) || s->sclass == 4) {
 		for (q = rsuse; q; q = q->next)
 			if (q->reg == r) {
 				q->busy = 0;
@@ -146,7 +146,7 @@ parminit(p)
 		rfree(r, t2);
 	got:
 		if (s->sclass == 4) {
-			if (s->stype == 7 || (s->stype == 6 && p->lval < 0))
+			if (s->stype == 7 || (s->stype == 6 && p->tn.lval < 0))
 				printf("\tfldd\t%s,", rnames[r]);
 			else if (s->stype == 6)
 				printf("\tflds\t%s,", rnames[r]);
@@ -157,16 +157,16 @@ parminit(p)
 					printf("\tldl\tr");
 				printf("%s,", rnames[r]);
 			}
-			if (p->lval < 0) {
+			if (p->tn.lval < 0) {
 				if (sz == 2)
 					putchar('r');
-				printf("%s\n", rnames[-p->lval]);
+				printf("%s\n", rnames[-p->tn.lval]);
 				return;
 			}
 #ifdef SEG
-				printf("_stkseg+~L2+%ld(fp)\n", p->lval);
+				printf("_stkseg+~L2+%ld(fp)\n", p->tn.lval);
 #else
-				printf("~L2+%ld(fp)\n", p->lval);
+				printf("~L2+%ld(fp)\n", p->tn.lval);
 #endif
 			return;
 		}
@@ -197,7 +197,7 @@ parminit(p)
 		s->sflags &= ~8;
 		return;
 	}
-	if (s->sclass == 9 && p->lval >= 0)
+	if (s->sclass == 9 && p->tn.lval >= 0)
 		s->sflags |= 8;
 	else if (s->sclass != 9)
 		cerror("illegal class in PROC tree");

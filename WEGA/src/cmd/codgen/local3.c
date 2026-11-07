@@ -156,7 +156,7 @@ void
 psuffix(p)
 	register NODE *p;
 {
-	tsuffix(p->type);
+	tsuffix(p->in.type);
 }
 
 void
@@ -537,13 +537,13 @@ void
 hopcode(p)
 	register NODE *p;
 {
-	register int o = p->op;
+	register int o = p->in.op;
 	register struct hoptab *q;
-	register int t = p->type;
+	register int t = p->in.type;
 
 	q = (t == 7 || t == 6) ? fhoptab : ihoptab;
-	for (; q->op >= 0; q++)
-		if (q->op == o && ttype(t, q->tword)) {
+	for (; q->in.op >= 0; q++)
+		if (q->in.op == o && ttype(t, q->tword)) {
 			printf("%s", q->str);
 			return;
 		}
@@ -630,10 +630,10 @@ zzzcode(p, c)
 		l = getlr(p, c == '<' ? 'L' : 'R');
 	case 'B':
 		/* the type suffix of the node, none when a float operation works on registers only */
-		if (p->type == 6 || p->type == 7) {
+		if (p->in.type == 6 || p->in.type == 7) {
 			q = getlr(p, 'L');
 			r = getlr(p, 'R');
-			if (q->op == REG && r->op == REG)
+			if (q->in.op == REG && r->in.op == REG)
 				return;
 		}
 		psuffix(c == 'B' ? p : l);
@@ -641,13 +641,13 @@ zzzcode(p, c)
 	case 'R':
 		/* "sgl," or "dbl," */
 		q = getlr(p, 'L');
-		if (q->type == 6)
+		if (q->in.type == 6)
 			printf("sgl,");
-		else if (q->type == 7)
+		else if (q->in.type == 7)
 			printf("dbl,");
 		return;
 	case 'f':
-		if (p->op == FNE || p->op == FEQ)
+		if (p->in.op == FNE || p->in.op == FEQ)
 			return;
 		putchar('x');
 		return;
@@ -662,21 +662,21 @@ zzzcode(p, c)
 		return;
 	case 'F':
 	case 'I':
-		cbgen(p->op, p->label, c);
+		cbgen(p->in.op, p->bn.label, c);
 		return;
 	case '2':
 		/* log2 of the constant */
-		printf("%d", ispow2(p->right->lval));
+		printf("%d", ispow2(p->in.right->tn.lval));
 		return;
 	case '~':
-		printf("%d", ispow2(~p->right->lval));
+		printf("%d", ispow2(~p->in.right->tn.lval));
 		return;
 	case 'i':
 		/* inc/dec/add/sub or the mnemonic of the operator, with the type suffix */
 		if (!tshape(z = getlr(p, 'R'), SCON))
 			cerror("bad Zi");
 		if (plainicon(z))
-			z->lval = geninc(p->op, z->lval);
+			z->tn.lval = geninc(p->in.op, z->tn.lval);
 		else
 			hopcode(p);
 		psuffix(p);
@@ -685,25 +685,25 @@ zzzcode(p, c)
 		nosuffix++;
 		return;
 	case 'C':
-		if (p->type == 2)
-			p->type = 4;
-		else if (p->type == 12)
-			p->type = 14;
+		if (p->in.type == 2)
+			p->in.type = 4;
+		else if (p->in.type == 12)
+			p->in.type = 14;
 		else
 			cerror("bad ZC");
 		return;
 	case 'c':
 		/* float <-> double: the operand has to be in a B register */
-		if (p->type == 6)
-			p->type = 7;
+		if (p->in.type == 6)
+			p->in.type = 7;
 		else
-			p->type = 6;
-		if (!tshape(p->left, STBREG))
-			order(p->left, STBREG);
+			p->in.type = 6;
+		if (!tshape(p->in.left, STBREG))
+			order(p->in.left, STBREG);
 		return;
 	case 'N':
 		/* a comparison used as a value: 0 or 1 */
-		switch ((int)p->lval) {
+		switch ((int)p->tn.lval) {
 		case EQ:
 		case NE:
 		case LE:
@@ -720,14 +720,14 @@ zzzcode(p, c)
 		case FLT:
 		case FGE:
 		case FGT:
-			deflab(p->label);
+			deflab(p->bn.label);
 			expand(p, FOREFF, "\tldk\tA1,#0\n");
-			expand(p, FOREFF, tcctab[negrel[p->lval - EQ] - EQ]);
+			expand(p, FOREFF, tcctab[negrel[p->tn.lval - EQ] - EQ]);
 			return;
 		}
 		expand(p, FOREFF, "\tldk\tA1,#1\n");
 		cbgen(0, n = getlab(), 'I');
-		deflab(p->label);
+		deflab(p->bn.label);
 		expand(p, FOREFF, "\tldk\tA1,#0\n");
 		deflab(n);
 		return;
@@ -735,9 +735,9 @@ zzzcode(p, c)
 	case 'h':
 		/* the low byte register of a word register */
 		p = getlr(p, c == 'H' ? 'L' : 'R');
-		if (p->rval > 7 || p->rval < 0)
-			cerror("bad %c call: register = %s\n", c, rnames[p->rval]);
-		printf(rhnames[p->rval]);
+		if (p->tn.rval > 7 || p->tn.rval < 0)
+			cerror("bad %c call: register = %s\n", c, rnames[p->tn.rval]);
+		printf(rhnames[p->tn.rval]);
 		return;
 	case 'l':
 	case 'r':
@@ -747,7 +747,7 @@ zzzcode(p, c)
 		upperlval = 0;
 		return;
 	case 'Q':
-		if (p->type == 5)
+		if (p->in.type == 5)
 			printf("\textsl\trq4\n");
 		else
 			printf("\tsubl\trr4,rr4\n");
@@ -775,24 +775,24 @@ zzzcode(p, c)
 			if (!rp)
 				cerror("zzzcode : can't find %d on rslist\n", savereg[nsave]);
 			rp->busy = 0;
-			if ((p->left->op == REG || p->left->op == OREG) && p->left->rval == savereg[nsave])
-				p->left->rval = saveorig[nsave];
-			if ((p->right->op == REG || p->right->op == OREG) && p->right->rval == savereg[nsave])
-				p->right->rval = saveorig[nsave];
+			if ((p->in.left->in.op == REG || p->in.left->in.op == OREG) && p->in.left->tn.rval == savereg[nsave])
+				p->in.left->tn.rval = saveorig[nsave];
+			if ((p->in.right->in.op == REG || p->in.right->in.op == OREG) && p->in.right->tn.rval == savereg[nsave])
+				p->in.right->tn.rval = saveorig[nsave];
 			rmode = m;
 			rlmode = k;
 		}
 		return;
 	case 'u':
 #ifdef SEG
-		u = p->left;
-		if (u->op != OREG || u->lval != 0 || u->sname != 0 || (u->op == OREG && u->stsize < 0)) {
+		u = p->in.left;
+		if (u->in.op != OREG || u->tn.lval != 0 || u->in.sname != 0 || (u->in.op == OREG && u->stn.stsize < 0)) {
 			expand(p, FOREFF, "\tZtZi\tUL,AR\n");
 			return;
 		}
-		printf("\tinc\t%s,#2\n", rnames[u->rval + 1]);
+		printf("\tinc\t%s,#2\n", rnames[u->tn.rval + 1]);
 		expand(p, FOREFF, "\tZtZi\tAL,AR\n");
-		printf("\tdec\t%s,#2\n", rnames[u->rval + 1]);
+		printf("\tdec\t%s,#2\n", rnames[u->tn.rval + 1]);
 		return;
 #else
 		expand(p, FOREFF, "\tZtZi\tUL,AR\n");
@@ -803,14 +803,14 @@ zzzcode(p, c)
 		switch (fldsz) {
 		case 1:
 		case 2:
-			if (p->right->lval & 1)
+			if (p->in.right->tn.lval & 1)
 				expand(p, FOREFF, "\tset\tAL,");
 			else
 				expand(p, FOREFF, "\tres\tAL,");
 			printf("#%d\n", fldshf);
 			if (fldsz == 1)
 				return;
-			if (p->right->lval & 2)
+			if (p->in.right->tn.lval & 2)
 				expand(p, FOREFF, "\tset\tAL,");
 			else
 				expand(p, FOREFF, "\tres\tAL,");
@@ -821,40 +821,40 @@ zzzcode(p, c)
 				break;
 			if (fldoff) {
 #ifdef SEG
-				if (p->left->left->lval != 0)
-					p->left->left->lval += 1;
+				if (p->in.left->in.left->tn.lval != 0)
+					p->in.left->in.left->tn.lval += 1;
 				else
-					printf("\tinc\t%s,#1\n", rnames[p->left->left->rval + 1]);
+					printf("\tinc\t%s,#1\n", rnames[p->in.left->in.left->tn.rval + 1]);
 #else
-				p->left->left->lval += 1;
+				p->in.left->in.left->tn.lval += 1;
 #endif
 			}
-			if (p->right->lval & 0xFFFF)
+			if (p->in.right->tn.lval & 0xFFFF)
 				expand(p, FOREFF, "\tldb\tWAL,AR\n");
 			else
 				expand(p, FOREFF, "\tclrb\tWAL\n");
 			return;
 		case 16:
-			if (p->right->lval)
+			if (p->in.right->tn.lval)
 				expand(p, FOREFF, "\tld\tAL,AR\n");
 			else
 				expand(p, FOREFF, "\tclr\tAL\n");
 			return;
 		}
 		expand(p, FOREFF, "\tld\tA1,AL\n\tand\tA1,#N\n");
-		if (p->right->lval) {
+		if (p->in.right->tn.lval) {
 			expand(p, FOREFF, "\tor\tA1,");
-			printf("#%d\n", ((int)p->right->lval & ~(-1 << fldsz)) << fldshf);
+			printf("#%d\n", ((int)p->in.right->tn.lval & ~(-1 << fldsz)) << fldshf);
 		}
 		expand(p, FOREFF, "\tld\tAL,A1\n");
 		return;
 	case 'L':
 		/* the address of the left operand into the register A1 */
-		if ((u = getlr(p, 'L'))->op == NAME) {
+		if ((u = getlr(p, 'L'))->in.op == NAME) {
 			expand(p, FOREFF, "\tldZB\tA1,#AL\n");
 			return;
 		}
-		if (u->rval >= 0x100 || u->lval != 0 || u->sname != 0 || (u->op == OREG && u->stsize < 0)) {
+		if (u->tn.rval >= 0x100 || u->tn.lval != 0 || u->in.sname != 0 || (u->in.op == OREG && u->stn.stsize < 0)) {
 #ifdef SEG
 			expand(p, FOREFF, "\tlda\tVA1X,AL\n");
 			expand(p, FOREFF, "\tand\tA1,#%7f00\n");
@@ -865,9 +865,9 @@ zzzcode(p, c)
 		}
 		expand(p, FOREFF, "\tldZB\tA1");
 #ifdef SEG
-		printf(",r%s\n", rnames[u->rval]);
+		printf(",r%s\n", rnames[u->tn.rval]);
 #else
-		printf(",%s\n", rnames[u->rval]);
+		printf(",%s\n", rnames[u->tn.rval]);
 #endif
 		return;
 	case 'M':
@@ -875,15 +875,15 @@ zzzcode(p, c)
 		{
 		int t;
 
-		u = p->left;
-		t = u->type;
+		u = p->in.left;
+		t = u->in.type;
 		if (t == 12)
 			expand(p, FOREFF, "\tldk\tU1,#0\n");
-		if (u->op != REG || getlr(p, '1')->rval + 1 != u->rval)
+		if (u->in.op != REG || getlr(p, '1')->tn.rval + 1 != u->tn.rval)
 			expand(u, FOREFF, "\tldZB\tU1,AL\n");
 		if (t == 2)
 			expand(p, FOREFF, "\textsb\tU1\n");
-		if (!(dope[p->op] & DIVFLAG))
+		if (!(dope[p->in.op] & DIVFLAG))
 			return;
 		if ((unsigned)t <= 15 && (unsigned)t >= 12)
 			expand(p, FOREFF, "\tldk\tA1,#0\n");
@@ -905,33 +905,33 @@ zzzcode(p, c)
 		int k2;
 		int cls;
 
-		if (p->op != STASG)
+		if (p->in.op != STASG)
 			cerror("zzzcode: bad ZS");
-		u = p->left;
-		r2 = p->right;
-		n2 = p->stsize;
+		u = p->in.left;
+		r2 = p->in.right;
+		n2 = p->stn.stsize;
 		rg = getlr(p, '1');
-		rn = rg->rval;
+		rn = rg->tn.rval;
 		name = rnames[rn];
-		k2 = szty(rg->type) == 2 ? 5 : 4;
-		cls = rclass(rg->type, -1);
+		k2 = szty(rg->in.type) == 2 ? 5 : 4;
+		cls = rclass(rg->in.type, -1);
 		rp2 = rfind(rn, cls);
 		rp2->busy = 1;
 		if (n2 <= 4) {
 			tmp = 0;
-			if (r2->op == ICON) {
+			if (r2->in.op == ICON) {
 				tmp = tcopy(r2);
-				r2->op = NAME;
-				r2->type = DECREF(r2->type);
+				r2->in.op = NAME;
+				r2->in.type = DECREF(r2->in.type);
 			} else if (!tshape(r2, STAREG | SAREG))
 				order(r2, STAREG | SAREG);
-			if (r2->op == REG) {
-				if (notoff(r2->type, r2->rval))
+			if (r2->in.op == REG) {
+				if (notoff(r2->in.type, r2->tn.rval))
 					order(r2, STAREG);
 				tmp = tcopy(r2);
-				r2->op = OREG;
-				r2->sname = 0;
-				r2->stsize = 0;
+				r2->in.op = OREG;
+				r2->in.sname = 0;
+				r2->stn.stsize = 0;
 			}
 			printf("\tld");
 			if (n2 == 4) {
@@ -950,26 +950,26 @@ zzzcode(p, c)
 			if (tmp) {
 				walkf(r2, recl2);
 				tfree(r2);
-				p->right = tmp;
+				p->in.right = tmp;
 			}
 		} else {
 			tmp = 0;
 			if (!tshape(r2, STAREG))
 				order(r2, STAREG);
-			if (notoff(r2->type, r2->rval))
+			if (notoff(r2->in.type, r2->tn.rval))
 				order(r2, STAREG);
-			if (u->op == OREG && u->lval == 0 && u->sname == 0 && u->rval < 0x100) {
+			if (u->in.op == OREG && u->tn.lval == 0 && u->in.sname == 0 && u->tn.rval < 0x100) {
 				tmp = tcopy(u);
-				u->op = REG;
-				if ((u->type & 0x30) != 0x10)
-					u->type = INCREF(u->type);
+				u->in.op = REG;
+				if ((u->in.type & 0x30) != 0x10)
+					u->in.type = INCREF(u->in.type);
 			}
 			if (!tshape(u, STAREG)) {
 				if (!tmp)
 					tmp = tcopy(u);
 				order(u, STAREG);
 			}
-			if (notoff(u->type, u->rval))
+			if (notoff(u->in.type, u->tn.rval))
 				order(u, STAREG);
 			n2 >>= 1;
 			if (n2 < 16)
@@ -984,23 +984,23 @@ zzzcode(p, c)
 			printf("%s\n", name);
 			rfree(rn, k2);
 			if (c == 's') {
-				if (!tmp || (tmp && (tmp->op == REG || tmp->op == OREG) && tmp->rval == u->rval))
+				if (!tmp || (tmp && (tmp->in.op == REG || tmp->in.op == OREG) && tmp->tn.rval == u->tn.rval))
 #ifdef SEG
-					printf("\tsub\t%s,#%d\n", rnames[u->rval + 1], n2 * 2);
+					printf("\tsub\t%s,#%d\n", rnames[u->tn.rval + 1], n2 * 2);
 #else
-					printf("\tsub\t%s,#%d\n", rnames[u->rval], n2 * 2);
+					printf("\tsub\t%s,#%d\n", rnames[u->tn.rval], n2 * 2);
 #endif
 			} else
 #ifdef SEG
-				printf("\tsub\t%s,#%d\n", rnames[r2->rval + 1], n2 * 2);
+				printf("\tsub\t%s,#%d\n", rnames[r2->tn.rval + 1], n2 * 2);
 #else
-				printf("\tsub\t%s,#%d\n", rnames[r2->rval], n2 * 2);
+				printf("\tsub\t%s,#%d\n", rnames[r2->tn.rval], n2 * 2);
 #endif
 			if (tmp) {
 				if (c == 's') {
 					walkf(u, recl2);
 					tfree(u);
-					p->left = tmp;
+					p->in.left = tmp;
 				} else {
 					walkf(tmp, recl2);
 					tfree(tmp);
@@ -1008,7 +1008,7 @@ zzzcode(p, c)
 			}
 		}
 		if (c == 's')
-			p->type = p->left->type;
+			p->in.type = p->in.left->in.type;
 		return;
 		}
 	case 'A':
@@ -1016,23 +1016,23 @@ zzzcode(p, c)
 		{
 		int n3, m3, k3;
 
-		if (p->op != STARG)
+		if (p->in.op != STARG)
 			cerror("zzzcode: bad ZA");
-		u = p->left;
-		n3 = p->stsize;
+		u = p->in.left;
+		n3 = p->stn.stsize;
 		if (n3 <= 0 || n3 > 0x6b5d)
 			cerror("structure size out of range: %ld", (long)n3);
 		if (n3 <= 4) {
-			if (u->op == ICON)
-				u->op = NAME;
+			if (u->in.op == ICON)
+				u->in.op = NAME;
 			if (!tshape(u, SNAME | STAREG | SAREG))
 				order(u, SNAME | STAREG | SAREG);
-			if (u->op == REG) {
-				if (notoff(u->type, u->rval))
+			if (u->in.op == REG) {
+				if (notoff(u->in.type, u->tn.rval))
 					order(u, STAREG);
-				u->op = OREG;
-				u->sname = 0;
-				u->stsize = 0;
+				u->in.op = OREG;
+				u->in.sname = 0;
+				u->stn.stsize = 0;
 			}
 			printf("\tld");
 			if (n3 == 4) {
@@ -1040,12 +1040,12 @@ zzzcode(p, c)
 				rmode++;
 			} else
 				putchar('\t');
-			m3 = p->rall & 0xEFFF;
+			m3 = p->in.rall & 0xEFFF;
 			printf("%s,", rnames[m3]);
 			expand(p, FOREFF, "AL\n");
-			k3 = getreg(n3 == 4 ? 3 : 2, m3, 0x1000, p->sname);
+			k3 = getreg(n3 == 4 ? 3 : 2, m3, 0x1000, p->in.sname);
 			if (m3 == k3) {
-				rbusy(m3, n3 == 4 ? 5 : 4, p->sname, p->lval);
+				rbusy(m3, n3 == 4 ? 5 : 4, p->in.sname, p->tn.lval);
 				return;
 			}
 			rfree(k3, n3 == 4 ? 5 : 4);
@@ -1054,10 +1054,10 @@ zzzcode(p, c)
 		}
 		if (!tshape(u, STAREG))
 			order(u, STAREG);
-		if (notoff(u->type, u->rval))
+		if (notoff(u->in.type, u->tn.rval))
 			order(u, STAREG);
 		n3 >>= 1;
-		printf("\tldm\t%s,", rnames[p->rall & 0xEFFF]);
+		printf("\tldm\t%s,", rnames[p->in.rall & 0xEFFF]);
 #ifdef SEG
 		expand(p, FOREFF, "@VAL");
 #else
@@ -1068,84 +1068,84 @@ zzzcode(p, c)
 		}
 	case 'T':
 		/* the second word of a long operand, for the conversion to a shorter type */
-		u = (NODE *)p->type;
-		p = p->left;
-		n = p->type;
-		switch (p->op) {
+		u = (NODE *)p->in.type;
+		p = p->in.left;
+		n = p->in.type;
+		switch (p->in.op) {
 		case NAME:
 		case OREG:
 #ifdef SEG
-			if (p->rval == 15)
+			if (p->tn.rval == 15)
 				goto frame;
 			order(p, 6);
 		case REG:
 			if (szty(n) != 2)
 				return;
-			rfree(p->rval, p->type);
+			rfree(p->tn.rval, p->in.type);
 			rfreeall(0);
-			p->rval++;
-			p->type = (int)u;
-			if (p->rval <= 7 && getreg(2, p->rval, 0x1000, 0) != p->rval)
+			p->tn.rval++;
+			p->in.type = (int)u;
+			if (p->tn.rval <= 7 && getreg(2, p->tn.rval, 0x1000, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 		frame:
-			if (p->sname->sclass == 3 && p->op == NAME && !(p->sname->sflags >> 2 & 1) && p->rval >= 0) {
+			if (p->in.sname->sclass == 3 && p->in.op == NAME && !(p->in.sname->sflags >> 2 & 1) && p->tn.rval >= 0) {
 				if (szty(n) == 2) {
 					if ((int)u == 2 || (int)u == 12)
-						p->rval += 3;
+						p->tn.rval += 3;
 					else {
 						if ((int)u == 3 || (int)u == 13)
 							;
-						p->rval += 2;
+						p->tn.rval += 2;
 					}
 				} else
-					p->rval += 1;
+					p->tn.rval += 1;
 				return;
 			}
 			if (szty(n) == 2) {
 				if ((int)u == 2 || (int)u == 12)
-					p->lval += 3;
+					p->tn.lval += 3;
 				else {
 					if ((int)u == 3 || (int)u == 13)
 						;
-					p->lval += 2;
+					p->tn.lval += 2;
 				}
 			} else
-				p->lval += 1;
+				p->tn.lval += 1;
 			return;
 #else
-			if (p->sname->sclass == 3 && p->op == NAME && !(p->sname->sflags >> 2 & 1) && p->rval >= 0) {
+			if (p->in.sname->sclass == 3 && p->in.op == NAME && !(p->in.sname->sflags >> 2 & 1) && p->tn.rval >= 0) {
 				if (szty(n) == 2) {
 					if ((int)u == 2 || (int)u == 12)
-						p->rval += 3;
+						p->tn.rval += 3;
 					else {
 						if ((int)u == 3 || (int)u == 13)
 							;
-						p->rval += 2;
+						p->tn.rval += 2;
 					}
 				} else
-					p->rval += 1;
+					p->tn.rval += 1;
 				return;
 			}
 			if (szty(n) == 2) {
 				if ((int)u == 2 || (int)u == 12)
-					p->lval += 3;
+					p->tn.lval += 3;
 				else {
 					if ((int)u == 3 || (int)u == 13)
 						;
-					p->lval += 2;
+					p->tn.lval += 2;
 				}
 			} else
-				p->lval += 1;
+				p->tn.lval += 1;
 			return;
 		case REG:
 			if (szty(n) != 2)
 				return;
-			rfree(p->rval, p->type);
+			rfree(p->tn.rval, p->in.type);
 			rfreeall(0);
-			p->rval++;
-			p->type = (int)u;
-			if (p->rval <= 7 && getreg(2, p->rval, 0x1000, 0) != p->rval)
+			p->tn.rval++;
+			p->in.type = (int)u;
+			if (p->tn.rval <= 7 && getreg(2, p->tn.rval, 0x1000, 0) != p->tn.rval)
 				cerror("zzzcode: case 'T'  reg not found");
 			return;
 #endif
@@ -1236,7 +1236,7 @@ shltype(op, p)
 {
 	if (op == NAME || op == REG || op == ICON || op == OREG)
 		return 1;
-	return op == STAR && p != 0 && shumul(p->left);
+	return op == STAR && p != 0 && shumul(p->in.left);
 }
 
 /* the operator is a leaf that can be addressed: NAME, REG, ICON, OREG */
@@ -1246,7 +1246,7 @@ ltypeop(p)
 {
 	register int o;
 
-	o = p->op;
+	o = p->in.op;
 	return o == NAME || o == REG || o == ICON || o == OREG;
 }
 
@@ -1255,9 +1255,9 @@ int
 shtemp(p)
 	register NODE *p;
 {
-	if (p->op == STAR)
-		p = p->left;
-	return (p->op == REG || p->op == OREG) ? !(rstatus[p->rval] & 0x14) : (p->op == NAME || p->op == ICON);
+	if (p->in.op == STAR)
+		p = p->in.left;
+	return (p->in.op == REG || p->in.op == OREG) ? !(rstatus[p->tn.rval] & 0x14) : (p->in.op == NAME || p->in.op == ICON);
 }
 
 /* does an increment of incr bytes on a pointer of type t step by the size of the object it points to? */
@@ -1289,12 +1289,12 @@ int
 shumul(p)
 	register NODE *p;
 {
-	register int o = p->op;
+	register int o = p->in.op;
 
 	if (o == NAME || o == OREG || o == ICON)
 		return STARNM;
-	if ((o == 0x4E || o == 9) && p->left->op == REG && p->right->op == ICON && p->right->sname == 0 &&
-	    shincr(p->left->type, p->right->lval))
+	if ((o == 0x4E || o == 9) && p->in.left->in.op == REG && p->in.right->in.op == ICON && p->in.right->in.sname == 0 &&
+	    shincr(p->in.left->in.type, p->in.right->tn.lval))
 		return STARREG;
 	return 0;
 }
@@ -1312,29 +1312,29 @@ void
 conput(p)
 	register NODE *p;
 {
-	switch (p->op) {
+	switch (p->in.op) {
 	case ICON:
 		acon(p);
 		break;
 	case REG:
 		if (rlmode)
-			printf("%s", rlnames[p->rval]);
+			printf("%s", rlnames[p->tn.rval]);
 		else {
 			if (rmode)
 				printf("r");
-			printf("%s", rnames[p->rval]);
+			printf("%s", rnames[p->tn.rval]);
 		}
 		break;
 	case OREG:
-		if (p->lval >= 0x100)
+		if (p->tn.lval >= 0x100)
 			cerror("bad oreg in conput");
-		else if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0))
+		else if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0))
 			oregput(p);
 		else
 #ifdef SEG
-			printf("@r%s", rnames[p->rval]);
+			printf("@r%s", rnames[p->tn.rval]);
 #else
-			printf("@%s", rnames[p->rval]);
+			printf("@%s", rnames[p->tn.rval]);
 #endif
 		break;
 	default:
@@ -1357,9 +1357,9 @@ oregput(p)
 	int bar = 0;		/* only the segmented version uses it */
 
 #ifdef SEG
-	if (p->rval == 15) {
-		if ((p->sname == symtab0 && (unsigned)(int)p->lval <= 0xFF) ||
-		    (p->sname == fpsym1 && (unsigned)(int)(p->lval + maxoff) <= 0xFF)) {
+	if (p->tn.rval == 15) {
+		if ((p->in.sname == symtab0 && (unsigned)(int)p->tn.lval <= 0xFF) ||
+		    (p->in.sname == fpsym1 && (unsigned)(int)(p->tn.lval + maxoff) <= 0xFF)) {
 			bar++;
 			putchar('|');
 		}
@@ -1369,15 +1369,15 @@ oregput(p)
 		printf("(fp)");
 	} else {
 		acon(p);
-		printf("(%s)", rnames[p->rval]);
+		printf("(%s)", rnames[p->tn.rval]);
 	}
 #else
-	if (p->rval == 15) {
+	if (p->tn.rval == 15) {
 		acon(p);
 		printf("(fp)");
 	} else {
 		acon(p);
-		printf("(%s)", rnames[p->rval]);
+		printf("(%s)", rnames[p->tn.rval]);
 	}
 #endif
 }
@@ -1393,46 +1393,46 @@ upput(p)
 	register int r2;
 #endif
 
-	if (p->op == FLD)
-		p = p->left;
-	save = p->lval;
-	switch (p->op) {
+	if (p->in.op == FLD)
+		p = p->in.left;
+	save = p->tn.lval;
+	switch (p->in.op) {
 	case NAME:
-		p->lval += 2;
-		if (p->rval < 0)
+		p->tn.lval += 2;
+		if (p->tn.rval < 0)
 			goto ac;
-		r = p->rval;
-		p->rval += 2;
+		r = p->tn.rval;
+		p->tn.rval += 2;
 		acon(p);
-		p->rval = r;
+		p->tn.rval = r;
 		break;
 	case ICON:
-		p->lval &= 0xFFFF;
+		p->tn.lval &= 0xFFFF;
 		putchar('#');
 		goto ac;
 	case REG:
 		if (rlmode) {
-			printf("%s", rlnames[p->rval + 1]);
+			printf("%s", rlnames[p->tn.rval + 1]);
 			return;
 		}
-		printf("%s", rnames[p->rval + 1]);
+		printf("%s", rnames[p->tn.rval + 1]);
 		break;
 	case OREG:
-		if (p->rval >= 0x100)
+		if (p->tn.rval >= 0x100)
 			cerror("illegal OREG upput");
 #ifdef SEG
-		if (p->lval != 0 || p->sname != 0 || (p->op == OREG && p->stsize < 0)) {
-			p->lval += 2;
+		if (p->tn.lval != 0 || p->in.sname != 0 || (p->in.op == OREG && p->stn.stsize < 0)) {
+			p->tn.lval += 2;
 			oregput(p);
 		} else {
-			p->lval = 2;
-			r2 = p->rval;
-			p->rval = (p->rval + 1) << 8;
+			p->tn.lval = 2;
+			r2 = p->tn.rval;
+			p->tn.rval = (p->tn.rval + 1) << 8;
 			adrput(p);
-			p->rval = r2;
+			p->tn.rval = r2;
 		}
 #else
-		p->lval += 2;
+		p->tn.lval += 2;
 		oregput(p);
 #endif
 		break;
@@ -1442,7 +1442,7 @@ upput(p)
 	ac:
 		acon(p);
 	}
-	p->lval = save;
+	p->tn.lval = save;
 }
 
 /* an operand */
@@ -1453,19 +1453,19 @@ adrput(p)
 	long save;
 	register int r;
 
-	if (p->op == FLD)
-		p = p->left;
-	switch (p->op) {
+	if (p->in.op == FLD)
+		p = p->in.left;
+	switch (p->in.op) {
 	case NAME:
 		acon(p);
 		break;
 	case ICON:
 		if (upperlval) {			/* the high word of a long constant */
-			save = p->lval;
-			p->lval = (p->lval >> 16) & 0xFFFF;
+			save = p->tn.lval;
+			p->tn.lval = (p->tn.lval >> 16) & 0xFFFF;
 			putchar('#');
 			acon(p);
-			p->lval = save;
+			p->tn.lval = save;
 		} else {
 			putchar('#');
 			acon(p);
@@ -1473,15 +1473,15 @@ adrput(p)
 		break;
 	case REG:
 		if (rlmode)
-			printf("%s", rlnames[p->rval]);
+			printf("%s", rlnames[p->tn.rval]);
 		else {
 			if (rmode)
 				printf("r");
-			printf("%s", rnames[p->rval]);
+			printf("%s", rnames[p->tn.rval]);
 		}
 		break;
 	case OREG:
-		r = p->rval;
+		r = p->tn.rval;
 		if (r >= 0x100) {			/* base and index register */
 			if (r & 0xFF)
 #ifdef SEG
@@ -1494,7 +1494,7 @@ adrput(p)
 				acon(p);
 				putchar(')');
 			}
-		} else if (p->lval == 0 && p->sname == 0 && p->stsize == 0)
+		} else if (p->tn.lval == 0 && p->in.sname == 0 && p->stn.stsize == 0)
 #ifdef SEG
 			printf("@r%s", rnames[r]);
 #else
@@ -1504,7 +1504,7 @@ adrput(p)
 			oregput(p);
 		break;
 	default:
-		cerror("illegal address: %d (%s)", p->op, opst[p->op]);
+		cerror("illegal address: %d (%s)", p->in.op, opst[p->in.op]);
 	}
 }
 
@@ -1515,49 +1515,49 @@ acon(p)
 {
 	char c;
 
-	if (p->op == ICON && p->rval < 0)
-		printf("L%d", -p->rval);
-	else if (p->op == OREG && p->stsize < 0)
-		printf("L%d", -p->stsize);
-	else if (p->op == NAME && p->rval < 0)
-		printf("L%d", -p->rval);
+	if (p->in.op == ICON && p->tn.rval < 0)
+		printf("L%d", -p->tn.rval);
+	else if (p->in.op == OREG && p->stn.stsize < 0)
+		printf("L%d", -p->stn.stsize);
+	else if (p->in.op == NAME && p->tn.rval < 0)
+		printf("L%d", -p->tn.rval);
 	else {
-		if (p->sname == 0) {
-			printf("%ld", p->lval);
+		if (p->in.sname == 0) {
+			printf("%ld", p->tn.lval);
 			return;
 		}
 #ifdef SEG
-		if (p->sname != symtab0 && ascii[p->sname->nameoff] != '~') {
-			if (p->op == NAME && p->sname->sclass == 3 && !(p->sname->sflags >> 2 & 1)) {
+		if (p->in.sname != symtab0 && ascii[p->in.sname->nameoff] != '~') {
+			if (p->in.op == NAME && p->in.sname->sclass == 3 && !(p->in.sname->sflags >> 2 & 1)) {
 				putchar('L');
-				printf("%ld", p->sname->soffset);
-				p->lval = p->rval;
+				printf("%ld", p->in.sname->soffset);
+				p->tn.lval = p->tn.rval;
 			} else {
 				putchar('_');
-				printf("%s", ascii + p->sname->nameoff);
+				printf("%s", ascii + p->in.sname->nameoff);
 			}
 		} else {		/* an address in the stack segment: _stkseg+~L1+offset */
 			printf("_stkseg");
-			if ((c = ascii[p->sname->nameoff]) == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
-				printf("+%s", ascii + p->sname->nameoff);
+			if ((c = ascii[p->in.sname->nameoff]) == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
+				printf("+%s", ascii + p->in.sname->nameoff);
 		}
 #else
-		if (p->sname && ascii[p->sname->nameoff] != '~') {
-			if (p->op == NAME && p->sname->sclass == 3 && !(p->sname->sflags >> 2 & 1)) {	/* a local static: its label */
+		if (p->in.sname && ascii[p->in.sname->nameoff] != '~') {
+			if (p->in.op == NAME && p->in.sname->sclass == 3 && !(p->in.sname->sflags >> 2 & 1)) {	/* a local static: its label */
 				putchar('L');
-				printf("%ld", p->sname->soffset);
-				p->lval = p->rval;
+				printf("%ld", p->in.sname->soffset);
+				p->tn.lval = p->tn.rval;
 			} else {
 				putchar('_');
-				printf("%s", ascii + p->sname->nameoff);
+				printf("%s", ascii + p->in.sname->nameoff);
 			}
-		} else if ((c = ascii[p->sname->nameoff]) == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
-			printf("%s", ascii + p->sname->nameoff);		/* ~L1, ~L2 */
+		} else if ((c = ascii[p->in.sname->nameoff]) == ascii[fpsym1->nameoff] || ascii[fpsym2->nameoff] == c)
+			printf("%s", ascii + p->in.sname->nameoff);		/* ~L1, ~L2 */
 #endif
 	}
-	if (p->lval) {
+	if (p->tn.lval) {
 		putchar('+');
-		printf("%ld", p->lval);
+		printf("%ld", p->tn.lval);
 	}
 }
 
@@ -1580,62 +1580,62 @@ gencall(p, cookie)
 	register int indirect;
 	long save;
 
-	f = p->left;
-	fop = f->op;
+	f = p->in.left;
+	fop = f->in.op;
 	indirect = 0;
 	argstop = 0;
 	if (fop != ICON) {
-		if (p->right) {
+		if (p->in.right) {
 			indirect = 1;
 			order(f, INTEMP);
-		} else if (fop != REG || f->rval == 0) {
+		} else if (fop != REG || f->tn.rval == 0) {
 			order(f, 6);
-			if (f->rval == 0)
+			if (f->tn.rval == 0)
 				order(f, 6);
-			rfree(f->rval, 0x14);
+			rfree(f->tn.rval, 0x14);
 		}
 	}
-	if (p->right) {
-		genargs(p->right);
+	if (p->in.right) {
+		genargs(p->in.right);
 	}
 #ifdef SEG
 	if (indirect) {
 		if (argstop == 0 && argreg >= 3) {
 			/* the address is still in reach of a free register pair */
-			f->rall = 0x1002;
+			f->in.rall = 0x1002;
 			order(f, 6);
-			rfree(f->rval, 0x14);
+			rfree(f->tn.rval, 0x14);
 			indirect = 0;
 		} else {
 			/* rr8 holds the address during the call; its old contents wait in a temporary */
 			save = freetemp(2) / 8;
 			printf("\tldl\t_stkseg+~L1+%ld(fp),rr8\n", save);
-			printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", f->lval);
-			f->rval = 8;
-			f->lval = 0;
-			f->sname = 0;
+			printf("\tldl\trr8,_stkseg+~L1+%ld(fp)\n", f->tn.lval);
+			f->tn.rval = 8;
+			f->tn.lval = 0;
+			f->in.sname = 0;
 		}
 	}
 #else
 	if (indirect) {
-		if (maxoff + f->lval)
-			printf("\tld\tr1,~L1+%ld(fp)\n", f->lval);
+		if (maxoff + f->tn.lval)
+			printf("\tld\tr1,~L1+%ld(fp)\n", f->tn.lval);
 		else
 #ifdef OLD_D18
 			printf("\tld\tr1,0(fp)\n");
 #else
 			printf("\tld\tr1,@fp\n");
 #endif
-		f->rval = 1;
-		f->lval = 0;
-		f->sname = 0;
+		f->tn.rval = 1;
+		f->tn.lval = 0;
+		f->in.sname = 0;
 	}
 #endif
-	if (f->op == REG) {
-		f->op = OREG;
-		f->stsize = 0;
+	if (f->in.op == REG) {
+		f->in.op = OREG;
+		f->stn.stsize = 0;
 	}
-	p->op = UCALL;
+	p->in.op = UCALL;
 	rsfreeall(1);
 #ifndef OLD_D14Q
 	tmpoff = 0;
@@ -1650,8 +1650,8 @@ gencall(p, cookie)
 	/* v0p: a double result comes back in rq4 */
 	if (match(p, 0x16) != MDONE)
 		return 1;
-	if ((p->type == 6 || p->type == 7) && p->op == REG)
-		printf("\tfldd\t%s,r4\n", rnames[p->rval]);
+	if ((p->in.type == 6 || p->in.type == 7) && p->in.op == REG)
+		printf("\tfldd\t%s,r4\n", rnames[p->tn.rval]);
 	return 0;
 #else
 	return match(p, 0x16) != MDONE;
@@ -1717,7 +1717,7 @@ nextcook(p, cookie)
 		return 0;
 	if (!(cookie & 0x14))
 		return 0x14;
-	if (!(cookie & 0x1000) && asgop(p->op))
+	if (!(cookie & 0x1000) && asgop(p->in.op))
 		return 0x101E;
 	return FORREW;
 }
@@ -1728,7 +1728,7 @@ lastchance(p, cookie)
 	register NODE *p;
 	register int cookie;
 {
-	if (cookie == 0x2000 && (p->op == OREG || p->op == NAME))
+	if (cookie == 0x2000 && (p->in.op == OREG || p->in.op == NAME))
 		return 1;
 	return 0;
 }
@@ -1740,12 +1740,12 @@ icright(p)
 {
 	register NODE *t;
 
-	switch (p->op) {
+	switch (p->in.op) {
 	case AND:
-		if (p->left->op == ICON) {
-			t = p->left;
-			p->left = p->right;
-			p->right = t;
+		if (p->in.left->in.op == ICON) {
+			t = p->in.left;
+			p->in.left = p->in.right;
+			p->in.right = t;
 		}
 	}
 }
@@ -1765,32 +1765,32 @@ special(p, shape)
 	register NODE *p;
 	int shape;
 {
-	if (p->op != ICON)
+	if (p->in.op != ICON)
 		return 0;
-	if (p->sname) {
+	if (p->in.sname) {
 		if (shape != SPECIAL + 8)
 			return 0;
 		return 1;
 	}
-	if (p->rval < 0)
+	if (p->tn.rval < 0)
 		return 0;
 	switch (shape) {
 	case SPECIAL + 1:
-		return p->lval >= 0 && p->lval <= 15;
+		return p->tn.lval >= 0 && p->tn.lval <= 15;
 	case SPECIAL + 2:
-		return p->lval >= -16 && p->lval <= 16;
+		return p->tn.lval >= -16 && p->tn.lval <= 16;
 	case SPECIAL + 3:
-		return p->lval >= -256 && p->lval <= 255;
+		return p->tn.lval >= -256 && p->tn.lval <= 255;
 	case SPECIAL + 5:
 		if (!plainicon(p))
 			return 0;
 		/* FALLTHROUGH */
 	case SPECIAL + 4:
-		return p->lval >= -32768 && p->lval <= 32767;
+		return p->tn.lval >= -32768 && p->tn.lval <= 32767;
 	case SPECIAL + 6:
-		return ispow2(p->lval) >= 0;
+		return ispow2(p->tn.lval) >= 0;
 	case SPECIAL + 7:
-		return ispow2(~p->lval) >= 0;
+		return ispow2(~p->tn.lval) >= 0;
 	case SPECIAL + 8:
 		return 0;
 	}
@@ -1807,22 +1807,22 @@ mycanon(p)
 {
 	register NODE *t;
 
-	switch (p->op) {
+	switch (p->in.op) {
 	case EQ: case NE: case GE: case GT: case LE: case LT: case UGE: case UGT: case ULE: case ULT:
 		break;
 	default:
 		return;
 	}
-	if (p->right->op != REG)
+	if (p->in.right->in.op != REG)
 		return;
-	if (p->left->op == REG)
+	if (p->in.left->in.op == REG)
 		return;
-	if (p->left->op == ICON && p->left->lval == 0)
+	if (p->in.left->in.op == ICON && p->in.left->tn.lval == 0)
 		return;
-	t = p->left;
-	p->left = p->right;
-	p->right = t;
-	p->op = rev[p->op - EQ];
+	t = p->in.left;
+	p->in.left = p->in.right;
+	p->in.right = t;
+	p->in.op = rev[p->in.op - EQ];
 }
 
 int

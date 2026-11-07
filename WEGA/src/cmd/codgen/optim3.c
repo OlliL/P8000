@@ -43,131 +43,131 @@ optim(p)
 	NODE *sp;
 	int i;
 
-	o = p->op;
+	o = p->in.op;
 	ty = optype(o);
 	if (ty == LTYPE)
 		return p;
-	if (ty == BITYPE && p->right->op == SCONV) {
+	if (ty == BITYPE && p->in.right->in.op == SCONV) {
 		p = convelim(p, 'r');
-		o = p->op;
+		o = p->in.op;
 		ty = optype(o);
 	}
-	if (p->left->op == SCONV) {
+	if (p->in.left->in.op == SCONV) {
 		p = convelim(p, 'l');
-		o = p->op;
+		o = p->in.op;
 		ty = optype(o);
 	}
-	if (p->op == SCONV) {
+	if (p->in.op == SCONV) {
 		p = convelim(p, 'p');
-		o = p->op;
+		o = p->in.op;
 		ty = optype(o);
 	}
 	if (ty == BITYPE)
-		p->right = optim(p->right);
-	p->left = optim(p->left);
+		p->in.right = optim(p->in.right);
+	p->in.left = optim(p->in.left);
 	switch (o) {
 	case UAND:
-		if (p->left->op != NAME)
+		if (p->in.left->in.op != NAME)
 			cerror("& error");
-		p->left->op = ICON;
+		p->in.left->in.op = ICON;
 	setuleft:
-		p->left->type = p->type;
-		p->op = FREE;
-		return p->left;
+		p->in.left->in.type = p->in.type;
+		p->in.op = FREE;
+		return p->in.left;
 	case STAR:
-		if (p->left->op != ICON)
+		if (p->in.left->in.op != ICON)
 			break;
-		p->left->op = NAME;
+		p->in.left->in.op = NAME;
 		goto setuleft;
 	case MINUS:
-		if (p->left->op == PLUS && p->right->op == PLUS && treeeq(p->left->left, p->right->left) &&
-		    p->left->right->type == p->type && p->right->right->type == p->type) {
-			a = tcopy(p->left->right);
-			b = tcopy(p->right->right);
+		if (p->in.left->in.op == PLUS && p->in.right->in.op == PLUS && treeeq(p->in.left->in.left, p->in.right->in.left) &&
+		    p->in.left->in.right->in.type == p->in.type && p->in.right->in.right->in.type == p->in.type) {
+			a = tcopy(p->in.left->in.right);
+			b = tcopy(p->in.right->in.right);
 			goto joined;
 		}
 		goto minus1;
 	minus2:
-		if (p->right->op == MINUS && treeeq(p->left->left, p->right->left) &&
-		    p->left->right->type == p->type && p->right->right->type == p->type) {
-			b = tcopy(p->left->right);
-			a = tcopy(p->right->right);
+		if (p->in.right->in.op == MINUS && treeeq(p->in.left->in.left, p->in.right->in.left) &&
+		    p->in.left->in.right->in.type == p->in.type && p->in.right->in.right->in.type == p->in.type) {
+			b = tcopy(p->in.left->in.right);
+			a = tcopy(p->in.right->in.right);
 		joined:
-			tfree(p->left);
-			tfree(p->right);
-			p->left = a;
-			p->right = b;
+			tfree(p->in.left);
+			tfree(p->in.right);
+			p->in.left = a;
+			p->in.right = b;
 		minus1:
-			if (p->left->op == MINUS)
+			if (p->in.left->in.op == MINUS)
 				goto minus2;
 		}
-		if (treeeq(p->left, p->right) && p->type != 6 && p->type != 7) {
-			tfree(p->left);
-			tfree(p->right);
-			p->op = ICON;
-			p->sname = 0;
-			p->rval = 0;
-			p->lval = 0;
+		if (treeeq(p->in.left, p->in.right) && p->in.type != 6 && p->in.type != 7) {
+			tfree(p->in.left);
+			tfree(p->in.right);
+			p->in.op = ICON;
+			p->in.sname = 0;
+			p->tn.rval = 0;
+			p->tn.lval = 0;
 			return p;
 		}
-		if (!nncon(p->right))
+		if (!nncon(p->in.right))
 			break;
-		p->right->lval = -p->right->lval;
-		p->op = PLUS;
+		p->in.right->tn.lval = -p->in.right->tn.lval;
+		p->in.op = PLUS;
 		o = PLUS;
 	case MUL:
 	case PLUS:
 	case AND:
 	case OR:
 	case ER:
-		if (nncon(p->left) || (p->left->op == ICON && p->right->op != ICON &&
-		    !(p->right->op == REG && p->right->rval == 15) && (p->type & 0x30) != 0x10)) {
-			sp = p->left;
-			p->left = p->right;
-			p->right = sp;
+		if (nncon(p->in.left) || (p->in.left->in.op == ICON && p->in.right->in.op != ICON &&
+		    !(p->in.right->in.op == REG && p->in.right->tn.rval == 15) && (p->in.type & 0x30) != 0x10)) {
+			sp = p->in.left;
+			p->in.left = p->in.right;
+			p->in.right = sp;
 		}
 #ifndef OLD_D23
-		if ((o == MINUS || o == PLUS) && nncon(p->right) && p->right->lval == 0)
+		if ((o == MINUS || o == PLUS) && nncon(p->in.right) && p->in.right->tn.lval == 0)
 			goto zapright;
 #endif
-		if (p->right->op == o && (p->type & 0x30) != 0x10 && (p->right->left->type & 0x30) != 0x10) {
+		if (p->in.right->in.op == o && (p->in.type & 0x30) != 0x10 && (p->in.right->in.left->in.type & 0x30) != 0x10) {
 			NODE *t1, *t2, *t3;
 
-			t1 = p->left;
-			sp = p->right;
-			t2 = sp->left;
-			t3 = sp->right;
-			p->left = sp;
-			sp->left = t1;
-			sp->right = t2;
-			p->right = t3;
+			t1 = p->in.left;
+			sp = p->in.right;
+			t2 = sp->in.left;
+			t3 = sp->in.right;
+			p->in.left = sp;
+			sp->in.left = t1;
+			sp->in.right = t2;
+			p->in.right = t3;
 		}
-		if (o == PLUS && p->left->op == MINUS && p->right->op == ICON && p->left->right->op == ICON &&
-		    conval(p->right, MINUS, p->left->right)) {
+		if (o == PLUS && p->in.left->in.op == MINUS && p->in.right->in.op == ICON && p->in.left->in.right->in.op == ICON &&
+		    conval(p->in.right, MINUS, p->in.left->in.right)) {
 		zapleft:
-			p->left->right->op = FREE;
-			p->left->op = FREE;
-			p->left = p->left->left;
+			p->in.left->in.right->in.op = FREE;
+			p->in.left->in.op = FREE;
+			p->in.left = p->in.left->in.left;
 		}
-		if (p->right->op == ICON && p->left->op == o && p->left->right->op == ICON &&
-		    conval(p->right, o, p->left->right))
+		if (p->in.right->in.op == ICON && p->in.left->in.op == o && p->in.left->in.right->in.op == ICON &&
+		    conval(p->in.right, o, p->in.left->in.right))
 			goto zapleft;
-		if ((p->type & 0x30) == 0x10 && p->left->op == ICON && p->right->op == o &&
-		    p->right->right->op == ICON && conval(p->left, o, p->right->right)) {
-			p->right->right->op = FREE;
-			p->right->op = FREE;
-			p->right = p->right->left;
+		if ((p->in.type & 0x30) == 0x10 && p->in.left->in.op == ICON && p->in.right->in.op == o &&
+		    p->in.right->in.right->in.op == ICON && conval(p->in.left, o, p->in.right->in.right)) {
+			p->in.right->in.right->in.op = FREE;
+			p->in.right->in.op = FREE;
+			p->in.right = p->in.right->in.left;
 		neg:
-			if (o == PLUS && nncon(p->right) && p->right->lval < 0) {
-				p->right->lval = -p->right->lval;
-				p->op = MINUS;
+			if (o == PLUS && nncon(p->in.right) && p->in.right->tn.lval < 0) {
+				p->in.right->tn.lval = -p->in.right->tn.lval;
+				p->in.op = MINUS;
 				o = MINUS;
 			}
 			break;
 		}
-		if (p->left->op == ICON && p->right->op == ICON && conval(p->left, o, p->right)) {
+		if (p->in.left->in.op == ICON && p->in.right->in.op == ICON && conval(p->in.left, o, p->in.right)) {
 		zapright:
-			p->right->op = FREE;
+			p->in.right->in.op = FREE;
 			goto setuleft;
 		}
 		goto neg;
@@ -175,25 +175,25 @@ optim(p)
 	case ASG DIV:
 	case MOD:
 	case ASG MOD:
-		a = p->right;
-		if (!((unsigned)p->type <= 15 && (unsigned)p->type >= 12))
+		a = p->in.right;
+		if (!((unsigned)p->in.type <= 15 && (unsigned)p->in.type >= 12))
 			break;
 		if (!nncon(a))
 			break;
-		if (ispow2(a->lval) <= 0)
+		if (ispow2(a->tn.lval) <= 0)
 			break;
 		if (o == MOD || o == ASG MOD) {
-			p->op = o == ASG MOD ? ASG AND : AND;
-			a->lval -= 1;
-			a->type = p->type = p->left->type;
+			p->in.op = o == ASG MOD ? ASG AND : AND;
+			a->tn.lval -= 1;
+			a->in.type = p->in.type = p->in.left->in.type;
 		} else {
-			p->op = o == ASG DIV ? ASG RS : RS;
-			a->lval = ispow2(a->lval);
+			p->in.op = o == ASG DIV ? ASG RS : RS;
+			a->tn.lval = ispow2(a->tn.lval);
 		}
 		break;
 	case ASG PLUS:
 	case ASG MINUS:
-		if (nncon(p->right) && p->right->lval == 0)
+		if (nncon(p->in.right) && p->in.right->tn.lval == 0)
 			goto zapright;
 		break;
 	case EQ:
@@ -206,18 +206,18 @@ optim(p)
 	case ULT:
 	case UGE:
 	case UGT:
-		if (p->left->op != ICON)
+		if (p->in.left->in.op != ICON)
 			break;
-		sp = p->left;
-		p->left = p->right;
-		p->right = sp;
-		p->op = revrel[p->op - EQ];
-		if (p->right->op != ICON)
+		sp = p->in.left;
+		p->in.left = p->in.right;
+		p->in.right = sp;
+		p->in.op = revrel[p->in.op - EQ];
+		if (p->in.right->in.op != ICON)
 			break;
-		if (!conval(p->left, p->op, p->right))
+		if (!conval(p->in.left, p->in.op, p->in.right))
 			break;
-		sp = p->left;
-		tfree(p->right);
+		sp = p->in.left;
+		tfree(p->in.right);
 		*p = *sp;
 		tfree(sp);
 		break;
@@ -236,8 +236,8 @@ conval(p, o, q)
 	int unsgn;
 	long val;
 
-	val = q->lval;
-	unsgn = ((unsigned)p->type <= 15 && (unsigned)p->type >= 12) || ((unsigned)q->type <= 15 && (unsigned)q->type >= 12);
+	val = q->tn.lval;
+	unsgn = ((unsigned)p->in.type <= 15 && (unsigned)p->in.type >= 12) || ((unsigned)q->in.type <= 15 && (unsigned)q->in.type >= 12);
 	if (unsgn && (o == LE || o == LT || o == GE || o == GT))
 		o += 4;
 	if (!nncon(p) && !nncon(q))
@@ -249,99 +249,99 @@ conval(p, o, q)
 	switch (o) {
 	case PLUS:
 #ifdef SEG
-		if ((p->type & 0x30) == 0x10) {
-			p->lval = ((val & 0x7F00FFFFL) + p->lval) & 0x7F00FFFFL;
+		if ((p->in.type & 0x30) == 0x10) {
+			p->tn.lval = ((val & 0x7F00FFFFL) + p->tn.lval) & 0x7F00FFFFL;
 			return 1;
 		}
 #endif
-		p->lval += val;
+		p->tn.lval += val;
 		if (nncon(p)) {
-			p->type = q->type;
-			p->rval = q->rval;
-			p->sname = q->sname ? q->sname : p->sname;
+			p->in.type = q->in.type;
+			p->tn.rval = q->tn.rval;
+			p->in.sname = q->in.sname ? q->in.sname : p->in.sname;
 		}
 		break;
 	case MINUS:
 #ifdef SEG
-		if ((p->type & 0x30) == 0x10) {		/* the difference of pointer constants: its offset */
-			p->lval = (p->lval - val) & 0xFFL;
+		if ((p->in.type & 0x30) == 0x10) {		/* the difference of pointer constants: its offset */
+			p->tn.lval = (p->tn.lval - val) & 0xFFL;
 			return 1;
 		}
 #endif
-		p->lval -= val;
+		p->tn.lval -= val;
 		break;
 	case MUL:
-		p->lval *= val;
+		p->tn.lval *= val;
 		break;
 	case DIV:
 		if (val == 0) {
 			uerror("division by 0");
 			return 1;
 		}
-		p->lval /= val;
+		p->tn.lval /= val;
 		break;
 	case MOD:
 		if (val == 0) {
 			uerror("division by 0");
 			return 1;
 		}
-		p->lval %= val;
+		p->tn.lval %= val;
 		break;
 	case AND:
-		p->lval &= val;
+		p->tn.lval &= val;
 		break;
 	case OR:
-		p->lval |= val;
+		p->tn.lval |= val;
 		break;
 	case ER:
-		p->lval ^= val;
+		p->tn.lval ^= val;
 		break;
 	case LS:
 		sh = val;
-		p->lval <<= sh;
+		p->tn.lval <<= sh;
 		break;
 	case RS:
 		sh = val;
-		p->lval >>= sh;
+		p->tn.lval >>= sh;
 		break;
 	case UMINUS:
-		p->lval = -p->lval;
+		p->tn.lval = -p->tn.lval;
 		break;
 	case COMPL:
-		p->lval = ~p->lval;
+		p->tn.lval = ~p->tn.lval;
 		break;
 	case NOT:
-		p->lval = !p->lval;
+		p->tn.lval = !p->tn.lval;
 		break;
 	case LT:
-		p->lval = p->lval < val;
+		p->tn.lval = p->tn.lval < val;
 		break;
 	case LE:
-		p->lval = p->lval <= val;
+		p->tn.lval = p->tn.lval <= val;
 		break;
 	case GT:
-		p->lval = p->lval > val;
+		p->tn.lval = p->tn.lval > val;
 		break;
 	case GE:
-		p->lval = p->lval >= val;
+		p->tn.lval = p->tn.lval >= val;
 		break;
 	case ULT:
-		p->lval = p->lval - val < 0;
+		p->tn.lval = p->tn.lval - val < 0;
 		break;
 	case ULE:
-		p->lval = p->lval - val <= 0;
+		p->tn.lval = p->tn.lval - val <= 0;
 		break;
 	case UGE:
-		p->lval = p->lval - val >= 0;
+		p->tn.lval = p->tn.lval - val >= 0;
 		break;
 	case UGT:
-		p->lval = p->lval - val > 0;
+		p->tn.lval = p->tn.lval - val > 0;
 		break;
 	case EQ:
-		p->lval = p->lval == val;
+		p->tn.lval = p->tn.lval == val;
 		break;
 	case NE:
-		p->lval = p->lval != val;
+		p->tn.lval = p->tn.lval != val;
 		break;
 	default:
 		return 0;
@@ -356,19 +356,19 @@ treeeq(p, q)
 {
 	register int o;
 
-	o = p->op;
-	if (o != q->op)
+	o = p->in.op;
+	if (o != q->in.op)
 		return 0;
 	switch optype(o) {
 	case LTYPE:
 		if (o == NAME)
-			return p->sname == q->sname && p->lval == q->lval;
-		return p->lval == q->lval && p->rval == q->rval;
+			return p->in.sname == q->in.sname && p->tn.lval == q->tn.lval;
+		return p->tn.lval == q->tn.lval && p->tn.rval == q->tn.rval;
 	case BITYPE:
-		if (!treeeq(p->right, q->right))
+		if (!treeeq(p->in.right, q->in.right))
 			return 0;
 	case UTYPE:
-		return treeeq(p->left, q->left);
+		return treeeq(p->in.left, q->in.left);
 	}
 }
 
@@ -382,43 +382,43 @@ convelim(p, c)
 	int s;
 
 	if (c == 'r') {
-		q = p->right;
-		if (q->type != q->left->type) {
-			s = bsize(q->left->type);
-			if (s != bsize(q->type))
+		q = p->in.right;
+		if (q->in.type != q->in.left->in.type) {
+			s = bsize(q->in.left->in.type);
+			if (s != bsize(q->in.type))
 				goto test;
-			if (!(isint(q->type) ^ isint(q->left->type)))
+			if (!(isint(q->in.type) ^ isint(q->in.left->in.type)))
 				goto remove;
 		test:
-			if (q->type != 7 || q->left->type != 6)
+			if (q->in.type != 7 || q->in.left->in.type != 6)
 				return p;
 		}
 	remove:
-		n = tcopy(q->left);
+		n = tcopy(q->in.left);
 		tfree(q);
-		p->right = n;
+		p->in.right = n;
 		return p;
 	}
 	if (c == 'l') {
-		q = p->left;
-		if (q->type != q->left->type) {
-			s = bsize(q->left->type);
-			if (s != bsize(q->type))
+		q = p->in.left;
+		if (q->in.type != q->in.left->in.type) {
+			s = bsize(q->in.left->in.type);
+			if (s != bsize(q->in.type))
 				goto ltest;
-			if (!(isint(q->type) ^ isint(q->left->type)))
+			if (!(isint(q->in.type) ^ isint(q->in.left->in.type)))
 				goto lremove;
 		ltest:
-			if (q->type != 7 || q->left->type != 6)
+			if (q->in.type != 7 || q->in.left->in.type != 6)
 				return p;
 		}
 	lremove:
-		n = tcopy(q->left);
+		n = tcopy(q->in.left);
 		tfree(q);
-		p->left = n;
+		p->in.left = n;
 		return p;
 	}
-	if (p->type == 0) {
-		n = tcopy(p->left);
+	if (p->in.type == 0) {
+		n = tcopy(p->in.left);
 		tfree(p);
 		p = n;
 	}

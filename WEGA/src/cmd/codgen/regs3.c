@@ -87,23 +87,23 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 #endif
 
 #define TEMPWORDS(p, nfield) \
-	((p->op == STCALL || p->op == STARG || p->op == USTCALL || p->op == STASG) ? ((unsigned)((p->stsize << 3) + 15)) >> 4 : \
-	 (p->type == 5 || p->type == 15) ? 2 : (p->type & 0x30) == 0x10 ? PTRWORDS : \
-	 p->type == 7 ? 4 : p->type == 6 ? 2 : (nfield))
+	((p->in.op == STCALL || p->in.op == STARG || p->in.op == USTCALL || p->in.op == STASG) ? ((unsigned)((p->stn.stsize << 3) + 15)) >> 4 : \
+	 (p->in.type == 5 || p->in.type == 15) ? 2 : (p->in.type & 0x30) == 0x10 ? PTRWORDS : \
+	 p->in.type == 7 ? 4 : p->in.type == 6 ? 2 : (nfield))
 
 #define SUBST(from) \
-	if ((p->left->op == REG || p->left->op == OREG) && p->left->rval == from) \
-		p->left->rval = r; \
-	if ((p->right->op == REG || p->right->op == OREG) && p->right->rval == from) \
-		p->right->rval = r
+	if ((p->in.left->in.op == REG || p->in.left->in.op == OREG) && p->in.left->tn.rval == from) \
+		p->in.left->tn.rval = r; \
+	if ((p->in.right->in.op == REG || p->in.right->in.op == OREG) && p->in.right->tn.rval == from) \
+		p->in.right->tn.rval = r
 
 /* r4 and r5 hold values that are still needed: move them to other registers */
 #define SAVEREGS \
 	n = rfind(4, 3); \
 	if (n && n->busy > 0) { \
-		r = getreg(3, -1, 0x1000, p->sname); \
+		r = getreg(3, -1, 0x1000, p->in.sname); \
 		if (r < 0) \
-			cerror("regfile: case A4UW can't free rr4 on %s\n", opst[p->op]); \
+			cerror("regfile: case A4UW can't free rr4 on %s\n", opst[p->in.op]); \
 		rmode++; \
 		savereg[nsave] = r; \
 		saveorig[nsave] = 4; \
@@ -115,9 +115,9 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 	} else { \
 		n = rfind(4, 2); \
 		if (n && n->busy > 0) { \
-			r = getreg(2, -1, 0x1000, p->sname); \
+			r = getreg(2, -1, 0x1000, p->in.sname); \
 			if (r < 0) \
-				cerror("regfile: case A4UW can't free r4 on %s\n", opst[p->op]); \
+				cerror("regfile: case A4UW can't free r4 on %s\n", opst[p->in.op]); \
 			savereg[nsave] = r; \
 			saveorig[nsave] = 4; \
 			savecls[nsave] = 2; \
@@ -128,13 +128,13 @@ static char sccsid[] = "@[$]regs3.c\t2.5  10/06/83 10:55:19 Copr. 1981 87wega3.2
 		} \
 		n = rfind(5, 2); \
 		if (n && n->busy > 0) { \
-			r = getreg(2, -1, 0x1000, p->sname); \
+			r = getreg(2, -1, 0x1000, p->in.sname); \
 			if (r < 0) \
-				cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->op]); \
+				cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->in.op]); \
 			if (r == 4) { \
-				r = getreg(2, -1, 0x1000, p->sname); \
+				r = getreg(2, -1, 0x1000, p->in.sname); \
 				if (r < 0) \
-					cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->op]); \
+					cerror("regfile: case A4UW can't free r5 on %s\n", opst[p->in.op]); \
 				rfree(4, 4); \
 			} \
 			savereg[nsave] = r; \
@@ -214,21 +214,21 @@ fixtemp(p)
 	register int cls, j;
 
 	if (rflag) {
-		if ((i = p->rval) >= 0 && (j = findtemp(i)) >= 0) {
-			p->op = REG;
-			p->lval = 0;
-			p->rval = regvar[j].rreg;
+		if ((i = p->tn.rval) >= 0 && (j = findtemp(i)) >= 0) {
+			p->in.op = REG;
+			p->tn.lval = 0;
+			p->tn.rval = regvar[j].rreg;
 			return;
 		}
 	}
-	i = tabfind(p->rval);
-	if (tmptab[i].off != p->rval) {
+	i = tabfind(p->tn.rval);
+	if (tmptab[i].off != p->tn.rval) {
 		if (i == 0x50)
 			cerror("TEMP table overflow\n");
-		tmptab[i].off = p->rval;
-		if (p->lval == -1) {
+		tmptab[i].off = p->tn.rval;
+		if (p->tn.lval == -1) {
 			tmptab[i].flags |= 0x8000;
-			cls = rclass(p->type, -1);
+			cls = rclass(p->in.type, -1);
 			tmptab[i].reg = j = getreg(cls, -1, 0x1000, 0);
 			tmptab[i].cls = cls;
 			n = rfind(j, cls);
@@ -236,25 +236,25 @@ fixtemp(p)
 			n->busy = 0;
 		} else {
 			tmptab[i].flags &= ~0x8000;
-			tmptab[i].reg = (int)((long)(unsigned)p->stsize + frame0);
+			tmptab[i].reg = (int)((long)(unsigned)p->stn.stsize + frame0);
 		}
 		if (i + 1 != 0x50)
 			tmptab[i + 1].off = -1;
 	}
-	tmptab[i].done = p->lval;
+	tmptab[i].done = p->tn.lval;
 	if ((tmptab[i].flags >> 15 & 1) == 1) {
-		p->op = REG;
-		p->lval = 0;
-		p->rval = tmptab[i].reg;
+		p->in.op = REG;
+		p->tn.lval = 0;
+		p->tn.rval = tmptab[i].reg;
 	} else {
-		p->op = OREG;
-		p->lval = (long)(unsigned)tmptab[i].reg;
-		p->rval = 15;
-		p->stsize = 0;
+		p->in.op = OREG;
+		p->tn.lval = (long)(unsigned)tmptab[i].reg;
+		p->tn.rval = 15;
+		p->stn.stsize = 0;
 #ifdef SEG
-		p->sname = symtab0;
+		p->in.sname = symtab0;
 #else
-		p->sname = 0;
+		p->in.sname = 0;
 #endif
 	}
 }
@@ -314,79 +314,79 @@ fixfld(p)
 	register NODE *a, *m;
 	register int ismember;
 #if defined(OLD_D5S) || defined(OLD_D5G)
-	int subsr = p->op == 120;
+	int subsr = p->in.op == 120;
 #endif
 
-	if (p->op == FLD) {
-		m = p->left;
+	if (p->in.op == FLD) {
+		m = p->in.left;
 		ismember = 1;
 	} else {
-		p->op = PLUS;
-		a = p->left;
-		m = a->left;
+		p->in.op = PLUS;
+		a = p->in.left;
+		m = a->in.left;
 		ismember = 0;
 	}
 #ifdef OLD_D5S
 	/* v0: an element of a local array is (index + offset) + fp, the frame pointer added last */
-	if (subsr && a->op == PLUS && a->left->op == REG && a->left->rval == 15 && a->right->op == ICON &&
-	    p->right->op != ICON) {
-		m = a->left;
-		a->left = p->right;
-		a->type = p->right->type;
-		p->left = a;
-		p->right = m;
+	if (subsr && a->in.op == PLUS && a->in.left->in.op == REG && a->in.left->tn.rval == 15 && a->in.right->in.op == ICON &&
+	    p->in.right->in.op != ICON) {
+		m = a->in.left;
+		a->in.left = p->in.right;
+		a->in.type = p->in.right->in.type;
+		p->in.left = a;
+		p->in.right = m;
 		return;
 	}
 #endif
 #if defined(OLD_D5S) && !defined(OLD_D3KC)
 	/* v0: so also an element of an array that is a member: (index + offset) + the rest, which comes last */
-	if (subsr && a->op == PLUS && a->right->op == ICON && !a->right->sname && p->right->op != ICON) {
-		m = a->left;
-		a->left = p->right;
-		a->type = p->right->type;
-		p->left = m;
-		p->right = a;
+	if (subsr && a->in.op == PLUS && a->in.right->in.op == ICON && !a->in.right->in.sname && p->in.right->in.op != ICON) {
+		m = a->in.left;
+		a->in.left = p->in.right;
+		a->in.type = p->in.right->in.type;
+		p->in.left = m;
+		p->in.right = a;
 		return;
 	}
 #endif
 #if defined(OLD_D5S) && !defined(OLD_D3KC)
 	/* v0: a member of an element of a global array: (index*size + member + index) + address, the address last */
-	if (subsr && a->op == PLUS && a->left->op == UAND && a->right->op == PLUS && p->right->op != ICON) {
-		m = a->left;
-		a->left = a->right;
-		a->right = p->right;
-		a->type = p->right->type;
-		p->left = a;
-		p->right = m;
+	if (subsr && a->in.op == PLUS && a->in.left->in.op == UAND && a->in.right->in.op == PLUS && p->in.right->in.op != ICON) {
+		m = a->in.left;
+		a->in.left = a->in.right;
+		a->in.right = p->in.right;
+		a->in.type = p->in.right->in.type;
+		p->in.left = a;
+		p->in.right = m;
 		return;
 	}
 #endif
 #ifdef OLD_D5G
 	/* v0p: an element of a global array of arrays is (index + index) + address, the address added last */
-	if (subsr && a->op == PLUS && (a->left->op == UAND || (a->left->op == ICON && a->left->sname)) &&
-	    p->right->op != ICON) {
-		m = a->left;
-		a->left = p->right;
-		a->type = p->right->type;
-		p->left = a;
-		p->right = m;
+	if (subsr && a->in.op == PLUS && (a->in.left->in.op == UAND || (a->in.left->in.op == ICON && a->in.left->in.sname)) &&
+	    p->in.right->in.op != ICON) {
+		m = a->in.left;
+		a->in.left = p->in.right;
+		a->in.type = p->in.right->in.type;
+		p->in.left = a;
+		p->in.right = m;
 		return;
 	}
 #endif
-	if (p->op != FLD && a->op != UAND)
+	if (p->in.op != FLD && a->in.op != UAND)
 		return;
-	if (m->op != NAME || m->rval < 0 || (m->sname->sflags >> 2 & 1) != 0)
+	if (m->in.op != NAME || m->tn.rval < 0 || (m->in.sname->sflags >> 2 & 1) != 0)
 		return;
 	m = clocal(m);
-	if (m->op != STAR)
+	if (m->in.op != STAR)
 		return;
 	if (!ismember) {
-		m->op = FREE;
-		a->op = FREE;
-		p->type = INCREF(DECREF((unsigned)m->type));
-		p->left = m->left;
+		m->in.op = FREE;
+		a->in.op = FREE;
+		p->in.type = INCREF(DECREF((unsigned)m->in.type));
+		p->in.left = m->in.left;
 	} else
-		p->left = m;
+		p->in.left = m;
 }
 
 #ifdef OLD_D23
@@ -398,15 +398,15 @@ d23drop(p)
 	register NODE *r, *n;
 	int t;
 
-	n = p->right;
-	if ((p->op != PLUS && p->op != STREF) || n->op != ICON || n->sname != 0 || n->lval != 0)
+	n = p->in.right;
+	if ((p->in.op != PLUS && p->in.op != STREF) || n->in.op != ICON || n->in.sname != 0 || n->tn.lval != 0)
 		return 0;
-	t = p->type;
-	r = p->left;
-	n->op = FREE;
+	t = p->in.type;
+	r = p->in.left;
+	n->in.op = FREE;
 	ncopy(p, r);
-	p->type = t;
-	r->op = FREE;
+	p->in.type = t;
+	r->in.op = FREE;
 	return 1;
 }
 
@@ -418,7 +418,7 @@ mapregs(p)
 {
 	register NODE *n, *m, *r;
 
-	switch (p->op) {
+	switch (p->in.op) {
 	case 120:
 		fixfld(p);
 #ifdef OLD_D23
@@ -427,27 +427,27 @@ mapregs(p)
 		break;
 	case STREF:
 		fixfld(p);
-		n = p->right;
-		if (p->left->op == UAND)
-			p->left->type = p->type;
-		if (n->op == NAME && (n->sname->sclass == 8 || n->sname->sclass == 11)) {
-			n->op = ICON;
-			n->lval = n->sname->soffset / 8;
-			n->rval = 0;
-			n->sname = 0;
-			n->type = 4;
+		n = p->in.right;
+		if (p->in.left->in.op == UAND)
+			p->in.left->in.type = p->in.type;
+		if (n->in.op == NAME && (n->in.sname->sclass == 8 || n->in.sname->sclass == 11)) {
+			n->in.op = ICON;
+			n->tn.lval = n->in.sname->soffset / 8;
+			n->tn.rval = 0;
+			n->in.sname = 0;
+			n->in.type = 4;
 		}
 #ifdef OLD_D5T
 		/* an element of a local array (OLD_D5S), its member: the member goes to the offset, fp stays last */
-		r = p->left;
-		if (r->op == PLUS && r->right->op == REG && r->right->rval == 15 && r->left->op == PLUS &&
-		    r->left->right->op == ICON && n->op == ICON && n->sname == 0) {
-			r->left->right->lval += n->lval;
-			n->op = FREE;
-			p->op = PLUS;
-			p->left = r->left;
-			p->right = r->right;
-			r->op = FREE;
+		r = p->in.left;
+		if (r->in.op == PLUS && r->in.right->in.op == REG && r->in.right->tn.rval == 15 && r->in.left->in.op == PLUS &&
+		    r->in.left->in.right->in.op == ICON && n->in.op == ICON && n->in.sname == 0) {
+			r->in.left->in.right->tn.lval += n->tn.lval;
+			n->in.op = FREE;
+			p->in.op = PLUS;
+			p->in.left = r->in.left;
+			p->in.right = r->in.right;
+			r->in.op = FREE;
 			break;
 		}
 #endif
@@ -457,28 +457,28 @@ mapregs(p)
 #endif
 		n = foldadd(p);
 		if (n != p) {
-			p->type = n->type;
-			p->op = n->op;
-			p->sname = n->sname;
-			p->lval = n->lval;
-			p->rval = n->rval;
-			n->op = FREE;
+			p->in.type = n->in.type;
+			p->in.op = n->in.op;
+			p->in.sname = n->in.sname;
+			p->tn.lval = n->tn.lval;
+			p->tn.rval = n->tn.rval;
+			n->in.op = FREE;
 		}
 		break;
 	case UAND:
-		m = p->left;
-		if (m->op == NAME && (m->sname->sflags >> 2 & 1) == 0 && m->rval >= 0) {
+		m = p->in.left;
+		if (m->in.op == NAME && (m->in.sname->sflags >> 2 & 1) == 0 && m->tn.rval >= 0) {
 			m = clocal(m);
-			if (m->op == STAR) {
-				m->op = FREE;
-				p->op = FREE;
-				r = m->left;
-				p->type = r->type;
-				p->op = r->op;
-				p->sname = r->sname;
-				p->lval = r->lval;
-				p->rval = r->rval;
-				r->op = FREE;
+			if (m->in.op == STAR) {
+				m->in.op = FREE;
+				p->in.op = FREE;
+				r = m->in.left;
+				p->in.type = r->in.type;
+				p->in.op = r->in.op;
+				p->in.sname = r->in.sname;
+				p->tn.lval = r->tn.lval;
+				p->tn.rval = r->tn.rval;
+				r->in.op = FREE;
 			}
 		}
 		break;
@@ -551,9 +551,9 @@ rnassign(p1, p2)
 {
 	register struct rs *a, *b;
 
-	if (p1->op != REG)
+	if (p1->in.op != REG)
 		return;
-	a = rfind(p1->rval, rclass(p1->type, p1->rval));
+	a = rfind(p1->tn.rval, rclass(p1->in.type, p1->tn.rval));
 	if (a == 0)
 		return;
 	switch (a->cls) {
@@ -565,8 +565,8 @@ rnassign(p1, p2)
 	}
 	if (a->kind == 6)
 		return;
-	if (p2->op == REG) {
-		b = rfind(p2->rval, rclass(p2->type, p2->rval));
+	if (p2->in.op == REG) {
+		b = rfind(p2->tn.rval, rclass(p2->in.type, p2->tn.rval));
 		if (b) {
 			a->sym = b->sym;
 			a->off = b->off;
@@ -575,8 +575,8 @@ rnassign(p1, p2)
 			a->off = 0;
 		}
 	} else {
-		a->sym = p2->sname;
-		a->off = p2->lval;
+		a->sym = p2->in.sname;
+		a->off = p2->tn.lval;
 	}
 	a->flags &= ~0x8000;
 	a->busy = 0;
@@ -589,7 +589,7 @@ rnnullp(p)
 {
 	register struct rs *n;
 
-	n = rfind(p->rval, rclass(p->type, p->rval));
+	n = rfind(p->tn.rval, rclass(p->in.type, p->tn.rval));
 	if (n) {
 		n->sym = 0;
 		n->busy = 0;
@@ -693,27 +693,27 @@ nxwork(p, nx)
 		rnassign(getlr(p, '1'), getlr(p, 'L'));
 		break;
 	case 18:
-		rnnullw(getlr(p, '1')->rval);
+		rnnullw(getlr(p, '1')->tn.rval);
 		break;
 	case 19:
-		rnnulll(getlr(p, '1')->rval);
+		rnnulll(getlr(p, '1')->tn.rval);
 		break;
 	case 20:
 		rnnullp(getlr(p, '1'));
 		break;
 	case 21:
-		rnnullw(getlr(p, '1')->rval);
-		rnnullw(getlr(p, '2')->rval);
+		rnnullw(getlr(p, '1')->tn.rval);
+		rnnullw(getlr(p, '2')->tn.rval);
 		break;
 	case 22:
-		rnnulll(getlr(p, '1')->rval);
-		rnnulll(getlr(p, '2')->rval);
+		rnnulll(getlr(p, '1')->tn.rval);
+		rnnulll(getlr(p, '2')->tn.rval);
 		break;
 	case 24:
-		rnnullw(getlr(p, 'L')->rval);
+		rnnullw(getlr(p, 'L')->tn.rval);
 		break;
 	case 25:
-		rnnulll(getlr(p, 'L')->rval);
+		rnnulll(getlr(p, 'L')->tn.rval);
 		break;
 	case 26:
 		rnnullp(getlr(p, 'L'));
@@ -726,12 +726,12 @@ nxwork(p, nx)
 		rnnullp(getlr(p, 'R'));
 		break;
 	case 29:
-		rnnullw(getlr(p, 'R')->rval);
-		rnnullw(getlr(p, 'L')->rval);
+		rnnullw(getlr(p, 'R')->tn.rval);
+		rnnullw(getlr(p, 'L')->tn.rval);
 		break;
 	case 30:
-		rnnullw(getlr(p, '1')->rval);
-		rnnullw(getlr(p, 'L')->rval);
+		rnnullw(getlr(p, '1')->tn.rval);
+		rnnullw(getlr(p, 'L')->tn.rval);
 		break;
 	case 31:
 		rnnullp(getlr(p, '1'));
@@ -855,12 +855,12 @@ fixname(p)
 {
 	register int r;
 
-	r = (p->rall & MUSTDO) ? p->rall & ~MUSTDO : -1;
-	r = regforsym(r, p->sname, p->type, p->sname->soffset / 8);
+	r = (p->in.rall & MUSTDO) ? p->in.rall & ~MUSTDO : -1;
+	r = regforsym(r, p->in.sname, p->in.type, p->in.sname->soffset / 8);
 	if (r >= 0) {
-		p->op = REG;
-		p->rval = r;
-		p->lval = 0;
+		p->in.op = REG;
+		p->tn.rval = r;
+		p->tn.lval = 0;
 	} else
 		oregfix(p);
 }
@@ -872,17 +872,17 @@ oregfix(p)
 {
 	register int spare;
 
-	if ((p->sname->sflags >> 2 & 1) == 1)
+	if ((p->in.sname->sflags >> 2 & 1) == 1)
 		return;
-	if (p->op == NAME && p->sname->sclass == 3)
+	if (p->in.op == NAME && p->in.sname->sclass == 3)
 		return;
-	if (p->op == NAME && p->rval < 0)
+	if (p->in.op == NAME && p->tn.rval < 0)
 		return;
-	p->op = OREG;
-	p->rval = 15;
-	p->lval = p->sname->soffset / 8;
-	p->stsize = 0;
-	p->sname = p->sname->sclass == 9 && ((p->sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
+	p->in.op = OREG;
+	p->tn.rval = 15;
+	p->tn.lval = p->in.sname->soffset / 8;
+	p->stn.stsize = 0;
+	p->in.sname = p->in.sname->sclass == 9 && ((p->in.sname->sflags >> 3 & 1) == 1) ? fpsym2 : fpsym1;
 }
 
 /* command F: a register variable or a temporary is released */

@@ -72,10 +72,10 @@ int fltused = 0;
 #ifdef SEG
 #define OFFSTARL(l)	offstar(l)
 #else
-#define OFFSTARL(l)	offstar((l)->left)
+#define OFFSTARL(l)	offstar((l)->in.left)
 #endif
 
-#define OFFSTARA(l)	offstar((l)->left)
+#define OFFSTARA(l)	offstar((l)->in.left)
 
 #define max(a, b)	((a) > (b) ? (a) : (b))
 
@@ -83,9 +83,9 @@ int fltused = 0;
 
 #ifdef OLD_D3K
 /* v0: not the register of a parameter (it is copied before an operator changes it) */
-#define istnode(q)	((q)->op == REG && (rstatus[(q)->rval] & 0x14) && !((q)->sname && (q)->sname->sclass == 9))
+#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14) && !((q)->in.sname && (q)->in.sname->sclass == 9))
 #else
-#define istnode(q)	((q)->op == REG && (rstatus[(q)->rval] & 0x14))
+#define istnode(q)	((q)->in.op == REG && (rstatus[(q)->tn.rval] & 0x14))
 #endif
 
 static int orderadd();
@@ -104,7 +104,7 @@ stoasg(p, o)
 	register NODE *p;
 	int o;
 {
-	return shltype(p->left->op, p->left);
+	return shltype(p->in.left->in.op, p->in.left);
 }
 
 /* store the subtree of p with the larger register need: stotree and stocook for codgen */
@@ -114,30 +114,30 @@ mkadrs(p)
 {
 	register int o;
 
-	o = p->op;
+	o = p->in.op;
 	if asgop(o) {
-		if (p->left->su > p->right->su ||
-		    (p->left->su == p->right->su && p->left->fsu >= p->right->fsu)) {
-			if (p->left->op == STAR) {
-				if (p->left->su > 0 || p->left->fsu > 0)
-					stotree = p->left->left;
-				else if (p->right->su > 0 || p->right->fsu > 0)
-					stotree = p->right;
+		if (p->in.left->in.su > p->in.right->in.su ||
+		    (p->in.left->in.su == p->in.right->in.su && p->in.left->in.fsu >= p->in.right->in.fsu)) {
+			if (p->in.left->in.op == STAR) {
+				if (p->in.left->in.su > 0 || p->in.left->in.fsu > 0)
+					stotree = p->in.left->in.left;
+				else if (p->in.right->in.su > 0 || p->in.right->in.fsu > 0)
+					stotree = p->in.right;
 				else {
 					cerror("store finds both sides trivial");
 					return;
 				}
-			} else if (p->left->op == FLD && p->left->left->op == STAR)
-				stotree = p->left->left->left;
+			} else if (p->in.left->in.op == FLD && p->in.left->in.left->in.op == STAR)
+				stotree = p->in.left->in.left->in.left;
 			else
-				stotree = p->left;
+				stotree = p->in.left;
 		} else
-			stotree = p->right;
+			stotree = p->in.right;
 	} else {
-		if (p->left->su > p->right->su || (p->left->su == p->right->su && p->left->fsu > p->right->fsu))
-			stotree = p->left;
+		if (p->in.left->in.su > p->in.right->in.su || (p->in.left->in.su == p->in.right->in.su && p->in.left->in.fsu > p->in.right->in.fsu))
+			stotree = p->in.left;
 		else
-			stotree = p->right;
+			stotree = p->in.right;
 	}
 	stocook = 0x1000;
 }
@@ -162,93 +162,93 @@ sucomp(p)
 	register int o, ty, sul, sur, nr;
 	int fl, fr, nf, t;
 
-	o = p->op;
+	o = p->in.op;
 	ty = optype(o);
-	if ((t = p->type) == 6 || t == 7) {
+	if ((t = p->in.type) == 6 || t == 7) {
 		nf = 1;
 		nr = 0;
 	} else {
 		nf = 0;
-		nr = max(szty(t), dope[p->op] & MULFLG ? 2 : 1);
+		nr = max(szty(t), dope[p->in.op] & MULFLG ? 2 : 1);
 	}
 	if callop(o) {			/* a call takes all registers */
-		p->su = fregs;
-		p->fsu = ffregs;
+		p->in.su = fregs;
+		p->in.fsu = ffregs;
 		return;
 	}
 	switch (ty) {
 	case LTYPE:
-		p->su = 0;
-		p->fsu = 0;
+		p->in.su = 0;
+		p->in.fsu = 0;
 		return;
 	case UTYPE:
-		if (p->op == STARG && (unsigned)p->stsize > 4) {
-			p->su = max(p->left->su, fregs - 3);
-			p->fsu = p->left->fsu;
+		if (p->in.op == STARG && (unsigned)p->stn.stsize > 4) {
+			p->in.su = max(p->in.left->in.su, fregs - 3);
+			p->in.fsu = p->in.left->in.fsu;
 			return;
 		}
-		p->su = max(p->left->su, nr);
-		p->fsu = max(p->left->fsu, nf);
+		p->in.su = max(p->in.left->in.su, nr);
+		p->in.fsu = max(p->in.left->in.fsu, nf);
 #ifdef SEG
-		if (p->op == STAR)		/* an indirection through a long pointer needs a register pair */
-			p->su = max(p->su, 2);
+		if (p->in.op == STAR)		/* an indirection through a long pointer needs a register pair */
+			p->in.su = max(p->in.su, 2);
 #endif
 		return;
 	case BITYPE:
-		sul = p->left->su;
-		fl = p->left->fsu;
-		sur = p->right->su;
-		fr = p->right->fsu;
+		sul = p->in.left->in.su;
+		fl = p->in.left->in.fsu;
+		sur = p->in.right->in.su;
+		fr = p->in.right->in.fsu;
 		if (o == 0x17 || o == 0x18) {		/* && and || */
-			p->su = max(max(sul, sur), nr);
-			p->fsu = max(max(fl, fr), nf);
+			p->in.su = max(max(sul, sur), nr);
+			p->in.fsu = max(max(fl, fr), nf);
 			return;
 		}
 		if asgop(o) {			/* assignments */
 			if (sur == 0) {
 				if (sul == 0)
-					p->su = nr;
+					p->in.su = nr;
 				else
-					p->su = max(sul, nr);
+					p->in.su = max(sul, nr);
 			} else if (sul <= sur && sul + nr > fregs)
-				p->su = fregs + nr;
+				p->in.su = fregs + nr;
 			else if (sul == 0)
-				p->su = max(sur, nr + nr);
+				p->in.su = max(sur, nr + nr);
 			else
-				p->su = max(sur, max(sul, 1 + nr + nr));
+				p->in.su = max(sur, max(sul, 1 + nr + nr));
 			if (fr == 0) {
 				if (fl == 0)
-					p->fsu = nf;
+					p->in.fsu = nf;
 				else
-					p->fsu = max(fl, nf);
+					p->in.fsu = max(fl, nf);
 			}
 			else if (fl <= fr && fl + nf > ffregs)
-				p->fsu = ffregs + nf;
+				p->in.fsu = ffregs + nf;
 			else if (fl == 0)
-				p->fsu = max(fr, nf + nf);
+				p->in.fsu = max(fr, nf + nf);
 			else
-				p->fsu = max(fr, max(fl, 1 + nf + nf));
+				p->in.fsu = max(fr, max(fl, 1 + nf + nf));
 		}
-		else if ((dope[p->op] & MULFLG) && (p->left->type == 5 || p->left->type == 15)) {	/* long * / % */
-			p->su = max(fregs - 1, min(max(sul, nr + sur), max(nr + sul, sur)));
+		else if ((dope[p->in.op] & MULFLG) && (p->in.left->in.type == 5 || p->in.left->in.type == 15)) {	/* long * / % */
+			p->in.su = max(fregs - 1, min(max(sul, nr + sur), max(nr + sul, sur)));
 			if (sur == sul)
-				p->fsu = max(ffregs - 1, min(max(fl, nf + fr), max(nf + fl, fr)));
+				p->in.fsu = max(ffregs - 1, min(max(fl, nf + fr), max(nf + fl, fr)));
 			else
-				p->fsu = max(fl, fr);
+				p->in.fsu = max(fl, fr);
 		}
-		else if ((dope[p->op] & MULFLG) && optype(p->left->op) == 2 && nr > szty(p->left->type)) {
-			p->su = max(nr, max(sul, sur));
+		else if ((dope[p->in.op] & MULFLG) && optype(p->in.left->in.op) == 2 && nr > szty(p->in.left->in.type)) {
+			p->in.su = max(nr, max(sul, sur));
 			if (sur == sul)
-				p->fsu = max(nf, max(fl, fr));
+				p->in.fsu = max(nf, max(fl, fr));
 			else
-				p->fsu = max(fl, fr);
+				p->in.fsu = max(fl, fr);
 		}
 		else {
-		p->su = max(nr + nr, min(max(sul, nr + sur), max(sur, nr + sul)));
+		p->in.su = max(nr + nr, min(max(sul, nr + sur), max(sur, nr + sul)));
 		if (sur == sul)
-			p->fsu = max(nf + nf, min(max(fl, nf + fr), max(fr, nf + fl)));
+			p->in.fsu = max(nf + nf, min(max(fl, nf + fr), max(fr, nf + fl)));
 		else
-			p->fsu = max(nf + nf, max(max(fl, nf + fr), max(fr, nf + fl)));
+			p->in.fsu = max(nf + nf, max(max(fl, nf + fr), max(fr, nf + fl)));
 		}
 	}
 }
@@ -259,20 +259,20 @@ mkrall(p, r)
 	register NODE *p;
 	register int r;
 {
-	if (p->op == FLD) {
-		p->left->rall = p->rall;
-		p = p->left;
+	if (p->in.op == FLD) {
+		p->in.left->in.rall = p->in.rall;
+		p = p->in.left;
 	}
-	if (p->op != STAR)
+	if (p->in.op != STAR)
 		return;
-	p = p->left;
-	if (p->op == STAR) {
-		p->rall = r;
-		p = p->left;
+	p = p->in.left;
+	if (p->in.op == STAR) {
+		p->in.rall = r;
+		p = p->in.left;
 	}
-	if (p->op == PLUS && p->right->op == ICON) {
-		p->rall = r;
-		p = p->left;
+	if (p->in.op == PLUS && p->in.right->in.op == ICON) {
+		p->in.rall = r;
+		p = p->in.left;
 	}
 	rallo(p, r);
 }
@@ -285,15 +285,15 @@ rallo(p, down)
 {
 	register int o, down1, down2, ty;
 
-	if (p->type == 6 || p->type == 7) {
+	if (p->in.type == 6 || p->in.type == 7) {
 		fltused++;
 		return;
 	}
 	down2 = NOPREF;
-	p->rall = down;
+	p->in.rall = down;
 	down &= ~MUSTDO;
 	down1 = down;
-	o = p->op;
+	o = p->in.op;
 	ty = optype(o);
 	switch (o) {
 	case ASSIGN:
@@ -315,16 +315,16 @@ rallo(p, down)
 		down1 = NOPREF;
 		break;
 	case MUL:
-		if (p->left->type == 5 || p->left->type == 15) {
+		if (p->in.left->in.type == 5 || p->in.left->in.type == 15) {
 			down1 = MUSTDO | 6;
 #ifndef OLD_D2U
-			if (p->right->op != REG)
+			if (p->in.right->in.op != REG)
 				down2 = MUSTDO | 4;	/* (OLD_D2U: v0 wants no register for the right operand) */
 #endif
 		}
 		break;
 	case ASG MUL:
-		if (p->left->type == 5 || p->left->type == 15) {
+		if (p->in.left->in.type == 5 || p->in.left->in.type == 15) {
 			down1 = MUSTDO | 6;
 			down2 = MUSTDO | 4;
 		}
@@ -333,7 +333,7 @@ rallo(p, down)
 	case ASG DIV:
 	case MOD:
 	case ASG MOD:
-		if (p->left->type == 5 || p->left->type == 15) {
+		if (p->in.left->in.type == 5 || p->in.left->in.type == 15) {
 			down1 = MUSTDO | 6;
 			down2 = MUSTDO | 2;
 		}
@@ -346,27 +346,27 @@ rallo(p, down)
 		break;
 #ifdef OLD_D5T
 	case PLUS:
-		if ((p->rall & MUSTDO) && p->right->op == REG && p->right->rval == 15 && p->left->op == PLUS)
+		if ((p->in.rall & MUSTDO) && p->in.right->in.op == REG && p->in.right->tn.rval == 15 && p->in.left->in.op == PLUS)
 			down1 = NOPREF;	/* an element of a local array as an address: as OLD_D5A */
 		break;
 #endif
 #ifdef OLD_D5A
 	case STAR:
-		if ((p->rall & MUSTDO) && p->left->op == PLUS && p->left->right->op == REG && p->left->right->rval == 15)
+		if ((p->in.rall & MUSTDO) && p->in.left->in.op == PLUS && p->in.left->in.right->in.op == REG && p->in.left->in.right->tn.rval == 15)
 			down1 = NOPREF;	/* v0p: the address of a local array element wanted in a given register goes anywhere */
 		break;
 #endif
 	case RET:
-		if (p->type != 6 && p->type != 7)
+		if (p->in.type != 6 && p->in.type != 7)
 			down1 = MUSTDO | 2;
 		else
 			down1 = MUSTDO | 0x10;
 		break;
 	}
 	if (ty != 2)
-		rallo(p->left, down1);
+		rallo(p->in.left, down1);
 	if (ty == 8)
-		rallo(p->right, down2);
+		rallo(p->in.right, down2);
 }
 
 #ifdef SEG
@@ -382,45 +382,45 @@ mkoreg(p)
 	NODE *q;
 	long off;
 
-	if (p->op != STAR)
+	if (p->in.op != STAR)
 		return 0;
-	q = p->left;
-	l = q->left;
-	r = q->right;
-	if ((q->op == PLUS || q->op == MINUS) && r->op == ICON && l->op == REG && p->type != 6 && p->type != 7) {
-		off = r->lval;
-		rv = (l->rval + 1) << 8;
-		sym = r->sname;
-		if (q->op == MINUS) {
+	q = p->in.left;
+	l = q->in.left;
+	r = q->in.right;
+	if ((q->in.op == PLUS || q->in.op == MINUS) && r->in.op == ICON && l->in.op == REG && p->in.type != 6 && p->in.type != 7) {
+		off = r->tn.lval;
+		rv = (l->tn.rval + 1) << 8;
+		sym = r->in.sname;
+		if (q->in.op == MINUS) {
 			if (sym->nameoff)
 				return 0;
 			off = -off;
 		}
 		goto set;
 	}
-	if (q->op == PLUS && r->op == REG && l->op == REG && p->type != 6 && p->type != 7) {
-		if (r->rval == 0)
+	if (q->in.op == PLUS && r->in.op == REG && l->in.op == REG && p->in.type != 6 && p->in.type != 7) {
+		if (r->tn.rval == 0)
 			return 0;
-		rv = ((l->rval + 1) << 8) | (r->rval + 1);
+		rv = ((l->tn.rval + 1) << 8) | (r->tn.rval + 1);
 		off = 0;
-		sym = r->sname;
+		sym = r->in.sname;
 		goto set;
 	}
 	oreg2(p);
-	if (p->op != OREG)
+	if (p->in.op != OREG)
 		return 0;
 	return 1;
 set:
 	if ((rv >> 8) - 1 == 0)
 		return 0;
-	p->op = OREG;
-	p->rval = rv;
-	p->lval = off;
-	p->stsize = 0;
+	p->in.op = OREG;
+	p->tn.rval = rv;
+	p->tn.lval = off;
+	p->stn.stsize = 0;
 	if (sym == symtab0 || sym == fpsym1 || sym == fpsym2)
-		p->sname = sym;
+		p->in.sname = sym;
 	else
-		p->sname = 0;
+		p->in.sname = 0;
 	tfree(q);
 	return 1;
 
@@ -435,28 +435,28 @@ orderadd(p)
 	register int n;
 
 	n = 0;
-	if (p->op == PLUS || p->op == MINUS) {
-		if (p->left->op == CALL || p->left->op == 72) {
-			if (p->right->op == CALL || p->right->op == 72) {
-				order(p->right, INTEMP);
+	if (p->in.op == PLUS || p->in.op == MINUS) {
+		if (p->in.left->in.op == CALL || p->in.left->in.op == 72) {
+			if (p->in.right->in.op == CALL || p->in.right->in.op == 72) {
+				order(p->in.right, INTEMP);
 				n++;
-				order(p->left, 6);
+				order(p->in.left, 6);
 				n++;
 			} else {
-				order(p->left, 6);
+				order(p->in.left, 6);
 				n++;
-				if (p->right->op != ICON && p->right->op != REG) {
-					order(p->right, 6);
+				if (p->in.right->in.op != ICON && p->in.right->in.op != REG) {
+					order(p->in.right, 6);
 					n++;
 				}
 			}
 		} else {
-			if (p->right->op != ICON && p->right->op != REG) {
-				order(p->right, 6);
+			if (p->in.right->in.op != ICON && p->in.right->in.op != REG) {
+				order(p->in.right, 6);
 				n++;
 			}
-			if (p->left->op != ICON && p->left->op != REG) {
-				order(p->left, 6);
+			if (p->in.left->in.op != ICON && p->in.left->in.op != REG) {
+				order(p->in.left, 6);
 				n++;
 			}
 		}
@@ -476,29 +476,29 @@ offstar(p)
 	register NODE *l;
 	register int spare;
 
-	if (p->op == STAR) {
-		l = p->left;
-		if (l->op == PLUS || l->op == MINUS) {
+	if (p->in.op == STAR) {
+		l = p->in.left;
+		if (l->in.op == PLUS || l->in.op == MINUS) {
 			orderadd(l);
 			if (mkoreg(p)) {
-				if (p->type == 6 || p->type == 7)
+				if (p->in.type == 6 || p->in.type == 7)
 					order(p, 0x18);
 				else
 					order(p, 6);
 				return;
 			}
 		}
-		if (l->op == REG) {
+		if (l->in.op == REG) {
 			oreg2(p);
-			if (p->op == OREG && !(p->rall & MUSTDO))
+			if (p->in.op == OREG && !(p->in.rall & MUSTDO))
 				return;
 		}
-		if (p->rall & MUSTDO) {
-			if (optype(p->op) != LTYPE) {
+		if (p->in.rall & MUSTDO) {
+			if (optype(p->in.op) != LTYPE) {
 				orderadd(l);
 				order(l, 6);
 			}
-			if (p->type == 6 || p->type == 7)
+			if (p->in.type == 6 || p->in.type == 7)
 				order(p, 0x18);
 			else
 				order(p, 6);
@@ -520,13 +520,13 @@ offstar(p)
 	register int save;
 
 	star = 0;
-	if (p->op == STAR) {
-		if (p->rall & MUSTDO)
+	if (p->in.op == STAR) {
+		if (p->in.rall & MUSTDO)
 			star = p;
-		p = p->left;
+		p = p->in.left;
 	}
 	if (orderadd(p) == 0) {
-		if (p->op == REG && p->rval == 0) {
+		if (p->in.op == REG && p->tn.rval == 0) {
 			save = ordflag;
 			ordflag = 0x14;
 			order(p, 6);
@@ -535,7 +535,7 @@ offstar(p)
 			order(p, 6);
 	}
 	if (star) {
-		if (star->type == 6 || star->type == 7)
+		if (star->in.type == 6 || star->in.type == 7)
 			order(star, 0x18);
 		else
 			order(star, 6);
@@ -550,7 +550,7 @@ niceuty(p)
 {
 	register int t;
 
-	return p->op == STAR && (t = p->type) != 2 && t != 12 && t != 6 && t != 7 && shumul(p->left) != 0x800;
+	return p->in.op == STAR && (t = p->in.type) != 2 && t != 12 && t != 6 && t != 7 && shumul(p->in.left) != 0x800;
 }
 
 /* order the operands of a binary operator; 1 when something was ordered, 0 when the template can be used */
@@ -560,11 +560,11 @@ setbin(p)
 {
 	register NODE *r, *l;
 
-	r = p->right;
-	l = p->left;
-	if (p->right->su == 0 && p->right->fsu == 0) {
-		if logop(p->op) {
-			if (l->op == STAR && shumul(l->left) != 0x800)
+	r = p->in.right;
+	l = p->in.left;
+	if (p->in.right->in.su == 0 && p->in.right->in.fsu == 0) {
+		if logop(p->in.op) {
+			if (l->in.op == STAR && shumul(l->in.left) != 0x800)
 				OFFSTARL(l);
 			else
 				order(l, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
@@ -579,13 +579,13 @@ setbin(p)
 		}
 		return 0;
 	}
-	if logop(p->op) {
-		if (r->su > l->su || (r->su == l->su && r->fsu >= l->fsu)) {
+	if logop(p->in.op) {
+		if (r->in.su > l->in.su || (r->in.su == l->in.su && r->in.fsu >= l->in.fsu)) {
 			if (niceuty(r)) {
 				OFFSTARA(r);
 				return 1;
 			}
-			if (r->su > l->su || (r->su == l->su && r->fsu > l->fsu)) {
+			if (r->in.su > l->in.su || (r->in.su == l->in.su && r->in.fsu > l->in.fsu)) {
 				if (!istnode(r)) {
 					order(r, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
 					return 1;
@@ -608,9 +608,9 @@ setbin(p)
 			order(r, INAREG|INTAREG|INBREG|INTBREG|INTEMP);
 			return 1;
 		}
-		cerror("setbin can't deal with %s", opst[p->op]);
+		cerror("setbin can't deal with %s", opst[p->in.op]);
 	}
-	if (!istnode(r) && (r->su > l->su || (r->su == l->su && r->fsu > l->fsu))) {
+	if (!istnode(r) && (r->in.su > l->in.su || (r->in.su == l->in.su && r->in.fsu > l->in.fsu))) {
 		if (niceuty(r)) {
 			OFFSTARA(r);
 			return 1;
@@ -633,15 +633,15 @@ int
 setstr(p)
 	register NODE *p;
 {
-	if (p->right->op != REG) {
-		order(p->right, 4);
+	if (p->in.right->in.op != REG) {
+		order(p->in.right, 4);
 		return 1;
 	}
-	p = p->left;
-	if (p->op != NAME && p->op != OREG) {
-		if (p->op != STAR)
+	p = p->in.left;
+	if (p->in.op != NAME && p->in.op != OREG) {
+		if (p->in.op != STAR)
 			cerror("bad setstr");
-		order(p->left, 4);
+		order(p->in.left, 4);
 		return 1;
 	}
 	return 0;
@@ -654,32 +654,32 @@ setasg(p)
 {
 	register NODE *l, *r;
 
-	l = p->left;
-	r = p->right;
-	if (l->su > r->su && l->op == STAR) {
+	l = p->in.left;
+	r = p->in.right;
+	if (l->in.su > r->in.su && l->in.op == STAR) {
 		OFFSTARA(l);
 		return 1;
 	}
-	if (r->su != 0 && r->op != REG) {
-		if (r->op == STAR)
+	if (r->in.su != 0 && r->in.op != REG) {
+		if (r->in.op == STAR)
 			OFFSTARL(r);
 		else
 			order(r, 0x2ca);
 		return 1;
 	}
-	if (r->op != REG && (p->type == 6 || p->type == 7)) {
-		order(p->right, 0x18);
+	if (r->in.op != REG && (p->in.type == 6 || p->in.type == 7)) {
+		order(p->in.right, 0x18);
 		return 1;
 	}
-	if (l->op == STAR) {
+	if (l->in.op == STAR) {
 		OFFSTARA(l);
 		return 1;
 	}
-	if (l->op == FLD && l->left->op == STAR) {
-		OFFSTARA(l->left);
+	if (l->in.op == FLD && l->in.left->in.op == STAR) {
+		OFFSTARA(l->in.left);
 		return 1;
 	}
-	if (r->op != REG) {
+	if (r->in.op != REG) {
 		order(r, 10);
 		return 1;
 	}
@@ -691,11 +691,11 @@ static int
 lmuldiv(p)
 	register NODE *p;
 {
-	switch (p->op) {
+	switch (p->in.op) {
 	case ASG MUL:
 	case ASG DIV:
 	case ASG MOD:
-		if (p->left->type == 5 || p->left->type == 15)
+		if (p->in.left->in.type == 5 || p->in.left->in.type == 15)
 			return 1;
 	default:
 		return 0;
@@ -711,93 +711,93 @@ setasop(p)
 	register NODE *q, *c;
 	register int fl, fr;
 
-	sul = p->left->su;
-	sur = p->right->su;
-	fl = p->left->fsu;
-	fr = p->right->fsu;
+	sul = p->in.left->in.su;
+	sur = p->in.right->in.su;
+	fl = p->in.left->in.fsu;
+	fr = p->in.right->in.fsu;
 	if (sur == 0 && fr == 0) {
 leftadr:
 		if (sul == 0 && fl == 0)
 			goto rew;
-		if (p->left->op == STAR) {
+		if (p->in.left->in.op == STAR) {
 			if (lmuldiv(p)) {
 #ifdef SEG
-				p->left->left->rall = 0x1002;
-				p->left->left->left->rall = 0x1002;
+				p->in.left->in.left->in.rall = 0x1002;
+				p->in.left->in.left->in.left->in.rall = 0x1002;
 #else
-				p->left->left->rall = 0x1001;
-				p->left->left->left->rall = 0x1001;
+				p->in.left->in.left->in.rall = 0x1001;
+				p->in.left->in.left->in.left->in.rall = 0x1001;
 #endif
 			}
-			OFFSTARA(p->left);
+			OFFSTARA(p->in.left);
 			return 1;
 		}
-		if (p->left->op == FLD && p->left->left->op == STAR) {
+		if (p->in.left->in.op == FLD && p->in.left->in.left->in.op == STAR) {
 			if (lmuldiv(p)) {
 #ifdef SEG
-				p->left->left->left->rall = 0x1002;
-				p->left->left->left->left->rall = 0x1002;
+				p->in.left->in.left->in.left->in.rall = 0x1002;
+				p->in.left->in.left->in.left->in.left->in.rall = 0x1002;
 #else
-				p->left->left->left->rall = 0x1001;
-				p->left->left->left->left->rall = 0x1001;
+				p->in.left->in.left->in.left->in.rall = 0x1001;
+				p->in.left->in.left->in.left->in.left->in.rall = 0x1001;
 #endif
 			}
-			OFFSTARA(p->left->left);
+			OFFSTARA(p->in.left->in.left);
 			return 1;
 		}
 rew:
-		q = p->left;
-		if (q->op == FLD)
-			q = q->left;
-		if (q->op != STAR || shumul(q->left) != 0x800)
+		q = p->in.left;
+		if (q->in.op == FLD)
+			q = q->in.left;
+		if (q->in.op != STAR || shumul(q->in.left) != 0x800)
 			return 0;
 		c = tcopy(p);
-		p->op = ASSIGN;
-		reclaim(p->right, 0, 0);
-		p->right = c;
-		if (q->left->op == INCR) {
-			q = c->left;
-			if (q->op == FLD)
-				q = q->left;
-			if (q->left->op != INCR)
+		p->in.op = ASSIGN;
+		reclaim(p->in.right, 0, 0);
+		p->in.right = c;
+		if (q->in.left->in.op == INCR) {
+			q = c->in.left;
+			if (q->in.op == FLD)
+				q = q->in.left;
+			if (q->in.left->in.op != INCR)
 				cerror("bad incr rewrite");
-		} else if (q->left->op != ASG MINUS)
+		} else if (q->in.left->in.op != ASG MINUS)
 			cerror(" bad -= rewrite");
-		q->left->right->op = FREE;
-		q->left->op = FREE;
-		q->left = q->left->left;
+		q->in.left->in.right->in.op = FREE;
+		q->in.left->in.op = FREE;
+		q->in.left = q->in.left->in.left;
 		p = canon(p);
-		rallo(p, p->rall);
-		order(c->left, INTAREG|INTBREG);
+		rallo(p, p->in.rall);
+		order(c->in.left, INTAREG|INTBREG);
 		order(c, INTAREG|INTBREG);
 		return 1;
 	}
-	if (p->op == ASG MOD || p->op == ASG DIV) {
-		if (p->type == 5 || p->type == 15) {
+	if (p->in.op == ASG MOD || p->in.op == ASG DIV) {
+		if (p->in.type == 5 || p->in.type == 15) {
 #ifdef SEG
 			if (sul) {
-				p->right->rall = 0x2000;
-				order(p->right, INTEMP);
+				p->in.right->in.rall = 0x2000;
+				order(p->in.right, INTEMP);
 				return 1;
 			}
 #endif
-			order(p->right, 4);
+			order(p->in.right, 4);
 			return 1;
 		}
 	}
-	if (sul > sur && p->left->op == STAR) {
+	if (sul > sur && p->in.left->in.op == STAR) {
 		if (lmuldiv(p))
-			p->left->left->rall = 0x1002;
-		OFFSTARA(p->left);
+			p->in.left->in.left->in.rall = 0x1002;
+		OFFSTARA(p->in.left);
 		return 1;
 	}
-	if (p->right->op == STAR) {
-		OFFSTARL(p->right);
+	if (p->in.right->in.op == STAR) {
+		OFFSTARL(p->in.right);
 		return 1;
 	}
-	if (p->right->op == REG)
+	if (p->in.right->in.op == REG)
 		goto leftadr;
-	order(p->right, 10);
+	order(p->in.right, 10);
 	return 1;
 }
 
@@ -841,8 +841,8 @@ argscan(p)
 	register NODE *rest, *q;
 
 	rest = p;
-	if (p->op == CM) {
-		rest = argscan(p->left);
+	if (p->in.op == CM) {
+		rest = argscan(p->in.left);
 		if (argstop) {
 		ret:
 			return rest;
@@ -850,28 +850,28 @@ argscan(p)
 #ifdef OLD_D22
 		if (0) {	/* v0p: a double argument goes by its size (rq4 when it is the first one) */
 #else
-		if (p->right->type == 6 || p->right->type == 7) {
+		if (p->in.right->in.type == 6 || p->in.right->in.type == 7) {
 #endif
 			if (argfreg < 0x10) {
 				if (argstop)
 					goto ret;
 				argstop = 1;
-				return p->right;
+				return p->in.right;
 			}
 		} else if (argreg < 2) {
 			if (argstop)
 				goto ret;
 			argstop = 1;
-			return p->right;
+			return p->in.right;
 		}
 		rest = p;
-		p->op = FREE;
-		p = p->right;
+		p->in.op = FREE;
+		p = p->in.right;
 	}
 #ifdef OLD_D22
 	if (0) {
 #else
-	if (p->type == 6 || p->type == 7) {
+	if (p->in.type == 6 || p->in.type == 7) {
 #endif
 		if (argfreg < 0x10)
 			goto stop;
@@ -935,9 +935,9 @@ argsort()
 
 #ifdef OLD_D19A
 	/* v0: a constant argument counts as needing less than any other one (it is loaded after them) */
-#define ARGSU(q)	((q)->op == ICON ? -1 : (q)->su)
+#define ARGSU(q)	((q)->in.op == ICON ? -1 : (q)->in.su)
 #else
-#define ARGSU(q)	((q)->su)
+#define ARGSU(q)	((q)->in.su)
 #endif
 	for (ai = argl; ai->node; ai++)
 		for (aj = ai + 1; aj->node; aj++)
@@ -963,11 +963,11 @@ fixstarg(p)
 	q.cstring = "/* dummy from fixstarg */\n";
 	if (!allo(p, &q))
 		cerror("bad STARG allocation");
-	resc[0].type = 8;
-	p->op = STASG;
-	p->right = p->left;
-	p->left = tcopy(resc);
-	p->type = 0x18;
+	resc[0].in.type = 8;
+	p->in.op = STASG;
+	p->in.right = p->in.left;
+	p->in.left = tcopy(resc);
+	p->in.type = 0x18;
 }
 
 /* remove the arguments that were collected from the tree up to rest and order the first of the rest */
@@ -975,32 +975,32 @@ static void
 argstrip(p, rest)
 	register NODE *p, *rest;
 {
-	if (rest == p->right) {
-		p->op = FREE;
-		p = p->right;
+	if (rest == p->in.right) {
+		p->in.op = FREE;
+		p = p->in.right;
 	}
 	if (p != rest) {
-		if (p->op == CM || p->op == FREE) {
-			argstrip(p->left, rest);
-			p->op = FREE;
-			p = p->right;
+		if (p->in.op == CM || p->in.op == FREE) {
+			argstrip(p->in.left, rest);
+			p->in.op = FREE;
+			p = p->in.right;
 		}
 	}
-	if (p->op == STARG) {
+	if (p->in.op == STARG) {
 		fixstarg(p);
 		order(p, 1);
 		return;
 	}
-	if (p->op == CM || p->op == FREE)
+	if (p->in.op == CM || p->in.op == FREE)
 		return;
-	if (p->op != REG) {
-		if (p->type == 2 || p->type == 12) {
+	if (p->in.op != REG) {
+		if (p->in.type == 2 || p->in.type == 12) {
 			order(p, 4);
-			if (p->type == 2)
-				printf("\textsb\t%s\n", rnames[p->rval]);
+			if (p->in.type == 2)
+				printf("\textsb\t%s\n", rnames[p->tn.rval]);
 			else
-				printf("\tldb\trh%d,#0\n", p->rval);
-			p->type = 4;
+				printf("\tldb\trh%d,#0\n", p->tn.rval);
+			p->in.type = 4;
 		}
 	}
 	order(p, 0x2000);
@@ -1019,24 +1019,24 @@ d3aw(p, top)
 	register struct rs *n;
 	register int k;
 
-	if (p->op == NAME && p->sname && p->sname->sclass == 9) {
+	if (p->in.op == NAME && p->in.sname && p->in.sname->sclass == 9) {
 		if (top)
 			for (n = rsuse; n; n = n->next)
-				if (n->cls <= 4 && n->sym == p->sname && n->reg <= d3awhi &&
+				if (n->cls <= 4 && n->sym == p->in.sname && n->reg <= d3awhi &&
 				    n->reg + (n->cls == 3) >= d3awlo)
 					n->sym = 0;
 		return;
 	}
-	k = optype(p->op);
-	if (k == LTYPE || p->op == QUEST)
+	k = optype(p->in.op);
+	if (k == LTYPE || p->in.op == QUEST)
 		return;
-	if (p->op == STAR)
+	if (p->in.op == STAR)
 		top = 1;		/* below an indirection: an address */
-	else if (p->op != PLUS && p->op != MINUS && p->op != UMINUS && p->op != MUL && p->op != 110 /* SCONV */)
+	else if (p->in.op != PLUS && p->in.op != MINUS && p->in.op != UMINUS && p->in.op != MUL && p->in.op != 110 /* SCONV */)
 		top = 0;		/* below another operator: a computed value */
-	d3aw(p->left, top);
+	d3aw(p->in.left, top);
 	if (k == BITYPE)
-		d3aw(p->right, top);
+		d3aw(p->in.right, top);
 }
 #endif
 
@@ -1047,17 +1047,17 @@ d22arg(q, reg)
 	register NODE *q;
 	int reg;
 {
-	if (q->op == NAME)
+	if (q->in.op == NAME)
 		oregfix(q);
-	if (q->op == NAME || q->op == OREG) {
+	if (q->in.op == NAME || q->in.op == OREG) {
 		printf("\tldm\tr%d,", reg);
 		adrput(q);
 		printf(",#4\n");
 		recl2(q);
 	} else {
 		order(q, 0x10);
-		printf("\tfldd\tr%d,%s\n", reg, rnames[q->rval]);
-		rfree(q->rval, q->type);
+		printf("\tfldd\tr%d,%s\n", reg, rnames[q->tn.rval]);
+		rfree(q->tn.rval, q->in.type);
 	}
 	getreg(3, reg, 0, (struct sym *)0);
 	getreg(3, reg + 2, 0, (struct sym *)0);
@@ -1083,17 +1083,17 @@ argplace()
 	nleft = 8;
 	fleft = 4;
 	for (; (q = argl[nargs].node) != 0; nargs++) {
-		if (nleft < q->su || fleft < q->fsu || (regs < 1 && q->su > 1)) {
+		if (nleft < q->in.su || fleft < q->in.fsu || (regs < 1 && q->in.su > 1)) {
 			order(q, INTEMP);
 			continue;
 		}
 #ifdef OLD_D22
-		if ((q->type == 7 || q->type == 6) && argl[nargs].reg < 8) {
+		if ((q->in.type == 7 || q->in.type == 6) && argl[nargs].reg < 8) {
 			nleft -= 4;
 			continue;
 		}
 #endif
-		if (q->type == 7 || q->type == 6) {
+		if (q->in.type == 7 || q->in.type == 6) {
 			fleft--;
 			continue;
 		}
@@ -1107,27 +1107,27 @@ argplace()
 	for (nargs = 0; (q = argl[nargs].node) != 0; nargs++) {
 		reg = argl[nargs].reg;
 #ifdef OLD_D22
-		if ((q->type == 6 || q->type == 7) && reg < 8) {
+		if ((q->in.type == 6 || q->in.type == 7) && reg < 8) {
 			d22arg(q, reg);
 			tfree(q);
 			continue;
 		}
 #endif
-		q->rall = reg | MUSTDO;
+		q->in.rall = reg | MUSTDO;
 #ifdef OLD_D3AW
 		/* v0p: a parameter that is a whole argument or is used as an address in it is not taken from its
 		   register (only there; in a computed value it is) */
 		d3awlo = reg;
-		d3awhi = reg + szty(q->type) - 1;
+		d3awhi = reg + szty(q->in.type) - 1;
 		d3aw(q, 1);
 #endif
-		if (q->type == 6 || q->type == 7)
+		if (q->in.type == 6 || q->in.type == 7)
 			order(q, 0x10);
 		else
 			order(q, 4);
-		if (q->type == 2)
+		if (q->in.type == 2)
 			printf("\textsb\t%s\n", rnames[reg]);
-		else if (q->type == 12)
+		else if (q->in.type == 12)
 			printf("\tldb\trh%d,#0\n", reg);
 		tfree(q);
 	}

@@ -109,7 +109,7 @@ tshape(p, shape)
 	register NODE *p;
 	int shape;
 {
-	register int o = p->op;
+	register int o = p->in.op;
 	register int r;
 
 	if (shape == SANY)
@@ -117,16 +117,16 @@ tshape(p, shape)
 	if (shape & SPECIAL) {
 		switch (shape) {
 		case SZERO:		/* the constant 0 without a name */
-			if (o != ICON || p->sname != 0 || p->rval < 0)
+			if (o != ICON || p->in.sname != 0 || p->tn.rval < 0)
 				return 0;
-			return p->lval == 0;
+			return p->tn.lval == 0;
 		default:
 			return special(p, shape);
 		}
 	}
 	if ((shape & INTEMP) && shtemp(p))
 		return 1;
-	if ((shape & SWADD) && (o == NAME || o == OREG) && (p->lval & 1))
+	if ((shape & SWADD) && (o == NAME || o == OREG) && (p->tn.lval & 1))
 		return 0;			/* a word address must be even */
 	switch (o) {
 	case NAME:
@@ -134,9 +134,9 @@ tshape(p, shape)
 	case ICON:
 		return shape & SCON;
 	case FLD:
-		if (!(shape & SFLD) || !ltypeop(p->left))
+		if (!(shape & SFLD) || !ltypeop(p->in.left))
 			return 0;
-		o = p->rval;
+		o = p->tn.rval;
 		fldsz = o & 0x3F;
 		fldoff = o >> 6;
 		fldshf = 16 - fldsz - (o >> 6);
@@ -144,23 +144,23 @@ tshape(p, shape)
 	case CCODES:
 		return shape & SCC;
 	case REG:
-		r = rstatus[p->rval] & RBFLAG ? SBREG : SAREG;
+		r = rstatus[p->tn.rval] & RBFLAG ? SBREG : SAREG;
 #ifdef OLD_D3K
 		/* v0: the register of a parameter is not a scratch one for the tree (it is copied first) */
 #ifdef OLD_D3KC
-		if ((rstatus[p->rval] & RTEMPFLAGS) && !(p->sname && p->sname->sclass == 9))
+		if ((rstatus[p->tn.rval] & RTEMPFLAGS) && !(p->in.sname && p->in.sname->sclass == 9))
 #else
-		if ((rstatus[p->rval] & RTEMPFLAGS) && !(p->sname && p->sname->sclass == 9 && (p->rall & ~MUSTDO) != p->rval))
+		if ((rstatus[p->tn.rval] & RTEMPFLAGS) && !(p->in.sname && p->in.sname->sclass == 9 && (p->in.rall & ~MUSTDO) != p->tn.rval))
 #endif
 #else
-		if (rstatus[p->rval] & RTEMPFLAGS)
+		if (rstatus[p->tn.rval] & RTEMPFLAGS)
 #endif
 			r = r == SBREG ? (SBREG | STBREG) : (SAREG | STAREG);
 		return shape & r;
 	case OREG:
 		return shape & SOREG;
 	case STAR:
-		return shumul(p->left) & shape;
+		return shumul(p->in.left) & shape;
 	}
 	return 0;
 }
@@ -213,7 +213,7 @@ setrew()
 	register struct optab *q;
 	register int op, mask;
 
-	for (q = table; q->op != FREE; q++)
+	for (q = table; q->in.op != FREE; q++)
 		if (q->needs == 0x1000) {
 			rwdefault = q;
 			goto more;
@@ -222,11 +222,11 @@ setrew()
 more:
 	for (op = 0; op < 129; op++)
 		if (dope[op]) {
-			for (q = table; q->op != FREE; q++) {
-				if (q->op < 0x1000) {
-					if (q->op == op)
+			for (q = table; q->in.op != FREE; q++) {
+				if (q->in.op < 0x1000) {
+					if (q->in.op == op)
 						break;
-				} else if ((mask = opclass[q->op - 0x1000]) & 0x4000) {
+				} else if ((mask = opclass[q->in.op - 0x1000]) & 0x4000) {
 					if (op == NAME || op == ICON || op == OREG)
 						break;
 					else if (shltype(op, (NODE *)0))
@@ -255,38 +255,38 @@ match(p, cookie)
 	int y;
 
 	rcount();
-	switch optype(p->op) {
+	switch optype(p->in.op) {
 	case BITYPE:
-		if (p->left->op == NAME && optype(p->right->op) == LTYPE) {
-			if asgop(p->op)
+		if (p->in.left->in.op == NAME && optype(p->in.right->in.op) == LTYPE) {
+			if asgop(p->in.op)
 				goto asg;
-			fixname(p->left);
+			fixname(p->in.left);
 		}
 		goto rgt;
 	elsq:
-		q = opptr[p->op];
+		q = opptr[p->in.op];
 		goto top;
 	fxl:
-		fixname(p->left);
+		fixname(p->in.left);
 	cont:
 		if (cookie != FORREW)
 			goto elsq;
 		q = rwdefault;
 		goto top;
 	case LTYPE:
-		if (p->op != NAME)
+		if (p->in.op != NAME)
 			goto cont;
 		fixname(p);
 #ifdef OLD_D2C
 		/* v0: a name (not a parameter) found in a scratch register is that register, which then loses the name */
-		if (p->op == REG && (cookie & STAREG) && (rstatus[p->rval] & STAREG) && p->type != 5 && p->type != 15 &&
+		if (p->in.op == REG && (cookie & STAREG) && (rstatus[p->tn.rval] & STAREG) && p->in.type != 5 && p->in.type != 15 &&
 #ifdef OLD_D3KC
-		    p->sname && p->sname->sclass != 9 &&
+		    p->in.sname && p->in.sname->sclass != 9 &&
 #else
-		    p->sname && (p->sname->sclass != 9 ? (p->rall & MUSTDO) || d2vfirst(p->rval) : (p->rall & ~MUSTDO) == p->rval) &&
+		    p->in.sname && (p->in.sname->sclass != 9 ? (p->in.rall & MUSTDO) || d2vfirst(p->tn.rval) : (p->in.rall & ~MUSTDO) == p->tn.rval) &&
 #endif
-		    (!(p->rall & MUSTDO) || (p->rall & ~MUSTDO) == p->rval)) {
-			symdrop(p->rval);
+		    (!(p->in.rall & MUSTDO) || (p->in.rall & ~MUSTDO) == p->tn.rval)) {
+			symdrop(p->tn.rval);
 			return MDONE;
 		}
 #endif
@@ -294,93 +294,93 @@ match(p, cookie)
 	case UTYPE:
 #ifdef OLD_D3L
 		/* v0: a word cast of a global long is not taken from the register that holds the long */
-		if (p->op == 110 && p->left->op == NAME && (p->left->type == 5 || p->left->type == 15) && p->type != 5 && p->type != 15 &&
-		    p->left->sname->sclass != 9 && p->left->sname->sclass != 1 && p->left->sname->sclass != 4)
+		if (p->in.op == 110 && p->in.left->in.op == NAME && (p->in.left->in.type == 5 || p->in.left->in.type == 15) && p->in.type != 5 && p->in.type != 15 &&
+		    p->in.left->in.sname->sclass != 9 && p->in.left->in.sname->sclass != 1 && p->in.left->in.sname->sclass != 4)
 			goto cont;
 #endif
-		if (p->left->op == NAME)
+		if (p->in.left->in.op == NAME)
 			goto fxl;
-		if (p->left->op == SCONV && p->left->left->op == NAME)
-			fixname(p->left->left);
+		if (p->in.left->in.op == SCONV && p->in.left->in.left->in.op == NAME)
+			fixname(p->in.left->in.left);
 		goto cont;
 	asg:		/* an assignment: the target must stay in memory */
-		t = (int)p->left;
-		symuse(((NODE *)t)->sname);
+		t = (int)p->in.left;
+		symuse(((NODE *)t)->in.sname);
 		oregfix((NODE *)t);
 	rgt:
-		if (p->right->op == NAME) {
-			if ((p->type == 5 || p->type == 15) && ((dope[p->op] & MULFLG) || (dope[p->op] & DIVFLG))) {
+		if (p->in.right->in.op == NAME) {
+			if ((p->in.type == 5 || p->in.type == 15) && ((dope[p->in.op] & MULFLG) || (dope[p->in.op] & DIVFLG))) {
 				register int rv;
 
-				rv = p->right->rval;
+				rv = p->in.right->tn.rval;
 				/* mult and div use r4..r7: a right operand in r6 (or r4 for div) goes to memory */
-				if (rv == 6 || ((dope[p->op] & DIVFLG) && rv == 4)) {
-					oregfix(p->right);
+				if (rv == 6 || ((dope[p->in.op] & DIVFLG) && rv == 4)) {
+					oregfix(p->in.right);
 					goto cont;
 				}
 			}
 #ifdef OLD_D3AW
 			/* v0p: a parameter added to an address constant is not taken from its register */
-			if (p->op == PLUS && p->left->op == ICON && p->left->sname && p->right->sname->sclass == 9)
-				oregfix(p->right);
+			if (p->in.op == PLUS && p->in.left->in.op == ICON && p->in.left->in.sname && p->in.right->in.sname->sclass == 9)
+				oregfix(p->in.right);
 			else
 #endif
-			if (optype(p->left->op) == LTYPE || p->left->op == FLD)
-				fixname(p->right);
+			if (optype(p->in.left->in.op) == LTYPE || p->in.left->in.op == FLD)
+				fixname(p->in.right);
 		}
 		goto cont;
 	}
 	goto cont;
 aa:
-	if (q->op == p->op)
+	if (q->in.op == p->in.op)
 		goto cand;
 	goto next;
 zz:
-	if (p->op == NAME)
+	if (p->in.op == NAME)
 		goto cand;
-	if (p->op == ICON)
+	if (p->in.op == ICON)
 		goto cand;
-	if (p->op == OREG)
+	if (p->in.op == OREG)
 		goto cand;
-	if (shltype(p->op, p))
+	if (shltype(p->in.op, p))
 		goto cand;
 next:
 	++q;
 top:
-	if (q->op == FREE)
+	if (q->in.op == FREE)
 		goto nom;
-	if (q->op < 0x1000)
+	if (q->in.op < 0x1000)
 		goto aa;
 	{
 		register int opmtemp;
 
-		if ((opmtemp = opclass[q->op - 0x1000]) & 0x4000)
+		if ((opmtemp = opclass[q->in.op - 0x1000]) & 0x4000)
 			goto zz;
-		if ((dope[p->op] & (opmtemp | 1)) == opmtemp) {
+		if ((dope[p->in.op] & (opmtemp | 1)) == opmtemp) {
 cand:
 		if (!(q->visit & cookie))
 			goto next;
 		l = r = getlr(p, 'L');
 		if (!tshape(r, q->lshape))
 			goto next;
-		if (!ttype(r->type, q->ltype))
+		if (!ttype(r->in.type, q->ltype))
 			goto next;
 #ifdef OLD_D10
 		/* the old codgen v0 shifts a long by a constant through a register (ld A1,#n; sdal): no OIZB AL,#n */
-		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (r->type == 5 || l->type == 15) &&
-		    (p->op == LS || p->op == RS || p->op == ASG LS || p->op == ASG RS))
+		if (q->lshape == 0x6 && q->rshape == 0x80 && q->in.op == 0x1013 && (r->in.type == 5 || l->in.type == 15) &&
+		    (p->in.op == LS || p->in.op == RS || p->in.op == ASG LS || p->in.op == ASG RS))
 			goto next;
 #endif
 		r = getlr(p, 'R');
 		if (!tshape(r, q->rshape))
 			goto next;
-		if (!ttype(r->type, q->rtype))
+		if (!ttype(r->in.type, q->rtype))
 			goto next;
 #ifdef OLD_D16A
 		/* v0p: a frame slot incremented by a constant whose value may go to a temporary is loaded, incremented in
 		   the register and stored (ld A1,AL; Zi A1,AR; ld AL,A1), not incremented in memory */
-		if (p->op == ASG PLUS && (cookie & INTEMP) && l->op == OREG && l->rval == 15 &&
-		    r->op == ICON && r->sname == 0) {
+		if (p->in.op == ASG PLUS && (cookie & INTEMP) && l->in.op == OREG && l->tn.rval == 15 &&
+		    r->in.op == ICON && r->in.sname == 0) {
 			if (q->rshape == 0x8002)
 				goto next;
 			if (q->needs == 1 && q->rewrite == 0x804 && allo(p, q)) {
@@ -391,33 +391,33 @@ cand:
 		}
 #endif
 		if (q->ltype == 0x4000 || q->rtype == 0x4000) {		/* both operands of the same type */
-			if (r->type != l->type)
+			if (r->in.type != l->in.type)
 				goto next;
 		} else if (q->ltype == 0x8000 || q->rtype == 0x8000) {	/* of the same size */
-			t = bsize(l->type);
-			if (bsize(r->type) != t)
+			t = bsize(l->in.type);
+			if (bsize(r->in.type) != t)
 				goto next;
 		}
-		if ((p->type == 6 || p->type == 7) && q->ltype == 0x8000 && q->rtype == 0x8000)
+		if ((p->in.type == 6 || p->in.type == 7) && q->ltype == 0x8000 && q->rtype == 0x8000)
 			goto next;
 		if (q->needs & REWRITE)
 			return q->rewrite;
 		if (!allo(p, q))
 			goto next;
 #ifdef OLD_D2A
-		t = p->op;
+		t = p->in.op;
 #endif
 #ifdef OLD_D6S
 		/* v0p: an assignment of a register to itself (the value of a switch into its register) prints nothing */
-		if (p->op == ASSIGN && p->left->op == REG && p->right->op == REG && p->left->rval == p->right->rval &&
-		    p->left->type == p->right->type) {
+		if (p->in.op == ASSIGN && p->in.left->in.op == REG && p->in.right->in.op == REG && p->in.left->tn.rval == p->in.right->tn.rval &&
+		    p->in.left->in.type == p->in.right->in.type) {
 			reclaim(p, q->rewrite, cookie);
 			return MDONE;
 		}
 #endif
 #ifdef OLD_D22
 		/* v0p: a floating compare with memory without the rounding fld of the left operand */
-		if (q->op == 0x100e && q->lshape == 0x18 && q->rshape == 0x2c0)
+		if (q->in.op == 0x100e && q->lshape == 0x18 && q->rshape == 0x2c0)
 			expand(p, cookie, "\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI");
 		else
 #endif
@@ -425,14 +425,14 @@ cand:
 		reclaim(p, q->rewrite, cookie);
 #ifdef OLD_D2A
 		/* v0: the value of a long assignment is copied into a new pair, which keeps the name */
-		if (t == ASSIGN && !(cookie & 01) && p->op == REG && (p->type == 5 || p->type == 15) && p->rval < 8 &&
-		    !(p->rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */
+		if (t == ASSIGN && !(cookie & 01) && p->in.op == REG && (p->in.type == 5 || p->in.type == 15) && p->tn.rval < 8 &&
+		    !(p->in.rall & MUSTDO)) {	/* (not when the value goes to a register wanted for it: an argument) */
 			register int nr;
 
 			nr = getreg(3, -1, 0x1000, (struct sym *)0);
-			if (nr >= 0 && nr != p->rval) {
-				rmove(nr, p->rval, p->type);
-				rfree(nr, p->type);
+			if (nr >= 0 && nr != p->tn.rval) {
+				rmove(nr, p->tn.rval, p->in.type);
+				rfree(nr, p->in.type);
 			}
 		}
 #endif
@@ -468,18 +468,18 @@ expand(p, cookie, cp)
 			adrput(getlr(p, *++cp));
 			continue;
 		case 'B':		/* byte offset in word */
-			val = getlr(p, *++cp)->lval;
+			val = getlr(p, *++cp)->tn.lval;
 			val = val & 1;
 			printf("%ld", val);
 			continue;
 		case 'C':		/* for constant value only */
 			/* the result register of a call holds the value of the right operand: note it */
 			r = getlr(p, *++cp);
-			n = rfind(resc[0].rval, rclass(p->type, resc[0].rval));
-			if (p->op == UCALL)
+			n = rfind(resc[0].tn.rval, rclass(p->in.type, resc[0].tn.rval));
+			if (p->in.op == UCALL)
 				n->sym = 0;
 			else {
-				n->off = r->lval;
+				n->off = r->tn.lval;
 				n->sym = fpsym1;
 				n->flags |= 0x8000;
 			}
@@ -497,7 +497,7 @@ expand(p, cookie, cp)
 			insput(getlr(p, *++cp));
 			continue;
 		case 'L':		/* output special label field */
-			printf("%d", p->label);
+			printf("%d", p->bn.label);
 			continue;
 		case 'M':		/* field mask */
 		case 'N':		/* complement of field mask */
@@ -532,9 +532,9 @@ expand(p, cookie, cp)
 			continue;
 		case 'Y':
 			r = getlr(p, 'R');
-			if (r->op == FLD)
-				r = r->left;
-			if (r->op == ICON)
+			if (r->in.op == FLD)
+				r = r->in.left;
+			if (r->in.op == ICON)
 				acon(r);
 			else
 				adrput(getlr(p, 'R'));
@@ -561,9 +561,9 @@ getlr(p, c)
 	case '1': case '2': case '3':
 		return &resc[c - '1'];
 	case 'L': case 'l':
-		return optype(p->op) == LTYPE ? p : p->left;
+		return optype(p->in.op) == LTYPE ? p : p->in.left;
 	case 'R': case 'r':
-		return optype(p->op) == BITYPE ? p->right : p;
+		return optype(p->in.op) == BITYPE ? p->in.right : p;
 	}
 	cerror("bad getlr: %c", c);
 }

@@ -463,12 +463,12 @@ mapsym(p)
 {
 	register int i;
 
-	if (p->rval) {
-		i = tagfind(p->rval);
+	if (p->tn.rval) {
+		i = tagfind(p->tn.rval);
 		if (i < 0)
-			cerror("mapn: tag %d not found", p->rval);
-		p->sname = tagtab[i].sym;
-		p->rval = 0;
+			cerror("mapn: tag %d not found", p->tn.rval);
+		p->in.sname = tagtab[i].sym;
+		p->tn.rval = 0;
 	}
 }
 
@@ -482,13 +482,13 @@ mapnm(p)
 	long ofs;
 
 	if (eflag > 1)
-		printf("mapnm, p->op=%d, p->rval=%d\n", p->op, p->rval);
-	if (p->op == NAME && p->rval >= 0) {
+		printf("mapnm, p->op=%d, p->rval=%d\n", p->in.op, p->tn.rval);
+	if (p->in.op == NAME && p->tn.rval >= 0) {
 		mapsym(p);
-		if (p->sname->sclass == 4) {
+		if (p->in.sname->sclass == 4) {
 			if (rflag) {
-				n = p->sname->sbyte5;
-				t = p->sname->stype;
+				n = p->in.sname->sbyte5;
+				t = p->in.sname->stype;
 #ifdef SEG
 				if (t == 6 || t == 7)
 					n -= 13;
@@ -499,51 +499,51 @@ mapnm(p)
 				else
 					n -= 7;
 			}
-			if (rflag && regvar[n].sym != p->sname)
-				p->sname->sclass = regvar[n].rcls;
+			if (rflag && regvar[n].sym != p->in.sname)
+				p->in.sname->sclass = regvar[n].rcls;
 			else {
-				n = p->sname->sbyte5;
+				n = p->in.sname->sbyte5;
 				if (!rflag)
-					n = getreg(rclass(p->type, n), n, 0x1000, p->sname);
-				p->op = REG;
-				p->rval = n;
-				p->lval = 0;
+					n = getreg(rclass(p->in.type, n), n, 0x1000, p->in.sname);
+				p->in.op = REG;
+				p->tn.rval = n;
+				p->tn.lval = 0;
 			}
 		}
 		if (eflag > 1)
-			printf("mapnm, p->sname = %d, p->global=%d\n", p->sname, p->sname->sflags >> 2 & 1);
+			printf("mapnm, p->sname = %d, p->global=%d\n", p->in.sname, p->in.sname->sflags >> 2 & 1);
 		return;
 	}
-	if (p->op == ICON) {
-		if (p->sname == fpsym1 || p->sname == fpsym2)
+	if (p->in.op == ICON) {
+		if (p->in.sname == fpsym1 || p->in.sname == fpsym2)
 			return;
-	} else if (p->op == TEMP) {
+	} else if (p->in.op == TEMP) {
 		fixtemp(p);
 		return;
-	} else if (p->op == FLD) {
-		m = p->right;
+	} else if (p->in.op == FLD) {
+		m = p->in.right;
 		mapsym(m);
-		mapnm(p->left);
-		ot = p->left->type;
+		mapnm(p->in.left);
+		ot = p->in.left->in.type;
 		fixfld(p);
-		ofs = m->sname->soffset / 16 * 2;
-		p->rval = m->sname->soffset % 16 << 6 | m->sname->sclass & 0x3F;
-		if (p->left->op == NAME)
-			p->left->lval += ofs;
+		ofs = m->in.sname->soffset / 16 * 2;
+		p->tn.rval = m->in.sname->soffset % 16 << 6 | m->in.sname->sclass & 0x3F;
+		if (p->in.left->in.op == NAME)
+			p->in.left->tn.lval += ofs;
 		else if (ofs != 0) {
-			t = INCREF(m->sname->stype);
-			p->left->type = t;
-			if ((ot & 0x30) != 0x10 && p->left->op == STAR) {
-				p->left->op = FREE;
-				p->left = clocal(makeblock(PLUS, p->left->left, bcon(ofs << 3), t));
+			t = INCREF(m->in.sname->stype);
+			p->in.left->in.type = t;
+			if ((ot & 0x30) != 0x10 && p->in.left->in.op == STAR) {
+				p->in.left->in.op = FREE;
+				p->in.left = clocal(makeblock(PLUS, p->in.left->in.left, bcon(ofs << 3), t));
 			} else
-				p->left = clocal(makeblock(PLUS, p->left, bcon(ofs << 3), t));
-			p->left = buildstar(STAR, p->left, 0);
+				p->in.left = clocal(makeblock(PLUS, p->in.left, bcon(ofs << 3), t));
+			p->in.left = buildstar(STAR, p->in.left, 0);
 		}
-		m->op = FREE;
+		m->in.op = FREE;
 		return;
 	}
-	p->sname = 0;
+	p->in.sname = 0;
 }
 
 /* the two pseudo symbols ~L1 and ~L2 of the frame */
@@ -585,39 +585,39 @@ eread()
 	ungetc(c, stdin);
 	op = rdin(10);
 	p = talloc();
-	p->rall = 0;
-	p->op = op;
+	p->in.rall = 0;
+	p->in.op = op;
 	op = optype(op);
 	if (op == 0x73)
 		erflag = 1;
 	if (op == LTYPE)
-		p->lval = rdin(10);
-	if (op != BITYPE && p->op != FLD)
-		p->rval = rdin(10);
-	if (p->op == TEMP)
-		p->stsize = rdin(10);
-	if (p->op == LAB)
-		p->op = NAME;
-	if (p->op == FCON) {
+		p->tn.lval = rdin(10);
+	if (op != BITYPE && p->in.op != FLD)
+		p->tn.rval = rdin(10);
+	if (p->in.op == TEMP)
+		p->stn.stsize = rdin(10);
+	if (p->in.op == LAB)
+		p->in.op = NAME;
+	if (p->in.op == FCON) {
 #ifdef OLD_D12K
-		d12kout(-p->rval);
+		d12kout(-p->tn.rval);
 #endif
-		p->op = NAME;
-		p->lval = 0;
+		p->in.op = NAME;
+		p->tn.lval = 0;
 	}
-	p->type = rdin(8);
-	p->rall = NOPREF;
-	if (p->op == STASG || p->op == STARG || p->op == STCALL || p->op == USTCALL) {
-		p->stsize = (rdin(10) + 7) / 8;
-		p->hi = rdin(10) / 8;
+	p->in.type = rdin(8);
+	p->in.rall = NOPREF;
+	if (p->in.op == STASG || p->in.op == STARG || p->in.op == STCALL || p->in.op == USTCALL) {
+		p->stn.stsize = (rdin(10) + 7) / 8;
+		p->stn.stalign = rdin(10) / 8;
 		if (getchar() != '\n')
 			cerror("illegal \n");
 	} else
 		nlcheck();
 	if (op != LTYPE)
-		p->left = eread();
-	if (op == BITYPE || p->op == FLD)
-		p->right = eread();
+		p->in.left = eread();
+	if (op == BITYPE || p->in.op == FLD)
+		p->in.right = eread();
 	return p;
 }
 

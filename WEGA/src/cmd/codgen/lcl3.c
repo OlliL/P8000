@@ -50,14 +50,14 @@ gswitch(p)
 	NODE *r, *l;
 	int reg, a6, save, t2, ac, tlab, rb, ra, t, cnt;
 
-	l = p->left;
-	r = p->right;
-	n = r->right->lval;
-	tab = r->right->rval;
-	dlab = -r->left->lval;
-	reg = (l->op == REG ? l : l->left)->rval;
-	if (l->op != 124) {
-		mapnm(l->left);
+	l = p->in.left;
+	r = p->in.right;
+	n = r->in.right->tn.lval;
+	tab = r->in.right->tn.rval;
+	dlab = -r->in.left->tn.lval;
+	reg = (l->in.op == REG ? l : l->in.left)->tn.rval;
+	if (l->in.op != 124) {
+		mapnm(l->in.left);
 		delay(l);
 		reclaim(l, 0, 0);
 		printf("\tcp\t%s,#%ld\n", rnames[reg], n);
@@ -84,9 +84,9 @@ gswitch(p)
 		printf("\tjp\t@r%s\n", rnames[a6]);
 		return;
 	}
-	if (l->op == 124) {
-		cnt = (int)l->right->lval;
-		tlab = l->right->rval;
+	if (l->in.op == 124) {
+		cnt = (int)l->in.right->tn.lval;
+		tlab = l->in.right->tn.rval;
 		a6 = getreg(3, -1, 0x1000, 0);
 		if (reg == a6 || (reg ^ 1) == a6 || a6 == 0) {
 			t = a6;
@@ -136,14 +136,14 @@ gswitch(p)
 	struct rs *tn;
 #endif
 
-	l = p->left;
-	r = p->right;
-	n = r->right->lval;
-	tab = r->right->rval;
-	dlab = -r->left->lval;
-	reg = (l->op == REG ? l : l->left)->rval;
-	if (l->op != 124) {
-		mapnm(l->left);
+	l = p->in.left;
+	r = p->in.right;
+	n = r->in.right->tn.lval;
+	tab = r->in.right->tn.rval;
+	dlab = -r->in.left->tn.lval;
+	reg = (l->in.op == REG ? l : l->in.left)->tn.rval;
+	if (l->in.op != 124) {
+		mapnm(l->in.left);
 		delay(l);
 		reclaim(l, 0, 0);
 		printf("\tcp\t%s,#%ld\n", rnames[reg], n);
@@ -159,9 +159,9 @@ gswitch(p)
 		printf("\tjp\t@%s\n", rnames[reg]);
 		return;
 	}
-	if (l->op == 124) {
-	cnt = (int)l->right->lval;
-	tlab = l->right->rval;
+	if (l->in.op == 124) {
+	cnt = (int)l->in.right->tn.lval;
+	tlab = l->in.right->tn.rval;
 	if (reg == 0) {
 		t = reg;
 		reg = getreg(2, -1, 0x1000, 0);
@@ -229,13 +229,13 @@ chk(p)
 {
 	register NODE *r;
 
-	r = p->left;
-	p->right->type = r->type;
-	p->left = p->right;
-	if (r->op != REG)
+	r = p->in.left;
+	p->in.right->in.type = r->in.type;
+	p->in.left = p->in.right;
+	if (r->in.op != REG)
 		cerror("badly formed offset");
-	p->right = r;
-	r->type = 4;
+	p->in.right = r;
+	r->in.type = 4;
 }
 #else
 /* a debugging hook that does nothing */
@@ -256,11 +256,11 @@ clocal(p)
 	register NODE *r, *l, *q;
 	int x;
 
-	l = p->left;
-	r = p->right;
-	switch (o = p->op) {
+	l = p->in.left;
+	r = p->in.right;
+	switch (o = p->in.op) {
 	case NAME:
-		s = p->sname;
+		s = p->in.sname;
 		switch (s->sclass) {
 		case 9:
 #ifdef OLD_D3K
@@ -276,29 +276,29 @@ clocal(p)
 #endif
 #endif
 			r = makeblock(REG, 0, 0, 0x18);
-			r->lval = s->soffset / 8;
-			r->rval = 15;
+			r->tn.lval = s->soffset / 8;
+			r->tn.rval = 15;
 			p = member(makeblock(STREF, r, p, 0));
-			q = p->left;
-			if (q->op == PLUS) {
-				if (q->right->op == ICON) {
+			q = p->in.left;
+			if (q->in.op == PLUS) {
+				if (q->in.right->in.op == ICON) {
 					if (s->sflags >> 3 & 1)
-						q->right->sname = fpsym2;
+						q->in.right->in.sname = fpsym2;
 					else
-						q->right->sname = fpsym1;
+						q->in.right->in.sname = fpsym1;
 				}
 				chk(q);
 			}
 			break;
 		case 1:
 			r = makeblock(REG, 0, 0, 0x18);
-			r->lval = s->soffset / 8;
-			r->rval = 15;
+			r->tn.lval = s->soffset / 8;
+			r->tn.rval = 15;
 			p = member(makeblock(STREF, r, p, 0));
-			q = p->left;
-			if (q->op == PLUS) {
-				if (q->right->op == ICON)
-					q->right->sname = fpsym1;
+			q = p->in.left;
+			if (q->in.op == PLUS) {
+				if (q->in.right->in.op == ICON)
+					q->in.right->in.sname = fpsym1;
 				chk(q);
 			}
 			break;
@@ -306,13 +306,13 @@ clocal(p)
 		case 6:
 			if ((s->sflags >> 2 & 1) == 1)
 				return;
-			p->lval = 0;
-			p->rval = -s->soffset;
+			p->tn.lval = 0;
+			p->tn.rval = -s->soffset;
 			break;
 		case 4:
-			p->op = REG;
-			p->lval = 0;
-			p->rval = s->sbyte5;
+			p->in.op = REG;
+			p->tn.lval = 0;
+			p->tn.rval = s->sbyte5;
 			break;
 		case 18:
 			break;
@@ -321,52 +321,52 @@ clocal(p)
 		}
 		break;
 	case SCONV:
-		pf = p->type == 6 || p->type == 7;
-		lf = l->type == 6 || l->type == 7;
+		pf = p->in.type == 6 || p->in.type == 7;
+		lf = l->in.type == 6 || l->in.type == 7;
 		if (pf || lf)
 			break;
-		while (l->op == SCONV) {
-			if (tbytes(l->type) <= tbytes(p->type))
+		while (l->in.op == SCONV) {
+			if (tbytes(l->in.type) <= tbytes(p->in.type))
 				break;
-			if (l->left->type == 7 || l->left->type == 6)
+			if (l->in.left->in.type == 7 || l->in.left->in.type == 6)
 				break;
-			l->op = FREE;
-			p->left = l = l->left;
+			l->in.op = FREE;
+			p->in.left = l = l->in.left;
 		}
-		pf = p->type;
-		lf = l->type;
+		pf = p->in.type;
+		lf = l->in.type;
 		{
 		long val;
 
-		if (l->op == ICON) {
-			val = l->lval;
+		if (l->in.op == ICON) {
+			val = l->tn.lval;
 #ifdef SEG
 			if (pf == 4 && (lf & 0x30) == 0x10) {
-				l->lval = (long)(int)val;
+				l->tn.lval = (long)(int)val;
 				goto done;
 			}
 			if (pf == 14 && (lf & 0x30) == 0x10) {
-				l->lval = val & 0xFFFFL;
+				l->tn.lval = val & 0xFFFFL;
 				goto done;
 			}
 #endif
 			switch (pf) {
 			case 2:
-				l->lval = (long)(char)val;
+				l->tn.lval = (long)(char)val;
 				break;
 			case 12:
-				l->lval = val & 0xFF;
+				l->tn.lval = val & 0xFF;
 				break;
 			case 14:
-				l->lval = val & 0xFFFFL;
+				l->tn.lval = val & 0xFFFFL;
 				break;
 			case 4:
-				l->lval = (long)(int)val;
+				l->tn.lval = (long)(int)val;
 				break;
 			}
-			l->type = pf;
-		} else if (l->op == MUL && szty(pf) - szty(lf) == 1)
-			l->type = pf;
+			l->in.type = pf;
+		} else if (l->in.op == MUL && szty(pf) - szty(lf) == 1)
+			l->in.type = pf;
 		else if (tbytes(pf) != tbytes(lf))
 			break;
 #ifdef SEG
@@ -374,14 +374,14 @@ clocal(p)
 			break;
 #endif
 		if (tbytes(pf) == tbytes(lf)) {
-			l->type = p->type;
-			l->rval = p->rval;
-			l->lval = p->lval;
-			l->sname = p->sname;
+			l->in.type = p->in.type;
+			l->tn.rval = p->tn.rval;
+			l->tn.lval = p->tn.lval;
+			l->in.sname = p->in.sname;
 			p = l;
 			goto ret;
 		}
-		p->op = FREE;
+		p->in.op = FREE;
 		p = l;
 		goto ret;
 		}
@@ -389,11 +389,11 @@ clocal(p)
 #ifdef SEG
 done:
 #endif
-	if (logop(p->op) && r->op == ICON && l->op == SCONV &&
-	    (l->left->type == 2 || l->left->type == 12) && r->lval >= -256 && r->lval <= 255) {
-		l->op = FREE;
-		l = p->left = l->left;
-		p->type = r->type = l->type;
+	if (logop(p->in.op) && r->in.op == ICON && l->in.op == SCONV &&
+	    (l->in.left->in.type == 2 || l->in.left->in.type == 12) && r->tn.lval >= -256 && r->tn.lval <= 255) {
+		l->in.op = FREE;
+		l = p->in.left = l->in.left;
+		p->in.type = r->in.type = l->in.type;
 	}
 ret:
 	return p;
