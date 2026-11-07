@@ -3,22 +3,22 @@
 
 static char sccsid[] = "@[$]ld.c\t1.18  06/27/83 16:44:24 - 87wega3.2";
 
-char eofmsg[] = "Premature EOF";
+char premeof[] = "Premature EOF";
 char symdef[] = "__.SYMDEF";
 extern long liblist[];
 long *libp = liblist;
 char *secnam[4] = {"?", "text", "data", "bss"};
-char *ofilnam = "l.out";
+char *ofilename = "l.out";
 int delarg = 4;
 int nlflag = 1;
 int nundef = 0;
-char tmpname[] = "/tmp/ldaXXXXX";
+char tfname[] = "/tmp/ldaXXXXX";
 char *aoutnam = "a.out";
 
 /* bss of ld in the order of the original (addresses from 0x0abe): the order of these declarations is the link order
-   of the commons; the gaps are spare variables (see HANDOFF_ld.md, step 5b) */
-int ntab;
-struct overlay tab[16];
+   of the commons; the gaps are spare variables */
+int vindex;
+struct overlay vnodes[16];
 struct page page[2];
 struct pghdr fpage;
 struct stream text;
@@ -38,12 +38,12 @@ struct symbol *hshtab[2341];
 struct local local[1000];
 struct symbol *p_etext, *p_edata, *p_end;
 struct symbol *entrypt;
-int Tflag;	/* -T: print each argument and the symbol count at the end */
+int trace;	/* -T: print each argument and the symbol count at the end */
 int xflag;
 int Xflag;
 int Sflag;
 int rflag;
-int arflag;	/* -r was given (rflag can be set later by end_pass1 for undefined symbols) */
+int arflag;	/* -r was given (rflag can be set later by middle for undefined symbols) */
 int sflag;
 int oflag;
 int dflag;
@@ -58,21 +58,21 @@ int n8swap;	/* 8-bit objects without that bit: their words are byte-swapped on i
 int ofilfnd;
 int infil;
 char *filname;
-int ttotal;
+int tsize;
 int fttotal;	/* -r: sum of the text sizes in the files (ftsize) */
-int dtotal;
+int dsize;
 int fdtotal;	/* -r: sum of the data sizes in the files (fdsize) */
 int comsize;
-int btotal;
-int stotal;	/* size of the local symbols of the output in bytes */
-int fctrel, fcdrel, fcbrel;
+int bsize;
+int ssize;	/* size of the local symbols of the output in bytes */
+int ctrel, cdrel, cbrel;
 char *pname;
 struct buf toutb;
 struct buf tmpoutb;
 struct buf routb;
 struct buf doutb;
 struct buf soutb;
-int nlocsym;	/* number of local symbol entries in front of the globals (stotal / 14) */
+int nlocsym;	/* number of local symbol entries in front of the globals (ssize / 14) */
 int torigin, dorigin, borigin;	/* start of text, data and bss of the current object in the output (Plexus) */
 int corigin;	/* start of the common symbols (Plexus) */
 struct rlent *rltab;
@@ -84,117 +84,117 @@ char secspec;
 char secflg[5];	/* option letter (t or b) given for the area all, text, data, bss */
 int secorg[4];
 char spare703c[2];
-int exstat;
+int errlev;
 char libpath[20];
 char spare7054[6];
 
-/* sig_handler: the exit path of ld (also the handler of SIGINT and SIGTERM): the symbol count with -T, remove l.out,
+/* delexit: the exit path of ld (also the handler of SIGINT and SIGTERM): the symbol count with -T, remove l.out,
    make the output executable when there was no error, remove it on an error, exit with delarg (Plexus delexit;
    0x0042..0x009c of /bin/ld) */
-sig_handler()
+delexit()
 {
 	int mode;
 
-	if (Tflag)
+	if (trace)
 		limit_msg();
 	unlink("l.out");
 	if (!delarg) {
 		if (!arflag || !nundef) {
 			mode = ~umask(0) & 0x1ff;
-			chmod(ofilnam, mode);
+			chmod(ofilename, mode);
 		}
 	}
 	if (delarg)
-		unlink(ofilnam);
+		unlink(ofilename);
 	exit(delarg);
 }
 
 /* main: entry of ld: the signals, the program name (s* gives swapped output), the option scan of pass one over the
-   arguments, then pass two (parse_args) (sld main, Plexus main; 0x009c..0x0370 of /bin/ld) */
+   arguments, then pass two (endload) (sld main, Plexus main; 0x009c..0x0370 of /bin/ld) */
 main(argc, argv)
 int argc;
 char **argv;
 {
+	register int c;
 	register int i;
-	register int j;
-	register char *s;
-	register char **av;
-	int spare;
+	register char *ap;
+	register char **p;
+	int num;
 	int found;
-	int k;
-	char c;
+	int vscan;
+	char save;
 	struct symbol **sp;
 
 	if (signal(2, 1) != 1)
-		signal(2, sig_handler);
+		signal(2, delexit);
 	if (signal(15, 1) != 1)
-		signal(15, sig_handler);
+		signal(15, delexit);
 	if (argc == 1)
 		exit(4);
-	s = rindex(*argv, '/');
-	if (s == 0)
-		s = *argv;
+	ap = rindex(*argv, '/');
+	if (ap == 0)
+		ap = *argv;
 	else
-		s++;
-	pname = s;
-	if (*s == 's') {
+		ap++;
+	pname = ap;
+	if (*ap == 's') {
 		swapflg++;
 		aoutnam = "s.out";
 	} else
 		noswap++;
-	av = argv + 1;
-	i = 1;
+	p = argv + 1;
+	c = 1;
 	goto test;
 body:
-	if (Tflag)
-		printf("%s:\n", *av);
+	if (trace)
+		printf("%s:\n", *p);
 	filname = 0;
-	s = *av++;
-	if (s[0] == '-') {
-		for (j = 1; s[j] != 0; j++)
-			switch (s[j]) {
+	ap = *p++;
+	if (ap[0] == '-') {
+		for (i = 1; ap[i] != 0; i++)
+			switch (ap[i]) {
 			case 'o':
-				i++;
-				if (i >= argc)
-					report_error(2, "Bad output file");
-				ofilnam = *av++;
+				c++;
+				if (c >= argc)
+					error(2, "Bad output file");
+				ofilename = *p++;
 				ofilfnd++;
 				break;
 			case 'e':
 			case 'u':
-				i++;
-				if (i >= argc)
-					report_error(2, "Bad 'use' or 'entry'");
-				sp = slookup(*av++);
+				c++;
+				if (c >= argc)
+					error(2, "Bad 'use' or 'entry'");
+				sp = slookup(*p++);
 				enter(sp);
-				if (s[j] == 'e')
+				if (ap[i] == 'e')
 					entrypt = lastsym;
 				break;
 			case 'v':
-				i++;
-				if (i >= argc)
-					report_error(2, "-v: arg missing");
+				c++;
+				if (c >= argc)
+					error(2, "-v: arg missing");
 				vflag = 1;
-				k = ntab;
+				vscan = vindex;
 				found = 0;
-				while (--k >= 0) {
+				while (--vscan >= 0) {
 					if (found)
 						break;
-					found = str_compare(tab[k].vname, *av);
+					found = eq(vnodes[vscan].vname, *p);
 				}
 				if (found) {
-					parse_args(i, argv);
-					restore(k);
+					endload(c, argv);
+					restore(vscan);
 				} else
-					record(i, *av);
-				av++;
+					record(c, *p);
+				p++;
 				break;
 			case 'l':
-				j--;
-				c = s[j];
-				s[j] = '-';
-				load_lib_syms(s + j);
-				s[j] = c;
+				i--;
+				save = ap[i];
+				ap[i] = '-';
+				load1arg(ap + i);
+				ap[i] = save;
 				goto next;
 			case 'X':
 				Xflag++;
@@ -221,23 +221,23 @@ body:
 				oflag++;
 				break;
 			case 'T':
-				Tflag++;
+				trace++;
 				break;
 			case 'b':
 			case 't':
-				i++;
-				if (i >= argc)
-					report_error(2, "-%c: arg missing", s[j]);
-				if (reg_sect_addr(s + j, *av))
-					j++;
-				av++;
+				c++;
+				if (c >= argc)
+					error(2, "-%c: arg missing", ap[i]);
+				if (reg_sect_addr(ap + i, *p))
+					i++;
+				p++;
 				break;
 			case 'w':
 				wflag++;
 				break;
 			case 'N':
-				j++;
-				switch (s[j]) {
+				i++;
+				switch (ap[i]) {
 				case 'l':
 					nlflag = 1;
 					break;
@@ -245,23 +245,23 @@ body:
 					nlflag = 0;
 					break;
 				default:
-					report_error(2, "-N%c: bad argument (l or s)", s[j]);
+					error(2, "-N%c: bad argument (l or s)", ap[i]);
 				}
 				break;
 			default:
-				report_error(2, "-%c: bad flag", s[j]);
+				error(2, "-%c: bad flag", ap[i]);
 				goto next;
 			}
 	} else
-		load_lib_syms(s);
+		load1arg(ap);
 next:
-	i++;
+	c++;
 test:
-	if (i < argc)
+	if (c < argc)
 		goto body;
 	if (rflag && secspec)
 		fprintf(stderr, "%s: warning, -r option overrides -t, -b\n", pname);
-	parse_args(argc, argv);
+	endload(argc, argv);
 }
 
 /* reg_sect_addr: read the address of a section option (-t, -d, -b with the selector t, d, b or none) into secorg; 1
@@ -289,11 +289,11 @@ char *t;
 		k = 0;
 		break;
 	default:
-		report_error(2, "-%.2s: invalid selector (must be t, d or b)", s);
+		error(2, "-%.2s: invalid selector (must be t, d or b)", s);
 	}
 	u = t;
 	if (secflg[k])
-		report_error(2, "-%.2s: -%c%c already specified", s, secflg[k], s[1]);
+		error(2, "-%.2s: -%c%c already specified", s, secflg[k], s[1]);
 	secflg[k] = *s;
 	fmt = "%o%c";
 	if (*u != '0')
@@ -303,107 +303,107 @@ char *t;
 		fmt = "%x%c";
 	}
 	if (sscanf(u, fmt, &secorg[k]) != 1)
-		report_error(2, "-%.2s %s: bad address", s, t);
+		error(2, "-%.2s %s: bad address", s, t);
 	if (k == 0)
 		return 0;
 	return 1;
 }
 
-/* parse_args: pass two over the arguments: end of pass one, open the output, then every object and library in order,
-   then finish_output (Plexus endload; 0x045e..0x050c of /bin/ld) */
-parse_args(argc, argv)
+/* endload: pass two over the arguments: end of pass one, open the output, then every object and library in order,
+   then finishout (Plexus endload; 0x045e..0x050c of /bin/ld) */
+endload(argc, argv)
 int argc;
 char **argv;
 {
-	register int k;
-	register int j;
-	register char *a;
-	register char **av;
-	int spare;
+	register int c;
+	register int i;
+	register char *ap;
+	register char **p;
+	int dnum;
 
 	filname = 0;
-	end_pass1();
-	start_output();
-	av = argv + 1;
+	middle();
+	setupout();
+	p = argv + 1;
 	libp = liblist;
-	k = 1;
-	while (k < argc) {
-		a = *av++;
-		if (Tflag)
-			printf("%s:\n", a);
-		if (*a == '-') {
-			for (j = 1; a[j] != 0; j++)
-				switch (a[j]) {
+	c = 1;
+	while (c < argc) {
+		ap = *p++;
+		if (trace)
+			printf("%s:\n", ap);
+		if (*ap == '-') {
+			for (i = 1; ap[i] != 0; i++)
+				switch (ap[i]) {
 				case 'b':
 				case 't':
-					if (a[j + 1])
-						j++;
+					if (ap[i + 1])
+						i++;
 				case 'e':
 				case 'o':
 				case 'u':
 				case 'v':
-					k++;
-					av++;
+					c++;
+					p++;
 					break;
 				case 'N':
-					j++;
+					i++;
 					break;
 				case 'l':
-					j--;
-					a[j] = '-';
-					load2arg(a + j);
+					i--;
+					ap[i] = '-';
+					load2arg(ap + i);
 					goto next;
 				}
 		} else
-			load2arg(a);
+			load2arg(ap);
 next:
-		k++;
+		c++;
 	}
-	finish_output();
+	finishout();
 }
 
-/* record: save the state of the load before the object named y (argument index x) in the next entry of tab: the symbol
+/* record: save the state of the load before the object named y (argument index x) in the next entry of vnodes: the symbol
    count, libp, the totals and the relocation bases, for a later restore by -v (Plexus record; 0x050c..0x057c of
    /bin/ld) */
-record(x, y)
-int x;
-char *y;
+record(c, nam)
+int c;
+char *nam;
 {
-	register struct overlay *e;
+	register struct overlay *v;
 
-	e = &tab[ntab++];
-	e->argsav = x;
-	e->symsav = symindex;
-	e->libsav = libp;
-	e->vname = y;
-	e->offt = ttotal;
-	e->offd = dtotal;
-	e->offb = btotal;
-	e->offs = stotal;
-	e->ctsav = fctrel;
-	e->cdsav = fcdrel;
-	e->cbsav = fcbrel;
+	v = &vnodes[vindex++];
+	v->argsav = c;
+	v->symsav = symindex;
+	v->libsav = libp;
+	v->vname = nam;
+	v->offt = tsize;
+	v->offd = dsize;
+	v->offb = bsize;
+	v->offs = ssize;
+	v->ctsav = ctrel;
+	v->cdsav = cdrel;
+	v->cbsav = cbrel;
 }
 
-/* restore: go back to the state saved by record in entry i of tab (libp, the relocation bases, the totals, ntab) and
+/* restore: go back to the state saved by record in entry i of vnodes (libp, the relocation bases, the totals, vindex) and
    clear the hash slots of the symbols entered since then (Plexus restore; 0x057c..0x0608 of /bin/ld) */
-restore(i)
-int i;
+restore(vscan)
+int vscan;
 {
-	register struct overlay *e;
+	register struct overlay *v;
 	register int saved;
 
-	e = &tab[i];
-	ntab = i + 1;
-	libp = e->libsav;
-	fctrel = e->ctsav;
-	fcdrel = e->cdsav;
-	fcbrel = e->cbsav;
-	ttotal = e->offt;
-	dtotal = e->offd;
-	btotal = e->offb;
-	stotal = e->offs;
-	saved = e->symsav;
+	v = &vnodes[vscan];
+	vindex = vscan + 1;
+	libp = v->libsav;
+	ctrel = v->ctsav;
+	cdrel = v->cdsav;
+	cbrel = v->cbsav;
+	tsize = v->offt;
+	dsize = v->offd;
+	bsize = v->offb;
+	ssize = v->offs;
+	saved = v->symsav;
 	while (symindex > saved) {
 		symindex--;
 		*symhash[symindex] = 0;
@@ -411,19 +411,19 @@ int i;
 	}
 }
 
-/* load_lib_syms: pass one for one argument: an object, an archive without table of contents (every member through
-   load_header) or an archive with __.SYMDEF (ranlib_scan until nothing more is loaded) (sld load_lib_syms, Plexus
+/* load1arg: pass one for one argument: an object, an archive without table of contents (every member through
+   load_header) or an archive with __.SYMDEF (ranlib_scan until nothing more is loaded) (sld load1arg, Plexus
    load1arg; 0x0608..0x0714 of /bin/ld) */
-load_lib_syms(p)
-char *p;
+load1arg(acp)
+char *acp;
 {
-	register char *r;
+	register char *cp;
 	long n;
 
-	r = p;
-	switch (getfile(r)) {
+	cp = acp;
+	switch (getfile(cp)) {
 	case 0:
-		read_symbols(0, 0L);
+		load1(0, 0L);
 		break;
 	case 1:
 		for (n = 1; load_header(n); n = ((archdr.asize + 27) >> 1) + n)
@@ -442,7 +442,7 @@ char *p;
 		unlock_rlbuf();
 		break;
 	case 3:
-		report_error(0, "out of date (warning)");
+		error(0, "out of date (warning)");
 		for (n = ((archdr.asize + 27) >> 1) + 1; load_header(n); n = ((archdr.asize + 27) >> 1) + n)
 			;
 		break;
@@ -467,7 +467,7 @@ long p;
 	if (swapflg)
 		magic = swap(magic);
 	if (magic == 0xe707 || magic == 0xe711 || magic == 0xe507 || magic == 0xe511) {
-		if (read_symbols(1, p + 13))
+		if (load1(1, p + 13))
 			*libp++ = p;
 	}
 	return 1;
@@ -501,9 +501,9 @@ int ranlib_scan()
 	return sv != libp;
 }
 
-/* add16_checked: sum of two words, report_error(1) with the message a when the sum is 0x10000 or more (sld
-   add16_checked, Plexus add; 0x089a..0x08cc of /bin/ld) */
-add16_checked(x, y, a)
+/* add: sum of two words, error(1) with the message a when the sum is 0x10000 or more (sld
+   add, Plexus add; 0x089a..0x08cc of /bin/ld) */
+add(x, y, a)
 int x, y;
 char *a;
 {
@@ -511,20 +511,20 @@ char *a;
 
 	s = (long)(unsigned)x + (long)(unsigned)y;
 	if (s >= 0x10000)
-		report_error(1, a);
+		error(1, a);
 	return(s);
 }
 
-/* read_symbols: pass one for one object (a = 1 for an archive member): read the header and the symbol table, enter the
+/* load1: pass one for one object (a = 1 for an archive member): read the header and the symbol table, enter the
    symbols and add the sizes to the totals; 0 when an archive member defines nothing that is needed (its symbols are
-   removed again). The putc forms with (char) casts: see warn_sym_redef (sld read_symbols, Plexus load1; 0x08cc..0x0b6e
+   removed again). The putc forms with (char) casts: see warn_sym_redef (sld load1, Plexus load1; 0x08cc..0x0b6e
    of /bin/ld) */
-read_symbols(a, c)
-int a;
+load1(libflg, c)
+int libflg;
 long c;
 {
-	register struct symbol *cur;
-	int saved;
+	register struct symbol *sp;
+	int savindex;
 	int cnt;
 	char ch;
 	char type;
@@ -532,14 +532,14 @@ long c;
 	int n;
 
 	readhdr(c);
-	fctrel = ttotal;
-	fcdrel += dtotal;
-	fcbrel += btotal;
+	ctrel = tsize;
+	cdrel += dsize;
+	cbrel += bsize;
 	cnt = 0;
 	k = 1;
-	saved = symindex;
+	savindex = symindex;
 	if ((filhdr.relflg & 1) == 1) {
-		report_error(1, "No relocation bits");
+		error(1, "No relocation bits");
 		goto done;
 	}
 	c = ((unsigned long)((unsigned)(hdrsz + segtsz) >> 1) + filhdr.ftsize + filhdr.fdsize) + c;
@@ -561,42 +561,42 @@ long c;
 		symreloc();
 		if (enter(lookup_name()))
 			continue;
-		cur = lastsym;
-		if (cur->stype != ' ') {
-			if (a)
-				warn_sym_redef(cur, &cursym);
+		sp = lastsym;
+		if (sp->stype != ' ') {
+			if (libflg)
+				warn_sym_redef(sp, &cursym);
 			continue;
 		}
 		if (cursym.stype == ' ') {
-			if (cursym.svalue > cur->svalue)
-				cur->svalue = cursym.svalue;
+			if (cursym.svalue > sp->svalue)
+				sp->svalue = cursym.svalue;
 			continue;
 		}
-		if (cur->svalue != 0 && cursym.stype == '"') {
-			if (a)
+		if (sp->svalue != 0 && cursym.stype == '"') {
+			if (libflg)
 				continue;
 			if (put_name(cursym.sname) < 8)
 				--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = '\t') : _flsbuf(9, stderr);
 			--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = ' ') : _flsbuf(' ', stderr);
-			report_error(0, "warning: external data item refers to text symbol");
+			error(0, "warning: external data item refers to text symbol");
 		}
 		cnt++;
-		cur->stype = cursym.stype;
-		cur->svalue = cursym.svalue;
+		sp->stype = cursym.stype;
+		sp->svalue = cursym.svalue;
 	}
-	if (a && cnt == 0)
+	if (libflg && cnt == 0)
 		goto clean;
-	ttotal = add16_checked(ttotal, filhdr.tsize, "text overflow");
-	dtotal = add16_checked(dtotal, filhdr.dsize, "data overflow");
-	btotal = add16_checked(btotal, filhdr.bsize, "bss overflow");
-	stotal = add16_checked(stotal, k * 14, "symbol table overflow");
+	tsize = add(tsize, filhdr.tsize, "text overflow");
+	dsize = add(dsize, filhdr.dsize, "data overflow");
+	bsize = add(bsize, filhdr.bsize, "bss overflow");
+	ssize = add(ssize, k * 14, "symbol table overflow");
 	if (rflag) {
-		fttotal = add16_checked(fttotal, filhdr.ftsize, "file text overflow");
-		fdtotal = add16_checked(fdtotal, filhdr.fdsize, "file data overflow");
+		fttotal = add(fttotal, filhdr.ftsize, "file text overflow");
+		fdtotal = add(fdtotal, filhdr.fdsize, "file data overflow");
 	}
 	return 1;
 clean:
-	while (symindex > saved) {
+	while (symindex > savindex) {
 		symindex--;
 		*symhash[symindex] = 0;
 		symhash[symindex] = 0;
@@ -605,11 +605,11 @@ done:
 	return 0;
 }
 
-/* end_pass1: end of pass one: _etext, _edata, _end, the rflag decision, the common symbols, the undefined symbols, the
+/* middle: end of pass one: _etext, _edata, _end, the rflag decision, the common symbols, the undefined symbols, the
    layout (place_sec) and the values of the defined symbols. The newline of the undefined message is cast to char: the
-   stdio of the original had char *_ptr (sign extension), src/head has unsigned char * (sld end_pass1, Plexus middle;
+   stdio of the original had char *_ptr (sign extension), src/head has unsigned char * (sld middle, Plexus middle;
    0x0b6e..0x0d9c of /bin/ld) */
-end_pass1()
+middle()
 {
 	register struct symbol *ep;
 	register struct symbol *end;
@@ -640,9 +640,9 @@ end_pass1()
 	comsize = 0;
 	if (dflag == 0 && rflag)
 		goto dolayout;
-	ldrsym(p_etext, (unsigned long)(unsigned)ttotal, '"');
-	ldrsym(p_edata, (unsigned long)(unsigned)dtotal, '#');
-	ldrsym(p_end, (unsigned long)(unsigned)btotal, '$');
+	ldrsym(p_etext, (unsigned long)(unsigned)tsize, '"');
+	ldrsym(p_edata, (unsigned long)(unsigned)dsize, '#');
+	ldrsym(p_end, (unsigned long)(unsigned)bsize, '$');
 	ep = table16_entry(0);
 	while (ep < end) {
 		if (ep->stype == ' ') {
@@ -652,7 +652,7 @@ end_pass1()
 					i = (i + 1) & ~1;
 				ep->svalue = (unsigned)comsize;
 				ep->stype = '%';
-				comsize = add16_checked(comsize, i, "bss overflow");
+				comsize = add(comsize, i, "bss overflow");
 			}
 		}
 		ep = next_entry(ep);
@@ -665,7 +665,7 @@ dolayout:
 		switch (ep->stype) {
 		case ' ':
 			if (arflag == 0) {
-				exstat |= 1;
+				errlev |= 1;
 				if (ep->svalue == 0) {
 					if (nundef == 0)
 						fprintf(stderr, "Undefined:\n");
@@ -692,9 +692,9 @@ dolayout:
 		ep = next_entry(ep);
 	}
 	if (sflag || xflag)
-		stotal = 0;
-	btotal = add16_checked(btotal, comsize, "bss overflow");
-	nlocsym = (unsigned)stotal / 14;
+		ssize = 0;
+	bsize = add(bsize, comsize, "bss overflow");
+	nlocsym = (unsigned)ssize / 14;
 }
 
 /* place_sec: place the text, data and bss areas of the output: sizes, the -t/-b addresses (secorg), rounding to 256
@@ -709,9 +709,9 @@ place_sec()
 	areas[1].kind = iflag ? 4 : 0;
 	areas[3].kind = n8rel4 ? 4 : 2;
 	areas[2].kind = iflag ? 0 : 1;
-	areas[1].tsize = iflag && n8rel4 == 0 && n8swap == 0 && rflag == 0 ? (ttotal + 255) & 0xff00 : ttotal;
-	areas[2].tsize = dtotal;
-	areas[3].tsize = comsize + btotal;
+	areas[1].tsize = iflag && n8rel4 == 0 && n8swap == 0 && rflag == 0 ? (tsize + 255) & 0xff00 : tsize;
+	areas[2].tsize = dsize;
+	areas[3].tsize = comsize + bsize;
 	if (secflg[0]) {
 		for (i = iflag ? 2 : 1; i < 4; i++) {
 			if (secflg[i]) {
@@ -720,7 +720,7 @@ place_sec()
 			}
 		}
 		areas[0].kind = 4;
-		areas[0].tsize = dtotal + comsize + btotal + iflag ? 0 : ttotal;
+		areas[0].tsize = dsize + comsize + bsize + iflag ? 0 : tsize;
 	}
 	for (j = secflg[0] ? 0 : 1; j < 4; j++) {
 		q = &areas[j];
@@ -728,7 +728,7 @@ place_sec()
 		switch (secflg[j]) {
 		case 't':
 			if ((unsigned)q->tsize > (unsigned)secorg[j])
-				report_error(1, "-t%c: top address too low", *secnam[j]);
+				error(1, "-t%c: top address too low", *secnam[j]);
 			r8 = secorg[j] - q->tsize;
 			r8 = r8 & 0xff00;
 			q->tsize = (q->tsize + 255) & 0xff00;
@@ -747,19 +747,19 @@ place_sec()
 			q->tsize = q->tend - r8;
 		}
 		if (r8 > (unsigned)q->tend)
-			report_error(1, "%s area wrap around", secnam[j]);
+			error(1, "%s area wrap around", secnam[j]);
 		if (n8rel4 == 0) {
 			for (i = iflag ? 2 : 1; i < j; i++) {
 				if (r8 < (unsigned)areas[i].tend && (unsigned)q->tend > (unsigned)areas[i].tstart)
-					report_error(1, "%s and %s areas overlap", secnam[j], secnam[i]);
+					error(1, "%s and %s areas overlap", secnam[j], secnam[i]);
 			}
 		}
 		q->tstart = r8;
 	}
-	if (comsize + btotal != areas[3].tsize)
-		btotal = areas[3].tsize - comsize;
-	ttotal = areas[1].tsize;
-	dtotal = areas[2].tsize;
+	if (comsize + bsize != areas[3].tsize)
+		bsize = areas[3].tsize - comsize;
+	tsize = areas[1].tsize;
+	dsize = areas[2].tsize;
 	torigin = areas[1].tstart;
 	dorigin = areas[2].tstart;
 	borigin = (corigin = areas[3].tstart) + comsize;
@@ -767,34 +767,34 @@ place_sec()
 		secflg[iflag ? 2 : 1] = secflg[0];
 }
 
-/* start_output: open the output and the temporary files and fill the header of the output (sld start_output, Plexus
+/* setupout: open the output and the temporary files and fill the header of the output (sld setupout, Plexus
    setupout; 0x108e..0x120e of /bin/ld) */
-start_output()
+setupout()
 {
 	struct objhdr hdr;
 	struct fseg seg;
 
-	open_tmp(&toutb, 0);
-	mktemp(tmpname);
-	open_tmp(&tmpoutb, 1);
+	tcreat(&toutb, 0);
+	mktemp(tfname);
+	tcreat(&tmpoutb, 1);
 	if (!sflag || !xflag)
-		open_tmp(&soutb, 1);
+		tcreat(&soutb, 1);
 	if (rflag) {
-		open_tmp(&routb, 1);
-		open_tmp(&doutb, 1);
+		tcreat(&routb, 1);
+		tcreat(&doutb, 1);
 	}
 	filhdr.fmagic = n8rel4 || n8swap ? (oflag ? 0xe505 : iflag ? 0xe511 : 0xe507) : (oflag ? 0xe705 : iflag ? 0xe711 : 0xe707);
-	filhdr.tsize = ttotal;
-	filhdr.dsize = dtotal;
-	filhdr.bsize = btotal;
+	filhdr.tsize = tsize;
+	filhdr.dsize = dsize;
+	filhdr.bsize = bsize;
 	if (rflag) {
 		filhdr.ftsize = fttotal;
 		filhdr.fdsize = fdtotal;
 	}
-	filhdr.ssize = sflag ? 0 : stotal + symindex * 14;
+	filhdr.ssize = sflag ? 0 : ssize + symindex * 14;
 	if (entrypt) {
 		if (entrypt->stype != '"')
-			report_error(1, "Entry point not in text");
+			error(1, "Entry point not in text");
 		else
 			filhdr.entry = entrypt->svalue;
 	} else
@@ -815,32 +815,32 @@ start_output()
 	mput(&toutb, &seg, 0x10);
 }
 
-/* open_tmp: create the temporary file (flag 1) or the output file and open it for the buffer out (sld open_tmp, Plexus
+/* tcreat: create the temporary file (flag 1) or the output file and open it for the buffer out (sld tcreat, Plexus
    tcreat; 0x120e..0x12a8 of /bin/ld) */
-open_tmp(out, flag)
-struct buf *out;
-int flag;
+tcreat(buf, tempflg)
+struct buf *buf;
+int tempflg;
 {
-	register int fd;
-	char *name;
+	register int ufd;
+	char *nam;
 
-	name = flag ? tmpname : ofilnam;
-	fd = creat(name, 0x1b6);
-	if (fd < 0) {
-		if (flag)
-			report_error(2, "cannot create temp");
+	nam = tempflg ? tfname : ofilename;
+	ufd = creat(nam, 0x1b6);
+	if (ufd < 0) {
+		if (tempflg)
+			error(2, "cannot create temp");
 		else {
 			fprintf(stderr, "ld: cannot create output\n");
 			unlink("l.out");
 			exit(2);
 		}
 	}
-	close(fd);
-	out->fildes = open(name, 2);
-	if (flag)
-		unlink(tmpname);
-	out->nleft = 0x100;
-	out->xnext = out->iobuf;
+	close(ufd);
+	buf->fildes = open(nam, 2);
+	if (tempflg)
+		unlink(tfname);
+	buf->nleft = 0x100;
+	buf->xnext = buf->iobuf;
 }
 
 /* init_entry: fill the header of the output (struct objhdr) and its segment record (struct fseg) from filhdr and the
@@ -890,28 +890,28 @@ struct fseg *seg;
 
 /* load2arg: pass two for one argument (an object or the archive members of the library list) (sld load2arg, Plexus
    load2arg; 0x13ca..0x1452 of /bin/ld) */
-load2arg(p)
-char *p;
+load2arg(acp)
+char *acp;
 {
-	register char *q;
+	register char *cp;
 	register long *lp;
 
-	q = p;
-	if (getfile(q) == 0) {
+	cp = acp;
+	if (getfile(cp) == 0) {
 		goto test0;
 body0:
-		q++;
+		cp++;
 test0:
-		if (*q != 0)
+		if (*cp != 0)
 			goto body0;
 		for (;;) {
-			if (q < p)
+			if (cp < acp)
 				break;
-			if (*--q == 0x2f)
+			if (*--cp == 0x2f)
 				break;
 		}
-		q++;
-		mkfsym(q);
+		cp++;
+		mkfsym(cp);
 		load2(0L);
 	} else {
 		lp = libp;
@@ -937,9 +937,9 @@ test1:
 load2(a)
 long a;
 {
-	register struct symbol *rec;
-	register struct local *t;
-	register int k;
+	register struct symbol *sp;
+	register struct local *lp;
+	register int symno;
 	char c;
 	char d;
 	int n;
@@ -947,13 +947,13 @@ long a;
 	long u2;
 
 	readhdr(a);
-	fctrel = torigin;
-	fcdrel += dorigin;
-	fcbrel += borigin;
-	t = local;
+	ctrel = torigin;
+	cdrel += dorigin;
+	cbrel += borigin;
+	lp = local;
 	a += (unsigned)((hdrsz + segtsz)) >> 1;
 	dseek(&text, a + filhdr.ftsize + filhdr.fdsize, filhdr.ssize);
-	k = 0;
+	symno = 0;
 	goto test;
 body:
 	n = read_entry_hdr() + 1;
@@ -974,30 +974,30 @@ body:
 		put_sym(&soutb, &cursym);
 		goto next;
 	}
-	rec = *lookup_name();
-	if (!rec) {
+	sp = *lookup_name();
+	if (!sp) {
 		if (put_name(cursym.sname) < 8)
 			--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = '\t') : _flsbuf(9, stderr);
 		--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = ' ') : _flsbuf(' ', stderr);
-		report_error(2, "internal error: symbol not found");
+		error(2, "internal error: symbol not found");
 	}
 	if (cursym.stype != 0x20)
 		goto other;
-	if (t >= &local[1000])
-		report_error(2, "Local symbol overflow");
-	t->locindex = k;
-	t->locsymbol = (int)rec;
-	t++;
+	if (lp >= &local[1000])
+		error(2, "Local symbol overflow");
+	lp->locindex = symno;
+	lp->locsymbol = (int)sp;
+	lp++;
 	goto next;
 other:
-	if (cursym.stype == rec->stype && cursym.svalue == rec->svalue)
+	if (cursym.stype == sp->stype && cursym.svalue == sp->svalue)
 		goto next;
 	if (put_name(cursym.sname) < 8)
 		--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = '\t') : _flsbuf(9, stderr);
 	--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = ' ') : _flsbuf(' ', stderr);
-	report_error(1, "- Multiply defined");
+	error(1, "- Multiply defined");
 next:
-	k += n;
+	symno += n;
 test:
 	if (text.size > 0)
 		goto body;
@@ -1005,12 +1005,12 @@ test:
 	u1 = half(filhdr.fdsize);
 	u2 = half(filhdr.ftsize) + a + u1;
 	dseek(&reloc, u2, filhdr.ftsize);
-	load2td(t, fctrel, &toutb, &routb);
+	load2td(lp, ctrel, &toutb, &routb);
 	u1 = half(filhdr.ftsize) + a;
 	dseek(&text, u1, filhdr.fdsize);
 	u1 = filhdr.ftsize + a + half(filhdr.fdsize);
 	dseek(&reloc, u1, filhdr.fdsize);
-	load2td(t, fcdrel, &tmpoutb, &doutb);
+	load2td(lp, cdrel, &tmpoutb, &doutb);
 	torigin += filhdr.tsize;
 	dorigin += filhdr.dsize;
 	borigin += filhdr.bsize;
@@ -1018,16 +1018,16 @@ test:
 
 /* load2td: relocate the words of the text or data of one object with their relocation words and write them to the
    output (q) and with -r the relocation to r (sld load2td, Plexus load2td; 0x172e..0x194a of /bin/ld) */
-load2td(p, base, q, r)
-struct local *p;
-int base;
-struct buf *q;
-struct buf *r;
+load2td(lp, creloc, b1, b2)
+struct local *lp;
+int creloc;
+struct buf *b1;
+struct buf *b2;
 {
 	register int w13;
 	register int w14;
 	register int w12;
-	register struct symbol *e;
+	register struct symbol *sp;
 	char flag;
 	unsigned char ch[2];
 
@@ -1046,7 +1046,7 @@ struct buf *r;
 			w12 = *text.ptr++;
 		if (--reloc.size <= 0) {
 			if (reloc.size < 0)
-				report_error(2, "Relocation error");
+				error(2, "Relocation error");
 			reloc.size++;
 			w13 = get(&reloc);
 		} else if (--reloc.nibuf < 0) {
@@ -1064,22 +1064,22 @@ struct buf *r;
 			w12 = swap(w12);
 		switch (w13 & 0x0e) {
 		case 2:
-			w12 += fctrel;
+			w12 += ctrel;
 			break;
 		case 4:
-			w12 += fcdrel;
+			w12 += cdrel;
 			break;
 		case 6:
-			w12 += fcbrel;
+			w12 += cbrel;
 			break;
 		}
 		if ((w13 & 8) == 8) {
-			e = (struct symbol *)table_lookup(p, w13);
-			if (e->stype == 0x20)
-				w13 = (w13 & 1) + (index16(e) + nlocsym << 4) + 8;
+			sp = (struct symbol *)lookloc(lp, w13);
+			if (sp->stype == 0x20)
+				w13 = (w13 & 1) + (index16(sp) + nlocsym << 4) + 8;
 			else {
-				w12 += (int)e->svalue;
-				w13 = (w13 & 1) + ((e->stype - 0x21) * 2);
+				w12 += (int)sp->svalue;
+				w13 = (w13 & 1) + ((sp->stype - 0x21) * 2);
 			}
 		}
 		if (n8swap)
@@ -1113,20 +1113,20 @@ struct buf *r;
 			flag = 0;
 			if (swapflg) {
 				ch[0] = swap(w12);
-				put_int_buf(ch[0], q);
+				put_int_buf(ch[0], b1);
 			} else
-				put_int_buf((unsigned char)w12, q);
+				put_int_buf((unsigned char)w12, b1);
 		} else {
-			put_word(w12, q);
+			putw(w12, b1);
 			if (rflag)
-				put_word(w13, r);
+				putw(w13, b2);
 		}
 	}
 }
 
-/* finish_output: pad text and data to the area ends, copy the temporary files into the output, the symbols, then
-   rewrite the header (sld finish_output, Plexus finishout; 0x194a..0x1a12 of /bin/ld) */
-finish_output()
+/* finishout: pad text and data to the area ends, copy the temporary files into the output, the symbols, then
+   rewrite the header (sld finishout, Plexus finishout; 0x194a..0x1a12 of /bin/ld) */
+finishout()
 {
 	register int *p;
 	register int *end;
@@ -1136,9 +1136,9 @@ finish_output()
 	goto test1;
 body1:
 	p++;
-	put_word(0, &toutb);
+	putw(0, &toutb);
 	if (rflag)
-		put_word(0, &routb);
+		putw(0, &routb);
 test1:
 	if (p < end)
 		goto body1;
@@ -1147,9 +1147,9 @@ test1:
 	goto test2;
 body2:
 	p++;
-	put_word(0, &tmpoutb);
+	putw(0, &tmpoutb);
 	if (rflag)
-		put_word(0, &doutb);
+		putw(0, &doutb);
 test2:
 	if (p < end)
 		goto body2;
@@ -1163,27 +1163,27 @@ test2:
 			copy(&soutb);
 		put_all();
 	}
-	flush_buffer(&toutb);
+	flush(&toutb);
 	close(toutb.fildes);
 	if (!ofilfnd) {
 		unlink(aoutnam);
 		link("l.out", aoutnam);
-		ofilnam = aoutnam;
+		ofilename = aoutnam;
 	}
-	delarg = exstat;
-	sig_handler();
+	delarg = errlev;
+	delexit();
 }
 
 /* copy: append the temporary file of the buffer p to the output (sld copy, Plexus copy; 0x1a12..0x1a74 of /bin/ld) */
-copy(p)
-struct buf *p;
+copy(buf)
+struct buf *buf;
 {
-	register fd;
+	register f;
 	register n;
 	unsigned char *q;
 
-	flush_buffer(p);
-	lseek(fd = p->fildes, 0L, 0);
+	flush(buf);
+	lseek(f = buf->fildes, 0L, 0);
 	goto test;
 body:
 	q = (unsigned char *)tmpoutb.iobuf;
@@ -1191,10 +1191,10 @@ body:
 		put_int_buf(*q++, &toutb);
 	while (--n);
 test:
-	n = read(fd, tmpoutb.iobuf, 256);
+	n = read(f, tmpoutb.iobuf, 256);
 	if (n > 1)
 		goto body;
-	close(fd);
+	close(f);
 }
 
 /* high_byte: the page number of an address that must be a multiple of 256 ("internal error - mkchar" otherwise) (sld
@@ -1203,124 +1203,124 @@ high_byte(x)
 unsigned x;
 {
 	if ((x & 0xff00) != x)
-		report_error(2, "internal error - mkchar");
+		error(2, "internal error - mkchar");
 	return((x >> 8) & 0xff);
 }
 
 /* mget: read n bytes of the text stream into p (sld mget, Plexus mget; 0x1a9a..0x1b0a of /bin/ld) */
-mget(p, n)
-int *p;
-int n;
+mget(aloc, an)
+int *aloc;
+int an;
 {
-	register int *r;
-	register i;
-	register int *q;
+	register int *loc;
+	register n;
+	register int *p;
 
-	i = n;
-	i >>= 1;
-	r = p;
-	text.nibuf -= i;
+	n = an;
+	n >>= 1;
+	loc = aloc;
+	text.nibuf -= n;
 	if (text.nibuf >= 0) {
-		text.size -= i;
+		text.size -= n;
 		if (text.size > 0) {
-			q = text.ptr;
+			p = text.ptr;
 			do
-				*r++ = *q++;
-			while (--i);
-			text.ptr = q;
+				*loc++ = *p++;
+			while (--n);
+			text.ptr = p;
 			return;
 		}
-		text.size += i;
+		text.size += n;
 	}
-	text.nibuf += i;
+	text.nibuf += n;
 	do
-		*r++ = get(&text);
-	while (--i);
+		*loc++ = get(&text);
+	while (--n);
 }
 
 /* mput: write n bytes of a to the output buffer q (word by word) (sld mput, Plexus mput; 0x1b0a..0x1b38 of /bin/ld) */
-mput(q, p, n)
-struct buf *q;
-int *p;
-int n;
+mput(buf, aloc, an)
+struct buf *buf;
+int *aloc;
+int an;
 {
-	register int *r;
-	register i;
+	register int *loc;
+	register n;
 
-	r = p;
-	i = n >> 1;
+	loc = aloc;
+	n = an >> 1;
 	do {
-		put_word(*r++, q);
-	} while (--i);
+		putw(*loc++, buf);
+	} while (--n);
 }
 
 /* dseek: position the input stream sp at the word v of the file with n bytes to read: find or fill one of the two
    pages (sld dseek, Plexus dseek; 0x1b38..0x1c5a of /bin/ld) */
-dseek(sp, v, n)
-struct stream *sp;
+dseek(asp, v, n)
+struct stream *asp;
 long v;
 int n;
 {
-	register struct stream *obj;
-	register struct page *cur;
+	register struct stream *sp;
+	register struct page *p;
 	long hi, lo;
 	int nw;
 
 	hi = v >> 8;
 	lo = v & 0xff;
-	obj = sp;
-	obj->pno->nuser -= 1;
-	if ((cur = &page[0])->bno == hi || (cur = &page[1])->bno == hi)
+	sp = asp;
+	sp->pno->nuser -= 1;
+	if ((p = &page[0])->bno == hi || (p = &page[1])->bno == hi)
 		goto common;
-	if (cur->nuser == 0 || (cur = &page[0])->nuser == 0) {
+	if (p->nuser == 0 || (p = &page[0])->nuser == 0) {
 		if (page[0].nuser == 0 && page[1].nuser == 0 && page[0].bno < page[1].bno)
-			cur = &page[0];
-		cur->bno = hi;
+			p = &page[0];
+		p->bno = hi;
 		lseek(infil, (v & 0xffffff00L) << 1, 0);
-		nw = read(infil, cur->buff, 0x200) >> 1;
+		nw = read(infil, p->buff, 0x200) >> 1;
 		if (nw < 0)
 			nw = 0;
-		cur->nibuf = nw;
+		p->nibuf = nw;
 	} else
-		report_error(2, "No pages");
+		error(2, "No pages");
 common:
-	cur->nuser += 1;
-	obj->bno = hi;
-	obj->pno = (struct pghdr *)cur;
-	obj->ptr = (int *)((char *)cur->buff + (lo << 1));
+	p->nuser += 1;
+	sp->bno = hi;
+	sp->pno = (struct pghdr *)p;
+	sp->ptr = (int *)((char *)p->buff + (lo << 1));
 	if (n != -1)
-		obj->size = half(n);
-	if ((obj->nibuf = cur->nibuf - lo) <= 0)
-		obj->size = 0;
+		sp->size = half(n);
+	if ((sp->nibuf = p->nibuf - lo) <= 0)
+		sp->size = 0;
 }
 
 /* half: a byte count in words (unsigned) (sld half, Plexus half; 0x1c5a..0x1c6c of /bin/ld) */
-half(x)
-int x;
+half(i)
+int i;
 {
-	return((x >> 1) & 0x7fff);
+	return((i >> 1) & 0x7fff);
 }
 
 /* get: next word of the input stream p; "Premature EOF" when the stream is exhausted (sld get, Plexus get;
    0x1c6c..0x1ce2 of /bin/ld) */
-get(a)
-struct stream *a;
+get(asp)
+struct stream *asp;
 {
-	register struct stream *p;
+	register struct stream *sp;
 
-	p = a;
-	if (--p->nibuf < 0) {
-		dseek(p, (long)(p->bno + 1) << 8, -1);
-		--p->nibuf;
+	sp = asp;
+	if (--sp->nibuf < 0) {
+		dseek(sp, (long)(sp->bno + 1) << 8, -1);
+		--sp->nibuf;
 	}
-	if (--p->size <= 0) {
-		if (p->size < 0)
-			report_error(2, eofmsg);
+	if (--sp->size <= 0) {
+		if (sp->size < 0)
+			error(2, premeof);
 		fpage.nuser++;
-		p->pno->nuser--;
-		p->pno = &fpage;
+		sp->pno->nuser--;
+		sp->pno = &fpage;
 	}
-	return(*p->ptr++);
+	return(*sp->ptr++);
 }
 
 /*
@@ -1334,28 +1334,28 @@ static char pfx2[] = "/z/bin";
 /* getfile: open an input file; -lx searches /lib/libx.a (or .8), /usr/lib, /z/bin/lib; 0 for an object, 1 for an
    archive, 2 for an archive with a current __.SYMDEF, 3 for an outdated one (sld getfile, Plexus getfile;
    0x1ce2..0x1e86 of /bin/ld) */
-getfile(name)
-char *name;
+getfile(acp)
+char *acp;
 {
-	register char *s;
+	register char *cp;
 	register char *p;
-	register int n;
+	register int c;
 	struct {
 		char pad[0x16];
 		long mtime;
 		long ctime;
 	} st;
 
-	s = name;
+	cp = acp;
 	infil = -1;
 	archdr.aname[0] = 0;
-	filname = name;
-	if (s[0] == '-' && s[1] == 'l') {
+	filname = acp;
+	if (cp[0] == '-' && cp[1] == 'l') {
 		filname = libpath;
-		if (s[2] == 0)
-			s = "-lc";
+		if (cp[2] == 0)
+			cp = "-lc";
 		p = rindex(libname, '/') + 4;
-		strncpy(p, s + 2, &libname[18] - p);
+		strncpy(p, cp + 2, &libname[18] - p);
 		strcat(p, noswap ? ".a" : ".8");
 		infil = open(libname, 0);
 		if (infil != -1)
@@ -1373,7 +1373,7 @@ char *name;
 	if (infil == -1) {
 		infil = open(filname, 0);
 		if (infil < 0)
-			report_error(2, "cannot open");
+			error(2, "cannot open");
 	}
 	page[1].bno = -1;
 	page[0].bno = -1;
@@ -1384,7 +1384,7 @@ char *name;
 	fpage.nuser = 2;
 	dseek(&text, 0L, 2);
 	if (text.size <= 0)
-		report_error(2, eofmsg);
+		error(2, premeof);
 	if (get(&text) != -155)
 		return 0;
 	dseek(&text, 1L, 0x1a);
@@ -1399,18 +1399,18 @@ char *name;
 	return 2;
 }
 
-/* report_error: print a message with the program name and the file (archive member) name; level 2 stops ld, level 1
-   marks an error (sld report_error, Plexus error; 0x1e86..0x1f22 of /bin/ld) */
-report_error(level, msg, a, b, c, d, e)
-int level;
-char *msg;
+/* error: print a message with the program name and the file (archive member) name; level 2 stops ld, level 1
+   marks an error (sld error, Plexus error; 0x1e86..0x1f22 of /bin/ld) */
+error(n, s, a, b, c, d, e)
+int n;
+char *s;
 int a;
 int b;
 int c;
 int d;
 int e;
 {
-	if (!exstat)
+	if (!errlev)
 		fprintf(stderr, "%s: ", pname);
 	if (filname) {
 		fprintf(stderr, "%s", filname);
@@ -1418,32 +1418,32 @@ int e;
 			fprintf(stderr, "(%.14s)", archdr.aname);
 		fprintf(stderr, ": ");
 	}
-	fprintf(stderr, msg, a, b, c, d, e);
+	fprintf(stderr, s, a, b, c, d, e);
 	fprintf(stderr, "\n");
-	if (level > 1)
-		sig_handler();
-	exstat = level;
+	if (n > 1)
+		delexit();
+	errlev = n;
 }
 
-/* table_lookup: the symbol of the local index in the relocation word a, searched in the local table up to end (sld
-   table_lookup, Plexus lookloc; 0x1f22..0x1f64 of /bin/ld) */
-table_lookup(end, a)
-struct local *end;
-int a;
+/* lookloc: the symbol of the local index in the relocation word a, searched in the local table up to end (sld
+   lookloc, Plexus lookloc; 0x1f22..0x1f64 of /bin/ld) */
+lookloc(alp, r)
+struct local *alp;
+int r;
 {
-	register struct local *p;
-	register struct local *e;
-	register k;
+	register struct local *clp;
+	register struct local *lp;
+	register sn;
 
-	e = end;
-	k = (a >> 4) & 0x0fff;
-	p = local;
-	while (p < e) {
-		if (p->locindex == k)
-			return(p->locsymbol);
-		p++;
+	lp = alp;
+	sn = (r >> 4) & 0x0fff;
+	clp = local;
+	while (clp < lp) {
+		if (clp->locindex == sn)
+			return(clp->locsymbol);
+		clp++;
 	}
-	report_error(2, "Local symbol botch");
+	error(2, "Local symbol botch");
 }
 
 /* readhdr: read the header of the object at word offset a and set filhdr (sizes, entry, symbols, relocation flag) from
@@ -1498,43 +1498,43 @@ long a;
 		filhdr.dsize = rec[c1].s_data;
 		filhdr.fstamp[1] = 0;
 		if ((rec[0].atr | w) & 0xf8)
-			report_error(2, "Invalid segment attributes");
+			error(2, "Invalid segment attributes");
 		filhdr.entry = tmp.hentry;
 		filhdr.relflg = tmp.hrelflg & 1;
 		filhdr.ssize = tmp.hsymsz;
 	} else
-		report_error(2, "Bad format");
+		error(2, "Bad format");
 	idsep = filhdr.fmagic == 0xe711 || filhdr.fmagic == 0xe511 ? 1 : 0;
 	if (magic == 0xe507 || magic == 0xe511) {
 		if (arflag)
-			report_error(2, "-r cannot be used with 8-bit files");
+			error(2, "-r cannot be used with 8-bit files");
 		if (tmp.hrelflg & 4)
 			n8rel4++;
 		else
 			n8swap++;
-		fcdrel = idsep ? 0 : -filhdr.tsize;
-		fcbrel = n8rel4 ? 0 : fcdrel - filhdr.dsize;
+		cdrel = idsep ? 0 : -filhdr.tsize;
+		cbrel = n8rel4 ? 0 : cdrel - filhdr.dsize;
 		filhdr.ftsize = tmp.hy;
 		filhdr.fdsize = (int)tmp.hx - tmp.hy;
 	} else {
 		t = (filhdr.tsize + 1) & 0xfffe;
 		filhdr.tsize = t;
-		fcdrel = idsep ? 0 : -t;
+		cdrel = idsep ? 0 : -t;
 		i = (filhdr.dsize + 1) & 0xfffe;
-		fcbrel = fcdrel - i;
+		cbrel = cdrel - i;
 		filhdr.bsize = (filhdr.bsize + 1) & 0xfffe;
 		filhdr.ftsize = filhdr.tsize;
 		filhdr.fdsize = filhdr.dsize;
 	}
 }
 
-/* str_compare: 1 when the strings are equal, else 0 (sld str_compare, Plexus eq; 0x21f2..0x221e of /bin/ld) */
-str_compare(p, q)
-char *p, *q;
+/* eq: 1 when the strings are equal, else 0 (sld eq, Plexus eq; 0x21f2..0x221e of /bin/ld) */
+eq(s1, s2)
+char *s1, *s2;
 {
 	for (;;) {
-		if (*p == *q++) {
-			if (*p++)
+		if (*s1 == *s2++) {
+			if (*s1++)
 				continue;
 			return(1);
 		}
@@ -1542,20 +1542,20 @@ char *p, *q;
 	}
 }
 
-/* put_word: put a word into the output buffer p byte by byte, high byte first (the byte order of the output does not
+/* putw: put a word into the output buffer p byte by byte, high byte first (the byte order of the output does not
    depend on the machine) (Plexus putw puts the word whole; 0x221e..0x226e of /bin/ld) */
-put_word(x, p)
-int x;
-register struct buf *p;
+putw(w, b)
+int w;
+register struct buf *b;
 {
-	*p->xnext++ = x >> 8;
-	p->nleft--;
-	if (p->nleft <= 0)
-		flush_buffer(p);
-	*p->xnext++ = x;
-	p->nleft--;
-	if (p->nleft <= 0)
-		flush_buffer(p);
+	*b->xnext++ = w >> 8;
+	b->nleft--;
+	if (b->nleft <= 0)
+		flush(b);
+	*b->xnext++ = w;
+	b->nleft--;
+	if (b->nleft <= 0)
+		flush(b);
 }
 
 /* put_int_buf: put a byte into the output buffer p (sld put_int_buf; 0x226e..0x229c of /bin/ld) */
@@ -1565,21 +1565,21 @@ register struct buf *p;
 {
 	*p->xnext++ = v;
 	if (--p->nleft <= 0)
-		flush_buffer(p);
+		flush(p);
 }
 
-/* flush_buffer: write the buffer to its file and reset it (sld flush_buffer, Plexus flush; 0x229c..0x22e8 of /bin/ld) */
-flush_buffer(a)
-register struct buf *a;
+/* flush: write the buffer to its file and reset it (sld flush, Plexus flush; 0x229c..0x22e8 of /bin/ld) */
+flush(b)
+register struct buf *b;
 {
 	register n;
 
-	n = (char *)a->xnext - (char *)a->iobuf;
+	n = (char *)b->xnext - (char *)b->iobuf;
 	if (n > 0) {
-		if (write(a->fildes, a->iobuf, n) != n)
-			report_error(2, "output error");
+		if (write(b->fildes, b->iobuf, n) != n)
+			error(2, "output error");
 	}
-	a->xnext = a->iobuf;
-	a->nleft = 0x100;
+	b->xnext = b->iobuf;
+	b->nleft = 0x100;
 }
 

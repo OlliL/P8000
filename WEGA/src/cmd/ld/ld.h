@@ -24,7 +24,7 @@ struct page {
 	int nibuf;
 	int buff[256];
 };
-/* tab entry: the state of the load before an object, saved by record and restored by -v (Plexus struct overlay) */
+/* vnodes entry: the state of the load before an object, saved by record and restored by -v (Plexus struct overlay) */
 struct overlay {
 	int argsav;
 	int symsav;
@@ -58,27 +58,27 @@ struct local {
 extern struct page page[2];
 extern struct pghdr fpage;
 extern int infil;
-extern int ntab;
-extern struct overlay tab[16];
+extern int vindex;
+extern struct overlay vnodes[16];
 extern int symindex;
 extern long *libp;
-extern int ttotal, dtotal, btotal, stotal;
-extern char *ofilnam;
+extern int tsize, dsize, bsize, ssize;
+extern char *ofilename;
 extern int nundef;
-extern char tmpname[];
-extern int Tflag, arflag;
+extern char tfname[];
+extern int trace, arflag;
 extern struct stream text;
 extern struct buf toutb;
 extern struct archdr archdr;
 extern char *pname;
 extern char *filname;
-extern int exstat;
+extern int errlev;
 extern struct local local[1000];
 /* symbol table: functions that return a symbol pointer (sld: table16_entry, next_entry) */
 struct symbol *table16_entry();
 struct symbol *next_entry();
 /* current symbol (sld: cursym). The layout is the one of ld's code: svalue at 0x1076, stype at 4, sname at 6 (the
-   address of pack_name's target), 14 bytes; sld's struct symbol has sseg and a 16 byte entry. */
+   address of cp8c's target), 14 bytes; sld's struct symbol has sseg and a 16 byte entry. */
 struct symbol {
 	long svalue;
 	char stype;
@@ -108,8 +108,8 @@ extern struct buf soutb;
 extern int torigin, nlocsym;
 int unpack_run();
 int put_sym();
-/* relocation bases of the object: text, data, bss (sld: fctrel, fcdrel, fcbrel) */
-extern int fctrel, fcdrel, fcbrel;
+/* relocation bases of the object: text, data, bss (sld: ctrel, cdrel, cbrel) */
+extern int ctrel, cdrel, cbrel;
 limit_msg();
 extern struct symbol **symhash[];
 extern struct symbol *lastsym;
@@ -136,7 +136,7 @@ struct rlent {
 struct symbol **pslookup();
 int chk_ranlib();
 int sbrk();
-int read_symbols();
+int load1();
 int swap();
 int load_header();
 extern struct rlent *rltab;
@@ -201,7 +201,7 @@ int put_sym();
 int dseek();
 struct symbol **lookup_name();
 int swap();
-int put_word();
+int putw();
 struct areas { char kind; char pad; int tstart; int tsize; int tend; };
 extern struct areas areas[4];
 extern char secflg[5];

@@ -32,37 +32,37 @@ test:
 	return n;
 }
 
-/* pack_name: build the table form of a C string: up to 8 characters zero padded, a longer name with the length byte
-   and continuation entries (sld pack_name; 0x2360..0x23e2 of /bin/ld) */
-pack_name(src, dst)
-char *src;
-char *dst;
+/* cp8c: build the table form of a C string: up to 8 characters zero padded, a longer name with the length byte
+   and continuation entries (sld cp8c; 0x2360..0x23e2 of /bin/ld) */
+cp8c(from, to)
+char *from;
+char *to;
 {
 	register char *q;
-	register char *d;
-	register char *s;
+	register char *t;
+	register char *f;
 	char cnt;
 
-	s = src;
-	q = src;
-	d = dst;
+	f = from;
+	q = from;
+	t = to;
 	cnt = 0;
 	goto test0;
 body0:
 	cnt++;
 test0:
-	if (*s++)
+	if (*f++)
 		goto body0;
 	if (cnt <= 8)
-		unpack_run(q, d);
+		unpack_run(q, t);
 	else {
-		*d++ = cnt | 0x80;
-		s--;
+		*t++ = cnt | 0x80;
+		f--;
 		goto test1;
 body1:
-		*d++ = *q++;
+		*t++ = *q++;
 test1:
-		if (q < s)
+		if (q < f)
 			goto body1;
 		cnt -= 8;
 		goto test2;
@@ -72,7 +72,7 @@ test2:
 		if (cnt > 0)
 			goto body2;
 		while (cnt-- != 0)
-			*d++ = 0;
+			*t++ = 0;
 	}
 }
 

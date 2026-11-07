@@ -41,38 +41,38 @@ test:
 /* ldrsym: define the linker symbol p with value v and type c; "Multiply defined" when it is defined already. x is not
    used and not passed by the callers; the parameter order follows the frame of the original (sld ldrsym, Plexus
    ldrsym; 0x2502..0x25a2 of /bin/ld) */
-ldrsym(a, x, v, c)
-struct symbol *a;
+ldrsym(asp, x, v, c)
+struct symbol *asp;
 int x;
 long v;
 char c;
 {
-	register struct symbol *p;
+	register struct symbol *sp;
 
-	p = a;
-	if (!p)
+	sp = asp;
+	if (!sp)
 		return;
-	if (p->stype != 0x20 || p->svalue != 0) {
-		if (put_name(p->sname) < 8)
+	if (sp->stype != 0x20 || sp->svalue != 0) {
+		if (put_name(sp->sname) < 8)
 			(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 9) : _flsbuf((unsigned)9, stderr));
 		(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 0x20) : _flsbuf((unsigned)0x20, stderr));
-		report_error(1, "-- Multiply defined");
+		error(1, "-- Multiply defined");
 		return;
 	}
-	p->stype = c;
-	p->svalue = v;
+	sp->stype = c;
+	sp->svalue = v;
 }
 
 /* mkfsym: write the file symbol of an object to the symbol output; its value is the text base torigin (sld: 0) (sld
    mkfsym, Plexus mkfsym; 0x25a2..0x25dc of /bin/ld) */
-mkfsym(p)
-char *p;
+mkfsym(s)
+char *s;
 {
 	if (sflag)
 		return;
 	if (xflag)
 		return;
-	unpack_run(p, cursym.sname);
+	unpack_run(s, cursym.sname);
 	cursym.stype = 0x1f;
 	cursym.svalue = (unsigned)torigin;
 	put_sym(&soutb, &cursym);
@@ -138,7 +138,7 @@ int x;
 {
 	int spare;
 
-	pack_name(x, cursym.sname);
+	cp8c(x, cursym.sname);
 	cursym.stype = ' ';
 	cursym.svalue = 0;
 	lookup_name();
@@ -159,22 +159,22 @@ int x;
 
 /* enter: enter cursym into the empty hash slot a: a new entry of the symbol table; 1 when it was entered, 0 when the
    slot was in use (lastsym is the symbol) (sld enter, Plexus enter; 0x26e8..0x2766 of /bin/ld) */
-enter(a)
-struct symbol **a;
+enter(hp)
+struct symbol **hp;
 {
-	register struct symbol *r;
+	register struct symbol *sp;
 
-	if (*a == 0) {
+	if (*hp == 0) {
 		if (symindex >= 0x0923)
-			report_error(2, "Symbol table overflow");
-		symhash[symindex] = a;
-		*a = lastsym = r = table16_entry(symindex++);
-		symindex = unpack_run(cursym.sname, r->sname) + symindex;
-		r->stype = cursym.stype;
-		r->svalue = cursym.svalue;
+			error(2, "Symbol table overflow");
+		symhash[symindex] = hp;
+		*hp = lastsym = sp = table16_entry(symindex++);
+		symindex = unpack_run(cursym.sname, sp->sname) + symindex;
+		sp->stype = cursym.stype;
+		sp->svalue = cursym.svalue;
 		return 1;
 	}
-	lastsym = *a;
+	lastsym = *hp;
 	return 0;
 }
 
@@ -185,15 +185,15 @@ symreloc()
 	switch (cursym.stype) {
 	case 2:
 	case 0x22:
-		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fctrel);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + ctrel);
 		return;
 	case 3:
 	case 0x23:
-		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcdrel);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + cdrel);
 		return;
 	case 4:
 	case 0x24:
-		cursym.svalue = (unsigned)((unsigned)cursym.svalue + fcbrel);
+		cursym.svalue = (unsigned)((unsigned)cursym.svalue + cbrel);
 		return;
 	case 0x20:
 		return;
@@ -278,7 +278,7 @@ struct symbol *a;
 	if (put_name(a->sname) < 8)
 		(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 9) : _flsbuf((unsigned)9, stderr));
 	(--stderr->_cnt >= 0 ? (int)(char)(*stderr->_ptr++ = 0x20) : _flsbuf((unsigned)0x20, stderr));
-	report_error(0, "- warning: symbol redefined in archive");
+	error(0, "- warning: symbol redefined in archive");
 }
 
 /* chk_ranlib: check the ranlib table of n entries at p against the defined symbols and warn about redefinitions (sld
@@ -320,18 +320,18 @@ unsigned x;
 	if (x < 0x258)
 		return sym16 + x;
 	if (x > 0x923)
-		report_error(2, "Symbol table overflow");
+		error(2, "Symbol table overflow");
 	if (symtab == 0) {
 		if (rlbusy != 0 || rlsize == 0) {
 			n = sbrk(0);
 			symtab = (struct symbol *)grow_heap(0x5fa6);
 			if ((int)symtab != n)
-				report_error(2, "Symbol table overflow");
+				error(2, "Symbol table overflow");
 		} else {
 			n = sbrk(0);
 			symtab = (struct symbol *)grow_heap(0x5fa6 - rlsize);
 			if ((int)symtab != n)
-				report_error(2, "Symbol table overflow");
+				error(2, "Symbol table overflow");
 			symtab = (struct symbol *)rlbuf;
 			for (p = rlbuf; p < rlbuf + rlsize; p++)
 				*p = 0;
@@ -381,10 +381,10 @@ unsigned long n;
 	if (rlsize < n) {
 		if (rlsize == 0) {
 			if (n > 0xffff)
-				report_error(2, "ranlib table of contents too large");
+				error(2, "ranlib table of contents too large");
 			rlbuf = (char *)grow_heap((int)n);
 			if (rlbuf == (char *)-1)
-				report_error(2, "table of contents overflow");
+				error(2, "table of contents overflow");
 			rlsize = n;
 		} else
 			return grow_rlbuf(n);
@@ -400,20 +400,20 @@ unsigned long n;
 	int k;
 
 	if (n > 0xffff)
-		report_error(2, "ranlib table of contents too large");
+		error(2, "ranlib table of contents too large");
 	if ((char *)sbrk(0) != rlbuf + rlsize) {
 		rlsize = 0;
 		return ensure_buf(n);
 	} else {
 		k = (int)n - (int)rlsize;
 		if (grow_heap(k) == -1)
-			report_error(2, "table of contents overflow");
+			error(2, "table of contents overflow");
 		rlsize = n;
 	}
 	return rlbuf;
 }
 
-/* lock_rlbuf: mark the ranlib buffer as in use while a ranlib table is read (load_lib_syms); table16_entry does not
+/* lock_rlbuf: mark the ranlib buffer as in use while a ranlib table is read (load1arg); table16_entry does not
    take it over for the symbol table then (rlbusy counts) (no sld counterpart; 0x2bf6..0x2bfc of /bin/ld) */
 lock_rlbuf()
 {

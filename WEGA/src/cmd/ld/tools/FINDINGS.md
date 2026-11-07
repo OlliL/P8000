@@ -23,14 +23,14 @@ Odd source forms, guessed names, dead code: the bytes fit, what was really writt
 | main | 0x009c | Odd form: unused local spare for the frame of the original; loops as goto skeletons (body, test) instead of for/while. |
 | load2arg | 0x13ca | Odd form: loops as goto skeletons (body0, test0, body1, test1) instead of for/while. |
 | load2 | 0x1452 | Odd form: loops as goto skeletons (body, test) instead of for/while. |
-| finish_output | 0x194a | Odd form: loops as goto skeletons (body1, test1, body2, test2) instead of for/while. |
+| finishout | 0x194a | Odd form: loops as goto skeletons (body1, test1, body2, test2) instead of for/while. |
 | copy | 0x1a12 | Odd form: loops as goto skeletons (body, test) instead of for/while. |
 | unpack_run | 0x22e8 | Odd form: loops as goto skeletons (body, test) instead of for/while. |
-| pack_name | 0x2360 | Odd form: loops as goto skeletons (body0, test0, body1, test1, body2, test2) instead of for/while. |
+| cp8c | 0x2360 | Odd form: loops as goto skeletons (body0, test0, body1, test1, body2, test2) instead of for/while. |
 | read_entry_hdr | 0x249a | Odd form: loops as goto skeletons (body, test) instead of for/while. |
 | slookup | 0x26ac | Odd form: unused local spare for the frame of the original. |
 | pslookup | 0x26ca | Odd form: unused local spare for the frame of the original. |
 | put_sym | 0x27be | Odd form: loops as goto skeletons (body, test) instead of for/while. |
 | chk_ranlib | 0x294e | Odd form: the label known that no goto names and the register variable r without use: they give the registers of the original (r3 for q2, r14 saved but unused). |
 | index16 | 0x2b04 | Odd form: unused local spare for the frame of the original. |
-| parse_args | 0x45e | Odd form: unused local spare for the frame of the original. |
+| endload | 0x45e | Odd form: unused local spare for the frame of the original. |

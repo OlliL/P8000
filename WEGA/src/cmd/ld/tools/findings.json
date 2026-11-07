@@ -33,7 +33,7 @@
    "size_orig": 140,
    "status": "exact"
   },
-  "put_word": {
+  "putw": {
    "file": "ld.c",
    "orig": "0x221e",
    "size_orig": 80,
@@ -81,7 +81,7 @@
    "size_orig": 118,
    "status": "exact"
   },
-  "report_error": {
+  "error": {
    "file": "ld.c",
    "orig": "0x1e86",
    "size_orig": 156,
@@ -99,13 +99,13 @@
    "size_orig": 38,
    "status": "exact"
   },
-  "table_lookup": {
+  "lookloc": {
    "file": "ld.c",
    "orig": "0x1f22",
    "size_orig": 66,
    "status": "exact"
   },
-  "str_compare": {
+  "eq": {
    "file": "ld.c",
    "orig": "0x21f2",
    "size_orig": 44,
@@ -117,7 +117,7 @@
    "size_orig": 46,
    "status": "exact"
   },
-  "flush_buffer": {
+  "flush": {
    "file": "ld.c",
    "orig": "0x229c",
    "size_orig": 76,
@@ -130,13 +130,13 @@
    "status": "exact",
    "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
-  "sig_handler": {
+  "delexit": {
    "file": "ld.c",
    "orig": "0x0042",
    "size_orig": 90,
    "status": "exact"
   },
-  "open_tmp": {
+  "tcreat": {
    "file": "ld.c",
    "orig": "0x120e",
    "size_orig": 154,
@@ -193,7 +193,7 @@
    "status": "exact",
    "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
-  "add16_checked": {
+  "add": {
    "file": "ld.c",
    "orig": "0x089a",
    "size_orig": 50,
@@ -206,7 +206,7 @@
    "status": "exact",
    "note": "Odd form: loops as goto skeletons (body, test) instead of for/while."
   },
-  "pack_name": {
+  "cp8c": {
    "file": "copyname.c",
    "orig": "0x2360",
    "size_orig": 130,
@@ -295,7 +295,7 @@
    "size_orig": 208,
    "status": "exact"
   },
-  "finish_output": {
+  "finishout": {
    "file": "ld.c",
    "orig": "0x194a",
    "size_orig": 200,
@@ -320,7 +320,7 @@
    "size_orig": 238,
    "status": "exact"
   },
-  "load_lib_syms": {
+  "load1arg": {
    "file": "ld.c",
    "orig": "0x0608",
    "size_orig": 268,
@@ -338,7 +338,7 @@
    "size_orig": 654,
    "status": "exact"
   },
-  "start_output": {
+  "setupout": {
    "file": "ld.c",
    "orig": "0x108e",
    "size_orig": 384,
@@ -370,20 +370,20 @@
    "status": "exact",
    "note": "Odd form: unused local spare for the frame of the original; loops as goto skeletons (body, test) instead of for/while."
   },
-  "parse_args": {
+  "endload": {
    "file": "ld.c",
    "orig": "0x45e",
    "size_orig": 174,
    "status": "exact",
    "note": "Odd form: unused local spare for the frame of the original."
   },
-  "read_symbols": {
+  "load1": {
    "file": "ld.c",
    "orig": "0x8cc",
    "size_orig": 674,
    "status": "exact"
   },
-  "end_pass1": {
+  "middle": {
    "file": "ld.c",
    "orig": "0xb6e",
    "size_orig": 558,
