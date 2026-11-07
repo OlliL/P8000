@@ -367,7 +367,7 @@ cand:
 			goto next;
 #ifdef OLD_D10
 		/* the old codgen v0 shifts a long by a constant through a register (ld A1,#n; sdal): no OIZB AL,#n */
-		if (q->lshape == 0x6 && q->rshape == 0x80 && q->in.op == 0x1013 && (r->in.type == 5 || l->in.type == 15) &&
+		if (q->lshape == 0x6 && q->rshape == 0x80 && q->op == 0x1013 && (r->in.type == 5 || l->in.type == 15) &&
 		    (p->in.op == LS || p->in.op == RS || p->in.op == ASG LS || p->in.op == ASG RS))
 			goto next;
 #endif
@@ -417,7 +417,7 @@ cand:
 #endif
 #ifdef OLD_D22
 		/* v0p: a floating compare with memory without the rounding fld of the left operand */
-		if (q->in.op == 0x100e && q->lshape == 0x18 && q->rshape == 0x2c0)
+		if (q->op == 0x100e && q->lshape == 0x18 && q->rshape == 0x2c0)
 			expand(p, cookie, "\tfcpZfZ>\tAL,AR\n\tfldctlb\tcmpflg\nZI");
 		else
 #endif

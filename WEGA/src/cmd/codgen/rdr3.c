@@ -137,7 +137,7 @@ rddata()
 	if (getc(dfile) != '\n')
 		cerror("data file format error\n");
 #ifdef OLD_D12K
-	return d12kcopy(n);
+	if (1) return d12kcopy(n);
 #endif
 	if (n > 0)
 		ok = 1;
