@@ -34,6 +34,25 @@ def CORPUS_PREPARE(src, work):
     return corpusc.prepare_i(src, work)
 
 
+def CORPUS_NORMALIZE(f, data):
+    """the .S file without the register byte (+5) of the symbols that are no register variable and no field: cparse sets
+    it only for these, else the byte is what the heap held before (KNOWLEDGE.md, quirks of /lib/cparse); it differs in a
+    build with another data layout"""
+    import struct
+    if not f.endswith('.S'):
+        return data
+    d = bytearray(data)
+    pos = 4
+    while pos + 14 <= len(d):
+        ns, na = struct.unpack('>II', bytes(d[pos + 2:pos + 10]))
+        nn, nm = struct.unpack('>HH', bytes(d[pos + 10:pos + 14]))
+        for k in range(pos + 14, pos + 14 + ns, 22):
+            if d[k + 4] != 4 and d[k + 4] < 0x40:
+                d[k + 5] = 0
+        pos += 14 + ns + na + nn + nm
+    return bytes(d)
+
+
 def CORPUS_RUN(binary, base, work):
     return [binary, '-E', base], base + '.i'
 

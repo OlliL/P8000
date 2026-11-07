@@ -5,9 +5,8 @@
 # proves the repository alone is enough and leaves the working tree alone:
 #   1. make in src: the old compilers with the shipped tools, the libraries, the old compilers again, cmd/;
 #   2. every member of lib/libc/libc.a, and every program of TABLE, stripped, against the original with cmp;
-#   3. the corpora (host/tools/corpus.sh, inputs made fresh): cpp, cparse, scparse, ld, sld as built in 1 (the output of
-#      cparse depends on its data layout), codgen, scodgen, popt, spopt in a normal build with the shipped cc, whose source
-#      also is the old compiler;
+#   3. the corpora (host/tools/corpus.sh, inputs made fresh, side by side) of every program with a tools/progcfg.py, built
+#      with the shipped cc (scc) and the libc of its Makefile: the byte-identical builds are proven by 2;
 #   4. make -C host check: the host tools.
 # -b: only 1 and 2. Prints one line per check, the logs stay in CHECK_TMP; exit status 0 when all pass.
 # A program joins by a line in TABLE.
@@ -171,22 +170,33 @@ echo "open, not counted:$o"
 corpus() {
 	line=`sed -n 's/^.*: \([0-9]*\) of \([0-9]*\) inputs identical.*/\1 \2/p' $2 | tail -1`
 	set -- "$1" "$2" $line
-	if [ $# = 4 ] && [ "$3" = "$4" ]; then result "corpus $1" ok "$3 of $4 inputs identical"
+	if [ $# = 4 ] && [ "$3" = "$4" ] && [ "$4" -gt 0 ]; then result "corpus $1" ok "$3 of $4 inputs identical"
 	else result "corpus $1" fail "see $2"; fi
 }
-CS=$T/tree/WEGA/host/tools/corpus.sh
-for p in cpp cparse scparse ld sld; do
-	WEGA_ROOT=$WEGA sh $CS $p > $T/corpus_$p.log 2>&1
-	corpus $p $T/corpus_$p.log
+# the shipped build: every program with a corpus built from the same sources by the shipped cc (scc) and the libc of
+# its Makefile; a byte-identical binary cannot show anything in a corpus, this build tests the sources
+copytree $T/shipped
+C=$T/shipped/WEGA/src/cmd
+cp $T/tree/WEGA/src/lib/*.a $T/shipped/WEGA/src/lib/
+(
+	PATH=$T/bin:$PATH; export PATH
+	cd $C/cpp && make cpp CC=cc
+	cd $C/cparse && make all CC=cc
+	cd $C/codgen && make all CC=cc
+	cd $C/popt && make all CC=cc
+	cd $C/ld && make ld CC=cc
+	cd $C/sld && make sld SCC=scc
+) > $T/shipped.log 2>&1
+# the corpora run side by side, each in a work directory of its own
+CS=$T/shipped/WEGA/host/tools/corpus.sh
+CORP='cpp:cpp/cpp cparse:cparse/build/nonseg/cparse scparse:cparse/build/seg/scparse codgen:codgen/build/nonseg/codgen
+	scodgen:codgen/build/seg/scodgen popt:popt/build/nonseg/popt spopt:popt/build/seg/spopt ld:ld/ld sld:sld/sld'
+for p in $CORP; do
+	n=${p%%:*}
+	CORPUS_BIN=$C/${p#*:} STAGE_TMP=$T/stage_$n JOBS=2 WEGA_ROOT=$WEGA sh $CS $n > $T/corpus_$n.log 2>&1 &
 done
-# the normal build: the shipped cc, the libc of the passes
-copytree $T/normal
-C=$T/normal/WEGA/src/cmd
-cp $T/tree/WEGA/src/lib/libc-v5.a $T/normal/WEGA/src/lib/
-(cd $C/codgen && PATH=$T/bin:$PATH make all CC=cc) > $T/normal.log 2>&1
-(cd $C/popt && PATH=$T/bin:$PATH make all CC=cc) >> $T/normal.log 2>&1
-for p in codgen:codgen/build/nonseg/codgen scodgen:codgen/build/seg/scodgen popt:popt/build/nonseg/popt spopt:popt/build/seg/spopt; do
-	CORPUS_BIN=$C/${p#*:} WEGA_ROOT=$WEGA sh $CS ${p%%:*} > $T/corpus_${p%%:*}.log 2>&1
+wait
+for p in $CORP; do
 	corpus ${p%%:*} $T/corpus_${p%%:*}.log
 done
 

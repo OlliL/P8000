@@ -36,6 +36,14 @@ To look at: codgen, scodgen and spopt built with the shipped cc and shipped libc
 
 Switches not in any version (`OLD_D1F`, `OLD_D2D`, `OLD_D3A`, `OLD_D19A`); switches with one witness (`OLDCC.md`, section 5); whether v0 and v0p are two versions; whether v1 had the old cas. `KNOWLEDGE.md`, `HANDOFF_*`, the table in section 4 of `OLDCC.md`.
 
+## 8a. Sources without the old libc
+
+For building everything with the shipped cc and the shipped libc later: the sources still need the libc of their time
+(measured 2026-11-07 with the corpus, shipped cc and shipped libc): popt uses the value of `sprintf` (the buffer; the
+shipped one returns a count), codgen meets the `%s` defect of the shipped `printf` (KNOWLEDGE.md, quirks), ld calls
+`swap_quad`, which only the old `swap.o` (`oldlibc/swap/0_1.s`) has. Changing them changes the bytes of the identical
+builds: only when the development line leaves them.
+
 ## 9. New programs
 
 `gld` and everything else under `bin/`, `lib/`, `usr/bin`, ... `host/OLDCC_DATES.md` lists all programs with their time.

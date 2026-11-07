@@ -15,6 +15,7 @@ The program is described by the functions and values of its progcfg.py (src/cmd/
   CORPUS_OUTPUTS(base)             the files a run writes (compared byte for byte)
   CORPUS_VARIANTS                  optional: a list of variants (e.g. options), each input is run once per variant
   CORPUS_IGNORE                    optional: a regular expression (bytes) of message text that may differ
+  CORPUS_NORMALIZE(file, data)     optional: an output file as it is compared (bytes that are known to be undefined)
 JOBS inputs at a time (default: all cores but one), below STAGE_TMP (default /tmp/wega_stage, a local disk).
 The exit status and the messages (stdout, stderr) are compared too. Result: one line per differing case and the totals;
 exit status 1 when a case differs.
@@ -34,6 +35,7 @@ WORK = os.path.join(os.environ.get('STAGE_TMP', '/tmp/wega_stage'), 'corpus_' + 
 
 VARIANTS = getattr(CFG, 'CORPUS_VARIANTS', [None])
 IGNORE = re.compile(CFG.CORPUS_IGNORE) if getattr(CFG, 'CORPUS_IGNORE', None) else None
+NORMALIZE = getattr(CFG, 'CORPUS_NORMALIZE', None)
 
 
 def run_pass(binary, base, work, variant):
@@ -44,6 +46,8 @@ def run_pass(binary, base, work, variant):
     for f in CFG.CORPUS_OUTPUTS(base):
         p = os.path.join(work, f)
         outs[f] = open(p, 'rb').read() if os.path.exists(p) else None
+        if outs[f] is not None and NORMALIZE:
+            outs[f] = NORMALIZE(f, outs[f])
         if os.path.exists(p):
             os.remove(p)
     msg = r.stdout + r.stderr
